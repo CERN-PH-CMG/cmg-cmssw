@@ -191,7 +191,7 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonTightID,'4l tight lepton tightid',1,'fourLeptonsTightID')
         
         #QCD suppression
-#        passed=cutFlow.applyCut(self.testFourLeptonMinMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')
+        passed=cutFlow.applyCut(self.testFourLeptonMinMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')
 
 
         #The other analyzer has cuts on M>70 or M>100 . I am totally against a cut at M>100 so I am not
@@ -200,9 +200,6 @@ class FourLeptonAnalyzerFSRStudy( FourLeptonAnalyzerBase ):
         
 
         if passed:
-         #   if EVN==9318 or EVN==9390:
-          #      for object in cutFlow.obj1:
-#                    print "mass before={before} mass after={after} z1before={zbefore} z1after={zafter}  z1hasPhoton={photon} z2 hasPhoton={photon2} dr={dr}".format(before=object.fsrUncorrected().M(),after=object.mass(),zbefore=object.leg1.fsrUncorrected().M(),zafter=object.leg1.mass(),photon=object.leg1.hasFSR(),photon2=object.leg2.hasFSR(),dr=min(object.leg2.fsrDR1(),object.leg2.fsrDR2()))
              event.higgsCand = cutFlow.obj1[0]
         
         return True

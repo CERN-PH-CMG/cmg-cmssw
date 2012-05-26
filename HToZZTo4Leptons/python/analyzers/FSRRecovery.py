@@ -14,13 +14,13 @@ class FSRConfig(object):
         self.electronCleaningDR=0.01
         self.vetoElectronDR=0.15
         self.vetoElectronDEta=0.05
-        self.vetoElectronDPhi=0.2
+        self.vetoElectronDPhi=2
         self.maxLeptonPhotonDR=0.5
         self.maxLeptonPhotonAngle=9999.
         self.maxLeptonPhotonDRTight=0.07
         self.maxLeptonPhotonAngleTight=1000.
 
-        self.maxThetaStar = 30.
+        self.maxThetaStar = 1000.
         self.leptonIsoCone=0.4
         self.maxZMass=100.
 
@@ -39,6 +39,12 @@ class FSRRecovery(object):
     def setZ(self,zCand):
         '''Set a Z to recover'''
         self.z = zCand
+
+
+    def setLeg(self,Cand):
+        '''Set a leg to recover'''
+        self.leg = Cand
+
 
     def setZZ(self,zzCand):
         '''Set a ZZ to recover'''
@@ -89,12 +95,12 @@ class FSRRecovery(object):
 
         photon=None
         if len(photonsHighPt)>0:
-            print "There is high Pt photon"
+
 
             #associate it to the Z
             photon=photonsHighPt[0]
         elif len(photonsLowPt):
-            print "There is low Pt photon"
+
 
             #sort by angle
             photonsLowPt = sorted(photonsLowPt,key=self.DRLGamma)
@@ -115,6 +121,36 @@ class FSRRecovery(object):
             
 
 
+
+
+
+    def recoverLeg(self):
+        ''' Run the recovewry algorithm. Associates a photon to the Z'''
+        
+        #Prefilter
+        photons = filter(self.photonPreFilter,self.photons)
+        photons = filter(self.photonFilterLeg,photons)
+        photonsHighPt = filter(lambda x: x.pt()>self.cfg.minPhotonPtTight,photons)
+        photonsLowPt  = filter(lambda x: x.pt()<=self.cfg.minPhotonPtTight,photons)
+        photonsHighPt=sorted(photonsHighPt,key=lambda x: x.pt(),reverse=True)
+        photon=None
+        if len(photonsHighPt)>0:
+            #associate it to the Z
+            photon=photonsHighPt[0]
+        elif len(photonsLowPt):
+            photonsLowPt = sorted(photonsLowPt,key=self.DRLGammaLeg)
+            photon=photonsLowPt[0]
+
+            
+        if photon is not None:    
+            if deltaR(photon.eta(),photon.phi(),self.leg.eta(),self.leg.phi())<self.cfg.leptonIsoCone:
+                self.leg.fsrPhoton=photon
+            self.photons.remove(photon)
+
+            
+
+
+
     def recoverZZ(self):
         '''Run the recovery algorithm for four leptons'''
         self.setZ(self.zz.leg1)
@@ -126,14 +162,16 @@ class FSRRecovery(object):
     def photonPreFilter(self,photon):
         '''Generic cross cleaning of photons''' 
 
-        if not hasattr(self,'zz'):
-            legs=[self.z.leg1,self.z.leg2]
-        else:    
+
+        if hasattr(self,'zz'):    
             legs=[self.zz.leg1.leg1, \
                   self.zz.leg1.leg2, \
                   self.zz.leg2.leg1, \
                   self.zz.leg2.leg2]
-
+        elif hasattr(self,'z'):
+            legs=[self.z.leg1,self.z.leg2]
+        elif hasattr(self,'leg'):
+            legs=[self.leg]
 
         for leg in legs:
             #Check that the photon is none of the legs
@@ -150,6 +188,7 @@ class FSRRecovery(object):
                 
 
         return True
+
 
     def photonFilter(self,photon):
         '''Ask minimum distance from Z legs. In case photon is an electron
@@ -181,6 +220,39 @@ class FSRRecovery(object):
 
         return True
 
+
+
+    def photonFilterLeg(self,photon):
+        '''Ask minimum distance from Z legs. In case photon is an electron
+           cross clean the photon . In case that the lepton is an electron
+           account for the fact that the energy will be absorbed by the
+           Supercluster'''
+
+        #Now ask that the photon is in the vicinity of the lepton
+        dr = deltaR(photon.eta(),photon.phi(),self.leg.eta(),self.leg.phi())
+
+
+        theta = acos(round(photon.p4().Vect().Dot(self.leg.p4().Vect())/(photon.p4().P()*self.leg.p4().P()),5))*180/pi
+
+
+        if dr > self.cfg.maxLeptonPhotonDR: 
+            return False
+
+        if theta > self.cfg.maxLeptonPhotonAngle:
+            return False
+
+        if dr > self.cfg.maxLeptonPhotonDRTight and photon.relIso(0.5)>self.cfg.maxPhotonDBIso:
+            return False
+
+        if photon.pt() < self.cfg.minPhotonPtTight and dr > self.cfg.maxLeptonPhotonDRTight:
+            return False
+
+        if photon.pt() < self.cfg.minPhotonPtTight and theta > self.cfg.maxLeptonPhotonAngleTight:
+            return False
+
+        return True
+
+
     def thetaStar(self,photon):
         plane = (self.z.leg1.p4().Vect().Cross(self.z.leg2.p4().Vect())).unit()
         angle = asin(round(plane.Dot(photon.p4().Vect().unit()),5))
@@ -197,6 +269,10 @@ class FSRRecovery(object):
         dr1 = deltaR(photon.eta(),photon.phi(),self.z.leg1.eta(),self.z.leg1.phi())
         dr2 = deltaR(photon.eta(),photon.phi(),self.z.leg2.eta(),self.z.leg2.phi())
         return min(dr1,dr2)
+
+    def DRLGammaLeg(self,photon):
+        dr1 = deltaR(photon.eta(),photon.phi(),self.leg.eta(),self.leg.phi())
+        return dr1
 
 
 

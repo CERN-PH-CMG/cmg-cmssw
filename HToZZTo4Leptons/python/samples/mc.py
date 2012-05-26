@@ -25,8 +25,48 @@ GGH130 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1)
 
+GGH140 = cfg.MCComponent(
+    name = 'GGH140',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
 GGH150 = cfg.MCComponent(
     name = 'GGH150',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH160 = cfg.MCComponent(
+    name = 'GGH160',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH170 = cfg.MCComponent(
+    name = 'GGH170',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH180 = cfg.MCComponent(
+    name = 'GGH180',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH190 = cfg.MCComponent(
+    name = 'GGH190',
     files = [],
     xSection = 1,
     nGenEvents = 1,
@@ -41,6 +81,55 @@ GGH200 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1)
 
+GGH210 = cfg.MCComponent(
+    name = 'GGH210',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH220 = cfg.MCComponent(
+    name = 'GGH220',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH250 = cfg.MCComponent(
+    name = 'GGH250',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH275 = cfg.MCComponent(
+    name = 'GGH275',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH300 = cfg.MCComponent(
+    name = 'GGH300',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH325 = cfg.MCComponent(
+    name = 'GGH325',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+
 GGH350 = cfg.MCComponent(
     name = 'GGH350',
     files = [],
@@ -48,6 +137,15 @@ GGH350 = cfg.MCComponent(
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1)
+
+GGH375 = cfg.MCComponent(
+    name = 'GGH375',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
 
 GGH400 = cfg.MCComponent(
     name = 'GGH400',
@@ -57,6 +155,61 @@ GGH400 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1)
 
+GGH425 = cfg.MCComponent(
+    name = 'GGH425',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH450 = cfg.MCComponent(
+    name = 'GGH450',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH475 = cfg.MCComponent(
+    name = 'GGH475',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH525 = cfg.MCComponent(
+    name = 'GGH525',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH550 = cfg.MCComponent(
+    name = 'GGH550',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH575 = cfg.MCComponent(
+    name = 'GGH575',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH600 = cfg.MCComponent(
+    name = 'GGH600',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
 
 
 ZZ4mu = cfg.MCComponent(
