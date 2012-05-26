@@ -48,6 +48,9 @@ public:
 	int computeIDflag   (float mva, float jetPt, float jetEta);
 	int computeIDflag   (float mva,int ptId,int etaId);
 
+	/// const PileupJetIdentifier::variables_list_t & getVariables() const { return variables_; };
+	const variables_list_t & getVariables() const { return variables_; };
+	
 protected:
 
 	void setup(); 
@@ -56,8 +59,6 @@ protected:
 	void resetVariables();
 	void initVariables();
 
-	/// const PileupJetIdentifier::variables_list_t & getVariables() const { return variables_; };
-	const variables_list_t & getVariables() const { return variables_; };
 	
 	PileupJetIdentifier internalId_;
 	variables_list_t variables_;
