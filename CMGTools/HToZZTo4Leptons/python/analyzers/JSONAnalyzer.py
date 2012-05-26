@@ -20,7 +20,7 @@ class JSONAnalyzer( TreeAnalyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
 
         if not cfg_comp.isMC:
-            self.lumiList = LumiList(cfg_ana.json)
+            self.lumiList = LumiList(cfg_comp.json)
         else:
             self.lumiList = None
         

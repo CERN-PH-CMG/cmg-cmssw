@@ -22,8 +22,7 @@ class TreeProducer( Analyzer ):
             self.tree.Branch(varName,self.vars[varName],varName+'/D')
         elif type is int    : 
             self.tree.Branch(varName,self.vars[varName],varName+'/I')
-        else:
-            print 'Unknown type '
+
 
 
     def fill(self, varName, value ):
@@ -69,10 +68,7 @@ class TreeProducer( Analyzer ):
         self.fill('{pName}_IsoNeutral'.format(pName=pName), particle.neutralHadronIso() )
         self.fill('{pName}_IsoPU'.format(pName=pName), particle.puChargedHadronIso() )
         self.fill('{pName}_IsoDB'.format(pName=pName), particle.absIso(0.5) )
-        if hasattr(particle,'type'):
-            self.fill('{pName}_Type'.format(pName=pName), particle.type )
-        else:
-            print "There is no type  particle of ID={id}".format(id=particle.pdgId())
+        self.fill('{pName}_Type'.format(pName=pName), particle.isFromMuon() )
             
 
     def bookLepton(self, pName ):

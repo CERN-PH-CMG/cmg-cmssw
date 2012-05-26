@@ -42,6 +42,8 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.bookLepton("ZFR_leg2")
         self.bookLepton("ZFR_probe")
         self.var("ZFR_nProbes",int)
+        self.bookLepton("ZFR_FSRprobe")
+        self.var("ZFR_nFSRProbes",int)
 
 
 
@@ -90,7 +92,8 @@ class FourLeptonTreeProducer( TreeProducer ):
             
 
         if hasattr( subevent, 'higgsCandLoose' ):
-            self.fillHiggs("H",subevent.higgsCandLoose)
+            self.fill('HLooseExists',1)
+            self.fillHiggs("HLoose",subevent.higgsCandLoose)
             self.fillBoson("HLoose_Z1",subevent.higgsCandLoose.leg1)
             self.fillBoson("HLoose_Z2",subevent.higgsCandLoose.leg2)
             self.fillLepton("HLoose_Z1_leg1",subevent.higgsCandLoose.leg1.leg1,subevent)
@@ -101,7 +104,6 @@ class FourLeptonTreeProducer( TreeProducer ):
 
 
         #Fill the fake rate measurement info
-        self.fill('HLooseExists',0)
         if hasattr( subevent, 'bestZForFakeRate' ):
             self.fill('HLooseExists',1)
             self.fillBoson("ZFR",subevent.bestZForFakeRate)
@@ -111,6 +113,10 @@ class FourLeptonTreeProducer( TreeProducer ):
             self.fill('ZFR_nProbes',len(subevent.leptonsForFakeRate))
             if len(subevent.leptonsForFakeRate)>0:
                 self.fillLepton("ZFR_probe",subevent.leptonsForFakeRate[0],subevent)
+        if hasattr( subevent,'leptonsForFakeRateWithPhoton'):
+            self.fill('ZFR_nFSRProbes',len(subevent.leptonsForFakeRateWithPhoton))
+            if len(subevent.leptonsForFakeRateWithPhoton)>0:
+                self.fillLepton("ZFR_FSRprobe",subevent.leptonsForFakeRateWithPhoton[0],subevent)
  
         self.tree.Fill()
 

@@ -58,9 +58,9 @@ vertexAna = cfg.Analyzer(
 #Analyzers
 muMuAna = cfg.Analyzer(
     'MuMuFourLeptonAnalyzer',
-    minPt1=3,
+    minPt1=5,
     maxEta1=2.4,
-    minPt2=3,
+    minPt2=5,
     maxEta2=2.4,
     z1_m = (40.,120.),
     z2_m = (4.,120.),
@@ -76,17 +76,17 @@ muMuAna = cfg.Analyzer(
 
 muEleAna = copy.deepcopy( muMuAna)
 muEleAna.name = 'MuEleFourLeptonAnalyzer'
-muEleAna.minPt1 = 3
+muEleAna.minPt1 = 5
 muEleAna.maxEta1 = 2.4
-muEleAna.minPt2 = 5
+muEleAna.minPt2 = 7
 muEleAna.maxEta2 = 2.5
 
 
 eleEleAna = copy.deepcopy( muEleAna )
 eleEleAna.name = 'EleEleFourLeptonAnalyzer'
-eleEleAna.minPt1 = 5
+eleEleAna.minPt1 = 7
 eleEleAna.maxEta1 = 2.5
-eleEleAna.minPt2 = 5
+eleEleAna.minPt2 = 7
 eleEleAna.maxEta2 = 2.5
 
 
@@ -126,27 +126,25 @@ def createTriggerTreeProducer( ana ):
 
 ####################################################################################
 
-from CMGTools.HToZZTo4Leptons.samples.samples_V5_2_0 import * 
+from CMGTools.HToZZTo4Leptons.samples.samples_7TeV import * 
 
 ####################################################################################
 
 
 jsonFilter = cfg.Analyzer(
-    'JSONAnalyzer',
-    json =json
+    'JSONAnalyzer'
     )
 
-# selectedComponents = Fall11
-#selectedComponents = copy.copy(mc_zz)
-#selectedComponents.append( Hig120GluGlu )
-# selectedComponents.extend( Fall11 )
 selectedSamples=[]
 
 for comp in mcSamples:
     comp.isMC = True
     comp.splitFactor = 10
-DYJets.splitFactor = 300
-DYJetsLowMass.splitFactor = 100
+#DYJets.splitFactor = 300
+#DYJetsLowMass.splitFactor = 100
+
+
+
 
 for comp in dataSamplesMu:
     comp.splitFactor = 100
@@ -194,13 +192,13 @@ elif channel == 'ele_ele':
 #Define Sequences for data and MC
 
 mcSequence = [
-#   theGenSel,    #uncomment to preselect events in gen level 
+   theGenSel,    #uncomment to preselect events in gen level 
     triggerAna,
     vertexAna,
-#    theGenAna,
+    theGenAna,
     theAna,
-    createTreeProducer( theAna )
-#   createTreeProducer( theGenAna )
+    createTreeProducer( theAna ),
+    createTreeProducer( theGenAna )
     ]
 
 dataSequence=[
@@ -223,8 +221,6 @@ if test==1:
     selectedComponents = [dataset]
     dataset.splitFactor = 1
     dataset.files = dataset.files[:10]
-    dataset.files = ['root://cmsphys08//data/bachtis/CMGTools/CMSSW_5_2_5/src/patTuple.root']
-#    dataset.files = ['file:/afs/cern.ch/work/p/pjanot/CMGTools/CMSSW_5_2_3_patch2/src/CMGTools/Common/prod/hzz125_patTuple_1.root']
 
    
 if test ==2:

@@ -17,6 +17,8 @@ from CMGTools.HToZZTo4Leptons.analyzers.CutFlowMaker import CutFlowMaker
 from CMGTools.HToZZTo4Leptons.analyzers.FourLeptonAnalyzerBase import FourLeptonAnalyzerBase
 from CMGTools.HToZZTo4Leptons.analyzers.OverlapCleaner import OverlapCleaner 
 
+from CMGTools.HToZZTo4Leptons.analyzers.FSRRecovery import FSRRecovery
+
 
 
 
@@ -49,6 +51,9 @@ class FourLeptonAnalyzerCMG( FourLeptonAnalyzerBase ):
         event.rho = self.handles['rho'].product()[0]
         self.rho = event.rho
 
+        #Get photons
+        self.buildPhotonList( event )
+
         
         #Build lepton lists and apply skim
         self.buildLeptonList( event )
@@ -72,7 +77,7 @@ class FourLeptonAnalyzerCMG( FourLeptonAnalyzerBase ):
 
 
         #make lepton combinations 
-        event.leptonPairs = self.findPairs(cutFlow.obj1)
+        event.leptonPairs = self.findPairsWithFSR(cutFlow.obj1,event.photons)
         cutFlow.setSource1(event.leptonPairs)
         
         #require that   M>40 and OS/SF
@@ -99,27 +104,40 @@ class FourLeptonAnalyzerCMG( FourLeptonAnalyzerBase ):
             event.bestZForFakeRate = self.bestZBosonByMass(event.zBosonsTightID)
 
             
+            #####FAKE RATE MEASUREMENT BUSINESS#############
+            ###############################################
+            
             event.leptonsForFakeRate = copy.copy(event.cleanLeptons)
             event.leptonsForFakeRate.remove( event.bestZForFakeRate.leg1)
             event.leptonsForFakeRate.remove( event.bestZForFakeRate.leg2)
+            event.leptonsForFakeRateWithPhoton=copy.copy(event.leptonsForFakeRate)
 
+            #To measure fake rate with FSR we need to measure it with photons
+            # So lets make a collection for those
+            for lepton in event.leptonsForFakeRateWithPhoton:
+                if  hasattr(self.cfg_ana,"FSR"):
+                    fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
+                    fsrAlgo.setPhotons(event.photons)
+                    fsrAlgo.setLeg(lepton)
+                    fsrAlgo.recoverLeg()
+
+            event.leptonsForFakeRateWithPhoton=filter(lambda x: hasattr(x,'fsrPhoton'),event.leptonsForFakeRateWithPhoton)        
+
+            
             #sort them by highest Pt
             event.leptonsForFakeRate.sort(key=lambda x: x.pt(),reverse=True)
+            event.leptonsForFakeRateWithPhoton.sort(key=lambda x: x.pt(),reverse=True)
+
             
         #OK in the post analysis process we will use those leptons to measure the fake rate
         #Nothing else to be done for that
 
         #Now create four Lepton candidtes upstream. Use all permutations and not combinations
         #of leptons so we can pick the best Z1 and Z2
-        event.fourLeptons = self.findQuads(event.cleanLeptons)
+        event.fourLeptons = self.findQuadsWithFSR(event.cleanLeptons,event.photons)
         #Sort them by M1 near Z and My highest Pt sum
         self.sortFourLeptons(event.fourLeptons)
         cutFlow.setSource1(event.fourLeptons)
-
-        if len(event.fourLeptons)>0:
-            event.higgsCandLoose = event.fourLeptons[0]
-
-        
         #Next Step : Apply Loose Lepton Selection
         passed=cutFlow.applyCut(self.testFourLeptonLooseID,'4l loose lepton id',1,'fourLeptonsLooseID')
         #Require Z1 OS/SF and mass cuts
