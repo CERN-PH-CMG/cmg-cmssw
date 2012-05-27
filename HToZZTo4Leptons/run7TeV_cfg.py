@@ -3,11 +3,9 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 
 
-from CMGTools.HToZZTo4Leptons.analyzers.EffectiveAreas import effectiveAreas2011 
-effectiveAreas = effectiveAreas2011()
+from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2011 as effectiveAreas
+from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
-from CMGTools.HToZZTo4Leptons.analyzers.FSRRecovery import FSRConfig
-fsr = FSRConfig()
 
 
 period = 'Period_2011AB'
@@ -70,7 +68,7 @@ muMuAna = cfg.Analyzer(
     PF=True,
     keep=False,
     effectiveAreas=effectiveAreas,
-    FSR=fsr
+#    FSR=fsr
     )
 
 
@@ -217,7 +215,7 @@ sequence = cfg.Sequence(dataSequence)
 
 test = 1
 if test==1:
-    dataset = ZZ4mu
+    dataset = GGH130
     selectedComponents = [dataset]
     dataset.splitFactor = 1
     dataset.files = dataset.files[:10]

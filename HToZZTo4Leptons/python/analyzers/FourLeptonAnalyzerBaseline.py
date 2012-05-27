@@ -12,10 +12,10 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
-from CMGTools.HToZZTo4Leptons.analyzers.CutFlowMaker import CutFlowMaker
+from CMGTools.HToZZTo4Leptons.tools.CutFlowMaker import CutFlowMaker
 
 from CMGTools.HToZZTo4Leptons.analyzers.FourLeptonAnalyzerBase import FourLeptonAnalyzerBase
-from CMGTools.HToZZTo4Leptons.analyzers.OverlapCleaner import OverlapCleaner 
+from CMGTools.HToZZTo4Leptons.tools.OverlapCleaner import OverlapCleaner 
         
 class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
 
