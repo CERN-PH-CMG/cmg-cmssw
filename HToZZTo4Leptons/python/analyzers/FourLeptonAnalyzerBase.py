@@ -13,10 +13,7 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton,Photon,Elect
 from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
 from CMGTools.HToZZTo4Leptons.tools.FSRRecovery import FSRRecovery
-
-
-
-
+from CMGTools.HToZZTo4Leptons.tools.FakeRateCalculator import FakeRateCalculator
 
 
 
@@ -25,6 +22,14 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
     LeptonClass1 = Lepton 
     LeptonClass2 = Lepton
+
+    def __init__(self, cfg_ana, cfg_comp, looperName ):
+        super(FourLeptonAnalyzerBase,self).__init__(cfg_ana,cfg_comp,looperName)
+
+        if hasattr(cfg_ana,'fakeRates'):
+            self.fakeRates=[]
+            for fr in cfg_ana.fakeRates:
+                self.fakeRates.append(FakeRateCalculator(fr))
 
 
     def declareHandles(self):
@@ -98,7 +103,15 @@ class FourLeptonAnalyzerBase( Analyzer ):
         out = []
         for l1, l2,l3,l4 in itertools.permutations(leptons, 4):
             if l1.pt()>l2.pt() and l3.pt()>l4.pt():
-                out.append( DiObjectPair(l1, l2,l3,l4))
+                if hasattr(self,'fakeRates'):
+                    for fr in self.fakeRates:
+                        fr.attachToObject(l3)
+                        fr.attachToObject(l4)
+                quadObject =DiObjectPair(l1, l2,l3,l4)
+                out.append(quadObject)
+                
+
+
         return out
 
     def findQuadsWithFSR(self, leptons,photons):
@@ -116,6 +129,11 @@ class FourLeptonAnalyzerBase( Analyzer ):
                     fsrAlgo.recoverZZ()
                     #Now Z 2
                     quadObject.updateP4()
+                    if hasattr(self,'fakeRates'):
+
+                        for fr in self.fakeRates:
+                            fr.attachToObject(quadObject.leg2.leg1)
+                            fr.attachToObject(quadObject.leg2.leg2)
                     out.append(quadObject)
         return out
 

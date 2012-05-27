@@ -5,6 +5,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 
 from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2011 as effectiveAreas
 from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
+from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 
 
 
@@ -68,7 +69,8 @@ muMuAna = cfg.Analyzer(
     PF=True,
     keep=False,
     effectiveAreas=effectiveAreas,
-#    FSR=fsr
+    FSR=fsr,
+    fakeRates=fakeRates2011
     )
 
 
@@ -111,13 +113,6 @@ def createTreeProducer( ana ):
     tp = cfg.Analyzer( '_'.join( ['FourLeptonTreeProducer',ana.name] ),
                        anaName = ana.name,
                        effectiveAreas=effectiveAreas
-                       )
-    return tp
-
-def createTriggerTreeProducer( ana ):
-    tp = cfg.Analyzer( '_'.join( ['FourLeptonTreeProducer',ana.name] ),
-                       anaName = ana.name,
-
                        )
     return tp
 
