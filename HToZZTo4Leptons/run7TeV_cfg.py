@@ -10,7 +10,7 @@ from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 
 
 period = 'Period_2011AB'
-channel = 'mu_mu'
+channel = 'ele_ele'
 
 
 
@@ -208,7 +208,7 @@ dataSequence=[
 sequence = cfg.Sequence(dataSequence)
 
 
-test = 1
+test = 0
 if test==1:
     dataset = GGH130
     selectedComponents = [dataset]
