@@ -35,7 +35,11 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.bookLepton("HLoose_Z1_leg2")
         self.bookLepton("HLoose_Z2_leg1")
         self.bookLepton("HLoose_Z2_leg2")
-
+        #Book the fake rate
+        self.var('HLoose_fakeRate')
+        self.var('HLoose_fakeRateUp')
+        self.var('HLoose_fakeRateDwn')
+        
         #Book the Z for fake rate measurement
         self.bookBoson("ZFR")
         self.bookLepton("ZFR_leg1")
@@ -100,12 +104,13 @@ class FourLeptonTreeProducer( TreeProducer ):
             self.fillLepton("HLoose_Z1_leg2",subevent.higgsCandLoose.leg1.leg2,subevent)
             self.fillLepton("HLoose_Z2_leg1",subevent.higgsCandLoose.leg2.leg1,subevent)
             self.fillLepton("HLoose_Z2_leg2",subevent.higgsCandLoose.leg2.leg2,subevent)
-
-
+            if hasattr(subevent.higgsCandLoose.leg2.leg1,'fR'):
+                self.fill('HLoose_fakeRate',subevent.higgsCandLoose.leg2.leg1.fR*subevent.higgsCandLoose.leg2.leg2.fR)
+                self.fill('HLoose_fakeRateUp',subevent.higgsCandLoose.leg2.leg1.fRUp*subevent.higgsCandLoose.leg2.leg2.fRUp)
+                self.fill('HLoose_fakeRateDwn',subevent.higgsCandLoose.leg2.leg1.fRDwn*subevent.higgsCandLoose.leg2.leg2.fRDwn)
 
         #Fill the fake rate measurement info
         if hasattr( subevent, 'bestZForFakeRate' ):
-            self.fill('HLooseExists',1)
             self.fillBoson("ZFR",subevent.bestZForFakeRate)
             self.fillLepton("ZFR_leg1",subevent.bestZForFakeRate.leg1,subevent)
             self.fillLepton("ZFR_leg2",subevent.bestZForFakeRate.leg2,subevent)
