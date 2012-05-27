@@ -1,28 +1,28 @@
 from copy import copy
 from math import pi,acos,asin
 from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi  
+
 from ROOT import TLorentzVector
 
 
-class FSRConfig(object):
-    def __init__(self):
-        self.minPhotonPt = 2.0
-        self.minPhotonPtTight = 4.0
+#class FSRConfig(object):
+#    def __init__(self):
+#        self.minPhotonPt = 2.0
+#        self.minPhotonPtTight = 4.0
+#        self.maxPhotonEta=2.4
+#        self.maxPhotonDBIso=1
+#        self.electronCleaningDR=0.01
+#        self.vetoElectronDR=0.15
+#        self.vetoElectronDEta=0.05
+#        self.vetoElectronDPhi=2
+#        self.maxLeptonPhotonDR=0.5
+#        self.maxLeptonPhotonAngle=9999.
+#        self.maxLeptonPhotonDRTight=0.07
+#        self.maxLeptonPhotonAngleTight=1000.
+#        self.maxThetaStar = 1000.
+#        self.leptonIsoCone=0.4
+#        self.maxZMass=100.
 
-        self.maxPhotonEta=2.4
-        self.maxPhotonDBIso=1
-        self.electronCleaningDR=0.01
-        self.vetoElectronDR=0.15
-        self.vetoElectronDEta=0.05
-        self.vetoElectronDPhi=2
-        self.maxLeptonPhotonDR=0.5
-        self.maxLeptonPhotonAngle=9999.
-        self.maxLeptonPhotonDRTight=0.07
-        self.maxLeptonPhotonAngleTight=1000.
-
-        self.maxThetaStar = 1000.
-        self.leptonIsoCone=0.4
-        self.maxZMass=100.
 
 
 class FSRRecovery(object):

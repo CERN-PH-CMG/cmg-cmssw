@@ -12,7 +12,8 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton,Photon,Elect
 
 from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
-from CMGTools.HToZZTo4Leptons.analyzers.FSRRecovery import FSRRecovery
+from CMGTools.HToZZTo4Leptons.tools.FSRRecovery import FSRRecovery
+
 
 
 
