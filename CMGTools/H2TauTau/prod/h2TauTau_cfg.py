@@ -39,13 +39,16 @@ print 'newSVFit', newSVFit
 
 # process.setName_('H2TAUTAU')
 
-dataset_user = 'cmgtools' 
+dataset_user = 'cbern' 
 # dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
-dataset_name = '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
+# dataset_name = '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1/PAT_CMG_V5_2_0'
+
+dataset_name = '/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_PhilV1'
+#cbern%/H2TAUTAU/Sync/GluGlu/AOD
 
 dataset_files = 'cmgTuple.*root'
 
@@ -67,7 +70,7 @@ process.source = datasetToSource(
 #    )
 #    )
 
-# process.source.fileNames = ['file:DYJets.root']
+# process.source.fileNames = ['file:cmgTuple.root']
 
 # restricting the number of files to process to a given number
 if numberOfFilesToProcess>0:
