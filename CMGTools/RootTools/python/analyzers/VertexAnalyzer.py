@@ -19,6 +19,11 @@ class VertexAnalyzer( Analyzer ):
             else:
                 self.mchandles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
                                                              'double' )
+        self.handles['goodVertices'] = AutoHandle(
+            'goodPVFilter',
+            'std::vector<reco::Vertex>'
+            )
+
         self.mchandles['pusi'] =  AutoHandle(
             'addPileupInfo',
             'std::vector<PileupSummaryInfo>' 
@@ -38,6 +43,8 @@ class VertexAnalyzer( Analyzer ):
         self.readCollections( iEvent )
         event.rho = self.handles['rho'].product()[0]
         event.vertices = self.handles['vertices'].product()
+        event.goodVertices = self.handles['goodVertices'].product()
+        
         event.vertexWeight = 1
         if self.cfg_comp.isMC:
             event.pileUpInfo = map( PileUpSummaryInfo,
@@ -52,3 +59,6 @@ class VertexAnalyzer( Analyzer ):
         if self.verbose:
             print 'VertexAnalyzer: #vert = ', len(event.vertices), \
                   ', weight = ', event.vertexWeight
+
+        if len(event.goodVertices)==0:
+            return False
