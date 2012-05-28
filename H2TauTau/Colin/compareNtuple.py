@@ -78,6 +78,7 @@ def draw(var, cut='', norm=False, rebin=None, nbins=None, xmin=None, xmax=None )
                 max = max)
         tree.Draw(theVar, cut, same)
         hist = tree.GetHistogram()
+        print tree.GetName(), hist.Integral()
         if same == '':
             hist.Sumw2()
         if norm:
@@ -116,11 +117,14 @@ def drawDiff(var, cut=''):
         mtree = makeFriends()
     same = ''
     histograms = {}
-    if not var in mtree.GetListOfLeaves():
+    leaves = [leave.GetName() for leave in mtree.GetListOfBranches()]
+    if not var in leaves:
+        import pdb; pdb.set_trace()
         raise ValueError( var + ' is not in reference tree.')
     for index, tree in enumerate(trees):
         if tree == mtree: continue
-        if not var in tree.GetListOfLeaves():
+        leaves = [leave.GetName() for leave in tree.GetListOfBranches()]        
+        if not var in leaves:
             raise ValueError( var + ' is not in reference tree ' + friendAlias(index))
         diffvar = '{var}-{ovar}'.format(var=var,
                                         ovar = '.'.join([friendAlias(index), var]))
