@@ -34,11 +34,19 @@ class VBFAnalyzer( Analyzer ):
         count.register('no central jets')
         
     def process(self, iEvent, event):
+
+##         if event.eventId == 103606:
+##             import pdb; pdb.set_trace()
+        
         self.readCollections( iEvent )
         cmgJets = self.handles['jets'].product()
-        event.jets = []
-        event.cleanJets = []
+
         allJets = []
+        event.jets = []
+        event.bJets = []
+        event.cleanJets = []
+        event.cleanBJets = []
+     
         for cmgJet in cmgJets:
             jet = Jet( cmgJet )
             allJets.append( jet )
@@ -46,25 +54,30 @@ class VBFAnalyzer( Analyzer ):
                 scale = random.gauss( self.cfg_comp.jetScale,
                                       self.cfg_comp.jetSmear )
                 jet.scaleEnergy( scale )
-            if not self.testJet( cmgJet ):
-                continue
-            event.jets.append(jet)
+            if self.testJet( jet ):
+                event.jets.append(jet)
+            if self.testBJet(jet):
+                event.bJets.append(jet)
         self.counters.counter('VBF').inc('all events')
 
-        event.bJets = filter( self.testBJet, allJets )
-
-        if len( event.jets )<2:
-            return True
-        self.counters.counter('VBF').inc('at least 2 good jets')
-       
         event.cleanJets = cleanObjectCollection( event.jets,
                                                  masks = [event.diLepton.leg1(),
                                                           event.diLepton.leg2() ],
-                                                 deltaRMin = 0.5 )
-        
-        if len( event.cleanJets )<2:
+                                                 deltaRMin = 0.5 )        
+
+        event.cleanBJets = cleanObjectCollection( event.bJets,
+                                                  masks = [event.diLepton.leg1(),
+                                                           event.diLepton.leg2() ],
+                                                  deltaRMin = 0.5 )        
+
+
+        if len( event.jets )>=2:
+            self.counters.counter('VBF').inc('at least 2 good jets')
+               
+        if len( event.cleanJets )>=2:
+            self.counters.counter('VBF').inc('at least 2 clean jets')
+        else:
             return True
-        self.counters.counter('VBF').inc('at least 2 clean jets')
 
         event.vbf = VBF( event.cleanJets, event.diLepton)
         if event.vbf.mjj > self.cfg_ana.Mjj:
@@ -87,11 +100,13 @@ class VBFAnalyzer( Analyzer ):
         # 2 is loose pile-up jet id
         return jet.pt() > self.cfg_ana.jetPt and \
                abs( jet.eta() ) < self.cfg_ana.jetEta and \
-               jet.passPuJetId('full', 2) and \
-               jet.getSelection('cuts_looseJetId')
+               jet.looseJetId() and \
+               jet.passPuJetId('full', 2) 
+               # jet.getSelection('cuts_looseJetId')
 
     def testBJet(self, jet):
-        # import pdb; pdb.set_trace()
         # medium csv working point
         # https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagPerformanceOP#B_tagging_Operating_Points_for_3
-        return jet.pt()>20 and jet.btag("combinedSecondaryVertexBJetTags")>0.679
+        return jet.pt()>20 and \
+               abs( jet.eta() ) < 2.4 and \
+               jet.btag("combinedSecondaryVertexBJetTags")>0.679

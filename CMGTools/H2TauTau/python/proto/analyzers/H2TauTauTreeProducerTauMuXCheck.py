@@ -210,10 +210,10 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
             # 2 is the loose working point
             fill( tr, 'jpass_2', j2.passPuJetId("full", 2))
 
-        if len(event.bJets)>0:
-            fill( tr, 'bpt', event.bJets[0].pt())
-            fill( tr, 'beta', event.bJets[0].eta())
-            fill( tr, 'bphi', event.bJets[0].phi())
+        if len(event.cleanBJets)>0:
+            fill( tr, 'bpt', event.cleanBJets[0].pt())
+            fill( tr, 'beta', event.cleanBJets[0].eta())
+            fill( tr, 'bphi', event.cleanBJets[0].phi())
 
         if hasattr( event, 'vbf'):
             vbf = event.vbf
@@ -231,7 +231,7 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
             fill( tr, 'visjeteta', vbf.visjeteta)
             fill( tr, 'ptvis', vbf.ptvis)
 
-        fill( tr, 'nbtag', len(event.bJets))
+        fill( tr, 'nbtag', len(event.cleanBJets))
         fill( tr, 'njets', len(event.cleanJets))
        
         self.tree.tree.Fill()

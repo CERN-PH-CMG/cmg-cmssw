@@ -136,7 +136,7 @@ sequence = cfg.Sequence( [
 tauWeighter.fixedWeight = 1
 muonWeighter.fixedWeight = 1
 
-test = 0
+test = 1
 if test==1:
     comp = HiggsVBF125 
     selectedComponents = [comp]
