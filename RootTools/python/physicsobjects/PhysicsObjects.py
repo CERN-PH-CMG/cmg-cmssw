@@ -87,10 +87,10 @@ class Lepton( PhysicsObject):
 
     def  relIso(self,dBetaFactor=0, allCharged=0):
          abs = self.absIso(dBetaFactor, allCharged)/self.pt();
-         if abs >0:
-             return abs
-         else:
-             return -1
+         # if abs >0:
+         return abs
+         #else:
+         #    return -1
 
     def relIsoAllChargedDB05(self):
         '''Used in the H2TauTau analysis: rel iso, dbeta=0.5, using all charged particles.'''
@@ -107,6 +107,7 @@ class Lepton( PhysicsObject):
 
 class Photon(Lepton):
     pass
+
     
 class Muon( Lepton ):
 
@@ -122,10 +123,11 @@ class Muon( Lepton ):
                self.normalizedChi2() < 10 and \
                self.numberOfValidMuonHits() > 0 and \
                self.numberOfMatches() > 1 and \
-               self.dxy() < 0.2 and \
-               self.dz() < 0.5 and \
-               self.numberOfValidPixelHits() > 0 and \
+               self.sourcePtr().innerTrack().hitPattern().numberOfValidPixelHits()>0 and \
                self.trackerLayersWithMeasurement() > 5 
+               # self.dxy() < 0.2 and \
+               # self.dz() < 0.5 and \
+               # self.numberOfValidPixelHits() > 0 and \
 
     def mvaId(self):
         '''For a transparent treatment of electrons and muons. Returns -99'''
@@ -157,7 +159,14 @@ class Muon( Lepton ):
     def absEffAreaIso(self,rho,effectiveAreas):
         return self.absIsoFromEA(rho,effectiveAreas.muon)
 
-        
+    def dxy(self, vertex):
+        return self.sourcePtr().innerTrack().dxy( vertex.position() )
+
+    def dz(self, vertex):
+        return self.sourcePtr().innerTrack().dz( vertex.position() )
+
+    
+
 class Electron( Lepton ):
 
     def __init__(self, *args, **kwargs):
@@ -248,6 +257,17 @@ class Tau( Lepton ):
         self.eOverP = self.leadChargedEnergy / self.leadChargedMomentum
         return self.eOverP         
 
+    def dxy(self, vertex):
+        vtx = self.leadChargedHadrVertex();   
+        p4 = self.p4();
+        return ( - (vtx.x()-vertex.position().x()) *  p4.y()
+                 + (vtx.y()-vertex.position().y()) *  p4.x() ) /  p4.pt();    
+
+    def dz(self, vertex):
+        vtx = self.leadChargedHadrVertex();   
+        p4 = self.p4();        
+        return  (vtx.z()-vertex.position().z()) - ((vtx.x()-vertex.position().x())*p4.x()+(vtx.y()-vertex.position().y())*p4.y())/ p4.pt() *  p4.z()/ p4.pt();
+    
     def __str__(self):
         lep = super(Tau, self).__str__()
         spec = '\tTau: decay = {decMode:<15}, eOverP = {eOverP:4.2f}'.format(
