@@ -107,8 +107,8 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
     def declareHandles(self):
         super(H2TauTauTreeProducerTauMuXCheck, self).declareHandles()
         self.handles['pfmetraw'] = AutoHandle(
-            'pfMetForRegression',
-            'std::vector<reco::PFMET>' 
+            'cmgPFMETRaw',
+            'std::vector<cmg::BaseMET>' 
             )        
         self.handles['pfmetsig'] = AutoHandle(
             'pfMetSignificance',
@@ -128,7 +128,7 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'lumi',event.lumi)
         fill( tr, 'evt', event.eventId)
         
-        fill( tr, 'npv', len(event.vertices)) 
+        fill( tr, 'npv', len(event.goodVertices)) 
         fill( tr, 'npu', event.pileUpInfo[1].nPU()) 
         fill( tr, 'rho', event.rho)
         
@@ -151,8 +151,8 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'm_1', leg1.mass())
         fill( tr, 'iso_1', leg1.relIsoAllChargedDB05())
         fill( tr, 'mva_1', leg1.mvaId()) # should be filled for e-tau: mva id
-        fill( tr, 'd0_1', leg1.dxy() )
-        fill( tr, 'dZ_1', leg1.dz())
+        fill( tr, 'd0_1', leg1.dxy(event.goodVertices[0]) )
+        fill( tr, 'dZ_1', leg1.dz(event.goodVertices[0]))
         fill( tr, 'passid_1', leg1.tightId() )
         fill( tr, 'passiso_1', leg1.relIsoAllChargedDB05()<0.1 )
         fill( tr, 'mt_1', event.diLepton.mTLeg2())
@@ -200,7 +200,7 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
             fill( tr, 'jpass_1', j1.passPuJetId("full", 2))
 
         if nJets>=2:
-            j2 = event.cleanJets[0]
+            j2 = event.cleanJets[1]
             fill( tr, 'jpt_2', j2.pt())
             fill( tr, 'jeta_2', j2.eta())
             fill( tr, 'jphi_2', j2.phi())

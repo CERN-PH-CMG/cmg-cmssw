@@ -25,6 +25,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             'cmgMuonSel',
             'std::vector<cmg::Muon>'
             )
+        
         # FIXME reading the genparticlespruned collection. problem elsewhere?
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
@@ -37,8 +38,11 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             diLeptons.append( pydil )
         return diLeptons
 
+
+
     def process(self, iEvent, event):
 
+        self.bestVertex = event.goodVertices[0]
         result = super(TauMuAnalyzer, self).process(iEvent, event)
         
         if result is False:
@@ -92,8 +96,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu and tau'''
-        return abs(lepton.dxy()) < 0.045 and \
-               abs(lepton.dz()) < 0.2 
+        return abs(lepton.dxy(self.bestVertex)) < 0.045 and \
+               abs(lepton.dz(self.bestVertex)) < 0.2 
 
 
     def testMuonTight(self, muon ):
