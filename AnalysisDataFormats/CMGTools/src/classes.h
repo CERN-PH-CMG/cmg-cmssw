@@ -125,9 +125,9 @@ namespace {
     std::vector<cmg::PFJet> pfjv;
     edm::Wrapper<cmg::PFJet> epfj;
     edm::Wrapper<std::vector<cmg::PFJet> > epfjv;
-    boost::array<int,3> intarray3;
-    boost::array<float,3> floatarray3;
-    boost::array<std::string,3> stringarray3;
+    boost::array<int,5> intarray5;
+    boost::array<float,5> floatarray5;
+    boost::array<std::string,5> stringarray5;
 
     cmg::PFJetComponent  jetComp_;
     std::vector< cmg::PFJetComponent > vJetComps_;

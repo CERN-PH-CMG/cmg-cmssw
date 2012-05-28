@@ -96,7 +96,7 @@ namespace cmg {
     float ptd_;
 
     // Pile-Up discrimination
-    typedef boost::array<int,3> PuIdArray;
+    typedef boost::array<int,5> PuIdArray;
     typedef boost::array<float,PuIdArray::static_size> PuMvaArray;
     typedef boost::array<std::string,PuIdArray::static_size> PuIdNames;
     PuIdArray puIds_;
