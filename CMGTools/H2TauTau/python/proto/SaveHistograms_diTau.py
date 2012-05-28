@@ -1,4 +1,5 @@
 import imp
+import os
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.H2TauTauDataMC_diTau import *
 from CMGTools.RootTools.RootInit import *
@@ -6,7 +7,7 @@ import math
 
 
 def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
-    rootfile=TFile(prefixLabel+"_tauTau_"+category+"_mH"+str(mass)+"_"+plotVarDataOS.varName+".root","RECREATE")
+    rootfile=TFile(os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+"_tauTau_"+category+"_mH"+str(mass)+"_"+plotVarDataOS.varName+".root","RECREATE")
     channel=rootfile.mkdir("tauTau_"+category)
 
     if plotVarDataOS.varName == massType+"" :
@@ -19,6 +20,9 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
 		plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
 		plotVarDataOS.Hist("WJets").weighted.SetName("W")
 		plotVarDataOS.Hist("TTJets").weighted.SetName("TT")
+		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("ZZ"))
+		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("WZ"))
+		plotVarDataOS.Hist("WW").weighted.SetName("diBosons")
 		plotVarDataOS.Hist("QCDdata").weighted.SetName("QCD")
 		plotVarDataOS.Hist("Data").weighted.SetName("data_obs")
 		channel.Add(plotVarDataOS.Hist(str("Higgsgg"+str(mass))).weighted)
@@ -41,6 +45,9 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
 		plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
 		plotVarDataOS.Hist("WJets").weighted.SetName("W_CMS_scale_tUp")
 		plotVarDataOS.Hist("TTJets").weighted.SetName("TT_CMS_scale_tUp")
+		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("ZZ"))
+		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("WZ"))
+		plotVarDataOS.Hist("WW").weighted.SetName("diBosons_CMS_scale_tUp")
 		channel.Add(plotVarDataOS.Hist(str("Higgsgg"+str(mass))).weighted)
 		channel.Add(plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted)
 		channel.Add(plotVarDataOS.Hist("DYJets").weighted)
@@ -59,6 +66,9 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
 		plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
 		plotVarDataOS.Hist("WJets").weighted.SetName("W_CMS_scale_tDown")
 		plotVarDataOS.Hist("TTJets").weighted.SetName("TT_CMS_scale_tDown")
+		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("ZZ"))
+		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("WZ"))
+		plotVarDataOS.Hist("WW").weighted.SetName("diBosons_CMS_scale_tDown")
 		channel.Add(plotVarDataOS.Hist(str("Higgsgg"+str(mass))).weighted)
 		channel.Add(plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted)
 		channel.Add(plotVarDataOS.Hist("DYJets").weighted)
@@ -71,9 +81,12 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
     rootfile.Close()
 
 def saveForPlotting(plotVarDataOS, prefixLabel, mass):
-    rootfile=TFile(prefixLabel+"_tauTau_mH"+str(mass)+"_PLOT.root","UPDATE")
+    rootfile=TFile(os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+"_tauTau_mH"+str(mass)+"_PLOT.root","UPDATE")
     channel=rootfile.mkdir(str(plotVarDataOS.varName))
     rootfile.cd(str(plotVarDataOS.varName))
+
+########## CHANGE FOR SCALED TES ###########
+
 
     plotVarDataOS.Hist(str("Higgsgg"+str(mass))).weighted.SetName(str("SM"+str(mass)))
     plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)))
@@ -84,6 +97,9 @@ def saveForPlotting(plotVarDataOS, prefixLabel, mass):
     plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
     plotVarDataOS.Hist("WJets").weighted.SetName("W")
     plotVarDataOS.Hist("TTJets").weighted.SetName("TT")
+    plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("ZZ"))
+    plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("WZ"))
+    plotVarDataOS.Hist("WW").weighted.SetName("diBosons")
     plotVarDataOS.Hist("QCDdata").weighted.SetName("QCD")
     plotVarDataOS.Hist("Data").weighted.SetName("data_obs")
     channel.Add(plotVarDataOS.Hist(str("Higgsgg"+str(mass))).weighted)
