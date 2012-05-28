@@ -40,7 +40,7 @@ MetFlavorProducer::MetFlavorProducer(const edm::ParameterSet& iConfig) {
   fDZMin          = iConfig.getParameter<double>       ("dZMin");  
   fMetFlavor      = iConfig.getParameter<int>          ("MetFlavor");
   fUtils          = new MetUtilities();
-  fPUJetIdAlgo         = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("full"));
+  fPUJetIdAlgo         = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("PhilV1"));
   fPUJetIdAlgoLowPt    = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("PhilV1"));
 }
 MetFlavorProducer::~MetFlavorProducer() { 

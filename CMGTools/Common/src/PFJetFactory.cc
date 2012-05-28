@@ -15,7 +15,7 @@ cmg::PFJetFactory::PFJetFactory(const edm::ParameterSet& ps):
 {
   // PU discrimination
   // Make sure that MVAs and IDs are in synch and match expectations
-  assert( puMvas_.size() == cmg::PFJet::PuIdArray::static_size && 
+  assert( puMvas_.size() <= cmg::PFJet::PuIdArray::static_size && 
 	  puMvas_.size() == puIds_.size() );
   for(size_t ii=0; ii<puIds_.size(); ++ii){
     std::string mvaLabel = puMvas_[ii].instance();
