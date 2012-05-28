@@ -84,11 +84,11 @@ class VBFAnalyzer( Analyzer ):
         
         
     def testJet( self, jet ):
-        if jet.pt() > self.cfg_ana.jetPt and \
-               abs( jet.eta() ) < self.cfg_ana.jetEta:
-            return True
-        else:
-            return False
+        # 2 is loose pile-up jet id
+        return jet.pt() > self.cfg_ana.jetPt and \
+               abs( jet.eta() ) < self.cfg_ana.jetEta and \
+               jet.passPuJetId('full', 2) and \
+               jet.getSelection('cuts_looseJetId')
 
     def testBJet(self, jet):
         # import pdb; pdb.set_trace()
