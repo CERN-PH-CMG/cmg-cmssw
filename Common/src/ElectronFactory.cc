@@ -71,7 +71,7 @@ cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* const ou
   
   //PG FIXME there's some hardcoded parameters here
   reco::isodeposit::AbsVetos ilPennello ;
-  reco::isodeposit::ConeVeto Cinghiale (reco::isodeposit::Direction(input->eta (), input->phi ()), 0.01) ;
+  reco::isodeposit::ConeVeto Cinghiale (reco::isodeposit::Direction(input->eta (), input->phi ()), 0.08) ;
   ilPennello.push_back (&Cinghiale) ;
   output->chargedAllIsoWithConeVeto_ = 
     (input->isoDeposit(pat::PfChargedAllIso)->depositAndCountWithin( 
