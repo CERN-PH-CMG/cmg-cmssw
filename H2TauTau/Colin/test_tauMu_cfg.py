@@ -64,6 +64,7 @@ muonWeighter = cfg.Analyzer(
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     # fixedWeight = 1,
+    goodVertices = 'offlinePrimaryVertices', # hum... collection not available in old tuples
     vertexWeight = mc_vertexWeight,
     verbose = False
     )
@@ -81,16 +82,16 @@ vbfAna = cfg.Analyzer(
     **vbfKwargs
     )
 
-eventSorter = cfg.Analyzer(
-    'H2TauTauEventSorter',
-    # vertexWeight = mc_vertexWeight,
-    leg1 = 'tau',
-    leg2 = 'mu',
-    MT_low = 40,
-    MT_high = 60,
-    Boosted_JetPt = 150,
-    **vbfKwargs
-    )
+## eventSorter = cfg.Analyzer(
+##     'H2TauTauEventSorter',
+##     # vertexWeight = mc_vertexWeight,
+##     leg1 = 'tau',
+##     leg2 = 'mu',
+##     MT_low = 40,
+##     MT_high = 60,
+##     Boosted_JetPt = 150,
+##     **vbfKwargs
+##     )
 
 treeProducer = cfg.Analyzer(
     'H2TauTauTreeProducerTauMu'
@@ -130,9 +131,9 @@ elif period == 'Period_2011AB':
 
 sequence = cfg.Sequence( [
     triggerAna,
+    vertexAna,
     TauMuAna,
     vbfAna,
-    vertexAna,
     tauWeighter, 
     muonWeighter, 
     treeProducer
@@ -158,10 +159,10 @@ embed_Run2011A_03Oct2011_v1.splitFactor = 5
 test = 0
 # selectedComponents = embed_2011
 if test==1:
-    # comp = HiggsVBF120
+    comp = HiggsVBF120
     # comp.files = ['tauMu_fullsel_tree_CMG.root']
     # comp.files = ['/data/c/cbern/Tests/CMGTools/44X/May05/CMGTools/CMSSW_4_4_4/src/CMGTools/H2TauTau/prod/tauMu_fullsel_tree_CMG.root']
-    comp = data_Run2011A_May10ReReco_v1
+    # comp = data_Run2011A_May10ReReco_v1
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:5]
