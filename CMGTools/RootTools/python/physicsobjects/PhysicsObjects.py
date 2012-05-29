@@ -169,12 +169,24 @@ class Muon( Lepton ):
     def absEffAreaIso(self,rho,effectiveAreas):
         return self.absIsoFromEA(rho,effectiveAreas.muon)
 
-    def dxy(self, vertex):
+    def dxy(self, vertex=None):
+        '''either pass the vertex, or set associatedVertex before calling the function.
+        note: the function does not work with standalone muons as innerTrack
+        is not available.
+        '''
+        if vertex is None:
+            vertex = self.associatedVertex
         return self.sourcePtr().innerTrack().dxy( vertex.position() )
+ 
 
-    def dz(self, vertex):
+    def dz(self, vertex=None):
+        '''either pass the vertex, or set associatedVertex before calling the function.
+        note: the function does not work with standalone muons as innerTrack
+        is not available.
+        '''
+        if vertex is None:
+            vertex = self.associatedVertex
         return self.sourcePtr().innerTrack().dz( vertex.position() )
-
     
 
 class Electron( Lepton ):
@@ -267,13 +279,17 @@ class Tau( Lepton ):
         self.eOverP = self.leadChargedEnergy / self.leadChargedMomentum
         return self.eOverP         
 
-    def dxy(self, vertex):
+    def dxy(self, vertex=None):
+        if vertex is None:
+            vertex = self.associatedVertex
         vtx = self.leadChargedHadrVertex();   
         p4 = self.p4();
         return ( - (vtx.x()-vertex.position().x()) *  p4.y()
                  + (vtx.y()-vertex.position().y()) *  p4.x() ) /  p4.pt();    
 
-    def dz(self, vertex):
+    def dz(self, vertex=None):
+        if vertex is None:
+            vertex = self.associatedVertex
         vtx = self.leadChargedHadrVertex();   
         p4 = self.p4();        
         return  (vtx.z()-vertex.position().z()) - ((vtx.x()-vertex.position().x())*p4.x()+(vtx.y()-vertex.position().y())*p4.y())/ p4.pt() *  p4.z()/ p4.pt();

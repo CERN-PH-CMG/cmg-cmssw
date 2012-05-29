@@ -33,10 +33,17 @@ class DiLeptonAnalyzer( Analyzer ):
                                                              max = self.cfg_ana.m_max ))
         
 
-    def buildDiLeptons(self, cmgDiLeptons):
+    def buildDiLeptons(self, cmgDiLeptons, event):
         '''Creates python DiLeptons from the di-leptons read from the disk.
         to be overloaded if needed.'''
         return map( self.__class__.DiObjectClass, cmgDiLeptons )
+
+
+    def buildLeptons(self, cmgLeptons, event):
+        '''Creates python Leptons from the leptons read from the disk.
+        to be overloaded if needed.'''
+        return map( self.__class__.LeptonClass, cmgLeptons )
+
 
         
     def process(self, iEvent, event):
@@ -50,8 +57,8 @@ class DiLeptonAnalyzer( Analyzer ):
         self.readCollections( iEvent )
         # trigger stuff could be put in a separate analyzer
         # event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
-        event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product() )
-        event.leptons = map( self.__class__.LeptonClass, self.handles['leptons'].product() ) 
+        event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product(), event )
+        event.leptons = self.buildLeptons( self.handles['leptons'].product(), event )
 
         self.counters.counter('DiLepton').inc('all events')
         # if not self.triggerList.triggerPassed(event.triggerObject):

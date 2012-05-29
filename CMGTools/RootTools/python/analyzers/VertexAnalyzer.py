@@ -20,7 +20,7 @@ class VertexAnalyzer( Analyzer ):
                 self.mchandles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
                                                              'double' )
         self.handles['goodVertices'] = AutoHandle(
-            'goodPVFilter',
+            self.cfg_ana.goodVertices,
             'std::vector<reco::Vertex>'
             )
 
