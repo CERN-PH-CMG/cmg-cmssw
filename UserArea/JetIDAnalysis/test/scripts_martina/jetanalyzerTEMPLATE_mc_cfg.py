@@ -11,7 +11,7 @@ from CMGTools.External.jec_2012_cff import use2012JecPreview
 from Configuration.AlCa.autoCond import autoCond
 if(runOnMC) : process.GlobalTag.globaltag=cms.string(autoCond.get('startup',autoCond['mc']))
 else        : process.GlobalTag.globaltag=cms.string(autoCond['com10'])
-use2012JecPreview(process)
+use2012JecPreview(process,not runOnMC)
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(1000)
