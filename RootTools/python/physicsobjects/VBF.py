@@ -4,10 +4,11 @@ from CMGTools.RootTools.utils.DeltaR import deltaPhi
 
 class VBF( object ):
     '''Computes and holds VBF quantities'''
-    def __init__(self, jets, diLepton):
+    def __init__(self, jets, diLepton, vbfMvaCalc):
         '''jets: jets cleaned from the diLepton legs.
         diLepton: the di-tau, for example. Necessary to compute input variables for MVA selection
         '''
+        self.vbfMvaCalc = vbfMvaCalc
         self.jets = jets
         # the MET is taken from the di-lepton, because it can depend on it
         # e.g. recoil corrections, mva met
@@ -35,9 +36,17 @@ class VBF( object ):
         # delta phi between dijet system and higgs system
         self.dphidijethiggs = deltaPhi( self.dijetphi, self.higgsp4.phi() )
         # ? 
-        self.visjeteta = -99
+        visDiLepton = diLepton.leg1 ().p4 () + diLepton.leg2 ().p4 ()
+        self.visjeteta =  abs (visDiLepton.eta () - dijetp4.eta ()) ;
         # visible higgs pt = di-lepton pt
-        self.ptvis = diLepton.pt()
+        self.ptvis = visDiLepton.pt()
+        # self.ptvis = diLepton.pt()
+        self.mva = self.vbfMvaCalc.val (self.mjj, abs(self.deta), self.dphi, 
+                                        self.ptvis, self.dijetpt, 
+                                        self.dphidijethiggs, 
+                                        self.visjeteta, self.ptvis) 
+
+        
         
     def findCentralJets( self, leadJets, otherJets ):
         '''Finds all jets between the 2 leading jets, for central jet veto.'''

@@ -5,6 +5,7 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection
 from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
+from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA
 
 class VBFAnalyzer( Analyzer ):
     '''Analyze jets, and in particular VBF.
@@ -15,6 +16,10 @@ class VBFAnalyzer( Analyzer ):
     - vbf: the VBF object with all necessary variables, if it can be defined
     - bJets: the bjets passing testBJet (see this method)
     '''
+
+    def __init__(self, cfg_ana, cfg_comp, looperName):
+        super(VBFAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
+        self.vbfMva = VBFMVA (cfg_ana.vbfMvaWeights)
 
     def declareHandles(self):
         super(VBFAnalyzer, self).declareHandles()
@@ -79,7 +84,7 @@ class VBFAnalyzer( Analyzer ):
         else:
             return True
 
-        event.vbf = VBF( event.cleanJets, event.diLepton)
+        event.vbf = VBF( event.cleanJets, event.diLepton, self.vbfMva.vbfMvaCalc)
         if event.vbf.mjj > self.cfg_ana.Mjj:
             self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )
         else:
