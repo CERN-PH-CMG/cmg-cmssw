@@ -96,18 +96,18 @@ MVAMETProducer< RecBosonType >::MVAMETProducer(const edm::ParameterSet & iConfig
   deltaRCut_(0.5),
   enable_( iConfig.getParameter<bool>("enable") ),
   verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ) {
-  
-/*   std::string fileCorrectTo = iConfig.getParameter<std::string>("fileCorrectTo"); */
-/*   std::string fileZmmData = iConfig.getParameter<std::string>("fileZmmData"); */
-/*   std::string fileZmmMC = iConfig.getParameter<std::string>("fileZmmMC"); */
-  
-
+    
   mvaMet_ = new MVAMet(0.1);
+/*   mvaMet_->Initialize(iConfig, */
+/* 		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmet_42.root"))),        //U */
+/* 		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmetphi_42.root"))),     //U Phi */
+/* 		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmetu1cov_42.root"))),   //U1 Cov */
+/* 		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmetu2cov_42.root"))));    //U2 Cov ); */
   mvaMet_->Initialize(iConfig,
-		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmet_42.root"))),        //U
-		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmetphi_42.root"))),     //U Phi
-		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmetu1cov_42.root"))),   //U1 Cov
-		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmetu2cov_42.root"))));    //U2 Cov );
+		      TString(iConfig.getParameter<std::string>("weights_gbrmet")),        //U
+		      TString(iConfig.getParameter<std::string>("weights_gbrmetphi")),     //U Phi
+		      TString(iConfig.getParameter<std::string>("weights_gbrmetu1cov")),   //U1 Cov
+		      TString(iConfig.getParameter<std::string>("weights_gbrmetu2cov")));  //U2 Cov
 		      
    
   // will produce one BaseMET for each recBoson 
