@@ -14,7 +14,7 @@ class FileOps(object):
     
     """Class gives access to attributes of the dataset that are stored on disk"""
     
-    def __init__(self, setName,user, force, checkGroups):
+    def __init__(self, setName,user, force, checkGroups, run_range = None):
         """Initialises attributes of object, and validates existence of dataset
         'setName' takes the name of the dataset in the EOS format e.g. /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3
         'user' takes the files owner on EOS e.g. cmgtools
@@ -36,6 +36,11 @@ class FileOps(object):
         self._valid = False
         self._castorGroups = None
         self._force = force
+        self._min_run = -1
+        self._max_run = -1
+        if run_range is not None:
+            self._min_run = run_range[0]
+            self._max_run = run_range[1]
         
         # If group space is specified, get EOS path using this, otherwise, use user space
         if re.search('group',user):
@@ -264,7 +269,7 @@ class FileOps(object):
             # If report is none then do integrity check
             if report is None and (self._user == 'cmgtools' or self._user == os.environ['USER']):
                 try:
-                    checkopts = CheckValues(defaults = {'verbose': 0, 'idx': 0, 'format': 'json', 'user': self._user, 'printout': True, 'host': 'https://cmsweb.cern.ch', 'limit': 10, 'resursive': False, 'wildcard': '[!histo]*.root', 'device': 'cmst3', 'query': False, 'name': None})
+                    checkopts = CheckValues(defaults = {'verbose': 0, 'idx': 0, 'format': 'json', 'user': self._user, 'printout': True, 'host': 'https://cmsweb.cern.ch', 'limit': 10, 'resursive': False, 'wildcard': '[!histo]*.root', 'device': 'cmst3', 'query': False, 'name': None, 'min_run':self._min_run, 'max_run':self._max_run, 'update':True})
                     check = IntegrityCheck(self._setName, checkopts)
                     check.test()
                     check.report()

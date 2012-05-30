@@ -14,7 +14,7 @@ from CMGTools.Production.findDSOnSav import getTaskID
 from CMGTools.Production.fileOps import FileOps
 
 
-def publish(dsName,fileown,comment,test,user,password, force, checkGroups, savannah):
+def publish(dsName,fileown,comment,test,user,password, force, checkGroups, savannah, run_range = None):
     """Publish the given dataset to CMGDB and Savannah
     
     'dsName' takes the name of the dataset, in either format
@@ -63,7 +63,7 @@ def publish(dsName,fileown,comment,test,user,password, force, checkGroups, savan
         # Create FileOps object
         fileOps = None
         try:
-            fileOps = FileOps(dsName, fileown ,force, checkGroups)    
+            fileOps = FileOps(dsName, fileown ,force, checkGroups, run_range)    
         except KeyboardInterrupt:
             raise
         
