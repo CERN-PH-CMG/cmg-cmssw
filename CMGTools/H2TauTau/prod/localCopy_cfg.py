@@ -7,7 +7,7 @@ process = cms.Process("COPY")
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'cmgtools',
-    '/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1/PAT_CMG_V5_2_0',
+    '/TauPlusX/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076',
     'cmgTuple.*root',
     )
 
