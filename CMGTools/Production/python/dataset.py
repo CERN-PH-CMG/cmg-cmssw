@@ -114,7 +114,6 @@ class CMSDataset( BaseDataset ):
         if runmax > 0:
             query = "%s and run <= %i" % (query,runmax)
         dbs = 'dbs search --query="find sum(file.numevents) where dataset like %s"' % query
-        print dbs
         dbsOut = os.popen(dbs).readlines()
 
         entries = []
@@ -125,7 +124,6 @@ class CMSDataset( BaseDataset ):
                     entries.append(int(line))
                 except ValueError:
                     pass
-                print line
         if entries:
             return sum(entries)
         return -1
