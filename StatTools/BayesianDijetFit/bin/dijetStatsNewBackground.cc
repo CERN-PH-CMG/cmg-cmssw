@@ -100,6 +100,7 @@ int main(int argc, char* argv[])
   double NSIGCUTOFF=3.0; // number of +/- "sigma" to cutoff integration of nuisance parameters
   bool USELOGNORM=true;  // use lognormal or gaussian nuisance prior pdfs
   bool USEJEFFREYS=false;  // use lognormal or gaussian nuisance prior pdfs
+  bool USENEWCOVARIANCE=true;  // use lognormal or gaussian nuisance prior pdfs
   bool WRITE=false;
 
 
@@ -704,27 +705,39 @@ int main(int argc, char* argv[])
         for(Int_t k= 0; k < nPar; k++) {
      	  std::cout << k << ": ";
      	  for(Int_t l= 0; l < nPar; l++) {
-     	    std::cout << eigenVectors[k][l] << " ";
+     	    std::cout << eigenVectors[l][k] << " ";
      	  }
      	  std::cout << std::endl;
         }
+	if(USENEWCOVARIANCE)
+	    eigenValues.Sqrt(); // Turn variances into errors 
  
         if (statlevel<100) {
          histA->Scale(3); // 3 times the central value plus up/down variations along 3 axes
          TVector g(nPar);
 	 for(Int_t v=1; v<nPar;v++){
-	  for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[v][k];
-	  // multiply this vector by Lt to introduce the appropriate correlations
-	  g*= (*_Lt);
+          if(USENEWCOVARIANCE)
+          {
+	      for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(v)*eigenVectors[k][v]; 
+	  } else {
+	      for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[v][k];
+              // multiply this vector by Lt to introduce the appropriate correlations
+              g*= (*_Lt);
+	  }
 	  ws->var("p1")->setVal(p1val+g(1));
 	  ws->var("p2")->setVal(p2val+g(2));
 	  ws->var("p3")->setVal(p3val+g(3));
 	  TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
 	  histA->Add(histAHi);
 	  delete histAHi;
-	  for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[v][k];
-	  // multiply tLos vector by Lt to introduce the appropriate correlations
-	  g*= (*_Lt);
+          if(USENEWCOVARIANCE)
+          {
+	      for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(v)*eigenVectors[k][v]; 
+	  } else {
+	      for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[v][k];
+              // multiply this vector by Lt to introduce the appropriate correlations
+              g*= (*_Lt);
+	  }
 	  ws->var("p1")->setVal(p1val+g(1));
 	  ws->var("p2")->setVal(p2val+g(2));
 	  ws->var("p3")->setVal(p3val+g(3));
@@ -737,12 +750,24 @@ int main(int argc, char* argv[])
 	else if (statlevel>=100 && statlevel < 1000) {
           TVector g(nPar);
 	  if ((statlevel>=100) && (statlevel<=102)) {
-            for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[statlevel-99][k];
+            if(USENEWCOVARIANCE)
+            {
+	        for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(statlevel-99)*eigenVectors[k][statlevel-99]; 
+	    } else {
+                for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[statlevel-99][k];
+                // multiply this vector by Lt to introduce the appropriate correlations
+                g*= (*_Lt);
+	    }
 	  } else if ((statlevel>=103) && (statlevel<=105)) {
-            for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[statlevel-102][k];
+            if(USENEWCOVARIANCE)
+            {
+	        for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(statlevel-102)*eigenVectors[k][statlevel-102]; 
+	    } else {
+                for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[statlevel-102][k];
+                // multiply this vector by Lt to introduce the appropriate correlations
+                g*= (*_Lt);
+	    }
 	  }
-          // multiply this vector by Lt to introduce the appropriate correlations
-          g*= (*_Lt);
           ws->var("p1")->setVal(p1val+g(1));
           ws->var("p2")->setVal(p2val+g(2));
           ws->var("p3")->setVal(p3val+g(3));
