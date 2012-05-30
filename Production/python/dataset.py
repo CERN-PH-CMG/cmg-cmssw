@@ -17,9 +17,13 @@ class BaseDataset( object ):
         self.user = user
         self.pattern = pattern
         self.run_range = run_range
+        self.primaryDatasetEntries = -1
+        self.report = None
+
         self.buildListOfFiles( self.pattern )
         self.extractFileSizes()
         self.buildListOfBadFiles()
+        self.primaryDatasetEntries = self.getPrimaryDatasetEntries()
      
     def buildListOfFiles( self, pattern ):
         self.files = []
@@ -35,6 +39,9 @@ class BaseDataset( object ):
     def printInfo(self):
         print 'sample      :  ' + self.name
         print 'user        :  ' + self.user
+
+    def getPrimaryDatasetEntries(self):
+        return self.primaryDatasetEntries
 
     def printFiles(self, abspath=True, info=True):
         # import pdb; pdb.set_trace()
@@ -57,6 +64,7 @@ class BaseDataset( object ):
                       '\t', fileNameToPrint
             else:
                 print fileNameToPrint
+        print 'PrimaryDatasetEntries: %d' % self.primaryDatasetEntries
                 
     def listOfFiles(self):
         '''Returns all files, even the bad ones.'''
@@ -96,7 +104,39 @@ class CMSDataset( BaseDataset ):
             line = line.rstrip()
             # print 'line',line
             self.files.append(line)
+            
+    @staticmethod
+    def findPrimaryDatasetEntries(dataset, runmin, runmax):
 
+        query = dataset
+        if runmin > 0:
+            query = "%s and run >= %i" % (query,runmin)
+        if runmax > 0:
+            query = "%s and run <= %i" % (query,runmax)
+        dbs = 'dbs search --query="find sum(file.numevents) where dataset like %s"' % query
+        print dbs
+        dbsOut = os.popen(dbs).readlines()
+
+        entries = []
+        for line in dbsOut:
+            line = line.replace('\n','')
+            if line:
+                try:
+                    entries.append(int(line))
+                except ValueError:
+                    pass
+                print line
+        if entries:
+            return sum(entries)
+        return -1
+
+    def getPrimaryDatasetEntries(self):
+        runmin = -1
+        runmax = -1
+        if self.run_range is not None:
+            runmin = self.run_range[0]
+            runmax = self.run_range[1]
+        return self.findPrimaryDatasetEntries(self.name, runmin, runmax)
 
 
 class LocalDataset( BaseDataset ):
@@ -193,6 +233,11 @@ class Dataset( BaseDataset ):
         print 'sample      :  ' + self.name
         print 'LFN         :  ' + self.lfnDir
         print 'Castor path :  ' + self.castorDir
+
+    def getPrimaryDatasetEntries(self):
+        if self.report is not None and self.report:
+            return int(self.report.get('PrimaryDatasetEntries',-1))
+        return -1
 
 
 def createDataset( user, dataset, pattern,  readcache=False, basedir=None, run_range = None):
