@@ -9,6 +9,7 @@ import subprocess
 import CMGTools.Production.eostools as castortools
 from CMGTools.Production.timeout import timed_out, TimedOutExc
 from CMGTools.Production.castorBaseDir import castorBaseDir
+from CMGTools.Production.dataset import CMSDataset
 
 class PublishToFileSystem(object):
     """Write a report to storage"""
@@ -94,27 +95,8 @@ class IntegrityCheck(object):
             
         if data is None:
             raise Exception("Dataset '%s' not found in Das. Please check." % self.dataset)
-        self.eventsTotal = 0
-
-        #there can be multiple datasets with the same name. If so we take the most recent
-        #eliminates double counting of entries in DAS and so we get the fractions right
-        datasets = []
-        for result in data['data']:
-            datasets.append( (result['das']['expire'], result) )
-        datasets.sort()
-        if datasets:
-            ds = datasets[-1][1]['dataset']
-            if ds and type(ds) == type([]):
-                if 'nevents' in datasets[-1][1]['dataset'][0]:
-                    self.eventsTotal = datasets[-1][1]['dataset'][0]['nevents']
-                elif 'nevents' in datasets[-1][1]['dataset'][1]:
-                    #try the second array index, maybe there was an error message in the first
-                    self.eventsTotal = datasets[-1][1]['dataset'][1]['nevents']
-                else:
-                    raise Exception("invalid dataset info")
-            else:
-                self.eventsTotal = datasets[-1][1]['dataset']['nevents']
-        
+        #get the number of events in the dataset
+        self.eventsTotal = CMSDataset.findPrimaryDatasetEntries(self.options.name, self.options.min_run, self.options.max_run)
     
     def stripDuplicates(self):
         
@@ -254,7 +236,7 @@ class IntegrityCheck(object):
         totalBad = 0
 
         report = {'data':{},
-                  'ReportVersion':2,
+                  'ReportVersion':3,
                   'PrimaryDataset':self.options.name,
                   'Name':self.dataset,
                   'PhysicsGroup':'CMG',
@@ -292,6 +274,9 @@ class IntegrityCheck(object):
         
         report['BadJobs'] = self.bad_jobs
         report['ValidDuplicates'] = self.duplicates
+        
+        report['MinRun'] = self.options.min_run
+        report['MaxRun'] = self.options.max_run
 
         return report
     

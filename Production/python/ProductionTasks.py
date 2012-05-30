@@ -122,7 +122,9 @@ class BaseDataset(Task):
         
         def check(ds):
             query = 'dataset=%s' % ds
-            data = eval(Das.get_data(host, query, idx, limit, debug))
+            result = Das.get_data(host, query, idx, limit, debug)
+            result = result.replace('null','None')
+            data = eval(result)
             if data['status'] != 'ok':
                 raise Exception("Das query failed: Output is '%s'" % data)
             return (data['data'],data)
