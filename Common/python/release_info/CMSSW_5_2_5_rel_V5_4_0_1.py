@@ -30,4 +30,4 @@
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-03'),
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'bMinimalSVfit_2012May13'),
-  ('TauAnalysis/SVFitStandAlone', 'TauAnalysis/SVFitStandAlone', 'joseMay18')]
+  ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
