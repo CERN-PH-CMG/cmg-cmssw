@@ -345,8 +345,7 @@ void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo>
 /*     double lNeuFrac = (pCJet->neutralEmEnergy()/pCJet->energy() + pCJet->neutralHadronEnergy()/pCJet->energy()); */
     // FIXME choose the correct mva
     if( ! pCJet->getSelection("cuts_looseJetId") ) continue;
-    //double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
-    double lMVA = pCJet->puMva("philv1");
+    double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
     // FIXME compute properly, according to what Phil does
     double lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
     MetUtilities::JetInfo pJetObject; 
