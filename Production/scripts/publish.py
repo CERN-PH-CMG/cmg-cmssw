@@ -3,7 +3,7 @@
 ## @ CERN, Meyrin
 ## September 27th 2011
 
-import os, getpass, sys, re, optparse
+import os, getpass, sys, re, optparse, copy
 from CMGTools.Production.castorToDbsFormatter import CastorToDbsFormatter
 from CMGTools.Production.publishController import PublishController
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
@@ -14,6 +14,7 @@ from DBSAPI.dbsApi import DbsApi
 from DBSAPI.dbsApiException import *
 from DBSAPI.dbsException import *
 from CMGTools.Production.publish import publish
+from CMGTools.Production.publishTask import PublishTask
 from optparse import *
 
 
@@ -31,15 +32,11 @@ publish.py -F cbern /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Summer11-PU_
     
     group = OptionGroup(parser, "Publish Options", """These options affect the way you publish to Savannah and CMGDB""")
     genGroup = OptionGroup(parser, "Login Options", """These options apply to your login credentials""")
-    
-    	
-    
-    # If user is not specified default is current user
-    # This option will be used to find dataset on castor, and assign dataset on savannah
-    group.add_option("-F", "--fileown", 
-                      dest="fileown",
-                      help="User who is the files owner on Castor." ,
-                      default=os.environ['USER'] )
+    PublishTask.addOptionStatic(group)
+    group.add_option("--min-run", dest="min_run", default=-1, type=int, help='When querying DBS, require runs >= than this run')
+    group.add_option("--max-run", dest="max_run", default=-1, type=int, help='When querying DBS, require runs <= than this run')
+
+
     # If specified is used to log in to savannah (only required if user that created the dataset,
     # is different to user publishing it)
     genGroup.add_option("-u", "--username",
@@ -56,37 +53,6 @@ Default is $USER.""",
                       help="""Specify the password to access both the DBS and savannah servers.
 If not entered, secure password prompt will appear.""",
                       default=None )
-    # If the purpose is to test the software use this parameter, it will not be recognised by the
-    # non-testing algorithm
-    group.add_option("-T", "--test",
-                      action = "store_true",
-                      dest="test",
-                      help="Flag task as a test",
-                      default=False )
-    group.add_option("--ns", "--nosavannah",
-                      action = "store_false",
-                      dest="savannah",
-                      help="Do not publish to savannah",
-                      default=True )
-    # If user wants to add their own comments
-    group.add_option("-C", "--comment",
-                      action = "store",
-                      dest="commented",
-                      help="Take comment as an argument",
-                      default = None)
-
-    # If user wants to add their own comments
-    group.add_option("-f", "--force",
-                      action = "store_true",
-                      dest="force",
-                      help="force publish without logger",
-                      default = False)
-    # If user wants to add their own comments
-    group.add_option("-G", "--groups",
-                      action = "store_true",
-                      dest="checkGroups",
-                      help="check the related group accounts on EOS",
-                      default = False)
     # If user wants to add multiple datasets from file
     group.add_option("-M", "--multi",
                       action = "store_true",
@@ -109,10 +75,9 @@ If not entered, secure password prompt will appear.""",
         parser.print_help()
         sys.exit(1)
         
-    if options.password == None:
-    	password = getpass.getpass("Enter NICE Password: ")
-    	options.password = password
-    if not validLogin(options.username, password):
+    if options.password is None:
+        options.password = PublishTask.getPassword(options.username)
+    if options.password is None:
     	print "Authentication Failed, exiting\n\n"
     	sys.exit(1)
     
@@ -166,6 +131,7 @@ If not entered, secure password prompt will appear.""",
     # For singular file input
     else:
         dataset = args[0].rstrip("/")
-        comment = options.commented
-        publish(dataset,options.fileown,comment,options.test,options.username,password,options.force,options.checkGroups, options.savannah)
+        pub = PublishTask(dataset,options.fileown, copy.deepcopy(options) )
+        pub.password = options.password
+        pub.run({})
 
