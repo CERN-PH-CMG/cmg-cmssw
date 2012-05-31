@@ -38,8 +38,10 @@ class CmgdbApi(object):
             self.insertConn = cx_Oracle.connect("cms_cmgdb_w/Bamboo66@(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = int9r1-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = int9r2-v.cern.ch)(PORT = 10121)) (LOAD_BALANCE = yes) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = int9r_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
             # Connect to select account
             self.selectConn = cx_Oracle.connect("cms_cmgdb_r/Chocolate100@(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = int9r1-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = int9r2-v.cern.ch)(PORT = 10121)) (LOAD_BALANCE = yes) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = int9r_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
+            self._masterConn = cx_Oracle.connect("cms_cmgdb/Concrete32@(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = int9r1-v.cern.ch)(PORT = 10121)) (ADDRESS = (PROTOCOL = TCP)(HOST = int9r2-v.cern.ch)(PORT = 10121)) (LOAD_BALANCE = yes) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = int9r_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
             # Create cx_Oracle cursor objects from connections
             self.selectCur = self.selectConn.cursor()
+            self._masterCur = self._masterConn.cursor()
             self.insertCur = self.insertConn.cursor()
             self.selectCur.execute("ALTER SESSION SET CURRENT_SCHEMA=CMS_CMGDB")
             self.insertCur.execute("ALTER SESSION SET CURRENT_SCHEMA=CMS_CMGDB")
@@ -48,6 +50,22 @@ class CmgdbApi(object):
             print dbError.args[0]
             return None
     
+    # Return DB description as a string
+    def describe(self):
+        tables = []
+        description = ""
+        """Returns a description of the database as a string"""
+        self._masterCur.execute("SELECT table_name from tabs")
+        for table in self._masterCur:
+            tables.append(table)
+        for table in tables:
+            description += table[0] + "\n"
+            self._masterCur.execute("select * from "+table[0]+" where 1 = 0")
+            
+            for column in self._masterCur.description:
+                description += "\t-"+column[0]+"\n"
+        return description
+        
     # Pass an SQL select query
     def sql(self, query):
         """Pass an SQL query to CMGDB
