@@ -12,6 +12,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/FatJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
+#include "AnalysisDataFormats/CMGTools/interface/StructuredPFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJetComponent.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/TriBool.h"
@@ -128,6 +129,11 @@ namespace {
     boost::array<int,5> intarray5;
     boost::array<float,5> floatarray5;
     boost::array<std::string,5> stringarray5;
+
+    cmg::StructuredPFJet spfj_;
+    std::vector<cmg::StructuredPFJet> spfjv;
+    edm::Wrapper<cmg::StructuredPFJet> espfj;
+    edm::Wrapper<std::vector<cmg::StructuredPFJet> > espfjv;
 
     cmg::PFJetComponent  jetComp_;
     std::vector< cmg::PFJetComponent > vJetComps_;
