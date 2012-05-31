@@ -1,6 +1,7 @@
 <lcgdict>
 
  <class name="TriggerEfficiency"/>
+ <class name="QCDEstimate"/>
  <class name="VBFMVA"/>
 
 </lcgdict>

@@ -29,6 +29,11 @@ So basically the dictionary for CSCHaloData would be like:
 </class>
 <class name="edm::Wrapper<reco::CSCHaloData>"/>
 
+Keti: When I was using my analysis code outside of CMG tools, I was adding this line before patDefaultSequence in Path.
+process.jetTracksAssociatorAtV
+ertex.tracks = cms.InputTag("tmfTracks")
+
+
 
 *********List of v1,v2 samples
 for mu+Tau 

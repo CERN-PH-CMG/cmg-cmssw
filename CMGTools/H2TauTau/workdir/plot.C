@@ -33,8 +33,13 @@ void plot(){
   //analysis->plotIsoFakeRate("taujetpt",16,20,100,"","(tauisodisc>=2)",50,1);//region 4 
   //analysis->plotIsoFakeRate("mujetpt",16,17,97,"","(muiso<0.1)",50,1);//region 4
 
+  //for LooseMVA tau isolation
+  //analysis->plotIsoFakeRate("taujetpt",16,20,100,"(muiso<0.1)","(tauisodiscmva>=1)",50,1);//region 1/2 
+  //analysis->plotIsoFakeRate("mujetpt",16,17,97,"(tauisodiscmva>=1)","(muiso<0.1)",50,1);//region 1/3
+
   ///Ratio for W+jets (mT>60)
-  //analysis->plotTauFakeRateWJets("taujetpt",16,20,100,"(njet==2)",50,1);
+  //analysis->plotTauFakeRateWJets("taujetpt",16,20,100,"",50,1);
+
   
 
   ////////////Inclusive plots
@@ -42,20 +47,27 @@ void plot(){
   analysis->setSmearHistoRes(0);//default smearing for mass
 
 
-  //analysis->plotInc("nvtx",1,1,-1,50,-.5,49.5,""," # of reco. vertices ","",c);
+  analysis->plotInc("nvtx",1,1,-1,50,-.5,49.5,""," # of reco. vertices ","",c);
   //analysis->plotInc("mupt",1,1,-1,50,0,100,""," mu pt   (GeV)","",c);
   //analysis->plotInc("mueta",1,1,-1,100,-2.5,2.5,""," muon  #eta","",c); 
-  //analysis->plotInc("muiso",0,1,-1,100,0,.5,"(tauisodisc>=2)"," muon relIso(0.5)"," Events / 0.005",c);
+  //analysis->plotInc("muiso",0,1,-1,100,0,.5,"(tauisodisc>=2)"," muon relIso(0.5)"," Events / 0.005",c,1);
   //analysis->plotInc("taupt",1,1,-1,50,0,100,""," tau pt   (GeV)","",c,0);
-  //analysis->plotInc("mueta",1,1,-1,100,-2.5,2.5,""," muon  #eta","",c); 
-  //analysis->plotInc("metpt",1,1,-1,50,0,200,""," MET   (GeV)","Events / 4 GeV",c);    
-  //analysis->plotInc("metphi",1,1,-1,70,-3.5,3.5," MET  phi ","",c);    
+  //analysis->plotInc("taueta",1,1,-1,100,-2.5,2.5,""," tau  #eta","",c); 
+  //analysis->plotInc("pfmetpt",1,1,-1,50,0,150,""," PFMET   (GeV)","Events / 3 GeV",c);    
+  //analysis->plotInc("pfmetphi",1,1,-1,70,-3.5,3.5,""," PFMET  phi ","",c);    
+  //analysis->plotInc("pftransversemass",1,0,-1,50,0,200,"","m_{T}   (GeV)","Events / 4 GeV",c);
+  //analysis->plotInc("metpt",1,1,-1,50,0,150,""," MVAMET   (GeV)","Events / 3 GeV",c);    
+  //analysis->plotInc("metphi",1,1,-1,70,-3.5,3.5,""," MVAMET  phi ","",c);    
   //analysis->plotInc("transversemass",1,0,-1,50,0,200,"","m_{T}   (GeV)","Events / 4 GeV",c);
   //analysis->plotInc("ditaumass",1,1,-1,40,0,200,"","m_{vis}   (GeV)","",c,0);
-  //analysis->plotInc("njet",1,1,-1,7,-.5,6.5,""," njet ","",c,0);
-  //analysis->plotInc("leadJetPt",1,1,-1,100,0,200,"(njet>0)"," jet p_{T}   (GeV)","",c);
-  analysis->plotInc("leadJetEta",1,1,-1,20,-5,5,"(njet>0)"," jet #eta","",c); 
-
+  //analysis->plotInc("svfitmass",1,1,-1,60,0,300,"","svfitmass   (GeV)","",c,0);
+  //analysis->plotInc("njet",1,1,-1,5,-.5,4.5,""," njet ","",c,1);
+  //analysis->plotInc("leadJetPt",1,1,-1,20,0,200,"(njet>=1)"," jet p_{T}   (GeV)","",c,1);
+  //analysis->plotInc("leadJetEta",1,1,-1,20,-5,5,"(njet>=1)"," jet #eta","",c); 
+  //analysis->plotInc("diJetMass",1,1,-1,20,0,1000,"(njet>=2)","M(jj)","",c); 
+  //analysis->plotInc("abs(diJetDeltaEta)",1,1,-1,20,0,10,"(njet>=2)","#Delta#eta","",c); 
+  //analysis->plotInc("leadBJetPt",1,1,-1,20,0,200,"(nbjet>=1)"," b jet p_{T}   (GeV)","",c,1);
+  //analysis->plotInc("leadBJetEta",1,1,-1,20,-5,5,"(njet>=1)"," b jet #eta","",c); 
 
 //   Float_t sigY=0;
 //   sigY+=analysis->getSample("HiggsGG120")->Integral();
@@ -121,6 +133,7 @@ void plot(){
   //analysis->plotInc("taujetpt",1,1,-1,8,20,100,"(njet==1)"," #tau jet  p_{T}   (GeV)","",c);  
   //Float_t c[4]={.4,.65,.42,.81};  analysis->plotInc("(1-cos(muphi-metphi))",1,1,-1,21,0,2.1,"(njet==1)","1-cos#Delta#phi","",c);
   //analysis->plotInc("cos(tauphi-muphi)",1,1,-1,20,-1,1.001,"(njet==1)","cos(#mu_#phi-#tau_#phi)","",c);
+  //analysis->plotInc("transversemass",1,0,-1,20,0,200,"(njet>=1)","m_{T}   (GeV)","",c);
   ////////////////////////////SS
   //analysis->plotIncSS("transversemass",1,0,1,20,0,200,"","m_{T}   (GeV)","",c);
   //analysis->plotIncSS("taupt",1,1,1,20,0,200," #tau p_{T}   (GeV)","",c);
@@ -131,6 +144,7 @@ void plot(){
   //analysis->plotIncSS("metpt",1,1,-1,12,0,60,"(njet==1)"," MET   (GeV)","",c);    
   //Float_t c[4]={.4,.65,.42,.81};  analysis->plotIncSS("(1-cos(muphi-metphi))",1,1,-1,21,0,2.1,"(njet==1)","1-cos#Delta#phi","",c);
   //analysis->plotIncSS("taujetpt",1,1,-1,16,20,100,"(njet==1)"," #tau jet  p_{T}   (GeV)","",c);  
+  //analysis->plotIncSS("transversemass",1,0,-1,20,0,200,"(njet>=1)","m_{T}   (GeV)","",c);
   //////////////////////////////anti
   //analysis->plotInc("transversemass",2,0,1,20,0,200,"","m_{T}   (GeV)","",c);
   //analysis->plotInc("tauisodisc",2,1,1,6,-.5,5.5,"tau isolation discriminator ","",c,0);

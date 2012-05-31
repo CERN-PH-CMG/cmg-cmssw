@@ -7,6 +7,7 @@
 #include <TLegend.h>
 #include <TLine.h>
 #include <TVectorD.h>
+#include "CMGTools/H2TauTau/interface/QCDEstimate.h"
 
 TauMuPlotter::TauMuPlotter():
   TNamed("","")
@@ -116,19 +117,30 @@ TauMuPlotter::TauMuPlotter(const char * name):
   //
   //qcdTauIsoRatio_ = "(muiso<0.1)*((20<taujetpt&&taujetpt<=25)*11.5+(25<taujetpt&&taujetpt<=30)*1.37+(30<taujetpt&&taujetpt<=35)*0.412+(35<taujetpt&&taujetpt<=40)*0.198+(40<taujetpt&&taujetpt<=45)*0.115+(45<taujetpt&&taujetpt<=50)*0.0758+(50<taujetpt&&taujetpt<=55)*0.0424+(55<taujetpt&&taujetpt<=60)*0.0329+(60<taujetpt&&taujetpt<=65)*0.0329)";
   
+  ///////////////Previous good ratios for deltaBetaCorr Loose
+//  qcdTauIsoRatio_ = "((20<taujetpt&&taujetpt<=25)*9.89+(25<taujetpt&&taujetpt<=30)*1.38+(30<taujetpt&&taujetpt<=35)*0.423+(35<taujetpt&&taujetpt<=40)*0.2+(40<taujetpt&&taujetpt<=45)*0.118+(45<taujetpt&&taujetpt<=50)*0.0725+(50<taujetpt&&taujetpt<=55)*0.0485+(55<taujetpt&&taujetpt<=60)*0.0325+(60<taujetpt&&taujetpt<=65)*0.0299+(65<taujetpt&&taujetpt<=70)*0.0156+(70<taujetpt&&taujetpt<=75)*0.0191+(75<taujetpt&&taujetpt<=80)*0.011+(80<taujetpt&&taujetpt<=85)*0.00971+(85<taujetpt&&taujetpt<=90)*0.0121+(90<taujetpt&&taujetpt<=95)*0.0108+(95<taujetpt&&taujetpt<=100)*0.0128)";
+//  qcdMuIsoRatio_ = "((17<mujetpt&&mujetpt<=22)*5.61+(22<mujetpt&&mujetpt<=27)*0.81+(27<mujetpt&&mujetpt<=32)*0.307+(32<mujetpt&&mujetpt<=37)*0.208+(37<mujetpt&&mujetpt<=42)*0.202+(42<mujetpt&&mujetpt<=47)*0.173+(47<mujetpt&&mujetpt<=52)*0.247+(52<mujetpt&&mujetpt<=57)*0.235+(57<mujetpt&&mujetpt<=62)*0.217+(62<mujetpt&&mujetpt<=67)*0.289+(67<mujetpt&&mujetpt<=72)*0.0971+(72<mujetpt&&mujetpt<=77)*0.742+(77<mujetpt&&mujetpt<=82)*1.3+(82<mujetpt&&mujetpt<=87)*0.821+(87<mujetpt&&mujetpt<=92)*3.02+(92<mujetpt&&mujetpt<=97)*3.88)";
+// //  qcdTauIsoRatioMuNonIso_ = "((20<taujetpt&&taujetpt<=25)*10.1+(25<taujetpt&&taujetpt<=30)*1.29+(30<taujetpt&&taujetpt<=35)*0.399+(35<taujetpt&&taujetpt<=40)*0.182+(40<taujetpt&&taujetpt<=45)*0.101+(45<taujetpt&&taujetpt<=50)*0.0612+(50<taujetpt&&taujetpt<=55)*0.0409+(55<taujetpt&&taujetpt<=60)*0.0299+(60<taujetpt&&taujetpt<=65)*0.0259+(65<taujetpt&&taujetpt<=70)*0.0197+(70<taujetpt&&taujetpt<=75)*0.0151+(75<taujetpt&&taujetpt<=80)*0.0132+(80<taujetpt&&taujetpt<=85)*0.011+(85<taujetpt&&taujetpt<=90)*0.0115+(90<taujetpt&&taujetpt<=95)*0.00885+(95<taujetpt&&taujetpt<=100)*0.00922)";
+// //  qcdMuIsoRatioTauNonIso_ = "((17<mujetpt&&mujetpt<=22)*4.11+(22<mujetpt&&mujetpt<=27)*0.664+(27<mujetpt&&mujetpt<=32)*0.253+(32<mujetpt&&mujetpt<=37)*0.168+(37<mujetpt&&mujetpt<=42)*0.142+(42<mujetpt&&mujetpt<=47)*0.137+(47<mujetpt&&mujetpt<=52)*0.136+(52<mujetpt&&mujetpt<=57)*0.166+(57<mujetpt&&mujetpt<=62)*0.153+(62<mujetpt&&mujetpt<=67)*0.159+(67<mujetpt&&mujetpt<=72)*0.205+(72<mujetpt&&mujetpt<=77)*0.0954+(77<mujetpt&&mujetpt<=82)*0.285+(82<mujetpt&&mujetpt<=87)*0.328+(87<mujetpt&&mujetpt<=92)*0.252+(92<mujetpt&&mujetpt<=97)*0.224)";
+// // 
 
-  qcdTauIsoRatio_ = "((20<taujetpt&&taujetpt<=25)*9.89+(25<taujetpt&&taujetpt<=30)*1.38+(30<taujetpt&&taujetpt<=35)*0.423+(35<taujetpt&&taujetpt<=40)*0.2+(40<taujetpt&&taujetpt<=45)*0.118+(45<taujetpt&&taujetpt<=50)*0.0725+(50<taujetpt&&taujetpt<=55)*0.0485+(55<taujetpt&&taujetpt<=60)*0.0325+(60<taujetpt&&taujetpt<=65)*0.0299+(65<taujetpt&&taujetpt<=70)*0.0156+(70<taujetpt&&taujetpt<=75)*0.0191+(75<taujetpt&&taujetpt<=80)*0.011+(80<taujetpt&&taujetpt<=85)*0.00971+(85<taujetpt&&taujetpt<=90)*0.0121+(90<taujetpt&&taujetpt<=95)*0.0108+(95<taujetpt&&taujetpt<=100)*0.0128)";
-  qcdMuIsoRatio_ = "((17<mujetpt&&mujetpt<=22)*5.61+(22<mujetpt&&mujetpt<=27)*0.81+(27<mujetpt&&mujetpt<=32)*0.307+(32<mujetpt&&mujetpt<=37)*0.208+(37<mujetpt&&mujetpt<=42)*0.202+(42<mujetpt&&mujetpt<=47)*0.173+(47<mujetpt&&mujetpt<=52)*0.247+(52<mujetpt&&mujetpt<=57)*0.235+(57<mujetpt&&mujetpt<=62)*0.217+(62<mujetpt&&mujetpt<=67)*0.289+(67<mujetpt&&mujetpt<=72)*0.0971+(72<mujetpt&&mujetpt<=77)*0.742+(77<mujetpt&&mujetpt<=82)*1.3+(82<mujetpt&&mujetpt<=87)*0.821+(87<mujetpt&&mujetpt<=92)*3.02+(92<mujetpt&&mujetpt<=97)*3.88)";
-  qcdTauIsoRatioMuNonIso_ = "((20<taujetpt&&taujetpt<=25)*10.1+(25<taujetpt&&taujetpt<=30)*1.29+(30<taujetpt&&taujetpt<=35)*0.399+(35<taujetpt&&taujetpt<=40)*0.182+(40<taujetpt&&taujetpt<=45)*0.101+(45<taujetpt&&taujetpt<=50)*0.0612+(50<taujetpt&&taujetpt<=55)*0.0409+(55<taujetpt&&taujetpt<=60)*0.0299+(60<taujetpt&&taujetpt<=65)*0.0259+(65<taujetpt&&taujetpt<=70)*0.0197+(70<taujetpt&&taujetpt<=75)*0.0151+(75<taujetpt&&taujetpt<=80)*0.0132+(80<taujetpt&&taujetpt<=85)*0.011+(85<taujetpt&&taujetpt<=90)*0.0115+(90<taujetpt&&taujetpt<=95)*0.00885+(95<taujetpt&&taujetpt<=100)*0.00922)";
-  qcdMuIsoRatioTauNonIso_ = "((17<mujetpt&&mujetpt<=22)*4.11+(22<mujetpt&&mujetpt<=27)*0.664+(27<mujetpt&&mujetpt<=32)*0.253+(32<mujetpt&&mujetpt<=37)*0.168+(37<mujetpt&&mujetpt<=42)*0.142+(42<mujetpt&&mujetpt<=47)*0.137+(47<mujetpt&&mujetpt<=52)*0.136+(52<mujetpt&&mujetpt<=57)*0.166+(57<mujetpt&&mujetpt<=62)*0.153+(62<mujetpt&&mujetpt<=67)*0.159+(67<mujetpt&&mujetpt<=72)*0.205+(72<mujetpt&&mujetpt<=77)*0.0954+(77<mujetpt&&mujetpt<=82)*0.285+(82<mujetpt&&mujetpt<=87)*0.328+(87<mujetpt&&mujetpt<=92)*0.252+(92<mujetpt&&mujetpt<=97)*0.224)";
-  
-  //Ratio for WJets 
+ 
+  //Using the Tau MVA isolation : Loose
+  qcdTauIsoRatio_ = "((20<taujetpt&&taujetpt<=25)*3.3+(25<taujetpt&&taujetpt<=30)*1.32+(30<taujetpt&&taujetpt<=35)*0.463+(35<taujetpt&&taujetpt<=40)*0.208+(40<taujetpt&&taujetpt<=45)*0.126+(45<taujetpt&&taujetpt<=50)*0.0767+(50<taujetpt&&taujetpt<=55)*0.0506+(55<taujetpt&&taujetpt<=60)*0.0362+(60<taujetpt&&taujetpt<=65)*0.031+(65<taujetpt&&taujetpt<=70)*0.0256+(70<taujetpt&&taujetpt<=75)*0.0106+(75<taujetpt&&taujetpt<=80)*0.0131+(80<taujetpt&&taujetpt<=85)*0.0253+(85<taujetpt&&taujetpt<=90)*0.00869+(90<taujetpt&&taujetpt<=95)*0.027+(95<taujetpt&&taujetpt<=100)*0.0286)";
+
+  qcdMuIsoRatio_ = "((17<mujetpt&&mujetpt<=22)*3.94+(22<mujetpt&&mujetpt<=27)*0.662+(27<mujetpt&&mujetpt<=32)*0.276+(32<mujetpt&&mujetpt<=37)*0.184+(37<mujetpt&&mujetpt<=42)*0.168+(42<mujetpt&&mujetpt<=47)*0.16+(47<mujetpt&&mujetpt<=52)*0.216+(52<mujetpt&&mujetpt<=57)*0.232+(57<mujetpt&&mujetpt<=62)*0.174+(62<mujetpt&&mujetpt<=67)*0.104)";
+
+  //----------------------Ratio for WJets 
   //inclusive  
   //wjetsTauIsoRatio_ = "(0.103)"; //avg
-  wjetsTauIsoRatio_ = "((20<taujetpt&&taujetpt<=25)*15.2+(25<taujetpt&&taujetpt<=30)*1.53+(30<taujetpt&&taujetpt<=35)*0.492+(35<taujetpt&&taujetpt<=40)*0.237+(40<taujetpt&&taujetpt<=45)*0.124+(45<taujetpt&&taujetpt<=50)*0.0864+(50<taujetpt&&taujetpt<=55)*0.0613+(55<taujetpt&&taujetpt<=60)*0.0465+(60<taujetpt&&taujetpt<=65)*0.0405+(65<taujetpt&&taujetpt<=70)*0.0342+(70<taujetpt&&taujetpt<=75)*0.0302+(75<taujetpt&&taujetpt<=80)*0.0253+(80<taujetpt&&taujetpt<=85)*0.0208+(85<taujetpt&&taujetpt<=90)*0.0228+(90<taujetpt&&taujetpt<=95)*0.0157+(95<taujetpt&&taujetpt<=100)*0.0174)";
-  //inclusive SS  
-  //wjetsTauIsoRatioSS_ = "(0.061)";//avg
-  wjetsTauIsoRatioSS_ = "((20<taujetpt&&taujetpt<=25)*7.63+(25<taujetpt&&taujetpt<=30)*1.14+(30<taujetpt&&taujetpt<=35)*0.34+(35<taujetpt&&taujetpt<=40)*0.156+(40<taujetpt&&taujetpt<=45)*0.0855+(45<taujetpt&&taujetpt<=50)*0.0517+(50<taujetpt&&taujetpt<=55)*0.0349+(55<taujetpt&&taujetpt<=60)*0.0239+(60<taujetpt&&taujetpt<=65)*0.0207+(65<taujetpt&&taujetpt<=70)*0.0166+(70<taujetpt&&taujetpt<=75)*0.0143+(75<taujetpt&&taujetpt<=80)*0.0109+(80<taujetpt&&taujetpt<=85)*0.0113+(85<taujetpt&&taujetpt<=90)*0.00844+(90<taujetpt&&taujetpt<=95)*0.00702+(95<taujetpt&&taujetpt<=100)*0.00695)";
+//   wjetsTauIsoRatio_ = "((20<taujetpt&&taujetpt<=25)*15.2+(25<taujetpt&&taujetpt<=30)*1.53+(30<taujetpt&&taujetpt<=35)*0.492+(35<taujetpt&&taujetpt<=40)*0.237+(40<taujetpt&&taujetpt<=45)*0.124+(45<taujetpt&&taujetpt<=50)*0.0864+(50<taujetpt&&taujetpt<=55)*0.0613+(55<taujetpt&&taujetpt<=60)*0.0465+(60<taujetpt&&taujetpt<=65)*0.0405+(65<taujetpt&&taujetpt<=70)*0.0342+(70<taujetpt&&taujetpt<=75)*0.0302+(75<taujetpt&&taujetpt<=80)*0.0253+(80<taujetpt&&taujetpt<=85)*0.0208+(85<taujetpt&&taujetpt<=90)*0.0228+(90<taujetpt&&taujetpt<=95)*0.0157+(95<taujetpt&&taujetpt<=100)*0.0174)";
+//   //inclusive SS  
+//   //wjetsTauIsoRatioSS_ = "(0.061)";//avg
+//   wjetsTauIsoRatioSS_ = "((20<taujetpt&&taujetpt<=25)*7.63+(25<taujetpt&&taujetpt<=30)*1.14+(30<taujetpt&&taujetpt<=35)*0.34+(35<taujetpt&&taujetpt<=40)*0.156+(40<taujetpt&&taujetpt<=45)*0.0855+(45<taujetpt&&taujetpt<=50)*0.0517+(50<taujetpt&&taujetpt<=55)*0.0349+(55<taujetpt&&taujetpt<=60)*0.0239+(60<taujetpt&&taujetpt<=65)*0.0207+(65<taujetpt&&taujetpt<=70)*0.0166+(70<taujetpt&&taujetpt<=75)*0.0143+(75<taujetpt&&taujetpt<=80)*0.0109+(80<taujetpt&&taujetpt<=85)*0.0113+(85<taujetpt&&taujetpt<=90)*0.00844+(90<taujetpt&&taujetpt<=95)*0.00702+(95<taujetpt&&taujetpt<=100)*0.00695)";
+
+  ///with new Tau MVA Iso : Loose
+  wjetsTauIsoRatio_ = "((20<taujetpt&&taujetpt<=25)*9.42+(25<taujetpt&&taujetpt<=30)*1.75+(30<taujetpt&&taujetpt<=35)*0.583+(35<taujetpt&&taujetpt<=40)*0.275+(40<taujetpt&&taujetpt<=45)*0.152+(45<taujetpt&&taujetpt<=50)*0.102+(50<taujetpt&&taujetpt<=55)*0.0755+(55<taujetpt&&taujetpt<=60)*0.0583+(60<taujetpt&&taujetpt<=65)*0.0468+(65<taujetpt&&taujetpt<=70)*0.0416+(70<taujetpt&&taujetpt<=75)*0.0353+(75<taujetpt&&taujetpt<=80)*0.0303+(80<taujetpt&&taujetpt<=85)*0.0253+(85<taujetpt&&taujetpt<=90)*0.0228+(90<taujetpt&&taujetpt<=95)*0.02+(95<taujetpt&&taujetpt<=100)*0.0192)";
+
 
 
 }
@@ -466,14 +478,14 @@ TH1F* TauMuPlotter::getDiBosonSS(){
 
 
 TH1F* TauMuPlotter::getZToTauTau(){  
-  //TH1F*h=getSample("ZToTauTau");
-  TH1F*h=getTotalEmbedded(); 
+  TH1F*h=getSample("ZToTauTau");
+  //TH1F*h=getTotalEmbedded(); 
   return h;
 }
 
 TH1F* TauMuPlotter::getZToTauTauSS(){  
-  //TH1F*h=getSampleSS("ZToTauTau");
-  TH1F*h=getTotalEmbeddedSS();  
+  TH1F*h=getSampleSS("ZToTauTau");
+  //TH1F*h=getTotalEmbeddedSS();  
   return h;
 }
 
@@ -538,7 +550,7 @@ bool TauMuPlotter::correctSamplesInc(){
     if(TString((*s)->GetName())=="WJetsToLNu"
        || TString((*s)->GetName())=="TTJets"
        || TString((*s)->GetName())=="ZToLJet"
-       || TString((*s)->GetName())=="ZToMuMu"
+       //|| TString((*s)->GetName())=="ZToMuMu"
        ){
       TH1F* hos=(*s)->getHistoNtpFile("transversemass",400,0,400,WJetsOSCorrSel.Data());
       HWJetsOS.Add(hos,(*s)->getNorm());
@@ -551,7 +563,7 @@ bool TauMuPlotter::correctSamplesInc(){
        && TString((*s)->GetName())!="WJetsToLNu"
        && TString((*s)->GetName())!="TTJets"
        && TString((*s)->GetName())!="ZToLJet"
-       && TString((*s)->GetName())!="ZToMuMu"
+       //&& TString((*s)->GetName())!="ZToMuMu"
        ){
       TH1F* hos=(*s)->getHistoNtpFile("transversemass",400,0,400,WJetsOSCorrSel.Data());
       HMCOS.Add(hos,(*s)->getNorm());
@@ -676,7 +688,7 @@ TH1F* TauMuPlotter::getZToLJetIncSS(){
 //ZMuMu
 TH1F* TauMuPlotter::getZToMuMuInc(){
   TH1F*h=getSample("ZToMuMu");
-  h->Scale(WJetsOSSideCorr_);
+  //h->Scale(WJetsOSSideCorr_);
   float y=h->Integral();
   float ye=0;
   for(Int_t b=1;b<=h->GetNbinsX();b++)
@@ -686,7 +698,7 @@ TH1F* TauMuPlotter::getZToMuMuInc(){
 }
 TH1F* TauMuPlotter::getZToMuMuIncSS(){
   TH1F*h=getSampleSS("ZToMuMu");
-  h->Scale(WJetsSSSideCorr_);
+  //h->Scale(WJetsSSSideCorr_);
   float y=h->Integral();
   float ye=0;
   for(Int_t b=1;b<=h->GetNbinsX();b++)
@@ -850,8 +862,31 @@ bool TauMuPlotter::plotInc(TString variable, Int_t Isocat, Int_t MTcat, Int_t SM
   
   TH1F*hQCD = 0;
   if(SMcat_==-1 || SMcat_==0 || Isocat_!=1 ) hQCD=getQCDInc();
-  else if(SMcat_==1 || SMcat_==2) hQCD=getQCDMike();//getQCDIsoSM();
-  else hQCD=0;
+  else if(SMcat_==1 || SMcat_==2){
+    //hQCD=getQCDIsoSM(); //hQCD=getQCDMike();//
+    TTree * DataTrees[10];
+    unsigned int nDataTrees=0;
+    for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
+      if((*s)->getDataType()=="Data" && nDataTrees<10){
+	DataTrees[nDataTrees++]=(*s)->getTChain();
+      }
+    TTree * ZTTTree = findSample("ZToTauTau")->getTChain();
+    TTree * WJetsTree = findSample("WJetsToLNu")->getTChain();
+    TTree * TTbarTree = findSample("TTJets")->getTChain();
+    QCDEstimate  qcdEstimator(DataTrees, nDataTrees,
+			      ZTTTree, findSample("ZToTauTau")->getNorm(),
+			      WJetsTree, findSample("WJetsToLNu")->getNorm(),
+			      TTbarTree, findSample("TTJets")->getNorm(),
+			      TString("eventweight*(categoryCh==1&&categorySM==")+(long)SMcat+")",
+			      "muiso<0.1",
+			      "tauisodiscmva>=1",
+			      "transversemass<40.",
+			      "transversemass>60.",
+			      "mujetpt",
+			      "taujetpt"
+			      );
+    hQCD=qcdEstimator.GetQCDNominal("hQCD",plotvar_,nbins_,xmin_,xmax_,3); 
+  }else hQCD=0;
   if(hQCD){
     hQCD->SetLineWidth(1);
     hQCD->SetLineColor(QCDColor_);
@@ -874,8 +909,9 @@ bool TauMuPlotter::plotInc(TString variable, Int_t Isocat, Int_t MTcat, Int_t SM
  
   
   TH1F*hWJetsToLNu=0;
-  hWJetsToLNu=getWJetsInc();
-  //hWJetsToLNu=getWJetsTauIsoSM();
+  if(SMcat_==-1 || SMcat_==0 || Isocat_!=1 ) hWJetsToLNu=getWJetsInc();
+  else if(SMcat_==1 || SMcat_==2) hWJetsToLNu=getWJetsTauIsoSM();
+  else hWJetsToLNu=0;
   if(!hWJetsToLNu)return 0;
   hWJetsToLNu->SetLineWidth(1);
   hWJetsToLNu->SetLineColor(WJetsColor_);
@@ -954,8 +990,11 @@ bool TauMuPlotter::plotInc(TString variable, Int_t Isocat, Int_t MTcat, Int_t SM
   ///Make plot 
   ///////////////////////
   C.Clear();
-  //hData->GetYaxis()->SetRangeUser(axesrange[2],axesrange[3]);
-  if(log) C.SetLogy(1);
+  hData->GetYaxis()->SetRangeUser(0,hData->GetMaximum()*1.15);
+  if(log){
+    C.SetLogy(1);
+    hData->GetYaxis()->SetRangeUser(1,hData->GetMaximum()*10);
+  }
   hData->SetStats(0);
   hData->GetXaxis()->SetTitle(xlabel);
   hData->GetYaxis()->SetTitle(ylabel);
@@ -1544,64 +1583,20 @@ TH1F* TauMuPlotter::getQCDIsoSM(){
   Isocat_=-1;  
   TString tmpextrasel=extrasel_;
   
+  TString muisocut="(muiso<0.1)";
+  TString tauisocut="(tauisodiscmva>=1)";
+  TString muantiisocut="(muiso>0.1)";
+  TString tauantiisocut="(tauisodiscmva<1)";
 
-  TFile FQCDIsoSM(outputpath_+"/FQCDIsoSM_"+plotvar_+"_TauIso"+(long)Isocat_+"_MT"+(long)MTcat_+"_SM"+(long)SMcat_+".root","recreate");
   //Save the intermediate histograms in a root file
-
-//   //First calculate MC correction factors from high mT
-//   Float_t MCCorrB=1.;
-//   Float_t MCCorrC=1.;
-//   Float_t MCCorrD=1.;
-
-//   Int_t tmpMTcat=MTcat_;
-//   MTcat_=3;
-//   extrasel_ += "*(muiso<0.1&&tauisodisc<2)";
-//   if(!scaleSamplesLumi())return 0;
-//   if(!correctSamplesInc())return 0;
-//   extrasel_ = extrasel_+"*"+qcdTauIsoRatio_;//apply  ratio here 
-//   cout<<"Applying Tau Iso QCD ratio : "<<qcdTauIsoRatio_<<endl;
-//   TH1F* hDataMTB=getTotalData();
-//   TH1F* hMCMTB=getTotalMCSM();
-//   extrasel_ = tmpextrasel;
-//   MCCorrB=hDataMTB->Integral()/hMCMTB->Integral();
-//   delete hDataMTB; delete hMCMTB;
-
-//   extrasel_ += "*(muiso>=0.1&&tauisodisc>=2)";
-//   if(!scaleSamplesLumi())return 0;//need to recalculate WJets correction factors because isolation is different
-//   if(!correctSamplesInc())return 0;
-//   cout<<"Applying Mu Iso QCD ratio : "<<qcdMuIsoRatio_<<endl;
-//   extrasel_ = extrasel_+"*"+qcdMuIsoRatio_;//apply  ratio here 
-//   TH1F* hDataMTC=getTotalData();
-//   TH1F* hMCMTC=getTotalMCSM();
-//   extrasel_ = tmpextrasel;
-//   MCCorrC=hDataMTC->Integral()/hMCMTC->Integral();
-//   delete hDataMTC; delete hMCMTC;
+  TFile FQCDIsoSM(outputpath_+"/FQCDIsoSM_"+plotvar_+"_TauIso"+(long)Isocat_+"_MT"+(long)MTcat_+"_SM"+(long)SMcat_+".root","recreate");
 
 
-//   extrasel_ += "*(muiso>0.1&&tauisodisc<2)";
-//   if(!scaleSamplesLumi())return 0;//need to recalculate WJets correction factors because isolation is different
-//   if(!correctSamplesInc())return 0;
-//   cout<<"Applying Tau-Mu Iso QCD ratio : "<<qcdTauIsoRatioMuNonIso_+"*"+qcdMuIsoRatioTauNonIso_<<endl;
-//   extrasel_ = extrasel_+"*"+qcdTauIsoRatioMuNonIso_+"*"+qcdMuIsoRatioTauNonIso_;//apply  ratio here 
-//   //cout<<"Applying Tau-Mu Iso QCD ratio : "<<qcdTauIsoRatio_+"*"+qcdMuIsoRatio_<<endl;
-//   //extrasel_ = extrasel_+"*"+qcdTauIsoRatio_+"*"+qcdMuIsoRatio_;//apply  ratio here 
-//   TH1F* hDataMTD=getTotalData();
-//   TH1F* hMCMTD=getTotalMCSM();
-//   extrasel_ = tmpextrasel;
-//   MCCorrD=hDataMTD->Integral()/hMCMTD->Integral();
-//   delete hDataMTD; delete hMCMTD;
-//   ///////////////////
-//   MTcat_=tmpMTcat;
-  
-//   cout<<"high mT correction factor B: "<<MCCorrB<<endl;
-//   cout<<"high mT correction factor C: "<<MCCorrC<<endl;
-//   cout<<"high mT correction factor D: "<<MCCorrD<<endl;
-
-  ///Now calculate the QCD in the low mT region (while applying the above corrections to the MC)
   //QCD From Region B
   TH1F* hB=new TH1F("hSMQCDB","SMQCDB",nbins_,xmin_,xmax_);
   hB->Sumw2();
-  extrasel_ += "*(muiso<0.1&&tauisodisc<2)";
+  //extrasel_ += "*(muiso<0.1&&tauisodisc<2)";
+  extrasel_ += TString("*")+muisocut+"*"+tauantiisocut;
   cout<<"Applying Tau Iso QCD ratio : "<<qcdTauIsoRatio_<<endl;
   extrasel_ = extrasel_+"*"+qcdTauIsoRatio_;//apply  ratio here 
   if(!scaleSamplesLumi())return 0;//need to recalculate WJets correction factors because isolation is different
@@ -1619,7 +1614,8 @@ TH1F* TauMuPlotter::getQCDIsoSM(){
   //QCD From Region C
   TH1F* hC=new TH1F("hSMQCC","SMQCC",nbins_,xmin_,xmax_);
   hC->Sumw2();
-  extrasel_ += "*(muiso>=0.1&&tauisodisc>=2)";
+  //extrasel_ += "*(muiso>=0.1&&tauisodisc>=2)";
+  extrasel_ += TString("*")+muantiisocut+"*"+tauisocut;
   cout<<"Applying Mu Iso QCD ratio : "<<qcdMuIsoRatio_<<endl;
   extrasel_ = extrasel_+"*"+qcdMuIsoRatio_;//apply  ratio here 
   if(!scaleSamplesLumi())return 0;//need to recalculate WJets correction factors because isolation is different
@@ -1640,7 +1636,8 @@ TH1F* TauMuPlotter::getQCDIsoSM(){
   //QCD From Region D
   TH1F* hD=new TH1F("hSMQCD","SMQCD",nbins_,xmin_,xmax_);
   hD->Sumw2();
-  extrasel_ += "*(muiso>0.1&&tauisodisc<2)";
+  //extrasel_ += "*(muiso>0.1&&tauisodisc<2)";
+  extrasel_ += TString("*")+muantiisocut+"*"+tauantiisocut;
   //cout<<"Applying Tau-Mu Iso QCD ratio : "<<qcdTauIsoRatioMuNonIso_+"*"+qcdMuIsoRatioTauNonIso_<<endl;
   //extrasel_ = extrasel_+"*"+qcdTauIsoRatioMuNonIso_+"*"+qcdMuIsoRatioTauNonIso_;//apply  ratio here 
   cout<<"Applying Tau-Mu Iso QCD ratio : "<<qcdTauIsoRatio_+"*"+qcdMuIsoRatio_<<endl;
@@ -1867,7 +1864,7 @@ TH1F* TauMuPlotter::getWJetsTauIsoSM(){
   Isocat_=2;
   extrasel_ += "*(muiso<0.1)";//
   if(!scaleSamplesLumi())return 0;
-  if(!correctSamplesInc())return 0;//fix the WJets at high mT
+  if(!correctSamplesInc())return 0;//fix the WJets at high mT in the anti-isolated sample
 
   /////////////////////
   cout<<"Applying Tau Iso WJets ratio : "<<wjetsTauIsoRatio_<<endl;

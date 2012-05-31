@@ -55,7 +55,9 @@ protected:
 
   const edm::Event * iEvent_; 
   edm::Handle< std::vector<reco::Vertex> > vertices_;
+  const reco::Vertex * PV_;
   std::vector<edm::InputTag *>  trigPaths_;
+
 
   edm::Service<TFileService> * file_;
   TTree * tree_;
@@ -64,6 +66,7 @@ protected:
   int lumiblock_;
   int eventid_;
 
+  int npu_;
   int nvtx_;
   float vtxx_;
   float vtxy_;
@@ -81,7 +84,9 @@ protected:
 
  private:
 
-
+  edm::InputTag verticesListTag_;
+  edm::InputTag trigPathsListTag_;
+  edm::InputTag trigObjsListTag_;
   edm::InputTag pupWeightName_;
   int firstRun_; 
   int lastRun_; 

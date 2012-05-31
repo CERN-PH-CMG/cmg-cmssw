@@ -46,6 +46,7 @@ public:
   void scale(Float_t factor){ normFactor_*=factor;}
 
   //access
+  TChain * getTChain(){if(!ntpChain_) openNtpFile(); return ntpChain_; }
   float getCrossection(){return crossection_;}
   TString getDataType(){return dataType_;}
   int getSampleGenEvents(){return genEvents_;}

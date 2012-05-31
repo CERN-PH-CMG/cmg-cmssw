@@ -1,6 +1,8 @@
 TauMuPlotter * tauMuConfig(const char * name){  
 
   TauMuPlotter * analysis = new TauMuPlotter(TString("analysis")+name);
+  //TString outpath="/data/benitezj/Samples/Mar2TrigEff";
+  //TString outpath="/data/benitezj/Samples/MuTauAntiIso";
   //TString outpath="/data/benitezj/Samples/Mar19MuJet";
   //TString outpath="./output/ColinMay7A";
   //TString outpath="/data/benitezj/Samples/JoseMay8";
@@ -13,7 +15,14 @@ TauMuPlotter * tauMuConfig(const char * name){
   //TString outpath="output/JoseMay16norecoilCut";
   //TString outpath="output/JoseMay16rawJetPt";
   //TString outpath="/data/benitezj/Samples/JoseMay16chs";
-  TString outpath="/data/benitezj/Samples/JoseMay16recoil";
+  //TString outpath="/data/benitezj/Samples/JoseMay16recoil";
+  //TString outpath="output/JoseMay16rawJetPt";
+  //TString outpath="output/JoseMay16oldJEC";
+  //TString outpath="output/JoseMay16oldJECV4";
+  TString outpath="/data/benitezj/Samples/V520JoseMay16chs";
+
+  //TString outpath="/data/benitezj/Samples/V541May30";
+
   analysis->setOutputPath(outpath);
   analysis->setQCDOStoSSRatio(1.11);//value from AN-11-390 v4
 
@@ -25,31 +34,27 @@ TauMuPlotter * tauMuConfig(const char * name){
   //2011 Data samples
   Sample* TauPlusXMay = new Sample("TauPlusXMay",outpath.Data());
   TauPlusXMay->setDataType("Data");
-  TauPlusXMay->setSampleLumi(168.597);//V5_1_0 missing files: 0/209
+  TauPlusXMay->setSampleLumi(168.66);// 168.597
   analysis->addSample(TauPlusXMay);
 
   Sample* TauPlusXv4 = new Sample("TauPlusXv4",outpath.Data());
   TauPlusXv4->setDataType("Data");
-  //TauPlusXv4->setSampleLumi(929.748*0.978);//V5_1_0 missing files: 20/891=0.022
-  TauPlusXv4->setSampleLumi(929.748);
+  TauPlusXv4->setSampleLumi(955.21);// 929.748
   analysis->addSample(TauPlusXv4);
 
   Sample* TauPlusXAug = new Sample("TauPlusXAug",outpath.Data());
   TauPlusXAug->setDataType("Data");
-  //TauPlusXAug->setSampleLumi(373.349*0.946);//V5_1_0 missing files: 9/166=0.054
-  TauPlusXAug->setSampleLumi(373.349);
+  TauPlusXAug->setSampleLumi(389.87);// 373.349
   analysis->addSample(TauPlusXAug);
 
   Sample* TauPlusXOct3 = new Sample("TauPlusXOct3",outpath.Data());
   TauPlusXOct3->setDataType("Data");
-  //TauPlusXOct3->setSampleLumi(658.886*0.958);//V5_1_0 missing files: 1/24=0.042
-  TauPlusXOct3->setSampleLumi(658.886);
+  TauPlusXOct3->setSampleLumi(706.70);// 658.886
   analysis->addSample(TauPlusXOct3);
 
   Sample* TauPlusX2011B = new Sample("TauPlusX2011B",outpath.Data());
   TauPlusX2011B->setDataType("Data");
-  //TauPlusX2011B->setSampleLumi(2511*0.973);//V5_1_0 missing files: 38/1417=0.027
-  TauPlusX2011B->setSampleLumi(2511);
+  TauPlusX2011B->setSampleLumi(2714.45);// 2511
   analysis->addSample(TauPlusX2011B);
 
 
@@ -77,19 +82,19 @@ TauMuPlotter * tauMuConfig(const char * name){
   Sample * WJetsToLNu=new Sample("WJetsToLNu",outpath.Data());
   WJetsToLNu->setDataType("MC");
   WJetsToLNu->setCrossection(31314);
-  WJetsToLNu->setSampleGenEvents(81308780);//V5_1_0 missing files: 1/91                                  
+  WJetsToLNu->setSampleGenEvents(81345381);//V5_4_1 missing files: 0/907    // for V5_2_0 used 81308780
   analysis->addSample(WJetsToLNu);  
    
   Sample* TTJets = new Sample("TTJets",outpath.Data());
   TTJets->setDataType("MC");
   TTJets->setCrossection(165.8);//157.5=NLO theory, 165.8=CMS TOP-11-024
-  TTJets->setSampleGenEvents(59591548); //V5_1_0 missing files: 2/536 + 1/535
+  TTJets->setSampleGenEvents(59613991);//  V5_4_1 missing 3/5365 files //for V5_2_0 used 59591548
   analysis->addSample(TTJets);
 
   Sample* ZToTauTau = new Sample("ZToTauTau",outpath.Data());
   ZToTauTau->setDataType("MC");
   ZToTauTau->setCrossection(3048);
-  ZToTauTau->setSampleGenEvents(36189241);//V5_1_0 missing files: 1/2751
+  ZToTauTau->setSampleGenEvents(36209629*0.9985*(38781.6/35988.8)*(55192./56400.));//V5_4_1 missing files: 4/2751 , correct to previous mc and data yields //for V5_2_0 used 36189241
   analysis->addSample(ZToTauTau);
 
   Sample* ZToMuMu = new Sample("ZToMuMu",outpath.Data());
