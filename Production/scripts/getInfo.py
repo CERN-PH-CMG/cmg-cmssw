@@ -12,51 +12,14 @@ from CMGTools.Production.cmgdbApi import CmgdbApi
 
 # Make sure is being used as a script
 if __name__ == '__main__':
+    cmgdbApi = CmgdbApi()
+    cmgdbApi.connect()
+    description = cmgdbApi.describe()
     parser = optparse.OptionParser()
 
     parser.usage = """
 Table Structure:
-    dataset_details
-        -dataset_id
-        -parent_dataset_id
-        -path_name
-        -path_name
-        -lfn
-        -file_owner
-        -published_by
-        -dataset_fraction
-        -dataset_entries
-        -date_recorded
-        -last_commented
-        -task_id
-        -tagset_id
-        -dataset_size_in_tb
-        -dataset_is_open
-        -number_files_missing
-        -number_jobs_bad
-        -number_files_good
-    tag_sets
-        -tagset_id
-        -release
-    tags
-        -tag_id
-        -package_name
-        -tag
-    tags_in_sets
-        -tag_id
-        -tagset_id
-    bad_files
-        -dataset_id
-        -bad_file
-    missing_files
-        -dataset_id
-        -missing_file
-    bad_jobs
-        -dataset_id
-        -bad_job
-    duplicate_files
-        -dataset_id
-        -duplicate_file
+"""+description+"""
 
 The database server being used is Oracle 11g, so a good idea would be to become farmiliar with the Oracle 11g query semantics.
 
@@ -150,8 +113,7 @@ getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6
         parser.print_help()
         sys.exit(1)
         
-    cmgdbApi = CmgdbApi()
-    cmgdbApi.connect()
+    
     # Dict of query alias'
     aliasDict = {"getTags":"SELECT distinct(tags.tag_id), tags.tag, tags.package_name from tags INNER JOIN tags_in_sets ON tags.tag_id = tags_in_sets.tag_id JOIN dataset_details ON dataset_details.tagset_id = tags_in_sets.tagset_id WHERE dataset_details.path_name = 'ARG1' ORDER BY tags.tag_id",
                  "getDatasetsAtDate":"SELECT distinct(dataset_id), path_name FROM dataset_details WHERE trunc(date_recorded) = TO_TIMESTAMP('ARG1','DD-MM-YYYY') ORDER BY dataset_id",
