@@ -8,7 +8,7 @@ recoilrootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRe
 
 
 #def loadFlatNtpSamples(process):
-def configureFlatNtpSample(module,sampleAlias):
+def configureFlatNtpSampleTauMu(module,sampleAlias):
     if sampleAlias == 'TauPlusXMay' : 
         module.path = "/TauPlusX/Run2011A-May10ReReco-v1/AOD/V5"
         module.dataType = "Data"
@@ -65,7 +65,7 @@ def configureFlatNtpSample(module,sampleAlias):
 
 
     if sampleAlias == 'WJetsToLNu' : 
-        module.path = "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/HTTSKIM"
+        module.path = "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/HTTSKIM5"
         module.dataType = "MC"
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
@@ -145,4 +145,179 @@ def configureFlatNtpSample(module,sampleAlias):
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
+
+    if sampleAlias == 'GluGluSync' : 
+        module.path = "/H2TAUTAU/Sync/GluGlu/AOD"
+        module.dataType = "MC"
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+
+    if sampleAlias == 'VBFSync' : 
+        module.path = "/H2TAUTAU/Sync/VBF/AOD"
+        module.dataType = "MC"
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+       
+
+
+###################Tau-Ele Channel###################################################################################################
+##need to
+#-fix trigger paths
+#-add rest of MC samples
+#-add embedded samples
+#-check valid ranges for each trigger path inside the c++ code
+
+##From Lorenzo
+#      if(run>=160404 && run<=161176)
+#//HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1
+#      else if(run>=161216 && run<=163261)
+#//HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2
+#      else if(run>=163269 && run<=163869)
+#//HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4
+#      else if(run>=165088 && run<=165633)
+#//HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6
+#      else if(run>=165970 && run<=166967)
+#//HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8
+#      else if(run>=167039 && run<=167913)
+#//HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9
+#      else if(run>=170249 && run<=173198)
+#//HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2
+#      else if(run>=173236 && run<=178380)
+#//HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1
+#|| //HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1
+#      else if(run>=178420 && run<=179889)
+#//HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v5
+#      else if(run>=179959 && run<=180252)
+#//HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v6
+
+
+###from twiki
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4 	163269 - 163869 	168.6 	L1_SingleEG12 	 
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6 	165088 - 165633 	139.0 	L1_SingleEG12 	 
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8 	165970 - 166967 	526.7 	L1_SingleEG12 	 
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9 	167039 - 167913 	268.3 	L1_SingleEG12 	 
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2 	170249 - 173198 	785.7 	L1_SingleEG12 	tight iso
+#HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1 	173236 - 178380 	1945 	L1_SingleEG15 	medium iso, ET(e)>18 GeV
+#HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v5 	178420 - 179889 	706.7 	L1_SingleEG18 OR EG20 	medium iso, ET(e)>20 GeV
+#HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v6 	179959 - 180252 	120.7 	L1_SingleEG18 OR EG20 	end of 2011 run
+
+
+
+def configureFlatNtpSampleTauEle(module,sampleAlias):
+    if sampleAlias == 'TauPlusXMay' : 
+        module.path = "/TauPlusX/Run2011A-May10ReReco-v1/AOD/V5"       #160329-163869
+        module.dataType = "Data"
+        #module.firstRun =  cms.int32( 163262 ) ##used in mu-tau 
+        module.firstRun =  cms.int32( 163269 ) 
+        module.lastRun =  cms.int32( 163869 )
+        module.trigPath1 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4","","")
+
+
+    if sampleAlias == 'TauPlusXv4' :
+        module.path = "/TauPlusX/Run2011A-PromptReco-v4/AOD/V5"         #165071-168437
+        module.dataType = "Data"
+        module.trigPath1 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6","","") #165088 - 165633
+        module.trigPath2 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8","","") #165970 - 166967
+        module.trigPath3 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9","","") #167039 - 167913    
+
+      
+    if sampleAlias == 'TauPlusXAug' : 
+        module.path = "/TauPlusX/Run2011A-05Aug2011-v1/AOD/V5"         #170053-172619
+        module.dataType = "Data"
+        module.trigPath1 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2","","") # 170249 - 173198 
+
+        
+    if sampleAlias == 'TauPlusXOct3' : 
+        module.path = "/TauPlusX/Run2011A-03Oct2011-v1/AOD/V5"         #172635-175580
+        module.dataType = "Data"
+        module.trigPath1 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2","","") # 170249 - 173198 
+        module.trigPath2 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","","") # 173236 - 178380
+                
+
+    if sampleAlias == 'TauPlusX2011B' : 
+        module.path = "/TauPlusX/Run2011B-PromptReco-v1/AOD/V5"       #175832-180296
+        module.dataType = "Data"
+        module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","","") #
+        module.trigPath2 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v5","","") #178420 - 179889
+        module.trigPath3 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v6","","") #179959 - 180252
+
+    if sampleAlias == 'WJetsToLNu' : 
+        module.path = "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/HTTSKIM5"
+        module.dataType = "MC"
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+        module.randsigma = 0.10
+        module.recoilCorrection = 0 #recoil corrector has memory leak and makes this sample fail
+        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root' 
+
+    if sampleAlias == 'TTJets' : 
+        module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1"
+        module.dataType = "MC"
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+
+    if sampleAlias == 'ZToTauTau' : 
+        module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
+        module.dataType = "MC"
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.sampleGenEventType = 5
+        #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+        module.recoilCorrection = 1
+        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root' 
+
+    if sampleAlias == 'ZToMuMu' : 
+        module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
+        module.dataType = "MC"
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.sampleTruthEventType = 3
+        #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+
+    if sampleAlias == 'ZToEE' : 
+        module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
+        module.dataType = "MC"
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.sampleTruthEventType = 1
+        #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+
+    if sampleAlias == 'ZToLJet' : 
+        module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
+        module.dataType = "MC"
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.sampleTruthEventType = 6
+        #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+
+
+    if sampleAlias == 'GluGluSync' : 
+        module.path = "/H2TAUTAU/Sync/GluGlu/AOD"
+        module.dataType = "MC"
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        #module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+
+    if sampleAlias == 'VBFSync' : 
+        module.path = "/H2TAUTAU/Sync/VBF/AOD"
+        module.dataType = "MC"
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        #module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+       
+
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1", kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15, "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter", kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_EleObj, 0, "hltPFTau15TrackLooseIso", kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_TauObj, 0);
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_EleObj,0,"hltPFTau15TrackLooseIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_TauObj,0);//auto
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_EleObj,0,"hltPFTau15TrackLooseIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_TauObj,0);//auto
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v6",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_EleObj,0,"hltPFTau15TrackLooseIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_TauObj,0);//auto
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v1",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_EleObj,0,"hltPFTau20TrackLooseIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_TauObj,0);
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v2",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_EleObj,0,"hltPFTau20TrackLooseIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_TauObj,0);//auto
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_EleObj,0,"hltPFTau20TrackLooseIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_TauObj,0);//auto
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_EleObj,0,"hltPFTau20TrackLooseIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_TauObj,0);//auto
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_EleObj,0,"hltPFTau20TrackLooseIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_TauObj,0);//auto
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_EleObj,0,"hltPFTau20TrackLooseIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_TauObj,0);//auto
+#
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v1",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_EleObj,0,"hltPFTauTighIso20TrackTightIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_TauObj,0);
+#HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20,"HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_EleObj,0,"hltPFTauTighIso20TrackTightIso",kHLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_TauObj,0);//auto
+#HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v1",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20,"HLTEle18CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_EleObj,0,"hltPFTau20TrackLooseIso",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_TauObj,0);
+#HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v2",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20,"HLTEle18CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_EleObj,0,"hltPFTau20TrackLooseIso",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_TauObj,0);//auto
+#HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v3",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20,"HLTEle18CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_EleObj,0,"hltPFTau20TrackLooseIso",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_TauObj,0);//auto
+#HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20,"HLTEle18CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_EleObj,0,"hltPFTauMediumIso20TrackMediumIso",kHLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_TauObj,0);
+#HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1",kHLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20,"HLTEle20CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_EleObj,0,"hltPFTauMediumIso20TrackMediumIso",kHLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_TauObj,0);
+#HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v5",kHLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20,"HLTEle20CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_EleObj,0,"hltPFTauMediumIso20TrackMediumIso",kHLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_TauObj,0);//auto
+#HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v6",kHLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20,"HLTEle20CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter",kHLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_EleObj,0,"hltPFTauMediumIso20TrackMediumIso",kHLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_TauObj,0);//auto
 

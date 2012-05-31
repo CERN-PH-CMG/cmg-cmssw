@@ -1,5 +1,5 @@
 #include "CMGTools/H2TauTau/plugins/BaseFlatNtp.h"
-
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   iEvent_(0),
@@ -11,6 +11,9 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   eventid_(0),
   dataType_(iConfig.getParameter<string>("dataType")),
   pupWeight_(0.),
+  verticesListTag_(iConfig.getParameter<edm::InputTag>("verticesListTag")),
+  trigPathsListTag_(iConfig.getParameter<edm::InputTag>("trigPathsListTag")),
+  trigObjsListTag_(iConfig.getParameter<edm::InputTag>("trigObjsListTag")),
   pupWeightName_(iConfig.getParameter<edm::InputTag>("pupWeightName")),
   firstRun_(iConfig.getParameter<int>("firstRun")),
   lastRun_(iConfig.getParameter<int>("lastRun")),
@@ -52,6 +55,7 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("runnumber",&runnumber_,"runnumber/I");
   tree_->Branch("lumiblock",&lumiblock_,"lumiblock/I");
   tree_->Branch("eventid",&eventid_,"eventid/I");
+  tree_->Branch("npu",&npu_,"npu/I");//
   tree_->Branch("nvtx",&nvtx_,"nvtx/I");//
   tree_->Branch("vtxx",&vtxx_,"vtxx/F");
   tree_->Branch("vtxy",&vtxy_,"vtxy/F");
@@ -76,13 +80,14 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
 
   runnumber_=iEvent.run();
 
-  iEvent.getByLabel(edm::InputTag("offlinePrimaryVertices"), vertices_);
-
+  iEvent.getByLabel(verticesListTag_,vertices_);
+  nvtx_=vertices_->size();  
+  PV_=&(*(vertices_->begin()));
 
   ///fill trigger flag
   trigpass_=0;
   edm::Handle< std::vector<cmg::TriggerObject> > trig;
-  iEvent.getByLabel(edm::InputTag("cmgTriggerObjectSel","","PAT"),trig);
+  iEvent.getByLabel(trigPathsListTag_,trig);
   if(trigPaths_.size()==0)trigpass_=1;//no trigger requirement
   for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){//cmg ObjetSel
     //cout<<path->label()<<" "<<path->instance()<<" "<<path->process()<<endl;
@@ -96,14 +101,27 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   //cout<<firstRun_<<" "<<lastRun_<<" "<<runnumber_<<" "<<trigpass_<<endl;
 
   //get trigger object list for later
-  iEvent.getByLabel(edm::InputTag("cmgTriggerObjectListSel","","PAT"),trigObjs_);
+  iEvent.getByLabel(trigObjsListTag_,trigObjs_);
+
 
   ///Event weight definition starts here:
   pupWeight_=1.;//do not comment out needs to be used.
+  npu_=-1;
   if(dataType_.compare("MC")==0){
     edm::Handle<double>  PupWeight;
     iEvent.getByLabel(pupWeightName_,PupWeight);    
     pupWeight_=(*PupWeight);
+
+    //get the number of pile up vertexes
+    edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+    iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+    std::vector<PileupSummaryInfo>::const_iterator PVI;
+    for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+      int BX = PVI->getBunchCrossing();
+      if(BX == 0) {
+	npu_ = PVI->getPU_NumInteractions();
+      }
+    }
   }
 
  
@@ -116,7 +134,8 @@ bool BaseFlatNtp::applySelections(){
   if(lastRun_!=0) if(lastRun_<runnumber_)return 0;
 
   if(!trigpass_) return 0;
-
+  if(nvtx_==0) return 0;
+  
   return 1;
 }
 
@@ -124,11 +143,10 @@ bool BaseFlatNtp::fill(){
 
   lumiblock_=iEvent_->luminosityBlock();
   eventid_=iEvent_->id().event();
-
-  nvtx_=vertices_->size();
-  vtxx_=vertices_->begin()->x();
-  vtxy_=vertices_->begin()->y();
-  vtxz_=vertices_->begin()->z();
+ 
+  vtxx_=PV_->x();
+  vtxy_=PV_->y();
+  vtxz_=PV_->z();
 
 
   return 1;

@@ -26,6 +26,7 @@ using namespace std;
 #include <TString.h>
 #include <TF1.h>
 
+
 class TauMuPlotter : public TNamed {
 
 public:
@@ -51,6 +52,14 @@ public:
 
   bool printRawYields(TString selection="");
   bool scaleSamplesLumi();
+
+  Sample * findSample(TString sampleName){
+    for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
+      if(TString((*s)->GetName())==sampleName){
+	return *s;
+      }  
+    return NULL;
+  }
 
   ///basic methods which can be used by all categories
   TH1F* getTotalDataSS();//sum of SS Data samples 

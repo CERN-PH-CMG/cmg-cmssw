@@ -1,11 +1,12 @@
-#ifndef CMGH2TAUTAU_TauMuFlatNtp_h
-#define CMGH2TAUTAU_TauMuFlatNtp_h
+#ifndef CMGH2TAUTAU_TauEleFlatNtp_h
+#define CMGH2TAUTAU_TauEleFlatNtp_h
 
 #include "CMGTools/H2TauTau/plugins/BaseFlatNtp.h"
 #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/Tau.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+#include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 
 #include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
@@ -17,12 +18,12 @@
 #include <TRandom2.h>
 
 
-class TauMuFlatNtp : public BaseFlatNtp {
+class TauEleFlatNtp : public BaseFlatNtp {
 
 
 public:
-  explicit TauMuFlatNtp(const edm::ParameterSet&);
-  ~TauMuFlatNtp();
+  explicit TauEleFlatNtp(const edm::ParameterSet&);
+  ~TauEleFlatNtp();
 
   virtual void beginJob() ;
   virtual void analyze(const edm::Event&  iEvent, const edm::EventSetup& iSetup);
@@ -38,9 +39,9 @@ protected:
   edm::InputTag genParticlesTag_;
   edm::InputTag pfJetListTag_;
   edm::InputTag diMuonVetoListTag_;
-  edm::Handle< std::vector<cmg::TauMu> > diTauList_;
-  std::vector<cmg::TauMu> diTauSelList_;
-  const cmg::TauMu * diTauSel_;
+  edm::Handle< std::vector<cmg::TauEle> > diTauList_;
+  std::vector<cmg::TauEle> diTauSelList_;
+  const cmg::TauEle * diTauSel_;
   std::vector<const cmg::PFJet * > pfJetList_;
   std::vector<const cmg::PFJet * > pfJetListLC_;
   std::vector<const cmg::PFJet * > pfJetListLepLC_;
@@ -76,6 +77,7 @@ protected:
   float tauy_;
   float tauz_;
   int   tauantie_;
+  int   tauantiemva_;
   int   tauantimu_;
   int   tauisodisc_;
   int   tauisodiscmva_;
@@ -99,8 +101,8 @@ protected:
   float mujeteta_;
 
   float pftransversemass_;
-  double pfmetpt_;
-  double pfmetphi_;
+  float pfmetpt_;
+  float pfmetphi_;
   float transversemass_;
   double metpt_;//double needed by recoil corrector
   double metphi_;
@@ -130,7 +132,6 @@ protected:
   int categoryMT_;//
   int categoryIso_;//
   int categorySM_;//SM search 
-  int categorySM2012_;//SM search 
 
 private:
   
@@ -145,10 +146,10 @@ private:
   const reco::GenParticle * genBosonL1_;
   const reco::GenParticle * genBosonL2_;
 
-  edm::Handle< std::vector<cmg::Muon> > diLeptonVetoList_;
+  edm::Handle< std::vector<cmg::Electron> > diLeptonVetoList_;
 
-  void fillPFJetListLC(const cmg::TauMu * cand, std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC);
-  void fillPFJetListLepLC(const cmg::TauMu * cand, std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC);
+  void fillPFJetListLC(const cmg::TauEle * cand, std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC);
+  void fillPFJetListLepLC(const cmg::TauEle * cand, std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC);
   bool vetoDiLepton();
   int truthMatchTau();
 

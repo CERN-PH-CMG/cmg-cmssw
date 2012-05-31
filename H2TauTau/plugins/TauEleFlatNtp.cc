@@ -1,11 +1,11 @@
-#include "CMGTools/H2TauTau/plugins/TauMuFlatNtp.h"
+#include "CMGTools/H2TauTau/plugins/TauEleFlatNtp.h"
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
 
-TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
+TauEleFlatNtp::TauEleFlatNtp(const edm::ParameterSet & iConfig):
   BaseFlatNtp(iConfig),
   diTauSel_(0),
   triggerEffWeight_(0.),
@@ -38,12 +38,12 @@ TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
 }
 
 
-TauMuFlatNtp::~TauMuFlatNtp(){
+TauEleFlatNtp::~TauEleFlatNtp(){
 
 }
 
 
-void TauMuFlatNtp::beginJob(){
+void TauEleFlatNtp::beginJob(){
 
   BaseFlatNtp::beginJob();
   //  tree_->Branch("",&_,"/F");
@@ -89,8 +89,8 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("mujetpt",&mujetpt_,"mujetpt/F");
   tree_->Branch("mujeteta",&mujeteta_,"mujeteta/F");
 
-  tree_->Branch("pfmetpt",&pfmetpt_,"pfmetpt/D");
-  tree_->Branch("pfmetphi",&pfmetphi_,"pfmetphi/D");
+  tree_->Branch("pfmetpt",&pfmetpt_,"pfmetpt/F");
+  tree_->Branch("pfmetphi",&pfmetphi_,"pfmetphi/F");
   tree_->Branch("pftransversemass",&pftransversemass_,"pftransversemass/F");
   tree_->Branch("metpt",&metpt_,"metpt/D");
   tree_->Branch("metphi",&metphi_,"metphi/D");
@@ -118,7 +118,6 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("categoryMT",&categoryMT_,"categoryMT/I");
   tree_->Branch("categoryIso",&categoryIso_,"categoryIso/I");
   tree_->Branch("categorySM",&categorySM_,"categorySM/I");
-  tree_->Branch("categorySM2012",&categorySM2012_,"categorySM2012/I");
 
 
   //counters
@@ -145,7 +144,7 @@ void TauMuFlatNtp::beginJob(){
 
 
 
-bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup & iSetup){
+bool TauEleFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup & iSetup){
 
   if(!BaseFlatNtp::fillVariables(iEvent,iSetup)) return 0;
 
@@ -159,7 +158,7 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
       embeddedGenWeight_=*embeddedGenWeight;
   }  
  
-  ///get the TauMu cands 
+  ///get the TauEle cands 
   iEvent.getByLabel(diTauTag_,diTauList_);
 
   //get the muons for the di-lepton veto
@@ -210,7 +209,7 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
   return 1;
 }
 
-bool TauMuFlatNtp::applySelections(){
+bool TauEleFlatNtp::applySelections(){
   counterall_++;
 
   //if none are selected returns 0
@@ -227,37 +226,37 @@ bool TauMuFlatNtp::applySelections(){
   if(vetoDiLepton()) return 0;
   counterveto_++;
 
-  std::vector<cmg::TauMu> tmpditaulist=*diTauList_;
+  std::vector<cmg::TauEle> tmpditaulist=*diTauList_;
   diTauSelList_.clear();
 
   ///basic skims which should have been applied in H2TAUTAU step  
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+  for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
     if(cand->leg1().pt() > 20.0
        && fabs(cand->leg1().eta()) < 2.3
        && cand->leg1().tauID("decayModeFinding") > 0.5
-       && cand->leg2().pt() > 17.0
+       && cand->leg2().pt() > 20.0
        && fabs(cand->leg2().eta()) < 2.1
        )     
       diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()>0) counterpresel_++;
 
-
   //muon vtx 
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    //if( fabs(cand->leg2().dxy())>0.045)continue;
-    //if( fabs(cand->leg2().dz())>0.2 )continue;
+  for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if( fabs(cand->leg2().dxy())>0.045)continue;
+    if( fabs(cand->leg2().dz())>0.1 )continue;
     
-    //track.isNonnull() && track.isAvailable()
-    if(!((*(cand->leg2().sourcePtr()))->innerTrack().isNonnull()))continue;
-    if(!((*(cand->leg2().sourcePtr()))->innerTrack().isAvailable()))continue;
+    //-----------------------------------------------------------------------------------------------------------------------------Fix
+//     //track.isNonnull() && track.isAvailable()
+//     if(!((*(cand->leg2().sourcePtr()))->innerTrack().isNonnull()))continue;
+//     if(!((*(cand->leg2().sourcePtr()))->innerTrack().isAvailable()))continue;
 
-    float dxy= (*(cand->leg2().sourcePtr()))->innerTrack()->dxy(PV_->position()) ;
-    float dz = (*(cand->leg2().sourcePtr()))->innerTrack()->dz(PV_->position());
-    if(fabs(dxy) > 0.045 ) continue;
-    if(fabs(dz)  > 0.2 ) continue;
+//     float dxy= (*(cand->leg2().sourcePtr()))->innerTrack()->dxy(PV_->position()) ;
+//     float dz = (*(cand->leg2().sourcePtr()))->innerTrack()->dz(PV_->position());
+//     if(fabs(dxy) > 0.045 ) continue;
+//     if(fabs(dz)  > 0.2 ) continue;
     //cout<<eventid_<<" "<<(*(cand->leg2().sourcePtr()))->innerTrack()->dz((*(vertices_->begin())).position())<<endl;
     
     diTauSelList_.push_back(*cand);
@@ -265,37 +264,49 @@ bool TauMuFlatNtp::applySelections(){
   if(diTauSelList_.size()>0)countermuvtx_++;
 
 
-
   //muion id cuts
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+  for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/H2TauTau/python/proto/analyzers/TauEleAnalyzer.py?revision=1.12&view=markup
+    //https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
+    if(!(cand->leg2().numberOfHits()<=0
+	 &&cand->leg2().passConversionVeto()==1
+	 ))continue; 
+
+    if((*(cand->leg2().sourcePtr()))->isEB()){
+      if(!(cand->leg2().sigmaIetaIeta() <0.01
+	   &&cand->leg2().deltaPhiSuperClusterTrackAtVtx()<0.80
+	   &&cand->leg2().deltaEtaSuperClusterTrackAtVtx()<0.0017
+	   &&cand->leg2().hadronicOverEm()<0.15
+	   ))continue; 
+    }else if((*(cand->leg2().sourcePtr()))->isEE()){
+      if(!(cand->leg2().sigmaIetaIeta() <0.03
+	   &&cand->leg2().deltaPhiSuperClusterTrackAtVtx()<0.70
+	   &&cand->leg2().deltaEtaSuperClusterTrackAtVtx()<0.01
+	   &&cand->leg2().hadronicOverEm()<0.07
+	   ))continue; 
+    }
     
-    //     //old VBTF cuts
-    //     if(cand->leg2().isGlobal()
-    //        &&cand->leg2().isTracker()
-    //        &&cand->leg2().numberOfValidTrackerHits() > 10
-    //        &&cand->leg2().numberOfValidPixelHits() > 0
-    //        &&cand->leg2().numberOfValidMuonHits() > 0
-    //        &&cand->leg2().numberOfMatches() > 1
-    //        &&cand->leg2().normalizedChi2() < 10
-    //        ){
-      
-    //     //"Loose Muon" 
-    //     if((*(cand->leg2().sourcePtr()))->userFloat("isPFMuon")>0.5
-    //        && (cand->leg2().isGlobal() || cand->leg2().isTracker())
-    //        ){      
-      
-    //"Tight Muon" 
-    if(!(cand->leg2().isGlobal()))continue; //cout<<"pass"<<endl;
-    if(!((*(cand->leg2().sourcePtr()))->userFloat("isPFMuon")>0.5))continue;// cout<<"pass"<<endl;
-    if(!(cand->leg2().normalizedChi2() < 10))continue; //cout<<"pass"<<endl;
-    if(!(cand->leg2().numberOfValidMuonHits() > 0))continue; //cout<<"pass"<<endl;
-    if(!(cand->leg2().numberOfMatches() > 1))continue; //cout<<"pass"<<endl;
-    //if(!(cand->leg2().numberOfValidPixelHits() > 0))continue; //cout<<"pass"<<endl; //pixelHits is not filled right in the cmgMuon
-    if(!((*(cand->leg2().sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits() > 0))continue; //cout<<"pass"<<endl; 
-    if(!(cand->leg2().trackerLayersWithMeasurement() > 5))continue; //cout<<"pass"<<endl;
+// Use non-triggering electron MVA
+// Category 	                             LOOSE ID (EMu) 	TIGHT ID (ETau)
+// Cat1: pT < 20 GeV, abs(eta) < 0.8 	mva_output > 0.925 	 
+// Cat2: pT < 20 GeV, 0.8 < abs(eta) < 1.479 	mva_output > 0.915 	 
+// Cat3: pT < 20 GeV, abs(eta) > 1.479 	mva_output > 0.965
+// Cat4: pT > 20 GeV, abs(eta) < 0.8 	mva_output > 0.905 	mva_output > 0.925
+// Cat5: pT > 20 GeV, 0.8 < abs (eta) < 1.479 	mva_output > 0.955 	mva_output > 0.975
+// Cat6: pT > 20 GeV, abs(eta) > 1.479 	mva_output > 0.975 	mva_output > 0.995 
+
+    //mva id  
+    float mvaid=cand->leg2().mvaNonTrigV0();
+    if(fabs(cand->leg2().eta())<0.8)
+      if(!(mvaid>0.925))continue; 
+    if(0.8<=fabs(cand->leg2().eta())&&fabs(cand->leg2().eta())<1.479)
+      if(!(mvaid>0.975))continue;
+    if(1.479<=fabs(cand->leg2().eta()))
+      if(!(mvaid>0.995))continue; 
     
+
     diTauSelList_.push_back(*cand);
       
   }
@@ -305,7 +316,7 @@ bool TauMuFlatNtp::applySelections(){
 //   //muon iso cut
 //   tmpditaulist=diTauSelList_;
 //   diTauSelList_.clear();
-//   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
 //     if(cand->leg2().relIso(0.5)>0.1) continue;    
 //     diTauSelList_.push_back(*cand);
 //   }
@@ -314,7 +325,7 @@ bool TauMuFlatNtp::applySelections(){
   //muon trig-match
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+  for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
     bool matchmu=0;
     if(trigPaths_.size()==0) matchmu=1;//no match requirement
     for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
@@ -327,12 +338,10 @@ bool TauMuFlatNtp::applySelections(){
   }
   if(diTauSelList_.size()>0)countermumatch_++;
 
-
-
   //Tau E/P cut
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+  for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
     if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
       if(cand->leg1().eOverP()<0.2)
 	continue;
@@ -344,7 +353,7 @@ bool TauMuFlatNtp::applySelections(){
   //tau vtx
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+  for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
     //if(fabs(cand->leg1().dxy())>0.045) continue;
     //if(fabs(cand->leg1().dz())>0.2 ) continue;
 
@@ -364,8 +373,8 @@ bool TauMuFlatNtp::applySelections(){
   //Tau anti-mu cut
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg1().tauID("againstMuonTight")>0.5)
+  for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(cand->leg1().tauID("againstMuonLoose")>0.5)
       diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()>0)countertaumuveto_++;
@@ -373,8 +382,10 @@ bool TauMuFlatNtp::applySelections(){
   //Tau anti-e cut
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg1().tauID("againstElectronLoose")>0.5)
+  for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(cand->leg1().tauID("againstElectronMedium")>0.5
+       &&cand->leg1().tauID("againstElectronMVA")>0.5
+       )
       diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()>0)countertaueveto_++;
@@ -383,7 +394,7 @@ bool TauMuFlatNtp::applySelections(){
 //   //isolation cut on the taus
 //   tmpditaulist=diTauSelList_;
 //   diTauSelList_.clear();
-//   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
 //     //if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")<0.5)
 //     if(cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") < 0.5) continue;
 //     //if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")<0.5)
@@ -395,7 +406,7 @@ bool TauMuFlatNtp::applySelections(){
   //Tau Trig-Match
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+  for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
     bool matchtau=0;
     if(trigPaths_.size()==0)matchtau=1;//no match requirement
     for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
@@ -408,25 +419,23 @@ bool TauMuFlatNtp::applySelections(){
   }
   if(diTauSelList_.size()>0)countertaumatch_++;
   
-
-
   /////////Isolation cuts
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+  for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
 
     if(
-       //-------mu iso cut here:
-       cand->leg2().relIso(0.5,1)<0.1
-       //if(cand->leg2().sourcePtr()->userFloat("mvaIsoRings")<.xx) continue;     
-       
-       //------tau iso cut here
+       //-------iso cut here
+       cand->leg2().chargedAllIsoWithConeVeto() < 0.1 
+       //cand->leg2().relIso(0.5) < 0.1
+
+       //-------tau iso cut here
        //if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")<0.5)
        // && cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5
        //if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")<0.5)
-       //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
-       
+       //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)       
        && cand->leg1().tauID("byLooseIsoMVA")>0.5
+
        ){
       diTauSelList_.push_back(*cand);
     }
@@ -437,7 +446,7 @@ bool TauMuFlatNtp::applySelections(){
   nditau_=diTauSelList_.size();
   if(diTauSelList_.size()==0){//no isolated candidates were found, see if there are any anti-isolated ones
     categoryIso_=2;//category gets set to "sideband" if there was no candidate in the signal box
-    for(std::vector<cmg::TauMu>::const_iterator cand = tmpditaulist.begin(); cand != tmpditaulist.end(); ++cand)
+    for(std::vector<cmg::TauEle>::const_iterator cand = tmpditaulist.begin(); cand != tmpditaulist.end(); ++cand)
       diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0) return 0;//there was no event in the signal or sideband
@@ -447,7 +456,7 @@ bool TauMuFlatNtp::applySelections(){
   nditau_=diTauSelList_.size();//keep track of the number of candidates per event
   diTauSel_=&(*diTauSelList_.begin());
   double highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
-  for(std::vector<cmg::TauMu>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand)
+  for(std::vector<cmg::TauEle>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand)
     if(cand->leg1().pt()+cand->leg2().pt()>highsumpt){
       diTauSel_=&(*cand);
       highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
@@ -494,7 +503,7 @@ bool TauMuFlatNtp::applySelections(){
   return 1;
 }
 
-bool TauMuFlatNtp::fill(){
+bool TauEleFlatNtp::fill(){
   
   BaseFlatNtp::fill();
 
@@ -525,7 +534,8 @@ bool TauMuFlatNtp::fill(){
   mupt_=diTauSel_->leg2().pt();
   mueta_=diTauSel_->leg2().eta();
   muphi_=diTauSel_->leg2().phi();
-  muiso_=diTauSel_->leg2().relIso(0.5,1);
+  //muiso_=diTauSel_->leg2().relIsoAllChargedDB05(); 
+  muiso_=diTauSel_->leg2().relIso(0.5);
   muisomva_=(*(diTauSel_->leg2().sourcePtr()))->userFloat("mvaIsoRings");
   mudz_=diTauSel_->leg2().dz();
   mudxy_=diTauSel_->leg2().dxy();
@@ -553,6 +563,8 @@ bool TauMuFlatNtp::fill(){
   if(diTauSel_->leg1().tauID("againstElectronLoose")>0.5)tauantie_=1;
   if(diTauSel_->leg1().tauID("againstElectronMedium")>0.5)tauantie_=2;
   if(diTauSel_->leg1().tauID("againstElectronTight")>0.5)tauantie_=3;
+  tauantiemva_=0;
+  if(diTauSel_->leg1().tauID("againstElectronMVA")>0.5)tauantiemva_=1;
   tauantimu_=0;
   if(diTauSel_->leg1().tauID("againstMuonLoose")>0.5)tauantimu_=1;
   if(diTauSel_->leg1().tauID("againstMuonMedium")>0.5)tauantimu_=2;
@@ -574,10 +586,11 @@ bool TauMuFlatNtp::fill(){
   ditaupt_=diTauSel_->pt();
   svfitmass_=diTauSel_->massSVFit();
 
-  edm::Handle<std::vector< cmg::BaseMET> > pfMET;
-  iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
-  pfmetpt_=pfMET->begin()->pt();
-  pfmetphi_=pfMET->begin()->phi();
+  pfmetpt_=diTauSel_->met().pt();
+  pfmetphi_=diTauSel_->met().phi();
+  pftransversemass_=sqrt(2*mupt_*pfmetpt_*(1-cos(muphi_-pfmetphi_)));
+  metpt_=pfmetpt_;//default values 
+  metphi_=pfmetphi_;//default values
 
   ///get the jets //need the jets here because of randomization of mT
   edm::Handle< std::vector<cmg::PFJet> > fulljetlist;
@@ -587,7 +600,7 @@ bool TauMuFlatNtp::fill(){
   pfJetList_.clear();
   for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
     if(jet->pt()<30.0)continue;  
-    if(fabs(jet->eta())>4.5)continue;
+    if(fabs(jet->eta())>4.5)continue; 
 
     //Loose PF Jet id 
     ///https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
@@ -612,11 +625,15 @@ bool TauMuFlatNtp::fill(){
   njet_=pfJetListLC_.size();
 
 
+  //run MVA met here 
+  //../../Common/python/miscProducers/mvaMET/mvaMETTauEle_cfi.py  
+  
+
   //Also the list cleaned only with the muon //njetLepLC needed in recoil correction
   fillPFJetListLepLC(diTauSel_,&pfJetList_,&pfJetListLepLC_);
   int njetLepLC_=pfJetListLepLC_.size();
   
-  ///Apply recoil correction here Applie to PFMET only for now
+  ///Apply recoil correction here
   if(recoilCorreciton_>0){
     corrector_.addDataFile( fileZmmData_);
     corrector_.addMCFile( fileZmmMC_);
@@ -633,43 +650,48 @@ bool TauMuFlatNtp::fill(){
       jetMult = njetLepLC_;
     }
 
-
-    corrector_.CorrectType1( pfmetpt_, pfmetphi_,  genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, jetMult );
-
-    //smear the met even more
-    //pfmetpt_=pfmetpt_*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);
+    //cout<<fileCorrectTo_<<" "<<metpt_<<" "<<metphi_<<endl;
+    corrector_.CorrectType1( metpt_, metphi_,  genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, jetMult );
+    //cout<<fileCorrectTo_<<" "<<metpt_<<" "<<metphi_<<endl;
+    //reco::Candidate::PolarLorentzVector newMETP4( met,0, metphi, 0);
   }
-  pftransversemass_=sqrt(2*mupt_*pfmetpt_*(1-cos(muphi_-pfmetphi_)));
- 
-  edm::Handle< cmg::METSignificance > pfMetSigHandle;
-  iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
-  const cmg::METSignificance * pfMetSig = &(*pfMetSigHandle);
+  reco::Candidate::PolarLorentzVector metCorrP4( metpt_,0,metphi_, 0);
+  //smeared met and keep also the unsmeared one
+  //metpt_=diTauSel_->met().pt()*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);
+  //metphi_=diTauSel_->met().phi();
+  transversemass_=sqrt(2*mupt_*metCorrP4.pt()*(1-cos(muphi_-metCorrP4.phi())));
+  
 
-
-  ///////////////Now get the MVA MET
-  metpt_=diTauSel_->met().pt();
-  metphi_=diTauSel_->met().phi();
-  transversemass_=sqrt(2*mupt_*metpt_*(1-cos(muphi_-metphi_)));//default values
-
-  //get the MET significance list
-  edm::InputTag metsigSrc_("mvaMETTauMu");
-  edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
-  iEvent_->getByLabel(metsigSrc_,metsigVector); 
-  //now determine which of the mets belongs to the selected tau-mu candidate
-  const cmg::METSignificance * MvaMetSig=0;
-  int candidx=0;
-  for(std::vector<cmg::TauMu>::const_iterator cand=diTauList_->begin(); cand!=diTauList_->end(); ++cand){
-    if(cand->mass()==diTauSel_->mass()) MvaMetSig = &(metsigVector->at(candidx));
-    candidx++;
-  }
-  if(!MvaMetSig){
-    cout<<"mvametsig Not found"<<endl;
-    exit(0);
+  ///!!!!!!Need to update to new MVA Met significance matrix-----------------------------------------------------------------------------Fix
+  if(runSVFit_==1){  //old svfit  
+    edm::Handle< cmg::METSignificance > metsig;
+    iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),metsig); 
+    NSVfitStandalone2011::Vector measuredMET( metCorrP4.x(), metCorrP4.y(), 0);
+    std::vector<NSVfitStandalone2011::MeasuredTauLepton2011> measuredTauLeptons;
+    NSVfitStandalone2011::LorentzVector p1(diTauSel_->leg1().p4());
+    measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kHadDecay,p1));    
+    NSVfitStandalone2011::LorentzVector p2(diTauSel_->leg2().p4());
+    measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kLepDecay,p2));
+    NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET,metsig->significance(),0);
+    algo.maxObjFunctionCalls(5000);
+    algo.fit();
+    svfitmass_  = algo.fittedDiTauSystem().mass();
   }
 
+  if(runSVFit_==2){    //new svfit
+    edm::Handle< cmg::METSignificance > metsig;
+    iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),metsig); 
+    std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
+    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTauSel_->leg2().p4()));
+    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTauSel_->leg1().p4()));
+    NSVfitStandaloneAlgorithm algo(measuredTauLeptons, metCorrP4.Vect(), *(metsig->significance()), 0);
+    algo.addLogM(false);
+    algo.integrate();
+    svfitmass_ = algo.getMass();
+  }
 
 
-  ///define control regions here needed to run SVFit
+  ///define control samples
   categoryCh_=0;
   if(fabs(ditaucharge_)==0.)categoryCh_=1;
   if(fabs(ditaucharge_)==2.)categoryCh_=2;
@@ -686,36 +708,6 @@ bool TauMuFlatNtp::fill(){
 //   if( muiso_ > 0.5) categoryIso_=4;
 
  
-
-  ///////////////here decide which met goes into SVFit
-  //reco::Candidate::PolarLorentzVector metP4( pfmetpt_,0,pfmetphi_, 0);
-  //cmg::METSignificance * metSig=pfMetSig;
-  reco::Candidate::PolarLorentzVector metP4( metpt_,0,metphi_, 0);
-  const cmg::METSignificance * metSig=MvaMetSig;
-
-  if(runSVFit_==1){  //old svfit  
-    NSVfitStandalone2011::Vector measuredMET( metP4.x(), metP4.y(), 0);
-    std::vector<NSVfitStandalone2011::MeasuredTauLepton2011> measuredTauLeptons;
-    NSVfitStandalone2011::LorentzVector p1(diTauSel_->leg1().p4());
-    measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kHadDecay,p1));    
-    NSVfitStandalone2011::LorentzVector p2(diTauSel_->leg2().p4());
-    measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kLepDecay,p2));
-    NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET,metSig->significance(),0);
-    algo.maxObjFunctionCalls(5000);
-    algo.fit();
-    svfitmass_  = algo.fittedDiTauSystem().mass();
-  }
-
-  if(runSVFit_==2){    //new svfit
-    std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
-    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTauSel_->leg2().p4()));
-    measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTauSel_->leg1().p4()));
-    NSVfitStandaloneAlgorithm algo(measuredTauLeptons, metP4.Vect(), *(metSig->significance()), 0);
-    algo.addLogM(false);
-    algo.integrate();
-    svfitmass_ = algo.getMass();
-  }
-
 
   //find the jet matching to the mu
   mujetpt_=0.;
@@ -759,7 +751,7 @@ bool TauMuFlatNtp::fill(){
   }
 
 
-  //make a list of b-tagged jets  
+  //make a list of b-tagged jets  jet->btag(6) 
   pfJetListBTag_.clear();
   for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
     //cout<<jet->btag(6)<<" "<<jet->btag("combinedSecondaryVertexBJetTags")<<endl;
@@ -799,7 +791,7 @@ bool TauMuFlatNtp::fill(){
     }
   }
   if(categorySM_!=2 && pfJetListLC_.size()>=1){//Boosted: 1 jet with pt>150 and no other jets
-    if(pfJetListLC_[0]->pt()>=150.0)
+    if(pfJetListLC_[0]->pt()>=150.0)///*pfJetListLC_[0]->rawFactor()
       categorySM_=1;
   }
 
@@ -811,67 +803,10 @@ bool TauMuFlatNtp::fill(){
   }
 
 
-
-  //////////////////////
-  ////2012 SM event categories 
-  //////////////////////
-// Category 	Selection
-// VBF 	At least 2 jets with pt > 30 GeV
-// No additional pt> 30 GeV in the eta gap between leading jets
-// VBF MVA > 0.8
-// No B-Tagged Jets Above 20 GeV (Emu Only)
-// VH 	At least 2 jets with pt > 30 GeV
-// Mass of Jet Pair 70-120 GeV
-// Vector Sum of Jet Pt > 150 GeV
-// VBF MVA < 0.8
-// No B-Tagged Jets Above 20 GeV
-// 1-Jet 	>= 1 Jet with pt > 30 GeV
-// Not in VBF or VH Categories
-// No B-Tagged Jets Above 20 GeV 	high pt: pt_tau_had >= Mass Dependent pt Threshold
-// low pt: pt_tau_had < Mass Dependent pt Threshold
-// 1 b-jet 	At least 1 B-Tagged Jet Above 20 GeV
-// Not 2 Jets above 30 GeV 	high pt: pt_tau_had >= Mass Dependent pt Threshold
-// low pt: pt_tau_had < Mass Dependent pt Threshold
-// 0-Jet 	Anything not passing other categories 	high pt: pt_tau_had >= Mass Dependent pt Threshold
-// low pt: pt_tau_had < Mass Dependent pt Threshold 
-
-
-  categorySM2012_=-1;
-  if(pfJetListLC_.size()>=2){//VBF: 
-    if((pfJetListLC_[0]->p4()+pfJetListLC_[1]->p4()).mass() > 400.0 
-       && fabs(pfJetListLC_[0]->eta() - pfJetListLC_[1]->eta()) > 4.0 
-       && pfJetListLC_[0]->eta()*pfJetListLC_[1]->eta() < 0.0
-       ){
-      njetingap_=0;
-      if(pfJetListLC_.size()>2){// check there is no additional central jet
-	for(std::vector<const cmg::PFJet *>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
-	  if(pfJetListLC_[0]->eta()<pfJetListLC_[1]->eta()) 
-	    if(pfJetListLC_[0]->eta()<(*jet3)->eta()&&(*jet3)->eta()<pfJetListLC_[1]->eta()) njetingap_++;
-	  if(pfJetListLC_[0]->eta()>pfJetListLC_[1]->eta()) 
-	    if(pfJetListLC_[1]->eta()<(*jet3)->eta()&&(*jet3)->eta()<pfJetListLC_[0]->eta()) njetingap_++;
-	}
-      }
-      if(njetingap_==0) categorySM2012_=2;
-    }
-  }
-  if(categorySM2012_!=2 && pfJetListLC_.size()>=1){//Boosted: 1 jet with pt>150 and no other jets
-    if(pfJetListLC_[0]->pt()>=150.0)
-      categorySM2012_=1;
-  }
-
-  if(categorySM2012_!=2 && categorySM2012_!=1 && pfJetListLC_.size()<=1){//SM0
-    if(pfJetListLC_.size()==1){
-      if(pfJetListLC_[0]->pt()<150.0)
-	categorySM2012_=0;
-    }else categorySM2012_=0;
-  }
-
-
-
   return 1;
 }
 
-void TauMuFlatNtp::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup){
+void TauEleFlatNtp::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup){
   
   fillVariables(iEvent,iSetup);
   if(!applySelections()) return;
@@ -879,7 +814,7 @@ void TauMuFlatNtp::analyze(const edm::Event & iEvent, const edm::EventSetup & iS
   tree_->Fill();
 }
 
-void TauMuFlatNtp::fillPFJetListLC(const cmg::TauMu * cand,std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC){
+void TauEleFlatNtp::fillPFJetListLC(const cmg::TauEle * cand,std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC){
 
   listLC->clear();
 
@@ -915,7 +850,7 @@ void TauMuFlatNtp::fillPFJetListLC(const cmg::TauMu * cand,std::vector<const cmg
 }
 
 
-void TauMuFlatNtp::fillPFJetListLepLC(const cmg::TauMu * cand,std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC){
+void TauEleFlatNtp::fillPFJetListLepLC(const cmg::TauEle * cand,std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC){
 
   listLC->clear();
 
@@ -949,19 +884,66 @@ void TauMuFlatNtp::fillPFJetListLepLC(const cmg::TauMu * cand,std::vector<const 
   
 }
 
-bool TauMuFlatNtp::vetoDiLepton(){
+bool TauEleFlatNtp::vetoDiLepton(){
   
   bool muminus=0;
   bool muplus=0;
-  for(std::vector<cmg::Muon>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
+  for(std::vector<cmg::Electron>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
     if(m->pt()<=15.0)continue;
     if(fabs(m->eta())>=2.5)continue;
-    if(m->relIso(0.5)>=0.3)continue;    
-    if(!(m->isGlobal()||m->isTracker()))continue; 
-    if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
     if(fabs(m->dxy())>=0.045)continue; 
     if(fabs(m->dz())>=0.2)continue; 
     
+    ///ID
+    if(!(m->numberOfHits()<=0
+	 &&m->passConversionVeto()==1
+	 ))continue; 
+
+    if((*(m->sourcePtr()))->isEB()){
+      if(!(m->sigmaIetaIeta() <0.01
+	   &&m->deltaPhiSuperClusterTrackAtVtx()<0.80
+	   &&m->deltaEtaSuperClusterTrackAtVtx()<0.0017
+	   &&m->hadronicOverEm()<0.15
+	   ))continue; 
+    }else if((*(m->sourcePtr()))->isEE()){
+      if(!(m->sigmaIetaIeta() <0.03
+	   &&m->deltaPhiSuperClusterTrackAtVtx()<0.70
+	   &&m->deltaEtaSuperClusterTrackAtVtx()<0.01
+	   &&m->hadronicOverEm()<0.07
+	   ))continue; 
+    }
+    
+
+// Cat1: pT < 20 GeV, abs(eta) < 0.8 	mva_output > 0.925 	 
+// Cat2: pT < 20 GeV, 0.8 < abs(eta) < 1.479 	mva_output > 0.915 	 
+// Cat3: pT < 20 GeV, abs(eta) > 1.479 	mva_output > 0.965
+// Cat4: pT > 20 GeV, abs(eta) < 0.8 	mva_output > 0.905 	mva_output > 0.925
+// Cat5: pT > 20 GeV, 0.8 < abs (eta) < 1.479 	mva_output > 0.955 	mva_output > 0.975
+// Cat6: pT > 20 GeV, abs(eta) > 1.479 	mva_output > 0.975 	mva_output > 0.995 
+
+
+    //mva id  
+    float mvaid=m->mvaNonTrigV0();
+    if(m->pt()<20.){
+      if(fabs(m->eta())<0.8)
+	if(!(mvaid>0.925))continue; 
+      if(0.8<=fabs(m->eta())&&fabs(m->eta())<1.479)
+	if(!(mvaid>0.915))continue;
+      if(1.479<=fabs(m->eta()))
+	if(!(mvaid>0.965))continue; 
+    } 
+    if(m->pt()>20.){
+      if(fabs(m->eta())<0.8)
+	if(!(mvaid>0.905))continue; 
+      if(0.8<=fabs(m->eta())&&fabs(m->eta())<1.479)
+	if(!(mvaid>0.955))continue;
+      if(1.479<=fabs(m->eta()))
+	if(!(mvaid>0.975))continue; 
+    }
+    
+    //isolation
+    if(m->relIso(0.5)>=0.3)continue;    
+
     if(m->charge()==-1)muminus=1;
     if(m->charge()==1)muplus=1;
   }
@@ -970,7 +952,7 @@ bool TauMuFlatNtp::vetoDiLepton(){
   return 0;
 }
 
-int TauMuFlatNtp::truthMatchTau(){
+int TauEleFlatNtp::truthMatchTau(){
   if(!diTauSel_ )return 0;
   if(dataType_.compare("MC")!=0) return 0;
 
@@ -985,7 +967,7 @@ int TauMuFlatNtp::truthMatchTau(){
 
 
 
-void TauMuFlatNtp::endJob(){
+void TauEleFlatNtp::endJob(){
   BaseFlatNtp::endJob();
   cout<<"counterall = "<<counterall_<<endl;
   cout<<"counterev = "<<counterev_<<endl;
@@ -1011,6 +993,6 @@ void TauMuFlatNtp::endJob(){
 
 #include "FWCore/Framework/interface/MakerMacros.h"
  
-DEFINE_FWK_MODULE(TauMuFlatNtp);
+DEFINE_FWK_MODULE(TauEleFlatNtp);
 
 

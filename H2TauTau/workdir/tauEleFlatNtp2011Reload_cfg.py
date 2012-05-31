@@ -8,25 +8,13 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 evReportFreq = 100
 
 #######Define the samples to process
-####CMSSW 42 samples
-#dataset_user = 'benitezj'
-#sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Feb11TauIso"
-
-####CMSSW 44 samples
 dataset_user = 'benitezj'
-#sampleTag = "/PAT_CMG_V5_1_0/H2TAUTAU_JoseMay8"
-#sampleTag = "/PAT_CMG_V5_1_0/H2TAUTAU_JoseMay9"
-#sampleTag = "/PAT_CMG_V5_2_0/H2TAUTAU_JoseMay14"
-#sampleTag = "/PAT_CMG_V5_2_0/H2TAUTAU_JoseMay15"
-#sampleTag = "/PAT_CMG_V5_2_0/H2TAUTAU_TauMu_JoseMay16"
-#sampleTag = "/PAT_CMG_V5_3_0_TEST/H2TAUTAU_JoseMay22"
-
-sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_V541_TauMu_JoseMay30"
+sampleTag = "/PAT_CMG_V5_2_0/H2TAUTAU_TauEle_JoseMay29" #already ran the recalibrator here so use cmgPFJetSel
 
 
 sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
-sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
+mergeFactor = 5
 
 #########################
 
@@ -40,42 +28,38 @@ process.analysis += process.goodOfflinePrimaryVertices
 
 ######The analysis module
 process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
-from CMGTools.H2TauTau.tools.joseFlatNtpSample2011Reload_cff import configureFlatNtpSampleTauMu
-configureFlatNtpSampleTauMu(process.flatNtpTauMu,sampleName)
-process.flatNtpTauMu.verticesListTag = cms.InputTag('goodOfflinePrimaryVertices')
-#process.flatNtpTauMu.diTauTag = 'cmgTauMuPreSel'
-#process.flatNtpTauMu.diTauTag = 'cmgTauMuCorSVFitFullSel'
-process.flatNtpTauMu.diTauTag = 'cmgTauMuMVAPreSel'
-process.flatNtpTauMu.runSVFit = 1
-process.analysis += process.flatNtpTauMu
+from CMGTools.H2TauTau.tools.joseFlatNtpSample2011Reload_cff import configureFlatNtpSampleTauEle
+configureFlatNtpSampleTauEle(process.flatNtpTauEle,sampleName)
+process.flatNtpTauEle.verticesListTag = cms.InputTag('goodOfflinePrimaryVertices')
+#process.flatNtpTauEle.diTauTag = 'cmgTauMuPreSel'
+#process.flatNtpTauEle.diTauTag = 'cmgTauMuCorSVFitFullSel'
+process.flatNtpTauEle.diTauTag = 'cmgTauEleMVAPreSel'
+process.flatNtpTauEle.runSVFit = 0
+process.analysis += process.flatNtpTauEle
 
-###define the input files
-inputfiles = "tauMu_fullsel_tree_CMG_.*root"
-dataset_name = process.flatNtpTauMu.path.value() + sampleTag
-firstfile = sampleJobIdx * sampleMergeFactor
-lastfile = (sampleJobIdx + 1 ) * sampleMergeFactor
+######Define the input files
+inputfiles = "tauEle_fullsel_tree_CMG_.*root" #-------------------------------------------------------------------Fix
+dataset_name = process.flatNtpTauEle.path.value() + sampleTag
+firstfile = sampleJobIdx * mergeFactor
+lastfile = (sampleJobIdx + 1 ) * mergeFactor
 print dataset_user
 print dataset_name
 print inputfiles
 print firstfile
 print lastfile
 
-
 #get input files
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
+print process.source.fileNames
 
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:6486','1:20430','1:28387','1:88240','1:105383','1:121208','1:165752','1:183902')
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:4394', '1:82155', '1:172226', '1:178770', '1:184091')
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:15599','1:20873','1:20916','1:20991','1:21008')
 #print process.source.eventsToProcess
 
-
-#process.source.fileNames = ['file:./tauMu_fullsel_tree_CMG.root']
-
-
-print process.source.fileNames
+process.source.fileNames = ['file:./tauEle_fullsel_tree_CMG.root']
 
 
 ##schedule the analyzer

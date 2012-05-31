@@ -1,0 +1,211 @@
+import FWCore.ParameterSet.Config as cms
+
+
+sep_line = '-'*70
+########## CONTROL CARDS
+
+process = cms.Process("H2TAUTAU")
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+# Message logger setup.
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+
+
+process.maxLuminosityBlocks = cms.untracked.PSet(
+    input = cms.untracked.int32(-1)
+    )
+
+##########
+
+
+
+# Input  & JSON             -------------------------------------------------
+
+
+# process.setName_('H2TAUTAU')
+
+dataset_user = 'cmgtools' 
+#dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
+#dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_2_0'
+# dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
+# dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
+# dataset_name = '/VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
+
+dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_3_0_TEST'
+
+dataset_files = 'cmgTuple.*root'
+
+## creating the source
+#from CMGTools.Production.datasetToSource import *
+#process.source = datasetToSource(
+#    dataset_user,
+#    dataset_name,
+#    dataset_files,
+#    )
+
+
+process.source = cms.Source(
+    "PoolSource",
+    fileNames = cms.untracked.vstring(
+    '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0/cmgTuple_0.root'
+    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/cmgTuple_0.root'
+    #'file:../../../Common/prod/TEST/cmgTuple_HToTauTau.root'
+    )
+    )
+
+# process.source.fileNames = ['file:DYJets.root']
+
+
+print process.source.fileNames
+
+###ProductionTaskHook$$$
+    
+runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.fileNames[0].find('embedded')==-1
+
+
+# Sequence & path definition -------------------------------------------------
+
+
+# set up JSON ---------------------------------------------------------------
+if runOnMC==False:
+    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
+    json = setupJSON(process)
+    print 'json:', json
+    print process.PoolSource.lumisToProcess
+
+##path definition starts here-----------------------------
+process.TauMuPath = cms.Path()
+
+
+# gen  ---------------------------
+if runOnMC:
+    process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
+    process.genSequence = cms.Sequence(
+        process.vertexWeightSequence 
+        )
+    process.TauMuPath += process.genSequence 
+
+## Jet recalibration -------------------
+#process.load('Configuration.StandardSequences.Services_cff')
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+#from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
+#process.cmgPFJetSel = cmgPFJetCorrector.clone()
+##process.cmgPFJetSel.src = cms.InputTag( 'cmgPFJetSel','','PAT' )
+##process.cmgPFJetSel.payload = cms.string('AK5PF')
+#process.cmgPFJetSel.src = cms.InputTag( 'cmgPFJetSelCHS','','PAT' )
+#process.cmgPFJetSel.payload = cms.string('AK5PFchs')
+#process.cmgPFJetSel.verbose = True
+#if runOnMC:
+#    process.GlobalTag.globaltag = 'START44_V13::All'
+#    process.cmgPFJetSel.levels = ['L1FastJet','L2Relative','L3Absolute']
+#else:
+#    process.GlobalTag.globaltag  = 'GR_R_44_V15::All'
+#    #process.GlobalTag.globaltag  = 'GR_R_44_V7::All'
+#    process.cmgPFJetSel.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
+#print 'GLOBAL TAG', process.GlobalTag.globaltag 
+#process.TauMuPath += process.cmgPFJetSel
+
+## tau-mu selections ----------------------
+process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
+process.TauMuPath +=  process.cmgTauScaler 
+
+process.load('CMGTools.Common.factories.cmgTauMu_cfi')
+process.cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
+process.cmgTauMu.cfg.metCollection = 'cmgPFMETRaw'
+process.TauMuPath +=  process.cmgTauMu
+
+##apply the preselections
+process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
+process.cmgTauMuPreSel = process.cmgTauMuSel.clone()
+process.cmgTauMuPreSel.cut = cms.string('mass()>10.0 && leg1().pt()>19.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg2().pt()>16.0 && abs(leg2().eta())<2.1' )
+process.TauMuPath +=  process.cmgTauMuPreSel 
+
+
+##run the MVA MET and remake the mu-tau list
+#from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
+#from CMGTools.Common.miscProducers.mvaMET.mvaMET_cff import *
+#from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
+
+process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
+process.load("CMGTools.Common.miscProducers.mvaMET.mvaMET_cff")
+process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
+process.mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
+
+process.mvaBaseMETTauMu = process.cmgBaseMETFromPFMET.clone()
+process.mvaBaseMETTauMu.cfg.inputCollection = 'mvaMETTauMu'
+
+process.load("CMGTools.Common.factories.cmgTauMuCor_cfi")
+process.cmgTauMuMVAPreSel = process.cmgTauMuCor.clone()
+process.cmgTauMuMVAPreSel.cfg.metCollection = 'mvaBaseMETTauMu'
+process.cmgTauMuMVAPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
+
+process.mvaMETSequence = cms.Sequence(
+    process.goodPVFilter + 
+    process.mvaMETTauMu +
+    process.mvaBaseMETTauMu+
+    process.cmgTauMuMVAPreSel
+    )
+
+process.TauMuPath += process.mvaMETSequence
+
+
+## SVFit -------------------------
+#from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit
+#process.cmgTauMuCorSVFitFullSel = tauMuSVFit.clone()
+#process.cmgTauMuCorSVFitFullSel.diTauSrc = 'cmgTauMuPreSel'
+#process.TauMuPath +=  process.cmgTauMuCorSVFitFullSel 
+
+# event filter --------------------------------
+process.load('CMGTools.Common.skims.cmgTauMuCount_cfi')
+#process.cmgTauMuCount.src = 'cmgTauMuPreSel'
+#process.cmgTauMuCount.src = 'cmgTauMuCorSVFitFullSel'
+process.cmgTauMuCount.src = 'cmgTauMuMVAPreSel'
+process.cmgTauMuCount.minNumber = 1
+process.TauMuPath +=  process.cmgTauMuCount
+
+
+
+# you can enable printouts of most modules like this:
+# process.cmgTauMuCorPreSelSVFit.verbose = True
+
+# systematic shift on tau energy scale 
+# process.cmgTauScaler.cfg.nSigma = -1
+
+process.out = cms.OutputModule(
+    "PoolOutputModule",
+    fileName = cms.untracked.string( 'tauMu_fullsel_tree_CMG.root' ),
+    SelectEvents   = cms.untracked.PSet(SelectEvents = cms.vstring('TauMuPath')),
+    outputCommands = cms.untracked.vstring('drop *')
+    )
+process.out.outputCommands.extend( [
+    'keep cmgTaucmgMuoncmgDiObjects_*_*_*',
+    'drop *_cmgTauMu_*_*',
+    'keep *_mvaMETTauMu_*_*',
+    'keep double_*_*_*',
+    'keep patMuons_patMuonsWithTrigger__PAT',
+    'keep cmgTriggerObjects_cmgTriggerObjectSel__PAT',
+    'keep cmgTriggerObjects_cmgTriggerObjectListSel__PAT',
+    'keep recoVertexs_offlinePrimaryVertices__RECO',
+    'keep cmgPFJets_cmgPFJetSel__PAT',
+    'keep cmgPFJets_cmgPFJetSelCHS__PAT',
+    'keep recoGenParticles_genParticlesPruned__PAT',
+    'keep *_cmgMuonSel__PAT',
+    'keep PileupSummaryInfos_addPileupInfo__HLT',
+    'keep cmgMETSignificance_pfMetSignificance__PAT',
+    'keep cmgBaseMETs_*_*_*',
+    'keep GenEventInfoProduct_generator__SIM',
+    ])
+
+
+# Path definition --------------------------
+process.outpath = cms.EndPath(process.out)
+process.schedule = cms.Schedule(
+    process.TauMuPath,
+    process.outpath
+    )
+
+
+
+

@@ -81,9 +81,17 @@ bool Sample::openNtpFile(){
     if(file.GetListOfKeys()->GetSize()==0) continue;
 
     if(ntpChain_->GetNtrees()==0){
-      TTree* TTest=(TTree*)file.Get("flatNtp/tree");
-      if(!TTest){//cope with previous versions
+      if(file.Get("flatNtp/tree")){
+	ntpChain_->SetName("flatNtp/tree");
+      }else if(file.Get(TString("flatNtp")+GetName()+"/tree")){//cope with previous versions
 	ntpChain_->SetName(TString("flatNtp")+GetName()+"/tree");
+      }else if(file.Get("flatNtpTauMu/tree")){
+	ntpChain_->SetName("flatNtpTauMu/tree");
+      }else if(file.Get("flatNtpTauEle/tree")){
+	ntpChain_->SetName("flatNtpTauEle/tree");
+      }else{
+	cout<<"TTree name in files is not supported"<<endl;
+	return 0;
       }
     }
 
@@ -92,15 +100,15 @@ bool Sample::openNtpFile(){
   
   
   if(ntpChain_->GetNtrees()==0){
-    cout<<"Sample "<<GetName()<<" 0 files chained"<<endl;
+    cout<<"Sample "<<GetName()<<" "<<GetTitle()<<" 0 files chained"<<endl;
     return 0;
   }
   if(ntpChain_->GetNtrees()==NMAXFILES_){
-    cout<<"Number of files added for sample "<<GetName()<<" is at max "<<NMAXFILES_<<endl;
+    cout<<"Number of files added for sample "<<GetName()<<" "<<GetTitle()<<" is at max "<<NMAXFILES_<<endl;
     return 0;
   }
 
-  cout<<GetName()<<" chained "<<ntpChain_->GetNtrees()<<" files, with "<<ntpChain_->GetEntries()<<" entries"<<endl;
+  cout<<GetName()<<" "<<TString(GetTitle())<<" : files = "<<ntpChain_->GetNtrees()<<" , entries = "<<ntpChain_->GetEntries()<<endl;
   
   return 1;
 }
