@@ -18,6 +18,8 @@ class PFJetFactory : public Factory<cmg::PFJet>{
     PFJetFactory(const edm::ParameterSet& ps);
     
     virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
+
+    void setPFproperties(const pat::Jet&, cmg::PFJet*, bool) const;
     
   private:
     const edm::InputTag jetLabel_;
