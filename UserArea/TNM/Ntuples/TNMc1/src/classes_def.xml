@@ -1,0 +1,10 @@
+<lcgdict>
+ <class name="HelperFor<pat::Electron>"/>
+ <class name="pat::ElectronHelper"/>
+ <class name="HelperFor<pat::Muon>"/>
+ <class name="pat::MuonHelper"/>
+ <class name="HelperFor<pat::Jet>"/>
+ <class name="pat::JetHelper"/>
+ <class name="HelperFor<edm::Event>"/>
+ <class name="edm::EventHelperExtra"/>
+</lcgdict>

@@ -1,0 +1,24 @@
+<use   name="PhysicsTools/TheNtupleMaker"/>
+<use   name="PhysicsTools/UtilAlgos"/>
+<use   name="PhysicsTools/Utilities"/>
+<use   name="FWCore/FWLite"/>
+<use   name="FWCore/PluginManager"/>
+<use   name="DataFormats/JetReco"/>
+<use   name="DataFormats/EgammaCandidates"/>
+<use   name="DataFormats/MuonReco"/>
+<use   name="DataFormats/METReco"/>
+<use   name="DataFormats/TrackReco"/>
+<use   name="DataFormats/BTauReco"/>
+<use   name="DataFormats/BeamSpot"/>
+<use   name="PhysicsTools/PatUtils"/>
+<use   name="DataFormats/PatCandidates"/>
+<use   name="DataFormats/HepMCCandidate"/>
+<use   name="DataFormats/Math"/>
+<use   name="boost_regex"/>
+<use   name="boost_python"/>
+<use   name="rootrflx"/>
+<use   name="rootminuit"/>
+<use   name="rootmath"/>
+<use   name="f77compiler"/>
+<bin name="ntuplestnmc1" file="ntuplestnmc1.cc">
+</bin>
