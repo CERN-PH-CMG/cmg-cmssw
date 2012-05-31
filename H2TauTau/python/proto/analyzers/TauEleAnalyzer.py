@@ -35,11 +35,23 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def buildDiLeptons(self, cmgDiLeptons):
+    def buildDiLeptons(self, cmgDiLeptons, event):
+        '''Build di-leptons, associate best vertex to both legs,
+        select di-leptons with a tight ID muon.
+        The tight ID selection is done so that dxy and dz can be computed
+        (the muon must not be standalone).
+        '''
         diLeptons = []
         for index, dil in enumerate(cmgDiLeptons):
             pydil = self.__class__.DiObjectClass(dil)
+            pydil.leg1().associatedVertex = event.goodVertices[0]
+            pydil.leg2().associatedVertex = event.goodVertices[0]
+#FIXME how I could work w/o the following line it's mistery 
             pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
+            if not self.testEleLoosePhil( pydil.leg2() ):
+                continue
+            if hasattr(self.cfg_ana, 'mvametsigs'):
+                pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
             diLeptons.append( pydil )
         return diLeptons
 
@@ -47,12 +59,29 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def process(self, iEvent, event):
+    def buildLeptons(self, cmgLeptons, event):
+        '''Build muons for veto, associate best vertex, select loose ID muons.
+        The loose ID selection is done to ensure that the muon has an inner track.'''
+        leptons = []
+        for index, lep in enumerate(cmgLeptons):
+            pyl = self.__class__.LeptonClass(lep)
+            pyl.associatedVertex = event.goodVertices[0]
+            if not self.testEleLoosePhil( pyl ):
+                continue
+            leptons.append( pyl )
+        return leptons
 
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+    def process(self, iEvent, event):
+        
+#        self.bestVertex = event.goodVertices[0]
         result = super(TauEleAnalyzer, self).process(iEvent, event)
 
 #        import pdb; pdb.set_trace()
-#        if event.eventId == 61939 : 
+#        if event.eventId == 20990 : 
 #            print 'STOPPING'
 #            import pdb
 #            pdb.set_trace()
@@ -101,6 +130,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if abs( leg.eta())  >= self.cfg_ana.eta2             : return False 
         if not self.testEleLoosePhil (leg, self.cfg_ana.pt2) : return False
         if leg.relIsoAllChargedDB05() >= self.cfg_ana.iso2   : return False
+#        if not leg.tightIdResult                             : return False
         return True
 
 
@@ -112,65 +142,29 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         
         https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
         """
-        nInnerHits = leg.numberOfHits()
-        if nInnerHits != 0 : return False
-        if leg.passConversionVeto() == False : return False 
-        if abs(leg.dz()) > 0.1 : return False
         eta = abs( leg.eta() )
         if eta > 2.1 : return False
         lmvaID = -99999 # identification
-        lmvaIS = -99999 # isolation
         if leg.pt() < 20 :
             if   eta<0.8:   
                 lmvaID = 0.925
-                lmvaIS = 0.815
             elif eta<1.479: 
                 lmvaID = 0.915
-                lmvaIS = 0.785
             else :          
                 lmvaID = 0.965
-                lmvaIS = 0.825
         else:
             if   eta<0.8:   
-                lmvaID = 0.905
-                lmvaIS = 0.805
+                lmvaID = 0.925
             elif eta<1.479: 
-                lmvaID = 0.955
-                lmvaIS = 0.815
-            else :          
                 lmvaID = 0.975
-                lmvaIS = 0.705
-        result =  self.testEleLoosePhil(leg) and \
-                 leg.mvaId()  > lmvaID and \
-                 leg.mvaIso() > lmvaIS
+            else :          
+                lmvaID = 0.985
+        result = leg.mvaNonTrigV0()  > lmvaID
         return result
 
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
-
-    def testEleLooseLorenzo( self, ele, ptCut=15 ):
-        """Loose electron selection, for the lepton veto, 
-        
-        according to Lorenzo prescription"""
-        if ele.pt() < ptCut : return False
-        hoe = ele.sourcePtr().hcalOverEcal()
-        deta = ele.sourcePtr().deltaEtaSuperClusterTrackAtVtx()
-        dphi = ele.sourcePtr().deltaPhiSuperClusterTrackAtVtx()
-        nvhits = ele.sourcePtr().gsfTrack().found() #PG valid hits
-        sihih = ele.sourcePtr().sigmaIetaIeta() 
-#        print 'TEST',hoe,deta,dphi,nvhits,sihih,ele.dxy(),ele.dz(),ele.sourcePtr().isEB()
-        if abs(ele.dxy()) >= 0.045 : return False
-        if abs(ele.dz())  >= 0.2   : return False
-        if nhits          >  999   : return False
-        if deta           >= 0.10  : return False
-        if hoe            >= 999   : return False
-        if ele.sourcePtr().isEB() :
-            if deta  >= 0.007     : return False
-            if hoe   >= 0.15      : return False
-            if sihih >= 0.010     : return False
-            if dphi  >= 0.80      : return False 
-        return True
+# 30.05.12, from Lorenzo
+# loose, pt > 20: {0.925, 0.975, 0.985}
+# tight, pt > 20: {0.925, 0.985, 0.985}
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -184,7 +178,6 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         nInnerHits = ele.numberOfHits()
         if nInnerHits != 0 : return False
         if ele.passConversionVeto() == False : return False 
-#PG this is broken        if ele.isConv()         != 1     : return False
         if ele.pt()                   < ptCut  : return False
         if ele.relIsoAllChargedDB05() > isoCut : return False
         if abs(ele.dxy())             >= 0.045 : return False
@@ -202,7 +195,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             if sihih >= 0.030     : return False
             if dphi  >= 0.70      : return False 
             if deta  >= 0.010     : return False
-            if hoe   >= 0.07      : return False
+#            if hoe   >= 0.07      : return False
         else : return False #PG is this correct? does this take cracks into consideration?
         return True
 
