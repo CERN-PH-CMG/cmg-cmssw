@@ -1,6 +1,6 @@
 import math
 from ROOT import TLorentzVector       
-from CMGTools.RootTools.utils.DeltaR import deltaPhi
+from CMGTools.RootTools.utils.DeltaR import deltaPhi, deltaR2
 
 class VBF( object ):
     '''Computes and holds VBF quantities'''
@@ -38,6 +38,13 @@ class VBF( object ):
         # ? 
         visDiLepton = diLepton.leg1 ().p4 () + diLepton.leg2 ().p4 ()
         ## self.visjeteta =  abs (visDiLepton.eta () - dijetp4.eta ()) ;
+#        DR1 = deltaR2 (self.leadJets[0].eta (), self.leadJets[0].phi (), 
+#                       visDiLepton.eta (), visDiLepton.phi ())
+#        DR2 = deltaR2 (self.leadJets[1].eta (), self.leadJets[1].phi (), 
+#                       visDiLepton.eta (), visDiLepton.phi ())
+#        if DR1 < DR2 : closest = 0
+#        else : closest = 1
+#        self.visjeteta = abs (self.leadJets[closest].eta () - visDiLepton.eta ())
         self.visjeteta = min (
             abs (self.leadJets[0].eta () - visDiLepton.eta ()), 
             abs (self.leadJets[1].eta () - visDiLepton.eta ()))
@@ -46,7 +53,7 @@ class VBF( object ):
         self.ptvis = visDiLepton.pt()
         ## self.ptvis = diLepton.pt()
         self.mva = self.vbfMvaCalc.val (self.mjj, abs(self.deta), abs(self.dphi), 
-                                        self.ptvis, self.dijetpt, 
+                                        self.higgsp4.pt (), self.dijetpt, 
                                         abs (self.dphidijethiggs), 
                                         self.visjeteta, self.ptvis) 
 
