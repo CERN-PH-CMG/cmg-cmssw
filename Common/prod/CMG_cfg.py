@@ -16,14 +16,29 @@ runOnMC = True
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
-   'cmgtools_group',
-   '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
+   'cmgtools',
+   '/DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S8_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0',
    # '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
    # 'CMS',
    # '/TauPlusX/Run2011A-03Oct2011-v1/AOD'
    )
 
 process.source.fileNames = ['file:patTuple.root']
+
+# drop all CMG objects from the input, to recreate them.
+# This is important if there was a change in AnalysisDataFormats after the patTuple was create.
+# It would result in a segmentation violation otherwiese.
+process.source.inputCommands=cms.untracked.vstring('keep *',
+    #'drop cmgTriggerObjects_*_*_*',
+    'drop cmgMuons_*_*_*',
+    'drop cmgElectrons_*_*_*',
+    'drop cmgPhotons_*_*_*',
+    'drop cmgBaseJets_*_*_*',
+    'drop cmgPFJets_*_*_*',
+    'drop cmgTaus_*_*_*',
+    'drop cmgBaseMETs_*_*_*',
+    'drop cmgPFMETs_*_*_*',
+    )
 
 print sep_line
 print process.source.fileNames
