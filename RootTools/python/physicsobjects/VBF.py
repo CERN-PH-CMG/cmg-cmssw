@@ -37,18 +37,9 @@ class VBF( object ):
         self.dphidijethiggs = deltaPhi( self.dijetphi, self.higgsp4.phi() )
         # ? 
         visDiLepton = diLepton.leg1 ().p4 () + diLepton.leg2 ().p4 ()
-        ## self.visjeteta =  abs (visDiLepton.eta () - dijetp4.eta ()) ;
-#        DR1 = deltaR2 (self.leadJets[0].eta (), self.leadJets[0].phi (), 
-#                       visDiLepton.eta (), visDiLepton.phi ())
-#        DR2 = deltaR2 (self.leadJets[1].eta (), self.leadJets[1].phi (), 
-#                       visDiLepton.eta (), visDiLepton.phi ())
-#        if DR1 < DR2 : closest = 0
-#        else : closest = 1
-#        self.visjeteta = abs (self.leadJets[closest].eta () - visDiLepton.eta ())
         self.visjeteta = min (
             abs (self.leadJets[0].eta () - visDiLepton.eta ()), 
             abs (self.leadJets[1].eta () - visDiLepton.eta ()))
-        ## visjeteta_forMVA = min (abs (self.leadJets[0].eta () - visDiLepton.eta ()), abs (self.leadJets[1].eta () - visDiLepton.eta ()))
         # visible higgs pt = di-lepton pt
         self.ptvis = visDiLepton.pt()
         ## self.ptvis = diLepton.pt()
@@ -57,6 +48,14 @@ class VBF( object ):
                                         abs (self.dphidijethiggs), 
                                         self.visjeteta, self.ptvis) 
 
+#  double mjj      , // the invariant mass of the two tag jets
+#  double dEta     , // the pseudorapidity difference between the two tag jets
+#  double dPhi     , // the phi difference between the two tag jets
+#  double ditau_pt , // the vector sum of the pT of the tau + electron/muon + MET
+#  double dijet_pt , // the vector sum of the pT of the two tag jets
+#  double dPhi_hj  , // the phi difference between the di-tau vector and the di-jet vector
+#  double C1       , // the pseudorapidity difference between the *visible* di-tau vector and the closest tag jet
+#  double C2         // the *visible* pT of the di-tau
         
         
     def findCentralJets( self, leadJets, otherJets ):
