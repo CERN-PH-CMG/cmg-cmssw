@@ -197,7 +197,7 @@ class Electron( Lepton ):
         function.'''
         super(Electron, self).__init__(*args, **kwargs)
         self.tightIdResult = None
-    
+
     def absEffAreaIso(self,rho,effectiveAreas):
         return self.absIsoFromEA(rho,effectiveAreas.eGamma)
 
@@ -234,6 +234,25 @@ class Electron( Lepton ):
 
         return ID and (self.numberOfHits()<=1)
 
+    def relIsoAllChargedDB05(self):
+        '''Used in the H2TauTau analysis: rel iso, dbeta=0.5, 
+        
+        using all charged particles with a 0.01 cone veto around electron.'''
+
+        dBetaFactor = 0.5
+        if dBetaFactor>0 and self.puChargedHadronIso()<0:
+            return -1
+        neutralIso = self.neutralHadronIso()+self.photonIso()
+
+        corNeutralIso = neutralIso - dBetaFactor * self.puChargedHadronIso();
+        charged = self.chargedAllIsoWithConeVeto()
+
+        abs = (charged + max(corNeutralIso,0)) / self.pt()
+
+        if abs >0:
+             return abs
+        else:
+             return -1
 
 class GenParticle( PhysicsObject):
     def __str__(self):
