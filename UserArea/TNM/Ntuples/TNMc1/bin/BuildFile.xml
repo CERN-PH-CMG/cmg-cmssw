@@ -22,3 +22,5 @@
 <use   name="f77compiler"/>
 <bin name="ntuplestnmc1" file="ntuplestnmc1.cc">
 </bin>
+<bin name="analyzer" file="analyzer.cc">
+</bin>
