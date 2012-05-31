@@ -104,6 +104,11 @@
   <class name="boost::array<float,5>" />
   <class name="boost::array<std::string,5>" />
 
+  <class name="cmg::StructuredPFJet"/>
+  <class name="std::vector<cmg::StructuredPFJet>"/>
+  <class name="edm::Wrapper<cmg::StructuredPFJet>"/>
+  <class name="edm::Wrapper<std::vector<cmg::StructuredPFJet> >"/>
+
   <class name="cmg::PFJetComponent"/>
   <class name="std::vector<cmg::PFJetComponent>"/>
   
