@@ -58,7 +58,26 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
     baseJetFactory_.set(jetPtr,&cmgjet);
     
     const pat::Jet& jet = *mi;
+
+    setPFproperties(jet, &cmgjet, useConstituents_);
     
+    // Fill PU discrimination variables
+    cmgjet.rms_  = (*puVariables)[jetPtr].dR2Mean();
+    cmgjet.beta_ = (*puVariables)[jetPtr].beta();
+    for(size_t ii=0; ii<puIds_.size(); ++ii ) {
+      cmgjet.puIdNames_[ii] = puNames_[ii];
+      cmgjet.puIds_[ii]  = (*puIds[ii])[jetPtr];
+      cmgjet.puMvas_[ii] = (*puMvas[ii])[jetPtr];
+    }
+
+    result->push_back(cmgjet);
+  }
+
+  return result;
+}
+
+void cmg::PFJetFactory::setPFproperties(const pat::Jet& jet, cmg::PFJet* cmgjet, bool useConstituents_) const
+{
     int nCharged = 0;
     int nPhotons = 0;
     int nNeutral = 0;
@@ -200,51 +219,38 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
 	
     }
 
-    cmgjet.components_[reco::PFCandidate::h].setNumber(nCharged);
-    cmgjet.components_[reco::PFCandidate::e].setNumber(nElectrons);
-    cmgjet.components_[reco::PFCandidate::mu].setNumber(nMuons);
-    cmgjet.components_[reco::PFCandidate::gamma].setNumber(nPhotons);
-    cmgjet.components_[reco::PFCandidate::h0].setNumber(nNeutral);
-    cmgjet.components_[reco::PFCandidate::egamma_HF].setNumber(nHFEM);
-    cmgjet.components_[reco::PFCandidate::h_HF].setNumber(nHFHad);
+    cmgjet->components_[reco::PFCandidate::h].setNumber(nCharged);
+    cmgjet->components_[reco::PFCandidate::e].setNumber(nElectrons);
+    cmgjet->components_[reco::PFCandidate::mu].setNumber(nMuons);
+    cmgjet->components_[reco::PFCandidate::gamma].setNumber(nPhotons);
+    cmgjet->components_[reco::PFCandidate::h0].setNumber(nNeutral);
+    cmgjet->components_[reco::PFCandidate::egamma_HF].setNumber(nHFEM);
+    cmgjet->components_[reco::PFCandidate::h_HF].setNumber(nHFHad);
 
-    cmgjet.components_[reco::PFCandidate::h].setPt(ptCharged);
-    cmgjet.components_[reco::PFCandidate::e].setPt(ptElectrons);
-    cmgjet.components_[reco::PFCandidate::mu].setPt(ptMuons);
-    cmgjet.components_[reco::PFCandidate::gamma].setPt(ptPhotons);
-    cmgjet.components_[reco::PFCandidate::h0].setPt(ptNeutral);
-    cmgjet.components_[reco::PFCandidate::egamma_HF].setPt(ptHFEM);
-    cmgjet.components_[reco::PFCandidate::h_HF].setPt(ptHFHad);
+    cmgjet->components_[reco::PFCandidate::h].setPt(ptCharged);
+    cmgjet->components_[reco::PFCandidate::e].setPt(ptElectrons);
+    cmgjet->components_[reco::PFCandidate::mu].setPt(ptMuons);
+    cmgjet->components_[reco::PFCandidate::gamma].setPt(ptPhotons);
+    cmgjet->components_[reco::PFCandidate::h0].setPt(ptNeutral);
+    cmgjet->components_[reco::PFCandidate::egamma_HF].setPt(ptHFEM);
+    cmgjet->components_[reco::PFCandidate::h_HF].setPt(ptHFHad);
 
-    cmgjet.components_[reco::PFCandidate::h].setEnergy(energyCharged);
-    cmgjet.components_[reco::PFCandidate::e].setEnergy(energyElectrons);
-    cmgjet.components_[reco::PFCandidate::mu].setEnergy(energyMuons);
-    cmgjet.components_[reco::PFCandidate::gamma].setEnergy(energyPhotons);
-    cmgjet.components_[reco::PFCandidate::h0].setEnergy(energyNeutral);
-    cmgjet.components_[reco::PFCandidate::egamma_HF].setEnergy(energyHFEM);
-    cmgjet.components_[reco::PFCandidate::h_HF].setEnergy(energyHFHad);
+    cmgjet->components_[reco::PFCandidate::h].setEnergy(energyCharged);
+    cmgjet->components_[reco::PFCandidate::e].setEnergy(energyElectrons);
+    cmgjet->components_[reco::PFCandidate::mu].setEnergy(energyMuons);
+    cmgjet->components_[reco::PFCandidate::gamma].setEnergy(energyPhotons);
+    cmgjet->components_[reco::PFCandidate::h0].setEnergy(energyNeutral);
+    cmgjet->components_[reco::PFCandidate::egamma_HF].setEnergy(energyHFEM);
+    cmgjet->components_[reco::PFCandidate::h_HF].setEnergy(energyHFHad);
 
-    cmgjet.components_[reco::PFCandidate::h].setFraction(fractionCharged);
-    cmgjet.components_[reco::PFCandidate::e].setFraction(fractionElectrons);
-    cmgjet.components_[reco::PFCandidate::mu].setFraction(fractionMuons);
-    cmgjet.components_[reco::PFCandidate::gamma].setFraction(fractionPhotons);
-    cmgjet.components_[reco::PFCandidate::h0].setFraction(fractionNeutral);
-    cmgjet.components_[reco::PFCandidate::egamma_HF].setFraction(fractionHFEM);
-    cmgjet.components_[reco::PFCandidate::h_HF].setFraction(fractionHFHad);
+    cmgjet->components_[reco::PFCandidate::h].setFraction(fractionCharged);
+    cmgjet->components_[reco::PFCandidate::e].setFraction(fractionElectrons);
+    cmgjet->components_[reco::PFCandidate::mu].setFraction(fractionMuons);
+    cmgjet->components_[reco::PFCandidate::gamma].setFraction(fractionPhotons);
+    cmgjet->components_[reco::PFCandidate::h0].setFraction(fractionNeutral);
+    cmgjet->components_[reco::PFCandidate::egamma_HF].setFraction(fractionHFEM);
+    cmgjet->components_[reco::PFCandidate::h_HF].setFraction(fractionHFHad);
 
-    cmgjet.ptd_ = ptd;
+    cmgjet->ptd_ = ptd;
 
-    // Fill PU discrimination variables
-    cmgjet.rms_  = (*puVariables)[jetPtr].dR2Mean();
-    cmgjet.beta_ = (*puVariables)[jetPtr].beta();
-    for(size_t ii=0; ii<puIds_.size(); ++ii ) {
-      cmgjet.puIdNames_[ii] = puNames_[ii];
-      cmgjet.puIds_[ii]  = (*puIds[ii])[jetPtr];
-      cmgjet.puMvas_[ii] = (*puMvas[ii])[jetPtr];
-    }
-
-    result->push_back(cmgjet);
-  }
-
-  return result;
 }

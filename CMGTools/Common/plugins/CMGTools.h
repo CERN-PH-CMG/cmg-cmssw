@@ -9,6 +9,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/Hemisphere.h"
 #include "AnalysisDataFormats/CMGTools/interface/Photon.h"
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
+#include "AnalysisDataFormats/CMGTools/interface/StructuredPFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/TriggerObject.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
@@ -30,6 +31,7 @@
 #include "CMGTools/Common/interface/ElectronFactory.h"
 #include "CMGTools/Common/interface/MuonFactory.h"
 #include "CMGTools/Common/interface/PFJetFactory.h"
+#include "CMGTools/Common/interface/StructuredPFJetFactory.h"
 
 #include "CMGTools/Common/interface/TauFactory.h"
 #include "CMGTools/Common/interface/Scaler.h"
@@ -65,6 +67,7 @@
 
 typedef cmg::JetEnergyCorrector<cmg::BaseJet> BaseJetCorrector;
 typedef cmg::JetEnergyCorrector<cmg::PFJet> PFJetCorrector;
+typedef cmg::JetEnergyCorrector<cmg::StructuredPFJet> StructuredPFJetCorrector;
 
 
 // Colin: should add cmg to the type names where applicable.
@@ -92,17 +95,20 @@ typedef PhysicsObjectProducer<cmg::QuadMuonFactory> QuadMuonPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseJetFactory> BaseJetPOProducer;
 typedef PhysicsObjectProducer<cmg::Scaler<cmg::BaseJet> > BaseJetPOScaler;
 typedef PhysicsObjectProducer<cmg::Scaler<cmg::PFJet> > PFJetPOScaler;
+typedef PhysicsObjectProducer<cmg::Scaler<cmg::StructuredPFJet> > StructuredPFJetPOScaler;
 typedef PhysicsObjectProducer<cmg::Scaler<cmg::Tau> > TauPOScaler;
 typedef PhysicsObjectProducer<cmg::Scaler<cmg::Muon> > MuonPOScaler;
 typedef PhysicsObjectProducer<cmg::Scaler<cmg::Electron> > ElectronPOScaler;
 typedef PhysicsObjectProducer<cmg::Scaler<cmg::BaseMET> > BaseMETPOScaler;
 typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::BaseJet> > BaseJetPOObjectSmear;
 typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::PFJet> > PFJetPOObjectSmear;
+typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::StructuredPFJet> > StructuredPFJetPOObjectSmear;
 typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::Tau> > TauPOObjectSmear;
 typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::Muon> > MuonPOObjectSmear;
 typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::Electron> > ElectronPOObjectSmear;
 typedef PhysicsObjectProducer<cmg::ObjectSmear<cmg::BaseMET> > BaseMETPOObjectSmear;
 typedef PhysicsObjectProducer<cmg::PFJetFactory> PFJetPOProducer;
+typedef PhysicsObjectProducer<cmg::StructuredPFJetFactory> StructuredPFJetPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<> > BaseMETPOProducer;
 typedef PhysicsObjectProducer<cmg::BaseMETModificationFactory> BaseMETModifier;
 typedef PhysicsObjectProducer<cmg::BaseMETFactory<pat::MET> > PATMETPOProducer;
@@ -192,6 +198,7 @@ typedef cmg::LeadingObjectsSelector<pat::Jet> LeadingPatJetSelector;
 typedef cmg::LeadingObjectsSelector<cmg::AbstractPhysicsObject> LeadingCMGPOSelector;
 typedef cmg::LeadingObjectsSelector<cmg::BaseJet> LeadingCMGBaseJetSelector;
 typedef cmg::LeadingObjectsSelector<cmg::PFJet> LeadingCMGPFJetSelector;
+typedef cmg::LeadingObjectsSelector<cmg::StructuredPFJet> LeadingCMGStructuredPFJetSelector;
 typedef cmg::LeadingObjectsSelector<cmg::Electron> LeadingCMGElectronSelector;
 typedef cmg::LeadingObjectsSelector<cmg::Muon> LeadingCMGMuonSelector;
 
@@ -201,6 +208,7 @@ typedef cmg::IndexObjectsSelector<pat::Jet> IndexPatJetSelector;
 typedef cmg::IndexObjectsSelector<cmg::AbstractPhysicsObject> IndexCMGPOSelector;
 typedef cmg::IndexObjectsSelector<cmg::BaseJet> IndexCMGBaseJetSelector;
 typedef cmg::IndexObjectsSelector<cmg::PFJet> IndexCMGPFJetSelector;
+typedef cmg::IndexObjectsSelector<cmg::StructuredPFJet> IndexCMGStructuredPFJetSelector;
 typedef cmg::IndexObjectsSelector<cmg::Electron> IndexCMGElectronSelector;
 typedef cmg::IndexObjectsSelector<cmg::Muon> IndexCMGMuonSelector;
 
@@ -247,6 +255,8 @@ typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::Photon> 
 
 //COLIN need to use this selector instead of the standard one, so that sourceCandidatePtrs are properly set
 typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::PFJet> > CmgPFJetSelector;
+
+typedef ObjectSelector<cmg::GenericPhysicsObjectSelectorDefinition<cmg::StructuredPFJet> > CmgStructuredPFJetSelector;
 
 
 /* typedef SingleObjectSelector< */
