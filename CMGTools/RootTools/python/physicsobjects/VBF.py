@@ -17,8 +17,6 @@ class VBF( object ):
         self.otherJets = jets[2:]
         self.centralJets = self.findCentralJets( self.leadJets, self.otherJets )
 
-        # mass of the di-jet system
-        self.mjj = self.calcP4( self.leadJets ).M()
         # delta eta
         self.deta = self.leadJets[0].eta() - self.leadJets[1].eta()
 
@@ -26,6 +24,8 @@ class VBF( object ):
         # delta phi
         self.dphi = deltaPhi(self.leadJets[0].phi(), self.leadJets[1].phi())
         dijetp4 = self.leadJets[0].p4() + self.leadJets[1].p4()
+        # mass of the di-jet system
+        self.mjj = dijetp4.M()
         # pt of di-jet system
         self.dijetpt = dijetp4.pt()
         # phi of di-jet system
@@ -37,13 +37,17 @@ class VBF( object ):
         self.dphidijethiggs = deltaPhi( self.dijetphi, self.higgsp4.phi() )
         # ? 
         visDiLepton = diLepton.leg1 ().p4 () + diLepton.leg2 ().p4 ()
-        self.visjeteta =  abs (visDiLepton.eta () - dijetp4.eta ()) ;
+        ## self.visjeteta =  abs (visDiLepton.eta () - dijetp4.eta ()) ;
+        self.visjeteta = min (
+            abs (self.leadJets[0].eta () - visDiLepton.eta ()), 
+            abs (self.leadJets[1].eta () - visDiLepton.eta ()))
+        ## visjeteta_forMVA = min (abs (self.leadJets[0].eta () - visDiLepton.eta ()), abs (self.leadJets[1].eta () - visDiLepton.eta ()))
         # visible higgs pt = di-lepton pt
         self.ptvis = visDiLepton.pt()
-        # self.ptvis = diLepton.pt()
-        self.mva = self.vbfMvaCalc.val (self.mjj, abs(self.deta), self.dphi, 
+        ## self.ptvis = diLepton.pt()
+        self.mva = self.vbfMvaCalc.val (self.mjj, abs(self.deta), abs(self.dphi), 
                                         self.ptvis, self.dijetpt, 
-                                        self.dphidijethiggs, 
+                                        abs (self.dphidijethiggs), 
                                         self.visjeteta, self.ptvis) 
 
         
