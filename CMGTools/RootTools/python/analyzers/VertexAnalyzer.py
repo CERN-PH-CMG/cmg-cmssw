@@ -19,10 +19,6 @@ class VertexAnalyzer( Analyzer ):
             else:
                 self.mchandles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
                                                              'double' )
-        self.handles['goodVertices'] = AutoHandle(
-            self.cfg_ana.goodVertices,
-            'std::vector<reco::Vertex>'
-            )
 
         self.mchandles['pusi'] =  AutoHandle(
             'addPileupInfo',
