@@ -37,6 +37,11 @@ class VertexAnalyzer( Analyzer ):
     def beginLoop(self):
         super(VertexAnalyzer,self).beginLoop()
         self.averages.add('vertexWeight', Average('vertexWeight') )
+        if hasattr(self.cfg_ana,'skimGoodVertex'):
+            self.counters.addCounter('GoodVertex')
+            self.count = self.counters.counter('GoodVertex')
+            self.count.register('All Events')
+            self.count.register('Events With Good Vertex')
 
 
     def process(self, iEvent, event):
@@ -60,5 +65,34 @@ class VertexAnalyzer( Analyzer ):
             print 'VertexAnalyzer: #vert = ', len(event.vertices), \
                   ', weight = ', event.vertexWeight
 
-        if len(event.goodVertices)==0:
+
+
+        #add a good vertex requirement
+        if hasattr(self.cfg_ana,'skimGoodVertex') and self.cfg_ana.skimGoodVertex:
+            event.goodVertices = filter(self.testGoodVertex,event.vertices)
+            self.count.inc('All Events')
+            if len(event.goodVertices):
+                self.count.inc('Events With Good Vertex')
+                return True
+            else:
+                return False
+
+        return True    
+
+
+    def testGoodVertex(self,vertex):
+        if vertex.isFake():
             return False
+        if vertex.ndof()<=4:
+            return False
+        if abs(vertex.z())>24:
+            return False
+        if vertex.position().Rho()>2:
+            return False
+        
+        return True
+
+
+            
+
+        
