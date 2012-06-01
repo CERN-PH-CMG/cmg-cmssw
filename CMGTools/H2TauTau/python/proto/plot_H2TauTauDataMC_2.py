@@ -6,6 +6,15 @@ from CMGTools.H2TauTau.proto.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.RootTools.Style import *
 from ROOT import kPink
 
+
+def blind(plot, minx, maxx):
+    data = plot.Hist('Data').weighted
+    minbin = data.FindBin(minx)
+    maxbin = min( data.FindBin(maxx), data.GetNbinsX())
+    for bin in range(minbin, maxbin):
+        data.SetBinContent(bin,0)
+        
+
 def prepareComponents(dir, config):
     # list of components from configuration file
     selComps = dict( [ (comp.name, comp) for comp in config.components ])
