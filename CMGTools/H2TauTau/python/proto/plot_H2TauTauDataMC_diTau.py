@@ -9,6 +9,8 @@ from PrepareDictionaries_diTau import *
 import math
 import copy
 
+run2012=True
+
 import ROOT
 ROOT.gROOT.SetBatch(True)
 
@@ -87,35 +89,42 @@ if __name__ == '__main__':
     selComps, weights = prepareComponents(anaDir, cfg.config)
     #print [co for co in selComps]
 
-    # 1fb
-    selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
-    weights['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
-    #selComps['data_Run2011A_PromptReco_v6'].intLumi = 0.
-    #weights['data_Run2011A_PromptReco_v6'].intLumi = 0.
-    
-    # IsoTau20
-    #selComps['data_Run2011A_PromptReco_v4'].intLumi = 31.5
-    #weights['data_Run2011A_PromptReco_v4'].intLumi = 31.5
+    if run2012:
+      # 1.616fb
+      selComps['data_Run2012A_PromptReco_v1'].intLumi = 920.039
+      weights['data_Run2012B_PromptReco_v1'].intLumi = 920.039
+      selComps['data_Run2012A_PromptReco_v1'].intLumi = 696.0
+      weights['data_Run2012B_PromptReco_v1'].intLumi = 696.0
+    else:
+      # 1fb
+      selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
+      weights['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
+      #selComps['data_Run2011A_PromptReco_v6'].intLumi = 0.
+      #weights['data_Run2011A_PromptReco_v6'].intLumi = 0.
+      
+      # IsoTau20
+      #selComps['data_Run2011A_PromptReco_v4'].intLumi = 31.5
+      #weights['data_Run2011A_PromptReco_v4'].intLumi = 31.5
 
-    # IsoTau25
-    #selComps['data_Run2011A_May10ReReco_v1'].intLumi = 0.+31.9
-    #weights['data_Run2011A_May10ReReco_v1'].intLumi = 0.+31.9
-    #selComps['data_Run2011A_PromptReco_v4'].intLumi = 139.+31.5
-    #weights['data_Run2011A_PromptReco_v4'].intLumi = 139.+31.5
-    #selComps['data_Run2011A_05Aug2011_v1'].intLumi = 0.
-    #weights['data_Run2011A_05Aug2011_v1'].intLumi = 0.
-    #selComps['data_Run2011A_PromptReco_v6'].intLumi = 0.
-    #weights['data_Run2011A_PromptReco_v6'].intLumi = 0.
+      # IsoTau25
+      #selComps['data_Run2011A_May10ReReco_v1'].intLumi = 0.+31.9
+      #weights['data_Run2011A_May10ReReco_v1'].intLumi = 0.+31.9
+      #selComps['data_Run2011A_PromptReco_v4'].intLumi = 139.+31.5
+      #weights['data_Run2011A_PromptReco_v4'].intLumi = 139.+31.5
+      #selComps['data_Run2011A_05Aug2011_v1'].intLumi = 0.
+      #weights['data_Run2011A_05Aug2011_v1'].intLumi = 0.
+      #selComps['data_Run2011A_PromptReco_v6'].intLumi = 0.
+      #weights['data_Run2011A_PromptReco_v6'].intLumi = 0.
 
-    # IsoTau35
-    #selComps['data_Run2011A_May10ReReco_v1'].intLumi = 0.
-    #weights['data_Run2011A_May10ReReco_v1'].intLumi = 0.
-    #selComps['data_Run2011A_PromptReco_v4'].intLumi = 759.2
-    #weights['data_Run2011A_PromptReco_v4'].intLumi = 759.2
-    #selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
-    #weights['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
-    #selComps['data_Run2011A_PromptReco_v6'].intLumi = 0.
-    #weights['data_Run2011A_PromptReco_v6'].intLumi = 0.
+      # IsoTau35
+      #selComps['data_Run2011A_May10ReReco_v1'].intLumi = 0.
+      #weights['data_Run2011A_May10ReReco_v1'].intLumi = 0.
+      #selComps['data_Run2011A_PromptReco_v4'].intLumi = 759.2
+      #weights['data_Run2011A_PromptReco_v4'].intLumi = 759.2
+      #selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
+      #weights['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
+      #selComps['data_Run2011A_PromptReco_v6'].intLumi = 0.
+      #weights['data_Run2011A_PromptReco_v6'].intLumi = 0.
 
     selCompsDataMass, weightsDataMass = componentsWithData(selComps,weights)
     #selCompsMCMass, weightsMCMass     = componentsWithOutData(selComps,weights)
@@ -145,13 +154,13 @@ if __name__ == '__main__':
     cuts=[
 #####  Andreas  ############################################################################################################################### 
 
-        #("CMS_review24b_l40_j30_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+' && jet1Pt>30'+NOVBF,' && dRtt<2.0',isolationMM,2),
-        ("CMS_review24b_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
-        #("CMS_review24b_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,2),
-        #("CMS_review24b_l40_j50_dR20_tt_Met00_Inclusive",baseline+l1Pt40l2Pt40,'',isolationTT,2),
-        ("CMS_review24b_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
-        #("CMS_review24b_l40_j50_dR20_tt_Met00_VBFtight",baseline+l1Pt40l2Pt40+VBFtight,' && dRtt<2.0',isolationML,2),
-        #("CMS_review24b_l35_j50_dR20_tt_Met00_VBF",baseline+VBF,' && dRtt<2.0',isolationMM,5),
+        #("CMS_test2012_l40_j30_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+' && jet1Pt>30'+NOVBF,' && dRtt<2.0',isolationMM,2),
+        ("CMS_test2012_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        #("CMS_test2012_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,2),
+        #("CMS_test2012_l40_j50_dR20_tt_Met00_Inclusive",baseline+l1Pt40l2Pt40,'',isolationTT,2),
+        ("CMS_test2012_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        #("CMS_test2012_l40_j50_dR20_tt_Met00_VBFtight",baseline+l1Pt40l2Pt40+VBFtight,' && dRtt<2.0',isolationML,2),
+        #("CMS_test2012_l35_j50_dR20_tt_Met00_VBF",baseline+VBF,' && dRtt<2.0',isolationMM,5),
 
 ######################################################################################################################################################### 
 
@@ -228,7 +237,7 @@ if __name__ == '__main__':
         ('visMass'          ,int(15/rebin), 0 , 300    ),
         #('visMass*1.03'     ,int(15/rebin), 0 , 300    ),
         #('visMass*0.97'     ,int(15/rebin), 0 , 300    ),
-        #('nVert'            ,int(50/rebin), 0 , 50     ),
+        ('nVert'            ,int(50/rebin), 0 , 50     ),
         #('mt'               ,int(20/rebin), 0 , 200    ),
         #('pThiggs'          ,int(20/rebin), 0 , 300    ),
         #('diTauPt'          ,int(20/rebin), 0 , 300    ),
@@ -264,7 +273,7 @@ if __name__ == '__main__':
         #('l2LooseMu'        ,2            , 0 , 2      ),
       ]:
       
-      prefix1 = os.getcwd()+"/"+prefix+"/diTau_1fb_"
+      prefix1 = os.getcwd()+"/"+prefix+"/diTau_2012_"
       dirList = os.listdir(os.getcwd())
       exists = False
       for fname in dirList:
