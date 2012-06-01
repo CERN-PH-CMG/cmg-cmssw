@@ -39,11 +39,16 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         if result is False:
             selDiLeptons = [ diL for diL in event.diLeptons if \
                              self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
-			     self.testLooseLeg( diL.leg1() ) and self.testLooseLeg( diL.leg2() ) ]
-            if len(selDiLeptons)==0:
-                selDiLeptons = [ diL for diL in event.diLeptons if \
-                             self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
-			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) ]
+			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
+			     (self.testLeg1( diL.leg1() ) or self.testLeg2( diL.leg2() )) ]
+            #if len(selDiLeptons)==0:
+            #    selDiLeptons = [ diL for diL in event.diLeptons if \
+            #                 self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
+		#	     self.testLooseLeg( diL.leg1() ) and self.testLooseLeg( diL.leg2() ) ]
+            #if len(selDiLeptons)==0:
+            #    selDiLeptons = [ diL for diL in event.diLeptons if \
+            #                 self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
+		#	     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) ]
             if len(selDiLeptons)==0:
                 return False
             event.diLepton = self.bestDiLepton( selDiLeptons )
