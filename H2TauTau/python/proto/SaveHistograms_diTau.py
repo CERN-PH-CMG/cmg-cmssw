@@ -13,7 +13,7 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
     if plotVarDataOS.varName == massType+"" :
 		plotVarDataOS.Hist(str("Higgsgg"+str(mass))).weighted.SetName(str("SM"+str(mass)))
 		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)))
-		plotVarDataOS.Hist("DYJets").Add(plotVarDataOS.Hist("DYJets_Photon"))
+		#plotVarDataOS.Hist("DYJets").Add(plotVarDataOS.Hist("DYJets_Photon"))
 		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT")
 		plotVarDataOS.Hist("DYJets_Electron").weighted.SetName("ZL")
 		plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ")
@@ -38,7 +38,7 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
     if plotVarDataOS.varName == massType+"*1.03" :
 		plotVarDataOS.Hist(str("Higgsgg"+str(mass))).weighted.SetName(str("SM"+str(mass)+"_CMS_scale_tUp"))
 		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)+"_CMS_scale_tUp"))
-		plotVarDataOS.Hist("DYJets").Add(plotVarDataOS.Hist("DYJets_Photon"))
+		#plotVarDataOS.Hist("DYJets").Add(plotVarDataOS.Hist("DYJets_Photon"))
 		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT_CMS_scale_tUp")
 		plotVarDataOS.Hist("DYJets_Electron").weighted.SetName("ZL_CMS_scale_tUp")
 		plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ_CMS_scale_tUp")
@@ -59,7 +59,7 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
     if plotVarDataOS.varName == massType+"*0.97" :
 		plotVarDataOS.Hist(str("Higgsgg"+str(mass))).weighted.SetName(str("SM"+str(mass)+"_CMS_scale_tDown"))
 		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)+"_CMS_scale_tDown"))
-		plotVarDataOS.Hist("DYJets").Add(plotVarDataOS.Hist("DYJets_Photon"))
+		#plotVarDataOS.Hist("DYJets").Add(plotVarDataOS.Hist("DYJets_Photon"))
 		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT_CMS_scale_tDown")
 		plotVarDataOS.Hist("DYJets_Electron").weighted.SetName("ZL_CMS_scale_tDown")
 		plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ_CMS_scale_tDown")
@@ -90,7 +90,7 @@ def saveForPlotting(plotVarDataOS, prefixLabel, mass):
 
     plotVarDataOS.Hist(str("Higgsgg"+str(mass))).weighted.SetName(str("SM"+str(mass)))
     plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)))
-    plotVarDataOS.Hist("DYJets").Add(plotVarDataOS.Hist("DYJets_Photon"))
+    #plotVarDataOS.Hist("DYJets").Add(plotVarDataOS.Hist("DYJets_Photon"))
     plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT")
     plotVarDataOS.Hist("DYJets_Electron").weighted.SetName("ZL")
     plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ")

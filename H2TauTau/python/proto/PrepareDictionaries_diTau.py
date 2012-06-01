@@ -106,3 +106,30 @@ def componentsWithOutData (selComps, weights) :
     return selCompsMCMass, weightsMCMass
 
         
+
+def componentsWithOutSignal (selComps, weights) :
+
+    selCompsMCMass = {}
+    weightsMCMass  = {}
+
+    selCompsMCMass['data_Run2011A_May10ReReco_v1'] = copy.deepcopy(selComps['data_Run2011A_May10ReReco_v1'])
+    selCompsMCMass['data_Run2011A_PromptReco_v4']  = copy.deepcopy(selComps['data_Run2011A_PromptReco_v4'])
+    selCompsMCMass['data_Run2011A_05Aug2011_v1']   = copy.deepcopy(selComps['data_Run2011A_05Aug2011_v1'])
+    selCompsMCMass['DYJets']		   = copy.deepcopy(selComps['DYJets'])
+    selCompsMCMass['WJets']		   = copy.deepcopy(selComps['WJets'])
+    selCompsMCMass['WW']		   = copy.deepcopy(selComps['WW'])
+    selCompsMCMass['WZ']		   = copy.deepcopy(selComps['WZ'])
+    selCompsMCMass['ZZ']		   = copy.deepcopy(selComps['ZZ'])
+    selCompsMCMass['TTJets']		   = copy.deepcopy(selComps['TTJets'])
+
+    weightsMCMass['data_Run2011A_May10ReReco_v1']  = copy.deepcopy(weights['data_Run2011A_May10ReReco_v1'])
+    weightsMCMass['data_Run2011A_PromptReco_v4']   = copy.deepcopy(weights['data_Run2011A_PromptReco_v4'])
+    weightsMCMass['data_Run2011A_05Aug2011_v1']    = copy.deepcopy(weights['data_Run2011A_05Aug2011_v1'])
+    weightsMCMass['DYJets']		   = copy.deepcopy(weights['DYJets'])
+    weightsMCMass['WJets']		   = copy.deepcopy(weights['WJets'])
+    weightsMCMass['WW'] 		   = copy.deepcopy(weights['WW'])
+    weightsMCMass['WZ'] 		   = copy.deepcopy(weights['WZ'])
+    weightsMCMass['ZZ'] 		   = copy.deepcopy(weights['ZZ'])
+    weightsMCMass['TTJets']		   = copy.deepcopy(weights['TTJets'])
+      
+    return selCompsMCMass, weightsMCMass

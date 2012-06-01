@@ -20,7 +20,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
     def __init__(self, varName, directory, selComps, weights,
                  nbins = 50, xmin = 0, xmax=200, cut = '',
-                 weight='weight', embed = False, photon = True, electron = True):
+                 weight='weight', embed = False, photon = False, electron = True):
         '''Data/MC plotter adapted to the H->tau tau analysis.
         The plotter takes a collection of trees in input. The trees are found according
         to the dictionary of selected components selComps.
