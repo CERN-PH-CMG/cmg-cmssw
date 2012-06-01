@@ -17,15 +17,16 @@ class LeptonWeighter( Analyzer ):
         self.weight = None
         # self.weightFactor = 1.
         self.trigEff = None
-        if self.cfg_comp.isMC or self.cfg_comp.isEmbed:
-            self.trigEff = TriggerEfficiency()
-            self.trigEff.lepEff = getattr( self.trigEff,
-                                           self.cfg_ana.effWeight )
-            self.trigEff.lepEffMC = None
-            if hasattr( self.cfg_ana, 'effWeightMC'):
-                self.trigEff.lepEffMC = getattr( self.trigEff,
-                                                 self.cfg_ana.effWeightMC )
-            
+        if (self.cfg_comp.isMC or self.cfg_comp.isEmbed) and \
+               not ( hasattr(self.cfg_ana,'disable') and self.cfg_ana.disable is True ):
+                self.trigEff = TriggerEfficiency()
+                self.trigEff.lepEff = getattr( self.trigEff,
+                                               self.cfg_ana.effWeight )
+                self.trigEff.lepEffMC = None
+                if hasattr( self.cfg_ana, 'effWeightMC'):
+                    self.trigEff.lepEffMC = getattr( self.trigEff,
+                                                     self.cfg_ana.effWeightMC )
+
             
     def beginLoop(self):
         print self, self.__class__
@@ -45,7 +46,8 @@ class LeptonWeighter( Analyzer ):
         self.lepton.triggerEffData = 1
         self.lepton.triggerEffMC = 1 
         self.lepton.recEffWeight = 1
-        if self.cfg_comp.isMC or self.cfg_comp.isEmbed:
+        if (self.cfg_comp.isMC or self.cfg_comp.isEmbed) and \
+           not ( hasattr(self.cfg_ana,'disable') and self.cfg_ana.disable is True ):
             assert( self.trigEff is not None )
             self.lepton.triggerEffData = self.trigEff.lepEff( self.lepton.pt(),
                                                               self.lepton.eta() )
@@ -75,21 +77,6 @@ class LeptonWeighter( Analyzer ):
 
         self.lepton.weight = self.lepton.triggerWeight * self.lepton.recEffWeight
         
-##        varName = '_'.join([self.leptonName, 'eff'])
-##         setattr( event, varName, self.lepton.triggerEffData )
-
-##         varName = '_'.join([self.leptonName, 'effMC'])
-##         setattr( event, varName, self.triggerEffMC )
-
-##         varName = '_'.join([self.leptonName, 'triggerWeight'])
-##         setattr( event, varName, self.lepton.triggerWeight )
-
-##         varName = '_'.join([self.leptonName, 'recEffWeight'])
-##         setattr( event, varName, self.lepton.recEffWeight )
-
-##         varName = '_'.join([self.leptonName, 'weight'])
-##         setattr( event, varName, self.lepton.weight )
-
         event.eventWeight *= self.lepton.weight
         self.averages['weight'].add( self.lepton.weight )
         self.averages['triggerWeight'].add( self.lepton.triggerWeight )
