@@ -34,8 +34,6 @@ class VertexAnalyzer( Analyzer ):
         super(VertexAnalyzer,self).beginLoop()
         self.averages.add('vertexWeight', Average('vertexWeight') )
         if hasattr(self.cfg_ana,'skimGoodVertex'):
-            self.counters.addCounter('GoodVertex')
-            self.count = self.counters.counter('GoodVertex')
             self.count.register('All Events')
             self.count.register('Events With Good Vertex')
 
@@ -44,7 +42,7 @@ class VertexAnalyzer( Analyzer ):
         self.readCollections( iEvent )
         event.rho = self.handles['rho'].product()[0]
         event.vertices = self.handles['vertices'].product()
-        event.goodVertices = self.handles['goodVertices'].product()
+
         
         event.vertexWeight = 1
         if self.cfg_comp.isMC:
