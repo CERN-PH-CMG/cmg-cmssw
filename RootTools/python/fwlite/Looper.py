@@ -100,6 +100,7 @@ class Looper(object):
         At the end of the loop, Analyzer.endLoop is called.'''
         nEvents = self.nEvents
         firstEvent = self.firstEvent
+        iEv = firstEvent
         if nEvents is None or int (nEvents) > int (self.events.size()) :
             nEvents = self.events.size()
         else:

@@ -4,11 +4,14 @@ class PileUpSummaryInfo( object ):
         
     def __getattr__(self,name):
         '''all accessors  from cmg::DiTau are transferred to this class.'''
-        return getattr(self.physObj, name)
+        return getattr(self.object, name)
 
     def nPU(self):
         return self.object.getPU_NumInteractions()
     
+    def nTrueInteractions(self):
+        return self.object.getTrueNumInteractions()
+        
     def __str__(self):
         tmp = '{className} : bunchx = {bunchx}; numPU = {numpu}'.format(
             className = self.__class__.__name__,
