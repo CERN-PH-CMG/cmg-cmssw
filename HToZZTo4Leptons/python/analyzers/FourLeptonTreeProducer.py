@@ -55,10 +55,12 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.var("vertexWeight")
 
         #For FSR study
-        self.bookGenFSR("genFSR")
-        self.bookRecoFSR("matchFSR")
+#        self.bookGenFSR("genFSR")
+#        self.bookRecoFSR("matchFSR")
 
 
+
+        
     def process(self, iEvent, event):
         self.reset()
 
@@ -69,14 +71,17 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.fill('vertices',len(event.vertices))
         self.fill('vertexWeight',(event.vertexWeight))
 
+
+
+
         #Fill run,lumi,event
         self.fillEventInfo(iEvent,subevent)
 
-        if hasattr( subevent, 'bestGenPhoton' ):
-            self.fillGenFSR('genFSR',subevent.bestGenPhoton)
+#        if hasattr( subevent, 'bestGenPhoton' ):
+#            self.fillGenFSR('genFSR',subevent.bestGenPhoton)
 
-        if hasattr( subevent, 'matchedPhoton' ):
-            self.fillRecoFSR('matchFSR',subevent.matchedPhoton)
+#        if hasattr( subevent, 'matchedPhoton' ):
+#            self.fillRecoFSR('matchFSR',subevent.matchedPhoton)
             
             
 

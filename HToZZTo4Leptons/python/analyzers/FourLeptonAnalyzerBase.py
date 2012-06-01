@@ -92,7 +92,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
                 fsrAlgo.setZ(z)
 
-                fsrAlgo.recoverZ(True)
+                fsrAlgo.recoverZ()
 
                 out.append(z)
         return out
@@ -120,6 +120,10 @@ class FourLeptonAnalyzerBase( Analyzer ):
             if l1.pt()>l2.pt() and l3.pt()>l4.pt():
                 quadObject =DiObjectPair(l1, l2,l3,l4)
                 if not hasattr(self.cfg_ana,"FSR"):
+                    if hasattr(self,'fakeRates'):
+                        for fr in self.fakeRates:
+                            fr.attachToObject(quadObject.leg2.leg1)
+                            fr.attachToObject(quadObject.leg2.leg2)
                     out.append(quadObject)
                 else:    
                     fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
@@ -151,32 +155,33 @@ class FourLeptonAnalyzerBase( Analyzer ):
         
         
     def testLeptonLoose1(self, lepton,sel=None):
-        return True
+        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
 
     def testLeptonLoose2(self, lepton,sel=None):
-        return  True
+        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
 
     def testLeptonTight1(self, lepton,sel=None):
-        return abs(lepton.sip3D())<4.
+        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
 
     def testLeptonTight2(self, lepton,sel=None):
-        return abs(lepton.sip3D())<4.
+        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
 
 
 #    Skimming of leptons 1-2 corresponds to the flavour here 
     def testLeptonSkim1(self, lepton,sel=None):
         if hasattr(self.cfg_ana,"minPt1") and hasattr(self.cfg_ana,"maxEta1"):
             return self.testLepton(lepton,self.cfg_ana.minPt1,self.cfg_ana.maxEta1,sel)  and \
-                   abs(lepton.sip3D())<100.
+                   abs(lepton.dxy())<0.5 and abs(lepton.dz())<1.
         else:
-            return abs(lepton.sip3D())<100.
+            return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1.
 
     def testLeptonSkim2(self, lepton,sel=None):
         if hasattr(self.cfg_ana,"minPt2") and hasattr(self.cfg_ana,"maxEta2"):
             return self.testLepton(lepton,self.cfg_ana.minPt2,self.cfg_ana.maxEta2,sel)  and \
-                   abs(lepton.sip3D())<100.
+                   abs(lepton.dxy())<0.5 and abs(lepton.dz())<1.
         else:
-            return abs(lepton.sip3D())<100.
+            return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1.
+
 #####################################################
 
 
@@ -189,7 +194,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
         looseID = (muon.isGlobal() or muon.isTracker())
         return looseID
 
-
+    def testElectronLoose(self, electron):
+        looseID = electron.numberOfHits()<=1
+        return looseID
 
 
     def testMuonPF(self, muon):
@@ -303,10 +310,10 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return fourLepton.minPairMass()>self.cfg_ana.minMass
 
     def testFourLeptonMassZ(self, fourLepton):
-        return fourLepton.mass()>=70.
+        return fourLepton.mass()>=70
 
     def testFourLeptonMass(self, fourLepton):
-        return fourLepton.mass()>=self.cfg_ana.minHMass
+        return fourLepton.mass()>=self.cfg_ana.minHMass and fourLepton.leg2.mass()>self.cfg_ana.minHMassZ2
 
 
         

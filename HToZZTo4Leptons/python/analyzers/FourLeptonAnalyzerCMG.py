@@ -51,6 +51,8 @@ class FourLeptonAnalyzerCMG( FourLeptonAnalyzerBase ):
         event.rho = self.handles['rho'].product()[0]
         self.rho = event.rho
 
+
+        
         #Get photons
         self.buildPhotonList( event )
 
@@ -162,7 +164,6 @@ class FourLeptonAnalyzerCMG( FourLeptonAnalyzerBase ):
         #QCD suppression
         passed=cutFlow.applyCut(self.testFourLeptonMinMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')
 
-
         #The other analyzer has cuts on M>70 or M>100 . I am totally against a cut at M>100 so I am not
         #putting it here . We need to use the Z->4L peak in the fit simultaneously with the Higgs
         #to exploit the correlations
@@ -170,6 +171,13 @@ class FourLeptonAnalyzerCMG( FourLeptonAnalyzerBase ):
 
         if passed:
             event.higgsCand = cutFlow.obj1[0]
+
+        #Z -> 4 l phase space
+        passed=cutFlow.applyCut(self.testFourLeptonMassZ,'4l Z phase space',1,'fourLeptonsZPhaseSpace')
+        #ZZ phase smace
+        passed=cutFlow.applyCut(self.testFourLeptonMass,'4l H phase space',1,'fourLeptonsHPhaseSpace')
+
+
         
         return True
     

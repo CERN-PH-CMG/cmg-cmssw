@@ -53,14 +53,16 @@ class MuEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
             return self.testMuonLoose(leg) and \
                super( MuEleFourLeptonAnalyzer, self).testLeptonLoose1( leg,sel )
         else:
-            return super( MuEleFourLeptonAnalyzer, self).testLeptonLoose1( leg,sel )
+            return self.testElectronLoose(leg) and \
+            super( MuEleFourLeptonAnalyzer, self).testLeptonLoose1( leg,sel )
 
     def testLeptonLoose2(self, leg,sel=None):
         if abs(leg.pdgId()) == 13:
             return self.testMuonLoose(leg) and \
                super( MuEleFourLeptonAnalyzer, self).testLeptonLoose2( leg,sel )
         else:
-            return super( MuEleFourLeptonAnalyzer, self).testLeptonLoose2( leg,sel )
+            return self.testElectronLoose(leg) and \
+                   super( MuEleFourLeptonAnalyzer, self).testLeptonLoose2( leg,sel )
 
 
 

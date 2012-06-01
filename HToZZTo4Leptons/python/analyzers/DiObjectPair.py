@@ -41,7 +41,8 @@ class DiObjectPair( TLorentzVector ):
 
 
     def sortedMassPairs(self,onlyOS = False):
-        pairs=[self.leg1,self.leg2, \
+        pairs=[DiObject(self.leg1.leg1,self.leg1.leg2),
+               DiObject(self.leg2.leg1,self.leg2.leg2),
                DiObject(self.leg1.leg1,self.leg2.leg1),
                DiObject(self.leg1.leg1,self.leg2.leg2),
                DiObject(self.leg1.leg2,self.leg2.leg1),
