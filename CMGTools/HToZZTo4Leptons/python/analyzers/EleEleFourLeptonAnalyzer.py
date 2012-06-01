@@ -31,10 +31,6 @@ class EleEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
 
 
 
-
-
-
-
     def testLeptonTight1(self, leg,sel=None):
         return self.testElectronTight(leg) and \
                super( EleEleFourLeptonAnalyzer, self).testLeptonTight1( leg,sel )

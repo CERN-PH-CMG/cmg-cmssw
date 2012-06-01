@@ -51,7 +51,7 @@ class FSRRecovery(object):
         self.zz = zzCand
 
 
-    def recoverZ(self,isZ1 = False):
+    def recoverZ(self):
         ''' Run the recovewry algorithm. Associates a photon to the Z'''
         
         #Prefilter
@@ -76,8 +76,8 @@ class FSRRecovery(object):
 
         #Sort the photons by thetaStar
 #        self.photons=sorted(self.photons,key=self.thetaStar)
-        if isZ1:
-            photons= filter(self.filterMassImprovement,photons)
+
+        photons= filter(self.filterMassImprovement,photons)
 #            print "Photons after  mass improvement test= %d\n" % len(self.photons)
 
 
@@ -100,8 +100,6 @@ class FSRRecovery(object):
             #associate it to the Z
             photon=photonsHighPt[0]
         elif len(photonsLowPt):
-
-
             #sort by angle
             photonsLowPt = sorted(photonsLowPt,key=self.DRLGamma)
             photon=photonsLowPt[0]
@@ -154,9 +152,9 @@ class FSRRecovery(object):
     def recoverZZ(self):
         '''Run the recovery algorithm for four leptons'''
         self.setZ(self.zz.leg1)
-        self.recoverZ(True)
+        self.recoverZ()
         self.setZ(self.zz.leg2)
-        self.recoverZ(False)
+        self.recoverZ()
         
 
     def photonPreFilter(self,photon):
@@ -286,7 +284,7 @@ class FSRRecovery(object):
 
     def filterMassImprovement(self,photon):
         p=TLorentzVector(photon.px(),photon.py(),photon.pz(),photon.energy())
-        if abs((p+self.z).M()-91.2)<abs(self.z.M()-91.2):
+        if abs((p+self.z).M()-91.188)<abs(self.z.M()-91.188):
             return True
         else:
             return False

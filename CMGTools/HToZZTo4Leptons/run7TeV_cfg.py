@@ -10,7 +10,7 @@ from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 
 
 period = 'Period_2011AB'
-channel = 'ele_ele'
+channel = 'mu_mu'
 
 
 
@@ -50,6 +50,7 @@ triggerAna = cfg.Analyzer(
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     vertexWeight = mc_vertexWeight,
+    skimGoodVertex=True,
     verbose = False
     )
 
@@ -65,12 +66,14 @@ muMuAna = cfg.Analyzer(
     z2_m = (4.,120.),
     z1_pt1 = 20,
     z1_pt2 = 10,
+    minHMass=100.,
+    minHMassZ2=12.,
     minMass=4.,
     PF=True,
     keep=False,
     effectiveAreas=effectiveAreas,
-    FSR=fsr,
-    fakeRates=fakeRates2011
+    fakeRates=fakeRates2011,
+#    FSR=fsr
     )
 
 
@@ -208,7 +211,10 @@ dataSequence=[
 sequence = cfg.Sequence(dataSequence)
 
 
-test = 0
+
+
+
+test = 1
 if test==1:
     dataset = GGH130
     selectedComponents = [dataset]
