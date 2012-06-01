@@ -5,6 +5,7 @@
 <use   name="FWCore/Framework"/>
 <use   name="FWCore/ParameterSet"/>
 <use   name="FWCore/Sources"/>
+<use   name="PhysicsTools/Utilities"/>
 <use   name="boost"/>
 <export>
 </export>

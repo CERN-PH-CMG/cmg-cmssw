@@ -49,12 +49,12 @@ class RLTInfoLumi(object):
         ofile.write( jstr )
         ofile.close()        
 
-    def computeLumi(self, lumiCalc=None, inputJsonFileName=None):
+    def computeLumi(self, lumiCalc, inputJsonFileName=None):
         if inputJsonFileName is None:
             inputJsonFileName = self.file.GetName().replace('.root','.json')
         outputLumiFileName = inputJsonFileName.replace('.json','.lumi')
-        if lumiCalc is None:
-            lumiCalc = 'pixelLumiCalc.py'
+##         if lumiCalc is None:
+##             lumiCalc = 'pixelLumiCalc.py'
         cmd = [lumiCalc, 'overview -i',
                inputJsonFileName, '>',
                outputLumiFileName]
@@ -78,6 +78,8 @@ class RLTInfoLumi(object):
                     runit = pattern.search( spl[4] ).group(1)
         if dunit == '/nb':
             self.sumdlum /= 1000.
+        elif dunit == '/ub':
+            self.sumdlum /= 1e6
         elif dunit == '/fb':
             self.sumdlum *= 1000.
         elif dunit == '/pb':
@@ -86,17 +88,32 @@ class RLTInfoLumi(object):
             raise ValueError('Unrecognized unit! '+dunit)
         if runit == '/nb':
             self.sumrlum /= 1000.
+        elif runit == '/ub':
+            self.sumrlum /= 1e6
         elif runit == '/fb':
             self.sumrlum *= 1000.
-        elif dunit == '/pb':
+        elif runit == '/pb':
             pass
         else:
             raise ValueError('Unrecognized unit! '+dunit)
         
         lumiFile.close()
-        print 'luminosity:',inputJsonFileName, self.sumdlum, '(delivered pb)', self.sumrlum, '(recorded pb)' 
+        print 'luminosity:',inputJsonFileName, self.sumdlum, '(delivered /pb)', self.sumrlum, '(recorded /pb)' 
         
 if __name__ == '__main__':
+
+    from optparse import OptionParser
+
+    parser = OptionParser()
+    parser.usage = """
+    %prog [options] <RLT root file>
+    """
+
+    parser.add_option("-l", "--lumicalc", dest="lumicalc",
+                      default='pixelLumiCalc.py',
+                      help='Lumi calc command (e.g. lumiCalc2.py, pixelLumiCalc.py)')
+
+    (options,args) = parser.parse_args()
 
     rltlum = RLTInfoLumi(sys.argv[1])
     # rltlum.tree.Print()
@@ -105,4 +122,4 @@ if __name__ == '__main__':
     # pprint.pprint( rltlum.compactDict )
     
     rltlum.writeJson()
-    rltlum.computeLumi()
+    rltlum.computeLumi(options.lumicalc)
