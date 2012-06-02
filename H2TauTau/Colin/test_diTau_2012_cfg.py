@@ -4,9 +4,10 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
 runOnData = False
-runOnMC = True
+runOnMC = False
 
 mc_vertexWeight = 'vertexWeightFall112011B'
+mc_vertexWeight = None
 mc_tauEffWeight = None
 mc_jetEffWeight = None
 mc_tauEffWeight_mc = 'effLooseTau15MC'
@@ -69,7 +70,8 @@ else:
     'VertexAnalyzer',
     goodVertices = 'offlinePrimaryVertices', # hum... collection not available in old tuples
     #goodVertices = 'goodPVFilter',
-    vertexWeight = mc_vertexWeight,
+    fixedWeight = 1,
+    #vertexWeight = mc_vertexWeight,
     verbose = False
     )
 
@@ -149,7 +151,7 @@ WW.splitFactor = 10
 WZ.splitFactor = 10
 ZZ.splitFactor = 10
 data_Run2012A_PromptReco_v1.splitFactor = 50
-data_Run2012B_PromptReco_v1.splitFactor = 50 
+data_Run2012B_PromptReco_v1.splitFactor = 50
 
 test = 0
 if test==1:
