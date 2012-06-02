@@ -36,7 +36,7 @@ Higgsgg125 = cfg.MCComponent(
     name = 'Higgsgg125',
     files = [],
     xSection = 19.57*6.37e-2,
-    nGenEvents = 200000,
+    nGenEvents = 968134,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -100,7 +100,7 @@ HiggsVBF125 = cfg.MCComponent(
     name = 'HiggsVBF125',
     files = [],
     xSection = 1.559*6.37e-2, 
-    nGenEvents = 200000,
+    nGenEvents = 998836,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -271,7 +271,7 @@ HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-
 #HiggsVBF145.files = getFiles('/VBF_HToTauTau_M-145_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 
-mc_spring12 = copy.copy( mc_basicEWK )
+mc_spring12 = copy.copy( mc_ewk )
 mc_spring12.extend( mc_higgs ) 
 mc_spring12.extend([WW, WZ, ZZ])
 
