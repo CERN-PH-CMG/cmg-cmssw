@@ -156,8 +156,8 @@ if __name__ == '__main__':
     cuts=[
 #####  Andreas  ############################################################################################################################### 
 
-        ("CMS_test2012_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
-        ("CMS_test2012_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,2),
+        ("CMS_test2012_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,2),
         ("CMS_test2012_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,2),
 
 ######################################################################################################################################################### 
@@ -220,7 +220,7 @@ if __name__ == '__main__':
         
     for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
      if str(prefix).find("VBF") > 0 :
-       rebin = 1	
+       rebin = 4	
      else :
        rebin = 1
      for var, nx, xmin, xmax in [
@@ -287,8 +287,8 @@ if __name__ == '__main__':
 
       #looseisocut=" && !(1 "+isocut+")"
       #semilooseisocut=isolationM+" && !(1 "+isocut+")"
-      looseisocut=isolationMLL+" && !(1 "+isocut+")"
-      semilooseisocut=isolationM
+      looseisocut=isolationM+" && !(1 "+isocut+")"
+      semilooseisocut=isolationMLL
       if qcdEstimate==0:
         # MET based QCD estimation
         lowcontrolcut=" && met<10"
