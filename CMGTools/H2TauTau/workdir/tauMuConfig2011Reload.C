@@ -19,9 +19,10 @@ TauMuPlotter * tauMuConfig(const char * name){
   //TString outpath="output/JoseMay16rawJetPt";
   //TString outpath="output/JoseMay16oldJEC";
   //TString outpath="output/JoseMay16oldJECV4";
-  TString outpath="/data/benitezj/Samples/V520JoseMay16chs";
-
+  //TString outpath="/data/benitezj/Samples/V520JoseMay16chs";
   //TString outpath="/data/benitezj/Samples/V541May30";
+  //TString outpath="output/V541TauMuJune1muIsoChHad";
+  TString outpath="output/V541TauMuJune1OfflinePV";
 
   analysis->setOutputPath(outpath);
   analysis->setQCDOStoSSRatio(1.11);//value from AN-11-390 v4
@@ -93,8 +94,8 @@ TauMuPlotter * tauMuConfig(const char * name){
 
   Sample* ZToTauTau = new Sample("ZToTauTau",outpath.Data());
   ZToTauTau->setDataType("MC");
-  ZToTauTau->setCrossection(3048);
-  ZToTauTau->setSampleGenEvents(36209629*0.9985*(38781.6/35988.8)*(55192./56400.));//V5_4_1 missing files: 4/2751 , correct to previous mc and data yields //for V5_2_0 used 36189241
+  ZToTauTau->setCrossection(3048);//*0.95
+  ZToTauTau->setSampleGenEvents(36209629*0.9985);//V5_4_1 missing files: 4/2751 , correct to previous mc and data yields *(38781.6/35988.8)*(55192./56400.) //for V5_2_0 used 36189241
   analysis->addSample(ZToTauTau);
 
   Sample* ZToMuMu = new Sample("ZToMuMu",outpath.Data());

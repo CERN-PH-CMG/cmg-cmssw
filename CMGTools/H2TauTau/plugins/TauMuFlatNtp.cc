@@ -5,6 +5,8 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
 
+
+
 TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
   BaseFlatNtp(iConfig),
   diTauSel_(0),
@@ -19,7 +21,10 @@ TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
   genBoson_(0),
   genBosonL1_(0),
   genBosonL2_(0),
-  corrector_(iConfig.getParameter<std::string>("fileCorrectTo"))
+  corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
+  vbfvars_(8,0.),
+  reader_ (new TMVA::Reader( "!Color:!Silent" )),
+  mvaWeights_ (iConfig.getParameter<std::string>("mvaWeights"))
 {
   diTauTag_               = iConfig.getParameter<edm::InputTag>("diTauTag");
   genParticlesTag_        = iConfig.getParameter<edm::InputTag>("genParticlesTag");
@@ -35,6 +40,22 @@ TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
   fileZmmMC_ = iConfig.getParameter<std::string>("fileZmmMC");
 
   runSVFit_  =  iConfig.getParameter<int>("runSVFit");
+
+
+
+  reader_->AddVariable("mjj", &vbfvars_[0]);
+  reader_->AddVariable("dEta", &vbfvars_[1]);
+  reader_->AddVariable("dPhi", &vbfvars_[2]);
+  reader_->AddVariable("ditau_pt", &vbfvars_[3]);
+  reader_->AddVariable("dijet_pt", &vbfvars_[4]);
+  reader_->AddVariable("dPhi_hj", &vbfvars_[5]);
+  reader_->AddVariable("C1", &vbfvars_[6]);
+  reader_->AddVariable("C2", &vbfvars_[7]);
+  edm::FileInPath weightFile (mvaWeights_.c_str ());
+  reader_->BookMVA("BDTG", weightFile.fullPath ());
+
+
+
 }
 
 
@@ -104,13 +125,15 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("subleadJetEta",&subleadJetEta_,"subleadJetEta/F");
   tree_->Branch("subleadJetRawFactor",&subleadJetRawFactor_,"subleadJetRawFactor/F");
   tree_->Branch("diJetMass",&diJetMass_,"diJetMass/F");
+  tree_->Branch("diJetPt",&diJetPt_,"diJetPt/F"); 
   tree_->Branch("diJetDeltaEta",&diJetDeltaEta_,"diJetDeltaEta/F");
   tree_->Branch("diJetEta1Eta2",&diJetEta1Eta2_,"diJetEta1Eta2/F"); 
   tree_->Branch("njetingap",&njetingap_,"njetingap/I");
   tree_->Branch("nbjet",&nbjet_,"nbjet/I");
   tree_->Branch("leadBJetPt",&leadBJetPt_,"leadBJetPt/F");
   tree_->Branch("leadBJetEta",&leadBJetEta_,"leadBJetEta/F");
-
+  tree_->Branch("vbfmva",&vbfmva_,"vbfmva/F");
+  
   tree_->Branch("muLCleadJetPt",&muLCleadJetPt_,"muLCleadJetPt/F");
   tree_->Branch("muLCleadJetEta",&muLCleadJetEta_,"muLCleadJetEta/F");
 
@@ -141,6 +164,15 @@ void TauMuFlatNtp::beginJob(){
   counterbestcand_=0;
   countertruth_=0;
   counter_=0;
+}
+
+
+void TauMuFlatNtp::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup){
+  
+  fillVariables(iEvent,iSetup);
+  if(!applySelections()) return;
+  fill();
+  tree_->Fill();
 }
 
 
@@ -418,6 +450,7 @@ bool TauMuFlatNtp::applySelections(){
     if(
        //-------mu iso cut here:
        cand->leg2().relIso(0.5,1)<0.1
+       //cand->leg2().relIso(0.5)<0.1
        //if(cand->leg2().sourcePtr()->userFloat("mvaIsoRings")<.xx) continue;     
        
        //------tau iso cut here
@@ -610,11 +643,18 @@ bool TauMuFlatNtp::fill(){
   //lepton clean the jet list //need to fill njet_ here 
   fillPFJetListLC(diTauSel_,&pfJetList_,&pfJetListLC_);
   njet_=pfJetListLC_.size();
+  
+  leadJet_=0;
+  subleadJet_=0;
+  if(njet_>0)leadJet_=pfJetListLC_[0];
+  if(njet_>1)subleadJet_=pfJetListLC_[1];
 
 
   //Also the list cleaned only with the muon //njetLepLC needed in recoil correction
   fillPFJetListLepLC(diTauSel_,&pfJetList_,&pfJetListLepLC_);
   int njetLepLC_=pfJetListLepLC_.size();
+
+
   
   ///Apply recoil correction here Applie to PFMET only for now
   if(recoilCorreciton_>0){
@@ -738,28 +778,29 @@ bool TauMuFlatNtp::fill(){
   }
 
   //jet quantities independent of SM category
-  if(pfJetListLC_.size()>=1){
-    leadJetPt_=pfJetListLC_[0]->pt();
-    leadJetEta_=pfJetListLC_[0]->eta();
-    leadJetRawFactor_=pfJetListLC_[0]->rawFactor();
+  if(njet_>=1){
+    leadJetPt_=leadJet_->pt();
+    leadJetEta_=leadJet_->eta();
+    leadJetRawFactor_=leadJet_->rawFactor();
   }
-  if(pfJetListLC_.size()>=2){
-    subleadJetPt_=pfJetListLC_[1]->pt();
-    subleadJetEta_=pfJetListLC_[1]->eta();
-    subleadJetRawFactor_=pfJetListLC_[1]->rawFactor();
-    diJetMass_=(pfJetListLC_[0]->p4()+pfJetListLC_[1]->p4()).mass();
-    diJetDeltaEta_=fabs(pfJetListLC_[0]->eta() - pfJetListLC_[1]->eta());
-    diJetEta1Eta2_=(pfJetListLC_[0]->eta())*(pfJetListLC_[1]->eta());
-  }
-
-  //Jets where only the muon has been removed
-  if(pfJetListLepLC_.size()>=1){
-    muLCleadJetPt_=pfJetListLepLC_[0]->pt();
-    muLCleadJetEta_=pfJetListLepLC_[0]->eta();
+  if(njet_>=2){
+    subleadJetPt_=subleadJet_->pt();
+    subleadJetEta_=subleadJet_->eta();
+    subleadJetRawFactor_=subleadJet_->rawFactor();
+    diJetMass_=(leadJet_->p4()+subleadJet_->p4()).mass();
+    diJetPt_ = (leadJet_->p4()+subleadJet_->p4()).pt();
+    diJetDeltaEta_=fabs(leadJet_->eta() - subleadJet_->eta());
+    diJetEta1Eta2_=(leadJet_->eta())*(subleadJet_->eta());
   }
 
+  if(njetLepLC_>=1){
+    muLCleadJetPt_  = pfJetListLepLC_[0]->pt();
+    muLCleadJetEta_ = pfJetListLepLC_[0]->eta();
+  }
 
-  //make a list of b-tagged jets  
+
+  //--------------------------------------make a list of b-tagged jets  
+  leadBJet_ = 0 ;
   pfJetListBTag_.clear();
   for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
     //cout<<jet->btag(6)<<" "<<jet->btag("combinedSecondaryVertexBJetTags")<<endl;
@@ -772,42 +813,41 @@ bool TauMuFlatNtp::fill(){
   fillPFJetListLC(diTauSel_,&pfJetListBTag_,&pfJetListBTagLC_);
   nbjet_=pfJetListBTagLC_.size();
   if(nbjet_>0){
-    leadBJetBTagProb_=pfJetListBTagLC_[0]->btag(6);
-    leadBJetPt_=pfJetListBTagLC_[0]->pt();
-    leadBJetEta_=pfJetListBTagLC_[0]->eta();
+    leadBJet_ = pfJetListBTagLC_[0];
+    leadBJetPt_ = leadBJet_->pt();
+    leadBJetEta_ = leadBJet_->eta();
+    leadBJetBTagProb_ = leadBJet_->btag("combinedSecondaryVertexBJetTags");
   }
 
   //////////////////////
-  ////SM event categories //use mu-tau cleaned jet list
+  ////2011 SM event categories 
   //////////////////////
   categorySM_=-1;
   if(pfJetListLC_.size()>=2){//VBF: two leading jets must have  m>400, |eta1-eta2| < 4 and no other jet high pt in between    
-    if((pfJetListLC_[0]->p4()+pfJetListLC_[1]->p4()).mass() > 400.0 
-       && fabs(pfJetListLC_[0]->eta() - pfJetListLC_[1]->eta()) > 4.0 
-       && pfJetListLC_[0]->eta()*pfJetListLC_[1]->eta() < 0.0
+    if(diJetMass_ > 400.0 
+       && diJetDeltaEta_ > 4.0 
+       && diJetEta1Eta2_ < 0.0
        ){
       njetingap_=0;
-      if(pfJetListLC_.size()>2){// check there is no additional central jet
+      if(njet_>2){// check there is no additional central jet
 	for(std::vector<const cmg::PFJet *>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
-	  if(pfJetListLC_[0]->eta()<pfJetListLC_[1]->eta()) 
-	    if(pfJetListLC_[0]->eta()<(*jet3)->eta()&&(*jet3)->eta()<pfJetListLC_[1]->eta()) njetingap_++;
-	  if(pfJetListLC_[0]->eta()>pfJetListLC_[1]->eta()) 
-	    if(pfJetListLC_[1]->eta()<(*jet3)->eta()&&(*jet3)->eta()<pfJetListLC_[0]->eta()) njetingap_++;
+	  if(leadJet_->eta()<subleadJet_->eta()) 
+	    if(leadJet_->eta()<(*jet3)->eta()&&(*jet3)->eta()<subleadJet_->eta()) njetingap_++;
+	  if(leadJet_->eta()>subleadJet_->eta()) 
+	    if(subleadJet_->eta()<(*jet3)->eta()&&(*jet3)->eta()<leadJet_->eta()) njetingap_++;
 	}
       }
       if(njetingap_==0) categorySM_=2;
     }
   }
-  if(categorySM_!=2 && pfJetListLC_.size()>=1){//Boosted: 1 jet with pt>150 and no other jets
-    if(pfJetListLC_[0]->pt()>=150.0)
+  if(categorySM_ != 2 && njet_ >= 1){//Boosted: 1 jet with pt>150
+    if(leadJetPt_ >= 150.0)
       categorySM_=1;
   }
 
-  if(categorySM_!=2 && categorySM_!=1 && pfJetListLC_.size()<=1){//SM0
-    if(pfJetListLC_.size()==1){
-      if(pfJetListLC_[0]->pt()<150.0)
-	categorySM_=0;
-    }else categorySM_=0;
+  if(categorySM_ != 2 && categorySM_ != 1 && njet_ <= 1){//SM0
+    if(njet_==0) categorySM_ = 0;
+    if(njet_ == 1 && leadJetPt_ < 150.0) categorySM_ = 0;
   }
 
 
@@ -820,137 +860,99 @@ bool TauMuFlatNtp::fill(){
 // No additional pt> 30 GeV in the eta gap between leading jets
 // VBF MVA > 0.8
 // No B-Tagged Jets Above 20 GeV (Emu Only)
+
 // VH 	At least 2 jets with pt > 30 GeV
 // Mass of Jet Pair 70-120 GeV
 // Vector Sum of Jet Pt > 150 GeV
 // VBF MVA < 0.8
-// No B-Tagged Jets Above 20 GeV
+// No B-Tagged Jets Above 20 GeV -->
+
 // 1-Jet 	>= 1 Jet with pt > 30 GeV
 // Not in VBF or VH Categories
 // No B-Tagged Jets Above 20 GeV 	high pt: pt_tau_had >= Mass Dependent pt Threshold
-// low pt: pt_tau_had < Mass Dependent pt Threshold
+//                                      low pt: pt_tau_had < Mass Dependent pt Threshold
+
 // 1 b-jet 	At least 1 B-Tagged Jet Above 20 GeV
 // Not 2 Jets above 30 GeV 	high pt: pt_tau_had >= Mass Dependent pt Threshold
 // low pt: pt_tau_had < Mass Dependent pt Threshold
+
 // 0-Jet 	Anything not passing other categories 	high pt: pt_tau_had >= Mass Dependent pt Threshold
 // low pt: pt_tau_had < Mass Dependent pt Threshold 
 
 
+  //VBF MVA
+  vbfmva_=0.;
+  if(njet_>=2){
+    vbfvars_[0] = diJetMass_ ;
+    vbfvars_[1] = diJetDeltaEta_;
+    vbfvars_[2] = reco::deltaPhi (leadJet_->phi (), subleadJet_->phi ()) ;
+    vbfvars_[4] = diJetPt_;
+    LorentzVector dijet = leadJet_->p4() + subleadJet_->p4() ;
+    LorentzVector ditau = diTauSel_->p4() + metP4 ;
+    vbfvars_[3] = ditau.Pt();
+    vbfvars_[5] = reco::deltaPhi (ditau.phi (), dijet.phi ());
+    vbfvars_[6] = fabs (diTauSel_->eta() - dijet.Eta());
+    vbfvars_[7] = diTauSel_->pt();    
+    vbfmva_ = reader_->EvaluateMVA(vbfvars_, "BDTG");
+  }
+
+
   categorySM2012_=-1;
-  if(pfJetListLC_.size()>=2){//VBF: 
-    if((pfJetListLC_[0]->p4()+pfJetListLC_[1]->p4()).mass() > 400.0 
-       && fabs(pfJetListLC_[0]->eta() - pfJetListLC_[1]->eta()) > 4.0 
-       && pfJetListLC_[0]->eta()*pfJetListLC_[1]->eta() < 0.0
-       ){
-      njetingap_=0;
-      if(pfJetListLC_.size()>2){// check there is no additional central jet
-	for(std::vector<const cmg::PFJet *>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
-	  if(pfJetListLC_[0]->eta()<pfJetListLC_[1]->eta()) 
-	    if(pfJetListLC_[0]->eta()<(*jet3)->eta()&&(*jet3)->eta()<pfJetListLC_[1]->eta()) njetingap_++;
-	  if(pfJetListLC_[0]->eta()>pfJetListLC_[1]->eta()) 
-	    if(pfJetListLC_[1]->eta()<(*jet3)->eta()&&(*jet3)->eta()<pfJetListLC_[0]->eta()) njetingap_++;
-	}
+  if(njet_>=2){//----------------------------------VBF---------------------
+    njetingap_=0;
+    if(njet_>2){// check there is no additional central jet
+      for(std::vector<const cmg::PFJet *>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
+	if(leadJet_->eta()<subleadJet_->eta()) 
+	  if(leadJet_->eta()<(*jet3)->eta()&&(*jet3)->eta()<subleadJet_->eta()) njetingap_++;
+	if(leadJet_->eta()>subleadJet_->eta()) 
+	  if(subleadJet_->eta()<(*jet3)->eta()&&(*jet3)->eta()<leadJet_->eta()) njetingap_++;
       }
-      if(njetingap_==0) categorySM2012_=2;
     }
+    if(njetingap_==0 && vbfmva_ > 0.8 ) categorySM2012_=2;
   }
-  if(categorySM2012_!=2 && pfJetListLC_.size()>=1){//Boosted: 1 jet with pt>150 and no other jets
-    if(pfJetListLC_[0]->pt()>=150.0)
-      categorySM2012_=1;
+  if(categorySM2012_ == -1 && njet_>=2){//------------------VH -------------------
+    if(70.< diJetMass_ && diJetMass_ < 120.0 
+       && diJetPt_ > 150.
+       && vbfmva_ < 0.8 
+       && nbjet_ == 0
+       ) categorySM2012_=3;
+  }  
+  if(categorySM2012_ == -1 && njet_>=1 && nbjet_ == 0 ){//-----------1-jet
+    if( taupt_<40.)categorySM2012_=1;
+    else categorySM2012_=11;
   }
-
-  if(categorySM2012_!=2 && categorySM2012_!=1 && pfJetListLC_.size()<=1){//SM0
-    if(pfJetListLC_.size()==1){
-      if(pfJetListLC_[0]->pt()<150.0)
-	categorySM2012_=0;
-    }else categorySM2012_=0;
+  if(categorySM2012_ == -1 && nbjet_>=1 && njet_ < 2 ){//-----------1-bjet
+    if( taupt_<40.) categorySM2012_=4;
+    else categorySM2012_=14;
   }
-
-
+  if(categorySM2012_ == -1){//inclusive
+    if( taupt_<40.) categorySM2012_=0;
+    else categorySM2012_=10;
+  }
 
   return 1;
 }
 
-void TauMuFlatNtp::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup){
-  
-  fillVariables(iEvent,iSetup);
-  if(!applySelections()) return;
-  fill();
-  tree_->Fill();
-}
 
 void TauMuFlatNtp::fillPFJetListLC(const cmg::TauMu * cand,std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC){
-
   listLC->clear();
-
-  //std::vector<cmg::PFJet> cleanjetlist;
   for(std::vector<const cmg::PFJet *>::const_iterator jet=list->begin(); jet!=list->end(); ++jet){
     if(reco::deltaR((*jet)->eta(),(*jet)->phi(),cand->leg1().eta(),cand->leg1().phi())<0.5) continue;     
     if(reco::deltaR((*jet)->eta(),(*jet)->phi(),cand->leg2().eta(),cand->leg2().phi())<0.5) continue;   
-    //cleanjetlist.push_back(*jet);
     listLC->push_back(*jet);
   }
- 
-//   //order by pt
-//   const cmg::PFJet * lastjet=NULL;
-//   for(std::vector<cmg::PFJet>::const_iterator jet1=cleanjetlist.begin(); jet1!=cleanjetlist.end(); ++jet1){
-//     const cmg::PFJet * highjet=NULL;
-//     for(std::vector<cmg::PFJet>::const_iterator jet2=cleanjetlist.begin(); jet2!=cleanjetlist.end(); ++jet2){
-//       if(lastjet){
-// 	if(jet2->pt()<lastjet->pt()){
-// 	  if(highjet){
-// 	    if(jet2->pt()>highjet->pt())highjet=&(*jet2);
-// 	  }else highjet=&(*jet2);
-// 	}
-//       }else{
-// 	if(highjet){
-// 	  if(jet2->pt()>highjet->pt())highjet=&(*jet2);
-// 	}else highjet=&(*jet2);
-//       }    
-//     }  
-//     pfJetListLC_.push_back(*highjet);
-//     lastjet=highjet;
-//   }
-  
 }
 
 
 void TauMuFlatNtp::fillPFJetListLepLC(const cmg::TauMu * cand,std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC){
-
   listLC->clear();
-
-  //std::vector<cmg::PFJet> cleanjetlist;
   for(std::vector<const cmg::PFJet *>::const_iterator jet=list->begin(); jet!=list->end(); ++jet){
     if(reco::deltaR((*jet)->eta(),(*jet)->phi(),cand->leg2().eta(),cand->leg2().phi())<0.5) continue;   
-    //cleanjetlist.push_back(*jet);
     listLC->push_back(*jet);
-  }
- 
-//   //order by pt
-//   const cmg::PFJet * lastjet=NULL;
-//   for(std::vector<cmg::PFJet>::const_iterator jet1=cleanjetlist.begin(); jet1!=cleanjetlist.end(); ++jet1){
-//     const cmg::PFJet * highjet=NULL;
-//     for(std::vector<cmg::PFJet>::const_iterator jet2=cleanjetlist.begin(); jet2!=cleanjetlist.end(); ++jet2){
-//       if(lastjet){
-// 	if(jet2->pt()<lastjet->pt()){
-// 	  if(highjet){
-// 	    if(jet2->pt()>highjet->pt())highjet=&(*jet2);
-// 	  }else highjet=&(*jet2);
-// 	}
-//       }else{
-// 	if(highjet){
-// 	  if(jet2->pt()>highjet->pt())highjet=&(*jet2);
-// 	}else highjet=&(*jet2);
-//       }    
-//     }  
-//     pfJetListLepLC_.push_back(*highjet);
-//     lastjet=highjet;
-//   }
-  
+  }  
 }
 
 bool TauMuFlatNtp::vetoDiLepton(){
-  
   bool muminus=0;
   bool muplus=0;
   for(std::vector<cmg::Muon>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
