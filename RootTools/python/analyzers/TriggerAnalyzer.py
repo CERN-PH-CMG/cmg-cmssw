@@ -3,9 +3,9 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Counter import Counter
 from CMGTools.RootTools.utils.TriggerList import TriggerList
 from CMGTools.RootTools.utils.TriggerMatching import selTriggerObjects
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import TriggerObject
 
 
-#FIXME profiling and verification of H->tau tau analysis needed.
 
 class TriggerAnalyzer( Analyzer ):
     '''Access to trigger information, and trigger selection'''
@@ -71,9 +71,9 @@ class TriggerAnalyzer( Analyzer ):
 
         event.hltPath = hltPath 
 
-
         if hltPath is not None:
-            trigObjs = self.handles['cmgTriggerObjectListSel'].product()
+            trigObjs = map( TriggerObject,
+                            self.handles['cmgTriggerObjectListSel'].product())
             # selecting the trigger objects used in this path
             event.triggerObjects = selTriggerObjects( trigObjs, hltPath )
             
@@ -84,10 +84,6 @@ class TriggerAnalyzer( Analyzer ):
         print 'writing TriggerAnalyzer'
         super(TriggerAnalyzer, self).write()
         self.triggerList.write( self.dirName )
-#        if self.cfg_comp.isData:
-#            self.triggerList.computeLumi( self.cfg_comp.json )
-#        elif self.cfg_comp.isMC is False:
-#            print 'cannot compute lumi, json is not present in component configuration.'
 
     def __str__(self):
         tmp = super(TriggerAnalyzer,self).__str__()
@@ -95,10 +91,12 @@ class TriggerAnalyzer( Analyzer ):
         return '\n'.join( [tmp, triglist ] )
 
 
-    def printTriggerObject(self, object):
-        for name in object.getSelectionNames():
-            hasSel = object.getSelection( name )
-            if self.cfg_ana.verbose==1 and hasSel:
-                print name, hasSel
-            elif self.cfg_ana.verbose==2:
-                print name, hasSel
+##     def printTriggerObject(self, object):
+##         '''FIXME : we need a trigger object class in physicsobjects.'''
+##         print 'trig obj', object.pdgId(), object.pt(), object.charge(), object.eta(), object.phi()
+##         for name in object.getSelectionNames():
+##             hasSel = object.getSelection( name )
+##             if self.cfg_ana.verbose==1 and hasSel:
+##                 print name, hasSel
+##             elif self.cfg_ana.verbose==2:
+##                 print name, hasSel
