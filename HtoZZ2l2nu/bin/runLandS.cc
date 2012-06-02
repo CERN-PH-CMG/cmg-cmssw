@@ -84,7 +84,7 @@ struct DataCardInputs
 
 void printHelp();
 Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin,JSONWrapper::Object &Root);
-void showShape(const Shape_t &shape, TString SaveName);
+void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName);
 void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName);
 
 void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bin, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes,  bool runSystematics, bool shape);
@@ -302,13 +302,14 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 
       bool isData(Process[i]["isdata"].toBool());
       bool isSignal(Process[i]["spimpose"].toBool());
-      int color(1);       if(Process[i].isTag("color" ) ) color  = (int)Process[i]["color" ].toDouble();
-      int lcolor(color);  if(Process[i].isTag("lcolor") ) lcolor = (int)Process[i]["lcolor"].toDouble();
-      int mcolor(color);  if(Process[i].isTag("mcolor") ) mcolor = (int)Process[i]["mcolor"].toDouble();
-      int fcolor(color);  if(Process[i].isTag("fcolor") ) fcolor = (int)Process[i]["fcolor"].toDouble();
-      int lwidth(1);      if(Process[i].isTag("lwidth") ) lwidth = (int)Process[i]["lwidth"].toDouble();
-      int fill(1001);     if(Process[i].isTag("fill"  ) ) fill   = (int)Process[i]["fill"  ].toDouble();
-      int marker(20);     if(Process[i].isTag("marker") ) marker = (int)Process[i]["marker"].toDouble();
+      int color(1);       if(Process[i].isTag("color" ) ) color  = (int)Process[i]["color" ].toInt();
+      int lcolor(color);  if(Process[i].isTag("lcolor") ) lcolor = (int)Process[i]["lcolor"].toInt();
+      int mcolor(color);  if(Process[i].isTag("mcolor") ) mcolor = (int)Process[i]["mcolor"].toInt();
+      int fcolor(color);  if(Process[i].isTag("fcolor") ) fcolor = (int)Process[i]["fcolor"].toInt();
+      int lwidth(1);      if(Process[i].isTag("lwidth") ) lwidth = (int)Process[i]["lwidth"].toInt();
+      int lstyle(1);      if(Process[i].isTag("lstyle") ) lstyle = (int)Process[i]["lstyle"].toInt();
+      int fill(1001);     if(Process[i].isTag("fill"  ) ) fill   = (int)Process[i]["fill"  ].toInt();
+      int marker(20);     if(Process[i].isTag("marker") ) marker = (int)Process[i]["marker"].toInt();
   
       TH1* syst = (TH1*)pdir->Get("optim_systs");
       if(syst==NULL){syst=new TH1F("optim_systs","optim_systs",1,0,1);syst->GetXaxis()->SetBinLabel(1,"");}
@@ -332,7 +333,9 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 	    hshape->SetTitle(proc);
 	    fixExtremities(hshape,true,true);
 	    hshape->SetFillColor(color); hshape->SetLineColor(lcolor); hshape->SetMarkerColor(mcolor);
-	    hshape->SetFillStyle(fill);  hshape->SetLineWidth(lwidth); hshape->SetMarkerStyle(marker);
+	    hshape->SetFillStyle(fill);  hshape->SetLineWidth(lwidth); hshape->SetMarkerStyle(marker); hshape->SetLineStyle(lstyle);
+            if(lstyle>1)printf("style for %s is %i\n", proc.Data(), hshape->GetLineStyle());
+            hshape->GetYaxis()->SetTitle("Events (/25GeV)");
          }else{		
             if(ivar==1)printf("Histo does not exist: %s\n", histoName.Data());
             continue;
@@ -396,67 +399,103 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 }
 
 //
-void showShape(const Shape_t &shape,TString SaveName)
+void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName)
 {
+
+  TH1* allbkg=NULL;
+  std::map<TString, TH1*> mapbkg;
+  std::map<TString, TH1*> mapsig;
+  TH1* alldata=NULL;
+
+
+  for(size_t i=0;i<selCh.size();i++){
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+     Shape_t& shape = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
+
+     if(!allbkg){allbkg=(TH1*)shape.totalBckg->Clone("mc");}else{allbkg->Add(shape.totalBckg);}
+     if(!alldata){alldata=(TH1*)shape.data->Clone("data");}else{alldata->Add(shape.data);}
+
+     for(size_t i=0; i<shape.bckg.size(); i++){
+        if(shape.bckg[i]->Integral()<=1E-6) continue;
+        if(mapbkg.find(shape.bckg[i]->GetTitle())!=mapbkg.end()){mapbkg[shape.bckg[i]->GetTitle()]->Add(shape.bckg[i]);}else{ mapbkg[shape.bckg[i]->GetTitle()]=(TH1*)shape.bckg[i]->Clone(shape.bckg[i]->GetTitle()); }
+     }
+
+     TString massStr(""); massStr += mass;
+     for(size_t ip=0; ip<shape.signal.size(); ip++){
+         TString proc(shape.signal[ip]->GetTitle());
+         if(!proc.Contains(massStr))continue;
+              if(proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ";
+         else if(proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ";
+         else if(proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW";
+         else if(proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW";
+
+        if(proc=="qqHZZ"){shape.signal[ip]->SetLineStyle(2);}
+
+        if(mapsig.find(shape.signal[ip]->GetTitle())!=mapsig.end()){mapsig[shape.signal[ip]->GetTitle()]->Add(shape.signal[ip]);}else{mapsig[shape.signal[ip]->GetTitle()]=(TH1*)shape.signal[ip]->Clone(shape.signal[ip]->GetTitle());}
+     }
+  }}
+
+
   TCanvas* c1 = new TCanvas("c1","c1",800,800);
-  c1->SetWindowSize(800,800);
-  c1->cd();
 
   TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);  t1->Draw();  t1->cd();
-  TLegend* legA  = new TLegend(0.845,0.2,0.99,0.99, "NDC");
+  TLegend* legA  = new TLegend(0.845,0.5,0.99,0.99, "NDC");
 
   bool canvasIsFilled(false);
   THStack *stack=0;
-  TH1 *mc=0;
-  if(shape.bckg.size())
-    {
-      mc=(TH1 *)shape.totalBckg->Clone("mc");
+  TH1 *mc=allbkg;
+  if(allbkg){
+
+      TH1* axis = (TH1*)allbkg->Clone("axis");
+      axis->Reset();
+      axis->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
+      axis->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
+      axis->SetMinimum(mc->GetMinimum());
+      axis->SetMaximum(1.1*mc->GetMaximum());
+      axis->GetXaxis()->SetRangeUser(175,450);
+      axis->Draw();
+
       stack = new THStack("stack","stack"); 
-      for(size_t i=0; i<shape.bckg.size(); i++) 
-	{
-	  if(shape.bckg[i]->Integral()<=0) continue;
-	  stack->Add(shape.bckg[i],"HIST");
-	  legA->AddEntry(shape.bckg[i],shape.bckg[i]->GetTitle(),"F");
-	}
-      stack->Draw();
-      stack->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
-      stack->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
-      stack->SetMinimum(mc->GetMinimum());
-      stack->SetMaximum(1.1*mc->GetMaximum());
+      for(std::map<TString, TH1*>::iterator it=mapbkg.begin(); it!=mapbkg.end(); it++){
+          it->second->GetXaxis()->SetRangeUser(175,450);
+          it->second->SetLineColor( it->second->GetFillColor());
+          stack->Add(it->second,"HIST");
+          legA->AddEntry(it->second,it->second->GetTitle(),"F");
+      }
+      stack->Draw("same");
       canvasIsFilled=true;
-    }
-  if(shape.data)
-    {
-      shape.data->Draw(canvasIsFilled ? "E1same" : "E1");
-      legA->AddEntry(shape.data,shape.data->GetTitle(),"P");
+  }
+  if(alldata){
+//      alldata->Draw(canvasIsFilled ? "E1same" : "E1");
+//      legA->AddEntry(alldata,alldata->GetTitle(),"P");
+      legA->AddEntry(alldata,"data (blinded)","P");
+//      canvasIsFilled=true;
+  }
+
+  for(std::map<TString, TH1*>::iterator it=mapsig.begin(); it!=mapsig.end(); it++){
+      it->second->Draw(canvasIsFilled ? "histsame" : "hist");
+      legA->AddEntry(it->second,it->second->GetTitle(),"L");
       canvasIsFilled=true;
-    }
-  for(size_t ip=0; ip<shape.signal.size(); ip++)
-    {
-      shape.signal[ip]->Draw(canvasIsFilled ? "histsame" : "hist");
-      legA->AddEntry(shape.signal[ip],shape.signal[ip]->GetTitle(),"L");
-      canvasIsFilled=true;
-    }
+  }
   TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
   T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
-  T->AddText("CMS preliminary");  T->Draw();
-  
+  T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV, #scale[0.5]{#int} L=5.0  fb^{-1}");  T->Draw();
+ 
   legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(); legA->SetHeader("");
   legA->Draw("same");    legA->SetTextFont(42);
 
 
   TH1 *ratio=0; 
-  if(shape.data && mc)
-    {
+  if(allbkg && alldata){
       c1->cd();
       TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);     t2->Draw();
       t2->cd();
       t2->SetGridy(true);
       t2->SetTopMargin(0);   t2->SetBottomMargin(0.5);
       float yscale = (1.0-0.2)/(0.18-0);
-      TH1 *ratio = (TH1*)shape.data->Clone("RatioHistogram");
+      TH1 *ratio = (TH1*)alldata->Clone("RatioHistogram");
       ratio->SetDirectory(0);
-      ratio->Divide(mc);
+      ratio->Divide(allbkg);
       ratio->GetYaxis()->SetTitle("Obs/Ref");
       ratio->GetXaxis()->SetTitle("");
       ratio->SetMinimum(0);
@@ -469,21 +508,128 @@ void showShape(const Shape_t &shape,TString SaveName)
       ratio->GetYaxis()->SetNdivisions(5);
       ratio->GetYaxis()->SetLabelSize(0.033*yscale);
       ratio->GetYaxis()->SetTitleSize(0.036*yscale);
+      ratio->GetXaxis()->SetRangeUser(175,450);
       ratio->Draw("E1");
-    }
+  }
 
   c1->cd();
-  c1->Modified();
   c1->Update();
   c1->SaveAs(SaveName+".png");
+  c1->SaveAs(SaveName+".pdf");
   c1->SaveAs(SaveName+".C");
   delete c1;
-  if(mc)    delete mc;
+  if(alldata)delete alldata;
+  if(allbkg)delete allbkg;
   if(stack) delete stack;
   if(ratio) delete ratio;
 }
 
 /*
+
+
+void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName)
+{
+
+//  std::map<TString, TH1*> map;
+
+
+  printf("makePlot\n");
+  for(size_t i=0;i<selCh.size();i++){
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+     Shape_t& shape = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
+
+
+     TCanvas* c1 = new TCanvas("c1","c1",800,800);
+
+     TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);  t1->Draw();  t1->cd();
+     TLegend* legA  = new TLegend(0.845,0.2,0.99,0.99, "NDC");
+
+     bool canvasIsFilled(false);
+     THStack *stack=0;
+     TH1 *mc=0;
+     if(shape.bckg.size()){
+         mc=(TH1 *)shape.totalBckg->Clone("mc");
+         stack = new THStack("stack","stack"); 
+         for(size_t i=0; i<shape.bckg.size(); i++){
+             if(shape.bckg[i]->Integral()<=0) continue;
+             stack->Add(shape.bckg[i],"HIST");
+             legA->AddEntry(shape.bckg[i],shape.bckg[i]->GetTitle(),"F");
+         }
+         stack->Draw();
+         stack->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
+         stack->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
+         stack->SetMinimum(mc->GetMinimum());
+         stack->SetMaximum(1.1*mc->GetMaximum());
+         stack->GetXaxis()->SetRangeUser(175,450);
+         canvasIsFilled=true;
+     }
+     if(shape.data){
+         shape.data->Draw(canvasIsFilled ? "E1same" : "E1");
+         legA->AddEntry(shape.data,shape.data->GetTitle(),"P");
+         canvasIsFilled=true;
+     }
+   
+     TString massStr(""); massStr += mass;
+     for(size_t ip=0; ip<shape.signal.size(); ip++){
+         TString proc(shape.signal[ip]->GetTitle());
+         if(!proc.Contains(massStr))continue;
+              if(proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ";
+         else if(proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ";
+         else if(proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW";
+         else if(proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW";
+ 
+         shape.signal[ip]->Draw(canvasIsFilled ? "histsame" : "hist");
+         legA->AddEntry(shape.signal[ip],shape.signal[ip]->GetTitle(),"L");
+         canvasIsFilled=true;
+     }
+     TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
+     T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
+     T->AddText("CMS preliminary");  T->Draw();
+     
+     legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(); legA->SetHeader("");
+     legA->Draw("same");    legA->SetTextFont(42);
+
+
+     TH1 *ratio=0; 
+     if(shape.data && mc){
+         c1->cd();
+         TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);     t2->Draw();
+         t2->cd();
+         t2->SetGridy(true);
+         t2->SetTopMargin(0);   t2->SetBottomMargin(0.5);
+         float yscale = (1.0-0.2)/(0.18-0);
+         TH1 *ratio = (TH1*)shape.data->Clone("RatioHistogram");
+         ratio->GetXaxis()->SetRangeUser(175,450);
+         ratio->SetDirectory(0);
+         ratio->Divide(mc);
+         ratio->GetYaxis()->SetTitle("Obs/Ref");
+         ratio->GetXaxis()->SetTitle("");
+         ratio->SetMinimum(0);
+         ratio->SetMaximum(2.2);
+         ratio->GetXaxis()->SetTitleOffset(1.3);
+         ratio->GetXaxis()->SetLabelSize(0.033*yscale);
+         ratio->GetXaxis()->SetTitleSize(0.036*yscale);
+         ratio->GetXaxis()->SetTickLength(0.03*yscale);
+         ratio->GetYaxis()->SetTitleOffset(0.3);
+         ratio->GetYaxis()->SetNdivisions(5);
+         ratio->GetYaxis()->SetLabelSize(0.033*yscale);
+         ratio->GetYaxis()->SetTitleSize(0.036*yscale);
+         ratio->Draw("E1");
+     }
+
+     c1->cd();
+     c1->SaveAs(SaveName+selCh[i]+AnalysisBins[b]+".png");
+     c1->SaveAs(SaveName+selCh[i]+AnalysisBins[b]+".pdf");
+     c1->SaveAs(SaveName+selCh[i]+AnalysisBins[b]+".C");
+     delete c1;
+     if(mc)    delete mc;
+     if(stack) delete stack;
+     if(ratio) delete ratio;
+   }}
+}
+
+
+
 //
 std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TString Json, bool runSystematics, bool shape)
 {
@@ -823,9 +969,11 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   //replace WZ by its estimate from 3rd Lepton SB
   if(subWZ)doWZSubtraction(selCh,"emu",allShapes,histo,histo+"_3rdLepton");
 
-
   //print event yields from the mt shapes
   if(runSystematics)getYieldsFromShape(selCh,allShapes,histo);
+
+  if(runSystematics)showShape(selCh,allShapes,histo,"plot");
+
 
   //prepare the output
   dci.shapesFile="Shapes_"+massStr+".root";
@@ -1179,9 +1327,16 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 	   if(( subNRB2011 && (proc.Contains("t#bar{t}") || proc.Contains("Single top") || proc.Contains("WW") || proc.Contains("Z#rightarrow #tau#tau")) ) ||
               ( subNRB2012 && (proc.Contains("t#bar{t}") || proc.Contains("Single top") ) ) ){
               MCNRB->Add(shapeChan_SI.bckg[ibckg], 1);
+              NonResonant->SetFillColor(shapeChan_SI.bckg[ibckg]->GetFillColor());
+              NonResonant->SetLineColor(shapeChan_SI.bckg[ibckg]->GetLineColor());
 	      shapeChan_SI.bckg.erase(shapeChan_SI.bckg.begin()+ibckg);  ibckg--;
            }
         }
+
+        NonResonant->SetFillStyle(1001);
+        NonResonant->SetFillColor(592);
+//        NonResonant->SetLineColor(592);
+
 
         //add the background estimate
         shapeChan_SI.bckg.push_back(NonResonant);
