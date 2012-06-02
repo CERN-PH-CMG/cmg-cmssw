@@ -246,4 +246,8 @@ class DiLeptonAnalyzer( Analyzer ):
             raise ValueError( 'legName should be leg1 or leg2, not {leg}'.format(
                 leg=legName )  )
         # the dR2Max value is 0.3^2
-        return triggerMatched(leg, triggerObjects, path, filter, dR2Max=0.089999)
+        pdgIds = None
+        if len(filter) == 2:
+            filter, pdgIds = filter[0], filter[1]
+        return triggerMatched(leg, triggerObjects, path, filter,
+                              dR2Max=0.089999, pdgIds=pdgIds )
