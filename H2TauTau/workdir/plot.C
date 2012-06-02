@@ -47,7 +47,7 @@ void plot(){
   analysis->setSmearHistoRes(0);//default smearing for mass
 
 
-  analysis->plotInc("nvtx",1,1,-1,50,-.5,49.5,""," # of reco. vertices ","",c);
+  //analysis->plotInc("nvtx",1,1,-1,50,-.5,49.5,""," # of reco. vertices ","",c);
   //analysis->plotInc("mupt",1,1,-1,50,0,100,""," mu pt   (GeV)","",c);
   //analysis->plotInc("mueta",1,1,-1,100,-2.5,2.5,""," muon  #eta","",c); 
   //analysis->plotInc("muiso",0,1,-1,100,0,.5,"(tauisodisc>=2)"," muon relIso(0.5)"," Events / 0.005",c,1);
@@ -59,7 +59,7 @@ void plot(){
   //analysis->plotInc("metpt",1,1,-1,50,0,150,""," MVAMET   (GeV)","Events / 3 GeV",c);    
   //analysis->plotInc("metphi",1,1,-1,70,-3.5,3.5,""," MVAMET  phi ","",c);    
   //analysis->plotInc("transversemass",1,0,-1,50,0,200,"","m_{T}   (GeV)","Events / 4 GeV",c);
-  //analysis->plotInc("ditaumass",1,1,-1,40,0,200,"","m_{vis}   (GeV)","",c,0);
+  analysis->plotInc("ditaumass",1,1,-1,40,0,200,"","m_{vis}   (GeV)","",c,0);
   //analysis->plotInc("svfitmass",1,1,-1,60,0,300,"","svfitmass   (GeV)","",c,0);
   //analysis->plotInc("njet",1,1,-1,5,-.5,4.5,""," njet ","",c,1);
   //analysis->plotInc("leadJetPt",1,1,-1,20,0,200,"(njet>=1)"," jet p_{T}   (GeV)","",c,1);

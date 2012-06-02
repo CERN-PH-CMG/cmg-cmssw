@@ -17,6 +17,8 @@
 #include <TRandom2.h>
 
 
+#include "TMVA/Reader.h"
+
 class TauMuFlatNtp : public BaseFlatNtp {
 
 
@@ -44,9 +46,13 @@ protected:
   std::vector<const cmg::PFJet * > pfJetList_;
   std::vector<const cmg::PFJet * > pfJetListLC_;
   std::vector<const cmg::PFJet * > pfJetListLepLC_;
+  const cmg::PFJet * leadJet_;
+  const cmg::PFJet * subleadJet_;
 
   std::vector<const cmg::PFJet * > pfJetListBTag_;
   std::vector<const cmg::PFJet * > pfJetListBTagLC_;
+  const cmg::PFJet * leadBJet_;
+
 
   TriggerEfficiency triggerEff_;
   float triggerEffWeight_;
@@ -113,6 +119,7 @@ protected:
   float subleadJetEta_;
   float subleadJetRawFactor_;
   float diJetMass_;
+  float diJetPt_;
   float diJetDeltaEta_;
   float diJetEta1Eta2_;
   int   njetingap_;
@@ -120,6 +127,7 @@ protected:
   float leadBJetBTagProb_;
   float leadBJetPt_;
   float leadBJetEta_;
+  float vbfmva_;
 
 
 
@@ -164,6 +172,13 @@ private:
 
 
   int runSVFit_;
+
+
+  //VBF MVA
+  std::vector<Float_t> vbfvars_ ;
+  TMVA::Reader *reader_ ;
+  std::string mvaWeights_ ;
+
 
   int counterall_;
   int counterev_;

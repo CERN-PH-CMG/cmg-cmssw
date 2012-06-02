@@ -43,6 +43,7 @@ process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
 from CMGTools.H2TauTau.tools.joseFlatNtpSample2011Reload_cff import configureFlatNtpSampleTauMu
 configureFlatNtpSampleTauMu(process.flatNtpTauMu,sampleName)
 process.flatNtpTauMu.verticesListTag = cms.InputTag('goodOfflinePrimaryVertices')
+#process.flatNtpTauMu.verticesListTag = cms.InputTag('offlinePrimaryVertices')
 #process.flatNtpTauMu.diTauTag = 'cmgTauMuPreSel'
 #process.flatNtpTauMu.diTauTag = 'cmgTauMuCorSVFitFullSel'
 process.flatNtpTauMu.diTauTag = 'cmgTauMuMVAPreSel'
