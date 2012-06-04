@@ -276,19 +276,24 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     reco::PFMET cleanpucmet( pucmet->getSpecific(),
 			     cleanpucmetsumet, cleanpucmetp4, dummyVertex);
 
-    LorentzVector tauChargedp4 = recBoson.leg1().p4()*recBoson.leg1().signalChargedFraction();
+    LorentzVector tau1Chargedp4 = recBoson.leg1().p4();
+    if(typeid(recBoson.leg1())==typeid(cmg::Tau))
+        tau1Chargedp4 *= dynamic_cast<const cmg::Tau&>(recBoson.leg1()).signalChargedFraction();
+    LorentzVector tau2Chargedp4 = recBoson.leg2().p4();
+    if(typeid(recBoson.leg2())==typeid(cmg::Tau))
+        tau2Chargedp4 *= dynamic_cast<const cmg::Tau&>(recBoson.leg2()).signalChargedFraction();
     
     LorentzVector cleantkmetp4 = tkmet->p4();
-    cleantkmetp4 += tauChargedp4;
-    cleantkmetp4 += recBoson.leg2().p4();
-    double cleantkmetsumet = tkmet->sumEt() - tauChargedp4.Et() - recBoson.leg2().et();    
+    cleantkmetp4 += tau1Chargedp4;
+    cleantkmetp4 += tau2Chargedp4;
+    double cleantkmetsumet = tkmet->sumEt() - tau1Chargedp4.Et() - tau2Chargedp4.Et();    
     reco::PFMET cleantkmet( tkmet->getSpecific(),
 			    cleantkmetsumet, cleantkmetp4, dummyVertex);
 
     LorentzVector cleannopumetp4 = nopumet->p4();
-    cleannopumetp4 += tauChargedp4;
-    cleannopumetp4 += recBoson.leg2().p4();
-    double cleannopumetsumet = nopumet->sumEt() - tauChargedp4.Et() - recBoson.leg2().et();    
+    cleannopumetp4 += tau1Chargedp4;
+    cleannopumetp4 += tau2Chargedp4;
+    double cleannopumetsumet = nopumet->sumEt() - tau1Chargedp4.Et() - tau2Chargedp4.Et();    
     reco::PFMET cleannopumet( nopumet->getSpecific(),
 			      cleannopumetsumet, cleannopumetp4, dummyVertex);
 
