@@ -57,7 +57,7 @@ class PublishTask(Task):
         
         password = None
         for i in xrange(retries):
-            pw = getpass.getpass("Enter NICE Password [%d/%d]: " % (i+1,retries) )
+            pw = getpass.getpass("Enter NICE Password [%d/%d] for user '%s': " % (i+1,retries,username) )
             if validLogin(username, pw):
                 password = pw
                 break
