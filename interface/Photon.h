@@ -1,6 +1,7 @@
 #ifndef _AnalysisDataFormats_CMGTools_Photon_H_
 #define _AnalysisDataFormats_CMGTools_Photon_H_
 
+#include "AnalysisDataFormats/CMGTools/interface/UnSet.h"
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/PatTypes.h"
 
@@ -16,6 +17,12 @@ namespace cmg {
     // Constructor for PF Photons
     Photon(pat::PhotonPtr pfPhoton):
       cmg::AbstractPhysicsObject::AbstractPhysicsObject(*pfPhoton),
+      charge_(UnSet(int)),
+      chargedHadronIso_(UnSet(double)),
+      chargedAllIso_(UnSet(double)),
+      puChargedHadronIso_(UnSet(double)),
+      neutralHadronIso_(UnSet(double)),
+      photonIso_(UnSet(double)),
       isFromMuon_(false) 
 	{}
     // Constructor for pat Muons.
