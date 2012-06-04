@@ -19,8 +19,11 @@ filePattern = 'tauMu.*fullsel.*root'
 data_Run2012A.files = getFiles('/TauPlusX/Run2012A-PromptReco-v1/RECO/{pat}_runrange_190605-194076/{htt}/Group'.format( pat=pat, htt=htt), user, filePattern)
 data_Run2012A.intLumi = 713.356 # recorded, obtained with lumiCalc2.py
 
-data_Run2012B.files = getFiles('/TauPlusX/Run2012B-PromptReco-v1/RECO/{pat}_runrange_start-194479/{htt}/Group'.format( pat=pat, htt=htt), user, filePattern)
-data_Run2012B.intLumi = 890.592
+data_Run2012B_start_194479.files = getFiles('/TauPlusX/Run2012B-PromptReco-v1/RECO/{pat}_runrange_start-194479/{htt}/Group'.format( pat=pat, htt=htt), user, filePattern)
+data_Run2012B_start_194479.intLumi = 890.592
+
+data_Run2012B_194480_195016.files = getFiles('/TauPlusX/Run2012B-PromptReco-v1/AOD/{pat}_runrange_194480-195016/{htt}/Group'.format(pat=pat, htt=htt), user, filePattern)
+data_Run2012B_194480_195016.intLumi = 767.154
 
 
 
@@ -30,8 +33,14 @@ data_Run2012B.intLumi = 890.592
 # MC Fall11 ----------------------------------------------------------------------------
 
 
-DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern )
-DYJets.nGenEvents = 1082838
+## DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern )
+## DYJets.nGenEvents = 1082838
+
+# FIXME: now the dataset is complete! remove (1-5/644.)
+DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern )
+DYJets.nGenEvents = 30461028 * (1-5/644.) * 1.97797155762/2.
+
+
 
 WJets.files = getFiles('/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}/Group'.format(aod=aod, pat=pat, htt=htt), user, filePattern )
 WJets.nGenEvents = 18393090
@@ -52,7 +61,7 @@ MC.extend( mc_higgs )
 for sam in MC:
     sam.triggers = mc_triggers 
     
-for sam in data_2012:
+for sam in data_list_2012:
     sam.triggers = data_triggers 
 
 

@@ -64,12 +64,12 @@ TauMuAna = cfg.Analyzer(
     pt1 = 20,
     eta1 = 2.3,
     iso1 = 999,
-    pt2 = 17,
+    pt2 = 20,
     eta2 = 2.1,
     iso2 = 0.1,
     m_min = 10,
     m_max = 99999,
-    # triggerMap = pathsAndFilters
+    triggerMap = pathsAndFilters
     )
 
 tauWeighter = cfg.Analyzer(
@@ -99,9 +99,10 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
+    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.5XX.xml',
     jetCol = 'cmgPFJetSel',
     jetPt = 30,
-    jetEta = 4.5,
+    jetEta = 5.0,
     **vbfKwargs
     )
 
@@ -132,21 +133,13 @@ MC = [DYJets, WJets, TTJets]
 # MC.extend( mc_higgs )
 selectedComponents =  copy.copy(MC)
 
-if period == 'Period_2011A':
-    selectedComponents.extend( data_2011A )
-    selectedComponents.extend( embed_2011A )    
-elif period == 'Period_2011B':
-    selectedComponents.extend( data_2011B )
-    selectedComponents.extend( embed_2011B )    
-elif period == 'Period_2011AB':
-    selectedComponents.extend( data_2011 )
-    selectedComponents.extend( embed_2011 )    
-elif period == 'Period_2012A':
-    selectedComponents.append( data_Run2012A )
+
+if period == 'Period_2012A':
+    selectedComponents.extend( data_list_Run2012A )
 elif period == 'Period_2012B':
-    selectedComponents.append( data_Run2012B )
+    selectedComponents.extend( data_list_Run2012B )
 elif period == 'Period_2012AB':
-    selectedComponents.extend( data_2012 )
+    selectedComponents.extend( data_list_2012 )
     
 
 
@@ -164,7 +157,7 @@ sequence = cfg.Sequence( [
 
 
 DYJets.fakes = True
-DYJets.splitFactor = 10
+DYJets.splitFactor = 100
 WJets.splitFactor = 10
 TTJets.splitFactor = 80
 
@@ -182,23 +175,24 @@ if period.find('Period_2012')==-1:
     embed_Run2011A_03Oct2011_v1.splitFactor = 5
 else:
     data_Run2012A.splitFactor = 80
-    data_Run2012B.splitFactor = 40
+    data_Run2012B_start_194479.splitFactor = 40
+    data_Run2012B_194480_195016.splitFactor = 40
 
 test = 0
 if test==1:
-    # comp = data_Run2012B
-    comp = TTJets
+    # comp = data_Run2012B_194480_195016
+    comp = DYJets
     # comp.files = comp.files[:20]
     # comp = data_2012[0]
-    comp.files = comp.files[:1]
+    comp.files = comp.files[:10]
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.files = comp.files[:2]
+        comp.files = comp.files[:5]
 
-# selectedComponents = [TTJets]
+# selectedComponents = [DYJets]
 # TTJets.splitFactor = 20
 
 config = cfg.Config( components = selectedComponents,
