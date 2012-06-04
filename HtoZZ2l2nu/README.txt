@@ -2,9 +2,19 @@
 # installation
 # Note: LandS has to be compiled on it's own cf. https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideLandS
 #
-scramv1 project CMSSW CMSSW_4_4_4
-cd CMSSW_4_4_4/src/
-cvs co -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS.txt | sh
+
+# 44x
+export SCRAM_ARCH=slc5_amd64_gcc462
+scramv1 project CMSSW CMSSW_5_2_3_patch2
+cd CMSSW_5_2_3_patch2/src/
+cvs co -r CMSSW_5x -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS_44x.txt | sh
+scramv1 b
+
+# 55x
+export SCRAM_ARCH=slc5_amd64_gcc462
+scramv1 project CMSSW CMSSW_5_2_3_patch2
+cd CMSSW_5_2_3_patch2/src/
+cvs co -r CMSSW_5x -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS.txt | sh
 scramv1 b
 
 
@@ -18,38 +28,18 @@ sh DUPLICATEDFILESFOUND
 #
 # create pat-tuples
 #
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 5 -s 2nd -d aoddir -t MC_WJets    -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py"
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 1 -s 2nd -d aoddir -t MC_DY       -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py"
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 1 -s 2nd -d aoddir -t MC_WW       -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py"
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 1 -s 2nd -d aoddir -t MC_WZ       -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py"
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 1 -s 2nd -d aoddir -t MC_ZZ       -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py"
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 1 -s 2nd -d aoddir -t MC_TTJets   -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py"
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 1 -s 2nd -d aoddir -t MC_SingleT  -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py"
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 1 -s 2nd -d aoddir -t MC_GG       -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py"
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 1 -s 2nd -d aoddir -t MC_VBF      -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_mc_cfg.py"
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -R "tmp>5000" -n 1 -s 2nd -d aoddir -t Data        -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_data_cfg.py"
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json -R "tmp>5000" -n 1 -d aoddir -p "-castor=patdir -cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvPattuple_data_cfg.py" -t Data -s 8nh
 
 #
 # create ntuples
 #
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t MC_WW
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t MC_WZ
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t MC_ZZ
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n 25 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t MC_WJets
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  5 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t MC_TTJets
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  5 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t MC_SingleT
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n 10 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t MC_DY
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t MC_GG
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t MC_VBF
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -n  1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split" -t Data
-
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/photon-samples.json -n  1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/psilva/12_03_15_HZZ2l2v_ntuples/split"
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json -n 5 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/psilva/2012_May_12_HZZ2l2v_ntuples/split" -t Data
 
 #
 # merge the ntuples
 #
-haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json -d /store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/split/ -o /store/cmst3/user/querten/12_03_13_HZZ2l2v_ntuples/
-haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/photon-samples.json -d /store/cmst3/user/psilva/12_03_15_HZZ2l2v_ntuples/split -o /store/cmst3/user/psilva/12_03_15_HZZ2l2v_ntuples
+haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json -d /store/cmst3/user/psilva/2012_May_12_HZZ2l2v_ntuples/split -o /store/cmst3/user/psilva/2012_May_12_HZZ2l2v_ntuples/ -t Data
+
 
 #
 # run the analysis
@@ -63,6 +53,11 @@ runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples.json -o test/r
 
 runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samplesNoHWW.json -d /store/cmst3/user/psilva/12_03_31_HZZ2l2v_ntuples -o test/results -c test/runAnalysis_cfg.py.templ
 
+#2012
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json -n 1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/psilva/12_05_11_HZZ2l2v_ntuples/split" -t MC_DY
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json -n 1 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/psilva/12_05_11_HZZ2l2v_ntuples/split" -t Data_
+runLocalAnalysisOverSamples.py -e run2012Analysis -j data/samples_2012.json -o test/results -d /store/cmst3/user/psilva/2012_May_12_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True" -s 8nh 
+
 #
 # z+jets replacement
 #
@@ -72,8 +67,12 @@ haddOverSamples.py -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03
 
 
 ## generate unweigthed distributions
+<<<<<<< README.txt
 
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/querten/12_04_14_HZZ2l2v_ntuples -o ~/work/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
+=======
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples.json -d /store/cmst3/user/psilva/12_04_09_HZZ2l2v_ntuples -o ~/work/gamma/  -c test/runAnalysis_cfg.py.templ -s 8nh
+>>>>>>> 1.41.2.11
 
 runPlotter --iLumi 4616 --inDir ~/work/gamma/ --outDir ~/work/gamma/plots --json data/photon-samples.json
 
