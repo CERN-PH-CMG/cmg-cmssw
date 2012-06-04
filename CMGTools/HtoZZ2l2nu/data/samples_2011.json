@@ -199,6 +199,7 @@
 	"spimpose":true,
 	"color":"800",
 	"lwidth":2,
+        "lstyle":3,
 	"fill":0,
 	"marker":1,
 	"data":[
