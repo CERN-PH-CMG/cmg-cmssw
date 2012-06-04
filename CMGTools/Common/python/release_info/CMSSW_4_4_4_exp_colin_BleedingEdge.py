@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'patrick_flipfix_4Jun12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'patrick_flipfix_4Jun12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_fullmva_4Jun12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_lepid_29May12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'pmeckiff31May2012'),
