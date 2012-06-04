@@ -1,5 +1,5 @@
-#TODO NO TRIGGER MAPPING YET! 
-#NO MC TRIGGER SELECTION YET! should now be ok
+#TODO NO TRIGGER MAPPING YET! <-- is it true? FIXME 
+#NO MC TRIGGER SELECTION YET! should now be ok FIXME
 #GET EMBEDDED SAMPLES
 
 import copy
@@ -45,8 +45,7 @@ tauEleAna = cfg.Analyzer(
     eta2 = 2.1,
     m_min = 10,
     m_max = 99999,
-    diLeptonCutString = 'cuts_baseline',
-    # triggerMap = pathsAndFilters
+    triggerMap = pathsAndFilters         #PG what does this mean?
     )
 
 tauWeighter = cfg.Analyzer(
@@ -57,7 +56,6 @@ tauWeighter = cfg.Analyzer(
     verbose = False
     )
 
-# DO I USE THE FALL11 SAMPLES? WITH TRIGGER SELECTION?
 eleWeighter = cfg.Analyzer(
     'LeptonWeighter_ele',
     effWeight = mc_eleEffWeight,
@@ -68,9 +66,16 @@ eleWeighter = cfg.Analyzer(
 
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
+    # fixedWeight = 1,
+    goodVertices = 'offlinePrimaryVertices', # hum... collection not available in old tuples
     vertexWeight = mc_vertexWeight,
     verbose = False
     )
+
+# defined for vbfAna and eventSorter
+vbfKwargs = dict( Mjj = 400,
+                  deltaEta = 4.0    
+                  )
 
 # defined for vbfAna and eventSorter
 vbfKwargs = dict( Mjj = 400,
@@ -82,6 +87,7 @@ vbfAna = cfg.Analyzer(
     jetCol = 'cmgPFJetSel',
     jetPt = 30,
     jetEta = 4.5,
+    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.44X.xml',
     **vbfKwargs
     )
 
@@ -89,7 +95,7 @@ eventSorter = cfg.Analyzer(
     'H2TauTauEventSorter',
     # vertexWeight = mc_vertexWeight,
     leg1 = 'tau',
-    leg2 = 'ele',
+    leg2 = 'mu',
     MT_low = 40,
     MT_high = 60,
     Boosted_JetPt = 150,
@@ -100,9 +106,10 @@ treeProducer = cfg.Analyzer(
     'H2TauTauTreeProducerTauEle'
     )
 
+
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauEle_ColinMay15 import * 
+from CMGTools.H2TauTau.proto.samples.tauEle_PietroJun04 import * 
 
 #########################################################################################
 
@@ -115,7 +122,7 @@ for mc in MC:
 
 
 MC = [DYJets, WJets, TTJets]
-MC.extend( mc_higgs )
+#MC.extend( mc_higgs )
 selectedComponents =  copy.copy(MC)
 
 if period == 'Period_2011A':
@@ -128,25 +135,24 @@ elif period == 'Period_2011AB':
     selectedComponents.extend( data_2011 )
     # selectedComponents.extend( embed_2011 )    
 
-
-
 sequence = cfg.Sequence( [
     triggerAna,
+    vertexAna,
     tauEleAna,
     vbfAna,
-    vertexAna,
     tauWeighter, 
     eleWeighter, 
-    # eventSorter,
     treeProducer
    ] )
 
+
 DYJets.fakes = True
-TTJets.splitFactor = 2 
-DYJets.splitFactor = 8
-WJets.splitFactor = 3
-data_Run2011B_PromptReco_v1.splitFactor = 8
-data_Run2011A_PromptReco_v4.splitFactor = 2 
+DYJets.splitFactor = 40
+WJets.splitFactor = 10
+TTJets.splitFactor = 100
+
+data_Run2011B_PromptReco_v1.splitFactor = 40
+data_Run2011A_PromptReco_v4.splitFactor = 40
 
 ## embed_Run2011A_May10ReReco_v1.splitFactor = 2
 ## embed_Run2011A_PromptReco_v4.splitFactor = 4
@@ -154,10 +160,10 @@ data_Run2011A_PromptReco_v4.splitFactor = 2
 ## embed_Run2011A_03Oct2011_v1.splitFactor = 2
 ## embed_Run2011B_PromptReco_v1.splitFactor = 8
 
-test = 1
+test = 0
 if test==1:
-#    comp = DYJets
-    comp = HiggsVBF120
+    comp = DYJets
+#    comp = HiggsVBF120
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:1]
