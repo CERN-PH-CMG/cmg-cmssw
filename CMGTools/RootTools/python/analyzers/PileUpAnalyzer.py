@@ -6,11 +6,19 @@ from CMGTools.RootTools.physicsobjects.PileUpSummaryInfo import PileUpSummaryInf
 from ROOT import TFile, TH1F
 
 class PileUpAnalyzer( Analyzer ):
-    '''Computes pile-up weights for MC
-    The pile up histograms for mc and data should be set on the components as:
-    puFileData, puFileMC
+    '''Computes pile-up weights for MC from the pile up histograms for MC and data.
+    These histograms should be set on the components as
+    puFileData, puFileMC attributes, as is done here:
+    
+    http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/H2TauTau/Colin/test_tauMu_2012_cfg.py?view=markup
 
-    example:
+    THESE HISTOGRAMS MUST BE CONSISTENT, SEE
+    https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsPileUpReweighting#Generating_pile_up_distributions
+    
+    Additionally, this analyzer writes in the output an histogram containing the unweighting MC
+    pile-up distribution, to be used in input of the weighting for a later pass. 
+    
+    Example of use: 
     
     puAna = cfg.Analyzer(
       "PileUpAnalyzer",
