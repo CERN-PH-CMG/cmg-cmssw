@@ -5,6 +5,7 @@
 #include "TObjString.h"
 #include "TString.h"
 #include "TSystem.h"
+#include "FWCore/Version/interface/GetReleaseVersion.h"
 
 using namespace std;
 using namespace reco;
@@ -359,9 +360,11 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	std::pair<double,double> enSF(1.0,0);
 	if(ecorr) 
 	  {
-	    //FIXME : 52X
+#if IS44x == 1
 	    enSF=ecorr->CorrectedEnergyWithError(dynamic_cast<const reco::GsfElectron &>(*ele),lazyTool);
-	    //	    enSF=ecorr->CorrectedEnergyWithError(*ele,*hVtx,lazyTool,iSetup);
+#else
+	    enSF=ecorr->CorrectedEnergyWithError(*ele,*hVtx,lazyTool,iSetup);
+#endif
 	    enSF.first = enSF.first/ele->energy();  enSF.second = enSF.second/ele->energy();
 	  }
 	lepId.ensf              = enSF.first;
@@ -885,9 +888,11 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 		gSystem->ExpandPathName(path);
 		phocorr->Initialize(iSetup,path.Data());
 	      }
-	    //FIXME : 52X 
+#if IS44x == 1
 	    enSF=phocorr->CorrectedEnergyWithError(*pho);
-	    //	    enSF=phocorr->CorrectedEnergyWithError(*pho,*hVtx,lazyTool,iSetup);
+#else
+	    enSF=phocorr->CorrectedEnergyWithError(*pho,*hVtx,lazyTool,iSetup);
+#endif
 	    enSF.first = enSF.first/pho->energy();  enSF.second = enSF.second/pho->energy();
 	  }
 	phoId.ensf              = enSF.first;
