@@ -14,7 +14,7 @@ class DataMCPlot(object):
     Features a list of histograms (some of them being stacked),
     and several Drawing functions.
     '''
-    
+
     def __init__(self, name):
         self.histosDict = {}
         self.histos = []
@@ -35,6 +35,18 @@ class DataMCPlot(object):
         self.histos.append( tmp )
         self.histosDict[name] = tmp
         # tmp.AddEntry( self.legend, legendLine)
+
+    def Replace(self, name, pyhist):
+        oldh = self.histosDict.get(name, None)
+        if oldh is None:
+            print 'histogram', name, 'does not exist, cannot replace it.'
+            return
+        else:
+            index = self.histos.index( oldh )
+            import pdb; pdb.set_trace
+            self.histosDict[name] = pyhist
+            self.histos[index] = pyhist
+            
         
     def _SortedHistograms(self, reverse=False):
         '''Returns the histogram dictionary, sorted by increasing layer,

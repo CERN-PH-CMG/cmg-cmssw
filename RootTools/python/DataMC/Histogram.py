@@ -16,6 +16,7 @@ class Histogram( object ):
     the same GetName(), coming from different TDirectories.
     '''
 
+
     def __init__(self, name, obj, layer=0., legendLine=None, stack=True):
         # name is a user defined name
         self.name = name
@@ -120,6 +121,7 @@ class Histogram( object ):
         if bmin is None and bmax is None:
             return hist.Integral(0, hist.GetNbinsX()+1)
         elif bmin is not None and bmax is not None:
+            # import pdb; pdb.set_trace()
             if (xmax - xmin) % self.obj.GetBinWidth(1) != 0:
                 raise ValueError('boundaries should define an integer number of bins. nbins=%d, xmin=%3.3f, xmax=%3.3f' % (self.obj.GetNbinsX(), self.obj.GetXaxis().GetXmin(), self.obj.GetXaxis().GetXmax()) )
             return hist.Integral(bmin, bmax)
@@ -137,5 +139,5 @@ class Histogram( object ):
         '''Sets the weight to normalize the weighted histogram to 1.
 
         In other words, the original histogram stays untouched.'''
-        self.SetWeight( 1/self.weighted.Integral() )
+        self.Scale( 1/self.Integral() )
 
