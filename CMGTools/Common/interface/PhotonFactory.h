@@ -30,8 +30,8 @@ namespace cmg {
       muonLabel_(ps.getParameter<edm::InputTag>("muonCollection")),
       isoDepWithChargedLabel_(ps.getParameter<edm::InputTag>("isoDepWithCharged")),
       isoDepWithPhotonsLabel_(ps.getParameter<edm::InputTag>("isoDepWithPhotons")),
-      isoDepWithNeutralLabel_(ps.getParameter<edm::InputTag>("isoDepWithPU")),
-      isoDepWithPULabel_(ps.getParameter<edm::InputTag>("isoDepWithNeutral"))
+      isoDepWithNeutralLabel_(ps.getParameter<edm::InputTag>("isoDepWithNeutral")),
+      isoDepWithPULabel_(ps.getParameter<edm::InputTag>("isoDepWithPU"))
 	{
 	  chargedHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("chargedHadronIsoPar"));
 	  neutralHadronIsoPar_.initialize( ps.getParameter<edm::ParameterSet>("neutralHadronIsoPar"));
