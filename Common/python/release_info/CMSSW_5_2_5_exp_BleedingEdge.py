@@ -2,7 +2,7 @@
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_fullmva_4Jun12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'pmeckiff31May2012'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_puandjson_1June12'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_4Jun12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-11'),
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
   ('DataFormats/PatCandidates', 'DataFormats/PatCandidates', 'cbern_25Apr12'),
