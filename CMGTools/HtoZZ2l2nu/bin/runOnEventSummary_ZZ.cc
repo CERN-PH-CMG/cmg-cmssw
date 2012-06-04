@@ -980,10 +980,11 @@ int main(int argc, char* argv[])
         mon.fillHisto("ZZ_in_BalRedIndMet_L", tags_cat, RedIndMet_L/zpt, iweight);
         if( ev.l1_id == -(ev.l2_id) ) mon.fillHisto("ZZ_in_LeptId", tags_cat, 0, iweight);
         else mon.fillHisto("ZZ_in_LeptId", tags_cat, 1, iweight);
-        if( ev.l1_passIso ) mon.fillHisto("ZZ_in_l1_passIso", tags_cat, 0, iweight);
-        else mon.fillHisto("ZZ_in_l1_passIso", tags_cat, 1, iweight);
-        if( ev.l2_passIso ) mon.fillHisto("ZZ_in_l2_passIso", tags_cat, 0, iweight);
-        else mon.fillHisto("ZZ_in_l2_passIso", tags_cat, 1, iweight);
+        // pedro: do you still need this?
+	// if( ev.l1_passIso ) mon.fillHisto("ZZ_in_l1_passIso", tags_cat, 0, iweight);
+	// else mon.fillHisto("ZZ_in_l1_passIso", tags_cat, 1, iweight);
+	// if( ev.l2_passIso ) mon.fillHisto("ZZ_in_l2_passIso", tags_cat, 0, iweight);
+	// else mon.fillHisto("ZZ_in_l2_passIso", tags_cat, 1, iweight);
       }
        //FinalSelection
       if( PassSelectionRedMet ){

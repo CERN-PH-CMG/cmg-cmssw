@@ -240,7 +240,9 @@ void plotLimit(TString outputName="Limit", TString inputs="", TString legendName
    MG->Draw("same");
 
    char LumiLabel[1024];
-   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=7 TeV, #int L=%6.1ffb^{-1}   -   %20s",5.035,legendName.Data());
+   //   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=7 TeV, #int L=%6.1ffb^{-1}   -   %20s",5.035,legendName.Data());
+   //  TPaveText *pave = new TPaveText(0.1,0.96,0.94,0.99,"NDC");
+   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=8 TeV, #int L=%6.1ffb^{-1}   -   %20s",2.035,legendName.Data());
    TPaveText *pave = new TPaveText(0.1,0.96,0.94,0.99,"NDC");
    pave->SetBorderSize(0);
    pave->SetFillStyle(0);

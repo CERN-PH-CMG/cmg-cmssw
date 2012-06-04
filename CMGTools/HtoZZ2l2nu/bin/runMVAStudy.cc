@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
 	  if(ev.cat!=1 && ev.cat!=2) continue;
 
 	  //require loose wp at least
-	  if(ev.pass==0) continue;
+	  //	  if(ev.pass==0) continue;
 
 	  //classify the event
 	  int eventCategory= eventClassifComp.Get(phys);
