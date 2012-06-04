@@ -76,7 +76,7 @@ class Stack:
         '''Draw statistical errors if statErrors is True.'''
         if self.statErrors is False:
             return
-        self.totalHist.Draw('same')
+        self.totalHist.Draw('sameE2')
         
     def SetStyle(self, style ):
         '''Set the style for the total histogram'''
