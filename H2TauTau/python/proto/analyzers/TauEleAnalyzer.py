@@ -77,14 +77,14 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, iEvent, event):
         
-#        self.bestVertex = event.goodVertices[0]
-        result = super(TauEleAnalyzer, self).process(iEvent, event)
-
 #        import pdb; pdb.set_trace()
 #        if event.eventId == 20990 : 
 #            print 'STOPPING'
 #            import pdb
 #            pdb.set_trace()
+
+#        self.bestVertex = event.goodVertices[0]
+        result = super(TauEleAnalyzer, self).process(iEvent, event)
 
         if result is False:
             selDiLeptons = [ diL for diL in event.diLeptons if \
@@ -211,7 +211,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if tau.decayMode() == 0 and \
                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B #PG FIXME should I put this in?
             return False
-        if abs (tau.dz()) > 0.2 : return False
+        if abs (tau.dz())  > 0.2   : return False
+        if abs (tau.dxy()) > 0.045 : return False
         return tau.tauID("byLooseIsoMVA")         == True and \
                tau.tauID("againstElectronMVA")    == True and \
                tau.tauID("againstElectronMedium") == True and \
