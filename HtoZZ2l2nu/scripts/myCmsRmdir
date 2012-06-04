@@ -2,6 +2,8 @@
 
 a=(`cmsLs $1 | awk '{print $5}'`)
 for i in ${a[@]}; do 
+    #myCmsRmdir ${i};
+    cmsRmdir ${i};
     cmsRm ${i};
 done
 

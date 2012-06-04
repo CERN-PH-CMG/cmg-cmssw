@@ -4,17 +4,17 @@
 #
 
 # 44x
-export SCRAM_ARCH=slc5_amd64_gcc462
-scramv1 project CMSSW CMSSW_5_2_3_patch2
-cd CMSSW_5_2_3_patch2/src/
-cvs co -r CMSSW_5x -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS_44x.txt | sh
+export SCRAM_ARCH=slc5_amd64_gcc434
+scramv1 project CMSSW CMSSW_4_4_4
+cd CMSSW_4_4_4/src/
+cvs co -r from_44x_and_52x -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS_44x.txt | sh
 scramv1 b
 
 # 55x
 export SCRAM_ARCH=slc5_amd64_gcc462
 scramv1 project CMSSW CMSSW_5_2_3_patch2
 cd CMSSW_5_2_3_patch2/src/
-cvs co -r CMSSW_5x -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS.txt | sh
+cvs co -r from_44x_and_52x -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS.txt | sh
 scramv1 b
 
 

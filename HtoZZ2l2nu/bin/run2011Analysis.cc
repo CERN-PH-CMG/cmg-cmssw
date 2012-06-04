@@ -390,8 +390,8 @@ int main(int argc, char* argv[])
       if(!isMC)
 	{
 	  //apply regression corrections for SC energy
-	  float l1corr( fabs(phys.leptons[0].id)==ELECTRON ? ev.en_corren[phys.leptons[0].pid]/phys.leptons[0].energy() : 1.0); if(l1corr==0) l1corr=1;
-	  float l2corr( fabs(phys.leptons[1].id)==ELECTRON ? ev.en_corren[phys.leptons[1].pid]/phys.leptons[1].energy() : 1.0); if(l2corr==0) l2corr=1;
+	  float l1corr( fabs(phys.leptons[0].id)==ELECTRON ? phys.leptons[0].ensf : 1.0); if(l1corr==0) l1corr=1;
+	  float l2corr( fabs(phys.leptons[1].id)==ELECTRON ? phys.leptons[1].ensf : 1.0); if(l2corr==0) l2corr=1;
 	  zll = LorentzVector(l1corr*lep1+l2corr*lep2);
 	}
 

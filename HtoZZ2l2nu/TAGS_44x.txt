@@ -1,5 +1,5 @@
 cvs co -r V00-02-05     -d CMGTools/External  UserCode/CMG/CMGTools/External
-cvs co -r  CMSSW_5x     -d  CMGTools/HtoZZ2l2nu UserCode/CMG/CMGTools/HtoZZ2l2nu                             
+cvs co -r  from_44x_and_52x  -d  CMGTools/HtoZZ2l2nu UserCode/CMG/CMGTools/HtoZZ2l2nu                             
 cvs co -r regression44x_Dec3 CondFormats/DataRecord                           
 cvs co -r V00-02-04      CondFormats/EgammaObjects                        
 cvs co -r V00-00-05      -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools

@@ -10,15 +10,16 @@ from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 #default values
 shapeBased='1'
 shapeName='mt_shapes'
-inUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root'
+inUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root'
 CWD=os.getcwd()
 phase=-1
-jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json'
+jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
 LandSArg=' --indexvbf 78 '
 LandSArg+=' --bins eq0jets,eq1jets,geq2jets,vbf'
-
+#LandSArg+=' --bins eq0jets,eq1jets,geq2jets,vbf --prefix 8'
 cutList='' 
+
 def help() :
    print '\n\033[92m optimize.py \033[0m \n'
    print ' -p phase (no default value is assigned)'
@@ -88,6 +89,7 @@ cuts1   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_met')
 cuts2   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmin') 
 cuts3   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmax') 
 
+
 #MASS = [200,400,600]
 #SUBMASS = [200,400,600]
 MASS = [200,250, 300,350, 400,450, 500,550, 600]
@@ -113,7 +115,7 @@ if( phase == 1 ):
       SCRIPT = open(OUT+'script_'+str(i)+'.sh',"w")
       SCRIPT.writelines('echo "TESTING SELECTION : ' + str(i).rjust(5) + ' --> met>' + str(cuts1.GetBinContent(i)).rjust(5) + ' ' + str(cuts2.GetBinContent(i)).rjust(5) + '<mt<'+str(cuts3.GetBinContent(i)).rjust(5)+'";\n')
       SCRIPT.writelines('cd ' + CMSSW_BASE + '/src;\n')
-      SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
+      SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc462;\n")
       SCRIPT.writelines("eval `scram r -sh`;\n")
       SCRIPT.writelines('cd /tmp/;\n')
       for m in MASS:
@@ -283,7 +285,7 @@ elif(phase == 3 ):
         index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
         SCRIPT = open(OUT+'/script_mass_'+str(m)+'.sh',"w")
         SCRIPT.writelines('cd ' + CMSSW_BASE + ';\n')
-        SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
+        SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc462;\n")
         SCRIPT.writelines("eval `scram r -sh`;\n")
         SCRIPT.writelines('cd ' + CWD + ';\n')
         shapeBasedOpt=''

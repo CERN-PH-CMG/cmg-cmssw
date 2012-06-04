@@ -9,30 +9,55 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 {
   
   PhysicsEvent_t phys;
+  phys.run=ev.run;
+  phys.event=ev.event;
+  phys.lumi=ev.lumi;
   phys.puWeight=ev.puWeight;
   phys.cat = ev.cat;
   phys.nvtx = ev.nvtx;
   phys.vtx = LorentzVector(ev.vtx_px,ev.vtx_py,ev.vtx_pz,ev.vtx_en);
   
+  size_t nlep(0);
   LorentzVector l1P4(ev.l1_px,ev.l1_py,ev.l1_pz,ev.l1_en);
-  if(l1P4.pt()>0) phys.leptons.push_back(PhysicsObject_Lepton(l1P4, ev.l1_id, ev.l1_genid, ev.l1_ptErr, ev.l1_ecalIso, ev.l1_hcalIso, ev.l1_trkIso, ev.l1_gIso, ev.l1_chIso, ev.l1_puchIso, ev.l1_nhIso, ev.l1_passIso, ev.l1_pid) );
+  if(l1P4.pt()>0)
+    {
+      phys.leptons.push_back(PhysicsObject_Lepton(l1P4, ev.l1_id, ev.l1_genid, ev.l1_ptErr, ev.l1_ecalIso, ev.l1_hcalIso, ev.l1_trkIso, ev.l1_gIso, ev.l1_chIso, ev.l1_puchIso, ev.l1_nhIso, ev.l1_pid) );
+      phys.leptons[nlep].setTrackInfo(ev.l1_d0, ev.l1_dZ,ev.l1_trkpt,ev.l1_trketa,ev.l1_trkphi,ev.l1_trkchi2,ev.l1_trkValidPixelHits,ev.l1_trkValidTrackerHits,ev.l1_trkLostInnerHits);
+      phys.leptons[nlep].setEnergyCorrections(ev.l1_ensf,ev.l1_ensferr);
+      nlep++;
+    }
   LorentzVector l2P4(ev.l2_px,ev.l2_py,ev.l2_pz,ev.l2_en);
-  if(l2P4.pt()>0) phys.leptons.push_back(PhysicsObject_Lepton(l2P4, ev.l2_id, ev.l2_genid, ev.l2_ptErr, ev.l2_ecalIso, ev.l2_hcalIso, ev.l2_trkIso, ev.l2_gIso, ev.l2_chIso, ev.l2_puchIso, ev.l1_nhIso, ev.l2_passIso, ev.l2_pid) );
+  if(l2P4.pt()>0)
+    {
+      phys.leptons.push_back(PhysicsObject_Lepton(l2P4, ev.l2_id, ev.l2_genid, ev.l2_ptErr, ev.l2_ecalIso, ev.l2_hcalIso, ev.l2_trkIso, ev.l2_gIso, ev.l2_chIso, ev.l2_puchIso, ev.l1_nhIso, ev.l2_pid) );
+      phys.leptons[nlep].setTrackInfo(ev.l2_d0, ev.l2_dZ,ev.l2_trkpt,ev.l2_trketa,ev.l2_trkphi,ev.l2_trkchi2,ev.l2_trkValidPixelHits,ev.l2_trkValidTrackerHits,ev.l2_trkLostInnerHits);
+      phys.leptons[nlep].setEnergyCorrections(ev.l2_ensf,ev.l2_ensferr);
+      nlep++;
+    }
   for(Int_t i=0;i<ev.ln;i++){
-    phys.leptons.push_back(PhysicsObject_Lepton(LorentzVector(ev.ln_px[i],ev.ln_py[i],ev.ln_pz[i],ev.ln_en[i]), ev.ln_id[i], ev.ln_genid[i], ev.ln_ptErr[i], ev.ln_ecalIso[i], ev.ln_hcalIso[i], ev.ln_trkIso[i], ev.ln_gIso[i], ev.ln_chIso[i], ev.ln_puchIso[i], ev.ln_nhIso[i], ev.ln_passIso[i], ev.ln_pid[i]) );
+    phys.leptons.push_back(PhysicsObject_Lepton(LorentzVector(ev.ln_px[i],ev.ln_py[i],ev.ln_pz[i],ev.ln_en[i]), ev.ln_id[i], ev.ln_genid[i], ev.ln_ptErr[i], ev.ln_ecalIso[i], ev.ln_hcalIso[i], ev.ln_trkIso[i], ev.ln_gIso[i], ev.ln_chIso[i], ev.ln_puchIso[i], ev.ln_nhIso[i], ev.ln_pid[i]) );
+
+    phys.leptons[nlep].setTrackInfo(ev.ln_d0[i], ev.ln_dZ[i],ev.ln_trkpt[i],ev.ln_trketa[i],ev.ln_trkphi[i],ev.ln_trkchi2[i],ev.ln_trkValidPixelHits[i],ev.ln_trkValidTrackerHits[i],ev.ln_trkLostInnerHits[i]);
+    phys.leptons[nlep].setEnergyCorrections(ev.ln_ensf[i],ev.ln_ensferr[i]);
+    nlep++;
   }
   
   for(Int_t i=0;i<ev.jn;i++){
-    phys.jets.push_back(PhysicsObject_Jet(LorentzVector(ev.jn_px[i],ev.jn_py[i],ev.jn_pz[i],ev.jn_en[i]), ev.jn_genid[i], ev.jn_btag1[i], ev.jn_btag2[i], ev.jn_neutHadFrac[i], ev.jn_neutEmFrac[i], ev.jn_chHadFrac[i], ev.jn_tightId[i]));
+    phys.jets.push_back(PhysicsObject_Jet(LorentzVector(ev.jn_px[i],ev.jn_py[i],ev.jn_pz[i],ev.jn_en[i]), ev.jn_genid[i], ev.jn_btag1[i], ev.jn_btag2[i], ev.jn_btag3[i], ev.jn_neutHadFrac[i], ev.jn_neutEmFrac[i], ev.jn_chHadFrac[i], ev.jn_idbits[i]));
     phys.jets[i].setGenPt(ev.jn_genpt[i]);
+    phys.jets[i].setGenFlavor(ev.jn_genflav[i]);
     phys.jets[i].setPUmva(ev.jn_pumva[i]);
+    phys.jets[i].setShapeVariables(ev.jn_beta[i],ev.jn_betaStar[i],ev.jn_dRMean[i],ev.jn_ptD[i],ev.jn_ptRMS[i]);
   }
 
   for(Int_t i=0;i<ev.ajn;i++){
-    phys.ajets.push_back(PhysicsObject_Jet(LorentzVector(ev.ajn_px[i],ev.ajn_py[i],ev.ajn_pz[i],ev.ajn_en[i]), ev.ajn_genid[i], ev.ajn_btag1[i], ev.ajn_btag2[i], ev.ajn_neutHadFrac[i], ev.ajn_neutEmFrac[i], ev.ajn_chHadFrac[i], ev.ajn_tightId[i]));
+    phys.ajets.push_back(PhysicsObject_Jet(LorentzVector(ev.ajn_px[i],ev.ajn_py[i],ev.ajn_pz[i],ev.ajn_en[i]), ev.ajn_genid[i], ev.ajn_btag1[i], ev.ajn_btag2[i],ev.ajn_btag3[i], ev.ajn_neutHadFrac[i], ev.ajn_neutEmFrac[i], ev.ajn_chHadFrac[i], ev.ajn_idbits[i]));
     phys.ajets[i].setGenPt(ev.ajn_genpt[i]);
+    phys.ajets[i].setGenFlavor(ev.ajn_genflav[i]);
     phys.ajets[i].setPUmva(ev.ajn_pumva[i]);
+    phys.ajets[i].setShapeVariables(ev.ajn_beta[i],ev.ajn_betaStar[i],ev.ajn_dRMean[i],ev.ajn_ptD[i],ev.ajn_ptRMS[i]);
   }
+
   //  //order the jet vector
   //  std::sort(phys.ajets.begin(), phys.ajets.end(), JetPtOrdering);
   
@@ -45,8 +70,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 			       0., 
 			       ev.g_iso1[ipart], ev.g_iso2[ipart], ev.g_iso3[ipart], 
 			       ev.g_sihih[ipart], ev.g_r9[ipart], ev.g_hoe[ipart]);
-    igamma.setConversionInfo(ev.g_conv[ipart],ev.g_conv_invtx[ipart],LorentzVector(ev.g_conv_px[ipart],ev.g_conv_py[ipart],ev.g_conv_pz[ipart],ev.g_conv_en[ipart]));
-    igamma.setTrackVeto(ev.g_trkVeto[ipart]);
+    igamma.setID(ev.g_idbits[ipart]);
     igamma.setSCcorrections(ev.g_corren[ipart],ev.g_correnerr[ipart]);
     phys.gammas.push_back( igamma );
   }
@@ -162,4 +186,12 @@ bool isZZ2l2nu(int mcChannelCode)
   if(getNgenLeptons(mcChannelCode,ELECTRON)<2 && getNgenLeptons(mcChannelCode,MUON)<2 && getNgenLeptons(mcChannelCode,TAU)<2) return false;
   if(getNgenLeptons(mcChannelCode,12)<2) return false;
   return true;
+}
+
+
+//
+bool hasObjectId(int idcode,int arbitration)
+{
+  bool hasArbitration((idcode>>arbitration) & 0x1);
+  return hasArbitration;
 }
