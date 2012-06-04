@@ -173,12 +173,7 @@
           ]
 	},
 	{
-<<<<<<< samples.json
 	"tag":"ggH(200)#rightarrow ZZ",
-=======
-	"tag":"ggH(200)#rightarrow ZZ",
-        "isinvisible":true,
->>>>>>> 1.62.2.1
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",

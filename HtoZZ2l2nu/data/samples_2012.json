@@ -8,7 +8,7 @@
         "marker":1,
         "data":[
 	    {
-                "dtag":"MC_WW",
+                "dtag":"MC8TeV_WW",
                 "dset":"/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
                 "split":1,
                 "xsec":57.1097
@@ -23,7 +23,7 @@
 	"marker":1,
 	"data":[
 	    {
-                "dtag":"MC_ZZ",
+                "dtag":"MC8TeV_ZZ",
                 "dset":"/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
                 "split":2,
 	        "mctruthmode":1,
@@ -39,7 +39,7 @@
         "marker":1,
         "data":[
             {
-                "dtag":"MC_WZ",
+                "dtag":"MC8TeV_WZ",
                 "dset":"/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
                 "split":2,
                 "xsec":32.3161
@@ -53,7 +53,7 @@
          "lcolor":1,
          "data":[
                 {
-                "dtag":"MC_TTJets",
+                "dtag":"MC8TeV_TTJets",
                 "dset":"/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
                 "split":1,
                 "xsec":225.197
@@ -67,13 +67,13 @@
          "lcolor":1,
          "data":[
                 {
-                "dtag":"MC_SingleTbar_tW",
+                "dtag":"MC8TeV_SingleTbar_tW",
                 "dset":"",
                 "split":1,
                 "xsec":11.1773
                 },
                 {
-                "dtag":"MC_SingleT_tW",
+                "dtag":"MC8TeV_SingleT_tW",
                 "dset":"",
                 "split":1,
                 "xsec":11.1773
@@ -87,32 +87,32 @@
 	"lcolor":1,
 	"data":[
 	     {	
-		"dtag":"MC_QCDPt30to80",
+		"dtag":"MC8TeV_QCDPt30to80",
 		"xsec":74330000,
 		"br":[0.0621]
 	     },
 	     {	
-		"dtag":"MC_QCDPt80to170",
+		"dtag":"MC8TeV_QCDPt80to170",
 		"xsec":1191000,
 		"br":[0.1539]
 	     },
 	     {	
-		"dtag":"MC_QCDPt170to250",
+		"dtag":"MC8TeV_QCDPt170to250",
 		"xsec":30990,
 		"br":[0.148]
 	     },
 	     {	
-		"dtag":"MC_QCDPt250to350",
+		"dtag":"MC8TeV_QCDPt250to350",
 		"xsec":4250,
 		"br":[0.131]
 	     },
 	     {	
-		"dtag":"MC_QCDPt350toInf",
+		"dtag":"MC8TeV_QCDPt350toInf",
 		"xsec":810,
 		"br":[0.11]
 	     },
      	     {	
-		"dtag":"MC_QCDMuPt20toInf",
+		"dtag":"MC8TeV_QCDMuPt20toInf",
 		"xsec":364000000,
 		"br":[0.00037]
 	     }
@@ -125,19 +125,19 @@
          "lcolor":1,
          "data":[
    		{
-                 "dtag":"MC_WToENu",
+                 "dtag":"MC8TeV_WToENu",
                  "dset":"/WToENu_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START50_V15-v1/AODSIM",
                  "split":1,
                 "xsec":12085.73
                 },
                 {
-                 "dtag":"MC_WToMuNu",
+                 "dtag":"MC8TeV_WToMuNu",
                  "dset":"/WToMuNu_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START50_V15-v1/AODSIM",
                  "split":1,
                 "xsec":12085.73
                 },
                 {
-                 "dtag":"MC_WToTauNu",
+                 "dtag":"MC8TeV_WToTauNu",
                  "dset":"/WToTauNu_TuneZ2star_8TeV_pythia6_tauola_cff/Summer12-PU_S7_START50_V15-v1/AODSIM",
                  "split":1,
                 "xsec":12085.73
@@ -152,7 +152,7 @@
 	 "mctruthmode":2,
          "data":[
 	      {
-               "dtag":"MC_DYJetsToTauTau",
+               "dtag":"MC8TeV_DYJetsToTauTau",
                "split":10,
                 "xsec":3503.71
               }
@@ -166,7 +166,7 @@
 	 "mctruthmode":1,
          "data":[
 	      {
-               "dtag":"MC_DYJetsToLL",
+               "dtag":"MC8TeV_DYJetsToLL",
 	       "patdir":["/store/cmst3/user/musella/PATtuples/19_04_2012/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START50_V15-v1_AODSIM/"],
 	       "dset":"/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START50_V15-v1/AODSIM",
                "split":10,
@@ -185,7 +185,7 @@
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC_8TeVGGtoH200toZZto2L2Nu",
+		"dtag":"MC8TeV_8TeVGGtoH200toZZto2L2Nu",
 		"dset":"",
                 "aoddir":[""],
 		"patdir":["/GluGluToHToZZTo2L2Nu_M-200_8TeV-powheg-pythia6/psilva-HZZ2l2vPAT01april2012_GluGluToHToZZTo2L2Nu_M-200_8TeV-7ba81c0aab6ea748ae0bd050e2c7b5f4/USER"],
@@ -205,7 +205,7 @@
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC_8TeVGGtoH400toZZto2L2Nu",
+		"dtag":"MC8TeV_8TeVGGtoH400toZZto2L2Nu",
 		"dset":"",
                 "aoddir":[""],
 		"patdir":["/GluGluToHToZZTo2L2Nu_M-400_8TeV-powheg-pythia6/psilva-HZZ2l2vPAT01april2012_GluGluToHToZZTo2L2Nu_M-400_8TeV-7ba81c0aab6ea748ae0bd050e2c7b5f4/USER"],
@@ -226,7 +226,7 @@
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC_8TeVGGtoH600toZZto2L2Nu",
+		"dtag":"MC8TeV_8TeVGGtoH600toZZto2L2Nu",
 		"dset":"",
                 "aoddir":[""],
 		"patdir":["/GluGluToHToZZTo2L2Nu_M-600_8TeV-powheg-pythia6/psilva-HZZ2l2vPAT01april2012_GluGluToHToZZTo2L2Nu_M-600_8TeV-7ba81c0aab6ea748ae0bd050e2c7b5f4/USER "],
@@ -244,7 +244,7 @@
            "marker":20,
            "data":[
                 {
-	         "dtag":"Data_DoubleElectron2012A",
+	         "dtag":"Data8TeV_DoubleElectron2012A",
 		 "dset":"/DoubleElectron/Run2012A-PromptReco-v1/AOD",
 		 "aoddir":["path=/DoubleElectron/Run2012A-PromptReco-v1/AOD"],
 	         "patdir2":["path=/DoubleElectron/wangjian-HZZ2l2v_Run2012A-b2c4843cc0f0fce2cad58e298627fbaa/USER"],
@@ -252,7 +252,7 @@
                  "split":2
                 },
                 {
-	         "dtag":"Data_DoubleMu2012A",
+	         "dtag":"Data8TeV_DoubleMu2012A",
 		 "dset":"/DoubleMu/Run2012A-PromptReco-v1/AOD",
 		 "aoddir":["path=/DoubleMu/Run2012A-PromptReco-v1/AOD"],
 	         "patdir2":["path=/DoubleMu/wangjian-HZZ2l2v_Run2012A-b2c4843cc0f0fce2cad58e298627fbaa/USER"],
@@ -260,7 +260,7 @@
                  "split":2
                 },
                 {
-	         "dtag":"Data_SingleMu2012A",
+	         "dtag":"Data8TeV_SingleMu2012A",
 		 "dset":"/SingleMu/Run2012A-PromptReco-v1/AOD",
 		 "aoddir":["path=/SingleMu/Run2012A-PromptReco-v1/AOD"],
 	         "patdir2":["path=/SingleMu/wangjian-HZZ2l2v_Run2012A-b2c4843cc0f0fce2cad58e298627fbaa/USER"],
@@ -268,7 +268,7 @@
                  "split":2
                 },
                 {
-                 "dtag":"Data_MuEG2012A",
+                 "dtag":"Data8TeV_MuEG2012A",
                  "dset":"/MuEG/Run2012A-PromptReco-v1/AOD",
 		 "aoddir":["path=/MuEG/Run2012A-PromptReco-v1/AOD"],
 	         "patdir2":["path=/MuEG/wangjian-HZZ2l2v_Run2012A-b2c4843cc0f0fce2cad58e298627fbaa/USER"],
@@ -276,7 +276,7 @@
                  "split":2
                 },
                 {
-	         "dtag":"Data_DoubleElectron2012B",
+	         "dtag":"Data8TeV_DoubleElectron2012B",
 		 "dset":"/DoubleElectron/Run2012B-PromptReco-v1/AOD",
 		 "aoddir":["path=/DoubleElectron/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
@@ -284,7 +284,7 @@
                  "split":2
                 },
                 {
-	         "dtag":"Data_DoubleMu2012B",
+	         "dtag":"Data8TeV_DoubleMu2012B",
 		 "dset":"/DoubleMu/Run2012B-PromptReco-v1/AOD",
 		 "aoddir":["path=/DoubleMu/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
@@ -292,7 +292,7 @@
                  "split":2
                 },
                 {
-	         "dtag":"Data_SingleMu2012B",
+	         "dtag":"Data8TeV_SingleMu2012B",
 		 "dset":"/SingleMu/Run2012B-PromptReco-v1/AOD",
 		 "aoddir":["path=/SingleMu/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
@@ -300,7 +300,7 @@
                  "split":2
                 },
                 {
-                 "dtag":"Data_MuEG2012B",
+                 "dtag":"Data8TeV_MuEG2012B",
                  "dset":"/MuEG/Run2012B-PromptReco-v1/AOD",
 		 "aoddir":["path=/MuEG/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
