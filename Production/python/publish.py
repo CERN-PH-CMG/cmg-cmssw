@@ -12,6 +12,7 @@ from datetime import *
 from CMGTools.Production.nameOps import *
 from CMGTools.Production.findDSOnSav import getTaskID
 from CMGTools.Production.fileOps import FileOps
+from CMGTools.Production.castorBaseDir import getUserAndArea
 
 
 def publish(dsName,fileown,comment,test,user,password, force, checkGroups, savannah, run_range = None):
@@ -28,6 +29,10 @@ def publish(dsName,fileown,comment,test,user,password, force, checkGroups, savan
     checked if the Dataset does not exist in the use space
     'savannah' takes True/False on whether Savannah publish is desired
     """
+
+    user, area = getUserAndArea(user)
+    if area == 'group':
+        checkGroups = True
     
     # Validate name, and escape if name is invalidate
     # Convert name to EOS format (castor)
