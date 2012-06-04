@@ -13,6 +13,7 @@ patEventContentCMG.extend([
     # all the commented lines are needed at CMG-tuple step if we do a simple cloning of the sequences. Need to see if we can gain time / disk space later by organizing the CMG sequences properly
     # 'drop patElectrons_selectedPat*_*_*',
     # 'keep patElectrons_patElectronsWithTrigger_*_*',
+    'keep *_allConversions_*_*',
     'keep patConversions_patConversions_*_*',
     # 'drop patMuons_selectedPatMuons_*_*',
     # 'keep patMuons_patMuonsWithMVA_*_*',
