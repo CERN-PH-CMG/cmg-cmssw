@@ -3,7 +3,7 @@
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_lepid_29May12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'pmeckiff22May2012'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_lepid_29May12'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_puandjson_1June12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-05-08'),
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
   ('DataFormats/METReco', 'DataFormats/METReco', 'lhx_12JAN2012_v1'),
