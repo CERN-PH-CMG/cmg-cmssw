@@ -1,10 +1,13 @@
 import imp
 import math
+import copy
 
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.RootTools.Style import *
-from ROOT import kPink
+from ROOT import kPink, TH1
+
+cp = copy.deepcopy
 
 
 def blind(plot, minx, maxx):
@@ -18,14 +21,25 @@ def blind(plot, minx, maxx):
 def prepareComponents(dir, config):
     # list of components from configuration file
     selComps = dict( [ (comp.name, comp) for comp in config.components ])
+
+    totIntLumi = 0
+    for comp in selComps.values():
+        if comp.isData is True:
+            totIntLumi += comp.intLumi
+            
+    for comp in selComps.values():
+        if comp.isMC is True:
+            comp.intLumi = totIntLumi
+    
     weights = dict( [ (comp.name,comp.getWeight()) \
                       for comp in selComps.values() ] )
+    
     return selComps, weights
     
     
 def fW_inclusive( mtplot, dataName ):
     
-    # WJets_data = data - DY - TTbar 
+    # WJets_data = data - DY - TTbar
     wjet = copy.deepcopy(mtplot.Hist(dataName))
     wjet.Add(mtplot.Hist('DYJets'), -1)
     try:
@@ -45,7 +59,7 @@ def fW_inclusive( mtplot, dataName ):
     mtplot.Hist('Data - DY - TT').SetStyle( sPinkHollow )
 
     # determine scaling factor for the WJet MC
-    mtmin, mtmax = 60, 200
+    mtmin, mtmax = 60, 300
     # scale = WJets_data / WJets 
     scale_WJets = mtplot.Hist('Data - DY - TT').Integral(True, mtmin, mtmax) \
                   / mtplot.Hist('WJets').Integral(True, mtmin, mtmax)
@@ -58,38 +72,44 @@ def fW_inclusive( mtplot, dataName ):
     mtplot.Hist('WJets').layer = -999999
     return scale_WJets
 
+
 def plot_W_inclusive():
     # get WJet scaling factor for same sign
-
     print 'extracting SS WJets inclusive data/MC factor'
-    mtSS = H2TauTauDataMC('mt', anaDir, selComps, weights,
-                          NBINS, XMIN, XMAX,
-                          cut = 'isSignal && mt>60 && diTau_charge!=0', weight=weight,
+    var = 'mt'
+    sscut = 'isSignal && mt>60 && diTau_charge!=0'
+    oscut = 'isSignal && mt>60 && diTau_charge==0'
+    mtSS = H2TauTauDataMC(var, anaDir, selComps, weights,
+                          30, 60, 300,
+                          cut = sscut, weight=weight,
                           embed=options.embed)
+    # replaceWJetShape( mtSS, var, sscut)
+    # import pdb; pdb.set_trace()
     fW_inclusive_SS = fW_inclusive( mtSS, dataName)
     # get WJet scaling factor for opposite sign
-
     print 'extracting OS WJets inclusive data/MC factor'
-    mtOS = H2TauTauDataMC('mt', anaDir, selComps, weights,
-                          NBINS, XMIN, XMAX, 
-                          cut = 'isSignal && mt>60 && diTau_charge==0', weight=weight,
+    mtOS = H2TauTauDataMC(var, anaDir, selComps, weights,
+                          30, 60, 300, 
+                          cut = oscut, weight=weight,
                           embed=options.embed)
+    # replaceWJetShape( mtOS, var, oscut)
     fW_inclusive_OS = fW_inclusive( mtOS, dataName)
+    print 'fW_inclusive_SS=',fW_inclusive_SS,'fW_inclusive_OS=',fW_inclusive_OS
     return fW_inclusive_SS, fW_inclusive_OS, mtSS, mtOS
 
 
-def buildPlot( var, cut, comps):
+
+def buildPlot( var, cut, comps, nbins, xmin, xmax):
     pl = H2TauTauDataMC(var, anaDir,
-                        comps, weights, NBINS, XMIN, XMAX,
-                        cut=cut+' && diTau_charge==0', weight=weight,
+                        comps, weights, nbins, xmin, xmax,
+                        cut=cut, weight=weight,
                         embed=embed)
     return pl
 
 
-def shape(var, cut, comp):
-    # import pdb; pdb.set_trace()
-    # wjetComp = {'WJets':comps['WJets']}
-    pl = buildPlot( var, cut, {comp.name:comp} )
+
+def shape(var, cut, comp, nbins, xmin, xmax):
+    pl = buildPlot( var, cut, {comp.name:comp}, nbins, xmin, xmax )
     shape = copy.deepcopy( pl.Hist(comp.name) )
     shape.Normalize()
     return shape
@@ -130,11 +150,12 @@ def isSignal():
 
 def isSignalRelaxedIso():
     cuts = [
-        'l2_relIso05<1.0',
+        'l2_relIso05<0.1',
         'l2_tightId>0.5',
         # 'l2_dxy<0.2',
         # 'l2_dz<0.045'
-        'l1_veryLooseIso>0.5',
+        # 'l1_veryLooseIso>0.5',
+        'l1_rawMvaIso>-0.5',
         '(l1_EOverp>0.2 || l1_decayMode!=0)',
         'l1_againstMuonTight>0.5',
         'l1_againstElectronLoose>0.5',
@@ -188,6 +209,7 @@ def hist_WJets_VBF( var, cut, comp, lumi):
     
 
 def addQCD( plot ):
+    # import pdb; pdb.set_trace()
     plotWithQCD = copy.deepcopy( plot )
     # QCD_data = data - DY - TTbar - W
     qcd = copy.deepcopy(plotWithQCD.Hist(dataName))
@@ -213,7 +235,6 @@ def getQCD( plotSS, plotOS, dataName ):
 
     # use SS data as a control region
     # to get the expected QCD shape and yield
-
     plotSSWithQCD = addQCD( plotSS )
 
     # extrapolate the expected QCD shape and yield to the
@@ -233,30 +254,53 @@ def getQCD( plotSS, plotOS, dataName ):
 
 NBINS = 100
 XMIN  = 0
-XMAX  = 200
+XMAX  = 300
 
 
-def makePlot( hist, weights, wJetScaleSS, wJetScaleOS,
+def replaceWJetShape(plot, var, cut):
+    if cut.find('isSignal')!=-1:
+        cut = cut.replace('isSignal', isSignalRelaxedIso())
+    print 'estimate WJet shape with cut',cut
+    plotWithNewShape = cp( plot )
+    wjyield = plot.Hist('WJets').Integral()
+    nbins = plot.Hist('WJets').obj.GetNbinsX()
+    xmin = plot.Hist('WJets').obj.GetXaxis().GetXmin()
+    xmax = plot.Hist('WJets').obj.GetXaxis().GetXmax()
+    wjshape = shape(var, cut, selComps['WJets'], nbins, xmin, xmax)
+    wjshape.Scale( wjyield )
+    plotWithNewShape.Replace('WJets', wjshape) 
+    # plotWithNewShape.Hist('WJets').on = False 
+    return plotWithNewShape
+
+
+def makePlot( var, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
               cut='', weight='weight', embed=False):
-
+    
     print 'making the plot'
     if nbins is None: nbins = NBINS
     if xmin is None: xmin = XMIN
     if xmax is None: xmax = XMAX
 
-    osign = H2TauTauDataMC(hist, anaDir,
+    oscut = cut+' && diTau_charge==0'
+    osign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
-                           cut=cut+' && diTau_charge==0', weight=weight,
+                           cut=oscut, weight=weight,
                            embed=embed)
     osign.Hist('WJets').Scale( wJetScaleOS ) 
-
+    osign = replaceWJetShape(osign, var, oscut)
+    # import pdb; pdb.set_trace()
+    
     # boxss = box.replace('OS','SS')
-    ssign = H2TauTauDataMC(hist, anaDir,
+    sscut = cut+' && diTau_charge!=0'
+    ssign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
-                           cut=cut+' && diTau_charge!=0', weight=weight,
+                           cut=sscut, weight=weight,
                            embed=embed)
     ssign.Hist('WJets').Scale( wJetScaleSS ) 
+    # import pdb; pdb.set_trace()
+    ssign = replaceWJetShape(ssign, var, sscut)
+
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )    
     return ssign, osign, ssQCD, osQCD
 
@@ -275,9 +319,11 @@ def simpleSignificance(plot, sigName, bgdName, min, max):
     nBgd = plot.Hist(bgdName).Integral(True, min, max)
     return nSig / math.sqrt(nBgd), nSig, nBgd
 
+
 def examplePlot():
     return H2TauTauDataMC('mt', anaDir, selComps, weights, NBINS, XMIN, XMAX, cut = '1', weight=weight, embed=options.embed)
     
+
 if __name__ == '__main__':
 
     import copy
@@ -312,6 +358,8 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
+
+    # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
 

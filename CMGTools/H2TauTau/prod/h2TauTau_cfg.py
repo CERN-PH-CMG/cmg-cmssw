@@ -15,7 +15,7 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     )
 
 # -1 : process all files
-numberOfFilesToProcess = 5
+numberOfFilesToProcess = 20
 
 debugEventContent = False
 
@@ -49,7 +49,7 @@ dataset_user = 'cmgtools'
 
 # dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/TauPlusX/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076'
-dataset_name = '/TauPlusX/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479'
+dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 #cbern%/H2TAUTAU/Sync/GluGlu/AOD
 
