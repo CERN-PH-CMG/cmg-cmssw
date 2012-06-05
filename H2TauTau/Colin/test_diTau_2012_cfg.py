@@ -16,7 +16,8 @@ if runOnMC:
     mc_jetEffWeight='eff2012Jet30'
 
 triggerAna = cfg.Analyzer(
-    'TriggerAnalyzer'
+    'TriggerAnalyzer',
+    verbose = False
     )
 
 TauTauAna = cfg.Analyzer(
@@ -31,7 +32,7 @@ TauTauAna = cfg.Analyzer(
     m_max = 99999,
     diLeptonCutString = 'cuts_baseline',
     # No trigger matching for the moment since MC only contains too high threshold trigger
-    #triggerMap = pathsAndFilters
+    triggerMap = pathsAndFilters
     )
 
 tau1Weighter = cfg.Analyzer(
@@ -85,6 +86,7 @@ vbfAna = cfg.Analyzer(
     jetCol = 'cmgPFJetSel',
     jetPt = 30,
     jetEta = 4.5,
+    vbfMvaWeights='/afs/cern.ch/user/h/hinzmann/workspace/stable2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.5XX.xml',
     **vbfKwargs
     )
 
@@ -94,7 +96,7 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.run2012.diTau_June1 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.diTau_June4 import * 
 
 #########################################################################################
 
@@ -108,7 +110,8 @@ for mc in MC:
 selectedComponents = data_2012 + [DYJets, WJets, TTJets, WW, WZ, ZZ]
 #selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
 #                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145]
-selectedComponents += [Higgsgg125, HiggsVBF125]
+selectedComponents += [Higgsgg110, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
+                       HiggsVBF115, HiggsVBF120, HiggsVBF125 ]
 
 if runOnData:
     selectedComponents = data_2012
@@ -116,7 +119,8 @@ if runOnMC:
     selectedComponents = [DYJets, WJets, TTJets, WW, WZ, ZZ]
     #selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
     #                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145]
-    selectedComponents += [Higgsgg125, HiggsVBF125]
+    selectedComponents += [Higgsgg110, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
+                           HiggsVBF115, HiggsVBF120, HiggsVBF125 ]
 
 print [c.name for c in selectedComponents]
 
@@ -155,9 +159,9 @@ data_Run2012B_PromptReco_v1.splitFactor = 50
 
 test = 0
 if test==1:
-    comp = DYJets
+    #comp = DYJets
     #comp = WJets
-    #comp = data_Run2012A_PromptReco_v1
+    comp = data_Run2012A_PromptReco_v1
     #comp = Higgsgg125
     selectedComponents = [comp]
     comp.splitFactor = 10
