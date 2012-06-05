@@ -1,3 +1,4 @@
 cmgtools%/Jet/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076
 cmgtools%/HT/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076
 cmgtools%/JetHT/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479
+cmgtools%/JetHT/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016

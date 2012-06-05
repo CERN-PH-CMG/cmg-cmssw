@@ -23,4 +23,5 @@
 <bin name="ntuplestnmc1" file="ntuplestnmc1.cc">
 </bin>
 <bin name="analyzer" file="analyzer.cc">
+<bin name="chi_analysis" file="chi_analysis.cc">
 </bin>
