@@ -58,6 +58,7 @@ int main(int argc, char* argv[])
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
+  bool runBlinded = runProcess.getParameter<bool>("runBlinded");
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
   TString dirname = runProcess.getParameter<std::string>("dirName");
   TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
@@ -188,8 +189,10 @@ int main(int argc, char* argv[])
     }
   Hcutflow->SetBinContent(1,cnorm);
 
+  //duplicate checker
   DuplicatesChecker duplicatesChecker;
-  
+  int NumberOfDuplicated(0);
+
   //pileup reweighting
   std::vector<double> dataPileupDistributionDouble = runProcess.getParameter< std::vector<double> >("datapileup");
   std::vector<float> dataPileupDistribution; 
@@ -220,23 +223,21 @@ int main(int argc, char* argv[])
       ZZ2l2nuSummary_t &ev = evSummaryHandler.getEvent();
       PhysicsEvent_t phys  = getPhysicsEventFrom(ev);
       bool isGammaEvent    = gammaEvHandler.isGood(phys);
-
       if(duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event))
-	{
-	  printf("event %i-%i-%i is duplicated\n", ev.run, ev.lumi, ev.event);
-	  //NumberOfDuplicated++;
-	  continue;
-	}
+      	{
+	  //	  printf("event %i-%i-%i is duplicated\n", ev.run, ev.lumi, ev.event);
+	  NumberOfDuplicated++;
+      	  continue;
+      	}
 
       //check which event type is required to use (dilepton/or photon)
       if(mctruthmode==22 && !isGammaEvent) continue;
       if(mctruthmode==1  && isGammaEvent) continue;
       if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
-
-      //event categories
       std::vector<TString> dilCats;
+
+      //build the gamma candidate
       LorentzVector gamma(0,0,0,0);
-      int triggerThr(0);
       float r9(0),sietaieta(0);
       bool hasTrkVeto(false),isConv(false);
       if(isGammaEvent)
@@ -248,58 +249,89 @@ int main(int argc, char* argv[])
 	  sietaieta        = phys.gammas[0].sihih;
 	  hasTrkVeto       = phys.gammas[0].hasCtfTrkVeto;
 	  gamma            = phys.gammas[0];
-	  triggerThr       = gammaEvHandler.triggerThr();
 	  isConv=(phys.gammas[0].isConv);
 	}
       else
 	{
-	  gamma=phys.leptons[0]+phys.leptons[1];
+	  //check if dilepton is good
+	  bool isGood(true);
+	  for(size_t ilep=0; ilep<2; ilep++)
+	    {
+	      gamma += phys.leptons[ilep];
+	      int lpid=phys.leptons[ilep].pid;
+	      if(fabs(phys.leptons[ilep].id)==13)
+		{
+		  float relIso    = phys.leptons[ilep].pfRelIsoDbeta();
+		  if( !hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) || relIso>0.2) isGood=false;
+		}
+	      if(fabs(phys.leptons[ilep].id)==11)
+		{
+		  float relIso=phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho);
+		  if(!hasObjectId(ev.en_idbits[lpid],EID_MEDIUM) || relIso>0.15) isGood=false;
+		}
+	    }
+	  if(!isGood) continue;
 	  if(fabs(gamma.mass()-91)>15) continue;
 	  if(ev.cat==MUMU) dilCats.push_back("mumu");
 	  if(ev.cat==EE)   dilCats.push_back("ee");
 	  dilCats.push_back("ll");
-	  triggerThr=gammaEvHandler.findTriggerCategoryFor( gamma.pt() );
-	  if(triggerThr<0) continue;
 	}
+
+      //check extra leptons
+      int nextraleptons(0);
+      for(size_t ilep=(isGammaEvent ? 0 : 2); ilep<phys.leptons.size(); ilep++)
+	{
+	  int lpid=phys.leptons[ilep].pid;
+	  if(fabs(phys.leptons[ilep].id)==13)
+	    {
+	      float relIso    = phys.leptons[ilep].pfRelIsoDbeta();
+	      if( (hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) && relIso<0.2)
+		  || hasObjectId(ev.mn_idbits[lpid], MID_SOFT) ) nextraleptons++;
+	    }
+	  if(fabs(phys.leptons[ilep].id)==11)
+	    {
+	      float relIso=phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho);
+	      if(hasObjectId(ev.en_idbits[lpid],EID_VETO) && relIso<0.15) nextraleptons++;
+	    }
+	}
+
       
       //jet/MET
       LorentzVector metP4(phys.met[0]);
       int nbtags(0),njets30(0),njets15(0);
       double mindphijmet(9999.);
       PhysicsObjectJetCollection jetsP4;
-      std::vector<double> genJetsPt;
-      LorentzVector rawClusteredMet(gamma); 
-      rawClusteredMet *= -1;
-      for(size_t ijet=0; ijet<phys.jets.size(); ijet++)
+      LorentzVector rawClusteredMet(gamma);  rawClusteredMet *= -1;
+      for(size_t ijet=0; ijet<phys.ajets.size(); ijet++)
         {
-	  LorentzVector ijetP4=phys.jets[ijet];
-	  //	  if(ijetP4.pt()<15 || fabs(ijetP4.eta())>5) continue;
+	  LorentzVector ijetP4=phys.ajets[ijet];
 	  if(ijetP4.pt()<15) continue;
 	  if(isGammaEvent && deltaR(ijetP4,gamma)<0.4) continue;
+	  
 	  njets15++;
 	  jetsP4.push_back(ijetP4);
-	  genJetsPt.push_back(phys.jets[ijet].genPt);
 	  rawClusteredMet -= ijetP4;
-	  double idphijmet=fabs(deltaPhi(metP4.phi(),ijetP4.phi()));
-	  mindphijmet=min(idphijmet,mindphijmet);
-	  if(ijetP4.pt()>20 && fabs(ijetP4.eta())<2.5) nbtags += (phys.jets[ijet].btag2>0.244);
-	  if(ijetP4.pt()>30)  njets30++;
+	  if(ijetP4.pt()>30 && fabs(ijetP4.eta())<2.5) nbtags += (phys.ajets[ijet].btag3>0.275);
+	  if(ijetP4.pt()>30)
+	    {
+	      njets30++;
+	      double idphijmet=fabs(deltaPhi(metP4.phi(),ijetP4.phi()));	  
+	      mindphijmet=min(idphijmet,mindphijmet);
+	    }
 	}
       TString subcat("eq"); subcat+=njets30; subcat+= "jets";
       if(njets30>=3) subcat="geq3jets";
-      int evType=eventClassifComp.Get(phys,&jetsP4); //phys.jets);
+      int evType=eventClassifComp.Get(phys,&jetsP4);
       if(evType==EventCategory::VBF) subcat="vbf";
 
-
-      //
+      //correct with JER
       LorentzVector nullP4(0,0,0,0);
-      LorentzVector rawZvv(phys.met[0]);
-      LorentzVector assocMetP4        = phys.met[1];
-      LorentzVector rawRedMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, rawClusteredMet, rawZvv,true));
+      LorentzVector assocMetP4 = phys.met[1];
+      LorentzVector rawRedMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, rawClusteredMet, metP4,true));
       LorentzVectorCollection zvvs,redMets,min3Mets;
-      std::vector<Float_t>  redMetLs,redMetTs;
+      std::vector<Float_t> redMetLs,redMetTs;
       std::vector<PhysicsObjectJetCollection> jets;
-      METUtils::computeVariation(jetsP4, rawZvv, jets, zvvs, &jecUnc);
+      METUtils::computeVariation(jetsP4, metP4, jets, zvvs, &jecUnc);
       for(size_t ivars=0; ivars<zvvs.size(); ivars++)
 	{
           LorentzVector clusteredMetP4(gamma); clusteredMetP4 *= -1;
@@ -310,9 +342,9 @@ int main(int argc, char* argv[])
           redMetTs.push_back( redMetOut.redMET_t );
 	  min3Mets.push_back( min(zvvs[ivars], min(assocMetP4,clusteredMetP4)) );
 	}
-
+      
       //event weight
-      float weight = 1.0;
+      float weight = 1.0;  
       if(isMC)                  { weight = LumiWeights.weight( ev.ngenITpu ); }
       //if(!isMC && isGammaEvent) { weight = gammaEvHandler.getTriggerPrescaleWeight(); }
       Hcutflow->Fill(1,1);
@@ -322,8 +354,8 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(5,1);
 
       //select event
-      bool passMultiplicityVetoes (isGammaEvent ? (phys.leptons.size()==0 && ev.ln==0 && phys.gammas.size()==1) : (ev.ln==0) );
-      bool passKinematics         (gamma.pt()>30);//55);
+      bool passMultiplicityVetoes (isGammaEvent ? (nextraleptons==0 && phys.gammas.size()==1) : (nextraleptons==0) );
+      bool passKinematics         (gamma.pt()>55); //30);
       bool passEB                 (!isGammaEvent || fabs(gamma.eta())<1.4442);
       bool passR9                 (!isGammaEvent || r9<1.0);
       bool passR9tight            (!isGammaEvent || r9>0.85); 
@@ -332,6 +364,10 @@ int main(int argc, char* argv[])
       bool passSMZZpreSel(njets30==0 && passBveto && passMinDphiJmet);  
       bool passSMZZredMet(redMets[0].pt()>50);
       bool passSMZZbalance(zvvs[0].pt()/gamma.pt() > 0.4 && zvvs[0].pt()/gamma.pt() < 1.8);
+      
+      //add blinding
+      bool mustBlind = (!isMC && runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC));
+      bool hasVbfBlinding(!isMC && runBlinded && subcat=="vbf" && zvvs[0].pt()>70);
 
       //control plots
       std::map<TString, float> qtWeights;
@@ -340,7 +376,6 @@ int main(int argc, char* argv[])
 	{
 	  LorentzVector iboson(isGammaEvent ? gammaEvHandler.massiveGamma(dilCats[idc]) : gamma);
 	  float zmass=iboson.mass();
-	  //Float_t rawMt( METUtils::transverseMass(iboson,metP4,true) );
 	  Float_t mt( METUtils::transverseMass(iboson,zvvs[0],true) );
 	  
 	  TString ctf=dilCats[idc];
@@ -377,9 +412,11 @@ int main(int argc, char* argv[])
 
 	      if(hasTrkVeto || !passR9tight) continue;
 	      if(zvvs[0].pt()>70) mon.fillHisto("mindphijmet_"+subCatsToFill[isc],ctf, mindphijmet,iweight);	      
+	      
+	      if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
 	      if(passMinDphiJmet)
 		{
-		  mon.fillHisto("met_rawmet_"+subCatsToFill[isc],ctf, rawZvv.pt(),iweight);
+		  mon.fillHisto("met_rawmet_"+subCatsToFill[isc],ctf, metP4.pt(),iweight);
 		  mon.fillHisto("metoverqt_"+subCatsToFill[isc],ctf, zvvs[0].pt()/gamma.pt(),iweight);
 		  mon.fillHisto("met_met_"+subCatsToFill[isc],ctf, zvvs[0].pt(),iweight);
 		  mon.fillHisto("met_met_"+subCatsToFill[isc]+"_vspu",ctf, ev.nvtx,zvvs[0].pt(),iweight);
@@ -414,6 +451,7 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("vbdphi",ctf,deltaPhi(jetsP4[0].phi(),jetsP4[1].phi()));
 		}
 
+	      if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
 	      for(unsigned int index=0;index<nOptimCuts;index++){
 		if ( index<nOptimCuts-1 && zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
 		  mon.fill2DHisto("mt_shapes_"+subCatsToFill[isc],ctf,index, mt,iweight);
@@ -437,10 +475,11 @@ int main(int argc, char* argv[])
   gSystem->Exec("mkdir -p " + outUrl);
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
+  printf("Results save in %s\n", outUrl.Data());
+
   TFile *ofile=TFile::Open(outUrl, "recreate");
   mon.Write();
   ofile->Close();
-
 }  
 
 
