@@ -632,7 +632,7 @@ bool ZZ2l2nuSummaryHandler::hasSpoilerAlert(bool isData)
   LorentzVector sum=visible+invisible;
   Double_t tMass = TMath::Power(TMath::Sqrt(TMath::Power(visible.pt(),2)+pow(visible.mass(),2))+TMath::Sqrt(TMath::Power(invisible.pt(),2)+pow(visible.mass(),2)),2);
   tMass-=TMath::Power(sum.pt(),2);
-  return (TMath::Sqrt(tMass)>175);
+  return (TMath::Sqrt(tMass)>250);
 }
 
 //

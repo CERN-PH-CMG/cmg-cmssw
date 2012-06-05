@@ -57,6 +57,11 @@ int main(int argc, char* argv[])
   // load framework libraries
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
+  
+  TString cmsswRel(gSystem->Getenv("CMSSW_BASE"));
+  bool use2011Id(cmsswRel.Contains("4_4_4"));
+  cout << cmsswRel << endl; 
+  cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
 
   // configure the process
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
@@ -92,7 +97,7 @@ int main(int argc, char* argv[])
 
   //systematics
   bool runSystematics                        = runProcess.getParameter<bool>("runSystematics");
-  TString varNames[]={"","_jesup","_jesdown","_jerup","_jerdown","_puup","_pudown","_renup","_rendown","_factup","_factdown","_btagup","_btagdown"};
+  TString varNames[]={"","_jesup","_jesdown","_jerup","_jerdown","_puup","_pudown","_renup","_rendown","_factup","_factdown","_btagup","_btagdown"};//,"_lesup","_lesdown"};
   size_t nvarsToInclude(1);
   if(runSystematics)
     {
@@ -105,7 +110,7 @@ int main(int argc, char* argv[])
   bool isMC_GG  = isMC && ( string(url.Data()).find("GG" )  != string::npos);
   bool isMC_VBF = isMC && ( string(url.Data()).find("VBF")  != string::npos);
   std::vector<TGraph *> hWeightsGrVec;
-  if(isMC_GG){
+  if(isMC_GG && use2011Id){
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     GGString = string(url.Data()).substr(GGStringpos);
@@ -123,7 +128,7 @@ int main(int argc, char* argv[])
       fin->Close();
       delete fin;
     }
-  }else if(isMC_VBF){
+  }else if(isMC_VBF && use2011Id){
     size_t VBFStringpos =  string(url.Data()).find("VBF");
     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     VBFString = string(url.Data()).substr(VBFStringpos);
@@ -282,6 +287,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,2.5) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_met3leptons"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_metRaw"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
   mon.addHistogram( new TH2F( "met_met_vspu", ";Pileup events; E_{T}^{miss};Events", 50,0,50,200,0,500) );
   mon.addHistogram( new TH1F( "met_min3Met"  , ";min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
@@ -564,9 +570,9 @@ int main(int argc, char* argv[])
 	  bool hasGoodId(false), isIso(false);
 	  if(fabs(phys.leptons[ilep].id)==13)
 	    {
-	      if( hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) )    { passIds.push_back(0); passIsos[0]=(relIso<0.2); hasGoodId=true; isIso=passIsos[0]; }
+	      if( hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) )    { passIds.push_back(0); passIsos[0]=(relIso<0.2); if(!use2011Id) { hasGoodId=true; isIso=passIsos[0]; } }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) )    { passIds.push_back(1); passIsos[1]=(relIso<0.2); }
-	      if( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) { passIds.push_back(2); passIsos[2]=(relIso2011<0.15); }
+	      if( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) { passIds.push_back(2); passIsos[2]=(relIso2011<0.15); if(use2011Id) {hasGoodId=true; isIso=passIsos[2];} }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_SOFT) )     { passIds.push_back(3); passIsos[3]=true;}
 	    }
 	  else
@@ -574,7 +580,11 @@ int main(int argc, char* argv[])
 	      int wps[]={EgammaCutBasedEleId::LOOSE,EgammaCutBasedEleId::MEDIUM, EID_VBTF2011, EgammaCutBasedEleId::VETO};
 	      for(int iwp=0; iwp<4; iwp++)
 		{
-		  if(iwp==2 && hasObjectId(ev.en_idbits[lpid], EID_VBTF2011)) { passIds.push_back(2); passIsos[2]=(relIso2011<0.10);}
+		  if(iwp==2 && hasObjectId(ev.en_idbits[lpid], EID_VBTF2011)) 
+		    { 
+		      passIds.push_back(2); passIsos[2]=(relIso2011<0.10); 
+		      if(use2011Id) { hasGoodId=true; isIso=passIsos[2]; } 
+		    }
 		  else
 		    {
 		      bool passWp = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::WorkingPoint(wps[iwp]),
@@ -587,11 +597,7 @@ int main(int argc, char* argv[])
 		      if(passWp) { 
 			passIds.push_back(iwp); 
 			passIsos[iwp]=(relIso<0.15);
-			if(wps[iwp]==EgammaCutBasedEleId::MEDIUM) 
-			  {
-			    hasGoodId=true;
-			    isIso=passIsos[iwp];
-			  }
+			if(wps[iwp]==EgammaCutBasedEleId::MEDIUM && !use2011Id){  hasGoodId=true; isIso=passIsos[iwp]; }
 		      }
 		    }
 		}
@@ -704,12 +710,27 @@ int main(int argc, char* argv[])
 		  int lpid=phys.leptons[ilep].pid;
 		  if(fabs(phys.leptons[ilep].id)==13)
 		    {
-		      isGood = (hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) && phys.leptons[ilep].pfRelIsoDbeta()<0.2);
-		      isGood |= hasObjectId(ev.mn_idbits[lpid], MID_SOFT);
+		      if(!use2011Id)
+			{
+			  isGood = (hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) && phys.leptons[ilep].pfRelIsoDbeta()<0.2);
+			  isGood |= hasObjectId(ev.mn_idbits[lpid], MID_SOFT);
+			}
+		      else
+			{
+			  isGood = (hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.15);
+			  isGood |= hasObjectId(ev.mn_idbits[lpid], MID_SOFT2011);
+			}
 		    }
 		  else
 		    {
-		      isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 );
+		      if(!use2011Id)
+			{
+			  isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 );
+			}
+		      else
+			{
+			  isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.1 );
+			}
 		    }
 		  nextraleptons += isGood;
 		  
@@ -872,6 +893,10 @@ int main(int argc, char* argv[])
 		    }//end passBveto
 
 		}//end pass3rdLeptonVeto
+	      else
+		{
+		  if(passBveto && passDphijmet) mon.fillHisto("met_met3leptons",tags_full,zvvs[0].pt(),weight);
+		}
 
 	    }//end passZpt
 
