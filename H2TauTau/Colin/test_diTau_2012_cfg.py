@@ -7,7 +7,6 @@ runOnData = False
 runOnMC = False
 
 mc_vertexWeight = 'vertexWeightFall112011B'
-mc_vertexWeight = None
 mc_tauEffWeight = None
 mc_jetEffWeight = None
 mc_tauEffWeight_mc = 'effLooseTau15MC'
@@ -96,7 +95,7 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.run2012.diTau_June4 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.diTau_June1 import * 
 
 #########################################################################################
 
@@ -159,9 +158,9 @@ data_Run2012B_PromptReco_v1.splitFactor = 50
 
 test = 0
 if test==1:
-    #comp = DYJets
+    comp = DYJets
     #comp = WJets
-    comp = data_Run2012A_PromptReco_v1
+    #comp = data_Run2012A_PromptReco_v1
     #comp = Higgsgg125
     selectedComponents = [comp]
     comp.splitFactor = 10
