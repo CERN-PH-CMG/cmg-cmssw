@@ -124,6 +124,8 @@ class BaseDataset(Task):
             query = 'dataset=%s' % ds
             result = Das.get_data(host, query, idx, limit, debug)
             result = result.replace('null','None')
+            result = result.replace('true','True')
+            result = result.replace('false','False')
             data = eval(result)
             if data['status'] != 'ok':
                 raise Exception("Das query failed: Output is '%s'" % data)
