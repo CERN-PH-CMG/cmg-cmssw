@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
   WRITE = verbose_;
 
   if (statlevel > 999 && statlevel < 1999) USELOGNORM=false;
-  if (statlevel == 2000 || statlevel == 2100) doAggressiveBkgFit=false;
+  if (statlevel == 2000 || statlevel == 2060 || statlevel == 2100) doAggressiveBkgFit=false;
 
 
   if (statlevel > 9999)
@@ -402,7 +402,7 @@ ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass
   if(statlevel==3 || statlevel==1003) ws->factory("PROD::prior(xs_prior,sigMassDelta_prior)");
   if(statlevel==4 || statlevel==1004) ws->factory("PROD::prior(xs_prior,sigWidthDelta_prior)");
   if(statlevel==5) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior)");
-  if(statlevel==6 || statlevel==63 || statlevel==64) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior,sigWidthDelta_prior)");
+  if(statlevel==6 || statlevel==63 || statlevel==64 || statlevel== 2060) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior,sigWidthDelta_prior)");
   if(statlevel==7) ws->factory("PROD::prior(xs_prior,sigMassDelta_prior)");
   if(statlevel==8) ws->factory("PROD::prior(xs_prior,lumi_prior,sigMassDelta_prior)");
   if(statlevel==9) ws->factory("PROD::prior(xs_prior,lumi_prior)");
@@ -415,7 +415,7 @@ ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass
   if(statlevel==3 || statlevel==1003) ws->defineSet("nuisSet","sigMassDelta");
   if(statlevel==4 || statlevel==1004) ws->defineSet("nuisSet","sigWidthDelta");
   if(statlevel==5) ws->defineSet("nuisSet","lumi,sigMassDelta");
-  if(statlevel==6 || statlevel==63 || statlevel==64) ws->defineSet("nuisSet","lumi,sigMassDelta,sigWidthDelta");
+  if(statlevel==6 || statlevel==63 || statlevel==64 || statlevel== 2060) ws->defineSet("nuisSet","lumi,sigMassDelta,sigWidthDelta");
   if(statlevel==7) ws->defineSet("nuisSet","sigMassDelta");
   if(statlevel==8) ws->defineSet("nuisSet","lumi,sigMassDelta");
   if(statlevel==9) ws->defineSet("nuisSet","lumi");
@@ -560,7 +560,7 @@ ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass
     } else if(statlevel==5) {
       ws->var("lumi")->setConstant(false);
       ws->var("sigMassDelta")->setConstant(false);
-    } else if(statlevel==6 || statlevel==63 || statlevel==64) {
+    } else if(statlevel==6 || statlevel==63 || statlevel==64 || statlevel== 2060) {
       ws->var("lumi")->setConstant(false);
       ws->var("sigMassDelta")->setConstant(false);
       ws->var("sigWidthDelta")->setConstant(false);
@@ -650,7 +650,7 @@ ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass
 
     TH1D* histA=dynamic_cast<TH1D*>(mcA.GetPosteriorHist()->Clone("histA"));
 
-    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==12 || statlevel==13 || statlevel==14 || statlevel==63 || statlevel==64 || (statlevel>=100 &&  statlevel<1000)) {
+    if(statlevel==1 || statlevel==5 || statlevel==6 || statlevel==7 || statlevel==9 || statlevel==11 || statlevel==12 || statlevel==13 || statlevel==14 || statlevel==63 || statlevel==64 || (statlevel>=100 &&  statlevel<1000) || statlevel== 2060) {
 
       if (statlevel==11){
         TH1D* histB=dynamic_cast<TH1D*>(mcB.GetPosteriorHist()->Clone("histB"));
@@ -717,7 +717,7 @@ ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass
 	if(USENEWCOVARIANCE)
 	    eigenValues.Sqrt(); // Turn variances into errors 
  
-        if (statlevel<100) {
+        if (statlevel<100 ||  statlevel== 2060) {
          histA->Scale(3); // 3 times the central value plus up/down variations along 3 axes
          TVector g(nPar);
 	 for(Int_t v=1; v<nPar;v++){
