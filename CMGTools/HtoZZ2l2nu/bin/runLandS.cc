@@ -582,7 +582,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 
       //observations
       fprintf(pFile, "bin 1\n");
-      fprintf(pFile, "Observation %.0f\n",round(dci.obs[RateKey_t("obs",dci.ch[i-1])]));
+      fprintf(pFile, "Observation %f\n",round(dci.obs[RateKey_t("obs",dci.ch[i-1])]));
       printf("OBS = %f\n",dci.obs[RateKey_t("obs",dci.ch[i-1])]);
       fprintf(pFile, "-------------------------------\n");
 
