@@ -1454,7 +1454,6 @@ void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& all
 
       TString  LeftName = signalTypes[t]+"("; LeftName+= leftMass;
       TString RightName = signalTypes[t]+"(";RightName+=rightMass;
-      printf("LeftName = %s, rightName=%s\n",LeftName.Data(), RightName.Data());
 
       for(size_t i=0;i<selCh.size();i++){
       for(size_t b=0; b<AnalysisBins.size(); b++){
@@ -1463,7 +1462,6 @@ void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& all
            int leftIndex=0, rightIndex=0;
            for(unsigned int i=0;i<shapeChan_SI.signal.size();i++){if(TString(shapeChan_SI.signal[i]->GetTitle()).BeginsWith( LeftName)) leftIndex=i;}
            for(unsigned int i=0;i<shapeChan_SI.signal.size();i++){if(TString(shapeChan_SI.signal[i]->GetTitle()).BeginsWith(RightName))rightIndex=i;}
-           printf("leftIndex=%i rightIndex=%i\n",leftIndex,rightIndex);
 
            double Ratio = (mass - leftMass); Ratio/=(rightMass - leftMass);
 
