@@ -641,27 +641,35 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
          //The following mUST BE UPDATED WITH NO DUMMY VALUE
          fprintf(pFile,"%35s %10s ", "pdf_gg", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            fprintf(pFile,"%6s ","-");
+            if(dci.procs[j-1].Contains("ggh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_pdfp->Eval(mass,NULL,"S"),2) + pow(TG_pdfm->Eval(mass,NULL,"S"),2)));
+            }else if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0384);}else{fprintf(pFile,"%6f ",1.0477);}
+            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.1360);}else{fprintf(pFile,"%6f ",1.0552);}
+            }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
          fprintf(pFile,"%35s %10s ", "pdf_qqbar", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            fprintf(pFile,"%6s ","-");
+            if(dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_pdfp->Eval(mass,NULL,"S"),2) + pow(TG_pdfm->Eval(mass,NULL,"S"),2)));
+            }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
          fprintf(pFile,"%35s %10s ", "QCDscale_ggH", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            fprintf(pFile,"%6s ","-");
+            if(dci.procs[j-1].Contains("ggh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_scap->Eval(mass,NULL,"S"),2) + pow(TG_scam->Eval(mass,NULL,"S"),2)));
+            }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
          fprintf(pFile,"%35s %10s ", "QCDscale_qqH", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            fprintf(pFile,"%6s ","-");
+            if(dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_scap->Eval(mass,NULL,"S"),2) + pow(TG_scam->Eval(mass,NULL,"S"),2)));
+            }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
          fprintf(pFile,"%35s %10s ", "QCDscale_ggVV", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            fprintf(pFile,"%6s ","-");
+                  if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0716);}else{fprintf(pFile,"%6f ",1.0617);}
+            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.1440);}else{fprintf(pFile,"%6f ",1.0847);}
+            }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
          fprintf(pFile,"%35s %10s ", "QCDscale_VV", "lnN");
