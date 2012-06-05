@@ -10,128 +10,128 @@ import CMGTools.RootTools.fwlite.Config as cfg
 Higgsgg110 = cfg.MCComponent(
     name = 'Higgsgg110',
     files = [],
-    xSection = 19.84*8.02e-2,
-    nGenEvents = 200000,
+    xSection = 25.04*8.02e-2,
+    nGenEvents =999907,
     triggers = [],
     effCorrFactor = 1 )
 
 Higgsgg115 = cfg.MCComponent(
     name = 'Higgsgg115',
     files = [],
-    xSection = 18.13*7.65e-2,
-    nGenEvents = 200000,
+    xSection = 22.96*7.65e-2,
+    nGenEvents = 0,
     triggers = [],
     effCorrFactor = 1 )
 
 Higgsgg120 = cfg.MCComponent(
     name = 'Higgsgg120',
     files = [],
-    xSection = 16.63*7.10e-2,
-    nGenEvents = 200000,
+    xSection = 21.13*7.10e-2,
+    nGenEvents = 4999561,
     triggers = [],
     effCorrFactor = 1 )
 
 Higgsgg125 = cfg.MCComponent(
     name = 'Higgsgg125',
     files = [],
-    xSection = 15.31*6.37e-2,
-    nGenEvents = 200000,
+    xSection = 19.52*6.37e-2,
+    nGenEvents = 968134,
     triggers = [],
     effCorrFactor = 1 )
 
 Higgsgg130 = cfg.MCComponent(
     name = 'Higgsgg130',
     files = [],
-    xSection = 14.12*5.48e-2,
-    nGenEvents = 200000,
+    xSection = 18.07*5.48e-2,
+    nGenEvents = 999921,
     triggers = [],
     effCorrFactor = 1 )
 
 Higgsgg135 = cfg.MCComponent(
     name = 'Higgsgg135',
     files = [],
-    xSection = 13.08*4.52e-2,
-    nGenEvents = 200000,
+    xSection = 16.79*4.52e-2,
+    nGenEvents = 860729,
     triggers = [],
     effCorrFactor = 1 )
 
 Higgsgg140 = cfg.MCComponent(
     name = 'Higgsgg140',
     files = [],
-    xSection = 12.13*3.54e-2,
-    nGenEvents = 200000,
+    xSection = 15.63*3.54e-2,
+    nGenEvents = 999932,
     triggers = [],
     effCorrFactor = 1 )
 
 Higgsgg145 = cfg.MCComponent(
     name = 'Higgsgg145',
     files = [],
-    xSection = 11.27*2.61e-2,
-    nGenEvents = 200000,
+    xSection = 14.59*2.61e-2,
+    nGenEvents = 962119,
     triggers = [],
     effCorrFactor = 1 )
 
 HiggsVBF110 = cfg.MCComponent(
     name = 'HiggsVBF110',
     files = [],
-    xSection = 1.398*8.02e-2, 
-    nGenEvents = 200000,
+    xSection = 1.791*8.02e-2, 
+    nGenEvents = 0,
     triggers = [],
     effCorrFactor = 1 )
 
 HiggsVBF115 = cfg.MCComponent(
     name = 'HiggsVBF115',
     files = [],
-    xSection = 1.332*7.65e-2, 
-    nGenEvents = 200000,
+    xSection = 1.709*7.65e-2, 
+    nGenEvents = 998870,
     triggers = [],
     effCorrFactor = 1 )
 
 HiggsVBF120 = cfg.MCComponent(
     name = 'HiggsVBF120',
     files = [],
-    xSection = 1.263*7.10e-2, 
-    nGenEvents = 200000,
+    xSection = 1.632*7.10e-2, 
+    nGenEvents = 4798759,
     triggers = [],
     effCorrFactor = 1 )
 
 HiggsVBF125 = cfg.MCComponent(
     name = 'HiggsVBF125',
     files = [],
-    xSection = 1.211*6.37e-2, 
-    nGenEvents = 200000,
+    xSection = 1.559*6.37e-2, 
+    nGenEvents = 998836,
     triggers = [],
     effCorrFactor = 1 )
 
 HiggsVBF130 = cfg.MCComponent(
     name = 'HiggsVBF130',
     files = [],
-    xSection = 1.154*5.48e-2, 
-    nGenEvents = 200000,
+    xSection = 1.490*5.48e-2, 
+    nGenEvents = 0,
     triggers = [],
     effCorrFactor = 1 )
 
 HiggsVBF135 = cfg.MCComponent(
     name = 'HiggsVBF135',
     files = [],
-    xSection = 1.100*4.52e-2, 
-    nGenEvents = 200000,
+    xSection = 1.425*4.52e-2, 
+    nGenEvents = 0,
     triggers = [],
     effCorrFactor = 1 )
 
 HiggsVBF140 = cfg.MCComponent(
     name = 'HiggsVBF140',
     files = [],
-    xSection = 1.052*3.54e-2, 
-    nGenEvents = 200000,
+    xSection = 1.365*3.54e-2, 
+    nGenEvents = 0,
     triggers = [],
     effCorrFactor = 1 )
 
 HiggsVBF145 = cfg.MCComponent(
     name = 'HiggsVBF145',
     files = [],
-    xSection = 1.004*2.61e-2, 
-    nGenEvents = 200000,
+    xSection = 1.306*2.61e-2, 
+    nGenEvents = 0,
     triggers = [],
     effCorrFactor = 1 )
 
