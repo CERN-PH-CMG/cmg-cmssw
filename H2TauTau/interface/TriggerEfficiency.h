@@ -326,10 +326,17 @@ public:
 	     tau45w * effIsoTau45(pt,eta) ) / ( tau20w + tau25w + tau35w + tau45w);
   }
   
-  double eff2012IsoTauL1(double pt, double eta){
-    double p0 = 0.979017;
-    double p1 = 31.2826;
-    double p2 = 1.027;
+  double eff2012IsoTau25(double pt, double eta){
+    double p0 = 0.86;
+    double p1 = 36.0;
+    double p2 = 1.15;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+  }
+
+  double eff2012Jet30(double pt, double eta){
+    double p0 = 0.9714;
+    double p1 = 34.56;
+    double p2 = 1.143;
     return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
   }
 
