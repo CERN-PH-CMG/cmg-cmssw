@@ -172,14 +172,11 @@ def QCDEstimate(prefix,prefix1,xmin,xmax,\
       tightOSLooseSShErr=tightOSLooseSSh*math.sqrt(1./QCDlooseHighControlOS.Integral() + 1./QCDlooseHighControlLooseIsoSS.Integral())
       print "QCDlooseHighControlOS / QCDlooseHighControlLooseIsoSS",tightOSLooseSSh, "+-", tightOSLooseSShErr
       
+      if tightOSLooseSSm<tightOSLooseSSmErr/2.:
+          tightOSLooseSSm=tightOSLooseSSmErr/2.
+      
       QCDScale=tightOSLooseSSm
       
-      for i in range(QCDlooseSS.obj.GetXaxis().GetNbins()):
-          if QCDlooseSS.obj.GetBinContent(i+1)<=0:
-	      QCDlooseSS.obj.SetBinContent(i+1,0.001)
-          if QCDlooseSS.weighted.GetBinContent(i+1)<=0:
-	      QCDlooseSS.weighted.SetBinContent(i+1,0.001)
-
       return QCDlooseSS,QCDScale
 
 def QCDEstimate1(prefix,prefix1,xmin,xmax,\
@@ -310,14 +307,14 @@ def QCDEstimate1(prefix,prefix1,xmin,xmax,\
       #osSShErr=osSSh*math.sqrt(1./QCDlooseHighControlLooseIsoOS.Integral() + 1./QCDlooseHighControlLooseIsoSS.Integral())
       #print "QCDlooseHighControlLooseIsoOS / QCDlooseHighControlLooseIsoSS",osSSh, "+-", osSShErr
       
+      if osSSm<osSSmErr/2.:
+          osSSm=osSSmErr/2.
+      
+      if tightLoose<tightLooseErr/2.:
+          tightLoose=tightLooseErr/2.
+      
       QCDScale=osSSm*tightLoose
       
-      for i in range(QCDlooseSS.obj.GetXaxis().GetNbins()):
-          if QCDlooseSS.obj.GetBinContent(i+1)<=0:
-	      QCDlooseSS.obj.SetBinContent(i+1,0.001)
-          if QCDlooseSS.weighted.GetBinContent(i+1)<=0:
-	      QCDlooseSS.weighted.SetBinContent(i+1,0.001)
-
       return QCDlooseSS,QCDScale
 
 def QCDEstimate2(prefix,prefix1,xmin,xmax,\
@@ -369,14 +366,11 @@ def QCDEstimate2(prefix,prefix1,xmin,xmax,\
       tightLooseErr=tightLoose*math.sqrt(1./abs(QCDtightSS.Integral()) + 1./abs(QCDlooseSS.Integral()))
       print "QCDtightSS / QCDlooseSS", tightLoose, "+-", tightLooseErr
       
+      if tightLoose<tightLooseErr/2.:
+          tightLoose=tightLooseErr/2.
+      
       QCDScale=tightLoose
       
-      for i in range(QCDlooseOS.obj.GetXaxis().GetNbins()):
-          if QCDlooseOS.obj.GetBinContent(i+1)<=0:
-	      QCDlooseOS.obj.SetBinContent(i+1,0.001)
-          if QCDlooseOS.weighted.GetBinContent(i+1)<=0:
-	      QCDlooseOS.weighted.SetBinContent(i+1,0.001)
-
       return QCDlooseOS,QCDScale
 
 def QCDEstimate3(prefix,prefix1,xmin,xmax,\
@@ -451,14 +445,14 @@ def QCDEstimate3(prefix,prefix1,xmin,xmax,\
       #osSShErr=osSSh*math.sqrt(1./QCDlooseHighControlLooseIsoOS.Integral() + 1./QCDlooseHighControlLooseIsoSS.Integral())
       #print "QCDlooseHighControlLooseIsoOS / QCDlooseHighControlLooseIsoSS",osSSh, "+-", osSShErr
       
+      if osSSm<osSSmErr/2.:
+          osSSm=osSSmErr/2.
+      
+      if tightLoose<tightLooseErr/2.:
+          tightLoose=tightLooseErr/2.
+      
       QCDScale=osSSm*tightLoose
       
-      for i in range(QCDlooseSS.obj.GetXaxis().GetNbins()):
-          if QCDlooseSS.obj.GetBinContent(i+1)<=0:
-	      QCDlooseSS.obj.SetBinContent(i+1,0.001)
-          if QCDlooseSS.weighted.GetBinContent(i+1)<=0:
-	      QCDlooseSS.weighted.SetBinContent(i+1,0.001)
-
       return QCDlooseSS,QCDScale
 
 def QCDEstimate4(prefix,prefix1,xmin,xmax,\
@@ -519,14 +513,11 @@ def QCDEstimate4(prefix,prefix1,xmin,xmax,\
       tightLooseErr=tightLoose*math.sqrt(1./abs(QCDtightSS.Integral()) + 1./abs(QCDlooseSS.Integral()))
       print "QCDtightSS / QCDlooseSS", tightLoose, "+-", tightLooseErr
       
+      if tightLoose<tightLooseErr/2.:
+          tightLoose=tightLooseErr/2.
+      
       QCDScale=tightLoose
       
-      for i in range(QCDlooseOS.obj.GetXaxis().GetNbins()):
-          if QCDlooseOS.obj.GetBinContent(i+1)<=0:
-	      QCDlooseOS.obj.SetBinContent(i+1,0.001)
-          if QCDlooseOS.weighted.GetBinContent(i+1)<=0:
-	      QCDlooseOS.weighted.SetBinContent(i+1,0.001)
-
       return QCDlooseOS,QCDScale
 
 def QCDEstimate5(prefix,prefix1,xmin,xmax,\
@@ -587,13 +578,9 @@ def QCDEstimate5(prefix,prefix1,xmin,xmax,\
       OSSSErr=OSSS*math.sqrt(1./abs(QCDlooseOS.Integral()) + 1./abs(QCDlooseSS.Integral()))
       print "QCDlooseOS / QCDlooseSS", OSSS, "+-", OSSSErr
       
+      if OSSS<OSSSErr/2.:
+          OSSS=OSSSErr/2.
+      
       QCDScale=OSSS
       
-      for i in range(QCDtightSS.obj.GetXaxis().GetNbins()):
-          if QCDtightSS.obj.GetBinContent(i+1)<=0:
-	      QCDtightSS.obj.SetBinContent(i+1,0.001)
-          if QCDtightSS.weighted.GetBinContent(i+1)<=0:
-	      QCDtightSS.weighted.SetBinContent(i+1,0.001)
-
       return QCDtightSS,QCDScale
-
