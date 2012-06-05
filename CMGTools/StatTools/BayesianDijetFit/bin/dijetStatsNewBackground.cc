@@ -63,7 +63,7 @@ using namespace DijetHelper;
 
 int main(int argc, char* argv[])
 {
-  bool doAggressiveBkgFit=true;
+  bool doAggressiveBkgFit=false;
 
 
   vector<double> upper_limits;
@@ -99,11 +99,12 @@ int main(int argc, char* argv[])
   double JERERROR=0.1;   // relative error on JER
   double NSIGCUTOFF=3.0; // number of +/- "sigma" to cutoff integration of nuisance parameters
   bool USELOGNORM=true;  // use lognormal or gaussian nuisance prior pdfs
-  bool USEJEFFREYS=false;  // use lognormal or gaussian nuisance prior pdfs
-  bool USENEWCOVARIANCE=true;  // use lognormal or gaussian nuisance prior pdfs
+  bool USEJEFFREYS=false;  // use jeffreys instead of flat prior
+  bool USENEWCOVARIANCE=true;  // Dinkos code for the fit eigenvectors
   bool WRITE=false;
 
-
+  bool LESS_PARAMETERS=false;
+  
   // histogram binning (for display only)
   const int NBINS=54;
   Double_t BOUNDARIES[NBINS] = { 220, 244, 270, 296, 325, 354, 386, 419, 453,
@@ -282,48 +283,52 @@ int main(int argc, char* argv[])
   cout << "Verbose = " << verbose_ << endl;
 
   // background
+  int number_of_parameters = 4;
 
     if (statlevel==63)
     {
         // swap fita and fitb
   if (iResonance > 2010 && iResonance < 2020)  {
-    ws->factory("EXPR::backgroundb('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
-    ws->factory("EXPR::background('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
-//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc1[0,0,0],pc2[5.4,-100,100],invmass)");
-    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],invmass)");
+    number_of_parameters = 3;
+    ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass/7000.0),p1)/pow(invmass/7000,p2)',p1[5.1,0,100],p2[5.72,-100,100], p3[-0.0547,-1,1],invmass)");
+    ws->factory("EXPR::backgroundb('pow(1.0-invmass/7000.0,pb1)/pow(invmass/7000.0,pb2+pb3*0)', pb1[12,-30,30], pb2[2,-20,20], pb3[0,0,0],invmass)");
+    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc2[5.4,-100,100],pc3[0,0,0],pc1[0,0,0],invmass)");
+//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],pc3[0,0,0],invmass)");
   } else {
-
-    ws->factory("EXPR::backgroundb('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
-    ws->factory("EXPR::background('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
-    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],invmass)");
+    number_of_parameters = 4;
+ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass/7000.0),p1)/pow(invmass/7000,p2)',p1[8.41,0,100],p2[5.20,-100,100], p3[-0.017,-1,1],invmass)");
+    ws->factory("EXPR::backgroundb('pow(1.0-invmass/7000.0,pb1)/pow(invmass/7000.0,pb2+pb3*log(invmass/7000.0))', pb1[7.460,-30,30], pb2[5.882,-20,20], pb3[0.106,-5,5],invmass)");
+        ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],pc3[0,0,0],invmass)");
   }
     } else
-    if (statlevel==64)
+    if ((statlevel==64)||(LESS_PARAMETERS))
   {
         // swap fita and fitc
   if (iResonance > 2010 && iResonance < 2020)  {
-    ws->factory("EXPR::backgroundc('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
+    number_of_parameters = 2;
+    ws->factory("EXPR::background('pow(1-invmass/7000.0,0)/pow(invmass/7000,p2)',p2[5.4,-100,100],p3[0,0,0],p1[0,0,0],invmass)");
+//    ws->factory("EXPR::background('pow(1-invmass/7000.0,p1)/pow(invmass/7000,0)',p1[7.8,-100,100],p2[0,0,0],p3[0,0,0],invmass)");
     ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
-//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc1[0,0,0],pc2[5.4,-100,100],invmass)");
-    ws->factory("EXPR::background('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],invmass)");
+    ws->factory("EXPR::backgroundc('pow(1.0-invmass/7000.0,pc1)/pow(invmass/7000.0,pc2+pc3*0)', pc1[12,-30,30], pc2[2,-20,20], pc3[0,0,0],invmass)");
   } else {
-
-    ws->factory("EXPR::backgroundc('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
+    number_of_parameters = 3;
+    ws->factory("EXPR::background('pow(1-invmass/7000.0,p1)/pow(invmass/7000,p2)',p1[7.8,-100,100],p2[5.4,-100,100],p3[0,0,0],invmass)");
     ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
-    ws->factory("EXPR::background('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],invmass)");
+    ws->factory("EXPR::backgroundc('pow(1.0-invmass/7000.0,pc1)/pow(invmass/7000.0,pc2+pc3*log(invmass/7000.0))', pc1[7.460,-30,30], pc2[5.882,-20,20], pc3[0.106,-5,5],invmass)");
   }
     } else
     {
   if (iResonance > 2010 && iResonance < 2020)  {
+    number_of_parameters = 3;
     ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
     ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
-//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc1[0,0,0],pc2[5.4,-100,100],invmass)");
-    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],invmass)");
+    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc2[5.4,-100,100],pc3[0,0,0],pc1[0,0,0],invmass)");
+//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],pc3[0,0,0],invmass)");
   } else {
-
+    number_of_parameters = 4;
     ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
     ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
-    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],invmass)");
+    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],pc3[0,0,0],invmass)");
   }
     }
 
@@ -423,18 +428,17 @@ int main(int argc, char* argv[])
   double maxinvmass=ws->var("invmass")->getMax();
   cout << "mininvmass = " << mininvmass << " maxinvmass = " << maxinvmass << endl;
   ws->var("invmass")->setRange("FULL", mininvmass,maxinvmass);
-  RooFitResult* fita;
+  RooFitResult* fit_for_covariance;
   RooFitResult* fit;
 
   cout << "Do fit A" << endl;
-  fita=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
+  fit_for_covariance=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
 
   cout << "Do fit B" << endl;
   fit=doFit(std::string("bfitb")+label, ws->pdf("modelb"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
 
   cout << "Do fit C" << endl;
   fit=doFit(std::string("bfitc")+label, ws->pdf("modelc"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
-  
 
   // integrate over model to get xs estimate as input to the B+S fit
   double pdfIntegral=ws->var("nbkg")->getVal()*calcPDF1DIntegral(ws->pdf("modela"), invmass, signalMass*0.9, signalMass*1.1);
@@ -452,6 +456,12 @@ int main(int argc, char* argv[])
   if (signalMass>3899) maxXS = maxXS*8.0;
   xs->setRange(0,maxXS);
   xs->setVal(maxXS/5.0);
+
+  if(!doAggressiveBkgFit) {
+        // Fit s+b with signal floating
+        xs->setConstant(false);
+	fit=doFit(std::string("bsfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
+  }
 
   double nbkgValInit=ws->var("nbkg")->getVal();
   double p1ValInit=ws->var("p1")->getVal();
@@ -490,14 +500,42 @@ int main(int argc, char* argv[])
       ws->var("pb3")->setConstant(true);
       ws->var("pc1")->setConstant(true);
       ws->var("pc2")->setConstant(true);
+      ws->var("pc3")->setConstant(true);
       ws->var("nbkg")->setConstant(true);
       
       fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
-    } else {
+    } else
+    if (statlevel == 2100) {
+        // Fit b with excluded signal region
+	double minexclude = std::max(mininvmass, ws->var("sigMass")->getVal()*0.8);
+	double maxexclude = std::min(maxinvmass, ws->var("sigMass")->getVal()*1.1);
+	ws->var("invmass")->setRange("SB1", mininvmass, minexclude);
+	if (maxexclude <  maxinvmass){
+	  ws->var("invmass")->setRange("SB2", maxexclude, maxinvmass);
+	  fit_for_covariance=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "SB1,SB2");
+	  ws->var("invmass")->removeRange("SB2");
+	} else {
+	  fit_for_covariance=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "SB1");
+	}
 
-      if (statlevel == 2000){
+	ws->var("invmass")->removeRange("SB1");
 
-	fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
+	ws->var("p1")->setConstant(true);
+	ws->var("p2")->setConstant(true);
+	ws->var("p3")->setConstant(true);
+	ws->var("pb1")->setConstant(true);
+	ws->var("pb2")->setConstant(true);
+	ws->var("pb3")->setConstant(true);
+	ws->var("pc1")->setConstant(true);
+	ws->var("pc2")->setConstant(true);
+	ws->var("pc3")->setConstant(true);
+	ws->var("nbkg")->setConstant(true);
+    } else
+    {
+        // Rerun s+b fit with fixed signal, to get a proper covariance matrix for the bg parameters
+        xs->setConstant(true);
+        fit_for_covariance=doFit(std::string("bfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
+        xs->setConstant(false);
 	
 	ws->var("p1")->setConstant(true);
 	ws->var("p2")->setConstant(true);
@@ -507,41 +545,8 @@ int main(int argc, char* argv[])
 	ws->var("pb3")->setConstant(true);
 	ws->var("pc1")->setConstant(true);
 	ws->var("pc2")->setConstant(true);
+	ws->var("pc3")->setConstant(true);
 	ws->var("nbkg")->setConstant(true);
-
-      } else if (statlevel == 2100) {
-
-	double minexclude = std::max(mininvmass, ws->var("sigMass")->getVal()*0.8);
-	double maxexclude = std::min(maxinvmass, ws->var("sigMass")->getVal()*1.1);
-	ws->var("invmass")->setRange("SB1", mininvmass, minexclude);
-	if (maxexclude <  maxinvmass){
-	  ws->var("invmass")->setRange("SB2", maxexclude, maxinvmass);
-	  fit=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "SB1,SB2");
-	  ws->var("invmass")->removeRange("SB2");
-	} else {
-	  fit=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "SB1");
-	}
-
-
-	ws->var("invmass")->removeRange("SB1");
-
-
-	ws->var("p1")->setConstant(true);
-	ws->var("p2")->setConstant(true);
-	ws->var("p3")->setConstant(true);
-	ws->var("pb1")->setConstant(true);
-	ws->var("pb2")->setConstant(true);
-	ws->var("pb3")->setConstant(true);
-	ws->var("pc1")->setConstant(true);
-	ws->var("pc2")->setConstant(true);
-	ws->var("nbkg")->setConstant(true);
-
-
-      }
-
-      
-      
-
     }
 
     // set parameters for limit calculation
@@ -611,6 +616,7 @@ int main(int argc, char* argv[])
     printVal(*ws->var("pb3"));
     printVal(*ws->var("pc1"));
     printVal(*ws->var("pc2"));
+    printVal(*ws->var("pc3"));
     if (verbose_) ws->writeToFile("ws.root");
     else if (!verbose_ && WRITE){
       string title("ws");
@@ -674,15 +680,14 @@ int main(int argc, char* argv[])
       }
       
       else {
-
         // Code taken from TFitResult.RandomizePars
-        Int_t nPar= fita->floatParsFinal().getSize();
+        Int_t nPar = number_of_parameters; // fit_for_covariance->floatParsFinal().getSize();
         // calculate the elements of the upper-triangular matrix L that gives Lt*L = C
         // where Lt is the transpose of L (the "square-root method")
         TMatrix L(nPar,nPar);
         for(Int_t iPar= 0; iPar < nPar; iPar++) {
      	  // calculate the diagonal term first
-     	  L(iPar,iPar)= fita->covarianceMatrix()(iPar,iPar);
+     	  L(iPar,iPar)= fit_for_covariance->covarianceMatrix()(iPar,iPar);
      	  for(Int_t k= 0; k < iPar; k++) {
      	    Double_t tmp= L(k,iPar);
      	    L(iPar,iPar)-= tmp*tmp;
@@ -690,7 +695,7 @@ int main(int argc, char* argv[])
      	  L(iPar,iPar)= sqrt(L(iPar,iPar));
      	  // then the off-diagonal terms
      	  for(Int_t jPar= iPar+1; jPar < nPar; jPar++) {
-     	    L(iPar,jPar)= fita->covarianceMatrix()(iPar,jPar);
+     	    L(iPar,jPar)= fit_for_covariance->covarianceMatrix()(iPar,jPar);
      	    for(Int_t k= 0; k < iPar; k++) {
      	      L(iPar,jPar)-= L(k,iPar)*L(k,jPar);
      	    }
@@ -700,7 +705,7 @@ int main(int argc, char* argv[])
         // remember Lt
         TMatrix* _Lt= new TMatrix(TMatrix::kTransposed,L);
         TVectorD eigenValues(4);
-        TMatrixD eigenVectors=fita->covarianceMatrix().EigenVectors(eigenValues);
+        TMatrixD eigenVectors=fit_for_covariance->covarianceMatrix().EigenVectors(eigenValues);
         std::cout << "EigenVectors" << std::endl;
         for(Int_t k= 0; k < nPar; k++) {
      	  std::cout << k << ": ";
