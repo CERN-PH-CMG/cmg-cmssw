@@ -455,9 +455,7 @@ if __name__ == '__main__':
        gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDcheck.png")
        gPad.WaitPrimitive()
 
-
-
-
+      
       #######################################################
       ################# PLOTTING DATA/MC ####################
       #######################################################
@@ -484,6 +482,18 @@ if __name__ == '__main__':
         plotVarDataOS.Hist('QCDdata').layer = 0.99
         plotVarDataOS.Hist('QCDdata').Scale(QCDScale)
         
+        #### WJets estimate for low stat 2012 MC samples ###
+        WJetsShape = copy.deepcopy(plotVarDataLooseIsoOS.Hist("WJets"))
+        WJetsScale = plotVarDataOS.Hist("WJets").Integral()/plotVarDataLooseIsoOS.Hist("WJets").Integral()
+        WJetsFakesShape = copy.deepcopy(plotVarDataLooseIsoOS.Hist("WJets_Fakes"))
+        WJetsFakesScale = plotVarDataOS.Hist("WJets_Fakes").Integral()/plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
+        plotVarDataOS.Hist("WJets").obj = WJetsShape.obj
+        plotVarDataOS.Hist("WJets").weighted = WJetsShape.weighted
+        plotVarDataOS.Hist("WJets").Scale(WJetsScale)
+        plotVarDataOS.Hist("WJets_Fakes").obj = WJetsFakesShape.obj
+        plotVarDataOS.Hist("WJets_Fakes").weighted = WJetsFakesShape.weighted
+        plotVarDataOS.Hist("WJets_Fakes").Scale(WJetsFakesScale)
+
         if yields == True :
           print "Yields for MC and Data Higgs Mass = "+str(mIndex)+" GeV"
           print "Lumi:"                    , plotVarDataOS.intLumi
