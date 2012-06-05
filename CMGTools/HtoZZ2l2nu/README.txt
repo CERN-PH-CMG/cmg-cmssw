@@ -35,7 +35,9 @@ runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json 
 #
 # create ntuples
 #
-runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json -n 5 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/store/cmst3/user/psilva/2012_May_12_HZZ2l2v_ntuples/split" -t Data
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2011.json -n 5 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/work/split" -t Data
+runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json -n 5 -s 8nh -d patdir -p "-cfg=$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/zzllvvCleanEventAndAnalysis_cfg.py -castor=/afs/cern.ch/user/p/psilva/work/split" -t 2012B
+
 
 #
 # merge the ntuples
@@ -70,7 +72,8 @@ haddOverSamples.py -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03
 
 
 ## generate unweigthed distributions
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma_2012/  -c test/runAnalysis_cfg.py.templ -s 8nh
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2011/raw  -c test/runAnalysis_cfg.py.templ -s 8nh
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2012/raw  -c test/runAnalysis_cfg.py.templ -s 8nh
 
 
 runPlotter --iLumi 4616 --inDir ~/work/gamma/ --outDir ~/work/gamma/plots --json data/photon-samples.json

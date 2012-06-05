@@ -51,6 +51,14 @@ process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
                                     MET = BaseMetSelection.clone()
                                     )
 
+if(castorDir.find('12_03_13_HZZ2l2v_pat')>0):
+    print ' Warning: applying PF muon patch to standard selection'
+    process.evAnalyzer.Muons.source=cms.InputTag("selectedPatMuonsPFlow")
+    process.evAnalyzer.Muons.sourceIsPF=cms.bool(True)
+    process.evAnalyzer.LooseMuons.source=process.evAnalyzer.Muons.source
+    process.evAnalyzer.LooseMuons.sourceIsPF=process.evAnalyzer.Muons.sourceIsPF
+    
+
 #rho for muon isolation
 process.load('CommonTools.ParticleFlow.ParticleSelectors.pfAllNeutralHadronsAndPhotons_cfi')
 process.pfAllNeutralHadronsAndPhotons.src=cms.InputTag("particleFlow")

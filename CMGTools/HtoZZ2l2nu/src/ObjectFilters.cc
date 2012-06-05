@@ -141,6 +141,7 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
     vector<reco::CandidatePtr> selMuons;
     selMuonIds.clear();
 
+    bool sourceIsPF = iConfig.getParameter<bool>("sourceIsPF");
     double minPt = iConfig.getParameter<double>("minPt");
     double maxEta = iConfig.getParameter<double>("maxEta");
     string id = iConfig.getParameter<string>("id");
@@ -198,14 +199,14 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 	    }
 
 	  //2012 categories : https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId
-	  bool isLoose(muon->isPFMuon() && (isTracker || isGlobal));
+	  bool isLoose( (sourceIsPF || muon->isPFMuon()) && (isTracker || isGlobal));
 	  bool isSoft(muon->muonID("TMOneStationTight") 
 		      && lepId.trkLayersWithMeasurement>5
 		      && lepId.pixelLayersWithMeasurement>1
 		      && lepId.innerTrackChi2 < 1.8
 		      && fabs(lepId.trkd0)<3.
 		      && fabs(lepId.trkdZ)<30.);
-	  bool isTight(muon->isPFMuon() 
+	  bool isTight( (sourceIsPF || muon->isPFMuon())  
 		       && isGlobal
 		       && lepId.trkchi2<10.
 		       && lepId.trkValidMuonHits>0
@@ -252,7 +253,7 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 	    | ( (int(muon->muonID("TMOneStationTight")) & 0x1) << MID_TMONESTATIONTIGHT)
 	    | (  muon->isTrackerMuon() << MID_TRACKER )
 	    | (  muon->isGlobalMuon() << MID_GLOBAL )
-	    | (  muon->isPFMuon() << MID_PF )
+	    | (  (sourceIsPF || muon->isPFMuon()) << MID_PF )
 	    | isLoose << MID_LOOSE
 	    | isSoft << MID_SOFT
 	    | isTight << MID_TIGHT
@@ -358,15 +359,19 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	else        lepId.genP4=LorentzVector(0,0,0,0);
 	lepId.charge=ele->charge();
 	std::pair<double,double> enSF(1.0,0);
-	if(ecorr) 
-	  {
+	try{
+	  if(ecorr) 
+	    {
 #if IS44x == 1
-	    enSF=ecorr->CorrectedEnergyWithError(dynamic_cast<const reco::GsfElectron &>(*ele),lazyTool);
+	      enSF=ecorr->CorrectedEnergyWithError(dynamic_cast<const reco::GsfElectron &>(*ele),lazyTool);
 #else
-	    enSF=ecorr->CorrectedEnergyWithError(*ele,*hVtx,lazyTool,iSetup);
+	      enSF=ecorr->CorrectedEnergyWithError(*ele,*hVtx,lazyTool,iSetup);
 #endif
-	    enSF.first = enSF.first/ele->energy();  enSF.second = enSF.second/ele->energy();
-	  }
+	      enSF.first = enSF.first/ele->energy();  enSF.second = enSF.second/ele->energy();
+	    }
+	}
+	catch(std::exception &e){
+	}
 	lepId.ensf              = enSF.first;
 	lepId.ensferr           = enSF.second;
 	std::vector<double> isoVals=getLeptonIso( elePtr, lepId.p4.pt(), rho);
@@ -375,9 +380,10 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	lepId.hoebc             = ele->hcalOverEcalBc();
 	lepId.dPhiTrack         = ele->deltaPhiSuperClusterTrackAtVtx();
 	lepId.dEtaTrack         = ele->deltaEtaSuperClusterTrackAtVtx();
-	vector<float> cov       = lazyTool.localCovariances(*ele->superCluster()->seed());
 	lepId.sihih             = ele->sigmaIetaIeta();
-	lepId.sipip             = sqrt(cov[2]);
+	lepId.sihip             = 0;
+	lepId.sipip             = 0; 
+	try { vector<float> cov = lazyTool.localCovariances(*ele->superCluster()->seed()); lepId.sipip=sqrt(cov[2]); lepId.sihip=cov[1]; } catch(std::exception &e) { }
 	lepId.ooemoop           = (1.0/ele->ecalEnergy() - ele->eSuperClusterOverP()/ele->ecalEnergy());
 	lepId.trkpt             = ele->gsfTrack()->pt();
 	lepId.trketa            = ele->gsfTrack()->eta();
@@ -397,7 +403,7 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	lepId.h2te              = ele->dr03HcalDepth2TowerSumEt();
 	lepId.h2tebc            = ele->dr03HcalDepth2TowerSumEtBc();
 	lepId.fbrem             = ele->fbrem();
-	lepId.r9                = lazyTool.e3x3(*ele->superCluster()->seed())/ele->superCluster()->rawEnergy();
+	lepId.r9                = 0; try{ lepId.r9=lazyTool.e3x3(*ele->superCluster()->seed())/ele->superCluster()->rawEnergy(); } catch(std::exception &e) { }
 	lepId.aeff              = EgammaCutBasedEleId::GetEffectiveArea(ele->eta());  
 	lepId.eopin             = ele->eSuperClusterOverP(); 
 	lepId.trkip3d           = ip3dRes.second.value();
@@ -409,7 +415,6 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	lepId.e1x5e5x5          =  (ele->e5x5()) !=0. ? 1.-(ele->e1x5()/ele->e5x5()) : -1. ; 
 	lepId.dEtaCalo          = ele->deltaEtaSeedClusterTrackAtCalo();
 	lepId.dPhiCalo          = ele->deltaPhiSeedClusterTrackAtCalo();
-	lepId.sihip             = cov[1];
 	lepId.nbrems            = fabs(ele->numberOfBrems());
 	lepId.kfchi2            = (validKF) ? myTrackRef->normalizedChi2() : 0 ;
 	lepId.kfhits            =  (validKF) ? myTrackRef->hitPattern().trackerLayersWithMeasurement() : -1. ;  
@@ -880,29 +885,33 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	if(genPho) phoId.genP4 = LorentzVector(genPho->px(),genPho->py(),genPho->pz(),genPho->energy());
 	phoId.charge=0;
 	std::pair<double,double> enSF(1.0,0);
-	if(phocorr) 
-	  {
-	    if(!phocorr->IsInitialized())
-	      {
-		TString path(iConfig.getParameter<std::string>("scCorrector"));
-		gSystem->ExpandPathName(path);
-		phocorr->Initialize(iSetup,path.Data());
-	      }
+	try{
+	  if(phocorr) 
+	    {
+	      if(!phocorr->IsInitialized())
+		{
+		  TString path(iConfig.getParameter<std::string>("scCorrector"));
+		  gSystem->ExpandPathName(path);
+		  phocorr->Initialize(iSetup,path.Data());
+		}
 #if IS44x == 1
-	    enSF=phocorr->CorrectedEnergyWithError(*pho);
+	      enSF=phocorr->CorrectedEnergyWithError(*pho);
 #else
-	    enSF=phocorr->CorrectedEnergyWithError(*pho,*hVtx,lazyTool,iSetup);
+	      enSF=phocorr->CorrectedEnergyWithError(*pho,*hVtx,lazyTool,iSetup);
 #endif
-	    enSF.first = enSF.first/pho->energy();  enSF.second = enSF.second/pho->energy();
-	  }
+	      enSF.first = enSF.first/pho->energy();  enSF.second = enSF.second/pho->energy();
+	    }
+	}
+	catch(std::exception &e){
+	}
 	phoId.ensf              = enSF.first;
 	phoId.ensferr           = enSF.second;
 	phoId.hoe               = pho->hadronicOverEm();
-	//FIXME : 52X 
-	//phoId.hoebc             = pho->hadTowOverEm();
-	vector<float> cov       = lazyTool.localCovariances(*pho->superCluster()->seed());
+#if IS44x == 0
+	phoId.hoebc           = pho->hadTowOverEm();
+#endif
 	phoId.sihih             = pho->sigmaIetaIeta();
-	phoId.sipip             = !isnan(cov[2]) ? sqrt(cov[2]) : 0.;
+	phoId.sipip             =0; try{ vector<float> cov       = lazyTool.localCovariances(*pho->superCluster()->seed()); phoId.sipip=!isnan(cov[2]) ? sqrt(cov[2]) : 0.; } catch(std::exception &e){ }
 	phoId.sce               = pho->superCluster()->energy();
 	phoId.sceta             = pho->superCluster()->eta();
 	phoId.scphi             = pho->superCluster()->phi();
@@ -910,8 +919,9 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	phoId.e1x5              = pho->e1x5();
 	phoId.e5x5              = pho->e5x5();
 	phoId.h2te              = pho->hadronicDepth2OverEm();
-	//FIXME : 52X 
-	//phoId.h2tebc            = pho->hadTowDepth2OverEm();
+#if IS44x == 0
+	phoId.h2tebc            = pho->hadTowDepth2OverEm();
+#endif
 	phoId.r9                = pho->r9();
 	phoId.aeff              = EgammaCutBasedEleId::GetEffectiveArea(pho->eta());  
 	phoId.isoVals[TRACKER_ISO]=pho->trkSumPtHollowConeDR04();
@@ -924,18 +934,21 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	bool hasBadSeed(false);
 	if(pho->isEB() && ebrechits.isValid())
 	  {
-	    DetId id=pho->superCluster()->seed()->hitsAndFractions()[0].first;
-	    EcalRecHitCollection::const_iterator seedcry_rh = ebrechits->find( id );
-	    if( seedcry_rh != ebrechits->end() ) 
-	      {
-		hasBadSeed |= seedcry_rh->checkFlag(EcalRecHit::kOutOfTime);
-		hasBadSeed |= seedcry_rh->checkFlag(EcalRecHit::kWeird);
-	      }
+	    try{
+	      DetId id=pho->superCluster()->seed()->hitsAndFractions()[0].first;
+	      EcalRecHitCollection::const_iterator seedcry_rh = ebrechits->find( id );
+	      if( seedcry_rh != ebrechits->end() ) 
+		{
+		  hasBadSeed |= seedcry_rh->checkFlag(EcalRecHit::kOutOfTime);
+		  hasBadSeed |= seedcry_rh->checkFlag(EcalRecHit::kWeird);
+		}
+	    }catch(std::exception &e){
+	    }
 	  }
 
 	bool hasPixelSeed=pho->hasPixelSeed();	
-	bool hasElectronVeto = ConversionTools::hasMatchedPromptElectron(pho->superCluster(), hEle, hConversions, beamSpot->position());
-	reco::ConversionRef conv = ConversionTools::matchedConversion(*(pho->superCluster()),hConversions,beamSpot->position());
+	bool hasElectronVeto(false); try{ hasElectronVeto = ConversionTools::hasMatchedPromptElectron(pho->superCluster(), hEle, hConversions, beamSpot->position()); } catch(std::exception &e) { }
+	reco::ConversionRef conv;    try{ conv = ConversionTools::matchedConversion(*(pho->superCluster()),hConversions,beamSpot->position()); } catch(std::exception &e) { }
 	bool isConverted(!conv.isNull());
 	bool isVtxConstrained(false);
 	if(isConverted)
