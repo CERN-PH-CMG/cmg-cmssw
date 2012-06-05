@@ -67,6 +67,9 @@ struct Shape_t
   //the key corresponds to the proc name
   //the key is the name of the variation: e.g. jesup, jesdown, etc.
   std::map<TString,std::vector<std::pair<TString, TH1*> > > bckgVars, signalVars;
+
+  std::map<TString, double> xsections;
+
 };
 
 typedef std::pair<TString,TString> RateKey_t;
@@ -94,6 +97,18 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString metHistoForRescale);
 void doWZSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto);
 void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto);
+
+void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, JSONWrapper::Object &Root);
+
+
+void setTGraph(TString proc, TString suffix);
+void initializeTGraph();
+
+TGraph *ggH7TG_xsec=NULL, *ggH7TG_errp=NULL, *ggH7TG_errm=NULL, *ggH7TG_scap=NULL, *ggH7TG_scam=NULL, *ggH7TG_pdfp=NULL, *ggH7TG_pdfm=NULL;
+TGraph *qqH7TG_xsec=NULL, *qqH7TG_errp=NULL, *qqH7TG_errm=NULL, *qqH7TG_scap=NULL, *qqH7TG_scam=NULL, *qqH7TG_pdfp=NULL, *qqH7TG_pdfm=NULL;
+TGraph *ggH8TG_xsec=NULL, *ggH8TG_errp=NULL, *ggH8TG_errm=NULL, *ggH8TG_scap=NULL, *ggH8TG_scam=NULL, *ggH8TG_pdfp=NULL, *ggH8TG_pdfm=NULL;
+TGraph *qqH8TG_xsec=NULL, *qqH8TG_errp=NULL, *qqH8TG_errm=NULL, *qqH8TG_scap=NULL, *qqH8TG_scam=NULL, *qqH8TG_pdfp=NULL, *qqH8TG_pdfm=NULL;
+TGraph *    TG_xsec=NULL, *    TG_errp=NULL, *    TG_errm=NULL, *    TG_scap=NULL, *    TG_scam=NULL, *    TG_pdfp=NULL, *    TG_pdfm=NULL;
 
 bool subNRB2011 = false;
 bool subNRB2012 = false;
@@ -162,6 +177,9 @@ int main(int argc, char* argv[])
   gStyle->SetOptStat(0);  
   gStyle->SetOptFit(0);
 
+  //init the TGraphs
+  initializeTGraph();
+
   //get input arguments
   bool runSystematics = false; bool shape = false;
   for(int i=1;i<argc;i++){
@@ -200,97 +218,6 @@ int main(int argc, char* argv[])
 }
 
 
-
-
-
-//
-void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName)
-{
-  FILE* pFile = fopen("Yields.tex","w");
-  fprintf(pFile,"\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
-
-  string Ccol   = "\\begin{tabular}{|c|";
-  string Cname  = "channel";
-  string Cval   = "";
-
-  TString massStr(""); massStr += mass;
-
-
-  TH1* h;
-  Double_t valerr, val, syst;
-  for(size_t b=0; b<AnalysisBins.size(); b++){
-  for(size_t ich=0; ich<ch.size(); ich++) {
-    TString icol(ch[ich]+"-"+AnalysisBins[b]);
-    icol.ReplaceAll("mu","\\mu"); icol.ReplaceAll("_"," ");
-    Cval = "$ "+icol+" $";
-
-    //bckg
-    size_t nbckg=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.bckg.size();
-    for(size_t ibckg=0; ibckg<nbckg; ibckg++){
-       TH1* h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.bckg[ibckg];       
-       TString procTitle(h->GetTitle()); 
-       if(procTitle.Contains("QCD"))continue;
-       if(procTitle.Contains("W#rightarrow l#nu"))continue;
-       if(procTitle.Contains("Z#rightarrow #tau#tau"))continue;
-       procTitle.ReplaceAll("#","\\");
-       if(b==0&&ich==0)Ccol  += "c|";
-       if(b==0&&ich==0)Cname += "&$" + procTitle + "$";
-
-       val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
-       syst = h->GetBinError(0)<=0 ? -1 : h->GetBinError(0); 
-       if(val<1E-6){val=0.0; valerr=0.0; syst=-1;}
-       Cval += "&" + toLatexRounded(val,valerr, syst);
-    }
-
-    //total bckg
-    if(b==0&&ich==0)Ccol  += "c|";
-    if(b==0&&ich==0)Cname += "&$Total$";
-    h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.totalBckg;
-    val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
-    syst = h->GetBinError(0)<=0 ? -1 : h->GetBinError(0);
-    if(val<1E-6){val=0.0; valerr=0.0; syst=-1;}
-    Cval += "&\\boldmath " + toLatexRounded(val,valerr,syst);
-
-    //signal
-    size_t nsig=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal.size();
-    for(size_t isig=0; isig<nsig; isig++){
-       h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal[isig];
-       TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
-
-       if(!procTitle.Contains(massStr))continue;
-            if(procTitle.Contains("ggH") && procTitle.Contains("ZZ"))procTitle = "ggH("+massStr+")";
-       else if(procTitle.Contains("qqH") && procTitle.Contains("ZZ"))procTitle = "qqH("+massStr+")";
-       else if(procTitle.Contains("ggH") && procTitle.Contains("WW"))procTitle = "ggH("+massStr+")WW";
-       else if(procTitle.Contains("qqH") && procTitle.Contains("WW"))procTitle = "qqH("+massStr+")WW";
-
-       if(b==0&&ich==0)Ccol  += "c|";
-       if(b==0&&ich==0)Cname += "&$" + procTitle+"$";
-
-       val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
-       if(val<1E-6){val=0.0; valerr=0.0;}
-       Cval += "&" + toLatexRounded(val,valerr);
-    }
-
-    //data
-    if(b==0&&ich==0)Ccol  += "c|";
-    if(b==0&&ich==0)Cname += "&$Data$";
-    h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.data;
-    val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
-    if(val<1E-6){val=0.0; valerr=0.0;}
-    Cval += "&\\boldmath " + toLatexRounded(val,0.0);
-
-    //endline
-    if(b==0&&ich==0)fprintf(pFile,"%s}\\hline\n", Ccol.c_str());
-    if(b==0&&ich==0)fprintf(pFile,"%s\\\\\\hline\n", Cname.c_str());
-    fprintf(pFile,"%s\\\\\n", Cval.c_str());
-  }}
-  fprintf(pFile,"\\hline\n");
-  fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n");
-  fprintf(pFile,"\n\n\n\n");
-  fclose(pFile);
-
-
-}
 
 
 //
@@ -343,7 +270,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 	    hshape->SetFillStyle(fill);  hshape->SetLineWidth(lwidth); hshape->SetMarkerStyle(marker); hshape->SetLineStyle(lstyle);
             hshape->GetYaxis()->SetTitle("Events (/25GeV)");
          }else{		
-            if(ivar==1)printf("Histo does not exist: %s\n", histoName.Data());
+            printf("Histo %s does not exist for syst:%s\n", histoName.Data(), varName.Data());
             continue;
          }
 	
@@ -359,6 +286,8 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
             if(!skipWW && mergeWWandZZ){proc.ReplaceAll("WW","VV"); proc.ReplaceAll("ZZ","VV");}
 
             if(varName==""){
+               if(Process[i]["data"].daughters()[0].isTag("xsec"))shape.xsections[proc] = Process[i]["data"].daughters()[0]["xsec"].toDouble();
+
                int procIndex = -1;
                for(unsigned int i=0;i<shape.signal.size();i++){ if(string(proc.Data())==shape.signal[i]->GetTitle() ){procIndex=i;break;}  }
                if(procIndex>=0) shape.signal[procIndex]->Add(hshape);
@@ -366,10 +295,11 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
             }else{
                std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator it = shape.signalVars.find(proc);
                 
-               bool newVar = false;
+               bool newVar = true;
                if(it!=shape.signalVars.end()){
-                  for(unsigned int i=0;i<it->second.size();i++){ if( string(it->second[i].first.Data()) == varName ){it->second[i].second->Add(hshape); newVar=true;break;}  }
+                  for(unsigned int i=0;i<it->second.size();i++){ if( string(it->second[i].first.Data()) == varName ){it->second[i].second->Add(hshape); newVar=false;break;}  }
                }
+
                if(newVar){
                   shape.signalVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
                }
@@ -403,6 +333,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
   //all done
   return shape;
 }
+
 
 //
 void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName)
@@ -530,6 +461,94 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   if(ratio) delete ratio;
 }
 
+//
+void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName)
+{
+  FILE* pFile = fopen("Yields.tex","w");
+  fprintf(pFile,"\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
+
+  string Ccol   = "\\begin{tabular}{|c|";
+  string Cname  = "channel";
+  string Cval   = "";
+
+  TString massStr(""); massStr += mass;
+
+
+  TH1* h;
+  Double_t valerr, val, syst;
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+  for(size_t ich=0; ich<ch.size(); ich++) {
+    TString icol(ch[ich]+"-"+AnalysisBins[b]);
+    icol.ReplaceAll("mu","\\mu"); icol.ReplaceAll("_"," ");
+    Cval = "$ "+icol+" $";
+
+    //bckg
+    size_t nbckg=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.bckg.size();
+    for(size_t ibckg=0; ibckg<nbckg; ibckg++){
+       TH1* h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.bckg[ibckg];       
+       TString procTitle(h->GetTitle()); 
+       if(procTitle.Contains("QCD"))continue;
+       if(procTitle.Contains("W#rightarrow l#nu"))continue;
+       if(procTitle.Contains("Z#rightarrow #tau#tau"))continue;
+       procTitle.ReplaceAll("#","\\");
+       if(b==0&&ich==0)Ccol  += "c|";
+       if(b==0&&ich==0)Cname += "&$" + procTitle + "$";
+
+       val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+       syst = h->GetBinError(0)<=0 ? -1 : h->GetBinError(0); 
+       if(val<1E-6){val=0.0; valerr=0.0; syst=-1;}
+       Cval += "&" + toLatexRounded(val,valerr, syst);
+    }
+
+    //total bckg
+    if(b==0&&ich==0)Ccol  += "c|";
+    if(b==0&&ich==0)Cname += "&$Total$";
+    h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.totalBckg;
+    val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+    syst = h->GetBinError(0)<=0 ? -1 : h->GetBinError(0);
+    if(val<1E-6){val=0.0; valerr=0.0; syst=-1;}
+    Cval += "&\\boldmath " + toLatexRounded(val,valerr,syst);
+
+    //signal
+    size_t nsig=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal.size();
+    for(size_t isig=0; isig<nsig; isig++){
+       h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal[isig];
+       TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
+
+       if(!procTitle.Contains(massStr))continue;
+            if(procTitle.Contains("ggH") && procTitle.Contains("ZZ"))procTitle = "ggH("+massStr+")";
+       else if(procTitle.Contains("qqH") && procTitle.Contains("ZZ"))procTitle = "qqH("+massStr+")";
+       else if(procTitle.Contains("ggH") && procTitle.Contains("WW"))procTitle = "ggH("+massStr+")WW";
+       else if(procTitle.Contains("qqH") && procTitle.Contains("WW"))procTitle = "qqH("+massStr+")WW";
+
+       if(b==0&&ich==0)Ccol  += "c|";
+       if(b==0&&ich==0)Cname += "&$" + procTitle+"$";
+
+       val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+       if(val<1E-6){val=0.0; valerr=0.0;}
+       Cval += "&" + toLatexRounded(val,valerr);
+    }
+
+    //data
+    if(b==0&&ich==0)Ccol  += "c|";
+    if(b==0&&ich==0)Cname += "&$Data$";
+    h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.data;
+    val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+    if(val<1E-6){val=0.0; valerr=0.0;}
+    Cval += "&\\boldmath " + toLatexRounded(val,0.0);
+
+    //endline
+    if(b==0&&ich==0)fprintf(pFile,"%s}\\hline\n", Ccol.c_str());
+    if(b==0&&ich==0)fprintf(pFile,"%s\\\\\\hline\n", Cname.c_str());
+    fprintf(pFile,"%s\\\\\n", Cval.c_str());
+  }}
+  fprintf(pFile,"\\hline\n");
+  fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n");
+  fprintf(pFile,"\n\n\n\n");
+  fclose(pFile);
+}
+
+
 
 std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TString Json, bool runSystematics, bool shape)
 {
@@ -591,7 +610,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 
          fprintf(pFile,"%35s %10s ", "theoryUncXS_HighMH", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            if((int)j<=dci.nsignalproc){fprintf(pFile,"%6f ",1.5*(mass/1000.0));}else{fprintf(pFile,"%6s ","-");}
+            if((int)j<=dci.nsignalproc){fprintf(pFile,"%6f ",1.0+1.5*pow((mass/1000.0),3));}else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
          //Id+Trigger efficiencies combined
@@ -655,6 +674,11 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             fprintf(pFile,"%6s ","-");
          }fprintf(pFile,"\n");
 
+         fprintf(pFile,"%35s %10s ", "Signal_rescaling_8TeV", "lnN");
+         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+            fprintf(pFile,"%6s ","-");
+         }fprintf(pFile,"\n");
+
          ///////////////////////////////////////////////
 
             
@@ -662,7 +686,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
              if(!runSystematics && string(it->first.Data()).find("stat")>0 )continue;
 
              isSyst=false;
-             if(it->first.Contains("_sys_") ){
+             if(it->first.Contains("_sys_") || it->first.Contains("_interpol_")){
                 sprintf(sFile,"%35s %10s ", it->first.Data(), "lnN");
                 for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
                    if(it->second.find(RateKey_t(dci.procs[j-1],dci.ch[i-1])) != it->second.end()){
@@ -766,8 +790,11 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   //replace WZ by its estimate from 3rd Lepton SB
   if(subWZ)doWZSubtraction(selCh,"emu",allShapes,histo,histo+"_3rdLepton");
 
+  //replace data by total MC background
   if(blindData)BlindData(selCh,allShapes,histo);
 
+  //interpollate signal sample if desired mass point is not available
+  SignalInterpolation(selCh,allShapes,histo, Root);
 
   //print event yields from the mt shapes
   if(runSystematics)getYieldsFromShape(selCh,allShapes,histo);
@@ -954,9 +981,9 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
        syst.ReplaceAll("up","Up");
 
        if(syst==""){syst="";
-       }else if(syst.First("_jes")==0){syst="_CMS_scale_j";
-       }else if(syst.First("_jer")==0){syst="_CMS_res_j";
-       }else if(syst.First("_pu")){syst="_CMS_pu";
+       }else if(syst.BeginsWith("_jes")){syst="_CMS_scale_j";
+       }else if(syst.BeginsWith("_jer")){syst="_CMS_res_j";
+       }else if(syst.BeginsWith("_pu" )){syst="_CMS_pu";
        }else{   syst="_CMS_hzz2l2nu"+syst;
        }
 
@@ -992,8 +1019,14 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                }
                statup  ->Write(proc+postfix+"_CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix+"Up");
                statdown->Write(proc+postfix+"_CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix+"Down");
-               dci.systs["CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix][RateKey_t(proc,ch)]=1.0;
-               if(systUncertainty>0)dci.systs["CMS_hzz2l2v_sys_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
+               dci.systs["CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix][RateKey_t(proc,ch)]=1.0;              
+               if(systUncertainty>0){
+                  if(proc.Contains("ggh") || proc.Contains("qqh")){
+                     dci.systs["CMS_hzz2l2v_interpol_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
+                  }else{
+                     dci.systs["CMS_hzz2l2v_sys_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
+                  }
+               }
             }
          }
        }else if(runSystematics && proc!="data" && (syst.Contains("Up") || syst.Contains("Down"))){
@@ -1022,9 +1055,9 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
 
           TH1 *temp=(TH1*) hshape->Clone();
           temp->Add(hshapes[0],-1);
-        if(temp->Integral()!=0)dci.systs[systName][RateKey_t(proc,ch)]=1.0;
+          if(temp->Integral()!=0)dci.systs[systName][RateKey_t(proc,ch)]=1.0;
           delete temp;
-        }else if(proc=="asignal" && syst==""){dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
+//        }else if(proc=="asignal" && syst==""){dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
 //        }else if(proc!="data" && syst==""){if(hshape->Integral()>1E-6)dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
         }else if(proc!="data" && syst==""){dci.rates[RateKey_t(proc,ch)]= hshape->Integral()>1E-6 ? hshape->Integral() : 0.0;
         }else if(proc=="data" && syst==""){dci.obs[RateKey_t("obs",ch)]=hshape->Integral();
@@ -1384,3 +1417,171 @@ void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TS
 }
 
 
+void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, JSONWrapper::Object &Root){    
+   std::vector<TString> signalTypes;
+   signalTypes.push_back("ggH");
+   signalTypes.push_back("qqH");
+
+   for(unsigned int t=0;t<signalTypes.size();t++){
+
+      int  leftMass = 0;
+      int rightMass =9999;
+      Shape_t& shapeRef = allShapes.find(selCh[0]+AnalysisBins[0]+mainHisto)->second;
+      for(unsigned int i=0;i<shapeRef.signal.size();i++){
+         string proctmp = shapeRef.signal[i]->GetTitle();
+         if(proctmp.find(signalTypes[t].Data())!=0)continue;
+         proctmp = proctmp.substr(proctmp.find('(')+1,4);
+         int currentMass;  sscanf(proctmp.c_str(),"%d",&currentMass);
+         printf("%s --> currentMass Point=%i\n",proctmp.c_str(),currentMass);
+         if(currentMass<=0 || currentMass>2000){printf("skip\n");continue;}
+         if(currentMass<=mass && currentMass>= leftMass){ leftMass=currentMass;}
+         if(currentMass>=mass && currentMass<=rightMass){rightMass=currentMass;}
+      }   
+      if(leftMass==mass || rightMass==mass)continue;
+      if(leftMass==0    || rightMass==9999)continue;
+      printf("MASS: %i will be interpolated from %i and %i for %s\n",mass, leftMass,rightMass,signalTypes[t].Data());
+
+      TString  LeftName = signalTypes[t]+"("; LeftName+= leftMass;
+      TString RightName = signalTypes[t]+"(";RightName+=rightMass;
+      printf("LeftName = %s, rightName=%s\n",LeftName.Data(), RightName.Data());
+
+      for(size_t i=0;i<selCh.size();i++){
+      for(size_t b=0; b<AnalysisBins.size(); b++){
+           Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
+
+           int leftIndex=0, rightIndex=0;
+           for(unsigned int i=0;i<shapeChan_SI.signal.size();i++){if(TString(shapeChan_SI.signal[i]->GetTitle()).BeginsWith( LeftName)) leftIndex=i;}
+           for(unsigned int i=0;i<shapeChan_SI.signal.size();i++){if(TString(shapeChan_SI.signal[i]->GetTitle()).BeginsWith(RightName))rightIndex=i;}
+           printf("leftIndex=%i rightIndex=%i\n",leftIndex,rightIndex);
+
+           double Ratio = (mass - leftMass); Ratio/=(rightMass - leftMass);
+
+           //centralValue
+           TH1* histoLeft  = (TH1*) shapeChan_SI.signal[ leftIndex]->Clone("tmpLeft");    histoLeft->Scale(1.0/shapeChan_SI.xsections[ histoLeft->GetTitle()]);
+           TH1* histoRight = (TH1*) shapeChan_SI.signal[rightIndex]->Clone("tmpRight");  histoRight->Scale(1.0/shapeChan_SI.xsections[histoRight->GetTitle()]);           
+           TString newName = signalTypes[t]+"("; newName+= mass;
+           TH1* histoNew = (TH1*)histoLeft->Clone(TString(histoLeft->GetTitle()).ReplaceAll(LeftName,newName));         
+           histoNew->SetTitle(histoNew->GetName());
+           histoNew->Scale(1-Ratio);
+           histoNew->Add(shapeChan_SI.signal[rightIndex],Ratio);
+
+           setTGraph(histoNew->GetTitle(), systpostfix );
+           double XSection = TG_xsec->Eval(mass,NULL,"S");
+           histoNew->Scale(XSection);
+           histoNew->SetBinError(0,0.15*histoNew->Integral());
+           shapeChan_SI.signal.insert(shapeChan_SI.signal.begin()+leftIndex,histoNew);
+
+           
+
+           //systematics
+           std::vector<std::pair<TString, TH1*> > varsLeft  = shapeChan_SI.signalVars[histoLeft->GetTitle()];
+           std::vector<std::pair<TString, TH1*> > varsRight = shapeChan_SI.signalVars[histoRight->GetTitle()];
+           std::vector<std::pair<TString, TH1*> > varsNew;
+           for(size_t v=0;v<varsLeft.size();v++){
+              TH1* histoSystLeft  = (TH1*) varsLeft [v].second->Clone("tmpSystLeft");    histoSystLeft ->Scale(1.0/shapeChan_SI.xsections[histoLeft ->GetTitle()]);
+              TH1* histoSystRight = (TH1*) varsRight[v].second->Clone("tmpSystRight");   histoSystRight->Scale(1.0/shapeChan_SI.xsections[histoRight->GetTitle()]);
+              TH1* histoSystNew   = (TH1*)histoSystLeft->Clone(TString(histoSystLeft->GetTitle()).ReplaceAll(LeftName,newName));
+              histoSystNew->SetTitle(histoSystNew->GetName());
+              histoSystNew->Scale(1-Ratio);
+              histoSystNew->Add(histoSystRight,Ratio);
+              histoSystNew->Scale(XSection);
+              varsNew.push_back(std::make_pair<TString, TH1*>(varsLeft[v].first,histoSystNew));
+              delete histoSystLeft;
+              delete histoSystRight;
+           }
+           shapeChan_SI.signalVars[histoNew->GetTitle()] = varsNew;
+
+           delete histoLeft;
+           delete histoRight;
+      }}
+
+   }
+}
+
+
+
+
+//TGraph *ggH7TG_xsec=NULL, *ggH7TG_errp=NULL, *ggH7TG_errm=NULL, *ggH7TG_scap=NULL, *ggH7TG_scam=NULL, *ggH7TG_pdfp=NULL, *ggH7TG_pdfm=NULL;
+//TGraph *qqH7TG_xsec=NULL, *qqH7TG_errp=NULL, *qqH7TG_errm=NULL, *qqH7TG_scap=NULL, *qqH7TG_scam=NULL, *qqH7TG_pdfp=NULL, *qqH7TG_pdfm=NULL;
+//TGraph *ggH8TG_xsec=NULL, *ggH8TG_errp=NULL, *ggH8TG_errm=NULL, *ggH8TG_scap=NULL, *ggH8TG_scam=NULL, *ggH8TG_pdfp=NULL, *ggH8TG_pdfm=NULL;
+//TGraph *qqH8TG_xsec=NULL, *qqH8TG_errp=NULL, *qqH8TG_errm=NULL, *qqH8TG_scap=NULL, *qqH8TG_scam=NULL, *qqH8TG_pdfp=NULL, *qqH8TG_pdfm=NULL;
+//TGraph *    TG_xsec=NULL, *    TG_errp=NULL, *    TG_errm=NULL, *    TG_scap=NULL, *    TG_scam=NULL, *    TG_pdfp=NULL, *    TG_pdfm=NULL;
+void setTGraph(TString proc, TString suffix){
+         if( suffix.Contains('8') &&  proc.Contains("qqH")){ TG_xsec=qqH8TG_xsec;    TG_errp=qqH8TG_errp;    TG_errm=qqH8TG_errm;    TG_scap=qqH8TG_scap;    TG_scam=qqH8TG_scam;    TG_pdfp=qqH8TG_pdfp;    TG_pdfm=qqH8TG_pdfm;
+   }else if( suffix.Contains('8') && !proc.Contains("qqH")){ TG_xsec=ggH8TG_xsec;    TG_errp=ggH8TG_errp;    TG_errm=ggH8TG_errm;    TG_scap=ggH8TG_scap;    TG_scam=ggH8TG_scam;    TG_pdfp=ggH8TG_pdfp;    TG_pdfm=ggH8TG_pdfm;
+   }else if(!suffix.Contains('8') &&  proc.Contains("qqH")){ TG_xsec=qqH7TG_xsec;    TG_errp=qqH7TG_errp;    TG_errm=qqH7TG_errm;    TG_scap=qqH7TG_scap;    TG_scam=qqH7TG_scam;    TG_pdfp=qqH7TG_pdfp;    TG_pdfm=qqH7TG_pdfm;
+   }else if(!suffix.Contains('8') && !proc.Contains("qqH")){ TG_xsec=ggH7TG_xsec;    TG_errp=ggH7TG_errp;    TG_errm=ggH7TG_errm;    TG_scap=ggH7TG_scap;    TG_scam=ggH7TG_scam;    TG_pdfp=ggH7TG_pdfp;    TG_pdfm=ggH7TG_pdfm;
+   }
+}
+void initializeTGraph(){
+   double ggH7_mass [] = {90.0, 95.0, 100.0, 105.0, 110.0, 110.5, 111.0, 111.5, 112.0, 112.5, 113.0, 113.5, 114.0, 114.5, 115.0, 115.5, 116.0, 116.5, 117.0, 117.5, 118.0, 118.5, 119.0, 119.5, 120.0, 120.5, 121.0, 121.5, 122.0, 122.5, 123.0, 123.5, 124.0, 124.5, 125.0, 125.5, 126.0, 126.5, 127.0, 127.5, 128.0, 128.5, 129.0, 129.5, 130.0, 130.5, 131.0, 131.5, 132.0, 132.5, 133.0, 133.5, 134.0, 134.5, 135.0, 135.5, 136.0, 136.5, 137.0, 137.5, 138.0, 138.5, 139.0, 139.5, 140.0, 141.0, 142.0, 143.0, 144.0, 145.0, 146.0, 147.0, 148.0, 149.0, 150.0, 151.0, 152.0, 153.0, 154.0, 155.0, 156.0, 157.0, 158.0, 159.0, 160.0, 162.0, 164.0, 166.0, 168.0, 170.0, 172.0, 174.0, 176.0, 178.0, 180.0, 182.0, 184.0, 186.0, 188.0, 190.0, 192.0, 194.0, 196.0, 198.0, 200.0, 202.0, 204.0, 206.0, 208.0, 210.0, 212.0, 214.0, 216.0, 218.0, 220.0, 222.0, 224.0, 226.0, 228.0, 230.0, 232.0, 234.0, 236.0, 238.0, 240.0, 242.0, 244.0, 246.0, 248.0, 250.0, 252.0, 254.0, 256.0, 258.0, 260.0, 262.0, 264.0, 266.0, 268.0, 270.0, 272.0, 274.0, 276.0, 278.0, 280.0, 282.0, 284.0, 286.0, 288.0, 290.0, 295.0, 300.0, 305.0, 310.0, 315.0, 320.0, 325.0, 330.0, 335.0, 340.0, 345.0, 350.0, 360.0, 370.0, 380.0, 390.0, 400.0, 420.0, 440.0, 460.0, 480.0, 500.0, 520.0, 540.0, 560.0, 580.0, 600.0, 620.0, 640.0, 660.0, 680.0, 700.0, 720.0, 740.0, 760.0, 780.0, 800.0, 820.0, 840.0, 860.0, 880.0, 900.0, 920.0, 940.0, 960.0, 980.0, 1000.0};
+   double ggH7_xsec [] = {29.47, 26.58, 24.02, 21.78, 19.84, 19.65, 19.48, 19.30, 19.13, 18.95, 18.79, 18.62, 18.45, 18.29, 18.13, 17.97, 17.82, 17.66, 17.51, 17.36, 17.21, 17.06, 16.92, 16.78, 16.63, 16.49, 16.36, 16.22, 16.08, 15.94, 15.82, 15.69, 15.56, 15.43, 15.31, 15.18, 15.06, 14.94, 14.82, 14.70, 14.58, 14.46, 14.35, 14.23, 14.12, 14.01, 13.90, 13.80, 13.69, 13.58, 13.48, 13.37, 13.28, 13.18, 13.08, 12.98, 12.88, 12.78, 12.68, 12.60, 12.50, 12.40, 12.31, 12.22, 12.13, 11.95, 11.78, 11.60, 11.44, 11.27, 11.12, 10.96, 10.80, 10.65, 10.50, 10.36, 10.21, 10.07, 9.934, 9.795, 9.655, 9.514, 9.367, 9.225, 9.080, 8.770, 8.465, 8.190, 7.952, 7.729, 7.515, 7.310, 7.112, 6.923, 6.739, 6.553, 6.379, 6.212, 6.050, 5.896, 5.751, 5.616, 5.487, 5.364, 5.249, 5.136, 5.027, 4.924, 4.822, 4.723, 4.630, 4.539, 4.454, 4.369, 4.288, 4.207, 4.128, 4.053, 3.980, 3.908, 3.839, 3.771, 3.707, 3.643, 3.581, 3.523, 3.468, 3.414, 3.362, 3.312, 3.261, 3.212, 3.164, 3.118, 3.072, 3.028, 2.984, 2.944, 2.903, 2.864, 2.828, 2.793, 2.760, 2.728, 2.696, 2.664, 2.633, 2.603, 2.574, 2.546, 2.480, 2.422, 2.369, 2.322, 2.281, 2.247, 2.221, 2.204, 2.195, 2.198, 2.225, 2.306, 2.361, 2.341, 2.266, 2.158, 2.032, 1.756, 1.482, 1.237, 1.026, 0.8491, 0.7006, 0.5782, 0.4771, 0.3944, 0.3267, 0.2713, 0.2257, 0.1883, 0.1574, 0.1320, 0.1109, 0.09335, 0.07883, 0.06668, 0.05655, 0.04806, 0.04089, 0.03490, 0.02982, 0.02555, 0.02193, 0.01885, 0.01624, 0.01400, 0.01210};
+   double ggH7_errp [] = {22.9, 21.9, 21.2, 20.8, 20.4, 20.4, 20.3, 20.3, 20.3, 20.3, 20.2, 20.2, 20.2, 20.1, 20.0, 20.0, 20.0, 19.9, 19.9, 19.9, 19.8, 19.8, 19.7, 19.7, 19.7, 19.7, 19.7, 19.7, 19.7, 19.6, 19.5, 19.5, 19.5, 19.5, 19.5, 19.5, 19.4, 19.4, 19.4, 19.3, 19.3, 19.3, 19.3, 19.2, 19.2, 19.2, 19.2, 19.1, 19.1, 19.0, 19.0, 19.0, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.9, 18.7, 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 18.8, 18.7, 18.7, 18.7, 18.7, 18.7, 18.7, 18.7, 18.7, 18.7, 18.6, 18.6, 18.5, 18.5, 18.6, 18.6, 18.6, 18.6, 18.6, 18.5, 18.2, 18.0, 17.9, 17.9, 17.9, 17.9, 18.0, 18.0, 18.1, 17.9, 17.5, 17.3, 17.3, 17.3, 17.3, 17.2, 17.2, 17.2, 17.2, 17.1, 17.1, 16.9, 16.9, 16.9, 16.9, 16.9, 16.9, 16.9, 16.8, 16.8, 16.7, 16.7, 16.6, 16.6, 16.6, 16.6, 16.7, 16.7, 16.7, 16.7, 16.7, 16.6, 16.6, 16.5, 16.5, 16.4, 16.3, 16.3, 16.2, 16.2, 16.3, 16.2, 16.2, 16.2, 16.2, 16.1, 16.1, 16.1, 16.0, 16.0, 16.0, 16.0, 16.1, 16.1, 16.6, 16.8, 16.8, 16.8, 16.8, 16.9, 17.1, 17.2, 17.4, 18.1, 19.5, 19.7, 19.4, 18.2, 17.1, 16.4, 15.7, 14.8, 15.6, 16.4, 17.1, 17.7, 18.1, 18.4, 18.7, 19.1, 19.4, 19.6, 20.0, 20.3, 20.7, 20.9, 21.1, 21.5, 21.7, 22.0, 22.2, 22.5, 23.1, 23.4, 24.1, 24.6, 25.1, 25.6, 26.0, 26.6, 27.1};
+   double ggH7_errm [] = {-15.6, -15.9, -15.6, -15.5, -15.3, -15.3, -15.3, -15.3, -15.3, -15.2, -15.3, -15.3, -15.3, -15.3, -15.3, -15.3, -15.3, -15.3, -15.3, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.0, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.2, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -15.1, -14.9, -15.0, -15.0, -15.0, -15.0, -15.0, -15.0, -15.0, -15.0, -15.0, -15.0, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -14.9, -15.0, -15.0, -15.0, -15.0, -15.0, -15.0, -14.9, -14.8, -14.7, -14.9, -14.9, -14.9, -14.8, -14.7, -14.7, -14.7, -14.6, -14.9, -15.0, -15.1, -15.0, -15.1, -15.1, -15.2, -15.1, -15.2, -15.2, -15.2, -15.3, -15.3, -15.3, -15.3, -15.3, -15.3, -15.3, -15.3, -15.3, -15.4, -15.4, -15.5, -15.5, -15.5, -15.4, -15.5, -15.5, -15.4, -15.4, -15.5, -15.6, -15.6, -15.6, -15.7, -15.7, -15.8, -15.8, -15.9, -15.8, -15.8, -15.9, -15.8, -15.8, -15.9, -15.9, -16.1, -16.1, -16.2, -16.2, -16.2, -16.2, -16.1, -16.1, -15.8, -15.5, -15.6, -15.6, -15.8, -15.8, -15.8, -15.8, -15.7, -15.3, -14.8, -14.8, -14.6, -15.1, -15.6, -16.0, -16.3, -16.9, -17.2, -17.2, -17.5, -17.6, -17.6, -17.7, -17.8, -17.8, -17.9, -18.0, -18.0, -18.3, -18.3, -18.4, -18.6, -18.6, -18.8, -18.9, -19.1, -19.4, -19.6, -19.9, -20.2, -20.6, -21.1, -21.4, -21.9, -22.2, -22.6};
+   double ggH7_scap [] = {14.8, 13.9, 13.3, 12.8, 12.5, 12.5, 12.4, 12.4, 12.4, 12.3, 12.3, 12.3, 12.2, 12.1, 12.1, 12.1, 12.1, 12.0, 12.0, 12.0, 12.0, 12.0, 11.9, 11.9, 11.9, 11.9, 11.9, 11.8, 11.8, 11.8, 11.7, 11.7, 11.7, 11.7, 11.7, 11.7, 11.6, 11.6, 11.6, 11.5, 11.5, 11.5, 11.5, 11.3, 11.3, 11.3, 11.3, 11.3, 11.3, 11.2, 11.2, 11.2, 11.1, 11.1, 11.1, 11.1, 11.1, 11.1, 11.1, 10.9, 11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 11.0, 10.9, 10.9, 10.9, 10.9, 10.9, 10.9, 10.9, 10.9, 10.9, 10.8, 10.9, 10.8, 10.8, 10.9, 10.9, 10.9, 10.9, 10.9, 10.8, 10.5, 10.3, 10.2, 10.2, 10.2, 10.2, 10.3, 10.3, 10.3, 10.2, 9.8, 9.6, 9.6, 9.6, 9.6, 9.5, 9.5, 9.4, 9.4, 9.3, 9.3, 9.2, 9.2, 9.2, 9.2, 9.2, 9.1, 9.1, 9.0, 9.0, 8.9, 8.9, 8.8, 8.8, 8.8, 8.8, 8.8, 8.8, 8.9, 8.8, 8.8, 8.7, 8.6, 8.6, 8.5, 8.5, 8.3, 8.3, 8.3, 8.3, 8.3, 8.2, 8.2, 8.2, 8.2, 8.1, 8.1, 8.0, 7.9, 7.9, 7.9, 7.9, 8.0, 8.0, 8.4, 8.6, 8.6, 8.5, 8.5, 8.6, 8.7, 8.8, 9.0, 9.6, 11.0, 11.1, 10.8, 9.5, 8.5, 7.6, 6.8, 5.8, 6.4, 7.0, 7.6, 8.0, 8.3, 8.5, 8.7, 8.9, 9.0, 9.1, 9.4, 9.5, 9.8, 9.9, 10.0, 10.3, 10.4, 10.6, 10.7, 10.8, 10.9, 11.0, 11.3, 11.5, 11.6, 11.9, 11.9, 12.1, 12.3};
+   double ggH7_scam [] = {-8.7, -9.0, -8.6, -8.5, -8.2, -8.2, -8.2, -8.2, -8.2, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.0, -7.9, -7.9, -7.9, -7.9, -7.9, -7.9, -7.9, -7.9, -7.9, -7.9, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.7, -7.7, -7.7, -7.7, -7.7, -7.6, -7.6, -7.7, -7.7, -7.5, -7.5, -7.5, -7.6, -7.6, -7.6, -7.6, -7.6, -7.5, -7.5, -7.6, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.2, -7.2, -7.2, -7.2, -7.3, -7.2, -7.2, -7.3, -7.3, -7.3, -7.2, -7.2, -7.2, -7.1, -6.9, -6.8, -6.9, -7.0, -6.9, -6.9, -6.7, -6.7, -6.7, -6.6, -6.9, -7.0, -7.1, -7.0, -7.1, -7.1, -7.2, -7.1, -7.2, -7.2, -7.2, -7.3, -7.3, -7.2, -7.3, -7.3, -7.2, -7.2, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.2, -7.3, -7.3, -7.3, -7.4, -7.4, -7.4, -7.5, -7.5, -7.6, -7.6, -7.6, -7.6, -7.6, -7.6, -7.5, -7.6, -7.6, -7.7, -7.8, -7.9, -7.9, -7.9, -7.8, -7.7, -7.7, -7.3, -7.1, -7.1, -7.2, -7.3, -7.2, -7.3, -7.3, -7.1, -6.7, -6.1, -6.2, -5.9, -6.3, -6.9, -7.3, -7.7, -8.2, -8.4, -8.4, -8.5, -8.6, -8.6, -8.5, -8.5, -8.4, -8.3, -8.3, -8.2, -8.3, -8.2, -8.3, -8.3, -8.2, -8.3, -8.3, -8.4, -8.4, -8.3, -8.4, -8.4, -8.4, -8.5, -8.5, -8.6, -8.6, -8.6};
+   double ggH7_pdfp [] = {8.1, 8.0, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.7, 7.8, 7.8, 7.8, 7.8, 7.7, 7.7, 7.7, 7.7, 7.7, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.8, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.1, 8.1, 8.1, 8.1, 8.1, 8.1, 8.1, 8.1, 8.2, 8.2, 8.2, 8.2, 8.3, 8.3, 8.3, 8.4, 8.4, 8.5, 8.5, 8.6, 8.6, 8.6, 8.6, 8.8, 8.9, 9.1, 9.3, 9.4, 9.5, 9.7, 9.8, 9.9, 10.0, 10.2, 10.4, 10.5, 10.6, 10.8, 10.9, 11.0, 11.1, 11.2, 11.3, 11.4, 11.5, 11.8, 12.1, 12.4, 12.7, 13.0, 13.4, 13.8, 14.1, 14.4, 14.8};
+   double ggH7_pdfm [] = {-6.9, -6.9, -7.0, -7.1, -7.1, -7.1, -7.1, -7.1, -7.1, -7.1, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.2, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.5, -7.5, -7.5, -7.5, -7.5, -7.5, -7.5, -7.5, -7.5, -7.4, -7.5, -7.5, -7.5, -7.5, -7.5, -7.5, -7.5, -7.6, -7.6, -7.6, -7.6, -7.6, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.8, -7.8, -7.8, -7.8, -7.9, -7.9, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.2, -8.2, -8.2, -8.2, -8.2, -8.2, -8.2, -8.2, -8.2, -8.2, -8.3, -8.3, -8.3, -8.3, -8.3, -8.3, -8.3, -8.3, -8.3, -8.3, -8.3, -8.3, -8.3, -8.3, -8.3, -8.4, -8.4, -8.4, -8.4, -8.4, -8.4, -8.5, -8.5, -8.5, -8.5, -8.6, -8.6, -8.6, -8.7, -8.7, -8.7, -8.8, -8.7, -8.7, -8.7, -8.7, -8.8, -8.8, -8.9, -9.0, -9.1, -9.2, -9.3, -9.4, -9.6, -9.7, -9.8, -10.0, -10.1, -10.2, -10.3, -10.4, -10.5, -10.6, -10.7, -10.9, -11.3, -11.6, -11.9, -12.2, -12.6, -12.9, -13.3, -13.6, -14.0};
+
+
+   double qqH7_mass [] = {90.0, 95.0, 100.0, 105.0, 110.0, 110.5, 111.0, 111.5, 112.0, 112.5, 113.0, 113.5, 114.0, 114.5, 115.0, 115.5, 116.0, 116.5, 117.0, 117.5, 118.0, 118.5, 119.0, 119.5, 120.0, 120.5, 121.0, 121.5, 122.0, 122.5, 123.0, 123.5, 124.0, 124.5, 125.0, 125.5, 126.0, 126.5, 127.0, 127.5, 128.0, 128.5, 129.0, 129.5, 130.0, 130.5, 131.0, 131.5, 132.0, 132.5, 133.0, 133.5, 134.0, 134.5, 135.0, 135.5, 136.0, 136.5, 137.0, 137.5, 138.0, 138.5, 139.0, 139.5, 140.0, 141.0, 142.0, 143.0, 144.0, 145.0, 146.0, 147.0, 148.0, 149.0, 150.0, 151.0, 152.0, 153.0, 154.0, 155.0, 156.0, 157.0, 158.0, 159.0, 160.0, 162.0, 164.0, 166.0, 168.0, 170.0, 172.0, 174.0, 176.0, 178.0, 180.0, 182.0, 184.0, 186.0, 188.0, 190.0, 192.0, 194.0, 196.0, 198.0, 200.0, 202.0, 204.0, 206.0, 208.0, 210.0, 212.0, 214.0, 216.0, 218.0, 220.0, 222.0, 224.0, 226.0, 228.0, 230.0, 232.0, 234.0, 236.0, 238.0, 240.0, 242.0, 244.0, 246.0, 248.0, 250.0, 252.0, 254.0, 256.0, 258.0, 260.0, 262.0, 264.0, 266.0, 268.0, 270.0, 272.0, 274.0, 276.0, 278.0, 280.0, 282.0, 284.0, 286.0, 288.0, 290.0, 295.0, 300.0, 305.0, 310.0, 315.0, 320.0, 325.0, 330.0, 335.0, 340.0, 345.0, 350.0, 360.0, 370.0, 380.0, 390.0, 400.0, 420.0, 440.0, 460.0, 480.0, 500.0, 520.0, 540.0, 560.0, 580.0, 600.0, 620.0, 640.0, 660.0, 680.0, 700.0, 720.0, 740.0, 760.0, 780.0, 800.0, 820.0, 840.0, 860.0, 880.0, 900.0, 920.0, 940.0, 960.0, 980.0, 1000.0};
+   double qqH7_xsec [] = {1.710, 1.628, 1.546, 1.472, 1.398, 1.391, 1.384, 1.378, 1.371, 1.364, 1.358, 1.351, 1.345, 1.339, 1.332, 1.326, 1.319, 1.313, 1.307, 1.300, 1.294, 1.288, 1.282, 1.276, 1.269, 1.263, 1.257, 1.251, 1.246, 1.240, 1.234, 1.228, 1.222, 1.216, 1.211, 1.205, 1.199, 1.193, 1.188, 1.182, 1.176, 1.171, 1.165, 1.159, 1.154, 1.148, 1.143, 1.137, 1.132, 1.126, 1.121, 1.115, 1.110, 1.105, 1.100, 1.095, 1.090, 1.085, 1.080, 1.076, 1.071, 1.066, 1.062, 1.057, 1.052, 1.043, 1.033, 1.023, 1.013, 1.004, 0.9951, 0.9866, 0.9782, 0.9699, 0.9617, 0.9529, 0.9441, 0.9353, 0.9266, 0.9180, 0.9095, 0.9013, 0.8934, 0.8859, 0.8787, 0.8676, 0.8571, 0.8453, 0.8316, 0.8173, 0.8029, 0.7885, 0.7744, 0.7609, 0.7480, 0.7361, 0.7248, 0.7139, 0.7032, 0.6925, 0.6812, 0.6699, 0.6587, 0.6478, 0.6371, 0.6267, 0.6164, 0.6064, 0.5965, 0.5869, 0.5775, 0.5684, 0.5594, 0.5506, 0.5420, 0.5335, 0.5252, 0.5170, 0.5089, 0.5011, 0.4934, 0.4859, 0.4785, 0.4712, 0.4641, 0.4572, 0.4503, 0.4436, 0.4369, 0.4304, 0.4239, 0.4174, 0.4111, 0.4049, 0.3988, 0.3931, 0.3875, 0.3821, 0.3767, 0.3715, 0.3663, 0.3611, 0.3560, 0.3510, 0.3461, 0.3413, 0.3365, 0.3318, 0.3271, 0.3226, 0.3116, 0.3011, 0.2908, 0.2809, 0.2716, 0.2627, 0.2539, 0.2453, 0.2368, 0.2286, 0.2206, 0.2132, 0.2018, 0.1910, 0.1808, 0.1712, 0.1620, 0.1451, 0.1304, 0.1171, 0.1054, 0.09497, 0.08568, 0.07746, 0.07010, 0.06353, 0.05771, 0.05246, 0.04776, 0.04356, 0.03977, 0.03637, 0.03330, 0.03052, 0.02805, 0.02580, 0.02373, 0.02188, 0.02018, 0.01864, 0.01724, 0.01597, 0.01479, 0.01375, 0.01275, 0.01186, 0.01104};
+   double qqH7_errp [] = {2.7, 2.5, 2.6, 2.5, 2.8, 2.8, 2.8, 2.7, 2.7, 2.7, 2.6, 2.6, 2.6, 2.6, 2.5, 2.6, 2.6, 2.6, 2.6, 2.7, 2.7, 2.7, 2.7, 2.7, 2.8, 2.7, 2.8, 2.8, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.9, 2.9, 2.9, 2.9, 2.9, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.9, 2.9, 2.9, 2.9, 2.9, 2.8, 2.8, 2.9, 2.9, 3.0, 3.1, 3.1, 3.1, 3.0, 3.0, 3.0, 2.9, 3.0, 3.0, 3.1, 3.1, 3.1, 3.1, 3.0, 3.0, 2.9, 2.9, 3.0, 3.1, 3.1, 3.1, 3.1, 3.2, 3.2, 3.2, 3.1, 3.1, 3.2, 3.4, 3.4, 3.3, 3.3, 3.3, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.6, 3.6, 3.7, 3.7, 3.8, 3.8, 3.8, 3.8, 3.8, 3.8, 3.8, 3.8, 3.9, 3.9, 4.0, 4.0, 4.1, 4.2, 4.2, 4.3, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2, 4.3, 4.3, 4.3, 4.4, 4.4, 4.4, 4.5, 4.5, 4.5, 4.6, 4.7, 4.8, 4.8, 4.9, 5.0, 5.0, 5.0, 5.1, 5.2, 5.2, 5.3, 5.5, 5.7, 5.8, 5.9, 6.2, 6.5, 6.7, 7.0, 7.2, 7.5, 7.8, 8.0, 8.3, 8.6, 8.9, 9.2, 9.4, 9.7, 9.9, 10.2, 10.5, 10.8, 11.0, 11.3, 11.5, 11.8, 12.1, 12.3, 12.6, 12.9, 13.3, 13.6, 13.9, 14.2};
+   double qqH7_errm [] = {-2.3, -2.5, -2.4, -2.4, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.5, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.1, -2.1, -2.1, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.1, -2.1, -2.1, -2.1, -2.2, -2.2, -2.2, -2.3, -2.2, -2.2, -2.2, -2.2, -2.2, -2.2, -2.1, -2.2, -2.3, -2.4, -2.3, -2.2, -2.2, -2.2, -2.2, -2.3, -2.4, -2.4, -2.4, -2.3, -2.3, -2.3, -2.3, -2.4, -2.4, -2.4, -2.4, -2.4, -2.4, -2.5, -2.5, -2.5, -2.5, -2.4, -2.4, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.6, -2.6, -2.6, -2.6, -2.6, -2.5, -2.5, -2.4, -2.4, -2.4, -2.5, -2.5, -2.5, -2.6, -2.6, -2.6, -2.6, -2.7, -2.7, -2.7, -2.7, -2.7, -2.6, -2.6, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.8, -2.8, -2.9, -2.9, -2.9, -3.0, -3.0, -3.0, -3.0, -3.0, -3.1, -3.1, -3.2, -3.3, -3.4, -3.4, -3.5, -3.5, -3.7, -3.8, -3.8, -3.8, -3.9, -4.0, -4.0, -4.1, -4.2, -4.2, -4.3, -4.3, -4.4, -4.5, -4.5, -4.6, -4.6, -4.7, -4.7, -4.8, -4.8, -4.9};
+   double qqH7_scap [] = {0.6, 0.4, 0.4, 0.3, 0.5, 0.5, 0.4, 0.4, 0.4, 0.3, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.5, 0.4, 0.4, 0.4, 0.4, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.4, 0.3, 0.3, 0.3, 0.2, 0.2, 0.3, 0.3, 0.3, 0.3, 0.3, 0.2, 0.2, 0.1, 0.1, 0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.1, 0.0, 0.1, 0.3, 0.3, 0.2, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.0, 0.0, 0.0, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2, 0.3, 0.3, 0.3, 0.3, 0.2, 0.2, 0.2, 0.1, 0.1, 0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4, 0.4, 0.5, 0.6, 0.6, 0.6, 0.7, 0.7, 0.8, 0.8, 0.9, 1.0, 1.0, 1.1, 1.1, 1.2, 1.2, 1.3, 1.4, 1.4, 1.4, 1.5, 1.5, 1.5, 1.6, 1.7, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2};
+   double qqH7_scam [] = {-0.2, -0.4, -0.3, -0.3, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.4, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.2, -0.2, -0.1, -0.1, -0.1, -0.1, -0.0, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.0, -0.1, -0.1, -0.1, -0.2, -0.2, -0.2, -0.1, -0.1, -0.1, -0.2, -0.1, -0.1, -0.1, -0.2, -0.3, -0.2, -0.2, -0.1, -0.2, -0.2, -0.3, -0.4, -0.4, -0.3, -0.2, -0.3, -0.3, -0.3, -0.3, -0.3, -0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.5, -0.5, -0.5, -0.5, -0.5, -0.6, -0.6, -0.6, -0.6, -0.6, -0.5, -0.5, -0.4, -0.4, -0.4, -0.5, -0.5, -0.5, -0.6, -0.6, -0.6, -0.6, -0.7, -0.7, -0.7, -0.7, -0.7, -0.7, -0.7, -0.7, -0.8, -0.8, -0.8, -0.8, -0.7, -0.8, -0.9, -0.9, -0.9, -1.0, -1.0, -1.1, -1.1, -1.1, -1.1, -1.2, -1.2, -1.3, -1.4, -1.5, -1.6, -1.7, -1.7, -1.8, -1.9, -2.0, -2.1, -2.1, -2.2, -2.3, -2.4, -2.5, -2.6, -2.7, -2.7, -2.8, -2.8, -2.9, -3.0, -3.1, -3.2, -3.2, -3.3, -3.3, -3.4, -3.5};
+   double qqH7_pdfp [] = {2.1, 2.1, 2.2, 2.2, 2.3, 2.3, 2.3, 2.3, 2.3, 2.3, 2.3, 2.3, 2.3, 2.3, 2.3, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.6, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.7, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.8, 2.9, 2.9, 2.9, 2.9, 3.0, 3.0, 3.0, 3.0, 3.0, 3.1, 3.1, 3.1, 3.1, 3.2, 3.2, 3.2, 3.2, 3.2, 3.3, 3.3, 3.3, 3.3, 3.3, 3.4, 3.4, 3.4, 3.4, 3.5, 3.5, 3.5, 3.5, 3.5, 3.6, 3.6, 3.6, 3.6, 3.7, 3.7, 3.7, 3.7, 3.7, 3.8, 3.8, 3.8, 3.8, 3.8, 3.9, 3.9, 3.9, 3.9, 4.0, 4.0, 4.0, 4.0, 4.0, 4.1, 4.1, 4.1, 4.1, 4.2, 4.2, 4.2, 4.2, 4.2, 4.3, 4.3, 4.4, 4.4, 4.5, 4.5, 4.6, 4.6, 4.7, 4.8, 4.8, 4.9, 4.9, 5.0, 5.1, 5.2, 5.3, 5.5, 5.7, 5.9, 6.1, 6.3, 6.6, 6.8, 7.0, 7.2, 7.4, 7.6, 7.9, 8.1, 8.3, 8.5, 8.7, 8.9, 9.2, 9.4, 9.6, 9.8, 10.0, 10.3, 10.5, 10.7, 10.9, 11.1, 11.4, 11.6, 11.8, 12.0};
+   double qqH7_pdfm [] = {-2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.1, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.8, -1.8, -1.8, -1.8, -1.8, -1.8, -1.7, -1.7, -1.7, -1.7, -1.7, -1.7, -1.6, -1.6, -1.6, -1.6, -1.6, -1.6, -1.5, -1.5, -1.5, -1.5, -1.5, -1.5, -1.5, -1.4, -1.4, -1.4};
+
+
+   double ggH8_mass [] = {80.0, 81.0, 82.0, 83.0, 84.0, 85.0, 86.0, 87.0, 88.0, 89.0, 90.0, 91.0, 92.0, 93.0, 94.0, 95.0, 96.0, 97.0, 98.0, 99.0, 100.0, 101.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0, 108.0, 109.0, 110.0, 110.5, 111.0, 111.5, 112.0, 112.5, 113.0, 113.5, 114.0, 114.5, 115.0, 115.5, 116.0, 116.5, 117.0, 117.5, 118.0, 118.5, 119.0, 119.5, 120.0, 120.5, 121.0, 121.5, 122.0, 122.5, 123.0, 123.5, 124.0, 124.5, 125.0, 125.5, 126.0, 126.5, 127.0, 127.5, 128.0, 128.5, 129.0, 129.5, 130.0, 130.5, 131.0, 131.5, 132.0, 132.5, 133.0, 133.5, 134.0, 134.5, 135.0, 135.5, 136.0, 136.5, 137.0, 137.5, 138.0, 138.5, 139.0, 139.5, 140.0, 141.0, 142.0, 143.0, 144.0, 145.0, 146.0, 147.0, 148.0, 149.0, 150.0, 151.0, 152.0, 153.0, 154.0, 155.0, 156.0, 157.0, 158.0, 159.0, 160.0, 162.0, 164.0, 165.0, 166.0, 168.0, 170.0, 172.0, 174.0, 175.0, 176.0, 178.0, 180.0, 182.0, 184.0, 185.0, 186.0, 188.0, 190.0, 192.0, 194.0, 195.0, 196.0, 198.0, 200.0, 202.0, 204.0, 206.0, 208.0, 210.0, 212.0, 214.0, 216.0, 218.0, 220.0, 222.0, 224.0, 226.0, 228.0, 230.0, 232.0, 234.0, 236.0, 238.0, 240.0, 242.0, 244.0, 246.0, 248.0, 250.0, 252.0, 254.0, 256.0, 258.0, 260.0, 262.0, 264.0, 266.0, 268.0, 270.0, 272.0, 274.0, 276.0, 278.0, 280.0, 282.0, 284.0, 286.0, 288.0, 290.0, 295.0, 300.0, 305.0, 310.0, 315.0, 320.0, 325.0, 330.0, 335.0, 340.0, 345.0, 350.0, 360.0, 370.0, 380.0, 390.0, 400.0, 420.0, 440.0, 450.0, 460.0, 480.0, 500.0, 520.0, 540.0, 550.0, 560.0, 580.0, 600.0, 620.0, 640.0, 650.0, 660.0, 680.0, 700.0, 720.0, 740.0, 750.0, 760.0, 780.0, 800.0, 820.0, 840.0, 850.0, 860.0, 880.0, 900.0, 920.0, 940.0, 950.0, 960.0, 980.0, 1000.0};
+   double ggH8_xsec [] = {46.12, 45.04, 43.99, 42.99, 42.01, 41.07, 40.17, 39.29, 38.44, 37.62, 36.80, 36.05, 35.30, 34.58, 33.87, 33.19, 32.53, 31.89, 31.27, 30.66, 30.12, 29.55, 28.99, 28.44, 27.92, 27.39, 26.89, 26.42, 25.95, 25.49, 25.04, 24.82, 24.60, 24.39, 24.18, 24.05, 23.76, 23.56, 23.36, 23.16, 22.96, 22.84, 22.58, 22.39, 22.20, 22.09, 21.90, 21.72, 21.55, 21.37, 21.20, 20.96, 20.86, 20.69, 20.53, 20.37, 20.21, 20.04, 19.89, 19.73, 19.57, 19.42, 19.27, 19.07, 18.97, 18.78, 18.67, 18.53, 18.39, 18.21, 18.11, 17.98, 17.84, 17.68, 17.55, 17.42, 17.29, 17.19, 17.07, 16.92, 16.82, 16.70, 16.60, 16.46, 16.36, 16.24, 16.13, 16.01, 15.89, 15.78, 15.67, 15.43, 15.20, 14.98, 14.79, 14.59, 14.40, 14.31, 14.11, 13.92, 13.65, 13.33, 13.12, 12.97, 12.86, 12.84, 12.92, 12.84, 12.52, 12.17, 11.98, 11.96, 11.27, 10.96, 10.69, 10.40, 10.15, 9.895, 9.637, 9.531, 9.429, 9.203, 8.923, 8.634, 8.410, 8.315, 8.219, 7.994, 7.984, 7.724, 7.443, 7.431, 7.430, 7.237, 7.127, 7.002, 6.885, 6.767, 6.644, 6.534, 6.421, 6.327, 6.249, 6.138, 6.038, 5.938, 5.851, 5.776, 5.680, 5.593, 5.513, 5.438, 5.352, 5.272, 5.183, 5.101, 5.020, 4.945, 4.874, 4.802, 4.734, 4.667, 4.602, 4.539, 4.479, 4.421, 4.366, 4.308, 4.253, 4.198, 4.149, 4.100, 4.053, 4.008, 3.964, 3.921, 3.880, 3.841, 3.803, 3.767, 3.683, 3.606, 3.539, 3.482, 3.434, 3.392, 3.364, 3.349, 3.349, 3.367, 3.405, 3.406, 3.390, 3.336, 3.235, 3.093, 2.924, 2.552, 2.180, 2.003, 1.837, 1.538, 1.283, 1.069, 0.8912, 0.8141, 0.7442, 0.6229, 0.5230, 0.4403, 0.3718, 0.3423, 0.3152, 0.2680, 0.2288, 0.1962, 0.1687, 0.1566, 0.1455, 0.1260, 0.1095, 0.09547, 0.08346, 0.07811, 0.07321, 0.06443, 0.05684, 0.05030, 0.04463, 0.04206, 0.03969, 0.03539, 0.03163};
+   double ggH8_errp [] = {+16.7, +16.7, +16.6, +16.6, +16.5, +16.5, +16.4, +16.4, +16.3, +16.2, +16.1, +16.1, +16.0, +16.0, +15.9, +15.9, +15.9, +15.8, +15.8, +15.8, +15.7, +15.7, +15.7, +15.6, +15.6, +15.5, +15.4, +15.4, +15.4, +15.3, +15.3, +15.3, +15.2, +15.1, +15.1, +15.1, +15.1, +15.1, +15.1, +15.1, +15.0, +15.0, +14.9, +14.9, +14.9, +14.9, +14.9, +14.8, +14.8, +14.8, +14.8, +14.8, +14.8, +14.8, +14.8, +14.7, +14.7, +14.7, +14.7, +14.7, +14.7, +14.7, +14.7, +14.7, +14.6, +14.6, +14.6, +14.6, +14.6, +14.6, +14.6, +14.6, +14.6, +14.5, +14.5, +14.5, +14.4, +14.4, +14.4, +14.4, +14.4, +14.4, +14.3, +14.3, +14.3, +14.3, +14.3, +14.3, +14.3, +14.3, +14.3, +14.1, +14.1, +14.1, +14.1, +14.1, +14.0, +14.0, +14.0, +14.1, +14.1, +14.1, +14.0, +14.1, +14.1, +14.1, +14.1, +14.1, +14.0, +14.0, +14.0, +14.0, +13.9, +13.9, +13.9, +13.9, +13.9, +13.8, +13.7, +13.7, +13.7, +13.7, +13.6, +13.6, +13.6, +13.6, +13.5, +13.5, +13.5, +13.5, +13.5, +13.5, +13.4, +13.4, +13.4, +13.4, +13.4, +13.4, +13.4, +13.4, +13.4, +13.4, +13.3, +13.3, +13.2, +13.2, +13.3, +13.3, +13.3, +13.3, +13.3, +13.2, +13.2, +13.2, +13.2, +13.2, +13.2, +13.2, +13.2, +13.2, +13.2, +13.3, +13.3, +13.3, +13.4, +13.4, +13.4, +13.4, +13.4, +13.4, +13.4, +13.4, +13.4, +13.3, +13.3, +13.3, +13.3, +13.3, +13.3, +13.3, +13.3, +13.4, +13.4, +13.4, +13.4, +13.4, +13.4, +13.5, +13.6, +13.6, +13.6, +13.7, +13.8, +13.9, +13.9, +14.0, +14.0, +14.1, +14.3, +14.4, +14.5, +14.7, +14.9, +15.0, +15.2, +15.2, +15.3, +15.4, +15.4, +15.5, +15.6, +15.6, +15.7, +15.9, +16.1, +16.2, +16.5, +16.5, +16.6, +16.6, +16.7, +16.9, +17.0, +17.1, +17.1, +17.3, +17.4, +17.5, +17.8, +17.9, +18.0, +18.3, +18.6};
+   double ggH8_errm [] = {-15.9, -15.8, -15.7, -15.6, -15.6, -15.6, -15.5, -15.5, -15.4, -15.4, -15.4, -15.3, -15.2, -15.2, -15.1, -15.1, -15.1, -15.0, -15.0, -15.0, -14.9, -14.9, -14.9, -14.9, -14.8, -14.8, -14.9, -14.9, -14.8, -14.9, -14.9, -14.9, -14.9, -14.8, -14.8, -14.8, -14.8, -14.9, -14.9, -14.9, -14.9, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.8, -14.7, -14.7, -14.7, -14.7, -14.7, -14.7, -14.7, -14.7, -14.7, -14.7, -14.6, -14.6, -14.7, -14.7, -14.7, -14.7, -14.7, -14.7, -14.7, -14.7, -14.7, -14.6, -14.6, -14.6, -14.6, -14.6, -14.5, -14.5, -14.5, -14.5, -14.5, -14.5, -14.4, -14.4, -14.4, -14.4, -14.4, -14.4, -14.4, -14.4, -14.4, -14.4, -14.5, -14.5, -14.4, -14.4, -14.4, -14.4, -14.4, -14.4, -14.4, -14.4, -14.4, -14.5, -14.5, -14.5, -14.5, -14.5, -14.5, -14.5, -14.5, -14.5, -14.5, -14.5, -14.5, -14.5, -14.4, -14.4, -14.4, -14.5, -14.5, -14.5, -14.4, -14.5, -14.5, -14.5, -14.5, -14.4, -14.5, -14.5, -14.4, -14.4, -14.3, -14.2, -14.2, -14.2, -14.2, -14.2, -14.2, -14.2, -14.2, -14.2, -14.2, -14.2, -14.1, -14.1, -14.1, -14.1, -14.1, -14.1, -14.1, -13.9, -13.8, -13.7, -13.7, -13.8, -13.9, -14.0, -14.0, -14.1, -14.1, -14.1, -14.2, -14.2, -14.2, -14.2, -14.1, -14.1, -14.1, -14.1, -14.1, -14.0, -13.9, -14.0, -14.0, -14.0, -14.1, -14.1, -14.0, -14.0, -14.1, -14.1, -14.1, -14.0, -13.8, -13.7, -13.6, -13.6, -13.7, -13.6, -13.6, -13.7, -13.6, -13.7, -13.7, -13.8, -13.8, -13.8, -13.8, -13.9, -14.0, -14.0, -14.2, -14.3, -14.4, -14.6, -14.7, -14.8, -14.9, -15.0, -15.0, -15.0, -15.1, -15.2, -15.3, -15.4, -15.5, -15.7, -16.0, -16.1, -16.2, -16.4, -16.7};
+   double ggH8_scap [] = {+8.8, +8.8, +8.7, +8.7, +8.6, +8.6, +8.5, +8.5, +8.4, +8.4, +8.3, +8.3, +8.2, +8.2, +8.1, +8.1, +8.1, +8.0, +8.0, +8.0, +7.9, +7.9, +7.9, +7.8, +7.8, +7.8, +7.7, +7.7, +7.7, +7.6, +7.6, +7.6, +7.6, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.3, +7.3, +7.3, +7.3, +7.3, +7.3, +7.3, +7.3, +7.2, +7.2, +7.2, +7.2, +7.2, +7.2, +7.2, +7.2, +7.2, +7.1, +7.1, +7.1, +7.1, +7.1, +7.1, +7.1, +7.1, +7.1, +7.0, +7.0, +7.0, +7.0, +7.0, +7.0, +7.0, +7.0, +7.0, +6.9, +6.9, +6.9, +6.9, +6.9, +6.9, +6.9, +6.9, +6.9, +6.8, +6.8, +6.8, +6.8, +6.8, +6.7, +6.7, +6.7, +6.7, +6.7, +6.7, +6.6, +6.6, +6.6, +6.6, +6.6, +6.6, +6.5, +6.5, +6.5, +6.5, +6.4, +6.4, +6.4, +6.4, +6.4, +6.3, +6.3, +6.3, +6.3, +6.3, +6.2, +6.2, +6.2, +6.2, +6.1, +6.1, +6.1, +6.1, +6.1, +6.1, +6.0, +6.0, +6.0, +6.0, +6.0, +6.0, +6.0, +6.0, +6.0, +6.0, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.7, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.8, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +5.9, +6.0, +6.0, +6.0, +6.1, +6.1, +6.1, +6.1, +6.1, +6.2, +6.2, +6.2, +6.2, +6.3, +6.3, +6.3, +6.4, +6.4, +6.4, +6.5, +6.5};
+   double ggH8_scam [] = {-9.2, -9.1, -9.1, -9.0, -9.0, -9.0, -8.9, -8.9, -8.8, -8.8, -8.8, -8.7, -8.7, -8.7, -8.6, -8.6, -8.6, -8.5, -8.5, -8.5, -8.4, -8.4, -8.4, -8.4, -8.3, -8.3, -8.3, -8.3, -8.2, -8.2, -8.2, -8.2, -8.2, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.1, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -7.9, -7.9, -7.9, -7.9, -7.9, -7.9, -7.9, -7.9, -7.9, -7.9, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.8, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.6, -7.6, -7.6, -7.6, -7.6, -7.6, -7.6, -7.6, -7.6, -7.6, -7.6, -7.5, -7.5, -7.5, -7.5, -7.5, -7.5, -7.4, -7.4, -7.4, -7.4, -7.4, -7.4, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.3, -7.2, -7.2, -7.2, -7.2, -7.2, -7.1, -7.1, -7.1, -7.1, -7.1, -7.0, -7.0, -7.0, -7.0, -7.0, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.8, -6.8, -6.8, -6.8, -6.8, -6.7, -6.7, -6.7, -6.7, -6.7, -6.6, -6.6, -6.6, -6.6, -6.6, -6.6, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.4, -6.4, -6.4, -6.4, -6.4, -6.4, -6.4, -6.3, -6.3, -6.3, -6.3, -6.3, -6.3, -6.3, -6.2, -6.2, -6.2, -6.2, -6.2, -6.2, -6.2, -6.2, -6.1, -6.1, -6.1, -6.1, -6.1, -6.1, -6.0, -6.0, -6.0, -6.0, -6.0, -6.0, -5.9, -5.9, -5.9, -5.9, -5.9, -5.8, -5.6, -5.5, -5.4, -5.3, -5.3, -5.2, -5.2, -5.2, -5.1, -5.1, -5.1, -5.1, -5.1, -5.1, -5.0, -5.0, -5.0, -5.0, -5.1, -5.1, -5.1, -5.1, -5.1, -5.1, -5.2, -5.2, -5.2, -5.2, -5.2, -5.3, -5.3, -5.3, -5.3, -5.3, -5.4, -5.4, -5.4, -5.4, -5.4};
+   double ggH8_pdfp [] = {+7.9, +7.9, +7.9, +7.9, +7.9, +7.9, +7.9, +7.9, +7.9, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.8, +7.7, +7.7, +7.7, +7.7, +7.7, +7.7, +7.7, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.3, +7.3, +7.3, +7.3, +7.3, +7.3, +7.3, +7.3, +7.4, +7.4, +7.4, +7.4, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.5, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.4, +7.3, +7.3, +7.4, +7.4, +7.4, +7.4, +7.4, +7.3, +7.3, +7.3, +7.3, +7.3, +7.3, +7.4, +7.4, +7.4, +7.4, +7.5, +7.5, +7.5, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.6, +7.7, +7.7, +7.7, +7.7, +7.7, +7.7, +7.8, +7.9, +7.9, +7.9, +8.0, +8.0, +8.1, +8.1, +8.2, +8.2, +8.3, +8.5, +8.6, +8.7, +8.9, +9.1, +9.2, +9.4, +9.4, +9.4, +9.5, +9.5, +9.6, +9.7, +9.7, +9.8, +9.9, +10.1, +10.2, +10.4, +10.4, +10.5, +10.5, +10.6, +10.7, +10.8, +10.9, +10.9, +11.0, +11.1, +11.2, +11.4, +11.5, +11.6, +11.8, +12.1};
+   double ggH8_pdfm [] = {-6.7, -6.7, -6.6, -6.6, -6.6, -6.6, -6.6, -6.6, -6.6, -6.6, -6.6, -6.6, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.5, -6.6, -6.6, -6.6, -6.7, -6.7, -6.7, -6.7, -6.7, -6.7, -6.7, -6.7, -6.8, -6.8, -6.8, -6.8, -6.8, -6.8, -6.8, -6.8, -6.8, -6.8, -6.8, -6.8, -6.8, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -7.0, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -6.9, -7.0, -7.0, -7.0, -7.0, -7.1, -7.1, -7.1, -7.1, -7.1, -7.1, -7.1, -7.1, -7.1, -7.2, -7.2, -7.3, -7.3, -7.3, -7.4, -7.4, -7.4, -7.4, -7.4, -7.5, -7.5, -7.5, -7.5, -7.5, -7.5, -7.5, -7.5, -7.6, -7.6, -7.6, -7.6, -7.7, -7.7, -7.7, -7.7, -7.7, -7.8, -7.8, -7.7, -7.7, -7.7, -7.6, -7.6, -7.6, -7.6, -7.6, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.7, -7.6, -7.5, -7.4, -7.4, -7.5, -7.6, -7.7, -7.8, -7.9, -7.9, -7.9, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -8.0, -7.9, -7.9, -8.0, -8.0, -8.0, -8.1, -8.1, -8.1, -8.1, -8.2, -8.2, -8.2, -8.2, -8.2, -8.2, -8.2, -8.3, -8.4, -8.4, -8.4, -8.5, -8.5, -8.6, -8.6, -8.7, -8.7, -8.7, -8.8, -8.9, -9.0, -9.0, -9.1, -9.2, -9.3, -9.5, -9.6, -9.7, -9.7, -9.8, -9.8, -9.8, -9.9, -9.9, -10.0, -10.1, -10.2, -10.4, -10.6, -10.7, -10.8, -11.0, -11.3};
+
+   double qqH8_mass [] = {80.0, 81.0, 82.0, 83.0, 84.0, 85.0, 86.0, 87.0, 88.0, 89.0, 90.0, 91.0, 92.0, 93.0, 94.0, 95.0, 96.0, 97.0, 98.0, 99.0, 100.0, 101.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0, 108.0, 109.0, 110.0, 110.5, 111.0, 111.5, 112.0, 112.5, 113.0, 113.5, 114.0, 114.5, 115.0, 115.5, 116.0, 116.5, 117.0, 117.5, 118.0, 118.5, 119.0, 119.5, 120.0, 120.5, 121.0, 121.5, 122.0, 122.5, 123.0, 123.5, 124.0, 124.5, 125.0, 125.5, 126.0, 126.5, 127.0, 127.5, 128.0, 128.5, 129.0, 129.5, 130.0, 130.5, 131.0, 131.5, 132.0, 132.5, 133.0, 133.5, 134.0, 134.5, 135.0, 135.5, 136.0, 136.5, 137.0, 137.5, 138.0, 138.5, 139.0, 139.5, 140.0, 141.0, 142.0, 143.0, 144.0, 145.0, 146.0, 147.0, 148.0, 149.0, 150.0, 151.0, 152.0, 153.0, 154.0, 155.0, 156.0, 157.0, 158.0, 159.0, 160.0, 162.0, 164.0, 165.0, 166.0, 168.0, 170.0, 172.0, 174.0, 175.0, 176.0, 178.0, 180.0, 182.0, 184.0, 185.0, 186.0, 188.0, 190.0, 192.0, 194.0, 195.0, 196.0, 198.0, 200.0, 202.0, 204.0, 206.0, 208.0, 210.0, 212.0, 214.0, 216.0, 218.0, 220.0, 222.0, 224.0, 226.0, 228.0, 230.0, 232.0, 234.0, 236.0, 238.0, 240.0, 242.0, 244.0, 246.0, 248.0, 250.0, 252.0, 254.0, 256.0, 258.0, 260.0, 262.0, 264.0, 266.0, 268.0, 270.0, 272.0, 274.0, 276.0, 278.0, 280.0, 282.0, 284.0, 286.0, 288.0, 290.0, 295.0, 300.0, 305.0, 310.0, 315.0, 320.0, 325.0, 330.0, 335.0, 340.0, 345.0, 350.0, 360.0, 370.0, 380.0, 390.0, 400.0, 420.0, 440.0, 450.0, 460.0, 480.0, 500.0, 520.0, 540.0, 550.0, 560.0, 580.0, 600.0, 620.0, 640.0, 650.0, 660.0, 680.0, 700.0, 720.0, 740.0, 750.0, 760.0, 780.0, 800.0, 820.0, 840.0, 850.0, 860.0, 880.0, 900.0, 920.0, 940.0, 950.0, 960.0, 980.0, 1000.0};
+   double qqH8_xsec [] = {2.410, 2.384, 2.360, 2.336, 2.311, 2.289, 2.265, 2.243, 2.221, 2.199, 2.176, 2.154, 2.133, 2.112, 2.090, 2.071, 2.050, 2.030, 2.010, 1.991, 1.971, 1.952, 1.934, 1.915, 1.897, 1.878, 1.860, 1.843, 1.826, 1.808, 1.791, 1.783, 1.775, 1.766, 1.758, 1.750, 1.742, 1.733, 1.725, 1.717, 1.709, 1.701, 1.693, 1.686, 1.678, 1.670, 1.661, 1.654, 1.647, 1.639, 1.632, 1.624, 1.617, 1.609, 1.602, 1.595, 1.588, 1.580, 1.573, 1.566, 1.559, 1.552, 1.544, 1.539, 1.531, 1.524, 1.517, 1.511, 1.504, 1.497, 1.490, 1.483, 1.477, 1.470, 1.463, 1.458, 1.451, 1.444, 1.439, 1.432, 1.425, 1.419, 1.413, 1.407, 1.401, 1.395, 1.388, 1.382, 1.376, 1.370, 1.365, 1.352, 1.341, 1.329, 1.317, 1.306, 1.295, 1.284, 1.272, 1.261, 1.251, 1.240, 1.229, 1.218, 1.208, 1.197, 1.187, 1.176, 1.166, 1.155, 1.146, 1.136, 1.123, 1.115, 1.106, 1.088, 1.070, 1.052, 1.035, 1.026, 1.017, 1.000, 0.9820, 0.9670, 0.9558, 0.9496, 0.9429, 0.9286, 0.9139, 0.8998, 0.8854, 0.8783, 0.8714, 0.8574, 0.8441, 0.8309, 0.8178, 0.8051, 0.7927, 0.7805, 0.7687, 0.7568, 0.7452, 0.7340, 0.7229, 0.7120, 0.7016, 0.6913, 0.6808, 0.6707, 0.6610, 0.6513, 0.6418, 0.6326, 0.6234, 0.6144, 0.6056, 0.5969, 0.5885, 0.5802, 0.5720, 0.5640, 0.5562, 0.5484, 0.5408, 0.5333, 0.5259, 0.5187, 0.5116, 0.5047, 0.4978, 0.4910, 0.4845, 0.4780, 0.4715, 0.4652, 0.4590, 0.4530, 0.4470, 0.4716, 0.4562, 0.4408, 0.4266, 0.4131, 0.3999, 0.3875, 0.3753, 0.3637, 0.3526, 0.3422, 0.3303, 0.3200, 0.3028, 0.2896, 0.2776, 0.2660, 0.2543, 0.2317, 0.2103, 0.2002, 0.1905, 0.1724, 0.1561, 0.1414, 0.1283, 0.1223, 0.1166, 0.1062, 0.09688, 0.08861, 0.08121, 0.07784, 0.07459, 0.06865, 0.06330, 0.05853, 0.05420, 0.05235, 0.05032, 0.04682, 0.04365, 0.04078, 0.03815, 0.03706, 0.03579, 0.03363, 0.03164, 0.02986, 0.02820, 0.02745, 0.02669, 0.02524, 0.02399};
+   double qqH8_errp [] = {+2.9, +3.0, +2.9, +3.0, +2.9, +2.9, +2.9, +2.9, +2.8, +2.9, +2.9, +2.9, +2.8, +2.9, +2.9, +2.8, +2.9, +2.9, +2.9, +2.8, +2.8, +2.9, +2.7, +2.8, +2.8, +2.8, +2.8, +2.7, +2.7, +2.8, +2.7, +2.7, +2.7, +2.7, +2.7, +2.8, +2.8, +2.8, +2.7, +2.7, +2.7, +2.8, +2.8, +2.8, +2.7, +2.8, +2.9, +2.8, +2.9, +2.8, +2.8, +2.8, +2.8, +2.8, +2.9, +2.8, +2.8, +2.8, +2.9, +2.8, +2.8, +2.8, +2.9, +2.8, +2.9, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.7, +2.7, +2.8, +2.8, +2.7, +2.7, +2.7, +2.7, +2.7, +2.7, +2.7, +2.8, +2.7, +2.7, +2.8, +2.7, +2.8, +2.7, +2.7, +2.8, +2.7, +2.7, +2.7, +2.7, +2.7, +2.8, +2.7, +2.7, +2.7, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.9, +2.8, +2.7, +2.7, +2.7, +2.8, +2.8, +2.7, +2.8, +2.7, +2.8, +2.8, +2.8, +2.7, +2.8, +2.8, +2.8, +2.7, +2.7, +2.7, +2.7, +2.6, +2.7, +2.9, +2.8, +2.8, +2.8, +2.8, +2.8, +2.7, +2.8, +2.7, +2.8, +2.8, +2.7, +2.8, +2.7, +2.8, +2.8, +2.8, +2.7, +2.8, +2.8, +2.8, +2.8, +2.8, +2.7, +2.8, +2.8, +2.8, +2.7, +2.6, +2.7, +2.7, +2.8, +2.7, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.7, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.8, +2.9, +2.9, +2.9, +3.1, +3.1, +3.1, +3.2, +3.2, +3.4, +3.4, +3.5, +3.5, +3.5, +3.7, +3.9, +3.9, +4.0, +4.0, +4.2, +4.3, +4.4, +4.4, +4.5, +4.7, +4.8, +4.9, +5.0, +5.0, +5.2, +5.4, +5.5, +5.5, +5.6, +5.7, +5.8, +6.0, +6.1, +6.2, +6.3};
+   double qqH8_errm [] = {-3.3, -3.3, -3.1, -3.0, -3.0, -3.0, -3.0, -3.2, -3.2, -3.2, -2.9, -2.9, -3.2, -2.9, -2.9, -3.1, -3.1, -3.0, -3.1, -3.1, -3.1, -3.1, -3.0, -3.0, -3.1, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -2.8, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -2.9, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.8, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.9, -2.8, -2.8, -2.8, -2.8, -2.8, -2.9, -2.9, -2.8, -2.8, -2.8, -2.9, -2.7, -2.8, -2.8, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.6, -2.6, -2.6, -2.6, -2.8, -2.6, -2.8, -2.8, -2.8, -2.8, -2.8, -2.7, -2.8, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.7, -2.7, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.9, -2.8, -2.8, -2.8, -2.9, -3.0, -3.0, -3.1, -3.2, -3.2, -3.2, -3.3, -3.6, -3.6, -3.6, -3.7, -3.9, -4.1, -4.1, -4.1, -4.3, -4.3, -4.4, -4.6, -4.8, -4.8, -4.9, -5.0, -5.3, -5.2, -5.2, -5.4, -5.6, -5.7, -6.0, -6.1, -6.0, -6.2, -6.3, -6.5, -6.8, -6.9, -6.8, -7.0, -7.1, -7.2};
+   double qqH8_scap [] = {+0.2, +0.4, +0.3, +0.4, +0.3, +0.3, +0.3, +0.3, +0.2, +0.3, +0.3, +0.3, +0.2, +0.3, +0.3, +0.2, +0.3, +0.3, +0.3, +0.2, +0.2, +0.3, +0.2, +0.2, +0.2, +0.3, +0.3, +0.2, +0.2, +0.3, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.3, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.3, +0.2, +0.3, +0.2, +0.2, +0.2, +0.2, +0.2, +0.3, +0.2, +0.2, +0.2, +0.3, +0.2, +0.2, +0.2, +0.3, +0.2, +0.3, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.3, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.3, +0.2, +0.2, +0.3, +0.2, +0.3, +0.2, +0.2, +0.3, +0.2, +0.2, +0.2, +0.2, +0.2, +0.3, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.3, +0.3, +0.2, +0.2, +0.2, +0.3, +0.3, +0.2, +0.3, +0.2, +0.3, +0.3, +0.3, +0.2, +0.3, +0.3, +0.3, +0.2, +0.2, +0.2, +0.2, +0.2, +0.2, +0.3, +0.2, +0.2, +0.3, +0.3, +0.3, +0.2, +0.3, +0.2, +0.3, +0.3, +0.2, +0.3, +0.2, +0.3, +0.3, +0.3, +0.2, +0.3, +0.3, +0.3, +0.3, +0.3, +0.2, +0.3, +0.3, +0.3, +0.3, +0.2, +0.3, +0.3, +0.3, +0.2, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.3, +0.4, +0.4, +0.4, +0.4, +0.4, +0.4, +0.4, +0.4, +0.4, +0.4, +0.5, +0.5, +0.5, +0.5, +0.6, +0.6, +0.6, +0.6, +0.6, +0.6, +0.6, +0.6, +0.7, +0.7, +0.7};
+   double qqH8_scam [] = {-0.3, -0.3, -0.3, -0.2, -0.2, -0.2, -0.2, -0.3, -0.3, -0.3, -0.2, -0.2, -0.3, -0.2, -0.2, -0.2, -0.2, -0.3, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.1, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.1, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.1, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.1, -0.1, -0.1, -0.1, -0.1, -0.2, -0.2, -0.1, -0.1, -0.1, -0.2, -0.1, -0.2, -0.2, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.1, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.4, -0.4, -0.4, -0.4, -0.5, -0.5, -0.5, -0.5, -0.6, -0.6, -0.6, -0.6, -0.7, -0.7, -0.7, -0.8, -0.8, -0.8, -0.8, -0.8, -0.9, -0.9, -0.9, -0.9, -1.0, -1.0, -1.1, -1.0, -1.1, -1.1, -1.1, -1.2, -1.2, -1.2, -1.3, -1.2, -1.3, -1.3};
+   double qqH8_pdfp [] = {+2.7, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.5, +2.6, +2.6, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.6, +2.5, +2.6, +2.5, +2.5, +2.5, +2.6, +2.6, +2.6, +2.5, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.5, +2.6, +2.5, +2.5, +2.6, +2.6, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.6, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.4, +2.5, +2.6, +2.6, +2.6, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.4, +2.4, +2.4, +2.4, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.4, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.5, +2.6, +2.6, +2.6, +2.8, +2.8, +2.8, +2.9, +2.9, +3.1, +3.1, +3.2, +3.2, +3.2, +3.4, +3.5, +3.5, +3.6, +3.6, +3.8, +3.9, +4.0, +4.0, +4.1, +4.3, +4.3, +4.4, +4.5, +4.5, +4.6, +4.8, +4.9, +4.9, +5.0, +5.1, +5.2, +5.4, +5.4, +5.5, +5.6};
+   double qqH8_pdfm [] = {-3.0, -3.0, -2.8, -2.8, -2.8, -2.8, -2.8, -2.9, -2.9, -2.9, -2.7, -2.7, -2.9, -2.7, -2.7, -2.9, -2.9, -2.7, -2.9, -2.9, -2.9, -2.9, -2.8, -2.8, -2.9, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.6, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.8, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.7, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.5, -2.5, -2.5, -2.5, -2.7, -2.5, -2.7, -2.7, -2.7, -2.7, -2.7, -2.6, -2.7, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.5, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.6, -2.5, -2.5, -2.5, -2.6, -2.7, -2.7, -2.8, -2.8, -2.8, -2.8, -2.9, -3.1, -3.1, -3.1, -3.2, -3.3, -3.5, -3.5, -3.5, -3.6, -3.6, -3.7, -3.8, -4.0, -4.0, -4.1, -4.2, -4.4, -4.3, -4.3, -4.5, -4.6, -4.7, -4.9, -5.1, -4.9, -5.1, -5.2, -5.3, -5.6, -5.7, -5.5, -5.8, -5.8, -5.9};
+
+
+   ggH7TG_xsec = new TGraph(sizeof(ggH7_mass)/sizeof(double), ggH7_mass, ggH7_xsec);
+   ggH7TG_errp = new TGraph(sizeof(ggH7_mass)/sizeof(double), ggH7_mass, ggH7_errp);
+   ggH7TG_errm = new TGraph(sizeof(ggH7_mass)/sizeof(double), ggH7_mass, ggH7_errm);
+   ggH7TG_scap = new TGraph(sizeof(ggH7_mass)/sizeof(double), ggH7_mass, ggH7_scap);
+   ggH7TG_scam = new TGraph(sizeof(ggH7_mass)/sizeof(double), ggH7_mass, ggH7_scam);
+   ggH7TG_pdfp = new TGraph(sizeof(ggH7_mass)/sizeof(double), ggH7_mass, ggH7_pdfp);
+   ggH7TG_pdfm = new TGraph(sizeof(ggH7_mass)/sizeof(double), ggH7_mass, ggH7_pdfm);
+
+   qqH7TG_xsec = new TGraph(sizeof(qqH7_mass)/sizeof(double), qqH7_mass, qqH7_xsec);
+   qqH7TG_errp = new TGraph(sizeof(qqH7_mass)/sizeof(double), qqH7_mass, qqH7_errp);
+   qqH7TG_errm = new TGraph(sizeof(qqH7_mass)/sizeof(double), qqH7_mass, qqH7_errm);
+   qqH7TG_scap = new TGraph(sizeof(qqH7_mass)/sizeof(double), qqH7_mass, qqH7_scap);
+   qqH7TG_scam = new TGraph(sizeof(qqH7_mass)/sizeof(double), qqH7_mass, qqH7_scam);
+   qqH7TG_pdfp = new TGraph(sizeof(qqH7_mass)/sizeof(double), qqH7_mass, qqH7_pdfp);
+   qqH7TG_pdfm = new TGraph(sizeof(qqH7_mass)/sizeof(double), qqH7_mass, qqH7_pdfm);
+
+   ggH8TG_xsec = new TGraph(sizeof(ggH8_mass)/sizeof(double), ggH8_mass, ggH8_xsec);
+   ggH8TG_errp = new TGraph(sizeof(ggH8_mass)/sizeof(double), ggH8_mass, ggH8_errp);
+   ggH8TG_errm = new TGraph(sizeof(ggH8_mass)/sizeof(double), ggH8_mass, ggH8_errm);
+   ggH8TG_scap = new TGraph(sizeof(ggH8_mass)/sizeof(double), ggH8_mass, ggH8_scap);
+   ggH8TG_scam = new TGraph(sizeof(ggH8_mass)/sizeof(double), ggH8_mass, ggH8_scam);
+   ggH8TG_pdfp = new TGraph(sizeof(ggH8_mass)/sizeof(double), ggH8_mass, ggH8_pdfp);
+   ggH8TG_pdfm = new TGraph(sizeof(ggH8_mass)/sizeof(double), ggH8_mass, ggH8_pdfm);
+
+   qqH8TG_xsec = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_xsec);
+   qqH8TG_errp = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_errp);
+   qqH8TG_errm = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_errm);
+   qqH8TG_scap = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_scap);
+   qqH8TG_scam = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_scam);
+   qqH8TG_pdfp = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_pdfp);
+   qqH8TG_pdfm = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_pdfm);
+}
