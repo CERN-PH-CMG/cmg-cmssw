@@ -93,8 +93,8 @@ if __name__ == '__main__':
       # 1.616fb
       selComps['data_Run2012A_PromptReco_v1'].intLumi = 920.039
       weights['data_Run2012A_PromptReco_v1'].intLumi = 920.039
-      selComps['data_Run2012B_PromptReco_v1'].intLumi = 696.0+804.0
-      weights['data_Run2012B_PromptReco_v1'].intLumi = 696.0+804.0
+      selComps['data_Run2012B_PromptReco_v1'].intLumi = 696.0#+804.0
+      weights['data_Run2012B_PromptReco_v1'].intLumi = 696.0#+804.0
     else:
       # 1fb
       selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
@@ -156,9 +156,9 @@ if __name__ == '__main__':
     cuts=[
 #####  Andreas  ############################################################################################################################### 
 
-        ("CMS_test2012newmetnewsvfit_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
-        ("CMS_test2012newmetnewsvfit_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
-        ("CMS_test2012newmetnewsvfit_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012v2_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012v2_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012v2_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,5),
 
 ######################################################################################################################################################### 
 
