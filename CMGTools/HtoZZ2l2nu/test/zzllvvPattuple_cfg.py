@@ -45,8 +45,8 @@ from CMGTools.HtoZZ2l2nu.PreselectionSequences_cff import addPreselectionSequenc
 from CMGTools.HtoZZ2l2nu.PreselectionSequences_cff import addLumifilter
 if(not runOnMC ):
     addPreselectionSequences(process)
-    #addLumifilter(process,'/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-194076_8TeV_PromptReco_Collisions12_JSON.txt')
-    #addLumifilter(process,'/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-194479_8TeV_PromptReco_Collisions12_JSON.txt')
+    addLumifilter(process,'/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-195016_8TeV_PromptReco_Collisions12_JSON_v2.txt')
+    
                       
 from CMGTools.HtoZZ2l2nu.SkimSequences_cff import addDileptonSkim, addPhotonSkim
 addDileptonSkim(process)

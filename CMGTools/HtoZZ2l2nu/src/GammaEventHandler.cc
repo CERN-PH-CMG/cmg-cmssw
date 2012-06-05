@@ -75,20 +75,20 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys)
   triggerPrescaleWeight_=1;
 
   //check if it is a gamma event
-  if( phys.cat<22) return isGoodEvent_;
-  triggerThr_ = (phys.cat-22)/1000;
-  if(triggerThr_==0) return isGoodEvent_;
-
+  if( phys.cat!=22) return isGoodEvent_;
+  //triggerThr_ = (phys.cat-22)/1000;
+  //if(triggerThr_==0) return isGoodEvent_;
+  // cout << triggerThr_ << endl;
   //check which category this event belongs to (use the trigger)
-  int eventTriggerCat(-1);
-  for(size_t icat=0; icat<gammaCats_.size()-1; icat++)
-    {
-      if(triggerThr_<gammaCats_[icat])    break;
-      eventTriggerCat=icat;   
-    }
-  if(eventTriggerCat<0) return isGoodEvent_;
-  triggerPrescaleWeight_ = gammaTriggerRenWeights_[eventTriggerCat];
-
+  //   int eventTriggerCat(-1);
+  //   for(size_t icat=0; icat<gammaCats_.size()-1; icat++)
+  //     {
+  //       if(triggerThr_<gammaCats_[icat])    break;
+  //       eventTriggerCat=icat;   
+  //     }
+  //   if(eventTriggerCat<0) return isGoodEvent_;
+  //   triggerPrescaleWeight_ = gammaTriggerRenWeights_[eventTriggerCat];
+  
   photonCategory_="photon";  photonCategory_ += triggerThr_; 
   //all done here
   isGoodEvent_=true;

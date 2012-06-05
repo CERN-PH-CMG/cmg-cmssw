@@ -11,11 +11,19 @@
 	   "spimpose":true,
            "data":[
                 {
-	         "dtag":"Data_DoubleElectron2012A",
+	         "dtag":"Data8TeV_DoubleElectron2012A",
                  "split":2
                 },
                 {
-	         "dtag":"Data_DoubleMu2012A",
+	         "dtag":"Data8TeV_DoubleMu2012A",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012B",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_DoubleMu2012B",
                  "split":2
                 }
 	    ]
@@ -30,9 +38,9 @@
 	 "spimpose":true,
          "data":[
 	      {
-               "dtag":"MC_DYJetsToLL",
+               "dtag":"MC8TeV_DYJetsToLL",
                "split":10,
-                "xsec":3503.71
+                "xsec":3532.8
               }
           ]
 	},
@@ -44,23 +52,23 @@
 	 "mctruthmode":22,
 	 "data":[
               {
-               "dtag":"MC_ZGToNuNu",
+               "dtag":"MC8TeV_ZGToNuNu",
                "dset":"ZGToNuNuG_TuneZ2_7TeV-madgraph",
                "patdir":["/store/cmst3/user/psilva/v444/MC/ZGToNuNuG_TuneZ2_7TeV-madgraph"],
                "xsec":3.426
               },
               {
-               "dtag":"MC_ZJetsToNuNu_50to100",
+               "dtag":"MC8TeV_ZJetsToNuNu_50to100",
                "dset":"",
                "xsec":309.5
               },
               {
-               "dtag":"MC_ZJetsToNuNu_100to200",
+               "dtag":"MC8TeV_ZJetsToNuNu_100to200",
                "dset":"",
                "xsec":125.2
               },
               {
-               "dtag":"MC_ZJetsToNuNu_200toInf",
+               "dtag":"MC8TeV_ZJetsToNuNu_200toInf",
                "dset":"",
                "xsec":32.92
               }
@@ -74,17 +82,17 @@
          "mctruthmode":22,
 	 "data":[
 		{
-		 "dtag":"MC_WGToENuG",
+		 "dtag":"MC8TeV_WGToENuG",
                  "xsec":114.7,
  		 "split":1
                 },
 		{
-		 "dtag":"MC_WGToMuNuG",
+		 "dtag":"MC8TeV_WGToMuNuG",
                  "xsec":114.6,
  		 "split":1
                 },
 		{
-		 "dtag":"MC_WGToTauNuG",
+		 "dtag":"MC8TeV_WGToTauNuG",
                  "xsec":104.6,
  		 "split":1
                 }
@@ -98,17 +106,17 @@
  	 "mctruthmode":22,
          "data":[
                 {
-                 "dtag":"MC_WToENu",
+                 "dtag":"MC8TeV_WToENu",
                  "split":1,
                  "xsec":12085.73
                 },
                 {
-                 "dtag":"MC_WToMuNu",
+                 "dtag":"MC8TeV_WToMuNu",
                  "split":1,
                  "xsec":12085.73
                 },
                 {
-                 "dtag":"MC_WToTauNu",
+                 "dtag":"MC8TeV_WToTauNu",
                  "split":1,
                  "xsec":12085.73
                 }
@@ -119,34 +127,35 @@
         "isdata":false,
 	"color":"400",
 	"lcolor":1,
+        "mctruthmode":22,	
 	"data":[
 	     {	
-		"dtag":"MC_QCDPt30to80",
+		"dtag":"MC8TeV_QCDPt30to80",
 		"xsec":74330000,
 		"br":[0.0621]
 	     },
 	     {	
-		"dtag":"MC_QCDPt80to170",
+		"dtag":"MC8TeV_QCDPt80to170",
 		"xsec":1191000,
 		"br":[0.1539]
 	     },
 	     {	
-		"dtag":"MC_QCDPt170to250",
+		"dtag":"MC8TeV_QCDPt170to250",
 		"xsec":30990,
 		"br":[0.148]
 	     },
 	     {	
-		"dtag":"MC_QCDPt250to350",
+		"dtag":"MC8TeV_QCDPt250to350",
 		"xsec":4250,
 		"br":[0.131]
 	     },
 	     {	
-		"dtag":"MC_QCDPt350toInf",
+		"dtag":"MC8TeV_QCDPt350toInf",
 		"xsec":810,
 		"br":[0.11]
 	     },
      	     {	
-		"dtag":"MC_QCDMuPt20toInf",
+		"dtag":"MC8TeV_QCDMuPt20toInf",
 		"xsec":364000000,
 		"br":[0.00037]
 	     }
@@ -160,65 +169,58 @@
  	"mctruthmode":22,
 	"data":[
 	     {	
-		"dtag":"MC_G_Pt-0to15_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-0to15_TuneZ2_7TeV_pythia6"],
-		"xsec":84200000,
+		"dtag":"MC8TeV_G_Pt-15to30_TuneZ2_7TeV_pythia6",
+		"patdir":[""],
+		"xsec":200061.7,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"MC_G_Pt-15to30_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-15to30_TuneZ2_7TeV_pythia6"],
-		"xsec":172000,
+		"dtag":"MC8TeV_G_Pt-30to50_TuneZ2_7TeV_pythia6",
+		"patdir":[""],
+		"xsec":19931.62,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"MC_G_Pt-30to50_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-30to50_TuneZ2_7TeV_pythia6"],
-		"xsec":16700,
+		"dtag":"MC8TeV_G_Pt-50to80_TuneZ2_7TeV_pythia6",
+		"patdir":[""],
+		"xsec":3322.309,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"MC_G_Pt-50to80_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-50to80_TuneZ2_7TeV_pythia6"],
-		"xsec":2720,
+		"dtag":"MC8TeV_G_Pt-80to120_TuneZ2_7TeV_pythia6",
+		"patdir":[""],
+		"xsec":558.2865,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"MC_G_Pt-80to120_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-80to120_TuneZ2_7TeV_pythia6"],
-		"xsec":447,
-		"br":[1.3],
-		"split":2
-	     },
-	     {	
-		"dtag":"MC_G_Pt-120to170_TuneZ2_7TeV_pythia6",
+		"dtag":"MC8TeV_G_Pt-120to170_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-120to170_TuneZ2_7TeV_pythia6"],
-		"xsec":84.2,
+		"xsec":108.0068,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"MC_G_Pt-170to300_TuneZ2_7TeV_pythia6",
+		"dtag":"MC8TeV_G_Pt-170to300_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-170to300_TuneZ2_7TeV_pythia6"],
-		"xsec":22.6,
+		"xsec":30.12207,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"MC_G_Pt-300to470_TuneZ2_7TeV_pythia6",
+		"dtag":"MC8TeV_G_Pt-300to470_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-300to470_TuneZ2_7TeV_pythia6"],
-		"xsec":1.49,
+		"xsec":2.138632,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
-		"dtag":"MC_G_Pt-470to800_TuneZ2_7TeV_pythia6",
+		"dtag":"MC8TeV_G_Pt-470to800_TuneZ2_7TeV_pythia6",
 		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-470to800_TuneZ2_7TeV_pythia6"],
-		"xsec":0.132,
+		"xsec":0.2119244,
 		"br":[1.3],
 		"split":2
 	     }
@@ -233,14 +235,14 @@
         "mctruthmode":22,
 	"data":[
                 {
-                  "dtag":"Data_Photon2012A",
+                  "dtag":"Data8TeV_Photon2012A",
                   "dset":"/Photon/Run2012A-PromptReco-v1/AOD",
 		  "aoddir":["path=/Photon/Run2012A-PromptReco-v1/AOD"],
                   "patdir":["/store/cmst3/user/psilva/Data2012/Photon-v2/2012A"],
 		  "split":2
 		},
                 {
-                  "dtag":"Data_Photon2012B",
+                  "dtag":"Data8TeV_Photon2012B",
                   "dset":"/SinglePhoton/Run2012B-PromptReco-v1/AOD",
 		  "aoddir":["path=/SinglePhoton/Run2012B-PromptReco-v1/AOD"],
                   "patdir":["/store/cmst3/user/psilva/Data2012/Photon-v2/2012B"],
