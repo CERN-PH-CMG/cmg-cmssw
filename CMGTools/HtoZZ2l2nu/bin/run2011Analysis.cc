@@ -415,10 +415,11 @@ int main(int argc, char* argv[])
   std::vector<double> dataPileupDistributionDouble = runProcess.getParameter< std::vector<double> >("datapileup");
   std::vector<float> dataPileupDistribution; for(unsigned int i=0;i<dataPileupDistributionDouble.size();i++){dataPileupDistribution.push_back(dataPileupDistributionDouble[i]);}
   std::vector<float> mcPileupDistribution;
-  bool needsPUfix( url.Contains("toZZto2L") );
+  //  bool useObservedPU( url.Contains("toZZto2L") );
+  bool useObservedPU(true);
   if(isMC){
     TString puDist("evAnalyzer/h2zz/pileuptrue");
-    if(needsPUfix) puDist="evAnalyzer/h2zz/pileup";
+    if(useObservedPU) puDist="evAnalyzer/h2zz/pileup";
     TH1F* histo = (TH1F *) file->Get(puDist);
     if(!histo)std::cout<<"pileup histogram is null!!!\n";
     for(int i=1;i<=histo->GetNbinsX();i++){mcPileupDistribution.push_back(histo->GetBinContent(i));}
@@ -508,9 +509,9 @@ int main(int argc, char* argv[])
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
       if(isMC){
-        weight            = LumiWeights->weight(needsPUfix ? ev.ngenITpu : ev.ngenTruepu);
-        TotalWeight_plus  = PShiftUp->ShiftWeight(needsPUfix ? ev.ngenITpu : ev.ngenTruepu);
-        TotalWeight_minus = PShiftDown->ShiftWeight(needsPUfix ? ev.ngenITpu : ev.ngenTruepu);
+        weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
+        TotalWeight_plus  = PShiftUp->ShiftWeight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
+        TotalWeight_minus = PShiftDown->ShiftWeight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
 	if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
         if(isMC_GG) {
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
