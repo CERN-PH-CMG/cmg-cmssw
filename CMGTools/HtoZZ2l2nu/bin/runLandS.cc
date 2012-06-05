@@ -582,7 +582,8 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 
       //observations
       fprintf(pFile, "bin 1\n");
-      fprintf(pFile, "Observation %.0f\n",dci.obs[RateKey_t("obs",dci.ch[i-1])]);
+      fprintf(pFile, "Observation %.0f\n",round(dci.obs[RateKey_t("obs",dci.ch[i-1])]));
+      printf("OBS = %f\n",dci.obs[RateKey_t("obs",dci.ch[i-1])]);
       fprintf(pFile, "-------------------------------\n");
 
       fprintf(pFile,"%45s ", "bin");
@@ -642,14 +643,14 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
          fprintf(pFile,"%35s %10s ", "pdf_gg", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
             if(dci.procs[j-1].Contains("ggh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_pdfp->Eval(mass,NULL,"S"),2) + pow(TG_pdfm->Eval(mass,NULL,"S"),2)));
-            }else if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0384);}else{fprintf(pFile,"%6f ",1.0477);}
-            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.1360);}else{fprintf(pFile,"%6f ",1.0552);}
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
          fprintf(pFile,"%35s %10s ", "pdf_qqbar", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
             if(dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_pdfp->Eval(mass,NULL,"S"),2) + pow(TG_pdfm->Eval(mass,NULL,"S"),2)));
+            }else if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0384);}else{fprintf(pFile,"%6f ",1.0477);}
+            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.1360);}else{fprintf(pFile,"%6f ",1.0552);}
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
@@ -667,14 +668,14 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 
          fprintf(pFile,"%35s %10s ", "QCDscale_ggVV", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-                  if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0716);}else{fprintf(pFile,"%6f ",1.0617);}
-            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.1440);}else{fprintf(pFile,"%6f ",1.0847);}
-            }else{fprintf(pFile,"%6s ","-");}
+            fprintf(pFile,"%6s ","-");
          }fprintf(pFile,"\n");
 
          fprintf(pFile,"%35s %10s ", "QCDscale_VV", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            fprintf(pFile,"%6s ","-");
+                  if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0716);}else{fprintf(pFile,"%6f ",1.0617);}
+            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.1440);}else{fprintf(pFile,"%6f ",1.0847);}
+            }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
          fprintf(pFile,"%35s %10s ", "CMS_hzz2l2nu_jetbinning", "lnN");
@@ -1293,9 +1294,10 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
            TH2* gjets2Dshape  = (TH2*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+mainHisto);
            TH1* gjets1Dshape  = gjets2Dshape->ProjectionY("tmpName",indexcut_,indexcut_);
            shapeChan_SI.bckg[ibckg]->SetTitle(DYProcName + " (data)");    
-           for(int i=0;i<shapeChan_SI.bckg[ibckg]->GetNbinsX();i++){
+           for(int i=0;i<shapeChan_SI.bckg[ibckg]->GetNbinsX();i++){             
               double val = gjets1Dshape->GetBinContent(i);
               double err = gjets1Dshape->GetBinError(i);
+              if(val<0)val=0;
               double newval = rescaleFactor*val;
               double newerr = rescaleFactor*err;
               shapeChan_SI.bckg[ibckg]->SetBinContent(i, newval);  
@@ -1304,6 +1306,7 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
            delete gjets1Dshape;
 
            shapeChan_SI.bckg[ibckg]->Scale(DDRescale);
+
 
 
            val  = shapeChan_SI.bckg[ibckg]->IntegralAndError(1,shapeChan_SI.bckg[ibckg]->GetXaxis()->GetNbins(),valerr);
