@@ -98,7 +98,8 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
 void doWZSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto);
 void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto);
 
-void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, JSONWrapper::Object &Root);
+//void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, JSONWrapper::Object &Root);
+void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allShapesL, map<TString, Shape_t>& allShapes, map<TString, Shape_t>& allShapesR, TString mainHisto);
 
 
 void setTGraph(TString proc, TString suffix);
@@ -131,8 +132,8 @@ TString postfix="";
 TString systpostfix="";
 
 int indexvbf = -1;
-int indexcut   = -1;
-int mass=-1; 
+int indexcut   = -1, indexcutL=-1, indexcutR=-1;
+int mass=-1, massL=-1, massR=-1;
 
 void printHelp()
 {
@@ -140,9 +141,13 @@ void printHelp()
   printf("--in        --> input file with from plotter\n");
   printf("--json      --> json file with the sample descriptor\n");
   printf("--histo     --> name of histogram to be used\n");
-  printf("--index     --> index of selection to be used (Xbin in histogram to be used)\n");
   printf("--indexvbf  --> index of selection to be used for the vbf bin (if unspecified same as --index)\n");
+  printf("--index     --> index of selection to be used (Xbin in histogram to be used)\n");
+  printf("--indexL    --> index of selection to be used (Xbin in histogram to be used) used for interpolation\n");
+  printf("--indexR    --> index of selection to be used (Xbin in histogram to be used) used for interpolation\n");
   printf("--m         --> higgs mass to be considered\n");
+  printf("--mL        --> higgs mass on the left  of the mass to be considered (used for interpollation\n");
+  printf("--mR        --> higgs mass on the right of the mass to be considered (used for interpollation\n");
   printf("--syst      --> use this flag if you want to run systematics, default is no systematics\n");
   printf("--shape     --> use this flag if you want to run shapeBased analysis, default is cut&count\n");
   printf("--subNRB    --> use this flag if you want to subtract non-resonant-backgounds similarly to what was done in 2011 (will also remove H->WW)\n");
@@ -197,10 +202,14 @@ int main(int argc, char* argv[])
     else if(arg.find("--blind")    !=string::npos) { blindData=true; printf("blindData = True\n");}
     else if(arg.find("--closure")  !=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
     else if(arg.find("--indexvbf") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexvbf); i++; printf("indexVBF = %i\n", indexvbf);}
+    else if(arg.find("--indexL")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexcutL); i++; printf("indexL = %i\n", indexcutL);}
+    else if(arg.find("--indexR")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexcutR); i++; printf("indexR = %i\n", indexcutR);}
     else if(arg.find("--index")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexcut); i++; printf("index = %i\n", indexcut);}
     else if(arg.find("--in")       !=string::npos && i+1<argc)  { inFileUrl = argv[i+1];  i++;  printf("in = %s\n", inFileUrl.Data());  }
     else if(arg.find("--json")     !=string::npos && i+1<argc)  { jsonFile  = argv[i+1];  i++;  printf("json = %s\n", jsonFile.Data()); }
     else if(arg.find("--histo")    !=string::npos && i+1<argc)  { histo     = argv[i+1];  i++;  printf("histo = %s\n", histo.Data()); }
+    else if(arg.find("--mL")       !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&massL ); i++; printf("massL = %i\n", massL);}
+    else if(arg.find("--mR")       !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&massR ); i++; printf("massR = %i\n", massR);}
     else if(arg.find("--m")        !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&mass ); i++; printf("mass = %i\n", mass);}
     else if(arg.find("--bins")     !=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");printf("bins are : ");while (pch!=NULL){printf(" %s ",pch); AnalysisBins.push_back(pch);  pch = strtok(NULL,",");}printf("\n"); i++; }
     else if(arg.find("--channels") !=string::npos && i+1<argc)  { char* pch = strtok(argv[i+1],",");printf("channels are : ");while (pch!=NULL){printf(" %s ",pch); Channels.push_back(pch);  pch = strtok(NULL,",");}printf("\n"); i++; }
@@ -760,6 +769,8 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   
   //get the shapes for each channel
   map<TString, Shape_t> allShapes;
+  map<TString, Shape_t> allShapesL;
+  map<TString, Shape_t> allShapesR;
   TString ch[]={"mumu","ee","emu"};
   const size_t nch=sizeof(ch)/sizeof(TString);
   std::vector<TString> sh;
@@ -774,6 +785,15 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
        if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf;}
         for(size_t j=0; j<nsh; j++){
 	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcut_,Root);
+             if(indexcutL>=0 && indexcutR>=0){
+                if(indexvbf>=0 && AnalysisBins[b] =="vbf"){
+                   allShapesL[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexvbf,Root);
+                   allShapesR[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexvbf,Root);
+                }else{
+                   allShapesL[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcutL,Root);
+                   allShapesR[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcutR,Root);
+                }
+             }
         }
      }
   }
@@ -802,7 +822,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   if(blindData)BlindData(selCh,allShapes,histo);
 
   //interpollate signal sample if desired mass point is not available
-  SignalInterpolation(selCh,allShapes,histo, Root);
+  SignalInterpolation(selCh,allShapesL, allShapes, allShapesR, histo);
 
   //print event yields from the mt shapes
   if(runSystematics)getYieldsFromShape(selCh,allShapes,histo);
@@ -1426,7 +1446,7 @@ void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TS
     }}
 }
 
-
+/*
 void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, JSONWrapper::Object &Root){    
    std::vector<TString> signalTypes;
    signalTypes.push_back("ggH");
@@ -1505,6 +1525,74 @@ void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& all
 
    }
 }
+*/
+
+void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allShapesL, map<TString, Shape_t>& allShapes, map<TString, Shape_t>& allShapesR, TString mainHisto){
+   if(massL<0 || massR<0 || massL==massR)return;
+
+   std::vector<TString> signalTypes;
+   signalTypes.push_back("ggH");
+   signalTypes.push_back("qqH");
+   for(unsigned int t=0;t<signalTypes.size();t++){
+      printf("MASS: %i will be interpolated from %i and %i for %s\n",mass, massL,massR,signalTypes[t].Data());
+
+      TString nameL = signalTypes[t]+"(";nameL+=massL;
+      TString nameR = signalTypes[t]+"(";nameR+=massR;
+
+      for(size_t i=0;i<selCh.size();i++){
+      for(size_t b=0; b<AnalysisBins.size(); b++){
+           Shape_t& shapeL = allShapesL.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
+           Shape_t& shape  = allShapes .find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
+           Shape_t& shapeR = allShapesR.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
+
+
+           int indexL=0, indexR=0;
+           for(unsigned int i=0;i<shapeL.signal.size();i++){if(TString(shapeL.signal[i]->GetTitle()).BeginsWith(nameL))indexL=i;}
+           for(unsigned int i=0;i<shapeR.signal.size();i++){if(TString(shapeR.signal[i]->GetTitle()).BeginsWith(nameR))indexR=i;}
+
+           double Ratio = (mass - massL); Ratio/=(massR - massL);
+
+           //centralValue
+           TH1* histoL = (TH1*) shapeL.signal[indexL]->Clone("tmpLeft");   histoL->Scale(1.0/shapeL.xsections[histoL->GetTitle()]);
+           TH1* histoR = (TH1*) shapeR.signal[indexR]->Clone("tmpRight");  histoR->Scale(1.0/shapeR.xsections[histoR->GetTitle()]);           
+           TString newName = signalTypes[t]+"("; newName+= mass;
+           TH1* histoNew = (TH1*)histoL->Clone(TString(histoL->GetTitle()).ReplaceAll(nameL,newName));         
+           histoNew->SetTitle(histoNew->GetName());
+           histoNew->Scale(1-Ratio);
+           histoNew->Add(histoR,Ratio);
+
+           setTGraph(histoNew->GetTitle(), systpostfix );
+           double XSection = TG_xsec->Eval(mass,NULL,"S");
+           histoNew->Scale(XSection);
+           histoNew->SetBinError(0,0.15*histoNew->Integral());
+           shape.signal.insert(shape.signal.begin()+indexL,histoNew);
+
+           
+           //systematics
+           std::vector<std::pair<TString, TH1*> > varsLeft  = shapeL.signalVars[histoL->GetTitle()];
+           std::vector<std::pair<TString, TH1*> > varsRight = shapeR.signalVars[histoR->GetTitle()];
+           std::vector<std::pair<TString, TH1*> > varsNew;
+           for(size_t v=0;v<varsLeft.size();v++){
+              TH1* histoSystL = (TH1*) varsLeft [v].second->Clone("tmpSystLeft");    histoSystL->Scale(1.0/shapeL.xsections[histoL->GetTitle()]);
+              TH1* histoSystR = (TH1*) varsRight[v].second->Clone("tmpSystRight");   histoSystR->Scale(1.0/shapeR.xsections[histoR->GetTitle()]);
+              TH1* histoSystNew   = (TH1*)histoSystL->Clone(TString(histoSystL->GetTitle()).ReplaceAll(nameL,newName));
+              histoSystNew->SetTitle(histoSystNew->GetName());
+              histoSystNew->Scale(1-Ratio);
+              histoSystNew->Add(histoSystR,Ratio);
+              histoSystNew->Scale(XSection);
+              varsNew.push_back(std::make_pair<TString, TH1*>(varsLeft[v].first,histoSystNew));
+              delete histoSystL;
+              delete histoSystR;
+           }
+           shape.signalVars[histoNew->GetTitle()] = varsNew;
+
+           delete histoL;
+           delete histoR;
+      }}
+
+   }
+}
+
 
 
 
