@@ -306,7 +306,7 @@
            "marker":20,
            "data":[
                 {
-	         "dtag":"Data_DoubleElectron2012A",
+	         "dtag":"Data8TeV_DoubleElectron2012A",
 		 "dset":"/DoubleElectron/Run2012A-PromptReco-v1/AOD",
 		 "aoddir":["path=/DoubleElectron/Run2012A-PromptReco-v1/AOD"],
 	         "patdir2":["path=/DoubleElectron/wangjian-HZZ2l2v_Run2012A-b2c4843cc0f0fce2cad58e298627fbaa/USER"],
@@ -314,7 +314,7 @@
                  "split":2
                 },
                 {
-	         "dtag":"Data_DoubleMu2012A",
+	         "dtag":"Data8TeV_DoubleMu2012A",
 		 "dset":"/DoubleMu/Run2012A-PromptReco-v1/AOD",
 		 "aoddir":["path=/DoubleMu/Run2012A-PromptReco-v1/AOD"],
 	         "patdir2":["path=/DoubleMu/wangjian-HZZ2l2v_Run2012A-b2c4843cc0f0fce2cad58e298627fbaa/USER"],
@@ -365,6 +365,7 @@
                  "dtag":"Data8TeV_MuEG2012B",
                  "dset":"/MuEG/Run2012B-PromptReco-v1/AOD",
 		 "aoddir":["path=/MuEG/Run2012B-PromptReco-v1/AOD"],
+	         "patdir2":["path="],
 		 "patdir":["/store/cmst3/user/psilva/Data2012/MuEG-v6/2012B"],
                  "split":2
                 }
