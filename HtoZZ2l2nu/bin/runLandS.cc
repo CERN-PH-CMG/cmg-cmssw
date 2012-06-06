@@ -1009,9 +1009,9 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
        syst.ReplaceAll("up","Up");
 
        if(syst==""){syst="";
-       }else if(syst.BeginsWith("_jes")){syst="_CMS_scale_j";
-       }else if(syst.BeginsWith("_jer")){syst="_CMS_res_j";
-       }else if(syst.BeginsWith("_pu" )){syst="_CMS_pu";
+       }else if(syst.BeginsWith("_jes")){syst.ReplaceAll("_jes","_CMS_scale_j");
+       }else if(syst.BeginsWith("_jer")){syst.ReplaceAll("_jer","_CMS_res_j");
+       }else if(syst.BeginsWith("_pu" )){syst.ReplaceAll("_pu", "_CMS_pu");
        }else{   syst="_CMS_hzz2l2nu"+syst;
        }
 

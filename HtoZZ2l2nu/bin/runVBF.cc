@@ -2,6 +2,8 @@
 #include <boost/shared_ptr.hpp>
 #include "Math/GenVector/Boost.h"
 
+#include "EGamma/EGammaAnalysisTools/interface/EGammaCutBasedEleId.h"
+
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
 #include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
@@ -49,6 +51,11 @@ int main(int argc, char* argv[])
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
 
+  TString cmsswRel(gSystem->Getenv("CMSSW_BASE"));
+  bool use2011Id(cmsswRel.Contains("4_4_"));
+  cout << cmsswRel << endl;
+  cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
+
   // configure the process
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
   TString url=runProcess.getParameter<std::string>("input");
@@ -94,7 +101,7 @@ int main(int argc, char* argv[])
   bool isMC_GG  = isMC && ( string(url.Data()).find("GG" )  != string::npos);
   bool isMC_VBF = isMC && ( string(url.Data()).find("VBF")  != string::npos);
   std::vector<TGraph *> hWeightsGrVec;
-  if(isMC_GG){
+  if(isMC_GG && use2011Id){
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     GGString = string(url.Data()).substr(GGStringpos);
@@ -305,7 +312,7 @@ int main(int argc, char* argv[])
         weight = LumiWeights->weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp->ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown->ShiftWeight( ev.ngenITpu );
-        if(isMC_VBF){ vbfweight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=vbfweight;  }
+        if(isMC_VBF && use2011Id){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
         if(isMC_GG)  {
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
           weight *= ev.hptWeights[0];
@@ -394,7 +401,69 @@ int main(int argc, char* argv[])
 	bool pass3dLeptonVeto(true); int nExtraLep(0); for(unsigned int i=2;i<phys.leptons.size();i++) { if(phys.leptons[i].pt()>10){ nExtraLep++; pass3dLeptonVeto=false;} }
 	bool passBveto(nbtags==0);
 	bool passBaseMet(zvv.pt()>70);
-     
+        bool passIdAndIso(true);
+
+      //check alternative selections for the dilepton
+      for(int ilep=0; ilep<2; ilep++)	{
+	  TString lepStr( fabs(phys.leptons[ilep].id)==13 ? "mu" : "e");
+	  
+	  //generator level matching
+	  int matchid(0);
+	  LorentzVector genP4(0,0,0,0);
+	  for(size_t igl=0;igl<phys.genleptons.size(); igl++){
+	      if(deltaR(phys.genleptons[igl],phys.leptons[ilep])>0.1) continue;
+	      genP4=phys.genleptons[igl];
+	      matchid=phys.genleptons[igl].id;
+	  }
+	  
+	  //id and isolation
+	  int lpid=phys.leptons[ilep].pid;
+	  float relIso2011    = phys.leptons[ilep].relIsoRho(ev.rho);
+	  float relIso = (lepStr=="mu") ? 
+	    phys.leptons[ilep].pfRelIsoDbeta(): //muPFRelIsoCorrected2012(ev.rho25Neut):
+	    phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho);
+	  std::vector<int> passIds;
+	  std::map<int,bool> passIsos;
+	  bool hasGoodId(false), isIso(false);
+	  if(fabs(phys.leptons[ilep].id)==13)
+	    {
+	      if( hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) )    { passIds.push_back(0); passIsos[0]=(relIso<0.2); if(!use2011Id) { hasGoodId=true; isIso=passIsos[0]; } }
+	      if( hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) )    { passIds.push_back(1); passIsos[1]=(relIso<0.2); }
+	      if( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) { passIds.push_back(2); passIsos[2]=(relIso2011<0.15); if(use2011Id) {hasGoodId=true; isIso=passIsos[2];} }
+	      if( hasObjectId(ev.mn_idbits[lpid], MID_SOFT) )     { passIds.push_back(3); passIsos[3]=true;}
+	    }
+	  else
+	    {
+	      int wps[]={EgammaCutBasedEleId::LOOSE,EgammaCutBasedEleId::MEDIUM, EID_VBTF2011, EgammaCutBasedEleId::VETO};
+	      for(int iwp=0; iwp<4; iwp++)
+		{
+		  if(iwp==2 && hasObjectId(ev.en_idbits[lpid], EID_VBTF2011)) 
+		    { 
+		      passIds.push_back(2); passIsos[2]=(relIso2011<0.10); 
+		      if(use2011Id) { hasGoodId=true; isIso=passIsos[2]; } 
+		    }
+		  else
+		    {
+		      bool passWp = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::WorkingPoint(wps[iwp]),
+								(fabs(phys.leptons[ilep].eta())<1.4442),
+								phys.leptons[ilep].pt(), phys.leptons[ilep].eta(),
+								ev.en_detain[lpid],  ev.en_dphiin[lpid], ev.en_sihih[lpid], ev.en_hoe[lpid],
+								ev.en_ooemoop[lpid], phys.leptons[ilep].d0, phys.leptons[ilep].dZ,
+								0., 0., 0.,
+								!hasObjectId(ev.en_idbits[lpid], EID_CONVERSIONVETO),0,ev.rho);
+		      if(passWp) { 
+			passIds.push_back(iwp); 
+			passIsos[iwp]=(relIso<0.15);
+			if(wps[iwp]==EgammaCutBasedEleId::MEDIUM && !use2011Id){  hasGoodId=true; isIso=passIsos[iwp]; }
+		      }
+		    }
+		}
+	    }
+	  if(!hasGoodId)  passIdAndIso=false;
+	  else if(!isIso) passIdAndIso=false;     
+        }
+        if(!passIdAndIso)continue;
+ 
     
 	//##############################################  
 	//########         GENERAL PLOTS        ########                                                                                                                  
