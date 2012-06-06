@@ -34,6 +34,7 @@ string cutIndexStr="";
 double iLumi = 2007;
 double iEcm=8;
 bool showChi2 = false;
+bool noLog=false; 
 bool do2D  = true;
 bool do1D  = true;
 bool doTex = true;
@@ -491,7 +492,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);
    t1->Draw();
    t1->cd();
-   t1->SetLogy(true);
+   if(!noLog) t1->SetLogy(true);
 
    TLegend* legA  = new TLegend(0.845,0.2,0.99,0.99, "NDC"); 
    //   TLegend* legA  = new TLegend(0.51,0.93,0.67,0.75, "NDC"); 
@@ -880,6 +881,7 @@ int main(int argc, char* argv[]){
         printf("--only    --> processing only the objects containing the following argument in their name\n");
         printf("--index   --> will do the projection on that index for histos of type cutIndex\n");
         printf("--chi2    --> show the data/MC chi^2\n"); 
+	printf("--noLog   --> use linear scale\n");
         printf("--no1D   --> Skip processing of 1D objects\n");
         printf("--no2D   --> Skip processing of 2D objects\n");
         printf("--noTex  --> Do not create latex table (when possible)\n");
@@ -903,6 +905,7 @@ int main(int argc, char* argv[]){
      if(arg.find("--only"   )!=string::npos && i+1<argc){ objectSearchKey = argv[i+1]; i++;    }
      if(arg.find("--index"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&cutIndex); i++; onlyCutIndex=(cutIndex>=0); printf("index = %i\n", cutIndex);  }
      if(arg.find("--chi2"  )!=string::npos){ showChi2 = true;    }
+     if(arg.find("--noLog")!=string::npos){ noLog = true;    }
      if(arg.find("--no2D"  )!=string::npos){ do2D = false;    }
      if(arg.find("--no1D"  )!=string::npos){ do1D = false;    }
      if(arg.find("--noTex" )!=string::npos){ doTex= false;    }
