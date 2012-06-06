@@ -904,7 +904,7 @@ int main(int argc, char* argv[])
 			      hardpt=hardSyst.pt();
 			      dphijj=deltaPhi(aGoodIdJets[0].phi(),aGoodIdJets[1].phi());
 			      double maxEta=max(aGoodIdJets[0].eta(),aGoodIdJets[1].eta());
-			      double minEta=max(aGoodIdJets[0].eta(),aGoodIdJets[1].eta());
+			      double minEta=min(aGoodIdJets[0].eta(),aGoodIdJets[1].eta());
 			      float avgEtajj=0.5*(maxEta+minEta);
 			      float detajj=maxEta-minEta;
 			      mon.fillHisto("pfvbfcandjetpt",     tags_full, fabs(aGoodIdJets[0].pt()),weight);
