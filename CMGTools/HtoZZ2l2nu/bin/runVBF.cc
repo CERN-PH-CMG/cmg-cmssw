@@ -307,7 +307,7 @@ int main(int argc, char* argv[])
       float weight = 1.0;
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
-      double vbfweight = 1.0;
+      double signalWeight = 1.0;
       if(isMC){
         weight = LumiWeights->weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp->ShiftWeight( ev.ngenITpu );
@@ -322,7 +322,7 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight*TotalWeight_minus);
       Hcutflow->Fill(4,weight*TotalWeight_plus);
-      Hcutflow->Fill(5,vbfweight);
+      Hcutflow->Fill(5,signalWeight);
 
       //analyze the leptons
       LorentzVector lep1=phys.leptons[0];

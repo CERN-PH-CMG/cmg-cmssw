@@ -595,8 +595,11 @@ int main(int argc, char* argv[])
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_SOFT) )     { passIds.push_back(3); passIsos[3]=true;}
 	      if(use2011Id) 
 		{
-		  llScaleFactor *= muonScaleFactor(phys.leptons[ilep].pt(),phys.leptons[ilep].eta());
-		  llTriggerEfficiency *= muonTriggerEfficiency(phys.leptons[ilep].pt(),phys.leptons[ilep].eta());
+		  try{
+		    llScaleFactor *= muonScaleFactor(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()));
+		    llTriggerEfficiency *= muonTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()));
+		  }catch(std::string &e){
+		  }
 		}
 	    }
 	  else
@@ -610,9 +613,12 @@ int main(int argc, char* argv[])
 		      if(use2011Id) 
 			{ 
 			  hasGoodId=true; isIso=passIsos[2]; 
-			  llScaleFactor *= electronScaleFactor(phys.leptons[ilep].pt(),phys.leptons[ilep].eta());
-			  llTriggerEfficiency *= electronTriggerEfficiency(phys.leptons[ilep].pt(),phys.leptons[ilep].eta());
-			} 
+			  try{
+			    llScaleFactor *= electronScaleFactor(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()));
+			    llTriggerEfficiency *= electronTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()));
+			  } catch(std::string &e){
+			  }
+			}
 		    }
 		  else
 		    {
@@ -698,11 +704,12 @@ int main(int argc, char* argv[])
       
       //select dilepton
       if(!passIdAndIso) continue;
-      if(use2011Id) weight *= llScaleFactor*llTriggerEfficiency;
+      if(isMC && use2011Id) weight *= llScaleFactor*llTriggerEfficiency;
+
       tags_full.push_back(tag_cat);
       mon.fillHisto("eventflow",tags_full,0,weight);
       mon.fillHisto("zmass",       tags_full, zll.mass(), weight);  
-      
+  
       //now run pre-selection
       bool pass3dLeptonVeto(true);
       bool passBveto(true);
@@ -902,6 +909,7 @@ int main(int argc, char* argv[])
 			      mon.fillHisto("pfvbfcandjeteta",     tags_full, fabs(aGoodIdJets[0].eta()),weight);
 			      mon.fillHisto("pfvbfcandjeteta",     tags_full, fabs(aGoodIdJets[1].eta()),weight);
 			      mon.fillHisto("pfvbfcandjetdeta",     tags_full, fabs(detajj),weight);
+			      
 			      if(fabs(detajj)>4.0)
 				{
 				  mon.fillHisto("pfvbfcandzeppenfeld",     tags_full, fabs(aGoodIdJets[0].eta()-avgEtajj)/fabs(detajj),weight);
@@ -909,11 +917,10 @@ int main(int argc, char* argv[])
 				  mon.fillHisto("pfvbfmjj",     tags_full, vbfSyst.mass(),weight);
 				  mon.fillHisto("pfvbfmjjvsdeta",     tags_full, vbfSyst.mass(),fabs(detajj),weight);
 				  mon.fillHisto("pfvbfmjjvshardpt",     tags_full, vbfSyst.mass(),hardpt,weight);
-				  if(vbfSyst.mass()>500)
-				    mon.fillHisto("pfvbfhardpt",     tags_full, hardpt,weight);
+				  if(vbfSyst.mass()>500)    mon.fillHisto("pfvbfhardpt",     tags_full, hardpt,weight);
 				}
 			    }
-			     
+			  
 
 			  //
 			  //SIGNAL REGION NOW : PROCEED WITH CARE
@@ -924,8 +931,10 @@ int main(int argc, char* argv[])
 			  if(zvvs[0].pt()>70) 
 			    {
 			      mon.fillHisto("eventflow",tags_full,6,weight);
+			      
 			      mon.fillHisto("pfvbfcandjetdphi",     tags_full, fabs(dphijj),weight);
 			      mon.fillHisto("pfvbfhardptfinal",     tags_full, hardpt,weight);
+			     
 			    }
 
 			  METUtils::stRedMET aRedMetOut; 
@@ -964,8 +973,6 @@ int main(int argc, char* argv[])
 	    }//end passZpt
 
 	}//end passZmass
-
-
 
 
       //
@@ -1008,7 +1015,7 @@ int main(int argc, char* argv[])
 	
 	bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
 	if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
-
+	
 	//fill shapes
 	for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
 	  
@@ -1035,7 +1042,7 @@ int main(int argc, char* argv[])
 	    }
 	}
       }
-  }
+	}
 
   printf("\n"); 
   file->Close();
