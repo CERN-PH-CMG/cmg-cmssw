@@ -294,10 +294,11 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(1,"=0 jets");
       h->GetXaxis()->SetBinLabel(2,"=1 jets");
       h->GetXaxis()->SetBinLabel(3,"#geq 2 jets");
-      mon.addHistogram( new TH1F(jetTypes[i]+"vbfmjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",50,0,2000) );
-      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcandjetdphi"       , ";#Delta#phi;Events",50,0,3.5) );
-      mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvsdeta"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];|#Delta #eta|;Events",50,0,2000,50,0,10) );
-      mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvshardpt"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Hard p_{T} [GeV/c];Events",50,0,2000,25,0,250) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfhtcjv"       , ";Central jet H_{T} [GeV/c];Events",50,0,250) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfmjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",40,0,2000) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcandjetdphi"       , ";#Delta#phi;Events",20,0,3.5) );
+      mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvsdeta"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];|#Delta #eta|;Events",40,0,2000,50,0,10) );
+      mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvshardpt"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Hard p_{T} [GeV/c];Events",40,0,2000,25,0,250) );
     }
 
 
@@ -901,27 +902,40 @@ int main(int argc, char* argv[])
 			      LorentzVector vbfSyst=aGoodIdJets[0]+aGoodIdJets[1];
 			      LorentzVector hardSyst=vbfSyst+zvvs[0]+zll;
 			      hardpt=hardSyst.pt();
-			      float detajj=aGoodIdJets[0].eta()-aGoodIdJets[1].eta();
 			      dphijj=deltaPhi(aGoodIdJets[0].phi(),aGoodIdJets[1].phi());
-			      float avgEtajj=0.5*(aGoodIdJets[0].eta()+aGoodIdJets[1].eta());
+			      double maxEta=max(aGoodIdJets[0].eta(),aGoodIdJets[1].eta());
+			      double minEta=max(aGoodIdJets[0].eta(),aGoodIdJets[1].eta());
+			      float avgEtajj=0.5*(maxEta+minEta);
+			      float detajj=maxEta-minEta;
 			      mon.fillHisto("pfvbfcandjetpt",     tags_full, fabs(aGoodIdJets[0].pt()),weight);
 			      mon.fillHisto("pfvbfcandjetpt",     tags_full, fabs(aGoodIdJets[1].pt()),weight);
-			      mon.fillHisto("pfvbfcandjeteta",     tags_full, fabs(aGoodIdJets[0].eta()),weight);
-			      mon.fillHisto("pfvbfcandjeteta",     tags_full, fabs(aGoodIdJets[1].eta()),weight);
+			      mon.fillHisto("pfvbfcandjeteta",     tags_full, fabs(maxEta),weight);
+			      mon.fillHisto("pfvbfcandjeteta",     tags_full, fabs(minEta),weight);
 			      mon.fillHisto("pfvbfcandjetdeta",     tags_full, fabs(detajj),weight);
-			      
+			      mon.fillHisto("pfvbfcandzeppenfeld",     tags_full, fabs(maxEta-avgEtajj)/fabs(detajj),weight);
+			      mon.fillHisto("pfvbfcandzeppenfeld",     tags_full, fabs(minEta-avgEtajj)/fabs(detajj),weight);			      
 			      if(fabs(detajj)>4.0)
 				{
-				  mon.fillHisto("pfvbfcandzeppenfeld",     tags_full, fabs(aGoodIdJets[0].eta()-avgEtajj)/fabs(detajj),weight);
-				  mon.fillHisto("pfvbfcandzeppenfeld",     tags_full, fabs(aGoodIdJets[1].eta()-avgEtajj)/fabs(detajj),weight);
 				  mon.fillHisto("pfvbfmjj",     tags_full, vbfSyst.mass(),weight);
 				  mon.fillHisto("pfvbfmjjvsdeta",     tags_full, vbfSyst.mass(),fabs(detajj),weight);
 				  mon.fillHisto("pfvbfmjjvshardpt",     tags_full, vbfSyst.mass(),hardpt,weight);
-				  if(vbfSyst.mass()>500)    mon.fillHisto("pfvbfhardpt",     tags_full, hardpt,weight);
+				  if(vbfSyst.mass()>500) 
+				    {
+				      mon.fillHisto("pfvbfhardpt",     tags_full, hardpt,weight);
+				      int ncjv(0);
+				      float htcjv(0);
+				      for(size_t iotherjet=2; iotherjet<aGoodIdJets.size(); iotherjet++)
+					{
+					  if(aGoodIdJets[iotherjet].pt()<30 || aGoodIdJets[iotherjet].eta()<minEta || aGoodIdJets[iotherjet].eta()>maxEta) continue;
+					  htcjv+= aGoodIdJets[iotherjet].pt();
+					  ncjv++;
+					}
+				      mon.fillHisto("pfvbfcjv",tags_full,ncjv,weight);
+				      mon.fillHisto("pfvbfhtcjv",tags_full,htcjv,weight);
+				    }
 				}
 			    }
 			  
-
 			  //
 			  //SIGNAL REGION NOW : PROCEED WITH CARE
 			  //
