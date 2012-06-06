@@ -14,6 +14,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
+#include "CMGTools/HtoZZ2l2nu/interface/EfficiencyMap.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -219,6 +220,7 @@ int main(int argc, char* argv[])
     }
   
   mon.addHistogram( new TH1F( "nvtx",";Vertices;Events",50,0,50) ); 
+  mon.addHistogram( new TH1F( "nvtxraw",";Vertices;Events",50,0,50) ); 
   mon.addHistogram( new TH1F( "rho",";#rho;Events",50,0,25) ); 
   mon.addHistogram( new TH1F( "rho25",";#rho(#eta<2.5);Events",50,0,25) ); 
 
@@ -281,6 +283,21 @@ int main(int argc, char* argv[])
 	} 
       mon.addHistogram( new TH2F("n"+jetTypes[i]+"jetspuidloosevspu", ";Pileup interactions;Jet multiplicity (p_{T}>30 GeV/c);Events",50,0,50,5,0,5) );
       mon.addHistogram( new TH2F("n"+jetTypes[i]+"jetspuidmediumvspu",";Pileup interactions;Jet multiplicity (p_{T}>30 GeV/c);Events",50,0,50,5,0,5) );  
+
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcandjeteta"       , ";#eta;Jets",50,0,5) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcandjetdeta"       , ";|#Delta #eta|;Jets",50,0,10) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcandjetpt"       , ";p_{T} [GeV/c];Jets",50,0,250) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcandzeppenfeld"       , ";|Zeppenfeld variable|;Events",50,0,5) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfhardpt"       , ";Hard p_{T} [GeV/c];Events",25,0,250) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfhardptfinal"       , ";Hard p_{T} [GeV/c];Events",25,0,250) );
+      h=mon.addHistogram( new TH1F(jetTypes[i]+"vbfcjv"       , ";Central jet count;Events",3,0,3) );
+      h->GetXaxis()->SetBinLabel(1,"=0 jets");
+      h->GetXaxis()->SetBinLabel(2,"=1 jets");
+      h->GetXaxis()->SetBinLabel(3,"#geq 2 jets");
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfmjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",50,0,2000) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcandjetdphi"       , ";#Delta#phi;Events",50,0,3.5) );
+      mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvsdeta"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];|#Delta #eta|;Events",50,0,2000,50,0,10) );
+      mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvshardpt"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Hard p_{T} [GeV/c];Events",50,0,2000,25,0,250) );
     }
 
 
@@ -546,6 +563,7 @@ int main(int argc, char* argv[])
       bool passZpt(zll.pt()>55);
 
       //check alternative selections for the dilepton
+      double llScaleFactor(1.0),llTriggerEfficiency(1.0);
       for(int ilep=0; ilep<2; ilep++)
 	{
 	  TString lepStr( fabs(phys.leptons[ilep].id)==13 ? "mu" : "e");
@@ -575,6 +593,11 @@ int main(int argc, char* argv[])
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) )    { passIds.push_back(1); passIsos[1]=(relIso<0.2); }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) { passIds.push_back(2); passIsos[2]=(relIso2011<0.15); if(use2011Id) {hasGoodId=true; isIso=passIsos[2];} }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_SOFT) )     { passIds.push_back(3); passIsos[3]=true;}
+	      if(use2011Id) 
+		{
+		  llScaleFactor *= muonScaleFactor(phys.leptons[ilep].pt(),phys.leptons[ilep].eta());
+		  llTriggerEfficiency *= muonTriggerEfficiency(phys.leptons[ilep].pt(),phys.leptons[ilep].eta());
+		}
 	    }
 	  else
 	    {
@@ -584,7 +607,12 @@ int main(int argc, char* argv[])
 		  if(iwp==2 && hasObjectId(ev.en_idbits[lpid], EID_VBTF2011)) 
 		    { 
 		      passIds.push_back(2); passIsos[2]=(relIso2011<0.10); 
-		      if(use2011Id) { hasGoodId=true; isIso=passIsos[2]; } 
+		      if(use2011Id) 
+			{ 
+			  hasGoodId=true; isIso=passIsos[2]; 
+			  llScaleFactor *= electronScaleFactor(phys.leptons[ilep].pt(),phys.leptons[ilep].eta());
+			  llTriggerEfficiency *= electronTriggerEfficiency(phys.leptons[ilep].pt(),phys.leptons[ilep].eta());
+			} 
 		    }
 		  else
 		    {
@@ -605,7 +633,7 @@ int main(int argc, char* argv[])
 	    }
 	  if(!hasGoodId)  passIdAndIso=false;
 	  else if(!isIso) passIdAndIso=false;     
-	  
+	
 	  //fill control histograms (constrained to the Z mass)
 	  if(passZmass && isSameFlavor)
 	    {
@@ -670,6 +698,7 @@ int main(int argc, char* argv[])
       
       //select dilepton
       if(!passIdAndIso) continue;
+      if(use2011Id) weight *= llScaleFactor*llTriggerEfficiency;
       tags_full.push_back(tag_cat);
       mon.fillHisto("eventflow",tags_full,0,weight);
       mon.fillHisto("zmass",       tags_full, zll.mass(), weight);  
@@ -686,6 +715,7 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("zpt"      ,   tags_full, zll.pt(),     weight);      
 	  mon.fillHisto("zeta"     ,   tags_full, zll.eta(),    weight);
 	  mon.fillHisto("nvtx"     ,   tags_full, ev.nvtx,      weight);
+	  mon.fillHisto("nvtxraw"  ,   tags_full, ev.nvtx,      1);
 	  mon.fillHisto("rho"      ,   tags_full, ev.rho,       weight);
 	  mon.fillHisto("rho25"    ,   tags_full, ev.rho25Neut, weight);
 
@@ -714,23 +744,23 @@ int main(int argc, char* argv[])
 		      if(!use2011Id)
 			{
 			  isGood = (hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) && phys.leptons[ilep].pfRelIsoDbeta()<0.2);
-			  isGood |= hasObjectId(ev.mn_idbits[lpid], MID_SOFT);
+			  isGood |= (hasObjectId(ev.mn_idbits[lpid], MID_SOFT) && phys.leptons[ilep].pt()>3);
 			}
 		      else
 			{
-			  isGood = (hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.15);
-			  isGood |= hasObjectId(ev.mn_idbits[lpid], MID_SOFT2011);
+			  isGood = (hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.15 && phys.leptons[ilep].pt()>10);
+			  isGood |= (hasObjectId(ev.mn_idbits[lpid], MID_SOFT2011) && phys.leptons[ilep].pt()>3);
 			}
 		    }
 		  else
 		    {
 		      if(!use2011Id)
 			{
-			  isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 );
+			  isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 && phys.leptons[ilep].pt()>10);
 			}
 		      else
 			{
-			  isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.1 );
+			  isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.1 && phys.leptons[ilep].pt()>10);
 			}
 		    }
 		  nextraleptons += isGood;
@@ -851,12 +881,39 @@ int main(int argc, char* argv[])
 		      if(tag_subcat!="vbf") tags_full.push_back(tag_cat + "novbf");
 		      mon.fillHisto("npfjets",     tags_full, nAJetsLoose,weight);
 
-
 		      passDphijmet=(mindphijmet>0.5); 
 		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,mindphijmet,weight);
 		      if(passDphijmet) 
 			{
 			  mon.fillHisto("eventflow",tags_full,5,weight);
+			  
+			  //VBF monitoring
+			  float dphijj(-1),hardpt(-1);
+			  if(nAJetsLoose>=2)
+			    {
+			      LorentzVector vbfSyst=aGoodIdJets[0]+aGoodIdJets[1];
+			      LorentzVector hardSyst=vbfSyst+zvvs[0]+zll;
+			      hardpt=hardSyst.pt();
+			      float detajj=aGoodIdJets[0].eta()-aGoodIdJets[1].eta();
+			      dphijj=deltaPhi(aGoodIdJets[0].phi(),aGoodIdJets[1].phi());
+			      float avgEtajj=0.5*(aGoodIdJets[0].eta()+aGoodIdJets[1].eta());
+			      mon.fillHisto("pfvbfcandjetpt",     tags_full, fabs(aGoodIdJets[0].pt()),weight);
+			      mon.fillHisto("pfvbfcandjetpt",     tags_full, fabs(aGoodIdJets[1].pt()),weight);
+			      mon.fillHisto("pfvbfcandjeteta",     tags_full, fabs(aGoodIdJets[0].eta()),weight);
+			      mon.fillHisto("pfvbfcandjeteta",     tags_full, fabs(aGoodIdJets[1].eta()),weight);
+			      mon.fillHisto("pfvbfcandjetdeta",     tags_full, fabs(detajj),weight);
+			      if(fabs(detajj)>4.0)
+				{
+				  mon.fillHisto("pfvbfcandzeppenfeld",     tags_full, fabs(aGoodIdJets[0].eta()-avgEtajj)/fabs(detajj),weight);
+				  mon.fillHisto("pfvbfcandzeppenfeld",     tags_full, fabs(aGoodIdJets[1].eta()-avgEtajj)/fabs(detajj),weight);
+				  mon.fillHisto("pfvbfmjj",     tags_full, vbfSyst.mass(),weight);
+				  mon.fillHisto("pfvbfmjjvsdeta",     tags_full, vbfSyst.mass(),fabs(detajj),weight);
+				  mon.fillHisto("pfvbfmjjvshardpt",     tags_full, vbfSyst.mass(),hardpt,weight);
+				  if(vbfSyst.mass()>500)
+				    mon.fillHisto("pfvbfhardpt",     tags_full, hardpt,weight);
+				}
+			    }
+			     
 
 			  //
 			  //SIGNAL REGION NOW : PROCEED WITH CARE
@@ -864,8 +921,13 @@ int main(int argc, char* argv[])
 			  bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
 			  if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
 			  
-			  if(zvvs[0].pt()>70) mon.fillHisto("eventflow",tags_full,6,weight);
-	  
+			  if(zvvs[0].pt()>70) 
+			    {
+			      mon.fillHisto("eventflow",tags_full,6,weight);
+			      mon.fillHisto("pfvbfcandjetdphi",     tags_full, fabs(dphijj),weight);
+			      mon.fillHisto("pfvbfhardptfinal",     tags_full, hardpt,weight);
+			    }
+
 			  METUtils::stRedMET aRedMetOut; 
 			  LorentzVector aRedMet=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, aClusteredMetP4, zvvs[0],false,&aRedMetOut);
 			  double aRedMetL=aRedMetOut.redMET_l;
@@ -896,7 +958,7 @@ int main(int argc, char* argv[])
 		}//end pass3rdLeptonVeto
 	      else
 		{
-		  if(passBveto && passDphijmet) mon.fillHisto("met_met3leptons",tags_full,zvvs[0].pt(),weight);
+		  if(nextraleptons==1 && passBveto && passDphijmet) mon.fillHisto("met_met3leptons",tags_full,zvvs[0].pt(),weight);
 		}
 
 	    }//end passZpt
