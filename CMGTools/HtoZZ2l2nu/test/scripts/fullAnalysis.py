@@ -34,7 +34,7 @@ command_out12 = commands.getstatusoutput("runLocalAnalysisOverSamples.py -e run2
 JobList = getListOfJobIds(command_out11[1]+command_out12[1])
 #JobList = []
 waitUntilJobDone(JobList)
-os.system("runPlotter --iEcm 7 --iLumi 5035 --inDir results/ --outDir $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results/plots2011/ --outFile $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root  --json $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2011.json --noRoot")
+os.system("runPlotter --iEcm 7 --iLumi 5035 --inDir results/ --outDir $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results/plots2011/ --outFile $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root  --json $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2011.json")
 os.system("runPlotter --iEcm 8 --iLumi 5000 --inDir results/ --outDir $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results/plots2012/ --outFile $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root  --json $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json --noPlot")
 os.system("runPlotter --iEcm 8 --iLumi 1620 --inDir results/ --outDir $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/results/plots2012/ --outFile $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root  --json $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json --noRoot")
 os.system('echo "run2012Analysis done" | mail -s "UNIXMAIL: run2012Analysis done" loic.quertenmont@gmail.com')

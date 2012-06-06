@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
   AutoLibraryLoader::enable();
   
   TString cmsswRel(gSystem->Getenv("CMSSW_BASE"));
-  bool use2011Id(cmsswRel.Contains("4_4_4"));
+  bool use2011Id(cmsswRel.Contains("4_4_"));
   cout << cmsswRel << endl; 
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
 
@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
       fin->Close();
       delete fin;
     }
-  }else if(isMC_VBF && use2011Id){
+  }else if(isMC_VBF){
     size_t VBFStringpos =  string(url.Data()).find("VBF");
     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     VBFString = string(url.Data()).substr(VBFStringpos);
@@ -529,7 +529,7 @@ int main(int argc, char* argv[])
         weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_plus  = PShiftUp->ShiftWeight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_minus = PShiftDown->ShiftWeight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
-	if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
+	if(isMC_VBF && use2011Id){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
         if(isMC_GG) {
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
 	    ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
