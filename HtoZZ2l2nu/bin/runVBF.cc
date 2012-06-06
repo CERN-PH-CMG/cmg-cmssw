@@ -312,7 +312,7 @@ int main(int argc, char* argv[])
         weight = LumiWeights->weight( ev.ngenITpu );
         TotalWeight_plus = PShiftUp->ShiftWeight( ev.ngenITpu );
         TotalWeight_minus = PShiftDown->ShiftWeight( ev.ngenITpu );
-        if(isMC_VBF && use2011Id){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
+        if(isMC_VBF && use2011Id){ vbfweight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=vbfweight; }
         if(isMC_GG)  {
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
           weight *= ev.hptWeights[0];

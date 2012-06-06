@@ -217,8 +217,8 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight /= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight /= PURescale_down[(Samples[j])["dtag"].toString()];}
 
 
 
@@ -316,8 +316,8 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight /= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight /= PURescale_down[(Samples[j])["dtag"].toString()];}
 
          int split = 1;
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
@@ -422,8 +422,8 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight /= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight /= PURescale_down[(Samples[j])["dtag"].toString()];}
 
          int split = 1;
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
@@ -518,8 +518,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight /= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight /= PURescale_down[(Samples[j])["dtag"].toString()];}
 
          if(HistoProperties.name.find("optim_cut")!=string::npos){Weight=1.0;}
 
@@ -750,8 +750,8 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight /= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight /= PURescale_down[(Samples[j])["dtag"].toString()];}
 
 
          int split = 1;
