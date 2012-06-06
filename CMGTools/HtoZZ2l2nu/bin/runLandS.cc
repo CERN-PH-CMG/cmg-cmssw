@@ -1580,7 +1580,8 @@ void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allS
               histoSystNew->Scale(1-Ratio);
               histoSystNew->Add(histoSystR,Ratio);
               histoSystNew->Scale(XSection);
-              varsNew.push_back(std::make_pair<TString, TH1*>(varsLeft[v].first,histoSystNew));
+              //varsNew.push_back(std::make_pair<TString, TH1*>(varsLeft[v].first,histoSystNew));
+	      varsNew.push_back(std::pair<TString, TH1*>(varsLeft[v].first,histoSystNew));
               delete histoSystL;
               delete histoSystR;
            }
