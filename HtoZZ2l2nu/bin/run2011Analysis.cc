@@ -433,8 +433,9 @@ int main(int argc, char* argv[])
   std::vector<double> dataPileupDistributionDouble = runProcess.getParameter< std::vector<double> >("datapileup");
   std::vector<float> dataPileupDistribution; for(unsigned int i=0;i<dataPileupDistributionDouble.size();i++){dataPileupDistribution.push_back(dataPileupDistributionDouble[i]);}
   std::vector<float> mcPileupDistribution;
-  //  bool useObservedPU( url.Contains("toZZto2L") );
-  bool useObservedPU(true);
+  //bool useObservedPU(true);
+  bool useObservedPU(use2011Id);
+  if(!use2011Id &&  url.Contains("toZZto2L")) useObservedPU=true;
   if(isMC){
     TString puDist("evAnalyzer/h2zz/pileuptrue");
     if(useObservedPU) puDist="evAnalyzer/h2zz/pileup";
@@ -471,8 +472,8 @@ int main(int argc, char* argv[])
   printf("Progressing Bar     :0%%       20%%       40%%       60%%       80%%       100%%\n");
   printf("Scanning the ntuple :");
   int treeStep = (evEnd-evStart)/50;if(treeStep==0)treeStep=1;
-  //DuplicatesChecker duplicatesChecker;
-  //int nDuplicates(0);
+  DuplicatesChecker duplicatesChecker;
+  int nDuplicates(0);
   for( int iev=evStart; iev<evEnd; iev++){
       if((iev-evStart)%treeStep==0){printf(".");fflush(stdout);}
 
@@ -481,7 +482,7 @@ int main(int argc, char* argv[])
       //load the event content from tree
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
-      //if( duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
+      if( duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       bool mustBlind = (!isMC && runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC));
 
