@@ -186,6 +186,13 @@ int main(int argc, char** argv)
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.primaryVertexFilterPath", triggerresultshelper_primaryVertexFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.trackingFailureFilterPath", triggerresultshelper_trackingFailureFilterPath);
 
+  stream.select("nrecoGenParticleHelper_genParticles", ngenparticlehelper);
+  stream.select("recoGenParticleHelper_genParticles.firstDaughter", genparticlehelper_firstDaughter);
+  stream.select("recoGenParticleHelper_genParticles.firstMother", genparticlehelper_firstMother);
+  stream.select("recoGenParticleHelper_genParticles.lastDaughter", genparticlehelper_lastDaughter);
+  stream.select("recoGenParticleHelper_genParticles.lastMother", genparticlehelper_lastMother);
+  stream.select("recoGenParticleHelper_genParticles.pdgId", genparticlehelper_pdgId);
+
   // The root application is needed to make canvases visible during
   // program execution. If this is not needed, just comment out the following
   // line
@@ -227,19 +234,20 @@ int main(int argc, char** argv)
   // Declare histograms
   //---------------------------------------------------------------------------
 
-  const int NBINS=54;
-  Double_t BOUNDARIES[NBINS] = { 220, 244, 270, 296, 325, 354, 386, 419, 453,
-				 489, 526, 565, 606, 649, 693, 740, 788, 838,
-				 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383,
-				 1455, 1530, 1607, 1687, 1770, 1856, 1945, 2037, 2132,
-				 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019, 3147,
-	                         3279, 3416, 3558, 3704, 3854, 4010, 4171, 4337, 4509};
-
+  const int NBINS = 104;
+  Double_t BOUNDARIES[NBINS] = {1, 3, 6, 10, 16, 23, 31, 40, 50, 61, 74, 88, 103, 119, 137, 156, 176, 197, 220, 244, 270, 296, 325,
+  354, 386, 419, 453, 489, 526, 565, 606, 649, 693, 740, 788, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1455, 1530, 1607, 1687,
+  1770, 1856, 1945, 2037, 2132, 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019, 3147, 3279, 3416, 3558, 3704, 3854, 4010, 4171, 4337, 4509,
+  4686, 4869, 5058, 5253, 5455, 5663, 5877, 6099, 6328, 6564, 6808, 7060, 7320, 7589, 7866, 8152, 8447, 8752, 9067, 9391, 9726, 10072, 10430, 
+  10798, 11179, 11571, 11977, 12395, 12827, 13272, 13732, 14000};
+  
   std::vector<TH1F*> hists;
 
   TCanvas c1("c1","c1",200,200);
   TH1F* h1=new TH1F("dijet_mass","M_{jj}",NBINS-1,BOUNDARIES);
   h1->Sumw2();
+  TH1F* h2=new TH1F("dijet_mass_gg","M_{jj}",NBINS-1,BOUNDARIES);
+  h2->Sumw2();
   
   //---------------------------------------------------------------------------
   // Loop over events
@@ -323,6 +331,21 @@ int main(int argc, char** argv)
 	    )) continue;
 	   
 	  // ---------------------
+	  // -- filter --
+	  // ---------------------	  
+          bool isgg=false;
+          if(cmdline.resonance_mass>0)
+	  {
+	      for(int i=0; i<ngenparticlehelper;++i)
+	      {
+	         if((genparticlehelper_pdgId[i]==5000039) &&
+		   ((genparticlehelper_pdgId[genparticlehelper_firstDaughter[i]]==9)||(genparticlehelper_pdgId[genparticlehelper_firstDaughter[i]]==21)) &&
+((genparticlehelper_pdgId[genparticlehelper_lastDaughter[i]]==9)||(genparticlehelper_pdgId[genparticlehelper_lastDaughter[i]]==21)))
+		 isgg=true;
+	      }
+	  }  
+
+	  // ---------------------
 	  // -- fill histograms --
 	  // ---------------------	  
 
@@ -330,7 +353,10 @@ int main(int argc, char** argv)
           if(geneventinfoproduct_weight>0)
 	      weight=geneventinfoproduct_weight;
 
-          h1->Fill(eventhelperextra_wj1wj2_invmass, weight);
+          if(isgg)
+              h2->Fill(eventhelperextra_wj1wj2_invmass, weight);
+	  else
+              h1->Fill(eventhelperextra_wj1wj2_invmass, weight);
 
 	}
 
@@ -377,6 +403,44 @@ int main(int argc, char** argv)
 
   h1->Write();
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_mass.pdf").c_str());
+
+  h2->Draw("histe");
+  //gPad->SetLogy(true);
+
+  std::cout << "Fit crystal ball function to gluon gluon dijet mass spectrum." << std::endl;
+
+  fit_gaus = new TF1("gaus","gaus",cmdline.resonance_mass*0.8, cmdline.resonance_mass*1.2);
+  h2->Fit(fit_gaus,"R");
+  fit = new TF1("fnc_dscb",fnc_dscb,cmdline.resonance_mass*0.3, cmdline.resonance_mass*1.6,7);
+  fit->SetTitle("");
+  fit->SetParameter(0,fit_gaus->GetParameter(0));
+  fit->SetParameter(1,fit_gaus->GetParameter(1));
+  fit->SetParameter(2,fit_gaus->GetParameter(2));
+  fit->SetParameter(3,2);
+  fit->SetParameter(4,1);
+  fit->SetParameter(5,2);
+  fit->SetParameter(6,1);
+  fit->SetLineWidth(2);
+  fit->SetLineColor(1);
+  fit->SetLineStyle(1);
+  h2->Fit(fit,"R");
+
+  std::cout << "Gluon gluon resonance shape for resonance of mass " << cmdline.resonance_mass << "." << std::endl;
+
+  std::cout << "double yvalues[50] = {" << std::endl;
+  for ( size_t j = 0; j < 50; ++j )
+  {
+      double shape=fit->Eval(bincenter[j]*cmdline.resonance_mass);
+      if(shape<=1e-10)
+          shape=fit_gaus->Eval(bincenter[j]*cmdline.resonance_mass);
+      std::cout << shape;
+      if(j<50-1)
+          std::cout <<", ";
+  }
+  std::cout << "};" << std::endl;
+
+  h2->Write();
+  c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_mass_gg.pdf").c_str());
 
   stream.close();
   ofile.close();

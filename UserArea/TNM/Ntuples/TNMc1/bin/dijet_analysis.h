@@ -2140,7 +2140,7 @@ decodeCommandLine(int argc, char** argv, commandLine& cl)
   if ( argc > 3 ) 
 	cl.resonance_mass = atof(argv[3]);
   else
-	cl.resonance_mass = 1000;
+	cl.resonance_mass = -1;
 }
 
 // Read ntuple filenames from file list
