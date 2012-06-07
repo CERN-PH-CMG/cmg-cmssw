@@ -1,4 +1,4 @@
-#$Revision: 1.2 $
+#$Revision: 1.3 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -16,7 +16,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # Run on MC or data
 
-runOnMC = False
+runOnMC = True
 
 # Input file
 
