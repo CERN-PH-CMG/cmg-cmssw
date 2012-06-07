@@ -79,7 +79,7 @@ class Lepton( PhysicsObject):
         patLepton = self.physObj.sourcePtr()
         return abs( patLepton.dB(2) ) / patLepton.edB(2) 
 
-    def absIsoFromEA(self,rho,effectiveArea1 = None,effectiveArea2 = None):
+    def absIsoFromEA(self,rho,eta,effectiveArea1 = None,effectiveArea2 = None):
         #First remove FSR
         photonIso = self.photonIso()
         if hasattr(self,'fsrPhoton'):
@@ -89,16 +89,16 @@ class Lepton( PhysicsObject):
         ea2 = rho
         if effectiveArea1 is not None:
             for element in effectiveArea1:
-                if abs(self.eta())>= element['etaMin'] and \
-                   abs(self.eta())< element['etaMax']:
+                if abs(eta)>= element['etaMin'] and \
+                   abs(eta)< element['etaMax']:
                     ea1 = ea1 * element['area']
                     break
         else:
             return self.chargedHadronIso()+max(0.,photonIso+self.neutralHadronIso()-ea1)
         if effectiveArea2 is not None:
             for element in effectiveArea2:
-                if abs(self.eta())>= element['etaMin'] and \
-                   abs(self.eta())< element['etaMax']:
+                if abs(eta)>= element['etaMin'] and \
+                   abs(eta)< element['etaMax']:
                     ea2 = ea2 * element['area']
             return self.chargedHadronIso()+max(0.,photonIso-ea1)+max(0.,self.neutralHadronIso()-ea2)
         else:
@@ -195,7 +195,9 @@ class Muon( Lepton ):
         return ecalIso, hcalIso
 
     def absEffAreaIso(self,rho,effectiveAreas):
-        return self.absIsoFromEA(rho,effectiveAreas.muon)
+        return self.absIsoFromEA(rho,self.eta(),effectiveAreas.muon)
+
+
 
     def dxy(self, vertex=None):
         '''either pass the vertex, or set associatedVertex before calling the function.
@@ -215,7 +217,8 @@ class Muon( Lepton ):
         if vertex is None:
             vertex = self.associatedVertex
         return self.sourcePtr().innerTrack().dz( vertex.position() )
-    
+
+
 
 class Electron( Lepton ):
 
@@ -227,7 +230,7 @@ class Electron( Lepton ):
         self.tightIdResult = None
 
     def absEffAreaIso(self,rho,effectiveAreas):
-        return self.absIsoFromEA(rho,effectiveAreas.eGamma)
+        return self.absIsoFromEA(rho,self.sourcePtr().superCluster().eta(),effectiveAreas.eGamma)
 
     def mvaIso( self ):
         return self.sourcePtr().userFloat('mvaIsoRings')
@@ -255,8 +258,8 @@ class Electron( Lepton ):
         for element in mvaRegions:
             if self.pt()>= element['ptMin'] and \
                self.pt()< element['ptMax'] and \
-               abs(self.eta())>=element['etaMin'] and \
-               abs(self.eta())<element['etaMax'] and \
+               abs(self.sourcePtr().superCluster().eta())>=element['etaMin'] and \
+               abs(self.sourcePtr().superCluster().eta())<element['etaMax'] and \
                self.mvaNonTrigV0()> element['mva']: 
                 ID=True
 
@@ -281,6 +284,30 @@ class Electron( Lepton ):
              return abs
         else:
              return -1
+
+
+    def dxy(self, vertex=None):
+        '''either pass the vertex, or set associatedVertex before calling the function.
+        note: the function does not work with standalone muons as innerTrack
+        is not available.
+        '''
+        if vertex is None:
+            vertex = self.associatedVertex
+        return self.sourcePtr().gsfTrack().dxy( vertex.position() )
+ 
+
+    def dz(self, vertex=None):
+        '''either pass the vertex, or set associatedVertex before calling the function.
+        note: the function does not work with standalone muons as innerTrack
+        is not available.
+        '''
+        if vertex is None:
+            vertex = self.associatedVertex
+        return self.sourcePtr().gsfTrack().dz( vertex.position() )
+
+
+
+
 
 class GenParticle( PhysicsObject):
     def __str__(self):

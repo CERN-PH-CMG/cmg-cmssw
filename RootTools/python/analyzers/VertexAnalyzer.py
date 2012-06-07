@@ -19,10 +19,6 @@ class VertexAnalyzer( Analyzer ):
             else:
                 self.mchandles['vertexWeight'] = AutoHandle( self.cfg_ana.vertexWeight,
                                                              'double' )
-        self.handles['goodVertices'] = AutoHandle(
-            self.cfg_ana.goodVertices,
-            'std::vector<reco::Vertex>'
-            )
 
         self.mchandles['pusi'] =  AutoHandle(
             'addPileupInfo',
@@ -37,13 +33,23 @@ class VertexAnalyzer( Analyzer ):
     def beginLoop(self):
         super(VertexAnalyzer,self).beginLoop()
         self.averages.add('vertexWeight', Average('vertexWeight') )
+        if hasattr(self.cfg_ana,'skimGoodVertex'):
+            self.counters.addCounter('GoodVertex')
+            self.count = self.counters.counter('GoodVertex')
+            self.count.register('All Events')
+            self.count.register('Events With Good Vertex')
+
 
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         event.rho = self.handles['rho'].product()[0]
         event.vertices = self.handles['vertices'].product()
-        event.goodVertices = self.handles['goodVertices'].product()
+        event.goodVertices = filter(self.testGoodVertex,event.vertices)
+
+
+        self.count.inc('All Events')
+
         
         event.vertexWeight = 1
         if self.cfg_comp.isMC:
@@ -62,3 +68,21 @@ class VertexAnalyzer( Analyzer ):
 
         if len(event.goodVertices)==0:
             return False
+
+        self.count.inc('Events With Good Vertex')
+        return True
+
+
+
+    def testGoodVertex(self,vertex):
+        if vertex.isFake():
+            return False
+        if vertex.ndof()<=4:
+            return False
+        if abs(vertex.z())>24:
+            return False
+        if vertex.position().Rho()>2:
+            return False
+     
+        return True
+                                                                 
