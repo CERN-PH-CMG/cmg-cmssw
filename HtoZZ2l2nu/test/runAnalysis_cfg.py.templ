@@ -8,20 +8,28 @@ datapileup_683_2012 = cms.vdouble( 31654.5, 1937.57, 554132, 3.85338e+07, 5.8824
 
 mcpileup_tsg=cms.vdouble(0,0,0,0,0,0,0,0,0,0,0,0,6,9,14,28,56,106,212,339,549,848,1210,1727,2197,2857,3589,4303,4786,5202,5632,5941,5835,5660,5248,4886,4459,3764,3199,2623,2119,1609,1176,891,661,508,351,228,137,102,64,47,17,11,11,4,5,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
+if(@automaticSwitch==False):
+    is2011flag = @is2011
+else:
+    is2011flag = False
+    import os
+    try:
+       cmssw_version = os.environ["CMSSW_VERSION"].replace("CMSSW_","")    
+    except:
+       cmssw_version = "5_X"
+    if cmssw_version.startswith("4") : 
+       is2011flag=True
 
-
-datapileupToUse=datapileup_683_2012
-import os
-try:
-    cmssw_version = os.environ["CMSSW_VERSION"].replace("CMSSW_","")
-except:
-    cmssw_version = "5_X"
-if cmssw_version.startswith("4") : datapileupToUse=datapileup_pixelbased_2011
+if(is2011flag):
+   datapileupToUse=datapileup_pixelbased_2011
+else:
+   datapileupToUse=datapileup_683_2012
 
 runProcess = cms.PSet(
     input = cms.string("@input"),
     outdir = cms.string("@outdir"),
     isMC = cms.bool(@isMC),
+    is2011 = cms.bool(is2011flag),
     mctruthmode=cms.int32(@mctruthmode),
     runBlinded = cms.bool(True),
     xsec = cms.double(@xsec),	

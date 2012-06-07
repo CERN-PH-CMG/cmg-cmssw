@@ -51,13 +51,12 @@ int main(int argc, char* argv[])
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
 
-  TString cmsswRel(gSystem->Getenv("CMSSW_BASE"));
-  bool use2011Id(cmsswRel.Contains("4_4_"));
-  cout << cmsswRel << endl;
-  cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
-
   // configure the process
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
+
+  bool use2011Id = runProcess.getParameter<bool>("is2011");
+  cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
+
   TString url=runProcess.getParameter<std::string>("input");
   TString outdir=runProcess.getParameter<std::string>("outdir");
   TString outUrl( outdir );
