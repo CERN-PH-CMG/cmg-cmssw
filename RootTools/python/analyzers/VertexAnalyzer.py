@@ -33,11 +33,11 @@ class VertexAnalyzer( Analyzer ):
     def beginLoop(self):
         super(VertexAnalyzer,self).beginLoop()
         self.averages.add('vertexWeight', Average('vertexWeight') )
-        if hasattr(self.cfg_ana,'skimGoodVertex'):
-            self.counters.addCounter('GoodVertex')
-            self.count = self.counters.counter('GoodVertex')
-            self.count.register('All Events')
-            self.count.register('Events With Good Vertex')
+
+        self.counters.addCounter('GoodVertex')
+        self.count = self.counters.counter('GoodVertex')
+        self.count.register('All Events')
+        self.count.register('Events With Good Vertex')
 
 
 

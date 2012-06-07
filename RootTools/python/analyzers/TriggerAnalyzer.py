@@ -60,6 +60,8 @@ class TriggerAnalyzer( Analyzer ):
                                                          run, lumi, self.cfg_comp.isData,
                                                          usePrescaled = usePrescaled)
 
+
+
         #Check the veto!
         veto=False
         if self.vetoTriggerList is not None:
@@ -68,6 +70,8 @@ class TriggerAnalyzer( Analyzer ):
                                                          usePrescaled = usePrescaled)
         if not passed or (passed and veto):
             return False
+
+
 
         event.hltPath = hltPath 
 
