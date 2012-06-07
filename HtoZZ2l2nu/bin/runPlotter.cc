@@ -493,6 +493,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    t1->Draw();
    t1->cd();
    if(!noLog) t1->SetLogy(true);
+   float maximumFound(noLog);
 
    TLegend* legA  = new TLegend(0.845,0.2,0.99,0.99, "NDC"); 
    //   TLegend* legA  = new TLegend(0.51,0.93,0.67,0.75, "NDC"); 
@@ -503,7 +504,6 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    std::vector<TString> spimposeOpts;
    TH1*     data = NULL;
    std::vector<TObject*> ObjectToDelete;
-
 
    std::string SaveName = "";
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
@@ -587,6 +587,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 	  legA->AddEntry(hist, Process[i]["tag"].c_str(), Process[i]["isdata"].toBool() ? "P" : "L" );
 	  spimposeOpts.push_back( Process[i]["isdata"].toBool() ? "e1" : "hist" );
 	  spimpose.push_back(hist);
+	  if(maximumFound<hist->GetMaximum()) maximumFound=hist->GetMaximum()*1.1;
 	}
       else{
 	if(Process[i]["isdata"].toBool()){
@@ -598,6 +599,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 	}
       }
    }
+   if(mc &&  maximumFound<mc->GetMaximum()) maximumFound=mc->GetMaximum()*1.1;
+   if(data && maximumFound<data->GetMaximum()) maximumFound=data->GetMaximum()*1.1;
 
    bool canvasIsFilled(false);
    if(stack && stack->GetStack() && stack->GetStack()->GetEntriesFast()>0){
@@ -606,7 +609,11 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
      stack->GetXaxis()->SetTitle(hist->GetXaxis()->GetTitle());
      stack->GetYaxis()->SetTitle(hist->GetYaxis()->GetTitle());
      stack->SetMinimum(hist->GetMinimum());
-     //stack->SetMaximum(hist->GetMaximum());
+     if(noLog)
+       {
+	 stack->SetMaximum(maximumFound);
+	 //stack->GetXaxis()->SetRangeUser(hist->GetMinimum(),maximumFound);
+       }
      ObjectToDelete.push_back(stack);
      canvasIsFilled=true;
    }
@@ -623,13 +630,13 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    //compare data and MC
    if(showChi2 && data && mc && data->Integral()>0 && mc->Integral()>0)
      {
-       TPaveText *pave = new TPaveText(0.5,0.65,1.0,0.95,"NDC");
+       TPaveText *pave = new TPaveText(0.6,0.85,0.8,0.9,"NDC");
        pave->SetBorderSize(0);
        pave->SetFillStyle(0);
        pave->SetTextAlign(32);
        pave->SetTextFont(42);
        char buf[100];
-       sprintf(buf,"#chi^{2}/ndof : %3.3f", data->Chi2Test(mc,"WWCHI2/NDF") );
+       sprintf(buf,"#chi^{2}/ndof : %3.2f", data->Chi2Test(mc,"WWCHI2/NDF") );
        pave->AddText(buf);
        pave->Draw();
      }
