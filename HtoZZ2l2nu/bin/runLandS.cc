@@ -1012,6 +1012,8 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
        }else if(syst.BeginsWith("_jes")){syst.ReplaceAll("_jes","_CMS_scale_j");
        }else if(syst.BeginsWith("_jer")){syst.ReplaceAll("_jer","_CMS_res_j");
        }else if(syst.BeginsWith("_pu" )){syst.ReplaceAll("_pu", "_CMS_pu");
+       }else if(syst.BeginsWith("_ren" )){continue;   //already accounted for in QCD scales
+       }else if(syst.BeginsWith("_fact" )){continue; //skip this one
        }else{   syst="_CMS_hzz2l2nu"+syst;
        }
 
@@ -1042,8 +1044,8 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                TH1* statup=(TH1 *)hshape->Clone(proc+"_stat"+ch+proc+"Up");
                TH1* statdown=(TH1 *)hshape->Clone(proc+"_stat"+ch+proc+"Down");
                for(int ibin=1; ibin<=statup->GetXaxis()->GetNbins(); ibin++){
-                  statup  ->SetBinContent(ibin,statup  ->GetBinContent(ibin) + statup  ->GetBinError(ibin));
-                  statdown->SetBinContent(ibin,statdown->GetBinContent(ibin) - statdown->GetBinError(ibin));
+                  statup  ->SetBinContent(ibin,std::max(1E-9, statup  ->GetBinContent(ibin) + statup  ->GetBinError(ibin)));
+                  statdown->SetBinContent(ibin,std::max(1E-9, statdown->GetBinContent(ibin) - statdown->GetBinError(ibin)));
                }
                statup  ->Write(proc+postfix+"_CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix+"Up");
                statdown->Write(proc+postfix+"_CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix+"Down");
