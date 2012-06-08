@@ -57,7 +57,7 @@ TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
 
 
 double NonResonnantSyst = 0.25;
-double GammaJetSyst = 0.5;
+double GammaJetSyst = 1.0;
 
 //wrapper for a projected shape for a given set of cuts
 struct Shape_t
