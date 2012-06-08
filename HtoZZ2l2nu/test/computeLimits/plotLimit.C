@@ -67,6 +67,11 @@ Limit GetLimit(TString inFileName, TString plotName, TString sfile="bands", doub
 printf("XXX ERRRO = %f\n",med_err);
 
 
+        if(p1s<med)p1s=med;
+        if(p2s<p1s)p2s=p1s;
+
+
+
         toReturn.Obs = dat;
         toReturn.Exp_minus2s = m2s;
         toReturn.Exp_minus1s = m1s;
@@ -104,7 +109,7 @@ TCutG* GetErrorBand(string name, int N, double* Mass, double* Low, double* High)
 
 
 
-void plotLimit(TString outputName="Limit", TString inputs="", TString legendName="ee and #mu#mu channels"){
+void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, double luminosity=5.035, TString legendName="ee and #mu#mu channels"){
   gStyle->SetCanvasBorderMode(0);
   gStyle->SetCanvasColor(kWhite);
   gStyle->SetFrameBorderMode(0);
@@ -159,23 +164,18 @@ void plotLimit(TString outputName="Limit", TString inputs="", TString legendName
    gStyle->SetPalette(1);
    gStyle->SetNdivisions(505);
 
+
    std::vector<string> files;
-   TObjArray* array=inputs.Tokenize(" ");
-   for(int i=0;i<array->GetEntriesFast();i++){files.push_back(array->At(i)->GetName());}
-/*
-   files.push_back("H225_shape_213/Shapes_225_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H250_shape_357/Shapes_250_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H275_shape_425/Shapes_275_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H300_shape_501/Shapes_300_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H325_shape_645/Shapes_325_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H350_shape_713/Shapes_350_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H375_shape_790/Shapes_375_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H400_shape_859/Shapes_400_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H425_shape_868/Shapes_425_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H450_shape_942/Shapes_450_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H475_shape_1011/Shapes_475_ee.dat_Hybrid_m2lnQ.root");
-   files.push_back("H500_shape_1080/Shapes_500_ee.dat_Hybrid_m2lnQ.root");
-*/
+   FILE* pFile = fopen(inputs.Data(),"r");
+   if(!pFile){printf("######  FILE %s DOES NOT EXIST\n",inputs.Data());exit(0);}
+   while(1){
+      char buff[2048];
+      if(fscanf(pFile,"%s",buff)==EOF)break;
+      files.push_back(buff);
+      printf("%s\n", buff);
+   }
+   fclose(pFile);
+
    int N = files.size();
 
    double* ObsLimit   = new double[N];
@@ -187,12 +187,11 @@ void plotLimit(TString outputName="Limit", TString inputs="", TString legendName
    double* MassAxis   = new double[N];
    double* MassAxisExp= new double[N];
 
-
    FILE* pFileSum = fopen((outputName+"_LimitSummary").Data(),"w");
 
    int NExp = 0;
    for(int i=0;i<N;i++){
-      string massStr = files[i].substr(1,3);
+      string massStr = files[i].substr(files[i].rfind('/')-3,3);
       int mass; sscanf(massStr.c_str(),"%d",&mass);
       Limit limits = GetLimit(files[i],string("Higgs")+massStr.c_str());
 
@@ -201,7 +200,7 @@ void plotLimit(TString outputName="Limit", TString inputs="", TString legendName
          MassAxis[i]   = mass;
          ObsLimit[i]   = limits.Obs;
 
-         if(int(MassAxis[i])%50==0){
+//         if(int(MassAxis[i])%10==0){
             MassAxisExp[NExp]= mass;
             ExpLimitm2[NExp] = limits.Exp_minus2s;
             ExpLimitm1[NExp] = limits.Exp_minus1s;
@@ -210,15 +209,17 @@ void plotLimit(TString outputName="Limit", TString inputs="", TString legendName
             ExpLimitp2[NExp] = limits.Exp_plus2s;
            // fprintf(pFileSum,"%f %f %f+-%f\n",MassAxis[i],ObsLimit[i],ExpLimit[NExp],(ExpLimitp1[NExp]-ExpLimitm1[NExp])/2.0);
             NExp++;
-         }
+//         }
    }
    fclose(pFileSum);
+
 
    TGraph* TGObsLimit   = new TGraph(N,MassAxis,ObsLimit);  TGObsLimit->SetLineWidth(2);
    TGraph* TGExpLimit   = new TGraph(NExp,MassAxisExp,ExpLimit);  TGExpLimit->SetLineWidth(2); TGExpLimit->SetLineStyle(2);
    TCutG* TGExpLimit1S = GetErrorBand("1S", NExp, MassAxisExp, ExpLimitm1, ExpLimitp1);  
    TCutG* TGExpLimit2S = GetErrorBand("2S", NExp, MassAxisExp, ExpLimitm2, ExpLimitp2);  TGExpLimit2S->SetFillColor(5);
-  
+
+
    printf("Obs Limits for Model are: ");for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);}printf("\n");
    printf("Exp Limits for Model are: ");for(int i=0;i<NExp;i++){printf("%f+-%f ",ExpLimit[i], (ExpLimitp1[i]-ExpLimitm1[i]))/2.0;}printf("\n");
 
@@ -226,23 +227,29 @@ void plotLimit(TString outputName="Limit", TString inputs="", TString legendName
    TGObsLimit->SetLineWidth(2);  TGObsLimit->SetMarkerStyle(20);
 
    TCanvas* c1 = new TCanvas("c1", "c1",600,600);
-   TMultiGraph* MG = new TMultiGraph();
-   //MG->Add(TGObsLimit       ,"CP");
-   MG->Add(TGExpLimit       ,"C");
-   MG->Draw("AXIS");
-   MG->SetTitle("");
-   MG->GetXaxis()->SetTitle("M_{H} [GeV/c^{2}]");
-   MG->GetYaxis()->SetTitle("#sigma_{95%}/#sigma_{SM}");
-   MG->GetYaxis()->SetTitleOffset(1.70);
-   MG->GetYaxis()->SetRangeUser(0.1,40.0);
-   TGExpLimit2S->Draw("fc");
-   TGExpLimit1S->Draw("fc");
-   MG->Draw("same");
+   TH1F* framework = new TH1F("Graph","Graph",1,190,610);
+   framework->SetStats(false);
+   framework->SetTitle("");
+   framework->GetXaxis()->SetTitle("M_{H} [GeV/c^{2}]");
+   framework->GetYaxis()->SetTitle("#sigma_{95%}/#sigma_{SM}");
+   framework->GetYaxis()->SetTitleOffset(1.70);
+   framework->GetYaxis()->SetRangeUser(0.1,40);
+   framework->Draw();
+
+   TGExpLimit2S->Draw("fc same");
+   TGExpLimit1S->Draw("fc same");
+
+//   TGObsLimit->Draw("same CP");
+   TGExpLimit->Draw("same C");
+
+//   TMultiGraph* MG = new TMultiGraph();
+////   MG->Add(TGObsLimit       ,"CP");
+//   MG->Add(TGExpLimit       ,"C");
+//   MG->SetTitle("");
+//   MG->Draw("same");
 
    char LumiLabel[1024];
-   //   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=7 TeV, #int L=%6.1ffb^{-1}   -   %20s",5.035,legendName.Data());
-   //  TPaveText *pave = new TPaveText(0.1,0.96,0.94,0.99,"NDC");
-   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=8 TeV, #int L=%6.1ffb^{-1}   -   %20s",2.035,legendName.Data());
+   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #int L=%6.1ffb^{-1}   -   %20s",energy, luminosity,legendName.Data());
    TPaveText *pave = new TPaveText(0.1,0.96,0.94,0.99,"NDC");
    pave->SetBorderSize(0);
    pave->SetFillStyle(0);
@@ -256,7 +263,7 @@ void plotLimit(TString outputName="Limit", TString inputs="", TString legendName
    }
    pave->Draw("same");
 
-   TLine* SMLine = new TLine(MG->GetXaxis()->GetXmin(),1.0,MG->GetXaxis()->GetXmax(),1.0);
+   TLine* SMLine = new TLine(framework->GetXaxis()->GetXmin(),1.0,framework->GetXaxis()->GetXmax(),1.0);
    SMLine->Draw("same");
 
    TLegend* LEG = new TLegend(0.15,0.80,0.40,0.93);
