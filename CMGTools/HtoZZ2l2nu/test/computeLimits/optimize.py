@@ -10,16 +10,21 @@ from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 #default values
 shapeBased='1'
 shapeName='mt_shapes'
-inUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root'
+inUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root'
+#inUrl='/afs/cern.ch/user/q/querten/scratch0/12_02_08_H_ZZ_2l2v/CMSSW_4_4_3/src/test/plotter2011Save.root'
 CWD=os.getcwd()
 phase=-1
-jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json'
+jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2011.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
 LandSArg=' --indexvbf 78 '
 LandSArg+=' --bins eq0jets,eq1jets,geq2jets,vbf'
-#LandSArg+=' --bins eq0jets,eq1jets,geq2jets,vbf --prefix 8'
-cutList='' 
+LandSArg+=' --subNRB --subDY $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/gamma_out.root --systpostfix _7TeV --blind'
 
+
+MASS = [200,250, 300,350, 400,450, 500,550, 600]
+SUBMASS = [200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 360, 370, 380, 390, 400, 420, 440, 450, 460, 480, 500, 520, 540, 550, 560, 580, 600]
+
+cutList='' 
 def help() :
    print '\n\033[92m optimize.py \033[0m \n'
    print ' -p phase (no default value is assigned)'
@@ -77,6 +82,17 @@ def findCutIndex(cut1, hcut1, cut2, hcut2, cut3, hcut3):
       return i;   
    return hcut1.GetXaxis().GetNbins();
 
+def findSideMassPoint(mass):
+   global MASS
+   LMass=0
+   RMass=9999
+   for m in MASS:
+      if(m<=mass and m>=LMass):LMass=m
+      if(m>=mass and m<=RMass):RMass=m
+   return [LMass,RMass]
+
+#######################
+
 #prepare the output
 OUT = CWD+'/JOBS/'
 if(shapeBased=='1'): OUT+='SHAPE/'
@@ -90,11 +106,6 @@ cuts2   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmin')
 cuts3   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmax') 
 
 
-#MASS = [200,400,600]
-#SUBMASS = [200,400,600]
-MASS = [200,250, 300,350, 400,450, 500,550, 600]
-SUBMASS = [200,250, 300,350, 400,450, 500,550, 600]
-#SUBMASS = [200, 225, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 525, 550, 575, 600, 625, 650];
 
 ######################################################################
 
@@ -115,7 +126,7 @@ if( phase == 1 ):
       SCRIPT = open(OUT+'script_'+str(i)+'.sh',"w")
       SCRIPT.writelines('echo "TESTING SELECTION : ' + str(i).rjust(5) + ' --> met>' + str(cuts1.GetBinContent(i)).rjust(5) + ' ' + str(cuts2.GetBinContent(i)).rjust(5) + '<mt<'+str(cuts3.GetBinContent(i)).rjust(5)+'";\n')
       SCRIPT.writelines('cd ' + CMSSW_BASE + '/src;\n')
-      SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc462;\n")
+      SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
       SCRIPT.writelines("eval `scram r -sh`;\n")
       SCRIPT.writelines('cd /tmp/;\n')
       for m in MASS:
@@ -127,7 +138,7 @@ if( phase == 1 ):
          SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
          SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName  + " --in " + inUrl + " " + shapeBasedOpt + " --index " + str(i) + " --json " + jsonUrl +" --fast " + LandSArg + " ;\n")
          SCRIPT.writelines("sh combineCards.sh;\n")
-         SCRIPT.writelines("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe -d Shapes_*.dat  -M Hybrid --ExpectationHints Asymptotic > LANDS.log;\n")
+         SCRIPT.writelines("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe -d hzz2l2v_*.dat  -M Hybrid --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 1 --nToysForCLb 1 --seed 1234 -rMax 50 -rMin 0.1 > LANDS.log;\n")
          if(shapeBased=='1'):
             SCRIPT.writelines('cat *.log | grep BAND &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
          else:
@@ -220,49 +231,6 @@ elif(phase == 3 ):
          Gtmin.SetPoint(mi, m, mtMinCut);
          Gtmax.SetPoint(mi, m, mtMaxCut);
          mi+=1
-
-      #display cuts chosen
-      c1 = ROOT.TCanvas("c1", "c1",900,300);
-      ROOT.gROOT.SetStyle('Plain')
-      ROOT.gStyle.SetOptStat(False);
-
-      c1 = ROOT.TCanvas("c1", "c1",900,300);
-      c1.Divide(3);
-      c1.cd(1);
-      Gmet.SetMarkerStyle(20);
-      Gmet.SetTitle("MET");
-      Gmet.Draw("APC");
-      Gmet.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
-      Gmet.GetYaxis().SetTitle("met cut");
-
-      c1.cd(2);
-      Gtmin.SetMarkerStyle(20);
-      Gtmin.SetTitle("MT min");
-      Gtmin.Draw("APC");
-      Gtmin.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
-      Gtmin.GetYaxis().SetTitle("mt_{min} cut");
-
-      c1.cd(3);
-      Gtmax.SetMarkerStyle(20);
-      Gtmax.SetTitle("MT max");
-      Gtmax.Draw("APC");
-      Gtmax.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
-      Gtmax.GetYaxis().SetTitle("mt_{max} cut");
-      c1.cd(0);
-      c1.Update();
-      c1.SaveAs("OptimizedCuts.png")
-
-      #run limits for the cuts chosen (for intermediate masses use spline interpolation)
-      for m in SUBMASS:
-           index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
-           print("mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(index)).rjust(5) )
-
-      while True:
-           ans = raw_input('Use this fit and compute final limits? (y or n)\n')
-           if(ans=='y' or ans == 'Y'): break;
-           else:			    sys.exit(0);           
-      print 'YES'
-
    else :
       mi=0
       f= open(cutList,'r')
@@ -274,9 +242,54 @@ elif(phase == 3 ):
          mi+=1
       f.close()
 
-      for m in SUBMASS:
-           index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
-           print("mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(index)).rjust(5) )
+   Gmet.Set(mi);
+   Gtmin.Set(mi);
+   Gtmax.Set(mi);
+
+
+
+
+   #display cuts chosen
+   c1 = ROOT.TCanvas("c1", "c1",900,300);
+   ROOT.gROOT.SetStyle('Plain')
+   ROOT.gStyle.SetOptStat(False);
+
+   c1 = ROOT.TCanvas("c1", "c1",900,300);
+   c1.Divide(3);
+   c1.cd(1);
+   Gmet.SetMarkerStyle(20);
+   Gmet.SetTitle("MET");
+   Gmet.Draw("APC");
+   Gmet.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
+   Gmet.GetYaxis().SetTitle("met cut");
+
+   c1.cd(2);
+   Gtmin.SetMarkerStyle(20);
+   Gtmin.SetTitle("MT min");
+   Gtmin.Draw("APC");
+   Gtmin.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
+   Gtmin.GetYaxis().SetTitle("mt_{min} cut");
+
+   c1.cd(3);
+   Gtmax.SetMarkerStyle(20);
+   Gtmax.SetTitle("MT max");
+   Gtmax.Draw("APC");
+   Gtmax.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
+   Gtmax.GetYaxis().SetTitle("mt_{max} cut");
+   c1.cd(0);
+   c1.Update();
+   c1.SaveAs("OptimizedCuts.png")
+
+   #run limits for the cuts chosen (for intermediate masses use spline interpolation)
+   for m in SUBMASS:
+        index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
+        print("mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(index)).rjust(5) )
+
+   while True:
+        ans = raw_input('Use this fit and compute final limits? (y or n)\n')
+        if(ans=='y' or ans == 'Y'): break;
+        else:			    sys.exit(0);           
+   print 'YES'
 
 
    list = open(OUT+'list.txt',"w")
@@ -285,19 +298,30 @@ elif(phase == 3 ):
         index = findCutIndex(Gmet.Eval(m,0,"S"), cuts1, Gtmin.Eval(m,0,"S"), cuts2,  Gtmax.Eval(m,0,"S"), cuts3);
         SCRIPT = open(OUT+'/script_mass_'+str(m)+'.sh',"w")
         SCRIPT.writelines('cd ' + CMSSW_BASE + ';\n')
-        SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc462;\n")
+        SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
         SCRIPT.writelines("eval `scram r -sh`;\n")
         SCRIPT.writelines('cd ' + CWD + ';\n')
         shapeBasedOpt=''
         if(shapeBased=='1') : shapeBasedOpt='--shape'
 
-        cardsdir = 'H'+ str(m);
-        if(shapeBased=='0'): cardsdir+='_count_'+str(index)
-        if(shapeBased=='1'): cardsdir+='_shape_'+str(index)
+        SideMassesArgs = ' '
+        SideMasses = findSideMassPoint(m)
+        if(not (SideMasses[0]==SideMasses[1])):
+           print "Side Mass for mass " + str(m) + " are " + str(SideMasses[0]) + " and " + str(SideMasses[1])
+           Lindex = findCutIndex(Gmet.Eval(SideMasses[0],0,"S"), cuts1, Gtmin.Eval(SideMasses[0],0,"S"), cuts2,  Gtmax.Eval(SideMasses[0],0,"S"), cuts3);
+           Rindex = findCutIndex(Gmet.Eval(SideMasses[1],0,"S"), cuts1, Gtmin.Eval(SideMasses[1],0,"S"), cuts2,  Gtmax.Eval(SideMasses[1],0,"S"), cuts3);
+           print "cutIndex for sideBand are " + str(Lindex) + " and " + str(Rindex) 
+           SideMassesArgs += "--mL " + str(SideMasses[0]) + " --mR " + str(SideMasses[1]) + " --indexL " + str(Lindex) +  " --indexR " + str(Rindex) + " "
+
+
+        cardsdir="cards/"+str(m);
+#        cardsdir = 'H'+ str(m);
+#        if(shapeBased=='0'): cardsdir+='_count_'+str(index)
+#        if(shapeBased=='1'): cardsdir+='_shape_'+str(index)
         SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
-        SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + LandSArg + " ;\n")
+        SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + " ;\n")
         SCRIPT.writelines("sh combineCards.sh;\n")
-        SCRIPT.writelines("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe -d Shapes_*.dat  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 4000 --nToysForCLb 2000 --seed 1234 -rMax 50 -rMin 0.1 > LANDS.log;\n")
+        SCRIPT.writelines("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe -d hzz2l2v_*.dat  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 6000 --nToysForCLb 3000 --seed 1234 -rMax 50 -rMin 0.1 > LANDS.log;\n")
         SCRIPT.writelines('cd ..;\n\n') 
 	SCRIPT.close()
 #	os.system("bsub -q 8nh 'sh " + OUT+"script_mass_"+str(m)+".sh'")
@@ -321,8 +345,8 @@ elif(phase == 4 ):
    files = ""
    for m in SUBMASS:   
 	#line = CWD+'/'+list.readline().split()[0]+'/combined/*m2lnQ.root'
-        line = list.readline().split()[0]+'/*m2lnQ.root'
-	print line
+        #line = list.readline().split()[0]+'/*m2lnQ.root'
+        line = "cards/"+str(m) + '/*m2lnQ.root'
 	out = commands.getstatusoutput("ls " + line)[1] 
 	if(out.find("No such file or directory")>=0):continue
 	files += " " + out;
@@ -330,8 +354,11 @@ elif(phase == 4 ):
    ouputName = 'COUNT'
    if(shapeBased=='1'):ouputName='SHAPE'
 
-   os.system("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+files+"\")'")
-   os.system("rm *.gif");
+   os.system("echo " + files +" > " + ouputName+"_fileList.txt");
+
+   print("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+ouputName+"_fileList.txt\", 7 , 5.035 )'")
+   os.system("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+ouputName+"_fileList.txt\", 7 , 5.035 )'")
+   os.system("rm Higgs*.gif");
 
 ######################################################################
 
