@@ -8,6 +8,7 @@
 <use name="FWCore/FWLite"/>
 <use name="DataFormats/FWLite"/>
 <use name="FWCore/PythonParameterSet"/>
+<use name="JHU/MELA"/>
 
 
 <export>

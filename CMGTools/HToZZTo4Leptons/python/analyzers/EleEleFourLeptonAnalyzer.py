@@ -38,3 +38,8 @@ class EleEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
     def testLeptonTight2(self, leg,sel=None):
         return self.testElectronTight(leg) and \
                super( EleEleFourLeptonAnalyzer, self).testLeptonTight2( leg,sel )
+
+
+    def testFourLeptonSF(self, fourLepton):
+        return ( abs(fourLepton.leg1.leg1.pdgId()) == abs(fourLepton.leg2.leg1.pdgId())) and \
+               super( EleEleFourLeptonAnalyzer, self).testFourLeptonSF( fourLepton)

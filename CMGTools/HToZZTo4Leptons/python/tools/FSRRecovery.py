@@ -1,4 +1,4 @@
-from copy import copy
+from copy import copy,deepcopy
 from math import pi,acos,asin
 from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi  
 
@@ -26,15 +26,19 @@ from ROOT import TLorentzVector
 
 
 class FSRRecovery(object):
-    def __init__(self,fsrCfg):
+    def __init__(self,fsrCfg,verbose=False):
         self.cfg = fsrCfg
-
+        self.verbose=verbose
         
     def setPhotons(self,photons):
         '''Define the collection of photons to be used for the recovery'''
         self.photons = filter(lambda x: x.pt()>self.cfg.minPhotonPt and \
                              abs(x.eta())<self.cfg.maxPhotonEta,photons)
 
+        if self.verbose:
+            print 'initial photons'
+            for g in self.photons:
+                print g.pt(),g.eta(),g.phi()
 
     def setZ(self,zCand):
         '''Set a Z to recover'''
@@ -57,19 +61,40 @@ class FSRRecovery(object):
         #Prefilter
         photons = filter(self.photonPreFilter,self.photons)
 
+        if self.verbose:
+            print 'prefiltered photons'
+            for g in photons:
+                print g.pt(),g.eta(),g.phi()
+
+
 #        print "Photons after Prefilter = %d\n" % len(self.photons)
         # filter wrt Z candidate
         photons = filter(self.photonFilter,photons)
 #        print "Photons after filter = %d\n" % len(self.photons)
+
+        if self.verbose:
+            print 'filtered photons'
+            for g in photons:
+                print g.pt(),g.eta(),g.phi()
 
 
         #Filter by theta star
         photons = filter(self.filterThetaStar,photons)
 #        print "Photons after theta star = %d\n" % len(self.photons)
 
+        if self.verbose:
+            print 'filtered photons after theta star'
+            for g in photons:
+                print g.pt(),g.eta(),g.phi()
+
         #Filter by MassZ
         photons = filter(self.filterMass,photons)
 #        print "Photons after z mass = %d\n" % len(self.photons)
+
+        if self.verbose:
+            print 'filtered photons after Z mass'
+            for g in photons:
+                print g.pt(),g.eta(),g.phi()
 
         #if the Z is Z1 check if FSR improves the Z measurement
         
@@ -80,11 +105,26 @@ class FSRRecovery(object):
         photons= filter(self.filterMassImprovement,photons)
 #            print "Photons after  mass improvement test= %d\n" % len(self.photons)
 
+        if self.verbose:
+            print 'filtered photons after  mass improvement'
+            for g in photons:
+                print g.pt(),g.eta(),g.phi()
+
 
 
         #Split the high Pt and low Pt region
         photonsHighPt = filter(lambda x: x.pt()>self.cfg.minPhotonPtTight,photons)
         photonsLowPt  = filter(lambda x: x.pt()<=self.cfg.minPhotonPtTight,photons)
+
+
+        if self.verbose:
+            print 'high pt photons'
+            for g in photonsHighPt:
+                print g.pt(),g.eta(),g.phi()
+            print 'low pt photons'
+            for g in photonsLowPt:
+                print g.pt(),g.eta(),g.phi()
+
             
         #Sort the high photons by pt
         photonsHighPt=sorted(photonsHighPt,key=lambda x: x.pt(),reverse=True)
@@ -108,10 +148,13 @@ class FSRRecovery(object):
         if photon is not None:    
             self.z.setFSR(photon)
             #and associate it with them
-            if self.z.fsrDR1()<self.cfg.leptonIsoCone:
-                self.z.leg1.fsrPhoton=photon
-            if self.z.fsrDR2()<self.cfg.leptonIsoCone:
-                self.z.leg2.fsrPhoton=photon
+#            if self.z.fsrDR1()<self.cfg.leptonIsoCone:
+#                self.z.leg1=self.z.leg1.clone()
+#                self.z.leg1.fsrPhoton=photon
+                
+#            if self.z.fsrDR2()<self.cfg.leptonIsoCone:
+#                self.z.leg2=self.z.leg2.clone()
+#                self.z.leg2.fsrPhoton=photon
             #remove photons from the list so thet we can next go to
             #the other Z
             self.photons.remove(photon)
@@ -174,14 +217,20 @@ class FSRRecovery(object):
         for leg in legs:
             #Check that the photon is none of the legs
             #Cross clean electrons from electrons
-            if abs(photon.pdgId())==11 and abs(leg.pdgId())==11:
-                if deltaR(photon.eta(),photon.phi(),leg.eta(),leg.phi())<self.cfg.electronCleaningDR:
-                    return False
+#            if abs(photon.pdgId())==11 and abs(leg.pdgId())==11:
+#                if deltaR(photon.eta(),photon.phi(),leg.eta(),leg.phi())<self.cfg.electronCleaningDR:
+#                    return False
             #if the lepton is an electron and the photon a photon account for supercluster absorption
-            if abs(photon.pdgId())!=11 and abs(leg.pdgId())==11:
-                if deltaR(photon.eta(),photon.phi(),leg.eta(),leg.phi())<self.cfg.vetoElectronDR:
+            DR = deltaR(photon.eta(),photon.phi(),leg.eta(),leg.phi())
+            Deta = abs(photon.eta()-leg.eta())
+            Dphi = abs(deltaPhi(photon.phi(),leg.phi()))
+            if self.verbose:
+                print 'prefilter gamma',photon.pt(),photon.eta(),DR,Deta,Dphi
+                
+            if  abs(leg.pdgId())==11:
+                if DR<self.cfg.vetoElectronDR:
                     return False
-                if abs(photon.eta()-leg.eta())<self.cfg.vetoElectronDEta and  deltaPhi(photon.phi(),leg.phi())<self.cfg.vetoElectronDPhi:
+                if Deta <self.cfg.vetoElectronDEta and  Dphi<self.cfg.vetoElectronDPhi:
                     return False
                 
 
@@ -207,7 +256,7 @@ class FSRRecovery(object):
         if min(theta1,theta2) > self.cfg.maxLeptonPhotonAngle:
             return False
 
-        if min(dr1,dr2) > self.cfg.maxLeptonPhotonDRTight and photon.relIso(0.5)>self.cfg.maxPhotonDBIso:
+        if min(dr1,dr2) > self.cfg.maxLeptonPhotonDRTight and (photon.chargedHadronIso()+photon.photonIso()+photon.puChargedHadronIso()+photon.neutralHadronIso())/photon.pt()>self.cfg.maxPhotonDBIso:
             return False
 
         if photon.pt() < self.cfg.minPhotonPtTight and min(dr1,dr2) > self.cfg.maxLeptonPhotonDRTight:
@@ -239,7 +288,7 @@ class FSRRecovery(object):
         if theta > self.cfg.maxLeptonPhotonAngle:
             return False
 
-        if dr > self.cfg.maxLeptonPhotonDRTight and photon.relIso(0.5)>self.cfg.maxPhotonDBIso:
+        if dr > self.cfg.maxLeptonPhotonDRTight and (photon.chargedHadronIso()+photon.photonIso()+photon.neutralHadronIso()+photon.puChargedHadronIso())/photon.pt()>self.cfg.maxPhotonDBIso:
             return False
 
         if photon.pt() < self.cfg.minPhotonPtTight and dr > self.cfg.maxLeptonPhotonDRTight:

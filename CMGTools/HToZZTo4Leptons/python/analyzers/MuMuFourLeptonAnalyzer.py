@@ -63,4 +63,7 @@ class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer):
 
 
 
+    def testFourLeptonSF(self, fourLepton):
+        return ( abs(fourLepton.leg1.leg1.pdgId()) == abs(fourLepton.leg2.leg1.pdgId())) and \
+               super( MuMuFourLeptonAnalyzer, self).testFourLeptonSF( fourLepton)
 
