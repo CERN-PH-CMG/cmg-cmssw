@@ -179,8 +179,8 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
          double PUCentralnnorm =  1; if(tmphist->GetBinContent(3)>0)PUCentralnnorm = tmphist->GetBinContent(2) / tmphist->GetBinContent(3);
          double PUDownnorm     =  1; if(tmphist->GetBinContent(4)>0)PUDownnorm     = tmphist->GetBinContent(3) / tmphist->GetBinContent(4);
          double PUUpnorm       =  1; if(tmphist->GetBinContent(5)>0)PUUpnorm       = tmphist->GetBinContent(3) / tmphist->GetBinContent(5);
-         PURescale_down[(Samples[j])["dtag"].toString()] = 1.0;//PUDownnorm;
-         PURescale_up  [(Samples[j])["dtag"].toString()] = 1.0;//PUUpnorm;
+         PURescale_down[(Samples[j])["dtag"].toString()] = PUDownnorm;
+         PURescale_up  [(Samples[j])["dtag"].toString()] = PUUpnorm;
          if(isMC)printf("PU Renormalization %25s Shift Down --> %6.2f  Central = %6.2f  Up Down --> %6.2f\n",(Samples[j])["dtag"].toString().c_str(),PUDownnorm, PUCentralnnorm, PUUpnorm);	
 
 
