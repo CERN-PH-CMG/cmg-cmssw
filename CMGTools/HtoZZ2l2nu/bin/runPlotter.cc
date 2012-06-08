@@ -179,9 +179,9 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
          double PUCentralnnorm =  1; if(tmphist->GetBinContent(3)>0)PUCentralnnorm = tmphist->GetBinContent(2) / tmphist->GetBinContent(3);
          double PUDownnorm     =  1; if(tmphist->GetBinContent(4)>0)PUDownnorm     = tmphist->GetBinContent(3) / tmphist->GetBinContent(4);
          double PUUpnorm       =  1; if(tmphist->GetBinContent(5)>0)PUUpnorm       = tmphist->GetBinContent(3) / tmphist->GetBinContent(5);
-         PURescale_down[(Samples[j])["dtag"].toString()] = PUDownnorm;
-         PURescale_up  [(Samples[j])["dtag"].toString()] = PUUpnorm;
-         //if(isMC)printf("PU Renormalization %25s Shift Down --> %6.2f  Central = %6.2f  Up Down --> %6.2f\n",(Samples[j])["dtag"].toString().c_str(),PUDownnorm, PUCentralnnorm, PUUpnorm);	
+         PURescale_down[(Samples[j])["dtag"].toString()] = 1.0;//PUDownnorm;
+         PURescale_up  [(Samples[j])["dtag"].toString()] = 1.0;//PUUpnorm;
+         if(isMC)printf("PU Renormalization %25s Shift Down --> %6.2f  Central = %6.2f  Up Down --> %6.2f\n",(Samples[j])["dtag"].toString().c_str(),PUDownnorm, PUCentralnnorm, PUUpnorm);	
 
 
          double cnorm = 1.0;
@@ -217,8 +217,8 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight /= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight /= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
 
 
 
@@ -316,8 +316,8 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight /= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight /= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
 
          int split = 1;
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
@@ -422,8 +422,8 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight /= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight /= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
 
          int split = 1;
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
@@ -518,8 +518,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight /= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight /= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
 
          if(HistoProperties.name.find("optim_cut")!=string::npos){Weight=1.0;}
 
@@ -757,8 +757,8 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight /= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight /= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
 
 
          int split = 1;

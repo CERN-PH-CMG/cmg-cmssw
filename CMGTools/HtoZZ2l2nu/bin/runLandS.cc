@@ -690,7 +690,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
-         fprintf(pFile,"%35s %10s ", "CMS_hzz2l2nu_jetbinning", "lnN");
+         fprintf(pFile,"%35s %10s ", "CMS_hzz2l2v_jetbinning", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
             fprintf(pFile,"%6s ","-");
          }fprintf(pFile,"\n");
@@ -1014,11 +1014,12 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
 
        if(syst==""){syst="";
        }else if(syst.BeginsWith("_jes")){syst.ReplaceAll("_jes","_CMS_scale_j");
-       }else if(syst.BeginsWith("_jer")){syst.ReplaceAll("_jer","_CMS_res_j");
-       }else if(syst.BeginsWith("_pu" )){syst.ReplaceAll("_pu", "_CMS_pu");
+       }else if(syst.BeginsWith("_jer")){syst.ReplaceAll("_jer","_CMS_res_j");  continue;//skip res for now
+       }else if(syst.BeginsWith("_btag")){syst.ReplaceAll("_btag","_CMS_eff_b"); 
+       }else if(syst.BeginsWith("_pu" )){syst.ReplaceAll("_pu", "_CMS_hzz2l2v_pu");
        }else if(syst.BeginsWith("_ren" )){continue;   //already accounted for in QCD scales
        }else if(syst.BeginsWith("_fact" )){continue; //skip this one
-       }else{   syst="_CMS_hzz2l2nu"+syst;
+       }else{   syst="_CMS_hzz2l2v"+syst;
        }
 
        double systUncertainty = hshape->GetBinError(0);  hshape->SetBinError(0,0);
@@ -1048,8 +1049,8 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                TH1* statup=(TH1 *)hshape->Clone(proc+"_stat"+ch+proc+"Up");
                TH1* statdown=(TH1 *)hshape->Clone(proc+"_stat"+ch+proc+"Down");
                for(int ibin=1; ibin<=statup->GetXaxis()->GetNbins(); ibin++){
-                  statup  ->SetBinContent(ibin,std::max(1E-9, statup  ->GetBinContent(ibin) + statup  ->GetBinError(ibin)));
-                  statdown->SetBinContent(ibin,std::max(1E-9, statdown->GetBinContent(ibin) - statdown->GetBinError(ibin)));
+                  statup  ->SetBinContent(ibin,std::min(2*hshape->GetBinContent(ibin), std::max(0.01*hshape->GetBinContent(ibin), statup  ->GetBinContent(ibin) + statup  ->GetBinError(ibin))));
+                  statdown->SetBinContent(ibin,std::min(2*hshape->GetBinContent(ibin), std::max(0.01*hshape->GetBinContent(ibin), statdown->GetBinContent(ibin) - statdown->GetBinError(ibin))));
                }               
                statup  ->Write(proc+postfix+"_CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix+"Up");
                statdown->Write(proc+postfix+"_CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix+"Down");
@@ -1060,7 +1061,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                   }else{
                      //makesure that syst+stat error is never bigger than 100%
                      double valerr, val  = hshape->IntegralAndError(1,hshape->GetXaxis()->GetNbins(),valerr);
-                     if(sqrt(pow(valerr,2)+pow(systUncertainty,2))>val){systUncertainty = sqrt(pow(val,2) - pow(valerr,2));}
+                     if(sqrt(pow(valerr,2)+pow(systUncertainty,2))>val){systUncertainty = sqrt(std::max(0.0, pow(val,2) - pow(valerr,2)));}
                      dci.systs["CMS_hzz2l2v_sys_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
                   }
                }

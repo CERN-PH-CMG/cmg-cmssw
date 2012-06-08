@@ -407,10 +407,10 @@ int main(int argc, char* argv[])
 		mon.fillHisto("met_"+reg+it->first,tags_full,it->second.pt(),iweight);
 		mon.fillHisto("met_"+reg+it->first+"_vspu",tags_full,ev.ngenITpu,it->second.pt(),iweight);
 	      }
-	    mon.fill2DHisto("met_"+reg+"metvsassocChargedMet", tags_full,mets["met"].pt(),mets["assocChargedMet"].pt(),iweight);
-	    mon.fill2DHisto("met_"+reg+"metvsassocMet",        tags_full,mets["met"].pt(),mets["assocMet"].pt(),       iweight);
-	    mon.fill2DHisto("met_"+reg+"metvsclusteredMet",    tags_full,mets["met"].pt(),mets["clusteredMet"].pt(),   iweight);
-	    mon.fill2DHisto("met_"+reg+"metvscentralMet",      tags_full,mets["met"].pt(),mets["centralMet"].pt(),     iweight);
+	    mon.fillHisto("met_"+reg+"metvsassocChargedMet", tags_full,mets["met"].pt(),mets["assocChargedMet"].pt(),iweight);
+	    mon.fillHisto("met_"+reg+"metvsassocMet",        tags_full,mets["met"].pt(),mets["assocMet"].pt(),       iweight);
+	    mon.fillHisto("met_"+reg+"metvsclusteredMet",    tags_full,mets["met"].pt(),mets["clusteredMet"].pt(),   iweight);
+	    mon.fillHisto("met_"+reg+"metvscentralMet",      tags_full,mets["met"].pt(),mets["centralMet"].pt(),     iweight);
 	    
 	    mon.fillHisto("met_"+reg+"redMetL",tags_full,redMetL,iweight);
 	    mon.fillHisto("met_"+reg+"redMetT",tags_full,redMetT,iweight);
