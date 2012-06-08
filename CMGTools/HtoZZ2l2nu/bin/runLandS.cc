@@ -263,9 +263,13 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
          TString histoName = ch+"_"+shapeName+varName ;
          TH2* hshape2D = (TH2*)pdir->Get(histoName );
          if(!hshape2D){
-            //replace by empty histogram
-            hshape2D = (TH2*)pdir->Get(shapeName+varName);
-            if(hshape2D)hshape2D->Reset();
+            if(varName==""){
+               //replace by empty histogram
+               hshape2D = (TH2*)pdir->Get(shapeName+varName);
+               if(hshape2D)hshape2D->Reset();
+            }else{
+               continue;
+            }
          }
 
          if(hshape2D){
@@ -1046,7 +1050,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                for(int ibin=1; ibin<=statup->GetXaxis()->GetNbins(); ibin++){
                   statup  ->SetBinContent(ibin,std::max(1E-9, statup  ->GetBinContent(ibin) + statup  ->GetBinError(ibin)));
                   statdown->SetBinContent(ibin,std::max(1E-9, statdown->GetBinContent(ibin) - statdown->GetBinError(ibin)));
-               }
+               }               
                statup  ->Write(proc+postfix+"_CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix+"Up");
                statdown->Write(proc+postfix+"_CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix+"Down");
                dci.systs["CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix][RateKey_t(proc,ch)]=1.0;              
@@ -1054,6 +1058,9 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                   if(proc.Contains("ggh") || proc.Contains("qqh")){
                      dci.systs["CMS_hzz2l2v_interpol_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
                   }else{
+                     //makesure that syst+stat error is never bigger than 100%
+                     double valerr, val  = hshape->IntegralAndError(1,hshape->GetXaxis()->GetNbins(),valerr);
+                     if(sqrt(pow(valerr,2)+pow(systUncertainty,2))>val){systUncertainty = sqrt(pow(val,2) - pow(valerr,2));}
                      dci.systs["CMS_hzz2l2v_sys_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
                   }
                }
