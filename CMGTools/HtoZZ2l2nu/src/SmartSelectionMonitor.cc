@@ -16,42 +16,36 @@ TH1 * SmartSelectionMonitor::addHistogram(TH1 *h, bool format){
   return addHistogram(h,h->GetName(),format);
 }
 
+
+
 // takes care of filling an histogram
-bool SmartSelectionMonitor::fillHisto(TString name, TString tag, double val, double weight,bool useBinWidth)
+bool SmartSelectionMonitor::fillHisto(TString name, TString tag, double val, double weight, bool useBinWidth)
 {
   TH1 *h = getHisto(name,tag);
   if(h==0) return false;
-  if(useBinWidth){
-      int ibin =h->FindBin(val);
-      double width = h->GetBinWidth(ibin);
-      weight /= width;
-    }
+  if(useBinWidth){ int ibin =h->FindBin(val); double width = h->GetBinWidth(ibin);   weight /= width;  }
   h->Fill(val,weight);
   return true;
 }
 
-bool SmartSelectionMonitor::fillHisto(TString name, std::vector<TString> tags, double val, double weight,bool useBinWidth){
+bool SmartSelectionMonitor::fillHisto(TString name, std::vector<TString> tags, double val, double weight, bool useBinWidth){
   for(unsigned int i=0;i<tags.size();i++){fillHisto(name, tags[i], val, weight, useBinWidth);}
   return true;
 }
 
 
 // takes care of filling an histogram
-bool SmartSelectionMonitor::fill2DHisto(TString name, TString tag, double valx, double valy, double weight,bool useBinWidth)
+bool SmartSelectionMonitor::fillHisto(TString name, TString tag, double valx, double valy, double weight, bool useBinWidth)
 {
   TH2 *h = (TH2 *)getHisto(name,tag);
   if(h==0) return false;
-  if(useBinWidth){
-      int ibin =h->FindBin(valx,valy);
-      double width = h->GetBinWidth(ibin);
-      weight /= width;
-    }
+  if(useBinWidth){ int ibin =h->FindBin(valx,valy); double width = h->GetBinWidth(ibin); weight /= width; }
   h->Fill(valx,valy,weight);
   return true;
 }
 
-bool SmartSelectionMonitor::fill2DHisto(TString name, std::vector<TString> tags, double valx, double valy, double weight,bool useBinWidth){
-  for(unsigned int i=0;i<tags.size();i++){fill2DHisto(name, tags[i], valx, valy, weight, useBinWidth);}
+bool SmartSelectionMonitor::fillHisto(TString name, std::vector<TString> tags, double valx, double valy, double weight, bool useBinWidth){
+  for(unsigned int i=0;i<tags.size();i++){fillHisto(name, tags[i], valx, valy, weight, useBinWidth);}
   return true; 
 }
 

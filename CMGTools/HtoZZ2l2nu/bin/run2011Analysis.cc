@@ -450,12 +450,11 @@ int main(int argc, char* argv[])
   gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
   edm::LumiReWeighting *LumiWeights=0;
   reweight::PoissonMeanShifter *PShiftUp=0, *PShiftDown=0;
-  if(isMC)
-    {
+  if(isMC){
       LumiWeights= new edm::LumiReWeighting(mcPileupDistribution,dataPileupDistribution);
       PShiftUp = new reweight::PoissonMeanShifter(+0.8);
       PShiftDown = new reweight::PoissonMeanShifter(-0.8);
-    }
+  }
 
   //event Categorizer
   //EventCategory eventCategoryInst(0); //inclusive analysis
@@ -999,9 +998,12 @@ int main(int argc, char* argv[])
       bool passPreselectionM3dlep       (passZmass && passZpt                     && passDphijmet && passBveto);
       for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
         float iweight = weight;                                               //nominal
-        if(ivar==5)                        iweight *=TotalWeight_plus;        //pu up
-        if(ivar==6)                        iweight *=TotalWeight_minus;       //pu down
+        if(ivar==5)                        iweight *=2;//TotalWeight_plus;        //pu up
+        if(ivar==6)                        iweight *=0.5;//TotalWeight_minus;       //pu down
         if(ivar<=10 && ivar>=7 && isMC_GG) iweight *=ev.hptWeights[ivar-6]/ev.hptWeights[0];   //ren/fact scales   
+
+//        if(ivar==0 || ivar==5 || ivar==6){printf("SYst=%10s  W=%6.3E\n",varNames[ivar].Data(),iweight);}
+
 
 	//recompute MET/MT if JES/JER was varied
 	LorentzVector zvv    = zvvs[ivar>4?0:ivar];
@@ -1054,6 +1056,9 @@ int main(int argc, char* argv[])
 	      if(passPreselectionMbvetoMzmass && passZmass         && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,3,iweight);
 	      if(passPreselectionMbvetoMzmass && isZsideBand       && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,4,iweight);
 	      if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,5,iweight);
+
+//              if(passPreselection && index==78 && (ivar==0 || ivar==5 || ivar==6)){printf("SYst=%10s  Weight=%6.3E Integral=%6.3E\n",varNames[ivar].Data(),iweight, ((TH2*)mon.getHisto(TString("mt_shapes")+varNames[ivar],tag_cat))->ProjectionY("tmp",79,79)->Integral());}
+
 	    }
 	}
       }
