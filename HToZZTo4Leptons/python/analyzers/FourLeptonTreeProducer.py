@@ -46,19 +46,10 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.bookLepton("ZFR_leg2")
         self.bookLepton("ZFR_probe")
         self.var("ZFR_nProbes",int)
-        self.bookLepton("ZFR_FSRprobe")
-        self.var("ZFR_nFSRProbes",int)
-
-
+        self.var("ZFR_probe_FSR",int)
 
         self.var("vertices",int)
         self.var("vertexWeight")
-
-        #For FSR study
-#        self.bookGenFSR("genFSR")
-#        self.bookRecoFSR("matchFSR")
-
-
 
         
     def process(self, iEvent, event):
@@ -71,19 +62,8 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.fill('vertices',len(event.vertices))
         self.fill('vertexWeight',(event.vertexWeight))
 
-
-
-
         #Fill run,lumi,event
         self.fillEventInfo(iEvent,subevent)
-
-#        if hasattr( subevent, 'bestGenPhoton' ):
-#            self.fillGenFSR('genFSR',subevent.bestGenPhoton)
-
-#        if hasattr( subevent, 'matchedPhoton' ):
-#            self.fillRecoFSR('matchFSR',subevent.matchedPhoton)
-            
-            
 
         #Fill the Higgs and legs
         self.fill('HExists',0)
@@ -109,6 +89,7 @@ class FourLeptonTreeProducer( TreeProducer ):
             self.fillLepton("HLoose_Z1_leg2",subevent.higgsCandLoose.leg1.leg2,subevent)
             self.fillLepton("HLoose_Z2_leg1",subevent.higgsCandLoose.leg2.leg1,subevent)
             self.fillLepton("HLoose_Z2_leg2",subevent.higgsCandLoose.leg2.leg2,subevent)
+
             if hasattr(subevent.higgsCandLoose.leg2.leg1,'fR'):
                 self.fill('HLoose_fakeRate',subevent.higgsCandLoose.leg2.leg1.fR*subevent.higgsCandLoose.leg2.leg2.fR)
                 self.fill('HLoose_fakeRateUp',subevent.higgsCandLoose.leg2.leg1.fRUp*subevent.higgsCandLoose.leg2.leg2.fRUp)
@@ -119,15 +100,12 @@ class FourLeptonTreeProducer( TreeProducer ):
             self.fillBoson("ZFR",subevent.bestZForFakeRate)
             self.fillLepton("ZFR_leg1",subevent.bestZForFakeRate.leg1,subevent)
             self.fillLepton("ZFR_leg2",subevent.bestZForFakeRate.leg2,subevent)
-        if hasattr( subevent,'leptonsForFakeRate'):
-            self.fill('ZFR_nProbes',len(subevent.leptonsForFakeRate))
-            if len(subevent.leptonsForFakeRate)>0:
-                self.fillLepton("ZFR_probe",subevent.leptonsForFakeRate[0],subevent)
-        if hasattr( subevent,'leptonsForFakeRateWithPhoton'):
-            self.fill('ZFR_nFSRProbes',len(subevent.leptonsForFakeRateWithPhoton))
-            if len(subevent.leptonsForFakeRateWithPhoton)>0:
-                self.fillLepton("ZFR_FSRprobe",subevent.leptonsForFakeRateWithPhoton[0],subevent)
- 
-        self.tree.Fill()
+            if hasattr( subevent,'leptonsForFakeRate'):
+                self.fill('ZFR_nProbes',len(subevent.leptonsForFakeRate))
+                if len(subevent.leptonsForFakeRate)>0:
+                    self.fillLepton("ZFR_probe",subevent.leptonsForFakeRate[0],subevent)
+                    self.fill("ZFR_probe_FSR",hasattr(subevent.leptonsForFakeRate[0],'fsrPhoton'))
 
+        self.tree.Fill()
+        
 

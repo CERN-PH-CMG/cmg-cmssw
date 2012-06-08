@@ -35,10 +35,7 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_E'.format(pName=pName))
 
     def bookRecoFSR(self, pName ):
-        self.var('{pName}_Pt'.format(pName=pName))
-        self.var('{pName}_Eta'.format(pName=pName))
-        self.var('{pName}_Phi'.format(pName=pName))
-        self.var('{pName}_E'.format(pName=pName))
+        self.bookGenFSR(pName)
         self.var('{pName}_Match'.format(pName=pName))
         self.var('{pName}_MatchE'.format(pName=pName))
         self.var('{pName}_Type'.format(pName=pName))
@@ -56,7 +53,7 @@ class TreeProducer( Analyzer ):
 
     def fillRecoFSR(self, pName,particle ):
         self.fillGenFSR(pName,particle)
-        if hasattr(particle,'match'):
+        if hasattr(particle,'match') and hasattr(particle,'matchedE'):
             self.fill('{pName}_Match'.format(pName=pName), particle.match )
             self.fill('{pName}_MatchE'.format(pName=pName), particle.matchedE )
         else:    
@@ -102,18 +99,20 @@ class TreeProducer( Analyzer ):
         self.fill('{pName}_PdgId'.format(pName=pName), particle.pdgId() )
         self.fill('{pName}_SIP3D'.format(pName=pName), particle.sip3D() )
         self.fill('{pName}_IsoDB'.format(pName=pName), particle.absIso(0.5) )
-        if hasattr(event,'rho'):
-            self.fill('{pName}_IsoEA'.format(pName=pName), particle.absEffAreaIso(event.rho,self.cfg_ana.effectiveAreas) )
-        if abs(particle.pdgId())==11:
+
+        if abs(particle.pdgId())==11 :
             self.fill('{pName}_eleMVA'.format(pName=pName), particle.mvaNonTrigV0())
             self.fill('{pName}_eleMVAID'.format(pName=pName), particle.mvaIDZZ())
             self.fill('{pName}_eleConvHits'.format(pName=pName), particle.numberOfHits())
             self.fill('{pName}_ID'.format(pName=pName), particle.mvaIDZZ())
+            self.fill('{pName}_IsoEA'.format(pName=pName), particle.absEffAreaIso(event.rhoEle,self.cfg_ana.effectiveAreas) )
+
         if abs(particle.pdgId())==13:
             self.fill('{pName}_muPF'.format(pName=pName), particle.sourcePtr().userFloat("isPFMuon"))
             self.fill('{pName}_muPixelHits'.format(pName=pName), particle.numberOfValidPixelHits())
             self.fill('{pName}_muMatches'.format(pName=pName), particle.numberOfMatches())
             self.fill('{pName}_ID'.format(pName=pName), particle.sourcePtr().userFloat("isPFMuon"))
+            self.fill('{pName}_IsoEA'.format(pName=pName), particle.absEffAreaIso(event.rhoMu,self.cfg_ana.effectiveAreas) )
 
             
             
@@ -124,8 +123,6 @@ class TreeProducer( Analyzer ):
         self.fill('EVENT',iEvent.eventAuxiliary().id().event())
         if hasattr(event,'met'):
             self.fill('met',event.met.pt())
-        if hasattr(event,'rho'):
-            self.fill('rho',event.rho)
         if hasattr(event,'step'):
             self.fill('step',event.step)
         if hasattr(event,'skim'):
@@ -160,13 +157,14 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_FSRExists'.format(pName=pName))
         self.var('{pName}_FSRMatch'.format(pName=pName))
         self.var('{pName}_FSRUncorrMass'.format(pName=pName))
+        self.var('{pName}_MELA'.format(pName=pName))
 
 
     def fillBoson(self, pName,particle ):
         self.fillBasic(pName,particle)
         self.fill('{pName}_FSR_UncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
 
-        if particle.hasFSR():
+        if hasattr(particle,'fsrPhoton'):
             self.fill('{pName}_FSR_Exists'.format(pName=pName), 1.0 )
             self.fill('{pName}_FSR_Theta1'.format(pName=pName), particle.fsrTheta1() )
             self.fill('{pName}_FSR_Theta2'.format(pName=pName), particle.fsrTheta2() )
@@ -183,9 +181,11 @@ class TreeProducer( Analyzer ):
         self.fill('{pName}_MinPairMass'.format(pName=pName), particle.minPairMass() )
         self.fill('{pName}_MinOSPairMass'.format(pName=pName), particle.minOSPairMass() )
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
-        self.fill('{pName}_FSRExists'.format(pName=pName), particle.leg1.hasFSR() or particle.leg2.hasFSR() )
+        self.fill('{pName}_FSRExists'.format(pName=pName), hasattr(particle.leg1,'fsrPhoton') or hasattr(particle.leg2,'fsrPhoton'))
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
-        
+        if hasattr(particle,'mela'):
+            self.fill('{pName}_MELA'.format(pName=pName), particle.mela )
+            
 
 
     def bookEventInfo(self):    
@@ -193,7 +193,6 @@ class TreeProducer( Analyzer ):
         self.var('LUMI',int)
         self.var('EVENT',int)
         self.var('met')
-        self.var('rho')
         self.var('step')
         self.var('skim')
 

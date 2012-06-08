@@ -1,92 +1,101 @@
 import os
 
 from CMGTools.RootTools.RootTools import loadLibs
-from ROOT import gSystem
-
-import ROOT as root
+import ROOT 
 
 
 # loadLibs()
 
-gSystem.Load("libCMGToolsHToZZTo4Leptons")
-gSystem.Load("libJHUMELA")
+#ROOT.gSystem.Load("libCMGToolsHToZZTo4Leptons")
+#ROOT.gSystem.Load("libJHUMELA.so")
 
-templatePath = '/'.join([os.environ['CMSSW_BASE'],'src/JHU/MELA/src/datafiles/my8DTemplateNotNorm.root']) 
-root.setTemplate(templatePath); # need a better way to point to the input file
+templatePath = '/'.join([os.environ['CMSSW_BASE'],'src/JHU/MELA/datafiles/my8DTemplateNotNorm.root']) 
+
+libPath = '/'.join([os.environ['CMSSW_BASE'],'src/JHU/MELA/'])
+
+
+ROOT.gSystem.AddIncludePath("-I/$ROOFITSYS/include/")
+ROOT.gROOT.ProcessLine('.L ' +libPath+'PDFs/RooXZsZs_5D.cxx+')
+ROOT.gROOT.ProcessLine('.L ' +libPath+'PDFs/RooqqZZ_JHU.cxx+')
+ROOT.gROOT.ProcessLine('.L ' +libPath+'src/AngularPdfFactory.cc+')
+ROOT.gROOT.ProcessLine('.L ' +libPath+'scripts/MELA.C+')
+
 
 # from ROOT import MELAAngles
-from ROOT import calculateAngles
 
+ROOT.setTemplate(templatePath); # need a better way to point to the input file
 
 
 
 # you can even create a python class for high level stuff, like this: 
-class LvMELAAngles(object):
+class MELACalculator(object):
     '''This class computes the mela angles, taking in input the 4-vectors of the leptons coming from the decay of the Zs from the Higgs.'''
     
-    def __init__(self,
-                 lepZ1, antiLepZ1,
-                 lepZ2, antiLepZ2): 
-        '''
-        lepZ1: lepton from Z1
-        antiLepZ1: anti-lepton from Z1
-        lepZ2: lepton from Z2
-        antiLepZ2: anti-lepton from Z2
+    def __init__(self):
+        self.costheta1=ROOT.Double(0)
+        self.costheta2=ROOT.Double(0)
+        self.phi=ROOT.Double(0)
+        self.costhetastar=ROOT.Double(0)
+        self.phistar1=ROOT.Double(0)
+        self.phistar2=ROOT.Double(0)
+        self.phistar12=ROOT.Double(0)
+        self.phi1=ROOT.Double(0)
+        self.phi2=ROOT.Double(0)
 
-        Computes the following angles (if you know the missing definitions add them!):
-        costheta1 : langle of the Z1 leptons w/r to the Z1 direction, in the Z1 rest frame   
-        costheta2 : same for Z2
-        phi 
-        costhetastar : angle of the Zs with respect to the Higgs propagation direction, in the Higgs rest frame
-        phistar1
-        phistar2
-        phistar12
-        phi1
-        phi2 
-        '''
 
-        self.costheta1=root.Double(0)
-        self.costheta2=root.Double(0)
-        self.phi=root.Double(0)
-        self.costhetastar=root.Double(0)
-        self.phistar1=root.Double(0)
-        self.phistar2=root.Double(0)
-        self.phistar12=root.Double(0)
-        self.phi1=root.Double(0)
-        self.phi2=root.Double(0)
+    def calculate(self,FL):
         
-        calculateAngles(lepZ1+antiLepZ1+lepZ2+antiLepZ2, lepZ1+antiLepZ1 , lepZ1 , antiLepZ1,
-                        lepZ2+antiLepZ2 , lepZ2, antiLepZ2,
+
+        self.costheta1=ROOT.Double(0)
+        self.costheta2=ROOT.Double(0)
+        self.phi=ROOT.Double(0)
+        self.costhetastar=ROOT.Double(0)
+        self.phistar1=ROOT.Double(0)
+        self.phistar2=ROOT.Double(0)
+        self.phistar12=ROOT.Double(0)
+        self.phi1=ROOT.Double(0)
+        self.phi2=ROOT.Double(0)
+
+        self.MELAS = ROOT.Double(0)
+        self.MELAB = ROOT.Double(0)
+        self.MELA  = ROOT.Double(0) 
+        
+
+        l1 = ROOT.TLorentzVector(FL.leg1.leg1.px(),FL.leg1.leg1.py(),FL.leg1.leg1.pz(),FL.leg1.leg1.energy())
+        l2 = ROOT.TLorentzVector(FL.leg1.leg2.px(),FL.leg1.leg2.py(),FL.leg1.leg2.pz(),FL.leg1.leg2.energy())
+        l3 = ROOT.TLorentzVector(FL.leg2.leg1.px(),FL.leg2.leg1.py(),FL.leg2.leg1.pz(),FL.leg2.leg1.energy())
+        l4 = ROOT.TLorentzVector(FL.leg2.leg2.px(),FL.leg2.leg2.py(),FL.leg2.leg2.pz(),FL.leg2.leg2.energy())
+
+        if hasattr(FL.leg1,'fsrPhoton'):
+            photon = ROOT.TLorentzVector(FL.leg1.fsrPhoton.px(),FL.leg1.fsrPhoton.py(),FL.leg1.fsrPhoton.pz(),FL.leg1.fsrPhoton.energy())
+            if FL.leg1.fsrDR1() < FL.leg1.fsrDR2():
+                l1 = l1+photon
+            else:
+                l2=l2+photon
+
+        if hasattr(FL.leg2,'fsrPhoton'):
+            photon = ROOT.TLorentzVector(FL.leg2.fsrPhoton.px(),FL.leg2.fsrPhoton.py(),FL.leg2.fsrPhoton.pz(),FL.leg2.fsrPhoton.energy())
+            if FL.leg2.fsrDR1() < FL.leg2.fsrDR2():
+                l3 = l3+photon
+            else:
+                l4=l4+photon
+                
+            
+        ROOT.calculateAngles(FL, FL.leg1 , l1 , l2,
+                        FL.leg2 , l3, l4,
                         self.costheta1,  self.costheta2,  self.phi,  self.costhetastar,
                         self.phistar1,  self.phistar2,  self.phistar12,  self.phi1,  self.phi2)
 
-        self.mZZ = (lepZ1+antiLepZ1+lepZ2+antiLepZ2).M()
-        self.m1  = (lepZ1+antiLepZ1).M()
-        self.m2  = (lepZ2+antiLepZ2).M()
         
 
-        prob = root.likelihoodDiscriminant( self.mZZ, self.m1, self.m2, self.costhetastar,
+        prob = ROOT.likelihoodDiscriminant( FL.mass(), FL.leg1.mass(), FL.leg2.mass(), self.costhetastar,
                                             self.costheta1, self.costheta2, self.phi, self.phistar1)
         self.MELAS = prob.first
         self.MELAB = prob.second
         self.MELA  = self.MELAS / (self.MELAS  + self.MELAB)
-       
-
-if __name__ == '__main__':
-
-    from ROOT import TLorentzVector
-    lepZ1 = TLorentzVector()
-    antiLepZ1 = TLorentzVector()
-    lepZ2 = TLorentzVector()
-    antiLepZ2 = TLorentzVector()
-    lepZ1.SetPxPyPzE(-0.768853944346720E+01,  0.419702017182753E+01, -0.980948214278878E+01,  0.131512188410873E+02)
-    antiLepZ2.SetPxPyPzE( 0.163114374963135E+02,  0.152798039261140E+02, -0.393458453717676E+02,  0.452507563388247E+02)
-    lepZ2.SetPxPyPzE(-0.943151158126501E+01, -0.986925894022945E+01,  0.240202927591857E+01,  0.138609316923216E+02)
-    antiLepZ1.SetPxPyPzE( 0.808613528418701E+00, -0.960756515771212E+01,  0.467532982386379E+02,  0.477370931277664E+02)
-    melaAngles = LvMELAAngles(lepZ1, antiLepZ1, lepZ2, antiLepZ2)
+        return self.MELA
     
-    print melaAngles.costheta1 , melaAngles.costheta2,  melaAngles.phi,  melaAngles.costhetastar,  melaAngles.phistar1,  melaAngles.phistar2,  melaAngles.phistar12,  melaAngles.phi1,  melaAngles.phi2
-    print melaAngles.MELA, melaAngles.MELAS , melaAngles.MELAB
+
 
 
 

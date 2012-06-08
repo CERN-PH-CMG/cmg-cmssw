@@ -47,8 +47,9 @@ class DiObjectPair( TLorentzVector ):
                DiObject(self.leg1.leg1,self.leg2.leg2),
                DiObject(self.leg1.leg2,self.leg2.leg1),
                DiObject(self.leg1.leg2,self.leg2.leg2)]
+
         if onlyOS:
-            pairs=filter(lambda x: x.charge==0,pairs)
+            pairs=filter(lambda x: x.charge()==0,pairs)
 
         pairs=sorted(pairs,key=lambda x: x.mass())
         return pairs

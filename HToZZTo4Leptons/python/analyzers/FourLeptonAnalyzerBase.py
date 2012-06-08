@@ -14,6 +14,7 @@ from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
 from CMGTools.HToZZTo4Leptons.tools.FSRRecovery import FSRRecovery
 from CMGTools.HToZZTo4Leptons.tools.FakeRateCalculator import FakeRateCalculator
+from CMGTools.HToZZTo4Leptons.tools.mela import MELACalculator
 
 
 
@@ -35,12 +36,17 @@ class FourLeptonAnalyzerBase( Analyzer ):
     def declareHandles(self):
         super(FourLeptonAnalyzerBase, self).declareHandles()
 
-        self.handles['rho'] = AutoHandle( ('kt6PFJetsForIso', 'rho'),
+        self.handles['rhoMu'] = AutoHandle( (self.cfg_ana.rhoMuon, 'rho'),
                                           'double')
+
+        self.handles['rhoEle'] = AutoHandle( (self.cfg_ana.rhoElectron, 'rho'),
+                                          'double')
+
         self.handles['met'] = AutoHandle( ('cmgPFMET',''),'std::vector<cmg::BaseMET>')
 
         self.handles['photons'] = AutoHandle( ('cmgPhotonSel',''),'std::vector<cmg::Photon>')
         self.handles['electrons'] = AutoHandle( ('cmgElectronSel',''),'std::vector<cmg::Electron>')
+
 
 
     def beginLoop(self):
@@ -48,19 +54,32 @@ class FourLeptonAnalyzerBase( Analyzer ):
         self.counters.addCounter('FourLepton')
         count = self.counters.counter('FourLepton')
         count.register('all events')
+
+        self.mela = MELACalculator()
+
         
     def buildPhotonList(self, event):
 
         event.photons = map( Photon,self.handles['photons'].product() )
-#        event.photons.extend(map( Photon,self.handles['electrons'].product()))
+
 
 
     def buildLeptonList(self, event):
+        #We need the vertices first!
+
+        
         event.leptons1 = map( self.__class__.LeptonClass1,
                               self.handles['leptons1'].product() )
+
+        for lepton in event.leptons1:
+            lepton.associatedVertex = event.vertex
+        
         if self.__class__.LeptonClass1 != self.__class__.LeptonClass2: 
             event.leptons2 = map( self.__class__.LeptonClass2,
                                   self.handles['leptons2'].product() )
+
+            for lepton in event.leptons2:
+                lepton.associatedVertex = event.vertex
         else:
             event.leptons2 = event.leptons1
 
@@ -69,6 +88,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
        
     def process(self, iEvent, event):
+        self.event = iEvent.eventAuxiliary().id().event()
         return True
     
     def findPairs(self, leptons):
@@ -79,6 +99,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
 
     def findPairsWithFSR(self, leptons,photons):
+        #if the pairs have already been rerun clean the fsr from them
         out = []
         for l1, l2 in itertools.combinations(leptons, 2):
             z = DiObject(l1, l2)
@@ -98,7 +119,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return out
 
 
-    #this function is different for the ee/mumu
+
     def findQuads(self, leptons):
         out = []
         for l1, l2,l3,l4 in itertools.permutations(leptons, 4):
@@ -124,6 +145,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
                         for fr in self.fakeRates:
                             fr.attachToObject(quadObject.leg2.leg1)
                             fr.attachToObject(quadObject.leg2.leg2)
+
                     out.append(quadObject)
                 else:    
                     fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
@@ -167,7 +189,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
 
 
-#    Skimming of leptons 1-2 corresponds to the flavour here 
+#    Skimming of leptons 1-2 corresponds to the flavour here not Z1/Z2
     def testLeptonSkim1(self, lepton,sel=None):
         if hasattr(self.cfg_ana,"minPt1") and hasattr(self.cfg_ana,"maxEta1"):
             return self.testLepton(lepton,self.cfg_ana.minPt1,self.cfg_ana.maxEta1,sel)  and \
@@ -194,6 +216,12 @@ class FourLeptonAnalyzerBase( Analyzer ):
         looseID = (muon.isGlobal() or muon.isTracker())
         return looseID
 
+    def testMuonCleaning(self, muon):
+        '''Returns True if a muon passes a set of cuts.
+        Can be used in testLepton1 and testLepton2, in child classes.'''
+        looseID = (muon.isGlobal() or self.testMuonPF(muon))
+        return looseID
+
     def testElectronLoose(self, electron):
         looseID = electron.numberOfHits()<=1
         return looseID
@@ -207,19 +235,21 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return pfID
 
 
+
+
     #tight muonn  requirements 
     def testMuonTight(self, muon):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
 
-        iso  = muon.absEffAreaIso(self.rho,self.cfg_ana.effectiveAreas)/muon.pt()<0.4 #warning:you need to set the self.rho !!!
+        iso  = muon.absEffAreaIso(self.rhoMu,self.cfg_ana.effectiveAreas)/muon.pt()<0.4 #warning:you need to set the self.rho !!!
         return self.testMuonLoose(muon) and self.testMuonPF(muon) and iso
 
     def testElectronTight(self, electron):
         '''Returns True if a electron passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
         id = electron.mvaIDZZ()
-        iso  = electron.absEffAreaIso(self.rho,self.cfg_ana.effectiveAreas)/electron.pt()<0.4 #warning:you need to set the self.rho !!!
+        iso  = electron.absEffAreaIso(self.rhoEle,self.cfg_ana.effectiveAreas)/electron.pt()<0.4 #warning:you need to set the self.rho !!!
         return iso and id 
 
 
@@ -228,8 +258,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
     def testZSkim(self, zCand):
         '''Applies  OS SF and M requirements on a Z'''
-        return zCand.M() > self.cfg_ana.z1_m[0] and \
-               self.testZSF(zCand) and \
+        return self.testZSF(zCand) and \
                self.testZOS(zCand)
 
      
@@ -257,6 +286,18 @@ class FourLeptonAnalyzerBase( Analyzer ):
                self.testLeptonLoose1(zCand.leg2)
 
     def testZ1TightID(self,zCand):
+        #Attach/Detach here the FSR photons
+        if hasattr(zCand,'fsrPhoton'):
+            if zCand.fsrDR1()<self.cfg_ana.FSR.leptonIsoCone:
+                zCand.leg1.fsrPhoton = zCand.fsrPhoton
+            if zCand.fsrDR2()<self.cfg_ana.FSR.leptonIsoCone:
+                zCand.leg2.fsrPhoton = zCand.fsrPhoton
+        else:
+            if hasattr(zCand.leg1,'fsrPhoton'):
+                del zCand.leg1.fsrPhoton
+            if hasattr(zCand.leg2,'fsrPhoton'):
+                del zCand.leg2.fsrPhoton
+
         return self.testLeptonTight1(zCand.leg1) and \
                self.testLeptonTight1(zCand.leg2)
 
@@ -265,6 +306,20 @@ class FourLeptonAnalyzerBase( Analyzer ):
                self.testLeptonLoose2(zCand.leg2)
 
     def testZ2TightID(self,zCand):
+        #Attach/Detach here the FSR photons
+        if hasattr(zCand,'fsrPhoton'):
+            if zCand.fsrDR1()<self.cfg_ana.FSR.leptonIsoCone:
+                zCand.leg1.fsrPhoton = zCand.fsrPhoton
+            if zCand.fsrDR2()<self.cfg_ana.FSR.leptonIsoCone:
+                zCand.leg2.fsrPhoton = zCand.fsrPhoton
+        else:
+            if hasattr(zCand.leg1,'fsrPhoton'):
+                del zCand.leg1.fsrPhoton
+            if hasattr(zCand.leg2,'fsrPhoton'):
+                del zCand.leg2.fsrPhoton
+            
+
+
         return self.testLeptonTight2(zCand.leg1) and \
                self.testLeptonTight2(zCand.leg2)
 
@@ -299,13 +354,16 @@ class FourLeptonAnalyzerBase( Analyzer ):
                self.testZOS(fourLepton.leg1)
 
 
-    def testFourLeptonMassZ1Z2(self, fourLepton):
-        return self.testZ1Mass(fourLepton.leg1) and self.testZ2Mass(fourLepton.leg2)
+    def testFourLeptonMassZ2(self, fourLepton):
+        return  self.testZ2Mass(fourLepton.leg2)
 
     def testFourLeptonMassZ1(self, fourLepton):
         return self.testZ1Mass(fourLepton.leg1)
 
         
+    def testFourLeptonMinOSMass(self, fourLepton):
+        return fourLepton.minOSPairMass()>self.cfg_ana.minMass
+
     def testFourLeptonMinMass(self, fourLepton):
         return fourLepton.minPairMass()>self.cfg_ana.minMass
 
@@ -324,7 +382,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
             return zBosons[0]
         else:
             # taking the closest from the Z mass
-            zMass = 91.2
+            zMass = 91.118
             return min(zBosons, key = lambda x: abs( x.mass() - zMass) )
 
     def bestZBosonBySumPt(self, zBosons):
@@ -336,12 +394,12 @@ class FourLeptonAnalyzerBase( Analyzer ):
             return max(zBosons, key = lambda x: x.leg1.pt()+x.leg2.pt())
 
 
-    def testZBosonSumPt(self, zBoson):
+    def getFourLeptonZ2SumPt(self, hBoson):
         sum=0
-        if zBoson.hasFSR():
-            sum = zBoson.leg1.pt()+zBoson.leg2.pt()+zBoson.fsrPhoton.pt()
+        if hasattr(hBoson.leg2,'fsrPhoton'):
+            sum = hBoson.leg2.leg1.pt()+hBoson.leg2.leg2.pt()+hBoson.leg2.fsrPhoton.pt()
         else:    
-            sum = zBoson.leg1.pt()+zBoson.leg2.pt()
+            sum = hBoson.leg2.leg1.pt()+hBoson.leg2.leg2.pt()
         return sum    
 
 
@@ -350,12 +408,25 @@ class FourLeptonAnalyzerBase( Analyzer ):
         #sort the first one by Z mass and if there
         #are more than one take the two highest pt ones
         if len(fourLeptons)>1 :
-            
-            fourLeptons=sorted(fourLeptons,key=lambda x: self.testZBosonSumPt,reverse=True)
-            fourLeptons=sorted(fourLeptons,key=lambda x: abs(x.leg1.mass()-91.2))
-            
-        
+            sorted1=sorted(fourLeptons,key=self.getFourLeptonZ2SumPt,reverse=True)
+            sorted2=sorted(sorted1,key=lambda x: abs(x.leg1.mass()-91.118))
+            return sorted2
+        else:
+            return fourLeptons
 
+    def pruneFourLeptonsForZ1(self, fourLeptons):
+        '''From all the objects in the collection pick the ones that has exactly the same
+           Z1 as the best'''
+        
+        if len(fourLeptons)>0:
+            referenceObj = fourLeptons[0]
+            filteredFourLeptons = filter(lambda x: abs(x.leg1.mass()-referenceObj.leg1.mass())<0.0001,fourLeptons)
+            return filteredFourLeptons
+        else:
+            return []
+        
+        
+            
 
 
 
