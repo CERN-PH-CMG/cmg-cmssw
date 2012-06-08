@@ -528,20 +528,20 @@ int main(int argc, char* argv[])
 
                if(jet.pt()<15)continue;
                NJets15++;
-               mon.fill1DHisto("JetEta15", tags_full, jet.eta(), iweight);
-               mon.fill2DHisto("JetEta15vspu", tags_full, ev.ngenITpu, jet.eta(), iweight);
+               mon.fillHisto("JetEta15", tags_full, jet.eta(), iweight);
+               mon.fillHisto("JetEta15vspu", tags_full, ev.ngenITpu, jet.eta(), iweight);
 
                if(jet.pt()<30)continue;
                NJets30++;
-               mon.fill1DHisto("JetEta30", tags_full, jet.eta(), iweight);
-               mon.fill2DHisto("JetEta30vspu", tags_full, ev.ngenITpu, jet.eta(), iweight);
+               mon.fillHisto("JetEta30", tags_full, jet.eta(), iweight);
+               mon.fillHisto("JetEta30vspu", tags_full, ev.ngenITpu, jet.eta(), iweight);
 
-               mon.fill2DHisto("JetPtvsZpT",  tags_full, zpt, jet.pt(), iweight);
+               mon.fillHisto("JetPtvsZpT",  tags_full, zpt, jet.pt(), iweight);
             } 
-            mon.fill1DHisto("NJets15"      ,tags_full, NJets15, iweight);
-            mon.fill1DHisto("NJets30"      ,tags_full, NJets30, iweight);
-            mon.fill2DHisto("NJets15vspu",tags_full, ev.ngenITpu,  NJets15 ,iweight);
-            mon.fill2DHisto("NJets30vspu",tags_full, ev.ngenITpu,  NJets30 ,iweight);
+            mon.fillHisto("NJets15"      ,tags_full, NJets15, iweight);
+            mon.fillHisto("NJets30"      ,tags_full, NJets30, iweight);
+            mon.fillHisto("NJets15vspu",tags_full, ev.ngenITpu,  NJets15 ,iweight);
+            mon.fillHisto("NJets30vspu",tags_full, ev.ngenITpu,  NJets30 ,iweight);
 
 
             for(unsigned int vbfSelection=0;vbfSelection<3;vbfSelection++){
@@ -605,91 +605,91 @@ int main(int argc, char* argv[])
                    VBFMaxEta = std::max(fabs(jets[0].eta()), fabs(jets[1].eta()));
 
                    if(VBFPassdEtaCut && VBFPassiMCut){
-                       mon.fill1DHisto("pumva", tags_full2, jets[0].pumva,iweight);
-                       mon.fill2DHisto("pumvavspu", tags_full2, ev.ngenITpu,  jets[0].pumva,iweight);
+                       mon.fillHisto("pumva", tags_full2, jets[0].pumva,iweight);
+                       mon.fillHisto("pumvavspu", tags_full2, ev.ngenITpu,  jets[0].pumva,iweight);
                    }
 
               }
 
  
                    //VBF control
-                if(true                                                                                        )mon.fill1DHisto("NEventsInc"       ,tags_full2,    0                ,iweight);
-                if(VBFPass2Jet30                                                                                  )mon.fill1DHisto("NEventsInc"       ,tags_full2,    1                ,iweight);
-                if(VBFPassdEtaCut                                                                                 )mon.fill1DHisto("NEventsInc"       ,tags_full2,    2                ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut                                                                    )mon.fill1DHisto("NEventsInc"       ,tags_full2,    3                ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn                                                    )mon.fill1DHisto("NEventsInc"       ,tags_full2,    4                ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto                                     )mon.fill1DHisto("NEventsInc"       ,tags_full2,    5                ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fill1DHisto("NEventsInc"       ,tags_full2,    6                ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto )mon.fill1DHisto("NEventsInc"       ,tags_full2,    7                ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto && VBFPassCentralDilep)mon.fill1DHisto("NEventsInc"       ,tags_full2,    8                ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto && VBFPassCentralDilep && zvv.pt()>50)mon.fill1DHisto("NEventsInc"       ,tags_full2,    9                ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto && VBFPassCentralDilep && zvv.pt()>60)mon.fill1DHisto("NEventsInc"       ,tags_full2,    10                ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto && VBFPassCentralDilep && zvv.pt()>70)mon.fill1DHisto("NEventsInc"       ,tags_full2,    11                ,iweight);
+                if(true                                                                                        )mon.fillHisto("NEventsInc"       ,tags_full2,    0                ,iweight);
+                if(VBFPass2Jet30                                                                                  )mon.fillHisto("NEventsInc"       ,tags_full2,    1                ,iweight);
+                if(VBFPassdEtaCut                                                                                 )mon.fillHisto("NEventsInc"       ,tags_full2,    2                ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut                                                                    )mon.fillHisto("NEventsInc"       ,tags_full2,    3                ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn                                                    )mon.fillHisto("NEventsInc"       ,tags_full2,    4                ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto                                     )mon.fillHisto("NEventsInc"       ,tags_full2,    5                ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fillHisto("NEventsInc"       ,tags_full2,    6                ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto )mon.fillHisto("NEventsInc"       ,tags_full2,    7                ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto && VBFPassCentralDilep)mon.fillHisto("NEventsInc"       ,tags_full2,    8                ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto && VBFPassCentralDilep && zvv.pt()>50)mon.fillHisto("NEventsInc"       ,tags_full2,    9                ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto && VBFPassCentralDilep && zvv.pt()>60)mon.fillHisto("NEventsInc"       ,tags_full2,    10                ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto && pass3dLeptonVeto && VBFPassCentralDilep && zvv.pt()>70)mon.fillHisto("NEventsInc"       ,tags_full2,    11                ,iweight);
 
 
-                if(VBFPass2Jet30                                                                                  )mon.fill1DHisto("dEtaInc"          ,tags_full2,    fabs(VBFdEta)    ,iweight);
-                if(VBFPassdEtaCut                                                                                 )mon.fill1DHisto("iMassInc"         ,tags_full2,    VBFSyst.M()      ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut                                                                    )mon.fill1DHisto("cenLeptonVetoInc" ,tags_full2,    VBFCentralLeptons,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn                                                    )mon.fill1DHisto("cen30JetVetoInc"  ,tags_full2,    VBFCentral30Jets ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto                                     )mon.fill1DHisto("NBJets30Inc"      ,tags_full2,    VBFNBJets        ,iweight);
+                if(VBFPass2Jet30                                                                                  )mon.fillHisto("dEtaInc"          ,tags_full2,    fabs(VBFdEta)    ,iweight);
+                if(VBFPassdEtaCut                                                                                 )mon.fillHisto("iMassInc"         ,tags_full2,    VBFSyst.M()      ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut                                                                    )mon.fillHisto("cenLeptonVetoInc" ,tags_full2,    VBFCentralLeptons,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn                                                    )mon.fillHisto("cen30JetVetoInc"  ,tags_full2,    VBFCentral30Jets ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto                                     )mon.fillHisto("NBJets30Inc"      ,tags_full2,    VBFNBJets        ,iweight);
     
-                if(               VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fill1DHisto("dEtaNM1C"         ,tags_full2,    fabs(VBFdEta)    ,iweight);
-                if(VBFPassdEtaCut              && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fill1DHisto("iMassNM1C"        ,tags_full2,    VBFSyst.M()      ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut                 && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fill1DHisto("cenLeptonVetoNM1C",tags_full2,    VBFCentralLeptons,iweight);
+                if(               VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fillHisto("dEtaNM1C"         ,tags_full2,    fabs(VBFdEta)    ,iweight);
+                if(VBFPassdEtaCut              && VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fillHisto("iMassNM1C"        ,tags_full2,    VBFSyst.M()      ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut                 && VBFPassJetVeto && VBFPassBJetVeto                     )mon.fillHisto("cenLeptonVetoNM1C",tags_full2,    VBFCentralLeptons,iweight);
    
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn                && VBFPassBJetVeto )mon.fill1DHisto("cen30JetVetoNM1C" ,tags_full2,    VBFCentral30Jets ,iweight);
-                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto                 )mon.fill1DHisto("NBJets30NM1C"     ,tags_full2,    VBFNBJets        ,iweight);
-                if(                            VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fill2DHisto("dEtaiMassNM1C"  ,tags_full2,    fabs(VBFdEta), VBFSyst.M(), iweight);
-                if(zvv.pt()>50 &&                VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fill2DHisto("dEtaiMassNM1C2" ,tags_full2,    fabs(VBFdEta), VBFSyst.M(), iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn                && VBFPassBJetVeto )mon.fillHisto("cen30JetVetoNM1C" ,tags_full2,    VBFCentral30Jets ,iweight);
+                if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto                 )mon.fillHisto("NBJets30NM1C"     ,tags_full2,    VBFNBJets        ,iweight);
+                if(                            VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fillHisto("dEtaiMassNM1C"  ,tags_full2,    fabs(VBFdEta), VBFSyst.M(), iweight);
+                if(zvv.pt()>50 &&                VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fillHisto("dEtaiMassNM1C2" ,tags_full2,    fabs(VBFdEta), VBFSyst.M(), iweight);
 
 
-                mon.fill1DHisto("totalvspu"      ,tags_full2,    ev.ngenITpu   ,iweight);
+                mon.fillHisto("totalvspu"      ,tags_full2,    ev.ngenITpu   ,iweight);
                 if(fabs(VBFMinEta)<2.4){
-                   mon.fill1DHisto("totalvspu_cen"      ,tags_full2,    ev.ngenITpu   ,iweight);
+                   mon.fillHisto("totalvspu_cen"      ,tags_full2,    ev.ngenITpu   ,iweight);
                 }else{
-                   mon.fill1DHisto("totalvspu_fwd"      ,tags_full2,    ev.ngenITpu   ,iweight);
+                   mon.fillHisto("totalvspu_fwd"      ,tags_full2,    ev.ngenITpu   ,iweight);
                 }
 
    	           if(VBFPass2Jet30 && VBFPassdEtaCut && VBFPassiMCut){
-                   mon.fill1DHisto("tagvspu_noveto"      ,tags_full2,    ev.ngenITpu   ,iweight);
+                   mon.fillHisto("tagvspu_noveto"      ,tags_full2,    ev.ngenITpu   ,iweight);
 
                    if(fabs(VBFMinEta)<2.4){
-                      mon.fill1DHisto("tagvspu_noveto_cen"      ,tags_full2,    ev.ngenITpu   ,iweight);
+                      mon.fillHisto("tagvspu_noveto_cen"      ,tags_full2,    ev.ngenITpu   ,iweight);
                    }else{
-                      mon.fill1DHisto("tagvspu_noveto_fwd"      ,tags_full2,    ev.ngenITpu   ,iweight);
+                      mon.fillHisto("tagvspu_noveto_fwd"      ,tags_full2,    ev.ngenITpu   ,iweight);
                    } 
                 }    
 
                 if(isVBF){
-                   mon.fill1DHisto("MinEta"      ,tags_full2,                VBFMinEta ,iweight);  
-                   mon.fill2DHisto("MinEtavspu"  ,tags_full2, ev.ngenITpu,   VBFMinEta ,iweight);
-                   mon.fill1DHisto("MaxEta"      ,tags_full2,                VBFMaxEta ,iweight);
-                   mon.fill2DHisto("MaxEtavspu"  ,tags_full2, ev.ngenITpu,   VBFMaxEta ,iweight);
+                   mon.fillHisto("MinEta"      ,tags_full2,                VBFMinEta ,iweight);  
+                   mon.fillHisto("MinEtavspu"  ,tags_full2, ev.ngenITpu,   VBFMinEta ,iweight);
+                   mon.fillHisto("MaxEta"      ,tags_full2,                VBFMaxEta ,iweight);
+                   mon.fillHisto("MaxEtavspu"  ,tags_full2, ev.ngenITpu,   VBFMaxEta ,iweight);
 
                    if(jets.size()>2){
-                       mon.fill2DHisto("ThirdJetPtvspu"  ,tags_full2, ev.ngenITpu, jets[2].pt()   ,iweight);
+                       mon.fillHisto("ThirdJetPtvspu"  ,tags_full2, ev.ngenITpu, jets[2].pt()   ,iweight);
                        if(jets[2].pt()>20){
-                       mon.fill2DHisto("ThirdJetEtavspu"  ,tags_full2, ev.ngenITpu, fabs(jets[2].eta())   ,iweight);
+                       mon.fillHisto("ThirdJetEtavspu"  ,tags_full2, ev.ngenITpu, fabs(jets[2].eta())   ,iweight);
                       }
                    }
 
-                   mon.fill1DHisto("tagvspu"      ,tags_full2,    ev.ngenITpu   ,iweight); 
+                   mon.fillHisto("tagvspu"      ,tags_full2,    ev.ngenITpu   ,iweight); 
                    if(fabs(VBFMinEta)<2.4){
-                      mon.fill1DHisto("tagvspu_cen"      ,tags_full2,    ev.ngenITpu   ,iweight);
+                      mon.fillHisto("tagvspu_cen"      ,tags_full2,    ev.ngenITpu   ,iweight);
                    }else{
-                      mon.fill1DHisto("tagvspu_fwd"      ,tags_full2,    ev.ngenITpu   ,iweight);
+                      mon.fillHisto("tagvspu_fwd"      ,tags_full2,    ev.ngenITpu   ,iweight);
                    }
 
-                   if(jets.size()<=2 || jets[2].pt()<=20)mon.fill1DHisto("tag3rd20vspu"      ,tags_full2,    ev.ngenITpu   ,iweight);
-                   if(jets.size()<=2 || jets[2].pt()<=25)mon.fill1DHisto("tag3rd25vspu"      ,tags_full2,    ev.ngenITpu   ,iweight);
+                   if(jets.size()<=2 || jets[2].pt()<=20)mon.fillHisto("tag3rd20vspu"      ,tags_full2,    ev.ngenITpu   ,iweight);
+                   if(jets.size()<=2 || jets[2].pt()<=25)mon.fillHisto("tag3rd25vspu"      ,tags_full2,    ev.ngenITpu   ,iweight);
                 }
 
 
-                if(VBFPass2Jet30 && VBFPassiMCut)mon.fill2DHisto("dEtavspu", tags_full2, ev.ngenITpu, VBFdEta,iweight);
+                if(VBFPass2Jet30 && VBFPassiMCut)mon.fillHisto("dEtavspu", tags_full2, ev.ngenITpu, VBFdEta,iweight);
 
                 if(VBFPass2Jet30 && VBFPassdEtaCut && VBFPassiMCut && VBFPassBJetVeto){
-                   mon.fill2DHisto("NCenJet15vspu"  , tags_full2, ev.ngenITpu, VBFCentral15Jets,iweight);
-                   mon.fill2DHisto("NCenJet30vspu"  , tags_full2, ev.ngenITpu, VBFCentral30Jets,iweight);
+                   mon.fillHisto("NCenJet15vspu"  , tags_full2, ev.ngenITpu, VBFCentral15Jets,iweight);
+                   mon.fillHisto("NCenJet30vspu"  , tags_full2, ev.ngenITpu, VBFCentral30Jets,iweight);
                 }    
 
             }//VBF selection cut

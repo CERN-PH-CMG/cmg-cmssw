@@ -998,8 +998,8 @@ int main(int argc, char* argv[])
       bool passPreselectionM3dlep       (passZmass && passZpt                     && passDphijmet && passBveto);
       for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
         float iweight = weight;                                               //nominal
-        if(ivar==5)                        iweight *=2;//TotalWeight_plus;        //pu up
-        if(ivar==6)                        iweight *=0.5;//TotalWeight_minus;       //pu down
+        if(ivar==5)                        iweight *=TotalWeight_plus;        //pu up
+        if(ivar==6)                        iweight *=TotalWeight_minus;       //pu down
         if(ivar<=10 && ivar>=7 && isMC_GG) iweight *=ev.hptWeights[ivar-6]/ev.hptWeights[0];   //ren/fact scales   
 
 //        if(ivar==0 || ivar==5 || ivar==6){printf("SYst=%10s  W=%6.3E\n",varNames[ivar].Data(),iweight);}

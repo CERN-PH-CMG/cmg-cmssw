@@ -1361,7 +1361,7 @@ int main(int argc, char* argv[])
       mon.fillHisto  ("zeta"     ,tags_full,zeta    ,iweight);
       mon.fillHisto  ("zpt"      ,tags_full,zpt     ,iweight);
      // mon.fillHisto  ("zrank"    ,tags_full,zrank   ,iweight);
-      mon.fill2DHisto("zptvszeta",tags_full,zpt,zeta,iweight);
+      mon.fillHisto("zptvszeta",tags_full,zpt,zeta,iweight);
       mon.fillHisto  ("dphill"   ,tags_full,dphill  ,iweight);
       mon.fillHisto  ("mindrlz"  ,tags_full,mindrlz ,iweight);
       mon.fillHisto  ("maxdrlz"  ,tags_full,maxdrlz ,iweight);
@@ -1406,7 +1406,7 @@ int main(int argc, char* argv[])
                       mon.fillHisto("eventflow",tags_full,6,iweight);
                       mon.fillHisto("eventSubCat",tags_full,eventSubCat,iweight);
                      // mon.fillHisto("cutOptMediumdphill",tags_full,fabs(dphill));
-                     // mon.fill2DHisto("cutOptMediumsummtvsredMetL",tags_full,mtsum,redMetL,iweight);                    
+                     // mon.fillHisto("cutOptMediumsummtvsredMetL",tags_full,mtsum,redMetL,iweight);                    
                       if(passTightRedMet)    mon.fillHisto("eventflow",tags_full,7,iweight);
                   }
                }
@@ -1492,8 +1492,8 @@ int main(int argc, char* argv[])
       
          if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn                && VBFPassBJetVeto )mon.fillHisto("VBFcen30JetVetoNM1C" ,tags_full,    VBFCentral30Jets ,iweight);
          if(VBFPassdEtaCut && VBFPassiMCut && VBFPassLeptonIn && VBFPassJetVeto                 )mon.fillHisto("VBFNBJets30NM1C"     ,tags_full,    VBFNBJets        ,iweight);
-         if(                            VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fill2DHisto("VBFdEtaiMassNM1C"  ,tags_full,    fabs(VBFdEta), VBFSyst.M(), iweight);
-         if(redMet>50 &&                VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fill2DHisto("VBFdEtaiMassNM1C2" ,tags_full,    fabs(VBFdEta), VBFSyst.M(), iweight);
+         if(                            VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fillHisto("VBFdEtaiMassNM1C"  ,tags_full,    fabs(VBFdEta), VBFSyst.M(), iweight);
+         if(redMet>50 &&                VBFPassLeptonIn && VBFPassJetVeto && VBFPassBJetVeto )mon.fillHisto("VBFdEtaiMassNM1C2" ,tags_full,    fabs(VBFdEta), VBFSyst.M(), iweight);
 
          if(isVBF){
             mon.fillHisto("VBFMinEta"  ,tags_full,    VBFMinEta ,iweight);

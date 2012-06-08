@@ -448,13 +448,13 @@ int main(int argc, char* argv[])
 		{
 		  LorentzVector VBFSyst=jetsP4[0]+jetsP4[1];
 		  mon.fillHisto("vbfmass",ctf,VBFSyst.mass(),iweight);
-		  mon.fillHisto("vbdphi",ctf,deltaPhi(jetsP4[0].phi(),jetsP4[1].phi()));
+		  mon.fillHisto("vbdphi",ctf,deltaPhi(jetsP4[0].phi(),jetsP4[1].phi()), iweight);
 		}
 
 	      if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
 	      for(unsigned int index=0;index<nOptimCuts;index++){
 		if ( index<nOptimCuts-1 && zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-		  mon.fill2DHisto("mt_shapes_"+subCatsToFill[isc],ctf,index, mt,iweight);
+		  mon.fillHisto("mt_shapes_"+subCatsToFill[isc],ctf,index, mt,iweight);
 	      }
 	    }
 	}
