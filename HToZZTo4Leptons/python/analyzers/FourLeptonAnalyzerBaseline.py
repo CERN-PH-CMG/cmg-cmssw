@@ -143,7 +143,7 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonTightIDZ1,'4l z1 tight ID',1,'fourLeptonsTightIDZ1')
 
         #Next Step : Apply Tight Lepton Selection for Z1 
-        passed=cutFlow.applyCut(self.testFourLeptonTightID,'4l tight lepton id',1,'fourLeptonsLooseID')
+        passed=cutFlow.applyCut(self.testFourLeptonLooseID,'4l loose lepton id',1,'fourLeptonsLooseID')
 #        passed=cutFlow.applyCut(self.testFourLeptonTightID,'4l tighter lepton id',1,'fourLeptonsTightIDPre')
 
         #Require Z1 OS/SF and mass cuts

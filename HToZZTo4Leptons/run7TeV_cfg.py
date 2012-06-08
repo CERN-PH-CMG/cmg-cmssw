@@ -10,7 +10,7 @@ from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 
 
 period = 'Period_2011AB'
-channel = 'mu_mu'
+channel = 'mu_ele'
 
 
 
@@ -41,6 +41,12 @@ eleEleGenSel = cfg.Analyzer(
     )
 
 
+A4Skim = cfg.Analyzer('A4Skim',
+    muons='cmgMuonSel',
+    electrons='cmgElectronSel'
+    )
+
+
 #Trigger Information
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
@@ -50,7 +56,6 @@ triggerAna = cfg.Analyzer(
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     vertexWeight = mc_vertexWeight,
-    skimGoodVertex=True,
     verbose = False
     )
 
@@ -73,9 +78,8 @@ muMuAna = cfg.Analyzer(
     keep=False,
     effectiveAreas=effectiveAreas,
     fakeRates=fakeRates2011,
-    rhoMuon     = 'kt6PFJetsCentralNeutralrho'
-    rhoElectron = 'f'
-
+    rhoMuon     = 'kt6PFJetsForIso',
+    rhoElectron = 'kt6PFJetsForIso',
     FSR=fsr
     )
 
@@ -146,10 +150,10 @@ for comp in mcSamples:
 
 
 for comp in dataSamplesMu:
-    comp.splitFactor = 100
+    comp.splitFactor = 200
     
 for comp in dataSamplesE:
-    comp.splitFactor = 100
+    comp.splitFactor = 200
     
 theAna = None
 if channel == 'mu_mu':
@@ -190,20 +194,12 @@ elif channel == 'ele_ele':
 
 #Define Sequences for data and MC
 
-mcSequence = [
-   theGenSel,    #uncomment to preselect events in gen level 
-    triggerAna,
-    vertexAna,
-    theGenAna,
-    theAna,
-    createTreeProducer( theAna ),
-    createTreeProducer( theGenAna )
-    ]
 
 dataSequence=[
     jsonFilter,
-    triggerAna,
+    A4Skim,
     vertexAna,
+    triggerAna,
     theAna,
     createTreeProducer( theAna )
     ]
@@ -222,7 +218,7 @@ if test==1:
     dataset = GGH130
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-    dataset.files = ['file:/afs/cern.ch/user/b/bachtis/work/releases/CMGTools/CMSSW_5_2_5/src/cmgTuple12.root']
+
 
    
 if test ==2:
