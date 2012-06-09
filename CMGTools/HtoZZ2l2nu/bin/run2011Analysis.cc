@@ -1037,7 +1037,7 @@ int main(int argc, char* argv[])
 	bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
 	if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
 
-	mon.fillHisto("mt_"+varNames[ivar],tags_full,mt,iweight);
+	if(passPreselection) mon.fillHisto("mt_"+varNames[ivar],tags_full,mt,iweight);
 	
 	//fill shapes
 	for(unsigned int index=0;index<optim_Cuts1_met.size();index++){

@@ -612,7 +612,7 @@ int main(int argc, char* argv[])
 
 	      for(unsigned int index=0;index<nOptimCuts;index++){
 		if ( index<nOptimCuts-1 && zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-		  mon.fill2DHisto("mt_shapes",ctf,index, mt,iweight);
+		  mon.fillHisto("mt_shapes",ctf,index, mt,iweight);
 	      }
 	    }
 	}
