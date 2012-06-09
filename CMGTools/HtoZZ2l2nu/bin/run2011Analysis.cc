@@ -62,10 +62,8 @@ int main(int argc, char* argv[])
   // configure the process
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
 
-
   bool use2011Id = runProcess.getParameter<bool>("is2011");
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
-
 
   bool isMC = runProcess.getParameter<bool>("isMC");
   bool runBlinded = runProcess.getParameter<bool>("runBlinded"); 
@@ -449,11 +447,13 @@ int main(int argc, char* argv[])
 
   gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
   edm::LumiReWeighting *LumiWeights=0;
-  reweight::PoissonMeanShifter *PShiftUp=0, *PShiftDown=0;
+  PuShifter_t PuShifters;
+  //  reweight::PoissonMeanShifter *PShiftUp=0, *PShiftDown=0;
   if(isMC){
       LumiWeights= new edm::LumiReWeighting(mcPileupDistribution,dataPileupDistribution);
-      PShiftUp = new reweight::PoissonMeanShifter(+0.8);
-      PShiftDown = new reweight::PoissonMeanShifter(-0.8);
+      PuShifters=getPUshifters(dataPileupDistribution,0.08);
+      //      PShiftUp = new reweight::PoissonMeanShifter(+0.8);
+      //      PShiftDown = new reweight::PoissonMeanShifter(-0.8);
   }
 
   //event Categorizer
@@ -528,8 +528,8 @@ int main(int argc, char* argv[])
       double TotalWeight_minus = 1.0;
       if(isMC){
         weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
-        TotalWeight_plus  = PShiftUp->ShiftWeight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
-        TotalWeight_minus = PShiftDown->ShiftWeight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
+        TotalWeight_plus  = PuShifters[PUUP]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
+        TotalWeight_minus = PuShifters[PUDOWN]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
 	if(isMC_VBF && use2011Id){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
         if(isMC_GG) {
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
@@ -547,8 +547,7 @@ int main(int argc, char* argv[])
       std::vector<PhysicsObjectJetCollection> variedAJets;
       LorentzVectorCollection zvvs;
       METUtils::computeVariation(phys.ajets, phys.met[0], variedAJets, zvvs, &jecUnc);
-
-
+      
       //
       // LEPTON ANALYSIS
       //
@@ -790,20 +789,19 @@ int main(int argc, char* argv[])
 		  //
 		  
 		  //std PF
-		  PhysicsObjectJetCollection aJets=variedAJets[0];
+		  PhysicsObjectJetCollection aJets= variedAJets[0];
 		  PhysicsObjectJetCollection aGoodIdJets;
 		  LorentzVector aClusteredMetP4(zll); aClusteredMetP4 *= -1;
 		  int nAJetsLoose(0), nAJetsTight(0), nAJetsPUIdLoose(0), nAJetsPUIdMedium(0);
 		  int nABtags[3]={0,0,0};
-		  float mindphijmet(999999.);
+		  float mindphijmet(999999.),mindphijmet15(999999.);
 		  PhysicsObjectJetCollection recoilJets;
 		  for(size_t ijet=0; ijet<aJets.size(); ijet++) 
 		    {
-		      if(aJets[ijet].pt()>30)
-			{
-			  float idphijmet( fabs(deltaPhi(aJets[ijet].phi(),zvvs[0].phi()) ) );
-			  if(idphijmet<mindphijmet)  mindphijmet=idphijmet;
-			}
+		      float idphijmet( fabs(deltaPhi(aJets[ijet].phi(),zvvs[0].phi()) ) );
+		      if(idphijmet<mindphijmet15)  mindphijmet15=idphijmet;
+		      if(aJets[ijet].pt()>30) if(idphijmet<mindphijmet)  mindphijmet=idphijmet;
+
 		      aClusteredMetP4 -= aJets[ijet];	  
 		      if(fabs(deltaPhi(aJets[ijet].phi(),zll.phi()))>2) recoilJets.push_back( aJets[ijet] );
 		      
@@ -858,7 +856,7 @@ int main(int argc, char* argv[])
 		      mon.fillHisto("npfjetstightvspu",     tags_full, ev.ngenITpu, nAJetsTight,weight);
 		      mon.fillHisto("npfjetspuidloosevspu", tags_full, ev.ngenITpu, nAJetsPUIdLoose,weight);
 		      mon.fillHisto("npfjetspuidmediumvspu",tags_full, ev.ngenITpu, nAJetsPUIdMedium,weight);
-
+		      
 		      //measure jet selection efficiency
 		      if(nAJetsLoose==1 && recoilJets.size()==1)
 			{
@@ -889,8 +887,12 @@ int main(int argc, char* argv[])
 		      if(tag_subcat!="vbf") tags_full.push_back(tag_cat + "novbf");
 		      mon.fillHisto("npfjets",     tags_full, nAJetsLoose,weight);
 
-		      passDphijmet=(mindphijmet>0.5); 
-		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,mindphijmet,weight);
+		      
+		      //passDphijmet=(mindphijmet15>0.5);
+		      passDphijmet=(mindphijmet>0.5);
+		      // if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
+		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet15:mindphijmet,weight);
+
 		      if(passDphijmet) 
 			{
 			  mon.fillHisto("eventflow",tags_full,5,weight);
@@ -1003,7 +1005,6 @@ int main(int argc, char* argv[])
         if(ivar<=10 && ivar>=7 && isMC_GG) iweight *=ev.hptWeights[ivar-6]/ev.hptWeights[0];   //ren/fact scales   
 
 //        if(ivar==0 || ivar==5 || ivar==6){printf("SYst=%10s  W=%6.3E\n",varNames[ivar].Data(),iweight);}
-
 
 	//recompute MET/MT if JES/JER was varied
 	LorentzVector zvv    = zvvs[ivar>4?0:ivar];

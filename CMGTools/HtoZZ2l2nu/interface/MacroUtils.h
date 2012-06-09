@@ -5,6 +5,7 @@
 #include<vector>
 #include <ext/hash_map>
 
+#include "TGraph.h"
 #include "TH1.h"
 
 #include "Math/LorentzVector.h"
@@ -17,6 +18,9 @@ typedef std::vector<LorentzVector> LorentzVectorCollection;
 LorentzVector min(const LorentzVector& a, const LorentzVector& b);
 double weightVBF(std::string SampleName, double m_gen, double mass);
 
+typedef std::vector<TGraph *> PuShifter_t;
+enum PuShifterTypes {PUDOWN,PUUP};
+PuShifter_t getPUshifters(std::vector< float > &Lumi_distr, float puUnc);
 
 // CODE FOR DUPLICATE EVENTS CHECKING
 namespace __gnu_cxx{

@@ -34,6 +34,8 @@ string cutIndexStr="";
 double iLumi = 2007;
 double iEcm=8;
 bool showChi2 = false;
+bool showUnc=false;
+double baseRelUnc=1.0;
 bool noLog=false; 
 bool do2D  = true;
 bool do1D  = true;
@@ -499,7 +501,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    //   TLegend* legA  = new TLegend(0.51,0.93,0.67,0.75, "NDC"); 
    // TLegend* legB  = new TLegend(0.67,0.93,0.83,0.75, "NDC");
    THStack* stack = new THStack("MC","MC");
-   TH1*     mc   = NULL;
+   TH1 *     mc   = NULL;
+   TH1 *     mcPlusRelUnc = NULL;
    std::vector<TH1 *> spimpose;
    std::vector<TString> spimposeOpts;
    TH1*     data = NULL;
@@ -616,6 +619,20 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
        }
      ObjectToDelete.push_back(stack);
      canvasIsFilled=true;
+
+     if(showUnc && mc)
+       {
+	 mcPlusRelUnc = (TH1 *) mc->Clone("totalmcwithunc"); mcPlusRelUnc->SetDirectory(0); 
+	 for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++)
+	   {
+	     Double_t error=sqrt(pow(mcPlusRelUnc->GetBinError(ibin),2)+pow(mcPlusRelUnc->GetBinContent(ibin)*baseRelUnc,2));
+	     mcPlusRelUnc->SetBinError(ibin,error);
+	   }
+	 mcPlusRelUnc->SetFillStyle(3427);
+	 mcPlusRelUnc->SetFillColor(kGray+1);
+	 mcPlusRelUnc->SetMarkerStyle(1);
+	 mcPlusRelUnc->Draw("e4same");
+       }
    }
    if(data){
        data->Draw(canvasIsFilled ? "E1 same" : "E1");
@@ -640,7 +657,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
        pave->AddText(buf);
        pave->Draw();
      }
-
+   
    TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
    T->SetFillColor(0);
    T->SetFillStyle(0);  T->SetLineColor(0);
@@ -670,24 +687,24 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    t2->SetTopMargin(0);
    t2->SetBottomMargin(0.5);
    float yscale = (1.0-0.2)/(0.18-0);
-   data = (TH1D*)data->Clone("RatioHistogram");
-   data->Divide(mc);
-   data->GetYaxis()->SetTitle("Obs/Ref");
-   data->GetXaxis()->SetTitle("");
-   //data->SetMinimum(0);
-   //data->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
-   data->SetMinimum(0);
-   data->SetMaximum(2.2);
-   data->GetXaxis()->SetTitleOffset(1.3);
-   data->GetXaxis()->SetLabelSize(0.033*yscale);
-   data->GetXaxis()->SetTitleSize(0.036*yscale);
-   data->GetXaxis()->SetTickLength(0.03*yscale);
-   data->GetYaxis()->SetTitleOffset(0.3);
-   data->GetYaxis()->SetNdivisions(5);
-   data->GetYaxis()->SetLabelSize(0.033*yscale);
-   data->GetYaxis()->SetTitleSize(0.036*yscale);
+   TH1D *dataToObs = (TH1D*)data->Clone("RatioHistogram");
+   dataToObs->Divide(mc);
+   dataToObs->GetYaxis()->SetTitle("Obs/Ref");
+   dataToObs->GetXaxis()->SetTitle("");
+   //dataToObs->SetMinimum(0);
+   //dataToObs->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
+   dataToObs->SetMinimum(0);
+   dataToObs->SetMaximum(2.2);
+   dataToObs->GetXaxis()->SetTitleOffset(1.3);
+   dataToObs->GetXaxis()->SetLabelSize(0.033*yscale);
+   dataToObs->GetXaxis()->SetTitleSize(0.036*yscale);
+   dataToObs->GetXaxis()->SetTickLength(0.03*yscale);
+   dataToObs->GetYaxis()->SetTitleOffset(0.3);
+   dataToObs->GetYaxis()->SetNdivisions(5);
+   dataToObs->GetYaxis()->SetLabelSize(0.033*yscale);
+   dataToObs->GetYaxis()->SetTitleSize(0.036*yscale);
    
-   data->Draw("E1");
+   dataToObs->Draw("E1");
    }
 
 
@@ -888,6 +905,7 @@ int main(int argc, char* argv[]){
         printf("--only    --> processing only the objects containing the following argument in their name\n");
         printf("--index   --> will do the projection on that index for histos of type cutIndex\n");
         printf("--chi2    --> show the data/MC chi^2\n"); 
+        printf("--showUnc --> show stat uncertainty (if number is given use it as relative bin by bin uncertainty (e.g. lumi)\n"); 
 	printf("--noLog   --> use linear scale\n");
         printf("--no1D   --> Skip processing of 1D objects\n");
         printf("--no2D   --> Skip processing of 2D objects\n");
@@ -911,7 +929,19 @@ int main(int argc, char* argv[]){
      if(arg.find("--json"   )!=string::npos && i+1<argc){ jsonFile = argv[i+1];  i++;  }
      if(arg.find("--only"   )!=string::npos && i+1<argc){ objectSearchKey = argv[i+1]; i++;    }
      if(arg.find("--index"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&cutIndex); i++; onlyCutIndex=(cutIndex>=0); printf("index = %i\n", cutIndex);  }
-     if(arg.find("--chi2"  )!=string::npos){ showChi2 = true;    }
+     if(arg.find("--chi2"  )!=string::npos){ showChi2 = true;  }
+     if(arg.find("--showUnc") != string::npos) { 
+       showUnc=true; 
+       if(i+1<argc) { 
+	 string nextArg(argv[i+1]); 
+	 if(nextArg.find("--")==string::npos)
+	   {
+	     sscanf(argv[i+1],"%lf",&baseRelUnc);
+	     i++;
+	   }
+       }
+       printf("Uncertainty band will be included for MC with base relative uncertainty of: %3.2f",baseRelUnc);
+     }
      if(arg.find("--noLog")!=string::npos){ noLog = true;    }
      if(arg.find("--no2D"  )!=string::npos){ do2D = false;    }
      if(arg.find("--no1D"  )!=string::npos){ do1D = false;    }

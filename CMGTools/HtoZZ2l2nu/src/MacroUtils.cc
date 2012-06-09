@@ -49,7 +49,51 @@ std::string toLatexRounded(double value, double error, double systError)
 }
 
 
+//
+PuShifter_t getPUshifters(std::vector< float > &Lumi_distr, float puUnc)
+{
+  Int_t NBins = Lumi_distr.size();
+  TH1F *pu=new TH1F("putmp","",NBins,-0.5,float(NBins)-0.5);
+  TH1F *puup=(TH1F *)pu->Clone("puuptmp");
+  TH1F *pudown=(TH1F *)pu->Clone("pudowntmp");
+  for(size_t i=0; i<Lumi_distr.size(); i++)  pu->SetBinContent(i+1,Lumi_distr[i]);
 
+  for(int ibin=1; ibin<=pu->GetXaxis()->GetNbins(); ibin++)
+    {
+      Double_t xval=pu->GetBinCenter(ibin);
+      TGraph *gr = new TGraph;
+      for(int ishift=-3; ishift<3; ishift++)
+	{
+	  if(ibin+ishift<0) continue;
+	  if(ibin+ishift>pu->GetXaxis()->GetNbins()) continue;
+	  
+	  gr->SetPoint(gr->GetN(),xval+ishift,pu->GetBinContent(ibin+ishift));
+	}
+      if(gr->GetN()>1)
+	{
+	  Double_t newval(gr->Eval(xval*(1+puUnc)));
+	  pudown->SetBinContent(ibin,newval>0?newval:0.0);
+	  newval=gr->Eval(xval*(1-puUnc));
+	  puup->SetBinContent(ibin,newval>0?newval:0.0);
+	}
+      delete gr;
+    }
+  std::cout << pu->GetMean() << " " << puup->GetMean() << " " << pudown->GetMean() << std::endl;
+  std::cout << "getPUshifts will shift average PU by " << puup->GetMean()-pu->GetMean() << " / " << pudown->GetMean()-pu->GetMean() << std::endl; 
+  
+  puup->Divide(pu);    TGraph *puupWgt = new TGraph(puup);
+  pudown->Divide(pu);  TGraph *pudownWgt = new TGraph(pudown);
+  delete puup;
+  delete pudown;  
+  delete pu;
+  
+  PuShifter_t res(2);
+  res[PUDOWN] = pudownWgt;
+  res[PUUP]   = puupWgt;
+  return res;
+}
+
+//
 double weightVBF(std::string SampleName, double m_gen, double mass){
    bool isZZ = (SampleName.find("ZZ")!=std::string::npos) ;
 

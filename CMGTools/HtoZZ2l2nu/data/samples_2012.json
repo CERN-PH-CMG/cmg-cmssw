@@ -206,6 +206,7 @@
 	{
 	"tag":"ggH(200)#rightarrow ZZ",
 	"isdata":false,
+	"isinvisible":true,
 	"spimpose":true,
 	"color":"800",
 	"lwidth":2,
@@ -227,6 +228,7 @@
 	{
 	"tag":"qqH(200)#rightarrow ZZ",
 	"isdata":false,
+	"isinvisible":true,
 	"spimpose":true,
 	"color":"800",
 	"lwidth":2,
@@ -239,7 +241,7 @@
                 "dset":"",
                 "aoddir":[""],
                 "patdir":[""],
-                "split":2,
+                "split":1,
                 "xsec":0.8441,
                 "xsecunc":[3.2,-3.0],
                 "br":[0.256,0.0403896]
@@ -324,11 +326,11 @@
 	"marker":1,
 	"data":[
 		{
-                "dtag":"MC8TeV_VBFtoH400toZZto2L2Nu",
+                "dtag":"MC7TeV_VBFtoH400toZZto2L2Nu",
                 "dset":"",
                 "aoddir":[""],
                 "patdir":[""],
-                "split":2,
+                "split":1,
                 "xsec":0.2543,
                 "xsecunc":[3.3,-3.4],
                 "br":[0.256,0.0403896]
@@ -385,6 +387,7 @@
 	{
 	"tag":"ggH(600)#rightarrow ZZ",
 	"isdata":false,
+	"isinvisible":true,
 	"spimpose":true,
 	"color":"807",
 	"lwidth":2,
@@ -406,6 +409,7 @@
 	{
 	"tag":"qqH(600)#rightarrow ZZ",
 	"isdata":false,
+	"isinvisible":true,
 	"spimpose":true,
 	"color":"807",
         "lwidth":3,
@@ -418,7 +422,7 @@
                 "dset":"",
                 "aoddir":[""],
                 "patdir":[""],
-                "split":2,
+                "split":1,
                 "xsec":0.09688,
                 "xsecunc":[4.2,-4.5],
                 "br":[0.256,0.0403896]
@@ -495,7 +499,7 @@
                  "split":2
                 },
                 {
-	         "dtag":"Data8TeV_SingleMu2012A",
+	         "dtag":"Data8TeVno_SingleMu2012A",
 		 "dset":"/SingleMu/Run2012A-PromptReco-v1/AOD",
 		 "aoddir":["path=/SingleMu/Run2012A-PromptReco-v1/AOD"],
 	         "patdir2":["path=/SingleMu/wangjian-HZZ2l2v_Run2012A-b2c4843cc0f0fce2cad58e298627fbaa/USER"],
@@ -527,7 +531,7 @@
                  "split":2
                 },
                 {
-	         "dtag":"Data8TeV_SingleMu2012B",
+	         "dtag":"Data8TeVno_SingleMu2012B",
 		 "dset":"/SingleMu/Run2012B-PromptReco-v1/AOD",
 		 "aoddir":["path=/SingleMu/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
