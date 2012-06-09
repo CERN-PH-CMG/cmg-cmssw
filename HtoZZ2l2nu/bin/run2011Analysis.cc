@@ -370,24 +370,27 @@ int main(int argc, char* argv[])
    TH1F* Hoptim_systs     =  (TH1F*) mon.addHistogram( new TH1F ("optim_systs"    , ";syst;", nvarsToInclude,0,nvarsToInclude) ) ;
    for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
    {
-       Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
-       mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
-       mon.addHistogram( new TH2F (TString("mt_shapesZ10")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
-       mon.addHistogram( new TH2F (TString("mt_shapesZ5")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
 
-       //3lepton SB
-       mon.addHistogram( new TH2F (TString("mt_shapes_3rdLepton")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );
-
-       if(ivar==0)mon.addHistogram( new TH2F (TString("mt_shapesBTagSB")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
-       mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
-       mon.addHistogram( new TH2F (TString("mt3")+varNames[ivar],";cut index;M_{T}^{3rd lepton} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 50,0,250) );
-       TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
-       h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
-       h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
-       h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
-       h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
-       h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
-       h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
+     mon.addHistogram( new TH1F( "mt_"+varNames[ivar]  , ";M_{T};Events", 100,0,1000) );
+     
+     Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
+     mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
+     mon.addHistogram( new TH2F (TString("mt_shapesZ10")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
+     mon.addHistogram( new TH2F (TString("mt_shapesZ5")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
+     
+     //3lepton SB
+     mon.addHistogram( new TH2F (TString("mt_shapes_3rdLepton")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );
+     
+     if(ivar==0)mon.addHistogram( new TH2F (TString("mt_shapesBTagSB")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
+     mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
+     mon.addHistogram( new TH2F (TString("mt3")+varNames[ivar],";cut index;M_{T}^{3rd lepton} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 50,0,250) );
+     TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
+     h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
+     h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
+     h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
+     h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
+     h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
+     h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
    } 
 
 
@@ -451,7 +454,7 @@ int main(int argc, char* argv[])
   //  reweight::PoissonMeanShifter *PShiftUp=0, *PShiftDown=0;
   if(isMC){
       LumiWeights= new edm::LumiReWeighting(mcPileupDistribution,dataPileupDistribution);
-      PuShifters=getPUshifters(dataPileupDistribution,0.08);
+      PuShifters=getPUshifters(dataPileupDistribution,0.05);
       //      PShiftUp = new reweight::PoissonMeanShifter(+0.8);
       //      PShiftDown = new reweight::PoissonMeanShifter(-0.8);
   }
@@ -1033,6 +1036,8 @@ int main(int argc, char* argv[])
 	
 	bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
 	if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
+
+	mon.fillHisto("mt_"+varNames[ivar],tags_full,mt,iweight);
 	
 	//fill shapes
 	for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
