@@ -78,7 +78,8 @@ PuShifter_t getPUshifters(std::vector< float > &Lumi_distr, float puUnc)
 	}
       delete gr;
     }
-  std::cout << pu->GetMean() << " " << puup->GetMean() << " " << pudown->GetMean() << std::endl;
+  puup->Scale(pu->Integral()/puup->Integral());
+  pudown->Scale(pu->Integral()/pudown->Integral());
   std::cout << "getPUshifts will shift average PU by " << puup->GetMean()-pu->GetMean() << " / " << pudown->GetMean()-pu->GetMean() << std::endl; 
   
   puup->Divide(pu);    TGraph *puupWgt = new TGraph(puup);
