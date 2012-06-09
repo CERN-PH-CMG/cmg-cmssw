@@ -113,10 +113,13 @@ public :
       }
     inline void setID(int id)
       {
-	hasCtfTrkVeto=false;
+	hasPixelSeed     = !(id && 0x1);
+	hasElectronVeto  = ((id >> 1) & 0x1);
+	hasCtfTrkVeto    = ((id >> 2) & 0x1);
+	isConv           = ((id >> 3) & 0x1);
+	isVtxConstrained = ((id>>4) & 0x1);
       }
-    Bool_t hasCtfTrkVeto;
-    Bool_t isConv,convMatchesPrimVertex;
+    bool hasPixelSeed, hasElectronVeto, hasCtfTrkVeto, isConv,isVtxConstrained;
     LorentzVector convP4;
     Float_t iso1, iso2, iso3, sihih, r9, hoe;
     Float_t scEnSF,scEnSFerr;
