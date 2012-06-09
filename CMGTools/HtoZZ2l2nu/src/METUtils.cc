@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/05/10 05:38:51 $
- *  $Revision: 1.11.2.2 $
+ *  $Date: 2012/06/04 08:26:34 $
+ *  $Revision: 1.13 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
  */
 
@@ -392,15 +392,15 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
 	newMet -= jetDiff; metsVar.push_back(newMet);
 
 	//SOME DEBUGING PRINTOUT... CAN BE SAFELY REMOVED
-        if(ivar==JER && newMet.pt()>2000){
-           printf("%f - %f - %f : ",newMet.pt(), met.pt(), jetDiff.pt());
-           for(size_t ijet=0; ijet<jets.size(); ijet++){
-//              LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],genjetsPt[ijet],mode);
-              LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,mode);
-//              printf("Jet%i %f(%f)>%f  ", (int)ijet, jets[ijet].pt(), genjetsPt[ijet], iSmearJet.pt());
-              printf("Jet%i %f(%f)>%f  ", (int)ijet, jets[ijet].pt(), jets[ijet].genPt, iSmearJet.pt());
-           }printf("\n");
-        }
+	//        if(ivar==JER && newMet.pt()>2000){
+	//           printf("%f - %f - %f : ",newMet.pt(), met.pt(), jetDiff.pt());
+	//           for(size_t ijet=0; ijet<jets.size(); ijet++){
+	//              LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],genjetsPt[ijet],mode);
+	//              LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,mode);
+	//              printf("Jet%i %f(%f)>%f  ", (int)ijet, jets[ijet].pt(), genjetsPt[ijet], iSmearJet.pt());
+	//              printf("Jet%i %f(%f)>%f  ", (int)ijet, jets[ijet].pt(), jets[ijet].genPt, iSmearJet.pt());
+	//           }printf("\n");
+	//       }
 
       }
   }
