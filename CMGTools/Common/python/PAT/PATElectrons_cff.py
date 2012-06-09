@@ -4,6 +4,7 @@ import FWCore.ParameterSet.Config as cms
 # Energy scale corrections and MC smearing
 from EgammaCalibratedGsfElectrons.CalibratedElectronProducers.calibratedGsfElectrons_cfi import calibratedGsfElectrons as gsfElectrons
 gsfElectrons.updateEnergyError = cms.bool(True)
+gsfElectrons.isAOD = cms.bool(True)
 RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
     gsfElectrons = cms.PSet(
         initialSeed = cms.untracked.uint32(1),
