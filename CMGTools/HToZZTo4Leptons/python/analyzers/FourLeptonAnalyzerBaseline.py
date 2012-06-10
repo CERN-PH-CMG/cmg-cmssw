@@ -149,6 +149,7 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         #Require Z1 OS/SF and mass cuts
         passed=cutFlow.applyCut(self.testFourLeptonZ1,'4l pair 1 built',1,'fourLeptonsZ1')
 
+
         #Now remove all combinations that have different Z1 as the first
         if passed:
             event.prunedZ1 = self.pruneFourLeptonsForZ1(event.fourLeptonsZ1)
@@ -159,9 +160,12 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonSF,'4l pair 2  SF',1,'fourLeptonsSFZ2')
 
 
-        if passed:
-            event.higgsCandLoose = event.fourLeptonsSFZ2[0]
+        #Pt Cuts (CAREFUL: The correct cut is : Any combination of leptons must be 20/10 not the Z1 ones
+        passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds',1,'fourLeptonsFakeRateApp')
 
+
+        if passed:
+            event.higgsCandLoose = cutFlow.obj1[0]
 
         #OS Z2    
         passed=cutFlow.applyCut(self.testFourLeptonOS,'4l pair 2  OS',1,'fourLeptonsOSZ2')
@@ -175,7 +179,7 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonMassZ2,'4l pair 2 mass cut',1,'fourLeptonsMassZ2')
 
         #Pt Cuts (CAREFUL: The correct cut is : Any combination of leptons must be 20/10 not the Z1 ones
-        passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds',1,'fourLeptonsFakeRateApp')
+#        passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds',1,'fourLeptonsFakeRateApp')
 
         #QCD suppression
         passed=cutFlow.applyCut(self.testFourLeptonMinOSMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')

@@ -397,7 +397,10 @@ class FourLeptonAnalyzerBase( Analyzer ):
     def getFourLeptonZ2SumPt(self, hBoson):
         sum=0
         if hasattr(hBoson.leg2,'fsrPhoton'):
-            sum = hBoson.leg2.leg1.pt()+hBoson.leg2.leg2.pt()+hBoson.leg2.fsrPhoton.pt()
+            if hBoson.leg2.fsrDR1()<hBoson.leg2.fsrDR2():
+                sum = (hBoson.leg2.leg1.p4()+hBoson.leg2.fsrPhoton.p4()).pt()+hBoson.leg2.leg2.pt()
+            else:    
+                sum = (hBoson.leg2.leg2.p4()+hBoson.leg2.fsrPhoton.p4()).pt()+hBoson.leg2.leg1.pt()
         else:    
             sum = hBoson.leg2.leg1.pt()+hBoson.leg2.leg2.pt()
         return sum    
