@@ -723,7 +723,7 @@ ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass
 	 for(Int_t v=1; v<nPar;v++){
           if(USENEWCOVARIANCE)
           {
-	      for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(v)*eigenVectors[k][v]; 
+	      for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(v)*eigenVectors[k][v]*(eigenVectors[0][v])/fabs(eigenVectors[0][v]); 
 	  } else {
 	      for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[v][k];
               // multiply this vector by Lt to introduce the appropriate correlations
@@ -737,7 +737,7 @@ ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass
 	  delete histAHi;
           if(USENEWCOVARIANCE)
           {
-	      for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(v)*eigenVectors[k][v]; 
+	      for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(v)*eigenVectors[k][v]*(eigenVectors[0][v])/fabs(eigenVectors[0][v]); 
 	  } else {
 	      for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[v][k];
               // multiply this vector by Lt to introduce the appropriate correlations
@@ -757,7 +757,7 @@ ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass
 	  if ((statlevel>=100) && (statlevel<=102)) {
             if(USENEWCOVARIANCE)
             {
-	        for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(statlevel-99)*eigenVectors[k][statlevel-99]; 
+	        for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(statlevel-99)*eigenVectors[k][statlevel-99]*(eigenVectors[0][statlevel-99])/fabs(eigenVectors[0][statlevel-99]); 
 	    } else {
                 for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[statlevel-99][k];
                 // multiply this vector by Lt to introduce the appropriate correlations
@@ -766,7 +766,7 @@ ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass
 	  } else if ((statlevel>=103) && (statlevel<=105)) {
             if(USENEWCOVARIANCE)
             {
-	        for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(statlevel-102)*eigenVectors[k][statlevel-102]; 
+	        for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(statlevel-102)*eigenVectors[k][statlevel-102]*(eigenVectors[0][statlevel-102])/fabs(eigenVectors[0][statlevel-102]); 
 	    } else {
                 for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[statlevel-102][k];
                 // multiply this vector by Lt to introduce the appropriate correlations
