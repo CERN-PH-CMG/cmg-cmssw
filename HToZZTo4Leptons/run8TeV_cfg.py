@@ -212,11 +212,12 @@ sequence = cfg.Sequence(dataSequence)
 
 test = 1
 if test==1:
-    dataset = GGH125
+    dataset = data_DoubleMuA
     selectedComponents = [dataset]
     dataset.splitFactor = 1
     dataset.files = ['file:/afs/cern.ch/user/b/bachtis/work/releases/CMGTools/CMSSW_5_2_5/src/cmgTuple12.root']
-   
+
+    
 if test ==2:
     selectedComponents=selectedComponents[:1]
     print selectedComponents

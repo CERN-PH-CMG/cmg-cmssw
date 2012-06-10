@@ -1,3 +1,4 @@
+
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
@@ -173,9 +174,9 @@ elif channel == 'mu_ele':
 
     for data in dataSamplesMu:
         data.triggers = triggers_mumu
+        data.vetoTriggers = triggers_ee
     for data in dataSamplesE:
         data.triggers = triggers_ee
-        data.vetoTriggers = triggers_mumu
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
     selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
@@ -215,10 +216,10 @@ sequence = cfg.Sequence(dataSequence)
 
 test = 1
 if test==1:
-    dataset = GGH130
+    dataset = data_DoubleMuA
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-
+    dataset.files=['/afs/cern.ch/user/b/bachtis/work/releases/5_4_0/CMGTools/CMSSW_4_4_4/src/cmgTuple.root']
 
    
 if test ==2:
