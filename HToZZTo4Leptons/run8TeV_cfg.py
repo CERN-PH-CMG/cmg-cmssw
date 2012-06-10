@@ -1,3 +1,5 @@
+
+
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
@@ -9,18 +11,10 @@ from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 
 
 
-period = 'Period_2011AB'
-channel = 'mu_mu'
+
+channel = 'ele_ele'
 
 
-
-mc_vertexWeight = None
-if period == 'Period_2011A':
-    mc_vertexWeight = 'vertexWeightFall112invfb'
-elif period == 'Period_2011B':
-    mc_vertexWeight = 'vertexWeightFall112011B'
-elif period == 'Period_2011AB':
-    mc_vertexWeight = 'vertexWeightFall112011AB'
 
 ###GEN LEVEL SELECTORS
 muMuGenSel = cfg.Analyzer(
@@ -41,11 +35,11 @@ eleEleGenSel = cfg.Analyzer(
     )
 
 
-
 A4Skim = cfg.Analyzer('A4Skim',
     muons='cmgMuonSel',
     electrons='cmgElectronSel'
     )
+
 
 #Trigger Information
 triggerAna = cfg.Analyzer(
@@ -55,17 +49,26 @@ triggerAna = cfg.Analyzer(
 #Vertex information
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
-    vertexWeight = mc_vertexWeight,
+    fixedWeight = 1,
     verbose = False
+    )
+
+
+#Pu reweighting
+puAna = cfg.Analyzer(
+    "PileUpAnalyzer",
+    # build unweighted pu distribution using number of pile up interactions if False
+    # otherwise, use fill the distribution using number of true interactions
+    true = True
     )
 
 
 #Analyzers
 muMuAna = cfg.Analyzer(
     'MuMuFourLeptonAnalyzer',
-    minPt1=5.,
+    minPt1=5,
     maxEta1=2.4,
-    minPt2=5.,
+    minPt2=5,
     maxEta2=2.4,
     z1_m = (40.,120.),
     z2_m = (4.,120.),
@@ -77,7 +80,7 @@ muMuAna = cfg.Analyzer(
     PF=True,
     keep=False,
     effectiveAreas=effectiveAreas,
-    fakeRates=fakeRates2011,
+    fakeRates=fakeRates2012,
     rhoMuon     = 'kt6PFJetsCentralNeutral',
     rhoElectron = 'kt6PFJets',
     FSR=fsr
@@ -138,19 +141,8 @@ jsonFilter = cfg.Analyzer(
     'JSONAnalyzer'
     )
 
-selectedSamples=[]
 
-for comp in mcSamples:
-    comp.isMC = True
-    comp.splitFactor = 10
 
-for comp in dataSamplesMu:
-    comp.splitFactor = 100
-    comp.isData = True
-    
-for comp in dataSamplesE:
-    comp.splitFactor = 100
-    comp.isData = True
     
 theAna = None
 if channel == 'mu_mu':
@@ -170,12 +162,11 @@ elif channel == 'mu_ele':
 
     for data in dataSamplesMu:
         data.triggers = triggers_mumu
+        data.vetoTriggers = triggers_ee
     for data in dataSamplesE:
         data.triggers = triggers_ee
-        data.vetoTriggers = triggers_mumu
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
-        print mc.triggers
     selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
 
 
@@ -192,11 +183,12 @@ elif channel == 'ele_ele':
 
 #Define Sequences for data and MC
 
+
 dataSequence=[
     jsonFilter,
-    A4Skim,
-    vertexAna,
+    puAna,
     triggerAna,
+    vertexAna,
     theAna,
     createTreeProducer( theAna )
     ]
@@ -210,14 +202,14 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 1
+test = 0
 if test==1:
-    dataset = data_DoubleMuA
+    dataset = GGH130
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-    dataset.files = ['file:/afs/cern.ch/user/b/bachtis/work/releases/CMGTools/CMSSW_5_2_5/src/cmgTuple12.root']
 
-    
+
+   
 if test ==2:
     selectedComponents=selectedComponents[:1]
     print selectedComponents
