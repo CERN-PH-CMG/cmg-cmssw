@@ -56,6 +56,7 @@ class TriggerAnalyzer( Analyzer ):
         usePrescaled = False
         if hasattr( self.cfg_ana, 'usePrescaled'):
             usePrescaled = self.cfg_ana.usePrescaled
+
         passed, hltPath = self.triggerList.triggerPassed(event.triggerObject,
                                                          run, lumi, self.cfg_comp.isData,
                                                          usePrescaled = usePrescaled)
@@ -66,7 +67,7 @@ class TriggerAnalyzer( Analyzer ):
         veto=False
         if self.vetoTriggerList is not None:
             veto,hltVetoPath = self.vetoTriggerList.triggerPassed(event.triggerObject,
-                                                         run, self.cfg_comp.isData,
+                                                         run,lumi,self.cfg_comp.isData,
                                                          usePrescaled = usePrescaled)
         if not passed or (passed and veto):
             return False
