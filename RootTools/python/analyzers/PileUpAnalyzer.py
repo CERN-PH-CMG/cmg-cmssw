@@ -95,7 +95,12 @@ class PileUpAnalyzer( Analyzer ):
         else:
             data = self.datahist.GetBinContent(bin)
             mc = self.mchist.GetBinContent(bin)
-            event.vertexWeight = data/mc
+            #Protect 0 division!!!!
+            if mc !=0.0:
+                event.vertexWeight = data/mc
+            else:
+                event.vertexWeight = 1
+                
         event.eventWeight *= event.vertexWeight
         self.averages['vertexWeight'].add( event.vertexWeight )
 
