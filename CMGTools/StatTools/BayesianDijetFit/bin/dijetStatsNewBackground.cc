@@ -215,6 +215,9 @@ int main(int argc, char* argv[])
   else if (sResonance.find("RSGravitonQQ_k0p7_fat30_ak5") != std::string::npos) iResonance = 3712;
   else if (sResonance.find("RSGravitonQQ_k0p9_fat30_ak5") != std::string::npos) iResonance = 3912;
 
+  else if (sResonance.find("RSGraviton_2012_Z2star_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 4011;
+  else if (sResonance.find("RSGraviton_2012_Z2star_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 4012;
+  else if (sResonance.find("Qstar_2012_Z2star_ak5_fat30") != std::string::npos) iResonance = 4013;
 
   if (iResonance > 20 && iResonance < 29)  {
     DATASETFN="../data/PFDiFatJetMassList_DATA.txt";
@@ -263,6 +266,12 @@ int main(int argc, char* argv[])
     LUMIERROR = sqrt(pow(LUMIERROR,2) + pow(0.18,2));
   }
 
+  if (iResonance > 4000 && iResonance < 5000)  {
+    DATASETFN="../data/dijet_mass_fat_2_4pbm1_outputMass4june.txt";
+    MININVMASS = 944.;
+    MAXINVMASS = 4509.;
+    LUMI = 2400.;
+  }
 
 
 

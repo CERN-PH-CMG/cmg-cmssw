@@ -221,6 +221,9 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
   case 2013:
     stitle = string("RSGraviton_ZZ_ak5_fat");
     break;
+  case 2014:
+    stitle = string("RSGraviton_ZZ_01_ak5_fat");
+    break;
   case 3111:
     stitle = string("RSGravitonGG_k0p1_fat30_ak5");
     break;
