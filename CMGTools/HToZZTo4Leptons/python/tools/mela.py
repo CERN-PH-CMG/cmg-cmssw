@@ -92,7 +92,12 @@ class MELACalculator(object):
                                             self.costheta1, self.costheta2, self.phi, self.phistar1)
         self.MELAS = prob.first
         self.MELAB = prob.second
-        self.MELA  = self.MELAS / (self.MELAS  + self.MELAB)
+        denom = (self.MELAS  + self.MELAB)
+        if denom !=0:
+            self.MELA  = self.MELAS / denom
+        else:
+            self.MELA=-99
+            
         return self.MELA
     
 
