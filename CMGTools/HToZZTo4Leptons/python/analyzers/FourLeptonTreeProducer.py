@@ -50,6 +50,7 @@ class FourLeptonTreeProducer( TreeProducer ):
 
         self.var("vertices",int)
         self.var("vertexWeight")
+        self.var('eventWeight')
 
         
     def process(self, iEvent, event):
@@ -61,6 +62,7 @@ class FourLeptonTreeProducer( TreeProducer ):
         #get the vertex analyzer event and fill the vertices
         self.fill('vertices',len(event.vertices))
         self.fill('vertexWeight',(event.vertexWeight))
+        self.fill('eventWeight',(event.eventWeight))
 
         #Fill run,lumi,event
         self.fillEventInfo(iEvent,subevent)

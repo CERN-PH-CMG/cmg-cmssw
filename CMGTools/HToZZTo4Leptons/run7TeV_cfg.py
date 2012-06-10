@@ -1,4 +1,5 @@
 
+
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
@@ -10,18 +11,10 @@ from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 
 
 
-period = 'Period_2011AB'
-channel = 'mu_ele'
+
+channel = 'ele_ele'
 
 
-
-mc_vertexWeight = None
-if period == 'Period_2011A':
-    mc_vertexWeight = 'vertexWeightFall112invfb'
-elif period == 'Period_2011B':
-    mc_vertexWeight = 'vertexWeightFall112011B'
-elif period == 'Period_2011AB':
-    mc_vertexWeight = 'vertexWeightFall112011AB'
 
 ###GEN LEVEL SELECTORS
 muMuGenSel = cfg.Analyzer(
@@ -56,8 +49,17 @@ triggerAna = cfg.Analyzer(
 #Vertex information
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
-    vertexWeight = mc_vertexWeight,
+    fixedWeight = 1,
     verbose = False
+    )
+
+
+#Pu reweighting
+puAna = cfg.Analyzer(
+    "PileUpAnalyzer",
+    # build unweighted pu distribution using number of pile up interactions if False
+    # otherwise, use fill the distribution using number of true interactions
+    true = True
     )
 
 
@@ -139,22 +141,8 @@ jsonFilter = cfg.Analyzer(
     'JSONAnalyzer'
     )
 
-selectedSamples=[]
-
-for comp in mcSamples:
-    comp.isMC = True
-    comp.splitFactor = 10
-#DYJets.splitFactor = 300
-#DYJetsLowMass.splitFactor = 100
 
 
-
-
-for comp in dataSamplesMu:
-    comp.splitFactor = 200
-    
-for comp in dataSamplesE:
-    comp.splitFactor = 200
     
 theAna = None
 if channel == 'mu_mu':
@@ -198,9 +186,9 @@ elif channel == 'ele_ele':
 
 dataSequence=[
     jsonFilter,
-    A4Skim,
-    vertexAna,
+    puAna,
     triggerAna,
+    vertexAna,
     theAna,
     createTreeProducer( theAna )
     ]
@@ -214,12 +202,12 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 1
+test = 0
 if test==1:
-    dataset = data_DoubleMuA
+    dataset = GGH130
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-    dataset.files=['/afs/cern.ch/user/b/bachtis/work/releases/5_4_0/CMGTools/CMSSW_4_4_4/src/cmgTuple.root']
+
 
    
 if test ==2:

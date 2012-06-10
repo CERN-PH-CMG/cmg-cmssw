@@ -1,5 +1,6 @@
 from CMGTools.HToZZTo4Leptons.samples.getFiles import getFiles
 from CMGTools.HToZZTo4Leptons.samples.mc import *
+import os
 
 pat='V5_4_0'
 filepattern = 'cmgTuple.*root'
@@ -93,8 +94,7 @@ mcSamples=[ZZ2mu2tau,
 
 
 #-----------DATA---------------
-json ='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-180252_7TeV_PromptReco_Collisions11_JSON.txt'
-
+json='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2.txt'
 data_DoubleElectronA = cfg.DataComponent(
     name = 'data_DoubleElectronA',
     files = getFiles('/DoubleElectron/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat, 'cmgtools', filepattern),
@@ -137,9 +137,24 @@ dataSamplesE=[data_DoubleElectronA,
 
 
 
+dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
+
+#Define splitting
+for comp in mcSamples:
+    comp.isMC = True
+    comp.splitFactor = 10
+    comp.puFileMC=dataDir+"/puProfile_Fall11.root"
+    comp.puFileData=dataDir+"/puProfile_Data11.root"
+    
+for comp in dataSamplesMu:
+    comp.splitFactor = 100
+    
+for comp in dataSamplesE:
+    comp.splitFactor = 100
 
 
-             
+
+
 
     
 
