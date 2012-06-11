@@ -12,7 +12,7 @@ from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 
 
 
-channel = 'ele_ele'
+channel = 'mu_ele'
 
 
 
@@ -187,6 +187,7 @@ elif channel == 'ele_ele':
 dataSequence=[
     jsonFilter,
     puAna,
+    A4Skim,
     triggerAna,
     vertexAna,
     theAna,
@@ -202,12 +203,12 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 0
+test = 1
 if test==1:
     dataset = GGH130
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-
+    dataset.files=['root://cmsphys05//data/b/botta/V5_4_0/cmgTuple_H120Fall11_noSmearing.root']
 
    
 if test ==2:
