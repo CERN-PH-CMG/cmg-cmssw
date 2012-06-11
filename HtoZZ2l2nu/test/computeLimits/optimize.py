@@ -11,7 +11,6 @@ from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 shapeBased='1'
 shapeName='mt_shapes'
 inUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root'
-#inUrl='/afs/cern.ch/user/q/querten/scratch0/12_02_08_H_ZZ_2l2v/CMSSW_4_4_3/src/test/plotter2011Save.root'
 CWD=os.getcwd()
 phase=-1
 jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2011.json'
@@ -19,10 +18,11 @@ CMSSW_BASE=os.environ.get('CMSSW_BASE')
 LandSArg=' --indexvbf 78 '
 LandSArg+=' --bins eq0jets,eq1jets,geq2jets,vbf'
 LandSArg+=' --subNRB --subDY $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/gamma_out.root --systpostfix _7TeV --blind'
-
+DataCardsDir='cards'
 
 MASS = [200,250, 300,350, 400,450, 500,550, 600]
-SUBMASS = [200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 360, 370, 380, 390, 400, 420, 440, 450, 460, 480, 500, 520, 540, 550, 560, 580, 600]
+SUBMASS = [200,250, 300,350, 400,450, 500,550, 600]
+#SUBMASS = [200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 360, 370, 380, 390, 400, 420, 440, 450, 460, 480, 500, 520, 540, 550, 560, 580, 600]
 
 cutList='' 
 def help() :
@@ -99,6 +99,8 @@ if(shapeBased=='1'): OUT+='SHAPE/'
 else:		     OUT+='COUNT/'	
 os.system('mkdir -p ' + OUT)
 
+if(shapeBased=='1'): DataCardsDir+='Shape'
+
 #get the cuts
 file = ROOT.TFile(inUrl)
 cuts1   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_met') 
@@ -136,19 +138,13 @@ if( phase == 1 ):
          if(shapeBased=='0'): cardsdir+='_count_'+str(i)
          if(shapeBased=='1'): cardsdir+='_shape_'+str(i)
          SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
-         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName  + " --in " + inUrl + " " + shapeBasedOpt + " --index " + str(i) + " --json " + jsonUrl +" --fast " + LandSArg + " ;\n")
+         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(i)     + " --json " + jsonUrl +" --fast " + LandSArg + " ;\n")
          SCRIPT.writelines("sh combineCards.sh;\n")
-         SCRIPT.writelines("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe -d hzz2l2v_*.dat  -M Hybrid --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 1 --nToysForCLb 1 --seed 1234 -rMax 50 -rMin 0.1 > LANDS.log;\n")
-         if(shapeBased=='1'):
-            SCRIPT.writelines('cat *.log | grep BAND &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
-         else:
-            SCRIPT.writelines('cat *.log | grep BAND &> ' +OUT+str(m)+'_'+str(i)+'.log;\n')
+         SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " --run expected card_combined.dat > COMB.log;\n")
+         SCRIPT.writelines('tail -n 100 COMB.log > ' +OUT+str(m)+'_'+str(i)+'.log;\n')
          SCRIPT.writelines('cd ..;\n\n')
       SCRIPT.close()
       commandToRun.append("bsub -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
-#      print("bsub -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
-#      os.system("bsub -q 8nh 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
-
    FILE.close()
 
    for c in commandToRun:
@@ -173,11 +169,12 @@ elif(phase == 2):
       print 'Starting mass ' + str(m)
       FILE.writelines("------------------------------------------------------------------------------------\n")
       BestLimit = []
-      fileList = commands.getstatusoutput("ls " + OUT + str(m)+"_*.log")[1].split();		
+      fileList = commands.getstatusoutput("ls " + OUT + str(m)+"_*.log")[1].split();           
       for f in fileList:
-         exp = commands.getstatusoutput("cat " + f + " | grep BANDS")[1];
+         exp = commands.getstatusoutput("cat " + f + " | grep \"Expected 50.0%\"")[1];
          if(len(exp)<=0):continue
-         median = exp.split()[6]
+         median = exp.split()[4]
+         if(float(median)<=0.0):continue
          index = int(f[f.rfind("_")+1:f.rfind(".log")])
          BestLimit.append("mH="+str(m)+ " --> " + ('%07.3f' % float(median)) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5))
 
@@ -314,21 +311,16 @@ elif(phase == 3 ):
            SideMassesArgs += "--mL " + str(SideMasses[0]) + " --mR " + str(SideMasses[1]) + " --indexL " + str(Lindex) +  " --indexR " + str(Rindex) + " "
 
 
-        cardsdir="cards/"+str(m);
-#        cardsdir = 'H'+ str(m);
-#        if(shapeBased=='0'): cardsdir+='_count_'+str(index)
-#        if(shapeBased=='1'): cardsdir+='_shape_'+str(index)
+        cardsdir=DataCardsDir+"/"+str(m);
         SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + " ;\n")
         SCRIPT.writelines("sh combineCards.sh;\n")
-        SCRIPT.writelines("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe -d hzz2l2v_*.dat  -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 6000 --nToysForCLb 3000 --seed 1234 -rMax 50 -rMin 0.1 > LANDS.log;\n")
+        SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " card_combined.dat > COMB.log;\n") 
         SCRIPT.writelines('cd ..;\n\n') 
 	SCRIPT.close()
-#	os.system("bsub -q 8nh 'sh " + OUT+"script_mass_"+str(m)+".sh'")
         os.system("bsub -q 2nd 'sh " + OUT+"script_mass_"+str(m)+".sh'")
 	if(shapeBased=='1'):   list.writelines('H'+str(m)+'_shape_'+str(index)+'\n'); 
 	else:                  list.writelines('H'+str(m)+'_count_'+str(index)+'\n');
-        #listcuts.writelines(str(m)+' & ' + str(Gmet.Eval(m,0,"S")) + '<met & ' + str(Gtmin.Eval(m,0,"S"))+'<mt<'+ str(Gtmax.Eval(m,0,"S")) +'\n');
         listcuts.writelines(str(m)+' ' + str(Gmet.Eval(m,0,"S")) + ' ' + str(Gtmin.Eval(m,0,"S"))+' '+ str(Gtmax.Eval(m,0,"S")) +'\n');
    list.close();
    listcuts.close();
@@ -340,25 +332,11 @@ elif(phase == 4 ):
    print '#            #'
    print '# FINAL PLOT #'
    print '#            #'
-
-   list = open(OUT+'/list.txt',"r")
-   files = ""
-   for m in SUBMASS:   
-	#line = CWD+'/'+list.readline().split()[0]+'/combined/*m2lnQ.root'
-        #line = list.readline().split()[0]+'/*m2lnQ.root'
-        line = "cards/"+str(m) + '/*m2lnQ.root'
-	out = commands.getstatusoutput("ls " + line)[1] 
-	if(out.find("No such file or directory")>=0):continue
-	files += " " + out;
-   list.close();
    ouputName = 'COUNT'
    if(shapeBased=='1'):ouputName='SHAPE'
 
-   os.system("echo " + files +" > " + ouputName+"_fileList.txt");
-
-   print("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+ouputName+"_fileList.txt\", 7 , 5.035 )'")
-   os.system("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+ouputName+"_fileList.txt\", 7 , 5.035 )'")
-   os.system("rm Higgs*.gif");
+   os.system("hadd -f "+ouputName+"_LimitTree.root "+DataCardsDir+"/*/higgsCombineTest.Asymptotic.*.root")
+   os.system("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+ouputName+"_LimitTree.root\", 7 , 5.035 )'")
 
 ######################################################################
 

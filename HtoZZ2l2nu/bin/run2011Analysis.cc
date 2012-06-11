@@ -888,6 +888,8 @@ int main(int argc, char* argv[])
 		      TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
 		      tags_full.push_back(tag_cat+tag_subcat);
 		      if(tag_subcat!="vbf") tags_full.push_back(tag_cat + "novbf");
+                      if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(tag_cat + "geq1jets");
+                      if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
 		      mon.fillHisto("npfjets",     tags_full, nAJetsLoose,weight);
 
 		      
@@ -1033,6 +1035,8 @@ int main(int argc, char* argv[])
 	tags_full.push_back(tag_cat);
 	tags_full.push_back(tag_cat+tag_subcat);
 	if(tag_subcat!="vbf") tags_full.push_back(tag_cat + "novbf");
+        if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(tag_cat + "geq1jets");
+        if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
 	
 	bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
 	if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;

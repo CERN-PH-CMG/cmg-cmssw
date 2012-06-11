@@ -34,28 +34,6 @@
 #include<set>
 
 using namespace std;
-
-TString landsExe("$CMSSW_BASE/src/UserCode/mschen/LandS/test/lands.exe");
-#define RUNBAYESIAN(INURL,OUTURL)\
-  gSystem->ExpandPathName(landsExe); \
-  TString cmd=TString(landsExe + " -M Bayesian -d ") + INURL + TString( " --doExpectation 1 -t 10000 > ") + OUTURL + TString(" "); \
-  cout << "Launching : " << cmd << endl;\
-  gSystem->Exec(cmd);
-
-#define RUNASYMPTOTIC(INURL,OUTURL)\
-  gSystem->ExpandPathName(landsExe); \
-  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 4000 --nToysForCLb 2000 --seed 1234 -rMax 50 -rMin 0.1 > ") + logUrl + TString(" "); \
-  cout << "Launching : " << cmd << endl;				\
-  gSystem->Exec(cmd);
-//  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --freq --ExpectationHints Asymptotic --scanRs 1 --freq --nToysForCLsb 10000 --nToysForCLb 5000 --seed 1234 -rMax 50 -rMin 0.1 > ") + logUrl + TString(" "); 
-
-#define RUNASYMPTOTIC_FAST(INURL,OUTURL)\
-  gSystem->ExpandPathName(landsExe); \
-  TString cmd=TString(landsExe + " -d ") + INURL + TString(" -M Hybrid --ExpectationHints Asymptotic > ") + logUrl + TString(" "); \
-  cout << "Launching : " << cmd << endl;                                \
-  gSystem->Exec(cmd);
-
-
 double NonResonnantSyst = 0.25;
 double GammaJetSyst = 1.0;
 
@@ -90,9 +68,9 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin,J
 void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName);
 void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName);
 
-void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bin, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes,  bool runSystematics, bool shape);
-DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString Json="", bool runSystematics=true, bool shape=true);
-std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString Json="", bool runSystematics=true, bool shape=true);
+void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bin, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes);
+DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString Json="");
+std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString Json="");
 void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t> &allShapes, TString mainHisto, TString sideBandHisto);
 void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString metHistoForRescale);
 void doWZSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto);
@@ -134,6 +112,7 @@ TString systpostfix="";
 int indexvbf = -1;
 int indexcut   = -1, indexcutL=-1, indexcutR=-1;
 int mass=-1, massL=-1, massR=-1;
+bool runSystematics = false; bool shape = false;
 
 void printHelp()
 {
@@ -186,7 +165,6 @@ int main(int argc, char* argv[])
   initializeTGraph();
 
   //get input arguments
-  bool runSystematics = false; bool shape = false;
   for(int i=1;i<argc;i++){
     string arg(argv[i]);
     if(arg.find("--help")          !=string::npos) { printHelp(); return -1;} 
@@ -223,7 +201,7 @@ int main(int argc, char* argv[])
   if(Channels.size()==0){Channels.push_back("ee");Channels.push_back("mumu");}
 
   //build the datacard for this mass point
-  std::vector<TString> dcUrls = buildDataCard(mass,histo,inFileUrl, jsonFile, runSystematics, shape);
+  std::vector<TString> dcUrls = buildDataCard(mass,histo,inFileUrl, jsonFile);
 }
 
 
@@ -275,7 +253,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
          if(hshape2D){
             histoName.ReplaceAll(ch,ch+"_proj"+procCtr);
    	    hshape   = hshape2D->ProjectionY(histoName,cutBin,cutBin);
-            if(hshape->Integral()<=0 && !isData){hshape->Reset(); hshape->SetBinContent(1, 1E-10);}
+            if(hshape->Integral()<=0 && varName=="" && !isData){hshape->Reset(); hshape->SetBinContent(1, 1E-10);}
 	    hshape->SetDirectory(0);
 	    hshape->SetTitle(proc);
 	    fixExtremities(hshape,true,true);
@@ -563,12 +541,12 @@ void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &al
 
 
 
-std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TString Json, bool runSystematics, bool shape)
+std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TString Json)
 {
   std::vector<TString> dcUrls;
 
   //get the datacard inputs 
-  DataCardInputs dci = convertHistosForLimits(mass,histo,url,Json, runSystematics, shape);
+  DataCardInputs dci = convertHistosForLimits(mass,histo,url,Json);
 
   TString eecard = "";
   TString mumucard = "";
@@ -754,7 +732,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 }
 
 //
-DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TString Json, bool runSystematics, bool shape)
+DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TString Json)
 {
   DataCardInputs dci;
  
@@ -829,9 +807,9 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   SignalInterpolation(selCh,allShapesL, allShapes, allShapesR, histo);
 
   //print event yields from the mt shapes
-  if(runSystematics)getYieldsFromShape(selCh,allShapes,histo);
+  if(!fast)getYieldsFromShape(selCh,allShapes,histo);
 
-  if(runSystematics)showShape(selCh,allShapes,histo,"plot");
+  if(!fast)showShape(selCh,allShapes,histo,"plot");
 
 
   //prepare the output
@@ -870,7 +848,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         else if(proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
         else if(proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
 
-        convertHistosForLimits_core(dci, proc, AnalysisBins[b], chbin, systs, hshapes, runSystematics, shape);
+        convertHistosForLimits_core(dci, proc, AnalysisBins[b], chbin, systs, hshapes);
         if(ich==0 && b==0)allProcs.push_back(proc);
         dci.nsignalproc++;
      }
@@ -892,7 +870,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         }
 
         TString proc(h->GetTitle());
-        convertHistosForLimits_core(dci, proc, AnalysisBins[b], chbin, systs, hshapes, runSystematics, shape);
+        convertHistosForLimits_core(dci, proc, AnalysisBins[b], chbin, systs, hshapes);
         if(ich==0 && b==0)allProcs.push_back(proc);
 
         //remove backgrounds with rate=0 (but keep at least one background)
@@ -937,7 +915,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
      systs.push_back("");
      hshapes.push_back(h);
      TString proc(h->GetTitle());
-     convertHistosForLimits_core(dci, proc, AnalysisBins[b], chbin, systs, hshapes, runSystematics, shape);
+     convertHistosForLimits_core(dci, proc, AnalysisBins[b], chbin, systs, hshapes);
 
      //return to parent dir
      fout->cd("..");     
@@ -996,7 +974,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
 
 
-void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bin, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes,  bool runSystematics, bool shape){
+void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bin, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes){
    proc.ReplaceAll("#bar{t}","tbar");
    proc.ReplaceAll("Z-#gamma^{*}+jets#rightarrow ll","dy");
    proc.ReplaceAll("#rightarrow","");
@@ -1014,7 +992,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
 
        if(syst==""){syst="";
        }else if(syst.BeginsWith("_jes")){syst.ReplaceAll("_jes","_CMS_scale_j");
-       }else if(syst.BeginsWith("_jer")){syst.ReplaceAll("_jer","_CMS_res_j");  continue;//skip res for now
+       }else if(syst.BeginsWith("_jer")){syst.ReplaceAll("_jer","_CMS_res_j"); // continue;//skip res for now
        }else if(syst.BeginsWith("_btag")){syst.ReplaceAll("_btag","_CMS_eff_b"); 
        }else if(syst.BeginsWith("_pu" )){syst.ReplaceAll("_pu", "_CMS_hzz2l2v_pu");
        }else if(syst.BeginsWith("_ren" )){continue;   //already accounted for in QCD scales
@@ -1060,14 +1038,17 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                      dci.systs["CMS_hzz2l2v_interpol_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
                   }else{
                      //makesure that syst+stat error is never bigger than 100%
-                     double valerr, val  = hshape->IntegralAndError(1,hshape->GetXaxis()->GetNbins(),valerr);
-                     if(sqrt(pow(valerr,2)+pow(systUncertainty,2))>val){systUncertainty = sqrt(std::max(0.0, pow(val,2) - pow(valerr,2)));}
+                     //double valerr, val  = hshape->IntegralAndError(1,hshape->GetXaxis()->GetNbins(),valerr);
+                     //if(sqrt(pow(valerr,2)+pow(systUncertainty,2))>val){systUncertainty = sqrt(std::max(0.0, pow(val,2) - pow(valerr,2)));}
                      dci.systs["CMS_hzz2l2v_sys_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
                   }
                }
             }
          }
        }else if(runSystematics && proc!="data" && (syst.Contains("Up") || syst.Contains("Down"))){
+         //if empty histogram --> no variation is applied
+         if(hshape->Integral()<hshapes[0]->Integral()*0.01){hshape->Reset(); hshape->Add(hshapes[0],1); }
+
          //write variation to file
          hshape->SetName(proc+syst);
          hshape->Write(proc+postfix+syst);
