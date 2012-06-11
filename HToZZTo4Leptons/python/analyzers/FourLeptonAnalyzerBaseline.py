@@ -175,6 +175,12 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonTightID,'4l tight lepton id',1,'fourLeptonsTightID')
 
 
+        #HERE PICK ONLY ONE
+        bestZ2=[]
+        if passed:
+            bestZ2 = [cutFlow.obj1[0]]
+
+        cutFlow.setSource1(bestZ2)    
         #Mass cuts for second lepton
         passed=cutFlow.applyCut(self.testFourLeptonMassZ2,'4l pair 2 mass cut',1,'fourLeptonsMassZ2')
 
