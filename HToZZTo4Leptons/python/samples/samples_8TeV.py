@@ -208,7 +208,7 @@ from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 for comp in mcSamples:
     comp.isMC = True
     comp.splitFactor = 10
-    comp.puFileMC=dataDir+"/puProfile_Fall11.root"
+    comp.puFileMC=dataDir+"/puProfile_Summer12.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     
 for comp in dataSamplesMu:
