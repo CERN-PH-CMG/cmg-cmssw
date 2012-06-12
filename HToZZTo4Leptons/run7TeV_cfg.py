@@ -186,7 +186,6 @@ elif channel == 'ele_ele':
 dataSequence=[
     jsonFilter,
     puAna,
-    A4Skim,
     triggerAna,
     vertexAna,
     theAna,

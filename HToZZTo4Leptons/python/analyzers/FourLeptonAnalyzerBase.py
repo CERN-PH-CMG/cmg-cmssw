@@ -14,6 +14,7 @@ from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
 from CMGTools.HToZZTo4Leptons.tools.FSRRecovery import FSRRecovery
 from CMGTools.HToZZTo4Leptons.tools.FakeRateCalculator import FakeRateCalculator
+from CMGTools.HToZZTo4Leptons.tools.EfficiencyCorrector import EfficiencyCorrector
 from CMGTools.HToZZTo4Leptons.tools.mela import MELACalculator
 
 
@@ -32,6 +33,10 @@ class FourLeptonAnalyzerBase( Analyzer ):
             for fr in cfg.comp.fakeRates:
                 self.fakeRates.append(FakeRateCalculator(fr))
 
+        if hasattr(cfg_comp,'efficiency'):
+            self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
+
+        self.mela = MELACalculator()
 
     def declareHandles(self):
         super(FourLeptonAnalyzerBase, self).declareHandles()
@@ -55,7 +60,6 @@ class FourLeptonAnalyzerBase( Analyzer ):
         count = self.counters.counter('FourLepton')
         count.register('all events')
 
-        self.mela = MELACalculator()
 
         
     def buildPhotonList(self, event):
@@ -66,13 +70,23 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
     def buildLeptonList(self, event):
         #We need the vertices first!
-
+        
         
         event.leptons1 = map( self.__class__.LeptonClass1,
                               self.handles['leptons1'].product() )
 
+
+
         for lepton in event.leptons1:
             lepton.associatedVertex = event.vertex
+            if hasattr(self,'fakeRates'):
+                for fr in self.fakeRates:
+                    fr.attachToObject(lepton)
+
+            if hasattr(self,'efficiency'):
+                self.efficiency.attachToObject(lepton)
+
+
         
         if self.__class__.LeptonClass1 != self.__class__.LeptonClass2: 
             event.leptons2 = map( self.__class__.LeptonClass2,
@@ -80,6 +94,12 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
             for lepton in event.leptons2:
                 lepton.associatedVertex = event.vertex
+                if hasattr(self,'fakeRates'):
+                    for fr in self.fakeRates:
+                        fr.attachToObject(lepton)
+                if hasattr(self,'efficiency'):
+                    self.efficiency.attachToObject(lepton)
+
         else:
             event.leptons2 = event.leptons1
 
@@ -120,20 +140,6 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
 
 
-    def findQuads(self, leptons):
-        out = []
-        for l1, l2,l3,l4 in itertools.permutations(leptons, 4):
-            if l1.pt()>l2.pt() and l3.pt()>l4.pt():
-                if hasattr(self,'fakeRates'):
-                    for fr in self.fakeRates:
-                        fr.attachToObject(l3)
-                        fr.attachToObject(l4)
-                quadObject =DiObjectPair(l1, l2,l3,l4)
-                out.append(quadObject)
-                
-
-
-        return out
 
     def findQuadsWithFSR(self, leptons,photons):
         out = []
@@ -141,11 +147,6 @@ class FourLeptonAnalyzerBase( Analyzer ):
             if l1.pt()>l2.pt() and l3.pt()>l4.pt():
                 quadObject =DiObjectPair(l1, l2,l3,l4)
                 if not hasattr(self.cfg_ana,"FSR"):
-                    if hasattr(self,'fakeRates'):
-                        for fr in self.fakeRates:
-                            fr.attachToObject(quadObject.leg2.leg1)
-                            fr.attachToObject(quadObject.leg2.leg2)
-
                     out.append(quadObject)
                 else:    
                     fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
@@ -155,9 +156,6 @@ class FourLeptonAnalyzerBase( Analyzer ):
                     fsrAlgo.recoverZZ()
                     #Now Z 2
                     quadObject.updateP4()
-                    for fr in self.fakeRates:
-                        fr.attachToObject(quadObject.leg2.leg1)
-                        fr.attachToObject(quadObject.leg2.leg2)
                     out.append(quadObject)
         return out
 
