@@ -7,7 +7,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 
 from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2011 as effectiveAreas
 from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
-from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
+
 
 
 
@@ -80,7 +80,6 @@ muMuAna = cfg.Analyzer(
     PF=True,
     keep=False,
     effectiveAreas=effectiveAreas,
-    fakeRates=fakeRates2011,
     rhoMuon     = 'kt6PFJetsForIso',
     rhoElectron = 'kt6PFJetsForIso',
     FSR=fsr

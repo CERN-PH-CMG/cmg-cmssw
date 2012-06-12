@@ -1,7 +1,7 @@
 from CMGTools.HToZZTo4Leptons.samples.getFiles import getFiles
 from CMGTools.HToZZTo4Leptons.samples.mc import *
 import os
-
+from copy import copy
 pat='V5_4_0'
 filepattern = 'cmgTuple.*root'
 
@@ -183,13 +183,17 @@ ZZGG2L2L8TeV.puFileData=dataDir+"/puProfile_Data12.root"
 
 mcSamples.extend([ZZ2e2mu8TeV,ZZ4tau8TeV,ZZGG4L8TeV,ZZGG2L2L8TeV])
                   
+from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 
     
 for comp in dataSamplesMu:
     comp.splitFactor = 100
+    comp.fakeRates=fakeRates2011
     
 for comp in dataSamplesE:
     comp.splitFactor = 100
+    comp.fakeRates=fakeRates2011
+    
 
 
 
