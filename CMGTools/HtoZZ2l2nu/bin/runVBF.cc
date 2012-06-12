@@ -351,8 +351,8 @@ int main(int argc, char* argv[])
       std::vector<Float_t>  mts,mt3s,redMetLs,redMetTs;
       std::vector<PhysicsObjectJetCollection> jetsSTD;
       std::vector<PhysicsObjectJetCollection> jetsCHS;
-      METUtils::computeVariation(phys. jets, rawZvv, jetsCHS, zvvs, &jecUnc);
-      METUtils::computeVariation(phys.ajets, rawZvv, jetsSTD, zvvs, &jecUnc);
+      METUtils::computeVariation(phys. jets, phys.leptons, rawZvv, jetsCHS, zvvs, &jecUnc);
+      METUtils::computeVariation(phys.ajets, phys.leptons, rawZvv, jetsSTD, zvvs, &jecUnc);
       for(size_t ivars=0; ivars<zvvs.size(); ivars++)
 	{
 	  LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;

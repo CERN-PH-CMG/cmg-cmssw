@@ -884,7 +884,7 @@ int main(int argc, char* argv[])
       std::vector<PhysicsObjectJetCollection> Jets;
 
       //Prepare Variation JER/JES   
-      if(/*runSystematics*/ true) METUtils::computeVariation(phys.jets, zvv, Jets, zvvs, &jecUnc);
+      if(/*runSystematics*/ true) METUtils::computeVariation(phys.jets, phys.leptons, zvv, Jets, zvvs, &jecUnc);
       LorentzVector MetSmeared        = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[0], isGammaEvent, &redMetInfo);
       LorentzVector MetSmeared_jerp   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[1], isGammaEvent, &redMetInfo);
       LorentzVector MetSmeared_jerm   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[2], isGammaEvent, &redMetInfo);

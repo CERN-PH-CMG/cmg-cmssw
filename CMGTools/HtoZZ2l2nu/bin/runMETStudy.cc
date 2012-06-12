@@ -336,7 +336,7 @@ int main(int argc, char* argv[])
       LorentzVectorCollection zvvs;
       std::vector< std::vector<PhysicsObject_Jet> > jets;
       //std::vector<LorentzVectorCollection> jets;
-      METUtils::computeVariation(phys.ajets, zvvRaw, jets, zvvs, &jecUnc);
+      METUtils::computeVariation(phys.ajets, phys.leptons, zvvRaw, jets, zvvs, &jecUnc);
       LorentzVector zvv(zvvs[0]);
       LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
       int njets(0),nbtags(0);

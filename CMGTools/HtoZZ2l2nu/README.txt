@@ -63,17 +63,12 @@ runOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json 
 runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2011.json -o test/results -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=True" -s 8nh 
 runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2012.json -o test/results -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
 
-#
-# z+jets replacement
-#
-
-#add the files for the ntuples
-haddOverSamples.py -j data/photon-samples.json -d /store/cmst3/user/psilva/12_03_27_HZZ2l2v_ntuples -o /store/cmst3/user/psilva/grid_12_03_27_HZZ2l2v_ntuples -m 1 -t G_
-
-
-## generate unweigthed distributions
+#photon+jets 
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2011/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=True" -s 8nh
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2012/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh
+
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples-data_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2012/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples-data_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2012/qt  -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_2012.root'" -s 8nh
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples-data_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2012/nvtx  -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_2012.root','data/gammanvtxweights_2012.root'" -s 8nh
 
 
 runPlotter --iLumi 4616 --inDir ~/work/gamma/ --outDir ~/work/gamma/plots --json data/photon-samples.json

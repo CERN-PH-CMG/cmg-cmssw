@@ -143,6 +143,8 @@ int main(int argc, char* argv[])
   //######## CONTROL PLOTS FOR SELECTION #########
   //##############################################
 
+  mon.addHistogram( new TH1F ("ht",     ";H_{T};Events",50,0,500) );
+  mon.addHistogram( new TH1F ("clusteredmet",     ";Clustered E_{T}^{miss} [GeV];Events",50,0,250) );
   mon.addHistogram( new TH1F ("njets",     ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TH1F ("nsoftjets", ";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TH1F ("nbtags",    ";b-tag multiplicity; Events", 5,0,5) );
@@ -164,7 +166,8 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1D( "qt",        ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 100,0,500) );
   mon.addHistogram( new TH1D( "metoverqt", ";E_{T}^{miss}/p_{T}^{#gamma} [GeV/c];Events", 25,0,2.5) );
   mon.addHistogram( new TH1D( "eta",       ";#eta;Events", 50,0,2.6) );  
-  mon.addHistogram( new TH1F( "nvtx", ";Vertices;Events", 30,0,30) );  
+  mon.addHistogram( new TH1F( "nvtx", ";Vertices;Events", 50,0,50) );  
+  mon.addHistogram( new TH1F( "rho", ";#rho;Events", 50,0,25) );  
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "met_rawmet"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
@@ -281,6 +284,9 @@ int main(int argc, char* argv[])
       //interpret event
       ZZ2l2nuSummary_t &ev = evSummaryHandler.getEvent();
       PhysicsEvent_t phys  = getPhysicsEventFrom(ev);
+      bool hasEEtrigger = ev.triggerType & 0x1;
+      bool hasMMtrigger = (ev.triggerType >> 1 ) & 0x1;
+
       bool isGammaEvent    = gammaEvHandler.isGood(phys);
       if(duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)) {  NumberOfDuplicated++; continue; }
 
@@ -295,7 +301,7 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(5,1);
 
       //check which event type is required to use (dilepton/or photon)
-      if(mctruthmode==22 && !isGammaEvent) continue;
+      if(mctruthmode==22 && (!isGammaEvent || hasEEtrigger || hasMMtrigger) ) continue;
       if(mctruthmode==1  && isGammaEvent) continue;
       if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
       std::vector<TString> dilCats;
@@ -303,14 +309,14 @@ int main(int argc, char* argv[])
       //build the gamma candidate
       LorentzVector gamma(0,0,0,0);
       float r9(0),sietaieta(0);
-      bool hasTrkVeto(false),isConv(false);
+      bool hasTrkVeto(false),isConv(false),hasElectronVeto(false);
       if(isGammaEvent)
 	{
 	  dilCats.push_back("ee");
 	  dilCats.push_back("mumu");
-	  dilCats.push_back("ll");
 	  r9               = phys.gammas[0].r9*(isMC ? 1.005 : 1.0);
 	  sietaieta        = phys.gammas[0].sihih;
+	  hasElectronVeto  = phys.gammas[0].hasElectronVeto;
 	  hasTrkVeto       = phys.gammas[0].hasCtfTrkVeto;
 	  gamma            = phys.gammas[0];
 	  isConv=(phys.gammas[0].isConv);
@@ -354,7 +360,6 @@ int main(int argc, char* argv[])
 	  if(fabs(gamma.mass()-91)>15) continue;
 	  if(ev.cat==MUMU) dilCats.push_back("mumu");
 	  if(ev.cat==EE)   dilCats.push_back("ee");
-	  dilCats.push_back("ll");
 	}
 
       //
@@ -398,11 +403,12 @@ int main(int argc, char* argv[])
       LorentzVector metP4(phys.met[0]);
       LorentzVectorCollection zvvs;
       std::vector<PhysicsObjectJetCollection> jets;
-      METUtils::computeVariation(phys.ajets, metP4, jets, zvvs, &jecUnc);
+      METUtils::computeVariation(phys.ajets, phys.leptons, metP4, jets, zvvs, &jecUnc);
       metP4=zvvs[0];
       
       //count the jets
       int nbtags(0),njets30(0),njets15(0);
+      double ht(0);
       double mindphijmet(9999.),mindphijmet15(9999.);
       PhysicsObjectJetCollection selJets,recoilJets;
       LorentzVector clusteredMet(gamma);  clusteredMet *= -1;
@@ -418,7 +424,8 @@ int main(int argc, char* argv[])
 	  njets15++;
 	  selJets.push_back(ijetP4);
 	  clusteredMet -= ijetP4;
-	  
+	  ht += ijetP4.pt();
+
 	  //dphi(jet,MET)
 	  double idphijmet=fabs(deltaPhi(metP4.phi(),ijetP4.phi()));	  
 	  mindphijmet15=min(idphijmet,mindphijmet15);
@@ -429,6 +436,15 @@ int main(int argc, char* argv[])
 	  
 	  //b-tag
 	  if(fabs(ijetP4.eta())<2.5) nbtags += (jets[0][ijet].btag3>0.275);
+
+
+// 	  TString reg=getJetRegion(jets[0][ijet].eta());
+// 	  mon.fillHisto(reg+"pfjetbeta",     tags_full,jets[0][ijet].beta,     weight);
+// 	  mon.fillHisto(reg+"pfjetbetastar", tags_full,jets[0][ijet].betaStar, weight);
+// 	  mon.fillHisto(reg+"pfjetdrmean",   tags_full,jets[0][ijet].dRMean,   weight);
+// 	  mon.fillHisto(reg+"pfjetptd",      tags_full,jets[0][ijet].ptD,      weight);
+// 	  mon.fillHisto(reg+"pfjetptrms",    tags_full,jets[0][ijet].ptRMS,    weight);
+// 	  mon.fillHisto(reg+"pfjetmva",      tags_full,jets[0][ijet].pumva,    weight);
 	}
             
       //other mets
@@ -445,9 +461,9 @@ int main(int argc, char* argv[])
       //
       bool passMultiplicityVetoes (isGammaEvent ? (nextraleptons==0 && phys.gammas.size()==1) : (nextraleptons==0) );
       bool passKinematics         (gamma.pt()>55); //30);
-      bool passEB                 (!isGammaEvent || fabs(gamma.eta())<1.4442);
+      bool passEB                 (!isGammaEvent || fabs(gamma.eta())<1.4442); // (fabs(gamma.eta())<1.4442); 
       bool passR9                 (!isGammaEvent || r9<1.0);
-      bool passR9tight            (!isGammaEvent || r9>0.85); 
+      bool passR9tight            (true); //!isGammaEvent || r9>0.85); 
       bool passBveto              (nbtags==0);
       bool passMinDphiJmet        (mindphijmet>0.5);
       bool passSMZZpreSel(njets30==0 && passBveto && passMinDphiJmet);  
@@ -467,8 +483,8 @@ int main(int argc, char* argv[])
 	} 
       else if(njets30==1)        subcats.push_back("eq1jets");
       else if(tag_subcat=="vbf") subcats.push_back("vbf");
-      else if(njets30==2)        subcats.push_back("eq2jets");
-      else if(njets30>2)         subcats.push_back("geq3jets");
+      else if(njets30==2)        { subcats.push_back("eq2jets");  tag_subcat="eq2jets"; }
+      else if(njets30>2)         { subcats.push_back("geq3jets"); tag_subcat="geq3jets"; }
       
       //add blinding (dilepton only)
       bool mustBlind = (!isMC && !isGammaEvent && runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC));
@@ -490,7 +506,6 @@ int main(int argc, char* argv[])
 	  Float_t mt( METUtils::transverseMass(iboson,metP4,true) );
 	  float iweight=weight;
 	  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
-	  
 	  for(size_t isc=0; isc<subcats.size(); isc++)
 	    {
 	      TString ctf=dilCats[idc]+subcats[isc];	      
@@ -498,12 +513,15 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("eta",ctf, fabs(gamma.eta()),iweight);
 	      mon.fillHisto("qt",ctf, gamma.pt(),iweight);
 	      mon.fillHisto("nvtx",ctf, ev.nvtx,iweight);
+	      mon.fillHisto("rho",ctf, ev.rho,iweight);
 	      mon.fillHisto("zmass",ctf, zmass,iweight);
 
 	      mon.fillHisto("nbtags",ctf, nbtags,iweight);
 	      if(!passBveto) continue;
 	  
 	      mon.fillHisto("njets",ctf, njets30,iweight);
+	      mon.fillHisto("ht",ctf, ht,iweight);
+	      mon.fillHisto("clusteredmet",ctf,clusteredMet.pt(),iweight);
 	      mon.fillHisto("nsoftjets",ctf, njets15,iweight);
 	      if(isGammaEvent)  
 		{
@@ -512,7 +530,7 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("trkveto",   ctf, hasTrkVeto, iweight);
 		}
 	      
-	      if(hasTrkVeto || !passR9tight) continue;
+	      if(/*hasElectronVeto ||*/ hasTrkVeto || !passR9tight) continue;
 	      
 	      //measure jet selection efficiency 
 	      if(ctf.Contains("eq1jets") && recoilJets.size()==1)
