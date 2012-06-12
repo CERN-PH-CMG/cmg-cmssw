@@ -8,7 +8,14 @@ from datetime import date
 import types
 
 class SavannahFormatter(object):
+    """Class to format information into human readable format, and interact with SavannahBrowser class"""
+	
     def __init__(self, username, password, taskID, opts):
+    	"""Creates SavannahBrowser object and initialises dictionary as well as several important fields, also passes unformatted metadata to SavannahBrowser
+    	
+    	'username' takes users NICE username
+    	'password' takes users NICE password
+    	'opts' takes the list of metadata options to be passed to SavannahBrowser first, these do not require formatting"""
         self._savannahBrowser = SavannahBrowser(username,password, taskID)
         self._taskID=taskID
         self._opts = opts
@@ -24,7 +31,17 @@ class SavannahFormatter(object):
             	if savOpts[i] is not None:
                 	self._savannahBrowser.addOption(i, self._opts[i])
         
-    def addMain(self, ProcDS, tags, files, castor, lfn, release, comment):
+    def addMain(self, ProcDS, tags, files, EOS, lfn, release, comment):
+    	"""Formats the main section into a readable structure
+    	
+    	'ProcDS' takes a DBSProcessedDataset object which contains basic dataset info
+    	'tags' takes a list of dict() objects containing the 'package' and 'tag' of each tag
+    	'files' takes a list of file groups as dict() objects which each contain information about the files e.g. missing files
+    	'EOS' takes the EOS name of the dataset
+    	'lfn' takes the lfn of the dataset
+    	'release' takes the CMSSW release name of the dataset
+    	'comment' takes a user comment
+    	"""
         self.name = ProcDS['PathList'][0]
         if comment is not None: self.comment = comment
         	
@@ -75,14 +92,21 @@ class SavannahFormatter(object):
                 if "qFiles" in group: detailString += "* No. of Files: " + str(group["qFiles"]) +"\n"
                 detailString+="\n"
             self.files = "\n" +detailString
-        if castor is not None:
-            self.dict["EOS Directory"]="\n\t"+castor
+        if EOS is not None:
+            self.dict["EOS Directory"]="\n\t"+EOS
         if lfn is not None:
             self.dict["LFN EOS Directory"]="\n\t"+lfn
         if release is not None:
         	self.dict["CMSSW Release"] = release
     
     def _recursiveRead(self, string, input, tabs):
+    	"""Recursively reads through a dict() or list and returns a string of formatted data
+    	
+    	'string' takes the string that has been built so far
+    	'input' takes the input the the function is working on in its current recursion
+    	'tabs' takes the number of tabs currently preceding each line
+    	"""
+    	
     	if input is None: return "\n"
     	if isinstance(input, int) or isinstance(input, float) or isinstance(input, str):
         	return tabs + " " + str(input)+"\n"
@@ -110,7 +134,11 @@ class SavannahFormatter(object):
         	return ""
         	
 	
-    def appendExtra(self, Extra):
+    def appendExtra(self, Extra): 
+    	"""Appends extra required information onto the end of the main section on Savannah
+    	
+    	'Extra' takes the required data as a string int float dict or list and passes it to the recursive read function before appending to an the userFields variable as a string
+    	"""
         if self.userFields is not "":
         	formattedString = self.userFields
         else:
@@ -119,6 +147,7 @@ class SavannahFormatter(object):
         self.userFields+=self._recursiveRead("", Extra, "")+"\n"
         
     def publish(self):
+    	"""Fill in the details section with the compiled data"""
         info = "*Dataset Name*: "+self.name + "\n\n"
         if self.comment is not None: info += "*Comment*: "+self.comment+"\n\n"
         for i in self.dict:
@@ -132,5 +161,6 @@ class SavannahFormatter(object):
         if self._taskID is None:
             self._savannahBrowser.addOption("details", info)
         else: self._savannahBrowser.addOption("comment", info)
+        
         return self._savannahBrowser.post(self._opts['assigned_to'])
             
