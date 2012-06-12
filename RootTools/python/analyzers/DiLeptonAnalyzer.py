@@ -6,7 +6,7 @@ from CMGTools.RootTools.physicsobjects.DiObject import DiObject
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
-class DiLeptonAnalyzer2( Analyzer ):
+class DiLeptonAnalyzer( Analyzer ):
 
     # The DiObject class will be used as the di-object class
     # and the Lepton class as the lepton class
@@ -17,7 +17,7 @@ class DiLeptonAnalyzer2( Analyzer ):
     LeptonClass = Lepton 
 
     def beginLoop(self):
-        super(DiLeptonAnalyzer2,self).beginLoop()
+        super(DiLeptonAnalyzer,self).beginLoop()
         self.counters.addCounter('DiLepton')
         count = self.counters.counter('DiLepton')
         count.register('all events')
@@ -143,7 +143,7 @@ class DiLeptonAnalyzer2( Analyzer ):
     
 
     def declareHandles(self):        
-        super(DiLeptonAnalyzer2, self).declareHandles()
+        super(DiLeptonAnalyzer, self).declareHandles()
         self.handles['cmgTriggerObjectSel'] =  AutoHandle(
             'cmgTriggerObjectSel',
             'std::vector<cmg::TriggerObject>'
