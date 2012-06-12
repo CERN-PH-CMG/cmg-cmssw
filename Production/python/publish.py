@@ -136,7 +136,6 @@ def publish(dsName,fileown,comment,test,user,password, force, checkGroups, savan
     	
     	if savannah or taskID == None:
     	    (taskID, parentTaskID) = publishController.savannahPublish(procds, opts, comment, fileOps)
-    	    print parentTaskID
     	else:
     	    print "NO SAVANNAH PUBLISH REQUIRED"
     	
