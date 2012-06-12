@@ -2,7 +2,7 @@ import random
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
-from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection
+from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA
@@ -51,6 +51,9 @@ class VBFAnalyzer( Analyzer ):
         event.bJets = []
         event.cleanJets = []
         event.cleanBJets = []
+
+        leg1 = event.diLepton.leg1()
+        leg2 = event.diLepton.leg2()
      
         for cmgJet in cmgJets:
             jet = Jet( cmgJet )
@@ -65,16 +68,26 @@ class VBFAnalyzer( Analyzer ):
                 event.bJets.append(jet)
         self.counters.counter('VBF').inc('all events')
 
-        event.cleanJets = cleanObjectCollection( event.jets,
-                                                 masks = [event.diLepton.leg1(),
-                                                          event.diLepton.leg2() ],
-                                                 deltaRMin = 0.5 )        
+        event.cleanJets, dummy = cleanObjectCollection( event.jets,
+                                                        masks = [leg1,
+                                                                 leg2 ],
+                                                        deltaRMin = 0.5 )
+        
 
-        event.cleanBJets = cleanObjectCollection( event.bJets,
-                                                  masks = [event.diLepton.leg1(),
-                                                           event.diLepton.leg2() ],
-                                                  deltaRMin = 0.5 )        
+        event.cleanBJets, dummy = cleanObjectCollection( event.bJets,
+                                                         masks = [leg1,
+                                                                  leg2 ],
+                                                         deltaRMin = 0.5 )        
 
+        pairs = matchObjectCollection( [ leg1,
+                                         leg2 ], allJets, 0.5*0.5)
+        leg1.jet = pairs[leg1]
+        leg2.jet = pairs[leg2]
+        # import pdb; pdb.set_trace()
+        if leg1.jet is None:
+            leg1.jet = leg1
+        if leg2.jet is None:
+            leg2.jet = leg2
 
         if len( event.jets )>=2:
             self.counters.counter('VBF').inc('at least 2 good jets')
