@@ -58,7 +58,15 @@ GGH550.files=getFiles('/GluGluToHToZZTo4L_M-550_7TeV-powheg-pythia6/Fall11-PU_S6
 GGH575.files=getFiles('/GluGluToHToZZTo4L_M-575_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
 GGH600.files=getFiles('/GluGluToHToZZTo4L_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
 
-
+uflSamples=[
+    ZZ2mu2tau,
+    ZZ4e,
+    ZZ4mu,
+    ZZ2e2mu,
+    ZZ2e2tau,
+    ZZ4tau,
+    ZZGG4L,
+    ]
 
 mcSamples=[ZZ2mu2tau,
            ZZ4e,
@@ -145,6 +153,15 @@ for comp in mcSamples:
     comp.splitFactor = 10
     comp.puFileMC=dataDir+"/puProfile_Fall11.root"
     comp.puFileData=dataDir+"/puProfile_Data11.root"
+
+
+#Fix the UFL PU crap
+for comp in uflSamples:
+    comp.isMC = True
+    comp.splitFactor = 10
+    comp.puFileMC=dataDir+"/puProfile_Summer11.root"
+    comp.puFileData=dataDir+"/puProfile_Data11.root"
+
     
 for comp in dataSamplesMu:
     comp.splitFactor = 100

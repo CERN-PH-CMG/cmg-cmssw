@@ -219,3 +219,12 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         
         return True
     
+
+
+
+#    def testFourLeptonTightID(self, fourLepton):
+#        if hasattr(fourLepton.leg1,'fsrPhoton'):
+#            fourLepton.leg2.fsrPhoton =fourLepton.leg1.fsrPhoton 
+#        if hasattr(fourLepton.leg2,'fsrPhoton'):
+##            fourLepton.leg1.fsrPhoton =fourLepton.leg2.fsrPhoton 
+#        return self.testZ1TightID(fourLepton.leg1) and self.testZ2TightID(fourLepton.leg2)
