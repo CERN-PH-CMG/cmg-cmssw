@@ -1,16 +1,18 @@
-from ROOT import TH1, kViolet
+from ROOT import TH1, kViolet, kMagenta, kOrange, kRed, kBlue
 
 class Style:
     def __init__(self,
                  markerStyle = 8,
                  markerColor = 1,
+                 markerSize = 1,
                  lineStyle = 1,
                  lineColor = 1,
                  lineWidth = 2,
                  fillColor = None,
-                 fillStyle = 3001 ):
+                 fillStyle = 1001 ):
         self.markerStyle = markerStyle
         self.markerColor = markerColor
+        self.markerSize = markerSize
         self.lineStyle = lineStyle
         self.lineColor = lineColor
         self.lineWidth = lineWidth
@@ -28,6 +30,7 @@ class Style:
     def formatHisto( self, hist, title=None):
         hist.SetMarkerStyle( self.markerStyle )
         hist.SetMarkerColor( self.markerColor )
+        hist.SetMarkerSize( self.markerSize )
         hist.SetLineStyle( self.lineStyle )
         hist.SetLineColor( self.lineColor )
         hist.SetLineWidth( self.lineWidth )
@@ -48,11 +51,21 @@ def formatPad( pad ):
 # user defined styles can be created in the same way in any python module
 
 sBlack = Style()
+sData = Style(fillStyle=0, markerSize=1.3)
 sBlue = Style(lineColor=4, markerColor=4)
 sGreen = Style(lineColor=8, markerColor=8)
 sRed = Style(lineColor=2, markerColor=2)
 sYellow = Style(lineColor=1, markerColor=5, fillColor=5)
 sViolet = Style(lineColor=1, markerColor=kViolet, fillColor=kViolet)
+
+qcdcol = kMagenta - 10
+sHTT_QCD = Style(lineColor=1, markerColor=qcdcol, fillColor = qcdcol)
+dycol = kOrange - 4 
+sHTT_DYJets = Style(lineColor=1, markerColor=dycol, fillColor = dycol)
+wcol = kRed+2 
+sHTT_WJets = Style(lineColor=1, markerColor=wcol, fillColor = wcol)
+ttcol = kBlue-8
+sHTT_TTJets = Style(lineColor=1, markerColor=ttcol, fillColor = ttcol)
 
 
 sBlackSquares = Style(markerStyle = 21)
