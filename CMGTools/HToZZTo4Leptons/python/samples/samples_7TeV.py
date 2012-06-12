@@ -28,7 +28,8 @@ ZZ4mu.files=getFiles('/Summer11/zz4mu_powheg_GENSIMRECO_v2/USER/PAT_CMG_'+pat,'c
 ZZ2e2mu.files=getFiles('/Summer11/zz2e2m_powheg_GENSIMRECO_v2/USER/PAT_CMG_'+pat,'cmgtools',filepattern)
 ZZ2e2tau.files=getFiles('/Summer11/zz2e2tau_powheg_GENSIMRECO_v2/USER/PAT_CMG_'+pat,'cmgtools',filepattern)
 ZZ4tau.files=getFiles('/Summer11/zz4tau_powheg_GENSIMRECO_v2/USER/PAT_CMG_'+pat,'cmgtools',filepattern)
-ZZGG4L.files=getFiles('/Summer11/ggH4L-M125_GENSIMRECO_v2/USER/PAT_CMG_'+pat,'cmgtools',filepattern)
+ZZGG4L.files=getFiles('/GluGluToZZTo4L_7TeV-gg2zz-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
+ZZGG2L2L.files=getFiles('/GluGluToZZTo2L2L_7TeV-gg2zz-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
 
 
 
@@ -65,7 +66,6 @@ uflSamples=[
     ZZ2e2mu,
     ZZ2e2tau,
     ZZ4tau,
-    ZZGG4L,
     ]
 
 mcSamples=[ZZ2mu2tau,
@@ -75,6 +75,7 @@ mcSamples=[ZZ2mu2tau,
            ZZ2e2tau,
            ZZ4tau,
            ZZGG4L,
+           ZZGG2L2L,
            GGH120,
            GGH130,
            GGH140,
@@ -162,6 +163,27 @@ for comp in uflSamples:
     comp.puFileMC=dataDir+"/puProfile_Summer11.root"
     comp.puFileData=dataDir+"/puProfile_Data11.root"
 
+
+#run some samples for 8TeV
+ZZ2e2mu8TeV = copy(ZZ2e2mu)
+ZZ2e2mu8TeV.puFileMC=dataDir+"/puProfile_Summer11.root"
+ZZ2e2mu8TeV.puFileData=dataDir+"/puProfile_Data12.root"
+
+ZZ4tau8TeV = copy(ZZ4tau)
+ZZ4tau8TeV.puFileMC=dataDir+"/puProfile_Summer11.root"
+ZZ4tau8TeV.puFileData=dataDir+"/puProfile_Data12.root"
+
+ZZGG4L8TeV = copy(ZZGG4L)
+ZZGG4L8TeV.puFileMC=dataDir+"/puProfile_Fall11.root"
+ZZGG4L8TeV.puFileData=dataDir+"/puProfile_Data12.root"
+
+ZZGG2L2L8TeV = copy(ZZGG2L2L)
+ZZGG2L2L8TeV.puFileMC=dataDir+"/puProfile_Fall11.root"
+ZZGG2L2L8TeV.puFileData=dataDir+"/puProfile_Data12.root"
+
+mcSamples.extend([ZZ2e2mu8TeV,ZZ4tau8TeV,ZZGG4L8TeV,ZZGG2L2L8TeV])
+                  
+
     
 for comp in dataSamplesMu:
     comp.splitFactor = 100
@@ -175,3 +197,5 @@ for comp in dataSamplesE:
 
     
 
+
+#  LocalWords:  ZZGG
