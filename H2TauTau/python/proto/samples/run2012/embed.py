@@ -3,49 +3,27 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 from   CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
-
-embed_Run2011A_May10ReReco_v1 = cfg.EmbedComponent(
-    name = 'embed_Run2011A_May10ReReco_v1',
+embed_Run2012A = cfg.DataComponent(
+    name = 'embed_Run2012A',
     files = [],
+    intLumi = 1.0, # dummy
     triggers = [],
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt'
     )
 
-embed_Run2011A_PromptReco_v4 = cfg.EmbedComponent(
-    name = 'embed_Run2011A_PromptReco_v4',
+embed_Run2012B_193752_195135 = cfg.DataComponent(
+    name = 'embed_Run2012B_193752_195135',
     files = [],
+    intLumi = 1.0, # dummy
     triggers = [],
-    ) 
-
-embed_Run2011A_05Aug2011_v1 = cfg.EmbedComponent(
-    name = 'embed_Run2011A_05Aug2011_v1',
-    files = [],
-    triggers = [],
-    ) 
-
-embed_Run2011A_03Oct2011_v1 = cfg.EmbedComponent(
-    name = 'embed_Run2011A_03Oct2011_v1',
-    files = [],
-    triggers = [],
-    ) 
-
-embed_Run2011B_PromptReco_v1 = cfg.EmbedComponent(
-    name = 'embed_Run2011B_PromptReco_v1',
-    files = [],
-    triggers = [],
-    ) 
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.txt'
+    )
 
 
 
-embed_2011A = [
-    embed_Run2011A_May10ReReco_v1,
-    embed_Run2011A_PromptReco_v4,
-    embed_Run2011A_05Aug2011_v1,
-    embed_Run2011A_03Oct2011_v1
-    ]
 
-embed_2011B = [
-    embed_Run2011B_PromptReco_v1
-    ]
+embed_list_Run2012A = [embed_Run2012A]
+embed_list_Run2012B = [embed_Run2012B_193752_195135]
 
-embed_2011 = copy.copy( embed_2011A )
-embed_2011.extend( embed_2011B ) 
+embed_list_2012 = copy.copy(embed_list_Run2012A)
+embed_list_2012.extend(embed_list_Run2012B)
