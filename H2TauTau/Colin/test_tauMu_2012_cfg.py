@@ -59,12 +59,13 @@ pileUpAna = cfg.Analyzer(
     true = True
     )
 
+
 TauMuAna = cfg.Analyzer(
     'TauMuAnalyzer',
     pt1 = 20,
     eta1 = 2.3,
     iso1 = 999,
-    pt2 = 20,
+    pt2 = 18,
     eta2 = 2.1,
     iso2 = 0.1,
     m_min = 10,
@@ -136,12 +137,15 @@ selectedComponents =  copy.copy(MC)
 
 if period == 'Period_2012A':
     selectedComponents.extend( data_list_Run2012A )
+    selectedComponents.extend( embed_list_Run2012A )
 elif period == 'Period_2012B':
     selectedComponents.extend( data_list_Run2012B )
+    selectedComponents.extend( embed_list_Run2012B )
 elif period == 'Period_2012AB':
     selectedComponents.extend( data_list_2012 )
+    selectedComponents.extend( embed_list_2012 )
     
-
+selectedComponents.append( zdata_Run2012A )
 
 sequence = cfg.Sequence( [
     jsonAna,
@@ -159,31 +163,22 @@ sequence = cfg.Sequence( [
 DYJets.fakes = True
 DYJets.splitFactor = 100
 WJets.splitFactor = 10
-TTJets.splitFactor = 80
+TTJets.splitFactor = 100
+HiggsVBF115.splitFactor = 10
+HiggsVBF120.splitFactor = 50
+HiggsVBF125.splitFactor = 10
 
-if period.find('Period_2012')==-1:
-    data_Run2011B_PromptReco_v1.splitFactor = 50
-    data_Run2011A_PromptReco_v4.splitFactor = 40
-    data_Run2011A_May10ReReco_v1.splitFactor = 40
-    data_Run2011A_05Aug2011_v1.splitFactor = 20
-    data_Run2011A_03Oct2011_v1.splitFactor = 20
-    
-    embed_Run2011B_PromptReco_v1.splitFactor = 10
-    embed_Run2011A_PromptReco_v4.splitFactor = 10
-    embed_Run2011A_May10ReReco_v1.splitFactor = 5
-    embed_Run2011A_05Aug2011_v1.splitFactor = 5
-    embed_Run2011A_03Oct2011_v1.splitFactor = 5
-else:
-    data_Run2012A.splitFactor = 80
-    data_Run2012B_start_194479.splitFactor = 40
-    data_Run2012B_194480_195016.splitFactor = 40
+data_Run2012A.splitFactor = 80
+data_Run2012B_start_194479.splitFactor = 40
+data_Run2012B_194480_195016.splitFactor = 40
+
+embed_Run2012A.splitFactor = 5
+embed_Run2012B_193752_195135.splitFactor = 10
+
 
 test = 0
 if test==1:
-    # comp = data_Run2012B_194480_195016
-    comp = DYJets
-    # comp.files = comp.files[:20]
-    # comp = data_2012[0]
+    comp = embed_Run2012A
     comp.files = comp.files[:10]
     selectedComponents = [comp]
     comp.splitFactor = 1
@@ -192,7 +187,7 @@ elif test==2:
         comp.splitFactor = 1
         comp.files = comp.files[:5]
 
-# selectedComponents = [DYJets]
+selectedComponents = embed_list_2012
 # TTJets.splitFactor = 20
 
 config = cfg.Config( components = selectedComponents,
