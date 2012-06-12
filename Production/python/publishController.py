@@ -95,36 +95,31 @@ class PublishController(object):
     	self.savannah.addMain(procds,fileOps.getTags(),self._deleteExtras(fileOps.getLFNGroups()),fileOps.getCastor(), fileOps.getLFN(),fileOps.getRelease(), comment)
     	
     	# Append all the elements of the integrity check to the savannah output.
-    	if fileOps.getIntegrity() is not None:
-    		report = fileOps.getIntegrity()
-    		if 'PrimaryDatasetEntries' in report:
-    			self.savannah.appendExtra("*Primary Dataset Entries:* "+str(report['PrimaryDatasetEntries']))
-    		if 'FilesEntries' in report:
-    			self.savannah.appendExtra("*File Entries:* "+str(report['FilesEntries']))
-    		if 'PrimaryDatasetFraction' in report:
-    			self.savannah.appendExtra("*Primary Dataset Fraction used:* "+str(report['PrimaryDatasetFraction']))
-    		if 'ValidDuplicates' in report:
-    			validDuplicates = ["\n"]
-    			for i in report['ValidDuplicates']:
-    				validDuplicates.append("* " +i+": \n** "+str(report['ValidDuplicates'][i])+" events")
-    			self.savannah.appendExtra({"Valid Duplicates":validDuplicates})
-    		if 'BadJobs' in report:
-    			self.savannah.appendExtra({"Bad Jobs":report['BadJobs']})
-    		if 'NumFilesBad' in report:
-    			self.savannah.appendExtra({"Number of Bad Files":report['NumFilesBad']})
-    		if 'FilesBad' in report:
-    			filesBad = []
-    			for i in report['FilesBad']:
-    				filesBad.append("* "+i)
-    			if len(filesBad)>0:
-    				filesBad[0] = "\n"+filesBad[0]
-    			self.savannah.appendExtra({"Bad Files":filesBad})
-    	
+    	if fileOps._totalJobs is not None:self.savannah.appendExtra("*Total Jobs:* "+str(fileOps._totalJobs))
+    	if fileOps._totalFilesMissing is not None:self.savannah.appendExtra("*Total Missing Files:* "+str(fileOps._totalFilesMissing))
+    	if fileOps._totalFilesGood is not None:self.savannah.appendExtra("*Total Good Files:* "+str(fileOps._totalFilesGood))
+    	if fileOps._totalFilesBad is not None:self.savannah.appendExtra("*Total Bad Files:* "+str(fileOps._totalFilesBad))
+    	if fileOps._primaryDatasetFraction is not None:self.savannah.appendExtra("*Primary Dataset Fraction used:* "+str(fileOps._primaryDatasetFraction))
+    	if fileOps._fileEntries is not None:self.savannah.appendExtra("*File Entries:* "+str(fileOps._fileEntries))
+    	if fileOps.getDatasetSize() is not None:self.savannah.appendExtra("*Dataset Size:* "+str(fileOps.getDatasetSize())+" TB")
+    	if fileOps._validDuplicates is not None:
+    		validDuplicates = ["\n"]
+    		for dupedFile in fileOps._validDuplicates:
+    			validDuplicates.append("* " +dupedFile+": \n** "+str(fileOps._validDuplicates[dupedFile])+" events")
+    		self.savannah.appendExtra({"Valid Duplicates":validDuplicates})
+    	if fileOps._primaryDatasetEntries is not None:self.savannah.appendExtra("*Primary Dataset Entries:* "+str(fileOps._primaryDatasetEntries))
+    	if fileOps._badJobs is not None:self.savannah.appendExtra({"Bad Jobs":fileOps._badJobs})
+    	if len(fileOps._filesBad) > 0:
+    		filesBad = []
+    		for badFile in fileOps._filesBad:filesBad.append("* "+badFile)
+    		filesBad[0] = "\n"+filesBad[0]
+    		self.savannah.appendExtra({"Bad Files":fileOps.filesBad})
+    		
         # Publish to Savannah
-    	newTask = self.savannah.publish() 
+    	newTask = self.savannah.publish()
         if newTask is None:
     		print "Unable to publish Dataset to Savannah, an error occured"
-    		return None
+    		return None, parentTaskID
     	elif newTask is taskID:
         	print "Comment added to Savannah"
         	print "URL: https://savannah.cern.ch/task/?"+newTask
@@ -179,43 +174,20 @@ class PublishController(object):
     		self._cmgdbAPI.clearDatasetMissingFiles(procds['PathList'][0],cmgdbID)
     		self._cmgdbAPI.clearDatasetBadJobs(procds['PathList'][0],cmgdbID)
     		
-    		# Find and add missing files
-    		missingFileNum = 0
-    		for i in fileOps.getLFNGroups():
-    			if 'missingFiles' in i:
-    				missingFileNum += len(i['missingFiles'])
-    				for i in i['missingFiles']:
-    					self._cmgdbAPI.addMissingFile(procds['PathList'][0],cmgdbID,i.split('/')[-1])
     		
-    		self._cmgdbAPI.addMissingFileNum(cmgdbID, missingFileNum)
+    		if fileOps._totalJobs is not None:self._cmgdbAPI.addTotalJobs(fileOps._totalJobs)
+    		if fileOps._totalFilesMissing is not None:self._cmgdbAPI.addMissingFileNum(cmgdbID, fileOps._totalFilesMissing)
+    		if fileOps._totalFilesGood is not None:self._cmgdbAPI.addGoodFileNum(cmgdbID, fileOps._totalFilesGood)
+    		if fileOps._totalFilesBad is not None:self._cmgdbAPI.addBadFileNum(cmgdbID, fileOps._totalFilesBad)
+    		for badFile in fileOps._allBadFiles:self._cmgdbAPI.addBadFile(procds['PathList'][0],cmgdbID, badFile.split('/')[-1])
+    		for missingFile in fileOps._allMissingFiles:self._cmgdbAPI.addMissingFile(procds['PathList'][0],cmgdbID, missingFile.split('/')[-1])
+    		for badJob in fileOps._badJobs:self._cmgdbAPI.addBadJob(cmgdbID, badJob)
+    		if fileOps._primaryDatasetFraction is not None:self._cmgdbAPI.addPrimaryDatasetFraction(cmgdbID, fileOps._primaryDatasetFraction)
+    		if fileOps._fileEntries is not None:self._cmgdbAPI.addFileEntries(cmgdbID, fileOps._fileEntries)
+    		if fileOps.getDatasetSize() is not None:self._cmgdbAPI.addDatasetSize(cmgdbID, fileOps.getDatasetSize())
     		
-    		# Get integrity check
-    		integrity = fileOps.getIntegrity()
-    		
-    		# Add content from integrity check
-    		if integrity is not None:
-    			if 'BadJobs' in integrity:
-    				for i in integrity['BadJobs']:
-    					self._cmgdbAPI.addBadJob(procds['PathList'][0],cmgdbID,i)
-    			if 'FilesBad' in integrity:
-    				self._cmgdbAPI.addBadFileNum(cmgdbID, len(integrity['FilesBad']))
-    				for i in integrity['FilesBad']:
-    					i= i.split('/')[-1]
-    					self._cmgdbAPI.addBadFile(procds['PathList'][0],cmgdbID,i)
-    			if 'PrimaryDatasetFraction' in integrity:
-    				self._cmgdbAPI.addPrimaryDatasetFraction(cmgdbID, integrity['PrimaryDatasetFraction'])
-    			if 'FilesEntries' in integrity:
-    				self._cmgdbAPI.addFileEntries(cmgdbID,integrity['FilesEntries'])
-    		
-    		# Add dataset size
-    		dsSize = fileOps.getDatasetSize()
-    		if dsSize is not None:
-    			self._cmgdbAPI.addDatasetSize(cmgdbID, dsSize)
-    	
     	# Add task id
     	self._cmgdbAPI.addTaskID(cmgdbID, taskID, test)
-    	
-    	
     	
     	# Add tags to CMGDB
     	if tags is None or len(tags) is 0: return None
