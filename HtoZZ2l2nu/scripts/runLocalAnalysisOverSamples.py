@@ -108,6 +108,7 @@ for proc in procList :
                         
             	sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
             	if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
+                if(params.find('@weightsFile')<0) :     params = '@weightsFile= ' + params
                 if(params.find('@evStart')<0) :         params = '@evStart=0 ' + params
                 if(params.find('@evEnd')<0) :           params = '@evEnd=-1 ' + params
             	if(params.find('@saveSummaryTree')<0) : params = '@saveSummaryTree=False ' + params

@@ -96,7 +96,15 @@ int main(int argc, char* argv[])
 
   //systematics
   bool runSystematics                        = runProcess.getParameter<bool>("runSystematics");
-  TString varNames[]={"","_jesup","_jesdown","_jerup","_jerdown","_puup","_pudown","_renup","_rendown","_factup","_factdown","_btagup","_btagdown"};//,"_lesup","_lesdown"};
+  TString varNames[]={"",
+		      "_jerup","_jerdown",
+		      "_jesup","_jesdown",
+		      "_umetup","_umetdown",
+		      "_lesup","_lesdown",
+		      "_puup","_pudown",
+		      "_renup","_rendown",
+		      "_factup","_factdown",
+		      "_btagup","_btagdown"};
   size_t nvarsToInclude(1);
   if(runSystematics)
     {
@@ -549,7 +557,7 @@ int main(int argc, char* argv[])
       //apply JER base corrections to jets (and compute associated variations)
       std::vector<PhysicsObjectJetCollection> variedAJets;
       LorentzVectorCollection zvvs;
-      METUtils::computeVariation(phys.ajets, phys.met[0], variedAJets, zvvs, &jecUnc);
+      METUtils::computeVariation(phys.ajets, phys.leptons, phys.met[0], variedAJets, zvvs, &jecUnc);
       
       //
       // LEPTON ANALYSIS
@@ -563,6 +571,7 @@ int main(int argc, char* argv[])
       bool passZmass5(fabs(zll.mass()-91)<5);
       bool isZsideBand( (zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200));
       bool isZsideBandPlus( (zll.mass()>110 && zll.mass()<200));
+      //bool passZpt(zll.pt()>55 && fabs(zll.eta())<1.442);
       bool passZpt(zll.pt()>55);
 
       //check alternative selections for the dilepton
@@ -895,7 +904,7 @@ int main(int argc, char* argv[])
 		      
 		      //passDphijmet=(mindphijmet15>0.5);
 		      passDphijmet=(mindphijmet>0.5);
-		      // if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
+		      if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
 		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet15:mindphijmet,weight);
 
 		      if(passDphijmet) 
@@ -1000,30 +1009,33 @@ int main(int argc, char* argv[])
       // HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
       //
       //Fill histogram for posterior optimization, or for control regions
-      bool passPreselection             (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passBveto);
-      bool passPreselectionMbvetoMzmass (             passZpt && pass3dLeptonVeto && passDphijmet             );          
-      bool passPreselectionM3dlep       (passZmass && passZpt                     && passDphijmet && passBveto);
       for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
         float iweight = weight;                                               //nominal
-        if(ivar==5)                        iweight *=TotalWeight_plus;        //pu up
-        if(ivar==6)                        iweight *=TotalWeight_minus;       //pu down
-        if(ivar<=10 && ivar>=7 && isMC_GG) iweight *=ev.hptWeights[ivar-6]/ev.hptWeights[0];   //ren/fact scales   
-
-//        if(ivar==0 || ivar==5 || ivar==6){printf("SYst=%10s  W=%6.3E\n",varNames[ivar].Data(),iweight);}
+        if(ivar==9)                        iweight *=TotalWeight_plus;        //pu up
+        if(ivar==10)                        iweight *=TotalWeight_minus;       //pu down
+        if(ivar<=14 && ivar>=11 && isMC_GG) iweight *=ev.hptWeights[ivar-10]/ev.hptWeights[0];   //ren/fact scales   
 
 	//recompute MET/MT if JES/JER was varied
-	LorentzVector zvv    = zvvs[ivar>4?0:ivar];
+	LorentzVector zvv    = zvvs[ivar>8 ? 0 : ivar];
 	float mt3(0);
 	if(nextraleptons==1) mt3 = METUtils::transverseMass(extraLeptonsP4[0],zvv,false);
-	PhysicsObjectJetCollection &varJets=variedAJets[ivar>4?0:ivar];
+	PhysicsObjectJetCollection &varJets=variedAJets[ivar>4 ? 0  : ivar];
 	PhysicsObjectJetCollection tightVarJets;
 	LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
+	bool passLocalBveto(passBveto);
 	for(size_t ijet=0; ijet<varJets.size(); ijet++) 
 	  {
 	    clusteredMetP4 -= varJets[ijet];
 	    if(!hasObjectId(varJets[ijet].pid,JETID_LOOSE)) continue;
 	    tightVarJets.push_back( varJets[ijet] );
+	    if(varJets[ijet].pt()<30 || fabs(varJets[ijet].eta())>2.5)continue;
+	    if(ivar==15)      passLocalBveto &= (varJets[ijet].btag3<0.285);
+	    else if(ivar==16) passLocalBveto &= (varJets[ijet].btag3<0.265);
 	  }
+	bool passPreselection             (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passLocalBveto);
+	bool passPreselectionMbvetoMzmass (             passZpt && pass3dLeptonVeto && passDphijmet                  );          
+	bool passPreselectionM3dlep       (passZmass && passZpt                     && passDphijmet && passLocalBveto);
+	
 	float mt = METUtils::transverseMass(zll,zvv,true);
 	LorentzVector nullP4(0,0,0,0);
 	LorentzVector redMet = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, zll, 0, nullP4, 0, clusteredMetP4, zvv,true);
@@ -1040,8 +1052,8 @@ int main(int argc, char* argv[])
 	
 	bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
 	if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
-
-	if(passPreselection) mon.fillHisto("mt_"+varNames[ivar],tags_full,mt,iweight);
+	
+	if(passPreselection && zvv.pt()>50) mon.fillHisto("mt_"+varNames[ivar],tags_full,mt,iweight);
 	
 	//fill shapes
 	for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
@@ -1058,14 +1070,14 @@ int main(int argc, char* argv[])
 	      //                   if(passPreselectionM3dlep       && !pass3dLeptonVeto && nExtraLep==1 && passZmass3dLepton && ivar==0)   mon.fillHisto(TString("mt_shapes_3rdLepton")+varNames[ivar],tags_full,index, mt,iweight);
 	      if(passPreselectionM3dlep       && !pass3dLeptonVeto && nextraleptons==1 && ivar==0)   mon.fillHisto(TString("mt_shapes_3rdLepton")+varNames[ivar],tags_full,index, mt,iweight);
 	      
-	      if(passPreselectionMbvetoMzmass && passZmass   && !passBveto && ivar==0)   mon.fillHisto(TString("mt_shapesBTagSB")+varNames[ivar],tags_full,index, mt,iweight);
+	      if(passPreselectionMbvetoMzmass && passZmass   && !passLocalBveto && ivar==0)   mon.fillHisto(TString("mt_shapesBTagSB")+varNames[ivar],tags_full,index, mt,iweight);
 	      if(passPreselectionM3dlep       && !pass3dLeptonVeto && nextraleptons==1   )   mon.fillHisto(TString("mt3")+varNames[ivar],tags_full,index, mt3,iweight);
-	      if(passPreselectionMbvetoMzmass && passZmass         && passBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,0,iweight);
-	      if(passPreselectionMbvetoMzmass && isZsideBand       && passBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,1,iweight);
-	      if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,2,iweight);
-	      if(passPreselectionMbvetoMzmass && passZmass         && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,3,iweight);
-	      if(passPreselectionMbvetoMzmass && isZsideBand       && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,4,iweight);
-	      if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,5,iweight);
+	      if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,0,iweight);
+	      if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,1,iweight);
+	      if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,2,iweight);
+	      if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,3,iweight);
+	      if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,4,iweight);
+	      if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,5,iweight);
 
 //              if(passPreselection && index==78 && (ivar==0 || ivar==5 || ivar==6)){printf("SYst=%10s  Weight=%6.3E Integral=%6.3E\n",varNames[ivar].Data(),iweight, ((TH2*)mon.getHisto(TString("mt_shapes")+varNames[ivar],tag_cat))->ProjectionY("tmp",79,79)->Integral());}
 

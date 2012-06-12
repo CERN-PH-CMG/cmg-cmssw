@@ -4,8 +4,8 @@
 /** \class METUtils
  *  No description available.
  *
- *  $Date: 2012/05/10 05:41:48 $
- *  $Revision: 1.7.2.1 $
+ *  $Date: 2012/06/04 08:26:32 $
+ *  $Revision: 1.9 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont & L. Pernie
  */
 
@@ -129,10 +129,13 @@ namespace METUtils{
 
   PhysicsObject_Jet smearedJet(const LorentzVector &origJet, double genJetPt, int mode=0);
 
-  enum UncertaintyVariations { JER, JER_UP, JER_DOWN, JES_UP, JES_DOWN};
+  enum UncertaintyVariations { JER, JER_UP, JER_DOWN, JES_UP, JES_DOWN,UMET_UP,UMET_DOWN,LES_UP,LES_DOWN};
 //  void computeVariation(LorentzVectorCollection& jets, std::vector<double> &genjetsPt, LorentzVector& met,
-  void computeVariation(PhysicsObjectJetCollection& jets, LorentzVector& met,
-                        std::vector<PhysicsObjectJetCollection>& jetsVar, LorentzVectorCollection& metsVar,
+  void computeVariation(PhysicsObjectJetCollection& jets, 
+			PhysicsObjectLeptonCollection &leptons,
+			LorentzVector& met,
+			std::vector<PhysicsObjectJetCollection>& jetsVar, 
+			LorentzVectorCollection& metsVar,
 			JetCorrectionUncertainty *jecUnc);
 
   LorentzVector SmearJetFormGen(LorentzVectorCollection& jets, LorentzVector& met, std::vector<double> GenJet, std::vector<LorentzVector>& jetsJer);

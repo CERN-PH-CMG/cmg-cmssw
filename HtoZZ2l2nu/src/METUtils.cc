@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/06/04 08:26:34 $
- *  $Revision: 1.13 $
+ *  $Date: 2012/06/09 12:25:51 $
+ *  $Revision: 1.14 $
  *  \author G. Cerminara & D. Trocino & P. Silva & L. Quertenmont
  */
 
@@ -345,27 +345,28 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
   }
 
   //
-  void computeVariation(PhysicsObjectJetCollection& jets, LorentzVector& met,   
-			std::vector<PhysicsObjectJetCollection>& jetsVar, LorentzVectorCollection& metsVar,
+  void computeVariation(PhysicsObjectJetCollection& jets, 
+			PhysicsObjectLeptonCollection &leptons,
+			LorentzVector& met,
+			std::vector<PhysicsObjectJetCollection>& jetsVar, 
+			LorentzVectorCollection& metsVar,
 			JetCorrectionUncertainty *jecUnc)
   {
     jetsVar.clear();
     metsVar.clear();
 
-    int vars[]={JER, JER_UP, JER_DOWN, JES_UP, JES_DOWN};
+    int vars[]={JER, JER_UP, JER_DOWN, JES_UP, JES_DOWN, UMET_UP,UMET_DOWN,LES_UP,LES_DOWN};
     for(size_t ivar=0; ivar<sizeof(vars)/sizeof(int); ivar++)
       {
 	PhysicsObjectJetCollection newJets;
-	LorentzVector newMet(met),jetDiff(0,0,0,0);
-	int mode(0); if(ivar==JER_UP) mode=1; if(ivar==JER_DOWN) mode=2;
+	LorentzVector newMet(met),jetDiff(0,0,0,0),lepDiff(0,0,0,0), unclustDiff(0,0,0,0), clusteredFlux(0,0,0,0);
 	for(size_t ijet=0; ijet<jets.size(); ijet++)
 	  {
-//	    LorentzVector iSmearJet=METUtils::smearedJet(jets[ijet],genjetsPt[ijet],mode);
-            PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,mode);
 	    if(ivar==JER || ivar==JER_UP || ivar==JER_DOWN)
 	      {
-		newJets.push_back(iSmearJet);
+		PhysicsObject_Jet iSmearJet=METUtils::smearedJet(jets[ijet],jets[ijet].genPt,ivar);
 		jetDiff += (iSmearJet-jets[ijet]);
+		newJets.push_back( iSmearJet );
 	      }
 	    else if(ivar==JES_UP || ivar==JES_DOWN)
 	      {
@@ -377,20 +378,52 @@ LorentzVector redMET(RedMetType Type, const LorentzVector& theLepton1, double si
 		  jetScale = 1.0 + varSign*fabs(jecUnc->getUncertainty(true));  
 		}
 		catch(std::exception &e){
-		  //cout << e.what() << ijet << " " << iSmearJet.pt() << " " << jets[ijet].pt() << " : " << genjetsPt[ijet] << endl;
-                  //cout << e.what() << ijet << " " << iSmearJet.pt() << " " << jets[ijet].pt() << " : " << jets[ijet].genPt << endl;
+		  cout << "[METUtils::computeVariation]" << e.what() << ijet << " " << jets[ijet].pt() << endl;
 		}
-		LorentzVector newJet = jetScale*iSmearJet;
-		newJets.push_back(newJet);
-		LorentzVector ijetDiff=(newJet-iSmearJet);
-		jetDiff += ijetDiff;
-	      } 
+		PhysicsObject_Jet iScaleJet(jets[ijet]);  iScaleJet *= jetScale;
+		jetDiff += (iScaleJet-jets[ijet]);
+		newJets.push_back(iScaleJet);
+	      }
+	    else if(ivar==UMET_UP || ivar==UMET_DOWN)  clusteredFlux += jets[ijet];
+	  }
+
+	if(ivar==UMET_UP || ivar==UMET_DOWN || ivar==LES_UP || ivar==LES_DOWN)
+	  {
+	    for(size_t ilep=0; ilep<leptons.size(); ilep++)
+	      {
+		if(ivar==UMET_UP || ivar==UMET_DOWN)  clusteredFlux +=leptons[ilep];
+		else if(ivar==LES_UP  || ivar==LES_DOWN)
+		  {
+		    LorentzVector iScaleLepton=leptons[ilep];
+		    double varSign=(ivar==LES_UP ? 1.0 : -1.0);
+		    if(fabs(leptons[ilep].id)==13)          iScaleLepton *= (1.0+varSign*0.01);
+		    else if(fabs(leptons[ilep].id)==11)
+		      {
+			if(fabs(leptons[ilep].eta())<1.442) iScaleLepton *= (1.0+varSign*0.02);
+			else                                iScaleLepton *= (1.0+varSign*0.05);
+		      }
+		    lepDiff += (iScaleLepton-leptons[ilep]);
+		  }
+	      }
 	  }
 	
-	//finish computation of the variation
-	jetsVar.push_back(newJets);
-	newMet -= jetDiff; metsVar.push_back(newMet);
+	//vary unclustered component
+	if(ivar==UMET_UP || ivar==UMET_DOWN)
+	  {
+	    unclustDiff=(met+clusteredFlux);
+	    double varSign=(ivar==UMET_UP ? 1.0 : -1.0);
+	    unclustDiff *= (varSign*0.10);
+	  }
 
+	//add new met
+	newMet -= jetDiff; 
+	newMet -= lepDiff; 
+	newMet -= unclustDiff; 
+	metsVar.push_back(newMet);
+      	
+	//add new jets (if some change has occured)
+	jetsVar.push_back(newJets);
+	
 	//SOME DEBUGING PRINTOUT... CAN BE SAFELY REMOVED
 	//        if(ivar==JER && newMet.pt()>2000){
 	//           printf("%f - %f - %f : ",newMet.pt(), met.pt(), jetDiff.pt());
