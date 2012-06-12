@@ -2,12 +2,14 @@ import os
 from fnmatch import fnmatch
 import copy
 
-from ROOT import TFile, TH1F
+from ROOT import TFile, TH1F, TPaveText
 
 from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
 from CMGTools.RootTools.fwlite.Weight import Weight
 from CMGTools.RootTools.fwlite.Weight import printWeights
 from CMGTools.RootTools.Style import *
+
+print 'WARNING, THIS FILE IS OBSOLETE, TAKE THE ONE IN plotter/ !'
 
 
 class H2TauTauDataMC( AnalysisDataMC ):
@@ -40,9 +42,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         # self.keeper = []
         
         super(H2TauTauDataMC, self).__init__(varName, directory, weights)
-        offsetx = 0.55
-        offsety = 0.1
-        self.legendBorders = 0.13+offsetx,0.66+offsety,0.44+offsetx,0.89+offsety
+
+        self.legendBorders = 0.711, 0.563, 0.895, 0.892
 
         self.dataComponents = [ key for key, value in selComps.iteritems() \
                                 if value.isData is True ]
@@ -59,7 +60,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
     def _BuildHistogram(self, tree, comp, compName, varName, cut, layer ):
         '''Build one histogram, for a given component'''
         histName = '_'.join( [compName, self.varName] )
-        hist = TH1F( histName, histName, self.nbins, self.xmin, self.xmax )
+        hist = TH1F( histName, '', self.nbins, self.xmin, self.xmax )
         hist.Sumw2()
         tree.Project( histName, varName, '{weight}*({cut})'.format(cut=cut,
                                                                    weight=self.eventWeight) )
@@ -67,12 +68,15 @@ class H2TauTauDataMC( AnalysisDataMC ):
         # hist.Sumw2()
         componentName = compName
         legendLine = compName
+        if legendLine=='Data':
+            legendLine = 'Observed'
         self.AddHistogram( componentName, hist, layer, legendLine)
         if comp.isData:
             self.Hist(componentName).stack = False
         # self.Hist(componentName).tree = tree
         if not hasattr( comp, 'tree'):
             comp.tree = tree
+
 
     def _ReadHistograms(self, directory):
         '''Build histograms for all components.'''
@@ -97,6 +101,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
                 self._BuildHistogram(tree, comp, fakeCompName, self.varName,
                                      self.cut + ' && isFake', layer)
                 self.weights[fakeCompName] = self.weights[compName]
+                # grouping fakes and WJets into EWK
             else:
                 self._BuildHistogram(tree, comp, compName, self.varName,
                                      self.cut, layer )     
@@ -154,9 +159,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         The resulting histogram is the sum of all data histograms.
         The resulting integrated luminosity is used to scale all the
         MC components.
-        '''
-        # import pdb; pdb.set_trace()
-        
+        '''        
         self.intLumi = 0
         # self.dataComponents = dataComponents
         data = None
@@ -176,11 +179,6 @@ class H2TauTauDataMC( AnalysisDataMC ):
             # ... and removed from the stack
             self.Hist(name).Add( hist )
             # compute integrated luminosity for all data samples
-        # print intLumi
-        # if self.intLumi == 0:
-        #     self.intLumi = 1000.
-        # self.Hist(name).intLumi = intLumi
-        # set lumi for all MC samples:
         if self.intLumi>0:
             for component, weight in self.weights.iteritems():
                 if component not in dataComponents:
@@ -192,7 +190,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
     def _InitPrefs(self):
         '''Definine preferences for each component'''
         self.histPref = {}
-        self.histPref['Data'] = {'style':sBlack, 'layer':-99}
+        self.histPref['Data'] = {'style':sData, 'layer':-99}
         self.histPref['data_Run2012B_194480_195016'] = {'style':sBlack, 'layer':-99}
         self.histPref['data_Run2012B_start_194479'] = {'style':sBlack, 'layer':-99}
         self.histPref['data_Run2012A'] = {'style':sBlack, 'layer':-99}
@@ -209,9 +207,10 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['embed_Run2011A_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
         self.histPref['embed_Run2011B_PromptReco_v1'] = {'style':sViolet, 'layer':-1200}
         self.histPref['dMay10ReReco_v1'] = {'style':sGreen, 'layer':-1200}
-        self.histPref['TTJets'] = {'style':sBlue, 'layer':1} 
-        self.histPref['WJets'] = {'style':sRed, 'layer':2}  
-        self.histPref['DYJets'] = {'style':sYellow, 'layer':3}
+        self.histPref['QCD'] = {'style':sHTT_QCD, 'layer':1.5}
+        self.histPref['TTJets'] = {'style':sHTT_TTJets, 'layer':1} 
+        self.histPref['WJets'] = {'style':sHTT_WJets, 'layer':2}  
+        self.histPref['DYJets'] = {'style':sHTT_DYJets, 'layer':3}
         self.histPref['DYJets (emb)'] = {'style':sYellow, 'layer':3}
         self.histPref['DYJets_Fakes'] = {'style':sBlack, 'layer':2.5}
         self.histPref['HiggsVBF110'] = {'style':sBlack, 'layer':4}
@@ -220,3 +219,5 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['HiggsVBF125'] = {'style':sBlack, 'layer':7}
         self.histPref['HiggsVBF130'] = {'style':sBlack, 'layer':8}
         self.histPref['HiggsVBF135'] = {'style':sBlack, 'layer':9}
+
+
