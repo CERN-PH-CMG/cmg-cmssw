@@ -12,7 +12,7 @@ from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 
 
 
-channel = 'ele_ele'
+channel = 'mu_mu'
 
 
 
@@ -165,11 +165,15 @@ elif channel == 'mu_ele':
         data.vetoTriggers = triggers_ee
     for data in dataSamplesE:
         data.triggers = triggers_ee
+
+    for data in dataSamplesMuE:
+        data.triggers = triggers_mue
+        data.vetTriggers=triggers_ee+triggers_mumu
+
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
-    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
-
-
+    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
+    
 
 elif channel == 'ele_ele':
     theGenSel = eleEleGenSel
@@ -202,12 +206,12 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 0
+test = 1
 if test==1:
-    dataset = GGH130
+    dataset = GGH126
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-
+#    dataset.files=['root://cmsphys05//data/b/botta/V5_4_0/cmgTuple_H126Summer12.root']
 
    
 if test ==2:
