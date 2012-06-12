@@ -106,7 +106,7 @@ mcSamples=[ZZ2mu2tau,
 json='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Reprocessing/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2.txt'
 data_DoubleElectronA = cfg.DataComponent(
     name = 'data_DoubleElectronA',
-    files = getFiles('/DoubleElectron/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat, 'cmgtools', filepattern),
+    files = getFiles('/DoubleElectron/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat+"_patch1", 'cmgtools', filepattern),
     intLumi = 1,
     triggers = [],
     json = json
@@ -114,7 +114,7 @@ data_DoubleElectronA = cfg.DataComponent(
 
 data_DoubleMuA = cfg.DataComponent(
     name = 'data_DoubleMuA',
-    files = getFiles('/DoubleMu/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat, 'cmgtools', filepattern),
+    files = getFiles('/DoubleMu/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat+"_patch1", 'cmgtools', filepattern),
     intLumi = 1,
     triggers = [],
     json = json
@@ -123,7 +123,7 @@ data_DoubleMuA = cfg.DataComponent(
 
 data_DoubleElectronB = cfg.DataComponent(
     name = 'data_DoubleElectronB',
-    files =getFiles('/DoubleElectron/Run2011B-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat, 'cmgtools', filepattern),
+    files =getFiles('/DoubleElectron/Run2011B-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat+"_patch1", 'cmgtools', filepattern),
     intLumi = 1,
     triggers = [],
     json = json
@@ -131,7 +131,7 @@ data_DoubleElectronB = cfg.DataComponent(
 
 data_DoubleMuB = cfg.DataComponent(
     name = 'data_DoubleMuB',
-    files = getFiles('/DoubleMu/Run2011B-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat, 'cmgtools', filepattern),
+    files = getFiles('/DoubleMu/Run2011B-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat+"_patch1", 'cmgtools', filepattern),
     intLumi = 1,
     triggers = [],
     json = json
@@ -148,12 +148,17 @@ dataSamplesE=[data_DoubleElectronA,
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 
+
+from CMGTools.HToZZTo4Leptons.setup.Efficiencies import *
+
+
 #Define splitting
 for comp in mcSamples:
     comp.isMC = True
     comp.splitFactor = 10
     comp.puFileMC=dataDir+"/puProfile_Fall11.root"
     comp.puFileData=dataDir+"/puProfile_Data11.root"
+    comp.efficiency = eff2011
 
 
 #Fix the UFL PU crap
@@ -162,27 +167,10 @@ for comp in uflSamples:
     comp.splitFactor = 10
     comp.puFileMC=dataDir+"/puProfile_Summer11.root"
     comp.puFileData=dataDir+"/puProfile_Data11.root"
+    comp.efficiency = eff2011
 
 
 #run some samples for 8TeV
-ZZ2e2mu8TeV = copy(ZZ2e2mu)
-ZZ2e2mu8TeV.puFileMC=dataDir+"/puProfile_Summer11.root"
-ZZ2e2mu8TeV.puFileData=dataDir+"/puProfile_Data12.root"
-
-ZZ4tau8TeV = copy(ZZ4tau)
-ZZ4tau8TeV.puFileMC=dataDir+"/puProfile_Summer11.root"
-ZZ4tau8TeV.puFileData=dataDir+"/puProfile_Data12.root"
-
-ZZGG4L8TeV = copy(ZZGG4L)
-ZZGG4L8TeV.puFileMC=dataDir+"/puProfile_Fall11.root"
-ZZGG4L8TeV.puFileData=dataDir+"/puProfile_Data12.root"
-
-ZZGG2L2L8TeV = copy(ZZGG2L2L)
-ZZGG2L2L8TeV.puFileMC=dataDir+"/puProfile_Fall11.root"
-ZZGG2L2L8TeV.puFileData=dataDir+"/puProfile_Data12.root"
-
-mcSamples.extend([ZZ2e2mu8TeV,ZZ4tau8TeV,ZZGG4L8TeV,ZZGG2L2L8TeV])
-                  
 from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 
     

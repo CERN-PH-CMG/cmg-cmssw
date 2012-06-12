@@ -39,6 +39,11 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.var('HLoose_fakeRate')
         self.var('HLoose_fakeRateUp')
         self.var('HLoose_fakeRateDwn')
+
+        #Book the fake rate
+        self.var('H_eff')
+        self.var('H_effUp')
+        self.var('H_effDwn')
         
         #Book the Z for fake rate measurement
         self.bookBoson("ZFR")
@@ -80,7 +85,24 @@ class FourLeptonTreeProducer( TreeProducer ):
             self.fillLepton("H_Z1_leg2",subevent.higgsCand.leg1.leg2,subevent)
             self.fillLepton("H_Z2_leg1",subevent.higgsCand.leg2.leg1,subevent)
             self.fillLepton("H_Z2_leg2",subevent.higgsCand.leg2.leg2,subevent)
-            
+
+            if hasattr(subevent.higgsCand.leg2.leg1,'eff'):
+                self.fill('H_eff',subevent.higgsCand.leg2.leg1.eff* \
+                          subevent.higgsCand.leg2.leg2.eff* \
+                          subevent.higgsCand.leg1.leg1.eff* \
+                          subevent.higgsCand.leg1.leg2.eff)
+                self.fill('H_effUp',subevent.higgsCand.leg2.leg1.effUp* \
+                          subevent.higgsCand.leg2.leg2.effUp* \
+                          subevent.higgsCand.leg1.leg1.effUp* \
+                          subevent.higgsCand.leg1.leg2.effUp)
+
+                self.fill('H_effDwn',subevent.higgsCand.leg2.leg1.effDwn* \
+                          subevent.higgsCand.leg2.leg2.effDwn* \
+                          subevent.higgsCand.leg1.leg1.effDwn* \
+                          subevent.higgsCand.leg1.leg2.effDwn)
+                
+
+
 
         if hasattr( subevent, 'higgsCandLoose' ):
             self.fill('HLooseExists',1)
@@ -96,6 +118,8 @@ class FourLeptonTreeProducer( TreeProducer ):
                 self.fill('HLoose_fakeRate',subevent.higgsCandLoose.leg2.leg1.fR*subevent.higgsCandLoose.leg2.leg2.fR)
                 self.fill('HLoose_fakeRateUp',subevent.higgsCandLoose.leg2.leg1.fRUp*subevent.higgsCandLoose.leg2.leg2.fRUp)
                 self.fill('HLoose_fakeRateDwn',subevent.higgsCandLoose.leg2.leg1.fRDwn*subevent.higgsCandLoose.leg2.leg2.fRDwn)
+
+
 
         #Fill the fake rate measurement info
         if hasattr( subevent, 'bestZForFakeRate' ):
