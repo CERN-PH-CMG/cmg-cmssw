@@ -1,4 +1,4 @@
-from CMGTools.RootTools.analyzers.DiLeptonAnalyzer2 import DiLeptonAnalyzer2
+from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauMuon
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
