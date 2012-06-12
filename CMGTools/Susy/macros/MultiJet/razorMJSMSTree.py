@@ -58,9 +58,9 @@ if __name__ == '__main__':
     if True:
         names = [f for f in options.datasetName.split('/') if f]
         if options.index == -1:
-            name = '%s-%s-%s.root' % (names[0],names[1],names[-1])
+            name = '%s-%s-%s-TauID.root' % (names[0],names[1],names[-1])
         else:
-            name = '%s-%s-%s_%d.root' % (names[0],names[1],names[-1],options.index)
+            name = '%s-%s-%s-TauID_%d.root' % (names[0],names[1],names[-1],options.index)
         options.outputFile = os.path.join(options.outputDirectory,name)
     pickleFile = options.outputFile.replace('.root','.pkl')
 
@@ -112,6 +112,7 @@ struct Info{\
     Int_t nBJetLoose;\
     Int_t nVertex;\
     Int_t genInfo;\
+    Int_t BOX_NUM;\
 };""")
     
     from ROOT import Variables, Info
@@ -191,24 +192,15 @@ struct Info{\
         else:
             bins[point] = 1
 
-        event.getByLabel(('TriggerResults','','MJSkim'),pathTriggerH)
-        pathTrigger = pathTriggerH.product()
-
-        #start by vetoing events that didn't pass the MultiJet path
-        pathTriggerNames = event.object().triggerNames(pathTrigger)
-        path = pathTrigger.wasrun(pathTriggerNames.triggerIndex('multijetPathNoTrigger')) and \
-               pathTrigger.accept(pathTriggerNames.triggerIndex('multijetPathNoTrigger'))
-        if not path: continue
+        ##selection part of code
+        #CRHad=5; BJet=6; CRLep=7
+        info.BOX_NUM = 0
 
         #this is the trigger hack, where I cut on the trigger objects
         event.getByLabel(('emulate2011Trigger'),filterH)
         triggerEMFilter = filterH.product()[0]
         if not triggerEMFilter: continue
-
-        info.event = event.object().id().event()
-        info.lumi = event.object().id().luminosityBlock()
-        info.run = event.object().id().run()
-                
+              
         event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
         jets = jetSel30H.product()
         info.nJet = len(jets)
@@ -225,25 +217,18 @@ struct Info{\
             #skip events with no hemi
             continue
 
-        event.getByLabel(('razorMJDiHemiHadBoxUp'),hemiHadH)
-        if len(hemiHadH.product()):
-            hemi = hemiHadH.product()[0]
-            vars.RSQ_JES_UP = hemi.Rsq()
-            vars.MR_JES_UP = hemi.mR()
+        #lepton ID
+        event.getByLabel(('razorMJElectronTight'),electronH)
+        event.getByLabel(('razorMJMuonTight'),muonH)
+        event.getByLabel(('razorMJTauTight'),tauH)
+        #
+        nElectronTight = len(electronH.product())
+        nMuonTight = len(muonH.product())
+        nTauTight = len(tauH.product())
 
-        event.getByLabel(('razorMJDiHemiHadBoxDown'),hemiHadH)
-        if len(hemiHadH.product()):
-            hemi = hemiHadH.product()[0]
-            vars.RSQ_JES_DOWN = hemi.Rsq()
-            vars.MR_JES_DOWN = hemi.mR()
-            
-        #for PU weights
-        event.getByLabel(('vertexSize'),countH)
-        info.nVertex = countH.product()[0]
-
-        #for the tau scaling
-        event.getByLabel(('simpleGenInfo'),filterH)
-        info.genInfo = filterH.product()[0]
+        #we don't make a requirement on the Taus at this point so we can study tau id
+        if (nElectronTight + nMuonTight) > 0: continue
+        nLepton = nElectronTight + nMuonTight + nTauTight
 
         #dump the B-tags
         tche = sorted([(j.btag(0),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 3.3])
@@ -263,6 +248,41 @@ struct Info{\
         tcheLoose = sorted([(j.pt(),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 1.7])
         info.nBJetLoose = len(tcheLoose)
         
+        #events must either have a Btag or pass the tight veto
+        if info.nBJet == 0 and info.nBJetLoose > 0: continue
+
+        #for the tau scaling
+        event.getByLabel(('simpleGenInfo'),filterH)
+        info.genInfo = filterH.product()[0]
+        nGenTau = int(str(info.genInfo)[-1])
+
+        if nLepton == 0 and info.nBJet > 0:
+            info.BOX_NUM = 6 #BJet box
+        elif nLepton == 0 and info.nBJet == 0 and info.nBJetLoose == 0:
+            info.BOX_NUM = 5 #CRHAD
+        elif nLepton == 1 and info.nBJet == 0 and info.nBJetLoose == 0:
+            info.BOX_NUM = 7 #CRLEP
+
+        event.getByLabel(('razorMJDiHemiHadBoxUp'),hemiHadH)
+        if len(hemiHadH.product()):
+            hemi = hemiHadH.product()[0]
+            vars.RSQ_JES_UP = hemi.Rsq()
+            vars.MR_JES_UP = hemi.mR()
+
+        event.getByLabel(('razorMJDiHemiHadBoxDown'),hemiHadH)
+        if len(hemiHadH.product()):
+            hemi = hemiHadH.product()[0]
+            vars.RSQ_JES_DOWN = hemi.Rsq()
+            vars.MR_JES_DOWN = hemi.mR()
+
+        info.event = event.object().id().event()
+        info.lumi = event.object().id().luminosityBlock()
+        info.run = event.object().id().run()
+              
+        #for PU weights
+        event.getByLabel(('vertexSize'),countH)
+        info.nVertex = countH.product()[0]
+        
         #dump the PDF weights
         event.getByLabel(('dumpPdfWeights','cteq66'),pdfH)
         for w in pdfH.product():
@@ -273,8 +293,6 @@ struct Info{\
 
         if (count % 1000) == 0:
             print count,'run/lumi/event',info.run,info.lumi,info.event
-            #if (count % 100000) == 0:
-            #    tree.AutoSave()
         count += 1
         tree.Fill()
 
