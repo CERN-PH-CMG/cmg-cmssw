@@ -1,5 +1,30 @@
 import CMGTools.RootTools.fwlite.Config as cfg
 
+GGH115 = cfg.MCComponent(
+    name = 'GGH115',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH117 = cfg.MCComponent(
+    name = 'GGH117',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH119 = cfg.MCComponent(
+    name = 'GGH119',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+
 GGH120 = cfg.MCComponent(
     name = 'GGH120',
     files = [],
@@ -8,6 +33,34 @@ GGH120 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1)
 
+
+GGH121 = cfg.MCComponent(
+    name = 'GGH121',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH123 = cfg.MCComponent(
+    name = 'GGH123',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH124 = cfg.MCComponent(
+    name = 'GGH124',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+
+
+
 GGH125 = cfg.MCComponent(
     name = 'GGH125',
     files = [],
@@ -15,6 +68,23 @@ GGH125 = cfg.MCComponent(
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1)
+
+GGH126 = cfg.MCComponent(
+    name = 'GGH126',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH127 = cfg.MCComponent(
+    name = 'GGH127',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
 
 
 GGH130 = cfg.MCComponent(
@@ -33,6 +103,17 @@ GGH140 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1)
 
+
+
+GGH145 = cfg.MCComponent(
+    name = 'GGH145',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+
 GGH150 = cfg.MCComponent(
     name = 'GGH150',
     files = [],
@@ -40,6 +121,8 @@ GGH150 = cfg.MCComponent(
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1)
+
+
 
 GGH160 = cfg.MCComponent(
     name = 'GGH160',
@@ -179,6 +262,15 @@ GGH475 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1)
 
+GGH500 = cfg.MCComponent(
+    name = 'GGH500',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+
 GGH525 = cfg.MCComponent(
     name = 'GGH525',
     files = [],
@@ -205,6 +297,70 @@ GGH575 = cfg.MCComponent(
 
 GGH600 = cfg.MCComponent(
     name = 'GGH600',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH650 = cfg.MCComponent(
+    name = 'GGH650',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH700 = cfg.MCComponent(
+    name = 'GGH700',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH750 = cfg.MCComponent(
+    name = 'GGH750',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH800 = cfg.MCComponent(
+    name = 'GGH800',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH850 = cfg.MCComponent(
+    name = 'GGH850',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH900 = cfg.MCComponent(
+    name = 'GGH900',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH950 = cfg.MCComponent(
+    name = 'GGH950',
+    files = [],
+    xSection = 1,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GGH1000 = cfg.MCComponent(
+    name = 'GGH1000',
     files = [],
     xSection = 1,
     nGenEvents = 1,
