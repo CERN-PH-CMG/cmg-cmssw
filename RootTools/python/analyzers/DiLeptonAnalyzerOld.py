@@ -6,7 +6,7 @@ from CMGTools.RootTools.physicsobjects.DiObject import DiObject
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 
-class DiLeptonAnalyzer2( Analyzer ):
+class DiLeptonAnalyzer( Analyzer ):
 
     # The DiObject class will be used as the di-object class
     # and the Lepton class as the lepton class
@@ -17,7 +17,7 @@ class DiLeptonAnalyzer2( Analyzer ):
     LeptonClass = Lepton 
 
     def beginLoop(self):
-        super(DiLeptonAnalyzer2,self).beginLoop()
+        super(DiLeptonAnalyzer,self).beginLoop()
         self.counters.addCounter('DiLepton')
         count = self.counters.counter('DiLepton')
         count.register('all events')
@@ -59,12 +59,8 @@ class DiLeptonAnalyzer2( Analyzer ):
         # event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product(), event )
         event.leptons = self.buildLeptons( self.handles['leptons'].product(), event )
-        return self.selectionSequence(event, fillCounter=True)
 
-
-    def selectionSequence(self, event, fillCounter, leg1IsoCut=None, leg2IsoCut=None):
-
-        if fillCounter: self.counters.counter('DiLepton').inc('all events')
+        self.counters.counter('DiLepton').inc('all events')
         # if not self.triggerList.triggerPassed(event.triggerObject):
         #    return False
         # self.counters.counter('DiLepton').inc('trigger passed ')
@@ -74,7 +70,7 @@ class DiLeptonAnalyzer2( Analyzer ):
             
         if len(event.diLeptons) == 0:
             return False
-        if fillCounter: self.counters.counter('DiLepton').inc('> 0 di-lepton')
+        self.counters.counter('DiLepton').inc('> 0 di-lepton')
 
         # testing di-lepton itself
         selDiLeptons = event.diLeptons
@@ -82,15 +78,15 @@ class DiLeptonAnalyzer2( Analyzer ):
         
         if not self.leptonAccept( event.leptons ):
             return False
-        if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
+        self.counters.counter('DiLepton').inc('lepton accept')
 
         # testing leg1
         selDiLeptons = [ diL for diL in selDiLeptons if \
-                         self.testLeg1( diL.leg1(), leg1IsoCut ) ]
+                         self.testLeg1( diL.leg1() ) ]
         if len(selDiLeptons) == 0:
             return False
         else:
-            if fillCounter: self.counters.counter('DiLepton').inc('leg1 offline cuts passed')
+            self.counters.counter('DiLepton').inc('leg1 offline cuts passed')
 
         if len(self.cfg_comp.triggers)>0:
             # trigger matching leg1
@@ -99,15 +95,15 @@ class DiLeptonAnalyzer2( Analyzer ):
             if len(selDiLeptons) == 0:
                 return False
             else:
-                if fillCounter: self.counters.counter('DiLepton').inc('leg1 trig matched')
+                self.counters.counter('DiLepton').inc('leg1 trig matched')
 
         # testing leg2 
         selDiLeptons = [ diL for diL in selDiLeptons if \
-                         self.testLeg2( diL.leg2(), leg2IsoCut ) ]
+                         self.testLeg2( diL.leg2() ) ]
         if len(selDiLeptons) == 0:
             return False
         else:
-            if fillCounter: self.counters.counter('DiLepton').inc('leg2 offline cuts passed')
+            self.counters.counter('DiLepton').inc('leg2 offline cuts passed')
 
         if len(self.cfg_comp.triggers)>0:
             # trigger matching leg2
@@ -116,7 +112,7 @@ class DiLeptonAnalyzer2( Analyzer ):
             if len(selDiLeptons) == 0:
                 return False
             else:
-                if fillCounter: self.counters.counter('DiLepton').inc('leg2 trig matched')
+                self.counters.counter('DiLepton').inc('leg2 trig matched')
 
         # mass cut 
         selDiLeptons = [ diL for diL in selDiLeptons if \
@@ -124,7 +120,7 @@ class DiLeptonAnalyzer2( Analyzer ):
         if len(selDiLeptons)==0:
             return False
         else:
-            if fillCounter: self.counters.counter('DiLepton').inc(
+            self.counters.counter('DiLepton').inc(
                 '{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
                                                       max = self.cfg_ana.m_max )
                 )
@@ -133,17 +129,17 @@ class DiLeptonAnalyzer2( Analyzer ):
         if len(selDiLeptons)==0:
             return False
         elif len(selDiLeptons)==1:
-            if fillCounter: self.counters.counter('DiLepton').inc('exactly 1 di-lepton')
+            self.counters.counter('DiLepton').inc('exactly 1 di-lepton')
         
         event.diLepton = self.bestDiLepton( selDiLeptons )
         event.leg1 = event.diLepton.leg1()
         event.leg2 = event.diLepton.leg2()
 
         return True
-    
+
 
     def declareHandles(self):        
-        super(DiLeptonAnalyzer2, self).declareHandles()
+        super(DiLeptonAnalyzer, self).declareHandles()
         self.handles['cmgTriggerObjectSel'] =  AutoHandle(
             'cmgTriggerObjectSel',
             'std::vector<cmg::TriggerObject>'
@@ -152,58 +148,80 @@ class DiLeptonAnalyzer2( Analyzer ):
     def leptonAccept(self, leptons):
         '''Should implement a default version running on event.leptons.'''
         return True
+
+
+##     def selectDiLeptons(self, diLeptons, cutString=None):
+##         '''Returns the list of input di-leptons which verify the cutstring'''
+##         if cutString is None:
+##             if not hasattr( self.cfg_ana, 'diLeptonCutString' ):
+##                 return diLeptons
+##             else:
+##                 cutString = self.cfg_ana.diLeptonCutString 
+##         selDiLeptons = [ diL for diL in diLeptons if \
+##                          diL.getSelection(cutString) ]
+##         if len(selDiLeptons) > 0:
+##             self.counters.counter('DiLepton').inc( 'di-lepton cut string ok')
+##         return selDiLeptons
+
+
+    def testLeg(self, leg, pt, eta, iso, sel=None):
+        if sel is not None and \
+           not leg.getSelection(sel):
+            # a cut string has to be tested, and the leg does not pass
+            return False
+        if leg.pt() > pt and \
+           abs(leg.eta()) < eta and \
+           leg.relIso( 0.5 ) < iso:
+            return True
+        else:
+            return False
+
     
-
-    def testLeg1(self, leg, isocut=None):
-        '''returns testLeg1ID && testLeg1Iso && testLegKine for leg1'''
-        return self.testLeg1ID(leg) and \
-               self.testLeg1Iso(leg, isocut) and \
-               self.testLegKine(leg, self.cfg_ana.pt1, self.cfg_ana.eta1)
-
-
-    def testLeg2(self, leg, isocut=None):
-        '''returns testLeg2ID && testLeg2Iso && testLegKine for leg2'''
-        return self.testLeg2ID(leg) and \
-               self.testLeg2Iso(leg, isocut) and \
-               self.testLegKine(leg, self.cfg_ana.pt2, self.cfg_ana.eta2)
+    def testLeg1(self, leg):
+        '''Overload according to type, see e.g. TauMuAnalyzer.'''
+        sel = None
+        if hasattr(self.cfg_ana, 'cutString1'):
+            sel = self.cfg_ana.cutString1
+        return self.testLeg( leg,
+                             pt = self.cfg_ana.pt1,
+                             eta = self.cfg_ana.eta1,
+                             iso = self.cfg_ana.iso1,
+                             sel = sel )
 
 
-    def testLegKine(self, leg, ptcut, etacut ):
-        '''Tests pt and eta.'''
-        return leg.pt() > ptcut and \
-               abs(leg.eta()) < etacut 
+    def testLeg2(self, leg):
+        '''Overload according to type, see e.g. TauMuAnalyzer.'''
+        sel = None
+        if hasattr(self.cfg_ana, 'cutString2'):
+            sel = self.cfg_ana.cutString2
+        return self.testLeg( leg,
+                             pt = self.cfg_ana.pt2,
+                             eta = self.cfg_ana.eta2,
+                             iso = self.cfg_ana.iso2,
+                             sel = sel )
+        
+    def testMuon(self, muon):
+        '''Returns True if a muon passes a set of cuts.
+        Can be used in testLeg1 and testLeg2, in child classes.'''
+        # return True
+        return muon.looseId()
 
     
-    def testLeg1ID(self, leg):
-        '''Always return true by default, overload in your subclass'''
+    def testElectron(self, electron):
+        '''Returns True if an electron passes a set of cuts.
+        Can be used in testLeg1 and testLeg2, in child classes.'''
         return True
 
-    
-    def testLeg1Iso(self, leg, isocut):
-        '''If isocut is None, the iso value is taken from the iso1 parameter.
-        Checks the standard dbeta corrected isolation.
-        '''
-        if isocut is None:
-            isocut = self.cfg_ana.iso1
-        return leg.relIso(0.5) < isocut
 
-    
-    def testLeg2ID(self, leg):
-        '''Always return true by default, overload in your subclass'''
+    def testTau(self, tau):
+        '''Returns True if a tau passes a set of cuts.
+        Can be used in testLeg1 and testLeg2, in child classes.
+
+        WARNING: the muon filter should be used only in the muon channel.'''
         return True
-
-    
-    def testLeg2Iso(self, leg, isocut):
-        '''If isocut is None, the iso value is taken from the iso2 parameter.
-        Checks the standard dbeta corrected isolation.
-        '''
-        if isocut is None:
-            isocut = self.cfg_ana.iso2
-        return leg.relIso(0.5) < isocut
 
 
     def testMass(self, diLepton):
-        '''returns True if the mass of the dilepton is between the m_min and m_max parameters'''
         mass = diLepton.mass()
         return self.cfg_ana.m_min < mass and mass < self.cfg_ana.m_max
 
@@ -214,8 +232,6 @@ class DiLeptonAnalyzer2( Analyzer ):
     
 
     def trigMatched(self, event, leg, legName):
-        '''Returns true if the leg is matched to a trigger object as defined in the
-        triggerMap parameter'''
         if not hasattr( self.cfg_ana, 'triggerMap'):
             return True
         path = event.hltPath

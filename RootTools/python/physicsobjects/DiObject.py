@@ -39,6 +39,12 @@ class DiMuon( DiObject ):
         self.mu1 = Muon( diobject.leg1() )
         self.mu2 = Muon( diobject.leg2() )
 
+    def leg1(self):
+        return self.mu1
+
+    def leg2(self):
+        return self.mu2
+
     def __str__(self):
         header = 'DiMuon: mvis=%3.2f, sumpT=%3.2f' \
                  % (self.diobject.mass(),
@@ -49,8 +55,14 @@ class DiElectron( DiObject ):
 
     def __init__(self, diobject):
         super(DiElectron, self).__init__(diobject)
-        self.mu1 = Electron( diobject.leg1() )
-        self.mu2 = Electron( diobject.leg2() )
+        self.ele1 = Electron( diobject.leg1() )
+        self.ele2 = Electron( diobject.leg2() )
+
+    def leg1(self):
+        return self.ele1
+
+    def leg2(self):
+        return self.ele2
 
     def __str__(self):
         header = 'DiElectron: mvis=%3.2f, sumpT=%3.2f' \
