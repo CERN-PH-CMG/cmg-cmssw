@@ -7,7 +7,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 
 from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2012 as effectiveAreas
 from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
-from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
+
 
 
 
@@ -80,7 +80,6 @@ muMuAna = cfg.Analyzer(
     PF=True,
     keep=False,
     effectiveAreas=effectiveAreas,
-    fakeRates=fakeRates2012,
     rhoMuon     = 'kt6PFJetsCentralNeutral',
     rhoElectron = 'kt6PFJets',
     FSR=fsr
@@ -208,7 +207,7 @@ sequence = cfg.Sequence(dataSequence)
 
 test = 1
 if test==1:
-    dataset = GGH126
+    dataset = GGH125
     selectedComponents = [dataset]
     dataset.splitFactor = 1
 #    dataset.files=['root://cmsphys05//data/b/botta/V5_4_0/cmgTuple_H126Summer12.root']

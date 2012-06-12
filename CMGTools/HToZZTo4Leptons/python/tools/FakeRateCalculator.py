@@ -5,7 +5,6 @@ from CMGTools.HToZZTo4Leptons.tools.fullPath import getFullPath
 
 class FakeRateCalculator(object):
     def __init__(self,cfg):
-        print getFullPath(cfg.muon)
         self.fileMu = ROOT.TFile(getFullPath(cfg.muon))
         self.histMu = self.fileMu.Get("eff")
         self.histMuUp = self.fileMu.Get("effUp")

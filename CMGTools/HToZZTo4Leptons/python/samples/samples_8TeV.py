@@ -202,21 +202,25 @@ dataSamplesMuE=[data_MuEGB]
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 
 
+from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
+
 #Define splitting
 for comp in mcSamples:
     comp.isMC = True
     comp.splitFactor = 10
-    comp.puFileMC=dataDir+"/puProfile_Summer12.root"
+    comp.puFileMC=dataDir+"/puProfile_Fall11.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     
 for comp in dataSamplesMu:
     comp.splitFactor = 100
-    
+    comp.fakeRates=fakeRates2012
 for comp in dataSamplesE:
     comp.splitFactor = 100
+    comp.fakeRates=fakeRates2012
 
 for comp in dataSamplesMuE:
     comp.splitFactor = 100
+    comp.fakeRates=fakeRates2012
 
 
              

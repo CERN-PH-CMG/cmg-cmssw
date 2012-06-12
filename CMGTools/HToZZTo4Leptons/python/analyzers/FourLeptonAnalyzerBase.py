@@ -27,9 +27,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(FourLeptonAnalyzerBase,self).__init__(cfg_ana,cfg_comp,looperName)
 
-        if hasattr(cfg_ana,'fakeRates'):
-            self.fakeRates=[]
-            for fr in cfg_ana.fakeRates:
+        self.fakeRates=[]
+        if hasattr(cfg_comp,'fakeRates'):
+            for fr in cfg.comp.fakeRates:
                 self.fakeRates.append(FakeRateCalculator(fr))
 
 
@@ -155,11 +155,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
                     fsrAlgo.recoverZZ()
                     #Now Z 2
                     quadObject.updateP4()
-                    if hasattr(self,'fakeRates'):
-
-                        for fr in self.fakeRates:
-                            fr.attachToObject(quadObject.leg2.leg1)
-                            fr.attachToObject(quadObject.leg2.leg2)
+                    for fr in self.fakeRates:
+                        fr.attachToObject(quadObject.leg2.leg1)
+                        fr.attachToObject(quadObject.leg2.leg2)
                     out.append(quadObject)
         return out
 
