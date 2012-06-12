@@ -153,9 +153,23 @@ def bookVBF( tree, pName ):
     var(tree, '{pName}_mjj'.format(pName=pName))
     var(tree, '{pName}_deta'.format(pName=pName))
     var(tree, '{pName}_nCentral'.format(pName=pName))
+    var(tree, '{pName}_mva'.format(pName=pName))
+    var(tree, '{pName}_jdphi'.format(pName=pName))
+    var(tree, '{pName}_dijetpt'.format(pName=pName))
+    var(tree, '{pName}_dijetphi'.format(pName=pName))
+    var(tree, '{pName}_hdijetphi'.format(pName=pName))
+    var(tree, '{pName}_visjeteta'.format(pName=pName))
+    var(tree, '{pName}_ptvis'.format(pName=pName))
     
 def fillVBF( tree, pName, vbf ):
     fill(tree, '{pName}_mjj'.format(pName=pName), vbf.mjj )
     fill(tree, '{pName}_deta'.format(pName=pName), vbf.deta )
     fill(tree, '{pName}_nCentral'.format(pName=pName), len(vbf.centralJets) )
+    fill(tree, '{pName}_mva'.format(pName=pName), vbf.mva )
+    fill(tree, '{pName}_jdphi'.format(pName=pName), vbf.dphi )
+    fill(tree, '{pName}_dijetpt'.format(pName=pName), vbf.dijetpt )
+    fill(tree, '{pName}_dijetphi'.format(pName=pName), vbf.dijetphi )
+    fill(tree, '{pName}_hdijetphi'.format(pName=pName), vbf.dphidijethiggs )
+    fill(tree, '{pName}_visjeteta'.format(pName=pName), vbf.visjeteta )
+    fill(tree, '{pName}_ptvis'.format(pName=pName), vbf.ptvis )
     

@@ -129,7 +129,10 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'evt', event.eventId)
         
         fill( tr, 'npv', len(event.goodVertices)) 
-        fill( tr, 'npu', event.pileUpInfo[1].nPU()) 
+        nPU = -1
+        if hasattr(event, 'pileUpInfo'):
+            nPU = event.pileUpInfo[1].nPU()
+            fill( tr, 'npu', nPU) 
         fill( tr, 'rho', event.rho)
         
         fill( tr, 'mcweight', -1) # where do I get the pt weight for ggHiggs? hardcode xs and nevents
@@ -181,11 +184,12 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'metcov10', metsig(1,0))
         fill( tr, 'metcov11', metsig(1,1))
 
-        mvametsig = event.diLepton.mvaMetSig.significance()
-        fill( tr, 'mvacov00', mvametsig(0,0))
-        fill( tr, 'mvacov01', mvametsig(0,1))
-        fill( tr, 'mvacov10', mvametsig(1,0))
-        fill( tr, 'mvacov11', mvametsig(1,1))
+        if hasattr( event.diLepton, 'mvaMetSig'):
+            mvametsig = event.diLepton.mvaMetSig.significance()
+            fill( tr, 'mvacov00', mvametsig(0,0))
+            fill( tr, 'mvacov01', mvametsig(0,1))
+            fill( tr, 'mvacov10', mvametsig(1,0))
+            fill( tr, 'mvacov11', mvametsig(1,1))
         
         nJets = len(event.cleanJets)
         if nJets>=1:
