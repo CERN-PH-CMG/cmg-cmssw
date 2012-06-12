@@ -1,4 +1,4 @@
-from CMGTools.RootTools.analyzers.DiLeptonAnalyzer2 import DiLeptonAnalyzer2
+from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauMuon
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
@@ -12,8 +12,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         super(TauMuAnalyzer, self).declareHandles()
         # print 'TauMuAnalyzer.declareHandles'
         self.handles['diLeptons'] = AutoHandle(
-            'cmgTauMuCorSVFitFullSel', # FIXME!!
-            # 'cmgTauMu',
+            'cmgTauMuCorSVFitFullSel',
             'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>'
             )
 
@@ -43,7 +42,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             pydil = self.__class__.DiObjectClass(dil)
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
-            if not self.testLeg2( pydil.leg2(), 99999 ):
+            if not self.testMuonIDTight( pydil.leg2() ):
                 continue
             if hasattr(self.cfg_ana, 'mvametsigs'):
                 pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
@@ -65,29 +64,25 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, iEvent, event):
 
-##         import pdb; pdb.set_trace()
-#        if event.eventId == 28510409:
-#            import pdb; pdb.set_trace()
-        result = super(TauMuAnalyzer, self).process(iEvent, event)
+##         if event.iEv == 421:
+##             import pdb; pdb.set_trace()
 
+        result = super(TauMuAnalyzer, self).process(iEvent, event)
+        
         if result is False:
-            # trying to get a dilepton from the control region.
-            # it must have well id'ed and trig matched legs,
-            # and di-lepton veto must pass
-            result = self.selectionSequence(event, fillCounter=False,
-                                            leg1IsoCut = -9999,
-                                            leg2IsoCut = 9999)
-            if result is False:
-                # really no way to find a suitable di-lepton,
-                # even in the control region
+            selDiLeptons = [ diL for diL in event.diLeptons if \
+                             self.testMass(diL) ]
+            if len(selDiLeptons)==0:
                 return False
+            event.diLepton = self.bestDiLepton( selDiLeptons )
+            event.leg1 = event.diLepton.leg1()
+            event.leg2 = event.diLepton.leg2()
             event.isSignal = False
         else:
             event.isSignal = True
-       
+
         event.genMatched = None
         if self.cfg_comp.isMC:
-            # print event.eventId
             genParticles = self.mchandles['genParticles'].product()
             event.genParticles = map( GenParticle, genParticles)
             leg1DeltaR, leg2DeltaR = event.diLepton.match( event.genParticles ) 
@@ -99,23 +94,28 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
                 
         return True
         
+    def testLeg1(self, leg):
+        return self.testTau(leg) and \
+               super( TauMuAnalyzer, self).testLeg1( leg )
 
-    def testLeg1ID(self, tau):
+
+    def testLeg2(self, leg):
+        # import pdb; pdb.set_trace()
+        return self.testMuonTight(leg) and \
+               super( TauMuAnalyzer, self).testLeg2( leg )
+
+
+    def testTau(self, tau):
+        '''Returns True if a tau passes a set of cuts.
+        Can be used in testLeg1 and testLeg2, in child classes.'''
         if tau.decayMode() == 0 and \
                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
             return False
-        return tau.tauID("againstMuonTight")>0.5 and \
+        return tau.tauID("byLooseIsoMVA")>0.5 and \
+               tau.tauID("againstMuonTight")>0.5 and \
                tau.tauID("againstElectronLoose")>0.5 and \
                self.testVertex( tau )
-        
-
-    def testLeg1Iso(self, tau, isocut):
-        '''if isocut is None, returns true if loose iso MVA is passed.
-        Otherwise, returns true if iso MVA > isocut.'''
-        if isocut is None:
-            return tau.tauID("byLooseIsoMVA")>0.5
-        else:
-            return tau.tauID("byRawIsoMVA")>isocut
+               # tau.tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5 and \   
 
 
     def testVertex(self, lepton):
@@ -124,39 +124,36 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
                abs(lepton.dz()) < 0.2 
 
 
-    def testLeg2ID(self, muon):
+    def testMuonIDTight(self, muon):
         '''Tight muon selection, no isolation requirement'''
-        return muon.tightId() and \
+        return muon.pt() > self.cfg_ana.pt2 and \
+               abs( muon.eta() ) < self.cfg_ana.eta2 and \
+               muon.tightId() and \
                self.testVertex( muon )
-#    muon.pt() > self.cfg_ana.pt2 and \
-#    abs( muon.eta() ) < self.cfg_ana.eta2 and \
-               
 
-    def testLeg2Iso(self, muon, isocut):
+    def testMuonTight(self, muon ):
         '''Tight muon selection, with isolation requirement'''
-        if isocut is None:
-            isocut = self.cfg_ana.iso2
-        return self.muonIso(muon)<isocut
-
-
-    def muonIso(self, muon ):
-        '''dbeta corrected pf isolation with all charged particles instead of
-        charged hadrons'''
-        return muon.relIsoAllChargedDB05()
-    
+        return self.testMuonIDTight(muon) and \
+               self.muonIso(muon)<self.cfg_ana.iso2
 
     def testMuonIDLoose(self, muon):
-        '''Loose muon ID and kine, no isolation requirement, for lepton veto'''        
+        '''Loose muon selection, no isolation requirement'''        
         return muon.pt() > 15 and \
                abs( muon.eta() ) < 2.5 and \
                muon.looseId() and \
                self.testVertex( muon ) 
-            
+        
+    
     def testMuonLoose( self, muon ):
         '''Loose muon selection, with isolation requirement (for di-lepton veto)'''
         #COLIN: not sure the vertex constraints should be kept 
         return self.testMuonIDLoose(muon) and \
                self.muonIso(muon)<0.3
+
+
+    def muonIso(self, muon ):
+        return muon.relIsoAllChargedDB05()
+    
 
     def leptonAccept(self, leptons):
         looseLeptons = set(filter( self.testMuonLoose, leptons ))
