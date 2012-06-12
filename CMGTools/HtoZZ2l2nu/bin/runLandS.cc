@@ -348,14 +348,14 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
         if(mapbkg.find(shape.bckg[i]->GetTitle())!=mapbkg.end()){mapbkg[shape.bckg[i]->GetTitle()]->Add(shape.bckg[i]);}else{ mapbkg[shape.bckg[i]->GetTitle()]=(TH1*)shape.bckg[i]->Clone(shape.bckg[i]->GetTitle()); }
      }
 
-     TString massStr(""); massStr += mass;
+     TString massStr("");if(mass>0) massStr += mass;
      for(size_t ip=0; ip<shape.signal.size(); ip++){
          TString proc(shape.signal[ip]->GetTitle());
-         if(!proc.Contains(massStr))continue;
-              if(proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ2l2v";
-         else if(proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ2l2v";
-         else if(proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
-         else if(proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
+         if(mass>0 && !proc.Contains(massStr))continue;
+              if(mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ2l2v";
+         else if(mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ2l2v";
+         else if(mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
+         else if(mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
 
         if(proc=="qqHZZ"){shape.signal[ip]->SetLineStyle(2);}
 
@@ -462,7 +462,7 @@ void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &al
   string Cname  = "channel";
   string Cval   = "";
 
-  TString massStr(""); massStr += mass;
+  TString massStr(""); if(mass>0)massStr += mass;
 
 
   TH1* h;
@@ -506,11 +506,11 @@ void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &al
        h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal[isig];
        TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
 
-       if(!procTitle.Contains(massStr))continue;
-            if(procTitle.Contains("ggH") && procTitle.Contains("ZZ"))procTitle = "ggH("+massStr+")";
-       else if(procTitle.Contains("qqH") && procTitle.Contains("ZZ"))procTitle = "qqH("+massStr+")";
-       else if(procTitle.Contains("ggH") && procTitle.Contains("WW"))procTitle = "ggH("+massStr+")WW";
-       else if(procTitle.Contains("qqH") && procTitle.Contains("WW"))procTitle = "qqH("+massStr+")WW";
+       if(mass>0 && !procTitle.Contains(massStr))continue;
+            if(mass>0 && procTitle.Contains("ggH") && procTitle.Contains("ZZ"))procTitle = "ggH("+massStr+")";
+       else if(mass>0 && procTitle.Contains("qqH") && procTitle.Contains("ZZ"))procTitle = "qqH("+massStr+")";
+       else if(mass>0 && procTitle.Contains("ggH") && procTitle.Contains("WW"))procTitle = "ggH("+massStr+")WW";
+       else if(mass>0 && procTitle.Contains("qqH") && procTitle.Contains("WW"))procTitle = "qqH("+massStr+")WW";
 
        if(b==0&&ich==0)Ccol  += "c|";
        if(b==0&&ich==0)Cname += "&$" + procTitle+"$";
@@ -599,10 +599,12 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             if(!dci.procs[j-1].Contains("data")){fprintf(pFile,"%6f ",1.022);}else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
+         if(mass>0){
          fprintf(pFile,"%35s %10s ", "theoryUncXS_HighMH", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
             if((int)j<=dci.nsignalproc){fprintf(pFile,"%6f ",1.0+1.5*pow((mass/1000.0),3));}else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
+         }
 
          //Id+Trigger efficiencies combined
          if(dci.ch[i-1].Contains("ee")){
@@ -740,7 +742,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   JSONWrapper::Object Root(Json.Data(), true);
 
   //init globalVariables
-  TString massStr(""); massStr += mass;
+  TString massStr(""); if(mass>0)massStr += mass;
 //  std::set<TString> allCh,allProcs;
   std::vector<TString> allCh,allProcs;
 
@@ -794,11 +796,11 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   //remove the non-resonant background from data
   if(subNRB2011 || subNRB2012)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl");
 
-  //replace Z+Jet background by Gamma+Jet estimates
-  if(subDY)doDYReplacement(selCh,"gamma",allShapes,histo,"met_met");
-
   //replace WZ by its estimate from 3rd Lepton SB
   if(subWZ)doWZSubtraction(selCh,"emu",allShapes,histo,histo+"_3rdLepton");
+
+  //replace Z+Jet background by Gamma+Jet estimates
+  if(subDY)doDYReplacement(selCh,"gamma",allShapes,histo,"met_met");
 
   //replace data by total MC background
   if(blindData)BlindData(selCh,allShapes,histo);
@@ -842,11 +844,11 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         }
 
         TString proc(h->GetTitle());
-	if(!proc.Contains(massStr))continue;
-	     if(proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ2l2v";
-        else if(proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ2l2v";
-        else if(proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
-        else if(proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
+	if(mass>0 && !proc.Contains(massStr))continue;
+	     if(mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ2l2v";
+        else if(mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ2l2v";
+        else if(mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
+        else if(mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
 
         convertHistosForLimits_core(dci, proc, AnalysisBins[b], chbin, systs, hshapes);
         if(ich==0 && b==0)allProcs.push_back(proc);
