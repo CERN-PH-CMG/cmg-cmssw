@@ -10,11 +10,23 @@ if __name__ == '__main__':
 
     parser.add_option("-t","--trigger",dest="trigcounter",default='TriggerAnalyzer/Trigger.pck',help="trigger counter")
     parser.add_option("-s","--sigma",dest="sigma",type=float,help="cross section")
-    parser.add_option("-r","--rootFile",dest="rootFile",default='FourLeptonTreeProducer_MuMuFourLeptonAnalyzer/FourLeptonTreeProducer_MuMuFourLeptonAnalyzer_tree.root',help="output root file ")
+    parser.add_option("-f","--finalState",dest="finalState",default='MuMu',help="final state")
 
     (options,args) = parser.parse_args()
     #define output dictionary
     output=dict()
+
+    rootFile=''
+    if options.finalState == 'MuMu':
+        rootFile='FourLeptonTreeProducer_MuMuFourLeptonAnalyzer/FourLeptonTreeProducer_MuMuFourLeptonAnalyzer_tree.root'
+
+    if options.finalState == 'MuEle':
+        rootFile='FourLeptonTreeProducer_MuEleFourLeptonAnalyzer/FourLeptonTreeProducer_MuEleFourLeptonAnalyzer_tree.root'
+
+    if options.finalState == 'EleEle':
+        rootFile='FourLeptonTreeProducer_EleEleFourLeptonAnalyzer/FourLeptonTreeProducer_EleEleFourLeptonAnalyzer_tree.root'
+        
+
 
     directory=args[0]
     
@@ -32,5 +44,5 @@ if __name__ == '__main__':
     f.close()
 
     #next copy the main tree
-    shutil.copyfile(directory+'/'+options.rootFile,directory+'.root')
+    shutil.copyfile(directory+'/'+rootFile,directory+'.root')
     

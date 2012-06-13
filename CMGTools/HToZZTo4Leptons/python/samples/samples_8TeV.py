@@ -37,9 +37,9 @@ triggersMC_mue   = [
 ZZ2mu2tau.files=getFiles('/ZZTo2mu2tau_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
 ZZ4e.files=getFiles('/ZZTo4e_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
 ZZ4mu.files=getFiles('/ZZTo4mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
-#ZZ2e2mu.files=getFiles('_CMG_'+pat,'cmgtools',filepattern)
+ZZ2e2mu.files=getFiles('/ZZTo2e2mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
 ZZ2e2tau.files=getFiles('/ZZTo4mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
-#ZZ4tau.files=getFiles('/Summer11/zz4tau_powheg_GENSIMRECO_v2/USER/PAT_CMG_'+pat,'cmgtools',filepattern)
+
 
 
 
@@ -101,7 +101,7 @@ GGH1000.files=getFiles('/GluGluToHToZZTo4L_M-1000_8TeV-powheg-pythia6/Summer12-P
 mcSamples=[ZZ2mu2tau,
            ZZ4e,
            ZZ4mu,
-#           ZZ2e2mu,
+           ZZ2e2mu,
            ZZ2e2tau,
 #           ZZ4tau,
 #           ZZGG4L,
@@ -208,20 +208,20 @@ from CMGTools.HToZZTo4Leptons.setup.Efficiencies import *
 #Define splitting
 for comp in mcSamples:
     comp.isMC = True
-    comp.splitFactor = 10
+    comp.splitFactor = 40
     comp.puFileMC=dataDir+"/puProfile_Summer12.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012
     
 for comp in dataSamplesMu:
-    comp.splitFactor = 100
+    comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
 for comp in dataSamplesE:
-    comp.splitFactor = 100
+    comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
 
 for comp in dataSamplesMuE:
-    comp.splitFactor = 100
+    comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
 
 
