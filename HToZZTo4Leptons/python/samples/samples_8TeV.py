@@ -37,9 +37,9 @@ triggersMC_mue   = [
 ZZ2mu2tau.files=getFiles('/ZZTo2mu2tau_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
 ZZ4e.files=getFiles('/ZZTo4e_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
 ZZ4mu.files=getFiles('/ZZTo4mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
-ZZ2e2mu.files=getFiles('/Summer11/zz2e2m_powheg_GENSIMRECO_v2/USER/PAT_CMG_'+pat,'cmgtools',filepattern)
+#ZZ2e2mu.files=getFiles('_CMG_'+pat,'cmgtools',filepattern)
 ZZ2e2tau.files=getFiles('/ZZTo4mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,'cmgtools',filepattern)
-ZZ4tau.files=getFiles('/Summer11/zz4tau_powheg_GENSIMRECO_v2/USER/PAT_CMG_'+pat,'cmgtools',filepattern)
+#ZZ4tau.files=getFiles('/Summer11/zz4tau_powheg_GENSIMRECO_v2/USER/PAT_CMG_'+pat,'cmgtools',filepattern)
 
 
 
@@ -147,62 +147,63 @@ json ='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Pro
 
 
 
-data_DoubleElectronA = cfg.DataComponent(
-    name = 'data_DoubleElectronA',
-    files = getFiles('/DoubleElectron/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat, 'cmgtools', filepattern),
-    intLumi = 1,
-    triggers = [],
-    json = json
-    )
-
-data_DoubleMuA = cfg.DataComponent(
-    name = 'data_DoubleMuA',
-    files = getFiles('/DoubleMu/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_'+pat, 'cmgtools', filepattern),
-    intLumi = 1,
-    triggers = [],
-    json = json
-    )
 
 
-data_DoubleElectronB = cfg.DataComponent(
-    name = 'data_DoubleElectronB',
-    files =getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_'+pat+'_runrange_194480-195016', 'cmgtools', filepattern),
-    intLumi = 1,
-    triggers = [],
-    json = json
-    )
+doubleMuFiles=getFiles('/DoubleMu/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076', 'cmgtools', filepattern)+ \
+               getFiles('/DoubleMu/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479', 'cmgtools', filepattern)+ \
+               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016', 'cmgtools', filepattern)+ \
+               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396', 'cmgtools', filepattern)
 
-data_DoubleMuB = cfg.DataComponent(
-    name = 'data_DoubleMuB',
-    files = getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_'+pat+'_runrange_194480-195016', 'cmgtools', filepattern),
+doubleEleFiles=getFiles('/DoubleElectron/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076', 'cmgtools', filepattern)+ \
+               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479', 'cmgtools', filepattern)+ \
+               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016', 'cmgtools', filepattern)+ \
+               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396', 'cmgtools', filepattern)
+
+muEGFiles=getFiles('/MuEG/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076', 'cmgtools', filepattern)+ \
+           getFiles('/MuEG/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479', 'cmgtools', filepattern)+ \
+           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016', 'cmgtools', filepattern)+ \
+           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396', 'cmgtools', filepattern)
+
+
+data_DoubleMu = cfg.DataComponent(
+    name = 'data_DoubleMu',
+    files = doubleMuFiles,
     intLumi = 1,
     triggers = [],
     json = json
     )
 
 
-data_MuEGB = cfg.DataComponent(
-    name = 'data_MuEGB',
-    files = getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_'+pat+'_runrange_194480-195016','cmgtools',filepattern),
+data_DoubleElectron = cfg.DataComponent(
+    name = 'data_DoubleElectron',
+    files =doubleEleFiles,
     intLumi = 1,
     triggers = [],
     json = json
     )
 
 
+data_MuEG = cfg.DataComponent(
+    name = 'data_MuEG',
+    files = muEGFiles,
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
 
 
           
-dataSamplesMu=[data_DoubleMuB]
+dataSamplesMu=[data_DoubleMu]
 
-dataSamplesE=[data_DoubleElectronB]
+dataSamplesE=[data_DoubleElectron]
 
-dataSamplesMuE=[data_MuEGB]
+dataSamplesMuE=[data_MuEG]
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 
 
 from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
+from CMGTools.HToZZTo4Leptons.setup.Efficiencies import *
 
 #Define splitting
 for comp in mcSamples:
@@ -210,6 +211,7 @@ for comp in mcSamples:
     comp.splitFactor = 10
     comp.puFileMC=dataDir+"/puProfile_Summer12.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
+    comp.efficiency = eff2012
     
 for comp in dataSamplesMu:
     comp.splitFactor = 100
