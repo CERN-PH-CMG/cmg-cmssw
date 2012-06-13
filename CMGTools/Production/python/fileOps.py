@@ -433,10 +433,10 @@ class FileOps(object):
         ### SIMPLIFY WITH REGEXP
         if groupInfo['qFiles']>1:
             count = groupInfo['bottom']
+            top = groupInfo['top']+1
             if groupInfo['bottom'] > 1: count = 1
             # Check that all numbers are there and index every element
             if checkRootType(group[0]):
-                top = groupInfo['top']+1
                 if self._totalJobs is not None: top = self._totalJobs - 1
                 for i in range(count, top):
                     if i not in groupInfo['fileNums']:
