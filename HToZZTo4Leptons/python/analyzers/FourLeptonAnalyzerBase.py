@@ -350,6 +350,16 @@ class FourLeptonAnalyzerBase( Analyzer ):
                self.testZOS(fourLepton.leg1)
 
 
+    def testFourLeptonGhostSuppression(self, fourLepton):
+        leptons = [fourLepton.leg1.leg1, \
+                   fourLepton.leg1.leg2, \
+                   fourLepton.leg2.leg1, \
+                   fourLepton.leg2.leg2]
+        for l1,l2 in intertools.combinations(leptons,2):
+            if deltaR(l1.eta(),l1.phi(),l2.eta(),l2.phi())<0.01:
+                return False
+        return True    
+
     def testFourLeptonMassZ2(self, fourLepton):
         return  self.testZ2Mass(fourLepton.leg2)
 
