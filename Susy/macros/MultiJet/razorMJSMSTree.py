@@ -58,9 +58,9 @@ if __name__ == '__main__':
     if True:
         names = [f for f in options.datasetName.split('/') if f]
         if options.index == -1:
-            name = '%s-%s-%s-TauID.root' % (names[0],names[1],names[-1])
+            name = '%s-%s-%s-JetFL.root' % (names[0],names[1],names[-1])
         else:
-            name = '%s-%s-%s-TauID_%d.root' % (names[0],names[1],names[-1],options.index)
+            name = '%s-%s-%s-JetFL_%d.root' % (names[0],names[1],names[-1],options.index)
         options.outputFile = os.path.join(options.outputDirectory,name)
     pickleFile = options.outputFile.replace('.root','.pkl')
 
@@ -98,6 +98,12 @@ struct Variables{\
     Double_t RSQ_JES_DOWN;\
     Double_t maxTCHE;\
     Double_t maxTCHE_PT;\
+    Double_t maxTCHE_FL;\
+    Double_t maxTCHE_ETA;\
+    Double_t nextTCHE;\
+    Double_t nextTCHE_PT;\
+    Double_t nextTCHE_FL;\
+    Double_t nextTCHE_ETA;\
     Double_t mStop;\
     Double_t mLSP;\
 };""")
@@ -113,6 +119,7 @@ struct Info{\
     Int_t nVertex;\
     Int_t genInfo;\
     Int_t BOX_NUM;\
+    Int_t nLepton;\
 };""")
     
     from ROOT import Variables, Info
@@ -201,7 +208,8 @@ struct Info{\
         triggerEMFilter = filterH.product()[0]
         if not triggerEMFilter: continue
               
-        event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
+        if not event.getByLabel(('razorMJPFJetSel30'),jetSel30H):
+            continue
         jets = jetSel30H.product()
         info.nJet = len(jets)
         if info.nJet < 6: continue
@@ -227,14 +235,24 @@ struct Info{\
         nTauTight = len(tauH.product())
 
         #we don't make a requirement on the Taus at this point so we can study tau id
-        if (nElectronTight + nMuonTight) > 0: continue
+        #if (nElectronTight + nMuonTight) > 0: continue
         nLepton = nElectronTight + nMuonTight + nTauTight
+        info.nLepton = nLepton
 
         #dump the B-tags
         tche = sorted([(j.btag(0),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 3.3])
         if tche:
             vars.maxTCHE = tche[-1][1].btag(0)
             vars.maxTCHE_PT = tche[-1][1].pt()
+            vars.maxTCHE_ETA = tche[-1][1].eta()
+            vars.maxTCHE_FL = tche[-1][1].partonFlavour()
+
+            if len(tche) > 1:
+                vars.nextTCHE = tche[-2][1].btag(0)
+                vars.nextTCHE_PT = tche[-2][1].pt()
+                vars.nextTCHE_ETA = tche[-2][1].eta()
+                vars.nextTCHE_FL = tche[-2][1].partonFlavour()
+
         info.nBJet = len(tche)
         if info.nBJet > 1:
             BTAG_TrackCount.push_back(tche[-1][1].btag(0))
