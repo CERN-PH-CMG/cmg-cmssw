@@ -495,8 +495,8 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	  hasCutBasedIds[3] << EID_TIGHT |
 	  passconversionveto << EID_CONVERSIONVETO |
 	  passEoP << EID_EOPCUT |
-	  passTriggerCut[0] << EID_TRIGGER2011 |
-	  passTriggerCut[1] << EID_TIGHTTRIGGER |
+	  passTriggerCut[1] << EID_TRIGGER2011 |
+	  passTriggerCut[0] << EID_TIGHTTRIGGER |
 	  hasHEEPid << EID_HEEPID |
 	  ele->ecalDrivenSeed() << EID_ECALDRIVEN |
 	  ele->trackerDrivenSeed() << EID_TRACKERDRIVEN;
@@ -948,6 +948,18 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 
 	bool hasPixelSeed=pho->hasPixelSeed();	
 	bool hasElectronVeto(false); try{ hasElectronVeto = ConversionTools::hasMatchedPromptElectron(pho->superCluster(), hEle, hConversions, beamSpot->position()); } catch(std::exception &e) { }
+	bool hasConvUnsafeElectronVeto(false);
+	if(hEle.isValid())
+	  {
+	    double minDR(99999.);
+	    for(reco::GsfElectronCollection::const_iterator eIt = hEle->begin(); eIt != hEle->end(); eIt++)
+	      {
+		double dR=deltaR(eIt->eta(),eIt->phi(),pho->eta(),pho->phi());
+		minDR = min(minDR,dR);
+	      }
+	    if(minDR<0.15) hasConvUnsafeElectronVeto=true;
+	  }
+
 	reco::ConversionRef conv;    try{ conv = ConversionTools::matchedConversion(*(pho->superCluster()),hConversions,beamSpot->position()); } catch(std::exception &e) { }
 	bool isConverted(!conv.isNull());
 	bool isVtxConstrained(false);
@@ -966,12 +978,14 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
             hasTrkVeto = true;
             break;
           }
+	
 	phoId.idBits = !hasPixelSeed |
 	  (!hasElectronVeto << 1) |
 	  (hasTrkVeto << 2 ) |
 	  (isConverted << 3) |
-	  (isVtxConstrained << 4);
-
+	  (isVtxConstrained << 4) |
+	  (!hasConvUnsafeElectronVeto << 5);
+	
 	//select the photon
 	float et=pho->energy()/cosh(pho->eta());
 	bool fallsInCrackRegion( fabs(pho->eta())>1.4442 && fabs(pho->eta())<1.566 );
@@ -1004,7 +1018,7 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	bool isEcalIso(pho->ecalRecHitSumEtConeDR04()< maxECALIso);
 	bool isHcalIso(pho->hcalTowerSumEtConeDR04()< maxHCALIso);
 	bool isIso(isTrkIso && isEcalIso && isHcalIso);
-	if(fallsInCrackRegion || !isGood || !hasBaseId || hasBadSeed || hasPixelSeed || hasElectronVeto || !isIso) continue;
+	if(fallsInCrackRegion || !isGood || !hasBaseId || hasBadSeed || hasPixelSeed /*|| hasElectronVeto*/ || !isIso) continue;
 
 	//save this photon
 	selPhotons.push_back( hPhoton->ptrAt(iPhoton) );
