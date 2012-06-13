@@ -33,6 +33,8 @@
 #include<vector>
 #include<set>
 
+
+
 using namespace std;
 double NonResonnantSyst = 0.25;
 double GammaJetSyst = 1.0;
@@ -88,6 +90,9 @@ TGraph *qqH7TG_xsec=NULL, *qqH7TG_errp=NULL, *qqH7TG_errm=NULL, *qqH7TG_scap=NUL
 TGraph *ggH8TG_xsec=NULL, *ggH8TG_errp=NULL, *ggH8TG_errm=NULL, *ggH8TG_scap=NULL, *ggH8TG_scam=NULL, *ggH8TG_pdfp=NULL, *ggH8TG_pdfm=NULL;
 TGraph *qqH8TG_xsec=NULL, *qqH8TG_errp=NULL, *qqH8TG_errm=NULL, *qqH8TG_scap=NULL, *qqH8TG_scam=NULL, *qqH8TG_pdfp=NULL, *qqH8TG_pdfm=NULL;
 TGraph *    TG_xsec=NULL, *    TG_errp=NULL, *    TG_errm=NULL, *    TG_scap=NULL, *    TG_scam=NULL, *    TG_pdfp=NULL, *    TG_pdfm=NULL;
+
+TGraph* TG_QCDScaleK0ggH0=NULL, *TG_QCDScaleK0ggH1=NULL, *TG_QCDScaleK1ggH1=NULL, *TG_QCDScaleK1ggH2=NULL, *TG_QCDScaleK2ggH2=NULL;
+TGraph* TG_UEPSf0=NULL, *TG_UEPSf1=NULL, *TG_UEPSf2=NULL;
 
 bool subNRB2011 = false;
 bool subNRB2012 = false;
@@ -631,7 +636,13 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             }fprintf(pFile,"\n");
          }
 
-         //The following mUST BE UPDATED WITH NO DUMMY VALUE
+         if(mass>0){
+         fprintf(pFile,"%35s %10s ", "Signal_rescaling_8TeV", "lnN");
+         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+            if(systpostfix.Contains('8') && (dci.procs[j-1].Contains("ggh") || dci.procs[j-1].Contains("qqh"))){fprintf(pFile,"%6f ",1.25);
+            }else{fprintf(pFile,"%6s ","-");}
+         }fprintf(pFile,"\n");
+
          fprintf(pFile,"%35s %10s ", "pdf_gg", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
             if(dci.procs[j-1].Contains("ggh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_pdfp->Eval(mass,NULL,"S"),2) + pow(TG_pdfm->Eval(mass,NULL,"S"),2)));
@@ -646,9 +657,31 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
+         fprintf(pFile,"%35s %10s ", "UEPS", "lnN");
+         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+                  if(dci.procs[j-1].Contains("ggh") && dci.ch[i-1].Contains("eq0jet")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",TG_UEPSf0->Eval(mass,NULL,"S"));
+            }else if(dci.procs[j-1].Contains("ggh") && dci.ch[i-1].Contains("eq1jet")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",TG_UEPSf1->Eval(mass,NULL,"S"));
+            }else if(dci.procs[j-1].Contains("ggh") && (dci.ch[i-1].Contains("eq2jet") || dci.ch[i-1].Contains("vbf"))){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",TG_UEPSf2->Eval(mass,NULL,"S"));
+            }else{fprintf(pFile,"%6s ","-");}
+         }fprintf(pFile,"\n");
+
          fprintf(pFile,"%35s %10s ", "QCDscale_ggH", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            if(dci.procs[j-1].Contains("ggh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_scap->Eval(mass,NULL,"S"),2) + pow(TG_scam->Eval(mass,NULL,"S"),2)));
+                  if(dci.procs[j-1].Contains("ggh") && dci.ch[i-1].Contains("eq0jet")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",TG_QCDScaleK0ggH0->Eval(mass,NULL,"S"));
+            }else{fprintf(pFile,"%6s ","-");}
+         }fprintf(pFile,"\n");
+
+         fprintf(pFile,"%35s %10s ", "QCDscale_ggH1in", "lnN");
+         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+                  if(dci.procs[j-1].Contains("ggh") && dci.ch[i-1].Contains("eq0jet")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",TG_QCDScaleK0ggH1->Eval(mass,NULL,"S"));
+            }else if(dci.procs[j-1].Contains("ggh") && dci.ch[i-1].Contains("eq1jet")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",TG_QCDScaleK1ggH1->Eval(mass,NULL,"S"));
+            }else{fprintf(pFile,"%6s ","-");}
+         }fprintf(pFile,"\n");
+
+         fprintf(pFile,"%35s %10s ", "QCDscale_ggH2in", "lnN");
+         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+                  if(dci.procs[j-1].Contains("ggh") && dci.ch[i-1].Contains("eq1jet")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",TG_QCDScaleK1ggH2->Eval(mass,NULL,"S"));
+            }else if(dci.procs[j-1].Contains("ggh") && (dci.ch[i-1].Contains("eq2jet") || dci.ch[i-1].Contains("vbf"))){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",TG_QCDScaleK2ggH2->Eval(mass,NULL,"S"));
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
@@ -657,6 +690,8 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             if(dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_scap->Eval(mass,NULL,"S"),2) + pow(TG_scam->Eval(mass,NULL,"S"),2)));
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
+
+         }
 
          fprintf(pFile,"%35s %10s ", "QCDscale_ggVV", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
@@ -670,15 +705,6 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
-         fprintf(pFile,"%35s %10s ", "CMS_hzz2l2v_jetbinning", "lnN");
-         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            fprintf(pFile,"%6s ","-");
-         }fprintf(pFile,"\n");
-
-         fprintf(pFile,"%35s %10s ", "Signal_rescaling_8TeV", "lnN");
-         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            fprintf(pFile,"%6s ","-");
-         }fprintf(pFile,"\n");
 
          ///////////////////////////////////////////////
 
@@ -1674,4 +1700,31 @@ void initializeTGraph(){
    qqH8TG_scam = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_scam);
    qqH8TG_pdfp = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_pdfp);
    qqH8TG_pdfm = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_pdfm);
+
+   double QCDScaleMass   [] = {200, 250, 300, 350, 400, 450, 500, 550, 600};
+   double QCDScaleK0ggH0 [] = {1.15 , 1.16, 1.17, 1.20, 1.17, 1.19, 1.22, 1.24, 1.25};
+   double QCDScaleK0ggH1 [] = {0.88, 0.86, 0.84, 0.83, 0.82, 0.81, 0.80, 0.78, 0.78};
+   double QCDScaleK1ggH1 [] = {1.27, 1.27, 1.27, 1.27, 1.26, 1.26, 1.25, 1.26, 1.26};
+   double QCDScaleK1ggH2 [] = {0.96, 0.96, 0.95, 0.95, 0.95, 0.95, 0.95,  0.95, 0.94};
+   double QCDScaleK2ggH2 [] = { 1.20, 1.17, 1.20, 1.21, 1.20, 1.20, 1.17, 1.19, 1.19};
+
+   double UEPSf0 []         = {0.952, 0.955, 0.958, 0.964, 0.966, 0.954, 0.946, 0.931, 0.920};
+   double UEPSf1 []         = {1.055, 1.058, 1.061, 1.068, 1.078, 1.092, 1.102, 1.117, 1.121};
+   double UEPSf2 []         = {0.059, 0.990, 0.942, 0.889, 0.856, 0.864, 0.868, 0.861, 0.872}; 
+
+  TG_QCDScaleK0ggH0 = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleK0ggH0);
+  TG_QCDScaleK0ggH1 = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleK0ggH1);
+  TG_QCDScaleK1ggH1 = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleK1ggH1);
+  TG_QCDScaleK1ggH2 = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleK1ggH2);
+  TG_QCDScaleK2ggH2 = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleK2ggH2);
+
+  TG_UEPSf0         = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, UEPSf0);
+  TG_UEPSf1         = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, UEPSf1);
+  TG_UEPSf2         = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, UEPSf2);
+
+
+
 }
+
+
+
