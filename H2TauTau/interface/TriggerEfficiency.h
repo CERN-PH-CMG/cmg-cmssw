@@ -186,36 +186,51 @@ public:
   //parameters taken from AN-11-390 v8
   //*****************
   double effLooseTau10(double pt, double eta){
-    if(fabs(eta)<1.479) efficiency(pt,13.6046,1.66291,1.71551,141.929,0.910686);
-    return efficiency(pt,-0.392211,7.90467,5.48228,134.599,0.925858);
+    if(fabs(eta)<1.479) 
+      return efficiency(pt,13.6046,1.66291,1.71551,141.929,0.910686);
+    else 
+      return efficiency(pt,-0.392211,7.90467,5.48228,134.599,0.925858);
   }
   double effLooseTau15(double pt, double eta){
-    if(fabs(eta)<1.479) efficiency(pt,13.9694,0.084835,0.057743,1.50674,0.984976);
-    return efficiency(pt,14.435,1.34952,2.43996,1.03631,1.79081);
+    if(fabs(eta)<1.479) 
+      return efficiency(pt,13.9694,0.084835,0.057743,1.50674,0.984976);
+    else 
+      return efficiency(pt,14.435,1.34952,2.43996,1.03631,1.79081);
   }
   double effLooseTau20(double pt, double eta){
-    if(fabs(eta)<1.479) efficiency(pt,19.2102,1.26519,2.48994,1.04699,1.3492);
-    return efficiency(pt,19.2438,1.37298,1.76448,1.73935,0.901291);
+    if(fabs(eta)<1.479) 
+      return efficiency(pt,19.2102,1.26519,2.48994,1.04699,1.3492);
+    else
+      return efficiency(pt,19.2438,1.37298,1.76448,1.73935,0.901291);
   }
 
   double effLooseTau15MC(double pt, double eta){//should correspond to Fall11 MC
-    if(fabs(eta)<1.479) efficiency(pt,14.4601,0.0485272,0.03849,1.48324,0.965257);
-    return efficiency(pt,14.4451,0.0790573,0.0732472,1.47046,0.942028);
+    if(fabs(eta)<1.479) 
+      return efficiency(pt,14.4601,0.0485272,0.03849,1.48324,0.965257);
+    else 
+      return efficiency(pt,14.4451,0.0790573,0.0732472,1.47046,0.942028);
   }
 
 
   double effTightIsoTau20(double pt, double eta){
-    if(fabs(eta)<1.479) efficiency(pt, 19.6013, 0.987317, 1.08015, 1.88592, 0.776894);
-    return efficiency(pt, 18.8859, 0.271301, 0.128008, 1.50993, 0.825122);
+    if(fabs(eta)<1.479) 
+      return efficiency(pt, 19.6013, 0.987317, 1.08015, 1.88592, 0.776894);
+    else 
+      return efficiency(pt, 18.8859, 0.271301, 0.128008, 1.50993, 0.825122);
   }
+
   double effMediumIsoTau20(double pt, double eta){
-    if(fabs(eta)<1.479) efficiency(pt, 19.5667, 1.15203, 1.68126, 1.40025, 0.848033);
-    return efficiency(pt, 18.8476, 0.528963, 0.16717, 3.65814, 0.749759);
+    if(fabs(eta)<1.479) 
+      return efficiency(pt, 19.5667, 1.15203, 1.68126, 1.40025, 0.848033);
+    else 
+      return efficiency(pt, 18.8476, 0.528963, 0.16717, 3.65814, 0.749759);
   }
 
   double effMediumIsoTau20MC(double pt, double eta){
-    if(fabs(eta)<1.479) efficiency(pt, 19.468, 0.0615381, 0.0349325, 1.59349, 0.860096);
-    return efficiency(pt, 19.3862, 0.247148, 0.123187, 2.87108,	0.790894);
+    if(fabs(eta)<1.479) 
+      return efficiency(pt, 19.468, 0.0615381, 0.0349325, 1.59349, 0.860096);
+    else 
+      return efficiency(pt, 19.3862, 0.247148, 0.123187, 2.87108,	0.790894);
   }
 
 
@@ -223,20 +238,31 @@ public:
   //parameters taken from AN-11-390 v8
   //*****************
   double effIsoMu12(double pt, double eta){
-    if(fabs(eta)<1.479)return 0.901; //Barrel: eta < 1.479 
-    return 0.863; //EndCap
+    if(fabs(eta)<1.479)
+      return 0.901; //Barrel: eta < 1.479 
+    else 
+      return 0.863; //EndCap
   }
+
   double effIsoMu15(double pt, double eta){
-    if(fabs(eta)<1.479)return 0.901; 
-    return 0.863;
+    if(fabs(eta)<1.479)
+      return 0.901; 
+    else 
+      return 0.863;
   }
+
   double effIsoMu15eta2p1(double pt, double eta){
-    if(fabs(eta)<1.479)return efficiency(pt,15.06,0.55278,1.34236,1.003,3.36767);
-    return efficiency(pt,15.03175,0.866114,1.25009,1.63711,0.844906);
+    if(fabs(eta)<1.479)
+      return efficiency(pt,15.06,0.55278,1.34236,1.003,3.36767);
+    else 
+      return efficiency(pt,15.03175,0.866114,1.25009,1.63711,0.844906);
   }
+
   double effIsoMu15MC(double pt, double eta){//should correspond to Fall11 MC
-    if(fabs(eta)<1.479)return 0.917;
-    return 0.836;
+    if(fabs(eta)<1.479)
+      return 0.917;
+    else 
+      return 0.836;
   }
 
 
@@ -271,6 +297,54 @@ public:
     else
       return efficiency(pt, 16.993, 0.0693958, 0.00695096, 1.9566, 1.00632 );
   }
+
+  //****************
+  //mu tau 2012 
+  //*****************
+  
+  double eff2012ATau20(double pt, double eta){
+    if(fabs(eta)<1.479) 
+      return efficiency(pt, 18.52, 1.86, 3.49, 1.15, 1.02);
+    else 
+      return efficiency(pt, 18.9, 0.14, 0.14, 1.56, 0.81);
+  }
+
+  double eff2012BTau20(double pt, double eta){
+    if(fabs(eta)<1.479) 
+      return efficiency(pt, 17.93, 1.96, 4.46, 1.02, 1.52);
+    else 
+      return efficiency(pt, 18.59, 2.49, 11.00, 1.51, 0.88);
+  }
+
+  double eff2012MCTau20(double pt, double eta){
+    if(fabs(eta)<1.479) 
+      return efficiency(pt, 18.86, 0.26, 0.17, 2.43, 0.90);
+    else 
+      return efficiency(pt, 18.75, 1.82, 701.47, 101.58, 0.83);
+  }
+
+  double effTau2012MC(double pt, double eta) {
+    return eff2012MCTau20(pt, eta);
+  }
+
+  double effTau2012A(double pt, double eta) {
+    return eff2012ATau20(pt, eta);
+  }
+
+  double effTau2012B(double pt, double eta) {
+    return eff2012BTau20(pt, eta);
+  }
+
+  double effTau2012AB(double pt, double eta) {
+    float weight_A = 698.0; 
+    float weight_B = 890.592 + 767.154;
+
+    return (weight_A * eff2012ATau20(pt, eta) + weight_B * eff2012BTau20(pt, eta))/(weight_A+weight_B);
+  }
+
+
+  
+  
 
 
   //****************
