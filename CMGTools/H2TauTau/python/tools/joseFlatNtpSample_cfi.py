@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 import os 
 rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
+httdata_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/'
 
 
 flatNtpTauMu = cms.EDAnalyzer(
@@ -9,7 +10,7 @@ flatNtpTauMu = cms.EDAnalyzer(
     path = cms.untracked.string(""),
     firstRun =  cms.int32( 0 ),
     lastRun =  cms.int32( 0 ),
-    dataType = cms.string(""),
+    dataType = cms.int32(-1),
     pupWeightName = cms.InputTag(""),
     trigPath1 = cms.InputTag(""),
     trigPath2 = cms.InputTag(""),
@@ -35,7 +36,9 @@ flatNtpTauMu = cms.EDAnalyzer(
     fileCorrectTo = cms.string(rootfile_dir + 'recoilfit_wjets_njet.root'), #need to configure this for each sample
     fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm_njet.root'),
     fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm42X_njet.root'),
-    runSVFit = cms.int32(1), # 0 do not run, 1 run old version, 2 run new version
+    metType = cms.int32(1), # 1=PFMET, 2=MVAMET
+    runSVFit = cms.int32(2), # 0 do not run, 1 run old version, 2 run new version
+    mvaWeights = cms.string(httdata_dir + 'VBFMVA_BDTG.weights.44X.xml'),
     )
 
 
@@ -71,4 +74,5 @@ flatNtpTauEle = cms.EDAnalyzer(
     fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm_njet.root'),
     fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm42X_njet.root'),
     runSVFit = cms.int32(1), # 0 do not run, 1 run old version, 2 run new version
+    mvaWeights = cms.string(httdata_dir + 'VBFMVA_BDTG.weights.44X.xml'),
     )

@@ -53,18 +53,28 @@ protected:
   virtual bool applySelections();
   virtual bool fill();
 
+
+  edm::InputTag verticesListTag_;
+  edm::InputTag trigPathsListTag_;
+  edm::InputTag trigObjsListTag_;
+  edm::InputTag pupWeightName_;
+  int firstRun_; 
+  int lastRun_; 
+  int dataType_;//0=MC, 1=Data, 2=EmbeddedData, 3=EmbeddedMC
+
   const edm::Event * iEvent_; 
   edm::Handle< std::vector<reco::Vertex> > vertices_;
   const reco::Vertex * PV_;
   std::vector<edm::InputTag *>  trigPaths_;
 
-
   edm::Service<TFileService> * file_;
   TTree * tree_;
+  float pupWeight_;
   float eventweight_;
   int runnumber_;
   int lumiblock_;
   int eventid_;
+  bool trigpass_;
 
   int npu_;
   int nvtx_;
@@ -79,18 +89,12 @@ protected:
   edm::Handle< std::vector<cmg::TriggerObject> > trigObjs_;
   bool trigObjMatch(float eta, float phi, std::string path, std::string filter);
 
-  string dataType_;
-  float pupWeight_;
+  
+
 
  private:
 
-  edm::InputTag verticesListTag_;
-  edm::InputTag trigPathsListTag_;
-  edm::InputTag trigObjsListTag_;
-  edm::InputTag pupWeightName_;
-  int firstRun_; 
-  int lastRun_; 
-  bool trigpass_;
+
 
 };
 

@@ -49,8 +49,8 @@ dataset_files = 'cmgTuple.*root'
 process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
-    '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0/cmgTuple_0.root'
-    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/cmgTuple_0.root'
+    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0/cmgTuple_0.root'
+    '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/cmgTuple_0.root'
     #'file:../../../Common/prod/TEST/cmgTuple_HToTauTau.root'
     )
     )
@@ -123,48 +123,11 @@ process.cmgTauMuPreSel.cut = cms.string('mass()>10.0 && leg1().pt()>19.0 && abs(
 process.TauMuPath +=  process.cmgTauMuPreSel 
 
 
-##run the MVA MET and remake the mu-tau list
-#from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
-#from CMGTools.Common.miscProducers.mvaMET.mvaMET_cff import *
-#from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
-
-process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
-process.load("CMGTools.Common.miscProducers.mvaMET.mvaMET_cff")
-process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
-process.mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
-
-process.mvaBaseMETTauMu = process.cmgBaseMETFromPFMET.clone()
-process.mvaBaseMETTauMu.cfg.inputCollection = 'mvaMETTauMu'
-
-process.load("CMGTools.Common.factories.cmgTauMuCor_cfi")
-process.cmgTauMuMVAPreSel = process.cmgTauMuCor.clone()
-process.cmgTauMuMVAPreSel.cfg.metCollection = 'mvaBaseMETTauMu'
-process.cmgTauMuMVAPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
-
-process.mvaMETSequence = cms.Sequence(
-    process.goodPVFilter + 
-    process.mvaMETTauMu +
-    process.mvaBaseMETTauMu+
-    process.cmgTauMuMVAPreSel
-    )
-
-process.TauMuPath += process.mvaMETSequence
-
-
-## SVFit -------------------------
-#from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit
-#process.cmgTauMuCorSVFitFullSel = tauMuSVFit.clone()
-#process.cmgTauMuCorSVFitFullSel.diTauSrc = 'cmgTauMuPreSel'
-#process.TauMuPath +=  process.cmgTauMuCorSVFitFullSel 
-
 # event filter --------------------------------
 process.load('CMGTools.Common.skims.cmgTauMuCount_cfi')
-#process.cmgTauMuCount.src = 'cmgTauMuPreSel'
-#process.cmgTauMuCount.src = 'cmgTauMuCorSVFitFullSel'
-process.cmgTauMuCount.src = 'cmgTauMuMVAPreSel'
+process.cmgTauMuCount.src = 'cmgTauMuPreSel'
 process.cmgTauMuCount.minNumber = 1
 process.TauMuPath +=  process.cmgTauMuCount
-
 
 
 # you can enable printouts of most modules like this:
@@ -182,8 +145,11 @@ process.out = cms.OutputModule(
 process.out.outputCommands.extend( [
     'keep cmgTaucmgMuoncmgDiObjects_*_*_*',
     'drop *_cmgTauMu_*_*',
+    'keep recoPFMETs_*_*_*',
+    'keep *_cmgPFBaseJetLead_*_*',
     'keep *_mvaMETTauMu_*_*',
     'keep double_*_*_*',
+    'keep int_*_*_*',
     'keep patMuons_patMuonsWithTrigger__PAT',
     'keep cmgTriggerObjects_cmgTriggerObjectSel__PAT',
     'keep cmgTriggerObjects_cmgTriggerObjectListSel__PAT',
