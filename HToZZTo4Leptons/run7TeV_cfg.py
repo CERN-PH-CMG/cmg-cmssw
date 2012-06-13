@@ -201,7 +201,7 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 1
+test = 0
 if test==1:
     dataset = GGH130
     selectedComponents = [dataset]
