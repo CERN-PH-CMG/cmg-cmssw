@@ -17,6 +17,8 @@ from CMGTools.HToZZTo4Leptons.tools.FakeRateCalculator import FakeRateCalculator
 from CMGTools.HToZZTo4Leptons.tools.EfficiencyCorrector import EfficiencyCorrector
 from CMGTools.HToZZTo4Leptons.tools.mela import MELACalculator
 
+from CMGTools.RootTools.utils.DeltaR import deltaR
+
 
 
         
@@ -355,8 +357,8 @@ class FourLeptonAnalyzerBase( Analyzer ):
                    fourLepton.leg1.leg2, \
                    fourLepton.leg2.leg1, \
                    fourLepton.leg2.leg2]
-        for l1,l2 in intertools.combinations(leptons,2):
-            if deltaR(l1.eta(),l1.phi(),l2.eta(),l2.phi())<0.01:
+        for l1,l2 in itertools.combinations(leptons,2):
+            if deltaR(l1.eta(),l1.phi(),l2.eta(),l2.phi())<0.02:
                 return False
         return True    
 
