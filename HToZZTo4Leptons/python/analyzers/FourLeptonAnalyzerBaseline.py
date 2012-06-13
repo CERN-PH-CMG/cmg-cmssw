@@ -20,6 +20,7 @@ from CMGTools.HToZZTo4Leptons.tools.OverlapCleaner import OverlapCleaner
 
 from CMGTools.HToZZTo4Leptons.tools.FSRRecovery import FSRRecovery
 
+from CMGTools.RootTools.utils.DeltaR import deltaR
 
 
 
@@ -115,13 +116,16 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
             #Require 1 lepton !
 
             # So lets make a collection for those
-            if len(event.leptonsForFakeRate)==1:
-                for lepton in event.leptonsForFakeRate:
-                    if  hasattr(self.cfg_ana,"FSR"):
-                        fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
-                        fsrAlgo.setPhotons(event.photons)
-                        fsrAlgo.setLeg(lepton)
-                        fsrAlgo.recoverLeg()
+            if len(event.leptonsForFakeRate)==1 and \
+               deltaR(event.leptonsForFakeRate[0].eta(),event.leptonsForFakeRate[0].phi(), \
+                      event.bestZForFakeRate.leg1.eta(),event.bestZForFakeRate.leg1.phi())<0.02 and \
+               deltaR(event.leptonsForFakeRate[0].eta(),event.leptonsForFakeRate[0].phi(), \
+                      event.bestZForFakeRate.leg2.eta(),event.bestZForFakeRate.leg2.phi())<0.02:
+                if  hasattr(self.cfg_ana,"FSR"):
+                    fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
+                    fsrAlgo.setPhotons(event.photons)
+                    fsrAlgo.setLeg(event.leptonsForFakeRate[0])
+                    fsrAlgo.recoverLeg()
             else:
                 event.leptonsForFakeRate=[]
 
@@ -137,6 +141,9 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         event.sortedFourLeptons = self.sortFourLeptons(event.fourLeptons)
 
         cutFlow.setSource1(event.sortedFourLeptons)
+
+        #Ghost Suppression
+        passed=cutFlow.applyCut(self.testFourLeptonGhostSuppression,'ghost suppression',1,'fourLeptonsGhostSup')
 
 
         #tight ID for Z1
