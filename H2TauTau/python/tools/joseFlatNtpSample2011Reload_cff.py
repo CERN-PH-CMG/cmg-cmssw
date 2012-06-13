@@ -11,14 +11,14 @@ recoilrootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRe
 def configureFlatNtpSampleTauMu(module,sampleAlias):
     if sampleAlias == 'TauPlusXMay' : 
         module.path = "/TauPlusX/Run2011A-May10ReReco-v1/AOD/V5"
-        module.dataType = "Data"
+        module.dataType = 1
         module.firstRun =  cms.int32( 163262 ) 
         module.lastRun =  cms.int32( 170000 )
         module.trigPath1 = cms.InputTag("HLT_IsoMu12_LooseIsoPFTau10_v4","hltFilterIsoMu12IsoPFTau10LooseIsolation","hltSingleMuIsoL3IsoFiltered12")
 
     if sampleAlias == 'TauPlusXv4' :
         module.path = "/TauPlusX/Run2011A-PromptReco-v4/AOD/V5"
-        module.dataType = "Data"
+        module.dataType = 1
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v2","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.trigPath2 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v4","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.trigPath3 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v5","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
@@ -26,47 +26,53 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
 
     if sampleAlias == 'TauPlusXAug' : 
         module.path = "/TauPlusX/Run2011A-05Aug2011-v1/AOD/V5"
-        module.dataType = "Data"
+        module.dataType = 1
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v8","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'TauPlusXOct3' : 
         module.path = "/TauPlusX/Run2011A-03Oct2011-v1/AOD/V5"
-        module.dataType = "Data"
+        module.dataType = 1
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v8","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.trigPath2 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'TauPlusX2011B' : 
         module.path = "/TauPlusX/Run2011B-PromptReco-v1/AOD/V5"
-        module.dataType = "Data"
+        module.dataType = 1
         #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")#to recover ~100pb-1 #removed in TriggerEfficiency lumi calculation
         module.trigPath2 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL1s14L3IsoFiltered15eta2p1")#used when HLT_IsoMu15_LooseIsoPFTau15_v9 got prescaled 
         module.trigPath3 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v5","hltPFTau20TrackLooseIso","hltSingleMuIsoL1s14L3IsoFiltered15eta2p1")
         module.trigPath4 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v6","hltPFTau20TrackLooseIso","hltSingleMuIsoL1s14L3IsoFiltered15eta2p1")
 
+
     if sampleAlias == 'EmbeddedMay' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
-        module.dataType = "Embedded"
+        #module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_10May2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
+        module.dataType = 2
 
     if sampleAlias == 'EmbeddedV4' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
-        module.dataType = "Embedded"
+        #module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
+        module.dataType = 2
 
     if sampleAlias == 'EmbeddedAug' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
-        module.dataType = "Embedded"
+        #module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_05Aug2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
+        module.dataType = 2
 
     if sampleAlias == 'EmbeddedOct' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
-        module.dataType = "Embedded"
+        #module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
+        module.dataType = 2
 
     if sampleAlias == 'Embedded2011B' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
-        module.dataType = "Embedded"
+        #module.path = "/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5"
+        module.dataType = 2
 
 
     if sampleAlias == 'WJetsToLNu' : 
         module.path = "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/HTTSKIM5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.randsigma = 0.10
@@ -75,13 +81,13 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
 
     if sampleAlias == 'TTJets' : 
         module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'ZToTauTau' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.sampleGenEventType = 5
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
@@ -90,33 +96,33 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
 
     if sampleAlias == 'ZToMuMu' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.sampleTruthEventType = 3
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'ZToLJet' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.sampleTruthEventType = 6
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'WW' : 
         module.path = "/WW_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'WZ' : 
         module.path = "/WZ_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'ZZ' : 
         module.path = "/ZZ_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
@@ -125,36 +131,36 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
 
         if sampleAlias == "HiggsGG"+HiggsMass[i] :
             module.path ="/GluGluToHToTauTau_M-%s_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" % HiggsMass[i]
-            module.dataType = "MC"
+            module.dataType = 0
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
-            module.recoilCorrection = 1
+            module.recoilCorrection = 0 #memory leak
             module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
             
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.path = "/VBF_HToTauTau_M-%s_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" % HiggsMass[i]
-            module.dataType = "MC"
+            module.dataType = 0
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
-            module.recoilCorrection = 1
+            module.recoilCorrection = 0 #memory leak
             module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] : 
             module.path = "/WH_ZH_TTH_HToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" % HiggsMass[i]
-            module.dataType = "MC"
+            module.dataType = 0
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
 
     if sampleAlias == 'GluGluSync' : 
         module.path = "/H2TAUTAU/Sync/GluGlu/AOD"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'VBFSync' : 
         module.path = "/H2TAUTAU/Sync/VBF/AOD"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
        
@@ -206,7 +212,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
 def configureFlatNtpSampleTauEle(module,sampleAlias):
     if sampleAlias == 'TauPlusXMay' : 
         module.path = "/TauPlusX/Run2011A-May10ReReco-v1/AOD/V5"       #160329-163869
-        module.dataType = "Data"
+        module.dataType = 1
         #module.firstRun =  cms.int32( 163262 ) ##used in mu-tau 
         module.firstRun =  cms.int32( 163269 ) 
         module.lastRun =  cms.int32( 163869 )
@@ -215,7 +221,7 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
 
     if sampleAlias == 'TauPlusXv4' :
         module.path = "/TauPlusX/Run2011A-PromptReco-v4/AOD/V5"         #165071-168437
-        module.dataType = "Data"
+        module.dataType = 1
         module.trigPath1 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6","","") #165088 - 165633
         module.trigPath2 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8","","") #165970 - 166967
         module.trigPath3 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9","","") #167039 - 167913    
@@ -223,27 +229,27 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
       
     if sampleAlias == 'TauPlusXAug' : 
         module.path = "/TauPlusX/Run2011A-05Aug2011-v1/AOD/V5"         #170053-172619
-        module.dataType = "Data"
+        module.dataType = 1
         module.trigPath1 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2","","") # 170249 - 173198 
 
         
     if sampleAlias == 'TauPlusXOct3' : 
         module.path = "/TauPlusX/Run2011A-03Oct2011-v1/AOD/V5"         #172635-175580
-        module.dataType = "Data"
+        module.dataType = 1
         module.trigPath1 = cms.InputTag("HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2","","") # 170249 - 173198 
         module.trigPath2 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","","") # 173236 - 178380
                 
 
     if sampleAlias == 'TauPlusX2011B' : 
         module.path = "/TauPlusX/Run2011B-PromptReco-v1/AOD/V5"       #175832-180296
-        module.dataType = "Data"
+        module.dataType = 1
         module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","","") #
         module.trigPath2 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v5","","") #178420 - 179889
         module.trigPath3 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v6","","") #179959 - 180252
 
     if sampleAlias == 'WJetsToLNu' : 
         module.path = "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/HTTSKIM5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.randsigma = 0.10
@@ -252,13 +258,13 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
 
     if sampleAlias == 'TTJets' : 
         module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'ZToTauTau' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.sampleGenEventType = 5
         #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
@@ -267,21 +273,21 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
 
     if sampleAlias == 'ZToMuMu' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.sampleTruthEventType = 3
         #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'ZToEE' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.sampleTruthEventType = 1
         #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'ZToLJet' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.sampleTruthEventType = 6
         #module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
@@ -289,13 +295,13 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
 
     if sampleAlias == 'GluGluSync' : 
         module.path = "/H2TAUTAU/Sync/GluGlu/AOD"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         #module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'VBFSync' : 
         module.path = "/H2TAUTAU/Sync/VBF/AOD"
-        module.dataType = "MC"
+        module.dataType = 0
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         #module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
        

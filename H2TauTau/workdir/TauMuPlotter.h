@@ -87,17 +87,17 @@ public:
   TH1F* getZToMuMuInc();
   TH1F* getZToMuMuIncSS();
   TH1F* getQCDInc();//uses the same sign samples
-  TH1F* getTotalBackgroundIncSS();//sum of SS backgrounds execpt for the QCD
+  TH1F* getTotalBackgroundIncSS();//sum of SS backgrounds except  QCD
   //TH1F* getTotalBackgroundInc();//sum of all OS backgrounds 
-  bool plotInc(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax,  TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);//OS distributions
-  bool plotIncSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax,  TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);//SS distributions
+  bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="",float muiso=0.5,float tauiso=0.75);
+  bool plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t SMcat, TString extrasel="", Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0,TString filetag="");
 
 
   //Boosted/VBF methods
   TH1F* getQCDMuIsoSM();//from muon isolation side-band
   TH1F* getWJetsSM();
   TH1F* getWJetsSMSS();
-  TH1F* getQCDMike();
+  TH1F* getQCDMike( float muisocut=0.5, float tauisocut=0.75);//values from Josh for 2012 analysis
   TString qcdTauIsoRatioMuNonIso_;//formula for the ratio
   TString qcdMuIsoRatioTauNonIso_;//formula for the ratio
   TString qcdTauIsoRatio_;//formula for the ratio
@@ -106,14 +106,15 @@ public:
   TH1F* getQCDTauIsoSMSS();//from anti-isolated taus
   TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
   TH1F* getQCDIsoSMSS();//from anti-isolated taus or anti iso muons  
+  TH1F* getWJetsIncShapeSS();//from anti-isolated taus
   TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
   TH1F* getWJetsTauIsoSM();//from anti-isolated taus
   TString wjetsTauIsoRatioSS_;//formula for the ratio for W+jets 
   TH1F* getWJetsTauIsoSMSS();//from anti-isolated taus
   TH1F* getTotalMCSM();//sum of OS backgrounds execpt for the QCD
   TH1F* getTotalMCSMSS();//sum of SS backgrounds execpt for the QCD
-  bool plotSM(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax,  TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
-  bool plotSMSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
+  //bool plotSM(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax,  TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
+  //bool plotSMSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
 
 
 
@@ -121,13 +122,6 @@ public:
   //tau fake rate
   void plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",TString IsoSel="(tauisodisc>=2)",Float_t ymax=50,Bool_t log=1);//
   void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
-
-  /////////////2D methods for 2D FakeRate computation///Be careful may not be defined same as above
-  TH2F* getTotalDataSS2D();//sum of SS Data samples 
-  TH2F* getSampleSS2D(TString samplename);//can be used to get histo for any MC or Data sample
-  TH2F* getWJetsIncSS2D();
-  TH2F* getTotalBackgroundIncSS2D();//sum of SS backgrounds execpt for the QCD
-
 
 
   
@@ -150,6 +144,7 @@ public:
   Int_t MTcat_;
   Int_t SMcat_;
   TString extrasel_;
+  TString blindsel_;
 
   TString plotvar_;
   Int_t nbins_;
@@ -170,6 +165,32 @@ public:
   Int_t SignalColor_;
 
 
+  TString getSMcut(Int_t sm){
+    if(sm<0||6<sm){
+      cout<<" Category : "<<sm<<" undefined "<<endl;
+      return TString("");
+    }
+    TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
+    TString notvbfcut=TString("(!")+vbfcut+")";
+    TString boostcut="(njet>=1&&nbjet==0)";
+    TString notboostcut=TString("(!")+boostcut+")";
+    TString bjetcut="(njet<2&&nbjet>=1)";
+    TString notbjetcut=TString("(!")+bjetcut+")";
+    TString taulowcut="(taupt<40.)";
+    TString tauhighcut="(taupt>=40.)";
+    TString SMcut[7];
+    SMcut[0]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+taulowcut;
+    SMcut[1]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+tauhighcut;
+    SMcut[2]=notvbfcut+"*"+boostcut+"*"+taulowcut;
+    SMcut[3]=notvbfcut+"*"+boostcut+"*"+tauhighcut;
+    SMcut[4]=vbfcut;
+    SMcut[5]=notvbfcut+"*"+notboostcut+"*"+bjetcut+"*"+taulowcut;
+    SMcut[6]=notvbfcut+"*"+notboostcut+"*"+bjetcut+"*"+tauhighcut;
+    cout<<"Category selection : "<<SMcut[sm]<<endl;
+    return SMcut[sm];
+  }
+
+
 protected:
  
 
@@ -186,6 +207,7 @@ private:
   Float_t WJetsSSSideCorr_;
   Float_t WJetsOSSideCorrErr_;
   Float_t WJetsSSSideCorrErr_;
+
 
 
 

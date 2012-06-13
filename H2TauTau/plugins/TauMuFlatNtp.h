@@ -17,7 +17,9 @@
 #include <TRandom2.h>
 
 
-#include "TMVA/Reader.h"
+//#include "TMVA/Reader.h"
+#include "CMGTools/H2TauTau/interface/VBFMVA.h"
+
 
 class TauMuFlatNtp : public BaseFlatNtp {
 
@@ -40,6 +42,9 @@ protected:
   edm::InputTag genParticlesTag_;
   edm::InputTag pfJetListTag_;
   edm::InputTag diMuonVetoListTag_;
+
+
+
   edm::Handle< std::vector<cmg::TauMu> > diTauList_;
   std::vector<cmg::TauMu> diTauSelList_;
   const cmg::TauMu * diTauSel_;
@@ -56,6 +61,7 @@ protected:
 
   TriggerEfficiency triggerEff_;
   float triggerEffWeight_;
+
   SelectionEfficiency selectionEff_;
   float selectionEffWeight_;
 
@@ -67,6 +73,7 @@ protected:
   float ditaueta_;
   float ditaupt_;
   float svfitmass_;
+  float mutaucostheta_;
 
   float taumass_;
   float taupt_;
@@ -110,7 +117,13 @@ protected:
   float transversemass_;
   double metpt_;//double needed by recoil corrector
   double metphi_;
-  
+  float  metsigcov00_;
+  float  metsigcov01_;
+  float  metsigcov10_;
+  float  metsigcov11_;
+  float  pZeta_;
+  float  pZetaVis_;
+
   int njet_;
   float leadJetPt_;
   float leadJetEta_;
@@ -127,8 +140,6 @@ protected:
   float leadBJetBTagProb_;
   float leadBJetPt_;
   float leadBJetEta_;
-  float vbfmva_;
-
 
 
   float muLCleadJetPt_;//jets where only the muon has been removed
@@ -159,6 +170,48 @@ private:
   void fillPFJetListLepLC(const cmg::TauMu * cand, std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC);
   bool vetoDiLepton();
   int truthMatchTau();
+ 
+  //function definitions from Matthews mva
+  Double_t deltaPhi(Double_t phi1, Double_t phi2){
+    Double_t dphi = fabs(phi1 - phi2);
+    return dphi <= TMath::Pi() ? dphi : 2*TMath::Pi() - dphi; 
+  }
+  Double_t massPtEtaPhiM(Double_t pt1, Double_t eta1, Double_t phi1, Double_t m1,
+			 Double_t pt2, Double_t eta2, Double_t phi2, Double_t m2)
+  {
+    ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<Double_t> > mom1(pt1, eta1, phi1, m1);
+    ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<Double_t> > mom2(pt2, eta2, phi2, m2);
+    return (mom1+mom2).M();
+  }  
+  
+  //pZeta computation //Code from Josh
+  void compZeta(const cmg::Muon * leg1, const cmg::Tau * leg2, double metPx, double metPy, float * pZ, float * pZV){
+    //leg1 is the muon and leg2 is the tau
+
+    double leg1x = cos(leg1->phi());
+    double leg1y = sin(leg1->phi());
+    double leg2x = cos(leg2->phi());
+    double leg2y = sin(leg2->phi());
+    double zetaX = leg1x + leg2x;
+    double zetaY = leg1y + leg2y;
+    double zetaR = TMath::Sqrt(zetaX*zetaX + zetaY*zetaY);
+    if ( zetaR > 0. ) {
+      zetaX /= zetaR;
+      zetaY /= zetaR;
+    }
+
+    double visPx = leg1->px() + leg2->px();
+    double visPy = leg1->py() + leg2->py();
+    //double pZetaVis = visPx*zetaX + visPy*zetaY;
+    *pZV = visPx*zetaX + visPy*zetaY;
+    
+    double px = visPx + metPx;
+    double py = visPy + metPy;
+    //double pZeta = px*zetaX + py*zetaY;
+    *pZ = px*zetaX + py*zetaY;
+  }
+
+
 
   TRandom2 randEngine_; 
   double randsigma_;
@@ -166,18 +219,19 @@ private:
   
   RecoilCorrector corrector_;
   int recoilCorreciton_;
-  std::string fileCorrectTo_;
   std::string fileZmmData_;
   std::string fileZmmMC_;
 
-
+  int metType_;
+  
   int runSVFit_;
 
 
   //VBF MVA
-  std::vector<Float_t> vbfvars_ ;
-  TMVA::Reader *reader_ ;
+  float vbfmva_;
+  double vbfvars_[8];
   std::string mvaWeights_ ;
+  VBFMVA reader_;
 
 
   int counterall_;

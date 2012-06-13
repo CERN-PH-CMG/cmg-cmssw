@@ -2,21 +2,21 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
-  iEvent_(0),
-  file_(0),
-  tree_(0),
-  eventweight_(0.),
-  runnumber_(0),
-  lumiblock_(0),
-  eventid_(0),
-  dataType_(iConfig.getParameter<string>("dataType")),
-  pupWeight_(0.),
   verticesListTag_(iConfig.getParameter<edm::InputTag>("verticesListTag")),
   trigPathsListTag_(iConfig.getParameter<edm::InputTag>("trigPathsListTag")),
   trigObjsListTag_(iConfig.getParameter<edm::InputTag>("trigObjsListTag")),
   pupWeightName_(iConfig.getParameter<edm::InputTag>("pupWeightName")),
   firstRun_(iConfig.getParameter<int>("firstRun")),
   lastRun_(iConfig.getParameter<int>("lastRun")),
+  dataType_(iConfig.getParameter<int>("dataType")),
+  iEvent_(0),
+  file_(0),
+  tree_(0),
+  pupWeight_(0.),
+  eventweight_(0.),
+  runnumber_(0),
+  lumiblock_(0),
+  eventid_(0),
   trigpass_(0){
 
 
@@ -51,6 +51,7 @@ void BaseFlatNtp::beginJob(){
   //tree_->Branch("",&,"/I");
 
   tree_ = (*file_)->make<TTree>("tree","tree");
+  tree_->Branch("pupWeight",&pupWeight_,"pupWeight/F");
   tree_->Branch("eventweight",&eventweight_,"eventweight/F");
   tree_->Branch("runnumber",&runnumber_,"runnumber/I");
   tree_->Branch("lumiblock",&lumiblock_,"lumiblock/I");
@@ -94,7 +95,7 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
     //trig->begin()->printSelections(cout);
     if(trig->begin()->hasSelection((*path)->label()))
       if(trig->begin()->getSelection((*path)->label()))
-	if(trig->begin()->getPrescale((*path)->label())==1 || dataType_.compare("MC")==0){
+	if(trig->begin()->getPrescale((*path)->label())==1 || dataType_==0){
 	  trigpass_=1;
 	}
   }
@@ -107,7 +108,7 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   ///Event weight definition starts here:
   pupWeight_=1.;//do not comment out needs to be used.
   npu_=-1;
-  if(dataType_.compare("MC")==0){
+  if(dataType_==0){
     edm::Handle<double>  PupWeight;
     iEvent.getByLabel(pupWeightName_,PupWeight);    
     pupWeight_=(*PupWeight);

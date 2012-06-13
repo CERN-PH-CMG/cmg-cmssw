@@ -22,38 +22,44 @@ TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
   genBosonL1_(0),
   genBosonL2_(0),
   corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
-  vbfvars_(8,0.),
-  reader_ (new TMVA::Reader( "!Color:!Silent" )),
-  mvaWeights_ (iConfig.getParameter<std::string>("mvaWeights"))
+  mvaWeights_(iConfig.getParameter<std::string>("mvaWeights")),
+  reader_(mvaWeights_.c_str())
 {
+  
   diTauTag_               = iConfig.getParameter<edm::InputTag>("diTauTag");
+  cout<<"diTauTag_  : "<<diTauTag_.label()<<endl;
+
   genParticlesTag_        = iConfig.getParameter<edm::InputTag>("genParticlesTag");
+  cout<<" genParticlesTag_  : "<<genParticlesTag_.label()<<endl;
+  
   pfJetListTag_           = iConfig.getParameter<edm::InputTag>("pfJetListTag");
+  cout<<" pfJetListTag_ : "<<pfJetListTag_.label()<<endl;
+
   diMuonVetoListTag_      = iConfig.getParameter<edm::InputTag>("diMuonVetoListTag");
+  cout<<" diMuonVetoListTag : "<<diMuonVetoListTag_.label()<<endl;
+						 
   sampleGenEventType_     = iConfig.getParameter<int>("sampleGenEventType");
+  cout<<"sampleGenEventType  : "<<sampleGenEventType_<<endl;
+
   sampleTruthEventType_   = iConfig.getParameter<int>("sampleTruthEventType");
+  cout<<" sampleTruthEventType : "<<sampleTruthEventType_<<endl;
+
   randsigma_              = iConfig.getParameter<double>("randsigma");
+  cout<<"randsigma_  : "<<randsigma_<<endl;
+
 
   recoilCorreciton_ =  iConfig.getParameter<int>("recoilCorrection");
-  fileCorrectTo_ = iConfig.getParameter<std::string>("fileCorrectTo");
+  cout<<"recoilCorreciton_  : "<<recoilCorreciton_<<endl;
   fileZmmData_ = iConfig.getParameter<std::string>("fileZmmData");
+  cout<<" fileZmmData_ : "<<fileZmmData_.c_str()<<endl;
   fileZmmMC_ = iConfig.getParameter<std::string>("fileZmmMC");
+  cout<<"fileZmmMC_  : "<<fileZmmMC_.c_str()<<endl;
+
+  metType_ = iConfig.getParameter<int>("metType");
+  cout<<"metType_  : "<<metType_<<endl;
 
   runSVFit_  =  iConfig.getParameter<int>("runSVFit");
-
-
-
-  reader_->AddVariable("mjj", &vbfvars_[0]);
-  reader_->AddVariable("dEta", &vbfvars_[1]);
-  reader_->AddVariable("dPhi", &vbfvars_[2]);
-  reader_->AddVariable("ditau_pt", &vbfvars_[3]);
-  reader_->AddVariable("dijet_pt", &vbfvars_[4]);
-  reader_->AddVariable("dPhi_hj", &vbfvars_[5]);
-  reader_->AddVariable("C1", &vbfvars_[6]);
-  reader_->AddVariable("C2", &vbfvars_[7]);
-  edm::FileInPath weightFile (mvaWeights_.c_str ());
-  reader_->BookMVA("BDTG", weightFile.fullPath ());
-
+  cout<<" runSVFit_ : "<<runSVFit_<<endl;
 
 
 }
@@ -68,12 +74,18 @@ void TauMuFlatNtp::beginJob(){
 
   BaseFlatNtp::beginJob();
   //  tree_->Branch("",&_,"/F");
+
+  tree_->Branch("triggerEffWeight",&triggerEffWeight_,"triggerEffWeight/F"); 
+  tree_->Branch("selectionEffWeight",&selectionEffWeight_,"selectionEffWeight/F"); 
+  tree_->Branch("embeddedGenWeight",&embeddedGenWeight_,"embeddedGenWeight/F"); 
+
   tree_->Branch("nditau",&nditau_,"nditau/I");
   tree_->Branch("ditaumass",&ditaumass_,"ditaumass/F");
   tree_->Branch("ditaucharge",&ditaucharge_,"ditaucharge/I");
   tree_->Branch("svfitmass",&svfitmass_,"svfitmass/F");
   tree_->Branch("ditaueta",&ditaueta_,"ditaueta/F");
   tree_->Branch("ditaupt",&ditaupt_,"ditaupt/F");
+  tree_->Branch("mutaucostheta",&mutaucostheta_,"mutaucostheta/F");
   
   tree_->Branch("taumass",&taumass_,"taumass/F");
   tree_->Branch("taupt",&taupt_,"taupt/F");
@@ -116,6 +128,13 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("metpt",&metpt_,"metpt/D");
   tree_->Branch("metphi",&metphi_,"metphi/D");
   tree_->Branch("transversemass",&transversemass_,"transversemass/F");
+  tree_->Branch("metsigcov00",&metsigcov00_,"metsigcov00/F");
+  tree_->Branch("metsigcov01",&metsigcov01_,"metsigcov01/F");
+  tree_->Branch("metsigcov10",&metsigcov10_,"metsigcov10/F");
+  tree_->Branch("metsigcov11",&metsigcov11_,"metsigcov11/F");
+
+  tree_->Branch("pZeta",&pZeta_,"pZeta/F");
+  tree_->Branch("pZetaVis",&pZetaVis_,"pZetaVis/F");
 
   tree_->Branch("njet",&njet_,"njet/I");
   tree_->Branch("leadJetPt",&leadJetPt_,"leadJetPt/F");
@@ -132,7 +151,17 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("nbjet",&nbjet_,"nbjet/I");
   tree_->Branch("leadBJetPt",&leadBJetPt_,"leadBJetPt/F");
   tree_->Branch("leadBJetEta",&leadBJetEta_,"leadBJetEta/F");
+
   tree_->Branch("vbfmva",&vbfmva_,"vbfmva/F");
+  tree_->Branch("vbfvars0",&vbfvars_[0],"vbfvars0/D");
+  tree_->Branch("vbfvars1",&vbfvars_[1],"vbfvars1/D");
+  tree_->Branch("vbfvars2",&vbfvars_[2],"vbfvars2/D");
+  tree_->Branch("vbfvars3",&vbfvars_[3],"vbfvars3/D");
+  tree_->Branch("vbfvars4",&vbfvars_[4],"vbfvars4/D");
+  tree_->Branch("vbfvars5",&vbfvars_[5],"vbfvars5/D");
+  tree_->Branch("vbfvars6",&vbfvars_[6],"vbfvars6/D");
+  tree_->Branch("vbfvars7",&vbfvars_[7],"vbfvars7/D");
+  
   
   tree_->Branch("muLCleadJetPt",&muLCleadJetPt_,"muLCleadJetPt/F");
   tree_->Branch("muLCleadJetEta",&muLCleadJetEta_,"muLCleadJetEta/F");
@@ -184,11 +213,10 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
 
   //embedded samples generator weight
   embeddedGenWeight_=1.0;
-  if(dataType_.compare("Embedded")==0){
+  if(dataType_==2){
     edm::Handle< double > embeddedGenWeight;
     iEvent.getByLabel(edm::InputTag("generator","weight",""),embeddedGenWeight);
-    if(!embeddedGenWeight.failedToGet())
-      embeddedGenWeight_=*embeddedGenWeight;
+    embeddedGenWeight_=*embeddedGenWeight;
   }  
  
   ///get the TauMu cands 
@@ -202,7 +230,7 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
   genBosonL1_ = NULL;
   genBosonL2_ = NULL;
   genEventType_=0;
-  if(dataType_.compare("MC")==0){  
+  if(dataType_==0){  
     iEvent.getByLabel(genParticlesTag_,genParticles_);    
     for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
       //cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
@@ -534,8 +562,7 @@ bool TauMuFlatNtp::fill(){
   /////mu and tau trigger efficiency weight
   triggerEffWeight_=1.;
   selectionEffWeight_=1.;
-  if(dataType_.compare("MC")==0
-     || dataType_.compare("Embedded")==0){
+  if(dataType_==0 || dataType_==2){
     
     ///trigger corrections
     if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
@@ -606,6 +633,7 @@ bool TauMuFlatNtp::fill(){
   ditaueta_=diTauSel_->eta();
   ditaupt_=diTauSel_->pt();
   svfitmass_=diTauSel_->massSVFit();
+  mutaucostheta_=diTauSel_->leg1().p4().Vect().Dot(diTauSel_->leg2().p4().Vect());
 
   edm::Handle<std::vector< cmg::BaseMET> > pfMET;
   iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
@@ -632,8 +660,6 @@ bool TauMuFlatNtp::fill(){
 	 &&(jet->component(2).fraction() < 0.99 || abs(jet->eta()) > 2.4)	 
 	 ))continue;
 
-    //if(jet->getSelection("cuts_looseJetId")<0.5)continue;
-
     //PU jet id 
     if(!(jet->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
 
@@ -656,7 +682,7 @@ bool TauMuFlatNtp::fill(){
 
 
   
-  ///Apply recoil correction here Applie to PFMET only for now
+  ///Apply recoil correction here to PFMET 
   if(recoilCorreciton_>0){
     corrector_.addDataFile( fileZmmData_);
     corrector_.addMCFile( fileZmmMC_);
@@ -673,7 +699,6 @@ bool TauMuFlatNtp::fill(){
       jetMult = njetLepLC_;
     }
 
-
     corrector_.CorrectType1( pfmetpt_, pfmetphi_,  genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, jetMult );
 
     //smear the met even more
@@ -681,17 +706,32 @@ bool TauMuFlatNtp::fill(){
   }
   pftransversemass_=sqrt(2*mupt_*pfmetpt_*(1-cos(muphi_-pfmetphi_)));
  
+
+
+  ///define control regions here, might be needed to run SVFit
+  categoryCh_=0;
+  if(fabs(ditaucharge_)==0.)categoryCh_=1;
+  if(fabs(ditaucharge_)==2.)categoryCh_=2;
+
+  categoryMT_=0;
+  if(pftransversemass_<=40.0) categoryMT_=1;
+  if(40.0<pftransversemass_ && pftransversemass_<=60.0) categoryMT_=2;
+  if(pftransversemass_>60.0) categoryMT_=3;
+
+
+//   categoryIso_=0;
+//   if( muiso_ <= 0.1) categoryIso_=1;
+//   if(0.1 < muiso_ &&  muiso_ <= 0.3) categoryIso_=2;
+//   if(0.3 < muiso_ &&  muiso_ <= 0.5) categoryIso_=3;
+//   if( muiso_ > 0.5) categoryIso_=4;
+
+
   edm::Handle< cmg::METSignificance > pfMetSigHandle;
   iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
   const cmg::METSignificance * pfMetSig = &(*pfMetSigHandle);
 
 
-  ///////////////Now get the MVA MET
-  metpt_=diTauSel_->met().pt();
-  metphi_=diTauSel_->met().phi();
-  transversemass_=sqrt(2*mupt_*metpt_*(1-cos(muphi_-metphi_)));//default values
-
-  //get the MET significance list
+  //get the MET significance corresponding to the candidate we selected
   edm::InputTag metsigSrc_("mvaMETTauMu");
   edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
   iEvent_->getByLabel(metsigSrc_,metsigVector); 
@@ -708,31 +748,37 @@ bool TauMuFlatNtp::fill(){
   }
 
 
-
-  ///define control regions here needed to run SVFit
-  categoryCh_=0;
-  if(fabs(ditaucharge_)==0.)categoryCh_=1;
-  if(fabs(ditaucharge_)==2.)categoryCh_=2;
-
-  categoryMT_=0;
-  if(transversemass_<=40.0)categoryMT_=1;
-  if(40.0<transversemass_&&transversemass_<=60.0)categoryMT_=2;
-  if(transversemass_>60.0)categoryMT_=3;
-
-//   categoryIso_=0;
-//   if( muiso_ <= 0.1) categoryIso_=1;
-//   if(0.1 < muiso_ &&  muiso_ <= 0.3) categoryIso_=2;
-//   if(0.3 < muiso_ &&  muiso_ <= 0.5) categoryIso_=3;
-//   if( muiso_ > 0.5) categoryIso_=4;
-
- 
-
   ///////////////here decide which met goes into SVFit
-  //reco::Candidate::PolarLorentzVector metP4( pfmetpt_,0,pfmetphi_, 0);
-  //cmg::METSignificance * metSig=pfMetSig;
-  reco::Candidate::PolarLorentzVector metP4( metpt_,0,metphi_, 0);
-  const cmg::METSignificance * metSig=MvaMetSig;
+  reco::Candidate::PolarLorentzVector metP4;
+  const cmg::METSignificance * metSig=0;
+  if(metType_==1){
+    metP4=reco::Candidate::PolarLorentzVector(pfmetpt_,0,pfmetphi_,0);
+    metSig=pfMetSig;
+  }
+  if(metType_==2){
+    metP4=reco::Candidate::PolarLorentzVector(metpt_,0,metphi_,0);
+    metSig=MvaMetSig;
+  }
+  if(!metSig){
+    cout<<" Unrecognized metType "<<endl;
+    exit(0);
+  }
 
+
+  ///////////////Now get the MVA MET
+  metpt_=metP4.pt();
+  metphi_=metP4.phi();
+  transversemass_=sqrt(2*mupt_*metpt_*(1-cos(muphi_-metphi_)));
+
+  //Compute pZeta
+  compZeta(&(diTauSel_->leg2()),&(diTauSel_->leg1()),metP4.px(),metP4.py(),&pZeta_,&pZetaVis_);
+
+  metsigcov00_=(*(metSig->significance()))[0][0];
+  metsigcov01_=(*(metSig->significance()))[0][1];
+  metsigcov10_=(*(metSig->significance()))[1][0];
+  metsigcov11_=(*(metSig->significance()))[1][1];
+
+  ////////Run SVFit
   if(runSVFit_==1){  //old svfit  
     NSVfitStandalone2011::Vector measuredMET( metP4.x(), metP4.y(), 0);
     std::vector<NSVfitStandalone2011::MeasuredTauLepton2011> measuredTauLeptons;
@@ -745,8 +791,7 @@ bool TauMuFlatNtp::fill(){
     algo.fit();
     svfitmass_  = algo.fittedDiTauSystem().mass();
   }
-
-  if(runSVFit_==2){    //new svfit
+  else if(runSVFit_==2){    //new svfit
     std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTauSel_->leg2().p4()));
     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTauSel_->leg1().p4()));
@@ -754,6 +799,9 @@ bool TauMuFlatNtp::fill(){
     algo.addLogM(false);
     algo.integrate();
     svfitmass_ = algo.getMass();
+  }else {
+    cout<<" Unrecognized SVFit version "<<endl;
+    exit(0);
   }
 
 
@@ -883,17 +931,53 @@ bool TauMuFlatNtp::fill(){
   //VBF MVA
   vbfmva_=0.;
   if(njet_>=2){
-    vbfvars_[0] = diJetMass_ ;
-    vbfvars_[1] = diJetDeltaEta_;
-    vbfvars_[2] = reco::deltaPhi (leadJet_->phi (), subleadJet_->phi ()) ;
-    vbfvars_[4] = diJetPt_;
-    LorentzVector dijet = leadJet_->p4() + subleadJet_->p4() ;
-    LorentzVector ditau = diTauSel_->p4() + metP4 ;
-    vbfvars_[3] = ditau.Pt();
-    vbfvars_[5] = reco::deltaPhi (ditau.phi (), dijet.phi ());
-    vbfvars_[6] = fabs (diTauSel_->eta() - dijet.Eta());
-    vbfvars_[7] = diTauSel_->pt();    
-    vbfmva_ = reader_->EvaluateMVA(vbfvars_, "BDTG");
+
+    TVector3 vTau, vMu, vMET, vDiTau, vDiTauVis;
+    vTau.SetPtEtaPhi(diTauSel_->leg1().pt(), diTauSel_->leg1().eta(), diTauSel_->leg1().phi());
+    vMu.SetPtEtaPhi(diTauSel_->leg2().pt(), diTauSel_->leg2().eta(), diTauSel_->leg2().phi());
+    vMET.SetPtEtaPhi(metP4.pt(),0,metP4.phi()); 
+    
+    vDiTau = vTau + vMu + vMET;
+    vDiTauVis = vTau + vMu;
+    
+    TVector3 vJet1, vJet2, vDiJet;
+    vJet1.SetPtEtaPhi(leadJet_->pt(), leadJet_->eta(), leadJet_->phi());
+    vJet2.SetPtEtaPhi(subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi());
+    vDiJet = vJet1 + vJet2;
+
+    Double_t mjj = massPtEtaPhiM(leadJet_->pt(), leadJet_->eta(), leadJet_->phi(), leadJet_->mass(),subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi(), subleadJet_->mass());
+    Double_t dEta = fabs(leadJet_->eta() - subleadJet_->eta());
+    Double_t dPhi = deltaPhi(leadJet_->phi(), subleadJet_->phi());
+    Double_t dPhi_hj = deltaPhi(vDiTau.Phi(), vDiJet.Phi());
+    
+    // Lorenzo's variables
+    Double_t C1 = min(fabs(vDiTauVis.Eta() - leadJet_->eta()), fabs(vDiTauVis.Eta() - subleadJet_->eta()));
+    Double_t C2 = vDiTauVis.Pt();
+    
+    // Fill input vector
+    vbfvars_[0] = mjj;
+    vbfvars_[1] = dEta;
+    vbfvars_[2] = dPhi;
+    vbfvars_[3] = vDiTau.Pt();
+    vbfvars_[4] = vDiJet.Pt();
+    vbfvars_[5] = dPhi_hj;
+    vbfvars_[6] = C1;
+    vbfvars_[7] = C2;
+    
+
+//     LorentzVector dijet = leadJet_->p4() + subleadJet_->p4() ;
+//     LorentzVector ditau = diTauSel_->p4() + metP4 ;
+//     vbfvars_[0] = diJetMass_ ; 
+//     vbfvars_[1] = diJetDeltaEta_;
+//     vbfvars_[2] = reco::deltaPhi (leadJet_->phi (), subleadJet_->phi ()) ; 
+//     vbfvars_[3] = ditau.Pt();
+//     vbfvars_[4] = diJetPt_;
+//     vbfvars_[5] = reco::deltaPhi (ditau.phi (), dijet.phi ());
+//     vbfvars_[6] = min( fabs(diTauSel_->eta() - leadJet_->eta()) , fabs(diTauSel_->eta() - subleadJet_->eta()) );
+//     vbfvars_[7] = diTauSel_->pt();    
+
+    vbfmva_ = reader_.val(vbfvars_[0],vbfvars_[1],vbfvars_[2],vbfvars_[3],vbfvars_[4],vbfvars_[5],vbfvars_[6],vbfvars_[7]);
+    
   }
 
 
@@ -913,8 +997,8 @@ bool TauMuFlatNtp::fill(){
   if(categorySM2012_ == -1 && njet_>=2){//------------------VH -------------------
     if(70.< diJetMass_ && diJetMass_ < 120.0 
        && diJetPt_ > 150.
-       && vbfmva_ < 0.8 
        && nbjet_ == 0
+       && vbfmva_ < 0.8 
        ) categorySM2012_=3;
   }  
   if(categorySM2012_ == -1 && njet_>=1 && nbjet_ == 0 ){//-----------1-jet
@@ -974,7 +1058,7 @@ bool TauMuFlatNtp::vetoDiLepton(){
 
 int TauMuFlatNtp::truthMatchTau(){
   if(!diTauSel_ )return 0;
-  if(dataType_.compare("MC")!=0) return 0;
+  if(dataType_!=0) return 0;
 
   for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
     if(abs(g->pdgId())==11) if(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),g->eta(),g->phi())<deltaRTruth_) return 1;

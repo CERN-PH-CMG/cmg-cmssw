@@ -1,7 +1,12 @@
 
 **********Fix from simone to produce PFAODs in CMSSW_4_4_4:
+-Fix the gsfElectron calibration(need in V5_4_1):
+CMGTools/Common/python/Tools/setupGsfElectronCalibration.py
+to catch the filename of the embedded samples:
+    elif lookup(fileName, 'DoubleMu_201' ):
+        return "Prompt"
 
-The recipe should be the following:
+-The recipe should be the following:
 cvs co -r V04-05-07 JetMETCorrections/Type1MET
 cvs co -r V02-03-00 JetMETCorrections/Algorithms                    
 rm JetMETCorrections/Algorithms/interface/L1JPTOffsetCorrector.h
@@ -29,9 +34,19 @@ So basically the dictionary for CSCHaloData would be like:
 </class>
 <class name="edm::Wrapper<reco::CSCHaloData>"/>
 
-Keti: When I was using my analysis code outside of CMG tools, I was adding this line before patDefaultSequence in Path.
-process.jetTracksAssociatorAtV
-ertex.tracks = cms.InputTag("tmfTracks")
+
+IMPORTANT: PFAOD production needs also a fix to keep a weight needed to reweight the embedded samples:
+process.out.outputCommands.extend(['keep *_generator_*_EmbeddedRECO'])
+
+
+IMPORTANT: Fix for b-tagging to work in the PATCMG step:
+process.jetTracksAssociatorAtVertex.tracks = cms.InputTag("tmfTracks")
+
+This is the fix applied in our V5_4_1 installation:
+process.ak5JetTracksAssociatorAtVertex.tracks = cms.InputTag("tmfTracks")
+look at this installation:
+/afs/cern.ch/user/c/cmgtools/scratch1/ProductionSoftware/V5_4_1Embedded/CMGTools/CMSSW_4_4_4/src
+
 
 
 
@@ -200,3 +215,39 @@ Currently being produced:
 /DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_embedded_trans1_tau122_ptmu1_18mu2_8_v2-f456bdbb960236e5c696adfe9b04eaae/USER
 
 The 2012B datasets will contain all data up to and including run 195135. I will make another dataset for later runs.
+
+
+*****Armin June4
+Now in global DBS:
+/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau121_ptelec1_17elec2_8_v2-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau115_ptelec1_17had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau123_pttau1_18tau2_8_v2-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau121_ptelec1_17elec2_8_v2-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau122_ptmu1_18mu2_8_v2-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER
+
+
+
+*******Jose (June 6)
+**need to remake these samples because previous PFAOD production did not keep the generator weight:
+/DoubleMu/StoreResults-DoubleMu_2011A_05Aug2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_10May2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_05Aug2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau115_ptelec1_17had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_10May2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_Aug05thRR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER
+/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER

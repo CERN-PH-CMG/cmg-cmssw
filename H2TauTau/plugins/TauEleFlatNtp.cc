@@ -151,7 +151,7 @@ bool TauEleFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSet
 
   //embedded samples generator weight
   embeddedGenWeight_=1.0;
-  if(dataType_.compare("Embedded")==0){
+  if(dataType_==0){
     edm::Handle< double > embeddedGenWeight;
     iEvent.getByLabel(edm::InputTag("generator","weight",""),embeddedGenWeight);
     if(!embeddedGenWeight.failedToGet())
@@ -169,7 +169,7 @@ bool TauEleFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSet
   genBosonL1_ = NULL;
   genBosonL2_ = NULL;
   genEventType_=0;
-  if(dataType_.compare("MC")==0){  
+  if(dataType_==0){  
     iEvent.getByLabel(genParticlesTag_,genParticles_);    
     for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
       //cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
@@ -510,8 +510,7 @@ bool TauEleFlatNtp::fill(){
   /////mu and tau trigger efficiency weight
   triggerEffWeight_=1.;
   selectionEffWeight_=1.;
-  if(dataType_.compare("MC")==0
-     || dataType_.compare("Embedded")==0){
+  if(dataType_==0 || dataType_==0){
     
     ///trigger corrections
     if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
@@ -954,7 +953,7 @@ bool TauEleFlatNtp::vetoDiLepton(){
 
 int TauEleFlatNtp::truthMatchTau(){
   if(!diTauSel_ )return 0;
-  if(dataType_.compare("MC")!=0) return 0;
+  if(dataType_!=0) return 0;
 
   for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
     if(abs(g->pdgId())==11) if(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),g->eta(),g->phi())<deltaRTruth_) return 1;
