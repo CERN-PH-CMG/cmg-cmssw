@@ -6,6 +6,20 @@ pathsAndFilters = {
     "HLT_IsoMu15_LooseIsoPFTau15_v6": ("hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15"),
     "HLT_IsoMu15_LooseIsoPFTau15_v8": ("hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15"),
     "HLT_IsoMu15_LooseIsoPFTau15_v9": ("hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15"),
+    # 2011 TauEle Ele15_*_LooseIsoPFTau15
+    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v1": ("hltPFTau15TrackLooseIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2": ("hltPFTau15TrackLooseIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4": ("hltPFTau15TrackLooseIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v6": ("hltPFTau15TrackLooseIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    # 2011 TauEle Ele15_*_TightIsoPFTau20
+    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v1": ("hltPFTauTighIso20TrackTightIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2": ("hltPFTauTighIso20TrackTightIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    # 2011 TauEle Ele18_*_MediumIsoPFTau20 
+    "HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1": ("hltPFTauMediumIso20TrackMediumIso", "HLTEle18CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    # 2011 TauEle Ele20_*_MediumIsoPFTau20 
+    "HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1": ("hltPFTauMediumIso20TrackMediumIso", "HLTEle20CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    "HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v5": ("hltPFTauMediumIso20TrackMediumIso", "HLTEle20CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    "HLT_Ele20_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v6": ("hltPFTauMediumIso20TrackMediumIso", "HLTEle20CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
     # the following is used for synchronization
     "HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1": ("hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15"), 
     "HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1": ("hltPFTau20TrackLooseIso","hltSingleMuIsoL1s14L3IsoFiltered15eta2p1"),
