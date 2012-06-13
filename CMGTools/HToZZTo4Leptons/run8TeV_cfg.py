@@ -210,7 +210,7 @@ if test==1:
     dataset = GGH125
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-#    dataset.files=['root://cmsphys05//data/b/botta/V5_4_0/cmgTuple_H126Summer12.root']
+    dataset.files=['root://cmsphys05//data/b/botta/V5_4_0/cmgTuple_H126Summer12.root']
 
    
 if test ==2:

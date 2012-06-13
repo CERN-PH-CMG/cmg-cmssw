@@ -30,7 +30,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
         self.fakeRates=[]
         if hasattr(cfg_comp,'fakeRates'):
-            for fr in cfg.comp.fakeRates:
+            for fr in cfg_comp.fakeRates:
                 self.fakeRates.append(FakeRateCalculator(fr))
 
         if hasattr(cfg_comp,'efficiency'):
