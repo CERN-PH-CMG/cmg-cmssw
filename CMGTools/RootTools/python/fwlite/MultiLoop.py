@@ -133,6 +133,8 @@ def main( options, args ):
                                  'src/CMGTools/RootTools/python/analyzers'] ))
     sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
                                  'src/CMGTools/HToZZTo4Leptons/python/analyzers'] ))
+    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
+                                 'src/CMGTools/LEP3/python/analyzers'] ))
     selComps = cfg.config.components
     selComps = split(selComps)
     for comp in selComps:
