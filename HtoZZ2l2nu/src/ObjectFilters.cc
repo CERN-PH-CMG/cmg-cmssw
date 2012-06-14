@@ -904,6 +904,7 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	}
 	catch(std::exception &e){
 	}
+
 	phoId.ensf              = enSF.first;
 	phoId.ensferr           = enSF.second;
 	phoId.hoe               = pho->hadronicOverEm();
@@ -1019,6 +1020,13 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	bool isHcalIso(pho->hcalTowerSumEtConeDR04()< maxHCALIso);
 	bool isIso(isTrkIso && isEcalIso && isHcalIso);
 	if(fallsInCrackRegion || !isGood || !hasBaseId || hasBadSeed || hasPixelSeed /*|| hasElectronVeto*/ || !isIso) continue;
+
+// 	cout << phoId.p4.pt() << " " << phoId.ensf << " px:" << hasPixelSeed
+// 	     << " eveto:" << hasElectronVeto
+// 	     << " trkveto:" << hasTrkVeto
+// 	     << " conv:" << isConverted
+// 	     << " vtx: " << isVtxConstrained 
+// 	     << " eveto_danger:" << hasConvUnsafeElectronVeto << endl;
 
 	//save this photon
 	selPhotons.push_back( hPhoton->ptrAt(iPhoton) );
@@ -1154,7 +1162,7 @@ pair<string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResult
       for(vector<string>::iterator tIt = gammaTriggers.begin(); tIt != gammaTriggers.end(); tIt++)
 	{
             if(trigName.find(*tIt) == string::npos) continue;
-            keepTrigger=true;
+	    keepTrigger=true;
             break;
 	}
       if(!keepTrigger) continue;
@@ -1164,10 +1172,10 @@ pair<string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResult
       TObjArray *tkns=fireTrigger.Tokenize("_");
       if(tkns->GetEntriesFast()<2) continue;
       TString phoName=((TObjString *)tkns->At(1))->GetString();
-     
+
       phoName.ReplaceAll("Photon","");
       Int_t thr=phoName.Atoi();
-     
+
       if(thr<maxthr) continue;
       maxthr=thr;
       selTrigger=trigName;
@@ -1188,11 +1196,7 @@ bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBits, const
       if( !allTriggerBits->accept(itrig) ) continue;
       for(size_t ip=0; ip<triggerPaths.size(); ip++)
 	{
-	  if(trigName.find(triggerPaths[ip])!= std::string::npos)
-	    {
-	      //cout << trigName << endl;
-	      return true;
-	    }
+	  if(trigName.find(triggerPaths[ip])!= std::string::npos) return true;
 	}
     }
   return false;

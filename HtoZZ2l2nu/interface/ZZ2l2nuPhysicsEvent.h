@@ -103,7 +103,12 @@ public :
   PhysicsObject_Gamma(LorentzVector vec, Float_t ptErr_=0, Float_t iso1_=0, Float_t iso2_=0, Float_t iso3_=0, Float_t sihih_=0, Float_t r9_=0, Float_t hoe_=0):
     LorentzVector(vec), iso1(iso1_), iso2(iso2_), iso3(iso3_), sihih(sihih_), r9(r9_), hoe(hoe_) 
     { 
+      hasPixelSeed=false;
+      hasElectronVeto=false;
+      isConv=false;
       hasCtfTrkVeto=false;
+      isVtxConstrained=false;
+      hasConvUnsafeElectronVeto=false;
       scEnSF=1.0; scEnSFerr=0;
     }
     inline void setSCcorrections(float scEnCorrected,float scEnCorrectedError)
@@ -118,8 +123,9 @@ public :
 	hasCtfTrkVeto    = ((id >> 2) & 0x1);
 	isConv           = ((id >> 3) & 0x1);
 	isVtxConstrained = ((id>>4) & 0x1);
+	hasConvUnsafeElectronVeto = ((id>>5) & 0x1);
       }
-    bool hasPixelSeed, hasElectronVeto, hasCtfTrkVeto, isConv,isVtxConstrained;
+    bool hasPixelSeed, hasElectronVeto, hasConvUnsafeElectronVeto, hasCtfTrkVeto, isConv,isVtxConstrained;
     LorentzVector convP4;
     Float_t iso1, iso2, iso3, sihih, r9, hoe;
     Float_t scEnSF,scEnSFerr;
