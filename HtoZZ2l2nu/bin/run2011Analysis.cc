@@ -321,6 +321,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mt75", ";M_{T};Events", 100,0,1000) );
   
 
   //##############################################
@@ -1054,6 +1055,7 @@ int main(int argc, char* argv[])
 	if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
 	
 	if(passPreselection && zvv.pt()>50) mon.fillHisto("mt_"+varNames[ivar],tags_full,mt,iweight);
+        if(passPreselection && zvv.pt()>75) mon.fillHisto("mt75_"+varNames[ivar],tags_full,mt,iweight);
 	
 	//fill shapes
 	for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
