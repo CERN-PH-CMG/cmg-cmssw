@@ -73,7 +73,7 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys)
   evWeights_.clear();
 
   //check if it is a gamma event
-  if( phys.cat!=22) return isGoodEvent_;
+  if( phys.cat<22) return isGoodEvent_;
 
   //all done here
   isGoodEvent_=true;

@@ -362,7 +362,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.vtx_py = primVertex->p4().py(); 
     ev.vtx_pz = primVertex->p4().pz();  
     ev.vtx_en = primVertex->p4().energy();
-    
+
     // average energy density
     edm::Handle< double > rho, rho25,rho25Neut;
     event.getByLabel( objConfig_["Jets"].getParameter<edm::InputTag>("rho"),rho);
@@ -577,9 +577,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.gn++;
       }
     if(ev.cat==UNKNOWN && selPhotons.size())
-      {
-	if(!event.isRealData() || triggerBits["gamma"]!=true)  ev.cat=GAMMA+1000*photonTrig.second;
-      }
+      if(!event.isRealData() || triggerBits["gamma"]==true)  ev.cat=GAMMA+1000*photonTrig.second;
 
     //quit if no gamma or dilepton candidate
     if(ev.cat==UNKNOWN) return;
