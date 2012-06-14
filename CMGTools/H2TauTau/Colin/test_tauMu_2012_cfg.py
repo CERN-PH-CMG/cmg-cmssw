@@ -2,7 +2,7 @@ import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
-
+from CMGTools.RootTools.RootTools import * 
 
 period = 'Period_2012AB'
 
@@ -14,26 +14,19 @@ puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
 mc_vertexWeight = None
 mc_tauEffWeight = None
 mc_muEffWeight = None
-mc_tauEffWeight_mc = 'effLooseTau15MC'
-mc_muEffWeight_mc = 'effIsoMu15MC'
-if period == 'Period_2011A':
-    mc_vertexWeight = 'vertexWeightFall112invfb'
-    mc_tauEffWeight = 'effTau2011A'
-    mc_muEffWeight = 'effMu2011A'
-elif period == 'Period_2011B':
-    mc_vertexWeight = 'vertexWeightFall112011B'
-    mc_tauEffWeight = 'effTau2011B'
-    mc_muEffWeight = 'effMu2011B'
-elif period == 'Period_2011AB':
-    mc_vertexWeight = 'vertexWeightFall112011AB'
-    mc_tauEffWeight = 'effTau2011AB'
-    mc_muEffWeight = 'effMu2011AB'
-elif period == 'Period_2012A':
+mc_tauEffWeight_mc = 'effTau2012MC'
+
+mc_muEffWeight_mc = None
+
+if period == 'Period_2012A':
     puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_A.root'])
+    mc_tauEffWeight = 'effTau2012A'
 elif period == 'Period_2012B':
     puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_B.root'])
+    mc_tauEffWeight = 'effTau2012B'
 elif period == 'Period_2012AB':
     puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB.root'])
+    mc_tauEffWeight = 'effTau2012AB'
     
 
 jsonAna = cfg.Analyzer(
@@ -51,6 +44,11 @@ vertexAna = cfg.Analyzer(
     goodVertices = 'goodPVFilter',
     vertexWeight = mc_vertexWeight,
     fixedWeight = 1,
+    verbose = False
+    )
+
+embedWeighter = cfg.Analyzer(
+    'EmbedWeighter',
     verbose = False
     )
 
@@ -145,7 +143,7 @@ elif period == 'Period_2012AB':
     selectedComponents.extend( data_list_2012 )
     selectedComponents.extend( embed_list_2012 )
     
-selectedComponents.append( zdata_Run2012A )
+# selectedComponents.append( zdata_Run2012A )
 
 sequence = cfg.Sequence( [
     jsonAna,
@@ -154,6 +152,7 @@ sequence = cfg.Sequence( [
     TauMuAna,
     vbfAna,
     pileUpAna,
+    embedWeighter, 
     tauWeighter, 
     muonWeighter, 
     treeProducer
@@ -163,12 +162,12 @@ sequence = cfg.Sequence( [
 DYJets.fakes = True
 DYJets.splitFactor = 100
 WJets.splitFactor = 10
-TTJets.splitFactor = 100
+TTJets.splitFactor = 50
 HiggsVBF115.splitFactor = 10
 HiggsVBF120.splitFactor = 50
 HiggsVBF125.splitFactor = 10
 
-data_Run2012A.splitFactor = 80
+data_Run2012A.splitFactor = 40
 data_Run2012B_start_194479.splitFactor = 40
 data_Run2012B_194480_195016.splitFactor = 40
 
@@ -179,6 +178,7 @@ embed_Run2012B_193752_195135.splitFactor = 10
 test = 0
 if test==1:
     comp = embed_Run2012A
+    # comp = HiggsVBF125
     comp.files = comp.files[:10]
     selectedComponents = [comp]
     comp.splitFactor = 1
@@ -188,6 +188,8 @@ elif test==2:
         comp.files = comp.files[:5]
 
 selectedComponents = embed_list_2012
+selectedComponents.extend(MC)
+
 # TTJets.splitFactor = 20
 
 config = cfg.Config( components = selectedComponents,

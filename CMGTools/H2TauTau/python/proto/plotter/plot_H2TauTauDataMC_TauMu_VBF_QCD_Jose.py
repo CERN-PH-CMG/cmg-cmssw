@@ -46,7 +46,7 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS,
     osign.Hist(EWK).Scale( wJetScaleOS ) 
     # import pdb; pdb.set_trace()
     osign = replaceWJets(osign, var, oscut, weight, embed)
-    osign = replaceZtt(osign, var, oscut, weight, embed)
+    # osign = replaceZtt(osign, var, oscut, weight, embed)
 
     antisocut = str( Cut(cat_Inc_AntiMuTauIso) &  Cut('l1_charge*l2_charge<0 && mt<40') & cat_VBF )
     fakeweight = ' * '.join( [weight, colin_qcdTauIsoRatio, colin_qcdMuIsoRatio])

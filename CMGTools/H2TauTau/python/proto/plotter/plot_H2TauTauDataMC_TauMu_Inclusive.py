@@ -12,7 +12,8 @@ from CMGTools.H2TauTau.proto.plotter.categories import *
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
-from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, plots_J1, drawAll
+from CMGTools.H2TauTau.proto.plotter.embed import *
+from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, PlotInfo
 from CMGTools.RootTools.Style import *
 from ROOT import kPink, TH1, TPaveText, TPad
 
@@ -52,15 +53,7 @@ def replaceShapeInclusive(plot, var, anaDir,
     # plotWithNewShape.Hist(comp.name).on = False 
     return plotWithNewShape
 
-
-
-## def replaceShape(plot, var, cut, comp, jetcategory):
-##     if jetcategory:
-##         return replaceShapeJets(plot, var, cut, comp)
-##     else:
-##         return replaceShapeInclusive(plot, var, cut, comp)
-        
-
+    
 
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
@@ -71,17 +64,20 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
     if xmin is None: xmin = XMIN
     if xmax is None: xmax = XMAX
 
+
     oscut = cut+' && diTau_charge==0'
     # import pdb; pdb.set_trace()
     osign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
                            cut=oscut, weight=weight,
                            embed=embed)
-    osign.Hist(EWK).Scale( wJetScaleOS ) 
-    osign = replaceShapeInclusive(osign, var, anaDir,
-                                  selComps['WJets'], weights, 
-                                  oscut, weight,
-                                  embed)
+    osign.Hist(EWK).Scale( wJetScaleOS )
+    replaceWJets = True
+    if replaceWJets:
+        osign = replaceShapeInclusive(osign, var, anaDir,
+                                      selComps['WJets'], weights, 
+                                      oscut, weight,
+                                      embed)
     
     # boxss = box.replace('OS','SS')
     sscut = cut+' && diTau_charge!=0'
@@ -91,10 +87,12 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            embed=embed)
     ssign.Hist(EWK).Scale( wJetScaleSS ) 
     # import pdb; pdb.set_trace()
-    ssign = replaceShapeInclusive(ssign, var, anaDir,
-                                  selComps['WJets'], weights, 
-                                  sscut, weight,
-                                  embed)
+    if replaceWJets:
+        ssign = replaceShapeInclusive(ssign, var, anaDir,
+                                      selComps['WJets'], weights, 
+                                      sscut, weight,
+                                      embed)
+    # import pdb; pdb.set_trace()
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
 
@@ -102,11 +100,25 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
     return ssign, osign, ssQCD, osQCD
 
 
+def drawAll(cut, plots):
+    for plot in plots.values():
+        print plot.var
+        ss, os, ssQ, osQ = makePlot( plot.var, anaDir,
+                                     selComps, weights, fwss, fwos,
+                                     plot.nbins, plot.xmin, plot.xmax,
+                                     cut, weight=weight, embed=False)
+        draw(osQ)
+        plot.ssign = cp(ss)
+        plot.osign = cp(os)
+        plot.ssQCD = cp(ssQ)
+        plot.osQCD = cp(osQ)
+        time.sleep(1)
 
-def replaceCategories(cutstr):
-    for catname, cat in categories.iteritems():
-        cutstr = cutstr.replace( catname, cat )
-    return cutstr
+
+## def replaceCategories(cutstr):
+##     for catname, cat in categories.iteritems():
+##         cutstr = cutstr.replace( catname, cat )
+##     return cutstr
 
 
 if __name__ == '__main__':
@@ -178,7 +190,7 @@ if __name__ == '__main__':
     can, pad, padr = buildCanvas()
 
     fwss, fwos, ss, os = plot_W_inclusive( options.hist, anaDir, selComps, weights,
-                                           30, 60, 300, options.cut,
+                                           12, 60, 300, options.cut,
                                            weight=weight, embed=options.embed)
 
     ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos,
