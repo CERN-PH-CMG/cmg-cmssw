@@ -23,29 +23,29 @@ if __name__ == '__main__':
 
     samples=["Resonance_Shapes_RSGraviton_ak5_QQtoQQ_fat30.root",
 	     "Resonance_Shapes_RSGraviton_2012_D6T_ak5_QQtoQQ_fat30.root",
-	     #"Resonance_Shapes_RSGraviton_2012_Z2star_ak5_QQtoQQ_fat30.root",
+	     "Resonance_Shapes_RSGraviton_2012_Z2star_ak5_QQtoQQ_fat30.root",
 	     "Resonance_Shapes_RSGraviton_ak5_GGtoGG_fat30.root",
 	     "Resonance_Shapes_RSGraviton_2012_D6T_ak5_GGtoGG_fat30.root",
-	     #"Resonance_Shapes_RSGraviton_2012_Z2star_ak5_GGtoGG_fat30.root",
+	     "Resonance_Shapes_RSGraviton_2012_Z2star_ak5_GGtoGG_fat30.root",
 	     "Resonance_Shapes_Qstar_ak5_fat30.root",
 	     "Resonance_Shapes_Qstar_2012_D6T_ak5_fat30.root",
-	     #"Resonance_Shapes_Qstar_2012_Z2star_ak5_fat30.root",
+	     "Resonance_Shapes_Qstar_2012_Z2star_ak5_fat30.root",
              ]
     
     labels=["RSG D6T qq 7 TeV",
             "RSG D6T qq 8 TeV",
-            #"RSG Z2* qq 8 TeV",
+            "RSG Z2* qq 8 TeV",
             "RSG D6T gg 7 TeV",
             "RSG D6T gg 8 TeV",
-            #"RSG Z2* gg 8 TeV",
+            "RSG Z2* gg 8 TeV",
             "q* D6T qg 7 TeV",
             "q* D6T qg 8 TeV",
-            #"q* Z2* qg 8 TeV",
+            "q* Z2* qg 8 TeV",
             ]
     
     masses=[1000,2000,3000,4000]
 
-    colors=[1,2,3,4,6,7,8,9,10]
+    colors=[1,2,3,4,6,7,8,9,11,12]
     styles=[1,2,3,4,5,6,7,8,9,10]
     
     for mass in masses:
