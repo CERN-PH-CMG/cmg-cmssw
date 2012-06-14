@@ -11,6 +11,8 @@ pathsAndFilters = {
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v2": ("hltPFTau15TrackLooseIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v4": ("hltPFTau15TrackLooseIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v6": ("hltPFTau15TrackLooseIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v8": ("hltPFTau15TrackLooseIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v9": ("hltPFTau15TrackLooseIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
     # 2011 TauEle Ele15_*_TightIsoPFTau20
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v1": ("hltPFTauTighIso20TrackTightIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2": ("hltPFTauTighIso20TrackTightIso", "HLTEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
