@@ -1,14 +1,16 @@
 import FWCore.ParameterSet.Config as cms
 
-# from PhysicsTools.PatAlgos.patTemplate_cfg import *
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 sep_line = '-'*70
+
+
 ########## CONTROL CARDS
 
 process = cms.Process("H2TAUTAU")
 
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -21,9 +23,9 @@ debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
 channel = 'tau-mu'
-jetRecalib = False
+jetRecalib = True
 useCHS = False 
-newSVFit = True
+newSVFit = True 
 
 print sep_line
 print 'channel', channel
@@ -50,8 +52,12 @@ dataset_user = 'cmgtools'
 # dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/TauPlusX/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076'
 dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0'
+# dataset_name = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
+# dataset_name = '/GluGluToHToTauTau_M-120_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 #cbern%/H2TAUTAU/Sync/GluGlu/AOD
+# dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
+# dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
 
 dataset_files = 'cmgTuple.*root'
 
@@ -64,16 +70,7 @@ process.source = datasetToSource(
     )
 
 
-#process.source = cms.Source(
-#    "PoolSource",
-#    fileNames = cms.untracked.vstring(
-#    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
-#    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_5_0/tree_CMG_1.root'
-#    'file:../../../Common/prod/TEST/cmgTuple_HToTauTau.root'
-#    )
-#    )
-
-# process.source.fileNames = ['file:cmgTuple.root']
+# process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG/TauPlusX/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076/cmgTuple_543.root']
 
 # restricting the number of files to process to a given number
 if numberOfFilesToProcess>0:
@@ -99,10 +96,14 @@ if runOnMC==False:
 process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
 # setting up the recoil correction according to the input file ---------------
-## print sep_line
-## from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
-## setupRecoilCorrection( process, runOnMC )
 
+print sep_line
+from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
+
+
+# WARNING DISABLING RECOIL CORRECTIONS FOR 2012!!!
+# setupRecoilCorrection( process, runOnMC )
+setupRecoilCorrection( process, runOnMC, enable=False )
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
@@ -192,7 +193,7 @@ if channel=='di-tau' or channel=='all':
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 
 # Jet recalibration
@@ -202,9 +203,15 @@ if jetRecalib:
     process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
     GT = None
     if runOnMC:
-        GT = 'START44_V13::All'
+        if cmsswIs44X():
+            GT = 'START44_V13::All'
+        else:
+            GT = 'START52_V10::All'
     else:
-        GT = 'GR_R_44_V15::All'
+        if cmsswIs44X():
+            GT = 'GR_R_44_V15::All'
+        else:
+            GT = 'GR_R_52_V8::All'  
     process.GlobalTag.globaltag = GT
     from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
     process.cmgPFJetSel = cmgPFJetCorrector.clone(src='cmgPFJetSel',
@@ -227,7 +234,8 @@ if jetRecalib:
     process.tauElePath.insert(0, process.cmgPFJetSelCHS)
     process.diTauPath.insert(0, process.cmgPFJetSelCHS)
 
-    print 'GLOBAL TAG', GT
+    print sep_line
+    print 'Jet recalibration with GLOBAL TAG', GT
 
 if useCHS:
     process.cmgPFJetForRecoil.src = 'cmgPFJetSelCHS'
@@ -235,7 +243,12 @@ if useCHS:
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
     process.MessageLogger.cerr.FwkReport.reportEvery = 1
+else:
+    process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
+ 
 
-#process.tauMuPath.remove(process.cmgTauMuCorSVFitPreSel)
-#process.tauMuPath.remove(process.cmgTauMuCorSVFitFullSel)
-#process.tauMuPath.remove(process.tauMuFullSelCount)
+## process.tauMu_fullsel_tree_CMG.outputCommands.extend([
+##     'keep *_cmgTauMu_*_*',
+##     'keep *_cmgTauSel_*_*'
+##     ])
+## process.tauMuFullSelCount.minNumber = 0
