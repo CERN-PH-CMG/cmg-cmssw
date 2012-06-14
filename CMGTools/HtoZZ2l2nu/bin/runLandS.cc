@@ -599,10 +599,17 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
       char sFile[2048];
       bool isSyst;
       if(runSystematics){
-         fprintf(pFile,"%35s %10s ", "lumi", "lnN");
-         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue; 
-            if(!dci.procs[j-1].Contains("data")){fprintf(pFile,"%6f ",1.022);}else{fprintf(pFile,"%6s ","-");}
-         }fprintf(pFile,"\n");
+         if(systpostfix.Contains('8')){
+            fprintf(pFile,"%35s %10s ", "lumi_8TeV", "lnN");
+            for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue; 
+               if(!dci.procs[j-1].Contains("data")){fprintf(pFile,"%6f ",1.05);}else{fprintf(pFile,"%6s ","-");}
+            }fprintf(pFile,"\n");
+         }else{
+            fprintf(pFile,"%35s %10s ", "lumi_7TeV", "lnN");
+            for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+               if(!dci.procs[j-1].Contains("data")){fprintf(pFile,"%6f ",1.022);}else{fprintf(pFile,"%6s ","-");}
+            }fprintf(pFile,"\n");
+         }
 
          if(mass>0){
          fprintf(pFile,"%35s %10s ", "theoryUncXS_HighMH", "lnN");
