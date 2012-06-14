@@ -344,7 +344,7 @@ class CmgdbToolsApi(CmgdbApi):
 		"""
 		try:
 			strippedDSName = re.sub("--[\w_]+---[\w_]+","---%",datasetName)
-			datasets = self.selectCur.execute("SELECT cmgdb_name, dataset_id from cms_cmgdb.dataset_details where cmgdb_name LIKE '%s'" % strippedDSName)
+			datasets = self.selectCur.execute("SELECT cmgdb_name, dataset_id from cms_cmgdb.dataset_details where cmgdb_name LIKE '%s' and dataset_is_open='Y'" % strippedDSName)
 			checkedDatasets = []
 			for row in datasets:
 				check = re.sub("--[\w_]+---[\w_]+","---[\w_]+",datasetName)
