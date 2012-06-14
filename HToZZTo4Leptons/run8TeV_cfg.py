@@ -12,7 +12,7 @@ from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
 
 
-channel = 'mu_mu'
+channel = 'ele_ele'
 
 
 
@@ -205,7 +205,7 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 1
+test = 0
 if test==1:
     dataset = GGH125
     selectedComponents = [dataset]
