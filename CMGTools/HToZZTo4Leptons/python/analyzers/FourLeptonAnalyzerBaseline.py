@@ -118,9 +118,9 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
             # So lets make a collection for those
             if len(event.leptonsForFakeRate)==1 and \
                deltaR(event.leptonsForFakeRate[0].eta(),event.leptonsForFakeRate[0].phi(), \
-                      event.bestZForFakeRate.leg1.eta(),event.bestZForFakeRate.leg1.phi())<0.02 and \
+                      event.bestZForFakeRate.leg1.eta(),event.bestZForFakeRate.leg1.phi())>0.02 and \
                deltaR(event.leptonsForFakeRate[0].eta(),event.leptonsForFakeRate[0].phi(), \
-                      event.bestZForFakeRate.leg2.eta(),event.bestZForFakeRate.leg2.phi())<0.02:
+                      event.bestZForFakeRate.leg2.eta(),event.bestZForFakeRate.leg2.phi())>0.02:
                 if  hasattr(self.cfg_ana,"FSR"):
                     fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
                     fsrAlgo.setPhotons(event.photons)
