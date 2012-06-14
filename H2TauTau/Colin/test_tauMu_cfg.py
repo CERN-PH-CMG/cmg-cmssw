@@ -4,7 +4,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
 
-period = 'Period_2012'
+period = 'Period_2011AB'
 
 
 mc_vertexWeight = None
@@ -24,10 +24,6 @@ elif period == 'Period_2011AB':
     mc_vertexWeight = 'vertexWeightFall112011AB'
     mc_tauEffWeight = 'effTau2011AB'
     mc_muEffWeight = 'effMu2011AB'
-elif period == 'Period_2012':
-    mc_tauEffWeight_mc = None
-    mc_muEffWeight_mc = None
-   
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
@@ -79,9 +75,10 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
+    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.44X.xml',
     jetCol = 'cmgPFJetSel',
     jetPt = 30,
-    jetEta = 4.5,
+    jetEta = 5.0,
     **vbfKwargs
     )
 
@@ -92,7 +89,7 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinMay30 import * 
+from CMGTools.H2TauTau.proto.samples.tauMu_ColinJune1 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay18_CHS import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay18 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay15 import * 
@@ -107,21 +104,24 @@ for mc in MC:
     mc.jetSmear = mc_jet_smear
 
 
-# MC = [DYJets, WJets, TTJets]
+MC = [DYJets, WJets, TTJets]
 # MC.extend( mc_higgs )
 selectedComponents =  copy.copy(MC)
 
+useEmbed = False 
+
 if period == 'Period_2011A':
     selectedComponents.extend( data_2011A )
-    selectedComponents.extend( embed_2011A )    
+    if useEmbed:
+        selectedComponents.extend( embed_2011A )    
 elif period == 'Period_2011B':
     selectedComponents.extend( data_2011B )
-    selectedComponents.extend( embed_2011B )    
+    if useEmbed:
+        selectedComponents.extend( embed_2011B )    
 elif period == 'Period_2011AB':
     selectedComponents.extend( data_2011 )
-    selectedComponents.extend( embed_2011 )    
-elif period == 'Period_2012':
-    selectedComponents.extend( data_2012 )
+    if useEmbed:
+        selectedComponents.extend( embed_2011 )    
     
 
 
@@ -142,23 +142,22 @@ DYJets.splitFactor = 40
 WJets.splitFactor = 10
 TTJets.splitFactor = 100
 
-if period != 'Period_2012':
-    data_Run2011B_PromptReco_v1.splitFactor = 50
-    data_Run2011A_PromptReco_v4.splitFactor = 40
-    data_Run2011A_May10ReReco_v1.splitFactor = 40
-    data_Run2011A_05Aug2011_v1.splitFactor = 20
-    data_Run2011A_03Oct2011_v1.splitFactor = 20
+data_Run2011B_PromptReco_v1.splitFactor = 50
+data_Run2011A_PromptReco_v4.splitFactor = 40
+data_Run2011A_May10ReReco_v1.splitFactor = 40
+data_Run2011A_05Aug2011_v1.splitFactor = 20
+data_Run2011A_03Oct2011_v1.splitFactor = 20
     
-    embed_Run2011B_PromptReco_v1.splitFactor = 10
-    embed_Run2011A_PromptReco_v4.splitFactor = 10
-    embed_Run2011A_May10ReReco_v1.splitFactor = 5
-    embed_Run2011A_05Aug2011_v1.splitFactor = 5
-    embed_Run2011A_03Oct2011_v1.splitFactor = 5
+embed_Run2011B_PromptReco_v1.splitFactor = 10
+embed_Run2011A_PromptReco_v4.splitFactor = 10
+embed_Run2011A_May10ReReco_v1.splitFactor = 5
+embed_Run2011A_05Aug2011_v1.splitFactor = 5
+embed_Run2011A_03Oct2011_v1.splitFactor = 5
 
-test = 1
+test = 0
 if test==1:
     comp = DYJets
-    comp.files = comp.files[:20]
+    comp.files = comp.files[:2]
     # comp = data_2012[0]
     selectedComponents = [comp]
     comp.splitFactor = 1
