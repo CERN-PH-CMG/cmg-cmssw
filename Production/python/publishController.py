@@ -113,7 +113,7 @@ class PublishController(object):
     		filesBad = []
     		for badFile in fileOps._filesBad:filesBad.append("* "+badFile)
     		filesBad[0] = "\n"+filesBad[0]
-    		self.savannah.appendExtra({"Bad Files":fileOps.filesBad})
+    		self.savannah.appendExtra({"Bad Files":filesBad})
     		
         # Publish to Savannah
     	newTask = self.savannah.publish()
