@@ -24,15 +24,3 @@ plots_J1 = {
     'svfitMass': PlotInfo('svfitMass', 30, 0, 300)    
     }
 
-def drawAll(cut, plots):
-    for plot in plots.values():
-        print plot.var
-        ss, os, ssQ, osQ = makePlot( plot.var, weights, fwss, fwos,
-                                     plot.nbins, plot.xmin, plot.xmax,
-                                     cut, weight=weight, embed=False)
-        draw(osQ)
-        plot.ssign = cp(ss)
-        plot.osign = cp(os)
-        plot.ssQCD = cp(ssQ)
-        plot.osQCD = cp(osQ)
-        time.sleep(1)

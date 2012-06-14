@@ -53,7 +53,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.groupDataComponents( self.dataComponents, groupDataName)
         
         if embed: 
-            self.setupEmbedding( self.dataComponents, embed )
+            self.setupEmbedding( embed )
         else:
             self.removeEmbeddedSamples()
 
@@ -118,40 +118,44 @@ class H2TauTauDataMC( AnalysisDataMC ):
                 hist.on = False
                 
 
-    def setupEmbedding(self, dataComponents, doEmbedding ):
-
-        name = 'DYJets'
-        dyHist = self.Hist(name)
-        dyYield = dyHist.Yield()
-
-        newName = 'DYJets (emb)'
-        
-        # get the embedded samples corresponding to the data components
-        # merge them into a single embedded component
+    def setupEmbedding(self, doEmbedding ):
+        name = 'Ztt'
+        try:
+            dyHist = self.Hist(name)
+        except KeyError:
+            return 
+        newName = name
         embed = None
-        for dataName in dataComponents:
-            if dataName.find('data_')==-1:
-                raise ValueError('the directory names for the data components should start by data...')
-            embedHistName = dataName.replace('data_', 'embed_')
+        embedFactor = None
+        for comp in self.selComps.values():
+            if not comp.isEmbed:
+                continue
+            embedHistName = comp.name
+            if embedFactor is None:
+                embedFactor = comp.embedFactor
+            elif embedFactor != comp.embedFactor:
+                raise ValueError('All embedded samples should have the same scale factor')
             embedHist = self.Hist( embedHistName )
             embedHist.stack = False
             embedHist.on = False
             if doEmbedding:
                 if embed is None:
                     embed = copy.deepcopy( embedHist )
-                    self.AddHistogram(newName, embed.weighted, 3.5)
+                    embed.name = 'Ztt'
+                    embed.on = True
+                    # self.AddHistogram(newName, embed.weighted, 3.5)
+                    self.Replace('Ztt', embed)
                     self.Hist(newName).stack = True
-                    continue
-                self.Hist(newName).Add(embedHist)
-       
-        # dyYield = dyHist.Yield()
-        # print '2', dyYield
+                else:
+                    self.Hist(newName).Add(embedHist)
         if doEmbedding:
-            print 'embedding is used'
-            embedYield = self.Hist(newName).Yield()
-            self.Hist(newName).Scale( dyYield / embedYield ) 
+            #         embedYield = self.Hist(newName).Yield()
+            print 'EMBEDDING: scale factor = ', embedFactor
+            # import pdb; pdb.set_trace()
+            self.Hist(newName).Scale( embedFactor * self.weights['Ztt'].GetWeight() ) 
             self._ApplyPrefs()
-            self.Hist(name).on = False
+            # self.Hist(name).on = False
+
 
     def groupDataComponents( self, dataComponents, name ):
         '''Groups all data components into a single component with name <name>.
