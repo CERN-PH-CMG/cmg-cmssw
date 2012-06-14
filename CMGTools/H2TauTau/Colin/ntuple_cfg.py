@@ -41,6 +41,7 @@ TauMuAna = cfg.Analyzer(
     iso2 = 0.1,
     m_min = 10,
     m_max = 99999,
+    mvametsigs = 'mvaMETTauMu',
     # diLeptonCutString = 'cuts_baseline',
     triggerMap = pathsAndFilters
     )
@@ -64,6 +65,7 @@ muonWeighter = cfg.Analyzer(
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     # fixedWeight = 1,
+    goodVertices = 'goodPVFilter',
     vertexWeight = mc_vertexWeight,
     verbose = False
     )
@@ -75,6 +77,7 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
+    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.5XX.xml',
     jetCol = 'cmgPFJetSel',
     jetPt = 30,
     jetEta = 5.0,
@@ -102,7 +105,7 @@ treeProducerXCheck = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauMu_sync_ColinMay28 import * 
+from CMGTools.H2TauTau.proto.samples.tauMu_sync_ColinMay29 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_sync_ColinMay26 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay18 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay18 import * 
