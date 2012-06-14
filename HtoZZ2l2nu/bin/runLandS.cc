@@ -376,9 +376,8 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 
   bool canvasIsFilled(false);
   THStack *stack=0;
-  TH1 *mc=allbkg;
+  TH1* mc=allbkg;
   if(allbkg){
-
       TH1* axis = (TH1*)allbkg->Clone("axis");
       axis->Reset();
       axis->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
@@ -391,13 +390,34 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
       stack = new THStack("stack","stack"); 
       for(std::map<TString, TH1*>::iterator it=mapbkg.begin(); it!=mapbkg.end(); it++){
           it->second->GetXaxis()->SetRangeUser(175,450);
-          it->second->SetLineColor( it->second->GetFillColor());
+//          it->second->SetLineColor( it->second->GetFillColor());
           stack->Add(it->second,"HIST");
           legA->AddEntry(it->second,it->second->GetTitle(),"F");
       }
+
       stack->Draw("same");
       canvasIsFilled=true;
-  }
+
+      TH1* mcPlusRelUnc = (TH1 *) allbkg->Clone("totalmcwithunc"); mcPlusRelUnc->SetDirectory(0);
+      for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++){
+         double baseRelUnc = 0.0; 
+         Double_t error=sqrt(pow(mcPlusRelUnc->GetBinError(ibin),2)+pow(mcPlusRelUnc->GetBinContent(ibin)*baseRelUnc,2));
+         mcPlusRelUnc->SetBinError(ibin,error);
+      }
+      mcPlusRelUnc->SetFillStyle(3427);
+      mcPlusRelUnc->SetFillColor(kGray+1);
+      mcPlusRelUnc->SetMarkerStyle(1);
+      mcPlusRelUnc->Draw("e4same");
+   }
+
+   for(std::map<TString, TH1*>::iterator it=mapsig.begin(); it!=mapsig.end(); it++){
+     it->second->Draw(canvasIsFilled ? "histsame" : "hist");
+     legA->AddEntry(it->second,it->second->GetTitle(),"L");
+     canvasIsFilled=true;
+   }
+
+
+
   if(alldata){
 //      alldata->Draw(canvasIsFilled ? "E1same" : "E1");
 //      legA->AddEntry(alldata,alldata->GetTitle(),"P");
@@ -405,11 +425,6 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 //      canvasIsFilled=true;
   }
 
-  for(std::map<TString, TH1*>::iterator it=mapsig.begin(); it!=mapsig.end(); it++){
-      it->second->Draw(canvasIsFilled ? "histsame" : "hist");
-      legA->AddEntry(it->second,it->second->GetTitle(),"L");
-      canvasIsFilled=true;
-  }
   TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
   T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
   T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV, #scale[0.5]{#int} L=5.0  fb^{-1}");  T->Draw();

@@ -148,7 +148,7 @@ int main(int argc, char* argv[])
   //##############################################
   SmartSelectionMonitor mon;
   TH1F* Hcutflow  = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,6,0,6) ) ;
-  TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";Step;Events", 7,0,7) );
+  TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 7,0,7) );
   h->GetXaxis()->SetBinLabel(1,"#geq 2 leptons");
   h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
   h->GetXaxis()->SetBinLabel(3,"p_{T}^{ll}>55");
@@ -380,7 +380,8 @@ int main(int argc, char* argv[])
    for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
    {
 
-     mon.addHistogram( new TH1F( "mt_"+varNames[ivar]  , ";M_{T};Events", 100,0,1000) );
+     mon.addHistogram( new TH1F( "mt"+varNames[ivar]  , ";M_{T};Events", 100,0,1000) );
+     mon.addHistogram( new TH1F( "mt75"+varNames[ivar]  , ";M_{T};Events", 100,0,1000) );
      
      Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
      mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
@@ -989,7 +990,7 @@ int main(int argc, char* argv[])
 			  mon.fillHisto("met_redMet_vspu",tags_full,ev.ngenITpu,aRedMet.pt(),weight);
 			  mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
 			  mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);
-			  mon.fillHisto("mt",tags_full,aMT,weight);
+			  //mon.fillHisto("mt",tags_full,aMT,weight);
 			  
 			}//end passDphijmet
 
@@ -1054,8 +1055,8 @@ int main(int argc, char* argv[])
 	bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
 	if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
 	
-	if(passPreselection && zvv.pt()>50) mon.fillHisto("mt_"+varNames[ivar],tags_full,mt,iweight);
-        if(passPreselection && zvv.pt()>75) mon.fillHisto("mt75_"+varNames[ivar],tags_full,mt,iweight);
+	if(passPreselection && zvv.pt()>50) mon.fillHisto("mt"+varNames[ivar],tags_full,mt,iweight);
+        if(passPreselection && zvv.pt()>75) mon.fillHisto("mt75"+varNames[ivar],tags_full,mt,iweight);
 	
 	//fill shapes
 	for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
