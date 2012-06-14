@@ -24,12 +24,12 @@ if __name__ == '__main__':
     samples=["Resonance_Shapes_RSGraviton_ak5_QQtoQQ_fat30.root",
 	     "Resonance_Shapes_RSGraviton_2012_D6T_ak5_QQtoQQ_fat30.root",
 	     "Resonance_Shapes_RSGraviton_2012_Z2star_ak5_QQtoQQ_fat30.root",
-	     "Resonance_Shapes_RSGraviton_ak5_GGtoGG_fat30.root",
-	     "Resonance_Shapes_RSGraviton_2012_D6T_ak5_GGtoGG_fat30.root",
-	     "Resonance_Shapes_RSGraviton_2012_Z2star_ak5_GGtoGG_fat30.root",
-	     "Resonance_Shapes_Qstar_ak5_fat30.root",
-	     "Resonance_Shapes_Qstar_2012_D6T_ak5_fat30.root",
-	     "Resonance_Shapes_Qstar_2012_Z2star_ak5_fat30.root",
+	     #"Resonance_Shapes_RSGraviton_ak5_GGtoGG_fat30.root",
+	     #"Resonance_Shapes_RSGraviton_2012_D6T_ak5_GGtoGG_fat30.root",
+	     #"Resonance_Shapes_RSGraviton_2012_Z2star_ak5_GGtoGG_fat30.root",
+	     #"Resonance_Shapes_Qstar_ak5_fat30.root",
+	     #"Resonance_Shapes_Qstar_2012_D6T_ak5_fat30.root",
+	     #"Resonance_Shapes_Qstar_2012_Z2star_ak5_fat30.root",
              ]
     
     labels=["RSG D6T qq 7 TeV",
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     
     masses=[1000,2000,3000,4000]
 
-    colors=[1,1,1,2,2,2,3,3,3]
+    colors=[1,2,3,1,2,3,1,2,3]
     styles=[1,2,3,1,2,3,1,2,3]
     
     for mass in masses:
@@ -73,5 +73,5 @@ if __name__ == '__main__':
       legend.SetTextSize(0.04)
       legend.SetFillStyle(0)
       legend.Draw("same")
-      canvas.SaveAs("compare_2011_2012_"+str(mass)+".root")
-      canvas.SaveAs("compare_2011_2012_"+str(mass)+".pdf")
+      canvas.SaveAs("compare_2011_2012_qq_"+str(mass)+".root")
+      canvas.SaveAs("compare_2011_2012_qq_"+str(mass)+".pdf")
