@@ -14,8 +14,8 @@ pathsAndFilters = {
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v8": ("hltOverlapFilterIsoEle15IsoPFTau15",      "hltEle15CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau15_v9": ("hltOverlapFilterIsoEle15IsoPFTau15",      "hltEle15CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),                                                                                                                  
     # 2011 TauEle Ele15_*_TightIsoPFTau20
-    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v1": ("hltOverlapFilterIsoEle15TightIsoPFTau20", "hltEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
-    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2": ("hltOverlapFilterIsoEle15TightIsoPFTau20", "hltEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
+    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v1": ("hltOverlapFilterIsoEle15TightIsoPFTau20", "hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),
+    "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2": ("hltOverlapFilterIsoEle15TightIsoPFTau20", "hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),
     "HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TightIsoPFTau20_v2": ("hltOverlapFilterIsoEle18TightIsoPFTau20", "hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4": ("hltOverlapFilterIsoEle15IsoPFTau20",      "hltEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter"),
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v6": ("hltOverlapFilterIsoEle15IsoPFTau20",      "hltEle15CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),
