@@ -420,7 +420,7 @@ class FileOps(object):
         if self._primaryDatasetFraction is not None: print "Fraction of primary dataset used: %f" % self._primaryDatasetFraction
         if self._primaryDatasetEntries is not None: print "Total entries in primary dataset: %d" % self._primaryDatasetEntries    
         if self._fileEntries is not None: print "Total file entries in dataset: %d" % self._fileEntries
-        if self.getDatasetSize is not None: print "Dataset Size = %f TB" % self.getDatasetSize()
+        if self.getDatasetSize() is not None: print "Dataset Size = %f TB" % self.getDatasetSize()
         print ""
     
     # Check if group is valid and return python dictionary with details
