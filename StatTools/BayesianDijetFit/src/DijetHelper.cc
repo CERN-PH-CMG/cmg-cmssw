@@ -171,11 +171,12 @@ RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* d
     // plot fit
     TCanvas* cfit = new TCanvas(TString("cfit")+label,"fit",500,500);
     RooPlot* plot = var->frame();
-    data->plotOn(plot, Binning(RooBinning(nbins, binsx)));
+//    data->plotOn(plot, Binning(RooBinning(nbins, binsx)));
+    data->plotOn(plot);
     pdf->plotOn(plot, LineColor(kBlue+2), RooFit::NormRange(range), RooFit::Range(range));
     pdf->plotOn(plot, RooFit::Components("signal"), RooFit::LineColor(kBlue+2), RooFit::NormRange(range), RooFit::Range(range));
     pdf->plotOn(plot, RooFit::Components("background"), RooFit::LineColor(kBlue+2), RooFit::LineStyle(kDotted), RooFit::NormRange(range), RooFit::Range(range));
-    pdf->paramOn(plot, Layout(0.43, 0.88, 0.92), Format("NEU",AutoPrecision(1)) ); 
+    pdf->paramOn(plot, Layout(0.43, 0.88, 0.92), Format("NEU",AutoPrecision(2)) ); 
     gPad->SetLogy();
     gPad->SetGrid(1,1);
     plot->GetYaxis()->SetRangeUser(0.1,plot->GetMaximum()*2.0);
@@ -266,7 +267,7 @@ RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* d
   tex.SetNDC();
   tex.SetTextAlign(12);
   tex.SetTextSize(0.04);
-  tex.DrawLatex(0.22,0.88, title);
+//  tex.DrawLatex(0.22,0.88, title);
   if (verbose) cpull->SaveAs(label+"_pull.gif");
   
   // draw diff
