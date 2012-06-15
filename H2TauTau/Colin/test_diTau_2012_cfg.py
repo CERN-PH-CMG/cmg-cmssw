@@ -3,16 +3,27 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
+runOnEmbedded = False
 runOnData = False
 runOnMC = False
 
-mc_vertexWeight = 'vertexWeightFall112011B'
-mc_tauEffWeight = None
-mc_jetEffWeight = None
+period = 'Period_2012AB'
+
+puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
+puFileData = None
+puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
+
+if period == 'Period_2012A':
+    puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_A.root'])
+elif period == 'Period_2012B':
+    puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_B.root'])
+elif period == 'Period_2012AB':
+    puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB.root'])
+
+mc_vertexWeight = None
 mc_tauEffWeight_mc = 'effLooseTau15MC'
-if runOnMC:
-    mc_tauEffWeight='eff2012IsoTau25'
-    mc_jetEffWeight='eff2012Jet30'
+mc_tauEffWeight='eff2012IsoTau1_6fb'
+mc_jetEffWeight='eff2012Jet30'
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer',
@@ -57,22 +68,23 @@ jetWeighter = cfg.Analyzer(
     verbose = False
     )
 
-if runOnData:
-  vertexAna = cfg.Analyzer(
-    'VertexAnalyzer',
-    goodVertices = 'offlinePrimaryVertices', # hum... collection not available in old tuples
-    #goodVertices = 'goodPVFilter',
-    fixedWeight = 1,
-    verbose = False
-    )
-else:
-  vertexAna = cfg.Analyzer(
+vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     goodVertices = 'offlinePrimaryVertices', # hum... collection not available in old tuples
     #goodVertices = 'goodPVFilter',
     fixedWeight = 1,
     #vertexWeight = mc_vertexWeight,
     verbose = False
+    )
+
+embedWeighter = cfg.Analyzer(
+    'EmbedWeighter',
+    verbose = False
+    )
+
+pileUpAna = cfg.Analyzer(
+    'PileUpAnalyzer',
+    true = True
     )
 
 # defined for vbfAna and eventSorter
@@ -85,7 +97,7 @@ vbfAna = cfg.Analyzer(
     jetCol = 'cmgPFJetSel',
     jetPt = 30,
     jetEta = 4.5,
-    vbfMvaWeights='/afs/cern.ch/user/h/hinzmann/workspace/stable2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.5XX.xml',
+    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.5XX.xml',
     **vbfKwargs
     )
 
@@ -106,7 +118,7 @@ for mc in MC:
     mc.jetScale = mc_jet_scale
     mc.jetSmear = mc_jet_smear
 
-selectedComponents = data_2012 + [DYJets, WJets, TTJets, WW, WZ, ZZ]
+selectedComponents = data_2012 + embedded_2012 + [DYJets, WJets, TTJets, WW, WZ, ZZ]
 #selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
 #                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145]
 selectedComponents += [Higgsgg110, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
@@ -120,13 +132,17 @@ if runOnMC:
     #                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145]
     selectedComponents += [Higgsgg110, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
                            HiggsVBF115, HiggsVBF120, HiggsVBF125 ]
+if runOnEmbedded:
+    selectedComponents = embedded_2012
 
 print [c.name for c in selectedComponents]
 
-if runOnMC:
+if runOnMC or runOnEmbedded:
   sequence = cfg.Sequence( [
     TauTauAna,
     vbfAna,
+    pileUpAna,
+    embedWeighter, 
     vertexAna,
     tau1Weighter, 
     tau2Weighter,
@@ -138,6 +154,8 @@ else:
     triggerAna,
     TauTauAna,
     vbfAna,
+    pileUpAna,
+    embedWeighter, 
     vertexAna,
     tau1Weighter, 
     tau2Weighter, 
@@ -155,13 +173,16 @@ WZ.splitFactor = 10
 ZZ.splitFactor = 10
 data_Run2012A_PromptReco_v1.splitFactor = 50
 data_Run2012B_PromptReco_v1.splitFactor = 50
+embed_Run2012A_PromptReco_v1.splitFactor = 50
+embed_Run2012B_PromptReco_v1.splitFactor = 50
 
 test = 0
 if test==1:
-    comp = DYJets
+    #comp = DYJets
     #comp = WJets
     #comp = data_Run2012A_PromptReco_v1
     #comp = Higgsgg125
+    comp = embed_Run2012A_PromptReco_v1
     selectedComponents = [comp]
     comp.splitFactor = 10
     comp.files = comp.files[:1]

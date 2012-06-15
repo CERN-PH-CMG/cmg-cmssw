@@ -4,6 +4,7 @@ from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.H2TauTauDataMC_diTau import *
 from CMGTools.RootTools.Style import formatPad,Style
 from QCDEstimation_diTau import *
+from DYEstimate_diTau import *
 from SaveHistograms_diTau import *
 from PrepareDictionaries_diTau import *
 import math
@@ -89,12 +90,22 @@ if __name__ == '__main__':
     selComps, weights = prepareComponents(anaDir, cfg.config)
     #print [co for co in selComps]
 
+    # SWITCH ON/OFF embedded samples
+    options.embed=True
+    scaleToZee=True
+
     if run2012:
-      # 1.616fb
+      # 1.616/fb
       selComps['data_Run2012A_PromptReco_v1'].intLumi = 920.039
       weights['data_Run2012A_PromptReco_v1'].intLumi = 920.039
-      selComps['data_Run2012B_PromptReco_v1'].intLumi = 696.0#+804.0
-      weights['data_Run2012B_PromptReco_v1'].intLumi = 696.0#+804.0
+      selComps['data_Run2012B_PromptReco_v1'].intLumi = 696.0
+      weights['data_Run2012B_PromptReco_v1'].intLumi = 696.0
+      # 2.4/fb
+      selComps['data_Run2012B_PromptReco_v1'].intLumi = 696.0+804.0
+      weights['data_Run2012B_PromptReco_v1'].intLumi = 696.0+804.0
+      # 2.86/fb
+      selComps['data_Run2012B_PromptReco_v1'].intLumi = 696.0+2164.0
+      weights['data_Run2012B_PromptReco_v1'].intLumi = 696.0+2164.0
     else:
       # 1fb
       selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
@@ -130,6 +141,12 @@ if __name__ == '__main__':
     #selCompsMCMass, weightsMCMass     = componentsWithOutData(selComps,weights)
     selCompsNoSignal, weightsNoSignal   = componentsWithOutSignal(selComps,weights)
 
+    if options.embed:
+        embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight)
+
+    if scaleToZee:
+        zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight, options.embed)
+
     tauScale='0.03'
     shiftedMet = 'sqrt(pow(mex+'+tauScale+'*l1Px+'+tauScale+'*l2Px,2)+pow(mey+'+tauScale+'*l1Py+'+tauScale+'*l2Py,2))' 
 
@@ -156,9 +173,9 @@ if __name__ == '__main__':
     cuts=[
 #####  Andreas  ############################################################################################################################### 
 
-        ("CMS_test2012v2_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
-        ("CMS_test2012v2_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
-        ("CMS_test2012v2_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012_2_86_embed_zee_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012_2_86_embed_zee_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012_2_86_embed_zee_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
 
 ######################################################################################################################################################### 
 
@@ -233,20 +250,18 @@ if __name__ == '__main__':
         ('jet1Pt'           ,int(50/rebin), 0 , 500    ),
         ('jet2Pt'           ,int(50/rebin), 0 , 500    ),
         ('visMass'          ,int(30/rebin), 0 , 300    ),
-        #('visMass*1.03'     ,int(30/rebin), 0 , 300    ),
-        #('visMass*0.97'     ,int(30/rebin), 0 , 300    ),
         ('nVert'            ,int(25/rebin), 0 , 50     ),
-        #('mt'               ,int(40/rebin), 0 , 200    ),
-        #('pThiggs'          ,int(40/rebin), 0 , 300    ),
-        #('diTauPt'          ,int(40/rebin), 0 , 300    ),
         ('l1Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
         ('l2Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
         ('jet1Eta'          ,int(20/rebin), -5, 5      ),
         ('jet2Eta'          ,int(20/rebin), -5, 5      ),
         ('mjj'              ,int(30/rebin), 0 , 800    ),
         ('nJets'            ,10           , 0 , 10     ),
-        #('dRtt'             ,int(40/rebin), 0 , 5      ),
-        #('dPhitt'           ,int(40/rebin), 0 , 3.15   ),
+        ('dRtt'             ,int(40/rebin), 0 , 5      ),
+        ('dPhitt'           ,int(40/rebin), 0 , 3.15   ),
+        ('mt'               ,int(40/rebin), 0 , 200    ),
+        ('pThiggs'          ,int(40/rebin), 0 , 300    ),
+        ('diTauPt'          ,int(40/rebin), 0 , 300    ),
         #('mttj'             ,int(40/rebin), 0 , 1000   ),
         #('diTauCharge'      ,7            , -3, 3      ),
         #('l1LooIso'         ,2            , 0,  2      ),
@@ -548,7 +563,17 @@ if __name__ == '__main__':
            if plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>1:
               plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
       
-        ymax = plotVarDataOS.Hist("Data").GetMaximum()*1.5
+        ymax = max( plotVarDataOS.Hist("Data").GetMaximum(),
+	              plotVarDataOS.Hist("TTJets").GetMaximum()+
+		      plotVarDataOS.Hist("DYJets").GetMaximum()+
+		      plotVarDataOS.Hist("DYJets_Electron").GetMaximum()+
+		      plotVarDataOS.Hist("DYJets_Fakes").GetMaximum()+
+		      plotVarDataOS.Hist("WJets").GetMaximum()+
+		      plotVarDataOS.Hist("WJets_Fakes").GetMaximum()+
+		      plotVarDataOS.Hist("WW").GetMaximum()+
+		      plotVarDataOS.Hist("WZ").GetMaximum()+
+		      plotVarDataOS.Hist("ZZ").GetMaximum()+
+		      plotVarDataOS.Hist("QCDdata").GetMaximum() )*1.5
             
         if log:
             plotVarDataOS.DrawStack("HIST",xmin,xmax,0.1,ymax)
