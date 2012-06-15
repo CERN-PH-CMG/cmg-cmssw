@@ -66,11 +66,12 @@ class PublishTask(Task):
         return password
 
     def run(self, input):
+        username = os.getlogin()
         if self.password is None:
             self.password = self.getPassword()
         return publish(self.dataset,self.options.fileown,\
                     self.options.commented,self.options.test,\
-                    self.user,self.password,self.options.force,\
+                    username,self.password,self.options.force,\
                     self.options.checkGroups, self.options.savannah,\
                     (self.options.min_run, self.options.max_run) )
 
