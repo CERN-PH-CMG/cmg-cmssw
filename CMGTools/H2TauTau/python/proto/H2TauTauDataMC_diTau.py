@@ -59,10 +59,10 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
         self.groupDataComponents( self.dataComponents, groupDataName)
         
-##         if embed: 
-##             self.setupEmbedding( self.dataComponents, embed )
-##         else:
-##             self.removeEmbeddedSamples()
+        if embed: 
+            self.setupEmbedding( embed )
+        else:
+            self.removeEmbeddedSamples()
 
     def _BuildHistogram(self, tree, comp, compName, varName, cut, layer ):
         '''Build one histogram, for a given component'''
@@ -104,7 +104,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
                                      self.cut + ' && isFake==0'+phot, layer)
                 fakeCompName = 'DYJets_Fakes'
                 self._BuildHistogram(tree, comp, fakeCompName, self.varName,
-                                     self.cut + ' && isFake', layer)
+                                     self.cut + ' && isFake'+phot, layer)
                 self.weights[fakeCompName] = self.weights[compName]
 		if self.photon:
                     photonCompName = 'DYJets_Photon'
@@ -131,48 +131,52 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self._ApplyPrefs()
         
 
-##     def removeEmbeddedSamples(self):
-##         for compname in self.selComps:
-##             if compname.startswith('embed_'):
-##                 hist = self.Hist(compname)
-##                 hist.stack = False
-##                 hist.on = False
+    def removeEmbeddedSamples(self):
+        for compname in self.selComps:
+            if compname.startswith('embed_'):
+                hist = self.Hist(compname)
+                hist.stack = False
+                hist.on = False
                 
 
-##     def setupEmbedding(self, dataComponents, doEmbedding ):
+    def setupEmbedding(self, doEmbedding ):
+        name = 'DYJets'
+        try:
+            dyHist = self.Hist(name)
+        except KeyError:
+            return 
+        newName = name
+        embed = None
+        embedFactor = None
+        for comp in self.selComps.values():
+            if not comp.isEmbed:
+                continue
+            embedHistName = comp.name
+            if embedFactor is None:
+                embedFactor = comp.embedFactor
+            elif embedFactor != comp.embedFactor:
+                raise ValueError('All embedded samples should have the same scale factor')
+            embedHist = self.Hist( embedHistName )
+            embedHist.stack = False
+            embedHist.on = False
+            if doEmbedding:
+                if embed is None:
+                    embed = copy.deepcopy( embedHist )
+                    embed.name = 'DYJets (emb)'
+                    embed.on = True
+                    # self.AddHistogram(newName, embed.weighted, 3.5)
+                    self.Replace('DYJets', embed)
+                    self.Hist(newName).stack = True
+                else:
+                    self.Hist(newName).Add(embedHist)
+        if doEmbedding:
+            #         embedYield = self.Hist(newName).Yield()
+            print 'EMBEDDING: scale factor = ', embedFactor
+            # import pdb; pdb.set_trace()
+            self.Hist(newName).Scale( embedFactor ) 
+            self._ApplyPrefs()
+            # self.Hist(name).on = False
 
-##         name = 'DYJets'
-##         dyHist = self.Hist(name)
-##         dyYield = dyHist.Yield()
-
-##         newName = 'DYJets (emb)'
-        
-##         # get the embedded samples corresponding to the data components
-##         # merge them into a single embedded component
-##         embed = None
-##         for dataName in dataComponents:
-##             if dataName.find('data_')==-1:
-##                 raise ValueError('the directory names for the data components should start by data...')
-##             embedHistName = dataName.replace('data_', 'embed_')
-##             embedHist = self.Hist( embedHistName )
-##             embedHist.stack = False
-##             embedHist.on = False
-##             if doEmbedding:
-##                 if embed is None:
-##                     embed = copy.deepcopy( embedHist )
-##                     self.AddHistogram(newName, embed.weighted, 3.5)
-##                     self.Hist(newName).stack = True
-##                     continue
-##                 self.Hist(newName).Add(embedHist)
-       
-##         # dyYield = dyHist.Yield()
-##         # print '2', dyYield
-##         if doEmbedding:
-##             print 'embedding is used'
-##             embedYield = self.Hist(newName).Yield()
-##             self.Hist(newName).Scale( dyYield / embedYield ) 
-##             self._ApplyPrefs()
-##             self.Hist(name).on = False
 
     def groupDataComponents( self, dataComponents, name ):
         '''Groups all data components into a single component with name <name>.
@@ -216,6 +220,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['Data']                          = {'style':sBlack,    'layer':-99}
         self.histPref['data_Run2012A_PromptReco_v1']   = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2012B_PromptReco_v1']   = {'style':sRed,      'layer':-1100}
+        self.histPref['embed_Run2012A_PromptReco_v1']   = {'style':sBlue,     'layer':-1000}
+        self.histPref['embed_Run2012B_PromptReco_v1']   = {'style':sRed,      'layer':-1100}
         self.histPref['data_Run2011A_May10ReReco_v1']  = {'style':sViolet,   'layer':-1000}
         self.histPref['data_Run2011A_PromptReco_v4']   = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2011A_PromptReco_v6']   = {'style':sRed,      'layer':-1100}

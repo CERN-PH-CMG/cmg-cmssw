@@ -192,20 +192,23 @@ filePattern = 'diTau.*fullsel.*root'
 
 data_Run2012A_PromptReco_v1.files = getFiles('/Tau/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
-data_Run2012B_PromptReco_v1.files = getFiles('/Tau/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+data_Run2012B_PromptReco_v1.files = getFiles('/Tau/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
+                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
+                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 # Embedded samples --------------------------------------------------------------------
 
-## embed_Run2012A_May10ReReco_v1.files = getFiles('/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+embed_Run2012A_PromptReco_v1 = cfg.EmbedComponent(
+    name = 'embed_Run2012A_PromptReco_v1',
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    triggers = [],
+    )
 
-## embed_Run2012A_PromptReco_v4.files = getFiles('/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-
-## embed_Run2012A_05Aug2012_v1.files = getFiles('/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-
-## embed_Run2012A_03Oct2012_v1.files = getFiles('/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-
-## embed_Run2012B_PromptReco_v1.files = getFiles('/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-
+embed_Run2012B_PromptReco_v1 = cfg.EmbedComponent(
+    name = 'embed_Run2012B_PromptReco_v1',
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    triggers = [],
+    )
 
 # MC spring12 ----------------------------------------------------------------------------
 
@@ -285,6 +288,8 @@ MC = []
 for mc in mc_spring12:
     mc.triggers = mc_triggers_spring12
     MC.append(mc)
+
+embedded_2012 = [embed_Run2012A_PromptReco_v1, embed_Run2012B_PromptReco_v1]
     
 if __name__ == '__main__':
 
