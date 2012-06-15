@@ -25,6 +25,7 @@
 #include "TPaveText.h"
 #include "TObjArray.h"
 #include "THStack.h"
+#include "TGraphErrors.h"
 
 #include<iostream>
 #include<fstream>
@@ -383,31 +384,55 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
       axis->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
       axis->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
       axis->SetMinimum(mc->GetMinimum());
-      axis->SetMaximum(1.1*mc->GetMaximum());
-      axis->GetXaxis()->SetRangeUser(175,450);
+      axis->SetMaximum(1.1*std::max(mc->GetMaximum(), alldata->GetMaximum()));
+      axis->GetXaxis()->SetRangeUser(150,700);
       axis->Draw();
+
+      TH1* mcPlusRelUnc = (TH1 *) allbkg->Clone("totalmcwithunc"); mcPlusRelUnc->SetDirectory(0); mcPlusRelUnc->Reset();
 
       stack = new THStack("stack","stack"); 
       for(std::map<TString, TH1*>::iterator it=mapbkg.begin(); it!=mapbkg.end(); it++){
-          it->second->GetXaxis()->SetRangeUser(175,450);
 //          it->second->SetLineColor( it->second->GetFillColor());
           stack->Add(it->second,"HIST");
           legA->AddEntry(it->second,it->second->GetTitle(),"F");
-      }
 
+          double baseRelUnc = it->second->GetBinError(0)/it->second->Integral();
+          if(TString(it->second->GetTitle()).Contains("rightarrow ll (data)")){
+             printf("replace uncertainty %g",baseRelUnc); baseRelUnc=1.0;}
+          for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++){
+             double val = it->second->GetBinContent(ibin);
+             double err = it->second->GetBinError(ibin);
+             double value = mcPlusRelUnc->GetBinContent(ibin) + val;
+             double error = sqrt(pow(mcPlusRelUnc->GetBinError(ibin),2) + pow(err,2) + pow(val*baseRelUnc,2));
+             mcPlusRelUnc->SetBinContent(ibin,value);
+             mcPlusRelUnc->SetBinError(ibin,error);
+           }
+
+      }
       stack->Draw("same");
       canvasIsFilled=true;
-
-      TH1* mcPlusRelUnc = (TH1 *) allbkg->Clone("totalmcwithunc"); mcPlusRelUnc->SetDirectory(0);
+  
+      
+      TGraphErrors* errors = new TGraphErrors(mcPlusRelUnc->GetXaxis()->GetNbins());
+      int icutg=0;
       for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++){
-         double baseRelUnc = 0.0; 
-         Double_t error=sqrt(pow(mcPlusRelUnc->GetBinError(ibin),2)+pow(mcPlusRelUnc->GetBinContent(ibin)*baseRelUnc,2));
-         mcPlusRelUnc->SetBinError(ibin,error);
+          if(mcPlusRelUnc->GetBinContent(ibin)>0)
+          errors->SetPoint(icutg,mcPlusRelUnc->GetXaxis()->GetBinCenter(ibin), mcPlusRelUnc->GetBinContent(ibin));
+          errors->SetPointError(icutg,mcPlusRelUnc->GetXaxis()->GetBinWidth(ibin)/2.0, mcPlusRelUnc->GetBinError(ibin)); 
+          icutg++;
       }
+      errors->Set(icutg);
+      errors->SetFillStyle(3427);
+      errors->SetFillColor(kGray+1);
+      errors->SetLineStyle(1);
+      errors->SetLineColor(2);
+      errors->Draw("2 same");
+
+
       mcPlusRelUnc->SetFillStyle(3427);
       mcPlusRelUnc->SetFillColor(kGray+1);
       mcPlusRelUnc->SetMarkerStyle(1);
-      mcPlusRelUnc->Draw("e4same");
+      //mcPlusRelUnc->Draw("e4same");
    }
 
    for(std::map<TString, TH1*>::iterator it=mapsig.begin(); it!=mapsig.end(); it++){
@@ -419,10 +444,13 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 
 
   if(alldata){
-//      alldata->Draw(canvasIsFilled ? "E1same" : "E1");
-//      legA->AddEntry(alldata,alldata->GetTitle(),"P");
-      legA->AddEntry(alldata,"data (blinded)","P");
-//      canvasIsFilled=true;
+      if(blindData) {
+         legA->AddEntry(alldata,"data (blinded)","P");
+      }else{
+         alldata->Draw(canvasIsFilled ? "E1same" : "E1");
+         legA->AddEntry(alldata,alldata->GetTitle(),"P");
+         canvasIsFilled=true;
+     }
   }
 
   TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
@@ -1087,6 +1115,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                   if(proc.Contains("ggh") || proc.Contains("qqh")){
                      dci.systs["CMS_hzz2l2v_interpol_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
                   }else{
+                     printf("SYST in %s - %s - %s = %f\n",bin.Data(), ch.Data(), proc.Data(), systUncertainty);
                      //makesure that syst+stat error is never bigger than 100%
                      //double valerr, val  = hshape->IntegralAndError(1,hshape->GetXaxis()->GetNbins(),valerr);
                      //if(sqrt(pow(valerr,2)+pow(systUncertainty,2))>val){systUncertainty = sqrt(std::max(0.0, pow(val,2) - pow(valerr,2)));}
