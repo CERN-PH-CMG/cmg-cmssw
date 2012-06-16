@@ -247,13 +247,13 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
          TString histoName = ch+"_"+shapeName+varName ;
          TH2* hshape2D = (TH2*)pdir->Get(histoName );
          if(!hshape2D){
-            if(varName==""){
-               //replace by empty histogram
+//            if(varName==""){
+               //replace by empty histogram (take inclusive histo to make sure it has same binning)
                hshape2D = (TH2*)pdir->Get(shapeName+varName);
                if(hshape2D)hshape2D->Reset();
-            }else{
-               continue;
-            }
+//            }else{
+//               continue;
+//            }
          }
 
          if(hshape2D){
@@ -331,6 +331,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
   return shape;
 }
 
+/*
 
 //
 void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName)
@@ -498,6 +499,182 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   if(allbkg)delete allbkg;
   if(stack) delete stack;
   if(ratio) delete ratio;
+}
+*/
+//
+void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName)
+{
+  TCanvas* c1 = new TCanvas("c1","c1",300*AnalysisBins.size(),300*selCh.size());
+  c1->SetTopMargin(0.00); c1->SetRightMargin(0.00); c1->SetBottomMargin(0.00);  c1->SetLeftMargin(0.00);
+  TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.0, 1.00);  t1->Draw();  t1->cd();
+  t1->Divide(AnalysisBins.size(), selCh.size(), 0, 0);
+
+  for(size_t s=0;s<selCh.size();s++){
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+      TVirtualPad* pad = t1->cd(1+s*AnalysisBins.size()+b);
+      pad->SetTopMargin(0.06); pad->SetRightMargin(0.04); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.04);
+
+     TH1* allbkg=NULL;
+     std::map<TString, TH1*> mapbkg;
+     std::map<TString, TH1*> mapsig;
+     TH1* alldata=NULL;
+
+     Shape_t& shape = allShapes.find(selCh[s]+AnalysisBins[b]+mainHisto)->second;
+
+     if(!allbkg){allbkg=(TH1*)shape.totalBckg->Clone("mc");}else{allbkg->Add(shape.totalBckg);}
+     if(!alldata){alldata=(TH1*)shape.data->Clone("data");}else{alldata->Add(shape.data);}
+
+     for(size_t i=0; i<shape.bckg.size(); i++){
+        if(shape.bckg[i]->Integral()<=1E-6) continue;
+        if(mapbkg.find(shape.bckg[i]->GetTitle())!=mapbkg.end()){mapbkg[shape.bckg[i]->GetTitle()]->Add(shape.bckg[i]);}else{ mapbkg[shape.bckg[i]->GetTitle()]=(TH1*)shape.bckg[i]->Clone(shape.bckg[i]->GetTitle()); }
+     }
+
+     TString massStr("");if(mass>0) massStr += mass;
+     for(size_t ip=0; ip<shape.signal.size(); ip++){
+         TString proc(shape.signal[ip]->GetTitle());
+         if(mass>0 && !proc.Contains(massStr))continue;
+              if(mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ2l2v";
+         else if(mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ2l2v";
+         else if(mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
+         else if(mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
+
+        if(proc=="qqHZZ"){shape.signal[ip]->SetLineStyle(2);}
+
+        if(mapsig.find(shape.signal[ip]->GetTitle())!=mapsig.end()){mapsig[shape.signal[ip]->GetTitle()]->Add(shape.signal[ip]);}else{mapsig[shape.signal[ip]->GetTitle()]=(TH1*)shape.signal[ip]->Clone(shape.signal[ip]->GetTitle());}
+     }
+ 
+//  TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);  t1->Draw();  t1->cd();
+  TLegend* legA  = new TLegend(0.3,0.2,0.99,0.85, "NDC");
+
+  THStack *stack=0;
+  TH1* mc=allbkg;
+  if(allbkg){
+      TH1* mcPlusRelUnc = (TH1 *) allbkg->Clone("totalmcwithunc"); mcPlusRelUnc->SetDirectory(0); mcPlusRelUnc->Reset();
+      stack = new THStack("stack","stack"); 
+      for(std::map<TString, TH1*>::iterator it=mapbkg.begin(); it!=mapbkg.end(); it++){
+          //it->second->SetLineColor( it->second->GetFillColor());
+          stack->Add(it->second,"HIST");
+          legA->AddEntry(it->second,it->second->GetTitle(),"F");
+
+          double baseRelUnc = it->second->GetBinError(0)/it->second->Integral();
+          if(TString(it->second->GetTitle()).Contains("rightarrow ll (data)")){
+             printf("replace uncertainty %g",baseRelUnc); baseRelUnc=1.0;}
+          for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++){
+             double val = it->second->GetBinContent(ibin);
+             double err = it->second->GetBinError(ibin);
+             double value = mcPlusRelUnc->GetBinContent(ibin) + val;
+             double error = sqrt(pow(mcPlusRelUnc->GetBinError(ibin),2) + pow(err,2) + pow(val*baseRelUnc,2));
+             mcPlusRelUnc->SetBinContent(ibin,value);
+             mcPlusRelUnc->SetBinError(ibin,error);
+           }
+
+      }
+
+      double mcErorMax=0;
+      TGraphErrors* errors = new TGraphErrors(mcPlusRelUnc->GetXaxis()->GetNbins());
+      int icutg=0;
+      for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++){
+          if(mcPlusRelUnc->GetBinContent(ibin)>0)
+          errors->SetPoint(icutg,mcPlusRelUnc->GetXaxis()->GetBinCenter(ibin), mcPlusRelUnc->GetBinContent(ibin));
+          errors->SetPointError(icutg,mcPlusRelUnc->GetXaxis()->GetBinWidth(ibin)/2.0, mcPlusRelUnc->GetBinError(ibin)); 
+          icutg++;
+          mcErorMax = std::max(mcErorMax, mcPlusRelUnc->GetBinContent(ibin) + mcPlusRelUnc->GetBinError(ibin));
+      }
+
+      TH1* axis = (TH1*)allbkg->Clone("axis");
+      axis->Reset();      
+      axis->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
+      axis->GetYaxis()->SetTitle(b==0?mc->GetYaxis()->GetTitle():"");
+      axis->SetMinimum(mc->GetMinimum());
+      axis->SetMaximum(1.1*std::max(mcErorMax, alldata->GetMaximum()));
+      axis->GetXaxis()->SetRangeUser(150,700);
+      axis->Draw();
+      stack->Draw("same");
+      
+      errors->Set(icutg);
+      errors->SetFillStyle(3427);
+      errors->SetFillColor(kGray+1);
+      errors->SetLineStyle(1);
+      errors->SetLineColor(2);
+      errors->Draw("2 same");
+   }
+
+   for(std::map<TString, TH1*>::iterator it=mapsig.begin(); it!=mapsig.end(); it++){
+     it->second->Draw("hist same");
+     legA->AddEntry(it->second,it->second->GetTitle(),"L");
+   }
+
+
+
+  if(alldata){
+      if(blindData) {
+         legA->AddEntry(alldata,"data (blinded)","P");
+      }else{
+         alldata->Draw("E1 same");
+         legA->AddEntry(alldata,alldata->GetTitle(),"P");
+     }
+  }
+
+
+  TPaveText* Label = new TPaveText(0.1,0.81,0.94,0.89, "NDC");
+  Label->SetFillColor(0);  Label->SetFillStyle(0);  Label->SetLineColor(0); Label->SetBorderSize(0);  Label->SetTextAlign(31);
+  TString LabelText = selCh[s]+"  -  "+AnalysisBins[b];
+  LabelText.ReplaceAll("mumu","#mu#mu"); LabelText.ReplaceAll("geq2jets","#geq2jets"); LabelText.ReplaceAll("eq0jets","0jet");  LabelText.ReplaceAll("eq1jets","1jet");
+  Label->AddText(LabelText);  Label->Draw();
+
+
+
+  if(s==1 && b==3) {
+  legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(); legA->SetHeader("");
+  legA->Draw("same");    legA->SetTextFont(42);}
+
+/*
+  TH1 *ratio=0; 
+  if(allbkg && alldata){
+      c1->cd();
+      TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);     t2->Draw();
+      t2->cd();
+      t2->SetGridy(true);
+      t2->SetTopMargin(0);   t2->SetBottomMargin(0.5);
+      float yscale = (1.0-0.2)/(0.18-0);
+      TH1 *ratio = (TH1*)alldata->Clone("RatioHistogram");
+      ratio->SetDirectory(0);
+      ratio->Divide(allbkg);
+      ratio->GetYaxis()->SetTitle("Obs/Ref");
+      ratio->GetXaxis()->SetTitle("");
+      ratio->SetMinimum(0);
+      ratio->SetMaximum(2.2);
+      ratio->GetXaxis()->SetTitleOffset(1.3);
+      ratio->GetXaxis()->SetLabelSize(0.033*yscale);
+      ratio->GetXaxis()->SetTitleSize(0.036*yscale);
+      ratio->GetXaxis()->SetTickLength(0.03*yscale);
+      ratio->GetYaxis()->SetTitleOffset(0.3);
+      ratio->GetYaxis()->SetNdivisions(5);
+      ratio->GetYaxis()->SetLabelSize(0.033*yscale);
+      ratio->GetYaxis()->SetTitleSize(0.036*yscale);
+      ratio->GetXaxis()->SetRangeUser(175,450);
+      ratio->Draw("E1");
+  }
+*/
+  }}
+
+  t1->cd();
+  t1->Update();
+  c1->cd();
+  TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
+  T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
+  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV, #scale[0.5]{#int} L=1.6  fb^{-1}");
+  }else{                         T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV, #scale[0.5]{#int} L=5.0  fb^{-1}");
+  }T->Draw();
+  c1->Update();
+  c1->SaveAs(SaveName+".png");
+  c1->SaveAs(SaveName+".pdf");
+  c1->SaveAs(SaveName+".C");
+  delete c1;
+//  if(alldata)delete alldata;
+//  if(allbkg)delete allbkg;
+//  if(stack) delete stack;
+//  if(ratio) delete ratio;
 }
 
 //
