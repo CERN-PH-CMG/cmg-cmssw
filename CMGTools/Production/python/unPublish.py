@@ -5,7 +5,7 @@
 
 from CMGTools.Production.castorToDbsFormatter import CastorToDbsFormatter
 from CMGTools.Production.savannahBrowser import SavannahBrowser
-from CMGTools.Production.cmgdbApi import CmgdbApi
+from CMGTools.Production.cmgdbToolsApi import CmgdbToolsApi
 import os, getpass, sys, re
 from CMGTools.Production.nameOps import *
 from CMGTools.Production.findDSOnSav import *
@@ -59,7 +59,8 @@ def unPublish(dsName,fileown,user,password):
     	 
     print "\n-------CMGDB-------\n"
     ID = None    
-    cmgdbAPI=CmgdbApi()
+    cmgdbAPI=CmgdbToolsApi()
+    cmgdbAPI.connect()
     ID = cmgdbAPI.getDatasetIDWithName(procds['PathList'][0])
     if ID is not None:
         try:
