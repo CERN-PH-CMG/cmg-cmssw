@@ -39,5 +39,5 @@ def setupGsfElectronCalibration( process, runOnMC, type=None):
         err = 'ERROR: Could not determine electron scale correction to be applied from dataset name {file}'.format(process.source.fileNames[0])
         raise ValueError(err)
     print "Setting process.calibratedGsfElectrons.inputDataset = ", eleCorrectionType
-    process.gsfElectrons.inputDataset = eleCorrectionType
+    process.gsfElectrons.inputDataset = cms.string(eleCorrectionType)
     process.gsfElectrons.isMC = cms.bool(runOnMC)
