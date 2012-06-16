@@ -489,11 +489,10 @@ int main(int argc, char* argv[])
       if((iev-evStart)%treeStep==0){printf(".");fflush(stdout);}
 
       //##############################################   EVENT LOOP STARTS   ##############################################
-   
       //load the event content from tree
       evSummaryHandler.getEntry(iev);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
-      if( duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
+      if(!isMC && duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
       bool mustBlind = (!isMC && runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC));
 
@@ -501,10 +500,10 @@ int main(int argc, char* argv[])
       bool isSameFlavor(ev.cat==MUMU || ev.cat==EE);
       TString tag_cat;
       switch(ev.cat){
-      case MUMU : tag_cat = "mumu";  break;
-      case EE   : tag_cat = "ee";    break;
-      case EMU  : tag_cat = "emu";   break;
-      default   : continue;
+         case MUMU : tag_cat = "mumu";  break;
+         case EE   : tag_cat = "ee";    break;
+         case EMU  : tag_cat = "emu";   break;
+         default   : continue;
       }
       //      if(isMC && mctruthmode==1 && !isDYToLL(ev.mccat) && !isZZ2l2nu(ev.mccat) ) continue;
       if(isMC && mctruthmode==1 && !isDYToLL(ev.mccat) ) continue;
@@ -515,8 +514,7 @@ int main(int argc, char* argv[])
       bool hasMMtrigger = (ev.triggerType >> 1 ) & 0x1;
       bool hasEMtrigger = (ev.triggerType >> 2 ) & 0x1;
       bool hasMtrigger  = (ev.triggerType >> 3 ) & 0x1;
-      if(!isMC)
-	{
+      if(!isMC){
 	  if(ev.cat!=fType) continue;
 
 	  if(ev.cat==EE   && !hasEEtrigger) continue;
@@ -528,7 +526,7 @@ int main(int argc, char* argv[])
 	    if(!hasMtrigger) continue;
 	    if(hasMtrigger && hasMMtrigger) continue;
 	  }
-	}
+      }
       
       //prepare the tag's vectors for histo filling
       std::vector<TString> tags_full(1,"all");
@@ -560,6 +558,9 @@ int main(int argc, char* argv[])
       LorentzVectorCollection zvvs;
       METUtils::computeVariation(phys.ajets, phys.leptons, phys.met[0], variedAJets, zvvs, &jecUnc);
       
+
+
+
       //
       // LEPTON ANALYSIS
       //
@@ -975,7 +976,6 @@ int main(int argc, char* argv[])
 
 	}//end passZmass
 
-
       //
       // HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
       //
@@ -1060,11 +1060,9 @@ int main(int argc, char* argv[])
 //              if(passPreselection && index==78 && (ivar==0 || ivar==5 || ivar==6)){printf("SYst=%10s  Weight=%6.3E Integral=%6.3E\n",varNames[ivar].Data(),iweight, ((TH2*)mon.getHisto(TString("mt_shapes")+varNames[ivar],tag_cat))->ProjectionY("tmp",79,79)->Integral());}
 
 	    }         
-	}
-
-
+ 	 }
       }
-	}
+  }
 
   printf("\n"); 
   file->Close();
