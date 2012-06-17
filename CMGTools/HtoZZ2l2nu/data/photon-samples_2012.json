@@ -169,58 +169,44 @@
  	"mctruthmode":22,
 	"data":[
 	     {	
-		"dtag":"MC8TeV_G_Pt-15to30_TuneZ2_7TeV_pythia6",
-		"patdir":[""],
-		"xsec":200061.7,
-		"br":[1.3],
-		"split":2
-	     },
-	     {	
-		"dtag":"MC8TeV_G_Pt-30to50_TuneZ2_7TeV_pythia6",
-		"patdir":[""],
-		"xsec":19931.62,
-		"br":[1.3],
-		"split":2
-	     },
-	     {	
 		"dtag":"MC8TeV_G_Pt-50to80_TuneZ2_7TeV_pythia6",
-		"patdir":[""],
 		"xsec":3322.309,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
 		"dtag":"MC8TeV_G_Pt-80to120_TuneZ2_7TeV_pythia6",
-		"patdir":[""],
 		"xsec":558.2865,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
 		"dtag":"MC8TeV_G_Pt-120to170_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-120to170_TuneZ2_7TeV_pythia6"],
 		"xsec":108.0068,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
 		"dtag":"MC8TeV_G_Pt-170to300_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-170to300_TuneZ2_7TeV_pythia6"],
 		"xsec":30.12207,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
 		"dtag":"MC8TeV_G_Pt-300to470_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-300to470_TuneZ2_7TeV_pythia6"],
 		"xsec":2.138632,
 		"br":[1.3],
 		"split":2
 	     },
 	     {	
 		"dtag":"MC8TeV_G_Pt-470to800_TuneZ2_7TeV_pythia6",
-		"patdir":["/store/cmst3/user/psilva/v444/MC/G_Pt-470to800_TuneZ2_7TeV_pythia6"],
 		"xsec":0.2119244,
+		"br":[1.3],
+		"split":2
+	     },
+	     {	
+		"dtag":"MC8TeV_G_Pt-800to1400_TuneZ2_7TeV_pythia6",
+		"xsec":0.007077847,
 		"br":[1.3],
 		"split":2
 	     }

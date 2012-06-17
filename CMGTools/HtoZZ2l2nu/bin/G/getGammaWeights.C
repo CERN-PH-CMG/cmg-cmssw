@@ -4,15 +4,14 @@
 //
 
 #include <iostream>
+#include <strstream>
 
-#include "TCanvas.h"
 #include "TF1.h"
 #include "TH1F.h"
 #include "TString.h"
 #include "TSystem.h"
 #include "TFile.h"
 #include "TGraphErrors.h"
-
 
 string cats[]      ={"eq0jets", "eq1jets", "eq2jets",  "geq3jets","vbf"};
 TString catLabels[]={"=0 jets", "=1 jets", "=2 jets", "#geq 3 jets","VBF"};
@@ -43,6 +42,8 @@ TF1 *qtFitFunc = new TF1("qtff","[0]*exp( - TMath::Abs(x-[1])/([2]+[3]*TMath::Ab
 TObject* getObjectFromPath(TDirectory* File, std::string Path, bool GetACopy)
 {
    TObject* toReturn = NULL;
+   if(File==0) return toReturn;
+
    size_t pos = Path.find("/");
    if(pos < std::string::npos){
       std::string firstPart = Path.substr(0,pos);
@@ -50,26 +51,44 @@ TObject* getObjectFromPath(TDirectory* File, std::string Path, bool GetACopy)
       TDirectory* TMP = (TDirectory*)File->Get(firstPart.c_str());
       toReturn =  getObjectFromPath(TMP,endPart,GetACopy);
    }else{
-      toReturn = File->Get(Path.c_str());
+     toReturn = File->Get(Path.c_str());
    }
 
    if(!toReturn)       printf("BUG: %s\n",Path.c_str());
-   else if(GetACopy){ toReturn = toReturn->Clone();  }
+   else if(GetACopy && toReturn){ toReturn = toReturn->Clone();  }
    return toReturn;
 }
 
 //init 
-void resetQtFitFunc()
+void resetQtFitFunc(TH1 *h)
 {
-  qtFitFunc->SetParameter(0,1e-5); 
-  qtFitFunc->SetParameter(1,-3.07791e+03);
-  qtFitFunc->SetParameter(2,1.01404e+03);
-  qtFitFunc->SetParameter(3,-3.69992e-01);
+  if(h==0) return;
+  if(h->Integral()==0) return;
+  Double_t xmin(h->GetXaxis()->GetBinLowEdge(1)), xmax(h->GetXaxis()->GetBinUpEdge(h->GetXaxis()->GetNbins()));
+  for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
+    {
+      Double_t val=h->GetBinContent(ibin);
+      if(val==0) continue;
+      qtFitFunc->SetParameter(0,h->Integral()); //qtFitFunc->SetParLimits(0,h->Integral()*0.5,h->Integral()*1.5);
+      xmin=h->GetBinLowEdge(ibin);
+      qtFitFunc->SetParameter(1,xmin-h->GetBinWidth(ibin)); // qtFitFunc->SetParLimits(1,xmin*0.9,xmin*1.1);
+      break;
+    }
+  qtFitFunc->SetParameter(2,10.);
+  qtFitFunc->SetParameter(3,0.02); qtFitFunc->SetParLimits(3,0.0,0.1);
+  qtFitFunc->SetRange(xmin,xmax);
 }
 
 //
-void getGammaWeights(string inputFile="plotter.root",string varName="qt",bool onlyData=false)
+enum WeightsMode { ALL, ONLYDATA, ONLYMC };
+void getGammaWeights(string inputFile="plotter.root",string varName="qt",int mode=ALL)
 {
+  strstream report;
+
+  //output
+  TString foutName="gamma"+varName+"weights.root";
+  TFile *fout = TFile::Open(foutName,"RECREATE");   fout->cd();
+  
   //get plots from file for each category
   TFile *fin = TFile::Open(inputFile.c_str());
   std::vector<TH1F *> dataWgts,     mcWgts;
@@ -79,76 +98,141 @@ void getGammaWeights(string inputFile="plotter.root",string varName="qt",bool on
     {
       for(size_t ic=0; ic<nCats; ic++)
 	{
-
-	  if(ic==0)
-	    {
-	      //mass shape
-	      string pName=dilCats[id]+cats[ic]+"_zmass";
-	      string newPname=dilCats[id]+"_datazmass";
-	      TH1F *hdymass=(TH1F *) getObjectFromPath(fin,dyDir+"/"+pName,true);      hdymass->SetName(newPname.c_str());   hdymass->SetDirectory(0);   dataMassShapes.push_back( hdymass );
-	      if(!onlyData)
+	  //mass shape
+	  if(mode != ONLYMC)
+	    { 
+	      //string pName=dilCats[id]+cats[ic]+"_zmass";
+	      string pName=dilCats[id]+"_zmass";
+	      string newPname=dilCats[id]+cats[ic]+"_datazmass";
+	      TH1F *hdymass=(TH1F *) getObjectFromPath(fin,dyDir+"/"+pName,true);      
+	      if(hdymass)
 		{
-		  newPname=dilCats[id]+"_mczmass";
-		  TH1F * hmcdymass=(TH1F *) getObjectFromPath(fin,dymcDir+"/"+pName,true); hmcdymass->SetName(newPname.c_str()); hmcdymass->SetDirectory(0); mcMassShapes.push_back( hmcdymass );
+		  hdymass->SetName(newPname.c_str());  
+		  hdymass->SetDirectory(0); 
+		  dataMassShapes.push_back( hdymass );
 		}
 	    }
 
-	  //get the histos (veto 0 soft jets for g+jets)
+	  if(ic==0)
+	    {	      
+	      if( mode != ONLYDATA )
+		{
+		  string pName=dilCats[id]+"_zmass";
+		  string newPname=dilCats[id]+"_mczmass";
+		  TH1F * hmcdymass=(TH1F *) getObjectFromPath(fin,dymcDir+"/"+pName,true); 
+		  if(hmcdymass)
+		    {
+		      hmcdymass->SetName(newPname.c_str()); 
+		      hmcdymass->SetDirectory(0);
+		      mcMassShapes.push_back( hmcdymass );
+		    }
+		}
+	    }
+
+	  //get the histos 
 	  string pName=dilCats[id]+cats[ic]+"_"+varName;
-	  TH1F *hdy   = (TH1F *) getObjectFromPath(fin,dyDir+"/"+pName,true);
+	  TH1F *hdy   = 0;
+	  if(mode != ONLYMC )  { hdy   = (TH1F *) getObjectFromPath(fin,dyDir+"/"+pName,true);    hdy->SetDirectory(0);   }
 	  TH1F *hmcdy = 0;
-	  if(!onlyData) hmcdy=(TH1F *) getObjectFromPath(fin,dymcDir+"/"+pName,true); 
-	  
+	  if(mode != ONLYDATA) { hmcdy = (TH1F *) getObjectFromPath(fin,dymcDir+"/"+pName,true);  hmcdy->SetDirectory(0); }
+
+	  //DERIVE WEIGHTS
 	  string gPName(pName);
-	  //	  if(cats[ic]=="eq0jets") { gPName=dilCats[id]+"_qt_"+"eq0hardjets"; }
-	  TH1F *hg    = (TH1F *) getObjectFromPath(fin,gDir+"/"+gPName,true);
-	  TH1F *hDataWgts = (TH1F *) hdy->Clone((pName+"_datawgts").c_str()); hDataWgts->SetDirectory(0); hDataWgts->Divide(hg);    dataWgts.push_back(hDataWgts);
-	  
-	  TH1F *hmcg  = 0;
-	  if(!onlyData)
+	  TH1F *hg    = 0;
+	  TH1F *hDataWgts = 0;
+	  if(mode!=ONLYMC)
 	    {
+	      hg = (TH1F *) getObjectFromPath(fin,gDir+"/"+gPName,true);
+	      if(hg)
+		{
+		  //SIMPLE RATIO
+		  hDataWgts = (TH1F *) hdy->Clone((pName+"_datawgts").c_str()); 
+		  hDataWgts->SetDirectory(0); 
+		  hDataWgts->Divide(hg);    
+		  dataWgts.push_back(hDataWgts);
+		  
+		  //PARAMETRIZED FUNCTION
+		  if(varName=="qt")
+		    {
+		      //resetQtFitFunc(hdy);
+		      //hdy->Fit(qtFitFunc,"WLMER+");
+		      TGraph *splHdy = new TGraph(hdy);
+		      hDataWgts   = (TH1F *) hdy->Clone((pName+"_datafitwgts").c_str()); 
+		      hDataWgts->SetDirectory(0);  
+		      hDataWgts->Reset("ICE");
+		      //		      for(int ibin=1; ibin<=hDataWgts->GetXaxis()->GetNbins(); ibin++) hDataWgts->SetBinContent(ibin,qtFitFunc->Eval(hDataWgts->GetBinCenter(ibin)));
+		      for(int ibin=1; ibin<=hDataWgts->GetXaxis()->GetNbins(); ibin++) hDataWgts->SetBinContent(ibin,splHdy->Eval(hDataWgts->GetBinCenter(ibin),0,"S"));
+		      hDataWgts->Divide(hg);
+		      dataWgts.push_back(hDataWgts);
+		      delete splHdy;
+		    }
+		}
+	    }
+	  
+	  //MC
+	  if(mode != ONLYDATA)
+	    {
+	      TH1F *hmcg=0;
+	      TH1F *hMCwgts=0;
+	      TH1F *hMCfitWgts=0; 
+
+	      //build the total MC spectra
 	      for(size_t imc=0; imc<nGmcDirs; imc++)
 		{
-		  
 		  if(hmcg==0) hmcg =     (TH1F *) getObjectFromPath(fin, gmcDirs[imc]+"/"+gPName,true);
 		  else        hmcg->Add( (TH1F *) getObjectFromPath(fin, gmcDirs[imc]+"/"+gPName,false) ); 
 		}
-	      //reweight to ZpT observed *in data*
-	      TH1F *hMCwgts   = (TH1F *) hdy->Clone((pName+"_mcwgts").c_str()); hMCwgts->SetDirectory(0);   hMCwgts->Divide(hmcg);    mcWgts.push_back(hMCwgts);
+	      
+	      //SIMPLE RATIO
+	      //reweight to ZpT observed
+	      if(mode==ONLYMC && hmcdy) hMCwgts   = (TH1F *) hmcdy->Clone((pName+"_mcwgts").c_str()); 
+	      else if (hdy)             hMCwgts   = (TH1F *) hdy->Clone((pName+"_mcwgts").c_str()); 
+	      if(hMCwgts)
+		{
+		  hMCwgts->SetDirectory(0);   
+		  hMCwgts->Divide(hmcg);    
+		  mcWgts.push_back(hMCwgts);
+		}
+		
+	      if(varName=="qt")
+		{
+		  
+		  //PARAMETRIZED ZPT
+		  //reset parameterization for boson pt
+		  hMCfitWgts   = (TH1F *) hmcdy->Clone((pName+"_mcfitwgts").c_str()); 
+		  hMCfitWgts->SetDirectory(0);  
+		  hMCfitWgts->Reset("ICE");
+		  TGraph *splHdy=0;
+		  if(mode==ONLYMC && hmcdy)  { splHdy=new TGraph(hmcdy); }
+		  else if (hdy)              { splHdy=new TGraph(hdy); }
+		  //if(mode==ONLYMC && hmcdy)  { resetQtFitFunc(hmcdy); hmcdy->Fit(qtFitFunc,"MER+"); }
+		  //else if (hdy)              { resetQtFitFunc(hdy);   hdy->Fit(qtFitFunc,"MER+");   }
+		  //for(int ibin=1; ibin<=hMCfitWgts->GetXaxis()->GetNbins(); ibin++) hMCfitWgts->SetBinContent(ibin,qtFitFunc->Eval(hMCfitWgts->GetBinCenter(ibin)));
+		  for(int ibin=1; ibin<=hMCfitWgts->GetXaxis()->GetNbins(); ibin++) hMCfitWgts->SetBinContent(ibin,splHdy->Eval(hMCfitWgts->GetBinCenter(ibin),0,"S"));
+		  hMCfitWgts->Divide(hmcg);
+		  if(splHdy) delete splHdy;
+		  mcWgts.push_back(hMCfitWgts);
+		}
 	    }
-
-	  /*
-	  //reset parameterization for boson pt
-	  resetQtFitFunc();
-	  
-	  hdy->Fit(qtFitFunc,"MER+");
-	  TH1F *hMCwgts   = (TH1F *) hmcdy->Clone((pName+"_mcwgts").c_str()); 
-	  hMCwgts->SetDirectory(0);  
-	  hMCwgts->Reset("ICE");
-	  for(int ibin=1; ibin<=hMCwgts->GetXaxis()->GetNbins(); ibin++) hMCwgts->SetBinContent(ibin,qtFitFunc->Eval(hMCwgts->GetBinLowEdge(ibin)));
-	  hMCwgts->Divide(hmcg);
-	  
-	  hmcdy->Fit(qtFitFunc,"MER+");
-	  TH1F *hDataWgts = (TH1F *) hdy->Clone((pName+"_datawgts").c_str()); 
-	  hDataWgts->SetDirectory(0); 
-	  hDataWgts->Reset("ICE");
-	  for(int ibin=1; ibin<=hDataWgts->GetXaxis()->GetNbins(); ibin++) hDataWgts->SetBinContent(ibin,qtFitFunc->Eval(hDataWgts->GetBinLowEdge(ibin)));
-	  
-	  mcWgts.push_back(hMCwgts);
-	  dataWgts.push_back(hDataWgts);
-	  */
 	}
     }
   fin->Close();
-  
+ 
   //save histograms to file
-  TString foutName="gamma"+varName+"weights.root";
-  TFile *fout = TFile::Open(foutName,"RECREATE");   fout->cd();
-  for(size_t ip=0; ip<dataWgts.size(); ip++)        dataWgts[ip]->Write();
-  if(!onlyData) for(size_t ip=0; ip<mcWgts.size(); ip++)          mcWgts[ip]->Write();
-  for(size_t ip=0; ip<dataMassShapes.size(); ip++)  dataMassShapes[ip]->Write();
-  if(!onlyData) for(size_t ip=0; ip<mcMassShapes.size(); ip++)    mcMassShapes[ip]->Write();
-  fout->Close();
-  
+
   cout << "*** Gamma pT weights (inclusive/differential) available @ " << foutName << endl;
+  cout << report.str() << endl;
+
+  fout->cd();
+  if(mode != ONLYMC) 
+    {
+      for(size_t ip=0; ip<dataWgts.size(); ip++)        dataWgts[ip]->Write();
+      for(size_t ip=0; ip<dataMassShapes.size(); ip++)  dataMassShapes[ip]->Write();
+    }
+  if(mode != ONLYDATA) 
+    {
+      for(size_t ip=0; ip<mcWgts.size(); ip++)          mcWgts[ip]->Write();
+      for(size_t ip=0; ip<mcMassShapes.size(); ip++)    mcMassShapes[ip]->Write();
+    }
+  fout->Close();
 }
