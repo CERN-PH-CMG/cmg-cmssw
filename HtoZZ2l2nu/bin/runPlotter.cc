@@ -177,7 +177,6 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
          
 	 bool isMC( !Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() );
 
-
          double PUCentralnnorm =  1; if(tmphist->GetBinContent(3)>0)PUCentralnnorm = tmphist->GetBinContent(2) / tmphist->GetBinContent(3);
          double PUDownnorm     =  1; if(tmphist->GetBinContent(4)>0)PUDownnorm     = tmphist->GetBinContent(3) / tmphist->GetBinContent(4);
          double PUUpnorm       =  1; if(tmphist->GetBinContent(5)>0)PUUpnorm       = tmphist->GetBinContent(3) / tmphist->GetBinContent(5);
@@ -216,7 +215,8 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
          double Weight = 1.0;
          if(!Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
-         std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
+	 
+	 std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
 
          if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
@@ -586,6 +586,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
       }
       else if(Process[i].isTag("spimpose") && Process[i]["spimpose"].toBool())
 	{
+	  if(Process[i].isTag("normto")) hist->Scale( Process[i]["normto"].toDouble()/hist->Integral() );
+	  	    
 	  //legB->AddEntry(hist, Process[i]["tag"].c_str(), "L");
 	  legA->AddEntry(hist, Process[i]["tag"].c_str(), Process[i]["isdata"].toBool() ? "P" : "L" );
 	  spimposeOpts.push_back( Process[i]["isdata"].toBool() ? "e1" : "hist" );

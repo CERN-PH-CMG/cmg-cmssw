@@ -119,7 +119,7 @@ public :
     inline void setID(int id)
       {
 	hasPixelSeed     = !(id && 0x1);
-	hasElectronVeto  = ((id >> 1) & 0x1);
+	hasElectronVeto  = !((id >> 1) & 0x1);
 	hasCtfTrkVeto    = ((id >> 2) & 0x1);
 	isConv           = ((id >> 3) & 0x1);
 	isVtxConstrained = ((id>>4) & 0x1);

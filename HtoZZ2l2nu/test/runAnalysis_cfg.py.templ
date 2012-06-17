@@ -10,8 +10,11 @@ mcpileup_tsg=cms.vdouble(0,0,0,0,0,0,0,0,0,0,0,0,6,9,14,28,56,106,212,339,549,84
 
 if(@is2011):
    datapileupToUse=datapileup_pixelbased_2011
+   datapileupToUse=cms.vdouble()	
 else:
    datapileupToUse=datapileup_683_2012
+   #use this if you don't want to apply any weight
+   #datapileupToUse=cms.vdouble()
 
 runProcess = cms.PSet(
     input = cms.string("@input"),

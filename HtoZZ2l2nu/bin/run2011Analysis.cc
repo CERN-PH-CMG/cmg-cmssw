@@ -301,6 +301,7 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(2,"=1 jets");
       h->GetXaxis()->SetBinLabel(3,"#geq 2 jets");
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfhtcjv"       , ";Central jet H_{T} [GeV/c];Events",50,0,250) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfpremjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",40,0,2000) );
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfmjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",40,0,2000) );
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfcandjetdphi"       , ";#Delta#phi;Events",20,0,3.5) );
       mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvsdeta"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];|#Delta #eta|;Events",40,0,2000,50,0,10) );
@@ -445,7 +446,7 @@ int main(int argc, char* argv[])
   std::vector<float> mcPileupDistribution;
   //bool useObservedPU(true);
   bool useObservedPU(use2011Id);
-  if(!use2011Id &&  url.Contains("toZZto2L")) useObservedPU=true;
+  if(!use2011Id && url.Contains("toZZto2L")) useObservedPU=true;
   if(isMC){
     TString puDist("evAnalyzer/h2zz/pileuptrue");
     if(useObservedPU) puDist="evAnalyzer/h2zz/pileup";
@@ -453,6 +454,7 @@ int main(int argc, char* argv[])
     if(!histo)std::cout<<"pileup histogram is null!!!\n";
     for(int i=1;i<=histo->GetNbinsX();i++){mcPileupDistribution.push_back(histo->GetBinContent(i));}
     delete histo;
+    if(dataPileupDistribution.size()==0) dataPileupDistribution=mcPileupDistribution;
   }
   while(mcPileupDistribution.size()<dataPileupDistribution.size())  mcPileupDistribution.push_back(0.0);
   while(mcPileupDistribution.size()>dataPileupDistribution.size())dataPileupDistribution.push_back(0.0);
@@ -864,14 +866,16 @@ int main(int argc, char* argv[])
 			  
 			  mon.fillHisto("pfjetbalance",tags_full, balance,weight);
 			  mon.fillHisto(etaReg+"pfjetbalance",tags_full, balance,weight);
-			  if(!passBalanceCut) continue;
-			  for(size_t iids=0; iids<passIds.size(); iids++)
+			  if(passBalanceCut)
 			    {
-			      mon.fillHisto(etaReg+passIds[iids]+"pfjetpt",tags_full,recoilJets[0].pt(),weight,true);
-			      mon.fillHisto(passIds[iids]+"pfjeteta",tags_full,fabs(recoilJets[0].eta()),weight,true);
+			      for(size_t iids=0; iids<passIds.size(); iids++)
+				{
+				  mon.fillHisto(etaReg+passIds[iids]+"pfjetpt",tags_full,recoilJets[0].pt(),weight,true);
+				  mon.fillHisto(passIds[iids]+"pfjeteta",tags_full,fabs(recoilJets[0].eta()),weight,true);
+				}
 			    }
 			}
-            
+		      
 		      //sub-divide for tight jets
 		      int eventSubCat  = eventCategoryInst.Get(phys,&aGoodIdJets);
 		      TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
@@ -880,7 +884,6 @@ int main(int argc, char* argv[])
                       if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(tag_cat + "geq1jets");
                       if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
 		      mon.fillHisto("npfjets",     tags_full, nAJetsLoose,weight);
-
 		      
 		      //passDphijmet=(mindphijmet15>0.5);
 		      passDphijmet=(mindphijmet>0.5);
@@ -910,7 +913,9 @@ int main(int argc, char* argv[])
 			      mon.fillHisto("pfvbfcandjetdeta",     tags_full, fabs(detajj),weight);
 			      mon.fillHisto("pfvbfcandzeppenfeld",     tags_full, fabs(maxEta-avgEtajj)/fabs(detajj),weight);
 			      mon.fillHisto("pfvbfcandzeppenfeld",     tags_full, fabs(minEta-avgEtajj)/fabs(detajj),weight);			      
-			      if(fabs(detajj)>4.0){
+			      mon.fillHisto("pfvbfpremjj",     tags_full, vbfSyst.mass(),weight);
+			      if(fabs(detajj)>4.0)
+				{
 				  mon.fillHisto("pfvbfmjj",     tags_full, vbfSyst.mass(),weight);
 				  mon.fillHisto("pfvbfmjjvsdeta",     tags_full, vbfSyst.mass(),fabs(detajj),weight);
 				  mon.fillHisto("pfvbfmjjvshardpt",     tags_full, vbfSyst.mass(),hardpt,weight);

@@ -7,13 +7,13 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
   : isGoodEvent_(false)
 {
   //trigger thresholds to consider
-  bool isMC = runProcess.getParameter<bool>("isMC");
+  isMC_ = runProcess.getParameter<bool>("isMC");
  
   //open file and retrieve weights + mass shapes
   std::vector<std::string> gammaPtWeightsFiles =  runProcess.getParameter<std::vector<std::string> >("weightsFile");  
   TString cats[]   =  {"eq0jets","eq1jets","eq2jets","geq3jets","vbf"};
   TString dilCats[] = {"ee","mumu","ll"};
-  TString wgtType( isMC ? "mcwgts" : "datawgts");
+  TString wgtType( isMC_ ? "mcwgts" : "datawgts");
   for(size_t ifile=0; ifile<gammaPtWeightsFiles.size(); ifile++)
     {
       TString gammaPtWeightsFile(gammaPtWeightsFiles[ifile].c_str());
@@ -40,18 +40,15 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 		    }
 		  
 		  //mass shape (take it from the first file with weights)
-		  if(ic==0)
-		    {
-		      key = dilCats[id]; 
-		      if(zmassH_.find(key)!=zmassH_.end()) continue;
+		  key = dilCats[id] + (isMC_ ? "" : cats[ic]);
+		  if(zmassH_.find(key)!=zmassH_.end()) continue;
 		      
-		      TString hname= key+ (isMC ? "_mczmass" : "_datazmass"); 
-		      h = (TH1 *) fwgt->Get(hname);
-		      if(h!=0)
-			{
-			  h->SetDirectory(0);
-			  zmassH_[key]= h;
-			}
+		  TString hname= key+ (isMC_ ? "_mczmass" : "_datazmass"); 
+		  h = (TH1 *) fwgt->Get(hname);
+		  if(h!=0)
+		    {
+		      h->SetDirectory(0);
+		      zmassH_[key]= h;
 		    }
 		}
 	    }
@@ -74,6 +71,7 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys)
 
   //check if it is a gamma event
   if( phys.cat<22) return isGoodEvent_;
+  triggerThr_ =( phys.cat-22)/1000;
 
   //all done here
   isGoodEvent_=true;
@@ -89,7 +87,7 @@ std::map<TString,float> GammaEventHandler::getWeights(PhysicsEvent_t &phys, TStr
   for(size_t id=0; id<sizeof(dilCats)/sizeof(TString); id++)
     {
       //the key to search for
-      TString key = dilCats[id];
+      TString key = dilCats[id]+(isMC_?"":evCategoryLabel);
       
       //generate a massive gamma (0 if in non-weighting mode)
       float mass(0);
@@ -102,7 +100,7 @@ std::map<TString,float> GammaEventHandler::getWeights(PhysicsEvent_t &phys, TStr
       massiveGamma_[dilCats[id]]=LorentzVector(gamma.px(),gamma.py(),gamma.pz(),sqrt(pow(mass,2)+pow(gamma.energy(),2)));
 
       //get event weight (will be 0 by default if we're running in weighting mode)
-      key += evCategoryLabel;
+      key = dilCats[id]+evCategoryLabel;
       float weight(1.0);//wgtsH_.size() ? 0.0 : 1.0);
       for(std::map<TString, std::map<TString,TH1 *> >::iterator wIt = wgtsH_.begin(); wIt != wgtsH_.end(); wIt++)
 	{
