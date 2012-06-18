@@ -105,7 +105,7 @@ def groupEWK( plot ):
 
 
 
-def fW_inclusive(mtplot, dataName, xmin, xmax):
+def fW(mtplot, dataName, xmin, xmax):
     
     # WJets_data = data - DY - TTbar
     wjet = copy.deepcopy(mtplot.Hist(dataName))
@@ -118,6 +118,7 @@ def fW_inclusive(mtplot, dataName, xmin, xmax):
     # FIXME
     wjet.Add(mtplot.Hist('TTJets'), -1)
 
+
     # adding the WJets_data estimation to the stack
     mtplot.AddHistogram( 'Data - DY - TT', wjet.weighted, 1010)
     mtplot.Hist('Data - DY - TT').stack = False
@@ -128,10 +129,11 @@ def fW_inclusive(mtplot, dataName, xmin, xmax):
 
     # determine scaling factor for the WJet MC
     mtmin, mtmax = xmin, xmax
-    # scale = WJets_data / WJets 
-    scale_WJets = mtplot.Hist('Data - DY - TT').Integral(True, mtmin, mtmax) \
-                  / mtplot.Hist('WJets').Integral(True, mtmin, mtmax)
-    # apply this additional scaling factor to the WJet component 
+    # scale = WJets_data / WJets
+    # import pdb; pdb.set_trace()
+    scale_WJets = mtplot.Hist('Data - DY - TT').Integral(True, xmin, xmax) \
+                  / mtplot.Hist('WJets').Integral(True, xmin, xmax)
+    # apply this additional scaling factor to the WJet component
     mtplot.Hist('WJets').Scale(scale_WJets)
 
     # hide the WJets_data component from the mtplot. can be set to True interactively
@@ -142,31 +144,39 @@ def fW_inclusive(mtplot, dataName, xmin, xmax):
 
 
 
-def plot_W_inclusive(var, anaDir,
-                     comps, weights, nbins, xmin, xmax,
-                     cut, weight,
-                     embed):
+def plot_W(var, anaDir,
+           comps, weights, nbins, xmin, xmax,
+           cut, weight,
+           embed):
 
     # get WJet scaling factor for same sign
-    print 'extracting SS WJets inclusive data/MC factor'
     var = 'mt'
-    sscut = 'isSignal && mt>{mtcut} && diTau_charge!=0'.format(mtcut=xmin)
-    oscut = 'isSignal && mt>{mtcut} && diTau_charge==0'.format(mtcut=xmin)
+    sscut = '{cut} && mt>{mtcut} && diTau_charge!=0'.format(
+        cut = cut, 
+        mtcut=xmin
+        )
+    oscut = '{cut} && mt>{mtcut} && diTau_charge==0'.format(
+        cut = cut,
+        mtcut=xmin
+        )
+    print 'extracting WJets data/MC factor in high mt region, SS'
+    print sscut 
     mtSS = H2TauTauDataMC(var, anaDir, comps, weights,
                           nbins, xmin, xmax,
                           cut = sscut, weight=weight,
                           embed=embed)
     # replaceWJetShape( mtSS, var, sscut)
     # import pdb; pdb.set_trace()
-    fW_inclusive_SS = fW_inclusive( mtSS, 'Data', xmin, xmax)
+    fW_SS = fW( mtSS, 'Data', xmin, xmax)
     # get WJet scaling factor for opposite sign
-    print 'extracting OS WJets inclusive data/MC factor'
+    print 'extracting WJets data/MC factor in high mt region, OS'
+    print oscut
     mtOS = H2TauTauDataMC(var, anaDir, comps, weights,
                           nbins, xmin, xmax, 
                           cut = oscut, weight=weight,
                           embed=embed)
     # replaceWJetShape( mtOS, var, oscut)
-    fW_inclusive_OS = fW_inclusive( mtOS, 'Data', xmin, xmax)
-    print 'fW_inclusive_SS=',fW_inclusive_SS,'fW_inclusive_OS=',fW_inclusive_OS
-    return fW_inclusive_SS, fW_inclusive_OS, mtSS, mtOS
+    fW_OS = fW( mtOS, 'Data', xmin, xmax)
+    print 'fW_SS=',fW_SS,'fW_OS=',fW_OS
+    return fW_SS, fW_OS, mtSS, mtOS
 

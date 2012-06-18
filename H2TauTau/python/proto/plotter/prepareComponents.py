@@ -5,16 +5,16 @@ from CMGTools.H2TauTau.proto.plotter.embed import embedScaleFactor
 keeper = []
 
 
-def prepareComponents(dir, config):
+def prepareComponents(dir, config, aliases=None):
     '''Selects all components in configuration file. computes the integrated lumi
     from data components, and set it on the MC components.
     '''
     # all components in your configuration object (cfg)
     selComps = dict( [ (comp.name, comp) for comp in config.components ])
     zComps = {}
-    
-    aliases = {'DYJets':'Ztt'}
-    
+
+    if aliases is None:
+        aliases = {'DYJets':'Ztt'}
     
     totIntLumi = 0
     newSelComps = {}
@@ -36,7 +36,6 @@ def prepareComponents(dir, config):
             print comp.name, comp.intLumi
             totIntLumi += comp.intLumi
 
-    
     for comp in selComps.values():
         if comp.isMC is True:
             comp.intLumi = totIntLumi
@@ -52,9 +51,6 @@ def prepareComponents(dir, config):
                                   comp.dir,
                                   'H2TauTauTreeProducer{channel}'.format(channel=channel),
                                   'H2TauTauTreeProducer{channel}_tree.root'.format(channel=channel)])
-##             file = TFile(fileName)
-##            keeper.append(file)
-##            tree = file.Get('H2TauTauTreeProducer{channel}'.format(channel=channel))
             tree = TChain('H2TauTauTreeProducer{channel}'.format(channel=channel))
             tree.Add(fileName)
             comp.tree = tree
@@ -64,6 +60,7 @@ def prepareComponents(dir, config):
     # import pdb; pdb.set_trace()
     eh, zh, embedFactor = embedScaleFactor(newSelComps)
     for comp in embedComps:
+        # import pdb; pdb.set_trace()
         comp.embedFactor = embedFactor
  
     return newSelComps, weights, zComps

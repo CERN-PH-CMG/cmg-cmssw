@@ -16,7 +16,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
     HINDEX = 0
 
     def __init__(self, varName, directory, selComps, weights,
-                 nbins = 50, xmin = 0, xmax=200, cut = '',
+                 bins = None, xmin = None, xmax=None, cut = '',
                  weight='weight', embed = False, treeName=None):
         '''Data/MC plotter adapted to the H->tau tau analysis.
         The plotter takes a collection of trees in input. The trees are found according
@@ -37,7 +37,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.cut = cut
         self.eventWeight = weight
         # import pdb; pdb.set_trace()
-        self.nbins = nbins
+        self.bins = bins
         self.xmin = xmin
         self.xmax = xmax
         # self.keeper = []
@@ -65,7 +65,12 @@ class H2TauTauDataMC( AnalysisDataMC ):
             comp.tree = tree
                     
         histName = '_'.join( [compName, self.varName] )
-        hist = TH1F( histName, '', self.nbins, self.xmin, self.xmax )
+
+        hist = None
+        if self.xmin and self.xmax:
+            hist = TH1F( histName, '', self.bins, self.xmin, self.xmax )
+        else:
+            hist = TH1F( histName, '', len(self.bins)-1, self.bins )
         hist.Sumw2()
         tree.Project( histName, varName, '{weight}*({cut})'.format(cut=cut,
                                                                    weight=self.eventWeight) )
@@ -123,7 +128,9 @@ class H2TauTauDataMC( AnalysisDataMC ):
         try:
             dyHist = self.Hist(name)
         except KeyError:
-            return 
+            return
+        if len(self.selComps)== 1:
+            return
         newName = name
         embed = None
         embedFactor = None
@@ -132,6 +139,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
                 continue
             embedHistName = comp.name
             if embedFactor is None:
+                # import pdb; pdb.set_trace()
                 embedFactor = comp.embedFactor
             elif embedFactor != comp.embedFactor:
                 raise ValueError('All embedded samples should have the same scale factor')
@@ -183,10 +191,10 @@ class H2TauTauDataMC( AnalysisDataMC ):
             # ... and removed from the stack
             self.Hist(name).Add( hist )
             # compute integrated luminosity for all data samples
-        if self.intLumi>0:
-            for component, weight in self.weights.iteritems():
-                if component not in dataComponents:
-                    self.weights[component].intLumi = self.intLumi
+        # if self.intLumi>0:
+        #    for component, weight in self.weights.iteritems():
+        #        if component not in dataComponents:
+        #            self.weights[component].intLumi = self.intLumi
         self._ApplyWeights()
         self._ApplyPrefs()
         

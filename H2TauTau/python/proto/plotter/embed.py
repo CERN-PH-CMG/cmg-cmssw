@@ -25,6 +25,8 @@ def embedScaleFactor(selComps):
     zh.Sumw2()
     embedChain.Project('eh', 'visMass', '({cut})*weight'.format(cut=embcut))
     zttChain.Project('zh', 'visMass', '({cut})*weight'.format(cut=zttcut))
+#    embedChain.Project('eh', 'visMass', '({cut})'.format(cut=embcut))
+#    zttChain.Project('zh', 'visMass', '({cut})'.format(cut=zttcut))
     factor = zh.Integral()/eh.Integral()
     return eh, zh, factor
 

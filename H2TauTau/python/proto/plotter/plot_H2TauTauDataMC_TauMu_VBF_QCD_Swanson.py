@@ -48,19 +48,19 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS,
     osign = replaceWJets(osign, var, oscut, weight, embed)
     osign = replaceZtt(osign, var, oscut, weight, embed)
 
-    antisocut = str( Cut(cat_Inc_AntiMuTauIso) &  Cut('l1_charge*l2_charge<0 && mt<40') & cat_VBF )
-    fakeweight = ' * '.join( [weight, colin_qcdTauIsoRatio, colin_qcdMuIsoRatio])
-    # antisocut = str( Cut(cat_Inc_AntiMuIso) &  Cut('l1_charge*l2_charge<0 && mt<40') & cat_VBF )
-    # fakeweight = ' * '.join( [weight, colin_qcdMuIsoRatio])
+    ssantisocut = str( Cut(cat_Inc_AntiMuTauIsoJosh) &  Cut('l1_charge*l2_charge>0 && mt<40') & cat_VBF )
+    
 
-    antiso = H2TauTauDataMC(var, anaDir,
-                            selComps, weights, nbins, xmin, xmax,
-                            cut=antisocut, weight=weight,
-                            embed=embed)
+    ssantiso = H2TauTauDataMC(var, anaDir,
+                              selComps, weights, nbins, xmin, xmax,
+                              cut=ssantisocut, weight=weight,
+                              embed=embed)
     # here, would need to replace with the same dilep cut!
     # antiso = replaceWJets(antiso, var, antisocut, weight, embed)
     # antiso = replaceZtt(antiso, var, antisocut, weight, embed)    
-    antisoQCD = addQCD( antiso, 'Data')
+    # ssantisoQCD = addQCD( ssantiso, 'Data')
+
+    import pdb; pdb.set_trace()
 
     # now get the QCD yield:
     antisoForYield = H2TauTauDataMC(var, anaDir,
@@ -92,20 +92,6 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS,
 
     osQCD = copy.deepcopy( osign )
     osQCD.AddHistogram('QCD', qcd.weighted, 1.5 )
-    
-    # boxss = box.replace('OS','SS')
-    # sscut = str(inc_sig & Cut('l1_charge*l2_charge>0') & cat_VBF)
-##     sscut = ' && '.join( [cat_Inc_RlxMuIso, 'l1_charge*l2_charge>0', cat_VBF] )
-##     print '[SS]', sscut
-##     ssign = H2TauTauDataMC(var, anaDir,
-##                            selComps, weights, nbins, xmin, xmax,
-##                            cut=sscut, weight=weight,
-##                            embed=embed)
-##     ssign.Hist(EWK).Scale( wJetScaleSS ) 
-##     ssign = replaceWJets(ssign, var, 'l1_charge*l2_charge>0 && mt<40' , weight, embed)
-##     ssign = replaceZtt(ssign, var, 'l1_charge*l2_charge>0 && mt<40' , weight, embed)
-
-##     ssQCD, osQCD = getQCD_VBF( ssign, osign, 'Data' )
 
     # osQCD = osign
     groupEWK( osQCD )

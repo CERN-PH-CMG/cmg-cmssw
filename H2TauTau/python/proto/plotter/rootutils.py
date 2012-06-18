@@ -87,7 +87,7 @@ unitpat = re.compile('.*\((.*)\)\s*$')
 
 keeper = []
 
-def draw(plot, xtitle=None, doBlind=True):
+def draw(plot, doBlind=True):
     
     blindxmin = None
     blindxmax = None
@@ -96,9 +96,8 @@ def draw(plot, xtitle=None, doBlind=True):
         blindxmin = 100
         blindxmax = 150
         plot.Blind(blindxmin, blindxmax, False)
-    
-    if xtitle is None:
-        xtitle = xtitles.get( plot.varName, None )
+        
+    xtitle = xtitles.get( plot.varName, None )
     if xtitle is None:
         xtitle = ''
     global can, pad, padr, ratio

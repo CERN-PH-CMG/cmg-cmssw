@@ -45,14 +45,19 @@ def cutstr_rlxtaumuiso(cutstr, tauIsoCut, muIsoCut):
 
 
 cat_Inc_RlxMuIso = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05<1.0')
+cat_Inc_RlxTauIso = str(inc_sig).replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.')
 cat_Inc_RlxMuTauIso = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
 cat_Inc_AntiMuTauIso = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.1').replace('l1_looseMvaIso>0.5', 'l1_looseMvaIso<0.5')
+cat_Inc_AntiMuTauIso_B = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.75')
+
+cat_Inc_AntiMuTauIsoJosh = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.7')
 cat_Inc_AntiMuIso = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.1')
 cat_Inc_AntiTauIso = str(inc_sig).replace('l1_looseMvaIso>0.5', 'l1_looseMvaIso<0.5')
 cat_Inc_RlxMuTauIso_b = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.5')
 cat_Inc = str(inc_sig)
 cat_VBF = 'nJets>=2 && VBF_nCentral==0 && VBF_mva>0.5'
 cat_VBF_Rel = 'nJets>=2 && VBF_nCentral==0 && VBF_mva>-0.7'
+cat_J2 = 'nJets>=2'
 cat_VH  = 'nJets>=2 && VBF_mjj>60 && VBF_mjj<120 && VBF_dijetpt>150 && VBF_mva<0.8 && nBJets==0'
 cat_J1  = 'nJets>=1 && !({VBF}) && !({VH}) && nBJets==0'.format(VBF=cat_VBF,
                                                                 VH=cat_VH)
@@ -63,13 +68,14 @@ cat_J0  = '!({VBF}) && !({VH}) && !({J1}) && !({J1B})'.format(VBF=cat_VBF,
                                                               J1B=cat_J1B)
 
 categories = {
-    'cat_Inc_RlxMuIso':cat_Inc_RlxMuIso,
-    'cat_Inc':cat_Inc,
-    'cat_VBF':cat_VBF,
-    'cat_VH':cat_VH,
-    'cat_J1':cat_J1,
-    'cat_J1B':cat_J1B,
-    'cat_J0':cat_J0
+    'Xcat_Inc_AntiMuTauIsoJoshX':cat_Inc_AntiMuTauIsoJosh,
+    'Xcat_Inc_RlxMuIsoX':cat_Inc_RlxMuIso,
+    'Xcat_IncX':cat_Inc,
+    'Xcat_VBFX':cat_VBF,
+    'Xcat_VHX':cat_VH,
+    'Xcat_J1X':cat_J1,
+    'Xcat_J1BX':cat_J1B,
+    'Xcat_J0X':cat_J0
     }
 
 def replaceCategories(cutstr):

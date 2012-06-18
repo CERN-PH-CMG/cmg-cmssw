@@ -39,9 +39,12 @@ def replaceShapeInclusive(plot, var, anaDir,
     print '[INCLUSIVE] estimate',comp.name,'with cut',cut
     plotWithNewShape = cp( plot )
     wjyield = plot.Hist(comp.name).Integral()
-    nbins = plot.Hist(comp.name).obj.GetNbinsX()
-    xmin = plot.Hist(comp.name).obj.GetXaxis().GetXmin()
-    xmax = plot.Hist(comp.name).obj.GetXaxis().GetXmax()
+##     nbins = plot.Hist(comp.name).obj.GetNbinsX()
+##     xmin = plot.Hist(comp.name).obj.GetXaxis().GetXmin()
+##     xmax = plot.Hist(comp.name).obj.GetXaxis().GetXmax()
+    nbins = plot.bins
+    xmin = plot.xmin
+    xmax = plot.xmax
     wjshape = shape(var, anaDir,
                     comp, weights, nbins, xmin, xmax,
                     cut, weight,
@@ -60,9 +63,9 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               cut='', weight='weight', embed=False):
     
     print 'making the plot:', var, 'cut', cut
-    if nbins is None: nbins = NBINS
-    if xmin is None: xmin = XMIN
-    if xmax is None: xmax = XMAX
+    # if nbins is None: nbins = NBINS
+    # if xmin is None: xmin = XMIN
+    # if xmax is None: xmax = XMAX
 
 
     oscut = cut+' && diTau_charge==0'
@@ -100,14 +103,14 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
     return ssign, osign, ssQCD, osQCD
 
 
-def drawAll(cut, plots):
+def drawAll(cut, plots, embed):
     for plot in plots.values():
         print plot.var
         ss, os, ssQ, osQ = makePlot( plot.var, anaDir,
                                      selComps, weights, fwss, fwos,
                                      plot.nbins, plot.xmin, plot.xmax,
-                                     cut, weight=weight, embed=False)
-        draw(osQ)
+                                     cut, weight=weight, embed=embed)
+        draw(osQ, False)
         plot.ssign = cp(ss)
         plot.osign = cp(os)
         plot.ssQCD = cp(ssQ)
@@ -151,7 +154,7 @@ if __name__ == '__main__':
     parser.add_option("-n", "--nbins", 
                       dest="nbins", 
                       help="Number of bins",
-                      default=50)
+                      default=40)
     parser.add_option("-m", "--min", 
                       dest="xmin", 
                       help="xmin",
@@ -184,16 +187,21 @@ if __name__ == '__main__':
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
     embed = options.embed
+
+    # remove WJets from components, and aliase W3Jets -> WJets
+    comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='TTJets11']
+    cfg.config.components = comps
+
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config)
 
 
     can, pad, padr = buildCanvas()
-
-    fwss, fwos, ss, os = plot_W_inclusive( options.hist, anaDir, selComps, weights,
-                                           12, 60, 300, options.cut,
-                                           weight=weight, embed=options.embed)
+    cutw = cat_Inc
+    fwss, fwos, ss, os = plot_W( options.hist, anaDir, selComps, weights,
+                                 12, 70, 310, cutw,
+                                 weight=weight, embed=options.embed)
 
     ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos,
                                            NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
-    draw(osQCD)
+    draw(osQCD, False)
     

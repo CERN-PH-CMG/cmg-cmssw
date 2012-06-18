@@ -13,9 +13,10 @@ plots_All = {
     'l1_pt': PlotInfo('l1_pt', 50, 0, 200),
     'l1_eta': PlotInfo('l1_eta', 20, -3, 3),
     # 'mt': PlotInfo('mt', 50, 0, 150),
-    'visMass': PlotInfo('visMass', 50, 0, 200),
-    'svfitMass': PlotInfo('svfitMass', 50, 0, 300),
-    'nJets': PlotInfo('nJets', 7, 0, 7),    
+    'visMass': PlotInfo('visMass', 30, 0, 210),
+    'svfitMass': PlotInfo('svfitMass', 30, 0, 300),
+    'nJets': PlotInfo('nJets', 5, 0, 5),
+    'nVert': PlotInfo('nVert', 20, 0, 40)
     }
 
 plots_J1 = {
