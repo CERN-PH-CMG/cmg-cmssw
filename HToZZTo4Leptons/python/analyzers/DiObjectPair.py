@@ -11,13 +11,27 @@ class DiObjectPair( TLorentzVector ):
         self.leg1=a
         self.leg2=b
 
-    def __getattr__(self, name):
-        '''Trick to preserve the interface in use in CMSSW.'''
-        if name.lower() == 'mass':
-            name = 'M'
-        # changing the first letter of the function name to upper case. 
-        capName = ''.join( [name[0].capitalize(), name[1:]] ) 
-        return getattr( self, capName )
+
+    def px(self):
+         return self.Px()
+    def py(self):
+         return self.Py()
+    def pz(self):
+         return self.Pz()
+    def energy(self):
+         return self.Energy()
+
+    def eta(self):
+         return self.Eta()
+    def phi(self):
+         return self.Phi()
+
+    def pt(self):
+         return self.Pt()
+
+    def mass(self):
+         return self.M()
+
 
 
     def sortedPtLeg(self,N):

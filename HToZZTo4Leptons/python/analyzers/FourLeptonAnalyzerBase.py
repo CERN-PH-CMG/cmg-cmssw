@@ -162,7 +162,6 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return out
 
 
-
     #Common Lepton Selection
     def testLepton(self, lepton, pt, eta,sel=None):
         if sel is not None and  not lepton.getSelection(sel):
