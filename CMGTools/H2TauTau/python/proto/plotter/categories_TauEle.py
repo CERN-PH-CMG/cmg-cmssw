@@ -1,14 +1,12 @@
 import copy
 
-from CMGTools.H2TauTau.proto.plotter.jetcategories.py
-from CMGTools.H2TauTau.proto.plotter.cut.py
+from CMGTools.H2TauTau.proto.plotter.jetcategories import *
+from CMGTools.H2TauTau.proto.plotter.cut import *
 
-
-## # inc_sig_mu = Cut('l2_relIso05<0.1 && l2_tightId>0.5 && l2_dxy<0.045 && l2_dz<0.2')
-## inc_sig_tau = Cut('l1_looseMvaIso>0.5 && (l1_EOverp>0.2 || l1_decayMode!=0) && l1_againstMuonTight>0.5 && l1_againstElectronLoose>0.5 && l1_dxy<0.045 && l1_dz<0.2')
-## inc_sig_mu = Cut('l2_relIso05<0.1 && l2_tightId>0.5 && l2_dxy<0.045 && l2_dz<0.2 && l2_pt>20')
-## # inc_sig_tau = Cut('l1_looseMvaIso>0.5 && (l1_EOverp>0.2 || l1_decayMode!=0) && l1_againstMuonTight>0.5 && l1_againstElectronLoose>0.5 && l1_dxy<0.045 && l1_dz<0.2 && l1_pt>25')
-## inc_sig = inc_sig_mu & inc_sig_tau
+Te_inc_sig_tau = Cut('l1_looseMvaIso>0.5 && (l1_EOverp>0.2 || l1_decayMode!=0) && l1_byLooseIsoMVA > 0.5 && l1_againstElectronMVA > 0.5 && l1_againstElectronMedium > 0.5 && l1_againstMuonLoose > 0.5 && l1_dxy<0.045 && l1_dz<0.2')
+#PG is the first one required for the eleTau channel as well?
+Te_inc_sig_ele = Cut('l2_relIso05<0.1 && l2_tightId>0.5 && l2_dxy<0.045 && l2_dz<0.2 && l2_pt>20')
+Te_inc_sig = inc_sig_ele & inc_sig_tau
 
 
 ## def cutstr_signal():
