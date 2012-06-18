@@ -5,7 +5,7 @@ from CMGTools.H2TauTau.proto.plotter.embed import embedScaleFactor
 keeper = []
 
 
-def prepareComponents(dir, config, aliases=None, embed=True):
+def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu'):
     '''Selects all components in configuration file. computes the integrated lumi
     from data components, and set it on the MC components.
     '''
@@ -63,7 +63,7 @@ def prepareComponents(dir, config, aliases=None, embed=True):
             tree.Add(fileName)
             comp.tree = tree
     attachTree(zComps,'MuMu')
-    attachTree(newSelComps, 'TauMu')
+    attachTree(newSelComps, channel)
 
     # compute the embedded sample weighting factor
     if embed:

@@ -148,7 +148,7 @@ def fW(mtplot, dataName, xmin, xmax):
 def plot_W(var, anaDir,
            comps, weights, nbins, xmin, xmax,
            cut, weight,
-           embed):
+           embed, treeName):
 
     # get WJet scaling factor for same sign
     var = 'mt'
@@ -165,7 +165,7 @@ def plot_W(var, anaDir,
     mtSS = H2TauTauDataMC(var, anaDir, comps, weights,
                           nbins, xmin, xmax,
                           cut = sscut, weight=weight,
-                          embed=embed)
+                          embed=embed, treeName=treeName)
     # replaceWJetShape( mtSS, var, sscut)
     # import pdb; pdb.set_trace()
     fW_SS = fW( mtSS, 'Data', xmin, xmax)
@@ -175,7 +175,7 @@ def plot_W(var, anaDir,
     mtOS = H2TauTauDataMC(var, anaDir, comps, weights,
                           nbins, xmin, xmax, 
                           cut = oscut, weight=weight,
-                          embed=embed)
+                          embed=embed, treeName=treeName)
     # replaceWJetShape( mtOS, var, oscut)
     fW_OS = fW( mtOS, 'Data', xmin, xmax)
     print 'fW_SS=',fW_SS,'fW_OS=',fW_OS
