@@ -9,6 +9,7 @@ from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
 from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw
 from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
+from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
@@ -69,7 +70,6 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 
 
     oscut = cut+' && diTau_charge==0'
-    # import pdb; pdb.set_trace()
     osign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
                            cut=oscut, weight=weight,
@@ -118,10 +118,6 @@ def drawAll(cut, plots, embed):
         time.sleep(1)
 
 
-## def replaceCategories(cutstr):
-##     for catname, cat in categories.iteritems():
-##         cutstr = cutstr.replace( catname, cat )
-##     return cutstr
 
 
 if __name__ == '__main__':
@@ -151,32 +147,41 @@ if __name__ == '__main__':
                       help="Use embedd samples.",
                       action="store_true",
                       default=False)
+    parser.add_option("-B", "--blind", 
+                      dest="blind", 
+                      help="Blind.",
+                      action="store_false",
+                      default=True)
     parser.add_option("-n", "--nbins", 
                       dest="nbins", 
                       help="Number of bins",
-                      default=40)
+                      default=None)
     parser.add_option("-m", "--min", 
                       dest="xmin", 
                       help="xmin",
-                      default=0)
+                      default=None)
     parser.add_option("-M", "--max", 
                       dest="xmax", 
                       help="xmax",
-                      default=200)
+                      default=None)
 
-    
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
 
+    if options.nbins is None:
+        NBINS = binning_svfitMass
+        XMIN = None
+        XMAX = None
+    else:
+        NBINS = int(options.nbins)
+        XMIN = float(options.xmin)
+        XMAX = float(options.xmax)
+        
 
-    NBINS = int(options.nbins)
-    XMIN = float(options.xmin)
-    XMAX = float(options.xmax)
-
-    options.cut = replaceCategories(options.cut) 
+    options.cut = replaceCategories(options.cut, categories) 
     
     # TH1.AddDirectory(False)
     dataName = 'Data'
@@ -196,12 +201,12 @@ if __name__ == '__main__':
 
 
     can, pad, padr = buildCanvas()
-    cutw = cat_Inc
+    cutw = options.cut.replace('mt<40', '1')
     fwss, fwos, ss, os = plot_W( options.hist, anaDir, selComps, weights,
                                  12, 70, 310, cutw,
                                  weight=weight, embed=options.embed)
 
     ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos,
                                            NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
-    draw(osQCD, False)
+    draw(osQCD, options.blind)
     

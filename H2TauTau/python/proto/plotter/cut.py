@@ -18,13 +18,6 @@ class Cut(object):
     def __str__(self):
         return self.cutstr
 
-
-def replaceCategories(cutstr):
-    for catname, cat in categories.iteritems():
-        cutstr = cutstr.replace( catname, cat )
-    return cutstr
-
-
     
 if __name__ == '__main__':
 

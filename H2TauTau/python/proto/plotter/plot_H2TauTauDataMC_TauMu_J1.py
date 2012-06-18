@@ -7,12 +7,14 @@ import re
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
-from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw
-from CMGTools.H2TauTau.proto.plotter.categories import *
+from CMGTools.H2TauTau.proto.plotter.rootutils import * 
+from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
+from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
-from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, plots_J1, drawAll
+from CMGTools.H2TauTau.proto.plotter.embed import *
+from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, PlotInfo
 from CMGTools.RootTools.Style import *
 from ROOT import kPink, TH1, TPaveText, TPad
 
@@ -25,67 +27,60 @@ XMIN  = 0
 XMAX  = 200
 
 
-def replaceShapeInclusive(plot, var, cut, comp):
+def replaceShapeInclusive(plot, var, anaDir,
+                          comp, weights, 
+                          cut, weight,
+                          embed):
+
     mvaTauIsoCut = -0.5
     # import pdb; pdb.set_trace()
-    if cut.find('isSignal')!=-1:
-        cut = cut.replace('isSignal', cutstr_rlxtauiso(str(inc_sig), mvaTauIsoCut))
-    print '[INCLUSIVE] estimate',comp,'with cut',cut
+    # if cut.find('isSignal')!=-1:
+    # cut = cut.replace( str(inc_sig), cutstr_rlxtauiso(str(inc_sig), mvaTauIsoCut))
+    cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
+    print '[INCLUSIVE] estimate',comp.name,'with cut',cut
     plotWithNewShape = cp( plot )
-    wjyield = plot.Hist(comp).Integral()
-    nbins = plot.Hist(comp).obj.GetNbinsX()
-    xmin = plot.Hist(comp).obj.GetXaxis().GetXmin()
-    xmax = plot.Hist(comp).obj.GetXaxis().GetXmax()
+    wjyield = plot.Hist(comp.name).Integral()
+##     nbins = plot.Hist(comp.name).obj.GetNbinsX()
+##     xmin = plot.Hist(comp.name).obj.GetXaxis().GetXmin()
+##     xmax = plot.Hist(comp.name).obj.GetXaxis().GetXmax()
+    nbins = plot.bins
+    xmin = plot.xmin
+    xmax = plot.xmax
     wjshape = shape(var, anaDir,
-                    selComps[comp], weights, nbins, xmin, xmax,
+                    comp, weights, nbins, xmin, xmax,
                     cut, weight,
                     embed)
     # import pdb; pdb.set_trace()
     wjshape.Scale( wjyield )
     # import pdb; pdb.set_trace()
-    plotWithNewShape.Replace(comp, wjshape) 
-    # plotWithNewShape.Hist(comp).on = False 
+    plotWithNewShape.Replace(comp.name, wjshape) 
+    # plotWithNewShape.Hist(comp.name).on = False 
     return plotWithNewShape
 
     
-def replaceShapeJets(plot, var, cut, comp):
-    cut = cut.replace(cat_J1,cat_J1_Rel)
-##     if cut.find('isSignal')!=-1:
-##         cut = cut.replace('isSignal', isSignalRelaxedTauIso(mvaTauIsoCut))
-    print '[JET] estimate',comp,'with cut',cut
-    plotWithNewShape = cp( plot )
-    # wjyield = plot.Hist(comp).Integral()
-    nbins = plot.Hist(comp).obj.GetNbinsX()
-    xmin = plot.Hist(comp).obj.GetXaxis().GetXmin()
-    xmax = plot.Hist(comp).obj.GetXaxis().GetXmax()
-    wjyirel, dummy = yield_and_shape(var, cut, selComps[comp],
-                                     nbins, xmin, xmax)
-    wjshape = shape(var, cat_VBF_Rel, selComps[comp],
-                    nbins, xmin, xmax)
-    wjyield = wjyirel * 0.05987 
-    wjshape.Scale( wjyield )
-    plotWithNewShape.Replace(comp, wjshape) 
-    # plotWithNewShape.Hist(comp).on = False 
-    return plotWithNewShape
-    
 
-
-def makePlot( var, weights, wJetScaleSS, wJetScaleOS,
+def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
               cut='', weight='weight', embed=False):
     
     print 'making the plot:', var, 'cut', cut
-    if nbins is None: nbins = NBINS
-    if xmin is None: xmin = XMIN
-    if xmax is None: xmax = XMAX
+    # if nbins is None: nbins = NBINS
+    # if xmin is None: xmin = XMIN
+    # if xmax is None: xmax = XMAX
+
 
     oscut = cut+' && diTau_charge==0'
     osign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
                            cut=oscut, weight=weight,
                            embed=embed)
-    osign.Hist(EWK).Scale( wJetScaleOS ) 
-    osign = replaceShape(osign, var, oscut, 'WJets')
+    osign.Hist(EWK).Scale( wJetScaleOS )
+    replaceWJets = True
+    if replaceWJets:
+        osign = replaceShapeInclusive(osign, var, anaDir,
+                                      selComps['WJets'], weights, 
+                                      oscut, weight,
+                                      embed)
     
     # boxss = box.replace('OS','SS')
     sscut = cut+' && diTau_charge!=0'
@@ -95,19 +90,48 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS,
                            embed=embed)
     ssign.Hist(EWK).Scale( wJetScaleSS ) 
     # import pdb; pdb.set_trace()
-    ssign = replaceShape(ssign, var, sscut, 'WJets')
+    if replaceWJets:
+        ssign = replaceShapeInclusive(ssign, var, anaDir,
+                                      selComps['WJets'], weights, 
+                                      sscut, weight,
+                                      embed)
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
+    qcd_yield = osQCD.Hist('QCD').Integral()
+
+    # replace the QCD shape by the one obtained from the data in the isolation sideband
+    sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.75') + ' && diTau_charge!=0' 
+    ssign_qcdshape = H2TauTauDataMC(var, anaDir,
+                                    selComps, weights, nbins, xmin, xmax,
+                                    cut=sscut_qcdshape, weight=weight,
+                                    embed=embed)
+    # import pdb; pdb.set_trace()
+    # ssign.Hist(EWK).Scale( wJetScaleSS ) 
+    qcd_shape = copy.deepcopy( ssign_qcdshape.Hist('Data') )    
+    qcd_shape.Normalize()
+    qcd_shape.Scale(qcd_yield)
+    # qcd_shape.Scale( qcd_yield )
+    osQCD.Replace('QCD', qcd_shape)
 
     groupEWK( osQCD )
     return ssign, osign, ssQCD, osQCD
 
 
+def drawAll(cut, plots, embed):
+    for plot in plots.values():
+        print plot.var
+        ss, os, ssQ, osQ = makePlot( plot.var, anaDir,
+                                     selComps, weights, fwss, fwos,
+                                     plot.nbins, plot.xmin, plot.xmax,
+                                     cut, weight=weight, embed=embed)
+        draw(osQ, False)
+        plot.ssign = cp(ss)
+        plot.osign = cp(os)
+        plot.ssQCD = cp(ssQ)
+        plot.osQCD = cp(osQ)
+        time.sleep(1)
 
-def replaceCategories(cutstr):
-    for catname, cat in categories.iteritems():
-        cutstr = cutstr.replace( catname, cat )
-    return cutstr
+
 
 
 if __name__ == '__main__':
@@ -137,32 +161,41 @@ if __name__ == '__main__':
                       help="Use embedd samples.",
                       action="store_true",
                       default=False)
+    parser.add_option("-B", "--blind", 
+                      dest="blind", 
+                      help="Blind.",
+                      action="store_false",
+                      default=True)
     parser.add_option("-n", "--nbins", 
                       dest="nbins", 
                       help="Number of bins",
-                      default=50)
+                      default=None)
     parser.add_option("-m", "--min", 
                       dest="xmin", 
                       help="xmin",
-                      default=0)
+                      default=None)
     parser.add_option("-M", "--max", 
                       dest="xmax", 
                       help="xmax",
-                      default=200)
+                      default=None)
 
-    
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
 
+    if options.nbins is None:
+        NBINS = binning_svfitMass
+        XMIN = None
+        XMAX = None
+    else:
+        NBINS = int(options.nbins)
+        XMIN = float(options.xmin)
+        XMAX = float(options.xmax)
+        
 
-    NBINS = int(options.nbins)
-    XMIN = float(options.xmin)
-    XMAX = float(options.xmax)
-
-    options.cut = replaceCategories(options.cut) 
+    options.cut = replaceCategories(options.cut, categories) 
     
     # TH1.AddDirectory(False)
     dataName = 'Data'
@@ -173,15 +206,21 @@ if __name__ == '__main__':
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
     embed = options.embed
-    selComps, weights = prepareComponents(anaDir, cfg.config)
+
+    # remove WJets from components, and aliase W3Jets -> WJets
+    comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='TTJets11']
+    cfg.config.components = comps
+
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config)
 
 
     can, pad, padr = buildCanvas()
+    cutw = options.cut.replace('mt<40', '1')
+    fwss, fwos, ss, os = plot_W( options.hist, anaDir, selComps, weights,
+                                 12, 70, 310, cutw,
+                                 weight=weight, embed=options.embed)
 
-    fwss, fwos, ss, os = plot_W_inclusive( options.hist, anaDir, selComps, weights,
-                                           30, 60, 300, options.cut,
-                                           weight=weight, embed=options.embed)
-
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
-    draw(osQCD)
+    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos,
+                                           NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
+    draw(osQCD, options.blind)
     
