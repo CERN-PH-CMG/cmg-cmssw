@@ -12,11 +12,8 @@ from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
 
 
-<<<<<<< run8TeV_cfg.py
+
 channel = 'mu_ele'
-=======
-channel = 'ele_ele'
->>>>>>> 1.9
 
 
 
@@ -209,7 +206,7 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 0
+test = 1
 if test==1:
     dataset = GGH125
     selectedComponents = [dataset]
