@@ -49,7 +49,23 @@ public:
   void setZMuMuColor(Int_t color){ZMuMuColor_=color;}
   void setZTauTauColor(Int_t color){ZTauTauColor_=color;}
   void setSignalColor(Int_t color){SignalColor_=color;}
+  void setTauLooseIsoCut(Float_t cut=0.7){tauLooseIsoCut_=cut;}
+  void setMuLooseIsoCut(Float_t cut=0.5){muLooseIsoCut_=cut;}
 
+  void setVariableBinning(Int_t nbins, Float_t * xbins){
+    if(nbins<2||xbins==0)cout<<" bad variable bins"<<endl;
+    nbinsVariable_=nbins;
+    xbinsVariable_=xbins;
+  }
+  TH1F * getPlotHisto(TString hname){
+    TH1F* h=0;
+    if(nbins_>0) h=new TH1F(hname,hname,nbins_,xmin_,xmax_);
+    else if(nbinsVariable_>0) h=new TH1F(hname,hname,nbinsVariable_,xbinsVariable_);
+    else{ cout<<" histo binning not recognized"<<endl; return 0;}
+    h->GetXaxis()->SetTitle(plotvar_);
+    h->Sumw2();
+    return h;
+  }
   bool printRawYields(TString selection="");
   bool scaleSamplesLumi();
 
@@ -59,6 +75,15 @@ public:
 	return *s;
       }  
     return NULL;
+  }
+
+  Float_t getTotalDataLumi(){
+    float totalDataLumi=0;
+    for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
+      if((*s)->getDataType()=="Data")
+	totalDataLumi+=(*s)->getLumi();
+    cout<<"Total Data lumi = "<<totalDataLumi<<endl;
+    return totalDataLumi;
   }
 
   ///basic methods which can be used by all categories
@@ -89,7 +114,7 @@ public:
   TH1F* getQCDInc();//uses the same sign samples
   TH1F* getTotalBackgroundIncSS();//sum of SS backgrounds except  QCD
   //TH1F* getTotalBackgroundInc();//sum of all OS backgrounds 
-  bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="",float muiso=0.5,float tauiso=0.75);
+  bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
   bool plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t SMcat, TString extrasel="", Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0,TString filetag="");
 
 
@@ -97,7 +122,7 @@ public:
   TH1F* getQCDMuIsoSM();//from muon isolation side-band
   TH1F* getWJetsSM();
   TH1F* getWJetsSMSS();
-  TH1F* getQCDMike( float muisocut=0.5, float tauisocut=0.75);//values from Josh for 2012 analysis
+  TH1F* getQCDMike();//values from Josh for 2012 analysis
   TString qcdTauIsoRatioMuNonIso_;//formula for the ratio
   TString qcdMuIsoRatioTauNonIso_;//formula for the ratio
   TString qcdTauIsoRatio_;//formula for the ratio
@@ -106,7 +131,12 @@ public:
   TH1F* getQCDTauIsoSMSS();//from anti-isolated taus
   TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
   TH1F* getQCDIsoSMSS();//from anti-isolated taus or anti iso muons  
-  TH1F* getWJetsIncShapeSS();//from anti-isolated taus
+  TH1F* getWJetsIncShape();
+  TH1F* getWJetsIncShapeSS();
+  TH1F* getW3Jets();
+  TH1F* getW3JetsSS();
+  TH1F* getW3JetsVBF();
+  //TH1F* getW3JetsVBFSS();
   TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
   TH1F* getWJetsTauIsoSM();//from anti-isolated taus
   TString wjetsTauIsoRatioSS_;//formula for the ratio for W+jets 
@@ -130,6 +160,13 @@ public:
   void setSmearHistoRes(float res){smearHistoRes_=res;}
   float smearHistoRes_;
   TH1F* smearHisto(TH1F* h);
+
+  void makeDensityHisto(TH1F*h){
+    for(Int_t b=1;b<=h->GetNbinsX();b++){
+      h->SetBinContent(b,h->GetBinContent(b)/h->GetBinWidth(b));
+      h->SetBinError(b,h->GetBinError(b)/h->GetBinWidth(b));//scale the error too
+    }
+  }
 
   //clean up
   void deleteSamples(){
@@ -156,6 +193,7 @@ public:
   Float_t xmin2_;
   Float_t xmax2_;
   
+
   //
   Int_t QCDColor_;
   Int_t WJetsColor_;
@@ -208,8 +246,13 @@ private:
   Float_t WJetsOSSideCorrErr_;
   Float_t WJetsSSSideCorrErr_;
 
+  Int_t WJetsType_;
+  
+  float tauLooseIsoCut_;
+  float muLooseIsoCut_;
 
-
+  Int_t nbinsVariable_;//for variable with binning
+  Float_t* xbinsVariable_;
 
   ///
   void fixFileTag(TString * filetag);

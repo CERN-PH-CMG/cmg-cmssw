@@ -33,6 +33,7 @@ flatNtpTauMu = cms.EDAnalyzer(
     sampleTruthEventType =  cms.int32( 0 ),
     randsigma = cms.double(0.),
     recoilCorrection = cms.int32(0), # 0 =no correction , 1=Z or Higgs , 2=W
+    recoiliScale = cms.double(0.),
     fileCorrectTo = cms.string(rootfile_dir + 'recoilfit_wjets_njet.root'), #need to configure this for each sample
     fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm_njet.root'),
     fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm42X_njet.root'),

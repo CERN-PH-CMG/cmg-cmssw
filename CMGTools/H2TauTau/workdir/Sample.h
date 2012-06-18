@@ -68,6 +68,7 @@ public:
 
 
   TH1F* getHistoNtpFile(TString xvar,Int_t xnbins,Float_t xmin,Float_t xmax,TString selection="");
+  TH1F* getHistoNtpFile(TString xvar,Int_t Nbins, Float_t * Xbins,TString selection="");
   
   TH2F* getHistoNtpFile(TString xvar,Int_t xnbins,Float_t xmin,Float_t xmax,TString yvar,Int_t ynbins,Float_t ymin,Float_t ymax,TString selection="");
 

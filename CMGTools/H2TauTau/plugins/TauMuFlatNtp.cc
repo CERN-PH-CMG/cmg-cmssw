@@ -50,10 +50,17 @@ TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
 
   recoilCorreciton_ =  iConfig.getParameter<int>("recoilCorrection");
   cout<<"recoilCorreciton_  : "<<recoilCorreciton_<<endl;
+
   fileZmmData_ = iConfig.getParameter<std::string>("fileZmmData");
   cout<<" fileZmmData_ : "<<fileZmmData_.c_str()<<endl;
+  corrector_.addDataFile( fileZmmData_);
+
   fileZmmMC_ = iConfig.getParameter<std::string>("fileZmmMC");
   cout<<"fileZmmMC_  : "<<fileZmmMC_.c_str()<<endl;
+  corrector_.addMCFile( fileZmmMC_);
+
+  recoiliScale_ = iConfig.getParameter<double>("recoiliScale");
+  cout<<"recoiliScale_   : "<<recoiliScale_<<endl;
 
   metType_ = iConfig.getParameter<int>("metType");
   cout<<"metType_  : "<<metType_<<endl;
@@ -684,11 +691,10 @@ bool TauMuFlatNtp::fill(){
   
   ///Apply recoil correction here to PFMET 
   if(recoilCorreciton_>0){
-    corrector_.addDataFile( fileZmmData_);
-    corrector_.addMCFile( fileZmmMC_);
-    double u1 = 0;
-    double u2 = 0;
-    double fluc = 0;
+    double u1 = 0.;
+    double u2 = 0.;
+    double fluc = 0.;
+   
     
     double lepPt  =diTauSel_->pt();
     double lepPhi =diTauSel_->phi();
@@ -699,7 +705,8 @@ bool TauMuFlatNtp::fill(){
       jetMult = njetLepLC_;
     }
 
-    corrector_.CorrectType1( pfmetpt_, pfmetphi_,  genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, jetMult );
+    //CorrectType1(pfmet,pfmetphi,iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);
+    corrector_.CorrectType1( pfmetpt_, pfmetphi_,  genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
 
     //smear the met even more
     //pfmetpt_=pfmetpt_*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);
