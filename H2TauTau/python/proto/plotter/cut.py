@@ -1,3 +1,5 @@
+import copy
+
 class Cut(object):
 
     def __init__(self, cutstr):
@@ -26,7 +28,6 @@ def replaceCategories(cutstr):
     
 if __name__ == '__main__':
 
-    import copy
 
     sig_mu = Cut('l2_relIso05<0.1 && l2_tightId>0.5 && l2_dxy<0.045 && l2_dz<0.2')
     sig_tau = Cut('l1_looseMvaIso>0.5 && (l1_EOverp>0.2 || l1_decayMode!=0) && l1_againstMuonTight>0.5 && l1_againstElectronLoose>0.5 && l1_dxy<0.045 && l1_dz<0.2')

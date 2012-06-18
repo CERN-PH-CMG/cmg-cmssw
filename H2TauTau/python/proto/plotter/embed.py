@@ -1,7 +1,7 @@
 import copy
 
 from ROOT import TChain, TH1F
-from CMGTools.H2TauTau.proto.plotter.categories import *
+from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
 
 
 def embedScaleFactor(selComps):

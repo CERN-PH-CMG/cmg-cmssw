@@ -1,7 +1,7 @@
 import copy
 
-from CMGTools.H2TauTau.proto.plotter.jetcategories.py
-from CMGTools.H2TauTau.proto.plotter.cut.py
+from CMGTools.H2TauTau.proto.plotter.jetcategories import *
+from CMGTools.H2TauTau.proto.plotter.cut import * 
 
 
 # inc_sig_mu = Cut('l2_relIso05<0.1 && l2_tightId>0.5 && l2_dxy<0.045 && l2_dz<0.2')
