@@ -102,8 +102,7 @@ if __name__ == '__main__':
 
     # SWITCH ON/OFF embedded samples
     options.embed=True
-    #scaleToZee=True
-    scaleToZee=False
+    crossCheckZee=True
 
     if run2012:
       # 1.616/fb
@@ -155,7 +154,7 @@ if __name__ == '__main__':
     if options.embed:
         embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight)
 
-    if scaleToZee:
+    if crossCheckZee:
         zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight, options.embed)
 
     tauScale='0.03'
@@ -188,12 +187,17 @@ if __name__ == '__main__':
     NOVBFtight         =  ' && (jet1Pt<30 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<4.0 || (jet1Eta*jet2Eta)>0 || mjj<400 || nCentralJets >0)'
 
     cuts=[
+##### Andreas ###############
+
+        ("CMS_test2012_2_86_embed_zee_oldsvfit_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012_2_86_embed_zee_oldsvfit_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012_2_86_embed_zee_oldsvfit_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+
 #####  Riccardo  ############################################################################################################################### 
 
-        ("CMS_2012_3_fb_l40_met00_mm_dRtt20_VertReweight_loose_BOOSTED"   , baseline + BOOSTED + l1Pt40l2Pt40 + NOVBF     , ' && dRtt<2.0' , isolationMM , 5 ),
-        ("CMS_2012_3_fb_l40_met00_mm_dRtt20_VertReweight_tight_BOOSTED"   , baseline + BOOSTED + l1Pt40l2Pt40 + NOVBFtight, ' && dRtt<2.0' , isolationMM , 5 ),
-
-        ("CMS_2012_3_fb_l40_met00_mm_dRtt20_VertReweight_loose_VBF"       , baseline + VBF      + l1Pt40l2Pt40 + VBF      , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_3_fb_l40_met00_mm_dRtt20_VertReweight_loose_BOOSTED"   , baseline + BOOSTED + l1Pt40l2Pt40 + NOVBF     , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_3_fb_l40_met00_mm_dRtt20_VertReweight_tight_BOOSTED"   , baseline + BOOSTED + l1Pt40l2Pt40 + NOVBFtight, ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_3_fb_l40_met00_mm_dRtt20_VertReweight_loose_VBF"       , baseline + VBF      + l1Pt40l2Pt40 + VBF      , ' && dRtt<2.0' , isolationMM , 5 ),
         #("CMS_2012_3_fb_l40_met00_mm_dRtt20_noReweight_tight_VBF"       , baseline + VBFtight + l1Pt40l2Pt40 + VBFtight , ' && dRtt<2.0' , isolationMM , 5 ),
 
 
@@ -413,7 +417,7 @@ if __name__ == '__main__':
           print "DYJets:"                  , plotVarDataSS.Hist("DYJets").Integral()#+plotVarDataSS.Hist("DYJets_Photon").Integral()
           print "DYJets_Electron:"         , plotVarDataSS.Hist("DYJets_Electron").Integral()
           print "DYJets_Fakes:"            , plotVarDataSS.Hist("DYJets_Fakes").Integral()
-          #print "WJets:"                   , plotVarDataSS.Hist("WJets").Integral()+plotVarDataSS.Hist("WJets_Fakes").Integral()
+          print "WJets:"                   , plotVarDataSS.Hist("WJets").Integral()+plotVarDataSS.Hist("WJets_Fakes").Integral()
           print "DiBoson:"                 , plotVarDataSS.Hist("WW").Integral()+plotVarDataSS.Hist("WZ").Integral()+plotVarDataSS.Hist("ZZ").Integral()
 
        if True:
@@ -423,7 +427,7 @@ if __name__ == '__main__':
           print "DYJets:"                  , plotVarDataLooseIsoOS.Hist("DYJets").Integral()#+plotVarDataLooseIsoOS.Hist("DYJets_Photon").Integral()
           print "DYJets_Electron:"         , plotVarDataLooseIsoOS.Hist("DYJets_Electron").Integral()
           print "DYJets_Fakes:"            , plotVarDataLooseIsoOS.Hist("DYJets_Fakes").Integral()
-          #print "WJets:"                   , plotVarDataLooseIsoOS.Hist("WJets").Integral()+plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
+          print "WJets:"                   , plotVarDataLooseIsoOS.Hist("WJets").Integral()+plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
           print "DiBoson:"                 , plotVarDataLooseIsoOS.Hist("WW").Integral()+plotVarDataLooseIsoOS.Hist("WZ").Integral()+plotVarDataLooseIsoOS.Hist("ZZ").Integral()
 
        if True:
@@ -433,7 +437,7 @@ if __name__ == '__main__':
           print "DYJets:"                  , plotVarDataLooseIsoSS.Hist("DYJets").Integral()#+plotVarDataLooseIsoSS.Hist("DYJets_Photon").Integral()
           print "DYJets_Electron:"         , plotVarDataLooseIsoSS.Hist("DYJets_Electron").Integral()
           print "DYJets_Fakes:"            , plotVarDataLooseIsoSS.Hist("DYJets_Fakes").Integral()
-          #print "WJets:"                   , plotVarDataLooseIsoSS.Hist("WJets").Integral()+plotVarDataLooseIsoSS.Hist("WJets_Fakes").Integral()
+          print "WJets:"                   , plotVarDataLooseIsoSS.Hist("WJets").Integral()+plotVarDataLooseIsoSS.Hist("WJets_Fakes").Integral()
           print "DiBoson:"                 , plotVarDataLooseIsoSS.Hist("WW").Integral()+plotVarDataLooseIsoSS.Hist("WZ").Integral()+plotVarDataLooseIsoSS.Hist("ZZ").Integral()
 
        ymax = max(QCDShapePlot.GetMaximum(),QCDShapeSemiPlot.GetMaximum())*1.5
@@ -501,11 +505,10 @@ if __name__ == '__main__':
           print >> Yields_dump, "Yields for MC and Data Higgs Mass = "+str(mIndex)+" GeV"
           print >> Yields_dump, "Data: \t\t\t"                    , plotVarDataOS.Hist("Data").Integral()
           print >> Yields_dump, "TTJets: \t\t"                    , plotVarDataOS.Hist("TTJets").Integral()
-          #print >> Yields_dump, "DYJets: \t\t"                    , plotVarDataOS.Hist("DYJets").Integral()+plotVarDataOS.Hist("DYJets_Photon").Integral()
           print >> Yields_dump, "DYJets: \t\t"                    , plotVarDataOS.Hist("DYJets").Integral()
           print >> Yields_dump, "DYJets_Electron: \t"             , plotVarDataOS.Hist("DYJets_Electron").Integral()
           print >> Yields_dump, "DYJets_Fakes: \t\t"              , plotVarDataOS.Hist("DYJets_Fakes").Integral()
-          #print >> Yields_dump, "WJets: \t\t\t"                   , plotVarDataOS.Hist("WJets").Integral()+plotVarDataOS.Hist("WJets_Fakes").Integral()
+          print >> Yields_dump, "WJets: \t\t\t"                   , plotVarDataOS.Hist("WJets").Integral()+plotVarDataOS.Hist("WJets_Fakes").Integral()
           print >> Yields_dump, "DiBoson: \t\t"                   , plotVarDataOS.Hist("WW").Integral()+plotVarDataOS.Hist("WZ").Integral()+plotVarDataOS.Hist("ZZ").Integral()
           print >> Yields_dump, "QCDdata: \t\t"                   , plotVarDataOS.Hist("QCDdata").Integral()
           print >> Yields_dump, str('Higgsgg'+str(mIndex)+":\t\t") , plotVarDataOS.Hist(str('Higgsgg'+str(mIndex))).Integral()

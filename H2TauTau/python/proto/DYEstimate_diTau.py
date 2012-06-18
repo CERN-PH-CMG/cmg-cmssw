@@ -75,13 +75,13 @@ def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, 
 
     zeeScaleFactor = inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").Integral()/ \
         (inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Integral())
-    print "zeeScaleFactor", zeeScaleFactor
+    print "zeeScaleFactor", zeeScaleFactor, "+-", math.sqrt(pow(0.2,2)+pow(0.2,2))*zeeScaleFactor
 
-    for name,comp in selCompsNoSignal.items():
-        if comp.isEmbed:
-	     comp.embedFactor *= zeeScaleFactor
-    for mass,comps in selCompsDataMass.items():
-      for name,comp in comps.items():
-        if comp.isEmbed:
-	     comp.embedFactor *= zeeScaleFactor
+    #for name,comp in selCompsNoSignal.items():
+    #    if comp.isEmbed:
+	#     comp.embedFactor *= zeeScaleFactor
+    #for mass,comps in selCompsDataMass.items():
+    #  for name,comp in comps.items():
+    #    if comp.isEmbed:
+	#     comp.embedFactor *= zeeScaleFactor
 
