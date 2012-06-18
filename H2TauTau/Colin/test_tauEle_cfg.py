@@ -148,11 +148,14 @@ sequence = cfg.Sequence( [
 
 DYJets.fakes = True
 DYJets.splitFactor = 40
-WJets.splitFactor = 10
+WJets.splitFactor = 100
 TTJets.splitFactor = 100
 
-data_Run2011B_PromptReco_v1.splitFactor = 40
-data_Run2011A_PromptReco_v4.splitFactor = 40
+data_Run2011A_May10ReReco_v1.splitFactor = 100
+data_Run2011A_PromptReco_v4.splitFactor = 100
+data_Run2011A_05Aug2011_v1.splitFactor = 100
+data_Run2011A_03Oct2011_v1.splitFactor = 100
+data_Run2011B_PromptReco_v1.splitFactor = 100
 
 ## embed_Run2011A_May10ReReco_v1.splitFactor = 2
 ## embed_Run2011A_PromptReco_v4.splitFactor = 4
@@ -160,10 +163,14 @@ data_Run2011A_PromptReco_v4.splitFactor = 40
 ## embed_Run2011A_03Oct2011_v1.splitFactor = 2
 ## embed_Run2011B_PromptReco_v1.splitFactor = 8
 
-test = 0
+test = 1
 if test==1:
-    comp = DYJets
+#    comp = DYJets
 #    comp = HiggsVBF120
+    comp = data_Run2011A_03Oct2011_v1
+#    comp = data_Run2011A_May10ReReco_v1
+#    comp = data_Run2011A_05Aug2011_v1
+#    comp = data_Run2011A_PromptReco_v4
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:1]
@@ -172,7 +179,13 @@ elif test==2:
     for comp in selectedComponents:
      comp.splitFactor = 1
      comp.files = comp.files[:2]
-
+elif test==3: # data only, test
+    selectedComponents = data_2011 
+    for comp in selectedComponents:
+     comp.splitFactor = 1
+     comp.files = comp.files[:2]
+elif test==4: # data only, full run
+    selectedComponents = data_2011 
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
