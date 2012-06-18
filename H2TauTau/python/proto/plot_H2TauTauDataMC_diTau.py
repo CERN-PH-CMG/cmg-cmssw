@@ -10,10 +10,20 @@ from PrepareDictionaries_diTau import *
 import math
 import copy
 
+from os import path
+if path.exists('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon2.C'):
+    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon2.C')  # Run ROOT logon script
+
+
 run2012=True
 
 import ROOT
 ROOT.gROOT.SetBatch(True)
+
+
+#def weightQCD(nVert) : 
+#    vertSig[]
+
 
 def prepareComponents(dir, config):
     # list of components from configuration file
@@ -92,7 +102,8 @@ if __name__ == '__main__':
 
     # SWITCH ON/OFF embedded samples
     options.embed=True
-    scaleToZee=True
+    #scaleToZee=True
+    scaleToZee=False
 
     if run2012:
       # 1.616/fb
@@ -139,7 +150,7 @@ if __name__ == '__main__':
 
     selCompsDataMass, weightsDataMass = componentsWithData(selComps,weights)
     #selCompsMCMass, weightsMCMass     = componentsWithOutData(selComps,weights)
-    selCompsNoSignal, weightsNoSignal   = componentsWithOutSignal(selComps,weights)
+    selCompsNoSignal, weightsNoSignal = componentsWithOutSignal(selComps,weights)
 
     if options.embed:
         embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight)
@@ -152,12 +163,17 @@ if __name__ == '__main__':
 
     baseline           =  'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0'
     baseline           += ' && l2MVAEle>0.5'
+    #baseline           += ' && l1MVAEle>0.5 && l2MVAEle<0.5'
+    #antiEleNegato      =  ' && l1MVAEle<0.5 && l2MVAEle<0.5'
     l1Pt35l2Pt35       =  ' && l1Pt>35 && l2Pt>35'
     l1Pt40l2Pt40       =  ' && l1Pt>40 && l2Pt>40'
     l1Pt45l2Pt40       =  ' && l1Pt>45 && l2Pt>40'
     l1Pt45l2Pt45       =  ' && l1Pt>45 && l2Pt>45'
     isolationL         =  ' && (l1RawMVAIso>0.795 || l2RawMVAIso>0.795)'
     isolationMLL       =  ' && ((l1MedMVAIso>0.5 && l2RawMVAIso>0.5) || (l1RawMVAIso>0.5 && l2MedMVAIso>0.5))'
+
+    isolationMNM       =  ' && l1MedMVAIso>0.5 && l2MedMVAIso<0.5'
+
     isolationM         =  ' && (l1MedMVAIso>0.5 || l2MedMVAIso>0.5)'
     isolationLL        =  ' && l1RawMVAIso>0.795 && l2RawMVAIso>0.795'
     isolationML        =  ' && ((l1MedMVAIso>0.5 && l2RawMVAIso>0.795) || (l1RawMVAIso>0.795 && l2MedMVAIso>0.5))'
@@ -166,80 +182,37 @@ if __name__ == '__main__':
     isolationTT        =  ' && l1TigMVAIso>0.5 && l2TigMVAIso>0.5'
     Jet0               =  ' && jet1Pt<50'
     BOOSTED            =  ' && jet1Pt>50'
-    VBF                =  ' &&  jet1Pt>30 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>250 '
-    NOVBF              =  ' && (jet1Pt<30 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<250)'
+    VBF                =  ' &&  jet1Pt>30 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>250 && nCentralJets==0 '
+    NOVBF              =  ' && (jet1Pt<30 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<250 || nCentralJets >0)'
     VBFtight           =  ' &&  jet1Pt>30 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>4.0 && (jet1Eta*jet2Eta)<0 && mjj>400 && nCentralJets==0'
+    NOVBFtight         =  ' && (jet1Pt<30 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<4.0 || (jet1Eta*jet2Eta)>0 || mjj<400 || nCentralJets >0)'
 
     cuts=[
-#####  Andreas  ############################################################################################################################### 
+#####  Riccardo  ############################################################################################################################### 
 
-        ("CMS_test2012_2_86_embed_zee_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
-        ("CMS_test2012_2_86_embed_zee_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,5),
-        ("CMS_test2012_2_86_embed_zee_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_2012_3_fb_l40_met00_mm_dRtt20_VertReweight_loose_BOOSTED"   , baseline + BOOSTED + l1Pt40l2Pt40 + NOVBF     , ' && dRtt<2.0' , isolationMM , 5 ),
+        ("CMS_2012_3_fb_l40_met00_mm_dRtt20_VertReweight_tight_BOOSTED"   , baseline + BOOSTED + l1Pt40l2Pt40 + NOVBFtight, ' && dRtt<2.0' , isolationMM , 5 ),
 
-######################################################################################################################################################### 
+        ("CMS_2012_3_fb_l40_met00_mm_dRtt20_VertReweight_loose_VBF"       , baseline + VBF      + l1Pt40l2Pt40 + VBF      , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_3_fb_l40_met00_mm_dRtt20_noReweight_tight_VBF"       , baseline + VBFtight + l1Pt40l2Pt40 + VBFtight , ' && dRtt<2.0' , isolationMM , 5 ),
 
-        #("CMS_review_l140_l240_j50_dR20_ll_Met00_VBF"         ,baseline + l1Pt40l2Pt40 + VBF               ,' && dRtt<2.0',isolationLL,2),
-        #("CMS_review_l140_l240_j50_dR20_ml_Met00_VBF"         ,baseline + l1Pt40l2Pt40 + VBF               ,' && dRtt<2.0',isolationML,2),
-        #("CMS_review_l140_l240_j50_dR20_mm_Met00_VBF"         ,baseline + l1Pt40l2Pt40 + VBF               ,' && dRtt<2.0',isolationMM,2),
 
-######################################################################################################################################################### 
-
-        #("CMS_review_l140_l240_j50_dR20_tt_Met00_BOOSTED"     ,baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0',isolationTT,2),
-        #("CMS_review_l140_l240_j50_dR20_tm_Met00_BOOSTED"     ,baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0',isolationTM,2),
-        #("CMS_review_l140_l240_j50_dR20_mm_Met00_BOOSTED"     ,baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0',isolationMM,2),
-
-        #("CMS_review_l145_l240_j50_dR20_tt_Met00_BOOSTED"     ,baseline + l1Pt45l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0',isolationTT,2),
-        #("CMS_review_l145_l240_j50_dR20_tm_Met00_BOOSTED"     ,baseline + l1Pt45l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0',isolationTM,2),
-        #("CMS_review_l145_l240_j50_dR20_mm_Met00_BOOSTED"     ,baseline + l1Pt45l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0',isolationMM,2),
-
-        #("CMS_review_l145_l245_j50_dR20_tt_Met00_BOOSTED"     ,baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF   ,' && dRtt<2.0',isolationTT,2),
-        #("CMS_review_l145_l245_j50_dR20_tm_Met00_BOOSTED"     ,baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF   ,' && dRtt<2.0',isolationTM,2),
-        #("CMS_review_l145_l245_j50_dR20_mm_Met00_BOOSTED"     ,baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF   ,' && dRtt<2.0',isolationMM,2),
-
-######################################################################################################################################################### 
-
-        #("CMS_review_l135_l235_j50_dR20_tt_Met00_VBF"         ,baseline + VBF                              ,' && dRtt<2.0',isolationTT,2),
-        #("CMS_review_l135_l235_j50_dR20_tm_Met00_VBF"         ,baseline + VBF                              ,' && dRtt<2.0',isolationTM,2),
-        #("CMS_review_l135_l235_j50_dR20_mm_Met00_VBF"         ,baseline + VBF                              ,' && dRtt<2.0',isolationMM,2),
-
-        #("CMS_review_l140_l240_j50_dR20_tt_Met00_VBF"         ,baseline + l1Pt40l2Pt40 + VBF               ,' && dRtt<2.0',isolationTT,2),
-        #("CMS_review_l140_l240_j50_dR20_tm_Met00_VBF"         ,baseline + l1Pt40l2Pt40 + VBF               ,' && dRtt<2.0',isolationTM,2),
-        #("CMS_review_l140_l240_j50_dR20_mm_Met00_VBF"         ,baseline + l1Pt40l2Pt40 + VBF               ,' && dRtt<2.0',isolationMM,2),
-        #("CMS_review_l140_l240_j50_dR20_ll_Met00_VBF"         ,baseline + l1Pt40l2Pt40 + VBF               ,' && dRtt<2.0',           ,2),
-        #("CMS_review_l145_l245_j50_dR20_mm_Met00_VBF"         ,baseline + l1Pt45l2Pt45 + VBF               ,' && dRtt<2.0',isolationMM,2),
-
-######################################################################################################################################################### 
-
-        #("CMS_review_l140_l240_j50_dR20_tt_Met20_BOOSTED"     ,baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0 && met >20',isolationTT,2),
-        #("CMS_review_l140_l240_j50_dR20_tm_Met20_BOOSTED"     ,baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0 && met >20',isolationTM,2),
-        #("CMS_review_l140_l240_j50_dR20_mm_Met20_BOOSTED"     ,baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0 && met >20',isolationMM,2),
-
-        #("CMS_review_l145_l240_j50_dR20_tt_Met20_BOOSTED"     ,baseline + l1Pt45l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0 && met >20',isolationTT,2),
-        #("CMS_review_l145_l240_j50_dR20_tm_Met20_BOOSTED"     ,baseline + l1Pt45l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0 && met >20',isolationTM,2),
-        #("CMS_review_l145_l240_j50_dR20_mm_Met20_BOOSTED"     ,baseline + l1Pt45l2Pt40 + BOOSTED + NOVBF   ,' && dRtt<2.0 && met >20',isolationMM,2),
-
-        #("CMS_review_l145_l245_j50_dR20_tt_Met20_BOOSTED"     ,baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF   ,' && dRtt<2.0 && met >20',isolationTT,2),
-        #("CMS_review_l145_l245_j50_dR20_tm_Met20_BOOSTED"     ,baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF   ,' && dRtt<2.0 && met >20',isolationTM,2),
-        #("CMS_review_l145_l245_j50_dR20_mm_Met20_BOOSTED"     ,baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF   ,' && dRtt<2.0 && met >20',isolationMM,2),
-
-######################################################################################################################################################### 
-
-        #("CMS_review_l135_l235_j50_dR20_tt_Met20_VBF"         ,baseline + VBF                              ,' && dRtt<2.0 && met >20',isolationTT,2),
-        #("CMS_review_l135_l235_j50_dR20_tm_Met20_VBF"         ,baseline + VBF                              ,' && dRtt<2.0 && met >20',isolationTM,2),
-        #("CMS_review_l135_l235_j50_dR20_mm_Met20_VBF"         ,baseline + VBF                              ,' && dRtt<2.0 && met >20',isolationMM,2),
-
-        #("CMS_review_l140_l240_j50_dR20_tt_Met20_VBF"         ,baseline + l1Pt40l2Pt40 + VBF               ,' && dRtt<2.0 && met >20',isolationTT,2),
-        #("CMS_review_l140_l240_j50_dR20_tm_Met20_VBF"         ,baseline + l1Pt40l2Pt40 + VBF               ,' && dRtt<2.0 && met >20',isolationTM,2),
-        #("CMS_review_l140_l240_j50_dR20_mm_Met20_VBF"         ,baseline + l1Pt40l2Pt40 + VBF               ,' && dRtt<2.0 && met >20',isolationMM,2),
+        #("CMS_2012_June1v3_fb_l35_j50_met00_mm_dRtt20_met20_Reweight_BOOSTED"  , baseline + BOOSTED , ' && met < 20' , isolationMM , 5 ),
+        #("CMS_2012_June1v3_fb_l40_j50_met00_mm_dRtt20_noReweightl2Pt_BOOSTED" , baseline + BOOSTED + l1Pt40l2Pt40 , ' && dRtt<2.0' , isolationMM , 5 ),
+        
+        #("CMS_2012_June1v3_fb_controlRegion2_BOOSTED"                   , baseline + BOOSTED , ' && dRtt>2' , isolationMM , 5 ),
+        
+        #("CMS_test2012_2_86_embed_zee_l40_j50_dR20_mm_Met00_BOOSTED"    , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF ,' && dRtt<2.0',isolationMM,5),
+        #("CMS_test2012_2_86_embed_zee_l40_j50_dR20_mm_Met00_VBF"        , baseline + l1Pt40l2Pt40 + VBF             ,' && dRtt<2.0',isolationMM,5),
+        #("CMS_test2012_2_86_embed_zee_l45_j50_dR20_mm_Met00_BOOSTED"    , baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF ,' && dRtt<2.0',isolationMM,5),
 
 	  ]
         
     for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
      if str(prefix).find("VBF") > 0 :
-       rebin = 4	
+       rebin = 2	
      else :
-       rebin = 1
+       rebin = 1	
      for var, nx, xmin, xmax in [
         ('svfitMass'        ,int(30/rebin), 0 , 300    ), 
         ('svfitMass*1.03'   ,int(30/rebin), 0 , 300    ),
@@ -250,6 +223,8 @@ if __name__ == '__main__':
         ('jet1Pt'           ,int(50/rebin), 0 , 500    ),
         ('jet2Pt'           ,int(50/rebin), 0 , 500    ),
         ('visMass'          ,int(30/rebin), 0 , 300    ),
+        #('visMass*1.03'     ,int(30/rebin), 0 , 300    ),
+        #('visMass*0.97'     ,int(30/rebin), 0 , 300    ),
         ('nVert'            ,int(25/rebin), 0 , 50     ),
         ('l1Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
         ('l2Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
@@ -302,8 +277,12 @@ if __name__ == '__main__':
 
       #looseisocut=" && !(1 "+isocut+")"
       #semilooseisocut=isolationM+" && !(1 "+isocut+")"
+
       looseisocut=isolationM+" && !(1 "+isocut+")"
+      #looseisocut=isolationMNM+" && !(1 "+isocut+")"
+
       semilooseisocut=isolationMLL+" && !(1 "+isocut+")"
+      
       if qcdEstimate==0:
         # MET based QCD estimation
         lowcontrolcut=" && met<10"
@@ -322,22 +301,46 @@ if __name__ == '__main__':
         lowcontrolcut=" && dRtt>3.0"
         averagecontrolcut=" && dRtt>2.0"
         highcontrolcut=" && dRtt>2.0 && dRtt<3.0"
+      elif qcdEstimate==6:
+        # Loose based QCD estimation
+        pass
 
       cutSS=cut.replace("diTauCharge==0","diTauCharge!=0")
       
-      plotVarDataSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     			    nx, xmin, xmax,
-     			    cut = cutSS+isocut+antiqcdcut, weight=weight,
-     			    embed=options.embed)
-      plotVarDataLooseIsoSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     			    nx, xmin, xmax,
-     			    cut = cutSS+looseisocut+antiqcdcut, weight=weight,
-     			    embed=options.embed)
+      plotVarDataSS = H2TauTauDataMC(var,                           \
+                                     anaDir,                        \
+                                     selCompsNoSignal,              \
+                                     weightsNoSignal,               \
+     			                     nx,                            \
+     			                     xmin,                          \
+     			                     xmax,                          \
+     			                     cut = cutSS+isocut+antiqcdcut, \
+     			                     weight=weight,                 \
+     			                     embed=options.embed)
+      
+      plotVarDataLooseIsoSS = H2TauTauDataMC(var,                               \
+                                             anaDir,                            \
+                                             selCompsNoSignal,                  \
+                                             weightsNoSignal,                   \
+     			                             nx,                                \
+     			                             xmin,                              \
+     			                             xmax,                              \
+     			                             cut = cutSS+looseisocut+antiqcdcut,\
+     			                             weight=weight,                     \
+     			                             embed=options.embed)
 
-      plotVarDataLooseIsoOS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     			    nx, xmin, xmax,
-     			    cut = cut+looseisocut+antiqcdcut, weight=weight,
-     			    embed=options.embed)
+      plotVarDataLooseIsoOS = H2TauTauDataMC(var,                              \
+                                             anaDir,                           \
+                                             selCompsNoSignal,                 \
+                                             weightsNoSignal,                  \
+     			                             nx,                               \
+     			                             xmin,                             \
+     			                             xmax,                             \
+     			                             cut = cut+looseisocut+antiqcdcut, \
+     			                             #weight=weight+"*weightQCD_nVert(nVert)",\
+     			                             #weight=weight+"*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
+     			                             weight=weight,                    \
+     			                             embed=options.embed)
 
       if qcdEstimate==4 or qcdEstimate==5:			    
        plotVarDataSemiLooseIsoSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
@@ -350,65 +353,40 @@ if __name__ == '__main__':
      			    embed=options.embed)
 			    
       if qcdEstimate==0 or qcdEstimate==1 or qcdEstimate==3:
-       plotVarDataLowControlOS = 0#H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     	#		    nx, xmin, xmax,
-     	#		    cut = cut+isocut+lowcontrolcut, weight=weight,
-     	#		    embed=options.embed)
-       plotVarDataLowControlSS = 0#H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     	#		    nx, xmin, xmax,
-     	#		    cut = cutSS+isocut+lowcontrolcut, weight=weight,
-     	#		    embed=options.embed)
-       plotVarDataAverageControlOS = 0#H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     	#		    nx, xmin, xmax,
-     	#		    cut = cut+isocut+averagecontrolcut, weight=weight,
-     	#		    embed=options.embed)
+       plotVarDataLowControlOS = 0
+       plotVarDataLowControlSS = 0
+       plotVarDataAverageControlOS = 0
        plotVarDataAverageControlSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
      			    nx, xmin, xmax,
      			    cut = cutSS+isocut+averagecontrolcut, weight=weight,
      			    embed=options.embed)
-       plotVarDataHighControlOS = 0#H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     	#		    nx, xmin, xmax,
-     	#		    cut = cut+isocut+highcontrolcut, weight=weight,
-     	#		    embed=options.embed)
-       plotVarDataHighControlSS = 0#H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     	#		    nx, xmin, xmax,
-     	#		    cut = cutSS+isocut+highcontrolcut, weight=weight,
-     	#		    embed=options.embed)
+       plotVarDataHighControlOS = 0
+       plotVarDataHighControlSS = 0
       if qcdEstimate==0 or qcdEstimate==1:
-       plotVarDataLowControlLooseIsoOS = 0#H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     	#		    nx, xmin, xmax,
-     	#		    cut = cut+looseisocut+lowcontrolcut, weight=weight,
-     	#		    embed=options.embed)
+       plotVarDataLowControlLooseIsoOS = 0
        plotVarDataAverageControlLooseIsoOS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
      			    nx, xmin, xmax,
      			    cut = cut+looseisocut+averagecontrolcut, weight=weight,
      			    embed=options.embed)
-       plotVarDataHighControlLooseIsoOS = 0#H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     	#		    nx, xmin, xmax,
-     	#		    cut = cut+looseisocut+highcontrolcut, weight=weight,
-     	#		    embed=options.embed)
+       plotVarDataHighControlLooseIsoOS = 0
       if qcdEstimate==0 or qcdEstimate==1 or qcdEstimate==3:
-       plotVarDataLowControlLooseIsoSS = 0#H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-      	#		    nx, xmin, xmax,
-     	#		    cut = cutSS+looseisocut+lowcontrolcut, weight=weight,
-     	#		    embed=options.embed)
+       plotVarDataLowControlLooseIsoSS = 0
        plotVarDataAverageControlLooseIsoSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
      			    nx, xmin, xmax,
      			    cut = cutSS+looseisocut+averagecontrolcut, weight=weight,
      			    embed=options.embed)
-       plotVarDataHighControlLooseIsoSS = 0#H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     	#		    nx, xmin, xmax,
-     	#		    cut = cutSS+looseisocut+highcontrolcut, weight=weight,
-     	#		    embed=options.embed)
+       plotVarDataHighControlLooseIsoSS = 0
 
       if qcdEstimate==1:
        QCDShape, QCDScale = QCDEstimate1(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,
                                        plotVarDataLowControlOS, plotVarDataLowControlSS, plotVarDataAverageControlOS, plotVarDataAverageControlSS, plotVarDataHighControlOS, plotVarDataHighControlSS,
-                                       plotVarDataLowControlLooseIsoOS, plotVarDataLowControlLooseIsoSS, plotVarDataAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoSS, plotVarDataHighControlLooseIsoOS, plotVarDataHighControlLooseIsoSS,
-       			       log)
+                                       plotVarDataLowControlLooseIsoOS, plotVarDataLowControlLooseIsoSS, plotVarDataAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoSS, plotVarDataHighControlLooseIsoOS, plotVarDataHighControlLooseIsoSS,log)
 
       if qcdEstimate==2:
-       QCDShape, QCDScale = QCDEstimate2(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
+        QCDShape, QCDScale, QCDlooseSS, QCDtightSS = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
+
+      if qcdEstimate==6:
+        QCDShape, QCDScale, QCDlooseSS, QCDtightSS = QCD_WJets_Estimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
 
       if qcdEstimate==3:
        QCDShape, QCDScale = QCDEstimate3(prefix,prefix1,xmin,xmax,plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataAverageControlSS, plotVarDataAverageControlLooseIsoSS, log)
@@ -417,8 +395,8 @@ if __name__ == '__main__':
        QCDShape, QCDScale = QCDEstimate4(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataSemiLooseIsoSS, log)
 
       if qcdEstimate==5:
-       QCDShape, QCDScale = QCDEstimate2(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
-       QCDShapeSemi, QCDScaleSemi = QCDEstimate2(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
+       QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
+       QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
 
        QCDShapePlot=copy.deepcopy(QCDShape)
        QCDShapePlot.SetStyle( sRedLine )
@@ -435,7 +413,7 @@ if __name__ == '__main__':
           print "DYJets:"                  , plotVarDataSS.Hist("DYJets").Integral()#+plotVarDataSS.Hist("DYJets_Photon").Integral()
           print "DYJets_Electron:"         , plotVarDataSS.Hist("DYJets_Electron").Integral()
           print "DYJets_Fakes:"            , plotVarDataSS.Hist("DYJets_Fakes").Integral()
-          print "WJets:"                   , plotVarDataSS.Hist("WJets").Integral()+plotVarDataSS.Hist("WJets_Fakes").Integral()
+          #print "WJets:"                   , plotVarDataSS.Hist("WJets").Integral()+plotVarDataSS.Hist("WJets_Fakes").Integral()
           print "DiBoson:"                 , plotVarDataSS.Hist("WW").Integral()+plotVarDataSS.Hist("WZ").Integral()+plotVarDataSS.Hist("ZZ").Integral()
 
        if True:
@@ -445,7 +423,7 @@ if __name__ == '__main__':
           print "DYJets:"                  , plotVarDataLooseIsoOS.Hist("DYJets").Integral()#+plotVarDataLooseIsoOS.Hist("DYJets_Photon").Integral()
           print "DYJets_Electron:"         , plotVarDataLooseIsoOS.Hist("DYJets_Electron").Integral()
           print "DYJets_Fakes:"            , plotVarDataLooseIsoOS.Hist("DYJets_Fakes").Integral()
-          print "WJets:"                   , plotVarDataLooseIsoOS.Hist("WJets").Integral()+plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
+          #print "WJets:"                   , plotVarDataLooseIsoOS.Hist("WJets").Integral()+plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
           print "DiBoson:"                 , plotVarDataLooseIsoOS.Hist("WW").Integral()+plotVarDataLooseIsoOS.Hist("WZ").Integral()+plotVarDataLooseIsoOS.Hist("ZZ").Integral()
 
        if True:
@@ -455,7 +433,7 @@ if __name__ == '__main__':
           print "DYJets:"                  , plotVarDataLooseIsoSS.Hist("DYJets").Integral()#+plotVarDataLooseIsoSS.Hist("DYJets_Photon").Integral()
           print "DYJets_Electron:"         , plotVarDataLooseIsoSS.Hist("DYJets_Electron").Integral()
           print "DYJets_Fakes:"            , plotVarDataLooseIsoSS.Hist("DYJets_Fakes").Integral()
-          print "WJets:"                   , plotVarDataLooseIsoSS.Hist("WJets").Integral()+plotVarDataLooseIsoSS.Hist("WJets_Fakes").Integral()
+          #print "WJets:"                   , plotVarDataLooseIsoSS.Hist("WJets").Integral()+plotVarDataLooseIsoSS.Hist("WJets_Fakes").Integral()
           print "DiBoson:"                 , plotVarDataLooseIsoSS.Hist("WW").Integral()+plotVarDataLooseIsoSS.Hist("WZ").Integral()+plotVarDataLooseIsoSS.Hist("ZZ").Integral()
 
        ymax = max(QCDShapePlot.GetMaximum(),QCDShapeSemiPlot.GetMaximum())*1.5
@@ -469,17 +447,17 @@ if __name__ == '__main__':
      
        gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDcheck.png")
        gPad.WaitPrimitive()
-
       
       #######################################################
       ################# PLOTTING DATA/MC ####################
       #######################################################
       yields = False
       if ( var == "svfitMass" or var == "svfitMass*1.03" or var == "svfitMass*0.97" ):
-        massesRange = [125]
         #massesRange = [110,115,120,125,130,135,140,145]
+        massesRange = [125]
         print 'I\'m plotting mass distribution for masses in [110,115,120,125,130,135,140,145] GeV'
-        yields = True
+        if var == "svfitMass" :
+          yields = True
       else :
         massesRange = [125]
         print 'I\'m plotting distribution just for mass 125 GeV'
@@ -491,17 +469,14 @@ if __name__ == '__main__':
      			    cut = cut+isocut+antiqcdcut, weight=weight,
      			    embed=options.embed)
 
-        plotVarDataOS.AddHistogram("QCDdata",QCDShape.weighted)
-        plotVarDataOS.Hist('QCDdata').stack = True
-        plotVarDataOS.Hist('QCDdata').SetStyle( sBlack )
-        plotVarDataOS.Hist('QCDdata').layer = 0.99
-        plotVarDataOS.Hist('QCDdata').Scale(QCDScale)
         
-        #### WJets estimate for low stat 2012 MC samples ###
+        ### WJets estimate for low stat 2012 MC samples ###
         WJetsShape = copy.deepcopy(plotVarDataLooseIsoOS.Hist("WJets"))
-        WJetsScale = plotVarDataOS.Hist("WJets").Integral()/plotVarDataLooseIsoOS.Hist("WJets").Integral()
+        #WJetsScale = plotVarDataOS.Hist("WJets").Integral()/plotVarDataLooseIsoOS.Hist("WJets").Integral()
+        WJetsScale = 1.5*plotVarDataOS.Hist("WJets").Integral()/plotVarDataLooseIsoOS.Hist("WJets").Integral()
         WJetsFakesShape = copy.deepcopy(plotVarDataLooseIsoOS.Hist("WJets_Fakes"))
-        WJetsFakesScale = plotVarDataOS.Hist("WJets_Fakes").Integral()/plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
+        #WJetsFakesScale = plotVarDataOS.Hist("WJets_Fakes").Integral()/plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
+        WJetsFakesScale = 1.5*plotVarDataOS.Hist("WJets_Fakes").Integral()/plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
         plotVarDataOS.Hist("WJets").obj = WJetsShape.obj
         plotVarDataOS.Hist("WJets").weighted = WJetsShape.weighted
         plotVarDataOS.Hist("WJets").Scale(WJetsScale)
@@ -509,20 +484,34 @@ if __name__ == '__main__':
         plotVarDataOS.Hist("WJets_Fakes").weighted = WJetsFakesShape.weighted
         plotVarDataOS.Hist("WJets_Fakes").Scale(WJetsFakesScale)
 
-        if yields == True :
-          print "Yields for MC and Data Higgs Mass = "+str(mIndex)+" GeV"
-          print "Lumi:"                    , plotVarDataOS.intLumi
-          print "Data:"                    , plotVarDataOS.Hist("Data").Integral()
-          print "TTJets:"                  , plotVarDataOS.Hist("TTJets").Integral()
-          print "DYJets:"                  , plotVarDataOS.Hist("DYJets").Integral()#+plotVarDataOS.Hist("DYJets_Photon").Integral()
-          print "DYJets_Electron:"         , plotVarDataOS.Hist("DYJets_Electron").Integral()
-          print "DYJets_Fakes:"            , plotVarDataOS.Hist("DYJets_Fakes").Integral()
-          print "WJets:"                   , plotVarDataOS.Hist("WJets").Integral()+plotVarDataOS.Hist("WJets_Fakes").Integral()
-          print "DiBoson:"                 , plotVarDataOS.Hist("WW").Integral()+plotVarDataOS.Hist("WZ").Integral()+plotVarDataOS.Hist("ZZ").Integral()
-          print "QCDdata:"                 , plotVarDataOS.Hist("QCDdata").Integral()
-          print str('Higgsgg'+str(mIndex)) , plotVarDataOS.Hist(str('Higgsgg'+str(mIndex))).Integral()
-          print str('HiggsVBF'+str(mIndex)), plotVarDataOS.Hist(str('HiggsVBF'+str(mIndex))).Integral()
+        plotVarDataOS.AddHistogram("QCDdata",QCDShape.weighted)
+        plotVarDataOS.Hist('QCDdata').stack = True
+        plotVarDataOS.Hist('QCDdata').SetStyle( sBlack )
+        plotVarDataOS.Hist('QCDdata').layer = 0.99
+        plotVarDataOS.Hist('QCDdata').Scale(QCDScale)
+	      
+        #####################################################
+        ###        SAVE ROOT FILE FOR PLOTTING QCD        ###
+        #####################################################
 
+        saveQCD(copy.deepcopy(QCDShape),copy.deepcopy(QCDlooseSS),copy.deepcopy(QCDtightSS),var,prefix,mIndex)
+
+        if yields == True :
+          Yields_dump = open(os.getcwd()+"/"+prefix+"/Yields_"+var+"_mH"+str(mIndex)+".txt","w")
+          print >> Yields_dump, "Yields for MC and Data Higgs Mass = "+str(mIndex)+" GeV"
+          print >> Yields_dump, "Data: \t\t\t"                    , plotVarDataOS.Hist("Data").Integral()
+          print >> Yields_dump, "TTJets: \t\t"                    , plotVarDataOS.Hist("TTJets").Integral()
+          #print >> Yields_dump, "DYJets: \t\t"                    , plotVarDataOS.Hist("DYJets").Integral()+plotVarDataOS.Hist("DYJets_Photon").Integral()
+          print >> Yields_dump, "DYJets: \t\t"                    , plotVarDataOS.Hist("DYJets").Integral()
+          print >> Yields_dump, "DYJets_Electron: \t"             , plotVarDataOS.Hist("DYJets_Electron").Integral()
+          print >> Yields_dump, "DYJets_Fakes: \t\t"              , plotVarDataOS.Hist("DYJets_Fakes").Integral()
+          #print >> Yields_dump, "WJets: \t\t\t"                   , plotVarDataOS.Hist("WJets").Integral()+plotVarDataOS.Hist("WJets_Fakes").Integral()
+          print >> Yields_dump, "DiBoson: \t\t"                   , plotVarDataOS.Hist("WW").Integral()+plotVarDataOS.Hist("WZ").Integral()+plotVarDataOS.Hist("ZZ").Integral()
+          print >> Yields_dump, "QCDdata: \t\t"                   , plotVarDataOS.Hist("QCDdata").Integral()
+          print >> Yields_dump, str('Higgsgg'+str(mIndex)+":\t\t") , plotVarDataOS.Hist(str('Higgsgg'+str(mIndex))).Integral()
+          print >> Yields_dump, str('HiggsVBF'+str(mIndex)+":\t\t"), plotVarDataOS.Hist(str('HiggsVBF'+str(mIndex))).Integral()
+          Yields_dump.close()
+          
         #####################################################
         ###     SAVE ROOT FILES FOR LIMIT COMPUTATION     ###
         #####################################################
@@ -553,15 +542,15 @@ if __name__ == '__main__':
            if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>100 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<140 ):
               plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
-        if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
-         for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<120 ):
-              plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
+        #if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
+        # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
+        #   if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<120 ):
+        #      plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
-        if var=="dRtt" and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
-         for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-           if plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>1:
-              plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
+        #if var=="dRtt" and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
+        # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
+        #   if plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>1:
+        #      plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
       
         ymax = max( plotVarDataOS.Hist("Data").GetMaximum(),
 	              plotVarDataOS.Hist("TTJets").GetMaximum()+
