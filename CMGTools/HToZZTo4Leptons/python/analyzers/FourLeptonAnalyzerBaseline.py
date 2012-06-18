@@ -191,8 +191,8 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         #Mass cuts for second lepton
         passed=cutFlow.applyCut(self.testFourLeptonMassZ2,'4l pair 2 mass cut',1,'fourLeptonsMassZ2')
 
-        #Pt Cuts (CAREFUL: The correct cut is : Any combination of leptons must be 20/10 not the Z1 ones
-#        passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds',1,'fourLeptonsFakeRateApp')
+#        Pt Cuts (CAREFUL: The correct cut is : Any combination of leptons must be 20/10 not the Z1 ones
+        passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds2',1,'fourLeptonsPtThres2')
 
         #QCD suppression
         passed=cutFlow.applyCut(self.testFourLeptonMinOSMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')

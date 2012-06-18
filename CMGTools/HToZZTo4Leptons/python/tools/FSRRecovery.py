@@ -147,16 +147,6 @@ class FSRRecovery(object):
             
         if photon is not None:    
             self.z.setFSR(photon)
-            #and associate it with them
-#            if self.z.fsrDR1()<self.cfg.leptonIsoCone:
-#                self.z.leg1=self.z.leg1.clone()
-#                self.z.leg1.fsrPhoton=photon
-                
-#            if self.z.fsrDR2()<self.cfg.leptonIsoCone:
-#                self.z.leg2=self.z.leg2.clone()
-#                self.z.leg2.fsrPhoton=photon
-            #remove photons from the list so thet we can next go to
-            #the other Z
             self.photons.remove(photon)
 
             
