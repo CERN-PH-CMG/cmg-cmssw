@@ -67,7 +67,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         histName = '_'.join( [compName, self.varName] )
 
         hist = None
-        if self.xmin and self.xmax:
+        if self.xmin is not None and self.xmax is not None:
             hist = TH1F( histName, '', self.bins, self.xmin, self.xmax )
         else:
             hist = TH1F( histName, '', len(self.bins)-1, self.bins )
@@ -150,6 +150,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
                 if embed is None:
                     embed = copy.deepcopy( embedHist )
                     embed.name = 'Ztt'
+                    embed.legendLine = 'Ztt'
                     embed.on = True
                     # self.AddHistogram(newName, embed.weighted, 3.5)
                     self.Replace('Ztt', embed)

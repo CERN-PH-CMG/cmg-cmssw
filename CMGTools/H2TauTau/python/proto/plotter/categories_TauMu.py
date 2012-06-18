@@ -1,6 +1,6 @@
 import copy
 
-from CMGTools.H2TauTau.proto.plotter.jetcategories import *
+from CMGTools.H2TauTau.proto.plotter.categories_common import *
 from CMGTools.H2TauTau.proto.plotter.cut import * 
 
 

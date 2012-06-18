@@ -1,5 +1,6 @@
 import re
 import copy
+import time
 from ROOT import gPad, TCanvas, TPad, TPaveText, TBox 
 
 can = None,
@@ -94,7 +95,7 @@ def draw(plot, doBlind=True):
     doBlind = (plot.varName == 'svfitMass') and doBlind
     if doBlind:
         blindxmin = 100
-        blindxmax = 150
+        blindxmax = 160
         plot.Blind(blindxmin, blindxmax, False)
         
     xtitle = xtitles.get( plot.varName, None )
@@ -155,3 +156,16 @@ def draw(plot, doBlind=True):
     can.cd()
     can.SaveAs( plot.varName + '.png')
 
+cantemp = None
+
+def drawTemplates(plot):
+    global cantemp
+    cantemp = TCanvas('cantemp', 'templates', 800,800)
+    cantemp.cd()
+    for hist in plot.histosDict.values():
+        if hist.name not in ['TTJets','Ztt','WJets', 'QCD']:
+            continue
+        hist.Draw()
+        gPad.Update()
+        cantemp.SaveAs(hist.name + '.png')
+        time.sleep(1)

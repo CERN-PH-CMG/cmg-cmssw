@@ -90,6 +90,7 @@ def getQCD( plotSS, plotOS, dataName ):
 
     plotOSWithQCD.AddHistogram('QCD', qcdOS.weighted, 1030)
     plotOSWithQCD.Hist('QCD').layer=1.5
+    plotOSWithQCD.Hist('QCD').SetStyle(sHTT_QCD)
 
     return plotSSWithQCD, plotOSWithQCD
 

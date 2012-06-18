@@ -8,8 +8,9 @@ from numpy import array
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
-from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw
+from CMGTools.H2TauTau.proto.plotter.rootutils import *
 from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
+from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
@@ -162,8 +163,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
 
-    NBINS = array([0., 20., 40., 60., 80., 100., 120., 140., 160., 180.,
-                   200., 250., 300., 350.])
+    NBINS = binning_svfitMass
     XMIN = None
     XMAX = None
 
