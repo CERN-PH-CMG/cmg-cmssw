@@ -63,6 +63,13 @@ class logger:
         self.addFile(showtagsLog)
         self.addFile(diffLog) 
 
+    def logJobs(self, n):
+        nJobs = 'logger_jobs.txt'
+        out = file(nJobs,'w')
+        out.write('NJobs: %i\n' % n)
+        out.close()
+        self.addFile(nJobs)
+
     def logPackages(self):
         # Records the working directory of the samples
         oldPwd = os.getcwd()
