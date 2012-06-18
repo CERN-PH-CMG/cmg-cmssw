@@ -153,7 +153,7 @@ def draw(plot, doBlind=True, channel='TauMu'):
         keeper.append(box)
     
     if channel == 'TauMu' : CMSPrelim( plot, pad, '#tau_{#mu}#tau_{h}')
-    elif channel == 'TauEle' : CMSPrelim ( plot, pad, '#tau_{e}#mu_{h}')
+    elif channel == 'TauEle' : CMSPrelim ( plot, pad, '#tau_{e}#tau_{h}')
     can.cd()
     can.SaveAs( plot.varName + '.png')
 
