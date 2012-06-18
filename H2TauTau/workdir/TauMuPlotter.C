@@ -7,7 +7,11 @@
 #include <TLegend.h>
 #include <TLine.h>
 #include <TVectorD.h>
+#include <TLatex.h>
+#include <TText.h>
+#include <TPaveText.h>
 #include "CMGTools/H2TauTau/interface/QCDEstimate.h"
+
 
 TauMuPlotter::TauMuPlotter():
   TNamed("","")
@@ -34,7 +38,10 @@ TauMuPlotter::TauMuPlotter(const char * name):
   WJetsOSSideCorr_(1.),
   WJetsSSSideCorr_(1.),
   WJetsOSSideCorrErr_(0.),
-  WJetsSSSideCorrErr_(0.)
+  WJetsSSSideCorrErr_(0.),
+  WJetsType_(0),
+  nbinsVariable_(0),
+  xbinsVariable_(0)
 {
  
   //qcdTauIsoRatio_="(0.190265-0.00241721*taupt)*(taupt<80)";
@@ -165,11 +172,7 @@ bool TauMuPlotter::scaleSamplesLumi(){
 
 
   /////////determine total lumi and scale MCs
-  float totalDataLumi=0.;
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
-    if((*s)->getDataType()=="Data")
-      totalDataLumi+=(*s)->getLumi();
-  cout<<"Total Data lumi = "<<totalDataLumi<<endl;
+  float totalDataLumi=getTotalDataLumi();
 
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if((*s)->getDataType()=="MC" 
@@ -251,19 +254,24 @@ TH1F* TauMuPlotter::getTotalData(){
   //if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
   if(blindsel_.CompareTo("1")!=0)sel += TString("*")+blindsel_;
   
-  TH1F* h=new TH1F("hData","Data",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hData");
+
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if((*s)->getDataType()=="Data"){
-      TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      //TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      TH1F*hd=0;//
+      if(nbins_>0) hd = (*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      else if(nbinsVariable_>0) hd = (*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
+      else { cout<<"binning not recognized "<<endl; return 0;}
       h->Add(hd);
       delete hd;
     }
  
-  cout<<"TotalData : "<<h->Integral(0,h->GetNbinsX()+1)<<endl;
+  cout<<"TotalData : "<<h->Integral()<<endl;
 
   return h;
 }
@@ -275,13 +283,18 @@ TH1F* TauMuPlotter::getTotalDataSS(){
   //  if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
+  //if(MTcat_==13)  sel += "*(transversemass>50.)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
-  TH1F* h=new TH1F("hDataSS","Data SS",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hDataSS");
+
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if((*s)->getDataType()=="Data"){
-      TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      TH1F*hd=0;//(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      if(nbins_>0)hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
+      else { cout<<"binning not recognized "<<endl; return 0;}
       h->Add(hd);
       delete hd;
     }
@@ -297,19 +310,24 @@ TH1F* TauMuPlotter::getTotalMC(){
   //  if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
+  //if(MTcat_==13)  sel += "*(transversemass>50.)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
-  TH1F* h=new TH1F("hTotalMC","TotalMC",nbins_,xmin_,xmax_);
-  h->Sumw2();
+
+  TH1F* h=getPlotHisto("hTotalMC");
 
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if((*s)->getDataType()=="MC"){// && TString((*s)->GetName()) != "ZToTauTau" && TString((*s)->GetName()) != "WJetsToLNu"){
-      TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      TH1F*hd=0;//(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      if(nbins_>0)hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
+      else { cout<<"binning not recognized "<<endl; return 0;}
       h->Add(hd,(*s)->getNorm());  
       delete hd;
     }
  
-  cout<<"Total MC : "<<h->Integral(0,h->GetNbinsX()+1)<<endl;
+  cout<<"Total MC : "<<h->Integral()<<endl;
 
   return h;
 }
@@ -320,19 +338,23 @@ TH1F* TauMuPlotter::getTotalMCSS(){
   //if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
+  //if(MTcat_==13)  sel += "*(transversemass>50.)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
-  TH1F* h=new TH1F("hMC_SS","",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hTotalMCSS");
 
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if((*s)->getDataType()=="MC"){// && TString((*s)->GetName()) != "ZToTauTau" && TString((*s)->GetName()) != "WJetsToLNu" ){
-      TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      TH1F*hd=0;//(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      if(nbins_>0)hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
+      else { cout<<"binning not recognized "<<endl; return 0;}
       h->Add(hd,(*s)->getNorm());  
       delete hd;
     }
  
-  cout<<"MCSS : "<<h->Integral(0,h->GetNbinsX()+1)<<endl;
+  cout<<"MCSS : "<<h->Integral()<<endl;
 
   return h;
 }
@@ -344,6 +366,8 @@ TH1F* TauMuPlotter::getTotalEmbedded(){
   //if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
+  //if(MTcat_==13)  sel += "*(transversemass>50.)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
   //cout<<"WARNING************************"<<endl;
@@ -352,16 +376,19 @@ TH1F* TauMuPlotter::getTotalEmbedded(){
   //sel += "*(0.701448+mupt*0.0115597)*(0.678738+taupt*0.002)";//because tau is still shifted upwards --> anyway does not fix the visible mass
 
 
-  TH1F* h=new TH1F("hEmbedded","",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hEmbedded");
+
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if((*s)->getDataType()=="Embedded"){
-      TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      TH1F*hd=0;//(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      if(nbins_>0)hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
+      else { cout<<"binning not recognized "<<endl; return 0;}
       h->Add(hd,(*s)->getNorm());  
       delete hd;
     }
  
-  cout<<"TotalEmbedded : "<<h->Integral(0,h->GetNbinsX()+1)<<endl;
+  cout<<"TotalEmbedded : "<<h->Integral()<<endl;
 
   return h;
 }
@@ -373,6 +400,8 @@ TH1F* TauMuPlotter::getTotalEmbeddedSS(){
   //  if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
+  //if(MTcat_==13)  sel += "*(transversemass>50.)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
 //   cout<<"WARNING************************"<<endl;
@@ -381,16 +410,19 @@ TH1F* TauMuPlotter::getTotalEmbeddedSS(){
 //   //sel += "*(0.701448+mupt*0.0115597)*(0.678738+taupt*0.002)";            
 
 
-  TH1F* h=new TH1F("hEmbeddedSS","",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hEmbeddedSS");
+
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if((*s)->getDataType()=="Embedded"){
-      TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      TH1F*hd=0;//(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      if(nbins_>0)hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
+      else { cout<<"binning not recognized "<<endl; return 0;}
       h->Add(hd,(*s)->getNorm());  
       delete hd;
     }
  
-  cout<<"TotalEmbeddedSS : "<<h->Integral(0,h->GetNbinsX()+1)<<endl;
+  cout<<"TotalEmbeddedSS : "<<h->Integral()<<endl;
 
   return h;
 }
@@ -402,14 +434,18 @@ TH1F* TauMuPlotter::getSample(TString samplename){
   //  if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
+  //if(MTcat_==13)  sel += "*(transversemass>50.)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
-  TH1F* h=new TH1F(samplename,"",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto(samplename);
 
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if(TString((*s)->GetName())==samplename){
-      TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      TH1F*hd=0;//(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      if(nbins_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
+      else { cout<<"binning not recognized "<<endl; return 0;}
       h->Add(hd,(*s)->getNorm());
       delete hd;
     }  
@@ -425,14 +461,18 @@ TH1F* TauMuPlotter::getSampleSS(TString samplename){
   //  if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
+  //if(MTcat_==13)  sel += "*(transversemass>50.)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
-  TH1F* h=new TH1F(samplename+"SS","",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto(samplename+"SS");
 
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if(TString((*s)->GetName())==samplename){
-      TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      TH1F*hd=0;//(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      if(nbins_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
+      else { cout<<"binning not recognized "<<endl; return 0;}
       h->Add(hd,(*s)->getNorm());
       delete hd;
     }  
@@ -443,8 +483,7 @@ TH1F* TauMuPlotter::getSampleSS(TString samplename){
 
 TH1F* TauMuPlotter::getDiBoson(){
 
-  TH1F* h=new TH1F("hVV","VV",nbins_,xmin_,xmax_);
-  h->Sumw2();  
+  TH1F* h=getPlotHisto("hVV");
 
   TH1F* hWW=getSample("WW");
   if(!hWW)return 0;
@@ -461,15 +500,14 @@ TH1F* TauMuPlotter::getDiBoson(){
   h->Add(hZZ);
   delete hZZ;
 
-  cout<<"DiBoson : "<<h->Integral(0,h->GetNbinsX()+1)<<endl;
+  cout<<"DiBoson : "<<h->Integral()<<endl;
 
   return h;
 }
 
 TH1F* TauMuPlotter::getDiBosonSS(){
 
-  TH1F* h=new TH1F("hVV","VV",nbins_,xmin_,xmax_);
-  h->Sumw2();  
+  TH1F* h=getPlotHisto("hVVSS");
 
   TH1F* hWW=getSampleSS("WW");
   if(!hWW)return 0;
@@ -486,7 +524,7 @@ TH1F* TauMuPlotter::getDiBosonSS(){
   h->Add(hZZ);
   delete hZZ;
 
-  cout<<"DiBoson : "<<h->Integral(0,h->GetNbinsX()+1)<<endl;
+  cout<<"DiBoson : "<<h->Integral()<<endl;
 
   return h;
 }
@@ -510,11 +548,11 @@ TH1F* TauMuPlotter::getZToTauTauSS(){
 ///////////////////Methods for inclusive categories start here
 bool TauMuPlotter::correctSamplesInc(){
 
-  //determine these factors here as they may be used by SM methods too
-  /////Correct WJets using m_T high side with inclusive level selections
-  cout<<"Determining WJets  from sidebands"<<endl;
-  TString WJetsOSCorrSel=TString("eventweight*(categoryCh==1&&transversemass>70.)");
-  TString WJetsSSCorrSel=TString("eventweight*(categoryCh==2&&transversemass>70.)");
+  cout<<"Determining WJets scale factors from high mT"<<endl;
+
+  /*
+  TString WJetsOSCorrSel=TString("eventweight*(categoryCh==1&&70<transversemass)");//&&transversemass<110
+  TString WJetsSSCorrSel=TString("eventweight*(categoryCh==2&&70<transversemass)");//&&transversemass<110
   if(Isocat_>0){//scale factors depend on the isolation
     WJetsOSCorrSel+=TString("*(categoryIso==")+(long)Isocat_+")";
     WJetsSSCorrSel+=TString("*(categoryIso==")+(long)Isocat_+")";
@@ -523,6 +561,8 @@ bool TauMuPlotter::correctSamplesInc(){
     WJetsOSCorrSel+=TString("*")+extrasel_;
     WJetsSSCorrSel+=TString("*")+extrasel_;
   }
+  cout<<"WJetsOSCorrSel = "<<WJetsOSCorrSel<<endl;
+  cout<<"WJetsSSCorrSel = "<<WJetsSSCorrSel<<endl;
 
 
   TH1F HDataOS("HDataOSWJets","",400,0,400);
@@ -564,6 +604,7 @@ bool TauMuPlotter::correctSamplesInc(){
        //|| TString((*s)->GetName())=="ZToLJet"
        //|| TString((*s)->GetName())=="ZToMuMu"
        ){
+      //cout<<" W "<<(*s)->GetName()<<endl;
       TH1F* hos=(*s)->getHistoNtpFile("transversemass",400,0,400,WJetsOSCorrSel.Data());
       HWJetsOS.Add(hos,(*s)->getNorm());
       delete hos;
@@ -577,6 +618,7 @@ bool TauMuPlotter::correctSamplesInc(){
        //&& TString((*s)->GetName())!="ZToLJet"
        //&& TString((*s)->GetName())!="ZToMuMu"
        ){
+      //cout<<" MC "<<(*s)->GetName()<<endl;
       TH1F* hos=(*s)->getHistoNtpFile("transversemass",400,0,400,WJetsOSCorrSel.Data());
       HMCOS.Add(hos,(*s)->getNorm());
       delete hos;
@@ -588,39 +630,83 @@ bool TauMuPlotter::correctSamplesInc(){
     
   }  
   
-  WJetsOSSideCorr_=1.; Float_t WJetsOSSide=0; Float_t MCOSSide=0; Float_t DataOSSide=0;  
-  WJetsOSSide=HWJetsOS.Integral();
-  MCOSSide=HMCOS.Integral();
-  DataOSSide=HDataOS.Integral();
+  */
+
+
+  WJetsOSSideCorr_=1.; 
+  WJetsSSSideCorr_=1.; 
+  
+  TString var=plotvar_;Int_t nb=nbins_; Float_t xmi=xmin_; Float_t xma=xmax_;
+  plotvar_="ditaumass"; nbins_=100; xmin_=0; xmax_=1000;
+  Int_t tmpCategoryMT=MTcat_;//switch to high mT
+  MTcat_=3;
+  cout<<"  **** Normalzing WJets from MTcat=="<<MTcat_<<endl;
+
+  TH1F* HDataOS=getTotalData();
+  TH1F* HMCOS=getZToTauTau();
+  TH1F* HTTOS=getTTJetsInc();
+  HMCOS->Add(HTTOS); delete HTTOS;
+  TH1F* HZJOS=getZToLJetInc();
+  HMCOS->Add(HZJOS); delete HZJOS;
+  TH1F* HWJetsOS=getWJetsInc();
+
+
+  TH1F* HDataSS=getTotalDataSS();
+  TH1F* HMCSS=getZToTauTauSS();
+  TH1F* HTTSS=getTTJetsIncSS();
+  HMCSS->Add(HTTSS); delete HTTSS;
+  TH1F* HZJSS=getZToLJetIncSS();
+  HMCSS->Add(HZJSS); delete HZJSS;
+  TH1F* HWJetsSS=getWJetsIncSS();
+
+  MTcat_=tmpCategoryMT;//return to normal
+  plotvar_=var; nbins_=nb; xmin_=xmi; xmax_=xma;
+
+
+
+  Float_t WJetsOSSide=0; Float_t MCOSSide=0; Float_t DataOSSide=0;  
+  WJetsOSSide=HWJetsOS->Integral();
+  MCOSSide=HMCOS->Integral();
+  DataOSSide=HDataOS->Integral();
+  cout<<" DataOSSide="<<DataOSSide<<"  MCOSSide = "<<MCOSSide<<"  WJetsOSSide="<<WJetsOSSide<<endl;
   if(WJetsOSSide>0){
     WJetsOSSideCorr_=(DataOSSide-MCOSSide)/WJetsOSSide;  
 
     Float_t WJetsOSSideEr=0; Float_t MCOSSideEr=0; Float_t DataOSSideEr=0;
-    for(Int_t b=1;b<=HWJetsOS.GetNbinsX();b++){
-      if(HWJetsOS.GetBinContent(b)>0)WJetsOSSideEr+=HWJetsOS.GetBinError(b)*HWJetsOS.GetBinError(b);
-      if(HMCOS.GetBinContent(b)>0)MCOSSideEr+=HMCOS.GetBinError(b)*HMCOS.GetBinError(b);
-      if(HDataOS.GetBinContent(b)>0)DataOSSideEr+=HDataOS.GetBinError(b)*HDataOS.GetBinError(b);
+    for(Int_t b=1;b<=HWJetsOS->GetNbinsX();b++){
+      if(HWJetsOS->GetBinContent(b)>0)WJetsOSSideEr+=HWJetsOS->GetBinError(b)*HWJetsOS->GetBinError(b);
+      if(HMCOS->GetBinContent(b)>0)MCOSSideEr+=HMCOS->GetBinError(b)*HMCOS->GetBinError(b);
+      if(HDataOS->GetBinContent(b)>0)DataOSSideEr+=HDataOS->GetBinError(b)*HDataOS->GetBinError(b);
     }
     WJetsOSSideCorrErr_=WJetsOSSideCorr_*sqrt((DataOSSideEr+MCOSSideEr)/((DataOSSide-MCOSSide)*(DataOSSide-MCOSSide)) + WJetsOSSideEr/(WJetsOSSide*WJetsOSSide) );
   }
   cout<<"WJetsIncOS  Correction = "<<WJetsOSSideCorr_<<" +- "<<WJetsOSSideCorrErr_<<endl;
 
-  WJetsSSSideCorr_=1.; Float_t WJetsSSSide=0; Float_t MCSSSide=0; Float_t DataSSSide=0;
-  WJetsSSSide=HWJetsSS.Integral();
-  MCSSSide=HMCSS.Integral();
-  DataSSSide=HDataSS.Integral();
+
+  Float_t WJetsSSSide=0; Float_t MCSSSide=0; Float_t DataSSSide=0;
+  WJetsSSSide=HWJetsSS->Integral();
+  MCSSSide=HMCSS->Integral();
+  DataSSSide=HDataSS->Integral();
+  cout<<" DataSSSide="<<DataSSSide<<"  MCSSSide = "<<MCSSSide<<"  WJetsSSSide="<<WJetsSSSide<<endl;
   if(WJetsSSSide>0){
     WJetsSSSideCorr_=(DataSSSide-MCSSSide)/WJetsSSSide;
 
     Float_t WJetsSSSideEr=0; Float_t MCSSSideEr=0; Float_t DataSSSideEr=0;
-    for(Int_t b=1;b<=HWJetsSS.GetNbinsX();b++){
-      if(HWJetsSS.GetBinContent(b)>0)WJetsSSSideEr+=HWJetsSS.GetBinError(b)*HWJetsSS.GetBinError(b);
-      if(HMCSS.GetBinContent(b)>0)MCSSSideEr+=HMCSS.GetBinError(b)*HMCSS.GetBinError(b);
-      if(HDataSS.GetBinContent(b)>0)DataSSSideEr+=HDataSS.GetBinError(b)*HDataSS.GetBinError(b);
+    for(Int_t b=1;b<=HWJetsSS->GetNbinsX();b++){
+      if(HWJetsSS->GetBinContent(b)>0)WJetsSSSideEr+=HWJetsSS->GetBinError(b)*HWJetsSS->GetBinError(b);
+      if(HMCSS->GetBinContent(b)>0)MCSSSideEr+=HMCSS->GetBinError(b)*HMCSS->GetBinError(b);
+      if(HDataSS->GetBinContent(b)>0)DataSSSideEr+=HDataSS->GetBinError(b)*HDataSS->GetBinError(b);
     }
     WJetsSSSideCorrErr_=WJetsSSSideCorr_*sqrt((DataSSSideEr+MCSSSideEr)/((DataSSSide-MCSSSide)*(DataSSSide-MCSSSide)) + WJetsSSSideEr/(WJetsSSSide*WJetsSSSide) );
   }
   cout<<"WJetsIncSS  Correction = "<<WJetsSSSideCorr_<<" +- "<<WJetsSSSideCorrErr_<<endl;
+
+  delete  HDataOS;
+  delete  HMCOS;
+  delete  HWJetsOS;
+  delete  HDataSS;
+  delete  HMCSS;
+  delete  HWJetsSS;
 
 
   //QCD correction factor
@@ -632,7 +718,9 @@ bool TauMuPlotter::correctSamplesInc(){
 
 //WJets
 TH1F* TauMuPlotter::getWJetsInc(){
-  TH1F*h=getSample("WJetsToLNu");
+  TH1F*h=0;
+  if(WJetsType_==4) h=getSample("W3JetsToLNu");
+  else h=getSample("WJetsToLNu");
   h->Scale(WJetsOSSideCorr_);
   float y=h->Integral();
   float ye=0;
@@ -643,7 +731,9 @@ TH1F* TauMuPlotter::getWJetsInc(){
 }
 
 TH1F* TauMuPlotter::getWJetsIncSS(){
-  TH1F*h=getSampleSS("WJetsToLNu");
+  TH1F*h=0;
+  if(WJetsType_==4) h=getSampleSS("W3JetsToLNu");
+  else h=getSampleSS("WJetsToLNu");
   h->Scale(WJetsSSSideCorr_);
   float y=h->Integral();
   float ye=0;
@@ -656,7 +746,7 @@ TH1F* TauMuPlotter::getWJetsIncSS(){
 //TTJets
 TH1F* TauMuPlotter::getTTJetsInc(){
   TH1F*h=getSample("TTJets");
-  //h->Scale(WJetsOSSideCorr_);
+  //h->Scale(WJetsOSSideCorr_); cout<<" getTTJetsInc applying high mT scale factor "<<endl;
   float y=h->Integral();
   float ye=0;
   for(Int_t b=1;b<=h->GetNbinsX();b++)
@@ -666,7 +756,7 @@ TH1F* TauMuPlotter::getTTJetsInc(){
 }
 TH1F* TauMuPlotter::getTTJetsIncSS(){
   TH1F*h=getSampleSS("TTJets");
-  //h->Scale(WJetsSSSideCorr_);
+  //h->Scale(WJetsSSSideCorr_); cout<<" getTTJetsIncSS applying high mT scale factor "<<endl;
   float y=h->Integral();
   float ye=0;
   for(Int_t b=1;b<=h->GetNbinsX();b++)
@@ -723,17 +813,20 @@ TH1F* TauMuPlotter::getZToMuMuIncSS(){
 
 TH1F* TauMuPlotter::getTotalBackgroundIncSS(){
 
-  TH1F* h=new TH1F("hBackgroundSS","",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hBackgroundSS");
 
   TH1F*hZToTauTauSS=getZToTauTauSS();//could be from Embedded
   if(!hZToTauTauSS)return 0;
   h->Add(hZToTauTauSS);
   delete hZToTauTauSS;
 
-  TH1F*hWJetsSS=getWJetsIncSS();//WJets needs a correction factor
+  TH1F*hWJetsSS=0;
   //TH1F*hWJetsSS=getWJetsTauIsoSMSS(); hWJetsSS->Scale(1.29);//Estimation for njet==2 
-  if(!hWJetsSS)return 0;
+  hWJetsSS=getWJetsIncSS();//WJets needs a correction factor
+  if(!hWJetsSS){
+    cout<<"getTotalBackgroundIncSS: WJetsType not recognized "<<endl;
+    return 0;
+  }
   h->Add(hWJetsSS);
   delete hWJetsSS;
 
@@ -758,6 +851,8 @@ TH1F* TauMuPlotter::getTotalBackgroundIncSS(){
   //if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
+  //if(MTcat_==13)  sel += "*(transversemass>50.)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
@@ -768,7 +863,10 @@ TH1F* TauMuPlotter::getTotalBackgroundIncSS(){
        && TString((*s)->GetName()) != "ZToLJet"
        && TString((*s)->GetName()) != "ZToMuMu"
        ){
-      TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      TH1F*hd=0;//(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      if(nbins_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
+      else { cout<<"binning not recognized "<<endl; return 0;}
       h->Add(hd,(*s)->getNorm()); 
       delete hd;
     }
@@ -782,8 +880,8 @@ TH1F* TauMuPlotter::getTotalBackgroundIncSS(){
 TH1F* TauMuPlotter::getQCDInc(){
   cout<<"Calling method getQCDInc"<<endl;
 
-  TH1F* h=new TH1F("hQCDInc","QCDInc",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hQCDInc");
+
   TH1F* hDataSS=getTotalDataSS();
   h->Add(hDataSS);
   delete hDataSS;
@@ -806,7 +904,7 @@ TH1F* TauMuPlotter::getQCDInc(){
 
 
 
-bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t MTcat,TString extrasel, TString blindsel, Int_t QCDType, Int_t WJetsType, TString xlabel, TString ylabel,Float_t* legendcoords, int higgs,TString filetag,float muiso,float tauiso){
+bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t MTcat,TString extrasel, TString blindsel, Int_t QCDType, Int_t WJetsType, TString xlabel, TString ylabel,Float_t* legendcoords, int higgs,TString filetag){
 
 
   plotvar_=variable;
@@ -817,6 +915,8 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   MTcat_=MTcat;
   extrasel_="1";//reset for multiple plotting
   if(extrasel.CompareTo("")!=0) extrasel_ += TString("*")+extrasel;
+
+  WJetsType_=WJetsType;
 
   //for checking mT in the antiIso samples
   //extrasel_ = extrasel_+"*"+qcdTauIsoRatio_;//apply  ratio here 
@@ -860,69 +960,97 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
 // 			      );
 //     hQCD=qcdEstimator.GetQCDNominal("hQCD",plotvar_,nbins_,xmin_,xmax_,3); 
   }
-  if(QCDType==3) hQCD=getQCDMike(muiso,tauiso);
+  if(QCDType==3) hQCD=getQCDMike();
   if(hQCD){
     hQCD->SetLineWidth(1);
-    hQCD->SetLineColor(QCDColor_);
+    hQCD->SetLineColor(1);
     hQCD->SetFillColor(QCDColor_);
   }else {
     cout<<"no QCD determined "<<endl;
   }
-  
-  //TH1F*hTTJets=getSample("TTJets");
-  TH1F*hTTJets=getTTJetsInc();
-  if(!hTTJets)return 0;
-  hTTJets->SetLineWidth(1);
-  hTTJets->SetLineColor(TTJetsColor_);
-  hTTJets->SetFillColor(TTJetsColor_);
- 
-  ///Z->tau tau
-  TH1F*hZToTauTau=getZToTauTau();
-  if(!hZToTauTau)return 0;
-  hZToTauTau->SetLineWidth(1);
-  hZToTauTau->SetLineColor(ZTauTauColor_);
-  hZToTauTau->SetFillColor(ZTauTauColor_);
- 
-  
+  if(hQCD)hQCD->SetName("hQCDplotInc");
+
+  if(hQCD) cout<<"QCD "<<hQCD->Integral()<<endl;
+  if(nbins_==0) if(hQCD) makeDensityHisto(hQCD);
+
   TH1F* hWJetsToLNu=0;
-  if(WJetsType==0) hWJetsToLNu=getWJetsInc();
-  if(WJetsType==1){
+  if(WJetsType==0) hWJetsToLNu=getWJetsInc(); //normalized at high mT MC shape
+  if(WJetsType==1){//not normalized at high mT smeared shape
     TH1F * htmp = getSample("WJetsToLNu");
     hWJetsToLNu = smearHisto(htmp);
     delete htmp;
   }
   if(WJetsType==2) hWJetsToLNu=getWJetsTauIsoSM();
+  if(WJetsType==3) hWJetsToLNu=getWJetsIncShape();
+  if(WJetsType==4){
+    hWJetsToLNu=getWJetsInc();
+    //you may want to smear here
+  }
+  if(WJetsType==5){
+    hWJetsToLNu=getW3JetsVBF();
+  }
   if(!hWJetsToLNu){
     cout<<"WJets Background is NULL"<<endl; 
     return 0;
   }
+  hWJetsToLNu->SetName("hWJetsToLNuplotInc");
   hWJetsToLNu->SetLineWidth(1);
-  hWJetsToLNu->SetLineColor(WJetsColor_);
+  hWJetsToLNu->SetLineColor(1);
   hWJetsToLNu->SetFillColor(WJetsColor_);
+  cout<<"hWJetsToLNu "<<hWJetsToLNu->Integral()<<endl;
+  if(nbins_==0) makeDensityHisto(hWJetsToLNu);  
+
+  TH1F*hTTJets=getTTJetsInc();
+  if(!hTTJets)return 0;
+  hTTJets->SetName("hTTJetsplotInc");
+  hTTJets->SetLineWidth(1);
+  hTTJets->SetLineColor(1);
+  hTTJets->SetFillColor(TTJetsColor_); 
+  cout<<"TTJets "<<hTTJets->Integral()<<endl;
+  if(nbins_==0)makeDensityHisto(hTTJets);  
+
+  ///Z->tau tau
+  TH1F*hZToTauTau=getZToTauTau();
+  if(!hZToTauTau)return 0;
+  hZToTauTau->SetName("hZToTauTauplotInc");
+  hZToTauTau->SetLineWidth(1);
+  hZToTauTau->SetLineColor(1);
+  hZToTauTau->SetFillColor(ZTauTauColor_);
+  cout<<"ZToTauTau "<<hZToTauTau->Integral()<<endl;
+  if(nbins_==0)makeDensityHisto(hZToTauTau);  
+
   
   TH1F*hEWK=(TH1F*)hWJetsToLNu->Clone("hElectroWeak");
 
   //combine Di-Bosons
   TH1F*hVV=getDiBoson();
   if(!hVV)return 0;
+  hVV->SetName("hVVplotInc");
+  if(nbins_==0)makeDensityHisto(hVV); 
   hEWK->Add(hVV);
-  //delete hVV;
+
 
   //combine ZLJet
   //TH1F*hZToLJet=getSample("ZToLJet");
   TH1F*hZToLJet=getZToLJetInc();
   if(!hZToLJet)return 0;
+  hZToLJet->SetName("hZToLJetplotInc");
+  if(nbins_==0)makeDensityHisto(hZToLJet); 
   hEWK->Add(hZToLJet);
-
 
   //combine Z->MuMu
   //TH1F*hZToMuMu=getSample("ZToMuMu");
   TH1F*hZToMuMu=getZToMuMuInc();
   if(!hZToMuMu)return 0;
+  hZToMuMu->SetName("hZToMuMuplotInc");
   hZToMuMu->SetLineWidth(1);
-  hZToMuMu->SetLineColor(ZMuMuColor_);
+  hZToMuMu->SetLineColor(1);
   hZToMuMu->SetFillColor(ZMuMuColor_);
+  if(nbins_==0)makeDensityHisto(hZToMuMu); 
   hEWK->Add(hZToMuMu);
+
+  //cout<<"ElectroWeak "<<hEWK->Integral()<<endl;
+
 
   ////////////////////////
   cout<<"Creating Bkg Stack:"<<endl;
@@ -935,25 +1063,30 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
 
 
   //create total Background
-  TH1F* hBkg=new TH1F("hBkg","Bkg",nbins_,xmin_,xmax_);
+  TH1F* hBkg=getPlotHisto("hBkg");
+
   TList* histList= hMCStack.GetHists();
   for(Int_t i=0;i<histList->GetSize();i++){
     hBkg->Add((TH1F*)(histList->At(i)));
   }
 
+  //cout<<"Total Bkg "<<hBkg->Integral()<<endl;
 
   
   //the higgs
 
   TH1F*hHiggs=0;
   if(higgs>0){
-    hHiggs=getSample("HiggsVBF120");
-    TH1F*hHiggsGG=getSample("HiggsGG120"); hHiggs->Add(hHiggsGG);
-    TH1F*hHiggsVH=getSample("HiggsVH120"); hHiggs->Add(hHiggsVH);
+    hHiggs=getSample("HiggsVBF125");
+    TH1F*hHiggsGG=getSample("HiggsGG125");
+    hHiggs->Add(hHiggsGG);
+    TH1F*hHiggsVH=getSample("HiggsVH125");
+    hHiggs->Add(hHiggsVH);
     hHiggs->Scale(higgs);
+    if(nbins_==0)makeDensityHisto(hHiggs); 
     hHiggs->Add(hBkg);
+    hHiggs->SetLineColor(1);
     hHiggs->SetLineStyle(2);
-    hHiggs->SetLineColor(2);
     delete hHiggsGG;
     delete hHiggsVH;
   }
@@ -961,29 +1094,22 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   ////Total Data
   if(blindsel.CompareTo("")!=0) blindsel_=blindsel;
   TH1F* hData=getTotalData();
+  if(nbins_==0)makeDensityHisto(hData); 
   blindsel_="1";//blind only around this call otherwise may affect background estimations
   if(!hData){cout<<" Total Data not determined "<<endl; return 0;}
- 
+
+  cout<<"Total Data "<<(int)(hData->Integral())<<endl; 
 
   //create legend key
   TLegend legend;
   legend.SetLineColor(0);
   legend.SetBorderSize(1);
-  legend.AddEntry(hData,"Data (4.9fb^{-1})","p");
-  if(hHiggs)  legend.AddEntry(hHiggs,TString("Higgs x ")+(long)higgs,"l");
+  legend.AddEntry(hData,"Observed","p");
+  if(hHiggs)  legend.AddEntry(hHiggs,TString("")+(long)higgs+" x SM Higgs(125)","l");
   legend.AddEntry(hZToTauTau,"Z#rightarrow#tau^{+}#tau^{-}","f");
   legend.AddEntry(hTTJets,"t#bar{t}","f");
   legend.AddEntry(hEWK,"EWK","f");
   if(hQCD)  legend.AddEntry(hQCD,"QCD","f");
-
-
-  cout<<" Summary of yields : "<<endl;
-  if(hQCD) cout<<"QCD "<<hQCD->Integral(0,hQCD->GetNbinsX()+1)<<endl;
-  cout<<"ElectroWeak "<<hEWK->Integral(0,hEWK->GetNbinsX()+1)<<endl;
-  cout<<"TTJets "<<hTTJets->Integral(0,hTTJets->GetNbinsX()+1)<<endl;
-  cout<<"ZToTauTau "<<hZToTauTau->Integral(0,hZToTauTau->GetNbinsX()+1)<<endl;
-  cout<<"Total Bkg "<<hBkg->Integral(0,hBkg->GetNbinsX()+1)<<endl;
-  cout<<"Total Data "<<(int)(hData->Integral(0,hData->GetNbinsX()+1))<<endl;
 
 
 
@@ -1029,6 +1155,29 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   }
   legend.SetTextSize(.04);
   legend.Draw();
+
+//   TLatex title;
+//   title.SetTextSize(0.05);
+//   //double ycord=(hData->GetMaximum()+hData->GetBinError(hData->GetMaximumBin()))*1.15*.9;
+//   //cout<<" title ycord "<<ycord<<endl;
+//   //title.DrawLatex(xmin_,ycord,"CMS Preliminary 2011 (4.9 fb^{-1})   #sqrt{s} =7 TeV              #tau_{#mu}#tau_{h}");
+//   //  title.DrawTextNDC(.1,.9,"CMS Preliminary 2011 (4.9 fb^{-1})   #sqrt{s} =7 TeV              #tau_{#mu}#tau_{h}");
+//   title.DrawTextNDC(.15,.9,"CMS 2011 Data  4.9 fb#^{-1}    7 TeV ");
+// //  hData->SetTitle("         CMS Preliminary 2011 (4.9 fb^{-1})   #sqrt{s} =7 TeV              #tau_{#mu}#tau_{h}");
+
+  TPaveText title(.1,.85,.9,.99, "NDC");
+  title.SetBorderSize(   0 );
+  title.SetFillStyle(    0 );
+  title.SetTextAlign(   12 );
+  title.SetTextSize ( 0.04 );
+  title.SetTextColor(    1 );
+  title.SetTextFont (   62 );
+  title.AddText("CMS 2011 Data  4.9 fb^{-1}    #sqrt{s} = 7 TeV                                       #tau_{#mu}#tau_{h}");
+  title.Draw();
+
+
+
+  C.RedrawAxis();
   C.Update();
   C.Print(filename+".ps");  
   C.Print(filename+".png");  
@@ -1041,26 +1190,39 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   C.Print(filename+"_log.eps");   
   C.SetLogy(0);
 
-
+  
+  TLine line;
 
 
   //make the difference plot  
-  TH1F* hDiff=new TH1F("hDiff","Difference",nbins_,xmin_,xmax_);
-  hDiff->GetXaxis()->SetTitle(plotvar_);
+  TH1F* hDiff=getPlotHisto("hDiff");
+
+  //hDiff->SetStats(0);
+  hDiff->GetXaxis()->SetTitle(hData->GetXaxis()->GetTitle());
+  hDiff->GetYaxis()->SetTitle("Data - MC");
   hDiff->Add(hData);
   hDiff->Add(hBkg,-1);
+  float max=fabs(hDiff->GetMaximum());
+  if(fabs(max)<fabs(hDiff->GetMinimum())) max = fabs(hDiff->GetMinimum());
+  hDiff->GetYaxis()->SetRangeUser(-max,max);
   C.Clear();
   hDiff->Draw("hist pe");
+  line.DrawLine(xmin_,0,xmax_,0);
   C.Print(filename+".ps");  
 
 
   //make the ratio plot
-  TH1F* hRatio=new TH1F("hRatio","Ratio",nbins_,xmin_,xmax_);
-  hRatio->GetXaxis()->SetTitle(plotvar_);
+  TH1F* hRatio=getPlotHisto("hRatio");
+
+  hRatio->SetStats(0);
+  hRatio->GetXaxis()->SetTitle(hData->GetXaxis()->GetTitle());
+  hRatio->GetYaxis()->SetTitle("Data/MC");
   hRatio->Add(hData);
   hRatio->Divide(hBkg);
+  hRatio->GetYaxis()->SetRangeUser(0,2);
   C.Clear();
   hRatio->Draw("hist pe");
+  line.DrawLine(xmin_,1,xmax_,1);
   C.Print(filename+".ps");  
 
   C.Print(filename+".ps]");
@@ -1075,6 +1237,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   hZToLJet->Write();
   hZToMuMu->Write();
   hWJetsToLNu->Write();
+  hVV->Write();
   hEWK->Write();
   hData->Write();
   hBkg->Write();
@@ -1090,6 +1253,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   delete hZToLJet;  
   delete hZToMuMu;
   delete hWJetsToLNu;
+  delete hVV;
   delete hEWK;
   delete hData;
   if(hHiggs) delete hHiggs;
@@ -1114,6 +1278,8 @@ bool TauMuPlotter::plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_
   MTcat_=MTcat;
   SMcat_=-1;
   if(extrasel.CompareTo("")!=0) extrasel_ += TString("*")+extrasel;
+
+  WJetsType_=WJetsType;
 
   if(!scaleSamplesLumi())return 0;
   if(!correctSamplesInc())return 0;
@@ -1160,6 +1326,11 @@ bool TauMuPlotter::plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_
     hWJetsToLNu = getSampleSS("WJetsToLNu");
   }
   if(WJetsType==3) hWJetsToLNu = getWJetsIncShapeSS();
+  if(WJetsType==4){
+    hWJetsToLNu=getWJetsIncSS();
+    //get the shape here
+    //if(WJetsType==4) hWJetsToLNu = getW3JetsSS();//only for 2-Jets 
+  }
   //TH1F*hWJetsToLNu=getWJetsTauIsoSMSS(); hWJetsToLNu->Scale(1.29); //estimation in njet=2
   if(!hWJetsToLNu){
     cout<<" WJets not determined "<<endl;
@@ -1216,7 +1387,8 @@ bool TauMuPlotter::plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_
 
 
   //create total Background
-  TH1F* hBkg=new TH1F("hBkg","Bkg",nbins_,xmin_,xmax_);
+  TH1F* hBkg=getPlotHisto("hBkg");
+
   TList* histList= hMCStack.GetHists();
   for(Int_t i=0;i<histList->GetSize();i++){
     hBkg->Add((TH1F*)(histList->At(i)));
@@ -1224,12 +1396,12 @@ bool TauMuPlotter::plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_
 
 
   cout<<" Summary of yields : "<<endl;
-  if(hQCD)  cout<<"QCD "<<hQCD->Integral(0,hQCD->GetNbinsX()+1)<<endl;
-  cout<<"ElectroWeak "<<hEWK->Integral(0,hEWK->GetNbinsX()+1)<<endl;
-  cout<<"TTJets "<<hTTJets->Integral(0,hTTJets->GetNbinsX()+1)<<endl;
-  cout<<"ZToTauTau "<<hZToTauTau->Integral(0,hZToTauTau->GetNbinsX()+1)<<endl;
-  cout<<"Total Bkg "<<hBkg->Integral(0,hBkg->GetNbinsX()+1)<<endl;
-  cout<<"Total Data "<<(int)(hData->Integral(0,hData->GetNbinsX()+1))<<endl;
+  if(hQCD)  cout<<"QCD "<<hQCD->Integral()<<endl;
+  cout<<"ElectroWeak "<<hEWK->Integral()<<endl;
+  cout<<"TTJets "<<hTTJets->Integral()<<endl;
+  cout<<"ZToTauTau "<<hZToTauTau->Integral()<<endl;
+  cout<<"Total Bkg "<<hBkg->Integral()<<endl;
+  cout<<"Total Data "<<(int)(hData->Integral())<<endl;
   
   
   TString tag;
@@ -1280,7 +1452,7 @@ bool TauMuPlotter::plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_
 
 
   //make the difference plot  
-  TH1F* hDiff=new TH1F("hDiff","Difference",nbins_,xmin_,xmax_);
+  TH1F* hDiff=getPlotHisto("hDiff");
   hDiff->GetXaxis()->SetTitle(plotvar_);
   hDiff->Add(hData);
   hDiff->Add(hBkg,-1);
@@ -1289,7 +1461,7 @@ bool TauMuPlotter::plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_
   C.Print(filename+".ps");  
 
   //make the ratio plot
-  TH1F* hRatio=new TH1F("hRatio","Ratio",nbins_,xmin_,xmax_);
+  TH1F* hRatio=getPlotHisto("hRatio");
   hRatio->GetXaxis()->SetTitle(plotvar_);
   hRatio->Add(hData);
   hRatio->Divide(hBkg);
@@ -1372,14 +1544,18 @@ TH1F* TauMuPlotter::getQCDMuIsoSM(){
   //if(MTcat_>0)  sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
+  //if(MTcat_==13)  sel += "*(transversemass>50.)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
-  TH1F* h=new TH1F("hSMQCD","SMQCD",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hSMQCD");
  
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
     if((*s)->getDataType()=="Data"){
-      TH1F*hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      TH1F*hd=0;//(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      if(nbins_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
+      else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
+      else { cout<<"binning not recognized "<<endl; return 0;}
       h->Add(hd);
       delete hd;
     }
@@ -1391,9 +1567,7 @@ TH1F* TauMuPlotter::getQCDMuIsoSM(){
 }
 
 TH1F* TauMuPlotter::getTotalMCSM(){
-  TH1F* h=new TH1F("hTotalMCSM","total MC",nbins_,xmin_,xmax_);
-  h->Sumw2();
-   
+  TH1F* h=getPlotHisto("hTotalsMCSM");
 
   TH1F*hZToTauTau=getZToTauTau();
   if(!hZToTauTau)return 0;
@@ -1431,8 +1605,7 @@ TH1F* TauMuPlotter::getTotalMCSM(){
 
 
 TH1F* TauMuPlotter::getTotalMCSMSS(){
-  TH1F* h=new TH1F("hTotalMCSM","total MC",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hTotalMCSMSS");
    
 
   TH1F*hZToTauTau=getZToTauTauSS();
@@ -1470,13 +1643,211 @@ TH1F* TauMuPlotter::getTotalMCSMSS(){
 }
 
 
-TH1F* TauMuPlotter::getQCDMike( float muisocut, float tauisocut){
+TH1F* TauMuPlotter::getW3JetsVBF(){
+  cout<<" calling getW3JetsVBF"<<endl;
 
-  //float muisocut=0.5;
-  //float tauisocut=0.75;
+  //get templates from inclusive 2-jet sample and normalize at high mT in VBF
+  TString TmpExtrasel=extrasel_;
+  extrasel_="(njet>=2)"; 
+
+  TH1F* hW3JetsShape=getSample("W3JetsToLNu");
+  hW3JetsShape->SetName("hW3JetsShape");
+  cout<<"hW3JetsShape :"<<hW3JetsShape->Integral()<<endl;
+  //need to know integral of template at high mT for normalization
+  Int_t tmpMTcat=MTcat_;
+  MTcat_=13;//go to high mT with same selections as with plot, cannot relax iso according to Lorenzo
+  TH1F* hW3JetsShapeHighMT=getSample("W3JetsToLNu");
+  hW3JetsShapeHighMT->SetName("hW3JetsShapeHighMT");
+
+  extrasel_=TmpExtrasel;  //return to VBF catetory But stay at high mT
+
+  //determine normalization factor
+  //Get Data and TTJets at high mT in VBF
+  TH1F* hDataHighMT=getTotalData();
+  hDataHighMT->SetName("hDataHighMT");
+  cout<<"hDataHighMT :"<<hDataHighMT->Integral()<<endl;
+  TH1F* hTTJetsHighMT=getSample("TTJets");
+  hTTJetsHighMT->SetName("hTTJetsHighMT");
+  cout<<"hTTJetsHighMT :"<<hTTJetsHighMT->Integral()<<endl;
+  TH1F* hZTTHighMT=getSample("ZToTauTau");
+  hZTTHighMT->SetName("hZTTHighMT");
+  cout<<"hZTTHighMT :"<<hZTTHighMT->Integral()<<endl;
+  TH1F* hZJHighMT=getSample("ZToLJet");
+  hZJHighMT->SetName("hZJHighMT");
+  cout<<"hZJHighMT :"<<hZJHighMT->Integral()<<endl;
+
+  MTcat_=tmpMTcat;//Return signal mT region
+
+  //normalize the Template
+  Float_t WJetsIntegralFromhighMTData=(hDataHighMT->Integral()-hTTJetsHighMT->Integral()-hZTTHighMT->Integral()-hZJHighMT->Integral());
+  hW3JetsShape->Scale(WJetsIntegralFromhighMTData/hW3JetsShapeHighMT->Integral());
+  
+  delete hW3JetsShapeHighMT;
+  delete hDataHighMT;
+  delete hTTJetsHighMT;
+  delete hZTTHighMT;
+  delete hZJHighMT;
+
+  cout<<"----> getW3JetsVBFyield: "<<hW3JetsShape->Integral()<<endl;
+ 
+
+  return hW3JetsShape;
+}
+
+TH1F* TauMuPlotter::getW3Jets(){
+  cout<<" calling getW3Jets() with loose tau iso: "<<tauLooseIsoCut_<<endl;
+
+  //integral of WJets in signal region
+  TH1F* hW3JetsLowMT=getSample("W3JetsToLNu");
+  hW3JetsLowMT->SetName("hW3JetsLowMT");
+  cout<<"hW3JetsLowMT :"<<hW3JetsLowMT->Integral()<<endl;
+
+  //calculate normalization factor
+  Int_t tmpMTcat=MTcat_;
+  MTcat_=3;//go to high mT with same selections as with plot, cannot relax iso according to Lorenzo
+  TH1F* hDataHighMT=getTotalData();
+  hDataHighMT->SetName("hDataHighMT");
+  cout<<"hDataHighMT :"<<hDataHighMT->Integral()<<endl;
+  TH1F* hTTJetsHighMT=getSample("TTJets");
+  hTTJetsHighMT->SetName("hTTJetsHighMT");
+  cout<<"hTTJetsHighMT :"<<hTTJetsHighMT->Integral()<<endl;
+  TH1F* hW3JetsHighMT=getSample("W3JetsToLNu");
+  hW3JetsHighMT->SetName("hW3JetsHighMT");
+  cout<<"hW3JetsHighMT :"<<hW3JetsHighMT->Integral()<<endl;
+  MTcat_=tmpMTcat;
+
+  //for shape relax the isolation in low mT region
+  Int_t TmpIsocat=Isocat_;
+  Isocat_=-1;
+  TString TmpExtrasel=extrasel_; 
   char isocuttxt[100];
-  sprintf(isocuttxt,"(muiso<%.3f&&tauisomva>%.3f)",muisocut,tauisocut);
-  cout<<"Calculating QCD with Mike Method and loose iso cut: "<<isocuttxt<<endl;
+  sprintf(isocuttxt,"(muiso<0.1&&tauisomva>%.3f)",tauLooseIsoCut_);
+  extrasel_+=TString("*")+isocuttxt;
+  TH1F* hW3JetsShape=getSample("W3JetsToLNu");
+  hW3JetsShape->SetName("hW3JetsShape");
+  cout<<"hW3JetsShape :"<<hW3JetsShape->Integral()<<endl;
+
+  //return to normal
+  Isocat_=TmpIsocat;
+  extrasel_=TmpExtrasel;
+
+  //smear
+  TH1F * htmp  = smearHisto(hW3JetsShape);
+  delete hW3JetsShape;
+  hW3JetsShape = htmp;
+
+
+  if(hW3JetsHighMT->Integral()>0&&hW3JetsShape->Integral()>0){
+    float HighToLowRatio=hW3JetsLowMT->Integral()/hW3JetsHighMT->Integral();
+    cout<<"getW3Jets HighToLowRatio "<<HighToLowRatio<<endl;
+    hW3JetsShape->Scale((HighToLowRatio*(hDataHighMT->Integral()-hTTJetsHighMT->Integral()))/hW3JetsShape->Integral());
+  }  else {
+    cout<<" getW3Jets  Warning hW3JetsHighMT is 0 cannot divide"<<endl;
+    hW3JetsShape->Scale(0.);
+  }
+
+  delete hDataHighMT;
+  delete hTTJetsHighMT;
+  delete hW3JetsLowMT;
+  delete hW3JetsHighMT;
+
+  
+  cout<<"getW3Jets yield: "<<hW3JetsShape->Integral()<<endl;
+
+  return hW3JetsShape;
+}
+
+
+TH1F* TauMuPlotter::getW3JetsSS(){
+  cout<<" calling getW3Jets() with loose tau iso: "<<tauLooseIsoCut_<<endl;
+
+  Int_t tmpMTcat=MTcat_;
+  MTcat_=3;//go to high mT with same selections as with plot
+  TH1F* hDataHighMT=getTotalDataSS();
+  hDataHighMT->SetName("hDataHighMT");
+  cout<<"hDataHighMT :"<<hDataHighMT->Integral()<<endl;
+  TH1F* hTTJetsHighMT=getSampleSS("TTJets");
+  hTTJetsHighMT->SetName("hTTJetsHighMT");
+  cout<<"hTTJetsHighMT :"<<hTTJetsHighMT->Integral()<<endl;
+
+  Int_t TmpIsocat=Isocat_;
+  Isocat_=-1;
+  TString TmpExtrasel=extrasel_; 
+  char isocuttxt[100];
+  sprintf(isocuttxt,"(tauisomva>%.3f)",tauLooseIsoCut_);
+  extrasel_+=TString("*")+isocuttxt;
+  
+  TH1F* hW3JetsHighMT=getSampleSS("W3JetsToLNu");
+  hW3JetsHighMT->SetName("hW3JetsHighMT");
+  cout<<"hW3JetsHighMT :"<<hW3JetsHighMT->Integral()<<endl;
+
+  ///Return to signal region in mT but stay loosely isolated
+  MTcat_=tmpMTcat;
+  TH1F* hW3JetsShape=getSampleSS("W3JetsToLNu");
+  hW3JetsShape->SetName("hW3JetsShape");
+  cout<<"hW3JetsShape :"<<hW3JetsShape->Integral()<<endl;
+
+  //smear
+  TH1F * htmp  = smearHisto(hW3JetsShape);
+  delete hW3JetsShape;
+  hW3JetsShape = htmp;
+
+
+  //return to normal
+  Isocat_=TmpIsocat;
+  extrasel_=TmpExtrasel;
+
+  if(hW3JetsHighMT->Integral()>0)
+    hW3JetsShape->Scale((hDataHighMT->Integral()-hTTJetsHighMT->Integral())/hW3JetsHighMT->Integral());
+  else {
+    cout<<" getW3Jets  Warning hW3JetsHighMT is 0 cannot divide"<<endl;
+    hW3JetsShape->Scale(0.);
+  }
+
+  delete hDataHighMT;
+  delete hW3JetsHighMT;
+  delete hTTJetsHighMT;
+  
+  cout<<"getW3Jets yield: "<<hW3JetsShape->Integral()<<endl;
+
+  return hW3JetsShape;
+}
+
+
+
+//   //Shape
+//   TFile FW3Jets("output/muTauW3Jets.root","read");
+//   gROOT->cd();
+//   TTree* tree=(TTree*)FW3Jets.Get("eventTree");
+//   if(!tree){
+//     cout<<" TTree not found"<<endl;
+//     return 0;
+//   }
+
+//   TH1F* hWJetsShape = new TH1F("hWJetsShape","",nbins_,xmin_,xmax_);
+//   hWJetsShape->Sumw2();
+//   TH1F* hWJetsShapeHighMT = new TH1F("hWJetsShapeHighMT","",nbins_,xmin_,xmax_);
+//   hWJetsShapeHighMT->Sumw2();
+  
+//   TString selection="njets>1&&njetingap==0&&mva>0.5";
+//   tree->Draw("m_sv>>hWJetsShape",selection+"*(mt>40)");
+//   tree->Draw("m_sv>>hWJetsShapeHighMT",selection+"*(mt>70)");
+
+//   //smear
+//   TH1F * htmp  = smearHisto(hWJetsShape);
+//   delete hWJetsShape;
+//   hWJetsShape = htmp;
+
+  
+
+TH1F* TauMuPlotter::getQCDMike(){
+
+  char isocuttxt[100];
+  sprintf(isocuttxt,"(0.2<muiso&&muiso<%.3f&&tauisomva>%.3f)",muLooseIsoCut_,0.7);//tauLooseIsoCut_ //for normalization
+  cout<<"Calculating QCD Yield with Mike Method and loose iso cut: "<<isocuttxt<<endl;
+  char isocuttxtshape[100];
+  sprintf(isocuttxtshape,"(0.2<muiso&&muiso<%.3f&&tauisomva>%.3f)",muLooseIsoCut_,tauLooseIsoCut_);//for shape
+  cout<<"Calculating QCD Shape with Mike Method and loose iso cut: "<<isocuttxtshape<<endl;
   
   Int_t TmpIsocat=Isocat_;
   TString TmpExtrasel=extrasel_;  
@@ -1504,6 +1875,22 @@ TH1F* TauMuPlotter::getQCDMike( float muisocut, float tauisocut){
   TH1F* hDataVBFLoose=getTotalDataSS();  if(!hDataVBFLoose){cout<<" Total Data not determined "<<endl; return 0;}   hDataVBFLoose->SetName("hDataVBFLoose");
   TH1F* hMCVBFLoose=getTotalBackgroundIncSS();   if(!hMCVBFLoose){cout<<" Total MC not determined "<<endl; return 0;}   hMCVBFLoose->SetName("hMCVBFLoose");
   
+
+  //SS Loose VBF QCD 
+  Isocat_=-1;  
+  extrasel_=TmpExtrasel+"*"+isocuttxtshape;
+  if(!scaleSamplesLumi())return 0;
+  if(!correctSamplesInc())return 0;
+  TH1F* hDataVBFLooseShape=getTotalDataSS();  if(!hDataVBFLooseShape){cout<<" Total Data not determined "<<endl; return 0;}   hDataVBFLooseShape->SetName("hDataVBFLooseShape");
+  TH1F* hMCVBFLooseShape=getTotalBackgroundIncSS();   if(!hMCVBFLooseShape){cout<<" Total MC not determined "<<endl; return 0;}   hMCVBFLooseShape->SetName("hMCVBFLooseShape");
+  
+  TH1F* hShape=getPlotHisto("hSMQCDShape");//new TH1F("hSMQCDShape","QCD",nbins_,xmin_,xmax_);
+
+  hShape->Sumw2();
+  hShape->Add(hDataVBFLooseShape);
+  hShape->Add(hMCVBFLooseShape,-1.);
+
+
   //return scale factors to normal
   Isocat_=TmpIsocat;
   extrasel_=TmpExtrasel;
@@ -1511,13 +1898,22 @@ TH1F* TauMuPlotter::getQCDMike( float muisocut, float tauisocut){
   if(!correctSamplesInc())return 0;
 
   //OS VBF QCD = 1.11 * (SS VBF QCD with loose iso.) * [(SS incl QCD) / ( SS incl QCD with loose iso.)]
-  TH1F* h=new TH1F("hSMQCD","QCD",nbins_,xmin_,xmax_);
+  TH1F* h=getPlotHisto("hSMQCD");//new TH1F("hSMQCD","QCD",nbins_,xmin_,xmax_);
   h->Sumw2();
   h->Add(hDataVBFLoose);
   h->Add(hMCVBFLoose,-1.);
+  cout<<"QCD sideband integral for datacard : "<< h->Integral()<<endl;
+
+  
+  //smear
+  TH1F * htmp  = smearHisto(h);
+  delete h;
+  h = htmp;
+
+  //scale to yield
   cout<<" QCDInc "<<hQCDInc->Integral()<<endl;
   cout<<" DataVBFLoose "<<hDataVBFLoose->Integral()<<endl;
-  cout<<" VBFLoose "<<hMCVBFLoose->Integral()<<endl;
+  cout<<" MCVBFLoose "<<hMCVBFLoose->Integral()<<endl;
   cout<<" DataIncLoose "<<hDataIncLoose->Integral()<<endl;
   cout<<" MCIncLoose "<<hMCIncLoose->Integral()<<endl;
   float ratio=hQCDInc->Integral()/(hDataIncLoose->Integral()-hMCIncLoose->Integral());
@@ -1525,11 +1921,14 @@ TH1F* TauMuPlotter::getQCDMike( float muisocut, float tauisocut){
   cout<<" Scaling Incl QCD by "<<ratio<<endl;
   h->Scale(ratio);
   cout<<"QCDMike "<<h->Integral()<<endl;
+  hShape->Scale(h->Integral()/hShape->Integral());
+
 
   TString filetag=TString("FQCDMike_")+plotvar_+"_TauIso"+(long)Isocat_+"_MT"+(long)MTcat_+extrasel_+isocuttxt;
   fixFileTag(&filetag);
   TFile FQCD(outputpath_+"/"+filetag+".root","recreate");
   h->Write();
+  hShape->Write();
   hDataIncLoose->Write();
   hMCIncLoose->Write();
   hDataVBFLoose->Write();
@@ -1541,16 +1940,17 @@ TH1F* TauMuPlotter::getQCDMike( float muisocut, float tauisocut){
   delete hMCIncLoose;
   delete hDataVBFLoose;
   delete hMCVBFLoose;
+  delete h;
 
-  return h;
+  return hShape;
 
 
 }
 
 TH1F* TauMuPlotter::getQCDTauIsoSM(){
   
-  TH1F* h=new TH1F("hSMQCD","SMQCD",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hSMQCD");//new TH1F("hSMQCD","SMQCD",nbins_,xmin_,xmax_);
+
    
   Int_t TmpIsocat=Isocat_;  
   Isocat_=2;//switch temporarily while keeping all other categories the same  
@@ -1628,8 +2028,8 @@ TH1F* TauMuPlotter::getQCDTauIsoSM(){
 
 TH1F* TauMuPlotter::getQCDTauIsoSMSS(){  //needed for cross-check
 
-  TH1F* h=new TH1F("hSMQCDSS","SMQCDSS",nbins_,xmin_,xmax_);
-  h->Sumw2();
+  TH1F* h=getPlotHisto("hSMQCDSS");//new TH1F("hSMQCDSS","SMQCDSS",nbins_,xmin_,xmax_);
+
    
   Int_t TmpIsocat=Isocat_;  
   Isocat_=2;//switch temporarily while keeping all other categories the same
@@ -1663,9 +2063,8 @@ TH1F* TauMuPlotter::getQCDTauIsoSMSS(){  //needed for cross-check
 TH1F* TauMuPlotter::getQCDIsoSM(){
    
 
-  TH1F* h=new TH1F("hQCD","SMQCD",nbins_,xmin_,xmax_);
-  h->Sumw2();
-  h->GetXaxis()->SetTitle(plotvar_);
+  TH1F* h=getPlotHisto("hQCDSM");//new TH1F("hQCD","SMQCD",nbins_,xmin_,xmax_);
+
   
   Int_t TmpIsocat=Isocat_;  
   Isocat_=-1;  
@@ -1679,7 +2078,7 @@ TH1F* TauMuPlotter::getQCDIsoSM(){
 
 
 //   //QCD From Region B
-  TH1F* hB=new TH1F("hSMQCDB","SMQCDB",nbins_,xmin_,xmax_);
+  TH1F* hB=getPlotHisto("hSMQCDB");//new TH1F("hSMQCDB","SMQCDB",nbins_,xmin_,xmax_);
 //   hB->Sumw2();
 //   cout<<"Applying Tau Iso QCD ratio : "<<qcdTauIsoRatio_<<endl;
 //   extrasel_ = extrasel_+ "*"+muisocut+"*"+tauantiisocut+"*"+qcdTauIsoRatio_;
@@ -1694,7 +2093,7 @@ TH1F* TauMuPlotter::getQCDIsoSM(){
 
 
 //   //QCD From Region C
-  TH1F* hC=new TH1F("hSMQCC","SMQCC",nbins_,xmin_,xmax_);
+  TH1F* hC=getPlotHisto("hSMQCDC");//new TH1F("hSMQCC","SMQCC",nbins_,xmin_,xmax_);
 //   hC->Sumw2();
 //   cout<<"Applying Mu Iso QCD ratio : "<<qcdMuIsoRatio_<<endl;
 //   extrasel_ = extrasel_+"*"+muantiisocut+"*"+tauisocut+"*"+qcdMuIsoRatio_;
@@ -1712,8 +2111,7 @@ TH1F* TauMuPlotter::getQCDIsoSM(){
 
 
   //QCD From Region D
-  TH1F* hD=new TH1F("hSMQCD","SMQCD",nbins_,xmin_,xmax_);
-  hD->Sumw2();
+  TH1F* hD=getPlotHisto("hSMQCDD");//new TH1F("hSMQCD","SMQCD",nbins_,xmin_,xmax_);
   cout<<"Applying Tau-Mu Iso QCD ratio : "<<qcdTauIsoRatio_+"*"+qcdMuIsoRatio_<<endl;
   extrasel_ = extrasel_+ "*"+muantiisocut+"*"+tauantiisocut+"*"+qcdTauIsoRatio_+"*"+qcdMuIsoRatio_;
   if(!scaleSamplesLumi())return 0;//need to recalculate WJets correction factors because isolation is different
@@ -1832,9 +2230,7 @@ TH1F* TauMuPlotter::getQCDIsoSM(){
 TH1F* TauMuPlotter::getQCDIsoSMSS(){
 
 
-  TH1F* h=new TH1F("hQCD","SMQCD",nbins_,xmin_,xmax_);
-  h->Sumw2();
-  h->GetXaxis()->SetTitle(plotvar_);
+  TH1F* h=getPlotHisto("hQCD");//new TH1F("hQCD","SMQCD",nbins_,xmin_,xmax_);
   
   Int_t TmpIsocat=Isocat_;  
   Isocat_=-1;  
@@ -1847,8 +2243,7 @@ TH1F* TauMuPlotter::getQCDIsoSMSS(){
 
   ///Now calculate the QCD in the low mT region (while applying the above corrections to the MC)
   //QCD From Region B
-  TH1F* hB=new TH1F("hSMQCDB","SMQCDB",nbins_,xmin_,xmax_);
-  hB->Sumw2();
+  TH1F* hB=getPlotHisto("hSMQCDB");//new TH1F("hSMQCDB","SMQCDB",nbins_,xmin_,xmax_);
   extrasel_ += "*(muiso<0.1&&tauisodisc<2)";
   cout<<"Applying Tau Iso QCD ratio : "<<qcdTauIsoRatio_<<endl;
   extrasel_ = extrasel_+"*"+qcdTauIsoRatio_;//apply  ratio here 
@@ -1865,8 +2260,7 @@ TH1F* TauMuPlotter::getQCDIsoSMSS(){
   hMCB->Write(); delete hMCB;
 
   //QCD From Region C
-  TH1F* hC=new TH1F("hSMQCC","SMQCC",nbins_,xmin_,xmax_);
-  hC->Sumw2();
+  TH1F* hC=getPlotHisto("hSMQCDC");//new TH1F("hSMQCC","SMQCC",nbins_,xmin_,xmax_);
   extrasel_ += "*(muiso>=0.1&&tauisodisc>=2)";
   cout<<"Applying Mu Iso QCD ratio : "<<qcdMuIsoRatio_<<endl;
   extrasel_ = extrasel_+"*"+qcdMuIsoRatio_;//apply  ratio here 
@@ -1886,8 +2280,7 @@ TH1F* TauMuPlotter::getQCDIsoSMSS(){
 
 
   //QCD From Region D
-  TH1F* hD=new TH1F("hSMQCD","SMQCD",nbins_,xmin_,xmax_);
-  hD->Sumw2();
+  TH1F* hD=getPlotHisto("hSMQCDD");//new TH1F("hSMQCD","SMQCD",nbins_,xmin_,xmax_);
   extrasel_ += "*(muiso>0.1&&tauisodisc<2)";
   //cout<<"Applying Tau-Mu Iso QCD ratio : "<<qcdTauIsoRatioMuNonIso_+"*"+qcdMuIsoRatioTauNonIso_<<endl;
   //extrasel_ = extrasel_+"*"+qcdTauIsoRatioMuNonIso_+"*"+qcdMuIsoRatioTauNonIso_;//apply  ratio here 
@@ -1965,6 +2358,60 @@ TH1F* TauMuPlotter::getQCDIsoSMSS(){
 }
 
 
+
+TH1F* TauMuPlotter::getWJetsIncShape(){
+  cout<<"Calling method getWJetsIncShape"<<endl;
+  //1.normalize at high mT
+  //2.get shape relaxed iso sample
+
+  Int_t tmpMTcat=MTcat_;
+  Int_t tmpIsocat=Isocat_;
+  TString tmpextrasel=extrasel_;
+
+  MTcat_=3;
+  TH1F* hDataHighMT=getTotalData();
+  cout<<"hDataHighMT :"<<hDataHighMT->Integral()<<endl;
+  TH1F* hTTJets=getSample("TTJets");
+  cout<<"hTTJets :"<<hTTJets->Integral()<<endl;
+  MTcat_=tmpMTcat;
+
+
+  //Shape
+  cout<<"WJets shape obtained from inclusive sample"<<endl;
+  Isocat_=-1;
+  extrasel_=extrasel_+"*(muiso<0.1&&tauisomva>0.)";
+
+  TH1F* hWJetsShape=getSample("WJetsToLNu");
+
+  MTcat_=3;//need this for normalization
+  TH1F* hWJetsShapeHighMT=getSample("WJetsToLNu");
+  cout<<"hWJetsShapeHighMT :"<<hWJetsShapeHighMT->Integral()<<endl;
+
+  MTcat_=tmpMTcat;
+  Isocat_=tmpIsocat;
+  extrasel_=tmpextrasel;
+
+  
+  //smear
+  TH1F * htmp  = smearHisto(hWJetsShape);
+  delete hWJetsShape;
+  hWJetsShape = htmp;
+
+  
+
+  //
+  hWJetsShape->Scale((hDataHighMT->Integral()-hTTJets->Integral())/hWJetsShapeHighMT->Integral());
+  delete hDataHighMT;
+  delete hWJetsShapeHighMT;
+  delete hTTJets;
+  
+  //cout<<"WJetsTauIso : "<<yield<<" +- "<<sqrt(yielder)<<endl;
+  return hWJetsShape;
+
+}
+
+
+
 TH1F* TauMuPlotter::getWJetsIncShapeSS(){
 
   //1.normalize at high mT
@@ -1999,6 +2446,7 @@ TH1F* TauMuPlotter::getWJetsIncShapeSS(){
   return hShape;
 
 }
+
 
 
 
@@ -2533,7 +2981,7 @@ void TauMuPlotter::plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, 
   hMC->Draw("hist same");
   C.Print(filename+".ps");
 
-  TH1F* hA=new TH1F("hDiffAnti","",nbins_,xmin_,xmax_);
+  TH1F* hA=getPlotHisto("hDiffAnti");//new TH1F("hDiffAnti","",nbins_,xmin_,xmax_);
   hA->Add(hData);
   hA->Add(hMC,-1);
   delete hData; delete hMC;
@@ -2553,7 +3001,7 @@ void TauMuPlotter::plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, 
   hMC->Draw("hist same");
   C.Print(filename+".ps");
 
-  TH1F* hI=new TH1F("hDiffIso","",nbins_,xmin_,xmax_);
+  TH1F* hI=getPlotHisto("hDiffIso");//new TH1F("hDiffIso","",nbins_,xmin_,xmax_);
   hI->Add(hData);
   hI->Add(hMC,-1);
   delete hData; delete hMC;
@@ -2572,7 +3020,7 @@ void TauMuPlotter::plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, 
 
 
   ////Calculate the ratio as a function of the variable
-  TH1F* hR=new TH1F("hRatio","",nbins_,xmin_,xmax_);
+  TH1F* hR=getPlotHisto("hRatio");//new TH1F("hRatio","",nbins_,xmin_,xmax_);
   hR->Add(hI);
   hR->Divide(hA);
   delete hA; delete hI;
@@ -2644,7 +3092,7 @@ void TauMuPlotter::plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t x
   TH1F* hData=getTotalData();
   if(!hData){cout<<" Total Data not determined "<<endl; return;}
 
-  TH1F* hMC=new TH1F("hMCAnti","",nbins_,xmin_,xmax_);
+  TH1F* hMC=getPlotHisto("hMCAnti");//new TH1F("hMCAnti","",nbins_,xmin_,xmax_);
   TH1F* hZ=getZToTauTau(); hMC->Add(hZ); delete hZ;
   TH1F* hTT=getSample("TTJets"); hMC->Add(hTT); delete hTT;
  
@@ -2653,7 +3101,7 @@ void TauMuPlotter::plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t x
   hMC->Draw("hist same");
   C.Print(filename+".ps");
 
-  TH1F* hA=new TH1F("hDiffAnti","",nbins_,xmin_,xmax_);
+  TH1F* hA=getPlotHisto("hDiffAnti");//new TH1F("hDiffAnti","",nbins_,xmin_,xmax_);
   hA->Add(hData); delete hData; 
   hA->Add(hMC,-1); delete hMC;
 
@@ -2670,7 +3118,7 @@ void TauMuPlotter::plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t x
   hData=getTotalData();
   if(!hData){cout<<" Total Data not determined "<<endl; return;}
 
-  hMC=new TH1F("hMCIso","",nbins_,xmin_,xmax_);
+  hMC=getPlotHisto("hMCIso");//new TH1F("hMCIso","",nbins_,xmin_,xmax_);
   hZ=getZToTauTau(); hMC->Add(hZ); delete hZ;
   hTT=getSample("TTJets"); hMC->Add(hTT); delete hTT;
 
@@ -2680,7 +3128,7 @@ void TauMuPlotter::plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t x
   hMC->Draw("hist same");
   C.Print(filename+".ps");
 
-  TH1F* hI=new TH1F("hDiffIso","",nbins_,xmin_,xmax_);
+  TH1F* hI=getPlotHisto("hDiffIso");//new TH1F("hDiffIso","",nbins_,xmin_,xmax_);
   hI->Add(hData);delete hData;
   hI->Add(hMC,-1);delete hMC;
   
@@ -2695,7 +3143,7 @@ void TauMuPlotter::plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t x
 
 
   ////Calculate the ratio as a function of the variable
-  TH1F* hR=new TH1F("hRatio","",nbins_,xmin_,xmax_);
+  TH1F* hR=getPlotHisto("hRatio");//new TH1F("hRatio","",nbins_,xmin_,xmax_);
   hR->Add(hI); 
   hR->Divide(hA); 
 

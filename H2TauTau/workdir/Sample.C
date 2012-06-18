@@ -41,12 +41,17 @@ TH1F* Sample::getHistoNtpFile(TString xvar,Int_t xnbins,Float_t xmin,Float_t xma
   h->Sumw2();
   ntpChain_->Draw(xvar+">>"+h->GetName(),selection);
   
-//   Float_t x;
-//   ntpChain_->SetBranchAddress(xvar,&x);
-//   for(int e=1;e<=ntpChain_->GetEntriesFast();e++){
-//     ntpChain_->GetEvent(e);
-//     h->Fill(x);
-//   }
+
+  return h;
+}
+
+TH1F * Sample::getHistoNtpFile(TString xvar,Int_t Nbins, Float_t * Xbins, TString selection){
+  if(!ntpChain_) openNtpFile();
+
+  TH1F* h=new TH1F(TString("Sample")+GetName(),xvar,Nbins,Xbins);
+  h->GetXaxis()->SetTitle(xvar);
+  h->Sumw2();
+  ntpChain_->Draw(xvar+">>"+h->GetName(),selection);
 
   return h;
 }

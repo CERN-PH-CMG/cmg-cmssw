@@ -76,7 +76,23 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.randsigma = 0.10
-        module.recoilCorrection = 0 #recoil corrector has memory leak and makes this sample fail
+        module.recoilCorrection = 2 
+        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root'
+
+    if sampleAlias == 'W3JetsToLNu' : 
+        module.path = "/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM" # V5 PFAOD was not made
+        module.dataType = 0
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+        module.recoilCorrection = 2 
+        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root'
+
+    if sampleAlias == 'W2JetsToLNu' : 
+        module.path = "/W2Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" # V5 PFAOD was not made
+        module.dataType = 0
+        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+        module.recoilCorrection = 2 
         module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root' 
 
     if sampleAlias == 'TTJets' : 
@@ -134,7 +150,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
             module.dataType = 0
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
-            module.recoilCorrection = 0 #memory leak
+            module.recoilCorrection = 1 #memory leak
             module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
             
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
@@ -142,7 +158,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
             module.dataType = 0
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
-            module.recoilCorrection = 0 #memory leak
+            module.recoilCorrection = 1 #memory leak
             module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] : 
