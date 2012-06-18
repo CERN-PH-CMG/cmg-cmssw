@@ -44,24 +44,37 @@ def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataM
 	     comp.embedFactor = embeddedScaleFactor
 
 def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight, embed):
-    inclusiveForEmbeddedNormalizationEE = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
+    # Data/MC scale factors for e->tau fake rate from 2012 ICHEP Object approval presentation: 0.85 for Barrel, 0.65 for Endcap
+    inclusiveForEmbeddedNormalizationZeeBB = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
      			    30,0,300,
-     			    cut = 'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>30', weight=weight,
+     			    cut = 'abs(l1Eta)<1.5 && abs(l2Eta)<1.5 && l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>30', weight=weight,
      			    embed=embed)
-    inclusiveForEmbeddedNormalizationEE.Hist("DYJets").Scale(0.87*0.87)
-    inclusiveForEmbeddedNormalizationEE.Hist("DYJets_Electron").Scale(0.87*0.87)
+    inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Scale(0.85*0.85)
+    inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Scale(0.85*0.85)
+    #inclusiveForEmbeddedNormalizationZeeBE = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
+    # 			    30,0,300,
+    # 			    cut = '((abs(l1Eta)>1.5 && abs(l2Eta)<1.5) || (abs(l1Eta)<1.5 && abs(l2Eta)>1.5)) && l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>30', weight=weight,
+    # 			    embed=embed)
+    #inclusiveForEmbeddedNormalizationZeeBE.Hist("DYJets").Scale(0.85*0.65)
+    #inclusiveForEmbeddedNormalizationZeeBE.Hist("DYJets_Electron").Scale(0.85*0.65)
+    #inclusiveForEmbeddedNormalizationZeeEE = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
+    # 			    30,0,300,
+    # 			    cut = 'abs(l1Eta)>1.5 && abs(l2Eta)>1.5 && l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>30', weight=weight,
+    # 			    embed=embed)
+    #inclusiveForEmbeddedNormalizationZeeEE.Hist("DYJets").Scale(0.65*0.65)
+    #inclusiveForEmbeddedNormalizationZeeEE.Hist("DYJets_Electron").Scale(0.65*0.65)
 
-    ymax = max(inclusiveForEmbeddedNormalizationEE.Hist("Data").GetMaximum(),(inclusiveForEmbeddedNormalizationEE.Hist("DYJets").GetMaximum()+inclusiveForEmbeddedNormalizationEE.Hist("DYJets_Electron").GetMaximum()))*1.5
-    inclusiveForEmbeddedNormalizationEE.DrawStack("HIST",0,300,0,ymax)
+    ymax = max(inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").GetMaximum(),(inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").GetMaximum()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").GetMaximum()))*1.5
+    inclusiveForEmbeddedNormalizationZeeBB.DrawStack("HIST",0,300,0,ymax)
     
-    print "Data events in boosted ee", inclusiveForEmbeddedNormalizationEE.Hist("Data").Integral()
-    print "DYJets events in boosted ee", (inclusiveForEmbeddedNormalizationEE.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationEE.Hist("DYJets_Electron").Integral())
+    print "Data events in boosted ee", inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").Integral()
+    print "DYJets events in boosted ee", (inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Integral())
 
     gPad.SaveAs("inclusiveForZeeNormalization.png")
     gPad.WaitPrimitive()
 
-    zeeScaleFactor = inclusiveForEmbeddedNormalizationEE.Hist("Data").Integral()/ \
-        (inclusiveForEmbeddedNormalizationEE.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationEE.Hist("DYJets_Electron").Integral())
+    zeeScaleFactor = inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").Integral()/ \
+        (inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Integral())
     print "zeeScaleFactor", zeeScaleFactor
 
     for name,comp in selCompsNoSignal.items():
