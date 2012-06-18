@@ -19,6 +19,8 @@ def prepareComponents(dir, config, aliases=None, embed=True):
     totIntLumi = 0
     newSelComps = {}
     embedComps = []
+    
+    # loop on all components
     for comp in selComps.values():
         if comp.isEmbed:
             embedComps.append(comp)
@@ -36,15 +38,21 @@ def prepareComponents(dir, config, aliases=None, embed=True):
             print comp.name, comp.intLumi
             totIntLumi += comp.intLumi
 
+    # newSelComps now contains the actual components for H->tau tau
+    # z->mu mu data is put in zComps
+
+    # compute integrated luminosity
     for comp in selComps.values():
         if comp.isMC is True:
             comp.intLumi = totIntLumi
-    
+
+    # prepare weight dictionary, with all the components
     weights = dict( [ (comp.name,comp.getWeight()) \
                       for comp in newSelComps.values() ] )
     weights.update( dict( [ (comp.name,comp.getWeight()) \
                       for comp in zComps.values() ] ) )
 
+    # attach the corresponding tree to each component
     def attachTree(comps, channel):
         for comp in comps.values():
             fileName = '/'.join([ dir,
@@ -57,7 +65,7 @@ def prepareComponents(dir, config, aliases=None, embed=True):
     attachTree(zComps,'MuMu')
     attachTree(newSelComps, 'TauMu')
 
-    import pdb; pdb.set_trace()
+    # compute the embedded sample weighting factor
     if embed:
         eh, zh, embedFactor = embedScaleFactor(newSelComps)
         for comp in embedComps:
