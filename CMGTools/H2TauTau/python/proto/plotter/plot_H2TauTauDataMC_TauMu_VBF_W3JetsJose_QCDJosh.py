@@ -194,7 +194,7 @@ if __name__ == '__main__':
                                                      weight=weight, embed=options.embed)
 
     # inclusive QCD yield in signal region
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     inc_ssign, inc_osign, inc_ssQCD, inc_osQCD = makePlotInclusive(
         options.hist, anaDir,
         selComps, weights,
@@ -232,6 +232,8 @@ if __name__ == '__main__':
     
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases)
     
+    # import pdb; pdb.set_trace()
+
 
     # WJets normalization in VBF region
     fwss, fwos, ss, os = plot_W( options.hist, anaDir, selComps, weights,
