@@ -27,7 +27,7 @@ NBINS = 100
 XMIN  = 0
 XMAX  = 200
 
-
+cutw = ' && '.join([cat_Inc, cat_J2]) 
 
 def makePlot( var, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
@@ -44,14 +44,21 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS,
                            cut=oscut, weight=weight,
                            embed=embed)
     osign.Hist(EWK).Scale( wJetScaleOS ) 
-    # import pdb; pdb.set_trace()
-    osign = replaceWJets(osign, var, oscut, weight, embed)
-    osign = replaceZtt(osign, var, oscut, weight, embed)
+
+    import pdb; pdb.set_trace()
+    # osign = replaceWJets(osign, var, oscut, weight, embed)
+    # osign = replaceZtt(osign, var, oscut, weight, embed)
+    wjshape = WJets_shape_VBF(var, anaDir, cutw,
+                              selComps, zComps, weights,
+                              nbins, xmin, xmax, weight,
+                              embed)
+    wjshape.Scale( osign.Hist('WJets').Integral() )
+    osign.Replace('WJets', wjshape )
+
+
 
     antisocut = str( Cut(cat_Inc_AntiMuTauIso) &  Cut('l1_charge*l2_charge<0 && mt<40') & cat_VBF )
     fakeweight = ' * '.join( [weight, colin_qcdTauIsoRatio, colin_qcdMuIsoRatio])
-    # antisocut = str( Cut(cat_Inc_AntiMuIso) &  Cut('l1_charge*l2_charge<0 && mt<40') & cat_VBF )
-    # fakeweight = ' * '.join( [weight, colin_qcdMuIsoRatio])
 
     antiso = H2TauTauDataMC(var, anaDir,
                             selComps, weights, nbins, xmin, xmax,
@@ -67,14 +74,8 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS,
                                     selComps, weights, nbins, xmin, xmax,
                                     cut=antisocut, weight=fakeweight,
                                     embed=embed)
-    # import pdb; pdb.set_trace()
-    
-    # hmmm shouldn't I use fakeweight here?
-    # import pdb; pdb.set_trace()
 
-    #WARNING!!! I HAD THAT IN TO GET MY NICE PLOTS JUNE12, 12:20, WORKS WHEN BOTH MU AND TAU ISO
-    # ARE RELAXED
-    antisoForYield = replaceWJets(antisoForYield, var, antisocut, fakeweight, embed)
+    # antisoForYield = replaceWJets(antisoForYield, var, antisocut, fakeweight, embed)
 
 
     # antisoForYield = replaceZtt(antisoForYield, var, antisocut, fakeweight, embed)
@@ -214,7 +215,7 @@ def WJets_shape_VBF(var, anaDir, cut,
     # cutforshape = cutforshape & Cut(cat_VBF_Rel)
     # print cutforshape
     cutforshape = cut.replace(cat_VBF, cat_VBF_Rel).replace('l1_looseMvaIso>0.5',
-                                                            'l1_rawMvaIso>-999')
+                                                            'l1_rawMvaIso>0')
     cutforshape = cutforshape.replace('l1_charge*l2_charge>0','1')
     cutforshape = cutforshape.replace('l1_charge*l2_charge<0','1')
     
@@ -263,11 +264,11 @@ def WJets_VBF(var, anaDir, cut,
                               selComps, zComps, weights,
                               nbins, xmin, xmax, weight,
                               embed)
-    wjyield = WJets_yield_VBF(var, anaDir, cut, 
-                              selComps, zComps, weights,
-                              nbins, xmin, xmax, weight,
-                              embed)
-    wjshape.Scale(wjyield)
+##     wjyield = WJets_yield_VBF(var, anaDir, cut, 
+##                               selComps, zComps, weights,
+##                               nbins, xmin, xmax, weight,
+##                               embed)
+##     wjshape.Scale(wjyield)
     return wjshape
 
 
@@ -364,7 +365,7 @@ if __name__ == '__main__':
     parser.add_option("-n", "--nbins", 
                       dest="nbins", 
                       help="Number of bins",
-                      default=50)
+                      default=14)
     parser.add_option("-m", "--min", 
                       dest="xmin", 
                       help="xmin",
@@ -372,7 +373,7 @@ if __name__ == '__main__':
     parser.add_option("-M", "--max", 
                       dest="xmax", 
                       help="xmax",
-                      default=200)
+                      default=350)
 
     
     
@@ -396,19 +397,38 @@ if __name__ == '__main__':
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
     embed = options.embed
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config)
+
+    # remove WJets from components, and aliase W3Jets -> WJets
+    comps = [comp for comp in cfg.config.components if comp.name!='WJets' and  comp.name!='TTJets']
+    cfg.config.components = comps
+
+    aliases = {'DYJets':'Ztt',
+               'W3Jets':'WJets',
+               'TTJets11':'TTJets'
+               }
+
+    # import pdb; pdb.set_trace()
+    
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases)
 
 
     can, pad, padr = buildCanvas()
 
-    fwss, fwos, ss, os = plot_W_inclusive( options.hist, anaDir, selComps, weights,
-                                           30, 60, 300, 'isSignal',
-                                           weight=weight, embed=options.embed)
+    # WJets normalization. relaxing tau iso to get more stat
+    
+    
+    fwss, fwos, ss, os = plot_W( options.hist, anaDir, selComps, weights,
+                                 15, 60, 120, cutw,
+                                 weight=weight, embed=options.embed)
+
+    # import pdb; pdb.set_trace()
 
     antiso, osign, antisoQCD, osQCD  = makePlot( options.hist, weights, fwss, fwos, NBINS, XMIN, XMAX, weight=weight, embed=options.embed); draw(osQCD)
+
+
     
-    # from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauMu_Inclusive import makePlot as makePlotInclusive
+##     # from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauMu_Inclusive import makePlot as makePlotInclusive
 
-    # ssign, osign, ssQCD, osQCD = makePlotInclusive( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, cat_Inc + ' && mt<40', weight=weight, embed=options.embed); draw(osQCD)
+##     # ssign, osign, ssQCD, osQCD = makePlotInclusive( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, cat_Inc + ' && mt<40', weight=weight, embed=options.embed); draw(osQCD)
 
-    # factor_QCD_nonIsoToIso()
+##     # factor_QCD_nonIsoToIso()
