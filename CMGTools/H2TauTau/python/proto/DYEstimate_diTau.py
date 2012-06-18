@@ -48,9 +48,12 @@ def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, 
      			    30,0,300,
      			    cut = 'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>30', weight=weight,
      			    embed=embed)
-    ymax = inclusiveForEmbeddedNormalizationEE.Hist("Data").GetMaximum()*1.5
-    inclusiveForEmbeddedNormalizationEE.DrawStack("HIST",0,300,0,ymax)
+    inclusiveForEmbeddedNormalizationEE.Hist("DYJets").Scale(0.87*0.87)
+    inclusiveForEmbeddedNormalizationEE.Hist("DYJets_Electron").Scale(0.87*0.87)
 
+    ymax = max(inclusiveForEmbeddedNormalizationEE.Hist("Data").GetMaximum(),(inclusiveForEmbeddedNormalizationEE.Hist("DYJets").GetMaximum()+inclusiveForEmbeddedNormalizationEE.Hist("DYJets_Electron").GetMaximum()))*1.5
+    inclusiveForEmbeddedNormalizationEE.DrawStack("HIST",0,300,0,ymax)
+    
     print "Data events in boosted ee", inclusiveForEmbeddedNormalizationEE.Hist("Data").Integral()
     print "DYJets events in boosted ee", (inclusiveForEmbeddedNormalizationEE.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationEE.Hist("DYJets_Electron").Integral())
 
@@ -58,8 +61,7 @@ def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, 
     gPad.WaitPrimitive()
 
     zeeScaleFactor = inclusiveForEmbeddedNormalizationEE.Hist("Data").Integral()/ \
-        (inclusiveForEmbeddedNormalizationEE.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationEE.Hist("DYJets_Electron").Integral())/ \
-	(0.87*0.87)
+        (inclusiveForEmbeddedNormalizationEE.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationEE.Hist("DYJets_Electron").Integral())
     print "zeeScaleFactor", zeeScaleFactor
 
     for name,comp in selCompsNoSignal.items():
