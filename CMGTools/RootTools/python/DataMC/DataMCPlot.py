@@ -55,7 +55,6 @@ class DataMCPlot(object):
             return
         else:
             index = self.histos.index( oldh )
-            import pdb; pdb.set_trace
             self.histosDict[name] = pyhist
             self.histos[index] = pyhist
             
@@ -247,6 +246,7 @@ class DataMCPlot(object):
             if self.blindminx:
                 hist.Blind(self.blindminx, self.blindmaxx)
             hist.Draw()
+            hist.GetYaxis().SetRangeUser(0.01, hist.GetMaximum()*1.3)
         self.stack.Draw(opt+'same',
                         xmin=xmin, xmax=xmax,
                         ymin=ymin, ymax=ymax )
