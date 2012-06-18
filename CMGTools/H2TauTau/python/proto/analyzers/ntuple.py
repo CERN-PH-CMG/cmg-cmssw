@@ -69,12 +69,71 @@ def bookEle( tree, pName ):
     var(tree, '{pName}_mvaIso'.format(pName=pName))
     var(tree, '{pName}_mvaTrigV0'.format(pName=pName))
     var(tree, '{pName}_mvaNonTrigV0'.format(pName=pName))
+    var(tree, '{pName}_looseId'.format(pName=pName))
+    var(tree, '{pName}_tightId'.format(pName=pName))
 
 def fillEle( tree, pName, ele ):
     fillLepton(tree, pName, ele)
     fill(tree, '{pName}_mvaIso'.format(pName=pName), ele.mvaIso() )
     fill(tree, '{pName}_mvaTrigV0'.format(pName=pName), ele.sourcePtr().electronID("mvaTrigV0") )
     fill(tree, '{pName}_mvaNonTrigV0'.format(pName=pName), ele.sourcePtr().electronID("mvaNonTrigV0") )
+    fill(tree, '{pName}_looseId'.format(pName=pName), testEleLoosePhil(ele) )
+    fill(tree, '{pName}_tightId'.format(pName=pName), testElectronTwiki_2012(ele) )
+
+
+def testElectronTwiki_2012(leg):
+    """reference numbers form the Htautau twiki
+
+    https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
+    """
+    if testEleLoosePhil(leg) == False : return False
+    eta = abs( leg.eta() )
+    if eta > 2.1 : return False
+    lmvaID = -99999 # identification
+    if leg.pt() < 20 :
+        if   eta<0.8:   
+            lmvaID = 0.925
+        elif eta<1.479: 
+            lmvaID = 0.915
+        else :          
+            lmvaID = 0.965
+    else:
+        if   eta<0.8:   
+            lmvaID = 0.925
+        elif eta<1.479: 
+            lmvaID = 0.975
+        else :          
+            lmvaID = 0.985
+    result = leg.mvaNonTrigV0()  > lmvaID
+    return result
+
+
+def testEleLoosePhil(ele):
+    """Loose electron selection, for the lepton veto, 
+
+    according to Phil sync prescription for the sync exercise 18/06/12
+    """
+    nInnerHits = ele.numberOfHits()
+    if nInnerHits != 0 : return False
+    if ele.passConversionVeto() == False : return False 
+    if abs(ele.dxy())             >= 0.045 : return False
+    if abs(ele.dz())              >= 0.2   : return False
+    hoe = ele.hadronicOverEm()
+    deta = ele.deltaEtaSuperClusterTrackAtVtx()
+    dphi = ele.deltaPhiSuperClusterTrackAtVtx()
+    sihih = ele.sigmaIetaIeta() 
+    if ele.sourcePtr().isEB() :
+        if sihih >= 0.010     : return False
+        if dphi  >= 0.80      : return False 
+        if deta  >= 0.007     : return False
+        if hoe   >= 0.15      : return False
+    elif ele.sourcePtr().isEE() :
+        if sihih >= 0.030     : return False
+        if dphi  >= 0.70      : return False 
+        if deta  >= 0.010     : return False
+#            if hoe   >= 0.07      : return False
+    else : return False #PG is this correct? does this take cracks into consideration?
+    return True
 
 
 # tau 
