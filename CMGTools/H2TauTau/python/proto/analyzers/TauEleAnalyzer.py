@@ -4,8 +4,6 @@ from CMGTools.RootTools.physicsobjects.DiObject import TauElectron
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Electron, GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
-
-
 class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     DiObjectClass = TauElectron
@@ -37,9 +35,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def buildDiLeptons(self, cmgDiLeptons, event):
         '''Build di-leptons, associate best vertex to both legs,
-        select di-leptons with a tight ID muon.
-        The tight ID selection is done so that dxy and dz can be computed
-        (the muon must not be standalone).
+        select di-leptons with a tight ID electron.
+        The electron ID selection is done so that dxy and dz can be computed
         '''
         diLeptons = []
         for index, dil in enumerate(cmgDiLeptons):
@@ -47,8 +44,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
 #FIXME how I could work w/o the following line it's mistery 
-            pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
-            if not self.testEleLoosePhil( pydil.leg2() ):
+#            pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
+            if not self.testLeg2( pydil.leg2(), 999999 ):
                 continue
             if hasattr(self.cfg_ana, 'mvametsigs'):
                 pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
@@ -60,8 +57,10 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def buildLeptons(self, cmgLeptons, event):
-        '''Build muons for veto, associate best vertex, select loose ID muons.
-        The loose ID selection is done to ensure that the muon has an inner track.'''
+        '''Build electrons for veto, associate best vertex, select loose ID muons.
+        The loose ID selection is done to ensure that the muon has an inner track.
+        Since the electrons are used for veto, the 0.3 default isolation cut is left there, 
+        as well as the pt 15 gev cut'''
         leptons = []
         for index, lep in enumerate(cmgLeptons):
             pyl = self.__class__.LeptonClass(lep)
@@ -87,50 +86,86 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         result = super(TauEleAnalyzer, self).process(iEvent, event)
 
         if result is False:
-            selDiLeptons = [ diL for diL in event.diLeptons if \
-                             self.testMass(diL) ]
-            if len(selDiLeptons)==0:
+            # trying to get a dilepton from the control region.
+            # it must have well id'ed and trig matched legs,
+            # and di-lepton veto must pass
+            result = self.selectionSequence(event, fillCounter=False,
+                                            leg1IsoCut = -9999,
+                                            leg2IsoCut = 9999)
+            if result is False:
+                # really no way to find a suitable di-lepton,
+                # even in the control region
                 return False
-            event.diLepton = self.bestDiLepton( selDiLeptons )
-            event.leg1 = event.diLepton.leg1()
-            event.leg2 = event.diLepton.leg2()
             event.isSignal = False
         else:
             event.isSignal = True
-
+       
+        event.genMatched = None
         if self.cfg_comp.isMC:
+            # print event.eventId
             genParticles = self.mchandles['genParticles'].product()
             event.genParticles = map( GenParticle, genParticles)
             leg1DeltaR, leg2DeltaR = event.diLepton.match( event.genParticles ) 
-            if leg1DeltaR > -1 and leg1DeltaR < 0.1 and \
-               leg2DeltaR > -1 and leg2DeltaR < 0.1:
+            if leg1DeltaR>-1 and leg1DeltaR < 0.1 and \
+               leg2DeltaR>-1 and leg2DeltaR < 0.1:
                 event.genMatched = True
             else:
                 event.genMatched = False
-
+                
         return True
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def testLeg1(self, leg):
-        return self.testTau(leg) and \
-               super( TauEleAnalyzer, self).testLeg1( leg )
+    def testLeg1ID(self, tau):
+        """Returns True if a tau passes a set of cuts.
+        
+        contains the selections of the sync exercise of 17/05/12
+        """
+        if tau.decayMode() == 0 and \
+               tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B #PG FIXME should I put this in?
+            return False
+        if abs (tau.dz())  > 0.2   : return False
+        if abs (tau.dxy()) > 0.045 : return False
+        return tau.tauID("byLooseIsoMVA")         == True and \
+               tau.tauID("againstElectronMVA")    == True and \
+               tau.tauID("againstElectronMedium") == True and \
+               tau.tauID("againstMuonLoose")      == True
+        # byLooseCombinedIsolationDeltaBetaCorr
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def testLeg2(self, leg):
+    def testLeg1Iso(self, tau, isocut):
+        '''if isocut is None, returns true if loose iso MVA is passed.
+        Otherwise, returns true if iso MVA > isocut.'''
+        if isocut is None:
+            return tau.tauID("byLooseIsoMVA")>0.5
+        else:
+            return tau.tauID("byRawIsoMVA")>isocut
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+    def testLeg2ID(self, leg):
         leg.tightIdResult = self.testElectronTwiki_2012(leg) 
-        if abs (leg.dxy())  >= 0.045                         : return False
-        if abs (leg.dz())   >= 0.2                           : return False
-        if leg.pt ()        <= self.cfg_ana.pt2              : return False
-        if abs( leg.eta())  >= self.cfg_ana.eta2             : return False 
-        if not self.testEleLoosePhil (leg, self.cfg_ana.pt2) : return False
-        if leg.relIsoAllChargedDB05() >= self.cfg_ana.iso2   : return False
-#        if not leg.tightIdResult                             : return False
+        if abs (leg.dxy())  >= 0.045                                : return False
+        if abs (leg.dz())   >= 0.2                                  : return False
+        if leg.pt ()        <= self.cfg_ana.pt2                     : return False # FIXME should be in kine
+        if abs( leg.eta())  >= self.cfg_ana.eta2                    : return False # FIXME should be in kine
+        if not self.testEleLoosePhil (leg, self.cfg_ana.pt2, 99999) : return False
+        if not leg.tightIdResult                                    : return False
+        return True
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+    def testLeg2Iso(self, leg, isocut):
+        if leg.relIsoAllChargedDB05() >= self.cfg_ana.iso2          : return False
         return True
 
 
@@ -165,6 +200,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # 30.05.12, from Lorenzo
 # loose, pt > 20: {0.925, 0.975, 0.985}
 # tight, pt > 20: {0.925, 0.985, 0.985}
+# 13.06.12, numbers from the twiki
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -177,7 +213,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         """
         nInnerHits = ele.numberOfHits()
         if nInnerHits != 0 : return False
-        if ele.passConversionVeto() == False : return False 
+        if ele.passConversionVeto() == False   : return False 
         if ele.pt()                   < ptCut  : return False
         if ele.relIsoAllChargedDB05() > isoCut : return False
         if abs(ele.dxy())             >= 0.045 : return False
@@ -198,26 +234,6 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 #            if hoe   >= 0.07      : return False
         else : return False #PG is this correct? does this take cracks into consideration?
         return True
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
-
-    def testTau(self, tau):
-        """Returns True if a tau passes a set of cuts.
-        
-        contains the selections of the sync exercise of 17/05/12
-        """
-        if tau.decayMode() == 0 and \
-               tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B #PG FIXME should I put this in?
-            return False
-        if abs (tau.dz())  > 0.2   : return False
-        if abs (tau.dxy()) > 0.045 : return False
-        return tau.tauID("byLooseIsoMVA")         == True and \
-               tau.tauID("againstElectronMVA")    == True and \
-               tau.tauID("againstElectronMedium") == True and \
-               tau.tauID("againstMuonLoose")      == True
-        # byLooseCombinedIsolationDeltaBetaCorr
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
