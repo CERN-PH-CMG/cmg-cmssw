@@ -52,9 +52,3 @@ from CMGTools.H2TauTau.proto.plotter.cut.py
 ##     'Xcat_J1BX':cat_J1B,
 ##     'Xcat_J0X':cat_J0
 ##     }
-
-def replaceCategories(cutstr):
-    for catname, cat in categories.iteritems():
-        cutstr = cutstr.replace( catname, cat )
-    return cutstr
-
