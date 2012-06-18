@@ -88,7 +88,7 @@ unitpat = re.compile('.*\((.*)\)\s*$')
 
 keeper = []
 
-def draw(plot, doBlind=True):
+def draw(plot, doBlind=True, channel='TauMu'):
     
     blindxmin = None
     blindxmax = None
@@ -152,7 +152,8 @@ def draw(plot, doBlind=True):
         # import pdb; pdb.set_trace()
         keeper.append(box)
     
-    CMSPrelim( plot, pad, '#tau_{#mu}#tau_{h}')
+    if channel == 'TauMu' : CMSPrelim( plot, pad, '#tau_{#mu}#tau_{h}')
+    elif channel == 'TauEle' : CMSPrelim ( plot, pad, '#tau_{e}#mu_{h}')
     can.cd()
     can.SaveAs( plot.varName + '.png')
 
