@@ -219,9 +219,9 @@ int main(int argc, char* argv[])
   else if (sResonance.find("RSGraviton_2012_Z2star_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 4012;
   else if (sResonance.find("Qstar_2012_Z2star_ak5_fat30") != std::string::npos) iResonance = 4013;
 
-  else if (sResonance.find("RSGraviton_2012_D6T_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 4013;
-  else if (sResonance.find("RSGraviton_2012_D6T_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 4014;
-  else if (sResonance.find("Qstar_2012_D6T_ak5_fat30") != std::string::npos) iResonance = 4015;
+  else if (sResonance.find("RSGraviton_2012_D6T_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 4014;
+  else if (sResonance.find("RSGraviton_2012_D6T_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 4015;
+  else if (sResonance.find("Qstar_2012_D6T_ak5_fat30") != std::string::npos) iResonance = 4016;
 
   if (iResonance > 20 && iResonance < 29)  {
     DATASETFN="../data/PFDiFatJetMassList_DATA.txt";
