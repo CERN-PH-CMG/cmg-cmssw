@@ -62,7 +62,7 @@ class Stack:
         if ymin is None:
             ymin = 0.1
         if ymax is None:
-            ymax = self.totalHist.GetMaximum()*1.1
+            ymax = self.totalHist.GetMaximum()*1.3
         hist.GetYaxis().SetRangeUser( ymin, ymax )
         if xmin is not None and xmax is not None:
             # without the little offset,

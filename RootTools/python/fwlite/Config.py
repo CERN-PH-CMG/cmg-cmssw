@@ -128,15 +128,16 @@ class MCComponent( Component ):
         # self.tauEffWeight = tauEffWeight
         # self.muEffWeight = muEffWeight
         self.isMC = True
+        self.intLumi = 1.
 
     def getWeight( self, intLumi = None):
-        if intLumi is None:
-            intLumi = Weight.FBINV
+        # if intLumi is None:
+        #    intLumi = Weight.FBINV
         #COLIN THIS WEIGHT STUFF IS REALLY BAD!!
         # use the existing Weight class or not? guess so...
         return Weight( genNEvents = self.nGenEvents,
                        xSection = self.xSection,
-                       intLumi = None,
+                       intLumi = self.intLumi,
                        genEff = 1/self.effCorrFactor,
                        addWeight = 1. )
 
