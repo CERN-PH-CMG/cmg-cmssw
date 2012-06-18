@@ -29,6 +29,7 @@ class Histogram( object ):
         self.layer = layer
         self.stack = stack
         self.on = True
+        self.style = None
         # after construction, weighted histogram = base histogram
         self.SetWeight(1)
         
@@ -67,8 +68,11 @@ class Histogram( object ):
 
     def SetStyle(self, style):
         '''Set the style for the original and weighted histograms.'''
+        if style is None:
+            return 
         style.formatHisto( self.obj )
         style.formatHisto( self.weighted )
+        self.style = style
 
     def AddEntry(self, legend, legendLine=None):
         '''By default the legend entry is set to self.legendLine of the histogram.'''

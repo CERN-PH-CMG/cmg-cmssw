@@ -50,6 +50,13 @@ class DataMCPlot(object):
 
     def Replace(self, name, pyhist):
         oldh = self.histosDict.get(name, None)
+        pythist = copy.deepcopy(pyhist)
+        pyhist.layer = oldh.layer
+        pyhist.stack = oldh.stack
+        pyhist.name = oldh.name
+        pyhist.legendLine = oldh.legendLine
+        pyhist.SetStyle( oldh.style )
+        pyhist.weighted.SetFillStyle( oldh.weighted.GetFillStyle())
         if oldh is None:
             print 'histogram', name, 'does not exist, cannot replace it.'
             return
