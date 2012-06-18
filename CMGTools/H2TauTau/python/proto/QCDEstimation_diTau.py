@@ -16,6 +16,16 @@ def substractMCbackground(QCDtightSS, plotVarDataSS):
       QCDtightSS.Add(plotVarDataSS.Hist("ZZ"),-1)
       QCDtightSS.Add(plotVarDataSS.Hist("TTJets"),-1)
 
+def substractMCbackground2(QCDtightSS, plotVarDataSS):
+      QCDtightSS.Add(plotVarDataSS.Hist("DYJets"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Fakes"),-1)
+      #QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Photon"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Electron"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("WW"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("WZ"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("ZZ"),-1)
+      QCDtightSS.Add(plotVarDataSS.Hist("TTJets"),-1)
+
 def QCDEstimate(prefix,prefix1,xmin,xmax,\
                 plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,\
                 plotVarDataLowControlOS, plotVarDataLowControlSS, plotVarDataAverageControlOS,\
@@ -317,7 +327,7 @@ def QCDEstimate1(prefix,prefix1,xmin,xmax,\
       
       return QCDlooseSS,QCDScale
 
-def QCDEstimate2(prefix,prefix1,xmin,xmax,\
+def QCDEstimate2(prefix,prefix1,var,xmin,xmax,\
                  plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,\
                  log):
       ymax=plotVarDataLooseIsoOS.Hist("Data").GetMaximum()*1.5
@@ -359,19 +369,83 @@ def QCDEstimate2(prefix,prefix1,xmin,xmax,\
       QCDtightSS=copy.deepcopy(plotVarDataSS.Hist("Data"))
       substractMCbackground(QCDtightSS, plotVarDataSS)
 
-      print "QCDlooseOS:", QCDlooseOS.Integral()
-      print "QCDlooseSS:", QCDlooseSS.Integral()
-      print "QCDtightSS:", QCDtightSS.Integral()
+      QCD_PrintOut = open( os.getcwd()+"/"+prefix+"/QCD_PrintOut_"+var+".txt","w")
+      print >> QCD_PrintOut, "QCDlooseOS:", QCDlooseOS.Integral()
+      print >> QCD_PrintOut, "QCDlooseSS:", QCDlooseSS.Integral()
+      print >> QCD_PrintOut, "QCDtightSS:", QCDtightSS.Integral()
       tightLoose=QCDtightSS.Integral()/QCDlooseSS.Integral()
       tightLooseErr=tightLoose*math.sqrt(1./abs(QCDtightSS.Integral()) + 1./abs(QCDlooseSS.Integral()))
-      print "QCDtightSS / QCDlooseSS", tightLoose, "+-", tightLooseErr
+      print >> QCD_PrintOut, "QCDtightSS / QCDlooseSS", tightLoose, "+-", tightLooseErr
+      QCD_PrintOut.close()
       
       if tightLoose<tightLooseErr/2.:
           tightLoose=tightLooseErr/2.
       
       QCDScale=tightLoose
       
-      return QCDlooseOS,QCDScale
+      return QCDlooseOS, QCDScale, QCDlooseSS, QCDtightSS
+
+
+def QCD_WJets_Estimate2(prefix,prefix1,var,xmin,xmax,\
+                        plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,\
+                        log):
+      ymax=plotVarDataLooseIsoOS.Hist("Data").GetMaximum()*1.5
+      if log:
+          plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+	  gPad.SetLogy()
+      else:
+          plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
+	  gPad.SetLogy(False)
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcd_wjets_LooseOS.png")
+      
+      ymax=plotVarDataLooseIsoSS.Hist("Data").GetMaximum()*1.5
+      if log:
+          plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+	  gPad.SetLogy()
+      else:
+          plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
+	  gPad.SetLogy(False)
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcd_wjets_LooseSS.png")
+      
+      ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
+      if log:
+          plotVarDataSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+	  gPad.SetLogy()
+      else:
+          plotVarDataSS.DrawStack("HIST",xmin,xmax,0,ymax)
+	  gPad.SetLogy(False)
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcd_wjets_TightSS.png")
+      
+      QCDlooseOS=copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
+      substractMCbackground2(QCDlooseOS, plotVarDataLooseIsoOS)
+
+      QCDlooseSS=copy.deepcopy(plotVarDataLooseIsoSS.Hist("Data"))
+      substractMCbackground2(QCDlooseSS, plotVarDataLooseIsoSS)
+
+      QCDtightSS=copy.deepcopy(plotVarDataSS.Hist("Data"))
+      substractMCbackground2(QCDtightSS, plotVarDataSS)
+
+      QCD_PrintOut = open( os.getcwd()+"/"+prefix+"/QCD_PrintOut_"+var+".txt","w")
+      print >> QCD_PrintOut, "QCDlooseOS:", QCDlooseOS.Integral()
+      print >> QCD_PrintOut, "QCDlooseSS:", QCDlooseSS.Integral()
+      print >> QCD_PrintOut, "QCDtightSS:", QCDtightSS.Integral()
+      tightLoose=QCDtightSS.Integral()/QCDlooseSS.Integral()
+      tightLooseErr=tightLoose*math.sqrt(1./abs(QCDtightSS.Integral()) + 1./abs(QCDlooseSS.Integral()))
+      print >> QCD_PrintOut, "QCDtightSS / QCDlooseSS", tightLoose, "+-", tightLooseErr
+      QCD_PrintOut.close()
+      
+      if tightLoose<tightLooseErr/2.:
+          tightLoose=tightLooseErr/2.
+      
+      QCDScale=tightLoose
+      
+      return QCDlooseOS, QCDScale, QCDlooseSS, QCDtightSS
+
+
+
+
+
+
 
 def QCDEstimate3(prefix,prefix1,xmin,xmax,\
                  plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,\
