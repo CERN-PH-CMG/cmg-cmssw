@@ -5,7 +5,7 @@ from CMGTools.H2TauTau.proto.plotter.embed import embedScaleFactor
 keeper = []
 
 
-def prepareComponents(dir, config, aliases=None):
+def prepareComponents(dir, config, aliases=None, embed=True):
     '''Selects all components in configuration file. computes the integrated lumi
     from data components, and set it on the MC components.
     '''
@@ -57,11 +57,12 @@ def prepareComponents(dir, config, aliases=None):
     attachTree(zComps,'MuMu')
     attachTree(newSelComps, 'TauMu')
 
-    # import pdb; pdb.set_trace()
-    eh, zh, embedFactor = embedScaleFactor(newSelComps)
-    for comp in embedComps:
-        # import pdb; pdb.set_trace()
-        comp.embedFactor = embedFactor
+    import pdb; pdb.set_trace()
+    if embed:
+        eh, zh, embedFactor = embedScaleFactor(newSelComps)
+        for comp in embedComps:
+            # import pdb; pdb.set_trace()
+            comp.embedFactor = embedFactor
  
     return newSelComps, weights, zComps
     
