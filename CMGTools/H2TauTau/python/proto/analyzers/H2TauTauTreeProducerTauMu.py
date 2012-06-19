@@ -1,5 +1,6 @@
 from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
+from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 
 
 class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
@@ -19,6 +20,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        var( tr, 'svfitMass')
        var( tr, 'mt') 
        var( tr, 'met')
+       var( tr, 'pfmet')
        
        bookParticle(tr, 'diTau')
        bookTau(tr, 'l1')
@@ -44,8 +46,15 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        var( tr, 'isFake')
        var( tr, 'isSignal')
        
-
+    def declareHandles(self):
+        super(H2TauTauTreeProducerTauMu, self).declareHandles()
+        self.handles['pfmetraw'] = AutoHandle(
+            'cmgPFMETRaw',
+            'std::vector<cmg::BaseMET>' 
+            )
+        
     def process(self, iEvent, event):
+       self.readCollections( iEvent )
             
        tr = self.tree
        tr.reset()
@@ -58,6 +67,11 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        fill(tr, 'svfitMass', event.diLepton.massSVFit())
        fill(tr, 'mt', event.diLepton.mTLeg2())
        fill(tr, 'met', event.diLepton.met().pt())
+
+       # import pdb; pdb.set_trace()
+       pfmet = self.handles['pfmetraw'].product()[0]
+       fill(tr, 'pfmet', pfmet.pt())
+
        
        fillParticle(tr, 'diTau', event.diLepton)
        fillTau(tr, 'l1', event.diLepton.leg1() )

@@ -63,14 +63,16 @@ class LeptonWeighter( Analyzer ):
                     self.lepton.triggerWeight = 1.                    
 
             recEffMap = None
-            if abs(self.lepton.pdgId()) == 11:
-                recEffMap = recEffMapEle
-            elif abs(self.lepton.pdgId()) == 13:
-                recEffMap = recEffMapMu
-            elif abs(self.lepton.pdgId()) == 15:
-                pass
-            else:
-                raise ValueError('bad lepton pdgid: {pdgid}'.format(pdgid = self.lepton.pdgId()))
+            if self.cfg_ana.recEffVersion == '2011':
+                if abs(self.lepton.pdgId()) == 11:
+                    recEffMap = recEffMapEle
+                elif abs(self.lepton.pdgId()) == 13:
+                    recEffMap = recEffMapMu
+                elif abs(self.lepton.pdgId()) == 15:
+                    pass
+                else:
+                    raise ValueError('bad lepton pdgid: {pdgid}'.format(pdgid = self.lepton.pdgId()))
+            
             if recEffMap is not None:
                 self.lepton.recEffWeight = recEffMap.effCor( self.lepton.pt(), self.lepton.eta())[0]
             
