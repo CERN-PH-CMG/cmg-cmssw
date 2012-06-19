@@ -74,7 +74,7 @@ private:
   EGEnergyCorrector phocorr_,ecorr_;
 
   float curAvgInstLumi_, curIntegLumi_;
-
+  int iErr_;
 };
 
 using namespace std;
@@ -82,7 +82,7 @@ using namespace std;
 //
 DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterSet &iConfig)
   : controlHistos_( iConfig.getParameter<std::string>("dtag") ),
-    curAvgInstLumi_(0), curIntegLumi_(0)
+    curAvgInstLumi_(0), curIntegLumi_(0),iErr_(0)
 {
   try{
 
@@ -713,7 +713,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.nmeasurements=0;
     summaryHandler_.fillTree();
   }catch(std::exception &e){
-    std::cout << "[DileptonPlusMETEventAnalyzer][analyze] failed with " << e.what() << std::endl;
+    if(iErr_<10) std::cout << "[DileptonPlusMETEventAnalyzer][analyze] failed with " << e.what() << std::endl;
+    if(iErr_==10) std::cout << "Suppressing further this error" << endl;
+    iErr_++;
   }
 
 

@@ -20,73 +20,16 @@ castorDir, outputFile, process.source.fileNames = configureSourceFromCommandLine
 # histogram service
 process.TFileService = cms.Service("TFileService", fileName = cms.string(outputFile) )
 
-# our MET producer
-from CMGTools.HtoZZ2l2nu.ClusteredPFMetProducer_cfi import ClusteredPFMetProducer
-process.ClusteredPFMetProducer = ClusteredPFMetProducer.clone()
+######################################
+# ANALYSIS                           #
+######################################
+from CMGTools.HtoZZ2l2nu.Analysis_cff import defineAnalysis
+defineAnalysis(process,castorDir)
 
-#pileup normalization
-from CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi import puWeights
-process.puWeights      = puWeights.clone( data = cms.string('$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/NewPileup2011AplusB.root'),
-                                          mc   = cms.string('$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/Summer11Observed.root')
-                                          )
-process.puWeightSequence = cms.Sequence(process.puWeights)
-
-#
-# configure the analyzer (cf. base values are in the StandardSelections_cfi)
-#
-from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import *
-process.evAnalyzer = cms.EDAnalyzer("DileptonPlusMETEventAnalyzer",
-                                    dtag=cms.string('h2zz'),
-                                    Trigger = BaseTriggerSelection.clone(),
-                                    Generator = BaseGeneratorSelection.clone(),
-                                    Vertices = BaseVertexSelection.clone(),
-                                    Photons = BasePhotonsSelection.clone(),
-                                    LooseMuons = BaseLooseMuonsSelection.clone(),
-                                    Muons = BaseMuonsSelection.clone(),
-                                    LooseElectrons = BaseLooseElectronsSelection.clone(),
-                                    Electrons = BaseElectronsSelection.clone(),
-                                    Dileptons = BaseDileptonSelection.clone(),
-                                    Jets = BaseJetSelection.clone(),
-                                    AssocJets = AssocJetSelection.clone(),
-                                    MET = BaseMetSelection.clone()
-                                    )
-
-if(castorDir.find('12_03_13_HZZ2l2v_pat')>0):
-    print ' Warning: applying PF muon patch to standard selection'
-    process.evAnalyzer.Muons.source=cms.InputTag("selectedPatMuonsPFlow")
-    process.evAnalyzer.Muons.sourceIsPF=cms.bool(True)
-    process.evAnalyzer.LooseMuons.source=process.evAnalyzer.Muons.source
-    process.evAnalyzer.LooseMuons.sourceIsPF=process.evAnalyzer.Muons.sourceIsPF
-    
-
-#rho for muon isolation
-process.load('CommonTools.ParticleFlow.ParticleSelectors.pfAllNeutralHadronsAndPhotons_cfi')
-process.pfAllNeutralHadronsAndPhotons.src=cms.InputTag("particleFlow")
-from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-process.kt6PFJetsCentralNeutral = kt4PFJets.clone(  src = cms.InputTag("pfAllNeutralHadronsAndPhotons"),
-                                                    rParam = cms.double(0.6),
-                                                    doAreaFastjet = cms.bool(True),
-                                                    doRhoFastjet = cms.bool(True),
-                                                    Ghost_EtaMax = cms.double(3.1),
-                                                    Rho_EtaMax = cms.double(2.5),
-                                                    inputEtMin = cms.double(0.5)
-)
-process.rhoForIsolationSequence = cms.Sequence(process.pfAllNeutralHadronsAndPhotons*process.kt6PFJetsCentralNeutral)
-
-
-
-#MVAs for IDs
-#process.load('EGamma.EGammaAnalysisTools.electronIdMVAProducer_cfi')
-#process.mvaIDs = cms.Sequence(  process.mvaTrigV0 + process.mvaNonTrigV0 )
-
-
-#the path to execute
-process.p = cms.Path( #process.mvaIDs +
-                      process.rhoForIsolationSequence +
-                      process.ClusteredPFMetProducer +
-                      process.puWeightSequence +
-                      process.evAnalyzer)
-
+#######################################
+# SCHEDULE THE EXECUTION OF THE PATHS #
+####################################### 
+process.schedule = cms.Schedule( process.analysis )
 
 # message logger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")

@@ -143,6 +143,7 @@ int main(int argc, char* argv[])
   //##############################################
 
   mon.addHistogram( new TH1F ("ht",     ";H_{T};Events",50,0,500) );
+  mon.addHistogram( new TH1F ("ht50",     ";H_{T};Events",50,0,500) );
   mon.addHistogram( new TH1F ("clusteredmet",     ";Clustered E_{T}^{miss} [GeV];Events",50,0,250) );
   mon.addHistogram( new TH1F ("unclusteredmet",     ";Unclustered E_{T}^{miss} [GeV];Events",50,0,250) );
   mon.addHistogram( new TH1F ("mht",     ";MHT [GeV];Events",50,0,250) );
@@ -161,6 +162,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("r9", ";R9;Events", 100,0.8,1) );
   mon.addHistogram( new TH1F ("sietaieta", ";#sigma i#eta i#eta;Events", 100,0,0.03) );
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "dphibmet", ";min #Delta#phi(boson,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,2.5) );
   mon.addHistogram( new TH1F ("trkveto", ";Track veto;Events", 2,0,2) );
   
@@ -262,6 +264,7 @@ int main(int argc, char* argv[])
   int NumberOfDuplicated(0);
 
   //pileup reweighting
+  bool disableJERSmear(false);
   std::vector<double> dataPileupDistributionDouble = runProcess.getParameter< std::vector<double> >("datapileup");
   std::vector<float> dataPileupDistribution; 
   for(unsigned int i=0;i<dataPileupDistributionDouble.size();i++){dataPileupDistribution.push_back(dataPileupDistributionDouble[i]);}
@@ -275,7 +278,11 @@ int main(int argc, char* argv[])
       if(!histo)std::cout<<"pileup histogram is null!!!\n";
       for(int i=1;i<=histo->GetNbinsX();i++){mcPileupDistribution.push_back(histo->GetBinContent(i));}
       delete histo;
-      if(dataPileupDistribution.size()==0) dataPileupDistribution=mcPileupDistribution;
+      if(dataPileupDistribution.size()==0) 
+	{ 
+	  dataPileupDistribution=mcPileupDistribution; disableJERSmear=true; 
+	  cout << "No PU reweighting or JER smearing will be applied" << endl;
+	}
     }
   else mcPileupDistribution=dataPileupDistribution;
   while(mcPileupDistribution.size()<dataPileupDistribution.size())  mcPileupDistribution.push_back(0.0);
@@ -432,14 +439,16 @@ int main(int argc, char* argv[])
       PhysicsObjectJetCollection selJets,recoilJets;
       LorentzVector clusteredMet(gamma);  clusteredMet *= -1;
       LorentzVector mht(0,0,0,0),unclusteredMet(0,0,0,0);
-      for(size_t ijet=0; ijet<jets[0].size(); ijet++)
+      PhysicsObjectJetCollection & jetsToUse=jets[0];
+      if(disableJERSmear) jetsToUse=phys.ajets;
+      for(size_t ijet=0; ijet<jetsToUse.size(); ijet++)
         {
-	  LorentzVector ijetP4=jets[0][ijet];
+	  LorentzVector ijetP4=jetsToUse[ijet];
 	  if(ijetP4.pt()<15) continue;
 	  if(isGammaEvent && deltaR(ijetP4,gamma)<0.2) continue;
 	  
 	  //condition for recoil jet
-	  if( fabs(deltaPhi(ijetP4.phi(),gamma.phi())>2 ) ) recoilJets.push_back( jets[0][ijet] );
+	  if( fabs(deltaPhi(ijetP4.phi(),gamma.phi())>2 ) ) recoilJets.push_back( jetsToUse[ijet] );
 	  
 	  njets15++;
 	  selJets.push_back(ijetP4);
@@ -456,7 +465,7 @@ int main(int argc, char* argv[])
 	  mindphijmet=min(idphijmet,mindphijmet);
 	  
 	  //b-tag
-	  if(fabs(ijetP4.eta())<2.5) nbtags += (jets[0][ijet].btag3>0.275);
+	  if(fabs(ijetP4.eta())<2.5) nbtags += (jetsToUse[ijet].btag3>0.275);
 
 // 	  TString reg=getJetRegion(jets[0][ijet].eta());
 // 	  mon.fillHisto(reg+"pfjetbeta",     tags_full,jets[0][ijet].beta,     weight);
@@ -542,8 +551,8 @@ int main(int argc, char* argv[])
 		  if(!hasConvUnsafeElectronVeto) mon.fillHisto("mtevetounsafe", ctf, mt,iweight);
 		}
 	      
-	      //if(hasElectronVeto || hasTrkVeto || !passR9tight) continue;
 	      if(hasElectronVeto || !passR9tight) continue;
+	      //if(hasElectronVeto || hasTrkVeto || !passR9tight) continue;
 	      
 	      mon.fillHisto("nbtags",ctf, nbtags,iweight);
 	      if(!passBveto) continue;
@@ -586,7 +595,13 @@ int main(int argc, char* argv[])
 		    }
 		}
 
-	      if(metP4.pt()>50) mon.fillHisto("mindphijmet",ctf,njets30==0? mindphijmet15:mindphijmet,iweight);	      
+	      if(metP4.pt()>50) 
+		{
+		  mon.fillHisto("mindphijmet",ctf,njets30==0? mindphijmet15:mindphijmet,iweight);	      
+		  mon.fillHisto("dphibmet",ctf,fabs(deltaPhi(gamma.phi(),metP4.phi())),iweight);	      
+		  mon.fillHisto("ht50",ctf,ht,iweight);	      
+		}
+		  
 	      if(passMinDphiJmet)
 		{
 

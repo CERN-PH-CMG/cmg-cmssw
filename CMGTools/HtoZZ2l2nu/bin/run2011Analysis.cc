@@ -309,6 +309,8 @@ int main(int argc, char* argv[])
     }
 
 
+  mon.addHistogram( new TH1F( "mindphilmet", ";min(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "maxdphilmet", ";max(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,2.5) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
@@ -443,8 +445,8 @@ int main(int argc, char* argv[])
   std::vector<double> dataPileupDistributionDouble = runProcess.getParameter< std::vector<double> >("datapileup");
   std::vector<float> dataPileupDistribution; for(unsigned int i=0;i<dataPileupDistributionDouble.size();i++){dataPileupDistribution.push_back(dataPileupDistributionDouble[i]);}
   std::vector<float> mcPileupDistribution;
-  //bool useObservedPU(true);
-  bool useObservedPU(use2011Id);
+  bool useObservedPU(true);
+  //bool useObservedPU(use2011Id);
   if(!use2011Id && url.Contains("toZZto2L")) useObservedPU=true;
   if(isMC){
     TString puDist("evAnalyzer/h2zz/pileuptrue");
@@ -955,7 +957,11 @@ int main(int argc, char* argv[])
 			  
 			  LorentzVector assocMetP4(phys.met[1]);
 			  LorentzVector min3Met( min(zvvs[0], min(assocMetP4,aClusteredMetP4)) );
-
+			  double dphil1met=fabs(deltaPhi(lep1.phi(),zvvs[0].phi()));
+			  double dphil2met=fabs(deltaPhi(lep2.phi(),zvvs[0].phi()));
+			  
+			  mon.fillHisto("mindphilmet",tags_full, min(dphil1met,dphil2met) ,weight);
+			  mon.fillHisto("maxdphilmet",tags_full, max(dphil1met,dphil2met) ,weight);
 			  mon.fillHisto("deltaleptonpt",tags_full, leadingLep.pt()-trailerLep.pt()    ,weight);
 			  mon.fillHisto("deltazpt",tags_full, zll.pt()-zvvs[0].pt(),weight);
 			  mon.fillHisto("balance",tags_full, zvvs[0].pt()/zll.pt(),weight);
