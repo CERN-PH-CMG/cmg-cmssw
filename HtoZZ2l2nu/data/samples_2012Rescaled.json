@@ -1083,7 +1083,7 @@
 		 "aoddir":["path=/SingleMu/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
 	         "patdir":["/store/cmst3/user/psilva/Data2012/SingleMu-v6/2012B"],
-                 "split":5
+                 "split":2
                 },
                 {
                  "dtag":"Data8TeV_MuEG2012B",
@@ -1091,7 +1091,7 @@
 		 "aoddir":["path=/MuEG/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
 		 "patdir":["/store/cmst3/user/psilva/Data2012/MuEG-v6/2012B"],
-                 "split":2
+                 "split":5
                 }
 	    ]
 	}
