@@ -1067,7 +1067,7 @@
 		 "aoddir":["path=/DoubleElectron/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
 		 "patdir":["/store/cmst3/user/psilva/Data2012/DoubleElectron-v6/2012B"],
-                 "split":2
+                 "split":5
                 },
                 {
 	         "dtag":"Data8TeV_DoubleMu2012B",
@@ -1075,7 +1075,7 @@
 		 "aoddir":["path=/DoubleMu/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
 	         "patdir":["/store/cmst3/user/psilva/Data2012/DoubleMu-v6/2012B"],
-                 "split":2
+                 "split":5
                 },
                 {
 	         "dtag":"Data8TeV_SingleMu2012B",
@@ -1083,7 +1083,7 @@
 		 "aoddir":["path=/SingleMu/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
 	         "patdir":["/store/cmst3/user/psilva/Data2012/SingleMu-v6/2012B"],
-                 "split":2
+                 "split":5
                 },
                 {
                  "dtag":"Data8TeV_MuEG2012B",
