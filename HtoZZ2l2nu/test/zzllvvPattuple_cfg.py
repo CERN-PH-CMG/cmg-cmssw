@@ -20,8 +20,8 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.autoCond import autoCond
 if(runOnMC) : process.GlobalTag.globaltag=cms.string(autoCond.get('startup',autoCond['mc']))
 else        : process.GlobalTag.globaltag=cms.string(autoCond['com10'])
-##if ( not runOnMC ): process.GlobalTag.globaltag = 'GR_R_52_V7::All'
-#else              : process.GlobalTag.globaltag = 'START52_V9::All'
+if ( not runOnMC ): process.GlobalTag.globaltag = 'GR_R_52_V9::All'
+else              : process.GlobalTag.globaltag = 'START52_V9B::All'
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load('JetMETCorrections.Configuration.DefaultJEC_cff')
 
@@ -45,7 +45,7 @@ from CMGTools.HtoZZ2l2nu.PreselectionSequences_cff import addPreselectionSequenc
 from CMGTools.HtoZZ2l2nu.PreselectionSequences_cff import addLumifilter
 if(not runOnMC ):
     addPreselectionSequences(process)
-    addLumifilter(process,'/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-195016_8TeV_PromptReco_Collisions12_JSON_v2.txt')
+    #addLumifilter(process,'/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-195016_8TeV_PromptReco_Collisions12_JSON_v2.txt')
     
                       
 from CMGTools.HtoZZ2l2nu.SkimSequences_cff import addDileptonSkim, addPhotonSkim
@@ -102,7 +102,7 @@ for i in xrange(0,len(postfixes) ):
     i_postfix        = postfixes[i]
     i_doPFNoPU       = doPFNoPU[i]
     
-    print ' ******* Setting up PF2PAT sequence: ' + i_jetAlgo
+    print ' ******* Setting up PFBRECO sequence: ' + i_jetAlgo
     print '         PFnoPU will run? ' + str(i_doPFNoPU)
     print '         ' + i_jetAlgo + ' jet algo payload is: ' + i_jetAlgoPayLoad
    
@@ -250,7 +250,13 @@ else:
     process.llPath = cms.Path(process.startCounter * process.preselection * process.llCandidateSequence * process.patSequence )
     process.photonPath = cms.Path(process.startCounter * process.preselection * process.photonCandidateSequence * process.patSequence )
 process.e = cms.EndPath( process.endCounter*process.out )
-    
+
+
+######################################
+# ANALYSIS                           #
+######################################
+from CMGTools.HtoZZ2l2nu.Analysis_cff import defineAnalysis
+defineAnalysis(process)
 
 #######################################
 # SCHEDULE THE EXECUTION OF THE PATHS #
@@ -261,8 +267,14 @@ if(not runStd) :
     else        : process.schedule = cms.Schedule( process.genLevelPath, process.patOnlyPath, process.e )
 else :
     configureOutput(process,selPaths=['llPath','photonPath'],outFile=outFile)
-    if(runOnMC) : process.schedule = cms.Schedule( process.genLevelPath, process.llPath, process.photonPath, process.e )
-    else        : process.schedule = cms.Schedule( process.llPath, process.photonPath, process.e )
+    if(runFull) :
+        process.TFileService = cms.Service("TFileService", fileName = cms.string("analysis.root"))
+        process.e = cms.EndPath( process.endCounter )
+        if(runOnMC) : process.schedule = cms.Schedule( process.genLevelPath, process.llPath, process.photonPath, process.analysis )
+        else        : process.schedule = cms.Schedule( process.llPath, process.photonPath, process.analysis )
+    else :
+        if(runOnMC) : process.schedule = cms.Schedule( process.genLevelPath, process.llPath, process.photonPath, process.e )
+        else        : process.schedule = cms.Schedule( process.llPath, process.photonPath, process.e )
 
 
 print '******************'

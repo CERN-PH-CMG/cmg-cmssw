@@ -6,6 +6,7 @@
 #include "THStack.h"
 #include "TPaveText.h"
 #include "TStyle.h"
+#include "TGraphErrors.h"
 
 #include <iostream> 
 #include <string> 
@@ -18,37 +19,71 @@ TStyle *tdrStyle;
 struct Shape_t
 {
   TH1* data, *totalBckg;
-  std::vector<TH1 *> bckg, signal;
-  //the key corresponds to the proc name
-  //the key is the name of the variation: e.g. jesup, jesdown, etc.
-  std::map<TString,std::vector<std::pair<TString, TH1*> > > bckgVars, signalVars;
+  std::map<TString, TH1 *> bckg, signal;
 };
 
 void showShape(const Shape_t &shape,TString SaveName);
 void setTDRStyle();
+
+
+//
+void addToShape(Shape_t &a, Shape_t &b,int sign=+1)
+{
+  if(a.data && b.data)           a.data->Add(b.data,sign);
+  if(a.totalBckg && b.totalBckg) a.totalBckg->Add(b.totalBckg,sign);
+  for(std::map<TString, TH1 *>::iterator it = a.bckg.begin(); it != a.bckg.end(); it++)
+    {
+      if(b.bckg.find(it->first)==b.bckg.end()) continue;
+      it->second->Add( b.bckg[it->first], sign );
+    }
+  for(std::map<TString, TH1 *>::iterator it = b.bckg.begin(); it != b.bckg.end(); it++)
+    {
+      if(a.bckg.find(it->first)!=b.bckg.end()) continue;
+      TH1 *h=(TH1 *)it->second->Clone();
+      h->SetDirectory(0);
+      h->Scale(sign);
+      a.bckg[it->first]=h;
+    }
+  for(std::map<TString, TH1 *>::iterator it = a.signal.begin(); it != a.signal.end(); it++)
+    {
+      if(b.signal.find(it->first)==b.signal.end()) continue;
+      it->second->Add( b.signal[it->first], sign );
+    }
+  for(std::map<TString, TH1 *>::iterator it = b.signal.begin(); it != b.signal.end(); it++)
+    {
+      if(a.signal.find(it->first)!=b.signal.end()) continue;
+      TH1 *h=(TH1 *)it->second->Clone();
+      h->SetDirectory(0);
+      h->Scale(sign);
+      a.signal[it->first]=h;
+    }
+}
+
 
 //
 void getDYprediction(bool doSubtraction=true)
 {
   setTDRStyle();
 
-  //  TString llFile="../../test/results/plotter.root";
-  // TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
-  TString llFile="../../test/results/plotter_2012.root";
+  //   TString llFile="../../test/results/plotter_2012.root";
+  TString llFile="../../plotter.root";
   TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
-
+  
+  //  TString llFile="../../test/results/plotter_2011.root";
+  //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
+  
   string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {"met_met","mt","mindphijmet","met_redMet","pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj","pfvbfcjv"};
+  string histos[] = {"met_met","mt"};//,"mt"};//,"mindphijmet","met_redMet","pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj","pfvbfcjv","mt_shapes"};
   const size_t nhistos=sizeof(histos)/sizeof(string);
-  string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};//,"novbf"};
-  const size_t ndilcats=sizeof(dilcats)/sizeof(string);//-1;
+  string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};
+  const size_t ndilcats=sizeof(dilcats)/sizeof(string);
   string dilprocs[]={"WW#rightarrow 2l2#nu","ZZ","WZ#rightarrow 3l#nu","t#bar{t}","Single top","W#rightarrow l#nu","data"};
   Int_t dilColors[]={592, 590, 596, 8, 824, 809, 1 };
-  string dilSignal("H(300)#rightarrow ZZ");
-  int cutIndex=411;
   const size_t ndilprocs=sizeof(dilprocs)/sizeof(string);
-  string gcats[]= {"eq0jets",/*"eq0softjets",*/"eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged
+  string dilSignal[]={"ggH(400)#rightarrow ZZ","qqH(400)#rightarrow ZZ"};
+  const size_t nDilSignals=sizeof(dilSignal)/sizeof(string);
+  string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
   const size_t ngcats=sizeof(gcats)/sizeof(string);
   string gprocs[]={"Z#gamma#rightarrow#nu#nu#gamma","W#gamma#rightarrowl#nu#gamma","W#rightarrow l#nu","data (#gamma)"};
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
@@ -80,16 +115,18 @@ void getDYprediction(bool doSubtraction=true)
 		    {
 		      m_shape.data=h;
 
-		      string hsigname=dilSignal+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
-		      TH1 *hsig=(TH1 *)llIn->Get(hsigname.c_str());
-		      if(hsig==0) { cout << hsigname << endl; continue; }
-		      //    if(histos[ih]=="mt_shapes")
-		      //			hsig = ((TH2 *)hsig)->ProjectionY((string(hsig->GetName())+"proj").c_str(),cutIndex,cutIndex);
-		      hsig->SetTitle(dilSignal.c_str());
-		      hsig->SetDirectory(0);
-		      hsig->SetLineColor(1);
-		      hsig->SetLineWidth(2);
-		      m_shape.signal.push_back(hsig);
+		      for(size_t isig=0; isig<nDilSignals; isig++)
+			{
+			  string hsigname = dilSignal[isig]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
+			  TH1 *hsig       = (TH1 *)llIn->Get(hsigname.c_str());
+			  if(hsig==0) { cout << hsigname << endl; continue; }
+			  hsig->SetTitle(dilSignal[isig].c_str());
+			  hsig->SetDirectory(0);
+			  hsig->SetLineColor(1);
+			  hsig->SetLineStyle(1+isig);
+			  hsig->SetLineWidth(2);
+			  m_shape.signal[dilSignal[isig]]=hsig;
+			}
 		    }
 		  else
 		    {
@@ -102,13 +139,12 @@ void getDYprediction(bool doSubtraction=true)
 			  m_shape.totalBckg->SetDirectory(0);
 			}
 		      if(h->Integral())m_shape.totalBckg->Add(h);
-		      m_shape.bckg.push_back(h);
+		      m_shape.bckg[dilprocs[iproc]]=h;
 		    }
 		}
 
 	      //save
 	      string key=ch[ich]+dilcats[icat]+"_"+histos[ih];
-	      cout << "Shapes: " << key << endl;
 	      shapesMap[key]=m_shape;
 	    }
 	}
@@ -128,19 +164,14 @@ void getDYprediction(bool doSubtraction=true)
 	      for(size_t iproc=0; iproc<ngprocs; iproc++)
 		{
 		  string hname=gprocs[iproc]+"/"+ch[ich]+gcats[icat]+"_"+histos[ih];
-		  cout << hname << endl;
 		  TH1 *h=(TH1 *)gIn->Get(hname.c_str());
-		  if(h==0) { cout << gprocs[iproc] << endl; continue; }
-		  cout << h->Integral() << endl;
-		  if(histos[ih]=="mt_shapes") cout << h->GetXaxis()->GetNbins() << endl;
-		    //		    h = ((TH2 *)h)->ProjectionY((string(h->GetName())+"proj").c_str(),cutIndex,cutIndex);
-		  
+		  if(h==0) continue;
+
 		  //detach and save
 		  h->SetDirectory(0);
-		  if(gprocs[iproc].find("data") != string::npos) { h->SetTitle("#splitline{Instr. bkg}{(data)}"); m_shape.data=h; cout << "here" << endl; }
+		  if(gprocs[iproc].find("data") != string::npos) { h->SetTitle("#splitline{Instr. bkg}{(data)}"); m_shape.data=h; }
 		  else
 		    {
-		      cout << "or here?" << endl;
 		      if(m_shape.bckg.size()==0 && h->Integral())
 			{
 			  string newname(ch[ich]+gcats[icat]+histos[ih]+"contbckg");
@@ -148,36 +179,33 @@ void getDYprediction(bool doSubtraction=true)
 			  m_shape.totalBckg->Reset("ICE");
 			  m_shape.totalBckg->SetDirectory(0);
 			}
-		      if(h->Integral())m_shape.totalBckg->Add(h);
-		      m_shape.bckg.push_back(h);
-		      cout << "not here?" << endl;
+		      if(h->Integral()) m_shape.totalBckg->Add(h);
+		      m_shape.bckg[gprocs[iproc]]=h;
 		    }
 		}
 	      
-	      //save
+	      //finalize shape
 	      string normKey(ch[ich]);
-	      cout << "Saving" << normKey << endl;
 	      TH1 *normH=0;
-	      if(gcats[icat]=="geq3jets")
+	      if(gcats[icat]=="geq3jets" || gcats[icat]=="eq0softjets")
 		{
-		  Shape_t &shape2jets=gShapesMap[ch[ich]+"geq2jets"+"_"+histos[ih]];
-		  shape2jets.data->Add(m_shape.data);
-		  shape2jets.totalBckg->Add(m_shape.totalBckg);
-		  normKey += "geq2jets";
-		  normH=shape2jets.data;
-		}
-	      else if(gcats[icat]=="eq0softjets")
-		{
-		  Shape_t &shape0jets=gShapesMap[ch[ich]+"eq0jets"+"_"+histos[ih]];
-		  shape0jets.data->Add(m_shape.data,-1);
-		  shape0jets.totalBckg->Add(m_shape.totalBckg,-1);
-		  normKey += "eq0jets";
-		  normH=shape0jets.data;
+		  int sign(+1);
+		  TString normKeyPostFix("geq2jets");
+		  if(gcats[icat]=="eq0softjets") { sign=-1; normKeyPostFix="eq0jets"; }
+		  normKey += normKeyPostFix;
+		  
+		  string keyToGet(ch[ich]+normKeyPostFix+"_"+histos[ih]);
+		  if(gShapesMap.find(keyToGet)!= gShapesMap.end())
+		    {
+		      Shape_t &shapeToCorrect=gShapesMap[keyToGet];
+		      addToShape(shapeToCorrect,m_shape,sign);
+		      normH=shapeToCorrect.data;
+		    }
 		}
 	      else 
 		{
 		  string key=ch[ich]+gcats[icat]+"_"+histos[ih];
-		
+		  
 		  if(gcats[icat]=="eq2jets") 
 		    {
 		      key=ch[ich]+"geq2jets"+"_"+histos[ih];
@@ -185,195 +213,24 @@ void getDYprediction(bool doSubtraction=true)
 		    }
 		  else
 		    normKey += gcats[icat];
-		
+		 
 		  gShapesMap[key]=m_shape;
 		  normH=m_shape.data;
 		}
-	     
+	      
 	      //normalization factor (from MET<50)
 	      if(histos[ih].find("met_met")==string::npos) continue;
 	      int normBin=normH->GetXaxis()->FindBin(50);
-	     
+	      
 	      Shape_t &dilMetShape = shapesMap[normKey+"_"+histos[ih]];
 	      float sf=dilMetShape.data->Integral(1,normBin)/normH->Integral(1,normBin);
-	     
+
 	      scaleFactors[normKey]=sf;
 	    }
 	}
-      /*
-      //create the no VBF category
-      for(size_t ih=0; ih<nhistos; ih++)
-	{
-	  Shape_t noVBFDil_shape,noVBFG_shape; 
-	  for(size_t icat=0; icat<ndilcats; icat++)
-	    {
-	      if(dilcats[icat]=="vbf") continue;
-	      string key=ch[ich]+dilcats[icat]+"_"+histos[ih];
-	      
-	      //gamma sample
-	      if(gShapesMap.find(key) != gShapesMap.end())
-		{
-		  Shape_t &gShape   = gShapesMap[key];
-		  if(noVBFG_shape.bckg.size()==0)
-		    {
-		      string newname(ch[ich]+"novbf"+histos[ih]+"gammadata");
-		      noVBFG_shape.data = (TH1 *) gShape.data->Clone(newname.c_str());
-		      noVBFG_shape.data->Reset("ICE");
-		      noVBFG_shape.data->SetDirectory(0);
-		      
-		      newname=ch[ich]+"novbf"+histos[ih]+"totalbckg";
-		      noVBFG_shape.totalBckg=(TH1*) gShape.totalBckg->Clone(newname.c_str());
-		      noVBFG_shape.totalBckg->Reset("ICE");
-		      noVBFG_shape.totalBckg->SetDirectory(0);
-		      for(size_t ibckg=0; ibckg<gShape.bckg.size(); ibckg++)
-			{
-			  newname=ch[ich]+"novbf"+histos[ih]+gShape.bckg[ibckg]->GetName();
-			  TH1 *h=(TH1*) gShape.bckg[ibckg]->Clone(newname.c_str());
-			  h->Reset("ICE");
-			  h->SetDirectory(0);
-			  noVBFG_shape.bckg.push_back(h);
-			}
-		    }
-		  noVBFG_shape.data->Add(gShape.data);
-		  noVBFG_shape.totalBckg->Add(gShape.totalBckg);
-		  for(size_t ibckg=0; ibckg<gShape.bckg.size(); ibckg++) noVBFG_shape.bckg[ibckg]->Add(gShape.bckg[ibckg]);
-		}
-
-	      //similar for the dilepton
-	      if(shapesMap.find(key) != shapesMap.end())
-		{
-		  Shape_t &dilShape = shapesMap[key];
-		  if(noVBFDil_shape.bckg.size()==0)
-                    {
-                      string newname(ch[ich]+"novbf"+histos[ih]+"data");
-                      noVBFDil_shape.data = (TH1 *) dilShape.data->Clone(newname.c_str());
-                      noVBFDil_shape.data->Reset("ICE");
-                      noVBFDil_shape.data->SetDirectory(0);
-
-		      newname=ch[ich]+"novbf"+histos[ih]+"totalbckg";
-		      noVBFDil_shape.totalBckg=(TH1*) dilShape.totalBckg->Clone(newname.c_str());
-		      noVBFDil_shape.totalBckg->Reset("ICE");
-		      noVBFDil_shape.totalBckg->SetDirectory(0);
-		      for(size_t ibckg=0; ibckg<dilShape.bckg.size(); ibckg++)
-			{
-                          newname=ch[ich]+"novbf"+histos[ih]+dilShape.bckg[ibckg]->GetName();
-                          TH1 *h=(TH1*) dilShape.bckg[ibckg]->Clone(newname.c_str());
-                          h->Reset("ICE");
-                          h->SetDirectory(0);
-                          noVBFDil_shape.bckg.push_back(h);
-                        }
-
-		      for(size_t isig=0; isig<dilShape.signal.size(); isig++)
-			{
-                          newname=ch[ich]+"novbf"+histos[ih]+dilShape.signal[isig]->GetName();
-                          TH1 *h=(TH1*) dilShape.signal[isig]->Clone(newname.c_str());
-                          h->Reset("ICE");
-                          h->SetDirectory(0);
-                          noVBFDil_shape.signal.push_back(h);
-                        }
-		    }
-                  noVBFDil_shape.data->Add(dilShape.data);
-                  noVBFDil_shape.totalBckg->Add(dilShape.totalBckg);
-                  for(size_t ibckg=0; ibckg<dilShape.bckg.size(); ibckg++) noVBFDil_shape.bckg[ibckg]->Add(dilShape.bckg[ibckg]);
-		  for(size_t isig=0; isig<dilShape.signal.size(); isig++) noVBFDil_shape.signal[isig]->Add(dilShape.signal[isig]);
-		}
-	    }
-	  
-	  string key=ch[ich]+"novbf_"+histos[ih];
-	  shapesMap[key]=noVBFDil_shape;
-	  gShapesMap[key]=noVBFG_shape;
-	}
-      */
     }
-  /*
-  //create the inclusive
-  for(size_t ih=0; ih<nhistos; ih++)
-    {
-      for(size_t icat=0; icat<ndilcats+1; icat++)
-	{
-	  Shape_t incG_shape, incDil_shape;
-	  for(size_t ich=0; ich<nchs; ich++)
-	    {
-	      string key=ch[ich]+dilcats[icat]+"_"+histos[ih];
-	     
-	      //gamma sample
-	      if(gShapesMap.find(key) != gShapesMap.end())
-		{
-		  Shape_t &gShape   = gShapesMap[key];
-		  if(incG_shape.bckg.size()==0)
-		    {
-		      string newname(ch[ich]+histos[ih]+"gammadata");
-		      incG_shape.data = (TH1 *) gShape.data->Clone(newname.c_str());
-		      incG_shape.data->Reset("ICE");
-		      incG_shape.data->SetDirectory(0);
-
-		      newname=ch[ich]+histos[ih]+"totalbckg";
-		      incG_shape.totalBckg=(TH1*) gShape.totalBckg->Clone(newname.c_str());
-		      incG_shape.totalBckg->Reset("ICE");
-		      incG_shape.totalBckg->SetDirectory(0);
-		      for(size_t ibckg=0; ibckg<gShape.bckg.size(); ibckg++)
-			{
-			  newname=ch[ich]+histos[ih]+gShape.bckg[ibckg]->GetName();
-			  TH1 *h=(TH1*) gShape.bckg[ibckg]->Clone(newname.c_str());
-			  h->Reset("ICE");
-			  h->SetDirectory(0);
-			  incG_shape.bckg.push_back(h);
-			}
-		    }
-		  incG_shape.data->Add(gShape.data);
-		  incG_shape.totalBckg->Add(gShape.totalBckg);
-		  for(size_t ibckg=0; ibckg<gShape.bckg.size(); ibckg++) incG_shape.bckg[ibckg]->Add(gShape.bckg[ibckg]);
-		}
-
-	      //similar for the dilepton
-	      if(shapesMap.find(key) != shapesMap.end())
-		{
-		  Shape_t &dilShape = shapesMap[key];
-		  if(incDil_shape.bckg.size()==0)
-                    {
-                      string newname(ch[ich]+histos[ih]+"data");
-                      incDil_shape.data = (TH1 *) dilShape.data->Clone(newname.c_str());
-                      incDil_shape.data->Reset("ICE");
-                      incDil_shape.data->SetDirectory(0);
-
-		      newname=ch[ich]+histos[ih]+"totalbckg";
-		      incDil_shape.totalBckg=(TH1*) dilShape.totalBckg->Clone(newname.c_str());
-		      incDil_shape.totalBckg->Reset("ICE");
-		      incDil_shape.totalBckg->SetDirectory(0);
-		      for(size_t ibckg=0; ibckg<dilShape.bckg.size(); ibckg++)
-			{
-                          newname=ch[ich]+histos[ih]+dilShape.bckg[ibckg]->GetName();
-                          TH1 *h=(TH1*) dilShape.bckg[ibckg]->Clone(newname.c_str());
-                          h->Reset("ICE");
-                          h->SetDirectory(0);
-                          incDil_shape.bckg.push_back(h);
-                        }
-		      for(size_t isig=0; isig<dilShape.signal.size(); isig++)
-			{
-                          newname=ch[ich]+"novbf"+histos[ih]+dilShape.signal[isig]->GetName();
-                          TH1 *h=(TH1*) dilShape.signal[isig]->Clone(newname.c_str());
-                          h->Reset("ICE");
-                          h->SetDirectory(0);
-                          incDil_shape.signal.push_back(h);
-                        }
-                    }
-                  incDil_shape.data->Add(dilShape.data);
-                  incDil_shape.totalBckg->Add(dilShape.totalBckg);
-                  for(size_t ibckg=0; ibckg<dilShape.bckg.size(); ibckg++) incDil_shape.bckg[ibckg]->Add(dilShape.bckg[ibckg]);
-		  for(size_t isig=0; isig<dilShape.signal.size(); isig++) incDil_shape.signal[isig]->Add(dilShape.signal[isig]);
-		}
-	    }
-	  
-	  string key=dilcats[icat]+"_"+histos[ih];
-	  cout << key << endl;
-	  shapesMap[key]=incDil_shape;
-	  gShapesMap[key]=incG_shape;
-	}
-	}
-  */
-
   gIn->Close();
-  cout << "Here?" << endl;
+
 
   //
   TFile *gOut = TFile::Open("gamma_out.root","RECREATE");
@@ -387,49 +244,29 @@ void getDYprediction(bool doSubtraction=true)
      if(it->first.find("geq2jets_")!=string::npos) normKey+="geq2jets";
      if(it->first.find("vbf_")!=string::npos)      normKey+="vbf";
      float sf = scaleFactors[normKey];
-
-     cout << sf << " " << normKey << " " << it->first << endl;
+     
      if(sf==0) continue;
      if(gShapesMap.find(it->first)==gShapesMap.end()) cout << "BUG: " << it->first << " not found in gamma sample..." << endl;
      Shape_t &gShape=gShapesMap[it->first];
      TH1 *corrGammaH=(TH1 *)gShape.data->Clone((it->first+"dy").c_str());
      corrGammaH->SetDirectory(0);
-
+     cout << corrGammaH->Integral() << endl;
+     
      if(doSubtraction) {
-       corrGammaH->Add( gShape.totalBckg,-1);
-       for(int ibin=1; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
+       int fbin=corrGammaH->GetXaxis()->FindBin(70);
+       for(int ibin=fbin; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
 	 {
-	   Double_t val=corrGammaH->GetBinContent(ibin);
-	   if(val<0)  corrGammaH->SetBinContent(ibin,0);
+	   Double_t val=corrGammaH->GetBinContent(ibin)/2;
+	   Double_t valerr=corrGammaH->GetBinError(ibin)/2;
+	   corrGammaH->SetBinContent(ibin,val);
+	   corrGammaH->SetBinError(ibin,valerr);
 	 }
      }
-     /*
-     else if(normKey.find("met_met")!= string::npos)
-       {
-	 int startbin=corrGammaH->GetXaxis()->FindBin(60);
-	 for(int ibin=startbin; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
-	   {
-	     double val=corrGammaH->GetBinContent(ibin);
-	     // double err=corrGammaH->GetBinError(ibin);
-	     corrGammaH->SetBinContent(ibin,val*0.5);
-	     corrGammaH->SetBinError(ibin,val);
-	   }
-       }
-     */
      corrGammaH->Scale(sf);
      corrGammaH->SetFillColor(831);
      it->second.totalBckg->Add(corrGammaH);
-     it->second.bckg.push_back(corrGammaH);
-     if(it->first.find("mindphijmet")!=string::npos)
-       {
-	 double sfcorr = it->second.data->Integral(1,it->second.data->FindBin(0.5))/it->second.totalBckg->Integral(1,it->second.totalBckg->FindBin(0.5));
-	 // cout << sfcorr << " applied " << endl; 
-	 it->second.totalBckg->Add(corrGammaH,-1);
-	 corrGammaH->Scale(sfcorr);
-	 it->second.totalBckg->Add(corrGammaH);
-       }
+     it->second.bckg["Instr. background (data)"]=corrGammaH;
      showShape(it->second,it->first);
-     
      gOutDir->cd();
      corrGammaH->Write(it->first.c_str());
    }
@@ -459,51 +296,65 @@ void showShape(const Shape_t &shape,TString SaveName)
       mc=(TH1 *)shape.totalBckg->Clone("mc");
       stack = new THStack("stack","stack");
       TH1 *nrbBckg=0;
-      for(size_t i=0; i<shape.bckg.size(); i++)
+      for(std::map<TString,TH1 *>::const_reverse_iterator it = shape.bckg.rbegin(); it != shape.bckg.rend(); it++)
         {
-          if(shape.bckg[i]->Integral()<=0) continue;
-          TString itit(shape.bckg[i]->GetTitle());
+	  TH1 *h = it->second;
+          if(h->Integral()<=0) continue;
+          TString itit(h->GetTitle());
  	  if(itit.Contains("t#bar{t}") || itit.Contains("Single top") || itit.Contains("W#rightarrow") || itit.Contains("WW") )
  	    {
- 	      if(nrbBckg==0) { nrbBckg = (TH1 *) shape.bckg[i]->Clone("nrb"); nrbBckg->SetTitle("#splitline{Non resonant}{bkg (data)}"); legA->AddEntry(nrbBckg,nrbBckg->GetTitle(),"F"); nrbBckg->SetDirectory(0); stack->Add(nrbBckg,"HIST"); }
- 	      else           { nrbBckg ->Add( shape.bckg[i] ); }
+ 	      if(nrbBckg==0) { nrbBckg = (TH1 *) h->Clone("nrb"); nrbBckg->SetTitle("#splitline{Non resonant}{bkg (data)}"); legA->AddEntry(nrbBckg,nrbBckg->GetTitle(),"F"); nrbBckg->SetDirectory(0); stack->Add(nrbBckg,"HIST"); }
+ 	      else           { nrbBckg ->Add( h ); }
  	    }
 	  else
 	    {
-	      stack->Add(shape.bckg[i],"HIST");
-	      legA->AddEntry(shape.bckg[i],shape.bckg[i]->GetTitle(),"F");
+	      stack->Add(h,"HIST");
+	      legA->AddEntry(h,itit,"F");
 	    }
 	}
       
       stack->Draw();
       stack->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
       stack->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
-      //      stack->GetXaxis()->SetRangeUser(0,350);
       stack->SetMinimum(1e-1);//mc->GetMinimum());
+      if(SaveName.Contains("vbf") && !SaveName.Contains("novbf")) stack->SetMinimum(1e-2);
       stack->SetMaximum(1.1*mc->GetMaximum());
 
       mc->Reset("ICE");
       mc->Add((TH1 *)stack->GetStack()->At( stack->GetStack()->GetEntriesFast()-1) );
       mc->SetDirectory(0);
-      mc->SetFillStyle(3001);//3427);
-      mc->SetFillColor(kGray+1);
-      mc->SetMarkerStyle(1);
-      mc->Draw("e4same");
 
+      TGraphErrors *mcgr=new TGraphErrors;
+      for(int ibin=1; ibin<=mc->GetXaxis()->GetNbins(); ibin++)
+	{
+	  mcgr->SetPoint(ibin-1,mc->GetXaxis()->GetBinCenter(ibin),mc->GetBinContent(ibin));
+	  mcgr->SetPointError(ibin-1,mc->GetXaxis()->GetBinWidth(ibin)/2,mc->GetBinError(ibin));
+	}
+      mcgr->SetFillStyle(3001);//3427);
+      mcgr->SetFillColor(kGray+1);
+      mcgr->SetMarkerStyle(1);
+      mcgr->Draw("e2p");
+      
       canvasIsFilled=true;
     }
+
+  //data
   if(shape.data)
     {
       shape.data->Draw(canvasIsFilled ? "E1same" : "E1");
       legA->AddEntry(shape.data,shape.data->GetTitle(),"P");
       canvasIsFilled=true;
     }
-  for(size_t ip=0; ip<shape.signal.size(); ip++)
+
+  //signal
+  for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
     {
-      shape.signal[ip]->Draw(canvasIsFilled ? "histsame" : "hist");
-      legA->AddEntry(shape.signal[ip],shape.signal[ip]->GetTitle(),"L");
+      TH1 *h=it->second;
+      h->Draw(canvasIsFilled ? "histsame" : "hist");
+      legA->AddEntry(h,h->GetTitle(),"L");
       canvasIsFilled=true;
     }
+
 
 
   TPaveText* T = new TPaveText(0.1,0.995,0.9,0.96, "NDC");
@@ -511,7 +362,8 @@ void showShape(const Shape_t &shape,TString SaveName)
   T->SetFillStyle(0);  T->SetLineColor(0);
   T->SetTextAlign(22);
   //  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5045./1000);
-  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 1616./1000);
+  // char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 1616./1000);
+  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5045./1000);
   T->AddText(Buffer);
   T->Draw("same");
   
