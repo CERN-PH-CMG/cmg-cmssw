@@ -326,33 +326,28 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mt75", ";M_{T};Events", 100,0,1000) );
   
-
-  //##############################################
-  //######## STUFF FOR CUTS OPTIMIZATION  ########
-  //##############################################
-
-   std::vector<double> optim_Cuts1_met;
+   std::vector<double> optim_Cuts1_met; 
    std::vector<double> optim_Cuts1_mtmin;
    std::vector<double> optim_Cuts1_mtmax;
-   for(double met=65;met<140;met+=2.5){
-	 if(met>100 && int(met)%5!=0)continue;
-         for(double mtmin_=140;mtmin_<550;mtmin_+=10){
-            double mtmin = mtmin_;
-            if(mtmin<=140)mtmin=0;
-	    if(mtmin>350 && int(mtmin)%20!=0)continue;
-            for(double mtmax=mtmin+50;mtmax<mtmin+450;mtmax+=10){
-               if(mtmax>=mtmin+445)mtmax=3000;
-               if(mtmin==0 && mtmax!=3000)continue;
-	       if(mtmin>350 && int(mtmax)%20!=0)continue;
-               if(mtmax-mtmin>200 && int(mtmax)%50!=0)continue;
+   for(double met=50;met<140;met+=2.5){
+//       if(met>100 && int(met)%5!=0)continue;
+//         for(double mtmin_=140;mtmin_<550;mtmin_+=10){
+//            double mtmin = mtmin_;
+//            if(mtmin<=140)mtmin=0;
+//          if(mtmin>350 && int(mtmin)%20!=0)continue;
+//            for(double mtmax=mtmin+50;mtmax<mtmin+450;mtmax+=10){
+//               if(mtmax>=mtmin+445)mtmax=3000;
+//               if(mtmin==0 && mtmax!=3000)continue;
+//             if(mtmin>350 && int(mtmax)%20!=0)continue;
+//               if(mtmax-mtmin>200 && int(mtmax)%50!=0)continue;
                optim_Cuts1_met    .push_back(met);
-               optim_Cuts1_mtmin  .push_back(mtmin);
-               optim_Cuts1_mtmax  .push_back(mtmax);
-            }
-      }
+               optim_Cuts1_mtmin  .push_back(0);//mtmin);
+               optim_Cuts1_mtmax  .push_back(9999);//mtmax);
+//            }
+//      }
   }
   //add last year cut
-  optim_Cuts1_met.push_back( 70); optim_Cuts1_mtmin.push_back(229); optim_Cuts1_mtmax.push_back(258);
+/*  optim_Cuts1_met.push_back( 70); optim_Cuts1_mtmin.push_back(229); optim_Cuts1_mtmax.push_back(258);
   optim_Cuts1_met.push_back( 77); optim_Cuts1_mtmin.push_back(245); optim_Cuts1_mtmax.push_back(293);
   optim_Cuts1_met.push_back( 84); optim_Cuts1_mtmin.push_back(260); optim_Cuts1_mtmax.push_back(328);
   optim_Cuts1_met.push_back( 91); optim_Cuts1_mtmin.push_back(276); optim_Cuts1_mtmax.push_back(364);
@@ -367,7 +362,7 @@ int main(int argc, char* argv[])
   optim_Cuts1_met.push_back(154); optim_Cuts1_mtmin.push_back(417); optim_Cuts1_mtmax.push_back(682);
   optim_Cuts1_met.push_back(161); optim_Cuts1_mtmin.push_back(433); optim_Cuts1_mtmax.push_back(717);
   optim_Cuts1_met.push_back(168); optim_Cuts1_mtmin.push_back(449); optim_Cuts1_mtmax.push_back(752);
-
+*/
 
    TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
    TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
@@ -385,15 +380,15 @@ int main(int argc, char* argv[])
      mon.addHistogram( new TH1F( "mtvar"+varNames[ivar]  , ";M_{T};Events", 100,0,1000) );
      
      Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
-     mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 80,150,950) );
+     mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );
 //     mon.addHistogram( new TH2F (TString("mt_shapesZ10")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
 //     mon.addHistogram( new TH2F (TString("mt_shapesZ5")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
      
      //3lepton SB
 //     mon.addHistogram( new TH2F (TString("mt_shapes_3rdLepton")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );
      
-//     if(ivar==0)mon.addHistogram( new TH2F (TString("mt_shapesBTagSB")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 80,150,950) );
-     mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 80,150,950) );
+//     if(ivar==0)mon.addHistogram( new TH2F (TString("mt_shapesBTagSB")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );
+     mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );
 //     mon.addHistogram( new TH2F (TString("mt3")+varNames[ivar],";cut index;M_{T}^{3rd lepton} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 50,0,250) );
      TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
      h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
