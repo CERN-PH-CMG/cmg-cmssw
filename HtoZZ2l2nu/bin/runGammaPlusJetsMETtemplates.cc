@@ -93,40 +93,39 @@ int main(int argc, char* argv[])
    std::vector<double> optim_Cuts1_met;
    std::vector<double> optim_Cuts1_mtmin;
    std::vector<double> optim_Cuts1_mtmax;
-   for(double met=65;met<160;met+=5.0){
-	 if(met>90 && int(met)%10!=0)continue;
-         if(met>120 && int(met)%20!=0)continue;
-         for(double mtmin_=150;mtmin_<500;mtmin_+=25){
+   for(double met=65;met<140;met+=2.5){
+         if(met>100 && int(met)%5!=0)continue;
+         for(double mtmin_=140;mtmin_<550;mtmin_+=10){
             double mtmin = mtmin_;
-            if(mtmin<=150)mtmin=0;
-	    if(mtmin>350 && int(mtmin)%50!=0)continue;
-            for(double mtmax=mtmin+100;mtmax<mtmin+350;mtmax+=25){
-               if(mtmax>=mtmin+325)mtmax=3000;
+            if(mtmin<=140)mtmin=0;
+            if(mtmin>350 && int(mtmin)%20!=0)continue;
+            for(double mtmax=mtmin+50;mtmax<mtmin+450;mtmax+=10){
+               if(mtmax>=mtmin+445)mtmax=3000;
                if(mtmin==0 && mtmax!=3000)continue;
-	       if(mtmin>350 && int(mtmax)%50!=0)continue;
+               if(mtmin>350 && int(mtmax)%20!=0)continue;
                if(mtmax-mtmin>200 && int(mtmax)%50!=0)continue;
                optim_Cuts1_met    .push_back(met);
                optim_Cuts1_mtmin  .push_back(mtmin);
                optim_Cuts1_mtmax  .push_back(mtmax);
             }
       }
-   }
-   //add last year cut
-   optim_Cuts1_met.push_back( 70); optim_Cuts1_mtmin.push_back(229); optim_Cuts1_mtmax.push_back(258);
-   optim_Cuts1_met.push_back( 77); optim_Cuts1_mtmin.push_back(245); optim_Cuts1_mtmax.push_back(293);
-   optim_Cuts1_met.push_back( 84); optim_Cuts1_mtmin.push_back(260); optim_Cuts1_mtmax.push_back(328);
-   optim_Cuts1_met.push_back( 91); optim_Cuts1_mtmin.push_back(276); optim_Cuts1_mtmax.push_back(364);
-   optim_Cuts1_met.push_back( 98); optim_Cuts1_mtmin.push_back(292); optim_Cuts1_mtmax.push_back(399);
-   optim_Cuts1_met.push_back(105); optim_Cuts1_mtmin.push_back(308); optim_Cuts1_mtmax.push_back(434);
-   optim_Cuts1_met.push_back(112); optim_Cuts1_mtmin.push_back(323); optim_Cuts1_mtmax.push_back(470);
-   optim_Cuts1_met.push_back(119); optim_Cuts1_mtmin.push_back(339); optim_Cuts1_mtmax.push_back(505);
-   optim_Cuts1_met.push_back(126); optim_Cuts1_mtmin.push_back(355); optim_Cuts1_mtmax.push_back(540);
-   optim_Cuts1_met.push_back(133); optim_Cuts1_mtmin.push_back(370); optim_Cuts1_mtmax.push_back(576);
-   optim_Cuts1_met.push_back(140); optim_Cuts1_mtmin.push_back(386); optim_Cuts1_mtmax.push_back(611);
-   optim_Cuts1_met.push_back(147); optim_Cuts1_mtmin.push_back(402); optim_Cuts1_mtmax.push_back(646);
-   optim_Cuts1_met.push_back(154); optim_Cuts1_mtmin.push_back(417); optim_Cuts1_mtmax.push_back(682);
-   optim_Cuts1_met.push_back(161); optim_Cuts1_mtmin.push_back(433); optim_Cuts1_mtmax.push_back(717);
-   optim_Cuts1_met.push_back(168); optim_Cuts1_mtmin.push_back(449); optim_Cuts1_mtmax.push_back(752);
+  }
+  //add last year cut
+  optim_Cuts1_met.push_back( 70); optim_Cuts1_mtmin.push_back(229); optim_Cuts1_mtmax.push_back(258);
+  optim_Cuts1_met.push_back( 77); optim_Cuts1_mtmin.push_back(245); optim_Cuts1_mtmax.push_back(293);
+  optim_Cuts1_met.push_back( 84); optim_Cuts1_mtmin.push_back(260); optim_Cuts1_mtmax.push_back(328);
+  optim_Cuts1_met.push_back( 91); optim_Cuts1_mtmin.push_back(276); optim_Cuts1_mtmax.push_back(364);
+  optim_Cuts1_met.push_back( 98); optim_Cuts1_mtmin.push_back(292); optim_Cuts1_mtmax.push_back(399);
+  optim_Cuts1_met.push_back(105); optim_Cuts1_mtmin.push_back(308); optim_Cuts1_mtmax.push_back(434);
+  optim_Cuts1_met.push_back(112); optim_Cuts1_mtmin.push_back(323); optim_Cuts1_mtmax.push_back(470);
+  optim_Cuts1_met.push_back(119); optim_Cuts1_mtmin.push_back(339); optim_Cuts1_mtmax.push_back(505);
+  optim_Cuts1_met.push_back(126); optim_Cuts1_mtmin.push_back(355); optim_Cuts1_mtmax.push_back(540);
+  optim_Cuts1_met.push_back(133); optim_Cuts1_mtmin.push_back(370); optim_Cuts1_mtmax.push_back(576);
+  optim_Cuts1_met.push_back(140); optim_Cuts1_mtmin.push_back(386); optim_Cuts1_mtmax.push_back(611);
+  optim_Cuts1_met.push_back(147); optim_Cuts1_mtmin.push_back(402); optim_Cuts1_mtmax.push_back(646);
+  optim_Cuts1_met.push_back(154); optim_Cuts1_mtmin.push_back(417); optim_Cuts1_mtmax.push_back(682);
+  optim_Cuts1_met.push_back(161); optim_Cuts1_mtmin.push_back(433); optim_Cuts1_mtmax.push_back(717);
+  optim_Cuts1_met.push_back(168); optim_Cuts1_mtmin.push_back(449); optim_Cuts1_mtmax.push_back(752);
    
    TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
    TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
@@ -190,7 +189,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH2F( "met_min3Met_vspu"       , ";Vertices;min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,500) );
   mon.addHistogram( new TH2F( "met_redMet_vspu"       , ";Vertices;red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,500) );
   
-  mon.addHistogram( new TH2F ("mt_shapes", ";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 32,150,950) );  
+  mon.addHistogram( new TH2F ("mt_shapes", ";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 80,150,950) );  
   
 
   //jet id efficiencies
