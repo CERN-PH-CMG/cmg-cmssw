@@ -243,9 +243,6 @@
 	"data":[
 		{
                 "dtag":"MC8TeV_GGtoH200toZZto2L2Nu",
-                "dset":"",
-                "aoddir":[""],
-                "patdir":["/GluGluToHToZZTo2L2Nu_M-200_8TeV-powheg-pythia6/psilva-HZZ2l2vPAT01april2012_GluGluToHToZZTo2L2Nu_M-200_8TeV-7ba81c0aab6ea748ae0bd050e2c7b5f4/USER"],
                 "split":2,
                 "xsec":7.127,
                 "xsecunc":[13.4,-14.5],
@@ -266,9 +263,6 @@
 	"data":[
 		{	
                 "dtag":"MC8TeV_VBFtoH200toZZto2L2Nu",
-                "dset":"",
-                "aoddir":[""],
-                "patdir":[""],
                 "split":1,
                 "xsec":0.8441,
                 "xsecunc":[3.2,-3.0],
@@ -277,7 +271,27 @@
 	   ]
 	},
 	{
-	"tag":"ggH(200)#rightarrow WW",
+	"tag":"qqH(200)#rightarrow WW",
+	"isdata":false,
+	"isinvisible":true,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{	
+                "dtag":"MC8TeV_VBFtoH200toWWto2L2Nu",
+                "split":1,
+                "xsec":0.8441,
+                "xsecunc":[3.2,-3.0],
+                "br":[0.741,0.046656]
+		}
+	   ]
+	},
+	{
+	"tag":"ggH(350)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -288,19 +302,16 @@
 	"marker":1,
 	"data":[
 		{	
-		"dtag":"MC8TeV_GGtoH200toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
+		"dtag":"MC8TeV_GGtoH350toZZto2L2Nu",
 		"split":1,
-                "xsec":7.127,
-                "xsecunc":[13.4,-14.5],
-		"br":[0.741,0.046656]
+                "xsec":3.406,
+                "xsecunc":[13.7,-14.1],
+                "br":[0.307,0.0403896]	
 		}
 	   ]
 	},
 	{
-	"tag":"qqH(200)#rightarrow WW",
+	"tag":"qqH(350)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -311,14 +322,11 @@
 	"marker":1,
 	"data":[
 		{	
-		"dtag":"MC8TeV_VBFtoH200toWWto2L2Nu",
-		"dset":"/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
+		"dtag":"MC8TeV_VBFtoH350toZZto2L2Nu",
 		"split":1,
-                "xsec":0.8441,
-                "xsecunc":[3.2,-3.0],
-		"br":[0.741,0.046656]
+                "xsec":0.3200,
+                "xsecunc":[2.8,-3.9],
+                "br":[0.307,0.0403896]	
 		}
 	   ]
 	},
@@ -333,9 +341,6 @@
 	"data":[
 		{
                 "dtag":"MC8TeV_GGtoH400toZZto2L2Nu",
-                "dset":"",
-                "aoddir":[""],
-                "patdir":["/GluGluToHToZZTo2L2Nu_M-400_8TeV-powheg-pythia6/psilva-HZZ2l2vPAT01april2012_GluGluToHToZZTo2L2Nu_M-400_8TeV-7ba81c0aab6ea748ae0bd050e2c7b5f4/USER"],
                 "split":2,
                 "xsec":2.924,
                 "xsecunc":[14.0,-13.6],
@@ -355,9 +360,6 @@
 	"data":[
 		{
                 "dtag":"MC8TeV_VBFtoH400toZZto2L2Nu",
-                "dset":"",
-                "aoddir":[""],
-                "patdir":[""],
                 "split":1,
                 "xsec":0.2543,
                 "xsecunc":[3.3,-3.4],
@@ -366,7 +368,7 @@
 	   ]
 	},
 	{
-	"tag":"ggH(400)#rightarrow WW",
+	"tag":"ggH(525)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"isinvisible":true,
@@ -378,19 +380,19 @@
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC8TeV_GGtoH400toWWto2L2Nu",
+		"dtag":"MC8TeV_GGtoH525toZZto2L2Nu",
 		"dset":"",
                 "aoddir":[""],
 		"patdir":[""],
 		"split":1,
-                "xsec":2.924,
-                "xsecunc":[14.0,-13.6],
-		"br":[0.582,0.046656]
+                "xsec":1.069,
+                "xsecunc":[15.0,-13.7],
+		"br":[0.263,0.0403896]
 		}
 	   ]
 	},
 	{
-	"tag":"qqH(400)#rightarrow WW",
+	"tag":"qqH(525)#rightarrow WW",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -401,14 +403,14 @@
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC8TeV_VBFtoH400toWWto2L2Nu",
+		"dtag":"MC8TeV_VBFtoH525toZZto2L2Nu",
 		"dset":"",
                 "aoddir":[""],
 		"patdir":[""],
 		"split":1,
-                "xsec":0.2543,
-                "xsecunc":[3.3,-3.4],
-		"br":[0.582,0.046656]
+                "xsec":0.1414,
+                "xsecunc":[3.4,-3.9],
+		"br":[0.253,0.0403896]
 		}
 	   ]
 	},
@@ -458,7 +460,7 @@
 	   ]
 	},
 	{
-	"tag":"ggH(600)#rightarrow WW",
+	"tag":"ggH(700)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -469,19 +471,16 @@
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC8TeV_GGtoH600toWWto2L2Nu",
-		"dset":"",
-                "aoddir":[""],
-		"patdir":[""],
+		"dtag":"MC8TeV_GGtoH700toZZto2L2Nu",
 		"split":1,
-                "xsec":0.5230,
-                "xsecunc":[15.4,-13.8],
-		"br":[0.558,0.046656]
+                "xsec":0.2288,
+                "xsecunc":[16.1,-14.4],
+		"br":[0.285,0.0403896]
 		}
 	   ]
 	},
 	{
-	"tag":"qqH(600)#rightarrow WW",
+	"tag":"qqH(700)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
@@ -492,14 +491,51 @@
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC8TeV_VBFtoH600toWWto2L2Nu",
-		"dset":"",
-                "aoddir":[""],
-		"patdir":[""],
+		"dtag":"MC8TeV_VBFtoH700toZZto2L2Nu",
 		"split":1,
-                "xsec":0.09688,
-                "xsecunc":[4.2,-4.5],
-		"br":[0.558,0.046656]
+                "xsec":0.06330,
+                "xsecunc":[4.4,-5.0],
+		"br":[0.285,0.0403896]
+		}
+	   ]
+	},
+	{
+	"tag":"ggH(800)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"809",
+	"lwidth":2,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC8TeV_GGtoH800toZZto2L2Nu",
+		"split":1,
+                "xsec":0.1095,
+                "xsecunc":[16.7,-15.0],
+		"br":[0.296,0.0403896]
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(800)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"807",
+	"lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC8TeV_VBFtoH800toZZto2L2Nu",
+		"split":1,
+                "xsec":0.04365,
+                "xsecunc":[5.0,-5.7],
+		"br":[0.296,0.0403896]
 		}
 	   ]
 	},
