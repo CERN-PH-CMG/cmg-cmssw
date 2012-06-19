@@ -332,24 +332,23 @@ int main(int argc, char* argv[])
    std::vector<double> optim_Cuts1_met;
    std::vector<double> optim_Cuts1_mtmin;
    std::vector<double> optim_Cuts1_mtmax;
-   for(double met=65;met<160;met+=5.0){
-	 if(met>90 && int(met)%10!=0)continue;
-         if(met>120 && int(met)%20!=0)continue;
-         for(double mtmin_=150;mtmin_<500;mtmin_+=25){
+   for(double met=65;met<140;met+=2.5){
+	 if(met>100 && int(met)%5!=0)continue;
+         for(double mtmin_=140;mtmin_<550;mtmin_+=10){
             double mtmin = mtmin_;
-            if(mtmin<=150)mtmin=0;
-	    if(mtmin>350 && int(mtmin)%50!=0)continue;
-            for(double mtmax=mtmin+100;mtmax<mtmin+350;mtmax+=25){
-               if(mtmax>=mtmin+325)mtmax=3000;
+            if(mtmin<=140)mtmin=0;
+	    if(mtmin>350 && int(mtmin)%20!=0)continue;
+            for(double mtmax=mtmin+50;mtmax<mtmin+450;mtmax+=10){
+               if(mtmax>=mtmin+445)mtmax=3000;
                if(mtmin==0 && mtmax!=3000)continue;
-	       if(mtmin>350 && int(mtmax)%50!=0)continue;
+	       if(mtmin>350 && int(mtmax)%20!=0)continue;
                if(mtmax-mtmin>200 && int(mtmax)%50!=0)continue;
                optim_Cuts1_met    .push_back(met);
                optim_Cuts1_mtmin  .push_back(mtmin);
                optim_Cuts1_mtmax  .push_back(mtmax);
             }
       }
-   }
+  }
   //add last year cut
   optim_Cuts1_met.push_back( 70); optim_Cuts1_mtmin.push_back(229); optim_Cuts1_mtmax.push_back(258);
   optim_Cuts1_met.push_back( 77); optim_Cuts1_mtmin.push_back(245); optim_Cuts1_mtmax.push_back(293);
@@ -385,15 +384,15 @@ int main(int argc, char* argv[])
      
      Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
      mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
-     mon.addHistogram( new TH2F (TString("mt_shapesZ10")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
-     mon.addHistogram( new TH2F (TString("mt_shapesZ5")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
+//     mon.addHistogram( new TH2F (TString("mt_shapesZ10")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
+//     mon.addHistogram( new TH2F (TString("mt_shapesZ5")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
      
      //3lepton SB
-     mon.addHistogram( new TH2F (TString("mt_shapes_3rdLepton")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );
+//     mon.addHistogram( new TH2F (TString("mt_shapes_3rdLepton")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );
      
-     if(ivar==0)mon.addHistogram( new TH2F (TString("mt_shapesBTagSB")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
+//     if(ivar==0)mon.addHistogram( new TH2F (TString("mt_shapesBTagSB")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
      mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 32,150,950) );
-     mon.addHistogram( new TH2F (TString("mt3")+varNames[ivar],";cut index;M_{T}^{3rd lepton} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 50,0,250) );
+//     mon.addHistogram( new TH2F (TString("mt3")+varNames[ivar],";cut index;M_{T}^{3rd lepton} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 50,0,250) );
      TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
      h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
      h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
@@ -1039,6 +1038,19 @@ int main(int argc, char* argv[])
         }
 
 
+        if(ivar==0 && outTxtFile && tag_subcat=="geq2jets" && zvv.pt()>100 && mt<250 && passPreselection){
+           fprintf(outTxtFile,"DEBUG----------------------------\nCat: %s - %s\n",tag_cat.Data(),tag_subcat.Data());
+           fprintf(outTxtFile,"subcat = %s inputFile = %s\n",tag_subcat.Data(), url.Data());
+           fprintf(outTxtFile,"run/lumi/event = %i/%i/%i\n",ev.run, ev.lumi, ev.event);
+           fprintf(outTxtFile,"mt = %f met = %f -redMet = %f\n",mt, zvv.pt(), redMet.pt());
+           fprintf(outTxtFile,"nvtx = %i rho=%f rho25 = %f\n",ev.nvtx,ev.rho, ev.rho25Neut);
+           fprintf(outTxtFile,"zll  pt=%f mass=%f eta=%f phi=%f\n",zll.pt(), zll.mass(), zll.eta(), zll.phi());
+           for(unsigned int j=0;j<phys.ajets.size();j++){
+              fprintf(outTxtFile,"jet %i  pt=%f eta=%f phi=%f\n",j, phys.ajets[j].pt(), phys.ajets[j].eta(), phys.ajets[j].phi());
+           }
+        }
+
+
 	//fill shapes
 	for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
 	  
@@ -1051,10 +1063,10 @@ int main(int argc, char* argv[])
 	      if(passPreselection && passZmass5                                      )   mon.fillHisto(TString("mt_shapesZ5")+varNames[ivar],tags_full,index, mt,iweight);
 	      
 	      //                   if(passPreselectionM3dlep       && !pass3dLeptonVeto && nExtraLep==1 && passZmass3dLepton && ivar==0)   mon.fillHisto(TString("mt_shapes_3rdLepton")+varNames[ivar],tags_full,index, mt,iweight);
-	      if(passPreselectionM3dlep       && !pass3dLeptonVeto && nextraleptons==1 && ivar==0)   mon.fillHisto(TString("mt_shapes_3rdLepton")+varNames[ivar],tags_full,index, mt,iweight);
+//	      if(passPreselectionM3dlep       && !pass3dLeptonVeto && nextraleptons==1 && ivar==0)   mon.fillHisto(TString("mt_shapes_3rdLepton")+varNames[ivar],tags_full,index, mt,iweight);
 	      
-	      if(passPreselectionMbvetoMzmass && passZmass   && !passLocalBveto && ivar==0)   mon.fillHisto(TString("mt_shapesBTagSB")+varNames[ivar],tags_full,index, mt,iweight);
-	      if(passPreselectionM3dlep       && !pass3dLeptonVeto && nextraleptons==1   )   mon.fillHisto(TString("mt3")+varNames[ivar],tags_full,index, mt3,iweight);
+//	      if(passPreselectionMbvetoMzmass && passZmass   && !passLocalBveto && ivar==0)   mon.fillHisto(TString("mt_shapesBTagSB")+varNames[ivar],tags_full,index, mt,iweight);
+//	      if(passPreselectionM3dlep       && !pass3dLeptonVeto && nextraleptons==1   )   mon.fillHisto(TString("mt3")+varNames[ivar],tags_full,index, mt3,iweight);
 	      if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,0,iweight);
 	      if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,1,iweight);
 	      if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,2,iweight);
