@@ -24,7 +24,7 @@ process.TFileService = cms.Service("TFileService", fileName = cms.string(outputF
 # ANALYSIS                           #
 ######################################
 from CMGTools.HtoZZ2l2nu.Analysis_cff import defineAnalysis
-defineAnalysis(process,castorDir)
+defineAnalysis(process,castorDir,True)
 
 #######################################
 # SCHEDULE THE EXECUTION OF THE PATHS #
