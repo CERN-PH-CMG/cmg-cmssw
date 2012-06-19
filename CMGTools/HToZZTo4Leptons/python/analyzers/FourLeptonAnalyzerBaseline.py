@@ -121,11 +121,22 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
                       event.bestZForFakeRate.leg1.eta(),event.bestZForFakeRate.leg1.phi())>0.02 and \
                deltaR(event.leptonsForFakeRate[0].eta(),event.leptonsForFakeRate[0].phi(), \
                       event.bestZForFakeRate.leg2.eta(),event.bestZForFakeRate.leg2.phi())>0.02:
+                minmass=True
+                if event.leptonsForFakeRate[0].charge()+event.bestZForFakeRate.leg1.charge()==0:
+                    if (event.leptonsForFakeRate[0].p4()+event.bestZForFakeRate.leg1.p4()).M()<self.cfg_ana.minMass:
+                        minmass=False
+                if event.leptonsForFakeRate[0].charge()+event.bestZForFakeRate.leg2.charge()==0:
+                    if (event.leptonsForFakeRate[0].p4()+event.bestZForFakeRate.leg2.p4()).M()<self.cfg_ana.minMass:
+                        minmass=False
+                        
+
                 if  hasattr(self.cfg_ana,"FSR"):
                     fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
                     fsrAlgo.setPhotons(event.photons)
                     fsrAlgo.setLeg(event.leptonsForFakeRate[0])
                     fsrAlgo.recoverLeg()
+                if not minmass:
+                    event.leptonsForFakeRate=[]
             else:
                 event.leptonsForFakeRate=[]
 
@@ -145,7 +156,6 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         #Ghost Suppression
         passed=cutFlow.applyCut(self.testFourLeptonGhostSuppression,'ghost suppression',1,'fourLeptonsGhostSup')
 
-
         #tight ID for Z1
         passed=cutFlow.applyCut(self.testFourLeptonTightIDZ1,'4l z1 tight ID',1,'fourLeptonsTightIDZ1')
 
@@ -161,22 +171,18 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         if passed:
             event.prunedZ1 = self.pruneFourLeptonsForZ1(event.fourLeptonsZ1)
             cutFlow.setSource1(event.prunedZ1)
-            
 
         
         passed=cutFlow.applyCut(self.testFourLeptonSF,'4l pair 2  SF',1,'fourLeptonsSFZ2')
 
-
         #Pt Cuts (CAREFUL: The correct cut is : Any combination of leptons must be 20/10 not the Z1 ones
         passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds',1,'fourLeptonsFakeRateApp')
-
 
         if passed:
             event.higgsCandLoose = cutFlow.obj1[0]
 
         #OS Z2    
         passed=cutFlow.applyCut(self.testFourLeptonOS,'4l pair 2  OS',1,'fourLeptonsOSZ2')
-
 
         #tight ID    
         passed=cutFlow.applyCut(self.testFourLeptonTightID,'4l tight lepton id',1,'fourLeptonsTightID')

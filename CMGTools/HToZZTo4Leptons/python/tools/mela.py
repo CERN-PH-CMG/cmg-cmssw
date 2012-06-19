@@ -9,9 +9,9 @@ import ROOT
 #ROOT.gSystem.Load("libCMGToolsHToZZTo4Leptons")
 #ROOT.gSystem.Load("libJHUMELA.so")
 
-templatePath = '/'.join([os.environ['CMSSW_BASE'],'src/JHU/MELA/datafiles/my8DTemplateNotNorm.root']) 
+templatePath = '/'.join([os.environ['CMSSW_BASE'],'src/MELA/datafiles/my8DTemplateNotNorm.root']) 
 
-libPath = '/'.join([os.environ['CMSSW_BASE'],'src/JHU/MELA/'])
+libPath = '/'.join([os.environ['CMSSW_BASE'],'src/MELA/'])
 
 
 ROOT.gSystem.AddIncludePath("-I/$ROOFITSYS/include/")
