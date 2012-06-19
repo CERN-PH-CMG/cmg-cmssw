@@ -8,10 +8,13 @@ datapileup_710_2012=cms.vdouble(1.91404e-05,0.000127611,0.000496681,0.00139434,0
 
 mcpileup_tsg=cms.vdouble(0,0,0,0,0,0,0,0,0,0,0,0,6,9,14,28,56,106,212,339,549,848,1210,1727,2197,2857,3589,4303,4786,5202,5632,5941,5835,5660,5248,4886,4459,3764,3199,2623,2119,1609,1176,891,661,508,351,228,137,102,64,47,17,11,11,4,5,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
 
+blinding=True
 if(@is2011):
    datapileupToUse=datapileup_pixelbased_2011
+   blinding=False
 else:
    datapileupToUse=datapileup_710_2012
+   blinding=True
 #use this if you don't want to apply any weight
 #datapileupToUse=cms.vdouble()
 
@@ -21,7 +24,7 @@ runProcess = cms.PSet(
     isMC = cms.bool(@isMC),
     is2011 = cms.bool(@is2011),
     mctruthmode=cms.int32(@mctruthmode),
-    runBlinded = cms.bool(True),
+    runBlinded = cms.bool(blinding),
     xsec = cms.double(@xsec),	
     saveSummaryTree = cms.bool(@saveSummaryTree),
     runSystematics = cms.bool(@runSystematics),	
