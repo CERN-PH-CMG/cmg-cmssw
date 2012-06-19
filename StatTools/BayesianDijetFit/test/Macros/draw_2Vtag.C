@@ -13,11 +13,11 @@ void draw_2Vtag()
 
   TFile *outf = new TFile("xs.root","RECREATE");
 
-  bool correctAcceptance = false;
+  bool correctAcceptance = true;
   
   const unsigned int nEBins = 12;
   double minMass = 950.0, maxMass = 2150.0;
-  double minXsec = 1e-3, maxXsec = 1e-1;
+  double minXsec = 1e-3, maxXsec = 3e-1;
 
   double x[nEBins] = {1000., 1100., 1200., 1300., 1400., 1500., 1600., 1700., 1800., 1900., 2000., 2100.};
 
@@ -27,7 +27,7 @@ void draw_2Vtag()
   {
      prefix = "Fit_Results/Acc";
      minXsec = 6e-3;
-     maxXsec = 6e-1;
+     maxXsec = 1e-0;
   }
 
   // definition of color 
@@ -58,8 +58,8 @@ void draw_2Vtag()
 
   TLegend *l_xs_theory =  new TLegend(0.5694631,0.7108014,0.9614094,0.9216028,NULL,"brNDC");
   TLegend *l_xs_theory_WZ =  new TLegend(0.5694631,0.7108014,0.9614094,0.9216028,NULL,"brNDC");
-  TLegend *l_xs_theory_WW =  new TLegend(0.5694631,0.7108014,0.9614094,0.9216028,NULL,"brNDC");
-  TLegend *l_xs_theory_ZZ =  new TLegend(0.5694631,0.7108014,0.9614094,0.9216028,NULL,"brNDC");
+  TLegend *l_xs_theory_WW =  new TLegend(0.4,0.7108014,0.9614094,0.9216028,NULL,"brNDC");
+  TLegend *l_xs_theory_ZZ =  new TLegend(0.4,0.7108014,0.9614094,0.9216028,NULL,"brNDC");
 
   TLegend *l_xs_WZ =  new TLegend(0.1694631,0.1585366,0.4479866,0.3362369,NULL,"brNDC");
   TLegend *l_xs_WW =  new TLegend(0.1694631,0.1585366,0.4479866,0.3362369,NULL,"brNDC");
@@ -108,9 +108,17 @@ void draw_2Vtag()
     //1.512e+2, 1.522e+1, 2.603e+0, 1.672e-1, 1.862e-2, 7.238e-5}; //Herwig++
     /*1.512e+2, 1.522e+1, */0.256, 1.75e-2, 1.83e-3, 2.95e-5}; //Pythia6
  
+  double RSG_WW_2 [en] = {
+    //1.512e+2, 1.522e+1, 2.603e+0, 1.672e-1, 1.862e-2, 7.238e-5}; //Herwig++
+    /*1.512e+2, 1.522e+1, */0.256*4, 1.75e-2*4, 1.83e-3*4, 2.95e-5*4}; //Pythia6
+ 
   double RSG_ZZ[en] = {
     //7.648e+1, 7.678e+0, 1.301e+0, 8.379e-2, 9.310e-3, 1.932e-4}; //Herwig++
     /*7.648e+1, 7.678e+0, */0.128, 8.73e-3, 9.22e-4, 1.47e-5}; //Pythia6
+
+  double RSG_ZZ_2[en] = {
+    //7.648e+1, 7.678e+0, 1.301e+0, 8.379e-2, 9.310e-3, 1.932e-4}; //Herwig++
+    /*7.648e+1, 7.678e+0, */0.128*4, 8.73e-3*4, 9.22e-4*4, 1.47e-5*4}; //Pythia6
 
   double RSG_VV[en] = {
     //7.648e+1, 7.678e+0, 1.301e+0, 8.379e-2, 9.310e-3, 1.932e-4}; //Herwig++
@@ -162,9 +170,17 @@ void draw_2Vtag()
   TF1* RSG_WW_f = new TF1("WW","pol2",minMass,maxMass);
   RSG_WW_graph->Fit(RSG_WW_f);
 
+  TGraph* RSG_WW_2_graph = new TGraph(en,mjj,RSG_WW_2);
+  TF1* RSG_WW_2_f = new TF1("WW_2","pol2",minMass,maxMass);
+  RSG_WW_2_graph->Fit(RSG_WW_2_f);
+
   TGraph* RSG_ZZ_graph = new TGraph(en,mjj,RSG_ZZ);
   TF1* RSG_ZZ_f = new TF1("ZZ","pol2",minMass,maxMass);
   RSG_ZZ_graph->Fit(RSG_ZZ_f);
+
+  TGraph* RSG_ZZ_2_graph = new TGraph(en,mjj,RSG_ZZ_2);
+  TF1* RSG_ZZ_2_f = new TF1("ZZ_2","pol2",minMass,maxMass);
+  RSG_ZZ_2_graph->Fit(RSG_ZZ_2_f);
 
   TGraph* RSG_VV_graph = new TGraph(en,mjj,RSG_VV);
   TF1* RSG_VV_f = new TF1("VV","pol2",minMass,maxMass);
@@ -216,7 +232,9 @@ void draw_2Vtag()
     if(!correctAcceptance)
     {
       RSG_WW[i] *= RSG_kfactor[i]*RSG_WW_acc[i];
+      RSG_WW_2[i] *= RSG_kfactor[i]*RSG_WW_acc[i];
       RSG_ZZ[i] *= RSG_kfactor[i]*RSG_ZZ_acc[i];
+      RSG_ZZ_2[i] *= RSG_kfactor[i]*RSG_ZZ_acc[i];
       RSG_VV[i] *= RSG_kfactor[i]*RSG_VV_acc[i];
       Wprime_WZ[i] *= Wprime_kfactor[i]*Wprime_WZ_acc[i];
     }
@@ -349,7 +367,7 @@ void draw_2Vtag()
  TFile* file_WW_bg6 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_WW_ak5_fat_103.root", "READ");
  TFile* file_WW_bg7 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_WW_ak5_fat_104.root", "READ");
  TFile* file_WW_bg8 = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_WW_ak5_fat_105.root", "READ");
- TFile* file_WW_prior = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_WW_ak5_fat_10000.root", "READ");
+ TFile* file_WW_prior = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_WW_ak5_fat_2000.root", "READ");
  TFile* file_WW_lumi = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_WW_ak5_fat_2.root", "READ");
  TFile* file_WW_JES = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_WW_ak5_fat_3.root", "READ");
  TFile* file_WW_JER = new TFile("plots_LowAndHighMass_2011_118pbm1_4677pbm1/limit_limit_RSGraviton_WW_ak5_fat_4.root", "READ");
@@ -730,7 +748,9 @@ void draw_2Vtag()
   // theory value
 
   g_xs_RSG_WW = new TGraph(en,mjj,RSG_WW);
+  g_xs_RSG_WW_2 = new TGraph(en,mjj,RSG_WW_2);
   g_xs_RSG_ZZ = new TGraph(en,mjj,RSG_ZZ);
+  g_xs_RSG_ZZ_2 = new TGraph(en,mjj,RSG_ZZ_2);
   g_xs_RSG_ZZ_ex = new TGraph(en_short,mjjshort,RSG_ZZ_ex);
   g_xs_Wprime_WZ = new TGraph(en,mjj,Wprime_WZ);
   //g_xs_diquark = new TGraph(en,mjj,diquark);
@@ -1068,9 +1088,17 @@ void draw_2Vtag()
   g_xs_RSG_WW->SetLineStyle(2);
   g_xs_RSG_WW->SetLineWidth(3);
 
+  g_xs_RSG_WW_2->SetLineColor(2);
+  g_xs_RSG_WW_2->SetLineStyle(3);
+  g_xs_RSG_WW_2->SetLineWidth(3);
+
   g_xs_RSG_ZZ->SetLineColor(7);
   g_xs_RSG_ZZ->SetLineStyle(3);
   g_xs_RSG_ZZ->SetLineWidth(3);
+  
+  g_xs_RSG_ZZ_2->SetLineColor(8);
+  g_xs_RSG_ZZ_2->SetLineStyle(2);
+  g_xs_RSG_ZZ_2->SetLineWidth(3);
   
   g_xs_RSG_ZZ_ex->SetLineColor(8);
   g_xs_RSG_ZZ_ex->SetLineStyle(3);
@@ -1147,6 +1175,7 @@ void draw_2Vtag()
 
   //g_xs_string->Draw("sameL");  
   g_xs_RSG_WW->Draw("sameL");
+  g_xs_RSG_WW_2->Draw("sameL");
   //g_xs_RSG_ZZ->Draw("sameL");
   //g_xs_diquark->Draw("sameL");
   //g_xs_wprime->Draw("sameL");  
@@ -1164,7 +1193,8 @@ void draw_2Vtag()
   l_xs_theory->SetFillColor(0);
   l_xs_theory->SetFillStyle(0);
   //l_xs_theory->AddEntry(g_xs_string,"String Resonance","L");
-  l_xs_theory->AddEntry(g_xs_RSG_WW,"RS Graviton -> WW ","L");
+  l_xs_theory->AddEntry(g_xs_RSG_WW,"RS Graviton -> WW (k/#bar{M}_{PL}=0.1)","L");
+  l_xs_theory->AddEntry(g_xs_RSG_WW_2,"RS Graviton -> WW (k/#bar{M}_{PL}=0.2)","L");
   //l_xs_theory->AddEntry(g_xs_RSG_ZZ,"RS Graviton -> ZZ","L");
   //l_xs_theory->AddEntry(g_xs_RSG_ZZ,"(NLO) arXiv:1111.7261v2","");
   //l_xs_theory->AddEntry(g_xs_diquark,"E_{6} Diquark","L");
@@ -1244,7 +1274,8 @@ void draw_2Vtag()
   //g_xs_string->Draw("sameL");  
   //g_xs_RSG_WW->Draw("sameL");
   g_xs_RSG_ZZ->Draw("sameL");
-  g_xs_RSG_ZZ_ex->Draw("sameL");
+  g_xs_RSG_ZZ_2->Draw("sameL");
+  //g_xs_RSG_ZZ_ex->Draw("sameL");
   //g_xs_diquark->Draw("sameL");
   //g_xs_wprime->Draw("sameL");  
   //g_xs_zprime->Draw("sameL");  
@@ -1357,7 +1388,7 @@ void draw_2Vtag()
   l_xs_sys->SetHeader("95% CL Upper Limit (sys)");
   l_xs_sys->AddEntry(g_xs_HT_fat_WW_1010_sys,"WW","pL");
   l_xs_sys->AddEntry(g_xs_HT_fat_ZZ_1010_sys,"ZZ","pL");
-  l_xs_sys->AddEntry(g_xs_HT_fat_ZZ_01_1010_sys,"ZZ (Fast)","pL");
+  //l_xs_sys->AddEntry(g_xs_HT_fat_ZZ_01_1010_sys,"ZZ (Fast)","pL");
   l_xs_sys->AddEntry(g_xs_HT_fat_WZ_1010_sys,"WZ","pL");
   l_xs_sys->Draw("sames");
   l_xs_theory->Draw("sames");
@@ -1395,7 +1426,7 @@ void draw_2Vtag()
   // vFrame->SetLogy();
 
   g_xs_HT_fat_WZ_1010->Draw("PL");
-  g_xs_HT_fat_ZZ_1010->Draw("PL");
+  g_xs_HT_fat_ZZ_1010->Draw("samePL");
   g_xs_HT_fat_WW_1010->Draw("samePL");
   g_xs_HT_fat_WZ_1010_sys->Draw("samePL");
   g_xs_HT_fat_ZZ_1010_sys->Draw("samePL");
@@ -1545,6 +1576,7 @@ void draw_2Vtag()
 
   //g_xs_string->Draw("samePL");  
   g_xs_RSG_WW->Draw("samePL");
+  g_xs_RSG_WW_2->Draw("samePL");
   //  g_xs_RSG_ZZ->Draw("sameL");
   //  g_xs_diquark->Draw("sameL");
   //  g_xs_wprime->Draw("sameL");  
@@ -1580,7 +1612,8 @@ void draw_2Vtag()
   l_xs_theory_WW->SetFillStyle(0);
   l_xs_theory_WW->SetTextSize(0.028);
   //l_xs_theory_WW->AddEntry(g_xs_string,"String Resonance","L");
-  l_xs_theory_WW->AddEntry(g_xs_RSG_WW,"RS Graviton -> WW","L");
+  l_xs_theory_WW->AddEntry(g_xs_RSG_WW,"RS Graviton -> WW (k/#bar{M}_{PL}=0.1)","L");
+  l_xs_theory_WW->AddEntry(g_xs_RSG_WW_2,"RS Graviton -> WW (k/#bar{M}_{PL}=0.2)","L");
   l_xs_theory_WW->Draw("sames");
 
   c_xs_WW_sys_E->Update();
@@ -1631,6 +1664,7 @@ void draw_2Vtag()
   //  g_xs_string->Draw("samePL");  
   //  g_xs_RSG_WW->Draw("sameL");
   g_xs_RSG_ZZ->Draw("sameL");
+  g_xs_RSG_ZZ_2->Draw("sameL");
   //g_xs_RSG_ZZ_ex->Draw("sameL");
   //g_xs_diquark->Draw("sameL");
   //g_xs_wprime->Draw("sameL");  
@@ -1665,7 +1699,8 @@ void draw_2Vtag()
   l_xs_theory_ZZ->SetFillColor(0);
   l_xs_theory_ZZ->SetFillStyle(0);
   l_xs_theory_ZZ->SetTextSize(0.028);
-  l_xs_theory_ZZ->AddEntry(g_xs_RSG_ZZ,"RS Graviton -> ZZ","L");
+  l_xs_theory_ZZ->AddEntry(g_xs_RSG_ZZ,"RS Graviton -> ZZ (k/#bar{M}_{PL}=0.1)","L");
+  l_xs_theory_ZZ->AddEntry(g_xs_RSG_ZZ_2,"RS Graviton -> ZZ (k/#bar{M}_{PL}=0.2)","L");
   //l_xs_theory_ZZ->AddEntry(g_xs_RSG_ZZ_ex,"RS Graviton -> ZZ (k/M_{PL}=2)","L");
   //l_xs_theory_ZZ->AddEntry(g_xs_RSG_ZZ,"(NLO) arXiv:1111.7261v2","");
   //l_xs_theory_ZZ->AddEntry(g_xs_diquark,"E_{6} Diquark","L");
@@ -1837,7 +1872,7 @@ void draw_2Vtag()
   h_xs_WZ_sys_E->Add(htemp_xs_WZ_sys_E_u2);
 
   h_xs_WZ_sys_E->SetMinimum(minXsec);
-  h_xs_WZ_sys_E->SetMaximum(maxXsec);
+  h_xs_WZ_sys_E->SetMaximum(maxXsec/2.0);
 
   c_xs_WZ_sys_E->cd(0);
 
@@ -2038,11 +2073,11 @@ void draw_2Vtag()
   vFrame->SetTitleSize(0.2);
   vFrame->SetXTitle("Resonance mass (GeV)");
   vFrame->GetXaxis()->SetTitleSize(0.06);
-  vFrame->SetYTitle("Jeffreys / flat prior  (stat.only 95% CL #sigma)");
+  vFrame->SetYTitle("S+B fit / B fit  (stat.only 95% CL #sigma)");
   vFrame->GetYaxis()->SetTitleSize(0.04);
   vFrame->GetYaxis()->SetTitleOffset(1.60);
-  vFrame->SetMinimum(0.6);
-  vFrame->SetMaximum(1.4);
+  vFrame->SetMinimum(0.5);
+  vFrame->SetMaximum(4.0);
   // vFrame->SetLogy();
 
 //  g_xs_comparison_bw_stat_bg_fat->Draw("PL");;
@@ -2078,14 +2113,14 @@ void draw_2Vtag()
 //  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg4_fat,"bg +e2 / stat","pL");
 //  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg6_fat,"bg -e1 / stat","pL");
 //  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_bg7_fat,"bg -e2 / stat","pL");
-  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_prior_fat,"Jeffreys prior","pL");
+  l_xs_comparison_bw_stat_sys_fat2->AddEntry(g_xs_comparison_bw_stat_prior_fat,"S+B fit","pL");
   l_xs_comparison_bw_stat_sys_fat2->Draw("sames");
 
   c_xs_comparison_bw_stat_sys_fat->Update();
 
-  c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_PriorDependance_2Vtag.root");
-  c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_PriorDependance_2Vtag.png");
-  c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_PriorDependance_2Vtag.pdf");
+  c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_FitDependance_2Vtag.root");
+  c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_FitDependance_2Vtag.png");
+  c_xs_comparison_bw_stat_sys_fat->SaveAs(prefix+"Exclusions_WW_FitDependance_2Vtag.pdf");
 
   // c_xs_WW_compare
   /*
