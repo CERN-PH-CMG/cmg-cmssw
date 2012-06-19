@@ -1,6 +1,21 @@
 {
     "proc":[
 	{
+        "tag":"WW#rightarrow 2l2#nu no",
+        "isdata":false,
+        "color":"592",
+        "lcolor":1,
+        "marker":1,
+        "data":[
+	    {
+                "dtag":"MC8TeV_WW_pythia no",
+                "dset":"/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
+                "split":1,
+                "xsec":57.1097
+             }
+	]
+	},
+	{
         "tag":"WW#rightarrow 2l2#nu",
         "isdata":false,
         "color":"592",
@@ -9,10 +24,24 @@
         "data":[
 	    {
                 "dtag":"MC8TeV_WW",
-                "dset":"/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
                 "split":1,
                 "xsec":57.1097,
 		"br":[0.104976]
+             }
+	]
+	},
+	{
+	"tag":"ZZ no",
+        "isdata":false,
+	"color":"590",
+        "lcolor":1,
+	"marker":1,
+	"data":[
+	    {
+                "dtag":"MC8TeV_ZZ_pythia no",
+                "split":2,
+	        "mctruthmode":1,
+                "xsec":8.25561
              }
 	]
 	},
@@ -25,7 +54,6 @@
 	"data":[
 	    {
                 "dtag":"MC8TeV_ZZ",
-                "dset":"/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
                 "split":2,
 	        "mctruthmode":1,
                 "xsec":8.25561,
@@ -520,7 +548,7 @@
 		 "aoddir":["path=/DoubleElectron/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
 		 "patdir":["/store/cmst3/user/psilva/Data2012/DoubleElectron-v6/2012B"],
-                 "split":2
+                 "split":5
                 },
                 {
 	         "dtag":"Data8TeV_DoubleMu2012B",
@@ -528,7 +556,7 @@
 		 "aoddir":["path=/DoubleMu/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
 	         "patdir":["/store/cmst3/user/psilva/Data2012/DoubleMu-v6/2012B"],
-                 "split":2
+                 "split":5
                 },
                 {
 	         "dtag":"Data8TeV_SingleMu2012B",
@@ -544,7 +572,7 @@
 		 "aoddir":["path=/MuEG/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
 		 "patdir":["/store/cmst3/user/psilva/Data2012/MuEG-v6/2012B"],
-                 "split":2
+                 "split":5
                 }
 	    ]
 	}
