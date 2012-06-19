@@ -210,7 +210,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
     def testMuonLoose(self, muon):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
-        looseID = (muon.isGlobal() or muon.isTracker())
+        looseID = (muon.isGlobal() or (muon.isTracker() and muon.numberOfMatches()>0 ))
         return looseID
 
     def testMuonCleaning(self, muon):
