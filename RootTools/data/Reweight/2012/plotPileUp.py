@@ -1,6 +1,7 @@
 import sys
 import copy
-from CMGTools.RootTools.RootTools import * 
+import pprint 
+from CMGTools.RootTools.PyRoot import * 
 from ROOT import TFile, TH1F
 
 fileNames = sys.argv[1:]
