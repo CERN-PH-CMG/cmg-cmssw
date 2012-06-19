@@ -188,8 +188,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":5.249,
-                "xsecunc":[17.2,-15.2],
+                "xsec":5.377,
+                "xsecunc":[13.6,-14.6],
 		"br":[0.256,0.0403896]
 		}
 	   ]
@@ -234,8 +234,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":5.249,
-                "xsecunc":[17.2,-15.2],
+  		"xsec":5.377,
+                "xsecunc":[13.6,-14.6],
 		"br":[0.741,0.046656]
 		}
 	   ]
@@ -279,8 +279,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-250_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":3.312,
-                "xsecunc":[16.5,-15.6],
+                "xsec":3.555,
+                "xsecunc":[13.6,-14.4],
 		"br":[0.297,0.0403896]
 		}
 	   ]
@@ -325,9 +325,9 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-250_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":3.312,
-                "xsecunc":[16.5,-15.6],
-		"br":[0.701,0.046656]
+  		"xsec":3.555,
+                "xsecunc":[13.6,-14.4],
+      		"br":[0.701,0.046656]
 		}
 	   ]
 	},
@@ -370,8 +370,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":2.422,
-                "xsecunc":[16.8,-15.5],
+                "xsec":2.616,
+                "xsecunc":[13.8,-14,3],
 		"br":[0.307,0.0403896]
 		}
 	   ]
@@ -416,8 +416,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":2.422,
-                "xsecunc":[16.8,-15.5],
+                "xsec":2.616,
+                "xsecunc":[13.8,-14,3],
 		"br":[0.692,0.046656]
 		}
 	   ]
@@ -461,8 +461,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-350_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":2.306,
-                "xsecunc":[19.7,-14.8],
+                "xsec":2.428,
+                "xsecunc":[14.2,-14.4],
 		"br":[0.307,0.0403896]
 		}
 	   ]
@@ -507,8 +507,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-350_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":2.306,
-                "xsecunc":[19.7,-14.8],
+                "xsec":2.428,
+                "xsecunc":[14.2,-14.4],
 		"br":[0.676,0.046656]
 		}
 	   ]
@@ -551,8 +551,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":2.032,
-                "xsecunc":[15.7,-16.3],
+                "xsec":2.049,
+                "xsecunc":[14.7,-14.0],
 		"br":[0.269,0.0403896]
 		}
 	   ]
@@ -597,8 +597,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":2.032,
-                "xsecunc":[15.7,-16.3],
+                "xsec":2.049,
+                "xsecunc":[14.7,-14.0],
 		"br":[0.582,0.046656]
 		}
 	   ]
@@ -642,8 +642,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-450_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":1.237,
-                "xsecunc":[16.4,-17.2],
+                "xsec":1.263,
+                "xsecunc":[15.2,-14.0],
 		"br":[0.259,0.0403896]
 		}
 	   ]
@@ -688,8 +688,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-450_7TeV-powheg-pythia6"],
 		"split":1,
-		"xsec":1.237,
-                "xsecunc":[16.4,-17.2],
+                "xsec":1.263,
+                "xsecunc":[15.2,-14.0],
 		"br":[0.549,0.046656]
 		}
 	   ]
@@ -733,8 +733,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":0.8491,
-                "xsecunc":[17.7,-17.6],
+                "xsec":0.8708,
+                "xsecunc":[15.5,-14.1],
 		"br":[0.261,0.0403896]
 		}
 	   ]
@@ -778,8 +778,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":0.8491,
-                "xsecunc":[17.7,-17.6],
+                "xsec":0.8708,
+                "xsecunc":[15.5,-14.1],
 		"br":[0.546,0.046656]
 		}
 	   ]
@@ -823,8 +823,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-550_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":0.4771,
-                "xsecunc":[18.7,-17.8],
+                "xsec":0.4960,
+                "xsecunc":[16.0,-14.4],
 		"br":[0.267,0.0403896]
 		}
 	   ]
@@ -869,8 +869,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-550_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":0.4771,
-                "xsecunc":[18.7,-17.8],
+                "xsec":0.4960,
+                "xsecunc":[16.0,-14.4],
 		"br":[0.552,0.046656]
 		}
 	   ]
@@ -914,8 +914,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":0.3267,
-                "xsecunc":[19.4,-17.9],
+                "xsec":0.3444,
+                "xsecunc":[16.2,-14.6],
 		"br":[0.272,0.0403896]
 		}
 	   ]
@@ -960,8 +960,8 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":0.3267,
-                "xsecunc":[19.4,-17.9],
+                "xsec":0.3444,
+                "xsecunc":[16.2,-14.6],
 		"br":[0.558,0.046656]
 		}
 	   ]
