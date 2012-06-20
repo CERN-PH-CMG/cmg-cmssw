@@ -175,7 +175,7 @@ class PublishController(object):
     		self._cmgdbAPI.clearDatasetBadJobs(procds['PathList'][0],cmgdbID)
     		
     		
-    		if fileOps._totalJobs is not None:self._cmgdbAPI.addTotalJobs(fileOps._totalJobs)
+    		if fileOps._totalJobs is not None:self._cmgdbAPI.addTotalJobs(cmgdbID, fileOps._totalJobs)
     		if fileOps._totalFilesMissing is not None:self._cmgdbAPI.addMissingFileNum(cmgdbID, fileOps._totalFilesMissing)
     		if fileOps._totalFilesGood is not None:self._cmgdbAPI.addGoodFileNum(cmgdbID, fileOps._totalFilesGood)
     		if fileOps._totalFilesBad is not None:self._cmgdbAPI.addBadFileNum(cmgdbID, fileOps._totalFilesBad)
