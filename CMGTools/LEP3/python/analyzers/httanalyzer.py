@@ -44,6 +44,8 @@ class httanalyzer( Analyzer ):
         count.register('All events')
         count.register('All hz events')
         count.register('h->tt')
+        count.register('Z->qq and h->tt')
+        count.register('Z->qq and h->tt selected')
         
     def buildMCinfo(self, event):
         self.isHZ = False
@@ -52,12 +54,15 @@ class httanalyzer( Analyzer ):
         nH = 0
         nZ = 0
         minzene=99999.
+        ptcz=0
+        
         for ptc in self.mchandles['genParticles'].product():
             if abs(ptc.pdgId())==23:
                 nZ+=1
                 if ptc.energy()<minzene:
                     minzene=ptc.energy()
                     self.Z=GenParticle(ptc)
+                    ptcz=ptc
                     
             if abs(ptc.pdgId())==25:
                 nH+=1
@@ -78,7 +83,7 @@ class httanalyzer( Analyzer ):
             self.isHZ=True
             # check if Z-->qq
             for ptc in self.mchandles['genParticles'].product():
-                if ptc.mother(0)==self.Z:
+                if ptc.mother(0)==ptcz:
                     if abs(ptc.pdgId())<=6:
                         self.isHZqq=True
 
@@ -137,16 +142,23 @@ class httanalyzer( Analyzer ):
 
         self.counters.counter('h_gen').inc('All events')
         if self.isHZ: self.counters.counter('h_gen').inc('All hz events')
-        if len(self.tau)==2: self.counters.counter('h_gen').inc('h->tt')
+        if len(self.tau)==2:
+            self.counters.counter('h_gen').inc('h->tt')
+            if self.isHZqq:
+                self.counters.counter('h_gen').inc('Z->qq and h->tt')
 
         event.isHZ = 0
-
+        event.isHZqq = 0
+        
         if self.isHZ:
             event.isHZ=1
             event.H=self.H
             event.Z=self.Z
+            if self.isHZqq:
+                event.isHZqq=1
             
         event.ishtt = 0
+
         if len(self.tau)==2:
             event.ishtt =1
             event.tau1=self.tau[0]
@@ -292,6 +304,10 @@ class httanalyzer( Analyzer ):
         if len(event.taucand)<2:
             return
         event.step+=1
+
+        if event.ishtt==1 and event.isHZqq==1:
+            self.counters.counter('h_gen').inc('Z->qq and h->tt selected')
+
 
         # now build Z(qq) and visible H(tautau) candidates 
         if event.ishtt==1:
