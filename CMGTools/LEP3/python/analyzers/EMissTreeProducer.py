@@ -55,6 +55,7 @@ class EMissTreeProducer( TreeAnalyzer ):
         var('ctVis')
         var('acol')
         var('acop')
+        var('sumtet')
         var('nunubb')
         var('wwh')
 
@@ -116,6 +117,7 @@ class EMissTreeProducer( TreeAnalyzer ):
         fill('ctVis',subevent.ctVis) 
         fill('acol',subevent.acol)
         fill('acop',subevent.acop)
+        fill('sumtet',subevent.sumtet)
         fill('nunubb',subevent.nunubb)
         fill('wwh',subevent.wwh)
 

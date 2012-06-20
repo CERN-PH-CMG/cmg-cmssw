@@ -85,6 +85,7 @@ class EMissAnalyzer( Analyzer ):
     def buildJetList(self, event):
 
         self.jets = []
+        self.jet3 = []
         for ptj in self.handles['jets'].product():
             self.jets.append(Jet(ptj))
             #print jet, jet.nConstituents(), jet.component(1).number(), Jet(ptj).component(1).fraction()
@@ -94,10 +95,16 @@ class EMissAnalyzer( Analyzer ):
         if len(self.jets) > 2 : 
             self.jets.sort(key=lambda a: a.energy(), reverse = True)
             tmpJets = set(self.jets)
+            tmpJet3 = set(self.jets)
 #            print 'Jets Avant : '
 #            for jet in tmpJets:
 #                print jet, jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
-            while len(tmpJets) != 2: 
+            while len(tmpJets) != 2:
+                # Keep the step with three jets
+                if len(tmpJet3) == 3 :
+                    for jet in tmpJet3 :
+                        self.jet3.append(jet)
+                # 
                 dijets = self.findPairs(tmpJets)
                 dijets.sort(key=lambda a: a.M())
 #                print dijets[0],dijets[0].M()
@@ -222,11 +229,21 @@ class EMissAnalyzer( Analyzer ):
                self.jets[0].py() * self.jets[1].py() 
         acop /= self.jets[0].pt() * self.jets[1].pt()
         acop = acos(acop)*180./pi
+
+        sumtet = 0.
+        if len(self.jet3) == 3 :
+            jp = self.findPairs( self.jet3 )
+            for j in jp :
+                angle = j.leg1.px() * j.leg2.px() + \
+                        j.leg1.py() * j.leg2.py() + \
+                        j.leg1.pz() * j.leg2.pz() 
+                angle /= j.leg1.p() * j.leg2.p()
+                angle = acos(angle)*180./pi
+                sumtet += angle
+
         event.acol = acol
         event.acop = acop
-        
-
-
+        event.sumtet = sumtet
 
 #        self.counters.counter('EMiss').inc('passing')
 #        if self.nunubb : self.counters.counter('EMissGen').inc('passing')
