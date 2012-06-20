@@ -147,7 +147,6 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         #of leptons so we can pick the best Z1 and Z2
         event.fourLeptons = self.findQuadsWithFSR(event.cleanLeptons,event.photons)
 
-
         #Sort them by M1 near Z and My highest Pt sum
         event.sortedFourLeptons = self.sortFourLeptons(event.fourLeptons)
 
@@ -168,9 +167,10 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
 
 
         #Now remove all combinations that have different Z1 as the first
+        event.prunedZ1=[]
         if passed:
-            event.prunedZ1 = self.pruneFourLeptonsForZ1(event.fourLeptonsZ1)
-            cutFlow.setSource1(event.prunedZ1)
+           event.prunedZ1 = self.pruneFourLeptonsForZ1(event.fourLeptonsZ1)
+        cutFlow.setSource1(event.prunedZ1)
 
         
         passed=cutFlow.applyCut(self.testFourLeptonSF,'4l pair 2  SF',1,'fourLeptonsSFZ2')
