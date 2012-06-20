@@ -160,11 +160,11 @@ elif channel == 'mu_ele':
     theAna = muEleAna
     theGenAna = muEleGenAna
 
+    for data in dataSamplesE:
+        data.triggers = triggers_ee
     for data in dataSamplesMu:
         data.triggers = triggers_mumu
         data.vetoTriggers = triggers_ee
-    for data in dataSamplesE:
-        data.triggers = triggers_ee
 
     for data in dataSamplesMuE:
         data.triggers = triggers_mue
@@ -206,9 +206,9 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 1
+test = 0
 if test==1:
-    dataset = GGH125
+    dataset = GGH126
     selectedComponents = [dataset]
     dataset.splitFactor = 1
     dataset.files=['root://cmsphys05//data/b/botta/V5_4_0/cmgTuple_H126Summer12.root']
