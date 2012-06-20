@@ -143,7 +143,7 @@ class EMissAnalyzer( Analyzer ):
         if self.wwh : self.counters.counter('WWHGen').inc('All events')
         event.step = 0
 
-        if self.eMiss.Pt() < 0.  :
+        if self.eMiss.Pt() < self.cfg_ana.ptmiss :
             return 0
         else:
             event.step +=1
@@ -151,7 +151,7 @@ class EMissAnalyzer( Analyzer ):
         if self.nunubb : self.counters.counter('EMissGen').inc('ptMiss > 20.')
         if self.wwh : self.counters.counter('WWHGen').inc('ptMiss > 20.')
             
-        if self.eMiss.P() == 0. or abs(self.eMiss.Pz()/self.eMiss.P()) > 1.00  :
+        if self.eMiss.P() == 0. or abs(self.eMiss.Pz()/self.eMiss.P()) > self.cfg_ana.ctmiss  :
             return 0
         else:
             event.step +=1
@@ -159,7 +159,7 @@ class EMissAnalyzer( Analyzer ):
         if self.nunubb : self.counters.counter('EMissGen').inc('ctMiss > 0.95')
         if self.wwh : self.counters.counter('WWHGen').inc('ctMiss > 0.95')
             
-        if self.eMiss.M() < 0.:
+        if self.eMiss.M() < self.cfg_ana.mmiss :
             return 0
         else:
             event.step +=1
