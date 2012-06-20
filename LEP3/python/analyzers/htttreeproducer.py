@@ -39,6 +39,11 @@ class htttreeproducer( TreeAnalyzer ):
         jetVars('nontgenjet3')
         jetVars('nontgenjet4')
 
+        var('step')
+        var('isHZ')
+        var('isHZqq')
+        var('ishtt')
+
         var('nontgenjetiso1')
         var('nontgenjetiso2')
         var('nontgenjetiso3')
@@ -111,6 +116,11 @@ class htttreeproducer( TreeAnalyzer ):
 #
         subevent = getattr( event, self.cfg_ana.anaName )
 
+        fill('step',subevent.step)
+        fill('g_ishtt',subevent.ishtt)
+        fill('g_isHZ',subevent.isHZ)
+        fill('g_izHZqq',subevent.isHZqq)
+        
         if subevent.isHZ==1 : 
             fgenParticleVars( 'H',subevent.H ) 
             fgenParticleVars( 'Z',subevent.Z )
