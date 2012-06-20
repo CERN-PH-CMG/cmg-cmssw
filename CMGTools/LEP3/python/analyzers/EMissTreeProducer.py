@@ -56,6 +56,9 @@ class EMissTreeProducer( TreeAnalyzer ):
         var('nunubb')
         var('wwh')
 
+        jetVars('Jet1')
+        jetVars('Jet2')
+
         self.tree.book()
 
 
@@ -110,6 +113,9 @@ class EMissTreeProducer( TreeAnalyzer ):
         fill('mVis',subevent.mVis)
         fill('ctVis',subevent.ctVis) 
         fill('nunubb',subevent.nunubb)
-        fill('wwh',subevent.wwh) 
+        fill('wwh',subevent.wwh)
+
+        fJetVars('Jet1',subevent.allJets[0])
+        fJetVars('Jet2',subevent.allJets[1])
 
         self.tree.fill()

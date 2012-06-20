@@ -6,7 +6,8 @@ eMissAna = cfg.Analyzer(
     'EMissAnalyzer',
     ptmiss = 0.,
     mmiss = -10000000.,
-    ctmiss = 1.0
+    ctmiss = 1.0,
+    nq = 2.
     )
 
 
