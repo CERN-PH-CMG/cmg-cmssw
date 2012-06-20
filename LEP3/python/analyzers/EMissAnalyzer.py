@@ -41,6 +41,8 @@ class EMissAnalyzer( Analyzer ):
         counts.append(self.counters.counter('WWHGen'))
         for count in counts : 
             count.register('All events')
+            count.register('Two Good Jets')
+            count.register('Good Jets Pairs')
             count.register('ptMiss > 20.')
             count.register('ctMiss > 0.95')
             count.register('mMiss > 20.')
@@ -104,7 +106,67 @@ class EMissAnalyzer( Analyzer ):
 ##         self.jets.sort(key=lambda a: a.btag(7), reverse = True)
             
 
+    def buildJetList(self, event):
 
+        self.quarks = []
+        self.nq = 0
+        for ptc in self.mchandles['genParticles'].product():
+            #print GenParticle(ptc)
+            # Find four jet events
+            if abs(ptc.pdgId()) > 6 and ptc.pdgId() != 21 : continue
+            #print 'a quark : ',ptc.pdgId()
+            if not(ptc.numberOfMothers()) : continue
+            moth = ptc.mother(0)
+            #print 'Mother : ',moth.pdgId()
+            if moth.numberOfMothers() and moth.mother(0).pdgId() == 25 : continue
+            if abs(moth.pdgId()) != 23 and \
+               abs(moth.pdgId()) != 25 : continue
+            self.nq += 1
+            self.quarks.append(GenParticle(ptc))
+
+#        if self.nq == 2 : print 'A Two Jet Event !'
+
+        self.jets = []
+        for ptj in self.handles['jets'].product():
+            self.jets.append(Jet(ptj))
+            #print jet, jet.nConstituents(), jet.component(1).number(), Jet(ptj).component(1).fraction()
+
+        
+
+        if len(self.jets) > 2 : 
+            self.jets.sort(key=lambda a: a.energy(), reverse = True)
+            tmpJets = set(self.jets)
+#            print 'Jets Avant : '
+#            for jet in tmpJets:
+#                print jet, jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
+            while len(tmpJets) != 2: 
+                dijets = self.findPairs(tmpJets)
+                dijets.sort(key=lambda a: a.M())
+#                print dijets[0],dijets[0].M()
+                
+                tmpJets.remove(dijets[0].leg1)
+                tmpJets.remove(dijets[0].leg2)
+                tmpJets.add(dijets[0])
+
+ #           print 'Jets apres : '
+            self.jets = []
+            for jet in tmpJets:
+ #               print jet,jet.nConstituents(), jet.mass(), jet.btag(7)
+ #               print jet,jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
+                self.jets.append(jet)
+                
+        self.jets.sort(key=lambda a: a.btag(7), reverse = True)
+
+
+    def findPairs(self, jets):
+        out = []
+
+        for j1, j2 in itertools.combinations(jets, 2):
+            out.append( DiObject(j1, j2) )
+
+        return out
+    
+ 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
@@ -116,6 +178,8 @@ class EMissAnalyzer( Analyzer ):
         event = myEvent
         
         self.buildMiss( event )
+        self.buildJetList( event )
+
         event.ptMiss = self.eMiss.Pt()
         event.pMiss = self.eMiss.P()
         event.eMiss = self.eMiss.E()
@@ -132,6 +196,10 @@ class EMissAnalyzer( Analyzer ):
         event.mVis = self.eVis.M()
         event.nunubb = self.nunubb
         event.wwh = self.wwh
+        event.nq = self.nq
+        event.allJets = self.jets
+        event.jetPairs = self.findPairs( event.allJets )
+
 
         #for ptc in self.mchandles['genParticles'].product():
         #    print GenParticle(ptc)
@@ -143,6 +211,18 @@ class EMissAnalyzer( Analyzer ):
         if self.wwh : self.counters.counter('WWHGen').inc('All events')
         event.step = 0
 
+        if len(self.jets) != 2 : 
+            return 0
+        else:
+            event.step +=1
+
+        self.counters.counter('EMiss').inc('Two Good Jets')
+        if self.nunubb : self.counters.counter('EMissGen').inc('Two Good Jets')
+        if self.wwh : self.counters.counter('WWHGen').inc('Two Good Jets')
+        
+        event.step += 1
+        
+  
         if self.eMiss.Pt() < self.cfg_ana.ptmiss :
             return 0
         else:
@@ -163,16 +243,28 @@ class EMissAnalyzer( Analyzer ):
             return 0
         else:
             event.step +=1
+
         self.counters.counter('EMiss').inc('mMiss > 20.')
         if self.nunubb : self.counters.counter('EMissGen').inc('mMiss > 20.')
         if self.wwh : self.counters.counter('WWHGen').inc('mMiss > 20.')
 
-        self.counters.counter('EMiss').inc('passing')
-        if self.nunubb : self.counters.counter('EMissGen').inc('passing')
-        if self.wwh : self.counters.counter('WWHGen').inc('passing')
-        event.step += 1
+
+
+
+#        self.counters.counter('EMiss').inc('passing')
+#        if self.nunubb : self.counters.counter('EMissGen').inc('passing')
+#        if self.wwh : self.counters.counter('WWHGen').inc('passing')
+#        event.step += 1
+
 
         return True
  
 
-
+ 
+    
+##    def testTwoJets(self, jets) :
+    
+##          if len(jets) != 2 :
+##             #print 'NJets = ', len(jets)
+##             return False
+        
