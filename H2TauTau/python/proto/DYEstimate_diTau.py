@@ -49,8 +49,8 @@ def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, 
      			    30,0,300,
      			    cut = 'abs(l1Eta)<1.5 && abs(l2Eta)<1.5 && l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>30', weight=weight,
      			    embed=embed)
-    inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Scale(0.85*0.85)
-    inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Scale(0.85*0.85)
+    inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Scale(1./(0.85*0.85))
+    inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Scale(1./(0.85*0.85))
     #inclusiveForEmbeddedNormalizationZeeBE = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
     # 			    30,0,300,
     # 			    cut = '((abs(l1Eta)>1.5 && abs(l2Eta)<1.5) || (abs(l1Eta)<1.5 && abs(l2Eta)>1.5)) && l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>30', weight=weight,
@@ -76,12 +76,3 @@ def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, 
     zeeScaleFactor = inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").Integral()/ \
         (inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Integral())
     print "zeeScaleFactor", zeeScaleFactor, "+-", math.sqrt(pow(0.2,2)+pow(0.2,2))*zeeScaleFactor
-
-    #for name,comp in selCompsNoSignal.items():
-    #    if comp.isEmbed:
-	#     comp.embedFactor *= zeeScaleFactor
-    #for mass,comps in selCompsDataMass.items():
-    #  for name,comp in comps.items():
-    #    if comp.isEmbed:
-	#     comp.embedFactor *= zeeScaleFactor
-
