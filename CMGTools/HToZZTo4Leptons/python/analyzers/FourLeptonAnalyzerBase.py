@@ -8,7 +8,7 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.Event import Event
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton,Photon,Electron
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton,Photon,Electron,Jet
 
 from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair
@@ -17,7 +17,7 @@ from CMGTools.HToZZTo4Leptons.tools.FakeRateCalculator import FakeRateCalculator
 from CMGTools.HToZZTo4Leptons.tools.EfficiencyCorrector import EfficiencyCorrector
 from CMGTools.HToZZTo4Leptons.tools.mela import MELACalculator
 
-from CMGTools.RootTools.utils.DeltaR import deltaR
+from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
 
 
 
@@ -54,6 +54,8 @@ class FourLeptonAnalyzerBase( Analyzer ):
         self.handles['photons'] = AutoHandle( ('cmgPhotonSel',''),'std::vector<cmg::Photon>')
         self.handles['electrons'] = AutoHandle( ('cmgElectronSel',''),'std::vector<cmg::Electron>')
 
+        self.handles['jets'] = AutoHandle( ('cmgPFJetSel',''),'std::vector<cmg::PFJet>')
+
 
 
     def beginLoop(self):
@@ -68,6 +70,9 @@ class FourLeptonAnalyzerBase( Analyzer ):
 
         event.photons = map( Photon,self.handles['photons'].product() )
 
+
+    def buildJetList(self, event):
+        event.jets = map( Jet,self.handles['jets'].product() )
 
 
     def buildLeptonList(self, event):
@@ -430,10 +435,19 @@ class FourLeptonAnalyzerBase( Analyzer ):
         else:
             return []
         
+    def calculateVBF(self,fourLepton,jets):
+        cleanedJets = filter(lambda x: deltaR(x.eta(),x.phi(),fourLepton.leg1.leg1.eta(),fourLepton.leg1.leg1.phi())>0.3 and \
+                             deltaR(x.eta(),x.phi(),fourLepton.leg1.leg2.eta(),fourLepton.leg1.leg2.phi())>0.3 and \
+                             deltaR(x.eta(),x.phi(),fourLepton.leg2.leg1.eta(),fourLepton.leg2.leg1.phi())>0.3 and \
+                             deltaR(x.eta(),x.phi(),fourLepton.leg2.leg2.eta(),fourLepton.leg2.leg2.phi())>0.3,jets)
         
-            
 
-
+        if len(cleanedJets)>1:
+            vbf=dict()
+            vbf['dEta'] = cleanedJets[0].eta()-cleanedJets[1].eta()
+            vbf['dPhi'] = deltaPhi(cleanedJets[0].phi(),cleanedJets[1].phi())
+            vbf['Mjj'] = (cleanedJets[0].p4()+cleanedJets[1].p4()).M()
+            fourLepton.vbf = vbf
 
 
        

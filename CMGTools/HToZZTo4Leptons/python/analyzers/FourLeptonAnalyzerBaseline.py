@@ -67,8 +67,16 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         
         #Get photons
         self.buildPhotonList( event )
-
+        #get leptons
         self.buildLeptonList( event )
+        #get jets
+        self.buildJetList(event)
+
+        #prune jets
+        event.selectedJets = filter(lambda x:x.pt()>30 and abs(x.eta())<4.5,event.jets)
+        
+
+
 
         #create a cut flow
         cutFlow = CutFlowMaker(self.counters.counter("FourLepton"),event,event.leptons1,event.leptons2)
@@ -178,6 +186,11 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         #Pt Cuts (CAREFUL: The correct cut is : Any combination of leptons must be 20/10 not the Z1 ones
         passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds',1,'fourLeptonsFakeRateApp')
 
+        #calculate mela and vbf
+        for fl in event.fourLeptonsFakeRateApp:
+            fl.mela=self.mela.calculate(fl)
+            self.calculateVBF(fl,event.selectedJets)
+
         if passed:
             event.higgsCandLoose = cutFlow.obj1[0]
 
@@ -212,9 +225,6 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
 
            
 
-        #calculate mela
-        for fl in event.fourLeptonsTightZ2:
-            fl.mela=self.mela.calculate(fl)
 
         if passed:
             event.higgsCand = cutFlow.obj1[0]
