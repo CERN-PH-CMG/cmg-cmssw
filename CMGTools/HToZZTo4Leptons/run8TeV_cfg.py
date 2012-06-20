@@ -13,7 +13,7 @@ from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
 
 
-channel = 'mu_mu'
+channel = 'all'
 
 
 
@@ -103,6 +103,14 @@ eleEleAna.minPt2 = 7
 eleEleAna.maxEta2 = 2.5
 
 
+allAna = copy.deepcopy( muMuAna)
+allAna.name = 'AllFourLeptonAnalyzer'
+allAna.minPt1 = 5
+allAna.maxEta1 = 2.4
+allAna.minPt2 = 7
+allAna.maxEta2 = 2.5
+
+
 #GenLevelAnalyzers
 muMuGenAna = copy.deepcopy(muMuAna)
 muMuGenAna.name = 'GenGenFourLeptonAnalyzer_MuMu'
@@ -155,7 +163,7 @@ if channel == 'mu_mu':
         mc.triggers = triggersMC_mumu
     selectedComponents=mcSamples+dataSamplesMu
     
-elif channel == 'mu_ele':
+elif channel == 'mu_ele' :
     theGenSel = muEleGenSel
     theAna = muEleAna
     theGenAna = muEleGenAna
@@ -173,6 +181,25 @@ elif channel == 'mu_ele':
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
     selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
+
+elif channel == 'all' :
+    theAna = allAna
+
+
+    for data in dataSamplesE:
+        data.triggers = triggers_ee
+    for data in dataSamplesMu:
+        data.triggers = triggers_mumu
+        data.vetoTriggers = triggers_ee
+
+    for data in dataSamplesMuE:
+        data.triggers = triggers_mue
+        data.vetTriggers=triggers_ee+triggers_mumu
+
+    for mc in mcSamples:
+        mc.triggers = triggersMC_mue
+    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
+
     
 
 elif channel == 'ele_ele':
@@ -206,7 +233,7 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 0
+test = 1
 if test==1:
     dataset = GGH126
     selectedComponents = [dataset]
