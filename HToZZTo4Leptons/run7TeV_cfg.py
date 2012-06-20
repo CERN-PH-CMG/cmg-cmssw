@@ -12,7 +12,7 @@ from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
 
 
-channel = 'mu_ele'
+channel = 'all'
 
 
 
@@ -93,6 +93,14 @@ muEleAna.maxEta1 = 2.4
 muEleAna.minPt2 = 7
 muEleAna.maxEta2 = 2.5
 
+allAna = copy.deepcopy( muMuAna)
+allAna.name = 'AllFourLeptonAnalyzer'
+allAna.minPt1 = 5
+allAna.maxEta1 = 2.4
+allAna.minPt2 = 7
+allAna.maxEta2 = 2.5
+
+
 
 eleEleAna = copy.deepcopy( muEleAna )
 eleEleAna.name = 'EleEleFourLeptonAnalyzer'
@@ -159,6 +167,18 @@ elif channel == 'mu_ele':
     theAna = muEleAna
     theGenAna = muEleGenAna
 
+    for data in dataSamplesMu:
+        data.triggers = triggers_mumu
+        data.vetoTriggers = triggers_ee
+    for data in dataSamplesE:
+        data.triggers = triggers_ee
+    for mc in mcSamples:
+        mc.triggers = triggersMC_mue
+    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
+
+
+elif channel == 'all':
+    theAna = allAna
     for data in dataSamplesMu:
         data.triggers = triggers_mumu
         data.vetoTriggers = triggers_ee

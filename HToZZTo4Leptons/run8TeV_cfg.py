@@ -176,7 +176,7 @@ elif channel == 'mu_ele' :
 
     for data in dataSamplesMuE:
         data.triggers = triggers_mue
-        data.vetTriggers=triggers_ee+triggers_mumu
+        data.vetoTriggers=triggers_ee+triggers_mumu
 
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
@@ -194,7 +194,7 @@ elif channel == 'all' :
 
     for data in dataSamplesMuE:
         data.triggers = triggers_mue
-        data.vetTriggers=triggers_ee+triggers_mumu
+        data.vetoTriggers=triggers_ee+triggers_mumu
 
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
