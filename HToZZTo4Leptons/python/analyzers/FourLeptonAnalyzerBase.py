@@ -339,12 +339,13 @@ class FourLeptonAnalyzerBase( Analyzer ):
     def testFourLeptonSF(self, fourLepton):
         return self.testZSF(fourLepton.leg1) and self.testZSF(fourLepton.leg2)
 
+
     def testFourLeptonOS(self, fourLepton):
         return self.testZOS(fourLepton.leg1) and self.testZOS(fourLepton.leg2)
 
     def testFourLeptonPtThr(self, fourLepton):
-        leading_pt = fourLepton.sortedPtLeg(0) 
-        subleading_pt = fourLepton.sortedPtLeg(1) 
+        leading_pt = fourLepton.sortedPtLeg(0).pt() 
+        subleading_pt = fourLepton.sortedPtLeg(1).pt() 
         return leading_pt>self.cfg_ana.z1_pt1  and subleading_pt>self.cfg_ana.z1_pt2
 
     def testFourLeptonZ1(self, fourLepton):
