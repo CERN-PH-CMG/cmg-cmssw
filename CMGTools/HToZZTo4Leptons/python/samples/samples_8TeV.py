@@ -195,7 +195,25 @@ data_DoubleElectronRecovered = cfg.DataComponent(
     files =getFiles('/DoubleElectron/Run2012A-23May2012-v2/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
     intLumi = 1,
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_May23ReReco_Collisions12_JSON.txt'
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_May23ReReco_Collisions12_JSON_v2.txt'
+    )
+
+
+data_DoubleMuRecovered = cfg.DataComponent(
+    name = 'data_DoubleMuRecovered',
+    files =getFiles('/DoubleMu/Run2012A-23May2012-v2/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_May23ReReco_Collisions12_JSON_v2.txt'
+    )
+
+data_MuEGRecovered = cfg.DataComponent(
+    name = 'data_MuEGRecovered',
+    files =getFiles('/MuEG/Run2012A-23May2012-v1/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_May23ReReco_Collisions12_JSON_v2.txt'
+
     )
 
 
@@ -209,11 +227,11 @@ data_MuEG = cfg.DataComponent(
 
 
           
-dataSamplesMu=[data_DoubleMu]
+dataSamplesMu=[data_DoubleMu,data_DoubleMuRecovered]
 
 dataSamplesE=[data_DoubleElectron,data_DoubleElectronRecovered]
 
-dataSamplesMuE=[data_MuEG]
+dataSamplesMuE=[data_MuEG,data_MuEGRecovered]
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 
@@ -230,14 +248,14 @@ for comp in mcSamples:
     comp.efficiency = eff2012
     
 for comp in dataSamplesMu:
-    comp.splitFactor = 500
+    comp.splitFactor = 100
     comp.fakeRates=fakeRates2012
 for comp in dataSamplesE:
     comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
 
 for comp in dataSamplesMuE:
-    comp.splitFactor = 500
+    comp.splitFactor = 100
     comp.fakeRates=fakeRates2012
 
 

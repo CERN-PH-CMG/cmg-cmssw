@@ -164,7 +164,7 @@ for comp in mcSamples:
 #Fix the UFL PU crap
 for comp in uflSamples:
     comp.isMC = True
-    comp.splitFactor = 40
+    comp.splitFactor = 50
     comp.puFileMC=dataDir+"/puProfile_Summer11.root"
     comp.puFileData=dataDir+"/puProfile_Data11.root"
     comp.efficiency = eff2011
