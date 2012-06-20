@@ -298,8 +298,8 @@ class httanalyzer( Analyzer ):
                 event.nontaucandiso.append(self.jetiso[ind])
                 #                print "adding to non tau"
                 
-        if event.ishtt==1:
-            print "taucands",len(event.taucand)
+#        if event.ishtt==1:
+#            print "taucands",len(event.taucand)
 
         if len(event.taucand)<2:
             return
@@ -310,11 +310,11 @@ class httanalyzer( Analyzer ):
 
 
         # now build Z(qq) and visible H(tautau) candidates 
-        if event.ishtt==1:
-            print "found ",len(event.taucand)," tau candidates"
-            print event.taucand
-            print "found ",len(event.nontaucand)," non tau candidates"
-            print event.nontaucand
+#        if event.ishtt==1:
+#            print "found ",len(event.taucand)," tau candidates"
+#            print event.taucand
+#            print "found ",len(event.nontaucand)," non tau candidates"
+#            print event.nontaucand
             
 #        first=True
 #        for comp in event.nontaucand:
