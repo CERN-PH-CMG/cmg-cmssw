@@ -67,7 +67,7 @@ struct DataCardInputs
 
 
 void printHelp();
-Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin,JSONWrapper::Object &Root);
+Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin,JSONWrapper::Object &Root,double minCut=0, double maxCut=9999);
 void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName);
 void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName);
 
@@ -114,6 +114,11 @@ TString DYFile ="";
 TString inFileUrl(""),jsonFile(""), histo("");
 TString postfix="";
 TString systpostfix="";
+double shapeMin = 0;
+double shapeMax = 9999;
+double shapeMinVBF = 0;
+double shapeMaxVBF = 9999;
+
 
 int indexvbf = -1;
 int indexcut   = -1, indexcutL=-1, indexcutR=-1;
@@ -126,6 +131,10 @@ void printHelp()
   printf("--in        --> input file with from plotter\n");
   printf("--json      --> json file with the sample descriptor\n");
   printf("--histo     --> name of histogram to be used\n");
+  printf("--shapeMin  --> left cut to apply on the shape histogram\n");
+  printf("--shapeMax  --> right cut to apply on the shape histogram\n");
+  printf("--shapeMinVBF  --> left cut to apply on the shape histogram for Vbf bin\n");
+  printf("--shapeMaxVBF  --> right cut to apply on the shape histogram for Vbf bin\n");
   printf("--indexvbf  --> index of selection to be used for the vbf bin (if unspecified same as --index)\n");
   printf("--index     --> index of selection to be used (Xbin in histogram to be used)\n");
   printf("--indexL    --> index of selection to be used (Xbin in histogram to be used) used for interpolation\n");
@@ -174,7 +183,6 @@ int main(int argc, char* argv[])
   for(int i=1;i<argc;i++){
     string arg(argv[i]);
     if(arg.find("--help")          !=string::npos) { printHelp(); return -1;} 
-    else if(arg.find("--shape")    !=string::npos) { shape=true; printf("shapeBased = True\n");}
     else if(arg.find("--subNRB12") !=string::npos) { subNRB2012=true; skipWW=false; printf("subNRB2012 = True\n");}
     else if(arg.find("--subNRB")   !=string::npos) { subNRB2011=true; skipWW=true; printf("subNRB2011 = True\n");}
     else if(arg.find("--subDY")    !=string::npos) { subDY=true; DYFile=argv[i+1];  i++; printf("Z+Jets will be replaced by %s\n",DYFile.Data());}
@@ -185,6 +193,10 @@ int main(int argc, char* argv[])
     else if(arg.find("--skipQQH")  !=string::npos) { skipQQH=true; printf("skipQQH = True\n");}
     else if(arg.find("--blind")    !=string::npos) { blindData=true; printf("blindData = True\n");}
     else if(arg.find("--closure")  !=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
+    else if(arg.find("--shapeMinVBF") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&shapeMinVBF); i++; printf("Min cut on shape for VBF = %f\n", shapeMinVBF);}
+    else if(arg.find("--shapeMaxVBF") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&shapeMaxVBF); i++; printf("Max cut on shape for VBF = %f\n", shapeMaxVBF);}
+    else if(arg.find("--shapeMin") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&shapeMin); i++; printf("Min cut on shape = %f\n", shapeMin);}
+    else if(arg.find("--shapeMax") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&shapeMax); i++; printf("Max cut on shape = %f\n", shapeMax);}
     else if(arg.find("--indexvbf") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexvbf); i++; printf("indexVBF = %i\n", indexvbf);}
     else if(arg.find("--indexL")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexcutL); i++; printf("indexL = %i\n", indexcutL);}
     else if(arg.find("--indexR")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexcutR); i++; printf("indexR = %i\n", indexcutR);}
@@ -201,6 +213,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--postfix")   !=string::npos && i+1<argc)  { postfix = argv[i+1]; systpostfix = argv[i+1]; i++;  printf("postfix '%s' will be used\n", postfix.Data());  }
     else if(arg.find("--systpostfix")   !=string::npos && i+1<argc)  { systpostfix = argv[i+1];  i++;  printf("systpostfix '%s' will be used\n", systpostfix.Data());  }
     else if(arg.find("--syst")     !=string::npos) { runSystematics=true; printf("syst = True\n");}
+    else if(arg.find("--shape")    !=string::npos) { shape=true; printf("shapeBased = True\n");}
   }
   if(jsonFile.IsNull() || inFileUrl.IsNull() || histo.IsNull() || indexcut == -1 || mass==-1) { printHelp(); return -1; }
   if(AnalysisBins.size()==0)AnalysisBins.push_back("");
@@ -214,7 +227,7 @@ int main(int argc, char* argv[])
 
 
 //
-Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, JSONWrapper::Object &Root)
+Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, JSONWrapper::Object &Root, double minCut, double maxCut)
 {
   Shape_t shape; shape.totalBckg=NULL;shape.data=NULL;
 
@@ -265,11 +278,23 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 	    fixExtremities(hshape,true,true);
 	    hshape->SetFillColor(color); hshape->SetLineColor(lcolor); hshape->SetMarkerColor(mcolor);
 	    hshape->SetFillStyle(fill);  hshape->SetLineWidth(lwidth); hshape->SetMarkerStyle(marker); hshape->SetLineStyle(lstyle);
-            hshape->GetYaxis()->SetTitle("Events (/25GeV)");
          }else{		
             printf("Histo %s does not exist for syst:%s\n", histoName.Data(), varName.Data());
             continue;
          }
+
+
+         //if current shape is the one to cut on, then apply the cuts
+         if(shapeName == histo){
+            for(int x=0;x<=hshape->GetXaxis()->GetNbins()+1;x++){
+               if(hshape->GetXaxis()->GetBinCenter(x)<=minCut || hshape->GetXaxis()->GetBinCenter(x)>=maxCut){hshape->SetBinContent(x,0); hshape->SetBinError(x,0);}
+            }
+            hshape->Rebin(5);
+            hshape->GetYaxis()->SetTitle("Entries (/25GeV)");
+         }
+
+
+
 	
 	 //save in structure
 	 if(isData){
@@ -504,15 +529,23 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 //
 void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName)
 {
+  std::map<TString, TH1*> CCHistos;
+
+
   TCanvas* c1 = new TCanvas("c1","c1",300*AnalysisBins.size(),300*selCh.size());
   c1->SetTopMargin(0.00); c1->SetRightMargin(0.00); c1->SetBottomMargin(0.00);  c1->SetLeftMargin(0.00);
   TPad* t1 = new TPad("t1","t1", 0.03, 0.03, 1.0, 1.00);  t1->Draw();  t1->cd();
   t1->Divide(AnalysisBins.size(), selCh.size(), 0, 0);
 
+  t1->cd(selCh.size()*AnalysisBins.size());
+  TLegend* legA  = new TLegend(0.3,0.2,0.99,0.85, "NDC");
+  t1->cd(0);
+
+
   for(size_t s=0;s<selCh.size();s++){
   for(size_t b=0; b<AnalysisBins.size(); b++){
       TVirtualPad* pad = t1->cd(1+s*AnalysisBins.size()+b);
-      pad->SetTopMargin(0.06); pad->SetRightMargin(0.04); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.04);
+      pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.06);
 
      TH1* allbkg=NULL;
      std::map<TString, TH1*> mapbkg;
@@ -527,6 +560,14 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
      for(size_t i=0; i<shape.bckg.size(); i++){
         if(shape.bckg[i]->Integral()<=1E-6) continue;
         if(mapbkg.find(shape.bckg[i]->GetTitle())!=mapbkg.end()){mapbkg[shape.bckg[i]->GetTitle()]->Add(shape.bckg[i]);}else{ mapbkg[shape.bckg[i]->GetTitle()]=(TH1*)shape.bckg[i]->Clone(shape.bckg[i]->GetTitle()); }
+
+
+//        double VAL, ERR;
+//        VAL = shape.bckg[i]->IntegralAndError(1,shape.bckg[i]->GetXaxis()->GetNbins(),ERR);
+//        if(CCHistos.find(shape.bckg[i]->GetTitle())!=CCHistos.end()){CCHistos[shape.bckg[i]->GetTitle()]->SetBinContent(1+s*AnalysisBins.size()+b)Add(shape.bckg[i]);}else{ mapbkg[shape.bckg[i]->GetTitle()]=(TH1*)shape.bckg[i]->Clone(shape.bckg[i]->GetTitle()); }
+
+
+
      }
 
      TString massStr("");if(mass>0) massStr += mass;
@@ -542,9 +583,6 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 
         if(mapsig.find(shape.signal[ip]->GetTitle())!=mapsig.end()){mapsig[shape.signal[ip]->GetTitle()]->Add(shape.signal[ip]);}else{mapsig[shape.signal[ip]->GetTitle()]=(TH1*)shape.signal[ip]->Clone(shape.signal[ip]->GetTitle());}
      }
- 
-//  TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);  t1->Draw();  t1->cd();
-  TLegend* legA  = new TLegend(0.3,0.2,0.99,0.85, "NDC");
 
   THStack *stack=0;
   TH1* mc=allbkg;
@@ -554,7 +592,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
       for(std::map<TString, TH1*>::iterator it=mapbkg.begin(); it!=mapbkg.end(); it++){
           //it->second->SetLineColor( it->second->GetFillColor());
           stack->Add(it->second,"HIST");
-          legA->AddEntry(it->second,it->second->GetTitle(),"F");
+          if(s==0 && b==0)legA->AddEntry(it->second,it->second->GetTitle(),"F");
 
           double baseRelUnc = it->second->GetBinError(0)/it->second->Integral();
           if(TString(it->second->GetTitle()).Contains("rightarrow ll (data)")){
@@ -566,9 +604,9 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
              double error = sqrt(pow(mcPlusRelUnc->GetBinError(ibin),2) + pow(err,2) + pow(val*baseRelUnc,2));
              mcPlusRelUnc->SetBinContent(ibin,value);
              mcPlusRelUnc->SetBinError(ibin,error);
-           }
-
+          }
       }
+      
 
       double mcErorMax=0;
       TGraphErrors* errors = new TGraphErrors(mcPlusRelUnc->GetXaxis()->GetNbins());
@@ -601,17 +639,17 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 
    for(std::map<TString, TH1*>::iterator it=mapsig.begin(); it!=mapsig.end(); it++){
      it->second->Draw("hist same");
-     legA->AddEntry(it->second,it->second->GetTitle(),"L");
+     if(s==0 && b==0)legA->AddEntry(it->second,it->second->GetTitle(),"L");
    }
 
 
 
   if(alldata){
       if(blindData) {
-         legA->AddEntry(alldata,"data (blinded)","P");
+         if(s==0 && b==0)legA->AddEntry(alldata,"data (blinded)","P");
       }else{
          alldata->Draw("E1 same");
-         legA->AddEntry(alldata,alldata->GetTitle(),"P");
+         if(s==0 && b==0)legA->AddEntry(alldata,alldata->GetTitle(),"P");
      }
   }
 
@@ -663,13 +701,13 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   c1->cd();
   TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
   T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
-  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV, #scale[0.5]{#int} L=1.6  fb^{-1}");
+  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV, #scale[0.5]{#int} L=3.9  fb^{-1}");
   }else{                         T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV, #scale[0.5]{#int} L=5.0  fb^{-1}");
   }T->Draw();
   c1->Update();
-  c1->SaveAs(SaveName+".png");
-  c1->SaveAs(SaveName+".pdf");
-  c1->SaveAs(SaveName+".C");
+  c1->SaveAs(SaveName+"_Shape.png");
+  c1->SaveAs(SaveName+"_Shape.pdf");
+  c1->SaveAs(SaveName+"_Shape.C");
   delete c1;
 //  if(alldata)delete alldata;
 //  if(allbkg)delete allbkg;
@@ -1018,17 +1056,17 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   const size_t nsh=sh.size();
   for(size_t i=0; i<nch; i++){
      for(size_t b=0; b<AnalysisBins.size(); b++){
-       int indexcut_ = indexcut;
-       if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf;}
+       int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax;
+       if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
         for(size_t j=0; j<nsh; j++){
-	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcut_,Root);
+	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcut_,Root,cutMin, cutMax);
              if(indexcutL>=0 && indexcutR>=0){
                 if(indexvbf>=0 && AnalysisBins[b] =="vbf"){
-                   allShapesL[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexvbf,Root);
-                   allShapesR[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexvbf,Root);
+                   allShapesL[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexvbf,Root,cutMin, cutMax);
+                   allShapesR[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexvbf,Root,cutMin, cutMax);
                 }else{
-                   allShapesL[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcutL,Root);
-                   allShapesR[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcutR,Root);
+                   allShapesL[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcutL,Root,cutMin, cutMax);
+                   allShapesR[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcutR,Root,cutMin, cutMax);
                 }
              }
         }
@@ -1296,7 +1334,10 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                      //makesure that syst+stat error is never bigger than 100%
                      //double valerr, val  = hshape->IntegralAndError(1,hshape->GetXaxis()->GetNbins(),valerr);
                      //if(sqrt(pow(valerr,2)+pow(systUncertainty,2))>val){systUncertainty = sqrt(std::max(0.0, pow(val,2) - pow(valerr,2)));}
-                     dci.systs["CMS_hzz2l2v_sys_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
+
+                     //add syst uncertainty as bin dependent or not
+//                     dci.systs["CMS_hzz2l2v_sys_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
+                     dci.systs["CMS_hzz2l2v_sys_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
                   }
                }
             }
@@ -1556,14 +1597,23 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
            double systError = val;
 
            //replace DY histogram by G+Jets data
-           int indexcut_ = indexcut;
-           if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf;}
+           int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax;
+           if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
+
            TH2* gjets2Dshape  = (TH2*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+mainHisto);
            TH1* gjets1Dshape  = gjets2Dshape->ProjectionY("tmpName",indexcut_,indexcut_);
+
+           //apply the cuts
+           for(int x=0;x<=gjets1Dshape->GetXaxis()->GetNbins()+1;x++){
+              if(gjets1Dshape->GetXaxis()->GetBinCenter(x)<=cutMin || gjets1Dshape->GetXaxis()->GetBinCenter(x)>=cutMax){gjets1Dshape->SetBinContent(x,0); gjets1Dshape->SetBinError(x,0);}
+           }
+           gjets1Dshape->Rebin(5);
+
+
            shapeChan_SI.bckg[ibckg]->SetTitle(DYProcName + " (data)");    
            for(int i=0;i<shapeChan_SI.bckg[ibckg]->GetNbinsX();i++){             
-              double val = gjets1Dshape->GetBinContent(i) / 2.0;
-              double err = gjets1Dshape->GetBinError(i) / 2.0;
+              double val = gjets1Dshape->GetBinContent(i);
+              double err = gjets1Dshape->GetBinError(i);
               if(val<0)val=0;
               double newval = rescaleFactor*val;
               double newerr = rescaleFactor*err;
