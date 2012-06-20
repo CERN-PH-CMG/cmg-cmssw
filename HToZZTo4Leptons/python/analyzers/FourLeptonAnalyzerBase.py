@@ -162,6 +162,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
         return out
 
 
+
     #Common Lepton Selection
     def testLepton(self, lepton, pt, eta,sel=None):
         if sel is not None and  not lepton.getSelection(sel):
@@ -210,7 +211,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
     def testMuonLoose(self, muon):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
-        looseID = (muon.isGlobal() or (muon.isTracker() and muon.numberOfMatches()>0 ))
+        looseID = (muon.isGlobal() or (muon.isTracker() and muon.numberOfMatches()>0))
         return looseID
 
     def testMuonCleaning(self, muon):
