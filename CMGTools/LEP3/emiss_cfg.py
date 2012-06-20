@@ -4,10 +4,12 @@ import CMGTools.RootTools.fwlite.Config as cfg
 
 eMissAna = cfg.Analyzer(
     'EMissAnalyzer',
-    ptmiss = 0.,
-    mmiss = -10000000.,
+    ptmiss = 10.,
+    mmiss = 0.,
     ctmiss = 1.0,
-    nq = 2.
+    mvis = 180.,
+    acop = 175.,
+    acol = 165.
     )
 
 
