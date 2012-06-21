@@ -36,6 +36,10 @@ class EMissTreeProducer( TreeAnalyzer ):
         var('sumtet')
         var('nunubb')
         var('wwh')
+        var('eleele')
+        var('mumu')
+        var('tautau')
+        var('alpha')
 
         jetVars('Jet1')
         jetVars('Jet2')
@@ -75,6 +79,10 @@ class EMissTreeProducer( TreeAnalyzer ):
         fill('sumtet',subevent.sumtet)
         fill('nunubb',subevent.nunubb)
         fill('wwh',subevent.wwh)
+        fill('eleele',subevent.eleele)
+        fill('mumu',subevent.mumu)
+        fill('tautau',subevent.tautau)
+        fill('alpha',subevent.alpha)
 
         fJetVars('Jet1',subevent.allJets[0])
         fJetVars('Jet2',subevent.allJets[1])
