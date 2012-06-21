@@ -87,10 +87,7 @@ class FileOps(object):
             self._castor =  castor
             self._LFN = eostools.eosToLFN(castor)
             self._castorTags()
-            try:
-                self._readNJobs()
-            except:
-                print "No jobs file found in Logger"
+            self._readNJobs()
             self._checkContiguity()
             self.printStats()
             print "File is directory on EOS"
@@ -169,19 +166,24 @@ class FileOps(object):
 
     # Check for the total jobs file and record
     def _readNJobs(self):
+        
         """Read the total number of jobs from file in the logger"""
         # Create temporary file to get logger info
         f = tempfile.NamedTemporaryFile()
         # Stage logger file to temp file and extract
-        os.system("cmsStage -f "+self.getLFN() + "/Logger.tgz "+f.name)
-        tar =tarfile.open(fileobj=f)
-        # Open the file in the logger and get the value
-        nJobsFile=tar.extractfile("Logger/logger_jobs.txt")
-        nJobs = nJobsFile.read().split(": ")[2].split("\n")[1]
-        tar.close()
+        nJobs = None
+        try:
+            os.system("cmsStage -f "+self.getLFN() + "/Logger.tgz "+f.name)
+            tar =tarfile.open(fileobj=f)
+            # Open the file in the logger and get the value
+            nJobsFile=tar.extractfile("Logger/logger_jobs.txt")
+            nJobs = int(nJobsFile.read().split(": ")[1].split("\n")[0])
+            tar.close()
+        except:
+            print "No jobs file found in logger"
         f.close()
         # Set the class variable
-        self._nJobs=nJobs
+        self._totalJobs=nJobs
 
     # Return castor directory name
     def getCastor(self):
@@ -332,9 +334,11 @@ class FileOps(object):
                     self._totalFilesGood = report['FilesGood']
                 if 'Files' in report:
                     self._filesBad = []
+                    self._fileEntries = 0
                     for i in report['Files']:
                         if report['Files'][i][0] is False:
                             self._filesBad.append(i)
+                        else:self._fileEntries += report['Files'][i][1]
                     if len(self._filesBad)>0:
                         if checkRootType(self._filesBad[0]):
                             self._filesBad.sort(key=lambda x: int(x.split("_")[-3]))
@@ -418,7 +422,7 @@ class FileOps(object):
         if self._totalFilesMissing is not None: print "Total files missing: %d" % self._totalFilesMissing
         if self._totalFilesBad is not None: print "Total files bad: %d" % self._totalFilesBad
         if self._primaryDatasetFraction is not None: print "Fraction of primary dataset used: %f" % self._primaryDatasetFraction
-        if self._primaryDatasetEntries is not None: print "Total entries in primary dataset: %d" % self._primaryDatasetEntries    
+        if self._primaryDatasetEntries is not None: print "Total entries in primary dataset: %d" % self._primaryDatasetEntries
         if self._fileEntries is not None: print "Total file entries in dataset: %d" % self._fileEntries
         if self.getDatasetSize() is not None: print "Dataset Size = %f TB" % self.getDatasetSize()
         print ""
@@ -431,15 +435,13 @@ class FileOps(object):
         """
         groupInfo = self._makeGroupInfo(group)
         top = groupInfo['top']+1
-        if self._totalJobs is not None: top = self._totalJobs - 1
+        if self._totalJobs is not None: top = self._totalJobs
+        
         ### SIMPLIFY WITH REGEXP
         if groupInfo['qFiles']>1:
             count = groupInfo['bottom']
             top = groupInfo['top']+1
             if groupInfo['bottom'] > 1: count = 1
-            top = groupInfo['top']+1
-            if self._totalJobs is not None: top = self._totalJobs - 1
-            top = groupInfo['top']+1
             # Check that all numbers are there and index every element
             if checkRootType(group[0]):
                 for i in range(count, top):
