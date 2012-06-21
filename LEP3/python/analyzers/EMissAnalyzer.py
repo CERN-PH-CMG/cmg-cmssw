@@ -51,15 +51,33 @@ class EMissAnalyzer( Analyzer ):
     def buildMiss(self, event):
 
         self.nunubb = False
+        self.eleele = False
+        self.mumu = False
+        self.tautau = False
         self.wwh = False
         self.neutrinos = []
         self.bquarks = []
+        self.electrons = []
+        self.muons = []
+        self.taus = []
         for ptc in self.mchandles['genParticles'].product():
             isNeutrino = abs(ptc.pdgId()) == 12 or abs(ptc.pdgId()) == 14 or abs(ptc.pdgId()) == 16
+            isElectron = abs(ptc.pdgId()) == 11
+            isMuon = abs(ptc.pdgId()) == 13
+            isTau = abs(ptc.pdgId()) == 15
             isbquark = abs(ptc.pdgId()) == 5
             if isNeutrino : 
                 if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
                 self.neutrinos.append(GenParticle(ptc))
+            if isElectron : 
+                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
+                self.electrons.append(GenParticle(ptc))
+            if isMuon : 
+                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
+                self.muons.append(GenParticle(ptc))
+            if isTau : 
+                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
+                self.taus.append(GenParticle(ptc))
             elif isbquark : 
                 if not(ptc.numberOfMothers()) : continue
                 if ptc.mother(0).pdgId() != 25 : continue
@@ -68,6 +86,13 @@ class EMissAnalyzer( Analyzer ):
         if len(self.neutrinos) == 2 and len(self.bquarks) == 2 :
             self.nunubb = True
             self.wwh = not(self.neutrinos[0].numberOfMothers())
+
+        if len(self.electrons) == 2 :
+            self.eleele = True
+        if len(self.muons) == 2 :
+            self.mumu = True
+        if len(self.taus) == 2 :
+            self.taus = True
 ##            for ptc in self.mchandles['genParticles'].product():
 ##                print GenParticle(ptc)
 
@@ -123,15 +148,6 @@ class EMissAnalyzer( Analyzer ):
         self.jets.sort(key=lambda a: a.btag(7), reverse = True)
 
 
-    def findPairs(self, jets):
-        out = []
-
-        for j1, j2 in itertools.combinations(jets, 2):
-            out.append( DiObject(j1, j2) )
-
-        return out
-    
- 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
@@ -160,10 +176,12 @@ class EMissAnalyzer( Analyzer ):
         event.mVis = self.eVis.M()
         event.nunubb = self.nunubb
         event.wwh = self.wwh
+        event.eleele = self.eleele
+        event.mumu = self.mumu
+        event.tautau = self.tautau
 
         event.allJets = self.jets
         event.jetPairs = self.findPairs( event.allJets )
-
 
         #for ptc in self.mchandles['genParticles'].product():
         #    print GenParticle(ptc)
@@ -207,6 +225,9 @@ class EMissAnalyzer( Analyzer ):
         self.counters.counter('EMiss').inc('mMiss > 0.')
         if self.nunubb : self.counters.counter('EMissGen').inc('mMiss > 0.')
         if self.wwh : self.counters.counter('WWHGen').inc('mMiss > 0.')
+
+        delta = self.eVis.E()*self.eVis.E() * 91.2 * 91.2 + self.eVis.p()*self.eVis.p()*(240.*240.-91.2*91.2)
+        event.alpha = (self.eVis.E()*240. - sqrt(delta)) / (self.eVis.M()*self.eVis.M())
 
         # Force the event into two jets.
         self.buildJetList( event )        
@@ -254,6 +275,15 @@ class EMissAnalyzer( Analyzer ):
         return True
  
 
+    def findPairs(self, jets):
+        out = []
+
+        for j1, j2 in itertools.combinations(jets, 2):
+            out.append( DiObject(j1, j2) )
+
+        return out
+    
+ 
  
     
 ##    def testTwoJets(self, jets) :
