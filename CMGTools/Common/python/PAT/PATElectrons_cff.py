@@ -122,5 +122,6 @@ PATElectronSequence = cms.Sequence(
     patConversions 
     )
 
-
-PATElectronSequence.insert( 0, gsfElectrons )
+if cmsswIs44X():
+    # the calibration doesn't exist yet for 52X
+    PATElectronSequence.insert( 0, gsfElectrons )
