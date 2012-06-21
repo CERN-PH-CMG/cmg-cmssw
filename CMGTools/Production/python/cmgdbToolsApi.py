@@ -317,6 +317,23 @@ class CmgdbToolsApi(CmgdbApi):
 		except TypeError:
 			pass
 	
+	# Add a Dataset file entries to a logged dataset
+	def addPrimaryDatasetEntries(self,datasetID, entries):
+		"""Update dataset_entries relating to the given datasetID in CMGDB table dataset_details, to new given value.
+			
+		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'entries' takes the number of file entries in the dataset as an int
+		Returns None
+		"""
+		try:
+			self.insertCur.execute("UPDATE cms_cmgdb.dataset_details set primary_dataset_entries='%d' WHERE dataset_id='%d'" % (int(entries), datasetID))
+			self.insertConn.commit()
+		except cx_Oracle.IntegrityError:
+			# If set doesn't exist print error message and ignore
+			print "Dataset doesn't exist"
+		except TypeError:
+			pass
+	
 	# Get dataset ID with name
 	def getDatasetIDWithName(self, datasetName):
 		"""Return the unique CMGDB Dataset ID of a dataset with a given name.
