@@ -100,15 +100,15 @@ class PublishController(object):
     	if fileOps._totalFilesGood is not None:self.savannah.appendExtra("*Total Good Files:* "+str(fileOps._totalFilesGood))
     	if fileOps._totalFilesBad is not None:self.savannah.appendExtra("*Total Bad Files:* "+str(fileOps._totalFilesBad))
     	if fileOps._primaryDatasetFraction is not None:self.savannah.appendExtra("*Primary Dataset Fraction used:* "+str(fileOps._primaryDatasetFraction))
+    	if fileOps._primaryDatasetEntries is not None:self.savannah.appendExtra("*Primary Dataset Entries:* "+str(fileOps._primaryDatasetEntries))
     	if fileOps._fileEntries is not None:self.savannah.appendExtra("*File Entries:* "+str(fileOps._fileEntries))
     	if fileOps.getDatasetSize() is not None:self.savannah.appendExtra("*Dataset Size:* "+str(fileOps.getDatasetSize())+" TB")
-    	if fileOps._validDuplicates is not None:
+    	if len(fileOps._validDuplicates) > 0:
     		validDuplicates = ["\n"]
     		for dupedFile in fileOps._validDuplicates:
     			validDuplicates.append("* " +dupedFile+": \n** "+str(fileOps._validDuplicates[dupedFile])+" events")
     		self.savannah.appendExtra({"Valid Duplicates":validDuplicates})
-    	if fileOps._primaryDatasetEntries is not None:self.savannah.appendExtra("*Primary Dataset Entries:* "+str(fileOps._primaryDatasetEntries))
-    	if fileOps._badJobs is not None:self.savannah.appendExtra({"Bad Jobs":fileOps._badJobs})
+    	if len(fileOps._badJobs) > 0:self.savannah.appendExtra({"Bad Jobs":fileOps._badJobs})
     	if len(fileOps._filesBad) > 0:
     		filesBad = []
     		for badFile in fileOps._filesBad:filesBad.append("* "+badFile)
@@ -183,6 +183,7 @@ class PublishController(object):
     		for missingFile in fileOps._allMissingFiles:self._cmgdbAPI.addMissingFile(procds['PathList'][0],cmgdbID, missingFile.split('/')[-1])
     		for badJob in fileOps._badJobs:self._cmgdbAPI.addBadJob(cmgdbID, badJob)
     		if fileOps._primaryDatasetFraction is not None:self._cmgdbAPI.addPrimaryDatasetFraction(cmgdbID, fileOps._primaryDatasetFraction)
+    		if fileOps._primaryDatasetEntries is not None:self._cmgdbAPI.addPrimaryDatasetEntries(cmgdbID, fileOps._primaryDatasetEntries)
     		if fileOps._fileEntries is not None:self._cmgdbAPI.addFileEntries(cmgdbID, fileOps._fileEntries)
     		if fileOps.getDatasetSize() is not None:self._cmgdbAPI.addDatasetSize(cmgdbID, fileOps.getDatasetSize())
     		
