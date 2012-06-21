@@ -2,7 +2,7 @@ import operator
 import itertools
 import copy
 
-from ROOT import TLorentzVector
+from ROOT import TLorentzVector, TVector3
 
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.Event import Event
@@ -14,7 +14,7 @@ from CMGTools.LEP3.analyzers.DiObject import DiObject
 from CMGTools.LEP3.analyzers.EMiss import EMiss, EVis
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
-from math import pi, sqrt, acos
+from math import pi, sqrt, acos, asin
         
 class EMissAnalyzer( Analyzer ):
 
@@ -251,6 +251,12 @@ class EMissAnalyzer( Analyzer ):
         acop /= self.jets[0].pt() * self.jets[1].pt()
         acop = acos(acop)*180./pi
 
+        vect1 = TVector3(self.jets[0].px(), self.jets[0].py(), self.jets[0].pz())
+        vect2 = TVector3(self.jets[1].px(), self.jets[1].py(), self.jets[1].pz())
+        cross = vect1.Unit().Cross(vect2.Unit())
+        cross = abs(cross.z())
+        cross = asin(cross) * 180./pi
+
         sumtet = 0.
         if len(self.jet3) == 3 :
             jp = self.findPairs( self.jet3 )
@@ -265,6 +271,7 @@ class EMissAnalyzer( Analyzer ):
         event.acol = acol
         event.acop = acop
         event.sumtet = sumtet
+        event.cross = cross
 
 #        self.counters.counter('EMiss').inc('passing')
 #        if self.nunubb : self.counters.counter('EMissGen').inc('passing')
