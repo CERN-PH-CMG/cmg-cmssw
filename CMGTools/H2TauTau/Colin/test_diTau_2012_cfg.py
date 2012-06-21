@@ -107,7 +107,7 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.run2012.diTau_June1 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.diTau_June5 import * 
 
 #########################################################################################
 
@@ -117,21 +117,23 @@ for mc in MC:
     # could handle the weights in the same way
     mc.jetScale = mc_jet_scale
     mc.jetSmear = mc_jet_smear
+    mc.puFileData = puFileData
+    mc.puFileMC = puFileMC
 
-selectedComponents = data_2012 + embedded_2012 + [DYJets, WJets, TTJets, WW, WZ, ZZ]
+selectedComponents = data_2012 + embedded_2012 + [DYJets, WJets, W3Jets, TTJets, WW, WZ, ZZ]
 #selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
 #                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145]
-selectedComponents += [Higgsgg110, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
-                       HiggsVBF115, HiggsVBF120, HiggsVBF125 ]
+selectedComponents += [ Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
+                        HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145 ]
 
 if runOnData:
     selectedComponents = data_2012
 if runOnMC:
-    selectedComponents = [DYJets, WJets, TTJets, WW, WZ, ZZ]
+    selectedComponents = [DYJets, WJets, W3Jets, TTJets, WW, WZ, ZZ]
     #selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
     #                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145]
-    selectedComponents += [Higgsgg110, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
-                           HiggsVBF115, HiggsVBF120, HiggsVBF125 ]
+    selectedComponents += [ Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
+                           HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145 ]
 if runOnEmbedded:
     selectedComponents = embedded_2012
 
@@ -167,6 +169,7 @@ DYJets.fakes = True
 DYJets.splitFactor = 50
 WJets.fakes = True
 WJets.splitFactor = 50
+W3Jets.splitFactor = 50
 TTJets.splitFactor = 50 
 WW.splitFactor = 10
 WZ.splitFactor = 10
@@ -178,11 +181,11 @@ embed_Run2012B_PromptReco_v1.splitFactor = 50
 
 test = 0
 if test==1:
-    #comp = DYJets
+    comp = DYJets
     #comp = WJets
     #comp = data_Run2012A_PromptReco_v1
     #comp = Higgsgg125
-    comp = embed_Run2012A_PromptReco_v1
+    #comp = embed_Run2012A_PromptReco_v1
     selectedComponents = [comp]
     comp.splitFactor = 10
     comp.files = comp.files[:1]

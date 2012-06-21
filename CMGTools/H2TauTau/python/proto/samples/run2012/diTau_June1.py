@@ -12,7 +12,7 @@ Higgsgg110 = cfg.MCComponent(
     name = 'Higgsgg110',
     files = [],
     xSection = 25.04*8.02e-2,
-    nGenEvents =999907,
+    nGenEvents =999907*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -20,7 +20,7 @@ Higgsgg115 = cfg.MCComponent(
     name = 'Higgsgg115',
     files = [],
     xSection = 22.96*7.65e-2,
-    nGenEvents = 0,
+    nGenEvents = 917825*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -28,7 +28,7 @@ Higgsgg120 = cfg.MCComponent(
     name = 'Higgsgg120',
     files = [],
     xSection = 21.13*7.10e-2,
-    nGenEvents = 4999561,
+    nGenEvents = 4999561*1.99183/2.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -36,7 +36,7 @@ Higgsgg125 = cfg.MCComponent(
     name = 'Higgsgg125',
     files = [],
     xSection = 19.52*6.37e-2,
-    nGenEvents = 968134,
+    nGenEvents = 968134*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -52,7 +52,7 @@ Higgsgg135 = cfg.MCComponent(
     name = 'Higgsgg135',
     files = [],
     xSection = 16.79*4.52e-2,
-    nGenEvents = 860729,
+    nGenEvents = 860729*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -60,7 +60,7 @@ Higgsgg140 = cfg.MCComponent(
     name = 'Higgsgg140',
     files = [],
     xSection = 15.63*3.54e-2,
-    nGenEvents = 999932,
+    nGenEvents = 999932*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -84,7 +84,7 @@ HiggsVBF115 = cfg.MCComponent(
     name = 'HiggsVBF115',
     files = [],
     xSection = 1.709*7.65e-2, 
-    nGenEvents = 998870,
+    nGenEvents = 998870*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -92,7 +92,7 @@ HiggsVBF120 = cfg.MCComponent(
     name = 'HiggsVBF120',
     files = [],
     xSection = 1.632*7.10e-2, 
-    nGenEvents = 4798759,
+    nGenEvents = 4798759*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -100,7 +100,7 @@ HiggsVBF125 = cfg.MCComponent(
     name = 'HiggsVBF125',
     files = [],
     xSection = 1.559*6.37e-2, 
-    nGenEvents = 998836,
+    nGenEvents = 998836*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -108,7 +108,7 @@ HiggsVBF130 = cfg.MCComponent(
     name = 'HiggsVBF130',
     files = [],
     xSection = 1.490*5.48e-2, 
-    nGenEvents = 0,
+    nGenEvents = 998790*0.99190,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -116,7 +116,7 @@ HiggsVBF135 = cfg.MCComponent(
     name = 'HiggsVBF135',
     files = [],
     xSection = 1.425*4.52e-2, 
-    nGenEvents = 0,
+    nGenEvents = 998817*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -124,7 +124,7 @@ HiggsVBF140 = cfg.MCComponent(
     name = 'HiggsVBF140',
     files = [],
     xSection = 1.365*3.54e-2, 
-    nGenEvents = 0,
+    nGenEvents = 998894*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -132,7 +132,7 @@ HiggsVBF145 = cfg.MCComponent(
     name = 'HiggsVBF145',
     files = [],
     xSection = 1.306*2.61e-2, 
-    nGenEvents = 0,
+    nGenEvents = 998883*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -140,13 +140,13 @@ HiggsVBF145 = cfg.MCComponent(
 
 mc_higgs_gg = [
     #Higgsgg110,
-    #Higgsgg115,
-    #Higgsgg120,
+    Higgsgg115,
+    Higgsgg120,
     Higgsgg125,
-    #Higgsgg130,
-    #Higgsgg135,
-    #Higgsgg140,
-    #Higgsgg145,
+    Higgsgg130,
+    Higgsgg135,
+    Higgsgg140,
+    Higgsgg145,
     ]
 
 #pattern = re.compile('Higgs(\D+)(\d+)')
@@ -159,13 +159,13 @@ mc_higgs_gg = [
 
 mc_higgs_vbf = [
     #HiggsVBF110,
-    #HiggsVBF115,
-    #HiggsVBF120,
+    HiggsVBF115,
+    HiggsVBF120,
     HiggsVBF125,
-    #HiggsVBF130,
-    #HiggsVBF135,
-    #HiggsVBF140,
-    #HiggsVBF145,
+    HiggsVBF130,
+    HiggsVBF135,
+    HiggsVBF140,
+    HiggsVBF145,
     ]
 
 #pattern = re.compile('Higgs(\D+)(\d+)')
@@ -194,7 +194,8 @@ data_Run2012A_PromptReco_v1.files = getFiles('/Tau/Run2012A-PromptReco-v1/RECO/P
 
 data_Run2012B_PromptReco_v1.files = getFiles('/Tau/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
                                     getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
-                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
+                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195947/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 # Embedded samples --------------------------------------------------------------------
 
@@ -218,8 +219,16 @@ DYJets.nGenEvents = 30461028*0.9926
 WJets.files = getFiles('/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 WJets.nGenEvents = 18393090*0.99689
 
+W3Jets = cfg.MCComponent(
+    name = 'W3Jets',
+    files = getFiles('/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12-PU_S7_START52_V9-v2/AODSIM/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    xSection = 304.0,
+    nGenEvents = 14725074*1.98661/2.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 TTJets.files = getFiles('/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-TTJets.nGenEvents = 6736135
+TTJets.nGenEvents = 6736135*1.0
 
 WW = cfg.MCComponent(
     name = 'WW',
@@ -256,8 +265,8 @@ ZZ.nGenEvents = 9799908
 
 # Higgs Summer11 ----------------------------------------------------------------------------
 
-Higgsgg110.files = getFiles('/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#Higgsgg115.files = getFiles('/GluGluToHToTauTau_M-115_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+#Higgsgg110.files = getFiles('/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg115.files = getFiles('/GluGluToHToTauTau_M-115_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 Higgsgg120.files = getFiles('/GluGluToHToTauTau_M-120_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 Higgsgg125.files = getFiles('/GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 Higgsgg130.files = getFiles('/GluGluToHToTauTau_M-130_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
@@ -268,10 +277,10 @@ Higgsgg145.files = getFiles('/GluGluToHToTauTau_M-145_8TeV-powheg-pythia6/Summer
 HiggsVBF115.files = getFiles('/VBF_HToTauTau_M-115_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF120.files = getFiles('/VBF_HToTauTau_M-120_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF130.files = getFiles('/VBF_HToTauTau_M-130_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF135.files = getFiles('/VBF_HToTauTau_M-135_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF140.files = getFiles('/VBF_HToTauTau_M-140_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF145.files = getFiles('/VBF_HToTauTau_M-145_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF130.files = getFiles('/VBF_HToTauTau_M-130_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF135.files = getFiles('/VBF_HToTauTau_M-135_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF140.files = getFiles('/VBF_HToTauTau_M-140_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF145.files = getFiles('/VBF_HToTauTau_M-145_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 
 mc_spring12 = copy.copy( mc_ewk )
