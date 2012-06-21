@@ -14,6 +14,7 @@ from CMGTools.LEP3.analyzers.DiObject import DiObject
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
 from math import pi, sqrt, acos
+from sets import Set
         
 class httanalyzer( Analyzer ):
 
@@ -228,10 +229,11 @@ class httanalyzer( Analyzer ):
         self.taugenjet=[]
         self.taucos=[]
         self.tauiso=[]
+        self.taumatchingjetindex=[]
 
-        self.nontaugenjet=self.jets
-        self.nontaugenjetiso=self.jetiso
-        
+        self.nontaugenjet = copy.copy(self.jets)
+        self.nontaugenjetiso = copy.copy(self.jetiso)
+       
         if event.ishtt==1:
 #            print "probing event",eventNumber
             # loop over jets and find closest gen tau
@@ -251,8 +253,9 @@ class httanalyzer( Analyzer ):
                     if cosmax!=-2:        
                         self.taugenjet.append(taucand)
                         self.tauiso.append(iso)
-                        self.nontaugenjet.pop(tauindex)
-                        self.nontaugenjetiso.pop(tauindex)
+                        #self.nontaugenjet.pop(tauindex)
+                        #self.nontaugenjetiso.pop(tauindex)
+                        self.taumatchingjetindex.append(tauindex)
                     else:
                         self.taugenjet.append(thistau) # just to fill it up
                     self.taucos.append(cosmax)
@@ -265,6 +268,9 @@ class httanalyzer( Analyzer ):
                 event.tau2genjet = self.taugenjet[1]
                 event.tau2cosjet = self.taucos[1]
                 event.tau2iso = self.tauiso[1]
+                event.tau1matchingjetindex=self.taumatchingjetindex[0]
+                event.tau2matchingjetindex=self.taumatchingjetindex[1]
+
 
         self.nontaugenjet.sort(key=lambda a: a.energy(), reverse = True)
         event.nontaugenjet = self.nontaugenjet
@@ -274,6 +280,7 @@ class httanalyzer( Analyzer ):
         
         # start here the real selection
         event.step=0
+        event.matchedRecGenDistances = []
         # first look for at least four jets and two of them isolated and low #tracks
         if event.njets<4:
             return
@@ -307,6 +314,16 @@ class httanalyzer( Analyzer ):
 
         if event.ishtt==1 and event.isHZqq==1:
             self.counters.counter('h_gen').inc('Z->qq and h->tt selected')
+            #check the closest gen tau
+            self.matched=[]
+            self.matcheddistance=[]
+            for taucand in event.taucand:
+                    cosmax=-2
+                    for gentau in self.tau:
+                        thiscos=self.cosdelta(taucand,gentau)
+                        if thiscos>cosmax:
+                            cosmax=thiscos
+                    event.matchedRecGenDistances.append(cosmax)     
 
 
         # now build Z(qq) and visible H(tautau) candidates 

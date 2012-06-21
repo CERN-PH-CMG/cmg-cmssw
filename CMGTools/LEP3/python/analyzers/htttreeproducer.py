@@ -56,6 +56,13 @@ class htttreeproducer( TreeAnalyzer ):
         var('t2iso')
         var('t2cosjet')
         var('njets')
+        var('genRecDistance1')
+        var('genRecDistance2')
+        var('genRecDistance3')
+        var('genRecDistance4')
+        var('tau1matchingjetindex')
+        var('tau2matchingjetindex')
+
 #       var('wwMin')
 #       var('zzMin')
 #       var('deltaZ')
@@ -133,8 +140,19 @@ class htttreeproducer( TreeAnalyzer ):
                 fJetVars( 't2genjet',subevent.tau2genjet )
                 fill( 't1cosjet',subevent.tau1cosjet)
                 fill( 't2cosjet',subevent.tau2cosjet)
+                fill( 'tau1matchingjetindex',subevent.tau1matchingjetindex)
+                fill( 'tau2matchingjetindex',subevent.tau2matchingjetindex)
                 fill( 't1iso',subevent.tau1iso)
                 fill( 't2iso',subevent.tau2iso)
+            if subevent.isHZqq==1:
+              if (len(subevent.matchedRecGenDistances)>0):
+                fill( 'genRecDistance1', subevent.matchedRecGenDistances[0] )   
+              if (len(subevent.matchedRecGenDistances)>1):
+                fill( 'genRecDistance2', subevent.matchedRecGenDistances[1] )  
+              if (len(subevent.matchedRecGenDistances)>2):
+                fill( 'genRecDistance3', subevent.matchedRecGenDistances[2] )   
+              if (len(subevent.matchedRecGenDistances)>3):
+                fill( 'genRecDistance4', subevent.matchedRecGenDistances[3] )   
 
         fill('njets',subevent.njets)
         for n_j in range(0,4):
