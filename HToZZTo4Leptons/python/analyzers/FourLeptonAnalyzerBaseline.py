@@ -189,7 +189,7 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         #calculate mela and vbf
         for fl in event.fourLeptonsFakeRateApp:
             fl.mela=self.mela.calculate(fl)
-            self.calculateVBF(fl,event.selectedJets)
+            self.calculateJets(fl,event.selectedJets)
 
         if passed:
             event.higgsCandLoose = cutFlow.obj1[0]
@@ -223,11 +223,19 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         #Z2 Mass Tight Cut
         passed=cutFlow.applyCut(lambda x: x.leg2.mass()>12.,'4l Tight Mass2',1,'fourLeptonsTightZ2')
 
-           
-
-
+        event.otherLeptons=[]
+        event.otherTightLeptons=[]
         if passed:
             event.higgsCand = cutFlow.obj1[0]
+            event.otherLeptons=copy.copy(event.cleanLeptons)
+            event.otherLeptons.remove(event.higgsCand.leg1.leg1)
+            event.otherLeptons.remove(event.higgsCand.leg1.leg2)
+            event.otherLeptons.remove(event.higgsCand.leg2.leg1)
+            event.otherLeptons.remove(event.higgsCand.leg2.leg2)
+            event.otherLeptons = filter(lambda x:x.pt()>10,event.otherLeptons)
+            event.otherTightLeptons = filter(self.testLeptonTight1,event.otherLeptons)
+            metV = TLorentzVector(event.met.px(),event.met.py(),event.met.pz(),event.met.energy())
+            event.recoil = (-metV-event.higgsCand).Pt()
 
         #ZZ phase smace
         passed=cutFlow.applyCut(self.testFourLeptonMass,'4l H phase space',1,'fourLeptonsHPhaseSpace')
