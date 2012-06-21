@@ -130,8 +130,9 @@ process.p += process.postPathCounter
 ## Setup electron energy corrections
 ########################################################
 
-from CMGTools.Common.Tools.setupGsfElectronCalibration import setupGsfElectronCalibration
-setupGsfElectronCalibration( process, runOnMC )
+if cmsswIs44X():
+    from CMGTools.Common.Tools.setupGsfElectronCalibration import setupGsfElectronCalibration
+    setupGsfElectronCalibration( process, runOnMC )
 
 
 ########################################################
