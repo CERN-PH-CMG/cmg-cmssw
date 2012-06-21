@@ -10,6 +10,7 @@ class DiObject ( TLorentzVector ):
         lv2 = TLorentzVector( leg2.px(), leg2.py(), leg2.pz(), leg2.energy() )
         lv1 += lv2 
         super( DiObject, self).__init__( lv1 )
+        self.p4_ = lv1
         
         c1 = ( leg1.px()*leg2.px() + \
                leg1.py()*leg2.py() + \
@@ -53,6 +54,7 @@ class DiObject ( TLorentzVector ):
 
     def p4(self):
         return self
+    #return TLorentzVector(self.px(), self.py(), self.pz(), self.e())
 
     def angle(self):
         return self.angle_
