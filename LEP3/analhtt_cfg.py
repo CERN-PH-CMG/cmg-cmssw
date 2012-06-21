@@ -16,7 +16,16 @@ import CMGTools.RootTools.fwlite.Config as cfg
 #    z_mass = (80.,110.),     # The Z candidate jet pair should have a mass closer to the Z mass than 100 GeV
 #    )
 
-httAna = cfg.Analyzer('httanalyzer')
+httAna = cfg.Analyzer('httanalyzer',
+  npfj = (2,3),       # at least 8 PF particle in 3 of the 4 jets
+  ntkj = (2,1),
+  minM = 0.5,
+  mVis = 180.,
+  chi2 = 1000.,
+  minE = 10.,
+  h_mass = 105.,
+  z_mass = (80.,110.),
+)
 
 def createTreeProducer( ana ):
     tp = cfg.Analyzer( '_'.join( ['htttreeproducer','httanalyzer'] ),

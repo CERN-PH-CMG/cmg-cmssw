@@ -25,7 +25,14 @@ class htttreeproducer( TreeAnalyzer ):
             var('{pName}Ntrk'.format(pName=pName))
             var('{pName}Photon'.format(pName=pName))
             var('{pName}Electron'.format(pName=pName))
-            
+        
+        def particleVars( pName ):
+            var('{pName}Mass'.format(pName=pName))
+            var('{pName}Pt'.format(pName=pName))
+            var('{pName}Energy'.format(pName=pName))
+            var('{pName}Eta'.format(pName=pName))
+            var('{pName}Phi'.format(pName=pName))
+        
             
         genparticleVars('H')
         genparticleVars('Z')
@@ -33,6 +40,9 @@ class htttreeproducer( TreeAnalyzer ):
         genparticleVars('t2')
         jetVars('t1genjet')
         jetVars('t2genjet')
+
+        particleVars('recH')
+        particleVars('recZ')
 
         jetVars('nontgenjet1')
         jetVars('nontgenjet2')
@@ -98,6 +108,13 @@ class htttreeproducer( TreeAnalyzer ):
             fill('{pName}Photon'.format(pName=pName), particle.component(4).energy() )
             fill('{pName}Eta'.format(pName=pName), particle.eta() )
 #
+        def fParticleVars( pName, particle ):
+            fill('{pName}Mass'.format(pName=pName), particle.mass() )
+            fill('{pName}Pt'.format(pName=pName), particle.pt() )
+            fill('{pName}Energy'.format(pName=pName), particle.energy() )
+            fill('{pName}Eta'.format(pName=pName), particle.eta() )
+            fill('{pName}Phi'.format(pName=pName), particle.phi() )
+
         def fgenParticleVars( pName, particle ):
             fill('g_{pName}Mass'.format(pName=pName), particle.mass() )
             fill('g_{pName}Pt'.format(pName=pName), particle.pt() )
@@ -152,7 +169,10 @@ class htttreeproducer( TreeAnalyzer ):
               if (len(subevent.matchedRecGenDistances)>2):
                 fill( 'genRecDistance3', subevent.matchedRecGenDistances[2] )   
               if (len(subevent.matchedRecGenDistances)>3):
-                fill( 'genRecDistance4', subevent.matchedRecGenDistances[3] )   
+                fill( 'genRecDistance4', subevent.matchedRecGenDistances[3] )  
+              if len(subevent.hz):
+                fParticleVars('recH', subevent.hz[0])
+                fParticleVars('recZ', subevent.hz[1])
 
         fill('njets',subevent.njets)
         for n_j in range(0,4):
