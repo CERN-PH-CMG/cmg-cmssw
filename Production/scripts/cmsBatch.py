@@ -342,6 +342,7 @@ if doCVSTag==False:
 
 log.tagPackage=doCVSTag
 log.logCMSSW()
+log.logJobs(nJobs)
 #COLIN not so elegant... but tar is behaving in a strange way.
 log.addFile( oldPwd + '/' + cfgFileName )
 
