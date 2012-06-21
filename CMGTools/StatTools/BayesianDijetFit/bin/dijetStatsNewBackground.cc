@@ -271,10 +271,12 @@ int main(int argc, char* argv[])
   }
 
   if (iResonance > 4000 && iResonance < 5000)  {
-    DATASETFN="../data/dijet_mass_fat_2_4pbm1_outputMass4june.txt";
-    MININVMASS = 944.;
-    MAXINVMASS = 4509.;
-    LUMI = 2400.;
+    DATASETFN="../data/dijet_mass_fat_3949pbm1_fatMass_190456_195947.txt";
+    MININVMASS = 890.;
+    MAXINVMASS = 4686.;
+    LUMI = 3950.;
+    LUMIERROR=0.050; // relative error on luminosity
+    JESERROR=0.0125;   // relative error on JES
   }
 
 
@@ -298,53 +300,61 @@ int main(int argc, char* argv[])
   // background
   int number_of_parameters = 4;
 
-    if (statlevel==63)
-    {
-        // swap fita and fitb
-  if (iResonance > 2010 && iResonance < 2020)  {
-    number_of_parameters = 3;
-    ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass/7000.0),p1)/pow(invmass/7000,p2)',p1[5.1,0,100],p2[5.72,-100,100], p3[-0.0547,-1,1],invmass)");
-    ws->factory("EXPR::backgroundb('pow(1.0-invmass/7000.0,pb1)/pow(invmass/7000.0,pb2+pb3*0)', pb1[12,-30,30], pb2[2,-20,20], pb3[0,0,0],invmass)");
-    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc2[5.4,-100,100],pc3[0,0,0],pc1[0,0,0],invmass)");
-//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],pc3[0,0,0],invmass)");
-  } else {
-    number_of_parameters = 4;
-ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass/7000.0),p1)/pow(invmass/7000,p2)',p1[8.41,0,100],p2[5.20,-100,100], p3[-0.017,-1,1],invmass)");
-    ws->factory("EXPR::backgroundb('pow(1.0-invmass/7000.0,pb1)/pow(invmass/7000.0,pb2+pb3*log(invmass/7000.0))', pb1[7.460,-30,30], pb2[5.882,-20,20], pb3[0.106,-5,5],invmass)");
-        ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],pc3[0,0,0],invmass)");
-  }
-    } else
-    if ((statlevel==64)||(LESS_PARAMETERS))
-  {
-        // swap fita and fitc
-  if (iResonance > 2010 && iResonance < 2020)  {
-    number_of_parameters = 2;
-    ws->factory("EXPR::background('pow(1-invmass/7000.0,0)/pow(invmass/7000,p2)',p2[5.4,-100,100],p3[0,0,0],p1[0,0,0],invmass)");
-//    ws->factory("EXPR::background('pow(1-invmass/7000.0,p1)/pow(invmass/7000,0)',p1[7.8,-100,100],p2[0,0,0],p3[0,0,0],invmass)");
-    ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
-    ws->factory("EXPR::backgroundc('pow(1.0-invmass/7000.0,pc1)/pow(invmass/7000.0,pc2+pc3*0)', pc1[12,-30,30], pc2[2,-20,20], pc3[0,0,0],invmass)");
-  } else {
-    number_of_parameters = 3;
-    ws->factory("EXPR::background('pow(1-invmass/7000.0,p1)/pow(invmass/7000,p2)',p1[7.8,-100,100],p2[5.4,-100,100],p3[0,0,0],invmass)");
-    ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
-    ws->factory("EXPR::backgroundc('pow(1.0-invmass/7000.0,pc1)/pow(invmass/7000.0,pc2+pc3*log(invmass/7000.0))', pc1[7.460,-30,30], pc2[5.882,-20,20], pc3[0.106,-5,5],invmass)");
-  }
-    } else
-    {
-  if (iResonance > 2010 && iResonance < 2020)  {
-    number_of_parameters = 3;
-    ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
-    ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
-    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc2[5.4,-100,100],pc3[0,0,0],pc1[0,0,0],invmass)");
-//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],pc3[0,0,0],invmass)");
-  } else {
-    number_of_parameters = 4;
-    ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
-    ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
-    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],pc3[0,0,0],invmass)");
-  }
+  if (statlevel==63){
+    // swap fita and fitb
+    if (iResonance > 2010 && iResonance < 2020)  {
+      number_of_parameters = 3;
+      ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass/7000.0),p1)/pow(invmass/7000,p2)',p1[5.1,0,100],p2[5.72,-100,100], p3[-0.0547,-1,1],invmass)");
+      ws->factory("EXPR::backgroundb('pow(1.0-invmass/7000.0,pb1)/pow(invmass/7000.0,pb2+pb3*0)', pb1[12,-30,30], pb2[2,-20,20], pb3[0,0,0],invmass)");
+      ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc2[5.4,-100,100],pc3[0,0,0],pc1[0,0,0],invmass)");
+      //    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],pc3[0,0,0],invmass)");
+    } else {
+      number_of_parameters = 4;
+      ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass/7000.0),p1)/pow(invmass/7000,p2)',p1[8.41,0,100],p2[5.20,-100,100], p3[-0.017,-1,1],invmass)");
+      ws->factory("EXPR::backgroundb('pow(1.0-invmass/7000.0,pb1)/pow(invmass/7000.0,pb2+pb3*log(invmass/7000.0))', pb1[7.460,-30,30], pb2[5.882,-20,20], pb3[0.106,-5,5],invmass)");
+      ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],pc3[0,0,0],invmass)");
     }
+  } else {
+    if ((statlevel==64)||(LESS_PARAMETERS)){
+      // swap fita and fitc
+      if (iResonance > 2010 && iResonance < 2020)  {
+	number_of_parameters = 2;
+	ws->factory("EXPR::background('pow(1-invmass/7000.0,0)/pow(invmass/7000,p2)',p2[5.4,-100,100],p3[0,0,0],p1[0,0,0],invmass)");
+	//    ws->factory("EXPR::background('pow(1-invmass/7000.0,p1)/pow(invmass/7000,0)',p1[7.8,-100,100],p2[0,0,0],p3[0,0,0],invmass)");
+	ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
+	ws->factory("EXPR::backgroundc('pow(1.0-invmass/7000.0,pc1)/pow(invmass/7000.0,pc2+pc3*0)', pc1[12,-30,30], pc2[2,-20,20], pc3[0,0,0],invmass)");
+      } else {
+	number_of_parameters = 3;
+	ws->factory("EXPR::background('pow(1-invmass/7000.0,p1)/pow(invmass/7000,p2)',p1[7.8,-100,100],p2[5.4,-100,100],p3[0,0,0],invmass)");
+	ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
+	ws->factory("EXPR::backgroundc('pow(1.0-invmass/7000.0,pc1)/pow(invmass/7000.0,pc2+pc3*log(invmass/7000.0))', pc1[7.460,-30,30], pc2[5.882,-20,20], pc3[0.106,-5,5],invmass)");
+      }
+    } else {
+      if (iResonance > 2010 && iResonance < 2020)  {
+	number_of_parameters = 3;
+	ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*0)', p1[12,-30,30], p2[2,-20,20], p3[0,0,0],invmass)");
+	ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[5.1,0,100],pb2[5.72,-100,100], pb3[-0.0547,-1,1],invmass)");
+	ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,0)/pow(invmass/7000,pc2)',pc2[5.4,-100,100],pc3[0,0,0],pc1[0,0,0],invmass)");
+	//    ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,0)',pc1[7.8,-100,100],pc2[0,0,0],pc3[0,0,0],invmass)");
+      } else {
+	number_of_parameters = 4;
+	if (iResonance > 4010 && iResonance < 4020)  {
+	  
+	  ws->factory("EXPR::background('pow(1.0-invmass/8000.0,p1)/pow(invmass/8000.0,p2+p3*log(invmass/8000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
+	  ws->factory("EXPR::backgroundb('pow(1-invmass/8000.0+pb3*(invmass/8000.0)*(invmass/8000.0),pb1)/pow(invmass/8000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
+	  ws->factory("EXPR::backgroundc('pow(1-invmass/8000.0,pc1)/pow(invmass/8000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],pc3[0,0,0],invmass)");
+	} else {
+	  
+	  ws->factory("EXPR::background('pow(1.0-invmass/7000.0,p1)/pow(invmass/7000.0,p2+p3*log(invmass/7000.0))', p1[7.460,-30,30], p2[5.882,-20,20], p3[0.106,-5,5],invmass)");
+	  ws->factory("EXPR::backgroundb('pow(1-invmass/7000.0+pb3*(invmass/7000.0)*(invmass/7000.0),pb1)/pow(invmass/7000,pb2)',pb1[8.41,0,100],pb2[5.20,-100,100], pb3[-0.017,-1,1],invmass)");
+	  ws->factory("EXPR::backgroundc('pow(1-invmass/7000.0,pc1)/pow(invmass/7000,pc2)',pc1[7.8,-100,100],pc2[5.4,-100,100],pc3[0,0,0],invmass)");
+	  
+	}
 
+
+      }
+    }
+  }
   // data
   int ndatabins=(MAXINVMASS-MININVMASS);
   RooDataHist* binnedData=makeBinnedData(DATASETFN, "binnedData", invmass, ndatabins, MININVMASS, MAXINVMASS);
@@ -457,12 +467,12 @@ ws->factory("EXPR::background('pow(1-invmass/7000.0+p3*(invmass/7000.0)*(invmass
   double pdfIntegral=ws->var("nbkg")->getVal()*calcPDF1DIntegral(ws->pdf("modela"), invmass, signalMass*0.9, signalMass*1.1);
   double maxXS = sqrt(pdfIntegral)*5/ws->var("lumi")->getVal();
   RooRealVar* xs=ws->var("xs");
-  if (signalMass==1000) maxXS = maxXS*2.0;
-  if (signalMass>1099 && signalMass<1401) maxXS = maxXS*2.1;
-  if (signalMass==1500) maxXS = maxXS*2.0;
-  if (signalMass>1599 && signalMass<1601) maxXS = maxXS*2.5;
-  if (signalMass>1699 && signalMass<2201) maxXS = maxXS*3.2;
-  if (signalMass>2299 && signalMass<3401) maxXS = maxXS*4.0;
+  if (signalMass<1001) maxXS = maxXS*2.0*3.0;
+  if (signalMass>1099 && signalMass<1401) maxXS = maxXS*2.1*1.5;
+  if (signalMass==1500) maxXS = maxXS*2.0*1.5;
+  if (signalMass>1599 && signalMass<1601) maxXS = maxXS*2.5*1.3;
+  if (signalMass>1699 && signalMass<2201) maxXS = maxXS*3.2*1.3;
+  if (signalMass>2299 && signalMass<3401) maxXS = maxXS*4.0*1.3;
   if (signalMass>3499 && signalMass<3501) maxXS = maxXS*4.2;
   if (signalMass>3599 && signalMass<3701) maxXS = maxXS*4.0;
   if (signalMass>3799 && signalMass<3801) maxXS = maxXS*4.8;
