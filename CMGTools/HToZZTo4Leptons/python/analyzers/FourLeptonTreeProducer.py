@@ -57,6 +57,10 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.var("vertexWeight")
         self.var('eventWeight')
 
+        self.var('otherLeptons',int)
+        self.var('otherTightLeptons',int)
+        self.var('recoil')
+
         
     def process(self, iEvent, event):
         self.reset()
@@ -64,10 +68,17 @@ class FourLeptonTreeProducer( TreeProducer ):
         #get the analyzer event
         subevent = getattr( event, self.cfg_ana.anaName )
 
+        if hasattr(subevent,'recoil'):
+            self.fill('recoil',subevent.recoil)
+
         #get the vertex analyzer event and fill the vertices
         self.fill('vertices',len(event.vertices))
         self.fill('vertexWeight',(event.vertexWeight))
         self.fill('eventWeight',(event.eventWeight))
+
+
+        self.fill('otherLeptons',len(subevent.otherLeptons))
+        self.fill('otherTightLeptons',len(subevent.otherTightLeptons))
 
         #Fill run,lumi,event
         self.fillEventInfo(iEvent,subevent)
@@ -77,7 +88,7 @@ class FourLeptonTreeProducer( TreeProducer ):
         
         if hasattr( subevent, 'higgsCand' ):
             self.fill('HExists',1)
-
+            
             self.fillHiggs("H",subevent.higgsCand)
             self.fillBoson("H_Z1",subevent.higgsCand.leg1)
             self.fillBoson("H_Z2",subevent.higgsCand.leg2)

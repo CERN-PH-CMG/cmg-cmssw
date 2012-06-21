@@ -161,6 +161,9 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_VBFDEta'.format(pName=pName))
         self.var('{pName}_VBFDPhi'.format(pName=pName))
         self.var('{pName}_VBFMass'.format(pName=pName))
+        self.var('{pName}_NJets'.format(pName=pName),int)
+        self.var('{pName}_NBJets'.format(pName=pName),int)
+        self.var('{pName}_NBJetsTight'.format(pName=pName),int)
 
 
     def fillBoson(self, pName,particle ):
@@ -188,10 +191,13 @@ class TreeProducer( Analyzer ):
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
         if hasattr(particle,'mela'):
             self.fill('{pName}_MELA'.format(pName=pName), particle.mela )
-        if hasattr(particle,'vbf'):
-            self.fill('{pName}_VBFDEta'.format(pName=pName), particle.vbf['dEta'] )
-            self.fill('{pName}_VBFDPhi'.format(pName=pName), particle.vbf['dPhi'] )
-            self.fill('{pName}_VBFMass'.format(pName=pName), particle.vbf['Mjj'] )
+        if hasattr(particle,'jets'):
+            self.fill('{pName}_VBFDEta'.format(pName=pName), particle.jets['dEta'] )
+            self.fill('{pName}_VBFDPhi'.format(pName=pName), particle.jets['dPhi'] )
+            self.fill('{pName}_VBFMass'.format(pName=pName), particle.jets['Mjj'] )
+            self.fill('{pName}_NJets'.format(pName=pName), particle.jets['nJets'] )
+            self.fill('{pName}_NBJets'.format(pName=pName), particle.jets['nBJets'] )
+            self.fill('{pName}_NBJetsTight'.format(pName=pName), particle.jets['nBJetsTight'] )
             
 
 
