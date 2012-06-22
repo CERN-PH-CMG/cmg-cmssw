@@ -187,17 +187,8 @@ class EMissAnalyzer( Analyzer ):
                     ijet = i
             if ijet >= 0 and drmin < 0.01 :
                 self.jets[ijet].setP4(lept.p4())
-
-        if self.eleele or self.mumu :
-            pj = TLorentzVector(0.,0.,0.,0.)
-            for jet in self.jets :
-                p4 = TLorentzVector(jet.px(),jet.py(),jet.pz(),jet.energy())
-                pj = pj + p4
-            pl = TLorentzVector(0.,0.,0.,0.)
-            for lept in self.leptons :
-                p4 = TLorentzVector(lept.px(),lept.py(),lept.pz(),lept.energy())
-                pl = pl + p4
-
+                self.jets[ijet].setPdgId(lept.pdgId())
+                
 
     def buildJetList(self, event):
 
@@ -233,12 +224,6 @@ class EMissAnalyzer( Analyzer ):
                 self.jets.append(jet)
                 
         self.jets.sort(key=lambda a: a.btag(7), reverse = True)
-        if self.eleele or self.mumu : 
-            pj = TLorentzVector(0.,0.,0.,0.)
-            for jet in self.jets :
-                #print jet
-                p4 = TLorentzVector(jet.px(),jet.py(),jet.pz(),jet.energy())
-                pj = pj + p4
 
 
     def process(self, iEvent, event):
