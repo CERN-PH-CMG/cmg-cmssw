@@ -29,6 +29,8 @@ class DataMCPlot(object):
         self.nostack = None
         self.blindminx = None
         self.blindmaxx = None
+        self.groups = {}
+        self.axisWasSet = False
 
     def Blind(self, minx, maxx, blindStack):
         self.blindminx = minx
@@ -48,7 +50,45 @@ class DataMCPlot(object):
         self.histosDict[name] = tmp
         # tmp.AddEntry( self.legend, legendLine)
 
+
+    def Group(self, groupName, namesToGroup, layer=None, style=None):
+        '''Group all histos with names in namesToGroup into a single
+        histo with name groupName. All histogram properties are taken
+        from the first histogram in namesToGroup.
+        See UnGroup as well
+        '''
+        groupHist = None
+        realNames = []
+        for name in namesToGroup:
+            hist = self.histosDict.get(name, None)
+            if hist is None:
+                print 'warning, no histo with name', name
+                continue
+            if groupHist is None:
+                groupHist = hist.Clone(groupName)
+                self.histos.append( groupHist )
+                self.histosDict[groupName] = groupHist
+            else:
+                groupHist.Add(hist)
+            realNames.append( hist.realName )
+            hist.on = False
+        self.groups[groupName] = namesToGroup
+        groupHist.realName = ','.join(realNames)
+
+
+    def UnGroup(self, groupName):
+        '''Ungroup groupName, recover the histograms in the group'''
+        group = self.groups.get(groupName, None)
+        if group is None:
+            print groupName, 'is not a group in this plot.'
+            return
+        for name in group:
+            self.histosDict[name].on = True
+        self.histosDict[groupName].on = False
+                
+
     def Replace(self, name, pyhist):
+        '''Not very elegant... should have a clone function in Histogram...'''
         oldh = self.histosDict.get(name, None)
         pythist = copy.deepcopy(pyhist)
         pyhist.layer = oldh.layer
@@ -163,13 +203,13 @@ class DataMCPlot(object):
         denom = None
         # import pdb; pdb.set_trace()
         histForRatios = []
+        denom = None
         for hist in self._SortedHistograms():
-            # if denom == None:
-            #     denom = hist
-            #    continue
+            if hist.stack is False:
+                # if several unstacked histograms, the highest layer is used
+                denom = hist
+                continue
             histForRatios.append( hist )
-        denom = histForRatios[-1]
-        histForRatios.pop()
         self._BuildStack( histForRatios, ytitle='MC/Data')
         self.stack.Divide( denom.obj )
         if self.blindminx and self.blindmaxx:
@@ -253,7 +293,10 @@ class DataMCPlot(object):
             if self.blindminx:
                 hist.Blind(self.blindminx, self.blindmaxx)
             hist.Draw()
-            hist.GetYaxis().SetRangeUser(0.01, hist.GetMaximum()*1.3)
+            if not self.axisWasSet:
+                max =  hist.weighted.GetBinContent(hist.weighted.GetMaximumBin())
+                hist.GetYaxis().SetRangeUser(0.01, max*1.3)
+                self.axisWasSet = True
         self.stack.Draw(opt+'same',
                         xmin=xmin, xmax=xmax,
                         ymin=ymin, ymax=ymax )
@@ -289,20 +332,21 @@ class DataMCPlot(object):
         # when calling it creates a problem in deepcopy.
         for hist in self.histos:
             hist.Rebin(factor)
-        if self.lastDraw == 'DrawStack':
-            self.DrawStack( *self.lastDrawArgs)
-        elif self.lastDraw == 'DrawNormalizedStack':
-            self.DrawNormalizedStack( *self.lastDrawArgs)
-        elif self.lastDraw == 'DrawRatioStack':
-            self.DrawRatioStack( *self.lastDrawArgs)
-        elif self.lastDraw == 'DrawNormalizedRatioStack':
-            self.DrawNormalizedRatioStack( *self.lastDrawArgs)
-        elif self.lastDraw == 'Draw':
-            self.Draw(*self.lastDrawArgs)
-        elif self.lastDraw == 'DrawNormalized':
-            self.DrawNormalized(*self.lastDrawArgs)
-        elif self.lastDraw == 'DrawRatio':
-            self.DrawRatio(*self.lastDrawArgs)
+        self.axisWasSet = False
+##         if self.lastDraw == 'DrawStack':
+##             self.DrawStack( *self.lastDrawArgs)
+##         elif self.lastDraw == 'DrawNormalizedStack':
+##             self.DrawNormalizedStack( *self.lastDrawArgs)
+##         elif self.lastDraw == 'DrawRatioStack':
+##             self.DrawRatioStack( *self.lastDrawArgs)
+##         elif self.lastDraw == 'DrawNormalizedRatioStack':
+##             self.DrawNormalizedRatioStack( *self.lastDrawArgs)
+##         elif self.lastDraw == 'Draw':
+##             self.Draw(*self.lastDrawArgs)
+##         elif self.lastDraw == 'DrawNormalized':
+##             self.DrawNormalized(*self.lastDrawArgs)
+##         elif self.lastDraw == 'DrawRatio':
+##             self.DrawRatio(*self.lastDrawArgs)
 
 
     def _BuildStack(self, hists, ytitle=None):

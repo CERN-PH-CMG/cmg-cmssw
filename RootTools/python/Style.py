@@ -66,6 +66,7 @@ wcol = kRed+2
 sHTT_WJets = Style(lineColor=1, markerColor=wcol, fillColor = wcol)
 ttcol = kBlue-8
 sHTT_TTJets = Style(lineColor=1, markerColor=ttcol, fillColor = ttcol)
+sHTT_Higgs = Style(lineColor=2, markerColor=2, fillColor = 0)
 
 
 sBlackSquares = Style(markerStyle = 21)

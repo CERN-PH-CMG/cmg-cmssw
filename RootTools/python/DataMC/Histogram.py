@@ -20,6 +20,7 @@ class Histogram( object ):
     def __init__(self, name, obj, layer=0., legendLine=None, stack=True):
         # name is a user defined name
         self.name = name
+        self.realName = name # can be different if an alias is set
         if legendLine is None:
             self.legendLine = name
         else:
@@ -32,11 +33,18 @@ class Histogram( object ):
         self.style = None
         # after construction, weighted histogram = base histogram
         self.SetWeight(1)
+
+
+    def Clone(self, newName):
+        newHist = copy.deepcopy(self)
+        newHist.name = newName
+        newHist.legendLine = newName
+        return newHist
         
     def __str__(self):
-        fmt = '{self.name:<10} / {hname:<10},\t Layer ={self.layer:8.1f}, w = {weighted:8.1f}, u = {unweighted:8.1f}'
+        fmt = '{self.name:<10} / {hname:<50},\t Layer ={self.layer:8.1f}, w = {weighted:8.1f}, u = {unweighted:8.1f}'
         tmp = fmt.format(self=self,
-                         hname = self.obj.GetName(),
+                         hname = self.realName,
                          weighted = self.Yield(weighted=True),
                          unweighted = self.Yield(weighted=False) )
         return tmp

@@ -35,25 +35,28 @@ class PileUpAnalyzer( Analyzer ):
         if self.cfg_comp.isMC:
             self.rawmcpileup = VertexHistograms('/'.join([self.dirName,
                                                           'rawMCPU.root']))
+        self.enable = True
+        if self.cfg_comp.isMC or self.cfg_comp.isEmbed:
+            if self.cfg_comp.puFileMC is None and self.cfg_comp.puFileData is None:
+                self.enable = False
+            else:
+                assert( os.path.isfile(self.cfg_comp.puFileMC) )
+                assert( os.path.isfile(self.cfg_comp.puFileData) )
 
-        if self.cfg_comp.isMC or self.cfg_comp.isEmbed:           
-            assert( os.path.isfile(self.cfg_comp.puFileMC) )
-            assert( os.path.isfile(self.cfg_comp.puFileData) )
-            
-            self.mcfile = TFile( self.cfg_comp.puFileMC )
-            self.mchist = self.mcfile.Get('pileup')
-            self.mchist.Scale( 1 / self.mchist.Integral() )
-            
-            self.datafile = TFile( self.cfg_comp.puFileData )
-            self.datahist = self.datafile.Get('pileup')
-            self.datahist.Scale( 1 / self.datahist.Integral() )
-            # import pdb; pdb.set_trace()
-            if self.mchist.GetNbinsX() != self.datahist.GetNbinsX():
-                raise ValueError('data and mc histograms must have the same number of bins')
-            if self.mchist.GetXaxis().GetXmin() != self.datahist.GetXaxis().GetXmin():
-                raise ValueError('data and mc histograms must have the same xmin')
-            if self.mchist.GetXaxis().GetXmax() != self.datahist.GetXaxis().GetXmax():
-                raise ValueError('data and mc histograms must have the same xmax')
+                self.mcfile = TFile( self.cfg_comp.puFileMC )
+                self.mchist = self.mcfile.Get('pileup')
+                self.mchist.Scale( 1 / self.mchist.Integral() )
+
+                self.datafile = TFile( self.cfg_comp.puFileData )
+                self.datahist = self.datafile.Get('pileup')
+                self.datahist.Scale( 1 / self.datahist.Integral() )
+                # import pdb; pdb.set_trace()
+                if self.mchist.GetNbinsX() != self.datahist.GetNbinsX():
+                    raise ValueError('data and mc histograms must have the same number of bins')
+                if self.mchist.GetXaxis().GetXmin() != self.datahist.GetXaxis().GetXmin():
+                    raise ValueError('data and mc histograms must have the same xmin')
+                if self.mchist.GetXaxis().GetXmax() != self.datahist.GetXaxis().GetXmax():
+                    raise ValueError('data and mc histograms must have the same xmax')
 
     def declareHandles(self):
         super(PileUpAnalyzer, self).declareHandles()
@@ -95,18 +98,19 @@ class PileUpAnalyzer( Analyzer ):
             nPU = len(vertices)
         else:
             return True
-        
-        bin = self.datahist.FindBin(nPU)
-        if bin<1 or bin>self.datahist.GetNbinsX():
-            event.vertexWeight = 0
-        else:
-            data = self.datahist.GetBinContent(bin)
-            mc = self.mchist.GetBinContent(bin)
-            #Protect 0 division!!!!
-            if mc !=0.0:
-                event.vertexWeight = data/mc
+
+        if self.enable:
+            bin = self.datahist.FindBin(nPU)
+            if bin<1 or bin>self.datahist.GetNbinsX():
+                event.vertexWeight = 0
             else:
-                event.vertexWeight = 1
+                data = self.datahist.GetBinContent(bin)
+                mc = self.mchist.GetBinContent(bin)
+                #Protect 0 division!!!!
+                if mc !=0.0:
+                    event.vertexWeight = data/mc
+                else:
+                    event.vertexWeight = 1
                 
         event.eventWeight *= event.vertexWeight
         self.averages['vertexWeight'].add( event.vertexWeight )
