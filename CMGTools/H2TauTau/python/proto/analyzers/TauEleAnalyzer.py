@@ -41,6 +41,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         diLeptons = []
         for index, dil in enumerate(cmgDiLeptons):
             pydil = self.__class__.DiObjectClass(dil)
+#            print 'TEST tau iso',pydil.leg1().tauID('byRawIsoMVA')
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
 #FIXME how I could work w/o the following line it's mistery 
@@ -110,8 +111,11 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
                leg2DeltaR>-1 and leg2DeltaR < 0.1:
                 event.genMatched = True
             else:
-                event.genMatched = False
-                
+                event.genMatched = False                
+
+#        for dil in event.diLeptons :
+#            print 'TEST tau iso',result,dil.leg1().tauID('byRawIsoMVA')
+
         return True
 
 
@@ -128,10 +132,11 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             return False
         if abs (tau.dz())  > 0.2   : return False
         if abs (tau.dxy()) > 0.045 : return False
-        return tau.tauID("byLooseIsoMVA")         == True and \
-               tau.tauID("againstElectronMVA")    == True and \
+        return tau.tauID("againstElectronMVA")    == True and \
                tau.tauID("againstElectronMedium") == True and \
                tau.tauID("againstMuonLoose")      == True
+
+               #tau.tauID("byLooseIsoMVA")         == True and \
         # byLooseCombinedIsolationDeltaBetaCorr
 
 
@@ -139,8 +144,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def testLeg1Iso(self, tau, isocut):
-        '''if isocut is None, returns true if loose iso MVA is passed.
+        '''if isocut is None, returns true if loose iso MVA is passed. <-- PG not now, why so?
         Otherwise, returns true if iso MVA > isocut.'''
+#        print 'TEST tau iso',isocut
         if isocut is None:
             return tau.tauID("byRawIsoMVA")>self.cfg_ana.iso1
 #        if isocut is None:   ##PG why this?
@@ -242,9 +248,10 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def leptonAccept(self, leptons) :
+    def leptonAccept(self, leptons, isoCut = 0.3) :
         ''' returns True if the additional lepton veto is successful'''
-        looseLeptons = filter( self.testEleLoosePhil, leptons )
+        #PG FIXME how do I pass the isolation argument to testEleLoosePhil?
+        looseLeptons = filter( self.testEleLoosePhil, leptons)
         nLeptons = len(looseLeptons)
         if nLeptons < 2 : return True
         if nLeptons > 2 : return False
