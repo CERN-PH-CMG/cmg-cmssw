@@ -51,7 +51,7 @@ class EMissAnalyzer( Analyzer ):
         for count in counts : 
             count.register('All events')
             count.register('ptMiss > 10.')
-            count.register('mVis < 180.')
+            count.register('10 < mVis < 180.')
             count.register('ctMiss > 1.00')
             count.register('mMiss > 0.')
             count.register('Two Good Jets')
@@ -261,13 +261,13 @@ class EMissAnalyzer( Analyzer ):
         if self.nunubb : self.counters.counter('EMissGen').inc('ptMiss > 10.')
         if self.wwh : self.counters.counter('WWHGen').inc('ptMiss > 10.')
             
-        if self.eVis.M() > self.cfg_ana.mvis :
+        if self.eVis.M() > self.cfg_ana.mvis[1] or self.eVis.M() < self.cfg_ana.mvis[0]:
             return 0
         else:
             event.step +=1
-        self.counters.counter('EMiss').inc('mVis < 180.')
-        if self.nunubb : self.counters.counter('EMissGen').inc('mVis < 180.')
-        if self.wwh : self.counters.counter('WWHGen').inc('mVis < 180.')
+        self.counters.counter('EMiss').inc('10 < mVis < 180.')
+        if self.nunubb : self.counters.counter('EMissGen').inc('10 < mVis < 180.')
+        if self.wwh : self.counters.counter('WWHGen').inc('10 < mVis < 180.')
             
         if self.eMiss.P() == 0. or abs(self.eMiss.Pz()/self.eMiss.P()) > self.cfg_ana.ctmiss  :
             return 0
