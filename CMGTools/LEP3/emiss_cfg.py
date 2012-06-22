@@ -7,7 +7,7 @@ eMissAna = cfg.Analyzer(
     ptmiss = 10.,
     mmiss = 0.,
     ctmiss = 1.0,
-    mvis = 180.,
+    mvis = (10.,180.),
     acop = 175.,
     acol = 165.
     )
