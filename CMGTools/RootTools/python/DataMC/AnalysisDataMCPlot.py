@@ -1,6 +1,7 @@
 
 import glob
 import os
+import fnmatch
 
 from ROOT import TFile
 
@@ -65,11 +66,16 @@ class AnalysisDataMC( DataMCPlot ):
 
     def _GetHistPref(self, name):
         '''Return the preference dictionary for a given component'''
-        try:
-            return self.histPref[name]
-        except KeyError:
+        thePref = None
+        for prefpat, pref in self.histPref.iteritems():
+            if fnmatch.fnmatch( name, prefpat):
+                if thePref is not None:
+                    print 'several matching preferences for', name 
+                thePref = pref
+        if thePref is None:
             print 'cannot find preference for hist',name
-            return {'style':sBlack, 'layer':999}
+            thePref = {'style':sBlack, 'layer':999}
+        return thePref
 
     def _ReadWeights(self, dirName):
         '''Read weight information from the weight directory.

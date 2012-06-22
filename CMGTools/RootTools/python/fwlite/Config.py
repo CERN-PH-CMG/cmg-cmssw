@@ -129,6 +129,7 @@ class MCComponent( Component ):
         # self.muEffWeight = muEffWeight
         self.isMC = True
         self.intLumi = 1.
+        self.addWeight = 1.
 
     def getWeight( self, intLumi = None):
         # if intLumi is None:
@@ -139,7 +140,7 @@ class MCComponent( Component ):
                        xSection = self.xSection,
                        intLumi = self.intLumi,
                        genEff = 1/self.effCorrFactor,
-                       addWeight = 1. )
+                       addWeight = self.addWeight )
 
 class Config( object ):
     '''Main configuration object, holds a sequence of analyzers, and

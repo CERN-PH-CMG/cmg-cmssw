@@ -3,12 +3,15 @@ from ROOT import THStack, gPad, kGray
 from CMGTools.RootTools.Style import sBlue,sBlack
 
 class Stack:
-    '''Attempt to overcome the defficiencies of the THStack class.
+    '''Attempt to overcome the deficiencies of the THStack class.
 
     Contains:
     - hists    : a list of Histogram (from this package,
     we\'re not taking about ROOT histograms here
-    - integral : the integral of the stack.'''
+    - integral : the integral of the stack.
+    - totalHist, the sum of all histograms in the stack with a layer < 1000.
+    
+    '''
 
     STAT_ERRORS = True
     STYLE = copy.copy(sBlack)
@@ -40,7 +43,7 @@ class Stack:
             self.obj.Add(hist.weighted)
             if self.totalHist is None:
                 self.totalHist = copy.deepcopy( hist )
-            else: 
+            elif hist.layer<1000.:
                 self.totalHist.Add( hist )
         self._Draw( opt, self.hists, xmin, xmax, ymin, ymax)
 
@@ -62,7 +65,7 @@ class Stack:
         if ymin is None:
             ymin = 0.1
         if ymax is None:
-            ymax = self.totalHist.GetMaximum()*1.3
+            ymax = hist.GetMaximum()*1.3
         hist.GetYaxis().SetRangeUser( ymin, ymax )
         if xmin is not None and xmax is not None:
             # without the little offset,
