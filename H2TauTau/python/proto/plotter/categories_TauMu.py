@@ -45,6 +45,7 @@ cat_Inc = str(inc_sig)
 categories = {
     'Xcat_Inc_AntiMuTauIsoJoshX':cat_Inc_AntiMuTauIsoJosh,
     'Xcat_Inc_RlxMuIsoX':cat_Inc_RlxMuIso,
+    'Xcat_Inc_RlxTauIsoX':cat_Inc_RlxTauIso,
     'Xcat_IncX':cat_Inc,
     'Xcat_VBFX':cat_VBF,
     'Xcat_VHX':cat_VH,

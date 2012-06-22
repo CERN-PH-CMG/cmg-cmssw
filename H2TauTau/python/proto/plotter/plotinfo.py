@@ -25,3 +25,11 @@ plots_J1 = {
     'svfitMass': PlotInfo('svfitMass', 30, 0, 300)    
     }
 
+plots_J2 = {
+    'jet1_pt': PlotInfo('jet1_pt', 30, 0, 300),
+    'jet1_eta': PlotInfo('jet1_eta', 10, -5, 5),
+    'jet2_pt': PlotInfo('jet1_pt', 30, 0, 300),
+    'jet2_eta': PlotInfo('jet1_eta', 10, -5, 5),
+    'svfitMass': PlotInfo('svfitMass', 30, 0, 300)    
+    }
+

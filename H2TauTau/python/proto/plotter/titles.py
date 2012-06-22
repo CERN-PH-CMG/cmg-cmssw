@@ -14,5 +14,6 @@ xtitles = {
     'jet2_pt':'p_{T,jet1} (GeV)',
     'jet1_eta':'#eta_{#tau}',
     'jet2_eta':'#eta_{#tau}',
+    'nVert':'# vertices'
     }
 

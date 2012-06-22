@@ -88,8 +88,9 @@ unitpat = re.compile('.*\((.*)\)\s*$')
 
 keeper = []
 
+
 def draw(plot, doBlind=True, channel='TauMu'):
-    
+    print plot
     blindxmin = None
     blindxmax = None
     doBlind = (plot.varName == 'svfitMass') and doBlind

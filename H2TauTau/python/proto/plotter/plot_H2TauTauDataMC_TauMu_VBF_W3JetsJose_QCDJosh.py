@@ -223,12 +223,13 @@ if __name__ == '__main__':
 
 
     # remove WJets and TTJets from components, and alias W3Jets -> WJets; TTJets11 -> TTJets
-    comps = [comp for comp in origComps if comp.name!='WJets' and  comp.name!='TTJets']
+    comps = [comp for comp in origComps if comp.name!='WJets' and  comp.name!='TTJets' ]
     cfg.config.components = comps
 
     aliases = {'DYJets':'Ztt',
                'W3Jets':'WJets',
-               'TTJets11':'TTJets' }
+               'TTJets11':'TTJets'
+               }
     
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases)
     
@@ -261,6 +262,6 @@ if __name__ == '__main__':
                               NBINS, XMIN, XMAX, weight=weight,
                               embed=options.embed);
 
-    draw(osQCD)
+    draw(osQCD, False)
 
 
