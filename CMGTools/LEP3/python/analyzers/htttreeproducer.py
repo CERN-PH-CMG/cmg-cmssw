@@ -73,6 +73,12 @@ class htttreeproducer( TreeAnalyzer ):
         var('tau1matchingjetindex')
         var('tau2matchingjetindex')
 
+        var('isHttZbbGen')
+        var('isHttZbbRec')
+
+        var('mvis')
+        var('chi2')
+
 #       var('wwMin')
 #       var('zzMin')
 #       var('deltaZ')
@@ -146,6 +152,9 @@ class htttreeproducer( TreeAnalyzer ):
         fill('g_isHZ',subevent.isHZ)
         fill('g_isHZqq',subevent.isHZqq)
         
+        isHttZbbGen = 0
+        isHttZbbRec = 0
+
         if subevent.isHZ==1 : 
             fgenParticleVars( 'H',subevent.H ) 
             fgenParticleVars( 'Z',subevent.Z )
@@ -162,6 +171,7 @@ class htttreeproducer( TreeAnalyzer ):
                 fill( 't1iso',subevent.tau1iso)
                 fill( 't2iso',subevent.tau2iso)
             if subevent.isHZqq==1:
+              isHttZbbGen = 1
               if (len(subevent.matchedRecGenDistances)>0):
                 fill( 'genRecDistance1', subevent.matchedRecGenDistances[0] )   
               if (len(subevent.matchedRecGenDistances)>1):
@@ -173,6 +183,14 @@ class htttreeproducer( TreeAnalyzer ):
               if len(subevent.hz):
                 fParticleVars('recH', subevent.hz[0])
                 fParticleVars('recZ', subevent.hz[1])
+       
+        #fill('mvis', subevent.mvis)
+        #fill('chi2', subevent.chi2)
+        if len(subevent.hz):
+          isHttZbbRec = 1
+
+        fill('isHttZbbGen', isHttZbbGen)  
+        fill('isHttZbbRec', isHttZbbRec)  
 
         fill('njets',subevent.njets)
         for n_j in range(0,4):
