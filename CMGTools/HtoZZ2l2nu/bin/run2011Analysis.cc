@@ -171,6 +171,11 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "thirdleptoneta", ";#eta^{l};Events", 50,-2.6,2.6) );
   mon.addHistogram( new TH1F( "nleptons", ";Leptons;Events", 3,2,4) );
 
+  //RunDependentVariable
+  mon.addHistogram( new TH1F( "RunDep_Yields", ";Run;Events",4000,170000,210000) );
+  mon.addHistogram( new TProfile( "RunDep_Met", ";Run;<Met>",4000,170000,210000) );
+
+
   //lepton control
   Double_t effptAxis[]={0,10,20,30,40,50,75,100,150,200,500};
   const size_t nEffptAxis=sizeof(effptAxis)/sizeof(Double_t)-1;
@@ -971,6 +976,11 @@ int main(int argc, char* argv[])
 			  mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);
 			  mon.fillHisto("mt",tags_full,aMT,weight);
                           if(zvvs[0].pt()>75) mon.fillHisto("mt75",tags_full,aMT,weight);
+
+                          mon.fillHisto("RunDep_Yields",tags_full,ev.run,weight);
+                          mon.fillProfile("RunDep_Met"   ,tags_full,ev.run, zvvs[0].pt(),weight);
+
+
 			}//end passDphijmet
 		    }//end passBveto
 	      }else{ //end pass3rdLeptonVeto
