@@ -15,6 +15,7 @@ class DiObject ( TLorentzVector ):
         c1 = ( leg1.px()*leg2.px() + \
                leg1.py()*leg2.py() + \
                leg1.pz()*leg2.pz() ) / ( leg1.p() * leg2.p() )
+        #print leg1, leg2, c1
         self.angle_ = acos(c1)*180./pi
         
         self.leg1 = leg1
