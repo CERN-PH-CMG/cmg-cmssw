@@ -102,7 +102,7 @@ class httanalyzer( Analyzer ):
       for jet in self.jets:
         if jet.energy() > self.cfg_ana.minE:
           n+=1
-      return n>3    
+      return n>1    
 
     def buildClusteredJets(self, event):
       event.nontaucand.sort(key=lambda a: a.energy(), reverse = True)
@@ -280,10 +280,11 @@ class httanalyzer( Analyzer ):
         event.hz = []
         # first look for at least four jets and two of them isolated and low #tracks
         if event.njets<4:
-            return
+            return False;
         event.step+=1
         #test for jets above threshold
-        if self.testE():
+        etest = self.testE();
+        if etest:
           self.counters.counter('h_rec').inc('4 jets above threshold')
         else:
           return;
@@ -302,7 +303,7 @@ class httanalyzer( Analyzer ):
             ntrk=self.jets[ind].component(1).number()
             # the two most energetic jets are not considered among taus 
 #            if ind>=2 and ntrk>0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
-            if ntrk>0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
+            if ntrk>=0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
                 event.taucand.append(self.jets[ind])
                 event.taucandiso.append(self.jetiso[ind])
 #                print "adding to tau"
@@ -335,7 +336,10 @@ class httanalyzer( Analyzer ):
         self.buildClusteredJets(event)
 
         #check that the clustered jets pass id (this also does the momentum rescaling)
-        if not self.testId(event.nontaucand, event.taucand):
+        idpass = self.testId(event.nontaucand, event.taucand) 
+        event.mvis = self.mvis       
+        event.chi2 = self.chi2       
+        if not idpass:
           return
         self.counters.counter('h_rec').inc('2 jets with id')
         event.step+=1
@@ -348,7 +352,7 @@ class httanalyzer( Analyzer ):
         self.counters.counter('h_rec').inc('passed') 
         event.hz = self.hz 
 
-              
+        
 
         return True
 
@@ -420,7 +424,16 @@ class httanalyzer( Analyzer ):
         return chi2  
 
     def testId(self, jets, taus) :
-    
+   
+        self.mvis = -100
+        self.px = -100
+        self.py = -100
+        self.pz = -100
+        self.evis = -100
+        self.chi2 = -100
+        self.mmin = -100 
+        
+
         njobj = 0
         njtrk = 0
         massmax = -999.
@@ -477,12 +490,12 @@ class httanalyzer( Analyzer ):
 
         # At least npfj jets with at least npf particles
         if njobj < self.cfg_ana.npfj[0] :
-            print 'njobj = ',njobj
+#            print 'njobj = ',njobj
             return False
 
         # At least ntkj jets with at least ntk tracks
         if njtrk < self.cfg_ana.ntkj[0] :
-            print 'njtrk = ',njtrk
+#            print 'njtrk = ',njtrk
             return False
         
         # Smallest jet mass larger than tau mass (say)
@@ -491,9 +504,9 @@ class httanalyzer( Analyzer ):
             return False
         
         # No missing energy
-        if mvis < self.cfg_ana.mVis :
-            print 'mvis = ',mvis
-            return False
+#        if mvis < self.cfg_ana.mVis :
+#            print 'mvis = ',mvis
+#            return False
 
         # Rescale jet energies
         # Check the chi2 ( < 1000. == request all energies to be positive)
