@@ -78,6 +78,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         componentName = compName
         legendLine = compName
         self.AddHistogram( componentName, hist, layer, legendLine)
+        self.Hist(componentName).realName = comp.realName
         if comp.isData:
             self.Hist(componentName).stack = False
 
@@ -105,6 +106,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
                 fakeCompName = 'Ztt_Fakes'
                 self._BuildHistogram(tree, comp, fakeCompName, self.varName,
                                      self.cut + ' && isFake', layer)
+                self.Hist(fakeCompName).realName =  comp.realName + '_Fakes'
                 self.weights[fakeCompName] = self.weights[compName]
                 # grouping fakes and WJets into EWK
             else:
@@ -203,34 +205,14 @@ class H2TauTauDataMC( AnalysisDataMC ):
     def _InitPrefs(self):
         '''Definine preferences for each component'''
         self.histPref = {}
-        self.histPref['Data'] = {'style':sData, 'layer':999}
-        self.histPref['data_Run2012B_194480_195016'] = {'style':sBlack, 'layer':-99}
-        self.histPref['data_Run2012B_start_194479'] = {'style':sBlack, 'layer':-99}
-        self.histPref['data_Run2012A'] = {'style':sBlack, 'layer':-99}
-        self.histPref['data_Run2011A_May10ReReco_v1'] = {'style':sViolet, 'layer':-1000}
-        self.histPref['data_Run2011A_PromptReco_v4'] = {'style':sBlue, 'layer':-1000}
-        self.histPref['data_Run2011A_PromptReco_v6'] = {'style':sRed, 'layer':-1100}
-        self.histPref['data_Run2011A_03Oct2011_v1'] = {'style':sYellow, 'layer':-1105}
-        self.histPref['data_Run2011A_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
-        self.histPref['data_Run2011B_PromptReco_v1'] = {'style':sViolet, 'layer':-1200}
-        self.histPref['embed_Run2011A_May10ReReco_v1'] = {'style':sViolet, 'layer':-1000}
-        self.histPref['embed_Run2011A_PromptReco_v4'] = {'style':sBlue, 'layer':-1000}
-        self.histPref['embed_Run2011A_PromptReco_v6'] = {'style':sRed, 'layer':-1100}
-        self.histPref['embed_Run2011A_03Oct2011_v1'] = {'style':sYellow, 'layer':-1105}
-        self.histPref['embed_Run2011A_05Aug2011_v1'] = {'style':sBlack, 'layer':-1150}
-        self.histPref['embed_Run2011B_PromptReco_v1'] = {'style':sViolet, 'layer':-1200}
-        self.histPref['dMay10ReReco_v1'] = {'style':sGreen, 'layer':-1200}
-        self.histPref['QCD'] = {'style':sHTT_QCD, 'layer':1.5}
+        self.histPref['Data'] = {'style':sData, 'layer':2999}
+        self.histPref['data_*'] = {'style':sBlack, 'layer':2002}
+        self.histPref['Ztt'] = {'style':sHTT_DYJets, 'layer':4}
+        self.histPref['embed_*'] = {'style':sViolet, 'layer':4.1}
         self.histPref['TTJets'] = {'style':sHTT_TTJets, 'layer':1} 
-        self.histPref['WJets'] = {'style':sHTT_WJets, 'layer':2}  
-        self.histPref['Ztt'] = {'style':sHTT_DYJets, 'layer':3}
-        self.histPref['Ztt (emb)'] = {'style':sYellow, 'layer':3}
-        self.histPref['Ztt_Fakes'] = {'style':sBlack, 'layer':2.5}
-        self.histPref['HiggsVBF110'] = {'style':sBlack, 'layer':4}
-        self.histPref['HiggsVBF115'] = {'style':sBlack, 'layer':5}
-        self.histPref['HiggsVBF120'] = {'style':sBlack, 'layer':6}
-        self.histPref['HiggsVBF125'] = {'style':sBlack, 'layer':7}
-        self.histPref['HiggsVBF130'] = {'style':sBlack, 'layer':8}
-        self.histPref['HiggsVBF135'] = {'style':sBlack, 'layer':9}
+        self.histPref['QCD'] = {'style':sHTT_QCD, 'layer':2}
+        self.histPref['WJets'] = {'style':sHTT_WJets, 'layer':3}  
+        self.histPref['Ztt_Fakes'] = {'style':sBlack, 'layer':3.5}
+        self.histPref['Higgs*'] = {'style':sHTT_Higgs, 'layer':1001}
 
 

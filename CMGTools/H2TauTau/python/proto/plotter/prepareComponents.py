@@ -13,7 +13,9 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu'):
     selComps = dict( [ (comp.name, comp) for comp in config.components ])
     zComps = {}
 
-    if aliases is None:
+    if aliases:
+        aliases['DYJets'] = 'Ztt' 
+    else:
         aliases = {'DYJets':'Ztt'}
     
     totIntLumi = 0
@@ -25,11 +27,17 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu'):
         if comp.isEmbed:
             embedComps.append(comp)
         comp.dir = comp.name
+        if comp.name.startswith('Higgs'):
+            if comp.name.find('125')==-1:
+                continue
+            else:
+                comp.addWeight = 5.0
         if comp.name.startswith('zdata'):
             zComps[comp.name] = comp
             # disabling is probably not necessary 
             comp.disabled = True
             continue
+        comp.realName = comp.name
         alias = aliases.get(comp.name, None)
         if alias:
             comp.name = alias

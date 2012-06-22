@@ -7,13 +7,12 @@ import re
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
-from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw
+from CMGTools.H2TauTau.proto.plotter.rootutils import * 
 from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
 from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
-from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.embed import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, PlotInfo
 from CMGTools.RootTools.Style import *
@@ -33,13 +32,11 @@ def replaceShapeInclusive(plot, var, anaDir,
                           cut, weight,
                           embed):
 
+    mvaTauIsoCut = 0
     cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.')
     print '[INCLUSIVE] estimate',comp.name,'with cut',cut
     plotWithNewShape = cp( plot )
     wjyield = plot.Hist(comp.name).Integral()
-##     nbins = plot.Hist(comp.name).obj.GetNbinsX()
-##     xmin = plot.Hist(comp.name).obj.GetXaxis().GetXmin()
-##     xmax = plot.Hist(comp.name).obj.GetXaxis().GetXmax()
     nbins = plot.bins
     xmin = plot.xmin
     xmax = plot.xmax
@@ -56,7 +53,7 @@ def replaceShapeInclusive(plot, var, anaDir,
 
     
 
-def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
+def makePlot( var, anaDir, selComps, weights, wJetYieldSS, wJetYieldOS,
               nbins=None, xmin=None, xmax=None,
               cut='', weight='weight', embed=False):
     
@@ -71,33 +68,55 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            selComps, weights, nbins, xmin, xmax,
                            cut=oscut, weight=weight,
                            embed=embed)
-    osign.Hist(EWK).Scale( wJetScaleOS )
-    replaceWJets = False
+    # osign.Hist(EWK).Scale( wJetScaleOS )
+    osign.Hist(EWK).Normalize()
+    osign.Hist(EWK).Scale(wJetYieldOS)    
+    replaceWJets = True
     if replaceWJets:
         osign = replaceShapeInclusive(osign, var, anaDir,
                                       selComps['WJets'], weights, 
                                       oscut, weight,
                                       embed)
     
-    # boxss = box.replace('OS','SS')
     sscut = cut+' && diTau_charge!=0'
     ssign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
                            cut=sscut, weight=weight,
                            embed=embed)
-    ssign.Hist(EWK).Scale( wJetScaleSS ) 
+    # ssign.Hist(EWK).Scale( wJetScaleSS ) 
     # import pdb; pdb.set_trace()
+    ssign.Hist(EWK).Normalize()
+    ssign.Hist(EWK).Scale(wJetYieldSS)    
     if replaceWJets:
         ssign = replaceShapeInclusive(ssign, var, anaDir,
                                       selComps['WJets'], weights, 
                                       sscut, weight,
                                       embed)
-    # import pdb; pdb.set_trace()
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
 
+    
+    qcd_yield = osQCD.Hist('QCD').Integral()
+
+    # replace the QCD shape by the one obtained from the data in the isolation sideband
+    sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.75') + ' && diTau_charge!=0' 
+    ssign_qcdshape = H2TauTauDataMC(var, anaDir,
+                                    selComps, weights, nbins, xmin, xmax,
+                                    cut=sscut_qcdshape, weight=weight,
+                                    embed=embed)
+    # import pdb; pdb.set_trace()
+    # ssign.Hist(EWK).Scale( wJetScaleSS ) 
+    qcd_shape = copy.deepcopy( ssign_qcdshape.Hist('Data') )    
+    qcd_shape.Normalize()
+    qcd_shape.Scale(qcd_yield)
+    # qcd_shape.Scale( qcd_yield )
+    osQCD.Replace('QCD', qcd_shape)
+    # import pdb; pdb.set_trace()
+    if var!='mt':
+        osQCD.Hist('QCD').Scale( 1618. / 1860.)
     osQCD.Group('EWK', ['WJets', 'Ztt_Fakes'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
+    
     return ssign, osign, ssQCD, osQCD
 
 
@@ -148,8 +167,8 @@ if __name__ == '__main__':
     parser.add_option("-B", "--blind", 
                       dest="blind", 
                       help="Blind.",
-                      action="store_true",
-                      default=False)
+                      action="store_false",
+                      default=True)
     parser.add_option("-n", "--nbins", 
                       dest="nbins", 
                       help="Number of bins",
@@ -192,29 +211,41 @@ if __name__ == '__main__':
     embed = options.embed
 
     origComps = copy.deepcopy(cfg.config.components)
-    
-    # WJet normalization
-    comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='TTJets11' and comp.name!='WJets']
-    cfg.config.components = comps
-    aliases = {'WJets11':'WJets'}
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases)
 
     can, pad, padr = buildCanvas()
+
+    # WJet normalization, done with the 2012 sample
+    comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='TTJets11' and comp.name!='WJets11']
+    cfg.config.components = comps
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config)
+
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
-                                 24, 70, 310, cutw,
+                                 12, 70, 310, cutw,
                                  weight=weight, embed=options.embed)
 
-##     # updating components to use the WJets11 sample (for shape)
-##     comps = [comp for comp in origComps if comp.name!='W3Jets' and comp.name!='TTJets11' and comp.name!='WJets']
-##     # and comp.name!='WJets']
-##     cfg.config.components = comps
-##     aliases = {'WJets11':'WJets'}
-##     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases)
-##                                                   # , aliases)
+    cutwss = options.cut + ' && diTau_charge!=0'
+    shapess, wjyieldss = shape_and_yield('mt', anaDir, selComps['WJets'], weights,
+                                         50, 0, 9999, cutwss, weight=weight,
+                                         embed=options.embed)
+    cutwos = options.cut + ' && diTau_charge==0'
+    shapeos, wjyieldos = shape_and_yield('mt', anaDir, selComps['WJets'], weights,
+                                         50, 0, 9999, cutwos, weight=weight,
+                                         embed=options.embed)
+        
+    wjyieldss *= fwss
+    wjyieldos *= fwos 
+    
+    # remove WJets from components, and aliase WJets11 -> WJets
+    comps = [comp for comp in origComps if comp.name!='W3Jets' and comp.name!='TTJets11' and comp.name!='WJets']
+    cfg.config.components = comps
 
 
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos,
-                                           NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
-    draw(osQCD, options.blind)
+    aliases = {'WJets11':'WJets'}
+    selComps, weights, zComps = prepareComponents(anaDir,
+                                                  cfg.config, aliases)
+    # import pdb; pdb.set_trace()
+
+    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, wjyieldss, wjyieldos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
+    draw(osQCD, False)
     

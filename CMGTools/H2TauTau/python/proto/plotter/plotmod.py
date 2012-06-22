@@ -95,17 +95,6 @@ def getQCD( plotSS, plotOS, dataName ):
     return plotSSWithQCD, plotOSWithQCD
 
 
-def groupEWK( plot ):
-    wjets = plot.Hist('WJets')
-    ewk = copy.deepcopy( wjets )
-    dyfakes = plot.Hist('Ztt_Fakes')
-    dyfakes.on = False
-    wjets.on = False
-    ewk.Add( dyfakes )
-    plot.AddHistogram('EWK', ewk.weighted, dyfakes.layer, 'EWK') 
-
-
-
 def fW(mtplot, dataName, xmin, xmax):
     
     # WJets_data = data - DY - TTbar
@@ -145,7 +134,7 @@ def fW(mtplot, dataName, xmin, xmax):
 
 
 
-def plot_W(var, anaDir,
+def plot_W(anaDir,
            comps, weights, nbins, xmin, xmax,
            cut, weight,
            embed, treeName):
@@ -160,6 +149,9 @@ def plot_W(var, anaDir,
         cut = cut,
         mtcut=xmin
         )
+
+    # import pdb; pdb.set_trace()
+    
     print 'extracting WJets data/MC factor in high mt region, SS'
     print sscut 
     mtSS = H2TauTauDataMC(var, anaDir, comps, weights,
