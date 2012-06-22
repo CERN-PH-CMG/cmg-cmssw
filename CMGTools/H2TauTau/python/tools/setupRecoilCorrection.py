@@ -2,7 +2,7 @@ from CMGTools.Common.generator.metRecoilCorrection.recoilCorrectedMET_cfi import
 
 #TODO remove code duplication
 
-def setupRecoilCorrection( process, runOnMC, enable=True ):
+def setupRecoilCorrection( process, runOnMC, enable=True, is52X=False):
 
     print 'setting up recoil corrections:'
 
@@ -15,7 +15,16 @@ def setupRecoilCorrection( process, runOnMC, enable=True ):
             return True
         else:
             return False
-        
+
+    if is52X:
+        print 'picking up 52X recoil fits'
+        if hasattr( process, 'recoilCorMETTauMu'):
+            process.recoilCorMETTauMu.fileZmmData = rootfile_dir + 'recoilfit_datamm52X_njet.root'
+            process.recoilCorMETTauMu.fileZmmMC = rootfile_dir + 'recoilfit_zmm52X_njet.root'
+        if hasattr( process, 'recoilCorMETTauEle'):
+            process.recoilCorMETTauEle.fileZmmData = rootfile_dir + 'recoilfit_datamm52X_njet.root'
+            process.recoilCorMETTauEle.fileZmmMC = rootfile_dir + 'recoilfit_zmm52X_njet.root'
+    
     #recoil correction does not handle WH_ZH_TTH_HToTauTau, because there are two bosons
     if enable: 
         if lookup( fileName, 'DYJets' ) or \
