@@ -17,7 +17,7 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     )
 
 # -1 : process all files
-numberOfFilesToProcess = 20
+numberOfFilesToProcess = 10
 
 debugEventContent = False
 
@@ -26,12 +26,15 @@ channel = 'tau-mu'
 jetRecalib = True
 useCHS = False 
 newSVFit = True 
+tauScaling = 1
 
 print sep_line
 print 'channel', channel
 print 'jet recalib', jetRecalib
 print 'useCHS', useCHS
 print 'newSVFit', newSVFit
+print 'tau scaling =', tauScaling
+
 ##########
 
 
@@ -50,14 +53,17 @@ dataset_user = 'cmgtools'
 # dataset_name = '/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1/PAT_CMG_V5_2_0'
 
 # dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
-# dataset_name = '/TauPlusX/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076'
-dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0'
+# dataset_name = '/TauPlusX/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195947'
+# dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/GluGluToHToTauTau_M-120_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 #cbern%/H2TAUTAU/Sync/GluGlu/AOD
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
+dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
+
+# dataset_name = '/TauPlusX/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396'
 
 dataset_files = 'cmgTuple.*root'
 
@@ -102,8 +108,8 @@ from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
 
 
 # WARNING DISABLING RECOIL CORRECTIONS FOR 2012!!!
-# setupRecoilCorrection( process, runOnMC )
-setupRecoilCorrection( process, runOnMC, enable=False )
+setupRecoilCorrection( process, runOnMC, True, cmsswIs52X())
+# setupRecoilCorrection( process, runOnMC, enable=False )
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
@@ -175,7 +181,7 @@ justn = 30
 # process.cmgTauMuCorPreSelSVFit.verbose = True
 
 # systematic shift on tau energy scale 
-# process.cmgTauScaler.cfg.nSigma = -1
+process.cmgTauScaler.cfg.nSigma = tauScaling
 
 from CMGTools.H2TauTau.tools.setupOutput import *
 if channel=='tau-mu' or channel=='all':
