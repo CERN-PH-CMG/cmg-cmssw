@@ -57,8 +57,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def buildLeptons(self, cmgLeptons, event):
-        '''Build electrons for veto, associate best vertex, select loose ID muons.
-        The loose ID selection is done to ensure that the muon has an inner track.
+        '''Build electrons for veto, associate best vertex, select loose ID electrons.
         Since the electrons are used for veto, the 0.3 default isolation cut is left there, 
         as well as the pt 15 gev cut'''
         leptons = []
@@ -89,6 +88,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
             # and di-lepton veto must pass
+            # i.e. only the iso requirement is relaxed
             result = self.selectionSequence(event, fillCounter=False,
                                             leg1IsoCut = -9999,
                                             leg2IsoCut = 9999)
