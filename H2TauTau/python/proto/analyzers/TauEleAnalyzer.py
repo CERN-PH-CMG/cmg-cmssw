@@ -142,7 +142,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         '''if isocut is None, returns true if loose iso MVA is passed.
         Otherwise, returns true if iso MVA > isocut.'''
         if isocut is None:
-            return tau.tauID("byLooseIsoMVA")>0.5
+            return tau.tauID("byRawIsoMVA")>self.cfg_ana.iso1
+#        if isocut is None:   ##PG why this?
+#            return tau.tauID("byLooseIsoMVA")>0.5
         else:
             return tau.tauID("byRawIsoMVA")>isocut
 
@@ -165,8 +167,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def testLeg2Iso(self, leg, isocut):
-        if leg.relIsoAllChargedDB05() >= self.cfg_ana.iso2          : return False
-        return True
+        if isocut is None:
+           isocut = self.cfg_ana.iso2
+        return leg.relIsoAllChargedDB05() < isocut
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
