@@ -336,13 +336,47 @@ public:
   }
 
   double effTau2012AB(double pt, double eta) {
-    float weight_A = 698.0; 
-    float weight_B = 890.592 + 767.154;
+    float weight_A = 696.09; 
+    float weight_B = 870.882 + 751.444 + 1525.0;
 
     return (weight_A * eff2012ATau20(pt, eta) + weight_B * eff2012BTau20(pt, eta))/(weight_A+weight_B);
   }
 
+  double eff2012AMu18(double pt, double eta) {
+    if(fabs(eta)<1.2) 
+      return efficiency(pt, 15.9998319, -0.39072829, 	0.28256338,	1.72861719, 	0.95769408);
+    else
+      return efficiency(pt, 18.49754887, 	-0.16941614, 	0.26076717, 	1.05494469, 	1.53819978);
+  }
+  
+  double eff2012BMu17(double pt, double eta) {
+    if(fabs(eta)<1.2) 
+      return efficiency(pt, 17.21270264, 	0.54997112, 	1.02874912, 	1.29646487, 	0.96724273 );
+    else
+      return efficiency(pt, 15.98037640, 	0.12062946, 	0.02183977, 	2.84751010,	0.83985656 );
+  }
 
+  double effMu2012A(double pt, double eta) {
+    return eff2012AMu18(pt, eta);
+  }
+  
+  double effMu2012B(double pt, double eta) {
+    return eff2012BMu17(pt, eta);
+  }
+  
+  double effMu2012AB(double pt, double eta) {
+    float weight_A = 696.09; 
+    float weight_B = 870.882 + 751.444 + 1525.0;
+
+    return (weight_A * eff2012AMu18(pt, eta) + weight_B * eff2012BMu17(pt, eta))/(weight_A+weight_B);
+  }
+  
+  double effMu2012MC(double pt, double eta) {
+    if(fabs(eta)<1.2) 
+      return efficiency(pt, 16.99389526, 	-0.04080190, 	0.00794730, 	1.60377906, 	0.99626161  );
+    else
+      return efficiency(pt,  16.99065795, 	-0.11993730, 	0.01384991, 	2.38867304, 	0.86552275 );
+  }
   
   
 
