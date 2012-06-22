@@ -17,14 +17,14 @@ DYJets.triggers = mc_triggers_fall11
 # DYJets.fakes = True # what is this?
 # DYJets.splitFactor = 40
 
-WJets.files = getFiles('/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1/PAT_CMG_V5_4_1/H2TAUTAU_PGJun02/', user, filePattern)
+WJets.files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/HTTSKIM5/PAT_CMG_V5_4_1/H2TAUTAU_PGJun02/', user, filePattern)
 # https://savannah.cern.ch/task/?30145
 # 2 bad pattuples over 907 files, the cmg tuples are there => ok
 WJets.nGenEvents = 81345381
 WJets.triggers = mc_triggers_fall11
 # WJets.splitFactor = 10
 
-TTJets.files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/HTTSKIM5/PAT_CMG_V5_4_1/H2TAUTAU_PGJun02/', user, filePattern)
+TTJets.files = getFiles('/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1/PAT_CMG_V5_4_1/H2TAUTAU_PGJun02/', user, filePattern)
 # https://savannah.cern.ch/task/?30144
 # 3 bad files out of 5365 => I don't care
 TTJets.nGenEvents = 59613991
@@ -44,6 +44,7 @@ TTJets.triggers = mc_triggers_fall11
 
 
 ## --- data --- + --- + --- + --- + --- + --- + --- + --- + ---
+
 
 from CMGTools.H2TauTau.proto.samples.data import *
 
