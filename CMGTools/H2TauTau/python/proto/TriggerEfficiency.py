@@ -45,6 +45,26 @@ if __name__ == '__main__':
                           p2012MC = (triggerEfficiency.effTau2012MC,
                                      TGraph(npoints))
                           )
+
+    muCurves2012barrel = dict( p2012A = (triggerEfficiency.effMu2012A,
+                                    TGraph(npoints)),
+                          p2012B = (triggerEfficiency.effMu2012B,
+                                    TGraph(npoints)),
+                          p2012AB = (triggerEfficiency.effMu2012AB,
+                                     TGraph(npoints)),
+                          p2012MC = (triggerEfficiency.effMu2012MC,
+                                     TGraph(npoints))
+                          )
+
+    muCurves2012endcaps = dict( p2012A = (triggerEfficiency.effMu2012A,
+                                    TGraph(npoints)),
+                          p2012B = (triggerEfficiency.effMu2012B,
+                                    TGraph(npoints)),
+                          p2012AB = (triggerEfficiency.effMu2012AB,
+                                     TGraph(npoints)),
+                          p2012MC = (triggerEfficiency.effMu2012MC,
+                                     TGraph(npoints))
+                          )
     
     tauCurves2 = dict( tau20 = (triggerEfficiency.effIsoTau20,
                                  TGraph(npoints)),
@@ -89,6 +109,8 @@ if __name__ == '__main__':
     # tauCurves2012endcaps = copy.deepcopy(tauCurves2012)
     fillGraphs( tauCurves2012barrel, region='Barrel' )
     fillGraphs( tauCurves2012endcaps, region='Endcaps' )
+    fillGraphs( muCurves2012barrel, region='Barrel' )
+    fillGraphs( muCurves2012endcaps, region='Endcaps' )
     fillGraphs( muCurves, region='Barrel' )
     fillGraphs( eleCurves, region='Endcaps' )
 
@@ -119,8 +141,10 @@ if __name__ == '__main__':
     
     # can1 = drawCurves( tauCurves, 'tau')
     # can1b = drawCurves( tauCurves2, 'tau2')
-    can1b = drawCurves( tauCurves2012barrel, 'tau2012, barrel')
-    can1ec = drawCurves( tauCurves2012endcaps, 'tau2012, endcaps')
+    #can1b = drawCurves( tauCurves2012barrel, 'tau2012, barrel')
+    # can1ec = drawCurves( tauCurves2012endcaps, 'tau2012, endcaps')
+    can1b = drawCurves( muCurves2012barrel, 'mu2012, barrel')
+    can1ec = drawCurves( muCurves2012endcaps, 'mu2012, endcaps')
     # can2 = drawCurves( muCurves, 'mu')
     # can3 = drawCurves( eleCurves, 'ele')
 
