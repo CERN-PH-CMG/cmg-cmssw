@@ -265,6 +265,61 @@ class Electron( Lepton ):
 
         return ID and (self.numberOfHits()<=1)
 
+
+    def looseIdForEleTau(self):
+        """Loose electron selection, for the lepton veto, 
+        according to Phil sync prescription for the sync exercise 18/06/12
+        """
+        nInnerHits = self.numberOfHits()
+        if nInnerHits != 0 : return False
+        if self.passConversionVeto() == False   : return False 
+        if abs(self.dxy())             >= 0.045 : return False
+        if abs(self.dz())              >= 0.2   : return False
+        hoe = self.hadronicOverEm()
+        deta = self.deltaEtaSuperClusterTrackAtVtx()
+        dphi = self.deltaPhiSuperClusterTrackAtVtx()
+        sihih = self.sigmaIetaIeta() 
+        if self.sourcePtr().isEB() :
+            if sihih >= 0.010     : return False
+            if dphi  >= 0.80      : return False 
+            if deta  >= 0.007     : return False
+            if hoe   >= 0.15      : return False
+        elif self.sourcePtr().isEE() :
+            if sihih >= 0.030     : return False
+            if dphi  >= 0.70      : return False 
+            if deta  >= 0.010     : return False
+    #            if hoe   >= 0.07      : return False
+        else : return False #PG is this correct? does this take cracks into consideration?
+        return True    
+
+
+    def tightIdForEleTau(self):
+        """reference numbers form the Htautau twiki
+
+        https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
+        """
+        if self.looseIdForEleTau() == False : return False
+        eta = abs( self.eta() )
+        if eta > 2.1 : return False
+        lmvaID = -99999 # identification
+        if self.pt() < 20 :
+            if   eta<0.8:   
+                lmvaID = 0.925
+            elif eta<1.479: 
+                lmvaID = 0.915
+            else :          
+                lmvaID = 0.965
+        else:
+            if   eta<0.8:   
+                lmvaID = 0.925
+            elif eta<1.479: 
+                lmvaID = 0.975
+            else :          
+                lmvaID = 0.985
+        result = self.mvaNonTrigV0()  > lmvaID
+        return result
+
+
     def relIsoAllChargedDB05(self):
         '''Used in the H2TauTau analysis: rel iso, dbeta=0.5, 
         
