@@ -8,7 +8,7 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.Event import Event
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet, GenParticle
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet, GenParticle, Lepton, Photon
 
 from CMGTools.LEP3.analyzers.DiObject import DiObject
 from CMGTools.LEP3.analyzers.EMiss import EMiss, EVis
@@ -26,6 +26,15 @@ class EMissAnalyzer( Analyzer ):
 
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
+
+        self.handles['electrons'] = AutoHandle ('cmgElectronSel',
+                                                'std::vector<cmg::Electron>')
+        
+        self.handles['muons'] = AutoHandle ('cmgMuonSel',
+                                            'std::vector<cmg::Muon>')
+
+        self.handles['photons'] = AutoHandle ('cmgPhotonSel',
+                                            'std::vector<cmg::Photon>')
 
 
 
@@ -51,33 +60,15 @@ class EMissAnalyzer( Analyzer ):
     def buildMiss(self, event):
 
         self.nunubb = False
-        self.eleele = False
-        self.mumu = False
-        self.tautau = False
         self.wwh = False
         self.neutrinos = []
         self.bquarks = []
-        self.electrons = []
-        self.muons = []
-        self.taus = []
         for ptc in self.mchandles['genParticles'].product():
             isNeutrino = abs(ptc.pdgId()) == 12 or abs(ptc.pdgId()) == 14 or abs(ptc.pdgId()) == 16
-            isElectron = abs(ptc.pdgId()) == 11
-            isMuon = abs(ptc.pdgId()) == 13
-            isTau = abs(ptc.pdgId()) == 15
             isbquark = abs(ptc.pdgId()) == 5
             if isNeutrino : 
                 if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
                 self.neutrinos.append(GenParticle(ptc))
-            if isElectron : 
-                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
-                self.electrons.append(GenParticle(ptc))
-            if isMuon : 
-                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
-                self.muons.append(GenParticle(ptc))
-            if isTau : 
-                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
-                self.taus.append(GenParticle(ptc))
             elif isbquark : 
                 if not(ptc.numberOfMothers()) : continue
                 if ptc.mother(0).pdgId() != 25 : continue
@@ -87,35 +78,131 @@ class EMissAnalyzer( Analyzer ):
             self.nunubb = True
             self.wwh = not(self.neutrinos[0].numberOfMothers())
 
+##            for ptc in self.mchandles['genParticles'].product():
+##                print GenParticle(ptc)
+
+        self.eMiss = EMiss(self.jets)
+        self.eVis = EVis(self.jets)
+        #if self.nunubb : print self.eMiss
+
+        event.ptMiss = self.eMiss.Pt()
+        event.pMiss = self.eMiss.P()
+        event.eMiss = self.eMiss.E()
+        event.ctMiss = 1.
+        if self.eMiss.P() > 0. : 
+            event.ctMiss = self.eMiss.Pz()/self.eMiss.P()
+        event.mMiss = self.eMiss.M()
+        event.ptVis = self.eVis.Pt()
+        event.pVis = self.eVis.P()
+        event.eVis = self.eVis.E()
+        event.ctVis = -1.
+        if self.eVis.P() > 0. : 
+            event.ctVis = self.eVis.Pz()/self.eVis.P()
+        event.mVis = self.eVis.M()
+        event.nunubb = self.nunubb
+        event.wwh = self.wwh
+
+
+
+    def buildLeptonList(self,event):
+
+        self.eleele = False
+        self.mumu = False
+        self.tautau = False
+        self.electrons = []
+        self.muons = []
+        self.taus = []
+
+        for ptc in self.mchandles['genParticles'].product():
+            isElectron = abs(ptc.pdgId()) == 11
+            isMuon = abs(ptc.pdgId()) == 13
+            isTau = abs(ptc.pdgId()) == 15
+            if isElectron : 
+                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
+                self.electrons.append(GenParticle(ptc))
+            if isMuon : 
+                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
+                self.muons.append(GenParticle(ptc))
+            if isTau : 
+                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
+                self.taus.append(GenParticle(ptc))
+
         if len(self.electrons) == 2 :
             self.eleele = True
         if len(self.muons) == 2 :
             self.mumu = True
         if len(self.taus) == 2 :
             self.taus = True
-##            for ptc in self.mchandles['genParticles'].product():
-##                print GenParticle(ptc)
+
+        event.eleele = self.eleele
+        event.mumu = self.mumu
+        event.tautau = self.tautau
+
 
         self.jets = []
         for ptj in self.handles['jets'].product():
             self.jets.append(Jet(ptj))
 
-        self.eMiss = EMiss(self.jets)
-        self.eVis = EVis(self.jets)
-        #if self.nunubb : print self.eMiss
+        self.leptons = []
+        for pte in self.handles['electrons'].product():
+            self.leptons.append(Lepton(pte))
+        for ptm in self.handles['muons'].product():
+            self.leptons.append(Lepton(ptm))
 
-        
+        self.photons = []
+        for ptg in self.handles['photons'].product():
+            if ptg.energy() > 1.0 : self.photons.append(Photon(ptg))
+
+        # Find FSR
+        tmpLept = set(self.leptons)
+        for lept in self.leptons :
+            leptonIso = self.leptonIso(lept)
+            if leptonIso > 0.05 :
+                tmpLept.remove(lept)
+                continue
+            
+            #if (self.eleele or self.mumu or self.tautau ) : 
+            #    print self.eleele, self.mumu, self.tautau,lept, leptonIso
+            for i,ph in enumerate(self.photons) :
+                dr = deltaR(lept.eta(),lept.phi(),ph.eta(),ph.phi())
+                if abs(lept.pdgId()) == 13 and dr < 0.4 :
+                    #print 'found ISR ',ph,lept
+                    leph = lept.p4()
+                    p4ph = ph.p4()
+                    p4 = ph.p4() + lept.p4()
+                    lept.setP4(p4)
+                    #print 'added ISR ',ph,lept
+        self.leptons = []
+
+        for lept in tmpLept :
+            self.leptons.append(lept)
+
+        for lept in self.leptons :
+            drmin = 999.
+            ijet = -1
+            for i,jet in enumerate(self.jets) :
+                dr = deltaR(lept.eta(),lept.phi(),jet.eta(),jet.phi())
+                if dr < drmin :
+                    drmin = dr
+                    ijet = i
+            if ijet >= 0 and drmin < 0.01 :
+                self.jets[ijet].setP4(lept.p4())
+
+        if self.eleele or self.mumu :
+            pj = TLorentzVector(0.,0.,0.,0.)
+            for jet in self.jets :
+                p4 = TLorentzVector(jet.px(),jet.py(),jet.pz(),jet.energy())
+                pj = pj + p4
+            pl = TLorentzVector(0.,0.,0.,0.)
+            for lept in self.leptons :
+                p4 = TLorentzVector(lept.px(),lept.py(),lept.pz(),lept.energy())
+                pl = pl + p4
 
 
     def buildJetList(self, event):
 
-        self.jets = []
-        self.jet3 = []
-        for ptj in self.handles['jets'].product():
-            self.jets.append(Jet(ptj))
-            #print jet, jet.nConstituents(), jet.component(1).number(), Jet(ptj).component(1).fraction()
-
         
+        self.jet3 = []
 
         if len(self.jets) > 2 : 
             self.jets.sort(key=lambda a: a.energy(), reverse = True)
@@ -146,6 +233,12 @@ class EMissAnalyzer( Analyzer ):
                 self.jets.append(jet)
                 
         self.jets.sort(key=lambda a: a.btag(7), reverse = True)
+        if self.eleele or self.mumu : 
+            pj = TLorentzVector(0.,0.,0.,0.)
+            for jet in self.jets :
+                #print jet
+                p4 = TLorentzVector(jet.px(),jet.py(),jet.pz(),jet.energy())
+                pj = pj + p4
 
 
     def process(self, iEvent, event):
@@ -158,27 +251,9 @@ class EMissAnalyzer( Analyzer ):
         setattr(event, self.name, myEvent)
         event = myEvent
         
-        self.buildMiss( event )
+        self.buildLeptonList ( event )
 
-        event.ptMiss = self.eMiss.Pt()
-        event.pMiss = self.eMiss.P()
-        event.eMiss = self.eMiss.E()
-        event.ctMiss = 1.
-        if self.eMiss.P() > 0. : 
-            event.ctMiss = self.eMiss.Pz()/self.eMiss.P()
-        event.mMiss = self.eMiss.M()
-        event.ptVis = self.eVis.Pt()
-        event.pVis = self.eVis.P()
-        event.eVis = self.eVis.E()
-        event.ctVis = -1.
-        if self.eVis.P() > 0. : 
-            event.ctVis = self.eVis.Pz()/self.eVis.P()
-        event.mVis = self.eVis.M()
-        event.nunubb = self.nunubb
-        event.wwh = self.wwh
-        event.eleele = self.eleele
-        event.mumu = self.mumu
-        event.tautau = self.tautau
+        self.buildMiss( event )
 
         event.allJets = self.jets
         event.jetPairs = self.findPairs( event.allJets )
@@ -273,10 +348,10 @@ class EMissAnalyzer( Analyzer ):
         event.sumtet = sumtet
         event.cross = cross
 
-#        self.counters.counter('EMiss').inc('passing')
-#        if self.nunubb : self.counters.counter('EMissGen').inc('passing')
-#        if self.wwh : self.counters.counter('WWHGen').inc('passing')
-#        event.step += 1
+        self.counters.counter('EMiss').inc('passing')
+        if self.nunubb : self.counters.counter('EMissGen').inc('passing')
+        if self.wwh : self.counters.counter('WWHGen').inc('passing')
+        event.step += 1
 
 
         return True
@@ -289,6 +364,16 @@ class EMissAnalyzer( Analyzer ):
             out.append( DiObject(j1, j2) )
 
         return out
+
+    def leptonIso( self, lepton ):
+
+        phpt = 0.
+        for ph in self.photons:
+            dr = deltaR(lepton.eta(), lepton.phi(), ph.eta(), ph.phi())
+            if dr < 0.4 : phpt += ph.pt()
+            
+        return max(0., lepton.relIso() - phpt/lepton.pt())
+
     
  
  
