@@ -245,9 +245,14 @@ int main(int argc, char** argv)
 
   TCanvas c1("c1","c1",200,200);
   TH1F* h1=new TH1F("dijet_mass","M_{jj}",NBINS-1,BOUNDARIES);
+//  TH1F* h1=new TH1F("dijet_mass","M_{jj}",2000,0,8000);
   h1->Sumw2();
   TH1F* h2=new TH1F("dijet_mass_gg","M_{jj}",NBINS-1,BOUNDARIES);
+//  TH1F* h2=new TH1F("dijet_mass_gg","M_{jj}",2000,0,8000);
   h2->Sumw2();
+  TH1F* h3=new TH1F("dijet_mass_qq","M_{jj}",NBINS-1,BOUNDARIES);
+//  TH1F* h3=new TH1F("dijet_mass_qq","M_{jj}",2000,0,8000);
+  h3->Sumw2();
   
   //---------------------------------------------------------------------------
   // Loop over events
@@ -334,16 +339,31 @@ int main(int argc, char** argv)
 	  // -- filter --
 	  // ---------------------	  
           bool isgg=false;
+          bool isqq=false;
           if(cmdline.resonance_mass>0)
 	  {
 	      for(int i=0; i<ngenparticlehelper;++i)
 	      {
 	         if((genparticlehelper_pdgId[i]==5000039) &&
-		   ((genparticlehelper_pdgId[genparticlehelper_firstDaughter[i]]==9)||(genparticlehelper_pdgId[genparticlehelper_firstDaughter[i]]==21)) &&
-((genparticlehelper_pdgId[genparticlehelper_lastDaughter[i]]==9)||(genparticlehelper_pdgId[genparticlehelper_lastDaughter[i]]==21)))
+((genparticlehelper_pdgId[genparticlehelper_firstDaughter[i]]==9)||(genparticlehelper_pdgId[genparticlehelper_firstDaughter[i]]==21)) &&
+((genparticlehelper_pdgId[genparticlehelper_lastDaughter[i]]==9)||(genparticlehelper_pdgId[genparticlehelper_lastDaughter[i]]==21)) &&
+((genparticlehelper_pdgId[genparticlehelper_firstMother[i]]==9)||(genparticlehelper_pdgId[genparticlehelper_firstMother[i]]==21)) &&
+((genparticlehelper_pdgId[genparticlehelper_lastMother[i]]==9)||(genparticlehelper_pdgId[genparticlehelper_lastMother[i]]==21)))
 		 isgg=true;
+	         if((genparticlehelper_pdgId[i]==5000039) &&
+((genparticlehelper_pdgId[genparticlehelper_firstDaughter[i]]!=9)&&(genparticlehelper_pdgId[genparticlehelper_firstDaughter[i]]!=21)) &&
+((genparticlehelper_pdgId[genparticlehelper_lastDaughter[i]]!=9)&&(genparticlehelper_pdgId[genparticlehelper_lastDaughter[i]]!=21)) &&
+((genparticlehelper_pdgId[genparticlehelper_firstMother[i]]!=9)&&(genparticlehelper_pdgId[genparticlehelper_firstMother[i]]!=21)) &&
+((genparticlehelper_pdgId[genparticlehelper_lastMother[i]]!=9)&&(genparticlehelper_pdgId[genparticlehelper_lastMother[i]]!=21)))
+		 isqq=true;
 	      }
 	  }  
+
+	  // ---------------------
+	  // -- vertex selection --
+	  // ---------------------	  
+
+//         if((nvertex<0)||(nvertex>12)) continue;
 
 	  // ---------------------
 	  // -- fill histograms --
@@ -355,10 +375,16 @@ int main(int argc, char** argv)
 
           if(isgg)
               h2->Fill(eventhelperextra_wj1wj2_invmass, weight);
+          else if(isqq)
+              h3->Fill(eventhelperextra_wj1wj2_invmass, weight);
 	  else
               h1->Fill(eventhelperextra_wj1wj2_invmass, weight);
 
 	}
+
+  h1->Scale(1./h1->Integral());
+  h2->Scale(1./h2->Integral());
+  h3->Scale(1./h3->Integral());
 
   h1->Draw("histe");
   //gPad->SetLogy(true);
@@ -441,6 +467,44 @@ int main(int argc, char** argv)
 
   h2->Write();
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_mass_gg.pdf").c_str());
+
+  h3->Draw("histe");
+  //gPad->SetLogy(true);
+
+  std::cout << "Fit crystal ball function to quark quark dijet mass spectrum." << std::endl;
+
+  fit_gaus = new TF1("gaus","gaus",cmdline.resonance_mass*0.8, cmdline.resonance_mass*1.2);
+  h3->Fit(fit_gaus,"R");
+  fit = new TF1("fnc_dscb",fnc_dscb,cmdline.resonance_mass*0.3, cmdline.resonance_mass*1.6,7);
+  fit->SetTitle("");
+  fit->SetParameter(0,fit_gaus->GetParameter(0));
+  fit->SetParameter(1,fit_gaus->GetParameter(1));
+  fit->SetParameter(2,fit_gaus->GetParameter(2));
+  fit->SetParameter(3,2);
+  fit->SetParameter(4,1);
+  fit->SetParameter(5,2);
+  fit->SetParameter(6,1);
+  fit->SetLineWidth(2);
+  fit->SetLineColor(1);
+  fit->SetLineStyle(1);
+  h3->Fit(fit,"R");
+
+  std::cout << "Quark quark resonance shape for resonance of mass " << cmdline.resonance_mass << "." << std::endl;
+
+  std::cout << "double yvalues[50] = {" << std::endl;
+  for ( size_t j = 0; j < 50; ++j )
+  {
+      double shape=fit->Eval(bincenter[j]*cmdline.resonance_mass);
+      if(shape<=1e-10)
+          shape=fit_gaus->Eval(bincenter[j]*cmdline.resonance_mass);
+      std::cout << shape;
+      if(j<50-1)
+          std::cout <<", ";
+  }
+  std::cout << "};" << std::endl;
+
+  h3->Write();
+  c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_mass_qq.pdf").c_str());
 
   stream.close();
   ofile.close();
