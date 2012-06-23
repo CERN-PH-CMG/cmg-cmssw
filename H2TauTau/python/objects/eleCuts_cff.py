@@ -7,9 +7,8 @@ def getEleCuts(leg, channel='tauEle', skim=False):
     ptCut = None
     etaCut = None
     if channel == 'tauEle':
-        ptCut = 10.
-        etaCut = 2.5
-        # etaCut = 1.0
+        ptCut = 20.
+        etaCut = 2.1
     elif channel == 'muEle':
         ptCut = 20.
         etaCut = 2.3
