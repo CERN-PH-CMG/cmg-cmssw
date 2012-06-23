@@ -25,6 +25,9 @@ class DiObject ( TLorentzVector ):
         for i in range(8):
             self.btag_.append ( max(self.leg1.btag(i),self.leg2.btag(i)) )
             self.component_.append ( Component(self,i) )
+        self.pdgId_ = 0
+        if self.leg1.pdgId() != 0 : self.pdgId_ = self.leg1.pdgId()
+        if self.leg2.pdgId() != 0 : self.pdgId_ = self.leg2.pdgId()
             
         self.nConstituents_ = self.leg1.nConstituents() + self.leg2.nConstituents()
 
@@ -59,6 +62,9 @@ class DiObject ( TLorentzVector ):
 
     def angle(self):
         return self.angle_
+
+    def pdgId(self):
+        return self.pdgId_
 
     def __str__(self):
         return ', '.join( ['DiObject:', str(self.leg1), str(self.leg2)] )

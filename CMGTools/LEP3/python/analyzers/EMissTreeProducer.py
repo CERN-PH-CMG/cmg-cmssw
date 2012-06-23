@@ -16,9 +16,10 @@ class EMissTreeProducer( TreeAnalyzer ):
             var('{pName}Phi'.format(pName=pName))
             var('{pName}Nobj'.format(pName=pName))
             var('{pName}Ntrk'.format(pName=pName))
+            var('{pName}NEle'.format(pName=pName))
+            var('{pName}pdgId'.format(pName=pName))
+            var('{pName}NMu'.format(pName=pName))
             var('{pName}B7'.format(pName=pName))
-#            var('{pName}B71'.format(pName=pName))
-#            var('{pName}B72'.format(pName=pName))
             
             
         var('ptMiss')
@@ -56,12 +57,15 @@ class EMissTreeProducer( TreeAnalyzer ):
         def fJetVars( pName, particle ):
             fill('{pName}Mass'.format(pName=pName), particle.mass() )
             fill('{pName}Pt'.format(pName=pName), particle.pt() )
+            fill('{pName}Eta'.format(pName=pName), particle.eta() )
+            fill('{pName}Phi'.format(pName=pName), particle.phi() )
             fill('{pName}Energy'.format(pName=pName), particle.energy() )
             fill('{pName}Nobj'.format(pName=pName), particle.nConstituents() )
             fill('{pName}Ntrk'.format(pName=pName), particle.component(1).number() )
-            fill('{pName}Electron'.format(pName=pName), particle.component(2).energy() )
+            fill('{pName}NEle'.format(pName=pName), particle.component(2).number() )
+            fill('{pName}NMu'.format(pName=pName), particle.component(3).number() )
+            fill('{pName}pdgId'.format(pName=pName), particle.pdgId() )
             fill('{pName}B7'.format(pName=pName), particle.btag(7) )
-#            fill('{pName}B72'.format(pName=pName), particle.leg2.btag(7) )
 
         subevent = getattr( event, self.cfg_ana.anaName )
 

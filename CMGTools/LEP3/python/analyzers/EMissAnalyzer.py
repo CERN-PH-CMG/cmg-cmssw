@@ -132,7 +132,7 @@ class EMissAnalyzer( Analyzer ):
         if len(self.muons) == 2 :
             self.mumu = True
         if len(self.taus) == 2 :
-            self.taus = True
+            self.tautau = True
 
         event.eleele = self.eleele
         event.mumu = self.mumu
@@ -179,16 +179,22 @@ class EMissAnalyzer( Analyzer ):
 
         for lept in self.leptons :
             drmin = 999.
+            
             ijet = -1
             for i,jet in enumerate(self.jets) :
                 dr = deltaR(lept.eta(),lept.phi(),jet.eta(),jet.phi())
                 if dr < drmin :
                     drmin = dr
                     ijet = i
-            if ijet >= 0 and drmin < 0.01 :
-                self.jets[ijet].setP4(lept.p4())
-                self.jets[ijet].setPdgId(lept.pdgId())
-                
+            if ijet >= 0 :
+                if drmin < 0.1 :
+                    self.jets[ijet].setP4(lept.p4())
+                    self.jets[ijet].setPdgId(lept.pdgId())
+##                 elif self.eleele or self.mumu :
+##                     print 'Watch out : Jet far from lepton '
+##                     print ' drmin = ',drmin
+##                     print ' Lepton : ',lept, lept.mass()
+##                     print ' Jet    : ',self.jets[ijet], self.jets[ijet].mass()
 
     def buildJetList(self, event):
 
