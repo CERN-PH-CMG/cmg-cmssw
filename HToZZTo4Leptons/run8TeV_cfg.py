@@ -1,21 +1,11 @@
-
-
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 
-
 from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2012 as effectiveAreas
 from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
-
-
-
-
-
 channel = 'all'
-
-
 
 ###GEN LEVEL SELECTORS
 muMuGenSel = cfg.Analyzer(
