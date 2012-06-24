@@ -2,7 +2,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.LEP3.analhtt_cff import *
 
 
-Hig125 = cfg.MCComponent(
+WW = cfg.MCComponent(
     name = 'WW',
     files = ['root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_170.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_171.root',

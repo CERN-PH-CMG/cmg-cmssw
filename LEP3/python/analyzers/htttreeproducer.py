@@ -180,9 +180,9 @@ class htttreeproducer( TreeAnalyzer ):
                 fill( 'genRecDistance3', subevent.matchedRecGenDistances[2] )   
               if (len(subevent.matchedRecGenDistances)>3):
                 fill( 'genRecDistance4', subevent.matchedRecGenDistances[3] )  
-              if len(subevent.hz):
-                fParticleVars('recH', subevent.hz[0])
-                fParticleVars('recZ', subevent.hz[1])
+        if len(subevent.hz):
+          fParticleVars('recH', subevent.hz[0])
+          fParticleVars('recZ', subevent.hz[1])
        
         #fill('mvis', subevent.mvis)
         #fill('chi2', subevent.chi2)
