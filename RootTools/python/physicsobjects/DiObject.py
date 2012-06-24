@@ -23,12 +23,14 @@ class DiObject( object ):
         return getattr(self.diobject, name)
 
     def __str__(self):
-        header = 'DiObject: mvis=%3.2f, mT=%3.2f, pZeta=%3.2f, sumpT=%3.2f' \
-                 % (self.diobject.mass(),
-                    self.diobject.mTLeg2(),
-                    self.diobject.pZeta(),
-                    self.sumPt() )
-        return '\n'.join( [header] )
+        header = '{cls}: mvis={mvis}, mT={mt}, sumpT={sumpt}'.format(
+            cls = self.__class__.__name__,
+            mvis = self.diobject.mass(),
+            mt = self.diobject.mTLeg2(),
+            sumpt = self.sumPt() )
+        return '\n'.join( [header,
+                           '\t'+str(self.leg1()),
+                           '\t'+str(self.leg2())] )
 
 
 
