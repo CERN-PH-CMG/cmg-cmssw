@@ -43,8 +43,7 @@ ZZ4e.files=getFiles('/ZZTo4e_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AO
 ZZ4mu.files=getFiles('/ZZTo4mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 ZZ2e2mu.files=getFiles('/ZZTo2e2mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 ZZ2e2tau.files=getFiles('/ZZTo4mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-
+TTJets.files=getFiles('/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START50_V15-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 
 
 
@@ -107,6 +106,7 @@ mcSamples=[ZZ2mu2tau,
            ZZ4mu,
            ZZ2e2mu,
            ZZ2e2tau,
+           TTJets,
 #           ZZ4tau,
 #           ZZGG4L,
 #           ZZGG2L2L,
@@ -147,21 +147,26 @@ mcSamples=[ZZ2mu2tau,
 
 
 #-----------DATA---------------
-json ='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-195775_8TeV_PromptReco_Collisions12_JSON.txt'
+json ='/afs/cern.ch/user/m/mangano/public/ichep2012_json/Jun22_190456-196509_noLowPU.json'
 
 
 doubleMuFiles=getFiles('/DoubleMu/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076/calib', userName, filepattern)+ \
                getFiles('/DoubleMu/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479/calib', userName, filepattern)+ \
                getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016/calib', userName, filepattern)+ \
                getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396/calib', userName, filepattern)+ \
-               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195775/calib', userName, filepattern)
+               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195775/calib', userName, filepattern)+ \
+               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195776-195947/calib', userName, filepattern)+ \
+               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195948-196509/calib', userName, filepattern)
+
+
 
 doubleEleFiles=getFiles('/DoubleElectron/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076/calib', userName, filepattern)+ \
                getFiles('/DoubleElectron/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479/calib', userName, filepattern)+ \
                getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016/calib', userName, filepattern)+ \
                getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396/calib', userName, filepattern)+ \
-               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195775/calib', userName, filepattern)
-
+               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195775/calib', userName, filepattern)+ \
+               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195776-195947/calib', userName, filepattern)+ \
+               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195948-196509/calib', userName, filepattern)
 
                
 
@@ -169,7 +174,9 @@ muEGFiles=getFiles('/MuEG/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_19
            getFiles('/MuEG/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479/calib', userName, filepattern)+ \
            getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016/calib', userName, filepattern)+ \
            getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396/calib', userName, filepattern)+ \
-           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195775/calib', userName, filepattern)
+           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195775/calib', userName, filepattern)+ \
+           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195776-195947/calib', userName, filepattern)+ \
+           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195948-196509/calib', userName, filepattern)
 
 
 data_DoubleMu = cfg.DataComponent(
@@ -195,7 +202,7 @@ data_DoubleElectronRecovered = cfg.DataComponent(
     files =getFiles('/DoubleElectron/Run2012A-23May2012-v2/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
     intLumi = 1,
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_May23ReReco_Collisions12_JSON_v2.txt'
+    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/May23ReReco_190782-190949_noLowPU.json'
     )
 
 
@@ -204,7 +211,8 @@ data_DoubleMuRecovered = cfg.DataComponent(
     files =getFiles('/DoubleMu/Run2012A-23May2012-v2/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
     intLumi = 1,
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_May23ReReco_Collisions12_JSON_v2.txt'
+    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/May23ReReco_190782-190949_noLowPU.json'
+
     )
 
 data_MuEGRecovered = cfg.DataComponent(
@@ -212,8 +220,33 @@ data_MuEGRecovered = cfg.DataComponent(
     files =getFiles('/MuEG/Run2012A-23May2012-v1/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
     intLumi = 1,
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_May23ReReco_Collisions12_JSON_v2.txt'
+    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/May23ReReco_190782-190949_noLowPU.json'
+    )
 
+
+data_DoubleElectronRecovered2 = cfg.DataComponent(
+    name = 'data_DoubleElectronRecovered2',
+    files =getFiles('/DoubleElectron/Run2012A-08Jun2012-v2/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/Jun08ReReco_noLowPileUp_noGoldetJsonJun22_noMay23.json'
+    )
+
+
+data_DoubleMuRecovered2 = cfg.DataComponent(
+    name = 'data_DoubleMuRecovered2',
+    files =getFiles('/DoubleMu/Run2012A-08Jun2012-v2/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/Jun08ReReco_noLowPileUp_noGoldetJsonJun22_noMay23.json'
+    )
+
+data_MuEGRecovered2 = cfg.DataComponent(
+    name = 'data_MuEGRecovered2',
+    files =getFiles('/MuEG/Run2012A-08Jun2012-v3/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/Jun08ReReco_noLowPileUp_noGoldetJsonJun22_noMay23.json'
     )
 
 
@@ -227,11 +260,11 @@ data_MuEG = cfg.DataComponent(
 
 
           
-dataSamplesMu=[data_DoubleMu,data_DoubleMuRecovered]
+dataSamplesMu=[data_DoubleMu,data_DoubleMuRecovered,data_DoubleMuRecovered2]
 
-dataSamplesE=[data_DoubleElectron,data_DoubleElectronRecovered]
+dataSamplesE=[data_DoubleElectron,data_DoubleElectronRecovered,data_DoubleElectronRecovered2]
 
-dataSamplesMuE=[data_MuEG,data_MuEGRecovered]
+dataSamplesMuE=[data_MuEG,data_MuEGRecovered,data_MuEGRecovered2]
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 
@@ -248,15 +281,22 @@ for comp in mcSamples:
     comp.efficiency = eff2012
     
 for comp in dataSamplesMu:
-    comp.splitFactor = 100
+    comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
 for comp in dataSamplesE:
     comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
 
 for comp in dataSamplesMuE:
-    comp.splitFactor = 100
+    comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
+
+data_DoubleMuRecovered.splitFactor=50
+data_DoubleElectronRecovered.splitFactor=50
+data_MuEGRecovered.splitFactor=50
+data_DoubleMuRecovered2.splitFactor=50
+data_DoubleElectronRecovered2.splitFactor=50
+data_MuEGRecovered2.splitFactor=50
 
 
              
