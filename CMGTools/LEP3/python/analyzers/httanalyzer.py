@@ -55,7 +55,6 @@ class httanalyzer( Analyzer ):
         count1.register('2 jets with id')
         count1.register('passed' )
 
-
         
     def buildMCinfo(self, event):
         self.isHZ = False
@@ -280,14 +279,14 @@ class httanalyzer( Analyzer ):
         event.hz = []
         # first look for at least four jets and two of them isolated and low #tracks
         if event.njets<4:
-            return False
+            return
         event.step+=1 # 1
         #test for jets above threshold
-        etest = self.testE();
+        etest = self.testE()
         if etest:
           self.counters.counter('h_rec').inc('4 jets above threshold')
         else:
-          return;
+          return
         event.step+=1 #2
 
 
@@ -410,7 +409,7 @@ class httanalyzer( Analyzer ):
         #finally find the HZ candidates
         self.hz = self.findHZ(event.nontaucand, event.taucand)
         if len(self.hz) < 1:
-          return;
+          return
         event.step+=1 #5
         self.counters.counter('h_rec').inc('passed') 
         event.hz = self.hz 
