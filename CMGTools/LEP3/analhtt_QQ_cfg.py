@@ -2,7 +2,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.LEP3.analhtt_cff import *
 
 
-Hig125 = cfg.MCComponent(
+QQ = cfg.MCComponent(
     name = 'QQ',
     files = ['root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/QQBAR/cmgTuple_QQBAR_270.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/QQBAR/cmgTuple_QQBAR_271.root',

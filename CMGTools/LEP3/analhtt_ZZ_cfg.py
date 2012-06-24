@@ -2,7 +2,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.LEP3.analhtt_cff import *
 
 
-Hig125 = cfg.MCComponent(
+ZZ = cfg.MCComponent(
     name = 'ZZ',
     files = ['root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/ZZ/cmgTuple_ZZ_80.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/ZZ/cmgTuple_ZZ_81.root',
