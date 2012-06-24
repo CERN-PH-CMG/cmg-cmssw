@@ -3,6 +3,10 @@ import fnmatch
 
 from CMGTools.RootTools.physicsobjects.TauDecayModes import tauDecayModes
 
+def printOut(objects):
+    if len(objects)==0:
+        return ''
+    return '\n'.join( map( type(objects[0]).__str__, objects) )
 
 
 class PhysicsObject(object):
@@ -361,14 +365,12 @@ class Electron( Lepton ):
         return self.sourcePtr().gsfTrack().dz( vertex.position() )
 
 
-
-
-
 class GenParticle( PhysicsObject):
     def __str__(self):
         base = super(GenParticle, self).__str__()
         theStr = '{base}, status = {status:>2}'.format(base=base, status=self.status())
         return theStr
+
 
 class GenLepton( GenParticle ):
     def sip3D(self):
