@@ -280,15 +280,15 @@ class httanalyzer( Analyzer ):
         event.hz = []
         # first look for at least four jets and two of them isolated and low #tracks
         if event.njets<4:
-            return False;
-        event.step+=1
+            return False
+        event.step+=1 # 1
         #test for jets above threshold
         etest = self.testE();
         if etest:
           self.counters.counter('h_rec').inc('4 jets above threshold')
         else:
           return;
-        event.step+=1
+        event.step+=1 #2
 
 
 
@@ -302,8 +302,10 @@ class httanalyzer( Analyzer ):
 #            print "evaluating ",ind
             ntrk=self.jets[ind].component(1).number()
             # the two most energetic jets are not considered among taus 
-#            if ind>=2 and ntrk>0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
-            if ntrk>=0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
+            #            if ind>=2 and ntrk>0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
+            #            if ntrk>=1 and ntrk<=3  and self.jetiso[ind]<0.8 and len(event.taucand)<2:
+            # if ntrk>=0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
+            if ntrk>=1 and ntrk<=3  and self.jetiso[ind]<0.9:
                 event.taucand.append(self.jets[ind])
                 event.taucandiso.append(self.jetiso[ind])
 #                print "adding to tau"
@@ -316,11 +318,72 @@ class httanalyzer( Analyzer ):
         if len(event.taucand)<2:
             return
         self.counters.counter('h_rec').inc('2 tau candidates')    
-        event.step+=1
+        event.step+=1 #3
+
+        # now iterate on all possible pairs of tau candidates, if more than two, and keep only the ones which give
+        # opposite mass closer to Z peak
+
+        if len(event.taucand)>2:
+            # print "Befoe tau:",len(event.taucand)
+            # for jet in event.taucand: print jet.energy()
+            # print "Before jet:",len(event.nontaucand)
+            # for jet in event.nontaucand: print jet.energy()
+            # print "tau cand:",len(event.taucand)
+            dm=9999.
+            taupair=(-1,-1)
+            # first sum-up nontaucand momentum
+            pnontau=[0,0,0,0]
+            for jet in event.nontaucand:
+                pnontau[0]+=jet.px()
+                pnontau[1]+=jet.py()
+                pnontau[2]+=jet.pz()
+                pnontau[3]+=jet.energy()
+            for ind1, ind2 in itertools.combinations(range(len(event.taucand)), 2):
+                ptau=[0,0,0,0]
+                for tauind in range(0,len(event.taucand)):
+                    if tauind!=ind1 and tauind!=ind2:
+                        ptau[0]+=event.taucand[tauind].px()
+                        ptau[1]+=event.taucand[tauind].py()
+                        ptau[2]+=event.taucand[tauind].pz()
+                        ptau[3]+=event.taucand[tauind].energy()
+                pall=[0,0,0,0]
+                for comp in range(0,4): pall[comp]=pnontau[comp]+ptau[comp]
+                mnontau=pall[3]**2-pall[0]**2-pall[1]**2-pall[2]**2
+                if mnontau<0: mnontau=0
+                mnontau=sqrt(mnontau)
+                # print ind1,ind2,mnontau
+                if abs(mnontau-91.2)<dm:
+                    taupair=(ind1,ind2)
+                    dm=abs(mnontau-91.2)
+
+            # now we have taupair and we can adapt the candidates
+            (t1,t2)=taupair
+            # print t1,t2
+            t1temp=event.taucand[t1]
+            t1isotemp=event.taucandiso[t1]
+            t2temp=event.taucand[t2]
+            t2isotemp=event.taucandiso[t2]
+            
+            for tauind in range(0,len(event.taucand)):
+                if tauind!=t1 and tauind!=t2:
+                    #remove thsi tau candidate and add it to nontaucandidate
+                    # print "removing ",tauind
+                    event.nontaucand.append(event.taucand[tauind])
+                    event.nontaucandiso.append(event.taucandiso[tauind])
+            # cleanup the taucand list
+            event.taucand=[t1temp,t2temp]
+            event.taucandiso=[t1isotemp,t2isotemp]
+            
+            # print "After tau:",len(event.taucand)
+            # for jet in event.taucand: print jet.energy()
+            # print "After jet:",len(event.nontaucand)
+            # for jet in event.nontaucand: print jet.energy()
+            
+            
+
 
         #MC matching
         if event.ishtt==1 and event.isHZqq==1:
-            self.counters.counter('h_gen').inc('Z->qq and h->tt selected')
             #check the closest gen tau
             self.matched=[]
             self.matcheddistance=[]
@@ -342,17 +405,19 @@ class httanalyzer( Analyzer ):
         if not idpass:
           return
         self.counters.counter('h_rec').inc('2 jets with id')
-        event.step+=1
+        event.step+=1 #4
 
         #finally find the HZ candidates
         self.hz = self.findHZ(event.nontaucand, event.taucand)
         if len(self.hz) < 1:
           return;
-        event.step+=1
+        event.step+=1 #5
         self.counters.counter('h_rec').inc('passed') 
         event.hz = self.hz 
 
-        
+        if event.ishtt==1 and event.isHZqq==1:
+            self.counters.counter('h_gen').inc('Z->qq and h->tt selected')
+            
 
         return True
 
@@ -433,7 +498,7 @@ class httanalyzer( Analyzer ):
         self.chi2 = -100
         self.mmin = -100 
         
-
+    
         njobj = 0
         njtrk = 0
         massmax = -999.
@@ -500,7 +565,7 @@ class httanalyzer( Analyzer ):
         
         # Smallest jet mass larger than tau mass (say)
         if massmin < self.cfg_ana.minM :
-            print 'massmin = ',massmin
+#            print 'massmin = ',massmin
             return False
         
         # No missing energy
