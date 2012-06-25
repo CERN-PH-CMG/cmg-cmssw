@@ -20,11 +20,13 @@ from ROOT import kPink, TH1, TPaveText, TPad
 cp = copy.deepcopy
 EWK = 'WJets'
 
-    
-NBINS = 100
+NBINS = 40
 XMIN  = 0
-XMAX  = 200
+XMAX  = 160
 
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+    
 
 def replaceShapeInclusive(plot, var, anaDir,
                           comp, weights, 
@@ -60,9 +62,9 @@ def replaceShapeInclusive(plot, var, anaDir,
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
     
 
-def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
-              nbins=None, xmin=None, xmax=None,
-              cut='', weight='weight', embed=False):
+def makePlotNOQCD( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
+                   nbins=None, xmin=None, xmax=None,
+                   cut='', weight='weight', embed=False, replaceWJets=False):
     
     print 'making the plot:', var, 'cut', cut
     # if nbins is None: nbins = NBINS
@@ -77,7 +79,34 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            cut=oscut, weight=weight,
                            embed=embed, treeName = 'H2TauTauTreeProducerTauEle')
     osign.Hist(EWK).Scale( wJetScaleOS )
-    replaceWJets = True
+    if replaceWJets:
+        osign = replaceShapeInclusive(osign, var, anaDir,
+                                      selComps['WJets'], weights, 
+                                      oscut, weight,
+                                      embed)
+    return osign
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+    
+
+def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
+              nbins=None, xmin=None, xmax=None,
+              cut='', weight='weight', embed=False, replaceWJets=True):
+    
+    print 'making the plot:', var, 'cut', cut
+    # if nbins is None: nbins = NBINS
+    # if xmin is None: xmin = XMIN
+    # if xmax is None: xmax = XMAX
+
+
+    oscut = cut+' && diTau_charge==0'
+    # import pdb; pdb.set_trace()
+    osign = H2TauTauDataMC(var, anaDir,
+                           selComps, weights, nbins, xmin, xmax,
+                           cut=oscut, weight=weight,
+                           embed=embed, treeName = 'H2TauTauTreeProducerTauEle')
+    osign.Hist(EWK).Scale( wJetScaleOS )
     if replaceWJets:
         osign = replaceShapeInclusive(osign, var, anaDir,
                                       selComps['WJets'], weights, 
@@ -101,7 +130,13 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
 
-    groupEWK( osQCD )
+#    groupEWK( osQCD )
+    osQCD.Group('EWK', ['WJets', 'Ztt_Fakes'])
+#    osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
+    return ssign, osign, ssQCD, osQCD
+
+
+
     return ssign, osign, ssQCD, osQCD
 
 
@@ -179,16 +214,22 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-
     NBINS = int(options.nbins)
     XMIN = float(options.xmin)
     XMAX = float(options.xmax)
 
+    # the categories dictionary is in categories_TauEle.py
+    # when putting -C key the key is substituted for the actual cut, for example:
+    # -C Xcut_IncX (the X's are necessary for some reasons)
     options.cut = replaceCategories(options.cut, categories) 
     
+    print 'used cut:',options.cut
+
     # TH1.AddDirectory(False)
     dataName = 'Data'
-    weight='weight'
+    weight = 'weight'
+
+    #import pdb ; pdb.set_trace ()
     
     anaDir = args[0]
     cfgFileName = args[1]
@@ -196,21 +237,104 @@ if __name__ == '__main__':
     cfg = imp.load_source( 'cfg', cfgFileName, file)
     embed = options.embed
 
-    # remove WJets from components, and aliase W3Jets -> WJets
     comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='TTJets11']
     cfg.config.components = comps
 
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, embed=embed, channel='TauEle')
+    # selComps = dictionary name,component
+    # weights = dictionary of (component_name, weight) to be given to events of each component
+    # zComps = set of names of 'zdata' components
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, 
+                                                  embed=embed, channel='TauEle')
 
+    #import pdb ; pdb.set_trace ()
 
     can, pad, padr = buildCanvas()
-    #cutw = cat_Inc
-    cutw = options.cut.replace('mt<40', '1')
-    fwss, fwos, ss, os = plot_W( options.hist, anaDir, selComps, weights,
-                                 12, 70, 310, cutw,
-                                 weight=weight, embed=options.embed, treeName='H2TauTauTreeProducerTauEle')
 
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos,
-                                           NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
-    draw(osQCD, False)
+    #PG first plot before any DD estimate of bkg
+    #PG -----------------------------------------
+
+#    weights['WJet']
+#(Pdb) print weights['WJets']
+# genN = 81345381, xsec = 31314.00000 pb, genEff = 1.00, intLumi = 4917.49, addWeight = 1.00 -> weight = 1.89299
+
+    firstPlot = H2TauTauDataMC(options.hist, anaDir,
+                               selComps, weights, NBINS, XMIN, XMAX,
+                               cut=options.cut, weight=weight,
+                               embed=False, treeName = 'H2TauTauTreeProducerTauEle')
+
+# {'data_Run2011A_03Oct2011_v1': <CMGTools.RootTools.fwlite.Config.DataComponent object at 0x11d34850>, 'data_Run2011A_05Aug2011_v1': <CMGTools.RootTools.fwlite.Config.DataComponent object at 0x11d31750>, 'data_Run2011B_PromptReco_v1': <CMGTools.RootTools.fwlite.Config.DataComponent object at 0x11d34910>, 'WJets': <CMGTools.RootTools.fwlite.Config.MCComponent object at 0xbd40410>, 'TTJets': <CMGTools.RootTools.fwlite.Config.MCComponent object at 0xbd40450>, 'data_Run2011A_May10ReReco_v1': <CMGTools.RootTools.fwlite.Config.DataComponent object at 0x11d31510>, 'Ztt': <CMGTools.RootTools.fwlite.Config.MCComponent object at 0xbd40310>, 'data_Run2011A_PromptReco_v4': <CMGTools.RootTools.fwlite.Config.DataComponent object at 0x11d31690>}
+
+    
+#    draw(firstPlot, True, channel='TauEle')
+
+    #PG plot of data and DY only
+    #PG -----------------------------------------
+
+    DY_data_comps = {}
+    for comp in selComps:
+        if 'data' in comp: 
+            DY_data_comps[comp] = selComps[comp]
+    DY_data_comps['Ztt'] = selComps['Ztt']
+    
+    DY_data_plot = H2TauTauDataMC(options.hist, anaDir,
+                                  DY_data_comps, weights, NBINS, XMIN, XMAX,
+                                  cut=options.cut, weight=weight,
+                                  embed=False, treeName = 'H2TauTauTreeProducerTauEle')
+
+#    draw(DY_data_plot, False, channel='TauEle')
+
+    #PG plot of data and WJets only
+    #PG -----------------------------------------
+    
+    WJ_data_comps = {}
+    for comp in selComps:
+        if 'data' in comp: 
+            WJ_data_comps[comp] = selComps[comp]
+    WJ_data_comps['WJets'] = selComps['WJets']
+    
+    WJ_data_plot = H2TauTauDataMC(options.hist, anaDir,
+                                  WJ_data_comps, weights, NBINS, XMIN, XMAX,
+                                  cut=options.cut, weight=weight,
+                                  embed=False, treeName = 'H2TauTauTreeProducerTauEle')
+
+#    draw(WJ_data_plot, False, channel='TauEle')
+
+#    import pdb ; pdb.set_trace ()
+
+    cutw = options.cut.replace('mt<40', '1') #PG questo a che serve? nel caso ci fosse mt<40
+    fwss = 0.1
+    fwos = 0.1
+    fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
+                                 12, 70, 310, cutw,
+                                 weight=weight, embed=options.embed, 
+                                 treeName='H2TauTauTreeProducerTauEle')
+
+#def plot_W(anaDir, comps, weights, 
+#           nbins, xmin, xmax, cut, 
+#           weight, embed, 
+#           treeName):
+
+
+#    draw(ss, True, channel='TauEle')
+#    draw(os, True, channel='TauEle')
+
+    osNOQCD = makePlotNOQCD( options.hist, anaDir, selComps, 
+                             weights, fwss, fwos,
+                             NBINS, XMIN, XMAX, options.cut, 
+                             weight=weight, embed=options.embed,
+                             replaceWJets=False)
+
+#    osNOQCD.legendOn = False
+#    draw(osNOQCD, False, channel='TauEle')
+
+    print 'TEST',options.cut
+    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, 
+                                           weights, fwss, fwos,
+                                           NBINS, XMIN, XMAX, options.cut, 
+                                           weight=weight, embed=options.embed,
+                                           replaceWJets=False)
+    osQCD.legendOn = True
+    draw(osQCD, False, channel='TauEle')
+#    ssQCD.legendOn = False
+#    draw(ssQCD, False, channel='TauEle')
     
