@@ -61,27 +61,32 @@ void addToShape(Shape_t &a, Shape_t &b,int sign=+1)
 
 
 //
-void getDYprediction(bool doSubtraction=true)
+enum SubtractionTypes {NOSUBTRACTION, HALVE, EWKSUBTRACTION};
+void getDYprediction(int subtractType=NOSUBTRACTION)
 {
   setTDRStyle();
 
-  //   TString llFile="../../test/results/plotter_2012.root";
-  TString llFile="../../plotter.root";
+  TString llFile="../../test/results/plotter_2012.root";
   TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
   
-  //  TString llFile="../../test/results/plotter_2011.root";
-  //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
+  //TString llFile="../../test/results/plotter_2011.root";
+  // TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
   
   string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {"met_met","mt"};//,"mt"};//,"mindphijmet","met_redMet","pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj","pfvbfcjv","mt_shapes"};
+  string histos[] = {"met_met","mt",
+		     //		     "mindphijmet",
+		     // "pfvbfpremjj",
+		     // "pfvbfcandjetdeta","pfvbfmjj","pfvbfcjv", "pfvbfhardpt"
+		     //		     "mt_shapes"
+  };
   const size_t nhistos=sizeof(histos)/sizeof(string);
   string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};
   const size_t ndilcats=sizeof(dilcats)/sizeof(string);
   string dilprocs[]={"WW#rightarrow 2l2#nu","ZZ","WZ#rightarrow 3l#nu","t#bar{t}","Single top","W#rightarrow l#nu","data"};
   Int_t dilColors[]={592, 590, 596, 8, 824, 809, 1 };
   const size_t ndilprocs=sizeof(dilprocs)/sizeof(string);
-  string dilSignal[]={"ggH(400)#rightarrow ZZ","qqH(400)#rightarrow ZZ"};
+  string dilSignal[]={"ggH(350)#rightarrow ZZ","qqH(350)#rightarrow ZZ"};
   const size_t nDilSignals=sizeof(dilSignal)/sizeof(string);
   string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
   const size_t ngcats=sizeof(gcats)/sizeof(string);
@@ -250,25 +255,75 @@ void getDYprediction(bool doSubtraction=true)
      Shape_t &gShape=gShapesMap[it->first];
      TH1 *corrGammaH=(TH1 *)gShape.data->Clone((it->first+"dy").c_str());
      corrGammaH->SetDirectory(0);
-     cout << corrGammaH->Integral() << endl;
+
      
-     if(doSubtraction) {
-       int fbin=corrGammaH->GetXaxis()->FindBin(70);
-       for(int ibin=fbin; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
-	 {
-	   Double_t val=corrGammaH->GetBinContent(ibin)/2;
-	   Double_t valerr=corrGammaH->GetBinError(ibin)/2;
-	   corrGammaH->SetBinContent(ibin,val);
-	   corrGammaH->SetBinError(ibin,valerr);
+     //do the subtraction for met related variables when MET>70
+     if(it->first.find("mt_shapes")!= string::npos || it->first.find("met_") != string::npos)
+       {
+	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
+	 if(subtractType==HALVE) {
+	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(70) );
+	   for(int ibin=fbin; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
+	     {
+	       if(isTH2)
+		 {
+		   for(int jbin=1; jbin<=corrGammaH->GetYaxis()->GetNbins(); jbin++)
+		     {
+		       Double_t val=corrGammaH->GetBinContent(ibin,jbin)/2;
+		       Double_t valerr=corrGammaH->GetBinError(ibin,jbin)/2;
+		       corrGammaH->SetBinContent(ibin,jbin,val);
+		       corrGammaH->SetBinError(ibin,jbin,valerr);
+		     }
+		 }
+	       else
+		 {
+		   Double_t val=corrGammaH->GetBinContent(ibin)/2;
+		   Double_t valerr=corrGammaH->GetBinError(ibin)/2;
+		   corrGammaH->SetBinContent(ibin,val);
+		   corrGammaH->SetBinError(ibin,valerr);
+		 }
+	     }
 	 }
-     }
+
+	 if(subtractType==EWKSUBTRACTION)
+	   {
+	     corrGammaH->Add( gShape.totalBckg,-1);
+	     for(int ibin=1; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
+	       {
+		 if(isTH2)
+		   {
+		     for(int jbin=1; jbin<=corrGammaH->GetYaxis()->GetNbins(); jbin++)
+		       {
+			 Double_t val=corrGammaH->GetBinContent(ibin,jbin);
+			 if(val<0)  corrGammaH->SetBinContent(ibin,jbin,0.);
+		       }
+		   }
+		 else
+		   {
+		     Double_t val=corrGammaH->GetBinContent(ibin);
+                     if(val<0)  corrGammaH->SetBinContent(ibin,0.);
+		   }
+	       }
+	   }
+       }
+
      corrGammaH->Scale(sf);
      corrGammaH->SetFillColor(831);
      it->second.totalBckg->Add(corrGammaH);
      it->second.bckg["Instr. background (data)"]=corrGammaH;
-     showShape(it->second,it->first);
+     showShape(it->second,"final_"+it->first);
      gOutDir->cd();
      corrGammaH->Write(it->first.c_str());
+     if(it->first.find("mumu")!= string::npos)
+       {
+	 TString keyToGet(it->first);
+	 keyToGet=keyToGet.ReplaceAll("mumu","ee");
+	 Shape_t &shapeToCorrect=shapesMap[keyToGet.Data()];
+	 addToShape(shapeToCorrect,it->second,1);
+	 keyToGet=keyToGet.ReplaceAll("ee","");
+	 showShape(shapeToCorrect,keyToGet.Data());
+       }
+     
    }
   gOut->Close();
 
@@ -361,10 +416,9 @@ void showShape(const Shape_t &shape,TString SaveName)
   T->SetFillColor(0);
   T->SetFillStyle(0);  T->SetLineColor(0);
   T->SetTextAlign(22);
-  //  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5045./1000);
-  // char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 1616./1000);
-  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5045./1000);
-  T->AddText(Buffer);
+  //   char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5045./1000);
+    char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 3947./1000);
+    T->AddText(Buffer);
   T->Draw("same");
   
   legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);
@@ -404,6 +458,7 @@ void showShape(const Shape_t &shape,TString SaveName)
   c1->Modified();
   c1->Update();
   c1->SaveAs(SaveName+".png");
+c1->SaveAs(SaveName+".pdf");
   // c1->SaveAs(SaveName+".C");
   //  delete c1;
   //   if(mc)    delete mc;

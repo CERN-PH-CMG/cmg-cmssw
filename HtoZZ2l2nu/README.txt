@@ -88,6 +88,16 @@ runPlotter --json data/photon-samples_2011.json --inDir ~/work/gamma/2011/mc/ --
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples-mc_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2011/mc -c test/runAnalysis_cfg.py.templ -p "@is2011=True @weightsFile='data/gammaqtweights_mc7tev.root','data/gammanvtxweights_mc7tev.root'" -s 8nh -t MC
 runPlotter --json data/photon-samples-mc_2011.json --inDir ~/work/gamma/2011/mc/ --outDir ~/work/gamma/2011/mc/plots/ --outFile ~/work/gamma/2011/mc/plotter_nvtx.root 
 
+
+################################## 
+# 2011 vs 2012 signal comparison #
+##################################
+#use the same pu distribution in test/runAnalysis_cfg.py.templ
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples-qqsignal_2011vs2012.json -o test/comp-results -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@is2011=True" -s 8nh -t 7TeV
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples-qqsignal_2011vs2012.json -o test/comp-results -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh -t 8TeV
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples-ggsignal_2011vs2012.json -o test/comp-results -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@is2011=True" -s 8nh -t 7TeV
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples-ggsignal_2011vs2012.json -o test/comp-results -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh -t 8TeV
+
 #
 # use bin/G/getGammaTemplates.C to generate the weights for the samples in both cases (data/MC)
 #

@@ -103,5 +103,6 @@ double muonTriggerEfficiency(double pt, double eta) {
 }
 
 double electronTriggerEfficiency(double pt, double eta) {
-	return 1.0; // fake
+  return 0.96;  //use top dileptons estimate cf. TOP-11-005
+  //return 1.0; // fake
 }

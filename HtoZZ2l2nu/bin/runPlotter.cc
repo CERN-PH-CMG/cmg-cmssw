@@ -36,7 +36,8 @@ double iEcm=8;
 bool showChi2 = false;
 bool showUnc=false;
 double baseRelUnc=1.0;
-bool noLog=false; 
+bool noLog=false;
+bool isSim=false;
 bool do2D  = true;
 bool do1D  = true;
 bool doTex = true;
@@ -577,6 +578,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
       //hist->SetMaximum(1E6);
       hist->SetMaximum(hist->GetBinContent(hist->GetMaximumBin())*1.10);
       ObjectToDelete.push_back(hist);
+      if(Process[i].isTag("normto")) hist->Scale( Process[i]["normto"].toDouble()/hist->Integral() );
 
       if((!Process[i].isTag("spimpose") || !Process[i]["spimpose"].toBool()) && !Process[i]["isdata"].toBool()){
          //Add to Stack
@@ -586,9 +588,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
       }
       else if(Process[i].isTag("spimpose") && Process[i]["spimpose"].toBool())
 	{
-	  if(Process[i].isTag("normto")) hist->Scale( Process[i]["normto"].toDouble()/hist->Integral() );
-	  	    
-	  //legB->AddEntry(hist, Process[i]["tag"].c_str(), "L");
+   	  //legB->AddEntry(hist, Process[i]["tag"].c_str(), "L");
 	  legA->AddEntry(hist, Process[i]["tag"].c_str(), Process[i]["isdata"].toBool() ? "P" : "L" );
 	  spimposeOpts.push_back( Process[i]["isdata"].toBool() ? "e1" : "hist" );
 	  spimpose.push_back(hist);
@@ -598,6 +598,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 	if(Process[i]["isdata"].toBool()){
 	  if(!data){
 	    data = hist; 
+	    cout << hist->Integral() << endl;
 	    legA->AddEntry(hist, Process[i]["tag"].c_str(), "P"); 
 	  }
 	  else data->Add(hist);
@@ -664,7 +665,9 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    T->SetFillColor(0);
    T->SetFillStyle(0);  T->SetLineColor(0);
    T->SetTextAlign(22);
-   char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
+   char Buffer[1024]; 
+   if(isSim) sprintf(Buffer, "CMS simulation");
+   else      sprintf(Buffer, "CMS preliminary, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
    T->AddText(Buffer);
    T->Draw("same");
 
@@ -900,6 +903,7 @@ int main(int argc, char* argv[]){
 
         printf("--iLumi   --> integrated luminosity to be used for the MC rescale\n");
         printf("--iEcm    --> center of mass energy (TeV) = 8 TeV by default\n");
+        printf("--isSim   --> print CMS Simulation instead of the standard title\n");
         printf("--inDir   --> path to the directory containing the .root files to process\n");
         printf("--outDir  --> path of the directory that will contains the output plots and tables\n");
         printf("--outFile --> path of the output summary .root file\n");
@@ -944,6 +948,7 @@ int main(int argc, char* argv[]){
        }
        printf("Uncertainty band will be included for MC with base relative uncertainty of: %3.2f",baseRelUnc);
      }
+     if(arg.find("--cmsSim")!=string::npos){ isSim = true;    }
      if(arg.find("--noLog")!=string::npos){ noLog = true;    }
      if(arg.find("--no2D"  )!=string::npos){ do2D = false;    }
      if(arg.find("--no1D"  )!=string::npos){ do1D = false;    }

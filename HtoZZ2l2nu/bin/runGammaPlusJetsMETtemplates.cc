@@ -84,6 +84,11 @@ int main(int argc, char* argv[])
   //book histograms
   SmartSelectionMonitor mon;
 
+  mon.addHistogram(  new TProfile("metvsrun"    ,      "Run number",     600, 190000,196000) ) ;
+  mon.addHistogram(  new TProfile("metvsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
+  mon.addHistogram(  new TProfile("nvtxvsrun",         "Run number",     600, 190000,196000) ) ;
+  mon.addHistogram(  new TProfile("nvtxvsavginstlumi", "Avg. inst lumi", 60,  400,1000));
+
   TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,6,0,6) ) ;
 
   //##############################################
@@ -661,6 +666,11 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("met_redMetT",     ctf, redMetL,iweight);
 		  mon.fillHisto("met_redMetL",     ctf, redMetT,iweight);
 		  mon.fillHisto("mt",              ctf, mt,iweight);
+		  
+		  mon.fillProfile("metvsrun",          ctf, ev.run,            zvvs[0].pt(), iweight);
+		  mon.fillProfile("metvsavginstlumi",  ctf, ev.curAvgInstLumi, zvvs[0].pt(), iweight);
+		  mon.fillProfile("nvtxvsrun",         ctf, ev.run,            ev.nvtx,      iweight);
+		  mon.fillProfile("nvtxvsavginstlumi", ctf, ev.curAvgInstLumi, ev.nvtx,      iweight);
 		}
 	      
 	      if(passSMZZpreSel && !mustBlind)

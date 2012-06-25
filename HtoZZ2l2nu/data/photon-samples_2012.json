@@ -38,6 +38,23 @@
 	 "spimpose":true,
          "data":[
 	      {
+               "dtag":"MC8TeV_DYToEE",
+               "split":2,
+               "xsec":3532.8,
+	       "br":[0.333333]
+              }
+          ]
+	},
+	{
+	 "tag":"Z#rightarrow ll (MG)",
+         "isdata":false,
+ 	 "color":"2",
+	 "lcolor":2,
+	 "fill":0,
+	 "mctruthmode":1,
+	 "spimpose":true,
+         "data":[
+	      {
                "dtag":"MC8TeV_DYJetsToLL",
                "split":10,
                 "xsec":3532.8
