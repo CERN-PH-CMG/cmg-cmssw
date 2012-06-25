@@ -7,6 +7,7 @@ from CMGTools.Common.generator.metRecoilCorrection.metRecoilCorrection_cff impor
 from CMGTools.Common.factories.cmgTauScaler_cfi import  cmgTauScaler
 from CMGTools.Common.factories.cmgTauEleCor_cfi import cmgTauEleCor 
 from CMGTools.H2TauTau.objects.tauEleSVFit_cfi import tauEleSVFit 
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 
 # no correction, no svfit ---------------------------------------------------
@@ -55,7 +56,10 @@ from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 
 # recoil correction
 
-metForRecoil = 'cmgPFMETRaw'
+# IN 52X: should be type1 MET. In 44X, should be raw MET
+metForRecoil = 'cmgPFMET'
+if cmsswIs44X:
+    metForRecoil = 'cmgPFMETRaw'
 diTausForRecoil = 'cmgTauElePreSel'
 
 recoilCorMETTauEle =  recoilCorrectedMETTauEle.clone(
