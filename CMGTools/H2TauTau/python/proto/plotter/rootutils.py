@@ -27,6 +27,26 @@ xtitles = {
     'jet2_eta':'#eta_{#tau}',
     }
 
+xtitles_TauEle = {
+    'l1_pt':'p_{T,#tau} (GeV)',
+    'l1Jet_pt':'p_{T,#tau jet} (GeV)',
+    'l2_pt':'p_{T,e} (GeV)',
+    'l2Jet_pt':'p_{T,e jet} (GeV)',
+    'l1_eta':'#eta_{#tau}',
+    'l2_eta':'#eta_{e}',
+    'l1_rawMvaIso':'MVA #tau iso',
+    'l1_relIso05':'#tau iso',
+    'l2_relIso05':'e iso',
+    'mt':'m_{T} (GeV/c^{2})',
+    'visMass':'m_{vis} (GeV)',
+    'svfitMass':'m_{sv} (GeV)',
+    'nJets':'N_{jets}',
+    'jet1_pt':'p_{T,jet1} (GeV)',
+    'jet2_pt':'p_{T,jet1} (GeV)',
+    'jet1_eta':'#eta_{#tau}',
+    'jet2_eta':'#eta_{#tau}',
+    }
+
 def savePlot(name):
     if gPad is None:
         print 'no active canvas'
@@ -99,6 +119,7 @@ def draw(plot, doBlind=True, channel='TauMu'):
         blindxmax = 160
         plot.Blind(blindxmin, blindxmax, False)
         
+    if channel=='TauEle': xtitles = xtitles_TauEle
     xtitle = xtitles.get( plot.varName, None )
     if xtitle is None:
         xtitle = ''
