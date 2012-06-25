@@ -66,7 +66,7 @@ def makePlotNOQCD( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                    nbins=None, xmin=None, xmax=None,
                    cut='', weight='weight', embed=False, replaceWJets=False):
     
-    print 'making the plot:', var, 'cut', cut
+    print 'making the plot:', var, ' with cut', cut, '\n'
     # if nbins is None: nbins = NBINS
     # if xmin is None: xmin = XMIN
     # if xmax is None: xmax = XMAX
@@ -94,7 +94,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
               cut='', weight='weight', embed=False, replaceWJets=True):
     
-    print 'making the plot:', var, 'cut', cut
+    print 'making the plot:', var, ' with cut', cut, '\n'
     # if nbins is None: nbins = NBINS
     # if xmin is None: xmin = XMIN
     # if xmax is None: xmax = XMAX
@@ -205,7 +205,7 @@ if __name__ == '__main__':
     parser.add_option("-M", "--max", 
                       dest="xmax", 
                       help="xmax",
-                      default=200)
+                      default=160)
 
     
     
@@ -253,19 +253,12 @@ if __name__ == '__main__':
     #PG first plot before any DD estimate of bkg
     #PG -----------------------------------------
 
-#    weights['WJet']
-#(Pdb) print weights['WJets']
-# genN = 81345381, xsec = 31314.00000 pb, genEff = 1.00, intLumi = 4917.49, addWeight = 1.00 -> weight = 1.89299
-
     firstPlot = H2TauTauDataMC(options.hist, anaDir,
                                selComps, weights, NBINS, XMIN, XMAX,
                                cut=options.cut, weight=weight,
                                embed=False, treeName = 'H2TauTauTreeProducerTauEle')
 
-# {'data_Run2011A_03Oct2011_v1': <CMGTools.RootTools.fwlite.Config.DataComponent object at 0x11d34850>, 'data_Run2011A_05Aug2011_v1': <CMGTools.RootTools.fwlite.Config.DataComponent object at 0x11d31750>, 'data_Run2011B_PromptReco_v1': <CMGTools.RootTools.fwlite.Config.DataComponent object at 0x11d34910>, 'WJets': <CMGTools.RootTools.fwlite.Config.MCComponent object at 0xbd40410>, 'TTJets': <CMGTools.RootTools.fwlite.Config.MCComponent object at 0xbd40450>, 'data_Run2011A_May10ReReco_v1': <CMGTools.RootTools.fwlite.Config.DataComponent object at 0x11d31510>, 'Ztt': <CMGTools.RootTools.fwlite.Config.MCComponent object at 0xbd40310>, 'data_Run2011A_PromptReco_v4': <CMGTools.RootTools.fwlite.Config.DataComponent object at 0x11d31690>}
-
-    
-#    draw(firstPlot, True, channel='TauEle')
+    draw(firstPlot, True, channel='TauEle', plotprefix='firstPlot')
 
     #PG plot of data and DY only
     #PG -----------------------------------------
@@ -281,7 +274,7 @@ if __name__ == '__main__':
                                   cut=options.cut, weight=weight,
                                   embed=False, treeName = 'H2TauTauTreeProducerTauEle')
 
-#    draw(DY_data_plot, False, channel='TauEle')
+    draw(DY_data_plot, False, channel='TauEle', plotprefix='onlyDY')
 
     #PG plot of data and WJets only
     #PG -----------------------------------------
@@ -297,7 +290,7 @@ if __name__ == '__main__':
                                   cut=options.cut, weight=weight,
                                   embed=False, treeName = 'H2TauTauTreeProducerTauEle')
 
-#    draw(WJ_data_plot, False, channel='TauEle')
+    draw(WJ_data_plot, False, channel='TauEle', plotprefix='onlyWJ')
 
 #    import pdb ; pdb.set_trace ()
 
@@ -309,14 +302,8 @@ if __name__ == '__main__':
                                  weight=weight, embed=options.embed, 
                                  treeName='H2TauTauTreeProducerTauEle')
 
-#def plot_W(anaDir, comps, weights, 
-#           nbins, xmin, xmax, cut, 
-#           weight, embed, 
-#           treeName):
-
-
-#    draw(ss, True, channel='TauEle')
-#    draw(os, True, channel='TauEle')
+    draw(ss, True, channel='TauEle', plotprefix='W_SS')
+    draw(os, True, channel='TauEle', plotprefix='W_OS')
 
     osNOQCD = makePlotNOQCD( options.hist, anaDir, selComps, 
                              weights, fwss, fwos,
