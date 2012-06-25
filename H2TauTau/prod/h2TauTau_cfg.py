@@ -10,7 +10,7 @@ sep_line = '-'*70
 process = cms.Process("H2TAUTAU")
 
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -22,8 +22,8 @@ numberOfFilesToProcess = 10
 debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
-channel = 'tau-mu'
-jetRecalib = True
+channel = 'tau-ele'
+jetRecalib = False
 useCHS = False 
 newSVFit = True 
 tauScaling = 1
@@ -45,6 +45,9 @@ print 'tau scaling =', tauScaling
 # process.setName_('H2TAUTAU')
 
 dataset_user = 'cmgtools' 
+dataset_name = '/TauPlusX/Run2011B-PromptReco-v1/AOD/V5/PAT_CMG_V5_4_1'
+#dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1'
+
 # dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5/PAT_CMG_V5_2_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_2_0'
@@ -61,7 +64,7 @@ dataset_user = 'cmgtools'
 #cbern%/H2TAUTAU/Sync/GluGlu/AOD
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
-dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
+# dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
 
 # dataset_name = '/TauPlusX/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396'
 
@@ -248,9 +251,11 @@ if useCHS:
 
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
+    process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
     process.MessageLogger.cerr.FwkReport.reportEvery = 1
 else:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
+    process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
  
 
 ## process.tauMu_fullsel_tree_CMG.outputCommands.extend([
