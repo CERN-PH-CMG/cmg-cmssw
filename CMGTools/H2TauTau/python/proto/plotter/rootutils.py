@@ -109,7 +109,7 @@ unitpat = re.compile('.*\((.*)\)\s*$')
 keeper = []
 
 
-def draw(plot, doBlind=True, channel='TauMu'):
+def draw(plot, doBlind=True, channel='TauMu', plotprefix = None):
     print plot
     blindxmin = None
     blindxmax = None
@@ -177,7 +177,9 @@ def draw(plot, doBlind=True, channel='TauMu'):
     if channel == 'TauMu' : CMSPrelim( plot, pad, '#tau_{#mu}#tau_{h}')
     elif channel == 'TauEle' : CMSPrelim ( plot, pad, '#tau_{e}#tau_{h}')
     can.cd()
-    can.SaveAs( plot.varName + '.png')
+    if plotprefix == None : plotname = plot.varName
+    else : plotname = plotprefix + '_' + plot.varName
+    can.SaveAs( plotname + '.png')
 
 cantemp = None
 
