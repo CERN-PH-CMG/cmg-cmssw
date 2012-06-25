@@ -221,7 +221,7 @@ if __name__ == '__main__':
     # the categories dictionary is in categories_TauEle.py
     # when putting -C key the key is substituted for the actual cut, for example:
     # -C Xcut_IncX (the X's are necessary for some reasons)
-    options.cut = replaceCategories(options.cut, categories) 
+    options.cut = replaceCategories(options.cut, categories_Te) 
     
     print 'used cut:',options.cut
 
