@@ -132,9 +132,9 @@ void getGammaWeights(string inputFile="plotter.root",string varName="qt",int mod
 	  //get the histos 
 	  string pName=dilCats[id]+cats[ic]+"_"+varName;
 	  TH1F *hdy   = 0;
-	  if(mode != ONLYMC )  { hdy   = (TH1F *) getObjectFromPath(fin,dyDir+"/"+pName,true);    hdy->SetDirectory(0);   }
+	  if(mode != ONLYMC )  { hdy   = (TH1F *) getObjectFromPath(fin,dyDir+"/"+pName,true);   if(hdy==0) continue;  hdy->SetDirectory(0);   }
 	  TH1F *hmcdy = 0;
-	  if(mode != ONLYDATA) { hmcdy = (TH1F *) getObjectFromPath(fin,dymcDir+"/"+pName,true);  hmcdy->SetDirectory(0); }
+	  if(mode != ONLYDATA) { hmcdy = (TH1F *) getObjectFromPath(fin,dymcDir+"/"+pName,true); if(hmcdy==0) continue; hmcdy->SetDirectory(0); }
 
 	  //DERIVE WEIGHTS
 	  string gPName(pName);
