@@ -137,7 +137,7 @@ def fW(mtplot, dataName, xmin, xmax):
 def plot_W(anaDir,
            comps, weights, nbins, xmin, xmax,
            cut, weight,
-           embed, treeName):
+           embed, treeName=None):
 
     # get WJet scaling factor for same sign
     var = 'mt'

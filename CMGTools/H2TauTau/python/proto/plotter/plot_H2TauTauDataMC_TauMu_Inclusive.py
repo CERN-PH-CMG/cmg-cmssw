@@ -33,7 +33,7 @@ def replaceShapeInclusive(plot, var, anaDir,
                           cut, weight,
                           embed):
 
-    cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.')
+    cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
     print '[INCLUSIVE] estimate',comp.name,'with cut',cut
     plotWithNewShape = cp( plot )
     wjyield = plot.Hist(comp.name).Integral()
@@ -72,7 +72,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            cut=oscut, weight=weight,
                            embed=embed)
     osign.Hist(EWK).Scale( wJetScaleOS )
-    replaceWJets = False
+    replaceWJets = True
     if replaceWJets:
         osign = replaceShapeInclusive(osign, var, anaDir,
                                       selComps['WJets'], weights, 
@@ -95,8 +95,23 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
     # import pdb; pdb.set_trace()
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
+        
+    if 0:
+        qcd_yield = osQCD.Hist('QCD').Integral()
+        
+        sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.75') + ' && diTau_charge!=0' 
+        ssign_qcdshape = H2TauTauDataMC(var, anaDir,
+                                        selComps, weights, nbins, xmin, xmax,
+                                        cut=sscut_qcdshape, weight=weight,
+                                        embed=embed)
+        qcd_shape = copy.deepcopy( ssign_qcdshape.Hist('Data') )    
+        qcd_shape.Normalize()
+        qcd_shape.Scale(qcd_yield)
+        # qcd_shape.Scale( qcd_yield )
+        osQCD.Replace('QCD', qcd_shape)
 
-    osQCD.Group('EWK', ['WJets', 'Ztt_Fakes'])
+    osQCD.Group('VV', ['WW','WZ','ZZ'])
+    osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
     return ssign, osign, ssQCD, osQCD
 
@@ -162,6 +177,10 @@ if __name__ == '__main__':
                       dest="xmax", 
                       help="xmax",
                       default=None)
+    parser.add_option("-g", "--higgs", 
+                      dest="higgs", 
+                      help="Higgs mass: 125, 130,... or dummy",
+                      default=None)
 
     
     (options,args) = parser.parse_args()
@@ -197,7 +216,8 @@ if __name__ == '__main__':
     comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='TTJets11' and comp.name!='WJets']
     cfg.config.components = comps
     aliases = {'WJets11':'WJets'}
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases)
+    
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, options.embed, 'TauMu', options.higgs)
 
     can, pad, padr = buildCanvas()
     cutw = options.cut.replace('mt<40', '1')
@@ -214,7 +234,6 @@ if __name__ == '__main__':
 ##                                                   # , aliases)
 
 
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos,
-                                           NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
+    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
     draw(osQCD, options.blind)
     

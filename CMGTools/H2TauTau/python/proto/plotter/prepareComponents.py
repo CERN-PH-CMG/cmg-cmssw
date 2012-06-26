@@ -5,7 +5,7 @@ from CMGTools.H2TauTau.proto.plotter.embed import embedScaleFactor
 keeper = []
 
 
-def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu'):
+def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', higgsMass=None):
     '''Selects all components in configuration file. computes the integrated lumi
     from data components, and set it on the MC components.
     '''
@@ -28,16 +28,19 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu'):
             embedComps.append(comp)
         comp.dir = comp.name
         if comp.name.startswith('Higgs'):
-            if comp.name.find('125')==-1:
-                continue
-            else:
-                comp.addWeight = 5.0
+            if higgsMass is not None:
+                if comp.name.find(higgsMass)==-1:
+                    continue
+                else:
+                    comp.addWeight = 5.0
         if comp.name.startswith('zdata'):
             zComps[comp.name] = comp
             # disabling is probably not necessary 
             comp.disabled = True
             continue
         comp.realName = comp.name
+        comp.name = comp.name.replace('_Up','')
+        comp.name = comp.name.replace('_Down','')
         alias = aliases.get(comp.name, None)
         if alias:
             comp.name = alias
@@ -74,7 +77,7 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu'):
     attachTree(newSelComps, channel)
 
     # compute the embedded sample weighting factor
-    if embed:
+    if embed and newSelComps.get('Ztt', False):
         eh, zh, embedFactor = embedScaleFactor(newSelComps)
         for comp in embedComps:
             # import pdb; pdb.set_trace()
@@ -86,7 +89,7 @@ if __name__ == '__main__':
     import imp
     import sys
     from CMGTools.RootTools.RootTools import * 
-    from CMGTools.H2TauTau.proto.plotter.categories import *
+    from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
 
     anaDir = sys.argv[1]
     cfgFileName = sys.argv[2]
