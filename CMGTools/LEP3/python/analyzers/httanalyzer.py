@@ -103,16 +103,13 @@ class httanalyzer( Analyzer ):
           n+=1
       return n>1    
 
-    def buildClusteredJets(self, event):
+    def buildClusteredJets_old(self, event):
       event.nontaucand.sort(key=lambda a: a.energy(), reverse = True)
       tmpJets = set(event.nontaucand)
       if len(event.nontaucand) > 2 :
-        event.nontaucand.sort(key=lambda a: a.energy(), reverse = True)
-        tmpJets = set(event.nontaucand)
         while len(tmpJets) != 2:
           dijets = self.findPairs(tmpJets)
           dijets.sort(key=lambda a: a.M())
-          #print dijets[0],dijets[0].M()
           tmpJets.remove(dijets[0].leg1)
           tmpJets.remove(dijets[0].leg2)
           tmpJets.add(dijets[0])
@@ -121,14 +118,26 @@ class httanalyzer( Analyzer ):
         for jet in tmpJets:
           event.nontaucand.append(jet) 
 
+    def buildClusteredJets(self, jets):
+      jets.sort(key=lambda a: a.energy(), reverse = True)
+      tmpJets = set(jets)
+      if len(jets) > 2 :
+        while len(tmpJets) != 2:
+          dijets = self.findPairs(tmpJets)
+          dijets.sort(key=lambda a: a.M())
+          tmpJets.remove(dijets[0].leg1)
+          tmpJets.remove(dijets[0].leg2)
+          tmpJets.add(dijets[0])
+
+      return tmpJets
+            
+
 
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
         eventNumber = iEvent.eventAuxiliary().id().event()
-        #print 'Event ',eventNumber
-        # creating a "sub-event" for this analyzer
         myEvent = Event(event.iEv)
         setattr(event, self.name, myEvent)
         event = myEvent
@@ -181,41 +190,41 @@ class httanalyzer( Analyzer ):
             self.jetiso.append(cosmax)
 
 
-        # prepare electrons ordered in energy
-        self.electrons=[]
-        for ptj in self.handles['electrons'].product():
-            self.electrons.append(Electron(ptj))
-            
-        # order them in energy
-        self.electrons.sort(key=lambda a: a.energy(), reverse = True)
-        
-        # loop over jets and define  "isolation"
-        self.eleiso=[]
-        for ind1 in range(0,len(self.electrons)):
-            cosmax=-2
-            for ind2 in range(ind1+1,len(self.jets)):
-                cos=self.cosdelta(self.electrons[ind1],self.jets[ind2])
-                if cos> cosmax:
-                    cosmax=cos
-            self.eleiso.append(cosmax)
-
-        # prepare muons ordered in energy
-        self.muons=[]
-        for ptj in self.handles['muons'].product():
-            self.muons.append(Electron(ptj))
-            
-        # order them in energy
-        self.muons.sort(key=lambda a: a.energy(), reverse = True)
-        
-        # loop over jets and define  "isolation"
-        self.muoiso=[]
-        for ind1 in range(0,len(self.muons)):
-            cosmax=-2
-            for ind2 in range(ind1+1,len(self.jets)):
-                cos=self.cosdelta(self.muons[ind1],self.jets[ind2])
-                if cos> cosmax:
-                    cosmax=cos
-            self.muoiso.append(cosmax)
+#        # prepare electrons ordered in energy
+#        self.electrons=[]
+#        for ptj in self.handles['electrons'].product():
+#            self.electrons.append(Electron(ptj))
+#            
+#        # order them in energy
+#        self.electrons.sort(key=lambda a: a.energy(), reverse = True)
+#        
+#        # loop over electron and define  "isolation"
+#        self.eleiso=[]
+#        for ind1 in range(0,len(self.electrons)):
+#            cosmax=-2
+#            for ind2 in range(ind1+1,len(self.jets)):
+#                cos=self.cosdelta(self.electrons[ind1],self.jets[ind2])
+#                if cos> cosmax:
+#                    cosmax=cos
+#            self.eleiso.append(cosmax)
+#
+#        # prepare muons ordered in energy
+#        self.muons=[]
+#        for ptj in self.handles['muons'].product():
+#            self.muons.append(Electron(ptj))
+#            
+#        # order them in energy
+#        self.muons.sort(key=lambda a: a.energy(), reverse = True)
+#        
+#        # loop over jets and define  "isolation"
+#        self.muoiso=[]
+#        for ind1 in range(0,len(self.muons)):
+#            cosmax=-2
+#            for ind2 in range(ind1+1,len(self.jets)):
+#                cos=self.cosdelta(self.muons[ind1],self.jets[ind2])
+#                if cos> cosmax:
+#                    cosmax=cos
+#            self.muoiso.append(cosmax)
 
             
         
@@ -226,11 +235,11 @@ class httanalyzer( Analyzer ):
         self.tauiso=[]
         self.taumatchingjetindex=[]
 
-        self.nontaugenjet = copy.copy(self.jets)
-        self.nontaugenjetiso = copy.copy(self.jetiso)
+#        self.nontaugenjet = copy.copy(self.jets)
+#        self.nontaugenjetiso = copy.copy(self.jetiso)
        
         if event.ishtt==1:
-#            print "probing event",eventNumber
+
             # loop over jets and find closest gen tau
             if event.njets>=2:
                 for thistau in self.tau:
@@ -267,9 +276,9 @@ class httanalyzer( Analyzer ):
                 event.tau2matchingjetindex=self.taumatchingjetindex[1]
 
 
-        self.nontaugenjet.sort(key=lambda a: a.energy(), reverse = True)
-        event.nontaugenjet = self.nontaugenjet
-        event.nontaugenjetiso = self.nontaugenjetiso
+#        self.nontaugenjet.sort(key=lambda a: a.energy(), reverse = True)
+#        event.nontaugenjet = self.nontaugenjet
+#        event.nontaugenjetiso = self.nontaugenjetiso
         
         
         
@@ -277,10 +286,12 @@ class httanalyzer( Analyzer ):
         event.step=0
         event.matchedRecGenDistances = []
         event.hz = []
+        
         # first look for at least four jets and two of them isolated and low #tracks
         if event.njets<4:
             return
         event.step+=1 # 1
+        
         #test for jets above threshold
         etest = self.testE()
         if etest:
@@ -304,7 +315,8 @@ class httanalyzer( Analyzer ):
             #            if ind>=2 and ntrk>0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
             #            if ntrk>=1 and ntrk<=3  and self.jetiso[ind]<0.8 and len(event.taucand)<2:
             # if ntrk>=0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
-            if ntrk>=1 and ntrk<=3  and self.jetiso[ind]<0.9:
+            # if ntrk>=1 and ntrk<=3  and self.jetiso[ind]<0.9:
+            if ntrk>=1 and ntrk<=3:
                 event.taucand.append(self.jets[ind])
                 event.taucandiso.append(self.jetiso[ind])
 #                print "adding to tau"
@@ -323,41 +335,69 @@ class httanalyzer( Analyzer ):
         # opposite mass closer to Z peak
 
         if len(event.taucand)>2:
-            # print "Befoe tau:",len(event.taucand)
-            # for jet in event.taucand: print jet.energy()
-            # print "Before jet:",len(event.nontaucand)
-            # for jet in event.nontaucand: print jet.energy()
-            # print "tau cand:",len(event.taucand)
             dm=9999.
             taupair=(-1,-1)
-            # first sum-up nontaucand momentum
-            pnontau=[0,0,0,0]
-            for jet in event.nontaucand:
-                pnontau[0]+=jet.px()
-                pnontau[1]+=jet.py()
-                pnontau[2]+=jet.pz()
-                pnontau[3]+=jet.energy()
+            # fit version of tau finding optimization
             for ind1, ind2 in itertools.combinations(range(len(event.taucand)), 2):
-                ptau=[0,0,0,0]
-                for tauind in range(0,len(event.taucand)):
-                    if tauind!=ind1 and tauind!=ind2:
-                        ptau[0]+=event.taucand[tauind].px()
-                        ptau[1]+=event.taucand[tauind].py()
-                        ptau[2]+=event.taucand[tauind].pz()
-                        ptau[3]+=event.taucand[tauind].energy()
-                pall=[0,0,0,0]
-                for comp in range(0,4): pall[comp]=pnontau[comp]+ptau[comp]
-                mnontau=pall[3]**2-pall[0]**2-pall[1]**2-pall[2]**2
-                if mnontau<0: mnontau=0
-                mnontau=sqrt(mnontau)
-                # print ind1,ind2,mnontau
+                nt=[]
+                nj=[]
+                nt.append(event.taucand[ind1])
+                nt.append(event.taucand[ind2])
+                nj=copy.copy(event.nontaucand)
+                for i in range(len(event.taucand)):
+                    if i!=ind1 and i!=ind2:
+                        nj.append(event.taucand[i])
+                # nt and nj are potential tau and nontaucandidates
+                # now clusterize the nontaucand
+                tmpJets=list(self.buildClusteredJets(nj))
+                # poor man kf
+                chi2,newjets,newtaus = self.beta4(tmpJets, nt, 120.,False)
+
+                jet0=newjets[0]
+                jet1=newjets[1]
+                
+                mnontau=(jet0[3]+jet1[3])**2-(jet0[2]+jet1[2])**2-(jet0[1]+jet1[1])**2-(jet0[0]+jet1[0])**2
+                if mnontau>0:
+                    mnontau=sqrt(mnontau)
+                else:
+                    mnontau=0
+#                print ind1,ind2,mnontau
                 if abs(mnontau-91.2)<dm:
                     taupair=(ind1,ind2)
                     dm=abs(mnontau-91.2)
+                
+                
+                
+            # poor man optimization of tau candidates
+            # first sum-up nontaucand momentum
+#            pnontau=[0,0,0,0]
+#            for jet in event.nontaucand:
+#                pnontau[0]+=jet.px()
+#                pnontau[1]+=jet.py()
+#                pnontau[2]+=jet.pz()
+#                pnontau[3]+=jet.energy()
+#            for ind1, ind2 in itertools.combinations(range(len(event.taucand)), 2):
+#                ptau=[0,0,0,0]
+#                for tauind in range(0,len(event.taucand)):
+#                    if tauind!=ind1 and tauind!=ind2:
+#                        ptau[0]+=event.taucand[tauind].px()
+#                        ptau[1]+=event.taucand[tauind].py()
+#                        ptau[2]+=event.taucand[tauind].pz()
+#                        ptau[3]+=event.taucand[tauind].energy()
+#                pall=[0,0,0,0]
+#                for comp in range(0,4): pall[comp]=pnontau[comp]+ptau[comp]
+#                mnontau=pall[3]**2-pall[0]**2-pall[1]**2-pall[2]**2
+#                if mnontau<0: mnontau=0
+#                mnontau=sqrt(mnontau)
+#                # print ind1,ind2,mnontau
+#                if abs(mnontau-91.2)<dm:
+#                    taupair=(ind1,ind2)
+#                    dm=abs(mnontau-91.2)
+
 
             # now we have taupair and we can adapt the candidates
             (t1,t2)=taupair
-            # print t1,t2
+#            print "chosen",t1,t2
             t1temp=event.taucand[t1]
             t1isotemp=event.taucandiso[t1]
             t2temp=event.taucand[t2]
@@ -373,14 +413,7 @@ class httanalyzer( Analyzer ):
             event.taucand=[t1temp,t2temp]
             event.taucandiso=[t1isotemp,t2isotemp]
             
-            # print "After tau:",len(event.taucand)
-            # for jet in event.taucand: print jet.energy()
-            # print "After jet:",len(event.nontaucand)
-            # for jet in event.nontaucand: print jet.energy()
             
-            
-
-
         #MC matching
         if event.ishtt==1 and event.isHZqq==1:
             #check the closest gen tau
@@ -395,24 +428,34 @@ class httanalyzer( Analyzer ):
                     event.matchedRecGenDistances.append(cosmax)     
   
         #cluster the remaining part of the event
-        self.buildClusteredJets(event)
+
+        #        self.buildClusteredJets_old(event)
+        tmpJets=self.buildClusteredJets(event.nontaucand)
+        # rewrites the jets after clustering
+        event.nontaucand = []
+        for jet in tmpJets:
+            event.nontaucand.append(jet)
+
 
         #check that the clustered jets pass id (this also does the momentum rescaling)
-        idpass = self.testId(event.nontaucand, event.taucand) 
+
+        idpass,newjets,newtaus = self.testId(event.nontaucand, event.taucand,True)
         event.mvis = self.mvis       
         event.chi2 = self.chi2       
         if not idpass:
           return
+
         self.counters.counter('h_rec').inc('2 jets with id')
         event.step+=1 #4
 
         #finally find the HZ candidates
-        self.hz = self.findHZ(event.nontaucand, event.taucand)
-        if len(self.hz) < 1:
+        reshz,self.hz = self.findHZ(event.nontaucand, event.taucand)
+        event.hz = self.hz
+#        print "dijetmass ",event.hz[1].M()
+        if not reshz:
           return
         event.step+=1 #5
         self.counters.counter('h_rec').inc('passed') 
-        event.hz = self.hz 
 
         if event.ishtt==1 and event.isHZqq==1:
             self.counters.counter('h_gen').inc('Z->qq and h->tt selected')
@@ -428,7 +471,7 @@ class httanalyzer( Analyzer ):
 
         return out 
 
-    def beta4(self, jets, taus, ebeam):
+    def beta4(self, jets, taus, ebeam,changevalues):
 
         from numpy import array, linalg, dot, add
         
@@ -457,8 +500,9 @@ class httanalyzer( Analyzer ):
         energies = linalg.solve(d2,d)
         #print energies
         chi2 = 0.
-        for i,jet in enumerate(jets):
 
+        newjets=[]
+        for i,jet in enumerate(jets):
             if energies[i] > 0. :
                 uncert = 0.5*sqrt(jet.energy()) + 0.05*jet.energy()
                 delta = (jet.energy()-energies[i])/uncert
@@ -470,25 +514,33 @@ class httanalyzer( Analyzer ):
                 chi2 += 1000.
 
             p4 = jet.p4()
-            p4.SetPxPyPzE(jet.px()*energies[i]/jet.energy(),
-                          jet.py()*energies[i]/jet.energy(),
-                          jet.pz()*energies[i]/jet.energy(),
-                          energies[i])
-            jet.setP4(p4)
+            px=jet.px()*energies[i]/jet.energy()
+            py=jet.py()*energies[i]/jet.energy()
+            pz=jet.pz()*energies[i]/jet.energy()
+            
+            if changevalues:
+                p4.SetPxPyPzE(px,py,pz,energies[i])
+                jet.setP4(p4)
+            newjets.append([px,py,pz,energies[i]])
+
+        newtaus=[]
         for i, tau in enumerate(taus):
           if energies[i+2] < 0.:
             chi2 += 1000.
           p4 = tau.p4()
-          p4.SetPxPyPzE(tau.px()*energies[i+2]/tau.energy(),
-                          tau.py()*energies[i+2]/tau.energy(),
-                          tau.pz()*energies[i+2]/tau.energy(),
-                          energies[i+2])  
-          tau.setP4(p4)  
+          px=tau.px()*energies[i+2]/tau.energy()
+          py=tau.py()*energies[i+2]/tau.energy()
+          pz=tau.pz()*energies[i+2]/tau.energy()
+          if changevalues:
+              p4.SetPxPyPzE(px,py,pz,energies[i+2])
+              tau.setP4(p4)
+          newtaus.append([px,py,pz,energies[i+2]])
+        return chi2,newjets,newtaus  
 
-        return chi2  
-
-    def testId(self, jets, taus) :
+    def testId(self, jets, taus,changevalues) :
    
+        newjets=[]
+        newtaus=[]
         self.mvis = -100
         self.px = -100
         self.py = -100
@@ -521,7 +573,7 @@ class httanalyzer( Analyzer ):
 
         if len(jets) != 2 :
             #print 'NJets = ', len(jets)
-            return False
+            return False,newjets,newtaus
         
         for jet in jets:
             if jet.nConstituents() >= self.cfg_ana.npfj[1] : njobj += 1
@@ -550,34 +602,36 @@ class httanalyzer( Analyzer ):
         # 4 jets
 #        if njeta < 4 :
 #            #print 'NjetsEta = ',njeta
-#            return False
+#            return False,newjets,newtaus
 
         # At least npfj jets with at least npf particles
         if njobj < self.cfg_ana.npfj[0] :
 #            print 'njobj = ',njobj
-            return False
+            return False,newjets,newtaus
 
         # At least ntkj jets with at least ntk tracks
         if njtrk < self.cfg_ana.ntkj[0] :
 #            print 'njtrk = ',njtrk
-            return False
+            return False,newjets,newtaus
         
         # Smallest jet mass larger than tau mass (say)
         if massmin < self.cfg_ana.minM :
 #            print 'massmin = ',massmin
-            return False
+            return False,newjets,newtaus
         
         # No missing energy
 #        if mvis < self.cfg_ana.mVis :
 #            print 'mvis = ',mvis
-#            return False
+#            return False,newjets,newtaus
 
         # Rescale jet energies
         # Check the chi2 ( < 1000. == request all energies to be positive)
-        chi2 = self.beta4(jets, taus, 120.)
+        
+        chi2,newjets,newtaus = self.beta4(jets, taus, 120.,changevalues)
+
         if chi2 > self.cfg_ana.chi2 :
             #print 'chi2 = ',chi2
-            return False
+            return False,newjets,newtaus
 
         self.mvis = mvis
         self.px = px
@@ -587,7 +641,7 @@ class httanalyzer( Analyzer ):
         self.chi2 = chi2
         self.mmin = massmin
 
-        return True 
+        return True,newjets,newtaus 
 
 
     def cosdelta(self,part1,part2):
@@ -671,6 +725,7 @@ class httanalyzer( Analyzer ):
                           
     def findHZ(self, jets, taus):
 
+        result=False
         hz = []
 
         hPair = []
@@ -682,12 +737,13 @@ class httanalyzer( Analyzer ):
         dijet = DiObject(jets[0], jets[1])
         #print "diphoton mass",diphoton.M()
         #print "dijet mass",dijet.M()
+        hz = [ditau, dijet]         
         if ditau.M() > self.cfg_ana.h_mass and \
            dijet.M() > self.cfg_ana.z_mass[0] and \
            dijet.M() < self.cfg_ana.z_mass[1] :
-          hz = [ditau, dijet]         
-                
-        return hz
+            result=True
+            
+        return result,hz
 
     def findWW(self, jetPairs):
 
