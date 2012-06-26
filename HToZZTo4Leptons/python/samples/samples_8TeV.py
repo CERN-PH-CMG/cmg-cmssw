@@ -42,7 +42,7 @@ ZZ2mu2tau.files=getFiles('/ZZTo2mu2tau_8TeV-powheg-pythia6/Summer12-PU_S7_START5
 ZZ4e.files=getFiles('/ZZTo4e_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 ZZ4mu.files=getFiles('/ZZTo4mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 ZZ2e2mu.files=getFiles('/ZZTo2e2mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-ZZ2e2tau.files=getFiles('/ZZTo4mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
+ZZ2e2tau.files=getFiles('/ZZTo2e2tau_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 TTJets.files=getFiles('/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START50_V15-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 
 
@@ -281,14 +281,14 @@ for comp in mcSamples:
     comp.efficiency = eff2012
     
 for comp in dataSamplesMu:
-    comp.splitFactor = 500
+    comp.splitFactor = 900
     comp.fakeRates=fakeRates2012
 for comp in dataSamplesE:
-    comp.splitFactor = 500
+    comp.splitFactor = 900
     comp.fakeRates=fakeRates2012
 
 for comp in dataSamplesMuE:
-    comp.splitFactor = 500
+    comp.splitFactor = 900
     comp.fakeRates=fakeRates2012
 
 data_DoubleMuRecovered.splitFactor=50
