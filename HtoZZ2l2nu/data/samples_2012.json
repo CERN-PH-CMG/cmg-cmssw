@@ -8,40 +8,10 @@
         "marker":1,
         "data":[
 	    {
-                "dtag":"noMC8TeV_WW_pythia",
-                "dset":"/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
-                "split":1,
-                "xsec":57.1097
-             }
-	]
-	},
-	{
-        "tag":"WW#rightarrow 2l2#nu",
-        "isdata":false,
-        "color":"592",
-        "lcolor":1,
-        "marker":1,
-        "data":[
-	    {
                 "dtag":"MC8TeV_WW",
                 "split":1,
                 "xsec":57.1097,
 		"br":[0.104976]
-             }
-	]
-	},
-	{
-	"tag":"ZZ",
-        "isdata":false,
-	"color":"590",
-        "lcolor":1,
-	"marker":1,
-	"data":[
-	    {
-                "dtag":"noMC8TeV_ZZ_pythia",
-                "split":2,
-	        "mctruthmode":1,
-                "xsec":8.25561
              }
 	]
 	},
@@ -267,26 +237,6 @@
                 "xsec":0.8441,
                 "xsecunc":[3.2,-3.0],
 		"br":[0.256,0.0273387105]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(200)#rightarrow WW",
-	"isdata":false,
-	"isinvisible":true,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-                "dtag":"MC8TeV_VBFtoH200toWWto2L2Nu",
-                "split":1,
-                "xsec":0.8441,
-                "xsecunc":[3.2,-3.0],
-                "br":[0.741,0.046656]
 		}
 	   ]
 	},
