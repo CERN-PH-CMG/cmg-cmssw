@@ -25,6 +25,7 @@ class Stack:
         self.statErrors = Stack.STAT_ERRORS
         self.style = Stack.STYLE
         self.ytitle = ytitle
+        self.axisWasSet = False
         
     def Add(self, hist):
         '''Add an Histogram.'''
@@ -66,7 +67,9 @@ class Stack:
             ymin = 0.1
         if ymax is None:
             ymax = hist.GetMaximum()*1.3
-        hist.GetYaxis().SetRangeUser( ymin, ymax )
+        if not self.axisWasSet:
+            self.axisWasSet = True
+            hist.GetYaxis().SetRangeUser( ymin, ymax )
         if xmin is not None and xmax is not None:
             # without the little offset,
             # the range includes the bin over xmax !@(*
