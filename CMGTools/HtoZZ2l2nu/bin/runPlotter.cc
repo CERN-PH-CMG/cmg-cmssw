@@ -598,7 +598,6 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 	if(Process[i]["isdata"].toBool()){
 	  if(!data){
 	    data = hist; 
-	    cout << hist->Integral() << endl;
 	    legA->AddEntry(hist, Process[i]["tag"].c_str(), "P"); 
 	  }
 	  else data->Add(hist);
