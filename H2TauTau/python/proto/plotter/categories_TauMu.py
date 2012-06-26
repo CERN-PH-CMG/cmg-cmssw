@@ -48,7 +48,7 @@ categories = {
     'Xcat_Inc_RlxTauIsoX':cat_Inc_RlxTauIso,
     'Xcat_IncX':cat_Inc,
     'Xcat_VBFX':cat_VBF,
-    'Xcat_VHX':cat_VH,
+#     'Xcat_VHX':cat_VH,
     'Xcat_J1X':cat_J1,
     'Xcat_J1BX':cat_J1B,
     'Xcat_J0X':cat_J0

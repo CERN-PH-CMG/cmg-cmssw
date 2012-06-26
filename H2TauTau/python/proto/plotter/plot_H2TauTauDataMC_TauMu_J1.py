@@ -13,6 +13,7 @@ from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
+from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.embed import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, PlotInfo
 from CMGTools.RootTools.Style import *
@@ -214,9 +215,10 @@ if __name__ == '__main__':
     can, pad, padr = buildCanvas()
 
     # WJet normalization, done with the 2012 sample
-    comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='TTJets11' and comp.name!='WJets11']
+    comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='TTJets11' and comp.name!='WJets']
     cfg.config.components = comps
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config)
+    aliases = {'WJets11':'WJets'}
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, options.embed, 'TauMu', '125')
 
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,

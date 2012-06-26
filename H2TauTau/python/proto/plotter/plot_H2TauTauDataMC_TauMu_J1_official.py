@@ -13,6 +13,7 @@ from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
+from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.embed import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, PlotInfo
 from CMGTools.RootTools.Style import *
@@ -114,7 +115,8 @@ def makePlot( var, anaDir, selComps, weights, wJetYieldSS, wJetYieldOS,
     # import pdb; pdb.set_trace()
     if var!='mt':
         osQCD.Hist('QCD').Scale( 1618. / 1860.)
-    osQCD.Group('EWK', ['WJets', 'Ztt_Fakes'])
+    osQCD.Group('VV', ['WW','WZ','ZZ'])
+    osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
     
     return ssign, osign, ssQCD, osQCD
@@ -217,7 +219,7 @@ if __name__ == '__main__':
     # WJet normalization, done with the 2012 sample
     comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='TTJets11' and comp.name!='WJets11']
     cfg.config.components = comps
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config)
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, options.embed, 'TauMu', '125')
 
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
@@ -243,7 +245,8 @@ if __name__ == '__main__':
 
     aliases = {'WJets11':'WJets'}
     selComps, weights, zComps = prepareComponents(anaDir,
-                                                  cfg.config, aliases)
+                                                  cfg.config, aliases, options.embed,
+                                                  'TauMu', '125')
     # import pdb; pdb.set_trace()
 
     ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, wjyieldss, wjyieldos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)

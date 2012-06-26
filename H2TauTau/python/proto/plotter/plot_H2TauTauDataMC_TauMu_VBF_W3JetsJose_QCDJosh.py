@@ -14,6 +14,7 @@ from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
+from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, plots_J1
 from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauMu_Inclusive import makePlot as makePlotInclusive
 from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauMu_Inclusive_TauFake import jose_qcdTauIsoRatio, jose_qcdMuIsoRatio, colin_qcdTauIsoRatio, colin_qcdMuIsoRatio
@@ -29,17 +30,19 @@ NBINS = 100
 XMIN  = 0
 XMAX  = 200
 
-cutw = ' && '.join([cat_Inc, cat_J2]) 
+cutwJ2 = ' && '.join([cat_Inc, cat_J2]) 
 
 def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
-              nbins=None, xmin=None, xmax=None,
+              nbins, xmin, xmax, cut,
               weight='weight', embed=False):
     
     if nbins is None: nbins = NBINS
     # if xmin is None: xmin = XMIN
     # if xmax is None: xmax = XMAX
-    
-    oscut = str(inc_sig & Cut('l1_charge*l2_charge<0 && mt<40') & cat_VBF)
+
+
+    oscut = '&&'.join( [cat_Inc, cat_VBF, 'diTau_charge==0', cut])
+    # oscut = str(inc_sig & Cut('l1_charge*l2_charge<0 && mt<40') & cat_VBF)
     print '[OS]', oscut
     osign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
@@ -47,16 +50,16 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
                            embed=embed)
     osign.Hist(EWK).Scale( wJetScaleOS ) 
     
-    wjshape = WJets_shape_VBF(var, anaDir, cutw,
+    wjshape = WJets_shape_VBF(var, anaDir, cutwJ2,
                               selComps, zComps, weights,
                               nbins, xmin, xmax, weight,
                               embed)
     wjshape.Scale( osign.Hist('WJets').Integral() )
     osign.Replace('WJets', wjshape )
-    groupEWK( osign )
 
     sscut = ' && '.join( [ cat_Inc_AntiMuTauIso_B,
-                           'l1_charge*l2_charge>0 && mt<40',
+                           'diTau_charge!=0',
+                           cut,
                            cat_VBF ] ) 
     print '[OS]', sscut
     ssign = H2TauTauDataMC(var, anaDir,
@@ -72,23 +75,13 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
     
     osQCD = copy.deepcopy( osign )
     osQCD.AddHistogram('QCD', qcd_shape.weighted, 1.5)   
-    
+
+    osQCD.Group('VV', ['WW','WZ','ZZ'])
+    osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ'])
+    osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])    
+
     return osign, osQCD 
 
-
-
-
-## def replaceWJets(plot, var, cut, weight, embed):
-##     plotWithNewShape = cp( plot )
-##     oldh = plotWithNewShape.Hist('WJets').weighted
-##     wjets = WJets_VBF(var, anaDir, cut, selComps,
-##                       zComps, weights,
-##                       oldh.GetNbinsX(),
-##                       oldh.GetXaxis().GetXmin(), oldh.GetXaxis().GetXmax(),
-##                       weight, embed)
-
-##     plotWithNewShape.Replace('WJets', wjets) 
-##     return plotWithNewShape
 
 
 def WJets_shape_VBF(var, anaDir, cut, 
@@ -137,6 +130,10 @@ if __name__ == '__main__':
                       dest="hist", 
                       help="histogram list",
                       default=None)
+    parser.add_option("-C", "--cut", 
+                      dest="cut", 
+                      help="cut",
+                      default='1')
     parser.add_option("-E", "--embed", 
                       dest="embed", 
                       help="Use embedd samples.",
@@ -172,6 +169,7 @@ if __name__ == '__main__':
     # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
+    vbf_eff = 0.0025
     
     anaDir = args[0]
     cfgFileName = args[1]
@@ -184,82 +182,84 @@ if __name__ == '__main__':
     comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and  comp.name!='TTJets11']
     cfg.config.components = comps
     
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config)
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, options.embed, 'TauMu', '125')
 
-    
+
+    # normalizing WJets (not WJets11 here) 
     # inclusive, iso sideband, SS
     inc_w_cut = cat_Inc
-    inc_fwss, inc_fwos, inc_w_ss, inc_w_os = plot_W( options.hist, anaDir, selComps, weights,
+    inc_fwss, inc_fwos, inc_w_ss, inc_w_os = plot_W( anaDir, selComps, weights,
                                                      12, 70, 310, inc_w_cut,
                                                      weight=weight, embed=options.embed)
 
     # inclusive QCD yield in signal region
+    # this yield will be multiplied by the VBF efficiency
     # import pdb; pdb.set_trace()
+    insig_qcd_cut = '&&'.join([cat_Inc, options.cut])
     inc_ssign, inc_osign, inc_ssQCD, inc_osQCD = makePlotInclusive(
         options.hist, anaDir,
         selComps, weights,
         inc_fwss, inc_fwos,
-        NBINS, XMIN, XMAX, cat_Inc + ' && mt<40',
+        NBINS, XMIN, XMAX, insig_qcd_cut,
         weight=weight, embed=options.embed
         )
 
     incsig_qcd_yield = inc_osQCD.Hist('QCD').Integral()
 
-    # import pdb; pdb.set_trace()
 
-    # computing VBF efficiency
+    if vbf_eff is None:
+        # computing VBF efficiency, in anti-isolated region ==================
 
-    inc_qcd_cut = cat_Inc_AntiMuTauIsoJosh + ' && mt<40'
-    inc_qcd_ssign, inc_qcd_osign, inc_qcd_ssQCD, inc_qcd_osQCD = makePlotInclusive(
-        options.hist, anaDir,
-        selComps, weights,
-        inc_fwss, inc_fwos,
-        NBINS, XMIN, XMAX, inc_qcd_cut,
-        weight=weight, embed=options.embed
-        )
+        # QCD, Inclusive, SS, anti-isolation, for QCD efficiency
+        inc_qcd_cut = '&&'.join([cat_Inc_AntiMuTauIsoJosh, options.cut])
+        inc_qcd_ssign, inc_qcd_osign, inc_qcd_ssQCD, inc_qcd_osQCD = makePlotInclusive(
+            options.hist, anaDir,
+            selComps, weights,
+            inc_fwss, inc_fwos,
+            NBINS, XMIN, XMAX, inc_qcd_cut,
+            weight=weight, embed=options.embed
+            )
 
-    # neglecting contribution of other backgrounds
-    inc_qcd_yield = inc_qcd_ssQCD.Hist('Data').Integral()
+        # neglecting contribution of other backgrounds
+        inc_qcd_yield = inc_qcd_ssQCD.Hist('Data').Integral()
 
 
     # remove WJets and TTJets from components, and alias W3Jets -> WJets; TTJets11 -> TTJets
-    comps = [comp for comp in origComps if comp.name!='WJets' and  comp.name!='TTJets' ]
+    comps = [comp for comp in origComps if comp.name!='WJets' and comp.name!='WJets11' and  comp.name!='TTJets' ]
     cfg.config.components = comps
 
     aliases = {'DYJets':'Ztt',
                'W3Jets':'WJets',
                'TTJets11':'TTJets'
                }
-    
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases)
-    
-    # import pdb; pdb.set_trace()
 
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases,
+                                                  options.embed, 'TauMu', '125')
 
-    # WJets normalization in VBF region
-    fwss, fwos, ss, os = plot_W( options.hist, anaDir, selComps, weights,
-                                 15, 60, 120, cutw,
+    # WJets normalization using 2 jet category
+    fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
+                                 15, 60, 120, cutwJ2,
                                  weight=weight, embed=options.embed)
-    
 
-    # QCD in SS VBF region, for QCD efficiency
-    vbf_qcd_cut = inc_qcd_cut + ' && ' + cat_VBF + ' && diTau_charge!=0'
-    vbf_qcd_ssQCD = H2TauTauDataMC(options.hist, anaDir,
-                                   selComps, weights, NBINS, XMIN, XMAX,
-                                   cut=vbf_qcd_cut, weight=weight,
-                                   embed=embed)
-    # vbf_qcd_ssQCD.Hist(EWK).Scale( fwss )
 
-    vbf_qcd_yield = vbf_qcd_ssQCD.Hist('Data').Integral()
-    
-    vbf_eff = vbf_qcd_yield / inc_qcd_yield
+    if vbf_eff is None:
+        # QCD VBF, SS, anti-isolation, for QCD efficiency
+        vbf_qcd_cut = '&&'.join( [inc_qcd_cut, cat_VBF, 'diTau_charge!=0'] ) 
+        vbf_qcd_ssQCD = H2TauTauDataMC(options.hist, anaDir,
+                                       selComps, weights, NBINS, XMIN, XMAX,
+                                       cut=vbf_qcd_cut, weight=weight,
+                                       embed=embed)
 
-    # vbf_qcd = copy.deepcopy( inc_osQCD.Hist('QCD') )
-    # vbf_qcd.Scale( vbf_eff )
+        vbf_qcd_yield = vbf_qcd_ssQCD.Hist('Data').Integral()
+
+        vbf_eff = vbf_qcd_yield / inc_qcd_yield
+        
+
+    print 'VBF Efficiency = ', vbf_eff
 
     osign, osQCD  = makePlot( options.hist, weights, fwss, fwos,
                               vbf_eff * incsig_qcd_yield,
-                              NBINS, XMIN, XMAX, weight=weight,
+                              NBINS, XMIN, XMAX, options.cut, weight=weight,
                               embed=options.embed);
 
     draw(osQCD, False)

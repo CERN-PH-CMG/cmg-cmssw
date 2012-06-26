@@ -8,7 +8,7 @@ from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
 from CMGTools.RootTools.fwlite.Weight import Weight
 from CMGTools.RootTools.fwlite.Weight import printWeights
 from CMGTools.RootTools.Style import *
-
+from CMGTools.H2TauTau.proto.plotter.receffweights import recEffId, recEffIso
 
 class H2TauTauDataMC( AnalysisDataMC ):
 
@@ -72,8 +72,11 @@ class H2TauTauDataMC( AnalysisDataMC ):
         else:
             hist = TH1F( histName, '', len(self.bins)-1, self.bins )
         hist.Sumw2()
+        weight = self.eventWeight
+        if not comp.isData:
+            weight = ' * '.join( [self.eventWeight, recEffId.weight(), recEffIso.weight()])
         tree.Project( histName, varName, '{weight}*({cut})'.format(cut=cut,
-                                                                   weight=self.eventWeight) )
+                                                                   weight=weight) )
         hist.SetStats(0)
         componentName = compName
         legendLine = compName
@@ -103,12 +106,17 @@ class H2TauTauDataMC( AnalysisDataMC ):
             if compName == 'Ztt':
                 self._BuildHistogram(tree, comp, compName, self.varName,
                                      self.cut + ' && isFake==0', layer)
-                fakeCompName = 'Ztt_Fakes'
+                fakeCompName = 'Ztt_ZL'
                 self._BuildHistogram(tree, comp, fakeCompName, self.varName,
-                                     self.cut + ' && isFake', layer)
-                self.Hist(fakeCompName).realName =  comp.realName + '_Fakes'
+                                     self.cut + ' && isFake==1', layer)
+                self.Hist(fakeCompName).realName =  comp.realName + '_ZL'
                 self.weights[fakeCompName] = self.weights[compName]
-                # grouping fakes and WJets into EWK
+                fakeCompName = 'Ztt_ZJ'
+                self._BuildHistogram(tree, comp, fakeCompName, self.varName,
+                                     self.cut + ' && isFake==2', layer)
+                self.Hist(fakeCompName).realName =  comp.realName + '_ZJ'
+                self.weights[fakeCompName] = self.weights[compName]
+
             else:
                 self._BuildHistogram(tree, comp, compName, self.varName,
                                      self.cut, layer )     
@@ -209,10 +217,14 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['data_*'] = {'style':sBlack, 'layer':2002}
         self.histPref['Ztt'] = {'style':sHTT_DYJets, 'layer':4}
         self.histPref['embed_*'] = {'style':sViolet, 'layer':4.1}
-        self.histPref['TTJets'] = {'style':sHTT_TTJets, 'layer':1} 
+        self.histPref['TTJets*'] = {'style':sHTT_TTJets, 'layer':1} 
+        self.histPref['WW'] = {'style':sBlue, 'layer':0.9} 
+        self.histPref['WZ'] = {'style':sRed, 'layer':0.8} 
+        self.histPref['ZZ'] = {'style':sGreen, 'layer':0.7} 
         self.histPref['QCD'] = {'style':sHTT_QCD, 'layer':2}
-        self.histPref['WJets'] = {'style':sHTT_WJets, 'layer':3}  
-        self.histPref['Ztt_Fakes'] = {'style':sBlack, 'layer':3.5}
+        self.histPref['WJets*'] = {'style':sHTT_WJets, 'layer':3}  
+        self.histPref['Ztt_ZJ'] = {'style':sGreen, 'layer':3.1}
+        self.histPref['Ztt_ZL'] = {'style':sBlue, 'layer':3.2}
         self.histPref['Higgs*'] = {'style':sHTT_Higgs, 'layer':1001}
 
 
