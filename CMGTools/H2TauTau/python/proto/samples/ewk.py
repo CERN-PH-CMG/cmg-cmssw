@@ -17,6 +17,13 @@ WJets = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+W3Jets = cfg.MCComponent(
+    name = 'W3Jets',
+    files = [],
+    xSection = 1.,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
 
 TTJets = cfg.MCComponent(
     name = 'TTJets',
@@ -30,5 +37,6 @@ TTJets = cfg.MCComponent(
 mc_ewk = [
     DYJets,
     WJets,
+    W3Jets, 
     TTJets
     ]
