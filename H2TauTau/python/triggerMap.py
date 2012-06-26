@@ -22,7 +22,7 @@ pathsAndFilters = {
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v8": ("hltOverlapFilterIsoEle15IsoPFTau20",      "hltEle15CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),
     "HLT_Ele15_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v9": ("hltOverlapFilterIsoEle15IsoPFTau20",      "hltEle15CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),
     #PG old name for the lepton filter: hltEle15CaloIdVTTrkIdTCaloIsoTTrkIsoTTrackIsolFilter 
-    # quello nuovo l'ho trovato nei menu 10^33
+    #PG I found the new one in the trigger menu for 10^33
     # 2011 TauEle Ele18_*_MediumIsoPFTau20 
     "HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1": ("hltOverlapFilterIsoEle18MediumIsoPFTau20", "hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),
     # 2011 TauEle Ele20_*_MediumIsoPFTau20 
