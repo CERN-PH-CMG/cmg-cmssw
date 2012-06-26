@@ -79,6 +79,7 @@ class htttreeproducer( TreeAnalyzer ):
         var('mvis')
         var('chi2')
 
+
 #       var('wwMin')
 #       var('zzMin')
 #       var('deltaZ')
@@ -145,16 +146,15 @@ class htttreeproducer( TreeAnalyzer ):
 #            fill('{pName}B72'.format(pName=pName), particle.leg2.btag(7) )
 #
         subevent = getattr( event, self.cfg_ana.anaName )
-
         fill('step',subevent.step)
         
         fill('g_ishtt',subevent.ishtt)
         fill('g_isHZ',subevent.isHZ)
         fill('g_isHZqq',subevent.isHZqq)
-        
+
         isHttZbbGen = 0
         isHttZbbRec = 0
-
+        
         if subevent.isHZ==1 : 
             fgenParticleVars( 'H',subevent.H ) 
             fgenParticleVars( 'Z',subevent.Z )
@@ -181,9 +181,9 @@ class htttreeproducer( TreeAnalyzer ):
               if (len(subevent.matchedRecGenDistances)>3):
                 fill( 'genRecDistance4', subevent.matchedRecGenDistances[3] )  
         if len(subevent.hz):
-          fParticleVars('recH', subevent.hz[0])
-          fParticleVars('recZ', subevent.hz[1])
-       
+            fParticleVars('recH', subevent.hz[0])
+            fParticleVars('recZ', subevent.hz[1])
+
         #fill('mvis', subevent.mvis)
         #fill('chi2', subevent.chi2)
         if len(subevent.hz):
@@ -192,11 +192,12 @@ class htttreeproducer( TreeAnalyzer ):
         fill('isHttZbbGen', isHttZbbGen)  
         fill('isHttZbbRec', isHttZbbRec)  
 
+
         fill('njets',subevent.njets)
-        for n_j in range(0,4):
-            if len(subevent.nontaugenjet)>n_j:
-                fJetVars('nontgenjet%d'%(n_j+1),subevent.nontaugenjet[n_j])
-                fill('nontgenjetiso%d'%(n_j+1),subevent.nontaugenjetiso[n_j])
+#        for n_j in range(0,4):
+#            if len(subevent.nontaugenjet)>n_j:
+#                fJetVars('nontgenjet%d'%(n_j+1),subevent.nontaugenjet[n_j])
+#                fill('nontgenjetiso%d'%(n_j+1),subevent.nontaugenjetiso[n_j])
                      
 #        fJetVars('Jet1',subevent.allJets[0])
 #        fJetVars('Jet2',subevent.allJets[1])
@@ -220,4 +221,5 @@ class htttreeproducer( TreeAnalyzer ):
 #
 #        fill('m3min',subevent.m3min) 
 #
+        
         self.tree.fill()
