@@ -76,21 +76,22 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
   
   string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {"met_met","met_met250"//,"mt","mt75",
+  string histos[] = {"met_met","mt"//,
 		     //		     "mindphijmet",
 		     // "pfvbfpremjj",
-		     // "pfvbfcandjetdeta","pfvbfmjj","pfvbfcjv", "pfvbfhardpt",
+		     ,"pfvbfcandjetdeta","pfvbfmjj"
+		     //,"pfvbfcjv", "pfvbfhardpt",
 		     // "mt_shapes"
   };
   const size_t nhistos=sizeof(histos)/sizeof(string);
-  string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};
+  string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf","novbf",""};
   const size_t ndilcats=sizeof(dilcats)/sizeof(string);
   string dilprocs[]={"WW#rightarrow 2l2#nu","ZZ","WZ#rightarrow 3l#nu","t#bar{t}","Single top","W#rightarrow l#nu","data"};
   Int_t dilColors[]={592, 590, 596, 8, 824, 809, 1 };
   const size_t ndilprocs=sizeof(dilprocs)/sizeof(string);
   string dilSignal[]={"ggH(350)#rightarrow ZZ","qqH(350)#rightarrow ZZ"};
   const size_t nDilSignals=sizeof(dilSignal)/sizeof(string);
-  string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
+  string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf","novbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
   const size_t ngcats=sizeof(gcats)/sizeof(string);
   string gprocs[]={"Z#gamma#rightarrow#nu#nu#gamma","W#gamma#rightarrowl#nu#gamma","W#rightarrow l#nu","data (#gamma)"};
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
