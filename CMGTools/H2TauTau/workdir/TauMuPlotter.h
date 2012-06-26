@@ -123,12 +123,13 @@ public:
   TH1F* getWJetsSM();
   TH1F* getWJetsSMSS();
   TH1F* getQCDMike();//values from Josh for 2012 analysis
+  TH1F* getQCDKeti();//values from Josh for 2012 analysis
   TString qcdTauIsoRatioMuNonIso_;//formula for the ratio
   TString qcdMuIsoRatioTauNonIso_;//formula for the ratio
   TString qcdTauIsoRatio_;//formula for the ratio
   TString qcdMuIsoRatio_;//formula for the ratio
-  TH1F* getQCDTauIsoSM();//from anti-isolated taus
-  TH1F* getQCDTauIsoSMSS();//from anti-isolated taus
+  //TH1F* getQCDTauIsoSM();//from anti-isolated taus
+  //TH1F* getQCDTauIsoSMSS();//from anti-isolated taus
   TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
   TH1F* getQCDIsoSMSS();//from anti-isolated taus or anti iso muons  
   TH1F* getWJetsIncShape();
@@ -137,6 +138,8 @@ public:
   TH1F* getW3JetsSS();
   TH1F* getW3JetsVBF();
   //TH1F* getW3JetsVBFSS();
+  TH1F* getW2JetsBJet();
+  TH1F* getW2JetsBJetSS();
   TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
   TH1F* getWJetsTauIsoSM();//from anti-isolated taus
   TString wjetsTauIsoRatioSS_;//formula for the ratio for W+jets 
@@ -147,14 +150,15 @@ public:
   //bool plotSMSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
 
 
+  ///MSSM methods
+  void setMSSMFlag(bool flag){MSSMFlag_=flag;}
+
 
   ////Methods unrelated to the main plots
   //tau fake rate
   void plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",TString IsoSel="(tauisodisc>=2)",Float_t ymax=50,Bool_t log=1);//
   void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
 
-
-  
 
   //utilities
   void setSmearHistoRes(float res){smearHistoRes_=res;}
@@ -247,6 +251,8 @@ private:
   Float_t WJetsSSSideCorrErr_;
 
   Int_t WJetsType_;
+
+  Bool_t MSSMFlag_;
   
   float tauLooseIsoCut_;
   float muLooseIsoCut_;

@@ -1,4 +1,8 @@
-TauMuPlotter * tauMuConfig(const char * name, const char * path){  
+#include "TauMuPlotter.h"
+#include "Sample.h"
+#include <TString.h>
+
+TauMuPlotter * tauMuConfig2011Reload(TString name, TString path){  
 
   TauMuPlotter * analysis = new TauMuPlotter(name);
   analysis->setOutputPath(path);
@@ -52,7 +56,7 @@ TauMuPlotter * tauMuConfig(const char * name, const char * path){
   Embedded2011B->setDataType("Embedded");
   analysis->addSample(Embedded2011B);
 
-  float CrossectionScaleFactor=0.95;
+
 
   Sample * WJetsToLNu=new Sample("WJetsToLNu",path);
   WJetsToLNu->setDataType("MC");
@@ -60,23 +64,33 @@ TauMuPlotter * tauMuConfig(const char * name, const char * path){
   WJetsToLNu->setSampleGenEvents(81345381);//V5_4_1 missing files: 0/907
   analysis->addSample(WJetsToLNu);  
 
+  Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
+  W2JetsToLNu->setDataType("MCCat");
+  W2JetsToLNu->setCrossection(1435);//This is wrong only use for shape
+  W2JetsToLNu->setSampleGenEvents(25400546);//This is wrong only use for shape
+  analysis->addSample(W2JetsToLNu);  
+   
   Sample * W3JetsToLNu=new Sample("W3JetsToLNu",path);
   W3JetsToLNu->setDataType("MCCat");
-  W3JetsToLNu->setCrossection(304.0);//This is wrong only use for shape
-  W3JetsToLNu->setSampleGenEvents(7541595);//This is wrong only use for shape
+  W3JetsToLNu->setCrossection(304.0);
+  W3JetsToLNu->setSampleGenEvents(7541595);
   analysis->addSample(W3JetsToLNu);  
    
-  float BjetsscaleFactor=0.95;
+  float CrossectionScaleFactor=0.95;
+  float BjetsscaleFactor=0.97;
   cout<<"WARNING applying scale factor for TTjets MC "<<CrossectionScaleFactor<<endl;
-  //cout<<"WARNING applying b-jet scale factor for TTjets MC "<<BjetsscaleFactor<<endl;
+  cout<<"WARNING applying b-jet scale factor for TTjets MC "<<BjetsscaleFactor<<endl;
   Sample* TTJets = new Sample("TTJets",path);
   TTJets->setDataType("MC");
-  TTJets->setCrossection(165.8*CrossectionScaleFactor);// 157.5=NLO theory, 165.8=CMS TOP-11-024
-  TTJets->setSampleGenEvents(59613991);//  V5_4_1 missing 3/5365 files //for V5_2_0 used 59591548
+  TTJets->setCrossection(165.8*CrossectionScaleFactor*BjetsscaleFactor);// 157.5=NLO theory, 165.8=CMS TOP-11-024
+  TTJets->setSampleGenEvents(59613991);//  V5_4_1 missing 3/5365 files 
   analysis->addSample(TTJets);
 
+
+  ///DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||  0.999437 ||     36189241
+
   cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
-  Sample* ZToTauTau = new Sample("ZToTauTau",path);
+  Sample* ZToTauTau = new Sample("ZToTauTau",path);//+"_tDown"
   ZToTauTau->setDataType("MC");
   ZToTauTau->setCrossection(3048*CrossectionScaleFactor);
   ZToTauTau->setSampleGenEvents(36209629*0.9985);//V5_4_1 missing files: 4/2751 , correct to previous mc and data yields *(38781.6/35988.8)*(55192./56400.) //for V5_2_0 used 36189241
@@ -117,10 +131,10 @@ TauMuPlotter * tauMuConfig(const char * name, const char * path){
   ///Crossections taken from here:
   ///https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt7TeV#gluon_gluon_Fusion_Process 
   ///Higgs --> tau tau branching ratios taken from http://arxiv.org/abs/1101.0593 v3
-  long HiggsMass[8]={110,115,120,125,130,135,140,145};
+  Int_t HiggsMass[8]={110,115,120,125,130,135,140,145};
   Float_t HiggsTauTauBF[8]={ 8.03e-2, 7.65e-2,  7.11e-2,  6.37e-2,  5.49e-2,  4.52e-2, 3.54e-2,2.62e-2};
 
-  //checked twick on June 17 2012
+  //checked twiki on June 17 2012
 // 110.0 	19.84 	+15.2 	-15.0 	+7.5 	-8.1 	+7.7 	-6.9
 // 115.0 	18.14 	+15.1 	-15.0 	+7.4 	-8.0 	+7.7 	-7.0
 // 120.0 	16.65 	+14.8 	-14.9 	+7.2 	-7.9 	+7.6 	-7.0
@@ -130,8 +144,18 @@ TauMuPlotter * tauMuConfig(const char * name, const char * path){
 // 140.0 	12.18 	+14.4 	-14.8 	+6.8 	-7.5 	+7.6 	-7.3
 // 145.0 	11.33 	+14.3 	-14.9 	+6.7 	-7.5 	+7.6 	-7.4 
   Float_t HiggsGGcross[8]={   19.84,   18.13,    16.63,    15.31,    14.12,   13.08,   12.13,   11.27};
-  //Int_t   HiggsGGNevt[8]={  199988,  196002,  199981,  199986,   199985,  198571,  191549, 199981};//V2_5_0
-  Int_t HiggsGGNevt=199981;//V5_1_0
+
+
+// /GluGluToHToTauTau_M-110_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||  1.0 ||  199988
+// /GluGluToHToTauTau_M-115_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||  1.0 ||  196002
+// /GluGluToHToTauTau_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||  1.0 ||  199981
+// /GluGluToHToTauTau_M-125_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||  1.0 ||  199986
+// /GluGluToHToTauTau_M-130_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||  1.0 ||  199985
+// /GluGluToHToTauTau_M-135_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||  1.0 ||  198571
+// /GluGluToHToTauTau_M-140_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||  1.0 ||  191549
+// /GluGluToHToTauTau_M-145_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||  1.0 ||  199981
+  Int_t   HiggsGGNevt[8]={  199988,  196002,  199981,  199986,   199985,  198571,  191549, 199981};//V5
+
 
 // 110.0 	1.398 	2.8 	-2.3 	0.5 	-0.2 	2.3 	-2.1
 // 115.0 	1.332 	2.5 	-2.3 	0.2 	-0.2 	2.3 	-2.1
@@ -142,8 +166,16 @@ TauMuPlotter * tauMuConfig(const char * name, const char * path){
 // 140.0 	1.052 	2.8 	-2.2 	0.2 	-0.2 	2.6 	-2.1
 // 145.0 	1.004 	3.1 	-2.1 	0.4 	-0.0 	2.7 	-2.1 
   Float_t HiggsVBFcross[8]={   1.398,   1.332,    1.269,    1.211,    1.154,   1.100,   1.052,   1.004};
-  //Int_t   HiggsVBFNevt[8]={  198435,  198051,   198632,   198612,   197236,  198682,  193846, 197095};//V2_5_0
-  Int_t HiggsVBFNevt=193846;//V5_1_0
+
+// /VBF_HToTauTau_M-110_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||       1.0 ||  198435
+// /VBF_HToTauTau_M-115_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||       1.0 ||  198051
+// /VBF_HToTauTau_M-120_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||       1.0 ||  198632
+// /VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||       1.0 ||  198612
+// /VBF_HToTauTau_M-130_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||       1.0 ||  197236
+// /VBF_HToTauTau_M-135_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||       1.0 ||  198682
+// /VBF_HToTauTau_M-140_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||       1.0 ||  193846
+// /VBF_HToTauTau_M-145_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||       1.0 ||  197095  
+  Int_t   HiggsVBFNevt[8]={  198435,  198051,   198632,   198612,   197236,  198682,  193846, 197095};//V5
   
 
 // //WH
@@ -176,26 +208,33 @@ TauMuPlotter * tauMuConfig(const char * name, const char * path){
   Float_t HiggsWHcross[8]={  0.8754,  0.7546,   0.6561,   0.5729,   0.5008,  0.4390,  0.3857,  0.3406};
   Float_t HiggsZHcross[8]={  0.4721,  0.4107,   0.3598,   0.3158,   0.2778,  0.2453,  0.2172,  0.1930};
   Float_t HiggsttHcross[8]={  0.1257,  0.1106,  0.09756,  0.08634,  0.07658, 0.06810, 0.06072, 0.05435};
-  Int_t   HiggsVHNevt[8]={  220000,  220000,   2200000,   220000,   220000,   220000,  220000, 220000};//V5_1_0 , M=120 has 10x ?
 
 
+// /WH_ZH_TTH_HToTauTau_M-110_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||        1.0 ||  216334
+// /WH_ZH_TTH_HToTauTau_M-115_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||        1.0 ||  220000
+// /WH_ZH_TTH_HToTauTau_M-120_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||        0.994118 ||     2186302
+// /WH_ZH_TTH_HToTauTau_M-125_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||        1.0 ||  220000
+// /WH_ZH_TTH_HToTauTau_M-130_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||        1.0 ||  214501
+// /WH_ZH_TTH_HToTauTau_M-135_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||        1.0 ||  220000
+// /WH_ZH_TTH_HToTauTau_M-140_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||        1.0 ||  218704
+// /WH_ZH_TTH_HToTauTau_M-145_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||        1.0 ||  216885
+  Int_t   HiggsVHNevt[8]={  216334,  220000,  2186302,   220000,   214501,   220000,  218704, 216885};// M=120 has 10x
 
   char nam[100];
-  char pa[1000];
   for(Int_t i=0;i<8;i++){
 
     sprintf(nam,"HiggsGG%d",HiggsMass[i]);
     Sample* HiggsGG = new Sample(nam,path);
     HiggsGG->setDataType("Signal");
     HiggsGG->setCrossection(HiggsGGcross[i]*HiggsTauTauBF[i]);
-    HiggsGG->setSampleGenEvents(HiggsGGNevt);//[i]);
+    HiggsGG->setSampleGenEvents(HiggsGGNevt[i]);
     analysis->addSample(HiggsGG);    
 
     sprintf(nam,"HiggsVBF%d",HiggsMass[i]);
     Sample* HiggsVBF=new Sample(nam,path);
     HiggsVBF->setDataType("Signal");
     HiggsVBF->setCrossection(HiggsVBFcross[i]*HiggsTauTauBF[i]);
-    HiggsVBF->setSampleGenEvents(HiggsVBFNevt);//[i]);
+    HiggsVBF->setSampleGenEvents(HiggsVBFNevt[i]);
     analysis->addSample(HiggsVBF);    
 
     sprintf(nam,"HiggsVH%d",HiggsMass[i]);
@@ -206,32 +245,72 @@ TauMuPlotter * tauMuConfig(const char * name, const char * path){
     analysis->addSample(HiggsVH);    
   }
 
+
+
+  /////////////////SUSY Samples
+  Int_t  SUSYMass[19]={90,100,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};  
+// /SUSYBBHToTauTau_M-90_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||     1.0 ||  220000
+// /SUSYBBHToTauTau_M-100_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    0.926591 ||     203850
+// /SUSYBBHToTauTau_M-120_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    0.992792 ||     2181784
+// /SUSYBBHToTauTau_M-130_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  220000
+// /SUSYBBHToTauTau_M-140_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  204580
+// /SUSYBBHToTauTau_M-160_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  220000
+// /SUSYBBHToTauTau_M-180_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  220000
+// /SUSYBBHToTauTau_M-200_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  220000
+// /SUSYBBHToTauTau_M-250_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  204448
+// /SUSYBBHToTauTau_M-300_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  2086880
+// /SUSYBBHToTauTau_M-350_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  220000
+// /SUSYBBHToTauTau_M-400_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  202330
+// /SUSYBBHToTauTau_M-450_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  220000
+// /SUSYBBHToTauTau_M-500_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  203260
+// /SUSYBBHToTauTau_M-600_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  207787
+// /SUSYBBHToTauTau_M-700_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  212314
+// /SUSYBBHToTauTau_M-800_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  210082
+// /SUSYBBHToTauTau_M-900_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||    1.0 ||  213214
+// /SUSYBBHToTauTau_M-1000_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||   1.0 ||  203068
+  Int_t SUSYBBNevt[19]={220000,203850,2181784,220000,204580,220000,220000,220000,204448,2086880,220000,202330,220000,203260,207787,212314,210082,213214,203068};//V5 m=300 has 10x
+
+// /SUSYGluGluToHToTauTau_M-90_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||       1.0 ||  209002
+// /SUSYGluGluToHToTauTau_M-100_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  220000
+// /SUSYGluGluToHToTauTau_M-120_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  2093360
+// /SUSYGluGluToHToTauTau_M-130_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  203464
+// /SUSYGluGluToHToTauTau_M-140_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      0.916682 ||     201670
+// /SUSYGluGluToHToTauTau_M-160_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  220000
+// /SUSYGluGluToHToTauTau_M-180_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  220000
+// /SUSYGluGluToHToTauTau_M-200_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  220000
+// /SUSYGluGluToHToTauTau_M-250_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      0.930727 ||     204760
+// /SUSYGluGluToHToTauTau_M-300_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      0.998333 ||     2095914
+// /SUSYGluGluToHToTauTau_M-350_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      0.918227 ||     202010
+// /SUSYGluGluToHToTauTau_M-400_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  220000
+// /SUSYGluGluToHToTauTau_M-450_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  207040
+// /SUSYGluGluToHToTauTau_M-500_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  220000
+// /SUSYGluGluToHToTauTau_M-600_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  204475
+// /SUSYGluGluToHToTauTau_M-700_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  206780
+// /SUSYGluGluToHToTauTau_M-800_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  219229
+// /SUSYGluGluToHToTauTau_M-900_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||      1.0 ||  215275
+// /SUSYGluGluToHToTauTau_M-1000_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||     0.930837 ||     197248
+  Int_t SUSYGGNevt[19]={209002,220000,2093360,203464,201670,220000,220000,220000,204760,2095914,202010,220000,207040,220000,204475,206780,219229,215275,197248};//V5
+
+  for(Int_t i=0;i<19;i++){
+
+      sprintf(nam,"SUSYBB%d",SUSYMass[i]);
+      Sample* SUSYBB = new Sample(nam,path);
+      SUSYBB->setDataType("Signal");
+      SUSYBB->setCrossection(1.);
+      SUSYBB->setSampleGenEvents(SUSYBBNevt[i]);
+      SUSYBB->setSignalMass(SUSYMass[i]);
+      analysis->addSample(SUSYBB);    
+
+      sprintf(nam,"SUSYGG%d",SUSYMass[i]);
+      Sample* SUSYGG = new Sample(nam,path);
+      SUSYGG->setDataType("Signal");
+      SUSYGG->setCrossection(1.);
+      SUSYGG->setSampleGenEvents(SUSYGGNevt[i]);
+      SUSYGG->setSignalMass(SUSYMass[i]);
+      analysis->addSample(SUSYGG);    
+
+  }
+
   return analysis;
 }
-
-  //TString outpath="/data/benitezj/Samples/Mar2TrigEff";
-  //TString outpath="/data/benitezj/Samples/MuTauAntiIso";
-  //TString outpath="/data/benitezj/Samples/Mar19MuJet";
-  //TString outpath="./output/ColinMay7A";
-  //TString outpath="/data/benitezj/Samples/JoseMay8";
-  //TString outpath="output/JoseMay9";
-  //TString outpath="/data/benitezj/Samples/JoseMay9mva";
-  //TString outpath="/data/benitezj/Samples/JoseMay9PFMuon";
-  //TString outpath="output2/ColinMay12MetRaw";
-  //TString outpath="output/JoseMay14";
-  //TString outpath="/data/benitezj/Samples/JoseMay14nosvfit";
-  //TString outpath="output/JoseMay16norecoilCut";
-  //TString outpath="output/JoseMay16rawJetPt";
-  //TString outpath="/data/benitezj/Samples/JoseMay16chs";
-  //TString outpath="/data/benitezj/Samples/JoseMay16recoil";
-  //TString outpath="output/JoseMay16rawJetPt";
-  //TString outpath="output/JoseMay16oldJEC";
-  //TString outpath="output/JoseMay16oldJECV4";
-  //TString outpath="/data/benitezj/Samples/V520JoseMay16chs";
-  //TString outpath="/data/benitezj/Samples/V541May30";
-  //TString outpath="output/V541TauMuJune1muIsoChHad";
-  //TString outpath="/data/benitezj/Samples/V541TauMuJune2newSVFit";//categoryMT defined using mvaMET 
-  //TString outpath="/data/benitezj/Samples/TauMuV541June2_mT";//categoryMT defind using PFMET
-  //TString outpath="/data/benitezj/Samples/TauMuV541June2_Embed";//fixed embedded weight
-  //TString outpath="/data/benitezj/Samples/TauMuV541June2_MVA";//PFMET for vbf mva
 
