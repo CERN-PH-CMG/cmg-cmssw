@@ -507,46 +507,6 @@
 	   ]
 	},
 	{
-	"tag":"ggH(900)#rightarrow ZZ",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"809",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC8TeV_GGtoH900toZZto2L2Nu",
-		"split":1,
-                "xsec":0.05684,
-                "xsecunc":[17.4,-15.5],
-		"br":[0.304,0.0403896]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(900)#rightarrow ZZ",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"807",
-	"lwidth":3,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC8TeV_VBFtoH900toZZto2L2Nu",
-		"split":1,
-                "xsec":0.03164,
-                "xsecunc":[5.6,-6.5],
-		"br":[0.304,0.0403896]
-		}
-	   ]
-	},
-	{
 	   "tag":"data",
 	   "isdata":true,
 	   "color":1,
