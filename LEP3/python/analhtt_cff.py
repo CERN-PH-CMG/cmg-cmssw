@@ -17,14 +17,14 @@ import CMGTools.RootTools.fwlite.Config as cfg
 #    )
 
 httAna = cfg.Analyzer('httanalyzer',
-  npfj = (2,3),       # at least 8 PF particle in 3 of the 4 jets
-  ntkj = (2,1),
-  minM = 0.5,
-  mVis = 180.,
-  chi2 = 1000.,
+  npfj = (2,3),       # at least 3 PF particle in both the nontau the 2 jets
+  ntkj = (2,1),       # at least 1 track in both nontau jets
+  minM = 0.5,         # minimum jet mass
+  mVis = 180.,        # minim visible mass (not applied)
+  chi2 = 1000000.,
   minE = 10.,
-  h_mass = 105.,
-  z_mass = (80.,110.),
+  h_mass = 100.,
+  z_mass = (60.,120.),
 )
 
 def createTreeProducer( ana ):
