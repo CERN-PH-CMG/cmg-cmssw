@@ -4,22 +4,22 @@
 #include <TFile.h>
 
 #define NCAT 5
-#define smearres 20. //resolution svfitmass
-#define taulooseiso -0.75 //For QCD
-#define mulooseiso 0.5 //For QCD 
+#define NBINS 13 
+#define taulooseiso -0.75 //For QCD shape
+#define mulooseiso 0.5 //For QCD shape
 //For W we use inclusive 2-jet sample
 
-void histosForLimit2012Roger(){
+void histosForLimit2012Roger(TString outputtag=""){
 
   gROOT->ProcessLine(".L ./tauMuConfig2011Reload.C");
 
   TString path="/data/benitezj/Samples/TauMuV541June2_TrigEff";
 
   TauMuPlotter * analysis=tauMuConfig("analysis",path);
-  //analysis->plotvar_="svfitmass";
-  analysis->plotvar_="ditaumass";
-  Float_t xbinsValues[13]={0.,20,40,60,80,100,120,140,160,210,260,310,360};
-  analysis->setVariableBinning(12,xbinsValues);
+  analysis->plotvar_="svfitmass";
+  //analysis->plotvar_="ditaumass";
+  Float_t xbinsValues[NBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
+  analysis->setVariableBinning(NBINS,xbinsValues);
   analysis->nbins_=0;
   analysis->Isocat_=1;
   analysis->MTcat_=1; 
@@ -31,7 +31,7 @@ void histosForLimit2012Roger(){
   analysis_tUp->nbins_=analysis->nbins_;
   analysis_tUp->Isocat_= analysis->Isocat_;
   analysis_tUp->MTcat_=analysis->MTcat_;
-  analysis_tUp->setVariableBinning(12,xbinsValues);
+  analysis_tUp->setVariableBinning(NBINS,xbinsValues);
   analysis_tUp->setTauLooseIsoCut(taulooseiso);//applies to QCD
   analysis_tUp->setMuLooseIsoCut(mulooseiso);//applies to QCD
 
@@ -40,7 +40,7 @@ void histosForLimit2012Roger(){
   analysis_tDown->nbins_=analysis->nbins_;
   analysis_tDown->Isocat_= analysis->Isocat_;
   analysis_tDown->MTcat_=analysis->MTcat_;
-  analysis_tDown->setVariableBinning(12,xbinsValues);
+  analysis_tDown->setVariableBinning(NBINS,xbinsValues);
   analysis_tDown->setTauLooseIsoCut(taulooseiso);//applies to QCD
   analysis_tDown->setMuLooseIsoCut(mulooseiso);//applies to QCD
 
@@ -61,7 +61,7 @@ void histosForLimit2012Roger(){
 //   nbins[4]=20;
 
   
-  TFile output(path+"/muTauSM.root","recreate");
+  TFile output(TString("muTauSM")+outputtag+".root","recreate");
   for(long sm=0;sm<NCAT;sm++){
 
     TDirectory* dir = output.mkdir(catdirname[sm]);  
@@ -111,11 +111,6 @@ void histosForLimit2012Roger(){
     ZLL->Add(ZJ);
 
     TH1F* data_obs = analysis->getTotalData();
-//     TH1F* data_obs = ZTT->Clone();//blind for now 
-//     data_obs->Add(QCD); data_obs->Add(W); data_obs->Add(TT); data_obs->Add(ZL); data_obs->Add(ZJ); data_obs->Add(VV);
-//     data_obs->Scale(((int)data_obs->Integral())/data_obs->Integral());
-//     for(Int_t b=1;b<=data_obs->GetXaxis()->GetNbins();b++)
-//       data_obs->SetBinContent(b,(int)(data_obs->GetBinContent(b)+0.5));
     data_obs->SetName("data_obs");//rename otherwise default name may conflict below
 
 
@@ -263,24 +258,24 @@ void histosForLimit2012Roger(){
 
       //tUp histos
       TH1F* SM_CMS_scale_tUp  = analysis_tUp->getSample(TString("HiggsGG")+ma);
-      SM_CMS_scale_tUp ->SetName(TString("ggH_CMS_scale_tUp")+ma);//rename otherwise default name may conflict below
+      SM_CMS_scale_tUp ->SetName(TString("ggH")+ma+"_CMS_scale_tUp");//rename otherwise default name may conflict below
 
       TH1F* VBF_CMS_scale_tUp  = analysis_tUp->getSample(TString("HiggsVBF")+ma);
-      VBF_CMS_scale_tUp ->SetName(TString("qqH_CMS_scale_tUp")+ma);//rename otherwise default name may conflict below
+      VBF_CMS_scale_tUp ->SetName(TString("qqH")+ma+"_CMS_scale_tUp");//rename otherwise default name may conflict below
 
       TH1F* VH_CMS_scale_tUp  = analysis_tUp->getSample(TString("HiggsVH")+ma);
-      VH_CMS_scale_tUp ->SetName(TString("VH_CMS_scale_tUp")+ma);//rename otherwise default name may conflict below      
+      VH_CMS_scale_tUp ->SetName(TString("VH")+ma+"_CMS_scale_tUp");//rename otherwise default name may conflict below      
 
 
       //tDown histos
       TH1F* SM_CMS_scale_tDown  = analysis_tDown->getSample(TString("HiggsGG")+ma);
-      SM_CMS_scale_tDown ->SetName(TString("ggH_CMS_scale_tDown")+ma);//rename otherwise default name may conflict below
+      SM_CMS_scale_tDown ->SetName(TString("ggH")+ma+"_CMS_scale_tDown");//rename otherwise default name may conflict below
 
       TH1F* VBF_CMS_scale_tDown  = analysis_tDown->getSample(TString("HiggsVBF")+ma);
-      VBF_CMS_scale_tDown ->SetName(TString("qqH_CMS_scale_tDown")+ma);//rename otherwise default name may conflict below
+      VBF_CMS_scale_tDown ->SetName(TString("qqH")+ma+"_CMS_scale_tDown");//rename otherwise default name may conflict below
 
       TH1F* VH_CMS_scale_tDown  = analysis_tDown->getSample(TString("HiggsVH")+ma);
-      VH_CMS_scale_tDown ->SetName(TString("VH_CMS_scale_tDown")+ma);//rename otherwise default name may conflict below      
+      VH_CMS_scale_tDown ->SetName(TString("VH")+ma+"_CMS_scale_tDown");//rename otherwise default name may conflict below      
 
       
       //Scale signals to 1/pb      

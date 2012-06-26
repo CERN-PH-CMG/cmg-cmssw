@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.PatAlgos.tools.helpers import applyPostfix
 
 HiggsMass = cms.vstring(['110','115','120','125','130','135','140','145'])
+SUSYMass = cms.vstring(['90','100','120','130','140','160','180','200','250','300','350','400','450','500','600','700','800','900','1000'])
 
 import os 
 recoilrootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
@@ -168,6 +169,25 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
 
+    for i in range(0,19):
+
+        if sampleAlias == "SUSYBB"+SUSYMass[i] :
+            module.path ="/SUSYBBHToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"% SUSYMass[i]
+            module.dataType = 0
+            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+            module.recoilCorrection = 1 
+            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+
+        if sampleAlias == "SUSYGG"+SUSYMass[i] :
+            module.path ="/SUSYGluGluToHToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"% SUSYMass[i]
+            module.dataType = 0
+            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+            module.recoilCorrection = 1 
+            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+
+
     if sampleAlias == 'GluGluSync' : 
         module.path = "/H2TAUTAU/Sync/GluGlu/AOD"
         module.dataType = 0
@@ -180,6 +200,11 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
        
+
+
+
+
+
 
 
 ###################Tau-Ele Channel###################################################################################################

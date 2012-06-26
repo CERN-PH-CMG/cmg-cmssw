@@ -14,6 +14,10 @@
 
 #include "CMGTools/Common/interface/RecoilCorrector.h"
 
+#include "CMGTools/H2TauTau/interface/BTagEfficiency.h"
+#include "CMGTools/H2TauTau/interface/BTagWeight.h"
+
+
 #include <TRandom2.h>
 
 
@@ -66,6 +70,21 @@ protected:
   float selectionEffWeight_;
 
   float embeddedGenWeight_;//for tau embedded samples
+
+  //for MSSM
+  float btagWP_;
+  std::vector<const cmg::PFJet * > pfJetListBTagWeight_;
+  BTagWeight btagWeight_;
+  BTagEfficiency btagEff_;
+  float btagEffWeight_;
+
+
+  //generator variables
+  float genbosonmass_;
+  float genbosonpt_;
+  float genbosonphi_;
+
+
 
   int   nditau_;//number of candidates before best candidate selection
   float ditaumass_;
@@ -171,6 +190,29 @@ private:
   bool vetoDiLepton();
   int truthMatchTau();
  
+
+  float computeDxy(reco::TrackBase::Point vtx, math::XYZTLorentzVector p4){
+    //methods from here http://cmslxr.fnal.gov/lxr/source/DataFormats/TrackReco/interface/TrackBase.h#063
+    return ( - (vtx.x()-PV_->position().x()) *  p4.y() + (vtx.y()-PV_->position().y()) *  p4.x() ) /  p4.pt();
+  }
+  float computeDz(reco::TrackBase::Point vtx, math::XYZTLorentzVector p4){
+    //methods from here http://cmslxr.fnal.gov/lxr/source/DataFormats/TrackReco/interface/TrackBase.h#063
+    return (vtx.z()-PV_->position().z()) - ((vtx.x()-PV_->position().x()) * p4.x()+(vtx.y()-PV_->position().y())*  p4.y())/ p4.pt() *  p4.z()/ p4.pt();
+  }
+
+  bool checkPFJetId(const cmg::PFJet * jet){
+    //Loose PF Jet id 
+    ///https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
+    if(jet->component(5).fraction() < 0.99
+       &&jet->component(4).fraction() < 0.99
+       &&jet->nConstituents() > 1
+       &&(jet->component(1).fraction() > 0 || abs(jet->eta()) > 2.4)
+       &&(jet->component(1).number() > 0 || abs(jet->eta()) > 2.4)
+       &&(jet->component(2).fraction() < 0.99 || abs(jet->eta()) > 2.4)        
+       )return 1;
+    else return 0;
+  }
+
   //function definitions from Matthews mva
   Double_t deltaPhi(Double_t phi1, Double_t phi2){
     Double_t dphi = fabs(phi1 - phi2);

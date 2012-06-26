@@ -5,14 +5,14 @@
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
 
-
-
 TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
   BaseFlatNtp(iConfig),
   diTauSel_(0),
   triggerEffWeight_(0.),
   selectionEffWeight_(0.),
   embeddedGenWeight_(0.),
+  btagWP_(0.679),
+  btagWeight_(1),
   sampleGenEventType_(0),
   sampleTruthEventType_(0),
   genEventType_(0),
@@ -85,6 +85,11 @@ void TauMuFlatNtp::beginJob(){
   tree_->Branch("triggerEffWeight",&triggerEffWeight_,"triggerEffWeight/F"); 
   tree_->Branch("selectionEffWeight",&selectionEffWeight_,"selectionEffWeight/F"); 
   tree_->Branch("embeddedGenWeight",&embeddedGenWeight_,"embeddedGenWeight/F"); 
+  tree_->Branch("btagEffWeight",&btagEffWeight_,"btagEffWeight/F");
+
+  tree_->Branch("genbosonmass",&genbosonmass_,"genbosonmass/F");
+  tree_->Branch("genbosonpt",&genbosonpt_,"genbosonpt/F");
+  tree_->Branch("genbosonphi",&genbosonphi_,"genbosonphi/F");
 
   tree_->Branch("nditau",&nditau_,"nditau/I");
   tree_->Branch("ditaumass",&ditaumass_,"ditaumass/F");
@@ -241,12 +246,16 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
     iEvent.getByLabel(genParticlesTag_,genParticles_);    
     for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
       //cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
-      if((abs(g->pdgId())==23 || abs(g->pdgId())==24 ||  abs(g->pdgId())==25 ) && genBoson_==NULL )
+      if((abs(g->pdgId())==23 || abs(g->pdgId())==24 ||  abs(g->pdgId())==25 ||  abs(g->pdgId())==36 ) && genBoson_==NULL )
 	genBoson_=&(*g);
     }
-    //if(genBoson_)cout<<"genBoson_ ref = "<<genBoson_<<endl;
+    //if(genBoson_)cout<<"genBoson_ ref = "<<genBoson_<<" "<<<genBoson_->pdgId()<<" "<<genBoson_->pt()<<endl;
 
     if(genBoson_){      
+
+      genbosonpt_=genBoson_->pt();
+      genbosonphi_=genBoson_->phi();
+
       //determine type of generated event: Z-->ee,mumu,tautau,, W-->e nu, mu nu, tau mu
       int genTaus=0;
       int genMuons=0;
@@ -268,6 +277,10 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
 	if((g->pdgId()==11 || g->pdgId()==13 || g->pdgId()==15 ) && g->mother()==genBoson_) genBosonL1_=&(*g);
 	if((g->pdgId()==-11 || g->pdgId()==-13 || g->pdgId()==-15 ) && g->mother()==genBoson_) genBosonL2_=&(*g);
       }      
+
+      if(genBosonL1_ && genBosonL2_)
+	genbosonmass_=(genBosonL1_->p4()+genBosonL2_->p4()).mass();
+      //cout<<genbosonmass_<<" "<<genbosonpt_<<" "<<genbosonphi_<<endl;
 
     }
 
@@ -321,11 +334,8 @@ bool TauMuFlatNtp::applySelections(){
     if(!((*(cand->leg2().sourcePtr()))->innerTrack().isNonnull()))continue;
     if(!((*(cand->leg2().sourcePtr()))->innerTrack().isAvailable()))continue;
 
-    float dxy= (*(cand->leg2().sourcePtr()))->innerTrack()->dxy(PV_->position()) ;
-    float dz = (*(cand->leg2().sourcePtr()))->innerTrack()->dz(PV_->position());
-    if(fabs(dxy) > 0.045 ) continue;
-    if(fabs(dz)  > 0.2 ) continue;
-    //cout<<eventid_<<" "<<(*(cand->leg2().sourcePtr()))->innerTrack()->dz((*(vertices_->begin())).position())<<endl;
+    if(fabs((*(cand->leg2().sourcePtr()))->innerTrack()->dxy(PV_->position())) > 0.045 ) continue;
+    if(fabs((*(cand->leg2().sourcePtr()))->innerTrack()->dz(PV_->position()))  > 0.2 ) continue;
     
     diTauSelList_.push_back(*cand);
   }
@@ -415,15 +425,19 @@ bool TauMuFlatNtp::applySelections(){
     //if(fabs(cand->leg1().dxy())>0.045) continue;
     //if(fabs(cand->leg1().dz())>0.2 ) continue;
 
-    //can't access the reco::track from the cmg::Tau
-    //methods from here http://cmslxr.fnal.gov/lxr/source/DataFormats/TrackReco/interface/TrackBase.h#063
-    reco::TrackBase::Point  vtx = cand->leg1().leadChargedHadrVertex();   
-    math::XYZTLorentzVector p4 = cand->leg1().p4();
-    float dxy = ( - (vtx.x()-PV_->position().x()) *  p4.y() + (vtx.y()-PV_->position().y()) *  p4.x() ) /  p4.pt();    
-    float dz  = (vtx.z()-PV_->position().z()) - ((vtx.x()-PV_->position().x()) * p4.x()+(vtx.y()-PV_->position().y())*  p4.y())/ p4.pt() *  p4.z()/ p4.pt();
-    if(fabs(dxy)>0.045)continue;
-    if(fabs(dz)>0.2)continue;
+//     //can't access the reco::track from the cmg::Tau
+//     //methods from here http://cmslxr.fnal.gov/lxr/source/DataFormats/TrackReco/interface/TrackBase.h#063
+//     reco::TrackBase::Point  vtx = cand->leg1().leadChargedHadrVertex();   
+//     math::XYZTLorentzVector p4 = cand->leg1().p4();
+//     float dxy = ( - (vtx.x()-PV_->position().x()) *  p4.y() + (vtx.y()-PV_->position().y()) *  p4.x() ) /  p4.pt();    
+//     float dz  = (vtx.z()-PV_->position().z()) - ((vtx.x()-PV_->position().x()) * p4.x()+(vtx.y()-PV_->position().y())*  p4.y())/ p4.pt() *  p4.z()/ p4.pt();
+//     if(fabs(dxy)>0.045)continue;
+//     if(fabs(dz)>0.2)continue;
       
+    if(fabs(computeDxy(cand->leg1().leadChargedHadrVertex(),cand->leg1().p4()))>0.045)continue;
+    if(fabs(computeDz(cand->leg1().leadChargedHadrVertex(),cand->leg1().p4()))>0.2)continue;
+
+
     diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()>0)countertauvtx_++;
@@ -594,8 +608,10 @@ bool TauMuFlatNtp::fill(){
   muphi_=diTauSel_->leg2().phi();
   muiso_=diTauSel_->leg2().relIso(0.5,1);
   muisomva_=(*(diTauSel_->leg2().sourcePtr()))->userFloat("mvaIsoRings");
-  mudz_=diTauSel_->leg2().dz();
-  mudxy_=diTauSel_->leg2().dxy();
+  //mudz_=diTauSel_->leg2().dz();
+  //mudxy_=diTauSel_->leg2().dxy();
+  mudz_=(*(diTauSel_->leg2().sourcePtr()))->innerTrack()->dz(PV_->position());
+  mudxy_=(*(diTauSel_->leg2().sourcePtr()))->innerTrack()->dxy(PV_->position());
   mux_=diTauSel_->leg2().vertex().x();
   muy_=diTauSel_->leg2().vertex().y();
   muz_=diTauSel_->leg2().vertex().z();
@@ -604,8 +620,11 @@ bool TauMuFlatNtp::fill(){
   taupt_=diTauSel_->leg1().pt();
   taueta_=diTauSel_->leg1().eta();
   tauphi_=diTauSel_->leg1().phi();
-  taudz_=diTauSel_->leg1().dz();
-  taudxy_=diTauSel_->leg1().dxy();
+  //taudz_=diTauSel_->leg1().dz();
+  //taudxy_=diTauSel_->leg1().dxy();
+  taudz_=computeDz(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());
+  taudxy_=computeDxy(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());
+  
   tautruth_=truthMatchTau();
   tauehop_=diTauSel_->leg1().eOverP();
   taueop_=diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p();
@@ -656,20 +675,8 @@ bool TauMuFlatNtp::fill(){
   for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
     if(jet->pt()<30.0)continue;  
     if(fabs(jet->eta())>4.5)continue;
-
-    //Loose PF Jet id 
-    ///https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
-    if(!(jet->component(5).fraction() < 0.99
-	 &&jet->component(4).fraction() < 0.99
-	 &&jet->nConstituents() > 1
-	 &&(jet->component(1).fraction() > 0 || abs(jet->eta()) > 2.4)
-	 &&(jet->component(1).number() > 0 || abs(jet->eta()) > 2.4)
-	 &&(jet->component(2).fraction() < 0.99 || abs(jet->eta()) > 2.4)	 
-	 ))continue;
-
-    //PU jet id 
+    if(!checkPFJetId(&(*jet)))continue;
     if(!(jet->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
-
     pfJetList_.push_back(&(*jet));
   }
 
@@ -691,6 +698,11 @@ bool TauMuFlatNtp::fill(){
   
   ///Apply recoil correction here to PFMET 
   if(recoilCorreciton_>0){
+    if(!genBoson_){
+      cout<<" recoilCorrection requested but no genBoson_ available"<<endl;
+      exit(0);
+    }
+
     double u1 = 0.;
     double u2 = 0.;
     double fluc = 0.;
@@ -772,7 +784,7 @@ bool TauMuFlatNtp::fill(){
   }
 
 
-  ///////////////Now get the MVA MET
+  ///////////////
   metpt_=metP4.pt();
   metphi_=metP4.phi();
   transversemass_=sqrt(2*mupt_*metpt_*(1-cos(muphi_-metphi_)));
@@ -858,11 +870,10 @@ bool TauMuFlatNtp::fill(){
   leadBJet_ = 0 ;
   pfJetListBTag_.clear();
   for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
-    //cout<<jet->btag(6)<<" "<<jet->btag("combinedSecondaryVertexBJetTags")<<endl;
-    //if(jet->btag(6)<0.679)continue;//CSV medium
-    if(jet->btag("combinedSecondaryVertexBJetTags")<0.679)continue;//CSV medium
     if(jet->pt()<20.0)continue;  
-    if(fabs(jet->eta())>2.4)continue; //
+    if(fabs(jet->eta())>2.4)continue;
+    if(!checkPFJetId(&(*jet)))continue;
+    if(jet->btag("combinedSecondaryVertexBJetTags")<btagWP_)continue;//CSV medium
     pfJetListBTag_.push_back(&(*jet));
   }
   fillPFJetListLC(diTauSel_,&pfJetListBTag_,&pfJetListBTagLC_);
@@ -873,6 +884,49 @@ bool TauMuFlatNtp::fill(){
     leadBJetEta_ = leadBJet_->eta();
     leadBJetBTagProb_ = leadBJet_->btag("combinedSecondaryVertexBJetTags");
   }
+
+
+  // KK ---------------------------------- Compute btag weight
+  pfJetListBTagWeight_.clear();
+  for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
+    if(jet->pt()<20.0)continue;  
+    if(fabs(jet->eta())>2.4)continue; 
+    if(!checkPFJetId(&(*jet)))continue;
+    pfJetListBTagWeight_.push_back(&(*jet));
+  }
+
+  btagEffWeight_ = 1.;
+  vector<vector<BTagWeight::JetInfo> > jetinfovec;
+  for (unsigned int i=0; i<pfJetListBTagWeight_.size(); ++i) {
+    //    int index = pfJetListBTagWeight_[i];
+    double jetpt = pfJetListBTagWeight_[i]->pt(); 
+    double jeteta = pfJetListBTagWeight_[i]->eta(); 
+    double jetflavor = TMath::Abs(pfJetListBTagWeight_[i]->partonFlavour());
+    double discr = btagWP_;//1.7;
+    
+    double eff = 1.;
+    double sf = 1.;
+    if (jetflavor==5){
+      eff = btagEff_.btagEFF(discr,1);
+      sf =  btagEff_.btagSF(jetpt,1);
+    }else if (jetflavor==4){
+      eff = btagEff_.btagEFF(discr,0);
+      sf =  btagEff_.btagSF(jetpt,0);
+    }else{
+      eff = btagEff_.mistagEFF(jetpt,jeteta);
+      sf =  btagEff_.mistagSF(jetpt,jeteta);
+    }
+    
+    BTagWeight::JetInfo jetinfo(eff,sf);
+    vector<BTagWeight::JetInfo> jetInfoForAllOPs;
+    jetInfoForAllOPs.push_back(jetinfo);
+    jetinfovec.push_back(jetInfoForAllOPs);
+    
+  }// End of loop over PF-jets                                                                                                                 
+  btagEffWeight_ = btagWeight_.weight(jetinfovec);
+  // KK -----------------  
+
+
 
   //////////////////////
   ////2011 SM event categories 

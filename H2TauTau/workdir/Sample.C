@@ -20,7 +20,8 @@ Sample::Sample(const char * name, const char * path):
   lcolor_(0),
   lstyle_(0),
   normFactor_(1),
-  init_(0)
+  init_(0),
+  signalMass_(0.)
 {
   
 }
@@ -41,7 +42,7 @@ TH1F* Sample::getHistoNtpFile(TString xvar,Int_t xnbins,Float_t xmin,Float_t xma
   h->Sumw2();
   ntpChain_->Draw(xvar+">>"+h->GetName(),selection);
   
-
+  h->Scale(getNorm());
   return h;
 }
 
@@ -53,6 +54,7 @@ TH1F * Sample::getHistoNtpFile(TString xvar,Int_t Nbins, Float_t * Xbins, TStrin
   h->Sumw2();
   ntpChain_->Draw(xvar+">>"+h->GetName(),selection);
 
+  h->Scale(getNorm());
   return h;
 }
 
@@ -63,6 +65,8 @@ TH2F* Sample::getHistoNtpFile(TString xvar, Int_t xnbins, Float_t xmin, Float_t 
   TH2F* h=new TH2F(TString("Sample")+GetName(),"",xnbins,xmin,xmax,ynbins,ymin,ymax);
   h->Sumw2();
   ntpChain_->Draw(xvar+":"+yvar+">>"+h->GetName(),selection);
+
+  h->Scale(getNorm());
   return h;
 }
 
