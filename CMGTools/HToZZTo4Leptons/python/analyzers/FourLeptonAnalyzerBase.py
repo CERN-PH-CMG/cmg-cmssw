@@ -180,10 +180,12 @@ class FourLeptonAnalyzerBase( Analyzer ):
         
         
     def testLeptonLoose1(self, lepton,sel=None):
-        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
+#        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
+        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1.
 
     def testLeptonLoose2(self, lepton,sel=None):
-        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
+#        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
+        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1.
 
     def testLeptonTight1(self, lepton,sel=None):
         return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
