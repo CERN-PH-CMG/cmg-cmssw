@@ -213,9 +213,9 @@
                 "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-200_7TeV-powheg-pythia6"],
 		"split":1,
-                "xsec":7.27,
-                "xsecunc":[17.2,-15.2],
-		"br":[0.256,0.0403896]
+                "xsec":7.127,
+                "xsecunc":[13.4,-14.5],
+                "br":[0.256,0.0403896]
 		}
 	   ]
 	},
@@ -305,7 +305,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-250_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":4.802,
-                "xsecunc":[16.5,-15.6],
+                "xsecunc":[13.2,-14.1],
 		"br":[0.297,0.0403896]
 		}
 	   ]
@@ -328,7 +328,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-250_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":0.5802,
-                "xsecunc":[4.0,-2.6],
+                "xsecunc":[2.8,-2.7],
 		"br":[0.297,0.0403896]
 		}
 	   ]
@@ -396,7 +396,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-300_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":3.606,
-                "xsecunc":[16.8,-15.5],
+                "xsecunc":[13.4,-14.0],
 		"br":[0.307,0.0403896]
 		}
 	   ]
@@ -419,7 +419,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-300_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":0.4408,
-                "xsecunc":[4.6,-2.7],
+                "xsecunc":[2.8,-2.8],
 		"br":[0.307,0.0403896]
 		}
 	   ]
@@ -487,7 +487,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-350_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":3.406,
-                "xsecunc":[19.7,-14.8],
+                "xsecunc":[13.7,-14.1],
 		"br":[0.307,0.0403896]
 		}
 	   ]
@@ -510,7 +510,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-350_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":0.3200,
-                "xsecunc":[5.2,-2.9],
+                "xsecunc":[2.8,-3.9],
 		"br":[0.307,0.0403896]
 		}
 	   ]
@@ -577,7 +577,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-400_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":2.924,
-                "xsecunc":[15.7,-16.3],
+                "xsecunc":[14.0,-13.6],
 		"br":[0.269,0.0403896]
 		}
 	   ]
@@ -691,7 +691,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-450_7TeV-powheg-pythia6"],
 		"split":1,
   		"xsec":0.2002,
-                "xsecunc":[6.7,-3.2],
+                "xsecunc":[3.1,-3.6],
 		"br":[0.259,0.0403896]
 		}
 	   ]
@@ -759,7 +759,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-500_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":1.283,
-                "xsecunc":[17.7,-17.6],
+                "xsecunc":[14.9,-13.6],
 		"br":[0.261,0.0403896]
 		}
 	   ]
@@ -782,7 +782,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-500_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":0.1561,
-                "xsecunc":[7.2,-3.4],
+                "xsecunc":[3.4,-3.7],
 		"br":[0.261,0.0403896]
 		}
 	   ]
@@ -940,7 +940,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToZZTo2L2Nu_M-600_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":0.5230,
-                "xsecunc":[19.4,-17.9],
+                "xsecunc":[15.4,-13.8],
 		"br":[0.272,0.0403896]
 		}
 	   ]
@@ -963,7 +963,7 @@
 		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-600_7TeV-powheg-pythia6"],
 		"split":1,
                 "xsec":0.09688,
-                "xsecunc":[8.6,-3.8],
+                "xsecunc":[4.2,-4.5],
 		"br":[0.272,0.0403896]
 		}
 	   ]

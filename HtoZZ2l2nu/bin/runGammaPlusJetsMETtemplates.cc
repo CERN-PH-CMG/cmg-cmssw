@@ -84,10 +84,10 @@ int main(int argc, char* argv[])
   //book histograms
   SmartSelectionMonitor mon;
 
-  mon.addHistogram(  new TProfile("metvsrun"    ,      "Run number",     600, 190000,196000) ) ;
-  mon.addHistogram(  new TProfile("metvsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
-  mon.addHistogram(  new TProfile("nvtxvsrun",         "Run number",     600, 190000,196000) ) ;
-  mon.addHistogram(  new TProfile("nvtxvsavginstlumi", "Avg. inst lumi", 60,  400,1000));
+  mon.addHistogram(  new TProfile("metvsrun"    ,      ";Run number;<MET>",     500, 190000,200000) ) ;
+  mon.addHistogram(  new TProfile("metvsavginstlumi",  ";Avg. inst lumi;<MET>", 50,  0,5000));
+  mon.addHistogram(  new TProfile("nvtxvsrun",         ";Run number;<Vertices>",     500, 190000,200000) ) ;
+  mon.addHistogram(  new TProfile("nvtxvsavginstlumi", ";Avg. inst lumi;<Vertices>", 50,  0,5000));
 
   TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,6,0,6) ) ;
 
@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("r9", ";R9;Events", 100,0.8,1) );
   mon.addHistogram( new TH1F ("sietaieta", ";#sigma i#eta i#eta;Events", 100,0,0.03) );
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
-  mon.addHistogram( new TH1F( "dphibmet", ";min #Delta#phi(boson,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "dphibmet", ";#Delta#phi(boson,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,2.5) );
   mon.addHistogram( new TH1F ("trkveto", ";Track veto;Events", 2,0,2) );
   
@@ -184,10 +184,12 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "nvtx", ";Vertices;Events", 50,0,50) );  
   mon.addHistogram( new TH1F( "rho", ";#rho;Events", 50,0,25) );  
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mt75"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mtevetounsafe"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "met_phi"  , ";#phi [rad];Events", 50,0,3.5) );
   mon.addHistogram( new TH1F( "met_rawmet"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_met250"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_min3Met"  , ";min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
@@ -658,6 +660,7 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("met_rawmet",      ctf, phys.met[0].pt(),iweight);
 		  mon.fillHisto("metoverqt",       ctf, metP4.pt()/gamma.pt(),iweight);
 		  mon.fillHisto("met_met",         ctf, metP4.pt(),iweight);
+		  if(mt>250) mon.fillHisto("met_met250",         ctf, metP4.pt(),iweight);
 		  mon.fillHisto("met_met_vspu",    ctf, ev.nvtx,metP4.pt(),iweight);
 		  mon.fillHisto("met_min3Met",     ctf, min3Met.pt(),iweight);
 		  mon.fillHisto("met_min3Met_vspu",ctf, ev.nvtx,min3Met.pt(),iweight);
@@ -666,7 +669,8 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("met_redMetT",     ctf, redMetL,iweight);
 		  mon.fillHisto("met_redMetL",     ctf, redMetT,iweight);
 		  mon.fillHisto("mt",              ctf, mt,iweight);
-		  
+		  if(metP4.pt()>75) mon.fillHisto("mt75",              ctf, mt,iweight);
+
 		  mon.fillProfile("metvsrun",          ctf, ev.run,            zvvs[0].pt(), iweight);
 		  mon.fillProfile("metvsavginstlumi",  ctf, ev.curAvgInstLumi, zvvs[0].pt(), iweight);
 		  mon.fillProfile("nvtxvsrun",         ctf, ev.run,            ev.nvtx,      iweight);

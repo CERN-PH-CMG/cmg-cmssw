@@ -20,11 +20,20 @@
                 },
                 {
 	         "dtag":"Data8TeV_DoubleElectron2012B",
-                 "split":2
+                 "split":5
                 },
                 {
 	         "dtag":"Data8TeV_DoubleMu2012B",
-                 "split":2
+                 "split":5
+                },
+		{
+                 "dtag":"Data8TeV_DoubleElectron2012B_195540to196509",
+    		 "split":5
+                },
+                {
+                 "dtag":"Data8TeV_DoubleMu2012B_195540to196509",
+  		 "patdir":["/store/cmst3/user/psilva/Data2012/DoubleMu-v6/2012B"],
+                 "split":5
                 }
 	    ]
 	},	
@@ -55,7 +64,7 @@
 	 "spimpose":true,
          "data":[
 	      {
-               "dtag":"MC8TeV_DYJetsToLL",
+               "dtag":"MC8TeV_DYJetsToLL_50toInf",
                "split":10,
                 "xsec":3532.8
               }
@@ -239,18 +248,24 @@
 	"data":[
                 {
                   "dtag":"Data8TeV_Photon2012A",
-                  "dset":"/Photon/Run2012A-PromptReco-v1/AOD",
-		  "aoddir":["path=/Photon/Run2012A-PromptReco-v1/AOD"],
-                  "patdir":["/store/cmst3/user/psilva/Data2012/Photon-v2/2012A"],
-		  "split":2
+      		  "split":2
 		},
                 {
                   "dtag":"Data8TeV_Photon2012B",
-                  "dset":"/SinglePhoton/Run2012B-PromptReco-v1/AOD",
-		  "aoddir":["path=/SinglePhoton/Run2012B-PromptReco-v1/AOD"],
-                  "patdir":["/store/cmst3/user/psilva/Data2012/Photon-v2/2012B"],
- 		  "split":2
-		}
+ 		  "split":5
+		},
+		{
+                  "dtag":"Data8TeV_Photon2012B_195540to196509",
+                  "split":5
+                },
+	 	{
+                 "dtag":"Data8TeV_DoubleElectron2012B_gamma",
+                 "split":5
+                },
+ 		{
+                 "dtag":"Data8TeV_DoubleElectron2012B_195540to196509_gamma",
+                 "split":5
+                }
 	   ]
 	}
     ]	
