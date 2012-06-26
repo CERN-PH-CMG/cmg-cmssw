@@ -14,10 +14,10 @@ from array import array
 
 # format: file,xsec(fb),tag for legenda
 mclist=[
-    ["htt/Hig125_104/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"]
-#   [ "zz.root",1446.,"ZZ"],
-#   ["ww.root",14080.,"WW"],
-#   ["qq.root",16750.,"QQ"]
+    ["htt/Hig125_105/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
+    ["htt/ZZ/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
+    ["htt/WW/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
+    ["htt/QQ/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",16750.,"QQ"]
     ]
 
 
@@ -25,7 +25,7 @@ mclist=[
 lumi=500
 
 # step at which the plot should be made
-stepplot=4
+stepplot=5
 
 # define histograms
 step_h=[]
@@ -36,27 +36,29 @@ massz_h=[]
 mzh_h2=[]
 
 for index in range(0,len(mclist)):
-    step_h.append(TH1F("step"+str(index),"step"+str(index),10,0,10))
+    mc=mclist[index]
+    tag=mc[2]
+    step_h.append(TH1F("step_"+tag,"step_"+tag,10,0,10))
     step_h[index].SetLineColor(index+2)
     step_h[index].SetMarkerColor(index+2)
-    step_h[index].SetFillColor(index+2)
-    massh_h.append(TH1F("Hmass"+str(index),"Hmass"+str(index),200,0,400))
+#    step_h[index].SetFillColor(index+2)
+    massh_h.append(TH1F("Hmass_"+tag,"Hmass_"+tag,200,0,400))
     massh_h[index].SetLineColor(index+2)
     massh_h[index].SetMarkerColor(index+2)
-    massh_h[index].SetFillColor(index+2)
-    massz_h.append(TH1F("Zmass"+str(index),"Zmass"+str(index),200,0,400))
+#    massh_h[index].SetFillColor(index+2)
+    massz_h.append(TH1F("Zmass_"+tag,"Zmass_"+tag,200,0,400))
     massz_h[index].SetLineColor(index+2)
     massz_h[index].SetMarkerColor(index+2)
-    massz_h[index].SetFillColor(index+2)
+#    massz_h[index].SetFillColor(index+2)
 
-    mzh_h2.append(TH2F("mzvsmh"+str(index),"mzvsmh"+str(index),200,0,400,200,0,400))
+    mzh_h2.append(TH2F("mzvsmh_"+tag,"mzvsmh_"+tag,200,0,400,200,0,400))
     mzh_h2[index].SetLineColor(index+2)
     mzh_h2[index].SetMarkerColor(index+2)
-    mzh_h2[index].SetFillColor(index+2)
+#    mzh_h2[index].SetFillColor(index+2)
 
 
-    genrec_s3_t1.append(TH1F("genrec_s3_t1","genrec_s3_t1",100,-1,1))
-    genrec_s3_t2.append(TH1F("genrec_s3_t2","genrec_s3_t2",100,-1,1))
+    genrec_s3_t1.append(TH1F("genrec_s3_t1_"+tag,"genrec_s3_t1_"+tag,100,-1,1))
+    genrec_s3_t2.append(TH1F("genrec_s3_t2_"+tag,"genrec_s3_t2_"+tag,100,-1,1))
                  
 
 # now loop on tree and project
@@ -65,6 +67,7 @@ for index,mc in enumerate(mclist):
     xsec=mc[1]
     tag=mc[2]
     treefile=TFile.Open(rootfile)
+    print "opening ",rootfile
     tree=treefile.Get("htttreeproducer_httanalyzer")
     nevents=tree.GetEntries()
     # loop on tree entries
@@ -86,13 +89,15 @@ for index,mc in enumerate(mclist):
 #                    print 'ok'
                     genrec_s3_t1[index].Fill(event.genRecDistance1)
                     genrec_s3_t2[index].Fill(event.genRecDistance2)
-                    massh_h[index].Fill(event.recHMass)   
-                    massz_h[index].Fill(event.recZMass)   
-                    mzh_h2[index].Fill(event.recHMass,event.recZMass)
-        continue
+            massh_h[index].Fill(event.recHMass)   
+            massz_h[index].Fill(event.recZMass)   
+            mzh_h2[index].Fill(event.recHMass,event.recZMass)
+
     treefile.Close()
     # renormalize step_h histo for efficiencies
     norm=step_h[index].GetBinContent(1)
+    print norm
+    if norm==0: norm=-1
     for bin in range(0,step_h[index].GetNbinsX()):
         step_h[index].SetBinContent(bin,step_h[index].GetBinContent(bin)/norm)
         
@@ -115,7 +120,8 @@ for index in range(0,len(mclist)):
     if (first):
         first=False
         opt=""
-        step_h[index].Draw(opt)
+    print index,opt
+    step_h[index].Draw(opt)
 #    c1.cd(1)
 #    genrec_s3_t1[index].Draw(opt)
 #    c1.cd(2)
@@ -129,15 +135,17 @@ c1.Print("cut_chain.png")
 
 c2=TCanvas("c2","c2",800,600)
 stackh_h = THStack("HmassS", "HmassS")
-for index in range(0,len(mclist)):
+for index in range(len(mclist)-1,-1,-1):
+    print index
     stackh_h.Add(massh_h[index])
-stackh_h.Draw("nostack")
+stackh_h.Draw()
 c2.Print("hmass.png")
 
 
 c3=TCanvas("c3","c3",800,600)
 stackz_h = THStack("ZmassS", "ZmassS")
-for index in range(0,len(mclist)):
+for index in range(len(mclist)-1,-1,-1):
+    print index
     stackz_h.Add(massz_h[index])
 stackz_h.Draw()
 c3.Print("zmass.png")
