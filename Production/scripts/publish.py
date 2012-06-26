@@ -91,7 +91,7 @@ If not entered, secure password prompt will appear.""",
             line = re.sub("\s+", " ", line)
             try:
             	print "\n------------------------NEW DATASET-----------------------"
-                dataset = line.split(" ")[0].lstrip().rstrip()
+                dataset = line.split(" ")[0].lstrip().rstrip().rstrip('/')
                 fileown = options.fileown
                 if re.search("%", line):
             		fileown = line.split("%")[0].lstrip().rstrip()
