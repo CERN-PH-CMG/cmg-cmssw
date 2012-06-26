@@ -9,7 +9,6 @@
         "data":[
 	    {
                 "dtag":"MC8TeV_WW",
-                "dset":"/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
                 "split":1,
                 "xsec":57.1097,
 		"br":[0.104976]
@@ -25,7 +24,6 @@
 	"data":[
 	    {
                 "dtag":"MC8TeV_ZZ",
-                "dset":"/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
                 "split":2,
 	        "mctruthmode":1,
                 "xsec":8.25561,
@@ -167,7 +165,7 @@
 	 "mctruthmode":2,
          "data":[
 	      {
-               "dtag":"MC8TeV_DYJetsToTauTau",
+               "dtag":"MC8TeV_DYJetsToTauTau_50toInf",
                "split":10,
                 "xsec":3532.8
               },
@@ -188,16 +186,12 @@
 	 "mctruthmode":1,
          "data":[
 	      {
-               "dtag":"MC8TeV_DYJetsToLL",
-	       "patdir":["/store/cmst3/user/musella/PATtuples/19_04_2012/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START50_V15-v1_AODSIM/"],
-	       "dset":"/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START50_V15-v1/AODSIM",
+               "dtag":"MC8TeV_DYJetsToLL_50toInf",
                "split":10,
                 "xsec":3532.8
               },
 	      {
                "dtag":"MC8TeV_DYJetsToLL_10to50",
-	       "patdir":[""],
-	       "dset":"",
                "split":2,
                 "xsec":860.5
               }
@@ -1020,8 +1014,6 @@
 		}
 	   ]
 	},
-
-
 	{
 	   "tag":"data",
 	   "isdata":true,
@@ -1083,7 +1075,7 @@
 		 "aoddir":["path=/SingleMu/Run2012B-PromptReco-v1/AOD"],
 	         "patdir2":["path="],
 	         "patdir":["/store/cmst3/user/psilva/Data2012/SingleMu-v6/2012B"],
-                 "split":2
+                 "split":5
                 },
                 {
                  "dtag":"Data8TeV_MuEG2012B",
@@ -1092,7 +1084,40 @@
 	         "patdir2":["path="],
 		 "patdir":["/store/cmst3/user/psilva/Data2012/MuEG-v6/2012B"],
                  "split":5
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012B_195540to196509",
+		 "dset":"/DoubleElectron/Run2012B-PromptReco-v1/AOD",
+		 "aoddir":["path=/DoubleElectron/Run2012B-PromptReco-v1/AOD"],
+	         "patdir2":["path="],
+		 "patdir":["/store/cmst3/user/psilva/Data2012/DoubleElectron-v6/2012B"],
+                 "split":5
+                },
+                {
+	         "dtag":"Data8TeV_DoubleMu2012B_195540to196509",
+		 "dset":"/DoubleMu/Run2012B-PromptReco-v1/AOD",
+		 "aoddir":["path=/DoubleMu/Run2012B-PromptReco-v1/AOD"],
+	         "patdir2":["path="],
+	         "patdir":["/store/cmst3/user/psilva/Data2012/DoubleMu-v6/2012B"],
+                 "split":5
+                },
+                {
+	         "dtag":"Data8TeV_SingleMu2012B_195540to196509",
+		 "dset":"/SingleMu/Run2012B-PromptReco-v1/AOD",
+		 "aoddir":["path=/SingleMu/Run2012B-PromptReco-v1/AOD"],
+	         "patdir2":["path="],
+	         "patdir":["/store/cmst3/user/psilva/Data2012/SingleMu-v6/2012B"],
+                 "split":5
+                },
+                {
+                 "dtag":"Data8TeV_MuEG2012B_195540to196509",
+                 "dset":"/MuEG/Run2012B-PromptReco-v1/AOD",
+		 "aoddir":["path=/MuEG/Run2012B-PromptReco-v1/AOD"],
+	         "patdir2":["path="],
+		 "patdir":["/store/cmst3/user/psilva/Data2012/MuEG-v6/2012B"],
+                 "split":5
                 }
+
 	    ]
 	}
     ]	
