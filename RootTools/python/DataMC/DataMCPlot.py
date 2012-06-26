@@ -1,7 +1,7 @@
 from operator import itemgetter, attrgetter
 import copy
 
-from ROOT import TH1, THStack, TLegend, TLine, gPad
+from ROOT import TH1, THStack, TLegend, TLine, TPad
 
 from CMGTools.RootTools.DataMC.Histogram import Histogram
 from CMGTools.RootTools.DataMC.Stack import Stack
@@ -72,8 +72,9 @@ class DataMCPlot(object):
                 groupHist.Add(hist)
             realNames.append( hist.realName )
             hist.on = False
-        self.groups[groupName] = namesToGroup
-        groupHist.realName = ','.join(realNames)
+        if groupHist:
+            self.groups[groupName] = namesToGroup
+            groupHist.realName = ','.join(realNames)
 
 
     def UnGroup(self, groupName):
@@ -132,7 +133,8 @@ class DataMCPlot(object):
             if same == '':
                 same = 'same'
         self.DrawLegend()
-        gPad.Update()
+        if TPad.Pad():
+            TPad.Pad().Update()
         self.lastDraw = 'DrawNormalized'
         self.lastDrawArgs = [ opt ]
 
@@ -144,7 +146,8 @@ class DataMCPlot(object):
             if same == '':
                 same = 'same'
         self.DrawLegend()
-        gPad.Update()
+        if TPad.Pad():
+            TPad.Pad().Update()
         self.lastDraw = 'Draw'
         self.lastDrawArgs = [ opt ]
 
@@ -190,7 +193,8 @@ class DataMCPlot(object):
             if same == '':
                 same = 'same'
         self.DrawLegend( ratio=True )
-        gPad.Update()
+        if TPad.Pad():
+            TPad.Pad().Update()
         self.lastDraw = 'DrawRatio'
         self.lastDrawArgs = [ opt ]
 
@@ -226,7 +230,8 @@ class DataMCPlot(object):
             self.ratios.append( ratio )
         self.DrawLegend( ratio=True )
         self.DrawRatioLines(denom, xmin, xmax)
-        gPad.Update()
+        if TPad.Pad():
+            TPad.Pad().Update()
         self.lastDraw = 'DrawRatioStack'
         self.lastDrawArgs = [ opt, ymin, ymax]
                 
@@ -264,7 +269,8 @@ class DataMCPlot(object):
             self.ratios.append( ratio )        
         self.DrawLegend( ratio=True )
         self.DrawRatioLines(denom, xmin,xmax)
-        gPad.Update()
+        if TPad.Pad():
+            TPad.Pad().Update()
         self.lastDraw = 'DrawNormalizedRatioStack'
         self.lastDrawArgs = [ opt ]
 
@@ -289,6 +295,9 @@ class DataMCPlot(object):
 
         if Histogram.stack is True, the histogram is put in the stack.'''
         self._BuildStack(self._SortedHistograms(), ytitle='Events')
+        same = 'same'
+        if len(self.nostack) == 0:
+            same = ''
         for hist in self.nostack:
             if self.blindminx:
                 hist.Blind(self.blindminx, self.blindmaxx)
@@ -297,13 +306,14 @@ class DataMCPlot(object):
                 max =  hist.weighted.GetBinContent(hist.weighted.GetMaximumBin())
                 hist.GetYaxis().SetRangeUser(0.01, max*1.3)
                 self.axisWasSet = True
-        self.stack.Draw(opt+'same',
+        self.stack.Draw(opt+same,
                         xmin=xmin, xmax=xmax,
                         ymin=ymin, ymax=ymax )
         for hist in self.nostack:
             hist.Draw('same')
         self.DrawLegend()
-        gPad.Update()
+        if TPad.Pad():
+            TPad.Pad().Update()
         self.lastDraw = 'DrawStack'
         self.lastDrawArgs = [ opt ]
 
@@ -321,7 +331,8 @@ class DataMCPlot(object):
         for hist in self.nostack:
             hist.obj.DrawNormalized('same')
         self.DrawLegend()
-        gPad.Update()
+        if TPad.Pad():
+            TPad.Pad().Update()
         self.lastDraw = 'DrawNormalizedStack'
         self.lastDrawArgs = [ opt ]
 

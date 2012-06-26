@@ -1,6 +1,22 @@
 from CMGTools.RootTools.fwlite.Weight import Weight
 import glob
 
+
+def printComps(comps, details=False):
+    nJobs = 0
+    for c in comps:
+        if not hasattr(c, 'splitFactor'):
+            c.splitFactor = 1
+        print c.name, c.splitFactor, len(c.files)
+        if len(c.files):
+            if details:
+                print c.files[0]
+            nJobs += c.splitFactor
+    print '-'*70
+    print '# components = ', len(comps)
+    print '# jobs       = ', nJobs
+
+
 class CFG(object):
     '''Base configuration class. The attributes are used to store parameters of any type'''
     def __init__(self, **kwargs):
