@@ -75,8 +75,17 @@ double muonIsolScaleFactor(double pt, double eta) {
 	return getEfficiency(muonIsolScaleFactors2011A, muonIsolScaleFactors2011B, pt, eta);
 }
 
-double muonScaleFactor(double pt, double eta) {
-	return muonRecoScaleFactor(pt, eta) *  muonIdScaleFactor(pt, eta) *  muonIsolScaleFactor(pt, eta);
+double muonScaleFactor(double pt, double eta,int era) {
+  switch(era)
+    {
+    case 2012: 
+      return 1.0; 
+      break;
+    default : 
+      return muonRecoScaleFactor(pt, eta) *  muonIdScaleFactor(pt, eta) *  muonIsolScaleFactor(pt, eta);
+      break;
+    }
+  return 1.0;
 }
 
 double electronRecoScaleFactor(double pt, double eta) {
@@ -91,18 +100,45 @@ double electronIsolScaleFactor(double pt, double eta) {
 	return getEfficiency(electronIsolScaleFactors2011A, electronIsolScaleFactors2011B, pt, eta);
 }
 
-double electronScaleFactor(double pt, double eta) {
-	return electronRecoScaleFactor(pt, eta) *  electronIdScaleFactor(pt, eta) *  electronIsolScaleFactor(pt, eta);
+double electronScaleFactor(double pt, double eta,int era) {
+  switch(era)
+    {
+    case 2012:
+      return 1;
+      break;
+    default:
+      return electronRecoScaleFactor(pt, eta) *  electronIdScaleFactor(pt, eta) *  electronIsolScaleFactor(pt, eta);
+      break;
+    }
+  return 1;
 }
 
-double muonTriggerEfficiency(double pt, double eta) {
-	return ( lumiDoubleMu7 / lumi2011 ) * hltDoubleMu7.getEfficiency(pt, eta)
-		+ ( (lumi2011A - lumiDoubleMu7) / lumi2011 ) * hltMu13Mu8_2011A.getEfficiency(pt, eta)
-		+ ( (lumi2011B - lumiMu17_Mu8) / lumi2011 ) * hltMu13Mu8_2011B.getEfficiency(pt, eta)
-		+ ( lumiMu17_Mu8 / lumi2011 ) * hltMu17Mu8.getEfficiency(pt, eta);
+double muonTriggerEfficiency(double pt, double eta, int era) {
+  switch(era)
+    {
+    case 2011:
+      return ( lumiDoubleMu7 / lumi2011 ) * hltDoubleMu7.getEfficiency(pt, eta)
+	+ ( (lumi2011A - lumiDoubleMu7) / lumi2011 ) * hltMu13Mu8_2011A.getEfficiency(pt, eta)
+	+ ( (lumi2011B - lumiMu17_Mu8) / lumi2011 ) * hltMu13Mu8_2011B.getEfficiency(pt, eta)
+	+ ( lumiMu17_Mu8 / lumi2011 ) * hltMu17Mu8.getEfficiency(pt, eta);
+      break;
+    case 2012:
+      return 0.965;
+      break;
+    }
+  return 1;
 }
 
-double electronTriggerEfficiency(double pt, double eta) {
-  return 0.96;  //use top dileptons estimate cf. TOP-11-005
-  //return 1.0; // fake
+double electronTriggerEfficiency(double pt, double eta,int era) {
+  switch(era)
+    {
+    case 2012:
+      return 0.98; 
+      break;
+    case 2011:
+      return 0.96;  //use top dileptons estimate cf. TOP-11-005
+      //return 1.0; // fake
+      break;
+    }
+  return 1.0;
 }

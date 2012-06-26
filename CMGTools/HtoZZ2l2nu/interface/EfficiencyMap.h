@@ -77,13 +77,13 @@ double getEfficiency(const Efficiency & eff2011A, const Efficiency & eff2011B, d
 double electronRecoScaleFactor(double pt, double eta);
 double electronIdScaleFactor(double pt, double eta);
 double electronIsolScaleFactor(double pt, double eta);
-double electronScaleFactor(double pt, double eta);
-double electronTriggerEfficiency(double pt, double eta);
+double electronScaleFactor(double pt, double eta,int era=2011);
+double electronTriggerEfficiency(double pt, double eta, int era=2011);
 
 double muonRecoScaleFactor(double pt, double eta);
 double muonIdScaleFactor(double pt, double eta);
 double muonIsolScaleFactor(double pt, double eta);
-double muonScaleFactor(double pt, double eta);
-double muonTriggerEfficiency(double pt, double eta);
+double muonScaleFactor(double pt, double eta, int era=2011);
+double muonTriggerEfficiency(double pt, double eta, int era=2011);
 
 #endif // EFFICIENCY_H

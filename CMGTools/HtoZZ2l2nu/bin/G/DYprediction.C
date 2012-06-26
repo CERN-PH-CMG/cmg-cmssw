@@ -66,19 +66,21 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 {
   setTDRStyle();
 
-  TString llFile="../../test/results/plotter_2012.root";
-  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
+  //  TString llFile="../../test/results/plotter_2012.root";
+  TString llFile="../../plotter.root";
+  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/qt/plotter.root";
+  //TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
   
   //TString llFile="../../test/results/plotter_2011.root";
   // TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
   
   string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {"met_met","mt",
+  string histos[] = {"met_met","met_met250"//,"mt","mt75",
 		     //		     "mindphijmet",
 		     // "pfvbfpremjj",
-		     // "pfvbfcandjetdeta","pfvbfmjj","pfvbfcjv", "pfvbfhardpt"
-		     //		     "mt_shapes"
+		     // "pfvbfcandjetdeta","pfvbfmjj","pfvbfcjv", "pfvbfhardpt",
+		     // "mt_shapes"
   };
   const size_t nhistos=sizeof(histos)/sizeof(string);
   string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};
@@ -224,7 +226,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		}
 	      
 	      //normalization factor (from MET<50)
-	      if(histos[ih].find("met_met")==string::npos) continue;
+	      if(histos[ih].find("met_met")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
 	      int normBin=normH->GetXaxis()->FindBin(50);
 	      
 	      Shape_t &dilMetShape = shapesMap[normKey+"_"+histos[ih]];
@@ -416,8 +418,8 @@ void showShape(const Shape_t &shape,TString SaveName)
   T->SetFillColor(0);
   T->SetFillStyle(0);  T->SetLineColor(0);
   T->SetTextAlign(22);
-  //   char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5045./1000);
-    char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 3947./1000);
+  //   char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5051./1000);
+    char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
     T->AddText(Buffer);
   T->Draw("same");
   
