@@ -49,8 +49,14 @@ class htttreeproducer( TreeAnalyzer ):
         jetVars('nontgenjet3')
         jetVars('nontgenjet4')
 
+        jetVars('t1rec')
+        jetVars('t2rec')
+        jetVars('j1rec')
+        jetVars('j2rec')
+
         var('g_isHZ')
         var('g_isHZqq')
+        var('g_isHZbb')
         var('g_ishtt')
 
         var('step')
@@ -60,6 +66,9 @@ class htttreeproducer( TreeAnalyzer ):
         var('nontgenjetiso4')
         
         
+        var('btag_tt')
+        var('btag_jj')
+
         var('t1cosjet')
         var('t2cosjet')
         var('t1iso')
@@ -73,15 +82,56 @@ class htttreeproducer( TreeAnalyzer ):
         var('tau1matchingjetindex')
         var('tau2matchingjetindex')
 
-        var('isHttZbbGen')
-        var('isHttZbbRec')
 
         var('mvis')
+        var('px') 
+        var('py') 
+        var('pz') 
+        var('evis') 
         var('chi2')
+        var('mmin')
+        
+        var('t1_px')
+        var('t1_py')
+        var('t1_pz')
+        var('t1_en')
+        var('t2_px')
+        var('t2_py')
+        var('t2_pz')
+        var('t2_en')
+        var('j1_px')
+        var('j1_py')
+        var('j1_pz')
+        var('j1_en')
+        var('j2_px')
+        var('j2_py')
+        var('j2_pz')
+        var('j2_en')
+
+        var('t1s_px')
+        var('t1s_py')
+        var('t1s_pz')
+        var('t1s_en')
+        var('t2s_px')
+        var('t2s_py')
+        var('t2s_pz')
+        var('t2s_en')
+        var('j1s_px')
+        var('j1s_py')
+        var('j1s_pz')
+        var('j1s_en')
+        var('j2s_px')
+        var('j2s_py')
+        var('j2s_pz')
+        var('j2s_en')
+        var('wwMin')
+        var('zzMin')
+        
 
 
-#       var('wwMin')
-#       var('zzMin')
+
+
+
 #       var('deltaZ')
 #       var('chi2')
 #       var('mvis')
@@ -151,9 +201,8 @@ class htttreeproducer( TreeAnalyzer ):
         fill('g_ishtt',subevent.ishtt)
         fill('g_isHZ',subevent.isHZ)
         fill('g_isHZqq',subevent.isHZqq)
+        fill('g_isHZqq',subevent.isHZbb)
 
-        isHttZbbGen = 0
-        isHttZbbRec = 0
         
         if subevent.isHZ==1 : 
             fgenParticleVars( 'H',subevent.H ) 
@@ -171,7 +220,6 @@ class htttreeproducer( TreeAnalyzer ):
                 fill( 't1iso',subevent.tau1iso)
                 fill( 't2iso',subevent.tau2iso)
             if subevent.isHZqq==1:
-              isHttZbbGen = 1
               if (len(subevent.matchedRecGenDistances)>0):
                 fill( 'genRecDistance1', subevent.matchedRecGenDistances[0] )   
               if (len(subevent.matchedRecGenDistances)>1):
@@ -184,16 +232,64 @@ class htttreeproducer( TreeAnalyzer ):
             fParticleVars('recH', subevent.hz[0])
             fParticleVars('recZ', subevent.hz[1])
 
-        #fill('mvis', subevent.mvis)
-        #fill('chi2', subevent.chi2)
-        if len(subevent.hz):
-          isHttZbbRec = 1
-
-        fill('isHttZbbGen', isHttZbbGen)  
-        fill('isHttZbbRec', isHttZbbRec)  
-
 
         fill('njets',subevent.njets)
+        if subevent.step>=4:
+            # fill rest of the variables
+                fill('mvis', subevent.mvis)
+                fill('px'  , subevent.px  )
+                fill('py'  , subevent.py  )
+                fill('pz'  , subevent.pz  )
+                fill('evis', subevent.evis)
+                fill('chi2', subevent.chi2)
+                fill('mmin', subevent.mmin)
+
+                fill('t1_px',subevent.t1_px)
+                fill('t1_py',subevent.t1_py)
+                fill('t1_pz',subevent.t1_pz)
+                fill('t1_en',subevent.t1_en)
+                fill('t2_px',subevent.t2_px)
+                fill('t2_py',subevent.t2_py)
+                fill('t2_pz',subevent.t2_pz)
+                fill('t2_en',subevent.t2_en)
+                fill('j1_px',subevent.j1_px)
+                fill('j1_py',subevent.j1_py)
+                fill('j1_pz',subevent.j1_pz)
+                fill('j1_en',subevent.j1_en)
+                fill('j2_px',subevent.j2_px)
+                fill('j2_py',subevent.j2_py)
+                fill('j2_pz',subevent.j2_pz)
+                fill('j2_en',subevent.j2_en)
+
+                fill('t1s_px',subevent.t1s_px)
+                fill('t1s_py',subevent.t1s_py)
+                fill('t1s_pz',subevent.t1s_pz)
+                fill('t1s_en',subevent.t1s_en)
+                fill('t2s_px',subevent.t2s_px)
+                fill('t2s_py',subevent.t2s_py)
+                fill('t2s_pz',subevent.t2s_pz)
+                fill('t2s_en',subevent.t2s_en)
+                fill('j1s_px',subevent.j1s_px)
+                fill('j1s_py',subevent.j1s_py)
+                fill('j1s_pz',subevent.j1s_pz)
+                fill('j1s_en',subevent.j1s_en)
+                fill('j2s_px',subevent.j2s_px)
+                fill('j2s_py',subevent.j2s_py)
+                fill('j2s_pz',subevent.j2s_pz)
+                fill('j2s_en',subevent.j2s_en)
+                fJetVars('t1rec',subevent.taucand[0])
+                fJetVars('t2rec',subevent.taucand[1])
+                fJetVars('j1rec',subevent.nontaucand[0])
+                fJetVars('j2rec',subevent.nontaucand[1])
+                fill('btag_tt',subevent.btag_tt)
+                fill('btag_jj',subevent.btag_jj)
+
+#        if subevent.step>=5:
+                fill('wwMin',subevent.wwMin)
+                fill('zzMin',subevent.zzMin)
+                
+        
+
 #        for n_j in range(0,4):
 #            if len(subevent.nontaugenjet)>n_j:
 #                fJetVars('nontgenjet%d'%(n_j+1),subevent.nontaugenjet[n_j])
@@ -204,8 +300,6 @@ class htttreeproducer( TreeAnalyzer ):
 #        fJetVars('Jet3',subevent.allJets[2])
 #        fJetVars('Jet4',subevent.allJets[3])
 #
-#        fill('wwMin',subevent.wwMin)
-#        fill('zzMin',subevent.zzMin)
 #        fill('deltaZ',subevent.deltaZ)
 #        fill('mvis',subevent.mvis)
 #        fill('pxvis',subevent.pxvis) 
