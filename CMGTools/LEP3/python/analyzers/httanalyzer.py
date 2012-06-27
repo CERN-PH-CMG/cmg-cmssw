@@ -20,13 +20,10 @@ class httanalyzer( Analyzer ):
 
     def declareHandles(self):
         super(httanalyzer, self).declareHandles()
-
         self.handles['jets'] = AutoHandle ('cmgPFJetSel',
                                            'std::vector<cmg::PFJet>')
-
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
-
         self.handles['muons'] = AutoHandle( 'cmgMuonSel',
                                                      'std::vector<cmg::Muon>' )
         self.handles['electrons'] = AutoHandle( 'cmgElectronSel',
@@ -46,12 +43,17 @@ class httanalyzer( Analyzer ):
         count.register('All hz events')
         count.register('h->tt')
         count.register('Z->qq and h->tt')
+        count.register('Z->bb and h->tt')
         count.register('Z->qq and h->tt selected')
+        count.register('Z->bb and h->tt selected')
+        count.register('Z->qq and h->tt b-selected')
+        count.register('Z->bb and h->tt b-selected')
         self.counters.addCounter('h_rec')
         count1 = self.counters.counter('h_rec')
         count1.register('All events')
         count1.register('4 jets above threshold')
         count1.register('2 tau candidates')
+        count1.register('2 tau candidates good pair')    
         count1.register('2 jets with id')
         count1.register('passed' )
 
@@ -59,6 +61,7 @@ class httanalyzer( Analyzer ):
     def buildMCinfo(self, event):
         self.isHZ = False
         self.isHZqq = False
+        self.isHZbb = False
         self.tau = []
         nH = 0
         nZ = 0
@@ -95,6 +98,8 @@ class httanalyzer( Analyzer ):
                 if ptc.mother(0)==ptcz:
                     if abs(ptc.pdgId())<=6:
                         self.isHZqq=True
+                        if abs(ptc.pdgId())==5:
+                            self.isHZbb=True
     
     def testE(self):
       n=0
@@ -151,9 +156,12 @@ class httanalyzer( Analyzer ):
             self.counters.counter('h_gen').inc('h->tt')
             if self.isHZqq:
                 self.counters.counter('h_gen').inc('Z->qq and h->tt')
+                if self.isHZbb:
+                    self.counters.counter('h_gen').inc('Z->bb and h->tt')
 
         event.isHZ = 0
         event.isHZqq = 0
+        event.isHZbb = 0
         
         if self.isHZ:
             event.isHZ=1
@@ -161,6 +169,8 @@ class httanalyzer( Analyzer ):
             event.Z=self.Z
             if self.isHZqq:
                 event.isHZqq=1
+            if self.isHZbb:
+                event.isHZbb=1
             
         event.ishtt = 0
 
@@ -316,7 +326,8 @@ class httanalyzer( Analyzer ):
             #            if ntrk>=1 and ntrk<=3  and self.jetiso[ind]<0.8 and len(event.taucand)<2:
             # if ntrk>=0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
             # if ntrk>=1 and ntrk<=3  and self.jetiso[ind]<0.9:
-            if ntrk>=1 and ntrk<=3:
+#            if ntrk>=1 and ntrk<=3:
+            if ntrk==1 or ntrk==3:
                 event.taucand.append(self.jets[ind])
                 event.taucandiso.append(self.jetiso[ind])
 #                print "adding to tau"
@@ -331,6 +342,11 @@ class httanalyzer( Analyzer ):
         self.counters.counter('h_rec').inc('2 tau candidates')    
         event.step+=1 #3
 
+        if len(event.taucand)==2:
+            ntr1=event.taucand[0].component(1).number()
+            ntr2=event.taucand[1].component(1).number()
+            if (ntr1*ntr2)!=1 and (ntr1*ntr2)!=3:
+                return
         # now iterate on all possible pairs of tau candidates, if more than two, and keep only the ones which give
         # opposite mass closer to Z peak
 
@@ -339,6 +355,12 @@ class httanalyzer( Analyzer ):
             taupair=(-1,-1)
             # fit version of tau finding optimization
             for ind1, ind2 in itertools.combinations(range(len(event.taucand)), 2):
+                ntr1=event.taucand[ind1].component(1).number()
+                ntr2=event.taucand[ind2].component(1).number()
+                # consider only combination 1,1 1,3 3,1
+
+                if (ntr1*ntr2)!=1 and (ntr1*ntr2)!=3:
+                    continue
                 nt=[]
                 nj=[]
                 nt.append(event.taucand[ind1])
@@ -377,6 +399,10 @@ class httanalyzer( Analyzer ):
 #                pnontau[2]+=jet.pz()
 #                pnontau[3]+=jet.energy()
 #            for ind1, ind2 in itertools.combinations(range(len(event.taucand)), 2):
+#                ntr1=event.taucand[ind1].component(1).number()
+#                ntr2=event.taucand[ind2].component(1).number()
+#                if (ntr1*ntr2)!=1 and (ntr1*ntr2)!=3:
+#                    continue
 #                ptau=[0,0,0,0]
 #                for tauind in range(0,len(event.taucand)):
 #                    if tauind!=ind1 and tauind!=ind2:
@@ -398,6 +424,10 @@ class httanalyzer( Analyzer ):
             # now we have taupair and we can adapt the candidates
             (t1,t2)=taupair
 #            print "chosen",t1,t2
+
+            if t1<0 or t2<0:
+                return
+#            print "chosen",t1,t2
             t1temp=event.taucand[t1]
             t1isotemp=event.taucandiso[t1]
             t2temp=event.taucand[t2]
@@ -412,7 +442,13 @@ class httanalyzer( Analyzer ):
             # cleanup the taucand list
             event.taucand=[t1temp,t2temp]
             event.taucandiso=[t1isotemp,t2isotemp]
+
             
+
+
+        self.counters.counter('h_rec').inc('2 tau candidates good pair')    
+        event.step+=1 #4
+
             
         #MC matching
         if event.ishtt==1 and event.isHZqq==1:
@@ -436,17 +472,85 @@ class httanalyzer( Analyzer ):
         for jet in tmpJets:
             event.nontaucand.append(jet)
 
+        event.btag_tt=0
+        event.btag_jj=0
+        for jet in event.taucand:
+            event.btag_tt+=jet.btag(7)
+        for jet in event.nontaucand:
+            event.btag_jj+=jet.btag(7)
+        
 
+        # store variables before rescaling
+        event.t1_px=event.taucand[0].px()
+        event.t1_py=event.taucand[0].py()
+        event.t1_pz=event.taucand[0].pz()
+        event.t1_en=event.taucand[0].energy()
+        event.t2_px=event.taucand[1].px()
+        event.t2_py=event.taucand[1].py()
+        event.t2_pz=event.taucand[1].pz()
+        event.t2_en=event.taucand[1].energy()
+        
+        # store variables before rescaling
+        event.j1_px=event.nontaucand[0].px()
+        event.j1_py=event.nontaucand[0].py()
+        event.j1_pz=event.nontaucand[0].pz()
+        event.j1_en=event.nontaucand[0].energy()
+        event.j2_px=event.nontaucand[1].px()
+        event.j2_py=event.nontaucand[1].py()
+        event.j2_pz=event.nontaucand[1].pz()
+        event.j2_en=event.nontaucand[1].energy()
+        
         #check that the clustered jets pass id (this also does the momentum rescaling)
 
         idpass,newjets,newtaus = self.testId(event.nontaucand, event.taucand,True)
-        event.mvis = self.mvis       
-        event.chi2 = self.chi2       
+
+        # store variables after rescaling
+        event.t1s_px=event.taucand[0].px()
+        event.t1s_py=event.taucand[0].py()
+        event.t1s_pz=event.taucand[0].pz()
+        event.t1s_en=event.taucand[0].energy()
+        event.t2s_px=event.taucand[1].px()
+        event.t2s_py=event.taucand[1].py()
+        event.t2s_pz=event.taucand[1].pz()
+        event.t2s_en=event.taucand[1].energy()
+        
+        # store variables after rescaling
+        event.j1s_px=event.nontaucand[0].px()
+        event.j1s_py=event.nontaucand[0].py()
+        event.j1s_pz=event.nontaucand[0].pz()
+        event.j1s_en=event.nontaucand[0].energy()
+        event.j2s_px=event.nontaucand[1].px()
+        event.j2s_py=event.nontaucand[1].py()
+        event.j2s_pz=event.nontaucand[1].pz()
+        event.j2s_en=event.nontaucand[1].energy()
+
+        event.mvis = self.mvis
+        event.px = self.px
+        event.py = self.py
+        event.pz = self.pz
+        event.evis = self.evis
+        event.chi2 = self.chi2
+        event.mmin = self.mmin
+
+        event.alljets=[]
+        for jet in event.nontaucand:
+            event.alljets.append(jet)
+        for jet in event.taucand:
+            event.alljets.append(jet)
+        #event.alljets contains all jets now (j1,j2,t1,t2)
+        event.jetPairs = self.findPairs( event.alljets )
+        event.ww, event.wwMin = self.findWW ( event.jetPairs )
+        event.zz, event.zzMin = self.findZZ ( event.jetPairs )
+
+
         if not idpass:
           return
 
         self.counters.counter('h_rec').inc('2 jets with id')
-        event.step+=1 #4
+        event.step+=1 #5
+
+        
+
 
         #finally find the HZ candidates
         reshz,self.hz = self.findHZ(event.nontaucand, event.taucand)
@@ -454,12 +558,24 @@ class httanalyzer( Analyzer ):
 #        print "dijetmass ",event.hz[1].M()
         if not reshz:
           return
-        event.step+=1 #5
+        event.step+=1 #6
         self.counters.counter('h_rec').inc('passed') 
 
         if event.ishtt==1 and event.isHZqq==1:
             self.counters.counter('h_gen').inc('Z->qq and h->tt selected')
+        if event.ishtt==1 and event.isHZbb==1:
+            self.counters.counter('h_gen').inc('Z->bb and h->tt selected')
             
+        # apply btag here
+        if event.btag_jj<0.95:
+            return
+        event.step+=1 #7
+        if event.ishtt==1 and event.isHZqq==1:
+            self.counters.counter('h_gen').inc('Z->qq and h->tt b-selected')
+        if event.ishtt==1 and event.isHZbb==1:
+            self.counters.counter('h_gen').inc('Z->bb and h->tt b-selected')
+        
+        
 
         return True
 
