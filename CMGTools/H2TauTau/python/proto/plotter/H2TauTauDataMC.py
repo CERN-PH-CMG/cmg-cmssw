@@ -20,13 +20,11 @@ class H2TauTauDataMC( AnalysisDataMC ):
         '''Data/MC plotter adapted to the H->tau tau analysis.
         The plotter takes a collection of trees in input. The trees are found according
         to the dictionary of selected components selComps.
-        The weighting information for each component is read from the weights dictionary.
+        The global weighting information for each component is read from the weights dictionary.
         The weight parameter is the name of an event weight variable that can be found in the tree.
-        The default is "weight" (full event weight computed at python analysis stage).
-        To do an unweighted plot, choose weight="1" (the string, not the number).
-        
-        To do:
-        - need to revive embedded samples (when they are ready from Simone)
+        The default is "weight" (full event weight computed at python analysis stage),
+        but you can build up the weight string you want before calling this constructor.
+        To do an unweighted plot, choose weight="1" (the string, not the number).        
         '''
         if treeName is None:
             treeName = 'H2TauTauTreeProducerTauMu'
@@ -90,9 +88,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
     def _ReadHistograms(self, directory):
         '''Build histograms for all components.'''
-        # self.__class__.keeper = {}
         for layer, (compName, comp) in enumerate( self.selComps.iteritems() ) : 
-            # import pdb; pdb.set_trace()
             fileName = '/'.join([ directory,
                                   comp.dir,
                                   self.treeName,
@@ -101,8 +97,6 @@ class H2TauTauDataMC( AnalysisDataMC ):
             file = self.__class__.keeper[ fileName + str(self.__class__.HINDEX) ] = TFile(fileName) 
             self.__class__.HINDEX+=1
 
-            # file = TFile(fileName)
-            # self.keeper.append( file )
             tree = file.Get( self.treeName )
             
             if compName == 'Ztt':
@@ -170,12 +164,9 @@ class H2TauTauDataMC( AnalysisDataMC ):
                 else:
                     self.Hist(newName).Add(embedHist)
         if doEmbedding:
-            #         embedYield = self.Hist(newName).Yield()
             print 'EMBEDDING: scale factor = ', embedFactor
-            # import pdb; pdb.set_trace()
             self.Hist(newName).Scale( embedFactor * self.weights['Ztt'].GetWeight() ) 
             self._ApplyPrefs()
-            # self.Hist(name).on = False
 
 
     def groupDataComponents( self, dataComponents, name ):
@@ -186,10 +177,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         MC components.
         '''        
         self.intLumi = 0
-        # self.dataComponents = dataComponents
         data = None
         for component in dataComponents:
-            # print component
             hist = self.Hist(component)
             hist.stack = False
             hist.on = False
@@ -203,11 +192,6 @@ class H2TauTauDataMC( AnalysisDataMC ):
             # other data histograms added to the first one...
             # ... and removed from the stack
             self.Hist(name).Add( hist )
-            # compute integrated luminosity for all data samples
-        # if self.intLumi>0:
-        #    for component, weight in self.weights.iteritems():
-        #        if component not in dataComponents:
-        #            self.weights[component].intLumi = self.intLumi
         self._ApplyWeights()
         self._ApplyPrefs()
         
