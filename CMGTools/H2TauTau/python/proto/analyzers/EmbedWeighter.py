@@ -36,14 +36,19 @@ class EmbedWeighter( Analyzer ):
         self.weight = 1
 
         if self.cfg_comp.isEmbed:
-            genfilter = self.embhandles['minVisPtFilter'].product()
+            try: 
+                genfilter = self.embhandles['minVisPtFilter'].product()
+            except RuntimeError:
+                print 'WARNING EmbedWeighter, cannot find the weight in the event'
+                return False
             if cmsswIs52X():
                 self.weight = genfilter.filterEfficiency()
-            else:
+            else: 
                 self.weight = genfilter[0]
+                print self.weight
         if self.cfg_ana.verbose:
             print self.name, 'efficiency =', self.weight
-        # import pdb; pdb.set_trace()
         event.eventWeight *= self.weight
         self.averages['weight'].add( self.weight )
+        return True
                 

@@ -118,9 +118,10 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None):
         blindxmin = 100
         blindxmax = 160
         plot.Blind(blindxmin, blindxmax, False)
-        
-    if channel=='TauEle': xtitles = xtitles_TauEle
-    xtitle = xtitles.get( plot.varName, None )
+    titles = xtitles
+    if channel=='TauEle':
+        titles = xtitles_TauEle
+    xtitle = titles.get( plot.varName, None )
     if xtitle is None:
         xtitle = ''
     global can, pad, padr, ratio
