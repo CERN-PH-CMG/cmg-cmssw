@@ -22,10 +22,10 @@ from array import array
 #    ]
 
 mclist=[
-    ["htt/Hig125_138/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
-    ["htt/ZZ_5/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"]
-#    ["htt/WW_8/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
-#    ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
+    ["htt/Hig125_139/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
+    ["htt/ZZ_7/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
+    ["htt/WW_10/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
+    ["htt/QQ_2/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
     ]
 
 
@@ -33,7 +33,7 @@ mclist=[
 lumi=500
 
 # step at which the plot should be made
-stepplot=7
+stepplot=6
 
 # define special histograms
 step_h=[]
@@ -104,13 +104,17 @@ for index,mc in enumerate(mclist):
     print "opening ",rootfile
     tree=treefile.Get("htttreeproducer_httanalyzer")
     nevents=tree.GetEntries()
+    nevents=min(nevents,100000)
     # loop on tree entries
     weight=xsec*lumi/nevents
     
     print weight,nevents
     h1loc=h1glob[index]
-    
+    read=0
     for event  in tree:
+        if read>=nevents:
+            break
+        read+=1
         for bin in range(0,int(event.step)+1):
             if index==0:
                 if event.g_ishtt==1 and event.g_isHZqq==1:
@@ -130,7 +134,7 @@ for index,mc in enumerate(mclist):
             for i,h1 in enumerate(h1loc):
                 param=h1_list[i]
 #                print param[1]
-                h1.Fill(eval(param[1]))
+                h1.Fill(eval(param[1]),weight)
             
     treefile.Close()
     # renormalize step_h histo for efficiencies
@@ -189,7 +193,7 @@ for i,h1 in enumerate(h1_list):
         stackh_h.Add(h1loc[i])
     stackh_h.Draw()
     leg_hist.Draw()
-    canv[len(canv)-1].Print("hmass.png")
+    canv[len(canv)-1].Print(tag+".png")
 
 
 
