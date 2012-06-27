@@ -1,5 +1,7 @@
 blah = 'CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT'
 
+# COLIN FIXME: wildcards for v* should work, look at the effect. If it works, migrate
+
 data_triggers_2011A = [
     # the first 2 triggers correspond to runs before the good run list
     # why do we get them??
