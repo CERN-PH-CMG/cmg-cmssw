@@ -42,8 +42,6 @@ cat_Inc = str(inc_sig)
 categories = {
     'Xcat_Inc_RlxEleIsoX':cat_Inc_RlxEleIso,
     'Xcat_IncX':cat_Inc,
-    'Xcat_VBFX':cat_VBF,
-    'Xcat_J1X':cat_J1,
-    'Xcat_J1BX':cat_J1B,
-    'Xcat_J0X':cat_J0
     }
+
+categories.update( categories_common )

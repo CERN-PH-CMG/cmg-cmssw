@@ -46,8 +46,6 @@ categories = {
     'Xcat_Inc_RlxMuIsoX':cat_Inc_RlxMuIso,
     'Xcat_Inc_RlxTauIsoX':cat_Inc_RlxTauIso,
     'Xcat_IncX':cat_Inc,
-    'Xcat_VBFX':cat_VBF,
-    'Xcat_J1X':cat_J1,
-    'Xcat_J1BX':cat_J1B,
-    'Xcat_J0X':cat_J0
     }
+
+categories.update( categories_common )

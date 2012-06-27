@@ -13,3 +13,11 @@ def replaceCategories(cutstr, categories):
         cutstr = cutstr.replace( catname, cat )
     return cutstr
 
+categories_common = {
+    'Xcat_VBFX':cat_VBF,
+    'Xcat_VBF_RelX':cat_VBF_Rel,
+    'Xcat_J2X':cat_J2,
+    'Xcat_J1X':cat_J1,
+    'Xcat_J1BX':cat_J1B,
+    'Xcat_J0X':cat_J0,
+    }
