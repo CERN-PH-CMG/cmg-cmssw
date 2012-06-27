@@ -119,6 +119,9 @@ if __name__ == '__main__':
       # 3.93/fb
       selComps['data_Run2012B_PromptReco_v1'].intLumi = 3010.
       weights['data_Run2012B_PromptReco_v1'].intLumi = 3010.
+      # 5.1/fb
+      selComps['data_Run2012B_PromptReco_v1'].intLumi = 4180.
+      weights['data_Run2012B_PromptReco_v1'].intLumi = 4180.
     else:
       # 1fb
       selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
@@ -192,10 +195,10 @@ if __name__ == '__main__':
     cuts=[
 ##### Andreas ###############
 
-        #("CMS_test2012_3_93_embed_zee_newsvfit_l40_j50_dR20_tt_Met00_BOOSTED_noDR",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,'',isolationMM,5),
-        ("CMS_test2012_3_93_embed_zee_newsvfit_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
-        ("CMS_test2012_3_93_embed_zee_newsvfit_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,5),
-        ("CMS_test2012_3_93_embed_zee_newsvfit_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012_5_1_embed_zee_oldsvfit_l40_j50_dR20_tt_Met00_BOOSTED_noDR",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,'',isolationMM,5),
+        ("CMS_test2012_5_1_embed_zee_oldsvfit_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012_5_1_embed_zee_oldsvfit_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,5),
+        ("CMS_test2012_5_1_embed_zee_oldsvfit_l45_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt45l2Pt45+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
 
 #####  Riccardo  ############################################################################################################################### 
 
@@ -245,6 +248,8 @@ if __name__ == '__main__':
         ('mt'               ,int(40/rebin), 0 , 200    ),
         ('pThiggs'          ,int(40/rebin), 0 , 300    ),
         ('diTauPt'          ,int(40/rebin), 0 , 300    ),
+        #('l1DecayMode'      ,12           , 0 , 12     ),
+        #('l2DecayMode'      ,12           , 0 , 12     ),
         #('mttj'             ,int(40/rebin), 0 , 1000   ),
         #('diTauCharge'      ,7            , -3, 3      ),
         #('l1LooIso'         ,2            , 0,  2      ),
@@ -253,8 +258,6 @@ if __name__ == '__main__':
         #('l2MedIso'         ,2            , 0,  2      ),
         #('l1TigIso'         ,2            , 0,  2      ),
         #('l2TigIso'         ,2            , 0,  2      ),
-        #('l1DecayMode'      ,12           , 0 , 12     ),
-        #('l2DecayMode'      ,12           , 0 , 12     ),
         #('l1RawMVAIso'      ,100          , 0 , 1.00001),
         #('l1MedMVAIso'      ,2            , 0 , 2      ),
         #('l1TigMVAIso'      ,2            , 0 , 2      ),
@@ -403,10 +406,8 @@ if __name__ == '__main__':
        QCDShape, QCDScale = QCDEstimate4(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataSemiLooseIsoSS, log)
 
       if qcdEstimate==5:
-       QCDShape    , QCDScale     = QCDEstimate2(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
-       QCDShapeSemi, QCDScaleSemi = QCDEstimate2(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
-       #QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
-       #QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
+       QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
+       QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
 
        QCDShapePlot=copy.deepcopy(QCDShape)
        QCDShapePlot.SetStyle( sRedLine )

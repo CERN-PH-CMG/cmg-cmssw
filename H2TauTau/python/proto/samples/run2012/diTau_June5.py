@@ -195,7 +195,8 @@ data_Run2012A_PromptReco_v1.files = getFiles('/Tau/Run2012A-PromptReco-v1/RECO/P
 data_Run2012B_PromptReco_v1.files = getFiles('/Tau/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
                                     getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
                                     getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
-                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195947/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195947/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
+                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195948-196531/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 # Embedded samples --------------------------------------------------------------------
 
@@ -207,7 +208,9 @@ embed_Run2012A_PromptReco_v1 = cfg.EmbedComponent(
 
 embed_Run2012B_PromptReco_v1 = cfg.EmbedComponent(
     name = 'embed_Run2012B_PromptReco_v1',
-    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
+            getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
+            getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run196090to196531_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
     triggers = [],
     )
 
@@ -285,7 +288,7 @@ HiggsVBF145.files = getFiles('/VBF_HToTauTau_M-145_8TeV-powheg-pythia6/Summer12-
 
 mc_spring12 = copy.copy( mc_ewk )
 mc_spring12.extend( mc_higgs ) 
-mc_spring12.extend([WW, WZ, ZZ])
+mc_spring12.extend([W3Jets, WW, WZ, ZZ])
 
 for data in data_2012A:
     data.triggers = data_triggers_2012A
