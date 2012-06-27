@@ -76,6 +76,7 @@ class DiLeptonAnalyzer( Analyzer ):
             return False
         if fillCounter: self.counters.counter('DiLepton').inc('> 0 di-lepton')
 
+        # import pdb; pdb.set_trace()
         # testing di-lepton itself
         selDiLeptons = event.diLeptons
         # selDiLeptons = self.selectDiLeptons( selDiLeptons ) 

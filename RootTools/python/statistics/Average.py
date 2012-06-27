@@ -18,14 +18,15 @@ class Average(object):
         # self.values.append( (value, weight) )        
 
     def variance(self):
-        return self.sumwx2 / self.sumw - \
-               self.sumwx * self.sumwx / (self.sumw*self.sumw)
+        return abs( self.sumwx2 / self.sumw - \
+                    self.sumwx * self.sumwx / (self.sumw*self.sumw) ) 
     
     def average( self ):
         ave = None
         err = None 
         if self.sumw:
             ave = self.sumwx / self.sumw
+            # print self.sumwx, self.sumw, self.variance()
             err = math.sqrt( self.variance() ) / math.sqrt( self.sumw ) 
         return ave, err
 
