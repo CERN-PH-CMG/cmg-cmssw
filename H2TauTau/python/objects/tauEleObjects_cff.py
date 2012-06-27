@@ -9,7 +9,6 @@ from CMGTools.Common.factories.cmgTauEleCor_cfi import cmgTauEleCor
 from CMGTools.H2TauTau.objects.tauEleSVFit_cfi import tauEleSVFit 
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
-
 # no correction, no svfit ---------------------------------------------------
 
 # attaching the cuts defined in this module

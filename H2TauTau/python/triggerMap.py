@@ -40,7 +40,9 @@ pathsAndFilters = {
     # 2012:
     # note: pdgId for taus incorrectly set to 0...
     'HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoMu18LooseIsoPFTau20', [15,0]), ('hltOverlapFilterIsoMu18LooseIsoPFTau20',[13])),
+    #COLIN FIXME
     'HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoMu17LooseIsoPFTau20', [15,0]), ('hltOverlapFilterIsoMu17LooseIsoPFTau20',[13])),
+    # 'HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoMu17LooseIsoPFTau20', [15,0]), 'hltL3crIsoL1sMu14erORMu16erL1f0L2f14QL3f17QL3crIsoRhoFiltered0p15'),
     # hadronic tau triggers 2011
     'HLT_DoubleIsoPFTau20_Trk5_v1': ("hltFilterDoubleIsoPFTau25Trk5LeadTrack5IsolationL1HLTMatched","hltFilterDoubleIsoPFTau25Trk5LeadTrack5IsolationL1HLTMatched"),
     'HLT_DoubleIsoPFTau20_Trk5_v2': ("hltFilterDoubleIsoPFTau25Trk5LeadTrack5IsolationL1HLTMatched","hltFilterDoubleIsoPFTau25Trk5LeadTrack5IsolationL1HLTMatched"),
