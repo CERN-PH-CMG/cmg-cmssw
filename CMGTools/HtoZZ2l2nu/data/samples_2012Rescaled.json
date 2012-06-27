@@ -26,7 +26,7 @@
                 "dtag":"MC8TeV_ZZ",
                 "split":2,
 	        "mctruthmode":1,
-                "xsec":8.25561,
+                "xsec":7.92,
 		"br":[0.0403896,1.14]
              }
 	]
@@ -215,7 +215,7 @@
 		"split":1,
                 "xsec":7.127,
                 "xsecunc":[13.4,-14.5],
-                "br":[0.256,0.0403896]
+                "br":[0.255,0.0273387105]
 		}
 	   ]
 	},
@@ -238,53 +238,7 @@
 		"split":1,
 		"xsec":0.8441,
                 "xsecunc":[3.4,-2.3],
-		"br":[0.256,0.0403896]
-		}
-	   ]
-	},
-	{
-	"tag":"ggH(200)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-		"dtag":"MC7TeV_GGtoH200toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":7.27,
-                "xsecunc":[17.2,-15.2],
-		"br":[0.741,0.046656]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(200)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":3,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-		"dtag":"MC7TeV_VBFtoH200toWWto2L2Nu",
-		"dset":"/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-200_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.8441,
-                "xsecunc":[3.4,-2.3],
-		"br":[0.741,0.046656]
+		"br":[0.255,0.0403896]
 		}
 	   ]
 	},
@@ -334,52 +288,6 @@
 	   ]
 	},
 	{
-	"tag":"ggH(250)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"802",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-		"dtag":"MC7TeV_GGtoH250toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-250_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":4.802,
-                "xsecunc":[16.5,-15.6],
-		"br":[0.701,0.046656]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(250)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":3,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-		"dtag":"MC7TeV_VBFtoH250toWWto2L2Nu",
-		"dset":"/VBF_HToWWTo2L2Nu_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-250_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.5802,
-		"xsecunc":[4.0,-2.6],
-		"br":[0.701,0.046656]
-		}
-	   ]
-	},
-	{
 	"tag":"ggH(300)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
@@ -421,52 +329,6 @@
                 "xsec":0.4408,
                 "xsecunc":[2.8,-2.8],
 		"br":[0.307,0.0403896]
-		}
-	   ]
-	},
-	{
-	"tag":"ggH(300)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"803",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC7TeV_GGtoH300toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":3.606,
-                "xsecunc":[16.8,-15.5],
-		"br":[0.692,0.046656]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(300)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"803",
-	"lwidth":3,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC7TeV_VBFtoH300toWWto2L2Nu",
-                "dset":"/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-300_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.4408,
-                "xsecunc":[4.6,-2.7],
-		"br":[0.692,0.046656]
 		}
 	   ]
 	},
@@ -516,52 +378,6 @@
 	   ]
 	},
 	{
-	"tag":"ggH(350)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-		"dtag":"MC7TeV_GGtoH350toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-350_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":3.406,
-                "xsecunc":[19.7,-14.8],
-		"br":[0.676,0.046656]
-		}
-	   ]
-	},
-        {
-	"tag":"qqH(350)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":3,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-		"dtag":"MC7TeV_VBFtoH350toWWto2L2Nu",
-		"dset":"/VBF_HToWWTo2L2Nu_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-350_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-350_7TeV-powheg-pythia6"],
-		"split":1,
-	        "xsec":0.3200,
-                "xsecunc":[5.2,-2.9],
-		"br":[0.676,0.046656]
-		}
-	   ]
-	},
-	{
 	"tag":"ggH(400)#rightarrow ZZ",
 	"isdata":false,
 	"spimpose":true,
@@ -601,53 +417,6 @@
                 "xsec":0.2543,
                 "xsecunc":[5.9,-3.0],
 		"br":[0.269,0.0403896]
-		}
-	   ]
-	},
-	{
-	"tag":"ggH(400)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"isinvisible":true,
-	"spimpose":true,
-	"color":"805",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC7TeV_GGtoH400toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-400_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":2.924,
-                "xsecunc":[15.7,-16.3],
-		"br":[0.582,0.046656]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(400)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"805",
-	"lwidth":3,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC7TeV_VBFtoH400toWWto2L2Nu",
-		"dset":" /VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-400_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.2543,
-                "xsecunc":[5.9,-3.0],
-		"br":[0.582,0.046656]
 		}
 	   ]
 	},
@@ -697,52 +466,6 @@
 	   ]
 	},
 	{
-	"tag":"ggH(450)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-		"dtag":"MC7TeV_GGtoH450toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-450_7TeV-powheg-pythia6"],
-		"split":1,
-		"xsec":2.003,
-                "xsecunc":[16.4,-17.2],
-		"br":[0.549,0.046656]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(450)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":3,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-		"dtag":"MC7TeV_VBFtoH450toWWto2L2Nu",
-		"dset":"/VBF_HToWWTo2L2Nu_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-450_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-450_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.2002,
-                "xsecunc":[6.7,-3.2],
-		"br":[0.549,0.046656]
-		}
-	   ]
-	},
-	{
 	"tag":"ggH(500)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
@@ -788,51 +511,6 @@
 	   ]
 	},
 	{
-	"tag":"ggH(500)#rightarrow WW",
-        "isinvisible":true,
-	"spimpose":true,
-	"color":"797",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC7TeV_GGtoH500toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-500_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":1.283,
-                "xsecunc":[17.7,-17.6],
-		"br":[0.546,0.046656]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(500)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"797",
-	"lwidth":3,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC7TeV_VBFtoH500toWWto2L2Nu",
-		"dset":" /VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-500_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.1561,
-                "xsecunc":[7.2,-3.4],
-		"br":[0.546,0.046656]
-		}
-	   ]
-	},
-	{
 	"tag":"ggH(550)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
@@ -873,53 +551,7 @@
 		"split":1,
                 "xsec":0.1223,
                 "xsecunc":[8.0,-3.5],
-		"br":[0.267,0.0403896]
-		}
-	   ]
-	},
-	{
-	"tag":"ggH(550)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-		"dtag":"MC7TeV_GGtoH550toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-550_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.8141,
-                "xsecunc":[18.7,-17.8],
-		"br":[0.552,0.046656]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(550)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":3,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{	
-		"dtag":"MC7TeV_VBFtoH550toWWto2L2Nu",
-		"dset":"/VBF_HToWWTo2L2Nu_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-550_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-550_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.1223,
-                "xsecunc":[8.0,-3.5],
-		"br":[0.552,0.046656]
+		"br":[0.266,0.0403896]
 		}
 	   ]
 	},
@@ -965,52 +597,6 @@
                 "xsec":0.09688,
                 "xsecunc":[4.2,-4.5],
 		"br":[0.272,0.0403896]
-		}
-	   ]
-	},
-	{
-	"tag":"ggH(600)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"809",
-	"lwidth":2,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC7TeV_GGtoH600toWWto2L2Nu",
-		"dset":"/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.5230,
-                "xsecunc":[19.4,-17.9],
-		"br":[0.558,0.046656]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(600)#rightarrow WW",
-        "isinvisible":true,
-	"isdata":false,
-	"spimpose":true,
-	"color":"807",
-	"lwidth":3,
-        "lstyle":3,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC7TeV_VBFtoH600toWWto2L2Nu",
-		"dset":" /VBF_HToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
-                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_HToWWTo2L2Nu_M-600_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
-		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_HToWWTo2L2Nu_M-600_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.09688,
-                "xsecunc":[8.6,-3.8],
-		"br":[0.558,0.046656]
 		}
 	   ]
 	},
