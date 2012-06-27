@@ -41,7 +41,7 @@ TauMuAna = cfg.Analyzer(
     iso2 = 0.1,
     m_min = 10,
     m_max = 99999,
-    mvametsigs = 'mvaMETTauMu',
+    # mvametsigs = 'mvaMETTauMu',
     # diLeptonCutString = 'cuts_baseline',
     triggerMap = pathsAndFilters
     )
@@ -105,7 +105,8 @@ treeProducerXCheck = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauMu_sync_ColinMay29 import * 
+from CMGTools.H2TauTau.proto.samples.tauMu_sync_June14 import * 
+# from CMGTools.H2TauTau.proto.samples.tauMu_sync_ColinMay29 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_sync_ColinMay26 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay18 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinMay18 import * 

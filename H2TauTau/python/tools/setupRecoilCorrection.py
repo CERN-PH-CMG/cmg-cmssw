@@ -46,7 +46,8 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is52X=False):
                 process.recoilCorMETMuEle.fileCorrectTo = '/'.join([rootfile_dir,
                                                                     'recoilfit_zjets_ltau_njet.root'])
                 process.recoilCorMETMuEle.leptonLeg = 0
-        elif lookup( fileName, 'WJetsToLNu' ):
+        elif lookup( fileName, 'WJetsToLNu' ) or \
+                 lookup( fileName, 'W3Jets' ):
             print '\tENABLED : W+jet mode (tau is fake)'
             if hasattr( process, 'recoilCorMETTauMu'):
                 process.recoilCorMETTauMu.enable = True
