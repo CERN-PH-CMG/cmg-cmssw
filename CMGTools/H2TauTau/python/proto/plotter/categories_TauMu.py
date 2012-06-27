@@ -4,7 +4,6 @@ from CMGTools.H2TauTau.proto.plotter.categories_common import *
 from CMGTools.H2TauTau.proto.plotter.cut import * 
 
 
-# inc_sig_mu = Cut('l2_relIso05<0.1 && l2_tightId>0.5 && l2_dxy<0.045 && l2_dz<0.2')
 inc_sig_tau = Cut('l1_looseMvaIso>0.5 && (l1_EOverp>0.2 || l1_decayMode!=0) && l1_againstMuonTight>0.5 && l1_againstElectronLoose>0.5 && l1_dxy<0.045 && l1_dz<0.2')
 inc_sig_mu = Cut('l2_relIso05<0.1 && l2_tightId>0.5 && l2_dxy<0.045 && l2_dz<0.2 && l2_pt>20')
 # inc_sig_tau = Cut('l1_looseMvaIso>0.5 && (l1_EOverp>0.2 || l1_decayMode!=0) && l1_againstMuonTight>0.5 && l1_againstElectronLoose>0.5 && l1_dxy<0.045 && l1_dz<0.2 && l1_pt>25')
@@ -48,7 +47,6 @@ categories = {
     'Xcat_Inc_RlxTauIsoX':cat_Inc_RlxTauIso,
     'Xcat_IncX':cat_Inc,
     'Xcat_VBFX':cat_VBF,
-#     'Xcat_VHX':cat_VH,
     'Xcat_J1X':cat_J1,
     'Xcat_J1BX':cat_J1B,
     'Xcat_J0X':cat_J0
