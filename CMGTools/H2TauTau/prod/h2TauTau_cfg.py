@@ -25,8 +25,8 @@ debugEventContent = False
 channel = 'tau-ele'
 jetRecalib = False
 useCHS = False 
-newSVFit = True 
-tauScaling = 1
+newSVFit = True
+tauScaling = 0
 
 print sep_line
 print 'channel', channel
@@ -57,6 +57,7 @@ dataset_name = '/TauPlusX/Run2011B-PromptReco-v1/AOD/V5/PAT_CMG_V5_4_1'
 
 # dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/TauPlusX/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195947'
+dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET'
 # dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/GluGluToHToTauTau_M-120_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
@@ -66,7 +67,7 @@ dataset_name = '/TauPlusX/Run2011B-PromptReco-v1/AOD/V5/PAT_CMG_V5_4_1'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
 # dataset_name = '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0'
 
-# dataset_name = '/TauPlusX/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396'
+# dataset_name = '/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 
 dataset_files = 'cmgTuple.*root'
 
@@ -78,9 +79,6 @@ process.source = datasetToSource(
     dataset_files,
     )
 
-
-# process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG/TauPlusX/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076/cmgTuple_543.root']
-
 # restricting the number of files to process to a given number
 if numberOfFilesToProcess>0:
     process.source.fileNames = process.source.fileNames[:numberOfFilesToProcess]
@@ -89,7 +87,6 @@ if numberOfFilesToProcess>0:
 ###ProductionTaskHook$$$
     
 runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.fileNames[0].find('embedded')==-1
-
 
 # Sequence & path definition -------------------------------------------------
 
