@@ -123,13 +123,13 @@ selectedComponents =  copy.copy(MC)
 
 if period == 'Period_2011A':
     selectedComponents.extend( data_2011A )
-    selectedComponents.extend( embed_2011A )    
+    # selectedComponents.extend( embed_2011A )    
 elif period == 'Period_2011B':
     selectedComponents.extend( data_2011B )
-    selectedComponents.extend( embed_2011B )    
+    # selectedComponents.extend( embed_2011B )    
 elif period == 'Period_2011AB':
     selectedComponents.extend( data_2011 )
-    selectedComponents.extend( embed_2011 )    
+    # selectedComponents.extend( embed_2011 )    
 
 sequence = cfg.Sequence( [
     jsonAna,
@@ -138,22 +138,22 @@ sequence = cfg.Sequence( [
     tauEleAna,
     dyJetsFakeAna,
     vbfAna,
-    tauWeighter,
     embedWeighter,
+    tauWeighter,
     eleWeighter, 
     treeProducer
    ] )
 
 
 DYJets.fakes = True
-DYJets.splitFactor = 40
-WJets.splitFactor = 100
+DYJets.splitFactor = 100
+WJets.splitFactor = 10
 TTJets.splitFactor = 100
 
-data_Run2011A_May10ReReco_v1.splitFactor = 100
-data_Run2011A_PromptReco_v4.splitFactor = 100
-data_Run2011A_05Aug2011_v1.splitFactor = 100
-data_Run2011A_03Oct2011_v1.splitFactor = 100
+data_Run2011A_May10ReReco_v1.splitFactor = 50
+data_Run2011A_PromptReco_v4.splitFactor = 50
+data_Run2011A_05Aug2011_v1.splitFactor = 50
+data_Run2011A_03Oct2011_v1.splitFactor = 50
 data_Run2011B_PromptReco_v1.splitFactor = 100
 
 embed_Run2011A_May10ReReco_v1.splitFactor = 2
@@ -162,9 +162,9 @@ embed_Run2011A_05Aug2011_v1.splitFactor = 2
 embed_Run2011A_03Oct2011_v1.splitFactor = 2
 embed_Run2011B_PromptReco_v1.splitFactor = 8
 
-test = 2
+test = 0
 if test==1:
-    comp = data_Run2011A_May10ReReco_v1
+    comp = embed_Run2011A_May10ReReco_v1
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:1]
