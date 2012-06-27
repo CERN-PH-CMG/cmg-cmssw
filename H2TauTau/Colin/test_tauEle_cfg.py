@@ -162,9 +162,11 @@ embed_Run2011A_05Aug2011_v1.splitFactor = 2
 embed_Run2011A_03Oct2011_v1.splitFactor = 2
 embed_Run2011B_PromptReco_v1.splitFactor = 8
 
-test = 0
+test = 1
 if test==1:
-    comp = embed_Run2011A_May10ReReco_v1
+#    comp = embed_Run2011A_May10ReReco_v1
+#    comp = WJets
+    comp = data_Run2011A_PromptReco_v4
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:1]
