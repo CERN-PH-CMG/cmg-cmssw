@@ -10,7 +10,7 @@ sep_line = '-'*70
 process = cms.Process("H2TAUTAU")
 
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -25,7 +25,7 @@ debugEventContent = False
 channel = 'tau-ele'
 jetRecalib = False
 useCHS = False 
-newSVFit = True
+newSVFit = False 
 tauScaling = 0
 
 print sep_line
@@ -69,6 +69,10 @@ dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7
 
 # dataset_name = '/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 
+# dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/HTTSKIM5/PAT_CMG_V5_4_1'
+dataset_name = '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/V5/PAT_CMG_V5_4_1'
+# dataset_name = '/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1/PAT_CMG_V5_4_1'
+
 dataset_files = 'cmgTuple.*root'
 
 # creating the source
@@ -108,8 +112,8 @@ from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
 
 
 # WARNING DISABLING RECOIL CORRECTIONS FOR 2012!!!
+
 setupRecoilCorrection( process, runOnMC, True, cmsswIs52X())
-# setupRecoilCorrection( process, runOnMC, enable=False )
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
@@ -140,11 +144,6 @@ elif channel=='tau-ele':
         process.tauElePath,
         process.outpath
         )
-## elif channel=='mu-ele':
-##     process.schedule = cms.Schedule(
-##         process.muElePath,
-##         process.outpath
-##         )
 elif channel=='di-tau':
     process.schedule = cms.Schedule(
         process.diTauPath,
@@ -255,8 +254,3 @@ else:
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
  
 
-## process.tauMu_fullsel_tree_CMG.outputCommands.extend([
-##     'keep *_cmgTauMu_*_*',
-##     'keep *_cmgTauSel_*_*'
-##     ])
-## process.tauMuFullSelCount.minNumber = 0
