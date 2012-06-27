@@ -337,7 +337,7 @@ public:
 
   double effTau2012AB(double pt, double eta) {
     float weight_A = 696.09; 
-    float weight_B = 870.882 + 751.444 + 1525.0;
+    float weight_B = 4327.0;
 
     return (weight_A * eff2012ATau20(pt, eta) + weight_B * eff2012BTau20(pt, eta))/(weight_A+weight_B);
   }
@@ -366,7 +366,7 @@ public:
   
   double effMu2012AB(double pt, double eta) {
     float weight_A = 696.09; 
-    float weight_B = 870.882 + 751.444 + 1525.0;
+    float weight_B = 4327.0;
 
     return (weight_A * eff2012AMu18(pt, eta) + weight_B * eff2012BMu17(pt, eta))/(weight_A+weight_B);
   }
