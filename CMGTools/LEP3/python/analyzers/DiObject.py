@@ -54,7 +54,7 @@ class DiObject ( TLorentzVector ):
         return self.component_[i]
 
     def setP4(self,p4):
-        self.SetPxPyPzE(p4.x(),p4.y(),p4.z(),p4.t())
+        self.SetPxPyPzE(p4.X(),p4.Y(),p4.Z(),p4.T())
 
     def p4(self):
         return self

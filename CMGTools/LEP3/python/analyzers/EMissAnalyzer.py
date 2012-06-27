@@ -14,7 +14,7 @@ from CMGTools.LEP3.analyzers.DiObject import DiObject
 from CMGTools.LEP3.analyzers.EMiss import EMiss, EVis
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
-from math import pi, sqrt, acos, asin
+from math import pi, sqrt, acos, asin, log
         
 class EMissAnalyzer( Analyzer ):
 
@@ -310,11 +310,15 @@ class EMissAnalyzer( Analyzer ):
                self.jets[0].py() * self.jets[1].py() + \
                self.jets[0].pz() * self.jets[1].pz()
         acol /= self.jets[0].p() * self.jets[1].p()
+        if acol >= 1.0 : acol = 1. - 1E-12
+        if acol <= -1.0 : acol = -1. + 1E-12
         acol = acos(acol)*180./pi
 
         acop = self.jets[0].px() * self.jets[1].px() + \
                self.jets[0].py() * self.jets[1].py() 
         acop /= self.jets[0].pt() * self.jets[1].pt()
+        if acop >= 1.0 : acop = 1. - 1E-12
+        if acop <= -1.0 : acop = -1. + 1E-12
         acop = acos(acop)*180./pi
 
         vect1 = TVector3(self.jets[0].px(), self.jets[0].py(), self.jets[0].pz())
@@ -338,6 +342,18 @@ class EMissAnalyzer( Analyzer ):
         event.acop = acop
         event.sumtet = sumtet
         event.cross = cross
+
+        if self.cfg_ana.hinvis: 
+            event.chi2mZ = self.fitmZ()
+            event.chi2partiel = self.chi2partiel
+            eVisFit = EVis(self.jets)
+            eMissFit = EMiss(self.jets)
+            event.mVisFit = eVisFit.M()
+            event.mMissFit = eMissFit.M()
+        else:
+            event.chi2mZ = 0.
+            event.mVisFit = alpha*mVis
+            event.mMissFit = 91.2
 
         self.counters.counter('EMiss').inc('passing')
         if self.nunubb : self.counters.counter('EMissGen').inc('passing')
@@ -365,13 +381,166 @@ class EMissAnalyzer( Analyzer ):
             
         return max(0., lepton.relIso() - phpt/lepton.pt())
 
+    def fitmZ(self) :
+
+        dilepton = False
+        diele = False
+        dimu = False
+
+        if self.jets[0].pdgId() + self.jets[1].pdgId() == 0 and \
+           abs( self.jets[0].pdgId() - self.jets[1].pdgId()) > 20 :
+            dilepton = True
+
+        #if not(dilepton) : return -99.
+
+        diele =  abs( self.jets[0].pdgId() - self.jets[1].pdgId()) == 22
+        dimu =  abs( self.jets[0].pdgId() - self.jets[1].pdgId()) == 26
+
+        l1 = TLorentzVector(self.jets[0].px(),self.jets[0].py(),self.jets[0].pz(),self.jets[0].energy())
+        l2 = TLorentzVector(self.jets[1].px(),self.jets[1].py(),self.jets[1].pz(),self.jets[1].energy())
+        c12 = l1.Vect().Dot(l2.Vect()) / l1.P() / l2.P()
+        st1 = l1.Pt()/l1.P()
+        st2 = l2.Pt()/l2.P()
+        m12 = (l1+l2).M()/sqrt(l1.E()*l2.E())
+        fac = 91.188/(l1+l2).M()
+        energies = [ l1.E()*fac  , l2.E()*fac  ]
+        measts = [ l1.E(), l2.E() ]
+
+        def chi2(e) :
+            
+            def breitw2(m,m0,g0) :
+                m02 = m0*m0
+                g02 = g0*g0
+                delta = m*m-m02
+                return m02*g02 / (delta*delta+g02*m02)
+
+            def breitw(m,m0,g0) :
+                delta = m-m0
+                return m0*g0 / (delta*delta + g0*m0)
+
+            chi2 = 0.
+            fudge = 1.
+            mz=m12*sqrt(e[0]*e[1])
+            mzm = m12*sqrt(measts[0]*measts[1])
+            #mz = sqrt(2.*e[0]*e[1]*(1.-c12))
+            #print 'mz = ',mz
+            sigma1 = 0
+            sigma2 = 0
+            if dimu : 
+                chi2 = ( 1./measts[0]-1./e[0] ) * ( 1./measts[0]-1./e[0] ) / (st1*st1) \
+                     + ( 1./measts[1]-1./e[1] ) * ( 1./measts[1]-1./e[1] ) / (st2*st2)
+                chi2 /= 25E-8
+                sigma1 = 5E-4*5E-4*e[0]*e[0]*e[0]*e[0]*st1*st1
+                sigma2 = 5E-4*5E-4*e[1]*e[1]*e[0]*e[0]*st2*st2
+                fudge = 0.5
+            elif diele :
+                sigma1 = (0.155*0.155 + 0.043*0.043*e[0] + 0.02*0.02*e[0]*e[0])
+                sigma2 = (0.155*0.155 + 0.043*0.043*e[1] + 0.02*0.02*e[1]*e[1])
+                chi2 = (measts[0]-e[0])*(measts[0]-e[0]) / sigma1 \
+                     + (measts[1]-e[1])*(measts[1]-e[1]) / sigma2
+                fudge = 2.0
+            else : 
+                sigma1 = (0.5*0.5*e[0]/st1 + 0.04*0.04*e[0]*e[0])
+                sigma2 = (0.5*0.5*e[1]/st2 + 0.04*0.04*e[1]*e[1])
+                chi2 = (measts[0]-e[0])*(measts[0]-e[0]) / sigma1 \
+                     + (measts[1]-e[1])*(measts[1]-e[1]) / sigma2
+                fudge = 1.0
+            #print 'chi2 partial  = ',chi2
+            sigmaM = mz*mz*(sigma1/(e[0]*e[0])+sigma2/(e[1]*e[1]))/4.
+            #chi2 = (mzm-mz)*(mzm-mz)/sigmaM
+            self.chi2partiel = copy.copy(chi2)
+            chi2 -= fudge*log(breitw2(mz,91.188,2.497))*sqrt(sigmaM)/2.497
+            self.chi2total = copy.copy(chi2)
+            #if diele:
+            #    print 'chi2 partie/complet = ',dimu,diele,mz,mzm,sqrt(sigma1),sqrt(sigma2),sqrt(sigmaM),self.chi2partiel,self.chi2total
+            return chi2
+
+        def fillDerivatives(funga):
+
+            def deriv(funga,gamma,i,epsilon):
+                g = deepcopy(gamma)
+                g[i] += epsilon
+                chip = funga(g)
+                g[i] -= 2.*epsilon
+                chim = funga(g)
+                g[i] += epsilon
+                return (chip-chim)/(2.*epsilon)
     
- 
- 
-    
-##    def testTwoJets(self, jets) :
-    
-##          if len(jets) != 2 :
-##             #print 'NJets = ', len(jets)
-##             return False
+            def deriv2(funga,gamma,i,j,epsilon, mu):
+                g = deepcopy(gamma)
+                g[i] += epsilon
+                derp = deriv(funga,g,j,mu)
+                g[i] -= 2.*epsilon
+                derm = deriv(funga,g,j,mu)
+                g[i] += epsilon
+                return (derp-derm)/(2.*epsilon)
+
+            rows = []
+            deri = []
+            for i in range(len(energies)):
+                column = []
+                for j in range(len(energies)):
+                    column.append(deriv2(funga,energies,i,j,0.001,0.001))
+                rows.append(column)
+                deri.append(deriv(funga,energies,i,0.001))                
+            return array(rows), array(deri)
+
+        from numpy import array, linalg, dot, add
+        from copy import deepcopy
+
+        #print chi2(energies)
+        Delta = 1E9
+        t = 0
+        while Delta > 1E-3 and t < 200 :
+            #print "iteration ",t
+            t += 1
+                
+            d2,d = fillDerivatives(chi2)
+            delta = linalg.solve(d2,d)
+            Delta = abs(delta[0]) + abs(delta[1])
+            #print '------------------- '
+            #print 'Delta = ',Delta
+            Ki2 = chi2(energies)
+
+            factor = 1.
+            for i in range(len(energies)):
+                #print i, energies[i], delta[i], d[i]
+                if abs(delta[i]) > energies[i]/10. :
+                    factor = min(factor,energies[i]/10./abs(delta[i]))
+            delta = map(lambda x:x*factor,delta)
+
+            def chinew(funga,gamma,delta):
+                gnew = deepcopy(gamma)
+                for i,g in enumerate(gamma):
+                    gnew[i] -= delta[i]
+                return funga(gnew) - Ki2
         
+            while chinew(chi2,energies,delta) > 1E-5 :
+                delta = map(lambda x:-x*0.6, delta)
+
+            #print ' ' 
+            for i in range(len(energies)):
+                energies[i] -= delta[i]
+        if t >= 199:
+            print 'Warning - reached iteration ',t
+            print diele,dimu,chi2(energies)
+            for i in range(len(energies)):
+                print i, energies[i], delta[i], d[i]
+        #print t, chi2(energies)
+
+        l1 *= energies[0] / l1.E()
+        l2 *= energies[1] / l2.E()
+        #if not(dimu):
+        #    m12 = (l1+l2).M()
+        #    l1 *= sqrt(91.188/m12)
+        #    l2 *= sqrt(91.188/m12)
+
+        #print self.jets[0]
+        p41 = self.jets[0].p4()
+        p41.SetPxPyPzE(l1.X(),l1.Y(),l1.Z(),l1.T())
+        self.jets[0].setP4(p41)
+        #print self.jets[1]
+        p42 = self.jets[1].p4()
+        p42.SetPxPyPzE(l2.X(),l2.Y(),l2.Z(),l2.T())
+        self.jets[1].setP4(p42)
+        return chi2(energies)
