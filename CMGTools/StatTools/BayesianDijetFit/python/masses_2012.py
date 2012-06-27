@@ -33,13 +33,13 @@ if __name__ == '__main__':
              ]
     
     labels=[#"RSG D6T qq 7 TeV",
-            "RSG D6T qq 8 TeV",
+            "RSG #rightarrow qq 8 TeV",
             #"RSG Z2* qq 8 TeV",
             #"RSG D6T gg 7 TeV",
-            "RSG D6T gg 8 TeV",
+            "RSG #rightarrow gg 8 TeV",
             #"RSG Z2* gg 8 TeV",
             #"q* D6T qg 7 TeV",
-            "q* D6T qg 8 TeV",
+            "q* #rightarrow qg 8 TeV",
             #"q* Z2* qg 8 TeV",
             ]
     
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     index=0
     i=0
     canvas = TCanvas("","",0,0,200,200)
-    legend=TLegend(0.5,0.6,0.95,0.90,"")
+    legend=TLegend(0.4,0.65,0.95,0.90,"Pythia D6T + CMS Simulation")
     for sample in samples:
       for mass in masses:
         f=TFile.Open("../Results/"+sample)
