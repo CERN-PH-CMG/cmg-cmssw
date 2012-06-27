@@ -78,7 +78,8 @@ class LeptonWeighter( Analyzer ):
             
 
         self.lepton.weight = self.lepton.triggerWeight * self.lepton.recEffWeight
-        
+
+        # import pdb; pdb.set_trace()
         event.eventWeight *= self.lepton.weight
         self.averages['weight'].add( self.lepton.weight )
         self.averages['triggerWeight'].add( self.lepton.triggerWeight )

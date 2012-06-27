@@ -1,6 +1,7 @@
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.statistics.Average import Average
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 class EmbedWeighter( Analyzer ):
     '''Gets lepton efficiency weight and puts it in the event'''
@@ -18,10 +19,17 @@ class EmbedWeighter( Analyzer ):
     def declareHandles(self):
         super(EmbedWeighter,self).declareHandles()
         if self.cfg_comp.isEmbed:
-            self.embhandles['minVisPtFilter'] = AutoHandle(
-                ('generator', 'minVisPtFilter'),
-                'GenFilterInfo'
-                )
+            if cmsswIs52X():
+                self.embhandles['minVisPtFilter'] = AutoHandle(
+                    ('generator', 'minVisPtFilter'),
+                    'GenFilterInfo'
+                    )
+            else:
+                self.embhandles['minVisPtFilter'] = AutoHandle(
+                    ('generator','weight'),
+                    'double'
+                    )
+                
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
@@ -29,7 +37,10 @@ class EmbedWeighter( Analyzer ):
 
         if self.cfg_comp.isEmbed:
             genfilter = self.embhandles['minVisPtFilter'].product()
-            self.weight = genfilter.filterEfficiency()
+            if cmsswIs52X():
+                self.weight = genfilter.filterEfficiency()
+            else:
+                self.weight = genfilter[0]
         if self.cfg_ana.verbose:
             print self.name, 'efficiency =', self.weight
         # import pdb; pdb.set_trace()
