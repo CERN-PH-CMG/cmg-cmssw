@@ -1,10 +1,12 @@
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
+from CMGTools.RootTools.fwlite.Config import printComps
 
 from CMGTools.H2TauTau.proto.samples.run2012.data import *
 from CMGTools.H2TauTau.proto.samples.run2012.embed import *
 from CMGTools.H2TauTau.proto.samples.run2012.zdata import *
 # from CMGTools.H2TauTau.proto.samples.run2012.embed import *
 from CMGTools.H2TauTau.proto.samples.run2012.ewk import *
+from CMGTools.H2TauTau.proto.samples.run2012.diboson import *
 from CMGTools.H2TauTau.proto.samples.run2012.higgs import *
 
 from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauMu import data_triggers, mc_triggers
@@ -20,17 +22,15 @@ cache = True
 # Data --------------------------------------------------------------------------------
 
 data_Run2012A.files = getFiles('/TauPlusX/Run2012A-PromptReco-v1/RECO/{pat}_runrange_190605-194076/{htt}'.format( pat=pat, htt=htt), user, filePattern, cache)
-# data_Run2012A.intLumi = 713.356 # recorded, obtained with lumiCalc2.py
-data_Run2012A.intLumi = 696.069 # recorded, obtained with lumiCalc2.py
 
 data_Run2012B_start_194479.files = getFiles('/TauPlusX/Run2012B-PromptReco-v1/RECO/{pat}_runrange_start-194479/{htt}/Group'.format( pat=pat, htt=htt), user, filePattern, cache)
-data_Run2012B_start_194479.intLumi = 870.882
 
 data_Run2012B_194480_195016.files = getFiles('/TauPlusX/Run2012B-PromptReco-v1/AOD/{pat}_runrange_194480-195016/{htt}/Group'.format(pat=pat, htt=htt), user, filePattern, cache)
-data_Run2012B_194480_195016.intLumi = 751.444
 
 data_Run2012B_195017_195947.files = getFiles('/TauPlusX/Run2012B-PromptReco-v1/AOD/{pat}_runrange_195017-195947/{htt}'.format(pat=pat, htt=htt), user, filePattern, cache)
-data_Run2012B_195017_195947.intLumi = 1525.0
+
+data_Run2012B_195948_196509.files = getFiles('/TauPlusX/Run2012B-PromptReco-v1/AOD/{pat}_runrange_195948-196509/{htt}'.format(pat=pat, htt=htt), 'cmgtools', filePattern, cache)
+
 
 # Z Data --------------------------------------------------------------------------------
 
@@ -143,7 +143,7 @@ HiggsGGH140.nGenEvents = 998894
 HiggsGGH145.nGenEvents = 998883 * 1.995 / 2.
 HiggsGGH150.nGenEvents = 1519804 * 1.9877 / 2.
 
-vhpath = '/WH_ZH_TTH_HToTauTau_M-135_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt)
+vhpath = '/WH_ZH_TTH_HToTauTau_M-HMASS_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt)
 
 
 HiggsVH120.files = getFiles(vhpath.replace('HMASS','120'), user, filePattern, cache )
@@ -203,7 +203,7 @@ HiggsGGH140_Down.nGenEvents = HiggsGGH140.nGenEvents
 HiggsGGH145_Down.nGenEvents = HiggsGGH145.nGenEvents
 HiggsGGH150_Down.nGenEvents = HiggsGGH150.nGenEvents
 
-vhpath = '/WH_ZH_TTH_HToTauTau_M-135_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}_Down'.format(aod=aod, pat=pat, htt=htt)
+vhpath = '/WH_ZH_TTH_HToTauTau_M-HMASS_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}_Down'.format(aod=aod, pat=pat, htt=htt)
 
 HiggsVH120_Down.files = getFiles(vhpath.replace('HMASS','120'), user, filePattern, cache )
 HiggsVH125_Down.files = getFiles(vhpath.replace('HMASS','125'), user, filePattern, cache )
@@ -262,7 +262,7 @@ HiggsGGH140_Up.nGenEvents = HiggsGGH140.nGenEvents
 HiggsGGH145_Up.nGenEvents = HiggsGGH145.nGenEvents
 HiggsGGH150_Up.nGenEvents = HiggsGGH150.nGenEvents
 
-vhpath = '/WH_ZH_TTH_HToTauTau_M-135_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}_Up'.format(aod=aod, pat=pat, htt=htt)
+vhpath = '/WH_ZH_TTH_HToTauTau_M-HMASS_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}_Up'.format(aod=aod, pat=pat, htt=htt)
 
 HiggsVH120_Up.files = getFiles(vhpath.replace('HMASS','120'), user, filePattern, cache )
 HiggsVH125_Up.files = getFiles(vhpath.replace('HMASS','125'), user, filePattern, cache )
@@ -280,12 +280,23 @@ HiggsVH140_Up.nGenEvents = HiggsVH140.nGenEvents
 HiggsVH145_Up.nGenEvents = HiggsVH145.nGenEvents
 HiggsVH150_Up.nGenEvents = HiggsVH150.nGenEvents
 
+# Di-boson
+
+WW.files = getFiles('/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0/TAUMU_Type1MET', 'cmgtools', filePattern, cache)
+WW.nGenEvents = 10000431
+
+WZ.files = getFiles('/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0/TAUMU_Type1MET', 'cmgtools', filePattern, cache)
+WZ.nGenEvents = 9996622 * 1.98849011196/2.
+
+ZZ.files = getFiles('/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM/V5/PAT_CMG_V5_4_0/TAUMU_Type1MET', 'cmgtools', filePattern, cache)
+ZZ.nGenEvents = 9799908 * 1.9088789405/2.
 
 
 
 
 MC = copy.copy( mc_ewk )
 MC.extend( mc_higgs ) 
+MC.extend( mc_diboson ) 
 
 MC_up = copy.copy(mc_ewk_up)
 MC_up.extend( mc_higgs_up ) 

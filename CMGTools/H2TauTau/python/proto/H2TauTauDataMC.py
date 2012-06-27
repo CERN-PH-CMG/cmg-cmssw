@@ -48,9 +48,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.dataComponents = [ key for key, value in selComps.iteritems() \
                                 if value.isData is True ]
         groupDataName = 'Data'
-
         self.groupDataComponents( self.dataComponents, groupDataName)
-        
         if embed: 
             self.setupEmbedding( self.dataComponents, embed )
         else:

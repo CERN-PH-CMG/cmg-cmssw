@@ -101,11 +101,11 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
           fill(tr, 'vertexWeight', event.vertexWeight)
           fill(tr, 'nVert', len(event.vertices) ) 
           
-       isFake = 1
-       if hasattr( event, 'genMatched'): 
-          if event.genMatched == 1:
-             isFake = 0
-       fill(tr, 'isFake', isFake)
+##        isFake = 1
+##        if hasattr( event, 'genMatched'): 
+##           if event.genMatched == 1:
+##              isFake = 0
+       fill(tr, 'isFake', event.isFake)
        fill(tr, 'isSignal', event.isSignal)
        
        self.tree.tree.Fill()
