@@ -276,9 +276,11 @@ class Electron( Lepton ):
         """
         nInnerHits = self.numberOfHits()
         if nInnerHits != 0 : return False
-        if self.passConversionVeto() == False   : return False 
+        if self.passConversionVeto() == False   : return False
+        #COLIN : we might want to keep the vertex constraints separated
         if abs(self.dxy())             >= 0.045 : return False
         if abs(self.dz())              >= 0.2   : return False
+        # Below, part of WP95 without vertex constraints (applied above)
         hoe = self.hadronicOverEm()
         deta = self.deltaEtaSuperClusterTrackAtVtx()
         dphi = self.deltaPhiSuperClusterTrackAtVtx()
@@ -307,19 +309,13 @@ class Electron( Lepton ):
         if eta > 2.1 : return False
         lmvaID = -99999 # identification
         if self.pt() < 20 :
-            if   eta<0.8:   
-                lmvaID = 0.925
-            elif eta<1.479: 
-                lmvaID = 0.915
-            else :          
-                lmvaID = 0.965
+            if   eta<0.8:   lmvaID = 0.925
+            elif eta<1.479: lmvaID = 0.915
+            else :          lmvaID = 0.965
         else:
-            if   eta<0.8:   
-                lmvaID = 0.925
-            elif eta<1.479: 
-                lmvaID = 0.975
-            else :          
-                lmvaID = 0.985
+            if   eta<0.8:   lmvaID = 0.925
+            elif eta<1.479: lmvaID = 0.975
+            else :          lmvaID = 0.985
         result = self.mvaNonTrigV0()  > lmvaID
         return result
 
