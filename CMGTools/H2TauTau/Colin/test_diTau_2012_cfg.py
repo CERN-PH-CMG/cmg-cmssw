@@ -3,7 +3,7 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
-runOnEmbedded = True
+runOnEmbedded = False
 runOnData = False
 runOnMC = False
 
