@@ -17,10 +17,11 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             'std::vector<cmg::DiObject<cmg::Tau,cmg::Electron>>'
             )
 
-        self.handles['mvametsigs'] = AutoHandle(
-            'mvaMETTauEle',
-            'std::vector<cmg::METSignificance>'
-            )
+        if hasattr(self.cfg_ana, 'mvametsigs'):
+            self.handles['mvametsigs'] = AutoHandle(
+                self.cfg_ana.mvametsigs, # 'mvaMETTauMu'
+                'std::vector<cmg::METSignificance>'
+                )
         
         self.handles['leptons'] = AutoHandle(
             'cmgElectronSel',
@@ -76,13 +77,14 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, iEvent, event):
         
-#        import pdb; pdb.set_trace()
-#        if event.eventId == 20990 : 
-#            print 'STOPPING'
-#            import pdb
-#            pdb.set_trace()
-
-#        self.bestVertex = event.goodVertices[0]
+        #        import pdb; pdb.set_trace()
+        #        if event.eventId == 20990 : 
+        #            print 'STOPPING'
+        #            import pdb
+        #            pdb.set_trace()
+        
+        #        self.bestVertex = event.goodVertices[0]
+        # import pdb; pdb.set_trace()
         result = super(TauEleAnalyzer, self).process(iEvent, event)
 
         if result is False:
