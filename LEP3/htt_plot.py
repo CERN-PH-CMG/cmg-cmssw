@@ -24,8 +24,8 @@ from array import array
 mclist=[
     ["htt/Hig125_139/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
     ["htt/ZZ_7/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
-    ["htt/WW_10/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
-    ["htt/QQ_2/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
+    ["htt/WW_11/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
+    ["htt/QQ_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
     ]
 
 
@@ -33,7 +33,7 @@ mclist=[
 lumi=500
 
 # step at which the plot should be made
-stepplot=6
+stepplot=7
 
 # define special histograms
 step_h=[]
@@ -46,20 +46,24 @@ mzh_h2=[]
 
 step_label=["all","njet>4","ejet>10","2 taucand","2 good taucand","jet sele","mzmh cut","btag"]
 
+def_plot=True
 h1_list=[
-    ["Hmass_" ,"event.recHMass" ,200,0,400,True],
-    ["Zmass_" ,"event.recZMass" ,200,0,400,True],
-    ["mvis_"  ,"event.mvis"     ,200,0,400,True],
-    ["evis_"  ,"event.evis"     ,200,0,400,True],
-    ["ntrt1_" ,"event.t1recNtrk", 10,0, 10,True],
-    ["ntrt2_" ,"event.t2recNtrk", 10,0, 10,True],
-    ["ntrt_"  ,"event.t2recNtrk+event.t1recNtrk", 10,0, 10,True],
-    ["pz_"    ,"event.pz"  ,  100,-100, 100,True],
-    ["chi2_"  ,"event.chi2", 1000, 0,10000, True],
-    ["wwmin_" ,"event.wwMin",  50, 0,  100, True],
-    ["zzmin_" ,"event.zzMin",  50, 0,  100, True],
-    ["btag_tt","event.btag_tt",50, -10, 10, True],
-    ["btag_jj","event.btag_jj",50, -10, 10, True]
+    ["Hmass_" ,"event.recHMass" ,100,0,400,True],
+    ["Zmass_" ,"event.recZMass" ,100,0,400,def_plot],
+    ["mvis_"  ,"event.mvis"     ,100,0,400,def_plot],
+    ["evis_"  ,"event.evis"     ,100,0,400,def_plot],
+    ["ntrt1_" ,"event.t1recNtrk", 10,0, 10,def_plot],
+    ["ntrt2_" ,"event.t2recNtrk", 10,0, 10,def_plot],
+    ["ntrt_"  ,"event.t2recNtrk+event.t1recNtrk", 10,0, 10,def_plot],
+    ["pz_"    ,"event.pz"  ,  50 ,-100, 100,def_plot],
+    ["chi2_"  ,"event.chi2", 1000, 0,10000, def_plot],
+    ["wwmin_" ,"event.wwMin",  25, 0,  100, def_plot],
+    ["zzmin_" ,"event.zzMin",  25, 0,  100, def_plot],
+    ["btag_tt","event.btag_tt",20, 0,   4., def_plot],
+    ["btag_jj","event.btag_jj",20, 0,   4., def_plot],
+    ["pz+emiss","240.-event.evis+abs(event.pz)", 200,-400,400,True],
+    ["ttacoll","acoll", 100,-1,1,True],
+    ["jjacoll","jacoll", 100,-1,1,True]
     ]
     
     
@@ -95,6 +99,7 @@ for index in range(0,len(mclist)):
         h1loc[len(h1loc)-1].SetMarkerColor(index+2)
     h1glob.append(h1loc)            
 
+maxevent=1000000
 # now loop on tree and project
 for index,mc in enumerate(mclist):
     rootfile=mc[0]
@@ -104,7 +109,7 @@ for index,mc in enumerate(mclist):
     print "opening ",rootfile
     tree=treefile.Get("htttreeproducer_httanalyzer")
     nevents=tree.GetEntries()
-    nevents=min(nevents,100000)
+    nevents=min(nevents,maxevent)
     # loop on tree entries
     weight=xsec*lumi/nevents
     
@@ -115,6 +120,22 @@ for index,mc in enumerate(mclist):
         if read>=nevents:
             break
         read+=1
+        
+
+        p1tot=sqrt(event.t1_px**2+event.t1_py**2+event.t1_pz**2)
+        p2tot=sqrt(event.t2_px**2+event.t2_py**2+event.t2_pz**2)
+        pscal=event.t1_px*event.t2_px+event.t1_py*event.t2_py+event.t1_pz*event.t2_pz
+        acoll=pscal/(p1tot*p2tot)
+
+        j1tot=sqrt(event.j1_px**2+event.j1_py**2+event.j1_pz**2)
+        j2tot=sqrt(event.j2_px**2+event.j2_py**2+event.j2_pz**2)
+        jscal=event.j1_px*event.j2_px+event.j1_py*event.j2_py+event.j1_pz*event.j2_pz
+        jacoll=jscal/(j1tot*j2tot)
+        
+        addcut = event.mvis>120.
+        addcut = addcut and acoll<-0.6
+        addcut = addcut and jacoll<-0.3
+
         for bin in range(0,int(event.step)+1):
             if index==0:
                 if event.g_ishtt==1 and event.g_isHZqq==1:
@@ -122,7 +143,7 @@ for index,mc in enumerate(mclist):
             else:
                 step_h[index].Fill(bin)
                 
-        if event.step>=stepplot:
+        if event.step>=stepplot and addcut:
             # here we can put all plots after selection
             if index==0:
                 if event.g_ishtt==1 and event.g_isHZqq==1:
@@ -178,6 +199,7 @@ for index in range(0,len(mclist)):
 
 leg_hist.Draw() 
 c1.Print("cut_chain.png")
+c1.Print("cut_chain.C")
 
 canv=[]
 for i,h1 in enumerate(h1_list):
@@ -194,6 +216,7 @@ for i,h1 in enumerate(h1_list):
     stackh_h.Draw()
     leg_hist.Draw()
     canv[len(canv)-1].Print(tag+".png")
+    canv[len(canv)-1].Print(tag+".C")
 
 
 
