@@ -57,7 +57,7 @@ from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 
 # IN 52X: should be type1 MET. In 44X, should be raw MET
 metForRecoil = 'cmgPFMET'
-if cmsswIs44X:
+if cmsswIs44X():
     metForRecoil = 'cmgPFMETRaw'
 diTausForRecoil = 'cmgTauElePreSel'
 

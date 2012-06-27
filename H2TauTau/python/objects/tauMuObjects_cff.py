@@ -21,7 +21,6 @@ cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
 # preselection 
 cmgTauMuPreSel = cmgTauMuSel.clone( cut = 'getSelection("cuts_baseline")')
 
-
 tauMuStdSequence = cms.Sequence( cmgTauScaler +
                                  cmgTauMu +
                                  cmgTauMuPreSel
@@ -57,11 +56,10 @@ from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 #    )
 
 # recoil correction
-## doMVAMet = True
 
 # IN 52X: should be type1 MET. In 44X, should be raw MET
 metForRecoil = 'cmgPFMET'
-if cmsswIs44X:
+if cmsswIs44X():
     metForRecoil = 'cmgPFMETRaw'
 diTausForRecoil = 'cmgTauMuPreSel'
 
@@ -97,5 +95,4 @@ tauMuCorSVFitSequence = cms.Sequence( #
 tauMuSequence = cms.Sequence( tauMuStdSequence +
                               tauMuCorSVFitSequence
                               )
-
 
