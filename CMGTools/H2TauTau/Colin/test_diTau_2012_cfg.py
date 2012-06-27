@@ -3,26 +3,17 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
-runOnEmbedded = False
+runOnEmbedded = True
 runOnData = False
 runOnMC = False
 
-period = 'Period_2012AB'
-
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
-puFileData = None
 puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
-
-if period == 'Period_2012A':
-    puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_A.root'])
-elif period == 'Period_2012B':
-    puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_B.root'])
-elif period == 'Period_2012AB':
-    puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB.root'])
+puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_190456_196531.root'])
 
 mc_vertexWeight = None
 mc_tauEffWeight_mc = 'effLooseTau15MC'
-mc_tauEffWeight='eff2012IsoTau1_6fb'
+mc_tauEffWeight='eff2012IsoTau5_1fb'
 mc_jetEffWeight='eff2012Jet30'
 
 triggerAna = cfg.Analyzer(
