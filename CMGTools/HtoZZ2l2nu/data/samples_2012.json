@@ -260,6 +260,29 @@
 	   ]
 	},
 	{
+	"tag":"qqH(250)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{	
+		"dtag":"MC7TeV_VBFtoH250toZZto2L2Nu",
+		"dset":"/VBF_ToHToZZTo2L2NU_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM",
+                "aoddir":["/store/cmst3/user/cmgtools/CMG/VBF_ToHToZZTo2L2NU_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3"],
+		"patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/VBF_ToHToZZTo2L2NU_M-250_7TeV-powheg-pythia6"],
+		"split":1,
+                "xsec":0.5802,
+                "xsecunc":[2.8,-2.7],
+		"br":[0.297,0.0403896]
+		}
+	   ]
+	},
+	{
 	"tag":"ggH(300)#rightarrow ZZ",
 	"isdata":false,
 	"isinvisible":true,
@@ -277,6 +300,29 @@
                 "xsec":3.606,
                 "xsecunc":[13.4,-14.0],
 		"br":[0.256,0.0273387105]
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(300)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"803",
+        "lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+                "dtag":"MC7TeV_VBFtoH300toZZto2L2Nu",
+                "dset":"",
+                "aoddir":["/store/cmst3/user/querten/12_06_25/qqH300ZZ.root"],
+                "patdir":["/store/cmst3/user/psilva/Powheg/VBF_300/PAT/tuple"],
+		"split":1,
+                "xsec":0.4408,
+                "xsecunc":[2.8,-2.8],
+		"br":[0.307,0.0403896]
 		}
 	   ]
 	},
@@ -381,6 +427,29 @@
 	   ]
 	},
 	{
+	"tag":"qqH(450)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"800",
+        "lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{	
+                "dtag":"MC7TeV_VBFtoH450toZZto2L2Nu",
+                "dset":"",
+                "aoddir":["/store/cmst3/user/querten/12_06_25/qqH450ZZ.root"],
+                "patdir":["/store/cmst3/user/psilva/Powheg/VBF_450/PAT/tuple"],
+		"split":1,
+  		"xsec":0.2002,
+                "xsecunc":[3.1,-3.6],
+		"br":[0.259,0.0403896]
+		}
+	   ]
+	},
+	{
 	"tag":"ggH(500)#rightarrow ZZ",
 	"isdata":false,
         "isinvisible":true,
@@ -398,6 +467,29 @@
                 "xsec":1.283,
                 "xsecunc":[14.9,-13.6],
                 "br":[0.261,0.0273387105]
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(500)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"797",
+        "lwidth":3,
+        "lstyle":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+                "dtag":"MC7TeV_VBFtoH500toZZto2L2Nu",
+                "dset":"",
+                "aoddir":["/store/cmst3/user/querten/12_06_25/qqH500ZZ.root"],
+                "patdir":["/store/cmst3/user/psilva/Powheg/VBF_500/PAT/tuple"],
+		"split":1,
+                "xsec":0.1561,
+                "xsecunc":[3.4,-3.7],
+		"br":[0.261,0.0403896]
 		}
 	   ]
 	},
@@ -435,14 +527,14 @@
 	"marker":1,
 	"data":[
 		{
-                "dtag":"MC8TeV_VBFtoH600toZZto2L2Nu_clone",
+                "dtag":"MC7TeV_VBFtoH600toZZto2L2Nu",
                 "dset":"",
-		"aoddir":["/store/cmst3/user/querten/12_06_25/qqH600ZZ.root"],
-		"patdir":["/store/cmst3/user/psilva/Powheg/VBF_600/PAT/tuple"],
-                "split":1,
+                "aoddir":["/store/cmst3/user/querten/12_06_25/qqH600ZZ.root"],
+                "patdir":["/store/cmst3/user/psilva/Powheg/VBF_600/PAT/tuple"],
+		"split":1,
                 "xsec":0.09688,
                 "xsecunc":[4.2,-4.5],
-                "br":[0.272,0.0273387105]
+		"br":[0.272,0.0403896]
 		}
 	   ]
 	},
