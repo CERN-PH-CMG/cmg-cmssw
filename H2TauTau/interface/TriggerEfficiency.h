@@ -158,7 +158,7 @@ public:
     double mediumIsoTau20Weight = 246.5; 
 
     return (tau15Weight * effLooseTau15(pt, eta) + 
-	    tau20Weight * effLooseTau20(pt,eta) + 
+	    tau20Weight * effLooseTau20_TauEle(pt,eta) + 
 	    tightIsoTau20Weight * effTightIsoTau20(pt,eta) + 
 	    mediumIsoTau20Weight * effMediumIsoTau20(pt,eta)) 
       / ( tau15Weight + tau20Weight + tightIsoTau20Weight + mediumIsoTau20Weight);
@@ -175,7 +175,7 @@ public:
     double mediumIsoTau20Weight = 246.5 + 1698 + 694.8 + 117.6;
 
     return (tau15Weight * effLooseTau15(pt, eta) + 
-	    tau20Weight * effLooseTau20(pt,eta) + 
+	    tau20Weight * effLooseTau20_TauEle(pt,eta) + 
 	    tightIsoTau20Weight * effTightIsoTau20(pt,eta) + 
 	    mediumIsoTau20Weight * effMediumIsoTau20(pt,eta)) 
       / ( tau15Weight + tau20Weight + tightIsoTau20Weight + mediumIsoTau20Weight);
@@ -203,6 +203,12 @@ public:
     else
       return efficiency(pt,19.2438,1.37298,1.76448,1.73935,0.901291);
   }
+  double effLooseTau20_TauEle(double pt, double eta){
+    if(fabs(eta)<1.479) 
+      return efficiency(pt,19.3916,0.996964,1.70131,1.38002,0.903245);
+    else
+      return efficiency(pt,18.8166,0.526632,0.20666,6.80392,0.903245);
+  }
 
   double effLooseTau15MC(double pt, double eta){//should correspond to Fall11 MC
     if(fabs(eta)<1.479) 
@@ -212,6 +218,7 @@ public:
   }
 
 
+  //PG this is ok for TauEle
   double effTightIsoTau20(double pt, double eta){
     if(fabs(eta)<1.479) 
       return efficiency(pt, 19.6013, 0.987317, 1.08015, 1.88592, 0.776894);
@@ -219,6 +226,7 @@ public:
       return efficiency(pt, 18.8859, 0.271301, 0.128008, 1.50993, 0.825122);
   }
 
+  //PG this is ok for TauEle
   double effMediumIsoTau20(double pt, double eta){
     if(fabs(eta)<1.479) 
       return efficiency(pt, 19.5667, 1.15203, 1.68126, 1.40025, 0.848033);
@@ -226,6 +234,7 @@ public:
       return efficiency(pt, 18.8476, 0.528963, 0.16717, 3.65814, 0.749759);
   }
 
+  //PG this is ok for TauEle
   double effMediumIsoTau20MC(double pt, double eta){
     if(fabs(eta)<1.479) 
       return efficiency(pt, 19.468, 0.0615381, 0.0349325, 1.59349, 0.860096);
