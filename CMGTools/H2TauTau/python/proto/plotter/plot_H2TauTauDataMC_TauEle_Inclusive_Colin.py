@@ -226,5 +226,5 @@ if __name__ == '__main__':
                                  treeName='H2TauTauTreeProducerTauEle')
 
     ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
-    draw(osQCD, options.blind)
+    draw(osQCD, options.blind, 'TauEle')
     

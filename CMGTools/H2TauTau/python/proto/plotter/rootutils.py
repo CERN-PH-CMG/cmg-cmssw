@@ -75,10 +75,10 @@ def buildCanvas():
 def CMSPrelim(self, pad, channel ):
     pad.cd()
     year = ''
-    if self.dataComponents[0].find('2012'):
+    if self.dataComponents[0].find('2012')!=-1:
         year = '2012'
         energy = 8
-    elif self.dataComponents[0].find('2011'):
+    elif self.dataComponents[0].find('2011')!=-1:
         year = '2011'
         energy = 7       
     lumi = self.weights['TTJets'].intLumi/1e3
@@ -174,7 +174,7 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None):
         box.Draw()
         # import pdb; pdb.set_trace()
         keeper.append(box)
-    
+    print channel
     if channel == 'TauMu' : CMSPrelim( plot, pad, '#tau_{#mu}#tau_{h}')
     elif channel == 'TauEle' : CMSPrelim ( plot, pad, '#tau_{e}#tau_{h}')
     can.cd()
