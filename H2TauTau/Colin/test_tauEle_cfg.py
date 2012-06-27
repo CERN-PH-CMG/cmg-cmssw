@@ -119,7 +119,9 @@ from CMGTools.H2TauTau.proto.samples.tauEle_PietroJun26 import *
 
 
 
-selectedComponents =  copy.copy(MC)
+# selectedComponents =  copy.copy(MC)
+
+selectedComponents = [DYJets, TTJets, WJets]
 
 if period == 'Period_2011A':
     selectedComponents.extend( data_2011A )
@@ -151,16 +153,18 @@ WJets.splitFactor = 10
 TTJets.splitFactor = 100
 
 data_Run2011A_May10ReReco_v1.splitFactor = 50
-data_Run2011A_PromptReco_v4.splitFactor = 50
+data_Run2011A_PromptReco_v4.splitFactor = 200
 data_Run2011A_05Aug2011_v1.splitFactor = 50
 data_Run2011A_03Oct2011_v1.splitFactor = 50
 data_Run2011B_PromptReco_v1.splitFactor = 100
 
-embed_Run2011A_May10ReReco_v1.splitFactor = 2
-embed_Run2011A_PromptReco_v4.splitFactor = 4
-embed_Run2011A_05Aug2011_v1.splitFactor = 2
-embed_Run2011A_03Oct2011_v1.splitFactor = 2
-embed_Run2011B_PromptReco_v1.splitFactor = 8
+embed_Run2011A_May10ReReco_v1.splitFactor = 5
+embed_Run2011A_PromptReco_v4.splitFactor = 5
+embed_Run2011A_05Aug2011_v1.splitFactor = 5
+embed_Run2011A_03Oct2011_v1.splitFactor = 5
+embed_Run2011B_PromptReco_v1.splitFactor = 10
+
+selectedComponents = embed_2011
 
 test = 1
 if test==1:

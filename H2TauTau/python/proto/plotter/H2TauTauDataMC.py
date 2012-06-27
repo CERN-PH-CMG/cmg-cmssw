@@ -8,7 +8,7 @@ from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
 from CMGTools.RootTools.fwlite.Weight import Weight
 from CMGTools.RootTools.fwlite.Weight import printWeights
 from CMGTools.RootTools.Style import *
-from CMGTools.H2TauTau.proto.plotter.receffweights import recEffId, recEffIso
+## from CMGTools.H2TauTau.proto.plotter.receffweights import recEffId, recEffIso
 
 class H2TauTauDataMC( AnalysisDataMC ):
 
@@ -73,8 +73,10 @@ class H2TauTauDataMC( AnalysisDataMC ):
             hist = TH1F( histName, '', len(self.bins)-1, self.bins )
         hist.Sumw2()
         weight = self.eventWeight
-        if not comp.isData:
-            weight = ' * '.join( [self.eventWeight, recEffId.weight(), recEffIso.weight()])
+##         if not comp.isData:
+##             weight = ' * '.join( [self.eventWeight, recEffId.weight(), recEffIso.weight()])
+        if tree == None:
+            raise ValueError('tree does not exist for component '+compName)
         tree.Project( histName, varName, '{weight}*({cut})'.format(cut=cut,
                                                                    weight=weight) )
         hist.SetStats(0)

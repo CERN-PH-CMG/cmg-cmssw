@@ -37,11 +37,11 @@ TTJets.nGenEvents = 59613991
 
 from CMGTools.H2TauTau.proto.samples.embed import *
 
-embed_Run2011A_May10ReReco_v1.files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_10May2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/{aod}/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern)
-embed_Run2011A_PromptReco_v4.files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/{aod}/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern)
-embed_Run2011A_05Aug2011_v1.files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_05Aug2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/{aod}/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern)
-embed_Run2011A_03Oct2011_v1.files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/{aod}/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern)
-embed_Run2011B_PromptReco_v1.files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau116_ptmu1_13had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/{aod}/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern)
+embed_Run2011A_May10ReReco_v1.files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_10May2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/{aod}/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern)
+embed_Run2011A_PromptReco_v4.files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4_embedded_trans1_tau115_ptelec1_17had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/{aod}/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern)
+embed_Run2011A_05Aug2011_v1.files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_05Aug2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/{aod}/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern)
+embed_Run2011A_03Oct2011_v1.files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1_embedded_trans1_tau115_ptelec1_17had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/{aod}/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern)
+embed_Run2011B_PromptReco_v1.files = getFiles('/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1_embedded_trans1_tau115_ptelec1_17had1_17_v3-f456bdbb960236e5c696adfe9b04eaae/USER/{aod}/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern)
 
 
 ## --- data --- + --- + --- + --- + --- + --- + --- + --- + ---
