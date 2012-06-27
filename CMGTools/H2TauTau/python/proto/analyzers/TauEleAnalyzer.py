@@ -84,7 +84,6 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         #            pdb.set_trace()
         
         #        self.bestVertex = event.goodVertices[0]
-        # import pdb; pdb.set_trace()
         result = super(TauEleAnalyzer, self).process(iEvent, event)
 
         if result is False:
@@ -124,35 +123,55 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def testLeg1ID(self, tau):
-        """Returns True if a tau passes a set of cuts.
+##     def testLeg1ID(self, tau):
+##         """Returns True if a tau passes a set of cuts.
         
-        contains the selections of the sync exercise of 17/05/12
-        """
-        if tau.decayMode() == 0 and \
-               tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B #PG FIXME should I put this in?
-            return False
-        if abs (tau.dz())  > 0.2   : return False
-        if abs (tau.dxy()) > 0.045 : return False
-        return tau.tauID("againstElectronMVA")    == True and \
-               tau.tauID("againstElectronMedium") == True and \
-               tau.tauID("againstMuonLoose")      == True
+##         contains the selections of the sync exercise of 17/05/12
+##         """
+##         if tau.decayMode() == 0 and \
+##                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B #PG FIXME should I put this in?
+##             return False
+##         if abs (tau.dz())  > 0.2   : return False
+##         if abs (tau.dxy()) > 0.045 : return False
+##         return tau.tauID("againstElectronMVA")    == True and \
+##                tau.tauID("againstElectronMedium") == True and \
+##                tau.tauID("againstMuonLoose")      == True
 
-               #tau.tauID("byLooseIsoMVA")         == True and \
-        # byLooseCombinedIsolationDeltaBetaCorr
+##                #tau.tauID("byLooseIsoMVA")         == True and \
+##         # byLooseCombinedIsolationDeltaBetaCorr
 
+    def testLeg1ID(self, tau):
+##         if tau.decayMode() == 0 and \
+##                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
+##             return False
+        return tau.tauID("againstElectronMVA")>0.5 and \
+               tau.tauID("againstMuonLoose")>0.5 and \
+               self.testVertex( tau )
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
+##     def testLeg1Iso(self, tau, isocut):
+##         '''if isocut is None, returns true if loose iso MVA is passed. <-- PG not now, why so?
+##         Otherwise, returns true if iso MVA > isocut.'''
+## #        print 'TEST tau iso',isocut
+##         if isocut is None:
+##             return tau.tauID("byRawIsoMVA")>self.cfg_ana.iso1
+## #        if isocut is None:   ##PG why this?
+## #            return tau.tauID("byLooseIsoMVA")>0.5
+##         else:
+##             return tau.tauID("byRawIsoMVA")>isocut
+    def testVertex(self, lepton):
+        '''Tests vertex constraints, for mu and tau'''
+        return abs(lepton.dxy()) < 0.045 and \
+               abs(lepton.dz()) < 0.2 
+
+
     def testLeg1Iso(self, tau, isocut):
-        '''if isocut is None, returns true if loose iso MVA is passed. <-- PG not now, why so?
+        '''if isocut is None, returns true if loose iso MVA is passed.
         Otherwise, returns true if iso MVA > isocut.'''
-#        print 'TEST tau iso',isocut
         if isocut is None:
-            return tau.tauID("byRawIsoMVA")>self.cfg_ana.iso1
-#        if isocut is None:   ##PG why this?
-#            return tau.tauID("byLooseIsoMVA")>0.5
+            return tau.tauID("byLooseIsoMVA")>0.5
         else:
             return tau.tauID("byRawIsoMVA")>isocut
 
@@ -160,18 +179,22 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def testLeg2ID(self, leg):
-        leg.tightIdResult = leg.tightIdForEleTau()
-        if abs (leg.dxy())  >= 0.045                                : return False
-        if abs (leg.dz())   >= 0.2                                  : return False
-        if leg.pt ()        <= self.cfg_ana.pt2                     : return False # FIXME should be in kine
-        if abs( leg.eta())  >= self.cfg_ana.eta2                    : return False # FIXME should be in kine
-        if not leg.tightIdForEleTau()                               : return False
-        if not leg.looseIdForEleTau()                               : return False
-#        if not self.testEleLoosePhil (leg, self.cfg_ana.pt2, 99999) : return False
-#        if not leg.tightIdResult                                    : return False
-        return True
+##     def testLeg2ID(self, leg):
+##         leg.tightIdResult = leg.tightIdForEleTau()
+##         if abs (leg.dxy())  >= 0.045                                : return False
+##         if abs (leg.dz())   >= 0.2                                  : return False
+##         if leg.pt ()        <= self.cfg_ana.pt2                     : return False # FIXME should be in kine
+##         if abs( leg.eta())  >= self.cfg_ana.eta2                    : return False # FIXME should be in kine
+##         if not leg.tightIdForEleTau()                               : return False
+##         if not leg.looseIdForEleTau()                               : return False
+## #        if not self.testEleLoosePhil (leg, self.cfg_ana.pt2, 99999) : return False
+## #        if not leg.tightIdResult                                    : return False
+##         return True
 
+    def testLeg2ID(self, electron):
+        '''Tight muon selection, no isolation requirement'''
+        return electron.tightIdForEleTau() and \
+               self.testVertex( electron )
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
@@ -200,9 +223,15 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         #PG FIXME how do I pass the isolation argument to testEleLoosePhil?
         looseLeptons = filter( Electron.looseIdForEleTau, leptons)
         nLeptons = len(looseLeptons)
-        if nLeptons < 2 : return True
-        if nLeptons > 2 : return False
-        if looseLeptons[0].charge() == looseLeptons[1].charge() : return True
-        if deltaR (looseLeptons[0].eta(), looseLeptons[0].phi(), looseLeptons[1].eta(), looseLeptons[1].phi()) < 0.15 : return True 
-        else : return False
+        if nLeptons < 2 :
+            return True
+        elif nLeptons > 2 :
+            return False
+        else: # 2 leptons
+            if looseLeptons[0].charge() == looseLeptons[1].charge() :
+                return True
+            elif deltaR (looseLeptons[0].eta(), looseLeptons[0].phi(), looseLeptons[1].eta(), looseLeptons[1].phi()) < 0.15 :
+                return True 
+            else :
+                return False
     
