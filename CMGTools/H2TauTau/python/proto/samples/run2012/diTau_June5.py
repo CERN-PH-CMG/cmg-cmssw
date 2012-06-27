@@ -7,7 +7,6 @@ import re
 import CMGTools.RootTools.fwlite.Config as cfg
 #from CMGTools.RootTools.yellowreport.YRParser import yrparser
 
-
 Higgsgg110 = cfg.MCComponent(
     name = 'Higgsgg110',
     files = [],
@@ -138,6 +137,72 @@ HiggsVBF145 = cfg.MCComponent(
 
 
 
+
+HiggsVH110 = cfg.MCComponent(
+    name = 'HiggsVH110',
+    files = [],
+    xSection = 1.791*8.02e-2,
+    nGenEvents = 200408*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH115 = cfg.MCComponent(
+    name = 'HiggsVH115',
+    files = [],
+    xSection = 1.709*7.65e-2, 
+    nGenEvents = 200460*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH120 = cfg.MCComponent(
+    name = 'HiggsVH120',
+    files = [],
+    xSection = 1.632*7.10e-2, 
+    nGenEvents = 200448*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH125 = cfg.MCComponent(
+    name = 'HiggsVH125',
+    files = [],
+    xSection = 1.559*6.37e-2, 
+    nGenEvents = 200124*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH130 = cfg.MCComponent(
+    name = 'HiggsVH130',
+    files = [],
+    xSection = 1.490*5.48e-2, 
+    nGenEvents = 200080*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH135 = cfg.MCComponent(
+    name = 'HiggsVH135',
+    files = [],
+    xSection = 1.425*4.52e-2, 
+    nGenEvents = 200128*0.97169,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH140 = cfg.MCComponent(
+    name = 'HiggsVH140',
+    files = [],
+    xSection = 1.365*3.54e-2, 
+    nGenEvents = 200186*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsVH145 = cfg.MCComponent(
+    name = 'HiggsVH145',
+    files = [],
+    xSection = 1.306*2.61e-2, 
+    nGenEvents = 200384*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+
 mc_higgs_gg = [
     #Higgsgg110,
     Higgsgg115,
@@ -176,7 +241,18 @@ mc_higgs_vbf = [
 #    h.xSection = yrparser.get(mass)['VBF']['sigma']
 #    print h.name, 'sigma = ', h.xSection
 
-mc_higgs = copy.copy( mc_higgs_gg ) + copy.copy( mc_higgs_vbf ) 
+mc_higgs_VH = [
+    #HiggsVH110,
+    HiggsVH115,
+    HiggsVH120,
+    HiggsVH125,
+    HiggsVH130,
+    HiggsVH135,
+    HiggsVH140,
+    HiggsVH145,
+    ]
+
+mc_higgs = copy.copy( mc_higgs_gg ) + copy.copy( mc_higgs_vbf ) + copy.copy( mc_higgs_VH ) 
 
 
 
@@ -284,6 +360,14 @@ HiggsVBF130.files = getFiles('/VBF_HToTauTau_M-130_8TeV-powheg-pythia6/Summer12-
 HiggsVBF135.files = getFiles('/VBF_HToTauTau_M-135_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF140.files = getFiles('/VBF_HToTauTau_M-140_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF145.files = getFiles('/VBF_HToTauTau_M-145_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+#HiggsVH110.files = getFiles('/WH_ZH_TTH_HToTauTau_M-110_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVH115.files = getFiles('/WH_ZH_TTH_HToTauTau_M-115_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVH120.files = getFiles('/WH_ZH_TTH_HToTauTau_M-120_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVH125.files = getFiles('/WH_ZH_TTH_HToTauTau_M-125_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVH130.files = getFiles('/WH_ZH_TTH_HToTauTau_M-130_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVH135.files = getFiles('/WH_ZH_TTH_HToTauTau_M-135_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVH140.files = getFiles('/WH_ZH_TTH_HToTauTau_M-140_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVH145.files = getFiles('/WH_ZH_TTH_HToTauTau_M-145_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 
 mc_spring12 = copy.copy( mc_ewk )

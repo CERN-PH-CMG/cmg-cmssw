@@ -98,7 +98,7 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.run2012.diTau_June5 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.diTau_June1 import * 
 
 #########################################################################################
 
@@ -115,7 +115,8 @@ selectedComponents = data_2012 + embedded_2012 + [DYJets, WJets, W3Jets, TTJets,
 #selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
 #                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145]
 selectedComponents += [ Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
-                        HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145 ]
+                        HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145,
+                        HiggsVH115, HiggsVH120, HiggsVH125, HiggsVH130, HiggsVH135, HiggsVH140, HiggsVH145 ]
 
 if runOnData:
     selectedComponents = data_2012
@@ -124,7 +125,8 @@ if runOnMC:
     #selectedComponents += [Higgsgg110, Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
     #                       HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145]
     selectedComponents += [ Higgsgg115, Higgsgg120, Higgsgg125, Higgsgg130, Higgsgg135, Higgsgg140, Higgsgg145,
-                           HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145 ]
+                           HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145,
+                           HiggsVH115, HiggsVH120, HiggsVH125, HiggsVH130, HiggsVH135, HiggsVH140, HiggsVH145 ]
 if runOnEmbedded:
     selectedComponents = embedded_2012
 
