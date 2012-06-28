@@ -104,6 +104,8 @@ int main(int argc, char* argv[])
   bool WRITE=false;
 
   bool LESS_PARAMETERS=false;
+
+  bool ALLOWSNEGATIVE=false;
   
   // histogram binning (for display only)
   const int NBINS=54;
@@ -467,29 +469,31 @@ int main(int argc, char* argv[])
   double pdfIntegral=ws->var("nbkg")->getVal()*calcPDF1DIntegral(ws->pdf("modela"), invmass, signalMass*0.9, signalMass*1.1);
   double maxXS = sqrt(pdfIntegral)*5/ws->var("lumi")->getVal();
   RooRealVar* xs=ws->var("xs");
-  if (signalMass<1001) maxXS = maxXS*2.0*3.0;
-  if (signalMass>1099 && signalMass<1401) maxXS = maxXS*2.1*1.5;
-  if (signalMass==1500) maxXS = maxXS*2.0*1.5;
-  if (signalMass>1599 && signalMass<1601) maxXS = maxXS*2.5*1.3;
-  if (signalMass>1699 && signalMass<2201) maxXS = maxXS*3.2*1.3;
-  if (signalMass>2299 && signalMass<3401) maxXS = maxXS*4.0*1.3;
-  if (signalMass>3499 && signalMass<3501) maxXS = maxXS*4.2;
-  if (signalMass>3599 && signalMass<3701) maxXS = maxXS*4.0;
-  if (signalMass>3799 && signalMass<3801) maxXS = maxXS*4.8;
-  if (signalMass>3899) maxXS = maxXS*8.0;
-  xs->setRange(0,maxXS);
-  xs->setVal(maxXS/5.0);
+  maxXS = maxXS*10.0;
+  if(ALLOWSNEGATIVE)
+      xs->setRange(-maxXS*1000.0,maxXS*1000.0);
+  else    
+      xs->setRange(0,maxXS*1000.0);
+  xs->setVal(maxXS/10.0);
+
+  cout << "doing S+B fit to estimate background" << endl;
 
   if(!doAggressiveBkgFit) {
         // Fit s+b with signal floating
         xs->setConstant(false);
 	fit=doFit(std::string("bsfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
         // Rerun s+b fit with fixed signal, to get a proper covariance matrix for the bg parameters
+        cout << "rerun S+B fit with fixed S for covariance matrix" << endl;
         xs->setConstant(true);
         fit_for_covariance=doFit(std::string("bfita")+label, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
         xs->setConstant(false);
-	
   }
+
+  if(xs->getVal()<0)
+     xs->setVal(0);
+  xs->setRange(0,maxXS);
+
+  cout << "start limit setting" << endl;
 
   double nbkgValInit=ws->var("nbkg")->getVal();
   double p1ValInit=ws->var("p1")->getVal();
@@ -728,8 +732,7 @@ int main(int argc, char* argv[])
      	  }
      	  std::cout << std::endl;
         }
-	if(USENEWCOVARIANCE)
-	    eigenValues.Sqrt(); // Turn variances into errors 
+        eigenValues.Sqrt(); // Turn variances into errors 
  
         if (statlevel<100) {
          histA->Scale(3); // 3 times the central value plus up/down variations along 3 axes
@@ -737,29 +740,35 @@ int main(int argc, char* argv[])
 	 for(Int_t v=1; v<nPar;v++){
           if(USENEWCOVARIANCE)
           {
-	      for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(v)*eigenVectors[k][v]*(eigenVectors[0][v])/fabs(eigenVectors[0][v]); 
+	      for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(v)*eigenVectors[k][v]; 
 	  } else {
 	      for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[v][k];
               // multiply this vector by Lt to introduce the appropriate correlations
               g*= (*_Lt);
 	  }
-	  ws->var("p1")->setVal(p1val+g(1));
-	  ws->var("p2")->setVal(p2val+g(2));
-	  ws->var("p3")->setVal(p3val+g(3));
+	  if(g(1)<0)
+	      for(Int_t k= 0; k < nPar; k++) g(k)=-g(k);
+	  ws->var("nbkg")->setVal(nbkgValInit);
+	  ws->var("p1")->setVal(p1ValInit+g(1));
+	  ws->var("p2")->setVal(p2ValInit+g(2));
+	  ws->var("p3")->setVal(p3ValInit+g(3));
 	  TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
 	  histA->Add(histAHi);
 	  delete histAHi;
           if(USENEWCOVARIANCE)
           {
-	      for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(v)*eigenVectors[k][v]*(eigenVectors[0][v])/fabs(eigenVectors[0][v]); 
+	      for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(v)*eigenVectors[k][v]; 
 	  } else {
 	      for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[v][k];
               // multiply this vector by Lt to introduce the appropriate correlations
               g*= (*_Lt);
 	  }
-	  ws->var("p1")->setVal(p1val+g(1));
-	  ws->var("p2")->setVal(p2val+g(2));
-	  ws->var("p3")->setVal(p3val+g(3));
+	  if(g(1)>=0)
+	      for(Int_t k= 0; k < nPar; k++) g(k)=-g(k);
+	  ws->var("nbkg")->setVal(nbkgValInit);
+	  ws->var("p1")->setVal(p1ValInit+g(1));
+	  ws->var("p2")->setVal(p2ValInit+g(2));
+	  ws->var("p3")->setVal(p3ValInit+g(3));
 	  TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
 	  histA->Add(histALo);
 	  delete histALo;
@@ -771,25 +780,30 @@ int main(int argc, char* argv[])
 	  if ((statlevel>=100) && (statlevel<=102)) {
             if(USENEWCOVARIANCE)
             {
-	        for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(statlevel-99)*eigenVectors[k][statlevel-99]*(eigenVectors[0][statlevel-99])/fabs(eigenVectors[0][statlevel-99]); 
+	        for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(statlevel-99)*eigenVectors[k][statlevel-99]; 
 	    } else {
                 for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[statlevel-99][k];
                 // multiply this vector by Lt to introduce the appropriate correlations
                 g*= (*_Lt);
 	    }
+            if(g(1)<0)
+	        for(Int_t k= 0; k < nPar; k++) g(k)=-g(k);
 	  } else if ((statlevel>=103) && (statlevel<=105)) {
             if(USENEWCOVARIANCE)
             {
-	        for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(statlevel-102)*eigenVectors[k][statlevel-102]*(eigenVectors[0][statlevel-102])/fabs(eigenVectors[0][statlevel-102]); 
+	        for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(statlevel-102)*eigenVectors[k][statlevel-102]; 
 	    } else {
                 for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[statlevel-102][k];
                 // multiply this vector by Lt to introduce the appropriate correlations
                 g*= (*_Lt);
 	    }
+            if(g(1)>=0)
+	        for(Int_t k= 0; k < nPar; k++) g(k)=-g(k);
 	  }
-          ws->var("p1")->setVal(p1val+g(1));
-          ws->var("p2")->setVal(p2val+g(2));
-          ws->var("p3")->setVal(p3val+g(3));
+	  ws->var("nbkg")->setVal(nbkgValInit);
+	  ws->var("p1")->setVal(p1ValInit+g(1));
+	  ws->var("p2")->setVal(p2ValInit+g(2));
+	  ws->var("p3")->setVal(p3ValInit+g(3));
 	  TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
 	  delete histA;
 	  histA=histAHi;
