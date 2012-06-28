@@ -15,6 +15,7 @@ from CMGTools.LEP3.analyzers.DiObject import DiObject
 from CMGTools.RootTools.utils.DeltaR import deltaR
 from math import pi, sqrt, acos
 from sets import Set
+import numpy
         
 class httanalyzer( Analyzer ):
 
@@ -338,17 +339,19 @@ class httanalyzer( Analyzer ):
         event.taucandcharge=[]
         event.nontaucand=[]
         event.nontaucandiso=[]
-        event.acoll = -99
+        event.acoll = -99.
+        event.acopl = -99.
         for ind in range(0,len(self.jets)):
 #            print "evaluating ",ind
-            ntrk=self.jets[ind].component(1).number()
+#            ntrk=self.jets[ind].component(1).number()
             # the two most energetic jets are not considered among taus 
             #            if ind>=2 and ntrk>0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
             #            if ntrk>=1 and ntrk<=3  and self.jetiso[ind]<0.8 and len(event.taucand)<2:
             # if ntrk>=0 and ntrk<=3  and self.jetiso[ind]<0.5 and len(event.taucand)<2:
             # if ntrk>=1 and ntrk<=3  and self.jetiso[ind]<0.9:
 #            if ntrk>=1 and ntrk<=3:
-            if ntrk==1 or ntrk==3:
+#            if ntrk==1 or ntrk==3:
+            if self.testTauId(self.jets[ind]):
                 event.taucand.append(self.jets[ind])
                 event.taucandiso.append(self.jetiso[ind])
 #                print "adding to tau"
@@ -364,8 +367,9 @@ class httanalyzer( Analyzer ):
         event.step+=1 #3
 
         if len(event.taucand)==2:
-            ntr1=event.taucand[0].component(1).number()
-            ntr2=event.taucand[1].component(1).number()
+            #electrons + muons + charged hadrons
+            ntr1=event.taucand[0].component(1).number()+event.taucand[0].component(2).number()+event.taucand[0].component(3).number()
+            ntr2=event.taucand[1].component(1).number()+event.taucand[1].component(2).number()+event.taucand[1].component(3).number()
             if (ntr1*ntr2)!=1 and (ntr1*ntr2)!=3:
                 return
         # now iterate on all possible pairs of tau candidates, if more than two, and keep only the ones which give
@@ -475,7 +479,7 @@ class httanalyzer( Analyzer ):
 #          for constituent in constituents:
 #             charge += constituent.charge()
 #          event.taucandcharge.append[charge]
-        #fill acoplanarity for tau candidates
+        #fill acollinearity for tau candidates
         tnorm1 = event.taucand[0].p4().P()
         tnorm2 = event.taucand[1].p4().P()
         ttdot = event.taucand[0].px()*event.taucand[1].px() + event.taucand[0].py()*event.taucand[1].py() + event.taucand[0].pz()*event.taucand[1].pz()
@@ -539,6 +543,18 @@ class httanalyzer( Analyzer ):
         #check that the clustered jets pass id (this also does the momentum rescaling)
 
         idpass,newjets,newtaus = self.testId(event.nontaucand, event.taucand,True)
+        #fill acoplanarity between met and the plane containinf the taus
+        t1 = numpy.array([event.taucand[0].px(), event.taucand[0].py(), event.taucand[0].pz()])
+        t2 = numpy.array([event.taucand[1].px(), event.taucand[1].py(), event.taucand[1].pz()])
+        norm = numpy.cross(t1,t2)
+        #now extract the angle wrt mmissing energy
+        me = ([-self.px, -self.py, -self.pz])
+        pscal = numpy.dot(norm,me)
+        norm_p = numpy.linalg.norm(norm)
+        me_p = numpy.linalg.norm(me)
+        if norm_p>0 and me_p>0:
+          event.acopl = pscal/(norm_p * me_p)
+
 
         # store variables after rescaling
         event.t1s_px=event.taucand[0].px()
@@ -614,6 +630,13 @@ class httanalyzer( Analyzer ):
         
 
         return True
+
+    def testTauId(self, jet):
+        ntrk=jet.component(1).number()+jet.component(2).number()+jet.component(3).number()
+        nhf = jet.component(5).fraction()
+        chf = jet.component(1).fraction()
+        mass = jet.mass()
+        return (ntrk==1 or ntrk==3) and nhf < 0.2 #and mass < 7 
 
     def findPairs(self, jets):
         out = []

@@ -21,11 +21,12 @@ class htttreeproducer( TreeAnalyzer ):
             var('{pName}Energy'.format(pName=pName))
             var('{pName}Eta'.format(pName=pName))
             var('{pName}Phi'.format(pName=pName))
-            var('{pName}Nobj'.format(pName=pName))
+            #var('{pName}Nobj'.format(pName=pName))
             var('{pName}Ntrk'.format(pName=pName))
             #var('{pName}Photon'.format(pName=pName))
             #var('{pName}Electron'.format(pName=pName))
             #var('{pName}NeutralHadron'.format(pName=pName))
+            var('{pName}ChFraction'.format(pName=pName))
             var('{pName}PFraction'.format(pName=pName))
             var('{pName}EFraction'.format(pName=pName))
             var('{pName}NHFraction'.format(pName=pName))
@@ -140,6 +141,7 @@ class htttreeproducer( TreeAnalyzer ):
         
         var('tt_acoll')
         var('jj_acoll')
+        var('ttmet_acopl')
 
 
 
@@ -171,11 +173,12 @@ class htttreeproducer( TreeAnalyzer ):
             fill('{pName}Mass'.format(pName=pName), particle.mass() )
             fill('{pName}Pt'.format(pName=pName), particle.pt() )
             fill('{pName}Energy'.format(pName=pName), particle.energy() )
-            fill('{pName}Nobj'.format(pName=pName), particle.nConstituents() )
-            fill('{pName}Ntrk'.format(pName=pName), particle.component(1).number() )
+            #fill('{pName}Nobj'.format(pName=pName), particle.nConstituents() )
+            fill('{pName}Ntrk'.format(pName=pName), particle.component(1).number() + particle.component(2).number() + particle.component(3).number())
             #fill('{pName}Electron'.format(pName=pName), particle.component(2).energy() )
             #fill('{pName}Photon'.format(pName=pName), particle.component(4).energy() )
             #fill('{pName}NeutralHadron'.format(pName=pName), particle.component(5).energy() )
+            fill('{pName}ChFraction'.format(pName=pName), particle.component(1).fraction() + particle.component(2).fraction() + particle.component(3).fraction())
             fill('{pName}EFraction'.format(pName=pName), particle.component(2).fraction() )
             fill('{pName}PFraction'.format(pName=pName), particle.component(4).fraction() )
             fill('{pName}NHFraction'.format(pName=pName), particle.component(5).fraction() )
@@ -290,6 +293,7 @@ class htttreeproducer( TreeAnalyzer ):
                 fill('j2_en',subevent.j2_en)
                 fill('tt_acoll',subevent.acoll)
                 fill('jj_acoll',subevent.jcoll)
+                fill('ttmet_acopl',subevent.acopl)
 
                 fill('t1s_px',subevent.t1s_px)
                 fill('t1s_py',subevent.t1s_py)
