@@ -13,7 +13,7 @@ promptjson  =  '/'.join([jsondir, 'Prompt/Cert_160404-180252_7TeV_PromptReco_Col
 data_Run2011A_May10ReReco_v1 = cfg.DataComponent(
     name = 'data_Run2011A_May10ReReco_v1',
     files = [],
-    intLumi = 168.538,
+    intLumi = 215.63, 
     triggers = [],
     json = '/'.join([jsondir, 'Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3.txt'])
     )
@@ -21,7 +21,7 @@ data_Run2011A_May10ReReco_v1 = cfg.DataComponent(
 data_Run2011A_PromptReco_v4 = cfg.DataComponent(
     name = 'data_Run2011A_PromptReco_v4',
     files = [],
-    intLumi = 955.001,
+    intLumi = 951.426, # 955.212 (Pietro)
     triggers = [],
     json = promptjson
     )
@@ -29,7 +29,7 @@ data_Run2011A_PromptReco_v4 = cfg.DataComponent(
 data_Run2011A_05Aug2011_v1 = cfg.DataComponent(
     name = 'data_Run2011A_05Aug2011_v1',
     files = [],
-    intLumi = 386.825,
+    intLumi = 383.798, # 389.876 (Pietro)
     triggers = [],
     json = '/'.join([jsondir, 'Reprocessing/Cert_170249-172619_7TeV_ReReco5Aug_Collisions11_JSON_v3.txt'])
     )
@@ -37,7 +37,7 @@ data_Run2011A_05Aug2011_v1 = cfg.DataComponent(
 data_Run2011A_03Oct2011_v1 = cfg.DataComponent(
     name = 'data_Run2011A_03Oct2011_v1',
     files = [],
-    intLumi = 701.129,
+    intLumi = 696.471, #706.7 (Pietro)
     triggers = [],
     json = promptjson
     )
@@ -45,7 +45,7 @@ data_Run2011A_03Oct2011_v1 = cfg.DataComponent(
 data_Run2011B_PromptReco_v1 = cfg.DataComponent(
     name = 'data_Run2011B_PromptReco_v1',
     files = [],
-    intLumi = 2706.0,
+    intLumi = 2714.0, #same (Pietro)
     triggers = [],
     json = promptjson
     )

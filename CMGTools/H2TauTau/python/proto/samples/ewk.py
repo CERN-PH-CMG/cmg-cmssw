@@ -1,9 +1,11 @@
 import CMGTools.RootTools.fwlite.Config as cfg
 
+valentinaFactor = 0.95
+
 DYJets = cfg.MCComponent(
     name = 'DYJets',
     files = [],
-    xSection = 3048.,
+    xSection = 3048. * valentinaFactor,
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1)
@@ -12,7 +14,7 @@ DYJets = cfg.MCComponent(
 WJets = cfg.MCComponent(
     name = 'WJets',
     files = [],
-    xSection = 31314.,
+    xSection = 31314. * valentinaFactor,
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
@@ -20,7 +22,7 @@ WJets = cfg.MCComponent(
 W3Jets = cfg.MCComponent(
     name = 'W3Jets',
     files = [],
-    xSection = 1.,
+    xSection = 1. * valentinaFactor,
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
@@ -28,7 +30,7 @@ W3Jets = cfg.MCComponent(
 TTJets = cfg.MCComponent(
     name = 'TTJets',
     files = [],
-    xSection = 165.8,
+    xSection = 165.8 * valentinaFactor,
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
