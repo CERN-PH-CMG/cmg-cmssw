@@ -20,6 +20,28 @@ def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
     fill(tree, '{pName}_charge'.format(pName=pName), particle.charge() )
 
+# di-tau
+
+def bookDiLepton(tree):
+    var( tree, 'visMass')
+    var( tree, 'svfitMass')
+    var( tree, 'pZetaMET')
+    var( tree, 'pZetaVis')
+    var( tree, 'pZetaDisc')
+    var( tree, 'mt')
+    var( tree, 'met')
+
+
+def fillDiLepton(tree, diLepton):
+    fill(tree, 'visMass', diLepton.mass())
+    fill(tree, 'svfitMass', diLepton.massSVFit())
+    fill(tree, 'pZetaMET', diLepton.pZetaMET())
+    fill(tree, 'pZetaVis', diLepton.pZetaVis())
+    fill(tree, 'pZetaDisc', diLepton.pZetaDisc())
+    fill(tree, 'mt', diLepton.mTLeg2())
+    fill(tree, 'met', diLepton.met().pt())
+
+    
 # lepton
 
 def bookLepton( tree, pName ):
