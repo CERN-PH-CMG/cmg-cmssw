@@ -8,13 +8,14 @@ from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
 from CMGTools.RootTools.fwlite.Weight import Weight
 from CMGTools.RootTools.fwlite.Weight import printWeights
 from CMGTools.RootTools.Style import *
-from ROOT import kPink, kOrange, kViolet
+from ROOT import kPink, kOrange, kViolet, kGreen
 
 sOrange = Style(lineColor=1, markerColor=kOrange, fillColor=kOrange)
 sViolet = Style(lineColor=1, markerColor=kViolet, fillColor=kViolet)
 
-sRedLine = Style(lineColor=2, markerColor=2, fillStyle=0)
-sBlueLine = Style(lineColor=4, markerColor=4, fillStyle=0)
+sRedLine   = Style(lineColor=2     , markerColor=2     , fillStyle=0)
+sBlueLine  = Style(lineColor=4     , markerColor=4     , fillStyle=0)
+sGreenLine = Style(lineColor=kGreen, markerColor=kGreen, fillStyle=0)
 
 class H2TauTauDataMC( AnalysisDataMC ):
 
@@ -220,8 +221,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['Data']                          = {'style':sBlack,    'layer':-99}
         self.histPref['data_Run2012A_PromptReco_v1']   = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2012B_PromptReco_v1']   = {'style':sRed,      'layer':-1100}
-        self.histPref['embed_Run2012A_PromptReco_v1']   = {'style':sBlue,     'layer':-1000}
-        self.histPref['embed_Run2012B_PromptReco_v1']   = {'style':sRed,      'layer':-1100}
+        self.histPref['embed_Run2012A_PromptReco_v1']  = {'style':sBlue,     'layer':-1000}
+        self.histPref['embed_Run2012B_PromptReco_v1']  = {'style':sRed,      'layer':-1100}
         self.histPref['data_Run2011A_May10ReReco_v1']  = {'style':sViolet,   'layer':-1000}
         self.histPref['data_Run2011A_PromptReco_v4']   = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2011A_PromptReco_v6']   = {'style':sRed,      'layer':-1100}
@@ -236,6 +237,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['embed_Run2011B_PromptReco_v1']  = {'style':sViolet,   'layer':-1200}
         self.histPref['TTJets']                        = {'style':sRed,      'layer':1} 
         self.histPref['WJets']                         = {'style':sBlue,     'layer':2}  
+        self.histPref['W3Jets']                        = {'style':sBlue,     'layer':2}  
         self.histPref['WJets_Fakes']                   = {'style':sViolet,   'layer':1.5}  
         self.histPref['WW']                            = {'style':sBlue,     'layer':0.93}  
         self.histPref['WZ']                            = {'style':sBlue,     'layer':0.92}  
@@ -249,6 +251,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['QCD30']                         = {'style':sBlack,    'layer':5.3}
         self.histPref['QCD50']                         = {'style':sBlack,    'layer':5.2}
         self.histPref['QCD80']                         = {'style':sBlack,    'layer':5.1}
+
         self.histPref['Higgsgg110']                    = {'style':sRedLine,  'layer':6.1}
         self.histPref['Higgsgg115']                    = {'style':sRedLine,  'layer':6.1}
         self.histPref['Higgsgg120']                    = {'style':sRedLine,  'layer':6.1}
@@ -257,6 +260,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['Higgsgg135']                    = {'style':sRedLine,  'layer':6.1}
         self.histPref['Higgsgg140']                    = {'style':sRedLine,  'layer':6.1}
         self.histPref['Higgsgg145']                    = {'style':sRedLine,  'layer':6.1}
+
         self.histPref['HiggsVBF110']                   = {'style':sBlueLine, 'layer':6.2}
         self.histPref['HiggsVBF115']                   = {'style':sBlueLine, 'layer':6.2}
         self.histPref['HiggsVBF120']                   = {'style':sBlueLine, 'layer':6.2}
@@ -265,4 +269,13 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['HiggsVBF135']                   = {'style':sBlueLine, 'layer':6.2}
         self.histPref['HiggsVBF140']                   = {'style':sBlueLine, 'layer':6.2}
         self.histPref['HiggsVBF145']                   = {'style':sBlueLine, 'layer':6.2}
+
+        self.histPref['HiggsVH110']                    = {'style':sBlueLine, 'layer':6.3}
+        self.histPref['HiggsVH115']                    = {'style':sBlueLine, 'layer':6.3}
+        self.histPref['HiggsVH120']                    = {'style':sBlueLine, 'layer':6.3}
+        self.histPref['HiggsVH125']                    = {'style':sBlueLine, 'layer':6.3}
+        self.histPref['HiggsVH130']                    = {'style':sBlueLine, 'layer':6.3}
+        self.histPref['HiggsVH135']                    = {'style':sBlueLine, 'layer':6.3}
+        self.histPref['HiggsVH140']                    = {'style':sBlueLine, 'layer':6.3}
+        self.histPref['HiggsVH145']                    = {'style':sBlueLine, 'layer':6.3}
         
