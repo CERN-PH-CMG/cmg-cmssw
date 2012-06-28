@@ -30,6 +30,7 @@ def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataM
     print "Embedded events in inclusive", embeddedHist.Integral()
     
     gPad.SaveAs("inclusiveForEmbeddedNormalization.png")
+    gPad.SaveAs("inclusiveForEmbeddedNormalization.pdf")
     gPad.WaitPrimitive()
    
     embeddedScaleFactor = inclusiveForEmbeddedNormalizationDY.Hist("DYJets").Integral()/embeddedHist.Integral()
@@ -71,6 +72,7 @@ def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, 
     print "DYJets events in boosted ee", (inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Integral())
 
     gPad.SaveAs("inclusiveForZeeNormalization.png")
+    gPad.SaveAs("inclusiveForZeeNormalization.pdf")
     gPad.WaitPrimitive()
 
     zeeScaleFactor = inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").Integral()/ \
