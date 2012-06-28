@@ -179,6 +179,25 @@ class httanalyzer( Analyzer ):
             event.tau1=self.tau[0]
             event.tau2=self.tau[1]
 
+        #save the two leading muons and the two leading electrons
+        self.muons = []
+        for muon in  self.handles['muons'].product():
+          self.muons.append(Muon(muon))
+        self.muons.sort(key=lambda a: a.energy(), reverse = True)  
+        event.leadingMuons = []
+        for muon in self.muons:
+          if len(event.leadingMuons) >= 2: break
+          event.leadingMuons.append(muon)
+
+        self.electrons = []
+        for electron in  self.handles['electrons'].product():
+          self.electrons.append(Electron(electron))   
+        self.electrons.sort(key=lambda a: a.energy(), reverse = True)
+        event.leadingElectrons = []
+        for electron in self.electrons:
+          if len(event.leadingElectrons) >= 2: break
+          event.leadingElectrons.append(electron)   
+    
 
         # prepare jets ordered in energy
         self.jets=[]
@@ -316,8 +335,10 @@ class httanalyzer( Analyzer ):
         # requires at least 2 taucandidates as isolated jets (0.5) and with 1,2 or 3 tracks
         event.taucand=[]
         event.taucandiso=[]
+        event.taucandcharge=[]
         event.nontaucand=[]
         event.nontaucandiso=[]
+        event.acoll = -99
         for ind in range(0,len(self.jets)):
 #            print "evaluating ",ind
             ntrk=self.jets[ind].component(1).number()
@@ -443,12 +464,23 @@ class httanalyzer( Analyzer ):
             event.taucand=[t1temp,t2temp]
             event.taucandiso=[t1isotemp,t2isotemp]
 
-            
-
 
         self.counters.counter('h_rec').inc('2 tau candidates good pair')    
         event.step+=1 #4
-
+        #fill jet charges for tau candidates
+#        for tau in event.taucand:
+#          print tau.numberOfSourceCandidatePtrs()
+#          constituents = tau.sourcePtr().getPFConstituents()
+#          charge = 0
+#          for constituent in constituents:
+#             charge += constituent.charge()
+#          event.taucandcharge.append[charge]
+        #fill acoplanarity for tau candidates
+        tnorm1 = event.taucand[0].p4().P()
+        tnorm2 = event.taucand[1].p4().P()
+        ttdot = event.taucand[0].px()*event.taucand[1].px() + event.taucand[0].py()*event.taucand[1].py() + event.taucand[0].pz()*event.taucand[1].pz()
+        event.acoll = ttdot/(tnorm1*tnorm2)   
+   
             
         #MC matching
         if event.ishtt==1 and event.isHZqq==1:
@@ -471,6 +503,10 @@ class httanalyzer( Analyzer ):
         event.nontaucand = []
         for jet in tmpJets:
             event.nontaucand.append(jet)
+        jnorm1 = event.nontaucand[0].p4().P()    
+        jnorm2 = event.nontaucand[1].p4().P()    
+        jjdot = event.nontaucand[0].px()*event.nontaucand[1].px() + event.nontaucand[0].py()*event.nontaucand[1].py() + event.nontaucand[0].pz()*event.nontaucand[1].pz()  
+        event.jcoll = jjdot/(jnorm1*jnorm2)
 
         event.btag_tt=0
         event.btag_jj=0
