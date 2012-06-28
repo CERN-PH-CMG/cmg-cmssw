@@ -9,9 +9,10 @@ def embedScaleFactor(selComps):
     zttChain = None
     for comp in selComps.values():
         if comp.isEmbed:
-            if embedChain is None:
-                embedChain = copy.deepcopy( comp.tree )
-                continue
+            #if embedChain is None:
+            #    embedChain = copy.deepcopy( comp.tree )
+            #    continue
+            print 'chaining', comp.name, comp.tree.GetEntries()
             embedChain.Add(comp.tree)
         elif comp.name=='Ztt':
             zttChain = comp.tree
@@ -25,8 +26,6 @@ def embedScaleFactor(selComps):
     zh.Sumw2()
     embedChain.Project('eh', 'visMass', '({cut})*weight'.format(cut=embcut))
     zttChain.Project('zh', 'visMass', '({cut})*weight'.format(cut=zttcut))
-#    embedChain.Project('eh', 'visMass', '({cut})'.format(cut=embcut))
-#    zttChain.Project('zh', 'visMass', '({cut})'.format(cut=zttcut))
     factor = zh.Integral()/eh.Integral()
     return eh, zh, factor
 

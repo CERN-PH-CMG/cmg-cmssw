@@ -96,4 +96,4 @@ if __name__ == '__main__':
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config,  None, False, 'TauEle') 
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config,  None, True, 'TauMu') 
