@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 
   bool LESS_PARAMETERS=false;
 
-  bool ALLOWSNEGATIVE=false;
+  bool ALLOWSNEGATIVE=true;
   
   // histogram binning (for display only)
   const int NBINS=54;
@@ -489,10 +489,6 @@ int main(int argc, char* argv[])
         xs->setConstant(false);
   }
 
-  if(xs->getVal()<0)
-     xs->setVal(0);
-  xs->setRange(0,maxXS);
-
   cout << "start limit setting" << endl;
 
   double nbkgValInit=ws->var("nbkg")->getVal();
@@ -564,7 +560,14 @@ int main(int argc, char* argv[])
 	ws->var("nbkg")->setConstant(true);
     } else
     {
+      if(ALLOWSNEGATIVE)
+          xs->setRange(-maxXS*1000.0,maxXS*1000.0);
+      else    
+          xs->setRange(0,maxXS*1000.0);
+      xs->setVal(maxXS/10.0);
+
       fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
+
     }
 
     // set parameters for limit calculation
@@ -591,6 +594,10 @@ int main(int argc, char* argv[])
       ws->var("lumi")->setConstant(false);
     }
     
+    if(xs->getVal()<0)
+        xs->setVal(0);
+    xs->setRange(0,maxXS);
+
     // setup model config
     ModelConfig modelConfigA("modelConfigA");
     modelConfigA.SetWorkspace(*ws);
