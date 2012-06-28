@@ -68,6 +68,11 @@ def load(locals, dir, types):
     return objs
 
 
+def treeComp(t1, t2, var, cut):
+    t1.SetWeight(1./t1.GetEntries(), 'global')
+    t2.SetWeight(1./t2.GetEntries(), 'global')
+    t1.Draw(var, cut)
+    t2.Draw(var, cut, 'same')
 
 if __name__ == '__main__':
 
@@ -87,14 +92,14 @@ if __name__ == '__main__':
         print
         print 'Maximum one argument (a root file)'
         sys.exit(1)
-    file = TFile( args[0] )
-    
-    import ROOT
-
-    LOCALS = locals()
-    
-    hists = load(LOCALS, file, histTypes)
-    trees = load(LOCALS, file, [ROOT.TTree])
-    dirs = load(LOCALS, file, dirTypes)
+    elif len(args)==1:
+        file = TFile( args[0] )
+        import ROOT
+      
+        LOCALS = locals()
+        
+        hists = load(LOCALS, file, histTypes)
+        trees = load(LOCALS, file, [ROOT.TTree])
+        dirs = load(LOCALS, file, dirTypes)
 
     
