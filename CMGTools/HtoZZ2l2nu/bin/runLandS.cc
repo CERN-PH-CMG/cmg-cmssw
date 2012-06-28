@@ -74,7 +74,7 @@ void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &al
 void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bin, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes);
 DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString Json="");
 std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString url="plotter.root",TString Json="");
-void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t> &allShapes, TString mainHisto, TString sideBandHisto);
+void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t> &allShapes, TString mainHisto, TString sideBandHisto, TString url, JSONWrapper::Object &Root);
 void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString metHistoForRescale);
 void doWZSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto);
 void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto);
@@ -99,7 +99,7 @@ bool subNRB2011 = false;
 bool subNRB2012 = false;
 bool MCclosureTest = false;
 
-bool mergeWWandZZ = true;
+bool mergeWWandZZ = false;
 bool skipWW = true;
 std::vector<TString> Channels;
 std::vector<TString> AnalysisBins;
@@ -561,13 +561,19 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
         if(shape.bckg[i]->Integral()<=1E-6) continue;
         if(mapbkg.find(shape.bckg[i]->GetTitle())!=mapbkg.end()){mapbkg[shape.bckg[i]->GetTitle()]->Add(shape.bckg[i]);}else{ mapbkg[shape.bckg[i]->GetTitle()]=(TH1*)shape.bckg[i]->Clone(shape.bckg[i]->GetTitle()); }
 
-
-//        double VAL, ERR;
-//        VAL = shape.bckg[i]->IntegralAndError(1,shape.bckg[i]->GetXaxis()->GetNbins(),ERR);
-//        if(CCHistos.find(shape.bckg[i]->GetTitle())!=CCHistos.end()){CCHistos[shape.bckg[i]->GetTitle()]->SetBinContent(1+s*AnalysisBins.size()+b)Add(shape.bckg[i]);}else{ mapbkg[shape.bckg[i]->GetTitle()]=(TH1*)shape.bckg[i]->Clone(shape.bckg[i]->GetTitle()); }
-
-
-
+        //cut & count plot
+        double VAL, ERR;
+        VAL = shape.bckg[i]->IntegralAndError(1,shape.bckg[i]->GetXaxis()->GetNbins(),ERR);
+        if(CCHistos.find(shape.bckg[i]->GetTitle())==CCHistos.end()){
+           CCHistos[shape.bckg[i]->GetTitle()] = new TH1D(TString(shape.bckg[i]->GetTitle())+"CC", "", 25,0,25);
+           CCHistos[shape.bckg[i]->GetTitle()]->SetLineColor(shape.bckg[i]->GetLineColor());
+           CCHistos[shape.bckg[i]->GetTitle()]->SetLineStyle(shape.bckg[i]->GetLineStyle());
+           CCHistos[shape.bckg[i]->GetTitle()]->SetLineWidth(shape.bckg[i]->GetLineWidth());
+           CCHistos[shape.bckg[i]->GetTitle()]->SetFillColor(shape.bckg[i]->GetFillColor());
+           CCHistos[shape.bckg[i]->GetTitle()]->SetFillStyle(shape.bckg[i]->GetFillStyle());
+        }
+        CCHistos[shape.bckg[i]->GetTitle()]->SetBinContent(1+s*AnalysisBins.size()+b,VAL);
+        CCHistos[shape.bckg[i]->GetTitle()]->SetBinError(1+s*AnalysisBins.size()+b,VAL);
      }
 
      TString massStr("");if(mass>0) massStr += mass;
@@ -582,6 +588,20 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
         if(proc=="qqHZZ"){shape.signal[ip]->SetLineStyle(2);}
 
         if(mapsig.find(shape.signal[ip]->GetTitle())!=mapsig.end()){mapsig[shape.signal[ip]->GetTitle()]->Add(shape.signal[ip]);}else{mapsig[shape.signal[ip]->GetTitle()]=(TH1*)shape.signal[ip]->Clone(shape.signal[ip]->GetTitle());}
+
+        //cut & count plot
+        double VAL, ERR;
+        VAL = shape.signal[ip]->IntegralAndError(1,shape.signal[ip]->GetXaxis()->GetNbins(),ERR);
+        if(CCHistos.find(shape.signal[ip]->GetTitle())==CCHistos.end()){
+           CCHistos[shape.signal[ip]->GetTitle()] = new TH1D(TString(shape.signal[ip]->GetTitle())+"CC", "", 25,0,25);
+           CCHistos[shape.signal[ip]->GetTitle()]->SetLineColor(shape.signal[ip]->GetLineColor());
+           CCHistos[shape.signal[ip]->GetTitle()]->SetLineStyle(shape.signal[ip]->GetLineStyle());
+           CCHistos[shape.signal[ip]->GetTitle()]->SetLineWidth(shape.signal[ip]->GetLineWidth());
+           CCHistos[shape.signal[ip]->GetTitle()]->SetFillColor(shape.signal[ip]->GetFillColor());
+           CCHistos[shape.signal[ip]->GetTitle()]->SetFillStyle(shape.signal[ip]->GetFillStyle());
+        }
+        CCHistos[shape.signal[ip]->GetTitle()]->SetBinContent(1+s*AnalysisBins.size()+b,VAL);
+        CCHistos[shape.signal[ip]->GetTitle()]->SetBinError(1+s*AnalysisBins.size()+b,ERR);
      }
 
   THStack *stack=0;
@@ -645,12 +665,8 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 
 
   if(alldata){
-      if(blindData) {
-         if(s==0 && b==0)legA->AddEntry(alldata,"data (blinded)","P");
-      }else{
-         alldata->Draw("E1 same");
-         if(s==0 && b==0)legA->AddEntry(alldata,alldata->GetTitle(),"P");
-     }
+      alldata->Draw("E1 same");
+      if(s==0 && b==0)legA->AddEntry(alldata,alldata->GetTitle(),"P");
   }
 
 
@@ -701,7 +717,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   c1->cd();
   TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
   T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
-  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV, #scale[0.5]{#int} L=3.9  fb^{-1}");
+  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV, #scale[0.5]{#int} L=5.0  fb^{-1}");
   }else{                         T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV, #scale[0.5]{#int} L=5.0  fb^{-1}");
   }T->Draw();
   c1->Update();
@@ -789,7 +805,10 @@ void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &al
     h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.data;
     val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
     if(val<1E-6){val=0.0; valerr=0.0;}
-    Cval += "&\\boldmath " + toLatexRounded(val,0.0);
+    char tmpchar[255];
+    sprintf(tmpchar,"%.0f",val);
+    Cval += "&\\boldmath $" + string(tmpchar)+"$";
+//    Cval += "&\\boldmath " + toLatexRounded(val,0.0);
 
     //endline
     if(b==0&&ich==0)fprintf(pFile,"%s}\\hline\n", Ccol.c_str());
@@ -904,7 +923,8 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
          if(mass>0){
          fprintf(pFile,"%35s %10s ", "Signal_rescaling_8TeV", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            if(systpostfix.Contains('8') && (dci.procs[j-1].Contains("ggh") || dci.procs[j-1].Contains("qqh"))){fprintf(pFile,"%6f ",1.25);
+//            if(systpostfix.Contains('8') && (dci.procs[j-1].Contains("ggh") || dci.procs[j-1].Contains("qqh"))){fprintf(pFile,"%6f ",1.25);
+            if(systpostfix.Contains('8') && (dci.procs[j-1].Contains("qqh"))){fprintf(pFile,"%6f ",1.25);
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
@@ -917,8 +937,8 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
          fprintf(pFile,"%35s %10s ", "pdf_qqbar", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
             if(dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_pdfp->Eval(mass,NULL,"S"),2) + pow(TG_pdfm->Eval(mass,NULL,"S"),2)));
-            }else if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0384);}else{fprintf(pFile,"%6f ",1.0477);}
-            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.1360);}else{fprintf(pFile,"%6f ",1.0552);}
+            }else if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0312);}else{fprintf(pFile,"%6f ",1.0360);}
+            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0455);}else{fprintf(pFile,"%6f ",1.0502);}
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
@@ -965,8 +985,8 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 
          fprintf(pFile,"%35s %10s ", "QCDscale_VV", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-                  if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0716);}else{fprintf(pFile,"%6f ",1.0617);}
-            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.1440);}else{fprintf(pFile,"%6f ",1.0847);}
+                  if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0669);}else{fprintf(pFile,"%6f ",1.0700);}
+            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0767);}else{fprintf(pFile,"%6f ",1.0822);}
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
@@ -1085,7 +1105,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   //estimateNonResonantBackground(selCh,"emu",allShapes,"nonresbckg_ctrl");
 
   //remove the non-resonant background from data
-  if(subNRB2011 || subNRB2012)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl");
+  if(subNRB2011 || subNRB2012)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl", url, Root);
 
   //replace WZ by its estimate from 3rd Lepton SB
   if(subWZ)doWZSubtraction(selCh,"emu",allShapes,histo,histo+"_3rdLepton");
@@ -1381,7 +1401,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
    }
 }
 
-void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto)
+void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto, TString url, JSONWrapper::Object &Root)
 {
      string Lcol   = "\\begin{tabular}{|l";
      string Lchan  = "channel";
@@ -1418,6 +1438,42 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
         TH1* hChan_SB=shapeChan_SB.data;
         Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
 //        TH1* hChan_SI=shapeChan_SI.data;
+
+
+
+        //IF HISTO IS EMPTY... LOWER THE CUT AND TAKE THIS WITH 100% UNCERTAINTY
+        if(subNRB2011 && hCtrl_SI->Integral()<=0){
+           TFile* inF = TFile::Open(url);
+           if( !inF || inF->IsZombie() ){break;}
+
+           int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax;
+           if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
+           while(hCtrl_SI->Integral()<=0 && indexcut_>=0){
+              double cutMin_=cutMin;
+              while(hCtrl_SI->Integral()<=0 && cutMin>=0){
+                 hCtrl_SB=getShapeFromFile(inF, ctrlCh+AnalysisBins[b],sideBandHisto,indexcut_,Root,cutMin_, cutMax).data;
+                 hCtrl_SI=getShapeFromFile(inF, ctrlCh+AnalysisBins[b],mainHisto,indexcut_,Root,cutMin_, cutMax).data;
+                 hChan_SB=getShapeFromFile(inF, selCh[i]+AnalysisBins[b],sideBandHisto,indexcut_,Root,cutMin_, cutMax).data;
+                 //printf("indexcut_ = %i cutMin=%f --> Integral = %f\n",indexcut_, cutMin_, hCtrl_SI->Integral());
+                 cutMin_-=5;
+              }
+              indexcut_--;
+           }
+           inF->Close();
+
+           //set stat error to 100%
+           for(int b=1;b<=hCtrl_SB->GetXaxis()->GetNbins()+1;b++){
+              hCtrl_SB->SetBinContent(b, hCtrl_SB->GetBinContent(b) *0.5 );
+              hCtrl_SI->SetBinContent(b, hCtrl_SI->GetBinContent(b) *0.5 );
+              hChan_SB->SetBinContent(b, hChan_SB->GetBinContent(b) *0.5 );
+              hCtrl_SB->SetBinError  (b, hCtrl_SB->GetBinContent(b) );
+              hCtrl_SI->SetBinError  (b, hCtrl_SI->GetBinContent(b) );
+              hChan_SB->SetBinError  (b, hChan_SB->GetBinContent(b) );
+           }
+
+        }
+
+
 
 	//printf("Channel = %s\n", selCh[i].Data());
         //printf("Bin %f %f %f %f %f %f\n", hCtrl_SB->GetBinContent(1), hCtrl_SB->GetBinContent(2), hCtrl_SB->GetBinContent(3), hCtrl_SB->GetBinContent(4), hCtrl_SB->GetBinContent(5), hCtrl_SB->GetBinContent(6) );
@@ -1458,6 +1514,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 
         double valvalerr, valval;
         valval = NonResonant->IntegralAndError(1,NonResonant->GetXaxis()->GetNbins(),valvalerr);
+        printf("VALVAL=%f\n",valval);
         for(int b=1;b<=NonResonant->GetXaxis()->GetNbins()+1;b++){
            double val = NonResonant->GetBinContent(b);
            double err = NonResonant->GetBinError(b);
@@ -1480,7 +1537,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
         TH1* MCNRB = (TH1*)shapeChan_SI.totalBckg->Clone("MCNRB"); MCNRB->Reset();
         for(size_t ibckg=0; ibckg<shapeChan_SI.bckg.size(); ibckg++){           
            TString proc(shapeChan_SI.bckg[ibckg]->GetTitle());
-	   if(( subNRB2011 && (proc.Contains("t#bar{t}") || proc.Contains("Single top") || proc.Contains("WW") || proc.Contains("Z#rightarrow #tau#tau")) ) ||
+	   if(( subNRB2011 && (proc.Contains("t#bar{t}") || proc.Contains("Single top") || proc.Contains("WW") || proc.Contains("Z#rightarrow #tau#tau") || proc.Contains("W#rightarrow l#nu")) ) ||
               ( subNRB2012 && (proc.Contains("t#bar{t}") || proc.Contains("Single top") ) ) ){
               MCNRB->Add(shapeChan_SI.bckg[ibckg], 1);
               NonResonant->SetFillColor(shapeChan_SI.bckg[ibckg]->GetFillColor());
@@ -1559,7 +1616,7 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
   for(size_t i=0;i<selCh.size();i++){
   for(size_t b=0; b<AnalysisBins.size(); b++){
      TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);
-     LowMetIntegral[selCh[i]+AnalysisBins[b]] = met->Integral(0,met->GetXaxis()->FindBin(50));
+     LowMetIntegral[selCh[i]+AnalysisBins[b]] = met->Integral(1,met->GetXaxis()->FindBin(50));
   }}
 
   //all done with input file
@@ -1585,7 +1642,7 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
 
            //compute rescale factor using low MET events
            TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);           
-           double integral = met->Integral(0,met->GetXaxis()->FindBin(50));
+           double integral = met->Integral(1,met->GetXaxis()->FindBin(50));
            double rescaleFactor = LowMetIntegral[selCh[i]+AnalysisBins[b]] / integral;
            printf("Rescale in %s = %f/%f = %f\n",  (selCh[i]+AnalysisBins[b]).Data(), LowMetIntegral[selCh[i]+AnalysisBins[b]], integral, rescaleFactor);         
            char buffer[255]; sprintf(buffer,"%6.3f",rescaleFactor);
@@ -1902,10 +1959,10 @@ void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allS
 //TGraph *qqH8TG_xsec=NULL, *qqH8TG_errp=NULL, *qqH8TG_errm=NULL, *qqH8TG_scap=NULL, *qqH8TG_scam=NULL, *qqH8TG_pdfp=NULL, *qqH8TG_pdfm=NULL;
 //TGraph *    TG_xsec=NULL, *    TG_errp=NULL, *    TG_errm=NULL, *    TG_scap=NULL, *    TG_scam=NULL, *    TG_pdfp=NULL, *    TG_pdfm=NULL;
 void setTGraph(TString proc, TString suffix){
-         if( suffix.Contains('8') &&  proc.Contains("qqH")){ TG_xsec=qqH8TG_xsec;    TG_errp=qqH8TG_errp;    TG_errm=qqH8TG_errm;    TG_scap=qqH8TG_scap;    TG_scam=qqH8TG_scam;    TG_pdfp=qqH8TG_pdfp;    TG_pdfm=qqH8TG_pdfm;
-   }else if( suffix.Contains('8') && !proc.Contains("qqH")){ TG_xsec=ggH8TG_xsec;    TG_errp=ggH8TG_errp;    TG_errm=ggH8TG_errm;    TG_scap=ggH8TG_scap;    TG_scam=ggH8TG_scam;    TG_pdfp=ggH8TG_pdfp;    TG_pdfm=ggH8TG_pdfm;
-   }else if(!suffix.Contains('8') &&  proc.Contains("qqH")){ TG_xsec=qqH7TG_xsec;    TG_errp=qqH7TG_errp;    TG_errm=qqH7TG_errm;    TG_scap=qqH7TG_scap;    TG_scam=qqH7TG_scam;    TG_pdfp=qqH7TG_pdfp;    TG_pdfm=qqH7TG_pdfm;
-   }else if(!suffix.Contains('8') && !proc.Contains("qqH")){ TG_xsec=ggH7TG_xsec;    TG_errp=ggH7TG_errp;    TG_errm=ggH7TG_errm;    TG_scap=ggH7TG_scap;    TG_scam=ggH7TG_scam;    TG_pdfp=ggH7TG_pdfp;    TG_pdfm=ggH7TG_pdfm;
+         if( suffix.Contains('8') &&  proc.Contains("qq")){ TG_xsec=qqH8TG_xsec;    TG_errp=qqH8TG_errp;    TG_errm=qqH8TG_errm;    TG_scap=qqH8TG_scap;    TG_scam=qqH8TG_scam;    TG_pdfp=qqH8TG_pdfp;    TG_pdfm=qqH8TG_pdfm;
+   }else if( suffix.Contains('8') && !proc.Contains("qq")){ TG_xsec=ggH8TG_xsec;    TG_errp=ggH8TG_errp;    TG_errm=ggH8TG_errm;    TG_scap=ggH8TG_scap;    TG_scam=ggH8TG_scam;    TG_pdfp=ggH8TG_pdfp;    TG_pdfm=ggH8TG_pdfm;
+   }else if(!suffix.Contains('8') &&  proc.Contains("qq")){ TG_xsec=qqH7TG_xsec;    TG_errp=qqH7TG_errp;    TG_errm=qqH7TG_errm;    TG_scap=qqH7TG_scap;    TG_scam=qqH7TG_scam;    TG_pdfp=qqH7TG_pdfp;    TG_pdfm=qqH7TG_pdfm;
+   }else if(!suffix.Contains('8') && !proc.Contains("qq")){ TG_xsec=ggH7TG_xsec;    TG_errp=ggH7TG_errp;    TG_errm=ggH7TG_errm;    TG_scap=ggH7TG_scap;    TG_scam=ggH7TG_scam;    TG_pdfp=ggH7TG_pdfp;    TG_pdfm=ggH7TG_pdfm;
    }
 }
 void initializeTGraph(){
