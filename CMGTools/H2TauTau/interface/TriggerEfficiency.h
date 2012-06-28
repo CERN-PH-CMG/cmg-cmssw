@@ -450,6 +450,27 @@ public:
     return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
   }
 
+  double eff2012IsoTau30(double pt, double eta){
+    double p0 = 0.839697;
+    double p1 = 38.3468;
+    double p2 = 1.0334;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+  }
+
+  double eff2012IsoTau1_6fb(double pt, double eta){
+    float tau25w = 400;
+    float tau30w = 1200;
+    return ( tau25w * eff2012IsoTau25(pt,eta) + 
+	     tau30w * eff2012IsoTau30(pt,eta) ) / ( tau25w + tau30w);
+  }
+  
+  double eff2012IsoTau5_1fb(double pt, double eta){
+    float tau25w = 400;
+    float tau30w = 4700;
+    return ( tau25w * eff2012IsoTau25(pt,eta) + 
+	     tau30w * eff2012IsoTau30(pt,eta) ) / ( tau25w + tau30w);
+  }
+  
   double eff2012Jet30(double pt, double eta){
     double p0 = 0.9714;
     double p1 = 34.56;
