@@ -47,7 +47,7 @@ def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, 
     # Data/MC scale factors for e->tau fake rate from 2012 ICHEP Object approval presentation: 0.85 for Barrel, 0.65 for Endcap
     inclusiveForEmbeddedNormalizationZeeBB = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
      			    30,0,300,
-     			    cut = 'abs(l1Eta)<1.5 && abs(l2Eta)<1.5 && l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>30', weight=weight,
+     			    cut = 'abs(l1Eta)<1.5 && abs(l2Eta)<1.5 && l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>50', weight=weight,
      			    embed=embed)
     inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Scale(1./(0.85*0.85))
     inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Scale(1./(0.85*0.85))
