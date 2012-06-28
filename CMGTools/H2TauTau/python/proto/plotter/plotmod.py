@@ -58,8 +58,10 @@ def addQCD( plot, dataName ):
     qcd = copy.deepcopy(plotWithQCD.Hist(dataName))
     qcd.Add(plotWithQCD.Hist('Ztt'), -1)
     try:
-        dyJetsFakes = plot.Hist('Ztt_Fakes')
-        qcd.Add(dyJetsFakes, -1)
+        f1 = plot.Hist('Ztt_ZL')
+        f2 = plot.Hist('Ztt_ZJ')
+        qcd.Add(f1, -1)
+        qcd.Add(f2, -1)
     except:
         print 'cannot find Ztt_Fakes'
         print plot

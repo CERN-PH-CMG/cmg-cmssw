@@ -123,7 +123,7 @@ def drawAll(cut, plots, embed):
                                      selComps, weights, fwss, fwos,
                                      plot.nbins, plot.xmin, plot.xmax,
                                      cut, weight=weight, embed=embed)
-        draw(osQ, False)
+        draw(osQ, False, 'TauEle')
         plot.ssign = cp(ss)
         plot.osign = cp(os)
         plot.ssQCD = cp(ssQ)
