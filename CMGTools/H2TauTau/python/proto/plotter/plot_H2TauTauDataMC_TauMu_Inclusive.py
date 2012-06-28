@@ -84,20 +84,20 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
         
-    if 0:
-        # replace QCD with a shape obtained from data in an anti-iso control region
-        qcd_yield = osQCD.Hist('QCD').Integral()
+##     if 0:
+##         # replace QCD with a shape obtained from data in an anti-iso control region
+##         qcd_yield = osQCD.Hist('QCD').Integral()
         
-        sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.75') + ' && diTau_charge!=0' 
-        ssign_qcdshape = H2TauTauDataMC(var, anaDir,
-                                        selComps, weights, nbins, xmin, xmax,
-                                        cut=sscut_qcdshape, weight=weight,
-                                        embed=embed)
-        qcd_shape = copy.deepcopy( ssign_qcdshape.Hist('Data') )    
-        qcd_shape.Normalize()
-        qcd_shape.Scale(qcd_yield)
-        # qcd_shape.Scale( qcd_yield )
-        osQCD.Replace('QCD', qcd_shape)
+##         sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.75') + ' && diTau_charge!=0' 
+##         ssign_qcdshape = H2TauTauDataMC(var, anaDir,
+##                                         selComps, weights, nbins, xmin, xmax,
+##                                         cut=sscut_qcdshape, weight=weight,
+##                                         embed=embed)
+##         qcd_shape = copy.deepcopy( ssign_qcdshape.Hist('Data') )    
+##         qcd_shape.Normalize()
+##         qcd_shape.Scale(qcd_yield)
+##         # qcd_shape.Scale( qcd_yield )
+##         osQCD.Replace('QCD', qcd_shape)
 
     osQCD.Group('VV', ['WW','WZ','ZZ'])
     osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
