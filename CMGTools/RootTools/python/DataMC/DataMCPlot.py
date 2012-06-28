@@ -59,6 +59,7 @@ class DataMCPlot(object):
         '''
         groupHist = None
         realNames = []
+        actualNamesInGroup = []
         for name in namesToGroup:
             hist = self.histosDict.get(name, None)
             if hist is None:
@@ -70,10 +71,11 @@ class DataMCPlot(object):
                 self.histosDict[groupName] = groupHist
             else:
                 groupHist.Add(hist)
+            actualNamesInGroup.append(name)
             realNames.append( hist.realName )
             hist.on = False
         if groupHist:
-            self.groups[groupName] = namesToGroup
+            self.groups[groupName] = actualNamesInGroup
             groupHist.realName = ','.join(realNames)
 
 
