@@ -21,14 +21,19 @@ from array import array
 #    ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
 #    ]
 
+#mclist=[
+#    ["htt/Hig125_139/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
+#    ["htt/ZZ_7/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
+#    ["htt/WW_11/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
+#    ["htt/QQ_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
+#    ]
+
 mclist=[
-    ["htt/Hig125_139/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
-    ["htt/ZZ_7/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
-    ["htt/WW_11/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
-    ["htt/QQ_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
+    ["test/Hig125_17/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
+    ["test/ZZ_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
+    ["test/WW_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
+    ["test/QQ_2/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
     ]
-
-
 # luminosity to normalize (in fb-1)
 lumi=500
 
@@ -46,10 +51,10 @@ mzh_h2=[]
 
 step_label=["all","njet>4","ejet>10","2 taucand","2 good taucand","jet sele","mzmh cut","btag"]
 
-def_plot=True
+def_plot=true
 h1_list=[
-    ["Hmass_" ,"event.recHMass" ,100,0,400,True],
-    ["Zmass_" ,"event.recZMass" ,100,0,400,def_plot],
+    ["Hmass_" ,"event.recHMass" ,20,100,200,True],
+    ["Zmass_" ,"event.recZMass" ,12,60,120,def_plot],
     ["mvis_"  ,"event.mvis"     ,100,0,400,def_plot],
     ["evis_"  ,"event.evis"     ,100,0,400,def_plot],
     ["ntrt1_" ,"event.t1recNtrk", 10,0, 10,def_plot],
@@ -61,9 +66,15 @@ h1_list=[
     ["zzmin_" ,"event.zzMin",  25, 0,  100, def_plot],
     ["btag_tt","event.btag_tt",20, 0,   4., def_plot],
     ["btag_jj","event.btag_jj",20, 0,   4., def_plot],
-    ["pz+emiss","240.-event.evis+abs(event.pz)", 200,-400,400,True],
-    ["ttacoll","acoll", 100,-1,1,True],
-    ["jjacoll","jacoll", 100,-1,1,True]
+    ["pz+emiss","240.-event.evis+abs(event.pz)", 200,-400,400,def_plot],
+    ["ttacoll","event.tt_acoll", 100,-1,1,def_plot],
+    ["jjacoll","event.jj_acoll", 100,-1,1,def_plot],
+    ["leadingmu_e","event.leadingMuonEnergy", 100,0,200,def_plot],
+    ["leadinge_e","event.leadingElectronEnergy", 100,0,200,def_plot],
+    ["subleadingmu_e","event.subleadingMuonEnergy", 100,0,200,def_plot],
+    ["subleadinge_e","event.subleadingElectronEnergy", 100,0,200,def_plot],
+    ["nhfraction_t1","event.t1recNHFraction", 100,0,1,def_plot],
+    ["nhfraction_t2","event.t2recNHFraction", 100,0,1,def_plot],
     ]
     
     
@@ -97,9 +108,12 @@ for index in range(0,len(mclist)):
         h1loc[len(h1loc)-1].SetLineColor(index+2)
         h1loc[len(h1loc)-1].SetLineWidth(2)
         h1loc[len(h1loc)-1].SetMarkerColor(index+2)
+        if index != 0:
+          h1loc[len(h1loc)-1].SetFillStyle(3013);
+          h1loc[len(h1loc)-1].SetFillColor(3)
     h1glob.append(h1loc)            
 
-maxevent=1000000
+maxevent=100000000
 # now loop on tree and project
 for index,mc in enumerate(mclist):
     rootfile=mc[0]
@@ -122,19 +136,24 @@ for index,mc in enumerate(mclist):
         read+=1
         
 
-        p1tot=sqrt(event.t1_px**2+event.t1_py**2+event.t1_pz**2)
-        p2tot=sqrt(event.t2_px**2+event.t2_py**2+event.t2_pz**2)
-        pscal=event.t1_px*event.t2_px+event.t1_py*event.t2_py+event.t1_pz*event.t2_pz
-        acoll=pscal/(p1tot*p2tot)
+        #p1tot=sqrt(event.t1_px**2+event.t1_py**2+event.t1_pz**2)
+        #p2tot=sqrt(event.t2_px**2+event.t2_py**2+event.t2_pz**2)
+        #pscal=event.t1_px*event.t2_px+event.t1_py*event.t2_py+event.t1_pz*event.t2_pz
+        #acoll=pscal/(p1tot*p2tot)
 
-        j1tot=sqrt(event.j1_px**2+event.j1_py**2+event.j1_pz**2)
-        j2tot=sqrt(event.j2_px**2+event.j2_py**2+event.j2_pz**2)
-        jscal=event.j1_px*event.j2_px+event.j1_py*event.j2_py+event.j1_pz*event.j2_pz
-        jacoll=jscal/(j1tot*j2tot)
+        #j1tot=sqrt(event.j1_px**2+event.j1_py**2+event.j1_pz**2)
+        #j2tot=sqrt(event.j2_px**2+event.j2_py**2+event.j2_pz**2)
+        #jscal=event.j1_px*event.j2_px+event.j1_py*event.j2_py+event.j1_pz*event.j2_pz
+        #jacoll=jscal/(j1tot*j2tot)
         
         addcut = event.mvis>120.
-        addcut = addcut and acoll<-0.6
-        addcut = addcut and jacoll<-0.3
+        addcut = addcut and event.tt_acoll<-0.6
+        addcut = addcut and event.jj_acoll<-0.3
+        addcut = addcut and event.leadingMuonEnergy<25.
+        addcut = addcut and event.leadingElectronEnergy<50.
+        addcut = addcut and event.t1recNHFraction<0.05
+        addcut = addcut and event.t1recNHFraction<0.05
+
 
         for bin in range(0,int(event.step)+1):
             if index==0:

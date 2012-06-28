@@ -23,8 +23,12 @@ class htttreeproducer( TreeAnalyzer ):
             var('{pName}Phi'.format(pName=pName))
             var('{pName}Nobj'.format(pName=pName))
             var('{pName}Ntrk'.format(pName=pName))
-            var('{pName}Photon'.format(pName=pName))
-            var('{pName}Electron'.format(pName=pName))
+            #var('{pName}Photon'.format(pName=pName))
+            #var('{pName}Electron'.format(pName=pName))
+            #var('{pName}NeutralHadron'.format(pName=pName))
+            var('{pName}PFraction'.format(pName=pName))
+            var('{pName}EFraction'.format(pName=pName))
+            var('{pName}NHFraction'.format(pName=pName))
         
         def particleVars( pName ):
             var('{pName}Mass'.format(pName=pName))
@@ -44,6 +48,11 @@ class htttreeproducer( TreeAnalyzer ):
         particleVars('recH')
         particleVars('recZ')
 
+        particleVars('leadingMuon')
+        particleVars('subleadingMuon')
+        particleVars('leadingElectron')
+        particleVars('subleadingElectron')
+
         jetVars('nontgenjet1')
         jetVars('nontgenjet2')
         jetVars('nontgenjet3')
@@ -60,20 +69,20 @@ class htttreeproducer( TreeAnalyzer ):
         var('g_ishtt')
 
         var('step')
-        var('nontgenjetiso1')
-        var('nontgenjetiso2')
-        var('nontgenjetiso3')
-        var('nontgenjetiso4')
+        #var('nontgenjetiso1')
+        #var('nontgenjetiso2')
+        #var('nontgenjetiso3')
+        #var('nontgenjetiso4')
         
         
         var('btag_tt')
         var('btag_jj')
 
-        var('t1cosjet')
-        var('t2cosjet')
-        var('t1iso')
-        var('t2iso')
-        var('t2cosjet')
+        #var('t1cosjet')
+        #var('t2cosjet')
+        #var('t1iso')
+        #var('t2iso')
+        #var('t2cosjet')
         var('njets')
         var('genRecDistance1')
         var('genRecDistance2')
@@ -99,6 +108,8 @@ class htttreeproducer( TreeAnalyzer ):
         var('t2_py')
         var('t2_pz')
         var('t2_en')
+#        var('t1_charge')
+#        var('t2_charge')
         var('j1_px')
         var('j1_py')
         var('j1_pz')
@@ -127,7 +138,8 @@ class htttreeproducer( TreeAnalyzer ):
         var('wwMin')
         var('zzMin')
         
-
+        var('tt_acoll')
+        var('jj_acoll')
 
 
 
@@ -161,8 +173,12 @@ class htttreeproducer( TreeAnalyzer ):
             fill('{pName}Energy'.format(pName=pName), particle.energy() )
             fill('{pName}Nobj'.format(pName=pName), particle.nConstituents() )
             fill('{pName}Ntrk'.format(pName=pName), particle.component(1).number() )
-            fill('{pName}Electron'.format(pName=pName), particle.component(2).energy() )
-            fill('{pName}Photon'.format(pName=pName), particle.component(4).energy() )
+            #fill('{pName}Electron'.format(pName=pName), particle.component(2).energy() )
+            #fill('{pName}Photon'.format(pName=pName), particle.component(4).energy() )
+            #fill('{pName}NeutralHadron'.format(pName=pName), particle.component(5).energy() )
+            fill('{pName}EFraction'.format(pName=pName), particle.component(2).fraction() )
+            fill('{pName}PFraction'.format(pName=pName), particle.component(4).fraction() )
+            fill('{pName}NHFraction'.format(pName=pName), particle.component(5).fraction() )
             fill('{pName}Eta'.format(pName=pName), particle.eta() )
 #
         def fParticleVars( pName, particle ):
@@ -202,6 +218,16 @@ class htttreeproducer( TreeAnalyzer ):
         fill('g_isHZ',subevent.isHZ)
         fill('g_isHZqq',subevent.isHZqq)
         fill('g_isHZqq',subevent.isHZbb)
+
+        #fill leading muons/electrons
+        if (len(subevent.leadingMuons)>0):
+          fParticleVars('leadingMuon', subevent.leadingMuons[0])
+          if (len(subevent.leadingMuons)>1):
+            fParticleVars('subleadingMuon', subevent.leadingMuons[1])
+        if (len(subevent.leadingElectrons)>0):
+          fParticleVars('leadingElectron', subevent.leadingElectrons[0])
+          if (len(subevent.leadingElectrons)>1):
+            fParticleVars('subleadingElectron', subevent.leadingElectrons[1])     
 
         
         if subevent.isHZ==1 : 
@@ -252,6 +278,8 @@ class htttreeproducer( TreeAnalyzer ):
                 fill('t2_py',subevent.t2_py)
                 fill('t2_pz',subevent.t2_pz)
                 fill('t2_en',subevent.t2_en)
+#                fill('t1_charge', subevent.taucandcharge[0])
+#                fill('t2_charge', subevent.taucandcharge[1])
                 fill('j1_px',subevent.j1_px)
                 fill('j1_py',subevent.j1_py)
                 fill('j1_pz',subevent.j1_pz)
@@ -260,6 +288,8 @@ class htttreeproducer( TreeAnalyzer ):
                 fill('j2_py',subevent.j2_py)
                 fill('j2_pz',subevent.j2_pz)
                 fill('j2_en',subevent.j2_en)
+                fill('tt_acoll',subevent.acoll)
+                fill('jj_acoll',subevent.jcoll)
 
                 fill('t1s_px',subevent.t1s_px)
                 fill('t1s_py',subevent.t1s_py)
