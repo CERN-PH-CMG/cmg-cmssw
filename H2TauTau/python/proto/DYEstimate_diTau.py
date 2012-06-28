@@ -22,20 +22,21 @@ def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataM
 	         embeddedHist.Add(inclusiveForEmbeddedNormalizationEmbed.Hist(name))
     ymax = max(inclusiveForEmbeddedNormalizationDY.Hist("DYJets").GetMaximum(),embeddedHist.GetMaximum())
    
+    print "DY events in inclusive", inclusiveForEmbeddedNormalizationDY.Hist("DYJets").Integral()
+    print "Embedded events in inclusive", embeddedHist.Integral()
+    
+    embeddedScaleFactor = inclusiveForEmbeddedNormalizationDY.Hist("DYJets").Integral()/embeddedHist.Integral()
+    print "embeddedScaleFactor", embeddedScaleFactor
+
+    embeddedHist.Scale(embeddedScaleFactor)
+
     inclusiveForEmbeddedNormalizationDY.Hist("DYJets").weighted.Draw("HISTe")
     inclusiveForEmbeddedNormalizationDY.Hist("DYJets").weighted.GetYaxis().SetRangeUser(0,ymax*1.5)
     embeddedHist.weighted.Draw("HISTeSAME")
 
-    print "DY events in inclusive", inclusiveForEmbeddedNormalizationDY.Hist("DYJets").Integral()
-    print "Embedded events in inclusive", embeddedHist.Integral()
-    
     gPad.SaveAs("inclusiveForEmbeddedNormalization.png")
-    gPad.SaveAs("inclusiveForEmbeddedNormalization.pdf")
     gPad.WaitPrimitive()
    
-    embeddedScaleFactor = inclusiveForEmbeddedNormalizationDY.Hist("DYJets").Integral()/embeddedHist.Integral()
-    print "embeddedScaleFactor", embeddedScaleFactor
-
     for name,comp in selCompsNoSignal.items():
         if comp.isEmbed:
 	     comp.embedFactor = embeddedScaleFactor
@@ -47,7 +48,7 @@ def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataM
 def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight, embed):
     # Data/MC scale factors for e->tau fake rate from 2012 ICHEP Object approval presentation: 0.85 for Barrel, 0.65 for Endcap
     inclusiveForEmbeddedNormalizationZeeBB = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
-     			    30,0,300,
+     			    30,50,160,
      			    cut = 'abs(l1Eta)<1.5 && abs(l2Eta)<1.5 && l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 && l1MVAEle<0.5 && l2MVAEle<0.5 && jet1Pt>50', weight=weight,
      			    embed=embed)
     inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Scale(1./(0.85*0.85))
@@ -68,13 +69,12 @@ def zeeScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, 
     ymax = max(inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").GetMaximum(),(inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").GetMaximum()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").GetMaximum()))*1.5
     inclusiveForEmbeddedNormalizationZeeBB.DrawStack("HIST",0,300,0,ymax)
     
-    print "Data events in boosted ee", inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").Integral()
-    print "DYJets events in boosted ee", (inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Integral())
+    print "Data events in boosted ee", inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").weighted.Integral()
+    print "DYJets events in boosted ee", (inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").weighted.Integral()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").weighted.Integral())
 
     gPad.SaveAs("inclusiveForZeeNormalization.png")
-    gPad.SaveAs("inclusiveForZeeNormalization.pdf")
     gPad.WaitPrimitive()
 
-    zeeScaleFactor = inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").Integral()/ \
-        (inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").Integral()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").Integral())
+    zeeScaleFactor = inclusiveForEmbeddedNormalizationZeeBB.Hist("Data").weighted.Integral()/ \
+        (inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets").weighted.Integral()+inclusiveForEmbeddedNormalizationZeeBB.Hist("DYJets_Electron").weighted.Integral())
     print "zeeScaleFactor", zeeScaleFactor, "+-", math.sqrt(pow(0.2,2)+pow(0.2,2))*zeeScaleFactor
