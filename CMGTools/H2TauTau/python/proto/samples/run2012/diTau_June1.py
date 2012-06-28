@@ -7,7 +7,6 @@ import re
 import CMGTools.RootTools.fwlite.Config as cfg
 #from CMGTools.RootTools.yellowreport.YRParser import yrparser
 
-
 Higgsgg110 = cfg.MCComponent(
     name = 'Higgsgg110',
     files = [],
@@ -138,11 +137,12 @@ HiggsVBF145 = cfg.MCComponent(
 
 
 
-
+# xsec WH + ZH + TTH
+# https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
 HiggsVH110 = cfg.MCComponent(
     name = 'HiggsVH110',
     files = [],
-    xSection = 1.791*8.02e-2,
+    xSection = (1.060+0.5869+0.1887)*8.02e-2,
     nGenEvents = 200408*1.0,
     triggers = [],
     effCorrFactor = 1 )
@@ -150,7 +150,7 @@ HiggsVH110 = cfg.MCComponent(
 HiggsVH115 = cfg.MCComponent(
     name = 'HiggsVH115',
     files = [],
-    xSection = 1.709*7.65e-2, 
+    xSection = (0.9165+0.5117+0.1663)*7.65e-2, 
     nGenEvents = 200460*1.0,
     triggers = [],
     effCorrFactor = 1 )
@@ -158,7 +158,7 @@ HiggsVH115 = cfg.MCComponent(
 HiggsVH120 = cfg.MCComponent(
     name = 'HiggsVH120',
     files = [],
-    xSection = 1.632*7.10e-2, 
+    xSection = (0.7859+0.4483+0.1470)*7.10e-2, 
     nGenEvents = 200448*1.0,
     triggers = [],
     effCorrFactor = 1 )
@@ -166,7 +166,7 @@ HiggsVH120 = cfg.MCComponent(
 HiggsVH125 = cfg.MCComponent(
     name = 'HiggsVH125',
     files = [],
-    xSection = 1.559*6.37e-2, 
+    xSection = (0.6966+0.3943+0.1302)*6.37e-2, 
     nGenEvents = 200124*1.0,
     triggers = [],
     effCorrFactor = 1 )
@@ -174,7 +174,7 @@ HiggsVH125 = cfg.MCComponent(
 HiggsVH130 = cfg.MCComponent(
     name = 'HiggsVH130',
     files = [],
-    xSection = 1.490*5.48e-2, 
+    xSection = (0.6095+0.3473+0.1157)*5.48e-2, 
     nGenEvents = 200080*1.0,
     triggers = [],
     effCorrFactor = 1 )
@@ -182,7 +182,7 @@ HiggsVH130 = cfg.MCComponent(
 HiggsVH135 = cfg.MCComponent(
     name = 'HiggsVH135',
     files = [],
-    xSection = 1.425*4.52e-2, 
+    xSection = (0.5351+0.3074+0.1031)*4.52e-2, 
     nGenEvents = 200128*0.97169,
     triggers = [],
     effCorrFactor = 1 )
@@ -190,7 +190,7 @@ HiggsVH135 = cfg.MCComponent(
 HiggsVH140 = cfg.MCComponent(
     name = 'HiggsVH140',
     files = [],
-    xSection = 1.365*3.54e-2, 
+    xSection = (0.4713+0.2728+0.09207)*3.54e-2, 
     nGenEvents = 200186*1.0,
     triggers = [],
     effCorrFactor = 1 )
@@ -198,7 +198,7 @@ HiggsVH140 = cfg.MCComponent(
 HiggsVH145 = cfg.MCComponent(
     name = 'HiggsVH145',
     files = [],
-    xSection = 1.306*2.61e-2, 
+    xSection = (0.4164+0.2424+0.08246)*2.61e-2, 
     nGenEvents = 200384*1.0,
     triggers = [],
     effCorrFactor = 1 )
@@ -294,10 +294,12 @@ embed_Run2012B_PromptReco_v1 = cfg.EmbedComponent(
 # MC spring12 ----------------------------------------------------------------------------
 
 DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-DYJets.nGenEvents = 30461028*0.9926
+DYJets.nGenEvents = 30461028*0.9926   ### all but June1 v1
+#DYJets.nGenEvents = 1082838
 
 WJets.files = getFiles('/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-WJets.nGenEvents = 18393090*0.99689
+WJets.nGenEvents = 18393090*0.99689  ### all but June1 v1
+#WJets.nGenEvents = 18393090
 
 W3Jets = cfg.MCComponent(
     name = 'W3Jets',
