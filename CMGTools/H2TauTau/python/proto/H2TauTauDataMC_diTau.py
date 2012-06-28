@@ -270,12 +270,12 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['HiggsVBF140']                   = {'style':sBlueLine, 'layer':6.2}
         self.histPref['HiggsVBF145']                   = {'style':sBlueLine, 'layer':6.2}
 
-        self.histPref['HiggsVH110']                    = {'style':sBlueLine, 'layer':6.3}
-        self.histPref['HiggsVH115']                    = {'style':sBlueLine, 'layer':6.3}
-        self.histPref['HiggsVH120']                    = {'style':sBlueLine, 'layer':6.3}
-        self.histPref['HiggsVH125']                    = {'style':sBlueLine, 'layer':6.3}
-        self.histPref['HiggsVH130']                    = {'style':sBlueLine, 'layer':6.3}
-        self.histPref['HiggsVH135']                    = {'style':sBlueLine, 'layer':6.3}
-        self.histPref['HiggsVH140']                    = {'style':sBlueLine, 'layer':6.3}
-        self.histPref['HiggsVH145']                    = {'style':sBlueLine, 'layer':6.3}
+        self.histPref['HiggsVH110']                    = {'style':sGreenLine,'layer':6.3}
+        self.histPref['HiggsVH115']                    = {'style':sGreenLine,'layer':6.3}
+        self.histPref['HiggsVH120']                    = {'style':sGreenLine,'layer':6.3}
+        self.histPref['HiggsVH125']                    = {'style':sGreenLine,'layer':6.3}
+        self.histPref['HiggsVH130']                    = {'style':sGreenLine,'layer':6.3}
+        self.histPref['HiggsVH135']                    = {'style':sGreenLine,'layer':6.3}
+        self.histPref['HiggsVH140']                    = {'style':sGreenLine,'layer':6.3}
+        self.histPref['HiggsVH145']                    = {'style':sGreenLine,'layer':6.3}
         
