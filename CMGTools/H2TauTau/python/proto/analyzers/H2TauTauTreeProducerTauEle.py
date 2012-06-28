@@ -16,10 +16,8 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        var( tr, 'lumi', int)
        var( tr, 'evt', int)
        
-       var( tr, 'visMass')
-       var( tr, 'svfitMass')
-       var( tr, 'mt') 
-       var( tr, 'met')
+       bookDiLepton(tr)
+
        var( tr, 'pfmet')
        
        bookParticle(tr, 'diTau')
@@ -63,10 +61,7 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        fill( tr, 'lumi',event.lumi)
        fill( tr, 'evt', event.eventId)
 
-       fill(tr, 'visMass', event.diLepton.mass())
-       fill(tr, 'svfitMass', event.diLepton.massSVFit())
-       fill(tr, 'mt', event.diLepton.mTLeg2())
-       fill(tr, 'met', event.diLepton.met().pt())
+       fillDiLepton( tr, event.diLepton )
 
        # import pdb; pdb.set_trace()
        pfmet = self.handles['pfmetraw'].product()[0]

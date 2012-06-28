@@ -16,10 +16,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        var( tr, 'lumi', int)
        var( tr, 'evt', int)
        
-       var( tr, 'visMass')
-       var( tr, 'svfitMass')
-       var( tr, 'mt') 
-       var( tr, 'met')
+       bookDiLepton(tr)
+       
        var( tr, 'pfmet')
        
        bookParticle(tr, 'diTau')
@@ -40,6 +38,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        
        var( tr, 'weight')
        var( tr, 'vertexWeight')
+       var( tr, 'embedWeight')
        
        var( tr, 'nVert')
        
@@ -63,15 +62,11 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        fill( tr, 'lumi',event.lumi)
        fill( tr, 'evt', event.eventId)
 
-       fill(tr, 'visMass', event.diLepton.mass())
-       fill(tr, 'svfitMass', event.diLepton.massSVFit())
-       fill(tr, 'mt', event.diLepton.mTLeg2())
-       fill(tr, 'met', event.diLepton.met().pt())
+       fillDiLepton( tr, event.diLepton )
 
        # import pdb; pdb.set_trace()
        pfmet = self.handles['pfmetraw'].product()[0]
        fill(tr, 'pfmet', pfmet.pt())
-
        
        fillParticle(tr, 'diTau', event.diLepton)
        fillTau(tr, 'l1', event.diLepton.leg1() )
@@ -96,6 +91,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
            fillVBF( tr, 'VBF', event.vbf )
 
        fill(tr, 'weight', event.eventWeight)
+       fill(tr, 'embedWeight', event.embedWeight)
 
        if hasattr( event, 'vertexWeight'): 
           fill(tr, 'vertexWeight', event.vertexWeight)
