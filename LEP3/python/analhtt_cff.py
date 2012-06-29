@@ -24,7 +24,7 @@ httAna = cfg.Analyzer('httanalyzer',
   mVis = 180.,        # minim visible mass (not applied)
   chi2 = 1000000.,
   minE = 10.,
-  h_mass = 100.,
+  h_mass = 40.,   # to see the z peak....
   z_mass = (70.,110.),
 )
 
