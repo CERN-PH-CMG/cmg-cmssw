@@ -2,8 +2,8 @@ import copy
 import os
 import CMGTools.RootTools.fwlite.Config as cfg
 
-eMissAna = cfg.Analyzer(
-    'EMissAnalyzer',
+fourJeteMissAna = cfg.Analyzer(
+    'FourJetEMissAnalyzer',
     hinvis = 0,
     ptmiss = 10.,
     mmiss = 0.,
@@ -15,8 +15,8 @@ eMissAna = cfg.Analyzer(
 
 
 def createTreeProducer( ana ):
-    tp = cfg.Analyzer( '_'.join( ['EMissTreeProducer','EMissAnalyzer'] ),
-                       anaName = 'EMissAnalyzer'
+    tp = cfg.Analyzer( '_'.join( ['FourJetEMissTreeProducer','FourJetEMissAnalyzer'] ),
+                       anaName = 'FourJetEMissAnalyzer'
                        )
     return tp
 
@@ -27,8 +27,8 @@ stopper = cfg.Analyzer(
     )
 
 sequence = cfg.Sequence([
-    eMissAna,
-    createTreeProducer( eMissAna ),
+    fourJeteMissAna,
+    createTreeProducer( fourJeteMissAna ),
     ])
 
 
@@ -55,7 +55,7 @@ Hig125 = cfg.MCComponent(
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/ZZ/cmgTuple_ZZ_97.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/ZZ/cmgTuple_ZZ_98.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/ZZ/cmgTuple_ZZ_99.root',],
-    ufiles = ['root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_0.root',
+    files = ['root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_0.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_1.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_2.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_3.root',
@@ -65,7 +65,7 @@ Hig125 = cfg.MCComponent(
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_7.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_8.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_9.root',],
-    files = ['root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_170.root',
+    ufiles = ['root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_170.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_171.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_172.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_173.root',
