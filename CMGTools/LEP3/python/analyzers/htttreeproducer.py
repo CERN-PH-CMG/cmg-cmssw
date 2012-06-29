@@ -120,6 +120,9 @@ class htttreeproducer( TreeAnalyzer ):
         var('j2_pz')
         var('j2_en')
 
+        var('t1candiso')
+        var('t2candiso')
+
         var('t1s_px')
         var('t1s_py')
         var('t1s_pz')
@@ -311,6 +314,9 @@ class htttreeproducer( TreeAnalyzer ):
                 fill('j2s_py',subevent.j2s_py)
                 fill('j2s_pz',subevent.j2s_pz)
                 fill('j2s_en',subevent.j2s_en)
+                fill('t1candiso',subevent.taucandiso[0])
+                fill('t2candiso',subevent.taucandiso[1])
+
                 fJetVars('t1rec',subevent.taucand[0])
                 fJetVars('t2rec',subevent.taucand[1])
                 fJetVars('j1rec',subevent.nontaucand[0])
