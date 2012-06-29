@@ -7,11 +7,11 @@ import math
 def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight):
     inclusiveForEmbeddedNormalizationDY = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
      			    30,0,300,
-     			    cut = 'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5', weight=weight,
+     			    cut = 'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && jet1Pt>50 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5', weight=weight,
      			    embed=False)
     inclusiveForEmbeddedNormalizationEmbed = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
      			    30,0,300,
-     			    cut = 'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5', weight=weight,
+     			    cut = 'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && jet1Pt>50 && abs(l2Eta)<2.1 && diTauCharge==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5', weight=weight,
      			    embed=False)
     embeddedHist=None
     for name,comp in selCompsNoSignal.items():
@@ -28,6 +28,9 @@ def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataM
     embeddedScaleFactor = inclusiveForEmbeddedNormalizationDY.Hist("DYJets").Integral()/embeddedHist.Integral()
     print "embeddedScaleFactor", embeddedScaleFactor
 
+
+    # applying scale factor from Jose MuTau (...and don't work for us)
+    #embeddedScaleFactor = 0.356715 / 0.95 * 5.1 / 3.95
     embeddedHist.Scale(embeddedScaleFactor)
 
     inclusiveForEmbeddedNormalizationDY.Hist("DYJets").weighted.Draw("HISTe")
