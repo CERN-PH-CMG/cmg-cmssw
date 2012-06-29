@@ -380,8 +380,8 @@ class httanalyzer( Analyzer ):
             taupair=(-1,-1)
             # fit version of tau finding optimization
             for ind1, ind2 in itertools.combinations(range(len(event.taucand)), 2):
-                ntr1=event.taucand[ind1].component(1).number()
-                ntr2=event.taucand[ind2].component(1).number()
+                ntr1=event.taucand[ind1].component(1).number()+event.taucand[ind1].component(2).number()+event.taucand[ind1].component(3).number()
+                ntr2=event.taucand[ind2].component(1).number()+event.taucand[ind2].component(2).number()+event.taucand[ind2].component(3).number()
                 # consider only combination 1,1 1,3 3,1
 
                 if (ntr1*ntr2)!=1 and (ntr1*ntr2)!=3:
