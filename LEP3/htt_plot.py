@@ -47,10 +47,10 @@ os.system("mkdir -p "+plot_dire)
 #    ]
 
 mclist=[
-    ["test/Hig125_26/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
-    ["test/ZZ_11/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
-    ["test/WW_7/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
-    ["test/QQ_5/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
+    ["htt/Hig125_2/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
+    ["htt/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
+    ["htt/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
+    ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
     ]
 # luminosity to normalize (in fb-1)
 lumi=500
@@ -73,7 +73,7 @@ step_label=["all","njet>4","ejet>10","2 taucand","2 good taucand","jet sele","mz
 
 def_plot=true
 h1_list=[
-    ["Hmass_" ,"event.recHMass" ,50,100,200,True],
+    ["Hmass_" ,"event.recHMass" ,80,40,200,True],
     ["Zmass_" ,"event.recZMass" ,30,60,120,def_plot],
     ["mvis_"  ,"event.mvis"     ,100,0,400,def_plot],
     ["evis_"  ,"event.evis"     ,100,0,400,def_plot],
@@ -97,12 +97,12 @@ h1_list=[
     ["nhfraction_t2","event.t2recNHFraction", 100,0,1,def_plot],
     ["chfraction_t1","event.t1recChFraction", 100,0,1,def_plot],
     ["chfraction_t2","event.t2recChFraction", 100,0,1,def_plot],
-    ["pfraction_t2","event.t1recPFraction", 100,0,1,def_plot],
+    ["pfraction_t1","event.t1recPFraction", 100,0,1,def_plot],
     ["pfraction_t2","event.t2recPFraction", 100,0,1,def_plot],
     ["mass_t1","event.t1recMass", 100,0,30,def_plot],
     ["mass_t2","event.t2recMass", 100,0,30,def_plot],
     ["acopl","event.ttmet_acopl", 100,-1,1,def_plot],
-    ["constrained_mass","event.recZMass + event.recHMass - 91.2", 50,100,200,def_plot],
+    ["constrained_mass","event.recZMass + event.recHMass - 91.2", 80,40,200,def_plot],
     ["t1candiso","event.t1candiso",100,0.,1.,True],
     ["t2candiso","event.t2candiso",100,0.,1.,True]
 
@@ -174,13 +174,15 @@ for index,mc in enumerate(mclist):
         if read>=nevents:
             break
         read+=1
+        if read % 10000 ==1:
+            print "Reading event:",read
         
-
 
         
         addcut = True
         addcut = event.mvis>120.
-        #addcut = addcut and event.tt_acoll<-0.6
+        addcut = event.mvis<210.
+        addcut = addcut and event.tt_acoll<-0.5
         addcut = addcut and event.jj_acoll<-0.3
         addcut = addcut and event.leadingMuonEnergy<50.
         addcut = addcut and event.leadingElectronEnergy<50.
