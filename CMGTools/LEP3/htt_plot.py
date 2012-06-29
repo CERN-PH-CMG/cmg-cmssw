@@ -47,7 +47,7 @@ os.system("mkdir -p "+plot_dire)
 #    ]
 
 mclist=[
-    ["htt/Hig125_2/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
+    ["htt/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
     ["htt/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
     ["htt/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
     ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
@@ -154,6 +154,8 @@ for index in range(0,len(mclist)):
 # now loop on tree and project
 nhtt=0
 nhtt_sel=0
+nhbbtt=0
+nhbbtt_sel=0
 
 for index,mc in enumerate(mclist):
     rootfile=mc[0]
@@ -195,6 +197,8 @@ for index,mc in enumerate(mclist):
         if index==0:
             if event.g_ishtt==1 and event.g_isHZqq==1:
                 nhtt+=1
+            if event.g_ishtt==1 and event.g_isHZbb==1:
+                nhbbtt+=1
                 
         for bin in range(0,int(event.step)+1):
             if index==0:
@@ -206,6 +210,8 @@ for index,mc in enumerate(mclist):
         if event.step>=stepplot and addcut:
             # here we can put all plots after selection
             if index==0:
+                if event.g_ishtt==1 and event.g_isHZbb==1:
+                    nhbbtt_sel+=1
                 if event.g_ishtt==1 and event.g_isHZqq==1:
                     nhtt_sel+=1
 #                    print 'ok'
@@ -311,6 +317,7 @@ for i,h1 in enumerate(h1_list):
 #stackmzh_h2.Draw("box")
 
 
-print "Efficiency on htt=",float(nhtt_sel)/nhtt
+print "Efficiency on htt=",float(nhtt_sel)/nhtt,"(",nhtt_sel,"/",nhtt,")"
+print "Efficiency on hbbtt=",float(nhbbtt_sel)/nhbbtt,"(",nhbbtt_sel,"/",nhbbtt,")"
 
 a=raw_input("hit a key to exit...")
