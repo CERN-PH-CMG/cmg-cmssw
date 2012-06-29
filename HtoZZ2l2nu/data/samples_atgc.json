@@ -1,9 +1,33 @@
+
 {
     "proc":[
+	{
+	"tag":"F4Z=0 F5Z=0",
+	"isdata":false,
+	"spimpose":true,
+	"normto":1,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"normto":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0_f5z_0",
+		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/sm/aodsim0607"],
+		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0_f5z_0"],         
+       		"xsec":1.0,
+		"br":[1.0]
+		}
+	 ]
+	},
 	{
 	"tag":"F4Z=0.1 F5Z=0",
 	"isdata":false,
 	"spimpose":true,
+	"normto":1,
+	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
@@ -14,6 +38,27 @@
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5z_0",
 		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p1_p0/aodsim0607"],
 		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v1_f5z_0"],         
+       		"xsec":1.0,
+		"br":[1.0]
+		}
+	 ]
+	},
+	{
+	"tag":"F4Z=0.1 F5Z=0.1",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"normto":1,
+	"lcolor":4,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"normto":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5z_0v1",
+		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p1_p1/aodsim0607"],
+		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v1_f5z_0v1"],         
        		"xsec":1.0,
 		"br":[1.0]
 		}
