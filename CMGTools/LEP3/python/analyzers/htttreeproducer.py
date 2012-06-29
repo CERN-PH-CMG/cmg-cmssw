@@ -223,7 +223,7 @@ class htttreeproducer( TreeAnalyzer ):
         fill('g_ishtt',subevent.ishtt)
         fill('g_isHZ',subevent.isHZ)
         fill('g_isHZqq',subevent.isHZqq)
-        fill('g_isHZqq',subevent.isHZbb)
+        fill('g_isHZbb',subevent.isHZbb)
 
         #fill leading muons/electrons
         if (len(subevent.leadingMuons)>0):
