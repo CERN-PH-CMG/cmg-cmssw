@@ -2,7 +2,7 @@
 import os,string,sys,commands,time,ConfigParser
 from ROOT import *
 from array import array
-
+import numpy
 # legenda:
 # step 0--> all
 # step 1--> after njet cut
@@ -10,6 +10,24 @@ from array import array
 # step 3--> after 2 tau candidate
 # step 4--> after testID
 # step 5--> after findhz
+
+if len(sys.argv)!=5:
+    print "Usage:",sys.argv[0]+" <plot directory> <step> <maxevent> <batch 1=yes>"
+    sys.exit(1)
+
+plot_dire=sys.argv[1]+"/"
+stepplot=int(sys.argv[2])
+maxevent=int(sys.argv[3])
+batch=int(sys.argv[4])
+if batch==1:
+    print "working in batch mode, no plot will be shown"
+    gROOT.SetBatch(True)
+    
+
+print "Parameters:",plot_dire,stepplot,maxevent,batch
+
+os.system("mkdir -p "+plot_dire)
+
 
 
 # format: file,xsec(fb),tag for legenda
@@ -29,22 +47,24 @@ from array import array
 #    ]
 
 mclist=[
-    ["test/Hig125_17/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
-    ["test/ZZ_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
-    ["test/WW_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
-    ["test/QQ_2/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
+    ["test/Hig125_26/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
+    ["test/ZZ_11/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
+    ["test/WW_7/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
+    ["test/QQ_5/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
     ]
 # luminosity to normalize (in fb-1)
 lumi=500
 
 # step at which the plot should be made
-stepplot=7
+#stepplot=6
 
 # define special histograms
 step_h=[]
 genrec_s3_t1=[]
 genrec_s3_t2=[]
 mzh_h2=[]
+dgen1_vs_iso_h2=[]
+dgen2_vs_iso_h2=[]
 
 # Define all others
 # syntax: name, variable, nibn,xmin,xmax,visualize
@@ -53,8 +73,8 @@ step_label=["all","njet>4","ejet>10","2 taucand","2 good taucand","jet sele","mz
 
 def_plot=true
 h1_list=[
-    ["Hmass_" ,"event.recHMass" ,20,100,200,True],
-    ["Zmass_" ,"event.recZMass" ,12,60,120,def_plot],
+    ["Hmass_" ,"event.recHMass" ,50,100,200,True],
+    ["Zmass_" ,"event.recZMass" ,30,60,120,def_plot],
     ["mvis_"  ,"event.mvis"     ,100,0,400,def_plot],
     ["evis_"  ,"event.evis"     ,100,0,400,def_plot],
     ["ntrt1_" ,"event.t1recNtrk", 10,0, 10,def_plot],
@@ -75,6 +95,14 @@ h1_list=[
     ["subleadinge_e","event.subleadingElectronEnergy", 100,0,200,def_plot],
     ["nhfraction_t1","event.t1recNHFraction", 100,0,1,def_plot],
     ["nhfraction_t2","event.t2recNHFraction", 100,0,1,def_plot],
+    ["chfraction_t1","event.t1recChFraction", 100,0,1,def_plot],
+    ["chfraction_t2","event.t2recChFraction", 100,0,1,def_plot],
+    ["pfraction_t2","event.t1recPFraction", 100,0,1,def_plot],
+    ["pfraction_t2","event.t2recPFraction", 100,0,1,def_plot],
+    ["mass_t1","event.t1recMass", 100,0,30,def_plot],
+    ["mass_t2","event.t2recMass", 100,0,30,def_plot],
+    ["acopl","event.ttmet_acopl", 100,-1,1,def_plot],
+    ["constrained_mass","event.recZMass + event.recHMass - 91.2", 50,100,200,def_plot],
     ]
     
     
@@ -97,6 +125,12 @@ for index in range(0,len(mclist)):
     mzh_h2[index].SetLineColor(index+2)
     mzh_h2[index].SetMarkerColor(index+2)
 #    mzh_h2[index].SetFillColor(index+2)
+    dgen1_vs_iso_h2.append(TH2F("dgen1vsiso_"+tag,"dgen1vsiso_"+tag,100,-1,1,100,-1,1))
+    dgen1_vs_iso_h2[index].SetLineColor(index+2)
+    dgen1_vs_iso_h2[index].SetMarkerColor(index+2)
+    dgen2_vs_iso_h2.append(TH2F("dgen2vsiso_"+tag,"dgen2vsiso_"+tag,100,-1,1,100,-1,1))
+    dgen2_vs_iso_h2[index].SetLineColor(index+2)
+    dgen2_vs_iso_h2[index].SetMarkerColor(index+2)
 
     genrec_s3_t1.append(TH1F("genrec_s3_t1_"+tag,"genrec_s3_t1_"+tag,100,-1,1))
     genrec_s3_t2.append(TH1F("genrec_s3_t2_"+tag,"genrec_s3_t2_"+tag,100,-1,1))
@@ -113,7 +147,7 @@ for index in range(0,len(mclist)):
           h1loc[len(h1loc)-1].SetFillColor(3)
     h1glob.append(h1loc)            
 
-maxevent=100000000
+#maxevent=100000000
 # now loop on tree and project
 for index,mc in enumerate(mclist):
     rootfile=mc[0]
@@ -136,23 +170,18 @@ for index,mc in enumerate(mclist):
         read+=1
         
 
-        #p1tot=sqrt(event.t1_px**2+event.t1_py**2+event.t1_pz**2)
-        #p2tot=sqrt(event.t2_px**2+event.t2_py**2+event.t2_pz**2)
-        #pscal=event.t1_px*event.t2_px+event.t1_py*event.t2_py+event.t1_pz*event.t2_pz
-        #acoll=pscal/(p1tot*p2tot)
 
-        #j1tot=sqrt(event.j1_px**2+event.j1_py**2+event.j1_pz**2)
-        #j2tot=sqrt(event.j2_px**2+event.j2_py**2+event.j2_pz**2)
-        #jscal=event.j1_px*event.j2_px+event.j1_py*event.j2_py+event.j1_pz*event.j2_pz
-        #jacoll=jscal/(j1tot*j2tot)
         
+        addcut = True
         addcut = event.mvis>120.
-        addcut = addcut and event.tt_acoll<-0.6
+        #addcut = addcut and event.tt_acoll<-0.6
         addcut = addcut and event.jj_acoll<-0.3
-        addcut = addcut and event.leadingMuonEnergy<25.
+        addcut = addcut and event.leadingMuonEnergy<50.
         addcut = addcut and event.leadingElectronEnergy<50.
-        addcut = addcut and event.t1recNHFraction<0.05
-        addcut = addcut and event.t1recNHFraction<0.05
+        #addcut = addcut and event.t1recNHFraction<0.2
+        #addcut = addcut and event.t2recNHFraction<0.2
+        addcut = addcut and event.t1recMass < 7 and event.t2recMass < 7
+        addcut = addcut and event.t1recChFraction > 0.06
 
 
         for bin in range(0,int(event.step)+1):
@@ -217,8 +246,8 @@ for index in range(0,len(mclist)):
 #    genrec_s3_t2[index].Draw(opt)
 
 leg_hist.Draw() 
-c1.Print("cut_chain.png")
-c1.Print("cut_chain.C")
+c1.Print(plot_dire+"/cut_chain.png")
+c1.Print(plot_dire+"/cut_chain.C")
 
 canv=[]
 for i,h1 in enumerate(h1_list):
@@ -234,8 +263,8 @@ for i,h1 in enumerate(h1_list):
         stackh_h.Add(h1loc[i])
     stackh_h.Draw()
     leg_hist.Draw()
-    canv[len(canv)-1].Print(tag+".png")
-    canv[len(canv)-1].Print(tag+".C")
+    canv[len(canv)-1].Print(plot_dire+"/"+tag+".png")
+    canv[len(canv)-1].Print(plot_dire+"/"+tag+".C")
 
 
 
