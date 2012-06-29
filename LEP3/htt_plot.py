@@ -103,6 +103,9 @@ h1_list=[
     ["mass_t2","event.t2recMass", 100,0,30,def_plot],
     ["acopl","event.ttmet_acopl", 100,-1,1,def_plot],
     ["constrained_mass","event.recZMass + event.recHMass - 91.2", 50,100,200,def_plot],
+    ["t1candiso","event.t1candiso",100,0.,1.,True],
+    ["t2candiso","event.t2candiso",100,0.,1.,True]
+
     ]
     
     
@@ -149,6 +152,9 @@ for index in range(0,len(mclist)):
 
 #maxevent=100000000
 # now loop on tree and project
+nhtt=0
+nhtt_sel=0
+
 for index,mc in enumerate(mclist):
     rootfile=mc[0]
     xsec=mc[1]
@@ -184,6 +190,10 @@ for index,mc in enumerate(mclist):
         addcut = addcut and event.t1recChFraction > 0.06
 
 
+        if index==0:
+            if event.g_ishtt==1 and event.g_isHZqq==1:
+                nhtt+=1
+                
         for bin in range(0,int(event.step)+1):
             if index==0:
                 if event.g_ishtt==1 and event.g_isHZqq==1:
@@ -195,6 +205,7 @@ for index,mc in enumerate(mclist):
             # here we can put all plots after selection
             if index==0:
                 if event.g_ishtt==1 and event.g_isHZqq==1:
+                    nhtt_sel+=1
 #                    print 'ok'
                     genrec_s3_t1[index].Fill(event.genRecDistance1)
                     genrec_s3_t2[index].Fill(event.genRecDistance2)
@@ -216,13 +227,14 @@ for index,mc in enumerate(mclist):
     
 # now we can plot them
 
+
 # first prepare legenda
 yheaderstart=.95-.023*len(mclist)
 leg_hist = TLegend(0.7,yheaderstart,.98,.98);
 leg_hist.SetFillColor(0)# Have a white background
 
 
-c1=TCanvas("c1","c1",800,600)
+c1=TCanvas("step","step",800,600)
 c1.SetFillColor(kWhite)
 c1.SetFillStyle(1001)
 #gStyle.SetOptStat(0)
@@ -237,17 +249,39 @@ for index in range(0,len(mclist)):
     if (first):
         first=False
         opt=""
-    print index,opt
+#    print index,opt
     step_h[index].Draw(opt)
     leg_hist.AddEntry(step_h[index],mc[2],"l")
-#    c1.cd(1)
-#    genrec_s3_t1[index].Draw(opt)
-#    c1.cd(2)
-#    genrec_s3_t2[index].Draw(opt)
 
 leg_hist.Draw() 
-c1.Print(plot_dire+"/cut_chain.png")
-c1.Print(plot_dire+"/cut_chain.C")
+c1.Print(plot_dire+"cut_chain.png")
+c1.Print(plot_dire+"cut_chain.C")
+
+c2=TCanvas("matched_s4","matched_s4",800,600)
+c2.SetFillColor(kWhite)
+c2.SetFillStyle(1001)
+c2.Divide(1,2)
+c2.cd(1)
+genrec_s3_t1[0].Draw()
+c2.cd(2)
+genrec_s3_t2[0].Draw()
+c2.Print(plot_dire+"matched.png")
+c2.Print(plot_dire+"matched.C")
+
+c3=TCanvas("dgenvsiso","dgenvsiso",800,600)
+c3.SetFillColor(kWhite)
+c3.SetFillStyle(1001)
+c3.Divide(1,2)
+c3.cd(1)
+dgen1_vs_iso_h2[0].Draw()
+c3.cd(2)
+dgen2_vs_iso_h2[0].Draw()
+c3.Print(plot_dire+"dgenvsiso.png")
+c3.Print(plot_dire+"dgenvsiso.C")
+
+
+
+
 
 canv=[]
 for i,h1 in enumerate(h1_list):
@@ -275,5 +309,6 @@ for i,h1 in enumerate(h1_list):
 #stackmzh_h2.Draw("box")
 
 
+print "Efficiency on htt=",float(nhtt_sel)/nhtt
 
 a=raw_input("hit a key to exit...")
