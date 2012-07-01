@@ -1,4 +1,4 @@
-#$Revision: 1.3 $
+#$Revision: 1.4 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -39,7 +39,7 @@ print 'input:', process.source.fileNames
 
 if runOnMC==False:
     from CMGTools.Common.Tools.applyJSON_cff import *
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-195016_8TeV_PromptReco_Collisions12_JSON.txt'
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON.txt'
     print 'json:', json
     applyJSON(process, json )
 
