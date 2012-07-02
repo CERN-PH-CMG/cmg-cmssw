@@ -474,7 +474,7 @@ int main(int argc, char* argv[])
       xs->setRange(-maxXS*1000.0,maxXS*1000.0);
   else    
       xs->setRange(0,maxXS*1000.0);
-  xs->setVal(maxXS/10.0);
+  xs->setVal(maxXS/1.0);
 
   cout << "doing S+B fit to estimate background" << endl;
 
@@ -559,12 +559,12 @@ int main(int argc, char* argv[])
 	ws->var("pc3")->setConstant(true);
 	ws->var("nbkg")->setConstant(true);
     } else
-    {
+    if (PE!=0){
       if(ALLOWSNEGATIVE)
           xs->setRange(-maxXS*1000.0,maxXS*1000.0);
       else    
           xs->setRange(0,maxXS*1000.0);
-      xs->setVal(maxXS/10.0);
+      xs->setVal(maxXS/1.0);
 
       fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
 
