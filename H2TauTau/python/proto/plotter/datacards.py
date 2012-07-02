@@ -55,7 +55,7 @@ def file_dir(name):
     return tfile, tdir
 
 
-def datacards(plot, category, channel='muTauSM'):
+def datacards(plot, category, channel='muTau'):
 
     fileName = '{channel}_{category}.root'.format(channel=channel,
                                                   category=category)

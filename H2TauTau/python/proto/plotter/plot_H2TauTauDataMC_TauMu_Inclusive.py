@@ -208,6 +208,7 @@ if __name__ == '__main__':
     comps = []
     for comp in cfg.config.components:
         if comp.name == 'W3Jets': continue
+        if comp.name == 'W2Jets': continue
         if comp.name == 'TTJets11': continue
         if useW11:
             if comp.name == 'WJets': continue

@@ -139,18 +139,6 @@ if __name__ == '__main__':
                       help="Use embedd samples.",
                       action="store_true",
                       default=False)
-##     parser.add_option("-n", "--nbins", 
-##                       dest="nbins", 
-##                       help="Number of bins",
-##                       default=14)
-##     parser.add_option("-m", "--min", 
-##                       dest="xmin", 
-##                       help="xmin",
-##                       default=0)
-##     parser.add_option("-M", "--max", 
-##                       dest="xmax", 
-##                       help="xmax",
-##                       default=350)
 
     
     
@@ -169,7 +157,9 @@ if __name__ == '__main__':
     # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
-    vbf_eff = 0.0025
+    # vbf_eff = 0.0025 # for 2012
+    vbf_eff = 0.001908 # for 2011
+    useTT11 = False
     
     anaDir = args[0]
     cfgFileName = args[1]
@@ -179,7 +169,7 @@ if __name__ == '__main__':
 
     origComps = copy.deepcopy(cfg.config.components)
 
-    comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and  comp.name!='TTJets11']
+    comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='W2Jets' and  comp.name!='TTJets11']
     cfg.config.components = comps
     
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, options.embed, 'TauMu', '125')
@@ -225,13 +215,27 @@ if __name__ == '__main__':
 
 
     # remove WJets and TTJets from components, and alias W3Jets -> WJets; TTJets11 -> TTJets
-    comps = [comp for comp in origComps if comp.name!='WJets' and comp.name!='WJets11' and  comp.name!='TTJets' ]
+    comps = []
+    for comp in origComps:
+        if comp.name == 'WJets': continue
+        if comp.name == 'W2Jets': continue
+        if useTT11:
+            if comp.name == 'TTJets': continue
+        else:
+            if comp.name == 'TTJets11': continue
+        comps.append( comp )
+
+
+    # comps = [comp for comp in origComps if comp.name!='WJets' and comp.name!='WJets11' and  comp.name!='TTJets' ]
     cfg.config.components = comps
 
     aliases = {'DYJets':'Ztt',
-               'W3Jets':'WJets',
-               'TTJets11':'TTJets'
-               }
+               'W3Jets':'WJets'} 
+    if useTT11:
+        aliases = {'DYJets':'Ztt',
+                   'W3Jets':'WJets',
+                   'TTJets11':'TTJets'}
+
 
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases,
                                                   options.embed, 'TauMu', '125')
