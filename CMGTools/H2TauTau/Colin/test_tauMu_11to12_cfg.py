@@ -11,19 +11,17 @@ mc_vertexWeight = None
 mc_tauEffWeight = None
 mc_muEffWeight = None
 mc_tauEffWeight_mc = 'effLooseTau15MC'
-mc_muEffWeight_mc = 'effIsoMu15MC'
-if period == 'Period_2011A':
-    mc_vertexWeight = 'vertexWeightFall112invfb'
-    mc_tauEffWeight = 'effTau2011A'
-    mc_muEffWeight = 'effMu2011A'
-elif period == 'Period_2011B':
-    mc_vertexWeight = 'vertexWeightFall112011B'
-    mc_tauEffWeight = 'effTau2011B'
-    mc_muEffWeight = 'effMu2011B'
-elif period == 'Period_2011AB':
-    mc_vertexWeight = 'vertexWeightFall112011AB'
-    mc_tauEffWeight = 'effTau2011AB'
-    mc_muEffWeight = 'effMu2011AB'
+# mc_muEffWeight_mc = 'effIsoMu15MC'
+mc_muEffWeight_mc = None
+
+mc_tauEffWeight = 'effTau2012AB'
+
+puFileDir11 = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2011'
+puFileDir12 = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
+puFileMC = '/'.join([puFileDir11, 'MyMCPileupHistogram_true.root'])
+# puFileData = '/'.join([puFileDir12, 'MyDataPileupHistogram_true_AB.root'])
+puFileData = '/'.join([puFileDir12, 'MyDataPileupHistogram_true_AB_190456_196531.root'])
+
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
@@ -34,7 +32,13 @@ vertexAna = cfg.Analyzer(
     # goodVertices = 'offlinePrimaryVertices', # hum... collection not available in old tuples
     goodVertices = 'goodPVFilter',
     vertexWeight = mc_vertexWeight,
+    fixedWeight = 1,
     verbose = False
+    )
+
+pileUpAna = cfg.Analyzer(
+    'PileUpAnalyzer',
+    true = True
     )
 
 TauMuAna = cfg.Analyzer(
@@ -42,7 +46,7 @@ TauMuAna = cfg.Analyzer(
     pt1 = 20,
     eta1 = 2.3,
     iso1 = 999,
-    pt2 = 17,
+    pt2 = 18,
     eta2 = 2.1,
     iso2 = 0.1,
     m_min = 10,
@@ -63,7 +67,8 @@ muonWeighter = cfg.Analyzer(
     effWeight = mc_muEffWeight,
     effWeightMC = mc_muEffWeight_mc,
     lepton = 'leg2',
-    verbose = False
+    verbose = False,
+    disable = True
     )
 
 
@@ -96,39 +101,21 @@ from CMGTools.H2TauTau.proto.samples.tauMu_ColinJune1 import *
 
 #########################################################################################
 
-mc_jet_scale = 1.
-mc_jet_smear = 0.
+
+
+MC = [WJets]
 for mc in MC:
-    # could handle the weights in the same way
-    mc.jetScale = mc_jet_scale
-    mc.jetSmear = mc_jet_smear
+    mc.puFileData = puFileData
+    mc.puFileMC = puFileMC
 
 
-MC = [DYJets, WJets, TTJets]
-# MC.extend( mc_higgs )
 selectedComponents =  copy.copy(MC)
-
-useEmbed = False 
-
-if period == 'Period_2011A':
-    selectedComponents.extend( data_2011A )
-    if useEmbed:
-        selectedComponents.extend( embed_2011A )    
-elif period == 'Period_2011B':
-    selectedComponents.extend( data_2011B )
-    if useEmbed:
-        selectedComponents.extend( embed_2011B )    
-elif period == 'Period_2011AB':
-    selectedComponents.extend( data_2011 )
-    if useEmbed:
-        selectedComponents.extend( embed_2011 )    
-    
-
 
 
 sequence = cfg.Sequence( [
     triggerAna,
     vertexAna,
+    pileUpAna, 
     TauMuAna,
     vbfAna,
     tauWeighter, 
@@ -137,36 +124,18 @@ sequence = cfg.Sequence( [
    ] )
 
 
-DYJets.fakes = True
-DYJets.splitFactor = 40
-WJets.splitFactor = 10
+W3Jets.splitFactor = 50 
 TTJets.splitFactor = 100
-
-data_Run2011B_PromptReco_v1.splitFactor = 50
-data_Run2011A_PromptReco_v4.splitFactor = 40
-data_Run2011A_May10ReReco_v1.splitFactor = 40
-data_Run2011A_05Aug2011_v1.splitFactor = 20
-data_Run2011A_03Oct2011_v1.splitFactor = 20
-    
-embed_Run2011B_PromptReco_v1.splitFactor = 10
-embed_Run2011A_PromptReco_v4.splitFactor = 10
-embed_Run2011A_May10ReReco_v1.splitFactor = 5
-embed_Run2011A_05Aug2011_v1.splitFactor = 5
-embed_Run2011A_03Oct2011_v1.splitFactor = 5
+WJets.splitFactor = 100
 
 test = 0
 if test==1:
-    comp = DYJets
-    comp.files = comp.files[:2]
+    comp = WJets
+    comp.files = comp.files[:19]
     # comp = data_2012[0]
     selectedComponents = [comp]
     comp.splitFactor = 1
-elif test==2:
-    for comp in selectedComponents:
-        comp.splitFactor = 1
-        # comp.files = comp.files[:2]
 
-# selectedComponents.extend(MC)
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )

@@ -11,12 +11,11 @@ from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
 period = 'Period_2011AB'
 
-baseDir = '2011'
 
 mc_vertexWeight = None
 mc_tauEffWeight = None
 mc_eleEffWeight = None
-mc_tauEffWeight_mc = 'effLooseTau15MC'
+mc_tauEffWeight_mc = 'effMediumIsoTau20MC'
 mc_eleEffWeight_mc = 'effEle18MC'
 if period == 'Period_2011A':
     mc_vertexWeight = 'vertexWeightFall112invfb'
@@ -120,8 +119,8 @@ from CMGTools.H2TauTau.proto.samples.tauEle_PietroJun26 import *
 
 
 # selectedComponents =  copy.copy(MC)
-
-selectedComponents = [DYJets, TTJets, WJets]
+MC = [DYJets, TTJets, WJets]
+selectedComponents = copy.copy(MC)
 
 if period == 'Period_2011A':
     selectedComponents.extend( data_2011A )
@@ -164,13 +163,13 @@ embed_Run2011A_05Aug2011_v1.splitFactor = 5
 embed_Run2011A_03Oct2011_v1.splitFactor = 5
 embed_Run2011B_PromptReco_v1.splitFactor = 10
 
-selectedComponents = embed_2011
+# selectedComponents = embed_2011
+# selectedComponents.extend(MC)
 
-test = 1
+
+test = 0
 if test==1:
-#    comp = embed_Run2011A_May10ReReco_v1
-#    comp = WJets
-    comp = data_Run2011A_PromptReco_v4
+    comp = DYJets
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:1]
