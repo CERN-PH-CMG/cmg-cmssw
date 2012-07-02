@@ -1,7 +1,9 @@
 from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauElectron
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Electron, GenParticle
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
+from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
+
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
 class TauEleAnalyzer( DiLeptonAnalyzer ):
