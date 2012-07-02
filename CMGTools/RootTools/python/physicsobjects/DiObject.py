@@ -1,6 +1,7 @@
 import math
 
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Tau, Electron
+from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 
 class DiObject( object ):
@@ -52,6 +53,8 @@ class DiMuon( DiObject ):
                  % (self.diobject.mass(),
                     self.sumPt() )
         return '\n'.join( [header] )
+
+
 
 class DiElectron( DiObject ):
 
@@ -131,7 +134,7 @@ class TauElectron( DiTau ):
     def __init__(self, diobject):
         super(TauElectron, self).__init__(diobject)
         self.tau = Tau( diobject.leg1() )
-        self.ele = Electron( diobject.leg2() )
+        self.ele = HTauTauElectron( diobject.leg2() )
 
     def leg1(self):
         return self.tau
@@ -144,13 +147,14 @@ class MuonElectron( DiTau ):
     def __init__(self, diobject):
         super(MuonElectron, self).__init__(diobject)
         self.mu = Muon( diobject.leg1() )
-        self.ele = Electron( diobject.leg2() )
+        self.ele = HTauTauElectron( diobject.leg2() )
 
     def leg1(self):
         return self.mu
 
     def leg2(self):
         return self.ele
+
 
 class TauTau( DiTau ):
     def __init__(self, diobject):
