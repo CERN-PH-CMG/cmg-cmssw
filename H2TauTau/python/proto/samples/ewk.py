@@ -1,4 +1,5 @@
 import CMGTools.RootTools.fwlite.Config as cfg
+from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
 
 valentinaFactor = 0.95
 
@@ -15,6 +16,14 @@ WJets = cfg.MCComponent(
     name = 'WJets',
     files = [],
     xSection = 31314. * valentinaFactor,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+W2Jets = cfg.MCComponent(
+    name = 'W2Jets',
+    files = [],
+    xSection = 1. * valentinaFactor,
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
@@ -42,3 +51,7 @@ mc_ewk = [
     W3Jets, 
     TTJets
     ]
+
+
+mc_ewk_up = sampleShift( locals(), [DYJets], 'Up')
+mc_ewk_down = sampleShift( locals(), [DYJets], 'Down')
