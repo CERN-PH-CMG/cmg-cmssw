@@ -59,8 +59,24 @@ class DiLeptonAnalyzer( Analyzer ):
         # event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product(), event )
         event.leptons = self.buildLeptons( self.handles['leptons'].product(), event )
+        # import pdb; pdb.set_trace()
+        self.shiftEnergyScale(event)
         return self.selectionSequence(event, fillCounter=True)
 
+
+    def shiftEnergyScale(self, event):
+        scaleShift1 = None
+        scaleShift2 = None
+        if hasattr( self.cfg_ana, 'scaleShift1'):
+            scaleShift1 = self.cfg_ana.scaleShift1
+        if hasattr( self.cfg_ana, 'scaleShift2'):
+            scaleShift2 = self.cfg_ana.scaleShift2
+        if scaleShift1:
+            map( lambda x: x.leg1().scaleEnergy(scaleShift1), event.diLeptons )
+        if scaleShift2:
+            map( lambda x: x.leg2().scaleEnergy(scaleShift2), event.diLeptons )
+            map( lambda x: x.scaleEnergy(scaleShift2), event.leptons )
+        
 
     def selectionSequence(self, event, fillCounter, leg1IsoCut=None, leg2IsoCut=None):
 
