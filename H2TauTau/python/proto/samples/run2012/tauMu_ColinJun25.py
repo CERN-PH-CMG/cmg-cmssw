@@ -1,3 +1,4 @@
+import itertools
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 from CMGTools.RootTools.fwlite.Config import printComps
 
@@ -286,7 +287,7 @@ MC_down = copy.copy(mc_ewk_down)
 MC_down.extend( mc_higgs_down ) 
 
 
-for sam in MC:
+for sam in itertools.chain(MC, MC_up, MC_down):
     sam.triggers = mc_triggers 
     
 for sam in data_list_2012:
