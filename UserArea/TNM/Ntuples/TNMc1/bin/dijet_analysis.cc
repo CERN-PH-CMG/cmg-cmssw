@@ -132,9 +132,60 @@ int main(int argc, char** argv)
   stream.select("patJetHelper_selectedPatJetsCHS.nConstituents", jethelper_nConstituents);
   stream.select("patJetHelper_selectedPatJetsCHS.neutralEmEnergyFraction", jethelper_neutralEmEnergyFraction);
   stream.select("patJetHelper_selectedPatJetsCHS.neutralHadronEnergyFraction", jethelper_neutralHadronEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.numberOfDaughters", jethelper_numberOfDaughters);
   stream.select("patJetHelper_selectedPatJetsCHS.phi", jethelper_phi);
   stream.select("patJetHelper_selectedPatJetsCHS.pt", jethelper_pt);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.numberOfDaughters", jethelper_numberOfDaughters);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.combinedSecondaryVertexBJetTags", jethelper3_combinedSecondaryVertexBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.combinedSecondaryVertexMVABJetTags", jethelper3_combinedSecondaryVertexMVABJetTags);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.energy", jethelper3_energy);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.et", jethelper3_et);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.eta", jethelper3_eta);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.genJet_energy", jethelper3_genJet_energy);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.genJet_eta", jethelper3_genJet_eta);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.genJet_phi", jethelper3_genJet_phi);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.genJet_pt", jethelper3_genJet_pt);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.genParton_pdgId", jethelper3_genParton_pdgId);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.jetArea", jethelper3_jetArea);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.jetBProbabilityBJetTags", jethelper3_jetBProbabilityBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.jetProbabilityBJetTags", jethelper3_jetProbabilityBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.mass", jethelper3_mass);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.nConstituents", jethelper3_nConstituents);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.partonFlavour", jethelper3_partonFlavour);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.phi", jethelper3_phi);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.pt", jethelper3_pt);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.simpleSecondaryVertexHighEffBJetTags", jethelper3_simpleSecondaryVertexHighEffBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.simpleSecondaryVertexHighPurBJetTags", jethelper3_simpleSecondaryVertexHighPurBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.trackCountingHighEffBJetTags", jethelper3_trackCountingHighEffBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.trackCountingHighPurBJetTags", jethelper3_trackCountingHighPurBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.uncor_energy", jethelper3_uncor_energy);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.uncor_et", jethelper3_uncor_et);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.uncor_pt", jethelper3_uncor_pt);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_chargedEmEnergyFraction", jethelper_daughter_0_chargedEmEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_chargedHadronEnergyFraction", jethelper_daughter_0_chargedHadronEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_chargedMultiplicity", jethelper_daughter_0_chargedMultiplicity);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_energy", jethelper_daughter_0_energy);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_eta", jethelper_daughter_0_eta);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_mass", jethelper_daughter_0_mass);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_muonEnergyFraction", jethelper_daughter_0_muonEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_nConstituents", jethelper_daughter_0_nConstituents);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_neutralEmEnergyFraction", jethelper_daughter_0_neutralEmEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_neutralHadronEnergyFraction", jethelper_daughter_0_neutralHadronEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_phi", jethelper_daughter_0_phi);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_photonEnergyFraction", jethelper_daughter_0_photonEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_pt", jethelper_daughter_0_pt);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_chargedEmEnergyFraction", jethelper_daughter_1_chargedEmEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_chargedHadronEnergyFraction", jethelper_daughter_1_chargedHadronEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_chargedMultiplicity", jethelper_daughter_1_chargedMultiplicity);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_energy", jethelper_daughter_1_energy);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_eta", jethelper_daughter_1_eta);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_mass", jethelper_daughter_1_mass);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_muonEnergyFraction", jethelper_daughter_1_muonEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_nConstituents", jethelper_daughter_1_nConstituents);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_neutralEmEnergyFraction", jethelper_daughter_1_neutralEmEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_neutralHadronEnergyFraction", jethelper_daughter_1_neutralHadronEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_phi", jethelper_daughter_1_phi);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_photonEnergyFraction", jethelper_daughter_1_photonEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_pt", jethelper_daughter_1_pt);
   stream.select("patMET_patMETsRaw.et", met2_et);
   stream.select("patMET_patMETsRaw.sumEt", met2_sumEt);
   stream.select("npatJetHelper_selectedPatJetsCHS", njethelper);
@@ -241,18 +292,21 @@ int main(int argc, char** argv)
   4686, 4869, 5058, 5253, 5455, 5663, 5877, 6099, 6328, 6564, 6808, 7060, 7320, 7589, 7866, 8152, 8447, 8752, 9067, 9391, 9726, 10072, 10430, 
   10798, 11179, 11571, 11977, 12395, 12827, 13272, 13732, 14000};
   
-  std::vector<TH1F*> hists;
+  TH1F* mass=new TH1F("dijet_mass","M_{jj}",NBINS-1,BOUNDARIES);
+  mass->Sumw2();
+  TH1F* mass_gg=new TH1F("dijet_mass_gg","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_gg->Sumw2();
+  TH1F* mass_qq=new TH1F("dijet_mass_qq","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_qq->Sumw2();
 
-  TCanvas c1("c1","c1",200,200);
-  TH1F* h1=new TH1F("dijet_mass","M_{jj}",NBINS-1,BOUNDARIES);
-//  TH1F* h1=new TH1F("dijet_mass","M_{jj}",2000,0,8000);
-  h1->Sumw2();
-  TH1F* h2=new TH1F("dijet_mass_gg","M_{jj}",NBINS-1,BOUNDARIES);
-//  TH1F* h2=new TH1F("dijet_mass_gg","M_{jj}",2000,0,8000);
-  h2->Sumw2();
-  TH1F* h3=new TH1F("dijet_mass_qq","M_{jj}",NBINS-1,BOUNDARIES);
-//  TH1F* h3=new TH1F("dijet_mass_qq","M_{jj}",2000,0,8000);
-  h3->Sumw2();
+  TH2F* deta_vs_mass=new TH2F("dijet_deta_vs_mass",";#Delta #eta;M_{jj}",50, 0, 5, 800, 0, 8000);
+  deta_vs_mass->Sumw2();
+  
+  TH2F* deta_vs_mass_gg=new TH2F("dijet_deta_vs_mass_gg",";#Delta #eta;M_{jj}",50, 0, 5, 800, 0, 8000);
+  deta_vs_mass_gg->Sumw2();
+  
+  TH2F* deta_vs_mass_qq=new TH2F("dijet_deta_vs_mass_qq",";#Delta #eta;M_{jj}",50, 0, 5, 800, 0, 8000);
+  deta_vs_mass_qq->Sumw2();
   
   //---------------------------------------------------------------------------
   // Loop over events
@@ -374,25 +428,36 @@ int main(int argc, char** argv)
 	      weight=geneventinfoproduct_weight;
 
           if(isgg)
-              h2->Fill(eventhelperextra_wj1wj2_invmass, weight);
+	  {
+              mass_gg->Fill(eventhelperextra_wj1wj2_invmass, weight);
+              deta_vs_mass_gg->Fill(fabs(eventhelperextra_wj1_eta-eventhelperextra_wj2_eta),eventhelperextra_wj1wj2_invmass, weight);
+	  }
           else if(isqq)
-              h3->Fill(eventhelperextra_wj1wj2_invmass, weight);
+          {
+	      mass_qq->Fill(eventhelperextra_wj1wj2_invmass, weight);
+              deta_vs_mass_qq->Fill(fabs(eventhelperextra_wj1_eta-eventhelperextra_wj2_eta),eventhelperextra_wj1wj2_invmass, weight);
+	  }
 	  else
-              h1->Fill(eventhelperextra_wj1wj2_invmass, weight);
+          {
+	      mass->Fill(eventhelperextra_wj1wj2_invmass, weight);
+              deta_vs_mass->Fill(fabs(eventhelperextra_wj1_eta-eventhelperextra_wj2_eta),eventhelperextra_wj1wj2_invmass, weight);
+	  }
 
 	}
 
-  h1->Scale(1./h1->Integral());
-  h2->Scale(1./h2->Integral());
-  h3->Scale(1./h3->Integral());
+  mass->Scale(1./mass->Integral());
+  mass_gg->Scale(1./mass_gg->Integral());
+  mass_qq->Scale(1./mass_qq->Integral());
 
-  h1->Draw("histe");
+  TCanvas c1("c1","c1",200,200);
+
+  mass->Draw("histe");
   //gPad->SetLogy(true);
 
   std::cout << "Fit crystal ball function to dijet mass spectrum." << std::endl;
 
   TF1* fit_gaus = new TF1("gaus","gaus",cmdline.resonance_mass*0.8, cmdline.resonance_mass*1.2);
-  h1->Fit(fit_gaus,"R");
+  mass->Fit(fit_gaus,"R");
   TF1* fit = new TF1("fnc_dscb",fnc_dscb,cmdline.resonance_mass*0.3, cmdline.resonance_mass*1.6,7);
   fit->SetTitle("");
   fit->SetParameter(0,fit_gaus->GetParameter(0));
@@ -405,7 +470,7 @@ int main(int argc, char** argv)
   fit->SetLineWidth(2);
   fit->SetLineColor(1);
   fit->SetLineStyle(1);
-  h1->Fit(fit,"R");
+  mass->Fit(fit,"R");
 
   std::cout << "Resonance shape for resonance of mass " << cmdline.resonance_mass << "." << std::endl;
 
@@ -427,16 +492,16 @@ int main(int argc, char** argv)
   }
   std::cout << "};" << std::endl;
 
-  h1->Write();
+  mass->Write();
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_mass.pdf").c_str());
 
-  h2->Draw("histe");
+  mass_gg->Draw("histe");
   //gPad->SetLogy(true);
 
   std::cout << "Fit crystal ball function to gluon gluon dijet mass spectrum." << std::endl;
 
   fit_gaus = new TF1("gaus","gaus",cmdline.resonance_mass*0.8, cmdline.resonance_mass*1.2);
-  h2->Fit(fit_gaus,"R");
+  mass_gg->Fit(fit_gaus,"R");
   fit = new TF1("fnc_dscb",fnc_dscb,cmdline.resonance_mass*0.3, cmdline.resonance_mass*1.6,7);
   fit->SetTitle("");
   fit->SetParameter(0,fit_gaus->GetParameter(0));
@@ -449,7 +514,7 @@ int main(int argc, char** argv)
   fit->SetLineWidth(2);
   fit->SetLineColor(1);
   fit->SetLineStyle(1);
-  h2->Fit(fit,"R");
+  mass_gg->Fit(fit,"R");
 
   std::cout << "Gluon gluon resonance shape for resonance of mass " << cmdline.resonance_mass << "." << std::endl;
 
@@ -465,16 +530,16 @@ int main(int argc, char** argv)
   }
   std::cout << "};" << std::endl;
 
-  h2->Write();
+  mass_gg->Write();
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_mass_gg.pdf").c_str());
 
-  h3->Draw("histe");
+  mass_qq->Draw("histe");
   //gPad->SetLogy(true);
 
   std::cout << "Fit crystal ball function to quark quark dijet mass spectrum." << std::endl;
 
   fit_gaus = new TF1("gaus","gaus",cmdline.resonance_mass*0.8, cmdline.resonance_mass*1.2);
-  h3->Fit(fit_gaus,"R");
+  mass_qq->Fit(fit_gaus,"R");
   fit = new TF1("fnc_dscb",fnc_dscb,cmdline.resonance_mass*0.3, cmdline.resonance_mass*1.6,7);
   fit->SetTitle("");
   fit->SetParameter(0,fit_gaus->GetParameter(0));
@@ -487,7 +552,7 @@ int main(int argc, char** argv)
   fit->SetLineWidth(2);
   fit->SetLineColor(1);
   fit->SetLineStyle(1);
-  h3->Fit(fit,"R");
+  mass_qq->Fit(fit,"R");
 
   std::cout << "Quark quark resonance shape for resonance of mass " << cmdline.resonance_mass << "." << std::endl;
 
@@ -503,8 +568,23 @@ int main(int argc, char** argv)
   }
   std::cout << "};" << std::endl;
 
-  h3->Write();
+  mass_qq->Write();
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_mass_qq.pdf").c_str());
+
+  TCanvas c2("c2","c2",200,200);
+
+  deta_vs_mass->Draw("COLZ");
+  deta_vs_mass->Write();
+  c2.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_deta_vs_mass.pdf").c_str());
+
+  deta_vs_mass_gg->Draw("COLZ");
+  deta_vs_mass_gg->Write();
+  c2.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_deta_vs_mass_gg.pdf").c_str());
+
+  deta_vs_mass_qq->Draw("COLZ");
+  deta_vs_mass_qq->Write();
+  c2.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_deta_vs_mass_qq.pdf").c_str());
+
 
   stream.close();
   ofile.close();
