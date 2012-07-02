@@ -90,10 +90,21 @@ if __name__ == '__main__':
     import sys
     from CMGTools.RootTools.RootTools import * 
     from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
+    from optparse import OptionParser
 
-    anaDir = sys.argv[1]
-    cfgFileName = sys.argv[2]
+    parser = OptionParser()
+    parser.add_option("-C", "--channel", 
+                      dest="channel", 
+                      help="TauEle or TauMu",
+                      default='TauMu')
+    (options,args) = parser.parse_args()
+    if len(args) != 2:
+        parser.print_help()
+        sys.exit(1)
+    
+    anaDir = args[0]
+    cfgFileName = args[1]
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config,  None, True, 'TauMu') 
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config,  None, True, options.channel) 
