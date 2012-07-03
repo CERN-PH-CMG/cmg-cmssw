@@ -155,11 +155,16 @@ bool BaseFlatNtp::fill(){
 
 
 bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::string filter){
-  for(std::vector<cmg::TriggerObject>::const_iterator obj=trigObjs_->begin(); obj!=trigObjs_->end(); obj++){//cmg ObjectListSel
-    if(obj->hasSelection(path.c_str())//HLT path name
-       &&obj->hasSelection(filter.c_str())//last filter
-       &&reco::deltaR(eta,phi,obj->eta(),obj->phi())<0.3)
-      return 1;      
+  for(std::vector<cmg::TriggerObject>::const_iterator obj=trigObjs_->begin(); obj!=trigObjs_->end(); obj++){
+    if(obj->hasSelection(path.c_str())){//HLT path name
+      //obj->printSelections(cout);
+      if(obj->hasSelection(filter.c_str())){//last filter
+	if(reco::deltaR(eta,phi,obj->eta(),obj->phi())<0.3){
+	  //obj->printSelections(cout);	  
+	  return 1;      
+	}
+      }
+    }
   }
   
   return 0;
