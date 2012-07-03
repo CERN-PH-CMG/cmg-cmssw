@@ -55,10 +55,22 @@ def file_dir(name):
     return tfile, tdir
 
 
-def datacards(plot, category, channel='muTau'):
-
+def datacards(plot, category, shift=None, channel='muTau'):
+    ext = None
+    if shift:
+        if shift == 'Up':
+            ext = 'CMS_scale_tUp'
+        elif shift == 'Down':
+            ext = 'CMS_scale_tDown'
+        else:
+            raise ValueError('shift should be "Up", "Down", or None. You gave shift='+str(shift))
+        
     fileName = '{channel}_{category}.root'.format(channel=channel,
                                                   category=category)
+    if ext:
+        fileName = '{channel}_{category}_{ext}.root'.format(channel=channel,
+                                                          category=category,
+                                                          ext=ext)
     file = TFile(fileName, 'recreate')
     print 'output file', fileName
     zttzl = None
@@ -66,16 +78,25 @@ def datacards(plot, category, channel='muTau'):
     for myName, hist in sorted(plot.histosDict.iteritems()):
         rogerName = datacards_aliases.get(myName, None)
         if rogerName is not None:
-            print 'writing', myName, 'as', rogerName
-            hist.weighted.Write(rogerName)
+            theName = rogerName
+            if ext:
+                if rogerName=='data_obs':
+                    # data not written for shifted samples
+                    continue
+                theName = '_'.join([rogerName,ext])
+            print 'writing', myName, 'as', theName
+            hist.weighted.Write( theName )
             if myName == 'Ztt_ZL':
                 zttzl = copy.deepcopy(hist)
             if myName == 'Ztt_ZJ':
                 zttzj = copy.deepcopy(hist)
     if zttzl and zttzj:
-        print 'writing ZLL'
+        name = 'ZLL'
+        if ext:
+            name = '_'.join( [name, ext])
+        print 'writing', name
         zttzl.Add(zttzj)
-        zttzl.weighted.Write('ZLL')
+        zttzl.weighted.Write(name)
     file.Close()
 
 

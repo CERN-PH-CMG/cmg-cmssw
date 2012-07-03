@@ -16,7 +16,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
     def __init__(self, varName, directory, selComps, weights,
                  bins = None, xmin = None, xmax=None, cut = '',
-                 weight='weight', embed = False, treeName=None):
+                 weight='weight', embed = False, shift=None, treeName=None):
         '''Data/MC plotter adapted to the H->tau tau analysis.
         The plotter takes a collection of trees in input. The trees are found according
         to the dictionary of selected components selComps.
@@ -31,6 +31,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.treeName = treeName
         self.selComps = selComps
         self.varName = varName
+        self.shift = shift
         self.cut = cut
         self.eventWeight = weight
         # import pdb; pdb.set_trace()
@@ -75,8 +76,21 @@ class H2TauTauDataMC( AnalysisDataMC ):
 ##             weight = ' * '.join( [self.eventWeight, recEffId.weight(), recEffIso.weight()])
         if tree == None:
             raise ValueError('tree does not exist for component '+compName)
-        tree.Project( histName, varName, '{weight}*({cut})'.format(cut=cut,
-                                                                   weight=weight) )
+        var = varName
+        if not comp.isData and self.shift:
+            if self.shift == 'Up':
+                if varName == 'visMass' or varName == 'svfitMass':
+                    print 'Shifting visMass and svfitMass by sqrt(1.03) for', comp.name
+                    var = varName + '* sqrt(1.03)'
+            elif self.shift == 'Down':
+                if varName == 'visMass' or varName == 'svfitMass':
+                    print 'Shifting visMass and svfitMass by sqrt(0.97) for', comp.name
+                    var = varName + '* sqrt(0.97)'
+            else:
+                raise ValueError( self.shift + ' is not recognized. Use None, "Up" or "Down".')
+            
+        tree.Project( histName, var, '{weight}*({cut})'.format(cut=cut,
+                                                               weight=weight) )
         hist.SetStats(0)
         componentName = compName
         legendLine = compName
@@ -88,7 +102,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
     def _ReadHistograms(self, directory):
         '''Build histograms for all components.'''
-        for layer, (compName, comp) in enumerate( self.selComps.iteritems() ) : 
+        for layer, (compName, comp) in enumerate( sorted(self.selComps.iteritems()) ) : 
             fileName = '/'.join([ directory,
                                   comp.dir,
                                   self.treeName,
