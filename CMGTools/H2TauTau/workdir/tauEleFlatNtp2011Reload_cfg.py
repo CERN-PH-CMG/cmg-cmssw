@@ -9,12 +9,14 @@ evReportFreq = 100
 
 #######Define the samples to process
 dataset_user = 'benitezj'
-sampleTag = "/PAT_CMG_V5_2_0/H2TAUTAU_TauEle_JoseMay29" #already ran the recalibrator here so use cmgPFJetSel
+#sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_V541_TauEle_JoseMay30"
+#sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_TauEle_V541June27"
+sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_TauEle_V541June29"
 
 
 sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
-mergeFactor = 5
+sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 
 #########################
 
@@ -31,17 +33,17 @@ process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
 from CMGTools.H2TauTau.tools.joseFlatNtpSample2011Reload_cff import configureFlatNtpSampleTauEle
 configureFlatNtpSampleTauEle(process.flatNtpTauEle,sampleName)
 process.flatNtpTauEle.verticesListTag = cms.InputTag('goodOfflinePrimaryVertices')
-#process.flatNtpTauEle.diTauTag = 'cmgTauMuPreSel'
-#process.flatNtpTauEle.diTauTag = 'cmgTauMuCorSVFitFullSel'
-process.flatNtpTauEle.diTauTag = 'cmgTauEleMVAPreSel'
-process.flatNtpTauEle.runSVFit = 0
+process.flatNtpTauEle.diTauTag = 'cmgTauElePreSel'
+#process.flatNtpTauEle.diTauTag = 'cmgTauEleMVAPreSel'
+process.flatNtpTauEle.runSVFit = 2
 process.analysis += process.flatNtpTauEle
 
+
 ######Define the input files
-inputfiles = "tauEle_fullsel_tree_CMG_.*root" #-------------------------------------------------------------------Fix
+inputfiles = "tauEle_fullsel_tree_CMG_.*root"
 dataset_name = process.flatNtpTauEle.path.value() + sampleTag
-firstfile = sampleJobIdx * mergeFactor
-lastfile = (sampleJobIdx + 1 ) * mergeFactor
+firstfile = sampleJobIdx * sampleMergeFactor
+lastfile = (sampleJobIdx + 1 ) * sampleMergeFactor
 print dataset_user
 print dataset_name
 print inputfiles
@@ -54,12 +56,8 @@ process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 print process.source.fileNames
 
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:6486','1:20430','1:28387','1:88240','1:105383','1:121208','1:165752','1:183902')
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:4394', '1:82155', '1:172226', '1:178770', '1:184091')
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:15599','1:20873','1:20916','1:20991','1:21008')
-#print process.source.eventsToProcess
 
-process.source.fileNames = ['file:./tauEle_fullsel_tree_CMG.root']
+#process.source.fileNames = ['file:./tauEle_fullsel_tree_CMG.root']
 
 
 ##schedule the analyzer

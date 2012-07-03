@@ -1,5 +1,5 @@
-#ifndef CMGTools_H2TauTau_TauMuPlotter_H
-#define CMGTools_H2TauTau_TauMuPlotter_H
+#ifndef CMGTools_H2TauTau_TauElePlotter_H
+#define CMGTools_H2TauTau_TauElePlotter_H
 
 
 //#include "CMGTools/H2TauTau/interface/Sample.h"
@@ -27,13 +27,13 @@ using namespace std;
 #include <TF1.h>
 
 
-class TauMuPlotter : public TNamed {
+class TauElePlotter : public TNamed {
 
 public:
   
-  TauMuPlotter();
-  TauMuPlotter(const char * name);
-  virtual ~TauMuPlotter();
+  TauElePlotter();
+  TauElePlotter(const char * name);
+  virtual ~TauElePlotter();
   
 
 
@@ -111,10 +111,11 @@ public:
   TH1F* getTTJetsIncSS();
   TH1F* getZToLJetInc();
   TH1F* getZToLJetIncSS();
-  TH1F* getZToMuMuInc();
-  TH1F* getZToMuMuIncSS();
-  TH1F* getZToEEInc(){return 0;}//dummy method just to make script work for datacard
-  TH1F* getQCDInc();//uses the same sign samples
+  TH1F* getZToMuMuInc(){return 0;}//dummy method just make script work for datacard
+  TH1F* getZToEEInc();
+  TH1F* getZToEEIncSS();
+  TH1F* getQCDInc();
+  TH1F* getQCDIncWJetsShape();
   TH1F* getTotalBackgroundIncSS();//sum of SS backgrounds except  QCD
   //TH1F* getTotalBackgroundInc();//sum of all OS backgrounds 
   bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
@@ -215,17 +216,18 @@ public:
       cout<<" Category : "<<sm<<" undefined "<<endl;
       return TString("");
     }
+    TString metcut="(metpt>30)";
     TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
-    TString boostcut="(njet>=1&&nbjet==0)";
+    TString boostcut=TString("(njet>=1&&nbjet==0)")+"*"+metcut;
     TString notboostcut=TString("(!")+boostcut+")";
     TString bjetcut="(njet<2&&nbjet>=1)";
     TString notbjetcut=TString("(!")+bjetcut+")";
     TString taulowcut="(taupt<40.)";
     TString tauhighcut="(taupt>=40.)";
     TString SMcut[7];
-    SMcut[0]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+taulowcut;
-    SMcut[1]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+tauhighcut;
+    SMcut[0]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+metcut+"*"+taulowcut;
+    SMcut[1]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+metcut+"*"+tauhighcut;
     SMcut[2]=notvbfcut+"*"+boostcut+"*"+taulowcut;
     SMcut[3]=notvbfcut+"*"+boostcut+"*"+tauhighcut;
     SMcut[4]=vbfcut;
@@ -268,7 +270,7 @@ private:
   ///
   void fixFileTag(TString * filetag);
 
-  ClassDef(TauMuPlotter, 1);
+  ClassDef(TauElePlotter, 1);
 };
 
 #endif 
