@@ -22,6 +22,8 @@ class FourJetEMissTreeProducer( TreeAnalyzer ):
             var('{pName}B7'.format(pName=pName))
             
             
+        var('nj_ini')
+        var('njet')
         var('ptMiss')
         var('pMiss')
         var('eMiss')
@@ -39,18 +41,21 @@ class FourJetEMissTreeProducer( TreeAnalyzer ):
         var('sumtet')
         var('nunuVV')
         var('wwh')
-        var('eleele')
-        var('mumu')
-        var('tautau')
+        #var('eleele')
+        #var('mumu')
+        #var('tautau')
         var('alpha')
         var('cross')
         var('chi2mZ')
-        var('chi2partiel')
-
+        var('ele')
+        var('muo')
+        var('tau')
+        
+#        var('chi2partiel')
         jetVars('Jet1')
         jetVars('Jet2')
-        jetVars('Jet3')
-        jetVars('Jet4')
+#        jetVars('Jet3')
+#        jetVars('Jet4')
 
         self.tree.book()
 
@@ -75,6 +80,8 @@ class FourJetEMissTreeProducer( TreeAnalyzer ):
 
         subevent = getattr( event, self.cfg_ana.anaName )
 
+        fill('nj_ini',subevent.njet_ini)
+        fill('njet',subevent.njet)
         fill('ptMiss',subevent.ptMiss)
         fill('eMiss',subevent.eMiss)
         fill('pMiss',subevent.pMiss)
@@ -92,17 +99,20 @@ class FourJetEMissTreeProducer( TreeAnalyzer ):
         fill('sumtet',subevent.sumtet)
         fill('nunuVV',subevent.nunuVV)
         fill('wwh',subevent.wwh)
-        fill('eleele',subevent.eleele)
-        fill('mumu',subevent.mumu)
-        fill('tautau',subevent.tautau)
+        #fill('eleele',subevent.eleele)
+        #fill('mumu',subevent.mumu)
+        #fill('tautau',subevent.tautau)
         fill('alpha',subevent.alpha)
         fill('cross',subevent.cross)
         fill('chi2mZ',subevent.chi2mZ)
-        fill('chi2partiel',subevent.chi2partiel)
+        fill('ele',subevent.ele)
+        fill('muo',subevent.muo)
+        fill('tau',subevent.tau)
+#        fill('chi2partiel',subevent.chi2partiel)
 
         fJetVars('Jet1',subevent.allJets[0])
         fJetVars('Jet2',subevent.allJets[1])
-        fJetVars('Jet3',subevent.allJets[2])
-        fJetVars('Jet4',subevent.allJets[3])
+#        fJetVars('Jet3',subevent.allJets[2])
+#        fJetVars('Jet4',subevent.allJets[3])
 
         self.tree.fill()

@@ -42,61 +42,45 @@ class FourJetEMissAnalyzer( Analyzer ):
     def beginLoop(self):
         super(FourJetEMissAnalyzer,self).beginLoop()
         self.counters.addCounter('FourJetEMiss')
-        self.counters.addCounter('EMissGen')
-        self.counters.addCounter('WWHGen')
-        self.counters.addCounter('FourJets')
-        self.counters.addCounter('FourGenJets')
+        self.counters.addCounter('nunuVV')
         counts = []
         counts.append(self.counters.counter('FourJetEMiss'))
-        counts.append(self.counters.counter('EMissGen'))
-        counts.append(self.counters.counter('WWHGen'))
+        counts.append(self.counters.counter('nunuVV'))
         for count in counts : 
             count.register('All events')
+            count.register('Leptonic 0')
             count.register('ptMiss > 10.')
             count.register('10 < mVis < 180.')
+            count.register('Leptonic 1')
             count.register('ctMiss > 1.00')
             count.register('mMiss > 0.')
+            count.register('Two Jets')
+            count.register('Leptonic 2')
             count.register('Four Good Jets')
-            count.register('passing')
+            count.register('Other Cuts')
         
     def buildMiss(self, event):
 
-        self.nq = 0 
-        self.quarks = []
         self.nunuVV = False
         self.wwh = False
         self.neutrinos = []
-        self.bquarks = []
+        self.Vs = []
         for ptc in self.mchandles['genParticles'].product():
             isNeutrino = abs(ptc.pdgId()) == 12 or abs(ptc.pdgId()) == 14 or abs(ptc.pdgId()) == 16
-            isbquark = abs(ptc.pdgId()) == 5
+            isV = abs(ptc.pdgId()) == 23 or  abs(ptc.pdgId()) ==24
             if isNeutrino : 
                 if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
                 self.neutrinos.append(GenParticle(ptc))
-            elif isbquark : 
+            elif isV : 
                 if not(ptc.numberOfMothers()) : continue
                 if ptc.mother(0).pdgId() != 25 : continue
-                self.bquarks.append(GenParticle(ptc))
+                self.Vs.append(GenParticle(ptc))
 
-           #print GenParticle(ptc)
-            # Find four jet events
-            if abs(ptc.pdgId()) > 6 and ptc.pdgId() != 21 : continue
-            print 'a quark : ',ptc.pdgId()
-            if not(ptc.numberOfMothers()) : continue
-            moth = ptc.mother(0)
-            print 'Mother : ',moth.pdgId()
-            if moth.numberOfMothers() and moth.mother(0).pdgId() == 25 : continue
-            if abs(moth.pdgId()) != 23 and \
-               abs(moth.pdgId()) != 25 : continue
-            self.nq += 1
-            self.quarks.append(GenParticle(ptc))
-
-        if self.nq == 4 : print 'A Four Jet Event !'
-
-
-        if len(self.quarks) == 4 and len(self.neutrinos) == 2:
+        if len(self.neutrinos) == 2 and len(self.Vs) == 2 :
             self.nunuVV = True
-
+            #self.nunuZZ = 
+            print 'nunuVV event!'
+            
 
         self.eMiss = EMiss(self.jets)
         self.eVis = EVis(self.jets)
@@ -116,42 +100,60 @@ class FourJetEMissAnalyzer( Analyzer ):
         if self.eVis.P() > 0. : 
             event.ctVis = self.eVis.Pz()/self.eVis.P()
         event.mVis = self.eVis.M()
-
+        event.nunuVV = self.nunuVV
+        event.wwh = self.wwh
 
     def buildLeptonList(self,event):
 
+        self.leptonic = False
+        
         self.eleele = False
         self.mumu = False
         self.tautau = False
         self.electrons = []
         self.muons = []
         self.taus = []
+        self.elefromW = []
+        self.muofromW = []
+        self.taufromW = []
+        self.elefromZ = []
+        self.muofromZ = []
+        self.taufromZ = []
 
         for ptc in self.mchandles['genParticles'].product():
             isElectron = abs(ptc.pdgId()) == 11
             isMuon = abs(ptc.pdgId()) == 13
             isTau = abs(ptc.pdgId()) == 15
-            if isElectron : 
-                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
+            if isElectron :
+                if ptc.numberOfMothers() and abs(ptc.mother(0).pdgId())==24 : self.elefromW.append(GenParticle(ptc))
+                if ptc.numberOfMothers() and ptc.mother(0).pdgId()==23 : self.elefromZ.append(GenParticle(ptc))
                 self.electrons.append(GenParticle(ptc))
             if isMuon : 
-                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
+                if ptc.numberOfMothers() and abs(ptc.mother(0).pdgId())==24 : self.muofromW.append(GenParticle(ptc))
+                if ptc.numberOfMothers() and ptc.mother(0).pdgId()==23 : self.muofromZ.append(GenParticle(ptc))
                 self.muons.append(GenParticle(ptc))
             if isTau : 
-                if ptc.numberOfMothers() and ptc.mother(0).pdgId() != 23 : continue
+                if ptc.numberOfMothers() and abs(ptc.mother(0).pdgId())==24 : self.taufromW.append(GenParticle(ptc))
+                if ptc.numberOfMothers() and ptc.mother(0).pdgId()==23 : self.taufromZ.append(GenParticle(ptc))
                 self.taus.append(GenParticle(ptc))
 
-        if len(self.electrons) == 2 :
-            self.eleele = True
-        if len(self.muons) == 2 :
-            self.mumu = True
-        if len(self.taus) == 2 :
-            self.tautau = True
+        #if len(self.electrons) == 2 :
+            #self.eleele = True
+        #if len(self.muons) == 2 :
+            #self.mumu = True
+        #if len(self.taus) == 2 :
+            #self.tautau = True
 
-        event.eleele = self.eleele
-        event.mumu = self.mumu
-        event.tautau = self.tautau
+        #event.eleele = self.eleele
+        #event.mumu = self.mumu
+        #event.tautau = self.tautau
+        
+        event.ele = len(self.electrons)
+        event.muo = len(self.muons)
+        event.tau = len(self.taus)
+        
 
+        if self.elefromW>0 or self.muofromW > 0 or self.taufromW > 0 : self.leptonic = True
 
         self.jets = []
         for ptj in self.handles['jets'].product():
@@ -204,85 +206,81 @@ class FourJetEMissAnalyzer( Analyzer ):
                 if drmin < 0.1 :
                     self.jets[ijet].setP4(lept.p4())
                     self.jets[ijet].setPdgId(lept.pdgId())
-##                 elif self.eleele or self.mumu :
-##                     print 'Watch out : Jet far from lepton '1
-##                     print ' drmin = ',drmin
-##                     print ' Lepton : ',lept, lept.mass()
-##                     print ' Jet    : ',self.jets[ijet], self.jets[ijet].mass()
+                 #elif self.eleele or self.mumu :
+                 #print 'Watch out : Jet far from lepton '1
+                 #print ' drmin = ',drmin
+                 #print ' Lepton : ',lept, lept.mass()
+                 #print ' Jet    : ',self.jets[ijet], self.jets[ijet].mass()
 
     def buildJetList(self, event):
 
-#Need to get to 4 jets, then to two
-        
+        self.jet4 = []
         self.jet3 = []
         self.jet2 = []
 
+        self.jets.sort(key=lambda a: a.energy(), reverse = True)
+        tmpJets = set(self.jets)
         if len(self.jets) > 4 : 
-            self.jets.sort(key=lambda a: a.energy(), reverse = True)
-            tmpJets = set(self.jets)
-            tmpJet3 = set(self.jets)
-            tmpJet2 = set(self.jets)
-#            print 'Jets Avant : '
-#            for jet in tmpJets:
-#                print jet, jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
-            while len(tmpJets) != 4:
-                # Keep the step with three jets
-                if len(tmpJet3) == 3 :
-                    for jet in tmpJet3 :
-                        self.jet3.append(jet)
+            #print 'Jets Avant : '
+            #for jet in tmpJets:
+            #    print jet, jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
+            while len(tmpJets) != 4 : 
                 # 
                 dijets = self.findPairs(tmpJets)
                 dijets.sort(key=lambda a: a.M())
-#                print dijets[0],dijets[0].M()
+                #print dijets[0],dijets[0].M()
                 
                 tmpJets.remove(dijets[0].leg1)
                 tmpJets.remove(dijets[0].leg2)
                 tmpJets.add(dijets[0])
 
- #           print 'Jets apres : '
+            #print 'Jets apres : '
             self.jets = []
             for jet in tmpJets:
- #               print jet,jet.nConstituents(), jet.mass(), jet.btag(7)
- #               print jet,jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
+                #print jet,jet.nConstituents(), jet.mass(), jet.btag(7)
+                #print jet,jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
                 self.jets.append(jet)
 
-                #        self.jets.sort(key=lambda a: a.btag(7), reverse = True)
-#Order in energy. do not need btag for now. 
-                self.jets.sort(key=lambda a: a.energy(), reverse = True)
 
-#Now obtain only two ":jets" for the acol and cross variable
-
-        if len(self.jets) > 2 : 
+                #self.jets.sort(key=lambda a: a.btag(7), reverse = True)
+            #Order in energy. do not need btag for now. 
             self.jets.sort(key=lambda a: a.energy(), reverse = True)
-            tmpJets2 = set(self.jets)
-#            print 'Jets Avant : '
-#            for jet in tmpJets:
-#                print jet, jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
-            while len(tmpJets2) != 2:
-                dijets = self.findPairs(tmpJets2)
+            
+        #Now obtain only two ":jets" for the acol and cross variable
+        
+        if len(self.jets) > 2 : 
+            #print 'Jets Avant : '
+            #for jet in tmpJets:
+            #print jet, jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
+            while len(tmpJets) != 2:
+                # Keep the step with three jets
+                if len(tmpJets) == 3 :
+                    for jet in tmpJets :
+                        self.jet3.append(jet)
+                        
+                dijets = self.findPairs(tmpJets)
                 dijets.sort(key=lambda a: a.M())
-#                print dijets[0],dijets[0].M()
+                #print dijets[0],dijets[0].M()
                 
-                tmpJets2.remove(dijets[0].leg1)
-                tmpJets2.remove(dijets[0].leg2)
-                tmpJets2.add(dijets[0])
+                tmpJets.remove(dijets[0].leg1)
+                tmpJets.remove(dijets[0].leg2)
+                tmpJets.add(dijets[0])
 
- #           print 'Jets apres : '
+            #print 'Jets apres : '
             self.jet2 = []
-            for jet in tmpJets:
- #               print jet,jet.nConstituents(), jet.mass(), jet.btag(7)
- #               print jet,jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
-                self.jet2.append(jet)
+            for jet in tmpJets :
+                 #print jet,jet.nConstituents(), jet.mass(), jet.btag(7)
+                 #print jet,jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
+                 self.jet2.append(jet)
                 
         self.jet2.sort(key=lambda a: a.energy(), reverse = True)
-
-
-
+        
+        
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
         eventNumber = iEvent.eventAuxiliary().id().event()
-        #print 'Event ',eventNumber
+        print 'Event ',eventNumber
         # creating a "sub-event" for this analyzer
         myEvent = Event(event.iEv)
         setattr(event, self.name, myEvent)
@@ -293,6 +291,9 @@ class FourJetEMissAnalyzer( Analyzer ):
         self.buildMiss( event )
 
         event.allJets = self.jets
+        event.njet_ini = len(self.jets)
+        #print 'Njet ini ', len(self.jets)
+       
         event.jetPairs = self.findPairs( event.allJets )
 
         #for ptc in self.mchandles['genParticles'].product():
@@ -300,61 +301,76 @@ class FourJetEMissAnalyzer( Analyzer ):
         #for jet in self.jets :
         #    print jet, jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(),jet.btag(7),jet.btag(0)
 
+        ###COUNTERS HERE 
+
         self.counters.counter('FourJetEMiss').inc('All events')
-        if self.nunuVV : self.counters.counter('EMissGen').inc('All events')
+        if self.nunuVV : self.counters.counter('nunuVV').inc('All events')
         event.step = 0
 
+        if self.leptonic:
+            self.counters.counter('FourJetEMiss').inc('Leptonic 0')
+            if self.nunuVV : self.counters.counter('nunuVV').inc('Leptonic 0')
+            event.step += 1
+
+        #Cut on pTMiss>0
         if self.eMiss.Pt() < self.cfg_ana.ptmiss :
             return 0
         else:
             event.step +=1
         self.counters.counter('FourJetEMiss').inc('ptMiss > 10.')
-        if self.nunuVV : self.counters.counter('EMissGen').inc('ptMiss > 10.')
-#        if self.wwh : self.counters.counter('WWHGen').inc('ptMiss > 10.')
+        if self.nunuVV : self.counters.counter('nunuVV').inc('ptMiss > 10.')
             
+        #cut on mVis<180
         if self.eVis.M() > self.cfg_ana.mvis[1] or self.eVis.M() < self.cfg_ana.mvis[0]:
             return 0
         else:
             event.step +=1
         self.counters.counter('FourJetEMiss').inc('10 < mVis < 180.')
-        if self.nunuVV : self.counters.counter('EMissGen').inc('10 < mVis < 180.')
-#        if self.wwh : self.counters.counter('WWHGen').inc('10 < mVis < 180.')
+        if self.nunuVV : self.counters.counter('nunuVV').inc('10 < mVis < 180.')
+        if self.leptonic:
+            self.counters.counter('FourJetEMiss').inc('Leptonic 1')
+            if self.nunuVV : self.counters.counter('nunuVV').inc('Leptonic 1')
+            event.step += 1
+
             
+        #cut on ctmiss
         if self.eMiss.P() == 0. or abs(self.eMiss.Pz()/self.eMiss.P()) > self.cfg_ana.ctmiss  :
             return 0
         else:
             event.step +=1
         self.counters.counter('FourJetEMiss').inc('ctMiss > 1.00')
-        if self.nunuVV : self.counters.counter('EMissGen').inc('ctMiss > 1.00')
-        if self.wwh : self.counters.counter('WWHGen').inc('ctMiss > 1.00')
+        if self.nunuVV : self.counters.counter('nunuVV').inc('ctMiss > 1.00')
             
+        #cut on mMiss>0
         if self.eMiss.M() < self.cfg_ana.mmiss :
             return 0
         else:
             event.step +=1
 
         self.counters.counter('FourJetEMiss').inc('mMiss > 0.')
-        if self.nunuVV : self.counters.counter('EMissGen').inc('mMiss > 0.')
-#        if self.wwh : self.counters.counter('WWHGen').inc('mMiss > 0.')
+        if self.nunuVV : self.counters.counter('nunuVV').inc('mMiss > 0.')
 
+
+        #Calculate alpha for rescaling
         delta = self.eVis.E()*self.eVis.E() * 91.2 * 91.2 + self.eVis.p()*self.eVis.p()*(240.*240.-91.2*91.2)
-
         if self.eVis.M()> 0 :
             event.alpha = (self.eVis.E()*240. - sqrt(delta)) / (self.eVis.M()*self.eVis.M())
         else:
             print 'Event ', eventNumber, self.eVis.M()
          
 
-# build two lists: one with 4 jets and onw with only 2 jets 
+        # build two lists: one with 4 jets and onw with only 2 jets 
         self.buildJetList( event )        
 
-        if len(self.jets) != 4 : 
+        event.njet = len(self.jets)
+        #print 'Njet after ', len(self.jets)
+
+        #remove the 4jet cuts, require at least 2
+        if len(self.jet2) <2 : 
+        #if len(self.jets) != 4 : 
             return 0
-        else:
-            event.step +=1
-        self.counters.counter('FourJetEMiss').inc('Four Good Jets')
-        if self.nunuVV : self.counters.counter('EMissGen').inc('Four Good Jets')
-#        if self.wwh : self.counters.counter('WWHGen').inc('Two Good Jets')
+        #else:
+             #event.step +=1
 
         acol = self.jet2[0].px() * self.jet2[1].px() + \
                self.jet2[0].py() * self.jet2[1].py() + \
@@ -405,10 +421,32 @@ class FourJetEMissAnalyzer( Analyzer ):
             event.mVisFit = event.alpha*event.mVis
             event.mMissFit = 91.2
 
-        self.counters.counter('FourJetEMiss').inc('passing')
-        if self.nunuVV : self.counters.counter('EMissGen').inc('passing')
-        if self.wwh : self.counters.counter('WWHGen').inc('passing')
+
+        self.counters.counter('FourJetEMiss').inc('Two Jets')
+        if self.nunuVV : self.counters.counter('nunuVV').inc('Two Jets')
         event.step += 1
+
+        if self.leptonic:
+            self.counters.counter('FourJetEMiss').inc('Leptonic 2')
+            if self.nunuVV : self.counters.counter('nunuVV').inc('Leptonic 2')
+            event.step += 1
+
+        #Check how many 4 jets events would be there (no cut) 
+        if len(self.jets) != 4 : self.counters.counter('FourJetEMiss').inc('Four Good Jets')
+        if len(self.jets) != 4 and self.nunuVV : self.counters.counter('nunuVV').inc('Four Good Jets')
+
+        #add the cuts in the macro
+        if abs(self.eMiss.M()-95.) < 30.  and event.acop < 160. and event.ptMiss > 20. :
+            return 0
+        self.counters.counter('FourJetEMiss').inc('Other Cuts')
+        self.counters.counter('nunuVV').inc('Other Cuts')
+        event.step+1
+
+        #print out the genparticle info
+        for ptc in self.mchandles['genParticles'].product():
+           print GenParticle(ptc)
+        for jet in self.jets :
+            print jet, jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(),jet.btag(7),jet.btag(0)
 
 
         return True
