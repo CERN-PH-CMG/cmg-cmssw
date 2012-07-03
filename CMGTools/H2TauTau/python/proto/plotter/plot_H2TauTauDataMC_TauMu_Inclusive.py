@@ -55,14 +55,14 @@ def replaceShapeInclusive(plot, var, anaDir,
 
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
-              cut='', weight='weight', embed=False, replaceW=False):
+              cut='', weight='weight', embed=False, shift=None, replaceW=False):
     
     print 'making the plot:', var, 'cut', cut
 
     oscut = cut+' && diTau_charge==0'
     osign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
-                           cut=oscut, weight=weight,
+                           cut=oscut, weight=weight, shift=shift,
                            embed=embed)
     osign.Hist(EWK).Scale( wJetScaleOS )
     if replaceW:
@@ -73,7 +73,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
     sscut = cut+' && diTau_charge!=0'
     ssign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
-                           cut=sscut, weight=weight,
+                           cut=sscut, weight=weight, shift=shift,
                            embed=embed)
     ssign.Hist(EWK).Scale( wJetScaleSS ) 
     if replaceW:
@@ -171,6 +171,10 @@ if __name__ == '__main__':
                       dest="higgs", 
                       help="Higgs mass: 125, 130,... or dummy",
                       default=None)
+##     parser.add_option("-s", "--shift", 
+##                       dest="shift", 
+##                       help="shift: Up or Down",
+##                       default=None)
 
     
     (options,args) = parser.parse_args()
@@ -187,7 +191,7 @@ if __name__ == '__main__':
         XMIN = float(options.xmin)
         XMAX = float(options.xmax)
         
-
+    cutstring = options.cut
     options.cut = replaceCategories(options.cut, categories) 
     
     # TH1.AddDirectory(False)
@@ -197,6 +201,12 @@ if __name__ == '__main__':
     useW11 = False
     
     anaDir = args[0]
+    shift = None
+    if anaDir.find('_Down')!=-1:
+        shift = 'Down'
+    elif anaDir.find('_Up')!=-1:
+        shift = 'Up'
+        
     cfgFileName = args[1]
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
@@ -230,6 +240,21 @@ if __name__ == '__main__':
                                  weight=weight, embed=options.embed)
 
 
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, replaceW=replaceW)
+    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, shift=shift, replaceW=replaceW)
     draw(osQCD, options.blind)
-    
+
+    category = 'X'
+    if cutstring.find('Xcat_J1X')!=-1:
+        category = '1jet'
+        if cutstring.find('l1_pt<40')!=-1:
+            category = '1jet_low'
+        elif cutstring.find('l1_pt>40')!=-1:
+            category = '1jet_high'
+    if cutstring.find('Xcat_J0X')!=-1:
+        category = '0jet'
+        if cutstring.find('l1_pt<40')!=-1:
+            category = '0jet_low'
+        elif cutstring.find('l1_pt>40')!=-1:
+            category = '0jet_high'
+            
+    datacards(osQCD, category, shift)
