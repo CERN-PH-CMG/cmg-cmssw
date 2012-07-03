@@ -121,21 +121,27 @@ class FourJetEMissAnalyzer( Analyzer ):
         self.taufromZ = []
 
         for ptc in self.mchandles['genParticles'].product():
-            isElectron = abs(ptc.pdgId()) == 11
-            isMuon = abs(ptc.pdgId()) == 13
-            isTau = abs(ptc.pdgId()) == 15
-            if isElectron :
-                if ptc.numberOfMothers() and abs(ptc.mother(0).pdgId())==24 : self.elefromW.append(GenParticle(ptc))
-                if ptc.numberOfMothers() and ptc.mother(0).pdgId()==23 : self.elefromZ.append(GenParticle(ptc))
-                self.electrons.append(GenParticle(ptc))
-            if isMuon : 
-                if ptc.numberOfMothers() and abs(ptc.mother(0).pdgId())==24 : self.muofromW.append(GenParticle(ptc))
-                if ptc.numberOfMothers() and ptc.mother(0).pdgId()==23 : self.muofromZ.append(GenParticle(ptc))
-                self.muons.append(GenParticle(ptc))
-            if isTau : 
-                if ptc.numberOfMothers() and abs(ptc.mother(0).pdgId())==24 : self.taufromW.append(GenParticle(ptc))
-                if ptc.numberOfMothers() and ptc.mother(0).pdgId()==23 : self.taufromZ.append(GenParticle(ptc))
-                self.taus.append(GenParticle(ptc))
+            isW = abs(ptc.pdgId()) == 24
+##             isElectron = abs(ptc.pdgId()) == 11 or abs(ptc.pdgId()) == 12
+##             isMuon = abs(ptc.pdgId()) == 13  or abs(ptc.pdgId()) == 14
+##             isTau = abs(ptc.pdgId()) == 15  or abs(ptc.pdgId()) == 16
+            if isW :
+                for idau in range(ptc.numberOfDaughters()) :
+                    if abs(ptc.daughter(idau).pdgId()) == 11 : self.elefromW.append(GenParticle(ptc))
+                    if abs(ptc.daughter(idau).pdgId()) == 13 : self.muofromW.append(GenParticle(ptc))
+                    if abs(ptc.daughter(idau).pdgId()) == 15 : self.taufromW.append(GenParticle(ptc))
+##             if isElectron :
+##                 if ptc.numberOfMothers() and abs(ptc.mother(0).pdgId())==24 : self.elefromW.append(GenParticle(ptc))
+##                 if ptc.numberOfMothers() and ptc.mother(0).pdgId()==23 : self.elefromZ.append(GenParticle(ptc))
+##                 self.electrons.append(GenParticle(ptc))
+##             if isMuon : 
+##                 if ptc.numberOfMothers() and abs(ptc.mother(0).pdgId())==24 : self.muofromW.append(GenParticle(ptc))
+##                 if ptc.numberOfMothers() and ptc.mother(0).pdgId()==23 : self.muofromZ.append(GenParticle(ptc))
+##                 self.muons.append(GenParticle(ptc))
+##             if isTau : 
+##                 if ptc.numberOfMothers() and abs(ptc.mother(0).pdgId())==24 : self.taufromW.append(GenParticle(ptc))
+##                 if ptc.numberOfMothers() and ptc.mother(0).pdgId()==23 : self.taufromZ.append(GenParticle(ptc))
+##                 self.taus.append(GenParticle(ptc))
 
         #if len(self.electrons) == 2 :
             #self.eleele = True
@@ -153,7 +159,7 @@ class FourJetEMissAnalyzer( Analyzer ):
         event.tau = len(self.taus)
         
 
-        if self.elefromW>0 or self.muofromW > 0 or self.taufromW > 0 : self.leptonic = True
+        if len(self.elefromW)>0 or len(self.muofromW) > 0 or len(self.taufromW) > 0 : self.leptonic = True
 
         self.jets = []
         for ptj in self.handles['jets'].product():
@@ -280,7 +286,7 @@ class FourJetEMissAnalyzer( Analyzer ):
         self.readCollections( iEvent )
 
         eventNumber = iEvent.eventAuxiliary().id().event()
-        print 'Event ',eventNumber
+        #print 'Event ',eventNumber
         # creating a "sub-event" for this analyzer
         myEvent = Event(event.iEv)
         setattr(event, self.name, myEvent)
@@ -310,7 +316,6 @@ class FourJetEMissAnalyzer( Analyzer ):
         if self.leptonic:
             self.counters.counter('FourJetEMiss').inc('Leptonic 0')
             if self.nunuVV : self.counters.counter('nunuVV').inc('Leptonic 0')
-            event.step += 1
 
         #Cut on pTMiss>0
         if self.eMiss.Pt() < self.cfg_ana.ptmiss :
@@ -330,7 +335,6 @@ class FourJetEMissAnalyzer( Analyzer ):
         if self.leptonic:
             self.counters.counter('FourJetEMiss').inc('Leptonic 1')
             if self.nunuVV : self.counters.counter('nunuVV').inc('Leptonic 1')
-            event.step += 1
 
             
         #cut on ctmiss
@@ -366,11 +370,11 @@ class FourJetEMissAnalyzer( Analyzer ):
         #print 'Njet after ', len(self.jets)
 
         #remove the 4jet cuts, require at least 2
-        if len(self.jet2) <2 : 
-        #if len(self.jets) != 4 : 
+        #if len(self.jet2) <2 : 
+        if len(self.jets) != 4 : 
             return 0
-        #else:
-             #event.step +=1
+        else:
+            event.step +=1
 
         acol = self.jet2[0].px() * self.jet2[1].px() + \
                self.jet2[0].py() * self.jet2[1].py() + \
@@ -429,14 +433,13 @@ class FourJetEMissAnalyzer( Analyzer ):
         if self.leptonic:
             self.counters.counter('FourJetEMiss').inc('Leptonic 2')
             if self.nunuVV : self.counters.counter('nunuVV').inc('Leptonic 2')
-            event.step += 1
 
-        #Check how many 4 jets events would be there (no cut) 
+        #Check how many 4 jets events would be there (no cut)
         if len(self.jets) != 4 : self.counters.counter('FourJetEMiss').inc('Four Good Jets')
         if len(self.jets) != 4 and self.nunuVV : self.counters.counter('nunuVV').inc('Four Good Jets')
 
         #add the cuts in the macro
-        if abs(self.eMiss.M()-95.) < 30.  and event.acop < 160. and event.ptMiss > 20. :
+        if abs(self.eMiss.M()-95.) < 30.  or event.acop < 160. or event.ptMiss > 20. :
             return 0
         self.counters.counter('FourJetEMiss').inc('Other Cuts')
         self.counters.counter('nunuVV').inc('Other Cuts')
