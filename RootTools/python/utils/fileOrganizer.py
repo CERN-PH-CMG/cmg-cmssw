@@ -1,4 +1,5 @@
 from ROOT import TFile, TDirectory, TBrowser
+import pprint
 
 def loadDesc(desc):
     spl = desc.split(':')
@@ -59,11 +60,11 @@ def processRootFiles( descmap ):
         copyDirItems( idir, odir )
     # ofile = ofiles['muTauSM_JoseJune17_tScale_mVis_Reb.root']
     ofile.cd()
-    ofile.ls()
+    # ofile.ls()
     for file in ofiles.values():
         file.Write()
-    print ifiles
-    print ofiles
+    pprint.pprint(ifiles)
+    pprint.pprint(ofiles)
 
 
 if __name__ == '__main__':
