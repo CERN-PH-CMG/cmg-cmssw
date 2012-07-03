@@ -437,16 +437,37 @@ class FourLeptonAnalyzerBase( Analyzer ):
         else:
             return []
         
-    def calculateJets(self,fourLepton,jets):
-        cleanedJets = filter(lambda x: deltaR(x.eta(),x.phi(),fourLepton.leg1.leg1.eta(),fourLepton.leg1.leg1.phi())>0.3 and \
-                             deltaR(x.eta(),x.phi(),fourLepton.leg1.leg2.eta(),fourLepton.leg1.leg2.phi())>0.3 and \
-                             deltaR(x.eta(),x.phi(),fourLepton.leg2.leg1.eta(),fourLepton.leg2.leg1.phi())>0.3 and \
-                             deltaR(x.eta(),x.phi(),fourLepton.leg2.leg2.eta(),fourLepton.leg2.leg2.phi())>0.3,jets)
-        
+    def calculateJetVars(self,fourLepton,jets,cleanDR = 0.5):
+        #Apply ID
+        idJets = filter(lambda x:x.looseJetId() and  x.passPuJetId('full', 2),jets) 
+
+        #Cross clean from leptons
+        cleanedJets = filter(lambda x: deltaR(x.eta(),x.phi(),fourLepton.leg1.leg1.eta(),fourLepton.leg1.leg1.phi())>cleanDR and \
+                             deltaR(x.eta(),x.phi(),fourLepton.leg1.leg2.eta(),fourLepton.leg1.leg2.phi())>cleanDR and \
+                             deltaR(x.eta(),x.phi(),fourLepton.leg2.leg1.eta(),fourLepton.leg2.leg1.phi())>cleanDR and \
+                             deltaR(x.eta(),x.phi(),fourLepton.leg2.leg2.eta(),fourLepton.leg2.leg2.phi())>cleanDR,idJets)
+
+
+        bJets = filter(lambda x: x.bDiscriminator('combinedSecondaryVertexBJetTags')>0.224,cleanedJets)
         jetVars=dict()
         jetVars['nJets']=len(cleanedJets)
-        jetVars['nBJets']=len(filter(lambda x: x.bDiscriminator('combinedSecondaryVertexBJetTags')>0.224,cleanedJets))
+
+        jetVars['nBJets']=len(bJets)
         jetVars['nBJetsTight']=len(filter(lambda x: x.bDiscriminator('combinedSecondaryVertexBJetTags')>0.679,cleanedJets))
+        ht=0
+        if len(bJets) >=2:
+            jetVars['Mbb'] = (bJets[0].p4()+bJets[1].p4()).M()
+        else:
+            jetVars['Mbb']=-99
+            
+        for jet in cleanedJets:
+            ht = ht + jet.pt()
+        jetVars['HT'] = ht
+        if len(cleanedJets)>2:
+            jetVars['Mjjj'] = (cleanedJets[0].p4()+cleanedJets[1].p4()+cleanedJets[2].p4()).M()
+        else:    
+            jetVars['Mjjj'] = -99.
+
         if len(cleanedJets)>1:
             jetVars['dEta'] = cleanedJets[0].eta()-cleanedJets[1].eta()
             jetVars['dPhi'] = deltaPhi(cleanedJets[0].phi(),cleanedJets[1].phi())
@@ -455,6 +476,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
             jetVars['dEta'] = -99
             jetVars['dPhi'] = -99
             jetVars['Mjj'] = -99
+
             
             
         fourLepton.jets = jetVars
