@@ -189,7 +189,7 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         #calculate mela and vbf
         for fl in event.fourLeptonsFakeRateApp:
             fl.mela=self.mela.calculate(fl)
-            self.calculateJets(fl,event.selectedJets)
+            self.calculateJetVars(fl,event.selectedJets)
 
         if passed:
             event.higgsCandLoose = cutFlow.obj1[0]
