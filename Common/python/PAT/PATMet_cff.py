@@ -25,8 +25,8 @@ PATMetSequence = cms.Sequence(
 from CMGTools.Common.Tools.cmsswRelease import *
 if cmsswIs52X():
     from PhysicsTools.PatAlgos.recoLayer0.jetMETCorrections_cff import *
-    producePFMETCorrections.remove( kt6PFJets )
-    producePFMETCorrections.remove( ak5PFJets )
+    # producePFMETCorrections.remove( kt6PFJets )
+    # producePFMETCorrections.remove( ak5PFJets )
     patMETs.metSource = 'pfType1CorrectedMet'
     PATMetSequence.insert(0, producePFMETCorrections)
 elif cmsswIs44X():
