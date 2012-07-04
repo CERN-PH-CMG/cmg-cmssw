@@ -5,21 +5,14 @@
 
 from CMGTools.Production.cmgdbToolsApi import CmgdbToolsApi
 from CMGTools.Production.savannahFormatter import SavannahFormatter
-from CMGTools.Production.fileOps import FileOps
-from DBSAPI.dbsApiException import *
-from DBSAPI.dbsApi import DbsApi
-from DBSAPI.dbsException import *
-from DBSAPI.dbsFileBlock import DbsFileBlock
-from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
+from datetime import *
 import CMGTools.Production.findDSOnSav as findDSOnSav
-from CMGTools.Production.castorToDbsFormatter import CastorToDbsFormatter
-from CMGTools.Production.nameOps import *
 import sys, re
 
 
 class PublishController(object):
     """This class controls the interactions between a user and the two publishing platforms, Savannah and CMGDB"""
-    def __init__(self, username, password, force):
+    def __init__(self, username, password):
         """Initialise CMGDB and set username and password
     	
         'username' takes the NICE username of the current user, NOT the files owner on EOS
@@ -30,168 +23,159 @@ class PublishController(object):
         self._cmgdbAPI.connect()
         self._username = username
         self._password = password
-        self._force = force
+	
     def cmgdbOnline(self):
     	"""Returns True if CMGDB is online and working"""
     	if self._cmgdbAPI is not None: return True
     	else: return False
+	
     def loginValid(self):
     	"""Returns true if the login values that the user provided were a valid CMG group NICE login"""
     	return findDSOnSav.validLogin(self._username, self._password)
-        
-     
-    def savannahPublish(self, procds, opts, comment, fileOps):
+    
+    def savannahPublish(self, datasetDetails):
     	"""Publish dataset details to savannah and returns task ID
     	
-    	'procds' takes a DbsProcessedDataset object which contains many of the datasets details
-    	### THIS COULD BE SIMPLIFIED. DBS OBJECTS NO LONGER NEEDED
-    	'opts' takes a Dict() object containing essential information about the post NOT THE DATA.
-    		it includes date of post, file owner (for assignment)
-    	'fileOps' takes a FileOps object, which generates metadata about the dataset
-    	Returns Savannah task ID of the dataset
+    	'datasetDetails' takes a dict object which contains all of the datasets details. This object is strictly definied.
     	
-    	First, checks if task already exits, then, sees if parent exists.
-    	Next, the function gathers information from the FileOps object,
-    	Finally, the function will send the dataset information to a SavannahFormatter object, 
-    	which will then format the info and publish it to Savannah.
+    	The function sends the dataset information to a SavannahFormatter object, in the order of appearance in Savannah
     	"""
-    	test = False
-    	# If item is test
-    	if 'category_id' in opts:
-    		if opts['category_id'] == '101': test = True
-		
-		# Check if task already exists for dataset
-		try:
-			taskID = findDSOnSav.getTaskID(procds['PathList'][0], opts['category_id'], self._username, self._password, False)
-		except KeyboardInterrupt:
-			raise
-    	
-    	# Check if parent exists
-    	parentTaskID = findDSOnSav.getTaskID(procds['ParentList'][0], opts['category_id'], self._username, self._password, True)
-    	
-    	if parentTaskID is not None and len(parentTaskID) > 0:
-    		if len(parentTaskID)>1: raise NameError("Multiple possible parents found for dataset: "+procds['PathList'][0]+". _getOption() method could be implemented here" )
-    		procds['ParentList'][0]= "[https://savannah.cern.ch/task/?"+str(parentTaskID[0])+" "+findDSOnSav.getNameWithID(parentTaskID[0])+"]"
-    		parentTaskID = parentTaskID[0]
-    	# If Parent is a CMS dataset (i.e. not a CMG dataset)
-    	elif not re.search("--", procds['ParentList'][0]):
-    		procds['ParentList'][0]= "[https://cmsweb.cern.ch/das/request?view=list&limit=10&instance=cms_dbs_prod_global&input=dataset%3D%2F" +procds['ParentList'][0].lstrip("/").split("/")[0]+ "%2F" +procds['ParentList'][0].lstrip("/").split("/")[1]+"%2F" + procds['ParentList'][0].lstrip("/").split("/")[2]+ " "+ procds['ParentList'][0]+"]"
-    		parentTaskID = None
-    	# If parent doesn't exist throw exception
-    	else: raise NameError("No Parent was found for Dataset: "+procds['PathList'][0]+" not publishing.",['PathList'][0],taskID)
-    	
-    	# If task already exists DO NOT re-enter category id, this would be BAD
-    	passOpts = opts
-    	if taskID is not None:
-    		del(passOpts['category_id'])
-    	
-    	# Check validity of dataset
-    	if fileOps.isValid():
-			procds['status'] = "VALID"
-    	else: procds['status'] = "INVALID"
     	
     	# Initialise SavannahFormatter object and add the main attributes
-    	self.savannah = SavannahFormatter(self._username, self._password, taskID, passOpts )
-    	self.savannah.addMain(procds,fileOps.getTags(),self._deleteExtras(fileOps.getLFNGroups()),fileOps.getCastor(), fileOps.getLFN(),fileOps.getRelease(), comment)
+    	self.savannah = SavannahFormatter(self._username, self._password, datasetDetails['taskID'], datasetDetails['SavannahOptions'])
     	
     	# Append all the elements of the integrity check to the savannah output.
-    	if fileOps._totalJobs is not None:self.savannah.appendExtra("*Total Jobs:* "+str(fileOps._totalJobs))
-    	if fileOps._totalFilesMissing is not None:self.savannah.appendExtra("*Total Missing Files:* "+str(fileOps._totalFilesMissing))
-    	if fileOps._totalFilesGood is not None:self.savannah.appendExtra("*Total Good Files:* "+str(fileOps._totalFilesGood))
-    	if fileOps._totalFilesBad is not None:self.savannah.appendExtra("*Total Bad Files:* "+str(fileOps._totalFilesBad))
-    	if fileOps._primaryDatasetFraction is not None:self.savannah.appendExtra("*Primary Dataset Fraction used:* "+str(fileOps._primaryDatasetFraction))
-    	if fileOps._primaryDatasetEntries is not None:self.savannah.appendExtra("*Primary Dataset Entries:* "+str(fileOps._primaryDatasetEntries))
-    	if fileOps._fileEntries is not None:self.savannah.appendExtra("*File Entries:* "+str(fileOps._fileEntries))
-    	if fileOps.getDatasetSize() is not None:self.savannah.appendExtra("*Dataset Size:* "+str(fileOps.getDatasetSize())+" TB")
-    	if len(fileOps._validDuplicates) > 0:
-    		validDuplicates = ["\n"]
-    		for dupedFile in fileOps._validDuplicates:
-    			validDuplicates.append("* " +dupedFile+": \n** "+str(fileOps._validDuplicates[dupedFile])+" events")
-    		self.savannah.appendExtra({"Valid Duplicates":validDuplicates})
-    	if len(fileOps._badJobs) > 0:self.savannah.appendExtra({"Bad Jobs":fileOps._badJobs})
-    	if len(fileOps._filesBad) > 0:
+    	if datasetDetails['CMGDBName']is not None:self.savannah.appendField("*CMGDB Name:* "+datasetDetails['CMGDBName'])
+    	if datasetDetails['EOSName']is not None:self.savannah.appendField("*EOS Name:* "+datasetDetails['EOSName'])
+    	if datasetDetails['Comment']is not None:self.savannah.appendField("*User Comment:* "+datasetDetails['Comment'])
+    	if datasetDetails['ParentSavannahString']is not None:self.savannah.appendField("*Parent:* "+datasetDetails['ParentSavannahString'])
+    	elif datasetDetails['ParentEOSName'] is not None:self.savannah.appendField("*Parent:* "+datasetDetails['ParentEOSName'])
+    	if datasetDetails['DateCreated']is not None:self.savannah.appendField("*Date Created:* "+date.fromtimestamp(int(datasetDetails['DateCreated'])).strftime('%d-%m-%Y'))
+    	if datasetDetails['PhysicsGroup'] is not None:self.savannah.appendField("*Physics Group:* "+datasetDetails['PhysicsGroup'])
+    	if datasetDetails['PrimaryDataset'] is not None:
+            self.savannah.appendField("*Primary Dataset:* "+datasetDetails['PrimaryDataset'])
+    	if datasetDetails['TierList'] is not None:
+            tiers = ""
+            for i in datasetDetails['TierList']:
+                tiers += "\t"+i+"\n"
+                self.savannah.appendField("*Tier List:* "+ tiers)
+    	if datasetDetails["Status"] is not None:self.savannah.appendField("*Status:* "+ datasetDetails["Status"])
+    	if datasetDetails['FileOwner'] is not None:self.savannah.appendField("*Created By:* "+ datasetDetails["FileOwner"])
+    	if datasetDetails['Tags'] is not None:    
+            detailString = ""
+            for row in datasetDetails['Tags']:
+                tag = row['tag']
+                package = row['package']
+                detailString +="_"+tag+"_ - "+package +"\n"
+            if detailString is not "":
+            	self.savannah.appendField("\n*Tags:*\n"+detailString)
+    	
+    	if datasetDetails['TotalJobs'] is not None:self.savannah.appendField("*Total Jobs:* "+str(datasetDetails['TotalJobs']))
+    	if datasetDetails['TotalFilesMissing'] is not None:self.savannah.appendField("*Total Missing Files:* "+str(datasetDetails['TotalFilesMissing']))
+    	if datasetDetails['TotalFilesGood'] is not None:self.savannah.appendField("*Total Good Files:* "+str(datasetDetails['TotalFilesGood']))
+    	if datasetDetails['TotalFilesBad'] is not None:self.savannah.appendField("*Total Bad Files:* "+str(datasetDetails['TotalFilesBad']))
+    	if datasetDetails['PrimaryDatasetFraction'] is not None:self.savannah.appendField("*Primary Dataset Fraction used:* "+str(datasetDetails['PrimaryDatasetFraction']))
+    	if datasetDetails['PrimaryDatasetEntries'] is not None:self.savannah.appendField("*Primary Dataset Entries:* "+str(datasetDetails['PrimaryDatasetEntries']))
+    	if datasetDetails['FileEntries'] is not None:self.savannah.appendField("*File Entries:* "+str(datasetDetails['FileEntries']))
+    	if datasetDetails['DatasetSizeInTB'] is not None:self.savannah.appendField("*Dataset Size:* "+str(datasetDetails['DatasetSizeInTB'])+" TB")
+    	if datasetDetails['LFNGroups'] is not None:
+            detailString=""
+            for group in datasetDetails['LFNGroups']:
+                detailString +=group['name'] + "\n"
+                if "missingFiles" in group:
+                	detailString +="* Missing Files:\n"
+                	for i in group["missingFiles"]: detailString+="** "+ i+"\n"
+                if "duplicateFiles" in group:
+                	detailString +="* Duplicate Files:\n"
+                	for i in group["duplicateFiles"]: detailString+="** "+ i+"\n"
+                if "invalidDuplicates" in group:
+                	detailString +="* Invalid Duplicate Files:\n"
+                	for i in group["invalidDuplicates"]: detailString+="** "+ i+"\n"
+                
+                if "qFiles" in group: detailString += "* No. of Files: " + str(group["qFiles"]) +"\n"
+                detailString+="\n"
+            self.savannah.appendField("*File Groups:*\n"+detailString)
+    	if len(datasetDetails['ValidDuplicates']) > 0:
+    		validDuplicates = ""
+    		for dupedFile in datasetDetails['ValidDuplicates']:
+    			validDuplicates+="* " +dupedFile+": \n** "+str(datasetDetails['ValidDuplicates'][dupedFile])+" events\n"
+    		self.savannah.appendField({"*Valid Duplicates:*\n":validDuplicates})
+    	if len(datasetDetails['BadJobs']) > 0:self.savannah.appendField({"*Bad Jobs:* ":datasetDetails['BadJobs']})
+    	if len(datasetDetails['BadFiles']) > 0:
     		filesBad = []
-    		for badFile in fileOps._filesBad:filesBad.append("* "+badFile)
+    		for badFile in datasetDetails['BadFiles']:filesBad.append("* "+badFile)
     		filesBad[0] = "\n"+filesBad[0]
-    		self.savannah.appendExtra({"Bad Files":filesBad})
+    		self.savannah.appendField({"Bad Files":filesBad})
     		
         # Publish to Savannah
     	newTask = self.savannah.publish()
         if newTask is None:
     		print "Unable to publish Dataset to Savannah, an error occured"
-    		return None, parentTaskID
-    	elif newTask is taskID:
+    		return None, datasetDetails['parentTaskID']
+    	elif newTask is datasetDetails['taskID']:
         	print "Comment added to Savannah"
         	print "URL: https://savannah.cern.ch/task/?"+newTask
         else:
     		print "Dataset published to Savannah"
     		print "URL: https://savannah.cern.ch/task/?"+newTask
-    	return newTask, parentTaskID
+    	return datasetDetails['taskID'], datasetDetails['parentTaskID']
     	
-
-    def cmgdbPublish(self, procds, taskID, test, fileOps):
+	
+    def cmgdbPublish(self, datasetDetails):
     	"""Publish dataset information to CMGDB, and return unique CMGDB dataset ID
     	
-    	'procds' takes a DbsProcessedDataset object which contains many of the datasets details
-    	### THIS COULD BE SIMPLIFIED. DBS OBJECTS NO LONGER NEEDED
-    	'taskID' takes the Savannah task ID of the dataset
-    	'test' takes a boolean relating to whether the dataset is a test dataset
-    	### Colin, could this be removed now?
-    	'fileOps' takes a FileOps object for retrieving data about the dataset
+    	'datasetDetails' takes a dict object which contains all of the datasets details. This is a strictly defined stucture.
     	"""
     	if self._cmgdbAPI is None:
     		return None
     	# Create hash code for the tag set
-    	tags = fileOps.getTags()
-    	release = fileOps.getRelease()
     	taghash = []
-    	for i in tags:
+    	for i in datasetDetails['Tags']:
     		a=hash((i['package'],i['tag']))
     		taghash.append(a)
     	taghash.sort()
     	endhash = hash(tuple(taghash))
     	    		
     	# See if cmgdb already has record of ds with sav
-    	cmgdbID = self._cmgdbAPI.getDatasetIDWithName(procds['PathList'][0])
+    	datasetDetails['CMGDBID'] = self._cmgdbAPI.getDatasetIDWithName(datasetDetails['CMGDBName'])
     			
     	# If not add dataset
-    	if cmgdbID is None:
-    		parentID = None
-    		if len(procds['PathList'][0].split("---")[0].split("--"))>2:
-    			parents = self._cmgdbAPI.getParentsWithName(procds['PathList'][0])
+    	if datasetDetails['CMGDBID'] is None:
+    		if len(datasetDetails['CMGDBName'].split("---")[0].split("--"))>2:
+    			parents = self._cmgdbAPI.getParentsWithName(datasetDetails['CMGDBName'])
     			if len(parents) == 0:
     				raise NameError("Dataset Should have Parent and does not, please publish parent first")
     			elif len(parents) == 1:
-    				parentID = parents[0][1]
+    				datasetDetails['ParentCMGDBID'] = parents[0][1]
     			else:
-    				parentID = self.getOption(parents)[1]
+    				datasetDetails['ParentCMGDBID'] = self.getOption(parents)[1]
     		
-    		cmgdbID = self._cmgdbAPI.addDataset(procds['PathList'][0],getCastor(procds['PathList'][0]),fileOps.getLFN(), getDbsUser(procds['PathList'][0]),parentID, self._username)
+    		datasetDetails['CMGDBID'] = self._cmgdbAPI.addDataset(datasetDetails['CMGDBName'],datasetDetails['EOSName'],datasetDetails["LFN"], datasetDetails['FileOwner'],datasetDetails['ParentCMGDBID'], self._username)
     	# Clear 4 tables relating to bad files & jobs, and missing & duplicate files
-    	if fileOps is not None:
-    		self._cmgdbAPI.clearDatasetBadFiles(procds['PathList'][0],cmgdbID)
-    		self._cmgdbAPI.clearDatasetDuplicateFiles(procds['PathList'][0],cmgdbID)
-    		self._cmgdbAPI.clearDatasetMissingFiles(procds['PathList'][0],cmgdbID)
-    		self._cmgdbAPI.clearDatasetBadJobs(procds['PathList'][0],cmgdbID)
+    	if datasetDetails["EOSCheckSuccess"]:
+    		self._cmgdbAPI.clearDatasetBadFiles(datasetDetails['CMGDBName'],datasetDetails['CMGDBID'])
+    		self._cmgdbAPI.clearDatasetDuplicateFiles(datasetDetails['CMGDBName'],datasetDetails['CMGDBID'])
+    		self._cmgdbAPI.clearDatasetMissingFiles(datasetDetails['CMGDBName'],datasetDetails['CMGDBID'])
+    		self._cmgdbAPI.clearDatasetBadJobs(datasetDetails['CMGDBName'],datasetDetails['CMGDBID'])
     		
     		
-    		if fileOps._totalJobs is not None:self._cmgdbAPI.addTotalJobs(cmgdbID, fileOps._totalJobs)
-    		if fileOps._totalFilesMissing is not None:self._cmgdbAPI.addMissingFileNum(cmgdbID, fileOps._totalFilesMissing)
-    		if fileOps._totalFilesGood is not None:self._cmgdbAPI.addGoodFileNum(cmgdbID, fileOps._totalFilesGood)
-    		if fileOps._totalFilesBad is not None:self._cmgdbAPI.addBadFileNum(cmgdbID, fileOps._totalFilesBad)
-    		for badFile in fileOps._allBadFiles:self._cmgdbAPI.addBadFile(procds['PathList'][0],cmgdbID, badFile.split('/')[-1])
-    		for missingFile in fileOps._allMissingFiles:self._cmgdbAPI.addMissingFile(procds['PathList'][0],cmgdbID, missingFile.split('/')[-1])
-    		for badJob in fileOps._badJobs:self._cmgdbAPI.addBadJob(cmgdbID, badJob)
-    		if fileOps._primaryDatasetFraction is not None:self._cmgdbAPI.addPrimaryDatasetFraction(cmgdbID, fileOps._primaryDatasetFraction)
-    		if fileOps._primaryDatasetEntries is not None:self._cmgdbAPI.addPrimaryDatasetEntries(cmgdbID, fileOps._primaryDatasetEntries)
-    		if fileOps._fileEntries is not None:self._cmgdbAPI.addFileEntries(cmgdbID, fileOps._fileEntries)
-    		if fileOps.getDatasetSize() is not None:self._cmgdbAPI.addDatasetSize(cmgdbID, fileOps.getDatasetSize())
+    		if datasetDetails["TotalJobs"] is not None:self._cmgdbAPI.addTotalJobs(datasetDetails['CMGDBID'], datasetDetails["TotalJobs"])
+    		if datasetDetails["TotalFilesMissing"] is not None:self._cmgdbAPI.addMissingFileNum(datasetDetails['CMGDBID'], datasetDetails["TotalFilesMissing"])
+    		if datasetDetails["TotalFilesGood"] is not None:self._cmgdbAPI.addGoodFileNum(datasetDetails['CMGDBID'], datasetDetails["TotalFilesGood"])
+    		if datasetDetails["TotalFilesBad"] is not None:self._cmgdbAPI.addBadFileNum(datasetDetails['CMGDBID'], datasetDetails["TotalFilesBad"])
+    		for badFile in datasetDetails["BadFiles"]:self._cmgdbAPI.addBadFile(datasetDetails['CMGDBName'],datasetDetails['CMGDBID'], badFile.split('/')[-1])
+    		for missingFile in datasetDetails["MissingFiles"]:self._cmgdbAPI.addMissingFile(datasetDetails['CMGDBName'],datasetDetails['CMGDBID'], missingFile.split('/')[-1])
+    		for badJob in datasetDetails["BadJobs"]:self._cmgdbAPI.addBadJob(datasetDetails['CMGDBID'], badJob)
+    		if datasetDetails["PrimaryDatasetFraction"] is not None:self._cmgdbAPI.addPrimaryDatasetFraction(datasetDetails['CMGDBID'], datasetDetails["PrimaryDatasetFraction"])
+    		if datasetDetails["PrimaryDatasetEntries"] is not None:self._cmgdbAPI.addPrimaryDatasetEntries(datasetDetails['CMGDBID'], datasetDetails["PrimaryDatasetEntries"])
+    		if datasetDetails["FileEntries"] is not None:self._cmgdbAPI.addFileEntries(datasetDetails['CMGDBID'], datasetDetails["FileEntries"])
+    		if datasetDetails["DatasetSizeInTB"] is not None:self._cmgdbAPI.addDatasetSize(datasetDetails['CMGDBID'], datasetDetails["DatasetSizeInTB"])
     		
     	# Add task id
-    	self._cmgdbAPI.addTaskID(cmgdbID, taskID, test)
+    	self._cmgdbAPI.addTaskID(datasetDetails['CMGDBID'], datasetDetails['taskID'], datasetDetails['Test'])
     	
     	# Add tags to CMGDB
-    	if tags is None or len(tags) is 0: return None
+    	if datasetDetails['Tags'] is None or len(datasetDetails['Tags']) is 0: return None
     	tagIDs = []
     	
     	# check if tag set is already on CMGDB
@@ -199,47 +183,16 @@ class PublishController(object):
     	
     	# If it isn't found, add the tags, and the tag set
     	if tagSetID is None:
-    		if tags:
+    		if datasetDetails['Tags']:
     			tagIDs
-    			for row in tags:
+    			for row in datasetDetails['Tags']:
     				tagID = self._cmgdbAPI.addTag(row["package"],row["tag"])
     				if tagID is not None: tagIDs.append(tagID)
     			
-    			tagSetID = self._cmgdbAPI.addTagSet(release,endhash)
+    			tagSetID = self._cmgdbAPI.addTagSet(datasetDetails['Release'],endhash)
     			for tagID in tagIDs:
     				self._cmgdbAPI.addTagToSet(tagID,tagSetID)
     			    	
-    	if tagSetID is not None: self._cmgdbAPI.addTagSetID(tagSetID, cmgdbID)
-    	return cmgdbID
-            
-         
-    def _getOption(self, opts):
-    	"""Present the user with a choice of options
-    	
-    	'opts' takes a Dict object
-    	Returns chosen value
-    	"""
-    	print "Please enter the number of the set you would like to use:"
-    	for i in opts:
-    		print str(opts.index(i)) + ": " + str(i)
-    	num = raw_input("-")
-    	while int(num) < len(opts) - 1:
-    		num = raw_input("Please enter a valid number:")
-    	return opts[int(num)]
-    	
-    def _deleteExtras(self,groups):
-    	"""Delete irrelevant data from group dictionaries
-    	
-    	'groups' takes the file groups object of the dataset from FileOps"""
-    	
-    	
-    	for i in groups:
-    			if 'top' in i:del i['top']
-    			if 'bottom' in i:del i['bottom']
-    			if 'fileNums' in i:del i['fileNums']
-    			if 'duplicateFiles' in i:
-    				if i['duplicateFiles']== []: del i['duplicateFiles']
-    			if 'missingFiles' in i:
-    				if i['missingFiles'] == []: del i['missingFiles']
-    	return groups
-          
+    	if tagSetID is not None: self._cmgdbAPI.addTagSetID(tagSetID, datasetDetails['CMGDBID'])
+    	return datasetDetails['CMGDBID']
+    
