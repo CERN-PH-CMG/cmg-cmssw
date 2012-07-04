@@ -5,7 +5,7 @@ from CMGTools.H2TauTau.proto.samples.triggers_tauMu import data_triggers_2011A, 
 
 aod = 'V5'
 pat = 'PAT_CMG_V5_4_1'
-htautau = 'TAUMU_Recoil_ColinJun29'
+htautau = 'TAUMU_Jul3_RelTauPt'
 user = 'cmgtools'
 filePattern = 'tauMu_fullsel_tree_CMG.*root'
 cache = True
@@ -18,13 +18,6 @@ DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_
 # https://savannah.cern.ch/task/?30143
 # 16 bad files out of 2751 total (0.6%), mostly pattuples, by now I don't care
 DYJets.nGenEvents = 36209629
-
-## DYJets_Up.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}_Up'.format(aod=aod, pat=pat, htt=htautau), user, filePattern, cache)
-## DYJets_Up.nGenEvents = DYJets.nGenEvents
-
-## DYJets_Down.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}_Down'.format(aod=aod, pat=pat, htt=htautau), user, filePattern, cache)
-## DYJets_Down.nGenEvents = DYJets.nGenEvents
-
 
 WJets.files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/HTTSKIM5/{pat}/{htautau}'.format(aod=aod, pat=pat, htautau=htautau), user, filePattern, cache)
 # https://savannah.cern.ch/task/?30145
@@ -76,22 +69,22 @@ data_Run2011B_PromptReco_v1.files = getFiles('/TauPlusX/Run2011B-PromptReco-v1/A
 data_Run2011B_PromptReco_v1.triggers = data_triggers_2011B
 
 
-from CMGTools.H2TauTau.proto.samples.higgs import *
+# from CMGTools.H2TauTau.proto.samples.higgs import *
 
 
 ## --- summary --- + --- + --- + --- + --- + --- + --- + --- + ---
 
 MC = copy.copy( mc_ewk )
-MC.extend( mc_higgs ) 
+# MC.extend( mc_higgs ) 
 # MC.extend( mc_diboson ) 
 
-MC_up = copy.copy(mc_ewk_up)
-MC_up.extend( mc_higgs_up ) 
+# MC_up = copy.copy(mc_ewk_up)
+# MC_up.extend( mc_higgs_up ) 
 
-MC_down = copy.copy(mc_ewk_down)
-MC_down.extend( mc_higgs_down ) 
+# MC_down = copy.copy(mc_ewk_down)
+# MC_down.extend( mc_higgs_down ) 
 
-for sam in itertools.chain(MC, MC_up, MC_down):
+for sam in MC:
     sam.triggers = mc_triggers_fall11
 
 for data in data_2011A:

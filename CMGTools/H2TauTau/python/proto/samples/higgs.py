@@ -2,7 +2,7 @@ import copy
 import re 
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.yellowreport.YRParser import yrparser7TeV
-from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
+# from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
 
 HiggsVBF110 = cfg.MCComponent(
     name = 'HiggsVBF110',
@@ -231,39 +231,39 @@ HiggsVH150 = cfg.MCComponent(
 #############
 
 mc_higgs_vbf = [
-    # HiggsVBF110,
-    # HiggsVBF115,
+    HiggsVBF110,
+    HiggsVBF115,
     HiggsVBF120,
     HiggsVBF125,
     HiggsVBF130,
     HiggsVBF135,
     HiggsVBF140,
     HiggsVBF145,
-    HiggsVBF150,
+    # HiggsVBF150,
     ]
 
 mc_higgs_ggh = [
-    # HiggsGGH110,
-    # HiggsGGH115,
+    HiggsGGH110,
+    HiggsGGH115,
     HiggsGGH120,
     HiggsGGH125,
     HiggsGGH130,
     HiggsGGH135,
     HiggsGGH140,
     HiggsGGH145,
-    HiggsGGH150,
+    # HiggsGGH150,
     ]
 
 mc_higgs_vh = [
-    # HiggsVH110,
-    # HiggsVH115,
+    HiggsVH110,
+    HiggsVH115,
     HiggsVH120,
     HiggsVH125,
     HiggsVH130,
     HiggsVH135,
     HiggsVH140,
     HiggsVH145,
-    HiggsVH150,
+    # HiggsVH150,
     ]
 
 
@@ -287,14 +287,14 @@ for h in mc_higgs:
     br = yrparser7TeV.get(mass)['H2F']['tautau']
     h.xSection = xSection*br
     h.branchingRatio = br
-    print h.name, 'sigma*br =', h.xSection, 'sigma =', xSection, 'br =', h.branchingRatio
+    # print h.name, 'sigma*br =', h.xSection, 'sigma =', xSection, 'br =', h.branchingRatio
 
 
-print 'generating shifted samples'
+## print 'generating shifted samples'
 
 
-mc_higgs_up = sampleShift( locals(), mc_higgs, 'Up')
-mc_higgs_down = sampleShift( locals(), mc_higgs, 'Down')
+## mc_higgs_up = sampleShift( locals(), mc_higgs, 'Up')
+## mc_higgs_down = sampleShift( locals(), mc_higgs, 'Down')
 
 
 
