@@ -34,7 +34,7 @@ cutwJ2 = ' && '.join([cat_Inc, cat_J2])
 
 def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
               nbins, xmin, xmax, cut,
-              weight='weight', embed=False):
+              weight='weight', embed=False, shift=None):
     
     if nbins is None: nbins = NBINS
     # if xmin is None: xmin = XMIN
@@ -46,14 +46,14 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
     print '[OS]', oscut
     osign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
-                           cut=oscut, weight=weight,
+                           cut=oscut, weight=weight, shift=shift,
                            embed=embed)
     osign.Hist(EWK).Scale( wJetScaleOS ) 
     
     wjshape = WJets_shape_VBF(var, anaDir, cutwJ2,
                               selComps, zComps, weights,
                               nbins, xmin, xmax, weight,
-                              embed)
+                              embed, shift)
     wjshape.Scale( osign.Hist('WJets').Integral() )
     osign.Replace('WJets', wjshape )
 
@@ -61,10 +61,10 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
                            'diTau_charge!=0',
                            cut,
                            cat_VBF ] ) 
-    print '[OS]', sscut
+    print '[SS]', sscut
     ssign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
-                           cut=sscut, weight=weight,
+                           cut=sscut, weight=weight, shift=shift,
                            embed=embed)
     
     ssQCD = addQCD(ssign, 'Data')
@@ -87,7 +87,7 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
 def WJets_shape_VBF(var, anaDir, cut, 
                     selComps, zComps, weights,
                     nbins, xmin, xmax, weight,
-                    embed):
+                    embed, shift):
     # to get the shape.
     # we need to fully relax the tau iso, and
     # to relax VBF to -0.7.
@@ -106,7 +106,7 @@ def WJets_shape_VBF(var, anaDir, cut,
                     selComps['WJets'], weights,
                     nbins, xmin, xmax,
                     cutforshape, weight,
-                    embed)
+                    embed, shift)
     return wjshape
 
 
@@ -161,7 +161,14 @@ if __name__ == '__main__':
     vbf_eff = 0.001908 # for 2011
     useTT11 = False
     
-    anaDir = args[0]
+    anaDir = args[0].rstrip('/')
+    shift = None
+    if anaDir.endswith('_Down'):
+        shift = 'Down'
+    elif anaDir.endswith('_Up'):
+        shift = 'Up'
+
+    
     cfgFileName = args[1]
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
@@ -264,8 +271,9 @@ if __name__ == '__main__':
     osign, osQCD  = makePlot( options.hist, weights, fwss, fwos,
                               vbf_eff * incsig_qcd_yield,
                               NBINS, XMIN, XMAX, options.cut, weight=weight,
-                              embed=options.embed);
+                              embed=options.embed, shift=shift);
 
     draw(osQCD, False)
+    datacards(osQCD, 'Xcat_VBFX', shift)
 
 

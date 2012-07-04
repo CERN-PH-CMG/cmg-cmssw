@@ -171,10 +171,6 @@ if __name__ == '__main__':
                       dest="higgs", 
                       help="Higgs mass: 125, 130,... or dummy",
                       default=None)
-##     parser.add_option("-s", "--shift", 
-##                       dest="shift", 
-##                       help="shift: Up or Down",
-##                       default=None)
 
     
     (options,args) = parser.parse_args()
@@ -200,11 +196,11 @@ if __name__ == '__main__':
     replaceW = False
     useW11 = False
     
-    anaDir = args[0]
+    anaDir = args[0].rstrip('/')
     shift = None
-    if anaDir.find('_Down')!=-1:
+    if anaDir.endswith('_Down'):
         shift = 'Down'
-    elif anaDir.find('_Up')!=-1:
+    elif anaDir.endswith('_Up'):
         shift = 'Up'
         
     cfgFileName = args[1]
@@ -242,19 +238,5 @@ if __name__ == '__main__':
 
     ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, shift=shift, replaceW=replaceW)
     draw(osQCD, options.blind)
-
-    category = 'X'
-    if cutstring.find('Xcat_J1X')!=-1:
-        category = '1jet'
-        if cutstring.find('l1_pt<40')!=-1:
-            category = '1jet_low'
-        elif cutstring.find('l1_pt>40')!=-1:
-            category = '1jet_high'
-    if cutstring.find('Xcat_J0X')!=-1:
-        category = '0jet'
-        if cutstring.find('l1_pt<40')!=-1:
-            category = '0jet_low'
-        elif cutstring.find('l1_pt>40')!=-1:
-            category = '0jet_high'
-            
-    datacards(osQCD, category, shift)
+      
+    datacards(osQCD, cutstring, shift)
