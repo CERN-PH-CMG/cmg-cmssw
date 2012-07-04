@@ -9,16 +9,22 @@ class RecEffCorrection(object):
 class RefEffCorrectionEle( RecEffCorrection ):
     
     def effCorBarrel(self, pt):
-        if pt<10: return (1,0)
-        elif pt<15: return (1.11, 0.08)
-        elif pt<20: return (0.98, 0.02)
-        else: return (0.990, 0.002)
+        # if pt<10: return (1,0)
+        # elif pt<15: return (1.11, 0.08)
+        # elif pt<20: return (0.98, 0.02)
+        # else: return (0.990, 0.002)
+        if pt<20: return (1.,0.)
+        elif pt<30: return (0.9359,0.)
+        else: return (1.0273, 0.)
 
     def effCorEndcaps(self, pt):
-        if pt<10: return (1,0)
-        elif pt<15: return (1.19, 1.13)
-        elif pt<20: return (1.06, 0.05)
-        else: return (1.05, 0.01)
+        # if pt<10: return (1,0)
+        # elif pt<15: return (1.19, 1.13)
+        # elif pt<20: return (1.06, 0.05)
+        # else: return (1.05, 0.01)
+        if pt<20: return (1,0)
+        elif pt<30: return (0.9070,0.)
+        else: return (0.9662, 0.01)
 
     def inBarrel(self, eta):
         if abs(eta)<1.479: return True
