@@ -24,7 +24,6 @@ class FileOps(object):
         init function uses the checkDirectory method, to establish whether the directory of the dataset is valid.
         """
         
-        
         self._setName = setName.rstrip("/")
         self._user = user
         self._castor=None
@@ -44,7 +43,7 @@ class FileOps(object):
         self._badJobs = None
         self._validDuplicates = None
         self._allMissingFiles = []
-        self._allBadFiles = []
+        self._allFilesBad = []
         self._force = force
         self._min_run = -1
         self._max_run = -1
@@ -333,17 +332,17 @@ class FileOps(object):
                 if 'FilesGood' in report:
                     self._totalFilesGood = report['FilesGood']
                 if 'Files' in report:
-                    self._filesBad = []
+                    self._allFilesBad = []
                     self._fileEntries = 0
                     for i in report['Files']:
                         if report['Files'][i][0] is False:
-                            self._filesBad.append(i)
+                            self._allFilesBad.append(i)
                         else:self._fileEntries += report['Files'][i][1]
-                    if len(self._filesBad)>0:
-                        if checkRootType(self._filesBad[0]):
-                            self._filesBad.sort(key=lambda x: int(x.split("_")[-3]))
+                    if len(self._allFilesBad)>0:
+                        if checkRootType(self._allFilesBad[0]):
+                            self._allFilesBad.sort(key=lambda x: int(x.split("_")[-3]))
                         else:
-                            self._filesBad.sort(key=lambda x: int(x.rstrip(".root").split("_")[-1]))
+                            self._allFilesBad.sort(key=lambda x: int(x.rstrip(".root").split("_")[-1]))
                 if 'FilesEntries' in report:
                     self._filesEntries = report['FilesEntries']
                 if 'PrimaryDatasetFraction' in report:
@@ -410,6 +409,7 @@ class FileOps(object):
                 
                 for file in group['missingFiles']:
                     file = self.getLFN() + file.split("/")[-1]
+                    self._allMissingFiles.append(file)
                     self._totalFilesMissing += 1
             
     
