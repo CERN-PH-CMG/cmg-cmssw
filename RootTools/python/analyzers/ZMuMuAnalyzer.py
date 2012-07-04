@@ -49,13 +49,13 @@ class ZMuMuAnalyzer( DiLeptonAnalyzer ):
         return leptons
     
 
-    def testLeg1(self, leg):
+    def testLeg1(self, leg, isoCut):
         return self.testMuonLoose(leg) and \
-               super( ZMuMuAnalyzer, self).testLeg1( leg )
+               super( ZMuMuAnalyzer, self).testLeg1( leg, isoCut )
 
-    def testLeg2(self, leg):
+    def testLeg2(self, leg, isoCut):
         return self.testMuonLoose(leg) and \
-               super( ZMuMuAnalyzer, self).testLeg2( leg )
+               super( ZMuMuAnalyzer, self).testLeg2( leg, isoCut )
 
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu and tau'''
