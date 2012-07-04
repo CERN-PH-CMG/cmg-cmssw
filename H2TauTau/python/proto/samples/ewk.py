@@ -48,6 +48,7 @@ TTJets = cfg.MCComponent(
 mc_ewk = [
     DYJets,
     WJets,
+    W2Jets, 
     W3Jets, 
     TTJets
     ]
