@@ -10,7 +10,7 @@ from CMGTools.RootTools.RootTools import *
 # 'Nom', 'Up', 'Down', or None
 shift = None
 # 1.0, 1.03, 0.97
-tauScaleShift = 0.97 
+tauScaleShift = 0.97
 
 mc_vertexWeight = 'vertexWeightFall112011AB'
 mc_tauEffWeight = None
@@ -109,23 +109,16 @@ treeProducer = cfg.Analyzer(
 #########################################################################################
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinJun25 import * 
-from CMGTools.H2TauTau.proto.samples.tauMu_ColinJun26 import * 
+from CMGTools.H2TauTau.proto.samples.tauMu_ColinJul4 import * 
 
 #########################################################################################
 
-# MC_list = copy.copy(MC)
 
-MC_list = [WJets, DYJets, TTJets, W2Jets, W3Jets]
-# MC_list = copy.copy(MC)
-# MC_list.extend(MC_up)
-# MC_list.extend(MC_down)
+# MC_list = [WJets, DYJets, TTJets, W2Jets, W3Jets]
+MC_list = copy.copy(MC)
 data_list = copy.copy(data_2011)
 embed_list = copy.copy(embed_2011)
 
-## MC_list.extend(MC_up)
-## MC_list.extend(MC_down)
-## embed_list.extend(embed_list_2012_up)
-## embed_list.extend(embed_list_2012_down)
 
 for mc in MC_list:
     mc.splitFactor = 10
@@ -145,10 +138,12 @@ for mc in MC_list:
          mc.name.find('ZZ')!=-1:
         mc.splitFactor = 50
     elif mc.name.find('HiggsVBF120')!=-1 or \
-         mc.name.find('HiggsGGH120')!=-1:
+         mc.name.find('HiggsGGH120')!=-1 or \
+         mc.name.find('HiggsVH120')!=-1:
         mc.splitFactor = 50
     elif mc.name.find('HiggsVBF150')!=-1 or \
-         mc.name.find('HiggsGGH150')!=-1:
+         mc.name.find('HiggsGGH150')!=-1 or \
+         mc.name.find('HiggsVH150')!=-1:
         mc.splitFactor = 30
 for emb in embed_list:
     emb.splitFactor = 10
@@ -184,7 +179,8 @@ sequence = cfg.Sequence( [
     treeProducer
    ] )
 
-# selectedComponents = [DYJets]
+
+selectedComponents = mc_higgs
 
 test = 0
 if test==1:
