@@ -55,7 +55,25 @@ def file_dir(name):
     return tfile, tdir
 
 
-def datacards(plot, category, shift=None, channel='muTau'):
+def datacards(plot, cutstring, shift, channel='muTau'):
+
+    category = 'Unknown'
+    if cutstring.find('Xcat_IncX')!=-1:
+        category = 'X'
+    if cutstring.find('Xcat_J1X')!=-1:
+        category = 'boosted'
+        if cutstring.find('l1_pt<40')!=-1:
+            category = 'boosted_low'
+        elif cutstring.find('l1_pt>40')!=-1:
+            category = 'boosted_high'
+    if cutstring.find('Xcat_J0X')!=-1:
+        category = '0jet'
+        if cutstring.find('l1_pt<40')!=-1:
+            category = '0jet_low'
+        elif cutstring.find('l1_pt>40')!=-1:
+            category = '0jet_high'
+    if cutstring.find('Xcat_VBF')!=-1:
+        category = 'vbf'
     ext = None
     if shift:
         if shift == 'Up':

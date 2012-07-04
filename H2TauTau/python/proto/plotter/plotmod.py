@@ -6,18 +6,18 @@ from ROOT import kPink
 def buildPlot( var, anaDir,
                comps, weights, nbins, xmin, xmax,
                cut, weight,
-               embed, treeName ):
+               embed, shift=None, treeName=None ):
     pl = H2TauTauDataMC(var, anaDir,
                         comps, weights, nbins, xmin, xmax,
                         str(cut), weight,
-                        embed, treeName )
+                        embed, shift, treeName )
     return pl
 
 
 def hist( var, anaDir,
           comp, weights, nbins, xmin, xmax,
           cut, weight,
-          embed, treeName=None ):
+          embed, shift=None, treeName=None ):
     pl = buildPlot( var, anaDir,
                     {comp.name:comp}, weights, nbins, xmin, xmax,
                     cut, weight,
@@ -29,11 +29,11 @@ def hist( var, anaDir,
 def shape( var, anaDir,
            comp, weights, nbins, xmin, xmax,
            cut, weight,
-           embed, treeName=None):
+           embed, shift, treeName=None):
     shape = hist( var, anaDir,
                   comp, weights, nbins, xmin, xmax,
                   cut, weight,
-                  embed, treeName )
+                  embed, shift, treeName )
     shape.Normalize()
     return shape
 
