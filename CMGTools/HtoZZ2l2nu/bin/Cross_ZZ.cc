@@ -180,10 +180,10 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
    }
 }
 
-enum Dataset { WW=0, ZZ, WZ, TT, WJ, DY, tw, tbw, ts, tbs, tt, tbt, EE, MuMu, EMU };
+enum Dataset { WW=0, ZZ, WZ, TT, WJ, DY , tw, tbw, ts, tbs, tt, tbt, EE, MuMu, EMU };
 
 //Cross and eff
-double Xsec_ee=0., Xsec_mumu=0., LeA_ee=0., LeA_mumu=0.;
+double Xsec_ee=0., Xsec_mumu=0., LeA_ee=0., LeA_mu=0.;
 //Ndata Bkg
 double NData_ee=0.,NDY_ee=0., Nnonres_ee=0, NWZ_ee=0.;
 double NData_mumu=0.,NDY_mumu=0., Nnonres_mumu=0, NWZ_mumu=0.;
@@ -193,6 +193,7 @@ double StatDy_mumu=0.,ErNdata_mumu=0.;
 //Syst
 double SystDy_ee=0.;
 double SystDy_mumu=0.;
+double Sys_Trig_ee=0., Sys_Trig_mumu=0, Sys_Scale_ee=0., Sys_Scale_mumu=0.;
 
 int main(int argc, char* argv[]){
 
@@ -247,12 +248,12 @@ int main(int argc, char* argv[]){
      GetInitialNumberOfEvents(Root,inDir,cutflowhisto);  //Used to get the rescale factor based on the total number of events geenrated
 
      if( hadd ){
-     system("hadd -f ../test/results/MC_WZ.root ../test/results/MC_WZ_*.root");
-     system("hadd -f ../test/results/MC_ZZ.root ../test/results/MC_ZZ_*.root");
-     system("hadd -f ../test/results/MC_DYJetsToLL.root ../test/results/MC_DYJetsToLL_*.root");
-     system("hadd -f ../test/results/Data_DoubleElectron.root ../test/results/Data_DoubleElectron*_*.root");
-     system("hadd -f ../test/results/Data_DoubleMu.root ../test/results/Data_DoubleMu*_*.root");
-     system("hadd -f ../test/results/Data_MuEG.root ../test/results/Data_MuEG2011*_*.root");
+     system("hadd -f ../test/results/MC7TeV_WZ.root ../test/results/MC7TeV_WZ_*.root");
+     system("hadd -f ../test/results/MC7TeV_ZZ.root ../test/results/MC7TeV_ZZ_*.root");
+     system("hadd -f ../test/results/MC7TeV_DYJetsToLL.root ../test/results/MC7TeV_DYJetsToLL_*.root");
+     system("hadd -f ../test/results/Data7TeV_DoubleElectron.root ../test/results/Data7TeV_DoubleElectron*_*.root");
+     system("hadd -f ../test/results/Data7TeV_DoubleMu.root ../test/results/Data7TeV_DoubleMu*_*.root");
+     system("hadd -f ../test/results/Data7TeV_MuEG.root ../test/results/Data7TeV_MuEG2011*_*.root");
      }
 
 	//Get Weight
@@ -273,7 +274,7 @@ int main(int argc, char* argv[]){
          Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
          cout<<(Samples[j])["dtag"].toString()<<endl;
          cout<<initialNumberOfEvents[(Samples[j])["dtag"].toString()]<<endl;
-         //if((Samples[j])["dtag"].toString()=="MC_ZZ" ) cout<<"N tot ev. "<< initialNumberOfEvents[(Samples[j])["dtag"].toString()]<<endl;
+         //if((Samples[j])["dtag"].toString()=="MC7TeV_ZZ" ) cout<<"N tot ev. "<< initialNumberOfEvents[(Samples[j])["dtag"].toString()]<<endl;
          //FinalWeight[(Samples[j])["dtag"].toString()] = Weight;
          if( !Process[i]["isdata"].toBool() && Samples.size()==1  ){
               pathtmp = inDir + (Samples[j])["dtag"].toString() + ".root";
@@ -301,11 +302,11 @@ int main(int argc, char* argv[]){
       }
     }
    }
-   File[TfileCount+TfileCount2] = TFile::Open( "../test/results/Data_DoubleElectron.root" );
+   File[TfileCount+TfileCount2] = TFile::Open( "../test/results/Data7TeV_DoubleElectron.root" );
    iWeight[TfileCount+TfileCount2] = 1.;
-   File[TfileCount+TfileCount2+1] = TFile::Open( "../test/results/Data_DoubleMu.root" );
+   File[TfileCount+TfileCount2+1] = TFile::Open( "../test/results/Data7TeV_DoubleMu.root" );
    iWeight[TfileCount+TfileCount2+1] = 1.;
-   File[TfileCount+TfileCount2+2] = TFile::Open( "../test/results/Data_MuEG.root" );
+   File[TfileCount+TfileCount2+2] = TFile::Open( "../test/results/Data7TeV_MuEG.root" );
    iWeight[TfileCount+TfileCount2+2] = 1.;
 
    std::vector<NameAndType> histlist;
@@ -316,8 +317,10 @@ double Br_ee=0., NNevTot_ee=0., Br_mumu=0., NNevTot_mumu=0.;
 Br_ee = (20./100.) * (3.363/100.) *2.;
 Br_mumu = (20./100.) * (3.366/100.) *2.;
 //NevTot form AOD = 4191045;
-NNevTot_ee = 4255560*Br_ee;  // valid for ee, mumu
-NNevTot_mumu = 4255560*Br_mumu;  // valid for ee, mumu
+//old    NNevTot_ee = 4255560*Br_ee;  // valid for ee, mumu
+//old    NNevTot_mumu = 4255560*Br_mumu;  // valid for ee, mumu
+NNevTot_ee = 52594;  // valid for ee, mumu
+NNevTot_mumu = 52526;  // valid for ee, mumu
 
 if( ChooseMet == 1 ){
 
@@ -426,6 +429,7 @@ cout<<"Done with Met comparison..."<<endl<<endl;
 if( OptCut ){
 
 string MetOpt = "all_optim_eventflow1";
+
 TH1F *h_ZZ = ( (TH1F*)File[ZZ]->Get( MetOpt.c_str() ));
 TH1F *h_DY = ( (TH1F*)File[DY]->Get( MetOpt.c_str() ));
 TH1F *h_WW = ( (TH1F*)File[WW]->Get( MetOpt.c_str() ));
@@ -508,8 +512,8 @@ Smear(File, myc1, "4");
 
 if( ComputeDy == 1 ){
 //taking histos
-//TString filepath = "/afs/cern.ch/user/l/lpernie/work/gamma/plotter_wgt.root";
-TString filepath = "/afs/cern.ch/user/l/lpernie/scratch0/plotter.root";
+TString filepath = "/afs/cern.ch/user/l/lpernie/work/gamma/plotter_wgt.root";
+//TString filepath = "/afs/cern.ch/user/l/lpernie/scratch0/plotter.root";
 TString Histo_ee = "ZZee_met_redMet_eq0jets";
 TString Histo_mu = "ZZmumu_met_redMet_eq0jets";
 TString Dir_data = "data (#gamma)";
@@ -549,7 +553,7 @@ for(int i=1; i<FinalHistoDY_ee->GetNbinsX(); i++){
    FinalHistoDY_mu->SetBinContent(i, BinVa_mu);
 }
 
-double cut = 50.;
+double cut = 70.;
 double maxcut = 500.;
 double err_ee=0., err_mu=0. ;
 double NbkgDY_ee = FinalHistoDY_ee->IntegralAndError( FinalHistoDY_ee->FindBin(cut)-1,FinalHistoDY_ee->FindBin(maxcut)-1, err_ee );
@@ -582,8 +586,8 @@ for(int i=1; i<mFinalHistoDY_ee->GetNbinsX(); i++){
 err_ee=0., err_mu=0.;
 double mNbkgDY_ee = mFinalHistoDY_ee->IntegralAndError( mFinalHistoDY_ee->FindBin(cut)-1,mFinalHistoDY_ee->FindBin(maxcut)-1, err_ee );
 double mNbkgDY_mu = mFinalHistoDY_mu->IntegralAndError( mFinalHistoDY_mu->FindBin(cut)-1,mFinalHistoDY_mu->FindBin(maxcut)-1, err_mu );
-cout<<"The Systematic (bkg *2) for nDY in ee is: "<< (NbkgDY_ee-mNbkgDY_ee)*100/NbkgDY_ee <<"%  you have now:"<<mNbkgDY_ee<<" events"<<endl;
-cout<<"The Systematic (bkg *2) for nDY in mumu is: "<< (NbkgDY_mu-mNbkgDY_mu)*100/NbkgDY_mu <<"%  you have now"<<mNbkgDY_mu<<" events."<<endl;
+cout<<"The Systematic (bkg *2) for nDY in ee is: "<< (NbkgDY_ee-mNbkgDY_ee)*100/NbkgDY_ee <<"%  you have now: "<<mNbkgDY_ee<<" events"<<endl;
+cout<<"The Systematic (bkg *2) for nDY in mumu is: "<< (NbkgDY_mu-mNbkgDY_mu)*100/NbkgDY_mu <<"%  you have now "<<mNbkgDY_mu<<" events."<<endl;
 
 //Systematic /2
 TH1F *pFinalHistoDY_ee = new TH1F("pFinalHistoDY_ee", "ee FinalHistoDY plus", 50, 0., 500. );
@@ -614,10 +618,11 @@ cout<<"The Systematic (bkg /2) for nDY in mumu is: "<< (NbkgDY_mu-pNbkgDY_mu)*10
 
 //XS
 NDY_ee= NbkgDY_ee; NDY_mumu= NbkgDY_mu;
-SystDy_ee = max(mNbkgDY_ee-NbkgDY_ee, pNbkgDY_ee-NbkgDY_ee);
-SystDy_mumu = max(mNbkgDY_mu-NDY_mumu, pNbkgDY_mu-NDY_mumu);
+SystDy_ee = max(mNbkgDY_ee, pNbkgDY_ee);
+SystDy_mumu = max(mNbkgDY_mu, pNbkgDY_mu);
 StatDy_ee = err_ee;
 StatDy_mumu = err_mu;
+
 }
 
 if( CrossSec == 1 ){
@@ -631,17 +636,23 @@ if( CrossSec == 1 ){
      string NEvFin_ee   = "ee_ZZ_eventflow";
      string NEvFin_mumu = "mumu_ZZ_eventflow";
      double Nevent_ee[NInput];
-     for(int i=0; i<NInput; i++){  Nevent_ee[i] = ((TH1F*)File[i]->Get( NEvFin_ee.c_str() ))->GetBinContent(9)*iWeight[i]; }
+     for(int i=0; i<NInput; i++){
+       if(!(TH1F*)File[i]->Get( NEvFin_ee.c_str()) ){ Nevent_ee[i]=0; }
+       else                    Nevent_ee[i] = ((TH1F*)File[i]->Get( NEvFin_ee.c_str() ))->GetBinContent(9)*iWeight[i];
+     }
      double Nevent_mumu[NInput];
-     for(int i=0; i<NInput; i++){  Nevent_mumu[i] = ((TH1F*)File[i]->Get( NEvFin_mumu.c_str() ))->GetBinContent(9)*iWeight[i]; }
+     for(int i=0; i<NInput; i++){
+         if(!(TH1F*)File[i]->Get( NEvFin_mumu.c_str())){ Nevent_mumu[i]=0; }
+         else                  Nevent_mumu[i] = ((TH1F*)File[i]->Get( NEvFin_mumu.c_str() ))->GetBinContent(9)*iWeight[i];
+     }
 
-     double Nbkg_ee = Nevent_ee[WW] + Nevent_ee[WZ] + Nevent_ee[DY] + Nevent_ee[TT] + Nevent_ee[WJ];
+     double Nbkg_ee = Nevent_ee[WW] + Nevent_ee[WZ] + NDY_ee /* Nevent_ee[DY]*/ + Nevent_ee[TT] + Nevent_ee[WJ];
      double EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_Effic" ))->GetBinContent(1)/NevTot_ee;
      double CrossSection_ee = (Nevent_ee[EE] - Nbkg_ee)/(iLumi*EffZZ_ee);
      double Error_ee = ( sqrt(Nevent_ee[EE] + Nbkg_ee))/(iLumi*EffZZ_ee);
      cout<<endl; cout<<"Cross Section: Sigma x B.r.(pp-ZZ-eevv):  "<<CrossSection_ee<< " /pm " << Error_ee <<endl;
 
-     double Nbkg_mumu = Nevent_mumu[WW]+Nevent_mumu[WZ]+Nevent_mumu[DY]+Nevent_mumu[TT]+Nevent_mumu[WJ];
+     double Nbkg_mumu = Nevent_mumu[WW] + Nevent_mumu[WZ] + NDY_mumu/*Nevent_mumu[DY]*/ + Nevent_mumu[TT] + Nevent_mumu[WJ];
      double EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_Effic" ))->GetBinContent(1)/NevTot_mumu;
      double CrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZ_mumu);
      double Error_mumu = ( sqrt(Nevent_mumu[MuMu] + Nbkg_mumu))/(iLumi*EffZZ_mumu);
@@ -651,16 +662,19 @@ if( CrossSec == 1 ){
 Xsec_ee   = CrossSection_ee;
 Xsec_mumu = CrossSection_mumu;
 LeA_ee    = iLumi*EffZZ_ee;
-LeA_mumu  = iLumi*EffZZ_mumu;
+LeA_mu  = iLumi*EffZZ_mumu;
 //Data and err stat data
 NData_ee  = Nevent_ee[EE];
 NData_mumu= Nevent_mumu[MuMu];
 ErNdata_ee  = sqrt(Nevent_ee[EE]);
 ErNdata_mumu= sqrt(Nevent_mumu[MuMu]);
 //nEv
-Nnonres_ee=Nevent_ee[WW]+Nevent_ee[TT]+Nevent_ee[WJ];  NWZ_ee=Nevent_ee[WZ];
-Nnonres_mumu=Nevent_mumu[WW]+Nevent_mumu[TT]+Nevent_mumu[WJ];  NWZ_mumu=Nevent_mumu[WZ];
-
+//Nnonres_ee=6.5;  NWZ_ee=6.4;
+//Nnonres_mumu=15.6;  NWZ_mumu=15.6;
+double stop_ee = Nevent_ee[tw]+Nevent_ee[tbw]+Nevent_ee[ts]+Nevent_ee[tbs]+Nevent_ee[tt]+Nevent_ee[tbt];
+double stop_mu = Nevent_mumu[tw]+Nevent_mumu[tbw]+Nevent_mumu[ts]+Nevent_mumu[tbs]+Nevent_mumu[tt]+Nevent_mumu[tbt];
+Nnonres_ee=Nevent_ee[WW]+Nevent_ee[TT]+stop_ee+Nevent_ee[WJ];  NWZ_ee=Nevent_ee[WZ];
+Nnonres_mumu=Nevent_mumu[WW]+Nevent_mumu[TT]+stop_mu+Nevent_mumu[WJ];  NWZ_mumu=Nevent_mumu[WZ];
 
 
      //Syst on Met (Jer)
@@ -681,61 +695,121 @@ Nnonres_mumu=Nevent_mumu[WW]+Nevent_mumu[TT]+Nevent_mumu[WJ];  NWZ_mumu=Nevent_m
      //Syst on Met (Jesp)
      EffZZJes_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficJesp" ))->GetBinContent(1)/NevTot_ee;
      JesCrossSection_ee = (Nevent_ee[EE] - Nbkg_ee)/(iLumi*EffZZJes_ee);
-     cout<< "Syst on Met (ee) (Eff:"<<EffZZJes_ee<<") (Jer p): "<< (JesCrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
+     cout<< "Syst on Met (ee) (Eff:"<<EffZZJes_ee<<") (Jes p): "<< (JesCrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
      EffZZJes_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficJesp" ))->GetBinContent(1)/NevTot_mumu;
      JesCrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mumu)/(iLumi*EffZZJes_mumu);
-     cout<< "Syst on Met (mumu)  (Eff:"<<EffZZJes_mumu<<")  (Jer p): "<< (JesCrossSection_mumu-CrossSection_mumu)*100./CrossSection_mumu<<"%"<<endl;
+     cout<< "Syst on Met (mumu)  (Eff:"<<EffZZJes_mumu<<")  (Jes p): "<< (JesCrossSection_mumu-CrossSection_mumu)*100./CrossSection_mumu<<"%"<<endl;
 
      //Syst on PU
      //PUm
      double NormFactor = ((TH1F*)File[ZZ]->Get("Norm_pum"))->GetBinContent(1)/((TH1F*)File[ZZ]->Get("Norm_pu"))->GetBinContent(1);
-     //string pu_NEvFin_ee   = "ee_eventflow_minus";
-     //string pu_NEvFin_mumu = "mumu_eventflow_minus";
-     //double NeventPUm_ee[NInput];
-     //for(int i=0; i<NInput; i++){  NeventPUm_ee[i] = ((TH1F*)File[i]->Get( pu_NEvFin_ee.c_str() ))->GetBinContent(9)*iWeight[i]; }
-     //double NeventPUm_mumu[NInput];
-     //for(int i=0; i<NInput; i++){  NeventPUm_mumu[i] = ((TH1F*)File[i]->Get( pu_NEvFin_mumu.c_str() ))->GetBinContent(9)*iWeight[i]; }
- 
      double pu_CrossSection_ee = 0.;
-     //double pu_Nbkg_ee = NeventPUm_ee[WW] + NeventPUm_ee[WZ] + NeventPUm_ee[DY] + NeventPUm_ee[TT] + NeventPUm_ee[WJ];
-     //double pu_EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficPUm" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_EfficPUm_tot" ))->GetBinContent(1);
-     //double NormFactor = pu_Nbkg_ee/Nbkg_ee;
      double pu_EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficPUm" ))->GetBinContent(1)/(NormFactor*NevTot_ee);
      pu_CrossSection_ee = (Nevent_ee[EE] - Nbkg_ee)/(iLumi*pu_EffZZ_ee);
      cout<< "Syst on PUm ee (Cross:"<<pu_CrossSection_ee<<"): "<< (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
 
      double pu_CrossSection_mumu = 0.;
-     //double pu_Nbkg_mumu = NeventPUm_mumu[WW] + NeventPUm_mumu[WZ] + NeventPUm_mumu[DY] + NeventPUm_mumu[TT] + NeventPUm_mumu[WJ];
-     //double pu_EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficPUm" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_EfficPUm_tot" ))->GetBinContent(1);
-     //NormFactor = pu_Nbkg_mumu/Nbkg_mumu;
      double pu_EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficPUm" ))->GetBinContent(1)/(NormFactor*NevTot_mumu);
      pu_CrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mumu)/(iLumi*pu_EffZZ_mumu);
      cout<< "Syst on PUm mumu ("<<pu_CrossSection_mumu<<"): "<< (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu<<"%"<<endl;
 
      //PUp
      NormFactor = ((TH1F*)File[ZZ]->Get("Norm_pup"))->GetBinContent(1)/((TH1F*)File[ZZ]->Get("Norm_pu"))->GetBinContent(1);
-     //pu_NEvFin_ee   = "ee_eventflow_minus";
-     //pu_NEvFin_mumu = "mumu_eventflow_minus";
-     //double NeventPUp_ee[NInput];
-     //for(int i=0; i<NInput; i++){  NeventPUp_ee[i] = ((TH1F*)File[i]->Get( pu_NEvFin_ee.c_str() ))->GetBinContent(9)*iWeight[i]; }
-     //double NeventPUp_mumu[NInput];
-     //for(int i=0; i<NInput; i++){  NeventPUp_mumu[i] = ((TH1F*)File[i]->Get( pu_NEvFin_mumu.c_str() ))->GetBinContent(9)*iWeight[i]; }
      pu_CrossSection_ee = 0., pu_EffZZ_ee =0.;
-     //pu_Nbkg_ee = NeventPUp_ee[WW] + NeventPUp_ee[WZ] + NeventPUp_ee[DY] + NeventPUp_ee[TT] + NeventPUp_ee[WJ];
-     //pu_EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficPUp" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "ee_EfficPUp_tot" ))->GetBinContent(1);
-     //NormFactor = pu_Nbkg_ee/Nbkg_ee;
      pu_EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficPUp" ))->GetBinContent(1)/(NormFactor*NevTot_ee);
      pu_CrossSection_ee = (Nevent_ee[EE] - Nbkg_ee)/(iLumi*pu_EffZZ_ee);
      cout<< "Syst on PUp ee ("<<pu_CrossSection_ee<<"): "<< (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
 
-     pu_CrossSection_mumu = 0.; pu_EffZZ_mumu =0.;
-     //pu_Nbkg_mumu = NeventPUp_mumu[WW] + NeventPUp_mumu[WZ] + NeventPUp_mumu[DY] + NeventPUp_mumu[TT] + NeventPUp_mumu[WJ];
-     //pu_EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficPUp" ))->GetBinContent(1)/((TH1F*)File[ZZ]->Get( "mumu_EfficPUp_tot" ))->GetBinContent(1);
-     //NormFactor = pu_Nbkg_mumu/Nbkg_mumu;
+     NormFactor = ((TH1F*)File[ZZ]->Get("Norm_pup"))->GetBinContent(1)/((TH1F*)File[ZZ]->Get("Norm_pu"))->GetBinContent(1);
+     pu_CrossSection_mumu = 0., pu_EffZZ_mumu =0.;
      pu_EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficPUp" ))->GetBinContent(1)/(NormFactor*NevTot_mumu);
      pu_CrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mumu)/(iLumi*pu_EffZZ_mumu);
      cout<< "Syst on PUp mumu ("<<pu_CrossSection_mumu<<"): "<< (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu<<"%"<<endl;
 
+     //Trigger Up
+     double Nevent_ee_new[NInput];
+     for(int i=0; i<NInput; i++){
+         if(!(TH1F*)File[i]->Get( "ee_eventflow_Sys" )) Nevent_ee_new[i] = 0.;
+         else Nevent_ee_new[i] = ((TH1F*)File[i]->Get( "ee_eventflow_Sys" ))->GetBinContent(1)*iWeight[i];
+     }
+     double Nbkg_ee_new = Nevent_ee_new[WW] + Nevent_ee_new[WZ] + NDY_ee /* Nevent_ee[DY]*/ + Nevent_ee_new[TT] + Nevent_ee_new[WJ];
+     double Nevent_mu_new[NInput];
+     for(int i=0; i<NInput; i++){  
+        if(!(TH1F*)File[i]->Get( "mumu_eventflow_Sys" )) Nevent_mu_new[i] = 0.;
+        else Nevent_mu_new[i] = ((TH1F*)File[i]->Get( "mumu_eventflow_Sys" ))->GetBinContent(1)*iWeight[i];
+     }
+     double Nbkg_mu_new = Nevent_mu_new[WW] + Nevent_mu_new[WZ] + NDY_mumu /* Nevent_ee[DY]*/ + Nevent_mu_new[TT] + Nevent_mu_new[WJ];
+
+     pu_CrossSection_ee = 0., pu_EffZZ_ee =0.;
+     pu_EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficTrig_up" ))->GetBinContent(1)/NevTot_ee;///(NormFactor*NevTot_ee);
+     pu_CrossSection_ee = (Nevent_ee[EE] -Nbkg_ee_new /*Nbkg_ee*/)/(iLumi*pu_EffZZ_ee);
+     cout<< "Syst on Trigger Up ee ("<<pu_CrossSection_ee<<"): "<< (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
+     pu_CrossSection_mumu = 0.; pu_EffZZ_mumu =0.;
+     pu_EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficTrig_up" ))->GetBinContent(1)/NevTot_mumu;///(NormFactor*NevTot_mumu);
+     pu_CrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mu_new/*Nbkg_mumu*/)/(iLumi*pu_EffZZ_mumu);
+     cout<< "Syst on Trigger Up mumu ("<<pu_CrossSection_mumu<<"): "<< (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu<<"%"<<endl;
+     float Syst1_ee = (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu;
+     float Syst1_mumu = (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee;
+     //Trigger Down
+     for(int i=0; i<NInput; i++) Nevent_ee_new[i] = 0;
+     for(int i=0; i<NInput; i++){if(i != 8  && i!=4 && i != 9 && i != 10 && i!=11 && i!=13 &&i!=14 ){  Nevent_ee_new[i] = ((TH1F*)File[i]->Get( "ee_eventflow_Sys" ))->GetBinContent(2)*iWeight[i];} }
+     Nbkg_ee_new = Nevent_ee_new[WW] + Nevent_ee_new[WZ] + NDY_ee /* Nevent_ee[DY]*/ + Nevent_ee_new[TT] + Nevent_ee_new[WJ];
+     for(int i=0; i<NInput; i++) Nevent_mu_new[i] = 0;
+     for(int i=0; i<NInput; i++){if(i!=4 && i != 8 && i != 9 && i != 10 && i != 11 && i!=12 &&i!=14){ Nevent_mu_new[i] = ((TH1F*)File[i]->Get( "mumu_eventflow_Sys" ))->GetBinContent(2)*iWeight[i];} }
+     Nbkg_mu_new = Nevent_mu_new[WW] + Nevent_mu_new[WZ] + NDY_mumu /* Nevent_ee[DY]*/ + Nevent_mu_new[TT] + Nevent_mu_new[WJ];
+
+     pu_CrossSection_ee = 0., pu_EffZZ_ee =0.;
+     pu_EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficTrig_dw" ))->GetBinContent(1)/NevTot_ee;///(NormFactor*NevTot_ee);
+     pu_CrossSection_ee = (Nevent_ee[EE] - Nbkg_ee_new/*Nbkg_ee*/)/(iLumi*pu_EffZZ_ee);
+     cout<< "Syst on Trigger Down ee ("<<pu_CrossSection_ee<<"): "<< (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
+     pu_CrossSection_mumu = 0.; pu_EffZZ_mumu =0.;
+     pu_EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficTrig_dw" ))->GetBinContent(1)/NevTot_mumu;///(NormFactor*NevTot_mumu);
+     pu_CrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mu_new/*Nbkg_mumu*/)/(iLumi*pu_EffZZ_mumu);
+     cout<< "Syst on Trigger Down mumu ("<<pu_CrossSection_mumu<<"): "<< (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu<<"%"<<endl;
+     float Syst2_ee = (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee;
+     float Syst2_mumu = (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu;
+Sys_Trig_ee = max(fabs(Syst1_ee),fabs(Syst2_ee));
+Sys_Trig_mumu = max(fabs(Syst1_mumu),fabs(Syst2_mumu));
+
+     //Scale Up
+     for(int i=0; i<NInput; i++) Nevent_ee_new[i] = 0;
+     for(int i=0; i<NInput; i++){ if(i != 8  && i!=4 && i != 9 && i != 10 && i!=11 && i!=13 &&i!=14) {  Nevent_ee_new[i] = ((TH1F*)File[i]->Get( "ee_eventflow_Sys" ))->GetBinContent(3)*iWeight[i];} }
+     Nbkg_ee_new = Nevent_ee_new[WW] + Nevent_ee_new[WZ] + NDY_ee /* Nevent_ee[DY]*/ + Nevent_ee_new[TT] + Nevent_ee_new[WJ];
+     for(int i=0; i<NInput; i++) Nevent_mu_new[i] = 0;
+     for(int i=0; i<NInput; i++){ if(i!=4 && i != 8 && i != 9 && i != 10 && i != 11 && i!=12 &&i!=14){ Nevent_mu_new[i] = ((TH1F*)File[i]->Get( "mumu_eventflow_Sys" ))->GetBinContent(3)*iWeight[i];} }
+     Nbkg_mu_new = Nevent_mu_new[WW] + Nevent_mu_new[WZ] + NDY_mumu /* Nevent_ee[DY]*/ + Nevent_mu_new[TT] + Nevent_mu_new[WJ];
+
+     pu_CrossSection_ee = 0., pu_EffZZ_ee =0.;
+     pu_EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficScal_up" ))->GetBinContent(1)/NevTot_ee;///(NormFactor*NevTot_ee);
+     pu_CrossSection_ee = (Nevent_ee[EE] - Nbkg_ee_new/*Nbkg_ee*/)/(iLumi*pu_EffZZ_ee);
+     cout<< "Syst on Scale Up ee ("<<pu_CrossSection_ee<<"): "<< (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
+     pu_CrossSection_mumu = 0.; pu_EffZZ_mumu =0.;
+     pu_EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficScal_up" ))->GetBinContent(1)/NevTot_mumu;///(NormFactor*NevTot_mumu);
+     pu_CrossSection_mumu = (Nevent_mumu[MuMu] -Nbkg_mu_new/* Nbkg_mumu*/)/(iLumi*pu_EffZZ_mumu);
+     cout<< "Syst on Scale Up mumu ("<<pu_CrossSection_mumu<<"): "<< (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu<<"%"<<endl;
+     Syst1_ee = (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu;
+     Syst1_mumu = (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee;
+
+     //Scale Down
+     for(int i=0; i<NInput; i++) Nevent_ee_new[i] = 0;
+     for(int i=0; i<NInput; i++){ if(i != 8  && i!=4 && i != 9 && i != 10 && i!=11 && i!=13 &&i!=14){  Nevent_ee_new[i] = ((TH1F*)File[i]->Get( "ee_eventflow_Sys" ))->GetBinContent(4)*iWeight[i];} }
+     Nbkg_ee_new = Nevent_ee_new[WW] + Nevent_ee_new[WZ] + NDY_ee /* Nevent_ee[DY]*/ + Nevent_ee_new[TT] + Nevent_ee_new[WJ];
+     for(int i=0; i<NInput; i++) Nevent_mu_new[i] = 0;
+     for(int i=0; i<NInput; i++){ if(i!=4 && i != 8 && i != 9 && i != 10 && i != 11 && i!=12 &&i!=14){ Nevent_mu_new[i] = ((TH1F*)File[i]->Get( "mumu_eventflow_Sys" ))->GetBinContent(4)*iWeight[i];} }
+     Nbkg_mu_new = Nevent_mu_new[WW] + Nevent_mu_new[WZ] + NDY_mumu /* Nevent_ee[DY]*/ + Nevent_mu_new[TT] + Nevent_mu_new[WJ];
+
+     pu_CrossSection_ee = 0., pu_EffZZ_ee =0.;
+     pu_EffZZ_ee = ((TH1F*)File[ZZ]->Get( "ee_EfficScal_dw" ))->GetBinContent(1)/NevTot_ee;///(NormFactor*NevTot_ee);
+     pu_CrossSection_ee = (Nevent_ee[EE] - Nbkg_ee_new/*Nbkg_ee*/)/(iLumi*pu_EffZZ_ee);
+     cout<< "Syst on Scale Down ee ("<<pu_CrossSection_ee<<"): "<< (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee<<"%"<<endl;
+     pu_CrossSection_mumu = 0.; pu_EffZZ_mumu =0.;
+     pu_EffZZ_mumu = ((TH1F*)File[ZZ]->Get( "mumu_EfficScal_dw" ))->GetBinContent(1)/NevTot_mumu;///(NormFactor*NevTot_mumu);
+     pu_CrossSection_mumu = (Nevent_mumu[MuMu] - Nbkg_mu_new/*Nbkg_mumu*/)/(iLumi*pu_EffZZ_mumu);
+     cout<< "Syst on Scale Down mumu ("<<pu_CrossSection_mumu<<"): "<< (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu<<"%"<<endl;
+     Syst2_ee = (pu_CrossSection_ee-CrossSection_ee)*100/CrossSection_ee;
+     Syst2_mumu = (pu_CrossSection_mumu-CrossSection_mumu)*100/CrossSection_mumu;
+Sys_Scale_ee = max(fabs(Syst1_ee),fabs(Syst2_ee));
+Sys_Scale_mumu = max(fabs(Syst1_mumu),fabs(Syst2_mumu));
      //Pt Bin 1
      NEvFin_ee   = "ee_ZZ_eventflow_ptBin";
      NEvFin_mumu = "mumu_ZZ_eventflow_ptBin";
@@ -818,27 +892,43 @@ Nnonres_mumu=Nevent_mumu[WW]+Nevent_mumu[TT]+Nevent_mumu[WJ];  NWZ_mumu=Nevent_m
 }
 
 if( SystGlob==1 ){
-double ERR_stat_ee=0.,ERR_syst_ee=0., ERR_stat_mumu=0.,ERR_syst_mumu=0.;
-//Stat
-double Nnres_ee = 0., Nwz_ee = 0., Nww_ee = 0.;
-double Nnres_mu = 0., Nwz_mu = 0., Nww_mu = 0.;
-//Syst
-double NSnres_ee = 0., NSwz_ee = 0., NSww_ee = 0.;
-double NSnres_mu = 0., NSwz_mu = 0., NSww_mu = 0.;
 
-Xsec_ee = (NData_ee - NDY_ee - Nnonres_ee - NWZ_ee)/LeA_ee;
-Xsec_mumu = (NData_mumu - NDY_mumu - Nnonres_mumu - NWZ_mumu)/LeA_mumu;
+double Nsig_ee = NData_ee - NDY_ee - Nnonres_ee - NWZ_ee;
+double Nsig_mu = NData_mumu - NDY_mumu - Nnonres_mumu - NWZ_mumu;
+Xsec_ee = Nsig_ee/LeA_ee;
+Xsec_mumu = Nsig_mu/LeA_mu;
 
-ERR_stat_ee = sqrt( pow(StatDy_ee/LeA_ee,2) + pow(ErNdata_ee/LeA_ee,2) );
-ERR_syst_ee = sqrt( pow(SystDy_ee/LeA_ee,2) );
-ERR_stat_mumu = sqrt( pow(StatDy_mumu/LeA_mumu,2) + pow(ErNdata_mumu/LeA_mumu,2) );
-ERR_syst_mumu = sqrt( pow(SystDy_mumu/LeA_mumu,2) );
+//LUMI, PDF, JER, JES, LeptScale, PU
+double LUXsec_ee = 2.2, LUXsec_mumu = 2.2, PDF = 4.;
+double JESER_ee=3.4, JESER_mumu=3.2, PUER_ee=5.2, PUER_mumu=2.3, LepEScale_ee=3., LepEScale_mumu=1.;
+//DY on XS
+double DYXsec_ee = (NData_ee - SystDy_ee - Nnonres_ee - NWZ_ee)/LeA_ee;
+SystDy_ee = (Xsec_ee - DYXsec_ee)*100./Xsec_ee;
+double DYXsec_mumu = (NData_mumu - SystDy_mumu - Nnonres_mumu - NWZ_mumu)/LeA_mu;
+SystDy_mumu = (Xsec_mumu - DYXsec_mumu)*100./Xsec_mumu;
+
+//From Table
+double stat_WW_ee = 0.3, stat_WZ_ee = 0.2, stat_TT_ee = 0.4, stat_T_ee = 0.2, stat_W_ee = 0., stat_Data_ee = 5.0;
+double stat_WW_mu = 0.3, stat_WZ_mu = 0.2, stat_TT_mu = 0.3, stat_T_mu = 0.2, stat_W_mu = 0., stat_Data_mu = 6.3;
+
+double ERR_stat_ee = Xsec_ee*sqrt( NData_ee )/Nsig_ee ;
+double ERR_syst_ee = sqrt( pow(PDF,2)+pow(Sys_Trig_ee,2)+pow(Sys_Scale_ee,2)+pow(LUXsec_ee,2)+pow(SystDy_ee,2)+pow(JESER_ee,2)+pow(PUER_ee,2)+pow(LepEScale_ee,2)+pow(stat_WW_ee/LeA_ee,2)
+                   +pow(stat_WZ_ee/Nsig_ee,2)+pow(stat_TT_ee/Nsig_ee,2)+pow(stat_T_ee/Nsig_ee,2)+pow(stat_W_ee/Nsig_ee,2)+pow(stat_Data_ee/Nsig_ee,2) );
+
+double ERR_stat_mumu = Xsec_mumu*sqrt( NData_mumu )/Nsig_mu;
+double ERR_syst_mumu = sqrt( pow(PDF,2)+pow(Sys_Trig_mumu,2)+pow(Sys_Scale_mumu,2)+pow(LUXsec_mumu,2)+pow(SystDy_mumu,2)+pow(JESER_mumu,2)+pow(PUER_mumu,2)+pow(LepEScale_mumu,2)+pow(stat_WW_mu/LeA_mu,2)
+                    +pow(stat_WZ_mu/Nsig_mu,2)+pow(stat_TT_mu/Nsig_mu,2)+pow(stat_T_mu/Nsig_mu,2)+pow(stat_W_mu/Nsig_mu,2)+pow(stat_Data_mu/Nsig_mu,2) );
+
+cout<<"Tot sys ee: "<<ERR_syst_ee<<"%  "<<ERR_syst_mumu<<"%"<<endl;
 
 cout<<endl;
 cout<<"_____________________________________________________________________________________"<<endl;
-cout<<"Xsec ee: "<<Xsec_ee<<" +- "<<ERR_stat_ee<<" (stat.) +- "<<ERR_syst_ee<<" (syst)"<<endl;
-cout<<"Xsec mumu: "<<Xsec_mumu<<" +- "<<ERR_stat_mumu<<" (stat.) +- "<<ERR_syst_mumu<<" (syst)"<<endl;
+cout<<"Xsec ee: "<<Xsec_ee<<" +- "<<ERR_stat_ee<<" (stat.) +- "<<ERR_syst_ee*Xsec_ee/100.<<" (syst)"<<endl;
+cout<<"Xsec mumu: "<<Xsec_mumu<<" +- "<<ERR_stat_mumu<<" (stat.) +- "<<ERR_syst_mumu*Xsec_mumu/100.<<" (syst)"<<endl;
 cout<<"_____________________________________________________________________________________"<<endl;
+
+cout<<"DY systee: "  <<SystDy_ee<<" Sys_Trig_ee: "<<Sys_Trig_ee<<" Sys_Scale_ee: "<<Sys_Scale_ee<<endl;
+cout<<"DY systmumu: "<<SystDy_mumu<<" Sys_Trig_mumu: "<<Sys_Trig_mumu<<" Sys_Scale_mumu: "<<Sys_Scale_mumu<<endl;
 }
 
 }//End Main
