@@ -134,7 +134,7 @@ class SavannahBrowser(object):
 			try:
 				self._br.form.set_value_by_label([assigned], "custom_sb1")
 			except:
-				print "User %s is not a valid Files Owner, field will be blank" % assigned
+				print "User %s is not a valid Files Owner, field will be blank, File's Owner field may need updating on Savannah." % assigned
 			try:
 				self._br.form.set_value_by_label([assigned], "assigned_to")
 			except:
