@@ -202,9 +202,9 @@ if cmsswIs44X():
         GT = 'GR_R_44_V15::All'
 else:
     if runOnMC:
-        GT = 'START52_V9::All'
+        GT = 'START52_V9B::All'
     else:
-        GT = 'GR_R_52_V8::All'
+        GT = 'GR_R_52_V9::All'
 process.GlobalTag.globaltag = GT
 
 print 'Global tag       : ', process.GlobalTag.globaltag
