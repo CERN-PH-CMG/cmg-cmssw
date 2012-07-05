@@ -44,6 +44,7 @@ reTAU = re.compile('TAU\S+')
 rePatPFAOD = re.compile('V\d+')
 rePatPATCMG = re.compile('PAT_CMG\S+')
 
+
 def processInfo(info):
     dsInfo = DatasetInfo()
     dsInfo.primary_dataset_entries = None
@@ -51,7 +52,7 @@ def processInfo(info):
         job_eff = None
         fraction = None
         skim = False
-        # print step, ds
+        # print ds
         pid, path_name, pde, njobs, nmiss, nbad, dataset_fraction, task_id = ds
         # try to find the total number of entries in the CMS dataset
         if pde:
@@ -102,45 +103,12 @@ def processInfo(info):
 
 rePatMass = re.compile('M-(\d+)_')
 
-def findAlias(path_name):
+def findAlias(path_name, aliases):
     name = None
-    if path_name.startswith('/VBF_HToTauTau'):
-        name = 'HiggsVBF'
-    elif path_name.startswith('/GluGluToHToTauTau'):
-        name = 'HiggsGGH'
-    elif path_name.startswith('/WH_ZH_TTH_HToTauTau'):
-        name = 'HiggsVH'
-    elif path_name.startswith('/DYJets'):
-        name = 'DYJets'
-    elif path_name.startswith('/WJets'):
-        name = 'WJets'
-    elif path_name.startswith('/W2Jets'):
-        name = 'W2Jets'
-    elif path_name.startswith('/W3Jets'):
-        name = 'W3Jets'
-    elif path_name.startswith('/TTJets'):
-        name = 'TTJets'
-    elif path_name.startswith('/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011'):
-        name = 'embed_Run2011A_03Oct2011_v1'
-    elif path_name.startswith('/DoubleMu/StoreResults-DoubleMu_2011A_05Aug2011_v1'):
-        name = 'embed_Run2011A_05Aug2011_v1'
-    elif path_name.startswith('/DoubleMu/StoreResults-DoubleMu_2011A_10May2011_v1'):
-        name = 'embed_Run2011A_May10ReReco_v1'
-    elif path_name.startswith('/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4'):
-        name = 'embed_Run2011A_PromptReco_v4'
-    elif path_name.startswith('/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1'):
-        name = 'embed_Run2011B_PromptReco_v1'
-    elif path_name.startswith('/TauPlusX/Run2011A-03Oct2011-v1'):
-        name = 'data_Run2011A_03Oct2011_v1'
-    elif path_name.startswith('/TauPlusX/Run2011A-05Aug2011-v1'):
-        name = 'data_Run2011A_05Aug2011_v1'
-    elif path_name.startswith('/TauPlusX/Run2011A-May10ReReco-v1'):
-        name = 'data_Run2011A_May10ReReco_v1'
-    elif path_name.startswith('/TauPlusX/Run2011A-PromptReco-v4'):
-        name = 'data_Run2011A_PromptReco_v4'
-    elif path_name.startswith('/TauPlusX/Run2011B-PromptReco-v1'):
-        name = 'data_Run2011B_PromptReco_v1'
-    else:
+    for dsname, alias in aliases.iteritems():
+        if path_name.startswith(dsname):
+            name = alias
+    if name is None:
         raise ValueError('dataset name not recognized: ' + path_name)
     match = rePatMass.search(path_name)
     if match and name != 'DYJets':
@@ -150,8 +118,7 @@ def findAlias(path_name):
         return name 
 
 
-
-def connectSample(components, row, filePattern, cache, verbose):
+def connectSample(components, row, filePattern, aliases, cache, verbose):
     id = row[0]
     path_name = row[1]
     file_owner = row[2]
@@ -172,7 +139,7 @@ def connectSample(components, row, filePattern, cache, verbose):
             continue
         globalEff *= eff
     path_name = dsInfo[0]['path_name']
-    compName = findAlias(path_name)
+    compName = findAlias(path_name, aliases)
     comps = [comp for comp in components if comp.name == compName]
     if len(comps)>1:
         print 'WARNING find several components for compName', compName
@@ -192,20 +159,21 @@ def connectSample(components, row, filePattern, cache, verbose):
     comp.files = getFiles(path_name, file_owner, filePattern, cache)
     if comp.name.startswith('data_'):
         if globalEff<0.99:
-            print 'ARGH! data sample is not complete.', taskurl            
+            print 'ARGH! data sample is not complete.', taskurl
+            print dsInfo
     else:
         if globalEff<0.9:
             print 'WEIRD! Efficiency is way too low! you might have to edit your cfg manually.'
             print dsInfo
 
     
-def connect(components, samplePattern, filePattern, cache, verbose=False):
+def connect(components, samplePattern, filePattern, aliases, cache, verbose=False):
     pattern = samplePattern
     cols, rows = db.sql("select dataset_id, path_name, file_owner from dataset_details where path_name like '{pattern}' order by path_name".format(
         pattern = samplePattern
         ))
     for row in rows:
-        connectSample(components, row, filePattern, cache, verbose)
+        connectSample(components, row, filePattern, aliases, cache, verbose)
         
     
     

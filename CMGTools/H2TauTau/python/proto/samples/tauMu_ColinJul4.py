@@ -23,7 +23,28 @@ allsamples = copy.copy(MC)
 allsamples.extend( data_2011 )
 allsamples.extend( embed_2011 )
 
-connect( allsamples, '%TAUMU_Jul3_RelTauPt', 'tauMu.*root', cache=True)
+aliases = {
+    '/VBF_HToTauTau':'HiggsVBF',
+    '/GluGluToHToTauTau':'HiggsGGH',
+    '/WH_ZH_TTH_HToTauTau':'HiggsVH',
+    '/DYJets':'DYJets',
+    '/WJets':'WJets',
+    '/W2Jets':'W2Jets',
+    '/W3Jets':'W3Jets',
+    '/TTJets':'TTJets',
+    '/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011':'embed_Run2011A_03Oct2011_v1',
+    '/DoubleMu/StoreResults-DoubleMu_2011A_05Aug2011_v1':'embed_Run2011A_05Aug2011_v1',
+    '/DoubleMu/StoreResults-DoubleMu_2011A_10May2011_v1':'embed_Run2011A_May10ReReco_v1',
+    '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4':'embed_Run2011A_PromptReco_v4',
+    '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1':'embed_Run2011B_PromptReco_v1',
+    '/TauPlusX/Run2011A-03Oct2011-v1':'data_Run2011A_03Oct2011_v1',
+    '/TauPlusX/Run2011A-05Aug2011-v1':'data_Run2011A_05Aug2011_v1',
+    '/TauPlusX/Run2011A-May10ReReco-v1':'data_Run2011A_May10ReReco_v1',
+    '/TauPlusX/Run2011A-PromptReco-v4':'data_Run2011A_PromptReco_v4',
+    '/TauPlusX/Run2011B-PromptReco-v1':'data_Run2011B_PromptReco_v1'
+    }
+
+connect( allsamples, '%TAUMU_Jul3_RelTauPt', 'tauMu.*root', aliases, cache=True)
 
 TTJets.nGenEvents = 59613991 * 0.1790225 / 0.179171 * 0.99962399999999996
 WJets.nGenEvents = 81345381 * 0.0236105 / 0.023636999999999998 * 0.99954999999999994
