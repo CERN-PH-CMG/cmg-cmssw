@@ -16,7 +16,7 @@ for sam in MC:
 for data in data_2011A:
     data.triggers = data_triggers_2011A
 for data in data_2011B:
-    data.triggers = data_triggers_2011A
+    data.triggers = data_triggers_2011B
     
 
 allsamples = copy.copy(MC)
