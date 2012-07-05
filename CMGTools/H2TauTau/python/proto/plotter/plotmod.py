@@ -21,7 +21,7 @@ def hist( var, anaDir,
     pl = buildPlot( var, anaDir,
                     {comp.name:comp}, weights, nbins, xmin, xmax,
                     cut, weight,
-                    embed, treeName )
+                    embed, shift, treeName )
     histo = copy.deepcopy( pl.Hist(comp.name) )    
     return histo
 
