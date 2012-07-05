@@ -31,7 +31,7 @@ XMAX  = 200
 def replaceShapeInclusive(plot, var, anaDir,
                           comp, weights, 
                           cut, weight,
-                          embed):
+                          embed, shift=None):
 
     cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
     print '[INCLUSIVE] estimate',comp.name,'with cut',cut
@@ -46,7 +46,7 @@ def replaceShapeInclusive(plot, var, anaDir,
     wjshape = shape(var, anaDir,
                     comp, weights, nbins, xmin, xmax,
                     cut, weight,
-                    embed, treeName = 'H2TauTauTreeProducerTauEle')
+                    embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
     # import pdb; pdb.set_trace()
     wjshape.Scale( wjyield )
     # import pdb; pdb.set_trace()
@@ -58,7 +58,7 @@ def replaceShapeInclusive(plot, var, anaDir,
 
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
-              cut='', weight='weight', embed=False):
+              cut='', weight='weight', embed=False, shift=None):
     
     print 'making the plot:', var, 'cut', cut
     # if nbins is None: nbins = NBINS
@@ -70,28 +70,28 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
     osign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
                            cut=oscut, weight=weight,
-                           embed=embed, treeName = 'H2TauTauTreeProducerTauEle')
+                           embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
     osign.Hist(EWK).Scale( wJetScaleOS )
     replaceWJets = True
     if replaceWJets:
         osign = replaceShapeInclusive(osign, var, anaDir,
                                       selComps['WJets'], weights, 
                                       oscut, weight,
-                                      embed)
+                                      embed, shift=shift)
     
     # boxss = box.replace('OS','SS')
     sscut = cut+' && diTau_charge!=0'
     ssign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
                            cut=sscut, weight=weight,
-                           embed=embed, treeName = 'H2TauTauTreeProducerTauEle')
+                           embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
     ssign.Hist(EWK).Scale( wJetScaleSS ) 
     # import pdb; pdb.set_trace()
     if replaceWJets:
         ssign = replaceShapeInclusive(ssign, var, anaDir,
                                       selComps['WJets'], weights, 
                                       sscut, weight,
-                                      embed)
+                                      embed, shift=shift)
     # import pdb; pdb.set_trace()
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
@@ -103,7 +103,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
         ssign_qcdshape = H2TauTauDataMC(var, anaDir,
                                         selComps, weights, nbins, xmin, xmax,
                                         cut=sscut_qcdshape, weight=weight,
-                                        embed=embed)
+                                        embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
         qcd_shape = copy.deepcopy( ssign_qcdshape.Hist('Data') )    
         qcd_shape.Normalize()
         qcd_shape.Scale(qcd_yield)
@@ -122,7 +122,7 @@ def drawAll(cut, plots, embed):
         ss, os, ssQ, osQ = makePlot( plot.var, anaDir,
                                      selComps, weights, fwss, fwos,
                                      plot.nbins, plot.xmin, plot.xmax,
-                                     cut, weight=weight, embed=embed)
+                                     cut, weight=weight, embed=embed, treeName = 'H2TauTauTreeProducerTauEle', shift=shift)
         draw(osQ, False, 'TauEle')
         plot.ssign = cp(ss)
         plot.osign = cp(os)
@@ -203,6 +203,7 @@ if __name__ == '__main__':
     # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
+    shift = None
     
     anaDir = args[0]
     cfgFileName = args[1]
@@ -216,15 +217,20 @@ if __name__ == '__main__':
     comps = [comp for comp in cfg.config.components]
     cfg.config.components = comps
 
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, options.embed, 'TauEle', options.higgs)
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, 
+                                                  options.embed, 'TauEle', options.higgs)
+    #import pdb ; pdb.set_trace()
 
     can, pad, padr = buildCanvas()
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
                                  24, 70, 310, cutw,
-                                 weight=weight, embed=options.embed,
+                                 weight=weight, embed=options.embed, shift=shift,
                                  treeName='H2TauTauTreeProducerTauEle')
 
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed)
+    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, 
+                                           fwss, fwos, NBINS, XMIN, XMAX, 
+                                           options.cut, weight=weight, embed=options.embed)
+    osQCD.legendOn = False
     draw(osQCD, options.blind, 'TauEle')
     
