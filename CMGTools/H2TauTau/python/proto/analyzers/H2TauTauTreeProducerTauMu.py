@@ -39,6 +39,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        var( tr, 'weight')
        var( tr, 'vertexWeight')
        var( tr, 'embedWeight')
+       var( tr, 'hqtWeight')
        
        var( tr, 'nVert')
        
@@ -92,6 +93,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
 
        fill(tr, 'weight', event.eventWeight)
        fill(tr, 'embedWeight', event.embedWeight)
+       fill(tr, 'hqtWeight', event.higgsPtWeight)
 
        if hasattr( event, 'vertexWeight'): 
           fill(tr, 'vertexWeight', event.vertexWeight)
