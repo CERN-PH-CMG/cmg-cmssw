@@ -139,8 +139,16 @@ if __name__ == '__main__':
                       help="Use embedd samples.",
                       action="store_true",
                       default=False)
+    parser.add_option("-g", "--higgs", 
+                      dest="higgs", 
+                      help="Higgs mass: 125, 130,... or dummy",
+                      default=None)
 
-    
+    print '''
+    IMPORTANT!! CALL THIS MACRO WITH ONLY THE MT CUT (OR WITHOUT IT IF YOU PLOT MT).
+    SO IF THE 
+    -C mt<40
+    '''
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
@@ -245,7 +253,7 @@ if __name__ == '__main__':
 
 
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases,
-                                                  options.embed, 'TauMu', '125')
+                                                  options.embed, 'TauMu', options.higgs)
 
     # WJets normalization using 2 jet category
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,

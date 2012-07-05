@@ -33,6 +33,8 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', hi
                     continue
                 else:
                     comp.addWeight = 5.0
+            else:
+                comp.xSection = 1 # for datacards
         if comp.name.startswith('zdata'):
             zComps[comp.name] = comp
             # disabling is probably not necessary 

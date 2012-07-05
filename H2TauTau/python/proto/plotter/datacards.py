@@ -41,18 +41,6 @@ datacards_aliases = {
     }
 
 
-def file_dir(name):
-    spl = name.split(':')
-    file = spl[0]
-    dir = None
-    if len(spl)==2:
-        file = spl[0]
-        dir = spl[1]
-    tfile = TFile(file)
-    tdir = tfile 
-    if dir:
-        tdir = tfile.Get(dir)
-    return tfile, tdir
 
 
 def datacards(plot, cutstring, shift, channel='muTau'):
