@@ -1,13 +1,6 @@
 from ROOT import TFile, TDirectory, TBrowser
+from CMGTools.RootTools.utils.file_dir import file_dir, file_dir_names
 import pprint
-
-def loadDesc(desc):
-    spl = desc.split(':')
-    file = spl[0]
-    dir = None
-    if len(spl)==2:
-        dir = spl[1]
-    return file, dir
 
 
 def loadDescMap( fileName ):
@@ -17,9 +10,7 @@ def loadDescMap( fileName ):
         spl = line.split()
         if len(spl) != 2:
             continue
-        ifile, idir = loadDesc(spl[0])
-        ofile, odir = loadDesc(spl[1])
-        filedirs[(ifile,idir)] = ofile, odir
+        filedirs[spl[0]] = spl[1]
     return filedirs
 
 
@@ -34,21 +25,19 @@ def processRootFiles( descmap ):
     ofiles = dict()
     # odirs = []
     for input, output in descmap.iteritems():
-        ifnam = input[0]
-        ofnam = output[0]
-        idnam = input[1]
-        odnam = output[1]
+        ifnam, idnam = file_dir_names( input )
+        ofnam, odnam = file_dir_names( output )
         ifile = ifiles.get(ifnam, None)
         if ifile is None:
             ifile = TFile(ifnam)
             ifiles[ifnam] = ifile
+        idir = ifile
+        if idnam:
+            idir = ifile.Get(idnam)
         ofile = ofiles.get(ofnam, None)
         if ofile is None:
             ofile = TFile(ofnam,'recreate')
             ofiles[ofnam] = ofile
-        idir = ifile
-        if idnam:
-            idir = ifile.Get(idnam)
         odir = ofile
         # import pdb; pdb.set_trace()
         if odnam:
@@ -56,11 +45,8 @@ def processRootFiles( descmap ):
             if odir == None:
                 print 'mkdir', odnam
                 odir = ofile.mkdir( odnam )
-                # odirs.append(odir)
         copyDirItems( idir, odir )
-    # ofile = ofiles['muTauSM_JoseJune17_tScale_mVis_Reb.root']
     ofile.cd()
-    # ofile.ls()
     for file in ofiles.values():
         file.Write()
     pprint.pprint(ifiles)
@@ -70,5 +56,37 @@ def processRootFiles( descmap ):
 if __name__ == '__main__':
     import sys
 
+    if len(sys.argv)!=2:
+        print '''
+        usage: fileOrganizer.py <desc_map>
+
+        where desc_map is a text file like this:
+
+        muTau_X.root                            muTau_ColinJuly2_mVis.root:muTau_X  
+        muTau_X_CMS_scale_tUp.root              muTau_ColinJuly2_mVis.root:muTau_X  
+        muTau_X_CMS_scale_tDown.root            muTau_ColinJuly2_mVis.root:muTau_X  
+        
+        muTau_0jet_low.root                     muTau_ColinJuly2_mVis.root:muTau_0jet_low  
+        muTau_0jet_low_CMS_scale_tUp.root       muTau_ColinJuly2_mVis.root:muTau_0jet_low  
+        muTau_0jet_low_CMS_scale_tDown.root     muTau_ColinJuly2_mVis.root:muTau_0jet_low  
+        
+        muTau_0jet_high.root                    muTau_ColinJuly2_mVis.root:muTau_0jet_high  
+        muTau_0jet_high_CMS_scale_tUp.root      muTau_ColinJuly2_mVis.root:muTau_0jet_high  
+        muTau_0jet_high_CMS_scale_tDown.root    muTau_ColinJuly2_mVis.root:muTau_0jet_high  
+
+        muTau_1jet_low.root                     muTau_ColinJuly2_mVis.root:muTau_boost_low  
+        muTau_1jet_low_CMS_scale_tUp.root       muTau_ColinJuly2_mVis.root:muTau_boost_low  
+        muTau_1jet_low_CMS_scale_tDown.root     muTau_ColinJuly2_mVis.root:muTau_boost_low  
+        
+        muTau_1jet_high.root                    muTau_ColinJuly2_mVis.root:muTau_boost_high  
+        muTau_1jet_high_CMS_scale_tUp.root      muTau_ColinJuly2_mVis.root:muTau_boost_high  
+        muTau_1jet_high_CMS_scale_tDown.root    muTau_ColinJuly2_mVis.root:muTau_boost_high  
+        
+        muTau_vbf.root                          muTau_ColinJuly2_mVis.root:muTau_vbf       
+        muTau_vbf_CMS_scale_tUp.root            muTau_ColinJuly2_mVis.root:muTau_vbf       
+        muTau_vbf_CMS_scale_tDown.root          muTau_ColinJuly2_mVis.root:muTau_vbf       
+
+        '''
+        sys.exit(1)
     descMap = loadDescMap( sys.argv[1] ) 
     processRootFiles( descMap )
