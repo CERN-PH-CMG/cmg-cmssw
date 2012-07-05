@@ -10,7 +10,7 @@ from CMGTools.RootTools.RootTools import *
 # 'Nom', 'Up', 'Down', or None
 shift = None
 # 1.0, 1.03, 0.97
-tauScaleShift = 0.97
+tauScaleShift = 1.0
 
 mc_vertexWeight = 'vertexWeightFall112011AB'
 mc_tauEffWeight = None
@@ -63,6 +63,10 @@ TauMuAna = cfg.Analyzer(
 dyJetsFakeAna = cfg.Analyzer(
     'DYJetsFakeAnalyzer',
     leptonType = 13
+    )
+
+higgsWeighter = cfg.Analyzer(
+    'HiggsPtWeighter',
     )
 
 tauWeighter = cfg.Analyzer(
@@ -172,6 +176,7 @@ sequence = cfg.Sequence( [
     vertexAna,
     TauMuAna,
     dyJetsFakeAna,
+    higgsWeighter,
     vbfAna,
     embedWeighter, 
     tauWeighter, 
@@ -180,11 +185,11 @@ sequence = cfg.Sequence( [
    ] )
 
 
-selectedComponents = mc_higgs
+# selectedComponents = mc_higgs
 
-test = 0
+test = 1
 if test==1:
-    comp = HiggsVBF125
+    comp = HiggsGGH125
     comp.files = getFiles('/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/TAUMU_TestMetFix', 'cmgtools', 'tauMu.*root')
     selectedComponents = [comp]
     comp.splitFactor = 1
