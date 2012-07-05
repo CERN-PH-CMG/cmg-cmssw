@@ -12,14 +12,22 @@ shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
 
-mc_vertexWeight = 'vertexWeightFall112011AB'
+puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
+puFileData = None
+puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
+puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_start_196509.root'])
+
+vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
+vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
+
+mc_vertexWeight = None
 mc_tauEffWeight = None
 mc_muEffWeight = None
 
-mc_tauEffWeight_mc = 'effLooseTau15MC'
-mc_muEffWeight_mc = 'effIsoMu15MC'
-mc_tauEffWeight = 'effTau2011AB'
-mc_muEffWeight = 'effMu2011AB'
+mc_tauEffWeight_mc = 'effTau2012MC'
+mc_muEffWeight_mc = 'effMu2012MC'
+mc_tauEffWeight = 'effTau2012AB'
+mc_muEffWeight = 'effMu2012AB'
     
 
 
@@ -36,13 +44,18 @@ vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     goodVertices = 'goodPVFilter',
     vertexWeight = mc_vertexWeight,
-    # fixedWeight = 1,
+    fixedWeight = 1,
     verbose = False
     )
 
 embedWeighter = cfg.Analyzer(
     'EmbedWeighter',
     verbose = False
+    )
+
+pileUpAna = cfg.Analyzer(
+    'PileUpAnalyzer',
+    true = True
     )
 
 
@@ -52,7 +65,7 @@ TauMuAna = cfg.Analyzer(
     pt1 = 20,
     eta1 = 2.3,
     iso1 = 999,
-    pt2 = 17,
+    pt2 = 20,
     eta2 = 2.1,
     iso2 = 0.1,
     m_min = 10,
@@ -63,10 +76,6 @@ TauMuAna = cfg.Analyzer(
 dyJetsFakeAna = cfg.Analyzer(
     'DYJetsFakeAnalyzer',
     leptonType = 13
-    )
-
-higgsWeighter = cfg.Analyzer(
-    'HiggsPtWeighter',
     )
 
 tauWeighter = cfg.Analyzer(
@@ -85,8 +94,8 @@ muonWeighter = cfg.Analyzer(
     effWeightMC = mc_muEffWeight_mc,
     lepton = 'leg2',
     verbose = False,
-    disable = False,
-    recEffVersion = '2011'
+    disable = True,
+    recEffVersion = None
     )
 
 
@@ -112,19 +121,21 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinJul5 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinJun25 import * 
-from CMGTools.H2TauTau.proto.samples.tauMu_ColinJul4 import * 
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinMay30 import * 
 
 #########################################################################################
 
 
 # MC_list = [WJets, DYJets, TTJets, W2Jets, W3Jets]
 MC_list = copy.copy(MC)
-data_list = copy.copy(data_2011)
-embed_list = copy.copy(embed_2011)
-
+data_list = copy.copy(data_list_2012)
+embed_list = copy.copy(embed_list_2012)
 
 for mc in MC_list:
+    mc.puFileMC = puFileMC
+    mc.puFileData = puFileData
     mc.splitFactor = 10
     if mc.name.find('DYJets')!=-1:
         mc.splitFactor = 100
@@ -136,7 +147,7 @@ for mc in MC_list:
     elif mc.name.find('W3Jets')!=-1:
         mc.splitFactor = 25
     elif mc.name.find('TTJets')!=-1:
-        mc.splitFactor = 200
+        mc.splitFactor = 80
     elif mc.name.find('WW')!=-1 or \
          mc.name.find('WZ')!=-1 or \
          mc.name.find('ZZ')!=-1:
@@ -150,20 +161,15 @@ for mc in MC_list:
          mc.name.find('HiggsVH150')!=-1:
         mc.splitFactor = 30
 for emb in embed_list:
+    emb.puFileData = None
+    emb.puFileMC = None
     emb.splitFactor = 10
 
-
-data_Run2011A_May10ReReco_v1.splitFactor = 50
-data_Run2011A_PromptReco_v4.splitFactor = 200
-data_Run2011A_05Aug2011_v1.splitFactor = 50
-data_Run2011A_03Oct2011_v1.splitFactor = 50
-data_Run2011B_PromptReco_v1.splitFactor = 100
-
-embed_Run2011A_May10ReReco_v1.splitFactor = 5
-embed_Run2011A_PromptReco_v4.splitFactor = 5
-embed_Run2011A_05Aug2011_v1.splitFactor = 5
-embed_Run2011A_03Oct2011_v1.splitFactor = 5
-embed_Run2011B_PromptReco_v1.splitFactor = 20
+data_Run2012A.splitFactor = 40
+data_Run2012B_start_194479.splitFactor = 50
+data_Run2012B_194480_195016.splitFactor = 40
+data_Run2012B_195017_195947.splitFactor = 40 
+data_Run2012B_195948_196509.splitFactor = 50
 
 selectedComponents =  copy.copy(MC_list)
 selectedComponents.extend( data_list )
@@ -176,8 +182,8 @@ sequence = cfg.Sequence( [
     vertexAna,
     TauMuAna,
     dyJetsFakeAna,
-    higgsWeighter,
     vbfAna,
+    pileUpAna,
     embedWeighter, 
     tauWeighter, 
     muonWeighter, 
@@ -185,11 +191,12 @@ sequence = cfg.Sequence( [
    ] )
 
 
+selectedComponents = mc_higgs
 
-test = 1
+test = 0
 if test==1:
-    comp = HiggsGGH125
-    comp.files = getFiles('/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/TAUMU_TestMetFix', 'cmgtools', 'tauMu.*root')
+    comp = HiggsVBF125
+    comp.files = comp.files[:10]
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:
@@ -202,3 +209,4 @@ elif test==2:
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
 
+printComps(config.components, True)
