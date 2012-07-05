@@ -673,17 +673,16 @@ TH1F* TauMuPlotter::getWJetsInc(){
   TH1F* HZJ=getZToLJetInc();
   HMC->Add(HZJ); delete HZJ;
   MTcat_=tmpCategoryMT;
-  hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  if(HW->Integral()>0.)
+    hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  else {
+    cout<<"WARNING HW->Integral is 0"<<endl;
+    hShape->Scale(0.);
+  }
   delete HData;
   delete HMC;
   delete HW;
 
-
-//   float y=hShape->Integral();
-//   float ye=0;
-//   for(Int_t b=1;b<=hShape->GetNbinsX();b++)
-//     if(hShape->GetBinContent(b)>0) ye+=pow(hShape->GetBinContent(b)*sqrt(pow(hShape->GetBinError(b)/hShape->GetBinContent(b),2)+pow(WJetsOSSideCorrErr_/WJetsOSSideCorr_,2)),2);
-//   cout<<" WJets : "<<y<<" +- "<<sqrt(ye)<<endl;
 
   cout<<"getWJetsInc : "<<hShape->Integral()<<endl;
   return hShape;
@@ -712,7 +711,12 @@ TH1F* TauMuPlotter::getWJetsIncSS(){
   TH1F* HZJ=getZToLJetIncSS();
   HMC->Add(HZJ); delete HZJ;
   MTcat_=tmpCategoryMT;
-  hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  if(HW->Integral())
+    hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  else {
+    cout<<"WARNING HW->Integral is 0"<<endl;
+    hShape->Scale(0.);
+  }
   delete HData;
   delete HMC;
   delete HW;

@@ -1,6 +1,6 @@
 export path="/data/benitezj/Samples"
-export tag="TauMuV541June2_TrigEff"
-#export tag="TauEleV541June29_FlatNtpJune29"
+#export tag="TauMuV541June2_TrigEff"
+export tag="TauEleV541June29_FlatNtpJune29"
 
 rm -rf Plots_$tag
 mkdir Plots_$tag
