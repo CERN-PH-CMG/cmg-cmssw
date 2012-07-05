@@ -4,7 +4,6 @@
 ## September 27th 2011
 
 import os, getpass, sys, re, optparse, copy
-from CMGTools.Production.castorToDbsFormatter import CastorToDbsFormatter
 from CMGTools.Production.publishController import PublishController
 from DBSAPI.dbsProcessedDataset import DbsProcessedDataset
 from DBSAPI.dbsPrimaryDataset import DbsPrimaryDataset
@@ -81,7 +80,7 @@ If not entered, secure password prompt will appear.""",
     	print "Authentication Failed, exiting\n\n"
     	sys.exit(1)
     
-    
+    fileown = os.environ['USER']
     
     # For multiple file input
     if options.multi:
@@ -92,40 +91,35 @@ If not entered, secure password prompt will appear.""",
             try:
             	print "\n------------------------NEW DATASET-----------------------"
                 dataset = line.split(" ")[0].lstrip().rstrip().rstrip('/')
-                fileown = options.fileown
                 if re.search("%", line):
             		fileown = line.split("%")[0].lstrip().rstrip()
             		dataset = line.split("%")[1].split(" ")[0].lstrip().rstrip()
                 elif not re.search("---", dataset):
                 	if len(line.lstrip().rstrip().split(" ")) ==1:
-                		
                 		dataset = line.rstrip("\n").lstrip().rstrip()
-                		fileown = options.fileown
                 	if len(line.lstrip().rstrip().split(" ")) >1 and re.search("'",line) is None and re.search('"',line) is None:
                 		fileown = line.split(" ")[1].rstrip("\n").lstrip().rstrip()
                 	elif re.search("'",line):
                 		preComment = line.split("'")[0]
                 		if len(preComment.lstrip().rstrip().split(" ")) == 2:
                 			fileown = preComment.lstrip().rstrip().split(" ")[1]
-                		else:
-                			fileown = options.fileown
                 	elif re.search('"',line):
                 		preComment = line.split('"')[0]
                 		if len(preComment.lstrip().rstrip().split(" ")) == 2:
                 			fileown = preComment.lstrip().rstrip().split(" ")[1]
-                		else:
-                			fileown = options.fileown
-                	else:
-                		fileown = options.fileown
-                	
                 comment = None
                 if len(line.split("'"))>1:
                 	comment = line.rstrip("'").split("'")[1]
                 elif len(line.split('"'))>1:
                 	comment = line.rstrip('"').split('"')[1]
                 dataset.rstrip("/")
-                publish(dataset,fileown,comment,options.test,options.username,options.password,options.force, options.checkGroups, options.savannah)
+                print options.fileown
+                print fileown
+                options.fileown = fileown
                 
+                pub = PublishTask(dataset,options.fileown,copy.deepcopy(options) )
+                pub.password = options.password
+                pub.run({})
             except NameError as err:
                 print err.args, "\nDataset not published"
     # For singular file input
