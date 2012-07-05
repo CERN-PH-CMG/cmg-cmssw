@@ -187,7 +187,8 @@ def connectSample(components, row, filePattern, cache, verbose):
              comp.name.startswith('embed_') ):
         comp.nGenEvents = nEvents
         comp.nGenEvents *= globalEff
-    print 'LOADING:', comp.name, nEvents, globalEff
+    print 'LOADING:', comp.name, nEvents, globalEff, taskurl
+    # print dsInfo
     comp.files = getFiles(path_name, file_owner, filePattern, cache)
     if comp.name.startswith('data_'):
         if globalEff<0.99:
