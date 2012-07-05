@@ -675,7 +675,12 @@ TH1F* TauElePlotter::getWJetsInc(){
   TH1F* HZL=getZToEEInc();
   HMC->Add(HZL); delete HZL;
   MTcat_=tmpCategoryMT;
-  hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  if(HW->Integral()>0.) 
+    hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  else {
+    cout<<"WARNING HW->Integral is 0"<<endl;
+    hShape->Scale(0.);
+  }
   delete HData;
   delete HMC;
   delete HW;
@@ -710,7 +715,12 @@ TH1F* TauElePlotter::getWJetsIncSS(){
   TH1F* HZJ=getZToLJetIncSS();
   HMC->Add(HZJ); delete HZJ;
   MTcat_=tmpCategoryMT;
-  hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  if(HW->Integral()>0.)
+    hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  else {
+    cout<<"WARNING HW->Integral is 0"<<endl;
+    hShape->Scale(0.);
+  }
   delete HData;
   delete HMC;
   delete HW;
@@ -1606,48 +1616,48 @@ TH1F* TauElePlotter::getW3JetsVBF(){
 
   //get templates from inclusive 2-jet sample and normalize at high mT in VBF
   TString TmpExtrasel=extrasel_;
-  extrasel_="(njet>=2)"; 
-
+  Int_t tmpMTcat=MTcat_;
+  Int_t tmpIsocat=Isocat_;
+  
+  //relax selections
+  Isocat_=-1;
+  extrasel_="(njet>=2&&muiso<0.1&&tauisomva>-0.75)"; 
+  cout<<"Determining WJets template with relaxed selection: "<<extrasel_<<endl;
   TH1F* hW3JetsShape=getSample("W3JetsToLNu");
   hW3JetsShape->SetName("hW3JetsShape");
-  cout<<"hW3JetsShape :"<<hW3JetsShape->Integral()<<endl;
-  //need to know integral of template at high mT for normalization
-  Int_t tmpMTcat=MTcat_;
-  MTcat_=13;//go to high mT with same selections as with plot, cannot relax iso according to Lorenzo
+
+  //go to high mT with same selections as shape
+  MTcat_=13;
   TH1F* hW3JetsShapeHighMT=getSample("W3JetsToLNu");
   hW3JetsShapeHighMT->SetName("hW3JetsShapeHighMT");
 
-  extrasel_=TmpExtrasel;  //return to VBF catetory But stay at high mT
+  //return to VBF catetory But stay at high mT
+  Isocat_=tmpIsocat;
+  extrasel_=TmpExtrasel;  
 
   //determine normalization factor
   //Get Data and TTJets at high mT in VBF
   TH1F* hDataHighMT=getTotalData();
   hDataHighMT->SetName("hDataHighMT");
-  cout<<"hDataHighMT :"<<hDataHighMT->Integral()<<endl;
-  TH1F* hTTJetsHighMT=getSample("TTJets");
-  hTTJetsHighMT->SetName("hTTJetsHighMT");
-  cout<<"hTTJetsHighMT :"<<hTTJetsHighMT->Integral()<<endl;
+  TH1F* hMCHighMT=getSample("TTJets");
+  hMCHighMT->SetName("hMC");
   TH1F* hZTTHighMT=getSample("ZToTauTau");
-  hZTTHighMT->SetName("hZTTHighMT");
-  cout<<"hZTTHighMT :"<<hZTTHighMT->Integral()<<endl;
+  hMCHighMT->Add(hZTTHighMT); delete hZTTHighMT;
   TH1F* hZJHighMT=getSample("ZToLJet");
-  hZJHighMT->SetName("hZJHighMT");
-  cout<<"hZJHighMT :"<<hZJHighMT->Integral()<<endl;
+  hMCHighMT->Add(hZJHighMT); delete hZJHighMT;
+  TH1F* hZEEHighMT=getSample("ZToEE");
+  hMCHighMT->Add(hZEEHighMT); delete hZEEHighMT;
 
-  MTcat_=tmpMTcat;//Return signal mT region
+
+  //Return signal mT region
+  MTcat_=tmpMTcat;
 
   //normalize the Template
-  Float_t WJetsIntegralFromhighMTData=(hDataHighMT->Integral()-hTTJetsHighMT->Integral()-hZTTHighMT->Integral()-hZJHighMT->Integral());
-  hW3JetsShape->Scale(WJetsIntegralFromhighMTData/hW3JetsShapeHighMT->Integral());
+  hW3JetsShape->Scale((hDataHighMT->Integral()-hMCHighMT->Integral())/hW3JetsShapeHighMT->Integral());
   
   delete hW3JetsShapeHighMT;
   delete hDataHighMT;
-  delete hTTJetsHighMT;
-  delete hZTTHighMT;
-  delete hZJHighMT;
-
-  cout<<"----> getW3JetsVBFyield: "<<hW3JetsShape->Integral()<<endl;
- 
+  delete hMCHighMT;
 
   return hW3JetsShape;
 }
@@ -2063,7 +2073,8 @@ TH1F* TauElePlotter::getQCDMike(){
 
   //SS Loose VBF QCD 
   Isocat_=-1;  
-  extrasel_=TmpExtrasel+"*"+isocuttxtshape;
+  //extrasel_=TmpExtrasel+"*"+isocuttxtshape;
+  extrasel_=TString("(njet>=2)*")+isocuttxtshape;
   if(!scaleSamplesLumi())return 0;
   if(!correctSamplesInc())return 0;
   TH1F* hDataVBFLooseShape=getTotalDataSS();if(!hDataVBFLooseShape){cout<<" Total Data not determined "<<endl; return 0;} hDataVBFLooseShape->SetName("hDataVBFLooseShape");
