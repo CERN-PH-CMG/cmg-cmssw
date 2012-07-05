@@ -5,10 +5,10 @@ import copy
 from ROOT import TFile, TH1F, TPaveText
 
 from CMGTools.RootTools.PyRoot import * 
+from CMGTools.RootTools.utils.file_dir import file_dir
 from CMGTools.RootTools.DataMC.DataMCPlot import DataMCPlot
 from CMGTools.RootTools.Style import *
 from CMGTools.RootTools.Style import *
-from CMGTools.H2TauTau.proto.plotter.datacards import file_dir 
 
 
 class H2TauTauDataMCDC( DataMCPlot ):
