@@ -195,7 +195,7 @@ int main(int argc, char** argv)
   // Declare histograms
   //---------------------------------------------------------------------------
 
-  std::vector<double> massBins = {400,600,800,1000,1200,1500,1900,2400,3000,7000};
+  std::vector<double> massBins = {400,600,800,1000,1200,1500,1900,2400,3000,4000,7000};
   std::vector<TH1F*> hists;
 
   TCanvas c1("c1","c1",200,200);
