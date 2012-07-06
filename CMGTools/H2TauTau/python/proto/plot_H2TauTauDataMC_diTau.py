@@ -11,8 +11,8 @@ import math
 import copy
 
 from os import path
-if path.exists('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon2.C'):
-    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon2.C')  # Run ROOT logon script
+if path.exists('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon3.C'):
+    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon3.C')  # Run ROOT logon script
 
 
 run2012=True
@@ -184,7 +184,7 @@ if __name__ == '__main__':
     isolationLL        =  ' && l1RawMVAIso>0.795 && l2RawMVAIso>0.795'
     isolationLL2       =  ' && l1RawMVAIso>0.7 && l2RawMVAIso>0.7'
     isolationLL3       =  ' && l1RawMVAIso>0.3 && l2RawMVAIso>0.3'
-    isolationLL4       =  ' && l1RawMVAIso>0.6 && l2RawMVAIso>0.4'
+    isolationLL4       =  ' && l1RawMVAIso>0.5 && l2RawMVAIso>0.5'
     isolationML        =  ' && ((l1MedMVAIso>0.5 && l2RawMVAIso>0.795) || (l1RawMVAIso>0.795 && l2MedMVAIso>0.5))'
     isolationMM        =  ' && l1MedMVAIso>0.5 && l2MedMVAIso>0.5'
     isolationTM        =  ' && ((l1MedMVAIso>0.5 && l2TigMVAIso>0.5) || (l1TigMVAIso>0.5 && l2MedMVAIso>0.5))'
@@ -194,18 +194,23 @@ if __name__ == '__main__':
     VBF                =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>250 && nCentralJets==0'
     NOVBF              =  ' && (jet1Pt<50 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<250 || nCentralJets >0)'
     VBFtight           =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>4.0 && (jet1Eta*jet2Eta)<0 && mjj>400 && nCentralJets==0 '
+    VBFmedium          =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>500 && nCentralJets==0 '
     NOVBFtight         =  ' && (jet1Pt<50 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<4.0 || (jet1Eta*jet2Eta)>0 || mjj<400 || nCentralJets >0)'
 
     cuts=[
 
 #####  Riccardo  ############################################################################################################################### 
 
-        ("CMS_2012_5_fb_l40_mm_dRtt20_qcd5LL4_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l40_mm_dRtt20_qcd5LL4_loose_VBF"     , baseline + l1Pt40l2Pt40 + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb_l35_met00_mm_dRtt00_SS_qcd5LL4_jet50_loose_BOOSTED" , baselineSS + BOOSTED , ' && dRtt<200.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb_l35_met00_mm_dRtt00_SS_qcd5LL4_jet50_loose_VBF"     , baselineSS + VBF     , ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_forReweighting_weighted3_VBF" , baselineSS + VBF, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_dR00_met20_BOOSTED" , baseline + BOOSTED, ' && dRtt<200.0 && met<20' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_dR00_inclusive_BOOSTED" , baseline + BOOSTED, ' && dRtt<200.0'  , isolationMM , 5 ),
+        
+        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5LL4_mjj2_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5LL4_dR_BOOSTED"   , baseline + l1Pt40l2Pt40 + BOOSTED , ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5LL4_loose_limit2_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        ("CMS_2012_5_fb_l40_mm_dRtt20_qcd5LL4_medium_VBF"   , baseline + l1Pt40l2Pt40 + VBFmedium        , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_tight_VBF"     , baseline + l1Pt40l2Pt40 + VBFtight        , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_loose_VBF"     , baseline + l1Pt40l2Pt40 + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
 
 	  ]
         
@@ -219,30 +224,30 @@ if __name__ == '__main__':
         ('svfitMass*1.03'   ,int(30/rebin), 0   , 300    ),
         ('svfitMass*0.97'   ,int(30/rebin), 0   , 300    ),
         ('met'              ,int(40/rebin), 0   , 200    ),
-        ('l1Pt'             ,int(50/rebin), 0   , 250    ),   # was 75 bins
-        ('l2Pt'             ,int(50/rebin), 0   , 250    ),   # was 75 bins
+        ('l1Pt'             ,int(40/rebin), 0   , 200    ),   # was 75 bins
+        ('l2Pt'             ,int(40/rebin), 0   , 200    ),   # was 75 bins
         ('jet1Pt'           ,int(50/rebin), 0   , 500    ),
         ('jet2Pt'           ,int(50/rebin), 0   , 500    ),
         ('visMass'          ,int(30/rebin), 0   , 300    ),
         #('visMass*1.03'     ,int(30/rebin), 0   , 300    ),
         #('visMass*0.97'     ,int(30/rebin), 0   , 300    ),
-        ('nVert'            ,int(25/rebin), 0   , 50     ),
-        ('l1Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
-        ('l2Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
-        ('jet1Eta'          ,int(20/rebin), -5  , 5      ),
-        ('jet2Eta'          ,int(20/rebin), -5  , 5      ),
+        #('nVert'            ,int(25/rebin), 0   , 50     ),
+        #('l1Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
+        #('l2Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
+        #('jet1Eta'          ,int(20/rebin), -5  , 5      ),
+        #('jet2Eta'          ,int(20/rebin), -5  , 5      ),
         ('mjj'              ,int(30/rebin), 0   ,  800   ),
-        ('nJets'            ,10           , 0   , 10     ),
-        ('dRtt'             ,int(50/rebin), 0   , 5      ),
-        ('dPhitt'           ,int(50/rebin), 0   , 3.15   ),
-        ('mt'               ,int(60/rebin), 0   , 200    ),
-        ('pThiggs'          ,int(60/rebin), 0   , 300    ),
-        ('diTauPt'          ,int(60/rebin), 0   , 300    ),
-        #('dEtajj'           ,int(40/rebin), -10 , 10     ),
+        #('nJets'            ,10           , 0   , 10     ),
+        #('dRtt'             ,int(30/rebin), 0   , 5      ),
+        #('dPhitt'           ,int(30/rebin), 0   , 3.15   ),
+        #('mt'               ,int(20/rebin), 0   , 200    ),
+        #('pThiggs'          ,int(25/rebin), 0   , 300    ),
+        #('diTauPt'          ,int(25/rebin), 0   , 300    ),
+        ('dEtajj'           ,int(20/rebin), -10 , 10     ),
         #('dEtatt'           ,int(45/rebin), 0   , 4.5    ),
         #('dEtattjj'         ,int(40/rebin), 0   , 10     ),
         #('dPhijj'           ,int(40/rebin), 0   , 3.15   ),
-        ('mttj'             ,int(60/rebin), 0   , 1000   ),
+        ('mttj'             ,int(25/rebin), 0   , 1000   ),
         #('l1DecayMode'      ,12           , 0   , 12     ),
         #('l2DecayMode'      ,12           , 0   , 12     ),
         #('diTauCharge'      ,7            , -3  , 3      ),
@@ -284,7 +289,11 @@ if __name__ == '__main__':
       #looseisocut=" && !(1 "+isocut+")"
       #semilooseisocut=isolationM+" && !(1 "+isocut+")"
 
-      #looseisocut = isolationM+" && !(1 "+isocut+")"
+#       if prefix.find('VBF') > 0 :
+#         looseisocut = isolationM+" && !(1 "+isocut+")"
+#       else :
+#         looseisocut = isolationLL4+" && !(1 "+isocut+")"
+
       looseisocut = isolationLL4+" && !(1 "+isocut+")"
       
       #looseisocut=isolationMNM+" && !(1 "+isocut+")"
@@ -347,11 +356,11 @@ if __name__ == '__main__':
      			                             xmax,                             \
      			                             cut = cut+looseisocut+antiqcdcut, \
      			                             #weight=weight+"*weightQCD_nVert(nVert)",\
-     			                             #weight=weight+"*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
-     			                             weight=weight,                    \
+     			                             weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
+     			                             #weight=weight,                    \
      			                             embed=options.embed)
       
-      WJets_looseisocut = isolationMNM+" && !(1 "+isocut+")"
+      WJets_looseisocut = isolationMNM + " && !(1 "+isocut+")"
       plotVarDataLooseIsoOS_WJets = H2TauTauDataMC(var,                              \
                                              anaDir,                                 \
                                              selCompsNoSignal,                       \
@@ -479,9 +488,9 @@ if __name__ == '__main__':
       #######################################################
       yields = False
       if ( var == "svfitMass" or var == "svfitMass*1.03" or var == "svfitMass*0.97" ):
-        #massesRange = [115,120,125,130,135,140,145]
+        massesRange = [115,120,125,130,135,140,145]
         #massesRange = [110,115,120,125,130,135,140,145]
-        massesRange = [125]
+        #massesRange = [125]
         print 'I\'m plotting mass distribution for masses in [110,115,120,125,130,135,140,145] GeV'
         if var == "svfitMass" :
           yields = True
@@ -498,15 +507,12 @@ if __name__ == '__main__':
 
         
         ### WJets estimate for low stat 2012 MC samples ###
-        #WJets_sample    = 'error'
-        #WJets_ToBePut_0 = 'error'
-        #scaleFromMuTau  = 10000.
-        
-        
+
         if prefix.find('VBF')     > 0 : 
           WJets_sample    = 'W3Jets'
           WJets_ToBePut_0 = ['WJets','WJets_Fakes']
-          scaleFromMuTau  = 8.56
+          #scaleFromMuTau  = 8.56  # for VBF loose
+          scaleFromMuTau  = 9.96  # for VBF tight
         
         if prefix.find('BOOSTED') > 0 : 
           WJets_sample    = 'WJets'

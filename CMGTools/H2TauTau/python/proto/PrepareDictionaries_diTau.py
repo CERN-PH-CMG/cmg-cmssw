@@ -37,8 +37,8 @@ def componentsWithData (selComps, weights) :
     #for mPoint in [125] :
 
       if run2012:
-        selCompsDataMass[mPoint]['data_Run2012A_PromptReco_v1'] = copy.deepcopy(selComps['data_Run2012A_PromptReco_v1'])
-        selCompsDataMass[mPoint]['data_Run2012B_PromptReco_v1'] = copy.deepcopy(selComps['data_Run2012B_PromptReco_v1'])
+        selCompsDataMass[mPoint]['data_Run2012A_PromptReco_v1']  = copy.deepcopy(selComps['data_Run2012A_PromptReco_v1'])
+        selCompsDataMass[mPoint]['data_Run2012B_PromptReco_v1']  = copy.deepcopy(selComps['data_Run2012B_PromptReco_v1'])
         selCompsDataMass[mPoint]['embed_Run2012A_PromptReco_v1'] = copy.deepcopy(selComps['embed_Run2012A_PromptReco_v1'])
         selCompsDataMass[mPoint]['embed_Run2012B_PromptReco_v1'] = copy.deepcopy(selComps['embed_Run2012B_PromptReco_v1'])
       else:
