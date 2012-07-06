@@ -17,4 +17,13 @@ class AutoHandle( Handle, object ):
         '''Load self from a given event.
 
         Call this function, and then just call self.product() to get the collection'''
-        event.getByLabel( self.label, self)
+        try:
+            event.getByLabel( self.label, self)
+        except ValueError:
+            errstr = '''
+            Cannot find collection with:
+            type = {type}
+            label = {label}
+            '''.format(type = self.type, label = self.label)
+            raise ValueError(errstr)
+            

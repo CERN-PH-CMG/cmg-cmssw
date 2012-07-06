@@ -65,7 +65,7 @@ class PileUpAnalyzer( Analyzer ):
             'std::vector<PileupSummaryInfo>' 
             ) 
         self.handles['vertices'] =  AutoHandle(
-            'goodPVFilter',
+            'offlinePrimaryVertices',
             'std::vector<reco::Vertex>' 
             ) 
 
