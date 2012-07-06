@@ -237,7 +237,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['embed_Run2011B_PromptReco_v1']  = {'style':sViolet,   'layer':-1200}
         self.histPref['TTJets']                        = {'style':sRed,      'layer':1} 
         self.histPref['WJets']                         = {'style':sBlue,     'layer':2}  
-        self.histPref['W3Jets']                        = {'style':sBlue,     'layer':2}  
+        self.histPref['W3Jets']                        = {'style':sOrange,   'layer':2}  
         self.histPref['WJets_Fakes']                   = {'style':sViolet,   'layer':1.5}  
         self.histPref['WW']                            = {'style':sBlue,     'layer':0.93}  
         self.histPref['WZ']                            = {'style':sBlue,     'layer':0.92}  
