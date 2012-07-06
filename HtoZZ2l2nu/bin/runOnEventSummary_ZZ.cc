@@ -472,7 +472,9 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F("ZZ_in_DPhiZZ", ";Diboson DPhi [GeV];Events", 30, 0., 3.15) );
   mon.addHistogram( new TH1F("ZZ_in_DEtaZZ", ";Diboson DEta [GeV];Events", 30, 0., 5.) );
   mon.addHistogram( new TH1F("ZZ_in_llMass", ";Dilepton Invariant mass [GeV];Events", 20, 75., 110.) );
-  mon.addHistogram( new TH1F("ZZ_in_NBtag", ";CVS discriminator ( Pt>20GeV ) [GeV];Events", 22, -1.1, 1.1) );
+  mon.addHistogram( new TH1F("ZZ_in_NBtag", ";CVS discriminator ( Pt>20GeV ) [GeV];Events", 22, -5.1, 5.1) );
+  mon.addHistogram( new TH1F("ZZ_in_NBtag_onlyMax", ";CVS discriminator ( Pt>20GeV ) [GeV];Events", 22, -5.1, 5.1) );
+  mon.addHistogram( new TH1F("ZZ_cut_NBtag_onlyMax", ";CVS discriminator ( Pt>20GeV ) [GeV];Events", 22, -5.1, 5.1) );
   mon.addHistogram( new TH1F("ZZ_in_llPt", ";Transvers momentum of lepton pair [GeV];Events", 50, 0., 500.) );
   mon.addHistogram( new TH1F("ZZ_in_l1Pt", ";Transvers momentum of lepton 1 [GeV];Events", 25, 20., 100.) );
   mon.addHistogram( new TH1F("ZZ_in_l2Pt", ";Transvers momentum of lepton 2 [GeV];Events", 25, 20., 100.) );
@@ -494,6 +496,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F("ZZ_fin_DPhiZZ", ";Diboson Dphi [GeV];Events", 30, 2., 3.15) );
   mon.addHistogram( new TH1F("ZZ_fin_DEtaZZ", ";Diboson DEta [GeV];Events", 30, 0., 5.) );
   mon.addHistogram( new TH1F("ZZ_fin_llMass", ";Dilepton Invariant mass [GeV];Events", 20, 75., 110.) );
+  mon.addHistogram( new TH1F("ZZ_finNonMass_llMass", ";Dilepton Invariant mass [GeV];Events", 50, 40., 140.) );
   mon.addHistogram( new TH1F("ZZ_fin_llPt", ";Transvers momentum of lepton pair [GeV];Events", 50, 0., 500.) );
   mon.addHistogram( new TH1F("ZZ_fin_l1Pt", ";Transvers momentum of lepton 1 [GeV];Events", 25, 20., 100.) );
   mon.addHistogram( new TH1F("ZZ_fin_l2Pt", ";Transvers momentum of lepton 2 [GeV];Events", 25, 20., 100.) );
@@ -504,7 +507,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F("ZZ_fin_MetRed_IND", ";Met IND [GeV];Events", 50, 0., 500.) );
   mon.addHistogram( new TH1F("ZZ_fin_MetRed_D0", ";Met D0 [GeV];Events", 50, 0., 500.) );
 // Cut Plot
-  mon.addHistogram( new TH1F("ZZ_cut_llPt", ";Transvers momentum of lepton 1 [GeV];Events", 25, 20., 100.) );
+  mon.addHistogram( new TH1F("ZZ_cut_llPt", ";Z Transvers momentum [GeV];Events", 25, 20., 100.) );
   mon.addHistogram( new TH1F("ZZ_cut_Bveto", ";Num of B-tagged Jet (2);Events", 5, 0., 5.) );
   mon.addHistogram( new TH1F("ZZ_cut_Bvetol", ";Num of B-tagged Jet (1.7);Events", 5, 0., 5.) );
   mon.addHistogram( new TH1F("ZZ_cut_njet", ";Num of Jet;Events", 5, 0., 5.) );
@@ -527,6 +530,18 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F("ZZ_cut_Nlept15", ";Num of Leptons, Pt > 15;Events",  4, 2., 6.) );
   mon.addHistogram( new TH1F("ZZ_cut_Nlept20", ";Num of Leptons, Pt > 17;Events",  4, 2., 6.) );
   mon.addHistogram( new TH1F("ZZ_cut_llMass", ";Dilepton Invariant mass [GeV];Events", 20, 75., 110.) );
+//CTRL BKG
+  mon.addHistogram( new TH1F("Ctrl_WZ_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WZ_RedMet", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WZ_Mt", ";Transvers Mass [GeV];Events", 35, 0., 100.) );
+  mon.addHistogram( new TH1F("Ctrl_T_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_T_RedMet", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_T_Mass", ";Z Mass [GeV];Events", 50, 0., 200.) );
+  mon.addHistogram( new TH1F("Ctrl_WW_Mass", ";Z Mass [GeV];Events", 25, 0., 200.) );
+  mon.addHistogram( new TH1F("Ctrl_WW_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WW_RedMe", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_W_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_W_RedMe", ";RedMet [GeV];Events", 50, 0., 300.) );
 // Bin Pt
   mon.addHistogram( new TH1F("ZZ_Pt1bin_llMass", ";Dilepton Invariant mass [GeV];Events", 20, 75., 110.) );
   mon.addHistogram( new TH1F("ZZ_Pt2bin_llMass", ";Dilepton Invariant mass [GeV];Events", 20, 75., 110.) );
@@ -587,13 +602,11 @@ int main(int argc, char* argv[])
   TH1F *ee_EfficTrig_dw = new TH1F("ee_EfficTrig_dw", "ZZ (ee) Efficiency Trigger down", 1, 0., 1.);
   TH1F *ee_EfficScal_up = new TH1F("ee_EfficScal_up", "ZZ (ee) Efficiency Scale up", 1, 0., 1.);
   TH1F *ee_EfficScal_dw = new TH1F("ee_EfficScal_dw", "ZZ (ee) Efficiency Scale dw", 1, 0., 1.);
-  //@TH1F *ee_EfficPUp_tot = new TH1F("ee_EfficPUp_tot", "ZZ (ee) Efficiency", 1, 0., 1.);
   TH1F *mumu_EfficPUp = new TH1F("mumu_EfficPUp", "ZZ (mumu) Efficiency", 1, 0., 1.);
   TH1F *mumu_EfficTrig_up = new TH1F("mumu_EfficTrig_up", "ZZ (mumu) Efficiency Trigger up", 1, 0., 1.);
   TH1F *mumu_EfficTrig_dw = new TH1F("mumu_EfficTrig_dw", "ZZ (mumu) Efficiency Trigger down", 1, 0., 1.);
   TH1F *mumu_EfficScal_up = new TH1F("mumu_EfficScal_up", "ZZ (mumu) Efficiency Scale up", 1, 0., 1.);
   TH1F *mumu_EfficScal_dw = new TH1F("mumu_EfficScal_dw", "ZZ (mumu) Efficiency Scale dw", 1, 0., 1.);
-  //@TH1F *mumu_EfficPUp_tot = new TH1F("mumu_EfficPUp_tot", "ZZ (mumu) Efficiency", 1, 0., 1.);
   //JER JES
   TH1F *ee_EfficJer = new TH1F("ee_EfficJer", "ZZ (ee) Efficiency Jer", 1, 0., 1.);
   TH1F *mumu_EfficJer = new TH1F("mumu_EfficJer", "ZZ (mumu) Efficiency Jer", 1, 0., 1.);
@@ -816,9 +829,9 @@ int main(int argc, char* argv[])
       //########       GLOBAL VARIABLES       ########
       //##############################################
 
-      //lept correction
-      float l1corr( fabs(phys.leptons[0].id)==ELECTRON ? phys.leptons[0].ensf : 1.0 ); if( l1corr==0 || isMC ) l1corr=1;
-      float l2corr( fabs(phys.leptons[1].id)==ELECTRON ? phys.leptons[1].ensf : 1.0 ); if( l2corr==0 || isMC ) l2corr=1;
+      //lept correction Off
+      //float l1corr( fabs(phys.leptons[0].id)==ELECTRON ? phys.leptons[0].ensf : 1.0 ); if( l1corr==0 || isMC ) l1corr=1;
+      //float l2corr( fabs(phys.leptons[1].id)==ELECTRON ? phys.leptons[1].ensf : 1.0 ); if( l2corr==0 || isMC ) l2corr=1;
  
       float iweight=weight;
 
@@ -906,11 +919,12 @@ int main(int argc, char* argv[])
       LorentzVector BestJet;
       float PtApp=0.;
       int njets(0),njetsinc(0);
-      int nbtags(0), nbtags_tchel(0),   nbtags_tche2(0),  nbtags_csvl(0);
+      int nbtags(0), nbtags_tchel(0),   nbtags_tche2(0),  nbtags_csvl(0), nbtags_csvl_tight(0);
       LorentzVectorCollection jetsP4;
       int nheavyjets(0), nlightsjets(0);
       int Nj_10=0, Nj_15=0, Nj_20=0, Nj_25=0, Nj_30=0;
       int tmpJ = 0; double deltaPhiJet = 0.;
+      float MaxBtag=-999.;
       for(size_t ijet=0; ijet<phys.ajets.size(); ijet++){
           if(phys.ajets[ijet].pt()>10) Nj_10++;
           if(phys.ajets[ijet].pt()>15) Nj_15++;
@@ -922,22 +936,26 @@ int main(int argc, char* argv[])
           jetsP4.push_back( phys.ajets[ijet] );
           njetsinc++;
           if(fabs(phys.ajets[ijet].eta())<2.5){
-               mon.fillHisto("ZZ_in_NBtag", tags_cat, phys.ajets[ijet].btag2, iweight);
+              if( phys.ajets[ijet].btag2 > MaxBtag  ) MaxBtag = phys.ajets[ijet].btag2;
+              mon.fillHisto("ZZ_in_NBtag", tags_cat, phys.ajets[ijet].btag2, iweight);
               njets++;
               bool passTCHEL(phys.ajets[ijet].btag1>1.7);
               bool passTCHE2(phys.ajets[ijet].btag1>2.0);
               bool passCSVL(phys.ajets[ijet].btag2>0.244);
+              bool passCSVLTight(phys.ajets[ijet].btag2>0.15);
               if(phys.ajets[ijet].pt()>20){
                 nbtags          += passTCHE2;
                 nbtags_tchel    += passTCHEL;
                 nbtags_tche2    += passTCHE2;
                 nbtags_csvl     += passCSVL;
+                nbtags_csvl_tight     += passCSVLTight;
                 nheavyjets += (fabs(phys.ajets[ijet].genid)==5);
                 nlightsjets += (fabs(phys.ajets[ijet].genid)!=5);
                 if( phys.ajets[ijet].pt() > PtApp ){PtApp =  phys.ajets[ijet].pt(); BestJet = phys.ajets[ijet];}
               }
           }
       }
+      if(MaxBtag>-9.) mon.fillHisto("ZZ_in_NBtag_onlyMax", tags_cat, MaxBtag, iweight);
       bcomp.compute(nheavyjets,nlightsjets);
       std::vector<btag::Weight_t> wgt = bcomp.getWeights();
       double p0btags = wgt[0].first;  
@@ -961,8 +979,8 @@ int main(int argc, char* argv[])
       //redmet
       METUtils::stRedMET redMetInfo;      
       LorentzVector nullP4     = LorentzVector(0,0,0,0);
-      LorentzVector lep1       = isGammaEvent ? zll    : phys.leptons[0]*l1corr;
-      LorentzVector lep2       = isGammaEvent ? nullP4 : phys.leptons[1]*l2corr;
+      LorentzVector lep1       = isGammaEvent ? zll    : phys.leptons[0];
+      LorentzVector lep2       = isGammaEvent ? nullP4 : phys.leptons[1];
       LorentzVector zllraw=lep1+lep2;
       LorentzVector rTMetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , zvv                , isGammaEvent);
       LorentzVector rAMetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , zvv                , isGammaEvent);
@@ -983,21 +1001,21 @@ int main(int argc, char* argv[])
       double RedIndMet_L = redMetP4.pt()*cos( fabs(deltaPhi( redMetP4.phi(),zll.phi() )) );
 
       //Isolation
-      bool passIso=false;
+      bool NoIso=false;
       for( int ilep=0; ilep<2; ilep++){
          int lpid=phys.leptons[ilep].pid;
          if(fabs(phys.leptons[ilep].id)==13){
-            if( !hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) passIso=true;
+            if( !hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) NoIso=true;
             float relIso2011 = phys.leptons[ilep].relIsoRho(ev.rho);
-            if( relIso2011 > 0.15) passIso=true;
+            if( relIso2011 > 0.15) NoIso=true;
          }
          if(fabs(phys.leptons[ilep].id)==11){
-            if( !hasObjectId(ev.mn_idbits[lpid], EID_VBTF2011) ) passIso=true;
+            if( !hasObjectId(ev.mn_idbits[lpid], EID_VBTF2011) ) NoIso=true;
             float relIso2011 = phys.leptons[ilep].relIsoRho(ev.rho);
-            if( relIso2011 > 0.10) passIso=true;
+            if( relIso2011 > 0.10) NoIso=true;
          }
       }
-      if(passIso) continue;
+      if(NoIso) continue;
 
 
       //sum ETs
@@ -1073,25 +1091,33 @@ int main(int argc, char* argv[])
       //
       int nextraleptons(0);
       int nlept10 = 2, nlept15 = 2, nlept20 = 2;
+      vector<int> Ind3lept; Ind3lept.clear();
       for(size_t ilep=2; ilep<phys.leptons.size(); ilep++){
 	  //lepton type
 	  bool isGood(false);
 	  int lpid=phys.leptons[ilep].pid;
 	  if(fabs(phys.leptons[ilep].id)==13){
+
+//@@       isGood = ( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.15 &&  phys.leptons[ilep].pt()>20);
+
 		isGood = (hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.15 && phys.leptons[ilep].pt()>10);
 		isGood |= (hasObjectId(ev.mn_idbits[lpid], MID_SOFT2011) && phys.leptons[ilep].pt()>3);
-          }else{
+        }else{
 		isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.1 && phys.leptons[ilep].pt()>10);
+//		isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.1 && phys.leptons[ilep].pt()>20);
 	  }
 	  nextraleptons += isGood;
+        Ind3lept.push_back((int)ilep);
         if(isGood && phys.leptons[ilep].pt() > 10) nlept10++; 
         if(isGood && phys.leptons[ilep].pt() > 15) nlept15++; 
         if(isGood && phys.leptons[ilep].pt() > 20) nlept20++; 
       }
 
+      //Using JER Smearing
+      redMet = MetSmeared.Pt();
+      redMetP4 = MetSmeared;
 
-      //bool Flav( (ev.l1_id == -(ev.l2_id)) );
-      bool passZmass(fabs(zmass-91.) < 7.); //@@@@
+      bool passZmass(fabs(zmass-91.) < 7.); 
       bool passZpt(zpt>30);
       bool passBveto(nbtags_csvl==0); // 0.244
       bool JetVeto( Nj_30 == 0 ); //"eq0jets"
@@ -1100,15 +1126,6 @@ int main(int argc, char* argv[])
       bool Balance( met/zpt > 0.4 && met/zpt < 1.8 );
       bool Dphi_J( DphiMet_Jet==0 );
       bool pass3dLeptonVeto(nextraleptons==0);
-// int nlept10 = 2, nlept15 = 2, nlept20 = 2; LorentzVector ThirdLept;
-//           for(unsigned int i=2; i < phys.leptons.size(); i++){
-//              if( phys.leptons[i].pt() > 10 ){
-//                  nlept10++;
-//                  if( pass3dLeptonVeto ) ThirdLept = phys.leptons[i];
-//                  pass3dLeptonVeto = false; } 
-//              if( phys.leptons[i].pt() > 15 ){ nlept15++; }
-//              if( phys.leptons[i].pt() > 20 ){ nlept20++; }
-//           }
 
       bool RedMetJer( MetSmeared.pt() > MetCut ); bool RedMetJesm( MetSmeared_jesm.pt() > MetCut ); bool RedMetJesp( MetSmeared_jesp.pt() > MetCut );
       bool Balance_jer( zvvs[0].pt()/zpt > 0.4 && zvvs[0].pt()/zpt < 1.8 ), Balance_jesp( zvvs[3].pt()/zpt > 0.4 && zvvs[3].pt()/zpt < 1.8 ),
@@ -1121,8 +1138,17 @@ int main(int argc, char* argv[])
 	bool PassSelectionSysMetJesp( Dil && passZmass && passZpt && passBveto && JetVeto_jesp && RedMetJesp && Balance_jesp && DphiMet_Jet_jesp && pass3dLeptonVeto);
 	bool PassSelectionSysMet( Dil && passZmass && passZpt && passBveto && JetVeto_jer && RedMetJer && Balance_jer && DphiMet_Jet_jer && pass3dLeptonVeto);
 	bool PassSelectionNoMet( Dil && passZmass && passZpt && passBveto && JetVeto && Balance && Dphi_J && pass3dLeptonVeto);
+	bool PassSelectionRedMetNoMass( Dil && passZpt && passBveto && JetVeto && RedMetPt && Balance && Dphi_J && pass3dLeptonVeto);
 	//bool SelectionNo3LeptVeto( passZmass && passZpt && passBveto && JetVeto && RedMetPt && Balance && Dphi_J );
-      bool CtrlTT( nbtags_csvl>1 && tag_cat == "emu" && phys.leptons.size()==2 );
+	//Control Sample BKG
+	bool sidebands( (zmass>40 && zmass<70 ) || (zmass>110 && zmass<200 ) );
+	bool WZ_ctrl  ( passZpt && nextraleptons==1 && passZmass && passBveto );
+	bool T_ctrl   ( passZpt && nbtags_csvl>0 && sidebands );
+	bool T_ctrl2  ( passZpt && nbtags_csvl>0 );
+	bool WW_ctrl  ( passZpt && nbtags_csvl_tight==0 && Nj_20 == 0 && redMet>45. && Balance && Dphi_J && pass3dLeptonVeto );
+	bool WW_ctrl2 ( passZpt && nbtags_csvl_tight==0 && Nj_20 == 0 && Balance && Dphi_J && pass3dLeptonVeto && sidebands );
+	bool W_ctrl   ( passZpt && (phys.leptons[0].id*phys.leptons[1].id)>0 && sidebands && passBveto );
+      bool CtrlTT   ( nbtags_csvl>1 && tag_cat == "emu" && phys.leptons.size()==2 );
 
       bool pt_1(zpt > 70. && zpt < 90.);
       bool pt_2(zpt > 90. && zpt < 110.);
@@ -1186,6 +1212,7 @@ int main(int argc, char* argv[])
         mon.fillHisto("ZZ_fin_MetRed_IND", tags_cat, redMet, iweight);
         mon.fillHisto("ZZ_fin_MetRed_D0", tags_cat, redMetD0P4.Pt(), iweight);
       }
+      if( PassSelectionRedMetNoMass ) mon.fillHisto("ZZ_finNonMass_llMass", tags_cat, zmass, iweight); 
       //Cut Optimization
       if( Dil && passZmass  ){
       mon.fillHisto("ZZ_cut_llPt", tags_cat, zpt, iweight);
@@ -1201,6 +1228,7 @@ int main(int argc, char* argv[])
       mon.fillHisto("ZZ_cut_njet_30", tags_cat, Nj_30 , iweight);
       mon.fillHisto("ZZ_cut_RedIndMet_L_yesJ", tags_cat, RedIndMet_L, iweight);
       mon.fillHisto("ZZ_cut_BalRedIndMet_L_yesJ", tags_cat, RedIndMet_L/zpt, iweight);
+      if(MaxBtag>-9.) mon.fillHisto("ZZ_cut_NBtag_onlyMax", tags_cat, MaxBtag, iweight);
          if( JetVeto ){
       mon.fillHisto("ZZ_cut_MET1Pt", tags_cat, met, iweight);
       mon.fillHisto("ZZ_cut_MetRed_IND", tags_cat, redMet, iweight);
@@ -1231,6 +1259,28 @@ int main(int argc, char* argv[])
                                               mon.fillHisto("ZZ_eventflow_ptBin",tags_cat,2,iweight);      }
       if( PassSelectionRedMet && pt_4 ){      mon.fillHisto("ZZ_Pt4bin_llMass", tags_cat, zmass, iweight);
                                               mon.fillHisto("ZZ_eventflow_ptBin",tags_cat,3,iweight);      }
+      //CTRL region WZ
+      if(WZ_ctrl){
+           mon.fillHisto("Ctrl_WZ_PFMet", tags_cat, met, iweight);
+           mon.fillHisto("Ctrl_WZ_RedMet", tags_cat, redMet, iweight);
+           mon.fillHisto("Ctrl_WZ_Mt", tags_cat, sqrt((2*zvv.pt()*phys.leptons[Ind3lept[0]].pt())*(1-cos(deltaPhi(zvv.phi(),phys.leptons[Ind3lept[0]].phi())))), iweight);
+      }
+      if(T_ctrl){
+           mon.fillHisto("Ctrl_T_PFMet", tags_cat, met, iweight);
+           mon.fillHisto("Ctrl_T_RedMet", tags_cat, redMet, iweight);
+      }
+      if(T_ctrl2)  mon.fillHisto("Ctrl_T_Mass", tags_cat, zmass, iweight);
+
+      if(WW_ctrl)  mon.fillHisto("Ctrl_WW_Mass", tags_cat, zmass, iweight);
+      if(WW_ctrl2){
+           mon.fillHisto("Ctrl_WW_PFMet", tags_cat, met, iweight);
+           mon.fillHisto("Ctrl_WW_RedMet", tags_cat, redMet, iweight);
+      }
+      if( W_ctrl ){
+           mon.fillHisto("Ctrl_W_PFMet", tags_cat, met, iweight);
+           mon.fillHisto("Ctrl_W_RedMet", tags_cat, redMet, iweight);
+      }
+
 
   //Met Smearing for Eff Correctio
   //Applying smearing
@@ -1512,7 +1562,6 @@ int main(int argc, char* argv[])
 
       if( Dil && passZpt  && passBveto && JetVeto && (fabs(zmass-91)<20) ){
          for(unsigned int index=0;index<Optim_Cuts1_met.size();index++){
-     //@@@       if(redMetP4.pt()>)ptim_Cuts1_met[index] && zll.mass()>optim_Cuts1_dmz[index] )
                  if(MetSmeared.pt() >Optim_Cuts1_met[index] && zll.mass()>optim_Cuts1_dmz[index] )
             mon.fillHisto( "optim_eventflow1" , tags_full,    index, weight);
          }
@@ -1787,13 +1836,11 @@ int main(int argc, char* argv[])
   ee_EfficPUm->Fill(0.,NzzPUm_ee);
   mumu_EfficPUm_tot->Fill(0.,NzzTotPUm_mumu);
   mumu_EfficPUm->Fill(0.,NzzPUm_mumu);
-  //@ee_EfficPUp_tot->Fill(0.,NzzTotPUp_ee);
   ee_EfficPUp->Fill(0.,NzzPUp_ee);
   ee_EfficTrig_up->Fill(0.,NzzTrig_up_ee);
   ee_EfficTrig_dw->Fill(0.,NzzTrig_dw_ee);
   ee_EfficScal_up->Fill(0.,NzzScal_up_ee);
   ee_EfficScal_dw->Fill(0.,NzzScal_dw_ee);
-  //@mumu_EfficPUp_tot->Fill(0.,NzzTotPUp_mumu);
   mumu_EfficPUp->Fill(0.,NzzPUp_mumu);
   mumu_EfficTrig_up->Fill(0.,NzzTrig_up_mu);
   mumu_EfficTrig_dw->Fill(0.,NzzTrig_dw_mu);
@@ -1835,13 +1882,11 @@ int main(int argc, char* argv[])
   ee_EfficPUm->Write();
   mumu_EfficPUm_tot->Write();
   mumu_EfficPUm->Write();
-  //@ee_EfficPUp_tot->Write();
   ee_EfficPUp->Write();
   ee_EfficTrig_up->Write();
   ee_EfficTrig_dw->Write();
   ee_EfficScal_up->Write();
   ee_EfficScal_dw->Write();
-  //@mumu_EfficPUp_tot->Write();
   mumu_EfficPUp->Write();
   mumu_EfficTrig_up->Write();
   mumu_EfficTrig_dw->Write();
