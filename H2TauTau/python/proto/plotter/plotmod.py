@@ -29,7 +29,7 @@ def hist( var, anaDir,
 def shape( var, anaDir,
            comp, weights, nbins, xmin, xmax,
            cut, weight,
-           embed, shift, treeName=None):
+           embed, shift=None, treeName=None):
     shape = hist( var, anaDir,
                   comp, weights, nbins, xmin, xmax,
                   cut, weight,
