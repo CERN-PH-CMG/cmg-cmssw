@@ -8,7 +8,12 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.Event import Event
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton,Photon,Electron,Jet
+from CMGTools.RootTools.physicsobjects.Lepton import Lepton
+from CMGTools.RootTools.physicsobjects.Photon import Photon
+from CMGTools.RootTools.physicsobjects.Electron import Electron
+from CMGTools.RootTools.physicsobjects.Muon import Muon
+from CMGTools.RootTools.physicsobjects.Jet import Jet
+
 
 from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
 from CMGTools.HToZZTo4Leptons.analyzers.DiObjectPair import DiObjectPair

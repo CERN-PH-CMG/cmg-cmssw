@@ -18,7 +18,10 @@ from CMGTools.HToZZTo4Leptons.analyzers.FourLeptonAnalyzerBase import FourLepton
 from CMGTools.HToZZTo4Leptons.tools.OverlapCleaner import OverlapCleaner 
 from CMGTools.HToZZTo4Leptons.tools.IsoDepositCreator import IsoDepositCreator
 
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton,Photon,Electron
+from CMGTools.RootTools.physicsobjects.Lepton import Lepton
+from CMGTools.RootTools.physicsobjects.Electron import Electron
+from CMGTools.RootTools.physicsobjects.Muon import Muon
+from CMGTools.RootTools.physicsobjects.Photon import Photon
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
