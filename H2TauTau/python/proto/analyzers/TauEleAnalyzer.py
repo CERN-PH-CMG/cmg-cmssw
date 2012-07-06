@@ -44,11 +44,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         diLeptons = []
         for index, dil in enumerate(cmgDiLeptons):
             pydil = self.__class__.DiObjectClass(dil)
-#            print 'TEST tau iso',pydil.leg1().tauID('byRawIsoMVA')
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
-#FIXME how I could work w/o the following line it's mistery 
-#            pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
             if not self.testLeg2( pydil.leg2(), 999999 ):
                 continue
             if hasattr(self.cfg_ana, 'mvametsigs'):
@@ -85,7 +82,6 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         #            import pdb
         #            pdb.set_trace()
         
-        #        self.bestVertex = event.goodVertices[0]
         result = super(TauEleAnalyzer, self).process(iEvent, event)
 
         if result is False:
@@ -125,48 +121,22 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-##     def testLeg1ID(self, tau):
-##         """Returns True if a tau passes a set of cuts.
-        
-##         contains the selections of the sync exercise of 17/05/12
-##         """
-##         if tau.decayMode() == 0 and \
-##                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B #PG FIXME should I put this in?
-##             return False
-##         if abs (tau.dz())  > 0.2   : return False
-##         if abs (tau.dxy()) > 0.045 : return False
-##         return tau.tauID("againstElectronMVA")    == True and \
-##                tau.tauID("againstElectronMedium") == True and \
-##                tau.tauID("againstMuonLoose")      == True
-
-##                #tau.tauID("byLooseIsoMVA")         == True and \
-##         # byLooseCombinedIsolationDeltaBetaCorr
-
     def testLeg1ID(self, tau):
-##         if tau.decayMode() == 0 and \
-##                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
-##             return False
         return tau.tauID("againstElectronMVA")>0.5 and \
                tau.tauID("againstMuonLoose")>0.5 and \
                self.testVertex( tau )
 
+
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-##     def testLeg1Iso(self, tau, isocut):
-##         '''if isocut is None, returns true if loose iso MVA is passed. <-- PG not now, why so?
-##         Otherwise, returns true if iso MVA > isocut.'''
-## #        print 'TEST tau iso',isocut
-##         if isocut is None:
-##             return tau.tauID("byRawIsoMVA")>self.cfg_ana.iso1
-## #        if isocut is None:   ##PG why this?
-## #            return tau.tauID("byLooseIsoMVA")>0.5
-##         else:
-##             return tau.tauID("byRawIsoMVA")>isocut
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu and tau'''
         return abs(lepton.dxy()) < 0.045 and \
                abs(lepton.dz()) < 0.2 
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
     def testLeg1Iso(self, tau, isocut):
@@ -181,22 +151,11 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-##     def testLeg2ID(self, leg):
-##         leg.tightIdResult = leg.tightIdForEleTau()
-##         if abs (leg.dxy())  >= 0.045                                : return False
-##         if abs (leg.dz())   >= 0.2                                  : return False
-##         if leg.pt ()        <= self.cfg_ana.pt2                     : return False # FIXME should be in kine
-##         if abs( leg.eta())  >= self.cfg_ana.eta2                    : return False # FIXME should be in kine
-##         if not leg.tightIdForEleTau()                               : return False
-##         if not leg.looseIdForEleTau()                               : return False
-## #        if not self.testEleLoosePhil (leg, self.cfg_ana.pt2, 99999) : return False
-## #        if not leg.tightIdResult                                    : return False
-##         return True
-
     def testLeg2ID(self, electron):
         '''Tight muon selection, no isolation requirement'''
         return electron.tightIdForEleTau() and \
                self.testVertex( electron )
+
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
@@ -222,7 +181,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def leptonAccept(self, leptons, isoCut = 0.3) :
         ''' returns True if the additional lepton veto is successful'''
-        #PG FIXME how do I pass the isolation argument to testEleLoosePhil?
+        #PG FIXME how do I pass the isolation argument to looseIdForEleTau
         looseLeptons = filter( Electron.looseIdForEleTau, leptons)
         nLeptons = len(looseLeptons)
         if nLeptons < 2 :
