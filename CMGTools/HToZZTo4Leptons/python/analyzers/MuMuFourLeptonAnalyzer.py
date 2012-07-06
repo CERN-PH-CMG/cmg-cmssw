@@ -1,6 +1,10 @@
 from CMGTools.HToZZTo4Leptons.analyzers.FourLeptonAnalyzer import FourLeptonAnalyzer 
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
+
+from CMGTools.RootTools.physicsobjects.Electron import Electron
+from CMGTools.RootTools.physicsobjects.Muon import Muon
+
+
 
 class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer):
 

@@ -5,7 +5,8 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.fwlite.Event import Event
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.HToZZTo4Leptons.analyzers.DiObject import DiObject
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Electron
+from CMGTools.RootTools.physicsobjects.Muon import Muon
+from CMGTools.RootTools.physicsobjects.Electron import Electron
 
 
 class A4Skim( Analyzer ):
