@@ -1,13 +1,13 @@
-#TODO NO TRIGGER MAPPING YET! <-- is it true? FIXME 
-#NO MC TRIGGER SELECTION YET! should now be ok FIXME
-#GET EMBEDDED SAMPLES
-
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
+# 'Nom', 'Up', 'Down', or None
+shift = None
+# 1.0, 1.03, 0.97
+tauScaleShift = 0.97
 
 period = 'Period_2011AB'
 
@@ -54,6 +54,7 @@ embedWeighter = cfg.Analyzer(
 
 tauEleAna = cfg.Analyzer(
     'TauEleAnalyzer',
+    scaleShift1 = tauScaleShift,
     pt1 = 20,
     pt2 = 20,
     iso1 = 999,
@@ -70,12 +71,17 @@ dyJetsFakeAna = cfg.Analyzer(
     leptonType = 11
     )
 
+higgsWeighter = cfg.Analyzer(
+    'HiggsPtWeighter',
+    )
+
 tauWeighter = cfg.Analyzer(
     'LeptonWeighter_tau',
     effWeight = mc_tauEffWeight,
     effWeightMC = mc_tauEffWeight_mc,
     lepton = 'leg1',
     verbose = False,
+    disable = False,
     recEffVersion = None
     )
 
@@ -85,6 +91,7 @@ eleWeighter = cfg.Analyzer(
     effWeightMC = mc_eleEffWeight_mc,
     lepton = 'leg2',
     verbose = False,
+    disable = False,
     recEffVersion = '2011'
     )
 
@@ -112,7 +119,8 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.tauEle_PietroJun26 import * 
+#from CMGTools.H2TauTau.proto.samples.tauEle_PietroJun26 import * 
+from CMGTools.H2TauTau.proto.samples.tauEle_PietroJul4 import * 
 
 #########################################################################################
 
@@ -124,13 +132,13 @@ selectedComponents = copy.copy(MC)
 
 if period == 'Period_2011A':
     selectedComponents.extend( data_2011A )
-    # selectedComponents.extend( embed_2011A )    
+    selectedComponents.extend( embed_2011A )    
 elif period == 'Period_2011B':
     selectedComponents.extend( data_2011B )
-    # selectedComponents.extend( embed_2011B )    
+    selectedComponents.extend( embed_2011B )    
 elif period == 'Period_2011AB':
     selectedComponents.extend( data_2011 )
-    # selectedComponents.extend( embed_2011 )    
+    selectedComponents.extend( embed_2011 )    
 
 sequence = cfg.Sequence( [
     jsonAna,
@@ -138,6 +146,7 @@ sequence = cfg.Sequence( [
     vertexAna,
     tauEleAna,
     dyJetsFakeAna,
+    higgsWeighter,
     vbfAna,
     embedWeighter,
     tauWeighter,
@@ -148,6 +157,7 @@ sequence = cfg.Sequence( [
 
 DYJets.fakes = True
 DYJets.splitFactor = 100
+W3Jets.splitFactor = 50 
 WJets.splitFactor = 10
 TTJets.splitFactor = 100
 
@@ -163,13 +173,16 @@ embed_Run2011A_05Aug2011_v1.splitFactor = 5
 embed_Run2011A_03Oct2011_v1.splitFactor = 5
 embed_Run2011B_PromptReco_v1.splitFactor = 10
 
-# selectedComponents = embed_2011
+#selectedComponents = embed_2011
 # selectedComponents.extend(MC)
-
 
 test = 0
 if test==1:
-    comp = DYJets
+    comp = data_Run2011A_PromptReco_v4
+#    comp = embed_Run2011A_May10ReReco_v1
+#    comp = WJets
+#    comp = data_Run2011A_PromptReco_v4
+#    comp = DYJets
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:1]
@@ -184,6 +197,13 @@ elif test==3: # data only, test
      comp.files = comp.files[:2]
 elif test==4: # data only, full run
     selectedComponents = data_2011 
+elif test==5: # embedded only, full run
+    selectedComponents = embed_2011 
+elif test==6: # embedded only, full run
+    comp = data_Run2011B_PromptReco_v1 
+    selectedComponents = [comp]
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
+
+printComps(config.components, True)
