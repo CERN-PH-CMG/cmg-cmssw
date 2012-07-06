@@ -75,6 +75,9 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_Charge'.format(pName=pName))
         self.var('{pName}_PdgId'.format(pName=pName))
         self.var('{pName}_SIP3D'.format(pName=pName))
+        self.var('{pName}_SIP'.format(pName=pName))
+        self.var('{pName}_DXY'.format(pName=pName))
+        self.var('{pName}_DZ'.format(pName=pName))
         self.var('{pName}_IsoDB'.format(pName=pName))
         self.var('{pName}_IsoEA'.format(pName=pName))
         self.var('{pName}_Mass'.format(pName=pName))
@@ -98,6 +101,9 @@ class TreeProducer( Analyzer ):
         self.fillBasic(pName,particle)
         self.fill('{pName}_PdgId'.format(pName=pName), particle.pdgId() )
         self.fill('{pName}_SIP3D'.format(pName=pName), particle.sip3D() )
+        self.fill('{pName}_SIP'.format(pName=pName), particle.sourcePtr().dB(2) )
+        self.fill('{pName}_DXY'.format(pName=pName), particle.dxy() )
+        self.fill('{pName}_DZ'.format(pName=pName), particle.dz() )
         self.fill('{pName}_IsoDB'.format(pName=pName), particle.absIso(0.5) )
 
         if abs(particle.pdgId())==11 :
