@@ -4,9 +4,10 @@ from PhysicsTools.PatAlgos.tools.helpers import applyPostfix
 HiggsMass = cms.vstring(['110','115','120','125','130','135','140','145'])
 SUSYMass = cms.vstring(['90','100','120','130','140','160','180','200','250','300','350','400','450','500','600','700','800','900','1000'])
 
+#import os 
+#recoilrootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
 import os 
-recoilrootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
-
+rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
 
 #def loadFlatNtpSamples(process):
 def configureFlatNtpSampleTauMu(module,sampleAlias):
@@ -78,7 +79,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.randsigma = 0.10
         module.recoilCorrection = 2 
-        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root'
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
 
     if sampleAlias == 'W3JetsToLNu' : 
         module.path = "/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM" # V5 PFAOD was not made
@@ -86,7 +87,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.recoilCorrection = 2 
-        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root'
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
 
     if sampleAlias == 'W2JetsToLNu' : 
         module.path = "/W2Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" # V5 PFAOD was not made
@@ -94,7 +95,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.recoilCorrection = 2 
-        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root' 
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root' 
 
     if sampleAlias == 'TTJets' : 
         module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1"
@@ -109,7 +110,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
         module.sampleGenEventType = 5
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.recoilCorrection = 1
-        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root' 
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root' 
 
     if sampleAlias == 'ZToMuMu' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
@@ -152,7 +153,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
             module.recoilCorrection = 1
-            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
             
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.path = "/VBF_HToTauTau_M-%s_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" % HiggsMass[i]
@@ -160,7 +161,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
             module.recoilCorrection = 1
-            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] : 
             module.path = "/WH_ZH_TTH_HToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" % HiggsMass[i]
@@ -177,7 +178,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
             module.recoilCorrection = 1 
-            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
 
         if sampleAlias == "SUSYGG"+SUSYMass[i] :
             module.path ="/SUSYGluGluToHToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"% SUSYMass[i]
@@ -185,7 +186,7 @@ def configureFlatNtpSampleTauMu(module,sampleAlias):
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
             module.recoilCorrection = 1 
-            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
 
 
     if sampleAlias == 'GluGluSync' : 
@@ -272,7 +273,7 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter")        
         module.randsigma = 0.
         module.recoilCorrection = 2 
-        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root'
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
 
 
     if sampleAlias == 'TTJets' :
@@ -288,7 +289,7 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
         module.sampleGenEventType = 5
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
         module.recoilCorrection = 1
-        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root' 
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root' 
 
     if sampleAlias == 'ZToEE' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
@@ -311,7 +312,7 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
         module.recoilCorrection = 2 
-        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root'
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
 
     if sampleAlias == 'W2JetsToLNu' : 
         module.path = "/W2Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" # V5 PFAOD was not made
@@ -319,7 +320,7 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
         module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
         module.recoilCorrection = 2 
-        module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_wjets_njet.root' 
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root' 
 
     if sampleAlias == 'WW' : 
         module.path = "/WW_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"
@@ -348,7 +349,7 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
             module.recoilCorrection = 1
-            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
             
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.path = "/VBF_HToTauTau_M-%s_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" % HiggsMass[i]
@@ -356,7 +357,7 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
             module.recoilCorrection = 1
-            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] : 
             module.path = "/WH_ZH_TTH_HToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5" % HiggsMass[i]
@@ -373,7 +374,7 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
             module.recoilCorrection = 1 
-            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
 
         if sampleAlias == "SUSYGG"+SUSYMass[i] :
             module.path ="/SUSYGluGluToHToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5"% SUSYMass[i]
@@ -381,7 +382,7 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
             module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
             module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
             module.recoilCorrection = 1 
-            module.fileCorrectTo =  recoilrootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
 
     if sampleAlias == 'GluGluSync' : 
         module.path = "/H2TAUTAU/Sync/GluGlu/AOD"
@@ -399,11 +400,6 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
         #hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter
         #hltEle18CaloIdVTTrkIdTDphiFilter      
 
-
-##need to
-#-add rest of MC samples
-#-add embedded samples
-#-check valid ranges for each trigger path inside the c++ code
 
 ##From Lorenzo
 #      if(run>=160404 && run<=161176)
@@ -471,3 +467,73 @@ def configureFlatNtpSampleTauEle(module,sampleAlias):
 #    "HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1": ("hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),
 
     
+####--------------------------------------muTau 2012--------------------------------------------
+
+###From pietro
+#   # 2012:
+#    # note: pdgId for taus incorrectly set to 0...
+#    'HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoMu18LooseIsoPFTau20', [15,0]), ('hltOverlapFilterIsoMu18LooseIsoPFTau20',[13])),
+#    'HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoMu17LooseIsoPFTau20', [15,0]), ('hltOverlapFilterIsoMu17LooseIsoPFTau20',[13])),
+
+#/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-196509_8TeV_PromptReco_Collisions12_JSON.txt
+#| HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4 |        833 | 28.303(/pb) 
+#| HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       5606 | 302.698(/pb) 
+#| HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 |       6858 | 377.184(/pb) 
+#| HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      50429 | 4.341(/fb) 
+    
+def configureFlatNtpSampleTauMu2012(module,sampleAlias):
+    ##common stuff
+    module.dataPeriodFlag = 2012
+    module.muPtCut = 20.
+    module.tauPtCut = 20.
+    module.fileZmmData = rootfile_dir + 'recoilfit_datamm52X_njet.root'
+    module.fileZmmMC = rootfile_dir + 'recoilfit_zmm52X_njet.root'
+        
+    if sampleAlias == 'TauPlusX2012A' : #DAS range: 190450 - 193686
+        module.path = "/TauPlusX/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_NewType1MET"
+        module.dataType = 1
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","","") # 190645 - 190738 | 28.303(/pb)  |
+        module.trigPath2 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5","","") # 191046 - 191411 | 299.117(/pb) |
+        module.trigPath3 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6","","") # 191695 - 193621 | 371.381(/pb) |
+
+    if sampleAlias == 'TauPlusX2012B' : #DAS range: 193752 - 197044
+        module.path = "/TauPlusX/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_NewType1MET_runrange_start-196509"
+        module.dataType = 1
+        module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","","") # 193834 - 196509 | 4.341(/fb) |
+
+    if sampleAlias == 'Embedded2012A' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0_NewType1MET"
+        module.dataType = 2
+
+    if sampleAlias == 'Embedded2012B1' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0_NewType1MET"
+        module.dataType = 2
+
+    if sampleAlias == 'Embedded2012B2' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_4_0_NewType1MET"
+        module.dataType = 2
+
+
+    if sampleAlias == 'ZToTauTau' : 
+        module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
+        module.dataType = 0
+        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.sampleGenEventType = 5
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","","")
+        module.recoilCorrection = 1
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root' 
+
+    if sampleAlias == 'WJetsToLNu' :
+        module.path = "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
+        module.dataType = 0
+        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","","")
+        module.randsigma = 0.
+        module.recoilCorrection = 2
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root' 
+
+    if sampleAlias == 'TTJets' :
+        module.path = "/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
+        module.dataType = 0
+        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","","") 

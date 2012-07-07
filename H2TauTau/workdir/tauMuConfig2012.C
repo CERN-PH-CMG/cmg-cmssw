@@ -2,129 +2,98 @@
 #include "Sample.h"
 #include <TString.h>
 
-TauMuPlotter * tauMuConfig2011Reload(TString name, TString path){  
+TauMuPlotter * tauMuConfig2012(TString name, TString path){  
 
   TauMuPlotter * analysis = new TauMuPlotter(name);
   analysis->setOutputPath(path);
-  analysis->setQCDOStoSSRatio(1.05);
+  analysis->setQCDOStoSSRatio(1.05);//my measured value July 6
+  
+  Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
+  TauPlusX2012A->setDataType("Data");
+  TauPlusX2012A->setSampleLumi(28+299+371);
+  analysis->addSample(TauPlusX2012A);
 
+  Sample* TauPlusX2012B = new Sample("TauPlusX2012B",path);
+  TauPlusX2012B->setDataType("Data");
+  TauPlusX2012B->setSampleLumi(4341);
+  analysis->addSample(TauPlusX2012B);
 
-  //2011 Data samples
-  Sample* TauPlusXMay = new Sample("TauPlusXMay",path);
-  TauPlusXMay->setDataType("Data");
-  TauPlusXMay->setSampleLumi(168.66);// 168.597
-  analysis->addSample(TauPlusXMay);
+  Sample* Embedded2012A = new Sample("Embedded2012A",path);
+  Embedded2012A->setDataType("Embedded");
+  analysis->addSample(Embedded2012A);
 
-  Sample* TauPlusXv4 = new Sample("TauPlusXv4",path);
-  TauPlusXv4->setDataType("Data");
-  TauPlusXv4->setSampleLumi(955.21);// 929.748
-  analysis->addSample(TauPlusXv4);
+  Sample* Embedded2012B1 = new Sample("Embedded2012B1",path);
+  Embedded2012B1->setDataType("Embedded");
+  analysis->addSample(Embedded2012B1);
 
-  Sample* TauPlusXAug = new Sample("TauPlusXAug",path);
-  TauPlusXAug->setDataType("Data");
-  TauPlusXAug->setSampleLumi(389.87);// 373.349
-  analysis->addSample(TauPlusXAug);
-
-  Sample* TauPlusXOct3 = new Sample("TauPlusXOct3",path);
-  TauPlusXOct3->setDataType("Data");
-  TauPlusXOct3->setSampleLumi(706.70);// 658.886
-  analysis->addSample(TauPlusXOct3);
-
-  Sample* TauPlusX2011B = new Sample("TauPlusX2011B",path);
-  TauPlusX2011B->setDataType("Data");
-  TauPlusX2011B->setSampleLumi(2714.45);// 2511
-  analysis->addSample(TauPlusX2011B);
-
-
-  Sample* EmbeddedMay = new Sample("EmbeddedMay",path);
-  EmbeddedMay->setDataType("Embedded");
-  analysis->addSample(EmbeddedMay);
-
-  Sample* EmbeddedV4 = new Sample("EmbeddedV4",path);
-  EmbeddedV4->setDataType("Embedded");
-  analysis->addSample(EmbeddedV4);
-
-  Sample* EmbeddedAug = new Sample("EmbeddedAug",path);
-  EmbeddedAug->setDataType("Embedded");
-  analysis->addSample(EmbeddedAug);
-
-  Sample* EmbeddedOct = new Sample("EmbeddedOct",path);
-  EmbeddedOct->setDataType("Embedded");
-  analysis->addSample(EmbeddedOct);
-
-  Sample* Embedded2011B = new Sample("Embedded2011B",path);
-  Embedded2011B->setDataType("Embedded");
-  analysis->addSample(Embedded2011B);
-
-
+  Sample* Embedded2012B2 = new Sample("Embedded2012B2",path);
+  Embedded2012B2->setDataType("Embedded");
+  analysis->addSample(Embedded2012B2);
 
   Sample * WJetsToLNu=new Sample("WJetsToLNu",path);
   WJetsToLNu->setDataType("MC");
-  WJetsToLNu->setCrossection(31314);
-  WJetsToLNu->setSampleGenEvents(81345381);//V5_4_1 missing files: 0/907
+  WJetsToLNu->setCrossection(36257.2);//https://twiki.cern.ch/twiki/bin/view/CMS/StandardModelCrossSectionsat8TeV
+  WJetsToLNu->setSampleGenEvents(36743101/2.);
   analysis->addSample(WJetsToLNu);  
 
-  Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
-  W2JetsToLNu->setDataType("MCCat");
-  W2JetsToLNu->setCrossection(1435);//This is wrong only use for shape
-  W2JetsToLNu->setSampleGenEvents(25400546);//This is wrong only use for shape
-  analysis->addSample(W2JetsToLNu);  
+//   Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
+//   W2JetsToLNu->setDataType("MCCat");
+//   W2JetsToLNu->setCrossection(1435);//This is wrong only use for shape
+//   W2JetsToLNu->setSampleGenEvents(25400546);//This is wrong only use for shape
+//   analysis->addSample(W2JetsToLNu);  
    
-  Sample * W3JetsToLNu=new Sample("W3JetsToLNu",path);
-  W3JetsToLNu->setDataType("MCCat");
-  W3JetsToLNu->setCrossection(304.0);
-  W3JetsToLNu->setSampleGenEvents(7541595);
-  analysis->addSample(W3JetsToLNu);  
+//   Sample * W3JetsToLNu=new Sample("W3JetsToLNu",path);
+//   W3JetsToLNu->setDataType("MCCat");
+//   W3JetsToLNu->setCrossection(304.0);
+//   W3JetsToLNu->setSampleGenEvents(7541595);
+//   analysis->addSample(W3JetsToLNu);  
    
-  float CrossectionScaleFactor=0.95;
-  float BjetsscaleFactor=0.97;
+  float CrossectionScaleFactor=0.976;
+  float BjetsscaleFactor=1.0;
   cout<<"WARNING applying scale factor for TTjets MC "<<CrossectionScaleFactor<<endl;
   cout<<"WARNING applying b-jet scale factor for TTjets MC "<<BjetsscaleFactor<<endl;
   Sample* TTJets = new Sample("TTJets",path);
   TTJets->setDataType("MC");
-  TTJets->setCrossection(165.8*CrossectionScaleFactor*BjetsscaleFactor);// 157.5=NLO theory, 165.8=CMS TOP-11-024
-  TTJets->setSampleGenEvents(59613991);//  V5_4_1 missing 3/5365 files 
+  TTJets->setCrossection(225.2*CrossectionScaleFactor*BjetsscaleFactor);
+  TTJets->setSampleGenEvents(13271892/2.);
   analysis->addSample(TTJets);
-
-
-  ///DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5 ||  0.999437 ||     36189241
 
   cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
   Sample* ZToTauTau = new Sample("ZToTauTau",path);//+"_tDown"
   ZToTauTau->setDataType("MC");
-  ZToTauTau->setCrossection(3048*CrossectionScaleFactor);
-  ZToTauTau->setSampleGenEvents(36209629*0.9985);//V5_4_1 missing files: 4/2751 , correct to previous mc and data yields *(38781.6/35988.8)*(55192./56400.) //for V5_2_0 used 36189241
+  ZToTauTau->setCrossection(3503.71*CrossectionScaleFactor);
+  ZToTauTau->setSampleGenEvents(60318194/2.);
   analysis->addSample(ZToTauTau);
 
-  Sample* ZToMuMu = new Sample("ZToMuMu",path);
-  ZToMuMu->setDataType("MC");
-  ZToMuMu->setCrossection(ZToTauTau->getCrossection());
-  ZToMuMu->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
-  analysis->addSample(ZToMuMu);
+//   Sample* ZToMuMu = new Sample("ZToMuMu",path);
+//   ZToMuMu->setDataType("MC");
+//   ZToMuMu->setCrossection(ZToTauTau->getCrossection());
+//   ZToMuMu->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
+//   analysis->addSample(ZToMuMu);
 
-  Sample* ZToLJet = new Sample("ZToLJet",path);
-  ZToLJet->setDataType("MC");
-  ZToLJet->setCrossection(ZToTauTau->getCrossection());
-  ZToLJet->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
-  analysis->addSample(ZToLJet);
+//   Sample* ZToLJet = new Sample("ZToLJet",path);
+//   ZToLJet->setDataType("MC");
+//   ZToLJet->setCrossection(ZToTauTau->getCrossection());
+//   ZToLJet->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
+//   analysis->addSample(ZToLJet);
 
-  Sample* WW = new Sample("WW",path);
-  WW->setDataType("MC");
-  WW->setCrossection(27.83);
-  WW->setSampleGenEvents(4225916);
-  analysis->addSample(WW);
+//   Sample* WW = new Sample("WW",path);
+//   WW->setDataType("MC");
+//   WW->setCrossection(27.83);
+//   WW->setSampleGenEvents(4225916);
+//   analysis->addSample(WW);
 
-  Sample* WZ = new Sample("WZ",path);
-  WZ->setDataType("MC");
-  WZ->setCrossection(10.47);
-  WZ->setSampleGenEvents(4265243);
-  analysis->addSample(WZ);
+//   Sample* WZ = new Sample("WZ",path);
+//   WZ->setDataType("MC");
+//   WZ->setCrossection(10.47);
+//   WZ->setSampleGenEvents(4265243);
+//   analysis->addSample(WZ);
 
-  Sample* ZZ = new Sample("ZZ",path);
-  ZZ->setDataType("MC");
-  ZZ->setCrossection(4.287);
-  ZZ->setSampleGenEvents(4191045);
-  analysis->addSample(ZZ);
+//   Sample* ZZ = new Sample("ZZ",path);
+//   ZZ->setDataType("MC");
+//   ZZ->setCrossection(4.287);
+//   ZZ->setSampleGenEvents(4191045);
+//   analysis->addSample(ZZ);
 
 
 
@@ -223,26 +192,26 @@ TauMuPlotter * tauMuConfig2011Reload(TString name, TString path){
   char nam[100];
   for(Int_t i=0;i<8;i++){
 
-    sprintf(nam,"HiggsGG%d",HiggsMass[i]);
-    Sample* HiggsGG = new Sample(nam,path);
-    HiggsGG->setDataType("Signal");
-    HiggsGG->setCrossection(HiggsGGcross[i]*HiggsTauTauBF[i]);
-    HiggsGG->setSampleGenEvents(HiggsGGNevt[i]);
-    analysis->addSample(HiggsGG);    
+//     sprintf(nam,"HiggsGG%d",HiggsMass[i]);
+//     Sample* HiggsGG = new Sample(nam,path);
+//     HiggsGG->setDataType("Signal");
+//     HiggsGG->setCrossection(HiggsGGcross[i]*HiggsTauTauBF[i]);
+//     HiggsGG->setSampleGenEvents(HiggsGGNevt[i]);
+//     analysis->addSample(HiggsGG);    
 
-    sprintf(nam,"HiggsVBF%d",HiggsMass[i]);
-    Sample* HiggsVBF=new Sample(nam,path);
-    HiggsVBF->setDataType("Signal");
-    HiggsVBF->setCrossection(HiggsVBFcross[i]*HiggsTauTauBF[i]);
-    HiggsVBF->setSampleGenEvents(HiggsVBFNevt[i]);
-    analysis->addSample(HiggsVBF);    
+//     sprintf(nam,"HiggsVBF%d",HiggsMass[i]);
+//     Sample* HiggsVBF=new Sample(nam,path);
+//     HiggsVBF->setDataType("Signal");
+//     HiggsVBF->setCrossection(HiggsVBFcross[i]*HiggsTauTauBF[i]);
+//     HiggsVBF->setSampleGenEvents(HiggsVBFNevt[i]);
+//     analysis->addSample(HiggsVBF);    
 
-    sprintf(nam,"HiggsVH%d",HiggsMass[i]);
-    Sample* HiggsVH=new Sample(nam,path);
-    HiggsVH->setDataType("Signal");
-    HiggsVH->setCrossection((HiggsWHcross[i]+HiggsZHcross[i]+HiggsttHcross[i])*HiggsTauTauBF[i]);
-    HiggsVH->setSampleGenEvents(HiggsVHNevt[i]);
-    analysis->addSample(HiggsVH);    
+//     sprintf(nam,"HiggsVH%d",HiggsMass[i]);
+//     Sample* HiggsVH=new Sample(nam,path);
+//     HiggsVH->setDataType("Signal");
+//     HiggsVH->setCrossection((HiggsWHcross[i]+HiggsZHcross[i]+HiggsttHcross[i])*HiggsTauTauBF[i]);
+//     HiggsVH->setSampleGenEvents(HiggsVHNevt[i]);
+//     analysis->addSample(HiggsVH);    
   }
 
 
@@ -293,21 +262,21 @@ TauMuPlotter * tauMuConfig2011Reload(TString name, TString path){
 
   for(Int_t i=0;i<19;i++){
 
-      sprintf(nam,"SUSYBB%d",SUSYMass[i]);
-      Sample* SUSYBB = new Sample(nam,path);
-      SUSYBB->setDataType("Signal");
-      SUSYBB->setCrossection(1.);
-      SUSYBB->setSampleGenEvents(SUSYBBNevt[i]);
-      SUSYBB->setSignalMass(SUSYMass[i]);
-      analysis->addSample(SUSYBB);    
+//       sprintf(nam,"SUSYBB%d",SUSYMass[i]);
+//       Sample* SUSYBB = new Sample(nam,path);
+//       SUSYBB->setDataType("Signal");
+//       SUSYBB->setCrossection(1.);
+//       SUSYBB->setSampleGenEvents(SUSYBBNevt[i]);
+//       SUSYBB->setSignalMass(SUSYMass[i]);
+//       analysis->addSample(SUSYBB);    
 
-      sprintf(nam,"SUSYGG%d",SUSYMass[i]);
-      Sample* SUSYGG = new Sample(nam,path);
-      SUSYGG->setDataType("Signal");
-      SUSYGG->setCrossection(1.);
-      SUSYGG->setSampleGenEvents(SUSYGGNevt[i]);
-      SUSYGG->setSignalMass(SUSYMass[i]);
-      analysis->addSample(SUSYGG);    
+//       sprintf(nam,"SUSYGG%d",SUSYMass[i]);
+//       Sample* SUSYGG = new Sample(nam,path);
+//       SUSYGG->setDataType("Signal");
+//       SUSYGG->setCrossection(1.);
+//       SUSYGG->setSampleGenEvents(SUSYGGNevt[i]);
+//       SUSYGG->setSignalMass(SUSYMass[i]);
+//       analysis->addSample(SUSYGG);    
 
   }
 

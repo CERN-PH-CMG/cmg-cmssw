@@ -53,6 +53,11 @@ public:
   void setTauLooseIsoCut(Float_t cut=0.7){tauLooseIsoCut_=cut;}
   void setMuLooseIsoCut(Float_t cut=0.5){muLooseIsoCut_=cut;}
   
+  void setPlotTitle(TString title){plotTitle_=title;}
+
+  ///MSSM methods
+  void setMSSMFlag(bool flag){MSSMFlag_=flag;}
+
 
   void setVariableBinning(Int_t nbins, Float_t * xbins){
     if(nbins<2||xbins==0)cout<<" bad variable bins"<<endl;
@@ -115,6 +120,7 @@ public:
   TH1F* getZToMuMuIncSS();
   TH1F* getZToEEInc(){return 0;}//dummy method just to make script work for datacard
   TH1F* getQCDInc();//uses the same sign samples
+  TH1F* getQCDIncWJetsShape();
   TH1F* getTotalBackgroundIncSS();//sum of SS backgrounds except  QCD
   //TH1F* getTotalBackgroundInc();//sum of all OS backgrounds 
   bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
@@ -153,14 +159,13 @@ public:
   //bool plotSMSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
 
 
-  ///MSSM methods
-  void setMSSMFlag(bool flag){MSSMFlag_=flag;}
-
-
   ////Methods unrelated to the main plots
   //tau fake rate
   void plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",TString IsoSel="(tauisodisc>=2)",Float_t ymax=50,Bool_t log=1);//
   void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
+
+  //
+  void plotQCDSSOSRatio();
 
 
   //utilities
@@ -264,6 +269,8 @@ private:
 
   Int_t nbinsVariable_;//for variable with binning
   Float_t* xbinsVariable_;
+
+  TString plotTitle_;
 
   ///
   void fixFileTag(TString * filetag);

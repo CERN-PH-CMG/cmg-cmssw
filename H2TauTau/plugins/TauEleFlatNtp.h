@@ -257,7 +257,7 @@ private:
     float puchhad=cand->puChargedHadronIso();
 
     //these two need to be recomputed with proper cone vetos
-    float charged=cand->chargedAllIsoWithConeVeto();
+    float charged=0.;//cand->chargedAllIsoWithConeVeto();
     float photon=cand->photonIso();
     const pat::Electron * input= &(*(*(cand->sourcePtr())));
 

@@ -87,26 +87,6 @@ if runOnMC:
         )
     process.TauMuPath += process.genSequence 
 
-## Jet recalibration -------------------
-#process.load('Configuration.StandardSequences.Services_cff')
-#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-#from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
-#process.cmgPFJetSel = cmgPFJetCorrector.clone()
-##process.cmgPFJetSel.src = cms.InputTag( 'cmgPFJetSel','','PAT' )
-##process.cmgPFJetSel.payload = cms.string('AK5PF')
-#process.cmgPFJetSel.src = cms.InputTag( 'cmgPFJetSelCHS','','PAT' )
-#process.cmgPFJetSel.payload = cms.string('AK5PFchs')
-#process.cmgPFJetSel.verbose = True
-#if runOnMC:
-#    process.GlobalTag.globaltag = 'START44_V13::All'
-#    process.cmgPFJetSel.levels = ['L1FastJet','L2Relative','L3Absolute']
-#else:
-#    process.GlobalTag.globaltag  = 'GR_R_44_V15::All'
-#    #process.GlobalTag.globaltag  = 'GR_R_44_V7::All'
-#    process.cmgPFJetSel.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
-#print 'GLOBAL TAG', process.GlobalTag.globaltag 
-#process.TauMuPath += process.cmgPFJetSel
-
 ## tau-mu selections ----------------------
 process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
 process.TauMuPath +=  process.cmgTauScaler 
@@ -161,7 +141,8 @@ process.out.outputCommands.extend( [
     'keep PileupSummaryInfos_addPileupInfo__HLT',
     'keep cmgMETSignificance_pfMetSignificance__PAT',
     'keep cmgBaseMETs_*_*_*',
-    'keep GenEventInfoProduct_generator__SIM',
+    'keep GenEventInfoProduct_generator_*_*',
+    'keep GenFilterInfo_generator_*_*',
     ])
 
 

@@ -8,6 +8,7 @@ httdata_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/'
 flatNtpTauMu = cms.EDAnalyzer(
     "TauMuFlatNtp",
     path = cms.untracked.string(""),
+    dataPeriodFlag = cms.int32(2011),
     firstRun =  cms.int32( 0 ),
     lastRun =  cms.int32( 0 ),
     dataType = cms.int32(-1),
@@ -40,6 +41,10 @@ flatNtpTauMu = cms.EDAnalyzer(
     metType = cms.int32(1), # 1=PFMET, 2=MVAMET
     runSVFit = cms.int32(2), # 0 do not run, 1 run old version, 2 run new version
     mvaWeights = cms.string(httdata_dir + 'VBFMVA_BDTG.weights.44X.xml'),
+    muPtCut = cms.double(17.),
+    tauPtCut = cms.double(20.),
+    muEtaCut = cms.double(2.1),
+    tauEtaCut = cms.double(2.3),
     )
 
 
