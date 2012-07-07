@@ -60,7 +60,9 @@ GGH125.files=getFiles('/GluGluToHToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12-PU_
 GGH126.files=getFiles('/GluGluToHToZZTo4L_M-126_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 GGH127.files=getFiles('/GluGluToHToZZTo4L_M-127_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 
+VBF123.files=getFiles('/VBF_HToZZTo4L_M-123_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 VBF125.files=getFiles('/VBF_HToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
+VBF127.files=getFiles('/VBF_HToZZTo4L_M-127_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
 
 
 GGH145.files=getFiles('/GluGluToHToZZTo4L_M-145_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
