@@ -40,8 +40,8 @@ class BTagEfficiency {
   // Obtain btag EFF SF
   double btagSF(double x, int isb){
     
-    float ptmin[14] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
-    float ptmax[14] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};
+//     float ptmin[14] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
+//     float ptmax[14] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};
     
     if (x<30) 
       x=30.1;
@@ -70,34 +70,35 @@ class BTagEfficiency {
 
     //    Tagger: CSVM within 30 < pt < 670 GeV, abs(eta) < 2.4, x = pt
     double SFb = 0.6981*((1.+(0.414063*x))/(1.+(0.300155*x)));
-    double SFb_error[14] = {
-      0.0295675,
-      0.0295095,
-      0.0210867,
-      0.0219349,
-      0.0227033,
-      0.0204062,
-      0.0185857,
-      0.0256242,
-      0.0383341,
-      0.0409675,
-      0.0420284,
-      0.0541299,
-      0.0578761,
-      0.0655432 };
+//     double SFb_error[14] = {
+//       0.0295675,
+//       0.0295095,
+//       0.0210867,
+//       0.0219349,
+//       0.0227033,
+//       0.0204062,
+//       0.0185857,
+//       0.0256242,
+//       0.0383341,
+//       0.0409675,
+//       0.0420284,
+//       0.0541299,
+//       0.0578761,
+//       0.0655432 };
 
-    double SFunc = 0.;
-    for (int i=0; i<13; ++i){
-      if (x > ptmin[i] && x < ptmax[i+1])
-	SFunc = SFb_error[i];
-    }
+//     double SFunc = 0.;
+//     for (int i=0; i<13; ++i){
+//       if (x > ptmin[i] && x < ptmax[i+1])
+// 	SFunc = SFb_error[i];
+//     }
     
-    double unc = 0;
+//     double unc = 0;
     
-    if (isb)
-      unc = SFunc;
-    else
-      unc = 2*SFunc;  
+//     if (isb)
+//       unc = SFunc;
+//     else
+//       unc = 2*SFunc;
+  
     return SFb;
     //  return SFb-unc;
   }

@@ -3,14 +3,15 @@
 #include <TH1F.h>
 #include <TDirectory.h>
 #include "TauMuPlotter.h"
-#include "tauMuConfig2011Reload.C"
+#include "tauMuConfig2012.C"
 
 
-void plot(){  
+void plotTauMu2012(){  
 
-  TString path="/data/benitezj/Samples/TauMuV541June2_TrigEff";
+  //TString path="/data/benitezj/Samples/TauMu2012V5_4_0_NewType1MET";
+  TString path="/data/benitezj/Samples/TauMu2012V5_4_0_NewType1MET2";
 
-  TauMuPlotter*analysis=tauMuConfig2011Reload("analysis",path);
+  TauMuPlotter*analysis=tauMuConfig2012("analysis",path);
   analysis->setQCDColor(kMagenta-10);
   analysis->setWJetsColor(kRed+2);
   analysis->setTTJetsColor(kBlue-8);
@@ -18,11 +19,11 @@ void plot(){
   analysis->setZTauTauColor(kOrange-4);
   analysis->setSmearHistoRes(0.);
   analysis->setZTTType(2);
-  analysis->setPlotTitle("CMS Preliminary 2011,   4.9 fb^{-1},     #sqrt{s} = 7 TeV,        #tau_{#mu}#tau_{h}");
+  analysis->setPlotTitle("CMS Preliminary 2012,   5.0 fb^{-1},     #sqrt{s} = 8 TeV,        #tau_{#mu}#tau_{h}");
 
   //raw yields to load samples now
   analysis->printRawYields("(categoryIso==1&&categoryCh==1)");
-
+  
   //determine the SS-->OS QCD ratio
   //analysis->plotQCDSSOSRatio();
 
@@ -33,33 +34,35 @@ void plot(){
   analysis->setVariableBinning(13,xbinsValues);
 
 
-//   analysis->plotInc("nvtx",50,-.5,49.5,1,1,"","",0,0,"# of reco. vertices ","",c,0,"inclusive");
+  //   analysis->plotInc("nvtx",50,-.5,49.5,1,1,"","",1,3,"# of reco. vertices ","",c,0,"inclusive");
 
-//  analysis->plotInc("mupt",50,0,100,1,1,"","",0,0," mu pt   (GeV)","",c,0,"inclusive");
-//   analysis->plotInc("mueta",50,-2.5,2.5,1,1,"","",0,0," muon  #eta","",c,0,"inclusive"); 
-//   analysis->plotInc("muiso",100,0,1,0,1,"(tauisodiscmva>=1)","",0,0," muon relIso","",c,0,"inclusive");
-//   analysis->plotInc("mudz",100,-.05,.05,1,1,"","",0,0," mu dz","",c,0,"inclusive");
-//   analysis->plotInc("mudxy",100,-.03,.03,1,1,"","",0,0," mu dxy","",c,0,"inclusive");
+//   analysis->plotInc("mupt",50,0,100,1,1,"","",1,3," mu pt   (GeV)","",c,0,"inclusive");
+//   analysis->plotInc("mueta",50,-2.5,2.5,1,1,"","",1,3," muon  #eta","",c,0,"inclusive"); 
+//  analysis->plotIncSS("muiso",100,0,1,0,1,"(tauisodiscmva>=1)",3," muon relIso","",c,0,"inclusive");
+//  analysis->plotInc("muiso",100,0,1,0,1,"(tauisodiscmva>=1)","",0,3," muon relIso","",c,0,"inclusive");
+//   analysis->plotInc("mudz",100,-.05,.05,1,1,"","",1,3," mu dz","",c,0,"inclusive");
+//   analysis->plotInc("mudxy",100,-.03,.03,1,1,"","",1,3," mu dxy","",c,0,"inclusive");
 
-//   analysis->plotInc("taupt",50,0,100,1,1,"","",0,0," tau pt   (GeV)","",c,0,"inclusive");
-//   analysis->plotInc("taueta",50,-2.5,2.5,1,1,"","",0,0," tau  #eta","",c2,0,"inclusive"); 
-//   analysis->plotInc("tauisomva",100,-1.0,1.01,0,1,"(muiso<0.1)","",0,0,"tau iso mva","",c,0,"inclusive");
-//   analysis->plotInc("taudz",100,-.05,.05,1,1,"","",0,0," tau dz","",c,0,"inclusive");
-//   analysis->plotInc("taudxy",100,-.03,.03,1,1,"","",0,0," tau dxy","",c,0,"inclusive");
+//   analysis->plotInc("taupt",50,0,100,1,1,"","",1,3," tau pt   (GeV)","",c,0,"inclusive");
+//   analysis->plotInc("taueta",50,-2.5,2.5,1,1,"","",1,3," tau  #eta","",c2,0,"inclusive"); 
+//   analysis->plotInc("tauisomva",100,-1.0,1.01,0,1,"(muiso<0.1)","",1,3,"tau iso mva","",c,0,"inclusive");
+//   analysis->plotInc("taudz",100,-.05,.05,1,1,"","",1,3," tau dz","",c,0,"inclusive");
+//   analysis->plotInc("taudxy",100,-.03,.03,1,1,"","",1,3," tau dxy","",c,0,"inclusive");
 
-//   analysis->plotInc("metpt",50,0,150,1,1,"","",0,0," MET   (GeV)","",c,0,"inclusive");    
-//   analysis->plotInc("metphi",70,-3.5,3.5,1,1,"","",0,0," MET  phi ","",c,0,"inclusive");    
+//  analysis->plotInc("metpt",50,0,150,1,1,"","",1,3," MET   (GeV)","",c,0,"inclusive");    
+//  analysis->plotInc("metphi",40,-3.5,3.5,1,1,"","",1,3," MET  phi ","",c,0,"inclusive");    
+//  analysis->plotInc("cos(metphi-muphi)",100,-1,1.001,1,1,"","",1,3," MET phi - Mu phi ","",c,0,"inclusive");    
 
-//   analysis->plotIncSS("transversemass",30,0,300,1,0,"",0,"m_{T} ","",c,0,"inclusive");
-//  analysis->plotInc("transversemass",20,0,200,1,-1,"","",0,0,"M_{T}   [GeV]","",c,0,"inclusive");
-//   analysis->plotInc("ditaumass",40,0,300,1,1,"","",0,0,"m_{vis}   (GeV)","Events / 5 GeV",c,0,"inclusive");
-//   analysis->plotInc("svfitmass",60,0,300,1,1,"","",0,0," m(#tau#tau)   (GeV)","Events / 5 GeV",c,0,"inclusive");
-//   analysis->plotInc("njet",5,-.5,4.5,1,1,"","",0,0," njet ","",c,0,"inclusive");
+//   analysis->plotIncSS("transversemass",20,0,200,1,0,"",3,"m_{T} ","",c,0,"inclusive");
+//   analysis->plotInc("transversemass",20,0,200,1,-1,"","",1,3,"M_{T}   [GeV]","",c,0,"inclusive");
+//   analysis->plotInc("ditaumass",40,0,300,1,1,"","",1,3,"m_{vis}   (GeV)","Events / 5 GeV",c,0,"inclusive");
+//   analysis->plotInc("svfitmass",60,0,300,1,1,"","",1,3," m(#tau#tau)   (GeV)","Events / 5 GeV",c,0,"inclusive");
+//   analysis->plotInc("njet",5,-.5,4.5,1,1,"","",1,3," njet ","",c,0,"inclusive");
 
-//   analysis->plotIncSS("transversemass",30,0,300,1,0,"(njet>=1)",0,"m_{T} ","",c,0,"inclusive1Jet");
-//   analysis->plotInc("transversemass",30,0,300,1,-1,"(njet>=1)","",0,0,"m_{T}   (GeV)","",c,0,"inclusive1Jet");//do not use W3Jets sample here 
-//   analysis->plotInc("leadJetPt",20,0,200,1,1,"(njet>=1)","",0,0,"lead jet p_{T}   (GeV)","",c,0,"inclusive1Jet");
-//   analysis->plotInc("leadJetEta",20,-5,5,1,1,"(njet>=1)","",0,0,"lead jet #eta","",c,0,"inclusive1Jet");
+//   analysis->plotIncSS("transversemass",20,0,200,1,0,"(njet>=1)",3,"m_{T} ","",c,0,"inclusive1Jet");
+//   analysis->plotInc("transversemass",20,0,200,1,-1,"(njet>=1)","",1,3,"m_{T}   (GeV)","",c,0,"inclusive1Jet");
+//   analysis->plotInc("leadJetPt",20,0,200,1,1,"(njet>=1)","",1,3,"lead jet p_{T}   (GeV)","",c,0,"inclusive1Jet");
+//   analysis->plotInc("leadJetEta",20,-5,5,1,1,"(njet>=1)","",1,3,"lead jet #eta","",c,0,"inclusive1Jet");
 
 //   analysis->plotIncSS("transversemass",30,0,300,1,0,"(njet>=2)",4,"m_{T} ","",c,0,"inclusive2Jet");
 //   analysis->plotInc("transversemass",30,0,300,1,-1,"(njet>=2)","",3,5,"m_{T}   (GeV)","",c,0,"inclusive2Jet");

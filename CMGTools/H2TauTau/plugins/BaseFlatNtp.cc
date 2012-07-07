@@ -2,6 +2,7 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
+  dataPeriodFlag_(iConfig.getParameter<int>("dataPeriodFlag")),
   verticesListTag_(iConfig.getParameter<edm::InputTag>("verticesListTag")),
   trigPathsListTag_(iConfig.getParameter<edm::InputTag>("trigPathsListTag")),
   trigObjsListTag_(iConfig.getParameter<edm::InputTag>("trigObjsListTag")),
@@ -90,9 +91,9 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   edm::Handle< std::vector<cmg::TriggerObject> > trig;
   iEvent.getByLabel(trigPathsListTag_,trig);
   if(trigPaths_.size()==0)trigpass_=1;//no trigger requirement
+  //trig->begin()->printSelections(cout);
   for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){//cmg ObjetSel
     //cout<<path->label()<<" "<<path->instance()<<" "<<path->process()<<endl;
-    //trig->begin()->printSelections(cout);
     if(trig->begin()->hasSelection((*path)->label()))
       if(trig->begin()->getSelection((*path)->label()))
 	if(trig->begin()->getPrescale((*path)->label())==1 || dataType_==0){
@@ -108,7 +109,7 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   ///Event weight definition starts here:
   pupWeight_=1.;//do not comment out needs to be used.
   npu_=-1;
-  if(dataType_==0){
+  if(dataType_==0 && (pupWeightName_.label()).compare("")!=0){//if no vertex weight name is provided then leave weight to 1
     edm::Handle<double>  PupWeight;
     iEvent.getByLabel(pupWeightName_,PupWeight);    
     pupWeight_=(*PupWeight);
@@ -120,7 +121,8 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
     for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
       int BX = PVI->getBunchCrossing();
       if(BX == 0) {
-	npu_ = PVI->getPU_NumInteractions();
+	if(dataPeriodFlag_==2011)npu_ = PVI->getPU_NumInteractions();
+	if(dataPeriodFlag_==2012)npu_ = PVI->getTrueNumInteractions();
       }
     }
   }
@@ -155,6 +157,9 @@ bool BaseFlatNtp::fill(){
 
 
 bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::string filter){
+
+  if(filter.compare("")==0) return 1;//no trigger matching required
+
   for(std::vector<cmg::TriggerObject>::const_iterator obj=trigObjs_->begin(); obj!=trigObjs_->end(); obj++){
     if(obj->hasSelection(path.c_str())){//HLT path name
       //obj->printSelections(cout);

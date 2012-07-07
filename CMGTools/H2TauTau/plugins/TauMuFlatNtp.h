@@ -47,7 +47,11 @@ protected:
   edm::InputTag pfJetListTag_;
   edm::InputTag diMuonVetoListTag_;
 
-
+  //configurable selections
+  float muPtCut_;
+  float tauPtCut_;
+  float muEtaCut_;
+  float tauEtaCut_;
 
   edm::Handle< std::vector<cmg::TauMu> > diTauList_;
   std::vector<cmg::TauMu> diTauSelList_;

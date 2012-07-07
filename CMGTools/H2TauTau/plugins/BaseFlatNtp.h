@@ -59,7 +59,7 @@ protected:
   virtual bool applySelections();
   virtual bool fill();
 
-
+  int dataPeriodFlag_;
   edm::InputTag verticesListTag_;
   edm::InputTag trigPathsListTag_;
   edm::InputTag trigObjsListTag_;

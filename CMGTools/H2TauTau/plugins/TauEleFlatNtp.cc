@@ -360,7 +360,8 @@ void TauEleFlatNtp::beginJob(){
 // /physicsobjects/PhysicsObjects.py
 
      if(cand->leg2().numberOfHits()!=0) continue;
-     if(cand->leg2().passConversionVeto()!=1) continue;
+     //if(cand->leg2().passConversionVeto()!=1) continue; 
+     if((*(cand->leg2().sourcePtr()))->passConversionVeto()!=1) continue;
      
 //      //for sync?
 //      if(!electronIDWP95(&(cand->leg2())))continue;     
@@ -1023,7 +1024,8 @@ void TauEleFlatNtp::beginJob(){
      if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) continue;
      if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
      if(m->numberOfHits()!=0)return 0;
-     if(m->passConversionVeto()!=1)return 0;     
+     //if(m->passConversionVeto()!=1)return 0;     
+     if((*(m->sourcePtr()))->passConversionVeto()!=1) continue;
      if(!electronIDWP95(&(*m)))continue;
 
      if( electronRelIsoDBCorr( &(*m) )>=0.3) continue; 

@@ -3,10 +3,15 @@
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenFilterInfo.h"
 
 
 TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
   BaseFlatNtp(iConfig),
+  muPtCut_(iConfig.getParameter<double>("muPtCut")),
+  tauPtCut_(iConfig.getParameter<double>("tauPtCut")),
+  muEtaCut_(iConfig.getParameter<double>("muEtaCut")),
+  tauEtaCut_(iConfig.getParameter<double>("tauEtaCut")),
   diTauSel_(0),
   triggerEffWeight_(0.),
   selectionEffWeight_(0.),
@@ -226,9 +231,16 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
   //embedded samples generator weight
   embeddedGenWeight_=1.0;
   if(dataType_==2){
-    edm::Handle< double > embeddedGenWeight;
-    iEvent.getByLabel(edm::InputTag("generator","weight",""),embeddedGenWeight);
-    embeddedGenWeight_=*embeddedGenWeight;
+    if(dataPeriodFlag_==2011){
+      edm::Handle< double > embeddedGenWeight;
+      iEvent.getByLabel(edm::InputTag("generator","weight",""),embeddedGenWeight);
+      embeddedGenWeight_=*embeddedGenWeight;
+    }
+    if(dataPeriodFlag_==2012){
+      edm::Handle<GenFilterInfo> genInfoEmbedded;
+      iEvent.getByLabel(edm::InputTag("generator","minVisPtFilter","EmbeddedRECO"),genInfoEmbedded);
+      if(genInfoEmbedded->numEventsTried()>0) embeddedGenWeight_ =  genInfoEmbedded->filterEfficiency(); 
+    }
   }  
  
   ///get the TauMu cands 
@@ -312,11 +324,11 @@ bool TauMuFlatNtp::applySelections(){
 
   ///basic skims which should have been applied in H2TAUTAU step  
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg1().pt() > 20.0
-       && fabs(cand->leg1().eta()) < 2.3
+    if(cand->leg1().pt() > tauPtCut_
+       && fabs(cand->leg1().eta()) < tauEtaCut_
        && cand->leg1().tauID("decayModeFinding") > 0.5
-       && cand->leg2().pt() > 17.0
-       && fabs(cand->leg2().eta()) < 2.1
+       && cand->leg2().pt() > muPtCut_
+       && fabs(cand->leg2().eta()) < muEtaCut_
        )     
       diTauSelList_.push_back(*cand);
   }
@@ -585,19 +597,35 @@ bool TauMuFlatNtp::fill(){
   selectionEffWeight_=1.;
   if(dataType_==0 || dataType_==2){
     
-    ///trigger corrections
-    if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
-      triggerEffWeight_ *= triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	                  /triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-      triggerEffWeight_ *= triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	                  /triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-    }else{//no trigger applied --> apply efficiency
-      triggerEffWeight_ *= triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-      triggerEffWeight_ *= triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+    if(dataPeriodFlag_==2011){
+      ///trigger corrections
+      if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
+	triggerEffWeight_ *= triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	  /triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeight_ *= triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	  /triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }else{//no trigger applied --> apply efficiency
+	triggerEffWeight_ *= triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeight_ *= triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }
+      
+      //id+isolation corrections
+      selectionEffWeight_ *= selectionEff_.effCorrMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
     }
-
-    //id+isolation corrections
-    selectionEffWeight_ *= selectionEff_.effCorrMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+    if(dataPeriodFlag_==2012){
+      ///trigger corrections
+      if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
+	triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	  /triggerEff_.effTau2012MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	  /triggerEff_.effMu2012MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }else{//no trigger applied --> apply efficiency
+	triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }
+      //id+isolation corrections
+      //selectionEffWeight_ *= selectionEff_.effCorrMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+    }
 
   }
   
@@ -738,43 +766,35 @@ bool TauMuFlatNtp::fill(){
   if(pftransversemass_>60.0) categoryMT_=3;
 
 
-//   categoryIso_=0;
-//   if( muiso_ <= 0.1) categoryIso_=1;
-//   if(0.1 < muiso_ &&  muiso_ <= 0.3) categoryIso_=2;
-//   if(0.3 < muiso_ &&  muiso_ <= 0.5) categoryIso_=3;
-//   if( muiso_ > 0.5) categoryIso_=4;
-
-
   edm::Handle< cmg::METSignificance > pfMetSigHandle;
   iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
   const cmg::METSignificance * pfMetSig = &(*pfMetSigHandle);
 
-
   //get the MET significance corresponding to the candidate we selected
-  edm::InputTag metsigSrc_("mvaMETTauMu");
-  edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
-  iEvent_->getByLabel(metsigSrc_,metsigVector); 
-  //now determine which of the mets belongs to the selected tau-mu candidate
   const cmg::METSignificance * MvaMetSig=0;
-  int candidx=0;
-  for(std::vector<cmg::TauMu>::const_iterator cand=diTauList_->begin(); cand!=diTauList_->end(); ++cand){
-    if(cand->mass()==diTauSel_->mass()) MvaMetSig = &(metsigVector->at(candidx));
-    candidx++;
-  }
-  if(!MvaMetSig){
-    cout<<"mvametsig Not found"<<endl;
-    exit(0);
-  }
 
 
   ///////////////here decide which met goes into SVFit
   reco::Candidate::PolarLorentzVector metP4;
   const cmg::METSignificance * metSig=0;
-  if(metType_==1){
+  if(metType_==1){//PFMET
     metP4=reco::Candidate::PolarLorentzVector(pfmetpt_,0,pfmetphi_,0);
     metSig=pfMetSig;
   }
-  if(metType_==2){
+  if(metType_==2){//MVA MET
+    edm::InputTag metsigSrc_("mvaMETTauMu");
+    edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
+    iEvent_->getByLabel(metsigSrc_,metsigVector); 
+    //now determine which of the mets belongs to the selected tau-mu candidate
+    int candidx=0;
+    for(std::vector<cmg::TauMu>::const_iterator cand=diTauList_->begin(); cand!=diTauList_->end(); ++cand){
+      if(cand->mass()==diTauSel_->mass()) MvaMetSig = &(metsigVector->at(candidx));
+      candidx++;
+    }
+    if(!MvaMetSig){
+      cout<<"mvametsig Not found"<<endl;
+      exit(0);
+    }
     metP4=reco::Candidate::PolarLorentzVector(metpt_,0,metphi_,0);
     metSig=MvaMetSig;
   }
