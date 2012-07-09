@@ -535,13 +535,25 @@ int main(int argc, char* argv[])
 //CTRL BKG
   mon.addHistogram( new TH1F("Ctrl_WZ_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
   mon.addHistogram( new TH1F("Ctrl_WZ_RedMet", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WZ_RedMet_1", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WZ_RedMet_2", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WZ_RedMet_3", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WZ_MLEPT", ";RedMet [GeV];Events",  4, 2., 6.) );
+  mon.addHistogram( new TH1F("Ctrl_WZ_MLEPT_10", ";RedMet [GeV];Events",  4, 2., 6.) );
+  mon.addHistogram( new TH1F("Ctrl_WZ_MLEPT_20", ";RedMet [GeV];Events",  4, 2., 6.) );
+  mon.addHistogram( new TH1F("Ctrl_WZ_RedMet_4", ";RedMet [GeV];Events", 50, 0., 300.) );
   mon.addHistogram( new TH1F("Ctrl_WZ_Mt", ";Transvers Mass [GeV];Events", 35, 0., 100.) );
   mon.addHistogram( new TH1F("Ctrl_T_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
   mon.addHistogram( new TH1F("Ctrl_T_RedMet", ";RedMet [GeV];Events", 50, 0., 300.) );
   mon.addHistogram( new TH1F("Ctrl_T_Mass", ";Z Mass [GeV];Events", 50, 0., 200.) );
   mon.addHistogram( new TH1F("Ctrl_WW_Mass", ";Z Mass [GeV];Events", 25, 0., 200.) );
   mon.addHistogram( new TH1F("Ctrl_WW_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
-  mon.addHistogram( new TH1F("Ctrl_WW_RedMe", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WW_RedMet", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WW_RedMet1", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WW_RedMet2", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WW_RedMet3", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WW_RedMet4", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_WW_RedMet5", ";RedMet [GeV];Events", 50, 0., 300.) );
   mon.addHistogram( new TH1F("Ctrl_W_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
   mon.addHistogram( new TH1F("Ctrl_W_RedMet", ";RedMet [GeV];Events", 50, 0., 300.) );
 // Bin Pt
@@ -1093,7 +1105,10 @@ int main(int argc, char* argv[])
 //@@       isGood = ( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.15 &&  phys.leptons[ilep].pt()>20);
 
 		isGood = (hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.15 && phys.leptons[ilep].pt()>10);
+		isGood = (hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.15 && phys.leptons[ilep].pt()>10);
 		isGood |= (hasObjectId(ev.mn_idbits[lpid], MID_SOFT2011) && phys.leptons[ilep].pt()>3);
+		isGood |= (hasObjectId(ev.mn_idbits[lpid], MID_SOFT2011) && phys.leptons[ilep].pt()>3);
+
         }else{
 		isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.1 && phys.leptons[ilep].pt()>10);
 //		isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.1 && phys.leptons[ilep].pt()>20);
@@ -1132,12 +1147,21 @@ int main(int argc, char* argv[])
 	bool PassSelectionRedMetNoMass( Dil && passZpt && passBveto && JetVeto && RedMetPt && Balance && Dphi_J && pass3dLeptonVeto);
 	//bool SelectionNo3LeptVeto( passZmass && passZpt && passBveto && JetVeto && RedMetPt && Balance && Dphi_J );
 	//Control Sample BKG
-	bool sidebands( (zmass>50 && zmass<70 ) || (zmass>110 && zmass<200 ) );
+	bool sidebands( /*(zmass>50 && zmass<70 ) ||*/ (zmass>110 && zmass<200 ) );
 	bool WZ_ctrl  ( passZpt && nextraleptons==1 && passZmass && passBveto );
+	bool WZ_ctrl_1  ( passZpt);
+	bool WZ_ctrl_2  ( passZpt && passZmass);
+	bool WZ_ctrl_3  ( passZpt && passZmass && passBveto);
+	bool WZ_ctrl_4  ( passZpt && passZmass && passBveto && nextraleptons==1);
 	bool T_ctrl   ( passZpt && nbtags_csvl>0 && sidebands );
 	bool T_ctrl2  ( passZpt && nbtags_csvl>0 );
 	bool WW_ctrl  ( passZpt && nbtags_csvl_tight==0 && Nj_20 == 0 && redMet>45. && Balance && Dphi_J && pass3dLeptonVeto );
 	bool WW_ctrl2 ( passZpt && nbtags_csvl_tight==0 && Nj_20 == 0 && Balance && Dphi_J && pass3dLeptonVeto && sidebands );
+	bool WW_ctrl2_1 ( passZpt && sidebands );
+	bool WW_ctrl2_2 ( passZpt && sidebands && passBveto==0 );
+	bool WW_ctrl2_3 ( passZpt && sidebands && passBveto==0 && Nj_20 == 0 && Balance );
+	bool WW_ctrl2_4 ( passZpt && sidebands && passBveto==0 && Nj_20 == 0 && Balance && Dphi_J);
+	bool WW_ctrl2_5 ( passZpt && sidebands && passBveto==0 && Nj_20 == 0 && Balance && Dphi_J && pass3dLeptonVeto);
 	bool W_ctrl   ( passZpt && (phys.leptons[0].id*phys.leptons[1].id)>0 && sidebands && passBveto );
       bool CtrlTT   ( nbtags_csvl>1 && tag_cat == "emu" && phys.leptons.size()==2 );
 
@@ -1257,6 +1281,15 @@ int main(int argc, char* argv[])
            mon.fillHisto("Ctrl_WZ_RedMet", tags_cat, redMet, iweight);
            mon.fillHisto("Ctrl_WZ_Mt", tags_cat, sqrt((2*zvv.pt()*phys.leptons[Ind3lept[0]].pt())*(1-cos(deltaPhi(zvv.phi(),phys.leptons[Ind3lept[0]].phi())))), iweight);
       }
+      if(WZ_ctrl_1) mon.fillHisto("Ctrl_WZ_RedMet_1", tags_cat, redMet, iweight);
+      if(WZ_ctrl_2) mon.fillHisto("Ctrl_WZ_RedMet_2", tags_cat, redMet, iweight);
+      if(WZ_ctrl_3){
+           mon.fillHisto("Ctrl_WZ_RedMet_3", tags_cat, redMet, iweight);
+           mon.fillHisto("Ctrl_WZ_MLEPT", tags_cat, nextraleptons+2, iweight);
+           mon.fillHisto("Ctrl_WZ_MLEPT_10", tags_cat, nlept10, iweight);
+           mon.fillHisto("Ctrl_WZ_MLEPT_20", tags_cat, nlept20, iweight);
+      }
+      if(WZ_ctrl_4) mon.fillHisto("Ctrl_WZ_RedMet_4", tags_cat, redMet, iweight);
       if(T_ctrl){
            mon.fillHisto("Ctrl_T_PFMet", tags_cat, met, iweight);
            mon.fillHisto("Ctrl_T_RedMet", tags_cat, redMet, iweight);
@@ -1268,6 +1301,11 @@ int main(int argc, char* argv[])
            mon.fillHisto("Ctrl_WW_PFMet", tags_cat, met, iweight);
            mon.fillHisto("Ctrl_WW_RedMet", tags_cat, redMet, iweight);
       }
+      if(WW_ctrl2_1) mon.fillHisto("Ctrl_WW_RedMet1", tags_cat, redMet, iweight);
+      if(WW_ctrl2_2) mon.fillHisto("Ctrl_WW_RedMet2", tags_cat, redMet, iweight);
+      if(WW_ctrl2_3) mon.fillHisto("Ctrl_WW_RedMet3", tags_cat, redMet, iweight);
+      if(WW_ctrl2_4) mon.fillHisto("Ctrl_WW_RedMet4", tags_cat, redMet, iweight);
+      if(WW_ctrl2_5) mon.fillHisto("Ctrl_WW_RedMet5", tags_cat, redMet, iweight);
       if( W_ctrl ){
            mon.fillHisto("Ctrl_W_PFMet", tags_cat, met, iweight);
            mon.fillHisto("Ctrl_W_RedMet", tags_cat, redMet, iweight);
