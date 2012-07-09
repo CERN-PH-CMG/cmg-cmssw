@@ -66,15 +66,16 @@ int main(int argc, char* argv[])
   TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
 
+  bool isMC = runProcess.getParameter<bool>("isMC");
+  int mctruthmode=runProcess.getParameter<int>("mctruthmode");
+ 
   int fType(0);
   if(url.Contains("DoubleEle")) fType=EE;
   if(url.Contains("DoubleMu"))  fType=MUMU;
   if(url.Contains("MuEG"))      fType=EMU;
   if(url.Contains("SingleMu"))  fType=MUMU;
+  bool isSingleMuPD(!isMC && url.Contains("SingleMu"));
 
-  bool isMC = runProcess.getParameter<bool>("isMC");
-  int mctruthmode=runProcess.getParameter<int>("mctruthmode");
-  
   TString outTxtUrl= outUrl + "/" + gSystem->BaseName(url) + ".txt";
   FILE* outTxtFile = NULL;
   if(!isMC)outTxtFile = fopen(outTxtUrl.Data(), "w");
@@ -529,6 +530,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F("ZZ_cut_Nlept10", ";Num of Leptons, Pt > 10;Events",  4, 2., 6.) );
   mon.addHistogram( new TH1F("ZZ_cut_Nlept15", ";Num of Leptons, Pt > 15;Events",  4, 2., 6.) );
   mon.addHistogram( new TH1F("ZZ_cut_Nlept20", ";Num of Leptons, Pt > 17;Events",  4, 2., 6.) );
+  mon.addHistogram( new TH1F("ZZ_cut_Nlept", ";Num of Leptons, Pt > 10;Events",  4, 2., 6.) );
   mon.addHistogram( new TH1F("ZZ_cut_llMass", ";Dilepton Invariant mass [GeV];Events", 20, 75., 110.) );
 //CTRL BKG
   mon.addHistogram( new TH1F("Ctrl_WZ_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
@@ -541,7 +543,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F("Ctrl_WW_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
   mon.addHistogram( new TH1F("Ctrl_WW_RedMe", ";RedMet [GeV];Events", 50, 0., 300.) );
   mon.addHistogram( new TH1F("Ctrl_W_PFMet", ";PF Met [GeV];Events", 50, 0., 300.) );
-  mon.addHistogram( new TH1F("Ctrl_W_RedMe", ";RedMet [GeV];Events", 50, 0., 300.) );
+  mon.addHistogram( new TH1F("Ctrl_W_RedMet", ";RedMet [GeV];Events", 50, 0., 300.) );
 // Bin Pt
   mon.addHistogram( new TH1F("ZZ_Pt1bin_llMass", ";Dilepton Invariant mass [GeV];Events", 20, 75., 110.) );
   mon.addHistogram( new TH1F("ZZ_Pt2bin_llMass", ";Dilepton Invariant mass [GeV];Events", 20, 75., 110.) );
@@ -762,13 +764,25 @@ int main(int argc, char* argv[])
      if(isMC && mctruthmode==1 && !isDYToLL(ev.mccat) ) continue;
      if(isMC && mctruthmode==2 && !isDYToTauTau(ev.mccat) ) continue;
 
-      bool isGammaEvent = false;
-      if(gammaEvHandler){
-          isGammaEvent=gammaEvHandler->isGood(phys);
-          if(mctruthmode==22 && !isGammaEvent) continue;
-          tag_cat = "gamma";
+      //require compatibilitiy of the event with the PD
+      bool hasEEtrigger = ev.triggerType & 0x1;
+      bool hasMMtrigger = (ev.triggerType >> 1 ) & 0x1;
+      bool hasEMtrigger = (ev.triggerType >> 2 ) & 0x1;
+      bool hasMtrigger  = (ev.triggerType >> 3 ) & 0x1;
+      if(!isMC){
+	  if(ev.cat!=fType) continue;
+	
+	  if(ev.cat==EE   && !hasEEtrigger) continue;
+	  if(ev.cat==MUMU && !(hasMMtrigger||hasMtrigger) ) continue;
+	  if(ev.cat==EMU  && !hasEMtrigger) continue;
+	
+	  //this is a safety veto for the single mu PD
+	  if(isSingleMuPD) {
+	    if(!hasMtrigger) continue;
+	    if(hasMtrigger && hasMMtrigger) continue;
+  }
       }
-     
+
       //int eventSubCat  = eventCategoryInst.Get(phys);
       int eventSubCat = eventCategoryInst.Get(phys, &phys.ajets);
       TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
@@ -786,7 +800,6 @@ int main(int argc, char* argv[])
       tags_full.push_back(tag_cat);
       tags_full.push_back(tag_cat + tag_subcat);
 
-      
       //OOT pu condition
       TString ootCond("");
       if(isMC){
@@ -877,26 +890,23 @@ int main(int argc, char* argv[])
       }
 
       //z+met kinematics
-      LorentzVector zll  = isGammaEvent ? gammaEvHandler->massiveGamma("ll") : phys.leptons[0]+phys.leptons[1];
+      LorentzVector lep1 = phys.leptons[0];
+      LorentzVector lep2 = phys.leptons[1];
+      LorentzVector zll  = lep1+lep2;
       LorentzVector zvv  = phys.met[0];
-      Float_t dphill     = isGammaEvent ? 0 : deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
-      //Float_t detall     = isGammaEvent ? 0 : phys.leptons[0].eta()-phys.leptons[1].eta();
-      //Float_t drll       = isGammaEvent ? 0 : deltaR(phys.leptons[0],phys.leptons[1]);
-      Float_t mindrlz    = isGammaEvent ? 0 : min( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
-      Float_t maxdrlz    = isGammaEvent ? 0 : max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
-      Float_t ptl1       = isGammaEvent ? 0 : phys.leptons[0].pt();
-      Float_t ptl2       = isGammaEvent ? 0 : phys.leptons[1].pt();
+      Float_t dphill     = deltaPhi(phys.leptons[0].phi(),phys.leptons[1].phi());
+      Float_t mindrlz    = min( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
+      Float_t maxdrlz    = max( deltaR(phys.leptons[0],zll), deltaR(phys.leptons[1],zll) );
+      Float_t ptl1       = phys.leptons[0].pt();
+      Float_t ptl2       = phys.leptons[1].pt();
       Float_t ptsum      = ptl1+ptl2;
-      Float_t mtl1       = isGammaEvent ? 0 : METUtils::transverseMass(phys.leptons[0],zvv,false);
-      Float_t mtl2       = isGammaEvent ? 0 : METUtils::transverseMass(phys.leptons[1],zvv,false);
-      //Float_t mtsum      = mtl1+mtl2;
+      Float_t mtl1       = METUtils::transverseMass(phys.leptons[0],zvv,false);
+      Float_t mtl2       = METUtils::transverseMass(phys.leptons[1],zvv,false);
       Float_t zmass      = zll.mass();
       Float_t zpt        = zll.pt();
       Float_t zeta       = zll.eta();
       Float_t met        = zvv.pt();
-      //Float_t dphizz     = deltaPhi(zll.phi(),zvv.phi());
       Float_t mt         = METUtils::transverseMass(zll,zvv,true);
-      //Float_t dphizleadl = isGammaEvent ? 0 : ( ptl1>ptl2 ? deltaPhi(phys.leptons[0].phi(),zll.phi()) : deltaPhi(phys.leptons[1].phi(),zll.phi()) );
 
      //Filer: Check if it's ZZ-llvv
      float StartCut = 20., EndCut = 80., BinCut = 2.;
@@ -914,54 +924,12 @@ int main(int argc, char* argv[])
           if( TwoMu>=1  || TwoNMu>=1 )   ZZllvvOrnotZZ = true;
       }
       else ZZllvvOrnotZZ = true;
-      
-      //count jets and b-tags
-      LorentzVector BestJet;
-      float PtApp=0.;
-      int njets(0),njetsinc(0);
-      int nbtags(0), nbtags_tchel(0),   nbtags_tche2(0),  nbtags_csvl(0), nbtags_csvl_tight(0);
+
+      //Jets
       LorentzVectorCollection jetsP4;
-      int nheavyjets(0), nlightsjets(0);
-      int Nj_10=0, Nj_15=0, Nj_20=0, Nj_25=0, Nj_30=0;
-      int tmpJ = 0; double deltaPhiJet = 0.;
-      float MaxBtag=-999.;
-      for(size_t ijet=0; ijet<phys.ajets.size(); ijet++){
-          if(phys.ajets[ijet].pt()>10) Nj_10++;
-          if(phys.ajets[ijet].pt()>15) Nj_15++;
-          if(phys.ajets[ijet].pt()>20) Nj_20++;
-          if(phys.ajets[ijet].pt()>25) Nj_25++;
-          if(phys.ajets[ijet].pt()>30){
-             Nj_30++; if(Nj_30==1) tmpJ=ijet; if(Nj_30==2) deltaPhiJet = deltaPhi(phys.ajets[ijet].phi(),phys.ajets[tmpJ].phi());  
-          }
-          jetsP4.push_back( phys.ajets[ijet] );
-          njetsinc++;
-          if(fabs(phys.ajets[ijet].eta())<2.5){
-              if( phys.ajets[ijet].btag2 > MaxBtag  ) MaxBtag = phys.ajets[ijet].btag2;
-              mon.fillHisto("ZZ_in_NBtag", tags_cat, phys.ajets[ijet].btag2, iweight);
-              njets++;
-              bool passTCHEL(phys.ajets[ijet].btag1>1.7);
-              bool passTCHE2(phys.ajets[ijet].btag1>2.0);
-              bool passCSVL(phys.ajets[ijet].btag2>0.244);
-              bool passCSVLTight(phys.ajets[ijet].btag2>0.15);
-              if(phys.ajets[ijet].pt()>20){
-                nbtags          += passTCHE2;
-                nbtags_tchel    += passTCHEL;
-                nbtags_tche2    += passTCHE2;
-                nbtags_csvl     += passCSVL;
-                nbtags_csvl_tight     += passCSVLTight;
-                nheavyjets += (fabs(phys.ajets[ijet].genid)==5);
-                nlightsjets += (fabs(phys.ajets[ijet].genid)!=5);
-                if( phys.ajets[ijet].pt() > PtApp ){PtApp =  phys.ajets[ijet].pt(); BestJet = phys.ajets[ijet];}
-              }
-          }
-      }
-      if(MaxBtag>-9.) mon.fillHisto("ZZ_in_NBtag_onlyMax", tags_cat, MaxBtag, iweight);
-      bcomp.compute(nheavyjets,nlightsjets);
-      std::vector<btag::Weight_t> wgt = bcomp.getWeights();
-      double p0btags = wgt[0].first;  
-      double p0btags_err=wgt[0].second;
-      
-      //met variables: check BaseMetSelection @ StandardSelections_cfi.py
+      for(size_t ijet=0; ijet<phys.ajets.size(); ijet++) jetsP4.push_back( phys.ajets[ijet] );
+      //Lepts & MetInfos
+      METUtils::stRedMET redMetInfo;
       LorentzVector metP4             = phys.met[0];
       LorentzVector centralMetP4      = phys.met[3];
       LorentzVector assocMetP4        = phys.met[1];
@@ -971,34 +939,95 @@ int main(int argc, char* argv[])
       LorentzVector assocFwdCMetP4    = phys.met[12];
       LorentzVector clusteredMetP4    = -1*zll;  for(unsigned int i=0;i<jetsP4.size();i++){clusteredMetP4 -= jetsP4[i];}
       LorentzVector unclMet = (zvv - clusteredMetP4);
-      if(isGammaEvent){
-          assocChargedMetP4 -= zll;
-          if(!phys.gammas[0].isConv) assocMetP4 -= zll;
-      }
+      LorentzVector redMetP4   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4             , zvv                , false, &redMetInfo);
 
-      //redmet
-      METUtils::stRedMET redMetInfo;      
-      LorentzVector nullP4     = LorentzVector(0,0,0,0);
-      LorentzVector lep1       = isGammaEvent ? zll    : phys.leptons[0];
-      LorentzVector lep2       = isGammaEvent ? nullP4 : phys.leptons[1];
-      LorentzVector zllraw=lep1+lep2;
-      LorentzVector rTMetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , zvv                , isGammaEvent);
-      LorentzVector rAMetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , zvv                , isGammaEvent);
-      LorentzVector rACorMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocCMetP4         , zvv                , isGammaEvent);                                                                             
-      LorentzVector rAFwdMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocFwdMetP4         , zvv                , isGammaEvent);
-      LorentzVector rAFwdCorMetP4 = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocFwdCMetP4         , zvv                , isGammaEvent);
-      LorentzVector rCMetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, clusteredMetP4     , zvv                , isGammaEvent);
-      LorentzVector rTAMetP4   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , assocMetP4         , isGammaEvent);
-      LorentzVector rTCMetP4   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocChargedMetP4  , clusteredMetP4     , isGammaEvent);
-      LorentzVector rACMetP4   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , clusteredMetP4     , isGammaEvent);
-      LorentzVector r3MetP4    = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, assocMetP4         , clusteredMetP4, zvv, isGammaEvent);
-      LorentzVector rmAMetP4   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, min(zvv,assocMetP4), clusteredMetP4, zvv, isGammaEvent);
-      LorentzVector redMetP4   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4             , zvv                , isGammaEvent, &redMetInfo);
       double redMet = redMetP4.pt();   
       //double redMetL = redMetInfo.redMET_l; double redMetT = redMetInfo.redMET_t;
-      LorentzVector redMetD0P4 = METUtils::redMET(METUtils::D0, lep1, 0, lep2, 0, jetsP4             , zvv                , isGammaEvent); 
-      //Float_t projMet              =  isGammaEvent ? 0 : METUtils::projectedMET(phys.leptons[0], phys.leptons[1], zvv).pt();
+      LorentzVector redMetD0P4 = METUtils::redMET(METUtils::D0, lep1, 0, lep2, 0, jetsP4             , zvv                , false); 
+      //Float_t projMet              =  METUtils::projectedMET(phys.leptons[0], phys.leptons[1], zvv).pt();
       double RedIndMet_L = redMetP4.pt()*cos( fabs(deltaPhi( redMetP4.phi(),zll.phi() )) );
+
+      //GenJet
+      std::vector<double> genJetsPt;
+      for(size_t ijet=0; ijet<phys.ajets.size(); ijet++)      genJetsPt.push_back( phys.ajets[ijet].genPt );
+      LorentzVectorCollection zvvs;
+      std::vector<PhysicsObjectJetCollection> Jets;
+      //Prepare Variation JER/JES   
+      if( runSystematics )          METUtils::computeVariation(phys.ajets, phys.leptons, zvv, Jets, zvvs, &jecUnc); 
+      LorentzVectorCollection JetsSme; for(unsigned int i=0; i<Jets[0].size(); i++) JetsSme.push_back(Jets[0][i]);
+      LorentzVector MetSmeared        = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, JetsSme, zvvs[0], false, &redMetInfo);
+      LorentzVector MetSmeared_jerp   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, JetsSme, zvvs[1], false, &redMetInfo);
+      LorentzVector MetSmeared_jerm   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, JetsSme, zvvs[2], false, &redMetInfo);
+      LorentzVector MetSmeared_jesp   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, JetsSme, zvvs[3], false, &redMetInfo);
+      LorentzVector MetSmeared_jesm   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, JetsSme, zvvs[4], false, &redMetInfo);
+      if( tag_cat=="ee" || tag_cat=="mumu" ){
+        mon.fillHisto("Sys_NewMet_Jer",  tags_cat, isMC ? MetSmeared.pt()      : redMetP4.pt(), iweight);
+        mon.fillHisto("Sys_NewMet_Jerp", tags_cat, isMC ? MetSmeared_jerp.pt() : redMetP4.pt(), iweight);
+        mon.fillHisto("Sys_NewMet_Jerm", tags_cat, isMC ? MetSmeared_jerm.pt() : redMetP4.pt(), iweight);
+        mon.fillHisto("Sys_NewMet_Jesp", tags_cat, isMC ? MetSmeared_jesp.pt() : redMetP4.pt(), iweight);
+        mon.fillHisto("Sys_NewMet_Jesm", tags_cat, isMC ? MetSmeared_jesm.pt() : redMetP4.pt(), iweight);
+      }
+      //JES PFMEt for stability
+      LorentzVector PFMetSmeared_jesp   = zvvs[3]; 
+      LorentzVector PFMetSmeared_jesm   = zvvs[4];
+      //JES METD0 for stability
+      LorentzVector D0MetSmeared_jesp   = METUtils::redMET(METUtils::D0, lep1, 0, lep2, 0, jetsP4, zvvs[3], false, &redMetInfo);
+      LorentzVector D0MetSmeared_jesm   = METUtils::redMET(METUtils::D0, lep1, 0, lep2, 0, jetsP4, zvvs[4], false, &redMetInfo);
+
+      //JER My Way
+      LorentzVector newMetJer;
+      std::vector<LorentzVector> jetsJer;
+      if( runSystematics ) newMetJer = METUtils::SmearJetFormGen(jetsP4, zvv, genJetsPt, jetsJer);
+      LorentzVector MetSmeared_my   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, newMetJer, false, &redMetInfo);
+      if( tag_cat == "ee" || tag_cat == "mumu" ){
+            double newMetJerpt = isMC ? MetSmeared_my.pt() : redMetP4.pt();
+            mon.fillHisto("Sys_NewMetSmiredJER", tags_cat, newMetJerpt, iweight);
+      }
+      
+      //count jets and b-tags
+      LorentzVector BestJet;
+      float PtApp=0.;
+      int njets(0),njetsinc(0);
+      int nbtags(0), nbtags_tchel(0),   nbtags_tche2(0),  nbtags_csvl(0), nbtags_csvl_tight(0);
+      int nheavyjets(0), nlightsjets(0);
+      int Nj_10=0, Nj_15=0, Nj_20=0, Nj_25=0, Nj_30=0;
+      int tmpJ = 0; double deltaPhiJet = 0.;
+      float MaxBtag=-999.;
+      for(size_t ijet=0; ijet<Jets[0].size(); ijet++){
+          if(Jets[0][ijet].pt()>10) Nj_10++;
+          if(Jets[0][ijet].pt()>15) Nj_15++;
+          if(Jets[0][ijet].pt()>20) Nj_20++;
+          if(Jets[0][ijet].pt()>25) Nj_25++;
+          if(Jets[0][ijet].pt()>30){
+             Nj_30++; if(Nj_30==1) tmpJ=ijet; if(Nj_30==2) deltaPhiJet = deltaPhi(Jets[0][ijet].phi(),Jets[0][tmpJ].phi());  
+          }
+          njetsinc++;
+          if(fabs(Jets[0][ijet].eta())<2.5){
+              if( Jets[0][ijet].btag2 > MaxBtag  ) MaxBtag = Jets[0][ijet].btag2;
+              mon.fillHisto("ZZ_in_NBtag", tags_cat, Jets[0][ijet].btag2, iweight);
+              njets++;
+              bool passTCHEL(Jets[0][ijet].btag1>1.7);
+              bool passTCHE2(Jets[0][ijet].btag1>2.0);
+              bool passCSVL(Jets[0][ijet].btag2>0.244);
+              bool passCSVLTight(Jets[0][ijet].btag2>0.15);
+              if(Jets[0][ijet].pt()>20){
+                nbtags          += passTCHE2;
+                nbtags_tchel    += passTCHEL;
+                nbtags_tche2    += passTCHE2;
+                nbtags_csvl     += passCSVL;
+                nbtags_csvl_tight     += passCSVLTight;
+                nheavyjets += (fabs(Jets[0][ijet].genid)==5);
+                nlightsjets += (fabs(Jets[0][ijet].genid)!=5);
+                if( Jets[0][ijet].pt() > PtApp ){PtApp =  Jets[0][ijet].pt(); BestJet = Jets[0][ijet];}
+              }
+          }
+      }
+      if(MaxBtag>-9.) mon.fillHisto("ZZ_in_NBtag_onlyMax", tags_cat, MaxBtag, iweight);
+      bcomp.compute(nheavyjets,nlightsjets);
+      std::vector<btag::Weight_t> wgt = bcomp.getWeights();
+      double p0btags = wgt[0].first;  
+      double p0btags_err=wgt[0].second;
+      
 
       //Isolation
       bool NoIso=false;
@@ -1021,48 +1050,11 @@ int main(int argc, char* argv[])
       //sum ETs
       float sumEt            = ev.sumEt           - ptsum;
       // float neutsumEt        = ev.neutsumEjmett;
-    
-      //GenJet
-      std::vector<double> genJetsPt;
-      for(size_t ijet=0; ijet<phys.ajets.size(); ijet++)      genJetsPt.push_back( phys.ajets[ijet].genPt );
-      LorentzVectorCollection zvvs;
-      std::vector<PhysicsObjectJetCollection> Jets;
-
-      //Prepare Variation JER/JES   
-      if( runSystematics )          METUtils::computeVariation(phys.ajets, phys.leptons, zvv, Jets, zvvs, &jecUnc);
-      LorentzVector MetSmeared        = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[0], isGammaEvent, &redMetInfo);
-      LorentzVector MetSmeared_jerp   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[1], isGammaEvent, &redMetInfo);
-      LorentzVector MetSmeared_jerm   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[2], isGammaEvent, &redMetInfo);
-      LorentzVector MetSmeared_jesp   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[3], isGammaEvent, &redMetInfo);
-      LorentzVector MetSmeared_jesm   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, zvvs[4], isGammaEvent, &redMetInfo);
-      if( tag_cat=="ee" || tag_cat=="mumu" ){
-        mon.fillHisto("Sys_NewMet_Jer",  tags_cat, isMC ? MetSmeared.pt()      : redMetP4.pt(), iweight);
-        mon.fillHisto("Sys_NewMet_Jerp", tags_cat, isMC ? MetSmeared_jerp.pt() : redMetP4.pt(), iweight);
-        mon.fillHisto("Sys_NewMet_Jerm", tags_cat, isMC ? MetSmeared_jerm.pt() : redMetP4.pt(), iweight);
-        mon.fillHisto("Sys_NewMet_Jesp", tags_cat, isMC ? MetSmeared_jesp.pt() : redMetP4.pt(), iweight);
-        mon.fillHisto("Sys_NewMet_Jesm", tags_cat, isMC ? MetSmeared_jesm.pt() : redMetP4.pt(), iweight);
-      }
-      //JES PFMEt for stability
-      LorentzVector PFMetSmeared_jesp   = zvvs[3]; 
-      LorentzVector PFMetSmeared_jesm   = zvvs[4];
-      //JES METD0 for stability
-      LorentzVector D0MetSmeared_jesp   = METUtils::redMET(METUtils::D0, lep1, 0, lep2, 0, jetsP4, zvvs[3], isGammaEvent, &redMetInfo);
-      LorentzVector D0MetSmeared_jesm   = METUtils::redMET(METUtils::D0, lep1, 0, lep2, 0, jetsP4, zvvs[4], isGammaEvent, &redMetInfo);
-
-      //JER My Way
-      LorentzVector newMetJer;
-      std::vector<LorentzVector> jetsJer;
-      if( runSystematics ) newMetJer = METUtils::SmearJetFormGen(jetsP4, zvv, genJetsPt, jetsJer);
-      LorentzVector MetSmeared_my   = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, jetsP4, newMetJer, isGammaEvent, &redMetInfo);
-      if( tag_cat == "ee" || tag_cat == "mumu" ){
-            double newMetJerpt = isMC ? MetSmeared_my.pt() : redMetP4.pt();
-            mon.fillHisto("Sys_NewMetSmiredJER", tags_cat, newMetJerpt, iweight);
-      }
 
       //DPhi
       int DphiMet_Jet=0;
-      for(size_t ijet=0; ijet<phys.ajets.size(); ijet++){
-             if( fabs(deltaPhi(phys.ajets[ijet].phi(), zvv.phi()))<0.5 && phys.ajets[ijet].pt()>20. ) DphiMet_Jet++;
+      for(size_t ijet=0; ijet<Jets[0].size(); ijet++){
+             if( fabs(deltaPhi(Jets[0][ijet].Phi(), zvv.phi()))<0.5 && Jets[0][ijet].Pt()>20. ) DphiMet_Jet++;
       }
       bool DphiMet_Jet_jer = true, JetVeto_jer = true;
       for(size_t ijet=0; ijet<Jets[0].size(); ijet++){
@@ -1112,7 +1104,6 @@ int main(int argc, char* argv[])
         if(isGood && phys.leptons[ilep].pt() > 15) nlept15++; 
         if(isGood && phys.leptons[ilep].pt() > 20) nlept20++; 
       }
-
       //Using JER Smearing
       redMet = MetSmeared.Pt();
       redMetP4 = MetSmeared;
@@ -1141,7 +1132,7 @@ int main(int argc, char* argv[])
 	bool PassSelectionRedMetNoMass( Dil && passZpt && passBveto && JetVeto && RedMetPt && Balance && Dphi_J && pass3dLeptonVeto);
 	//bool SelectionNo3LeptVeto( passZmass && passZpt && passBveto && JetVeto && RedMetPt && Balance && Dphi_J );
 	//Control Sample BKG
-	bool sidebands( (zmass>40 && zmass<70 ) || (zmass>110 && zmass<200 ) );
+	bool sidebands( (zmass>50 && zmass<70 ) || (zmass>110 && zmass<200 ) );
 	bool WZ_ctrl  ( passZpt && nextraleptons==1 && passZmass && passBveto );
 	bool T_ctrl   ( passZpt && nbtags_csvl>0 && sidebands );
 	bool T_ctrl2  ( passZpt && nbtags_csvl>0 );
@@ -1208,7 +1199,7 @@ int main(int argc, char* argv[])
         mon.fillHisto("ZZ_fin_MET1Pt", tags_cat, met, iweight);
         mon.fillHisto("ZZ_fin_llEta", tags_cat, zeta, iweight);
         mon.fillHisto("ZZ_fin_nvtx", tags_cat, ev.nvtx, iweight);
-        mon.fillHisto("ZZ_fin_njet", tags_cat, phys.ajets.size() , iweight);
+        mon.fillHisto("ZZ_fin_njet", tags_cat, Jets[0].size() , iweight);
         mon.fillHisto("ZZ_fin_MetRed_IND", tags_cat, redMet, iweight);
         mon.fillHisto("ZZ_fin_MetRed_D0", tags_cat, redMetD0P4.Pt(), iweight);
       }
@@ -1220,7 +1211,7 @@ int main(int argc, char* argv[])
       mon.fillHisto("ZZ_cut_Bveto", tags_cat, nbtags, iweight);
       mon.fillHisto("ZZ_cut_Bvetol", tags_cat, nbtags_tchel, iweight);
         if( passBveto ){
-      mon.fillHisto("ZZ_cut_njet", tags_cat, phys.ajets.size() , iweight);
+      mon.fillHisto("ZZ_cut_njet", tags_cat, Jets[0].size() , iweight);
       mon.fillHisto("ZZ_cut_njet_10", tags_cat, Nj_10 , iweight);
       mon.fillHisto("ZZ_cut_njet_15", tags_cat, Nj_15 , iweight);
       mon.fillHisto("ZZ_cut_njet_20", tags_cat, Nj_20 , iweight);
@@ -1238,14 +1229,15 @@ int main(int argc, char* argv[])
           if( RedMetPt ){
       mon.fillHisto("ZZ_cut_Balance", tags_cat, met/zpt, iweight);
             if( Balance ){
-            for(size_t ijet=0; ijet<phys.ajets.size(); ijet++){
-                if( phys.ajets[ijet].pt()>20. ) mon.fillHisto("ZZ_cut_Dphi_val", tags_cat, fabs(deltaPhi(phys.ajets[ijet].phi(), zvv.phi())), iweight);
+            for(size_t ijet=0; ijet<Jets[0].size(); ijet++){
+                if( Jets[0][ijet].pt()>20. ) mon.fillHisto("ZZ_cut_Dphi_val", tags_cat, fabs(deltaPhi(Jets[0][ijet].phi(), zvv.phi())), iweight);
             }
       mon.fillHisto("ZZ_cut_Dphi_J", tags_cat,  DphiMet_Jet, iweight);
             if( Dphi_J ){
       mon.fillHisto("ZZ_cut_Nlept10", tags_cat, nlept10, iweight);
       mon.fillHisto("ZZ_cut_Nlept15", tags_cat, nlept15, iweight);
       mon.fillHisto("ZZ_cut_Nlept20", tags_cat, nlept20, iweight);
+      mon.fillHisto("ZZ_cut_Nlept", tags_cat, nextraleptons+2, iweight);
           if( pass3dLeptonVeto ){
       mon.fillHisto("ZZ_cut_llMass", tags_cat, zmass, iweight);
       }}}}}}}}
@@ -1643,7 +1635,7 @@ int main(int argc, char* argv[])
             }
          }
       }
-
+/*
       //##############################################
       //########           VBF PLOTS          ########
       //##############################################
@@ -1672,9 +1664,8 @@ int main(int argc, char* argv[])
              double MinEta, MaxEta;
 
              if(phys.ajets[0].eta()<phys.ajets[1].eta()){MinEta=phys.ajets[0].eta(); MaxEta=phys.ajets[1].eta();}else{MinEta=phys.ajets[1].eta(); MaxEta=phys.ajets[0].eta();}
-             if(isGammaEvent){  if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFCentralLeptons++;
-             }else{             if(zll.eta()>MinEta && zll.eta()<MaxEta) VBFCentralLeptons=2;
-             }
+             if(zll.eta()>MinEta && zll.eta()<MaxEta) VBFCentralLeptons=2;
+             
 
              for(size_t ijet=2; ijet<phys.ajets.size(); ijet++){
                  if(phys.ajets[ijet].pt()<30)continue; 
@@ -1732,7 +1723,7 @@ int main(int argc, char* argv[])
          }
          mon.fillHisto("VBFtotalvspu"      ,tags_full,    ev.ngenITpu   ,iweight);
       }
-
+*/
       // ################   The FINAL OPTIMIZATION ##############     
       // Base Met
       LorentzVector zvvRaw(phys.met[0]);
@@ -1782,7 +1773,7 @@ int main(int argc, char* argv[])
 	    njets++;
 //            if( fabs(phys.ajets[ijet].eta() < 2.5) ){
             if( fabs(phys.ajets[ijet].eta())<2.5 ){
- 	       nbtags += (phys.ajets[ijet].btag1>btagcut);                                                                                                                                
+ 	       nbtags += (phys.ajets[ijet].btag2>btagcut);                                                                                                                                
             } 
 	  }
 	}
