@@ -66,7 +66,6 @@ int main(int argc, char* argv[])
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
 
   bool isMC = runProcess.getParameter<bool>("isMC");
-  bool runBlinded = runProcess.getParameter<bool>("runBlinded"); 
   int mctruthmode=runProcess.getParameter<int>("mctruthmode");
 
   TString url=runProcess.getParameter<std::string>("input");
@@ -193,20 +192,15 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "leadeta", ";#eta^{l};Events", 50,-2.6,2.6) );
   mon.addHistogram( new TH1F( "trailerpt", ";p_{T}^{l};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "trailereta", ";#eta^{l};Events", 50,-2.6,2.6) );
-  mon.addHistogram( new TH1F( "deltaleptonpt", ";|p_{T}^{1}-p_{T}^{2}|;Events", 50,0,250) );
-  mon.addHistogram( new TH1F( "deltazpt", ";p_{T}^{ll}-E_{T}^{miss};Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 50,-10,10) );
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,40,250) );
-  mon.addHistogram( new TH1F( "mindphilmet", ";min(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
-  mon.addHistogram( new TH1F( "maxdphilmet", ";max(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
-  mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,2.5) );
 
   //3rd lepton control 
-  mon.addHistogram( new TH1F( "thirdleptonpt", ";p_{T}^{l};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "thirdleptoneta", ";#eta^{l};Events", 50,-2.6,2.6) );
   mon.addHistogram( new TH1F( "nleptons", ";Leptons;Events", 3,2,4) );
-  mon.addHistogram( new TH1F( "mt3" , ";M_{T}^{3rd lepton} [GeV/c^{2}];Events",50,0,200) );
+  mon.addHistogram( new TH1F( "thirdleptonpt", ";p_{T}^{l};Events", 10,0,250) );
+  mon.addHistogram( new TH1F( "thirdleptoneta", ";#eta^{l};Events", 10,0,2.6) );
+  mon.addHistogram( new TH1F( "mt3" , ";M_{T}^{3rd lepton} [GeV/c^{2}];Events",20,0,200) );
 
 
   //jet control
@@ -224,14 +218,18 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(ibin,label);
       hb->GetXaxis()->SetBinLabel(ibin,label);
     } 
-  mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",20,0,4) );
   
   //MET control
+  mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,5) );
   mon.addHistogram( new TH1F( "met_redMetSB"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
-  mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-250,250) );
-  mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-100,400) );
+  mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-100,400) );
+  mon.addHistogram( new TH1F( "mt_final"  , ";M_{T};Events", 25,0,1000) );
+  mon.addHistogram( new TH1F( "met_met_final"  , ";E_{T}^{miss};Events", 25,0,250) );
+  mon.addHistogram( new TH1F( "zpt_final", ";p_{T}^{ll};Events", 25,0,500) );
+  mon.addHistogram( new TH1F( "met_redMetL_final"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 25,-100,400) );
 
   //FIXME
   //optimization
@@ -637,7 +635,7 @@ int main(int argc, char* argv[])
 		}
 	    }
 	  
-	  if(aJets[ijet].pt()<30) continue;
+	  if(aJets[ijet].pt()<20) continue;
 	  if(fabs(aJets[ijet].eta())<2.5) 
 	    {
 	      nABtags += (aJets[ijet].btag2>0.244);
@@ -662,7 +660,8 @@ int main(int argc, char* argv[])
       bool passDphijmet(mindphijmet>0.5);
       if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
       bool passRedMet(aRedMet.pt()>70);
-      
+      float mt = METUtils::transverseMass(zll,zvvs[0],true);      
+     
       //now fill control distributions
       tags_full.push_back(tag_cat);
       mon.fillHisto("eventflow",tags_full,0,weight);
@@ -697,7 +696,7 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("nleptons",tags_full,2+nextraleptons,weight);
 	  if(nextraleptons==1) 
 	    {
-	      mon.fillHisto("thirdleptoneta",   tags_full,extraLeptonsP4[0].eta()   ,weight);
+	      mon.fillHisto("thirdleptoneta",   tags_full,fabs(extraLeptonsP4[0].eta())   ,weight);
 	      mon.fillHisto("thirdleptonpt" ,   tags_full,extraLeptonsP4[0].pt()     ,weight);
 	      mon.fillHisto("mt3",tags_full,METUtils::transverseMass(extraLeptonsP4[0],zvvs[0],false),weight);
 	    }
@@ -723,7 +722,6 @@ int main(int argc, char* argv[])
 			{
 			  mon.fillHisto("eventflow",tags_full,6,weight);
 			  mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet15:mindphijmet,weight);
-			  mon.fillHisto("eventflow",tags_full,6,weight);
 			  
 			  if(passDphijmet)
 			    {
@@ -731,6 +729,10 @@ int main(int argc, char* argv[])
 			      if(pass3dLeptonVeto)
 				{
 				  mon.fillHisto("eventflow",tags_full,8,weight);
+				  mon.fillHisto("mt_final",tags_full,mt,weight);
+				  mon.fillHisto("met_redMetL_final",tags_full,aRedMetL,weight);
+				  mon.fillHisto("met_met_final",tags_full,zvvs[0].pt(),weight);
+				  mon.fillHisto("zpt_final",tags_full,zll.pt(),weight);
 				}
 			    }
 			}
@@ -740,6 +742,9 @@ int main(int argc, char* argv[])
 	}
       }
       
+      //other control regions
+      if(passZsideBand && passZpt && !passBveto) mon.fillHisto("met_redMetSB",tags_full,aRedMet.pt(),weight);
+
 
       //
       // HISTOS FOR STATISTICAL ANALYSIS (include systematic variations, selection is repeated for each variation)
