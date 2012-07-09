@@ -44,12 +44,26 @@ TCutG* GetErrorBand(string name, int N, double* Mass, double* Low, double* High)
 {
    TCutG* cutg = new TCutG(name.c_str(),2*N+2);
    cutg->SetFillColor(kGreen-7);
+   cutg->SetLineStyle(0);
+   cutg->SetLineColor(0);
    int I = 0;
    for(int i=0;i<N;i++){cutg->SetPoint(I,Mass[i]    , Low[i]     );I++; }
                         cutg->SetPoint(I,Mass[N-1]  , Low[N-1]   );I++;
                         cutg->SetPoint(I,Mass[N-1]  , High[N-1]  );I++;
    for(int i=0;i<N;i++){cutg->SetPoint(I,Mass[N-1-i], High[N-1-i]);I++;}
    return cutg;
+}
+
+
+void printLimits(TGraph* graph, double Mmin=200, double Mmax=600){
+   double previous = graph->Eval(Mmin);
+   printf("Exclude ");
+   for(double M=Mmin;M<=Mmax;M+=1.0){
+      double NEW = graph->Eval(M);
+      if(previous>1 && NEW<1){printf("[%f,",M);}
+      if(previous<1 && NEW>1){printf("%f]",M-1);}
+      previous = NEW;
+   }printf("\n");
 }
 
 
@@ -135,8 +149,10 @@ void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, d
 
    FILE* pFileSum = fopen((outputName+"_LimitSummary").Data(),"w");
    for(int i=0;i<N;i++){
+      if(((int)MassAxis[i])%50==0)
       fprintf(pFileSum, "$%7.3f$ & $%6.2f$ & $[%6.2f,%6.2f]$ & $[%6.2f,%6.2f]$ & $%6.2f$ \\\\\\hline\n",MassAxis[i], ExpLimit[i], ExpLimitm1[i], ExpLimitp1[i], ExpLimitm2[i],  ExpLimitp2[i], ObsLimit[i]);
-   }
+      if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);
+   }printf("\n");
    fclose(pFileSum);
 
 
@@ -146,8 +162,13 @@ void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, d
    TCutG* TGExpLimit2S = GetErrorBand("2S", N, MassAxis, ExpLimitm2, ExpLimitp2);  TGExpLimit2S->SetFillColor(5);
 
 
+   printf("EXPECTED LIMIT --> ");   printLimits(TGExpLimit, MassAxis[0], MassAxis[N-1]);
+   printf("OBSERVED LIMIT --> ");   printLimits(TGObsLimit, MassAxis[0], MassAxis[N-1]);
+
+
+
    printf("Obs Limits for Model are: ");for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);}printf("\n");
-   printf("Exp Limits for Model are: ");for(int i=0;i<N;i++){printf("%f+-%f ",ExpLimit[i], (ExpLimitp1[i]-ExpLimitm1[i]))/2.0;}printf("\n");
+   printf("Exp Limits for Model are: ");for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; printf("%f+-%f ",ExpLimit[i], (ExpLimitp1[i]-ExpLimitm1[i]))/2.0;}printf("\n");
 
    TGExpLimit->SetLineColor(2);  TGExpLimit->SetLineStyle(1);
    TGObsLimit->SetLineWidth(2);  TGObsLimit->SetMarkerStyle(20);
@@ -165,7 +186,7 @@ void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, d
    TGExpLimit2S->Draw("fc same");
    TGExpLimit1S->Draw("fc same");
 
-//   TGObsLimit->Draw("same CP");
+   TGObsLimit->Draw("same CP");
    TGExpLimit->Draw("same C");
 
 //   TMultiGraph* MG = new TMultiGraph();
@@ -175,11 +196,17 @@ void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, d
 //   MG->Draw("same");
 
    char LumiLabel[1024];
-   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #int L=%6.1ffb^{-1}   -   %20s",energy, luminosity,legendName.Data());
+   if(energy<9){
+//      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #int L=%6.1ffb^{-1}   -   %20s",energy, luminosity,legendName.Data());
+      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #int L=%6.1ffb^{-1}",energy, luminosity);
+   }else{
+//      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f/%.0f TeV, #int L=%6.1ffb^{-1}   -   %20s",7.0,8.0, luminosity,legendName.Data());
+      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f/%.0f TeV, #int L=%6.1ffb^{-1}",7.0,8.0, luminosity);
+   }
    TPaveText *pave = new TPaveText(0.1,0.96,0.94,0.99,"NDC");
    pave->SetBorderSize(0);
    pave->SetFillStyle(0);
-   pave->SetTextAlign(12);
+   pave->SetTextAlign(32);
    pave->SetTextFont(42);
    TObjArray* tokens = (TString(LumiLabel)).Tokenize("\\\\");
    int nt = tokens->GetEntries();
@@ -192,13 +219,15 @@ void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, d
    TLine* SMLine = new TLine(framework->GetXaxis()->GetXmin(),1.0,framework->GetXaxis()->GetXmax(),1.0);
    SMLine->Draw("same");
 
-   TLegend* LEG = new TLegend(0.15,0.80,0.40,0.93);
-   LEG->SetHeader("");
+   TLegend* LEG = new TLegend(0.35,0.70,0.65,0.93);
+   LEG->SetHeader(legendName.Data());
    LEG->SetFillColor(0);
    LEG->SetBorderSize(0);
-   LEG->AddEntry(TGObsLimit  , "Observed"  ,"P");
-   LEG->AddEntry(TGExpLimit  , "Expected"  ,"L");
-//   LEG->Draw();
+   LEG->AddEntry(TGExpLimit  , "median expected"  ,"L");
+   LEG->AddEntry(TGExpLimit1S  , "expected #pm 1#sigma"  ,"F");
+   LEG->AddEntry(TGExpLimit2S  , "expected #pm 2#sigma"  ,"F");
+   LEG->AddEntry(TGObsLimit  , "observed"  ,"LP");
+   LEG->Draw();
    //c1->SetGridx(true);
 //   c1->SetGridy(true);
    c1->SetLogy(true);
