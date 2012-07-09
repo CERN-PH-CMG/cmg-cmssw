@@ -231,43 +231,46 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "zpt_final", ";p_{T}^{ll};Events", 25,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL_final"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 25,-100,400) );
 
-  //FIXME
   //optimization
-  //   std::vector<double> optim_Cuts1_met; 
-  //   std::vector<double> optim_Cuts1_zpt;
-  //   std::vector<double> optim_Cuts1_zmass;
-  //   for(double met=50;met<100;met+=2.5){
-  //     for(double pt=30;pt<60;pt+=2.5){
-  //       for(double zm=5;zm<20;zm+=2.5){
-  // 	optim_Cuts1_met    .push_back(met);
-  // 	optim_Cuts1_zpt    .push_back(pt);
-  // 	optim_Cuts1_zmass  .push_back(zm);
-  //       }
-  //     }
-  //   }
-  
-  //    TH1F* Hoptim_cuts1_met    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-  //    TH1F* Hoptim_cuts1_zpt    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_zpt"  , ";cut index;zpt"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-  //    TH1F* Hoptim_cuts1_zmass  =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_zm"  , ";cut index;zmass"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-  //    for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
-  //       Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
-  //       Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
-  //       Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
-  //    }
+  std::vector<double> optim_Cuts1_met; 
+  std::vector<double> optim_Cuts1_zpt;
+  std::vector<double> optim_Cuts1_zmass;
+  for(double met=50;met<100;met+=5.0){
+    if(met>80 && int(met)%10!=0)continue;
+    for(double pt=30;pt<100;pt+=5){
+      if(pt>60 && int(pt)%10!=0)continue;
+      for(double zm=5;zm<20;zm+=2.5){
+      if(zm>10 && int(2*zm)%5!=0)continue;
+         optim_Cuts1_met    .push_back(met);
+         optim_Cuts1_zpt    .push_back(pt);
+         optim_Cuts1_zmass  .push_back(zm);
+      }
+    }
+  }
+
+  TH1F* Hoptim_cuts1_met    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  TH1F* Hoptim_cuts1_zpt    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_zpt"  , ";cut index;zpt"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  TH1F* Hoptim_cuts1_zmass  =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_zm"  , ";cut index;zmass"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
+     Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
+     Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
+     Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
+  }
   
   TH1F* Hoptim_systs     =  (TH1F*) mon.addHistogram( new TH1F ("optim_systs"    , ";syst;", nvarsToInclude,0,nvarsToInclude) ) ;
   for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
     {
       Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
-      //FIXME
-      //      mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );
-      //      TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
-      //      h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
-      //      h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
-      //      h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
-      //      h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
-      //      h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
-      //     h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
+      mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
+      mon.addHistogram( new TH2F (TString("met_shapes")+varNames[ivar],";cut index;met [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
+      mon.addHistogram( new TH2F (TString("zpt_shapes")+varNames[ivar],";cut index;Z p_{T} [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
+      TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
+      h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
+      h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
+      h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
+      h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
+      h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
+      h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
     } 
   
   
