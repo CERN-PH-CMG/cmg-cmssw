@@ -10,18 +10,19 @@ from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 #default values
 shapeBased='1'
 shapeName='mt_shapes'
-inUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root'
+inUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root'
 CWD=os.getcwd()
 phase=-1
-jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2011.json'
+jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
 #LandSArg=' --indexvbf 78 '
 LandSArg=' --indexvbf 9 '
-LandSArg+=' --bins eq0jets,eq1jets,geq2jets,vbf'
-LandSArg+=' --subNRB --subDY $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/gamma_half_2011_5fb_fix.root --systpostfix _7TeV'
-DataCardsDir='cards'
+LandSArg+='--bins eq0jets,eq1jets,geq2jets,vbf'
+LandSArg+=' --subNRB --subDY $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/gamma_half_2012_5_0fb_fix.root --systpostfix _8TeV'
+DataCardsDir='cards8TeV'
 
-MASS = [200,250, 300,350, 400,450, 500,550, 600]
+#MASS = [200,250, 300,350, 400,450, 500,550, 600]
+MASS = [200,250, 300, 350, 400, 450, 500, 600, 800, 900]
 SUBMASS = [200,225,250, 275,300,325,350,375, 400,425,450,475, 500,525,550,575, 600]
 #SUBMASS = [200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 360, 370, 380, 390, 400, 420, 440, 450, 460, 480, 500, 520, 540, 550, 560, 580, 600]
 
@@ -97,7 +98,7 @@ def findSideMassPoint(mass):
 #prepare the output
 OUT = CWD+'/JOBS/'
 if(shapeBased=='1'): OUT+='SHAPE/'
-else:		     OUT+='COUNT/'	
+else:		     OUT+='COUNT8/'	
 os.system('mkdir -p ' + OUT)
 
 if(shapeBased=='1'): DataCardsDir+='Shape'
@@ -163,7 +164,7 @@ elif(phase == 2):
    
    fileName = OUT + "/OPTIM_"
    if(shapeBased=='1'):  fileName+='SHAPE'
-   else:                 fileName+='COUNT' 	
+   else:                 fileName+='COUNT8' 	
 
    FILE = open(fileName+".txt","w")
    for m in MASS:
@@ -205,7 +206,7 @@ elif(phase == 3 ):
       if(shapeBased=='1'):
          fileName+='SHAPE'
       else:
-         fileName+='COUNT'
+         fileName+='COUNT8'
       fileName+=".txt"
       
       mi=0
@@ -316,7 +317,7 @@ elif(phase == 3 ):
         SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + " --shapeMin " + str(Gtmin.Eval(m,0,"")) +" --shapeMax " + str(Gtmax.Eval(m,0,""))  +" ;\n")
         SCRIPT.writelines("sh combineCards.sh;\n")
-        SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " card_combined.dat > COMB.log;\n") 
+        SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + "  card_combined.dat > COMB.log;\n") 
         SCRIPT.writelines("combine -M MaxLikelihoodFit -m " +  str(m) + " --saveNormalizations card_combined.dat;\n")
         SCRIPT.writelines("extractFitNormalization.py mlfit.root hzz2l2v_"+str(m)+"_?TeV.root > fit.txt;\n")
         SCRIPT.writelines('cd ..;\n\n') 
@@ -335,11 +336,11 @@ elif(phase == 4 ):
    print '#            #'
    print '# FINAL PLOT #'
    print '#            #'
-   ouputName = 'COUNT'
+   ouputName = 'COUNT8'
    if(shapeBased=='1'):ouputName='SHAPE'
 
    os.system("hadd -f "+ouputName+"_LimitTree.root "+DataCardsDir+"/*/higgsCombineTest.Asymptotic.*.root")
-   os.system("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+ouputName+"_LimitTree.root\", 7 , 5.035 )'")
+   os.system("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+ouputName+"_LimitTree.root\",  8 , 5.000 )'")
 
 ######################################################################
 
