@@ -104,9 +104,10 @@ if(shapeBased=='1'): DataCardsDir+='Shape'
 
 #get the cuts
 file = ROOT.TFile(inUrl)
-cuts1   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_met') 
-cuts2   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmin') 
-cuts3   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmax') 
+cuts1   = file.Get('WW#rightarrow 2l2#nu/mt_shapes') #optim_cut1_met') 
+cuts2   = file.Get('WW#rightarrow 2l2#nu/mt_shapes') #optim_cut1_mz') 
+cuts3   = file.Get('WW#rightarrow 2l2#nu/mt_shapes') #optim_cut1_mz')
+
 
 
 
