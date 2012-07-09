@@ -352,6 +352,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH2D( "met_mt"  , ";E_{T}^{miss};M_{T};Events", 50,0,250,50,0,500) );
   mon.addHistogram( new TH2D( "met_mindphilmet"  , ";E_{T}^{miss};min(#Delta#phi(lepton,E_{T}^{miss});Events", 50,0,250,40,0,4) );
   mon.addHistogram( new TH2D( "metoverlpt_mindphilmet"  , ";E_{T}^{miss}/p_{T}^{lepton};min(#Delta#phi(lepton,E_{T}^{miss});Events", 50,0,2,40,0,4) );
+  mon.addHistogram( new TH1F( "met_metSB"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met250"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met3leptons"  , ";E_{T}^{miss};Events", 50,0,500) );
@@ -916,6 +917,7 @@ int main(int argc, char* argv[])
 	      
 	      pass3dLeptonVeto=(nextraleptons==0);
 	      mon.fillHisto("nleptons",tags_full,2+nextraleptons,weight);
+
 	      if(pass3dLeptonVeto){
 		  mon.fillHisto("eventflow",tags_full,3,weight);
 		  
@@ -1169,6 +1171,11 @@ int main(int argc, char* argv[])
 
 	}//end passZmass
 
+      bool passSB( ((zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200)) && zll.pt()>30 );
+      if(passSB && pass3dLeptonVeto && passDphijmet && !passBveto) mon.fillHisto("met_metSB",tags_full,zvvs[0].pt(),weight);
+
+
+
       //
       // HISTOS FOR STATISTICAL ANALYSIS (include systematic variations)
       //
@@ -1177,7 +1184,7 @@ int main(int argc, char* argv[])
         float iweight = weight;                                               //nominal
         if(ivar==9)                         iweight *=TotalWeight_plus;        //pu up
         if(ivar==10)                        iweight *=TotalWeight_minus;       //pu down
-        if(ivar<=14 && ivar>=11 && isMC_GG) iweight *=ev.hptWeights[ivar-10]/ev.hptWeights[0];   //ren/fact scales   
+        if(ivar<=14 && ivar>=11 && isMC_GG) iweight *=ev.hptWeights[ivar-10]/ev.hptWeights[0];   //ren/fact     scales   
 
 	//recompute MET/MT if JES/JER was varied
 	LorentzVector zvv    = zvvs[ivar>8 ? 0 : ivar];

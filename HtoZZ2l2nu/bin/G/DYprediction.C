@@ -67,31 +67,32 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
   setTDRStyle();
 
   //  TString llFile="../../test/results/plotter_2012.root";
-  TString llFile="../../plotter.root";
-  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/qt/plotter.root";
+  //  TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
+  // TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/qt/plotter.root";
   //TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
   
-  //TString llFile="../../test/results/plotter_2011.root";
-  // TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
+  //  TString llFile="../../test/results/plotter_2011.root";
+  TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
+  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
   
-  string ch[]     = {"ee","mumu"};
+  string ch[]     = {"ee"};//,"mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {"met_met","mt"//,
-		     //		     "mindphijmet",
+  string histos[] = {"met_met",//"mt",
+		     "mindphijmet",
 		     // "pfvbfpremjj",
-		     ,"pfvbfcandjetdeta","pfvbfmjj"
+		     "pfvbfcandjetdeta","pfvbfmjj"
 		     //,"pfvbfcjv", "pfvbfhardpt",
-		     // "mt_shapes"
+		     //"mt_shapes"
   };
   const size_t nhistos=sizeof(histos)/sizeof(string);
-  string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf","novbf",""};
+  string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};
   const size_t ndilcats=sizeof(dilcats)/sizeof(string);
   string dilprocs[]={"WW#rightarrow 2l2#nu","ZZ","WZ#rightarrow 3l#nu","t#bar{t}","Single top","W#rightarrow l#nu","data"};
   Int_t dilColors[]={592, 590, 596, 8, 824, 809, 1 };
   const size_t ndilprocs=sizeof(dilprocs)/sizeof(string);
   string dilSignal[]={"ggH(350)#rightarrow ZZ","qqH(350)#rightarrow ZZ"};
   const size_t nDilSignals=sizeof(dilSignal)/sizeof(string);
-  string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf","novbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
+  string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
   const size_t ngcats=sizeof(gcats)/sizeof(string);
   string gprocs[]={"Z#gamma#rightarrow#nu#nu#gamma","W#gamma#rightarrowl#nu#gamma","W#rightarrow l#nu","data (#gamma)"};
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
@@ -311,6 +312,13 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
        }
 
      corrGammaH->Scale(sf);
+     if(it->first.find("mindphijmet")!= string::npos)
+       {
+	 int normBin=corrGammaH->GetXaxis()->FindBin(0.5);
+       	 float newSF = it->second.data->Integral(1,normBin)/corrGammaH->Integral(1,normBin);
+	 corrGammaH->Scale(newSF);
+       }
+
      corrGammaH->SetFillColor(831);
      it->second.totalBckg->Add(corrGammaH);
      it->second.bckg["Instr. background (data)"]=corrGammaH;
@@ -419,8 +427,8 @@ void showShape(const Shape_t &shape,TString SaveName)
   T->SetFillColor(0);
   T->SetFillStyle(0);  T->SetLineColor(0);
   T->SetTextAlign(22);
-  //   char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5051./1000);
-    char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
+  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
+  //    char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
     T->AddText(Buffer);
   T->Draw("same");
   
