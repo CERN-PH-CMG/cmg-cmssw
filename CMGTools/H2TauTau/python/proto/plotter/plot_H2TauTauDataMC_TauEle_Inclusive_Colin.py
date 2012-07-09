@@ -32,14 +32,11 @@ def replaceShapeInclusive(plot, var, anaDir,
                           comp, weights, 
                           cut, weight,
                           embed, shift=None):
-
+    '''Replace WJets with the shape obtained using a relaxed tau iso'''
     cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
     print '[INCLUSIVE] estimate',comp.name,'with cut',cut
     plotWithNewShape = cp( plot )
     wjyield = plot.Hist(comp.name).Integral()
-##     nbins = plot.Hist(comp.name).obj.GetNbinsX()
-##     xmin = plot.Hist(comp.name).obj.GetXaxis().GetXmin()
-##     xmax = plot.Hist(comp.name).obj.GetXaxis().GetXmax()
     nbins = plot.bins
     xmin = plot.xmin
     xmax = plot.xmax
@@ -58,13 +55,9 @@ def replaceShapeInclusive(plot, var, anaDir,
 
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
-              cut='', weight='weight', embed=False, shift=None):
+              cut='', weight='weight', embed=False, shift=None, replaceW=False):
     
     print 'making the plot:', var, 'cut', cut
-    # if nbins is None: nbins = NBINS
-    # if xmin is None: xmin = XMIN
-    # if xmax is None: xmax = XMAX
-
 
     oscut = cut+' && diTau_charge==0'
     osign = H2TauTauDataMC(var, anaDir,
@@ -72,14 +65,11 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            cut=oscut, weight=weight,
                            embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
     osign.Hist(EWK).Scale( wJetScaleOS )
-    replaceWJets = True
-    if replaceWJets:
+    if replaceW:
         osign = replaceShapeInclusive(osign, var, anaDir,
                                       selComps['WJets'], weights, 
                                       oscut, weight,
-                                      embed, shift=shift)
-    
-    # boxss = box.replace('OS','SS')
+                                      embed, shift=shift)    
     sscut = cut+' && diTau_charge!=0'
     ssign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
@@ -87,28 +77,27 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
     ssign.Hist(EWK).Scale( wJetScaleSS ) 
     # import pdb; pdb.set_trace()
-    if replaceWJets:
+    if replaceW:
         ssign = replaceShapeInclusive(ssign, var, anaDir,
                                       selComps['WJets'], weights, 
                                       sscut, weight,
                                       embed, shift=shift)
-    # import pdb; pdb.set_trace()
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
         
-    if 0:
-        qcd_yield = osQCD.Hist('QCD').Integral()
-        
-        sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.75') + ' && diTau_charge!=0' 
-        ssign_qcdshape = H2TauTauDataMC(var, anaDir,
-                                        selComps, weights, nbins, xmin, xmax,
-                                        cut=sscut_qcdshape, weight=weight,
-                                        embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
-        qcd_shape = copy.deepcopy( ssign_qcdshape.Hist('Data') )    
-        qcd_shape.Normalize()
-        qcd_shape.Scale(qcd_yield)
-        # qcd_shape.Scale( qcd_yield )
-        osQCD.Replace('QCD', qcd_shape)
+#    if 0:
+#        qcd_yield = osQCD.Hist('QCD').Integral()
+#        
+#        sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.75') + ' && diTau_charge!=0' 
+#        ssign_qcdshape = H2TauTauDataMC(var, anaDir,
+#                                        selComps, weights, nbins, xmin, xmax,
+#                                        cut=sscut_qcdshape, weight=weight,
+#                                        embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
+#        qcd_shape = copy.deepcopy( ssign_qcdshape.Hist('Data') )    
+#        qcd_shape.Normalize()
+#        qcd_shape.Scale(qcd_yield)
+#        # qcd_shape.Scale( qcd_yield )
+#        osQCD.Replace('QCD', qcd_shape)
 
     osQCD.Group('VV', ['WW','WZ','ZZ'])
     osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
@@ -117,6 +106,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 
 
 def drawAll(cut, plots, embed):
+    '''See plotinfo for more information'''
     for plot in plots.values():
         print plot.var
         ss, os, ssQ, osQ = makePlot( plot.var, anaDir,
@@ -197,15 +187,22 @@ if __name__ == '__main__':
         XMIN = float(options.xmin)
         XMAX = float(options.xmax)
         
-
+    cutstring = options.cut
     options.cut = replaceCategories(options.cut, categories) 
     
     # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
-    shift = None
+    replaceW = False
+    useW11 = False
     
-    anaDir = args[0]
+    anaDir = args[0].rstrip('/')
+    shift = None
+    if anaDir.endswith('_Down'):
+        shift = 'Down'
+    elif anaDir.endswith('_Up'):
+        shift = 'Up'
+        
     cfgFileName = args[1]
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
@@ -214,7 +211,20 @@ if __name__ == '__main__':
     origComps = copy.deepcopy(cfg.config.components)
     
     # WJet normalization
-    comps = [comp for comp in cfg.config.components]
+    comps = []
+    for comp in cfg.config.components:
+        if comp.name == 'W3Jets': continue
+        if comp.name == 'W2Jets': continue
+        if comp.name == 'TTJets11': continue
+        if useW11:
+            if comp.name == 'WJets': continue
+        else:
+            if comp.name == 'WJets11': continue
+        comps.append( comp )
+    aliases = None
+    if useW11:
+        aliases = {'WJets11':'WJets'}
+
     cfg.config.components = comps
 
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, 
@@ -225,12 +235,14 @@ if __name__ == '__main__':
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
                                  24, 70, 310, cutw,
-                                 weight=weight, embed=options.embed, shift=shift,
+                                 weight=weight, embed=options.embed,
                                  treeName='H2TauTauTreeProducerTauEle')
 
     ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, 
                                            fwss, fwos, NBINS, XMIN, XMAX, 
                                            options.cut, weight=weight, embed=options.embed)
-    osQCD.legendOn = False
+
+    #osQCD.legendOn = False
     draw(osQCD, options.blind, 'TauEle')
     
+    datacards(osQCD, cutstring, shift, 'TauEle')
