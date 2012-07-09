@@ -1085,14 +1085,21 @@ std::pair<int,vector<const reco::Candidate *> > assignPhysicsChannel(edm::Handle
       const reco::GenParticle & p = dynamic_cast<const reco::GenParticle &>( (*genParticles)[i] );
       if( p.status()!=3) continue;
       int id_p   = abs(p.pdgId());         
-
       if(id_p== filterId) { genTree.push_back(&p); isSignal=true; continue; }
       
       //select Z/g* or W
       bool isZg(id_p == Z || abs(id_p)==GAMMA); nZgs+=isZg;
       bool isW(id_p == W);                      nWs+=isW;
       bool isTop(id_p == TOP);                  nTops+=isTop;
-      if(!isZg && !isW) continue;
+      //this is a patch for Sherpa in which the bosons are simply absent
+      if(!isZg && !isW) 
+	{
+	  if(id_p == ELECTRON)                 { nElecs++;     genTree.push_back(&p); }
+	  if(id_p == MUON)                     { nMuons++;     genTree.push_back(&p); }
+	  if(id_p == TAU)                      { nTaus++;      genTree.push_back(&p); } 
+	  if(id_p==12 || id_p==14 || id_p==16) { nNeutrinos++; genTree.push_back(&p); }
+	  continue;
+	}
       genTree.push_back( &p );
      
       //check leptonic decays of Z/g* or W

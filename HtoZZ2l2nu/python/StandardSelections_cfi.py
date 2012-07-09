@@ -27,7 +27,7 @@ BaseTriggerSelection = cms.PSet( source = cms.InputTag("TriggerResults::HLT"),
                                  )
 
 # base values for the vertex selection ------------------------------------------
-BaseGeneratorSelection = cms.PSet( source = cms.InputTag("prunedGen"),
+BaseGeneratorSelection = cms.PSet( source = cms.InputTag("genParticles"), #"prunedGen"),
                                    filterId = cms.int32(25),
                                    genJets=cms.InputTag("selectedPatJetsPFlow"),
                                    puReweight=cms.InputTag("puWeights:puWeight")
