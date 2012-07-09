@@ -508,7 +508,6 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    std::vector<TString> spimposeOpts;
    TH1*     data = NULL;
    std::vector<TObject*> ObjectToDelete;
-
    std::string SaveName = "";
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
    for(unsigned int i=0;i<Process.size();i++){
@@ -574,15 +573,16 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
       fixExtremities(hist,true,true);
       hist->SetTitle("");
       hist->SetStats(kFALSE);
-      hist->SetMinimum(1E-2);
+      hist->SetMinimum(1e-1);
       //hist->SetMaximum(1E6);
       hist->SetMaximum(hist->GetBinContent(hist->GetMaximumBin())*1.10);
       ObjectToDelete.push_back(hist);
       if(Process[i].isTag("normto")) hist->Scale( Process[i]["normto"].toDouble()/hist->Integral() );
-
+      
+      
       if((!Process[i].isTag("spimpose") || !Process[i]["spimpose"].toBool()) && !Process[i]["isdata"].toBool()){
          //Add to Stack
-	 stack->Add(hist, "HIST");               
+	stack->Add(hist, "HIST");               
          legA->AddEntry(hist, Process[i]["tag"].c_str(), "F");	 
          if(!mc){mc = (TH1D*)hist->Clone("mc");}else{mc->Add(hist);}
       }
@@ -669,6 +669,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    else      sprintf(Buffer, "CMS preliminary, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
    T->AddText(Buffer);
    T->Draw("same");
+   T->SetBorderSize(0);
 
    
    legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);
@@ -682,33 +683,32 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 
 
    if(data && mc){
-   c1->cd();
-   TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);
-   t2->Draw();
-   t2->cd();
-   t2->SetGridy(true);
-   t2->SetPad(0,0.0,1.0,0.2);
-   t2->SetTopMargin(0);
-   t2->SetBottomMargin(0.5);
-   float yscale = (1.0-0.2)/(0.18-0);
-   TH1D *dataToObs = (TH1D*)data->Clone("RatioHistogram");
-   dataToObs->Divide(mc);
-   dataToObs->GetYaxis()->SetTitle("Obs/Ref");
-   dataToObs->GetXaxis()->SetTitle("");
-   //dataToObs->SetMinimum(0);
-   //dataToObs->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
-   dataToObs->SetMinimum(0);
-   dataToObs->SetMaximum(2.2);
-   dataToObs->GetXaxis()->SetTitleOffset(1.3);
-   dataToObs->GetXaxis()->SetLabelSize(0.033*yscale);
-   dataToObs->GetXaxis()->SetTitleSize(0.036*yscale);
-   dataToObs->GetXaxis()->SetTickLength(0.03*yscale);
-   dataToObs->GetYaxis()->SetTitleOffset(0.3);
-   dataToObs->GetYaxis()->SetNdivisions(5);
-   dataToObs->GetYaxis()->SetLabelSize(0.033*yscale);
-   dataToObs->GetYaxis()->SetTitleSize(0.036*yscale);
-   
-   dataToObs->Draw("E1");
+     c1->cd();
+     TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);
+     t2->Draw();
+     t2->cd();
+     t2->SetGridy(true);
+     t2->SetPad(0,0.0,1.0,0.2);
+     t2->SetTopMargin(0);
+     t2->SetBottomMargin(0.5);
+     float yscale = (1.0-0.2)/(0.18-0);
+     TH1D *dataToObsH = (TH1D*)data->Clone("CompHistogram");
+     dataToObsH->Divide(mc);
+     dataToObsH->Draw();
+     dataToObsH->GetYaxis()->SetTitle("Data/#Sigma MC");
+     dataToObsH->SetMinimum(0.4);
+     dataToObsH->SetMaximum(1.6);
+     dataToObsH->GetXaxis()->SetTitle("");
+     //dataToObsH->SetMinimum(0);
+     //dataToObsH->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
+     dataToObsH->GetXaxis()->SetTitleOffset(1.3);
+     dataToObsH->GetXaxis()->SetLabelSize(0.033*yscale);
+     dataToObsH->GetXaxis()->SetTitleSize(0.036*yscale);
+     dataToObsH->GetXaxis()->SetTickLength(0.03*yscale);
+     dataToObsH->GetYaxis()->SetTitleOffset(0.3);
+     dataToObsH->GetYaxis()->SetNdivisions(5);
+     dataToObsH->GetYaxis()->SetLabelSize(0.033*yscale);
+     dataToObsH->GetYaxis()->SetTitleSize(0.036*yscale);
    }
 
 

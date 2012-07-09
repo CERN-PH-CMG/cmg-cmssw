@@ -211,6 +211,7 @@ int main(int argc, char* argv[])
   Int_t nJetPtBins=sizeof(jetPtBins)/sizeof(Double_t)-1;
   Double_t jetEtaBins[]={0,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.25,2.625,2.75,2.875,3.0,3.5,4.0,4.5,5.0};
   Double_t nJetEtaBins=sizeof(jetEtaBins)/sizeof(Double_t)-1;
+  mon.addHistogram( new TH1F("pfjetflavor",";Flavor;Events",10,0,10) );
   for(size_t ireg=0; ireg<nJetRegs; ireg++)
     {
       mon.addHistogram( new TH1F(jetRegs[ireg]+"pfjetbeta"    , ";#beta;Events",50,0,1) );
@@ -595,6 +596,7 @@ int main(int argc, char* argv[])
 		  mon.fillHisto(etaReg+"pfjetbalance",ctf, balance,iweight);
 		  if(passBalanceCut)
 		    {
+		      mon.fillHisto("pfjetflavor",ctf,fabs(recoilJets[0].flavid),iweight,true);
 		      for(size_t iids=0; iids<passIds.size(); iids++)
 			{
 			  mon.fillHisto(etaReg+passIds[iids]+"pfjetpt",ctf,recoilJets[0].pt(),iweight,true);
@@ -674,32 +676,34 @@ int main(int argc, char* argv[])
 		  mon.fillProfile("metvsrun",          ctf, ev.run,            zvvs[0].pt(), iweight);
 		  mon.fillProfile("metvsavginstlumi",  ctf, ev.curAvgInstLumi, zvvs[0].pt(), iweight);
 		  mon.fillProfile("nvtxvsrun",         ctf, ev.run,            ev.nvtx,      iweight);
-		  mon.fillProfile("nvtxvsavginstlumi", ctf, ev.curAvgInstLumi, ev.nvtx,      iweight);
-		}
-	      
-	      if(passSMZZpreSel && !mustBlind)
-		{
-		  if(passSMZZredMet) mon.fillHisto("metoverqt","ZZ"+ctf, metP4.pt()/gamma.pt(),iweight);
-		  if(passSMZZbalance)
+		  mon.fillProfile("nvtxvsavginstlumi", ctf, ev.curAvgInstLumi, ev.nvtx,      iweight);  
+	       
+		  
+		  if(passSMZZpreSel && !mustBlind)
 		    {
-		      mon.fillHisto("met_met","ZZ"+ctf, metP4.pt(),iweight);
-		      mon.fillHisto("met_redMet","ZZ"+ctf, redMet.pt(),iweight);
-		      if(passSMZZredMet)
+		      if(passSMZZredMet) mon.fillHisto("metoverqt","ZZ"+ctf, metP4.pt()/gamma.pt(),iweight);
+		      if(passSMZZbalance)
 			{
-			  mon.fillHisto("met_redMetT","ZZ"+ctf, redMetL,iweight);
-			  mon.fillHisto("met_redMetL","ZZ"+ctf, redMetT,iweight);
+			  mon.fillHisto("met_met","ZZ"+ctf, metP4.pt(),iweight);
+			  mon.fillHisto("met_redMet","ZZ"+ctf, redMet.pt(),iweight);
+			  if(passSMZZredMet)
+			    {
+			      mon.fillHisto("met_redMetT","ZZ"+ctf, redMetL,iweight);
+			      mon.fillHisto("met_redMetL","ZZ"+ctf, redMetT,iweight);
+			    }
 			}
 		    }
+		  
+		  for(unsigned int index=0;index<nOptimCuts;index++){
+		    if ( index<nOptimCuts-1 && zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+		      mon.fillHisto("mt_shapes",ctf,index, mt,iweight);
+		   
+		  } 
 		}
-
-	      for(unsigned int index=0;index<nOptimCuts;index++){
-		if ( index<nOptimCuts-1 && zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-		  mon.fillHisto("mt_shapes",ctf,index, mt,iweight);
-	      }
 	    }
 	}
     }
-
+  
   //all done with the events file
   file->Close();
   cout << "Sample treated as MC? " << isMC << endl;

@@ -43,7 +43,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   }
   
   for(Int_t i=0;i<ev.jn;i++){
-    phys.jets.push_back(PhysicsObject_Jet(LorentzVector(ev.jn_px[i],ev.jn_py[i],ev.jn_pz[i],ev.jn_en[i]), ev.jn_genid[i], ev.jn_btag1[i], ev.jn_btag2[i], ev.jn_btag3[i], ev.jn_neutHadFrac[i], ev.jn_neutEmFrac[i], ev.jn_chHadFrac[i], ev.jn_idbits[i]));
+    phys.jets.push_back(PhysicsObject_Jet(LorentzVector(ev.jn_px[i],ev.jn_py[i],ev.jn_pz[i],ev.jn_en[i]), ev.jn_genid[i], ev.jn_btag1[i], ev.jn_btag2[i], ev.jn_btag3[i], ev.jn_btag3[i], ev.jn_neutHadFrac[i], ev.jn_neutEmFrac[i], ev.jn_chHadFrac[i], ev.jn_idbits[i]));
     phys.jets[i].setGenPt(ev.jn_genpt[i]);
     phys.jets[i].setGenFlavor(ev.jn_genflav[i]);
     phys.jets[i].setPUmva(ev.jn_pumva[i]);
@@ -51,7 +51,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   }
 
   for(Int_t i=0;i<ev.ajn;i++){
-    phys.ajets.push_back(PhysicsObject_Jet(LorentzVector(ev.ajn_px[i],ev.ajn_py[i],ev.ajn_pz[i],ev.ajn_en[i]), ev.ajn_genid[i], ev.ajn_btag1[i], ev.ajn_btag2[i],ev.ajn_btag3[i], ev.ajn_neutHadFrac[i], ev.ajn_neutEmFrac[i], ev.ajn_chHadFrac[i], ev.ajn_idbits[i]));
+    phys.ajets.push_back(PhysicsObject_Jet(LorentzVector(ev.ajn_px[i],ev.ajn_py[i],ev.ajn_pz[i],ev.ajn_en[i]), ev.ajn_genid[i], ev.ajn_btag1[i], ev.ajn_btag2[i],ev.ajn_btag3[i], ev.ajn_btag4[i], ev.ajn_neutHadFrac[i], ev.ajn_neutEmFrac[i], ev.ajn_chHadFrac[i], ev.ajn_idbits[i]));
     phys.ajets[i].setGenPt(ev.ajn_genpt[i]);
     phys.ajets[i].setGenFlavor(ev.ajn_genflav[i]);
     phys.ajets[i].setPUmva(ev.ajn_pumva[i]);
@@ -155,6 +155,16 @@ bool isDYToLL(int mcChannelCode)
   if(getGenProcess(mcChannelCode)!=Z_CH) return false;
   if(getNgenLeptons(mcChannelCode,ELECTRON)<2 && getNgenLeptons(mcChannelCode,MUON)<2) return false;
   return true;
+}
+
+bool isTTbar(int mcChannelCode)
+{
+  return (getGenProcess(mcChannelCode)==TTBAR_CH);
+}
+
+bool isSingleTop(int mcChannelCode)
+{
+  return (getGenProcess(mcChannelCode)==SINGLETOP_CH);
 }
 
 //

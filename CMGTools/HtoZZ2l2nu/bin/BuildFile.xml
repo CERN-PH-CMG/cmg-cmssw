@@ -8,6 +8,7 @@
  <bin name="runMETStudy" file="runMETStudy.cc"></bin>
  <bin name="runVBF" file="runVBF.cc"></bin>
  <bin name="run2011Analysis" file="run2011Analysis.cc"></bin>
+ <bin name="runZZAnalysis" file="runZZAnalysis.cc"></bin>
  <bin name="runLandS" file="runLandS.cc"></bin>
  <bin name="runGenScanner" file="runGenScanner.cc"></bin>
 </environment>

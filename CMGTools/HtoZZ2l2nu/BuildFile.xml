@@ -21,4 +21,4 @@
 <export>
   <lib name="1"/>
 </export>
-<Flags CPPDEFINES="IS44x=1"/>
+<Flags CPPDEFINES="IS44x=0"/>

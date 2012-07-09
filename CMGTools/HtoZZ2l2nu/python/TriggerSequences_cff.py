@@ -30,7 +30,6 @@ def getTriggerPaths(version=2012) :
         
         Photon = ['HLT_Photon22_R9Id90_HE10_Iso40_EBOnly_v',
                   'HLT_Photon36_R9Id90_HE10_Iso40_EBOnly_v',                  
-<<<<<<< TriggerSequences_cff.py
                   'HLT_Photon50_R9Id90_HE10_Iso40_EBOnly_v',
                   'HLT_Photon75_R9Id90_HE10_Iso40_EBOnly_v',
                   'HLT_Photon90_R9Id90_HE10_Iso40_EBOnly_v',
@@ -39,16 +38,6 @@ def getTriggerPaths(version=2012) :
                   'HLT_Photon160_v1_v',
                   'HLT_Photon250_NoHE_v1_v',
                   'HLT_Photon300_NoHE_v1_v']
-=======
-                  'HLT_Photon50_R9Id90_HE10_Iso40_EBOnly_v',   #'HLT_Photon50_CaloIdVL_IsoL_v','HLT_Photon50_CaloIdVL_v',
-                  'HLT_Photon75_R9Id90_HE10_Iso40_EBOnly_v',   #'HLT_Photon75_CaloIdVL_IsoL_v','HLT_Photon75_CaloIdVL_v',
-                  'HLT_Photon90_R9Id90_HE10_Iso40_EBOnly_v',   #'HLT_Photon90_CaloIdVL_IsoL_v',
-                  'HLT_Photon135_v',
-                  'HLT_Photon150_v',
-                  'HLT_Photon160_v',
-                  'HLT_Photon250_NoHE_v',
-                  'HLT_Photon300_NoHE_v']
->>>>>>> 1.21
 
     #################
     # 2011 triggers #

@@ -515,7 +515,7 @@
 	},
         {
 	"tag":"qqH(350)#rightarrow WW",
-        "isinvisible":true,
+	"isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -538,6 +538,7 @@
 	},
 	{
 	"tag":"ggH(400)#rightarrow ZZ",
+	"isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"805",
@@ -560,6 +561,7 @@
 	{
 	"tag":"qqH(400)#rightarrow ZZ",
 	"isdata":false,
+        "isinvisible":true,
 	"spimpose":true,
 	"color":"805",
         "lwidth":3,
@@ -583,7 +585,6 @@
 	"tag":"ggH(400)#rightarrow WW",
         "isinvisible":true,
 	"isdata":false,
-	"isinvisible":true,
 	"spimpose":true,
 	"color":"805",
 	"lwidth":2,

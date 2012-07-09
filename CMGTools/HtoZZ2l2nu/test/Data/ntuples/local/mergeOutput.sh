@@ -1,11 +1,12 @@
 #!/bin/bash
 
 totalOutputs=`ls ${1}/res/analysis_*.root | wc -l`
+nsplit=$2
 echo "Integrating $1 PD"
-echo '$totalOutputs found - will be divided in 4'
+echo '$totalOutputs found - will be divided in ${nsplit}'
 
-let "step=${totalOutputs}/4"
-for i in `seq 0 4`; do
+let "step=${totalOutputs}/${nsplit}"
+for i in `seq 0 ${nsplit}`; do
     let "startOutput=${i}*step"
     let "endOutput=(${i}+1)*step-1"
     echo "${startOutput}-${endOutput}"
