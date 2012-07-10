@@ -233,15 +233,15 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 
   //iterate over the processes required
   std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
-  for(unsigned int i=0;i<Process.size();i++)
-    {
+  for(unsigned int i=0;i<Process.size();i++){
       TString procCtr(""); procCtr+=i;
       TString proc=(Process[i])["tag"].toString();
       TDirectory *pdir = (TDirectory *)inF->Get(proc);         
-      if(pdir==0){ printf("Skip Proc=%s because its directory is missing in root file\n", proc.Data()); continue;}
+      if(pdir==0){ /*printf("Skip Proc=%s because its directory is missing in root file\n", proc.Data());*/ continue;}
 
       bool isData(Process[i]["isdata"].toBool());
       bool isSignal(Process[i]["spimpose"].toBool());
+      if(Process[i].isTag("issignal") && Process[i]["issignal"].toBool())isSignal=true;
       int color(1);       if(Process[i].isTag("color" ) ) color  = (int)Process[i]["color" ].toInt();
       int lcolor(color);  if(Process[i].isTag("lcolor") ) lcolor = (int)Process[i]["lcolor"].toInt();
       int mcolor(color);  if(Process[i].isTag("mcolor") ) mcolor = (int)Process[i]["mcolor"].toInt();
@@ -314,6 +314,8 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
                for(unsigned int i=0;i<shape.signal.size();i++){ if(string(proc.Data())==shape.signal[i]->GetTitle() ){procIndex=i;break;}  }
                if(procIndex>=0) shape.signal[procIndex]->Add(hshape);
                else             {hshape->SetTitle(proc);shape.signal.push_back(hshape);}
+
+               printf("Adding signal %s\n",proc.Data());
             }else{
                std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator it = shape.signalVars.find(proc);
                 
@@ -1079,6 +1081,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
        int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax;
        if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
         for(size_t j=0; j<nsh; j++){
+             printf("i=%i b=%i j=%i\n",(int)i,(int)b,(int)j);
 	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcut_,Root,cutMin, cutMax);
              if(indexcutL>=0 && indexcutR>=0){
                 if(indexvbf>=0 && AnalysisBins[b] =="vbf"){
@@ -1096,6 +1099,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   //all done with input file
   inF->Close();
 
+  printf("done loading all shapes\n");
 
   //define vector for search
   std::vector<TString>& selCh = Channels;
@@ -1403,6 +1407,9 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
 
 void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto, TString url, JSONWrapper::Object &Root)
 {
+
+printf("test1\n");
+
      string Lcol   = "\\begin{tabular}{|l";
      string Lchan  = "channel";
      string Lalph1 = "$\\alpha$ measured";
@@ -1421,10 +1428,14 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
         fprintf(pFile,"%s\\\\\\hline\n", Cname.c_str());
      }
 
+printf("test2\n");
+
 
 
     for(size_t i=0;i<selCh.size();i++){
     for(size_t b=0; b<AnalysisBins.size(); b++){     
+printf("test3\n");
+
         Lcol += " |c";
         Lchan += string(" &")+selCh[i]+string(" - ")+AnalysisBins[b];
         Cval   = selCh[i]+string(" - ")+AnalysisBins[b];
@@ -1440,6 +1451,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 //        TH1* hChan_SI=shapeChan_SI.data;
 
 
+printf("test4\n");
 
         //IF HISTO IS EMPTY... LOWER THE CUT AND TAKE THIS WITH 100% UNCERTAINTY
         if(subNRB2011 && hCtrl_SI->Integral()<=0){
@@ -1450,7 +1462,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
            if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
            while(hCtrl_SI->Integral()<=0 && indexcut_>=0){
               double cutMin_=cutMin;
-              while(hCtrl_SI->Integral()<=0 && cutMin>=0){
+              while(hCtrl_SI->Integral()<=0 && cutMin_>=0){
                  hCtrl_SB=getShapeFromFile(inF, ctrlCh+AnalysisBins[b],sideBandHisto,indexcut_,Root,cutMin_, cutMax).data;
                  hCtrl_SI=getShapeFromFile(inF, ctrlCh+AnalysisBins[b],mainHisto,indexcut_,Root,cutMin_, cutMax).data;
                  hChan_SB=getShapeFromFile(inF, selCh[i]+AnalysisBins[b],sideBandHisto,indexcut_,Root,cutMin_, cutMax).data;
@@ -1460,6 +1472,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
               indexcut_--;
            }
            inF->Close();
+printf("test5\n");
 
            //set stat error to 100%
            for(int b=1;b<=hCtrl_SB->GetXaxis()->GetNbins()+1;b++){
@@ -1471,6 +1484,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
               hChan_SB->SetBinError  (b, hChan_SB->GetBinContent(b) );
            }
 
+printf("test6\n");
         }
 
 
