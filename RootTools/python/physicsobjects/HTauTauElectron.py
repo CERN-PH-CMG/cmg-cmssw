@@ -18,9 +18,6 @@ class HTauTauElectron( Electron ):
             myVetoes = reco.IsoDeposit.Vetos()
             pfGammaIsoType = 6
             iso = self.sourcePtr().isoDeposit(pfGammaIsoType).depositWithin(0.4,myVetoes,False)
-            # if self.sourcePtr().isEE() :
-            # Colin Why 13?? Changing the isodeposit type to PF photon
-            # also, the veto seems to be 0.08 in both EB and EE
             iso_veto = self.sourcePtr().isoDeposit(pfGammaIsoType).depositWithin(0.08,myVetoes,False)
             iso -= iso_veto
             self.photonIsoCache = iso
@@ -49,7 +46,8 @@ class HTauTauElectron( Electron ):
         https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
         """
         if self.looseIdForEleTau() == False : return False
-        eta = abs( self.eta() )
+        # eta = abs( self.eta() )
+        eta = abs( self.sorucePtr().superCluster().eta() )
         if eta > 2.1 : return False
         lmvaID = -99999 # identification
         if self.pt() < 20 :
