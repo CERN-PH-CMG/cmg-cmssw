@@ -173,7 +173,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         if leg.relIsoAllChargedDB05() > 0.3 : return False
         if abs( leg.eta() )           < 2.5 : return False
         if leg.pt()                   < 15  : return False
-        if self.looseIdForEleTau() == False : return False
+        if leg.looseIdForEleTau()  == False : return False
         return True
 
 
