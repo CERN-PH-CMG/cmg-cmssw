@@ -169,6 +169,17 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
+    def testLooseLeg2 (self, leg):
+        if leg.relIsoAllChargedDB05() > 0.3 : return False
+        if abs( leg.eta() )           < 2.5 : return False
+        if leg.pt()                   < 15  : return False
+        if self.looseIdForEleTau() == False : return False
+        return True
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
 #PG eleID parameters (implemented in Electron)
 # 30.05.12, from Lorenzo
 # loose, pt > 20: {0.925, 0.975, 0.985}
@@ -182,7 +193,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
     def leptonAccept(self, leptons, isoCut = 0.3) :
         ''' returns True if the additional lepton veto is successful'''
         #PG FIXME how do I pass the isolation argument to looseIdForEleTau
-        looseLeptons = filter( Electron.looseIdForEleTau, leptons)
+        looseLeptons = filter( self.testLooseLeg2, leptons)
         nLeptons = len(looseLeptons)
         if nLeptons < 2 :
             return True
@@ -191,7 +202,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         else: # 2 leptons
             if looseLeptons[0].charge() == looseLeptons[1].charge() :
                 return True
-            elif deltaR (looseLeptons[0].eta(), looseLeptons[0].phi(), looseLeptons[1].eta(), looseLeptons[1].phi()) < 0.15 :
+            elif deltaR (looseLeptons[0].eta(), looseLeptons[0].phi(), 
+                         looseLeptons[1].eta(), looseLeptons[1].phi()) < 0.15 :
                 return True 
             else :
                 return False
