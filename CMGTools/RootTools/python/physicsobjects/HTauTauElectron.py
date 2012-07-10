@@ -47,7 +47,7 @@ class HTauTauElectron( Electron ):
         """
         if self.looseIdForEleTau() == False : return False
         # eta = abs( self.eta() )
-        eta = abs( self.sorucePtr().superCluster().eta() )
+        eta = abs( self.sourcePtr().superCluster().eta() )
         if eta > 2.1 : return False
         lmvaID = -99999 # identification
         if self.pt() < 20 :
