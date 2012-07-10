@@ -2,6 +2,27 @@
 {
     "proc":[
 	{
+	"tag":"VBF ZZ",
+	"isdata":false,
+	"spimpose":true,
+	"normto":1,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"normto":1,
+	"data":[
+		{
+		"dtag":"MC8TeV_VBFZZ_Madgraph",
+		"aoddir":["/store/cmst3/user/psilva/Madgraph/QuarticCoupling/AODSIM"],
+		"patdir":["/store/cmst3/user/psilva/Madgraph/QuarticCoupling/PAT"],         
+       		"xsec":0.05979,
+		"br":[1.0]
+		}
+	 ]
+	},
+	{
 	"tag":"F4Z=0 F5Z=0",
 	"isdata":false,
 	"spimpose":true,
