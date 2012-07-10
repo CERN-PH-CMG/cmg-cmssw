@@ -35,7 +35,7 @@ class HTauTauElectron( Electron ):
                                                                                myVetoes,False)
             vetoSize = 0.01
             if self.sourcePtr().isEE():
-                coneSize = 0.015
+                vetoSize = 0.015
             iso_veto = self.sourcePtr().isoDeposit(chargedAllIsoType).depositWithin(vetoSize,
                                                                                     myVetoes,False)
             iso -= iso_veto
