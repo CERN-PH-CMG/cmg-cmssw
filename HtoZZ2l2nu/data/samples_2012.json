@@ -255,7 +255,7 @@
                 "split":1,
                 "xsec":4.802,
                 "xsecunc":[13.2,-14.1],
-		"br":[0.297,,0.0403896]
+		"br":[0.297,0.0403896]
 		}
 	   ]
 	},
@@ -328,7 +328,7 @@
 	},
 	{
 	"tag":"ggH(350)#rightarrow ZZ",
-        "isinvisible":false,
+        "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -348,7 +348,7 @@
 	},
 	{
 	"tag":"qqH(350)#rightarrow ZZ",
-        "isinvisible":false,
+        "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
