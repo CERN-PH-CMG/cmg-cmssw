@@ -1,5 +1,5 @@
 import CMGTools.RootTools.fwlite.Config as cfg
-from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
+from CMGTools.Production.getFiles import getFiles
 
 file_owner = 'cbern'
 filePattern = 'cmgTuple.*root'
