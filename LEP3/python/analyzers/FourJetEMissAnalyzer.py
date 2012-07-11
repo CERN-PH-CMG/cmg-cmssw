@@ -363,6 +363,11 @@ class FourJetEMissAnalyzer( Analyzer ):
             print 'Event ', eventNumber, self.eVis.M()
          
 
+        lj = False
+        for jet in self.jets :
+            if jet.energy() > 10. and jet.component(1).number() < 3 : lj = True
+            if jet.pdgId() != 0 : lj = True
+
         # build two lists: one with 4 jets and onw with only 2 jets 
         self.buildJetList( event )        
 
@@ -435,14 +440,15 @@ class FourJetEMissAnalyzer( Analyzer ):
             if self.nunuVV : self.counters.counter('nunuVV').inc('Leptonic 2')
 
         #Check how many 4 jets events would be there (no cut)
-        if len(self.jets) != 4 : self.counters.counter('FourJetEMiss').inc('Four Good Jets')
-        if len(self.jets) != 4 and self.nunuVV : self.counters.counter('nunuVV').inc('Four Good Jets')
+        if len(self.jets) == 4 : self.counters.counter('FourJetEMiss').inc('Four Good Jets')
+        if len(self.jets) == 4 and self.nunuVV : self.counters.counter('nunuVV').inc('Four Good Jets')
 
         #add the cuts in the macro
-        if abs(self.eMiss.M()-95.) < 30.  or event.acop < 160. or event.ptMiss > 20. :
+        if abs(self.eMiss.M()-95.) > 1000.  or event.acop > 1800. or event.ptMiss < 0. or lj :
             return 0
-        self.counters.counter('FourJetEMiss').inc('Other Cuts')
-        self.counters.counter('nunuVV').inc('Other Cuts')
+        else :
+            self.counters.counter('FourJetEMiss').inc('Other Cuts')
+            if self.nunuVV : self.counters.counter('nunuVV').inc('Other Cuts')
         event.step+1
 
         #print out the genparticle info
