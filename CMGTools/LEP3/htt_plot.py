@@ -190,7 +190,7 @@ for index,mc in enumerate(mclist):
         addcut = event.mvis>120.
         addcut = event.mvis<210.
         addcut = addcut and event.tt_acoll<-0.5
-        #addcut = addcut and event.jj_acoll<-0.3
+        addcut = addcut and event.jj_acoll<-0.3
         addcut = addcut and event.leadingMuonEnergy<50.
         addcut = addcut and event.leadingElectronEnergy<50.
         #addcut = addcut and event.t1recNHFraction<0.2
