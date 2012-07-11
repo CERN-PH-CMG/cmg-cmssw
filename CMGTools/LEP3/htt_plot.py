@@ -112,6 +112,7 @@ h1_list=[
 linecolors=[2, 4, 1, 6]
 fillcolors=[0, 4, 4, 4]
 fillstyles=[0, 3013, 3013, 3013]
+smooth=[False, True, True, True]
 
 h1glob=[]
 for index in range(0,len(mclist)):
@@ -189,7 +190,7 @@ for index,mc in enumerate(mclist):
         addcut = event.mvis>120.
         addcut = event.mvis<210.
         addcut = addcut and event.tt_acoll<-0.5
-        addcut = addcut and event.jj_acoll<-0.3
+        #addcut = addcut and event.jj_acoll<-0.3
         addcut = addcut and event.leadingMuonEnergy<50.
         addcut = addcut and event.leadingElectronEnergy<50.
         #addcut = addcut and event.t1recNHFraction<0.2
@@ -312,6 +313,8 @@ for i,h1 in enumerate(h1_list):
     for index in range(len(mclist)-1,-1,-1):
         h1loc=h1glob[index]
         print index
+        if smooth[index]:
+          h1loc[i].Smooth(1, "R")
         stackh_h.Add(h1loc[i])
     stackh_h.Draw()
     if h1[7] != "":    
