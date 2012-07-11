@@ -57,6 +57,10 @@ class SixJetAnalyzer( Analyzer ):
 ##             self.counters.counter('SixJets').inc('>6 jets')
 
         event.sixjets = self.exclusiveJets(event.jets)
+
+        # import pdb; pdb.set_trace()
+        self.fitter.fit( event.sixjets[0].p4(), event.sixjets[1].p4(),
+                         event.sixjets[2].p4(), event.sixjets[3].p4())
         
         # pair the jets and look for a Z
         # for each good Z, 1 event hypothesis
