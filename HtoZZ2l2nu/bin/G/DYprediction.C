@@ -72,27 +72,31 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
   //TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
   
   //  TString llFile="../../test/results/plotter_2011.root";
-  TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
+  //  TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
   TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-  
-  string ch[]     = {"ee"};//,"mumu"};
+  //TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/qt/plotter.root";
+  TString llFile="../../plotter_zz_2011.root";
+
+  string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {"met_met",//"mt",
-		     "mindphijmet",
-		     // "pfvbfpremjj",
-		     "pfvbfcandjetdeta","pfvbfmjj"
+  string histos[] = {"met_redMet","balance"//,
+		     //"mt"//,
+		     //"mindphijmet"//,
+		     // "pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj"
 		     //,"pfvbfcjv", "pfvbfhardpt",
-		     //"mt_shapes"
+		     //"mt_shapes",
+		     // "zpt_shapes",
+		     //"met_shapes"
   };
   const size_t nhistos=sizeof(histos)/sizeof(string);
-  string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};
+  string dilcats[]= {"eq0jets"};//"eq1jets","geq2jets","vbf",""};
   const size_t ndilcats=sizeof(dilcats)/sizeof(string);
   string dilprocs[]={"WW#rightarrow 2l2#nu","ZZ","WZ#rightarrow 3l#nu","t#bar{t}","Single top","W#rightarrow l#nu","data"};
   Int_t dilColors[]={592, 590, 596, 8, 824, 809, 1 };
   const size_t ndilprocs=sizeof(dilprocs)/sizeof(string);
-  string dilSignal[]={"ggH(350)#rightarrow ZZ","qqH(350)#rightarrow ZZ"};
+  string dilSignal[]={};//"ggH(350)#rightarrow ZZ","qqH(350)#rightarrow ZZ"};
   const size_t nDilSignals=sizeof(dilSignal)/sizeof(string);
-  string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
+  string gcats[]= {"eq0jets","eq0softjets"};//,"eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
   const size_t ngcats=sizeof(gcats)/sizeof(string);
   string gprocs[]={"Z#gamma#rightarrow#nu#nu#gamma","W#gamma#rightarrowl#nu#gamma","W#rightarrow l#nu","data (#gamma)"};
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
@@ -112,7 +116,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		{
 		  string hname=dilprocs[iproc]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)llIn->Get(hname.c_str());
-		  if(h==0) continue; //{ cout << hname << endl; continue; }
+		  if(h==0) continue;// { cout << hname << endl; continue; }
 		  if(histos[ih]=="mt_shapes") cout << h->GetXaxis()->GetNbins() << endl;
 		  //	  if(histos[ih]=="mt_shapes")
 		    //	    h = ((TH2 *)h)->ProjectionY((string(h->GetName())+"proj").c_str(),cutIndex,cutIndex);
@@ -175,7 +179,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		  string hname=gprocs[iproc]+"/"+ch[ich]+gcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)gIn->Get(hname.c_str());
 		  if(h==0) continue;
-
+		  
 		  //detach and save
 		  h->SetDirectory(0);
 		  if(gprocs[iproc].find("data") != string::npos) { h->SetTitle("#splitline{Instr. bkg}{(data)}"); m_shape.data=h; }
@@ -192,7 +196,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		      m_shape.bckg[gprocs[iproc]]=h;
 		    }
 		}
-	      
+
 	      //finalize shape
 	      string normKey(ch[ich]);
 	      TH1 *normH=0;
@@ -227,13 +231,15 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		  normH=m_shape.data;
 		}
 	      
-	      //normalization factor (from MET<50)
-	      if(histos[ih].find("met_met")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
-	      int normBin=normH->GetXaxis()->FindBin(50);
+	      ////normalization factor (from MET<50)
+	      //if(histos[ih].find("met_met")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
+	      //int normBin=normH->GetXaxis()->FindBin(50);
+	      
+	      if(histos[ih].find("met_redMet")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
+	      int normBin=normH->GetXaxis()->FindBin(40);
 	      
 	      Shape_t &dilMetShape = shapesMap[normKey+"_"+histos[ih]];
 	      float sf=dilMetShape.data->Integral(1,normBin)/normH->Integral(1,normBin);
-
 	      scaleFactors[normKey]=sf;
 	    }
 	}
@@ -260,13 +266,23 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
      TH1 *corrGammaH=(TH1 *)gShape.data->Clone((it->first+"dy").c_str());
      corrGammaH->SetDirectory(0);
 
-     
+     /*
+     if(it->first.find("balance")!= string::npos && subtractType==HALVE)
+       {
+	 corrGammaH->Scale(0.5);
+	 for(int ibin=1; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++) 
+	   {
+	     corrGammaH->SetBinError(ibin,corrGammaH->GetBinContent(ibin));
+	   }
+       }
+     */
      //do the subtraction for met related variables when MET>70
      if(it->first.find("mt_shapes")!= string::npos || it->first.find("met_") != string::npos)
        {
 	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
 	 if(subtractType==HALVE) {
-	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(70) );
+	   //int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(70) );
+	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(60) );
 	   for(int ibin=fbin; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
 	     {
 	       if(isTH2)

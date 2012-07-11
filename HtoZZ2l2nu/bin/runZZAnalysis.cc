@@ -695,22 +695,24 @@ int main(int argc, char* argv[])
 	  mon.fillHisto("trailereta"  ,   tags_full, trailerLep.eta()   ,weight);
 	  mon.fillHisto("trailerpt"   ,   tags_full, trailerLep.pt()    ,weight);
 
-	  //analyze also 3 lepton category
-	  mon.fillHisto("nleptons",tags_full,2+nextraleptons,weight);
-	  if(nextraleptons==1) 
-	    {
-	      mon.fillHisto("thirdleptoneta",   tags_full,fabs(extraLeptonsP4[0].eta())   ,weight);
-	      mon.fillHisto("thirdleptonpt" ,   tags_full,extraLeptonsP4[0].pt()     ,weight);
-	      mon.fillHisto("mt3",tags_full,METUtils::transverseMass(extraLeptonsP4[0],zvvs[0],false),weight);
-	    }
-
 	  mon.fillHisto("nbtags",  tags_full, nABtags,weight);
 	  if(passBveto)
 	    {
+
+	      //analyze also 3 lepton category
+	      mon.fillHisto("nleptons",tags_full,2+nextraleptons,weight);
+	      if(nextraleptons==1) 
+		{
+		  mon.fillHisto("thirdleptoneta",   tags_full,fabs(extraLeptonsP4[0].eta())   ,weight);
+		  mon.fillHisto("thirdleptonpt" ,   tags_full,extraLeptonsP4[0].pt()     ,weight);
+		  mon.fillHisto("mt3",tags_full,METUtils::transverseMass(extraLeptonsP4[0],zvvs[0],false),weight);
+		}
+	      
 	      mon.fillHisto("eventflow",tags_full,3,weight);
 	      mon.fillHisto("njets",          tags_full, nAJetsLoose,weight);
 	      if(passJetVeto)
 		{
+		  tags_full.push_back(tag_cat+"eq0jets");
 		  mon.fillHisto("eventflow",tags_full,4,weight);
 		  mon.fillHisto("met_redMet",tags_full,aRedMet.pt(),weight);
 		  mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
@@ -757,6 +759,9 @@ int main(int argc, char* argv[])
 	 if(ivar==9)                         iweight *=TotalWeight_plus;        //pu up
          if(ivar==10)                        iweight *=TotalWeight_minus;       //pu down
 
+	 tags_full.clear();
+	 tags_full.push_back(tag_cat);
+
 	 //recompute MET/MT if JES/JER was varied
 	 LorentzVector zvv    = zvvs[ivar>8 ? 0 : ivar];
 	 PhysicsObjectJetCollection &varJets=variedAJets[ivar>4 ? 0  : ivar];
@@ -789,6 +794,8 @@ int main(int argc, char* argv[])
 	 bool passLocalBalance(balance>0.4 && balance<1.8);
 	 bool passLocalDphijmet(mindphijmet>0.5);
 	 if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
+
+	 if(passLocalJetVeto) tags_full.push_back(tag_cat+"eq0jets");	   
 	 
 	 for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
 	   float minMet=optim_Cuts1_met[index];
@@ -799,6 +806,7 @@ int main(int argc, char* argv[])
 	   bool passLocalZpt(zll.pt()>minZpt);
 	   bool passLocalPreselection            (pass3dLeptonVeto && passLocalDphijmet && passLocalBveto && passLocalJetVeto && passLocalBalance && passLocalZmass && passLocalZpt && passLocalMet);
 	   bool passLocalPreselectionMbvetoMzmass(pass3dLeptonVeto && passLocalDphijmet                   && passLocalJetVeto && passLocalBalance                   && passLocalZpt && passLocalMet);
+
 	   
 	   if(passLocalPreselection)
 	     {

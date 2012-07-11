@@ -2,6 +2,7 @@
 <environment>
  <bin name="Cross_ZZ" file="Cross_ZZ.cc"></bin>
  <bin name="runOnEventSummary_ZZ" file="runOnEventSummary_ZZ.cc"></bin>
+ <bin name="runGammaPlusJetsMETtemplatesForZZ" file="runGammaPlusJetsMETtemplatesForZZ.cc"></bin>
  <bin name="runGammaPlusJetsMETtemplates" file="runGammaPlusJetsMETtemplates.cc"></bin>
  <bin name="runMVAStudy" file="runMVAStudy.cc"></bin>
  <bin name="runPlotter" file="runPlotter.cc"></bin>
