@@ -122,7 +122,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def testLeg1ID(self, tau):
-        return tau.tauID("againstElectronMVA")>0.5 and \
+        return tau.tauID("againstElectronMVA") >0.5 and \
+               tau.tauID("againstElectronMedium") > 0.5 and \
                tau.tauID("againstMuonLoose")>0.5 and \
                self.testVertex( tau )
 
@@ -153,7 +154,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def testLeg2ID(self, electron):
         '''Tight muon selection, no isolation requirement'''
-        return electron.tightIdForEleTau() and \
+        print 'WARNING: USING SETUP FOR SYNC PURPOSES'
+#        return electron.tightIdForEleTau() and \
+        return electron.looseIdForEleTau() and \
                self.testVertex( electron )
 
 
@@ -171,7 +174,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def testLooseLeg2 (self, leg):
         if leg.relIsoAllChargedDB05() > 0.3 : return False
-        if abs( leg.eta() )           < 2.5 : return False
+        if abs( leg.eta() )           > 2.5 : return False
         if leg.pt()                   < 15  : return False
         if leg.looseIdForEleTau()  == False : return False
         return True
@@ -192,7 +195,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def leptonAccept(self, leptons, isoCut = 0.3) :
         ''' returns True if the additional lepton veto is successful'''
-        #PG FIXME how do I pass the isolation argument to looseIdForEleTau
+        #PG FIXME how do I pass the isolation argument to testLooseLeg2?
         looseLeptons = filter( self.testLooseLeg2, leptons)
         nLeptons = len(looseLeptons)
         if nLeptons < 2 :
