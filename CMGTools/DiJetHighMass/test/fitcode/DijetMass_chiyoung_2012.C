@@ -2090,7 +2090,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
     leg->AddEntry(g,Form("CMS Preliminary (%.1f fb^{-1})   ", lumi/1000.),"PL"); 
     leg->AddEntry(fit,"Fit","L");
     leg->AddEntry(f_qcd,"QCD Pythia","L");
-    leg->AddEntry(htmp,"JES Uncertainty","F");
+    leg->AddEntry(htmp,"Jet Energy Scale Uncertainty","F");
     //  leg->AddEntry(gr_qstar1,"Excited Quark + CMS Simulation","L");
     //   leg->AddEntry(gr_string1,"String Resonance + CMS Simulation","L");
     leg->Draw("same");
