@@ -27,6 +27,22 @@ void Init(string resonance){
     TArrayD* dv2000_den = new TArrayD(50, QstarToJJ_M_2000_TuneD6T_ak5_fat);
     TArrayD* dv3500_den = new TArrayD(50, QstarToJJ_M_3500_TuneD6T_ak5_fat);
     TArrayD* dv4000_den = new TArrayD(50, QstarToJJ_M_4000_TuneD6T_ak5_fat);
+	}
+
+  else if (resonance.find("QQFat") !=string::npos ) {
+    TArrayD* dv500 = new TArrayD(50, finalResults_RSGravitonToJJ_M_700_qq_M_FatPFJet1FatPFJet2_shifted_2);
+    TArrayD* dv700 = new TArrayD(50, finalResults_RSGravitonToJJ_M_700_qq_M_FatPFJet1FatPFJet2_shifted_2);
+    TArrayD* dv1200 = new TArrayD(50, finalResults_RSGravitonToJJ_M_1200_qq_M_FatPFJet1FatPFJet2_shifted_3);
+    TArrayD* dv2000 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_FatPFJet1FatPFJet2_shifted_4);
+    TArrayD* dv3500 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_FatPFJet1FatPFJet2_shifted_4);
+    TArrayD* dv4000 = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_FatPFJet1FatPFJet2_shifted_4);
+
+    TArrayD* dv500_den = new TArrayD(50, finalResults_RSGravitonToJJ_M_700_qq_M_FatPFJet1FatPFJet2_shifted_2);
+    TArrayD* dv700_den = new TArrayD(50, finalResults_RSGravitonToJJ_M_700_qq_M_FatPFJet1FatPFJet2_shifted_2);
+    TArrayD* dv1200_den = new TArrayD(50, finalResults_RSGravitonToJJ_M_1200_qq_M_FatPFJet1FatPFJet2_shifted_3);
+    TArrayD* dv2000_den = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_FatPFJet1FatPFJet2_shifted_4);
+    TArrayD* dv3500_den = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_FatPFJet1FatPFJet2_shifted_4);
+    TArrayD* dv4000_den = new TArrayD(50, finalResults_RSGravitonToJJ_M_2000_qq_M_FatPFJet1FatPFJet2_shifted_4);
 
 
   }  if (resonance.find("ZBBbar_pf") !=string::npos ) {
