@@ -59,8 +59,13 @@ class HTauTauElectron( Electron ):
             elif eta<1.479: lmvaID = 0.975
             else :          lmvaID = 0.985
         result = self.mvaNonTrigV0()  > lmvaID
+        #self.tightIdResult = result
         return result
     
+
+    def tightId( self ):
+        return self.tightIdForEleTau()
+        
 
     def looseIdForEleTau(self):
         """Loose electron selection, for the lepton veto, 
