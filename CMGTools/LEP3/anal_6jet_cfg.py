@@ -14,9 +14,10 @@ sequence = cfg.Sequence( [
     ana6jet,
 ])
 
-QQBAR.splitFactor = 50
-WW.splitFactor = 50
-ZZ.splitFactor = 20
+HZVIS.splitFactor = 3
+QQBAR.splitFactor = 3
+WW.splitFactor = 3
+ZZ.splitFactor = 3
 
 selectedComponents = [
     # ELEL,
@@ -38,6 +39,7 @@ if test==1:
     comp = HZVIS
     selectedComponents = [comp]
     comp.splitFactor = 1
+    comp.files = comp.files[:1]
     
     
 config = cfg.Config( components = selectedComponents,
