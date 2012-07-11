@@ -47,10 +47,10 @@ os.system("mkdir -p "+plot_dire)
 #    ]
 
 mclist=[
-    ["htt/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
-    ["htt/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
-    ["htt/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
-    ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
+    ["fromLuca/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
+    ["fromLuca/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
+    ["fromLuca/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
+    ["fromLuca/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
     ]
 # luminosity to normalize (in fb-1)
 lumi=500
@@ -73,43 +73,45 @@ step_label=["all","njet>4","ejet>10","2 taucand","2 good taucand","jet sele","mz
 
 def_plot=true
 h1_list=[
-    ["Hmass_" ,"event.recHMass" ,80,40,200,True],
-    ["Zmass_" ,"event.recZMass" ,30,60,120,def_plot],
-    ["mvis_"  ,"event.mvis"     ,100,0,400,def_plot],
-    ["evis_"  ,"event.evis"     ,100,0,400,def_plot],
-    ["ntrt1_" ,"event.t1recNtrk", 10,0, 10,def_plot],
-    ["ntrt2_" ,"event.t2recNtrk", 10,0, 10,def_plot],
-    ["ntrt_"  ,"event.t2recNtrk+event.t1recNtrk", 10,0, 10,def_plot],
-    ["pz_"    ,"event.pz"  ,  50 ,-100, 100,def_plot],
-    ["chi2_"  ,"event.chi2", 1000, 0,10000, def_plot],
-    ["wwmin_" ,"event.wwMin",  25, 0,  100, def_plot],
-    ["zzmin_" ,"event.zzMin",  25, 0,  100, def_plot],
-    ["btag_tt","event.btag_tt",20, 0,   4., def_plot],
-    ["btag_jj","event.btag_jj",20, 0,   4., def_plot],
-    ["pz+emiss","240.-event.evis+abs(event.pz)", 200,-400,400,def_plot],
-    ["ttacoll","event.tt_acoll", 100,-1,1,def_plot],
-    ["jjacoll","event.jj_acoll", 100,-1,1,def_plot],
-    ["leadingmu_e","event.leadingMuonEnergy", 100,0,200,def_plot],
-    ["leadinge_e","event.leadingElectronEnergy", 100,0,200,def_plot],
-    ["subleadingmu_e","event.subleadingMuonEnergy", 100,0,200,def_plot],
-    ["subleadinge_e","event.subleadingElectronEnergy", 100,0,200,def_plot],
-    ["nhfraction_t1","event.t1recNHFraction", 100,0,1,def_plot],
-    ["nhfraction_t2","event.t2recNHFraction", 100,0,1,def_plot],
-    ["chfraction_t1","event.t1recChFraction", 100,0,1,def_plot],
-    ["chfraction_t2","event.t2recChFraction", 100,0,1,def_plot],
-    ["pfraction_t1","event.t1recPFraction", 100,0,1,def_plot],
-    ["pfraction_t2","event.t2recPFraction", 100,0,1,def_plot],
-    ["mass_t1","event.t1recMass", 100,0,30,def_plot],
-    ["mass_t2","event.t2recMass", 100,0,30,def_plot],
-    ["acopl","event.ttmet_acopl", 100,-1,1,def_plot],
-    ["constrained_mass","event.recZMass + event.recHMass - 91.2", 80,40,200,def_plot],
-    ["t1candiso","event.t1candiso",100,0.,1.,True],
-    ["t2candiso","event.t2candiso",100,0.,1.,True]
+    ["Hmass_" ,"event.recHMass" ,80,40,200,True, "", "", ""],
+    ["Zmass_" ,"event.recZMass" ,30,60,120,def_plot, "", "", ""],
+    ["mvis_"  ,"event.mvis"     ,100,0,400,def_plot, "", "", ""],
+    ["evis_"  ,"event.evis"     ,100,0,400,def_plot, "", "", ""],
+    ["ntrt1_" ,"event.t1recNtrk", 10,0, 10,def_plot, "", "", ""],
+    ["ntrt2_" ,"event.t2recNtrk", 10,0, 10,def_plot, "", "", ""],
+    ["ntrt_"  ,"event.t2recNtrk+event.t1recNtrk", 10,0, 10,def_plot, "", "", ""],
+    ["pz_"    ,"event.pz"  ,  50 ,-100, 100,def_plot, "", "", ""],
+    ["chi2_"  ,"event.chi2", 1000, 0,10000, def_plot, "", "", ""],
+    ["wwmin_" ,"event.wwMin",  25, 0,  100, def_plot, "", "", ""],
+    ["zzmin_" ,"event.zzMin",  25, 0,  100, def_plot, "", "", ""],
+    ["btag_tt","event.btag_tt",20, 0,   4., def_plot, "", "", ""],
+    ["btag_jj","event.btag_jj",20, 0,   4., def_plot, "", "", ""],
+    ["pz+emiss","240.-event.evis+abs(event.pz)", 200,-400,400,def_plot, "", "", ""],
+    ["ttacoll","event.tt_acoll", 100,-1,1,def_plot, "", "", ""],
+    ["jjacoll","event.jj_acoll", 100,-1,1,def_plot, "", "", ""],
+    ["leadingmu_e","event.leadingMuonEnergy", 100,0,200,def_plot, "", "", ""],
+    ["leadinge_e","event.leadingElectronEnergy", 100,0,200,def_plot, "", "", ""],
+    ["subleadingmu_e","event.subleadingMuonEnergy", 100,0,200,def_plot, "", "", ""],
+    ["subleadinge_e","event.subleadingElectronEnergy", 100,0,200,def_plot, "", "", ""],
+    ["nhfraction_t1","event.t1recNHFraction", 100,0,1,def_plot, "", "", ""],
+    ["nhfraction_t2","event.t2recNHFraction", 100,0,1,def_plot, "", "", ""],
+    ["chfraction_t1","event.t1recChFraction", 100,0,1,def_plot, "", "", ""],
+    ["chfraction_t2","event.t2recChFraction", 100,0,1,def_plot, "", "", ""],
+    ["pfraction_t1","event.t1recPFraction", 100,0,1,def_plot, "", "", ""],
+    ["pfraction_t2","event.t2recPFraction", 100,0,1,def_plot, "", "", ""],
+    ["mass_t1","event.t1recMass", 100,0,30,def_plot, "", "", ""],
+    ["mass_t2","event.t2recMass", 100,0,30,def_plot, "", "", ""],
+    ["acopl","event.ttmet_acopl", 100,-1,1,def_plot, "", "", ""],
+    ["constrained_mass","event.recZMass + event.recHMass - 91.2", 80,40,200,def_plot, "H#rightarrow#tau#tau with Z#rightarrow q#bar{q}", "Higgs mass (GeV)", "Events/2 GeV"],
+    ["t1candiso","event.t1candiso",100,0.,1.,True, "", "", ""],
+    ["t2candiso","event.t2candiso",100,0.,1.,True, "", "", ""]
 
     ]
     
     
-
+linecolors=[2, 4, 1, 6]
+fillcolors=[0, 4, 4, 4]
+fillstyles=[0, 3013, 3013, 3013]
 
 h1glob=[]
 for index in range(0,len(mclist)):
@@ -117,23 +119,25 @@ for index in range(0,len(mclist)):
     tag=mc[2]
 
     step_h.append(TH1F("step_"+tag,"step_"+tag,10,0,10))
-    step_h[index].SetLineColor(index+2)
+    step_h[index].SetLineColor(linecolors[index])
     step_h[index].SetLineWidth(2)
-    step_h[index].SetMarkerColor(index+2)
+    step_h[index].SetMarkerColor(linecolors[index])
+    step_h[index].SetFillColor(fillcolors[index])
+    step_h[index].SetFillStyle(fillstyles[index])
     for bin in range(1,len(step_label)+1):
         step_h[index].GetXaxis().SetBinLabel(bin,step_label[bin-1])    
 #        step_h[index].LabelsOption("v","X")
         
     mzh_h2.append(TH2F("mzvsmh_"+tag,"mzvsmh_"+tag,200,0,400,200,0,400))
-    mzh_h2[index].SetLineColor(index+2)
-    mzh_h2[index].SetMarkerColor(index+2)
-#    mzh_h2[index].SetFillColor(index+2)
+    mzh_h2[index].SetLineColor(linecolors[index])
+    mzh_h2[index].SetMarkerColor(linecolors[index])
+#    mzh_h2[index].SetFillColor(linecolors[index])
     dgen1_vs_iso_h2.append(TH2F("dgen1vsiso_"+tag,"dgen1vsiso_"+tag,100,-1,1,100,-1,1))
-    dgen1_vs_iso_h2[index].SetLineColor(index+2)
-    dgen1_vs_iso_h2[index].SetMarkerColor(index+2)
+    dgen1_vs_iso_h2[index].SetLineColor(linecolors[index])
+    dgen1_vs_iso_h2[index].SetMarkerColor(linecolors[index])
     dgen2_vs_iso_h2.append(TH2F("dgen2vsiso_"+tag,"dgen2vsiso_"+tag,100,-1,1,100,-1,1))
-    dgen2_vs_iso_h2[index].SetLineColor(index+2)
-    dgen2_vs_iso_h2[index].SetMarkerColor(index+2)
+    dgen2_vs_iso_h2[index].SetLineColor(linecolors[index])
+    dgen2_vs_iso_h2[index].SetMarkerColor(linecolors[index])
 
     genrec_s3_t1.append(TH1F("genrec_s3_t1_"+tag,"genrec_s3_t1_"+tag,100,-1,1))
     genrec_s3_t2.append(TH1F("genrec_s3_t2_"+tag,"genrec_s3_t2_"+tag,100,-1,1))
@@ -142,12 +146,12 @@ for index in range(0,len(mclist)):
     for h1 in range(0,len(h1_list)):
         param=h1_list[h1]
         h1loc.append(TH1F(param[0]+tag,param[0]+tag,param[2],param[3],param[4]))  
-        h1loc[len(h1loc)-1].SetLineColor(index+2)
+        h1loc[len(h1loc)-1].SetLineColor(linecolors[index])
         h1loc[len(h1loc)-1].SetLineWidth(2)
-        h1loc[len(h1loc)-1].SetMarkerColor(index+2)
-        if index != 0:
-          h1loc[len(h1loc)-1].SetFillStyle(3013);
-          h1loc[len(h1loc)-1].SetFillColor(3)
+        h1loc[len(h1loc)-1].SetMarkerColor(linecolors[index])
+        #if index != 0:
+        h1loc[len(h1loc)-1].SetFillStyle(fillstyles[index]);
+        h1loc[len(h1loc)-1].SetFillColor(fillcolors[index])
     h1glob.append(h1loc)            
 
 #maxevent=100000000
@@ -237,12 +241,13 @@ for index,mc in enumerate(mclist):
 
 
 # first prepare legenda
-yheaderstart=.95-.023*len(mclist)
-leg_hist = TLegend(0.7,yheaderstart,.98,.98);
+#yheaderstart=.95-.023*len(mclist)
+leg_hist = TLegend(0.15,0.55,0.35,0.85);
 leg_hist.SetFillColor(0)# Have a white background
+leg_hist.SetTextSize(0.03)
+#text_lumi = TText(60,320,"L = 500 fb-1");
 
-
-c1=TCanvas("step","step",800,600)
+c1=TCanvas("step","step")
 c1.SetFillColor(kWhite)
 c1.SetFillStyle(1001)
 #gStyle.SetOptStat(0)
@@ -259,13 +264,15 @@ for index in range(0,len(mclist)):
         opt=""
 #    print index,opt
     step_h[index].Draw(opt)
+    if index == 1:
+      leg_hist.AddEntry( step_h[index], "All backgrounds", "lf");
     leg_hist.AddEntry(step_h[index],mc[2],"l")
 
 leg_hist.Draw() 
 c1.Print(plot_dire+"cut_chain.png")
 c1.Print(plot_dire+"cut_chain.C")
 
-c2=TCanvas("matched_s4","matched_s4",800,600)
+c2=TCanvas("matched_s4","matched_s4")
 c2.SetFillColor(kWhite)
 c2.SetFillStyle(1001)
 c2.Divide(1,2)
@@ -276,7 +283,7 @@ genrec_s3_t2[0].Draw()
 c2.Print(plot_dire+"matched.png")
 c2.Print(plot_dire+"matched.C")
 
-c3=TCanvas("dgenvsiso","dgenvsiso",800,600)
+c3=TCanvas("dgenvsiso","dgenvsiso")
 c3.SetFillColor(kWhite)
 c3.SetFillStyle(1001)
 c3.Divide(1,2)
@@ -297,14 +304,22 @@ for i,h1 in enumerate(h1_list):
     if not plot:
         continue
     tag=h1[0]
-    canv.append(TCanvas("c_"+tag,"c_"+tag,800,600))
-    stackh_h = THStack(tag, tag)
+    canv.append(TCanvas("c_"+tag,"c_"+tag))
+    if h1[6] != "":
+      stackh_h = THStack(h1[6], h1[6])
+    else:  
+      stackh_h = THStack(tag, tag)
     for index in range(len(mclist)-1,-1,-1):
         h1loc=h1glob[index]
         print index
         stackh_h.Add(h1loc[i])
     stackh_h.Draw()
+    if h1[7] != "":    
+      stackh_h.GetXaxis().SetTitle(h1[7])    
+    if h1[8] != "":
+      stackh_h.GetYaxis().SetTitle(h1[8])   
     leg_hist.Draw()
+    #text_lumi.Draw()
     canv[len(canv)-1].Print(plot_dire+"/"+tag+".png")
     canv[len(canv)-1].Print(plot_dire+"/"+tag+".C")
 
