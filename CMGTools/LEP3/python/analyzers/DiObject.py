@@ -1,5 +1,6 @@
 from ROOT import TLorentzVector
 from math import pi, acos
+from ROOT import reco
 
 class DiObject ( TLorentzVector ):
     '''Class used for Zs, and also for Higgs candidates'''
@@ -61,8 +62,10 @@ class DiObject ( TLorentzVector ):
         self.SetPxPyPzE(p4.X(),p4.Y(),p4.Z(),p4.T())
 
     def p4(self):
-        return self
-    #return TLorentzVector(self.px(), self.py(), self.pz(), self.e())
+        return reco.Candidate.LorentzVector(self.px(), self.py(),
+                                            self.pz(), self.e())
+        # return self
+        #return TLorentzVector(self.px(), self.py(), self.pz(), self.e())
 
     def angle(self):
         return self.angle_
