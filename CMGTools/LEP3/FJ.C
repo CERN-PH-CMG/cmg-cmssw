@@ -11,6 +11,7 @@ void FJ() {
   FourJetTreeProducer_FourJetAnalyzer->Project("higgs","ZMass+HMass-91.2",cut1);
   FourJetTreeProducer_FourJetAnalyzer->Project("heta","HEta",cut2);
   higgs->Scale(1.03);
+  //higgs->Scale(0.00);
 
   TFile *z = TFile::Open("ZZ.root");
   TH1F* zz = (TH1F*)(higgs->Clone("zz"));
@@ -40,12 +41,13 @@ void FJ() {
   ww->Add(qq);
   higgs->Add(ww);
 
-  TF1* fh = new TF1("fh","[0]*exp(-(x-[1])*(x-[1])/(2*[2]*[2]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x",100,150);
-  fh->SetParameters(700,125.,5.,0.,0.,0..);
-  //fh->FixParameter(3,2063.67);
-  //fh->FixParameter(4,-133.61);
-  //fh->FixParameter(5,1.9125);
-  //fh->FixParameter(6,-7.073E-3);
+  TF1* fh = new TF1("fh","[0]*exp(-(x-[1])*(x-[1])/(2*[2]*[2]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x+[0]*[7]*exp(-(x-[8])*(x-[8])/(2*[9]*[9]))",100,150);
+  fh->SetParameters(500,125.,3.,0.,0.,0.,0.,0.54,125.,10.);
+  fh->FixParameter(7,0.54);
+  fh->FixParameter(3,2242.);
+  fh->FixParameter(4,-97.32);
+  fh->FixParameter(5,1.186);
+  fh->FixParameter(6,-4.236E-3);
 
 
   higgs->Fit("fh","EL","",102,147);  
@@ -54,7 +56,7 @@ void FJ() {
   //  higgs->Fit("fh","L","",102,147);  
 
   ww->SetLineColor(4);
-  ww->SetLineWidth(2);
+  ww->SetLineWidth(4);
   ww->SetFillColor(4);
   ww->SetFillStyle(3013);
 
@@ -62,12 +64,12 @@ void FJ() {
   higgs->SetMarkerColor(2);
   higgs->SetMarkerSize(1);
   higgs->SetLineColor(2);
-  higgs->SetLineWidth(2);
+  higgs->SetLineWidth(4);
  
   zz->SetLineColor(1);
-  zz->SetLineWidth(2);
+  zz->SetLineWidth(4);
   qq->SetLineColor(6);
-  qq->SetLineWidth(2);
+  qq->SetLineWidth(4);
 
   higgs->SetTitle( "Four-Jet Channel" );
   higgs->SetXTitle( "Higgs mass (GeV)" );
@@ -94,7 +96,9 @@ void FJ() {
   leg0->Draw();
 
   TText *text = new TText(137,1100,"L = 500 fb-1");
-  text->Draw("same");
+  //text->Draw("same");
+  TText *cms = new TText(133,1250,"CMS Preliminary");
+  cms->Draw("same");
 
 //   heta->SetLineColor(2);
 //   zeta->SetLineColor(1);
@@ -109,7 +113,8 @@ void FJ() {
 //   weta->Draw("same");
 
 
-  gPad->SetGridx();
-  gPad->SetGridy();
+  //gPad->SetGridx();
+  //gPad->SetGridy();
   gPad->SaveAs("4J.png");
+  gPad->SaveAs("4J.pdf");
 }

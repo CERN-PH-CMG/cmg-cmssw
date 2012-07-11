@@ -2,7 +2,7 @@ void EM() {
 
   //TCut cut1("Jet1pdgId+Jet2pdgId==0&&abs(Jet1pdgId-Jet2pdgId)==0&&abs(mMiss-95)<30&&acol>100&&cross>10&&ptMiss>15&&abs(pMiss*ctMiss)<50&&Jet1B7+Jet2B7>0.9");
   //TCut cut2("Jet1pdgId+Jet2pdgId==0&&abs(Jet1pdgId-Jet2pdgId)==0&&abs(mMiss-95)<30&&acol>100&&cross>10&&ptMiss>15&&abs(pMiss*ctMiss)<50&&Jet1B7+Jet2B7>0.9&&wwh==1");
-  TCut cut1("abs(mMiss-95)<30&&acol>100&&cross>10&&ptMiss>15&&abs(pMiss*ctMiss)<50&&Jet1B7+Jet2B7>0.9");
+  TCut cut1("abs(mMiss-95)<30&&acol>100&&cross>10&&ptMiss>15&&abs(pMiss*ctMiss)<50&&Jet1B7+Jet2B7>0.90");
   TCut cut2("abs(mMiss-95)<30&&acol>100&&cross>10&&ptMiss>15&&abs(pMiss*ctMiss)<50&&Jet1B7+Jet2B7>0.9&&wwh==1");
   TFile *h = TFile::Open("HZHA.root");
   TH1F* higgsbb = new TH1F("higgsbb","higgsbb",100,50.,150);
@@ -138,23 +138,23 @@ void EM() {
   higgsbb->SetMarkerColor(2);
   higgsbb->SetMarkerSize(1);
   higgsbb->SetLineColor(2);
-  higgsbb->SetLineWidth(2);
+  higgsbb->SetLineWidth(4);
 
   higgsww->SetLineStyle(2);
   higgsww->SetLineColor(2);
   higgsww->SetLineWidth(3);
 
   zzbb->SetLineColor(4);
-  zzbb->SetLineWidth(2);
+  zzbb->SetLineWidth(4);
   zzbb->SetFillColor(4);
   zzbb->SetFillStyle(3013);
 
   wwbb->SetLineColor(3);
-  wwbb->SetLineWidth(2);
+  wwbb->SetLineWidth(4);
   znnbbb->SetLineColor(1);
-  znnbbb->SetLineWidth(2);
+  znnbbb->SetLineWidth(4);
   qqbb->SetLineColor(6);
-  qqbb->SetLineWidth(2);
+  qqbb->SetLineWidth(4);
 
   higgsbb->SetTitle( "Missing Energy Channel" );
   higgsbb->SetXTitle( "Higgs mass (GeV)" );
@@ -163,7 +163,7 @@ void EM() {
   higgsbb->GetYaxis()->SetLabelSize(0.045);
   higgsbb->GetXaxis()->SetLabelSize(0.045);
   higgsbb->SetStats(0);
-  //higgsbb->SetMaximum(800);
+  higgsbb->SetMaximum(800);
 
   higgsbb->Draw();
   higgsww->Draw("same");
@@ -187,11 +187,14 @@ void EM() {
   leg0->Draw();
 
   TText *text = new TText(60,320,"L = 500 fb-1");
-  text->Draw("same");
+  //text->Draw("same");
+  TText *cms = new TText(115,810,"CMS Preliminary");
+  cms->Draw("same");
 
-  gPad->SetGridx();
-  gPad->SetGridy();
-  gPad->SaveAs("EMbb.png");
+  //gPad->SetGridx();
+  //gPad->SetGridy();
+  gPad->SaveAs("EM.png");
+  gPad->SaveAs("EM.pdf");
 
  
 }
