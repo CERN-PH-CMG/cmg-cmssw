@@ -55,7 +55,7 @@ Hig125 = cfg.MCComponent(
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/ZZ/cmgTuple_ZZ_97.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/ZZ/cmgTuple_ZZ_98.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/ZZ/cmgTuple_ZZ_99.root',],
-    ufiles = ['root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_0.root',
+    hfiles = ['root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_0.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_1.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_2.root',
              'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/cmgTuple_HZHA_3.root',
