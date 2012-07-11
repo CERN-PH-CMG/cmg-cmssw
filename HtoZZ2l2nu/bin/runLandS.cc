@@ -109,6 +109,7 @@ bool skipQQH = false;
 bool subDY = false;
 bool subWZ = false;
 double DDRescale = 1.0;
+double MCRescale = 1.0;
 bool blindData = false;
 TString DYFile ="";
 TString inFileUrl(""),jsonFile(""), histo("");
@@ -158,6 +159,7 @@ void printHelp()
   printf("--fast      --> use this flag to only do assymptotic prediction (very fast but inaccurate))\n");
   printf("--postfix    --> use this to specify a postfix that will be added to the process names)\n");
   printf("--systpostfix    --> use this to specify a syst postfix that will be added to the process names)\n");
+  printf("--MCRescale    --> use this to specify a syst postfix that will be added to the process names)\n");
 }
 
 //
@@ -188,6 +190,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--subDY")    !=string::npos) { subDY=true; DYFile=argv[i+1];  i++; printf("Z+Jets will be replaced by %s\n",DYFile.Data());}
     else if(arg.find("--subWZ")    !=string::npos) { subWZ=true; printf("WZ will be estimated from 3rd lepton SB\n");}
     else if(arg.find("--DDRescale")!=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&DDRescale); i++;}
+    else if(arg.find("--MCRescale")!=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&MCRescale); i++;}
     else if(arg.find("--HWW")      !=string::npos) { skipWW=false; printf("HWW = True\n");}
     else if(arg.find("--skipGGH")  !=string::npos) { skipGGH=true; printf("skipGGH = True\n");}
     else if(arg.find("--skipQQH")  !=string::npos) { skipQQH=true; printf("skipQQH = True\n");}
@@ -293,6 +296,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
             hshape->GetYaxis()->SetTitle("Entries (/25GeV)");
          }
 
+         hshape->Scale(MCRescale);
 
 
 	
@@ -851,10 +855,10 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
       fprintf(pFile, "jmax *\n");
       fprintf(pFile, "kmax *\n");
       fprintf(pFile, "-------------------------------\n");
-
+      if(shape){
       fprintf(pFile, "shapes * * %s %s/$PROCESS %s/$PROCESS_$SYSTEMATIC\n",dci.shapesFile.Data(), dci.ch[i-1].Data(), dci.ch[i-1].Data());
       fprintf(pFile, "-------------------------------\n");
-
+      }
       //observations
       fprintf(pFile, "bin 1\n");
       fprintf(pFile, "Observation %f\n",dci.obs[RateKey_t("obs",dci.ch[i-1])]);
@@ -1014,10 +1018,10 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
                 }if(isSyst)fprintf(pFile,"%s\n",sFile);
 
              }else{
-                sprintf(sFile,"%35s %10s ", it->first.Data(), "shapeN2");
+                if(shape){sprintf(sFile,"%35s %10s ", it->first.Data(), "shapeN2");}else{sprintf(sFile,"%35s %10s ", it->first.Data(), "lnN");}
                 for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
                    if(it->second.find(RateKey_t(dci.procs[j-1],dci.ch[i-1])) != it->second.end()){
-                      sprintf(sFile,"%s%6f ",sFile,it->second[RateKey_t(dci.procs[j-1],dci.ch[i-1])]); isSyst=true;
+                      sprintf(sFile,"%s%6.3f",sFile,it->second[RateKey_t(dci.procs[j-1],dci.ch[i-1])]); isSyst=true;
                    }else{
                       sprintf(sFile,"%s%6s ",sFile,"-");
                    }
@@ -1349,7 +1353,9 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                }               
                statup  ->Write(proc+postfix+"_CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix+"Up");
                statdown->Write(proc+postfix+"_CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix+"Down");
-               dci.systs["CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix][RateKey_t(proc,ch)]=1.0;              
+               if(shape){ dci.systs["CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix][RateKey_t(proc,ch)]=1.0;              
+               }else{     dci.systs["CMS_hzz2l2v_stat_"+ch+"_"+proc+systpostfix][RateKey_t(proc,ch)]=(statup->Integral()/hshapes[0]->Integral());
+               }
                if(systUncertainty>0){
                   if(proc.Contains("ggh") || proc.Contains("qqh")){
                      dci.systs["CMS_hzz2l2v_interpol_"+bin+"_"+proc+systpostfix][RateKey_t(proc,ch)]=systUncertainty;
@@ -1395,7 +1401,20 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
 
           TH1 *temp=(TH1*) hshape->Clone();
           temp->Add(hshapes[0],-1);
-          if(temp->Integral()!=0)dci.systs[systName][RateKey_t(proc,ch)]=1.0;
+          if(temp->Integral()!=0){
+             if(shape){
+                dci.systs[systName][RateKey_t(proc,ch)]=1.0;
+             }else{
+                double Unc = 1 + fabs(temp->Integral()/hshapes[0]->Integral());
+                if(dci.systs.find(systName)==dci.systs.end() || dci.systs[systName].find(RateKey_t(proc,ch))==dci.systs[systName].end() ){
+                   dci.systs[systName][RateKey_t(proc,ch)]=Unc;
+                }else{
+                   dci.systs[systName][RateKey_t(proc,ch)]=(dci.systs[systName][RateKey_t(proc,ch)] + Unc)/2.0;
+                }
+             }
+          }
+
+
           delete temp;
 //        }else if(proc=="asignal" && syst==""){dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
 //        }else if(proc!="data" && syst==""){if(hshape->Integral()>1E-6)dci.rates[RateKey_t(proc,ch)]=hshape->Integral();
@@ -1407,9 +1426,6 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
 
 void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto, TString url, JSONWrapper::Object &Root)
 {
-
-printf("test1\n");
-
      string Lcol   = "\\begin{tabular}{|l";
      string Lchan  = "channel";
      string Lalph1 = "$\\alpha$ measured";
@@ -1428,14 +1444,8 @@ printf("test1\n");
         fprintf(pFile,"%s\\\\\\hline\n", Cname.c_str());
      }
 
-printf("test2\n");
-
-
-
     for(size_t i=0;i<selCh.size();i++){
     for(size_t b=0; b<AnalysisBins.size(); b++){     
-printf("test3\n");
-
         Lcol += " |c";
         Lchan += string(" &")+selCh[i]+string(" - ")+AnalysisBins[b];
         Cval   = selCh[i]+string(" - ")+AnalysisBins[b];
@@ -1450,8 +1460,6 @@ printf("test3\n");
         Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
 //        TH1* hChan_SI=shapeChan_SI.data;
 
-
-printf("test4\n");
 
         //IF HISTO IS EMPTY... LOWER THE CUT AND TAKE THIS WITH 100% UNCERTAINTY
         if(subNRB2011 && hCtrl_SI->Integral()<=0){
@@ -1472,7 +1480,6 @@ printf("test4\n");
               indexcut_--;
            }
            inF->Close();
-printf("test5\n");
 
            //set stat error to 100%
            for(int b=1;b<=hCtrl_SB->GetXaxis()->GetNbins()+1;b++){
@@ -1483,8 +1490,6 @@ printf("test5\n");
               hCtrl_SI->SetBinError  (b, hCtrl_SI->GetBinContent(b) );
               hChan_SB->SetBinError  (b, hChan_SB->GetBinContent(b) );
            }
-
-printf("test6\n");
         }
 
 
