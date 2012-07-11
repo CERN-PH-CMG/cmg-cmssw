@@ -51,7 +51,7 @@ void DijetMass_chiyoung_2(){
   Init("Q*");
 
 
-  //  lumi = 1025.;
+//  lumi =2422.;
   //  lumi = 2509.0;
   //  lumi = 2168.0;
   // lumi = 4677.0;
@@ -66,11 +66,11 @@ void DijetMass_chiyoung_2(){
   gROOT->ProcessLine("setTDRStyle()");
   
   // Input Files  
-  //  TFile *inputFile = TFile::Open("histograms_1p010fbm1.root", "READ");
+//  TFile *inputFile = TFile::Open("../../data/histograms_data2012_190456_195016_ak5.root", "READ");
   inputFile = TFile::Open("../../data/histograms_data_HT_Run2011AB_160404_180252_Fat30_ak5_4677pbm1.root", "READ");
   //  inputFile = TFile::Open("../../data/histograms_data_HT_Run2011A_160404_175770_Fat30_ak5_2168pbm1.root", "READ");
   // inputFile = TFile::Open("../../data/histograms_data_HT_Run2011B_175832_180252_Fat30_ak5_2509pbm1.root", "READ");
-
+  //inputFile = TFile::Open("../../data/histograms_data_HT_Run2011AB_160404_180252_PF_ak5_4677pbm1.root", "READ");
 
 
   //  inputFile = TFile::Open("histograms_data_HT_Run2010_2011_136033_180252_4479pbm1_ak5.root", "READ");
@@ -81,7 +81,7 @@ void DijetMass_chiyoung_2(){
   // Histograms 
   hDijetMass = (TH1F*) inputFile->Get("h_DijetMass_data_fat;1");
   //  TH1F *hQCDMC = (TH1F*)inputFile->Get("fit_DijetMass_mc_wide");
-  //  inputFileMC = TFile::Open("histograms_summer11_mc_ak5.root", "UPDATE");
+//  inputFileMC = TFile::Open("../../data/histograms_mc_weightpileup_pt_4June_pfweight_ak5.root", "UPDATE");
   inputFileMC = TFile::Open("../../data/histograms_Fat30_summer11_mc_ak5.root", "UPDATE");
   hQCD = (TH1F*)inputFileMC->Get("h_DijetMass_data_fat;1");
   
@@ -126,6 +126,8 @@ void DijetMass_chiyoung_2(){
   TH1F *hPulls_4par = (TH1F*)hDijetMass->Clone("Pulls_4par");
   TH1F *hPulls = (TH1F*)hDijetMass->Clone("Pulls");
   TH1F *hPulls_lowMassFit = (TH1F*)hDijetMass->Clone("Pulls_lowMassFit");
+
+
 
   //  TH1F *hPulls_add = (TH1F*)inputFile->Get("h_DijetMass_mc_wide");
   hPulls_add = (TH1F*) hQCD->Clone("hPulls_add");
@@ -389,6 +391,7 @@ void DijetMass_chiyoung_2(){
   fit_lowMass->SetLineWidth(2);
   fit_lowMass->SetLineColor(kMagenta);
   g->Fit("fit_lowMass","","",889.0,1900.0);
+  g->Fit("fit_lowMass","","",889.0,1900.0);
  
   double P0 = fit_lowMass->GetParameter(0), P1 = fit_lowMass->GetParameter(1);
   double P2 = fit_lowMass->GetParameter(2), P3 = fit_lowMass->GetParameter(3);
@@ -406,6 +409,7 @@ void DijetMass_chiyoung_2(){
   fit->SetParameter(3,1.93728e-01);
   fit->SetLineWidth(2);
   fit->SetLineColor(4);
+
   g->Fit("fit","","",889.0,4171.0);	
   TFitResultPtr fitResult=g->Fit("fit","S","",889.0,4171.0);	
    
@@ -432,6 +436,7 @@ void DijetMass_chiyoung_2(){
   f_4par->SetLineWidth(2);
   f_4par->SetLineColor(TColor::GetColor("#009900"));
   g_4par->Fit("fit_4par","","",889.0,4171.0);	
+  g_4par->Fit("fit_4par","","",889.0,4171.0);	
 
   //Alternate Fits 3 parameter
   TF1 *f_3par = new TF1("fit_3par",fitQCD2,889.0,4171.0,3); // 3 Par. Fit
@@ -442,6 +447,7 @@ void DijetMass_chiyoung_2(){
   f_3par->SetLineWidth(2);
   f_3par->SetLineColor(2);
   f_3par->SetLineStyle(2);
+  g_3par->Fit("fit_3par","","",889.0,4171.0);	
   g_3par->Fit("fit_3par","","",889.0,4171.0);	
 
   gStyle->SetOptFit(0000);
@@ -462,6 +468,9 @@ void DijetMass_chiyoung_2(){
   TGraphAsymmErrors *gPull_3par = new TGraphAsymmErrors(*gDefault);
   TGraphAsymmErrors *gPull_lowMass = new TGraphAsymmErrors(*gDefault);
 
+  TH1F *hPulls_Upward = (TH1F*)hDijetMass->Clone("hPulls_Upward");
+  TH1F *hPulls_Downward = (TH1F*)hDijetMass->Clone("hPulls_Downward");
+
   double nbkgval=fit->GetParameter(0);
   double p1val=fit->GetParameter(1);
   double p2val=fit->GetParameter(2);
@@ -469,64 +478,103 @@ void DijetMass_chiyoung_2(){
 
   TMatrixDSym covarianceMatrix=fitResult->GetCovarianceMatrix();
 
-        // Code taken from TFitResult.RandomizePars
-        Int_t nPar= fit->GetNpar();
-        // calculate the elements of the upper-triangular matrix L that gives Lt*L = C
-        // where Lt is the transpose of L (the "square-root method")
-        TMatrix L(nPar,nPar);
-        for(Int_t iPar= 0; iPar < nPar; iPar++) {
-     	  // calculate the diagonal term first
-     	  L(iPar,iPar)= covarianceMatrix(iPar,iPar);
-     	  for(Int_t k= 0; k < iPar; k++) {
-     	    Double_t tmp= L(k,iPar);
-     	    L(iPar,iPar)-= tmp*tmp;
-     	  }
-     	  L(iPar,iPar)= sqrt(L(iPar,iPar));
-     	  // then the off-diagonal terms
-     	  for(Int_t jPar= iPar+1; jPar < nPar; jPar++) {
-     	    L(iPar,jPar)= covarianceMatrix(iPar,jPar);
-     	    for(Int_t k= 0; k < iPar; k++) {
-     	      L(iPar,jPar)-= L(k,iPar)*L(k,jPar);
-     	    }
-     	    L(iPar,jPar)/= L(iPar,iPar);
-     	  }
-        }
-        // remember Lt
-        TMatrix* _Lt= new TMatrix(TMatrix::kTransposed,L);
-        TVectorD eigenValues(4);
-        TMatrixD eigenVectors=covarianceMatrix.EigenVectors(eigenValues);
-        std::cout << "EigenVectors" << std::endl;
-        for(Int_t k= 0; k < nPar; k++) {
-     	  std::cout << k << ": ";
-     	  for(Int_t lv= 0; lv < nPar; lv++) {
-     	    std::cout << eigenVectors[k][lv] << " ";
-     	  }
-     	  std::cout << std::endl;
-        }
+  // Code taken from TFitResult.RandomizePars
+  Int_t nPar= fit->GetNpar();
 
-        TF1* variations[6];
+  for(Int_t iPar= 0; iPar < nPar; iPar++) {
+    for(Int_t kPar= 0; kPar < nPar; kPar++) {
+  
+      std::cout << sqrt(covarianceMatrix(iPar,kPar)) << " ";
+    
+    }
+    std::cout << "" << endl;
+
+  }
+
+  cout << "nbkgval = " << nbkgval << " +- " << fit->GetParError(0) << endl;
+  cout << "p1val = " << p1val  << " +- " << fit->GetParError(1) << endl;
+  cout << "p2val = " << p2val  << " +- " << fit->GetParError(2) << endl;
+  cout << "p3val = " << p3val  << " +- " << fit->GetParError(3) << endl;
+
+
+
+  // calculate the elements of the upper-triangular matrix L that gives Lt*L = C
+  // where Lt is the transpose of L (the "square-root method")
+  TMatrix L(nPar,nPar);
+  for(Int_t iPar= 0; iPar < nPar; iPar++) {
+    // calculate the diagonal term first
+    L(iPar,iPar)= covarianceMatrix(iPar,iPar);
+    for(Int_t k= 0; k < iPar; k++) {
+      Double_t tmp= L(k,iPar);
+      L(iPar,iPar)-= tmp*tmp;
+    }
+    L(iPar,iPar)= sqrt(L(iPar,iPar));
+    // then the off-diagonal terms
+    for(Int_t jPar= iPar+1; jPar < nPar; jPar++) {
+      L(iPar,jPar)= covarianceMatrix(iPar,jPar);
+      for(Int_t k= 0; k < iPar; k++) {
+	L(iPar,jPar)-= L(k,iPar)*L(k,jPar);
+      }
+      L(iPar,jPar)/= L(iPar,iPar);
+    }
+  }
+  // remember Lt
+  TMatrix* _Lt= new TMatrix(TMatrix::kTransposed,L);
+
+  for(Int_t iPar= 0; iPar < nPar; iPar++) {
+    for(Int_t kPar= 0; kPar < nPar; kPar++) {
+  
+      std::cout << _Lt(iPar, kPar) << " ";
+    
+    }
+    std::cout << "" << endl;
+
+  }
+
+  TVectorD eigenValues(4);
+  TMatrixD eigenVectors=covarianceMatrix.EigenVectors(eigenValues);
+  std::cout << "EigenVectors" << std::endl;
+  for(Int_t k= 0; k < nPar; k++) {
+    std::cout << k << ": ";
+    for(Int_t lv= 0; lv < nPar; lv++) {
+      std::cout << eigenVectors[k][lv] << " ";
+    }
+    std::cout << std::endl;
+  }
+  
+  TF1* variations[8];
       
          TVector gv(nPar);
          Double_t pars[4];
-	 for(Int_t vi=1; vi<nPar;vi++){
-	  for(Int_t k= 0; k < nPar; k++) gv(k)=eigenVectors[vi][k];
+	 for(Int_t vi=1; vi<nPar+1;vi++){
+	  for(Int_t k= 0; k < nPar; k++) gv(k)=eigenVectors[vi-1][k];
 	  // multiply this vector by Lt to introduce the appropriate correlations
 	  gv*= (*_Lt);
 	  stringstream ss;
 	  ss << "up" << vi;
+	  std::cout << "up " << vi-1 << ": ";
+	  for(Int_t lv= 0; lv < nPar; lv++) {
+	    std::cout << gv(lv) << " ";
+	  }
+	  std::cout << std::endl;
 	  TF1* variationUp=new TF1(ss.str().c_str(),fitQCD1,889.0,4171.0,4);
-	  pars[0]=nbkgval;
+	  pars[0]=nbkgval+gv(0);
 	  pars[1]=p1val+gv(1);
 	  pars[2]=p2val+gv(2);
 	  pars[3]=p3val+gv(3);
 	  variationUp->SetParameters(pars);
 	  variations[2*vi-2]=variationUp;
-	  for(Int_t k= 0; k < nPar; k++) gv(k)=-eigenVectors[vi][k];
+	  for(Int_t k= 0; k < nPar; k++) gv(k)=-eigenVectors[vi-1][k];
 	  // multiply tLos vector by Lt to introduce the appropriate correlations
 	  gv*= (*_Lt);
 	  ss << "down";
+	  std::cout << "down " << vi-1 << ": ";
+	  for(Int_t lv= 0; lv < nPar; lv++) {
+	    std::cout << gv(lv) << " ";
+	  }
+	  std::cout << std::endl;
 	  TF1* variationDown=new TF1(ss.str().c_str(),fitQCD1,889.0,4171.0,4);
-	  pars[0]=nbkgval;
+	  pars[0]=nbkgval+gv(0);
 	  pars[1]=p1val+gv(1);
 	  pars[2]=p2val+gv(2);
 	  pars[3]=p3val+gv(3);
@@ -563,6 +611,7 @@ void DijetMass_chiyoung_2(){
     aData->AddAt(gWindow, iWindow);
     
     gWindow->Fit(Form("fit_window_%d",iWindow),"","",890.0,4171.0);
+    gWindow->Fit(Form("fit_window_%d",iWindow),"","",890.0,4171.0);
 
 
     for (int i = 0; i < gRatio->GetN(); i++){
@@ -578,8 +627,8 @@ void DijetMass_chiyoung_2(){
       if (Xsec < 1e-10 && (fMass > 4500 || fMass < 890)) gRatio->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
 
-    if (iWindow == 0){
-
+      if (iWindow == 0){
+	
 	float XsecWindow_4par = f_4par->Eval(fMass,0,0);
 	float XsecWindow_3par = f_3par->Eval(fMass,0,0);
 	float XsecWindow_lowMass = fit_lowMass->Eval(fMass,0,0);
@@ -613,21 +662,42 @@ void DijetMass_chiyoung_2(){
       float XsecWindow = fit_window->Eval(fMass,0,0);
       float XsecDefault = fit->Eval(fMass,0,0);
       float XsecVariationDefault = 0;
-      for(Int_t k= 0; k < (nPar-1)*2; k++) XsecVariationDefault+=pow(variations[k]->Eval(fMass)-XsecDefault,2);
+      float XsecVariationDefaultUp = 0;
+      float XsecVariationDefaultDown = 0;
+
+      for(Int_t k= 0; k < nPar; k++) {
+	double up = fabs(variations[2*k]->Eval(fMass)-XsecDefault);
+	double down = fabs(variations[2*k+1]->Eval(fMass)-XsecDefault);
+
+	XsecVariationDefault+=pow((up+down)/2,2);
+	XsecVariationDefaultUp+=pow(up,2);
+	XsecVariationDefaultDown+=pow(down,2);
+
+      }
       XsecVariationDefault=sqrt(XsecVariationDefault);
-      
+      XsecVariationDefaultUp=sqrt(XsecVariationDefaultUp);
+      XsecVariationDefaultDown=sqrt(XsecVariationDefaultDown);
+   
+      //      cout << "XsecVariationDefault = " << XsecVariationDefault << " XsecVariationDefaultUp = " << XsecVariationDefaultUp << " XsecVariationDefaultDown = " << XsecVariationDefaultDown << endl;
+
       if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull->SetPoint(i, fMass, (XsecWindow-XsecDefault)/XsecVariationDefault); 
       if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
       if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull->SetPoint(i, fMass, 0.0); 
       if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
+      
 
-    if (iWindow == 0){
+
+
+      if (iWindow == 0){
 
 	float XsecWindow_4par = f_4par->Eval(fMass,0,0);
 	float XsecWindow_3par = f_3par->Eval(fMass,0,0);
 	float XsecWindow_lowMass = fit_lowMass->Eval(fMass,0,0);
+
+	//	cout << " i = " << i << " Up = " << 1.0+XsecVariationDefaultUp/XsecDefault << " down = " << 1.0-XsecVariationDefaultUp/XsecDefault << endl;
+
 
 	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull_4par->SetPoint(i, fMass, (XsecWindow_4par-XsecDefault)/XsecVariationDefault); 
 	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
@@ -638,6 +708,10 @@ void DijetMass_chiyoung_2(){
 	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull_lowMass->SetPoint(i, fMass, (XsecWindow_lowMass-XsecDefault)/XsecVariationDefault); 
 	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) gPull_lowMass->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
 
+	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) hPulls_Upward->SetBinContent(i+1, 1.0+XsecVariationDefaultUp/XsecDefault);
+	if (Xsec > 1e-10 || (fMass < 4500.0 && fMass > 890.0)) hPulls_Downward->SetBinContent(i+1, 1.0-XsecVariationDefaultDown/XsecDefault);
+
+
 
 	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull_4par->SetPoint(i, fMass, 0.0); 
 	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull_4par->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
@@ -647,6 +721,8 @@ void DijetMass_chiyoung_2(){
 
 	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull_lowMass->SetPoint(i, fMass, 0.0); 
 	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) gPull_lowMass->SetPointError(i, 1e-10, 1e-10, 1e-10, 1e-10); 
+	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) hPulls_Upward->SetBinContent(i+1, 1.0);
+	if (Xsec < 1e-10 && (fMass > 4500.0 || fMass < 890.0)) hPulls_Downward->SetBinContent(i+1, 1.0);
 
       }
 
@@ -654,7 +730,7 @@ void DijetMass_chiyoung_2(){
     }
 
 
-    aFit->AddAt(fit, iWindow);
+    aFit->AddAt(fit_window, iWindow);
     aRatio->AddAt(gRatio, iWindow);
     aPull->AddAt(gPull, iWindow);
 
@@ -780,6 +856,8 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   TString status_4par= gMinuit->fCstatu.Data();
   g2->Fit("fit_3par","+","sames",889.0,4171.0);
   TString status_3par= gMinuit->fCstatu.Data();
+  g2->Fit("fit_lowMass","+","sames",889.0,4171.0);
+  TString status_lowMass = gMinuit->fCstatu.Data();
   TLegend *leg = new TLegend(0.18,0.78,0.38,0.92);
   leg->SetTextSize(0.03146853);
   leg->SetLineColor(1);
@@ -788,6 +866,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   leg->SetFillColor(0);
   leg->AddEntry(g,Form("CMS  (%.3f fb^{-1})", lumi/1000.),"PL");
   leg->AddEntry(fit,"Default Fit (4 Par.)","L");
+  leg->AddEntry(fit_lowMass,"Default Fit up to 1.9 TeV","L");
   leg->AddEntry(fit_4par,"Alternate Fit A (4 Par.)","L");
   leg->AddEntry(fit_3par,"Alternate Fit B (3 Par.)","L");
   leg->Draw("same");
@@ -837,14 +916,15 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 
   //hJESplus->SetFillColor(3);
   hJESminus->SetFillColor(10);
-  hJESminus->SetLineColor(5);
+  hJESminus->SetLineColor(8);
+
   hJESminus->SetLineWidth(0);
   //    hJESminus->SetLineColor(5);
   htmp->GetXaxis()->SetRangeUser(700,4300);
-  htmp->SetFillColor(5);
+  htmp->SetFillColor(8);
   htmp->SetLineColor(1);
   htmp->SetLineWidth(1); 
-  htmp->SetLineColor(5);
+  htmp->SetLineColor(8);
   c2->SaveAs("Plots/DijetMassCrossSectionWithAllFit.png");
   c2->SaveAs("Plots/DijetMassCrossSectionWithAllFit.eps");
 
@@ -1450,6 +1530,26 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 
  //Dijet Mass Cross Section with Fit	
   TCanvas* c02 = new TCanvas("c02","DijetMass Cross Section with Window Fit");
+
+
+  THStack *hsPull = new THStack("hsPull","hsPull");
+  TH1F *htmpPull = (TH1F*)hPulls_Upward->Clone("htmpPull");
+  htmpPull->Add(hPulls_Downward, -1);
+  hsPull->Add(hPulls_Downward);
+  hsPull->Add(htmpPull);
+
+
+  //hJESplus->SetFillColor(3);
+  hPulls_Downward->SetFillColor(10);
+  hPulls_Downward->SetLineColor(5);
+  hPulls_Downward->SetLineWidth(0);
+  //    hJESminus->SetLineColor(5);
+  htmpPull->SetFillColor(5);
+  htmpPull->SetLineColor(1);
+  htmpPull->SetLineWidth(1); 
+  htmpPull->SetLineColor(5);
+
+
   ((TGraphAsymmErrors*) aRatio->At(0))->SetTitle("");
   ((TGraphAsymmErrors*) aRatio->At(0))->SetLineColor(1);
   ((TGraphAsymmErrors*) aRatio->At(0))->SetFillColor(1);
@@ -1459,6 +1559,8 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   ((TGraphAsymmErrors*) aRatio->At(0))->GetYaxis()->SetRangeUser(0.0,2.0);
   ((TGraphAsymmErrors*) aRatio->At(0))->Draw("AL");
 
+  hsPull->Draw("SAMEC");
+
   for (int iWindow = 1; iWindow < 30; iWindow++){
 
     ((TGraphAsymmErrors*) aRatio->At(iWindow))->SetLineColor(iWindow+1);
@@ -1466,16 +1568,16 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 
   }
 
-  gRatio_4par->SetLineWidth(2);
+  gRatio_4par->SetLineWidth(3);
   gRatio_4par->SetLineStyle(1);
   gRatio_4par->SetLineColor(TColor::GetColor("#009900"));
 
 
-  gRatio_3par->SetLineWidth(2);
+  gRatio_3par->SetLineWidth(3);
   gRatio_3par->SetLineStyle(1);
   gRatio_3par->SetLineColor(kBlue);
   
-  gRatio_lowMass->SetLineWidth(2);
+  gRatio_lowMass->SetLineWidth(3);
   gRatio_lowMass->SetLineStyle(1);
   gRatio_lowMass->SetLineColor(kMagenta);
 
@@ -1523,7 +1625,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   ((TGraphAsymmErrors*) aPull->At(0))->GetYaxis()->SetRangeUser(-6.0,6.0);
   ((TGraphAsymmErrors*) aPull->At(0))->Draw("AL");
 
-  for (int iWindow = 1; iWindow < 15; iWindow++){
+  for (int iWindow = 1; iWindow < 30; iWindow++){
 
     ((TGraphAsymmErrors*) aPull->At(iWindow))->SetLineColor(iWindow+1);
     ((TGraphAsymmErrors*) aPull->At(iWindow))->Draw("SAME");
@@ -1575,7 +1677,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   hDiff->GetXaxis()->SetTitle("Dijet Mass (GeV)");
   hDiff->GetYaxis()->SetTitle("(Data-Fit)/Fit");
   hDiff->GetXaxis()->SetRangeUser(700.,4300.);
-  hDiff->GetYaxis()->SetRangeUser(-1.5,3.);
+  hDiff->GetYaxis()->SetRangeUser(-1.5,1.5);
   hDiff->Draw("APZ");
   gr_qstar1_3->Draw("sameC");
   gr_qstar2_3->Draw("sameC");
@@ -1584,7 +1686,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   l->Draw("same");
   pave->Draw("same");
 
-  TPaveText *pt_c6_qstar1 = new TPaveText(0.20,0.48,0.35,0.58,"NDC");
+  TPaveText *pt_c6_qstar1 = new TPaveText(0.20,0.68,0.35,0.78,"NDC");
   pt_c6_qstar1->SetFillColor(0);
   pt_c6_qstar1->SetTextColor(2);
   pt_c6_qstar1->SetFillStyle(0);
@@ -1592,7 +1694,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   pt_c6_qstar1->SetTextSize(0.03);
   pt_c6_qstar1->AddText("Q* (1.5 TeV)");
 
-  TPaveText *pt_c6_qstar2 = new TPaveText(0.60,0.48,0.75,0.58,"NDC");
+  TPaveText *pt_c6_qstar2 = new TPaveText(0.57,0.60,0.72,0.70,"NDC");
   pt_c6_qstar2->SetFillColor(0);
   pt_c6_qstar2->SetTextColor(2);
   pt_c6_qstar2->SetFillStyle(0);
@@ -1638,13 +1740,13 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   hPulls->Draw("ep");
   hPulls_4par->Draw("epsame");
   hPulls_3par->Draw("epsame");
-  hPulls_lowMassFit->Draw("epsame");
+  //  hPulls_lowMassFit->Draw("epsame");
   l->Draw("same");	
   TLegend *leg = new TLegend(0.57,0.7,0.92,0.93);
   leg->SetFillColor(0);
   leg->SetTextSize(0.02);
   leg->AddEntry(hPulls,"Default Fit (4 Par.)","PL");
-  leg->AddEntry(hPulls_lowMassFit,"Default Fit up to 1.9 TeV (4 Par.)","PL");
+  //  leg->AddEntry(hPulls_lowMassFit,"Default Fit up to 1.9 TeV (4 Par.)","PL");
   leg->AddEntry(hPulls_4par,"Alternate Fit A (4 Par.)","PL");
   leg->AddEntry(hPulls_3par,"Alternate Fit B (3 Par.)","PL");
   leg->Draw("same");
@@ -1793,7 +1895,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
     vFrame2->SetTitle("");
     vFrame2->SetXTitle("Dijet Mass (GeV)");
     vFrame2->GetXaxis()->SetTitleSize(0.06);
-    vFrame2->SetYTitle("Significance");
+    vFrame2->SetYTitle("Residuals");
     vFrame2->GetYaxis()->SetTitleSize(0.12);
     vFrame2->GetYaxis()->SetLabelSize(0.10);
     vFrame2->GetYaxis()->SetTitleOffset(0.50);
@@ -1875,17 +1977,17 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 
 
     TLegend *leg = new TLegend(0.44,0.60,0.86,0.93);
-    leg->SetTextSize(0.03146853);
+    leg->SetTextSize(0.035);
     leg->SetLineColor(1);
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g,Form("CMS Preliminary (%.0f fb^{-1})", lumi/1000.),"PL"); 
+    leg->AddEntry(g,Form("CMS Preliminary (%.0f fb^{-1})   ", lumi/1000.),"PL"); 
     leg->AddEntry(fit,"Fit","L");
-    leg->AddEntry(f_qcd,"QCD Pythia + CMS Simulation","L");
-    leg->AddEntry(htmp,"JES Uncertainty","F");
-    leg->AddEntry(gr_qstar1,"Excited Quark + CMS Simulation","L");
-    leg->AddEntry(gr_string1,"String Resonance + CMS Simulation","L");
+    leg->AddEntry(f_qcd,"QCD Pythia","L");
+    leg->AddEntry(htmp,"Jet Energy Scale Uncertainty","F");
+//    leg->AddEntry(gr_qstar1,"Excited Quark + CMS Simulation","L");
+//    leg->AddEntry(gr_string1,"String Resonance + CMS Simulation","L");
     leg->Draw("same");
 
     pave_fit_publi->Draw("same");
@@ -1945,7 +2047,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
     vFrame2->SetTitle("");
     vFrame2->SetXTitle("Dijet Mass (GeV)");
     vFrame2->GetXaxis()->SetTitleSize(0.06);
-    vFrame2->SetYTitle("Significance");
+    vFrame2->SetYTitle("Residuals");
     vFrame2->GetYaxis()->SetTitleSize(0.12);
     vFrame2->GetYaxis()->SetLabelSize(0.10);
     vFrame2->GetYaxis()->SetTitleOffset(0.50);
