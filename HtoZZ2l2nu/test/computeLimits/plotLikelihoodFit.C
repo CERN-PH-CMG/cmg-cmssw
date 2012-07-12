@@ -20,26 +20,26 @@
   mu->setRange(0.5,2.5);
   f->Close();
 
+
+  //draw the likelihoods
+  TCanvas *c=new TCanvas("c","c",600,600);
+  c->cd();
+  RooPlot *frame = mu->frame(Title("LL and profileLL in signal strength"),Bins(1000)) ;
   
   //build the likelihoods
   RooAbsReal* eenll = eepdf.createNLL(*data) ;
   RooMinuit(*eenll).migrad() ;
+  eenll->plotOn(frame,LineColor(kGreen),LineStyle(kDashed),ShiftToZero(),Name("ee"));
 
   RooAbsReal* mumunll = mumupdf.createNLL(*data) ;
   RooMinuit(*mumunll).migrad() ;
+  mumunll->plotOn(frame,LineColor(kRed),LineStyle(kDashed),ShiftToZero(),Name("mumu"));
 
   RooArgSet llSet; llSet.add((RooNLLVar &)(*eenll)); llSet.add((RooNLLVar &)(*mumunll));
   RooAddition *combll = new RooAddition("combll","combll",llSet);        
   RooMinuit(*combll).migrad();
-
-  
-  //draw the likelihoods
-  TCanvas *c=new TCanvas("c","c",600,600);
-  c->cd();
-  RooPlot *frame = mu->frame(Title("LL and profileLL in signal strength")) ;
-  eenll->plotOn(frame,LineColor(kGreen),LineStyle(kDashed),ShiftToZero(),Name("ee"));
-  mumunll->plotOn(frame,LineColor(kRed),LineStyle(kDashed),ShiftToZero(),Name("mumu"));
   combll->plotOn(frame,LineWidth(3),ShiftToZero(),Name("combined"));
+
   frame->Draw(); 
   frame->GetXaxis()->SetTitle("#sigma / #sigma_{th.}^{NLO}"); frame->GetXaxis()->SetTitleSize(0.05); frame->GetXaxis()->SetTitleOffset(1.0);
   frame->GetYaxis()->SetTitle("- ln (L/L_{max})");      frame->GetYaxis()->SetTitleSize(0.05); frame->GetYaxis()->SetTitleOffset(1.0);
@@ -55,7 +55,6 @@
   leg->AddEntry("combined","Combined","l");
   leg->Draw("same");
 
-
-
-  
+  c->SaveAs("LikelihoodFit.png");
+  c->SaveAs("LikelihoodFit.pdf");
 }
