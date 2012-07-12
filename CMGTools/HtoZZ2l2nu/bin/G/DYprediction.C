@@ -79,13 +79,14 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 
   string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {"met_redMet","balance"//,
+  string histos[] = {"met_redMet15",
+		     "balance"//,
 		     //"mt"//,
 		     //"mindphijmet"//,
 		     // "pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj"
 		     //,"pfvbfcjv", "pfvbfhardpt",
 		     //"mt_shapes",
-		     // "zpt_shapes",
+		     //"zpt_shapes",
 		     //"met_shapes"
   };
   const size_t nhistos=sizeof(histos)/sizeof(string);

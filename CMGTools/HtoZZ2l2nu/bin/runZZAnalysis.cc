@@ -224,6 +224,11 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,5) );
   mon.addHistogram( new TH1F( "met_redMetSB"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_redMet15"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_redMet20"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+  mon.addHistogram(  new TProfile("metvsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
+  mon.addHistogram(  new TProfile("met15vsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
+  mon.addHistogram(  new TProfile("met20vsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-100,400) );
   mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-100,400) );
   mon.addHistogram( new TH1F( "mt_final"  , ";M_{T};Events", 25,0,1000) );
@@ -235,26 +240,33 @@ int main(int argc, char* argv[])
   std::vector<double> optim_Cuts1_met; 
   std::vector<double> optim_Cuts1_zpt;
   std::vector<double> optim_Cuts1_zmass;
+  std::vector<double> optim_Cuts1_jetthr;
   for(double met=50;met<100;met+=5.0){
     if(met>80 && int(met)%10!=0)continue;
     for(double pt=30;pt<100;pt+=5){
       if(pt>60 && int(pt)%10!=0)continue;
       for(double zm=5;zm<20;zm+=2.5){
       if(zm>10 && int(2*zm)%5!=0)continue;
-         optim_Cuts1_met    .push_back(met);
-         optim_Cuts1_zpt    .push_back(pt);
-         optim_Cuts1_zmass  .push_back(zm);
+      for(double jetpt=10; jetpt<20; jetpt+=5)
+	{
+	  optim_Cuts1_met    .push_back(met);
+	  optim_Cuts1_zpt    .push_back(pt);
+	  optim_Cuts1_zmass  .push_back(zm);
+	  optim_Cuts1_jetthr.push_back(jetpt);
+	}
       }
     }
   }
 
-  TH1F* Hoptim_cuts1_met    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-  TH1F* Hoptim_cuts1_zpt    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_zpt"  , ";cut index;zpt"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-  TH1F* Hoptim_cuts1_zmass  =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_zm"  , ";cut index;zmass"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  TH1F* Hoptim_cuts1_met    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met",     ";cut index;met",     optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  TH1F* Hoptim_cuts1_zpt    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_zpt",     ";cut index;zpt",     optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  TH1F* Hoptim_cuts1_zmass  =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_zm",      ";cut index;zmass",   optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  TH1F* Hoptim_cuts1_jetthr =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_jetthr",  ";cut index;jet thr", optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
   for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
      Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
-     Hoptim_cuts1_zpt  ->Fill(index, optim_Cuts1_zpt[index]);
+     Hoptim_cuts1_zpt    ->Fill(index, optim_Cuts1_zpt[index]);
      Hoptim_cuts1_zmass  ->Fill(index, optim_Cuts1_zmass[index]);
+     Hoptim_cuts1_jetthr ->Fill(index, optim_Cuts1_jetthr[index]);
   }
   
   TH1F* Hoptim_systs     =  (TH1F*) mon.addHistogram( new TH1F ("optim_systs"    , ";syst;", nvarsToInclude,0,nvarsToInclude) ) ;
@@ -615,9 +627,9 @@ int main(int argc, char* argv[])
       PhysicsObjectJetCollection aJets= variedAJets[0];
       PhysicsObjectJetCollection aGoodIdJets;
       LorentzVector aClusteredMetP4(zll); aClusteredMetP4 *= -1;
+      LorentzVector aClustered15MetP4(aClusteredMetP4),aClustered20MetP4(aClusteredMetP4);
       int nAJetsLoose(0), nABtags(0);
       float mindphijmet(999999.),mindphijmet15(999999.);
-      PhysicsObjectJetCollection recoilJets;
       for(size_t ijet=0; ijet<aJets.size(); ijet++) 
 	{
 	  float idphijmet( fabs(deltaPhi(aJets[ijet].phi(),zvvs[0].phi()) ) );
@@ -625,7 +637,8 @@ int main(int argc, char* argv[])
 	  if(aJets[ijet].pt()>30) if(idphijmet<mindphijmet)  mindphijmet=idphijmet;
 	      
 	  aClusteredMetP4 -= aJets[ijet];	  
-	  if(fabs(deltaPhi(aJets[ijet].phi(),zll.phi()))>2) recoilJets.push_back( aJets[ijet] );
+	  if(aJets[ijet].pt()>15) aClustered15MetP4 -= aJets[ijet];
+	  if(aJets[ijet].pt()>20) aClustered20MetP4 -= aJets[ijet];
 	  
 	  bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_LOOSE);//TIGHT);
 	  if(isGoodJet)
@@ -655,6 +668,8 @@ int main(int argc, char* argv[])
       // MET ANALYSIS
       //
       METUtils::stRedMET aRedMetOut; 
+      LorentzVector aRedMet15=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, aClustered15MetP4, zvvs[0],false,&aRedMetOut);
+      LorentzVector aRedMet20=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, aClustered20MetP4, zvvs[0],false,&aRedMetOut);
       LorentzVector aRedMet=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, aClusteredMetP4, zvvs[0],false,&aRedMetOut);
       double aRedMetL=aRedMetOut.redMET_l;
       double aRedMetT=aRedMetOut.redMET_t;
@@ -714,7 +729,13 @@ int main(int argc, char* argv[])
 		{
 		  tags_full.push_back(tag_cat+"eq0jets");
 		  mon.fillHisto("eventflow",tags_full,4,weight);
+		  mon.fillHisto("met_met",tags_full,zvvs[0].pt(),weight);
 		  mon.fillHisto("met_redMet",tags_full,aRedMet.pt(),weight);
+		  mon.fillHisto("met_redMet15",tags_full,aRedMet15.pt(),weight);
+		  mon.fillHisto("met_redMet20",tags_full,aRedMet20.pt(),weight);
+		  mon.fillProfile("metvsavginstlumi",  tags_full, ev.curAvgInstLumi, aRedMet.pt(), weight);
+		  mon.fillProfile("met15vsavginstlumi",  tags_full, ev.curAvgInstLumi, aRedMet15.pt(), weight);
+		  mon.fillProfile("met20vsavginstlumi",  tags_full, ev.curAvgInstLumi, aRedMet20.pt(), weight);
 		  mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
 		  mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);		  
 
@@ -767,10 +788,13 @@ int main(int argc, char* argv[])
 	 PhysicsObjectJetCollection &varJets=variedAJets[ivar>4 ? 0  : ivar];
 	 PhysicsObjectJetCollection tightVarJets;
 	 LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
+	 LorentzVector clusteredMet15P4(clusteredMetP4),clusteredMet20P4(clusteredMetP4);
 	 int nAJetsLoose(0),nABtags(0);
 	 float mindphijmet(999999.),mindphijmet15(999999.);
 	 for(size_t ijet=0; ijet<varJets.size(); ijet++){
 	   clusteredMetP4 -= varJets[ijet];
+	   if(aJets[ijet].pt()>15) clusteredMet15P4 -= varJets[ijet];
+	   if(aJets[ijet].pt()>20) clusteredMet20P4 -= varJets[ijet];
 	   if(!hasObjectId(varJets[ijet].pid,JETID_LOOSE)) continue;
 	   float idphijmet( fabs(deltaPhi(aJets[ijet].phi(),zvvs[0].phi()) ) );
 	   if(idphijmet<mindphijmet15)  mindphijmet15=idphijmet;
@@ -784,9 +808,11 @@ int main(int argc, char* argv[])
 	 }
 	 float mt = METUtils::transverseMass(zll,zvv,true);
 	 METUtils::stRedMET redMetInfo;
+	 LorentzVector redMet15=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0., lep2, 0., clusteredMet15P4, zvv,false,&redMetInfo);
+	 LorentzVector redMet20=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0., lep2, 0., clusteredMet20P4, zvv,false,&redMetInfo);
 	 LorentzVector redMet=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0., lep2, 0., clusteredMetP4, zvv,false,&redMetInfo);
 	 float balance=zvv.pt()/zll.pt();
-
+	 
 	 bool isZsideBand( (zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200));
 	 bool isZsideBandPlus( (zll.mass()>110 && zll.mass()<200));	 
 	 bool passLocalBveto(nABtags==0);
@@ -794,20 +820,20 @@ int main(int argc, char* argv[])
 	 bool passLocalBalance(balance>0.4 && balance<1.8);
 	 bool passLocalDphijmet(mindphijmet>0.5);
 	 if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
-
 	 if(passLocalJetVeto) tags_full.push_back(tag_cat+"eq0jets");	   
 	 
 	 for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
 	   float minMet=optim_Cuts1_met[index];
 	   float minZpt=optim_Cuts1_zpt[index];
 	   float deltaZ=optim_Cuts1_zmass[index];
-	   bool passLocalZmass(fabs(zll.mass()-91)<deltaZ);
+	   float jetthr=optim_Cuts1_jetthr[index];
 	   bool passLocalMet(redMet.pt()>minMet);
+	   if(jetthr==15) passLocalMet=(redMet15.pt()>minMet);
+	   if(jetthr==20) passLocalMet=(redMet20.pt()>minMet);
+	   bool passLocalZmass(fabs(zll.mass()-91)<deltaZ);
 	   bool passLocalZpt(zll.pt()>minZpt);
 	   bool passLocalPreselection            (pass3dLeptonVeto && passLocalDphijmet && passLocalBveto && passLocalJetVeto && passLocalBalance && passLocalZmass && passLocalZpt && passLocalMet);
 	   bool passLocalPreselectionMbvetoMzmass(pass3dLeptonVeto && passLocalDphijmet                   && passLocalJetVeto && passLocalBalance                   && passLocalZpt && passLocalMet);
-
-	   
 	   if(passLocalPreselection)
 	     {
 	       mon.fillHisto(TString("met_shapes")+varNames[ivar],tags_full,index,redMet.pt(),iweight);
