@@ -14,8 +14,8 @@
   RooWorkspace *w=(RooWorkspace *)f->Get("MaxLikelihoodFitResult");
   //  w->Print();
   RooAbsData*	data=w->data("data_obs");
-  RooAbsPdf*	eepdf=w->pdf("pdf_binee");
-  RooAbsPdf*	mumupdf=w->pdf("pdf_binmumu");
+  RooAbsPdf*	eepdf=w->pdf("pdf_bineeeq0jets");
+  RooAbsPdf*	mumupdf=w->pdf("pdf_binmumueq0jets");
   RooRealVar *mu=w->var("r");
   mu->setRange(0.5,2.5);
   f->Close();
