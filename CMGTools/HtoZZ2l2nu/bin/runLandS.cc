@@ -992,7 +992,23 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
          fprintf(pFile,"%35s %10s ", "QCDscale_VV", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
                   if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0669);}else{fprintf(pFile,"%6f ",1.0700);}
-            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0767);}else{fprintf(pFile,"%6f ",1.0822);}
+            //temporary removed to avoid double counts with uncertainty applied on ZZ xsection itself --> should be reintegrated for Higgs computation
+            //}else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0767);}else{fprintf(pFile,"%6f ",1.0822);}
+            }else{fprintf(pFile,"%6s ","-");}
+         }fprintf(pFile,"\n");
+
+
+         ///////////////////////////////////////////////
+
+         fprintf(pFile,"%35s %10s ", "XSec_sys_WW", "lnN");
+         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+            if(dci.procs[j-1].BeginsWith("ww")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.097);}else{fprintf(pFile,"%6f ",1.097);}
+            }else{fprintf(pFile,"%6s ","-");}
+         }fprintf(pFile,"\n");
+
+         fprintf(pFile,"%35s %10s ", "XSec_sys_WZ", "lnN");
+         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+            if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.056);}else{fprintf(pFile,"%6f ",1.056);}
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
