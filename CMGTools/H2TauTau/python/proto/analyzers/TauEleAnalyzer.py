@@ -154,9 +154,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def testLeg2ID(self, electron):
         '''Tight muon selection, no isolation requirement'''
-        print 'WARNING: USING SETUP FOR SYNC PURPOSES'
-#        return electron.tightIdForEleTau() and \
-        return electron.looseIdForEleTau() and \
+#        print 'WARNING: USING SETUP FOR SYNC PURPOSES'
+#        return electron.looseIdForEleTau() and \
+        return electron.tightIdForEleTau() and \
                self.testVertex( electron )
 
 
