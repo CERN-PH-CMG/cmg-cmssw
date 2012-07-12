@@ -82,12 +82,6 @@ int main(int argc, char* argv[])
 
   //book histograms
   SmartSelectionMonitor mon;
-
-  mon.addHistogram(  new TProfile("metvsrun"    ,      ";Run number;<MET>",     500, 190000,200000) ) ;
-  mon.addHistogram(  new TProfile("metvsavginstlumi",  ";Avg. inst lumi;<MET>", 50,  0,5000));
-  mon.addHistogram(  new TProfile("nvtxvsrun",         ";Run number;<Vertices>",     500, 190000,200000) ) ;
-  mon.addHistogram(  new TProfile("nvtxvsavginstlumi", ";Avg. inst lumi;<Vertices>", 50,  0,5000));
-
   TH1F* Hcutflow     = (TH1F*) mon.addHistogram(  new TH1F ("cutflow"    , "cutflow"    ,6,0,6) ) ;
 
   //##############################################
@@ -96,15 +90,20 @@ int main(int argc, char* argv[])
   std::vector<double> optim_Cuts1_met; 
   std::vector<double> optim_Cuts1_zpt;
   std::vector<double> optim_Cuts1_zmass;
+  std::vector<double> optim_Cuts1_jetthr;
   for(double met=50;met<100;met+=5.0){
     if(met>80 && int(met)%10!=0)continue;
     for(double pt=30;pt<100;pt+=5){
       if(pt>60 && int(pt)%10!=0)continue;
       for(double zm=5;zm<20;zm+=2.5){
 	if(zm>10 && int(2*zm)%5!=0)continue;
-	optim_Cuts1_met    .push_back(met);
-	optim_Cuts1_zpt    .push_back(pt);
-	optim_Cuts1_zmass  .push_back(zm);
+	for(double jetpt=10; jetpt<20; jetpt+=5)
+	  {
+	    optim_Cuts1_met    .push_back(met);
+	    optim_Cuts1_zpt    .push_back(pt);
+	    optim_Cuts1_zmass  .push_back(zm);
+	    optim_Cuts1_jetthr.push_back(jetpt);
+	  }
       }
     }
   }
@@ -112,10 +111,12 @@ int main(int argc, char* argv[])
   TH1F* Hoptim_cuts1_met    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
   TH1F* Hoptim_cuts1_zpt    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_zpt"  , ";cut index;zpt"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
   TH1F* Hoptim_cuts1_zmass  =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_zm"  , ";cut index;zmass"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+  TH1F* Hoptim_cuts1_jetthr =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_jetthr",  ";cut index;jet thr", optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
   for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
     Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
     Hoptim_cuts1_zpt  ->Fill(index, optim_Cuts1_zpt[index]);
     Hoptim_cuts1_zmass  ->Fill(index, optim_Cuts1_zmass[index]);
+    Hoptim_cuts1_jetthr ->Fill(index, optim_Cuts1_jetthr[index]);
   }
   mon.addHistogram( new TH2F ("mt_shapes",";cut index;M_{T} [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
   mon.addHistogram( new TH2F ("met_shapes",";cut index;met [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
@@ -145,8 +146,13 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_redMet15"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_redMet20"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-100,400) );
   mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-100,400) );
+  mon.addHistogram(  new TProfile("metvsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
+  mon.addHistogram(  new TProfile("met15vsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
+  mon.addHistogram(  new TProfile("met20vsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 15,76,106) );
   TH1 *hj=mon.addHistogram( new TH1F("njets",  ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
   for(int ibin=1; ibin<=hj->GetXaxis()->GetNbins(); ibin++)
@@ -354,6 +360,7 @@ int main(int argc, char* argv[])
       double mindphijmet(9999.),mindphijmet15(9999.);
       PhysicsObjectJetCollection selJets;
       LorentzVector clusteredMet(gamma);  clusteredMet *= -1;
+      LorentzVector clustered15Met(clusteredMet),clustered20Met(clusteredMet);
       LorentzVector mht(0,0,0,0),unclusteredMet(0,0,0,0);
       PhysicsObjectJetCollection & jetsToUse=jets[0];
       if(disableJERSmear) jetsToUse=phys.ajets;
@@ -368,6 +375,9 @@ int main(int argc, char* argv[])
 	  if(ijetP4.pt()<15) njets15++;
 	  selJets.push_back(ijetP4);
 	  clusteredMet -= ijetP4;
+	  if(ijetP4.pt()>15) clustered15Met -= ijetP4;
+          if(ijetP4.pt()>20) clustered20Met -= ijetP4;
+
 	  mht -= ijetP4;
 	  ht += ijetP4.pt();
 
@@ -389,6 +399,8 @@ int main(int argc, char* argv[])
       LorentzVector assocMetP4 = phys.met[1];
       LorentzVector min3Met=min(metP4, min(assocMetP4,clusteredMet)) ;
       METUtils::stRedMET redMetOut;
+      LorentzVector redMet15=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clustered15Met, zvvs[0],true,&redMetOut);
+      LorentzVector redMet20=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clustered20Met, zvvs[0],true,&redMetOut);
       LorentzVector redMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clusteredMet, metP4,true,&redMetOut));
       double redMetL=redMetOut.redMET_l;
       double redMetT=redMetOut.redMET_t;
@@ -408,7 +420,7 @@ int main(int argc, char* argv[])
       bool passBalance(metP4.pt()/gamma.pt() > 0.4 && metP4.pt()/gamma.pt() < 1.8);
       bool passDphijmet        (mindphijmet>0.5);
       if(njets30==0)  passDphijmet=(mindphijmet15>0.5);
-      bool passPreSelection(passBveto && passJetVeto && passDphijmet);
+      bool passShapePreSelection(passBveto && passJetVeto && passDphijmet);
       
       //event category
       int eventSubCat    = eventCategoryInst.Get(phys,&selJets);
@@ -455,6 +467,11 @@ int main(int argc, char* argv[])
 	      if(!passJetVeto) continue;
 	      mon.fillHisto("met_met",         ctf, metP4.pt(),iweight);
 	      mon.fillHisto("met_redMet",      ctf, redMet.pt(),iweight);
+	      mon.fillHisto("met_redMet15",    ctf,redMet15.pt(),iweight);
+	      mon.fillHisto("met_redMet20",    ctf,redMet20.pt(),iweight);
+	      mon.fillProfile("metvsavginstlumi",  ctf, ev.curAvgInstLumi, redMet.pt(), iweight);
+	      mon.fillProfile("met15vsavginstlumi",  ctf, ev.curAvgInstLumi, redMet15.pt(), iweight);
+	      mon.fillProfile("met20vsavginstlumi",  ctf, ev.curAvgInstLumi, redMet20.pt(), iweight);
 	      mon.fillHisto("met_redMetT",     ctf, redMetL,iweight);
 	      mon.fillHisto("met_redMetL",     ctf, redMetT,iweight);
 	      mon.fillHisto("mt",              ctf, mt,iweight);
@@ -468,14 +485,17 @@ int main(int argc, char* argv[])
 		    }
 		}
 	      
-	      if(!passPreSelection) continue;
+	      if(!passShapePreSelection) continue;
 	      for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
 		float minMet=optim_Cuts1_met[index];
 		float minZpt=optim_Cuts1_zpt[index];
 		float deltaZ=optim_Cuts1_zmass[index];
+		float jetthr=optim_Cuts1_jetthr[index];
 		bool passLocalZmass(fabs(gamma.mass()-91)<deltaZ);
-		bool passLocalMet(redMet.pt()>minMet);
 		bool passLocalZpt(gamma.pt()>minZpt);
+		bool passLocalMet(redMet.pt()>minMet);
+		if(jetthr==15) passLocalMet=(redMet15.pt()>minMet);
+		if(jetthr==20) passLocalMet=(redMet20.pt()>minMet);
 		if(passLocalZmass && passLocalMet && passLocalZpt) 
 		  { 
 		    mon.fillHisto("met_shapes",ctf,index,redMet.pt(),iweight);
