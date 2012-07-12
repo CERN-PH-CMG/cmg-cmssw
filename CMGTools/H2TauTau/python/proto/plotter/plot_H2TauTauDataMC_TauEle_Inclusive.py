@@ -15,7 +15,7 @@ from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.embed import *
-from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, PlotInfo
+from CMGTools.H2TauTau.proto.plotter.plotinfo import *
 from CMGTools.RootTools.Style import *
 from ROOT import kPink, TH1, TPaveText, TPad
 
@@ -105,14 +105,17 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
     return ssign, osign, ssQCD, osQCD
 
 
-def drawAll(cut, plots, embed):
+def drawAll(cut, plots, embed, selComps, weights, fwss, fwos):
     '''See plotinfo for more information'''
     for plot in plots.values():
         print plot.var
         ss, os, ssQ, osQ = makePlot( plot.var, anaDir,
                                      selComps, weights, fwss, fwos,
                                      plot.nbins, plot.xmin, plot.xmax,
-                                     cut, weight=weight, embed=embed, treeName = 'H2TauTauTreeProducerTauEle', shift=shift)
+                                     cut, weight=weight, embed=embed)
+
+        osQ.legendOn = False
+        print 'drawing ', plot.var
         draw(osQ, False, 'TauEle')
         plot.ssign = cp(ss)
         plot.osign = cp(os)
@@ -171,7 +174,10 @@ if __name__ == '__main__':
                       dest="higgs", 
                       help="Higgs mass: 125, 130,... or dummy",
                       default=None)
-
+    parser.add_option("-p", "--plots", 
+                      dest="plots", 
+                      help="plots: set it to true to make control plots",
+                      default=False)
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
@@ -189,11 +195,13 @@ if __name__ == '__main__':
         
     cutstring = options.cut
     options.cut = replaceCategories(options.cut, categories) 
+
+    print 'CUT APPLIED:', options.cut
     
     # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
-    replaceW = False
+    replaceW = True
     useW11 = False
     
     anaDir = args[0].rstrip('/')
@@ -238,11 +246,14 @@ if __name__ == '__main__':
                                  weight=weight, embed=options.embed,
                                  treeName='H2TauTauTreeProducerTauEle')
 
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, 
-                                           fwss, fwos, NBINS, XMIN, XMAX, 
-                                           options.cut, weight=weight, embed=options.embed)
-
-    #osQCD.legendOn = False
-    draw(osQCD, options.blind, 'TauEle')
-    
-    datacards(osQCD, cutstring, shift, 'TauEle')
+    if (options.plots == 'True') :
+        drawAll(options.cut, plots_TauEle, options.embed, selComps, weights, fwss, fwos)
+        # this does not work yet, it does not get the DY right
+    else :
+        ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, 
+                                               fwss, fwos, NBINS, XMIN, XMAX, 
+                                               options.cut, weight=weight, embed=options.embed, 
+                                               replaceW=replaceW)
+        osQCD.legendOn = False                                       
+        draw(osQCD, options.blind, 'TauEle')
+        datacards(osQCD, cutstring, shift, 'TauEle')
