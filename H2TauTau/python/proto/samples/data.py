@@ -13,7 +13,8 @@ promptjson  =  '/'.join([jsondir, 'Prompt/Cert_160404-180252_7TeV_PromptReco_Col
 data_Run2011A_May10ReReco_v1 = cfg.DataComponent(
     name = 'data_Run2011A_May10ReReco_v1',
     files = [],
-    intLumi = 215.63, 
+    intLumi = 168.59, # 215.63, 168.59 ... this is because we should start from run 163262, as 
+                      # before the tau trigger is bugged
     triggers = [],
     json = '/'.join([jsondir, 'Reprocessing/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON_v3.txt'])
     )
