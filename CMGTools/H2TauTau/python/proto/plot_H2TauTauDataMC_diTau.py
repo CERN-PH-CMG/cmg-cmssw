@@ -10,10 +10,23 @@ from PrepareDictionaries_diTau import *
 import math
 import copy
 
+'''This provides a lineno() function to make it easy to grab the line
+number that we're on.
+
+Danny Yoo (dyoo@hkn.eecs.berkeley.edu)
+'''
+
+import inspect
+
+def lineno():
+    '''Returns the current line number in our program.'''
+    return inspect.currentframe().f_back.f_lineno
+
+########## rootlogon5 for loose iso M   ##### don't forget to change weight!
+########## rootlogon3 for loose iso LL4 ##### don't forget to change weight!
 from os import path
 if path.exists('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon3.C'):
     gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon3.C')  # Run ROOT logon script
-
 
 run2012=True
 
@@ -87,6 +100,7 @@ if __name__ == '__main__':
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
+    #print lineno()
 
     dataName = 'Data'
     weight='weight'
@@ -152,10 +166,12 @@ if __name__ == '__main__':
       #weights['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
       #selComps['data_Run2011A_PromptReco_v6'].intLumi = 0.
       #weights['data_Run2011A_PromptReco_v6'].intLumi = 0.
+    #print lineno()
 
     selCompsDataMass, weightsDataMass = componentsWithData(selComps,weights)
     #selCompsMCMass, weightsMCMass     = componentsWithOutData(selComps,weights)
     selCompsNoSignal, weightsNoSignal = componentsWithOutSignal(selComps,weights)
+    #print lineno()
 
     if options.embed:
         embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight)
@@ -171,7 +187,11 @@ if __name__ == '__main__':
     baseline           += ' && l2MVAEle>0.5'
     baselineSS         += ' && l2MVAEle>0.5'
     l1Pt35l2Pt35       =  ' && l1Pt>35 && l2Pt>35'
+    
+    l1Pt40l2Pt40_down  =  ' && l1Pt>40*0.97 && l2Pt>40*0.97'
+    l1Pt40l2Pt40_up    =  ' && l1Pt>40*1.03 && l2Pt>40*1.03'
     l1Pt40l2Pt40       =  ' && l1Pt>40 && l2Pt>40'
+    
     l1Pt45l2Pt40       =  ' && l1Pt>45 && l2Pt>40'
     l1Pt45l2Pt45       =  ' && l1Pt>45 && l2Pt>45'
     l1Pt50l2Pt50       =  ' && l1Pt>50 && l2Pt>50'
@@ -192,55 +212,32 @@ if __name__ == '__main__':
     Jet0               =  ' && jet1Pt<50'
     BOOSTED            =  ' && jet1Pt>50'
     VBF                =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>250 && nCentralJets==0'
-    NOVBF              =  ' && (jet1Pt<50 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<250 || nCentralJets >0)'
     VBFtight           =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>4.0 && (jet1Eta*jet2Eta)<0 && mjj>400 && nCentralJets==0 '
     VBFmedium          =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>500 && nCentralJets==0 '
+    NOVBF              =  ' && (jet1Pt<50 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<250 || nCentralJets >0)'
+    NOVBFmedium        =  ' && (jet1Pt<50 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<500 || nCentralJets >0)'
     NOVBFtight         =  ' && (jet1Pt<50 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<4.0 || (jet1Eta*jet2Eta)>0 || mjj<400 || nCentralJets >0)'
+    #print lineno()
 
     cuts=[
 
 #####  Riccardo  ############################################################################################################################### 
 
-        #("CMS_2012_5_fb_forReweighting_weighted_BOOSTED"     , baselineSS + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb_forReweighting_weighted_VBF"         , baselineSS + VBF             , ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_dRRW_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<200.0'   , isolationMM , 5 ),
 
-        ("CMS_2012_5_fb_l40_mm_dRtt20_qcd5LL4_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<2.0'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l40_mm_dRtt18_qcd5LL4_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<1.8'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l40_mm_dRtt16_qcd5LL4_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<1.6'   , isolationMM , 5 ),
+        ("CMS_2012_5_fb__qcd5LL4_loose_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        ("CMS_2012_5_fb__qcd5LL4_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
 
-        ("CMS_2012_5_fb_l45_mm_dRtt22_qcd5LL4_loose_BOOSTED" , baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF , ' && dRtt<2.2'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l45_mm_dRtt20_qcd5LL4_loose_BOOSTED" , baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF , ' && dRtt<2.0'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l45_mm_dRtt18_qcd5LL4_loose_BOOSTED" , baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF , ' && dRtt<1.8'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l45_mm_dRtt16_qcd5LL4_loose_BOOSTED" , baseline + l1Pt45l2Pt45 + BOOSTED + NOVBF , ' && dRtt<1.6'   , isolationMM , 5 ),
-
-        ("CMS_2012_5_fb_l50_mm_dRtt25_qcd5LL4_loose_BOOSTED" , baseline + l1Pt50l2Pt50 + BOOSTED + NOVBF , ' && dRtt<2.5'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l50_mm_dRtt22_qcd5LL4_loose_BOOSTED" , baseline + l1Pt50l2Pt50 + BOOSTED + NOVBF , ' && dRtt<2.2'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l50_mm_dRtt20_qcd5LL4_loose_BOOSTED" , baseline + l1Pt50l2Pt50 + BOOSTED + NOVBF , ' && dRtt<2.0'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l50_mm_dRtt18_qcd5LL4_loose_BOOSTED" , baseline + l1Pt50l2Pt50 + BOOSTED + NOVBF , ' && dRtt<1.8'   , isolationMM , 5 ),
-
-
-        ("CMS_2012_5_fb_l40_mm_dRtt20_qcd5LL4_loose_VBF"     , baseline + l1Pt40l2Pt40 + VBF             , ' && dRtt<2.0'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l40_mm_dRtt16_qcd5LL4_loose_VBF"     , baseline + l1Pt40l2Pt40 + VBF             , ' && dRtt<1.6'   , isolationMM , 5 ),
-
-        ("CMS_2012_5_fb_l45_mm_dRtt20_qcd5LL4_loose_VBF"     , baseline + l1Pt45l2Pt45 + VBF             , ' && dRtt<2.0'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l45_mm_dRtt16_qcd5LL4_loose_VBF"     , baseline + l1Pt45l2Pt45 + VBF             , ' && dRtt<1.6'   , isolationMM , 5 ),
-
-        ("CMS_2012_5_fb_l40_mm_dRtt22_qcd5LL4_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium       , ' && dRtt<2.2'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l40_mm_dRtt20_qcd5LL4_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium       , ' && dRtt<2.0'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l40_mm_dRtt16_qcd5LL4_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium       , ' && dRtt<1.6'   , isolationMM , 5 ),
-
-        ("CMS_2012_5_fb_l45_mm_dRtt22_qcd5LL4_medium_VBF"    , baseline + l1Pt45l2Pt45 + VBFmedium       , ' && dRtt<2.2'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l45_mm_dRtt20_qcd5LL4_medium_VBF"    , baseline + l1Pt45l2Pt45 + VBFmedium       , ' && dRtt<2.0'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l45_mm_dRtt16_qcd5LL4_medium_VBF"    , baseline + l1Pt45l2Pt45 + VBFmedium       , ' && dRtt<1.6'   , isolationMM , 5 ),
-        
-        ("CMS_2012_5_fb_l45_mm_dRtt28_qcd5LL4_tight_VBF"     , baseline + l1Pt45l2Pt45 + VBFtight        , ' && dRtt<2.8'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l45_mm_dRtt25_qcd5LL4_tight_VBF"     , baseline + l1Pt45l2Pt45 + VBFtight        , ' && dRtt<2.5'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l45_mm_dRtt22_qcd5LL4_tight_VBF"     , baseline + l1Pt45l2Pt45 + VBFtight        , ' && dRtt<2.2'   , isolationMM , 5 ),
-        ("CMS_2012_5_fb_l45_mm_dRtt20_qcd5LL4_tight_VBF"     , baseline + l1Pt45l2Pt45 + VBFtight        , ' && dRtt<2.0'   , isolationMM , 5 ),
+        #("CMS_2012_5_fb_l40_mm_dRtt18_qcd5M_dRRW_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBFmedium , ' && dRtt<1.8'   , isolationMM , 5 ),
+        #("CMS_2012_5_fb_l40_mm_dRtt25_qcd5M_dRRW_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium             , ' && dRtt<2.5'   , isolationMM , 5 ),
+        #("CMS_2012_5_fb_l40_mm_dRtt22_qcd5M_dRRW_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium             , ' && dRtt<2.2'   , isolationMM , 5 ),
+        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_dRRW_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium             , ' && dRtt<2.0'   , isolationMM , 5 ),
+        #("CMS_2012_5_fb_l40_mm_dRtt18_qcd5M_dRRW_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium             , ' && dRtt<1.8'   , isolationMM , 5 ),
 
 	  ]
-        
+    
     for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
+     bareCut = cut
      if str(prefix).find("VBF") > 0 :
        rebin = 2	
      else :
@@ -297,6 +294,16 @@ if __name__ == '__main__':
         #('l2LooseMu'        ,2            , 0   , 2      ),
         #('jet1Eta-jet2Eta'  ,int(40/rebin), -5  , 5      ),
       ]:
+      cut     = bareCut
+      print 'I\'ve stripped the old pt cut\n', cut
+      if   ( var == 'svfitMass*1.03' or var == 'visMass*1.03' ):
+        cut += l1Pt40l2Pt40_up
+      elif ( var == 'svfitMass*0.97' or var == 'visMass*0.97' ):
+        cut += l1Pt40l2Pt40_down 
+      else :
+        cut += l1Pt40l2Pt40
+        	
+      print 'I\'m using this cut string\n',cut+isocut+antiqcdcut    
       
       prefix1 = os.getcwd()+"/"+prefix+"/diTau_2012_"
       dirList = os.listdir(os.getcwd())
@@ -306,13 +313,14 @@ if __name__ == '__main__':
           exists = True
       if not(exists) :
         os.mkdir(os.getcwd()+"/"+prefix)
-
+      #print lineno()
+      
       if var in ["met","jet1Pt","jet2Pt","l1Pt","l2Pt"]:
         log=True
       else:
         log=False
 
-      #looseisocut=" && !(1 "+isocut+")"
+      looseisocut = isolationM + " && !(1 "+isocut+")"
       #semilooseisocut=isolationM+" && !(1 "+isocut+")"
 
 #       if prefix.find('VBF') > 0 :
@@ -320,6 +328,8 @@ if __name__ == '__main__':
 #       else :
 #         looseisocut = isolationLL4+" && !(1 "+isocut+")"
 
+############## change here the loose iso
+      #looseisocut = isolationM + " && !(1 "+isocut+")"
       looseisocut = isolationLL4+" && !(1 "+isocut+")"
       
       #looseisocut=isolationMNM+" && !(1 "+isocut+")"
@@ -350,7 +360,8 @@ if __name__ == '__main__':
         pass
 
       cutSS=cut.replace("diTauCharge==0","diTauCharge!=0")
-      
+      #print lineno()
+
       plotVarDataSS = H2TauTauDataMC(var,                           \
                                      anaDir,                        \
                                      selCompsNoSignal,              \
@@ -361,6 +372,7 @@ if __name__ == '__main__':
      			                     cut = cutSS+isocut+antiqcdcut, \
      			                     weight=weight,                 \
      			                     embed=options.embed)
+      #print lineno()
       
       plotVarDataLooseIsoSS = H2TauTauDataMC(var,                               \
                                              anaDir,                            \
@@ -372,23 +384,28 @@ if __name__ == '__main__':
      			                             cut = cutSS+looseisocut+antiqcdcut,\
      			                             weight=weight,                     \
      			                             embed=options.embed)
+      #print lineno()
 
       plotVarDataLooseIsoOS = H2TauTauDataMC(var,                              \
                                              anaDir,                           \
                                              selCompsNoSignal,                 \
                                              weightsNoSignal,                  \
-     			                             nx,                               \
-     			                             xmin,                             \
-     			                             xmax,                             \
-     			                             cut = cut+looseisocut+antiqcdcut, \
-     			                             #weight=weight+"*weightQCD_nVert(nVert)",\
-     			                             weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
-     			                             #weight=weight,                    \
-     			                             embed=options.embed)
+                                             nx,                               \
+                                             xmin,                             \
+                                             xmax,                             \
+                                             cut = cut+looseisocut+antiqcdcut, \
+                                             #weight=weight+"*weightQCD_nVert(nVert)",\
+                                             #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
+                                             weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
+                                             #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
+                                             #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
+                                             #weight=weight,                    \
+                                             embed=options.embed)
+      #print lineno()
       
       WJets_looseisocut = isolationMNM + " && !(1 "+isocut+")"
-      if prefix.find('VBF')     > 0 : weightForWJets = 'weightWJets2011_nVert'
-      if prefix.find('BOOSTED') > 0 : weightForWJets = 'weightW3Jets2011_nVert'
+      if prefix.find('VBF')     > 0 : weightForWJets = 'weightWJets2011_nVert(nVert)'
+      if prefix.find('BOOSTED') > 0 : weightForWJets = 'weightW3Jets2011_nVert(nVert)'
       plotVarDataLooseIsoOS_WJets = H2TauTauDataMC(var,                                    \
                                                    anaDir,                                 \
                                                    selCompsNoSignal,                       \
@@ -468,6 +485,7 @@ if __name__ == '__main__':
        QCDShapeSemiPlot=copy.deepcopy(QCDShapeSemi)
        QCDShapeSemiPlot.SetStyle( sBlueLine )
        QCDShapeSemiPlot.weighted.Scale(QCDScaleSemi)
+       #print lineno()
 
        if True:
           print "tight SS"
@@ -526,13 +544,13 @@ if __name__ == '__main__':
         massesRange = [125]
         print 'I\'m plotting distribution just for mass 125 GeV'
         
-      for mIndex in massesRange :
-        
+      for mIndex in massesRange :        
         plotVarDataOS = H2TauTauDataMC(var, anaDir, selCompsDataMass[mIndex], weightsDataMass[mIndex],
      			    nx, xmin, xmax,
      			    cut = cut+isocut+antiqcdcut, weight=weight,
      			    embed=options.embed)
 
+        #print lineno()
 
         #####################################################
         ###            WJets /W3Jets Estimation           ###
@@ -541,7 +559,7 @@ if __name__ == '__main__':
         if prefix.find('VBF')     > 0 : 
           WJets_sample    = 'W3Jets'
           WJets_ToBePut_0 = ['WJets','WJets_Fakes']
-          if   prefix.find('loose')   > 0 : 
+          if   prefix.find('loose') or prefix.find('medium')  > 0 : 
             scaleFromMuTau  = 8.56  # for VBF loose
           elif prefix.find('tight')   > 0 : 
             scaleFromMuTau  = 9.96  # for VBF tight
@@ -593,6 +611,7 @@ if __name__ == '__main__':
           print >> Yields_dump, "DYJets_Electron: \t"              , plotVarDataOS.Hist("DYJets_Electron").Integral()
           print >> Yields_dump, "DYJets_Fakes: \t\t"               , plotVarDataOS.Hist("DYJets_Fakes").Integral()
           print >> Yields_dump, "WJets: \t\t\t"                    , plotVarDataOS.Hist("WJets").Integral()+plotVarDataOS.Hist("WJets_Fakes").Integral()
+          print >> Yields_dump, "W3Jets: \t\t\t"                   , plotVarDataOS.Hist("W3Jets").Integral()
           print >> Yields_dump, "DiBoson: \t\t"                    , plotVarDataOS.Hist("WW").Integral()+plotVarDataOS.Hist("WZ").Integral()+plotVarDataOS.Hist("ZZ").Integral()
           print >> Yields_dump, "QCDdata: \t\t"                    , plotVarDataOS.Hist("QCDdata").Integral()
           print >> Yields_dump, str('Higgsgg' +str(mIndex)+":\t\t"), plotVarDataOS.Hist(str('Higgsgg' +str(mIndex))).Integral()
@@ -614,7 +633,8 @@ if __name__ == '__main__':
             saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"svfitMass","SM1")
           if var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03":
             saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"visMass","SM1")
-      
+        #print lineno()
+
         #####################################################
         ###   BOOSTING THE SIGNAL FOR PICTORIAL RESULTS   ###
         #####################################################
