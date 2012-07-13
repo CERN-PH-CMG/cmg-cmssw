@@ -1,4 +1,4 @@
-from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauEle_Inclusive_Colin import *
+from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauEle_Inclusive import *
 from CMGTools.RootTools.Style import formatPad
 from ROOT import TH1F
 
