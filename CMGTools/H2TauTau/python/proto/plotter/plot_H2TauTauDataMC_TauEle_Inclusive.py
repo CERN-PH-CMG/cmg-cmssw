@@ -201,7 +201,7 @@ if __name__ == '__main__':
     # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
-    replaceW = True
+    replaceW = False
     useW11 = False
     
     anaDir = args[0].rstrip('/')
@@ -238,13 +238,16 @@ if __name__ == '__main__':
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, 
                                                   options.embed, 'TauEle', options.higgs)
     #import pdb ; pdb.set_trace()
+    print 'SELCOMPS:',selComps
 
     can, pad, padr = buildCanvas()
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
-                                 24, 70, 310, cutw,
+                                 24, 70, 130, cutw,
                                  weight=weight, embed=options.embed,
                                  treeName='H2TauTauTreeProducerTauEle')
+    draw(ss, False, 'TauEle', plotprefix = 'W_ss')
+    draw(os, False, 'TauEle', plotprefix = 'W_os')
 
     if (options.plots == 'True') :
         drawAll(options.cut, plots_TauEle, options.embed, selComps, weights, fwss, fwos)
@@ -254,6 +257,8 @@ if __name__ == '__main__':
                                                fwss, fwos, NBINS, XMIN, XMAX, 
                                                options.cut, weight=weight, embed=options.embed, 
                                                replaceW=replaceW)
-        osQCD.legendOn = False                                       
+        draw(ssign, False, 'TauEle', 'QCD_ss')
+        draw(osign, False, 'TauEle', 'QCD_os')
+#        osQCD.legendOn = False
         draw(osQCD, options.blind, 'TauEle')
         datacards(osQCD, cutstring, shift, 'TauEle')
