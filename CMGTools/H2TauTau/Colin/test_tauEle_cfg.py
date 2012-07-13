@@ -7,17 +7,16 @@ from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 # 'Nom', 'Up', 'Down', or None
 shift = None
 # 1.0, 1.03, 0.97
-tauScaleShift = 0.97
+tauScaleShift = 1
+
+period = 'Period_2011AB'
 
 
+mc_tauEffWeight_mc = 'effMediumIsoTau20MC'
+mc_eleEffWeight_mc = 'effEle18MC'
 mc_vertexWeight = 'vertexWeightFall112011AB'
-mc_tauEffWeight = None
-mc_muEffWeight = None
-
-mc_tauEffWeight_mc = 'effLooseTau15MC'
-mc_muEffWeight_mc = 'effIsoMu15MC'
-mc_tauEffWeight = 'effTau2011AB'
-mc_muEffWeight = 'effMu2011AB'
+mc_tauEffWeight = 'effTau2011AB_TauEle'
+mc_eleEffWeight = 'effEle2011AB'
 
 
 jsonAna = cfg.Analyzer(
@@ -201,6 +200,3 @@ config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
 
 printComps(config.components, True)
-
-
-
