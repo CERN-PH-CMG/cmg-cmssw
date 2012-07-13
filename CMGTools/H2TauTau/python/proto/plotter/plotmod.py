@@ -63,7 +63,7 @@ def addQCD( plot, dataName ):
         qcd.Add(f1, -1)
         qcd.Add(f2, -1)
     except:
-        print 'cannot find Ztt_Fakes'
+        print 'cannot find Ztt_Fakes in W+jets estimate'
         print plot
         pass    
     qcd.Add(plotWithQCD.Hist('TTJets'), -1)
@@ -103,13 +103,15 @@ def fW(mtplot, dataName, xmin, xmax):
     wjet = copy.deepcopy(mtplot.Hist(dataName))
     wjet.Add(mtplot.Hist('Ztt'), -1)
     try:
-        dyJetsFakes = mtplot.Hist('Ztt_Fakes')
-        wjet.Add(mtplot.Hist('Ztt_Fakes'), -1)
+        f1 = plot.Hist('Ztt_ZL')
+        f2 = plot.Hist('Ztt_ZJ')
+        wjet.Add(f1, -1)
+        wjet.Add(f2, -1)
     except:
+        print 'cannot find Ztt_Fakes in QCD estimate'
         pass
     # FIXME
     wjet.Add(mtplot.Hist('TTJets'), -1)
-
 
     # adding the WJets_data estimation to the stack
     mtplot.AddHistogram( 'Data - DY - TT', wjet.weighted, 1010)
