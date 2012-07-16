@@ -144,15 +144,19 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "nvtx", ";Vertices;Events", 50,0,50) );  
   mon.addHistogram( new TH1F( "rho", ";#rho;Events", 50,0,25) );  
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mt_final"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_met_final"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_redMet_final"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet15"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet20"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-100,400) );
+  mon.addHistogram( new TH1F( "met_redMetL_final"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-100,400) );
   mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-100,400) );
-  mon.addHistogram(  new TProfile("metvsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
-  mon.addHistogram(  new TProfile("met15vsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
-  mon.addHistogram(  new TProfile("met20vsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
+  mon.addHistogram(  new TProfile("metvsrho",    "#rho", 50,0,25));
+  mon.addHistogram(  new TProfile("met15vsrho",  "#rho", 50,0,25));
+  mon.addHistogram(  new TProfile("met20vsrho",  "#rho", 50,0,25));
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 15,76,106) );
   TH1 *hj=mon.addHistogram( new TH1F("njets",  ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
   for(int ibin=1; ibin<=hj->GetXaxis()->GetNbins(); ibin++)
@@ -357,7 +361,7 @@ int main(int argc, char* argv[])
       //count the jets
       int nbtags(0),njets30(0),njets15(0);
       double ht(0);
-      double mindphijmet(9999.),mindphijmet15(9999.);
+      double mindphijmet(9999.),mindphijmet20(9999.);
       PhysicsObjectJetCollection selJets;
       LorentzVector clusteredMet(gamma);  clusteredMet *= -1;
       LorentzVector clustered15Met(clusteredMet),clustered20Met(clusteredMet);
@@ -386,8 +390,8 @@ int main(int argc, char* argv[])
 
 	  //dphi(jet,MET)
 	  double idphijmet=fabs(deltaPhi(metP4.phi(),ijetP4.phi()));	  
-	  mindphijmet15=min(idphijmet,mindphijmet15);
-  
+	  if(ijetP4.pt()>20) mindphijmet20=min(idphijmet,mindphijmet20);
+	  
 	  if(ijetP4.pt()<30) continue;
 	  njets30++;
 	  mindphijmet=min(idphijmet,mindphijmet);
@@ -419,7 +423,7 @@ int main(int argc, char* argv[])
       bool passRedMet(redMet.pt()>70);
       bool passBalance(metP4.pt()/gamma.pt() > 0.4 && metP4.pt()/gamma.pt() < 1.8);
       bool passDphijmet        (mindphijmet>0.5);
-      if(njets30==0)  passDphijmet=(mindphijmet15>0.5);
+      if(njets30==0)  passDphijmet=(mindphijmet20>0.5);
       bool passShapePreSelection(passBveto && passJetVeto && passDphijmet);
       
       //event category
@@ -469,19 +473,25 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("met_redMet",      ctf, redMet.pt(),iweight);
 	      mon.fillHisto("met_redMet15",    ctf,redMet15.pt(),iweight);
 	      mon.fillHisto("met_redMet20",    ctf,redMet20.pt(),iweight);
-	      mon.fillProfile("metvsavginstlumi",  ctf, ev.curAvgInstLumi, redMet.pt(), iweight);
-	      mon.fillProfile("met15vsavginstlumi",  ctf, ev.curAvgInstLumi, redMet15.pt(), iweight);
-	      mon.fillProfile("met20vsavginstlumi",  ctf, ev.curAvgInstLumi, redMet20.pt(), iweight);
+	      mon.fillProfile("metvsrho",  ctf, ev.rho, redMet.pt(), iweight);
+	      mon.fillProfile("met15vsrho",  ctf, ev.rho, redMet15.pt(), iweight);
+	      mon.fillProfile("met20vsrho",  ctf, ev.rho, redMet20.pt(), iweight);
 	      mon.fillHisto("met_redMetT",     ctf, redMetL,iweight);
 	      mon.fillHisto("met_redMetL",     ctf, redMetT,iweight);
 	      mon.fillHisto("mt",              ctf, mt,iweight);
-
 	      if(passRedMet)
 		{
 		  mon.fillHisto("balance",       ctf, metP4.pt()/gamma.pt(),iweight);
 		  if(passBalance)
 		    {
-		      mon.fillHisto("mindphijmet",ctf,njets30==0 ? mindphijmet15:mindphijmet,weight);
+		      mon.fillHisto("mindphijmet",ctf,njets30==0 ? mindphijmet20:mindphijmet,weight);
+		      if(passDphijmet)
+			{
+			  mon.fillHisto("mt_final",         ctf, metP4.pt(),iweight);
+			  mon.fillHisto("met_met_final",         ctf, metP4.pt(),iweight);
+			  mon.fillHisto("met_redMet_final",      ctf, redMet.pt(),iweight);
+			  mon.fillHisto("met_redMetL_final",      ctf, redMetL,iweight);
+			}
 		    }
 		}
 	      
@@ -491,7 +501,7 @@ int main(int argc, char* argv[])
 		float minZpt=optim_Cuts1_zpt[index];
 		float deltaZ=optim_Cuts1_zmass[index];
 		float jetthr=optim_Cuts1_jetthr[index];
-		bool passLocalZmass(fabs(gamma.mass()-91)<deltaZ);
+		bool passLocalZmass(fabs(zmass-91)<deltaZ);
 		bool passLocalZpt(gamma.pt()>minZpt);
 		bool passLocalMet(redMet.pt()>minMet);
 		if(jetthr==15) passLocalMet=(redMet15.pt()>minMet);

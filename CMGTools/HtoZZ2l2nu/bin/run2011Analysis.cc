@@ -82,7 +82,8 @@ int main(int argc, char* argv[])
   
   TString outTxtUrl= outUrl + "/" + gSystem->BaseName(url) + ".txt";
   FILE* outTxtFile = NULL;
-  if(!isMC)outTxtFile = fopen(outTxtUrl.Data(), "w");
+  //if(!isMC)
+  outTxtFile = fopen(outTxtUrl.Data(), "w");
   printf("TextFile URL = %s\n",outTxtUrl.Data());
 
   //tree info
@@ -162,6 +163,8 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(5,"b-veto"); 
   h->GetXaxis()->SetBinLabel(6,"#Delta #phi(jet,E_{T}^{miss})>0.5");
   h->GetXaxis()->SetBinLabel(7,"E_{T}^{miss}>70");
+
+  mon.addHistogram( new TH1F ("syncheventflow", ";;Events", 9,0,9) );
 
   mon.addHistogram( new TH1F( "leadpt", ";p_{T}^{l};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "leadeta", ";#eta^{l};Events", 50,-2.6,2.6) );
@@ -606,6 +609,7 @@ int main(int argc, char* argv[])
       LorentzVector lep1=phys.leptons[0];
       LorentzVector lep2=phys.leptons[1];
       LorentzVector zll(lep1+lep2);
+      bool passId(true);
       bool passIdAndIso(true);
       bool passZmass(fabs(zll.mass()-91)<15);
       bool passZmass10(fabs(zll.mass()-91)<10);
@@ -699,9 +703,10 @@ int main(int argc, char* argv[])
 		    }
 		}
 	    }
-	  if(!hasGoodId)  passIdAndIso=false;
-	  else if(!isIso) passIdAndIso=false;     
-	
+	  if(!hasGoodId)  { passId=false; passIdAndIso=false; }
+	  if(!isIso) passIdAndIso=false;     
+	  
+
 	  //fill control histograms (constrained to the Z mass)
 	  if(passZmass && isSameFlavor){
 	      if(matchid!=0){
@@ -850,12 +855,17 @@ int main(int argc, char* argv[])
       */
       //////////////////////////////////////////////////////
 
-      
-      //select dilepton
-      if(!passIdAndIso) continue;
-      if(isMC && use2011Id) weight *= llScaleFactor*llTriggerEfficiency;
-
       tags_full.push_back(tag_cat);
+
+      //select dilepton
+      mon.fillHisto("syncheventflow",tags_full,0,1);
+      if(passId)       mon.fillHisto("syncheventflow",tags_full,1,1);
+      else   	    { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,0,ev.cat); continue; }
+
+      if(passIdAndIso) { mon.fillHisto("syncheventflow",tags_full,2,1); }
+      else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,1,ev.cat); continue; }
+
+      if(isMC && use2011Id) weight *= llScaleFactor*llTriggerEfficiency;
       mon.fillHisto("eventflow",tags_full,0,weight);
       mon.fillHisto("zmass",       tags_full, zll.mass(), weight);  
  
@@ -1111,19 +1121,21 @@ int main(int argc, char* argv[])
 			  //veto events where the lepton is close to MET (2012 only)
 			  if(!use2011Id && zvvs[0].pt()>60 && min(dphil1met,dphil2met)<0.2) 
 			    {
-			      if(!isMC)
+			      /*
+				if(!isMC)
 				{
-				  fprintf(outTxtFile,"\ntype=%d run=%d lumi=%d event=%d\n  met=%3.3f phi=%3.3f \n Njets=%d min dphi(met)=%3.3f rho=%3.3f", 
-					  ev.cat, ev.run, ev.lumi, ev.event,zvvs[0].pt(),zvvs[0].phi(),nAJetsLoose,mindphijmet,ev.rho);
-				  fprintf(outTxtFile,"\n\t l1: pt=%3.3f eta=%3.3f dphi(met)=%3.3f ecalIso=%3.3f hcalIso=%3.3f trkIso=%3.3f gIso=%3.3f nhIso=%3.3f chIso=%3.3f",
-					  phys.leptons[0].pt(), phys.leptons[0].eta(), deltaPhi(phys.leptons[0].phi(),zvvs[0].phi()), 
-					  phys.leptons[0].ecalIso, phys.leptons[0].hcalIso, phys.leptons[0].trkIso, 
-					  phys.leptons[0].gIso, phys.leptons[0].nhIso, phys.leptons[0].chIso );
-				  fprintf(outTxtFile,"\n\t l2: pt=%3.3f eta=%3.3f dphi(met)=%3.3f ecalIso=%3.3f hcalIso=%3.3f trkIso=%3.3f gIso=%3.3f nhIso=%3.3f chIso=%3.3f",
-					  phys.leptons[1].pt(), phys.leptons[1].eta(), deltaPhi(phys.leptons[1].phi(),zvvs[0].phi()), 
-					  phys.leptons[1].ecalIso, phys.leptons[1].hcalIso, phys.leptons[1].trkIso, 
-					  phys.leptons[1].gIso, phys.leptons[1].nhIso, phys.leptons[1].chIso );
+				fprintf(outTxtFile,"\ntype=%d run=%d lumi=%d event=%d\n  met=%3.3f phi=%3.3f \n Njets=%d min dphi(met)=%3.3f rho=%3.3f", 
+				ev.cat, ev.run, ev.lumi, ev.event,zvvs[0].pt(),zvvs[0].phi(),nAJetsLoose,mindphijmet,ev.rho);
+				fprintf(outTxtFile,"\n\t l1: pt=%3.3f eta=%3.3f dphi(met)=%3.3f ecalIso=%3.3f hcalIso=%3.3f trkIso=%3.3f gIso=%3.3f nhIso=%3.3f chIso=%3.3f",
+				phys.leptons[0].pt(), phys.leptons[0].eta(), deltaPhi(phys.leptons[0].phi(),zvvs[0].phi()), 
+				phys.leptons[0].ecalIso, phys.leptons[0].hcalIso, phys.leptons[0].trkIso, 
+				phys.leptons[0].gIso, phys.leptons[0].nhIso, phys.leptons[0].chIso );
+				fprintf(outTxtFile,"\n\t l2: pt=%3.3f eta=%3.3f dphi(met)=%3.3f ecalIso=%3.3f hcalIso=%3.3f trkIso=%3.3f gIso=%3.3f nhIso=%3.3f chIso=%3.3f",
+				phys.leptons[1].pt(), phys.leptons[1].eta(), deltaPhi(phys.leptons[1].phi(),zvvs[0].phi()), 
+				phys.leptons[1].ecalIso, phys.leptons[1].hcalIso, phys.leptons[1].trkIso, 
+				phys.leptons[1].gIso, phys.leptons[1].nhIso, phys.leptons[1].chIso );
 				}
+			      */
 			      continue;
 			    }
 			  
@@ -1170,6 +1182,32 @@ int main(int argc, char* argv[])
 	    }//end passZpt
 
 	}//end passZmass
+      
+      if(pass3dLeptonVeto) {
+	mon.fillHisto("syncheventflow",tags_full,3,1);
+	if(passZmass) {
+	  mon.fillHisto("syncheventflow",tags_full,4,1);
+	  if(passZpt) {
+	    mon.fillHisto("syncheventflow",tags_full,5,1);
+	    if(passDphijmet) {
+	      mon.fillHisto("syncheventflow",tags_full,6,1);
+	      if(zvvs[0].pt()>70) {
+		mon.fillHisto("syncheventflow",tags_full,7,1);
+		if(passBveto) {
+		  mon.fillHisto("syncheventflow",tags_full,8,1);
+		  fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,8,ev.cat);
+		}
+		else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,7,ev.cat); }
+	      }
+	      else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,6,ev.cat); }
+	    }
+	    else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,5,ev.cat); }
+	  }
+	  else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,4,ev.cat); }
+	}
+	else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,3,ev.cat); }
+      }
+      else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,2,ev.cat); }
 
       bool passSB( ((zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200)) && zll.pt()>30 );
       if(passSB && pass3dLeptonVeto && passDphijmet && !passBveto) mon.fillHisto("met_metSB",tags_full,zvvs[0].pt(),weight);
@@ -1225,26 +1263,28 @@ int main(int argc, char* argv[])
 	
 	if(passPreselection && zvv.pt()>50) mon.fillHisto("mtvar"+varNames[ivar],tags_full,mt,iweight);
 	
-
-        if(ivar==0 && outTxtFile && tag_subcat=="vbf" && zvv.pt()>70 && passPreselection){
-           fprintf(outTxtFile,"X----------------------------\nCat: %s - %s\n",tag_cat.Data(),tag_subcat.Data());
-           fprintf(outTxtFile,"inputFile = %s\n",url.Data());
-           fprintf(outTxtFile,"run/lumi/event = %i/%i/%i\n",ev.run, ev.lumi, ev.event);
-           fprintf(outTxtFile,"mt = %f met = %f -redMet = %f\n",mt, zvv.pt(), redMet.pt());
-        }
-
-
-        if(ivar==0 && outTxtFile && tag_subcat=="geq2jets" && zvv.pt()>100 && mt<250 && passPreselection){
-           fprintf(outTxtFile,"DEBUG----------------------------\nCat: %s - %s\n",tag_cat.Data(),tag_subcat.Data());
-           fprintf(outTxtFile,"subcat = %s inputFile = %s\n",tag_subcat.Data(), url.Data());
-           fprintf(outTxtFile,"run/lumi/event = %i/%i/%i\n",ev.run, ev.lumi, ev.event);
-           fprintf(outTxtFile,"mt = %f met = %f -redMet = %f\n",mt, zvv.pt(), redMet.pt());
-           fprintf(outTxtFile,"nvtx = %i rho=%f rho25 = %f\n",ev.nvtx,ev.rho, ev.rho25Neut);
-           fprintf(outTxtFile,"zll  pt=%f mass=%f eta=%f phi=%f\n",zll.pt(), zll.mass(), zll.eta(), zll.phi());
-           for(unsigned int j=0;j<phys.ajets.size();j++){
-              fprintf(outTxtFile,"jet %i  pt=%f eta=%f phi=%f\n",j, phys.ajets[j].pt(), phys.ajets[j].eta(), phys.ajets[j].phi());
-           }
-        }
+	/*
+	  if(ivar==0 && outTxtFile && tag_subcat=="vbf" && zvv.pt()>70 && passPreselection){
+	  fprintf(outTxtFile,"X----------------------------\nCat: %s - %s\n",tag_cat.Data(),tag_subcat.Data());
+	  fprintf(outTxtFile,"inputFile = %s\n",url.Data());
+	  fprintf(outTxtFile,"run/lumi/event = %i/%i/%i\n",ev.run, ev.lumi, ev.event);
+	  fprintf(outTxtFile,"mt = %f met = %f -redMet = %f\n",mt, zvv.pt(), redMet.pt());
+	  }
+	  
+	  
+	  if(ivar==0 && outTxtFile && tag_subcat=="geq2jets" && zvv.pt()>100 && mt<250 && passPreselection){
+	  fprintf(outTxtFile,"DEBUG----------------------------\nCat: %s - %s\n",tag_cat.Data(),tag_subcat.Data());
+	  fprintf(outTxtFile,"subcat = %s inputFile = %s\n",tag_subcat.Data(), url.Data());
+	  fprintf(outTxtFile,"run/lumi/event = %i/%i/%i\n",ev.run, ev.lumi, ev.event);
+	  fprintf(outTxtFile,"mt = %f met = %f -redMet = %f\n",mt, zvv.pt(), redMet.pt());
+	  fprintf(outTxtFile,"nvtx = %i rho=%f rho25 = %f\n",ev.nvtx,ev.rho, ev.rho25Neut);
+	  fprintf(outTxtFile,"zll  pt=%f mass=%f eta=%f phi=%f\n",zll.pt(), zll.mass(), zll.eta(), zll.phi());
+	  for(unsigned int j=0;j<phys.ajets.size();j++){
+	  fprintf(outTxtFile,"jet %i  pt=%f eta=%f phi=%f\n",j, phys.ajets[j].pt(), phys.ajets[j].eta(), phys.ajets[j].phi());
+	  }
+	  }
+	*/
+      
 
 
 	//fill shapes
