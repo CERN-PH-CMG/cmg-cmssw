@@ -180,7 +180,7 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, st
    }
 }
 
-enum Dataset { WW=0, ZZ, WZ, TT, WJ, DY , tw, tbw, ts, tbs, tt, tbt, EE, MuMu, EMU };
+enum Dataset { ZZ=0, WW, WZ, TT, WJ, DY , tw, tbw, ts, tbs, tt, tbt, EE, MuMu, EMU };
 
 //Cross and eff
 double Xsec_ee=0., Xsec_mumu=0., LeA_ee=0., LeA_mu=0.;
@@ -248,8 +248,8 @@ int main(int argc, char* argv[]){
      GetInitialNumberOfEvents(Root,inDir,cutflowhisto);  //Used to get the rescale factor based on the total number of events geenrated
 
      if( hadd ){
-     system("hadd -f ../test/results/MC7TeV_WZ.root ../test/results/MC7TeV_WZ_*.root");
      system("hadd -f ../test/results/MC7TeV_ZZ.root ../test/results/MC7TeV_ZZ_*.root");
+     system("hadd -f ../test/results/MC7TeV_WZ.root ../test/results/MC7TeV_WZ_*.root");
      system("hadd -f ../test/results/MC7TeV_DYJetsToLL.root ../test/results/MC7TeV_DYJetsToLL_*.root");
      system("hadd -f ../test/results/Data7TeV_DoubleElectron.root ../test/results/Data7TeV_DoubleElectron*_*.root");
      system("hadd -f ../test/results/Data7TeV_DoubleMu.root ../test/results/Data7TeV_DoubleMu*_*.root");
@@ -929,6 +929,29 @@ cout<<"_________________________________________________________________________
 
 cout<<"DY systee: "  <<SystDy_ee<<" Sys_Trig_ee: "<<Sys_Trig_ee<<" Sys_Scale_ee: "<<Sys_Scale_ee<<endl;
 cout<<"DY systmumu: "<<SystDy_mumu<<" Sys_Trig_mumu: "<<Sys_Trig_mumu<<" Sys_Scale_mumu: "<<Sys_Scale_mumu<<endl;
+
+//Prova
+double Cross =  (27-9.8462+2.0197+5.4400+6.1231)/LeA_ee;
+double var1= 9.8462+(9.8462*7.5/100);
+double Cross_1 = (27-var1+2.0197+5.4400+6.1231)/LeA_ee;
+double var2= 2.0197+(2.0197*7.1/100);
+double Cross_2 = (27-9.8462+var2+5.4400+6.1231)/LeA_ee;
+double var3= 5.4400+(5.4400*25/100);
+double Cross_3 = (27-var3+9.8462+2.0197+6.1231)/LeA_ee;
+double var4= 6.1231+(6.1231*8.85/100);
+double Cross_4 = (27-var4+2.0197+5.4400+9.8462)/LeA_ee;
+
+double FinaErr = sqrt( pow((Cross-Cross_1)*100/Cross,2) + pow((Cross-Cross_2)*100/Cross,2) + pow((Cross-Cross_3)*100/Cross,2) + pow((Cross-Cross_4)*100/Cross,2) );
+
+cout<<" Cross (ee): "<< Cross <<" Error: "<<FinaErr<<" % "<<endl;
+cout<<" Cross_1 : "<<(Cross-Cross_1)*100/Cross<<" % "<<endl;
+cout<<" Cross_1 : "<<Cross<<"  "<<Cross_1<<endl;
+cout<<" Cross_2 : "<<(Cross-Cross_2)*100/Cross<<" % "<<endl;
+cout<<" Cross_2 : "<<Cross<<"  "<<Cross_2<<endl;
+cout<<" Cross_3 : "<<(Cross-Cross_3)*100/Cross<<" % "<<endl;
+cout<<" Cross_3 : "<<Cross<<"  "<<Cross_3<<endl;
+cout<<" Cross_4 : "<<(Cross-Cross_4)*100/Cross<<" % "<<endl;
+cout<<" Cross_4 : "<<Cross<<"  "<<Cross_4<<endl;
 }
 
 }//End Main
