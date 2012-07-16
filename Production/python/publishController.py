@@ -99,13 +99,12 @@ class PublishController(object):
     		validDuplicates = ""
     		for dupedFile in datasetDetails['ValidDuplicates']:
     			validDuplicates+="* " +dupedFile+": \n** "+str(datasetDetails['ValidDuplicates'][dupedFile])+" events\n"
-    		self.savannah.appendField({"*Valid Duplicates:*\n":validDuplicates})
-    	if len(datasetDetails['BadJobs']) > 0:self.savannah.appendField({"*Bad Jobs:* ":datasetDetails['BadJobs']})
+    		self.savannah.appendField("*Valid Duplicates:*\n"+validDuplicates)
+    	if len(datasetDetails['BadJobs']) > 0:self.savannah.appendField("*Bad Jobs:* "+str(datasetDetails['BadJobs']))
     	if len(datasetDetails['BadFiles']) > 0:
-    		filesBad = []
-    		for badFile in datasetDetails['BadFiles']:filesBad.append("* "+badFile)
-    		filesBad[0] = "\n"+filesBad[0]
-    		self.savannah.appendField({"Bad Files":filesBad})
+    		filesBad = "Bad Files:\n"
+    		for badFile in datasetDetails['BadFiles']:filesBad+="* "+badFile+"\n"
+    		self.savannah.appendField(filesBad)
     		
         # Publish to Savannah
     	newTask = self.savannah.publish()
@@ -195,4 +194,3 @@ class PublishController(object):
     			    	
     	if tagSetID is not None: self._cmgdbAPI.addTagSetID(tagSetID, datasetDetails['CMGDBID'])
     	return datasetDetails['CMGDBID']
-    
