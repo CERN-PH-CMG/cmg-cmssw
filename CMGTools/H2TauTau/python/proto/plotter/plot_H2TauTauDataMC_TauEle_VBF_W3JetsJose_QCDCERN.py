@@ -42,6 +42,8 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
     # if xmin is None: xmin = XMIN
     # if xmax is None: xmax = XMAX
 
+    #PG prepare the final plot, that will be modified in the subsequent lines
+    #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
     oscut = '&&'.join( [cat_Inc, cat_VBF, 'diTau_charge==0', cut])
     # oscut = str(inc_sig & Cut('l1_charge*l2_charge<0 && mt<40') & cat_VBF)
@@ -51,6 +53,9 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
                            cut=oscut, weight=weight, shift=shift,
                            embed=embed, treeName = 'H2TauTauTreeProducerTauEle')
     osign.Hist(EWK).Scale( wJetScaleOS ) 
+
+    #PG get the W+jets shape with loose VBF and loose isolation
+    #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
     
     wjshape = WJets_shape_VBF(var, anaDir, cutwJ2,
                               selComps, zComps, weights,
@@ -59,7 +64,10 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
     wjshape.Scale( osign.Hist('WJets').Integral() )
     osign.Replace('WJets', wjshape )
 
-    sscut = ' && '.join( [ cat_Inc_AntiMuTauIso_B,
+    #PG get the QCD shape from SS with relaxed cuts
+    #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+    
+    sscut = ' && '.join( [ cat_Inc_AntiEleTauIsoCERNShape,
                            'diTau_charge!=0',
                            cut,
                            cat_VBF ] ) 
@@ -74,6 +82,8 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
     qcd_shape = ssQCD.Hist('QCD')
     qcd_shape.Scale( vbf_qcd_yield/qcd_shape.Integral() )
     
+    #PG prepare the final plot
+    #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
     
     osQCD = copy.deepcopy( osign )
     osQCD.AddHistogram('QCD', qcd_shape.weighted, 1.5)   
