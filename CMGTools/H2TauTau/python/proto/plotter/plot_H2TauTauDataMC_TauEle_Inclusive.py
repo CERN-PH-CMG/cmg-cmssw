@@ -238,14 +238,55 @@ if __name__ == '__main__':
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, 
                                                   options.embed, 'TauEle', options.higgs)
     #import pdb ; pdb.set_trace()
-    print 'SELCOMPS:',selComps
+    #print 'SELCOMPS:',selComps
 
-    can, pad, padr = buildCanvas()
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
                                  24, 70, 130, cutw,
                                  weight=weight, embed=options.embed,
-                                 treeName='H2TauTauTreeProducerTauEle')
+                                 treeName='H2TauTauTreeProducerTauEle', replaceW=replaceW)
+
+    can0 = TCanvas('can0','',100,100,600,600)
+
+    W_ss = copy.deepcopy( ss )
+    W_ss_WJets = W_ss.Hist('WJets').weighted
+    W_ss_Data = W_ss.Hist('Data - DY - TT').weighted
+    W_ss_WJets.SetFillColor (0)
+    W_ss_WJets.Draw ('hist')
+    W_ss_Data.Draw ('same')
+    can0.Print ('compare_W_ss.png','png')
+    W_ss_Data.Divide (W_ss_WJets)
+    W_ss_WJets.Divide (W_ss_WJets)
+#    W_ss_WJets.Divide (W_ss_Data)
+    can0.DrawFrame(W_ss_WJets.GetXaxis().GetXmin(), 0.5,W_ss_WJets.GetXaxis().GetXmax(), 2)
+    W_ss_Data.Draw ('same')
+    W_ss_WJets.SetFillStyle (4001)
+    W_ss_WJets.SetFillColor (2)
+    W_ss_WJets.SetMarkerStyle (9)
+    W_ss_WJets.Draw ('sameE3')
+    can0.Print ('compare_W_ss_ratio.png','png')
+
+    #import pdb ; pdb.set_trace()
+
+    W_os = copy.deepcopy( os )
+    W_os_WJets = W_os.Hist('WJets').weighted
+    W_os_Data = W_os.Hist('Data - DY - TT').weighted
+    W_os_WJets.SetFillColor (0)
+    W_os_WJets.Draw ('hist')
+    W_os_Data.Draw ('same')
+    can0.Print ('compare_W_os.png','png')
+    W_os_Data.Divide (W_os_WJets)
+    W_os_WJets.Divide (W_os_WJets)
+#    W_os_WJets.Divide (W_os_Data)
+    can0.DrawFrame(W_os_WJets.GetXaxis().GetXmin(), 0.5,W_os_WJets.GetXaxis().GetXmax(), 2)
+    W_os_Data.Draw ('same')
+    W_os_WJets.SetFillStyle (4001)
+    W_os_WJets.SetFillColor (2)
+    W_os_WJets.SetMarkerStyle (9)
+    W_os_WJets.Draw ('sameE3')
+    can0.Print ('compare_W_os_ratio.png','png')
+
+    can, pad, padr = buildCanvas()
     draw(ss, False, 'TauEle', plotprefix = 'W_ss')
     draw(os, False, 'TauEle', plotprefix = 'W_os')
 
@@ -253,6 +294,7 @@ if __name__ == '__main__':
         drawAll(options.cut, plots_TauEle, options.embed, selComps, weights, fwss, fwos)
         # this does not work yet, it does not get the DY right
     else :
+    
         ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, 
                                                fwss, fwos, NBINS, XMIN, XMAX, 
                                                options.cut, weight=weight, embed=options.embed, 
