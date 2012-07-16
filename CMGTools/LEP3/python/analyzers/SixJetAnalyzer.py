@@ -11,10 +11,8 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
 from CMGTools.LEP3.analyzers.DiObject import DiObject
 
-from CMGTools.LEP3.kinfitters import FourJetKinFitter
-
-
-
+from CMGTools.LEP3.kinfitters import FourJetEpKinFitter
+from CMGTools.LEP3.kinfitters import DiJetMKinFitter
 
         
 class SixJetAnalyzer( Analyzer ):
@@ -36,7 +34,9 @@ class SixJetAnalyzer( Analyzer ):
         count.register('At least 2Z, or 1Z & 1W')
         count.register('Passing')
 
-        self.fitter = FourJetKinFitter('fitter','test for Cris')
+        self.diJetfitter = DiJetMKinFitter('fitter','test for Colin',91.1876)
+        self.fourJetfitter = FourJetEpKinFitter('fitter','test for Colin',240)
+        
 
  
     def process(self, iEvent, event):
@@ -59,9 +59,23 @@ class SixJetAnalyzer( Analyzer ):
         event.sixjets = self.exclusiveJets(event.jets)
 
         # import pdb; pdb.set_trace()
-        self.fitter.fit( event.sixjets[0].p4(), event.sixjets[1].p4(),
-                         event.sixjets[2].p4(), event.sixjets[3].p4())
         
+        self.finalDiJets = self.diJetfitter.fit( event.sixjets[0].p4(), event.sixjets[1].p4())
+
+        
+               
+        self.finalFourJets = self.fourJetfitter.fit( event.sixjets[0].p4(), event.sixjets[1].p4(),
+                                                 event.sixjets[2].p4(), event.sixjets[3].p4())
+
+
+        # Temporary cout to check if the fitters work
+        print 'This is the energy for the first jet in the event before the kinfit constraint'
+        print event.sixjets[0].p4().energy()
+        print 'This is the energy for the first jet in the event after the kinfit Ep constraint'
+        print self.finalFourJets[0].Energy()
+        print 'This is the energy for the first jet in the event after the kinfit M constraint'
+        print self.finalDiJets.first.Energy()
+    
         # pair the jets and look for a Z
         # for each good Z, 1 event hypothesis
         pairs = self.findPairs( event.sixjets )
