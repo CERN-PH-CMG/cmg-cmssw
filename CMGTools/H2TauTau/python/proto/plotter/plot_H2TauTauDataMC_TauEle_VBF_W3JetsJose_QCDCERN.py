@@ -172,7 +172,7 @@ if __name__ == '__main__':
     # vbf_eff = 0.0025 # for 2012
     # vbf_eff = 0.001908 # for 2011
     vbf_eff = None
-    useTT11 = False
+    useTT11 = False #FIXME
     
     anaDir = args[0].rstrip('/')
     shift = None
