@@ -690,6 +690,10 @@ int main(int argc, char* argv[])
       bool passDphijmet(mindphijmet>0.5);
       if(nAJetsLoose==0) passDphijmet=(mindphijmet20>0.5);
       bool passRedMet(aRedMet.pt()>70);
+      double dphil1met=fabs(deltaPhi(lep1.phi(),zvvs[0].phi()));
+      double dphil2met=fabs(deltaPhi(lep2.phi(),zvvs[0].phi()));
+      bool passLeptonMisReconstruction(use2011Id || zvvs[0].pt()<60 || (zvvs[0].pt()>60 && min(dphil1met,dphil2met)>0.2));
+
       float mt = METUtils::transverseMass(zll,zvvs[0],true);      
      
       //now fill control distributions
@@ -742,37 +746,41 @@ int main(int argc, char* argv[])
 		  if(nAJetsLoose==0) tags_full.push_back(tag_cat+"eq0jets");
 		  if(nAJetsLoose==1) tags_full.push_back(tag_cat+"eq1jets");
 		  mon.fillHisto("eventflow",tags_full,4,weight);
-		  mon.fillHisto("met_met",tags_full,zvvs[0].pt(),weight);
-		  mon.fillHisto("met_redMet",tags_full,aRedMet.pt(),weight);
-		  mon.fillHisto("met_redMet15",tags_full,aRedMet15.pt(),weight);
-		  mon.fillHisto("met_redMet20",tags_full,aRedMet20.pt(),weight);
-		  mon.fillProfile("metvsrho",  tags_full, ev.rho, aRedMet.pt(), weight);
-		  mon.fillProfile("met15vsrho",  tags_full, ev.rho, aRedMet15.pt(), weight);
-		  mon.fillProfile("met20vsrho",  tags_full, ev.rho, aRedMet20.pt(), weight);
-		  mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
-		  mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);		  
-
-		  if(passRedMet)
+	
+		  if(passLeptonMisReconstruction)
 		    {
-		      mon.fillHisto("eventflow",tags_full,5,weight);
-		      mon.fillHisto("balance",tags_full, balance, weight);
-	      
-		      if(passBalance)
+		      mon.fillHisto("met_met",tags_full,zvvs[0].pt(),weight);
+		      mon.fillHisto("met_redMet",tags_full,aRedMet.pt(),weight);
+		      mon.fillHisto("met_redMet15",tags_full,aRedMet15.pt(),weight);
+		      mon.fillHisto("met_redMet20",tags_full,aRedMet20.pt(),weight);
+		      mon.fillProfile("metvsrho",  tags_full, ev.rho, aRedMet.pt(), weight);
+		      mon.fillProfile("met15vsrho",  tags_full, ev.rho, aRedMet15.pt(), weight);
+		      mon.fillProfile("met20vsrho",  tags_full, ev.rho, aRedMet20.pt(), weight);
+		      mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
+		      mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);		  
+		      
+		      if(passRedMet)
 			{
-			  mon.fillHisto("eventflow",tags_full,6,weight);
-			  mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet20:mindphijmet,weight);
+			  mon.fillHisto("eventflow",tags_full,5,weight);
+			  mon.fillHisto("balance",tags_full, balance, weight);
 			  
-			  if(passDphijmet)
+			  if(passBalance)
 			    {
-			      mon.fillHisto("eventflow",tags_full,7,weight);
-			      if(pass3dLeptonVeto)
+			      mon.fillHisto("eventflow",tags_full,6,weight);
+			      mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet20:mindphijmet,weight);
+			      
+			      if(passDphijmet)
 				{
-				  mon.fillHisto("eventflow",tags_full,8,weight);
-				  mon.fillHisto("mt_final",tags_full,mt,weight);
-				  mon.fillHisto("met_redMet_final",tags_full,aRedMet.pt(),weight);
-				  mon.fillHisto("met_redMetL_final",tags_full,aRedMetL,weight);
-				  mon.fillHisto("met_met_final",tags_full,zvvs[0].pt(),weight);
-				  mon.fillHisto("zpt_final",tags_full,zll.pt(),weight);
+				  mon.fillHisto("eventflow",tags_full,7,weight);
+				  if(pass3dLeptonVeto)
+				    {
+				      mon.fillHisto("eventflow",tags_full,8,weight);
+				      mon.fillHisto("mt_final",tags_full,mt,weight);
+				      mon.fillHisto("met_redMet_final",tags_full,aRedMet.pt(),weight);
+				      mon.fillHisto("met_redMetL_final",tags_full,aRedMetL,weight);
+				      mon.fillHisto("met_met_final",tags_full,zvvs[0].pt(),weight);
+				      mon.fillHisto("zpt_final",tags_full,zll.pt(),weight);
+				    }
 				}
 			    }
 			}
@@ -844,6 +852,8 @@ int main(int argc, char* argv[])
 	 bool passLocalBalance(balance>0.4 && balance<1.8);
 	 bool passLocalDphijmet(mindphijmet>0.5);
 	 if(nAJetsLoose==0) passDphijmet=(mindphijmet20>0.5);
+	 bool passLeptonMisReconstruction(use2011Id || zvvs[0].pt()<60 || (zvvs[0].pt()>60 && min(dphil1met,dphil2met)>0.2));  //this is a patch - use always raw MET
+	 if(!passLeptonMisReconstruction) continue;
 	 if(passLocalJetVeto)
 	   {
 	     if(nAJetsLoose==0) tags_full.push_back(tag_cat+"eq0jets");	   
