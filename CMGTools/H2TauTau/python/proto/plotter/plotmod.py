@@ -104,8 +104,8 @@ def fW(mtplot, dataName, xmin, xmax):
     wjet = copy.deepcopy(mtplot.Hist(dataName))
     wjet.Add(mtplot.Hist('Ztt'), -1)
     try:
-        f1 = plot.Hist('Ztt_ZL')
-        f2 = plot.Hist('Ztt_ZJ')
+        f1 = mtplot.Hist('Ztt_ZL')
+        f2 = mtplot.Hist('Ztt_ZJ')
         wjet.Add(f1, -1)
         wjet.Add(f2, -1)
     except:
