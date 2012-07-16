@@ -1,5 +1,6 @@
 import copy
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
+from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauEle_Inclusive import replaceShapeInclusive
 from CMGTools.RootTools.Style import *
 from ROOT import kPink
 
@@ -141,7 +142,7 @@ def fW(mtplot, dataName, xmin, xmax):
 def plot_W(anaDir,
            comps, weights, nbins, xmin, xmax,
            cut, weight,
-           embed, treeName=None):
+           embed, treeName=None, replaceW=False):
 
     # get WJet scaling factor for same sign
     var = 'mt'
@@ -162,6 +163,12 @@ def plot_W(anaDir,
                           nbins, xmin, xmax,
                           cut = sscut, weight=weight,
                           embed=embed, treeName=treeName)
+    if replaceW :
+        mtSS = replaceShapeInclusive(mtSS, var, anaDir,
+                                     selComps['WJets'], weights, 
+                                     sscut, weight,
+                                     embed, shift=shift)    
+        
     # replaceWJetShape( mtSS, var, sscut)
     # import pdb; pdb.set_trace()
     fW_SS = fW( mtSS, 'Data', xmin, xmax)
@@ -172,6 +179,13 @@ def plot_W(anaDir,
                           nbins, xmin, xmax, 
                           cut = oscut, weight=weight,
                           embed=embed, treeName=treeName)
+    if replaceW :
+        mtOS = replaceShapeInclusive(mtOS, var, anaDir,
+                                     selComps['WJets'], weights, 
+                                     oscut, weight,
+                                     embed, shift=shift)    
+
+
     # replaceWJetShape( mtOS, var, oscut)
     fW_OS = fW( mtOS, 'Data', xmin, xmax)
     print 'fW_SS=',fW_SS,'fW_OS=',fW_OS
