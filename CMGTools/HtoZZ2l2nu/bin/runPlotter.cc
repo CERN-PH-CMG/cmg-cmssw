@@ -573,7 +573,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
       fixExtremities(hist,true,true);
       hist->SetTitle("");
       hist->SetStats(kFALSE);
-      hist->SetMinimum(1e-2);
+      hist->SetMinimum(0.5e-1);
       //hist->SetMaximum(1E6);
       hist->SetMaximum(hist->GetBinContent(hist->GetMaximumBin())*1.10);
       ObjectToDelete.push_back(hist);
@@ -988,7 +988,7 @@ int main(int argc, char* argv[]){
        if(objectSearchKey != "" && it->name.find(objectSearchKey)==std::string::npos)continue;
        system(("echo \"" + it->name + "\" >> " + csvFile).c_str());
 
-       if(doTex && it->name.find("eventflow")!=std::string::npos && it->name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,*it); }
+       if(doTex && (it->name.find("eventflow")!=std::string::npos || it->name.find("evtflow")!=std::string::npos) && it->name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,*it); }
        if(doPlot && do2D  && !it->type){                      if(!splitCanvas){Draw2DHistogram(Root,inDir,*it); }else{Draw2DHistogramSplitCanvas(Root,inDir,*it);}}
        if(doPlot && do1D  &&  it->type){                                       Draw1DHistogram(Root,inDir,*it); }
 

@@ -666,7 +666,7 @@ int main(int argc, char* argv[])
 	    }
 	}
       bool passBveto(nABtags==0);
-      bool passJetVeto(nAJetsLoose<=1);
+      //bool passJetVeto(nAJetsLoose<=1);
       
       //
       // MET ANALYSIS
@@ -678,7 +678,7 @@ int main(int argc, char* argv[])
       double aRedMetL=aRedMetOut.redMET_l;
       double aRedMetT=aRedMetOut.redMET_t;
       float balance=zvvs[0].pt()/zll.pt();
-      if(nAJetsLoose==1)
+      if(nAJetsLoose>0)
 	{
 	  //met+zll+sum jets ~ 0 for a boosted ZZ
 	  LorentzVector recoil=zvvs[0];
@@ -835,7 +835,7 @@ int main(int argc, char* argv[])
 	 LorentzVector redMet20=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0., lep2, 0., clusteredMet20P4, zvv,false,&redMetInfo);
 	 LorentzVector redMet=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0., lep2, 0., clusteredMetP4, zvv,false,&redMetInfo);
 	 float balance=zvv.pt()/zll.pt();
-	 if(nAJetsLoose==1)
+	 if(nAJetsLoose>0)
 	   {
 	     //met+zll+sum jets ~ 0 for a boosted ZZ
 	     LorentzVector recoil=zvv;
@@ -853,17 +853,17 @@ int main(int argc, char* argv[])
 	 bool isZsideBand( (zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200));
 	 bool isZsideBandPlus( (zll.mass()>110 && zll.mass()<200));	 
 	 bool passLocalBveto(nABtags==0);
-	 bool passLocalJetVeto(nAJetsLoose==0 || nAJetsLoose==1);
+	 //bool passLocalJetVeto(nAJetsLoose==0 || nAJetsLoose==1);
 	 bool passLocalBalance(balance>0.4 && balance<1.8);
 	 bool passLocalDphijmet(mindphijmet>0.5);
 	 if(nAJetsLoose==0) passDphijmet=(mindphijmet20>0.5);
 	 bool passLeptonMisReconstruction(use2011Id || zvvs[0].pt()<60 || (zvvs[0].pt()>60 && min(dphil1met,dphil2met)>0.2));  //this is a patch - use always raw MET
 	 if(!passLeptonMisReconstruction) continue;
-	 if(passLocalJetVeto)
-	   {
-	     if(nAJetsLoose==0) tags_full.push_back(tag_cat+"eq0jets");	   
-	     if(nAJetsLoose==1) tags_full.push_back(tag_cat+"eq1jets");	   
-	   }
+	 //  if(passLocalJetVeto)
+	 // 	   {
+	 // 	     if(nAJetsLoose==0) tags_full.push_back(tag_cat+"eq0jets");	   
+	 // 	     if(nAJetsLoose==1) tags_full.push_back(tag_cat+"eq1jets");	   
+// 	   }
 	 for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
 	   float minMet=optim_Cuts1_met[index];
 	   float minZpt=optim_Cuts1_zpt[index];
@@ -874,8 +874,8 @@ int main(int argc, char* argv[])
 	   if(jetthr==20) passLocalMet=(redMet20.pt()>minMet);
 	   bool passLocalZmass(fabs(zll.mass()-91)<deltaZ);
 	   bool passLocalZpt(zll.pt()>minZpt);
-	   bool passLocalPreselection            (pass3dLeptonVeto && passLocalDphijmet && passLocalBveto && passLocalJetVeto && passLocalBalance && passLocalZmass && passLocalZpt && passLocalMet);
-	   bool passLocalPreselectionMbvetoMzmass(pass3dLeptonVeto && passLocalDphijmet                   && passLocalJetVeto && passLocalBalance                   && passLocalZpt && passLocalMet);
+	   bool passLocalPreselection            (pass3dLeptonVeto && passLocalDphijmet && passLocalBveto /*&& passLocalJetVeto*/ && passLocalBalance && passLocalZmass && passLocalZpt && passLocalMet);
+	   bool passLocalPreselectionMbvetoMzmass(pass3dLeptonVeto && passLocalDphijmet                   /*&& passLocalJetVeto*/ && passLocalBalance                   && passLocalZpt && passLocalMet);
 	   if(passLocalPreselection)
 	     {
 	       mon.fillHisto(TString("met_shapes")+varNames[ivar],tags_full,index,redMet.pt(),iweight);
