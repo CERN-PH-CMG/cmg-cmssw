@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/05/10 05:38:51 $
- *  $Revision: 1.11.2.1 $
+ *  $Date: 2012/06/04 08:26:34 $
+ *  $Revision: 1.14 $
  *  \author L. Quertenmont
  */
 
@@ -31,11 +31,18 @@ EventCategory::EventCategory(int mode_){
         ZZ2l2nuCategoryLabel[1] = "eq1jets";
         ZZ2l2nuCategoryLabel[2] = "geq2jets";
         ZZ2l2nuCategoryLabel[3] = "vbf";
-     }else{
-        mode = 0;
-        NStates = 1;
+     }else if(mode==4){
+        NStates = 3;
         ZZ2l2nuCategoryLabel = new TString[NStates];
-        ZZ2l2nuCategoryLabel[0] = "";
+        ZZ2l2nuCategoryLabel[0] = "eq0jets";
+        ZZ2l2nuCategoryLabel[1] = "geq1jets";
+        ZZ2l2nuCategoryLabel[2] = "vbf";
+     }
+     else{
+       mode = 0;
+       NStates = 1;
+       ZZ2l2nuCategoryLabel = new TString[NStates];
+       ZZ2l2nuCategoryLabel[0] = "";
      }
 }
 EventCategory::~EventCategory(){}
@@ -105,10 +112,15 @@ int EventCategory::Get(const PhysicsEvent_t& phys, PhysicsObjectJetCollection* J
         if(NJets==1) return 1;
         return 0;
      }break;
-     case 0:
-     default:{
-        return 0;      
-     }break;
+  case 4:{
+    if(isVBF)return 2;
+    if(NJets>=1) return 1;
+    return 0;
+  }break;
+  case 0:
+  default:{
+    return 0;      
+  }break;
   }
 }
 
