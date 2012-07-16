@@ -76,7 +76,7 @@ def addQCD( plot, dataName ):
     return plotWithQCD
 
 
-def getQCD( plotSS, plotOS, dataName ):
+def getQCD( plotSS, plotOS, dataName, scale=1.11 ):
 
     # use SS data as a control region
     # to get the expected QCD shape and yield
@@ -89,7 +89,7 @@ def getQCD( plotSS, plotOS, dataName ):
 
     qcdOS = copy.deepcopy( plotSSWithQCD.Hist('QCD') )
     qcdOS.RemoveNegativeValues()
-    qcdOS.Scale( 1.11 )
+    qcdOS.Scale( scale )
 
     plotOSWithQCD.AddHistogram('QCD', qcdOS.weighted, 1030)
     plotOSWithQCD.Hist('QCD').layer=1.5
