@@ -83,7 +83,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                                       sscut, weight,
                                       embed, shift=shift)
 
-    ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
+    ssQCD, osQCD = getQCD( ssign, osign, 'Data', 1.06 ) #PG FIXME check the scale
         
 #    if 0:
 #        qcd_yield = osQCD.Hist('QCD').Integral()
@@ -248,6 +248,9 @@ if __name__ == '__main__':
 
     can0 = TCanvas('can0','',100,100,600,600)
 
+    #PG compare the MC-subtracted data to the WJets MC only for SS
+    #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
     W_ss = copy.deepcopy( ss )
     W_ss_WJets = W_ss.Hist('WJets').weighted
     W_ss_Data = W_ss.Hist('Data - DY - TT').weighted
@@ -267,6 +270,9 @@ if __name__ == '__main__':
     can0.Print ('compare_W_ss_ratio.png','png')
 
     #import pdb ; pdb.set_trace()
+
+    #PG compare the MC-subtracted data to the WJets MC only for OS
+    #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
     W_os = copy.deepcopy( os )
     W_os_WJets = W_os.Hist('WJets').weighted
@@ -292,13 +298,13 @@ if __name__ == '__main__':
 
     if (options.plots == 'True') :
         drawAll(options.cut, plots_TauEle, options.embed, selComps, weights, fwss, fwos)
-        # this does not work yet, it does not get the DY right
+        #PG this does not work yet, it does not get the DY right
     else :
     
         ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, 
                                                fwss, fwos, NBINS, XMIN, XMAX, 
                                                options.cut, weight=weight, embed=options.embed, 
-                                               replaceW=replaceW)
+                                               replaceW=replaceW )
         draw(ssign, False, 'TauEle', 'QCD_ss')
         draw(osign, False, 'TauEle', 'QCD_os')
 #        osQCD.legendOn = False
