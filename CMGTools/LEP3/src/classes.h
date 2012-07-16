@@ -1,8 +1,14 @@
-#include "CMGTools/LEP3/interface/FourJetKinFitter.h"
+#include "CMGTools/LEP3/interface/FourJetEpKinFitter.h"
+#include "CMGTools/LEP3/interface/DiJetMKinFitter.h"
+#include <TLorentzVector.h>
 
 namespace {
   struct CMGTools_LEP3 {
 
-    FourJetKinFitter fourJetKinFitter; 
+    FourJetEpKinFitter fourJetEpKinFitter; 
+    DiJetMKinFitter diJetMKinFitter;
+    std::pair<TLorentzVector,TLorentzVector> pairOfTLV;
+    std::vector<TLorentzVector> vectorOfTLV;
+
   };
 }
