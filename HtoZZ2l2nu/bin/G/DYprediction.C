@@ -79,14 +79,17 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 
   string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {"met_redMet15",
-		     "balance"//,
-		     //"mt"//,
-		     //"mindphijmet"//,
+  string histos[] = {"met_met"//,
+		     //"met_redMet",
+		     //		     "met_redMet15",
+		     //  "met_redMet20",
+		     //"balance",
+		     //"mt",
+		     //"mindphijmet",
 		     // "pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj"
 		     //,"pfvbfcjv", "pfvbfhardpt",
 		     //"mt_shapes",
-		     //"zpt_shapes",
+		     // "zpt_shapes",
 		     //"met_shapes"
   };
   const size_t nhistos=sizeof(histos)/sizeof(string);
@@ -118,7 +121,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		  string hname=dilprocs[iproc]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)llIn->Get(hname.c_str());
 		  if(h==0) continue;// { cout << hname << endl; continue; }
-		  if(histos[ih]=="mt_shapes") cout << h->GetXaxis()->GetNbins() << endl;
+		  if(histos[ih]=="mt_shapes")
+		    {
+		      cout << h->GetXaxis()->GetNbins() << endl;
+		      cout << h->InheritsFrom("TH2")<< endl;
+		    }
 		  //	  if(histos[ih]=="mt_shapes")
 		    //	    h = ((TH2 *)h)->ProjectionY((string(h->GetName())+"proj").c_str(),cutIndex,cutIndex);
 		  h->SetTitle(dilprocs[iproc].c_str());
@@ -179,8 +186,13 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		{
 		  string hname=gprocs[iproc]+"/"+ch[ich]+gcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)gIn->Get(hname.c_str());
-		  if(h==0) continue;
-		  
+		  if(h==0) { cout << hname <<endl; continue; }
+		  if(histos[ih]=="mt_shapes")
+		    {
+		      cout << "g: " <<  h->GetXaxis()->GetNbins() 
+			   << " " << h->InheritsFrom("TH2")<< endl;
+		    }
+		  		  
 		  //detach and save
 		  h->SetDirectory(0);
 		  if(gprocs[iproc].find("data") != string::npos) { h->SetTitle("#splitline{Instr. bkg}{(data)}"); m_shape.data=h; }
@@ -281,6 +293,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
      if(it->first.find("mt_shapes")!= string::npos || it->first.find("met_") != string::npos)
        {
 	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
+	 cout << isTH2 << " " << it->first << endl;
 	 if(subtractType==HALVE) {
 	   //int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(70) );
 	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(60) );
@@ -341,7 +354,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
      it->second.bckg["Instr. background (data)"]=corrGammaH;
      showShape(it->second,"final_"+it->first);
      gOutDir->cd();
-     corrGammaH->Write(it->first.c_str());
+     TString keyToWrite(it->first.c_str());
+     //     keyToWrite.ReplaceAll("eeeq","ee_eq");
+     // keyToWrite.ReplaceAll("mumueq","mumu_eq");
+     //     keyToWrite.ReplaceAll("eq0jets","");
+     corrGammaH->Write(keyToWrite);//it->first.c_str());
      if(it->first.find("mumu")!= string::npos)
        {
 	 TString keyToGet(it->first);

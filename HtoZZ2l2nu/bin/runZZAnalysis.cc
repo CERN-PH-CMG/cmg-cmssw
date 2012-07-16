@@ -224,6 +224,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,5) );
   mon.addHistogram( new TH1F( "met_redMetSB"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_redMet_final"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet15"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet20"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram(  new TProfile("metvsavginstlumi",  "Avg. inst lumi", 60,  400,1000));
@@ -533,7 +534,7 @@ int main(int argc, char* argv[])
 	    }
 	  if(!hasGoodId)  passIdAndIso=false;
 	  else if(!isIso) passIdAndIso=false;     
-	
+
 	  //fill control histograms (constrained to the Z mass)
 	  if(passZmass && isSameFlavor){
 	      if(matchid!=0){
@@ -603,13 +604,12 @@ int main(int argc, char* argv[])
 	if(fabs(phys.leptons[ilep].id)==13){
 	  if(!use2011Id){
 	    isGood = (hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) && phys.leptons[ilep].pfRelIsoDbeta()<0.2);
-	    isGood |= (hasObjectId(ev.mn_idbits[lpid], MID_SOFT) && phys.leptons[ilep].pt()>3);
 	  }else{
 	    isGood = (hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.15 && phys.leptons[ilep].pt()>10);
 	  }
 	}else{
 	  if(!use2011Id){
-	    isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 && phys.leptons[ilep].pt()>10);
+	    isGood = ( hasObjectId(ev.en_idbits[lpid],EID_LOOSE) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 && phys.leptons[ilep].pt()>10);
 	  }else{
 	    isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.1 && phys.leptons[ilep].pt()>10);
 	  }
@@ -625,16 +625,17 @@ int main(int argc, char* argv[])
       //JET ANALYSIS
       //
       PhysicsObjectJetCollection aJets= variedAJets[0];
+      PhysicsObjectJetCollection aJets30;
       PhysicsObjectJetCollection aGoodIdJets;
       LorentzVector aClusteredMetP4(zll); aClusteredMetP4 *= -1;
       LorentzVector aClustered15MetP4(aClusteredMetP4),aClustered20MetP4(aClusteredMetP4);
       int nAJetsLoose(0), nABtags(0);
-      float mindphijmet(999999.),mindphijmet15(999999.);
+      float mindphijmet(999999.),mindphijmet20(999999.);
       for(size_t ijet=0; ijet<aJets.size(); ijet++) 
 	{
 	  float idphijmet( fabs(deltaPhi(aJets[ijet].phi(),zvvs[0].phi()) ) );
-	  if(idphijmet<mindphijmet15)  mindphijmet15=idphijmet;
-	  if(aJets[ijet].pt()>30) if(idphijmet<mindphijmet)  mindphijmet=idphijmet;
+	  if(aJets[ijet].pt()>20 && idphijmet<mindphijmet20)  mindphijmet20=idphijmet;
+	  if(aJets[ijet].pt()>30 && idphijmet<mindphijmet)    mindphijmet=idphijmet;
 	      
 	  aClusteredMetP4 -= aJets[ijet];	  
 	  if(aJets[ijet].pt()>15) aClustered15MetP4 -= aJets[ijet];
@@ -649,20 +650,25 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("jetpt",  tags_full, aJets[ijet].pt(),weight);
 		  mon.fillHisto("jeteta",  tags_full, fabs(aJets[ijet].eta()),weight);
 		}
-	    }
+	   
 	  
-	  if(aJets[ijet].pt()<20) continue;
-	  if(fabs(aJets[ijet].eta())<2.5) 
-	    {
-	      nABtags += (aJets[ijet].btag2>0.244);
-	      if(passZmass && passZpt)	mon.fillHisto("btags",  tags_full, aJets[ijet].btag2,weight);
-		  
+	      if(aJets[ijet].pt()<20) continue;
+	  
+	      //b-tagging
+	      if(fabs(aJets[ijet].eta())<2.5) 
+		{
+		  nABtags += (aJets[ijet].btag2>0.244);
+		  if(passZmass && passZpt)	mon.fillHisto("btags",  tags_full, aJets[ijet].btag2,weight);
+		}
+	      
+	      //jet counting
 	      if(aJets[ijet].pt()<30 ) continue;
-	      nAJetsLoose      += hasObjectId(aJets[ijet].pid,JETID_LOOSE);
+	      nAJetsLoose++;
+	      aJets30.push_back(aJets[ijet]);
 	    }
 	}
       bool passBveto(nABtags==0);
-      bool passJetVeto(nAJetsLoose==0);
+      bool passJetVeto(nAJetsLoose<=1);
       
       //
       // MET ANALYSIS
@@ -674,9 +680,15 @@ int main(int argc, char* argv[])
       double aRedMetL=aRedMetOut.redMET_l;
       double aRedMetT=aRedMetOut.redMET_t;
       float balance=zvvs[0].pt()/zll.pt();
+      if(nAJetsLoose==1)
+	{
+	  //met+zll+jet ~ 0 for a boosted ZZ
+	  LorentzVector recoil=zvvs[0]-aJets30[0];
+	  balance=recoil.pt()/zll.pt();
+	}
       bool passBalance(balance>0.4 && balance<1.8);
       bool passDphijmet(mindphijmet>0.5);
-      if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
+      if(nAJetsLoose==0) passDphijmet=(mindphijmet20>0.5);
       bool passRedMet(aRedMet.pt()>70);
       float mt = METUtils::transverseMass(zll,zvvs[0],true);      
      
@@ -727,15 +739,16 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("njets",          tags_full, nAJetsLoose,weight);
 	      if(passJetVeto)
 		{
-		  tags_full.push_back(tag_cat+"eq0jets");
+		  if(nAJetsLoose==0) tags_full.push_back(tag_cat+"eq0jets");
+		  if(nAJetsLoose==1) tags_full.push_back(tag_cat+"eq1jets");
 		  mon.fillHisto("eventflow",tags_full,4,weight);
 		  mon.fillHisto("met_met",tags_full,zvvs[0].pt(),weight);
 		  mon.fillHisto("met_redMet",tags_full,aRedMet.pt(),weight);
 		  mon.fillHisto("met_redMet15",tags_full,aRedMet15.pt(),weight);
 		  mon.fillHisto("met_redMet20",tags_full,aRedMet20.pt(),weight);
-		  mon.fillProfile("metvsavginstlumi",  tags_full, ev.curAvgInstLumi, aRedMet.pt(), weight);
-		  mon.fillProfile("met15vsavginstlumi",  tags_full, ev.curAvgInstLumi, aRedMet15.pt(), weight);
-		  mon.fillProfile("met20vsavginstlumi",  tags_full, ev.curAvgInstLumi, aRedMet20.pt(), weight);
+		  mon.fillProfile("metvsrho",  tags_full, ev.rho, aRedMet.pt(), weight);
+		  mon.fillProfile("met15vsrho",  tags_full, ev.rho, aRedMet15.pt(), weight);
+		  mon.fillProfile("met20vsrho",  tags_full, ev.rho, aRedMet20.pt(), weight);
 		  mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
 		  mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);		  
 
@@ -747,7 +760,7 @@ int main(int argc, char* argv[])
 		      if(passBalance)
 			{
 			  mon.fillHisto("eventflow",tags_full,6,weight);
-			  mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet15:mindphijmet,weight);
+			  mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet20:mindphijmet,weight);
 			  
 			  if(passDphijmet)
 			    {
@@ -756,6 +769,7 @@ int main(int argc, char* argv[])
 				{
 				  mon.fillHisto("eventflow",tags_full,8,weight);
 				  mon.fillHisto("mt_final",tags_full,mt,weight);
+				  mon.fillHisto("met_redMet_final",tags_full,aRedMet.pt(),weight);
 				  mon.fillHisto("met_redMetL_final",tags_full,aRedMetL,weight);
 				  mon.fillHisto("met_met_final",tags_full,zvvs[0].pt(),weight);
 				  mon.fillHisto("zpt_final",tags_full,zll.pt(),weight);
@@ -786,21 +800,25 @@ int main(int argc, char* argv[])
 	 //recompute MET/MT if JES/JER was varied
 	 LorentzVector zvv    = zvvs[ivar>8 ? 0 : ivar];
 	 PhysicsObjectJetCollection &varJets=variedAJets[ivar>4 ? 0  : ivar];
-	 PhysicsObjectJetCollection tightVarJets;
+	 PhysicsObjectJetCollection tightVarJets,tightVarJets30;
 	 LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
 	 LorentzVector clusteredMet15P4(clusteredMetP4),clusteredMet20P4(clusteredMetP4);
 	 int nAJetsLoose(0),nABtags(0);
-	 float mindphijmet(999999.),mindphijmet15(999999.);
+	 float mindphijmet(999999.),mindphijmet20(999999.);
 	 for(size_t ijet=0; ijet<varJets.size(); ijet++){
 	   clusteredMetP4 -= varJets[ijet];
-	   if(aJets[ijet].pt()>15) clusteredMet15P4 -= varJets[ijet];
-	   if(aJets[ijet].pt()>20) clusteredMet20P4 -= varJets[ijet];
+	   if(varJets[ijet].pt()>15) clusteredMet15P4 -= varJets[ijet];
+	   if(varJets[ijet].pt()>20) clusteredMet20P4 -= varJets[ijet];
 	   if(!hasObjectId(varJets[ijet].pid,JETID_LOOSE)) continue;
-	   float idphijmet( fabs(deltaPhi(aJets[ijet].phi(),zvvs[0].phi()) ) );
-	   if(idphijmet<mindphijmet15)  mindphijmet15=idphijmet;
-	   if(aJets[ijet].pt()>30) if(idphijmet<mindphijmet)  mindphijmet=idphijmet;
+	   float idphijmet( fabs(deltaPhi(varJets[ijet].phi(),zvvs[0].phi()) ) );
+	   if(varJets[ijet].pt()>20 && idphijmet<mindphijmet20)  mindphijmet20=idphijmet;
+	   if(varJets[ijet].pt()>30 && idphijmet<mindphijmet)    mindphijmet=idphijmet;
 	   tightVarJets.push_back( varJets[ijet] );
-	   nAJetsLoose += (varJets[ijet].pt()>30);
+	   if(varJets[ijet].pt()>30)
+	     {
+	       nAJetsLoose ++;
+	       tightVarJets30.push_back(varJets[ijet]); 
+	     }
 	   if(varJets[ijet].pt()<20 || fabs(varJets[ijet].eta())>2.5)continue;
 	   if(ivar==11)      nABtags += (varJets[ijet].btag2<0.250);
 	   else if(ivar==12) nABtags += (varJets[ijet].btag2<0.240);
@@ -812,16 +830,25 @@ int main(int argc, char* argv[])
 	 LorentzVector redMet20=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0., lep2, 0., clusteredMet20P4, zvv,false,&redMetInfo);
 	 LorentzVector redMet=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0., lep2, 0., clusteredMetP4, zvv,false,&redMetInfo);
 	 float balance=zvv.pt()/zll.pt();
-	 
+	 if(nAJetsLoose==1)
+	   {
+	     //zvv+jet+zll~0 for a boosted ZZ
+	     LorentzVector recoil=zvv-tightVarJets30[0];
+	     balance = recoil.pt()/zll.pt();
+	   }
+
 	 bool isZsideBand( (zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200));
 	 bool isZsideBandPlus( (zll.mass()>110 && zll.mass()<200));	 
 	 bool passLocalBveto(nABtags==0);
-	 bool passLocalJetVeto(nAJetsLoose==0);
+	 bool passLocalJetVeto(nAJetsLoose==0 || nAJetsLoose==1);
 	 bool passLocalBalance(balance>0.4 && balance<1.8);
 	 bool passLocalDphijmet(mindphijmet>0.5);
-	 if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
-	 if(passLocalJetVeto) tags_full.push_back(tag_cat+"eq0jets");	   
-	 
+	 if(nAJetsLoose==0) passDphijmet=(mindphijmet20>0.5);
+	 if(passLocalJetVeto)
+	   {
+	     if(nAJetsLoose==0) tags_full.push_back(tag_cat+"eq0jets");	   
+	     if(nAJetsLoose==1) tags_full.push_back(tag_cat+"eq1jets");	   
+	   }
 	 for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
 	   float minMet=optim_Cuts1_met[index];
 	   float minZpt=optim_Cuts1_zpt[index];
