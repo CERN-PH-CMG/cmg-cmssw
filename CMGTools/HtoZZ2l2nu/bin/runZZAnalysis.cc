@@ -350,10 +350,8 @@ int main(int argc, char* argv[])
   }
 
   //event Categorizer
-  EventCategory eventCategoryInst(0); //inclusive analysis
-  //EventCategory eventCategoryInst(1); //jet binning
-  //EventCategory eventCategoryInst(2); //vbf binning
-  //EventCategory eventCategoryInst(3); //jet+vbf binning
+  EventCategory eventCategoryInst(4); //0,>=1jet, VBF
+
 
   //##############################################
   //########           EVENT LOOP         ########
@@ -682,8 +680,9 @@ int main(int argc, char* argv[])
       float balance=zvvs[0].pt()/zll.pt();
       if(nAJetsLoose==1)
 	{
-	  //met+zll+jet ~ 0 for a boosted ZZ
-	  LorentzVector recoil=zvvs[0]-aJets30[0];
+	  //met+zll+sum jets ~ 0 for a boosted ZZ
+	  LorentzVector recoil=zvvs[0];
+	  for(size_t ijet=0; ijet<=aGoodIdJets.size(); ijet++) recoil+=aGoodIdJets[ijet];
 	  balance=recoil.pt()/zll.pt();
 	}
       bool passBalance(balance>0.4 && balance<1.8);
@@ -741,51 +740,52 @@ int main(int argc, char* argv[])
 	      
 	      mon.fillHisto("eventflow",tags_full,3,weight);
 	      mon.fillHisto("njets",          tags_full, nAJetsLoose,weight);
-	      if(passJetVeto)
+	      //if(passJetVeto)
+	      //{
+	      int evcat=eventCategoryInst.Get(phys,&aGoodIdJets);
+	      tags_full.push_back(tag_cat+eventCategoryInst.GetLabel(evcat));
+
+	      mon.fillHisto("eventflow",tags_full,4,weight);
+	      
+	      if(passLeptonMisReconstruction)
 		{
-		  if(nAJetsLoose==0) tags_full.push_back(tag_cat+"eq0jets");
-		  if(nAJetsLoose==1) tags_full.push_back(tag_cat+"eq1jets");
-		  mon.fillHisto("eventflow",tags_full,4,weight);
-	
-		  if(passLeptonMisReconstruction)
+		  mon.fillHisto("met_met",tags_full,zvvs[0].pt(),weight);
+		  mon.fillHisto("met_redMet",tags_full,aRedMet.pt(),weight);
+		  mon.fillHisto("met_redMet15",tags_full,aRedMet15.pt(),weight);
+		  mon.fillHisto("met_redMet20",tags_full,aRedMet20.pt(),weight);
+		  mon.fillProfile("metvsrho",  tags_full, ev.rho, aRedMet.pt(), weight);
+		  mon.fillProfile("met15vsrho",  tags_full, ev.rho, aRedMet15.pt(), weight);
+		  mon.fillProfile("met20vsrho",  tags_full, ev.rho, aRedMet20.pt(), weight);
+		  mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
+		  mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);		  
+		  
+		  if(passRedMet)
 		    {
-		      mon.fillHisto("met_met",tags_full,zvvs[0].pt(),weight);
-		      mon.fillHisto("met_redMet",tags_full,aRedMet.pt(),weight);
-		      mon.fillHisto("met_redMet15",tags_full,aRedMet15.pt(),weight);
-		      mon.fillHisto("met_redMet20",tags_full,aRedMet20.pt(),weight);
-		      mon.fillProfile("metvsrho",  tags_full, ev.rho, aRedMet.pt(), weight);
-		      mon.fillProfile("met15vsrho",  tags_full, ev.rho, aRedMet15.pt(), weight);
-		      mon.fillProfile("met20vsrho",  tags_full, ev.rho, aRedMet20.pt(), weight);
-		      mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
-		      mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);		  
+		      mon.fillHisto("eventflow",tags_full,5,weight);
+		      mon.fillHisto("balance",tags_full, balance, weight);
 		      
-		      if(passRedMet)
+		      if(passBalance)
 			{
-			  mon.fillHisto("eventflow",tags_full,5,weight);
-			  mon.fillHisto("balance",tags_full, balance, weight);
+			  mon.fillHisto("eventflow",tags_full,6,weight);
+			  mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet20:mindphijmet,weight);
 			  
-			  if(passBalance)
+			  if(passDphijmet)
 			    {
-			      mon.fillHisto("eventflow",tags_full,6,weight);
-			      mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet20:mindphijmet,weight);
-			      
-			      if(passDphijmet)
+			      mon.fillHisto("eventflow",tags_full,7,weight);
+			      if(pass3dLeptonVeto)
 				{
-				  mon.fillHisto("eventflow",tags_full,7,weight);
-				  if(pass3dLeptonVeto)
-				    {
-				      mon.fillHisto("eventflow",tags_full,8,weight);
-				      mon.fillHisto("mt_final",tags_full,mt,weight);
-				      mon.fillHisto("met_redMet_final",tags_full,aRedMet.pt(),weight);
-				      mon.fillHisto("met_redMetL_final",tags_full,aRedMetL,weight);
-				      mon.fillHisto("met_met_final",tags_full,zvvs[0].pt(),weight);
-				      mon.fillHisto("zpt_final",tags_full,zll.pt(),weight);
-				    }
+				  mon.fillHisto("eventflow",tags_full,8,weight);
+				  mon.fillHisto("mt_final",tags_full,mt,weight);
+				  mon.fillHisto("met_redMet_final",tags_full,aRedMet.pt(),weight);
+				  mon.fillHisto("met_redMetL_final",tags_full,aRedMetL,weight);
+				  mon.fillHisto("met_met_final",tags_full,zvvs[0].pt(),weight);
+				  mon.fillHisto("zpt_final",tags_full,zll.pt(),weight);
 				}
 			    }
 			}
 		    }
 		}
+	      //}
 	    }
 	}
       }
@@ -801,9 +801,6 @@ int main(int argc, char* argv[])
          float iweight = weight;                                               //nominal
 	 if(ivar==9)                         iweight *=TotalWeight_plus;        //pu up
          if(ivar==10)                        iweight *=TotalWeight_minus;       //pu down
-
-	 tags_full.clear();
-	 tags_full.push_back(tag_cat);
 
 	 //recompute MET/MT if JES/JER was varied
 	 LorentzVector zvv    = zvvs[ivar>8 ? 0 : ivar];
@@ -840,10 +837,18 @@ int main(int argc, char* argv[])
 	 float balance=zvv.pt()/zll.pt();
 	 if(nAJetsLoose==1)
 	   {
-	     //zvv+jet+zll~0 for a boosted ZZ
-	     LorentzVector recoil=zvv-tightVarJets30[0];
+	     //met+zll+sum jets ~ 0 for a boosted ZZ
+	     LorentzVector recoil=zvv;
+	     for(size_t ijet=0; ijet<=tightVarJets.size(); ijet++) recoil+=tightVarJets[ijet];
 	     balance = recoil.pt()/zll.pt();
 	   }
+
+	 //re-assign the event category;
+	 int evcat=eventCategoryInst.Get(phys,&varJets);
+	 tags_full.clear();
+	 tags_full.push_back(tag_cat);
+	 tags_full.push_back(tag_cat+eventCategoryInst.GetLabel(evcat));
+
 
 	 bool isZsideBand( (zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200));
 	 bool isZsideBandPlus( (zll.mass()>110 && zll.mass()<200));	 
