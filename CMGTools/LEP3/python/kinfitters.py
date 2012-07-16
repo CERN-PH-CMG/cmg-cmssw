@@ -3,5 +3,5 @@ from ROOT import gSystem
 
 gSystem.Load("libCMGToolsLEP3")
 
-from ROOT import FourJetKinFitter
- 
+from ROOT import FourJetEpKinFitter
+from ROOT import DiJetMKinFitter
