@@ -32,14 +32,16 @@ def cutstr_rlxtaueleiso(cutstr, tauIsoCut, eleIsoCut):
     cutstr = cutstr_rlxeleiso(cutstr, eleIsoCut)
     return cutstr_rlxtauiso(cutstr, tauIsoCut)
 
-
 cat_Inc_RlxEleIso = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05<1.0')
 cat_Inc_RlxTauIso = str(inc_sig).replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.')
 cat_Inc_RlxEleTauIso = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
 cat_Inc_AntiEleTauIso = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.1').replace('l1_looseMvaIso>0.5', 'l1_looseMvaIso<0.5')
 cat_Inc_AntiEleTauIso_B = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.75')
 
-## cat_Inc_AntiMuTauIsoJosh = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.7')
+cat_Inc_AntiEleIsoLorenzo = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5')
+cat_Inc_AntiEleTauIsoCERNShape = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.75')
+cat_Inc_AntiEleTauIsoCERNEff = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.0')
+
 cat_Inc_AntiEleIso = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.1')
 cat_Inc_AntiTauIso = str(inc_sig).replace('l1_looseMvaIso>0.5', 'l1_looseMvaIso<0.5')
 cat_Inc_RlxEleTauIso_b = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.5')
