@@ -5,19 +5,18 @@ from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import * 
 
 ana6jet = cfg.Analyzer(
-    "SixJetAnalyzer"
+    "SixJetAnalyzer",
+    )
+tree = cfg.Analyzer(
+    "SixJetTreeProducer",
     )
 
 from CMGTools.LEP3.samples.allSamples import * 
 
 sequence = cfg.Sequence( [
     ana6jet,
+    tree
 ])
-
-HZVIS.splitFactor = 3
-QQBAR.splitFactor = 3
-WW.splitFactor = 3
-ZZ.splitFactor = 3
 
 selectedComponents = [
     # ELEL,
@@ -34,9 +33,13 @@ selectedComponents = [
     ZZ,
     ]
 
-test = 1
+
+# for c in selectedComponents:
+#     c.splitFactor = 3
+
+test = 0
 if test==1:
-    comp = HZVIS
+    comp = WW
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:1]

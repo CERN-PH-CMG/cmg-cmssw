@@ -11,6 +11,8 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet, GenParticle
 
 from CMGTools.LEP3.analyzers.DiObject import DiObject
+from CMGTools.LEP3.analyzers.beta4 import beta4
+from CMGTools.LEP3.analyzers.findVV import findWW, findZZ
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
 from math import pi, sqrt, acos
@@ -181,8 +183,8 @@ class FourJetAnalyzer( Analyzer ):
         event.m3min = self.m3min
 
 
-        event.ww, event.wwMin = self.findWW ( event.jetPairs )
-        event.zz, event.zzMin = self.findZZ ( event.jetPairs )
+        event.ww, event.wwMin = findWW ( event.jetPairs )
+        event.zz, event.zzMin = findZZ ( event.jetPairs )
         event.hz, event.deltaZ = self.findHZ ( event.jetPairs )
 
         if len(event.hz) == 0 :
@@ -226,49 +228,7 @@ class FourJetAnalyzer( Analyzer ):
         return True
  
 
-    def beta4(self,jets,ebeam):
 
-        from numpy import array, linalg, dot, add
-        
-        
-        rows = []
-        for i in range(4):
-            rows.append([])
-        for jet in jets:
-            rows[0].append(jet.px()/jet.energy())
-            rows[1].append(jet.py()/jet.energy())
-            rows[2].append(jet.pz()/jet.energy())
-            rows[3].append(jet.energy()/jet.energy())        
-
-        constraint = [0.,0.,0.,2.*ebeam]
-
-        d2 = array(rows)
-        d = array(constraint)
-        #print d2
-        #print d
-        energies = linalg.solve(d2,d)
-        #print energies
-        chi2 = 0.
-        for i,jet in enumerate(jets):
-
-            if energies[i] > 0. :
-                uncert = 0.5*sqrt(jet.energy()) + 0.05*jet.energy()
-                delta = (jet.energy()-energies[i])/uncert
-                if delta > 0. : 
-                    chi2 += delta*delta
-                else:
-                    chi2 += delta*delta/4.
-            else:
-                chi2 += 1000.
-
-            p4 = jet.p4()
-            p4.SetPxPyPzE(jet.px()*energies[i]/jet.energy(),
-                          jet.py()*energies[i]/jet.energy(),
-                          jet.pz()*energies[i]/jet.energy(),
-                          energies[i])
-            jet.setP4(p4)
-
-        return chi2
 
     def testFourJets(self, jets) :
     
@@ -327,7 +287,7 @@ class FourJetAnalyzer( Analyzer ):
 
         # Rescale jet energies
         # Check the chi2 ( < 1000. == request all energies to be positive)
-        chi2 = self.beta4(self.jets, 120.)
+        chi2 = beta4(self.jets, 120.)
         if chi2 > self.cfg_ana.chi2 :
             #print 'chi2 = ',chi2
             return False
@@ -447,42 +407,4 @@ class FourJetAnalyzer( Analyzer ):
             hz = [hPair[0],zPair[0]]
 
         return hz, btag
-
-    def findWW(self, jetPairs):
-
-        ww = []
-
-        w1 = jetPairs[0]
-        w2 = jetPairs[5]
-        wwmin = 999.
-        for i,pair1 in enumerate(jetPairs):
-            pair2 = jetPairs[5-i]
-            wwchi = sqrt((pair1.M()-80.3)*(pair1.M()-80.3) + (pair2.M()-80.3)*(pair2.M()-80.3))
-
-            if wwchi < wwmin :
-                wwmin = wwchi
-                w1 = pair1
-                w2 = pair2
-
-        ww = [w1,w2]
-        return ww, wwmin
-
-    def findZZ(self, jetPairs):
-
-        zz = []
-
-        z1 = jetPairs[0]
-        z2 = jetPairs[5]
-        zzmin = 999.
-        for i,pair1 in enumerate(jetPairs):
-            pair2 = jetPairs[5-i]
-            zzchi = sqrt((pair1.M()-91.2)*(pair1.M()-91.2) + (pair2.M()-91.2)*(pair2.M()-91.2))
-
-            if zzchi < zzmin :
-                zzmin = zzchi
-                z1 = pair1
-                z2 = pair2
-
-        zz = [z1,z2]
-        return zz, zzmin
 
