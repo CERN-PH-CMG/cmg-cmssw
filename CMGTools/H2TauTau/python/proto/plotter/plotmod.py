@@ -156,6 +156,9 @@ def plot_W(anaDir,
         )
 
     # import pdb; pdb.set_trace()
+
+    if treeName is None : 
+        treeName = 'H2TauTauTreeProducerTauMu'
     
     print 'extracting WJets data/MC factor in high mt region, SS'
     print sscut 
@@ -165,9 +168,10 @@ def plot_W(anaDir,
                           embed=embed, treeName=treeName)
     if replaceW :
         mtSS = replaceShapeInclusive(mtSS, var, anaDir,
-                                     selComps['WJets'], weights, 
+                                     comps['WJets'], weights, 
                                      sscut, weight,
-                                     embed, shift=shift)    
+                                     embed, shift=None,
+                                     treeName=treeName)    
         
     # replaceWJetShape( mtSS, var, sscut)
     # import pdb; pdb.set_trace()
@@ -181,10 +185,10 @@ def plot_W(anaDir,
                           embed=embed, treeName=treeName)
     if replaceW :
         mtOS = replaceShapeInclusive(mtOS, var, anaDir,
-                                     selComps['WJets'], weights, 
+                                     comps['WJets'], weights, 
                                      oscut, weight,
-                                     embed, shift=shift)    
-
+                                     embed, shift=None,
+                                     treeName=treeName)
 
     # replaceWJetShape( mtOS, var, oscut)
     fW_OS = fW( mtOS, 'Data', xmin, xmax)
