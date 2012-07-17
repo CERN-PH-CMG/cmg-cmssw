@@ -34,6 +34,20 @@ class CmgdbToolsApi(CmgdbApi):
 		except cx_Oracle.IntegrityError:
 			print "Dataset not found"
 	
+	# Log num of good files
+	def addGroupGoodFileNum(self,group_id,number):
+		"""Record the quantity of bad files
+			
+		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'number' takes the number of good files as an int
+		"""
+		try:
+			self.insertCur.execute("UPDATE cms_cmgdb.file_group_details set number_files_good=%d where file_group_id=%d" % (number,group_id))
+			self.insertConn.commit()
+		except cx_Oracle.IntegrityError:
+			print "Dataset not found"
+	
 	def clearDatasetMissingFiles(self, dsName, datasetID):
 		"""Clear all missing files from CMGDB pertaining to the given dataset ID
 			
@@ -61,8 +75,22 @@ class CmgdbToolsApi(CmgdbApi):
 		except cx_Oracle.IntegrityError:
 			print "Dataset not found"        
 	
+	# Log num of good files
+	def addGroupMissingFileNum(self,group_id,number):
+		"""Record the quantity of bad files
+			
+		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'number' takes the number of missing files as an int
+		"""
+		try:
+			self.insertCur.execute("UPDATE cms_cmgdb.file_group_details set number_files_missing=%d where file_group_id=%d" % (number,group_id))
+			self.insertConn.commit()
+		except cx_Oracle.IntegrityError:
+			print "Dataset not found"
+	
 	# Log missing files
-	def addMissingFile(self, dsName, datasetID, missingFileName):
+	def addMissingFile(self, dsName, datasetID, missingFileName, group_id):
 		"""Add name of given missing file to CMGDB and link it to a given dataset with the unique CMGDB Dataset ID
 			
 		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
@@ -71,7 +99,7 @@ class CmgdbToolsApi(CmgdbApi):
 		Returns None
 		"""
 		try:
-			self.insertCur.execute("INSERT INTO cms_cmgdb.missing_files(dataset_id, missing_file) values(%d, '%s')" % (datasetID, missingFileName))
+			self.insertCur.execute("INSERT INTO cms_cmgdb.missing_files(dataset_id, missing_file, file_group_id) values(%d, '%s', %d)" % (datasetID, missingFileName, group_id))
 			self.insertConn.commit()
 		except cx_Oracle.IntegrityError:
 			#If exception is thrown display error message and ignore
@@ -105,8 +133,22 @@ class CmgdbToolsApi(CmgdbApi):
 		except cx_Oracle.IntegrityError:
 			print "Dataset not found"
 	
+	# Log num of good files
+	def addGroupBadFileNum(self,group_id,number):
+		"""Record the quantity of bad files
+			
+		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'number' takes the number of bad files as an int
+		"""
+		try:
+			self.insertCur.execute("UPDATE cms_cmgdb.file_group_details set number_files_bad=%d where file_group_id=%d" % (number,group_id))
+			self.insertConn.commit()
+		except cx_Oracle.IntegrityError:
+			print "Dataset not found"
+	
 	# Log bad files
-	def addBadFile(self, dsName, datasetID, badFileName):
+	def addBadFile(self, dsName, datasetID, badFileName, group_id):
 		"""Add name of given bad file to CMGDB and link it to a given dataset with the unique CMGDB Dataset ID
 			
 		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
@@ -115,7 +157,7 @@ class CmgdbToolsApi(CmgdbApi):
 		Returns None
 		"""
 		try:
-			self.insertCur.execute("INSERT INTO cms_cmgdb.bad_files(dataset_id, bad_file) values(%d, '%s')" % (datasetID, str(badFileName)))
+			self.insertCur.execute("INSERT INTO cms_cmgdb.bad_files(dataset_id, bad_file, file_group_id) values(%d, '%s', %d)" % (datasetID, str(badFileName),group_id))
 			self.insertConn.commit()
 		except cx_Oracle.IntegrityError:
 			#If exception is thrown display error message and ignore
@@ -151,35 +193,19 @@ class CmgdbToolsApi(CmgdbApi):
 			#If exception is thrown display error message and ignore
 			print 'Job: '+badJobName+ " in dataset " + dsName + " is already logged as bad on the system"
 	
-	# Clear missing file entries
-	def clearDatasetDuplicateFiles(self, dsName, datasetID):
-		"""Clear all duplicate files from CMGDB pertaining to the given dataset ID
-			
-		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM 
-		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
-		Returns None
-		"""
-		try:
-			self.insertCur.execute('DELETE FROM cms_cmgdb.duplicate_files WHERE dataset_id = %d' % int(datasetID))
-			self.insertConn.commit()
-		except cx_Oracle.IntegrityError:
-			print "Unable to delete duplicate file record"
-	
-	# Log missing files
-	def addDuplicateFile(self, dsName, datasetID, duplicateFileName):
-		"""Add name of given duplicate file to CMGDB and link it to a given dataset with the unique CMGDB Dataset ID
+	# Log num of good files
+	def addBadJobNum(self,datasetID,number):
+		"""Record the quantity of bad files
 			
 		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
 		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
-		'duplicateFileName' takes the name of the duplicate file as a string
-		Returns None
+		'number' takes the number of bad jobs as an int
 		"""
 		try:
-			self.insertCur.execute('INSERT INTO cms_cmgdb.duplicate_files(dataset_id, duplicate_file) values(%d, %s)' % (datasetID, duplicateFileName))
+			self.insertCur.execute("UPDATE cms_cmgdb.dataset_details set number_jobs_bad=%d where dataset_id = %d" % (number, datasetID))
 			self.insertConn.commit()
 		except cx_Oracle.IntegrityError:
-			#If exception is thrown display error message and ignore
-			print 'File: '+duplicateFileName+ " in dataset " + dsName + " is already logged as bad on the system"
+			print "Dataset not found"
 	
 	# Add a value for the number_total_jobs field
 	def addTotalJobs(self, datasetID, nJobs):
@@ -251,7 +277,29 @@ class CmgdbToolsApi(CmgdbApi):
 			# If set is already in the database then print error message and ignore
 			print "Dataset %s is already present on the system\n" % dsName
 	
-	# Adds a set to the database
+	# Adds a file group to the database
+	def addFileGroup(self, group_name,cmgdb_id):
+		"""Add a file group to a dataset"""
+		try:
+			group_id = self.getGroupIDWithDatasetAndName(group_name,cmgdb_id)
+			if group_id is not None:
+				return group_id
+			#Insert information into database
+			group_id = self.selectCur.execute("select cms_cmgdb.file_group_id_seq.NEXTVAL from dual").fetchone()[0]
+			self.insertCur.execute("INSERT INTO cms_cmgdb.file_group_details(file_group_id,dataset_id,file_group_name) values(%d,%d,'%s')" % (group_id,cmgdb_id, group_name))
+			self.insertConn.commit()
+			return group_id
+		except cx_Oracle.IntegrityError:
+			# If set is already in the database then print error message and ignore
+			print "-File group %s is already present on the system-\n" % group_name
+	
+	def getGroupIDWithDatasetAndName(self,group_name,cmgdb_id):
+		try:
+			return self.selectCur.execute("SELECT file_group_id from cms_cmgdb.file_group_details where file_group_name='%s' and dataset_id=%d" % (group_name, cmgdb_id)).fetchone()[0]
+		except:
+			return None
+	
+	# Closes a dataset on the database
 	def closeDataset(self, dsName):
 		"""Change the dataset_open field of the dataset_details table to 'N' for given dataset name.
 			
@@ -283,8 +331,41 @@ class CmgdbToolsApi(CmgdbApi):
 		except TypeError:
 			pass
 	
+	def addGroupPrimaryDatasetFraction(self,group_id, fraction):
+		"""Update dataset_fraction relating to the given CMGDB Dataset ID in CMGDB table dataset_details, to new given value.
+			
+		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'fraction' takes the dataset size as a fraction of the primary dataset as a float
+		Returns None
+		"""
+		try:
+			self.insertCur.execute("UPDATE cms_cmgdb.file_group_details set dataset_fraction='%f' WHERE file_group_id='%d'" % (fraction, group_id))
+			self.insertConn.commit()
+		except cx_Oracle.IntegrityError:
+			# If set doesn't exist print error message and ignore
+			print "Dataset doesn't exist"
+		except TypeError:
+			pass
+	
 	# Add a Dataset size to a logged dataset
-	def addDatasetSize(self,datasetID, size):
+	def addDatasetSize(self,group_id, size):
+		"""Update field dataset_size_in_tb relating to the given CMGDB Dataset ID in CMGDB table dataset_details, to new given value.
+			
+		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'size' takes the dataset size in TB dataset as a float
+		Returns None
+		"""
+		try:
+			self.insertCur.execute("UPDATE cms_cmgdb.file_group_details set dataset_size_in_tb='%f' WHERE file_group_id='%d'" % (size, group_id))
+			self.insertConn.commit()
+		except cx_Oracle.IntegrityError:
+			# If set doesn't exist print error message and ignore
+			print "Dataset doesn't exist"
+		except TypeError:
+			pass
+	
+	# Add a Directory size to a logged dataset
+	def addDirectorySize(self,datasetID, size):
 		"""Update field dataset_size_in_tb relating to the given CMGDB Dataset ID in CMGDB table dataset_details, to new given value.
 			
 		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
@@ -310,6 +391,22 @@ class CmgdbToolsApi(CmgdbApi):
 		"""
 		try:
 			self.insertCur.execute("UPDATE cms_cmgdb.dataset_details set dataset_entries='%d' WHERE dataset_id='%d'" % (int(entries), datasetID))
+			self.insertConn.commit()
+		except cx_Oracle.IntegrityError:
+			# If set doesn't exist print error message and ignore
+			print "Dataset doesn't exist"
+		except TypeError:
+			pass
+	
+	def addGroupFileEntries(self,group_id, entries):
+		"""Update dataset_entries relating to the given datasetID in CMGDB table dataset_details, to new given value.
+
+		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'entries' takes the number of file entries in the dataset as an int
+		Returns None
+		"""
+		try:
+			self.insertCur.execute("UPDATE cms_cmgdb.file_group_details set dataset_entries='%d' WHERE file_group_id='%d'" % (int(entries), group_id))
 			self.insertConn.commit()
 		except cx_Oracle.IntegrityError:
 			# If set doesn't exist print error message and ignore
