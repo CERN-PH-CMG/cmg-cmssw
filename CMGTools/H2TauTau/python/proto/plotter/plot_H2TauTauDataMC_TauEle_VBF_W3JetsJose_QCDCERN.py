@@ -230,7 +230,7 @@ if __name__ == '__main__':
     inc_fwss, inc_fwos, inc_w_ss, inc_w_os = plot_W( anaDir, selComps, weights,
                                                      12, 70, 310, inc_w_cut,
                                                      weight=weight, embed=options.embed,
-                                                     treeName='H2TauTauTreeProducerTauEle', replaceW=False)
+                                                     treeName='H2TauTauTreeProducerTauEle')
 
     # inclusive QCD yield in signal region
     # this yield will be multiplied by the VBF efficiency
@@ -296,7 +296,7 @@ if __name__ == '__main__':
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
                                  15, 60, 120, cutwJ2,
                                  weight=weight, embed=options.embed,
-                                 treeName='H2TauTauTreeProducerTauEle', replaceW=False)
+                                 treeName='H2TauTauTreeProducerTauEle')
 
 
     if vbf_eff is None:

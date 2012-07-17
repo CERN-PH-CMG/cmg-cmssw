@@ -84,7 +84,6 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                                       sscut, weight,
                                       embed, shift=shift)
 
-    from CMGTools.H2TauTau.proto.plotter.plotmod import getQCD
     ssQCD, osQCD = getQCD( ssign, osign, 'Data', 1.06 ) #PG FIXME check the scale 1.06
         
 #    if 0:
@@ -251,8 +250,7 @@ if __name__ == '__main__':
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
                                  12, 70, 130, cutw,
                                  weight=weight, embed=options.embed,
-                                 treeName='H2TauTauTreeProducerTauEle', replaceW=replaceW)
-                                 #PG FIXME I am not sure I want replaceW here
+                                 treeName='H2TauTauTreeProducerTauEle')
 
     can0 = TCanvas('can0','',100,100,600,600)
 
