@@ -20,3 +20,5 @@ runPlotter --json data/photon-samples_2011.json --inDir ~/work/gamma/2011/nvtx/ 
 runLocalAnalysisOverSamples.py -e runZZAnalysis -j data/samples_ZZ_2012.json -o test/results -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
 
 runPlotter --json data/samples_ZZ_2012.json --inDir test/results/ --outDir test/results/plots/ --iLumi 5045 --iEcm 8 --outFile plotter_zz_2012.root
+
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2012/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh

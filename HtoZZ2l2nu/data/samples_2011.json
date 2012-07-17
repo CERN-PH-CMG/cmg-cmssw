@@ -173,6 +173,84 @@
           ]
 	},
 	{
+	"tag":"ggH(130)#rightarrow ZZ",
+	"isdata":false,
+	"isinvisible":true,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_GGtoH130toZZto2L2Nu",
+		"split":1,
+                "xsec":14.16,
+                "xsecunc":[14.6,-14.9],
+		"br":[0.0398,0.0403896]
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(130)#rightarrow ZZ",
+	"isdata":false,
+        "isinvisible":true,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{	
+		"dtag":"MC7TeV_VBFtoH130toZZto2L2Nu",
+		"split":1,
+		"xsec":1.154,
+                "xsecunc":[2.8,-2.3],
+		"br":[0.0398,0.0403896]
+		}
+	   ]
+	},
+	{
+	"tag":"ggH(170)#rightarrow ZZ",
+	"isdata":false,
+	"isinvisible":true,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_GGtoH170toZZto2L2Nu",
+		"split":1,
+                "xsec":7.786,
+                "xsecunc":[13.8,-14.9],
+		"br":[0.0298,0.0403896]
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(170)#rightarrow ZZ",
+	"isdata":false,
+        "isinvisible":true,
+	"spimpose":true,
+	"color":"800",
+	"lwidth":2,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{	
+		"dtag":"MC7TeV_VBFtoH170toZZto2L2Nu",
+		"split":1,
+		"xsec":0.8173,
+                "xsecunc":[3.1,-2.2],
+		"br":[0.0298,0.0403896]
+		}
+	   ]
+	},
+	{
 	"tag":"ggH(200)#rightarrow ZZ",
 	"isdata":false,
 	"isinvisible":true,

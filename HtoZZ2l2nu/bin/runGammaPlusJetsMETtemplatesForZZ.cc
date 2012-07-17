@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
   JetCorrectionUncertainty jecUnc(uncFile.Data());
 
   TRandom2 rndGen;
-  EventCategory eventCategoryInst(0);
+  EventCategory eventCategoryInst(4);  //0,>=1jet, VBF
   GammaEventHandler gammaEvHandler(runProcess);  
 
   //book histograms
@@ -344,7 +344,7 @@ int main(int argc, char* argv[])
 		}
 	      else
 		{
-		  if( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 && phys.leptons[ilep].pt()>10) nextraleptons++;
+		  if( hasObjectId(ev.en_idbits[lpid],EID_LOOSE) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 && phys.leptons[ilep].pt()>10) nextraleptons++;
 		}
 	    }
 	}
@@ -408,6 +408,13 @@ int main(int argc, char* argv[])
       LorentzVector redMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clusteredMet, metP4,true,&redMetOut));
       double redMetL=redMetOut.redMET_l;
       double redMetT=redMetOut.redMET_t;
+      float balance=metP4.pt()/gamma.pt();
+      if(njets30>0)
+	{
+	  LorentzVector recoil=metP4;
+          for(size_t ijet=0; ijet<=selJets.size(); ijet++) recoil+=selJets[ijet];
+          balance=recoil.pt()/gamma.pt();
+	}
         
       //  
       // EVENT SELECTION
@@ -419,12 +426,12 @@ int main(int argc, char* argv[])
       bool passR9                 (!isGammaEvent || r9<1.0);
       bool passR9tight            (true); //!isGammaEvent || r9>0.85); 
       bool passBveto              (nbtags==0);
-      bool passJetVeto            (njets30==0); 
+      //       bool passJetVeto            (njets30==0); 
       bool passRedMet(redMet.pt()>70);
-      bool passBalance(metP4.pt()/gamma.pt() > 0.4 && metP4.pt()/gamma.pt() < 1.8);
+      bool passBalance(balance > 0.4 && balance < 1.8);
       bool passDphijmet        (mindphijmet>0.5);
       if(njets30==0)  passDphijmet=(mindphijmet20>0.5);
-      bool passShapePreSelection(passBveto && passJetVeto && passDphijmet);
+      bool passShapePreSelection(passBveto /*&& passJetVeto*/ && passDphijmet);
       
       //event category
       int eventSubCat    = eventCategoryInst.Get(phys,&selJets);
@@ -468,7 +475,7 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("zmass",ctf, zmass,iweight);
 	      mon.fillHisto("njets",ctf, njets30,iweight);
 
-	      if(!passJetVeto) continue;
+	      //if(!passJetVeto) continue;
 	      mon.fillHisto("met_met",         ctf, metP4.pt(),iweight);
 	      mon.fillHisto("met_redMet",      ctf, redMet.pt(),iweight);
 	      mon.fillHisto("met_redMet15",    ctf,redMet15.pt(),iweight);
