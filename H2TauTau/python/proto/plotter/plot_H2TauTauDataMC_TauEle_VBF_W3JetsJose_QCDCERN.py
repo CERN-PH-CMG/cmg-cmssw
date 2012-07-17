@@ -86,7 +86,7 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
     #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
     
     osQCD = copy.deepcopy( osign )
-    osQCD.AddHistogram('QCD', qcd_shape.weighted, 1.5)   
+    osQCD.AddHistogram('QCD', qcd_shape.weighted, 1.5) #PG FIXME where does this number come from?   
 
     osQCD.Group('VV', ['WW','WZ','ZZ'])
     osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ'])
@@ -151,19 +151,40 @@ if __name__ == '__main__':
                       help="Use embedd samples.",
                       action="store_true",
                       default=False)
+    parser.add_option("-n", "--nbins", 
+                      dest="nbins", 
+                      help="Number of bins",
+                      default=None)
+    parser.add_option("-m", "--min", 
+                      dest="xmin", 
+                      help="xmin",
+                      default=None)
+    parser.add_option("-M", "--max", 
+                      dest="xmax", 
+                      help="xmax",
+                      default=None)
+    parser.add_option("-g", "--higgs", 
+                      dest="higgs", 
+                      help="Higgs mass: 125, 130,... or dummy",
+                      default=125)
 
-    
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
 
+    options.higgs = '125' #PG FIXME I have to fix the grouping at line 93
 
-    NBINS = binning_svfitMass
-    XMIN = None
-    XMAX = None
-
+    if options.nbins is None:
+        NBINS = binning_svfitMass
+        XMIN = None
+        XMAX = None
+    else:
+        NBINS = int(options.nbins)
+        XMIN = float(options.xmin)
+        XMAX = float(options.xmax)
+        
     can, pad, padr = buildCanvas()
     
     # TH1.AddDirectory(False)
@@ -173,6 +194,7 @@ if __name__ == '__main__':
     # vbf_eff = 0.001908 # for 2011
     vbf_eff = None
     useTT11 = False #FIXME
+    replaceW=False
     
     anaDir = args[0].rstrip('/')
     shift = None
@@ -192,7 +214,7 @@ if __name__ == '__main__':
     comps = [comp for comp in cfg.config.components if comp.name!='W3Jets' and comp.name!='W2Jets' and  comp.name!='TTJets11']
     cfg.config.components = comps
     
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, options.embed, 'TauMu', '125')
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, options.embed, 'TauEle', options.higgs)
 
 
     # normalizing WJets (not WJets11 here) 
@@ -200,7 +222,8 @@ if __name__ == '__main__':
     inc_w_cut = cat_Inc
     inc_fwss, inc_fwos, inc_w_ss, inc_w_os = plot_W( anaDir, selComps, weights,
                                                      12, 70, 310, inc_w_cut,
-                                                     weight=weight, embed=options.embed)
+                                                     weight=weight, embed=options.embed,
+                                                     treeName='H2TauTauTreeProducerTauEle', replaceW=False)
 
     # inclusive QCD yield in signal region
     # this yield will be multiplied by the VBF efficiency
@@ -211,7 +234,7 @@ if __name__ == '__main__':
         selComps, weights,
         inc_fwss, inc_fwos,
         NBINS, XMIN, XMAX, insig_qcd_cut,
-        weight=weight, embed=options.embed
+        weight=weight, embed=options.embed, replaceW=replaceW
         )
 
     incsig_qcd_yield = inc_osQCD.Hist('QCD').Integral()
@@ -260,12 +283,13 @@ if __name__ == '__main__':
 
 
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases,
-                                                  options.embed, 'TauMu', '125')
+                                                  options.embed, 'TauEle', options.higgs)
 
     # WJets normalization using 2 jet category
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
                                  15, 60, 120, cutwJ2,
-                                 weight=weight, embed=options.embed)
+                                 weight=weight, embed=options.embed,
+                                 treeName='H2TauTauTreeProducerTauEle', replaceW=False)
 
 
     if vbf_eff is None:
@@ -287,7 +311,7 @@ if __name__ == '__main__':
     osign, osQCD  = makePlot( options.hist, weights, fwss, fwos,
                               vbf_eff * incsig_qcd_yield,
                               NBINS, XMIN, XMAX, options.cut, weight=weight,
-                              embed=options.embed, shift=shift);
+                              embed=options.embed, shift=shift )
 
     draw(osQCD, False)
     datacards(osQCD, 'Xcat_VBFX', shift)
