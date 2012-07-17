@@ -25,7 +25,7 @@ HZVIS = cfg.MCComponent(
     name = 'HZVIS',
     files = [],
     xSection = 0.2, 
-    nGenEvents = 1.,
+    nGenEvents = 97000,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -49,7 +49,7 @@ QQBAR = cfg.MCComponent(
     name = 'QQBAR',
     files = [],
     xSection = 50., 
-    nGenEvents = 1.,
+    nGenEvents = 5998000.,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -73,7 +73,7 @@ WW = cfg.MCComponent(
     name = 'WW',
     files = [],
     xSection = 16., 
-    nGenEvents = 1.,
+    nGenEvents = 1946000.,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -97,7 +97,7 @@ ZZ = cfg.MCComponent(
     name = 'ZZ',
     files = [],
     xSection = 1.3, 
-    nGenEvents = 1.,
+    nGenEvents = 982000.,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -120,4 +120,4 @@ allSamples = [
 for sam in allSamples:
     sam.files = getFiles('/'.join(['/LEP3',sam.name]),
                          file_owner, filePattern, cache)
-
+    sam.splitFactor = int( sam.nGenEvents / 30000 ) 

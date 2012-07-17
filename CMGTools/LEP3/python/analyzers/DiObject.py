@@ -38,12 +38,13 @@ class DiObject ( TLorentzVector ):
 
     def __getattr__(self, name):
         '''Trick to preserve the interface in use in CMSSW.'''
+        # print 'calling getattr', name
         if name.lower() == 'mass':
             name = 'M'
         # changing the first letter of the function name to upper case. 
         capName = ''.join( [name[0].capitalize(), name[1:]] ) 
-        # return getattr( super(DiObject, self), capName )
-        return getattr( self, capName )
+        return getattr( super(DiObject, self), capName )
+        # return getattr( self, capName )
 
     def PdgId(self):
         '''Dummy, needed to fill the tree'''
@@ -74,7 +75,21 @@ class DiObject ( TLorentzVector ):
         return self.pdgId_
 
     def __str__(self):
-        return ', '.join( ['DiObject:', str(self.leg1), str(self.leg2)] )
+        theStr = []
+        theStr.append( '{className} : {pdgId:>3}, E = {energy:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f},  phi = {phi:5.2f}'.format(
+            className = self.__class__.__name__,
+            pdgId = self.pdgId(),
+            energy = self.energy(),
+            eta = self.eta(),
+            theta = self.theta(),
+            phi = self.phi() ))
+        leg1lines = str(self.leg1).split('\n')
+        for line in leg1lines:
+            theStr.append('\t'+line)
+        leg2lines = str(self.leg2).split('\n')
+        for line in leg2lines:
+            theStr.append('\t'+line)
+        return '\n'.join( theStr )
 
 
 class Component(object):
