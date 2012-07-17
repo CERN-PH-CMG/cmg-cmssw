@@ -34,6 +34,10 @@ XMAX  = 200
 
 cutwJ2 = ' && '.join([cat_Inc, cat_J2]) 
 
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
 def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
               nbins, xmin, xmax, cut,
               weight='weight', embed=False, shift=None):
@@ -86,7 +90,7 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
     #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
     
     osQCD = copy.deepcopy( osign )
-    osQCD.AddHistogram('QCD', qcd_shape.weighted, 1.5) #PG FIXME where does this number come from?   
+    osQCD.AddHistogram('QCD', qcd_shape.weighted, 1.5)  
 
     osQCD.Group('VV', ['WW','WZ','ZZ'])
     osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ'])
@@ -94,6 +98,8 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
 
     return osign, osQCD 
 
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
 def WJets_shape_VBF(var, anaDir, cut, 
@@ -122,6 +128,7 @@ def WJets_shape_VBF(var, anaDir, cut,
     return wjshape
 
 
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
 if __name__ == '__main__':
@@ -234,8 +241,8 @@ if __name__ == '__main__':
         selComps, weights,
         inc_fwss, inc_fwos,
         NBINS, XMIN, XMAX, insig_qcd_cut,
-        weight=weight, embed=options.embed, replaceW=replaceW
-        )
+        weight=weight, embed=options.embed, 
+        replaceW=replaceW)
 
     incsig_qcd_yield = inc_osQCD.Hist('QCD').Integral()
 
@@ -313,7 +320,7 @@ if __name__ == '__main__':
                               NBINS, XMIN, XMAX, options.cut, weight=weight,
                               embed=options.embed, shift=shift )
 
-    draw(osQCD, False)
+    draw(osQCD, False, 'TauEle', 'VBF')
     datacards(osQCD, 'Xcat_VBFX', shift)
 
 
