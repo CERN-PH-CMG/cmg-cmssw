@@ -83,7 +83,8 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                                       sscut, weight,
                                       embed, shift=shift)
 
-    ssQCD, osQCD = getQCD( ssign, osign, 'Data', 1.06 ) #PG FIXME check the scale
+    from CMGTools.H2TauTau.proto.plotter.plotmod import getQCD
+    ssQCD, osQCD = getQCD( ssign, osign, 'Data', 1.06 ) #PG FIXME check the scale 1.06
         
 #    if 0:
 #        qcd_yield = osQCD.Hist('QCD').Integral()
