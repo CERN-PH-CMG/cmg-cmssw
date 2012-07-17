@@ -31,7 +31,8 @@ XMAX  = 200
 def replaceShapeInclusive(plot, var, anaDir,
                           comp, weights, 
                           cut, weight,
-                          embed, shift=None):
+                          embed, shift=None, 
+                          treeName = 'H2TauTauTreeProducerTauEle'):
     '''Replace WJets with the shape obtained using a relaxed tau iso'''
     cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
     print '[INCLUSIVE] estimate',comp.name,'with cut',cut
@@ -43,7 +44,7 @@ def replaceShapeInclusive(plot, var, anaDir,
     wjshape = shape(var, anaDir,
                     comp, weights, nbins, xmin, xmax,
                     cut, weight,
-                    embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
+                    embed, shift=shift, treeName = treeName)
     # import pdb; pdb.set_trace()
     wjshape.Scale( wjyield )
     # import pdb; pdb.set_trace()
@@ -159,6 +160,11 @@ if __name__ == '__main__':
                       help="Blind.",
                       action="store_true",
                       default=False)
+    parser.add_option("-W", "--replaceW", 
+                      dest="replaceW", 
+                      help="replace W shape by relaxing isolation on the hadronic tau",
+                      action="store_true",
+                      default=False)
     parser.add_option("-n", "--nbins", 
                       dest="nbins", 
                       help="Number of bins",
@@ -202,7 +208,7 @@ if __name__ == '__main__':
     # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
-    replaceW = False
+    replaceW = options.replaceW
     useW11 = False
     
     anaDir = args[0].rstrip('/')
@@ -243,9 +249,10 @@ if __name__ == '__main__':
 
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
-                                 24, 70, 130, cutw,
+                                 12, 70, 130, cutw,
                                  weight=weight, embed=options.embed,
                                  treeName='H2TauTauTreeProducerTauEle', replaceW=replaceW)
+                                 #PG FIXME I am not sure I want replaceW here
 
     can0 = TCanvas('can0','',100,100,600,600)
 
@@ -256,6 +263,8 @@ if __name__ == '__main__':
     W_ss_WJets = W_ss.Hist('WJets').weighted
     W_ss_Data = W_ss.Hist('Data - DY - TT').weighted
     W_ss_WJets.SetFillColor (0)
+    W_ss_WJets.GetXaxis().SetTitle ('mt')
+    W_ss_Data.GetXaxis().SetTitle ('mt')
     W_ss_WJets.Draw ('hist')
     W_ss_Data.Draw ('same')
     can0.Print ('compare_W_ss.png','png')
@@ -279,6 +288,8 @@ if __name__ == '__main__':
     W_os_WJets = W_os.Hist('WJets').weighted
     W_os_Data = W_os.Hist('Data - DY - TT').weighted
     W_os_WJets.SetFillColor (0)
+    W_os_WJets.GetXaxis().SetTitle ('mt')
+    W_os_Data.GetXaxis().SetTitle ('mt')
     W_os_WJets.Draw ('hist')
     W_os_Data.Draw ('same')
     can0.Print ('compare_W_os.png','png')
