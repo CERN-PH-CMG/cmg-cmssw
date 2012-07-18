@@ -75,7 +75,7 @@ HiggsVBF110 = cfg.MCComponent(
     name = 'HiggsVBF110',
     files = [],
     xSection = 1.791*8.02e-2, 
-    nGenEvents = 0,
+    nGenEvents = 499385*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
