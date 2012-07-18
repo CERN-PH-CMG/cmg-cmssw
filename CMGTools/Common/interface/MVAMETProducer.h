@@ -98,11 +98,7 @@ MVAMETProducer< RecBosonType >::MVAMETProducer(const edm::ParameterSet & iConfig
   verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ) {
     
   mvaMet_ = new MVAMet(0.1);
-/*   mvaMet_->Initialize(iConfig, */
-/* 		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmet_42.root"))),        //U */
-/* 		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmetphi_42.root"))),     //U Phi */
-/* 		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmetu1cov_42.root"))),   //U1 Cov */
-/* 		      TString((getenv("CMSSW_BASE")+string("/src/CMGTools/Common/data/MVAMet/gbrmetu2cov_42.root"))));    //U2 Cov ); */
+
   mvaMet_->Initialize(iConfig,
 		      TString(iConfig.getParameter<std::string>("weights_gbrmet")),        //U
 		      TString(iConfig.getParameter<std::string>("weights_gbrmetphi")),     //U Phi
@@ -184,12 +180,6 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   if(leadJetH->size() > 0 ) leadJet  = &(*leadJetH)[0].p4();
   if(leadJetH->size() > 1 ) leadJet2 = &(*leadJetH)[1].p4();
 
-  int nJetsPtGt30 = 0; 
-  for( unsigned i=0; i<jetH->size(); ++i) {
-    if( jetH->at(i).pt() > 30 )
-      nJetsPtGt30++; 
-  }
-
   edm::Handle< reco::VertexCollection > vertexH;
   iEvent.getByLabel(vertexSrc_, vertexH);
 
@@ -205,23 +195,6 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 
   
 
-  if(verbose_) {
-    std::cout<<"---"<<std::endl;
-    std::cout<<"MVAMETProducer"<<std::endl;
-    std::cout<<"\tpfmet = "<<pfmet->pt()<<std::endl;
-    std::cout<<"\ttkmet = "<<tkmet->pt()<<std::endl;
-    std::cout<<"\tnopumet = "<<nopumet->pt()<<std::endl;
-    std::cout<<"\tpucmet = "<<pucmet->pt()<<std::endl;
-    std::cout<<"\tpumet = "<<pumet->pt()<<std::endl;
-    std::cout<<"\tnJetsPtGt1 = "<<nJetsPtGt1<<std::endl;
-    std::cout<<"\tnJetsPtGt30 = "<<nJetsPtGt30<<std::endl;
-    std::cout<<"\tnGoodVtx = "<<nGoodVtx<<std::endl;
-    std::cout<<"\trho = "<<rho<<std::endl;
-    if(leadJet  != 0) std::cout<<"\tjet1 eta,pt= "<<leadJet->Et()<<","<<leadJet->eta()<<std::endl;
-    if(leadJet2 != 0) std::cout<<"\tjet2 eta,pt= "<<leadJet2->Et()<<","<<leadJet2->eta()<<std::endl;
-    
-  }
-
   std::vector<MetUtilities::JetInfo> jetInfo; 
   makeJets( jetInfo, *jetH, *vertexH, rho );
   
@@ -230,7 +203,18 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 
   for( unsigned i=0; i<recBosonH->size(); ++i) {
     const RecBosonType& recBoson = recBosonH->at(i);
-    
+
+    int nJetsPtGt30     = 0; 
+    int nJetsPtGt1Clean = nJetsPtGt1;
+    for( unsigned i=0; i<jetH->size(); ++i) {
+      if( jetH->at(i).pt() < 1 ) continue; 
+      if(deltaR(jetH->at(i).p4(),recBoson.leg1().p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
+      if(deltaR(jetH->at(i).p4(),recBoson.leg2().p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
+      if( jetH->at(i).pt() < 30 ) continue;
+      nJetsPtGt30++; 
+    }
+    if(nJetsPtGt1Clean<0) nJetsPtGt1Clean=0;
+       
     LorentzVector lCand0 = recBoson.leg1().p4();
     LorentzVector lCand1 = recBoson.leg2().p4();
     std::vector<LorentzVector> lVisible;
@@ -265,14 +249,14 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     LorentzVector cleanpfmetp4 = pfmet->p4();
     cleanpfmetp4 += recBoson.leg1().p4();
     cleanpfmetp4 += recBoson.leg2().p4();
-    double cleanpfmetsumet = pfmet->sumEt() - recBoson.leg1().et() - recBoson.leg2().et();
+    double cleanpfmetsumet = pfmet->sumEt() - recBoson.leg1().pt() - recBoson.leg2().pt();
     reco::PFMET cleanpfmet( pfmet->getSpecific(),
 			    cleanpfmetsumet, cleanpfmetp4, dummyVertex);
 
     LorentzVector cleanpucmetp4 = pucmet->p4();
     cleanpucmetp4 += recBoson.leg1().p4();
     cleanpucmetp4 += recBoson.leg2().p4();
-    double cleanpucmetsumet = pucmet->sumEt() - recBoson.leg1().et() - recBoson.leg2().et();    
+    double cleanpucmetsumet = pucmet->sumEt() - recBoson.leg1().pt() - recBoson.leg2().pt();    
     reco::PFMET cleanpucmet( pucmet->getSpecific(),
 			     cleanpucmetsumet, cleanpucmetp4, dummyVertex);
 
@@ -286,18 +270,34 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     LorentzVector cleantkmetp4 = tkmet->p4();
     cleantkmetp4 += tau1Chargedp4;
     cleantkmetp4 += tau2Chargedp4;
-    double cleantkmetsumet = tkmet->sumEt() - tau1Chargedp4.Et() - tau2Chargedp4.Et();    
+    double cleantkmetsumet = tkmet->sumEt() - tau1Chargedp4.Pt() - tau2Chargedp4.Pt();    
     reco::PFMET cleantkmet( tkmet->getSpecific(),
 			    cleantkmetsumet, cleantkmetp4, dummyVertex);
 
     LorentzVector cleannopumetp4 = nopumet->p4();
     cleannopumetp4 += tau1Chargedp4;
     cleannopumetp4 += tau2Chargedp4;
-    double cleannopumetsumet = nopumet->sumEt() - tau1Chargedp4.Et() - tau2Chargedp4.Et();    
+    double cleannopumetsumet = nopumet->sumEt() - tau1Chargedp4.Pt() - tau2Chargedp4.Pt();    
     reco::PFMET cleannopumet( nopumet->getSpecific(),
 			      cleannopumetsumet, cleannopumetp4, dummyVertex);
 
 
+    if(verbose_) {
+      std::cout<<"---"<<std::endl;
+      std::cout<<"MVAMETProducer"<<std::endl;
+      std::cout<<"\tpfmet = "<<pfmet->pt()<<std::endl;
+      std::cout<<"\ttkmet = "<<tkmet->pt()<<std::endl;
+      std::cout<<"\tnopumet = "<<nopumet->pt()<<std::endl;
+      std::cout<<"\tpucmet = "<<pucmet->pt()<<std::endl;
+      std::cout<<"\tpumet = "<<pumet->pt()<<std::endl;
+      std::cout<<"\tnJetsPtGt1 = "<<nJetsPtGt1Clean<<std::endl;
+      std::cout<<"\tnJetsPtGt30 = "<<nJetsPtGt30<<std::endl;
+      std::cout<<"\tnGoodVtx = "<<nGoodVtx<<std::endl;
+      std::cout<<"\trho = "<<rho<<std::endl;
+      if(leadJet  != 0) std::cout<<"\tjet1 eta,pt= "<<leadJet->Et()<<","<<leadJet->eta()<<std::endl;
+      if(leadJet2 != 0) std::cout<<"\tjet2 eta,pt= "<<leadJet2->Et()<<","<<leadJet2->eta()<<std::endl;
+      
+    }
 
     std::pair<LorentzVector,TMatrixD> lMVAMetInfo
       = mvaMet_->GetMet( lVisible,
@@ -309,7 +309,7 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 			 cleanLeadJet,
 			 cleanLeadJet2,
 			 nJetsPtGt30,
-			 nJetsPtGt1,
+			 nJetsPtGt1Clean,
 			 nGoodVtx,
 			 jetInfo, 
 			 false );
@@ -350,7 +350,8 @@ void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo>
 /*     double lNeuFrac = (pCJet->neutralEmEnergy()/pCJet->energy() + pCJet->neutralHadronEnergy()/pCJet->energy()); */
     // FIXME choose the correct mva
     if( ! pCJet->getSelection("cuts_looseJetId") ) continue;
-    double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
+    //double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
+    double lMVA = pCJet->puMva("philv1");//, PileupJetIdentifier::kMedium );
     // FIXME compute properly, according to what Phil does
     double lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
     MetUtilities::JetInfo pJetObject; 

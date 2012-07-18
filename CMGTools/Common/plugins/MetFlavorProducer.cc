@@ -40,7 +40,7 @@ MetFlavorProducer::MetFlavorProducer(const edm::ParameterSet& iConfig) {
   fDZMin          = iConfig.getParameter<double>       ("dZMin");  
   fMetFlavor      = iConfig.getParameter<int>          ("MetFlavor");
   fUtils          = new MetUtilities();
-  fPUJetIdAlgo         = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("full"));
+  fPUJetIdAlgo         = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("PhilV1"));
   fPUJetIdAlgoLowPt    = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("PhilV1"));
 }
 MetFlavorProducer::~MetFlavorProducer() { 
@@ -109,12 +109,15 @@ void MetFlavorProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 void MetFlavorProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
 				 const std::vector<pat::Jet>& iCJets,
 				 const VertexCollection &iVertices,double iRho) { 
+  
   for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
     const pat::Jet     *pCJet  = &(iCJets.at(i1));
+    if(pCJet->pt() < fJetPtMin) continue;
     if( !passPFLooseId(pCJet) ) continue;
     double lJec = 0;
     double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false);
-    double lNeuFrac = (pCJet->neutralEmEnergy()/pCJet->energy() + pCJet->neutralHadronEnergy()/pCJet->energy());
+    double lJetEnergy = pCJet->correctedJet(0).pt()/pCJet->pt()*pCJet->energy();
+    double lNeuFrac = (pCJet->neutralEmEnergy() + pCJet->neutralHadronEnergy())/lJetEnergy;
     MetUtilities::JetInfo pJetObject; 
     pJetObject.p4       = pCJet->p4(); 
     pJetObject.mva      = lMVA;
@@ -141,13 +144,15 @@ void MetFlavorProducer::makeVertices(std::vector<Vector>        &iPVInfo,const V
   }
 }
 bool MetFlavorProducer::passPFLooseId(const pat::Jet *iJet) { 
+  //5.33831 - 2.75353 : 42.0967 - 54.9466 - 13 - 87.3427 _ 0 - 4
   //std::cout << " ==> " << iJet->pt() << " - " << iJet->eta() << " : " << iJet->energy() << " - " << iJet->neutralEmEnergy() << " - " << iJet->nConstituents() << " - " << iJet->chargedHadronEnergy() << " _ " << iJet->chargedEmEnergy() << " - " << iJet->chargedMultiplicity() << std::endl;
-  if(iJet->energy()== 0)                                  return false;
-  if(iJet->neutralHadronEnergy()/iJet->energy() > 0.99)   return false;
-  if(iJet->neutralEmEnergy()/iJet->energy()     > 0.99)   return false;
-  if(iJet->nConstituents() <  2)                          return false;
-  if(iJet->chargedHadronEnergy()/iJet->energy() <= 0 && fabs(iJet->eta()) < 2.4 ) return false;
-  if(iJet->chargedEmEnergy()/iJet->energy() >  0.99  && fabs(iJet->eta()) < 2.4 ) return false;
+  //if(iJet->energy()== 0)                                                           return false;
+  double lJetEnergy = iJet->correctedJet(0).pt()/iJet->pt()*iJet->energy();
+  if((iJet->neutralHadronEnergy()+iJet->HFHadronEnergy())/lJetEnergy > 0.99)      return false;
+  if(iJet->neutralEmEnergy()/lJetEnergy     > 0.99)                               return false;
+  if(iJet->nConstituents()                  <  2)                                 return false;
+  if(iJet->chargedHadronEnergy()/lJetEnergy <= 0     && fabs(iJet->eta()) < 2.4 ) return false;
+  if(iJet->chargedEmEnergy()/lJetEnergy     >  0.99  && fabs(iJet->eta()) < 2.4 ) return false;
   if(iJet->chargedMultiplicity()            < 1      && fabs(iJet->eta()) < 2.4 ) return false;
   return true;
 }

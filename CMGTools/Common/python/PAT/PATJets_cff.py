@@ -47,7 +47,8 @@ from PhysicsTools.PatAlgos.mcMatchLayer0.jetFlavourId_cff import *
 patJetPartonAssociation.jets = jetSource
 
 from CMGTools.Common.skims.cmgCandSel_cfi import cmgCandSel
-jetsPtGt1 = cmgCandSel.clone( src = 'patJets', cut = 'pt()>1')
+jetsPtGt1 = cmgCandSel.clone( src = 'patJets', cut ='(neutralHadronEnergy()+HFHadronEnergy())/(correctedJet(0).pt()/pt()*energy())  < 0.99 && (neutralEmEnergy()/(correctedJet(0).pt()/pt()*energy())) < 0.99 && (nConstituents()) > 1    && ((abs(eta())  < 2.4  && chargedHadronEnergy()/(correctedJet(0).pt()/pt()*energy()) > 0 && chargedEmEnergy()      /(correctedJet(0).pt()/pt()*energy()) < 0.99 && chargedMultiplicity() > 0)   ||  abs(eta())  > 2.4) ')
+
 from CMGTools.Common.miscProducers.collectionSize.candidateSize_cfi import candidateSize
 nJetsPtGt1 = candidateSize.clone( src = 'jetsPtGt1' )
 
