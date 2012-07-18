@@ -3,7 +3,6 @@ import FWCore.ParameterSet.Config as cms
 def getTauCuts( leg, channel='tauMu'):
 
     ptCut = 18.
-    # ptCut = 15.
     etaCut = 2.3
     muVeto = None
     eVeto = None
