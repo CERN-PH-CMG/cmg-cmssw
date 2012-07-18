@@ -89,8 +89,8 @@
   <class name="edm::Wrapper<std::vector<cmg::Tau> >"/>
   
   <class name="cmg::BaseJet"/>
-  <class name="boost::array<double,8>" />
-  <class name="boost::array<std::basic_string<char>,8>" />
+  <class name="boost::array<double,16>" />
+  <class name="boost::array<std::basic_string<char>,16>" />
   <class name="cmg::PhysicsObjectWithPtr<pat::JetPtr>" />
   <class name="std::vector<cmg::BaseJet>"/>
   <class name="edm::Wrapper<cmg::BaseJet>"/>
@@ -100,9 +100,9 @@
   <class name="std::vector<cmg::PFJet>"/>
   <class name="edm::Wrapper<cmg::PFJet>"/>
   <class name="edm::Wrapper<std::vector<cmg::PFJet> >"/>
-  <class name="boost::array<int,5>" />
-  <class name="boost::array<float,5>" />
-  <class name="boost::array<std::string,5>" />
+  <class name="boost::array<int,10>" />
+  <class name="boost::array<float,10>" />
+  <class name="boost::array<std::string,10>" />
 
   <class name="cmg::StructuredPFJet"/>
   <class name="std::vector<cmg::StructuredPFJet>"/>
