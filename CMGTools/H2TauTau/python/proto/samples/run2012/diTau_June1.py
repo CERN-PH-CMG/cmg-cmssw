@@ -205,7 +205,7 @@ HiggsVH145 = cfg.MCComponent(
 
 
 mc_higgs_gg = [
-    #Higgsgg110,
+    Higgsgg110,
     Higgsgg115,
     Higgsgg120,
     Higgsgg125,
@@ -224,7 +224,7 @@ mc_higgs_gg = [
 #    print h.name, 'sigma = ', h.xSection
 
 mc_higgs_vbf = [
-    #HiggsVBF110,
+    HiggsVBF110,
     HiggsVBF115,
     HiggsVBF120,
     HiggsVBF125,
@@ -243,7 +243,7 @@ mc_higgs_vbf = [
 #    print h.name, 'sigma = ', h.xSection
 
 mc_higgs_VH = [
-    #HiggsVH110,
+    HiggsVH110,
     HiggsVH115,
     HiggsVH120,
     HiggsVH125,
@@ -347,7 +347,7 @@ ZZ.nGenEvents = 9799908
 
 # Higgs Summer11 ----------------------------------------------------------------------------
 
-#Higgsgg110.files = getFiles('/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg110.files = getFiles('/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 Higgsgg115.files = getFiles('/GluGluToHToTauTau_M-115_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 Higgsgg120.files = getFiles('/GluGluToHToTauTau_M-120_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 Higgsgg125.files = getFiles('/GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
@@ -355,7 +355,7 @@ Higgsgg130.files = getFiles('/GluGluToHToTauTau_M-130_8TeV-powheg-pythia6/Summer
 Higgsgg135.files = getFiles('/GluGluToHToTauTau_M-135_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 Higgsgg140.files = getFiles('/GluGluToHToTauTau_M-140_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 Higgsgg145.files = getFiles('/GluGluToHToTauTau_M-145_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF110.files = getFiles('/VBF_HToTauTau_M-110_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF110.files = getFiles('/VBF_HToTauTau_M-110_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF115.files = getFiles('/VBF_HToTauTau_M-115_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF120.files = getFiles('/VBF_HToTauTau_M-120_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
@@ -363,7 +363,7 @@ HiggsVBF130.files = getFiles('/VBF_HToTauTau_M-130_8TeV-powheg-pythia6/Summer12-
 HiggsVBF135.files = getFiles('/VBF_HToTauTau_M-135_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF140.files = getFiles('/VBF_HToTauTau_M-140_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVBF145.files = getFiles('/VBF_HToTauTau_M-145_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVH110.files = getFiles('/WH_ZH_TTH_HToTauTau_M-110_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVH110.files = getFiles('/WH_ZH_TTH_HToTauTau_M-110_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v3/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVH115.files = getFiles('/WH_ZH_TTH_HToTauTau_M-115_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVH120.files = getFiles('/WH_ZH_TTH_HToTauTau_M-120_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVH125.files = getFiles('/WH_ZH_TTH_HToTauTau_M-125_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
