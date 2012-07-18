@@ -22,20 +22,12 @@ from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'cmgtools_group',
     #'/DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S8_START52_V9-v1/AODSIM/V5'
-    '/GluGluToHToZZTo4L_M-126_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5'
-   # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
-   # 'CMS',
-   # '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V5-v2/AODSIM',
-   # '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5'
-   '/TauPlusX/Run2012A-PromptReco-v1/RECO'
-   # '/DoubleMu/Run2012A-PromptReco-v1/RECO',
-   # '/DoubleMu/Run2012A-23May2012-v2/AOD'
-   #'/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
-   # 'CMS',
-   # '/TauPlusX/Run2011A-03Oct2011-v1/AOD'
-   #'CMS',
-   # '/DoubleMu/Run2012B-PromptReco-v1/AOD'
+    '/GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5'
+    #'CMS',
+    # '/DoubleMu/Run2012B-PromptReco-v1/AOD'
    )
+
+process.source.fileNames = process.source.fileNames[:1]
 
 print sep_line
 print process.source.fileNames
@@ -202,9 +194,9 @@ if cmsswIs44X():
         GT = 'GR_R_44_V15::All'
 else:
     if runOnMC:
-        GT = 'START52_V9B::All'
+        GT = 'START52_V10::All'
     else:
-        GT = 'GR_R_52_V9::All'
+        GT = 'GR_R_52_V8::All'
 process.GlobalTag.globaltag = GT
 
 print 'Global tag       : ', process.GlobalTag.globaltag

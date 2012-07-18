@@ -407,8 +407,8 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   std::pair<LorentzVector,double> lTKMet;    lTKMet.first   = iTKMet  ->p4(); lTKMet  .second = iTKMet  ->sumEt();
   std::pair<LorentzVector,double> lNoPUMet;  lNoPUMet.first = iNoPUMet->p4(); lNoPUMet.second = iNoPUMet->sumEt();
   std::pair<LorentzVector,double> lPUCMet;   lPUCMet.first  = iPUCMet ->p4(); lPUCMet .second = iPUCMet ->sumEt();
-  std::pair<LorentzVector,double> lPUMet;    lPUCMet.first  = iPUMet  ->p4(); lPUMet  .second = iPUMet  ->sumEt();
-
+  std::pair<LorentzVector,double> lPUMet;    lPUMet.first   = iPUMet  ->p4(); lPUMet  .second = iPUMet  ->sumEt();
+  
   //Here is the cleaning step I just added
   fUtils->cleanMet(iVis,iJets,lNoPUMet,true ,true);
   fUtils->cleanMet(iVis,iJets,lPUCMet ,false,false);

@@ -20,13 +20,16 @@ pattuple = 'patTuple.root'
 cmgtuple = 'cmgTuple.root'
 
 dataset_owner_mc = 'cmgtools'
-dataset_name_mc = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5'
+# dataset_name_mc = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5'
+dataset_name_mc = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5'
 
-dataset_owner_data = 'cmgtools'
-dataset_name_data = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
-patExt = '/PAT_CMG_V5_1_0'
 
-maxEvents = 10
+dataset_owner_data = 'CMS'
+# dataset_name_data = '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
+dataset_name_data = '/TauPlusX/Run2012B-PromptReco-v1/AOD'
+patExt = '/PAT_CMG_V5_4_0'
+
+maxEvents = 3000
 
 import inspect
 
@@ -44,9 +47,6 @@ def checkRootFile( file ):
     out = subprocess.Popen(edmf, stdout=subprocess.PIPE, stderr=subprocess.PIPE ).communicate()[0]
     # print out
     (nevents, kbytesPerEvent, branches) = fileAna(out.split('\n'))
-    # out.close()
-    # print nevents, kbytesPerEvent
-    # print branches
     if nevents == 0:
         raise ValueError('no event in ' + file )
     return (nevents, kbytesPerEvent, branches)
@@ -261,7 +261,7 @@ if __name__ == '__main__':
     # outDir_PATCMGT3_MC = 'PATCMG_44X_cfg.py_PATCMGT3_MC'
     finf_NEW_PAT = FileInfo( outDir_PATCMGT3_MC + '/patTuple.root')
     finf_NEW_CMG = FileInfo( outDir_PATCMGT3_MC + '/cmgTuple.root')
-
+    
     finf_NEW_PAT.compare( finf_REF_PAT )
     finf_NEW_CMG.compare( finf_REF_CMG )
     finf_NEW_PAT.write()
