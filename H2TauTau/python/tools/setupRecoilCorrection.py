@@ -6,6 +6,11 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is52X=False):
 
     print 'setting up recoil corrections:'
 
+    if not hasattr( process, 'recoilCorMETTauMu') and \
+       not hasattr( process, 'recoilCorMETTauEle') :
+        print 'recoil correction module not in the path -> DISABLED'
+        return False
+        
     fileName = process.source.fileNames[0]
     print fileName
 
@@ -41,11 +46,11 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is52X=False):
                 process.recoilCorMETTauEle.fileCorrectTo = '/'.join([rootfile_dir,
                                                                     'recoilfit_zjets_ltau_njet.root'])
                 process.recoilCorMETTauEle.leptonLeg = 0
-            if hasattr( process, 'recoilCorMETMuEle'):
-                process.recoilCorMETMuEle.enable = True
-                process.recoilCorMETMuEle.fileCorrectTo = '/'.join([rootfile_dir,
-                                                                    'recoilfit_zjets_ltau_njet.root'])
-                process.recoilCorMETMuEle.leptonLeg = 0
+##             if hasattr( process, 'recoilCorMETMuEle'):
+##                 process.recoilCorMETMuEle.enable = True
+##                 process.recoilCorMETMuEle.fileCorrectTo = '/'.join([rootfile_dir,
+##                                                                     'recoilfit_zjets_ltau_njet.root'])
+##                 process.recoilCorMETMuEle.leptonLeg = 0
         elif lookup( fileName, 'WJetsToLNu' ) or \
                  lookup( fileName, 'W3Jets' ):
             print '\tENABLED : W+jet mode (tau is fake)'
@@ -59,11 +64,11 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is52X=False):
                 process.recoilCorMETTauEle.fileCorrectTo = '/'.join([rootfile_dir,
                                                                     'recoilfit_wjets_njet.root'])
                 process.recoilCorMETTauEle.leptonLeg = 2
-            if hasattr( process, 'recoilCorMETMuEle'):
-                process.recoilCorMETMuEle.enable = True
-                process.recoilCorMETMuEle.fileCorrectTo = '/'.join([rootfile_dir,
-                                                                    'recoilfit_wjets_njet.root'])
-            process.recoilCorMETMuEle.leptonLeg = 2
+##             if hasattr( process, 'recoilCorMETMuEle'):
+##                 process.recoilCorMETMuEle.enable = True
+##                 process.recoilCorMETMuEle.fileCorrectTo = '/'.join([rootfile_dir,
+##                                                                     'recoilfit_wjets_njet.root'])
+##             process.recoilCorMETMuEle.leptonLeg = 2
         else:
             enable = False
     if enable is False:
@@ -74,7 +79,7 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is52X=False):
             process.recoilCorMETTauMu.enable = False            
         if hasattr( process, 'recoilCorMETTauEle'):
             process.recoilCorMETTauEle.enable = False
-        if hasattr( process, 'recoilCorMETMuEle'):
-            process.recoilCorMETMuEle.enable = False
+##         if hasattr( process, 'recoilCorMETMuEle'):
+##             process.recoilCorMETMuEle.enable = False
             
 
