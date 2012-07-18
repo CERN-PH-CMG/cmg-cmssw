@@ -206,7 +206,7 @@ PATCMGSequence = cms.Sequence(
     PATCMGRhoSequence +
     PATCMGMuonSequence +
     PATCMGElectronSequence +
-    PATCMGPhotonSequence +
+    # PATCMGPhotonSequence +
     PATCMGJetSequence +
     PATCMGTauSequence +
     PATCMGMetSequence +
