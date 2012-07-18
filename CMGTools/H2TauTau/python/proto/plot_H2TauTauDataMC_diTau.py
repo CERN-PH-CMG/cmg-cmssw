@@ -22,8 +22,8 @@ def lineno():
     '''Returns the current line number in our program.'''
     return inspect.currentframe().f_back.f_lineno
 
-########## rootlogon5 for loose iso M   ##### don't forget to change weight!
-########## rootlogon3 for loose iso LL4 ##### don't forget to change weight!
+########## rootlogon5 for loose iso M   ##### don't forget to change weight at line ~401!
+########## rootlogon3 for loose iso LL4 ##### don't forget to change weight at line ~401!
 from os import path
 if path.exists('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon3.C'):
     gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon3.C')  # Run ROOT logon script
@@ -205,8 +205,10 @@ if __name__ == '__main__':
     isolationLL2       =  ' && l1RawMVAIso>0.7 && l2RawMVAIso>0.7'
     isolationLL3       =  ' && l1RawMVAIso>0.3 && l2RawMVAIso>0.3'
     isolationLL4       =  ' && l1RawMVAIso>0.5 && l2RawMVAIso>0.5'
+    isolationLL4old    =  ' && l1LooIso<0.5 && l2LooIso<0.5'
     isolationML        =  ' && ((l1MedMVAIso>0.5 && l2RawMVAIso>0.795) || (l1RawMVAIso>0.795 && l2MedMVAIso>0.5))'
     isolationMM        =  ' && l1MedMVAIso>0.5 && l2MedMVAIso>0.5'
+    isolationMMold     =  ' && l1MedIso>0.5 && l2MedIso>0.5'
     isolationTM        =  ' && ((l1MedMVAIso>0.5 && l2TigMVAIso>0.5) || (l1TigMVAIso>0.5 && l2MedMVAIso>0.5))'
     isolationTT        =  ' && l1TigMVAIso>0.5 && l2TigMVAIso>0.5'
     Jet0               =  ' && jet1Pt<50'
@@ -225,14 +227,12 @@ if __name__ == '__main__':
 
         #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_dRRW_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<200.0'   , isolationMM , 5 ),
 
-        ("CMS_2012_5_fb__qcd5LL4_loose_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-        ("CMS_2012_5_fb__qcd5LL4_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        ("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMMold , 5 ),
+        
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMMold , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMMold , 5 ),
 
-        #("CMS_2012_5_fb_l40_mm_dRtt18_qcd5M_dRRW_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBFmedium , ' && dRtt<1.8'   , isolationMM , 5 ),
-        #("CMS_2012_5_fb_l40_mm_dRtt25_qcd5M_dRRW_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium             , ' && dRtt<2.5'   , isolationMM , 5 ),
-        #("CMS_2012_5_fb_l40_mm_dRtt22_qcd5M_dRRW_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium             , ' && dRtt<2.2'   , isolationMM , 5 ),
-        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_dRRW_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium             , ' && dRtt<2.0'   , isolationMM , 5 ),
-        #("CMS_2012_5_fb_l40_mm_dRtt18_qcd5M_dRRW_medium_VBF"    , baseline + l1Pt40l2Pt40 + VBFmedium             , ' && dRtt<1.8'   , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
 
 	  ]
     
@@ -244,25 +244,25 @@ if __name__ == '__main__':
        rebin = 1	
      for var, nx, xmin, xmax in [
         ('svfitMass'        ,int(30/rebin), 0   , 300    ), 
-        ('svfitMass*1.03'   ,int(30/rebin), 0   , 300    ),
-        ('svfitMass*0.97'   ,int(30/rebin), 0   , 300    ),
+        #('svfitMass*1.03'   ,int(30/rebin), 0   , 300    ),
+        #('svfitMass*0.97'   ,int(30/rebin), 0   , 300    ),
         #('met'              ,int(40/rebin), 0   , 200    ),
-        #('l1Pt'             ,int(40/rebin), 0   , 200    ),   # was 75 bins
-        #('l2Pt'             ,int(40/rebin), 0   , 200    ),   # was 75 bins
-        #('jet1Pt'           ,int(50/rebin), 0   , 500    ),
+        ('l1Pt'             ,int(40/rebin), 0   , 200    ),   # was 75 bins
+        ('l2Pt'             ,int(40/rebin), 0   , 200    ),   # was 75 bins
+        ('jet1Pt'           ,int(50/rebin), 0   , 500    ),
         #('jet2Pt'           ,int(50/rebin), 0   , 500    ),
-        #('visMass'          ,int(30/rebin), 0   , 300    ),
+        ('visMass'          ,int(30/rebin), 0   , 300    ),
         #('visMass*1.03'     ,int(30/rebin), 0   , 300    ),
         #('visMass*0.97'     ,int(30/rebin), 0   , 300    ),
-        #('nVert'            ,int(25/rebin), 0   , 50     ),
+        ('nVert'            ,int(25/rebin), 0   , 50     ),
         #('l1Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
         #('l2Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
         #('jet1Eta'          ,int(20/rebin), -5  , 5      ),
         #('jet2Eta'          ,int(20/rebin), -5  , 5      ),
         #('mjj'              ,int(30/rebin), 0   ,  800   ),
         #('nJets'            ,10           , 0   , 10     ),
-        #('dRtt'             ,int(30/rebin), 0   , 5      ),
-        #('dPhitt'           ,int(30/rebin), 0   , 3.15   ),
+        ('dRtt'             ,int(30/rebin), 0   , 5      ),
+        ('dPhitt'           ,int(30/rebin), 0   , 3.15   ),
         #('mt'               ,int(20/rebin), 0   , 200    ),
         #('pThiggs'          ,int(25/rebin), 0   , 300    ),
         #('diTauPt'          ,int(25/rebin), 0   , 300    ),
@@ -294,6 +294,7 @@ if __name__ == '__main__':
         #('l2LooseMu'        ,2            , 0   , 2      ),
         #('jet1Eta-jet2Eta'  ,int(40/rebin), -5  , 5      ),
       ]:
+      
       cut     = bareCut
       print 'I\'ve stripped the old pt cut\n', cut
       if   ( var == 'svfitMass*1.03' or var == 'visMass*1.03' ):
@@ -302,7 +303,7 @@ if __name__ == '__main__':
         cut += l1Pt40l2Pt40_down 
       else :
         cut += l1Pt40l2Pt40
-        	
+      
       print 'I\'m using this cut string\n',cut+isocut+antiqcdcut    
       
       prefix1 = os.getcwd()+"/"+prefix+"/diTau_2012_"
@@ -328,12 +329,16 @@ if __name__ == '__main__':
 #       else :
 #         looseisocut = isolationLL4+" && !(1 "+isocut+")"
 
-############## change here the loose iso
+
+      #########################################################
+      ############## change here the loose iso ################
+      #########################################################
       #looseisocut = isolationM + " && !(1 "+isocut+")"
       looseisocut = isolationLL4+" && !(1 "+isocut+")"
+      #looseisocut = isolationLL4old +" && !(1 "+isocut+")"
+      #########################################################
       
       #looseisocut=isolationMNM+" && !(1 "+isocut+")"
-
       semilooseisocut = isolationMLL+" && !(1 "+isocut+")"
       
       if qcdEstimate==0:
@@ -396,10 +401,10 @@ if __name__ == '__main__':
                                              cut = cut+looseisocut+antiqcdcut, \
                                              #weight=weight+"*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
-                                             weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
+                                             #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
-                                             #weight=weight,                    \
+                                             weight=weight,                    \
                                              embed=options.embed)
       #print lineno()
       
@@ -634,6 +639,11 @@ if __name__ == '__main__':
           if var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03":
             saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"visMass","SM1")
         #print lineno()
+        
+        #####################################################
+        ###        SAVE ROOT FILES FOR REWEIGHTING        ###
+        #####################################################
+        #saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVarDataLooseIsoOS, prefix, mIndex)
 
         #####################################################
         ###   BOOSTING THE SIGNAL FOR PICTORIAL RESULTS   ###
@@ -646,15 +656,15 @@ if __name__ == '__main__':
         #####################################################
         ###            BLINDING DATA ABOVE Z PEAK         ###
         #####################################################
-        if ( var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
-         for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>100 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<140 ):
-              plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
+        #if ( var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
+        # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
+        #   if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>100 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<140 ):
+        #      plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
-        if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
-         for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<120 ):
-              plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
+        #if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
+        # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
+        #   if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<120 ):
+        #      plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
         #if var=="dRtt" and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
         # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
