@@ -198,17 +198,23 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         #PG FIXME how do I pass the isolation argument to testLooseLeg2?
         looseLeptons = filter( self.testLooseLeg2, leptons)
         nLeptons = len(looseLeptons)
-        return nLeptons < 2 #PG according to AN 2012/150 of 12/07/2012
+#        return nLeptons < 2 #PG according to AN 2012/150 of 12/07/2012
         if nLeptons < 2 :
             return True
-        elif nLeptons > 2 :
-            return False
-        else: # 2 leptons
-            if looseLeptons[0].charge() == looseLeptons[1].charge() :
-                return True
-            elif deltaR (looseLeptons[0].eta(), looseLeptons[0].phi(), 
-                         looseLeptons[1].eta(), looseLeptons[1].phi()) < 0.15 :
-                return True 
-            else :
-                return False
+        else :
+            chargeSum = 0
+            for i in range(len(looseLeptons)) : chargeSum = chargeSum += looseLeptons[i].charge()
+            if abs(chargeSum) < len(looseLeptons) : return False
+        return True
+
+#        elif nLeptons > 2 :
+#            return False
+#        else: # 2 leptons
+#            if looseLeptons[0].charge() == looseLeptons[1].charge() :
+#                return True
+#            elif deltaR (looseLeptons[0].eta(), looseLeptons[0].phi(), 
+#                         looseLeptons[1].eta(), looseLeptons[1].phi()) < 0.15 :
+#                return True 
+#            else :
+#                return False
     
