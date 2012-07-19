@@ -72,6 +72,7 @@ class DiLeptonAnalyzer( Analyzer ):
         if hasattr( self.cfg_ana, 'scaleShift2'):
             scaleShift2 = self.cfg_ana.scaleShift2
         if scaleShift1:
+            # import pdb; pdb.set_trace()
             map( lambda x: x.leg1().scaleEnergy(scaleShift1), event.diLeptons )
         if scaleShift2:
             map( lambda x: x.leg2().scaleEnergy(scaleShift2), event.diLeptons )
