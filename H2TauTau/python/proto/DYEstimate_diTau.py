@@ -7,10 +7,12 @@ import math
 def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataMass, weightsDataMass, weight):
     inclusiveForEmbeddedNormalizationDY = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
      			    30,0,300,
+     			    #cut = 'l1Pt>40 && l2Pt>40 && abs(l1Eta)<2.1 && jet1Pt>50 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5', weight=weight,
      			    cut = 'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && jet1Pt>50 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5', weight=weight,
      			    embed=False)
     inclusiveForEmbeddedNormalizationEmbed = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
      			    30,0,300,
+     			    #cut = 'l1Pt>40 && l2Pt>40 && abs(l1Eta)<2.1 && jet1Pt>50 && abs(l2Eta)<2.1 && diTauCharge==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5', weight=weight,
      			    cut = 'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && jet1Pt>50 && abs(l2Eta)<2.1 && diTauCharge==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5', weight=weight,
      			    embed=False)
     embeddedHist=None
