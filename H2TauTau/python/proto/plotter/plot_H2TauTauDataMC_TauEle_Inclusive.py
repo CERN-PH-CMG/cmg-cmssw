@@ -319,4 +319,4 @@ if __name__ == '__main__':
         draw(osign, False, 'TauEle', 'QCD_os')
 #        osQCD.legendOn = False
         draw(osQCD, options.blind, 'TauEle')
-        datacards(osQCD, cutstring, shift, 'TauEle')
+        datacards(osQCD, cutstring, shift, 'eEle')
