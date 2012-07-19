@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_boostarrays_18Jul12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_nophoton_18Jul12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_fixnjetsgt1_19Jul12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_mvaandrecoil_18Jul12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'pmeckiff17Jul2012'),
