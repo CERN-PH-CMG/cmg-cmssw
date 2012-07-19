@@ -235,6 +235,7 @@ public:
   }
 
   //PG this is ok for TauEle
+  //Jose: should we add a _TauEle tag to this function? 
   double effMediumIsoTau20MC(double pt, double eta){
     if(fabs(eta)<1.479) 
       return efficiency(pt, 19.468, 0.0615381, 0.0349325, 1.59349, 0.860096);
@@ -387,7 +388,69 @@ public:
       return efficiency(pt,  16.99065795, 	-0.11993730, 	0.01384991, 	2.38867304, 	0.86552275 );
   }
   
+
   
+  //********************************
+  //e-tau 2012
+  //********************************
+
+  //Upto ICHEP
+  double effEle2012AB(double pt, double eta) {
+    float weight_A = 696.09; 
+    float weight_B = 4327.0;    
+    return (weight_A * eff2012AEle20(pt, eta) + weight_B * eff2012BEle22(pt, eta))/(weight_A+weight_B);
+  } 
+  //Upto ICHEP
+  double effTau2012AB_TauEle(double pt, double eta) {
+    float weight_A = 696.09; 
+    float weight_B = 4327.0;
+    return (weight_A * eff2012ATau20_TauEle(pt, eta) + weight_B * eff2012BTau20_TauEle(pt, eta))/(weight_A+weight_B);
+  }
+
+
+  // Electron (2012) //Upto ICHEP
+  // Trigger 	                     m0 	  sigma 	   alpha 	      n 	  norm
+  // Ele20 EB - Run < 193686 	20.97643939 	1.15196354 	2.27544602 	1.01743868 	2.04391816
+  // Ele22 EB - Run >= 193686 	22.90752344 	1.32376429 	2.17813319 	1.03674051 	2.15454768
+  // Ele 20 EB - 52X MC 	        20.58604584 	-1.89456806 	3.69311772 	1.05480046 	1.28655181
+  
+  // Ele20 EE - Run < 193686 	20.59874300 	1.25425435 	1.61098921 	1.00146962 	60.35067579
+  // Ele22 EE - Run >= 193686 	22.14553261 	1.19913124 	1.75642067 	1.00826962 	9.04331617
+  // Ele 20 EE - 52X MC 	        20.15425918 	0.75449122 	1.06027513 	1.01106686 	7.01956561 
+  double eff2012AEle20(double pt, double eta) {
+    if(fabs(eta)<1.2) 
+      return efficiency(pt, 20.97643939 , 1.15196354 , 2.27544602, 1.01743868, 2.04391816);
+    else
+      return efficiency(pt, 20.59874300, 1.25425435, 1.61098921, 1.00146962, 60.35067579);
+  }  
+  double eff2012BEle22(double pt, double eta) {
+    if(fabs(eta)<1.2) 
+      return efficiency(pt, 22.90752344, 1.32376429 , 2.17813319, 1.03674051, 2.15454768);
+    else
+      return efficiency(pt, 22.14553261, 1.19913124 , 1.75642067, 1.00826962, 9.04331617);
+  }
+  double eff2012Ele20MC(double pt, double eta) {
+    if(fabs(eta)<1.2)  
+      return efficiency(pt, 20.58604584, -1.89456806 , 3.69311772, 1.05480046, 1.28655181);
+    else
+      return efficiency(pt, 20.15425918,  0.75449122 , 1.06027513, 1.01106686, 7.01956561);
+  }
+
+
+  // Tau (2012) //Upto ICHEP
+  // Trigger (Tau) 	             m0 	   sigma 	  alpha              n    	norm
+  // Loose Tau 20 - Run < 193686 	  18.84658959 	0.25958704 	0.17300958 	2.43491208 	0.85872017
+  // Loose Tau 20 - Run >= 193686   18.48663118 	1.63417147 	20.25695815 	138.55422224 	0.89456038
+  // Loose Tau 20 - 52X MC 	  18.77448606 	0.45765507 	0.26077509 	13.43372485 	0.88037836
+  double eff2012ATau20_TauEle(double pt, double eta) {
+    return efficiency(pt, 18.84658959 , 0.25958704,  0.17300958,   2.43491208, 0.85872017);
+  }
+  double eff2012BTau20_TauEle(double pt, double eta) {
+    return efficiency(pt, 18.48663118 , 1.63417147, 20.25695815, 138.55422224, 0.89456038);
+  }
+  double eff2012Tau20MC_TauEle(double pt, double eta) {
+    return efficiency(pt, 18.77448606 , 0.45765507,  0.26077509,  13.43372485, 0.88037836);
+  }
 
 
   //****************

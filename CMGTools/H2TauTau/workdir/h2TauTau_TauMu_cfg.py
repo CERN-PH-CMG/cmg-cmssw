@@ -50,7 +50,8 @@ process.source = cms.Source(
     "PoolSource",
     fileNames = cms.untracked.vstring(
     #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0/cmgTuple_0.root'
-    '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/cmgTuple_0.root'
+    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/cmgTuple_0.root'
+    '/store/cmst3/user/cmgtools/CMG/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET/cmgTuple_0.root'
     #'file:../../../Common/prod/TEST/cmgTuple_HToTauTau.root'
     )
     )
@@ -67,25 +68,9 @@ runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.file
 
 # Sequence & path definition -------------------------------------------------
 
-
-# set up JSON ---------------------------------------------------------------
-if runOnMC==False:
-    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
-    json = setupJSON(process)
-    print 'json:', json
-    print process.PoolSource.lumisToProcess
-
 ##path definition starts here-----------------------------
 process.TauMuPath = cms.Path()
 
-
-# gen  ---------------------------
-if runOnMC:
-    process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
-    process.genSequence = cms.Sequence(
-        process.vertexWeightSequence 
-        )
-    process.TauMuPath += process.genSequence 
 
 ## tau-mu selections ----------------------
 process.load('CMGTools.Common.factories.cmgTauScaler_cfi')

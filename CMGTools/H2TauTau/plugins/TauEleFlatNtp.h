@@ -9,10 +9,6 @@
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 
-#include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
-#include "CMGTools/H2TauTau/interface/SelectionEfficiency.h"
-//#include "CMGTools/H2TauTau/interface/TauRate.h"
-
 #include "CMGTools/H2TauTau/interface/BTagEfficiency.h"
 #include "CMGTools/H2TauTau/interface/BTagWeight.h"
 
@@ -45,29 +41,19 @@ public:
 
 protected:
 
+  //configurable selections
+  float muPtCut_;
+  float tauPtCut_;
+  float muEtaCut_;
+  float tauEtaCut_;
+
   edm::InputTag diTauTag_;
-  edm::InputTag genParticlesTag_;
-  edm::InputTag pfJetListTag_;
   edm::InputTag diMuonVetoListTag_;
+
   edm::Handle< std::vector<cmg::TauEle> > diTauList_;
   std::vector<cmg::TauEle> diTauSelList_;
   const cmg::TauEle * diTauSel_;
-  std::vector<const cmg::PFJet * > pfJetList_;
-  std::vector<const cmg::PFJet * > pfJetListLC_;
-  std::vector<const cmg::PFJet * > pfJetListLepLC_;
-  const cmg::PFJet * leadJet_;
-  const cmg::PFJet * subleadJet_;
 
-
-
-  std::vector<const cmg::PFJet * > pfJetListBTag_;
-  std::vector<const cmg::PFJet * > pfJetListBTagLC_;
-
-
-  TriggerEfficiency triggerEff_;
-  float triggerEffWeight_;
-  SelectionEfficiency selectionEff_;
-  float selectionEffWeight_;
 
   float embeddedGenWeight_;//for tau embedded samples
 
@@ -216,41 +202,6 @@ private:
   //custom electron isolation
   float electronRelIsoDBCorr(const cmg::Electron * cand){
     if(!cand) return 9999.;
-    //code from Pietro
-//      //electron iso:
-//      dBetaFactor = 0.5
-//        if dBetaFactor>0 and self.puChargedHadronIso()<0:
-//      return -1
-//        neutralIso = self.neutralHadronIso()+self.photonIso()       
-//        corNeutralIso = neutralIso - dBetaFactor * self.puChargedHadronIso();
-//      charged = self.chargedAllIsoWithConeVeto()       
-//        abs = (charged + max(corNeutralIso,0)) / self.pt()
-
-// //PG FIXME there's some hardcoded parameters here
-//   reco::isodeposit::AbsVetos allChargedVetoesCollection ;
-//   float coneSize = 0.01 ;
-//   if (input->isEE ()) coneSize = 0.015 ;
-//   reco::isodeposit::ConeVeto allChargedVeto (reco::isodeposit::Direction(input->eta (), input->phi ()), coneSize) ;
-//   allChargedVetoesCollection.push_back (&allChargedVeto) ;
-//   output->chargedAllIsoWithConeVeto_ =
-//     (input->isoDeposit(pat::PfChargedAllIso)->depositAndCountWithin(
-//       0.4,
-//       allChargedVetoesCollection,
-//       false ).first);
- 
-//   //PG try for the photon, to have a working recipe
-//   reco::isodeposit::AbsVetos photonVetoesCollection ;
-//   coneSize = 0.00 ;
-//   if (input->isEE ()) coneSize = 0.08 ;
-//   reco::isodeposit::ConeVeto photonVeto (reco::isodeposit::Direction(input->eta (), input->phi ()), coneSize) ;
-//   photonVetoesCollection.push_back (&photonVeto) ;
-
-//   float photonsIsoWithTauEleConeVeto = input->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(
-//       0.4,
-//       photonVetoesCollection,
-//       false ).first ;
-//   //PG FIXME I cannot commit this!
-//   output->photonIso_ = photonsIsoWithTauEleConeVeto ;
 
     //these are ok in the cmgElectron
     float neutralhad=cand->neutralHadronIso();
@@ -286,10 +237,6 @@ private:
   }
 
 
-  TRandom2 randEngine_; 
-  double randsigma_;
-  
-  
   RecoilCorrector corrector_;
   int recoilCorreciton_;
   double recoiliScale_;
@@ -304,48 +251,6 @@ private:
   double vbfvars_[8];
   std::string mvaWeights_ ;
   VBFMVA reader_;
-
-
-  //function definitions from Matthews mva
-  Double_t deltaPhi(Double_t phi1, Double_t phi2){
-    Double_t dphi = fabs(phi1 - phi2);
-    return dphi <= TMath::Pi() ? dphi : 2*TMath::Pi() - dphi; 
-  }
-  Double_t massPtEtaPhiM(Double_t pt1, Double_t eta1, Double_t phi1, Double_t m1,
-                         Double_t pt2, Double_t eta2, Double_t phi2, Double_t m2)
-  {
-    ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<Double_t> > mom1(pt1, eta1, phi1, m1);
-    ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<Double_t> > mom2(pt2, eta2, phi2, m2);
-    return (mom1+mom2).M();
-  }  
-  
-  //pZeta computation //Code from Josh
-  void compZeta(const cmg::Electron * leg1, const cmg::Tau * leg2, double metPx, double metPy, float * pZ, float * pZV){
-    //leg1 is the muon and leg2 is the tau
-
-    double leg1x = cos(leg1->phi());
-    double leg1y = sin(leg1->phi());
-    double leg2x = cos(leg2->phi());
-    double leg2y = sin(leg2->phi());
-    double zetaX = leg1x + leg2x;
-    double zetaY = leg1y + leg2y;
-    double zetaR = TMath::Sqrt(zetaX*zetaX + zetaY*zetaY);
-    if ( zetaR > 0. ) {
-      zetaX /= zetaR;
-      zetaY /= zetaR;
-    }
-
-    double visPx = leg1->px() + leg2->px();
-    double visPy = leg1->py() + leg2->py();
-    //double pZetaVis = visPx*zetaX + visPy*zetaY;
-    *pZV = visPx*zetaX + visPy*zetaY;
-    
-    double px = visPx + metPx;
-    double py = visPy + metPy;
-    //double pZeta = px*zetaX + py*zetaY;
-    *pZ = px*zetaX + py*zetaY;
-  }
-
 
 
   int counterall_;

@@ -51,6 +51,7 @@ flatNtpTauMu = cms.EDAnalyzer(
 flatNtpTauEle = cms.EDAnalyzer(
     "TauEleFlatNtp",
     path = cms.untracked.string(""),
+    dataPeriodFlag = cms.int32(2011),
     firstRun =  cms.int32( 0 ),
     lastRun =  cms.int32( 0 ),
     dataType =  cms.int32(-1),
@@ -66,7 +67,7 @@ flatNtpTauEle = cms.EDAnalyzer(
     trigPath9 = cms.InputTag(""),
     trigPath10 = cms.InputTag(""),
     diTauTag =  cms.InputTag(""),
-    verticesListTag = cms.InputTag("offlinePrimaryVertices"),
+    verticesListTag = cms.InputTag("goodOfflinePrimaryVertices"),
     genParticlesTag =  cms.InputTag("genParticlesPruned"),
     trigPathsListTag = cms.InputTag("cmgTriggerObjectSel"),
     trigObjsListTag = cms.InputTag("cmgTriggerObjectListSel"),
@@ -83,4 +84,8 @@ flatNtpTauEle = cms.EDAnalyzer(
     metType = cms.int32(1), # 1=PFMET, 2=MVAMET
     runSVFit = cms.int32(1), # 0 do not run, 1 run old version, 2 run new version
     mvaWeights = cms.string(httdata_dir + 'VBFMVA_BDTG.weights.44X.xml'),
+    muPtCut = cms.double(20.),
+    tauPtCut = cms.double(20.),
+    muEtaCut = cms.double(2.1),
+    tauEtaCut = cms.double(2.3),
     )

@@ -8,12 +8,12 @@
 
  TauEleFlatNtp::TauEleFlatNtp(const edm::ParameterSet & iConfig):
    BaseFlatNtp(iConfig),
+   muPtCut_(iConfig.getParameter<double>("muPtCut")),
+   tauPtCut_(iConfig.getParameter<double>("tauPtCut")),
+   muEtaCut_(iConfig.getParameter<double>("muEtaCut")),
+   tauEtaCut_(iConfig.getParameter<double>("tauEtaCut")),
    diTauSel_(0),
-   triggerEffWeight_(0.),
-   selectionEffWeight_(0.),
-   embeddedGenWeight_(0.),
    btagWP_(0.679),
-   btagWeight_(1),   
    sampleGenEventType_(0),
    sampleTruthEventType_(0),
    genEventType_(0),
@@ -69,7 +69,6 @@
    cout<<" runSVFit_ : "<<runSVFit_<<endl;
 
 
-   runSVFit_  =  iConfig.getParameter<int>("runSVFit");
  }
 
 
@@ -310,13 +309,14 @@ void TauEleFlatNtp::beginJob(){
 
    ///basic skims which should have been applied in H2TAUTAU step  
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     if(cand->leg1().pt() > 20.0
-        && fabs(cand->leg1().eta()) < 2.3
-        && cand->leg1().tauID("decayModeFinding") > 0.5
-        && cand->leg2().pt() > 20.0
-        && fabs(cand->leg2().eta()) < 2.1
-        )     
+     if(cand->leg1().pt() > tauPtCut_
+	&& fabs(cand->leg1().eta()) < tauEtaCut_
+	&& cand->leg1().tauID("decayModeFinding") > 0.5
+	&& cand->leg2().pt() > muPtCut_
+	&& fabs(cand->leg2().eta()) < muEtaCut_
+	)     
        diTauSelList_.push_back(*cand);
+     
    }
    if(diTauSelList_.size()>0) counterpresel_++;
 
@@ -346,25 +346,12 @@ void TauEleFlatNtp::beginJob(){
      //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/H2TauTau/python/proto/analyzers/TauEleAnalyzer.py?revision=1.12&view=markup
      //https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
 
-//      Electron ID:
-//     No missing inner hits
-//     Conversion rejection
-//     |dz| < 0.2 cm (the longitudinal impact parameter calculated with respect to the selected primary vertex)
-//     In the EMu (ETau) channel: |d0| < 0.02(0.045) cm -- the impact parameter in the transverse plane
-//     MVA selection: we only use the MVA for the ID, following the instructions in MultivariateElectronIdentification.
-//         Use non-triggering electron MVA
-//         Category 	LOOSE ID (EMu) 	TIGHT ID (ETau)
-//         Cat4: pT > 20 GeV, abs(eta) < 0.8 	        mva_output > 0.905 	mva_output > 0.925
-//         Cat5: pT > 20 GeV, 0.8 < abs (eta) < 1.479 	mva_output > 0.955 	mva_output > 0.975
-//         Cat6: pT > 20 GeV, abs(eta) > 1.479 	        mva_output > 0.975      mva_output > 0.985
-// /physicsobjects/PhysicsObjects.py
-
      if(cand->leg2().numberOfHits()!=0) continue;
      //if(cand->leg2().passConversionVeto()!=1) continue; 
      if((*(cand->leg2().sourcePtr()))->passConversionVeto()!=1) continue;
      
-//      //for sync?
-//      if(!electronIDWP95(&(cand->leg2())))continue;     
+     //for sync
+     if(!electronIDWP95(&(cand->leg2())))continue;     
      
      //mva id  
      //look here https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentification
@@ -389,7 +376,7 @@ void TauEleFlatNtp::beginJob(){
      bool matchmu=0;
      if(trigPaths_.size()==0) matchmu=1;//no match requirement
      for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
-       if(trigObjMatch(cand->leg2().eta(),cand->leg2().phi(),(*path)->label(),(*path)->process()))
+       if(trigObjMatch(cand->leg2().eta(),cand->leg2().phi(),(*path)->label(),(*path)->process()),11)
  	  matchmu=1;
      }
   
@@ -416,15 +403,10 @@ void TauEleFlatNtp::beginJob(){
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
      //if(fabs(cand->leg1().dxy())>0.045) continue;
      //if(fabs(cand->leg1().dz())>0.2 ) continue;
+      
+    if(fabs(computeDxy(cand->leg1().leadChargedHadrVertex(),cand->leg1().p4()))>0.045)continue;
+    if(fabs(computeDz(cand->leg1().leadChargedHadrVertex(),cand->leg1().p4()))>0.2)continue;
 
-     //can't access the reco::track from the cmg::Tau
-     //methods from here http://cmslxr.fnal.gov/lxr/source/DataFormats/TrackReco/interface/TrackBase.h#063
-     reco::TrackBase::Point  vtx = cand->leg1().leadChargedHadrVertex();   
-     math::XYZTLorentzVector p4 = cand->leg1().p4();
-     float dxy = ( - (vtx.x()-PV_->position().x()) *  p4.y() + (vtx.y()-PV_->position().y()) *  p4.x() ) /  p4.pt();    
-     float dz  = (vtx.z()-PV_->position().z()) - ((vtx.x()-PV_->position().x()) * p4.x()+(vtx.y()-PV_->position().y())*  p4.y())/ p4.pt() *  p4.z()/ p4.pt();
-     if(fabs(dxy)>0.045)continue;
-     if(fabs(dz)>0.2)continue;
     
      diTauSelList_.push_back(*cand);
    }
@@ -458,7 +440,8 @@ void TauEleFlatNtp::beginJob(){
      bool matchtau=0;
      if(trigPaths_.size()==0)matchtau=1;//no match requirement
      for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
-       if(trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),(*path)->label(),(*path)->instance()))
+       if(trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),(*path)->label(),(*path)->instance(),15)
+	  || trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),(*path)->label(),(*path)->instance(),0))
  	  matchtau=1;
      }
   
@@ -558,18 +541,34 @@ void TauEleFlatNtp::beginJob(){
    if(dataType_==0 || dataType_==2){
   
      ///trigger corrections
-     if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
-       triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
- 	                  /triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-       triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
- 	                  /triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-     }else{//no trigger applied --> apply efficiency
-       triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-       triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+     if(dataPeriodFlag_==2011){
+       if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
+	 triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	   /triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	 triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	   /triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+       }else{//no trigger applied --> apply efficiency
+	 triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	 triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+       }
+       //id+isolation corrections
+       selectionEffWeight_ *= selectionEff_.effCorrEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
      }
 
-     //id+isolation corrections
-     selectionEffWeight_ *= selectionEff_.effCorrEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+     if(dataPeriodFlag_==2012){
+       
+       if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
+	 triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	   /triggerEff_.eff2012Tau20MC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	 triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	   /triggerEff_.eff2012Ele20MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+       }else{//no trigger applied --> apply efficiency
+	 triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	 triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+       }
+       //id+isolation corrections
+       selectionEffWeight_ *= selectionEff_.effCorrEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+     }
 
    }
    eventweight_=pupWeight_*embeddedGenWeight_*triggerEffWeight_*selectionEffWeight_;
@@ -578,7 +577,6 @@ void TauEleFlatNtp::beginJob(){
    mupt_=diTauSel_->leg2().pt();
    mueta_=diTauSel_->leg2().eta();
    muphi_=diTauSel_->leg2().phi();
-   //muiso_=diTauSel_->leg2().relIsoAllChargedDB05(); 
    muiso_= electronRelIsoDBCorr( &(diTauSel_->leg2()) ); //diTauSel_->leg2().relIso(0.5);
    muisomva_=(*(diTauSel_->leg2().sourcePtr()))->userFloat("mvaIsoRings");
    mudz_=diTauSel_->leg2().dz();
@@ -638,27 +636,6 @@ void TauEleFlatNtp::beginJob(){
    if(fabs(ditaucharge_)==0.)categoryCh_=1;
    if(fabs(ditaucharge_)==2.)categoryCh_=2;
 
-   //   pfmetpt_=diTauSel_->met().pt();
-   //   pfmetphi_=diTauSel_->met().phi();
-
-   edm::Handle<std::vector< cmg::BaseMET> > pfMET;
-   iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
-   
-   pfmetpt_=pfMET->begin()->pt();
-   pfmetphi_=pfMET->begin()->phi();
-   pftransversemass_=sqrt(2*mupt_*pfmetpt_*(1-cos(muphi_-pfmetphi_)));
-
-
-   edm::Handle< cmg::METSignificance > pfMetSigHandle;
-   iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
-   const cmg::METSignificance * metSig = &(*pfMetSigHandle);
-   if(!metSig){ cout<<" metSig is NULL "<<endl; return 0;}
-   
-   metsigcov00_=(*(metSig->significance()))[0][0];
-   metsigcov01_=(*(metSig->significance()))[0][1];
-   metsigcov10_=(*(metSig->significance()))[1][0];
-   metsigcov11_=(*(metSig->significance()))[1][1];
-
 
    ///get the jets //need the jets here because of randomization of mT
    edm::Handle< std::vector<cmg::PFJet> > fulljetlist;
@@ -669,22 +646,8 @@ void TauEleFlatNtp::beginJob(){
    for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
      if(jet->pt()<30.0)continue;  
      if(fabs(jet->eta())>4.5)continue; 
-
-     //Loose PF Jet id 
-     ///https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
-     if(!(jet->component(5).fraction() < 0.99
- 	 &&jet->component(4).fraction() < 0.99
- 	 &&jet->nConstituents() > 1
- 	 &&(jet->component(1).fraction() > 0 || abs(jet->eta()) > 2.4)
- 	 &&(jet->component(1).number() > 0 || abs(jet->eta()) > 2.4)
- 	 &&(jet->component(2).fraction() < 0.99 || abs(jet->eta()) > 2.4)	 
- 	 ))continue;
-
-     //if(jet->getSelection("cuts_looseJetId")<0.5)continue;
-
-     //PU jet id 
+     if(!checkPFJetId(&(*jet)))continue;
      if(!(jet->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
-
      pfJetList_.push_back(&(*jet));
    }
 
@@ -697,18 +660,61 @@ void TauEleFlatNtp::beginJob(){
    if(njet_>0)leadJet_=pfJetListLC_[0];
    if(njet_>1)subleadJet_=pfJetListLC_[1];
    
-
-   //run MVA met here 
-   //../../Common/python/miscProducers/mvaMET/mvaMETTauEle_cfi.py  
-
-
    //Also the list cleaned only with the muon //njetLepLC needed in recoil correction
    fillPFJetListLepLC(diTauSel_,&pfJetList_,&pfJetListLepLC_);
    int njetLepLC_=pfJetListLepLC_.size();
 
-   //recoil corrected met
-   metpt_=pfmetpt_;
-   metphi_=pfmetphi_;
+
+   //////////////MET/////////////////
+   const cmg::METSignificance * metSig=0;
+   if(metType_==1){//PFMET
+     edm::Handle<std::vector< cmg::BaseMET> > pfMET;
+     iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
+     metpt_=pfMET->begin()->pt();
+     metphi_=pfMET->begin()->phi();
+     
+     edm::Handle< cmg::METSignificance > pfMetSigHandle;
+     iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
+     metSig = &(*pfMetSigHandle);
+   }
+   if(metType_==2){//MVA MET //needs to be updated
+     metpt_=diTauSel_->met().pt();
+     metphi_=diTauSel_->met().phi();
+     
+     //get the MET significance corresponding to the candidate we selected
+     edm::InputTag metsigSrc_("mvaMETTauEle");
+     edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
+     iEvent_->getByLabel(metsigSrc_,metsigVector); 
+     //now determine which of the mets belongs to the selected tau-mu candidate
+     int candidx=0;
+     for(std::vector<cmg::TauEle>::const_iterator cand=diTauList_->begin(); cand!=diTauList_->end(); ++cand){
+       if(cand->mass()==diTauSel_->mass()) metSig = &(metsigVector->at(candidx));
+       candidx++;
+     }
+   }
+   if(metType_==3){//Type 1 Corrected MET
+     edm::Handle<std::vector< cmg::BaseMET> > pfMET;
+     iEvent_->getByLabel(edm::InputTag("cmgPFMET"),pfMET);
+     metpt_=pfMET->begin()->pt();
+     metphi_=pfMET->begin()->phi();
+     
+     edm::Handle< cmg::METSignificance > pfMetSigHandle;
+     iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
+     metSig = &(*pfMetSigHandle);
+   }
+   if(!metSig){
+     cout<<" Unrecognized metType "<<endl;
+     exit(0);
+   }
+   
+   metsigcov00_=(*(metSig->significance()))[0][0];
+   metsigcov01_=(*(metSig->significance()))[0][1];
+   metsigcov10_=(*(metSig->significance()))[1][0];
+   metsigcov11_=(*(metSig->significance()))[1][1];
+  
+
+
+
 
    ///Apply recoil correction here
    if(recoilCorreciton_>0){
@@ -716,23 +722,30 @@ void TauEleFlatNtp::beginJob(){
      double u1 = 0;
      double u2 = 0;
      double fluc = 0;
-  
-     double lepPt  =diTauSel_->pt();
-     double lepPhi =diTauSel_->phi();
-     int jetMult = njet_;
-     if(recoilCorreciton_==2){//for W+jets
+     
+     double lepPt  = 0.;
+     double lepPhi = 0.;
+     int jetMult = 0;
+     if(recoilCorreciton_%10==1){//for Z
+       lepPt  = diTauSel_->pt();
+       lepPhi = diTauSel_->phi();
+       jetMult = njet_;
+     }else if(recoilCorreciton_%10==2){//for W+jets
        lepPt  =mupt_;
        lepPhi =muphi_;
        jetMult = njetLepLC_;
      }
+     
+     if(recoilCorreciton_<10) 
+       corrector_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+     else if(recoilCorreciton_<20)
+       corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
 
-     corrector_.CorrectType1( metpt_, metphi_,  genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc,  recoiliScale_ ,  jetMult );
    }
-
-   reco::Candidate::PolarLorentzVector metP4( metpt_,0,metphi_, 0);
-
+   
+   reco::Candidate::PolarLorentzVector metP4=reco::Candidate::PolarLorentzVector(metpt_,0,metphi_,0);
    transversemass_=sqrt(2*mupt_*metP4.pt()*(1-cos(muphi_-metP4.phi())));
-   compZeta(&(diTauSel_->leg2()),&(diTauSel_->leg1()),metP4.px(),metP4.py(),&pZeta_,&pZetaVis_);
+   compZeta(diTauSel_->leg2().p4(),diTauSel_->leg1().p4(),metP4.px(),metP4.py(),&pZeta_,&pZetaVis_);
 
 
 
