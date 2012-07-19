@@ -358,13 +358,13 @@ def QCDEstimate2(prefix,prefix1,var,xmin,xmax,\
       gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.png")
       
       QCDlooseOS = copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
-      #substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOS)
+      substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOS)
 
       QCDlooseSS = copy.deepcopy(plotVarDataLooseIsoSS.Hist("Data"))
-      #substractMCbackground(QCDlooseSS, plotVarDataLooseIsoSS)
+      substractMCbackground(QCDlooseSS, plotVarDataLooseIsoSS)
 
       QCDtightSS = copy.deepcopy(plotVarDataSS.Hist("Data"))
-      #substractMCbackground(QCDtightSS, plotVarDataSS)
+      substractMCbackground(QCDtightSS, plotVarDataSS)
 
       QCD_PrintOut = open( os.getcwd()+"/"+prefix+"/QCD_PrintOut_"+var+".txt","w")
       print >> QCD_PrintOut, "QCDlooseOS:", QCDlooseOS.Integral()
