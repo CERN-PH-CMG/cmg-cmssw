@@ -321,6 +321,6 @@ if __name__ == '__main__':
                               embed=options.embed, shift=shift )
 
     draw(osQCD, False, 'TauEle', 'VBF')
-    datacards(osQCD, 'Xcat_VBFX', shift)
+    datacards(osQCD, 'Xcat_VBFX', shift, 'eTau')
 
 
