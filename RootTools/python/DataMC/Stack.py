@@ -54,7 +54,8 @@ class Stack:
         # as a support histo.
         # otherwise, can't change y axis range (ROOT!@#!)
         # we draw it as hist so that the markers don't appear.
-        hist = hists[0]
+        # hist = hists[0]
+        hist = self.totalHist
         # hist.Draw('hist')
         hist.Draw(opt)
         if self.ytitle is not None:
