@@ -29,14 +29,16 @@ void plot(){
   //
   Float_t c[4]={.6,.96,.57,.87};//default legend coordinates
   Float_t c2[4]={.2,.44,.52,.87};//on the right side
+  Float_t c3[4]={.6,.96,.22,.57};//on the right side bottom
   Float_t xbinsValues[14]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
   analysis->setVariableBinning(13,xbinsValues);
 
 
 //   analysis->plotInc("nvtx",50,-.5,49.5,1,1,"","",0,0,"# of reco. vertices ","",c,0,"inclusive");
 
-//  analysis->plotInc("mupt",50,0,100,1,1,"","",0,0," mu pt   (GeV)","",c,0,"inclusive");
-//   analysis->plotInc("mueta",50,-2.5,2.5,1,1,"","",0,0," muon  #eta","",c,0,"inclusive"); 
+//   analysis->plotInc("mupt",50,0,100,1,1,"","",0,0," muon  pt   (GeV)","",c,0,"inclusive");
+//   analysis->plotInc("mueta",50,-2.5,2.5,1,1,"","",0,0," muon  #eta","",c,0,"inclusive");
+//   analysis->plotInc("muphi",20,-3.5,3.5,1,1,"","",0,0," muon  phi ","",c3,0,"inclusive");     
 //   analysis->plotInc("muiso",100,0,1,0,1,"(tauisodiscmva>=1)","",0,0," muon relIso","",c,0,"inclusive");
 //   analysis->plotInc("mudz",100,-.05,.05,1,1,"","",0,0," mu dz","",c,0,"inclusive");
 //   analysis->plotInc("mudxy",100,-.03,.03,1,1,"","",0,0," mu dxy","",c,0,"inclusive");
@@ -48,11 +50,14 @@ void plot(){
 //   analysis->plotInc("taudxy",100,-.03,.03,1,1,"","",0,0," tau dxy","",c,0,"inclusive");
 
 //   analysis->plotInc("metpt",50,0,150,1,1,"","",0,0," MET   (GeV)","",c,0,"inclusive");    
-//   analysis->plotInc("metphi",70,-3.5,3.5,1,1,"","",0,0," MET  phi ","",c,0,"inclusive");    
+//  analysis->plotInc("metphi",20,-3.5,3.5,1,0,"","",0,0," MET  phi ","",c,0,"inclusive");  
+//  analysis->plotInc("1-cos(metphi-muphi)",40,0,2.001,1,1,"","",1,3," 1 - cos(#Delta#phi) ","",c,0,"inclusive");  
+//  analysis->plotInc("metpt*cos(metphi)",30,-150,150,1,0,"","",1,3," MET  X (GeV)","",c2,0,"inclusive");    
+//  analysis->plotInc("metpt*sin(metphi)",30,-150,150,1,0,"","",1,3," MET  Y (GeV)","",c2,0,"inclusive");    
 
 //   analysis->plotIncSS("transversemass",30,0,300,1,0,"",0,"m_{T} ","",c,0,"inclusive");
-//  analysis->plotInc("transversemass",20,0,200,1,-1,"","",0,0,"M_{T}   [GeV]","",c,0,"inclusive");
-//   analysis->plotInc("ditaumass",40,0,300,1,1,"","",0,0,"m_{vis}   (GeV)","Events / 5 GeV",c,0,"inclusive");
+//   analysis->plotInc("transversemass",20,0,200,1,-1,"","",0,0,"M_{T}   [GeV]","",c,0,"inclusive");
+//   analysis->plotInc("ditaumass",30,0,300,1,3,"","",0,0,"m_{vis}   (GeV)","Events / 5 GeV",c,0,"inclusive");
 //   analysis->plotInc("svfitmass",60,0,300,1,1,"","",0,0," m(#tau#tau)   (GeV)","Events / 5 GeV",c,0,"inclusive");
 //   analysis->plotInc("njet",5,-.5,4.5,1,1,"","",0,0," njet ","",c,0,"inclusive");
 

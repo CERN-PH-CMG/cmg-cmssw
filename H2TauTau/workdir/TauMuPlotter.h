@@ -109,7 +109,6 @@ public:
 
  
   //Inclusive/SM0 methods
-  bool correctSamplesInc();
   TH1F* getWJetsInc();
   TH1F* getWJetsIncSS();
   TH1F* getTTJetsInc();
@@ -129,8 +128,6 @@ public:
 
   //Boosted/VBF methods
   TH1F* getQCDMuIsoSM();//from muon isolation side-band
-  TH1F* getWJetsSM();
-  TH1F* getWJetsSMSS();
   TH1F* getQCDMike();//values from Josh for 2012 analysis
   TH1F* getQCDKeti();//values from Josh for 2012 analysis
   TString qcdTauIsoRatioMuNonIso_;//formula for the ratio

@@ -2,14 +2,6 @@
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
-  dataPeriodFlag_(iConfig.getParameter<int>("dataPeriodFlag")),
-  verticesListTag_(iConfig.getParameter<edm::InputTag>("verticesListTag")),
-  trigPathsListTag_(iConfig.getParameter<edm::InputTag>("trigPathsListTag")),
-  trigObjsListTag_(iConfig.getParameter<edm::InputTag>("trigObjsListTag")),
-  pupWeightName_(iConfig.getParameter<edm::InputTag>("pupWeightName")),
-  firstRun_(iConfig.getParameter<int>("firstRun")),
-  lastRun_(iConfig.getParameter<int>("lastRun")),
-  dataType_(iConfig.getParameter<int>("dataType")),
   iEvent_(0),
   file_(0),
   tree_(0),
@@ -19,6 +11,31 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   lumiblock_(0),
   eventid_(0),
   trigpass_(0){
+
+  
+  dataPeriodFlag_=iConfig.getParameter<int>("dataPeriodFlag");
+  cout<<"dataPeriodFlag_  : "<<dataPeriodFlag_<<endl;
+
+  verticesListTag_=iConfig.getParameter<edm::InputTag>("verticesListTag");
+  cout<<"verticesListTag_  : "<<verticesListTag_.label()<<endl;
+
+  trigPathsListTag_=iConfig.getParameter<edm::InputTag>("trigPathsListTag");
+  cout<<"trigPathsListTag_  : "<<trigPathsListTag_.label()<<endl;
+
+  trigObjsListTag_=iConfig.getParameter<edm::InputTag>("trigObjsListTag");
+  cout<<"trigObjsListTag_  : "<<trigObjsListTag_.label()<<endl;
+
+  pupWeightName_=iConfig.getParameter<edm::InputTag>("pupWeightName");
+  cout<<"pupWeightName_  : "<<pupWeightName_.label()<<endl;
+
+  firstRun_=iConfig.getParameter<int>("firstRun");
+  cout<<"firstRun_  : "<<firstRun_<<endl;
+
+  lastRun_=iConfig.getParameter<int>("lastRun");
+  cout<<"lastRun_  : "<<lastRun_<<endl;
+
+  dataType_=iConfig.getParameter<int>("dataType");  
+  cout<<"dataType_  : "<<dataType_<<endl;
 
 
   cout<<"Trigger paths: "<<endl;
@@ -42,12 +59,6 @@ BaseFlatNtp::~BaseFlatNtp(){
 
 void BaseFlatNtp::beginJob(){
 
-  cout<<"dataType : "<<dataType_<<endl;
-  cout<<"pupWeightName "<<pupWeightName_.label()<<endl;
-  cout<<"firstRun : "<<firstRun_<<endl;
-  cout<<"lastRun : "<<lastRun_<<endl;
-
-
   file_ = new edm::Service<TFileService>();
   //tree_->Branch("",&,"/I");
 
@@ -57,11 +68,16 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("runnumber",&runnumber_,"runnumber/I");
   tree_->Branch("lumiblock",&lumiblock_,"lumiblock/I");
   tree_->Branch("eventid",&eventid_,"eventid/I");
-  tree_->Branch("npu",&npu_,"npu/I");//
-  tree_->Branch("nvtx",&nvtx_,"nvtx/I");//
+  tree_->Branch("npu",&npu_,"npu/I");
+  tree_->Branch("nvtx",&nvtx_,"nvtx/I");
   tree_->Branch("vtxx",&vtxx_,"vtxx/F");
   tree_->Branch("vtxy",&vtxy_,"vtxy/F");
   tree_->Branch("vtxz",&vtxz_,"vtxz/F");
+
+  counterall_=0;
+  countertrig_=0;
+  counterruns_=0;
+  countergoodvtx_=0;
 }
 
 
@@ -132,12 +148,17 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
 }
 
 bool BaseFlatNtp::applySelections(){
+  counterall_++;
 
   if(firstRun_!=0) if(runnumber_<firstRun_)return 0;
   if(lastRun_!=0) if(lastRun_<runnumber_)return 0;
+  counterruns_++;
 
   if(!trigpass_) return 0;
+  countertrig_++;
+  
   if(nvtx_==0) return 0;
+  countergoodvtx_++;
   
   return 1;
 }
@@ -156,7 +177,7 @@ bool BaseFlatNtp::fill(){
 }
 
 
-bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::string filter){
+bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::string filter, int pdgid){
 
   if(filter.compare("")==0) return 1;//no trigger matching required
 
@@ -164,8 +185,9 @@ bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::stri
     if(obj->hasSelection(path.c_str())){//HLT path name
       //obj->printSelections(cout);
       if(obj->hasSelection(filter.c_str())){//last filter
-	if(reco::deltaR(eta,phi,obj->eta(),obj->phi())<0.3){
+	if(reco::deltaR(eta,phi,obj->eta(),obj->phi())<0.3 && (abs(obj->pdgId())==pdgid || pdgid==-1) ){
 	  //obj->printSelections(cout);	  
+	  //cout<<"pdg id "<<obj->pdgId()<<endl;
 	  return 1;      
 	}
       }

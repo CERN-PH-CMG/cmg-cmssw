@@ -8,17 +8,12 @@
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 
-#include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
-#include "CMGTools/H2TauTau/interface/SelectionEfficiency.h"
-//#include "CMGTools/H2TauTau/interface/TauRate.h"
 
 #include "CMGTools/Common/interface/RecoilCorrector.h"
 
 #include "CMGTools/H2TauTau/interface/BTagEfficiency.h"
 #include "CMGTools/H2TauTau/interface/BTagWeight.h"
 
-
-#include <TRandom2.h>
 
 
 //#include "TMVA/Reader.h"
@@ -42,36 +37,21 @@ public:
 
 protected:
 
-  edm::InputTag diTauTag_;
-  edm::InputTag genParticlesTag_;
-  edm::InputTag pfJetListTag_;
-  edm::InputTag diMuonVetoListTag_;
-
   //configurable selections
   float muPtCut_;
   float tauPtCut_;
   float muEtaCut_;
   float tauEtaCut_;
 
+
+  edm::InputTag diTauTag_;
+  edm::InputTag diMuonVetoListTag_;
+
+
   edm::Handle< std::vector<cmg::TauMu> > diTauList_;
   std::vector<cmg::TauMu> diTauSelList_;
   const cmg::TauMu * diTauSel_;
-  std::vector<const cmg::PFJet * > pfJetList_;
-  std::vector<const cmg::PFJet * > pfJetListLC_;
-  std::vector<const cmg::PFJet * > pfJetListLepLC_;
-  const cmg::PFJet * leadJet_;
-  const cmg::PFJet * subleadJet_;
 
-  std::vector<const cmg::PFJet * > pfJetListBTag_;
-  std::vector<const cmg::PFJet * > pfJetListBTagLC_;
-  const cmg::PFJet * leadBJet_;
-
-
-  TriggerEfficiency triggerEff_;
-  float triggerEffWeight_;
-
-  SelectionEfficiency selectionEff_;
-  float selectionEffWeight_;
 
   float embeddedGenWeight_;//for tau embedded samples
 
@@ -195,61 +175,6 @@ private:
   int truthMatchTau();
  
 
-  float computeDxy(reco::TrackBase::Point vtx, math::XYZTLorentzVector p4){
-    //methods from here http://cmslxr.fnal.gov/lxr/source/DataFormats/TrackReco/interface/TrackBase.h#063
-    return ( - (vtx.x()-PV_->position().x()) *  p4.y() + (vtx.y()-PV_->position().y()) *  p4.x() ) /  p4.pt();
-  }
-  float computeDz(reco::TrackBase::Point vtx, math::XYZTLorentzVector p4){
-    //methods from here http://cmslxr.fnal.gov/lxr/source/DataFormats/TrackReco/interface/TrackBase.h#063
-    return (vtx.z()-PV_->position().z()) - ((vtx.x()-PV_->position().x()) * p4.x()+(vtx.y()-PV_->position().y())*  p4.y())/ p4.pt() *  p4.z()/ p4.pt();
-  }
-
-
-  //function definitions from Matthews mva
-  Double_t deltaPhi(Double_t phi1, Double_t phi2){
-    Double_t dphi = fabs(phi1 - phi2);
-    return dphi <= TMath::Pi() ? dphi : 2*TMath::Pi() - dphi; 
-  }
-  Double_t massPtEtaPhiM(Double_t pt1, Double_t eta1, Double_t phi1, Double_t m1,
-			 Double_t pt2, Double_t eta2, Double_t phi2, Double_t m2)
-  {
-    ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<Double_t> > mom1(pt1, eta1, phi1, m1);
-    ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiM4D<Double_t> > mom2(pt2, eta2, phi2, m2);
-    return (mom1+mom2).M();
-  }  
-  
-  //pZeta computation //Code from Josh
-  void compZeta(const cmg::Muon * leg1, const cmg::Tau * leg2, double metPx, double metPy, float * pZ, float * pZV){
-    //leg1 is the muon and leg2 is the tau
-
-    double leg1x = cos(leg1->phi());
-    double leg1y = sin(leg1->phi());
-    double leg2x = cos(leg2->phi());
-    double leg2y = sin(leg2->phi());
-    double zetaX = leg1x + leg2x;
-    double zetaY = leg1y + leg2y;
-    double zetaR = TMath::Sqrt(zetaX*zetaX + zetaY*zetaY);
-    if ( zetaR > 0. ) {
-      zetaX /= zetaR;
-      zetaY /= zetaR;
-    }
-
-    double visPx = leg1->px() + leg2->px();
-    double visPy = leg1->py() + leg2->py();
-    //double pZetaVis = visPx*zetaX + visPy*zetaY;
-    *pZV = visPx*zetaX + visPy*zetaY;
-    
-    double px = visPx + metPx;
-    double py = visPy + metPy;
-    //double pZeta = px*zetaX + py*zetaY;
-    *pZ = px*zetaX + py*zetaY;
-  }
-
-
-
-  TRandom2 randEngine_; 
-  double randsigma_;
-  
   
   RecoilCorrector corrector_;
   int recoilCorreciton_;
@@ -268,9 +193,6 @@ private:
   std::string mvaWeights_ ;
   VBFMVA reader_;
 
-
-  int counterall_;
-  int counterev_;
   int countergen_;
   int counterveto_;
   int counterpresel_;

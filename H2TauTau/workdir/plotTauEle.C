@@ -97,7 +97,7 @@ void plotTauEle(){
 //   analysis->plotInc("svfitmass",0,0,350,1,1,analysis->getSMcut(3),"(svfitmass<100||160<svfitmass)",0,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"BoostedHigh");  
   
 //  analysis->plotInc("transversemass",15,0,300,1,0,analysis->getSMcut(4),"",3,12,"m_{T} ","",c,0,"VBF");
-  analysis->plotInc("svfitmass",0,0,350,1,1,analysis->getSMcut(4),"(svfitmass<100||160<svfitmass)",3,12,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"VBF");
+//  analysis->plotInc("svfitmass",0,0,350,1,1,analysis->getSMcut(4),"(svfitmass<100||160<svfitmass)",3,12,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"VBF");
 
 
 
@@ -110,7 +110,9 @@ void plotTauEle(){
 
 //   analysis->plotIncSS("pZeta-1.5*pZetaVis",100,-150,100,1,-1,"",0,"p_{#zeta} - 1.5 x p_{#zeta}^{vis}    [GeV]","",c4,0,"MSSMinclusive");
 //   analysis->plotInc("pZeta-1.5*pZetaVis",50,-150,100,1,-1,"","",0,0,"p_{#zeta} - 1.5 x p_{#zeta}^{vis}    [GeV]","Events / 5 GeV ",c2,0,"MSSMinclusive");
+//   analysis->plotInc("ditaumass",50,0,200,1,101,"","",0,0,"m_{vis}   (GeV)","",c,0,"MSSMinclusive");
 //   analysis->plotInc("nbjet",5,-.5,4.5,1,101,"","",0,0," nbjet ","",c4,0,"MSSMinclusive");
+
 
 //   analysis->plotIncSS("pZeta-1.5*pZetaVis",25,-150,100,1,-1,"(nbjet>=1&&njet<2)",22,"p_{#zeta} - 1.5 x p_{#zeta}^{vis}    [GeV]","",c2,0,"MSSMinclusiveBJet");
 //   analysis->plotInc("pZeta-1.5*pZetaVis",25,-150,100,1,-1,"(nbjet>=1&&njet<2)","",4,22,"p_{#zeta} - 1.5 x p_{#zeta}^{vis}    [GeV]","",c2,0,"MSSMinclusiveBJet");

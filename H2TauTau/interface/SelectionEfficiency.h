@@ -59,6 +59,34 @@ public:
   }
 
 
+  //eTau 2012 //Upto ICHEP
+// 2012
+// pT /  eta bin 	MC Efficiency 	Data Efficiency 	Scale Factor
+// ID
+// 20 < pT < 30 Barrel 	0.795 ± 0.005 	0.733 ± 0.003 	0.922 ± 0.007
+// 20 < pT < 30 Endcap 	0.433 ± 0.009 	0.389 ± 0.006 	0.944 ± 0.026
+// pT > 30 Barrel 	0.908 ± 0.001 	0.876 ± 0.001 	0.964 ± 0.001
+// pT > 30 Endcap 	0.617 ± 0.004 	0.592 ± 0.010 	0.958 ± 0.007
+// Iso
+// 20 < pT < 30 Barrel 	0.734 ± 0.006 	0.715 ± 0.001 	0.974 ± 0.008
+// 20 < pT < 30 Endcap 	0.740 ± 0.013 	0.745 ± 0.008 	1.008 ± 0.021
+// pT > 30 Barrel 	0.896 ± 0.001 	0.893 ± 0.001 	0.997 ± 0.001
+// pT > 30 Endcap 	0.912 ± 0.003 	0.896 ± 0.001 	0.983 ± 0.004 
+
+  double effCorrEle2012AB(double pt,double eta){
+    if(fabs(eta)<1.479) {//Barrel
+      if(20.0<pt&&pt<=30.0) return 0.922*0.974 ;
+      if(30.0<pt) return 0.964*0.997;
+      return 0;
+    }else if(1.479<fabs(eta)&&fabs(eta)<2.1){//Endcap
+      if(20.0<pt&&pt<=30.0) return 0.944*1.008;
+      if(30.0<pt) return 0.958*0.983;
+      return 0;
+    }
+    return 0;
+  }
+
+
 
 private:
   

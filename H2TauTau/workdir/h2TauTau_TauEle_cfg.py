@@ -29,16 +29,13 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
 # process.setName_('H2TAUTAU')
 
 dataset_user = 'cmgtools' 
-dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1'
+#dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1'
+dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET'
 dataset_files = 'cmgTuple.*root'
 
 # creating the source
 from CMGTools.Production.datasetToSource import *
-process.source = datasetToSource(
-    dataset_user,
-    dataset_name,
-    dataset_files,
-    )
+process.source = datasetToSource(dataset_user,dataset_name,dataset_files)
 
 
 
@@ -62,24 +59,24 @@ runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.file
 # Sequence & path definition -------------------------------------------------
 
 
-# set up JSON ---------------------------------------------------------------
-if runOnMC==False:
-    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
-    json = setupJSON(process)
-    print 'json:', json
-    print process.PoolSource.lumisToProcess
+## set up JSON ---------------------------------------------------------------
+#if runOnMC==False:
+#    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
+#    json = setupJSON(process)
+#    print 'json:', json
+#    print process.PoolSource.lumisToProcess
 
 ##path definition starts here-----------------------------
 process.TauElePath = cms.Path()
 
 
-# gen  ---------------------------
-if runOnMC:
-    process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
-    process.genSequence = cms.Sequence(
-        process.vertexWeightSequence 
-        )
-    process.TauElePath += process.genSequence 
+## gen  ---------------------------
+#if runOnMC:
+#    process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
+#    process.genSequence = cms.Sequence(
+#        process.vertexWeightSequence 
+#        )
+#    process.TauElePath += process.genSequence 
 
 
 ## tau-mu selections ----------------------
@@ -133,7 +130,8 @@ process.out.outputCommands.extend( [
     'keep PileupSummaryInfos_addPileupInfo__HLT',
     'keep cmgMETSignificance_pfMetSignificance__PAT',
     'keep cmgBaseMETs_*_*_*',    
-    'keep GenEventInfoProduct_generator__SIM',
+    'keep GenEventInfoProduct_generator_*_*',
+    'keep GenFilterInfo_generator_*_*',
     ])
 
 

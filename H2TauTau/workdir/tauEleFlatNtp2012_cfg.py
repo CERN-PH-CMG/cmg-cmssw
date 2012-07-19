@@ -9,14 +9,7 @@ evReportFreq = 100
 
 #######Define the samples to process
 dataset_user = 'benitezj'
-#sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_TauMu_V541June2"
-#sampleTag = "/PAT_CMG_V5_4_0_NewType1MET/H2TAUTAU_TauMu2012_V5_4_0_NewType1MET"
-
-#for data and MC samples
-#sampleTag = "/H2TAUTAU_TauMu2012_V5_4_0_NewType1MET"
-
-#for embedded samples
-sampleTag = "/TauMu2012V540"
+sampleTag = "/TauEle2012V540"
 
 
 sampleName = os.environ['SAMPLENAME']
@@ -35,16 +28,16 @@ process.analysis += process.goodOfflinePrimaryVertices
 
 ######The analysis module
 process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
-from CMGTools.H2TauTau.tools.joseFlatNtpSample2011Reload_cff import configureFlatNtpSampleTauMu2012
-configureFlatNtpSampleTauMu2012(process.flatNtpTauMu,sampleName)
-process.flatNtpTauMu.diTauTag = 'cmgTauMuPreSel'
-process.flatNtpTauMu.metType = 1
-process.flatNtpTauMu.runSVFit = 1
+from CMGTools.H2TauTau.tools.joseFlatNtpSample2011Reload_cff import configureFlatNtpSampleTauEle2012
+configureFlatNtpSampleTauEle2012(process.flatNtpTauEle,sampleName)
+process.flatNtpTauEle.diTauTag = 'cmgTauElePreSel'
+process.flatNtpTauEle.metType = 3
+process.flatNtpTauEle.runSVFit = 1
 
 
 ### input files
-inputfiles = "tauMu_fullsel_tree_CMG_.*root"
-dataset_name = process.flatNtpTauMu.path.value() + sampleTag
+inputfiles = "tauEle_fullsel_tree_CMG_.*root"
+dataset_name = process.flatNtpTauEle.path.value() + sampleTag
 firstfile = sampleJobIdx * sampleMergeFactor
 lastfile = (sampleJobIdx + 1 ) * sampleMergeFactor
 print dataset_user
@@ -68,33 +61,56 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 #    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_2_0/cmgTuple_0.root'
 #    #'/store/cmst3/user/cmgtools/CMG/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/cmgTuple_0.root'
 #    #'file:../../../Common/prod/TEST/cmgTuple_HToTauTau.root'
-#    'file:./tauMu_fullsel_tree_CMG.root'
+#   'file:./tauEle_fullsel_tree_CMG.root'
 #    )
 #    )
 
-#process.source.fileNames = ['file:./tauMu_fullsel_tree_CMG.root']
+#process.source.fileNames = ['file:./tauEle_fullsel_tree_CMG.root']
 
 print process.source.fileNames
 
 
 # set up JSON ---------------------------------------------------------------
-if process.flatNtpTauMu.dataType != 0 :
+if process.flatNtpTauEle.dataType != 0 :
    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
    json = setupJSON(process)
    print 'json:', json
    print process.PoolSource.lumisToProcess
 
-## run the vertex weights
-if process.flatNtpTauMu.dataType == 0:
-    process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
-    process.genSequence = cms.Sequence(
-        process.vertexWeightSequence 
-        )
-    process.analysis += process.genSequence 
+# run the vertex weights
+if process.flatNtpTauEle.dataType == 0:
+   process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
+   process.genSequence = cms.Sequence(
+      process.vertexWeightSequence 
+      )
+   process.analysis += process.genSequence 
+   
 
 
-##schedule the analyzer
-process.analysis += process.flatNtpTauMu
+##run the MVA MET and remake the mu-tau list
+process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
+process.load("CMGTools.Common.miscProducers.mvaMET.mvaMETTauEle_cfi")
+process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
+process.mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
+process.mvaBaseMETTauEle = process.cmgBaseMETFromPFMET.clone()
+process.mvaBaseMETTauEle.cfg.inputCollection = 'mvaMETTauEle'
+process.load("CMGTools.Common.factories.cmgTauEleCor_cfi")
+process.cmgTauEleMVAPreSel = process.cmgTauEleCor.clone()
+process.cmgTauEleMVAPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
+process.cmgTauEleMVAPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
+process.mvaMETSequence = cms.Sequence(
+    process.goodPVFilter + 
+    process.mvaMETTauEle +
+    process.mvaBaseMETTauEle+
+    process.cmgTauEleMVAPreSel
+    )
+process.analysis  += process.mvaMETSequence
+process.flatNtpTauEle.diTauTag = 'cmgTauEleMVAPreSel'
+process.flatNtpTauEle.metType = 2
+
+
+# schedule the analyzer
+process.analysis += process.flatNtpTauEle
 process.schedule = cms.Schedule(process.analysis)
 process.TFileService = cms.Service("TFileService", fileName = cms.string("flatNtp.root"))
 

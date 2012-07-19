@@ -13,11 +13,7 @@ TauMuFlatNtp::TauMuFlatNtp(const edm::ParameterSet & iConfig):
   muEtaCut_(iConfig.getParameter<double>("muEtaCut")),
   tauEtaCut_(iConfig.getParameter<double>("tauEtaCut")),
   diTauSel_(0),
-  triggerEffWeight_(0.),
-  selectionEffWeight_(0.),
-  embeddedGenWeight_(0.),
   btagWP_(0.679),
-  btagWeight_(1),
   sampleGenEventType_(0),
   sampleTruthEventType_(0),
   genEventType_(0),
@@ -191,8 +187,6 @@ void TauMuFlatNtp::beginJob(){
 
 
   //counters
-  counterall_=0;
-  counterev_=0;
   countergen_=0;
   counterveto_=0;
   counterpresel_=0;
@@ -303,13 +297,12 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
 }
 
 bool TauMuFlatNtp::applySelections(){
-  counterall_++;
 
   //if none are selected returns 0
   diTauSel_=NULL;
 
   if(!BaseFlatNtp::applySelections()) return 0;
-  counterev_++;
+
 
   //apply gen level separation here
   if( sampleGenEventType_!=0 && sampleGenEventType_!=genEventType_) return 0;
@@ -407,7 +400,7 @@ bool TauMuFlatNtp::applySelections(){
     bool matchmu=0;
     if(trigPaths_.size()==0) matchmu=1;//no match requirement
     for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
-      if(trigObjMatch(cand->leg2().eta(),cand->leg2().phi(),(*path)->label(),(*path)->process()))
+      if(trigObjMatch(cand->leg2().eta(),cand->leg2().phi(),(*path)->label(),(*path)->process()),13)
 	  matchmu=1;
     }
     
@@ -436,15 +429,6 @@ bool TauMuFlatNtp::applySelections(){
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
     //if(fabs(cand->leg1().dxy())>0.045) continue;
     //if(fabs(cand->leg1().dz())>0.2 ) continue;
-
-//     //can't access the reco::track from the cmg::Tau
-//     //methods from here http://cmslxr.fnal.gov/lxr/source/DataFormats/TrackReco/interface/TrackBase.h#063
-//     reco::TrackBase::Point  vtx = cand->leg1().leadChargedHadrVertex();   
-//     math::XYZTLorentzVector p4 = cand->leg1().p4();
-//     float dxy = ( - (vtx.x()-PV_->position().x()) *  p4.y() + (vtx.y()-PV_->position().y()) *  p4.x() ) /  p4.pt();    
-//     float dz  = (vtx.z()-PV_->position().z()) - ((vtx.x()-PV_->position().x()) * p4.x()+(vtx.y()-PV_->position().y())*  p4.y())/ p4.pt() *  p4.z()/ p4.pt();
-//     if(fabs(dxy)>0.045)continue;
-//     if(fabs(dz)>0.2)continue;
       
     if(fabs(computeDxy(cand->leg1().leadChargedHadrVertex(),cand->leg1().p4()))>0.045)continue;
     if(fabs(computeDz(cand->leg1().leadChargedHadrVertex(),cand->leg1().p4()))>0.2)continue;
@@ -492,8 +476,10 @@ bool TauMuFlatNtp::applySelections(){
     bool matchtau=0;
     if(trigPaths_.size()==0)matchtau=1;//no match requirement
     for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
-      if(trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),(*path)->label(),(*path)->instance()))
-	  matchtau=1;
+      if(trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),(*path)->label(),(*path)->instance(),15)
+	 ||trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),(*path)->label(),(*path)->instance(),0) //seems taus were set to 0 in 2012
+	 )
+	matchtau=1;
     }
     
     if(matchtau)
@@ -689,10 +675,14 @@ bool TauMuFlatNtp::fill(){
   svfitmass_=diTauSel_->massSVFit();
   mutaucostheta_=diTauSel_->leg1().p4().Vect().Dot(diTauSel_->leg2().p4().Vect());
 
-  edm::Handle<std::vector< cmg::BaseMET> > pfMET;
-  iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
-  pfmetpt_=pfMET->begin()->pt();
-  pfmetphi_=pfMET->begin()->phi();
+
+
+  ///define control regions here, might be needed to run SVFit
+  categoryCh_=0;
+  if(fabs(ditaucharge_)==0.)categoryCh_=1;
+  if(fabs(ditaucharge_)==2.)categoryCh_=2;
+
+
 
   ///get the jets //need the jets here because of randomization of mT
   edm::Handle< std::vector<cmg::PFJet> > fulljetlist;
@@ -723,7 +713,61 @@ bool TauMuFlatNtp::fill(){
   int njetLepLC_=pfJetListLepLC_.size();
 
 
+
+  ///////////////here decide which met 
+  const cmg::METSignificance * metSig=0;
+  if(metType_==1){//PFMET
+    edm::Handle<std::vector< cmg::BaseMET> > pfMET;
+    iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
+    metpt_=pfMET->begin()->pt();
+    metphi_=pfMET->begin()->phi();
+
+    edm::Handle< cmg::METSignificance > pfMetSigHandle;
+    iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
+    metSig = &(*pfMetSigHandle);
+  }
+
+  if(metType_==2){//MVA MET //needs to be updated
+    metpt_=diTauSel_->met().pt();
+    metphi_=diTauSel_->met().phi();
+
+    //get the MET significance corresponding to the candidate we selected
+    edm::InputTag metsigSrc_("mvaMETTauMu");
+    edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
+    iEvent_->getByLabel(metsigSrc_,metsigVector); 
+    //now determine which of the mets belongs to the selected tau-mu candidate
+    int candidx=0;
+    for(std::vector<cmg::TauMu>::const_iterator cand=diTauList_->begin(); cand!=diTauList_->end(); ++cand){
+      if(cand->mass()==diTauSel_->mass()) metSig = &(metsigVector->at(candidx));
+      candidx++;
+    }
+  }
+
+
+  if(metType_==3){//Type Corrected MET
+    edm::Handle<std::vector< cmg::BaseMET> > pfMET;
+    iEvent_->getByLabel(edm::InputTag("cmgPFMET"),pfMET);
+    metpt_=pfMET->begin()->pt();
+    metphi_=pfMET->begin()->phi();
+
+    edm::Handle< cmg::METSignificance > pfMetSigHandle;
+    iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
+    metSig = &(*pfMetSigHandle);
+  }
+
   
+  if(!metSig){
+    cout<<" Unrecognized metType "<<endl;
+    exit(0);
+  }
+
+  metsigcov00_=(*(metSig->significance()))[0][0];
+  metsigcov01_=(*(metSig->significance()))[0][1];
+  metsigcov10_=(*(metSig->significance()))[1][0];
+  metsigcov11_=(*(metSig->significance()))[1][1];
+
+
+
   ///Apply recoil correction here to PFMET 
   if(recoilCorreciton_>0){
     if(!genBoson_){
@@ -734,88 +778,34 @@ bool TauMuFlatNtp::fill(){
     double u1 = 0.;
     double u2 = 0.;
     double fluc = 0.;
-   
-    
-    double lepPt  =diTauSel_->pt();
-    double lepPhi =diTauSel_->phi();
-    int jetMult = njet_;
-    if(recoilCorreciton_==2){//for W+jets
+    double lepPt  = 0.;
+    double lepPhi = 0.;
+    int jetMult = 0;
+    if(recoilCorreciton_%10==1){//for Z
+      lepPt  = diTauSel_->pt();
+      lepPhi = diTauSel_->phi();
+      jetMult = njet_;
+    }else if(recoilCorreciton_%10==2){//for W+jets
       lepPt  =mupt_;
       lepPhi =muphi_;
       jetMult = njetLepLC_;
     }
 
-    //CorrectType1(pfmet,pfmetphi,iGenPt,double iGenPhi,double iLepPt,double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);
-    corrector_.CorrectType1( pfmetpt_, pfmetphi_,  genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+    if(recoilCorreciton_<10) 
+      corrector_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+    else if(recoilCorreciton_<20)
+      corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
 
     //smear the met even more
-    //pfmetpt_=pfmetpt_*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);
-  }
-  pftransversemass_=sqrt(2*mupt_*pfmetpt_*(1-cos(muphi_-pfmetphi_)));
- 
-
-
-  ///define control regions here, might be needed to run SVFit
-  categoryCh_=0;
-  if(fabs(ditaucharge_)==0.)categoryCh_=1;
-  if(fabs(ditaucharge_)==2.)categoryCh_=2;
-
-  categoryMT_=0;
-  if(pftransversemass_<=40.0) categoryMT_=1;
-  if(40.0<pftransversemass_ && pftransversemass_<=60.0) categoryMT_=2;
-  if(pftransversemass_>60.0) categoryMT_=3;
-
-
-  edm::Handle< cmg::METSignificance > pfMetSigHandle;
-  iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
-  const cmg::METSignificance * pfMetSig = &(*pfMetSigHandle);
-
-  //get the MET significance corresponding to the candidate we selected
-  const cmg::METSignificance * MvaMetSig=0;
-
-
-  ///////////////here decide which met goes into SVFit
-  reco::Candidate::PolarLorentzVector metP4;
-  const cmg::METSignificance * metSig=0;
-  if(metType_==1){//PFMET
-    metP4=reco::Candidate::PolarLorentzVector(pfmetpt_,0,pfmetphi_,0);
-    metSig=pfMetSig;
-  }
-  if(metType_==2){//MVA MET
-    edm::InputTag metsigSrc_("mvaMETTauMu");
-    edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
-    iEvent_->getByLabel(metsigSrc_,metsigVector); 
-    //now determine which of the mets belongs to the selected tau-mu candidate
-    int candidx=0;
-    for(std::vector<cmg::TauMu>::const_iterator cand=diTauList_->begin(); cand!=diTauList_->end(); ++cand){
-      if(cand->mass()==diTauSel_->mass()) MvaMetSig = &(metsigVector->at(candidx));
-      candidx++;
-    }
-    if(!MvaMetSig){
-      cout<<"mvametsig Not found"<<endl;
-      exit(0);
-    }
-    metP4=reco::Candidate::PolarLorentzVector(metpt_,0,metphi_,0);
-    metSig=MvaMetSig;
-  }
-  if(!metSig){
-    cout<<" Unrecognized metType "<<endl;
-    exit(0);
+    //metpt_=metpt_*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);
   }
 
 
-  ///////////////
-  metpt_=metP4.pt();
-  metphi_=metP4.phi();
-  transversemass_=sqrt(2*mupt_*metpt_*(1-cos(muphi_-metphi_)));
+  reco::Candidate::PolarLorentzVector metP4=reco::Candidate::PolarLorentzVector(metpt_,0,metphi_,0);
+  transversemass_=sqrt(2*mupt_*metP4.pt()*(1-cos(muphi_-metP4.phi())));
+  //compZeta(&(diTauSel_->leg2()),&(diTauSel_->leg1()),metP4.px(),metP4.py(),&pZeta_,&pZetaVis_);
+  compZeta(diTauSel_->leg2().p4(),diTauSel_->leg1().p4(),metP4.px(),metP4.py(),&pZeta_,&pZetaVis_);
 
-  //Compute pZeta
-  compZeta(&(diTauSel_->leg2()),&(diTauSel_->leg1()),metP4.px(),metP4.py(),&pZeta_,&pZetaVis_);
-
-  metsigcov00_=(*(metSig->significance()))[0][0];
-  metsigcov01_=(*(metSig->significance()))[0][1];
-  metsigcov10_=(*(metSig->significance()))[1][0];
-  metsigcov11_=(*(metSig->significance()))[1][1];
 
   ////////Run SVFit
   if(runSVFit_==1){  //old svfit  
@@ -984,32 +974,6 @@ bool TauMuFlatNtp::fill(){
   //////////////////////
   ////2012 SM event categories 
   //////////////////////
-// Category 	Selection
-// VBF 	At least 2 jets with pt > 30 GeV
-// No additional pt> 30 GeV in the eta gap between leading jets
-// VBF MVA > 0.8
-// No B-Tagged Jets Above 20 GeV (Emu Only)
-
-// VH 	At least 2 jets with pt > 30 GeV
-// Mass of Jet Pair 70-120 GeV
-// Vector Sum of Jet Pt > 150 GeV
-// VBF MVA < 0.8
-// No B-Tagged Jets Above 20 GeV -->
-
-// 1-Jet 	>= 1 Jet with pt > 30 GeV
-// Not in VBF or VH Categories
-// No B-Tagged Jets Above 20 GeV 	high pt: pt_tau_had >= Mass Dependent pt Threshold
-//                                      low pt: pt_tau_had < Mass Dependent pt Threshold
-
-// 1 b-jet 	At least 1 B-Tagged Jet Above 20 GeV
-// Not 2 Jets above 30 GeV 	high pt: pt_tau_had >= Mass Dependent pt Threshold
-// low pt: pt_tau_had < Mass Dependent pt Threshold
-
-// 0-Jet 	Anything not passing other categories 	high pt: pt_tau_had >= Mass Dependent pt Threshold
-// low pt: pt_tau_had < Mass Dependent pt Threshold 
-
-
-  //VBF MVA
   vbfmva_=0.;
   if(njet_>=2){
 
@@ -1045,20 +1009,7 @@ bool TauMuFlatNtp::fill(){
     vbfvars_[6] = C1;
     vbfvars_[7] = C2;
     
-
-//     LorentzVector dijet = leadJet_->p4() + subleadJet_->p4() ;
-//     LorentzVector ditau = diTauSel_->p4() + metP4 ;
-//     vbfvars_[0] = diJetMass_ ; 
-//     vbfvars_[1] = diJetDeltaEta_;
-//     vbfvars_[2] = reco::deltaPhi (leadJet_->phi (), subleadJet_->phi ()) ; 
-//     vbfvars_[3] = ditau.Pt();
-//     vbfvars_[4] = diJetPt_;
-//     vbfvars_[5] = reco::deltaPhi (ditau.phi (), dijet.phi ());
-//     vbfvars_[6] = min( fabs(diTauSel_->eta() - leadJet_->eta()) , fabs(diTauSel_->eta() - subleadJet_->eta()) );
-//     vbfvars_[7] = diTauSel_->pt();    
-
     vbfmva_ = reader_.val(vbfvars_[0],vbfvars_[1],vbfvars_[2],vbfvars_[3],vbfvars_[4],vbfvars_[5],vbfvars_[6],vbfvars_[7]);
-    
   }
 
 
@@ -1154,8 +1105,12 @@ int TauMuFlatNtp::truthMatchTau(){
 
 void TauMuFlatNtp::endJob(){
   BaseFlatNtp::endJob();
+
   cout<<"counterall = "<<counterall_<<endl;
-  cout<<"counterev = "<<counterev_<<endl;
+  cout<<"counterruns = "<<counterruns_<<endl;
+  cout<<"countertrig = "<<countertrig_<<endl;
+  cout<<"countergoodvtx = "<<countergoodvtx_<<endl;
+
   cout<<"countergen = "<<countergen_<<endl;
   cout<<"counterveto = "<<counterveto_<<endl;
   cout<<"counterpresel = "<<counterpresel_<<endl;

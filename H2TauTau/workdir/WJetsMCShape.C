@@ -175,3 +175,168 @@ void WJetsTotalSystematic(){
 
 
 }
+
+
+//////////Check shape of WJets Shape as a function of tau isolation
+void plotWJetsShape(){
+  Sample s("WJetsToLNu","/data/benitezj/Samples/TauMuV541June2_TrigEff");
+  
+  TString sel="eventweight*(categoryCh==1&&muiso<0.1)";
+  
+  TH1F*hmtP075=s.getHistoNtpFile("transversemass",15,0,150,sel+"*(tauisomva>0.75)");
+  hmtP075->SetName("hmtP075");hmtP075->SetTitle("");
+
+  TH1F*hmtP050=s.getHistoNtpFile("transversemass",15,0,150,sel+"*(tauisomva>0.5)");
+  hmtP050->SetName("hmtP050");hmtP050->SetTitle("");
+  hmtP050->Scale(hmtP075->Integral(8,15)/hmtP050->Integral(8,15));
+
+  TH1F*hmtM000=s.getHistoNtpFile("transversemass",15,0,150,sel+"*(tauisomva>0.0)");
+  hmtM000->SetName("hmtM000");hmtM000->SetTitle("");
+  hmtM000->Scale(hmtP075->Integral(8,15)/hmtM000->Integral(8,15));
+
+  TH1F*hmtM050=s.getHistoNtpFile("transversemass",15,0,150,sel+"*(tauisomva>-0.50)");
+  hmtM050->SetName("hmtM050");hmtM050->SetTitle("");
+  hmtM050->Scale(hmtP075->Integral(8,15)/hmtM050->Integral(8,15));
+
+  TH1F*hmtM075=s.getHistoNtpFile("transversemass",15,0,150,sel+"*(tauisomva>-0.75)");
+  hmtM075->SetName("hmtM075");hmtM075->SetTitle("");
+  hmtM075->Scale(hmtP075->Integral(8,15)/hmtM075->Integral(8,15));
+
+  TH1F*hmtM100=s.getHistoNtpFile("transversemass",15,0,150,sel+"*(tauisomva>-1.0)");
+  hmtM100->SetName("hmtM100");hmtM100->SetTitle("");
+  hmtM100->Scale(hmtP075->Integral(8,15)/hmtM100->Integral(8,15));
+
+
+
+  TCanvas C("plotWJetsMTShape");
+  C.Print("plotWJetsMTShape.ps[");
+  C.Clear();
+  hmtP075->GetYaxis()->SetRangeUser(0,1.2*hmtP075->GetMaximum());
+  hmtP075->Draw("histpe");
+  hmtP050->Draw("histsame");
+  hmtM000->Draw("histsame");
+  hmtM050->Draw("histsame");
+  hmtM075->Draw("histsame");
+  hmtM100->Draw("histsame");
+  C.Print("plotWJetsMTShape.ps");
+
+  //plot ratios
+  hmtP050->Divide(hmtP075);
+  hmtM000->Divide(hmtP075);
+  hmtM050->Divide(hmtP075);
+  hmtM075->Divide(hmtP075);
+  hmtM100->Divide(hmtP075);
+  C.Clear();
+  hmtP050->GetYaxis()->SetRangeUser(0.5,1.5);
+  hmtP050->GetYaxis()->SetTitle("ratio");
+  hmtP050->Draw("hist");
+  hmtM000->Draw("histsame");
+  hmtM050->Draw("histsame");
+  hmtM075->Draw("histsame");
+  hmtM100->Draw("histsame");
+  TLine line;
+  line.DrawLine(0,1,150,1);
+  C.Print("plotWJetsMTShape.ps");
+
+
+
+
+
+  //////changes on the svfitmass
+  TH1F*hmsvP075=s.getHistoNtpFile("svfitmass",30,0,300,sel+"*(tauisomva>0.75)");
+  hmsvP075->SetName("hmsvP075");hmsvP075->SetTitle("");
+
+  TH1F*hmsvP050=s.getHistoNtpFile("svfitmass",30,0,300,sel+"*(tauisomva>0.5)");
+  hmsvP050->SetName("hmsvP050");hmsvP050->SetTitle("");
+  hmsvP050->Scale(hmsvP075->Integral()/hmsvP050->Integral());
+
+  TH1F*hmsvM000=s.getHistoNtpFile("svfitmass",30,0,300,sel+"*(tauisomva>0.0)");
+  hmsvM000->SetName("hmsvM000");hmsvM000->SetTitle("");
+  hmsvM000->Scale(hmsvP075->Integral()/hmsvM000->Integral());
+
+  TH1F*hmsvM050=s.getHistoNtpFile("svfitmass",30,0,300,sel+"*(tauisomva>-0.50)");
+  hmsvM050->SetName("hmsvM050");hmsvM050->SetTitle("");
+  hmsvM050->Scale(hmsvP075->Integral()/hmsvM050->Integral());
+
+  TH1F*hmsvM075=s.getHistoNtpFile("svfitmass",30,0,300,sel+"*(tauisomva>-0.75)");
+  hmsvM075->SetName("hmsvM075");hmsvM075->SetTitle("");
+  hmsvM075->Scale(hmsvP075->Integral()/hmsvM075->Integral());
+
+  TH1F*hmsvM100=s.getHistoNtpFile("svfitmass",30,0,300,sel+"*(tauisomva>-1.0)");
+  hmsvM100->SetName("hmsvM100");hmsvM100->SetTitle("");
+  hmsvM100->Scale(hmsvP075->Integral()/hmsvM100->Integral());
+
+
+  C.Clear();
+  hmsvP075->GetYaxis()->SetRangeUser(0,1.2*hmsvP075->GetMaximum());
+  hmsvP075->Draw("histpe");
+  hmsvP050->Draw("histsame");
+  hmsvM000->Draw("histsame");
+  hmsvM050->Draw("histsame");
+  hmsvM075->Draw("histsame");
+  hmsvM100->Draw("histsame");
+  C.Print("plotWJetsMTShape.ps");
+
+  //plot ratios
+  hmsvP050->Divide(hmsvP075);
+  hmsvM000->Divide(hmsvP075);
+  hmsvM050->Divide(hmsvP075);
+  hmsvM075->Divide(hmsvP075);
+  hmsvM100->Divide(hmsvP075);
+  C.Clear();
+  hmsvP050->GetYaxis()->SetRangeUser(0.5,1.5);
+  hmsvP050->GetYaxis()->SetTitle("ratio");
+  hmsvP050->Draw("hist");
+  hmsvM000->Draw("histsame");
+  hmsvM050->Draw("histsame");
+  hmsvM075->Draw("histsame");
+  hmsvM100->Draw("histsame");
+  TLine line;
+  line.DrawLine(0,1,150,1);
+  C.Print("plotWJetsMTShape.ps");
+
+
+
+  C.Print("plotWJetsMTShape.ps]");
+  
+
+}
+
+
+//////////compute the pile-up reweighting for 2011 WJetsMC
+void computePileReweight2011To2012(){
+  Sample s2011("WJetsToLNu","/data/benitezj/Samples/TauMuV541June2_TrigEff");
+  Sample s2012("ZToTauTau","/data/benitezj/Samples/TauMu2012V5_4_0_NewType1MET4");
+  
+  TString sel="eventweight*(mupt>20)";
+
+  TH1F*H2012=s2012.getHistoNtpFile("nvtx",30,-.5,29.5,sel);
+  H2012->SetName("H2012");H2012->SetTitle("");
+  
+  TH1F*H2011=s2011.getHistoNtpFile("nvtx",30,-.5,29.5,sel);
+  H2011->SetName("H2011");H2011->SetTitle("");
+  H2011->Scale(H2012->Integral()/H2011->Integral());
+
+  TCanvas C;
+  C.Print("computePileReweight2011To2012.ps[");
+
+  C.Clear();
+  H2011->Draw("hist");
+  H2012->Draw("histpesame");
+  C.Print("computePileReweight2011To2012.ps");
+
+  TH1F*HRatio = (TH1F*) H2012->Clone("HRatio");
+  HRatio->Divide(H2011);
+  C.Clear();
+  HRatio->Draw("histpe");
+  C.Print("computePileReweight2011To2012.ps");
+
+  cout<<"(";
+  for(Int_t b=1;b<=HRatio->GetNbinsX();b++)
+    //cout<<b<<" "<<HRatio->GetBinContent(b)<<endl;
+    cout<<"(nvtx=="<<(b-1)<<")*"<<HRatio->GetBinContent(b)<<"+";
+  cout<<")"<<endl;
+
+  C.Print("computePileReweight2011To2012.ps]");
+
+}

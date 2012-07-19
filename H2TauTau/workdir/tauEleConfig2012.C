@@ -1,12 +1,12 @@
-#include "TauMuPlotter.h"
+#include "TauElePlotter.h"
 #include "Sample.h"
 #include <TString.h>
 
-TauMuPlotter * tauMuConfig2012(TString name, TString path){  
+TauElePlotter * tauEleConfig2012(TString name, TString path){  
 
-  TauMuPlotter * analysis = new TauMuPlotter(name);
+  TauElePlotter * analysis = new TauElePlotter(name);
   analysis->setOutputPath(path);
-  analysis->setQCDOStoSSRatio(1.05);//my measured value July 6
+  analysis->setQCDOStoSSRatio(1.1);
   
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
@@ -33,9 +33,10 @@ TauMuPlotter * tauMuConfig2012(TString name, TString path){
   Sample * WJetsToLNu=new Sample("WJetsToLNu",path);
   WJetsToLNu->setDataType("MC");
   WJetsToLNu->setCrossection(36257.2);//https://twiki.cern.ch/twiki/bin/view/CMS/StandardModelCrossSectionsat8TeV
-  //WJetsToLNu->setSampleGenEvents(36743101/2.);
-  WJetsToLNu->setSampleGenEvents(121174980/2.);
+  WJetsToLNu->addRootFiles("WJetsToLNu2");//add previous sample with 18M events
+  WJetsToLNu->setSampleGenEvents(78000000.);//this number needs to checked
   analysis->addSample(WJetsToLNu);  
+  
 
 //   Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
 //   W2JetsToLNu->setDataType("MCCat");
@@ -43,11 +44,11 @@ TauMuPlotter * tauMuConfig2012(TString name, TString path){
 //   W2JetsToLNu->setSampleGenEvents(25400546);//This is wrong only use for shape
 //   analysis->addSample(W2JetsToLNu);  
    
-//   Sample * W3JetsToLNu=new Sample("W3JetsToLNu",path);
-//   W3JetsToLNu->setDataType("MCCat");
-//   W3JetsToLNu->setCrossection(304.0);
-//   W3JetsToLNu->setSampleGenEvents(7541595);
-//   analysis->addSample(W3JetsToLNu);  
+  Sample * W3JetsToLNu=new Sample("W3JetsToLNu",path);
+  W3JetsToLNu->setDataType("MCCat");
+  W3JetsToLNu->setCrossection(304.0);//this is wrong
+  W3JetsToLNu->setSampleGenEvents(1);
+  analysis->addSample(W3JetsToLNu);  
    
   float CrossectionScaleFactor=0.976;
   float BjetsscaleFactor=1.0;
@@ -66,17 +67,17 @@ TauMuPlotter * tauMuConfig2012(TString name, TString path){
   ZToTauTau->setSampleGenEvents(60318194/2.);
   analysis->addSample(ZToTauTau);
 
-//   Sample* ZToMuMu = new Sample("ZToMuMu",path);
-//   ZToMuMu->setDataType("MC");
-//   ZToMuMu->setCrossection(ZToTauTau->getCrossection());
-//   ZToMuMu->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
-//   analysis->addSample(ZToMuMu);
+  Sample* ZToEE = new Sample("ZToEE",path);
+  ZToEE->setDataType("MC");
+  ZToEE->setCrossection(ZToTauTau->getCrossection());
+  ZToEE->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
+  analysis->addSample(ZToEE);
 
-//   Sample* ZToLJet = new Sample("ZToLJet",path);
-//   ZToLJet->setDataType("MC");
-//   ZToLJet->setCrossection(ZToTauTau->getCrossection());
-//   ZToLJet->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
-//   analysis->addSample(ZToLJet);
+  Sample* ZToLJet = new Sample("ZToLJet",path);
+  ZToLJet->setDataType("MC");
+  ZToLJet->setCrossection(ZToTauTau->getCrossection());
+  ZToLJet->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
+  analysis->addSample(ZToLJet);
 
 //   Sample* WW = new Sample("WW",path);
 //   WW->setDataType("MC");

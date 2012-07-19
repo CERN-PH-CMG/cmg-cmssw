@@ -35,6 +35,7 @@ public:
   
 
   void setOutputPath(TString path){outputpath_=path;}
+  void addRootFiles(TString name){addFileNames[nNames_]=name; nNames_++;}
   void setCrossection(float crossection){crossection_=crossection;} //in pb
   void setSampleLumi(float lumi){lumi_=lumi;}
   void setSampleGenEvents(float Ngen){genEvents_=Ngen;}
@@ -86,6 +87,9 @@ private:
   float genEvents_;//for MC
 
   TString outputpath_;
+  Int_t  nNames_;
+  TString addFileNames[5];
+
 
   TChain* ntpChain_;
   Int_t NMAXFILES_;
