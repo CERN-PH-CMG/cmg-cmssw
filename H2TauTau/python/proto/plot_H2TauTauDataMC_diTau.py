@@ -23,10 +23,10 @@ def lineno():
     return inspect.currentframe().f_back.f_lineno
 
 ########## rootlogon5 for loose iso M   ##### don't forget to change weight at line ~401!
-########## rootlogon3 for loose iso LL4 ##### don't forget to change weight at line ~401!
+########## rootlogon6 for loose iso LL4 ##### don't forget to change weight at line ~401!
 from os import path
-if path.exists('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon3.C'):
-    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon3.C')  # Run ROOT logon script
+if path.exists('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon6.C'):
+    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon6.C')  # Run ROOT logon script
 
 run2012=True
 
@@ -220,17 +220,17 @@ if __name__ == '__main__':
     NOVBFmedium        =  ' && (jet1Pt<50 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<500 || nCentralJets >0)'
     NOVBFtight         =  ' && (jet1Pt<50 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<4.0 || (jet1Eta*jet2Eta)>0 || mjj<400 || nCentralJets >0)'
     #print lineno()
-
+    
     cuts=[
 
 #####  Riccardo  ############################################################################################################################### 
 
         #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_dRRW_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<200.0'   , isolationMM , 5 ),
 
-        ("CMS_2012_5_fb_qcd5LL4_IsoTest_forRW_AndreasBIN_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5LL4_IsoTest_forRW_AndreasBIN3_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
         
-        #("CMS_2012_5_fb__qcd5LL4_nPVT1T2PtW_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_nPVT1T2PtW_loose_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        ("CMS_2012_5_fb__qcd5LL4_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<3.0' , isolationMM , 2 ),
+        #("CMS_2012_5_fb__qcd5LL4_FullW_2_loose_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 2 ),
 
         #("CMS_2012_5_fb_qcd5M_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
 
@@ -239,7 +239,7 @@ if __name__ == '__main__':
     for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
      bareCut = cut
      if str(prefix).find("VBF") > 0 :
-       rebin = 2	
+       rebin = 1		
      else :
        rebin = 1	
      for var, nx, xmin, xmax in [
@@ -249,19 +249,19 @@ if __name__ == '__main__':
         #('met'              ,int(40/rebin), 0   , 200    ),
         ('l1Pt'             ,int(15/rebin), 0   , 300    ),   # was 75 bins
         ('l2Pt'             ,int(10/rebin), 0   , 200    ),   # was 75 bins
-        ('jet1Pt'           ,int(50/rebin), 0   , 500    ),
+        #('jet1Pt'           ,int(50/rebin), 0   , 500    ),
         #('jet2Pt'           ,int(50/rebin), 0   , 500    ),
         #('visMass'          ,int(30/rebin), 0   , 300    ),
         #('visMass*1.03'     ,int(30/rebin), 0   , 300    ),
         #('visMass*0.97'     ,int(30/rebin), 0   , 300    ),
-        ('nVert'            ,int(25/rebin), 0   , 50     ),
+        #('nVert'            ,int(25/rebin), 0   , 50     ),
         #('l1Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
         #('l2Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
         #('jet1Eta'          ,int(20/rebin), -5  , 5      ),
         #('jet2Eta'          ,int(20/rebin), -5  , 5      ),
         #('mjj'              ,int(30/rebin), 0   ,  800   ),
         #('nJets'            ,10           , 0   , 10     ),
-        #('dRtt'             ,int(30/rebin), 0   , 5      ),
+        ('dRtt'             ,int(15/rebin), 0   , 5      ),
         #('dPhitt'           ,int(30/rebin), 0   , 3.15   ),
         #('mt'               ,int(20/rebin), 0   , 200    ),
         #('pThiggs'          ,int(25/rebin), 0   , 300    ),
@@ -324,7 +324,7 @@ if __name__ == '__main__':
       log=False
 
 
-      looseisocut = isolationM + " && !(1 "+isocut+")"
+      #looseisocut = isolationM + " && !(1 "+isocut+")"
       #semilooseisocut=isolationM+" && !(1 "+isocut+")"
 
 #       if prefix.find('VBF') > 0 :
@@ -405,10 +405,10 @@ if __name__ == '__main__':
                                              #weight=weight+"*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
-                                             #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
+                                             weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
-                                             weight=weight,                    \
+                                             #weight=weight,                    \
                                              embed=options.embed)
       #print lineno()
       
@@ -426,126 +426,29 @@ if __name__ == '__main__':
      			                                   weight=weight+"*"+weightForWJets,       \
      			                                   embed=options.embed)
 
-      if qcdEstimate==4 or qcdEstimate==5:			    
-       plotVarDataSemiLooseIsoSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     			    nx, xmin, xmax,
-     			    cut = cutSS+semilooseisocut+antiqcdcut, weight=weight,
-     			    embed=options.embed)
-       plotVarDataSemiLooseIsoOS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     			    nx, xmin, xmax,
-     			    cut = cut+semilooseisocut+antiqcdcut, weight=weight,
-     			    embed=options.embed)
-			    
-      if qcdEstimate==0 or qcdEstimate==1 or qcdEstimate==3:
-       plotVarDataLowControlOS = 0
-       plotVarDataLowControlSS = 0
-       plotVarDataAverageControlOS = 0
-       plotVarDataAverageControlSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     			    nx, xmin, xmax,
-     			    cut = cutSS+isocut+averagecontrolcut, weight=weight,
-     			    embed=options.embed)
-       plotVarDataHighControlOS = 0
-       plotVarDataHighControlSS = 0
-      if qcdEstimate==0 or qcdEstimate==1:
-       plotVarDataLowControlLooseIsoOS = 0
-       plotVarDataAverageControlLooseIsoOS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     			    nx, xmin, xmax,
-     			    cut = cut+looseisocut+averagecontrolcut, weight=weight,
-     			    embed=options.embed)
-       plotVarDataHighControlLooseIsoOS = 0
-      if qcdEstimate==0 or qcdEstimate==1 or qcdEstimate==3:
-       plotVarDataLowControlLooseIsoSS = 0
-       plotVarDataAverageControlLooseIsoSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
-     			    nx, xmin, xmax,
-     			    cut = cutSS+looseisocut+averagecontrolcut, weight=weight,
-     			    embed=options.embed)
-       plotVarDataHighControlLooseIsoSS = 0
+      WJets_looseisocut = isolationMNM + " && !(1 "+isocut+")"
+      if prefix.find('VBF')     > 0 : weightForWJets = 'weightWJets2011_nVert(nVert)'
+      if prefix.find('BOOSTED') > 0 : weightForWJets = 'weightW3Jets2011_nVert(nVert)'
+      plotVarDataLooseIsoSS_WJets = H2TauTauDataMC(var,                                      \
+                                                   anaDir,                                   \
+                                                   selCompsNoSignal,                         \
+                                                   weightsNoSignal,                          \
+     			                                   nx,                                       \
+     			                                   xmin,                                     \
+     			                                   xmax,                                     \
+     			                                   cut = cutSS+WJets_looseisocut+antiqcdcut, \
+     			                                   weight=weight+"*"+weightForWJets,         \
+     			                                   embed=options.embed)
 
-      if qcdEstimate==0:
-       QCDShape, QCDScale = QCDEstimate1(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,
-                                       plotVarDataLowControlOS, plotVarDataLowControlSS, plotVarDataAverageControlOS, plotVarDataAverageControlSS, plotVarDataHighControlOS, plotVarDataHighControlSS,
-                                       plotVarDataLowControlLooseIsoOS, plotVarDataLowControlLooseIsoSS, plotVarDataAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoSS, plotVarDataHighControlLooseIsoOS, plotVarDataHighControlLooseIsoSS,log)
-
-      if qcdEstimate==1:
-       QCDShape, QCDScale = QCDEstimate1(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,
-                                       plotVarDataLowControlOS, plotVarDataLowControlSS, plotVarDataAverageControlOS, plotVarDataAverageControlSS, plotVarDataHighControlOS, plotVarDataHighControlSS,
-                                       plotVarDataLowControlLooseIsoOS, plotVarDataLowControlLooseIsoSS, plotVarDataAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoSS, plotVarDataHighControlLooseIsoOS, plotVarDataHighControlLooseIsoSS,log)
-
-      if qcdEstimate==2:
-        QCDShape, QCDScale, QCDlooseSS, QCDtightSS = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
-
-      if qcdEstimate==6:
-        QCDShape, QCDScale, QCDlooseSS, QCDtightSS = QCDEstimate6(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
-
-      if qcdEstimate==3:
-       QCDShape, QCDScale = QCDEstimate3(prefix,prefix1,xmin,xmax,plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataAverageControlSS, plotVarDataAverageControlLooseIsoSS, log)
-
-      if qcdEstimate==4:
-       QCDShape, QCDScale = QCDEstimate4(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataSemiLooseIsoSS, log)
-
-      if qcdEstimate==5:
-       QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
-       QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
-
-       QCDShapePlot=copy.deepcopy(QCDShape)
-       QCDShapePlot.SetStyle( sRedLine )
-       QCDShapePlot.weighted.Scale(QCDScale)
-        
-       QCDShapeSemiPlot=copy.deepcopy(QCDShapeSemi)
-       QCDShapeSemiPlot.SetStyle( sBlueLine )
-       QCDShapeSemiPlot.weighted.Scale(QCDScaleSemi)
-       #print lineno()
-
-       if True:
-          print "tight SS"
-          print "Data:"                    , plotVarDataSS.Hist("Data").Integral()
-          print "TTJets:"                  , plotVarDataSS.Hist("TTJets").Integral()
-          print "DYJets:"                  , plotVarDataSS.Hist("DYJets").Integral()#+plotVarDataSS.Hist("DYJets_Photon").Integral()
-          print "DYJets_Electron:"         , plotVarDataSS.Hist("DYJets_Electron").Integral()
-          print "DYJets_Fakes:"            , plotVarDataSS.Hist("DYJets_Fakes").Integral()
-          print "WJets:"                   , plotVarDataSS.Hist("WJets").Integral()+plotVarDataSS.Hist("WJets_Fakes").Integral()
-          print "DiBoson:"                 , plotVarDataSS.Hist("WW").Integral()+plotVarDataSS.Hist("WZ").Integral()+plotVarDataSS.Hist("ZZ").Integral()
-
-       if True:
-          print "loose OS"
-          print "Data:"                    , plotVarDataLooseIsoOS.Hist("Data").Integral()
-          print "TTJets:"                  , plotVarDataLooseIsoOS.Hist("TTJets").Integral()
-          print "DYJets:"                  , plotVarDataLooseIsoOS.Hist("DYJets").Integral()#+plotVarDataLooseIsoOS.Hist("DYJets_Photon").Integral()
-          print "DYJets_Electron:"         , plotVarDataLooseIsoOS.Hist("DYJets_Electron").Integral()
-          print "DYJets_Fakes:"            , plotVarDataLooseIsoOS.Hist("DYJets_Fakes").Integral()
-          print "WJets:"                   , plotVarDataLooseIsoOS.Hist("WJets").Integral()+plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
-          print "DiBoson:"                 , plotVarDataLooseIsoOS.Hist("WW").Integral()+plotVarDataLooseIsoOS.Hist("WZ").Integral()+plotVarDataLooseIsoOS.Hist("ZZ").Integral()
-
-       if True:
-          print "loose SS"
-          print "Data:"                    , plotVarDataLooseIsoSS.Hist("Data").Integral()
-          print "TTJets:"                  , plotVarDataLooseIsoSS.Hist("TTJets").Integral()
-          print "DYJets:"                  , plotVarDataLooseIsoSS.Hist("DYJets").Integral()#+plotVarDataLooseIsoSS.Hist("DYJets_Photon").Integral()
-          print "DYJets_Electron:"         , plotVarDataLooseIsoSS.Hist("DYJets_Electron").Integral()
-          print "DYJets_Fakes:"            , plotVarDataLooseIsoSS.Hist("DYJets_Fakes").Integral()
-          print "WJets:"                   , plotVarDataLooseIsoSS.Hist("WJets").Integral()+plotVarDataLooseIsoSS.Hist("WJets_Fakes").Integral()
-          print "DiBoson:"                 , plotVarDataLooseIsoSS.Hist("WW").Integral()+plotVarDataLooseIsoSS.Hist("WZ").Integral()+plotVarDataLooseIsoSS.Hist("ZZ").Integral()
-
-       ymax = max(QCDShapePlot.GetMaximum(),QCDShapeSemiPlot.GetMaximum())*1.5
-        
-       QCDShapePlot.weighted.Draw("HISTe")
-       if log:
-           QCDShapePlot.GetYaxis().SetRangeUser(0.1,ymax)
-       else:
-           QCDShapePlot.GetYaxis().SetRangeUser(0,ymax)
-       QCDShapeSemiPlot.weighted.Draw("HISTeSAME")
-     
-       gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDcheck.png")
-       gPad.WaitPrimitive()
       
       #######################################################
       ################# PLOTTING DATA/MC ####################
       #######################################################
       yields = False
       if ( var == "svfitMass" or var == "svfitMass*1.03" or var == "svfitMass*0.97" ):
-        massesRange = [115,120,125,130,135,140,145]
+        #massesRange = [115,120,125,130,135,140,145]
         #massesRange = [110,115,120,125,130,135,140,145]
-        #massesRange = [125]
+        massesRange = [125]
         print 'I\'m plotting mass distribution for masses in [110,115,120,125,130,135,140,145] GeV'
         if var == "svfitMass" :
           yields = True
@@ -562,7 +465,7 @@ if __name__ == '__main__':
         #print lineno()
 
         #####################################################
-        ###            WJets /W3Jets Estimation           ###
+        ###            WJets / W3Jets Estimation          ###
         #####################################################
         
         if prefix.find('VBF')     > 0 : 
@@ -578,26 +481,153 @@ if __name__ == '__main__':
           WJets_ToBePut_0 = ['W3Jets']
           scaleFromMuTau  = 0.64
 
-          WJetsFakesShape = copy.deepcopy(plotVarDataLooseIsoOS_WJets.Hist("WJets_Fakes"))
+          WJetsFakesShape   = copy.deepcopy(plotVarDataLooseIsoOS_WJets.Hist("WJets_Fakes"))
+          WJetsFakesShapeSS = copy.deepcopy(plotVarDataLooseIsoSS_WJets.Hist("WJets_Fakes"))
         
           if plotVarDataLooseIsoOS.Hist(WJets_sample).Integral() == 0 : WJetsFakesScale = 0
           else :                                                        WJetsFakesScale = scaleFromMuTau * plotVarDataOS.Hist("WJets_Fakes").Integral()/plotVarDataLooseIsoOS_WJets.Hist("WJets_Fakes").Integral()
+
+          if plotVarDataLooseIsoSS.Hist(WJets_sample).Integral() == 0 : WJetsFakesScaleSS = 0
+          else :                                                        WJetsFakesScaleSS = scaleFromMuTau * plotVarDataSS.Hist("WJets_Fakes").Integral()/plotVarDataLooseIsoSS_WJets.Hist("WJets_Fakes").Integral()
 
           plotVarDataOS.Hist("WJets_Fakes").obj      = WJetsFakesShape.obj
           plotVarDataOS.Hist("WJets_Fakes").weighted = WJetsFakesShape.weighted
           plotVarDataOS.Hist("WJets_Fakes").Scale(WJetsFakesScale)
 
-        WJetsShape = copy.deepcopy(plotVarDataLooseIsoOS_WJets.Hist(WJets_sample))
+          plotVarDataSS.Hist("WJets_Fakes").obj      = WJetsFakesShapeSS.obj
+          plotVarDataSS.Hist("WJets_Fakes").weighted = WJetsFakesShapeSS.weighted
+          plotVarDataSS.Hist("WJets_Fakes").Scale(WJetsFakesScaleSS)
+
+        WJetsShape   = copy.deepcopy(plotVarDataLooseIsoOS_WJets.Hist(WJets_sample))
+        WJetsShapeSS = copy.deepcopy(plotVarDataLooseIsoSS_WJets.Hist(WJets_sample))
         
         if plotVarDataLooseIsoOS.Hist(WJets_sample).Integral() == 0 : WJetsScale = 0
         else :                                                        WJetsScale = scaleFromMuTau * plotVarDataOS.Hist(WJets_sample).Integral()/plotVarDataLooseIsoOS_WJets.Hist(WJets_sample).Integral()
+
+        if plotVarDataLooseIsoSS.Hist(WJets_sample).Integral() == 0 : WJetsScaleSS = 0
+        else :                                                        WJetsScaleSS = scaleFromMuTau * plotVarDataSS.Hist(WJets_sample).Integral()/plotVarDataLooseIsoSS_WJets.Hist(WJets_sample).Integral()
         	
         plotVarDataOS.Hist(WJets_sample).obj       = WJetsShape.obj
         plotVarDataOS.Hist(WJets_sample).weighted  = WJetsShape.weighted
         plotVarDataOS.Hist(WJets_sample).Scale(WJetsScale)
 
+        plotVarDataSS.Hist(WJets_sample).obj       = WJetsShapeSS.obj
+        plotVarDataSS.Hist(WJets_sample).weighted  = WJetsShapeSS.weighted
+        plotVarDataSS.Hist(WJets_sample).Scale(WJetsScaleSS)
+
         for zero in WJets_ToBePut_0 :
           plotVarDataOS.Hist(zero).Scale(0)
+
+        for zero in WJets_ToBePut_0 :
+          plotVarDataSS.Hist(zero).Scale(0)
+
+        #####################################################
+        ###                 QCD ESTIMATION                ###
+        #####################################################
+
+        if qcdEstimate == 4 or qcdEstimate == 5:			    
+         plotVarDataSemiLooseIsoSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+       			    nx, xmin, xmax,
+       			    cut = cutSS+semilooseisocut+antiqcdcut, weight=weight,
+       			    embed=options.embed)
+         plotVarDataSemiLooseIsoOS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+       			    nx, xmin, xmax,
+       			    cut = cut+semilooseisocut+antiqcdcut, weight=weight,
+       			    embed=options.embed)
+        if qcdEstimate == 0 or qcdEstimate == 1 or qcdEstimate == 3:
+         plotVarDataLowControlOS = 0
+         plotVarDataLowControlSS = 0
+         plotVarDataAverageControlOS = 0
+         plotVarDataAverageControlSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+       			    nx, xmin, xmax,
+       			    cut = cutSS+isocut+averagecontrolcut, weight=weight,
+       			    embed=options.embed)
+         plotVarDataHighControlOS = 0
+         plotVarDataHighControlSS = 0
+        if qcdEstimate == 0 or qcdEstimate == 1:
+         plotVarDataLowControlLooseIsoOS = 0
+         plotVarDataAverageControlLooseIsoOS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+       			    nx, xmin, xmax,
+       			    cut = cut+looseisocut+averagecontrolcut, weight=weight,
+       			    embed=options.embed)
+         plotVarDataHighControlLooseIsoOS = 0
+        if qcdEstimate == 0 or qcdEstimate == 1 or qcdEstimate == 3:
+         plotVarDataLowControlLooseIsoSS = 0
+         plotVarDataAverageControlLooseIsoSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+       			    nx, xmin, xmax,
+       			    cut = cutSS+looseisocut+averagecontrolcut, weight=weight,
+       			    embed=options.embed)
+         plotVarDataHighControlLooseIsoSS = 0
+        if qcdEstimate == 0:
+         QCDShape, QCDScale = QCDEstimate1(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,
+                                         plotVarDataLowControlOS, plotVarDataLowControlSS, plotVarDataAverageControlOS, plotVarDataAverageControlSS, plotVarDataHighControlOS, plotVarDataHighControlSS,
+                                         plotVarDataLowControlLooseIsoOS, plotVarDataLowControlLooseIsoSS, plotVarDataAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoSS, plotVarDataHighControlLooseIsoOS, plotVarDataHighControlLooseIsoSS,log)
+        if qcdEstimate == 1:
+         QCDShape, QCDScale = QCDEstimate1(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,
+                                         plotVarDataLowControlOS, plotVarDataLowControlSS, plotVarDataAverageControlOS, plotVarDataAverageControlSS, plotVarDataHighControlOS, plotVarDataHighControlSS,
+                                         plotVarDataLowControlLooseIsoOS, plotVarDataLowControlLooseIsoSS, plotVarDataAverageControlLooseIsoOS, plotVarDataAverageControlLooseIsoSS, plotVarDataHighControlLooseIsoOS, plotVarDataHighControlLooseIsoSS,log)
+        if qcdEstimate == 2:
+         QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
+        if qcdEstimate == 6:
+          QCDShape, QCDScale, QCDlooseSS, QCDtightSS = QCDEstimate6(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
+        if qcdEstimate == 3:
+         QCDShape, QCDScale = QCDEstimate3(prefix,prefix1,xmin,xmax,plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataAverageControlSS, plotVarDataAverageControlLooseIsoSS, log)
+        if qcdEstimate == 4:
+         QCDShape, QCDScale = QCDEstimate4(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataSemiLooseIsoSS, log)
+        if qcdEstimate == 5:
+         QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS , log)
+         QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS    , plotVarDataLooseIsoSS     , log)
+  
+         QCDShapePlot = copy.deepcopy(QCDShape)
+         QCDShapePlot.SetStyle( sRedLine )
+         QCDShapePlot.weighted.Scale(QCDScale)
+          
+         QCDShapeSemiPlot = copy.deepcopy(QCDShapeSemi)
+         QCDShapeSemiPlot.SetStyle( sBlueLine )
+         QCDShapeSemiPlot.weighted.Scale(QCDScaleSemi)
+         #print lineno()
+  
+         if True:
+            print "tight SS"
+            print "Data:"                    , plotVarDataSS.Hist("Data").Integral()
+            print "TTJets:"                  , plotVarDataSS.Hist("TTJets").Integral()
+            print "DYJets:"                  , plotVarDataSS.Hist("DYJets").Integral()#+plotVarDataSS.Hist("DYJets_Photon").Integral()
+            print "DYJets_Electron:"         , plotVarDataSS.Hist("DYJets_Electron").Integral()
+            print "DYJets_Fakes:"            , plotVarDataSS.Hist("DYJets_Fakes").Integral()
+            print "WJets:"                   , plotVarDataSS.Hist("WJets").Integral()+plotVarDataSS.Hist("WJets_Fakes").Integral()
+            print "DiBoson:"                 , plotVarDataSS.Hist("WW").Integral()+plotVarDataSS.Hist("WZ").Integral()+plotVarDataSS.Hist("ZZ").Integral()
+  
+         if True:
+            print "loose OS"
+            print "Data:"                    , plotVarDataLooseIsoOS.Hist("Data").Integral()
+            print "TTJets:"                  , plotVarDataLooseIsoOS.Hist("TTJets").Integral()
+            print "DYJets:"                  , plotVarDataLooseIsoOS.Hist("DYJets").Integral()#+plotVarDataLooseIsoOS.Hist("DYJets_Photon").Integral()
+            print "DYJets_Electron:"         , plotVarDataLooseIsoOS.Hist("DYJets_Electron").Integral()
+            print "DYJets_Fakes:"            , plotVarDataLooseIsoOS.Hist("DYJets_Fakes").Integral()
+            print "WJets:"                   , plotVarDataLooseIsoOS.Hist("WJets").Integral()+plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
+            print "DiBoson:"                 , plotVarDataLooseIsoOS.Hist("WW").Integral()+plotVarDataLooseIsoOS.Hist("WZ").Integral()+plotVarDataLooseIsoOS.Hist("ZZ").Integral()
+  
+         if True:
+            print "loose SS"
+            print "Data:"                    , plotVarDataLooseIsoSS.Hist("Data").Integral()
+            print "TTJets:"                  , plotVarDataLooseIsoSS.Hist("TTJets").Integral()
+            print "DYJets:"                  , plotVarDataLooseIsoSS.Hist("DYJets").Integral()#+plotVarDataLooseIsoSS.Hist("DYJets_Photon").Integral()
+            print "DYJets_Electron:"         , plotVarDataLooseIsoSS.Hist("DYJets_Electron").Integral()
+            print "DYJets_Fakes:"            , plotVarDataLooseIsoSS.Hist("DYJets_Fakes").Integral()
+            print "WJets:"                   , plotVarDataLooseIsoSS.Hist("WJets").Integral()+plotVarDataLooseIsoSS.Hist("WJets_Fakes").Integral()
+            print "DiBoson:"                 , plotVarDataLooseIsoSS.Hist("WW").Integral()+plotVarDataLooseIsoSS.Hist("WZ").Integral()+plotVarDataLooseIsoSS.Hist("ZZ").Integral()
+  
+         ymax = max(QCDShapePlot.GetMaximum(),QCDShapeSemiPlot.GetMaximum())*1.5
+          
+         QCDShapePlot.weighted.Draw("HISTe")
+         if log:
+             QCDShapePlot.GetYaxis().SetRangeUser(0.1,ymax)
+         else:
+             QCDShapePlot.GetYaxis().SetRangeUser(0,ymax)
+         QCDShapeSemiPlot.weighted.Draw("HISTeSAME")
+       
+         gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDcheck.png")
+         gPad.WaitPrimitive()
         
         plotVarDataOS.AddHistogram("QCDdata",QCDShape.weighted)
         plotVarDataOS.Hist('QCDdata').stack = True
