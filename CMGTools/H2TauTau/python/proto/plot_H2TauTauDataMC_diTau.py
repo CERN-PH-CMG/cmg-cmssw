@@ -227,10 +227,10 @@ if __name__ == '__main__':
 
         #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_dRRW_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<200.0'   , isolationMM , 5 ),
 
-        ("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMMold , 5 ),
+        ("CMS_2012_5_fb_qcd5LL4_IsoTest_forRW_AndreasBIN_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
         
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMMold , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMMold , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_nPVT1T2PtW_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_nPVT1T2PtW_loose_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
 
         #("CMS_2012_5_fb_qcd5M_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
 
@@ -247,11 +247,11 @@ if __name__ == '__main__':
         #('svfitMass*1.03'   ,int(30/rebin), 0   , 300    ),
         #('svfitMass*0.97'   ,int(30/rebin), 0   , 300    ),
         #('met'              ,int(40/rebin), 0   , 200    ),
-        ('l1Pt'             ,int(40/rebin), 0   , 200    ),   # was 75 bins
-        ('l2Pt'             ,int(40/rebin), 0   , 200    ),   # was 75 bins
+        ('l1Pt'             ,int(15/rebin), 0   , 300    ),   # was 75 bins
+        ('l2Pt'             ,int(10/rebin), 0   , 200    ),   # was 75 bins
         ('jet1Pt'           ,int(50/rebin), 0   , 500    ),
         #('jet2Pt'           ,int(50/rebin), 0   , 500    ),
-        ('visMass'          ,int(30/rebin), 0   , 300    ),
+        #('visMass'          ,int(30/rebin), 0   , 300    ),
         #('visMass*1.03'     ,int(30/rebin), 0   , 300    ),
         #('visMass*0.97'     ,int(30/rebin), 0   , 300    ),
         ('nVert'            ,int(25/rebin), 0   , 50     ),
@@ -261,8 +261,8 @@ if __name__ == '__main__':
         #('jet2Eta'          ,int(20/rebin), -5  , 5      ),
         #('mjj'              ,int(30/rebin), 0   ,  800   ),
         #('nJets'            ,10           , 0   , 10     ),
-        ('dRtt'             ,int(30/rebin), 0   , 5      ),
-        ('dPhitt'           ,int(30/rebin), 0   , 3.15   ),
+        #('dRtt'             ,int(30/rebin), 0   , 5      ),
+        #('dPhitt'           ,int(30/rebin), 0   , 3.15   ),
         #('mt'               ,int(20/rebin), 0   , 200    ),
         #('pThiggs'          ,int(25/rebin), 0   , 300    ),
         #('diTauPt'          ,int(25/rebin), 0   , 300    ),
@@ -316,10 +316,13 @@ if __name__ == '__main__':
         os.mkdir(os.getcwd()+"/"+prefix)
       #print lineno()
       
-      if var in ["met","jet1Pt","jet2Pt","l1Pt","l2Pt"]:
-        log=True
-      else:
-        log=False
+      #if var in ["met","jet1Pt","jet2Pt","l1Pt","l2Pt"]:
+      #  log=True
+      #else:
+      #  log=False
+
+      log=False
+
 
       looseisocut = isolationM + " && !(1 "+isocut+")"
       #semilooseisocut=isolationM+" && !(1 "+isocut+")"
@@ -402,6 +405,7 @@ if __name__ == '__main__':
                                              #weight=weight+"*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
+                                             #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
                                              weight=weight,                    \
@@ -480,8 +484,8 @@ if __name__ == '__main__':
        QCDShape, QCDScale = QCDEstimate4(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataSemiLooseIsoSS, log)
 
       if qcdEstimate==5:
-       QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
        QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
+       QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, log)
 
        QCDShapePlot=copy.deepcopy(QCDShape)
        QCDShapePlot.SetStyle( sRedLine )
@@ -656,15 +660,15 @@ if __name__ == '__main__':
         #####################################################
         ###            BLINDING DATA ABOVE Z PEAK         ###
         #####################################################
-        #if ( var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
-        # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-        #   if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>100 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<140 ):
-        #      plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
+        if ( var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
+         for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
+           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>100 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<140 ):
+              plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
-        #if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
-        # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-        #   if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<120 ):
-        #      plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
+        if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
+         for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
+           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<120 ):
+              plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
         #if var=="dRtt" and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
         # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):

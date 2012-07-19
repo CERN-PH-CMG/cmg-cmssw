@@ -260,9 +260,10 @@ mc_higgs = copy.copy( mc_higgs_gg ) + copy.copy( mc_higgs_vbf ) + copy.copy( mc_
 from CMGTools.H2TauTau.proto.samples.run2012.triggers_diTau import data_triggers_2012A, data_triggers_2012B, mc_triggers_spring12
 
 user = 'hinzmann'
-aod = 'V5'
-pat = 'PAT_CMG_V5_4_0'
-htt = 'H2TAUTAU_hinzmann5June12'
+aod  = 'V5'
+pat  = 'PAT_CMG_V5_4_0'
+pat2 = 'PAT_CMG_V5_4_1'
+htt  = 'H2TAUTAU_hinzmann5June12'
 filePattern = 'diTau.*fullsel.*root'
 
 # Data --------------------------------------------------------------------------------
@@ -296,14 +297,30 @@ embed_Run2012B_PromptReco_v1 = cfg.EmbedComponent(
 DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 DYJets.nGenEvents = 30461028*0.9926
 
-WJets.files = getFiles('/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-WJets.nGenEvents = 18393090*0.99689
+# WJets Spring12 
+#WJets.files = getFiles('/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+#WJets.nGenEvents = 18393090*0.99689
 
+# WJets Fall11 
+WJets.files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat2, htt=htt), user, filePattern)
+WJets.nGenEvents = 81345381
+WJets.xSection = 36257.2
+
+# WJets Spring12
+#W3Jets = cfg.MCComponent(
+#    name = 'W3Jets',
+#    files = getFiles('/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12-PU_S7_START52_V9-v2/AODSIM/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+#    xSection = 304.0,
+#    nGenEvents = 14725074*1.98661/2.0,
+#    triggers = [],
+#    effCorrFactor = 1 )
+
+# W3Jets Fall11 
 W3Jets = cfg.MCComponent(
     name = 'W3Jets',
-    files = getFiles('/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12-PU_S7_START52_V9-v2/AODSIM/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    files = getFiles('/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/{pat}/{htt}'.format(aod=aod, pat=pat2, htt=htt), user, filePattern),
     xSection = 304.0,
-    nGenEvents = 14725074*1.98661/2.0,
+    nGenEvents = 7541595*1.99724/2.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -369,7 +386,6 @@ HiggsVH130.files = getFiles('/WH_ZH_TTH_HToTauTau_M-130_8TeV-pythia6-tauola/Summ
 HiggsVH135.files = getFiles('/WH_ZH_TTH_HToTauTau_M-135_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVH140.files = getFiles('/WH_ZH_TTH_HToTauTau_M-140_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVH145.files = getFiles('/WH_ZH_TTH_HToTauTau_M-145_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-
 
 mc_spring12 = copy.copy( mc_ewk )
 mc_spring12.extend( mc_higgs ) 
