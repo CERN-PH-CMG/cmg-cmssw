@@ -77,6 +77,7 @@ class PublishController(object):
 		if datasetDetails['TotalFilesGood'] is not None:self.savannah.appendField("*Total Good Files:* "+str(datasetDetails['TotalFilesGood']))
 		if datasetDetails['TotalFilesBad'] is not None:self.savannah.appendField("*Total Bad Files:* "+str(datasetDetails['TotalFilesBad']))
 		if datasetDetails['PrimaryDatasetEntries'] is not None:self.savannah.appendField("*Primary Dataset Entries:* "+str(datasetDetails['PrimaryDatasetEntries']))
+		if datasetDetails['FileEntries'] is not None:self.savannah.appendField("*Total entries in directory:* "+str(datasetDetails['FileEntries']))
 		if datasetDetails['DirectorySizeInTB'] is not None:self.savannah.appendField("*Directory Size:* "+str(datasetDetails['DirectorySizeInTB'])+" TB")
 		if datasetDetails['BadJobs'] is not None:
 			jobs = "*Bad Jobs:* "
@@ -124,13 +125,7 @@ class PublishController(object):
 		"""
 		if self._cmgdbAPI is None:
 			return None
-		# Create hash code for the tag set
-		taghash = []
-		for i in datasetDetails['Tags']:
-			a=hash((i['package'],i['tag']))
-			taghash.append(a)
-		taghash.sort()
-		endhash = hash(tuple(taghash))
+		
 		
 		# See if cmgdb already has record of ds with sav
 		datasetDetails['CMGDBID'] = self._cmgdbAPI.getDatasetIDWithName(datasetDetails['CMGDBName'])
@@ -171,8 +166,18 @@ class PublishController(object):
 		self._cmgdbAPI.addTaskID(datasetDetails['CMGDBID'], datasetDetails['TaskID'], datasetDetails['Test'])
 		
 		# Add tags to CMGDB
-		if datasetDetails['Tags'] is None or len(datasetDetails['Tags']) is 0: return None
+		if datasetDetails['Tags'] is None or len(datasetDetails['Tags']) is 0:
+			print "No tags could be added to CMGDB as none were found"
+			return datasetDetails['CMGDBID'] 
 		tagIDs = []
+		
+		# Create hash code for the tag set
+		taghash = []
+		for i in datasetDetails['Tags']:
+			a=hash((i['package'],i['tag']))
+			taghash.append(a)
+		taghash.sort()
+		endhash = hash(tuple(taghash))
 		
 		# check if tag set is already on CMGDB
 		tagSetID = self._cmgdbAPI.getTagSetID(endhash)
