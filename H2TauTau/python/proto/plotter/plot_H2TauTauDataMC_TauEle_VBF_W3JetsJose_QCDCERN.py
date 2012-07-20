@@ -17,12 +17,13 @@ from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, plots_J1
 from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauEle_Inclusive import makePlot as makePlotInclusive
+from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauEle_Inclusive import plotPurity
 #PG fixme to be reproduced!
 #PG fixme what is it meant for?
 #from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauEle_Inclusive_TauFake import jose_qcdTauIsoRatio, jose_qcdMuIsoRatio, colin_qcdTauIsoRatio, colin_qcdMuIsoRatio
 
 from CMGTools.RootTools.Style import *
-from ROOT import kPink, TH1, TPaveText, TPad
+from ROOT import kPink, TH1, TPaveText, TPad, Double, TCanvas
 
 cp = copy.deepcopy
 EWK = 'WJets'
@@ -84,6 +85,7 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
     ssQCD = addQCD(ssign, 'Data')
 
     qcd_shape = ssQCD.Hist('QCD')
+    qcd_shape_before = copy.deepcopy(qcd_shape)
     qcd_shape.Scale( vbf_qcd_yield/qcd_shape.Integral() )
     
     #PG prepare the final plot
@@ -96,7 +98,7 @@ def makePlot( var, weights, wJetScaleSS, wJetScaleOS, vbf_qcd_yield,
     osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])    
 
-    return osign, osQCD 
+    return qcd_shape_before, osign, osQCD 
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -200,7 +202,8 @@ if __name__ == '__main__':
     # vbf_eff = 0.0025 # for 2012
     # vbf_eff = 0.001908 # for 2011
     vbf_eff = None
-    useTT11 = False #FIXME
+    vbf_eff_err = None
+    useTT11 = False
     replaceW=False
     
     anaDir = args[0].rstrip('/')
@@ -245,8 +248,9 @@ if __name__ == '__main__':
         replaceW=replaceW)
 
     incsig_qcd_yield = inc_osQCD.Hist('QCD').Integral()
-
-
+    plotPurity (inc_osQCD,'QCD','Data','OS_inc_QCD_purity')
+    plotPurity (inc_osQCD,'WJets','Data','OS_inc_WJets_purity')
+    
     if vbf_eff is None:
         # computing VBF efficiency, in anti-isolated region ==================
 
@@ -263,7 +267,13 @@ if __name__ == '__main__':
             )
 
         # neglecting contribution of other backgrounds
-        inc_qcd_yield = inc_qcd_ssQCD.Hist('Data').Integral()
+        inc_qcd_yield_old = inc_qcd_ssQCD.Hist('Data').Integral()
+        inc_qcd_yield_error = Double(0.)
+        inc_qcd_yield = inc_qcd_ssQCD.Hist('Data').weighted.IntegralAndError(
+            0, 
+            inc_qcd_ssQCD.Hist('Data').weighted.GetNbinsX(), 
+            inc_qcd_yield_error)
+        print 'TEST',inc_qcd_yield_old - inc_qcd_yield
 
 
     # remove WJets and TTJets from components, and alias W3Jets -> WJets; TTJets11 -> TTJets
@@ -308,17 +318,37 @@ if __name__ == '__main__':
                                        cut=vbf_qcd_cut, weight=weight,
                                        embed=embed, treeName = 'H2TauTauTreeProducerTauEle')
 
-        vbf_qcd_yield = vbf_qcd_ssQCD.Hist('Data').Integral()
+#        vbf_qcd_yield = vbf_qcd_ssQCD.Hist('Data').Integral()
+        vbf_qcd_yield_error = Double(0.)
+        vbf_qcd_yield = vbf_qcd_ssQCD.Hist('Data').weighted.IntegralAndError(
+            0, 
+            vbf_qcd_ssQCD.Hist('Data').weighted.GetNbinsX(), 
+            vbf_qcd_yield_error)
 
         vbf_eff = vbf_qcd_yield / inc_qcd_yield
+        vbf_eff_err = vbf_eff * math.sqrt(vbf_qcd_yield_error * vbf_qcd_yield_error / (vbf_qcd_yield * vbf_qcd_yield) +
+                           inc_qcd_yield_error * inc_qcd_yield_error / (inc_qcd_yield * inc_qcd_yield))
+                      
         
 
-    print 'VBF Efficiency = ', vbf_eff
+    print 'VBF Efficiency = ', vbf_eff,' +- ',vbf_eff_err
 
-    osign, osQCD  = makePlot( options.hist, weights, fwss, fwos,
-                              vbf_eff * incsig_qcd_yield,
-                              NBINS, XMIN, XMAX, options.cut, weight=weight,
-                              embed=options.embed, shift=shift )
+    qcd_shape_before, osign, osQCD  = makePlot( options.hist, weights, fwss, fwos,
+                                                vbf_eff * incsig_qcd_yield,
+                                                NBINS, XMIN, XMAX, options.cut, weight=weight,
+                                                embed=options.embed, shift=shift )
+
+
+    #PG save the sidebands to be able and get numbers for the systematics
+#    currdir = copy(gDirectory)
+    qcdsyst_file = TFile ('qcdsyst.root','recreate')
+    qcdsyst_file.cd()
+    osQCD.Hist('QCD').weighted.Write('QCD_os_QCD')
+    qcd_shape_before.weighted.Write('QCD_ss_QCD')
+    qcdsyst_file.Close()   
+#    currdir.cd()
+    #PG FIXME in this way I am forgetting the systematics due to other samples subtraction
+    #PG FIXME i.e. I should check the purities at least
 
     draw(osQCD, False, 'TauEle', 'VBF')
     datacards(osQCD, 'Xcat_VBFX', shift, 'eTau')
