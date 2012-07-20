@@ -43,7 +43,9 @@ print 'tau scaling =', tauScaling
 # process.setName_('H2TAUTAU')
 
 dataset_user = 'cmgtools' 
-dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
+# dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
+# dataset_name = '/H2TAUTAU/Sync/GluGlu/AOD/PAT_CMG_V5_5_0'
+dataset_name = '/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_5_0'
 dataset_files = 'cmgTuple.*root'
 
 # creating the source
@@ -54,7 +56,7 @@ process.source = datasetToSource(
     dataset_files,
     )
 
-process.source.fileNames = ['file:VBF_HToTauTau.root']
+# process.source.fileNames = ['file:VBF_HToTauTau.root']
 
 # restricting the number of files to process to a given number
 if numberOfFilesToProcess>0:
@@ -167,7 +169,7 @@ if channel=='di-tau' or channel=='all':
 
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 
