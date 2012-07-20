@@ -10,48 +10,45 @@ from CMGTools.Production.castorBaseDir import getUserAndArea
 from CMGTools.Production.datasetInformation import DatasetInformation
 
 
-def publish(dsName,fileown,comment,test,user,password, force, checkGroups, savannah, run_range = None):
+def publish(sampleName,fileown,comment,test,user,password, force, savannah,primary, run_range = None):
 	"""Publish the given dataset to CMGDB and Savannah
 		
-	'dsName' takes the name of the dataset, in either format
+	'sampleName' takes the name of the dataset, in either format
 	'fileown' takes the NICE username of the space on EOS in which the dataset resides
 	'comment' takes a users comment for publishing to Savannah or None
 	'test' takes True/False on whether the posting is a test or not
 	'user' takes the NICE username of the person making the post
 	'password' takes the NICE password of the person making the post
 	'force' takes True/False on whether the dataset should be published if no log file exists
-	'checkGroups' takes True/False on whether the associated group directory on EOS should be 
-	checked if the Dataset does not exist in the use space
 	'savannah' takes True/False on whether Savannah publish is desired
 	"""
-	# Validate name, and escape if name is invalidate
-	# Convert name to EOS format (castor)
-	if re.search("---",dsName):
-		fileown = getDbsUser(dsName)
-		dsName2 = getCastor(dsName)
-		if dsName2 is None:
-			print "\nError, "+dsName+" is not valid, please use valid name\n"
-			return None
-		else:
-			dsName = dsName2
 	
-	# Check the length of the dataset name	
-	if len(dsName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) < 3:
-		print "Error, "+dsName+" is not valid, please use valid name"
-		return None
-	elif len(dsName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) < 4:
-		print "Dataset "+ dsName + "is a CMS base dataset and cannot be published, please use DAS."
-		return None
+	def checkName(sampleName, fileown):
+		# Validate name, and escape if name is invalidate
+		# Convert name to EOS format (castor)
+		if re.search("---",sampleName):
+			fileown = getFileOwner(sampleName)
+			sampleName = getSampleName(sampleName)
+			if sampleName is None:
+				print "\nError, dataset name is not valid, please use valid name\n"
+				return None
+		
+		# Check the length of the dataset name	
+		if len(sampleName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) < 3:
+			print "Error, "+sampleName+" is not valid, please use valid name"
+			return None
+		elif len(sampleName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) < 4:
+			print "Dataset "+ sampleName + "is a CMS base dataset and cannot be published, please use DAS."
+			return None
+		return sampleName, fileown
 	
 	datasetDetails = None
-	user, area = getUserAndArea(user)
-	if area == 'group':
-		checkGroups = True
-	
-		
 	try:
-		print "\n---Publish Dataset---"
-		print "Retrieving dataset information...\n"
+		if not primary:
+			sampleName, fileown = checkName(sampleName, fileown)
+		if sampleName is None: return None
+		print "\n\t-------Publishing New Dataset-------"
+		print sampleName+"\n"
 		
 		# Initialise PublishController
 		publishController = PublishController(user, password)
@@ -68,28 +65,24 @@ def publish(dsName,fileown,comment,test,user,password, force, checkGroups, savan
 		    except KeyboardInterrupt:
 		        raise
 		
-		# Get DS Information
-		datasetDetails = DatasetInformation(dsName, fileown ,comment ,force,test, user, password, run_range)
-		
-		if datasetDetails is None: return None
-		datasetDetails.buildAllReports()
-		if datasetDetails.dataset_details is None: return None
-		
-		# Print dataset names
-		print "\n------DataSet------\n"
-		print "CMGDB name:",datasetDetails.dataset_details['CMGDBName']
-		print "Sample name:  ",datasetDetails.dataset_details['SampleName']
-		print "Total Jobs: ",datasetDetails.dataset_details['TotalJobs']
-		print "Directory size: ",datasetDetails.dataset_details['DirectorySizeInTB']," TB"
-		print ""
-		for group_name in datasetDetails.dataset_details['FileGroups']:
-			print datasetDetails.createFileGroupDetailString(group_name)
 		# If login fails return None
 		if loginClear is False:
 			print "User authentication failed, exiting\n\n"
 			return None
 		
 		
+		# Get DS Information
+		datasetDetails = DatasetInformation(sampleName, fileown ,comment ,force,test,primary, user, password)
+		
+		# Build all reports on the dataset
+		if datasetDetails is None: return None
+		datasetDetails.buildAllReports()
+		if datasetDetails.dataset_details is None: return None
+		# Print dataset names
+		print "\n------DataSet Information------"
+		print datasetDetails.createDirectoryDetailString()
+		for group_name in datasetDetails.dataset_details['FileGroups']:
+			print datasetDetails.createFileGroupDetailString(group_name)
 		
 		## Savannah operations
 		print "\n------Savanah------\n"
@@ -100,11 +93,13 @@ def publish(dsName,fileown,comment,test,user,password, force, checkGroups, savan
 		    print "NO SAVANNAH PUBLISH REQUIRED"
 		
 		if datasetDetails.dataset_details['TaskID'] is not None: status = 'Success'
+		
+		# Sent data (with updated task ID) to CMGDB
 		if publishController.cmgdbOnline():
 			print "\n-------CMGDB-------\n"
 			cmgdbid = publishController.cmgdbPublish(datasetDetails.dataset_details)
 			
-		return datasetDetails
+		return datasetDetails.dataset_details
 	except KeyboardInterrupt:
 		raise
 	except ValueError as err:
