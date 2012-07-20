@@ -17,7 +17,7 @@ from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.embed import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import *
 from CMGTools.RootTools.Style import *
-from ROOT import kPink, TH1, TPaveText, TPad
+from ROOT import kGray, kPink, TH1, TPaveText, TPad, TCanvas
 
 cp = copy.deepcopy
 EWK = 'WJets'
@@ -26,6 +26,20 @@ EWK = 'WJets'
 NBINS = 100
 XMIN  = 0
 XMAX  = 200
+
+
+def plotPurity (orig, num, den,plotname):
+    local = copy.deepcopy(orig)
+    h_num = local.Hist(num).weighted
+    h_den = local.Hist(den).weighted
+    h_num.Divide(h_den)
+    can0 = TCanvas ('can_'+plotname,'',100,100,600,600)
+    bkg = can0.DrawFrame(h_num.GetXaxis().GetXmin(),0,h_num.GetXaxis().GetXmax(),1.2)
+    bkg.GetXaxis().SetTitle(orig.histName)
+    h_num.SetFillColor(2)
+    h_num.Draw('histsame')
+    h_num.Draw('same')
+    can0.Print(plotname+'.png','png')
 
 
 def replaceShapeInclusive(plot, var, anaDir,
@@ -86,6 +100,9 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data', 1.10 ) #PG scale value according to the note
         
+    plotPurity (ssQCD,'QCD','Data','SS_QCD_purity')
+    plotPurity (ssQCD,'WJets','Data','SS_WJets_purity')
+
 #    if 0:
 #        qcd_yield = osQCD.Hist('QCD').Integral()
 #        
@@ -277,6 +294,7 @@ if __name__ == '__main__':
     W_ss_WJets.Draw ('sameE3')
     can0.Print ('compare_W_ss_ratio.png','png')
 
+
     #import pdb ; pdb.set_trace()
 
     #PG compare the MC-subtracted data to the WJets MC only for OS
@@ -291,6 +309,16 @@ if __name__ == '__main__':
     W_os_WJets.Draw ('hist')
     W_os_Data.Draw ('same')
     can0.Print ('compare_W_os.png','png')
+
+    #PG save the sidebands to be able and get numbers for the systematics
+#    currdir = copy(gDirectory)
+    wsyst_file = TFile ('wsyst.root','recreate')
+    wsyst_file.cd()
+    W_os_WJets.Write('W_os_WJets')
+    W_os_Data.Write('W_os_Data')    
+    wsyst_file.Close()
+#    currdir.cd()
+
     W_os_Data.Divide (W_os_WJets)
     W_os_WJets.Divide (W_os_WJets)
 #    W_os_WJets.Divide (W_os_Data)
@@ -315,8 +343,32 @@ if __name__ == '__main__':
                                                fwss, fwos, NBINS, XMIN, XMAX, 
                                                options.cut, weight=weight, embed=options.embed, 
                                                replaceW=replaceW )
+        # ssign = all cuts, same sign, before QCD estimate
+        # osign = all cuts, opposite sign, before QCD estimate
+        # ssQCD = all cuts, same sign, after QCD estimate, i.e. the QCD is in
+        # osQCD = all cuts, opposite sign, after QCD estimate, i.e. the QCD is in
         draw(ssign, False, 'TauEle', 'QCD_ss')
         draw(osign, False, 'TauEle', 'QCD_os')
+
+        #PG save the sidebands to be able and get numbers for the systematics
+#        currdir = copy(gDirectory)
+        qcdsyst_file = TFile ('qcdsyst.root','recreate')
+        qcdsyst_file.cd()
+        ssQCD.Hist('QCD').weighted.Write('ssQCD_QCD')
+        ssQCD.Hist('Data').weighted.Write('ssQCD_Data')
+        ssQCD.Hist('Ztt').weighted.Write('ssQCD_Ztt')
+        ssQCD.Hist('TTJets').weighted.Write('ssQCD_TTJets')
+        ssQCD.Hist('WJets').weighted.Write('ssQCD_WJets')
+        try:
+            ssQCD.Hist('Ztt_ZL').weighted.Write('QCD_ss_Ztt_ZL')
+            ssQCD.Hist('Ztt_ZJ').weighted.Write('QCD_ss_Ztt_ZJ')
+        except:
+            print 'cannot find Ztt_Fakes in QCD SS plot saving'
+            print plot
+            pass    
+        qcdsyst_file.Close()   
+#        currdir.cd()
+
 #        osQCD.legendOn = False
         draw(osQCD, options.blind, 'TauEle')
-        datacards(osQCD, cutstring, shift, 'eEle')
+        datacards(osQCD, cutstring, shift, 'eTau')
