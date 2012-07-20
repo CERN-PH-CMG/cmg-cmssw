@@ -10,7 +10,7 @@ from CMGTools.RootTools.RootTools import *
 # 'Nom', 'Up', 'Down', or None
 shift = None
 # 1.0, 1.03, 0.97
-tauScaleShift = 0.97
+tauScaleShift = 1.0
 
 mc_vertexWeight = 'vertexWeightFall112011AB'
 mc_tauEffWeight = None
@@ -140,11 +140,14 @@ sequence = cfg.Sequence( [
 
 selectedComponents = [HiggsVBF120, HiggsGGH120]
 
-test = 1
+HiggsVBF120.splitFactor = 3
+HiggsGGH120.splitFactor = 3
+
+test = 0
 if test==1:
     comp = HiggsVBF120
     selectedComponents = [comp]
-    comp.splitFactor = 4
+    comp.splitFactor = 1
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
