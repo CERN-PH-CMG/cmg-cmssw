@@ -46,6 +46,12 @@ class PublishTask(Task):
                          dest="checkGroups",
                          help="check the related group accounts on EOS",
                          default = False)
+        # If user wants to publish primary dataset
+        parser.add_option("-P", "--primary",
+                         action = "store_true",
+                         dest="primary",
+                         help="publish a primary dataset",
+                         default = False)
 
     def addOption(self,parser):
         self.addOptionStatic(parser)
@@ -72,6 +78,6 @@ class PublishTask(Task):
         return publish(self.dataset,self.options.fileown,\
                     self.options.commented,self.options.test,\
                     username,self.password,self.options.force,\
-                    self.options.checkGroups, self.options.savannah,\
+                    self.options.savannah,self.options.primary,\
                     (self.options.min_run, self.options.max_run) )
 
