@@ -135,7 +135,7 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
             fill( tr, 'npu', nPU) 
         fill( tr, 'rho', event.rho)
         
-        fill( tr, 'mcweight', -1) # where do I get the pt weight for ggHiggs? hardcode xs and nevents
+        fill( tr, 'mcweight', event.eventWeight) 
         fill( tr, 'puweight', event.vertexWeight) #OK
         # warning: phil's leg definition is different from ours!
         # for him, leg1 = muon, leg2 = tau
