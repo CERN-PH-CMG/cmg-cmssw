@@ -19,26 +19,43 @@ class DatasetInformation(object):
 	
 	"""Class gives access to attributes of the dataset that are stored on disk"""
 	
-	def __init__(self, sampleName,fileOwner,comment, force, test, username, password, run_range = None):
+	### Important definitions:
+	### CMGDB Name is in the form which contains the file owner
+	##### e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
+	
+	### Sample Name is in the format usually used when accessing datasets on EOS
+	##### e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V3
+	
+	### Group name (or file group name) is the name of a set of files within a directory, represented by the common root
+	##### e.g. 'patTuple' for the files:
+	##### patTuple_2159.root and patTuple_1996.root
+	
+	### User or Username relates to the current user making a request/publishing NOT NECESARILY the files owner on EOS
+	
+	### File owner is the name of the area that stores the sample on EOS 
+	##### e.g. 'cmgtools' is the file owner of a sample stored in user/cmgtools/CMG/
+	##### whereas 'cmgtools_group' is the file owner of a sample stored in group/cmgtools/CMG/
+	##### and 'cbern' is the file owner of a sample stored in user/cbern/CMG/
+	
+	def __init__(self, sampleName,fileOwner,comment, force, test, primary, username, password):
 		"""Initialises attributes of object, and validates existence of dataset
-		'setName' takes the name of the dataset in the EOS format e.g. /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3
-		'user' takes the files owner on EOS e.g. cmgtools
+		'sampleName' takes the name of the dataset e.g. /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3
+		'fileOwner' takes the files owner on EOS e.g. cmgtools
 		'force' takes True/False on whether the dataset should be considered valid if there is no logger file found
-		'checkGroups' takes True/False on whether the corresponding group area should be checked if the dataset is not found. e.g. cmgtools_group
+		'test' takes True/False on whether the sample is a test or not
+		'username' takes the username of the person submitting the sample
+		'password' takes that users password
 			
-		init function uses the checkDirectory method, to establish whether the directory of the dataset is valid.
 		"""
 		self.dataset = None
 		self._report = None
 		self._reportBuilt = False
 		self._force = force
+		self._primary = primary
 		self._username = username
 		self._password = password
-		self._min_run = -1
-		self._max_run = -1
-		if run_range is not None:
-			self._min_run = run_range[0]
-			self._max_run = run_range[1]
+		self._logger_file = None
+		self._logger_tar_object = None
 		
 		self.dataset_details = {"SampleName":sampleName,
 								"ParentSampleName":None,
@@ -91,6 +108,7 @@ class DatasetInformation(object):
 		self.createFileGroups()
 	
 	def createFileGroups(self):
+		"""Builds a dictionary containing the different file groups within a directory"""
 		# First get the root files and divide them into file groups
 		self.dataset.buildListOfFiles()
 		
@@ -153,34 +171,52 @@ class DatasetInformation(object):
 			else:
 				self.dataset_details['FileGroups'][file_group]['Files'].sort(key=lambda x: int(getIndex(x)))
 			self.dataset_details['FileGroups'][file_group]['TotalJobs'] = getIndex(self.dataset_details['FileGroups'][file_group]['Files'][-1])+1
-			if self.dataset_details['TotalJobs'] is not None:
-				self.dataset_details['FileGroups'][file_group]['TotalJobs'] = self.dataset_details['TotalJobs']
-			else:
-				self.dataset_details['TotalJobs']=self.dataset_details['FileGroups'][file_group]['TotalJobs'] 
 	
 	def createFileGroupDetailString(self, group_name):
+		"""Build a string containing the important information pertaining to a file group
+			
+		'group_name' takes the groups name as a string e.g. 'cmgtuple'"""
 		if self.dataset_details is None or 'FileGroups' not in self.dataset_details or group_name not in self.dataset_details['FileGroups']:
 			return None
-		string = "--"+group_name+"--\n"
+		string = "\t----"+group_name+"----\n"
 		if self.dataset_details['FileGroups'][group_name]['SizeInTB'] is not None:
-			string +="Dataset size: "+str(self.dataset_details['FileGroups'][group_name]['SizeInTB'])+" TB\n"
+			string +="\tDataset size: "+str(self.dataset_details['FileGroups'][group_name]['SizeInTB'])+" TB\n"
 		if self.dataset_details['FileGroups'][group_name]['FileEntries'] is not None:
-			string +="Dataset file entries: "+str(self.dataset_details['FileGroups'][group_name]['FileEntries'])+"\n"
+			string +="\tDataset file entries: "+str(self.dataset_details['FileGroups'][group_name]['FileEntries'])+"\n"
 		if self.dataset_details['FileGroups'][group_name]['PrimaryDatasetFraction'] is not None:
-			string +="Fraction of primary dataset used: "+str(self.dataset_details['FileGroups'][group_name]['PrimaryDatasetFraction'])+"\n"
+			string +="\tFraction of primary dataset used: "+str(self.dataset_details['FileGroups'][group_name]['PrimaryDatasetFraction'])+"\n"
 		if self.dataset_details['FileGroups'][group_name]['NumberBadFiles'] is not None:
-			string +="Number of bad files: "+str(self.dataset_details['FileGroups'][group_name]['NumberBadFiles'])+"\n"
+			string +="\tNumber of bad files: "+str(self.dataset_details['FileGroups'][group_name]['NumberBadFiles'])+"\n"
 			if self.dataset_details['FileGroups'][group_name]['BadFiles']:
 				for i in self.dataset_details['FileGroups'][group_name]['BadFiles']:
-					string +="-- "+i+"\n"
+					string +="\t-- "+i+"\n"
 		if self.dataset_details['FileGroups'][group_name]['NumberMissingFiles'] is not None:
-			string +="Number of missing files: "+str(self.dataset_details['FileGroups'][group_name]['NumberMissingFiles'])+"\n"
+			string +="\tNumber of missing files: "+str(self.dataset_details['FileGroups'][group_name]['NumberMissingFiles'])+"\n"
 			if self.dataset_details['FileGroups'][group_name]['MissingFiles']:
 				for i in self.dataset_details['FileGroups'][group_name]['MissingFiles']:
-					string +="-- "+i+"\n"
+					string +="\t-- "+i+"\n"
+		return string
+	
+	def createDirectoryDetailString(self):
+		"""Build a string containing the important information pertaining to the directory"""
+		if self.dataset_details is None :
+			return None
+		string = "Dataset Name: "+self.dataset_details['SampleName']+"\n"
+		string += "CMGDB Name: "+self.dataset_details['CMGDBName']+"\n"
+		string += "File Owner: "+self.dataset_details['FileOwner']+"\n"
+		if self.dataset_details['DirectorySizeInTB'] is not None:
+			string +="Directory size: "+str(self.dataset_details['DirectorySizeInTB'])+" TB\n"
+		if self.dataset_details['FileEntries'] is not None:
+			string +="Directory file entries: "+str(self.dataset_details['FileEntries'])+"\n"
+		if self.dataset_details['PrimaryDatasetEntries'] is not None:
+			string +="Primary dataset file entries: "+str(self.dataset_details['PrimaryDatasetEntries'])+"\n"
 		return string
 	
 	def checkDatasetDirectoryExists(self, sampleName, fileOwner):
+		"""Checks that the directory of the sample exists on EOS
+			
+		'sampleName' takes the name of the sample as a string
+		'fileOwner' takes the file owner on EOS as a string """
 		try:
 			self.dataset = Dataset(sampleName, fileOwner)
 		except:
@@ -189,11 +225,33 @@ class DatasetInformation(object):
 			raise NameError("ERROR: Dataset not found on EOS, please enter correct dataset name and fileowner\n")
 	
 	def checkForLogger(self, sampleName, fileOwner):
+		"""Checks the EOS directory for a Logger.tgz file, if not found, escapes
+			
+		'sampleName' takes the name of the sample as a string
+		'fileOwner' takes the file owner on EOS as a string
+		"""
 		if len(eostools.matchingFiles(self.dataset_details['LFN'], "Logger.tgz"))  == 1 or self._force:
+			self.createLoggerTemporaryFile()
 			return True
 		else: raise NameError("ERROR: No Logger file found, and force not requested.\n")
 	
+	def createLoggerTemporaryFile(self):
+		"""Build a temporary logger file object and tarfile object to be used when retrieving tags and jobs"""
+		try:
+			self._logger_file = tempfile.NamedTemporaryFile()
+			os.system("cmsStage -f "+self.dataset_details['LFN'] + "/Logger.tgz "+self._logger_file.name)
+			self._logger_tar_object = tarfile.open(fileobj=self._logger_file)
+			if len(self._logger_tar_object.getmembers())==0: 
+				print "\nERROR: Failed to stage logger file"
+				self._logger_tar_object = None
+				self._logger_file = None
+		except:
+			print "\nERROR: Failed to stage logger file"
+			self._logger_tar_object = None
+			self._logger_file = None
+	
 	def checkForRootFiles(self):
+		"""Checks the dataset object for presence of root files, if not found, escapes"""
 		self.dataset.buildListOfFiles()
 		if len(self.dataset.files)  > 0:
 			self.dataset_details['RootFiles']=self.dataset.files
@@ -201,6 +259,7 @@ class DatasetInformation(object):
 		else: NameError("ERROR: Dataset root files not found on EOS, dataset is invalid\n")
 	
 	def buildAllReports(self):
+		"""Builds all of the optional reports in the class"""
 		# Get available info from Savannah
 		self.buildSavannahReport()
 		
@@ -221,25 +280,29 @@ class DatasetInformation(object):
 		self.buildFileEntriesReport()
 	
 	def buildCMGDBReport(self):
+		"""Finds CMGDB ID of parent sample and sample"""
 		cmgdbAPI=CmgdbToolsApi()
 		cmgdbAPI.connect()
 		self.dataset_details['CMGDBID'] = cmgdbAPI.getDatasetIDWithName(self.dataset_details['CMGDBName'])
 		self.dataset_details['ParentCMGDBID'] = cmgdbAPI.getDatasetIDWithName(self.dataset_details['ParentCMGDBName'])
 	
 	def buildBasicDetailsReport(self):
+		"""Gets the basic dataset information"""
 		self.dataset_details['LFN'] = self.dataset.lfnDir
 		self.dataset_details['EOSPath']= self.dataset.castorDir
-		self.dataset_details['ParentSampleName']=getParentWithCastor(self.dataset_details['SampleName'])
-		self.dataset_details['PrimaryDatasetName'] = self.dataset.name.lstrip("/").split("/")[0]
-		# Can make addition here for physics group
+		self.dataset_details['CMGDBName'] = getCMGDBWithUser(self.dataset.name, self.dataset.user)
+		if not self._primary:
+			self.dataset_details['ParentSampleName']=getParentWithSampleName(self.dataset_details['SampleName'])
+			self.dataset_details['PrimaryDatasetName'] = self.dataset.name.lstrip("/").split("/")[0]
+			self.dataset_details['ParentCMGDBName'] = getUnknownParentWithCMGDB(self.dataset_details['CMGDBName'])
+			self.dataset_details['Tiers'] = self.dataset_details['SampleName'].lstrip("/").split("/")[2]
+			# Can make addition here for physics group
 		self.dataset_details['PhysicsGroup'] = "CMG"
-		self.dataset_details['CMGDBName'] = getDbsWithUser(self.dataset.name, self.dataset.user)
-		self.dataset_details['ParentCMGDBName'] = getUnknownParentWithDbs(self.dataset_details['CMGDBName'])
 		self.dataset_details['DateCreated'] = datetime.now().strftime("%s")
-		self.dataset_details['Tiers'] = self.dataset_details['SampleName'].lstrip("/").split("/")[2]
 		self.dataset_details['Status'] = "VALID"
 	
 	def buildSavannahReport(self):
+		"""Access Savannah and get all information relating to the dataset"""
 		dayMonthYear = date.fromtimestamp(int(self.dataset_details['DateCreated'])).strftime('%d-%B-%Y').split("-")
 		self.dataset_details['SavannahOptions']['planned_starting_date_dayfd']=dayMonthYear[0].lstrip("0")
 		self.dataset_details['SavannahOptions']['planned_starting_date_monthfd']=dayMonthYear[1]    
@@ -258,6 +321,11 @@ class DatasetInformation(object):
 		# If task already exists you NO NOT WANT TO CHANGE THE CATEGORY so only add this field if it is a new DS
 		if self.dataset_details['TaskID'] is None: self.dataset_details['SavannahOptions']['category_id']=category_id
 		
+		# If dataset is primary
+		if self._primary:
+			print "NOTE: Dataset is a primary dataset"
+			return None
+		
 		# Check if parent exists
 		self.dataset_details['ParentTaskID'] = getTaskID(self.dataset_details['ParentCMGDBName'], category_id, self._username, self._password, True)
 		
@@ -270,23 +338,23 @@ class DatasetInformation(object):
 		elif not re.search("--", self.dataset_details['ParentCMGDBName']):
 			self.dataset_details['ParentSavannahString']= "[https://cmsweb.cern.ch/das/request?view=list&limit=10&instance=cms_dbs_prod_global&input=dataset%3D%2F" +self.dataset_details['ParentCMGDBName'].lstrip("/").split("/")[0]+ "%2F" +self.dataset_details['ParentCMGDBName'].lstrip("/").split("/")[1]+"%2F" + self.dataset_details['ParentCMGDBName'].lstrip("/").split("/")[2]+ " "+ self.dataset_details['ParentCMGDBName']+"]"
 			self.dataset_details['ParentTaskID'] = None
+		
 		# If parent doesn't exist throw exception
 		else: raise NameError("No Parent was found for Dataset: "+self.dataset_details['CMGDBName']+" not publishing.",self.dataset_details['TaskID'])
 	
 	def buildShowtagsReport(self):
-		# Create temporary file to get logger info
-		f = tempfile.NamedTemporaryFile()
-		# Stage logger file to temp file and extract
+		"""Stage the logger_showtags.txt file in Logger.tgz and get a list of tags and the CMSSW version"""
+		
+		if self._logger_tar_object is None:
+			return None
+		showtagsFile=None
+		lines = None
 		try:
-			os.system("cmsStage -f "+self.dataset_details['LFN'] + "/Logger.tgz "+f.name)
-			tar =tarfile.open(fileobj=f)
-			showtagsFile=tar.extractfile("Logger/logger_showtags.txt")
+			showtagsFile=self._logger_tar_object.extractfile("Logger/logger_showtags.txt")
 			lines = showtagsFile.read().split("\n")
-			tar.close()
 		except:
 			print "ERROR: No showtags file found in logger"
 			return None
-		f.close()
 		#Sets tags and release 
 		# Get the release from the first line of showtags
 		self.dataset_details['Release'] = lines[0].split(":")[1].lstrip().rstrip()
@@ -308,25 +376,32 @@ class DatasetInformation(object):
 		self.dataset_details['Tags'] = tags
 	
 	def buildJobsReport(self):
-		"""Read the total number of jobs from file in the logger"""
-		# Create temporary file to get logger info
-		f = tempfile.NamedTemporaryFile()
-		# Stage logger file to temp file and extract
+		"""Stage the logger_jobs.txt file in Logger.tgz and read the total number of jobs"""
+		
+		if self._logger_tar_object is None:
+			return None
 		nJobs = None
 		try:
-			os.system("cmsStage -f "+self.dataset_details['LFN'] + "/Logger.tgz "+f.name)
-			tar =tarfile.open(fileobj=f)
 			# Open the file in the logger and get the value
 			nJobsFile=tar.extractfile("Logger/logger_jobs.txt")
 			nJobs = int(nJobsFile.read().split(": ")[1].split("\n")[0])
-			tar.close()
 		except:
 			print "ERROR: No jobs file found in logger (non-fatal error)"
-		f.close()
+			return None
+		
 		# Set the class variable
 		if nJobs is not None:self.dataset_details['TotalJobs']=nJobs
+		
+		# COLIN TODO Change here if -1 is prefered for if no jobs report found
+		if self.dataset_details['TotalJobs'] is not None:
+			for file_group in self.dataset_details['FileGroups']:
+				self.dataset_details['FileGroups'][file_group]['TotalJobs'] = self.dataset_details['TotalJobs']
+		else:
+			for file_group in self.dataset_details['FileGroups']:
+				self.dataset_details['TotalJobs']=self.dataset_details['FileGroups'][file_group]['TotalJobs']
 	
 	def buildDatasetSizeReport(self):
+		"""Get the dataset size for both the directory, and the individual file groups"""
 		if self.dataset_details['FileGroups'] is None: return None
 		self.dataset.extractFileSizes()
 		self.dataset_details['DirectorySizeInTB'] = 0.0
@@ -338,6 +413,7 @@ class DatasetInformation(object):
 			self.dataset_details['DirectorySizeInTB'] += float(size_in_bytes)/1000/1000/1000/1000
 	
 	def buildMissingFileReport(self):
+		"""Create a list of missing files and no. total missing files for each file group"""
 		def isCrabFile(name):
 			_, fname = os.path.split(name)
 			base, _ = os.path.splitext(fname)
@@ -375,9 +451,9 @@ class DatasetInformation(object):
 				self.dataset_details['FileGroups'][group_name]['NumberMissingFiles']=len(missing_files)
 			else: self.dataset_details['FileGroups'][group_name]['NumberMissingFiles']=0
 			totalMissing += len(missing_files)
-			for i in missing_files: print "Missing file found: " + i
 	
 	def buildBadFileReport(self):
+		"""Create a list of bad files and no. total bad files for each file group"""
 		def isCrabFile(name):
 			_, fname = os.path.split(name)
 			base, _ = os.path.splitext(fname)
@@ -419,9 +495,9 @@ class DatasetInformation(object):
 				self.dataset_details['FileGroups'][group_name]['BadFiles'] = bad_files
 				self.dataset_details['FileGroups'][group_name]['NumberBadFiles']=len(self.dataset_details['FileGroups'][group_name]['BadFiles'])
 			else: self.dataset_details['FileGroups'][group_name]['NumberBadFiles']=0
-			for i in bad_files:print "Bad File Found: "+i
 	
 	def buildGoodFileReport(self):
+		"""Creates a list of good files and no. total good files for each file group"""
 		def isCrabFile(name):
 			_, fname = os.path.split(name)
 			base, _ = os.path.splitext(fname)
@@ -464,6 +540,7 @@ class DatasetInformation(object):
 			else: self.dataset_details['FileGroups'][group_name]['NumberGoodFiles']=0
 	
 	def buildFileEntriesReport(self):
+		"""Use EDM data to calculate no. of entries, also calculate fraction of primary dataset used"""
 		if self._report is None:return None
 		files = self._report['Files']
 		if len(files) == 0: 
@@ -474,12 +551,12 @@ class DatasetInformation(object):
 			for file_name in files:
 				if file_name.split("/")[-1].split("_")[0]==group_name:
 					entries += files[file_name][1]
-			print self.dataset_details['PrimaryDatasetEntries']
 			self.dataset_details['FileGroups'][group_name]['FileEntries']=entries
 			if self.dataset_details['PrimaryDatasetEntries'] is not None and entries != 0 and self.dataset_details['PrimaryDatasetEntries'] > 0:
 				self.dataset_details['FileGroups'][group_name]['PrimaryDatasetFraction']=float(entries)/float(self.dataset_details['PrimaryDatasetEntries'])
 	
 	def buildEDMReport(self):
+		"""Retrieve the revelevant information from the EDM report and add it to the dictionary"""
 		if self._report is None:
 			return None
 		# Check if integrity check report is there. If yes, get it.
@@ -490,7 +567,7 @@ class DatasetInformation(object):
 		if 'FilesGood' in self._report:
 			self.dataset_details['TotalFilesGood']=self._report['FilesGood']
 		if 'FilesEntries' in self._report:
-			self.dataset_details['TotalFilesEntries'] = self._report['FilesEntries']
+			self.dataset_details['FileEntries'] = self._report['FilesEntries']
 		if 'PrimaryDatasetFraction' in self._report:
 			self.dataset_details['PrimaryDatasetFraction'] = self._report['PrimaryDatasetFraction']
 		if 'PrimaryDatasetEntries' in self._report:
