@@ -203,7 +203,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             return True
         else :
             chargeSum = 0
-            for i in range(len(looseLeptons)) : chargeSum = chargeSum += looseLeptons[i].charge()
+            for i in range(len(looseLeptons)) : chargeSum = chargeSum + looseLeptons[i].charge()
             if abs(chargeSum) < len(looseLeptons) : return False
         return True
 
