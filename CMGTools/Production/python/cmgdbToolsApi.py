@@ -38,8 +38,7 @@ class CmgdbToolsApi(CmgdbApi):
 	def addGroupGoodFileNum(self,group_id,number):
 		"""Record the quantity of bad files
 			
-		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
-		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'group_id' takes the unique ID of the file group
 		'number' takes the number of good files as an int
 		"""
 		try:
@@ -48,6 +47,7 @@ class CmgdbToolsApi(CmgdbApi):
 		except cx_Oracle.IntegrityError:
 			print "Dataset not found"
 	
+	# Clear all the missing files relating to a dataset
 	def clearDatasetMissingFiles(self, dsName, datasetID):
 		"""Clear all missing files from CMGDB pertaining to the given dataset ID
 			
@@ -65,7 +65,6 @@ class CmgdbToolsApi(CmgdbApi):
 	def addMissingFileNum(self,datasetID,number):
 		"""Record the quantity of bad files
 			
-		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
 		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
 		'number' takes the number of missing files as an int
 		"""
@@ -79,8 +78,7 @@ class CmgdbToolsApi(CmgdbApi):
 	def addGroupMissingFileNum(self,group_id,number):
 		"""Record the quantity of bad files
 			
-		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
-		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'group_id' takes the unique ID of the file group
 		'number' takes the number of missing files as an int
 		"""
 		try:
@@ -96,6 +94,7 @@ class CmgdbToolsApi(CmgdbApi):
 		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
 		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
 		'missingFileName' takes the name of the missing file as a string
+		'group_id' takes the unique ID of the file group
 		Returns None
 		"""
 		try:
@@ -137,8 +136,7 @@ class CmgdbToolsApi(CmgdbApi):
 	def addGroupBadFileNum(self,group_id,number):
 		"""Record the quantity of bad files
 			
-		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
-		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'group_id' takes the unique ID of the file group
 		'number' takes the number of bad files as an int
 		"""
 		try:
@@ -154,6 +152,7 @@ class CmgdbToolsApi(CmgdbApi):
 		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
 		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
 		'badFileName' takes the name of the bad file as a string
+		'group_id' takes the unique ID of the file group
 		Returns None
 		"""
 		try:
@@ -279,7 +278,11 @@ class CmgdbToolsApi(CmgdbApi):
 	
 	# Adds a file group to the database
 	def addFileGroup(self, group_name,cmgdb_id):
-		"""Add a file group to a dataset"""
+		"""Add a file group to a dataset
+			
+		group_name takes the name of the file group
+		cmgdb_id takes the ID of the dataset to which the file group belongs
+		"""
 		try:
 			group_id = self.getGroupIDWithDatasetAndName(group_name,cmgdb_id)
 			if group_id is not None:
@@ -293,7 +296,12 @@ class CmgdbToolsApi(CmgdbApi):
 			# If set is already in the database then print error message and ignore
 			print "-File group %s is already present on the system-\n" % group_name
 	
+	# Get a group ID with the group's name and the dataset ID
 	def getGroupIDWithDatasetAndName(self,group_name,cmgdb_id):
+		"""Returns the unique ID of a file group in CMGDB
+			
+		group_name takes the name of the file group
+		cmgdb_id takes the unique ID of the dataset to which the file group belongs"""
 		try:
 			return self.selectCur.execute("SELECT file_group_id from cms_cmgdb.file_group_details where file_group_name='%s' and dataset_id=%d" % (group_name, cmgdb_id)).fetchone()[0]
 		except:
@@ -331,10 +339,11 @@ class CmgdbToolsApi(CmgdbApi):
 		except TypeError:
 			pass
 	
+	# Add the fraction of the primary dataset used to a group
 	def addGroupPrimaryDatasetFraction(self,group_id, fraction):
 		"""Update dataset_fraction relating to the given CMGDB Dataset ID in CMGDB table dataset_details, to new given value.
 			
-		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'group_id' takes the unique ID of the file group
 		'fraction' takes the dataset size as a fraction of the primary dataset as a float
 		Returns None
 		"""
@@ -351,7 +360,7 @@ class CmgdbToolsApi(CmgdbApi):
 	def addDatasetSize(self,group_id, size):
 		"""Update field dataset_size_in_tb relating to the given CMGDB Dataset ID in CMGDB table dataset_details, to new given value.
 			
-		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'group_id' takes the unique ID of the file group
 		'size' takes the dataset size in TB dataset as a float
 		Returns None
 		"""
@@ -398,10 +407,11 @@ class CmgdbToolsApi(CmgdbApi):
 		except TypeError:
 			pass
 	
+	# Add the number of file entries to a group
 	def addGroupFileEntries(self,group_id, entries):
 		"""Update dataset_entries relating to the given datasetID in CMGDB table dataset_details, to new given value.
 
-		'datasetID' takes the unique CMGDB Dataset ID of the dataset as an int
+		'group_id' takes the unique ID of the file group
 		'entries' takes the number of file entries in the dataset as an int
 		Returns None
 		"""
@@ -444,6 +454,7 @@ class CmgdbToolsApi(CmgdbApi):
 		except:
 			return None
 	
+	# Return possible parents as a list
 	def getParentsWithName(self, datasetName):
 		"""Return a list of potential parents of a given dataset
 			
@@ -568,6 +579,7 @@ class CmgdbToolsApi(CmgdbApi):
 			return self.selectCur.execute("SELECT %s from cms_cmgdb.dataset_details where dataset_id='%d'" % (taskType, datasetID)).fetchone()[0]
 		except:return None
 	
+	# Return an array of the tags
 	def getTags(self, datasetID):
 		"""Return a list of Dict objects, each containing a "Tag" field and a "Package" field, for all tags relating to a given dataset
 			
@@ -615,6 +627,7 @@ class CmgdbToolsApi(CmgdbApi):
 			print "Tagset not added to dataset"
 			return None
 	
+	# Add tags to a tag set
 	def addTagToSet(self, tagID, tagSetID):
 		""" Add a tag to a tagset by adding the unique CMGDG ID's of both the tagset and the tag to the table cms_cmgdb.tags_in_sets
 			
