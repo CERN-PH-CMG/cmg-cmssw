@@ -102,8 +102,11 @@ void MetUtilities::cleanMet(std::vector<LorentzVector> &iVis,std::vector<JetInfo
 	if(!iMVA &&  passMVA(pMVAInfo)) lRemoveJet = false;
       }
     }
-    if(lRemoveJet && iAdd)  { iMet.first += iJets[i0].p4*iJets[i0].neutFrac;} //Add Jet back (ie removing it)
-    if(lRemoveJet && !iAdd) { iMet.first -= iJets[i0].p4*iJets[i0].neutFrac;} //Add Jet back (when subtraced as in PUCMet)
+    if(lRemoveJet && iAdd)  { iMet.first += iJets[i0].p4*iJets[i0].neutFrac;  iMet.second -= iJets[i0].p4.pt()*iJets[i0].neutFrac;} //Add Jet back (ie removing it)
+    if(lRemoveJet && !iAdd) { iMet.first -= iJets[i0].p4*iJets[i0].neutFrac;  iMet.second += iJets[i0].p4.pt()*iJets[i0].neutFrac;} //Add Jet back (when subtraced as in PUCMet)
+
+    //     if(lRemoveJet && iAdd)  { iMet.first += iJets[i0].p4*iJets[i0].neutFrac;} //Add Jet back (ie removing it)
+    //     if(lRemoveJet && !iAdd) { iMet.first -= iJets[i0].p4*iJets[i0].neutFrac;} //Add Jet back (when subtraced as in PUCMet)
   }
 }
 std::pair<MetUtilities::LorentzVector,double> MetUtilities::TKMet(std::vector<std::pair<LorentzVector,double> > &iCands,double iDZ,int iLowDz) { 
