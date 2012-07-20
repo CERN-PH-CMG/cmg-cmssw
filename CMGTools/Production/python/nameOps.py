@@ -3,7 +3,10 @@
 ## @ CERN, Meyrin
 ## October 24th 2011
 
-def getCastor(name):
+import re
+
+def getSampleName(name):
+    """Return the datasets name in the format /Primary/Proc/Tiers/V-/Pat/etc"""
     try:
         name = removeUser(name)
         name = name.lstrip("/").rstrip("/").split("/")
@@ -18,14 +21,14 @@ def getCastor(name):
     except:
         return None
 
-def getDbsUser(name):
+def getFileOwner(name):
     try:
         parts = name.lstrip("/").split("/")
         user = parts[1].split("---")[1]
         return user
     except:
         return None
-def getDbs(name):
+def getCMGDB(name):
     try:
         parts = name.lstrip("/").split("/")
         prim = parts[0]
@@ -37,9 +40,9 @@ def getDbs(name):
     except:
         return name
 
-def getDbsWithUser(name, user):
+def getCMGDBWithUser(name, user):
     try:
-        dbs = getDbs(name)
+        dbs = getCMGDB(name)
         splitDbs= dbs.lstrip("/").split("/")
         splitProc = splitDbs[1].split("--")
         if len(splitProc) > 1:
@@ -49,7 +52,7 @@ def getDbsWithUser(name, user):
     except:
         return None
         
-def getParentWithCastor(name):
+def getParentWithSampleName(name):
     try:
         name = name.lstrip("/").split("/")
         if len(name) > 3:    
@@ -59,7 +62,7 @@ def getParentWithCastor(name):
         return None
     
     
-def getUnknownParentWithDbs(name):
+def getUnknownParentWithCMGDB(name):
     try:
         
         name = removeUser(name)
@@ -79,7 +82,7 @@ def getUnknownParentWithDbs(name):
         else: return None
     except:
         return None 
-def getKnownParentWithDbs(name,user):
+def getKnownParentWithCMGDB(name,user):
     try:
         name = removeUser(name)
         name = name.lstrip("/").split("/")
@@ -104,3 +107,14 @@ def removeUser(setName):
         return "/" + name
     except:
         return setName
+def isCMGDBName(name):
+	length = len(name.rstrip().lstrip().rstrip("/").lstrip("/").split("/"))
+	if length == 3 and re.search("---",name):
+		return True
+	else: return False
+def isSampleName(name):
+	length = len(name.rstrip().lstrip().rstrip("/").lstrip("/").split("/"))
+	if length > 3 and not re.search("---",name):
+		return True
+	else:
+		return False
