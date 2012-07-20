@@ -9,9 +9,11 @@ from CMGTools.H2TauTau.proto.samples.higgs import *
 MC = copy.copy( mc_higgs )
 for sam in MC:
     sam.triggers = mc_triggers_fall11
+    sam.triggers = ["HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1"]
     
 
 allsamples = copy.copy(MC)
 
 HiggsVBF120.files = getFiles('/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_5_0/TAUMU_SumEtFix_Colin_Jul20', 'cmgtools', '.*root')
 HiggsGGH120.files = getFiles('/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_5_0/TAUMU_SumEtFix_Colin_Jul20', 'cmgtools', '.*root')
+

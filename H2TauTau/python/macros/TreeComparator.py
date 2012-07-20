@@ -28,9 +28,9 @@ class TreeComparator(object):
         
         
     def setStyles(self):
-        self.styles['tree1'] = sBlack
-        self.styles['tree2'] = sBlueSquares
-        sBlueSquares.markerStyle = 25
+        self.styles['tree1'] = Style.sBlack
+        self.styles['tree2'] = Style.sBlueSquares
+        Style.sBlueSquares.markerStyle = 25
         
     def draw(self, var, cut=''):
         same = ''

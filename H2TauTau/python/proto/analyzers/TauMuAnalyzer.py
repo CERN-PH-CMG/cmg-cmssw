@@ -65,6 +65,8 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, iEvent, event):
 
+        #if event.eventId == 4579:
+        #    import pdb; pdb.set_trace()
         result = super(TauMuAnalyzer, self).process(iEvent, event)
 
         if result is False:
