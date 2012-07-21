@@ -79,7 +79,7 @@ if process.flatNtpTauEle.dataType != 0 :
 
 # run the vertex weights
 if process.flatNtpTauEle.dataType == 0:
-   process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
+   process.load('CMGTools.RootTools.utils.vertexWeight.vertexWeight_cff')
    process.genSequence = cms.Sequence(
       process.vertexWeightSequence 
       )
@@ -87,26 +87,26 @@ if process.flatNtpTauEle.dataType == 0:
    
 
 
-##run the MVA MET and remake the mu-tau list
-process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
-process.load("CMGTools.Common.miscProducers.mvaMET.mvaMETTauEle_cfi")
-process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
-process.mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
-process.mvaBaseMETTauEle = process.cmgBaseMETFromPFMET.clone()
-process.mvaBaseMETTauEle.cfg.inputCollection = 'mvaMETTauEle'
-process.load("CMGTools.Common.factories.cmgTauEleCor_cfi")
-process.cmgTauEleMVAPreSel = process.cmgTauEleCor.clone()
-process.cmgTauEleMVAPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
-process.cmgTauEleMVAPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
-process.mvaMETSequence = cms.Sequence(
-    process.goodPVFilter + 
-    process.mvaMETTauEle +
-    process.mvaBaseMETTauEle+
-    process.cmgTauEleMVAPreSel
-    )
-process.analysis  += process.mvaMETSequence
-process.flatNtpTauEle.diTauTag = 'cmgTauEleMVAPreSel'
-process.flatNtpTauEle.metType = 2
+###run the MVA MET and remake the mu-tau list
+#process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
+#process.load("CMGTools.Common.miscProducers.mvaMET.mvaMETTauEle_cfi")
+#process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
+#process.mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
+#process.mvaBaseMETTauEle = process.cmgBaseMETFromPFMET.clone()
+#process.mvaBaseMETTauEle.cfg.inputCollection = 'mvaMETTauEle'
+#process.load("CMGTools.Common.factories.cmgTauEleCor_cfi")
+#process.cmgTauEleMVAPreSel = process.cmgTauEleCor.clone()
+#process.cmgTauEleMVAPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
+#process.cmgTauEleMVAPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
+#process.mvaMETSequence = cms.Sequence(
+#    process.goodPVFilter + 
+#    process.mvaMETTauEle +
+#    process.mvaBaseMETTauEle+
+#    process.cmgTauEleMVAPreSel
+#    )
+#process.analysis  += process.mvaMETSequence
+#process.flatNtpTauEle.diTauTag = 'cmgTauEleMVAPreSel'
+#process.flatNtpTauEle.metType = 2
 
 
 # schedule the analyzer
