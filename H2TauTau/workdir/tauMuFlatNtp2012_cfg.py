@@ -86,7 +86,7 @@ if process.flatNtpTauMu.dataType != 0 :
 
 ## run the vertex weights
 if process.flatNtpTauMu.dataType == 0:
-    process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
+    process.load('CMGTools.RootTools.utils.vertexWeight.vertexWeight_cff')
     process.genSequence = cms.Sequence(
         process.vertexWeightSequence 
         )
