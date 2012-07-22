@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.generator.genParticlesPruned_cfi import *
 from CMGTools.Common.generator.genJets_cff import *
 from CMGTools.Common.generator.listParticles_cfi import *
-from CMGTools.Common.generator.vertexWeight.vertexWeight_cff import *
+from CMGTools.RootTools.utils.vertexWeight.vertexWeight_cff import *
 
 from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
 
