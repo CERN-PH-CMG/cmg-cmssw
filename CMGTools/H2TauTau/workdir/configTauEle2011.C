@@ -24,27 +24,27 @@ TauElePlotter * tauEleConfig2011Reload(TString name, TString path){
   //2011 Data samples
   Sample* TauPlusXMay = new Sample("TauPlusXMay",path);
   TauPlusXMay->setDataType("Data");
-  TauPlusXMay->setSampleLumi(168.66);// 168.597
+  TauPlusXMay->setSampleLumi(168.66);// 168.597 
   analysis->addSample(TauPlusXMay);
 
   Sample* TauPlusXv4 = new Sample("TauPlusXv4",path);
   TauPlusXv4->setDataType("Data");
-  TauPlusXv4->setSampleLumi(955.21);// 929.748
+  TauPlusXv4->setSampleLumi(955.21);// 929.748 --> 951.43
   analysis->addSample(TauPlusXv4);
 
   Sample* TauPlusXAug = new Sample("TauPlusXAug",path);
   TauPlusXAug->setDataType("Data");
-  TauPlusXAug->setSampleLumi(389.87);// 373.349
+  TauPlusXAug->setSampleLumi(389.87);// 373.349  --> 383.798
   analysis->addSample(TauPlusXAug);
 
   Sample* TauPlusXOct3 = new Sample("TauPlusXOct3",path);
   TauPlusXOct3->setDataType("Data");
-  TauPlusXOct3->setSampleLumi(706.70);// 658.886
+  TauPlusXOct3->setSampleLumi(706.70);// 658.886 --> 696.471
   analysis->addSample(TauPlusXOct3);
 
   Sample* TauPlusX2011B = new Sample("TauPlusX2011B",path);
   TauPlusX2011B->setDataType("Data");
-  TauPlusX2011B->setSampleLumi(2714.45);// 2511
+  TauPlusX2011B->setSampleLumi(2714.45);// 2511  -->2714
   analysis->addSample(TauPlusX2011B);
 
 

@@ -6,7 +6,7 @@
 #include "tauMuConfig2011Reload.C"
 
 
-void plot(){  
+void plotTauMu(){  
 
   TString path="/data/benitezj/Samples/TauMuV541June2_TrigEff";
 
