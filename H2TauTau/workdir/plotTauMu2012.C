@@ -3,7 +3,7 @@
 #include <TH1F.h>
 #include <TDirectory.h>
 #include "TauMuPlotter.h"
-#include "tauMuConfig2012.C"
+#include "configTauMu2012.C"
 
 
 void plotTauMu2012(){  
@@ -18,7 +18,7 @@ void plotTauMu2012(){
 
   TString path="/data/benitezj/Samples/TauMu2012V540_July7_2012WJets"; // includes new 2012 W+jets sample
 
-  TauMuPlotter*analysis=tauMuConfig2012("analysis",path);
+  TauMuPlotter*analysis=configTauMu2012("analysis",path);
   analysis->setQCDColor(kMagenta-10);
   analysis->setWJetsColor(kRed+2);
   analysis->setTTJetsColor(kBlue-8);

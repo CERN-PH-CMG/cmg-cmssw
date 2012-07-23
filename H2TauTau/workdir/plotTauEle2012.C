@@ -3,7 +3,7 @@
 #include <TH1F.h>
 #include <TDirectory.h>
 #include "TauElePlotter.h"
-#include "tauEleConfig2012.C"
+#include "configTauEle2012.C"
 
 
 void plotTauEle2012(){  
@@ -16,7 +16,7 @@ void plotTauEle2012(){
   TString path="/data/benitezj/Samples/TauEle2012V5_4_0_NewType1MET4"; //Type 1 MET, embedded samples, W3Jets
   //TString path="/data/benitezj/Samples/TauEle2012V5_4_0_NewType1MET5"; //MVA MET
 
-  TauElePlotter*analysis=tauEleConfig2012("analysis",path);
+  TauElePlotter*analysis=configTauEle2012("analysis",path);
   analysis->setQCDColor(kMagenta-10);
   analysis->setWJetsColor(kRed+2);
   analysis->setTTJetsColor(kBlue-8);

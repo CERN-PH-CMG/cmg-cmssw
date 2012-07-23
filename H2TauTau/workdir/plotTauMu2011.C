@@ -3,14 +3,14 @@
 #include <TH1F.h>
 #include <TDirectory.h>
 #include "TauMuPlotter.h"
-#include "tauMuConfig2011Reload.C"
+#include "configTauMu2011.C"
 
 
-void plotTauMu(){  
+void plotTauMu2011(){  
 
   TString path="/data/benitezj/Samples/TauMuV541June2_TrigEff";
 
-  TauMuPlotter*analysis=tauMuConfig2011Reload("analysis",path);
+  TauMuPlotter*analysis=configTauMu2011("analysis",path);
   analysis->setQCDColor(kMagenta-10);
   analysis->setWJetsColor(kRed+2);
   analysis->setTTJetsColor(kBlue-8);
@@ -34,7 +34,7 @@ void plotTauMu(){
   analysis->setVariableBinning(13,xbinsValues);
 
 
-//   analysis->plotInc("nvtx",50,-.5,49.5,1,1,"","",0,0,"# of reco. vertices ","",c,0,"inclusive");
+//  analysis->plotInc("nvtx",50,-.5,49.5,1,1,"","",0,0,"# of reco. vertices ","",c,0,"inclusive");
 
 //   analysis->plotInc("mupt",50,0,100,1,1,"","",0,0," muon  pt   (GeV)","",c,0,"inclusive");
 //   analysis->plotInc("mueta",50,-2.5,2.5,1,1,"","",0,0," muon  #eta","",c,0,"inclusive");

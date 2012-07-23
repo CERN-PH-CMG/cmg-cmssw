@@ -2,7 +2,7 @@
 #include "Sample.h"
 #include <TString.h>
 
-TauMuPlotter * tauMuConfig2012(TString name, TString path){  
+TauMuPlotter * configTauMu2012(TString name, TString path){  
 
   TauMuPlotter * analysis = new TauMuPlotter(name);
   analysis->setOutputPath(path);
