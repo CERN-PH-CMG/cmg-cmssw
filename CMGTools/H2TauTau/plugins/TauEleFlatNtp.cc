@@ -1,75 +1,13 @@
 
  #include "CMGTools/H2TauTau/plugins/TauEleFlatNtp.h"
- #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
- #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
  #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
  #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
 
- TauEleFlatNtp::TauEleFlatNtp(const edm::ParameterSet & iConfig):
-   BaseFlatNtp(iConfig),
-   muPtCut_(iConfig.getParameter<double>("muPtCut")),
-   tauPtCut_(iConfig.getParameter<double>("tauPtCut")),
-   muEtaCut_(iConfig.getParameter<double>("muEtaCut")),
-   tauEtaCut_(iConfig.getParameter<double>("tauEtaCut")),
-   diTauSel_(0),
-   btagWP_(0.679),
-   sampleGenEventType_(0),
-   sampleTruthEventType_(0),
-   genEventType_(0),
-   truthEventType_(0),
-   deltaRTruth_(0.3),
-   genBoson_(0),
-   genBosonL1_(0),
-   genBosonL2_(0),
-   corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
-   mvaWeights_(iConfig.getParameter<std::string>("mvaWeights")),
-   reader_(mvaWeights_.c_str())   
- {
-
-   diTauTag_               = iConfig.getParameter<edm::InputTag>("diTauTag");
-   cout<<"diTauTag_  : "<<diTauTag_.label()<<endl;
-   
-   genParticlesTag_        = iConfig.getParameter<edm::InputTag>("genParticlesTag");
-   cout<<" genParticlesTag_  : "<<genParticlesTag_.label()<<endl;
-   
-   pfJetListTag_           = iConfig.getParameter<edm::InputTag>("pfJetListTag");
-   cout<<" pfJetListTag_ : "<<pfJetListTag_.label()<<endl;
-   
-   diMuonVetoListTag_      = iConfig.getParameter<edm::InputTag>("diMuonVetoListTag");
-   cout<<" diMuonVetoListTag : "<<diMuonVetoListTag_.label()<<endl;
-   
-   sampleGenEventType_     = iConfig.getParameter<int>("sampleGenEventType");
-   cout<<"sampleGenEventType  : "<<sampleGenEventType_<<endl;
-   
-   sampleTruthEventType_   = iConfig.getParameter<int>("sampleTruthEventType");
-   cout<<" sampleTruthEventType : "<<sampleTruthEventType_<<endl;
-   
-   randsigma_              = iConfig.getParameter<double>("randsigma");
-   cout<<"randsigma_  : "<<randsigma_<<endl;
-
-   recoilCorreciton_ =  iConfig.getParameter<int>("recoilCorrection");
-   cout<<"recoilCorreciton_  : "<<recoilCorreciton_<<endl;
-   
-   fileZmmData_ = iConfig.getParameter<std::string>("fileZmmData");
-   cout<<" fileZmmData_ : "<<fileZmmData_.c_str()<<endl;
-   corrector_.addDataFile( fileZmmData_);
-
-   fileZmmMC_ = iConfig.getParameter<std::string>("fileZmmMC");
-   cout<<"fileZmmMC_  : "<<fileZmmMC_.c_str()<<endl;
-   corrector_.addMCFile( fileZmmMC_);
-
-   recoiliScale_ = iConfig.getParameter<double>("recoiliScale");
-   cout<<"recoiliScale_   : "<<recoiliScale_<<endl;
-
-   metType_ = iConfig.getParameter<int>("metType");
-   cout<<"metType_  : "<<metType_<<endl;
-
-   runSVFit_  =  iConfig.getParameter<int>("runSVFit");
-   cout<<" runSVFit_ : "<<runSVFit_<<endl;
-
-
- }
+TauEleFlatNtp::TauEleFlatNtp(const edm::ParameterSet & iConfig):
+   BaseFlatNtp(iConfig)
+{
+}
 
 
 TauEleFlatNtp::~TauEleFlatNtp(){
@@ -82,110 +20,8 @@ void TauEleFlatNtp::beginJob(){
   BaseFlatNtp::beginJob();
   //  tree_->Branch("",&_,"/F");
 
-  tree_->Branch("triggerEffWeight",&triggerEffWeight_,"triggerEffWeight/F"); 
-  tree_->Branch("selectionEffWeight",&selectionEffWeight_,"selectionEffWeight/F"); 
-  tree_->Branch("embeddedGenWeight",&embeddedGenWeight_,"embeddedGenWeight/F"); 
-  tree_->Branch("btagEffWeight",&btagEffWeight_,"btagEffWeight/F");
-
-  tree_->Branch("genbosonmass",&genbosonmass_,"genbosonmass/F");
-  tree_->Branch("genbosonpt",&genbosonpt_,"genbosonpt/F");
-  tree_->Branch("genbosonphi",&genbosonphi_,"genbosonphi/F");
-
-  tree_->Branch("nditau",&nditau_,"nditau/I");
-  tree_->Branch("ditaumass",&ditaumass_,"ditaumass/F");
-  tree_->Branch("ditaucharge",&ditaucharge_,"ditaucharge/I");
-  tree_->Branch("svfitmass",&svfitmass_,"svfitmass/F");
-  tree_->Branch("ditaueta",&ditaueta_,"ditaueta/F");
-  tree_->Branch("ditaupt",&ditaupt_,"ditaupt/F");
-
-  tree_->Branch("taumass",&taumass_,"taumass/F");
-  tree_->Branch("taupt",&taupt_,"taupt/F");
-  tree_->Branch("taueta",&taueta_,"taueta/F");
-  tree_->Branch("tauphi",&tauphi_,"tauphi/F");
-  tree_->Branch("tauehop",&tauehop_,"tauehop/F");
-  tree_->Branch("taueop",&taueop_,"taueop/F");
-  tree_->Branch("tautruth",&tautruth_,"tautruth/I");
-  tree_->Branch("taudecaymode",&taudecaymode_,"taudecaymode/I");
-  tree_->Branch("taudz",&taudz_,"taudz/F");
-  tree_->Branch("taudxy",&taudxy_,"taudxy/F");
-  tree_->Branch("tauantie",&tauantie_,"tauantie/I");
-  tree_->Branch("tauantimu",&tauantimu_,"tauantimu/I");
-  tree_->Branch("tauisodisc",&tauisodisc_,"tauisodisc/I");
-  tree_->Branch("tauisodiscmva",&tauisodiscmva_,"tauisodiscmva/I");
-  tree_->Branch("tauiso",&tauiso_,"tauiso/F");
-  tree_->Branch("tauisomva",&tauisomva_,"tauisomva/F");
-  tree_->Branch("taux",&taux_,"taux/F");
-  tree_->Branch("tauy",&tauy_,"tauy/F");
-  tree_->Branch("tauz",&tauz_,"tauz/F");
-  tree_->Branch("taujetpt",&taujetpt_,"taujetpt/F");
-  tree_->Branch("taujeteta",&taujeteta_,"taujeteta/F");
-
-  tree_->Branch("mupt",&mupt_,"mupt/F");
-  tree_->Branch("mueta",&mueta_,"mueta/F");
-  tree_->Branch("muphi",&muphi_,"muphi/F");
-  tree_->Branch("muiso",&muiso_,"muiso/F");
-  tree_->Branch("muisomva",&muisomva_,"muisomva/F");
-  tree_->Branch("mudz",&mudz_,"mudz/F");
-  tree_->Branch("mudxy",&mudxy_,"mudxy/F");
-  tree_->Branch("mux",&mux_,"mux/F");
-  tree_->Branch("muy",&muy_,"muy/F");
-  tree_->Branch("muz",&muz_,"muz/F");
-  tree_->Branch("mujetpt",&mujetpt_,"mujetpt/F");
-  tree_->Branch("mujeteta",&mujeteta_,"mujeteta/F");
   tree_->Branch("mumvaid",&mumvaid_,"mumvaid/F");
-
-  tree_->Branch("pfmetpt",&pfmetpt_,"pfmetpt/F");
-  tree_->Branch("pfmetphi",&pfmetphi_,"pfmetphi/F");
-  tree_->Branch("pftransversemass",&pftransversemass_,"pftransversemass/F");
-  tree_->Branch("metpt",&metpt_,"metpt/D");
-  tree_->Branch("metphi",&metphi_,"metphi/D");
-  tree_->Branch("transversemass",&transversemass_,"transversemass/F");
-  tree_->Branch("metsigcov00",&metsigcov00_,"metsigcov00/F");
-  tree_->Branch("metsigcov01",&metsigcov01_,"metsigcov01/F");
-  tree_->Branch("metsigcov10",&metsigcov10_,"metsigcov10/F");
-  tree_->Branch("metsigcov11",&metsigcov11_,"metsigcov11/F");
-
-  tree_->Branch("pZeta",&pZeta_,"pZeta/F");
-  tree_->Branch("pZetaVis",&pZetaVis_,"pZetaVis/F");
-
-
-
-  tree_->Branch("njet",&njet_,"njet/I");
-  tree_->Branch("leadJetPt",&leadJetPt_,"leadJetPt/F");
-  tree_->Branch("leadJetRawFactor",&leadJetRawFactor_,"leadJetRawFactor/F");
-  tree_->Branch("leadJetEta",&leadJetEta_,"leadJetEta/F");
-  tree_->Branch("subleadJetPt",&subleadJetPt_,"subleadJetPt/F");
-  tree_->Branch("subleadJetEta",&subleadJetEta_,"subleadJetEta/F");
-  tree_->Branch("subleadJetRawFactor",&subleadJetRawFactor_,"subleadJetRawFactor/F");
-  tree_->Branch("diJetMass",&diJetMass_,"diJetMass/F");
-  tree_->Branch("diJetPt",&diJetPt_,"diJetPt/F"); 
-  tree_->Branch("diJetDeltaEta",&diJetDeltaEta_,"diJetDeltaEta/F");
-  tree_->Branch("diJetEta1Eta2",&diJetEta1Eta2_,"diJetEta1Eta2/F"); 
-  tree_->Branch("njetingap",&njetingap_,"njetingap/I");
-  tree_->Branch("nbjet",&nbjet_,"nbjet/I");
-  tree_->Branch("leadBJetPt",&leadBJetPt_,"leadBJetPt/F");
-  tree_->Branch("leadBJetEta",&leadBJetEta_,"leadBJetEta/F");
-
-  tree_->Branch("muLCleadJetPt",&muLCleadJetPt_,"muLCleadJetPt/F");
-  tree_->Branch("muLCleadJetEta",&muLCleadJetEta_,"muLCleadJetEta/F");
-
-
-  tree_->Branch("vbfmva",&vbfmva_,"vbfmva/F");
-  tree_->Branch("vbfvars0",&vbfvars_[0],"vbfvars0/D");
-  tree_->Branch("vbfvars1",&vbfvars_[1],"vbfvars1/D");
-  tree_->Branch("vbfvars2",&vbfvars_[2],"vbfvars2/D");
-  tree_->Branch("vbfvars3",&vbfvars_[3],"vbfvars3/D");
-  tree_->Branch("vbfvars4",&vbfvars_[4],"vbfvars4/D");
-  tree_->Branch("vbfvars5",&vbfvars_[5],"vbfvars5/D");
-  tree_->Branch("vbfvars6",&vbfvars_[6],"vbfvars6/D");
-  tree_->Branch("vbfvars7",&vbfvars_[7],"vbfvars7/D");
-
-
-  tree_->Branch("categoryCh",&categoryCh_,"categoryCh/I");
-  tree_->Branch("categoryMT",&categoryMT_,"categoryMT/I");
-  tree_->Branch("categoryIso",&categoryIso_,"categoryIso/I");
-  tree_->Branch("categorySM",&categorySM_,"categorySM/I");
-  tree_->Branch("categorySM2012",&categorySM2012_,"categorySM2012/I");
+  tree_->Branch("tauantiemva",&tauantiemva_,"tauantiemva/F");
 
 
   //counters
@@ -217,70 +53,12 @@ void TauEleFlatNtp::beginJob(){
    if(!BaseFlatNtp::fillVariables(iEvent,iSetup)) return 0;
 
 
-   //embedded samples generator weight
-   embeddedGenWeight_=1.0;
-   if(dataType_==2){
-     edm::Handle< double > embeddedGenWeight;
-     iEvent.getByLabel(edm::InputTag("generator","weight",""),embeddedGenWeight);
-     if(!embeddedGenWeight.failedToGet())
-       embeddedGenWeight_=*embeddedGenWeight;
-   }  
-
    ///get the TauEle cands 
    iEvent.getByLabel(diTauTag_,diTauList_);
 
    //get the muons for the di-lepton veto
    iEvent.getByLabel(diMuonVetoListTag_,diLeptonVetoList_);
 
-   ///get the gen Boson and set the genEventType
-   genBoson_ = NULL;
-   genBosonL1_ = NULL;
-   genBosonL2_ = NULL;
-   genEventType_=0;
-   if(dataType_==0){  
-     iEvent.getByLabel(genParticlesTag_,genParticles_);    
-     for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
-       //cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
-       if((abs(g->pdgId())==23 || abs(g->pdgId())==24 ||  abs(g->pdgId())==25 ||  abs(g->pdgId())==36 ) && genBoson_==NULL )
- 	genBoson_=&(*g);
-     }
-     //if(genBoson_)cout<<"genBoson_ ref = "<<genBoson_<<endl;
-
-     if(genBoson_){      
-       
-       genbosonpt_=genBoson_->pt();
-       genbosonphi_=genBoson_->phi();
-       
-
-       //determine type of generated event: Z-->ee,mumu,tautau,, W-->e nu, mu nu, tau mu
-       int genTaus=0;
-       int genMuons=0;
-       int genElectrons=0;
-       for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
- 	if(abs(g->pdgId())==11 && g->mother()==genBoson_) genElectrons++;
- 	if(abs(g->pdgId())==13 && g->mother()==genBoson_) genMuons++;
- 	if(abs(g->pdgId())==15 && g->mother()==genBoson_) genTaus++;
-       }
-       if(abs(genBoson_->pdgId())==23 && genElectrons==2)   genEventType_=1;
-       if(abs(genBoson_->pdgId())==23 && genMuons==2)       genEventType_=3;
-       if(abs(genBoson_->pdgId())==23 && genTaus==2)        genEventType_=5;
-       if(abs(genBoson_->pdgId())==24 && genElectrons==1)   genEventType_=11;
-       if(abs(genBoson_->pdgId())==24 && genMuons==1)       genEventType_=13;
-       if(abs(genBoson_->pdgId())==24 && genTaus==1)        genEventType_=15;
-
-       //get the leptons from the genBoson
-       for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
- 	if((g->pdgId()==11 || g->pdgId()==13 || g->pdgId()==15 ) && g->mother()==genBoson_) genBosonL1_=&(*g);
- 	if((g->pdgId()==-11 || g->pdgId()==-13 || g->pdgId()==-15 ) && g->mother()==genBoson_) genBosonL2_=&(*g);
-       }      
-
-       if(genBosonL1_ && genBosonL2_)
-	 genbosonmass_=(genBosonL1_->p4()+genBosonL2_->p4()).mass();
-       
-
-     }
-
-   }
 
 
    return 1;
@@ -295,10 +73,6 @@ void TauEleFlatNtp::beginJob(){
    //trigger, n-vertex selection
    if(!BaseFlatNtp::applySelections()) return 0;
    counterev_++;
-
-   //apply gen level separation here
-   if( sampleGenEventType_!=0 && sampleGenEventType_!=genEventType_) return 0;
-   countergen_++;
 
    ////other 
    if(vetoDiLepton()) return 0;
@@ -494,39 +268,12 @@ void TauEleFlatNtp::beginJob(){
 
    //truth match 
    truthEventType_=0;
-   if(genBoson_){
-     //Z-->ll
-     if(abs(genBoson_->pdgId())==23){
-       if(genBosonL1_&&genBosonL2_){
- 	if(((reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),genBosonL1_->eta(),genBosonL1_->phi())<deltaRTruth_)
- 	    ||(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),genBosonL2_->eta(),genBosonL2_->phi())<deltaRTruth_))
- 	   && ((reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL1_->eta(),genBosonL1_->phi())<deltaRTruth_)
- 	       ||(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL2_->eta(),genBosonL2_->phi())<deltaRTruth_))
- 	   ) truthEventType_=abs(genBosonL1_->pdgId())-10;
- 	else truthEventType_=6;
-       }else truthEventType_=6;
-     }
-
-     //W-->lnu
-     if(abs(genBoson_->pdgId())==24){
-       if(genBosonL1_){
- 	if(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL1_->eta(),genBosonL1_->phi())<deltaRTruth_)
- 	  truthEventType_=abs(genBosonL1_->pdgId());
- 	else truthEventType_=16;
-       }else if(genBosonL2_){	  
- 	if(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),genBosonL2_->eta(),genBosonL2_->phi())<deltaRTruth_)
- 	  truthEventType_=abs(genBosonL2_->pdgId());
- 	else truthEventType_=16;
-       }else truthEventType_=16;
-     }
-   }
-
-
+   if(genBoson_)
+     fillTruthEventType(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi());
    if(sampleTruthEventType_>0)
      if(sampleTruthEventType_!=truthEventType_) return 0;
    countertruth_++;
-
-
+   
    counter_++;
    return 1;
  }
@@ -584,7 +331,7 @@ void TauEleFlatNtp::beginJob(){
    mux_=diTauSel_->leg2().vertex().x();
    muy_=diTauSel_->leg2().vertex().y();
    muz_=diTauSel_->leg2().vertex().z();
-   mutruth_=truthMatchEle();
+   mutruth_=truthMatchLeg(diTauSel_->leg2().eta(),diTauSel_->leg2().phi());
    mumvaid_=diTauSel_->leg2().mvaNonTrigV0();
  
    taumass_=diTauSel_->leg1().p4().M();
@@ -593,7 +340,7 @@ void TauEleFlatNtp::beginJob(){
    tauphi_=diTauSel_->leg1().phi();
    taudz_=diTauSel_->leg1().dz();
    taudxy_=diTauSel_->leg1().dxy();
-   tautruth_=truthMatchTau();
+   tautruth_=truthMatchLeg(diTauSel_->leg1().eta(),diTauSel_->leg1().phi());
    tauehop_=diTauSel_->leg1().eOverP();
    taueop_=diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p();
    taudecaymode_=diTauSel_->leg1().decayMode();
@@ -629,363 +376,77 @@ void TauEleFlatNtp::beginJob(){
    ditaucharge_=diTauSel_->charge();
    ditaueta_=diTauSel_->eta();
    ditaupt_=diTauSel_->pt();
+   ditauphi_=diTauSel_->phi();
    svfitmass_=diTauSel_->massSVFit();
-
-   ///define control samples
-   categoryCh_=0;
-   if(fabs(ditaucharge_)==0.)categoryCh_=1;
-   if(fabs(ditaucharge_)==2.)categoryCh_=2;
 
 
    ///get the jets //need the jets here because of randomization of mT
-   edm::Handle< std::vector<cmg::PFJet> > fulljetlist;
-   iEvent_->getByLabel(pfJetListTag_,fulljetlist);
+   edm::Handle< std::vector<cmg::PFJet> > eventJetList;
+   iEvent_->getByLabel(pfJetListTag_,eventJetList);
+   fullJetList_.clear();
+   for(std::vector<cmg::PFJet>::const_iterator jet=eventJetList->begin(); jet!=eventJetList->end(); ++jet)
+     fullJetList_.push_back(&(*jet));
 
    //apply pt and eta cuts on jets
-   pfJetList_.clear();
-   for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
-     if(jet->pt()<30.0)continue;  
-     if(fabs(jet->eta())>4.5)continue; 
-     if(!checkPFJetId(&(*jet)))continue;
-     if(!(jet->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
-     pfJetList_.push_back(&(*jet));
-   }
+   fillPFJetList(&fullJetList_,&pfJetList_);
 
    //lepton clean the jet list //need to fill njet_ here 
-   fillPFJetListLC(diTauSel_,&pfJetList_,&pfJetListLC_);
-   njet_=pfJetListLC_.size();
-
-   leadJet_=0;
-   subleadJet_=0;
-   if(njet_>0)leadJet_=pfJetListLC_[0];
-   if(njet_>1)subleadJet_=pfJetListLC_[1];
+   fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetList_,&pfJetListLC_);
    
    //Also the list cleaned only with the muon //njetLepLC needed in recoil correction
-   fillPFJetListLepLC(diTauSel_,&pfJetList_,&pfJetListLepLC_);
-   int njetLepLC_=pfJetListLepLC_.size();
+   fillPFJetListLepLC(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetList_,&pfJetListLepLC_);
 
-
-   //////////////MET/////////////////
-   const cmg::METSignificance * metSig=0;
-   if(metType_==1){//PFMET
-     edm::Handle<std::vector< cmg::BaseMET> > pfMET;
-     iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
-     metpt_=pfMET->begin()->pt();
-     metphi_=pfMET->begin()->phi();
-     
-     edm::Handle< cmg::METSignificance > pfMetSigHandle;
-     iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
-     metSig = &(*pfMetSigHandle);
-   }
-   if(metType_==2){//MVA MET //needs to be updated
-     metpt_=diTauSel_->met().pt();
-     metphi_=diTauSel_->met().phi();
-     
-     //get the MET significance corresponding to the candidate we selected
-     edm::InputTag metsigSrc_("mvaMETTauEle");
-     edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
-     iEvent_->getByLabel(metsigSrc_,metsigVector); 
-     //now determine which of the mets belongs to the selected tau-mu candidate
-     int candidx=0;
-     for(std::vector<cmg::TauEle>::const_iterator cand=diTauList_->begin(); cand!=diTauList_->end(); ++cand){
-       if(cand->mass()==diTauSel_->mass()) metSig = &(metsigVector->at(candidx));
-       candidx++;
-     }
-   }
-   if(metType_==3){//Type 1 Corrected MET
-     edm::Handle<std::vector< cmg::BaseMET> > pfMET;
-     iEvent_->getByLabel(edm::InputTag("cmgPFMET"),pfMET);
-     metpt_=pfMET->begin()->pt();
-     metphi_=pfMET->begin()->phi();
-     
-     edm::Handle< cmg::METSignificance > pfMetSigHandle;
-     iEvent_->getByLabel(edm::InputTag("pfMetSignificance"),pfMetSigHandle); 
-     metSig = &(*pfMetSigHandle);
-   }
-   if(!metSig){
-     cout<<" Unrecognized metType "<<endl;
-     exit(0);
-   }
-   
-   metsigcov00_=(*(metSig->significance()))[0][0];
-   metsigcov01_=(*(metSig->significance()))[0][1];
-   metsigcov10_=(*(metSig->significance()))[1][0];
-   metsigcov11_=(*(metSig->significance()))[1][1];
-  
-
-
-
-
-   ///Apply recoil correction here
-   if(recoilCorreciton_>0){
-
-     double u1 = 0;
-     double u2 = 0;
-     double fluc = 0;
-     
-     double lepPt  = 0.;
-     double lepPhi = 0.;
-     int jetMult = 0;
-     if(recoilCorreciton_%10==1){//for Z
-       lepPt  = diTauSel_->pt();
-       lepPhi = diTauSel_->phi();
-       jetMult = njet_;
-     }else if(recoilCorreciton_%10==2){//for W+jets
-       lepPt  =mupt_;
-       lepPhi =muphi_;
-       jetMult = njetLepLC_;
-     }
-     
-     if(recoilCorreciton_<10) 
-       corrector_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
-     else if(recoilCorreciton_<20)
-       corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
-
-   }
-   
-   reco::Candidate::PolarLorentzVector metP4=reco::Candidate::PolarLorentzVector(metpt_,0,metphi_,0);
-   transversemass_=sqrt(2*mupt_*metP4.pt()*(1-cos(muphi_-metP4.phi())));
-   compZeta(diTauSel_->leg2().p4(),diTauSel_->leg1().p4(),metP4.px(),metP4.py(),&pZeta_,&pZetaVis_);
-
-
-
-   ///!!!!!!Need to update to new MVA Met significance matrix-----------------------------------------------------------------------------Fix
-   if(runSVFit_==1){  //old svfit  
-     NSVfitStandalone2011::Vector measuredMET( metP4.x(), metP4.y(), 0);
-     std::vector<NSVfitStandalone2011::MeasuredTauLepton2011> measuredTauLeptons;
-     NSVfitStandalone2011::LorentzVector p1(diTauSel_->leg1().p4());
-     measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kHadDecay,p1));    
-     NSVfitStandalone2011::LorentzVector p2(diTauSel_->leg2().p4());
-     measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kLepDecay,p2));
-     NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET,metSig->significance(),0);
-     algo.maxObjFunctionCalls(5000);
-     algo.fit();
-     svfitmass_  = algo.fittedDiTauSystem().mass();
-   }
-
-   if(runSVFit_==2){    //new svfit
-     std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
-     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTauSel_->leg2().p4()));
-     measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTauSel_->leg1().p4()));
-     NSVfitStandaloneAlgorithm algo(measuredTauLeptons, metP4.Vect(), *(metSig->significance()), 0);
-     algo.addLogM(false);
-     algo.integrate();
-     svfitmass_ = algo.getMass();
-   }
-
-
-   //find the jet matching to the mu
-   mujetpt_=0.;
-   mujeteta_=0.;
-   for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
-     if(reco::deltaR(jet->eta(),jet->phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi())<0.3){
-       mujetpt_=jet->pt();
-       mujeteta_=jet->eta();
-     }
-   }
-
+   //
+   fillJetVariables();
+    
    //find the jet matching to the tau
    taujetpt_=0.;
    taujeteta_=0.;
-   for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
-     if(reco::deltaR(jet->eta(),jet->phi(),diTauSel_->leg1().eta(),diTauSel_->leg1().phi())<0.3){
-       taujetpt_=jet->pt();
-       taujeteta_=jet->eta();
-     }
+   const cmg::PFJet * taujet = findJet(&fullJetList_,diTauSel_->leg1().eta(),diTauSel_->leg1().phi());
+   if(taujet) taujetpt_=taujet->pt();
+   if(taujet) taujeteta_=taujet->eta();
+   //find the jet matching to the mu
+   mujetpt_=0.;
+   mujeteta_=0.;
+   const cmg::PFJet * mujet = findJet(&fullJetList_,diTauSel_->leg2().eta(),diTauSel_->leg2().phi());
+   if(mujet) mujetpt_=mujet->pt();
+   if(mujet) mujeteta_=mujet->eta();
+  
+
+
+   //////////////MET/////////////////
+   metSig_=0;
+   metpt_=0.;
+   metphi_=0.;
+   //needed for mva MET
+   diobjectmet_=diTauSel_->met();
+   diobjectindex_=0;
+   for(std::vector<cmg::TauEle>::const_iterator cand=diTauList_->begin(); cand!=diTauList_->end(); ++cand){
+     if(cand->mass()==diTauSel_->mass()) break;
+     diobjectindex_++;
    }
+   fillMET();
+  
+   //
+   transversemass_=sqrt(2*mupt_*metP4_.pt()*(1-cos(muphi_-metP4_.phi())));
+   compZeta(diTauSel_->leg2().p4(),diTauSel_->leg1().p4(),metP4_.px(),metP4_.py(),&pZeta_,&pZetaVis_);
 
-   //jet quantities independent of SM category
-   if(pfJetListLC_.size()>=1){
-     leadJetPt_=leadJet_->pt();
-     leadJetEta_=leadJet_->eta();
-     leadJetRawFactor_=leadJet_->rawFactor();
-   }
-   if(pfJetListLC_.size()>=2){
-     subleadJetPt_=subleadJet_->pt();
-     subleadJetEta_=subleadJet_->eta();
-     subleadJetRawFactor_=subleadJet_->rawFactor();
-     diJetMass_=(leadJet_->p4()+subleadJet_->p4()).mass();
-     diJetPt_ = (leadJet_->p4()+subleadJet_->p4()).pt();  
-     diJetDeltaEta_=fabs(leadJet_->eta() - subleadJet_->eta());
-     diJetEta1Eta2_=(leadJet_->eta())*(subleadJet_->eta());
-   }
-
-   //Jets where only the muon has been removed
-   if(pfJetListLepLC_.size()>=1){
-     muLCleadJetPt_=pfJetListLepLC_[0]->pt();
-     muLCleadJetEta_=pfJetListLepLC_[0]->eta();
-   }
+   ///----SVFit
+   taup4_=diTauSel_->leg1().p4();
+   mup4_=diTauSel_->leg2().p4();
+   runSVFit();
 
 
-   //make a list of b-tagged jets  jet->btag(6) 
-   pfJetListBTag_.clear();
-   for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
-     if(jet->pt()<20.0)continue;  
-     if(fabs(jet->eta())>2.4)continue; 
-     if(!checkPFJetId(&(*jet)))continue;
-     if(jet->btag("combinedSecondaryVertexBJetTags")<btagWP_)continue;//CSV medium     
-     pfJetListBTag_.push_back(&(*jet));
-   }
-   fillPFJetListLC(diTauSel_,&pfJetListBTag_,&pfJetListBTagLC_);
-   nbjet_=pfJetListBTagLC_.size();
-   if(nbjet_>0){
-     leadBJetPt_=pfJetListBTagLC_[0]->pt();
-     leadBJetEta_=pfJetListBTagLC_[0]->eta();
-     leadBJetBTagProb_=pfJetListBTagLC_[0]->btag("combinedSecondaryVertexBJetTags");
-   }
+   ///---- b-jets
+   fillPFJetListB(&fullJetList_,&pfJetListB_);
+   fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetListB_,&pfJetListBLC_);
+   fillPFJetListBTag(&pfJetListBLC_,&pfJetListBTagLC_);
+   fillBTagWeight();
 
 
-   // KK ---------------------------------- Compute btag weight
-   pfJetListBTagWeight_.clear();
-   for(std::vector<cmg::PFJet>::const_iterator jet=fulljetlist->begin(); jet!=fulljetlist->end(); ++jet){
-     if(jet->pt()<20.0)continue;  
-     if(fabs(jet->eta())>2.4)continue; 
-     if(!checkPFJetId(&(*jet)))continue;
-     pfJetListBTagWeight_.push_back(&(*jet));
-   }
-   btagEffWeight_ = 1.;
-   vector<vector<BTagWeight::JetInfo> > jetinfovec;
-   for (unsigned int i=0; i<pfJetListBTagWeight_.size(); ++i) {
-     double jetpt = pfJetListBTagWeight_[i]->pt(); 
-     double jeteta = pfJetListBTagWeight_[i]->eta(); 
-     double jetflavor = TMath::Abs(pfJetListBTagWeight_[i]->partonFlavour());
-     double discr = btagWP_;//1.7;
-    
-     double eff = 1.;
-     double sf = 1.;
-     if (jetflavor==5){
-       eff = btagEff_.btagEFF(discr,1);
-       sf =  btagEff_.btagSF(jetpt,1);
-     }else if (jetflavor==4){
-       eff = btagEff_.btagEFF(discr,0);
-       sf =  btagEff_.btagSF(jetpt,0);
-     }else{
-       eff = btagEff_.mistagEFF(jetpt,jeteta);
-       sf =  btagEff_.mistagSF(jetpt,jeteta);
-     }
-    
-     BTagWeight::JetInfo jetinfo(eff,sf);
-     vector<BTagWeight::JetInfo> jetInfoForAllOPs;
-     jetInfoForAllOPs.push_back(jetinfo);
-     jetinfovec.push_back(jetInfoForAllOPs);
-    
-   }
-   btagEffWeight_ = btagWeight_.weight(jetinfovec);
-   // KK -----------------  
-
-
-
-   //////////////////////
-   ////SM event categories //use mu-tau cleaned jet list
-   //////////////////////
-   categorySM_=-1;
-   if(pfJetListLC_.size()>=2){//VBF: two leading jets must have  m>400, |eta1-eta2| < 4 and no other jet high pt in between    
-     if((leadJet_->p4()+subleadJet_->p4()).mass() > 400.0 
-        && fabs(leadJet_->eta() - subleadJet_->eta()) > 4.0 
-        && leadJet_->eta()*subleadJet_->eta() < 0.0
-        ){
-       njetingap_=0;
-       if(pfJetListLC_.size()>2){// check there is no additional central jet
-	 for(std::vector<const cmg::PFJet *>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
-	   if(leadJet_->eta()<subleadJet_->eta()) 
-	     if(leadJet_->eta()<(*jet3)->eta()&&(*jet3)->eta()<subleadJet_->eta()) njetingap_++;
-	   if(leadJet_->eta()>subleadJet_->eta()) 
-	     if(subleadJet_->eta()<(*jet3)->eta()&&(*jet3)->eta()<leadJet_->eta()) njetingap_++;
-	 }
-       }
-       if(njetingap_==0) categorySM_=2;
-     }
-   }
-   if(categorySM_!=2 && pfJetListLC_.size()>=1){//Boosted: 1 jet with pt>150 and no other jets
-     if(leadJet_->pt()>=150.0)
-       categorySM_=1;
-   }
-
-   if(categorySM_!=2 && categorySM_!=1 && pfJetListLC_.size()<=1){//SM0
-     if(pfJetListLC_.size()==1){
-       if(leadJet_->pt()<150.0)
-	 categorySM_=0;
-     }else categorySM_=0;
-   }
-
-
-   //VBF MVA
+   //VBF 
    vbfmva_=0.;
-   if(njet_>=2){
-     
-     TVector3 vTau, vMu, vMET, vDiTau, vDiTauVis;
-     vTau.SetPtEtaPhi(diTauSel_->leg1().pt(), diTauSel_->leg1().eta(), diTauSel_->leg1().phi());
-     vMu.SetPtEtaPhi(diTauSel_->leg2().pt(), diTauSel_->leg2().eta(), diTauSel_->leg2().phi());
-     vMET.SetPtEtaPhi(metP4.pt(),0,metP4.phi()); 
-     
-
-     vDiTau = vTau + vMu + vMET;
-     vDiTauVis = vTau + vMu;
-    
-     TVector3 vJet1, vJet2, vDiJet;
-     vJet1.SetPtEtaPhi(leadJet_->pt(), leadJet_->eta(), leadJet_->phi());
-     vJet2.SetPtEtaPhi(subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi());
-     vDiJet = vJet1 + vJet2;
-
-     Double_t mjj = massPtEtaPhiM(leadJet_->pt(), leadJet_->eta(), leadJet_->phi(), leadJet_->mass(),subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi(), subleadJet_->mass());
-     Double_t dEta = fabs(leadJet_->eta() - subleadJet_->eta());
-     Double_t dPhi = deltaPhi(leadJet_->phi(), subleadJet_->phi());
-     Double_t dPhi_hj = deltaPhi(vDiTau.Phi(), vDiJet.Phi());
-
-     // Lorenzo's variables
-     Double_t C1 = min(fabs(vDiTauVis.Eta() - leadJet_->eta()), fabs(vDiTauVis.Eta() - subleadJet_->eta()));
-     Double_t C2 = vDiTauVis.Pt();
-    
-     // Fill input vector
-     vbfvars_[0] = mjj;
-     vbfvars_[1] = dEta;
-     vbfvars_[2] = dPhi;
-     vbfvars_[3] = vDiTau.Pt();
-     vbfvars_[4] = vDiJet.Pt();
-     vbfvars_[5] = dPhi_hj;
-     vbfvars_[6] = C1;
-     vbfvars_[7] = C2;
-    
-     
-     vbfmva_ = reader_.val(vbfvars_[0],vbfvars_[1],vbfvars_[2],vbfvars_[3],vbfvars_[4],vbfvars_[5],vbfvars_[6],vbfvars_[7]);
-    
-   }
-
-
-   categorySM2012_=-1;
-   if(njet_>=2){//----------------------------------VBF---------------------
-     njetingap_=0;
-     if(njet_>2){// check there is no additional central jet
-       for(std::vector<const cmg::PFJet *>::const_iterator jet3=pfJetListLC_.begin(); jet3!=pfJetListLC_.end(); ++jet3){
-	 if(leadJet_->eta()<subleadJet_->eta()) 
-	   if(leadJet_->eta()<(*jet3)->eta()&&(*jet3)->eta()<subleadJet_->eta()) njetingap_++;
-	 if(leadJet_->eta()>subleadJet_->eta()) 
-	   if(subleadJet_->eta()<(*jet3)->eta()&&(*jet3)->eta()<leadJet_->eta()) njetingap_++;
-       }
-     }
-     if(njetingap_==0 && vbfmva_ > 0.5 ) categorySM2012_=2;
-   }
-   if(categorySM2012_ == -1 && njet_>=2){//------------------VH -------------------
-     if(70.< diJetMass_ && diJetMass_ < 120.0 
-	&& diJetPt_ > 150.
-	&& nbjet_ == 0
-	&& vbfmva_ < 0.5
-	) categorySM2012_=3;
-   }  
-   if(categorySM2012_ == -1 && njet_>=1 && nbjet_ == 0 ){//-----------1-jet
-     if( taupt_<40.)categorySM2012_=1;
-     else categorySM2012_=11;
-   }
-   if(categorySM2012_ == -1 && nbjet_>=1 && njet_ < 2 ){//-----------1-bjet
-     if( taupt_<40.) categorySM2012_=4;
-     else categorySM2012_=14;
-   }
-   if(categorySM2012_ == -1){//inclusive
-     if( taupt_<40.) categorySM2012_=0;
-     else categorySM2012_=10;
-   }
-
-
+   if(njet_>=2)fillVBFMVA();
 
    return 1;
  }
@@ -998,34 +459,7 @@ void TauEleFlatNtp::beginJob(){
    tree_->Fill();
  }
 
- void TauEleFlatNtp::fillPFJetListLC(const cmg::TauEle * cand,std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC){
 
-   listLC->clear();
-
-   //std::vector<cmg::PFJet> cleanjetlist;
-   for(std::vector<const cmg::PFJet *>::const_iterator jet=list->begin(); jet!=list->end(); ++jet){
-     if(reco::deltaR((*jet)->eta(),(*jet)->phi(),cand->leg1().eta(),cand->leg1().phi())<0.5) continue;     
-     if(reco::deltaR((*jet)->eta(),(*jet)->phi(),cand->leg2().eta(),cand->leg2().phi())<0.5) continue;   
-     //cleanjetlist.push_back(*jet);
-     listLC->push_back(*jet);
-   }
-
-
- }
-
-
- void TauEleFlatNtp::fillPFJetListLepLC(const cmg::TauEle * cand,std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC){
-
-   listLC->clear();
-
-   //std::vector<cmg::PFJet> cleanjetlist;
-   for(std::vector<const cmg::PFJet *>::const_iterator jet=list->begin(); jet!=list->end(); ++jet){
-     if(reco::deltaR((*jet)->eta(),(*jet)->phi(),cand->leg2().eta(),cand->leg2().phi())<0.5) continue;   
-     //cleanjetlist.push_back(*jet);
-     listLC->push_back(*jet);
-   }
-
- }
 
  bool TauEleFlatNtp::vetoDiLepton(){
 
@@ -1051,37 +485,10 @@ void TauEleFlatNtp::beginJob(){
    return 0;
  }
 
- int TauEleFlatNtp::truthMatchTau(){
-   if(!diTauSel_ )return 0;
-   if(dataType_!=0) return 0;
-
-   for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
-     if(abs(g->pdgId())==11) if(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),g->eta(),g->phi())<deltaRTruth_) return 1;
-     if(abs(g->pdgId())==13) if(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),g->eta(),g->phi())<deltaRTruth_) return 3;
-     if(abs(g->pdgId())==15) if(reco::deltaR(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),g->eta(),g->phi())<deltaRTruth_) return 5;
-   }
-
-   return 9;
- }
-
- int TauEleFlatNtp::truthMatchEle(){
-   if(!diTauSel_ )return 0;
-   if(dataType_!=0) return 0;
-
-   for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
-     if(abs(g->pdgId())==11) if(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),g->eta(),g->phi())<deltaRTruth_) return 1;
-     if(abs(g->pdgId())==13) if(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),g->eta(),g->phi())<deltaRTruth_) return 3;
-     if(abs(g->pdgId())==15) if(reco::deltaR(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),g->eta(),g->phi())<deltaRTruth_) return 5;
-   }
-
-   return 9;
- }
-
 
 
  void TauEleFlatNtp::endJob(){
    BaseFlatNtp::endJob();
-   cout<<"counterall = "<<counterall_<<endl;
    cout<<"counterev = "<<counterev_<<endl;
    cout<<"countergen = "<<countergen_<<endl;
    cout<<"counterveto = "<<counterveto_<<endl;

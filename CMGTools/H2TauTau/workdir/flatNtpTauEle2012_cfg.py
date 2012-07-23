@@ -28,16 +28,17 @@ process.analysis += process.goodOfflinePrimaryVertices
 
 ######The analysis module
 process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
+process.flatNtp = process.flatNtpTauEle.clone()
 from CMGTools.H2TauTau.tools.joseFlatNtpSample2011Reload_cff import configureFlatNtpSampleTauEle2012
-configureFlatNtpSampleTauEle2012(process.flatNtpTauEle,sampleName)
-process.flatNtpTauEle.diTauTag = 'cmgTauElePreSel'
-process.flatNtpTauEle.metType = 3
-process.flatNtpTauEle.runSVFit = 1
+configureFlatNtpSampleTauEle2012(process.flatNtp,sampleName)
+process.flatNtp.diTauTag = 'cmgTauElePreSel'
+process.flatNtp.metType = 3
+process.flatNtp.runSVFit = 1
 
 
 ### input files
 inputfiles = "tauEle_fullsel_tree_CMG_.*root"
-dataset_name = process.flatNtpTauEle.path.value() + sampleTag
+dataset_name = process.flatNtp.path.value() + sampleTag
 firstfile = sampleJobIdx * sampleMergeFactor
 lastfile = (sampleJobIdx + 1 ) * sampleMergeFactor
 print dataset_user
@@ -71,14 +72,14 @@ print process.source.fileNames
 
 
 # set up JSON ---------------------------------------------------------------
-if process.flatNtpTauEle.dataType != 0 :
+if process.flatNtp.dataType != 0 :
    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
    json = setupJSON(process)
    print 'json:', json
    print process.PoolSource.lumisToProcess
 
 # run the vertex weights
-if process.flatNtpTauEle.dataType == 0:
+if process.flatNtp.dataType == 0:
    process.load('CMGTools.RootTools.utils.vertexWeight.vertexWeight_cff')
    process.genSequence = cms.Sequence(
       process.vertexWeightSequence 
@@ -105,12 +106,12 @@ if process.flatNtpTauEle.dataType == 0:
 #    process.cmgTauEleMVAPreSel
 #    )
 #process.analysis  += process.mvaMETSequence
-#process.flatNtpTauEle.diTauTag = 'cmgTauEleMVAPreSel'
-#process.flatNtpTauEle.metType = 2
+#process.flatNtp.diTauTag = 'cmgTauEleMVAPreSel'
+#process.flatNtp.metType = 2
 
 
 # schedule the analyzer
-process.analysis += process.flatNtpTauEle
+process.analysis += process.flatNtp
 process.schedule = cms.Schedule(process.analysis)
 process.TFileService = cms.Service("TFileService", fileName = cms.string("flatNtp.root"))
 
