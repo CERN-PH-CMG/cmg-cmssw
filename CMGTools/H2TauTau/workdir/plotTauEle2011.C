@@ -3,13 +3,13 @@
 #include <TH1F.h>
 #include <TDirectory.h>
 #include "TauElePlotter.h"
-#include "tauEleConfig2011Reload.C"
+#include "configTauEle2011.C"
 
-void plotTauEle(){  
+void plotTauEle2011(){  
 
   TString path="/data/benitezj/Samples/TauEleV541June29_FlatNtpJune29";
 
-  TauElePlotter*analysis=tauEleConfig2011Reload("analysis",path);
+  TauElePlotter*analysis=configTauEle2011("analysis",path);
   analysis->setQCDColor(kMagenta-10);
   analysis->setWJetsColor(kRed+2);
   analysis->setTTJetsColor(kBlue-8);
@@ -28,7 +28,7 @@ void plotTauEle(){
   analysis->setVariableBinning(13,xbinsValues);
 
 
-//   analysis->plotInc("nvtx",50,-.5,49.5,1,1,"","",0,0,"# of reco. vertices ","",c,0,"inclusive");
+//   analysis->plotInc("nvtx",50,-.5,49.5,1,1,1,"","",0,0,"# of reco. vertices ","",c,0,"inclusive");
 
 //   analysis->plotInc("mupt",50,0,100,1,1,"","",0,0," electron p_{T}   (GeV)","",c,0,"inclusive");
 //   analysis->plotInc("mueta",25,-2.5,2.5,1,1,"","",0,0," electron #eta","",c,0,"inclusive"); 
@@ -45,9 +45,8 @@ void plotTauEle(){
 //   analysis->plotInc("metpt",50,0,150,1,1,"","",0,0," MET   (GeV)","",c,0,"inclusive");    
 //   analysis->plotInc("metphi",70,-3.5,3.5,1,1,"","",0,0," MET  phi ","",c,0,"inclusive");    
 
-//   analysis->plotIncSS("transversemass",30,0,300,1,0,"",0,"M_{T} ","",c,0,"inclusive");
-//   analysis->plotInc("transversemass",40,0,160,1,-1,"","",0,0,"M_{T}   [GeV]","Events / 4 GeV",c,0,"inclusive");
-//   analysis->plotInc("ditaumass",50,0,200,1,1,"","",0,0,"m_{vis}   (GeV)","",c,0,"inclusive");
+//   analysis->plotInc("transversemass",40,0,200,1,1,-1,"","",0,0,"M_{T}   [GeV]","",c,0,"inclusive");
+//   analysis->plotInc("ditaumass",50,0,200,1,1,1,"","",0,0,"m_{vis}   (GeV)","",c,0,"inclusive");
 //   analysis->plotInc("svfitmass",60,0,300,1,1,"","",0,0," m(#tau#tau)   (GeV)","",c,0,"inclusive");
 //   analysis->plotInc("njet",5,-.5,4.5,1,1,"","",0,0," njet ","",c,0,"inclusive");
 

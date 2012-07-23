@@ -2,7 +2,7 @@
 #include "Sample.h"
 #include <TString.h>
 
-TauElePlotter * tauEleConfig2011Reload(TString name, TString path){  
+TauElePlotter * configTauEle2011(TString name, TString path){  
 
   TauElePlotter * analysis = new TauElePlotter(name);
   analysis->setOutputPath(path);
