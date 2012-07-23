@@ -11,37 +11,27 @@ evReportFreq = 100
 dataset_user = 'benitezj'
 #sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_V541_TauEle_JoseMay30"
 #sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_TauEle_V541June27"
-sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_TauEle_V541June29"
+sampleTag = "/H2TAUTAU_TauEle_V541June29"
 
 
 sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 
-#########################
-
-process.analysis = cms.Path() 
-
-
-##create the cleaned primary vertices
-process.load("CommonTools.ParticleFlow.goodOfflinePrimaryVertices_cfi")
-process.analysis += process.goodOfflinePrimaryVertices
-
 
 ######The analysis module
 process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
-from CMGTools.H2TauTau.tools.joseFlatNtpSample2011Reload_cff import configureFlatNtpSampleTauEle
-configureFlatNtpSampleTauEle(process.flatNtpTauEle,sampleName)
-process.flatNtpTauEle.verticesListTag = cms.InputTag('goodOfflinePrimaryVertices')
-process.flatNtpTauEle.diTauTag = 'cmgTauElePreSel'
-#process.flatNtpTauEle.diTauTag = 'cmgTauEleMVAPreSel'
-process.flatNtpTauEle.runSVFit = 2
-process.analysis += process.flatNtpTauEle
+process.flatNtp = process.flatNtpTauEle.clone()
+from CMGTools.H2TauTau.tools.joseFlatNtpSample_cff import configureFlatNtpSampleTauEle2011
+configureFlatNtpSampleTauEle2011(process.flatNtp,sampleName)
+process.flatNtp.verticesListTag = cms.InputTag('goodOfflinePrimaryVertices')
+process.flatNtp.diTauTag = 'cmgTauElePreSel'
+process.flatNtp.runSVFit = 1
 
 
 ######Define the input files
 inputfiles = "tauEle_fullsel_tree_CMG_.*root"
-dataset_name = process.flatNtpTauEle.path.value() + sampleTag
+dataset_name = process.flatNtp.path.value() + sampleTag
 firstfile = sampleJobIdx * sampleMergeFactor
 lastfile = (sampleJobIdx + 1 ) * sampleMergeFactor
 print dataset_user
@@ -60,7 +50,46 @@ print process.source.fileNames
 #process.source.fileNames = ['file:./tauEle_fullsel_tree_CMG.root']
 
 
+#########################
+process.analysis = cms.Path() 
+
+# set up JSON ---------------------------------------------------------------
+if process.flatNtp.dataType != 0 :
+   from CMGTools.H2TauTau.tools.setupJSON import setupJSON
+   json = setupJSON(process)
+   print 'json:', json
+   print process.PoolSource.lumisToProcess
+
+# run the vertex weights
+if process.flatNtp.dataType == 0:
+   process.load('CMGTools.RootTools.utils.vertexWeight.vertexWeight_cff')
+   process.genSequence = cms.Sequence(
+      process.vertexWeightSequence 
+      )
+   process.analysis += process.genSequence 
+   
+
+##create the cleaned primary vertices
+process.load("CommonTools.ParticleFlow.goodOfflinePrimaryVertices_cfi")
+process.analysis += process.goodOfflinePrimaryVertices
+
+##create mu-tau candidates
+process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
+process.analysis +=  process.cmgTauScaler 
+
+process.load('CMGTools.Common.factories.cmgTauEle_cfi')
+process.cmgTauEle.cfg.leg1Collection = 'cmgTauScaler'
+process.cmgTauEle.cfg.metCollection = 'cmgPFMETRaw'
+process.analysis +=  process.cmgTauEle
+
+process.load('CMGTools.Common.skims.cmgTauEleSel_cfi')
+process.cmgTauElePreSel = process.cmgTauEleSel.clone()
+process.cmgTauElePreSel.cut = cms.string('pt()>0.0' )
+process.analysis +=  process.cmgTauElePreSel 
+
+
 ##schedule the analyzer
+process.analysis += process.flatNtp
 process.schedule = cms.Schedule(process.analysis)
 process.TFileService = cms.Service("TFileService", fileName = cms.string("flatNtp.root"))
 

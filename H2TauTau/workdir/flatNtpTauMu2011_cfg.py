@@ -14,16 +14,9 @@ evReportFreq = 100
 
 ####CMSSW 44 samples
 dataset_user = 'benitezj'
-#sampleTag = "/PAT_CMG_V5_1_0/H2TAUTAU_JoseMay8"
-#sampleTag = "/PAT_CMG_V5_1_0/H2TAUTAU_JoseMay9"
-#sampleTag = "/PAT_CMG_V5_2_0/H2TAUTAU_JoseMay14"
-#sampleTag = "/PAT_CMG_V5_2_0/H2TAUTAU_JoseMay15"
-#sampleTag = "/PAT_CMG_V5_2_0/H2TAUTAU_TauMu_JoseMay16"
-#sampleTag = "/PAT_CMG_V5_3_0_TEST/H2TAUTAU_JoseMay22"
-
 #sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_V541_TauMu_JoseMay30"
 #sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_TauMu_V541June2"
-sampleTag = "TauMuSkimJuly22"
+sampleTag = "/TauMuSkimJuly22"
 
 sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
@@ -32,17 +25,17 @@ sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 
 ######The analysis module
 process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
-from CMGTools.H2TauTau.tools.joseFlatNtpSample2011Reload_cff import configureFlatNtpSampleTauMu
-configureFlatNtpSampleTauMu(process.flatNtpTauMu,sampleName)
-process.flatNtpTauMu.diTauTag = 'cmgTauMuPreSel'
-process.flatNtpTauMu.metType = 1
-process.flatNtpTauMu.runSVFit = 2
-process.analysis += process.flatNtpTauMu
+process.flatNtp = process.flatNtpTauMu.clone()
+from CMGTools.H2TauTau.tools.joseFlatNtpSample_cff import configureFlatNtpSampleTauMu2011
+configureFlatNtpSampleTauMu2011(process.flatNtp,sampleName)
+process.flatNtp.diTauTag = 'cmgTauMuPreSel'
+process.flatNtp.metType = 1
+process.flatNtp.runSVFit = 1
 
 
 ### input files
 inputfiles = "tauMu_fullsel_tree_CMG_.*root"
-dataset_name = process.flatNtpTauMu.path.value() + sampleTag
+dataset_name = process.flatNtp.path.value() + sampleTag
 firstfile = sampleJobIdx * sampleMergeFactor
 lastfile = (sampleJobIdx + 1 ) * sampleMergeFactor
 print dataset_user
@@ -71,24 +64,39 @@ print process.source.fileNames
 
 process.analysis = cms.Path() 
 
-##apply selections on mu-tau candidates
-process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
-process.TauMuPath +=  process.cmgTauScaler 
+# set up JSON ---------------------------------------------------------------
+if process.flatNtp.dataType != 0 :
+   from CMGTools.H2TauTau.tools.setupJSON import setupJSON
+   json = setupJSON(process)
+   print 'json:', json
+   print process.PoolSource.lumisToProcess
 
-process.load('CMGTools.Common.factories.cmgTauMu_cfi')
-process.cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
-process.cmgTauMu.cfg.metCollection = 'cmgPFMETRaw'
-process.TauMuPath +=  process.cmgTauMu
-
-process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
-process.cmgTauMuPreSel = process.cmgTauMuSel.clone()
-process.cmgTauMuPreSel.cut = cms.string('pt()>0.0' )
-process.TauMuPath +=  process.cmgTauMuPreSel 
-
+# run the vertex weights
+if process.flatNtp.dataType == 0:
+   process.load('CMGTools.RootTools.utils.vertexWeight.vertexWeight_cff')
+   process.genSequence = cms.Sequence(
+      process.vertexWeightSequence 
+      )
+   process.analysis += process.genSequence 
+   
 
 ##create the good primary vertices
 process.load("CommonTools.ParticleFlow.goodOfflinePrimaryVertices_cfi")
 process.analysis += process.goodOfflinePrimaryVertices
+
+##create mu-tau candidates
+process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
+process.analysis +=  process.cmgTauScaler 
+
+process.load('CMGTools.Common.factories.cmgTauMu_cfi')
+process.cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
+process.cmgTauMu.cfg.metCollection = 'cmgPFMETRaw'
+process.analysis +=  process.cmgTauMu
+
+process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
+process.cmgTauMuPreSel = process.cmgTauMuSel.clone()
+process.cmgTauMuPreSel.cut = cms.string('pt()>0.0' )
+process.analysis +=  process.cmgTauMuPreSel 
 
 
 ##jet energy systematics
@@ -119,12 +127,14 @@ process.analysis += process.goodOfflinePrimaryVertices
 #    process.cmgTauMuMVAPreSel
 #    )
 #process.analysis  += process.mvaMETSequence
-#process.flatNtpTauMu.diTauTag = 'cmgTauMuMVAPreSel' 
+#process.flatNtp.diTauTag = 'cmgTauMuMVAPreSel'
+#process.flatNtp.metType = 2
 
 
 
 
 ##schedule the analyzer
+process.analysis += process.flatNtp
 process.schedule = cms.Schedule(process.analysis)
 process.TFileService = cms.Service("TFileService", fileName = cms.string("flatNtp.root"))
 

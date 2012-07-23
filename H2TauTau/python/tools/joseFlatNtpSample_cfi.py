@@ -39,6 +39,7 @@ flatNtpTauMu = cms.EDAnalyzer(
     fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm_njet.root'),
     fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm42X_njet.root'),
     metType = cms.int32(1), # 1=PFMET, 2=MVAMET
+    mvaMETSigTag = cms.InputTag("mvaMETTauMu"),
     runSVFit = cms.int32(2), # 0 do not run, 1 run old version, 2 run new version
     mvaWeights = cms.string(httdata_dir + 'VBFMVA_BDTG.weights.44X.xml'),
     muPtCut = cms.double(17.),
@@ -82,6 +83,7 @@ flatNtpTauEle = cms.EDAnalyzer(
     fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm_njet.root'),
     fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm42X_njet.root'),
     metType = cms.int32(1), # 1=PFMET, 2=MVAMET
+    mvaMETSigTag = cms.InputTag("mvaMETTauEle"),
     runSVFit = cms.int32(1), # 0 do not run, 1 run old version, 2 run new version
     mvaWeights = cms.string(httdata_dir + 'VBFMVA_BDTG.weights.44X.xml'),
     muPtCut = cms.double(20.),

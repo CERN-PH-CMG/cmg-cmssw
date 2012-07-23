@@ -72,39 +72,41 @@ process.SkimPath = cms.Path()
 
 
 ####  ----------------------
-process.load('CMGTools.Common.factories.cmgTauMu_cfi')
-process.cmgTauMu.cfg.leg1Collection = 'cmgTauSel'
-process.cmgTauMu.cfg.leg2Collection = 'cmgMuonSel'
-process.SkimPath +=  process.cmgTauMu
+process.load('CMGTools.Common.factories.cmgTauEle_cfi')
+process.cmgTauEle.cfg.leg1Collection = 'cmgTauSel'
+process.cmgTauEle.cfg.leg2Collection = 'cmgElectronSel'
+process.SkimPath +=  process.cmgTauEle
 
-process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
-process.cmgTauMuSkim = process.cmgTauMuSel.clone()
-process.cmgTauMuSkim.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>18.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg2().pt()>16.0 && abs(leg2().eta())<2.1' )
-process.SkimPath +=  process.cmgTauMuSkim 
+process.load('CMGTools.Common.skims.cmgTauEleSel_cfi')
+process.cmgTauEleSkim = process.cmgTauEleSel.clone()
+process.cmgTauEleSkim.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>18.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg2().pt()>19.0 && abs(leg2().eta())<2.1' )
+process.SkimPath +=  process.cmgTauEleSkim 
 
 
 # event filter --------------------------------
-process.load('CMGTools.Common.skims.cmgTauMuCount_cfi')
-process.cmgTauMuCount.src = 'cmgTauMuSkim'
-process.cmgTauMuCount.minNumber = 1
-process.SkimPath +=  process.cmgTauMuCount
+process.load('CMGTools.Common.skims.cmgTauEleCount_cfi')
+process.cmgTauEleCount.src = 'cmgTauEleSkim'
+process.cmgTauEleCount.minNumber = 1
+process.SkimPath +=  process.cmgTauEleCount
 
 
 
 process.out = cms.OutputModule(
     "PoolOutputModule",
-    fileName = cms.untracked.string( 'tauMu_fullsel_tree_CMG.root' ),
+    fileName = cms.untracked.string( 'tauEle_fullsel_tree_CMG.root' ),
     SelectEvents   = cms.untracked.PSet(SelectEvents = cms.vstring('SkimPath')),
     outputCommands = cms.untracked.vstring('drop *')
     )
 process.out.outputCommands.extend( [
-    'keep cmgMuons_cmgMuonSel__PAT',
+    'keep cmgElectrons_cmgElectronSel__PAT',
+    'keep cmgMuons_cmgMuonSel__PAT',   
     'keep cmgTaus_cmgTauSel__PAT',
     'keep recoPFMETs_*_*_*',
     'keep cmgBaseMETs_*_*_PAT',
     'keep *_cmgPFBaseJetLead_*_PAT',
     'keep double_*_*_*',
     'keep int_*_*_*',
+    'keep patElectrons_patElectronsWithTrigger__PAT',
     'keep patMuons_patMuonsWithTrigger__PAT',
     'keep cmgTriggerObjects_cmgTriggerObjectSel__PAT',
     'keep cmgTriggerObjects_cmgTriggerObjectListSel__PAT',

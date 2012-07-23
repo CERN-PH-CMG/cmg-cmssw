@@ -35,16 +35,17 @@ process.analysis += process.goodOfflinePrimaryVertices
 
 ######The analysis module
 process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
+process.flatNtp = process.flatNtpTauMu.clone()
 from CMGTools.H2TauTau.tools.joseFlatNtpSample2011Reload_cff import configureFlatNtpSampleTauMu2012
-configureFlatNtpSampleTauMu2012(process.flatNtpTauMu,sampleName)
-process.flatNtpTauMu.diTauTag = 'cmgTauMuPreSel'
-process.flatNtpTauMu.metType = 1
-process.flatNtpTauMu.runSVFit = 1
+configureFlatNtpSampleTauMu2012(process.flatNtp,sampleName)
+process.flatNtp.diTauTag = 'cmgTauMuPreSel'
+process.flatNtp.metType = 1
+process.flatNtp.runSVFit = 1
 
 
 ### input files
 inputfiles = "tauMu_fullsel_tree_CMG_.*root"
-dataset_name = process.flatNtpTauMu.path.value() + sampleTag
+dataset_name = process.flatNtp.path.value() + sampleTag
 firstfile = sampleJobIdx * sampleMergeFactor
 lastfile = (sampleJobIdx + 1 ) * sampleMergeFactor
 print dataset_user
@@ -78,23 +79,23 @@ print process.source.fileNames
 
 
 # set up JSON ---------------------------------------------------------------
-if process.flatNtpTauMu.dataType != 0 :
+if process.flatNtp.dataType != 0 :
    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
    json = setupJSON(process)
    print 'json:', json
    print process.PoolSource.lumisToProcess
 
 ## run the vertex weights
-if process.flatNtpTauMu.dataType == 0:
-    process.load('CMGTools.RootTools.utils.vertexWeight.vertexWeight_cff')
-    process.genSequence = cms.Sequence(
-        process.vertexWeightSequence 
-        )
-    process.analysis += process.genSequence 
-
+if process.flatNtp.dataType == 0:
+   process.load('CMGTools.RootTools.utils.vertexWeight.vertexWeight_cff')
+   process.genSequence = cms.Sequence(
+      process.vertexWeightSequence 
+      )
+   process.analysis += process.genSequence 
+   
 
 ##schedule the analyzer
-process.analysis += process.flatNtpTauMu
+process.analysis += process.flatNtp
 process.schedule = cms.Schedule(process.analysis)
 process.TFileService = cms.Service("TFileService", fileName = cms.string("flatNtp.root"))
 
