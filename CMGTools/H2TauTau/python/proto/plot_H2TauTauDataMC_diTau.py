@@ -22,11 +22,14 @@ def lineno():
     '''Returns the current line number in our program.'''
     return inspect.currentframe().f_back.f_lineno
 
-########## rootlogon5 for loose iso M   ##### don't forget to change weight at line ~401!
-########## rootlogon6 for loose iso LL4 ##### don't forget to change weight at line ~401!
+########## rootlogon5 for loose iso M          ##### don't forget to change weight at line ~401!
+########## rootlogon6 for loose iso LL4        ##### don't forget to change weight at line ~401!
+########## rootlogon7 for loose iso and dR<3.5 ##### don't forget to change weight at line ~401!
+########## rootlogon8 for loose iso M          ##### don't forget to change weight at line ~401!
+########## rootlogon9 for loose iso M   and Tau pT calculated post dR+nVert RW       ##### don't forget to change weight at line ~401!
 from os import path
-if path.exists('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon6.C'):
-    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon6.C')  # Run ROOT logon script
+if path.exists('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon9.C'):
+    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon9.C')  # Run ROOT logon script
 
 run2012=True
 
@@ -227,10 +230,31 @@ if __name__ == '__main__':
 
         #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_dRRW_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<200.0'   , isolationMM , 5 ),
 
-        #("CMS_2012_5_fb_qcd5LL4_IsoTest_forRW_AndreasBIN3_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_forRW_dR00_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
         
-        ("CMS_2012_5_fb__qcd5LL4_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<3.0' , isolationMM , 2 ),
-        #("CMS_2012_5_fb__qcd5LL4_FullW_2_loose_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 2 ),
+        #("CMS_2012_5_fb_qcd5M_TriggerTurnOnTest_nominal_loose_BOOSTED"      , baseline  + BOOSTED + NOVBF, ' && dRtt<2.0' , isolationMM , 5 ),
+        ("CMS_2012_5_fb_qcd5M_TriggerTurnOnTest_nominal_loose_VBF"      , baseline + NOVBF, ' && dRtt<2.0 && abs(l1Eta)<1. && abs(l2Eta)<1.' , isolationMM , 5 ),
+
+        #("CMS_2012_5_fb_qcd5M_forCorr_BARE_loose_BOOSTED"      , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_forCorr_dR_loose_BOOSTED"        , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_forCorr_l1_loose_BOOSTED"        , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_forCorr_nPV_loose_BOOSTED"       , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_forCorr_l2_loose_BOOSTED"        , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+
+
+        #("CMS_2012_5_fb_qcd5M_forCorr_dRl2_loose_BOOSTED"      , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_forCorr_dRl2nPV_loose_BOOSTED"   , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_forCorr_dRl2l1nPV_loose_BOOSTED" , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_forCorr_dRnPV_loose_BOOSTED"     , baselineSS  + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        
+        #("CMS_2012_5_fb_qcd5M_dR00_loose_dRnPV_RW_BOOSTED"   , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_dR35_loose_dRnPV_RW_BOOSTED"   , baseline  + BOOSTED + NOVBF , ' && dRtt<3.5' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_dR30_loose_dRnPV_RW_BOOSTED"   , baseline  + BOOSTED + NOVBF , ' && dRtt<3.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_dR25_loose_dRnPV_RW_BOOSTED"   , baseline  + BOOSTED + NOVBF , ' && dRtt<2.5' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_dR20_loose2_ClosureTest_Full_PtTausAfterDRandPV_RW_BOOSTED"   , baselineSS  + BOOSTED , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_loose_Full_RW_VBF"       , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+
+        #("CMS_2012_5_fb_qcd5M_loose_Full_RW_CloseureTest_BOOSTED"   , baselineSS  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
 
         #("CMS_2012_5_fb_qcd5M_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
 
@@ -243,14 +267,14 @@ if __name__ == '__main__':
      else :
        rebin = 1	
      for var, nx, xmin, xmax in [
-        ('svfitMass'        ,int(30/rebin), 0   , 300    ), 
+        ('svfitMass'        ,int(15/rebin), 0   , 300    ), 
         #('svfitMass*1.03'   ,int(30/rebin), 0   , 300    ),
         #('svfitMass*0.97'   ,int(30/rebin), 0   , 300    ),
         #('met'              ,int(40/rebin), 0   , 200    ),
-        ('l1Pt'             ,int(15/rebin), 0   , 300    ),   # was 75 bins
-        ('l2Pt'             ,int(10/rebin), 0   , 200    ),   # was 75 bins
-        #('jet1Pt'           ,int(50/rebin), 0   , 500    ),
-        #('jet2Pt'           ,int(50/rebin), 0   , 500    ),
+        #('l1Pt'             ,int(15/rebin), 0   , 300    ),   # was 75 bins
+        #('l2Pt'             ,int(10/rebin), 0   , 200    ),   # was 75 bins
+        #('jet1Pt'           ,int(25/rebin), 0   , 500    ),
+        #('jet2Pt'           ,int(25/rebin), 0   , 500    ),
         #('visMass'          ,int(30/rebin), 0   , 300    ),
         #('visMass*1.03'     ,int(30/rebin), 0   , 300    ),
         #('visMass*0.97'     ,int(30/rebin), 0   , 300    ),
@@ -259,18 +283,18 @@ if __name__ == '__main__':
         #('l2Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
         #('jet1Eta'          ,int(20/rebin), -5  , 5      ),
         #('jet2Eta'          ,int(20/rebin), -5  , 5      ),
-        #('mjj'              ,int(30/rebin), 0   ,  800   ),
+        #('mjj'              ,int(20/rebin), 0   ,  800   ),
         #('nJets'            ,10           , 0   , 10     ),
-        ('dRtt'             ,int(15/rebin), 0   , 5      ),
-        #('dPhitt'           ,int(30/rebin), 0   , 3.15   ),
+        #('dRtt'             ,int(15/rebin), 0   , 5      ),
+        #('dPhitt'           ,int(15/rebin), 0   , 3.15   ),
         #('mt'               ,int(20/rebin), 0   , 200    ),
         #('pThiggs'          ,int(25/rebin), 0   , 300    ),
         #('diTauPt'          ,int(25/rebin), 0   , 300    ),
         #('dEtajj'           ,int(20/rebin), -10 , 10     ),
         #('dEtatt'           ,int(45/rebin), 0   , 4.5    ),
-        #('dEtattjj'         ,int(40/rebin), 0   , 10     ),
-        #('dPhijj'           ,int(40/rebin), 0   , 3.15   ),
-        #('mttj'             ,int(25/rebin), 0   , 1000   ),
+        #('dEtattjj'         ,int(10/rebin), 0   , 10     ),
+        #('dPhijj'           ,int(20/rebin), 0   , 3.15   ),
+        #('mttj'             ,int(20/rebin), 0   , 1000   ),
         #('l1DecayMode'      ,12           , 0   , 12     ),
         #('l2DecayMode'      ,12           , 0   , 12     ),
         #('diTauCharge'      ,7            , -3  , 3      ),
@@ -336,8 +360,8 @@ if __name__ == '__main__':
       #########################################################
       ############## change here the loose iso ################
       #########################################################
-      #looseisocut = isolationM + " && !(1 "+isocut+")"
-      looseisocut = isolationLL4+" && !(1 "+isocut+")"
+      looseisocut = isolationM + " && !(1 "+isocut+")"
+      #looseisocut = isolationLL4+" && !(1 "+isocut+")"
       #looseisocut = isolationLL4old +" && !(1 "+isocut+")"
       #########################################################
       
@@ -392,6 +416,25 @@ if __name__ == '__main__':
      			                             cut = cutSS+looseisocut+antiqcdcut,\
      			                             weight=weight,                     \
      			                             embed=options.embed)
+
+      plotVarDataLooseIsoSSWeighted = H2TauTauDataMC(var,                               \
+                                             anaDir,                            \
+                                             selCompsNoSignal,                  \
+                                             weightsNoSignal,                   \
+     			                             nx,                                \
+     			                             xmin,                              \
+     			                             xmax,                              \
+     			                             cut = cutSS+looseisocut+antiqcdcut,\
+                                             #weight = weight+"*weightQCD_dR(dRtt)",    \
+                                             #weight = weight+"*weightQCD_l1Pt(l1Pt)",  \
+                                             #weight = weight+"*weightQCD_l2Pt(l2Pt)",  \
+                                             #weight = weight+"*weightQCD_nVert(nVert)",\
+                                             #weight = weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
+                                             #weight = weight+"*weightQCD_dR(dRtt)*weightQCD_l2Pt(l2Pt)",\
+                                             weight = weight+"*weightQCD_dR(dRtt)*weightQCD_l2Pt(l2Pt)*weightQCD_l1Pt(l1Pt)*weightQCD_nVert(nVert)",\
+                                             #weight = weight+"*weightQCD_dR(dRtt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
+     			                             #weight=weight,                     \
+     			                             embed=options.embed)
       #print lineno()
 
       plotVarDataLooseIsoOS = H2TauTauDataMC(var,                              \
@@ -402,13 +445,16 @@ if __name__ == '__main__':
                                              xmin,                             \
                                              xmax,                             \
                                              cut = cut+looseisocut+antiqcdcut, \
-                                             #weight=weight+"*weightQCD_nVert(nVert)",\
-                                             #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
-                                             #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
-                                             weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
-                                             #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
-                                             #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
-                                             #weight=weight,                    \
+                                             #weight = weight+"*weightQCD_dR(dRtt)",    \
+                                             #weight = weight+"*weightQCD_l1Pt(l1Pt)",  \
+                                             #weight = weight+"*weightQCD_l2Pt(l2Pt)",  \
+                                             #weight = weight+"*weightQCD_nVert(nVert)",\
+                                             weight = weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)*weightQCD_l2Pt(l2Pt)*weightQCD_l1Pt(l1Pt)",\
+                                             #weight = weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
+                                             #weight = weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
+                                             #weight = weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
+                                             #weight = weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
+                                             #weight = weight,                    \
                                              embed=options.embed)
       #print lineno()
       
@@ -456,9 +502,10 @@ if __name__ == '__main__':
         massesRange = [125]
         print 'I\'m plotting distribution just for mass 125 GeV'
         
-      for mIndex in massesRange :        
+      for mIndex in massesRange :    
         plotVarDataOS = H2TauTauDataMC(var, anaDir, selCompsDataMass[mIndex], weightsDataMass[mIndex],
      			    nx, xmin, xmax,
+     			    #cut = cut+isocut+antiqcdcut, weight=weight+'*weightZTT_Eta(l1Eta)*weightZTT_Eta(l2Eta)',
      			    cut = cut+isocut+antiqcdcut, weight=weight,
      			    embed=options.embed)
 
@@ -575,8 +622,9 @@ if __name__ == '__main__':
         if qcdEstimate == 4:
          QCDShape, QCDScale = QCDEstimate4(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataSemiLooseIsoSS, log)
         if qcdEstimate == 5:
-         QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS , log)
-         QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS    , plotVarDataLooseIsoSS     , log)
+         QCDShapeSemi  , QCDScaleSemi  , QCDlooseSSSemi     , QCDtightSSSemi  = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS      , log)
+         QCDShape      , QCDScale      , QCDlooseSS         , QCDtightSS      = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS    , plotVarDataLooseIsoSS          , log)
+         QCDShapeDummy , QCDScaleDummy , QCDlooseSSWeighted , QCDtightSSDummy = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS    , plotVarDataLooseIsoSSWeighted  , log)
   
          QCDShapePlot = copy.deepcopy(QCDShape)
          QCDShapePlot.SetStyle( sRedLine )
@@ -690,15 +738,15 @@ if __name__ == '__main__':
         #####################################################
         ###            BLINDING DATA ABOVE Z PEAK         ###
         #####################################################
-        if ( var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
-         for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>100 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<140 ):
-              plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
+        #if ( var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
+        # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
+        #   if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>100 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<140 ):
+        #      plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
-        if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
-         for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<120 ):
-              plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
+        #if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
+        # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
+        #   if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<120 ):
+        #      plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
         #if var=="dRtt" and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
         # for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
@@ -730,3 +778,10 @@ if __name__ == '__main__':
         #####################################################
         saveForPlotting(copy.deepcopy(plotVarDataOS),prefix,mIndex)
         
+        #####################################################
+        ###        SAVE ROOT FILE FOR CORRELATIONS        ###
+        #####################################################
+
+        saveQCD(copy.deepcopy(QCDShape),copy.deepcopy(QCDlooseSSWeighted),copy.deepcopy(QCDtightSS),var,prefix,mIndex,True)
+
+
