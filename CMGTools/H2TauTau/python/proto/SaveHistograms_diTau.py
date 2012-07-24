@@ -146,10 +146,14 @@ def saveForPlotting(plotVarDataOS, prefixLabel, mass):
     channel.Write()
     rootfile.Close()
 
-def saveQCD(QCDlooseOS, QCDlooseSS, QCDtightSS, var, prefixLabel, mass):
+def saveQCD(QCDlooseOS, QCDlooseSS, QCDtightSS, var, prefixLabel, mass, corr=False):
 
-    rootfile=TFile(os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+"_QCD_TauTau_mH"+str(mass)+"_PLOT.root","UPDATE")
-    channel=rootfile.mkdir(str(var))
+    if corr :
+      rootfile = TFile(os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+"_CORRELATIONS_QCD_TauTau_mH"+str(mass)+"_PLOT.root","UPDATE")      
+    else :
+      rootfile = TFile(os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+"_QCD_TauTau_mH"+str(mass)+"_PLOT.root","UPDATE")
+    
+    channel = rootfile.mkdir(str(var))
     rootfile.cd(str(var))
     
     names = {QCDlooseOS:'QCDlooseOS', QCDlooseSS:'QCDlooseSS', QCDtightSS:'QCDtightSS'}
@@ -175,7 +179,7 @@ def saveQCD(QCDlooseOS, QCDlooseSS, QCDtightSS, var, prefixLabel, mass):
     scale = num.Integral() / den.Integral()
     
     ratio.Divide(num,den,1,scale)
-    ratio.SetName('QCDtightSS/QCDlooseSS_ratio')
+    ratio.SetName('QCDtightSS_QCDlooseSS_ratio')
 
     ratio.Write()      
     
@@ -325,3 +329,4 @@ def saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVa
     channelOSL.Write()
 
     rootfile.Close()
+

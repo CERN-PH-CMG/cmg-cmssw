@@ -328,7 +328,7 @@ def QCDEstimate1(prefix,prefix1,xmin,xmax,\
       return QCDlooseSS,QCDScale
 
 def QCDEstimate2(prefix,prefix1,var,xmin,xmax,\
-                 plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS,\
+                 plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoOSMC, plotVarDataLooseIsoSS,\
                  log):
       ymax=plotVarDataLooseIsoOS.Hist("Data").GetMaximum()*1.5
       if log:
@@ -358,7 +358,7 @@ def QCDEstimate2(prefix,prefix1,var,xmin,xmax,\
       gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.png")
       
       QCDlooseOS = copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
-      substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOS)
+      substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOSMC)
 
       QCDlooseSS = copy.deepcopy(plotVarDataLooseIsoSS.Hist("Data"))
       substractMCbackground(QCDlooseSS, plotVarDataLooseIsoSS)
