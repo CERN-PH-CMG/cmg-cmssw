@@ -341,6 +341,9 @@ void DijetMass_chiyoung_2(){
        	{
 	  nl = n-0.5*TMath::ChisquareQuantile(a,2*n);
 	  nh = 0.5*TMath::ChisquareQuantile(1-a,2*(n+1))-n;
+
+	  cout << " n = " << n << " nl = " << nl << " nh = " << nh << endl;
+
 	  veyl[i] = nl/(lumi*dm);
 	  veyh[i] = nh/(lumi*dm);  
 	}
@@ -1039,24 +1042,27 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 
   // The end of comparison between data and PTYHIA QCD MC
    
-  // Dijet Resonance Signals	
-  TH1F *h_qstar1 = (TH1F*)hDijetMass->Clone("h_qstar1");
-  TH1F *h_qstar2 = (TH1F*)hDijetMass->Clone("h_qstar2");
-  TH1F *h_string1 = (TH1F*)hDijetMass->Clone("h_string1");
-  TH1F *h_string2 = (TH1F*)hDijetMass->Clone("h_string2");
-  h_qstar1->Reset();
-  h_qstar2->Reset();
-  h_string1->Reset();
-  h_string2->Reset();
-
   // Mass of excited quarks and strings
   float qstar1 = 1500;
   float qstar2 = 3200;
   float qstar3 = 2500;
-  float string1 = 1800;
-  float string2 = 2600;
-  float string3 = 4000;
+  float string1 = 2600;
+  float string2 = 3500;
+  int string3 = 3500;
 
+  TFile *ResonanceShapes = TFile::Open("../../../../StatTools/BayesianDijetFit/Results/Resonance_Shapes_QBH52_ak5_fat.root", "READ");
+  // Dijet Resonance Signals	
+  TH1F *h_qstar1 = (TH1F*)hDijetMass->Clone("h_qstar1");
+  TH1F *h_qstar2 = (TH1F*)hDijetMass->Clone("h_qstar2");
+  TH1F *h_string1 = (TH1F*)hDijetMass->Clone("h_string1");
+  TH1D *h_string2 = (TH1D*)ResonanceShapes->Get("h_qstar_3300;1");
+  //  double integral = h_string2->Integral();
+  //  h_string2->Scale(1./integral);
+
+  //  h_qstar1->Reset();
+  //  h_qstar2->Reset();
+  //  h_string1->Reset();
+      
 
   unsigned int qbin1 = (qstar1 / 100) -5;
   unsigned int qbin2 = (qstar2 / 100) -5;
@@ -1066,6 +1072,9 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
   unsigned int sbin3 = (string3 / 100) - 5; 
 
   std::vector<float> v_string1, v_string1_mjj, v_string2, v_string2_mjj, v_qstar1, v_qstar1_mjj, v_qstar2, v_qstar2_mjj, v_string1_2, v_string2_2, v_qstar1_2, v_qstar2_2, v_qstar1_3, v_qstar2_3;
+
+
+
 
   for(int i=0;i<hDijetMass->GetNbinsX();i++)
     {
@@ -1142,16 +1151,30 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 	}
       }
 
-      if(mass>0.6*string2 && mass<1.40*string2){
+      double jj = 0;
+      float prob = 0;
 
-	float prob = QstarBinnedProb(mass,string2);
+      while (h_string2->GetBinCenter(jj+1) < hDijetMass->GetBinLowEdge(i+1)) jj++;
+      while(h_string2->GetBinCenter(jj+1) > hDijetMass->GetBinLowEdge(i+1) && h_string2->GetBinCenter(jj+1) < hDijetMass->GetBinLowEdge(i+1)+hDijetMass->GetBinWidth(i+1)){
+	prob += h_string2->GetBinContent(jj+1);
+	jj++;
+      }
 
-	if (prob > 1e-4){
-	  v_string2.push_back(prob * string_newcut[sbin2] / dm);
-	  v_string2_2.push_back(((prob * string_newcut[sbin2] / dm)+fitt)/fitt);
-	  v_string2_mjj.push_back(mass);
-	}
+      if(mass>0.6*string2 && mass<1.40*string2 && mass > 3000.){
+	  
+	  //cout << "i = " << i << " mass = " << mass << " prob = " << prob << endl;
+	  // QBH cross section at 3.5 TeV: 1.130e-01
+	  
+	  if (prob > 1e-4){
+	    v_string2.push_back(prob/dm * 1.130e-01);
+	    v_string2_2.push_back(((prob/dm * 1.130e-01)+fitt)/fitt);
+	    v_string2_mjj.push_back(mass);
+	  }
       }	
+	
+    
+
+
 
       
       if(mass>0.6*string3 && mass<1.40*string3){
@@ -1982,7 +2005,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g,Form("CMS Preliminary (%.0f fb^{-1})   ", lumi/1000.),"PL"); 
+    leg->AddEntry(g,Form("CMS (%.0f fb^{-1})   ", lumi/1000.),"PL"); 
     leg->AddEntry(fit,"Fit","L");
     leg->AddEntry(f_qcd,"QCD Pythia","L");
     leg->AddEntry(htmp,"Jet Energy Scale Uncertainty","F");
@@ -1994,23 +2017,26 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 
     gr_qstar1->Draw("sameC");
     gr_qstar2->Draw("sameC");
+
+    gr_string1->SetLineColor(kMagenta);
+    gr_string2->SetLineColor(kBlue);
     gr_string1->Draw("sameC");
     gr_string2->Draw("sameC");
 
-    TPaveText *pt_c12_string1 = new TPaveText(0.47,0.50,0.64,0.6,"NDC");
+    TPaveText *pt_c12_string1 = new TPaveText(0.74,0.30,0.87,0.40,"NDC");
     pt_c12_string1->SetFillColor(0);
     pt_c12_string1->SetTextSize(0.04);
     pt_c12_string1->SetFillStyle(0);
     pt_c12_string1->SetBorderSize(0);
-    pt_c12_string1->SetTextColor(TColor::GetColor("#006600"));
-    pt_c12_string1->AddText("S (1.8 TeV)");
+    pt_c12_string1->SetTextColor(kBlue);
+    pt_c12_string1->AddText("QBH (3.5 TeV)");
 
     TPaveText *pt_c12_string2 = new TPaveText(0.60,0.43,0.77,0.53,"NDC");
     pt_c12_string2->SetFillColor(0);
     pt_c12_string2->SetFillStyle(0);
     pt_c12_string2->SetBorderSize(0);
     pt_c12_string2->SetTextSize(0.04);
-    pt_c12_string2->SetTextColor(TColor::GetColor("#006600"));
+    pt_c12_string2->SetTextColor(kMagenta);
     pt_c12_string2->AddText("S (2.6 TeV)");
 
     TPaveText *pt_c12_qstar1 = new TPaveText(0.18,0.35,0.35,0.50,"NDC");
@@ -2071,7 +2097,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
     
     c12->SaveAs("Plots/DefaultFitAndPull_noStat.png");
     c12->SaveAs("Plots/DefaultFitAndPull_noStat.eps");
-    
+    c12->SaveAs("Plots/DefaultFitAndPull_noStat.C");
 
  
 
