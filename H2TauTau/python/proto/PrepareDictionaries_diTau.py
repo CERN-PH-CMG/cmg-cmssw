@@ -32,8 +32,7 @@ def componentsWithData (selComps, weights) :
     selCompsDataMass = {110:selCompsData110,115:selCompsData115,120:selCompsData120,125:selCompsData125,130:selCompsData130,135:selCompsData135,140:selCompsData140,145:selCompsData145}
     weightsDataMass  = {110:weightsData110,115:weightsData115,120:weightsData120,125:weightsData125,130:weightsData130,135:weightsData135,140:weightsData140,145:weightsData145}
 
-    for mPoint in [115,120,125,130,135,140,145] :
-    #for mPoint in [110,115,120,125,130,135,140,145] :
+    for mPoint in [110,115,120,125,130,135,140,145] :
     #for mPoint in [125] :
 
       if run2012:
@@ -103,8 +102,7 @@ def componentsWithOutData (selComps, weights) :
     selCompsMCMass = {110:selCompsData110,115:selCompsData115,120:selCompsData120,125:selCompsData125,130:selCompsData130,135:selCompsData135,140:selCompsData140,145:selCompsData145}
     weightsMCMass  = {110:weightsData110 ,115:weightsData115 ,120:weightsData120 ,125:weightsData125 ,130:weightsData130 ,135:weightsData135 ,140:weightsData140 ,145:weightsData145 }
 
-    for mPoint in [115,120,125,130,135,140,145] :
-    #for mPoint in [110,115,120,125,130,135,140,145] :
+    for mPoint in [110,115,120,125,130,135,140,145] :
     #for mPoint in [125] :
     
       selCompsMCMass[mPoint]['DYJets']               = copy.deepcopy(selComps['DYJets'])
