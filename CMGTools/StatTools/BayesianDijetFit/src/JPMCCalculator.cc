@@ -15,8 +15,15 @@
 #include "RooFunctor.h"
 #include "RooFunctor1DBinding.h"
 
+#include <string.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//creation of the histogram
+TH1D *h2 = new TH1D("h2", "Luminosity", 40, 4000., 6000.);
+TH1D *h3 = new TH1D("h3", "sigMassDelta", 40, 0.8, 1.2);
+TH1D *h4 = new TH1D("h4", "sigWidthDelta", 40, 0.6, 1.4);
+
 
 JPMCCalculator::JPMCCalculator() :
   fData(0),
@@ -185,10 +192,37 @@ TH1D* JPMCCalculator::GetPosteriorHistInternal(int testtype, double poiVal, int 
       TIterator* it=genset->createIterator();
       RooAbsReal* arg;
       while((arg=(RooAbsReal*)it->Next())) {
-	std::cout << " ------------------------------------------- "<< arg->GetName() << " " << arg->getVal() << std::endl;
 	fNuisanceParameters.setRealValue(arg->GetName(), arg->getVal());
-      }
+
+
+        // filling the histograms
+
+	string name = arg->GetName();
+//	h2->Fill(arg->getVal());
+//	h2->SaveAs("lumi.root");
+	
+
+	if(strcmp(name.c_str(),"lumi") == 0) 
+	  {
+	  h2->Fill(arg->getVal());
+	  h2->SaveAs("lumi.root");
+	  }
+	else if(strcmp(name.c_str(),"sigMassDelta") == 0) 
+	  {
+	  h3->Fill(arg->getVal());
+	  h3->SaveAs("sigMassDelta.root");
+	  }
+	else if(strcmp(name.c_str(),"sigWidthDelta") == 0) 
+	  {
+	  h4->Fill(arg->getVal());
+	  h4->SaveAs("sigWidthDelta.root");
+	  }
+
+     }
+
     }
+
+
 
     // turn the pdf into an NLL
     RooAbsReal* theNLL = prodPdf->createNLL(*fData);
@@ -229,15 +263,6 @@ TH1D* JPMCCalculator::GetPosteriorHistInternal(int testtype, double poiVal, int 
     // do some tests on the posterior
     if(testtype==1) {
       RooAbsReal* unnormPostInt=unnormPost->createIntegral(RooArgSet(*poi), "range");
-      double unnormPostIntVal = unnormPostInt->getVal(RooArgSet(*poi));
-      TIterator* it=fNuisanceParameters.createIterator();
-      RooAbsReal* arg;
-      std::cout << "------------------------------------------------" << std::endl;
-      std::cout << "normalized integral of posterior in [" << poiVal << ", " << poi->getMax() << "] = " << unnormPostIntVal/integralVal << std::endl;
-      while((arg=(RooAbsReal*)it->Next())) {
-	std::cout << arg->GetName() << " " << arg->getVal() << std::endl;
-      }
-      std::cout << "------------------------------------------------" << std::endl;
       delete unnormPostInt;
     }
 
@@ -320,7 +345,6 @@ RooAbsReal* JPMCCalculator::GetPosterior(void) const
       TIterator* it=genset->createIterator();
       RooAbsReal* arg;
       while((arg=(RooAbsReal*)it->Next())) {
-	std::cout << arg->GetName() << " " << arg->getVal() << std::endl;
 	fNuisanceParameters.setRealValue(arg->GetName(), arg->getVal());
       }
     }
@@ -458,10 +482,6 @@ RooStats::SimpleInterval* JPMCCalculator::GetInterval(void) const
     coutE(Eval) << "JPMCCalculator::GetInterval - cannot compute a valid interval - return a dummy [1,0] interval"
 		<<  std::endl;
   }
-  else {
-    coutI(Eval) << "JPMCCalculator::GetInterval - found a valid interval : [" << fLower << " , " 
-		<< fUpper << " ]" << std::endl;
-  }
   
   TString interval_name = TString("BayesianInterval_a") + TString(this->GetName());
   RooStats::SimpleInterval * interval = new RooStats::SimpleInterval(interval_name,*poi,fLower,fUpper,ConfidenceLevel());
@@ -473,7 +493,6 @@ RooStats::SimpleInterval* JPMCCalculator::GetInterval(void) const
 void JPMCCalculator::ComputeIntervalFromHist(double lowerCutOff, double upperCutOff) const
 {
   // compute the interval using RooFit
-  coutI(Eval) <<  "JPMCCalculator: Compute interval using RooFit:  posteriorPdf + createCdf + RooBrentRootFinder " << std::endl;
 
   if(!fPosteriorHist) GetPosteriorHist();
   if(!fPosteriorHist) return;
@@ -507,7 +526,6 @@ void JPMCCalculator::ComputeIntervalFromHist(double lowerCutOff, double upperCut
 void JPMCCalculator::ComputeIntervalFromPdf(double lowerCutOff, double upperCutOff) const
 {
   // compute the interval using RooFit
-  coutI(Eval) <<  "JPMCCalculator: Compute interval using RooFit:  posteriorPdf + createCdf + RooBrentRootFinder " << std::endl;
 
   RooRealVar* poi = dynamic_cast<RooRealVar*>( fPOI.first() ); 
   assert(poi);
@@ -541,10 +559,17 @@ void JPMCCalculator::ComputeIntervalFromPdf(double lowerCutOff, double upperCutO
 			<< std::endl;
   
   poi->setVal(tmpVal); // patch: restore the original value of poi
-   
+  
+
   delete cdf_bind;
   delete cdf;
   fValidInterval = true;
+
+  delete h2;
+  delete h3;
+  delete h4;
+ 
+
 }
 
 
