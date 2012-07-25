@@ -48,7 +48,7 @@ flatNtpTauMu = cms.EDAnalyzer(
     muEtaCut = cms.double(2.1),
     tauEtaCut = cms.double(2.3),
     signalWeightDir =  cms.string(httdata_dir),
-    signalWeightMass =  cms.string(''),
+    signalWeightMass =  cms.string('0'),
     )
 
 
@@ -95,5 +95,5 @@ flatNtpTauEle = cms.EDAnalyzer(
     muEtaCut = cms.double(2.1),
     tauEtaCut = cms.double(2.3),
     signalWeightDir =  cms.string(httdata_dir),
-    signalWeightMass =  cms.string(''),
+    signalWeightMass =  cms.string('0'),
     )

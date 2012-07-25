@@ -197,7 +197,7 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
         module.dataType = 0
         module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
-        module.signalWeightMass = '120'
+        module.signalWeightMass = '125'
         
     if sampleAlias == 'VBFSync' : 
         module.path = "/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_4_1"
@@ -399,7 +399,7 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
         module.dataType = 0
         module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter")
-        module.signalWeightMass = '120'
+        module.signalWeightMass = '125'
 
     if sampleAlias == 'VBFSync' : 
         module.path = "/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_4_1"

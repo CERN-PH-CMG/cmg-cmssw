@@ -116,8 +116,8 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   signalWeightDir_ = iConfig.getParameter<std::string>("signalWeightDir");
   cout<<"signalWeightDir_  : "<<signalWeightDir_.c_str()<<endl;
   signalWeightMass_ = iConfig.getParameter<std::string>("signalWeightMass");
-  cout<<"signalWeightMass_  : "<<signalWeightMass_.c_str()<<endl;
-  if(signalWeightMass_.compare("")!=0){//signal reweighting required
+  cout<<"signalWeightMass_  "<<signalWeightMass_.c_str()<<endl;
+  if((int)(signalWeightMass_.compare("0"))!=0 ){//signal reweighting required
     TFile F(TString(signalWeightDir_)+"/weight_ptH_"+signalWeightMass_.c_str()+".root","read");
     TH1F* H=(TH1F*)F.Get(TString("powheg_weight/weight_hqt_fehipro_fit_")+signalWeightMass_.c_str());
     gROOT->cd();
