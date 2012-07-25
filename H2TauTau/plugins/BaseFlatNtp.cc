@@ -13,6 +13,7 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   genEventType_(0),
   truthEventType_(0),
   deltaRTruth_(0.3),
+  signalWeightHisto_(NULL),
   btagWP_(0.679),
   corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
   mvaWeights_(iConfig.getParameter<std::string>("mvaWeights")),
