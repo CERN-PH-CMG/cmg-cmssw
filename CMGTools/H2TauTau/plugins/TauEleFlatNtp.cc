@@ -40,10 +40,7 @@ void TauEleFlatNtp::beginJob(){
   countertaueveto_=0;
   countertauiso_=0;
   countertaumatch_=0;
-  counterditau_=0;
-  counterbestcand_=0;
   countertruth_=0;
-  counter_=0;
 }
 
 
@@ -65,7 +62,7 @@ void TauEleFlatNtp::beginJob(){
  }
 
  bool TauEleFlatNtp::applySelections(){
-   counterall_++;
+ 
 
    //if none are selected returns 0
    diTauSel_=NULL;
@@ -73,10 +70,12 @@ void TauEleFlatNtp::beginJob(){
    //trigger, n-vertex selection
    if(!BaseFlatNtp::applySelections()) return 0;
    counterev_++;
+   if(printSelectionPass_)cout<<" pass counterev"<<endl;
 
    ////other 
    if(vetoDiLepton()) return 0;
    counterveto_++;
+   if(printSelectionPass_)cout<<" pass counterveto"<<endl;
 
    std::vector<cmg::TauEle> tmpditaulist=*diTauList_;
    diTauSelList_.clear();
@@ -92,7 +91,9 @@ void TauEleFlatNtp::beginJob(){
        diTauSelList_.push_back(*cand);
      
    }
-   if(diTauSelList_.size()>0) counterpresel_++;
+   if(diTauSelList_.size()==0) return 0;
+   counterpresel_++;
+   if(printSelectionPass_)cout<<" pass counterpresel"<<endl;
 
 
    //muon vtx 
@@ -110,7 +111,9 @@ void TauEleFlatNtp::beginJob(){
 
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()>0)countermuvtx_++;
+   if(diTauSelList_.size()==0) return 0;
+   countermuvtx_++;
+   if(printSelectionPass_)cout<<" pass countermuvtx"<<endl;
 
 
    //ele id cuts
@@ -141,7 +144,9 @@ void TauEleFlatNtp::beginJob(){
      diTauSelList_.push_back(*cand);
     
    }
-   if(diTauSelList_.size()>0)countermuid_++;
+   if(diTauSelList_.size()==0) return 0;
+   countermuid_++;
+   if(printSelectionPass_)cout<<" pass countermuid"<<endl;
 
    //muon trig-match
    tmpditaulist=diTauSelList_;
@@ -157,7 +162,9 @@ void TauEleFlatNtp::beginJob(){
      if(matchmu) 
        diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()>0)countermumatch_++;
+   if(diTauSelList_.size()==0) return 0;
+   countermumatch_++;
+   if(printSelectionPass_)cout<<" pass countermumatch"<<endl;
 
    //Tau E/P cut
    tmpditaulist=diTauSelList_;
@@ -169,7 +176,9 @@ void TauEleFlatNtp::beginJob(){
   
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()>0)countertaueop_++;
+   if(diTauSelList_.size()==0) return 0;
+   countertaueop_++;
+   if(printSelectionPass_)cout<<" pass countertaueop"<<endl;
 
    //tau vtx
    tmpditaulist=diTauSelList_;
@@ -184,7 +193,9 @@ void TauEleFlatNtp::beginJob(){
     
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()>0)countertauvtx_++;
+   if(diTauSelList_.size()==0) return 0;
+   countertauvtx_++;
+   if(printSelectionPass_)cout<<" pass countertauvtx"<<endl;
 
    //Tau anti-mu cut
    tmpditaulist=diTauSelList_;
@@ -193,7 +204,9 @@ void TauEleFlatNtp::beginJob(){
      if(cand->leg1().tauID("againstMuonLoose")<0.5)continue;
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()>0)countertaumuveto_++;
+   if(diTauSelList_.size()==0) return 0;
+   countertaumuveto_++;
+   if(printSelectionPass_)cout<<" pass countertaumuveto"<<endl;
 
    //Tau anti-e cut
    tmpditaulist=diTauSelList_;
@@ -203,8 +216,9 @@ void TauEleFlatNtp::beginJob(){
      if(cand->leg1().tauID("againstElectronMVA")<0.5)continue;
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()>0)countertaueveto_++;
-   //../python/proto/analyzers/TauEleAnalyzer.py
+   if(diTauSelList_.size()==0) return 0;
+   countertaueveto_++;
+   if(printSelectionPass_)cout<<" pass countertaueveto"<<endl;
 
 
    //Tau Trig-Match
@@ -222,7 +236,9 @@ void TauEleFlatNtp::beginJob(){
      if(matchtau)
        diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()>0)countertaumatch_++;
+   if(diTauSelList_.size()==0) return 0;
+   countertaumatch_++;
+   if(printSelectionPass_)cout<<" pass countertaumatch"<<endl;
 
    /////////Isolation cuts
    tmpditaulist=diTauSelList_;
@@ -242,7 +258,6 @@ void TauEleFlatNtp::beginJob(){
        diTauSelList_.push_back(*cand);
      }
    }
-   if(diTauSelList_.size()>0)counterditau_++;
 
    categoryIso_=1;//category gets set to "signal" by default
    nditau_=diTauSelList_.size();
@@ -251,7 +266,6 @@ void TauEleFlatNtp::beginJob(){
      for(std::vector<cmg::TauEle>::const_iterator cand = tmpditaulist.begin(); cand != tmpditaulist.end(); ++cand)
        diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()==0) return 0;//there was no event in the signal or sideband
 
 
    //choose the best candidate
@@ -264,7 +278,6 @@ void TauEleFlatNtp::beginJob(){
        highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
      }
 
-   counterbestcand_++;
 
    //truth match 
    truthEventType_=0;
@@ -273,8 +286,8 @@ void TauEleFlatNtp::beginJob(){
    if(sampleTruthEventType_>0)
      if(sampleTruthEventType_!=truthEventType_) return 0;
    countertruth_++;
+   if(printSelectionPass_)cout<<" pass countertruth"<<endl;
    
-   counter_++;
    return 1;
  }
 
@@ -503,10 +516,7 @@ void TauEleFlatNtp::beginJob(){
    cout<<"countertaueveto = "<<countertaueveto_<<endl;
    cout<<"countertauiso = "<<countertauiso_<<endl;
    cout<<"countertaumatch = "<<countertaumatch_<<endl;
-   cout<<"counterditau = "<<counterditau_<<endl;
-   cout<<"counterbestcand = "<<counterbestcand_<<endl;
    cout<<"countertruth = "<<countertruth_<<endl;
-   cout<<"counter = "<<counter_<<endl;
 
  }
 

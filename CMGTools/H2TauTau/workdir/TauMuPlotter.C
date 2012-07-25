@@ -126,7 +126,7 @@ bool TauMuPlotter::scaleSamplesLumi(){
 
 TH1F* TauMuPlotter::getSample(TString samplename){
 
-  TString sel="eventweight*(categoryCh==1)";
+  TString sel="eventweight*(abs(ditaucharge)==0)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
@@ -166,7 +166,7 @@ TH1F* TauMuPlotter::getSample(TString samplename){
 
 TH1F* TauMuPlotter::getSampleSS(TString samplename){
 
-  TString sel="eventweight*(categoryCh==2)";
+  TString sel="eventweight*(abs(ditaucharge)==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   //  if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
@@ -208,7 +208,7 @@ TH1F* TauMuPlotter::getSampleSS(TString samplename){
 
 
 TH1F* TauMuPlotter::getTotalData(){
-  TString sel="eventweight*(categoryCh==1)";
+  TString sel="eventweight*(abs(ditaucharge)==0)";
   if(Isocat_>0)  sel += TString("*(categoryIso==")+(long)Isocat_+")";
   //if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
@@ -241,7 +241,7 @@ TH1F* TauMuPlotter::getTotalData(){
 
 
 TH1F* TauMuPlotter::getTotalDataSS(){
-  TString sel="eventweight*(categoryCh==2)";
+  TString sel="eventweight*(abs(ditaucharge)==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   //  if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
@@ -272,7 +272,7 @@ TH1F* TauMuPlotter::getTotalDataSS(){
 
 
 TH1F* TauMuPlotter::getTotalMC(){
-  TString sel="eventweight*(categoryCh==1)";
+  TString sel="eventweight*(abs(ditaucharge)==0)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   //  if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
@@ -304,7 +304,7 @@ TH1F* TauMuPlotter::getTotalMC(){
 }
 
 TH1F* TauMuPlotter::getTotalMCSS(){
-  TString sel="eventweight*(categoryCh==2)";
+  TString sel="eventweight*(abs(ditaucharge)==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
@@ -334,7 +334,7 @@ TH1F* TauMuPlotter::getTotalMCSS(){
 
 
 TH1F* TauMuPlotter::getTotalEmbedded(){
-  TString sel="eventweight*(categoryCh==1)";
+  TString sel="eventweight*(abs(ditaucharge)==0)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
@@ -365,7 +365,7 @@ TH1F* TauMuPlotter::getTotalEmbedded(){
 
 
 TH1F* TauMuPlotter::getTotalEmbeddedSS(){
-  TString sel="eventweight*(categoryCh==2)";
+  TString sel="eventweight*(abs(ditaucharge)==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
@@ -1380,7 +1380,7 @@ bool TauMuPlotter::plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_
 
 
 TH1F* TauMuPlotter::getQCDMuIsoSM(){
-  TString sel="eventweight*(categoryCh==1&&0.3<muiso&&muiso<0.5)";
+  TString sel="eventweight*(abs(ditaucharge)==0&&0.3<muiso&&muiso<0.5)";
   //if(MTcat_>0)  sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";

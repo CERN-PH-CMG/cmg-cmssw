@@ -18,7 +18,10 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   mvaWeights_(iConfig.getParameter<std::string>("mvaWeights")),
   reader_(mvaWeights_.c_str()){
 
-  
+  //for debugging
+  printSelectionPass_ = iConfig.getParameter<int>("printSelectionPass");
+  cout<<"printSelectionPass_  : "<<printSelectionPass_<<endl;
+
   dataPeriodFlag_=iConfig.getParameter<int>("dataPeriodFlag");
   cout<<"dataPeriodFlag_  : "<<dataPeriodFlag_<<endl;
 
@@ -104,12 +107,26 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
 
   recoiliScale_ = iConfig.getParameter<double>("recoiliScale");
   cout<<"recoiliScale_   : "<<recoiliScale_<<endl;
-
    
   randsigma_              = iConfig.getParameter<double>("randsigma");
   cout<<"randsigma_  : "<<randsigma_<<endl;
 
 
+  //read in histogram with signal weights
+  signalWeightDir_ = iConfig.getParameter<std::string>("signalWeightDir");
+  cout<<"signalWeightDir_  : "<<signalWeightDir_.c_str()<<endl;
+  signalWeightMass_ = iConfig.getParameter<std::string>("signalWeightMass");
+  cout<<"signalWeightMass_  : "<<signalWeightMass_.c_str()<<endl;
+  if(signalWeightMass_.compare("")!=0){//signal reweighting required
+    TFile F(TString(signalWeightDir_)+"/weight_ptH_"+signalWeightMass_.c_str()+".root","read");
+    TH1F* H=(TH1F*)F.Get(TString("powheg_weight/weight_hqt_fehipro_fit_")+signalWeightMass_.c_str());
+    gROOT->cd();
+    if(!H){
+      cout<<"signalWeight requested but histogram not found in "<<F.GetName()<<endl;
+      exit(0);
+    }
+    signalWeightHisto_=(TH1F*)H->Clone("signalWeightHisto");
+  }
 
   cout<<"Trigger paths: "<<endl;
   for(long p=1;p<=10;p++){
@@ -125,6 +142,8 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
 }
 
 BaseFlatNtp::~BaseFlatNtp(){
+
+  delete signalWeightHisto_;
   delete file_;
   for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
     delete *path;
@@ -145,6 +164,7 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("selectionEffWeight",&selectionEffWeight_,"selectionEffWeight/F"); 
   tree_->Branch("embeddedGenWeight",&embeddedGenWeight_,"embeddedGenWeight/F"); 
   tree_->Branch("btagEffWeight",&btagEffWeight_,"btagEffWeight/F");
+  tree_->Branch("signalWeight",&signalWeight_,"signalWeight/F");
 
   tree_->Branch("genbosonmass",&genbosonmass_,"genbosonmass/F");
   tree_->Branch("genbosonpt",&genbosonpt_,"genbosonpt/F");
@@ -154,6 +174,7 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("runnumber",&runnumber_,"runnumber/I");
   tree_->Branch("lumiblock",&lumiblock_,"lumiblock/I");
   tree_->Branch("eventid",&eventid_,"eventid/I");
+
   tree_->Branch("npu",&npu_,"npu/I");
   tree_->Branch("nvtx",&nvtx_,"nvtx/I");
   tree_->Branch("vtxx",&vtxx_,"vtxx/F");
@@ -266,12 +287,12 @@ void BaseFlatNtp::beginJob(){
 }
 
 
-void BaseFlatNtp::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup){
-  fillVariables(iEvent,iSetup);
-  if(!applySelections())return;
-  fill();
-  tree_->Fill();
-}
+// void BaseFlatNtp::analyze(const edm::Event & iEvent, const edm::EventSetup & iSetup){
+//   fillVariables(iEvent,iSetup);
+//   if(!applySelections())return;
+//   fill();
+//   tree_->Fill();
+// }
 
 void BaseFlatNtp::endJob(){
 
@@ -286,6 +307,7 @@ void BaseFlatNtp::endJob(){
 
 
 bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup & iSetup){
+  //fill things one may need to apply selections
 
   iEvent_=&iEvent;
 
@@ -295,66 +317,12 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   nvtx_=vertices_->size();  
   PV_=&(*(vertices_->begin()));
 
-  ///fill trigger flag
-  trigpass_=0;
-  edm::Handle< std::vector<cmg::TriggerObject> > trig;
-  iEvent.getByLabel(trigPathsListTag_,trig);
-  if(trigPaths_.size()==0)trigpass_=1;//no trigger requirement
-  //trig->begin()->printSelections(cout);
-  for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){//cmg ObjetSel
-    //cout<<path->label()<<" "<<path->instance()<<" "<<path->process()<<endl;
-    if(trig->begin()->hasSelection((*path)->label()))
-      if(trig->begin()->getSelection((*path)->label()))
-	if(trig->begin()->getPrescale((*path)->label())==1 || dataType_==0){
-	  trigpass_=1;
-	}
-  }
-  //cout<<firstRun_<<" "<<lastRun_<<" "<<runnumber_<<" "<<trigpass_<<endl;
+
+  iEvent.getByLabel(trigPathsListTag_,trig_);
+  //trig_->begin()->printSelections(cout);
 
   //get trigger object list for later
   iEvent.getByLabel(trigObjsListTag_,trigObjs_);
-
-
-  ///Event weight definition starts here:
-  pupWeight_=1.;//do not comment out needs to be used.
-  npu_=-1;
-  if(dataType_==0 && (pupWeightName_.label()).compare("")!=0){//if no vertex weight name is provided then leave weight to 1
-    edm::Handle<double>  PupWeight;
-    iEvent.getByLabel(pupWeightName_,PupWeight);    
-    pupWeight_=(*PupWeight);
-
-    //get the number of pile up vertexes
-    edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-    iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
-    std::vector<PileupSummaryInfo>::const_iterator PVI;
-    for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
-      int BX = PVI->getBunchCrossing();
-      if(BX == 0) {
-	if(dataPeriodFlag_==2011)npu_ = PVI->getPU_NumInteractions();
-	if(dataPeriodFlag_==2012)npu_ = PVI->getTrueNumInteractions();
-      }
-    }
-  }
-
-
-
-
-  //embedded samples generator weight
-  embeddedGenWeight_=1.0;
-  if(dataType_==2){
-    if(dataPeriodFlag_==2011){
-      edm::Handle< double > embeddedGenWeight;
-      iEvent.getByLabel(edm::InputTag("generator","weight",""),embeddedGenWeight);
-      embeddedGenWeight_=*embeddedGenWeight;
-    }
-    if(dataPeriodFlag_==2012){
-      edm::Handle<GenFilterInfo> genInfoEmbedded;
-      iEvent.getByLabel(edm::InputTag("generator","minVisPtFilter","EmbeddedRECO"),genInfoEmbedded);
-      if(genInfoEmbedded->numEventsTried()>0) embeddedGenWeight_ =  genInfoEmbedded->filterEfficiency(); 
-    }
-  }  
-
-
   
   ///get the gen Boson and set the genEventType
   genBoson_ = NULL;
@@ -406,7 +374,6 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
 
   }
 
-
  
   return 1;
 }
@@ -417,15 +384,29 @@ bool BaseFlatNtp::applySelections(){
   if(firstRun_!=0) if(runnumber_<firstRun_)return 0;
   if(lastRun_!=0) if(lastRun_<runnumber_)return 0;
   counterruns_++;
+  if(printSelectionPass_)cout<<" pass counterruns"<<endl;
 
+  if(trigPaths_.size()==0)trigpass_=1;//no trigger requirement
+  for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){//cmg ObjetSel
+    //cout<<path->label()<<" "<<path->instance()<<" "<<path->process()<<endl;
+    if(trig_->begin()->hasSelection((*path)->label()))
+      if(trig_->begin()->getSelection((*path)->label()))
+	if(trig_->begin()->getPrescale((*path)->label())==1 || dataType_==0){
+	  trigpass_=1;
+	}
+  }
+  //cout<<firstRun_<<" "<<lastRun_<<" "<<runnumber_<<" "<<trigpass_<<endl;
   if(!trigpass_) return 0;
   countertrig_++;
+  if(printSelectionPass_)cout<<" pass countertrig"<<endl;
   
   if(nvtx_==0) return 0;
   countergoodvtx_++;
+  if(printSelectionPass_)cout<<" pass countergoodvtx"<<endl;
 
   if( sampleGenEventType_!=0 && sampleGenEventType_!=genEventType_) return 0;
   countergen_++;
+  if(printSelectionPass_)cout<<" pass countergen"<<endl;
 
   
   return 1;
@@ -439,6 +420,55 @@ bool BaseFlatNtp::fill(){
   vtxx_=PV_->x();
   vtxy_=PV_->y();
   vtxz_=PV_->z();
+
+  pupWeight_=1.;//do not comment out needs to be used.
+  npu_=-1;
+  if(dataType_==0 && (pupWeightName_.label()).compare("")!=0){//if no vertex weight name is provided then leave weight to 1
+    edm::Handle<double>  PupWeight;
+    iEvent_->getByLabel(pupWeightName_,PupWeight);    
+    pupWeight_=(*PupWeight);
+
+    //get the number of pile up vertexes
+    edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+    iEvent_->getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+    std::vector<PileupSummaryInfo>::const_iterator PVI;
+    for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+      int BX = PVI->getBunchCrossing();
+      if(BX == 0) {
+	if(dataPeriodFlag_==2011)npu_ = PVI->getPU_NumInteractions();
+	if(dataPeriodFlag_==2012)npu_ = PVI->getTrueNumInteractions();
+      }
+    }
+  }
+
+
+  //embedded samples generator weight
+  embeddedGenWeight_=1.0;
+  if(dataType_==2){
+    if(dataPeriodFlag_==2011){
+      edm::Handle< double > embeddedGenWeight;
+      iEvent_->getByLabel(edm::InputTag("generator","weight",""),embeddedGenWeight);
+      embeddedGenWeight_=*embeddedGenWeight;
+    }
+    if(dataPeriodFlag_==2012){
+      edm::Handle<GenFilterInfo> genInfoEmbedded;
+      iEvent_->getByLabel(edm::InputTag("generator","minVisPtFilter","EmbeddedRECO"),genInfoEmbedded);
+      if(genInfoEmbedded->numEventsTried()>0) embeddedGenWeight_ =  genInfoEmbedded->filterEfficiency(); 
+    }
+  }  
+
+
+  //fill the signalWeight
+  signalWeight_=1.;
+  if(signalWeightHisto_){
+    if(!genBoson_){
+      cout<<"signal weight requested but no genboson found in event."<<endl;
+      exit(0);
+    }
+    if(0.<genbosonpt_&&genbosonpt_<500.)
+      signalWeight_=signalWeightHisto_->GetBinContent(((int)genbosonpt_)+1);//round the the pt value down
+  }
+
 
 
   return 1;

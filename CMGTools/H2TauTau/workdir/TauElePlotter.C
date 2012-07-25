@@ -148,7 +148,8 @@ bool TauElePlotter::scaleSamplesLumi(){
 TH1F* TauElePlotter::getSample(TString samplename){
 
   TString sel="eventweight";
-  if(Chcat_>0) sel += TString("*(categoryCh==")+(long)Chcat_+")";
+  if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
+  if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
@@ -190,7 +191,9 @@ TH1F* TauElePlotter::getSample(TString samplename){
 
 TH1F* TauElePlotter::getTotalData(){
   TString sel="eventweight";
-  if(Chcat_>0) sel += TString("*(categoryCh==")+(long)Chcat_+")";
+  if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
+  if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
+
   if(Isocat_>0)  sel += TString("*(categoryIso==")+(long)Isocat_+")";
   //if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
@@ -225,7 +228,9 @@ TH1F* TauElePlotter::getTotalData(){
 
 TH1F* TauElePlotter::getTotalMC(){
   TString sel="eventweight";
-  if(Chcat_>0) sel += TString("*(categoryCh==")+(long)Chcat_+")";
+  if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
+  if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
+
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   //  if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
@@ -260,7 +265,8 @@ TH1F* TauElePlotter::getTotalMC(){
 
 TH1F* TauElePlotter::getTotalEmbedded(){
   TString sel="eventweight";
-  if(Chcat_>0) sel += TString("*(categoryCh==")+(long)Chcat_+")";
+  if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
+  if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
@@ -1431,7 +1437,7 @@ TH1F* TauElePlotter::getWJetsSM(){
 
 
 TH1F* TauElePlotter::getQCDMuIsoSM(){
-  TString sel="eventweight*(categoryCh==1&&0.3<muiso&&muiso<0.5)";
+  TString sel="eventweight*(abs(ditaucharge)==0&&0.3<muiso&&muiso<0.5)";
   //if(MTcat_>0)  sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";

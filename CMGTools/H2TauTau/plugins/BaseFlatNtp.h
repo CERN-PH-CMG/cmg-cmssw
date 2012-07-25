@@ -69,13 +69,15 @@ class BaseFlatNtp : public edm::EDAnalyzer{
   ~BaseFlatNtp();
 
   virtual void beginJob() ;
-  virtual void analyze(const edm::Event&  iEvent, const edm::EventSetup& iSetup);
+  //virtual void analyze(const edm::Event&  iEvent, const edm::EventSetup& iSetup);
   virtual void endJob() ;
 
 protected:
 
   edm::Service<TFileService> * file_;
   TTree * tree_;
+
+  int printSelectionPass_;
 
   virtual bool fillVariables(const edm::Event & iEvent, const edm::EventSetup & iSetup);
   virtual bool applySelections();
@@ -104,6 +106,7 @@ protected:
   edm::Handle< std::vector<reco::Vertex> > vertices_;
   const reco::Vertex * PV_;
 
+  edm::Handle< std::vector<cmg::TriggerObject> > trig_;
   std::vector<edm::InputTag *>  trigPaths_;
 
   edm::InputTag genParticlesTag_;
@@ -138,7 +141,17 @@ protected:
   const cmg::METSignificance * metSig_;
 
   TriggerEfficiency triggerEff_;
+  float triggerEffWeight_;
+
   SelectionEfficiency selectionEff_;
+  float selectionEffWeight_;
+
+  //HQT weights for 2011 signal samples
+  std::string signalWeightDir_;
+  std::string signalWeightMass_;
+  TH1F* signalWeightHisto_;
+  float signalWeight_;
+
 
   //for MSSM
   float btagWP_;
@@ -159,13 +172,10 @@ protected:
   float pupWeight_;
   float eventweight_;
   float embeddedGenWeight_;//for tau embedded samples
-  float triggerEffWeight_;
-  float selectionEffWeight_;
 
   int runnumber_;
   int lumiblock_;
   int eventid_;
-  bool trigpass_;
 
   int npu_;
   int nvtx_;
@@ -271,6 +281,37 @@ protected:
   int categorySM_;//SM search 
   int categorySM2012_;//SM search 
 
+  
+
+
+
+  //selection variables
+  int runrangepass_;
+  int trigpass_;
+  int nvtxpass_;
+  int geneventtypepass_;
+  int baseeventpass_;
+  int dilepvetopass_;
+  int ptetapass_;
+  int muvtxpass_;
+  int muidpass_;
+  int muisopass_;
+  int mumatchpass_;
+  int taueoppass_;
+  int tauvtxpass_;
+  int taumuvetopass_;
+  int tauelevetopass_;
+  int tauisopass_;
+  int taumatchpass_;
+  int ditauisopass_;
+
+
+  //event counters
+  int counterall_;
+  int countertrig_;
+  int counterruns_;
+  int countergoodvtx_;
+  int countergen_;
 
 
   //Utilities
@@ -637,11 +678,6 @@ protected:
 
   }
 
-  int counterall_;
-  int countertrig_;
-  int counterruns_;
-  int countergoodvtx_;
-  int countergen_;
 
 private:
 

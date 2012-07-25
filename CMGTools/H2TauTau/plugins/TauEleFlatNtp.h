@@ -115,10 +115,7 @@ private:
   int countermuid_;
   int countermuiso_;
   int countermumatch_;
-  int counterditau_;
-  int counterbestcand_;
   int countertruth_;
-  int counter_;
 
 };
 

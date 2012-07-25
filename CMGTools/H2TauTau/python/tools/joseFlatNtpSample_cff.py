@@ -75,7 +75,7 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
     if sampleAlias == 'WJetsToLNu' : 
         module.path = "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/HTTSKIM5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.randsigma = 0.10
         module.recoilCorrection = 2 
@@ -84,7 +84,7 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
     if sampleAlias == 'W3JetsToLNu' : 
         module.path = "/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM" # V5 PFAOD was not made
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.recoilCorrection = 2 
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
@@ -92,7 +92,7 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
     if sampleAlias == 'W2JetsToLNu' : 
         module.path = "/W2Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1" # V5 PFAOD was not made
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.recoilCorrection = 2 
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root' 
@@ -100,13 +100,13 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
     if sampleAlias == 'TTJets' : 
         module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'ZToTauTau' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.sampleGenEventType = 5
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
         module.recoilCorrection = 1
@@ -115,7 +115,7 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
     if sampleAlias == 'ZToMuMu' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.sampleGenEventType = 3
         module.sampleTruthEventType = 3
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
@@ -123,7 +123,7 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
     if sampleAlias == 'ZToLJet' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.sampleGenEventType = 3
         module.sampleTruthEventType = 6
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
@@ -131,19 +131,19 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
     if sampleAlias == 'WW' : 
         module.path = "/WW_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'WZ' : 
         module.path = "/WZ_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
     if sampleAlias == 'ZZ' : 
         module.path = "/ZZ_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
 
@@ -152,15 +152,16 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
         if sampleAlias == "HiggsGG"+HiggsMass[i] :
             module.path ="/GluGluToHToTauTau_M-%s_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1" % HiggsMass[i]
             module.dataType = 0
-            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.pupWeightName = 'vertexWeightFall112011AB'
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
             module.recoilCorrection = 1
             module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.signalWeightMass = HiggsMass[i]
             
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.path = "/VBF_HToTauTau_M-%s_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1" % HiggsMass[i]
             module.dataType = 0
-            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.pupWeightName = 'vertexWeightFall112011AB'
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
             module.recoilCorrection = 1
             module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
@@ -168,7 +169,7 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
         if sampleAlias == "HiggsVH"+HiggsMass[i] : 
             module.path = "/WH_ZH_TTH_HToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1" % HiggsMass[i]
             module.dataType = 0
-            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.pupWeightName = 'vertexWeightFall112011AB'
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
 
 
@@ -177,7 +178,7 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
         if sampleAlias == "SUSYBB"+SUSYMass[i] :
             module.path ="/SUSYBBHToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"% SUSYMass[i]
             module.dataType = 0
-            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.pupWeightName = 'vertexWeightFall112011AB'
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
             module.recoilCorrection = 1 
             module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
@@ -185,28 +186,25 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
         if sampleAlias == "SUSYGG"+SUSYMass[i] :
             module.path ="/SUSYGluGluToHToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"% SUSYMass[i]
             module.dataType = 0
-            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.pupWeightName = 'vertexWeightFall112011AB'
             module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
             module.recoilCorrection = 1 
             module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
 
 
     if sampleAlias == 'GluGluSync' : 
-        module.path = "/H2TAUTAU/Sync/GluGlu/AOD"
+        module.path = "/H2TAUTAU/Sync/GluGlu/AOD/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
-
+        module.signalWeightMass = '120'
+        
     if sampleAlias == 'VBFSync' : 
-        module.path = "/H2TAUTAU/Sync/VBF/AOD"
+        module.path = "/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
        
-
-
-
-
 
 
 
@@ -271,7 +269,7 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
     if sampleAlias == 'WJetsToLNu' :
         module.path = "/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/HTTSKIM5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter")        
         module.randsigma = 0.
         module.recoilCorrection = 2 
@@ -281,13 +279,13 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
     if sampleAlias == 'TTJets' :
         module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter")  
 
     if sampleAlias == 'ZToTauTau' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.sampleGenEventType = 5
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
         module.recoilCorrection = 1
@@ -296,7 +294,7 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
     if sampleAlias == 'ZToEE' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.sampleGenEventType = 1
         module.sampleTruthEventType = 1
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
@@ -304,7 +302,7 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
     if sampleAlias == 'ZToLJet' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.sampleGenEventType = 1
         module.sampleTruthEventType = 6
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
@@ -313,14 +311,14 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
     if sampleAlias == 'ZToMuMu' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.sampleGenEventType = 3
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
 
     if sampleAlias == 'W3JetsToLNu' : 
         module.path = "/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM" # V5 PFAOD was not made
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
         module.recoilCorrection = 2 
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
@@ -328,7 +326,7 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
     if sampleAlias == 'W2JetsToLNu' : 
         module.path = "/W2Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1" # V5 PFAOD was not made
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
         module.recoilCorrection = 2 
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root' 
@@ -336,19 +334,19 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
     if sampleAlias == 'WW' : 
         module.path = "/WW_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
 
     if sampleAlias == 'WZ' : 
         module.path = "/WZ_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
 
     if sampleAlias == 'ZZ' : 
         module.path = "/ZZ_TuneZ2_7TeV_pythia6_tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
 
 
@@ -357,15 +355,16 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
         if sampleAlias == "HiggsGG"+HiggsMass[i] :
             module.path ="/GluGluToHToTauTau_M-%s_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1" % HiggsMass[i]
             module.dataType = 0
-            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.pupWeightName = 'vertexWeightFall112011AB'
             module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
             module.recoilCorrection = 1
             module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.signalWeightMass = HiggsMass[i]
             
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.path = "/VBF_HToTauTau_M-%s_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1" % HiggsMass[i]
             module.dataType = 0
-            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.pupWeightName = 'vertexWeightFall112011AB'
             module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
             module.recoilCorrection = 1
             module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
@@ -373,7 +372,7 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
         if sampleAlias == "HiggsVH"+HiggsMass[i] : 
             module.path = "/WH_ZH_TTH_HToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1" % HiggsMass[i]
             module.dataType = 0
-            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.pupWeightName = 'vertexWeightFall112011AB'
             module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
 
 
@@ -382,7 +381,7 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
         if sampleAlias == "SUSYBB"+SUSYMass[i] :
             module.path ="/SUSYBBHToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"% SUSYMass[i]
             module.dataType = 0
-            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.pupWeightName = 'vertexWeightFall112011AB'
             module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
             module.recoilCorrection = 1 
             module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
@@ -390,7 +389,7 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
         if sampleAlias == "SUSYGG"+SUSYMass[i] :
             module.path ="/SUSYGluGluToHToTauTau_M-%s_7TeV-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"% SUSYMass[i]
             module.dataType = 0
-            module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+            module.pupWeightName = 'vertexWeightFall112011AB'
             module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
             module.recoilCorrection = 1 
             module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
@@ -398,13 +397,14 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
     if sampleAlias == 'GluGluSync' : 
         module.path = "/H2TAUTAU/Sync/GluGlu/AOD/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
-        module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
+        module.pupWeightName = 'vertexWeightFall112011AB'
+        module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter")
+        module.signalWeightMass = '120'
 
     if sampleAlias == 'VBFSync' : 
         module.path = "/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_4_1"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightFall112011AB")
+        module.pupWeightName = 'vertexWeightFall112011AB'
         #module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter")
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_TrkIdT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTTrkIdTDphiFilter")
         ##this last one gives a better sync with Lorenzo but still distributions are not same
@@ -529,7 +529,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
     if sampleAlias == 'ZToTauTau' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.sampleGenEventType = 5
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
         module.recoilCorrection = 11
@@ -539,7 +539,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
     if sampleAlias == 'ZToMuMu' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.sampleGenEventType = 3
         module.sampleTruthEventType = 3
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
@@ -547,7 +547,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
     if sampleAlias == 'ZToLJet' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.sampleGenEventType = 3
         module.sampleTruthEventType = 6
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
@@ -556,7 +556,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         #module.path = "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.path = "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9_extension-v1/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
         module.recoilCorrection = 12
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root' 
@@ -564,7 +564,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
     if sampleAlias == 'TTJets' :
         module.path = "/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
 
 
@@ -618,7 +618,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
     if sampleAlias == 'ZToTauTau' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.sampleGenEventType = 5
         module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
         module.recoilCorrection = 11
@@ -627,7 +627,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
     if sampleAlias == 'ZToEE' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.sampleGenEventType = 1
         module.sampleTruthEventType = 1
         module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
@@ -635,7 +635,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
     if sampleAlias == 'ZToLJet' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.sampleGenEventType = 1
         module.sampleTruthEventType = 6
         module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
@@ -644,7 +644,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
     if sampleAlias == 'WJetsToLNu' :
         module.path = "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9_extension-v1/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
         module.recoilCorrection = 12
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
@@ -652,7 +652,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
     if sampleAlias == 'WJetsToLNu2' :
         module.path = "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
         module.recoilCorrection = 12
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
@@ -660,7 +660,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
     if sampleAlias == 'W3JetsToLNu' :
         module.path = "/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
         module.recoilCorrection = 12
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
@@ -668,7 +668,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
     if sampleAlias == 'TTJets' :
         module.path = "/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET"
         module.dataType = 0
-        module.pupWeightName = cms.InputTag("vertexWeightSummer12MCICHEPData")
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
 
 
