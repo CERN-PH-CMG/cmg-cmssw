@@ -177,7 +177,7 @@ class CmgdbToolsApi(CmgdbApi):
 			print "Unable to delete bad job record"
 	
 	# Log missing files
-	def addBadJob(self, dsName, datasetID, badJobNum):
+	def addBadJob(self, datasetID, badJobNum):
 		"""Add name of given bad job to CMGDB and link it to a given dataset with the unique CMGDB Dataset ID
 			
 		'dsName' takes the dataset name in CMGDB format as a string e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
@@ -190,7 +190,7 @@ class CmgdbToolsApi(CmgdbApi):
 			self.insertConn.commit()
 		except cx_Oracle.IntegrityError:
 			#If exception is thrown display error message and ignore
-			print 'Job: '+badJobName+ " in dataset " + dsName + " is already logged as bad on the system"
+			print 'Job: '+badJobName + " is already logged as bad on the system"
 	
 	# Log num of good files
 	def addBadJobNum(self,datasetID,number):
