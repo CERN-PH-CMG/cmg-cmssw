@@ -83,6 +83,8 @@ process.analysis += process.goodOfflinePrimaryVertices
 ##create mu-tau candidates
 process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
 process.analysis +=  process.cmgTauScaler 
+#process.cmgTauScaler.cfg.uncertainty = 0.03
+#process.cmgTauScaler.cfg.nSigma = -1.0
 
 process.load('CMGTools.Common.factories.cmgTauMu_cfi')
 process.cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
