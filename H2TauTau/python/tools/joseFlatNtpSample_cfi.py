@@ -8,6 +8,7 @@ httdata_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/'
 flatNtpTauMu = cms.EDAnalyzer(
     "TauMuFlatNtp",
     path = cms.untracked.string(""),
+    printSelectionPass = cms.int32(0),
     dataPeriodFlag = cms.int32(2011),
     firstRun =  cms.int32( 0 ),
     lastRun =  cms.int32( 0 ),
@@ -46,12 +47,15 @@ flatNtpTauMu = cms.EDAnalyzer(
     tauPtCut = cms.double(20.),
     muEtaCut = cms.double(2.1),
     tauEtaCut = cms.double(2.3),
+    signalWeightDir =  cms.string(httdata_dir),
+    signalWeightMass =  cms.string(''),
     )
 
 
 flatNtpTauEle = cms.EDAnalyzer(
     "TauEleFlatNtp",
     path = cms.untracked.string(""),
+    printSelectionPass = cms.int32(0),
     dataPeriodFlag = cms.int32(2011),
     firstRun =  cms.int32( 0 ),
     lastRun =  cms.int32( 0 ),
@@ -90,4 +94,6 @@ flatNtpTauEle = cms.EDAnalyzer(
     tauPtCut = cms.double(20.),
     muEtaCut = cms.double(2.1),
     tauEtaCut = cms.double(2.3),
+    signalWeightDir =  cms.string(httdata_dir),
+    signalWeightMass =  cms.string(''),
     )

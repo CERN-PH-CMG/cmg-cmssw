@@ -9,9 +9,8 @@ evReportFreq = 100
 
 #######Define the samples to process
 dataset_user = 'benitezj'
-#sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_V541_TauEle_JoseMay30"
-#sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_TauEle_V541June27"
-sampleTag = "/H2TAUTAU_TauEle_V541June29"
+#sampleTag = "/H2TAUTAU_TauEle_V541June29"
+sampleTag = "/TauEleSkimJuly23"
 
 
 sampleName = os.environ['SAMPLENAME']
@@ -26,6 +25,7 @@ from CMGTools.H2TauTau.tools.joseFlatNtpSample_cff import configureFlatNtpSample
 configureFlatNtpSampleTauEle2011(process.flatNtp,sampleName)
 process.flatNtp.verticesListTag = cms.InputTag('goodOfflinePrimaryVertices')
 process.flatNtp.diTauTag = 'cmgTauElePreSel'
+process.flatNtp.metType = 1
 process.flatNtp.runSVFit = 1
 
 

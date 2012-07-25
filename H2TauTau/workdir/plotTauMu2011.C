@@ -8,7 +8,8 @@
 
 void plotTauMu2011(){  
 
-  TString path="/data/benitezj/Samples/TauMuV541June2_TrigEff";
+  //TString path="/data/benitezj/Samples/TauMuV541June2_TrigEff";
+  TString path="/afs/cern.ch/user/b/benitezj/output/TauMu2011FlatNtpJuly23";
 
   TauMuPlotter*analysis=configTauMu2011("analysis",path);
   analysis->setQCDColor(kMagenta-10);
@@ -21,7 +22,7 @@ void plotTauMu2011(){
   analysis->setPlotTitle("CMS Preliminary 2011,   4.9 fb^{-1},     #sqrt{s} = 7 TeV,        #tau_{#mu}#tau_{h}");
 
   //raw yields to load samples now
-  analysis->printRawYields("(categoryIso==1&&categoryCh==1)");
+  //analysis->printRawYields("(categoryIso==1&&abs(ditaucharge)==0)");
 
   //determine the SS-->OS QCD ratio
   //analysis->plotQCDSSOSRatio();
@@ -56,7 +57,7 @@ void plotTauMu2011(){
 //  analysis->plotInc("metpt*sin(metphi)",30,-150,150,1,0,"","",1,3," MET  Y (GeV)","",c2,0,"inclusive");    
 
 //   analysis->plotIncSS("transversemass",30,0,300,1,0,"",0,"m_{T} ","",c,0,"inclusive");
-//   analysis->plotInc("transversemass",20,0,200,1,-1,"","",0,0,"M_{T}   [GeV]","",c,0,"inclusive");
+  analysis->plotInc("transversemass",20,0,200,1,-1,"","",0,0,"M_{T}   [GeV]","",c,0,"inclusive");
 //   analysis->plotInc("ditaumass",30,0,300,1,3,"","",0,0,"m_{vis}   (GeV)","Events / 5 GeV",c,0,"inclusive");
 //   analysis->plotInc("svfitmass",60,0,300,1,1,"","",0,0," m(#tau#tau)   (GeV)","Events / 5 GeV",c,0,"inclusive");
 //   analysis->plotInc("njet",5,-.5,4.5,1,1,"","",0,0," njet ","",c,0,"inclusive");

@@ -80,10 +80,18 @@ bool Sample::openNtpFile(){
 
   //chain the root files for this sample
   for(Int_t i=0;i<=NMAXFILES_;i++){
-    TString fname=TString(GetTitle())+"/flatNtp_"+GetName()+"_"+(long)i+".root";
-    
+    TString fname;
     struct stat st;
-    if(stat(fname.Data(),&st) != 0) continue;
+    bool found=0;
+    if(stat((TString(GetTitle())+"/flatNtp_"+GetName()+"_"+(long)i+".root").Data(),&st) == 0){
+      found=1;
+      fname=TString(GetTitle())+"/flatNtp_"+GetName()+"_"+(long)i+".root";
+    }
+    if(stat((TString(GetTitle())+"/"+GetName()+"/flatNtp_"+(long)i+".root").Data(),&st) == 0){
+      found=1;
+      fname=TString(GetTitle())+"/"+GetName()+"/flatNtp_"+(long)i+".root";
+    }
+    if(!found) continue;
     
     TFile file(fname.Data(),"read");
     if(file.IsZombie()) continue;
@@ -117,7 +125,9 @@ bool Sample::openNtpFile(){
     for(Int_t i=0;i<=NMAXFILES_;i++){
       TString fname=TString(GetTitle())+"/flatNtp_"+addFileNames[n]+"_"+(long)i+".root";      
       struct stat st;
-      if(stat(fname.Data(),&st) != 0) continue;      
+      if(stat(fname.Data(),&st) != 0) continue;   
+
+   
       TFile file(fname.Data(),"read");
       if(file.IsZombie()) continue;
       if(!file.GetListOfKeys()) continue;

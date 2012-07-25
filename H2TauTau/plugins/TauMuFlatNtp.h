@@ -10,16 +10,15 @@ public:
   explicit TauMuFlatNtp(const edm::ParameterSet&);
   ~TauMuFlatNtp();
 
-  virtual void beginJob() ;
+  virtual void beginJob();
   virtual void analyze(const edm::Event&  iEvent, const edm::EventSetup& iSetup);
-  virtual void endJob() ;
+  virtual void endJob();
 
   virtual bool fillVariables(const edm::Event & iEvent, const edm::EventSetup & iSetup);
   virtual bool applySelections();
   virtual bool fill();
 
 protected:
-
 
   edm::Handle< std::vector<cmg::TauMu> > diTauList_;
   std::vector<cmg::TauMu> diTauSelList_;
@@ -45,10 +44,7 @@ private:
   int countermuid_;
   int countermuiso_;
   int countermumatch_;
-  int counterditau_;
-  int counterbestcand_;
   int countertruth_;
-  int counter_;
 
 };
 

@@ -8,20 +8,16 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 evReportFreq = 100
 
 #######Define the samples to process
-####CMSSW 42 samples
-#dataset_user = 'benitezj'
-#sampleTag = "/PAT_CMG_V2_5_0/H2TAUTAU_Feb11TauIso"
-
-####CMSSW 44 samples
 dataset_user = 'benitezj'
-#sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_V541_TauMu_JoseMay30"
 #sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_TauMu_V541June2"
-sampleTag = "/TauMuSkimJuly22"
+sampleTag = "/TauMuSkimJuly23"
 
 sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
-
+print sampleName
+print sampleJobIdx
+print sampleMergeFactor
 
 ######The analysis module
 process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')

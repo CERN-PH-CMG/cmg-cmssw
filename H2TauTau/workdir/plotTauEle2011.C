@@ -7,7 +7,9 @@
 
 void plotTauEle2011(){  
 
-  TString path="/data/benitezj/Samples/TauEleV541June29_FlatNtpJune29";
+  //TString path="/data/benitezj/Samples/TauEleV541June29_FlatNtpJune29";
+  TString path="/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly23";
+
 
   TauElePlotter*analysis=configTauEle2011("analysis",path);
   analysis->setQCDColor(kMagenta-10);
@@ -19,7 +21,7 @@ void plotTauEle2011(){
   analysis->setZTTType(2);
 
   //raw yields to load samples now
-  analysis->printRawYields("(categoryIso==1&&categoryCh==1)");
+  //analysis->printRawYields("(categoryIso==1&&categoryCh==1)");
 
   //
   Float_t c[4]={.6,.94,.52,.87};//default legend coordinates
@@ -45,7 +47,7 @@ void plotTauEle2011(){
 //   analysis->plotInc("metpt",50,0,150,1,1,"","",0,0," MET   (GeV)","",c,0,"inclusive");    
 //   analysis->plotInc("metphi",70,-3.5,3.5,1,1,"","",0,0," MET  phi ","",c,0,"inclusive");    
 
-//   analysis->plotInc("transversemass",40,0,200,1,1,-1,"","",0,0,"M_{T}   [GeV]","",c,0,"inclusive");
+  analysis->plotInc("transversemass",40,0,200,1,1,-1,"","",0,0,"M_{T}   [GeV]","",c,0,"inclusive");
 //   analysis->plotInc("ditaumass",50,0,200,1,1,1,"","",0,0,"m_{vis}   (GeV)","",c,0,"inclusive");
 //   analysis->plotInc("svfitmass",60,0,300,1,1,"","",0,0," m(#tau#tau)   (GeV)","",c,0,"inclusive");
 //   analysis->plotInc("njet",5,-.5,4.5,1,1,"","",0,0," njet ","",c,0,"inclusive");

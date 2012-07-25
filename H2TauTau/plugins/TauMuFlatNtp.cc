@@ -34,10 +34,7 @@ void TauMuFlatNtp::beginJob(){
   countertaueveto_=0;
   countertauiso_=0;
   countertaumatch_=0;
-  counterditau_=0;
-  counterbestcand_=0;
   countertruth_=0;
-  counter_=0;
 }
 
 
@@ -71,9 +68,11 @@ bool TauMuFlatNtp::applySelections(){
 
   if(!BaseFlatNtp::applySelections()) return 0;
   counterev_++;
+  if(printSelectionPass_)cout<<" pass counterev"<<endl;
 
   if(vetoDiLepton()) return 0;
   counterveto_++;
+  if(printSelectionPass_)cout<<" pass counterveto"<<endl;
 
   std::vector<cmg::TauMu> tmpditaulist=*diTauList_;
   diTauSelList_.clear();
@@ -88,8 +87,9 @@ bool TauMuFlatNtp::applySelections(){
        )     
       diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()>0) counterpresel_++;
-
+  if(diTauSelList_.size()==0) return 0;
+  counterpresel_++;
+  if(printSelectionPass_)cout<<" pass counterpresel"<<endl;
 
   //muon vtx 
   tmpditaulist=diTauSelList_;
@@ -107,8 +107,9 @@ bool TauMuFlatNtp::applySelections(){
     
     diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()>0)countermuvtx_++;
-
+  if(diTauSelList_.size()==0) return 0;
+  countermuvtx_++;
+  if(printSelectionPass_)cout<<" pass countermuvtx"<<endl;  
 
 
   //muion id cuts
@@ -144,8 +145,9 @@ bool TauMuFlatNtp::applySelections(){
     diTauSelList_.push_back(*cand);
       
   }
-  if(diTauSelList_.size()>0)countermuid_++;
-
+  if(diTauSelList_.size()==0) return 0;
+  countermuid_++;
+  if(printSelectionPass_)cout<<" pass countermuid"<<endl;
 
 //   //muon iso cut
 //   tmpditaulist=diTauSelList_;
@@ -154,7 +156,9 @@ bool TauMuFlatNtp::applySelections(){
 //     if(cand->leg2().relIso(0.5)>0.1) continue;    
 //     diTauSelList_.push_back(*cand);
 //   }
-//   if(diTauSelList_.size()>0)countermuiso_++;
+//   if(diTauSelList_.size()==0) return 0;
+//  countermuiso_++;
+//  if(printSelectionPass_)cout<<" pass counterev"<<endl;
 
   //muon trig-match
   tmpditaulist=diTauSelList_;
@@ -170,8 +174,9 @@ bool TauMuFlatNtp::applySelections(){
     if(matchmu) 
       diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()>0)countermumatch_++;
-
+  if(diTauSelList_.size()==0) return 0;
+  countermumatch_++;
+  if(printSelectionPass_)cout<<" pass countermumatch"<<endl;
 
 
   //Tau E/P cut
@@ -184,8 +189,10 @@ bool TauMuFlatNtp::applySelections(){
     
     diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()>0)countertaueop_++;
-
+  if(diTauSelList_.size()==0) return 0;
+  countertaueop_++;
+  if(printSelectionPass_)cout<<" pass countertaueop"<<endl;
+  
   //tau vtx
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
@@ -199,7 +206,9 @@ bool TauMuFlatNtp::applySelections(){
 
     diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()>0)countertauvtx_++;
+  if(diTauSelList_.size()==0) return 0;
+  countertauvtx_++;
+  if(printSelectionPass_)cout<<" pass countertauvtx"<<endl;
 
   //Tau anti-mu cut
   tmpditaulist=diTauSelList_;
@@ -208,7 +217,9 @@ bool TauMuFlatNtp::applySelections(){
     if(cand->leg1().tauID("againstMuonTight")>0.5)
       diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()>0)countertaumuveto_++;
+  if(diTauSelList_.size()==0) return 0;
+  countertaumuveto_++;
+  if(printSelectionPass_)cout<<" pass countertaumuveto"<<endl;
 
   //Tau anti-e cut
   tmpditaulist=diTauSelList_;
@@ -217,7 +228,9 @@ bool TauMuFlatNtp::applySelections(){
     if(cand->leg1().tauID("againstElectronLoose")>0.5)
       diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()>0)countertaueveto_++;
+  if(diTauSelList_.size()==0) return 0;
+  countertaueveto_++;
+  if(printSelectionPass_)cout<<" pass countertaueveto"<<endl;
 
 
 //   //isolation cut on the taus
@@ -230,7 +243,9 @@ bool TauMuFlatNtp::applySelections(){
 //     //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
 //     diTauSelList_.push_back(*cand);
 //   }
-//   if(diTauSelList_.size()>0)countertauiso_++;
+//   if(diTauSelList_.size()==0) return 0;
+//  countertauiso_++;
+//   if(printSelectionPass_)cout<<" pass countertauiso"<<endl;
   
   //Tau Trig-Match
   tmpditaulist=diTauSelList_;
@@ -248,8 +263,9 @@ bool TauMuFlatNtp::applySelections(){
     if(matchtau)
       diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()>0)countertaumatch_++;
-  
+  if(diTauSelList_.size()==0) return 0;
+  countertaumatch_++;
+  if(printSelectionPass_)cout<<" pass countertaumatch"<<endl;
 
 
   /////////Isolation cuts
@@ -274,17 +290,15 @@ bool TauMuFlatNtp::applySelections(){
       diTauSelList_.push_back(*cand);
     }
   }
-  if(diTauSelList_.size()>0)counterditau_++;
 
   categoryIso_=1;//category gets set to "signal" by default
-  nditau_=diTauSelList_.size();
+  nditau_=diTauSelList_.size();//save number of cadidates in event
   if(diTauSelList_.size()==0){//no isolated candidates were found, see if there are any anti-isolated ones
     categoryIso_=2;//category gets set to "sideband" if there was no candidate in the signal box
     for(std::vector<cmg::TauMu>::const_iterator cand = tmpditaulist.begin(); cand != tmpditaulist.end(); ++cand)
       diTauSelList_.push_back(*cand);
   }
-  if(diTauSelList_.size()==0) return 0;//there was no event in the signal or sideband
-  
+ 
   
   //choose the best candidate
   nditau_=diTauSelList_.size();//keep track of the number of candidates per event
@@ -295,8 +309,7 @@ bool TauMuFlatNtp::applySelections(){
       diTauSel_=&(*cand);
       highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
     }
-  
-  counterbestcand_++;
+
 
   //truth match 
   truthEventType_=0;
@@ -305,9 +318,9 @@ bool TauMuFlatNtp::applySelections(){
   if(sampleTruthEventType_>0)
     if(sampleTruthEventType_!=truthEventType_) return 0;
   countertruth_++;
+  if(printSelectionPass_)cout<<" pass countertruth"<<endl;
 
 
-  counter_++;
   return 1;
 }
 
@@ -352,7 +365,7 @@ bool TauMuFlatNtp::fill(){
 
   }
   
-  eventweight_=pupWeight_*embeddedGenWeight_*triggerEffWeight_*selectionEffWeight_;
+  eventweight_=pupWeight_*embeddedGenWeight_*triggerEffWeight_*selectionEffWeight_*signalWeight_;
 
   mupt_=diTauSel_->leg2().pt();
   mueta_=diTauSel_->leg2().eta();
@@ -529,11 +542,7 @@ void TauMuFlatNtp::endJob(){
   cout<<"countertaueveto = "<<countertaueveto_<<endl;
   cout<<"countertauiso = "<<countertauiso_<<endl;
   cout<<"countertaumatch = "<<countertaumatch_<<endl;
-  cout<<"counterditau = "<<counterditau_<<endl;
-  cout<<"counterbestcand = "<<counterbestcand_<<endl;
   cout<<"countertruth = "<<countertruth_<<endl;
-  cout<<"counter = "<<counter_<<endl;
-
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
