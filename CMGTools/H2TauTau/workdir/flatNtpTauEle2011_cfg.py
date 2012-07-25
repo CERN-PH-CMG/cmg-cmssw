@@ -16,6 +16,9 @@ sampleTag = "/TauEleSkimJuly23"
 sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
+print sampleName
+print sampleJobIdx
+print sampleMergeFactor
 
 
 ######The analysis module
@@ -23,7 +26,6 @@ process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
 process.flatNtp = process.flatNtpTauEle.clone()
 from CMGTools.H2TauTau.tools.joseFlatNtpSample_cff import configureFlatNtpSampleTauEle2011
 configureFlatNtpSampleTauEle2011(process.flatNtp,sampleName)
-process.flatNtp.verticesListTag = cms.InputTag('goodOfflinePrimaryVertices')
 process.flatNtp.diTauTag = 'cmgTauElePreSel'
 process.flatNtp.metType = 1
 process.flatNtp.runSVFit = 1
@@ -46,6 +48,46 @@ process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 print process.source.fileNames
 
+#process.source.eventsToProcess = cms.untracked.VEventRange(
+#'1:6068',
+#'1:6099',
+#'1:6580',
+#'1:15132',
+#'1:15150',
+#'1:15362',
+#'1:20565',
+#'1:21111',
+#'1:21127',
+#'1:28242',
+#'1:28490',
+#'1:28653',
+#'1:28762',
+#'1:39658',
+#'1:39959',
+#'1:40145',
+#'1:47160',
+#'1:58271',
+#'1:62162',
+#'1:62337',
+#'1:81878',
+#'1:82084',
+#'1:88471',
+#'1:88704',
+#'1:102863',
+#'1:102946',
+#'1:103290',
+#'1:105123',
+#'1:121657',
+#'1:163950',
+#'1:172248',
+#'1:172411',
+#'1:172498',
+#'1:172509',
+#'1:178461',
+#'1:184088',
+#'1:187591',
+#'1:187788',
+#'1:190397')
 
 #process.source.fileNames = ['file:./tauEle_fullsel_tree_CMG.root']
 
@@ -76,6 +118,8 @@ process.analysis += process.goodOfflinePrimaryVertices
 ##create mu-tau candidates
 process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
 process.analysis +=  process.cmgTauScaler 
+#process.cmgTauScaler.cfg.uncertainty = 0.03
+#process.cmgTauScaler.cfg.nSigma = -1.0
 
 process.load('CMGTools.Common.factories.cmgTauEle_cfi')
 process.cmgTauEle.cfg.leg1Collection = 'cmgTauScaler'

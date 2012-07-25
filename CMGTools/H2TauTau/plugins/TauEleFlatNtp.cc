@@ -124,8 +124,8 @@ void TauEleFlatNtp::beginJob(){
      //https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
 
      if(cand->leg2().numberOfHits()!=0) continue;
-     //if(cand->leg2().passConversionVeto()!=1) continue; 
-     if((*(cand->leg2().sourcePtr()))->passConversionVeto()!=1) continue;
+     if(cand->leg2().passConversionVeto()!=1) continue; 
+     //if((*(cand->leg2().sourcePtr()))->passConversionVeto()!=1) continue;
      
      //for sync
      if(!electronIDWP95(&(cand->leg2())))continue;     
@@ -134,6 +134,7 @@ void TauEleFlatNtp::beginJob(){
      //look here https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentification
      float mvaid=cand->leg2().mvaNonTrigV0();
      float eta=(*(cand->leg2().sourcePtr()))->superCluster()->eta();
+     cout<<eta<<" "<<mvaid<<endl;
      if(fabs(eta)<0.8)
        if(mvaid<0.925)continue; 
      if(0.8<=fabs(eta)&&fabs(eta)<1.479)
@@ -142,7 +143,6 @@ void TauEleFlatNtp::beginJob(){
        if(mvaid<0.985)continue; 
      
      diTauSelList_.push_back(*cand);
-    
    }
    if(diTauSelList_.size()==0) return 0;
    countermuid_++;
