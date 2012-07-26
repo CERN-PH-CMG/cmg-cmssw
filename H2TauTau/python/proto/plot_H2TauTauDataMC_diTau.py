@@ -30,8 +30,8 @@ def lineno():
 ########## rootlogon9 for loose iso M   and Tau pT calculated post dR+nVert RW       ##### don't forget to change weight at line ~401!
 ########## rootlogon10 for loose iso LL4 POST BUG! RW                                ##### don't forget to change weight at line ~401!
 from os import path
-if path.exists('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon10.C'):
-    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon10.C')  # Run ROOT logon script
+if path.exists('../proto/rootlogon10.C'):
+    gROOT.Macro('../proto/rootlogon10.C')  # Run ROOT logon script
 
 run2012=True
 
@@ -42,6 +42,10 @@ ROOT.gROOT.SetBatch(True)
 #def weightQCD(nVert) : 
 #    vertSig[]
 
+def integralAndError(hist):
+    error=array('d',[0])
+    integral=hist.IntegralAndError(1, hist.GetNbinsX(),error)
+    return integral, error[0]
 
 def prepareComponents(dir, config):
     # list of components from configuration file
@@ -210,6 +214,7 @@ if __name__ == '__main__':
     isolationLL2       =  ' && l1RawMVAIso>0.7 && l2RawMVAIso>0.7'
     isolationLL3       =  ' && l1RawMVAIso>0.3 && l2RawMVAIso>0.3'
     isolationLL4       =  ' && l1RawMVAIso>0.5 && l2RawMVAIso>0.5'
+    isolationLL1       =  ' && l1RawMVAIso>0.1 && l2RawMVAIso>0.1'
     isolationLL4old    =  ' && l1LooIso<0.5 && l2LooIso<0.5'
     isolationML        =  ' && ((l1MedMVAIso>0.5 && l2RawMVAIso>0.795) || (l1RawMVAIso>0.795 && l2MedMVAIso>0.5))'
     isolationMM        =  ' && l1MedMVAIso>0.5 && l2MedMVAIso>0.5'
@@ -219,6 +224,7 @@ if __name__ == '__main__':
     Jet0               =  ' && jet1Pt<50'
     BOOSTED            =  ' && jet1Pt>50'
     VBF                =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>250 && nCentralJets==0'
+    VBFlooser          =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>150 && nCentralJets==0'
     VBFtight           =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>4.0 && (jet1Eta*jet2Eta)<0 && mjj>400 && nCentralJets==0 '
     VBFmedium          =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>500 && nCentralJets==0 '
     NOVBF              =  ' && (jet1Pt<50 || jet2Pt<30 || abs(jet1Eta - jet2Eta)<2.5 || (jet1Eta*jet2Eta)>0 || mjj<250 || nCentralJets >0)'
@@ -227,75 +233,108 @@ if __name__ == '__main__':
     #print lineno()
     
     cuts=[
+##### Andreas ###############
+
+        #("CMS_test2012_5_1_embed_zee_newsvfit_l40_j50_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,'',isolationMM,5),
+        #("CMS_test2012_5_1_embed_zee_newsvfit_l40_j50_dR20_tt_Met00_BOOSTED",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,' && dRtt<2.0',isolationMM,5),
+        #("CMS_test2012_5_1_embed_zee_newsvfit_l40_j50_dR20_tt_Met00_VBF",baseline+l1Pt40l2Pt40+VBF,' && dRtt<2.0',isolationMM,5),
+        #("CMS_test2012_5_1_embed_zee_newsvfit_l40_j50_dR20_tt_Met00_BOOSTED_noDR",baseline+l1Pt40l2Pt40+BOOSTED+NOVBF,'',isolationMM,5),
 
 #####  Riccardo  ############################################################################################################################### 
 
+        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_dRRW_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<200.0'   , isolationMM , 5 ),
         #("CMS_2012_5_fb_qcd5LL4_forRW_loose_BOOSTED"     , baselineSS + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
         #("CMS_2012_5_fb_qcd5M_Closure_loose_BOOSTED"     , baselineSS + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
 
-        #("CMS_2012_5_fb_qcd5LL4_Jettology_loose_BOOSTED"     , baseline + BOOSTED , ' && dRtt<2.0 && jet2Pt>30.0' , isolationMM , 5 ),
-        ("CMS_2012_5_fb_qcd5LL4_FINAL_loose_BOOSTED"     , baseline + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        ("CMS_2012_5_fb_qcd5LL4_FINAL_loose_VBF"         , baseline + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<100.' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_dR3_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<3.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_dR2_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_iso04_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<100.' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_iso06_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<100.' , isolationMM , 5 ),
 
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR3_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR2_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso04_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso06_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR3_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR2_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso04_VBF"    , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso06_VBF"    , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_test_BOOSTED"  , baselineSS  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_test_VBF"      , baselineSS  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_test_VBFwider"      , baselineSS  + VBFlooser             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_test_VBFiso06"      , baselineSS  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_sep_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_sep_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_nodR_loose_sep_BOOSTED"  , baseline  + BOOSTED + NOVBF , '' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_SS_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF, ' && dRtt<2.0' , isolationMM , 5 ),
+
+        #("CMS_2012_5_fb_qcd5LL4_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
+
+        ("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+
+        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_SS_BOOSTED"  , baselineSS  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_PREAPP_WIDE_SS_VBF"      , baselineSS  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NODR_BOOSTED"  , baseline  + BOOSTED + NOVBF , '' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NODR_VBF"      , baseline  + VBF             , '' , isolationMM , 5 ),
 	  ]
     
     for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
      bareCut = cut
      if str(prefix).find("VBF") > 0 :
-       rebin = 2		
+       rebin = 2
      else :
        rebin = 1	
      for var, nx, xmin, xmax in [
-        #('svfitMass'        ,int(15      ), 0   , 300    ), 
-        #('svfitMass*1.03'   ,int(15      ), 0   , 300    ),
-        #('svfitMass*0.97'   ,int(15      ), 0   , 300    ),
-        #('met'              ,int(40/rebin), 0   , 200    ),
-        #('l1Pt'             ,int(15/rebin), 0   , 300    ),   # was 75 bins
-        #('l2Pt'             ,int(10/rebin), 0   , 200    ),   # was 75 bins
-        #('jet1Pt'           ,int(25/rebin), 0   , 500    ),
-        #('jet2Pt'           ,int(25/rebin), 0   , 500    ),
-        #('visMass'          ,int(30/rebin), 0   , 300    ),
-        #('visMass*1.03'     ,int(30/rebin), 0   , 300    ),
-        #('visMass*0.97'     ,int(30/rebin), 0   , 300    ),
-        #('nVert'            ,int(25/rebin), 0   , 50     ),
-        #('l1Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
-        #('l2Eta'            ,int(20/rebin), -3  , 3      ),   # was 40 bins
-        #('jet1Eta'          ,int(20/rebin), -5  , 5      ),
-        #('jet2Eta'          ,int(20/rebin), -5  , 5      ),
-        #('mjj'              ,int(20/rebin), 0   ,  800   ),
-        #('nJets'            ,10           , 0   , 10     ),
-        #('dRtt'             ,int(15/rebin), 0   , 5      ),
-        #('dPhitt'           ,int(15/rebin), 0   , 3.15   ),
-        #('mt'               ,int(20/rebin), 0   , 200    ),
-        #('pThiggs'          ,int(25/rebin), 0   , 300    ),
-        #('diTauPt'          ,int(25/rebin), 0   , 300    ),
-        #('dEtajj'           ,int(20/rebin), -10 , 10     ),
-        #('dEtatt'           ,int(45/rebin), 0   , 4.5    ),
-        #('dEtattjj'         ,int(10/rebin), 0   , 10     ),
-        #('dPhijj'           ,int(20/rebin), 0   , 3.15   ),
-        #('mttj'             ,int(20/rebin), 0   , 1000   ),
-        #('l1DecayMode'      ,12           , 0   , 12     ),
-        #('l2DecayMode'      ,12           , 0   , 12     ),
-        #('diTauCharge'      ,7            , -3  , 3      ),
-        #('l1LooIso'         ,2            , 0   ,  2     ),
-        #('l2LooIso'         ,2            , 0   ,  2     ),
-        #('l1MedIso'         ,2            , 0   ,  2     ),
-        #('l2MedIso'         ,2            , 0   ,  2     ),
-        #('l1TigIso'         ,2            , 0   ,  2     ),
-        #('l2TigIso'         ,2            , 0   ,  2     ),
-        #('l1RawMVAIso'      ,100          , 0   , 1.00001),
-        #('l1MedMVAIso'      ,2            , 0   , 2      ),
-        #('l1TigMVAIso'      ,2            , 0   , 2      ),
-        #('l1LooseEle'       ,2            , 0   , 2      ),
-        #('l1MVAEle'         ,2            , 0   , 2      ),
-        #('l1LooseMu'        ,2            , 0   , 2      ),
-        #('l2RawMVAIso'      ,100          , 0   , 1.00001),
-        #('l2MedMVAIso'      ,2            , 0   , 2      ),
-        #('l2TigMVAIso'      ,2            , 0   , 2      ),
-        #('l2LooseEle'       ,2            , 0   , 2      ),
-        #('l2MVAEle'         ,2            , 0   , 2      ),
-        #('l2LooseMu'        ,2            , 0   , 2      ),
-        #('jet1Eta-jet2Eta'  ,int(40/rebin), -5  , 5      ),
+        ('svfitMass'        ,int(30/rebin), 0 , 300    ), 
+        #('svfitMass'        ,int(20/rebin), 0 , 300    ), 
+        ('svfitMass*1.03'   ,int(30/rebin), 0 , 300    ),
+        ('svfitMass*0.97'   ,int(30/rebin), 0 , 300    ),
+        ('dRtt'             ,int(15/rebin), 0 , 5      ),
+        ('jet1Pt'           ,int(20/rebin), 0 , 600    ),
+        ('nVert'            ,int(25/rebin), 0 , 50     ),
+        ('l1Pt'             ,int(15/rebin), 0 , 300    ),   # was 75 bins
+        ('l2Pt'             ,int(20/rebin), 0 , 200    ),   # was 75 bins
+        ('jet2Pt'           ,int(25/rebin), 0 , 500    ),
+        ('met'              ,int(40/rebin), 0 , 200    ),
+        ('l1Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
+        ('l2Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
+        ('visMass'          ,int(30/rebin), 0 , 300    ),
+        #('visMass*1.03'     ,int(30/rebin), 0 , 300    ),
+        #('visMass*0.97'     ,int(30/rebin), 0 , 300    ),
+        ('jet1Eta'          ,int(20/rebin), -5, 5      ),
+        ('jet2Eta'          ,int(20/rebin), -5, 5      ),
+        ('mjj'              ,int(30/rebin), 0 , 800    ),
+        ('nJets'            ,10           , 0 , 10     ),
+        ('dPhitt'           ,int(40/rebin), 0 , 3.15   ),
+        ('mt'               ,int(40/rebin), 0 , 200    ),
+        ('pThiggs'          ,int(40/rebin), 0 , 300    ),
+        ('diTauPt'          ,int(40/rebin), 0 , 300    ),
+        #('l1DecayMode'      ,12           , 0 , 12     ),
+        #('l2DecayMode'      ,12           , 0 , 12     ),
+        #('mttj'             ,int(40/rebin), 0 , 1000   ),
+        #('diTauCharge'      ,7            , -3, 3      ),
+        #('l1LooIso'         ,2            , 0,  2      ),
+        #('l2LooIso'         ,2            , 0,  2      ),
+        #('l1MedIso'         ,2            , 0,  2      ),
+        #('l2MedIso'         ,2            , 0,  2      ),
+        #('l1TigIso'         ,2            , 0,  2      ),
+        #('l2TigIso'         ,2            , 0,  2      ),
+        #('l1RawMVAIso'      ,100          , 0 , 1.00001),
+        #('l1MedMVAIso'      ,2            , 0 , 2      ),
+        #('l1TigMVAIso'      ,2            , 0 , 2      ),
+        #('l1LooseEle'       ,2            , 0 , 2      ),
+        #('l1MVAEle'         ,2            , 0 , 2      ),
+        #('l1LooseMu'        ,2            , 0 , 2      ),
+        #('l2RawMVAIso'      ,100          , 0 , 1.00001),
+        #('l2MedMVAIso'      ,2            , 0 , 2      ),
+        #('l2TigMVAIso'      ,2            , 0 , 2      ),
+        #('l2LooseEle'       ,2            , 0 , 2      ),
+        #('l2MVAEle'         ,2            , 0 , 2      ),
+        #('l2LooseMu'        ,2            , 0 , 2      ),
       ]:
       
       cut     = bareCut
@@ -344,8 +383,7 @@ if __name__ == '__main__':
       #looseisocut = isolationLL4old +" && !(1 "+isocut+")"
       #########################################################
       
-      #looseisocut=isolationMNM+" && !(1 "+isocut+")"
-      semilooseisocut = isolationMLL+" && !(1 "+isocut+")"
+      semilooseisocut=isolationLL3+" && !(1 "+isocut+")"
       
       if qcdEstimate==0:
         # MET based QCD estimation
@@ -437,16 +475,13 @@ if __name__ == '__main__':
                                              xmin,                             \
                                              xmax,                             \
                                              cut = cut+looseisocut+antiqcdcut, \
-                                             #weight = weight+"*weightQCD_dR(dRtt)",    \
-                                             #weight = weight+"*weightQCD_l1Pt(l1Pt)",  \
-                                             #weight = weight+"*weightQCD_l2Pt(l2Pt)",  \
-                                             #weight = weight+"*weightQCD_nVert(nVert)",\
-                                             weight = weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
-                                             #weight = weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)*weightQCD_l2Pt(l2Pt)*weightQCD_l1Pt(l1Pt)",\
-                                             #weight = weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
-                                             #weight = weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
-                                             #weight = weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
-                                             #weight = weight,                    \
+                                             #weight=weight+"*weightQCD_nVert(nVert)",\
+                                             #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
+                                             #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
+                                             #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
+                                             #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
+                                             weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
+                                             #weight=weight,                    \
                                              embed=options.embed)
       #print lineno()
       
@@ -614,63 +649,165 @@ if __name__ == '__main__':
         if qcdEstimate == 4:
          QCDShape, QCDScale = QCDEstimate4(prefix,prefix1,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoSS, plotVarDataSemiLooseIsoSS, log)
         if qcdEstimate == 5:
-         # dont't trust too much, weighting techique spoilt here, to be re-tought
-         QCDShapeSemi  , QCDScaleSemi  , QCDlooseSSSemi     , QCDtightSSSemi  = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS      , log)
-         # uncomment just for correlations (and remeber to uncomment the lines at the bootom of this file)
-         #QCDShapeDummy , QCDScaleDummy , QCDlooseSSWeighted , QCDtightSSDummy = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS    , plotVarDataLooseIsoSSWeighted                              , log)
-         QCDShape      , QCDScale      , QCDlooseSS         , QCDtightSS      = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS    ,  plotVarDataLooseIsoOSMC ,  plotVarDataLooseIsoSS          , log)
-  
-         QCDShapePlot = copy.deepcopy(QCDShape)
-         QCDShapePlot.SetStyle( sRedLine )
-         QCDShapePlot.weighted.Scale(QCDScale)
-          
-         QCDShapeSemiPlot = copy.deepcopy(QCDShapeSemi)
-         QCDShapeSemiPlot.SetStyle( sBlueLine )
-         QCDShapeSemiPlot.weighted.Scale(QCDScaleSemi)
-         #print lineno()
-  
-         if True:
-            print "tight SS"
-            print "Data:"                    , plotVarDataSS.Hist("Data").Integral()
-            print "TTJets:"                  , plotVarDataSS.Hist("TTJets").Integral()
-            print "DYJets:"                  , plotVarDataSS.Hist("DYJets").Integral()#+plotVarDataSS.Hist("DYJets_Photon").Integral()
-            print "DYJets_Electron:"         , plotVarDataSS.Hist("DYJets_Electron").Integral()
-            print "DYJets_Fakes:"            , plotVarDataSS.Hist("DYJets_Fakes").Integral()
-            print "WJets:"                   , plotVarDataSS.Hist("WJets").Integral()+plotVarDataSS.Hist("WJets_Fakes").Integral()
-            print "DiBoson:"                 , plotVarDataSS.Hist("WW").Integral()+plotVarDataSS.Hist("WZ").Integral()+plotVarDataSS.Hist("ZZ").Integral()
-  
+   	 QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi , tightLooseErrSemi = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
+   	 QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     , tightLooseErr	= QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoOSMC, plotVarDataLooseIsoSS, log)
+   
+   	if False:
+   	 plotVarDataLooseIsoSS_sys1 = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+   			      nx, xmin, xmax,
+   			      cut = cutSS+looseisocut+antiqcdcut+" && l1Pt>70", weight=weight,
+   			      embed=options.embed)
+   	 plotVarDataLooseIsoSS_sys2 = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+   			      nx, xmin, xmax,
+   			      cut = cutSS+looseisocut+antiqcdcut+" && l2Pt>50", weight=weight,
+   			      embed=options.embed)
+   	 plotVarDataLooseIsoSS_sys3 = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+   			      nx, xmin, xmax,
+   			      cut = cutSS+looseisocut+antiqcdcut+" && jet1Pt>100", weight=weight,
+   			      embed=options.embed)
+   	 plotVarDataSS_sys1 = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+   			      nx, xmin, xmax,
+   			      cut = cutSS+isocut+antiqcdcut+" && l1Pt>70", weight=weight,
+   			      embed=options.embed)
+   	 plotVarDataSS_sys2 = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+   			      nx, xmin, xmax,
+   			      cut = cutSS+isocut+antiqcdcut+" && l2Pt>50", weight=weight,
+   			      embed=options.embed)
+   	 plotVarDataSS_sys3 = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
+   			      nx, xmin, xmax,
+   			      cut = cutSS+isocut+antiqcdcut+" && jet1Pt>100", weight=weight,
+   			      embed=options.embed)
+ 	  		      
+   	 tightLooseErr,tightLooseErrSys = QCDYieldError(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoSS, 
+   			     plotVarDataSS_sys1, plotVarDataLooseIsoSS_sys1,
+   			     plotVarDataSS_sys2, plotVarDataLooseIsoSS_sys2,
+   			     plotVarDataSS_sys3, plotVarDataLooseIsoSS_sys3,
+   	  		     log)
+   	else:
+   	 # if QCD yield sys is not evaluated inflate by hand
+   	 #if prefix.find('BOOSTED') > 0 : 
+   	 #    tightLooseErr=0.25
+   	 #if prefix.find('VBF') > 0 : 
+   	 #    tightLooseErr=0.45
+   	 if prefix.find('BOOSTED') > 0 : 
+   	     tightLooseErr=0.056
+   	 if prefix.find('VBF') > 0 : 
+   	     tightLooseErr=0.22
+   
+        if qcdEstimate==5:
+   	 print "QCD yield uncertainty:", tightLooseErr
+   	 if prefix.find('BOOSTED') > 0 : 
+             f=TFile.Open("BOOSTED_shape.root")
+   	 if prefix.find('VBF') > 0 : 
+             f=TFile.Open("VBF_shape.root")
+         uncup=f.Get("UncDown")
+   	 QCDShapeErrorPlot=copy.deepcopy(QCDShape)
+   	 QCDShapeErrorPlot.SetStyle( sBlue )
+   	 QCDShapeErrorPlot.weighted.Scale(QCDScale)
+   	 for b in range(QCDShapeErrorPlot.weighted.GetNbinsX()):
+   	     QCDShapeErrorPlot.weighted.SetBinError(b+1,uncup.GetBinContent(uncup.FindBin(QCDShapeErrorPlot.weighted.GetBinCenter(b+1)))*QCDShapeErrorPlot.weighted.GetBinContent(b+1))
+   	 QCDShapeErrorPlot.weighted.SetMarkerSize(0)
+   
+   	 QCDYieldErrorPlot=copy.deepcopy(QCDShape)
+   	 QCDYieldErrorPlot.SetStyle( sOrange )
+   	 QCDYieldErrorPlot.weighted.Scale(QCDScale)
+   	 for b in range(QCDYieldErrorPlot.weighted.GetNbinsX()):
+   	     QCDYieldErrorPlot.weighted.SetBinError(b+1,tightLooseErr*QCDYieldErrorPlot.weighted.GetBinContent(b+1))
+   	 QCDYieldErrorPlot.weighted.SetMarkerSize(0)
+     
+         if str(prefix).find("SS") > 0 :
+   	   for b in range(QCDYieldErrorPlot.weighted.GetNbinsX()):
+   	     QCDYieldErrorPlot.weighted.SetBinError(b+1,math.sqrt(pow(QCDYieldErrorPlot.weighted.GetBinError(b+1),2)+pow(QCDShapeErrorPlot.weighted.GetBinError(b+1),2)))
+   	  
+   	 QCDShapePlot=copy.deepcopy(QCDShape)
+   	 QCDShapePlot.SetStyle( sRedLine )
+   	 QCDShapePlot.weighted.Scale(QCDScale)
+
+         if str(prefix).find("SS") > 0 :
+   	   for b in range(QCDShapePlot.weighted.GetNbinsX()):
+   	      QCDShapePlot.weighted.SetBinError(b+1,math.sqrt(pow(QCDShapePlot.weighted.GetBinError(b+1),2)+pow(QCDShapeErrorPlot.weighted.GetBinError(b+1),2)+pow(QCDYieldErrorPlot.weighted.GetBinError(b+1),2)))
+   	  
+   	 QCDShapeSemiPlot=copy.deepcopy(QCDShapeSemi)
+   	 QCDShapeSemiPlot.SetStyle( sBlueLine )
+   	 QCDShapeSemiPlot.weighted.Scale(QCDShapePlot.weighted.Integral()/QCDShapeSemiPlot.weighted.Integral())
+   
+   	 QCDShapeSSPlot=copy.deepcopy(QCDtightSS)
+   	 QCDShapeSSPlot.SetStyle( sGreenLine )
+   	 for b in range(QCDShapeErrorPlot.weighted.GetNbinsX()):
+           if QCDlooseSSSemi.weighted.GetBinContent(b+1)>0:
+   	     QCDShapeSSPlot.weighted.SetBinContent(b+1,QCDShapeSSPlot.weighted.GetBinContent(b+1)*QCDShapeSemi.weighted.GetBinContent(b+1)/QCDlooseSSSemi.weighted.GetBinContent(b+1))
+   	     #QCDShapeSSPlot.weighted.SetBinContent(b+1,QCDShapeSemi.weighted.GetBinContent(b+1)/QCDlooseSSSemi.weighted.GetBinContent(b+1))
+   	     #QCDShapeSSPlot.weighted.SetBinError(b+1,QCDShapeSemi.weighted.GetBinError(b+1)/QCDlooseSSSemi.weighted.GetBinContent(b+1))
+	   else:
+   	     QCDShapeSSPlot.weighted.SetBinContent(b+1,0)
+   	 QCDShapeSSPlot.weighted.Scale(QCDShapePlot.weighted.Integral()/QCDShapeSSPlot.weighted.Integral())
+   
+   	 if True:
+   	    print "tight SS"
+   	    print "Data:"		     , plotVarDataSS.Hist("Data").Integral()
+   	    print "TTJets:"		     , plotVarDataSS.Hist("TTJets").Integral()
+   	    print "DYJets:"		     , plotVarDataSS.Hist("DYJets").Integral()#+plotVarDataSS.Hist("DYJets_Photon").Integral()
+   	    print "DYJets_Electron:"	     , plotVarDataSS.Hist("DYJets_Electron").Integral()
+   	    print "DYJets_Fakes:"	     , plotVarDataSS.Hist("DYJets_Fakes").Integral()
+   	    print "WJets:"		     , plotVarDataSS.Hist("WJets").Integral()+plotVarDataSS.Hist("WJets_Fakes").Integral()
+     	    print "DiBoson:"		     , plotVarDataSS.Hist("WW").Integral()+plotVarDataSS.Hist("WZ").Integral()+plotVarDataSS.Hist("ZZ").Integral()
+
          if True:
             print "loose OS"
-            print "Data:"                    , plotVarDataLooseIsoOS.Hist("Data").Integral()
-            print "TTJets:"                  , plotVarDataLooseIsoOS.Hist("TTJets").Integral()
-            print "DYJets:"                  , plotVarDataLooseIsoOS.Hist("DYJets").Integral()#+plotVarDataLooseIsoOS.Hist("DYJets_Photon").Integral()
-            print "DYJets_Electron:"         , plotVarDataLooseIsoOS.Hist("DYJets_Electron").Integral()
-            print "DYJets_Fakes:"            , plotVarDataLooseIsoOS.Hist("DYJets_Fakes").Integral()
-            print "WJets:"                   , plotVarDataLooseIsoOS.Hist("WJets").Integral()+plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
-            print "DiBoson:"                 , plotVarDataLooseIsoOS.Hist("WW").Integral()+plotVarDataLooseIsoOS.Hist("WZ").Integral()+plotVarDataLooseIsoOS.Hist("ZZ").Integral()
-  
+            print "Data:"		     , plotVarDataLooseIsoOS.Hist("Data").Integral()
+            print "TTJets:"		     , plotVarDataLooseIsoOS.Hist("TTJets").Integral()
+            print "DYJets:"		     , plotVarDataLooseIsoOS.Hist("DYJets").Integral()#+plotVarDataLooseIsoOS.Hist("DYJets_Photon").Integral()
+            print "DYJets_Electron:"	     , plotVarDataLooseIsoOS.Hist("DYJets_Electron").Integral()
+            print "DYJets_Fakes:"	     , plotVarDataLooseIsoOS.Hist("DYJets_Fakes").Integral()
+            print "WJets:"		     , plotVarDataLooseIsoOS.Hist("WJets").Integral()+plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
+            print "DiBoson:"		     , plotVarDataLooseIsoOS.Hist("WW").Integral()+plotVarDataLooseIsoOS.Hist("WZ").Integral()+plotVarDataLooseIsoOS.Hist("ZZ").Integral()
+       
          if True:
             print "loose SS"
-            print "Data:"                    , plotVarDataLooseIsoSS.Hist("Data").Integral()
-            print "TTJets:"                  , plotVarDataLooseIsoSS.Hist("TTJets").Integral()
-            print "DYJets:"                  , plotVarDataLooseIsoSS.Hist("DYJets").Integral()#+plotVarDataLooseIsoSS.Hist("DYJets_Photon").Integral()
-            print "DYJets_Electron:"         , plotVarDataLooseIsoSS.Hist("DYJets_Electron").Integral()
-            print "DYJets_Fakes:"            , plotVarDataLooseIsoSS.Hist("DYJets_Fakes").Integral()
-            print "WJets:"                   , plotVarDataLooseIsoSS.Hist("WJets").Integral()+plotVarDataLooseIsoSS.Hist("WJets_Fakes").Integral()
-            print "DiBoson:"                 , plotVarDataLooseIsoSS.Hist("WW").Integral()+plotVarDataLooseIsoSS.Hist("WZ").Integral()+plotVarDataLooseIsoSS.Hist("ZZ").Integral()
-  
+            print "Data:"		     , plotVarDataLooseIsoSS.Hist("Data").Integral()
+            print "TTJets:"		     , plotVarDataLooseIsoSS.Hist("TTJets").Integral()
+            print "DYJets:"		     , plotVarDataLooseIsoSS.Hist("DYJets").Integral()#+plotVarDataLooseIsoSS.Hist("DYJets_Photon").Integral()
+            print "DYJets_Electron:"	     , plotVarDataLooseIsoSS.Hist("DYJets_Electron").Integral()
+            print "DYJets_Fakes:"	     , plotVarDataLooseIsoSS.Hist("DYJets_Fakes").Integral()
+            print "WJets:"		     , plotVarDataLooseIsoSS.Hist("WJets").Integral()+plotVarDataLooseIsoSS.Hist("WJets_Fakes").Integral()
+            print "DiBoson:"		     , plotVarDataLooseIsoSS.Hist("WW").Integral()+plotVarDataLooseIsoSS.Hist("WZ").Integral()+plotVarDataLooseIsoSS.Hist("ZZ").Integral()
+
          ymax = max(QCDShapePlot.GetMaximum(),QCDShapeSemiPlot.GetMaximum())*1.5
           
          QCDShapePlot.weighted.Draw("HISTe")
+         #QCDShapePlot.weighted.Draw("HIST")
          if log:
              QCDShapePlot.GetYaxis().SetRangeUser(0.1,ymax)
          else:
              QCDShapePlot.GetYaxis().SetRangeUser(0,ymax)
-         QCDShapeSemiPlot.weighted.Draw("HISTeSAME")
-       
+         #QCDShapeSemiPlot.weighted.Draw("HISTeSAME")
+         if str(prefix).find("SS") > 0 :
+             QCDShapeSSPlot.weighted.Draw("HISTeSAME")
+         QCDYieldErrorPlot.weighted.Draw("e2SAME")
+	 QCDShapeErrorPlot.weighted.Draw("e2SAME")
+         QCDShapePlot.weighted.Draw("esame")
+         l=TLegend(0.45,0.65,0.9,0.9)
+         if str(prefix).find("SS") > 0 :
+             l.AddEntry(QCDShapePlot.weighted,"Estimated SS QCD shape","p")
+	 else:
+             l.AddEntry(QCDShapePlot.weighted,"QCD shape","p")
+         l.AddEntry(QCDShapeErrorPlot.weighted,"Shape uncertainty","f")
+         if str(prefix).find("SS") > 0 :
+             l.AddEntry(QCDYieldErrorPlot.weighted,"Yield(+shape) uncertainty","f")
+             l.AddEntry(QCDShapePlot.weighted,"Stat(+yield+shape) uncertainty","le")
+             l.AddEntry(QCDShapeSSPlot.weighted,"True SS QCD shape","lep")
+	 else:
+             l.AddEntry(QCDYieldErrorPlot.weighted,"Yield uncertainty","f")
+             l.AddEntry(QCDShapePlot.weighted,"Stat uncertainty","le")
+         l.SetTextSize(0.035)
+         l.SetFillStyle(0)
+         l.Draw("same")
+         
          gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDcheck.png")
+         gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDcheck.pdf")
          gPad.WaitPrimitive()
-        
+         QCDShapeSSPlot.weighted.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDcheck.root")
+	
         plotVarDataOS.AddHistogram("QCDdata",QCDShape.weighted)
         plotVarDataOS.Hist('QCDdata').stack = True
         plotVarDataOS.Hist('QCDdata').SetStyle( sBlack )
@@ -686,18 +823,21 @@ if __name__ == '__main__':
         if yields == True :
           Yields_dump = open(os.getcwd()+"/"+prefix+"/Yields_"+var+"_mH"+str(mIndex)+".txt","w")
           print >> Yields_dump, "Yields for MC and Data Higgs Mass = "+str(mIndex)+" GeV"
-          print >> Yields_dump, "Data: \t\t\t"                     , plotVarDataOS.Hist("Data").Integral()
-          print >> Yields_dump, "TTJets: \t\t"                     , plotVarDataOS.Hist("TTJets").Integral()
-          print >> Yields_dump, "DYJets: \t\t"                     , plotVarDataOS.Hist("DYJets").Integral()
-          print >> Yields_dump, "DYJets_Electron: \t"              , plotVarDataOS.Hist("DYJets_Electron").Integral()
-          print >> Yields_dump, "DYJets_Fakes: \t\t"               , plotVarDataOS.Hist("DYJets_Fakes").Integral()
-          print >> Yields_dump, "WJets: \t\t\t"                    , plotVarDataOS.Hist("WJets").Integral()+plotVarDataOS.Hist("WJets_Fakes").Integral()
-          print >> Yields_dump, "W3Jets: \t\t\t"                   , plotVarDataOS.Hist("W3Jets").Integral()
-          print >> Yields_dump, "DiBoson: \t\t"                    , plotVarDataOS.Hist("WW").Integral()+plotVarDataOS.Hist("WZ").Integral()+plotVarDataOS.Hist("ZZ").Integral()
-          print >> Yields_dump, "QCDdata: \t\t"                    , plotVarDataOS.Hist("QCDdata").Integral()
-          print >> Yields_dump, str('Higgsgg' +str(mIndex)+":\t\t"), plotVarDataOS.Hist(str('Higgsgg' +str(mIndex))).Integral()
-          print >> Yields_dump, str('HiggsVBF'+str(mIndex)+":\t\t"), plotVarDataOS.Hist(str('HiggsVBF'+str(mIndex))).Integral()
-          print >> Yields_dump, str('HiggsVH' +str(mIndex)+":\t\t"), plotVarDataOS.Hist(str('HiggsVH' +str(mIndex))).Integral()
+	  print 
+          print >> Yields_dump, "Data: \t\t\t"                     , plotVarDataOS.Hist("Data").weighted.Integral(), "+-", integralAndError(plotVarDataOS.Hist("Data").weighted)[1]
+          print >> Yields_dump, "TTJets: \t\t"                     , plotVarDataOS.Hist("TTJets").Integral(), "+-", integralAndError(plotVarDataOS.Hist("TTJets").weighted)[1]
+          print >> Yields_dump, "DYJets: \t\t"                     , plotVarDataOS.Hist("DYJets").Integral(), "+-", integralAndError(plotVarDataOS.Hist("DYJets").weighted)[1]
+          print >> Yields_dump, "DYJets_Electron: \t"              , plotVarDataOS.Hist("DYJets_Electron").Integral(), "+-", integralAndError(plotVarDataOS.Hist("DYJets_Electron").weighted)[1]
+          print >> Yields_dump, "DYJets_Fakes: \t\t"               , plotVarDataOS.Hist("DYJets_Fakes").Integral(), "+-", integralAndError(plotVarDataOS.Hist("DYJets_Fakes").weighted)[1]
+          print >> Yields_dump, "WJets: \t\t\t"                    , plotVarDataOS.Hist("WJets").Integral()+plotVarDataOS.Hist("WJets_Fakes").Integral(),"+-",\
+	           math.sqrt(pow(integralAndError(plotVarDataOS.Hist("WJets").weighted)[1],2)+pow(integralAndError(plotVarDataOS.Hist("WJets_Fakes").weighted)[1],2))
+          print >> Yields_dump, "W3Jets: \t\t\t"                   , plotVarDataOS.Hist("W3Jets").Integral(), "+-", integralAndError(plotVarDataOS.Hist("W3Jets").weighted)[1]
+          print >> Yields_dump, "DiBoson: \t\t"                    , plotVarDataOS.Hist("WW").Integral()+plotVarDataOS.Hist("WZ").Integral()+plotVarDataOS.Hist("ZZ").Integral(),"+-",\
+	           math.sqrt(pow(integralAndError(plotVarDataOS.Hist("WW").weighted)[1],2)+pow(integralAndError(plotVarDataOS.Hist("WZ").weighted)[1],2)+pow(integralAndError(plotVarDataOS.Hist("ZZ").weighted)[1],2))
+          print >> Yields_dump, "QCDdata: \t\t"                    , plotVarDataOS.Hist("QCDdata").Integral(), "+-", integralAndError(plotVarDataOS.Hist("QCDdata").weighted)[1]
+          print >> Yields_dump, str('Higgsgg' +str(mIndex)+":\t\t"), plotVarDataOS.Hist(str('Higgsgg' +str(mIndex))).Integral(), "+-", integralAndError(plotVarDataOS.Hist(str('Higgsgg' +str(mIndex))).weighted)[1]
+          print >> Yields_dump, str('HiggsVBF'+str(mIndex)+":\t\t"), plotVarDataOS.Hist(str('HiggsVBF'+str(mIndex))).Integral(), "+-", integralAndError(plotVarDataOS.Hist(str('HiggsVBF'+str(mIndex))).weighted)[1]
+          print >> Yields_dump, str('HiggsVH' +str(mIndex)+":\t\t"), plotVarDataOS.Hist(str('HiggsVH' +str(mIndex))).Integral(), "+-", integralAndError(plotVarDataOS.Hist(str('HiggsVH' +str(mIndex))).weighted)[1]
           Yields_dump.close()
           
         #####################################################
@@ -765,6 +905,7 @@ if __name__ == '__main__':
             plotVarDataOS.DrawStack("HIST",xmin,xmax,0,ymax)
       
         gPad.SaveAs(prefix1+prefix+'_'+plotVarDataOS.varName+"_mH"+str(mIndex)+"_data.png")
+        gPad.SaveAs(prefix1+prefix+'_'+plotVarDataOS.varName+"_mH"+str(mIndex)+"_data.pdf")
         gPad.WaitPrimitive()
 
         #####################################################

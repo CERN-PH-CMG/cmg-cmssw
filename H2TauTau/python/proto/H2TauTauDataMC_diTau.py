@@ -17,6 +17,14 @@ sRedLine   = Style(lineColor=2     , markerColor=2     , fillStyle=0)
 sBlueLine  = Style(lineColor=4     , markerColor=4     , fillStyle=0)
 sGreenLine = Style(lineColor=kGreen, markerColor=kGreen, fillStyle=0)
 
+sOrange.fillStyle=1001
+sViolet.fillStyle=1001
+sRed.fillStyle=1001
+sGreen.fillStyle=1001
+sBlue.fillStyle=1001
+sYellow.fillStyle=1001
+sBlack.fillStyle=1001
+
 class H2TauTauDataMC( AnalysisDataMC ):
 
     def __init__(self, varName, directory, selComps, weights,
