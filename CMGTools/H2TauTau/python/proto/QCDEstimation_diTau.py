@@ -380,7 +380,7 @@ def QCDEstimate2(prefix,prefix1,var,xmin,xmax,\
       
       QCDScale=tightLoose
       
-      return QCDlooseOS, QCDScale, QCDlooseSS, QCDtightSS
+      return QCDlooseOS, QCDScale, QCDlooseSS, QCDtightSS, tightLooseErr/tightLoose
 
 
 def QCD_WJets_Estimate2(prefix,prefix1,var,xmin,xmax,\
@@ -650,6 +650,69 @@ def QCDEstimate5(prefix,prefix1,xmin,xmax,\
       QCDScale=OSSS
       
       return QCDtightSS,QCDScale
+
+
+def QCDYieldError(prefix,prefix1,var,xmin,xmax,\
+                 plotVarDataSS, plotVarDataLooseIsoSS,\
+                 plotVarDataSS_sys1, plotVarDataLooseIsoSS_sys1,\
+                 plotVarDataSS_sys2, plotVarDataLooseIsoSS_sys2,\
+                 plotVarDataSS_sys3, plotVarDataLooseIsoSS_sys3,\
+                 log):
+      QCDlooseSS=copy.deepcopy(plotVarDataLooseIsoSS.Hist("Data"))
+      substractMCbackground(QCDlooseSS, plotVarDataLooseIsoSS)
+
+      QCDtightSS=copy.deepcopy(plotVarDataSS.Hist("Data"))
+      substractMCbackground(QCDtightSS, plotVarDataSS)
+
+      tightLoose=QCDtightSS.Integral()/QCDlooseSS.Integral()
+      tightLooseErr=tightLoose*math.sqrt(1./abs(QCDtightSS.Integral()) + 1./abs(QCDlooseSS.Integral()))
+      
+      QCDlooseSS_sys1=copy.deepcopy(plotVarDataLooseIsoSS_sys1.Hist("Data"))
+      substractMCbackground(QCDlooseSS_sys1, plotVarDataLooseIsoSS_sys1)
+
+      QCDtightSS_sys1=copy.deepcopy(plotVarDataSS_sys1.Hist("Data"))
+      substractMCbackground(QCDtightSS_sys1, plotVarDataSS_sys1)
+
+      tightLoose_sys1=QCDtightSS_sys1.Integral()/QCDlooseSS_sys1.Integral()
+      tightLooseErr_sys1=tightLoose_sys1*math.sqrt(1./abs(QCDtightSS_sys1.Integral()) + 1./abs(QCDlooseSS_sys1.Integral()))
+      
+      QCDlooseSS_sys2=copy.deepcopy(plotVarDataLooseIsoSS_sys2.Hist("Data"))
+      substractMCbackground(QCDlooseSS_sys2, plotVarDataLooseIsoSS_sys2)
+
+      QCDtightSS_sys2=copy.deepcopy(plotVarDataSS_sys2.Hist("Data"))
+      substractMCbackground(QCDtightSS_sys2, plotVarDataSS_sys2)
+
+      tightLoose_sys2=QCDtightSS_sys2.Integral()/QCDlooseSS_sys2.Integral()
+      tightLooseErr_sys2=tightLoose_sys2*math.sqrt(1./abs(QCDtightSS_sys2.Integral()) + 1./abs(QCDlooseSS_sys2.Integral()))
+      
+      QCDlooseSS_sys3=copy.deepcopy(plotVarDataLooseIsoSS_sys3.Hist("Data"))
+      substractMCbackground(QCDlooseSS_sys3, plotVarDataLooseIsoSS_sys3)
+
+      QCDtightSS_sys3=copy.deepcopy(plotVarDataSS_sys3.Hist("Data"))
+      substractMCbackground(QCDtightSS_sys3, plotVarDataSS_sys3)
+
+      tightLoose_sys3=QCDtightSS_sys3.Integral()/QCDlooseSS_sys3.Integral()
+      tightLooseErr_sys3=tightLoose_sys3*math.sqrt(1./abs(QCDtightSS_sys3.Integral()) + 1./abs(QCDlooseSS_sys3.Integral()))
+      
+      if tightLoose<tightLooseErr/2.:
+          tightLoose=tightLooseErr/2.
+      
+      if tightLoose_sys1<tightLooseErr_sys1/2.:
+          tightLoose_sys1=tightLooseErr_sys1/2.
+      
+      if tightLoose_sys2<tightLooseErr_sys2/2.:
+          tightLoose_sys2=tightLooseErr_sys2/2.
+      
+      if tightLoose_sys3<tightLooseErr_sys3/2.:
+          tightLoose_sys3=tightLooseErr_sys3/2.
+      
+      print "QCD yield error: stat:", tightLooseErr/tightLoose, "sys1:", tightLoose_sys1/tightLoose-1.0, "sys2:", tightLoose_sys2/tightLoose-1.0, "sys3:", tightLoose_sys3/tightLoose-1.0
+      
+      overall=math.sqrt(pow(tightLooseErr/tightLoose,2)+max(tightLoose_sys1/tightLoose-1.0,tightLoose_sys2/tightLoose-1.0,tightLoose_sys3/tightLoose-1.0,2))
+      
+      return tightLooseErr/tightLoose,overall
+
+
 
 
 def QCDEstimate6(prefix,prefix1,var,xmin,xmax,\
