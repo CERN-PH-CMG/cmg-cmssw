@@ -273,8 +273,8 @@ if __name__ == '__main__':
 
         #("CMS_2012_5_fb_qcd5LL4_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
 
-        ("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        ("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
 
         #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_SS_BOOSTED"  , baselineSS  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
         #("CMS_2012_5_fb__qcd5LL4_PREAPP_WIDE_SS_VBF"      , baselineSS  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
@@ -810,7 +810,7 @@ if __name__ == '__main__':
 	
         plotVarDataOS.AddHistogram("QCDdata",QCDShape.weighted)
         plotVarDataOS.Hist('QCDdata').stack = True
-        plotVarDataOS.Hist('QCDdata').SetStyle( sBlack )
+        plotVarDataOS.Hist('QCDdata').SetStyle( sGreen )
         plotVarDataOS.Hist('QCDdata').layer = 0.99
         plotVarDataOS.Hist('QCDdata').Scale(QCDScale)
 	      
