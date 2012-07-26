@@ -252,13 +252,13 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['ZZ']                            = {'style':sBlue,     'layer':0.91}  
         self.histPref['DYJets']                        = {'style':sYellow,   'layer':3}
         self.histPref['DYJets (emb)']                  = {'style':sYellow,   'layer':3}
-        self.histPref['DYJets_Photon']                 = {'style':sOrange,   'layer':2.7}
-        self.histPref['DYJets_Electron']               = {'style':sRed,      'layer':2.6}
-        self.histPref['DYJets_Fakes']                  = {'style':sGreen,    'layer':2.5}
-        self.histPref['QCD15']                         = {'style':sBlack,    'layer':5.4}
-        self.histPref['QCD30']                         = {'style':sBlack,    'layer':5.3}
-        self.histPref['QCD50']                         = {'style':sBlack,    'layer':5.2}
-        self.histPref['QCD80']                         = {'style':sBlack,    'layer':5.1}
+        self.histPref['DYJets_Photon']                 = {'style':sYellow,   'layer':2.7}
+        self.histPref['DYJets_Electron']               = {'style':sYellow,   'layer':2.6}
+        self.histPref['DYJets_Fakes']                  = {'style':sYellow,    'layer':2.5}
+        self.histPref['QCD15']                         = {'style':sGreen,    'layer':5.4}
+        self.histPref['QCD30']                         = {'style':sGreen,    'layer':5.3}
+        self.histPref['QCD50']                         = {'style':sGreen,    'layer':5.2}
+        self.histPref['QCD80']                         = {'style':sGreen,    'layer':5.1}
 
         self.histPref['Higgsgg110']                    = {'style':sRedLine,  'layer':6.1}
         self.histPref['Higgsgg115']                    = {'style':sRedLine,  'layer':6.1}
