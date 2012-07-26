@@ -28,9 +28,32 @@ httAna = cfg.Analyzer('httanalyzer',
   z_mass = (70.,110.),
 )
 
+httAnapftau = cfg.Analyzer('httanalyzerpftau',
+  npfj = (2,3),       # at least 3 PF particle in both the nontau jets
+  ntkj = (2,1),       # at least 1 track in both nontau jets
+#  minM = 0.5,         # minimum jet mass
+  minM = 1.5,         # minimum jet mass
+  mVis = 180.,        # minim visible mass (not applied)
+  chi2 = 1000000.,
+  minE = 10.,
+  h_mass = 40.,   # to see the z peak....
+  z_mass = (70.,110.),
+)
+
+
 def createTreeProducer( ana ):
     tp = cfg.Analyzer( '_'.join( ['htttreeproducer','httanalyzer'] ),
+
+
                        anaName = 'httanalyzer'
+                       )
+    return tp
+
+def createTreeProducerpftau( ana ):
+    tp = cfg.Analyzer( '_'.join( ['htttreeproducerpftau','httanalyzerpftau'] ),
+
+
+                       anaName = 'httanalyzerpftau'
                        )
     return tp
 
@@ -40,9 +63,14 @@ stopper = cfg.Analyzer(
     'Stopper'
     )
 
-sequence = cfg.Sequence([
+sequence_orig = cfg.Sequence([
     httAna,
     createTreeProducer( httAna ),
     ])
 
+sequence_pftau = cfg.Sequence([
+    httAnapftau,
+    createTreeProducerpftau( httAnapftau ),
+    ])
 
+sequence=sequence_pftau
