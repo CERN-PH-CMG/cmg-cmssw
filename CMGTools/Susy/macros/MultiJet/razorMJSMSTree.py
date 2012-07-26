@@ -4,6 +4,7 @@ import ROOT as rt
 import os, sys, math, glob, copy, pickle
 from DataFormats.FWLite import Events, Handle
 from CMGTools.RootTools import RootFile
+from BTagSFUtil import BTag
 
 import numpy as n
 from ROOT import std
@@ -42,6 +43,11 @@ if __name__ == '__main__':
                   VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.varType.string,          # string, int, or float
                   "A directory to read root files from")
+    options.register ('model',
+                  None,
+                  VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.varType.string,          # string, int, or float
+                  "The SMS model to use in the error calculation")
     options.register ('maxFiles',
                   -1, # default value
                   VarParsing.multiplicity.singleton, # singleton or list
@@ -58,10 +64,11 @@ if __name__ == '__main__':
     if True:
         names = [f for f in options.datasetName.split('/') if f]
         if options.index == -1:
-            name = '%s-%s-%s-JetFL.root' % (names[0],names[1],names[-1])
+            name = '%s-%s-%s-BPOG.root' % (names[0],names[1],names[-1])
         else:
-            name = '%s-%s-%s-JetFL_%d.root' % (names[0],names[1],names[-1],options.index)
+            name = '%s-%s-%s-BPOG_%d.root' % (names[0],names[1],names[-1],options.index)
         options.outputFile = os.path.join(options.outputDirectory,name)
+        options.model = names[0].split('-')[1].split('_')[0]
     pickleFile = options.outputFile.replace('.root','.pkl')
 
     files = getFiles(
@@ -106,6 +113,14 @@ struct Variables{\
     Double_t nextTCHE_ETA;\
     Double_t mStop;\
     Double_t mLSP;\
+    Double_t BTAG_W;\
+    Double_t BTAG_W_BC_UP;\
+    Double_t BTAG_W_BC_DW;\
+    Double_t BTAG_W_LT_UP;\
+    Double_t BTAG_W_LT_DW;\
+    Double_t BTAG_W_DT_UP;\
+    Double_t BTAG_W_DT_DW;\
+    Double_t diTopPt;\
 };""")
 
     rt.gROOT.ProcessLine("""
@@ -155,6 +170,7 @@ struct Info{\
     hemiHadH = Handle("std::vector<cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> >")
     metH = Handle("std::vector<cmg::BaseMET>")
     lheH = Handle('LHEEventProduct')
+    candH = Handle("std::vector<reco::LeafCandidate>")
 
     electronH = Handle("std::vector<cmg::Electron>")
     muonH = Handle("std::vector<cmg::Muon>")
@@ -172,6 +188,9 @@ struct Info{\
 
     #for storing the counts of each model point
     bins = {}
+
+    #for doing all the crap with btags and scale factors
+    tagger = BTag(options.model)
 
     # loop over events
     for event in events:
@@ -269,6 +288,80 @@ struct Info{\
         #events must either have a Btag or pass the tight veto
         if info.nBJet == 0 and info.nBJetLoose > 0: continue
 
+        def findWeight(jets, mcdir = 0, doLight = False, datadir = 0):
+            w_data = 1.
+            w_mc = 1.
+            for j in jets:
+                if j.pt() < 30 or abs(j.eta()) > 2.4 or j.btag(0) < 0:
+                    continue
+                w_data_i, w_dataE_i = tagger.getEfficiencyData(j.btag(0), j.pt(), j.eta(), j.partonFlavour())
+                w_mc_i, w_mcE_i = tagger.getEfficiencyFastSim(j.btag(0), j.pt(), j.eta(), j.partonFlavour())
+                #use errors
+                if mcdir:
+                    #b,c are taken correlated and uncorrelated with the light jets
+                    if (not doLight and abs(j.partonFlavour()) in [4,5]) or (doLight and not abs(j.partonFlavour()) in [4,5]):
+                        w_mc_i = w_mc_i + (mcdir*w_mcE_i)
+                        #project against bounds in eff
+                        if w_mc_i > 1: w_mc_i = 1.0
+                        if w_mc_i < 0: w_mc_i = 0.0
+                        #if doLight: print w_data_i, w_dataE_i, w_mc_i, w_mcE_i
+                if datadir:
+                    #print 'datadir',w_data_i, w_dataE_i, w_mc_i, w_mcE_i, j.pt(), j.eta(), j.partonFlavour(), j.btag(0)
+                    w_data_i = w_data_i + (datadir*w_dataE_i)
+                    #project against bounds in eff
+                    if w_data_i > 1: w_data_i = 1.0
+                    if w_data_i < 0: w_data_i = 0.0
+
+                w_data = w_data * (1 - w_data_i)
+                w_mc = w_mc * (1 - w_mc_i)
+
+            if w_data > 1: w_data = 1.
+            if w_mc > 1: w_mc = 0.0
+            
+            try:
+                tag_weight = (1-w_data)/(1-w_mc)
+            except ZeroDivisionError:
+                tag_weight = (1-w_data)
+            return tag_weight
+
+        jet_set = set()
+        for j in jets:
+            if j.pt() < 30 or abs(j.eta()) > 2.4 or j.btag(0) < 0:
+                continue
+            jet_set.add(j)
+
+        jets = [j for j in jet_set]    
+        nominal = findWeight(jets)
+        bc_mc_up = abs(nominal - findWeight(jets,mcdir=+1))
+        bc_mc_dw = abs(nominal - findWeight(jets,mcdir=-1))
+        #print 'btag bc mc',nominal, bc_mc_up, bc_mc_dw
+
+        lt_mc_up = abs(nominal - findWeight(jets,mcdir=+1,doLight=True))
+        lt_mc_dw = abs(nominal - findWeight(jets,mcdir=-1,doLight=True))
+        #print 'btag light mc',nominal, lt_mc_up, lt_mc_dw
+
+        data_up = abs(nominal - findWeight(jets,datadir=+1))
+        data_dw = abs(nominal - findWeight(jets,datadir=-1))
+        #print 'btag data', nominal, data_up, data_dw
+        #print 'final', info.nBJet, nominal, rt.TMath.Sqrt(bc_mc_up**2 + max(lt_mc_up,lt_mc_dw)**2 + data_dw**2 ),rt.TMath.Sqrt(bc_mc_dw**2 + max(lt_mc_up,lt_mc_dw)**2 + data_up**2 )
+
+        #if max(rt.TMath.Sqrt(bc_mc_up**2 + max(lt_mc_up,lt_mc_dw)**2 + data_dw**2 ),rt.TMath.Sqrt(bc_mc_dw**2 + max(lt_mc_up,lt_mc_dw)**2 + data_up**2 ) ) > 0.5:
+        #if nominal > 2:
+        if False:
+            print '\tbtag bc mc',nominal, bc_mc_up, bc_mc_dw
+            print '\tbtag light mc',nominal, lt_mc_up, lt_mc_dw
+            print '\tbtag data', nominal, data_up, data_dw
+               
+            
+        #set all of the btagging vars
+        vars.BTAG_W = nominal
+        vars.BTAG_W_BC_UP = bc_mc_up
+        vars.BTAG_W_BC_DW = bc_mc_dw
+        vars.BTAG_W_LT_UP = lt_mc_up
+        vars.BTAG_W_LT_DW = lt_mc_dw
+        vars.BTAG_W_DT_UP = data_up
+        vars.BTAG_W_DT_DW = data_dw
+
         #for the tau scaling
         event.getByLabel(('simpleGenInfo'),filterH)
         info.genInfo = filterH.product()[0]
@@ -308,6 +401,16 @@ struct Info{\
         event.getByLabel(('dumpPdfWeights','MRST2006nnlo'),pdfH)
         for w in pdfH.product():
             MRST2006NNLO_W.push_back(w)
+
+        event.getByLabel(('topGenInfo'),candH)
+        if len(candH.product()):
+            if 'T2' in options.model:
+                diTop = candH.product()[1]
+            elif 'T1' in options.model:
+                diTop = candH.product()[2]
+            else:
+                diTop = candH.product()[0]
+            vars.diTopPt = diTop.pt()
 
         if (count % 1000) == 0:
             print count,'run/lumi/event',info.run,info.lumi,info.event

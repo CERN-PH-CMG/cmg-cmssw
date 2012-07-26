@@ -29,9 +29,15 @@ def getFiles(datasets, user, pattern):
 
     return ['root://eoscms//eos/cms%s' % f for f in files]
 
+def deltaR(a,b):
+    deta = a.eta() - b.eta()
+    dphi = a.phi() - b.phi()
+    dr = deta*deta + dphi*dphi
+    return math.sqrt(dr)
+
 if __name__ == '__main__':
 
-    runOnMC = True
+    runOnMC = False
 
     # https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideAboutPythonConfigFile#VarParsing_Example
     from FWCore.ParameterSet.VarParsing import VarParsing
@@ -59,24 +65,24 @@ if __name__ == '__main__':
                   "The maximum number of files to read")
     
     options.parseArguments()
-    if not options.inputFiles:
-        if options.inputDirectory is not None:
-            listDirectory(options.inputDirectory, options.inputFiles, options.maxFiles)
+    if options.inputDirectory is not None:
+        listDirectory(options.inputDirectory, options.inputFiles, options.maxFiles)
         
-        if True:
-            names = [f for f in options.datasetName.split('/') if f]
-            name = '%s-%s-%s.root' % (names[0],names[1],names[-1])
-            options.outputFile = os.path.join(options.outputDirectory,name)
+    if True:
+        names = [f for f in options.datasetName.split('/') if f]
+        name = '%s-%s-%s.root' % (names[0],names[1],names[-1])
+        options.outputFile = os.path.join(options.outputDirectory,name)
         
-        files = getFiles(
-            [options.datasetName],
-            'wreece',
-            'susy_tree_CMG_[0-9]+.root'                
-            )
-        if options.maxFiles > 0:
-            options.inputFiles = files[0:options.maxFiles]
-        else:
-            options.inputFiles = files
+    files = getFiles(
+                      [options.datasetName],
+                      'wreece',
+                      'susy_tree_CMG_[0-9]+.root'
+
+                     )
+    if options.maxFiles > 0:
+        options.inputFiles = files[0:options.maxFiles]
+    else:
+        options.inputFiles = files
 
     rt.gROOT.ProcessLine("""
 struct Variables{\
@@ -110,15 +116,12 @@ struct Info{\
     Int_t run;\
     Int_t lumi;\
     Int_t nJet;\
-    Int_t nBJet;\
-    Int_t nBJetLoose;\
     Int_t nMuonLoose;\
     Int_t nMuonTight;\
     Int_t nElectronLoose;\
     Int_t nElectronTight;\
     Int_t nTauLoose;\
     Int_t nTauTight;\
-    Int_t nLepton;\
     Int_t nVertex;\
     Int_t hemisphereBalance;\
     Int_t genInfo;\
@@ -162,22 +165,10 @@ struct Filters{\
 
     from ROOT import Variables, Info, Filters
 
-#    output = rt.TFile.Open(options.outputFile,'recreate')
-    tree = rt.TTree('RMRTree','Multijet events')
-    tree.SetDirectory(0)
-    def setAddress(obj, flag):
-        for branch in dir(obj):
-            if branch.startswith('__'): continue
-            tree.Branch(branch,rt.AddressOf(obj,branch),'%s/%s' % (branch,flag) )
-    
     filters = Filters()
     info = Info()
     vars = Variables()
     
-    setAddress(filters,'O')
-    setAddress(info,'I')
-    setAddress(vars,'D')
-
     # use Varparsing object
     events = Events(options)
     
@@ -199,7 +190,44 @@ struct Filters{\
     pathTriggerH = Handle("edm::TriggerResults")
 
     store = RootFile.RootFile(options.outputFile)
-    store.add(tree)
+
+    #fucking stupid plots for ARC
+    #could you point me to the kinematic distributions of these merged jets (megajets) like pT, eta, mass, deltaR(j1,j2). Number of jets in merged jets, Number of b-jets in merged jet. 
+    
+    #pt
+    hemi1Pt = rt.TH1D('hemi1Pt','hemi1Pt',350,0.,700.)
+    hemi2Pt = rt.TH1D('hemi2Pt','hemi2Pt',350,0.,700.)
+    store.add(hemi1Pt)
+    store.add(hemi2Pt)
+
+    #eta
+    hemi1Eta = rt.TH1D('hemi1Eta','hemi1Eta',32,-3.2,3.2)
+    hemi2Eta = rt.TH1D('hemi2Eta','hemi2Eta',32,-3.2,3.2)
+    store.add(hemi1Eta)
+    store.add(hemi2Eta)
+    
+    #mass
+    hemi1Mass = rt.TH1D('hemi1Mass','hemi1Mass',350,0.,700.)
+    hemi2Mass = rt.TH1D('hemi2Mass','hemi2Mass',350,0.,700.)
+    store.add(hemi1Mass)
+    store.add(hemi2Mass)
+
+    #deltaR
+    deltaRHemi = rt.TH1D('deltaRHemi','deltaRHemi',64,0,6.4)
+    store.add(deltaRHemi)
+
+    #number of merged jets
+    hemi1NJet = rt.TH1D('hemi1NJet','hemi1NJet',10,0.,10)
+    hemi2NJet = rt.TH1D('hemi2NJet','hemi2NJet',10,0.,10)
+    store.add(hemi1NJet)
+    store.add(hemi2NJet)
+
+    #number of merged b-jets
+    hemi1NBJet = rt.TH1D('hemi1NBJet','hemi1NBJet',10,0.,10)
+    hemi2NBJet = rt.TH1D('hemi2NBJet','hemi2NBJet',10,0.,10)
+    store.add(hemi1NBJet)
+    store.add(hemi2NBJet)
+
 
     count = 0
 
@@ -212,7 +240,6 @@ struct Filters{\
 
         if (count % 1000) == 0:
             print count,'run/lumi/event',info.run,info.lumi,info.event
-            tree.AutoSave()
         count += 1    
 
         event.getByLabel(('TriggerResults','','MJSkim'),pathTriggerH)
@@ -223,26 +250,13 @@ struct Filters{\
         path = pathTrigger.wasrun(pathTriggerNames.triggerIndex('multijetPathNoTrigger')) and \
                pathTrigger.accept(pathTriggerNames.triggerIndex('multijetPathNoTrigger'))
         filters.selectionFilter = path
-        #if not path: continue
-
-        event.getByLabel(('razorMJDiHemiHadBox'),hemiHadH)
-        if len(hemiHadH.product()):
-            hemi = hemiHadH.product()[0]
-            vars.Rsq = hemi.Rsq()
-            vars.mR = hemi.mR()
-            vars.hemi1Mass = hemi.leg1().mass()
-            vars.hemi2Mass = hemi.leg2().mass()
-            info.hemisphereBalance = (10*hemi.leg1().numConstituents()) + hemi.leg2().numConstituents()
-
-            if vars.Rsq < 0.03 or vars.mR < 500:
-                continue
+        if not path: continue
 
         event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
         if not jetSel30H.isValid(): continue
         jets = jetSel30H.product()
         info.nJet = len(jets)
-        if info.nJet < 6:
-            continue
+        if info.nJet < 6: continue
 
         event.getByLabel(('cmgTriggerObjectSel'),triggerH)
         hlt = triggerH.product()[0]
@@ -273,11 +287,6 @@ struct Filters{\
                 setattr(vars,'jet%iEta'%(i+1),jet.eta())
 
         tche = sorted([j.btag(0) for j in jets if abs(j.eta()) <= 2.4])
-        tcheMedium = sorted([(j.pt(),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 3.3])
-        info.nBJet = len(tcheMedium)
-        tcheLoose = sorted([(j.pt(),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 1.7])
-        info.nBJetLoose = len(tcheLoose)
-
         ssvp = sorted([j.btag(5) for j in jets if abs(j.eta()) <= 2.4])
 
         if len(tche) < 2:
@@ -309,19 +318,59 @@ struct Filters{\
         info.nElectronTight = len(electronH.product())
         info.nMuonTight = len(muonH.product())
         info.nTauTight = len(tauH.product())
-        info.nLepton = info.nElectronTight + info.nMuonTight + info.nTauTight
+        if (info.nElectronTight + info.nMuonTight + info.nTauTight) > 0:
+            continue
 
         event.getByLabel(('vertexSize'),countH)
         info.nVertex = countH.product()[0]
+
+        event.getByLabel(('razorMJDiHemiHadBox'),hemiHadH)
+        if len(hemiHadH.product()):
+            hemi = hemiHadH.product()[0]
+            vars.Rsq = hemi.Rsq()
+            vars.mR = hemi.mR()
+            vars.hemi1Mass = hemi.leg1().mass()
+            vars.hemi2Mass = hemi.leg2().mass()
+            info.hemisphereBalance = (10*hemi.leg1().numConstituents()) + hemi.leg2().numConstituents()
+
+            if vars.Rsq < 0.03 or vars.mR < 500:
+                continue
+
+            hemi1Pt.Fill(hemi.leg1().pt())
+            hemi2Pt.Fill(hemi.leg2().pt())
+
+            hemi1Eta.Fill(hemi.leg1().eta())
+            hemi2Eta.Fill(hemi.leg2().eta())
+            
+            hemi1Mass.Fill(hemi.leg1().mass())
+            hemi2Mass.Fill(hemi.leg2().mass())
+
+            deltaRHemi.Fill(deltaR(hemi.leg1(),hemi.leg2()))
+
+            hemi1NJet.Fill(hemi.leg1().numConstituents())
+            hemi2NJet.Fill(hemi.leg2().numConstituents())
+
+            jets1 = []
+            jets2 = []
+            for j in jets:
+                if abs(j.eta()) > 2.4 or j.btag(0) < 3.3:
+                    continue
+
+                dr1 = deltaR(j, hemi.leg1())
+                dr2 = deltaR(j, hemi.leg2())
+                
+                if dr1 < dr2:
+                    jets1.append(j)
+                else:
+                    jets2.append(j)
+
+            hemi1NBJet.Fill(len(jets1))
+            hemi2NBJet.Fill(len(jets2))
+
         
         if runOnMC:
             event.getByLabel(('simpleGenInfo'),filterH)
             if filterH.isValid():
                 info.genInfo = filterH.product()[0]
 
-        tree.Fill()
-
-#    tree.SetDirectory(output)
-#    tree.Write()
-#    output.Close()
     store.write()
