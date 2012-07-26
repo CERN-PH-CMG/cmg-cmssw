@@ -491,6 +491,7 @@ bool TauMuFlatNtp::fill(){
   fillPFJetListB(&fullJetList_,&pfJetListB_);
   fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetListB_,&pfJetListBLC_);
   fillPFJetListBTag(&pfJetListBLC_,&pfJetListBTagLC_);
+  fillBJetVariables();
   fillBTagWeight();
 
 

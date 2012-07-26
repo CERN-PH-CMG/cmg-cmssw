@@ -41,7 +41,6 @@ public:
   //General Methods 
   void setOutputPath(TString path){outputpath_=path;}
   void addSample(Sample* sample){samples_.push_back(sample);}   
-  void setSMCat(Int_t cat){SMcat_=cat;}
   void setQCDOStoSSRatio(Float_t ratio){QCDOStoSSRatio_=ratio;}
   void setZTTType(int type){ZTTType_=type;}
   void setQCDColor(Int_t color){QCDColor_=color;}
@@ -94,36 +93,34 @@ public:
   }
 
   ///basic methods which can be used by all categories
-  TH1F* getTotalDataSS();//sum of SS Data samples 
+  //TH1F* getTotalDataSS();//sum of SS Data samples 
   TH1F* getTotalData();
-  TH1F* getTotalEmbeddedSS();
+  //TH1F* getTotalEmbeddedSS();
   TH1F* getTotalEmbedded();
   TH1F* getTotalMC();//sum of all OS MCs 
-  TH1F* getTotalMCSS();//sum of all SS MC's 
+  //TH1F* getTotalMCSS();//sum of all SS MC's 
   TH1F* getSample(TString samplename);//can be used to get histo for any MC or Data sample
-  TH1F* getSampleSS(TString samplename);//can be used to get histo for any MC or Data sample
+  //TH1F* getSampleSS(TString samplename);//can be used to get histo for any MC or Data sample
   TH1F* getDiBoson();
-  TH1F* getDiBosonSS();
+  //TH1F* getDiBosonSS();
   TH1F* getZToTauTau();//Z-->tau tau (either from MC or Embedded)
-  TH1F* getZToTauTauSS();
+  //TH1F* getZToTauTauSS();
 
  
   //Inclusive/SM0 methods
   TH1F* getWJetsInc();
-  TH1F* getWJetsIncSS();
+  //TH1F* getWJetsIncSS();
   TH1F* getTTJetsInc();
-  TH1F* getTTJetsIncSS();
+  //TH1F* getTTJetsIncSS();
   TH1F* getZToLJetInc();
-  TH1F* getZToLJetIncSS();
+  //TH1F* getZToLJetIncSS();
   TH1F* getZToMuMuInc();
-  TH1F* getZToMuMuIncSS();
+  //TH1F* getZToMuMuIncSS();
   TH1F* getZToEEInc(){return 0;}//dummy method just to make script work for datacard
   TH1F* getQCDInc();//uses the same sign samples
   TH1F* getQCDIncWJetsShape();
-  TH1F* getTotalBackgroundIncSS();//sum of SS backgrounds except  QCD
-  //TH1F* getTotalBackgroundInc();//sum of all OS backgrounds 
-  bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
-  bool plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t SMcat, TString extrasel="", Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0,TString filetag="");
+  bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
+  //bool plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t SMcat, TString extrasel="", Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0,TString filetag="");
 
 
   //Boosted/VBF methods
@@ -137,21 +134,21 @@ public:
   //TH1F* getQCDTauIsoSM();//from anti-isolated taus
   //TH1F* getQCDTauIsoSMSS();//from anti-isolated taus
   TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
-  TH1F* getQCDIsoSMSS();//from anti-isolated taus or anti iso muons  
+  //TH1F* getQCDIsoSMSS();//from anti-isolated taus or anti iso muons  
   TH1F* getWJetsIncShape();
-  TH1F* getWJetsIncShapeSS();
+  //TH1F* getWJetsIncShapeSS();
   TH1F* getW3Jets();
-  TH1F* getW3JetsSS();
+  //TH1F* getW3JetsSS();
   TH1F* getW3JetsVBF();
   //TH1F* getW3JetsVBFSS();
   TH1F* getW2JetsBJet();
-  TH1F* getW2JetsBJetSS();
+  //TH1F* getW2JetsBJetSS();
   TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
   TH1F* getWJetsTauIsoSM();//from anti-isolated taus
   TString wjetsTauIsoRatioSS_;//formula for the ratio for W+jets 
-  TH1F* getWJetsTauIsoSMSS();//from anti-isolated taus
+  //TH1F* getWJetsTauIsoSMSS();//from anti-isolated taus
   TH1F* getTotalMCSM();//sum of OS backgrounds execpt for the QCD
-  TH1F* getTotalMCSMSS();//sum of SS backgrounds execpt for the QCD
+  //TH1F* getTotalMCSMSS();//sum of SS backgrounds execpt for the QCD
   //bool plotSM(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax,  TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
   //bool plotSMSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
 
@@ -187,8 +184,8 @@ public:
 
   //selections used for each plot made inside this class
   Int_t Isocat_;
+  Int_t Chcat_;
   Int_t MTcat_;
-  Int_t SMcat_;
   TString extrasel_;
   TString blindsel_;
 

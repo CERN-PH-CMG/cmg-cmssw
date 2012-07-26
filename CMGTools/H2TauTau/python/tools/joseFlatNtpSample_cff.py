@@ -82,7 +82,7 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
 
     if sampleAlias == 'W3JetsToLNu' : 
-        module.path = "/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM" # V5 PFAOD was not made
+        module.path = "/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/PAT_CMG_V5_4_1" # V5 PFAOD was not made
         module.dataType = 0
         module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
@@ -316,7 +316,7 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
 
     if sampleAlias == 'W3JetsToLNu' : 
-        module.path = "/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM" # V5 PFAOD was not made
+        module.path = "/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/PAT_CMG_V5_4_1" # V5 PFAOD was not made
         module.dataType = 0
         module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter") 
