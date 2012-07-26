@@ -225,7 +225,8 @@ void synchNtuple() {
    //Sample sample("TauPlusXAug","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly23");
    //Sample sample("GluGluSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly23");
    //Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly23");
-   Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly25");
+   //Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly25");
+   Sample sample("HiggsVBF125","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly25");
    
 
 
@@ -407,17 +408,18 @@ void compareSync(){
   /////////////TauEle channel 
   //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/TauEleJune28/Output_VBFSync.root","read");
   //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July24/eTau_2011_TauPlusXAug.root");
+  //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25/eTau_2011_GluGluSync.root");
   //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25/eTau_2011_VBFSync.root");
   //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25b/eTau_2011_VBFSync.root");
-  TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25/eTau_2011_GluGluSync.root");
+  TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25b/eTau_2011_HiggsVBF125.root");
   
   //TFile Fother("/afs/cern.ch/user/b/bianchi/public/HTTSync/May24/OutputElecTau_VBFH125.root");
   //TFile Fother("/afs/cern.ch/user/m/mhchan/public/Htt/sync/etau_h125tt-vbf_sync_v5.root");
   //TTree*Tother=(TTree*)Fother.Get("TauCheck");
 
   //TFile Fother("/afs/cern.ch/user/g/govoni/work/public/sync/sync_aug04_tree.root");
-  //TFile Fother("/afs/cern.ch/user/g/govoni/work/public/sync/PG_VBFH125.root");
-  TFile Fother("/afs/cern.ch/user/g/govoni/work/public/sync/PG_GGH125.root");
+  TFile Fother("/afs/cern.ch/user/g/govoni/work/public/sync/PG_VBFH125.root");
+  //TFile Fother("/afs/cern.ch/user/g/govoni/work/public/sync/PG_GGH125.root");
   TTree*Tother=(TTree*)Fother.Get("H2TauTauTreeProducerTauMuXCheck");
 
 

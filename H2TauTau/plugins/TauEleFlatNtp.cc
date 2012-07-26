@@ -134,7 +134,7 @@ void TauEleFlatNtp::beginJob(){
      //look here https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentification
      float mvaid=cand->leg2().mvaNonTrigV0();
      float eta=(*(cand->leg2().sourcePtr()))->superCluster()->eta();
-     cout<<eta<<" "<<mvaid<<endl;
+     //cout<<eta<<" "<<mvaid<<endl;
      if(fabs(eta)<0.8)
        if(mvaid<0.925)continue; 
      if(0.8<=fabs(eta)&&fabs(eta)<1.479)
@@ -454,6 +454,7 @@ void TauEleFlatNtp::beginJob(){
    fillPFJetListB(&fullJetList_,&pfJetListB_);
    fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetListB_,&pfJetListBLC_);
    fillPFJetListBTag(&pfJetListBLC_,&pfJetListBTagLC_);
+   fillBJetVariables();
    fillBTagWeight();
 
 

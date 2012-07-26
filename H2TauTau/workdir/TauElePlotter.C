@@ -341,7 +341,7 @@ TH1F* TauElePlotter::getWJetsInc(){
   hShape->SetName("getWJetsInc");
 
   //determine normalization
-  Int_t tmpCategoryMT=MTcat_;//switch to high mT
+  Int_t tmpCategoryMT=MTcat_;
   MTcat_=13;
   if(MSSMFlag_)  MTcat_=103;//use pZeta
   cout<<"  **** Normalzing WJets from MTcat=="<<MTcat_<<endl;
