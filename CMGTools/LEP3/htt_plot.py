@@ -33,25 +33,21 @@ os.system("mkdir -p "+plot_dire)
 # format: file,xsec(fb),tag for legenda
 #latest ok
 #mclist=[
-#    ["htt/Hig125_134/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
-#    ["htt/ZZ_2/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
-#    ["htt/WW_8/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
+#    ["htt/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
+#    ["htt/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
+#    ["htt/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
 #    ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
 #    ]
-
-#mclist=[
-#    ["htt/Hig125_139/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
-#    ["htt/ZZ_7/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
-#    ["htt/WW_11/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
-#    ["htt/QQ_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
-#    ]
+# treename="htttreeproducer_httanalyzer"
 
 mclist=[
-    ["fromLuca/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
-    ["fromLuca/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
-    ["fromLuca/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
-    ["fromLuca/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
+    ["htt/Hig125_83/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZ"],
+#    ["htt/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
+#    ["htt/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
+#    ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
     ]
+treename="htttreeproducerpftau_httanalyzerpftau"
+
 # luminosity to normalize (in fb-1)
 lumi=500
 
@@ -77,9 +73,9 @@ h1_list=[
     ["Zmass_" ,"event.recZMass" ,30,60,120,def_plot, "", "", ""],
     ["mvis_"  ,"event.mvis"     ,100,0,400,def_plot, "", "", ""],
     ["evis_"  ,"event.evis"     ,100,0,400,def_plot, "", "", ""],
-    ["ntrt1_" ,"event.t1recNtrk", 10,0, 10,def_plot, "", "", ""],
-    ["ntrt2_" ,"event.t2recNtrk", 10,0, 10,def_plot, "", "", ""],
-    ["ntrt_"  ,"event.t2recNtrk+event.t1recNtrk", 10,0, 10,def_plot, "", "", ""],
+#    ["ntrt1_" ,"event.t1recNtrk", 10,0, 10,def_plot, "", "", ""],
+#    ["ntrt2_" ,"event.t2recNtrk", 10,0, 10,def_plot, "", "", ""],
+#    ["ntrt_"  ,"event.t2recNtrk+event.t1recNtrk", 10,0, 10,def_plot, "", "", ""],
     ["pz_"    ,"event.pz"  ,  50 ,-100, 100,def_plot, "", "", ""],
     ["chi2_"  ,"event.chi2", 1000, 0,10000, def_plot, "", "", ""],
     ["wwmin_" ,"event.wwMin",  25, 0,  100, def_plot, "", "", ""],
@@ -93,12 +89,12 @@ h1_list=[
     ["leadinge_e","event.leadingElectronEnergy", 100,0,200,def_plot, "", "", ""],
     ["subleadingmu_e","event.subleadingMuonEnergy", 100,0,200,def_plot, "", "", ""],
     ["subleadinge_e","event.subleadingElectronEnergy", 100,0,200,def_plot, "", "", ""],
-    ["nhfraction_t1","event.t1recNHFraction", 100,0,1,def_plot, "", "", ""],
-    ["nhfraction_t2","event.t2recNHFraction", 100,0,1,def_plot, "", "", ""],
-    ["chfraction_t1","event.t1recChFraction", 100,0,1,def_plot, "", "", ""],
-    ["chfraction_t2","event.t2recChFraction", 100,0,1,def_plot, "", "", ""],
-    ["pfraction_t1","event.t1recPFraction", 100,0,1,def_plot, "", "", ""],
-    ["pfraction_t2","event.t2recPFraction", 100,0,1,def_plot, "", "", ""],
+#    ["nhfraction_t1","event.t1recNHFraction", 100,0,1,def_plot, "", "", ""],
+#    ["nhfraction_t2","event.t2recNHFraction", 100,0,1,def_plot, "", "", ""],
+#    ["chfraction_t1","event.t1recChFraction", 100,0,1,def_plot, "", "", ""],
+#    ["chfraction_t2","event.t2recChFraction", 100,0,1,def_plot, "", "", ""],
+#    ["pfraction_t1","event.t1recPFraction", 100,0,1,def_plot, "", "", ""],
+#    ["pfraction_t2","event.t2recPFraction", 100,0,1,def_plot, "", "", ""],
     ["mass_t1","event.t1recMass", 100,0,30,def_plot, "", "", ""],
     ["mass_t2","event.t2recMass", 100,0,30,def_plot, "", "", ""],
     ["acopl","event.ttmet_acopl", 100,-1,1,def_plot, "", "", ""],
@@ -168,7 +164,7 @@ for index,mc in enumerate(mclist):
     tag=mc[2]
     treefile=TFile.Open(rootfile)
     print "opening ",rootfile
-    tree=treefile.Get("htttreeproducer_httanalyzer")
+    tree=treefile.Get(treename)
     nevents=tree.GetEntries()
     nevents=min(nevents,maxevent)
     # loop on tree entries
@@ -182,21 +178,19 @@ for index,mc in enumerate(mclist):
             break
         read+=1
         if read % 10000 ==1:
-            print "Reading event:",read
+            print "Reading event:",read,'/',nevents
         
 
         
         addcut = True
         addcut = event.mvis>120.
         addcut = event.mvis<210.
-        addcut = addcut and event.tt_acoll<-0.5
+#        addcut = addcut and event.tt_acoll<-0.5
         addcut = addcut and event.jj_acoll<-0.3
-        addcut = addcut and event.leadingMuonEnergy<50.
-        addcut = addcut and event.leadingElectronEnergy<50.
-        #addcut = addcut and event.t1recNHFraction<0.2
-        #addcut = addcut and event.t2recNHFraction<0.2
-        addcut = addcut and event.t1recMass < 7 and event.t2recMass < 7
-        addcut = addcut and event.t1recChFraction > 0.06
+        addcut = addcut and event.leadingMuon_en<50.
+        addcut = addcut and event.leadingElectron_en<50.
+#        addcut = addcut and event.t1recMass < 7 and event.t2recMass < 7
+#        addcut = addcut and event.t1recChFraction > 0.06
 
 
         if index==0:
