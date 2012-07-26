@@ -4,6 +4,7 @@ import ROOT as rt
 import os, sys, math, glob
 from DataFormats.FWLite import Events, Handle
 from CMGTools.RootTools import RootFile
+import math
 
 def listDirectory(dir, inputFiles, maxFiles):
     if not os.path.exists(dir):
@@ -28,6 +29,20 @@ def getFiles(datasets, user, pattern):
         files.extend(ds.fileNames)
 
     return ['root://eoscms//eos/cms%s' % f for f in files]
+
+def deltaPhi(phi1, phi2):
+    M_PI = rt.TMath.Pi()
+    result = phi1 - phi2
+    while (result > M_PI):
+        result -= 2*M_PI
+    while (result <= -M_PI):
+        result += 2*M_PI
+    return result
+
+def transverseMass(l1, l2):
+    return math.sqrt( math.pow(l1.pt()+l2.pt(), 2) - 
+                    math.pow(l1.px()+l2.px(), 2) - 
+                    math.pow(l1.py()+l2.py(), 2) )
 
 if __name__ == '__main__':
 
@@ -57,26 +72,44 @@ if __name__ == '__main__':
                   VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.varType.int,          # string, int, or float
                   "The maximum number of files to read")
+    options.register ('index',
+                  -1, # default value
+                  VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.varType.int,          # string, int, or float
+                  "The file index to run on")
     
     options.parseArguments()
-    if not options.inputFiles:
-        if options.inputDirectory is not None:
-            listDirectory(options.inputDirectory, options.inputFiles, options.maxFiles)
+    if options.inputDirectory is not None:
+        listDirectory(options.inputDirectory, options.inputFiles, options.maxFiles)
         
-        if True:
-            names = [f for f in options.datasetName.split('/') if f]
-            name = '%s-%s-%s.root' % (names[0],names[1],names[-1])
-            options.outputFile = os.path.join(options.outputDirectory,name)
+    if True:
+        names = [f for f in options.datasetName.split('/') if f]
+        name = '%s-%s-%s-%d-AllSMS.root' % (names[0],names[1],names[-1],options.index)
+        options.outputFile = os.path.join(options.outputDirectory,name)
         
-        files = getFiles(
-            [options.datasetName],
-            'wreece',
-            'susy_tree_CMG_[0-9]+.root'                
-            )
-        if options.maxFiles > 0:
-            options.inputFiles = files[0:options.maxFiles]
-        else:
-            options.inputFiles = files
+    files = getFiles(
+                      [options.datasetName],
+                      'wreece',
+                      'susy_tree_CMG_[0-9]+.root'
+
+                     )
+
+    print 'The number of files to run on is: %d' % len(files)
+    if options.index > -1:
+        chunks = []
+        chunk = []
+        for f in files:
+            if len(chunk) <= options.maxFiles:
+                chunk.append(f)
+            if len(chunk) == options.maxFiles:
+                chunks.append(chunk)
+                chunk = []
+        print 'Created %d chunks of length %s' % (len(chunks),options.maxFiles)
+        options.inputFiles = chunks[options.index]
+    elif options.maxFiles > 0:
+        options.inputFiles = files[0:options.maxFiles]
+    else:
+        options.inputFiles = files
 
     rt.gROOT.ProcessLine("""
 struct Variables{\
@@ -102,6 +135,13 @@ struct Variables{\
     Double_t jet6Eta;\
     Double_t hemi1Mass;\
     Double_t hemi2Mass;\
+    Double_t mStop;\
+    Double_t mLSP;\
+    Double_t leadingLeptonPt;\
+    Double_t leadingLeptonEta;\
+    Double_t leadingLeptonIso;\
+    Double_t minDeltaPhi;\
+    Double_t transverseMass;\
 };""")
     
     rt.gROOT.ProcessLine("""
@@ -110,31 +150,18 @@ struct Info{\
     Int_t run;\
     Int_t lumi;\
     Int_t nJet;\
-    Int_t nBJet;\
-    Int_t nBJetLoose;\
     Int_t nMuonLoose;\
     Int_t nMuonTight;\
     Int_t nElectronLoose;\
     Int_t nElectronTight;\
     Int_t nTauLoose;\
     Int_t nTauTight;\
-    Int_t nLepton;\
+    Int_t nUniqueLeptons;\
     Int_t nVertex;\
     Int_t hemisphereBalance;\
     Int_t genInfo;\
 };""")
     
-    filter_tags = [('ecalDeadCellTPfilter'),
-                   ('HBHENoiseFilterResultProducer2010'),
-                   ('HBHENoiseFilterResultProducer2011IsoDefault'),
-                   ('HBHENoiseFilterResultProducer2011NonIsoRecommended'),
-                   ('eeNoiseFilter'),
-                   ('goodPrimaryVertexFilter'),
-                   ('greedyMuonsTagging'),
-                   ('inconsistentMuonsTagging'),
-                   ('recovRecHitFilter'),
-                   ('scrapingFilter'),
-                   ('trackingFailureFilter')]
 
     rt.gROOT.ProcessLine("""
 struct Filters{\
@@ -143,28 +170,18 @@ struct Filters{\
     Bool_t sixTriggerFilter;\
     Bool_t eightTriggerFilter;\
     Bool_t l1MultiJetFilter;\
-    Bool_t selectionFilter;\
     Bool_t ht250TriggerFilter;\
     Bool_t ht300TriggerFilter;\
     Bool_t razorTriggerFilter;\
-    Bool_t ecalDeadCellTPfilter;\
-    Bool_t HBHENoiseFilterResultProducer2010;\
-    Bool_t HBHENoiseFilterResultProducer2011IsoDefault;\
-    Bool_t HBHENoiseFilterResultProducer2011NonIsoRecommended;\
-    Bool_t eeNoiseFilter;\
-    Bool_t goodPrimaryVertexFilter;\
-    Bool_t greedyMuonsTagging;\
-    Bool_t inconsistentMuonsTagging;\
-    Bool_t recovRecHitFilter;\
-    Bool_t scrapingFilter;\
-    Bool_t trackingFailureFilter;\
+    Bool_t eleHadTriggerFilter;\
+    Bool_t muHadTriggerFilter;\
 };""")
 
     from ROOT import Variables, Info, Filters
 
-#    output = rt.TFile.Open(options.outputFile,'recreate')
+    output = rt.TFile.Open(options.outputFile,"recreate",'SMS',9)
+    output.cd()
     tree = rt.TTree('RMRTree','Multijet events')
-    tree.SetDirectory(0)
     def setAddress(obj, flag):
         for branch in dir(obj):
             if branch.startswith('__'): continue
@@ -198,9 +215,6 @@ struct Filters{\
     # path trigger
     pathTriggerH = Handle("edm::TriggerResults")
 
-    store = RootFile.RootFile(options.outputFile)
-    store.add(tree)
-
     count = 0
 
     # loop over events
@@ -209,21 +223,23 @@ struct Filters{\
         info.event = event.object().id().event()
         info.lumi = event.object().id().luminosityBlock()
         info.run = event.object().id().run()
+        
+        if runOnMC:
+        #get the LHE product info
+            event.getByLabel(('source'),lheH)
+            lhe = lheH.product()
+            for i in xrange(lhe.comments_size()):
+                comment = lhe.getComment(i)
+                if 'model' not in comment: continue
+                comment = comment.replace('\n','')
+                parameters = comment.split(' ')[-1]
+                masses = map(float,parameters.split('_')[-2:])
+                vars.mStop = masses[0]
+                vars.mLSP = masses[1]
 
         if (count % 1000) == 0:
             print count,'run/lumi/event',info.run,info.lumi,info.event
-            tree.AutoSave()
         count += 1    
-
-        event.getByLabel(('TriggerResults','','MJSkim'),pathTriggerH)
-        pathTrigger = pathTriggerH.product()
-
-        #start by vetoing events that didn't pass the offline selection
-        pathTriggerNames = event.object().triggerNames(pathTrigger)
-        path = pathTrigger.wasrun(pathTriggerNames.triggerIndex('multijetPathNoTrigger')) and \
-               pathTrigger.accept(pathTriggerNames.triggerIndex('multijetPathNoTrigger'))
-        filters.selectionFilter = path
-        #if not path: continue
 
         event.getByLabel(('razorMJDiHemiHadBox'),hemiHadH)
         if len(hemiHadH.product()):
@@ -234,15 +250,10 @@ struct Filters{\
             vars.hemi2Mass = hemi.leg2().mass()
             info.hemisphereBalance = (10*hemi.leg1().numConstituents()) + hemi.leg2().numConstituents()
 
-            if vars.Rsq < 0.03 or vars.mR < 500:
-                continue
-
         event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
         if not jetSel30H.isValid(): continue
         jets = jetSel30H.product()
         info.nJet = len(jets)
-        if info.nJet < 6:
-            continue
 
         event.getByLabel(('cmgTriggerObjectSel'),triggerH)
         hlt = triggerH.product()[0]
@@ -254,30 +265,30 @@ struct Filters{\
         filters.ht250TriggerFilter = hlt.getSelectionRegExp("^HLT_HT250_v[0-9]+$")
         filters.ht300TriggerFilter = hlt.getSelectionRegExp("^HLT_HT300_v[0-9]+$")
         filters.razorTriggerFilter = hlt.getSelectionRegExp("^HLT_R0[0-9]+_MR[0-9]+_v[0-9]+$")
+        filters.muHadTriggerFilter = hlt.getSelectionRegExp("^HLT_.*Mu[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$") or hlt.getSelectionRegExp("^HLT_.*Mu[0-9]+_TriCentral.*Jet[0-9]+_v[0-9]+$")
+        filters.eleHadTriggerFilter = hlt.getSelectionRegExp("^HLT_Ele[0-9]+.*Quad.*Jet[0-9]+.*_v[0-9]+$") or hlt.getSelectionRegExp("^HLT_Ele[0-9]+.*TriCentral.*Jet[0-9]+_v[0-9]+$") or\
+            hlt.getSelectionRegExp("^HLT_Ele[0-9]+.*CentralTriJet[0-9]+_v[0-9]+$")
         filters.triggerFilter = filters.quadTriggerFilter or filters.sixTriggerFilter or filters.eightTriggerFilter
-        if not filters.triggerFilter: continue
-        #if not filters.l1MultiJetFilter: continue
-        
-        if not runOnMC:
-            for f in filter_tags:
-                event.getByLabel(f,filterH)
-                if filterH.isValid():
-                    result = filterH.product()[0]
-                    setattr(filters,f,result)
 
+        event.getByLabel(('cmgPFMET'),metH)
+        met = metH.product()[0]
+        vars.met = met.et()
+
+        vars.minDeltaPhi = 1e6
         for i in xrange(len(jets)):
+            
             name = 'jet%iPt' % (i + 1)
+            jet = jets[i]
+            
+            dp = deltaPhi(met.phi(),jet.phi())
+            vars.minDeltaPhi = min(vars.minDeltaPhi,dp)
+
             if hasattr(vars,name):
-                jet = jets[i]
+                
                 setattr(vars,name,jet.pt())
                 setattr(vars,'jet%iEta'%(i+1),jet.eta())
 
         tche = sorted([j.btag(0) for j in jets if abs(j.eta()) <= 2.4])
-        tcheMedium = sorted([(j.pt(),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 3.3])
-        info.nBJet = len(tcheMedium)
-        tcheLoose = sorted([(j.pt(),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 1.7])
-        info.nBJetLoose = len(tcheLoose)
-
         ssvp = sorted([j.btag(5) for j in jets if abs(j.eta()) <= 2.4])
 
         if len(tche) < 2:
@@ -288,10 +299,6 @@ struct Filters{\
         vars.nextTCHE = tche[-2]
         vars.nextSSVP = ssvp[-2]
 
-        event.getByLabel(('cmgPFMET'),metH)
-        met = metH.product()[0]
-        vars.met = met.et()
-
         #loose lepton ID
         event.getByLabel(('razorMJElectronLoose'),electronH)
         event.getByLabel(('razorMJMuonLoose'),muonH)
@@ -300,7 +307,7 @@ struct Filters{\
         info.nElectronLoose = len(electronH.product())
         info.nMuonLoose = len(muonH.product())
         info.nTauLoose = len(tauH.product())
-
+        
         #tight lepton ID
         event.getByLabel(('razorMJElectronTight'),electronH)
         event.getByLabel(('razorMJMuonTight'),muonH)
@@ -309,7 +316,27 @@ struct Filters{\
         info.nElectronTight = len(electronH.product())
         info.nMuonTight = len(muonH.product())
         info.nTauTight = len(tauH.product())
-        info.nLepton = info.nElectronTight + info.nMuonTight + info.nTauTight
+
+        
+
+        #study the leading lepton
+        info.nUniqueLeptons = 0
+        if (info.nElectronTight + info.nMuonTight + info.nTauTight) > 0:
+            leptons = [(l.pt(),l) for l in electronH.product()]
+            leptons.extend([(l.pt(),l) for l in muonH.product()])
+            if info.nTauTight > 0:
+                for t in tauH.product():
+                    can = (t.pt(),t)
+                    if can not in leptons:
+                        leptons.append(can)
+            leptons.sort()
+            info.nUniqueLeptons = len(leptons)
+
+            leading = leptons[-1][1]
+            vars.leadingLeptonPt = leading.pt()
+            vars.leadingLeptonEta = leading.pt()
+            vars.leadingLeptonIso = leading.relIso()
+            vars.transverseMass = transverseMass(leading, met)
 
         event.getByLabel(('vertexSize'),countH)
         info.nVertex = countH.product()[0]
@@ -320,8 +347,9 @@ struct Filters{\
                 info.genInfo = filterH.product()[0]
 
         tree.Fill()
+        #if count > 2000: break
 
-#    tree.SetDirectory(output)
-#    tree.Write()
-#    output.Close()
-    store.write()
+    output.cd()    
+    tree.Write()
+    output.Close()
+

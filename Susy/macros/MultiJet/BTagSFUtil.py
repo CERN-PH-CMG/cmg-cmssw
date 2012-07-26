@@ -59,7 +59,6 @@ class FullSimCentral(object):
         else:
             effb = -3.67153247396e-07*x*x*x*x +  -2.81599797034e-05*x*x*x +  0.00293190163243*x*x +  -0.0849600849778*x +  0.928524440715
             effc = effb
-            #effb_err_max = 3.03337430722e-06*x*x*x*x + -0.000171604835897*x*x*x + 0.00474711667943*x*x + -0.0929933040514*x + 0.978347619293
         if abs(flav) == 5:
             return effb
         elif abs(flav) == 4:
@@ -101,8 +100,8 @@ class FullSimError(object):
         elif abs(flav) == 4:
             return 2.*FullSimError.getBTagScaleError(pt)
         else:
-            sf = FullSimError.getBTagScaleLight(pt)
-            return max( abs(sf - FullSimError.getBTagScaleLight(pt, version = -1) ), abs(sf - FullSimError.getBTagScaleLight(pt, version = +1) ) ) 
+            sf = FullSimCentral.getBTagScaleLight(pt)
+            return max( abs(sf - FullSimCentral.getBTagScaleLight(pt, version = -1) ), abs(sf - FullSimCentral.getBTagScaleLight(pt, version = +1) ) ) 
 
     @staticmethod
     def getBTagScaleEfficiencyErrorWithFlavour(pt, x, flav):
@@ -314,64 +313,6 @@ class BTag(object):
 #This class should only be used for upgrading and downgrading 
 #if a single operating point is used in an analysis. 
 
-#bool isBTagged = b-tag flag for jet
-#int pdgIdPart = parton id
-#float Btag_SF = MC/data scale factor for b/c-tagging efficiency
-#float Btag_eff = b/c-tagging efficiency in data
-#float Bmistag_SF = MC/data scale factor for mistag efficiency
-#float Bmistag_eff = mistag efficiency in data
-#
-#Author: Michael Segala
-#Contact: michael.segala@gmail.com
-#Updated: Ulrich Heintz 12/23/2011
-
-class BTagSFUtil:
-
-    def __init__(self, seed = 0):
-        self.rand = rt.TRandom3(seed)
-
-    def modifyBTagsWithSF(self, isBTagged, pdgIdPart, Btag_SF = 0.98, Btag_eff = 1.0, Bmistag_SF = 1.0, Bmistag_eff = 1.0):
-
-        newBTag = isBTagged
-
-        #b quarks and c quarks:
-        if( abs( pdgIdPart ) == 5 or  abs( pdgIdPart ) == 4):
-            bctag_eff = Btag_eff;
-            if ( abs(pdgIdPart)==4 ):
-                bctag_eff = Btag_eff/5.0; #take ctag eff as one 5th of Btag eff
-            newBTag = applySF(isBTagged, Btag_SF, bctag_eff);
-
-        #light quarks:
-        elif( abs( pdgIdPart )>0 ):#in data it is 0 (save computing time)
-            newBTag = applySF(isBTagged, Bmistag_SF, Bmistag_eff);
-
-        isBTagged = newBTag
-        return isBTagged
-
-    def applySF(self, isBTagged, Btag_SF = 0.98, Btag_eff = 1.0):
-          
-        newBTag = isBTagged
-        if Btag_SF == 1:
-            return newBTag #no correction needed 
-
-        #throw die
-        coin = self.rand.Uniform(1.);    
-  
-        if Btag_SF > 1: #use this if SF>1
-            if(not isBTagged ):
-                #fraction of jets that need to be upgraded
-                mistagPercent = (1.0 - Btag_SF) / (1.0 - (Btag_SF/Btag_eff) );
-
-                #upgrade to tagged
-                if( coin < mistagPercent ):
-                    newBTag = True
-
-        else:  #use this if SF<1
-            #downgrade tagged to untagged
-            if( isBTagged and coin > Btag_SF ):
-                newBTag = False
-
-        return newBTag
 
 if __name__ == '__main__':
 
