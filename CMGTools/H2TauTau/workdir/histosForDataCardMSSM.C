@@ -3,9 +3,9 @@
 #include <TH1F.h>
 #include <TDirectory.h>
 #include "TauMuPlotter.h"
-#include "tauMuConfig2011Reload.C"
+#include "configTauMu2011.C"
 #include "TauElePlotter.h"
-#include "tauEleConfig2011Reload.C"
+#include "configTauEle2011.C"
 
 long massValues[19]={90,100,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
 
@@ -33,20 +33,21 @@ void histosForDataCardMSSM(Int_t channel,TString path,TString tag){
   Float_t xbinsValues[19+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,450,500,600,700,800};
   
   
-  if(channel==1)TauMuPlotter * analysis=tauMuConfig2011Reload("analysis",path);
-  if(channel==2)TauElePlotter * analysis=tauEleConfig2011Reload("analysis",path);
+  if(channel==1)TauMuPlotter * analysis=configTauMu2011("analysis",path);
+  if(channel==2)TauElePlotter * analysis=configTauEle2011("analysis",path);
   
   //analysis->plotvar_="svfitmass";
   analysis->plotvar_="ditaumass";
   analysis->setVariableBinning(19,xbinsValues);
   analysis->nbins_=0;
   analysis->Isocat_=1;
+  analysis->Chcat_=1; 
   analysis->MTcat_=101; 
   analysis->setMSSMFlag(1);
   analysis->setZTTType(2);
 
   
-  TFile output(ChannelName+"MSSM"+tag+".root","recreate");
+  TFile output(ChannelName+"MSSM_"+analysis->plotvar_+"_"+tag+".root","recreate");
   for(long sm=0; sm<7; sm++){
     if(sm==4) continue;
 
@@ -62,26 +63,25 @@ void histosForDataCardMSSM(Int_t channel,TString path,TString tag){
 
 
     TH1F* QCD = 0;
-    if(channel==1){//need to sync this channel with e-tau
+    if(channel==1){
       if(sm==0 || sm==1 || sm==2 || sm==3) QCD=analysis->getQCDInc();
       if(sm==5 || sm==6)                   QCD=analysis->getQCDKeti();
     }
     if(channel==2){
-      if(sm==0 || sm==1 || sm==2 || sm==3) QCD=analysis->getQCDIncWJetsShape();
+      if(sm==0 || sm==1 || sm==2 || sm==3) QCD=analysis->getQCDInc();
       if(sm==5 || sm==6)                   QCD=analysis->getQCDKeti();
     }
     QCD->SetName("QCD");
 
 
     TH1F* W = 0;
-    if(channel==1){//need to sync this channel with e-tau
+    if(channel==1){
       if(sm==0 || sm==1 || sm==2 || sm==3) W = analysis->getWJetsInc();
       if(sm==5 || sm==6)                   W = analysis->getW2JetsBJet();
     }
     if(channel==2){
-      if(sm==0 || sm==1) W = analysis->getWJetsIncShape();
-      if(sm==2 || sm==3) W = analysis->getW2JetsBJet();
-      if(sm==5 || sm==6) W = analysis->getW2JetsBJet();
+      if(sm==0 || sm==1 || sm==2 || sm==3) W = analysis->getWJetsInc();
+      if(sm==5 || sm==6)                   W = analysis->getW2JetsBJet();
     }
     W->SetName("W");
 
@@ -168,7 +168,7 @@ void histosForDataCardMSSM(Int_t channel,TString path,TString tag){
 }
 
 //Once the root files are created as above use this function to merge
-void mergeDataCardHistosMSSM(Int_t channel){
+void mergeDataCardHistosMSSM(Int_t channel, TString tag="svfitmass"){
 
   TString ChannelName;
   if(channel==1)ChannelName="muTau";
@@ -176,11 +176,11 @@ void mergeDataCardHistosMSSM(Int_t channel){
   else return;
   
 
-  TFile nominal(ChannelName+"MSSM.root","read");
-  TFile nominaltUp(ChannelName+"MSSMtUp.root","read");
-  TFile nominaltDown(ChannelName+"MSSMtDown.root","read");
+  TFile nominal(ChannelName+"MSSM_"+tag+"_.root","read");
+  TFile nominaltUp(ChannelName+"MSSM_"+tag+"_tUp.root","read");
+  TFile nominaltDown(ChannelName+"MSSM_"+tag+"_tDown.root","read");
 
-  TFile output(ChannelName+"MSSM_Merge.root","recreate");
+  TFile output(ChannelName+"MSSM_"+tag+".root","recreate");
   for(long sm=0;sm<7;sm++){
     if(sm==4) continue;
 
@@ -189,83 +189,83 @@ void mergeDataCardHistosMSSM(Int_t channel){
 
 
     /////////////Nominal histos:
-    TH1F* ZTT = nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
+    TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
     ZTT->SetName("ZTT");
 
-    TH1F* QCD = nominal.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
+    TH1F* QCD = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
     QCD->SetName("QCD");
 
-    TH1F* W = nominal.Get(ChannelName+"_"+catdirname[sm]+"/W");
+    TH1F* W = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/W");
     W->SetName("W");
 
-    TH1F* TT = nominal.Get(ChannelName+"_"+catdirname[sm]+"/TT");
+    TH1F* TT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/TT");
     TT->SetName("TT");
 
-    TH1F* ZL = nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
+    TH1F* ZL = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
     ZL->SetName("ZL");
 
-    TH1F* ZJ = nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
+    TH1F* ZJ = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
     ZJ->SetName("ZJ");
 
-    TH1F* VV = nominal.Get(ChannelName+"_"+catdirname[sm]+"/VV");
+    TH1F* VV = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/VV");
     VV->SetName("VV");
 
-    TH1F* ZLL = nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZLL");
+    TH1F* ZLL = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZLL");
     ZLL->SetName("ZLL");
  
-    TH1F* data_obs = nominal.Get(ChannelName+"_"+catdirname[sm]+"/data_obs");
+    TH1F* data_obs = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/data_obs");
     data_obs->SetName("data_obs");
 
 
     /////////////tUp histos
-    TH1F* ZTT_CMS_scale_tUp =  nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
+    TH1F* ZTT_CMS_scale_tUp =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
     ZTT_CMS_scale_tUp->SetName("ZTT_CMS_scale_tUp");
 
-    TH1F* QCD_CMS_scale_tUp = nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
+    TH1F* QCD_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
     QCD_CMS_scale_tUp->SetName("QCD_CMS_scale_tUp");
 
-    TH1F* W_CMS_scale_tUp =  nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/W");
+    TH1F* W_CMS_scale_tUp =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/W");
     W_CMS_scale_tUp->SetName("W_CMS_scale_tUp");
 
-    TH1F* TT_CMS_scale_tUp = nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/TT");
+    TH1F* TT_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/TT");
     TT_CMS_scale_tUp->SetName("TT_CMS_scale_tUp");
 
-    TH1F* ZL_CMS_scale_tUp = nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
+    TH1F* ZL_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
     ZL_CMS_scale_tUp->SetName("ZL_CMS_scale_tUp");
 
-    TH1F* ZJ_CMS_scale_tUp = nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
+    TH1F* ZJ_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
     ZJ_CMS_scale_tUp->SetName("ZJ_CMS_scale_tUp");
 
-    TH1F* VV_CMS_scale_tUp = nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/VV");
+    TH1F* VV_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/VV");
     VV_CMS_scale_tUp->SetName("VV_CMS_scale_tUp");
 
-    TH1F* ZLL_CMS_scale_tUp= nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZLL");
+    TH1F* ZLL_CMS_scale_tUp= (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZLL");
     ZLL_CMS_scale_tUp->SetName("ZLL_CMS_scale_tUp");
 
 
     /////////////tDown histos
-    TH1F* ZTT_CMS_scale_tDown =  nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
+    TH1F* ZTT_CMS_scale_tDown =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
     ZTT_CMS_scale_tDown->SetName("ZTT_CMS_scale_tDown");
 
-    TH1F* QCD_CMS_scale_tDown = nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
+    TH1F* QCD_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
     QCD_CMS_scale_tDown->SetName("QCD_CMS_scale_tDown");
 
-    TH1F* W_CMS_scale_tDown =  nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/W");
+    TH1F* W_CMS_scale_tDown =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/W");
     W_CMS_scale_tDown->SetName("W_CMS_scale_tDown");
 
-    TH1F* TT_CMS_scale_tDown = nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/TT");
+    TH1F* TT_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/TT");
     TT_CMS_scale_tDown->SetName("TT_CMS_scale_tDown");
 
-    TH1F* ZL_CMS_scale_tDown = nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
+    TH1F* ZL_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
     ZL_CMS_scale_tDown->SetName("ZL_CMS_scale_tDown");
 
-    TH1F* ZJ_CMS_scale_tDown = nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
+    TH1F* ZJ_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
     ZJ_CMS_scale_tDown->SetName("ZJ_CMS_scale_tDown");
 
-    TH1F* VV_CMS_scale_tDown = nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/VV");
+    TH1F* VV_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/VV");
     VV_CMS_scale_tDown->SetName("VV_CMS_scale_tDown");
 
-    TH1F* ZLL_CMS_scale_tDown= nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZLL");
+    TH1F* ZLL_CMS_scale_tDown= (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZLL");
     ZLL_CMS_scale_tDown->SetName("ZLL_CMS_scale_tDown");
 
 
@@ -307,25 +307,25 @@ void mergeDataCardHistosMSSM(Int_t channel){
       cout<<ChannelName+"_"+catdirname[sm]<<" "<<ma<<endl;
 
       //Nominal histos
-      TH1F* GG = nominal.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
+      TH1F* GG = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
       GG->SetName(TString("ggH")+ma);
 
-      TH1F* BB =  nominal.Get(ChannelName+"_"+catdirname[sm]+"/bbH"+ma);
+      TH1F* BB =  (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/bbH"+ma);
       BB->SetName(TString("bbH")+ma);
      
       //tUp histos
-      TH1F* GG_CMS_scale_tUp  = nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
+      TH1F* GG_CMS_scale_tUp  = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
       GG_CMS_scale_tUp->SetName(TString("ggH")+ma+"_CMS_scale_tUp");
       
-      TH1F* BB_CMS_scale_tUp  =  nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/bbH"+ma);
+      TH1F* BB_CMS_scale_tUp  =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/bbH"+ma);
       BB_CMS_scale_tUp->SetName(TString("bbH")+ma+"_CMS_scale_tUp");
 
      
       //tDown histos
-      TH1F* GG_CMS_scale_tDown  = nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
+      TH1F* GG_CMS_scale_tDown  = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
       GG_CMS_scale_tDown->SetName(TString("ggH")+ma+"_CMS_scale_tDown");
       
-      TH1F* BB_CMS_scale_tDown  =  nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/bbH"+ma);
+      TH1F* BB_CMS_scale_tDown  =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/bbH"+ma);
       if(!BB_CMS_scale_tDown){cout<<ma<<" "<<ChannelName+"_"+catdirname[sm]+"/bbH"+ma<<endl; return 0;}
       BB_CMS_scale_tDown->SetName(TString("bbH")+ma+"_CMS_scale_tDown");
 
@@ -368,28 +368,28 @@ void plotDataCard(TString file, Int_t channel){
   for(long sm=0;sm<7;sm++){
     if(sm==4) continue;
 
-    TH1F* ZTT = nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
+    TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
     ZTT->SetName("ZTT");
 
-    TH1F* QCD = nominal.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
+    TH1F* QCD = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
     QCD->SetName("QCD");
 
-    TH1F* W = nominal.Get(ChannelName+"_"+catdirname[sm]+"/W");
+    TH1F* W = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/W");
     W->SetName("W");
 
-    TH1F* TT = nominal.Get(ChannelName+"_"+catdirname[sm]+"/TT");
+    TH1F* TT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/TT");
     TT->SetName("TT");
 
-    TH1F* ZL = nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
+    TH1F* ZL = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
     ZL->SetName("ZL");
 
-    TH1F* ZJ = nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
+    TH1F* ZJ = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
     ZJ->SetName("ZJ");
 
-    TH1F* VV = nominal.Get(ChannelName+"_"+catdirname[sm]+"/VV");
+    TH1F* VV = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/VV");
     VV->SetName("VV");
 
-    TH1F* data_obs = nominal.Get(ChannelName+"_"+catdirname[sm]+"/data_obs");
+    TH1F* data_obs = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/data_obs");
     data_obs->SetName("data_obs");
 
     //plot

@@ -496,14 +496,13 @@ protected:
   const cmg::PFJet * findJet(std::vector<const cmg::PFJet * > * fulllist, float eta, float phi);
 
   bool checkPFJetId(const cmg::PFJet * jet){
-    //Loose PF Jet id 
-    ///https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
+    //Loose PF Jet id : https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
     if(jet->component(5).fraction() < 0.99
        &&jet->component(4).fraction() < 0.99
        &&jet->nConstituents() > 1
-       &&(jet->component(1).fraction() > 0 || abs(jet->eta()) > 2.4)
-       &&(jet->component(1).number() > 0 || abs(jet->eta()) > 2.4)
-       &&(jet->component(2).fraction() < 0.99 || abs(jet->eta()) > 2.4)        
+       &&(jet->component(1).fraction() > 0 || abs(jet->eta()) < 2.4 )
+       &&(jet->component(1).number() > 0 || abs(jet->eta()) < 2.4 )
+       &&(jet->component(2).fraction() < 0.99 || abs(jet->eta()) < 2.4)        
        )return 1;
     else return 0;
   }

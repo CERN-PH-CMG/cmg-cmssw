@@ -79,7 +79,8 @@ bool TauMuFlatNtp::applySelections(){
 
   ///basic skims which should have been applied in H2TAUTAU step  
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg1().pt() > tauPtCut_
+    if(cand->mass()>10.0
+       && cand->leg1().pt() > tauPtCut_
        && fabs(cand->leg1().eta()) < tauEtaCut_
        && cand->leg1().tauID("decayModeFinding") > 0.5
        && cand->leg2().pt() > muPtCut_

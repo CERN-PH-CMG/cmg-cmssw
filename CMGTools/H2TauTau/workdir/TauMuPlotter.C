@@ -1189,7 +1189,7 @@ TH1F* TauMuPlotter::getQCDKeti(){
     hQCDShape->Scale(hQCDInc->Integral()/hQCDShape->Integral());
   else {
     cout<<"hQCDShape integral is 0 cannot normalize shape "<<endl;
-    return 0;
+    hQCDShape->Scale(0.);
   }
   delete hQCDInc;
 
