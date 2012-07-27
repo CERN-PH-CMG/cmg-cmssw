@@ -31,20 +31,33 @@ os.system("mkdir -p "+plot_dire)
 
 
 # format: file,xsec(fb),tag for legenda
-#latest ok
+#latest ok (no pftau)
 #mclist=[
-#    ["htt/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ"],
+#    ["htt/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ(qq#tau#tau)"],
+#    ["htt/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ(others)"],
 #    ["htt/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
 #    ["htt/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
 #    ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
 #    ]
-# treename="htttreeproducer_httanalyzer"
+#treename="htttreeproducer_httanalyzer"
+
+#pftau version
+#latest ok
+#mclist=[
+#    ["htt/Hig125_83/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZ(qq#tau#tau)"],
+#    ["htt/Hig125_83/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZ(others)"],
+#    ["htt/ZZ_2/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",1446.,"ZZ"],
+#    ["htt/WW_3/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",14080.,"WW"],
+#    ["htt/QQ_4/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",50000.,"QQ"]
+#    ]
+#treename="htttreeproducerpftau_httanalyzerpftau"
 
 mclist=[
-    ["htt/Hig125_83/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZ"],
-#    ["htt/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
-#    ["htt/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
-#    ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
+    ["htt/Hig125_85/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZ(qq#tau#tau)"],
+    ["htt/Hig125_85/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZ(others)"],
+#    ["htt/ZZ_2/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",1446.,"ZZ"],
+#    ["htt/WW_3/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",14080.,"WW"],
+#    ["htt/QQ_4/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",50000.,"QQ"]
     ]
 treename="htttreeproducerpftau_httanalyzerpftau"
 
@@ -105,10 +118,10 @@ h1_list=[
     ]
     
     
-linecolors=[2, 4, 1, 6]
-fillcolors=[0, 4, 4, 4]
-fillstyles=[0, 3013, 3013, 3013]
-smooth=[False, True, True, True]
+linecolors=[2, 3, 4, 1, 6]
+fillcolors=[0, 0, 4, 4, 4]
+fillstyles=[0, 0, 3013, 3013, 3013]
+smooth=[False, False, True, True, True]
 
 h1glob=[]
 for index in range(0,len(mclist)):
@@ -181,16 +194,26 @@ for index,mc in enumerate(mclist):
             print "Reading event:",read,'/',nevents
         
 
-        
+        istt=event.g_ishtt==1 and event.g_isHZqq==1
+
         addcut = True
-        addcut = event.mvis>120.
-        addcut = event.mvis<210.
+        if index==0:
+            addcut= addcut and istt
+        if index==1:
+            addcut= addcut and not istt
+            
+#        addcut = event.mvis>120.
+        addcut = addcut and event.mvis<210.
 #        addcut = addcut and event.tt_acoll<-0.5
         addcut = addcut and event.jj_acoll<-0.3
-        addcut = addcut and event.leadingMuon_en<50.
-        addcut = addcut and event.leadingElectron_en<50.
-#        addcut = addcut and event.t1recMass < 7 and event.t2recMass < 7
-#        addcut = addcut and event.t1recChFraction > 0.06
+        if "pftau" in treename:
+            addcut = addcut and event.leadingMuon_en<50.
+            addcut = addcut and event.leadingElectron_en<50.
+        else:
+            addcut = addcut and event.leadingMuonEnergy<50.
+            addcut = addcut and event.leadingElectronEnergy<50.
+            addcut = addcut and event.t1recMass < 7 and event.t2recMass < 7
+            addcut = addcut and event.t1recChFraction > 0.06
 
 
         if index==0:
