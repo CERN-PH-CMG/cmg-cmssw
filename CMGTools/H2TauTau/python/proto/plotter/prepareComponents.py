@@ -1,8 +1,21 @@
 from ROOT import TFile, TTree, TChain
 from CMGTools.RootTools.Chain import Chain
 from CMGTools.H2TauTau.proto.plotter.embed import embedScaleFactor
+import pickle
 
 keeper = []
+
+def readPickles(dir, config, embed=True, channel='TauMu',higgsMass=None):
+    selComps = dict( [ (comp.name, comp) for comp in config.components ])
+#    print selComps
+    pickleFiles = {}
+    for comp in selComps.values():
+        fileName = '/'.join([ dir,
+                              comp.dir,
+                              'TauEleAnalyzer/DiLepton.pck'])
+
+        pickleFiles[comp.name] = pickle.load( open( fileName, 'rb' ) )
+    return pickleFiles
 
 
 def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', higgsMass=None):
@@ -85,6 +98,14 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', hi
             # import pdb; pdb.set_trace()
             comp.embedFactor = embedFactor
  
+    pickles = readPickles(dir, config, embed, channel, higgsMass)
+#    print 'TTJets',pickles['TTJets']['all events'][1]
+
+    for pick in pickles:
+        print 'reading pickle file',pick,pickles[pick]['all events'][1]
+        newSelComps[pick].totEvents = pickles[pick]['all events'][1]
+
+
     return newSelComps, weights, zComps
     
 if __name__ == '__main__':
