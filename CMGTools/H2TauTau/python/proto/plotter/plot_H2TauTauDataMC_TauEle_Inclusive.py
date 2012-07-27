@@ -6,7 +6,7 @@ import re
 
 #from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
-from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
+from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents, readPickles
 from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw
 from CMGTools.H2TauTau.proto.plotter.categories_TauEle import *
 from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
@@ -16,6 +16,7 @@ from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.embed import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import *
+from CMGTools.RootTools.statistics.Counter import Counters
 from CMGTools.RootTools.Style import *
 from ROOT import kGray, kPink, TH1, TPaveText, TPad, TCanvas
 
@@ -237,7 +238,7 @@ if __name__ == '__main__':
     cfgFileName = args[1]
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
-    embed = options.embed
+#    embed = options.embed
 
     origComps = copy.deepcopy(cfg.config.components)
     
@@ -260,14 +261,27 @@ if __name__ == '__main__':
 
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, 
                                                   options.embed, 'TauEle', options.higgs)
+
+
+#    pickles = readPickles(anaDir, cfg.config, options.embed, 'TauMu', options.higgs)
+#    print 'TTJets',pickles['TTJets']['all events'][1]
+
+#    for pick in pickles:
+#        print 'READ',pick,pickles[pick]['all events'][1]
+#        selComps[pick].totEvents = pickles[pick]['all events'][1]
+
     #import pdb ; pdb.set_trace()
     #print 'SELCOMPS:',selComps
 
     cutw = options.cut.replace('mt<40', '1')
-    fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
-                                 12, 70, 130, cutw,
-                                 weight=weight, embed=options.embed,
-                                 treeName='H2TauTauTreeProducerTauEle')
+    fwss, fwss_error, fwos, fwos_error, ss, os = plot_W(anaDir, selComps, weights,
+                                                        12, 70, 130, cutw,
+                                                        weight=weight, embed=options.embed,
+                                                        treeName='H2TauTauTreeProducerTauEle')
+    #PG fwss = W normalization factor for the same sign plots
+    #PG fwos = W normalization factor for the opposite sign plots
+    #PG ss   = mt plot with the scaled W, according to fwss
+    #PG os   = mt plot with the scaled W, according to fwos
 
     can0 = TCanvas('can0','',100,100,600,600)
 
@@ -334,6 +348,9 @@ if __name__ == '__main__':
     draw(ss, False, 'TauEle', plotprefix = 'W_ss')
     draw(os, False, 'TauEle', plotprefix = 'W_os')
 
+    #PG final drawing
+    #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
     if (options.plots == 'True') :
         drawAll(options.cut, plots_TauEle, options.embed, selComps, weights, fwss, fwos)
         #PG this does not work yet, it does not get the DY right
@@ -350,7 +367,7 @@ if __name__ == '__main__':
         draw(ssign, False, 'TauEle', 'QCD_ss')
         draw(osign, False, 'TauEle', 'QCD_os')
 
-        #PG save the sidebands to be able and get numbers for the systematics
+        #PG save the QCD sideband to be able and get numbers for the systematics
 #        currdir = copy(gDirectory)
         qcdsyst_file = TFile ('qcdsyst.root','recreate')
         qcdsyst_file.cd()
@@ -372,3 +389,70 @@ if __name__ == '__main__':
 #        osQCD.legendOn = False
         draw(osQCD, options.blind, 'TauEle')
         datacards(osQCD, cutstring, shift, 'eTau')
+
+        #PG errors for datacards
+        #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
+        
+        #PG WJets
+        WJets_stats_component = 1. / math.sqrt(osQCD.Hist('WJets').obj.GetEntries())
+        WJets_tot_error = sqsum(WJets_stats_component, fwos_error/fwos)
+        print 'WJets total relative error', round(WJets_tot_error, 2)
+        #PG FIXME missing the error due to other bkg subtraction in the fwos_error calculation
+        #PG FIXME move getpickels in prepare components
+        #PG FIXME and assign to the compontents the number of intial events
+        #PG FIXME directly there, so that I am sure it can be used also to estimate
+        #PG FIXME the uncertainty on fos within plotmod.py
+        
+        #PG TTbar
+        TTJets_eff = osQCD.Hist('TTJets').obj.GetEntries() / selComps['TTJets'].totEvents
+        TTJet_eff_error = math.sqrt(TTJets_eff * (1 - TTJets_eff) / selComps['TTJets'].totEvents)
+        print 'TTjets relative eff error', TTJet_eff_error / TTJets_eff
+        #PG missing the error on the scale factor and the error on the total cross-section
+        #PG for 2011 and 2012 separately
+        
+        #PG QCD
+        QCD_norm_component = ssQCD.Hist('QCD').weighted.Integral()
+        print 'QCD norm component', round(QCD_norm_component,0)
+        QCD_extrap_scale = 1.10
+        QCD_extrap_error = 0.10 / QCD_extrap_scale
+        print 'QCD extrapolation factor (and relative error)',round(QCD_extrap_scale,2),'+-',round(QCD_extrap_error,2)
+        
+        #PG Z+jets
+        ZJets_total_stats = selComps['Ztt'].totEvents * \
+                            selComps['Ztt'].tree.GetEntries('isFake == 0') / selComps['Ztt'].tree.GetEntries()
+        if options.embed :
+            ZJets_total_stats = sum(comp.totEvents for name,comp in selComps.iteritems() if comp.isEmbed)
+        ZJets_eff = osQCD.Hist('Ztt').obj.GetEntries() / ZJets_total_stats
+        ZJets_eff_error = math.sqrt(ZJets_eff * (1 - ZJets_eff) / ZJets_total_stats)
+        print 'ZJets relative eff error:',round (ZJets_eff_error / ZJets_eff,2)
+        #PG FIXME normalization error is missing
+
+        #PG Z+jets, lepton tau fake
+        tauEle_fake_error = 0.2
+        ZJets_ZL_total_stats = selComps['Ztt'].totEvents * \
+                               selComps['Ztt'].tree.GetEntries('isFake == 1') / selComps['Ztt'].tree.GetEntries()
+        ZJets_ZL_eff = osQCD.Hist('Ztt_ZL').obj.GetEntries() / ZJets_ZL_total_stats
+        ZJets_ZL_eff_error = math.sqrt(ZJets_ZL_eff * (1 - ZJets_ZL_eff) / ZJets_ZL_total_stats)
+        ZJets_ZL_tot_error = sqsum(tauEle_fake_error, ZJets_ZL_eff_error/ZJets_ZL_eff)
+        print 'ZJets_ZL relative tot error:',round(ZJets_ZL_tot_error,2)
+
+        #PG Z+jets, jet tau fake
+        tauJet_fake_error = 0.2
+        ZJets_ZJ_total_stats = selComps['Ztt'].totEvents * \
+                               selComps['Ztt'].tree.GetEntries('isFake == 2') / selComps['Ztt'].tree.GetEntries()
+        ZJets_ZJ_eff = osQCD.Hist('Ztt_ZJ').obj.GetEntries() / ZJets_ZJ_total_stats
+        ZJets_ZJ_eff_error = math.sqrt(ZJets_ZJ_eff * (1 - ZJets_ZJ_eff) / ZJets_ZJ_total_stats)
+        ZJets_ZJ_tot_error = sqsum(tauJet_fake_error, ZJets_ZJ_eff_error/ZJets_ZJ_eff)
+        print 'ZJets_ZJ relative tot error:',round(ZJets_ZJ_tot_error,2)
+
+
+        
+        
+        
+       
+        
+        
+        
+
+        
+

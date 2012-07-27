@@ -175,15 +175,13 @@ if __name__ == '__main__':
     parser.add_option("-g", "--higgs", 
                       dest="higgs", 
                       help="Higgs mass: 125, 130,... or dummy",
-                      default=125)
+                      default=None)
 
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
-
-    options.higgs = '125' #PG FIXME I have to fix the grouping at line 93
 
     if options.nbins is None:
         NBINS = binning_svfitMass
@@ -273,7 +271,7 @@ if __name__ == '__main__':
             0, 
             inc_qcd_ssQCD.Hist('Data').weighted.GetNbinsX(), 
             inc_qcd_yield_error)
-        print 'TEST',inc_qcd_yield_old - inc_qcd_yield
+        print 'TEST QCD INTEGRAL ERROR',inc_qcd_yield_old - inc_qcd_yield #PG FIXME remove me after first test
 
 
     # remove WJets and TTJets from components, and alias W3Jets -> WJets; TTJets11 -> TTJets
