@@ -353,7 +353,7 @@ class httanalyzerpftau( Analyzer ):
         # first build up tau dandidates from hadtaus, electrons and muons
         #        print "#jets,muons,elec,hadtaus:",len(self.jets),len(self.muons),len(self.electrons),len(self.hadtaus)
         for ind in range(0,len(self.muons)):
-            if self.testmuoId(self.muons[ind]):
+            if self.testmuoId(ind):
                 if self.muoindex[ind] not in removedjet: # be sure you get only one copy
                     event.taucand.append(self.muons[ind])
                     event.taucandtype.append(0)
@@ -363,7 +363,7 @@ class httanalyzerpftau( Analyzer ):
                     # print "added muon ",event.taucandindex[len(event.taucand)-1]
 
         for ind in range(0,len(self.electrons)):
-            if self.testeleId(self.electrons[ind]):
+            if self.testeleId(ind):
                 if self.eleindex[ind] not in removedjet: # prefer muons over ele if belonging to same matched jet
                     event.taucand.append(self.electrons[ind])
                     event.taucandtype.append(1)
@@ -373,7 +373,7 @@ class httanalyzerpftau( Analyzer ):
                     # print "added ele ",event.taucandindex[len(event.taucand)-1]
 
         for ind in range(0,len(self.hadtaus)):
-            if self.testhadtauId(self.hadtaus[ind]):
+            if self.testhadtauId(ind):
                 if self.hadtauindex[ind] not in removedjet: # prefer electrons,muons over had taus if belonging to same matched jet
                     event.taucand.append(self.hadtaus[ind])
                     event.taucandtype.append(2)
@@ -708,15 +708,24 @@ class httanalyzerpftau( Analyzer ):
 
 
 
-    def testmuoId(self, muo):
-        energy=muo.energy()
-        return energy<50.
+    def testmuoId(self, ind):
+        energy=self.muons[ind].energy()
+        # we need to remove muons in jet
+        jet=self.jets[self.muoindex[ind]]
+        ntrk=jet.component(1).number()+jet.component(2).number()+jet.component(3).number()
+        
+        return ntrk==1 and energy<50.
     
-    def testeleId(self, ele):
-        energy=ele.energy()
-        return energy<50.
+    def testeleId(self, ind):
+        energy=self.electrons[ind].energy()
+        # we need to remove muons in jet
+        jet=self.jets[self.eleindex[ind]]
+        ntrk=jet.component(1).number()+jet.component(2).number()+jet.component(3).number()
+
+        return ntrk==1 and energy<50.
     
-    def testhadtauId(self, tau):
+    def testhadtauId(self, ind):
+        tau=self.hadtaus[ind]
         # energy=tau.energy()
         #print "decayModeFinding",tau.tauID("decayModeFinding")
         #print "byVLooseCombinedIsolationDeltaBetaCorr",tau.tauID("byVLooseCombinedIsolationDeltaBetaCorr")
@@ -729,6 +738,7 @@ class httanalyzerpftau( Analyzer ):
         mva=tau.tauID("byRawIsoMVA")
         #retrun mva>0.98
         return vl>0.
+
 
     def ntrtaucand(self,tau,type):
         if type<2: # electron or muon
