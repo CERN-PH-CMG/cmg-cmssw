@@ -688,20 +688,22 @@ class httanalyzerpftau( Analyzer ):
         iso=[]
         index=[]
         dist=[]
-        for ind1 in range(0,len(objects)):
-            cos=[]
-            for ind2 in range(0,len(jets)):
-                cos.append(self.cosdelta(objects[ind1],jets[ind2]))
-                sortedindex=sorted(range(len(cos)),key=lambda x:cos[x])
-                sortedindex.reverse()
-            index.append(sortedindex[0])
-            closest=sortedindex[0]
-            dist.append(cos[closest])
-            if len(sortedindex)>=2:
-                closest=sortedindex[1]
-                iso.append(cos[closest])
-            else:
-                iso.append(-2.)
+        if len(objects)>=1:
+            for ind1 in range(0,len(objects)):
+                cos=[]
+                if len(jets)>=1:
+                    for ind2 in range(0,len(jets)):
+                        cos.append(self.cosdelta(objects[ind1],jets[ind2]))
+                        sortedindex=sorted(range(len(cos)),key=lambda x:cos[x])
+                        sortedindex.reverse()
+                    index.append(sortedindex[0])
+                    closest=sortedindex[0]
+                    dist.append(cos[closest])
+                    if len(sortedindex)>=2:
+                        closest=sortedindex[1]
+                        iso.append(cos[closest])
+                    else:
+                        iso.append(-2.)
         return iso,index,dist
 
 
