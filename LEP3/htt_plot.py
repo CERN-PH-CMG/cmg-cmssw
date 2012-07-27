@@ -30,34 +30,35 @@ os.system("mkdir -p "+plot_dire)
 
 
 
-# format: file,xsec(fb),tag for legenda
+# format: file,xsec(fb),tag for internal use (no strange char there), tag for legenda
 #latest ok (no pftau)
 #mclist=[
-#    ["htt/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ(qq#tau#tau)"],
-#    ["htt/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZ(others)"],
-#    ["htt/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ"],
-#    ["htt/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW"],
-#    ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ"]
+#    ["htt/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZqqtt","HZ(qq#tau#tau)"],
+#    ["htt/Hig125_3/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",200.,"HZothers","HZ(others)"],
+#    ["htt/ZZ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",1446.,"ZZ","ZZ"],
+#    ["htt/WW_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",14080.,"WW","WW"],
+#    ["htt/QQ_1/htttreeproducer_httanalyzer/htttreeproducer_httanalyzer_tree.root",50000.,"QQ","QQ"]
 #    ]
 #treename="htttreeproducer_httanalyzer"
 
-#pftau version
+#pftau version 1 (loose ele,muons)
 #latest ok
 #mclist=[
-#    ["htt/Hig125_83/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZ(qq#tau#tau)"],
-#    ["htt/Hig125_83/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZ(others)"],
-#    ["htt/ZZ_2/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",1446.,"ZZ"],
-#    ["htt/WW_3/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",14080.,"WW"],
-#    ["htt/QQ_4/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",50000.,"QQ"]
+#    ["htt/Hig125_83/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZqqtt","HZ(qq#tau#tau)"],
+#    ["htt/Hig125_83/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZothers","HZ(others)"],
+#    ["htt/ZZ_2/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",1446.,"ZZ","ZZ"],
+#    ["htt/WW_3/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",14080.,"WW","WW"],
+#    ["htt/QQ_4/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",50000.,"QQ","QQ"]
 #    ]
 #treename="htttreeproducerpftau_httanalyzerpftau"
 
+#pftau version 2 (tight ele muons)
 mclist=[
-    ["htt/Hig125_85/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZ(qq#tau#tau)"],
-    ["htt/Hig125_85/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZ(others)"],
-#    ["htt/ZZ_2/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",1446.,"ZZ"],
-#    ["htt/WW_3/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",14080.,"WW"],
-#    ["htt/QQ_4/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",50000.,"QQ"]
+    ["htt/Hig125_85/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZqqtt","HZ(qq#tau#tau)"],
+    ["htt/Hig125_85/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",200.,"HZothers","HZ(others)"],
+    ["htt/ZZ_3/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",1446.,"ZZ","ZZ"],
+    ["htt/WW_4/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",14080.,"WW","WW"],
+    ["htt/QQ_5/htttreeproducerpftau_httanalyzerpftau/htttreeproducerpftau_httanalyzerpftau_tree.root",50000.,"QQ","QQ"]
     ]
 treename="htttreeproducerpftau_httanalyzerpftau"
 
@@ -76,44 +77,44 @@ dgen1_vs_iso_h2=[]
 dgen2_vs_iso_h2=[]
 
 # Define all others
-# syntax: name, variable, nibn,xmin,xmax,visualize
+# syntax: name, variable, nibn,xmin,xmax,visualize, tag (no strange character here),title,xlabel,ylabel 
 
 step_label=["all","njet>4","ejet>10","2 taucand","2 good taucand","jet sele","mzmh cut","btag"]
 
 def_plot=true
 h1_list=[
-    ["Hmass_" ,"event.recHMass" ,80,40,200,True, "", "", ""],
-    ["Zmass_" ,"event.recZMass" ,30,60,120,def_plot, "", "", ""],
-    ["mvis_"  ,"event.mvis"     ,100,0,400,def_plot, "", "", ""],
-    ["evis_"  ,"event.evis"     ,100,0,400,def_plot, "", "", ""],
-#    ["ntrt1_" ,"event.t1recNtrk", 10,0, 10,def_plot, "", "", ""],
-#    ["ntrt2_" ,"event.t2recNtrk", 10,0, 10,def_plot, "", "", ""],
-#    ["ntrt_"  ,"event.t2recNtrk+event.t1recNtrk", 10,0, 10,def_plot, "", "", ""],
-    ["pz_"    ,"event.pz"  ,  50 ,-100, 100,def_plot, "", "", ""],
-    ["chi2_"  ,"event.chi2", 1000, 0,10000, def_plot, "", "", ""],
-    ["wwmin_" ,"event.wwMin",  25, 0,  100, def_plot, "", "", ""],
-    ["zzmin_" ,"event.zzMin",  25, 0,  100, def_plot, "", "", ""],
-    ["btag_tt","event.btag_tt",20, 0,   4., def_plot, "", "", ""],
-    ["btag_jj","event.btag_jj",20, 0,   4., def_plot, "", "", ""],
-    ["pz+emiss","240.-event.evis+abs(event.pz)", 200,-400,400,def_plot, "", "", ""],
-    ["ttacoll","event.tt_acoll", 100,-1,1,def_plot, "", "", ""],
-    ["jjacoll","event.jj_acoll", 100,-1,1,def_plot, "", "", ""],
-    ["leadingmu_e","event.leadingMuonEnergy", 100,0,200,def_plot, "", "", ""],
-    ["leadinge_e","event.leadingElectronEnergy", 100,0,200,def_plot, "", "", ""],
-    ["subleadingmu_e","event.subleadingMuonEnergy", 100,0,200,def_plot, "", "", ""],
-    ["subleadinge_e","event.subleadingElectronEnergy", 100,0,200,def_plot, "", "", ""],
-#    ["nhfraction_t1","event.t1recNHFraction", 100,0,1,def_plot, "", "", ""],
-#    ["nhfraction_t2","event.t2recNHFraction", 100,0,1,def_plot, "", "", ""],
-#    ["chfraction_t1","event.t1recChFraction", 100,0,1,def_plot, "", "", ""],
-#    ["chfraction_t2","event.t2recChFraction", 100,0,1,def_plot, "", "", ""],
-#    ["pfraction_t1","event.t1recPFraction", 100,0,1,def_plot, "", "", ""],
-#    ["pfraction_t2","event.t2recPFraction", 100,0,1,def_plot, "", "", ""],
-    ["mass_t1","event.t1recMass", 100,0,30,def_plot, "", "", ""],
-    ["mass_t2","event.t2recMass", 100,0,30,def_plot, "", "", ""],
-    ["acopl","event.ttmet_acopl", 100,-1,1,def_plot, "", "", ""],
-    ["constrained_mass","event.recZMass + event.recHMass - 91.2", 80,40,200,def_plot, "H#rightarrow#tau#tau with Z#rightarrow q#bar{q}", "Higgs mass (GeV)", "Events/2 GeV"],
-    ["t1candiso","event.t1candiso",100,0.,1.,True, "", "", ""],
-    ["t2candiso","event.t2candiso",100,0.,1.,True, "", "", ""]
+    ["Hmass_" ,"event.recHMass" ,80,40,200,True, "", "", "", ""],
+    ["Zmass_" ,"event.recZMass" ,30,60,120,def_plot, "", "", "", ""],
+    ["mvis_"  ,"event.mvis"     ,100,0,400,def_plot, "", "", "", ""],
+    ["evis_"  ,"event.evis"     ,100,0,400,def_plot, "", "", "", ""],
+#    ["ntrt1_" ,"event.t1recNtrk", 10,0, 10,def_plot, "", "", "", ""],
+#    ["ntrt2_" ,"event.t2recNtrk", 10,0, 10,def_plot, "", "", "", ""],
+#    ["ntrt_"  ,"event.t2recNtrk+event.t1recNtrk", 10,0, 10,def_plot, "", "", "", ""],
+    ["pz_"    ,"event.pz"  ,  50 ,-100, 100,def_plot, "", "", "", ""],
+    ["chi2_"  ,"event.chi2", 1000, 0,10000, def_plot, "", "", "", ""],
+    ["wwmin_" ,"event.wwMin",  25, 0,  100, def_plot, "", "", "", ""],
+    ["zzmin_" ,"event.zzMin",  25, 0,  100, def_plot, "", "", "", ""],
+    ["btag_tt","event.btag_tt",20, 0,   4., def_plot, "", "", "", ""],
+    ["btag_jj","event.btag_jj",20, 0,   4., def_plot, "", "", "", ""],
+    ["pz+emiss","240.-event.evis+abs(event.pz)", 200,-400,400,def_plot, "", "", "", ""],
+    ["ttacoll","event.tt_acoll", 100,-1,1,def_plot, "", "", "", ""],
+    ["jjacoll","event.jj_acoll", 100,-1,1,def_plot, "", "", "", ""],
+    ["leadingmu_e","event.leadingMuonEnergy", 100,0,200,def_plot, "", "", "", ""],
+    ["leadinge_e","event.leadingElectronEnergy", 100,0,200,def_plot, "", "", "", ""],
+    ["subleadingmu_e","event.subleadingMuonEnergy", 100,0,200,def_plot, "", "", "", ""],
+    ["subleadinge_e","event.subleadingElectronEnergy", 100,0,200,def_plot, "", "", "", ""],
+#    ["nhfraction_t1","event.t1recNHFraction", 100,0,1,def_plot, "", "", "", ""],
+#    ["nhfraction_t2","event.t2recNHFraction", 100,0,1,def_plot, "", "", "", ""],
+#    ["chfraction_t1","event.t1recChFraction", 100,0,1,def_plot, "", "", "", ""],
+#    ["chfraction_t2","event.t2recChFraction", 100,0,1,def_plot, "", "", "", ""],
+#    ["pfraction_t1","event.t1recPFraction", 100,0,1,def_plot, "", "", "", ""],
+#    ["pfraction_t2","event.t2recPFraction", 100,0,1,def_plot, "", "", "", ""],
+    ["mass_t1","event.t1recMass", 100,0,30,def_plot, "", "", "", ""],
+    ["mass_t2","event.t2recMass", 100,0,30,def_plot, "", "", "", ""],
+    ["acopl","event.ttmet_acopl", 100,-1,1,def_plot, "", "", "", ""],
+    ["constrained_mass","event.recZMass + event.recHMass - 91.2", 80,40,200,def_plot,"hqqtt", "H#rightarrow#tau#tau with Z#rightarrow q#bar{q}", "Higgs mass (GeV)", "Events/2 GeV"],
+    ["t1candiso","event.t1candiso",100,0.,1.,True, "", "", "", ""],
+    ["t2candiso","event.t2candiso",100,0.,1.,True, "", "", "", ""]
 
     ]
     
@@ -202,7 +203,7 @@ for index,mc in enumerate(mclist):
         if index==1:
             addcut= addcut and not istt
             
-#        addcut = event.mvis>120.
+
         addcut = addcut and event.mvis<210.
 #        addcut = addcut and event.tt_acoll<-0.5
         addcut = addcut and event.jj_acoll<-0.3
@@ -284,7 +285,7 @@ for index in range(0,len(mclist)):
     step_h[index].Draw(opt)
     if index == 1:
       leg_hist.AddEntry( step_h[index], "All backgrounds", "lf");
-    leg_hist.AddEntry(step_h[index],mc[2],"l")
+    leg_hist.AddEntry(step_h[index],mc[3],"l")
 
 leg_hist.Draw() 
 c1.Print(plot_dire+"cut_chain.png")
@@ -323,8 +324,9 @@ for i,h1 in enumerate(h1_list):
         continue
     tag=h1[0]
     canv.append(TCanvas("c_"+tag,"c_"+tag))
+
     if h1[6] != "":
-      stackh_h = THStack(h1[6], h1[6])
+      stackh_h = THStack(h1[6], h1[7])
     else:  
       stackh_h = THStack(tag, tag)
     for index in range(len(mclist)-1,-1,-1):
@@ -334,10 +336,10 @@ for i,h1 in enumerate(h1_list):
           h1loc[i].Smooth(1, "R")
         stackh_h.Add(h1loc[i])
     stackh_h.Draw()
-    if h1[7] != "":    
-      stackh_h.GetXaxis().SetTitle(h1[7])    
-    if h1[8] != "":
-      stackh_h.GetYaxis().SetTitle(h1[8])   
+    if h1[8] != "":    
+      stackh_h.GetXaxis().SetTitle(h1[8])    
+    if h1[9] != "":
+      stackh_h.GetYaxis().SetTitle(h1[9])   
     leg_hist.Draw()
     #text_lumi.Draw()
     canv[len(canv)-1].Print(plot_dire+"/"+tag+".png")
