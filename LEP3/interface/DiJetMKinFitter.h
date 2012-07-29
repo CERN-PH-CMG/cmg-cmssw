@@ -13,7 +13,9 @@ class DiJetMKinFitter : public TKinFitter {
   DiJetMKinFitter(const char* name, const char* title, double mass = 91.1876);
   
   std::pair<TLorentzVector,TLorentzVector> fit( LorentzVector jet1, LorentzVector jet2 );
-
+  
+  double getChi2();
+  
   double ErrEt(double Et, double Eta); 
   double ErrEta(double Et, double Eta); 
   double ErrPhi(double Et, double Eta); 
