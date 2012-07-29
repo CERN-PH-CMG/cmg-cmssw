@@ -25,9 +25,7 @@ void TauEleFlatNtp::beginJob(){
 
 
   //counters
-  counterall_=0;
   counterev_=0;
-  countergen_=0;
   counterveto_=0;
   counterpresel_=0;
   countermuvtx_=0;
@@ -566,7 +564,6 @@ void TauEleFlatNtp::beginJob(){
  void TauEleFlatNtp::endJob(){
    BaseFlatNtp::endJob();
    cout<<"counterev = "<<counterev_<<endl;
-   cout<<"countergen = "<<countergen_<<endl;
    cout<<"counterveto = "<<counterveto_<<endl;
    cout<<"counterpresel = "<<counterpresel_<<endl;
    cout<<"countermuvtx = "<<countermuvtx_<<endl;

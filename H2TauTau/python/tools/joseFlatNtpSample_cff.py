@@ -570,6 +570,12 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
 
 
+    if sampleAlias == 'VBFSync' : 
+        module.path = "/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_0"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
+
 
 ####--------------------------------------e-Tau 2012--------------------------------------------
 
@@ -673,4 +679,11 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
 
+
+
+    if sampleAlias == 'VBFSync' : 
+        module.path = "/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_0"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
 
