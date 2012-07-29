@@ -56,6 +56,7 @@ std::pair<TLorentzVector,TLorentzVector> DiJetMKinFitter::fit(LorentzVector jet1
   //Perform the fit
   TKinFitter::fit();
 
+
   TLorentzVector tjet1_kinfit(*fitJet1->getCurr4Vec());
   TLorentzVector tjet2_kinfit(*fitJet2->getCurr4Vec());
 
@@ -72,6 +73,15 @@ std::pair<TLorentzVector,TLorentzVector> DiJetMKinFitter::fit(LorentzVector jet1
 
 
 
+}
+
+
+double DiJetMKinFitter::getChi2( ) {
+  
+  //Get the Chi2
+  double chi2 =  TKinFitter::getS();
+  
+  return chi2;
 }
 
 
