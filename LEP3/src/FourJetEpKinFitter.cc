@@ -85,6 +85,7 @@ std::vector<TLorentzVector> FourJetEpKinFitter::fit( LorentzVector jet1,
   //Perform the fit
   TKinFitter::fit();
 
+
   TLorentzVector tjet1_kinfit(*fitJet1->getCurr4Vec());
   TLorentzVector tjet2_kinfit(*fitJet2->getCurr4Vec());
   TLorentzVector tjet3_kinfit(*fitJet3->getCurr4Vec());
@@ -105,6 +106,15 @@ std::vector<TLorentzVector> FourJetEpKinFitter::fit( LorentzVector jet1,
   return jetvector;
 }
 
+
+
+double FourJetEpKinFitter::getChi2( ) {
+  
+  //Get the Chi2
+  double chi2 =  TKinFitter::getS();
+  
+  return chi2;
+}
 
 
 // pfjet resolutions. taken from AN-2010-371
