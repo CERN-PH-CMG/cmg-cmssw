@@ -216,6 +216,7 @@ void synchNtuple() {
    //Sample sample("GluGluSync","/afs/cern.ch/user/b/benitezj/output/TauMu2011FlatNtpJuly23");
    //Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauMu2011FlatNtpJuly23");
 
+   //Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauMu2011V550July28svfit");
 
 
 
@@ -226,8 +227,8 @@ void synchNtuple() {
    //Sample sample("GluGluSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly23");
    //Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly23");
    //Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly25");
-   Sample sample("HiggsVBF125","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly25");
-   
+   //Sample sample("HiggsVBF125","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly25");
+   Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011V550July28");
 
 
    //***************************************
@@ -365,10 +366,15 @@ void drawHistos(TTree* Tmine, TTree* Tother,TString var, int nbins, float xmin, 
   Tmine->Draw(var+">>"+Hmine->GetName(),selection);
   Tother->Draw(var+">>"+Hother->GetName(),selection);
 
-  Hmine->Draw("hist");
-  TXmine.DrawTextNDC(.75,.82,TString("mine ")+(long)(Hmine->Integral()));
+  if(Hmine->GetMaximum()>Hother->GetMaximum()){
+    Hmine->Draw("hist");
+    Hother->Draw("histsame");
+  }else {
+    Hother->Draw("hist");
+    Hmine->Draw("histsame");
+  }
 
-  Hother->Draw("histsame");
+  TXmine.DrawTextNDC(.75,.82,TString("mine ")+(long)(Hmine->Integral()));
   TXother.DrawTextNDC(.75,.77,TString("other ")+(long)(Hother->Integral()));
 }
 
@@ -383,10 +389,14 @@ void compareSync(){
   //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/May30/Output_VBF_V541May30.root","read");
   //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/June13/muTauVBF.root","read");
   //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25/muTau_2011_VBFSync.root");
+  //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July28/muTau2011_VBFSync.root");
 
+  //Colin
   //TFile Fother("/afs/cern.ch/user/c/cbern/public/HTTSync/May22_c/ggh.root","read");  
+  //TFile Fother("/tmp/H2TauTauTreeProducerTauMuXCheck_tree.root","read");  
   //TTree*Tother=(TTree*)Fother.Get("H2TauTauTreeProducerTauMuXCheck");
 
+  //Lorenzo
   //TFile Fother("/afs/cern.ch/user/b/bianchi/public/HTTSync/May24/OutputMuTau_VBFH125.root");
   //TTree*Tother=(TTree*)Fother.Get("TauCheck");
 
@@ -394,8 +404,10 @@ void compareSync(){
   //TFile Fother("/afs/cern.ch/user/m/mhchan/public/Htt/sync/mutau_h125tt-vbf_sync_v3.root");
   //TTree*Tother=(TTree*)Fother.Get("TauCheck");
   
+  //Josh
   //TFile Fother("/afs/cern.ch/user/s/swanson/public/EventListsRound4/muTauVBF.root"); 
   //TFile Fother("/afs/cern.ch/user/s/swanson/public/Sync12062012/muTauVBF.root");
+  //TFile Fother("/afs/cern.ch/user/s/swanson/public/Sync42XMuTau/muTauPreselection.root");
   //TTree*Tother=(TTree*)Fother.Get("eventTree");
 
   //Andrew
@@ -411,17 +423,20 @@ void compareSync(){
   //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25/eTau_2011_GluGluSync.root");
   //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25/eTau_2011_VBFSync.root");
   //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25b/eTau_2011_VBFSync.root");
-  TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25b/eTau_2011_HiggsVBF125.root");
+  //TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July25b/eTau_2011_HiggsVBF125.root");
+  TFile Fmine("/afs/cern.ch/user/b/benitezj/public/HTTSync/July28/eTau2011_VBFSync.root");
   
   //TFile Fother("/afs/cern.ch/user/b/bianchi/public/HTTSync/May24/OutputElecTau_VBFH125.root");
   //TFile Fother("/afs/cern.ch/user/m/mhchan/public/Htt/sync/etau_h125tt-vbf_sync_v5.root");
   //TTree*Tother=(TTree*)Fother.Get("TauCheck");
 
   //TFile Fother("/afs/cern.ch/user/g/govoni/work/public/sync/sync_aug04_tree.root");
-  TFile Fother("/afs/cern.ch/user/g/govoni/work/public/sync/PG_VBFH125.root");
+  //TFile Fother("/afs/cern.ch/user/g/govoni/work/public/sync/PG_VBFH125.root");
   //TFile Fother("/afs/cern.ch/user/g/govoni/work/public/sync/PG_GGH125.root");
-  TTree*Tother=(TTree*)Fother.Get("H2TauTauTreeProducerTauMuXCheck");
+  //TTree*Tother=(TTree*)Fother.Get("H2TauTauTreeProducerTauMuXCheck");
 
+  TFile Fother("/afs/cern.ch/user/s/swanson/public/Sync42XEleTau/eleTauPreselection.root");
+  TTree*Tother=(TTree*)Fother.Get("eventTree");
 
   
   ////////////////
@@ -467,12 +482,6 @@ void compareSync(){
   C.Clear();
   drawHistos(Tmine,Tother,"metphi",30,-3.5,3.5,selection);
   C.Print("compareSync.ps");
-//   C.Clear();
-//   drawHistos(Tmine,Tother,"mvamet",20,0,200,selection);
-//   C.Print("compareSync.ps");
-//   C.Clear();
-//   drawHistos(Tmine,Tother,"mvametphi",30,-3.5,3.5,selection);
-//   C.Print("compareSync.ps");
 
   C.Clear();
   drawHistos(Tmine,Tother,"m_sv",30,0,300,selection);

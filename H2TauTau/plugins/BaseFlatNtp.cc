@@ -312,18 +312,20 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
 
   iEvent_=&iEvent;
 
-  runnumber_=iEvent.run();
+  runnumber_=iEvent_->run();
+  lumiblock_=iEvent_->luminosityBlock();
+  eventid_=iEvent_->id().event();
 
-  iEvent.getByLabel(verticesListTag_,vertices_);
+  iEvent_->getByLabel(verticesListTag_,vertices_);
   nvtx_=vertices_->size();  
   PV_=&(*(vertices_->begin()));
 
 
-  iEvent.getByLabel(trigPathsListTag_,trig_);
+  iEvent_->getByLabel(trigPathsListTag_,trig_);
   //trig_->begin()->printSelections(cout);
 
   //get trigger object list for later
-  iEvent.getByLabel(trigObjsListTag_,trigObjs_);
+  iEvent_->getByLabel(trigObjsListTag_,trigObjs_);
   
   ///get the gen Boson and set the genEventType
   genBoson_ = NULL;
@@ -331,7 +333,7 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   genBosonL2_ = NULL;
   genEventType_=0;
   if(dataType_==0){  
-    iEvent.getByLabel(genParticlesTag_,genParticles_);    
+    iEvent_->getByLabel(genParticlesTag_,genParticles_);    
     for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
       //cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
       if((abs(g->pdgId())==23 || abs(g->pdgId())==24 ||  abs(g->pdgId())==25 ||  abs(g->pdgId())==36 ) && genBoson_==NULL )
@@ -382,10 +384,13 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
 bool BaseFlatNtp::applySelections(){
   counterall_++;
 
-  if(firstRun_!=0) if(runnumber_<firstRun_)return 0;
-  if(lastRun_!=0) if(lastRun_<runnumber_)return 0;
+  if((firstRun_!=0 && runnumber_<firstRun_)
+     || (lastRun_!=0 && lastRun_<runnumber_)){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterruns"<<endl;
+    return 0;
+  }
   counterruns_++;
-  if(printSelectionPass_)cout<<" pass counterruns"<<endl;
+
 
   if(trigPaths_.size()==0)trigpass_=1;//no trigger requirement
   for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){//cmg ObjetSel
@@ -397,26 +402,32 @@ bool BaseFlatNtp::applySelections(){
 	}
   }
   //cout<<firstRun_<<" "<<lastRun_<<" "<<runnumber_<<" "<<trigpass_<<endl;
-  if(!trigpass_) return 0;
+  if(!trigpass_){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertrig"<<endl;
+    return 0;
+  }
   countertrig_++;
-  if(printSelectionPass_)cout<<" pass countertrig"<<endl;
-  
-  if(nvtx_==0) return 0;
-  countergoodvtx_++;
-  if(printSelectionPass_)cout<<" pass countergoodvtx"<<endl;
 
-  if( sampleGenEventType_!=0 && sampleGenEventType_!=genEventType_) return 0;
+  
+  if(nvtx_==0){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countergoodvtx"<<endl;
+    return 0;
+  }
+  countergoodvtx_++;
+
+
+  if( sampleGenEventType_!=0 && sampleGenEventType_!=genEventType_){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countergen"<<endl;
+    return 0;
+  }
   countergen_++;
-  if(printSelectionPass_)cout<<" pass countergen"<<endl;
+
 
   
   return 1;
 }
 
 bool BaseFlatNtp::fill(){
-
-  lumiblock_=iEvent_->luminosityBlock();
-  eventid_=iEvent_->id().event();
  
   vtxx_=PV_->x();
   vtxy_=PV_->y();
@@ -484,7 +495,9 @@ bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::stri
     if(obj->hasSelection(path.c_str())){//HLT path name
       //obj->printSelections(cout);
       if(obj->hasSelection(filter.c_str())){//last filter
-	if(reco::deltaR(eta,phi,obj->eta(),obj->phi())<0.3 && (abs(obj->pdgId())==pdgid || pdgid==-1) ){
+	if(reco::deltaR(eta,phi,obj->eta(),obj->phi())<0.3
+	   && (abs(obj->pdgId())==pdgid || pdgid==-1)
+	   ){
 	  //obj->printSelections(cout);	  
 	  //cout<<"pdg id "<<obj->pdgId()<<endl;
 	  return 1;      

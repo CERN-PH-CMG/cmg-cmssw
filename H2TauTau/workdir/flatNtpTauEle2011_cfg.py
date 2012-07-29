@@ -8,9 +8,12 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 evReportFreq = 100
 
 #######Define the samples to process
-dataset_user = 'benitezj'
+#dataset_user = 'benitezj'
 #sampleTag = "/H2TAUTAU_TauEle_V541June29"
-sampleTag = "/TauEleSkimJuly23"
+#sampleTag = "/TauEleSkimJuly23"
+
+dataset_user = 'cmgtools'
+sampleTag = ""
 
 
 sampleName = os.environ['SAMPLENAME']
@@ -32,7 +35,8 @@ process.flatNtp.runSVFit = 2
 
 
 ######Define the input files
-inputfiles = "tauEle_fullsel_tree_CMG_.*root"
+#inputfiles = "tauEle_fullsel_tree_CMG_.*root"
+inputfiles = "cmgTuple_.*root"
 dataset_name = process.flatNtp.path.value() + sampleTag
 firstfile = sampleJobIdx * sampleMergeFactor
 lastfile = (sampleJobIdx + 1 ) * sampleMergeFactor
@@ -48,46 +52,9 @@ process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 print process.source.fileNames
 
-#process.source.eventsToProcess = cms.untracked.VEventRange(
-#'1:6068',
-#'1:6099',
-#'1:6580',
-#'1:15132',
-#'1:15150',
-#'1:15362',
-#'1:20565',
-#'1:21111',
-#'1:21127',
-#'1:28242',
-#'1:28490',
-#'1:28653',
-#'1:28762',
-#'1:39658',
-#'1:39959',
-#'1:40145',
-#'1:47160',
-#'1:58271',
-#'1:62162',
-#'1:62337',
-#'1:81878',
-#'1:82084',
-#'1:88471',
-#'1:88704',
-#'1:102863',
-#'1:102946',
-#'1:103290',
-#'1:105123',
-#'1:121657',
-#'1:163950',
-#'1:172248',
-#'1:172411',
-#'1:172498',
-#'1:172509',
-#'1:178461',
-#'1:184088',
-#'1:187591',
-#'1:187788',
-#'1:190397')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:20990','1:47301','1:58284','1:58681','1:61939','1:62102','1:81878','1:103290','1:105187','1:121448','1:165937','1:172509','1:176504','1:184173','1:186434','1:190606')
+
+#process.flatNtp.printSelectionPass = 1
 
 #process.source.fileNames = ['file:./tauEle_fullsel_tree_CMG.root']
 
@@ -128,8 +95,39 @@ process.analysis +=  process.cmgTauEle
 
 process.load('CMGTools.Common.skims.cmgTauEleSel_cfi')
 process.cmgTauElePreSel = process.cmgTauEleSel.clone()
-process.cmgTauElePreSel.cut = cms.string('pt()>0.0' )
+#process.cmgTauElePreSel.cut = cms.string('pt()>0.0' )
+process.cmgTauElePreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg2().pt()>20.0 && abs(leg2().eta())<2.1' )
 process.analysis +=  process.cmgTauElePreSel 
+
+
+# event filter --------------------------------
+process.load('CMGTools.Common.skims.cmgTauEleCount_cfi')
+process.cmgTauEleCount.src = 'cmgTauElePreSel'
+process.cmgTauEleCount.minNumber = 1
+process.analysis +=  process.cmgTauEleCount
+
+
+##run the MVA MET and remake the mu-tau list
+process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
+process.load("CMGTools.Common.miscProducers.mvaMET.mvaMETTauEle_cfi")
+process.mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
+process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
+process.mvaBaseMETTauEle = process.cmgBaseMETFromPFMET.clone()
+process.mvaBaseMETTauEle.cfg.inputCollection = 'mvaMETTauEle'
+process.load("CMGTools.Common.factories.cmgTauEleCor_cfi")
+process.cmgTauEleCorPreSel = process.cmgTauEleCor.clone()
+process.cmgTauEleCorPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
+process.cmgTauEleCorPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
+process.mvaMETSequence = cms.Sequence(
+    process.goodPVFilter + 
+    process.mvaMETTauEle +
+    process.mvaBaseMETTauEle +
+    process.cmgTauEleCorPreSel
+    )
+process.analysis  += process.mvaMETSequence
+process.flatNtp.diTauTag = 'cmgTauEleCorPreSel'
+process.flatNtp.metType = 2
+
 
 
 ##schedule the analyzer
