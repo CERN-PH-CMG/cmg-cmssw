@@ -200,7 +200,8 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
         module.signalWeightMass = '125'
         
     if sampleAlias == 'VBFSync' : 
-        module.path = "/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_4_1"
+        #module.path = "/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_4_1"
+        module.path = "/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_5_0"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightFall112011AB'
         module.trigPath1 = cms.InputTag("HLT_IsoMu15_eta2p1_LooseIsoPFTau20_v1","hltPFTau20TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
@@ -402,11 +403,12 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
         module.signalWeightMass = '125'
 
     if sampleAlias == 'VBFSync' : 
-        module.path = "/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_4_1"
+        #module.path = "/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_4_1"
+        module.path = "/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_5_0"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightFall112011AB'
-        #module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter")
-        module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_TrkIdT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTTrkIdTDphiFilter")
+        module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter")
+        #module.trigPath1 = cms.InputTag("HLT_Ele18_CaloIdVT_TrkIdT_MediumIsoPFTau20_v1","hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTTrkIdTDphiFilter")
         ##this last one gives a better sync with Lorenzo but still distributions are not same
         #hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter
         #hltEle18CaloIdVTTrkIdTDphiFilter      

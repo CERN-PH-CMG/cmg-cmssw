@@ -68,38 +68,44 @@ void TauEleFlatNtp::beginJob(){
    diTauSel_=NULL;
 
    //trigger, n-vertex selection
-   if(!BaseFlatNtp::applySelections()) return 0;
+   if(!BaseFlatNtp::applySelections()){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterev"<<endl;
+     return 0;
+   }
    counterev_++;
-   if(printSelectionPass_)cout<<" pass counterev"<<endl;
+
 
    ////other 
-   if(vetoDiLepton()) return 0;
+   if(vetoDiLepton()){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
+     return 0;
+   }
    counterveto_++;
-   if(printSelectionPass_)cout<<" pass counterveto"<<endl;
+
 
    std::vector<cmg::TauEle> tmpditaulist=*diTauList_;
    diTauSelList_.clear();
 
-   ///basic skims which should have been applied in H2TAUTAU step  
-   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     if(cand->mass()>10.0
-	&& cand->leg1().pt() > tauPtCut_
-	&& fabs(cand->leg1().eta()) < tauEtaCut_
-	&& cand->leg1().tauID("decayModeFinding") > 0.5
-	&& cand->leg2().pt() > muPtCut_
-	&& fabs(cand->leg2().eta()) < muEtaCut_
-	)     
-       diTauSelList_.push_back(*cand);
+//    ///basic skims which should have been applied in H2TAUTAU step  
+//    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//      if(cand->mass()>10.0
+// 	&& cand->leg1().pt() > tauPtCut_
+// 	&& fabs(cand->leg1().eta()) < tauEtaCut_
+// 	&& cand->leg1().tauID("decayModeFinding") > 0.5
+// 	&& cand->leg2().pt() > muPtCut_
+// 	&& fabs(cand->leg2().eta()) < muEtaCut_
+// 	)     
+//        diTauSelList_.push_back(*cand);
      
-   }
-   if(diTauSelList_.size()==0) return 0;
-   counterpresel_++;
-   if(printSelectionPass_)cout<<" pass counterpresel"<<endl;
+//    }
+//    if(diTauSelList_.size()==0) return 0;
+//    counterpresel_++;
+//    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterpresel"<<endl;
 
 
    //muon vtx 
-   tmpditaulist=diTauSelList_;
-   diTauSelList_.clear();
+   //   tmpditaulist=diTauSelList_;
+   //   diTauSelList_.clear();
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
 //      if( fabs(cand->leg2().dxy())>0.045)continue;
 //      if( fabs(cand->leg2().dz())>0.1 )continue;
@@ -112,9 +118,12 @@ void TauEleFlatNtp::beginJob(){
 
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()==0) return 0;
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermuvtx"<<endl;
+     return 0;
+   }
    countermuvtx_++;
-   if(printSelectionPass_)cout<<" pass countermuvtx"<<endl;
+
 
 
    //ele id cuts
@@ -145,9 +154,26 @@ void TauEleFlatNtp::beginJob(){
      
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()==0) return 0;
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermuid"<<endl;
+     return 0;
+   }
    countermuid_++;
-   if(printSelectionPass_)cout<<" pass countermuid"<<endl;
+
+//   /////////electron iso
+//   tmpditaulist=diTauSelList_;
+//   diTauSelList_.clear();
+//   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//     if( electronRelIsoDBCorr( &(cand->leg2()) ) < 0.1){
+//       diTauSelList_.push_back(*cand);
+//     }
+//   }
+//   if(diTauSelList_.size()==0){
+//     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermuiso"<<endl;
+//     return 0;
+//   }
+//   countermuiso_++;
+
 
    //muon trig-match
    tmpditaulist=diTauSelList_;
@@ -163,9 +189,12 @@ void TauEleFlatNtp::beginJob(){
      if(matchmu) 
        diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()==0) return 0;
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermumatch"<<endl;
+     return 0;
+   }
    countermumatch_++;
-   if(printSelectionPass_)cout<<" pass countermumatch"<<endl;
+
 
    //Tau E/P cut
    tmpditaulist=diTauSelList_;
@@ -177,9 +206,12 @@ void TauEleFlatNtp::beginJob(){
   
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()==0) return 0;
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
+     return 0;
+   }
    countertaueop_++;
-   if(printSelectionPass_)cout<<" pass countertaueop"<<endl;
+
 
    //tau vtx
    tmpditaulist=diTauSelList_;
@@ -194,9 +226,12 @@ void TauEleFlatNtp::beginJob(){
     
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()==0) return 0;
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertauvtx"<<endl;
+     return 0;
+   }
    countertauvtx_++;
-   if(printSelectionPass_)cout<<" pass countertauvtx"<<endl;
+
 
    //Tau anti-mu cut
    tmpditaulist=diTauSelList_;
@@ -205,9 +240,12 @@ void TauEleFlatNtp::beginJob(){
      if(cand->leg1().tauID("againstMuonLoose")<0.5)continue;
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()==0) return 0;
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaumuveto"<<endl;
+     return 0;
+   }
    countertaumuveto_++;
-   if(printSelectionPass_)cout<<" pass countertaumuveto"<<endl;
+
 
    //Tau anti-e cut
    tmpditaulist=diTauSelList_;
@@ -217,10 +255,26 @@ void TauEleFlatNtp::beginJob(){
      if(cand->leg1().tauID("againstElectronMVA")<0.5)continue;
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()==0) return 0;
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueveto"<<endl;
+     return 0;
+   }
    countertaueveto_++;
-   if(printSelectionPass_)cout<<" pass countertaueveto"<<endl;
 
+
+//   /////////Tau Isolation
+//   tmpditaulist=diTauSelList_;
+//   diTauSelList_.clear();
+//   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//     if(cand->leg1().tauID("byLooseIsoMVA")>0.5){
+//       diTauSelList_.push_back(*cand);
+//     }
+//   }
+//   if(diTauSelList_.size()==0){
+//     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertauiso"<<endl;
+//     return 0;
+//   }
+//   countertauiso_++;
 
    //Tau Trig-Match
    tmpditaulist=diTauSelList_;
@@ -237,9 +291,12 @@ void TauEleFlatNtp::beginJob(){
      if(matchtau)
        diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()==0) return 0;
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaumatch"<<endl;
+     return 0;
+   }
    countertaumatch_++;
-   if(printSelectionPass_)cout<<" pass countertaumatch"<<endl;
+
 
    /////////Isolation cuts
    tmpditaulist=diTauSelList_;
@@ -285,9 +342,12 @@ void TauEleFlatNtp::beginJob(){
    if(genBoson_)
      fillTruthEventType(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi());
    if(sampleTruthEventType_>0)
-     if(sampleTruthEventType_!=truthEventType_) return 0;
+     if(sampleTruthEventType_!=truthEventType_){
+       if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertruth"<<endl;
+       return 0;
+     }
    countertruth_++;
-   if(printSelectionPass_)cout<<" pass countertruth"<<endl;
+
    
    return 1;
  }
