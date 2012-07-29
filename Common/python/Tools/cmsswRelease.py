@@ -6,7 +6,12 @@ def cmsswRelease():
 def cmsswIs44X():
     return cmsswRelease().find('CMSSW_4_4_') != -1
 def cmsswIs52X():
-    return cmsswRelease().find('CMSSW_5_2_') != -1
+    #return (cmsswRelease().find('CMSSW_5_2_') != -1 || cmsswRelease().find('CMSSW_5_3_') != -1)
+    if cmsswRelease().find('CMSSW_5_2_') != -1:
+        return 1
+    if cmsswRelease().find('CMSSW_5_3_') != -1:
+        return 1
+    return 0
 
 if __name__ == '__main__':
     print cmsswRelease()
