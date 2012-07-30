@@ -385,28 +385,31 @@ void qqtt_forpaper(int bb=0) {
   constrained_massHZothers->Add(constrained_massZZ);
   constrained_massHZqqtt->Add(constrained_massHZothers);
 
-  TF1* fh = new TF1("fh","[0]*exp(-(x-[1])*(x-[1])/(2*[2]*[2]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x+[0]*[7]*exp(-(x-[8])*(x-[8])/(2*[9]*[9]))",100,150);
-  fh->SetParameters(250,125.,3.,0.,0.,0.,0.,0.54,125.,10.);
-  //  fh->FixParameter(7,0.54);
+//  TF1* fh = new TF1("fh","[0]*exp(-(x-[1])*(x-[1])/(2*[2]*[2]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x+[0]*[7]*exp(-(x-[8])*(x-[8])/(2*[9]*[9]))",100,150);
+//  fh->SetParameters(250,125.,3.,0.,0.,0.,0.,0.54,125.,10.);
+////  //  fh->FixParameter(7,0.54);
   //  fh->FixParameter(3,2242.);
   //  fh->FixParameter(4,-97.32);
   //  fh->FixParameter(5,1.186);
   //  fh->FixParameter(6,-4.236E-3);
 
   //  TF1* fh = new TF1("fh","[0]*exp(-(x-[1])*(x-[1])/(2*[2]*[2]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x",100,150);
-  //  fh->SetParameters(250,125.,3.,0.,0.,0.,0.);
+  
+  
+  TF1* fh = new TF1("fh","[0]*exp(-(x-[1])*(x-[1])/(2*[2]*[2]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x",100,150);
+  fh->SetParameters(180,125.,2.,0, 0,0,0);
   fh->SetLineColor(1);
   fh->SetLineWidth(4);
 
-  //  fh->FixParameter(7,0.54);
-  //  fh->FixParameter(3,2242.);
-  //  fh->FixParameter(4,-97.32);
-  //  fh->FixParameter(5,1.186);
-  //  fh->FixParameter(6,-4.236E-3);
   //
   //
-  constrained_massHZqqtt->Fit("fh","EL","",102,147);  
-  constrained_massHZqqtt->Fit("fh","EL","",102,147);  
+  constrained_massHZqqtt->Fit("fh","EL","",105,145);  
+  constrained_massHZqqtt->Fit("fh","M","",105,145);  
+  //  constrained_massHZqqtt->Fit("fh","M","",105,145);  
+  //  constrained_massHZqqtt->Fit("fh","M","",100,150);  
+  // constrained_massHZqqtt->Fit("fh","E","",105,145);  
+  //  constrained_massHZqqtt->Fit("fh","EL","",102,147);  
+  // constrained_massHZqqtt->Fit("fh","EL","",102,147);  
   //  higgs->Fit("fh","EL","",102,147);  
   //  higgs->Fit("fh","E","",102,147);  
   //  higgs->Fit("fh","L","",102,147);  
