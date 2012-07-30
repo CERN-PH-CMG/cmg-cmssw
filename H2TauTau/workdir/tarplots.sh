@@ -4,13 +4,13 @@ export path="/data/benitezj/Samples"
 #export tag="TauMuV541June2_TrigEff"
 #export tag="TauMu2011FlatNtpJuly25"
 #export tag="TauMu2011FlatNtpJuly26"
-#export tag="TauMu2011FlatNtpJuly26svfit"
+export tag="TauMu2011FlatNtpJuly26svfit"
 
 ##e-tau 2011
 #export tag="TauEleV541June29_FlatNtpJune29"
 #export tag="TauEle2011FlatNtpJuly25"
 #export tag="TauEle2011FlatNtpJuly26"
-export tag="TauEle2011FlatNtpJuly26svfit"
+#export tag="TauEle2011FlatNtpJuly26svfit"
 
 ##mu-tau 2012
 #export tag="TauMu2012V5_4_0_NewType1MET"

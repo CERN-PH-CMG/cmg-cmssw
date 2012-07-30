@@ -229,8 +229,9 @@ void synchNtuple() {
    //Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly23");
    //Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly25");
    //Sample sample("HiggsVBF125","/afs/cern.ch/user/b/benitezj/output/TauEle2011FlatNtpJuly25");
+
    //Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2011V550July28");
-   Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2012V550July29svfit");
+   //Sample sample("VBFSync","/afs/cern.ch/user/b/benitezj/output/TauEle2012V550July29svfit");
 
    //***************************************
    TChain * InputTree = sample.getTChain();  

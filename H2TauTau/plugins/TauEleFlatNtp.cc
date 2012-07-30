@@ -128,21 +128,33 @@ void TauEleFlatNtp::beginJob(){
    tmpditaulist=diTauSelList_;
    diTauSelList_.clear();
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     //http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/H2TauTau/python/proto/analyzers/TauEleAnalyzer.py?revision=1.12&view=markup
-     //https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
-
      if(cand->leg2().numberOfHits()!=0) continue;
+     diTauSelList_.push_back(*cand);
+   }
+   if(diTauSelList_.size()==0 && printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail cand->leg2().numberOfHits()"<<endl;
+
+   tmpditaulist=diTauSelList_;
+   diTauSelList_.clear();
+   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
      if(cand->leg2().passConversionVeto()!=1) continue; 
-     //if((*(cand->leg2().sourcePtr()))->passConversionVeto()!=1) continue;
-     
-     //for sync
+     diTauSelList_.push_back(*cand);
+   }
+   if(diTauSelList_.size()==0 && printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail cand->leg2().passConversionVeto()"<<endl;
+
+   tmpditaulist=diTauSelList_;
+   diTauSelList_.clear();
+   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
      if(!electronIDWP95(&(cand->leg2())))continue;     
-     
-     //mva id  
+     diTauSelList_.push_back(*cand);
+   }
+   if(diTauSelList_.size()==0 && printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail electronIDWP95"<<endl;
+
+   tmpditaulist=diTauSelList_;
+   diTauSelList_.clear();
+   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
      //look here https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentification
      float mvaid=cand->leg2().mvaNonTrigV0();
      float eta=(*(cand->leg2().sourcePtr()))->superCluster()->eta();
-     //cout<<eta<<" "<<mvaid<<endl;
      if(fabs(eta)<0.8)
        if(mvaid<0.925)continue; 
      if(0.8<=fabs(eta)&&fabs(eta)<1.479)

@@ -63,6 +63,11 @@ void plotTauMu2011(){
 //   analysis->plotInc("svfitmass",60,0,300,1,1,1,"","",0,0," m(#tau#tau)   (GeV)","Events / 5 GeV",c,0,"inclusive");
 //   analysis->plotInc("njet",5,-.5,4.5,1,1,1,"","",0,0," njet ","",c,0,"inclusive");
 
+  analysis->plotInc("ditaumass",40,0,200,2,1,1,"(taudecaymode==0)","",0,0,"m(#mu#tau)   (GeV)","Events / 5 GeV",c,0,"taudecaymode==0");
+  analysis->plotInc("ditaumass",40,0,200,2,1,1,"(taudecaymode==1)","",0,0,"m(#mu#tau)   (GeV)","Events / 5 GeV",c,0,"taudecaymode==1");
+  analysis->plotInc("ditaumass",40,0,200,2,1,1,"(taudecaymode==2)","",0,0,"m(#mu#tau)   (GeV)","Events / 5 GeV",c,0,"taudecaymode==2");
+  analysis->plotInc("ditaumass",40,0,200,2,1,1,"(taudecaymode==10)","",0,0,"m(#mu#tau)   (GeV)","Events / 5 GeV",c,0,"taudecaymode==10");
+
 //   analysis->plotInc("transversemass",30,0,300,1,1,0,"(njet>=1)","",0,0,"m_{T}   (GeV)","",c,0,"inclusive1Jet");
 //   analysis->plotInc("leadJetPt",20,0,200,1,1,1,"(njet>=1)","",0,0,"lead jet p_{T}   (GeV)","",c,0,"inclusive1Jet");
 //   analysis->plotInc("leadJetEta",20,-5,5,1,1,1,"(njet>=1)","",0,0,"lead jet #eta","",c,0,"inclusive1Jet");

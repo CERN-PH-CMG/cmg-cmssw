@@ -54,7 +54,22 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:4394', '1:82155', '1:172226', '1:178770', '1:184091')
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:15599','1:20873','1:20916','1:20991','1:21008')
 
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:4581','1:14591','1:20853','1:21032','1:28414','1:28751','1:39670','1:47378','1:72512','1:102743','1:102968','1:103009','1:105167','1:105438','1:149032','1:187424')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:102743',
+#     '1:102968',
+#     '1:103009',
+#     '1:105167',
+#     '1:105438',
+#     '1:14591',
+#     '1:149032',
+#     '1:187424',
+#     '1:20853',
+#     '1:21032',
+#     '1:28414',
+#     '1:28751',
+#     '1:39670',
+#     '1:4581',
+#     '1:47378',
+#     '1:72512')
 
 #process.flatNtp.printSelectionPass = 1
 #print process.source.eventsToProcess
@@ -101,7 +116,6 @@ process.analysis +=  process.cmgTauMu
 
 process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
 process.cmgTauMuPreSel = process.cmgTauMuSel.clone()
-#process.cmgTauMuPreSel.cut = cms.string('pt()>0' )
 process.cmgTauMuPreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg2().pt()>17.0 && abs(leg2().eta())<2.1' )
 process.analysis +=  process.cmgTauMuPreSel 
 
