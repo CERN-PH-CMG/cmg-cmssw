@@ -5,13 +5,11 @@
 	"tag":"VBF ZZ",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"color":"1",
 	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC8TeV_VBFZZ_Madgraph",
@@ -23,21 +21,38 @@
 	 ]
 	},
 	{
-	"tag":"F4Z=0 F5Z=0",
+	"tag":"=0 jets",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"color":"1",
 	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_Sherpa",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/sm/aodsim0607"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v"],         
+		"dtag":"MC7TeV_ZZ2l2v0jets_Sherpa",
+		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/test0723/sm0j/"],
+		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_0jets"],         
+       		"xsec":1.0,
+		"br":[1.0]
+		}
+	 ]
+	},
+	{
+	"tag":"=1 jets",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v1jets_Sherpa",
+		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/test0723/sm1j/"],
+		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_1jets"],         
        		"xsec":1.0,
 		"br":[1.0]
 		}
@@ -48,12 +63,10 @@
 	"isdata":false,
 	"spimpose":true,
 	"color":"1",
-	"normto":1,
 	"lcolor":4,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5z0v1",
@@ -68,13 +81,11 @@
 	"tag":"F4Z=+0.1 F5Z=+0.04",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5z0v04",
@@ -89,13 +100,11 @@
 	"tag":"F4Z=+0.1 F5Z=0",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5z0",
@@ -110,13 +119,11 @@
 	"tag":"F4Z=+0.1 F5Z=-0.04",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5zm0v04",
@@ -131,13 +138,11 @@
 	"tag":"F4Z=+0.1 F5Z=-0.1",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5zm0v1",
@@ -152,13 +157,11 @@
 	"tag":"F4Z=+0.04 F5Z=+0.1",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v04_f5z0v1",
@@ -173,13 +176,11 @@
 	"tag":"F4Z=+0.04 F5Z=+0.04",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v04_f5z0v04",
@@ -194,13 +195,11 @@
 	"tag":"F4Z=+0.04 F5Z=-0.04",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v04_f5zm0v04",
@@ -215,13 +214,11 @@
 	"tag":"F4Z=+0.04 F5Z=-0.1",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v04_f5zm0v1",
@@ -236,13 +233,11 @@
 	"tag":"F4Z=-0.04 F5Z=+0.1",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v04_f5z0v1",
@@ -258,13 +253,11 @@
 	"tag":"F4Z=-0.04 F5Z=+0.04",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v04_f5z0v04",
@@ -279,13 +272,11 @@
 	"tag":"F4Z=-0.04 F5Z=-0.04",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v04_f5zm0v04",
@@ -300,13 +291,11 @@
 	"tag":"F4Z=-0.04 F5Z=-0.1",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v04_f5zm0v1",
@@ -321,13 +310,11 @@
 	"tag":"F4Z=-0.1 F5Z=+0.1",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v1_f5z0v1",
@@ -342,13 +329,11 @@
 	"tag":"F4Z=-0.1 F5Z=+0.04",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v1_f5z0v04",
@@ -363,13 +348,11 @@
 	"tag":"F4Z=-0.1 F5Z=-0.04",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v1_f5zm0v04",
@@ -384,13 +367,11 @@
 	"tag":"F4Z=-0.1 F5Z=-0.1",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
 	"lcolor":2,
 	"color":"1",
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
 		{
 		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v1_f5zm0v1",
