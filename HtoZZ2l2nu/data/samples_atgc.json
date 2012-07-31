@@ -2,6 +2,27 @@
 {
     "proc":[
 	{
+	"tag":"VBF Z",
+	"isdata":false,
+	"spimpose":true,
+	"normto":1,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"normto":1,
+	"data":[
+		{
+		"dtag":"MC8TeV_VBFZ_Madgraph",
+		"aoddir":["/store/cmst3/user/psilva/Madgraph/VBFZ/AODSIM"],
+		"patdir":["/store/cmst3/user/psilva/Madgraph/VBFZ/PAT"],         
+       		"xsec":7.743,
+		"br":[2,0.033658]
+		}
+	 ]
+	},
+	{
 	"tag":"VBF ZZ",
 	"isdata":false,
 	"spimpose":true,

@@ -8,6 +8,7 @@
            "fill":0,
            "marker":24,
 	   "mctruthmode":1,
+	   "isinvisible":true,	
 	   "spimpose":true,
            "data":[
                 {
@@ -32,7 +33,6 @@
                 },
                 {
                  "dtag":"Data8TeV_DoubleMu2012B_195540to196509",
-  		 "patdir":["/store/cmst3/user/psilva/Data2012/DoubleMu-v6/2012B"],
                  "split":5
                 }
 	    ]
@@ -45,6 +45,7 @@
 	 "fill":0,
 	 "mctruthmode":1,
 	 "spimpose":true,
+	 "isinvisible":true,	
          "data":[
 	      {
                "dtag":"MC8TeV_DYToEE",
@@ -62,7 +63,8 @@
 	 "fill":0,
 	 "mctruthmode":1,
 	 "spimpose":true,
-         "data":[
+ 	 "isinvisible":true,	
+	 "data":[
 	      {
                "dtag":"MC8TeV_DYJetsToLL_50toInf",
                "split":10,

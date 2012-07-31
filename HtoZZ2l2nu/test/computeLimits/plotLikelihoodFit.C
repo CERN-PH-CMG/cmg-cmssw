@@ -2,8 +2,10 @@
   //combine -M MaxLikelihoodFit  --saveNLL --saveNorm --saveWorkspace ZZ_Datacard.dat
 
   using namespace RooFit;
+  using namespace RooStats;
   gSystem->Load("$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so");
   gSystem->Load("libRooFit.so");
+  gSystem->Load("libRooStats.so");
   gStyle->SetOptFit(0);
   gStyle->SetOptStat(0);
   gStyle->SetPalette(1,0);
@@ -16,7 +18,7 @@
     {
       TFile *f=TFile::Open(url[i]);
       RooWorkspace *w=(RooWorkspace *)f->Get("MaxLikelihoodFitResult");
-      //  w->Print();
+      //w->Print();
       RooAbsData*	data=w->data("data_obs");
       if(i==0)
 	{

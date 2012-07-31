@@ -8,6 +8,7 @@
            "fill":0,
            "marker":24,
 	   "mctruthmode":1,
+	   "isinvisible":true,	
 	   "spimpose":true,
            "data":[
                 {
@@ -48,6 +49,7 @@
 	 "fill":0,
 	 "mctruthmode":1,
 	 "spimpose":true,
+	 "isinvisible":true,	
          "data":[
 	      {
                "dtag":"MC7TeV_DYJetsToLL",

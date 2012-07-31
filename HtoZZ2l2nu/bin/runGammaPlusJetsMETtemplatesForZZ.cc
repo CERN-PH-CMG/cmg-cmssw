@@ -271,8 +271,12 @@ int main(int argc, char* argv[])
 	{
 	  //check if dilepton is good
 	  bool isGood(true);
+	  float mindphilmet(99999.);
 	  for(size_t ilep=0; ilep<2; ilep++)
 	    {
+	      float dphilmet=fabs(deltaPhi(phys.leptons[ilep].phi(),phys.met[0].phi()));
+	      mindphilmet=min(dphilmet,mindphilmet);
+
 	      gamma += phys.leptons[ilep];
 	      int lpid=phys.leptons[ilep].pid;
 	      if(fabs(phys.leptons[ilep].id)==13)
@@ -304,6 +308,8 @@ int main(int argc, char* argv[])
 	    }
 	  if(!isGood) continue;
 	  if(fabs(gamma.mass()-91)>15) continue;
+	  bool passLeptonMisReconstruction(use2011Id || phys.met[0].pt()<60 || (phys.met[0].pt()>60 && mindphilmet>0.2));
+	  if(!passLeptonMisReconstruction) continue;
 	  if(ev.cat==MUMU) dilCats.push_back("mumu");
 	  if(ev.cat==EE)   dilCats.push_back("ee");
 	}
@@ -445,6 +451,7 @@ int main(int argc, char* argv[])
 	  else                   subcats.push_back("eq0hardjets");
 	  tag_subcat="eq0jets";
 	} 
+      else subcats.push_back(tag_subcat);
       
       //now do the control plots
       std::map<TString, float> qtWeights;
