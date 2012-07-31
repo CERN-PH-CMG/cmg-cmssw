@@ -88,17 +88,62 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
 	case 12: case -12: case 14: case -14: case 16: case -16:
 	  genmet += p4;
 	  break;
-	case 1:
-	  phys.genjets.push_back( PhysicsObject(p4,ev.mc_id[ipart]) );
-	  break;
+	  // 	case 1:
+	  // 	  phys.genjets.push_back( PhysicsObject(p4,ev.mc_id[ipart]) );
+	  // 	  break;
 	case 22:
 	  phys.gengammas.push_back( PhysicsObject(p4,ev.mc_id[ipart]) );
 	  break;
 	case 11: case -11: case 13: case -13: case 15: case -15:
-	  phys.genleptons.push_back( PhysicsObject(p4,ev.mc_id[ipart]) );
+	  //check overlap with other leptons
+	  bool overlap(false);
+	  for(size_t igl=0; igl<phys.genleptons.size(); igl++)
+	    {
+	      if(deltaR(p4,phys.genleptons[igl])<0.1)
+		{
+		  overlap=true;
+		  break;
+		}
+	    }
+	  if(!overlap) phys.genleptons.push_back( PhysicsObject(p4,ev.mc_id[ipart]) );
 	  break;
 	}
     }
+
+  //add the jets separately
+  for(Int_t ipart=0; ipart<ev.nmcparticles; ipart++)
+    {
+      if(ev.mc_id[ipart]!=1) continue;
+      LorentzVector p4(ev.mc_px[ipart],ev.mc_py[ipart],ev.mc_pz[ipart],ev.mc_en[ipart]);
+
+      bool overlap(false);
+      //check overlap with previous jets
+      for(size_t igj=0; igj<phys.genjets.size(); igj++)
+	{
+	  if(deltaR(p4,phys.genjets[igj])<0.1)
+	    {
+	      overlap=true;
+	      break;
+	    }
+	}
+      if(overlap) continue;
+
+      //check overlap with any other gen particle 
+      for(Int_t jpart=0; jpart<ev.nmcparticles; jpart++)
+	{
+	  if(ev.mc_id[ipart]==1) continue;
+	  LorentzVector jp4(ev.mc_px[jpart],ev.mc_py[jpart],ev.mc_pz[jpart],ev.mc_en[jpart]);
+	  if(deltaR(p4,jp4)<0.1)
+            {
+              overlap=true;
+              break;
+            }
+	}
+      if(overlap) continue;
+      
+      phys.genjets.push_back( PhysicsObject(p4,ev.mc_id[ipart]) );
+    }
+  
   phys.genmet.push_back( PhysicsObject(genmet,0) );
 
   return phys;
