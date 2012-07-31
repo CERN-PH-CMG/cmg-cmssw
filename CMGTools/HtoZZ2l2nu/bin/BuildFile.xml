@@ -1,4 +1,5 @@
 <use name="CMGTools/HtoZZ2l2nu"/>
+<use name="HiggsAnalysis/CombinedLimit"/>
 <environment>
  <bin name="Cross_ZZ" file="Cross_ZZ.cc"></bin>
  <bin name="runOnEventSummary_ZZ" file="runOnEventSummary_ZZ.cc"></bin>
@@ -12,5 +13,6 @@
  <bin name="runZZAnalysis" file="runZZAnalysis.cc"></bin>
  <bin name="runLandS" file="runLandS.cc"></bin>
  <bin name="runGenScanner" file="runGenScanner.cc"></bin>
+ <bin name="runLLanalysis" file="runLLanalysis.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g"/>

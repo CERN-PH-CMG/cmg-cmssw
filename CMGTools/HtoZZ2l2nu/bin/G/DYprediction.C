@@ -22,7 +22,7 @@ struct Shape_t
   std::map<TString, TH1 *> bckg, signal;
 };
 
-void showShape(const Shape_t &shape,TString SaveName);
+void showShape(const Shape_t &shape,TString SaveName,bool is2011);
 void setTDRStyle();
 
 
@@ -61,46 +61,49 @@ void addToShape(Shape_t &a, Shape_t &b,int sign=+1)
 
 
 //
-enum SubtractionTypes {NOSUBTRACTION, HALVE, EWKSUBTRACTION};
+enum SubtractionTypes {NOSUBTRACTION, HALVE, EWKSUBTRACTION, EWKSUBTRACTIONHALVE};
 void getDYprediction(int subtractType=NOSUBTRACTION)
 {
   setTDRStyle();
 
   //  TString llFile="../../test/results/plotter_2012.root";
-  //  TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
+  // TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
   // TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/qt/plotter.root";
-  //TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
-  
+  //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
+    //  TString llFile="../../plotter_zz_2012.root"; 
+
   //  TString llFile="../../test/results/plotter_2011.root";
   //  TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
+  //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/qt/plotter.root";
   TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-  //TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/qt/plotter.root";
   TString llFile="../../plotter_zz_2011.root";
+
+  bool is2011(llFile.Contains("2011"));
 
   string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {"met_met"//,
-		     //"met_redMet",
-		     //		     "met_redMet15",
-		     //  "met_redMet20",
-		     //"balance",
+  string histos[] = {//"met_met"//,
+		     "met_redMet",
+		     //"met_redMet15",
+		     //"met_redMet20",
+		     "balance",
 		     //"mt",
 		     //"mindphijmet",
 		     // "pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj"
 		     //,"pfvbfcjv", "pfvbfhardpt",
-		     //"mt_shapes",
-		     // "zpt_shapes",
-		     //"met_shapes"
+		     "mt_shapes"//,
+		     //"zpt_shapes",
+		     // "met_shapes"
   };
   const size_t nhistos=sizeof(histos)/sizeof(string);
-  string dilcats[]= {"eq0jets"};//"eq1jets","geq2jets","vbf",""};
+  string dilcats[]= {"eq0jets","geq1jets","vbf"};//"eq1jets","geq2jets","vbf",""};
   const size_t ndilcats=sizeof(dilcats)/sizeof(string);
   string dilprocs[]={"WW#rightarrow 2l2#nu","ZZ","WZ#rightarrow 3l#nu","t#bar{t}","Single top","W#rightarrow l#nu","data"};
   Int_t dilColors[]={592, 590, 596, 8, 824, 809, 1 };
   const size_t ndilprocs=sizeof(dilprocs)/sizeof(string);
   string dilSignal[]={};//"ggH(350)#rightarrow ZZ","qqH(350)#rightarrow ZZ"};
   const size_t nDilSignals=sizeof(dilSignal)/sizeof(string);
-  string gcats[]= {"eq0jets","eq0softjets"};//,"eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
+  string gcats[]= {"eq0jets","eq0softjets","geq1jets","vbf"};//,"eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
   const size_t ngcats=sizeof(gcats)/sizeof(string);
   string gprocs[]={"Z#gamma#rightarrow#nu#nu#gamma","W#gamma#rightarrowl#nu#gamma","W#rightarrow l#nu","data (#gamma)"};
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
@@ -268,7 +271,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
      string normKey("mumu"); 
      if(it->first.find("ee")!=string::npos)       normKey="ee";
      if(it->first.find("eq0jets_")!=string::npos)  normKey+="eq0jets";
-     if(it->first.find("eq1jets_")!=string::npos)  normKey+="eq1jets";
+     if(it->first.find("geq1jets_")!=string::npos)  normKey+="geq1jets";
+     else if(it->first.find("eq1jets_")!=string::npos)  normKey+="eq1jets";
      if(it->first.find("geq2jets_")!=string::npos) normKey+="geq2jets";
      if(it->first.find("vbf_")!=string::npos)      normKey+="vbf";
      float sf = scaleFactors[normKey];
@@ -279,8 +283,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
      TH1 *corrGammaH=(TH1 *)gShape.data->Clone((it->first+"dy").c_str());
      corrGammaH->SetDirectory(0);
 
-     /*
-     if(it->first.find("balance")!= string::npos && subtractType==HALVE)
+
+     if(it->first.find("balance")!= string::npos && (subtractType==HALVE || subtractType==EWKSUBTRACTION  || subtractType==EWKSUBTRACTIONHALVE))
        {
 	 corrGammaH->Scale(0.5);
 	 for(int ibin=1; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++) 
@@ -288,13 +292,13 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 	     corrGammaH->SetBinError(ibin,corrGammaH->GetBinContent(ibin));
 	   }
        }
-     */
+
      //do the subtraction for met related variables when MET>70
      if(it->first.find("mt_shapes")!= string::npos || it->first.find("met_") != string::npos)
        {
 	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
-	 cout << isTH2 << " " << it->first << endl;
-	 if(subtractType==HALVE) {
+	
+	 if(subtractType==HALVE || subtractType==EWKSUBTRACTIONHALVE) {
 	   //int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(70) );
 	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(60) );
 	   for(int ibin=fbin; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
@@ -306,7 +310,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		       Double_t val=corrGammaH->GetBinContent(ibin,jbin)/2;
 		       Double_t valerr=corrGammaH->GetBinError(ibin,jbin)/2;
 		       corrGammaH->SetBinContent(ibin,jbin,val);
-		       corrGammaH->SetBinError(ibin,jbin,valerr);
+		       corrGammaH->SetBinError(ibin,jbin,val);//err);
 		     }
 		 }
 	       else
@@ -314,12 +318,12 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		   Double_t val=corrGammaH->GetBinContent(ibin)/2;
 		   Double_t valerr=corrGammaH->GetBinError(ibin)/2;
 		   corrGammaH->SetBinContent(ibin,val);
-		   corrGammaH->SetBinError(ibin,valerr);
+		   corrGammaH->SetBinError(ibin,val);//err);
 		 }
 	     }
 	 }
-
-	 if(subtractType==EWKSUBTRACTION)
+	 
+	 if(subtractType==EWKSUBTRACTION || subtractType==EWKSUBTRACTIONHALVE )
 	   {
 	     corrGammaH->Add( gShape.totalBckg,-1);
 	     for(int ibin=1; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
@@ -352,7 +356,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
      corrGammaH->SetFillColor(831);
      it->second.totalBckg->Add(corrGammaH);
      it->second.bckg["Instr. background (data)"]=corrGammaH;
-     showShape(it->second,"final_"+it->first);
+     showShape(it->second,"final_"+it->first,is2011);
      gOutDir->cd();
      TString keyToWrite(it->first.c_str());
      //     keyToWrite.ReplaceAll("eeeq","ee_eq");
@@ -366,7 +370,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 	 Shape_t &shapeToCorrect=shapesMap[keyToGet.Data()];
 	 addToShape(shapeToCorrect,it->second,1);
 	 keyToGet=keyToGet.ReplaceAll("ee","");
-	 showShape(shapeToCorrect,keyToGet.Data());
+	 showShape(shapeToCorrect,keyToGet.Data(),is2011);
        }
      
    }
@@ -375,7 +379,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 }
 
 //
-void showShape(const Shape_t &shape,TString SaveName)
+void showShape(const Shape_t &shape,TString SaveName,bool is2011)
 {
   if(shape.data->InheritsFrom("TH2")) return;
 
@@ -461,8 +465,11 @@ void showShape(const Shape_t &shape,TString SaveName)
   T->SetFillColor(0);
   T->SetFillStyle(0);  T->SetLineColor(0);
   T->SetTextAlign(22);
-  char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
-  //    char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
+  char Buffer[1024]; 
+  if(is2011)
+    sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
+  else
+    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
     T->AddText(Buffer);
   T->Draw("same");
   

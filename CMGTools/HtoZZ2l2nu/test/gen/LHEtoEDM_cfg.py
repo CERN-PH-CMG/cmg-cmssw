@@ -27,7 +27,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("LHESource",
-    fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Madgraph/QuarticCoupling/unweighted_events-dec.lhe')
+    fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Madgraph/VBFZ/unweighted_events_dec.lhe')
 )
 
 process.options = cms.untracked.PSet(
@@ -36,7 +36,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     annotation = cms.untracked.string('POWHEG + PYTHIA6 + Tauola - Higgs -> ZZ -> 2l2nu at 8TeV'),
     name = cms.untracked.string('$Source: /local/reps/CMSSW/UserCode/CMG/CMGTools/HtoZZ2l2nu/test/gen/LHEtoEDM_cfg.py,v $')
 )

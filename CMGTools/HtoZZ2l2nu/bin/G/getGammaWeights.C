@@ -13,8 +13,8 @@
 #include "TFile.h"
 #include "TGraphErrors.h"
 
-string cats[]      ={"eq0jets", "eq1jets", "eq2jets",  "geq3jets","vbf"};
-TString catLabels[]={"=0 jets", "=1 jets", "=2 jets", "#geq 3 jets","VBF"};
+string cats[]      ={"eq0jets", "eq1jets", "eq2jets",  "geq3jets", "vbf", "geq1jets"};
+TString catLabels[]={"=0 jets", "=1 jets", "=2 jets", "#geq 3 jets","VBF", "geq1jets"};
 const size_t nCats=sizeof(cats)/sizeof(string);
 
 string dilCats[]       = {"ee","mumu"};
@@ -43,7 +43,7 @@ TObject* getObjectFromPath(TDirectory* File, std::string Path, bool GetACopy)
 {
    TObject* toReturn = NULL;
    if(File==0) return toReturn;
-
+   
    size_t pos = Path.find("/");
    if(pos < std::string::npos){
       std::string firstPart = Path.substr(0,pos);
@@ -53,7 +53,7 @@ TObject* getObjectFromPath(TDirectory* File, std::string Path, bool GetACopy)
    }else{
      toReturn = File->Get(Path.c_str());
    }
-
+   
    if(!toReturn)       printf("BUG: %s\n",Path.c_str());
    else if(GetACopy && toReturn){ toReturn = toReturn->Clone();  }
    return toReturn;
@@ -134,14 +134,16 @@ void getGammaWeights(string inputFile="plotter.root",string varName="qt",int mod
 	  TH1F *hdy   = 0;
 	  if(mode != ONLYMC )  { hdy   = (TH1F *) getObjectFromPath(fin,dyDir+"/"+pName,true);   if(hdy==0) continue;  hdy->SetDirectory(0);   }
 	  TH1F *hmcdy = 0;
-	  if(mode != ONLYDATA) { hmcdy = (TH1F *) getObjectFromPath(fin,dymcDir+"/"+pName,true); if(hmcdy==0) continue; hmcdy->SetDirectory(0); }
+	  if(mode != ONLYDATA) { hmcdy = (TH1F *) getObjectFromPath(fin,dymcDir+"/"+pName,true); if(hmcdy==0) { if(mode==ONLYMC) continue; } else hmcdy->SetDirectory(0); }
 
 	  //DERIVE WEIGHTS
 	  string gPName(pName);
 	  TH1F *hg    = 0;
 	  TH1F *hDataWgts = 0;
+	  
 	  if(mode!=ONLYMC)
 	    {
+	      cout << " ----> " <<  gDir << endl;
 	      hg = (TH1F *) getObjectFromPath(fin,gDir+"/"+gPName,true);
 	      if(hg)
 		{
@@ -199,19 +201,22 @@ void getGammaWeights(string inputFile="plotter.root",string varName="qt",int mod
 		  
 		  //PARAMETRIZED ZPT
 		  //reset parameterization for boson pt
-		  hMCfitWgts   = (TH1F *) hmcdy->Clone((pName+"_mcfitwgts").c_str()); 
-		  hMCfitWgts->SetDirectory(0);  
-		  hMCfitWgts->Reset("ICE");
-		  TGraph *splHdy=0;
-		  if(mode==ONLYMC && hmcdy)  { splHdy=new TGraph(hmcdy); }
-		  else if (hdy)              { splHdy=new TGraph(hdy); }
-		  //if(mode==ONLYMC && hmcdy)  { resetQtFitFunc(hmcdy); hmcdy->Fit(qtFitFunc,"MER+"); }
-		  //else if (hdy)              { resetQtFitFunc(hdy);   hdy->Fit(qtFitFunc,"MER+");   }
-		  //for(int ibin=1; ibin<=hMCfitWgts->GetXaxis()->GetNbins(); ibin++) hMCfitWgts->SetBinContent(ibin,qtFitFunc->Eval(hMCfitWgts->GetBinCenter(ibin)));
-		  for(int ibin=1; ibin<=hMCfitWgts->GetXaxis()->GetNbins(); ibin++) hMCfitWgts->SetBinContent(ibin,splHdy->Eval(hMCfitWgts->GetBinCenter(ibin),0,"S"));
-		  hMCfitWgts->Divide(hmcg);
-		  if(splHdy) delete splHdy;
-		  mcWgts.push_back(hMCfitWgts);
+		  if(hmcdy)
+		    {
+		      hMCfitWgts   = (TH1F *) hmcdy->Clone((pName+"_mcfitwgts").c_str()); 
+		      hMCfitWgts->SetDirectory(0);  
+		      hMCfitWgts->Reset("ICE");
+		      TGraph *splHdy=0;
+		      if(mode==ONLYMC && hmcdy)  { splHdy=new TGraph(hmcdy); }
+		      else if (hdy)              { splHdy=new TGraph(hdy); }
+		      //if(mode==ONLYMC && hmcdy)  { resetQtFitFunc(hmcdy); hmcdy->Fit(qtFitFunc,"MER+"); }
+		      //else if (hdy)              { resetQtFitFunc(hdy);   hdy->Fit(qtFitFunc,"MER+");   }
+		      //for(int ibin=1; ibin<=hMCfitWgts->GetXaxis()->GetNbins(); ibin++) hMCfitWgts->SetBinContent(ibin,qtFitFunc->Eval(hMCfitWgts->GetBinCenter(ibin)));
+		      for(int ibin=1; ibin<=hMCfitWgts->GetXaxis()->GetNbins(); ibin++) hMCfitWgts->SetBinContent(ibin,splHdy->Eval(hMCfitWgts->GetBinCenter(ibin),0,"S"));
+		      hMCfitWgts->Divide(hmcg);
+		      if(splHdy) delete splHdy;
+		      mcWgts.push_back(hMCfitWgts);
+		    }
 		}
 	    }
 	}
@@ -226,7 +231,7 @@ void getGammaWeights(string inputFile="plotter.root",string varName="qt",int mod
   fout->cd();
   if(mode != ONLYMC) 
     {
-      for(size_t ip=0; ip<dataWgts.size(); ip++)        dataWgts[ip]->Write();
+      for(size_t ip=0; ip<dataWgts.size(); ip++)        { dataWgts[ip]->Write(); cout << dataWgts[ip]->GetName() << endl; }
       for(size_t ip=0; ip<dataMassShapes.size(); ip++)  dataMassShapes[ip]->Write();
     }
   if(mode != ONLYDATA) 

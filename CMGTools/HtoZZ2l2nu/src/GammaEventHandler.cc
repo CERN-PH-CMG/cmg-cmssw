@@ -11,7 +11,7 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
  
   //open file and retrieve weights + mass shapes
   std::vector<std::string> gammaPtWeightsFiles =  runProcess.getParameter<std::vector<std::string> >("weightsFile");  
-  TString cats[]   =  {"eq0jets","eq1jets","eq2jets","geq3jets","vbf"};
+  TString cats[]   =  {"eq0jets","eq1jets","eq2jets","geq3jets","vbf","geq1jets"};
   TString dilCats[] = {"ee","mumu","ll"};
   TString wgtType( isMC_ ? "mcwgts" : "datawgts");
   for(size_t ifile=0; ifile<gammaPtWeightsFiles.size(); ifile++)
@@ -104,7 +104,7 @@ std::map<TString,float> GammaEventHandler::getWeights(PhysicsEvent_t &phys, TStr
       float weight(1.0);//wgtsH_.size() ? 0.0 : 1.0);
       for(std::map<TString, std::map<TString,TH1 *> >::iterator wIt = wgtsH_.begin(); wIt != wgtsH_.end(); wIt++)
 	{
-	  if(wIt->second.find(key) == wIt->second.end()) continue; //{ cout << key; continue; }
+	  if(wIt->second.find(key) == wIt->second.end()) continue; // { cout << key; continue; }
 	  TH1 *h = wIt->second[key];
 
 	  float iweight(1.0);
