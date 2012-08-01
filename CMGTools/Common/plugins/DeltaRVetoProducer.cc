@@ -144,12 +144,15 @@ void cmg::DeltaRVetoProducer<T>::produce(edm::Event & iEvent, const edm::EventSe
 #include "AnalysisDataFormats/CMGTools/interface/PFJet.h"
 #include "AnalysisDataFormats/CMGTools/interface/Electron.h"
 #include "AnalysisDataFormats/CMGTools/interface/Muon.h"
+#include "AnalysisDataFormats/CMGTools/interface/Tau.h"
 typedef cmg::DeltaRVetoProducer<cmg::BaseJet> DeltaRVetoProducerBaseJet;
 typedef cmg::DeltaRVetoProducer<cmg::PFJet> DeltaRVetoProducerPFJet;
 typedef cmg::DeltaRVetoProducer<cmg::Electron> DeltaRVetoProducerElectron;
 typedef cmg::DeltaRVetoProducer<cmg::Muon> DeltaRVetoProducerMuon;
+typedef cmg::DeltaRVetoProducer<cmg::Tau> DeltaRVetoProducerTau;
 
 DEFINE_FWK_MODULE(DeltaRVetoProducerBaseJet);
 DEFINE_FWK_MODULE(DeltaRVetoProducerPFJet);
 DEFINE_FWK_MODULE(DeltaRVetoProducerElectron);
 DEFINE_FWK_MODULE(DeltaRVetoProducerMuon);
+DEFINE_FWK_MODULE(DeltaRVetoProducerTau);
