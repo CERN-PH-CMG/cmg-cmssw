@@ -45,21 +45,20 @@ private:
 
   //electron id WP95
   bool electronIDWP95(const cmg::Electron * cand){
+    ///https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
     if(!cand) return 0;
-    ///need to apply missing hits and conv rejection outside
-    if((*(cand->sourcePtr()))->isEB()){
-      if(cand->sigmaIetaIeta()>=0.01)return 0;
-      if(cand->deltaPhiSuperClusterTrackAtVtx()>=0.80)return 0;
-      if(cand->deltaEtaSuperClusterTrackAtVtx()>=0.007)return 0;
-      if(cand->hadronicOverEm()>=0.15)return 0;
-    }else if((*(cand->sourcePtr()))->isEE()){
-      if(cand->sigmaIetaIeta()>=0.03)return 0;
-      if(cand->deltaPhiSuperClusterTrackAtVtx()>=0.70)return 0;
-      if(cand->deltaEtaSuperClusterTrackAtVtx()>=0.01)return 0;
-      //if(cand->hadronicOverEm()>=0.07)return 0;//dropped in HTT twiki
-    } else return 0;
-
-    return 1;
+    if((*(cand->sourcePtr()))->isEB()
+       && cand->deltaEtaSuperClusterTrackAtVtx()<0.007
+       && cand->deltaPhiSuperClusterTrackAtVtx()<0.800
+       && cand->sigmaIetaIeta()<0.01
+       && cand->hadronicOverEm()<0.15
+       ) return 1;
+    else if((*(cand->sourcePtr()))->isEE()
+	    && cand->deltaEtaSuperClusterTrackAtVtx()<0.01
+	    && cand->deltaPhiSuperClusterTrackAtVtx()<0.70
+	    && cand->sigmaIetaIeta()<0.03
+	    )return 1;
+    else return 0;
   }
 
   //custom electron isolation
