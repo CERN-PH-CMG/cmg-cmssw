@@ -73,13 +73,6 @@ void TauEleFlatNtp::beginJob(){
    counterev_++;
 
 
-   ////other 
-   if(vetoDiLepton()){
-     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
-     return 0;
-   }
-   counterveto_++;
-
 
    std::vector<cmg::TauEle> tmpditaulist=*diTauList_;
    diTauSelList_.clear();
@@ -346,6 +339,13 @@ void TauEleFlatNtp::beginJob(){
        diTauSel_=&(*cand);
        highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
      }
+
+   ////other 
+   if(vetoDiLepton()){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
+     return 0;
+   }
+   counterveto_++;
 
 
    //truth match 

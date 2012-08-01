@@ -73,11 +73,11 @@ bool TauMuFlatNtp::applySelections(){
   counterev_++;
 
 
-  if(vetoDiLepton()){
-    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
-    return 0;
-  }
-  counterveto_++;
+//   if(vetoDiLepton()){
+//     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
+//     return 0;
+//   }
+//   counterveto_++;
 
 
   std::vector<cmg::TauMu> tmpditaulist=*diTauList_;
@@ -342,6 +342,13 @@ bool TauMuFlatNtp::applySelections(){
       diTauSel_=&(*cand);
       highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
     }
+
+  //
+  if(vetoDiLepton()){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
+    return 0;
+  }
+  counterveto_++;
 
 
   //truth match 

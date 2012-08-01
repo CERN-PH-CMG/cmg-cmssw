@@ -52,9 +52,6 @@ from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:15599','1:20873','1:20916','1:20991','1:21008')
-#print process.source.eventsToProcess
-
 #process.source = cms.Source(
 #    "PoolSource",
 #    fileNames = cms.untracked.vstring(
@@ -66,6 +63,11 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 #    )
 
 #process.source.fileNames = ['file:./tauEle_fullsel_tree_CMG.root']
+
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:1580609', '1:428746')
+#process.flatNtp.printSelectionPass = 1
+
+#print process.source.eventsToProcess
 
 print process.source.fileNames
 
