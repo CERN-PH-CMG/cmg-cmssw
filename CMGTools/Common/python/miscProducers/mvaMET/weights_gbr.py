@@ -9,7 +9,7 @@ weights_gbrmetu2cov = None
 weightdir = '/'.join([os.environ['CMSSW_BASE'],
                       'src/CMGTools/Common/data/MVAMet'])
 
-if cmsswIs52X():
+if isNewerThan('CMSSW_5_2_0'):
     weights_gbrmet = '/'.join([weightdir, 'gbrmet_52.root'])
     weights_gbrmetphi = '/'.join([weightdir, 'gbrmetphi_52.root'])
     weights_gbrmetu1cov = '/'.join([weightdir, 'gbrmetu1cov_52.root'])

@@ -23,7 +23,7 @@ PATMetSequence = cms.Sequence(
     )
 
 from CMGTools.Common.Tools.cmsswRelease import *
-if cmsswIs52X():
+if isNewerThan('CMSSW_5_2_0'):
     from PhysicsTools.PatAlgos.recoLayer0.jetMETCorrections_cff import *
     # producePFMETCorrections.remove( kt6PFJets )
     # producePFMETCorrections.remove( ak5PFJets )

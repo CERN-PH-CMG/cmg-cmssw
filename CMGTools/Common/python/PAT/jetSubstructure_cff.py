@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs52X
+from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
-if cmsswIs52X():
+if isNewerThan('CMSSW_5_2_0'):
     # JETS PRUNED ----------------------------
 
     # for jet substructure you need extra tags in 4XX and 52X:
