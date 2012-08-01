@@ -60,7 +60,16 @@ process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:15599','1:20873','1:20916','1:20991','1:21008')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:20401','1:20509','1:20536','1:20611','1:20625')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:20536','1:20611')
 #print process.source.eventsToProcess
+
+#*        0 *         1 *     20401 * 61.421115 *
+#*        1 *         1 *     20509 * 59.559642 *
+#*        2 *         1 *     20536 * 54.727180 *
+#*        3 *         1 *     20611 * 148.97924 *
+#*        4 *         1 *     20625 * 51.737155 *
+
 
 #process.source = cms.Source(
 #    "PoolSource",
@@ -141,6 +150,7 @@ process.mvaMETSequence = cms.Sequence(
 process.analysis  += process.mvaMETSequence
 process.flatNtp.diTauTag = 'cmgTauMuCorPreSel'
 process.flatNtp.metType = 2
+#process.mvaMETTauMu.verbose = True
 
 
 ##schedule the analyzer
