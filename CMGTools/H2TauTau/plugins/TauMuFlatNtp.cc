@@ -540,26 +540,42 @@ bool TauMuFlatNtp::fill(){
 
 
 
+// bool TauMuFlatNtp::vetoDiLepton(){
+//   bool muminus=0;
+//   bool muplus=0;
+//   for(std::vector<cmg::Muon>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
+//     if(m->pt()<=15.0)continue;
+//     if(fabs(m->eta())>=2.5)continue;
+//     if(!(m->isGlobal()||m->isTracker()))continue; 
+//     if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
+//     if(fabs(m->dxy())>=0.045)continue; 
+//     if(fabs(m->dz())>=0.2)continue; 
+//     if(m->relIso(0.5,1)>=0.3)continue;        
+
+//     if(m->charge()==-1)muminus=1;
+//     if(m->charge()==1)muplus=1;
+//   }
+  
+//   if(muminus&&muplus) return 1;
+//   return 0;
+// }
+
+
 bool TauMuFlatNtp::vetoDiLepton(){
-  bool muminus=0;
-  bool muplus=0;
   for(std::vector<cmg::Muon>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
     if(m->pt()<=15.0)continue;
     if(fabs(m->eta())>=2.5)continue;
-    if(m->relIso(0.5)>=0.3)continue;    
     if(!(m->isGlobal()||m->isTracker()))continue; 
     if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
     if(fabs(m->dxy())>=0.045)continue; 
     if(fabs(m->dz())>=0.2)continue; 
-    
-    if(m->charge()==-1)muminus=1;
-    if(m->charge()==1)muplus=1;
+    if(m->relIso(0.5,1)>=0.3)continue;        
+
+    if((m->charge())*(diTauSel_->leg2().charge())<0)return 1;
   }
   
-  if(muminus&&muplus) return 1;
   return 0;
 }
-
 
 
 

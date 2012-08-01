@@ -7,9 +7,13 @@
 #include "TauElePlotter.h"
 #include "configTauEle2011.C"
 
-long massValues[19]={90,100,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
+#define NMASS 19
+#define NCAT 7
 
-TString catdirname[7]={
+
+long massValues[NMASS]={90,100,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
+
+TString catdirname[NCAT]={
  "0jet_low",
  "0jet_high",
  "boost_low",
@@ -48,7 +52,7 @@ void histosForDataCardMSSM(Int_t channel,TString path,TString tag){
 
   
   TFile output(ChannelName+"MSSM_"+analysis->plotvar_+"_"+tag+".root","recreate");
-  for(long sm=0; sm<7; sm++){
+  for(long sm=0; sm<NCAT; sm++){
     if(sm==4) continue;
 
     TDirectory* dir = output.mkdir(ChannelName+"_"+catdirname[sm]);  
@@ -133,7 +137,7 @@ void histosForDataCardMSSM(Int_t channel,TString path,TString tag){
     delete data_obs;
 
 
-    for(Int_t m=0;m<19;m++){
+    for(Int_t m=0;m<NMASS;m++){
       long ma=massValues[m];
 
       gROOT->cd();
@@ -181,7 +185,7 @@ void mergeDataCardHistosMSSM(Int_t channel, TString tag="svfitmass"){
   TFile nominaltDown(ChannelName+"MSSM_"+tag+"_tDown.root","read");
 
   TFile output(ChannelName+"MSSM_"+tag+".root","recreate");
-  for(long sm=0;sm<7;sm++){
+  for(long sm=0;sm<NCAT;sm++){
     if(sm==4) continue;
 
     TDirectory* dir = output.mkdir(ChannelName+"_"+catdirname[sm]);  
@@ -301,7 +305,7 @@ void mergeDataCardHistosMSSM(Int_t channel, TString tag="svfitmass"){
     QCD_CMS_scale_tDown->Write();
 
 
-    for(Int_t m=0;m<19;m++){
+    for(Int_t m=0;m<NMASS;m++){
       long ma=massValues[m];
       
       cout<<ChannelName+"_"+catdirname[sm]<<" "<<ma<<endl;
@@ -365,7 +369,7 @@ void plotDataCard(TString file, Int_t channel){
   TCanvas C("plotDataCard");
   C.Print("plotDataCard.ps[");
 
-  for(long sm=0;sm<7;sm++){
+  for(long sm=0;sm<NCAT;sm++){
     if(sm==4) continue;
 
     TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");

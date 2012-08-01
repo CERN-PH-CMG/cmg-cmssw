@@ -141,13 +141,13 @@ void TauEleFlatNtp::beginJob(){
    }
    if(diTauSelList_.size()==0 && printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail cand->leg2().passConversionVeto()"<<endl;
 
-   tmpditaulist=diTauSelList_;
-   diTauSelList_.clear();
-   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     if(!electronIDWP95(&(cand->leg2())))continue;     
-     diTauSelList_.push_back(*cand);
-   }
-   if(diTauSelList_.size()==0 && printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail electronIDWP95"<<endl;
+//    tmpditaulist=diTauSelList_;
+//    diTauSelList_.clear();
+//    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//      if(!electronIDWP95(&(cand->leg2())))continue;     
+//      diTauSelList_.push_back(*cand);
+//    }
+//    if(diTauSelList_.size()==0 && printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail electronIDWP95"<<endl;
 
    tmpditaulist=diTauSelList_;
    diTauSelList_.clear();
@@ -155,6 +155,7 @@ void TauEleFlatNtp::beginJob(){
      //look here https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentification
      float mvaid=cand->leg2().mvaNonTrigV0();
      float eta=(*(cand->leg2().sourcePtr()))->superCluster()->eta();
+     //cout<<eta<<" "<<mvaid<<endl;
      if(fabs(eta)<0.8)
        if(mvaid<0.925)continue; 
      if(0.8<=fabs(eta)&&fabs(eta)<1.479)
@@ -556,12 +557,12 @@ void TauEleFlatNtp::beginJob(){
      if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) continue;
      if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
 
-     if(m->numberOfHits()!=0)return 0;
-     if(m->passConversionVeto()!=1)return 0;     
+     if(m->numberOfHits()!=0)continue;
+     //if(m->passConversionVeto()!=1)continue;     
      //if((*(m->sourcePtr()))->passConversionVeto()!=1) continue;
      if(!electronIDWP95(&(*m)))continue;
 
-     if( electronRelIsoDBCorr( &(*m) )>=0.3) continue; 
+     if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
 
      if(m->charge()==-1)muminus=1;
      if(m->charge()==1)muplus=1;

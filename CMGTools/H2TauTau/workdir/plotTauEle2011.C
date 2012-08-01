@@ -24,7 +24,7 @@ void plotTauEle2011(){
   analysis->setPlotTitle("CMS Preliminary 2011,   4.9 fb^{-1},     #sqrt{s} = 7 TeV,        #tau_{e}#tau_{h}");
 
   //raw yields to load samples now
-  //analysis->printRawYields("(categoryIso==1&&categoryCh==1)");
+  analysis->printRawYields("(categoryIso==1&&abs(ditaucharge)==0)");
 
   //
   Float_t c[4]={.6,.94,.52,.87};//default legend coordinates
