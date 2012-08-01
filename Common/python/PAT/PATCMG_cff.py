@@ -132,7 +132,7 @@ PATCMGJetSequence = cms.Sequence(
     cmgPFBaseJetLead
     )
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X, isNewerThan
 from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
 
 if cmsswIs44X():
@@ -214,5 +214,5 @@ PATCMGSequence = cms.Sequence(
     PATCMGMetRegressionSequence
     )
 
-if cmsswIs52X():
+if isNewerThan('CMSSW_5_2_0'):
     PATCMGSequence += PATCMGJetSequenceCHSpruned

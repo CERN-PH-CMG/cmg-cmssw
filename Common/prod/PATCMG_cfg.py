@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,isNewerThan
 # if not cmsswIs44X():
 #    raise ValueError('Sorry, you are not working in 44X. use the correct cfg')
 
@@ -34,7 +34,7 @@ print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 print 'loading the main CMG sequence'
 
@@ -56,7 +56,7 @@ if runOnMC is False:
     process.patJets.addGenJetMatch = False
     process.patJets.addGenPartonMatch = False
 
-    if cmsswIs52X():
+    if isNewerThan('CMSSW_5_2_0'):
         process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
         process.patJetsCHSpruned.addGenJetMatch = False
         process.patJetsCHSpruned.addGenPartonMatch = False
@@ -79,7 +79,7 @@ if runOnMC is False:
 
     # adding L2L3Residual corrections
     process.patJetCorrFactors.levels.append('L2L3Residual')
-    if cmsswIs52X():
+    if isNewerThan('CMSSW_5_2_0'):
         process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
 
 

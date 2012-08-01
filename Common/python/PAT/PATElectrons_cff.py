@@ -46,7 +46,7 @@ patElectrons.pfElectronSource = 'particleFlow'
 from CommonTools.ParticleFlow.Isolation.pfElectronIsolation_cff import *
 
 # 44X need to remove spurious sequences from the path
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X
 if cmsswIs44X():
     pfElectronIsolationSequence.remove( pfElectronIsoDepositsSequence )
     pfElectronIsolationSequence.remove( pfElectronIsolationFromDepositsSequence )
