@@ -1,4 +1,4 @@
-for d in 0 1 2 3 4; do
+for d in 0 1 2 3 5; do
 echo $d
 rm -rf SM$d
 mkdir SM$d
