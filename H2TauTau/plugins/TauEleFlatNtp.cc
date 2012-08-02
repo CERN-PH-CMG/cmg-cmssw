@@ -72,6 +72,12 @@ void TauEleFlatNtp::beginJob(){
    }
    counterev_++;
 
+   ////
+   if(vetoDiLepton()){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
+     return 0;
+   }
+   counterveto_++;
 
 
    std::vector<cmg::TauEle> tmpditaulist=*diTauList_;
@@ -340,12 +346,6 @@ void TauEleFlatNtp::beginJob(){
        highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
      }
 
-   ////other 
-   if(vetoDiLepton()){
-     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
-     return 0;
-   }
-   counterveto_++;
 
 
    //truth match 
@@ -547,49 +547,51 @@ void TauEleFlatNtp::beginJob(){
 
 
 
-//  bool TauEleFlatNtp::vetoDiLepton(){
+ bool TauEleFlatNtp::vetoDiLepton(){
 
-//    bool muminus=0;
-//    bool muplus=0;
-//    for(std::vector<cmg::Electron>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
-//      if(m->pt()<=15.0)continue;
-//      if(fabs(m->eta())>=2.5)continue;
-//      if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) continue;
-//      if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
-
-//      if(m->numberOfHits()!=0)continue;
-//      //if(m->passConversionVeto()!=1)continue;     
-//      //if((*(m->sourcePtr()))->passConversionVeto()!=1) continue;
-//      if(!electronIDWP95(&(*m)))continue;
-
-//      if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
-
-//      if(m->charge()==-1)muminus=1;
-//      if(m->charge()==1)muplus=1;
-//    }
-
-//    if(muminus&&muplus) return 1;
-//    return 0;
-//  }
-
-
-
-bool TauEleFlatNtp::vetoDiLepton(){
-
+   bool muminus=0;
+   bool muplus=0;
    for(std::vector<cmg::Electron>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
      if(m->pt()<=15.0)continue;
      if(fabs(m->eta())>=2.5)continue;
-     if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.04 ) continue;
+
+     //if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) continue;
      if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
-     if(m->passConversionVeto()!=1)continue;     
+
+     //if(m->numberOfHits()!=0)continue;
+     //if(m->passConversionVeto()!=1)continue;     
+     //if((*(m->sourcePtr()))->passConversionVeto()!=1) continue;
+     
      if(!electronIDWP95(&(*m)))continue;
+
      if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
 
-     if((m->charge())*(diTauSel_->leg2().charge())<0) return 1;
+     if(m->charge()==-1)muminus=1;
+     if(m->charge()==1)muplus=1;
    }
 
+   if(muminus&&muplus) return 1;
    return 0;
  }
+
+
+
+// bool TauEleFlatNtp::vetoDiLepton(){
+
+//    for(std::vector<cmg::Electron>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
+//      if(m->pt()<=15.0)continue;
+//      if(fabs(m->eta())>=2.5)continue;
+//      if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.04 ) continue;
+//      if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
+//      if(m->passConversionVeto()!=1)continue;     
+//      if(!electronIDWP95(&(*m)))continue;
+//      if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
+
+//      if((m->charge())*(diTauSel_->leg2().charge())<0) return 1;
+//    }
+
+//    return 0;
+//  }
 
 
 
