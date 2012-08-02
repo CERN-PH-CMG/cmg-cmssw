@@ -77,7 +77,7 @@ std::vector<TString> buildDataCard(Int_t mass, TString histo="finalmt", TString 
 void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t> &allShapes, TString mainHisto, TString sideBandHisto, TString url, JSONWrapper::Object &Root);
 void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString metHistoForRescale);
 void doWZSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto);
-void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto);
+void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, bool addSignal);
 
 //void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, JSONWrapper::Object &Root);
 void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allShapesL, map<TString, Shape_t>& allShapes, map<TString, Shape_t>& allShapesR, TString mainHisto);
@@ -111,6 +111,7 @@ bool subWZ = false;
 double DDRescale = 1.0;
 double MCRescale = 1.0;
 bool blindData = false;
+bool blindWithSignal = false; 
 TString DYFile ="";
 TString inFileUrl(""),jsonFile(""), histo("");
 TString postfix="";
@@ -156,6 +157,7 @@ void printHelp()
   printf("--skipGGH   --> use this flag to skip GGH signal)\n");
   printf("--skipQQH   --> use this flag to skip GGH signal)\n");
   printf("--blind     --> use this flag to replace observed data by total predicted background)\n");
+  printf("--blindWithSignal --> use this flag to replace observed data by total predicted background+signal)\n");
   printf("--fast      --> use this flag to only do assymptotic prediction (very fast but inaccurate))\n");
   printf("--postfix    --> use this to specify a postfix that will be added to the process names)\n");
   printf("--systpostfix    --> use this to specify a syst postfix that will be added to the process names)\n");
@@ -194,6 +196,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--HWW")      !=string::npos) { skipWW=false; printf("HWW = True\n");}
     else if(arg.find("--skipGGH")  !=string::npos) { skipGGH=true; printf("skipGGH = True\n");}
     else if(arg.find("--skipQQH")  !=string::npos) { skipQQH=true; printf("skipQQH = True\n");}
+    else if(arg.find("--blindWithSignal")    !=string::npos) { blindData=true; blindWithSignal=true; printf("blindData = True; blindWithSignal = True\n");}
     else if(arg.find("--blind")    !=string::npos) { blindData=true; printf("blindData = True\n");}
     else if(arg.find("--closure")  !=string::npos) { MCclosureTest=true; printf("MCclosureTest = True\n");}
     else if(arg.find("--shapeMinVBF") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&shapeMinVBF); i++; printf("Min cut on shape for VBF = %f\n", shapeMinVBF);}
@@ -362,176 +365,6 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
   return shape;
 }
 
-/*
-
-//
-void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName)
-{
-
-  TH1* allbkg=NULL;
-  std::map<TString, TH1*> mapbkg;
-  std::map<TString, TH1*> mapsig;
-  TH1* alldata=NULL;
-
-
-  for(size_t i=0;i<selCh.size();i++){
-  for(size_t b=0; b<AnalysisBins.size(); b++){
-     Shape_t& shape = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
-
-     if(!allbkg){allbkg=(TH1*)shape.totalBckg->Clone("mc");}else{allbkg->Add(shape.totalBckg);}
-     if(!alldata){alldata=(TH1*)shape.data->Clone("data");}else{alldata->Add(shape.data);}
-
-     for(size_t i=0; i<shape.bckg.size(); i++){
-        if(shape.bckg[i]->Integral()<=1E-6) continue;
-        if(mapbkg.find(shape.bckg[i]->GetTitle())!=mapbkg.end()){mapbkg[shape.bckg[i]->GetTitle()]->Add(shape.bckg[i]);}else{ mapbkg[shape.bckg[i]->GetTitle()]=(TH1*)shape.bckg[i]->Clone(shape.bckg[i]->GetTitle()); }
-     }
-
-     TString massStr("");if(mass>0) massStr += mass;
-     for(size_t ip=0; ip<shape.signal.size(); ip++){
-         TString proc(shape.signal[ip]->GetTitle());
-         if(mass>0 && !proc.Contains(massStr))continue;
-              if(mass>0 && proc.Contains("ggH") && proc.Contains("ZZ"))proc = "ggHZZ2l2v";
-         else if(mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ2l2v";
-         else if(mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
-         else if(mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
-
-        if(proc=="qqHZZ"){shape.signal[ip]->SetLineStyle(2);}
-
-        if(mapsig.find(shape.signal[ip]->GetTitle())!=mapsig.end()){mapsig[shape.signal[ip]->GetTitle()]->Add(shape.signal[ip]);}else{mapsig[shape.signal[ip]->GetTitle()]=(TH1*)shape.signal[ip]->Clone(shape.signal[ip]->GetTitle());}
-     }
-  }}
-
-
-  TCanvas* c1 = new TCanvas("c1","c1",800,800);
-
-  TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);  t1->Draw();  t1->cd();
-  TLegend* legA  = new TLegend(0.845,0.5,0.99,0.99, "NDC");
-
-  bool canvasIsFilled(false);
-  THStack *stack=0;
-  TH1* mc=allbkg;
-  if(allbkg){
-      TH1* axis = (TH1*)allbkg->Clone("axis");
-      axis->Reset();
-      axis->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
-      axis->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
-      axis->SetMinimum(mc->GetMinimum());
-      axis->SetMaximum(1.1*std::max(mc->GetMaximum(), alldata->GetMaximum()));
-      axis->GetXaxis()->SetRangeUser(150,700);
-      axis->Draw();
-
-      TH1* mcPlusRelUnc = (TH1 *) allbkg->Clone("totalmcwithunc"); mcPlusRelUnc->SetDirectory(0); mcPlusRelUnc->Reset();
-
-      stack = new THStack("stack","stack"); 
-      for(std::map<TString, TH1*>::iterator it=mapbkg.begin(); it!=mapbkg.end(); it++){
-//          it->second->SetLineColor( it->second->GetFillColor());
-          stack->Add(it->second,"HIST");
-          legA->AddEntry(it->second,it->second->GetTitle(),"F");
-
-          double baseRelUnc = it->second->GetBinError(0)/it->second->Integral();
-          if(TString(it->second->GetTitle()).Contains("rightarrow ll (data)")){
-             printf("replace uncertainty %g",baseRelUnc); baseRelUnc=1.0;}
-          for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++){
-             double val = it->second->GetBinContent(ibin);
-             double err = it->second->GetBinError(ibin);
-             double value = mcPlusRelUnc->GetBinContent(ibin) + val;
-             double error = sqrt(pow(mcPlusRelUnc->GetBinError(ibin),2) + pow(err,2) + pow(val*baseRelUnc,2));
-             mcPlusRelUnc->SetBinContent(ibin,value);
-             mcPlusRelUnc->SetBinError(ibin,error);
-           }
-
-      }
-      stack->Draw("same");
-      canvasIsFilled=true;
-  
-      
-      TGraphErrors* errors = new TGraphErrors(mcPlusRelUnc->GetXaxis()->GetNbins());
-      int icutg=0;
-      for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++){
-          if(mcPlusRelUnc->GetBinContent(ibin)>0)
-          errors->SetPoint(icutg,mcPlusRelUnc->GetXaxis()->GetBinCenter(ibin), mcPlusRelUnc->GetBinContent(ibin));
-          errors->SetPointError(icutg,mcPlusRelUnc->GetXaxis()->GetBinWidth(ibin)/2.0, mcPlusRelUnc->GetBinError(ibin)); 
-          icutg++;
-      }
-      errors->Set(icutg);
-      errors->SetFillStyle(3427);
-      errors->SetFillColor(kGray+1);
-      errors->SetLineStyle(1);
-      errors->SetLineColor(2);
-      errors->Draw("2 same");
-
-
-      mcPlusRelUnc->SetFillStyle(3427);
-      mcPlusRelUnc->SetFillColor(kGray+1);
-      mcPlusRelUnc->SetMarkerStyle(1);
-      //mcPlusRelUnc->Draw("e4same");
-   }
-
-   for(std::map<TString, TH1*>::iterator it=mapsig.begin(); it!=mapsig.end(); it++){
-     it->second->Draw(canvasIsFilled ? "histsame" : "hist");
-     legA->AddEntry(it->second,it->second->GetTitle(),"L");
-     canvasIsFilled=true;
-   }
-
-
-
-  if(alldata){
-      if(blindData) {
-         legA->AddEntry(alldata,"data (blinded)","P");
-      }else{
-         alldata->Draw(canvasIsFilled ? "E1same" : "E1");
-         legA->AddEntry(alldata,alldata->GetTitle(),"P");
-         canvasIsFilled=true;
-     }
-  }
-
-  TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
-  T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
-  T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV, #scale[0.5]{#int} L=5.0  fb^{-1}");  T->Draw();
- 
-  legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(); legA->SetHeader("");
-  legA->Draw("same");    legA->SetTextFont(42);
-
-
-  TH1 *ratio=0; 
-  if(allbkg && alldata){
-      c1->cd();
-      TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);     t2->Draw();
-      t2->cd();
-      t2->SetGridy(true);
-      t2->SetTopMargin(0);   t2->SetBottomMargin(0.5);
-      float yscale = (1.0-0.2)/(0.18-0);
-      TH1 *ratio = (TH1*)alldata->Clone("RatioHistogram");
-      ratio->SetDirectory(0);
-      ratio->Divide(allbkg);
-      ratio->GetYaxis()->SetTitle("Obs/Ref");
-      ratio->GetXaxis()->SetTitle("");
-      ratio->SetMinimum(0);
-      ratio->SetMaximum(2.2);
-      ratio->GetXaxis()->SetTitleOffset(1.3);
-      ratio->GetXaxis()->SetLabelSize(0.033*yscale);
-      ratio->GetXaxis()->SetTitleSize(0.036*yscale);
-      ratio->GetXaxis()->SetTickLength(0.03*yscale);
-      ratio->GetYaxis()->SetTitleOffset(0.3);
-      ratio->GetYaxis()->SetNdivisions(5);
-      ratio->GetYaxis()->SetLabelSize(0.033*yscale);
-      ratio->GetYaxis()->SetTitleSize(0.036*yscale);
-      ratio->GetXaxis()->SetRangeUser(175,450);
-      ratio->Draw("E1");
-  }
-
-  c1->cd();
-  c1->Update();
-  c1->SaveAs(SaveName+".png");
-  c1->SaveAs(SaveName+".pdf");
-  c1->SaveAs(SaveName+".C");
-  delete c1;
-  if(alldata)delete alldata;
-  if(allbkg)delete allbkg;
-  if(stack) delete stack;
-  if(ratio) delete ratio;
-}
-*/
 //
 void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName)
 {
@@ -993,7 +826,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
                   if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0669);}else{fprintf(pFile,"%6f ",1.0700);}
             //temporary removed to avoid double counts with uncertainty applied on ZZ xsection itself --> should be reintegrated for Higgs computation
-            //}else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0767);}else{fprintf(pFile,"%6f ",1.0822);}
+            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0767);}else{fprintf(pFile,"%6f ",1.0822);}
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
@@ -1037,7 +870,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
                 if(shape){sprintf(sFile,"%35s %10s ", it->first.Data(), "shapeN2");}else{sprintf(sFile,"%35s %10s ", it->first.Data(), "lnN");}
                 for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
                    if(it->second.find(RateKey_t(dci.procs[j-1],dci.ch[i-1])) != it->second.end()){
-                      sprintf(sFile,"%s%6.3f",sFile,it->second[RateKey_t(dci.procs[j-1],dci.ch[i-1])]); isSyst=true;
+                      sprintf(sFile,"%s%6.3f ",sFile,it->second[RateKey_t(dci.procs[j-1],dci.ch[i-1])]); isSyst=true;
                    }else{
                       sprintf(sFile,"%s%6s ",sFile,"-");
                    }
@@ -1138,7 +971,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   if(subDY)doDYReplacement(selCh,"gamma",allShapes,histo,"met_met");
 
   //replace data by total MC background
-  if(blindData)BlindData(selCh,allShapes,histo);
+  if(blindData)BlindData(selCh,allShapes,histo, blindWithSignal);
 
   //interpollate signal sample if desired mass point is not available
   SignalInterpolation(selCh,allShapesL, allShapes, allShapesR, histo);
@@ -1648,11 +1481,11 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
   TDirectory *pdir = (TDirectory *)inF->Get(DYProcName);        
   if(!pdir){ printf("Skip Z+Jet estimation because %s directory is missing in root file\n", DYProcName.Data()); return;}
 
-  for(size_t i=0;i<selCh.size();i++){
-  for(size_t b=0; b<AnalysisBins.size(); b++){
-     TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);
-     LowMetIntegral[selCh[i]+AnalysisBins[b]] = met->Integral(1,met->GetXaxis()->FindBin(50));
-  }}
+//  for(size_t i=0;i<selCh.size();i++){
+//  for(size_t b=0; b<AnalysisBins.size(); b++){
+//     TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);
+//     LowMetIntegral[selCh[i]+AnalysisBins[b]] = met->Integral(1,met->GetXaxis()->FindBin(50));
+//  }}
 
   //all done with input file
   inF->Close();
@@ -1676,10 +1509,10 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
         if( proc.Contains(DYProcName) ){
 
            //compute rescale factor using low MET events
-           TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);           
-           double integral = met->Integral(1,met->GetXaxis()->FindBin(50));
-           double rescaleFactor = LowMetIntegral[selCh[i]+AnalysisBins[b]] / integral;
-           printf("Rescale in %s = %f/%f = %f\n",  (selCh[i]+AnalysisBins[b]).Data(), LowMetIntegral[selCh[i]+AnalysisBins[b]], integral, rescaleFactor);         
+//           TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);           
+//           double integral = met->Integral(1,met->GetXaxis()->FindBin(50));
+           double rescaleFactor = 1.0;//LowMetIntegral[selCh[i]+AnalysisBins[b]] / integral;
+//           printf("Rescale in %s = %f/%f = %f\n",  (selCh[i]+AnalysisBins[b]).Data(), LowMetIntegral[selCh[i]+AnalysisBins[b]], integral, rescaleFactor);         
            char buffer[255]; sprintf(buffer,"%6.3f",rescaleFactor);
            Cval   += string(" &") + buffer;
 
@@ -1827,12 +1660,17 @@ void doWZSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
 
 
 
-void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto){
+void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, bool addSignal){
     for(size_t i=0;i<selCh.size();i++){
     for(size_t b=0; b<AnalysisBins.size(); b++){
         Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
         shapeChan_SI.data->Reset(); 
         shapeChan_SI.data->Add(shapeChan_SI.totalBckg,1);
+        if(addSignal){
+           for(unsigned int s=0;s<shapeChan_SI.signal.size();s++){
+              shapeChan_SI.data->Add(shapeChan_SI.signal[s], 1);
+           }
+        }
     }}
 }
 
