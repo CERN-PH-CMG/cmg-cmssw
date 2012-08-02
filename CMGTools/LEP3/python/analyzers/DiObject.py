@@ -18,7 +18,7 @@ class DiObject ( TLorentzVector ):
                leg1.pz()*leg2.pz() ) / ( leg1.p() * leg2.p() )
         #print c1
         if c1>=1.0: c1 = 1.-1E-12
-        if c1<=-1.0: c1 = -1.+1-E12
+        if c1<=-1.0: c1 = -1.+1E-12
         #print leg1, leg2, c1
         
         self.angle_ = acos(c1)*180./pi
