@@ -13,6 +13,6 @@
  <bin name="runZZAnalysis" file="runZZAnalysis.cc"></bin>
  <bin name="runLandS" file="runLandS.cc"></bin>
  <bin name="runGenScanner" file="runGenScanner.cc"></bin>
- <bin name="runLLanalysis" file="runLLanalysis.cc"></bin>
+ <bin name="runPLRanalysis" file="runPLRanalysis.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g"/>
