@@ -1,7 +1,7 @@
 cvs co -r cbern_sip_27Mar12	-d AnalysisDataFormats/CMGTools UserCode/CMG/AnalysisDataFormats/CMGTools                     
 cvs co -r cbern_nomitid_11Apr12 -d CMGTools/Common		UserCode/CMG/CMGTools/Common                                  
 cvs co -r V00-02-05		-d CMGTools/External		UserCode/CMG/CMGTools/External                                
-cvs co                     	-d CMGTools/HtoZZ2l2nu		UserCode/CMG/CMGTools/HtoZZ2l2nu                              
+cvs co -r V12-08-03          	-d CMGTools/HtoZZ2l2nu		UserCode/CMG/CMGTools/HtoZZ2l2nu                              
 cvs co -r cbern_dasoff_11Apr12	-d CMGTools/Production		UserCode/CMG/CMGTools/Production                              
 cvs co -r V00-03-07-01						CommonTools/ParticleFlow                         
 cvs co -r Shervin20022012_2011Jan16ReRec0_and_Shervin05032012_Fall11MC_smearing -d EgammaCalibratedGsfElectrons/CalibratedElectronAlgos UserCode/ClaudeCharlot/EgammaCalibratedGsfElectrons/CalibratedElectronAlgos
@@ -13,12 +13,9 @@ cvs co -r V08-03-16      PhysicsTools/Utilities
 cvs co -r V15-01-05      RecoParticleFlow/PFProducer                      
 cvs co -r Colin_June23   -d RecoParticleFlow/PostProcessing UserCode/RecoParticleFlow/PostProcessing                 
 cvs co -r V00-08-01      -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer        
-cvs co -r t3-04-13	 UserCode/mschen/LandS
 cvs co -r V00-00-05      -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools
 cvs co  HiggsAnalysis/CombinedLimit
 cmsenv
-#compile landS
-cd UserCode/mschen/LandS
-make
-cd -
 
+#we don't use LandS any longer
+#cvs co -r t3-04-13	 UserCode/mschen/LandS

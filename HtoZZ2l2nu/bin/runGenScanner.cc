@@ -150,7 +150,12 @@ int main(int argc, char* argv[])
       string type1, type2;
       switch(abs(phys.genleptons[0].id)){case 11: type1="e";break; case 13: type1="m";break; case 15: type1="t";break; default: type1="?"; break;}if(phys.genleptons[0].id>0){type1+="-";}else{type1+="+";}
       switch(abs(phys.genleptons[1].id)){case 11: type2="e";break; case 13: type2="m";break; case 15: type2="t";break; default: type2="?"; break;}if(phys.genleptons[1].id>0){type2+="-";}else{type2+="+";}
-
+      
+      //       for(size_t ij=0; ij<phys.genjets.size(); ij++)
+      // 	{
+      // 	  cout << phys.genjets[ij].pt() << " " << phys.genjets[ij].eta() << endl;
+      // 	}
+      //       cout << "-------" << endl;
 
       std::vector<TString> tags_full;
       tags_full.push_back(type1+type2);
