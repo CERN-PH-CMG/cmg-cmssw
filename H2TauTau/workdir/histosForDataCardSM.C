@@ -185,34 +185,21 @@ void plotDataCard(TString file, Int_t channel){
   TFile nominal(file,"read");
   gROOT->cd();
 
-  TCanvas C("plotDataCard");
-  C.Print("plotDataCard.ps[");
+  TString fname=TString("plotDataCard_")+ChannelName+".ps";
+
+  TCanvas C;
+  C.Print(fname+"[");
 
   for(long sm=0;sm<NCAT;sm++){
 
     TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
-    ZTT->SetName("ZTT");
-
     TH1F* QCD = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
-    QCD->SetName("QCD");
-
     TH1F* W = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/W");
-    W->SetName("W");
-
     TH1F* TT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/TT");
-    TT->SetName("TT");
-
     TH1F* ZL = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZL");
-    ZL->SetName("ZL");
-
     TH1F* ZJ = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZJ");
-    ZJ->SetName("ZJ");
-
     TH1F* VV = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/VV");
-    VV->SetName("VV");
-
     TH1F* data_obs = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/data_obs");
-    data_obs->SetName("data_obs");
 
     //plot
     TH1F*MC=(TH1F*)ZTT->Clone("MC");
@@ -226,19 +213,60 @@ void plotDataCard(TString file, Int_t channel){
     MC->SetTitle(ChannelName+"_"+catdirname[sm]);
 
 
+    THStack hMCStack("hBkgStack","BkgStack");//dont't set any of the regular histogram properties on the THStack will crash.
+    QCD->SetFillColor(kMagenta-10);
+    hMCStack.Add(QCD,"hist");
+    TH1F*hEWK=(TH1F*)W->Clone("EWK");
+    hEWK->Add(ZL);
+    hEWK->Add(ZJ);
+    hEWK->Add(VV);
+    hEWK->SetFillColor(kRed+2);
+    hMCStack.Add(hEWK,"hist");
+    TT->SetFillColor(kBlue-8);
+    hMCStack.Add(TT,"hist");
+    ZTT->SetFillColor(kOrange-4);
+    hMCStack.Add(ZTT,"hist");
+
+
+    ////////////
     C.Clear();
     if(MC->GetMaximum()>data_obs->GetMaximum())
-      MC->GetYaxis()->SetRangeUser(0,1.2*MC->GetMaximum());
+      data_obs->GetYaxis()->SetRangeUser(0,1.2*MC->GetMaximum());
     else
-      MC->GetYaxis()->SetRangeUser(0,1.2*data_obs->GetMaximum());
-    MC->Draw("hist");
+      data_obs->GetYaxis()->SetRangeUser(0,1.2*data_obs->GetMaximum());
+    data_obs->Draw("histpe");
+    //MC->Draw("hist");
+    hMCStack.Draw("histsame");
     data_obs->Draw("histpesame");
-    C.Print("plotDataCard.ps");
+    C.Print(fname);
     delete MC;
+
+    ////////
+    C.Clear();
+    TH1F * SM1=0;
+    TH1F * SM2=0;
+    for(Int_t m=0;m<NMASS;m++){
+      long ma=massValues[m];
+      TH1F* SM = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
+      TH1F* VBF = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/qqH"+ma);
+      TH1F* VH = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/VH"+ma);
+      if(m==0){SM1=(TH1F*)SM->Clone("SM1"); SM1->Add(VBF); SM1->Add(VH);}
+      if(m==NMASS-1){SM2=(TH1F*)SM->Clone("SM2");SM2->Add(VBF);SM2->Add(VH);}
+    }
+    
+    if(SM1->GetMaximum()>SM2->GetMaximum()){
+      SM1->Draw("hist");
+      SM2->Draw("histpesame");
+    }
+    if(SM1->GetMaximum()<SM2->GetMaximum()){
+      SM2->Draw("hist");
+      SM1->Draw("histpesame");
+    }
+    C.Print(fname);
  
   }
   
-  C.Print("plotDataCard.ps]");
+  C.Print(fname+"]");
  
   nominal.Close();
 }
