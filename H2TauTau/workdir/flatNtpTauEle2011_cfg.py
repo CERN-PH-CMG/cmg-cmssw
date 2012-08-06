@@ -53,26 +53,10 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 print process.source.fileNames
 
 
-#process.source.eventsToProcess = cms.untracked.VEventRange(
-#     '1:103290',
-#     '1:105187',
-#     '1:121448',
-#     '1:165937',
-#     '1:172509',
-#     '1:176504',
-#     '1:184173',
-#     '1:186434',
-#     '1:190606',
-#     '1:20990',
-#     '1:47301',
-#     '1:58284',
-#     '1:58681',
-#     '1:61939',
-#     '1:62102',
-#     '1:81878'
-#)
 
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:165937','1:58681','1:190606','1:184173','1:176504','1:105187','1:62102','1:121448','1:186434','1:172509')
+
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:103290','1:172509','1:20990','1:47301','1:58284','1:61939','1:81878')
     
 #process.flatNtp.printSelectionPass = 1
 

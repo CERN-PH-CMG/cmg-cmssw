@@ -118,6 +118,7 @@ public:
   //TH1F* getZToMuMuIncSS();
   TH1F* getZToEEInc(){return 0;}//dummy method just to make script work for datacard
   TH1F* getQCDInc();//uses the same sign samples
+  TH1F* getQCDIncLooseShape();
   TH1F* getQCDIncWJetsShape();
   bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
   //bool plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t SMcat, TString extrasel="", Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0,TString filetag="");

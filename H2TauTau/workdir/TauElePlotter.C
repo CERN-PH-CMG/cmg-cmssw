@@ -524,7 +524,7 @@ TH1F* TauElePlotter::getWJetsIncShape2012(){
 TH1F* TauElePlotter::getW3JetsVBF(){
   cout<<" calling getW3JetsVBF"<<endl;
 
-  //get templates from inclusive 2-jet sample and normalize at high mT in VBF
+  //
   TString TmpExtrasel=extrasel_;
   Int_t tmpMTcat=MTcat_;
   Int_t tmpIsocat=Isocat_;
@@ -672,6 +672,38 @@ TH1F* TauElePlotter::getQCDInc(){
   return h;
 }
 
+
+TH1F* TauElePlotter::getQCDIncLooseShape(){
+  cout<<"Calling method getQCDIncHighPt"<<endl;
+
+  //integral from SS after subtracting MC
+  TH1F* hNorm=getQCDInc();
+
+  //Shape from sample with loose isolation
+  TH1F* h=getPlotHisto("hQCDIncHigPt");
+  
+  int ChcatTmp=Chcat_;
+  Chcat_=2;
+  int IsocatTmp=Isocat_;
+  Isocat_=0;
+  TString extraselTmp=extrasel_;
+  extrasel_+="*(muiso<1.&&tauisomva>-0.5)";
+  
+  TH1F* hDataSS=getTotalData();
+  h->Add(hDataSS);
+  delete hDataSS;
+  TH1F*hMC=getTotalMCSM();
+  h->Add(hMC,-1);
+  delete hMC;
+
+  Chcat_=ChcatTmp;
+  Isocat_=IsocatTmp;
+  extrasel_=extraselTmp;
+
+  h->Scale(TMath::Max(hNorm->Integral(),1.)/h->Integral());
+  
+  return h;
+}
 
 
 TH1F* TauElePlotter::getQCDIncWJetsShape(){
@@ -1008,21 +1040,26 @@ TH1F* TauElePlotter::getQCDMike(){
   Isocat_=1;
   extrasel_="1";
   //if(!scaleSamplesLumi())return 0;
-  TH1F* hQCDInc = getQCDInc();     hQCDInc->SetName("hQCDInc");
+  TH1F* hQCDInc = getQCDInc();
+  hQCDInc->SetName("hQCDInc");
  
   //SS Loose Incl QCD 
   Isocat_=-1;
   extrasel_=isocuttxt;
   //if(!scaleSamplesLumi())return 0;
-  TH1F* hDataIncLoose = getTotalData();   hDataIncLoose->SetName("hDataIncLoose");
-  TH1F* hMCIncLoose = getTotalMCSM();   hMCIncLoose->SetName("hMCIncLoose");
+  TH1F* hDataIncLoose = getTotalData();
+  hDataIncLoose->SetName("hDataIncLoose");
+  TH1F* hMCIncLoose = getTotalMCSM();
+  hMCIncLoose->SetName("hMCIncLoose");
 
   //SS Loose VBF QCD 
   Isocat_=-1;  
   extrasel_=TmpExtrasel+"*"+isocuttxt;
   //if(!scaleSamplesLumi())return 0;
-  TH1F* hDataVBFLoose=getTotalData();    hDataVBFLoose->SetName("hDataVBFLoose");
-  TH1F* hMCVBFLoose=getTotalMCSM();   hMCVBFLoose->SetName("hMCVBFLoose");
+  TH1F* hDataVBFLoose=getTotalData();
+  hDataVBFLoose->SetName("hDataVBFLoose");
+  TH1F* hMCVBFLoose=getTotalMCSM();
+  hMCVBFLoose->SetName("hMCVBFLoose");
   
 
   char isocuttxtshape[100];
@@ -1033,8 +1070,10 @@ TH1F* TauElePlotter::getQCDMike(){
   Isocat_=-1;  
   extrasel_=TString("(njet>=2)*")+isocuttxtshape;
   //if(!scaleSamplesLumi())return 0;
-  TH1F* hDataVBFLooseShape=getTotalData(); hDataVBFLooseShape->SetName("hDataVBFLooseShape");
-  TH1F* hMCVBFLooseShape=getTotalMCSM(); hMCVBFLooseShape->SetName("hMCVBFLooseShape");
+  TH1F* hDataVBFLooseShape=getTotalData();
+  hDataVBFLooseShape->SetName("hDataVBFLooseShape");
+  TH1F* hMCVBFLooseShape=getTotalMCSM();
+  hMCVBFLooseShape->SetName("hMCVBFLooseShape");
   
   TH1F* hShape=getPlotHisto("hSMQCDShape");
 
@@ -1105,10 +1144,10 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   if(Chcat_==1){
     if(QCDType==0) hQCD=getQCDInc();
     if(QCDType==1) hQCD=getQCDIncWJetsShape();
-    if(QCDType==2) hQCD=getQCDIsoSM(); 
+    if(QCDType==2) hQCD=getQCDIncLooseShape();
     if(QCDType==3) hQCD=getQCDMike();
-    if(QCDType==4) hQCD=getQCDKeti();
-    if(QCDType==5) hQCD=getQCDIncFit();
+    if(QCDType==4) hQCD=getQCDKeti();//uses W2Jets sample
+    if(QCDType==5) hQCD=getQCDIncFit();//for 2012
   }
   if(hQCD){
     hQCD->SetLineWidth(1);   hQCD->SetLineColor(1);    hQCD->SetFillColor(QCDColor_);
@@ -1129,6 +1168,7 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   //Methods using W3Jets sample 
   if(WJetsType==10)hWJetsToLNu=getWJetsInc();
   if(WJetsType==12)hWJetsToLNu=getW3JetsVBF();
+
   //methods using W2Jets sample
   if(WJetsType==20)hWJetsToLNu=getWJetsInc();
   if(WJetsType==22)hWJetsToLNu=getW2JetsBJet();
@@ -1290,14 +1330,18 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   ///Make plot 
   ///////////////////////
   C.Clear();
+  hMCStack.Draw("hist");  
   hData->SetTitle("");
-  hData->GetYaxis()->SetRangeUser(0,(hData->GetMaximum()+hData->GetBinError(hData->GetMaximumBin()))*1.15);
+  if(hMCStack.GetHistogram()->GetMaximum()<hData->GetMaximum())
+    hData->GetYaxis()->SetRangeUser(0,hData->GetMaximum()*1.2);
+  if(hMCStack.GetHistogram()->GetMaximum()>hData->GetMaximum())
+    hData->GetYaxis()->SetRangeUser(0,hMCStack.GetHistogram()->GetMaximum()*1.2);
   hData->SetStats(0);
   hData->GetXaxis()->SetTitle(xlabel);
   hData->GetYaxis()->SetTitle(ylabel);
   hData->Draw("hist pe");
-  //////////////////////////
   hMCStack.Draw("hist same");  
+  //////////////////////////
   hData->Draw("hist pe same");//bring Data points back to front
   hBkg->SetFillColor(0);
   hBkg->SetLineColor(1);
