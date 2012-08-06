@@ -246,8 +246,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
       if(pdir==0){ /*printf("Skip Proc=%s because its directory is missing in root file\n", proc.Data());*/ continue;}
 
       bool isData(Process[i]["isdata"].toBool());
-      bool isSignal(Process[i]["spimpose"].toBool());
-      if(Process[i].isTag("issignal") && Process[i]["issignal"].toBool())isSignal=true;
+      bool isSignal(Process[i].isTag("issignal") && Process[i]["issignal"].toBool());
       int color(1);       if(Process[i].isTag("color" ) ) color  = (int)Process[i]["color" ].toInt();
       int lcolor(color);  if(Process[i].isTag("lcolor") ) lcolor = (int)Process[i]["lcolor"].toInt();
       int mcolor(color);  if(Process[i].isTag("mcolor") ) mcolor = (int)Process[i]["mcolor"].toInt();
