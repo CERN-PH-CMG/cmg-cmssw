@@ -130,7 +130,7 @@ if( phase == 1 ):
 #      SCRIPT = open(OUT+'script_'+str(i)+'.sh',"w")
 #      SCRIPT.writelines('echo "TESTING SELECTION : ' + str(i).rjust(5) + ' --> met>' + str(cuts1.GetBinContent(i)).rjust(5) + ' ' + str(cuts2.GetBinContent(i)).rjust(5) + '<mt<'+str(cuts3.GetBinContent(i)).rjust(5)+'";\n')
 #      SCRIPT.writelines('cd ' + CMSSW_BASE + '/src;\n')
-#      SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
+#      SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc5_amd64_gcc462")+";\n")
 #      SCRIPT.writelines("eval `scram r -sh`;\n")
 #      SCRIPT.writelines('cd /tmp/;\n')
 #      for m in MASS:
@@ -297,7 +297,7 @@ elif(phase == 3 ):
         index = findCutIndex(Gmet.Eval(m,0,""), cuts1, Gtmin.Eval(m,0,""), cuts2,  Gtmax.Eval(m,0,""), cuts3);
         SCRIPT = open(OUT+'/script_mass_'+str(m)+'.sh',"w")
         SCRIPT.writelines('cd ' + CMSSW_BASE + ';\n')
-        SCRIPT.writelines("export SCRAM_ARCH=slc5_amd64_gcc434;\n")
+        SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc5_amd64_gcc462")+";\n")
         SCRIPT.writelines("eval `scram r -sh`;\n")
         SCRIPT.writelines('cd ' + CWD + ';\n')
         shapeBasedOpt=''
