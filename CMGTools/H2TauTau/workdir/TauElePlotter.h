@@ -110,6 +110,7 @@ public:
   TH1F* getW3JetsVBF();
   TH1F* getW2JetsBJet();
   TH1F* getQCDInc();
+  TH1F* getQCDIncLooseShape();
   TH1F* getQCDIncWJetsShape();
   TH1F* getQCDIncFit();
   TH1F* getQCDMike();

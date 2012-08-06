@@ -21,8 +21,6 @@ TString catdirname[NCAT]={
 
 void histosForDataCardSM(Int_t channel,TString path,TString tag){
 
-  //TString path="/data/benitezj/Samples/TauMuV541June2_TrigEff";
-
   if(tag!="")path=path+"_"+tag;
 
   TString ChannelName;
@@ -42,6 +40,7 @@ void histosForDataCardSM(Int_t channel,TString path,TString tag){
   analysis->nbins_=0;
   analysis->Isocat_=1;
   analysis->MTcat_=1; 
+  analysis->Chcat_=1; 
   analysis->setZTTType(2);
 
   
@@ -58,16 +57,15 @@ void histosForDataCardSM(Int_t channel,TString path,TString tag){
     TH1F* ZTT = analysis->getZToTauTau();
     ZTT->SetName("ZTT");
 
-
     TH1F* QCD = 0;
     if(channel==1){//need to sync this channel with e-tau
-      if(sm==0 || sm==1) QCD=analysis->getQCDInc();
-      if(sm==2 || sm==3) QCD=analysis->getQCDInc();
+      if(sm==0) QCD=analysis->getQCDInc();
+      if(sm==1 || sm==2 || sm==3 ) QCD=analysis->getQCDIncLooseShape();
       if(sm==4)          QCD=analysis->getQCDMike();
     }
     if(channel==2){
-      if(sm==0 || sm==1) QCD=analysis->getQCDInc();
-      if(sm==2 || sm==3) QCD=analysis->getQCDInc();
+      if(sm==0 || sm==1) QCD=analysis->getQCDIncLooseShape();//getQCDInc();
+      if(sm==2 || sm==3) QCD=analysis->getQCDIncLooseShape();//getQCDInc();
       if(sm==4)          QCD=analysis->getQCDMike();
     }
     QCD->SetName("QCD");
