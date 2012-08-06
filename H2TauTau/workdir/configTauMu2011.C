@@ -93,8 +93,14 @@ TauMuPlotter * configTauMu2011(TString name, TString path){
   Sample* ZToTauTau = new Sample("ZToTauTau",path);//+"_tDown"
   ZToTauTau->setDataType("MC");
   ZToTauTau->setCrossection(3048*CrossectionScaleFactor);
-  ZToTauTau->setSampleGenEvents(36209629*0.9985);//V5_4_1 missing files: 4/2751 , correct to previous mc and data yields *(38781.6/35988.8)*(55192./56400.) //for V5_2_0 used 36189241
+  ZToTauTau->setSampleGenEvents(36209629*0.9985);//V5_4_1 missing files: 4/2751 
   analysis->addSample(ZToTauTau);
+
+//   Sample* ZToTauTauM10To50 = new Sample("ZToTauTauM10To50",path);
+//   ZToTauTauM10To50->setDataType("MC");
+//   ZToTauTauM10To50->setCrossection(3048*CrossectionScaleFactor);
+//   ZToTauTauM10To50->setSampleGenEvents(31459189);
+//   analysis->addSample(ZToTauTauM10To50);
 
   Sample* ZToMuMu = new Sample("ZToMuMu",path);
   ZToMuMu->setDataType("MC");

@@ -307,7 +307,9 @@ TH1F* TauMuPlotter::getZToTauTau(){
   TH1F*h=0;
   //TString tmpex=extrasel_;
   //extrasel_+="*(1+0.02*(mupt-25))";
-  if(ZTTType_==1)h=getSample("ZToTauTau");
+  if(ZTTType_==1){
+    h=getSample("ZToTauTau");
+  }
   if(ZTTType_==2)h=getTotalEmbedded(); 
   //extrasel_=tmpex;
   return h;

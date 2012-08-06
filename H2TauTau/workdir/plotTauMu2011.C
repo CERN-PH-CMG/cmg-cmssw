@@ -46,7 +46,7 @@ void plotTauMu2011(){
 //   analysis->plotInc("mudz",100,-.05,.05,1,1,1,"","",0,0," mu dz","",c,0,"inclusive");
 //   analysis->plotInc("mudxy",100,-.03,.03,1,1,1,"","",0,0," mu dxy","",c,0,"inclusive");
 
-//   analysis->plotInc("taupt",50,0,100,1,1,1,"","",0,0," tau pt   (GeV)","",c,0,"inclusive");
+  analysis->plotInc("taupt",50,0,100,1,1,1,"","",0,0," tau pt   (GeV)","",c,0,"inclusive");
 //   analysis->plotInc("taueta",50,-2.5,2.5,1,1,1,"","",0,0," tau  #eta","",c2,0,"inclusive"); 
 //   analysis->plotInc("tauisomva",100,-1.0,1.01,1,0,1,"(muiso<0.1)","",0,0,"tau iso mva","",c,0,"inclusive");
 //   analysis->plotInc("taudz",100,-.05,.05,1,1,1,"","",0,0," tau dz","",c,0,"inclusive");
@@ -58,8 +58,8 @@ void plotTauMu2011(){
 //   analysis->plotInc("metpt*cos(metphi)",30,-150,150,1,1,0,"","",0,0," MET  X (GeV)","",c2,0,"inclusive");    
 //   analysis->plotInc("metpt*sin(metphi)",30,-150,150,1,1,0,"","",0,0," MET  Y (GeV)","",c2,0,"inclusive");    
   
-//   analysis->plotInc("transversemass",20,0,200,1,1,0,"","",0,0,"M_{T}   [GeV]","",c,0,"inclusive");
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"","",0,0,"m(#mu#tau)   (GeV)","Events / 5 GeV",c,0,"inclusive");
+//  analysis->plotInc("transversemass",20,0,200,1,1,0,"","",0,0,"M_{T}   [GeV]","",c,0,"inclusive");
+//  analysis->plotInc("ditaumass",40,0,200,1,1,1,"","",0,0,"m(#mu#tau)   (GeV)","Events / 5 GeV",c,0,"inclusive");
 //   analysis->plotInc("svfitmass",60,0,300,1,1,1,"","",0,0," m(#tau#tau)   (GeV)","Events / 5 GeV",c,0,"inclusive");
 //   analysis->plotInc("njet",5,-.5,4.5,1,1,1,"","",0,0," njet ","",c,0,"inclusive");
 
