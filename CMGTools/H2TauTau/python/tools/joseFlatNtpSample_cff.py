@@ -112,6 +112,16 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
         module.recoilCorrection = 1
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root' 
 
+    if sampleAlias == 'ZToTauTauM10To50' : 
+        module.path = "/DYJetsToLL_M-10To50_TuneZ2_7TeV-madgraph/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightFall112011AB'
+        module.sampleGenEventType = 5
+        module.trigPath1 = cms.InputTag("HLT_IsoMu15_LooseIsoPFTau15_v9","hltPFTau15TrackLooseIso","hltSingleMuIsoL3IsoFiltered15")
+        module.recoilCorrection = 1
+        module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+        
+
     if sampleAlias == 'ZToMuMu' : 
         module.path = "/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1"
         module.dataType = 0
