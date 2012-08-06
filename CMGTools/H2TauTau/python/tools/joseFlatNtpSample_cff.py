@@ -570,8 +570,33 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
 
 
+    for i in range(0,8):
+
+        if sampleAlias == "HiggsGG"+HiggsMass[i] :
+            module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_0" % HiggsMass[i]
+            module.dataType = 0
+            module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+            module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
+            #module.recoilCorrection = 1
+            #module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            
+        if sampleAlias == "HiggsVBF"+HiggsMass[i] :
+            module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_0" % HiggsMass[i]
+            module.dataType = 0
+            module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+            module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
+            #module.recoilCorrection = 1
+            #module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            
+        if sampleAlias == "HiggsVH"+HiggsMass[i] : 
+            module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_5_0" % HiggsMass[i]
+            module.dataType = 0
+            module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+            module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
+
+
     if sampleAlias == 'VBFSync' : 
-        module.path = "/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_0"
+        module.path = "/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
@@ -681,8 +706,33 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
 
 
 
+    for i in range(0,8):
+
+        if sampleAlias == "HiggsGG"+HiggsMass[i] :
+            module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_0" % HiggsMass[i]
+            module.dataType = 0
+            module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+            module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
+            #module.recoilCorrection = 1
+            #module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+
+        if sampleAlias == "HiggsVBF"+HiggsMass[i] :
+            module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_0" % HiggsMass[i]
+            module.dataType = 0
+            module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+            module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
+            #module.recoilCorrection = 1
+            #module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            
+        if sampleAlias == "HiggsVH"+HiggsMass[i] : 
+            module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_5_0" % HiggsMass[i]
+            module.dataType = 0
+            module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+            module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
+
+
     if sampleAlias == 'VBFSync' : 
-        module.path = "/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_0"
+        module.path = "/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
