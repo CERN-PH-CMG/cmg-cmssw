@@ -17,15 +17,15 @@ JetHelper::JetHelper()
 JetHelper::~JetHelper() {}
 
 // -- Called once per event
-//void JetHelper::analyzeEvent()
-//{
-//
-//}
+void JetHelper::analyzeEvent()
+{
+  event->getByLabel(labelname+"puJetId", puJetId_);
+  event->getByLabel(labelname, jets_);
+}
 
 // -- Called once per object
 void JetHelper::analyzeObject()
 {
-  
   // write only jets with pt > 15:
 
   if (!(object->pt() > 15)) {
@@ -33,9 +33,3 @@ void JetHelper::analyzeObject()
   }
 
 }
-
-// -- User access methods
-//double JetHelper::someMethod()  const
-//{
-//  return  //-- some-value --
-//}

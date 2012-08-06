@@ -13,6 +13,10 @@
 #include <map>
 #include "PhysicsTools/TheNtupleMaker/interface/HelperFor.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "CMGTools/External/interface/PileupJetIdentifier.h"
+#include "DataFormats/Common/interface/RefProd.h"
+#include "DataFormats/Common/interface/View.h"
+#include "DataFormats/Common/interface/Handle.h"
 //-----------------------------------------------------------------------------
 // Definitions:
 //   helper:        object of class JetHelper
@@ -80,7 +84,7 @@ namespace pat
 	virtual ~JetHelper();
 
 	// Uncomment if this class does some event-level analysis
-	// virtual void analyzeEvent();
+	virtual void analyzeEvent();
 	 
 	// Uncomment if this class does some object-level analysis
 	virtual void analyzeObject();
@@ -89,10 +93,36 @@ namespace pat
 	// -- User access methods go here
 	// ---------------------------------------------------------
 
+        float puJetId_nParticles() const { return (*puJetId_)[jets_->refAt(oindex)].nParticles(); }
+        float puJetId_leadPt() const { return (*puJetId_)[jets_->refAt(oindex)].leadPt(); }
+        float puJetId_leadEta() const { return (*puJetId_)[jets_->refAt(oindex)].leadEta(); }
+        float puJetId_leadPhi() const { return (*puJetId_)[jets_->refAt(oindex)].leadPhi(); }
+        float puJetId_secondPt() const { return (*puJetId_)[jets_->refAt(oindex)].secondPt(); }
+        float puJetId_secondEta() const { return (*puJetId_)[jets_->refAt(oindex)].secondEta(); }
+        float puJetId_secondPhi() const { return (*puJetId_)[jets_->refAt(oindex)].secondPhi(); }
+        float puJetId_dRLeadCent() const { return (*puJetId_)[jets_->refAt(oindex)].dRLeadCent(); }
+        float puJetId_dRLead2nd() const { return (*puJetId_)[jets_->refAt(oindex)].dRLead2nd(); }
+        float puJetId_dRMean() const { return (*puJetId_)[jets_->refAt(oindex)].dRMean(); }
+        float puJetId_dR2Mean() const { return (*puJetId_)[jets_->refAt(oindex)].dR2Mean(); }
+        float puJetId_ptD() const { return (*puJetId_)[jets_->refAt(oindex)].ptD(); }
+        float puJetId_ptMean() const { return (*puJetId_)[jets_->refAt(oindex)].ptMean(); }
+        float puJetId_ptRMS() const { return (*puJetId_)[jets_->refAt(oindex)].ptRMS(); }
+        float puJetId_pt2A() const { return (*puJetId_)[jets_->refAt(oindex)].pt2A(); }
+        float puJetId_sumPt() const { return (*puJetId_)[jets_->refAt(oindex)].sumPt(); }
+        float puJetId_leadFrac() const { return (*puJetId_)[jets_->refAt(oindex)].leadFrac(); }
+        float puJetId_secondFrac() const { return (*puJetId_)[jets_->refAt(oindex)].secondFrac(); }
+        float puJetId_frac01() const { return (*puJetId_)[jets_->refAt(oindex)].frac01(); }
+        float puJetId_frac02() const { return (*puJetId_)[jets_->refAt(oindex)].frac02(); }
+        float puJetId_frac03() const { return (*puJetId_)[jets_->refAt(oindex)].frac03(); }
+        float puJetId_frac04() const { return (*puJetId_)[jets_->refAt(oindex)].frac04(); }
+        float puJetId_frac05() const { return (*puJetId_)[jets_->refAt(oindex)].frac05(); }
+        float puJetId_leadCharge() const { return (*puJetId_)[jets_->refAt(oindex)].leadCharge(); }
+        float puJetId_secondCharge() const { return (*puJetId_)[jets_->refAt(oindex)].secondCharge(); }
 	
   private:
     // -- User internals
-
+        edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > puJetId_;
+        edm::Handle<edm::View<pat::Jet> > jets_;
 
   public:
 	

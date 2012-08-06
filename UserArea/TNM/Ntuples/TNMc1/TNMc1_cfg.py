@@ -1,4 +1,4 @@
-#$Revision: 1.4 $
+#$Revision: 1.5 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -47,4 +47,24 @@ print 'runOnMC:', runOnMC
 
 process.load("Ntuples.TNMc1.ntuple_cfi")
 
-process.p = cms.Path(process.demo)
+from CMGTools.External.pujetidsequence_cff import *
+
+process.selectedPatJetspuJetId = pileupJetIdProducer.clone(
+    produceJetIds = cms.bool(True),
+    jetids = cms.InputTag(""),
+    runMvas = cms.bool(False),
+    jets = cms.InputTag("selectedPatJets"),
+    vertexes = cms.InputTag("offlinePrimaryVertices"),
+    algos = cms.VPSet(cutbased)
+    )
+
+process.selectedPatJetsCHSpuJetId = pileupJetIdProducer.clone(
+    produceJetIds = cms.bool(True),
+    jetids = cms.InputTag(""),
+    runMvas = cms.bool(False),
+    jets = cms.InputTag("selectedPatJetsCHS"),
+    vertexes = cms.InputTag("offlinePrimaryVertices"),
+    algos = cms.VPSet(cutbased)
+    )
+
+process.p = cms.Path(process.selectedPatJetspuJetId * process.selectedPatJetsCHSpuJetId * process.demo)
