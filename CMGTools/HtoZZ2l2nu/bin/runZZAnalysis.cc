@@ -827,30 +827,32 @@ int main(int argc, char* argv[])
                   float detajj=maxEta-minEta;
                   mon.fillHisto("pfvbfcandjetpt",       tags_full, fabs(aGoodIdJets[0].pt()),weight);
                   mon.fillHisto("pfvbfcandjetpt",       tags_full, fabs(aGoodIdJets[1].pt()),weight);
-                  mon.fillHisto("pfvbfcandjeteta",      tags_full, fabs(maxEta),weight);
-                  mon.fillHisto("pfvbfcandjeteta",      tags_full, fabs(minEta),weight);
-                  mon.fillHisto("pfvbfcandjetdeta",     tags_full, fabs(detajj),weight);
-                  mon.fillHisto("pfvbfcandzeppenfeld",  tags_full, fabs(maxEta-avgEtajj)/fabs(detajj),weight);
-                  mon.fillHisto("pfvbfcandzeppenfeld",  tags_full, fabs(minEta-avgEtajj)/fabs(detajj),weight);			      
-                  mon.fillHisto("pfvbfpremjj",          tags_full, vbfSyst.mass(),weight);
-                  if(fabs(detajj)>4.5){
-                      mon.fillHisto("pfvbfmjj",             tags_full, vbfSyst.mass(),weight);
-                      mon.fillHisto("pfvbfmjjvsdeta",       tags_full, vbfSyst.mass(),fabs(detajj),weight);
-                      mon.fillHisto("pfvbfmjjvshardpt",     tags_full, vbfSyst.mass(),hardpt,weight);
-                      if(vbfSyst.mass()>450){
-                          mon.fillHisto("pfvbfhardpt",     tags_full, hardpt,weight);
-                          int ncjv(0);
-                          float htcjv(0);
-                          for(size_t iotherjet=2; iotherjet<aGoodIdJets.size(); iotherjet++){
-                              if(aGoodIdJets[iotherjet].pt()<30 || aGoodIdJets[iotherjet].eta()<minEta || aGoodIdJets[iotherjet].eta()>maxEta) continue;
-                              htcjv+= aGoodIdJets[iotherjet].pt();
-                              ncjv++;
-                          }
-                          mon.fillHisto("pfvbfcjv",tags_full,ncjv,weight);
-                          mon.fillHisto("pfvbfhtcjv",tags_full,htcjv,weight);
-                        }
-                    }
-                }
+                  if(aGoodIdJets[0].pt()>30 && aGoodIdJets[1].pt()>30){
+                     mon.fillHisto("pfvbfcandjeteta",      tags_full, fabs(maxEta),weight);
+                     mon.fillHisto("pfvbfcandjeteta",      tags_full, fabs(minEta),weight);
+                     mon.fillHisto("pfvbfcandjetdeta",     tags_full, fabs(detajj),weight);
+                     mon.fillHisto("pfvbfcandzeppenfeld",  tags_full, fabs(maxEta-avgEtajj)/fabs(detajj),weight);
+                     mon.fillHisto("pfvbfcandzeppenfeld",  tags_full, fabs(minEta-avgEtajj)/fabs(detajj),weight);			      
+                     mon.fillHisto("pfvbfpremjj",          tags_full, vbfSyst.mass(),weight);
+                     if(fabs(detajj)>4.5){
+                         mon.fillHisto("pfvbfmjj",             tags_full, vbfSyst.mass(),weight);
+                         mon.fillHisto("pfvbfmjjvsdeta",       tags_full, vbfSyst.mass(),fabs(detajj),weight);
+                         mon.fillHisto("pfvbfmjjvshardpt",     tags_full, vbfSyst.mass(),hardpt,weight);
+                         if(vbfSyst.mass()>450){
+                             mon.fillHisto("pfvbfhardpt",     tags_full, hardpt,weight);
+                             int ncjv(0);
+                             float htcjv(0);
+                             for(size_t iotherjet=2; iotherjet<aGoodIdJets.size(); iotherjet++){
+                                 if(aGoodIdJets[iotherjet].pt()<30 || aGoodIdJets[iotherjet].eta()<minEta || aGoodIdJets[iotherjet].eta()>maxEta) continue;
+                                 htcjv+= aGoodIdJets[iotherjet].pt();
+                                 ncjv++;
+                             }
+                             mon.fillHisto("pfvbfcjv",tags_full,ncjv,weight);
+                             mon.fillHisto("pfvbfhtcjv",tags_full,htcjv,weight);
+                           }
+                       }
+                   }
+               }
 
 
 
