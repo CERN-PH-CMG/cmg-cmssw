@@ -285,7 +285,49 @@ int main(int argc, char* argv[])
       h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
       h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
     } 
-  
+ 
+
+
+   std::vector<double> optim_Cuts2_jet1_pt;
+   std::vector<double> optim_Cuts2_jet2_pt; 
+   std::vector<double> optim_Cuts2_eta_gap;
+   std::vector<double> optim_Cuts2_dijet_mass;
+   for(double jet1_pt=15;jet1_pt<35;jet1_pt+=5)  
+   {
+    for(double jet2_pt=15;jet2_pt<=jet1_pt;jet2_pt+=5) 
+       {
+         for(double eta_gap=2.5;eta_gap<=5.0;eta_gap+=0.5)
+            {
+              for(double dijet_mass=200; dijet_mass<=500; dijet_mass+=50)
+                 {
+                   optim_Cuts2_jet1_pt.push_back(jet1_pt);
+                   optim_Cuts2_jet2_pt.push_back(jet2_pt);
+                   optim_Cuts2_eta_gap.push_back(eta_gap);
+                   optim_Cuts2_dijet_mass.push_back(dijet_mass);
+                 }
+            }
+       }
+   } 
+   TH1F* Hoptim_cuts2_jet1_pt=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_jet1_pt",";cut index;jet1_pt",optim_Cuts2_jet1_pt.size(),0,optim_Cuts2_jet1_pt.size())) ;
+   TH1F* Hoptim_cuts2_jet2_pt=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_jet2_pt",";cut index;jet2_pt",optim_Cuts2_jet2_pt.size(),0,optim_Cuts2_jet2_pt.size())) ;
+   TH1F* Hoptim_cuts2_eta_gap=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_eta_gap",";cut index;eta_gap",optim_Cuts2_eta_gap.size(),0,optim_Cuts2_eta_gap.size())) ;
+   TH1F* Hoptim_cuts2_dijet_mass=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_dijet_mass",";cut index;dijet_mass", optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size()));
+
+   for(unsigned int index=0;index<optim_Cuts2_jet1_pt.size();index++){
+     Hoptim_cuts2_jet1_pt->Fill(index,optim_Cuts2_jet1_pt[index]);   
+     Hoptim_cuts2_jet2_pt->Fill(index,optim_Cuts2_jet2_pt[index]); 
+     Hoptim_cuts2_eta_gap->Fill(index,optim_Cuts2_eta_gap[index]);
+     Hoptim_cuts2_dijet_mass->Fill(index,optim_Cuts2_dijet_mass[index]);
+   }
+
+   for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
+     mon.addHistogram( new TH2F (TString("dijet_mass_shapes")+varNames[ivar],";cut index;M_{Jet1,Jet2} [GeV];#events (/50GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),200,0.,1200) );
+     mon.addHistogram( new TH2F (TString("vbfz_zmasswindow_shapes")+varNames[ivar],";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),60,51.0,131) );
+     mon.addHistogram( new TH2F (TString("vbfz_zmasswindow2_shapes")+varNames[ivar],";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),60,51.0,131) );
+   }
+
+
+ 
   
   //##############################################
   //######## GET READY FOR THE EVENT LOOP ########
@@ -890,6 +932,37 @@ int main(int argc, char* argv[])
 	   if(passLocalPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,4,iweight);
 	   if(passLocalPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,5,iweight);
 	 }
+
+
+            if(varJets.size()>1){
+	       for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
+		    float minJet1Pt=optim_Cuts2_jet1_pt[index];
+		    float minJet2Pt=optim_Cuts2_jet2_pt[index];
+		    float minEtaGap=optim_Cuts2_eta_gap[index];
+		    float minDijetMass=optim_Cuts2_dijet_mass[index];
+                    bool passLocalZmass(fabs(zll.mass()-91)<15);
+                    bool passLocalZpt(zll.pt()>30); 
+                    bool passLocalRedMet(aRedMet.pt()>60);
+		    bool passLocalJet1Pt(varJets[0].pt()>minJet1Pt);
+		    bool passLocalJet2Pt(varJets[1].pt()>minJet2Pt);
+		    bool passLocalEtaGap(fabs(varJets[0].eta()-varJets[1].eta())>minEtaGap);
+		    bool passLocalDijetMass((varJets[0]+varJets[1]).M()>minDijetMass);
+		    bool passLocalPreselection(pass3dLeptonVeto && passLocalBveto && passLocalZmass && passLocalZpt && passLocalRedMet && passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass);		    
+		    if(passLocalPreselection){
+			mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
+                    }
+
+
+                    if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt && zvv.pt()<50 && pass3dLeptonVeto && passLocalBveto){
+                        mon.fillHisto(TString("vbfz_zmasswindow_shapes")+varNames[ivar],tags_full,index,zll.mass(),iweight);
+                    }
+
+                    if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt && zvv.pt()<25 && pass3dLeptonVeto && passLocalBveto){
+                        mon.fillHisto(TString("vbfz_zmasswindow2_shapes")+varNames[ivar],tags_full,index,zll.mass(),iweight);
+                    }
+	       }
+           }
+
        }
   }
   
