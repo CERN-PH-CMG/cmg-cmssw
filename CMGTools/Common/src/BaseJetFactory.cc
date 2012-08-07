@@ -10,31 +10,31 @@
 cmg::BaseJetFactory::BaseJetFactory(const edm::ParameterSet& ps):
   jetLabel_(ps.getParameter<edm::InputTag>("inputCollection")),
   btagType_(ps.getParameter<std::vector<std::string> >("btagType")),
-  fillJec_(ps.getParameter<bool>("fillJec")),
-  fillJecUncertainty_(ps.getParameter<bool>("fillJecUncertainty")),
-  jecPath_(""),
-  JES_(0)
+  fillJec_(ps.getParameter<bool>("fillJec"))
+  //fillJecUncertainty_(ps.getParameter<bool>("fillJecUncertainty")),
+  //jecPath_(""),
+  //JES_(0)
 {
   if(btagType_.size() > cmg::BaseJet::TagNameArray::static_size){
     edm::LogWarning("cmg::BaseJetFactory") << "Too many B-tags. The maximum number is fixed."  << std::endl;
   }  
     
-  if (fillJecUncertainty_) {
-    jecPath_ = ps.getParameter<std::string>("jecPath");
-    edm::LogInfo("BaseJetFactory") << "Loading JEC uncertainties from '"
-                                   << jecPath_ << "'" << std::endl;
-    edm::FileInPath jecPathFull(jecPath_);
-    JES_ = new JetCorrectionUncertainty(jecPathFull.fullPath());
-  }
+  //if (fillJecUncertainty_) {
+  //  jecPath_ = ps.getParameter<std::string>("jecPath");
+  //  edm::LogInfo("BaseJetFactory") << "Loading JEC uncertainties from '"
+  //                                 << jecPath_ << "'" << std::endl;
+  //  edm::FileInPath jecPathFull(jecPath_);
+  //  JES_ = new JetCorrectionUncertainty(jecPathFull.fullPath());
+  //}
 
 }
 
 cmg::BaseJetFactory::~BaseJetFactory()
 {
-  if (JES_) {
-    delete JES_;
-  }
-  JES_ = 0;
+  //if (JES_) {
+  //  delete JES_;
+  //}
+  //JES_ = 0;
 }
 
 cmg::BaseJetFactory::event_ptr cmg::BaseJetFactory::create(const edm::Event& iEvent,
@@ -78,11 +78,11 @@ void cmg::BaseJetFactory::set(const pat::JetPtr& input,
     }
 
     //there is an Exception at eta > 5.0
-    if (fillJecUncertainty_ && (fabs(input->eta()) <= 5.) ){
-      JES_->setJetEta(input->eta());
-      // NOTE: This should be the L2L3-corrected pT.
-      JES_->setJetPt(input->pt());
-      float unc = JES_->getUncertainty(true);
-      output->uncOnFourVectorScale_ = unc;
-    }
+    //if (fillJecUncertainty_ && (fabs(input->eta()) <= 5.) ){
+    //  JES_->setJetEta(input->eta());
+    //  // NOTE: This should be the L2L3-corrected pT.
+    //  JES_->setJetPt(input->pt());
+    //  float unc = JES_->getUncertainty(true);
+    //  output->uncOnFourVectorScale_ = unc;
+    //}
 }

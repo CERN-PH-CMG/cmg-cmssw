@@ -15,9 +15,9 @@ baseJetFactory = cms.PSet(
                               'combinedSecondaryVertexBJetTags',#6
                               'combinedSecondaryVertexMVABJetTags'#7
                               ),
-       fillJec = cms.bool(True),
-       fillJecUncertainty = cms.bool(True),
-       jecPath = cms.string("CMGTools/Common/data/GR_R_52_V9_Uncertainty_AK5PFchs.txt")
+       fillJec = cms.bool(True)
+       #fillJecUncertainty = cms.bool(True),
+       #jecPath = cms.string("CMGTools/Common/data/GR_R_52_V9_Uncertainty_AK5PFchs.txt")
        )
 
 cmgBaseJet = cms.EDFilter(
