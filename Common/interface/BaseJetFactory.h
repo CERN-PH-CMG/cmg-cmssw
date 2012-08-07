@@ -31,11 +31,11 @@ namespace cmg {
     const std::vector<std::string> btagType_;
 
     const bool fillJec_;
-    const bool fillJecUncertainty_;
-    std::string jecPath_;
+    //const bool fillJecUncertainty_;
+    //std::string jecPath_;
 /* COLIN not needed ?    int jecUncDirection_; */
 
-    JetCorrectionUncertainty* JES_;
+    //JetCorrectionUncertainty* JES_;
   };
 
 }
