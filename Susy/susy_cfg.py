@@ -1,20 +1,20 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
 ##########
-runOnMC = False
+runOnMC = True
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
 json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-180252_7TeV_PromptReco_Collisions11_JSON.txt'
 if not runOnMC:
     applyJSON(process, json )
 ##########
-skimEvents = True
-runPAT = False
+skimEvents = False
+runPAT = True
 
 ##########
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(200000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -30,11 +30,9 @@ process.setName_('MJSkim')
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'cmgtools',
-    #'/HT/Run2011B-PromptReco-v1/AOD/PAT_CMG_V2_5_0',
-    '/MultiJet/Run2011A-May10ReReco-v1/AOD/V2/PAT_CMG_V2_5_0',
-    #'/SMS-T2tt_Mstop-225to1200_mLSP-50to1025_7TeV-Pythia6Z/Summer11-PU_START42_V11_FastSim-v1/AODSIM/V2/PAT_CMG_V2_4_0',
-    #'patTuple_PF2PAT_[0-9]+\\.root'
-    'tree_CMG_[0-9]+\\.root'
+    '/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET',
+    'patTuple_[0-9]+\\.root'
+    #'cmgTuple_[0-9]+\\.root'
     ) 
 #process.source.fileNames = process.source.fileNames[:10]
 
@@ -51,22 +49,32 @@ outFileNameExt = ext
 process.p = cms.Path()
 
 if runPAT:
-    process.load('CMGTools.Common.analysis_cff')
-    from CMGTools.Common.Tools.tuneCMGSequences import * 
-    tuneCMGSequences(process, postpostfix='CMG')
-    process.p += process.analysisSequence
+    process.load('CMGTools.Common.CMG.CMG_cff')
+
+    if not runOnMC:
+        # removing MC stuff
+        print 'removing MC stuff, as we are running on Data'
+        process.PATCMGSequence.remove(genSequence)
+
+    print 'cloning the jet sequence to build PU chs jets'
+
+    from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+    process.jetCHSSequence = cloneProcessingSnippet(process, process.jetSequence, 'CHS')
+    from CMGTools.Common.Tools.visitorUtils import replaceSrc
+    replaceSrc( process.jetCHSSequence, 'selectedPatJets', 'selectedPatJetsCHS')
+    replaceSrc( process.jetCHSSequence, 'puJetId', 'puJetIdCHS')
+
+    process.p += process.CMGSequence
+    process.p += process.jetCHSSequence
 
 process.load('CMGTools.Susy.susy_cff')
 process.load('CMGTools.Susy.common.susy_cff')
 process.schedule = cms.Schedule(
     process.p,
-    process.multijetPath,
-    process.multijetPathNoTrigger,
-    process.multijetPathMultijetTrigger,
-    process.multijetPathRazorTrigger,
-    process.multijetPathHTTrigger,
-    process.multijetPathL1Passthrough,
-    #process.multijetPathL1Seed,
+    process.razorMJSkimSequenceHadPath,
+    process.razorMJSkimSequenceElePath,
+    process.razorMJSkimSequenceMuPath,
+    process.razorMJSkimSequenceTauPath,
     process.outpath
     )
 if runOnMC:
@@ -77,16 +85,15 @@ else:
 from CMGTools.Susy.susyEventContent_cff import susyEventContent
 process.out.fileName = cms.untracked.string('susy_tree_%s.root' %  outFileNameExt)
 process.out.outputCommands = cms.untracked.vstring('drop *')
+if runPAT:
+    process.out.outputCommands.extend(cms.untracked.vstring('drop cmg*_*_*_PAT'))
 from CMGTools.Common.eventContent.eventCleaning_cff import eventCleaning
 process.out.outputCommands.extend( eventCleaning )
 process.out.outputCommands += susyEventContent
 
-SelectEvents = cms.vstring('multijetPath','multijetPathNoTrigger','multijetPathMultijetTrigger',\
-                               'multijetPathRazorTrigger','multijetPathL1Passthrough','multijetPathHTTrigger')
+SelectEvents = cms.vstring('razorMJSkimSequenceHadPath','razorMJSkimSequenceElePath','razorMJSkimSequenceMuPath','razorMJSkimSequenceTauPath')
 if not skimEvents:
     SelectEvents.append('p')
-if runPAT:
-    SelectedEvents.append('multijetPathL1Seed')
 
 process.out.SelectEvents = cms.untracked.PSet( SelectEvents = SelectEvents )
 
