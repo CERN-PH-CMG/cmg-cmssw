@@ -58,8 +58,17 @@ int main(int argc, char *argv[])
 	cout << "List of files to analyse: " << endl;
 	for(int itkn=0; itkn<tkns->GetEntriesFast(); itkn++) 
 	  {
-	    inFilesUrl.push_back( tkns->At(itkn)->GetName() );
-	    cout << "\t" << inFilesUrl[itkn] << endl;
+	    TString ifname(tkns->At(itkn)->GetName());
+	    cout << "\t" << ifname << flush;
+	    if(ifname.EndsWith(".dat")) { 
+	      cout << " -> converting workspace (dat) to ROOT file (root)" << flush;
+	      TString shCommand("text2workspace.py " + ifname + " -o ");
+	      ifname.ReplaceAll(".dat",".root");
+	      shCommand += ifname;
+	      gSystem->Exec(shCommand.Data());
+	    }
+	    cout << endl;
+	    inFilesUrl.push_back( ifname );
 	  }
 	delete tkns;
       }	  
@@ -119,6 +128,7 @@ int main(int argc, char *argv[])
       std::vector<std::pair<TString,float> > subCategories;
       std::vector<std::pair<TString,TGraph *> > plotList;
       float statUnc(0);
+      RooArgSet *profNuis=0;
       for(int in=-1; in<=(int)nuisNames.size(); in++)
 	{
 	  TFile *inF=TFile::Open(inFilesUrl[ifile]);
@@ -141,6 +151,12 @@ int main(int argc, char *argv[])
 	      TObject *nuis_params_obj;
 	      while((nuis_params_obj=nuis_params_itr->Next())){
 		RooRealVar *nVar=(RooRealVar *)nuis_params_obj;
+		if(profNuis)
+		  {
+		    RooRealVar *fitNuis=(RooRealVar *)profNuis->find(nVar->GetName());
+		    if(fitNuis && !isnan(float(fitNuis->getVal()))) nVar->setVal(fitNuis->getVal()); 
+		    else                                            nVar->setVal(0);
+		  }
 		if(in==0)                                 nVar->setConstant(kTRUE);
 		else if(nuisNames[in-1]!=nVar->GetName()) nVar->setConstant(kTRUE);
 	      }
@@ -150,11 +166,14 @@ int main(int argc, char *argv[])
 	  ProfileLikelihoodCalculator pl(*data,*mc);
 	  pl.SetConfidenceLevel(cl); 	
 	  LikelihoodInterval* interval = pl.GetInterval();
+	  if(in<=0) profNuis=(RooArgSet *) mc->GetNuisanceParameters()->snapshot();
 	  RooRealVar* firstPOI = (RooRealVar*) mc->GetParametersOfInterest()->first();
 	  float ir=firstPOI->getVal(); 
 	  float irmin=interval->LowerLimit(*firstPOI); 
 	  float irmax=interval->UpperLimit(*firstPOI);
-	  float relErr=(irmax-irmin)*0.5/ir*100;
+	  //	  float relErr=(irmax-irmin)*0.5/ir*100;
+	  float relErr=firstPOI->getError()/ir;
+	  if(irmin==irmax) { irmin=(1-relErr)*ir; irmax=(1+relErr)*ir; }
 	  if(in==0)     statUnc=relErr;
 	  else if(in>0) relErr=sqrt(pow(relErr,2)-pow(statUnc,2));
 
@@ -169,8 +188,10 @@ int main(int argc, char *argv[])
 	      //even if the class is derived from it (otherwise it crashes)
 	      TCanvas *c= new TCanvas("c","c",600,600);
 	      LikelihoodIntervalPlot plot(interval);
-	      plot.SetRange(0,3.5);
-	      plot.SetNPoints(100);
+	      //plot.SetRange(0,3.5);
+	      //plot.SetNPoints(100);	      
+	      plot.SetRange(0,2);
+	      plot.SetNPoints(200);
 	      plot.Draw(""); 
 	      TIter nextpobj(c->GetListOfPrimitives());
 	      TObject *pobj;
@@ -282,7 +303,7 @@ void showPLR(std::vector<std::pair<TString,TGraph *> > &plotList, TString fout,T
   for(size_t ipl=0; ipl<plotList.size(); ipl++)
     {
       TGraph *gr=plotList[ipl].second;
-      TString tag=plotList[ipl].first;
+      TString tag=plotList[ipl].first; tag.ReplaceAll("mu","#mu");
       gr->SetTitle(tag);
       if(tag=="total" || tag=="inclusive") orderedPlotList.insert(orderedPlotList.begin(),gr);
       else                                 orderedPlotList.push_back(gr);
@@ -296,7 +317,7 @@ void showPLR(std::vector<std::pair<TString,TGraph *> > &plotList, TString fout,T
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextFont(42);
-  header.ReplaceAll("mumu","#mu#mu");
+  header.ReplaceAll("mu","#mu");
   leg->SetHeader(header);
   //  leg->SetNColumns(plotList.size());
 
