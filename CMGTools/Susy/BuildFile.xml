@@ -5,6 +5,7 @@
 <use name="AnalysisDataFormats/CMGTools"/>
 <use name="CMGTools/Common"/>
 <use name="CMGTools/RootTools"/>
+<use name="SandBox/Skims"/>
 
 <use name="rootrflx"/>
 

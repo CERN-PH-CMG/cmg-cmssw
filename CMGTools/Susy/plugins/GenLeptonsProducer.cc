@@ -36,11 +36,18 @@ class GenLeptonsProducer : public edm::EDFilter{
 	continue;
       }
       const int id = it->pdgId();
+      bool fromW = false;
+      if(it->mother()){
+	fromW = abs(it->mother()->pdgId()) == 24;
+      }
       if(abs(id) == 6) nTop++;
       if(abs(id) == 5) nBot++;
-      if(abs(id) == 11) nEle++;
-      if(abs(id) == 13) nMuon++;
-      if(abs(id) == 15) nTau++;
+      //we insist that the leptons are from a W decay
+      if(fromW){
+	if(abs(id) == 11) nEle++;
+	if(abs(id) == 13) nMuon++;
+	if(abs(id) == 15) nTau++;
+      }
     }
 
     const int result = (nTop*10000) + (nBot*1000) + (nEle*100) + (nMuon*10) + nTau;

@@ -9,7 +9,7 @@ from CMGTools.Susy.common.emulate2011Trigger_cff import *
 from CMGTools.Susy.common.topGenInfo_cff import *
 
 susyGenSequence  = cms.Sequence(
-    dumpPdfWeights+
+    #dumpPdfWeights+
     simpleGenInfo+
     emulate2011Trigger+
     topGenInfo
