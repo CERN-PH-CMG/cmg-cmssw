@@ -371,56 +371,18 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mt75", ";M_{T};Events", 100,0,1000) );
   
    std::vector<double> optim_Cuts1_met; 
-   std::vector<double> optim_Cuts1_mtmin;
-   std::vector<double> optim_Cuts1_mtmax;
    for(double met=50;met<140;met+=2.5){
-//       if(met>100 && int(met)%5!=0)continue;
-//         for(double mtmin_=140;mtmin_<550;mtmin_+=10){
-//            double mtmin = mtmin_;
-//            if(mtmin<=140)mtmin=0;
-//          if(mtmin>350 && int(mtmin)%20!=0)continue;
-//            for(double mtmax=mtmin+50;mtmax<mtmin+450;mtmax+=10){
-//               if(mtmax>=mtmin+445)mtmax=3000;
-//               if(mtmin==0 && mtmax!=3000)continue;
-//             if(mtmin>350 && int(mtmax)%20!=0)continue;
-//               if(mtmax-mtmin>200 && int(mtmax)%50!=0)continue;
-               optim_Cuts1_met    .push_back(met);
-               optim_Cuts1_mtmin  .push_back(0);//mtmin);
-               optim_Cuts1_mtmax  .push_back(9999);//mtmax);
-//            }
-//      }
+         optim_Cuts1_met    .push_back(met);
   }
-  //add last year cut
-/*  optim_Cuts1_met.push_back( 70); optim_Cuts1_mtmin.push_back(229); optim_Cuts1_mtmax.push_back(258);
-  optim_Cuts1_met.push_back( 77); optim_Cuts1_mtmin.push_back(245); optim_Cuts1_mtmax.push_back(293);
-  optim_Cuts1_met.push_back( 84); optim_Cuts1_mtmin.push_back(260); optim_Cuts1_mtmax.push_back(328);
-  optim_Cuts1_met.push_back( 91); optim_Cuts1_mtmin.push_back(276); optim_Cuts1_mtmax.push_back(364);
-  optim_Cuts1_met.push_back( 98); optim_Cuts1_mtmin.push_back(292); optim_Cuts1_mtmax.push_back(399);
-  optim_Cuts1_met.push_back(105); optim_Cuts1_mtmin.push_back(308); optim_Cuts1_mtmax.push_back(434);
-  optim_Cuts1_met.push_back(112); optim_Cuts1_mtmin.push_back(323); optim_Cuts1_mtmax.push_back(470);
-  optim_Cuts1_met.push_back(119); optim_Cuts1_mtmin.push_back(339); optim_Cuts1_mtmax.push_back(505);
-  optim_Cuts1_met.push_back(126); optim_Cuts1_mtmin.push_back(355); optim_Cuts1_mtmax.push_back(540);
-  optim_Cuts1_met.push_back(133); optim_Cuts1_mtmin.push_back(370); optim_Cuts1_mtmax.push_back(576);
-  optim_Cuts1_met.push_back(140); optim_Cuts1_mtmin.push_back(386); optim_Cuts1_mtmax.push_back(611);
-  optim_Cuts1_met.push_back(147); optim_Cuts1_mtmin.push_back(402); optim_Cuts1_mtmax.push_back(646);
-  optim_Cuts1_met.push_back(154); optim_Cuts1_mtmin.push_back(417); optim_Cuts1_mtmax.push_back(682);
-  optim_Cuts1_met.push_back(161); optim_Cuts1_mtmin.push_back(433); optim_Cuts1_mtmax.push_back(717);
-  optim_Cuts1_met.push_back(168); optim_Cuts1_mtmin.push_back(449); optim_Cuts1_mtmax.push_back(752);
-*/
 
    TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-   TH1F* Hoptim_cuts1_mtmin   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmin"  , ";cut index;mtmin"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
-   TH1F* Hoptim_cuts1_mtmax   =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_mtmax"  , ";cut index;mtmax"  ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
    for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
       Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
-      Hoptim_cuts1_mtmin  ->Fill(index, optim_Cuts1_mtmin[index]);
-      Hoptim_cuts1_mtmax  ->Fill(index, optim_Cuts1_mtmax[index]);
    }
 
    TH1F* Hoptim_systs     =  (TH1F*) mon.addHistogram( new TH1F ("optim_systs"    , ";syst;", nvarsToInclude,0,nvarsToInclude) ) ;
    for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
    {
-
      mon.addHistogram( new TH1F( "mtvar"+varNames[ivar]  , ";M_{T};Events", 100,0,1000) );
      
      Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
@@ -442,6 +404,49 @@ int main(int argc, char* argv[])
      h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
      h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
    } 
+
+   std::vector<double> optim_Cuts2_met;
+   std::vector<double> optim_Cuts2_vbfJ1pt;
+   std::vector<double> optim_Cuts2_vbfJ2pt;
+   std::vector<double> optim_Cuts2_vbfdeta;
+   std::vector<double> optim_Cuts2_vbfmass;
+   for(double met=50;met<=80;met+=10){
+      for(double j2=15;j2<=40;j2+=5){
+         for(double j1=j2;j1<=40;j1+=5){
+           for(double deta=2.5;deta<=5.0;deta+=0.5){
+              for(double mass=250;mass<=500;mass+=50){
+                 optim_Cuts2_met    .push_back(met);
+                 optim_Cuts2_vbfJ1pt.push_back(j1);
+                 optim_Cuts2_vbfJ2pt.push_back(j2);
+                 optim_Cuts2_vbfdeta.push_back(deta);
+                 optim_Cuts2_vbfmass.push_back(mass);
+  }}}}}
+
+   TH1F* Hoptim_cuts2_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_met"    , ";cut index;met"    ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TH1F* Hoptim_cuts2_jet1    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_jet1"   , ";cut index;jet1"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TH1F* Hoptim_cuts2_jet2    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_jet2"   , ";cut index;jet2"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TH1F* Hoptim_cuts2_deta    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_deta"   , ";cut index;deta"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TH1F* Hoptim_cuts2_mass    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mass"   , ";cut index;mass"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
+      Hoptim_cuts2_met    ->Fill(index, optim_Cuts2_met[index]);  
+      Hoptim_cuts2_jet1   ->Fill(index, optim_Cuts2_vbfJ1pt[index]);  
+      Hoptim_cuts2_jet2   ->Fill(index, optim_Cuts2_vbfJ2pt[index]); 
+      Hoptim_cuts2_deta   ->Fill(index, optim_Cuts2_vbfdeta[index]);
+      Hoptim_cuts2_mass   ->Fill(index, optim_Cuts2_vbfmass[index]);
+   }
+
+   for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
+   {
+     Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
+     mon.addHistogram( new TH2F (TString("VBFmt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts2_met.size(),0,optim_Cuts2_met.size(), 160,150,950) );
+     TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("VBFnonresbckg_ctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts2_met.size(),0,optim_Cuts2_met.size(),6,0,6) );
+     h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
+     h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
+     h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
+     h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
+     h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
+     h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
+   }
 
 
   //##############################################
@@ -1290,10 +1295,10 @@ int main(int argc, char* argv[])
 	//fill shapes
 	for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
 	  
-	  if(redMet.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+	  if(redMet.pt()>optim_Cuts1_met[index])
 	    if(passPreselection                                        )          mon.fillHisto(TString("mt_redMet_shapes")+varNames[ivar],tags_full,index, mt,iweight);
 	  
-	  if(zvv.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index]){
+	  if(zvv.pt()>optim_Cuts1_met[index]){
 	      if(passPreselection                                                    )   mon.fillHisto(TString("mt_shapes")+varNames[ivar],tags_full,index, mt,iweight);
 	      if(passPreselection && passZmass10                                     )   mon.fillHisto(TString("mt_shapesZ10")+varNames[ivar],tags_full,index, mt,iweight);
 	      if(passPreselection && passZmass5                                      )   mon.fillHisto(TString("mt_shapesZ5")+varNames[ivar],tags_full,index, mt,iweight);
@@ -1314,6 +1319,22 @@ int main(int argc, char* argv[])
 
 	    }         
  	 }
+
+
+        for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
+              if(varJets.size()>=2 && zvv.pt()>optim_Cuts2_met[index] && varJets[0].pt()>optim_Cuts2_vbfJ1pt[index] && varJets[1].pt()>optim_Cuts2_vbfJ2pt[index] &&  fabs(varJets[0].eta()-varJets[1].eta())>optim_Cuts2_vbfdeta[index] &&  (varJets[0] + varJets[1]).M()>optim_Cuts2_vbfmass[index]  ){
+              if(passPreselection                                                         )   mon.fillHisto("VBFmt_shapes"      +varNames[ivar],tags_full,index, mt,iweight);
+              if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("VBFnonresbckg_ctrl"+varNames[ivar],tags_full,index,0,iweight);
+              if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("VBFnonresbckg_ctrl"+varNames[ivar],tags_full,index,1,iweight);
+              if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("VBFnonresbckg_ctrl"+varNames[ivar],tags_full,index,2,iweight);
+              if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("VBFnonresbckg_ctrl"+varNames[ivar],tags_full,index,3,iweight);
+              if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("VBFnonresbckg_ctrl"+varNames[ivar],tags_full,index,4,iweight);
+              if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("VBFnonresbckg_ctrl"+varNames[ivar],tags_full,index,5,iweight);
+            }
+         }
+
+
+
       }
   }
 

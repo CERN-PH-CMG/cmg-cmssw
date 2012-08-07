@@ -294,7 +294,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
             for(int x=0;x<=hshape->GetXaxis()->GetNbins()+1;x++){
                if(hshape->GetXaxis()->GetBinCenter(x)<=minCut || hshape->GetXaxis()->GetBinCenter(x)>=maxCut){hshape->SetBinContent(x,0); hshape->SetBinError(x,0);}
             }
-            hshape->Rebin(5);
+            hshape->Rebin(2);
             hshape->GetYaxis()->SetTitle("Entries (/25GeV)");
          }
 
@@ -376,7 +376,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   t1->Divide(AnalysisBins.size(), selCh.size(), 0, 0);
 
   t1->cd(selCh.size()*AnalysisBins.size());
-  TLegend* legA  = new TLegend(0.3,0.2,0.99,0.85, "NDC");
+  TLegend* legA  = new TLegend(0.6,0.5,0.99,0.85, "NDC");
   t1->cd(0);
 
 
@@ -516,7 +516,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 
 
 
-  if(s==1 && b==3) {
+  if(s==selCh.size()-1 && b==AnalysisBins.size()-1) {
   legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(); legA->SetHeader("");
   legA->Draw("same");    legA->SetTextFont(42);}
 
