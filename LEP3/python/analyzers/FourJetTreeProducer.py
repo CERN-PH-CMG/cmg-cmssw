@@ -55,8 +55,11 @@ class FourJetTreeProducer( TreeAnalyzer ):
 
         var('wwMin')
         var('zzMin')
+        #var('wwMinKin')
+        #var('zzMinKin')
         var('deltaZ')
         var('chi2')
+        var('chi2fit')
         var('mvis')
         var('evis')
         var('pxvis')
@@ -126,6 +129,8 @@ class FourJetTreeProducer( TreeAnalyzer ):
 
         fill('wwMin',subevent.wwMin)
         fill('zzMin',subevent.zzMin)
+        #fill('wwMinKin',subevent.wwMinKin)
+        #fill('zzMinKin',subevent.zzMinKin)
         fill('deltaZ',subevent.deltaZ)
         fill('mvis',subevent.mvis)
         fill('pxvis',subevent.pxvis) 
@@ -133,6 +138,7 @@ class FourJetTreeProducer( TreeAnalyzer ):
         fill('pzvis',subevent.pzvis) 
         fill('evis',subevent.evis)
         fill('chi2',subevent.chi2)
+        fill('chi2fit',subevent.chi2fit)
         fill('mmin',subevent.mmin)
 
         fill('sumtet',subevent.sumtet) 
