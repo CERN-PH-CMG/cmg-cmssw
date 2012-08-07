@@ -11,8 +11,11 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet, GenParticle
 
 from CMGTools.LEP3.analyzers.DiObject import DiObject
+from CMGTools.LEP3.analyzers.kinFit4 import kinFit4
+from CMGTools.LEP3.analyzers.kinFit5 import kinFit5
 from CMGTools.LEP3.analyzers.beta4 import beta4
 from CMGTools.LEP3.analyzers.findVV import findWW, findZZ
+from CMGTools.LEP3.analyzers.findKinVV import findKinWW, findKinZZ
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
 from math import pi, sqrt, acos
@@ -51,6 +54,8 @@ class FourJetAnalyzer( Analyzer ):
         count2.register('Good jet triplets')
         count2.register('H -> bb tagged')
         count2.register('passing')
+
+        
         
     def buildJetList(self, event):
 
@@ -67,14 +72,14 @@ class FourJetAnalyzer( Analyzer ):
             if moth.numberOfMothers() and moth.mother(0).pdgId() == 25 : continue
             if abs(moth.pdgId()) != 23 and \
                abs(moth.pdgId()) != 25 : continue
-            self.nq += 1
-            self.quarks.append(GenParticle(ptc))
+            self.nq += 1  # counters of quarks with H or Z as a mothers 
+            self.quarks.append(GenParticle(ptc)) # list of GenParticle objects for the quarks that have H or Z as a mothers 
 
         #if self.nq == 4 : print 'A Four Jet Event !'
 
         self.jets = []
         for ptj in self.handles['jets'].product():
-            self.jets.append(Jet(ptj))
+            self.jets.append(Jet(ptj)) # list of Jets object for all the jets in input
             #print jet, jet.nConstituents(), jet.component(1).number(), Jet(ptj).component(1).fraction()
 
         
@@ -86,13 +91,13 @@ class FourJetAnalyzer( Analyzer ):
             #for jet in tmpJets:
             #    print jet, jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
             while len(tmpJets) != 4: 
-                dijets = self.findPairs(tmpJets)
+                dijets = self.findPairs(tmpJets) 
                 dijets.sort(key=lambda a: a.M())
                 #print dijets[0],dijets[0].M()
                 
-                tmpJets.remove(dijets[0].leg1)
-                tmpJets.remove(dijets[0].leg2)
-                tmpJets.add(dijets[0])
+                tmpJets.remove(dijets[0].leg1) # it removes from the list of all Jets the components of the diJet object with the lowest mass 
+                tmpJets.remove(dijets[0].leg2) # ""
+                tmpJets.add(dijets[0]) # it add the diJet object with lowest mass to the list of Jets 
 
             #print 'Jets apres : '
             self.jets = []
@@ -101,7 +106,7 @@ class FourJetAnalyzer( Analyzer ):
                 #print jet,jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(), jet.btag(7)
                 self.jets.append(jet)
                 
-        self.jets.sort(key=lambda a: a.btag(7), reverse = True)
+        self.jets.sort(key=lambda a: a.btag(7), reverse = True) # list of Jet objects 
             
 
 
@@ -122,40 +127,42 @@ class FourJetAnalyzer( Analyzer ):
         #for jet in self.jets :
         #    print jet, jet.nConstituents(), jet.component(1).number(), jet.component(1).fraction(), jet.mass(),jet.btag(7),jet.btag(0)
 
-        self.counters.counter('FourJets').inc('All events')
+        self.counters.counter('FourJets').inc('All events') #NB: we don't have the Four RECO jet request at this moment
         if self.nq == 4 : self.counters.counter('FourGenJets').inc('All events')
         event.step = 0
 
         # Request four good hadronic jets and nothing else
-        if not(self.testFourJets(self.jets)) :
-            return 0
+        if not(self.testFourJets(self.jets)) : 
+            return 0 # here I'm rejecting events that do not pass the Jets preselection [ + I'm changing the jet.p4() and providing the chi2 of the 4j fit/scale hypothesis ]
         else:
             event.step +=1
         self.counters.counter('FourJets').inc('Four good jets')
         if self.nq == 4 : self.counters.counter('FourGenJets').inc('Four good jets')
             
 
+        # variables for each FourJet object
         event.mvis = self.mvis
         event.pxvis = self.px
         event.pyvis = self.py
         event.pzvis = self.pz 
         event.evis = self.evis 
-        event.chi2 = self.chi2 
+        event.chi2 = self.chi2
+        event.chi2fit = self.chi2fit 
         event.mmin = self.mmin
         #print 'mvis ',event.mvis
 
         # Test on jet pairs
         #event.trueJets = set(self.quarks)
         #event.truePairs = self.findPairs( event.trueJets )
-        event.allJets = self.jets
-        event.jetPairs = self.findPairs( event.allJets )
+        event.allJets = self.jets # jets - after marging - 
+        event.jetPairs = self.findPairs( event.allJets ) # all possible pairs - of the merged jet collection -
 
         if not(self.testJetPairs(event.jetPairs)) :
             return 0
         else:
             event.step +=1
-        self.counters.counter('FourJets').inc('Good jet pairs')
-        if self.nq == 4 : self.counters.counter('FourGenJets').inc('Good jet pairs')
+        self.counters.counter('FourJets').inc('Good jet pairs') # no selection in the current analysis
+        if self.nq == 4 : self.counters.counter('FourGenJets').inc('Good jet pairs') # no selection in the current analysis
 
         event.sumtet = self.sumtet
         event.cijklmin = self.cijklmin
@@ -185,6 +192,8 @@ class FourJetAnalyzer( Analyzer ):
 
         event.ww, event.wwMin = findWW ( event.jetPairs )
         event.zz, event.zzMin = findZZ ( event.jetPairs )
+        #event.wwKin, event.wwMinKin = findKinWW ( event.jetPairs )
+        #event.zzKin, event.zzMinKin = findKinZZ ( event.jetPairs )
         event.hz, event.deltaZ = self.findHZ ( event.jetPairs )
 
         if len(event.hz) == 0 :
@@ -201,7 +210,7 @@ class FourJetAnalyzer( Analyzer ):
         self.selJets.append(zj1)
         self.selJets.append(zj2)
 
-        if hj1.btag(7) + hj2.btag(7) < 0.95 and hj1.btag(7) + hj2.btag(7) + zj1.btag(7) + zj2.btag(7) < 2.1 :
+        if hj1.btag(7) + hj2.btag(7) < 0.95 and hj1.btag(7) + hj2.btag(7) + zj1.btag(7) + zj2.btag(7) < 2.1 : # this is different from what in the note!
             return 0
         else:
 ##             for ptc in self.mchandles['genParticles'].product():
@@ -291,6 +300,11 @@ class FourJetAnalyzer( Analyzer ):
         if chi2 > self.cfg_ana.chi2 :
             #print 'chi2 = ',chi2
             return False
+        
+        # To use the kinFitter instead of the beta4 function to rescale the energy/momentum of the jets uncomment this line and
+        # comment jet.setP4(p4) in the beta4 function. In this way the 2 chi2 are anyhow computed and can be stored in the event
+        #chi2fit = kinFit4(self.jets, 120.)
+        chi2fit = kinFit5(self.jets, 120., 91.2)
 
         self.mvis = mvis
         self.px = px
@@ -298,6 +312,7 @@ class FourJetAnalyzer( Analyzer ):
         self.pz = pz
         self.evis = en
         self.chi2 = chi2
+        self.chi2fit = chi2fit
         self.mmin = massmin
 
         return True
@@ -348,13 +363,13 @@ class FourJetAnalyzer( Analyzer ):
         for i in range(4):
             sumtet += jetjetAngles[i]*180./pi
             
-        if mMin < self.cfg_ana.pair_mass :
+        if mMin < self.cfg_ana.pair_mass :       
             return False
 
-        if cijklMin > self.cfg_ana.pair_cijkl :
+        if cijklMin > self.cfg_ana.pair_cijkl :  
             return False
 
-        if sumtet < self.cfg_ana.pair_sumtet :
+        if sumtet < self.cfg_ana.pair_sumtet :   
             return False
 
         self.sumtet = sumtet
