@@ -16,6 +16,7 @@ puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/20
 puFileData = None
 puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
 puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_start_196509.root'])
+# puFileData = '/'.join([puFileDir, 'Test/MyDataPileupHistogram_RLT.root'])
 
 vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
 vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
@@ -76,6 +77,10 @@ TauMuAna = cfg.Analyzer(
 dyJetsFakeAna = cfg.Analyzer(
     'DYJetsFakeAnalyzer',
     leptonType = 13
+    )
+
+higgsWeighter = cfg.Analyzer(
+    'HiggsPtWeighter',
     )
 
 tauWeighter = cfg.Analyzer(
@@ -170,6 +175,7 @@ data_Run2012B_start_194479.splitFactor = 50
 data_Run2012B_194480_195016.splitFactor = 40
 data_Run2012B_195017_195947.splitFactor = 40 
 data_Run2012B_195948_196509.splitFactor = 50
+data_Run2012B_start_196509.splitFactor = 200
 
 selectedComponents =  copy.copy(MC_list)
 selectedComponents.extend( data_list )
@@ -182,6 +188,7 @@ sequence = cfg.Sequence( [
     vertexAna,
     TauMuAna,
     dyJetsFakeAna,
+    higgsWeighter, 
     vbfAna,
     pileUpAna,
     embedWeighter, 
@@ -191,7 +198,9 @@ sequence = cfg.Sequence( [
    ] )
 
 
-selectedComponents = mc_higgs
+# selectedComponents = [WJets]
+# selectedComponents.remove( data_Run2012A )
+# selectedComponents.remove( HiggsVBF125 )
 
 test = 0
 if test==1:
