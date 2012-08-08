@@ -237,6 +237,8 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 {
   Shape_t shape; shape.totalBckg=NULL;shape.data=NULL;
 
+  std::vector<TString> BackgroundsInSignal;
+
   //iterate over the processes required
   std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
   for(unsigned int i=0;i<Process.size();i++){
@@ -247,6 +249,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 
       bool isData(Process[i]["isdata"].toBool());
       bool isSignal(Process[i].isTag("issignal") && Process[i]["issignal"].toBool());
+      bool isInSignal(Process[i].isTag("isinsignal") && Process[i]["isinsignal"].toBool());
       int color(1);       if(Process[i].isTag("color" ) ) color  = (int)Process[i]["color" ].toInt();
       int lcolor(color);  if(Process[i].isTag("lcolor") ) lcolor = (int)Process[i]["lcolor"].toInt();
       int mcolor(color);  if(Process[i].isTag("mcolor") ) mcolor = (int)Process[i]["mcolor"].toInt();
@@ -255,7 +258,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
       int lstyle(1);      if(Process[i].isTag("lstyle") ) lstyle = (int)Process[i]["lstyle"].toInt();
       int fill(1001);     if(Process[i].isTag("fill"  ) ) fill   = (int)Process[i]["fill"  ].toInt();
       int marker(20);     if(Process[i].isTag("marker") ) marker = (int)Process[i]["marker"].toInt();
-  
+
       TH1* syst = (TH1*)pdir->Get("optim_systs");
       if(syst==NULL){syst=new TH1F("optim_systs","optim_systs",1,0,1);syst->GetXaxis()->SetBinLabel(1,"");}
       for(int ivar = 1; ivar<=syst->GetNbinsX();ivar++){
@@ -337,6 +340,8 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 	 }else{
 	    if(varName=="")  shape.bckg.push_back(hshape);
 	    else             shape.bckgVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
+            if(isInSignal && varName==""){BackgroundsInSignal.push_back(proc);}
+
 	    //printf("histoName = B %i -- %i  -- %s - %s --> %s\n", i, int(varName==""), proc.Data(), histoName.Data(), hshape->GetTitle());
 	 }
       }
@@ -359,6 +364,30 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
         }
      }
   }
+
+
+  //subtract background that are included to signal sample
+  if(shape.signal.size()>1 && BackgroundsInSignal.size()>0)printf("YOU ARE TRYING TO SUBTRACT BACKGROUNDS FROM SIGNAL SAMPLE WHILE YOU HAVE MORE THAN ONE SIGNAL GIVEN!  ASSUME THAT FIRST SIGNAL SAMPLE IS THE ONE CONTAINING THE BACKGROUND\n");
+  for(size_t i=0;i<BackgroundsInSignal.size()  && shape.signal.size()>0  ;i++){
+     //deal with central value
+     for(size_t j=0;j<shape.bckg.size();j++){
+        if(BackgroundsInSignal[i]!=shape.bckg[j]->GetTitle())continue;
+         printf("Subtract %s to %s\n",shape.signal[0]->GetTitle(), BackgroundsInSignal[i].Data());
+        shape.signal[0]->Add(shape.bckg[j],-1);
+        for(int x=0;x<=shape.signal[0]->GetNbinsX()+1;x++){if(shape.signal[0]->GetBinContent(x)<0)shape.signal[0]->SetBinContent(x,0.0); }
+     }
+
+     //deal with systematics
+     const std::vector<std::pair<TString, TH1*> >& bckgSysts = shape.bckgVars  [BackgroundsInSignal[i] ];
+     const std::vector<std::pair<TString, TH1*> >& signSysts = shape.signalVars[shape.signal[0]->GetTitle() ];    
+     if(bckgSysts.size()!=signSysts.size())printf("Problem the two vectors have different size!\n");
+     for(size_t j=0;j<bckgSysts.size();j++){
+        signSysts[j].second->Add(bckgSysts[j].second, -1);
+        for(int x=0;x<=signSysts[j].second->GetNbinsX()+1;x++){if(signSysts[j].second->GetBinContent(x)<0)signSysts[j].second->SetBinContent(x,0.0); }        
+     }
+  }
+
+
 
   //all done
   return shape;
