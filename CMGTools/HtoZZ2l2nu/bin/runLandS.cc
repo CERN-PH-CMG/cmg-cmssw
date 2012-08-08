@@ -1176,7 +1176,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
    proc.ReplaceAll("#bar{t}","tbar");
    proc.ReplaceAll("Z-#gamma^{*}+jets#rightarrow ll","dy");
    proc.ReplaceAll("#rightarrow","");
-   proc.ReplaceAll("(","");    proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");   proc.ReplaceAll("/","");  proc.ReplaceAll("#","");
+   proc.ReplaceAll("(","");    proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");   proc.ReplaceAll("/","");  proc.ReplaceAll("#","");  proc.ReplaceAll("=",""); proc.ReplaceAll(".","");
    proc.ToLower();
 
    for(unsigned int i=0;i<systs.size();i++){
