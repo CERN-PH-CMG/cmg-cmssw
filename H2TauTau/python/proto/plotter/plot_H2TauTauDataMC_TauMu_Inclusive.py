@@ -31,9 +31,9 @@ XMAX  = 200
 def replaceShapeInclusive(plot, var, anaDir,
                           comp, weights, 
                           cut, weight,
-                          embed):
+                          embed, shift):
     '''Replace WJets with the shape obtained using a relaxed tau iso'''
-    cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
+    cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.')
     print '[INCLUSIVE] estimate',comp.name,'with cut',cut
     plotWithNewShape = cp( plot )
     wjyield = plot.Hist(comp.name).Integral()
@@ -43,7 +43,7 @@ def replaceShapeInclusive(plot, var, anaDir,
     wjshape = shape(var, anaDir,
                     comp, weights, nbins, xmin, xmax,
                     cut, weight,
-                    embed)
+                    embed, shift)
     # import pdb; pdb.set_trace()
     wjshape.Scale( wjyield )
     # import pdb; pdb.set_trace()
@@ -69,7 +69,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
         osign = replaceShapeInclusive(osign, var, anaDir,
                                       selComps['WJets'], weights, 
                                       oscut, weight,
-                                      embed)
+                                      embed, shift)
     sscut = cut+' && diTau_charge!=0'
     ssign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
@@ -80,7 +80,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
         ssign = replaceShapeInclusive(ssign, var, anaDir,
                                       selComps['WJets'], weights, 
                                       sscut, weight,
-                                      embed)
+                                      embed, shift)
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
         
@@ -213,6 +213,7 @@ if __name__ == '__main__':
     # WJet normalization
     comps = []
     for comp in cfg.config.components:
+        if comp.name == 'WJetsExt': continue
         if comp.name == 'W3Jets': continue
         if comp.name == 'W2Jets': continue
         if comp.name == 'TTJets11': continue
