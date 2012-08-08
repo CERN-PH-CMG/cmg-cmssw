@@ -348,11 +348,10 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
     }
 
   //compute the total
-  for(size_t i=0; i<shape.bckg.size(); i++)
-    {
+  for(size_t i=0; i<shape.bckg.size(); i++){
       if(i==0) { shape.totalBckg = (TH1 *)shape.bckg[i]->Clone(ch+"_"+shapeName+"_total"); shape.totalBckg->SetDirectory(0); }
       else     { shape.totalBckg->Add(shape.bckg[i]); }
-    }
+  }
 
   if(MCclosureTest){
      if(shape.totalBckg){
@@ -1686,8 +1685,6 @@ void doWZSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
      }
 }
 
-
-
 void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, bool addSignal){
     for(size_t i=0;i<selCh.size();i++){
     for(size_t b=0; b<AnalysisBins.size(); b++){
@@ -1702,86 +1699,6 @@ void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TS
     }}
 }
 
-/*
-void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, JSONWrapper::Object &Root){    
-   std::vector<TString> signalTypes;
-   signalTypes.push_back("ggH");
-   signalTypes.push_back("qqH");
-
-   for(unsigned int t=0;t<signalTypes.size();t++){
-
-      int  leftMass = 0;
-      int rightMass =9999;
-      Shape_t& shapeRef = allShapes.find(selCh[0]+AnalysisBins[0]+mainHisto)->second;
-      for(unsigned int i=0;i<shapeRef.signal.size();i++){
-         string proctmp = shapeRef.signal[i]->GetTitle();
-         if(proctmp.find(signalTypes[t].Data())!=0)continue;
-         proctmp = proctmp.substr(proctmp.find('(')+1,4);
-         int currentMass;  sscanf(proctmp.c_str(),"%d",&currentMass);
-         printf("%s --> currentMass Point=%i\n",proctmp.c_str(),currentMass);
-         if(currentMass<=0 || currentMass>2000){printf("skip\n");continue;}
-         if(currentMass<=mass && currentMass>= leftMass){ leftMass=currentMass;}
-         if(currentMass>=mass && currentMass<=rightMass){rightMass=currentMass;}
-      }   
-      if(leftMass==mass || rightMass==mass)continue;
-      if(leftMass==0    || rightMass==9999)continue;
-      printf("MASS: %i will be interpolated from %i and %i for %s\n",mass, leftMass,rightMass,signalTypes[t].Data());
-
-      TString  LeftName = signalTypes[t]+"("; LeftName+= leftMass;
-      TString RightName = signalTypes[t]+"(";RightName+=rightMass;
-
-      for(size_t i=0;i<selCh.size();i++){
-      for(size_t b=0; b<AnalysisBins.size(); b++){
-           Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
-
-           int leftIndex=0, rightIndex=0;
-           for(unsigned int i=0;i<shapeChan_SI.signal.size();i++){if(TString(shapeChan_SI.signal[i]->GetTitle()).BeginsWith( LeftName)) leftIndex=i;}
-           for(unsigned int i=0;i<shapeChan_SI.signal.size();i++){if(TString(shapeChan_SI.signal[i]->GetTitle()).BeginsWith(RightName))rightIndex=i;}
-
-           double Ratio = (mass - leftMass); Ratio/=(rightMass - leftMass);
-
-           //centralValue
-           TH1* histoLeft  = (TH1*) shapeChan_SI.signal[ leftIndex]->Clone("tmpLeft");    histoLeft->Scale(1.0/shapeChan_SI.xsections[ histoLeft->GetTitle()]);
-           TH1* histoRight = (TH1*) shapeChan_SI.signal[rightIndex]->Clone("tmpRight");  histoRight->Scale(1.0/shapeChan_SI.xsections[histoRight->GetTitle()]);           
-           TString newName = signalTypes[t]+"("; newName+= mass;
-           TH1* histoNew = (TH1*)histoLeft->Clone(TString(histoLeft->GetTitle()).ReplaceAll(LeftName,newName));         
-           histoNew->SetTitle(histoNew->GetName());
-           histoNew->Scale(1-Ratio);
-           histoNew->Add(shapeChan_SI.signal[rightIndex],Ratio);
-
-           setTGraph(histoNew->GetTitle(), systpostfix );
-           double XSection = TG_xsec->Eval(mass,NULL,"S");
-           histoNew->Scale(XSection);
-           histoNew->SetBinError(0,0.15*histoNew->Integral());
-           shapeChan_SI.signal.insert(shapeChan_SI.signal.begin()+leftIndex,histoNew);
-
-           
-
-           //systematics
-           std::vector<std::pair<TString, TH1*> > varsLeft  = shapeChan_SI.signalVars[histoLeft->GetTitle()];
-           std::vector<std::pair<TString, TH1*> > varsRight = shapeChan_SI.signalVars[histoRight->GetTitle()];
-           std::vector<std::pair<TString, TH1*> > varsNew;
-           for(size_t v=0;v<varsLeft.size();v++){
-              TH1* histoSystLeft  = (TH1*) varsLeft [v].second->Clone("tmpSystLeft");    histoSystLeft ->Scale(1.0/shapeChan_SI.xsections[histoLeft ->GetTitle()]);
-              TH1* histoSystRight = (TH1*) varsRight[v].second->Clone("tmpSystRight");   histoSystRight->Scale(1.0/shapeChan_SI.xsections[histoRight->GetTitle()]);
-              TH1* histoSystNew   = (TH1*)histoSystLeft->Clone(TString(histoSystLeft->GetTitle()).ReplaceAll(LeftName,newName));
-              histoSystNew->SetTitle(histoSystNew->GetName());
-              histoSystNew->Scale(1-Ratio);
-              histoSystNew->Add(histoSystRight,Ratio);
-              histoSystNew->Scale(XSection);
-              varsNew.push_back(std::make_pair<TString, TH1*>(varsLeft[v].first,histoSystNew));
-              delete histoSystLeft;
-              delete histoSystRight;
-           }
-           shapeChan_SI.signalVars[histoNew->GetTitle()] = varsNew;
-
-           delete histoLeft;
-           delete histoRight;
-      }}
-
-   }
-}
-*/
 
 void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allShapesL, map<TString, Shape_t>& allShapes, map<TString, Shape_t>& allShapesR, TString mainHisto){
    if(massL<0 || massR<0 || massL==massR)return;
