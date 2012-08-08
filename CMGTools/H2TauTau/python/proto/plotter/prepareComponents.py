@@ -59,7 +59,14 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', hi
         alias = aliases.get(comp.name, None)
         if alias:
             comp.name = alias
+        # do we already have a component with this name?
+        # existingComp = newSelComps.get(comp.name, None)
+        # import pdb; pdb.set_trace()
+        # if existingComp is None:
         newSelComps[comp.name] = comp
+        # else:
+        #    import pdb; pdb.set_trace()
+        #    newSelComps[comp.name] += comp
         if comp.isData is True:
             print comp.name, comp.intLumi
             totIntLumi += comp.intLumi
@@ -130,4 +137,7 @@ if __name__ == '__main__':
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config,  None, True, options.channel) 
+    aliases = {'WJetsExt':'WJets'}
+    # aliases = None
+    
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, True, options.channel) 

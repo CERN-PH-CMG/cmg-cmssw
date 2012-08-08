@@ -1,5 +1,5 @@
 import CMGTools.RootTools.fwlite.Config as cfg
-from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
+# from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
 
 DYJets = cfg.MCComponent(
     name = 'DYJets',
@@ -18,6 +18,14 @@ WJets = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+## WJets = cfg.MCComponent(
+##     name = 'WJets',
+##     files = [],
+##     xSection = WJets.xSection ,
+##     nGenEvents = 1,
+##     triggers = [],
+##     effCorrFactor = 1 )
+
 
 TTJets = cfg.MCComponent(
     name = 'TTJets',
@@ -31,8 +39,9 @@ TTJets = cfg.MCComponent(
 mc_ewk = [
     DYJets,
     WJets,
+    # WJetsExt,
     TTJets
     ]
 
-mc_ewk_up = sampleShift( locals(), [DYJets], 'Up')
-mc_ewk_down = sampleShift( locals(), [DYJets], 'Down')
+## mc_ewk_up = sampleShift( locals(), [DYJets], 'Up')
+## mc_ewk_down = sampleShift( locals(), [DYJets], 'Down')

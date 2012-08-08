@@ -56,12 +56,12 @@ data_Run2012B_start_196509 = cfg.DataComponent(
 
 
 data_list_Run2012A = [ data_Run2012A ]
-data_list_Run2012B = [ data_Run2012B_start_194479,
-                       data_Run2012B_194480_195016,
-                       data_Run2012B_195017_195947,
-                       data_Run2012B_195948_196509 ]
+# data_list_Run2012B = [ data_Run2012B_start_194479,
+#                       data_Run2012B_194480_195016,
+#                       data_Run2012B_195017_195947,
+#                       data_Run2012B_195948_196509 ]
 
-# data_list_Run2012B = [ data_Run2012B_start_196509 ]
+data_list_Run2012B = [ data_Run2012B_start_196509 ]
 
 data_list_2012 = copy.copy(data_list_Run2012A)
 data_list_2012.extend(data_list_Run2012B)
