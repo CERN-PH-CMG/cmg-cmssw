@@ -233,8 +233,8 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(2,"=1 jets");
   h->GetXaxis()->SetBinLabel(3,"#geq 2 jets");
   mon.addHistogram( new TH1F("pfvbfhtcjv"       , ";Central jet H_{T} [GeV/c];Events",50,0,250) );
-  mon.addHistogram( new TH1F("pfvbfpremjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",40,0,2000) );
-  mon.addHistogram( new TH1F("pfvbfmjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",40,0,2000) );
+  mon.addHistogram( new TH1F("pfvbfpremjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",120,0,3000) );
+  mon.addHistogram( new TH1F("pfvbfmjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",120,0,3000) );
   mon.addHistogram( new TH1F("pfvbfcandjetdphi"       , ";#Delta#phi;Events",20,0,3.5) );
   mon.addHistogram( new TH2F("pfvbfmjjvsdeta"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];|#Delta #eta|;Events",40,0,2000,50,0,10) );
   mon.addHistogram( new TH2F("pfvbfmjjvshardpt"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Hard p_{T} [GeV/c];Events",40,0,2000,25,0,250) );
@@ -342,8 +342,7 @@ int main(int argc, char* argv[])
 
    for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
      mon.addHistogram( new TH2F (TString("dijet_mass_shapes")+varNames[ivar],";cut index;M_{Jet1,Jet2} [GeV];#events (/50GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),200,0.,1200) );
-     mon.addHistogram( new TH2F (TString("vbfz_zmasswindow_shapes")+varNames[ivar],";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),60,51.0,131) );
-     mon.addHistogram( new TH2F (TString("vbfz_zmasswindow2_shapes")+varNames[ivar],";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),60,51.0,131) );
+     mon.addHistogram( new TH2F (TString("vbfz_mjj_shapes")+varNames[ivar],";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),120,0,3000) );
    }
 
 
@@ -828,29 +827,32 @@ int main(int argc, char* argv[])
                   mon.fillHisto("pfvbfcandjetpt",       tags_full, fabs(aGoodIdJets[0].pt()),weight);
                   mon.fillHisto("pfvbfcandjetpt",       tags_full, fabs(aGoodIdJets[1].pt()),weight);
                   if(aGoodIdJets[0].pt()>30 && aGoodIdJets[1].pt()>30){
-                     mon.fillHisto("pfvbfcandjeteta",      tags_full, fabs(maxEta),weight);
-                     mon.fillHisto("pfvbfcandjeteta",      tags_full, fabs(minEta),weight);
-                     mon.fillHisto("pfvbfcandjetdeta",     tags_full, fabs(detajj),weight);
-                     mon.fillHisto("pfvbfcandzeppenfeld",  tags_full, fabs(maxEta-avgEtajj)/fabs(detajj),weight);
-                     mon.fillHisto("pfvbfcandzeppenfeld",  tags_full, fabs(minEta-avgEtajj)/fabs(detajj),weight);			      
-                     mon.fillHisto("pfvbfpremjj",          tags_full, vbfSyst.mass(),weight);
-                     if(fabs(detajj)>4.5){
-                         mon.fillHisto("pfvbfmjj",             tags_full, vbfSyst.mass(),weight);
-                         mon.fillHisto("pfvbfmjjvsdeta",       tags_full, vbfSyst.mass(),fabs(detajj),weight);
-                         mon.fillHisto("pfvbfmjjvshardpt",     tags_full, vbfSyst.mass(),hardpt,weight);
-                         if(vbfSyst.mass()>450){
-                             mon.fillHisto("pfvbfhardpt",     tags_full, hardpt,weight);
-                             int ncjv(0);
-                             float htcjv(0);
-                             for(size_t iotherjet=2; iotherjet<aGoodIdJets.size(); iotherjet++){
-                                 if(aGoodIdJets[iotherjet].pt()<30 || aGoodIdJets[iotherjet].eta()<minEta || aGoodIdJets[iotherjet].eta()>maxEta) continue;
-                                 htcjv+= aGoodIdJets[iotherjet].pt();
-                                 ncjv++;
-                             }
-                             mon.fillHisto("pfvbfcjv",tags_full,ncjv,weight);
-                             mon.fillHisto("pfvbfhtcjv",tags_full,htcjv,weight);
-                           }
-                       }
+                    int ncjv(0);
+                    float htcjv(0);
+                    for(size_t iotherjet=2; iotherjet<aGoodIdJets.size(); iotherjet++){
+                        if(aGoodIdJets[iotherjet].pt()<30 || aGoodIdJets[iotherjet].eta()<minEta || aGoodIdJets[iotherjet].eta()>maxEta) continue;
+                        htcjv+= aGoodIdJets[iotherjet].pt();
+                        ncjv++;
+                    }
+                    mon.fillHisto("pfvbfcjv",tags_full,ncjv,weight);
+                    mon.fillHisto("pfvbfhtcjv",tags_full,htcjv,weight);
+
+                     if(ncjv==0){
+                        mon.fillHisto("pfvbfcandjeteta",      tags_full, fabs(maxEta),weight);
+                        mon.fillHisto("pfvbfcandjeteta",      tags_full, fabs(minEta),weight);
+                        mon.fillHisto("pfvbfcandjetdeta",     tags_full, fabs(detajj),weight);
+                        mon.fillHisto("pfvbfcandzeppenfeld",  tags_full, fabs(maxEta-avgEtajj)/fabs(detajj),weight);
+                        mon.fillHisto("pfvbfcandzeppenfeld",  tags_full, fabs(minEta-avgEtajj)/fabs(detajj),weight);			      
+                        mon.fillHisto("pfvbfpremjj",          tags_full, vbfSyst.mass(),weight);
+                        if(fabs(detajj)>4.5){
+                            mon.fillHisto("pfvbfmjj",             tags_full, vbfSyst.mass(),weight);
+                            mon.fillHisto("pfvbfmjjvsdeta",       tags_full, vbfSyst.mass(),fabs(detajj),weight);
+                            mon.fillHisto("pfvbfmjjvshardpt",     tags_full, vbfSyst.mass(),hardpt,weight);
+                            if(vbfSyst.mass()>450){
+                                mon.fillHisto("pfvbfhardpt",     tags_full, hardpt,weight);
+                              }
+                          }
+                      }
                    }
                }
 
@@ -1003,6 +1005,14 @@ int main(int argc, char* argv[])
 
 
             if(varJets.size()>1){
+               double maxEta=max(varJets[0].eta(),varJets[1].eta());
+               double minEta=min(varJets[0].eta(),varJets[1].eta());
+               int ncjv(0);
+               for(size_t iotherjet=2; iotherjet<aGoodIdJets.size(); iotherjet++){
+                  if(varJets[iotherjet].pt()<30 || varJets[iotherjet].eta()<minEta || varJets[iotherjet].eta()>maxEta)continue;
+                  ncjv++;
+               }
+
 	       for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
 		    float minJet1Pt=optim_Cuts2_jet1_pt[index];
 		    float minJet2Pt=optim_Cuts2_jet2_pt[index];
@@ -1020,17 +1030,15 @@ int main(int argc, char* argv[])
 			mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
                     }
 
-
                     if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt && zvv.pt()<50 && pass3dLeptonVeto && passLocalBveto){
                         mon.fillHisto(TString("vbfz_zmasswindow_shapes")+varNames[ivar],tags_full,index,zll.mass(),iweight);
                     }
 
                     if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt && zvv.pt()<25 && pass3dLeptonVeto && passLocalBveto){
-                        mon.fillHisto(TString("vbfz_zmasswindow2_shapes")+varNames[ivar],tags_full,index,zll.mass(),iweight);
+                        mon.fillHisto(TString("vbfz_mjj_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
                     }
 	       }
            }
-
        }
   }
   
