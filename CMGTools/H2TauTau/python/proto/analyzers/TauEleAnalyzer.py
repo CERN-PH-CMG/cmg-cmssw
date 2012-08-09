@@ -46,6 +46,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             pydil = self.__class__.DiObjectClass(dil)
             pydil.leg1().associatedVertex = event.goodVertices[0]
             pydil.leg2().associatedVertex = event.goodVertices[0]
+            #COLIN for debugging
+            pydil.leg2().eventId = event.eventId
             if not self.testLeg2( pydil.leg2(), 999999 ):
                 continue
             if hasattr(self.cfg_ana, 'mvametsigs'):
@@ -77,10 +79,6 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
     def process(self, iEvent, event):
         
         #        import pdb; pdb.set_trace()
-        #        if event.eventId == 20990 : 
-        #            print 'STOPPING'
-        #            import pdb
-        #            pdb.set_trace()
         
         result = super(TauEleAnalyzer, self).process(iEvent, event)
 
@@ -154,8 +152,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def testLeg2ID(self, electron):
         '''Tight muon selection, no isolation requirement'''
-#        print 'WARNING: USING SETUP FOR SYNC PURPOSES'
-#        return electron.looseIdForEleTau() and \
+        #        print 'WARNING: USING SETUP FOR SYNC PURPOSES'
+        #        return electron.looseIdForEleTau() and \
         return electron.tightIdForEleTau() and \
                self.testVertex( electron )
 

@@ -6,7 +6,8 @@ from CMGTools.H2TauTau.objects.gen_cff import *
 # from CMGTools.H2TauTau.objects.tauMuObjects_cff import *
 # and comment this one: 
 from CMGTools.H2TauTau.objects.tauMuObjectsMVAMET_cff import *
-from CMGTools.H2TauTau.objects.tauEleObjects_cff import *
+# from CMGTools.H2TauTau.objects.tauEleObjects_cff import *
+from CMGTools.H2TauTau.objects.tauEleObjectsMVAMET_cff import *
 from CMGTools.H2TauTau.objects.muEleObjects_cff import *
 from CMGTools.H2TauTau.objects.diTauObjects_cff import *
 from CMGTools.H2TauTau.skims.skim_cff import *

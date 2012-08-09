@@ -4,7 +4,6 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
-from CMGTools.H2TauTau.proto.samples.sampleShift import selectShift
 from CMGTools.RootTools.RootTools import * 
 
 # 'Nom', 'Up', 'Down', or None
@@ -23,13 +22,12 @@ vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweigh
 vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
 
 mc_vertexWeight = None
-mc_tauEffWeight = None
-mc_muEffWeight = None
 
-mc_tauEffWeight_mc = 'effTau2012MC'
-mc_muEffWeight_mc = 'effMu2012MC'
-mc_tauEffWeight = 'effTau2012AB'
-mc_muEffWeight = 'effMu2012AB'
+#COLIN need to set the right triggers and to pick the right efficiencies
+mc_tauEffWeight_mc = 'eff2012Tau20MC_TauEle'
+mc_eleEffWeight_mc = 'eff2012Ele20MC'
+mc_tauEffWeight = 'effTau2012AB_TauEle'
+mc_eleEffWeight = 'effEle2012AB'
     
 
 jsonAna = cfg.Analyzer(
@@ -60,13 +58,13 @@ pileUpAna = cfg.Analyzer(
     )
 
 
-TauMuAna = cfg.Analyzer(
-    'TauMuAnalyzer',
+TauEleAna = cfg.Analyzer(
+    'TauEleAnalyzer',
     scaleShift1 = tauScaleShift,
     pt1 = 20,
     eta1 = 2.3,
     iso1 = 999,
-    pt2 = 20,
+    pt2 = 24,
     eta2 = 2.1,
     iso2 = 0.1,
     m_min = 10,
@@ -76,13 +74,14 @@ TauMuAna = cfg.Analyzer(
 
 dyJetsFakeAna = cfg.Analyzer(
     'DYJetsFakeAnalyzer',
-    leptonType = 13
+    leptonType = 11
     )
 
 higgsWeighter = cfg.Analyzer(
     'HiggsPtWeighter',
     )
 
+#COLIN enable efficiency weighting (make sure the efficiencies correspond to tau-ele triggers)
 tauWeighter = cfg.Analyzer(
     'LeptonWeighter_tau',
     effWeight = mc_tauEffWeight,
@@ -93,13 +92,15 @@ tauWeighter = cfg.Analyzer(
     recEffVersion = None
     )
 
-muonWeighter = cfg.Analyzer(
-    'LeptonWeighter_mu',
-    effWeight = mc_muEffWeight,
-    effWeightMC = mc_muEffWeight_mc,
+#COLIN enable efficiency weighting
+# trigger & reco
+electronWeighter = cfg.Analyzer(
+    'LeptonWeighter_ele',
+    effWeight = mc_eleEffWeight,
+    effWeightMC = mc_eleEffWeight_mc,
     lepton = 'leg2',
     verbose = False,
-    disable = True,
+    disable = False,
     recEffVersion = None
     )
 
@@ -121,7 +122,7 @@ vbfAna = cfg.Analyzer(
 
 
 treeProducer = cfg.Analyzer(
-    'H2TauTauTreeProducerTauMu'
+    'H2TauTauTreeProducerTauEle'
     )
 
 treeProducerXCheck = cfg.Analyzer(
@@ -130,8 +131,8 @@ treeProducerXCheck = cfg.Analyzer(
 
 #########################################################################################
 
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinJul5 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinAug8 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinJul5 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinAug8 import *
 
 #########################################################################################
 
@@ -189,14 +190,14 @@ sequence = cfg.Sequence( [
     jsonAna,
     triggerAna,
     vertexAna,
-    TauMuAna,
+    TauEleAna,
     dyJetsFakeAna,
     higgsWeighter, 
     vbfAna,
     pileUpAna,
     embedWeighter, 
     tauWeighter, 
-    muonWeighter, 
+    electronWeighter, 
     treeProducer
    ] )
 
@@ -206,10 +207,10 @@ if syncntuple:
 
 test = 1
 if test==1:
-    comp = HiggsVBF125
+    comp = HiggsVBF125Small
     # comp.files = comp.files[:10]
     selectedComponents = [comp]
-    comp.splitFactor = 12
+    comp.splitFactor = 1
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
