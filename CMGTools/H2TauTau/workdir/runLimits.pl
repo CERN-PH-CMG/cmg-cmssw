@@ -1,20 +1,26 @@
 #!/usr/bin/perl
 # -w
 
+$muTauInput=shift;
+$muTauUncsDir=shift;
+$eTauInput=shift;
+$eTauUncsDir=shift;
 #1=muTau, 2=eTau, 12=muTau+eTau
 $channel=shift;
 
-####inputs
-$muTauInput="/afs/cern.ch/user/b/bianchi/public/Roger/datacards2011v3/muTauSM.root";
-$eTauInput="/afs/cern.ch/user/b/bianchi/public/Roger/datacards2011v3/eTauSM.root";
 
+####inputs
+#$muTauInput="/afs/cern.ch/user/b/bianchi/public/Roger/datacards2011v3/muTauSM.root";
+#$eTauInput="/afs/cern.ch/user/b/bianchi/public/Roger/datacards2011v3/eTauSM.root";
 #$muTauInput="/afs/cern.ch/user/b/benitezj/public/datacards/2011/Aug4/muTauSM_svfitmass.root";
 #$eTauInput="/afs/cern.ch/user/b/benitezj/public/datacards/2011/Aug4/eTauSM_svfitmass.root";
 
-
 #####uncertainties
-$muTauUncsDir="/afs/cern.ch/user/b/benitezj/scratch0/V5_5_0_44X/CMGTools/CMSSW_4_4_4/src/HiggsAnalysis/HiggsToTauTau/setup/mt";
-$eTauUncsDir="/afs/cern.ch/user/b/benitezj/scratch0/V5_5_0_44X/CMGTools/CMSSW_4_4_4/src/HiggsAnalysis/HiggsToTauTau/setup/et";
+#$muTauUncsDir="/afs/cern.ch/user/b/benitezj/scratch0/V5_5_0_44X/CMGTools/CMSSW_4_4_4/src/HiggsAnalysis/HiggsToTauTau/setup/mt";
+#$eTauUncsDir="/afs/cern.ch/user/b/benitezj/scratch0/V5_5_0_44X/CMGTools/CMSSW_4_4_4/src/HiggsAnalysis/HiggsToTauTau/setup/et";
+
+
+
 
 ###plot layout
 $layoutDir="/afs/cern.ch/user/b/benitezj/public/datacards";
