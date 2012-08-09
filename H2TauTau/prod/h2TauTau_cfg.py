@@ -45,7 +45,8 @@ print 'tau scaling =', tauScaling
 dataset_user = 'cmgtools' 
 # dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/H2TAUTAU/Sync/GluGlu/AOD/PAT_CMG_V5_5_0'
-dataset_name = '/H2TAUTAU/Sync/VBF/AOD/PAT_CMG_V5_5_0'
+# dataset_name = '/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1'
+dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1'
 dataset_files = 'cmgTuple.*root'
 
 # creating the source
