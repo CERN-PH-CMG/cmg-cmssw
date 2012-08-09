@@ -247,29 +247,35 @@ public:
   //****************
   //parameters taken from AN-11-390 v8
   //*****************
+
+  //COLIN: putting the junction at 1.4 as discussed with Josh
   double effIsoMu12(double pt, double eta){
-    if(fabs(eta)<1.479)
+    // if(fabs(eta)<1.479)
+    if(fabs(eta)<1.4)
       return 0.901; //Barrel: eta < 1.479 
     else 
       return 0.863; //EndCap
   }
 
   double effIsoMu15(double pt, double eta){
-    if(fabs(eta)<1.479)
+    // if(fabs(eta)<1.479)
+    if(fabs(eta)<1.4)
       return 0.901; 
     else 
       return 0.863;
   }
 
   double effIsoMu15eta2p1(double pt, double eta){
-    if(fabs(eta)<1.479)
+    // if(fabs(eta)<1.479)
+    if(fabs(eta)<1.4)
       return efficiency(pt,15.06,0.55278,1.34236,1.003,3.36767);
     else 
       return efficiency(pt,15.03175,0.866114,1.25009,1.63711,0.844906);
   }
 
   double effIsoMu15MC(double pt, double eta){//should correspond to Fall11 MC
-    if(fabs(eta)<1.479)
+    // if(fabs(eta)<1.479)
+    if(fabs(eta)<1.4)
       return 0.917;
     else 
       return 0.836;
@@ -418,19 +424,19 @@ public:
   // Ele22 EE - Run >= 193686 	22.14553261 	1.19913124 	1.75642067 	1.00826962 	9.04331617
   // Ele 20 EE - 52X MC 	        20.15425918 	0.75449122 	1.06027513 	1.01106686 	7.01956561 
   double eff2012AEle20(double pt, double eta) {
-    if(fabs(eta)<1.2) 
+    if(fabs(eta)<1.479) 
       return efficiency(pt, 20.97643939 , 1.15196354 , 2.27544602, 1.01743868, 2.04391816);
     else
       return efficiency(pt, 20.59874300, 1.25425435, 1.61098921, 1.00146962, 60.35067579);
   }  
   double eff2012BEle22(double pt, double eta) {
-    if(fabs(eta)<1.2) 
+    if(fabs(eta)<1.479) 
       return efficiency(pt, 22.90752344, 1.32376429 , 2.17813319, 1.03674051, 2.15454768);
     else
       return efficiency(pt, 22.14553261, 1.19913124 , 1.75642067, 1.00826962, 9.04331617);
   }
   double eff2012Ele20MC(double pt, double eta) {
-    if(fabs(eta)<1.2)  
+    if(fabs(eta)<1.479)  
       return efficiency(pt, 20.58604584, -1.89456806 , 3.69311772, 1.05480046, 1.28655181);
     else
       return efficiency(pt, 20.15425918,  0.75449122 , 1.06027513, 1.01106686, 7.01956561);
