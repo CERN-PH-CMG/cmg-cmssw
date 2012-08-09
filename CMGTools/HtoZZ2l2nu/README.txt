@@ -71,14 +71,15 @@ runPlotter --json data/photon-samples_2012.json --inDir ~/work/gamma/2012/mc/ --
 #    2011    #
 ##############
 runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2011.json -o test/results -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=True" -s 8nh 
+runPlotter --json data/samples_2011.json --inDir test/results/ --outDir test/results/plots/ --outFile test/results/plotter.root --iEcm 7 --iLumi 5051
 
 #photon+jets
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2011/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=True" -s 8nh
-runPlotter --json data/photon-samples_2011.json --inDir ~/work/gamma/2011/raw/ --outDir ~/work/gamma/2011/raw/plots/ --outFile ~/work/gamma/2011/raw/plotter.root --only qt
+runPlotter --json data/photon-samples_2011.json --inDir ~/work/gamma/2011/raw/ --outDir ~/work/gamma/2011/raw/plots/ --outFile ~/work/gamma/2011/raw/plotter.root --iEcm 7 --iLumi 5051 --only qt 
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2011/qt  -c test/runAnalysis_cfg.py.templ -p "@is2011=True @weightsFile='data/gammaqtweights_2011.root'" -s 8nh
-runPlotter --json data/photon-samples_2011.json --inDir ~/work/gamma/2011/qt/ --outDir ~/work/gamma/2011/qt/plots/ --outFile ~/work/gamma/2011/qt/plotter.root 
+runPlotter --json data/photon-samples_2011.json --inDir ~/work/gamma/2011/qt/ --outDir ~/work/gamma/2011/qt/plots/ --iEcm 7 --iLumi 5051 --outFile ~/work/gamma/2011/qt/plotter.root 
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2011/nvtx  -c test/runAnalysis_cfg.py.templ -p "@is2011=True @weightsFile='data/gammaqtweights_2011.root','data/gammanvtxweights_2011.root'" -s 8nh
-runPlotter --json data/photon-samples_2011.json --inDir ~/work/gamma/2011/nvtx/ --outDir ~/work/gamma/2011/nvtx/plots/ --outFile ~/work/gamma/2011/nvtx/plotter.root 
+runPlotter --json data/photon-samples_2011.json --inDir ~/work/gamma/2011/nvtx/ --outDir ~/work/gamma/2011/nvtx/plots/ --iEcm 7 --iLumi 5051 --outFile ~/work/gamma/2011/nvtx/plotter.root 
 
 #photon+jets (closure)
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples-mc_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2011/mc -c test/runAnalysis_cfg.py.templ -p "@is2011=True" -s 8nh -t MC

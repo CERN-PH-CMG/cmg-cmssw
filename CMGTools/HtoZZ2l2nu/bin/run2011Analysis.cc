@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
   TH1F *h=(TH1F*) mon.addHistogram( new TH1F ("eventflow", ";;Events", 7,0,7) );
   h->GetXaxis()->SetBinLabel(1,"#geq 2 leptons");
   h->GetXaxis()->SetBinLabel(2,"|M-M_{Z}|<15");
-  h->GetXaxis()->SetBinLabel(3,"p_{T}^{ll}>55");
+  h->GetXaxis()->SetBinLabel(3,"p_{T}^{ll}>30");
   h->GetXaxis()->SetBinLabel(4,"3^{rd}-lepton veto");
   h->GetXaxis()->SetBinLabel(5,"b-veto"); 
   h->GetXaxis()->SetBinLabel(6,"#Delta #phi(jet,E_{T}^{miss})>0.5");
@@ -622,7 +622,7 @@ int main(int argc, char* argv[])
       bool isZsideBand( (zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200));
       bool isZsideBandPlus( (zll.mass()>110 && zll.mass()<200));
       //bool passZpt(zll.pt()>55 && fabs(zll.eta())<1.442);
-      bool passZpt(zll.pt()>55);
+      bool passZpt(zll.pt()>30);
 
       //check alternative selections for the dilepton
       double llScaleFactor(1.0),llTriggerEfficiency(1.0);
@@ -953,13 +953,12 @@ int main(int argc, char* argv[])
 		      float idphijmet( fabs(deltaPhi(aJets[ijet].phi(),zvvs[0].phi()) ) );
 		      if(idphijmet<mindphijmet15)  mindphijmet15=idphijmet;
 		      if(aJets[ijet].pt()>30) if(idphijmet<mindphijmet)  mindphijmet=idphijmet;
-
-		      aClusteredMetP4 -= aJets[ijet];	  
 		      if(fabs(deltaPhi(aJets[ijet].phi(),zll.phi()))>2) recoilJets.push_back( aJets[ijet] );
-		      
+
 		      bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_LOOSE);//TIGHT);
 		      if(isGoodJet)
 			{
+			  aClusteredMetP4 -= aJets[ijet];	  
 			  aGoodIdJets.push_back(aJets[ijet]);
 			  mon.fillHisto("pfjetpt",  tags_full, aJets[ijet].pt(),weight);
 			  mon.fillHisto("pfjeteta",  tags_full, fabs(aJets[ijet].eta()),weight);
@@ -1046,7 +1045,7 @@ int main(int argc, char* argv[])
 		      //passDphijmet=(mindphijmet15>0.5);
 		      passDphijmet=(mindphijmet>0.5);
 		      if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
-		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet15:mindphijmet,weight);
+		      if(zvvs[0].pt()>30) mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet15:mindphijmet,weight);
 
 		      if(passDphijmet) 
 			{
@@ -1240,8 +1239,8 @@ int main(int argc, char* argv[])
 	LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
 	bool passLocalBveto(passBveto);
 	for(size_t ijet=0; ijet<varJets.size(); ijet++){
-	    clusteredMetP4 -= varJets[ijet];
 	    if(!hasObjectId(varJets[ijet].pid,JETID_LOOSE)) continue;
+	    clusteredMetP4 -= varJets[ijet];
 	    tightVarJets.push_back( varJets[ijet] );
 	    if(varJets[ijet].pt()<30 || fabs(varJets[ijet].eta())>2.5)continue;
 	    if(ivar==15)      passLocalBveto &= (varJets[ijet].btag3<0.285);
@@ -1268,7 +1267,7 @@ int main(int argc, char* argv[])
 	bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
 	if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
 	
-	if(passPreselection && zvv.pt()>50) mon.fillHisto("mtvar"+varNames[ivar],tags_full,mt,iweight);
+	if(passPreselection && zvv.pt()>30) mon.fillHisto("mtvar"+varNames[ivar],tags_full,mt,iweight);
 	
 	/*
 	  if(ivar==0 && outTxtFile && tag_subcat=="vbf" && zvv.pt()>70 && passPreselection){

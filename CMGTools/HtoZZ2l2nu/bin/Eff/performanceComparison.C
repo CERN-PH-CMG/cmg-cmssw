@@ -1040,7 +1040,7 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
 */
 
   string pre("");
-  pre="sideband";
+  //  pre="sideband";
 
   //simple METs
   /*
@@ -1056,13 +1056,13 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
   //pseudo-METs
   names.clear();                             titles.clear();
   names.push_back(pre+"met"                 );   titles.push_back("E_{T}^{miss}");
-  names.push_back(pre+"minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
-  names.push_back(pre+"minAssocMet"  );          titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss})");
+  //  names.push_back(pre+"minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
+  // names.push_back(pre+"minAssocMet"  );          titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss})");
   names.push_back(pre+"min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back(pre+"minProjAssocChargedMet"); titles.push_back("min(proj-E_{T}^{miss},proj-assoc-E_{T}^{miss}(charged))");
-  names.push_back(pre+"minProjAssocMet");        titles.push_back("min(proj-E_{T}^{miss},proj-assoc-E_{T}^{miss}");
+  //  names.push_back(pre+"minProjAssocChargedMet"); titles.push_back("min(proj-E_{T}^{miss},proj-assoc-E_{T}^{miss}(charged))");
+  // names.push_back(pre+"minProjAssocMet");        titles.push_back("min(proj-E_{T}^{miss},proj-assoc-E_{T}^{miss}");
   names.push_back(pre+"redMet"     );            titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
-  names.push_back(pre+"red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
+  //  names.push_back(pre+"red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
   performancePU(OutDir+"Combined_", evcat, signal, background,  fname, names, titles);
   performanceSummary(OutDir, evcat, signal, background,  fname, names, titles);
 

@@ -453,22 +453,23 @@ int main(int argc, char* argv[])
       for(size_t ijet=0; ijet<jetsToUse.size(); ijet++)
         {
 	  LorentzVector ijetP4=jetsToUse[ijet];
-	  if(ijetP4.pt()<15) continue;
 	  if(isGammaEvent && deltaR(ijetP4,gamma)<0.2) continue;
-	  
-	  //condition for recoil jet
-	  if( fabs(deltaPhi(ijetP4.phi(),gamma.phi())>2 ) ) recoilJets.push_back( jetsToUse[ijet] );
-	  
-	  njets15++;
+	  bool isGoodJet    =hasObjectId(jetsToUse[ijet].pid,JETID_LOOSE);//TIGHT);
+	  if(!isGoodJet) continue;
+	  double idphijmet=fabs(deltaPhi(metP4.phi(),ijetP4.phi()));	  
+
 	  selJets.push_back(ijetP4);
 	  clusteredMet -= ijetP4;
 	  mht -= ijetP4;
 	  ht += ijetP4.pt();
 
+	  //condition for recoil jet
+	  if( fabs(deltaPhi(ijetP4.phi(),gamma.phi())>2 ) ) recoilJets.push_back( jetsToUse[ijet] );
+
+	  //low pT jets
+	  if(ijetP4.pt()>15) { njets15++;  mindphijmet15=min(idphijmet,mindphijmet15); }
+
 	  //dphi(jet,MET)
-	  double idphijmet=fabs(deltaPhi(metP4.phi(),ijetP4.phi()));	  
-	  mindphijmet15=min(idphijmet,mindphijmet15);
-	  
 	  if(ijetP4.pt()<30) continue;
 	  njets30++;
 	  mindphijmet=min(idphijmet,mindphijmet);
@@ -499,7 +500,7 @@ int main(int argc, char* argv[])
       // EVENT SELECTION
       //
       bool passMultiplicityVetoes (isGammaEvent ? (nextraleptons==0 /*&& phys.gammas.size()==1*/) : (nextraleptons==0) );
-      bool passKinematics         (gamma.pt()>55); //30);
+      bool passKinematics         (gamma.pt()>30); //55);
       if(isGammaEvent && !isMC)    passKinematics &= (gamma.pt()>gammaEvHandler. triggerThr());
       bool passEB                 (!isGammaEvent || fabs(gamma.eta())<1.4442); // (fabs(gamma.eta())<1.4442); 
       bool passR9                 (!isGammaEvent || r9<1.0);
@@ -507,9 +508,6 @@ int main(int argc, char* argv[])
       bool passBveto              (nbtags==0);
       bool passMinDphiJmet        (mindphijmet>0.5);
       if(njets30==0)  passMinDphiJmet=(mindphijmet15>0.5);
-      bool passSMZZpreSel(njets30==0 && passBveto && passMinDphiJmet);  
-      bool passSMZZredMet(redMet.pt()>50);
-      bool passSMZZbalance(metP4.pt()/gamma.pt() > 0.4 && metP4.pt()/gamma.pt() < 1.8);
       
       //event category
       int eventSubCat    = eventCategoryInst.Get(phys,&selJets);
@@ -677,22 +675,6 @@ int main(int argc, char* argv[])
 		  mon.fillProfile("metvsavginstlumi",  ctf, ev.curAvgInstLumi, zvvs[0].pt(), iweight);
 		  mon.fillProfile("nvtxvsrun",         ctf, ev.run,            ev.nvtx,      iweight);
 		  mon.fillProfile("nvtxvsavginstlumi", ctf, ev.curAvgInstLumi, ev.nvtx,      iweight);  
-	       
-		  
-		  if(passSMZZpreSel && !mustBlind)
-		    {
-		      if(passSMZZredMet) mon.fillHisto("metoverqt","ZZ"+ctf, metP4.pt()/gamma.pt(),iweight);
-		      if(passSMZZbalance)
-			{
-			  mon.fillHisto("met_met","ZZ"+ctf, metP4.pt(),iweight);
-			  mon.fillHisto("met_redMet","ZZ"+ctf, redMet.pt(),iweight);
-			  if(passSMZZredMet)
-			    {
-			      mon.fillHisto("met_redMetT","ZZ"+ctf, redMetL,iweight);
-			      mon.fillHisto("met_redMetL","ZZ"+ctf, redMetT,iweight);
-			    }
-			}
-		    }
 		  
 		  for(unsigned int index=0;index<nOptimCuts;index++){
 		    if ( index<nOptimCuts-1 && zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
