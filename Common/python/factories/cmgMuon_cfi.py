@@ -4,17 +4,21 @@ from CMGTools.Common.factories.cmgLepton_cfi import leptonFactory
 muonFactory = cms.PSet(
        inputCollection = cms.InputTag("selectedPatMuonsAK5"),
        trackType = cms.int32(0),#use the global track,
-       muonIDType = cms.string("TMLastStationLoose"),#the flag for muonID
+       muonIDType = cms.string("TMLastStationLoose"),#the flag for a muonID
        leptonFactory = leptonFactory.clone()
        )
 
-from CMGTools.Common.selections.isolation_cfi import isolation
-from CMGTools.Common.selections.vbtfmuon_cfi import vbtfmuon
+
+from CMGTools.Common.selections.muonIDs_cfi import *
 
 cmgMuon = cms.EDFilter("MuonPOProducer",
     cfg = muonFactory.clone(),
     cuts = cms.PSet(
-                isomuon = isolation.clone(),
-                vbtfmuon = vbtfmuon.clone()
-       )    
+                
+                loosemuon = loosemuon.clone(),
+                softmuonNoVtx = softmuonNoVtx.clone(),
+                tightmuonNoVtx = tightmuonNoVtx.clone(),
+                highptmuonNoVtx = highptmuonNoVtx.clone(),
+                vbtfmuon = vbtfmuon.clone(),
+         )    
 )
