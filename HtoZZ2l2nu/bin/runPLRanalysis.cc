@@ -342,7 +342,7 @@ void showPLR(std::vector<std::pair<TString,TGraph *> > &plotList, TString fout,T
       gr->GetXaxis()->SetRangeUser(0,3);
       gr->GetXaxis()->SetTitle("#sigma/#sigma_{th.}");
       gr->GetYaxis()->SetRangeUser(0,5);
-      gr->GetYaxis()->SetTitle("-2 log #lambda");
+      gr->GetYaxis()->SetTitle("- log #lambda");
       
       TLine *l=new TLine(0,0.5,3,0.5); l->SetLineColor(kGreen); l->Draw();
       l=new TLine(rmin,0.,rmin,0.5); l->SetLineColor(kGreen); l->Draw();

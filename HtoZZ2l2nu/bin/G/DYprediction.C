@@ -75,35 +75,41 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
   //  TString llFile="../../test/results/plotter_2011.root";
   //  TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
   //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/qt/plotter.root";
+  //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
+  // TString llFile="../../plotter_zz_2011.root";
+
   TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-  TString llFile="../../plotter_zz_2011.root";
+  TString llFile="../../test/results/plotter.root";
 
   bool is2011(llFile.Contains("2011"));
 
   string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {//"met_met"//,
-		     "met_redMet",
+  string histos[] = {//"met_met",
+    //    "met_redMet"//,
+    "met_min3Met"//,
 		     //"met_redMet15",
 		     //"met_redMet20",
-		     "balance",
+		     // "balance",
 		     //"mt",
 		     //"mindphijmet",
 		     // "pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj"
 		     //,"pfvbfcjv", "pfvbfhardpt",
-		     "mt_shapes"//,
+		     //"mt_shapes"//,
 		     //"zpt_shapes",
 		     // "met_shapes"
   };
   const size_t nhistos=sizeof(histos)/sizeof(string);
-  string dilcats[]= {"eq0jets","geq1jets","vbf"};//"eq1jets","geq2jets","vbf",""};
+  //  string dilcats[]= {"eq0jets","geq1jets","vbf"};
+  string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};
   const size_t ndilcats=sizeof(dilcats)/sizeof(string);
   string dilprocs[]={"WW#rightarrow 2l2#nu","ZZ","WZ#rightarrow 3l#nu","t#bar{t}","Single top","W#rightarrow l#nu","data"};
   Int_t dilColors[]={592, 590, 596, 8, 824, 809, 1 };
   const size_t ndilprocs=sizeof(dilprocs)/sizeof(string);
-  string dilSignal[]={};//"ggH(350)#rightarrow ZZ","qqH(350)#rightarrow ZZ"};
+  string dilSignal[]={"ggH(350)#rightarrow ZZ","qqH(350)#rightarrow ZZ"};
   const size_t nDilSignals=sizeof(dilSignal)/sizeof(string);
-  string gcats[]= {"eq0jets","eq0softjets","geq1jets","vbf"};//,"eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
+  //string gcats[]= {"eq0jets","eq0softjets","geq1jets","vbf"};
+  string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
   const size_t ngcats=sizeof(gcats)/sizeof(string);
   string gprocs[]={"Z#gamma#rightarrow#nu#nu#gamma","W#gamma#rightarrowl#nu#gamma","W#rightarrow l#nu","data (#gamma)"};
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
@@ -123,7 +129,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		{
 		  string hname=dilprocs[iproc]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)llIn->Get(hname.c_str());
-		  if(h==0) continue;// { cout << hname << endl; continue; }
+		  if(h==0)  { cout << hname << endl; continue; }
 		  if(histos[ih]=="mt_shapes")
 		    {
 		      cout << h->GetXaxis()->GetNbins() << endl;
@@ -248,10 +254,13 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		}
 	      
 	      ////normalization factor (from MET<50)
-	      //if(histos[ih].find("met_met")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
-	      //int normBin=normH->GetXaxis()->FindBin(50);
+	      // if(histos[ih].find("met_met")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
+// 	      int normBin=normH->GetXaxis()->FindBin(50);
 	      
-	      if(histos[ih].find("met_redMet")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
+//	      if(histos[ih].find("met_redMet")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
+//	      int normBin=normH->GetXaxis()->FindBin(40);
+
+	      if(histos[ih].find("met_min3Met")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
 	      int normBin=normH->GetXaxis()->FindBin(40);
 	      
 	      Shape_t &dilMetShape = shapesMap[normKey+"_"+histos[ih]];
