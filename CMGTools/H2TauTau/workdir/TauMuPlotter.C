@@ -320,29 +320,34 @@ TH1F* TauMuPlotter::getZToTauTau(){
 
 //WJets
 TH1F* TauMuPlotter::getWJetsInc(){
-  TString sname;   
-  if(WJetsType_==3) sname="W3JetsToLNu";
-  else if(WJetsType_==2) sname="W2JetsToLNu";
-  else sname="WJetsToLNu";
+  TString sname="WJetsToLNu";
+  //if(WJetsType_==3) sname="W3JetsToLNu";
+  //if(WJetsType_==2) sname="W2JetsToLNu";
 
   //shape of W+jets
   TH1F*hShape=getSample(sname);
   hShape->SetName("getWJetsInc");
+  //cout<<hShape->Integral()<<endl;
 
   //determine normalization
   Int_t tmpCategoryMT=MTcat_;//switch to high mT
   MTcat_=3;
   if(MSSMFlag_)  MTcat_=103;//use pZeta
-  cout<<"  **** Normalzing WJets from MTcat=="<<MTcat_<<endl;
+  //cout<<"  **** Normalzing WJets from MTcat=="<<MTcat_<<endl;
   TH1F* HW=getSample(sname);
+  //cout<<HW->Integral()<<endl;
   TH1F* HData=getTotalData();
+  //cout<<HData->Integral()<<endl;
   TH1F* HMC=getZToTauTau();
+  //cout<<HMC->Integral()<<endl;
   TH1F* HTT=getTTJetsInc();
+  //cout<<HTT->Integral()<<endl;
   HMC->Add(HTT); delete HTT;
   TH1F* HZJ=getZToLJetInc();
+  //cout<<HZJ->Integral()<<endl;
   HMC->Add(HZJ); delete HZJ;
   MTcat_=tmpCategoryMT;
-  if(HW->Integral()>0.){
+  if(HW->Integral()>1.){
     hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
   }else {
     cout<<"WARNING HW->Integral is 0"<<endl;

@@ -117,26 +117,26 @@ process.analysis +=  process.cmgTauEleCount
 
 
 ##run the MVA MET and remake the mu-tau list
-process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
-process.load("CMGTools.Common.miscProducers.mvaMET.mvaMETTauEle_cfi")
-process.mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
-process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
-process.mvaBaseMETTauEle = process.cmgBaseMETFromPFMET.clone()
-process.mvaBaseMETTauEle.cfg.inputCollection = 'mvaMETTauEle'
-process.load("CMGTools.Common.factories.cmgTauEleCor_cfi")
-process.cmgTauEleCorPreSel = process.cmgTauEleCor.clone()
-process.cmgTauEleCorPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
-process.cmgTauEleCorPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
-process.mvaMETSequence = cms.Sequence(
-    process.goodPVFilter + 
-    process.mvaMETTauEle +
-    process.mvaBaseMETTauEle +
-    process.cmgTauEleCorPreSel
-    )
-process.analysis  += process.mvaMETSequence
-process.flatNtp.diTauTag = 'cmgTauEleCorPreSel'
-process.flatNtp.metType = 2
-
+if process.flatNtp.metType == 2:
+   process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
+   process.load("CMGTools.Common.miscProducers.mvaMET.mvaMETTauEle_cfi")
+   process.mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
+   process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
+   process.mvaBaseMETTauEle = process.cmgBaseMETFromPFMET.clone()
+   process.mvaBaseMETTauEle.cfg.inputCollection = 'mvaMETTauEle'
+   process.load("CMGTools.Common.factories.cmgTauEleCor_cfi")
+   process.cmgTauEleCorPreSel = process.cmgTauEleCor.clone()
+   process.cmgTauEleCorPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
+   process.cmgTauEleCorPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
+   process.mvaMETSequence = cms.Sequence(
+      process.goodPVFilter + 
+      process.mvaMETTauEle +
+      process.mvaBaseMETTauEle +
+      process.cmgTauEleCorPreSel
+      )
+   process.analysis  += process.mvaMETSequence
+   process.flatNtp.diTauTag = 'cmgTauEleCorPreSel'
+   
 
 
 # schedule the analyzer

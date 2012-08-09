@@ -129,28 +129,27 @@ process.load('CMGTools.Common.skims.cmgTauMuCount_cfi')
 process.cmgTauMuCount.src = 'cmgTauMuPreSel'
 process.cmgTauMuCount.minNumber = 1
 
-
 ##run the MVA MET and remake the mu-tau list
-process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
-process.load("CMGTools.Common.miscProducers.mvaMET.mvaMETTauMu_cfi")
-process.mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
-process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
-process.mvaBaseMETTauMu = process.cmgBaseMETFromPFMET.clone()
-process.mvaBaseMETTauMu.cfg.inputCollection = 'mvaMETTauMu'
-process.load("CMGTools.Common.factories.cmgTauMuCor_cfi")
-process.cmgTauMuCorPreSel = process.cmgTauMuCor.clone()
-process.cmgTauMuCorPreSel.cfg.metCollection = 'mvaBaseMETTauMu'
-process.cmgTauMuCorPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
-process.mvaMETSequence = cms.Sequence(
-    process.goodPVFilter + 
-    process.mvaMETTauMu +
-    process.mvaBaseMETTauMu +
-    process.cmgTauMuCorPreSel
-    )
-process.analysis  += process.mvaMETSequence
-process.flatNtp.diTauTag = 'cmgTauMuCorPreSel'
-process.flatNtp.metType = 2
-#process.mvaMETTauMu.verbose = True
+if process.flatNtp.metType ==2 :
+   process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
+   process.load("CMGTools.Common.miscProducers.mvaMET.mvaMETTauMu_cfi")
+   process.mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
+   process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
+   process.mvaBaseMETTauMu = process.cmgBaseMETFromPFMET.clone()
+   process.mvaBaseMETTauMu.cfg.inputCollection = 'mvaMETTauMu'
+   process.load("CMGTools.Common.factories.cmgTauMuCor_cfi")
+   process.cmgTauMuCorPreSel = process.cmgTauMuCor.clone()
+   process.cmgTauMuCorPreSel.cfg.metCollection = 'mvaBaseMETTauMu'
+   process.cmgTauMuCorPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
+   process.mvaMETSequence = cms.Sequence(
+      process.goodPVFilter + 
+      process.mvaMETTauMu +
+      process.mvaBaseMETTauMu +
+      process.cmgTauMuCorPreSel
+      )
+   process.analysis  += process.mvaMETSequence
+   process.flatNtp.diTauTag = 'cmgTauMuCorPreSel'
+   #process.mvaMETTauMu.verbose = True
 
 
 ##schedule the analyzer
