@@ -39,7 +39,7 @@ process.RandomNumberGeneratorService.mix.initialSeed = cms.untracked.uint32(XXX_
 # Input source
 process.source = cms.Source("PoolSource",
     secondaryFileNames = cms.untracked.vstring(),
-    fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Madgraph/VBFZ/unweighted_events-dec.lhe.root'),
+    fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Madgraph/VBFZ_interf/unweighted_events.lhe.root'),
     skipEvents = cms.untracked.uint32(XXX_SKIP_XXX) 
 )
 
@@ -59,7 +59,7 @@ process.configurationMetadata = cms.untracked.PSet(
 process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     outputCommands = process.AODSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('/afs/cern.ch/user/p/psilva/work/FullSim/VBFZ/Events_XXX_I_XXX.root'),
+    fileName = cms.untracked.string('/afs/cern.ch/user/p/psilva/work/FullSim/VBFZ_interf/Events_XXX_I_XXX.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('AODSIM')

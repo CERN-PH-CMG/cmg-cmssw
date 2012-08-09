@@ -12,7 +12,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
-process.load('SimGeneral.MixingModule.mix_2012_Startup_50ns_PoissonOOTPU_cfi')
+process.load('SimGeneral.MixingModule.mix_E7TeV_Fall2011_Reprocess_50ns_PoissonOOTPU_cfi')
 process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
@@ -27,7 +27,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("LHESource",
-    fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Madgraph/VBFZ_interf/unweighted_events.lhe')
+    fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Madgraph/VBFZ_interf_7TeV/unweighted_events.lhe')
 )
 
 process.options = cms.untracked.PSet(
@@ -44,23 +44,21 @@ process.configurationMetadata = cms.untracked.PSet(
 # Output definition
 
 process.LHEoutput = cms.OutputModule("PoolOutputModule",
-    splitLevel = cms.untracked.int32(0),
-    eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    outputCommands = process.LHEEventContent.outputCommands,
-    fileName = cms.untracked.string('unweighted_events-dec.lhe.root'),
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string(''),
-        dataTier = cms.untracked.string('LHE')
-    ),
-    SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring()
-    )
-)
+                                     splitLevel = cms.untracked.int32(0),
+                                     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
+                                     outputCommands = process.AODSIMEventContent.outputCommands,
+                                     fileName = cms.untracked.string('unweighted_events.lhe.root'),
+                                     dataset = cms.untracked.PSet( filterName = cms.untracked.string(''),
+                                                                   dataTier = cms.untracked.string('LHE')
+                                                                   ),
+                                     SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring()
+                                                                        )
+                                     )
 
 # Additional output definition
 
 # Other statements
-process.GlobalTag.globaltag = 'START52_V9::All'
+process.GlobalTag.globaltag = 'START44_V5::All'
 
 # Path and EndPath definitions
 process.endjob_step = cms.EndPath(process.endOfProcess)
