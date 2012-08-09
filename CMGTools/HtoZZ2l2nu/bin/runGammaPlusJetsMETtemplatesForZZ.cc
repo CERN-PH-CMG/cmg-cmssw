@@ -200,6 +200,7 @@ int main(int argc, char* argv[])
   mon.addHistogram(  new TProfile("met20vsrho",  "#rho", 50,0,25));
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 15,76,106) );
   mon.addHistogram( new TH1F( "selsync", ";Synchronization step;Events", 4,0,4) );
+  mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 50,0,500) );
   TH1 *hj=mon.addHistogram( new TH1F("njets",  ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
   for(int ibin=1; ibin<=hj->GetXaxis()->GetNbins(); ibin++)
     {
@@ -542,6 +543,7 @@ int main(int argc, char* argv[])
 	  if(!isGammaEvent)
 	    {
 	      mon.fillHisto("selsync",ctf,0,weight);
+	      mon.fillHisto("zpt"    ,ctf, zll.pt(),     weight);      
 	      if(passKinematics)
 		{
 		  mon.fillHisto("selsync",ctf,1,weight);
@@ -552,17 +554,16 @@ int main(int argc, char* argv[])
 		    }
 		}
 	    }
-	  
 	  if(!passKinematics) continue;
 	  if(!passMultiplicityVetoes) continue;
-	
-
+	  
 	  LorentzVector iboson(isGammaEvent ? gammaEvHandler.massiveGamma(dilCats[idc]) : gamma);
 	  float zmass=iboson.mass();
 	  Float_t mt( METUtils::transverseMass(iboson,metP4,true) );
-
+	  
 	  float iweight=weight;
 	  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
+	 
 	  for(size_t isc=0; isc<subcats.size(); isc++)
 	    {
 	      TString ctf=dilCats[idc]+subcats[isc];	      
