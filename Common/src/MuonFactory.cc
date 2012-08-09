@@ -28,33 +28,55 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, c
     output->type_ = input->type();
     output->isGlobal_ = cmg::toTriBool(input->isGlobalMuon());
     output->isTracker_ = cmg::toTriBool(input->isTrackerMuon());
-    output->muonID_ = cmg::toTriBool(input->muonID(muonIDType_));
-    output->nMatches_ = input->numberOfMatches();
+    
+    //NOT NEEDED as implemented in Muon.h accessing the source pointer 
+    //output->isPF_ = cmg::toTriBool(input->isPFMuon()); //this is not functional in release < 52X
+    //assert(input->hasUserFloat("isPFMuon")); //this is normally added by PATPFMuonEmbedder module. see comment above
+    //output->isPF_ = cmg::toTriBool(input->userFloat("isPFMuon")); 
+    //output->isTMOST_ = cmg::toTriBool(input->muonID("TMOneStationTight")); 
+
+    output->muonID_ = cmg::toTriBool(input->muonID(muonIDType_));//useless
+    output->nMatches_ = input->numberOfMatches(); 
+    
+    //NOT NEEDED as implemented in Muon.h accessing the source pointer 
+    //output->nMatchedStations_ = input->numberOfMatchedStations(); 
 
     output->dB3D_ = input->dB( pat::Muon::PV3D );
     output->edB3D_ = input->edB( pat::Muon::PV3D );
 
-    reco::TrackRef combinedMuon = getTrack(input);
-    if(combinedMuon.isNonnull() && combinedMuon.isAvailable()){
-      //        output->pixelHits_ = combinedMuon->hitPattern().numberOfValidPixelHits();
-      //   output->trackerHits_ = combinedMuon->hitPattern().numberOfValidTrackerHits();
-        output->globalNormChi2_ = combinedMuon->normalizedChi2();
-        output->muonHits_ = combinedMuon->hitPattern().numberOfValidMuonHits();   
-    }
-    //Michalis : The pixel and tracker hits should come from the inner track
-    //Always!
-    reco::TrackRef innerMuon = getTrackerTrack(input);
-    if(innerMuon.isNonnull() && innerMuon.isAvailable()){
-        output->pixelHits_ = innerMuon->hitPattern().numberOfValidPixelHits();
-        output->trackerHits_ = innerMuon->hitPattern().numberOfValidTrackerHits();
-    }
-
     //we need the tracker track for this
     reco::TrackRef track = input->track();
     if(track.isNonnull() && track.isAvailable()){
+      
+      output->pixelHits_ = track->hitPattern().numberOfValidPixelHits();
+      output->trackerHits_ = track->hitPattern().numberOfValidTrackerHits();
       output->trackerLayersWithMeasurement_ = track->hitPattern().trackerLayersWithMeasurement();
+      //NOT NEEDED as implemented in Muon.h accessing the source pointer 
+      //output->pixelLayersWithMeasurement_ = track->hitPattern().pixelLayersWithMeasurement();
+      //output->tkNormChi2_ = track->normalizedChi2();
     }
+
+    reco::TrackRef globaltrack = input->globalTrack();
+    if(globaltrack.isNonnull() && globaltrack.isAvailable()){
+      output->globalNormChi2_ = globaltrack->normalizedChi2();
+      output->muonHits_ = globaltrack->hitPattern().numberOfValidMuonHits();         
+    }
+    
+    
+    // The following variables have been previously uniquely defined given a particular track type
+
+    //  reco::TrackRef combinedMuon = getTrack(input);
+    //     if(combinedMuon.isNonnull() && combinedMuon.isAvailable()){
+    //       //output->pixelHits_ = combinedMuon->hitPattern().numberOfValidPixelHits();
+    //       //output->trackerHits_ = combinedMuon->hitPattern().numberOfValidTrackerHits();
+    //         output->globalNormChi2_ = combinedMuon->normalizedChi2();
+    //         output->muonHits_ = combinedMuon->hitPattern().numberOfValidMuonHits();   
+    //     }
+    
+   
 }
+
+
 
 reco::TrackRef cmg::MuonFactory::getTrack(const pat::MuonPtr& input) const{
     
@@ -84,7 +106,7 @@ reco::TrackRef cmg::MuonFactory::getTrackerTrack(const pat::MuonPtr& input) cons
      case Global:
      case Other:
      case Inner:
-        combinedMuon = input->innerTrack();
+       combinedMuon = input->innerTrack(); //NOTE: innerTrack() and track() return the same thing, therefore this function is useless
         break;
      case Track:
         combinedMuon = input->track();
