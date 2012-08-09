@@ -35,7 +35,7 @@ which lumiCalcVersion
 ###-------2012-----------------------------
 #export Json2012="/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-196509_8TeV_PromptReco_Collisions12_JSON.txt"
 export Json2012="/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-199754_8TeV_PromptReco_Collisions12_JSON.txt"
-#export Json2012="./Cert_190456-199429_8TeV_PromptReco_Collisions12_JSON_Run2012c.txt"
+#export Json2012="./Cert_190456-199429_8TeV_PromptReco_Collisions12_JSON_Run2012Cv1.txt"
 echo $Json2012
 
 ######mu-tau
@@ -44,12 +44,10 @@ echo $Json2012
 #lumiCalcVersion -i $Json2012 recorded --hltpath HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 | grep HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5
 #lumiCalcVersion -i $Json2012 recorded --hltpath HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 | grep HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6
 ##2012B
-#lumiCalcVersion -i $Json2012 recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2
+#lumiCalcVersion -i $Json2012 recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 # 193834 - 196531 #  4.403(/fb)
 ##2012C
-#lumiCalcVersion -i $Json2012 recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 #199273
-#| HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |      22076 | 1.783(/fb) | 1.783(/fb) |
-#lumiCalcVersion -i $Json2012 recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 #199696
-#| HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 |       2039 | 153.752(/pb) | 153.752(/pb) |
+#lumiCalcVersion -i $Json2012 recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 # 198049 - 199608 #| HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |      22076 | 1.783(/fb) | 1.783(/fb) |
+#lumiCalcVersion -i $Json2012 recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 # 199703 - 199754 #| HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 |       2039 | 153.752(/pb) | 153.752(/pb) |
 
 ######e-tau
 ###2012A

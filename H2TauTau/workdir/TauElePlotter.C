@@ -476,6 +476,12 @@ TH1F* TauElePlotter::getWJetsIncShape(){
 TH1F* TauElePlotter::getWJetsIncShape2012(){
   cout<<" calling method getWJetsIncShape"<<endl;
 
+  TString sname;   
+  if(WJetsType_==3) sname="W3JetsToLNu";
+  else if(WJetsType_==2) sname="W2JetsToLNu";
+  else sname="WJetsToLNu";
+
+
   TString tmpextrasel=extrasel_;
   Int_t tmpMTcat=MTcat_;
   Int_t tmpIsocat=Isocat_;
@@ -487,13 +493,13 @@ TH1F* TauElePlotter::getWJetsIncShape2012(){
   Isocat_=-1;//relax isolation
   extrasel_ = extrasel_ + "*(muiso<0.15&&tauisomva>0.5)";
   cout<<" using relaxed iso selection :"<<extrasel_<<endl;
-  TH1F* hShape=getSample("WJetsToLNu");
+  TH1F* hShape=getSample(sname);
   hShape->SetName("hShape");
 
   //go to high mT still with relaxed 
   MTcat_=13;
   if(MSSMFlag_)MTcat_=103;
-  TH1F* hShapeHighMT=getSample("WJetsToLNu");
+  TH1F* hShapeHighMT=getSample(sname);
   hShapeHighMT->SetName("hShapeHighMT");
 
   //normalize to at high mT
@@ -1168,6 +1174,7 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   //Methods using W3Jets sample 
   if(WJetsType==10)hWJetsToLNu=getWJetsInc();
   if(WJetsType==12)hWJetsToLNu=getW3JetsVBF();
+  if(WJetsType==14)hWJetsToLNu=getWJetsIncShape2012();
 
   //methods using W2Jets sample
   if(WJetsType==20)hWJetsToLNu=getWJetsInc();
