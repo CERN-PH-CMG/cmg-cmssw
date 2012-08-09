@@ -7,6 +7,8 @@
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/PhysicsObject.h"
 
+#include "DataFormats/Math/interface/Point3D.h"
+
 #include <vector>
 
 namespace cmg
@@ -94,13 +96,22 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
   float dxy() const{
     return dxy_;
   }
+  
+  /// transverse impact parameter with respect to a given vertex
+  float dxy(const math::XYZPoint& vertex) const{
+    return (- (this->vx()-vertex.x()) * this->py() + (this->vy()-vertex.y()) * this->px() ) / this->pt();
+  }
 
   /// longitudinal impact parameter
   float dz() const{
     return dz_;
   }
 
-
+  /// longitudinal impact parameter
+  float dz(const math::XYZPoint& vertex) const{
+    return (this->vz()-vertex.z()) - ((this->vx()-vertex.x())*this->px()+(this->vy()-vertex.y())*this->py())/this->pt() * this->pz()/this->pt();
+  }
+  
   /// 3d impact parameter and error
   float dB3D() const{
     return dB3D_;
