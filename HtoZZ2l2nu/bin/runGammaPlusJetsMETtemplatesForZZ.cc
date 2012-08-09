@@ -76,6 +76,13 @@ int main(int argc, char* argv[])
   TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
   JetCorrectionUncertainty jecUnc(uncFile.Data());
 
+  int fType(0);
+  if(url.Contains("DoubleEle")) fType=EE;
+  if(url.Contains("DoubleMu"))  fType=MUMU;
+  if(url.Contains("MuEG"))      fType=EMU;
+  if(url.Contains("SingleMu"))  fType=MUMU;
+  bool isSingleMuPD(!isMC && url.Contains("SingleMu")); 
+
   TRandom2 rndGen;
   EventCategory eventCategoryInst(4);  //0,>=1jet, VBF
   GammaEventHandler gammaEvHandler(runProcess);  
@@ -129,6 +136,40 @@ int main(int argc, char* argv[])
   h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
   h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
   
+  //VBF optimization
+  std::vector<double> optim_Cuts2_jet1_pt;
+  std::vector<double> optim_Cuts2_jet2_pt; 
+  std::vector<double> optim_Cuts2_eta_gap;
+  std::vector<double> optim_Cuts2_dijet_mass;
+  for(double jet1_pt=15;jet1_pt<35;jet1_pt+=5)  
+    {
+      for(double jet2_pt=15;jet2_pt<=jet1_pt;jet2_pt+=5) 
+	{
+	  for(double eta_gap=2.5;eta_gap<=5.0;eta_gap+=0.5)
+            {
+              for(double dijet_mass=200; dijet_mass<=500; dijet_mass+=50)
+		{
+		  optim_Cuts2_jet1_pt.push_back(jet1_pt);
+		  optim_Cuts2_jet2_pt.push_back(jet2_pt);
+		  optim_Cuts2_eta_gap.push_back(eta_gap);
+		  optim_Cuts2_dijet_mass.push_back(dijet_mass);
+		}
+            }
+	}
+    } 
+   TH1F* Hoptim_cuts2_jet1_pt=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_jet1_pt",";cut index;jet1_pt",optim_Cuts2_jet1_pt.size(),0,optim_Cuts2_jet1_pt.size())) ;
+   TH1F* Hoptim_cuts2_jet2_pt=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_jet2_pt",";cut index;jet2_pt",optim_Cuts2_jet2_pt.size(),0,optim_Cuts2_jet2_pt.size())) ;
+   TH1F* Hoptim_cuts2_eta_gap=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_eta_gap",";cut index;eta_gap",optim_Cuts2_eta_gap.size(),0,optim_Cuts2_eta_gap.size())) ;
+   TH1F* Hoptim_cuts2_dijet_mass=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_dijet_mass",";cut index;dijet_mass", optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size()));
+   for(unsigned int index=0;index<optim_Cuts2_jet1_pt.size();index++){
+     Hoptim_cuts2_jet1_pt->Fill(index,optim_Cuts2_jet1_pt[index]);   
+     Hoptim_cuts2_jet2_pt->Fill(index,optim_Cuts2_jet2_pt[index]); 
+     Hoptim_cuts2_eta_gap->Fill(index,optim_Cuts2_eta_gap[index]);
+     Hoptim_cuts2_dijet_mass->Fill(index,optim_Cuts2_dijet_mass[index]);
+   }
+   mon.addHistogram( new TH2F ("dijet_mass_shapes",";cut index;M_{Jet1,Jet2} [GeV];#events (/50GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),200,0.,1200) );
+   mon.addHistogram( new TH2F ("vbfz_mjj_shapes",";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),120,0,3000) );
+  
 
   //##############################################
   //######## CONTROL PLOTS FOR SELECTION #########
@@ -158,6 +199,7 @@ int main(int argc, char* argv[])
   mon.addHistogram(  new TProfile("met15vsrho",  "#rho", 50,0,25));
   mon.addHistogram(  new TProfile("met20vsrho",  "#rho", 50,0,25));
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 15,76,106) );
+  mon.addHistogram( new TH1F( "selsync", ";Synchronization step;Events", 4,0,4) );
   TH1 *hj=mon.addHistogram( new TH1F("njets",  ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
   for(int ibin=1; ibin<=hj->GetXaxis()->GetNbins(); ibin++)
     {
@@ -167,8 +209,31 @@ int main(int argc, char* argv[])
       label += (ibin-1);
       hj->GetXaxis()->SetBinLabel(ibin,label);
     }
+
+  //vbf control
+  TString jetIds[]={"pf","pfpuloose","pfpumvaloose"};
+  for(size_t i=0; i<sizeof(jetIds)/sizeof(TString); i++)
+    {
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjeteta"       , ";#eta;Jets",50,0,5) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjetdeta"       , ";|#Delta #eta|;Jets",50,0,10) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjetpt"       , ";p_{T} [GeV/c];Jets",50,0,250) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfcandzeppenfeld"       , ";|Zeppenfeld variable|;Events",50,0,5) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfhardpt"       , ";Hard p_{T} [GeV/c];Events",25,0,250) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfhardptfinal"       , ";Hard p_{T} [GeV/c];Events",25,0,250) );
+      TH1 *hcjv=mon.addHistogram( new TH1F(jetIds[i]+"vbfcjv"       , ";Central jet count;Events",3,0,3) );
+      hcjv->GetXaxis()->SetBinLabel(1,"=0 jets");
+      hcjv->GetXaxis()->SetBinLabel(2,"=1 jets");
+      hcjv->GetXaxis()->SetBinLabel(3,"#geq 2 jets");
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfhtcjv"       , ";Central jet H_{T} [GeV/c];Events",50,0,250) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfpremjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",120,0,3000) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfmjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",120,0,3000) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjetdphi"       , ";#Delta#phi;Events",20,0,3.5) );
+      mon.addHistogram( new TH2F(jetIds[i]+"vbfmjjvsdeta"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];|#Delta #eta|;Events",40,0,2000,50,0,10) );
+      mon.addHistogram( new TH2F(jetIds[i]+"vbfmjjvshardpt"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Hard p_{T} [GeV/c];Events",40,0,2000,25,0,250) );
+    }
+
   
-  //opten the file and get events tree
+  //open the file and get events tree
   TFile *file = TFile::Open(url);
   if(file==0) return -1;
   if(file->IsZombie()) return -1;
@@ -225,15 +290,15 @@ int main(int argc, char* argv[])
     {
       if(iev%1000==0) printf("\r [ %d/100 ] ",int(100*float(iev-evStart)/float(evEnd)));
       evSummaryHandler.getEntry(iev);
-      
-      //interpret event
       ZZ2l2nuSummary_t &ev = evSummaryHandler.getEvent();
+      if(!isMC && duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)) {  NumberOfDuplicated++; continue; }      
+
+      //interpret event
       PhysicsEvent_t phys  = getPhysicsEventFrom(ev);
       bool hasEEtrigger = ev.triggerType & 0x1;
       bool hasMMtrigger = (ev.triggerType >> 1 ) & 0x1;
-
+      bool hasMtrigger  = (ev.triggerType >> 3 ) & 0x1;
       bool isGammaEvent    = gammaEvHandler.isGood(phys);
-      if(duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)) {  NumberOfDuplicated++; continue; }
 
       //event weight
       float weight = 1.0;  
@@ -269,6 +334,17 @@ int main(int argc, char* argv[])
 	}
       else
 	{
+	  if(!isMC){
+	    if(ev.cat!=fType) continue;
+	    if(ev.cat==EE   && !hasEEtrigger) continue;
+	    if(ev.cat==MUMU && !(hasMMtrigger||hasMtrigger) ) continue;
+	    //this is a safety veto for the single mu PD
+	    if(isSingleMuPD) {
+	      if(!hasMtrigger) continue;
+	      if(hasMtrigger && hasMMtrigger) continue;
+	    }
+	  }
+
 	  //check if dilepton is good
 	  bool isGood(true);
 	  float mindphilmet(99999.);
@@ -309,7 +385,7 @@ int main(int argc, char* argv[])
 	  if(!isGood) continue;
 	  if(fabs(gamma.mass()-91)>15) continue;
 	  bool passLeptonMisReconstruction(use2011Id || phys.met[0].pt()<60 || (phys.met[0].pt()>60 && mindphilmet>0.2));
-	  if(!passLeptonMisReconstruction) continue;
+	  //if(!passLeptonMisReconstruction) continue;
 	  if(ev.cat==MUMU) dilCats.push_back("mumu");
 	  if(ev.cat==EE)   dilCats.push_back("ee");
 	}
@@ -458,11 +534,29 @@ int main(int argc, char* argv[])
       if(isGammaEvent) qtWeights = gammaEvHandler.getWeights(phys,tag_subcat);
       
       //now do the control plots
-      if(!passMultiplicityVetoes) continue;
       if(!passEB || !passR9 /*|| isConv*/) continue;
-      if(!passKinematics) continue;
       for(size_t idc=0; idc<dilCats.size(); idc++)
 	{
+	  TString ctf=dilCats[idc];
+	  //sync with std selection
+	  if(!isGammaEvent)
+	    {
+	      mon.fillHisto("selsync",ctf,0,weight);
+	      if(passKinematics)
+		{
+		  mon.fillHisto("selsync",ctf,1,weight);
+		  if(passMultiplicityVetoes)
+		    {
+		      mon.fillHisto("selsync",ctf,2,weight);
+		      if(passBveto)  mon.fillHisto("selsync",ctf,3,weight);
+		    }
+		}
+	    }
+	  
+	  if(!passKinematics) continue;
+	  if(!passMultiplicityVetoes) continue;
+	
+
 	  LorentzVector iboson(isGammaEvent ? gammaEvHandler.massiveGamma(dilCats[idc]) : gamma);
 	  float zmass=iboson.mass();
 	  Float_t mt( METUtils::transverseMass(iboson,metP4,true) );
@@ -493,12 +587,84 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("met_redMetT",     ctf, redMetL,iweight);
 	      mon.fillHisto("met_redMetL",     ctf, redMetT,iweight);
 	      mon.fillHisto("mt",              ctf, mt,iweight);
+
+	      //VBF monitoring
+	      if(jetsToUse.size()>=2){
+		for(size_t ijetid=0; ijetid<sizeof(jetIds)/sizeof(TString); ijetid++)
+		  {
+		    int jetIdToApply(JETID_LOOSE);
+		    if(jetIds[ijetid]=="pfpuloose")    jetIdToApply=JETID_CUTBASED_LOOSE;
+		    if(jetIds[ijetid]=="pfpumvaloose") jetIdToApply=JETID_OPT_LOOSE;
+		    if(!hasObjectId(jetsToUse[0].pid,jetIdToApply) || !hasObjectId(jetsToUse[0].pid,jetIdToApply)) continue; 
+		    
+		    LorentzVector vbfSyst=jetsToUse[0]+jetsToUse[1];
+		    LorentzVector hardSyst=vbfSyst+zvvs[0]+gamma;
+		    float hardpt=hardSyst.pt();
+		    float dphijj=deltaPhi(jetsToUse[0].phi(),jetsToUse[1].phi());
+		    double maxEta=max(jetsToUse[0].eta(),jetsToUse[1].eta());
+		    double minEta=min(jetsToUse[0].eta(),jetsToUse[1].eta());
+		    float avgEtajj=0.5*(maxEta+minEta);
+		    float detajj=maxEta-minEta;
+		    mon.fillHisto(jetIds[ijetid]+"vbfcandjetpt",       ctf, fabs(jetsToUse[0].pt()),iweight);
+		    mon.fillHisto(jetIds[ijetid]+"vbfcandjetpt",       ctf, fabs(jetsToUse[1].pt()),iweight);
+		    if(jetsToUse[0].pt()>30 && jetsToUse[1].pt()>30){
+		      int ncjv(0);
+		      float htcjv(0);
+		      for(size_t iotherjet=2; iotherjet<jetsToUse.size(); iotherjet++){
+                        if(jetsToUse[iotherjet].pt()<30 || jetsToUse[iotherjet].eta()<minEta || jetsToUse[iotherjet].eta()>maxEta) continue;
+			if(!hasObjectId(jetsToUse[iotherjet].pid,jetIdToApply)) continue;
+                        htcjv+= jetsToUse[iotherjet].pt();
+                        ncjv++;
+		      }
+		      mon.fillHisto(jetIds[ijetid]+"vbfcjv",ctf,ncjv,iweight);
+		      mon.fillHisto(jetIds[ijetid]+"vbfhtcjv",ctf,htcjv,iweight);
+		      
+		      if(ncjv==0){
+                        mon.fillHisto(jetIds[ijetid]+"vbfcandjeteta",      ctf, fabs(maxEta),iweight);
+                        mon.fillHisto(jetIds[ijetid]+"vbfcandjeteta",      ctf, fabs(minEta),iweight);
+                        mon.fillHisto(jetIds[ijetid]+"vbfcandjetdeta",     ctf, fabs(detajj),iweight);
+                        mon.fillHisto(jetIds[ijetid]+"vbfcandzeppenfeld",  ctf, fabs(maxEta-avgEtajj)/fabs(detajj),iweight);
+                        mon.fillHisto(jetIds[ijetid]+"vbfcandzeppenfeld",  ctf, fabs(minEta-avgEtajj)/fabs(detajj),iweight);			      
+                        mon.fillHisto(jetIds[ijetid]+"vbfpremjj",          ctf, vbfSyst.mass(),iweight);
+                        if(fabs(detajj)>4.5){
+			  mon.fillHisto(jetIds[ijetid]+"vbfmjj",             ctf, vbfSyst.mass(),iweight);
+			  mon.fillHisto(jetIds[ijetid]+"vbfmjjvsdeta",       ctf, vbfSyst.mass(),fabs(detajj),iweight);
+			  mon.fillHisto(jetIds[ijetid]+"vbfmjjvshardpt",     ctf, vbfSyst.mass(),hardpt,iweight);
+			  if(vbfSyst.mass()>450){
+			    mon.fillHisto(jetIds[ijetid]+"vbfhardpt",     ctf, hardpt,iweight);
+			  }
+			}
+                      }
+		    
+		      //stat analysis
+		      if(ijetid!=0) continue;
+		      for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
+			float minJet1Pt=optim_Cuts2_jet1_pt[index];
+			float minJet2Pt=optim_Cuts2_jet2_pt[index];
+			float minEtaGap=optim_Cuts2_eta_gap[index];
+			float minDijetMass=optim_Cuts2_dijet_mass[index];
+			bool passLocalZmass(isGammaEvent || fabs(gamma.mass()-91)<15);
+			bool passLocalRedMet(redMet.pt()>60);
+			bool passLocalJet1Pt(jetsToUse[0].pt()>minJet1Pt);
+			bool passLocalJet2Pt(jetsToUse[1].pt()>minJet2Pt);
+			bool passLocalEtaGap(fabs(jetsToUse[0].eta()-jetsToUse[1].eta())>minEtaGap);
+			float mjj((jetsToUse[0]+jetsToUse[1]).M());
+			bool passLocalDijetMass(mjj>minDijetMass);
+			bool passLocalPreselection(passLocalZmass && passLocalRedMet && passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass);		    
+			if(passLocalPreselection) mon.fillHisto("dijet_mass_shapes",ctf,index,(jetsToUse[0]+jetsToUse[1]).M(),iweight);
+			if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && metP4.pt()<25) mon.fillHisto("vbfz_mjj_shapes",ctf,index,mjj,iweight);
+		      }
+		    }
+		  }
+	      }
+	      //end VBF control
+	      
 	      if(passRedMet)
 		{
 		  mon.fillHisto("balance",       ctf, metP4.pt()/gamma.pt(),iweight);
 		  if(passBalance)
 		    {
-		      mon.fillHisto("mindphijmet",ctf,njets30==0 ? mindphijmet20:mindphijmet,weight);
+		      mon.fillHisto("mindphijmet",ctf,njets30==0 ? mindphijmet20:mindphijmet,iweight);
 		      if(passDphijmet)
 			{
 			  mon.fillHisto("mt_final",         ctf, metP4.pt(),iweight);

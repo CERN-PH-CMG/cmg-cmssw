@@ -174,12 +174,13 @@ int main(int argc, char *argv[])
 	  //	  float relErr=(irmax-irmin)*0.5/ir*100;
 	  float relErr=firstPOI->getError()/ir;
 	  if(irmin==irmax) { irmin=(1-relErr)*ir; irmax=(1+relErr)*ir; }
+
 	  if(in==0)     statUnc=relErr;
 	  else if(in>0) relErr=sqrt(pow(relErr,2)-pow(statUnc,2));
 
-	  if(in<0)  { fr.r=ir; fr.rmin=irmin; fr.rmax=irmax; fr.totalUnc=relErr; }
-	  if(in==0) { fr.statUnc=relErr; }
-	  else      { fr.uncList[test]=relErr; }
+	  if(in<0)      { fr.r=ir;  fr.rmin=irmin; fr.rmax=irmax; fr.totalUnc=relErr; }
+	  if (in==0)    { fr.statUnc=statUnc;}
+	  else if(in>0) { fr.uncList[test]=relErr; }
 
 	  if(in<=0)
 	    {
@@ -213,6 +214,9 @@ int main(int argc, char *argv[])
 		    finalPlotList.push_back( std::pair<TString,TGraph *>( chTag, gr) );
 		    if(chTag.Contains("inclusive") || chTag.Contains("combined") || chTag.Contains("total"))
 		      {
+			int n = gr->GetN();
+			double* y = gr->GetY();
+			int locmax = TMath::LocMax(n,y);
 			finalRmin=irmin;
 			finalRmax=irmax;
 		      }
@@ -229,7 +233,9 @@ int main(int argc, char *argv[])
       //show the plot
       TString fout("PLR"); fout += (ifile+1);
       showPLR(plotList,fout,chTag,fr.rmin,fr.rmax);
-      finalResults[chTag]=fr;
+      TString key(chTag);
+      if(key=="inclusive" || key=="combined") key="."+key;
+      finalResults[key]=fr;
     
       /*
       //
@@ -268,11 +274,11 @@ int main(int argc, char *argv[])
   cout << cl*100 << " \\% C.I. &    ";
   for(std::map<TString,FitResults_t>::iterator it = finalResults.begin(); it != finalResults.end(); it++) cout << "]" << it->second.rmin << "," << it->second.rmax << "[" <<  " & ";
   cout << " \\\\" << endl;
-  cout << " Stat. unc. &";
-  for(std::map<TString,FitResults_t>::iterator it = finalResults.begin(); it != finalResults.end(); it++) cout << it->second.statUnc << " & ";
+  cout << " Stat. unc. (\\%) &";
+  for(std::map<TString,FitResults_t>::iterator it = finalResults.begin(); it != finalResults.end(); it++) cout << it->second.statUnc*100 << " & ";
   cout << " \\\\" << endl;
-  cout << " Total unc. &";
-  for(std::map<TString,FitResults_t>::iterator it = finalResults.begin(); it != finalResults.end(); it++) cout << it->second.totalUnc << " & ";
+  cout << " Total unc. (\\%) &";
+  for(std::map<TString,FitResults_t>::iterator it = finalResults.begin(); it != finalResults.end(); it++) cout << it->second.totalUnc*100 << " & ";
   cout << " \\\\\\hline" << endl;
   std::map<TString, float> uncList;
   if(finalResults.find("combined") != finalResults.end())       uncList=finalResults["combined"].uncList;
@@ -281,11 +287,12 @@ int main(int argc, char *argv[])
   else uncList=finalResults.begin()->second.uncList;
   for(std::map<TString, float>::iterator it = uncList.begin(); it!= uncList.end(); it++)
     {
-      cout << it->first << " & ";
+      TString systName(it->first); systName.ReplaceAll("_"," ");
+      cout << systName << " & ";
       for(std::map<TString,FitResults_t>::iterator itt = finalResults.begin(); itt != finalResults.end(); itt++)
 	{
 	  if(itt->second.uncList.find(it->first)==itt->second.uncList.end()) cout << "    & ";
-	  else cout << setprecision(1) << itt->second.uncList[it->first] << " & ";
+	  else cout << setprecision(2) << 100*itt->second.uncList[it->first] << " & ";
 	}
       cout << " \\\\" << endl;
     }
