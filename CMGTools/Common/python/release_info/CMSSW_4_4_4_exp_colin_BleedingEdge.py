@@ -1,9 +1,9 @@
+# Package CMGTools/H2TauTau not in local area -> removed from relinfo
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_boostarrays_18Jul12'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_fixsumet_20Jul12'),
-  ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-02'),
-  ('CMGTools/H2TauTau', 'UserCode/CMGTools/H2TauTau', 'cbern_xcheck_20Jul12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'pmeckiff17Jul2012'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_18Jul12'),
+  ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-09'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'pmeckiff25july2012'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'wreece_010812'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-05-10'),
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
   ('DataFormats/METReco', 'DataFormats/METReco', 'lhx_12JAN2012_v1'),
