@@ -26,3 +26,5 @@
 </bin>
 <bin name="dijet_analysis" file="dijet_analysis.cc">
 </bin>
+<bin name="heavy_tagged_dijet_analysis" file="heavy_tagged_dijet_analysis.cc">
+</bin>

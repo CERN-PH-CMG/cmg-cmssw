@@ -1,0 +1,1 @@
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/rsg-ww-1000-52-fastsim-ntuple.root
