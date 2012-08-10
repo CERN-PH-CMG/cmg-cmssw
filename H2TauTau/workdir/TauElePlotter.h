@@ -104,6 +104,7 @@ public:
   TH1F* getZToMuMuInc(){return 0;}//dummy method just make script work for datacard
   TH1F* getZToEEInc();
   TH1F* getWJetsInc();
+  TH1F* getWJetsInc2012();
   TH1F* getWJetsIncShape();
   TH1F* getWJetsIncShape2012();
   TH1F* getW3Jets();

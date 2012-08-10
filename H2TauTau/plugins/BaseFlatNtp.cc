@@ -514,7 +514,7 @@ void BaseFlatNtp::fillPFJetList(std::vector<const cmg::PFJet * > * fulllist, std
   list->clear();
   for(std::vector<const cmg::PFJet *>::const_iterator jet=fulllist->begin(); jet!=fulllist->end(); ++jet){
     if((*jet)->pt()<30.0)continue;  
-    if(fabs((*jet)->eta())>4.5)continue; 
+    if(fabs((*jet)->eta())>5.0)continue; 
     if(!checkPFJetId((*jet)))continue;
     if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
     list->push_back((*jet));

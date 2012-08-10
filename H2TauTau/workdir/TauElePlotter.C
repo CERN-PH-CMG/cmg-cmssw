@@ -329,48 +329,6 @@ TH1F* TauElePlotter::getZToTauTau(){
 }
 
 
-//WJets
-TH1F* TauElePlotter::getWJetsInc(){
-  TString sname;   
-  if(WJetsType_==3) sname="W3JetsToLNu";
-  else if(WJetsType_==2) sname="W2JetsToLNu";
-  else sname="WJetsToLNu";
-
-  //shape of W+jets
-  TH1F*hShape=getSample(sname);
-  hShape->SetName("getWJetsInc");
-
-  //determine normalization
-  Int_t tmpCategoryMT=MTcat_;
-  MTcat_=13;
-  if(MSSMFlag_)  MTcat_=103;//use pZeta
-  cout<<"  **** Normalzing WJets from MTcat=="<<MTcat_<<endl;
-  TH1F* HW=getSample(sname);
-  TH1F* HData=getTotalData();
-  TH1F* HMC=getZToTauTau();
-  TH1F* HTT=getTTJetsInc();
-  HMC->Add(HTT); delete HTT;
-  TH1F* HZJ=getZToLJetInc();
-  HMC->Add(HZJ); delete HZJ;
-  TH1F* HZL=getZToEEInc();
-  HMC->Add(HZL); delete HZL;
-  MTcat_=tmpCategoryMT;
-  if(HW->Integral()>0.) 
-    hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
-  else {
-    cout<<"WARNING HW->Integral is 0"<<endl;
-    hShape->Scale(0.);
-  }
-  delete HData;
-  delete HMC;
-  delete HW;
-
-
-  cout<<"getWJetsInc : "<<hShape->Integral()<<endl;
-  return hShape;
-}
-
-
 
 //TTJets
 TH1F* TauElePlotter::getTTJetsInc(){
@@ -427,6 +385,88 @@ TH1F* TauElePlotter::getTotalMCSM(){
 
 
 //////////W+jets estimations////////////////////////////
+TH1F* TauElePlotter::getWJetsInc(){
+  TString sname;   
+  if(WJetsType_==3) sname="W3JetsToLNu";
+  else if(WJetsType_==2) sname="W2JetsToLNu";
+  else sname="WJetsToLNu";
+
+  //shape of W+jets
+  TH1F*hShape=getSample(sname);
+  hShape->SetName("getWJetsInc");
+
+  //determine normalization
+  Int_t tmpCategoryMT=MTcat_;
+  MTcat_=13;
+  if(MSSMFlag_)  MTcat_=103;//use pZeta
+  cout<<"  **** Normalzing WJets from MTcat=="<<MTcat_<<endl;
+  TH1F* HW=getSample(sname);
+  TH1F* HData=getTotalData();
+  TH1F* HMC=getZToTauTau();
+  TH1F* HTT=getTTJetsInc();
+  HMC->Add(HTT); delete HTT;
+  TH1F* HZJ=getZToLJetInc();
+  HMC->Add(HZJ); delete HZJ;
+  TH1F* HZL=getZToEEInc();
+  HMC->Add(HZL); delete HZL;
+  MTcat_=tmpCategoryMT;
+  if(HW->Integral()>0.) 
+    hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  else {
+    cout<<"WARNING HW->Integral is 0"<<endl;
+    hShape->Scale(0.);
+  }
+  delete HData;
+  delete HMC;
+  delete HW;
+
+
+  cout<<"getWJetsInc : "<<hShape->Integral()<<endl;
+  return hShape;
+}
+
+TH1F* TauElePlotter::getWJetsInc2012(){
+  TString sname;   
+  if(WJetsType_==3) sname="W3JetsToLNu";
+  else if(WJetsType_==2) sname="W2JetsToLNu";
+  else sname="WJetsToLNu";
+
+  //shape of W+jets
+  TH1F*hShape=getSample(sname);
+  hShape->SetName("getWJetsInc");
+
+  //determine normalization
+  Int_t tmpCategoryMT=MTcat_;
+  MTcat_=13;
+  if(MSSMFlag_)  MTcat_=103;//use pZeta
+  cout<<"  **** Normalzing WJets from MTcat=="<<MTcat_<<endl;
+  TH1F* HW=getSample(sname);
+  TH1F* HData=getTotalData();
+  TH1F* HMC=getZToTauTau();
+  TH1F* HTT=getTTJetsInc();
+  HMC->Add(HTT); delete HTT;
+  TH1F* HZJ=getZToLJetInc();
+  HMC->Add(HZJ); delete HZJ;
+  TH1F* HZL=getZToEEInc();
+  HMC->Add(HZL); delete HZL;
+  TH1F* hQCD=getQCDIncFit();////Need to subtract QCD because it extends at high mT
+  HMC->Add(hQCD); delete hQCD;
+  MTcat_=tmpCategoryMT;
+  if(HW->Integral()>0.) 
+    hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  else {
+    cout<<"WARNING HW->Integral is 0"<<endl;
+    hShape->Scale(0.);
+  }
+  delete HData;
+  delete HMC;
+  delete HW;
+
+
+  cout<<"getWJetsInc : "<<hShape->Integral()<<endl;
+  return hShape;
+}
+
 
 TH1F* TauElePlotter::getWJetsIncShape(){
   cout<<" calling method getWJetsIncShape"<<endl;
@@ -1167,14 +1207,15 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   //Methods using standard WJets sample
   if(WJetsType==0) hWJetsToLNu = getWJetsInc(); 
   if(WJetsType==1) hWJetsToLNu = getSample("WJetsToLNu"); 
-  if(WJetsType==2) hWJetsToLNu = getWJetsTauIsoSM();
   if(WJetsType==3) hWJetsToLNu = getWJetsIncShape();
   if(WJetsType==4) hWJetsToLNu = getWJetsIncShape2012();
+  if(WJetsType==5) hWJetsToLNu = getWJetsInc2012(); 
 
   //Methods using W3Jets sample 
   if(WJetsType==10)hWJetsToLNu=getWJetsInc();
   if(WJetsType==12)hWJetsToLNu=getW3JetsVBF();
   if(WJetsType==14)hWJetsToLNu=getWJetsIncShape2012();
+  if(WJetsType==15)hWJetsToLNu=getWJetsInc2012(); 
 
   //methods using W2Jets sample
   if(WJetsType==20)hWJetsToLNu=getWJetsInc();

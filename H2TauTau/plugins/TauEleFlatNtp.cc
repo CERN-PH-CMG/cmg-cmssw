@@ -375,10 +375,12 @@ void TauEleFlatNtp::beginJob(){
      ///trigger corrections
      if(dataPeriodFlag_==2011){
        if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
-	 triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	   /triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	   /triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	 if(triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	   triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	     /triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	 if(triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	   triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	     /triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
        }else{//no trigger applied --> apply efficiency
 	 triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	 triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
@@ -390,10 +392,12 @@ void TauEleFlatNtp::beginJob(){
      if(dataPeriodFlag_==2012){
        
        if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
-	 triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	   /triggerEff_.eff2012Tau20MC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	   /triggerEff_.eff2012Ele20MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	 if(triggerEff_.eff2012Tau20MC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	   triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	     /triggerEff_.eff2012Tau20MC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	 if(triggerEff_.eff2012Ele20MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	   triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	     /triggerEff_.eff2012Ele20MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
        }else{//no trigger applied --> apply efficiency
 	 triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	 triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
@@ -554,16 +558,8 @@ void TauEleFlatNtp::beginJob(){
    for(std::vector<cmg::Electron>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
      if(m->pt()<=15.0)continue;
      if(fabs(m->eta())>=2.5)continue;
-
-     //if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) continue;
      if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
-
-     //if(m->numberOfHits()!=0)continue;
-     //if(m->passConversionVeto()!=1)continue;     
-     //if((*(m->sourcePtr()))->passConversionVeto()!=1) continue;
-     
      if(!electronIDWP95(&(*m)))continue;
-
      if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
 
      if(m->charge()==-1)muminus=1;
@@ -573,27 +569,6 @@ void TauEleFlatNtp::beginJob(){
    if(muminus&&muplus) return 1;
    return 0;
  }
-
-
-
-// bool TauEleFlatNtp::vetoDiLepton(){
-
-//    for(std::vector<cmg::Electron>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
-//      if(m->pt()<=15.0)continue;
-//      if(fabs(m->eta())>=2.5)continue;
-//      if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.04 ) continue;
-//      if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
-//      if(m->passConversionVeto()!=1)continue;     
-//      if(!electronIDWP95(&(*m)))continue;
-//      if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
-
-//      if((m->charge())*(diTauSel_->leg2().charge())<0) return 1;
-//    }
-
-//    return 0;
-//  }
-
-
 
 
  void TauEleFlatNtp::endJob(){
