@@ -1,6 +1,5 @@
-# Package CMGTools/H2TauTau not in local area -> removed from relinfo
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_boostarrays_18Jul12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_fixsumet_20Jul12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'joseJuly29'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-09'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'pmeckiff25july2012'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'wreece_010812'),
