@@ -30,7 +30,7 @@ process.flatNtp = process.flatNtpTauEle.clone()
 from CMGTools.H2TauTau.tools.joseFlatNtpSample_cff import configureFlatNtpSampleTauEle2012
 configureFlatNtpSampleTauEle2012(process.flatNtp,sampleName)
 process.flatNtp.diTauTag = 'cmgTauElePreSel'
-process.flatNtp.metType = 1
+process.flatNtp.metType = 2
 process.flatNtp.runSVFit = 2
 
 

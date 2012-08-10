@@ -83,14 +83,15 @@ bool Sample::openNtpFile(){
     TString fname;
     struct stat st;
     bool found=0;
-    if(stat((TString(GetTitle())+"/flatNtp_"+GetName()+"_"+(long)i+".root").Data(),&st) == 0){
-      found=1;
-      fname=TString(GetTitle())+"/flatNtp_"+GetName()+"_"+(long)i+".root";
-    }
     if(stat((TString(GetTitle())+"/"+GetName()+"/flatNtp_"+(long)i+".root").Data(),&st) == 0){
       found=1;
       fname=TString(GetTitle())+"/"+GetName()+"/flatNtp_"+(long)i+".root";
     }
+    if(!found)
+      if(stat((TString(GetTitle())+"/flatNtp_"+GetName()+"_"+(long)i+".root").Data(),&st) == 0){
+	found=1;
+	fname=TString(GetTitle())+"/flatNtp_"+GetName()+"_"+(long)i+".root";
+      }
     if(!found) continue;
     
     TFile file(fname.Data(),"read");
@@ -123,9 +124,20 @@ bool Sample::openNtpFile(){
   //Add additional root files
   for(Int_t n=0;n<nNames_;n++){
     for(Int_t i=0;i<=NMAXFILES_;i++){
-      TString fname=TString(GetTitle())+"/flatNtp_"+addFileNames[n]+"_"+(long)i+".root";      
+      TString fname;//=TString(GetTitle())+"/flatNtp_"+addFileNames[n]+"_"+(long)i+".root";      
       struct stat st;
-      if(stat(fname.Data(),&st) != 0) continue;   
+      bool found=0;
+      if(stat((TString(GetTitle())+"/"+addFileNames[n]+"/flatNtp_"+(long)i+".root").Data(),&st) == 0){
+	found=1;
+	fname=TString(GetTitle())+"/"+addFileNames[n]+"/flatNtp_"+(long)i+".root";
+      }
+      if(!found)
+	if(stat((TString(GetTitle())+"/flatNtp_"+addFileNames[n]+"_"+(long)i+".root").Data(),&st) == 0){
+	  found=1;
+	  fname=TString(GetTitle())+"/flatNtp_"+addFileNames[n]+"_"+(long)i+".root";
+	}
+      if(!found) continue;
+
 
    
       TFile file(fname.Data(),"read");

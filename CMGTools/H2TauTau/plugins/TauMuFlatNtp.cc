@@ -377,13 +377,14 @@ bool TauMuFlatNtp::fill(){
   if(dataType_==0 || dataType_==2){
     
     if(dataPeriodFlag_==2011){
-      ///trigger corrections
-      if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
-	triggerEffWeight_ *= triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	  /triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	triggerEffWeight_ *= triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	  /triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-      }else{//no trigger applied --> apply efficiency
+      if(trigPaths_.size()>0){
+	if(triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeight_ *= triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeight_ *= triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }else{
 	triggerEffWeight_ *= triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	triggerEffWeight_ *= triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       }
@@ -392,18 +393,19 @@ bool TauMuFlatNtp::fill(){
       selectionEffWeight_ *= selectionEff_.effCorrMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
     }
     if(dataPeriodFlag_==2012){
-      ///trigger corrections
-      if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
-	triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	  /triggerEff_.effTau2012MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	  /triggerEff_.effMu2012MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-      }else{//no trigger applied --> apply efficiency
+      if(trigPaths_.size()>0){
+	if(triggerEff_.effTau2012MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.effTau2012MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.effMu2012MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.effMu2012MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }else{
 	triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       }
       //id+isolation corrections
-      //selectionEffWeight_ *= selectionEff_.effCorrMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      selectionEffWeight_ *= selectionEff_.effCorrMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
     }
 
   }
@@ -553,11 +555,10 @@ bool TauMuFlatNtp::vetoDiLepton(){
   for(std::vector<cmg::Muon>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
     if(m->pt()<=15.0)continue;
     if(fabs(m->eta())>=2.4)continue;
-    //if(!(m->isTracker()))continue; 
+    if(!(m->isTracker()))continue; 
     if(!(m->isGlobal()))continue; 
     if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
-    //if(fabs(m->dxy())>=0.045)continue; 
-    if(fabs(m->dz())>=0.2)continue; 
+    if(fabs((*(m->sourcePtr()))->innerTrack()->dz(PV_->position()))  > 0.2 ) continue;
     if(m->relIso(0.5,1)>=0.3)continue;        
 
     if(m->charge()==-1)muminus=1;
@@ -567,24 +568,6 @@ bool TauMuFlatNtp::vetoDiLepton(){
   if(muminus&&muplus) return 1;
   return 0;
 }
-
-
-// bool TauMuFlatNtp::vetoDiLepton(){
-//   for(std::vector<cmg::Muon>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
-//     if(m->pt()<=15.0)continue;
-//     if(fabs(m->eta())>=2.5)continue;
-//     if(!(m->isGlobal()||m->isTracker()))continue; 
-//     if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
-//     if(fabs(m->dxy())>=0.045)continue; 
-//     if(fabs(m->dz())>=0.2)continue; 
-//     if(m->relIso(0.5,1)>=0.3)continue;        
-
-//     if((m->charge())*(diTauSel_->leg2().charge())<0)return 1;
-//   }
-  
-//   return 0;
-// }
-
 
 
 void TauMuFlatNtp::endJob(){

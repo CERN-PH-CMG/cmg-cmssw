@@ -37,7 +37,7 @@ process.flatNtp = process.flatNtpTauMu.clone()
 from CMGTools.H2TauTau.tools.joseFlatNtpSample_cff import configureFlatNtpSampleTauMu2012
 configureFlatNtpSampleTauMu2012(process.flatNtp,sampleName)
 process.flatNtp.diTauTag = 'cmgTauMuPreSel'
-process.flatNtp.metType = 1
+process.flatNtp.metType = 2
 process.flatNtp.runSVFit = 2
 
 

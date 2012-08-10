@@ -321,8 +321,8 @@ TH1F* TauMuPlotter::getZToTauTau(){
 //WJets
 TH1F* TauMuPlotter::getWJetsInc(){
   TString sname="WJetsToLNu";
-  //if(WJetsType_==3) sname="W3JetsToLNu";
-  //if(WJetsType_==2) sname="W2JetsToLNu";
+  if(WJetsType_==3) sname="W3JetsToLNu";
+  if(WJetsType_==2) sname="W2JetsToLNu";
 
   //shape of W+jets
   TH1F*hShape=getSample(sname);

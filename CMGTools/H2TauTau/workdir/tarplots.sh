@@ -20,12 +20,13 @@ export path="/data/benitezj/Samples"
 #export tag="TauMu2012V551Aug8svfitPFMET"
 #export tag="TauMu2012V551Aug6svfit"
 
+
 ###e-tau 2012
 #export tag="TauEle2012V5_4_0_NewType1MET3"
 #export tag="TauEle2012V5_4_0_NewType1MET4"
 #export tag="TauEle2012V5_4_0_NewType1MET5"
-#export tag="TauEle2012V551Aug8svfitPFMET"
-export tag="TauEle2012V551Aug7svfit"
+export tag="TauEle2012V551Aug8svfitPFMET"
+#export tag="TauEle2012V551Aug7svfit"
 
 
 export dirname=Plots_${tag}_${1}
@@ -46,5 +47,5 @@ mkdir $dirname/png
 mv $path/$tag/*.png $dirname/png
 
 tar -cvf $dirname.tar $dirname
-rm -rf $dirname
+#rm -rf $dirname
 ###########################################

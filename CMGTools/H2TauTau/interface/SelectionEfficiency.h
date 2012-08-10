@@ -59,6 +59,37 @@ public:
   }
 
 
+  //muTau 2012
+// pT /  eta bin 	MC Efficiency 	Data Efficiency 	Scale Factor
+// ID
+// 15 < pT < 20 Barrel 	0.979 ± 0.003 	0.968 ± 0.002 	0.989 ± 0.004
+// 15 < pT < 20 Endcap 	0.982 ± 0.005 	0.959 ± 0.004 	0.977 ± 0.007
+// 20 < pT < 30 Barrel 	0.970 ± 0.002 	0.961 ± 0.001 	0.991 ± 0.002
+// 20 < pT < 30 Endcap 	0.976 ± 0.003 	0.951 ± 0.002 	0.974 ± 0.004
+// pT > 30 Barrel 	0.973 ± 0.001 	0.962 ± 0.001 	0.989 ± 0.001
+// pT > 30 Endcap 	0.966 ± 0.001 	0.955 ± 0.001 	0.989 ± 0.001
+// Iso
+// 15 < pT < 20 Barrel 	0.728 ± 0.011 	0.688 ± 0.006 	0.945 ± 0.017
+// 15 < pT < 20 Endcap 	0.716 ± 0.018 	0.750 ± 0.010 	1.047 ± 0.030
+// 20 < pT < 30 Barrel 	0.771 ± 0.004 	0.775 ± 0.002 	1.005 ± 0.006
+// 20 < pT < 30 Endcap 	0.841 ± 0.007 	0.834 ± 0.004 	0.992 ± 0.009
+// pT > 30 Barrel 	0.921 ± 0.001 	0.915 ± 0.001 	0.993 ± 0.001
+// pT > 30 Endcap 	0.930 ± 0.002 	0.935 ± 0.001 	1.005 ± 0.002 
+  double effCorrMu2012AB(double pt,double eta){
+    if(fabs(eta)<1.6) {//Barrel
+      if(15.0<pt&&pt<=20.0) return 0.989*0.945;
+      if(20.0<pt&&pt<=30.0) return 0.991*1.005;
+      if(30.0<pt) return 0.989*0.993;
+      return 0;
+    }else if(1.6<fabs(eta)&&fabs(eta)<2.1){//Endcap
+      if(15.0<pt&&pt<=20.0) return 0.977*1.047;
+      if(20.0<pt&&pt<=30.0) return 0.974*0.992;
+      if(30.0<pt) return 0.989*1.005;
+      return 0;
+    }
+    return 0;
+  }
+
   //eTau 2012 //Upto ICHEP
 // 2012
 // pT /  eta bin 	MC Efficiency 	Data Efficiency 	Scale Factor
