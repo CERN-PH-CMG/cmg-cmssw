@@ -17,6 +17,45 @@
              }
 	]
 	},
+        {
+        "tag":"VBF ZZ",
+        "isdata":false,
+        "issignal":false,
+        "spimpose":true,
+        "color":"1",
+        "lcolor":1,
+        "lwidth":2,
+        "fill":0,
+        "marker":1,
+        "data":[
+                {
+                "dtag":"MC8TeV_VBFZZ_Madgraph",
+                "aoddir":["/store/cmst3/user/psilva/Madgraph/QuarticCoupling/AODSIM"],
+                "patdir":["/store/cmst3/user/psilva/Madgraph/QuarticCoupling/PAT"],
+                "xsec":0.08650,
+                "br":[0.0273387105]
+                }
+         ]
+        },
+        {
+        "tag":"VBF ll",
+        "isdata":false,
+        "spimpose":true,
+        "color":"1",
+        "lcolor":1,
+        "lwidth":2,
+        "lstyle":2,
+        "fill":0,
+        "marker":1,
+        "data":[
+                {
+                "dtag":"MC8TeV_VBFZ_interf_Madgraph",
+                "aoddir":["/store/cmst3/user/psilva/Madgraph/VBFZ_interf/AODSIM"],
+                "patdir":["/store/cmst3/user/psilva/Madgraph/VBFZ_interf/PAT"],
+                "xsec":0.5484
+                }
+         ]
+        },
 	{
         "tag":"WW#rightarrow 2l2#nu",
         "isdata":false,

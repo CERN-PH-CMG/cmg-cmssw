@@ -17,6 +17,25 @@
              }
 	]
 	},
+        {
+        "tag":"VBF ll",
+        "isdata":false,
+        "spimpose":true,
+        "color":"1",
+        "lcolor":1,
+        "lwidth":2,
+        "lstyle":2,
+        "fill":0,
+        "marker":1,
+        "data":[
+                {
+                "dtag":"MC7TeV_VBFZ_interf_Madgraph",
+                "aoddir":["/store/cmst3/user/psilva/Madgraph/VBFZ_interf/AODSIM"],
+                "patdir":["/store/cmst3/user/psilva/Madgraph/VBFZ_interf/PAT"],
+                "xsec":0.4486
+                }
+         ]
+        },
 	{
         "tag":"WW#rightarrow 2l2#nu",
         "isdata":false,
