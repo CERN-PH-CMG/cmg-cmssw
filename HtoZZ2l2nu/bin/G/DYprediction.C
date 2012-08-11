@@ -22,7 +22,7 @@ struct Shape_t
   std::map<TString, TH1 *> bckg, signal;
 };
 
-void showShape(const Shape_t &shape,TString SaveName,bool is2011);
+void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model);
 void setTDRStyle();
 
 
@@ -62,55 +62,96 @@ void addToShape(Shape_t &a, Shape_t &b,int sign=+1)
 
 //
 enum SubtractionTypes {NOSUBTRACTION, HALVE, EWKSUBTRACTION, EWKSUBTRACTIONHALVE};
-void getDYprediction(int subtractType=NOSUBTRACTION)
+enum ModelType { HZZ,ZZ,VBFZ};
+void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 {
   setTDRStyle();
+ 
 
-  //  TString llFile="../../test/results/plotter_2012.root";
-  // TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
-  // TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/qt/plotter.root";
-  //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
-    //  TString llFile="../../plotter_zz_2012.root"; 
+  TString llFile,gammaFile;
+  std::vector<std::string> histos,dilSignal,dilcats,gcats;
+  if(model==VBFZ) 
+    {
+      //gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
+      // llFile="../../plotter_vbfz_2012.root";
 
-  //  TString llFile="../../test/results/plotter_2011.root";
-  //  TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
-  //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/qt/plotter.root";
-  //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-  // TString llFile="../../plotter_zz_2011.root";
+      gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
+      llFile="../../plotter_vbfz_2011.root";
 
-  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-  TString llFile="../../test/results/plotter.root";
+      histos.push_back("pfpuloosevbfcandjetdeta");
+      histos.push_back("pfpuloosevbfcandjet1pt");
+      histos.push_back("pfpuloosevbfcandjet2pt");
+      histos.push_back("pfpuloosevbfcandjet1eta");
+      histos.push_back("pfpuloosevbfcandjet2eta");
+      histos.push_back("pfpuloosevbfcjv");
+      histos.push_back("pfpuloosevbfdphijj");
+      histos.push_back("pfpuloosevbfpremjj");
+      histos.push_back("pfpuloosevbfmjj");
+      histos.push_back("pfpuloosevbfhardpt");
+      //      histos.push_back("dijet_mass_shapes");
+      //  histos.push_back("vbfz_mjj_shapes");
+
+      //dilSignal.push_back("VBF Z");
+      //dilSignal.push_back("VBF Z (interference)");
+      dilSignal.push_back("#alpha^{4}_{EW}-ll");
+
+      //dilcats.push_back("geq1jets");
+      // dilcats.push_back("vbf");
+      dilcats.push_back("");
+
+      //gcats.push_back("eq1jets"); gcats.push_back("eq2jets"); gcats.push_back("geq3jets"); //to be merged
+      // gcats.push_back("vbf");
+      gcats.push_back("");
+    }
+  else
+    {
+      //FIXME
+      //  TString llFile="../../test/results/plotter_2012.root";
+      // TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
+      // TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/qt/plotter.root";
+      //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
+      //  TString llFile="../../plotter_zz_2012.root"; 
+      
+      //  TString llFile="../../test/results/plotter_2011.root";
+      //  TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
+      //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/qt/plotter.root";
+      //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
+      // TString llFile="../../plotter_zz_2011.root";
+
+      gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
+      llFile="../../test/results/plotter.root";
+      
+      //   string histos[] = {//"met_met",
+      //     //    "met_redMet"//,
+      //     "met_min3Met"//,
+      // 		     //"met_redMet15",
+      // 		     //"met_redMet20",
+      // 		     // "balance",
+      // 		     //"mt",
+      // 		     //"mindphijmet",
+      // 		     // "pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj"
+      // 		     //,"pfvbfcjv", "pfvbfhardpt",
+      // 		     //"mt_shapes"//,
+      // 		     //"zpt_shapes",
+      // 		     // "met_shapes"
+      dilSignal.push_back("ggH(350)#rightarrow ZZ");
+      dilSignal.push_back("qqH(350)#rightarrow ZZ");
+      //string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};
+      //string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
+    };
+
 
   bool is2011(llFile.Contains("2011"));
 
   string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
-  string histos[] = {//"met_met",
-    //    "met_redMet"//,
-    "met_min3Met"//,
-		     //"met_redMet15",
-		     //"met_redMet20",
-		     // "balance",
-		     //"mt",
-		     //"mindphijmet",
-		     // "pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj"
-		     //,"pfvbfcjv", "pfvbfhardpt",
-		     //"mt_shapes"//,
-		     //"zpt_shapes",
-		     // "met_shapes"
-  };
-  const size_t nhistos=sizeof(histos)/sizeof(string);
-  //  string dilcats[]= {"eq0jets","geq1jets","vbf"};
-  string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};
-  const size_t ndilcats=sizeof(dilcats)/sizeof(string);
+  const size_t nhistos=histos.size();
+  const size_t ndilcats=dilcats.size();
   string dilprocs[]={"WW#rightarrow 2l2#nu","ZZ","WZ#rightarrow 3l#nu","t#bar{t}","Single top","W#rightarrow l#nu","data"};
   Int_t dilColors[]={592, 590, 596, 8, 824, 809, 1 };
   const size_t ndilprocs=sizeof(dilprocs)/sizeof(string);
-  string dilSignal[]={"ggH(350)#rightarrow ZZ","qqH(350)#rightarrow ZZ"};
-  const size_t nDilSignals=sizeof(dilSignal)/sizeof(string);
-  //string gcats[]= {"eq0jets","eq0softjets","geq1jets","vbf"};
-  string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
-  const size_t ngcats=sizeof(gcats)/sizeof(string);
+  const size_t nDilSignals=dilSignal.size();
+  const size_t ngcats=gcats.size();
   string gprocs[]={"Z#gamma#rightarrow#nu#nu#gamma","W#gamma#rightarrowl#nu#gamma","W#rightarrow l#nu","data (#gamma)"};
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
 
@@ -129,7 +170,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		{
 		  string hname=dilprocs[iproc]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)llIn->Get(hname.c_str());
-		  if(h==0)  { cout << hname << endl; continue; }
+		  if(h==0)  { cout << "Missing " << hname << endl; continue; }
 		  if(histos[ih]=="mt_shapes")
 		    {
 		      cout << h->GetXaxis()->GetNbins() << endl;
@@ -144,13 +185,18 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		  if(dilprocs[iproc].find("data") != string::npos) 
 		    {
 		      m_shape.data=h;
-
+		      
 		      for(size_t isig=0; isig<nDilSignals; isig++)
 			{
 			  string hsigname = dilSignal[isig]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
 			  TH1 *hsig       = (TH1 *)llIn->Get(hsigname.c_str());
-			  if(hsig==0) { cout << hsigname << endl; continue; }
+			  if(hsig==0) { cout << "Missing " << hsigname << endl; continue; }
 			  hsig->SetTitle(dilSignal[isig].c_str());
+			  if(dilSignal[isig].find("VBF Z")!=string::npos)
+			    {
+			      if(dilSignal[isig].find("interf")==string::npos) hsig->SetTitle("#alpha_{EW}^{4}-Z");			  
+			      else                                             hsig->SetTitle("#alpha_{EW}^{4}-ll");			  
+			    }
 			  hsig->SetDirectory(0);
 			  hsig->SetLineColor(1);
 			  hsig->SetLineStyle(1+isig);
@@ -204,7 +250,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		  		  
 		  //detach and save
 		  h->SetDirectory(0);
-		  if(gprocs[iproc].find("data") != string::npos) { h->SetTitle("#splitline{Instr. bkg}{(data)}"); m_shape.data=h; }
+		  if(gprocs[iproc].find("data") != string::npos) {
+		    if(model==VBFZ) h->SetTitle("QCD Z");
+		    else            h->SetTitle("#splitline{Instr. bkg}{(data)}");
+		    m_shape.data=h; 
+		  }
 		  else
 		    {
 		      if(m_shape.bckg.size()==0 && h->Integral())
@@ -222,7 +272,19 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 	      //finalize shape
 	      string normKey(ch[ich]);
 	      TH1 *normH=0;
-	      if(gcats[icat]=="geq3jets" || gcats[icat]=="eq0softjets")
+	      if(model==VBFZ && (gcats[icat]=="eq2jets" || gcats[icat]=="geq3jets"))
+		{
+                  TString normKeyPostFix("geq1jets");
+                  normKey += normKeyPostFix;
+                  string keyToGet(ch[ich]+normKeyPostFix+"_"+histos[ih]);
+                  if(gShapesMap.find(keyToGet)!= gShapesMap.end())
+                    {
+                      Shape_t &shapeToCorrect=gShapesMap[keyToGet];
+                      addToShape(shapeToCorrect,m_shape);
+                      normH=shapeToCorrect.data;
+                    }
+		}
+	      else if(gcats[icat]=="geq3jets" || gcats[icat]=="eq0softjets")
 		{
 		  int sign(+1);
 		  TString normKeyPostFix("geq2jets");
@@ -240,8 +302,12 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 	      else 
 		{
 		  string key=ch[ich]+gcats[icat]+"_"+histos[ih];
-		  
-		  if(gcats[icat]=="eq2jets") 
+		  if(model==VBFZ && gcats[icat]=="eq1jets") 
+		    {
+		      key=ch[ich]+"geq1jets"+"_"+histos[ih];
+		      normKey += "geq1jets";
+		    }		  
+		  else if(gcats[icat]=="eq2jets") 
 		    {
 		      key=ch[ich]+"geq2jets"+"_"+histos[ih];
 		      normKey += "geq2jets";
@@ -253,18 +319,20 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 		  normH=m_shape.data;
 		}
 	      
+	      int normBin(-1);
 	      ////normalization factor (from MET<50)
-	      // if(histos[ih].find("met_met")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
-// 	      int normBin=normH->GetXaxis()->FindBin(50);
-	      
-//	      if(histos[ih].find("met_redMet")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
-//	      int normBin=normH->GetXaxis()->FindBin(40);
+	      if(model==HZZ && histos[ih].find("met_met")!=string::npos)  normBin=normH->GetXaxis()->FindBin(50);
+	      ////normalization factor (from red-MET<40)
+	      if(model==ZZ && histos[ih].find("met_redMet")!=string::npos) normBin=normH->GetXaxis()->FindBin(40);
+	      ////normalization factor (from deta_jj<3)
+	      //if(model==VBFZ && histos[ih].find("jetdeta")!=string::npos) normBin=normH->GetXaxis()->FindBin(3);
+	      if(model==VBFZ && histos[ih].find("premjj")!=string::npos) normBin=normH->GetXaxis()->FindBin(500);
 
-	      if(histos[ih].find("met_min3Met")==string::npos) continue;// || histos[ih].find("met_met250")!=string::npos) continue;
-	      int normBin=normH->GetXaxis()->FindBin(40);
-	      
+	      if(normBin<0) continue;
+	      cout << histos[ih] << " " << normBin << " " << " " << normKey << flush;
 	      Shape_t &dilMetShape = shapesMap[normKey+"_"+histos[ih]];
 	      float sf=dilMetShape.data->Integral(1,normBin)/normH->Integral(1,normBin);
+	      cout << " " << sf << endl;
 	      scaleFactors[normKey]=sf;
 	    }
 	}
@@ -278,12 +346,12 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
   for(std::map<string,Shape_t>::iterator it=shapesMap.begin(); it!=shapesMap.end(); it++) 
    {
      string normKey("mumu"); 
-     if(it->first.find("ee")!=string::npos)       normKey="ee";
-     if(it->first.find("eq0jets_")!=string::npos)  normKey+="eq0jets";
-     if(it->first.find("geq1jets_")!=string::npos)  normKey+="geq1jets";
+     if(it->first.find("ee")!=string::npos)             normKey="ee";
+     if(it->first.find("eq0jets_")!=string::npos)       normKey+="eq0jets";
+     if(it->first.find("geq1jets_")!=string::npos)      normKey+="geq1jets";
      else if(it->first.find("eq1jets_")!=string::npos)  normKey+="eq1jets";
-     if(it->first.find("geq2jets_")!=string::npos) normKey+="geq2jets";
-     if(it->first.find("vbf_")!=string::npos)      normKey+="vbf";
+     if(it->first.find("geq2jets_")!=string::npos)      normKey+="geq2jets";
+     if(it->first.find("vbf_")!=string::npos)           normKey+="vbf";
      float sf = scaleFactors[normKey];
      
      if(sf==0) continue;
@@ -365,7 +433,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
      corrGammaH->SetFillColor(831);
      it->second.totalBckg->Add(corrGammaH);
      it->second.bckg["Instr. background (data)"]=corrGammaH;
-     showShape(it->second,"final_"+it->first,is2011);
+     showShape(it->second,"final_"+it->first,is2011,model);
      gOutDir->cd();
      TString keyToWrite(it->first.c_str());
      //     keyToWrite.ReplaceAll("eeeq","ee_eq");
@@ -379,7 +447,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 	 Shape_t &shapeToCorrect=shapesMap[keyToGet.Data()];
 	 addToShape(shapeToCorrect,it->second,1);
 	 keyToGet=keyToGet.ReplaceAll("ee","");
-	 showShape(shapeToCorrect,keyToGet.Data(),is2011);
+	 showShape(shapeToCorrect,keyToGet.Data(),is2011,model);
        }
      
    }
@@ -388,36 +456,63 @@ void getDYprediction(int subtractType=NOSUBTRACTION)
 }
 
 //
-void showShape(const Shape_t &shape,TString SaveName,bool is2011)
+void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
 {
   if(shape.data->InheritsFrom("TH2")) return;
 
   TCanvas* c1 = new TCanvas(SaveName,SaveName,800,800);
-  c1->SetWindowSize(600,600);
   c1->cd();
-  
+
   TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);  t1->Draw();  t1->cd();
   t1->SetLogy(true);
-  TLegend* legA  = new TLegend(0.60,0.6,0.95,0.99, "NDC");
-  legA->SetNColumns(2);
+
+  TLegend* legA  = new TLegend(0.845,0.2,0.99,0.99, "NDC");
 
   bool canvasIsFilled(false);
   THStack *stack=0;
-  TH1 *mc=0;
+  TH1 *mc=0,*vbfmc=0;
   if(shape.bckg.size())
     {
       mc=(TH1 *)shape.totalBckg->Clone("mc");
+      vbfmc=(TH1 *)shape.totalBckg->Clone("vbfmc"); vbfmc->Reset("ICE");
       stack = new THStack("stack","stack");
-      TH1 *nrbBckg=0;
+ 
+      //include VBF Z in the stack
+      if(model==VBFZ)
+	{
+	  for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
+	    {
+	      TH1 *h=it->second;
+	      h->SetFillColor(809);
+	      h->SetLineStyle(1);
+	      h->SetLineColor(1);
+	      stack->Add(h,"HIST");
+	      legA->AddEntry(h,h->GetTitle(),"F");
+	    }
+	}
+
+     TH1 *nrbBckg=0;
       for(std::map<TString,TH1 *>::const_reverse_iterator it = shape.bckg.rbegin(); it != shape.bckg.rend(); it++)
         {
 	  TH1 *h = it->second;
+	  vbfmc->Add(h);
+
           if(h->Integral()<=0) continue;
           TString itit(h->GetTitle());
- 	  if(itit.Contains("t#bar{t}") || itit.Contains("Single top") || itit.Contains("W#rightarrow") || itit.Contains("WW") )
- 	    {
- 	      if(nrbBckg==0) { nrbBckg = (TH1 *) h->Clone("nrb"); nrbBckg->SetTitle("#splitline{Non resonant}{bkg (data)}"); legA->AddEntry(nrbBckg,nrbBckg->GetTitle(),"F"); nrbBckg->SetDirectory(0); stack->Add(nrbBckg,"HIST"); }
- 	      else           { nrbBckg ->Add( h ); }
+ 	  if(itit.Contains("t#bar{t}") || itit.Contains("Single top") || itit.Contains("W#rightarrow") || itit.Contains("WW") 
+	     || (model==VBFZ && (itit.Contains("ZZ") || itit.Contains("WZ") ) ) )
+	    {
+ 	      if(nrbBckg==0) { 
+		nrbBckg = (TH1 *) h->Clone("nrb"); 
+		if(model==VBFZ) nrbBckg->SetTitle("Top,W,VV");
+		else            nrbBckg->SetTitle("#splitline{Non resonant}{bkg (data)}"); 
+		legA->AddEntry(nrbBckg,nrbBckg->GetTitle(),"F");
+		nrbBckg->SetDirectory(0); 
+		stack->Add(nrbBckg,"HIST"); 
+	      }
+ 	      else { 
+		nrbBckg ->Add( h ); 
+	      }
  	    }
 	  else
 	    {
@@ -425,7 +520,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011)
 	      legA->AddEntry(h,itit,"F");
 	    }
 	}
-      
+ 
       stack->Draw();
       stack->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
       stack->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
@@ -460,12 +555,15 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011)
     }
 
   //signal
-  for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
+  if(model!=VBFZ)
     {
-      TH1 *h=it->second;
-      h->Draw(canvasIsFilled ? "histsame" : "hist");
-      legA->AddEntry(h,h->GetTitle(),"L");
-      canvasIsFilled=true;
+      for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
+	{
+	  TH1 *h=it->second;
+	  h->Draw(canvasIsFilled ? "histsame" : "hist");
+	  legA->AddEntry(h,h->GetTitle(),"L");
+	  canvasIsFilled=true;
+	}
     }
 
 
@@ -518,13 +616,54 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011)
   c1->cd();
   c1->Modified();
   c1->Update();
+  if(SaveName.BeginsWith("_")) SaveName="inc"+SaveName;
   c1->SaveAs(SaveName+".png");
-c1->SaveAs(SaveName+".pdf");
-  // c1->SaveAs(SaveName+".C");
-  //  delete c1;
-  //   if(mc)    delete mc;
-  //   if(stack) delete stack;
-  //   if(ratio) delete ratio;
+  c1->SaveAs(SaveName+".pdf");
+
+  if(!SaveName.Contains("hardpt") && !SaveName.Contains("dphijj") && !SaveName.Contains("mjj") ) return;
+  bool doRebin(SaveName.Contains("mjj"));
+
+  //subtract data
+  c1->Clear();
+  c1->SetWindowSize(600,600);
+  c1->SetLogy(false);
+
+  TLegend* legB  = new TLegend(0.845,0.2,0.99,0.99, "NDC");
+
+  //signal
+  canvasIsFilled=false;
+  TH1 *hframe=0;
+  for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
+    {
+      TH1 *h=(TH1 *)it->second->Clone();
+      h->Draw(canvasIsFilled ? "histsame" : "hist");
+      if(doRebin) h->Rebin(4);
+      if(!canvasIsFilled) hframe=h;
+      legB->AddEntry(h,h->GetTitle(),"F");
+      canvasIsFilled=true;
+    }
+
+  TH1 *diff = (TH1*)shape.data->Clone("DiffHistogram");
+  diff->SetDirectory(0);
+  diff->Add(vbfmc,-1);
+  if(doRebin) diff->Rebin(4);
+  diff->Draw(canvasIsFilled ? "same" : "");
+  legB->AddEntry(diff,"residuals","P");
+ 
+  hframe->GetYaxis()->SetRangeUser(1.05*diff->GetMinimum(),diff->GetMaximum()*1.05);
+
+  legB->SetFillColor(0); legB->SetFillStyle(0); legB->SetLineColor(0);
+  legB->SetHeader("");
+  legB->Draw("same");
+  legB->SetTextFont(42);
+
+  T->SetBorderSize(0);
+  T->Draw();
+  SaveName.ReplaceAll("hardpt","hardpt_sub");
+  SaveName.ReplaceAll("dphijj","dphijj_sub");
+  SaveName.ReplaceAll("mjj","mjj_sub");
+  c1->SaveAs(SaveName+".png");
+  c1->SaveAs(SaveName+".pdf");
 }
 
 
@@ -668,5 +807,15 @@ void setTDRStyle() {
   // tdrStyle->SetHistMinimumZero(kTRUE);
 
   tdrStyle->cd();
+
+  gStyle->SetPadTopMargin   (0.06);
+  gStyle->SetPadBottomMargin(0.12);
+  gStyle->SetPadRightMargin (0.16);
+  gStyle->SetPadLeftMargin  (0.14);
+  gStyle->SetTitleSize(0.04, "XYZ");
+  gStyle->SetTitleXOffset(1.1);
+  gStyle->SetTitleYOffset(1.45);
+  gStyle->SetPalette(1);
+  gStyle->SetNdivisions(505);
 
 }
