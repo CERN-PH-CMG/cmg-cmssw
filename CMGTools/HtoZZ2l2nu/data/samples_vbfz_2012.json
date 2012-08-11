@@ -1,21 +1,5 @@
 {
     "proc":[
-	{
-	"tag":"ZZ",
-        "isdata":false,
-	"color":"590",
-        "lcolor":1,
-	"marker":1,
-	"data":[
-	    {
-                "dtag":"MC8TeV_ZZ",
-                "split":2,
-	        "mctruthmode":1,
-                "xsec":7.92,
-		"br":[0.0403896,1.14]
-             }
-	]
-	},
         {
         "tag":"#alpha^{4}_{EW}-ll",
         "isdata":false,
@@ -33,6 +17,22 @@
                 }
          ]
         },
+	{
+	"tag":"ZZ",
+        "isdata":false,
+	"color":"590",
+        "lcolor":1,
+	"marker":1,
+	"data":[
+	    {
+                "dtag":"MC8TeV_ZZ",
+                "split":2,
+	        "mctruthmode":1,
+                "xsec":7.92,
+		"br":[0.0403896,1.14]
+             }
+	]
+	},
 	{
         "tag":"WW#rightarrow 2l2#nu",
         "isdata":false,
