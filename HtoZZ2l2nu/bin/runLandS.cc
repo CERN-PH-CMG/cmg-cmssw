@@ -511,7 +511,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
       axis->GetYaxis()->SetTitle(b==0?mc->GetYaxis()->GetTitle():"");
       axis->SetMinimum(mc->GetMinimum());
       axis->SetMaximum(1.1*std::max(mcErorMax, alldata->GetMaximum()));
-      axis->GetXaxis()->SetRangeUser(150,700);
+      //axis->GetXaxis()->SetRangeUser(150,700);
       axis->Draw();
       stack->Draw("same");
       
@@ -1175,7 +1175,8 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
    proc.ReplaceAll("#bar{t}","tbar");
    proc.ReplaceAll("Z-#gamma^{*}+jets#rightarrow ll","dy");
    proc.ReplaceAll("#rightarrow","");
-   proc.ReplaceAll("(","");    proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");   proc.ReplaceAll("/","");  proc.ReplaceAll("#","");  proc.ReplaceAll("=",""); proc.ReplaceAll(".","");
+   proc.ReplaceAll("(",""); proc.ReplaceAll(")","");    proc.ReplaceAll("+","");    proc.ReplaceAll(" ","");   proc.ReplaceAll("/","");  proc.ReplaceAll("#",""); 
+   proc.ReplaceAll("=",""); proc.ReplaceAll(".","");    proc.ReplaceAll("^","");    proc.ReplaceAll("}","");   proc.ReplaceAll("{","");
    proc.ToLower();
 
    for(unsigned int i=0;i<systs.size();i++){
