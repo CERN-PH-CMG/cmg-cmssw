@@ -45,7 +45,17 @@ class HTauTauElectron( Electron ):
 
         https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
         """
-        if self.looseIdForEleTau() == False : return False
+        # if self.eventId == 428746: 
+        #    print 'STOPPING'
+        #    import pdb
+        #    pdb.set_trace()
+
+        #COLIN: loose id shouldn't be required here (Jose said)
+        # if self.looseIdForEleTau() == False : return False
+        #BUT: need to apply conversion rejection and missing inner hits cuts
+        if self.numberOfHits() != 0: return False
+        if not self.passConversionVeto(): return False
+        
         # eta = abs( self.eta() )
         eta = abs( self.sourcePtr().superCluster().eta() )
         if eta > 2.1 : return False
