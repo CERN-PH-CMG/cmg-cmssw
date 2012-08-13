@@ -100,7 +100,7 @@ cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* const ou
 
   //see https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPFBasedIsolation#Recommended_electron_vetoes_Upda
   reco::isodeposit::Direction Dir = reco::isodeposit::Direction(input->superCluster()->eta(), input->superCluster()->phi());
-  if( abs( input->superCluster()->eta() ) > 1.479 ){
+  if( fabs( input->superCluster()->eta() ) > 1.479 ){
     vetos_ch.push_back(new reco::isodeposit::ConeVeto( Dir, 0.015 ));
     vetos_ph.push_back(new reco::isodeposit::ConeVeto( Dir, 0.08 ));
   }
