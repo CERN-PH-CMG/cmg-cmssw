@@ -792,7 +792,7 @@ int main(int argc, char* argv[])
 	    if(passBveto) mon.fillHisto("selsync",tags_full,3,weight);
 	  }
 	}
-
+	
 	if(passZpt){
 	  mon.fillHisto  ("eventflow",tags_full,2,weight);
 	  
@@ -1033,9 +1033,10 @@ int main(int argc, char* argv[])
 	 }
 
 	 if(varJets.size()>1){
+
+	   int ncjv(0);
 	   double maxEta=max(varJets[0].eta(),varJets[1].eta());
 	   double minEta=min(varJets[0].eta(),varJets[1].eta());
-	   int ncjv(0);
 	   for(size_t iotherjet=2; iotherjet<varJets.size(); iotherjet++){
 	     if(varJets[iotherjet].pt()<30 || varJets[iotherjet].eta()<minEta || varJets[iotherjet].eta()>maxEta)continue;
 	     ncjv++;
@@ -1053,14 +1054,24 @@ int main(int argc, char* argv[])
 	     bool passLocalJet2Pt(varJets[1].pt()>minJet2Pt);
 	     bool passLocalEtaGap(fabs(varJets[0].eta()-varJets[1].eta())>minEtaGap);
 	     bool passLocalDijetMass((varJets[0]+varJets[1]).M()>minDijetMass);
-	     bool passLocalPreselection(pass3dLeptonVeto && passLocalBveto && passLocalZmass && passLocalZpt && passLocalRedMet && passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass);		    
+	     //bool passLocalPreselection(pass3dLeptonVeto && passLocalBveto && passLocalZmass && passLocalZpt && passLocalRedMet && passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass);		    
 	     //		    if(passLocalPreselection){
 	     //	mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
 	     // }
+	     if(index==1 && ivar==0)
+	       {
+		 if((ev.run==191062 && ev.lumi==97 && ev.event==110336433) ||
+		    ( ev.run==191062 && ev.lumi==183 && ev.event==204686174) ||
+		    (ev.run==191062 && ev.lumi==230 && ev.event==254667359) ||
+		    (ev.run==191062 && ev.lumi==281 && ev.event==307799427) ||
+		    (ev.run==191062 && ev.lumi==459 && ev.event==482792157))
+		   cout << passLocalJet1Pt << passLocalJet2Pt << passLocalEtaGap << passLocalDijetMass << passLocalZmass << passLocalZpt << (ncjv==0) << pass3dLeptonVeto << passLocalBveto << endl;
+	       }
+
 	     if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt && ncjv==0 && pass3dLeptonVeto && passLocalBveto){
 	       mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
-	       //       if(index==1 && ivar==0)
-	       //	 cout << tags_full.size() << " " << varJets[0].pt() << " " << varJets[1].pt() << " " << fabs(varJets[0].eta()-varJets[1].eta()) << " " << minEtaGap << " " << (varJets[0]+varJets[1]).M() << " " << ncjv << " " << iweight << endl;
+	       if(index==1 && ivar==0)
+		 cout << tags_full.size() << " " << varJets[0].pt() << " " << varJets[1].pt() << " " << fabs(varJets[0].eta()-varJets[1].eta()) << " " << minEtaGap << " " << (varJets[0]+varJets[1]).M() << " " << ncjv << " " << iweight << endl;
 	     }
 	   }
 	 }

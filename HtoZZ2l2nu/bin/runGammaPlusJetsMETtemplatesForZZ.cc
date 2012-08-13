@@ -556,19 +556,18 @@ int main(int argc, char* argv[])
 	    }
 	  if(!passKinematics) continue;
 	  if(!passMultiplicityVetoes) continue;
+	  if(hasElectronVeto || !passR9tight) continue;
+	  if(!passBveto) continue;
 	  
+	  //fill the histograms now
 	  LorentzVector iboson(isGammaEvent ? gammaEvHandler.massiveGamma(dilCats[idc]) : gamma);
 	  float zmass=iboson.mass();
 	  Float_t mt( METUtils::transverseMass(iboson,metP4,true) );
-	  
 	  float iweight=weight;
 	  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
-	 
 	  for(size_t isc=0; isc<subcats.size(); isc++)
 	    {
 	      TString ctf=dilCats[idc]+subcats[isc];	      
-	      if(hasElectronVeto || !passR9tight) continue;
-	      if(!passBveto) continue;
 	      
 	      mon.fillHisto("zpt"    ,ctf, gamma.pt(),  iweight);      //this is for synch
 	      mon.fillHisto("eta",ctf, fabs(gamma.eta()),iweight);
@@ -593,7 +592,6 @@ int main(int argc, char* argv[])
 	      //VBF monitoring
 	      if(njets30>=2)
 		{
-		  
 		  for(size_t ijetid=0; ijetid<sizeof(jetIds)/sizeof(TString); ijetid++)
 		    {
 		      int jetIdToApply(JETID_LOOSE);
@@ -644,7 +642,7 @@ int main(int argc, char* argv[])
 		      
 		      
 		      //stat analysis
-		      if(jetIds[ijetid]=="pf") 
+		      if(ijetid==0)
 			{
 			  for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
 			    float minJet1Pt    = optim_Cuts2_jet1_pt[index];
@@ -664,9 +662,10 @@ int main(int argc, char* argv[])
 			    {
 			      mon.fillHisto("dijet_mass_shapes", ctf, index, mjj, iweight);
 			      if(index==1)
-				cout << ctf << " " << njets30 << " " << gamma.pt() <<  " " 
-				     << selJets[0].pt() << " " << selJets[1].pt() << " " << fabs(selJets[0].eta()-selJets[1].eta()) 
-				     << " " << minEtaGap << " " << mjj << " " << ncjv << " " << iweight << endl;
+				cout << " ev.run==" << ev.run << " && ev.lumi==" << ev.lumi << " ev.event=="<< ev.event << endl;
+// 				cout << ctf << " " << njets30 << " " << gamma.pt() <<  " " 
+// 				     << selJets[0].pt() << " " << selJets[1].pt() << " " << fabs(selJets[0].eta()-selJets[1].eta()) 
+// 				     << " " << minEtaGap << " " << mjj << " " << ncjv << " " << iweight << endl;
 			    }
 			  }
 			}
