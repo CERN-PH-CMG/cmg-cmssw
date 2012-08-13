@@ -167,8 +167,8 @@ int main(int argc, char* argv[])
      Hoptim_cuts2_eta_gap->Fill(index,optim_Cuts2_eta_gap[index]);
      Hoptim_cuts2_dijet_mass->Fill(index,optim_Cuts2_dijet_mass[index]);
    }
-   mon.addHistogram( new TH2F ("dijet_mass_shapes",";cut index;M_{Jet1,Jet2} [GeV];#events (/50GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),200,0.,1200) );
-   mon.addHistogram( new TH2F ("vbfz_mjj_shapes",";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),120,0,3000) );
+   //   mon.addHistogram( new TH2F ("dijet_mass_shapes",";cut index;M_{Jet1,Jet2} [GeV];#events (/50GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),200,0.,1200) );
+   mon.addHistogram( new TH2F ("dijet_mass_shapes",";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),120,0,3000) );
   
 
   //##############################################
@@ -593,75 +593,85 @@ int main(int argc, char* argv[])
 	      //VBF monitoring
 	      if(njets30>=2)
 		{
-		
-		for(size_t ijetid=0; ijetid<sizeof(jetIds)/sizeof(TString); ijetid++)
-		  {
-		    int jetIdToApply(JETID_LOOSE);
-		    if(jetIds[ijetid]=="pfpuloose")    jetIdToApply=JETID_CUTBASED_LOOSE;
-		    if(jetIds[ijetid]=="pfpumvaloose") jetIdToApply=JETID_OPT_LOOSE;
-		    if(!hasObjectId(selJets[0].pid,jetIdToApply) || !hasObjectId(selJets[0].pid,jetIdToApply)) continue; 
-		   		    
-		    LorentzVector vbfSyst=selJets[0]+selJets[1];
-		    LorentzVector hardSyst=vbfSyst+gamma; //+zvvs[0]
-		    float hardpt=hardSyst.pt();
-		    float dphijj=deltaPhi(selJets[0].phi(),selJets[1].phi());
-		    double maxEta=max(selJets[0].eta(),selJets[1].eta());
-		    double minEta=min(selJets[0].eta(),selJets[1].eta());
-		    float detajj=maxEta-minEta;
-		    mon.fillHisto(jetIds[ijetid]+"vbfcandjetpt",       ctf, fabs(selJets[0].pt()),iweight);
-		    mon.fillHisto(jetIds[ijetid]+"vbfcandjetpt",       ctf, fabs(selJets[1].pt()),iweight);
-		    mon.fillHisto(jetIds[ijetid]+"vbfcandjet1pt", ctf, max(selJets[0].pt(),selJets[1].pt()),iweight);
-                    mon.fillHisto(jetIds[ijetid]+"vbfcandjet2pt", ctf, min(selJets[0].pt(),selJets[1].pt()),iweight);
-		    
-		    if(selJets[0].pt()>30 && selJets[1].pt()>30) {
+		  
+		  for(size_t ijetid=0; ijetid<sizeof(jetIds)/sizeof(TString); ijetid++)
+		    {
+		      int jetIdToApply(JETID_LOOSE);
+		      if(jetIds[ijetid]=="pfpuloose")    jetIdToApply=JETID_CUTBASED_LOOSE;
+		      if(jetIds[ijetid]=="pfpumvaloose") jetIdToApply=JETID_OPT_LOOSE;
+		      if(!hasObjectId(selJets[0].pid,jetIdToApply) || !hasObjectId(selJets[0].pid,jetIdToApply)) continue; 
+		      
+		      LorentzVector vbfSyst=selJets[0]+selJets[1];
+		      LorentzVector hardSyst=vbfSyst+gamma; //+zvvs[0]
+		      float hardpt=hardSyst.pt();
+		      float dphijj=deltaPhi(selJets[0].phi(),selJets[1].phi());
+		      double maxEta=max(selJets[0].eta(),selJets[1].eta());
+		      double minEta=min(selJets[0].eta(),selJets[1].eta());
+		      float detajj=maxEta-minEta;
+		      mon.fillHisto(jetIds[ijetid]+"vbfcandjetpt",       ctf, fabs(selJets[0].pt()),iweight);
+		      mon.fillHisto(jetIds[ijetid]+"vbfcandjetpt",       ctf, fabs(selJets[1].pt()),iweight);
+		      mon.fillHisto(jetIds[ijetid]+"vbfcandjet1pt", ctf, max(selJets[0].pt(),selJets[1].pt()),iweight);
+		      mon.fillHisto(jetIds[ijetid]+"vbfcandjet2pt", ctf, min(selJets[0].pt(),selJets[1].pt()),iweight);
+		      
 		      int ncjv(0);
 		      float htcjv(0);
-		      for(size_t iotherjet=2; iotherjet<selJets.size(); iotherjet++){
-                        if(selJets[iotherjet].pt()<30 || selJets[iotherjet].eta()<minEta || selJets[iotherjet].eta()>maxEta) continue;
-			if(!hasObjectId(selJets[iotherjet].pid,jetIdToApply)) continue;
-                        htcjv+= selJets[iotherjet].pt();
-                        ncjv++;
-		      }
-		      mon.fillHisto(jetIds[ijetid]+"vbfcjv",ctf,ncjv,iweight);
-		      mon.fillHisto(jetIds[ijetid]+"vbfhtcjv",ctf,htcjv,iweight);
-		      
-		      if(ncjv==0){
-			mon.fillHisto(jetIds[ijetid]+"vbfcandjet1eta",     ctf, max(fabs(maxEta),fabs(minEta)),iweight);
-                        mon.fillHisto(jetIds[ijetid]+"vbfcandjet2eta",     ctf, min(fabs(maxEta),fabs(minEta)),iweight);
-			mon.fillHisto(jetIds[ijetid]+"vbfcandjeteta",      ctf, fabs(maxEta),iweight);
-                        mon.fillHisto(jetIds[ijetid]+"vbfcandjeteta",      ctf, fabs(minEta),iweight);
-                        mon.fillHisto(jetIds[ijetid]+"vbfcandjetdeta",     ctf, fabs(detajj),iweight);
-                        mon.fillHisto(jetIds[ijetid]+"vbfpremjj",          ctf, vbfSyst.mass(),iweight);
-                        if(fabs(detajj)>4.5){
-			  mon.fillHisto(jetIds[ijetid]+"vbfmjj",             ctf, vbfSyst.mass(),iweight);
-			  if(vbfSyst.mass()>450){
-			    mon.fillHisto(jetIds[ijetid]+"vbfhardpt",     ctf, hardpt,iweight);
-			    mon.fillHisto(jetIds[ijetid]+"vbfdphijj",     ctf, fabs(dphijj),iweight);
+		      if(selJets[0].pt()>30 && selJets[1].pt()>30) {
+			for(size_t iotherjet=2; iotherjet<selJets.size(); iotherjet++){
+			  if(selJets[iotherjet].pt()<30 || selJets[iotherjet].eta()<minEta || selJets[iotherjet].eta()>maxEta) continue;
+			  if(!hasObjectId(selJets[iotherjet].pid,jetIdToApply)) continue;
+			  htcjv+= selJets[iotherjet].pt();
+			  ncjv++;
+			}
+			mon.fillHisto(jetIds[ijetid]+"vbfcjv",ctf,ncjv,iweight);
+			mon.fillHisto(jetIds[ijetid]+"vbfhtcjv",ctf,htcjv,iweight);
+			
+			if(ncjv==0){
+			  mon.fillHisto(jetIds[ijetid]+"vbfcandjet1eta",     ctf, max(fabs(maxEta),fabs(minEta)),iweight);
+			  mon.fillHisto(jetIds[ijetid]+"vbfcandjet2eta",     ctf, min(fabs(maxEta),fabs(minEta)),iweight);
+			  mon.fillHisto(jetIds[ijetid]+"vbfcandjeteta",      ctf, fabs(maxEta),iweight);
+			  mon.fillHisto(jetIds[ijetid]+"vbfcandjeteta",      ctf, fabs(minEta),iweight);
+			  mon.fillHisto(jetIds[ijetid]+"vbfcandjetdeta",     ctf, fabs(detajj),iweight);
+			  mon.fillHisto(jetIds[ijetid]+"vbfpremjj",          ctf, vbfSyst.mass(),iweight);
+			  if(fabs(detajj)>4.5){
+			    mon.fillHisto(jetIds[ijetid]+"vbfmjj",             ctf, vbfSyst.mass(),iweight);
+			    if(vbfSyst.mass()>450){
+			      mon.fillHisto(jetIds[ijetid]+"vbfhardpt",     ctf, hardpt,iweight);
+			      mon.fillHisto(jetIds[ijetid]+"vbfdphijj",     ctf, fabs(dphijj),iweight);
+			    }
 			  }
 			}
-                      		    
-			//stat analysis
-			if(ijetid!=0) continue;
-			for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
-			  float minJet1Pt=optim_Cuts2_jet1_pt[index];
-			  float minJet2Pt=optim_Cuts2_jet2_pt[index];
-			  float minEtaGap=optim_Cuts2_eta_gap[index];
-			  float minDijetMass=optim_Cuts2_dijet_mass[index];
-			  bool passLocalZmass(isGammaEvent || fabs(gamma.mass()-91)<15);
-			  bool passLocalRedMet(redMet.pt()>60);
-			  bool passLocalJet1Pt(selJets[0].pt()>minJet1Pt);
-			  bool passLocalJet2Pt(selJets[1].pt()>minJet2Pt);
-			  bool passLocalEtaGap(fabs(selJets[0].eta()-selJets[1].eta())>minEtaGap);
-			  float mjj((selJets[0]+selJets[1]).M());
-			  bool passLocalDijetMass(mjj>minDijetMass);
-			  bool passLocalPreselection(passLocalZmass && passLocalRedMet && passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass);		    
-			  if(passLocalPreselection) mon.fillHisto("dijet_mass_shapes",ctf,index,(selJets[0]+selJets[1]).M(),iweight);
-			  if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass /*&& metP4.pt()<25*/) mon.fillHisto("vbfz_mjj_shapes",ctf,index,mjj,iweight);
-			}
 		      }
+		      
+		      
+		      //stat analysis
+		      if(jetIds[ijetid]=="pf") 
+			{
+			  for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
+			    float minJet1Pt    = optim_Cuts2_jet1_pt[index];
+			    float minJet2Pt    = optim_Cuts2_jet2_pt[index];
+			    float minEtaGap    = optim_Cuts2_eta_gap[index];
+			    float minDijetMass = optim_Cuts2_dijet_mass[index];
+			    bool passLocalZmass(isGammaEvent || fabs(gamma.mass()-91)<15);
+			    //bool passLocalRedMet(redMet.pt()>60);
+			    bool passLocalJet1Pt(selJets[0].pt()>minJet1Pt);
+			    bool passLocalJet2Pt(selJets[1].pt()>minJet2Pt);
+			    bool passLocalEtaGap(fabs(selJets[0].eta()-selJets[1].eta())>minEtaGap);
+			    float mjj((selJets[0]+selJets[1]).M());
+			    bool passLocalDijetMass(mjj>minDijetMass);
+			    //bool passLocalPreselection(passLocalZmass && passLocalRedMet && passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass);		    
+			    //if(passLocalPreselection) mon.fillHisto("dijet_mass_shapes",ctf,index,(selJets[0]+selJets[1]).M(),iweight);
+			    if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && ncjv==0)  
+			    {
+			      mon.fillHisto("dijet_mass_shapes", ctf, index, mjj, iweight);
+			      if(index==1)
+				cout << ctf << " " << njets30 << " " << gamma.pt() <<  " " 
+				     << selJets[0].pt() << " " << selJets[1].pt() << " " << fabs(selJets[0].eta()-selJets[1].eta()) 
+				     << " " << minEtaGap << " " << mjj << " " << ncjv << " " << iweight << endl;
+			    }
+			  }
+			}
 		    }
-		  }
-	      }
+		}
 	      //end VBF control
 	      
 	      if(passRedMet)
@@ -700,7 +710,7 @@ int main(int argc, char* argv[])
 	      }
 	    }
 	}
-    }
+}
   
   //all done with the events file
   file->Close();
