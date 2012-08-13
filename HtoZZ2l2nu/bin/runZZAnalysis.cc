@@ -966,9 +966,9 @@ int main(int argc, char* argv[])
 	       tightVarJets30.push_back(varJets[ijet]); 
 	     }
 	   if(varJets[ijet].pt()<20 || fabs(varJets[ijet].eta())>2.5)continue;
-	   if(ivar==11)      nABtags += (varJets[ijet].btag2<0.250);
-	   else if(ivar==12) nABtags += (varJets[ijet].btag2<0.240);
-	   else              nABtags += (varJets[ijet].btag2<0.244);
+	   if(ivar==11)      nABtags += (varJets[ijet].btag2>0.250);
+	   else if(ivar==12) nABtags += (varJets[ijet].btag2>0.240);
+	   else              nABtags += (varJets[ijet].btag2>0.244);
 	 }
 	 float mt = METUtils::transverseMass(zll,zvv,true);
 	 METUtils::stRedMET redMetInfo;
@@ -1058,20 +1058,10 @@ int main(int argc, char* argv[])
 	     //		    if(passLocalPreselection){
 	     //	mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
 	     // }
-	     if(index==1 && ivar==0)
-	       {
-		 if((ev.run==191062 && ev.lumi==97 && ev.event==110336433) ||
-		    ( ev.run==191062 && ev.lumi==183 && ev.event==204686174) ||
-		    (ev.run==191062 && ev.lumi==230 && ev.event==254667359) ||
-		    (ev.run==191062 && ev.lumi==281 && ev.event==307799427) ||
-		    (ev.run==191062 && ev.lumi==459 && ev.event==482792157))
-		   cout << passLocalJet1Pt << passLocalJet2Pt << passLocalEtaGap << passLocalDijetMass << passLocalZmass << passLocalZpt << (ncjv==0) << pass3dLeptonVeto << passLocalBveto << endl;
-	       }
-
 	     if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt && ncjv==0 && pass3dLeptonVeto && passLocalBveto){
 	       mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
-	       if(index==1 && ivar==0)
-		 cout << tags_full.size() << " " << varJets[0].pt() << " " << varJets[1].pt() << " " << fabs(varJets[0].eta()-varJets[1].eta()) << " " << minEtaGap << " " << (varJets[0]+varJets[1]).M() << " " << ncjv << " " << iweight << endl;
+	       //if(index==1 && ivar==0)
+	       //cout << tags_full.size() << " " << varJets[0].pt() << " " << varJets[1].pt() << " " << fabs(varJets[0].eta()-varJets[1].eta()) << " " << minEtaGap << " " << (varJets[0]+varJets[1]).M() << " " << ncjv << " " << iweight << endl;
 	     }
 	   }
 	 }

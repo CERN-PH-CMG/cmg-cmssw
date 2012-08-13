@@ -75,8 +75,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       llFile="../../plotter_vbfz_2012.root";
 
       //gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-      // llFile="../../plotter_vbfz_2011.root";
-
+      //llFile="../../plotter_vbfz_2011.root";
+      
       histos.push_back("pfpuloosevbfcandjetdeta");
       histos.push_back("pfpuloosevbfcandjet1pt");
       histos.push_back("pfpuloosevbfcandjet2pt");
@@ -88,7 +88,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       histos.push_back("pfpuloosevbfmjj");
       histos.push_back("pfpuloosevbfhardpt");
       //       //      histos.push_back("dijet_mass_shapes");
-      histos.push_back("vbfz_mjj_shapes");
+      //histos.push_back("vbfz_mjj_shapes");
 
       //dilSignal.push_back("VBF Z");
       //dilSignal.push_back("VBF Z (interference)");
@@ -142,7 +142,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 
   bool is2011(llFile.Contains("2011"));
 
-  string ch[]     = {"ee"};//,"mumu"};
+  string ch[]     = {"ee","mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
   const size_t nhistos=histos.size();
   const size_t ndilcats=dilcats.size();
@@ -694,6 +694,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   
   if(doRebin) diff->Rebin(4);
   diffWithSystGr->Draw("a20");
+  diffWithSystGr->GetXaxis()->SetRangeUser(vbfmcwithsyst->GetXaxis()->GetXmin(),vbfmcwithsyst->GetXaxis()->GetXmax());
   diff->Draw("same");
   legB->AddEntry(diff,"residuals","P");
 

@@ -661,11 +661,11 @@ int main(int argc, char* argv[])
 			    if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && ncjv==0)  
 			    {
 			      mon.fillHisto("dijet_mass_shapes", ctf, index, mjj, iweight);
-			      if(index==1)
-				cout << " ev.run==" << ev.run << " && ev.lumi==" << ev.lumi << " ev.event=="<< ev.event << endl;
-// 				cout << ctf << " " << njets30 << " " << gamma.pt() <<  " " 
-// 				     << selJets[0].pt() << " " << selJets[1].pt() << " " << fabs(selJets[0].eta()-selJets[1].eta()) 
-// 				     << " " << minEtaGap << " " << mjj << " " << ncjv << " " << iweight << endl;
+			      //			      if(index==1)
+			      //				cout << " ev.run==" << ev.run << " && ev.lumi==" << ev.lumi << " ev.event=="<< ev.event << endl;
+			      // 				cout << ctf << " " << njets30 << " " << gamma.pt() <<  " " 
+			      // 				     << selJets[0].pt() << " " << selJets[1].pt() << " " << fabs(selJets[0].eta()-selJets[1].eta()) 
+			      // 				     << " " << minEtaGap << " " << mjj << " " << ncjv << " " << iweight << endl;
 			    }
 			  }
 			}
