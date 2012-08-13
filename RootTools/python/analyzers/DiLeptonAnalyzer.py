@@ -252,4 +252,6 @@ class DiLeptonAnalyzer( Analyzer ):
         if len(filter) == 2:
             filter, pdgIds = filter[0], filter[1]
         return triggerMatched(leg, triggerObjects, path, filter,
-                              dR2Max=0.089999, pdgIds=pdgIds )
+                              # dR2Max=0.089999,
+                              dR2Max=0.25,
+                              pdgIds=pdgIds )
