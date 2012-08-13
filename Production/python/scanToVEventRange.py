@@ -17,7 +17,7 @@ etc. etc.
 import re
 
 def scanToVEventRange( lines ):
-    pattern = re.compile('^\*\s*\d+\D+\d+\D+(\d+)\D+(\d+)\D+(\d+).*')
+    pattern = re.compile('^\*\s*\d+\D+(\d+)\D+(\d+)\D+(\d+).*')
 
     eventRanges = cms.untracked.VEventRange()
 
