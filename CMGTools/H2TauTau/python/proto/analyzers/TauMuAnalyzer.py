@@ -65,10 +65,12 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def process(self, iEvent, event):
 
-        #if event.eventId == 4579:
+        # if event.eventId == 105104:
+        #    print 'EVENT', event.eventId
         #    import pdb; pdb.set_trace()
         result = super(TauMuAnalyzer, self).process(iEvent, event)
-
+        # print 'EVENT', event.eventId, result
+        
         if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
@@ -147,9 +149,12 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
     def testMuonIDLoose(self, muon):
         '''Loose muon ID and kine, no isolation requirement, for lepton veto'''        
         return muon.pt() > 15 and \
-               abs( muon.eta() ) < 2.5 and \
-               muon.looseId() and \
-               self.testVertex( muon ) 
+               abs( muon.eta() ) < 2.4 and \
+               muon.isGlobalMuon() and \
+               muon.isTrackerMuon() and \
+               muon.sourcePtr().userFloat('isPFMuon') and \
+               abs(muon.dz()) < 0.2
+               # self.testVertex( muon ) 
             
     def testMuonLoose( self, muon ):
         '''Loose muon selection, with isolation requirement (for di-lepton veto)'''
@@ -159,4 +164,12 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def leptonAccept(self, leptons):
         looseLeptons = set(filter( self.testMuonLoose, leptons ))
-        return len(looseLeptons)<2
+        isPlus = False
+        isMinus = False
+        for lepton in looseLeptons:
+            if lepton.charge()<0: isMinus=True
+            elif lepton.charge()>0: isPlus=True
+            else:
+                raise ValueError('Impossible!')
+        veto = isMinus and isPlus
+        return not veto
