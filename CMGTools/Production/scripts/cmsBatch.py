@@ -94,7 +94,10 @@ ls
 cd `find . -type d | grep /`
 echo 'running'
 %s run_cfg.py
-echo
+if [ $? != 0 ]; then
+    echo wrong exit code! removing all root files
+    rm *.root
+fi
 echo 'sending the job directory back'
 """ % prog
 
@@ -119,7 +122,10 @@ def batchScriptLocal(  remoteDir, index ):
    script = """#!/bin/bash
 echo 'running'
 %s run_cfg.py
-echo
+if [ $? != 0 ]; then
+    echo wrong exit code! removing all root files
+    rm *.root
+fi
 echo 'sending the job directory back'
 """ % prog
 
