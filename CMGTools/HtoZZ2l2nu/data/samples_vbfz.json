@@ -39,6 +39,25 @@
                 "xsec":0.5484
                 }
          ]
+        },
+       {
+         "tag":"Z#rightarrow ll",
+         "isdata":false,
+         "color":"831",
+         "lcolor":1,
+         "mctruthmode":1,
+         "data":[
+              {
+               "dtag":"MC8TeV_DYJetsToLL_50toInf",
+               "split":10,
+                "xsec":3532.8
+              },
+              {
+               "dtag":"MC8TeV_DYJetsToLL_10to50",
+               "split":2,
+                "xsec":860.5
+              }
+          ]
         }
     ]	
 }
