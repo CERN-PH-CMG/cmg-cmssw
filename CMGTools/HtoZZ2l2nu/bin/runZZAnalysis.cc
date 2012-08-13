@@ -15,6 +15,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EfficiencyMap.h"
+#include "CMGTools/HtoZZ2l2nu/interface/LeptonEfficiencySF.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -88,6 +89,9 @@ int main(int argc, char* argv[])
   int evStart=runProcess.getParameter<int>("evStart");
   int evEnd=runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
+
+  //lepton efficiencies
+  LeptonEfficiencySF lepEff2012;
 
   //jet energy scale uncertainties
   TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
@@ -345,8 +349,8 @@ int main(int argc, char* argv[])
    }
 
    for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
-     mon.addHistogram( new TH2F (TString("dijet_mass_shapes")+varNames[ivar],";cut index;M_{Jet1,Jet2} [GeV];#events (/50GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),200,0.,1200) );
-     mon.addHistogram( new TH2F (TString("vbfz_mjj_shapes")+varNames[ivar],";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),120,0,3000) );
+     //     mon.addHistogram( new TH2F (TString("dijet_mass_shapes")+varNames[ivar],";cut index;M_{Jet1,Jet2} [GeV];#events (/50GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),200,0.,1200) );
+     mon.addHistogram( new TH2F (TString("dijet_mass_shapes")+varNames[ivar],";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),120,0,3000) );
    }
 
 
@@ -551,7 +555,7 @@ int main(int argc, char* argv[])
 		}
 	      else
 		{
-		  llScaleFactor *= 1;
+		  llScaleFactor *= lepEff2012.getLeptonEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),13).first;
 		  llTriggerEfficiency *= muonTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),2012);
 		}
 	    }
@@ -589,7 +593,7 @@ int main(int argc, char* argv[])
 		      }
 		      if(!use2011Id)
 			{
-			  llScaleFactor *= 1;
+			  llScaleFactor *= lepEff2012.getLeptonEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),11).first;
 			  llTriggerEfficiency *= electronTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),2012);
 			}
 		    }
@@ -869,12 +873,12 @@ int main(int argc, char* argv[])
 			  if(vbfSyst.mass()>450){
 			    mon.fillHisto(jetIds[ijetid]+"vbfhardpt",     tags_full, hardpt,weight);
 			    mon.fillHisto(jetIds[ijetid]+"vbfdphijj",     tags_full, fabs(dphijj),weight);
-			    if(hardpt>10 && hardpt<20)
+			    if(hardpt>10 && hardpt<20 && outTxtFile)
 			      {
 				fprintf(outTxtFile,
-					"%d:%d:%d @ %s hardPt=%f Mjj=%f",
+					"%d:%d:%d @ %s hardPt=%f Mjj=%f nvtx=%d\n",
 					ev.run,ev.lumi,ev.event,
-					url.Data(),hardpt,vbfSyst.mass());
+					url.Data(),hardpt,vbfSyst.mass(),ev.nvtx);
 			      }
 			  }
 			}
@@ -1028,37 +1032,38 @@ int main(int argc, char* argv[])
 	   if(passLocalPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("nonresbckg_ctrl"+varNames[ivar],tags_full,index,5,iweight);
 	 }
 
-
-            if(varJets.size()>1){
-               double maxEta=max(varJets[0].eta(),varJets[1].eta());
-               double minEta=min(varJets[0].eta(),varJets[1].eta());
-               int ncjv(0);
-               for(size_t iotherjet=2; iotherjet<aGoodIdJets.size(); iotherjet++){
-                  if(varJets[iotherjet].pt()<30 || varJets[iotherjet].eta()<minEta || varJets[iotherjet].eta()>maxEta)continue;
-                  ncjv++;
-               }
-
-	       for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
-		    float minJet1Pt=optim_Cuts2_jet1_pt[index];
-		    float minJet2Pt=optim_Cuts2_jet2_pt[index];
-		    float minEtaGap=optim_Cuts2_eta_gap[index];
-		    float minDijetMass=optim_Cuts2_dijet_mass[index];
-                    bool passLocalZmass(fabs(zll.mass()-91)<15);
-                    bool passLocalZpt(zll.pt()>30); 
-                    bool passLocalRedMet(aRedMet.pt()>60);
-		    bool passLocalJet1Pt(varJets[0].pt()>minJet1Pt);
-		    bool passLocalJet2Pt(varJets[1].pt()>minJet2Pt);
-		    bool passLocalEtaGap(fabs(varJets[0].eta()-varJets[1].eta())>minEtaGap);
-		    bool passLocalDijetMass((varJets[0]+varJets[1]).M()>minDijetMass);
-		    bool passLocalPreselection(pass3dLeptonVeto && passLocalBveto && passLocalZmass && passLocalZpt && passLocalRedMet && passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass);		    
-		    if(passLocalPreselection){
-			mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
-                    }
-                    if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt /*&& zvv.pt()<25*/ && pass3dLeptonVeto && passLocalBveto){
-                        mon.fillHisto(TString("vbfz_mjj_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
-                    }
-	       }
-           }
+	 if(varJets.size()>1){
+	   double maxEta=max(varJets[0].eta(),varJets[1].eta());
+	   double minEta=min(varJets[0].eta(),varJets[1].eta());
+	   int ncjv(0);
+	   for(size_t iotherjet=2; iotherjet<varJets.size(); iotherjet++){
+	     if(varJets[iotherjet].pt()<30 || varJets[iotherjet].eta()<minEta || varJets[iotherjet].eta()>maxEta)continue;
+	     ncjv++;
+	   }
+	   
+	   for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
+	     float minJet1Pt=optim_Cuts2_jet1_pt[index];
+	     float minJet2Pt=optim_Cuts2_jet2_pt[index];
+	     float minEtaGap=optim_Cuts2_eta_gap[index];
+	     float minDijetMass=optim_Cuts2_dijet_mass[index];
+	     bool passLocalZmass(fabs(zll.mass()-91)<15);
+	     bool passLocalZpt(zll.pt()>30); 
+	     bool passLocalRedMet(aRedMet.pt()>60);
+	     bool passLocalJet1Pt(varJets[0].pt()>minJet1Pt);
+	     bool passLocalJet2Pt(varJets[1].pt()>minJet2Pt);
+	     bool passLocalEtaGap(fabs(varJets[0].eta()-varJets[1].eta())>minEtaGap);
+	     bool passLocalDijetMass((varJets[0]+varJets[1]).M()>minDijetMass);
+	     bool passLocalPreselection(pass3dLeptonVeto && passLocalBveto && passLocalZmass && passLocalZpt && passLocalRedMet && passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass);		    
+	     //		    if(passLocalPreselection){
+	     //	mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
+	     // }
+	     if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt && ncjv==0 && pass3dLeptonVeto && passLocalBveto){
+	       mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
+	       //       if(index==1 && ivar==0)
+	       //	 cout << tags_full.size() << " " << varJets[0].pt() << " " << varJets[1].pt() << " " << fabs(varJets[0].eta()-varJets[1].eta()) << " " << minEtaGap << " " << (varJets[0]+varJets[1]).M() << " " << ncjv << " " << iweight << endl;
+	     }
+	   }
+	 }
        }
   }
   

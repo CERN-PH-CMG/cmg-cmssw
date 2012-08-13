@@ -38,7 +38,7 @@ void addToShape(Shape_t &a, Shape_t &b,int sign=+1)
     }
   for(std::map<TString, TH1 *>::iterator it = b.bckg.begin(); it != b.bckg.end(); it++)
     {
-      if(a.bckg.find(it->first)!=b.bckg.end()) continue;
+      if(a.bckg.find(it->first)!=a.bckg.end()) continue;
       TH1 *h=(TH1 *)it->second->Clone();
       h->SetDirectory(0);
       h->Scale(sign);
@@ -59,7 +59,6 @@ void addToShape(Shape_t &a, Shape_t &b,int sign=+1)
     }
 }
 
-
 //
 enum SubtractionTypes {NOSUBTRACTION, HALVE, EWKSUBTRACTION, EWKSUBTRACTIONHALVE};
 enum ModelType { HZZ,ZZ,VBFZ};
@@ -72,11 +71,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   std::vector<std::string> histos,dilSignal,dilcats,gcats;
   if(model==VBFZ) 
     {
-      //gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
-      // llFile="../../plotter_vbfz_2012.root";
+      gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
+      llFile="../../plotter_vbfz_2012.root";
 
-      gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-      llFile="../../plotter_vbfz_2011.root";
+      //gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
+      // llFile="../../plotter_vbfz_2011.root";
 
       histos.push_back("pfpuloosevbfcandjetdeta");
       histos.push_back("pfpuloosevbfcandjet1pt");
@@ -88,8 +87,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       histos.push_back("pfpuloosevbfpremjj");
       histos.push_back("pfpuloosevbfmjj");
       histos.push_back("pfpuloosevbfhardpt");
-      //      histos.push_back("dijet_mass_shapes");
-      //  histos.push_back("vbfz_mjj_shapes");
+      //       //      histos.push_back("dijet_mass_shapes");
+      histos.push_back("vbfz_mjj_shapes");
 
       //dilSignal.push_back("VBF Z");
       //dilSignal.push_back("VBF Z (interference)");
@@ -143,7 +142,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 
   bool is2011(llFile.Contains("2011"));
 
-  string ch[]     = {"ee","mumu"};
+  string ch[]     = {"ee"};//,"mumu"};
   const size_t nchs=sizeof(ch)/sizeof(string);
   const size_t nhistos=histos.size();
   const size_t ndilcats=dilcats.size();
@@ -171,7 +170,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 		  string hname=dilprocs[iproc]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)llIn->Get(hname.c_str());
 		  if(h==0)  { cout << "Missing " << hname << endl; continue; }
-		  if(histos[ih]=="mt_shapes")
+		  if(histos[ih]=="mt_shapes" || histos[ih]=="vbfz_mjj_shapes")
 		    {
 		      cout << h->GetXaxis()->GetNbins() << endl;
 		      cout << h->InheritsFrom("TH2")<< endl;
@@ -242,11 +241,6 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 		  string hname=gprocs[iproc]+"/"+ch[ich]+gcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)gIn->Get(hname.c_str());
 		  if(h==0) { cout << hname <<endl; continue; }
-		  if(histos[ih]=="mt_shapes")
-		    {
-		      cout << "g: " <<  h->GetXaxis()->GetNbins() 
-			   << " " << h->InheritsFrom("TH2")<< endl;
-		    }
 		  		  
 		  //detach and save
 		  h->SetDirectory(0);
@@ -281,6 +275,9 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
                     {
                       Shape_t &shapeToCorrect=gShapesMap[keyToGet];
                       addToShape(shapeToCorrect,m_shape);
+		      cout << keyToGet << " " <<
+			
+endl;
                       normH=shapeToCorrect.data;
                     }
 		}
@@ -357,7 +354,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
      if(sf==0) continue;
      if(gShapesMap.find(it->first)==gShapesMap.end()) cout << "BUG: " << it->first << " not found in gamma sample..." << endl;
      Shape_t &gShape=gShapesMap[it->first];
-     TH1 *corrGammaH=(TH1 *)gShape.data->Clone((it->first+"dy").c_str());
+
+     TH1 *corrGammaH=(TH1 *)gShape.data->Clone((it->first+"corrg").c_str());
      corrGammaH->SetDirectory(0);
 
 
@@ -371,7 +369,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
        }
 
      //do the subtraction for met related variables when MET>70
-     if(it->first.find("mt_shapes")!= string::npos || it->first.find("met_") != string::npos)
+     if(it->first.find("mt_shapes")!= string::npos || it->first.find("met_") != string::npos || it->first.find("vbfz_mjj_shapes")!=string::npos)
        {
 	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
 	
@@ -385,17 +383,19 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 		   for(int jbin=1; jbin<=corrGammaH->GetYaxis()->GetNbins(); jbin++)
 		     {
 		       Double_t val=corrGammaH->GetBinContent(ibin,jbin)/2;
-		       Double_t valerr=corrGammaH->GetBinError(ibin,jbin)/2;
+		       Double_t valerr=val;
+		       if(model==VBFZ) valerr=0.3*val;
 		       corrGammaH->SetBinContent(ibin,jbin,val);
-		       corrGammaH->SetBinError(ibin,jbin,val);//err);
+		       corrGammaH->SetBinError(ibin,jbin,valerr);
 		     }
 		 }
 	       else
 		 {
 		   Double_t val=corrGammaH->GetBinContent(ibin)/2;
-		   Double_t valerr=corrGammaH->GetBinError(ibin)/2;
+		   Double_t valerr=val;
+		   if(model==VBFZ) valerr=0.5*val;
 		   corrGammaH->SetBinContent(ibin,val);
-		   corrGammaH->SetBinError(ibin,val);//err);
+		   corrGammaH->SetBinError(ibin,valerr);
 		 }
 	     }
 	 }
@@ -431,6 +431,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
        }
 
      corrGammaH->SetFillColor(831);
+     cout << it->second.totalBckg->GetName() << " " << corrGammaH->GetName() << " " << sf << endl;
      it->second.totalBckg->Add(corrGammaH);
      it->second.bckg["Instr. background (data)"]=corrGammaH;
      showShape(it->second,"final_"+it->first,is2011,model);
@@ -440,16 +441,16 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
      // keyToWrite.ReplaceAll("mumueq","mumu_eq");
      //     keyToWrite.ReplaceAll("eq0jets","");
      corrGammaH->Write(keyToWrite);//it->first.c_str());
+
      if(it->first.find("mumu")!= string::npos)
        {
 	 TString keyToGet(it->first);
 	 keyToGet=keyToGet.ReplaceAll("mumu","ee");
-	 Shape_t &shapeToCorrect=shapesMap[keyToGet.Data()];
-	 addToShape(shapeToCorrect,it->second,1);
+	 Shape_t &eeShape=shapesMap[keyToGet.Data()];
+	 addToShape(eeShape,it->second);
 	 keyToGet=keyToGet.ReplaceAll("ee","");
-	 showShape(shapeToCorrect,keyToGet.Data(),is2011,model);
+	 showShape(eeShape,keyToGet.Data(),is2011,model);
        }
-     
    }
   gOut->Close();
 
@@ -458,8 +459,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 //
 void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
 {
-  if(shape.data->InheritsFrom("TH2")) return;
-
+  if(shape.data->InheritsFrom("TH2"))
+    {
+      cout << "Skipping plot for: " << shape.data->GetName() << endl;
+      return;
+    }
   TCanvas* c1 = new TCanvas(SaveName,SaveName,800,800);
   c1->cd();
 
@@ -574,7 +578,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   T->SetTextAlign(22);
   char Buffer[1024]; 
   if(is2011)
-    sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
+    sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5051./1000);
   else
     sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
     T->AddText(Buffer);
@@ -597,20 +601,55 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       ratio = (TH1*)shape.data->Clone("RatioHistogram");
       ratio->SetDirectory(0);
       ratio->Divide(mc);
-      ratio->GetYaxis()->SetTitle("Data/#Sigma Bckg");
-      ratio->GetXaxis()->SetTitle("");
-      ratio->SetMinimum(0);
-      ratio->SetMaximum(2.2);
-      ratio->GetXaxis()->SetTitleOffset(1.3);
-      ratio->GetXaxis()->SetLabelSize(0.033*yscale);
-      ratio->GetXaxis()->SetTitleSize(0.036*yscale);
-      ratio->GetXaxis()->SetTickLength(0.03*yscale);
-      ratio->GetYaxis()->SetTitleOffset(0.3);
-      ratio->GetYaxis()->SetNdivisions(5);
-      // ratio->GetXaxis()->SetRangeUser(0,350);
-      ratio->GetYaxis()->SetLabelSize(0.033*yscale);
-      ratio->GetYaxis()->SetTitleSize(0.036*yscale);
-      ratio->Draw("E1");
+      
+      TGraphErrors *systGr=0;
+      if(model==VBFZ)
+	{
+	  TH1 *ratiosyst=(TH1*)shape.data->Clone("RatioHistogramSyst");
+	  ratiosyst->SetDirectory(0);
+	  TH1 *mcwithsyst=(TH1 *)mc->Clone("mcsyst");
+	  for(int ibin=1; ibin<=mcwithsyst->GetXaxis()->GetNbins(); ibin++)
+	    {
+	      float unc=pow(vbfmc->GetBinContent(ibin,1)*0.3,2);
+	      unc += pow(mcwithsyst->GetBinError(ibin),2);
+	      mcwithsyst->SetBinError(ibin,sqrt(unc));
+	    }
+	  ratiosyst->Divide(mcwithsyst);
+	  systGr=new TGraphErrors(ratiosyst);
+	  systGr->SetFillStyle(3001);
+	  systGr->SetFillColor(kGray+1);
+	  systGr->SetMarkerStyle(1);
+	  systGr->SetMarkerColor(kGray+1);
+	  for(int ibin=1; ibin<=ratiosyst->GetXaxis()->GetNbins(); ibin++){
+	    systGr->SetPointError(ibin-1,ratiosyst->GetXaxis()->GetBinWidth(ibin)/2.0, ratiosyst->GetBinError(ibin));
+	  }
+	}
+
+      TAxis *yaxis=0,*xaxis=0;
+      if(systGr) { 
+	systGr->Draw("a20");
+	yaxis=systGr->GetYaxis(); xaxis=systGr->GetXaxis();
+	xaxis->SetRangeUser(ratio->GetXaxis()->GetXmin(),ratio->GetXaxis()->GetXmax());
+	ratio->Draw("E1same");
+      }
+      else{
+	ratio->Draw("e1");
+	yaxis=ratio->GetYaxis(); xaxis=ratio->GetXaxis();
+      }
+      yaxis->SetRangeUser(0.5,1.5);
+      yaxis->SetTitle("Data/#Sigma Bckg");
+      xaxis->SetTitle("");
+      xaxis->SetTitleOffset(1.3);
+      xaxis->SetLabelSize(0.033*yscale);
+      xaxis->SetTitleSize(0.036*yscale);
+      xaxis->SetTickLength(0.03*yscale);
+      yaxis->SetTitleOffset(0.3);
+      yaxis->SetNdivisions(5);
+      yaxis->SetLabelSize(0.033*yscale);
+      yaxis->SetTitleSize(0.036*yscale);
+
+
+
     }
    
   c1->cd();
@@ -630,27 +669,49 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
 
   TLegend* legB  = new TLegend(0.845,0.2,0.99,0.99, "NDC");
 
+  TH1 *diff = (TH1*)shape.data->Clone("DiffHistogram");
+  diff->SetDirectory(0);
+  diff->Add(vbfmc,-1);
+  TH1 *vbfmcwithsyst=(TH1 *)vbfmc->Clone("vbfmcwithsyst");
+  for(int ibin=1; ibin<=vbfmcwithsyst->GetXaxis()->GetNbins(); ibin++)
+    {
+      float unc=pow(vbfmcwithsyst->GetBinContent(ibin,1)*0.3,2);
+      unc += pow(vbfmcwithsyst->GetBinError(ibin),2);
+      vbfmcwithsyst->SetBinError(ibin,sqrt(unc));
+    }
+  TH1 *diffWithSyst = (TH1*)shape.data->Clone("DiffWithSystHistogram");
+  diffWithSyst->SetDirectory(0);
+  diffWithSyst->Add(vbfmcwithsyst,-1);
+  if(doRebin) diffWithSyst->Rebin(4);
+  TGraphErrors *diffWithSystGr=new TGraphErrors(diffWithSyst);
+  diffWithSystGr->SetFillStyle(3427);
+  diffWithSystGr->SetFillColor(kGray+1);
+  diffWithSystGr->SetMarkerStyle(1);
+  diffWithSystGr->SetMarkerColor(kGray+1);
+  for(int ibin=1; ibin<=diffWithSyst->GetXaxis()->GetNbins(); ibin++){
+    diffWithSystGr->SetPointError(ibin-1,diffWithSyst->GetXaxis()->GetBinWidth(ibin)/2.0, diffWithSyst->GetBinError(ibin));
+  }
+  
+  if(doRebin) diff->Rebin(4);
+  diffWithSystGr->Draw("a20");
+  diff->Draw("same");
+  legB->AddEntry(diff,"residuals","P");
+
   //signal
-  canvasIsFilled=false;
   TH1 *hframe=0;
   for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
     {
       TH1 *h=(TH1 *)it->second->Clone();
+      h->SetFillStyle(3001);
       h->Draw(canvasIsFilled ? "histsame" : "hist");
       if(doRebin) h->Rebin(4);
       if(!canvasIsFilled) hframe=h;
       legB->AddEntry(h,h->GetTitle(),"F");
-      canvasIsFilled=true;
     }
 
-  TH1 *diff = (TH1*)shape.data->Clone("DiffHistogram");
-  diff->SetDirectory(0);
-  diff->Add(vbfmc,-1);
-  if(doRebin) diff->Rebin(4);
-  diff->Draw(canvasIsFilled ? "same" : "");
-  legB->AddEntry(diff,"residuals","P");
+
  
-  hframe->GetYaxis()->SetRangeUser(1.05*diff->GetMinimum(),diff->GetMaximum()*1.05);
+  //  hframe->GetYaxis()->SetRangeUser(1.05*diff->GetMinimum(),diff->GetMaximum()*1.05);
 
   legB->SetFillColor(0); legB->SetFillStyle(0); legB->SetLineColor(0);
   legB->SetHeader("");
