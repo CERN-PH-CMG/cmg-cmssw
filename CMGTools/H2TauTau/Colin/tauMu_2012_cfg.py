@@ -32,9 +32,12 @@ mc_tauEffWeight = 'effTau2012AB'
 mc_muEffWeight = 'effMu2012AB'
     
 
+skipper = cfg.Analyzer(
+    'Skipper',
+    )
+
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
-    # fixme pick it up automatically
     )
 
 triggerAna = cfg.Analyzer(
@@ -71,7 +74,8 @@ TauMuAna = cfg.Analyzer(
     iso2 = 0.1,
     m_min = 10,
     m_max = 99999,
-    triggerMap = pathsAndFilters
+    triggerMap = pathsAndFilters,
+    mvametsigs = 'mvaMETTauMu'
     )
 
 dyJetsFakeAna = cfg.Analyzer(
@@ -99,7 +103,7 @@ muonWeighter = cfg.Analyzer(
     effWeightMC = mc_muEffWeight_mc,
     lepton = 'leg2',
     verbose = False,
-    disable = True,
+    disable = False,
     recEffVersion = None
     )
 
@@ -186,6 +190,7 @@ selectedComponents.extend( embed_list )
 
 
 sequence = cfg.Sequence( [
+    # skipper,
     jsonAna,
     triggerAna,
     vertexAna,
@@ -208,6 +213,7 @@ test = 1
 if test==1:
     comp = HiggsVBF125
     # comp.files = comp.files[:10]
+    # comp.files = 'cmgTuple_colinMinusJosh.root'
     selectedComponents = [comp]
     comp.splitFactor = 12
 elif test==2:
