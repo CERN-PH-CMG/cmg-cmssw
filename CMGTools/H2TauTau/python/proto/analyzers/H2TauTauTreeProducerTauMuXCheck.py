@@ -131,7 +131,7 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'npv', len(event.goodVertices)) 
         nPU = -1
         if hasattr(event, 'pileUpInfo'):
-            nPU = event.pileUpInfo[1].nPU()
+            nPU = event.pileUpInfo[1].nTrueInteractions()
             fill( tr, 'npu', nPU) 
         fill( tr, 'rho', event.rho)
         
@@ -179,6 +179,8 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'pzetamiss', event.diLepton.pZetaMET())
 
         metsig = self.handles['pfmetsig'].product().significance()
+        # if hasattr(event.diLepton, 'mvaMetSig'):
+        #     metsig = event.diLepton.mvaMetSig.significance()
         fill( tr, 'metcov00', metsig(0,0))
         fill( tr, 'metcov01', metsig(0,1))
         fill( tr, 'metcov10', metsig(1,0))
@@ -223,15 +225,15 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
             vbf = event.vbf
             # import pdb; pdb.set_trace()
             fill( tr, 'mjj', vbf.mjj)
-            fill( tr, 'jdeta', vbf.deta)
+            fill( tr, 'jdeta', abs(vbf.deta))
             fill( tr, 'njetingap', len(vbf.centralJets))
             fill( tr, 'mva', vbf.mva)
             
             # add the following variables to the vbf object in VBFAnalyzer
-            fill( tr, 'jdphi', vbf.dphi)
+            fill( tr, 'jdphi', abs(vbf.dphi))
             fill( tr, 'dijetpt', vbf.dijetpt)
             fill( tr, 'dijetphi', vbf.dijetphi)
-            fill( tr, 'hdijetphi', vbf.dphidijethiggs) # higgs p = p1 + p2 + met
+            fill( tr, 'hdijetphi', abs(vbf.dphidijethiggs)) # higgs p = p1 + p2 + met
             fill( tr, 'visjeteta', vbf.visjeteta)
             fill( tr, 'ptvis', vbf.ptvis)
 
