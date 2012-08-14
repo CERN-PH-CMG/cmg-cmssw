@@ -71,11 +71,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   std::vector<std::string> histos,dilSignal,dilcats,gcats;
   if(model==VBFZ) 
     {
-      gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
-      llFile="../../plotter_vbfz_2012.root";
+      //      gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
+      //      llFile="../../plotter_vbfz_2012.root";
 
-      //gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-      //llFile="../../plotter_vbfz_2011.root";
+      gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
+      llFile="../../plotter_vbfz_2011.root";
       
       histos.push_back("pfpuloosevbfcandjetdeta");
       histos.push_back("pfpuloosevbfcandjet1pt");
@@ -83,11 +83,14 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       histos.push_back("pfpuloosevbfcandjet1eta");
       histos.push_back("pfpuloosevbfcandjet2eta");
       histos.push_back("pfpuloosevbfcjv");
-      histos.push_back("pfpuloosevbfdphijj");
       histos.push_back("pfpuloosevbfpremjj");
       histos.push_back("pfpuloosevbfmjj");
+      histos.push_back("pfpuloosevbfdphijj");
       histos.push_back("pfpuloosevbfhardpt");
-      //       //      histos.push_back("dijet_mass_shapes");
+      histos.push_back("pfpuloosevbfmjj50");
+      histos.push_back("pfpuloosevbfhardpt50");
+      histos.push_back("pfpuloosevbfdphijj50");
+      histos.push_back("dijet_mass_shapes");
       //histos.push_back("vbfz_mjj_shapes");
 
       //dilSignal.push_back("VBF Z");
@@ -170,7 +173,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 		  string hname=dilprocs[iproc]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)llIn->Get(hname.c_str());
 		  if(h==0)  { cout << "Missing " << hname << endl; continue; }
-		  if(histos[ih]=="mt_shapes" || histos[ih]=="vbfz_mjj_shapes")
+		  if(histos[ih]=="mt_shapes" || histos[ih]=="dijet_mass_shapes")
 		    {
 		      cout << h->GetXaxis()->GetNbins() << endl;
 		      cout << h->InheritsFrom("TH2")<< endl;
@@ -200,6 +203,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 			  hsig->SetLineColor(1);
 			  hsig->SetLineStyle(1+isig);
 			  hsig->SetLineWidth(2);
+			  if(model==VBFZ)
+			    {
+			      if(ch[ich]=="ee")        hsig->Scale(is2011 ? 0.985 : 0.842);
+			      else if(ch[ich]=="mumu") hsig->Scale(is2011 ? 1.106 : 0.558 );
+			    }
 			  m_shape.signal[dilSignal[isig]]=hsig;
 			}
 		    }
@@ -369,7 +377,7 @@ endl;
        }
 
      //do the subtraction for met related variables when MET>70
-     if(it->first.find("mt_shapes")!= string::npos || it->first.find("met_") != string::npos || it->first.find("vbfz_mjj_shapes")!=string::npos)
+     if(it->first.find("mt_shapes")!= string::npos || it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos)
        {
 	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
 	
@@ -468,8 +476,8 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   c1->cd();
 
   TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);  t1->Draw();  t1->cd();
-  t1->SetLogy(true);
-
+  if(!SaveName.EndsWith("50")) t1->SetLogy(true);
+  
   TLegend* legA  = new TLegend(0.845,0.2,0.99,0.99, "NDC");
 
   bool canvasIsFilled(false);
@@ -482,7 +490,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       stack = new THStack("stack","stack");
  
       //include VBF Z in the stack
-      if(model==VBFZ)
+      if(model==VBFZ && !SaveName.EndsWith("50"))
 	{
 	  for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
 	    {
@@ -524,13 +532,28 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
 	      legA->AddEntry(h,itit,"F");
 	    }
 	}
+
+      //include VBF Z in the stack
+      if(model==VBFZ && SaveName.EndsWith("50"))
+	{
+	  for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
+	    {
+	      TH1 *h=it->second;
+	      h->SetFillColor(809);
+	      h->SetLineStyle(1);
+	      h->SetLineColor(1);
+	      stack->Add(h,"HIST");
+	      legA->AddEntry(h,h->GetTitle(),"F");
+	    }
+	}
+
  
       stack->Draw();
       stack->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
       stack->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
-      stack->SetMinimum(1e-1);//mc->GetMinimum());
-      if(SaveName.Contains("vbf") && !SaveName.Contains("novbf")) stack->SetMinimum(1e-2);
-      stack->SetMaximum(1.1*mc->GetMaximum());
+      stack->SetMinimum(1);//mc->GetMinimum());
+      //if(SaveName.Contains("vbf") && !SaveName.Contains("novbf")) stack->SetMinimum(1e-2);
+      stack->SetMaximum(1.5*max(mc->GetMaximum(),shape.data->GetMaximum()));
 
       mc->Reset("ICE");
       mc->Add((TH1 *)stack->GetStack()->At( stack->GetStack()->GetEntriesFast()-1) );

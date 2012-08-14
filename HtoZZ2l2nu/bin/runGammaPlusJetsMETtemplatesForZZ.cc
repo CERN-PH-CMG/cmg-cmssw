@@ -223,6 +223,7 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjet2eta"       , ";#eta;Jets",50,0,5) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjet2pt"       , ";p_{T} [GeV/c];Jets",50,0,500) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfhardpt"       , ";Hard p_{T} [GeV/c];Events",25,0,250) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfhardpt50"       , ";Hard p_{T} [GeV/c];Events",25,0,250) );
       TH1 *hcjv=mon.addHistogram( new TH1F(jetIds[i]+"vbfcjv"       , ";Central jet count;Events",3,0,3) );
       hcjv->GetXaxis()->SetBinLabel(1,"=0 jets");
       hcjv->GetXaxis()->SetBinLabel(2,"=1 jets");
@@ -231,6 +232,8 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH1F(jetIds[i]+"vbfpremjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",60,0,3000) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfmjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",60,0,3000) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfdphijj"       , ";#Delta#phi;Events",20,0,3.5) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfmjj50"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",60,0,3000) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfdphijj50"       , ";#Delta#phi;Events",20,0,3.5) );
     }
 
   
@@ -637,6 +640,14 @@ int main(int argc, char* argv[])
 			      mon.fillHisto(jetIds[ijetid]+"vbfdphijj",     ctf, fabs(dphijj),iweight);
 			    }
 			  }
+			  if(selJets[0].pt()>50 && selJets[1].pt()>50 && fabs(detajj)>3.5)
+			    {
+			      mon.fillHisto(jetIds[ijetid]+"vbfmjj50",             ctf, vbfSyst.mass(),iweight);
+			      if(vbfSyst.mass()>650){
+				mon.fillHisto(jetIds[ijetid]+"vbfhardpt50",     ctf, hardpt,iweight);
+				mon.fillHisto(jetIds[ijetid]+"vbfdphijj50",     ctf, fabs(dphijj),iweight);
+			      }
+			    }
 			}
 		      }
 		      
