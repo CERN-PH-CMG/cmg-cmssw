@@ -90,7 +90,7 @@ class DiLeptonAnalyzer( Analyzer ):
         #    import pdb; pdb.set_trace()
             
         if len(event.diLeptons) == 0:
-            return False
+            return False, '0 di-lepton'
         if fillCounter: self.counters.counter('DiLepton').inc('> 0 di-lepton')
 
         # import pdb; pdb.set_trace()
@@ -99,14 +99,14 @@ class DiLeptonAnalyzer( Analyzer ):
         # selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
         
         if not self.leptonAccept( event.leptons ):
-            return False
+            return False, 'di-lepton veto failed'
         if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
 
         # testing leg1
         selDiLeptons = [ diL for diL in selDiLeptons if \
                          self.testLeg1( diL.leg1(), leg1IsoCut ) ]
         if len(selDiLeptons) == 0:
-            return False
+            return False, 'leg1 offline cuts failed'
         else:
             if fillCounter: self.counters.counter('DiLepton').inc('leg1 offline cuts passed')
 
@@ -115,7 +115,7 @@ class DiLeptonAnalyzer( Analyzer ):
             selDiLeptons = [diL for diL in selDiLeptons if \
                             self.trigMatched(event, diL.leg1(), 'leg1')]
             if len(selDiLeptons) == 0:
-                return False
+                return False, 'leg1 trigger matching failed'
             else:
                 if fillCounter: self.counters.counter('DiLepton').inc('leg1 trig matched')
 
@@ -123,7 +123,7 @@ class DiLeptonAnalyzer( Analyzer ):
         selDiLeptons = [ diL for diL in selDiLeptons if \
                          self.testLeg2( diL.leg2(), leg2IsoCut ) ]
         if len(selDiLeptons) == 0:
-            return False
+            return False, 'leg2 offline cuts failed'
         else:
             if fillCounter: self.counters.counter('DiLepton').inc('leg2 offline cuts passed')
 
@@ -132,7 +132,7 @@ class DiLeptonAnalyzer( Analyzer ):
             selDiLeptons = [diL for diL in selDiLeptons if \
                             self.trigMatched(event, diL.leg2(), 'leg2')]
             if len(selDiLeptons) == 0:
-                return False
+                return False, 'leg2 trigger matching failed'
             else:
                 if fillCounter: self.counters.counter('DiLepton').inc('leg2 trig matched')
 
@@ -140,7 +140,7 @@ class DiLeptonAnalyzer( Analyzer ):
         selDiLeptons = [ diL for diL in selDiLeptons if \
                          self.testMass(diL) ]
         if len(selDiLeptons)==0:
-            return False
+            return False, 'mass cut failed'
         else:
             if fillCounter: self.counters.counter('DiLepton').inc(
                 '{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
@@ -157,7 +157,7 @@ class DiLeptonAnalyzer( Analyzer ):
         event.leg1 = event.diLepton.leg1()
         event.leg2 = event.diLepton.leg2()
 
-        return True
+        return True, 'SUCCESS'
     
 
     def declareHandles(self):        
