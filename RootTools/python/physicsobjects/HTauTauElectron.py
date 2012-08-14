@@ -45,10 +45,10 @@ class HTauTauElectron( Electron ):
 
         https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
         """
-        # if self.eventId == 428746: 
-        #    print 'STOPPING'
-        #    import pdb
-        #    pdb.set_trace()
+##         if self.eventId == 14636: 
+##             print 'STOPPING'
+##             import pdb
+##             pdb.set_trace()
 
         #COLIN: loose id shouldn't be required here (Jose said)
         # if self.looseIdForEleTau() == False : return False
@@ -81,17 +81,20 @@ class HTauTauElectron( Electron ):
         """Loose electron selection, for the lepton veto, 
         according to Phil sync prescription for the sync exercise 18/06/12
         """
-        nInnerHits = self.numberOfHits()
-        if nInnerHits != 0 : return False
-        if self.passConversionVeto() == False   : return False
-        #COLIN : we might want to keep the vertex constraints separated
-        if abs(self.dxy())             >= 0.045 : return False
+        #COLIN inner hits and conversion veto not on the twiki
+        # nInnerHits = self.numberOfHits()
+        # if nInnerHits != 0 : return False
+        # if self.passConversionVeto() == False   : return False
+        #COLIN: we might want to keep the vertex constraints separated
+        #COLIN: in the twiki there is no cut on dxy
+        # if abs(self.dxy())             >= 0.045 : return False
         if abs(self.dz())              >= 0.2   : return False
         # Below, part of WP95 without vertex constraints (applied above)
         hoe = self.hadronicOverEm()
-        deta = self.deltaEtaSuperClusterTrackAtVtx()
-        dphi = self.deltaPhiSuperClusterTrackAtVtx()
-        sihih = self.sigmaIetaIeta() 
+        deta = abs(self.deltaEtaSuperClusterTrackAtVtx())
+        dphi = abs(self.deltaPhiSuperClusterTrackAtVtx())
+        sihih = self.sigmaIetaIeta()
+        # print sihih
         if self.sourcePtr().isEB() :
             if sihih >= 0.010     : return False
             if dphi  >= 0.80      : return False 
