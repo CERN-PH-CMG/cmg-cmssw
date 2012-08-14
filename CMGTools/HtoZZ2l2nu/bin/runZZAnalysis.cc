@@ -238,6 +238,7 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjet2pt"       , ";p_{T} [GeV/c];Jets",50,0,500) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjetdeta"       , ";|#Delta #eta|;Jets",50,0,10) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfhardpt"       , ";Hard p_{T} [GeV/c];Events",25,0,250) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfhardpt50"       , ";Hard p_{T} [GeV/c];Events",25,0,250) );
       h=mon.addHistogram( new TH1F(jetIds[i]+"vbfcjv"       , ";Central jet count;Events",3,0,3) );
       h->GetXaxis()->SetBinLabel(1,"=0 jets");
       h->GetXaxis()->SetBinLabel(2,"=1 jets");
@@ -246,6 +247,8 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH1F(jetIds[i]+"vbfpremjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",60,0,3000) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfmjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",60,0,3000) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfdphijj"       , ";#Delta#phi;Events",20,0,3.5) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfmjj50"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",60,0,3000) );
+      mon.addHistogram( new TH1F(jetIds[i]+"vbfdphijj50"       , ";#Delta#phi;Events",20,0,3.5) );
     }
  
   //MET control
@@ -831,6 +834,7 @@ int main(int argc, char* argv[])
               //VBF monitoring
               float dphijj(-1),hardpt(-1);
               if(nAJetsLoose>=2){
+
 		for(size_t ijetid=0; ijetid<sizeof(jetIds)/sizeof(TString); ijetid++)
 		  {
 		    int jetIdToApply(JETID_LOOSE);
@@ -873,16 +877,28 @@ int main(int argc, char* argv[])
 			  if(vbfSyst.mass()>450){
 			    mon.fillHisto(jetIds[ijetid]+"vbfhardpt",     tags_full, hardpt,weight);
 			    mon.fillHisto(jetIds[ijetid]+"vbfdphijj",     tags_full, fabs(dphijj),weight);
-			    if(hardpt>10 && hardpt<20 && outTxtFile)
-			      {
-				fprintf(outTxtFile,
-					"%d:%d:%d @ %s hardPt=%f Mjj=%f nvtx=%d\n",
-					ev.run,ev.lumi,ev.event,
-					url.Data(),hardpt,vbfSyst.mass(),ev.nvtx);
-			      }
 			  }
 			}
-                      }
+
+			if(aGoodIdJets[0].pt()>50 && aGoodIdJets[1].pt()>50 && fabs(detajj)>3.5)
+			  {
+			    mon.fillHisto(jetIds[ijetid]+"vbfmjj50",          tags_full, vbfSyst.mass(),weight);
+			    if(vbfSyst.mass()>650)
+			      {
+				mon.fillHisto(jetIds[ijetid]+"vbfhardpt50",     tags_full, hardpt,weight);
+				mon.fillHisto(jetIds[ijetid]+"vbfdphijj50",     tags_full, fabs(dphijj),weight);
+				if(hardpt>10 && hardpt<20 && outTxtFile)
+				  {
+				    fprintf(outTxtFile,
+					    "%d:%d:%d @ %s hardPt=%f Mjj=%f pt1=%f pt2=%f nvtx=%d\n",
+					    ev.run,ev.lumi,ev.event,
+					    url.Data(),hardpt,vbfSyst.mass(),
+					    aGoodIdJets[0].pt(),aGoodIdJets[1].pt(),
+					    ev.nvtx);
+				  }
+			      }
+			  }
+		      }
 		    }
 		  }
 	      }
