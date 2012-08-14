@@ -69,7 +69,8 @@ TauEleAna = cfg.Analyzer(
     iso2 = 0.1,
     m_min = 10,
     m_max = 99999,
-    triggerMap = pathsAndFilters
+    triggerMap = pathsAndFilters,
+    verbose = False
     )
 
 dyJetsFakeAna = cfg.Analyzer(
@@ -207,10 +208,10 @@ if syncntuple:
 
 test = 1
 if test==1:
-    comp = HiggsVBF125Small
-    # comp.files = comp.files[:10]
+    comp = HiggsVBF125
+    # comp.files = 'Aug14/joshMinusColin.root'
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 50
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1

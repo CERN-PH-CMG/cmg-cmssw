@@ -80,16 +80,21 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         
         #        import pdb; pdb.set_trace()
         
-        result = super(TauEleAnalyzer, self).process(iEvent, event)
+        result, message = super(TauEleAnalyzer, self).process(iEvent, event)
+        if self.cfg_ana.verbose and result is False:
+            print event.run, event.lumi, event.eventId, message
+            for dl in event.diLeptons:
+                print dl.leg2(), dl.leg2().relIsoAllChargedDB05()
+            # import pdb; pdb.set_trace()
 
         if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
             # and di-lepton veto must pass
             # i.e. only the iso requirement is relaxed
-            result = self.selectionSequence(event, fillCounter=False,
-                                            leg1IsoCut = -9999,
-                                            leg2IsoCut = 9999)
+            result, message = self.selectionSequence(event, fillCounter=False,
+                                                     leg1IsoCut = -9999,
+                                                     leg2IsoCut = 9999)
             if result is False:
                 # really no way to find a suitable di-lepton,
                 # even in the control region
@@ -194,6 +199,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
     def leptonAccept(self, leptons, isoCut = 0.3) :
         ''' returns True if the additional lepton veto is successful'''
         #PG FIXME how do I pass the isolation argument to testLooseLeg2?
+        # import pdb; pdb.set_trace()
         looseLeptons = filter( self.testLooseLeg2, leptons)
         nLeptons = len(looseLeptons)
 #        return nLeptons < 2 #PG according to AN 2012/150 of 12/07/2012
