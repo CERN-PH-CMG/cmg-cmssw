@@ -3,7 +3,7 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 
 
-class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
+class H2TauTauSyncTree( TreeAnalyzerNumpy ):
     '''Tree producer for the H->tau tau analysis.
 
     Some of the functions in this class should be made available to everybody.'''
@@ -40,6 +40,10 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         var( tr, 'passid_1', int)
         var( tr, 'passiso_1', int)
         var( tr, 'mt_1')
+        var( tr, 'trigweight_1')
+        var( tr, 'idweight_1')
+        var( tr, 'isoweight_1')
+        
         
         var( tr, 'pt_2')
         var( tr, 'phi_2')
@@ -50,6 +54,9 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         var( tr, 'passid_2', int)
         var( tr, 'passiso_2', int)
         var( tr, 'mt_2')
+        var( tr, 'trigweight_2')
+        var( tr, 'idweight_2')
+        var( tr, 'isoweight_2')
         
         var( tr, 'met')
         var( tr, 'metphi')
@@ -105,7 +112,7 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
 
 
     def declareHandles(self):
-        super(H2TauTauTreeProducerTauMuXCheck, self).declareHandles()
+        super(H2TauTauSyncTree, self).declareHandles()
         self.handles['pfmetraw'] = AutoHandle(
             'cmgPFMETRaw',
             'std::vector<cmg::BaseMET>' 
@@ -159,6 +166,9 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'passid_1', leg1.tightId() )
         fill( tr, 'passiso_1', leg1.relIsoAllChargedDB05()<0.1 )
         fill( tr, 'mt_1', event.diLepton.mTLeg2())
+        fill( tr, 'trigweight_1', leg1.triggerWeight)
+        fill( tr, 'idweight_1', leg1.idWeight)
+        fill( tr, 'isoweight_1', leg1.isoWeight)
         
         fill( tr, 'pt_2', leg2.pt())
         fill( tr, 'phi_2', leg2.phi())
@@ -169,6 +179,9 @@ class H2TauTauTreeProducerTauMuXCheck( TreeAnalyzerNumpy ):
         fill( tr, 'passid_2',  1)
         fill( tr, 'passiso_2', 1)
         fill( tr, 'mt_2', event.diLepton.mTLeg1())
+        fill( tr, 'trigweight_2', leg2.triggerWeight)
+        fill( tr, 'idweight_2', leg2.idWeight)
+        fill( tr, 'isoweight_2', leg2.isoWeight)
         
         met = self.handles['pfmetraw'].product()[0]
         fill( tr, 'met', met.pt()) # raw 

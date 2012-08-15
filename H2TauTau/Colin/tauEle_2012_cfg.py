@@ -127,7 +127,7 @@ treeProducer = cfg.Analyzer(
     )
 
 treeProducerXCheck = cfg.Analyzer(
-    'H2TauTauTreeProducerTauMuXCheck'    
+    'H2TauTauSyncTree'    
     )
 
 #########################################################################################

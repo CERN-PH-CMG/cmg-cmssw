@@ -4,6 +4,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
+from CMGTools.H2TauTau.proto.weights.weighttable import mu_id_taumu_2012, mu_iso_taumu_2012
 from CMGTools.H2TauTau.proto.samples.sampleShift import selectShift
 from CMGTools.RootTools.RootTools import * 
 
@@ -32,8 +33,20 @@ mc_tauEffWeight = 'effTau2012AB'
 mc_muEffWeight = 'effMu2012AB'
     
 
-skipper = cfg.Analyzer(
-    'Skipper',
+eventSelector = cfg.Analyzer(
+    'EventSelector',
+    toSelect = [
+    6136,
+    23454,
+    40807,
+    46759,
+    52897,
+    55583,
+    56969,
+    64110,
+    73578,
+    74257,
+    ]
     )
 
 jsonAna = cfg.Analyzer(
@@ -75,7 +88,8 @@ TauMuAna = cfg.Analyzer(
     m_min = 10,
     m_max = 99999,
     triggerMap = pathsAndFilters,
-    mvametsigs = 'mvaMETTauMu'
+    mvametsigs = 'mvaMETTauMu',
+    verbose = False
     )
 
 dyJetsFakeAna = cfg.Analyzer(
@@ -94,7 +108,6 @@ tauWeighter = cfg.Analyzer(
     lepton = 'leg1',
     verbose = False,
     disable = False,
-    recEffVersion = None
     )
 
 muonWeighter = cfg.Analyzer(
@@ -104,7 +117,8 @@ muonWeighter = cfg.Analyzer(
     lepton = 'leg2',
     verbose = False,
     disable = False,
-    recEffVersion = None
+    idWeight = mu_id_taumu_2012,
+    isoWeight = mu_iso_taumu_2012    
     )
 
 
@@ -129,7 +143,7 @@ treeProducer = cfg.Analyzer(
     )
 
 treeProducerXCheck = cfg.Analyzer(
-    'H2TauTauTreeProducerTauMuXCheck'    
+    'H2TauTauSyncTree'    
     )
 
 #########################################################################################
@@ -190,7 +204,7 @@ selectedComponents.extend( embed_list )
 
 
 sequence = cfg.Sequence( [
-    # skipper,
+    # eventSelector,
     jsonAna,
     triggerAna,
     vertexAna,
@@ -211,11 +225,11 @@ if syncntuple:
 
 test = 1
 if test==1:
-    comp = HiggsVBF125
-    # comp.files = comp.files[:10]
+    comp = HiggsVBF125Small
+    # comp.files = comp.files[:1]
     # comp.files = 'cmgTuple_colinMinusJosh.root'
     selectedComponents = [comp]
-    comp.splitFactor = 12
+    comp.splitFactor = 1
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
