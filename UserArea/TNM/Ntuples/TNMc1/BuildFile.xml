@@ -106,6 +106,8 @@
 <lib   name="Gui"/>
 <lib   name="Postscript"/>
 
+<use   name="fastjet"/>
+
 <export>
   <lib   name="1"/>
 </export>

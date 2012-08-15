@@ -17,6 +17,7 @@
 #include "DataFormats/Common/interface/RefProd.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Handle.h"
+
 //-----------------------------------------------------------------------------
 // Definitions:
 //   helper:        object of class JetHelper
@@ -118,6 +119,10 @@ namespace pat
         float puJetId_frac05() const { return (*puJetId_)[jets_->refAt(oindex)].frac05(); }
         float puJetId_leadCharge() const { return (*puJetId_)[jets_->refAt(oindex)].leadCharge(); }
         float puJetId_secondCharge() const { return (*puJetId_)[jets_->refAt(oindex)].secondCharge(); }
+
+        float getTau(int num) const;
+        float tau1() const { return getTau(1); }
+        float tau2() const { return getTau(2); }
 	
   private:
     // -- User internals
@@ -129,21 +134,6 @@ namespace pat
     // ---------------------------------------------------------
     // -- Access Methods
     // ---------------------------------------------------------
-
-    // Extra:
-
-    //float daughter_0_neutralHadronEnergyFraction() const
-    //{ return dynamic_cast<const reco::PFJet*>(object->daughter(0))->neutralHadronEnergyFraction(); }
-
-    /*
-    float  daughter(0)->chargedEmEnergyFraction()
-    float  daughter(0)->neutralEmEnergyFraction()
-    float  daughter(0)->photonEnergyFraction()
-    float  daughter(0)->muonEnergyFraction()
-    int  daughter(0)->chargedMultiplicity()
-    int  daughter(0)->nConstituents()
-    */
-
 
     // Default
 

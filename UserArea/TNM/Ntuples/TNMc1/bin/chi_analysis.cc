@@ -343,12 +343,13 @@ int main(int argc, char** argv)
 	     ((fabs(jethelper2_eta[1])>2.4)||
 	      ((jethelper2_chargedHadronEnergyFraction[1]>0)&&
 	       (jethelper2_chargedMultiplicity[1]>0)&&
-	       (jethelper2_chargedEmEnergyFraction[1]<0.99)))&&
-	     
+	       (jethelper2_chargedEmEnergyFraction[1]<0.99)))
+	     /*
+	     &&
 	     (triggerresultshelper_primaryVertexFilterPath)&&
 	     (triggerresultshelper_noscrapingFilterPath)&&
 	     (triggerresultshelper_hcalLaserEventFilterPath)&&
-
+             
 	     ((triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v1)||
 	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v2)||
 	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v3)||
@@ -403,6 +404,7 @@ int main(int argc, char** argv)
 	      (triggerresultshelper_HLT_HT750_v7)||
 	      (triggerresultshelper_HLT_HT750_v8)||
 	      (triggerresultshelper_HLT_HT750_v9))
+	     */
 	    )) continue;
 	   
 	  // ---------------------
@@ -427,7 +429,7 @@ int main(int argc, char** argv)
                   histsy2[j]->Fill(jethelper2_rapidity[1], weight);
                   histsyboost[j]->Fill(fabs(jethelper2_rapidity[0]+jethelper2_rapidity[1])/2., weight);
                   histsmetsumet[j]->Fill(met2_et/met2_sumEt, weight);
-                  histsdphi[j]->Fill(reco::deltaPhi(jethelper2_phi[0],jethelper2_phi[1]));
+                  histsdphi[j]->Fill(fabs(reco::deltaPhi(jethelper2_phi[0],jethelper2_phi[1])));
               }
           }
   

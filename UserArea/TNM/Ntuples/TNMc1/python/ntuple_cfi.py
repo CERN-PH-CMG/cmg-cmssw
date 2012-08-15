@@ -190,6 +190,9 @@ cms.EDAnalyzer("TheNtupleMaker",
     'float puJetId_frac05()',
     'float puJetId_leadCharge()',
     'float puJetId_secondCharge()',
+    #-- n-subjettiness variables ------------------------------------------
+    'float tau1()',
+    'float tau2()',
     ),
                patJet1Helper =
                cms.untracked.
@@ -265,6 +268,9 @@ cms.EDAnalyzer("TheNtupleMaker",
     'float puJetId_frac05()',
     'float puJetId_leadCharge()',
     'float puJetId_secondCharge()',
+    #-- n-subjettiness variables ------------------------------------------
+    'float tau1()',
+    'float tau2()',
     ),
                patJet2Helper =
                cms.untracked.
@@ -344,6 +350,9 @@ cms.EDAnalyzer("TheNtupleMaker",
     'float  daughter(1)->muonEnergyFraction()',
     'int  daughter(1)->chargedMultiplicity()',
     'int  daughter(1)->nConstituents()',
+    #-- n-subjettiness variables ------------------------------------------
+    'float tau1()',
+    'float tau2()',
     ),
                patMET =
                cms.untracked.
