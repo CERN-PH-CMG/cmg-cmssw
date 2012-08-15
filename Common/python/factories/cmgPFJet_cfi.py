@@ -10,18 +10,21 @@ pfJetFactory = cms.PSet(
        useConstituents = cms.bool( True ),
        puVariables = cms.InputTag("puJetId"),
        puMvas = cms.VInputTag( cms.InputTag("cmgPUJetMva","%sDiscriminant" % a ) for a in algolables ),
-       puIds = cms.VInputTag( cms.InputTag("cmgPUJetMva","%sId" % a ) for a in algolables )
+       puIds = cms.VInputTag( cms.InputTag("cmgPUJetMva","%sId" % a ) for a in algolables ),
        )
 
 
-from CMGTools.Common.selections.btaggedjet_cfi import trackCountingHighEffBJetTags
+from CMGTools.Common.selections.btaggedjet_cfi import *
 from CMGTools.Common.selections.jetId_cfi import *
 
 cmgPFJet = cms.EDFilter(
     "PFJetPOProducer",
     cfg = pfJetFactory.clone(),
     cuts = cms.PSet(
-       btag = trackCountingHighEffBJetTags.clone(),
+       tchp = trackCountingHighPurBJetTags.clone(),
+       tche = trackCountingHighEffBJetTags.clone(),
+       jp = jetProbabilityBJetTags.clone(),
+       csv = combinedSecondaryVertexBJetTags.clone(),
        veryLooseJetId99 = veryLooseJetId99.clone(),
        veryLooseJetId95 = veryLooseJetId95.clone(),       
        veryLooseJetId95h0 = veryLooseJetId95h0.clone(),       

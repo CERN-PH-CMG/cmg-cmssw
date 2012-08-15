@@ -15,8 +15,8 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC = True
-
+runOnMC      = True
+runOnFastSim = False
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
@@ -128,6 +128,23 @@ process.p += process.postPathCounter
 # process.p.remove(process.PATCMGMetRegressionSequence)
 # process.p.remove(process.PATCMGJetSequenceCHSpruned)
 
+if runOnFastSim :
+    process.vertexWeightSequence.remove(process.vertexWeight3DMay10ReReco)
+    process.vertexWeightSequence.remove(process.vertexWeight3DMay10ReReco)
+    process.vertexWeightSequence.remove(process.vertexWeight3DPromptRecov4)
+    process.vertexWeightSequence.remove(process.vertexWeight3D05AugReReco)
+    process.vertexWeightSequence.remove(process.vertexWeight3DPromptRecov6)
+    process.vertexWeightSequence.remove(process.vertexWeight3D2invfb)
+    process.vertexWeightSequence.remove(process.vertexWeight3D2011B)
+    process.vertexWeightSequence.remove(process.vertexWeight3D2011AB)
+    process.vertexWeightSequence.remove(process.vertexWeight3DFall11May10ReReco)
+    process.vertexWeightSequence.remove(process.vertexWeight3DFall11PromptRecov4)
+    process.vertexWeightSequence.remove(process.vertexWeight3DFall1105AugReReco)
+    process.vertexWeightSequence.remove(process.vertexWeight3DFall11PromptRecov6)
+    process.vertexWeightSequence.remove(process.vertexWeight3DFall112invfb)
+    process.vertexWeightSequence.remove(process.vertexWeight3DFall112011B)
+    process.vertexWeightSequence.remove(process.vertexWeight3DFall112011AB)
+
 ########################################################
 ## Setup electron energy corrections
 ########################################################
@@ -211,7 +228,7 @@ print 'Global tag       : ', process.GlobalTag.globaltag
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
 
 from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
-process.schedule = getSchedule(process, runOnMC)
+process.schedule = getSchedule(process, runOnMC, runOnFastSim)
 process.schedule.append( process.outpath )
 
 ## MessageLogger
