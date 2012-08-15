@@ -68,16 +68,17 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         # if event.eventId == 105104:
         #    print 'EVENT', event.eventId
         #    import pdb; pdb.set_trace()
-        result = super(TauMuAnalyzer, self).process(iEvent, event)
-        # print 'EVENT', event.eventId, result
+        result, message  = super(TauMuAnalyzer, self).process(iEvent, event)
+        if self.cfg_ana.verbose and result is False:
+            print 'EventReport', event.run, event.lumi, event.eventId, ':', message
         
         if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
             # and di-lepton veto must pass
-            result = self.selectionSequence(event, fillCounter=False,
-                                            leg1IsoCut = -9999,
-                                            leg2IsoCut = 9999)
+            result, message = self.selectionSequence(event, fillCounter=False,
+                                                     leg1IsoCut = -9999,
+                                                     leg2IsoCut = 9999)
             if result is False:
                 # really no way to find a suitable di-lepton,
                 # even in the control region
