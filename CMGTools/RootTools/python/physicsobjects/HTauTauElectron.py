@@ -29,12 +29,12 @@ class HTauTauElectron( Electron ):
             chargedAllIsoType = 13
             myVetoes = reco.IsoDeposit.Vetos()
             iso = self.sourcePtr().isoDeposit(chargedAllIsoType).depositWithin(0.4,
-                                                                               myVetoes,False)
+                                                                               myVetoes,True)
             vetoSize = 0.01
             if self.sourcePtr().isEE():
                 vetoSize = 0.015
             iso_veto = self.sourcePtr().isoDeposit(chargedAllIsoType).depositWithin(vetoSize,
-                                                                                    myVetoes,False)
+                                                                                    myVetoes,True)
             iso -= iso_veto
             self.chargedAllIsoCache = iso
         return self.chargedAllIsoCache
