@@ -6,7 +6,7 @@ import os
 import copy
 from CMGTools.RootTools.RootInit import *
 from CMGTools.RootTools.Style import sData, sBlue, styleSet
-from ROOT import TTree
+from ROOT import TTree, TLegend
 
 
 from optparse import OptionParser
@@ -61,12 +61,18 @@ trees = []
 for file in files:
     trees.append( getTree(file) )
 
+legend = None
 
 def draw(var, cut='', norm=False, rebin=None, nbins=None, xmin=None, xmax=None ):
+    global legend
     same = ''
     if nbins is not None:
         if xmin is None or xmax is None:
             raise ValueError('if you specify nbins, you also should specify xmin and xmax')
+    firstLegend = False
+    if not legend:
+        firstLegend = True
+        legend = TLegend(0.7, 0.7, 0.9, 0.9)
     for index, tree in enumerate(trees):
         theVar = var
         if same == '' and nbins:
@@ -89,8 +95,11 @@ def draw(var, cut='', norm=False, rebin=None, nbins=None, xmin=None, xmax=None )
         if index < len(styles):
             styles[index].formatHisto( hist )
         hist.Draw(same)
+        if firstLegend:
+            legend.AddEntry(hist, files[index], 'lp' )
         if same == '':
             same = 'same'
+    legend.Draw('same')
         
 
 areFriends = False
