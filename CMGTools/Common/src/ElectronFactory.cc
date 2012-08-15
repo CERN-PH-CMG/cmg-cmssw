@@ -93,29 +93,4 @@ cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* const ou
     output->isEcalDriven_ = cmg::toTriBool(input->ecalDriven());
   }  
 
-  //retrieve isolation from iso-deposit
-  reco::isodeposit::AbsVetos vetos_ch;
-  reco::isodeposit::AbsVetos vetos_nh;
-  reco::isodeposit::AbsVetos vetos_ph;
-
-  //see https://twiki.cern.ch/twiki/bin/view/CMS/EgammaPFBasedIsolation#Recommended_electron_vetoes_Upda
-  reco::isodeposit::Direction Dir = reco::isodeposit::Direction(input->superCluster()->eta(), input->superCluster()->phi());
-  if( fabs( input->superCluster()->eta() ) > 1.479 ){
-    vetos_ch.push_back(new reco::isodeposit::ConeVeto( Dir, 0.015 ));
-    vetos_ph.push_back(new reco::isodeposit::ConeVeto( Dir, 0.08 ));
-  }
-
-  output->chargedHadronIsoR03_ = (input->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin( 0.3, vetos_ch ).first);
-  output->chargedAllIsoR03_ = (input->isoDeposit(pat::PfChargedAllIso)->depositAndCountWithin( 0.3, vetos_ch ).first);
-  output->puChargedHadronIsoR03_ = (input->isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin( 0.3, vetos_ch ).first);
-  output->neutralHadronIsoR03_ = (input->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin( 0.3, vetos_nh ).first);
-  output->photonIsoR03_ = (input->isoDeposit(pat::PfGammaIso)->depositAndCountWithin( 0.3, vetos_ph ).first);
-
-  output->chargedHadronIsoR04_ = (input->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin( 0.4, vetos_ch ).first);
-  output->chargedAllIsoR04_ = (input->isoDeposit(pat::PfChargedAllIso)->depositAndCountWithin( 0.4, vetos_ch ).first);
-  output->puChargedHadronIsoR04_ = (input->isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin( 0.4, vetos_ch ).first);
-  output->neutralHadronIsoR04_ = (input->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin( 0.4, vetos_nh ).first);
-  output->photonIsoR04_ = (input->isoDeposit(pat::PfGammaIso)->depositAndCountWithin( 0.4, vetos_ph ).first);
-
-
 }

@@ -73,31 +73,6 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, c
     //         output->muonHits_ = combinedMuon->hitPattern().numberOfValidMuonHits();   
     //     }
    
-    //retrieve isolation from iso-deposit
-    reco::isodeposit::AbsVetos vetos_ch;
-    reco::isodeposit::AbsVetos vetos_nh;
-    reco::isodeposit::AbsVetos vetos_ph;
-
-    //see http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/RecoMuon/MuonIsolation/python/muonPFIsolationValues_cff.py?revision=1.3&view=markup
-    reco::isodeposit::Direction Dir = reco::isodeposit::Direction(input->eta(), input->phi());
-    vetos_ch.push_back(new reco::isodeposit::ConeVeto( Dir, 0.0001 ));
-    vetos_nh.push_back(new reco::isodeposit::ConeVeto( Dir, 0.01 ));
-    vetos_ph.push_back(new reco::isodeposit::ConeVeto( Dir, 0.01 ));
-    vetos_nh.push_back(new reco::isodeposit::ThresholdVeto( 0.5 ));
-    vetos_ph.push_back(new reco::isodeposit::ThresholdVeto( 0.5 ));
-
-    output->chargedHadronIsoR03_ = (input->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin( 0.3, vetos_ch ).first);
-    output->chargedAllIsoR03_ = (input->isoDeposit(pat::PfChargedAllIso)->depositAndCountWithin( 0.3, vetos_ch ).first);
-    output->puChargedHadronIsoR03_ = (input->isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin( 0.3, vetos_ch ).first);
-    output->neutralHadronIsoR03_ = (input->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin( 0.3, vetos_nh ).first);
-    output->photonIsoR03_ = (input->isoDeposit(pat::PfGammaIso)->depositAndCountWithin( 0.3, vetos_ph ).first);
-
-    output->chargedHadronIsoR04_ = (input->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin( 0.4, vetos_ch ).first);
-    output->chargedAllIsoR04_ = (input->isoDeposit(pat::PfChargedAllIso)->depositAndCountWithin( 0.4, vetos_ch ).first);
-    output->puChargedHadronIsoR04_ = (input->isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin( 0.4, vetos_ch ).first);
-    output->neutralHadronIsoR04_ = (input->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin( 0.4, vetos_nh ).first);
-    output->photonIsoR04_ = (input->isoDeposit(pat::PfGammaIso)->depositAndCountWithin( 0.4, vetos_ph ).first);
-   
 }
 
 
