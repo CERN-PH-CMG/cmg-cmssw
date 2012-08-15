@@ -4,6 +4,8 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
+from CMGTools.H2TauTau.proto.weights.weighttable import ele_id_tauele_2012, ele_iso_tauele_2012
+from CMGTools.H2TauTau.proto.samples.sampleShift import selectShift
 from CMGTools.RootTools.RootTools import * 
 
 # 'Nom', 'Up', 'Down', or None
@@ -102,9 +104,10 @@ electronWeighter = cfg.Analyzer(
     lepton = 'leg2',
     verbose = False,
     disable = False,
-    recEffVersion = None
+    recEffVersion = None,
+    idWeight = ele_id_tauele_2012,
+    isoWeight = ele_iso_tauele_2012    
     )
-
 
 
 # defined for vbfAna and eventSorter
@@ -206,7 +209,7 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 1
+test = 0
 if test==1:
     comp = HiggsVBF125
     # comp.files = 'Aug14/joshMinusColin.root'
