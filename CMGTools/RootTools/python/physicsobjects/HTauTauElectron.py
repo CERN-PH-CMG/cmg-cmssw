@@ -17,8 +17,8 @@ class HTauTauElectron( Electron ):
         if self.photonIsoCache is None:
             myVetoes = reco.IsoDeposit.Vetos()
             pfGammaIsoType = 6
-            iso = self.sourcePtr().isoDeposit(pfGammaIsoType).depositWithin(0.4,myVetoes,False)
-            iso_veto = self.sourcePtr().isoDeposit(pfGammaIsoType).depositWithin(0.08,myVetoes,False)
+            iso = self.sourcePtr().isoDeposit(pfGammaIsoType).depositWithin(0.4,myVetoes,True)
+            iso_veto = self.sourcePtr().isoDeposit(pfGammaIsoType).depositWithin(0.08,myVetoes,True)
             iso -= iso_veto
             self.photonIsoCache = iso
         return self.photonIsoCache
