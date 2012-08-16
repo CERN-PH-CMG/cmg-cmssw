@@ -6,8 +6,6 @@ using namespace cmg;
 reco::isodeposit::AbsVetos Muon::chargedHadronVetos() const {
   reco::isodeposit::AbsVetos vetos;
   reco::isodeposit::Direction Dir = reco::isodeposit::Direction((*(this->sourcePtr()))->eta(), (*(this->sourcePtr()))->phi());
-  double depEta = (*(this->sourcePtr()))->isoDeposit(pat::PfChargedHadronIso)->eta();
-  std::cout << "eta= " << (*(this->sourcePtr()))->eta() << " depEta= " << depEta << std::endl;
   vetos.push_back(new reco::isodeposit::ConeVeto( Dir, 0.0001 ));
   return vetos;
 }
