@@ -9,6 +9,11 @@
 
 #include "DataFormats/Math/interface/Point3D.h"
 
+#include "DataFormats/RecoCandidate/interface/IsoDepositDirection.h"
+#include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
+#include "DataFormats/RecoCandidate/interface/IsoDepositVetos.h"
+#include "DataFormats/PatCandidates/interface/Isolation.h"
+
 #include <vector>
 
 namespace cmg
@@ -32,16 +37,6 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
     puChargedHadronIso_(UnSet(double)),
     neutralHadronIso_(UnSet(double)),
     photonIso_(UnSet(double)),
-    chargedHadronIsoR03_(UnSet(double)),
-    chargedAllIsoR03_(UnSet(double)),
-    puChargedHadronIsoR03_(UnSet(double)),
-    neutralHadronIsoR03_(UnSet(double)),
-    photonIsoR03_(UnSet(double)),
-    chargedHadronIsoR04_(UnSet(double)),
-    chargedAllIsoR04_(UnSet(double)),
-    puChargedHadronIsoR04_(UnSet(double)),
-    neutralHadronIsoR04_(UnSet(double)),
-    photonIsoR04_(UnSet(double)),
     dxy_(UnSet(float)),
     dz_(UnSet(float)){}
     
@@ -52,49 +47,46 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
   }
                                 
   /// charged hadron isolation    
-  double chargedHadronIso(double dr=0) const{
-    if( dr == 0 ) return chargedHadronIso_;
-    else if( dr == 0.3) return chargedHadronIsoR03_;
-    else if( dr == 0.4) return chargedHadronIsoR04_;
-    else return -1;
-  }
-
+  double chargedHadronIso(double dr=-1.0) const; 
   /// charged particle isolation (e, mu, h+-)
-  double chargedAllIso(double dr=0) const{
-    if( dr == 0) return chargedAllIso_;
-    else if ( dr == 0.3 ) return chargedAllIsoR03_;
-    else if ( dr == 0.4 ) return chargedAllIsoR04_;
-    else return -1;
-  }
-
+  double chargedAllIso(double dr=-1.0) const;
   /// pile-up charged hadron isolation, used for dbeta corrections
-  double puChargedHadronIso(double dr=0) const{
-    if( dr == 0) return puChargedHadronIso_;
-    else if( dr == 0.3) return puChargedHadronIsoR03_;
-    else if( dr == 0.4) return puChargedHadronIsoR04_;
-    else return -1;
-  }
-
+  double puChargedHadronIso(double dr=-1.0) const;
   /// neutral hadron isolation
-  double neutralHadronIso(double dr=0) const{
-    if( dr == 0) return neutralHadronIso_;
-    else if( dr == 0.3) return neutralHadronIsoR03_;
-    else if( dr == 0.4) return neutralHadronIsoR04_;
-    else return -1;
-  }
-
+  double neutralHadronIso(double dr=-1.0) const;
   /// photon isolation
-  double photonIso(double dr=0) const{
-    if( dr == 0) return photonIso_;
-    else if( dr == 0.3) return photonIsoR03_;
-    else if( dr == 0.4) return photonIsoR04_;
-    else return -1;
+  double photonIso(double dr=-1.0) const;
+
+  /// charged hadron vetoes    
+  virtual reco::isodeposit::AbsVetos chargedHadronVetos() const { 
+    reco::isodeposit::AbsVetos vetos;
+    return vetos;
+  }
+  /// charged particle vetoes (e, mu, h+-)
+  virtual reco::isodeposit::AbsVetos chargedAllVetos() const {
+    reco::isodeposit::AbsVetos vetos;
+    return vetos;
+  }
+  /// pile-up charged hadron vetoes, used for dbeta corrections
+  virtual reco::isodeposit::AbsVetos puChargedHadronVetos() const { 
+    reco::isodeposit::AbsVetos vetos;
+    return vetos;
+  }
+  /// neutral hadron vetoes
+  virtual reco::isodeposit::AbsVetos neutralHadronVetos() const {
+    reco::isodeposit::AbsVetos vetos;
+    return vetos;
+  }
+  /// photon vetoes
+  virtual reco::isodeposit::AbsVetos photonVetos() const {
+    reco::isodeposit::AbsVetos vetos;
+    return vetos;
   }
 
   /// absolute isolation. if dBetaFactor > 0, the delta beta correction is applied. 
   /// if allCharged is true, charged hadron isolation is replaced by charged 
   /// particle isolation.
-  double absIso(float dBetaFactor=0, int allCharged=0, double dr=0) const{
+  double absIso(float dBetaFactor=0, int allCharged=0, double dr=-1.0) const{
     // in this case, dbeta correction is asked, but 
     // the input for this correction is not available. 
     // better returning an unphysical result than applying a wrong correction.
@@ -112,7 +104,7 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
   /// relative isolation. if dBetaFactor > 0, the delta beta correction is applied. 
   /// if allCharged is true, charged hadron isolation is replaced by charged 
   /// particle isolation.
-  double relIso(float dBetaFactor=0, int allCharged=0, double dr=0) const{
+  double relIso(float dBetaFactor=0, int allCharged=0, double dr=-1.0) const{
     double abs = absIso(dBetaFactor, allCharged, dr)/this->pt();
     return abs >=0 ? abs : -1;
   }
@@ -171,17 +163,6 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
   double puChargedHadronIso_;
   double neutralHadronIso_;
   double photonIso_;
-  //isolation values from iso-deposit
-  double chargedHadronIsoR03_;
-  double chargedAllIsoR03_;
-  double puChargedHadronIsoR03_;
-  double neutralHadronIsoR03_;
-  double photonIsoR03_;
-  double chargedHadronIsoR04_;
-  double chargedAllIsoR04_;
-  double puChargedHadronIsoR04_;
-  double neutralHadronIsoR04_;
-  double photonIsoR04_;
 
   /// transverse impact parameter
   float dxy_;
@@ -192,6 +173,55 @@ class Lepton : public cmg::PhysicsObjectWithPtr< LeptonType >{
 
 };
 
+/// charged hadron isolation
+template <class LeptonType>
+double Lepton<LeptonType>::chargedHadronIso(double dr) const {
+  if( dr > 0 ){
+    return (*(this->sourcePtr()))->isoDeposit(pat::PfChargedHadronIso)->depositAndCountWithin( dr, chargedHadronVetos() ).first;
+  }else{
+    return chargedHadronIso_;
+  }
+}
+
+/// charged particle isolation (e, mu, h+-)
+template <class LeptonType>
+double Lepton<LeptonType>::chargedAllIso(double dr) const {
+  if( dr > 0 ){
+    return (*(this->sourcePtr()))->isoDeposit(pat::PfChargedAllIso)->depositAndCountWithin( dr, chargedAllVetos() ).first;
+  }else{
+    return chargedAllIso_;
+  }
+}
+
+/// pile-up charged hadron isolation, used for dbeta corrections
+template <class LeptonType>
+double Lepton<LeptonType>::puChargedHadronIso(double dr) const {
+  if( dr > 0 ){
+    return (*(this->sourcePtr()))->isoDeposit(pat::PfPUChargedHadronIso)->depositAndCountWithin( dr, puChargedHadronVetos() ).first;
+  }else{
+    return puChargedHadronIso_;
+  }
+}
+
+/// neutral hadron isolation
+template <class LeptonType>
+double Lepton<LeptonType>::neutralHadronIso(double dr) const {
+  if( dr > 0 ){
+    return (*(this->sourcePtr()))->isoDeposit(pat::PfNeutralHadronIso)->depositAndCountWithin( dr, neutralHadronVetos() ).first;
+  }else{
+    return neutralHadronIso_;
+  }
+}
+
+/// photon isolation
+template <class LeptonType>
+double Lepton<LeptonType>::photonIso(double dr) const {
+  if( dr > 0 ){
+    return (*(this->sourcePtr()))->isoDeposit(pat::PfGammaIso)->depositAndCountWithin( dr, photonVetos() ).first;
+  }else{
+    return photonIso_;
+  }
+}
 
 }
 
