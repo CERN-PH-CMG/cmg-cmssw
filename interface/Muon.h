@@ -123,6 +123,17 @@ class MuonFactory;
     bool isCaloMuon() const { return type_ & reco::Muon::CaloMuon; }
     //bool isPFMuon() const {return type_ & reco::Muon::PFMuon; }     //WOULD NOT WORK IN <5.2.X (and is not a member of reco::Candidate)
     //bool isRPCMuon() const {return type_ & reco::Muon::RPCMuon;}
+
+    /// charged hadron vetoes    
+    reco::isodeposit::AbsVetos chargedHadronVetos() const;
+    /// charged particle vetoes (e, mu, h+-)
+    reco::isodeposit::AbsVetos chargedAllVetos() const;
+    /// pile-up charged hadron vetoes, used for dbeta corrections
+    reco::isodeposit::AbsVetos puChargedHadronVetos() const;
+    /// neutral hadron vetoes
+    reco::isodeposit::AbsVetos neutralHadronVetos() const;
+    /// photon vetoes
+    reco::isodeposit::AbsVetos photonVetos() const;
 	
     friend class cmg::MuonFactory;
 	

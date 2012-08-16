@@ -100,6 +100,16 @@ class Electron : public cmg::Lepton<pat::ElectronPtr>{
       return chargedAllIsoWithConeVeto_;
     }
 
+    /// charged hadron vetoes    
+    reco::isodeposit::AbsVetos chargedHadronVetos() const;
+    /// charged particle vetoes (e, mu, h+-)
+    reco::isodeposit::AbsVetos chargedAllVetos() const;
+    /// pile-up charged hadron vetoes, used for dbeta corrections
+    reco::isodeposit::AbsVetos puChargedHadronVetos() const;
+    /// neutral hadron vetoes
+    reco::isodeposit::AbsVetos neutralHadronVetos() const;
+    /// photon vetoes
+    reco::isodeposit::AbsVetos photonVetos() const;
     
 private:
     
