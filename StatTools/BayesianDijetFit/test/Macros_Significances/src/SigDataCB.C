@@ -38,6 +38,7 @@ void SigDataCB()
 
 // variables definition and initialization
 
+
 int filenumber=3;
 int Detastart=1; // this is the bin number
 int Detacut1=5; // last bin for the 1st region
@@ -78,20 +79,23 @@ double meantest=0.; // scan over all masses --> meantest=0. else choose the mass
 
 if(filenumber==1)
 {
-TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_3fbm1_190456_195947_8TeV.root");
-TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin10GeV;1");
+  TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_3fbm1_190456_195947_8TeV.root");
+  TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin10GeV;1");
+  string outputPlots("Plots_3fbm1_8TeV/");
 }
 
 if(filenumber==2)
 {
-TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_5fbm1_8TeV.root");
-TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat;1");
+  TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_5fbm1_8TeV.root");
+  TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat;1");
+  string outputPlots("Plots_5fbm1_8TeV/");
 }
 
 if(filenumber==3)
 {
-TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_7fbm1_8TeV.root");
-TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
+  TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_7fbm1_8TeV.root");
+  TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
+  string outputPlots("Plots_7fbm1_8TeV/");
 }
 
  gStyle->SetOptFit(111); 
@@ -339,7 +343,7 @@ double *sNLow = new double[Nvalues];
 double *sFrac = new double[Nvalues];
 
 ifstream flux;
-flux.open("CristalBall.txt");
+flux.open("data/CristalBall_Qstar_8TeV.txt");
 for(int i=0;i<Nvalues;i++)
 {
 flux>>mass[i]>>sMean[i]>>sSigma[i]>>sAlphaHigh[i]>>sAlphaLow[i]>>sNHigh[i]>>sNLow[i]>>sFrac[i];
@@ -1696,6 +1700,10 @@ M1graph->SetMinimum(0);
 M1graph->SetMaximum(4);
 if(savefile1==1) outputfileM1Sig->cd();
 if(savefile1==1) M1graph->Write();
+ if(savefile1==1) {
+   string output = outputPlots + "SigMethod1.png"
+   M1CanvasSig->SaveAs(output);
+ }
 }
 
 if(exec2==1)
@@ -1717,33 +1725,187 @@ M2CanvasSig->cd();
 M2graph->Draw("ALP");
 M2graph->SetMinimum(0);
 M2graph->SetMaximum(4);
+
+
+
+
+  //----------------------------------------------------------
+
+
+  TGraph *M2graph1= new TGraph(Nvalues,x3,M2significance1);
+  M2graph1->SetTitle("method3: Significance as a function of the Invariant Mass");
+  M2graph1->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  M2graph1->GetYaxis()->SetTitle("Significance");
+  M2graph1->SetLineColor(2);
+  M2graph1->SetLineWidth(2);
+  M2graph1->SetMarkerColor(4);
+  M2graph1->SetMarkerStyle(21);
+  M2graph1->SetMarkerSize(0.7);
+  
+  TCanvas *M2CanvasSig1 = new TCanvas("M2CanvasSig1","M2CanvasSig1",11,51,700,500);
+  M2CanvasSig1->SetGrid();
+  
+  M2CanvasSig1->cd();
+  M2graph1->Draw("ALP");
+  M2graph1->SetMinimum(0);
+  M2graph1->SetMaximum(4);
+  
+
+  TGraph *M2graph2= new TGraph(Nvalues,x3,M2significance2);
+  M2graph2->SetTitle("method3: Significance as a function of the Invariant Mass");
+  M2graph2->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  M2graph2->GetYaxis()->SetTitle("Significance");
+  M2graph2->SetLineColor(2);
+  M2graph2->SetLineWidth(2);
+  M2graph2->SetMarkerColor(4);
+  M2graph2->SetMarkerStyle(21);
+  M2graph2->SetMarkerSize(0.7);
+  
+  TCanvas *M2CanvasSig2 = new TCanvas("M2CanvasSig2","M2CanvasSig2",11,51,700,500);
+  M2CanvasSig2->SetGrid();
+  
+  M2CanvasSig2->cd();
+  M2graph2->Draw("ALP");
+  M2graph2->SetMinimum(0);
+  M2graph2->SetMaximum(4);
+
+  TGraph *M2graph3= new TGraph(Nvalues,x3,M2significance3);
+  M2graph3->SetTitle("method3: Significance as a function of the Invariant Mass");
+  M2graph3->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  M2graph3->GetYaxis()->SetTitle("Significance");
+  M2graph3->SetLineColor(2);
+  M2graph3->SetLineWidth(2);
+  M2graph3->SetMarkerColor(4);
+  M2graph3->SetMarkerStyle(21);
+  M2graph3->SetMarkerSize(0.7);
+  
+  TCanvas *M2CanvasSig3 = new TCanvas("M2CanvasSig3","M2CanvasSig3",11,51,700,500);
+  M2CanvasSig3->SetGrid();
+  
+  M2CanvasSig3->cd();
+  M2graph3->Draw("ALP");
+  M2graph3->SetMinimum(0);
+  M2graph3->SetMaximum(4);
+
+
+
+
+
+
+
+
 if(savefile2==1) outputfileM2Sig->cd();
 if(savefile2==1) M2graph->Write();
+ if(savefile2==1) {
+   string output = outputPlots + "SigMethod2.png"
+   M2CanvasSig->SaveAs(output);
+
+
+    string output1 = outputPlots + "SigMethod2_Bin1.png"
+      M2CanvasSig1->SaveAs(output);
+    string output2 = outputPlots + "SigMethod2_Bin2.png"
+      M2CanvasSig2->SaveAs(output);
+    string output3 = outputPlots + "SigMethod2_Bin3.png"
+      M2CanvasSig3->SaveAs(output);
+ }
+
 }
 
 
 if(exec3==1)
 {
-TGraph *M3graph= new TGraph(Nvalues,x3,y3);
-M3graph->SetTitle("method3: Significance as a function of the Invariant Mass");
-M3graph->GetXaxis()->SetTitle("Invariant Mass (GeV)");
-M3graph->GetYaxis()->SetTitle("Significance");
-M3graph->SetLineColor(2);
-M3graph->SetLineWidth(2);
-M3graph->SetMarkerColor(4);
-M3graph->SetMarkerStyle(21);
-M3graph->SetMarkerSize(0.7);
+  TGraph *M3graph= new TGraph(Nvalues,x3,y3);
+  M3graph->SetTitle("method3: Significance as a function of the Invariant Mass");
+  M3graph->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  M3graph->GetYaxis()->SetTitle("Significance");
+  M3graph->SetLineColor(2);
+  M3graph->SetLineWidth(2);
+  M3graph->SetMarkerColor(4);
+  M3graph->SetMarkerStyle(21);
+  M3graph->SetMarkerSize(0.7);
+  
+  TCanvas *M3CanvasSig = new TCanvas("M3CanvasSig","M3CanvasSig",11,51,700,500);
+  M3CanvasSig->SetGrid();
+  
+  M3CanvasSig->cd();
+  M3graph->Draw("ALP");
+  M3graph->SetMinimum(0);
+  M3graph->SetMaximum(4);
 
-TCanvas *M3CanvasSig = new TCanvas("M3CanvasSig","M3CanvasSig",11,51,700,500);
-M3CanvasSig->SetGrid();
 
-M3CanvasSig->cd();
-M3graph->Draw("ALP");
-M3graph->SetMinimum(0);
-M3graph->SetMaximum(4);
-if(savefile3==1) outputfileM3Sig->cd();
-if(savefile3==1) M3graph->Write();
-}
+  //----------------------------------------------------------
+
+
+  TGraph *M3graph1= new TGraph(Nvalues,x3,M3significance1);
+  M3graph1->SetTitle("method3: Significance as a function of the Invariant Mass");
+  M3graph1->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  M3graph1->GetYaxis()->SetTitle("Significance");
+  M3graph1->SetLineColor(2);
+  M3graph1->SetLineWidth(2);
+  M3graph1->SetMarkerColor(4);
+  M3graph1->SetMarkerStyle(21);
+  M3graph1->SetMarkerSize(0.7);
+  
+  TCanvas *M3CanvasSig1 = new TCanvas("M3CanvasSig1","M3CanvasSig1",11,51,700,500);
+  M3CanvasSig1->SetGrid();
+  
+  M3CanvasSig1->cd();
+  M3graph1->Draw("ALP");
+  M3graph1->SetMinimum(0);
+  M3graph1->SetMaximum(4);
+  
+
+  TGraph *M3graph2= new TGraph(Nvalues,x3,M3significance2);
+  M3graph2->SetTitle("method3: Significance as a function of the Invariant Mass");
+  M3graph2->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  M3graph2->GetYaxis()->SetTitle("Significance");
+  M3graph2->SetLineColor(2);
+  M3graph2->SetLineWidth(2);
+  M3graph2->SetMarkerColor(4);
+  M3graph2->SetMarkerStyle(21);
+  M3graph2->SetMarkerSize(0.7);
+  
+  TCanvas *M3CanvasSig2 = new TCanvas("M3CanvasSig2","M3CanvasSig2",11,51,700,500);
+  M3CanvasSig2->SetGrid();
+  
+  M3CanvasSig2->cd();
+  M3graph2->Draw("ALP");
+  M3graph2->SetMinimum(0);
+  M3graph2->SetMaximum(4);
+
+  TGraph *M3graph3= new TGraph(Nvalues,x3,M3significance3);
+  M3graph3->SetTitle("method3: Significance as a function of the Invariant Mass");
+  M3graph3->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  M3graph3->GetYaxis()->SetTitle("Significance");
+  M3graph3->SetLineColor(2);
+  M3graph3->SetLineWidth(2);
+  M3graph3->SetMarkerColor(4);
+  M3graph3->SetMarkerStyle(21);
+  M3graph3->SetMarkerSize(0.7);
+  
+  TCanvas *M3CanvasSig3 = new TCanvas("M3CanvasSig3","M3CanvasSig3",11,51,700,500);
+  M3CanvasSig3->SetGrid();
+  
+  M3CanvasSig3->cd();
+  M3graph3->Draw("ALP");
+  M3graph3->SetMinimum(0);
+  M3graph3->SetMaximum(4);
+
+
+  if(savefile3==1) outputfileM3Sig->cd();
+  if(savefile3==1) M3graph->Write();
+  if(savefile3==1) {
+    string output = outputPlots + "SigMethod3.png"
+      M3CanvasSig->SaveAs(output);
+    string output1 = outputPlots + "SigMethod3_Bin1.png"
+      M3CanvasSig1->SaveAs(output);
+    string output2 = outputPlots + "SigMethod3_Bin2.png"
+      M3CanvasSig2->SaveAs(output);
+    string output3 = outputPlots + "SigMethod3_Bin3.png"
+      M3CanvasSig3->SaveAs(output);
+  }
+  
+ }
 
 }
 
