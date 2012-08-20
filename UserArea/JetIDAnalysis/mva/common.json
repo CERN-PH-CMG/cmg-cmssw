@@ -16,5 +16,9 @@
   "### sigwei"   : "(jetPt^(2.09563))/2.74326e+06",
   "### bkgwei"   : "1./( 1.71983e+09*((jetPt^-(4.14048))+(0.660527*exp(-(0.00173749*((jetPt+61.8387)*(jetPt+61.8387)))))) )",
   "sigcut"  : "nvtx>1. && jetPt>= 10. &&  isMatched  && abs(jetGenDr) < 0.3  && ( jetGenPt/jetPt > 0.7 || jetGenPt > 10 ) && abs(jetFlavour) <=3 && abs(jetFlavour) !=0",
-  "bkgcut"  : "nvtx>1. && jetPt>= 10. && ( !isMatched || ( abs(jetGenDr) > 0.3 && ( jetGenPt/jetPt < 0.7 && jetGenPt < 10 ) ) )"
+  "bkgcut"  : "nvtx>1. && jetPt>= 10. && ( !isMatched || ( abs(jetGenDr) > 0.3 && ( jetGenPt/jetPt < 0.7 && jetGenPt < 10 ) ) )",
+
+  "### sigcut"  : "nvtx>1. &&     ( jetGenDr < 0.1 + exp(-0.05*(jetGenPt-10.)) ) && ( abs(jetGenPt-jetPt) / jetPt < 0.5 ) ", 
+  "## bkgcut"  : "nvtx>1. && ! ( ( jetGenDr < 0.1 + exp(-0.05*(jetGenPt-10.)) ) && ( abs(jetGenPt-jetPt) / jetPt < 0.5 ) )"
+
 }

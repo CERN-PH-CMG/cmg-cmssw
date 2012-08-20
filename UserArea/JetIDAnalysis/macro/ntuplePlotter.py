@@ -40,25 +40,21 @@ def main(options,args):
             }
         if options.mvas != "":
             for mva in options.mvas.split(","):
-                PileupJetHistograms.prototypes[mva] = ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,-1.,1.)
+                PileupJetHistograms.prototypes[mva] = ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",400,-1.,1.)
         if options.customPrototypes:
-            PileupJetHistograms.prototypes["mva"] = ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",50,-1.,1.)
+            PileupJetHistograms.prototypes["mva"] = ("%(name)s %(hname)s%(jetbin)s;%(hname)s %(unitx)s;Jets %(unity)s",400,-1.,1.)
 
     
     ## cuts and binning
     genDrCut = 0.3
     genPtCut = 0.
     genDrAntiCut = 0.2
-    
+
     vtxBins   = (1,10,20)
-    ## ptBins    = (0,10,20,30)
     ptBins    = (0,10,20,25,30,40,50)
-    #### vtxBins   = (0,10,15,20,30)
-    #### ptBins    = (20,30,50)
-    #### if options.tmva:
-    ####     vtxBins   = (1,10,20)
-    ####     ## ptBins    = (0,10,20,30)
-    ####     ptBins    = (0,10,20,25,30,40,50)
+    if options.inclusive:
+            vtxBins   = (0,100)
+            ptBins    = (0,20)
     vtxBinLabels = mkBinLabels(vtxBins)
 
     etaBins   = (0,2.5,2.75,3.0)
@@ -122,9 +118,9 @@ def main(options,args):
                 
         ## Original ntuples
         else:
-            if not tr.jetLooseID:
+            if not tr.jetLooseID or tr.jetPt < 20.:
                 continue
-
+            
             if options.forceFlavour != 0:
                 tr.jetFlavour = options.forceFlavour
             
@@ -139,7 +135,7 @@ def main(options,args):
                 elif abs(tr.jetFlavour) <=3 and abs(tr.jetFlavour) !=0:
                     quarkCleanHistosId.fillRootTuple(tr)
 
-            elif not tr.isMatched or ( tr.jetGenDr > 0.3 and r.jetGenPt/tr.jetPt < 0.5 ):
+            elif not tr.isMatched or ( tr.jetGenDr > 0.3 and tr.jetGenPt/tr.jetPt < 0.7 and tr.jetGenPt < 10 ):
                 unmatchedCleanJetHistos.fillRootTuple(tr)
                 unmatchedCleanHistosId.fillRootTuple(tr)
 
@@ -197,6 +193,11 @@ if __name__ == "__main__":
                         ),
             make_option("-T", "--tmva",
                         action="store_true", dest="tmva",
+                        default=False,
+                        help="",
+                        ),
+            make_option("-I", "--inclusive",
+                        action="store_true", dest="inclusive",
                         default=False,
                         help="",
                         ),

@@ -52,7 +52,8 @@ def main(options, args):
     fitr =  TF1("fitl","pol1",20,35)
     fita =  TF1("fita","pol1",15,25)
 
-    wps = { "loose":[0,0.05,0.1,0.1,0.1], "medium":[0,0.10,0.2,0.2,0.2], "tight":[1,0.95,0.9,0.9,0.9] }
+    ## wps = { "loose":[0,0.05,0.1,0.1,0.1], "medium":[0,0.10,0.2,0.2,0.2], "tight":[1,0.95,0.9,0.9,0.9] }
+    wps = { "loose":[0,0.05,0.05,0.05,0.05], "medium":[0,0.1,0.1,0.1,0.1], "tight":[0,0.2,0.2,0.2,0.2] }
     if options.chs:
         wps = { "loose":[0,0.02,0.1,0.1,0.1], "medium":[0,0.05,0.2,0.2,0.2], "tight":[1,0.95,0.9,0.9,0.9] }
     wpf = { }
@@ -87,18 +88,18 @@ def main(options, args):
             h_bkg =  gDirectory.Get("h_bkg_%s" % hname)
             
             print "Getting quantiles ", hname 
-            sig_qvals = [0.1,0.2,0.2,0.5,0.6 ,0.05, 0.1]
-            bkg_qvals = [0.4,0.7,0.6,0.8,0.9 ,0.95, 0.9]
+            sig_qvals = [0.1,0.2,0.3,0.5,0.02 ,0.05, 0.15]
+            bkg_qvals = [0.4,0.7,0.6,0.8,0.9 , 0.95, 0.9 ]
             quants[hname] = getQuantilesGraphs(h_sig,sig_qvals), getQuantilesGraphs(h_bkg,bkg_qvals)
             
             for i in range(len(sig_qvals)):
                 if options.integrateall:
                     quants[hname][0][i].SetTitle("%1.0f%% efficiency" % (((1.-sig_qvals[i])*100.) ))
                     if options.vsnvtx:
-                        quants[hname][0][i].Fit(fita,"R+")
+                        quants[hname][0][i].Fit(fita.Clone(),"R+")
                     else:
-                        quants[hname][0][i].Fit(fitl,"R+")
-                        quants[hname][0][i].Fit(fitr,"R+")
+                        quants[hname][0][i].Fit(fitl.Clone(),"R+")
+                        quants[hname][0][i].Fit(fitr.Clone(),"R+")
                     for wpn,wp in wps.iteritems():
                         if wp[0] == 0 and wp[icat] == sig_qvals[i]:
                             wpf[wpn]["%d_%s" % (icat,name)] = quants[hname][0][i].GetListOfFunctions(),quants[hname][0][i].GetTitle()
@@ -114,10 +115,10 @@ def main(options, args):
                 if options.integrateall:
                     quants[hname][1][i].SetTitle("%1.0f%% rejection" % ((bkg_qvals[i]*100.) ))
                     if options.vsnvtx:
-                        quants[hname][1][i].Fit(fita,"R+")
+                        quants[hname][1][i].Fit(fita.Clone(),"R+")
                     else:
-                        quants[hname][1][i].Fit(fitl,"R+")
-                        quants[hname][1][i].Fit(fitr,"R+")
+                        quants[hname][1][i].Fit(fitl.Clone(),"R+")
+                        quants[hname][1][i].Fit(fitr.Clone(),"R+")
                     for wpn,wp in wps.iteritems():
                         if wp[0] == 1 and wp[icat] == bkg_qvals[i]:
                             wpf[wpn]["%d_%s" % (icat,name)] = quants[hname][1][i].GetListOfFunctions(),quants[hname][1][i].GetTitle()
@@ -255,6 +256,10 @@ if __name__ == "__main__":
                         ),
             make_option("-a", "--integrateall",
                         action="store_true", dest="integrateall",
+                        default=False
+                        ),
+            make_option("-c", "--chs",
+                        action="store_true", dest="chs",
                         default=False
                         ),
             make_option("-V", "--vsnvtx",
