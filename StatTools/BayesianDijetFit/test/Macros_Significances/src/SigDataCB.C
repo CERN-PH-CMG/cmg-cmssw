@@ -39,11 +39,11 @@ void SigDataCB()
 // variables definition and initialization
 
 
-int filenumber=3;
-int Detastart=1; // this is the bin number
-int Detacut1=5; // last bin for the 1st region
-int Detacut2=10; // last bin for the 2nd region
-int Detaend=13;
+  int filenumber=3; // check that you have created the proper Plot repertory. See below where filenumber is used
+  int Detastart=1; // this is the bin number
+  int Detacut1=5; // last bin for the 1st region
+  int Detacut2=10; // last bin for the 2nd region
+  int Detaend=13;
 
 int exec1=1; //method1
 int exec2=1; //method2
@@ -64,7 +64,7 @@ double r3=0.187717;
 double xmin=890; // range for the input histograms and fits
 double xmax=4700.;
 double minmass=1000.; // range for the significance scan only
-double maxmass=1300.;
+double maxmass=4700.;
 int Nvalues=(maxmass-minmass)/100+1; // number of values in the text file for Crystal Ball shapes, size of arrays and pointers
 int NvaluesLoop=(maxmass-minmass)/100+1; // number of values in the loop
 
@@ -98,6 +98,13 @@ if(filenumber==3)
   string outputPlots("Plots_7fbm1_8TeV/");
 }
 
+if(filenumber==4)
+{
+  TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_2fbm1_POST_ICHEP_8TeV.root");
+  TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
+  string outputPlots("Plots_2fbm1_POST_ICHEP_8TeV/");
+}
+
  gStyle->SetOptFit(111); 
 
 
@@ -112,7 +119,7 @@ if(filenumber==1)
   h_DEta_Mass->GetYaxis()->SetTitleSize(0.04);
   h_DEta_Mass->GetYaxis()->SetTitleOffset(1.6);
 }
-if(filenumber==2 || filenumber==3)
+if(filenumber==2 || filenumber==3 || filenumber==4)
 {
   h_DEta_Mass->SetTitle("Invariant Mass VS #Delta#eta for data");
   h_DEta_Mass->GetYaxis()->SetTitle("Invariant Mass (GeV)");
@@ -160,7 +167,7 @@ hist_mass2=h_DEta_Mass->ProjectionX("hist_mass2",Detacut1+1,Detacut2,"e");
 hist_mass3=h_DEta_Mass->ProjectionX("hist_mass3",Detacut2+1,Detaend,"e");
 }
 
-if(filenumber==2 || filenumber==3)
+if(filenumber==2 || filenumber==3 || filenumber==4)
 {
 
 hist_mass=h_DEta_Mass->ProjectionY("hist_mass",Detastart,Detaend,"e");
@@ -170,7 +177,7 @@ hist_mass3=h_DEta_Mass->ProjectionY("hist_mass3",Detacut2+1,Detaend,"e");
 }
 
 
-if(filenumber==2 || filenumber==3)
+if(filenumber==2 || filenumber==3 || filenumber==4)
 {
 hist_mass->Rebin(10);
 hist_mass1->Rebin(10);
@@ -1871,11 +1878,11 @@ if(savefile2==1) M2graph->Write();
 
 
    string output1 = outputPlots + "SigMethod2_Bin1.png";
-   M2CanvasSig1->SaveAs(output.c_str());
+   M2CanvasSig1->SaveAs(output1.c_str());
    string output2 = outputPlots + "SigMethod2_Bin2.png";
-   M2CanvasSig2->SaveAs(output.c_str());
+   M2CanvasSig2->SaveAs(output2.c_str());
    string output3 = outputPlots + "SigMethod2_Bin3.png";
-   M2CanvasSig3->SaveAs(output.c_str());
+   M2CanvasSig3->SaveAs(output3.c_str());
  }
 
 }
@@ -1967,11 +1974,11 @@ if(exec3==1)
     string output = outputPlots + "SigMethod3.png";
     M3CanvasSig->SaveAs(output.c_str());
     string output1 = outputPlots + "SigMethod3_Bin1.png";
-    M3CanvasSig1->SaveAs(output.c_str());
+    M3CanvasSig1->SaveAs(output1.c_str());
     string output2 = outputPlots + "SigMethod3_Bin2.png";
-    M3CanvasSig2->SaveAs(output.c_str());
+    M3CanvasSig2->SaveAs(output2.c_str());
     string output3 = outputPlots + "SigMethod3_Bin3.png";
-    M3CanvasSig3->SaveAs(output.c_str());
+    M3CanvasSig3->SaveAs(output3.c_str());
   }
   
  }
