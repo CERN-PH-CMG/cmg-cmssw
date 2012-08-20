@@ -1,7 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.HtoZZ2l2nu.ClusteredPFMetProducer_cfi import ClusteredPFMetProducer
-from CMGTools.HtoZZ2l2nu.PileupNormalizationProducer_cfi import puWeights
 from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import *
 from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
 from CommonTools.ParticleFlow.ParticleSelectors.pfAllNeutralHadronsAndPhotons_cfi import pfAllNeutralHadronsAndPhotons
@@ -10,12 +9,6 @@ def defineAnalysis(process,castorDir="",reRunRho=False) :
 
     # our MET producer
     process.ClusteredPFMetProducer = ClusteredPFMetProducer.clone()
-
-    #pileup normalization
-    process.puWeights      = puWeights.clone( data = cms.string('$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/NewPileup2011AplusB.root'),
-                                              mc   = cms.string('$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/Summer11Observed.root')
-                                              )
-    process.puWeightSequence = cms.Sequence(process.puWeights)
 
     #
     # configure the analyzer (cf. base values are in the StandardSelections_cfi)
@@ -46,7 +39,10 @@ def defineAnalysis(process,castorDir="",reRunRho=False) :
     #MVAs for IDs
     #process.load('EGamma.EGammaAnalysisTools.electronIdMVAProducer_cfi')
     #process.mvaIDs = cms.Sequence(  process.mvaTrigV0 + process.mvaNonTrigV0 )
-        
+    
+    from JetMETCorrections.Configuration.JetCorrectionProducers_cff import ak5PFJetsL1L2L3
+    process.ak5PFJetsL1L2L3ForMVAMET=ak5PFJetsL1L2L3.clone()
+    
         
     #rho for muon isolation
     if(reRunRho) :
@@ -62,13 +58,13 @@ def defineAnalysis(process,castorDir="",reRunRho=False) :
         process.rhoForIsolationSequence = cms.Sequence(process.pfAllNeutralHadronsAndPhotons*process.kt6PFJetsCentralNeutral)
         process.analysis = cms.Path( #process.mvaIDs +
             process.rhoForIsolationSequence +
+            process.ak5PFJetsL1L2L3ForMVAMET +
             process.ClusteredPFMetProducer +
-            process.puWeightSequence +
             process.evAnalyzer)
     else :
         process.analysis = cms.Path( #process.mvaIDs +
+            process.ak5PFJetsL1L2L3ForMVAMET +
             process.ClusteredPFMetProducer +
-            process.puWeightSequence +
             process.evAnalyzer)
         
      

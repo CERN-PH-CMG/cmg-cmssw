@@ -25,6 +25,12 @@
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+#include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
 
 #include "FWCore/Utilities/interface/Exception.h"
 
@@ -32,6 +38,10 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "CMGTools/HtoZZ2l2nu/interface/FastJetAlgoWrapper.h"
+#include "CMGTools/External/interface/PileupJetIdAlgo.h"
+
+#include "pharris/MVAMet/interface/MetUtilities.h"
+#include "pharris/MVAMet/interface/MVAMet.h"
 
 #include "Math/LorentzVector.h"
 
@@ -54,6 +64,13 @@ private:
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
+  void produceMVAMet(edm::Event& iEvent, const edm::EventSetup& iSetup);
+  double jetMVA (const reco::PFJet *iCorrJet,double iJec, const reco::Vertex *iPV, const reco::VertexCollection &iAllvtx);
+  double pfCandDz(const reco::PFCandidate* iPFCand, const reco::Vertex *iPV);
+  void makeCandidates(std::vector<std::pair<LorentzVector,double> > &iPFInfo, reco::PFCandidateCollection &iCands,const reco::Vertex *iPV);
+  void makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,reco::PFJetCollection &iUCJets,reco::PFJetCollection &iCJets,const std::vector<reco::Vertex>&iVertices,double iRho);
+  bool passPFLooseId(const reco::PFJet *iJet);
+
   int computeVertexAssociationFor(const reco::PFCandidateRef &candptr);
   int computeVertexAssociationFor(const  edm::Ptr<reco::PFCandidate> &candptr);
   int computeVertexAssociationFor(const reco::TrackBaseRef& trackBaseRef);
@@ -70,12 +87,18 @@ private:
   double minNeutralPt_, maxNeutralEta_;
   double minJetPt_, maxJetEta_;
   std::vector<int> vertexAssociationMasks_;
-
   FastJetAlgoWrapper jetProducer_;
-
   bool minBiasMode_;
+  bool simpleNeutralAssociation_;
 
-   bool simpleNeutralAssociation_;
+  //MVA met specific
+  edm::InputTag  mvaMet_CorrJetName,mvaMet_UnCorrJetName, mvaMet_RhoName;
+  double mvaMet_DZMin;
+  PileupJetIdAlgo        *mvaMet_PUJetIdAlgo ;
+  MVAMet                 *mvaMet_;
+
+  //dilepton selection specific
+  std::map<std::string, edm::ParameterSet> dilObjConfig_;
 
 };
 
@@ -90,7 +113,11 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   minJetPt_(iConfig.getParameter<double>("minJetPt")),
   maxJetEta_(iConfig.getParameter<double>("maxJetEta")),
   jetProducer_(iConfig.getParameter<edm::ParameterSet>("fastjet")),
-  minBiasMode_(iConfig.getParameter<bool>("minBiasMode"))
+  minBiasMode_(iConfig.getParameter<bool>("minBiasMode")),
+  mvaMet_CorrJetName(iConfig.getParameter<edm::InputTag>("mvaMet_CorrJetName")),
+  mvaMet_UnCorrJetName(iConfig.getParameter<edm::InputTag>("mvaMet_JetName")),
+  mvaMet_RhoName(iConfig.getParameter<edm::InputTag>("mvaMet_RhoName")),
+  mvaMet_DZMin(iConfig.getParameter<double>       ("mvaMet_dZMin"))
 //  simpleNeutralAssociation_(iConfig.getParameter<bool>("simpleNeutralAssociation"))
 {
   produces<reco::PFMET>("standard");
@@ -103,10 +130,25 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   produces<reco::PFMET>("assocBeta");
   produces<reco::PFMET>("assocWithFwdBeta");
 
+  produces<reco::PFMET>("mvaMET");
 
   produces<std::vector<int> >("pvAssocCandidates");
   produces<std::vector<double> >("globalPfMetSums"); 
   produces<std::vector<reco::PFJet> >("JET");
+
+  //MVA MET specific
+  mvaMet_PUJetIdAlgo    = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("JetIdParams"));
+  mvaMet_               = new MVAMet(mvaMet_DZMin);
+  mvaMet_               ->Initialize(iConfig,
+			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmet_52.root"))),        //U
+			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmetphi_52.root"))),     //U Phi
+			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmetu1cov_52.root"))),   //U1 Cov
+			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmetu2cov_52.root"))) //U2 Cov
+			       );
+
+  std::string objs[]={"Vertices", "Photons","Electrons", "Muons"};
+  for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
+    dilObjConfig_[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
 }
 
 //
@@ -455,6 +497,170 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   std::auto_ptr<std::vector< reco::PFJet> > jetCollWithUnAssocPtr(new std::vector< reco::PFJet> );
   for(unsigned int i=0;i<vtxJetsPlusNeutral[0].size();i++){jetCollWithUnAssocPtr->push_back(vtxJetsPlusNeutral[0][i]);}
   iEvent.put(jetCollWithUnAssocPtr,"JET");
+
+  //add the MVA MET
+  produceMVAMet(iEvent,iSetup);
+}
+
+
+// the following is based on https://twiki.cern.ch/twiki/bin/view/CMS/MVAMet
+void ClusteredPFMetProducer::produceMVAMet(edm::Event& iEvent, const edm::EventSetup& iSetup) {  
+  //Uncorrected Jets
+  edm::Handle<reco::PFJetCollection>       lHUCJets;
+  iEvent.getByLabel(mvaMet_UnCorrJetName, lHUCJets);
+  reco::PFJetCollection               lUCJets = *lHUCJets;
+
+  //Corrected Jets
+  edm::Handle<reco::PFJetCollection>       lHCJets;
+  iEvent.getByLabel(mvaMet_CorrJetName  , lHCJets);
+  reco::PFJetCollection               lCJets = *lHCJets;
+
+  //Get pfCandidates
+  reco::PFCandidateCollection         lCands = *pfCandsH_;
+
+  // vertices    
+  std::vector<reco::VertexRef> selVertices = getGoodVertices(vtxH_,dilObjConfig_["Vertices"]);
+  const reco::Vertex *lPV = 0; if(selVertices.size() > 0) lPV = selVertices[0].get();
+
+  //Get PF Met
+  edm::Handle<std::vector<reco::PFMET> > lHPFMet;
+  iEvent.getByLabel("pfMet"      , lHPFMet); 
+  std::vector<reco::PFMET> lPFMET = *lHPFMet;
+
+  //Get Rho
+  edm::Handle<double>                                        lHRho;
+  iEvent.getByLabel(mvaMet_RhoName                          , lHRho);
+  double lRho = *lHRho;
+  
+  //Make Generic Objects
+  std::vector<LorentzVector >                                     lVisible;
+  std::vector<std::pair<LorentzVector,double> >                   lPFInfo;  makeCandidates(lPFInfo, lCands,lPV);
+  std::vector<MetUtilities::JetInfo>                              lJetInfo; makeJets      (lJetInfo,lUCJets,lCJets,*vtxH_,lRho);
+  std::vector<math::XYZVector>                                    lVtxInfo; 
+  for(size_t ivtx=0; ivtx<selVertices.size(); ivtx++)
+    {
+      math::XYZVector pVec; pVec.SetCoordinates(selVertices[ivtx]->x(),selVertices[ivtx]->y(),selVertices[ivtx]->z());
+      lVtxInfo.push_back(pVec);
+    }
+
+
+
+
+  //SELECT LEPTONS (RECOIL WILL BE COMPUTED FROM THESE)
+  edm::Handle<reco::BeamSpot> beamSpot;
+  iEvent.getByLabel( dilObjConfig_["Vertices"].getParameter<edm::InputTag>("beamSpot"), beamSpot);
+  std::vector<ObjectIdSummary> lIds;
+  edm::Handle<edm::View<reco::Candidate> > hEle;
+  iEvent.getByLabel(dilObjConfig_["Electrons"].getParameter<edm::InputTag>("source"), hEle);
+  EcalClusterLazyTools lazyTool(iEvent,iSetup,dilObjConfig_["Photons"].getParameter<edm::InputTag>("ebrechits"),dilObjConfig_["Photons"].getParameter<edm::InputTag>("eerechits"));
+  edm::Handle<reco::ConversionCollection> hConversions;
+  try{ iEvent.getByLabel(dilObjConfig_["Photons"].getParameter<edm::InputTag>("conversions"), hConversions); }  catch(std::exception &e){ cout << e.what() << endl; }
+  edm::Handle<edm::View<reco::Candidate> > hMu;
+  iEvent.getByLabel(dilObjConfig_["Muons"].getParameter<edm::InputTag>("source"), hMu);
+  try{
+    if(hEle.isValid() && hEle->size()>0)
+      {
+	std::vector<reco::CandidatePtr> selElectrons   = getGoodElectrons(hEle, hMu, vtxH_, *beamSpot, hConversions, 0, lazyTool, lRho, dilObjConfig_["Electrons"], iSetup, lIds);
+	for(size_t iele=0; iele<selElectrons.size(); iele++)
+	  {
+	    LorentzVector ele4(selElectrons[iele]->px(),selElectrons[iele]->py(),selElectrons[iele]->pz(),selElectrons[iele]->energy());
+	    lVisible.push_back(ele4);
+	  }
+      }
+  }catch(std::exception &e){
+  }
+  try{
+    if(hMu.isValid() && hMu->size()>0)
+      {
+	std::vector<reco::CandidatePtr> selMuons        = getGoodMuons(hMu, selVertices[0], lRho, dilObjConfig_["Muons"], iSetup, lIds);
+	for(size_t imu=0; imu<selMuons.size(); imu++)
+	  {
+	    LorentzVector mu4(selMuons[imu]->px(),selMuons[imu]->py(),selMuons[imu]->pz(),selMuons[imu]->energy());
+	    lVisible.push_back(mu4);
+	  }
+      }
+  }catch(std::exception &e){
+  }
+  
+  if(lVisible.size()>0)
+    {
+      //Calculate the MVA
+      std::pair<LorentzVector,TMatrixD> lMVAMetInfo = mvaMet_->GetMet(lVisible,lJetInfo,lPFInfo,lVtxInfo,false);
+      
+      //add PF mva met to the event
+      reco::PFMET lDummy;
+      std::auto_ptr<reco::PFMET> lMVAMet(new reco::PFMET(lDummy.getSpecific(),lPFMET.at(0).sumEt(),lMVAMetInfo.first,lPV->position()) ); //Use PFMET sum Et
+      iEvent.put(lMVAMet,"mvaMET");
+    }
+}
+
+
+//
+void ClusteredPFMetProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,reco::PFJetCollection &iUCJets,reco::PFJetCollection &iCJets,const std::vector<reco::Vertex>&iVertices,double iRho) { 
+  for(int i0   = 0; i0 < (int) iUCJets.size(); i0++) {   // uncorrecte jets collection                                           
+    const reco::PFJet       *pUCJet = &(iUCJets.at(i0));
+    for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
+      const reco::PFJet     *pCJet  = &(iCJets.at(i1));
+      if(       pUCJet->jetArea() != pCJet->jetArea()                  ) continue;
+      if( fabs(pUCJet->eta() - pCJet->eta())         > 0.01            ) continue;
+      if( pUCJet->pt()                               < minJetPt_       ) continue;
+      //if( fabs(pCJet->eta())                         > 4.99          ) continue;
+      if( !passPFLooseId(pUCJet)                                       ) continue;
+      double lJec = pCJet ->pt()/pUCJet->pt();
+      double lMVA = jetMVA(pCJet,lJec,&(iVertices[0]),iVertices);
+      double lNeuFrac = (pUCJet->neutralEmEnergy()/pUCJet->energy() + pUCJet->neutralHadronEnergy()/pUCJet->energy());
+      MetUtilities::JetInfo pJetObject; 
+      pJetObject.p4       = pCJet->p4(); 
+      pJetObject.mva      = lMVA;
+      pJetObject.neutFrac = lNeuFrac;
+      //Following discussion with Jet MET convenors < 10 GeV use rho correction only below 10
+      //if(pUCJet->pt() < 10) { 
+      //TLorentzVector lCorrPt ;  lCorrPt.SetPtEtaPhiM(max(pUCJet->pt()-pCJet->jetArea()*iRho,0.),pCJet->eta(),pCJet->phi(),pCJet->mass());
+      //pJetObject.p4.SetCoordinates(lCorrPt.Px(),lCorrPt.Py(),lCorrPt.Pz(),lCorrPt.E());
+      //}
+      //pJetObject.p4       = pUCJet->p4(); 
+      iJetInfo.push_back(pJetObject);
+      break;
+    }
+  }
+}
+
+//
+void ClusteredPFMetProducer::makeCandidates(std::vector<std::pair<LorentzVector,double> > &iPFInfo,reco::PFCandidateCollection &iCands,const reco::Vertex *iPV) { 
+  for(int i0 = 0; i0 < (int)iCands.size(); i0++) {
+    const reco::PFCandidate*  pflowCand = &(iCands.at(i0));
+    double pDZ = -999;
+    if(iPV != 0) pDZ  = pfCandDz(pflowCand,iPV); //If there is no track return negative number -999
+    //LorentzVector pVec; pVec.SetCoordinates(pflowCand->pt(),pflowCand->eta(),pflowCand->phi(),pflowCand->mass());
+    std::pair<LorentzVector,double> pPFObject(pflowCand->p4(),pDZ);
+    iPFInfo.push_back(pPFObject);
+  }
+}
+
+//
+bool ClusteredPFMetProducer::passPFLooseId(const reco::PFJet *iJet) { 
+  if(iJet->energy()== 0)                                  return false;
+  if(iJet->neutralHadronEnergy()/iJet->energy() > 0.99)   return false;
+  if(iJet->neutralEmEnergy()/iJet->energy()     > 0.99)   return false;
+  if(iJet->nConstituents() <  2)                          return false;
+  if(iJet->chargedHadronEnergy()/iJet->energy() <= 0 && fabs(iJet->eta()) < 2.4 ) return false;
+  if(iJet->chargedEmEnergy()/iJet->energy() >  0.99  && fabs(iJet->eta()) < 2.4 ) return false;
+  if(iJet->chargedMultiplicity()            < 1      && fabs(iJet->eta()) < 2.4 ) return false;
+  return true;
+}
+
+//
+double ClusteredPFMetProducer::pfCandDz(const reco::PFCandidate* iPFCand, const reco::Vertex *iPV) { 
+  double lDz = -999;
+  if(iPFCand->trackRef().isNonnull())    lDz = fabs(iPFCand->   trackRef()->dz(iPV->position()));
+  if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->gsfTrackRef()->dz(iPV->position()));
+  return lDz;
+}
+
+//
+double ClusteredPFMetProducer::jetMVA (const reco::PFJet *iCorrJet,double iJec, const reco::Vertex *iPV, const reco::VertexCollection &iAllvtx){
+  PileupJetIdentifier lPUJetId =  mvaMet_PUJetIdAlgo->computeIdVariables(iCorrJet,iJec,iPV,iAllvtx,true);
+  return lPUJetId.mva();
 }
 
 //

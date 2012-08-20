@@ -189,14 +189,6 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
   ev.puWeight = 1.0;
   if(event.isRealData())  return;
 
-
-
-  //pileup
-  edm::Handle<float> puWeightHandle;
-  event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("puReweight"), puWeightHandle );
-  if(puWeightHandle.isValid()) weight = *(puWeightHandle.product());
-  ev.puWeight = weight;
-
   edm::Handle<std::vector<PileupSummaryInfo> > puInfoH;
   event.getByType(puInfoH);
   int npuOOT(0),npuIT(0),npuOOTm1(0);
@@ -701,8 +693,15 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	{
 	  edm::Handle< reco::PFMET > clustMetH;
 	  event.getByLabel(clusteredMetSources[i],clustMetH); 
-	  LorentzVector iclustMet(clustMetH->px(),clustMetH->py(),0,clustMetH->pt());
-	  ev.met_phi[i+1]  = iclustMet.phi();   ev.met_pt[i+1]  = iclustMet.pt();
+	  if(clustMetH.isValid())
+	    {
+	      LorentzVector iclustMet(clustMetH->px(),clustMetH->py(),0,clustMetH->pt());
+	      ev.met_phi[i+1]  = iclustMet.phi();   ev.met_pt[i+1]  = iclustMet.pt();
+	    }
+	  else
+	    {
+	      ev.met_phi[i+1]  = 0;    ev.met_pt[i+1]  = -1;
+	    }
 	}
 
     }catch(std::exception &e){

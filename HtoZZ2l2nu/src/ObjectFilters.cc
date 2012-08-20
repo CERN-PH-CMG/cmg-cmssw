@@ -404,7 +404,7 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	lepId.h2tebc            = ele->dr03HcalDepth2TowerSumEtBc();
 	lepId.fbrem             = ele->fbrem();
 	lepId.r9                = 0; try{ lepId.r9=lazyTool.e3x3(*ele->superCluster()->seed())/ele->superCluster()->rawEnergy(); } catch(std::exception &e) { }
-	lepId.aeff              = EgammaCutBasedEleId::GetEffectiveArea(ele->eta());  
+	lepId.aeff              = 1.0; 
 	lepId.eopin             = ele->eSuperClusterOverP(); 
 	lepId.trkip3d           = ip3dRes.second.value();
 	lepId.trkip3dsig        = ip3dRes.second.significance();
@@ -476,17 +476,6 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 									lepId.isoVals[TRACKER_ISO],lepId.isoVals[ECAL_ISO],lepId.isoVals[HCAL_ISO]);
 	  }
 	
-	int myHeepBits[]={heep::CutCodes::DETAIN,
-			  heep::CutCodes::DPHIIN,
-			  heep::CutCodes::HADEM,
-			  heep::CutCodes::SIGMAIETAIETA,
-			  heep::CutCodes::E2X5OVER5X5,
-			  heep::CutCodes::NRMISSHITS};
-	int heepIdVal( ele->electronID("eidHEEP"));
-	bool hasHEEPid=true;
-	for(size_t ibit=0; ibit<sizeof(myHeepBits)/sizeof(int); ibit++)
-	  hasHEEPid &= !(heep::CutCodes::passCuts(heepIdVal,myHeepBits[ibit]));
-
 	//build a summary of IDs
 	lepId.idBits = has2011Id << EID_VBTF2011 |
 	  hasCutBasedIds[0] << EID_VETO | 
@@ -497,10 +486,8 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	  passEoP << EID_EOPCUT |
 	  passTriggerCut[1] << EID_TRIGGER2011 |
 	  passTriggerCut[0] << EID_TIGHTTRIGGER |
-	  hasHEEPid << EID_HEEPID |
 	  ele->ecalDrivenSeed() << EID_ECALDRIVEN |
 	  ele->trackerDrivenSeed() << EID_TRACKERDRIVEN;
-
 
 	//now do its selection
 	if(lepId.p4.pt()<minPt || fabs(lepId.p4.eta())>maxEta) continue; 
@@ -924,7 +911,7 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 	phoId.h2tebc            = pho->hadTowDepth2OverEm();
 #endif
 	phoId.r9                = pho->r9();
-	phoId.aeff              = EgammaCutBasedEleId::GetEffectiveArea(pho->eta());  
+	phoId.aeff              = 1.0;
 	phoId.isoVals[TRACKER_ISO]=pho->trkSumPtHollowConeDR04();
 	phoId.isoVals[ECAL_ISO]=pho->ecalRecHitSumEtConeDR04();
 	phoId.isoVals[HCAL_ISO]=pho->hcalTowerSumEtConeDR04();
