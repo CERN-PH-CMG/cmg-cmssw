@@ -1,5 +1,5 @@
 // -*- C++ -*-
-//
+q//
 // Package:    JetAnalyzer
 // Class:      JetAnalyzer
 // 
@@ -13,7 +13,7 @@
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.20 2012/05/18 09:48:55 malberti Exp $
+// $Id: JetAnalyzer.cc,v 1.21 2012/05/23 08:31:26 musella Exp $
 //
 //
 
@@ -191,11 +191,13 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     genJets = *genJetHandle;
   }
 
+  bool selectEvent=true;
   int goodMuon1=-1, goodMuon2=-1;
-  bool isZ=false;
-  DiMuonSelection(muons, goodMuon1, goodMuon2, isZ);
-
-  if( ! isZ && requireZ_ ) { return; }
+  if( requireZ_ ) {
+	  selectEvent=false;
+	  DiMuonSelection(muons, goodMuon1, goodMuon2, selectEvent);
+	  if( ! selectEvent ) { return; }
+  }
 
   int numberOfJets = 0;
   
@@ -219,7 +221,7 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     if ( patjet.pt()*jec <  jetPtThreshold_ )  continue;
  
     //-- remove muons from jets 
-    if (isZ) {
+    if (selectEvent && requireZ_ ) {
       float dr1 = deltaR( muons.at(goodMuon1).eta(),  muons.at(goodMuon1).phi(),  patjet.eta(),  patjet.phi());
       float dr2 = deltaR( muons.at(goodMuon2).eta(),  muons.at(goodMuon2).phi(),  patjet.eta(),  patjet.phi());
       //std::cout << i << " " << dr1 << " " << dr2 << std::endl; 
@@ -254,7 +256,7 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     if ( patjet.pt() <  jetPtThreshold_ )  { continue; }
   
     //-- remove muons from jets 
-    if (isZ) {
+    if (selectEvent  && requireZ_) {
       float dr1 = deltaR( muons.at(goodMuon1).eta(),  muons.at(goodMuon1).phi(),  patjet.eta(),  patjet.phi());
       float dr2 = deltaR( muons.at(goodMuon2).eta(),  muons.at(goodMuon2).phi(),  patjet.eta(),  patjet.phi());
       //std::cout << i << " " << dr1 << " " << dr2 << std::endl; 
@@ -299,8 +301,10 @@ JetAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     PUoot_early_nTrue = PUoot_early_TrueNumInteractions;
     PUoot_late_n      = PUoot_late_NumInteractions;
     PUoot_late_nTrue  = PUoot_late_TrueNumInteractions;
-    dimuonPt          = (muons.at(goodMuon1).p4()+muons.at(goodMuon2).p4()).Pt();
-    dphiZJet          = deltaPhi( (muons.at(goodMuon1).p4()+muons.at(goodMuon2).p4()).Phi(),  patjet.phi()   );
+    if( requireZ_ ) { 
+	    dimuonPt          = (muons.at(goodMuon1).p4()+muons.at(goodMuon2).p4()).Pt();
+	    dphiZJet          = deltaPhi( (muons.at(goodMuon1).p4()+muons.at(goodMuon2).p4()).Phi(),  patjet.phi()   );
+    }
     
     tree->Fill();
   

@@ -51,6 +51,7 @@ process.pfjetanalyzer = jetanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJetsPFlowNoPuSub",""),
     GenJetTag   = cms.InputTag("selectedPatJetsPFlowNoPuSub","genJets"),
     dataFlag = cms.untracked.bool(False),
+    requireZ = cms.untracked.bool(False),
 )
 
 process.chspfjetanalyzer = jetanalyzer.clone(
