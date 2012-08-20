@@ -31,44 +31,51 @@
 //    These values must be consistent with the Crystal Ball description in the text file CristalBall.txt (from 1000 to 4700 and divisible by 100 here)
 //10) Calculation of significance for a given mass only --> meantest= given mass , else put 0. to scan over all masses defined within minmass and maxmass
 
+Double_t Ntot=1;
+Double_t N1=0;
+Double_t N2=0;
+Double_t N3=0;
+Double_t N4=0;
 
-
-void SigDataCB()
-{
-
-// variables definition and initialization
-
-
-  int filenumber=2; // check that you have created the proper Plot repertory. See below where filenumber is used
-  int Detastart=1; // this is the bin number
-  int Detacut1=5; // last bin for the 1st region
-  int Detacut2=10; // last bin for the 2nd region
-  int Detaend=13;
-
-int exec1=1; //method1
-int exec2=1; //method2
-int exec3=1; //method3
-int savefile1=1; //method1
-int savefile2=1; //method2
-int savefile3=1; //method3
-int iPValue=0; //generate pseudo experiment and calculate pvalue --> iPValue=1
-int iendPValue=10000; //number of pseudo experiments
-int savefilePValue=0; // to save the PValue plot -->savefilePValue=1
-int igraph=1;  // plot signal ratio for method 2 and 3 -->igraph=1
-int iprint=0;
 
 double r1=0.436786; //ratio for signal
 double r2=0.375497;
 double r3=0.187717;
 
-double xmin=900; // range for the input histograms and fits
+void SigDataCB_Test()
+{
+
+// variables definition and initialization
+
+
+  int filenumber=3; // check that you have created the proper Plot repertory. See below where filenumber is used
+  int Detastart=1; // this is the bin number
+  int Detacut1=5; // last bin for the 1st region
+  int Detacut2=10; // last bin for the 2nd region
+  int Detacut3=13;
+  int Detaend=20;
+
+int exec1=1; //method1
+int exec2=1; //method2
+int exec3=0; //method3
+int savefile1=1; //method1
+int savefile2=1; //method2
+int savefile3=0; //method3
+int iPValue=0; //generate pseudo experiment and calculate pvalue --> iPValue=1
+int iendPValue=10000; //number of pseudo experiments
+int savefilePValue=0; // to save the PValue plot -->savefilePValue=1
+int igraph=1;  // plot signal ratio for method 2 and 3 -->igraph=1
+int iprint=1;
+
+
+double xmin=1200; // range for the input histograms and fits
 double xmax=4700.;
 double minmass=1000.; // range for the significance scan only
 double maxmass=4000.;
 int Nvalues=(maxmass-minmass)/100+1; // number of values in the text file for Crystal Ball shapes, size of arrays and pointers
 int NvaluesLoop=(maxmass-minmass)/100+1; // number of values in the loop
 
- double meantest=0.; // scan over all masses --> meantest=0. else choose the mass 
+double meantest=0.; // scan over all masses --> meantest=0. else choose the mass 
 
  double chisquare = 0; // chisquare to control the fits convergence
 
@@ -81,28 +88,28 @@ if(filenumber==1)
 {
   TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_3fbm1_190456_195947_8TeV.root");
   TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin10GeV;1");
-  string outputPlots("Plots_3fbm1_8TeV/");
+  string outputPlots("Plots_3fbm1_8TeV_4bins/");
 }
 
 if(filenumber==2)
 {
   TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_5fbm1_8TeV.root");
   TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat;1");
-  string outputPlots("Plots_5fbm1_8TeV/");
+  string outputPlots("Plots_5fbm1_8TeV_4bins/");
 }
 
 if(filenumber==3)
 {
   TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_7fbm1_8TeV.root");
   TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
-  string outputPlots("Plots_7fbm1_8TeV/");
+  string outputPlots("Plots_7fbm1_8TeV_4bins/");
 }
 
 if(filenumber==4)
 {
   TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_2fbm1_POST_ICHEP_8TeV.root");
   TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
-  string outputPlots("Plots_2fbm1_POST_ICHEP_8TeV/");
+  string outputPlots("Plots_2fbm1_POST_ICHEP_8TeV_4bins/");
 }
 
  gStyle->SetOptFit(111); 
@@ -157,6 +164,10 @@ if(filenumber==2 || filenumber==3 || filenumber==4)
   TCanvas *Canvas_3 = new TCanvas("Canvas_3","Canvas_3",11,51,700,500);
   TLegend* leg3 = new TLegend(0.4, 0.4, .6, .45);
 
+  TH1D* hist_mass4 = new TH1D();
+  hist_mass4->Sumw2();
+  TCanvas *Canvas_4 = new TCanvas("Canvas_4","Canvas_4",11,51,700,500);
+  TLegend* leg4 = new TLegend(0.4, 0.4, .6, .45);
 
 
 if(filenumber==1)
@@ -173,7 +184,8 @@ if(filenumber==2 || filenumber==3 || filenumber==4)
 hist_mass=h_DEta_Mass->ProjectionY("hist_mass",Detastart,Detaend,"e");
 hist_mass1=h_DEta_Mass->ProjectionY("hist_mass1",Detastart,Detacut1,"e");
 hist_mass2=h_DEta_Mass->ProjectionY("hist_mass2",Detacut1+1,Detacut2,"e");
-hist_mass3=h_DEta_Mass->ProjectionY("hist_mass3",Detacut2+1,Detaend,"e");
+hist_mass3=h_DEta_Mass->ProjectionY("hist_mass3",Detacut2+1,Detacut3,"e");
+hist_mass4=h_DEta_Mass->ProjectionY("hist_mass4",Detacut3+1,Detaend,"e");
 }
 
 
@@ -183,6 +195,7 @@ hist_mass->Rebin(10);
 hist_mass1->Rebin(10);
 hist_mass2->Rebin(10);
 hist_mass3->Rebin(10);
+hist_mass4->Rebin(10);
 }
 
   hist_mass->SetTitle("Invariant Mass with 0<#Delta#eta<1.3");
@@ -205,29 +218,36 @@ hist_mass3->Rebin(10);
   hist_mass3->GetXaxis()->SetTitleOffset(1.1);
   hist_mass3->GetYaxis()->SetTitle("number of events");
   hist_mass3->GetYaxis()->SetTitleOffset(1.5);
-
+  hist_mass4->SetTitle("Invariant Mass with 1.3<#Delta#eta<2.0");
+  hist_mass4->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  hist_mass4->GetXaxis()->SetTitleOffset(1.1);
+  hist_mass4->GetYaxis()->SetTitle("number of events");
+  hist_mass4->GetYaxis()->SetTitleOffset(1.5);
 
   TH1D*  hist_massRebin = (TH1D*) hist_mass->Clone("hist_massRebin");
   TH1D*  hist_mass1Rebin = (TH1D*) hist_mass1->Clone("hist_mass1Rebin");
   TH1D*  hist_mass2Rebin = (TH1D*) hist_mass2->Clone("hist_mass2Rebin");
   TH1D*  hist_mass3Rebin = (TH1D*) hist_mass3->Clone("hist_mass3Rebin");
+  TH1D*  hist_mass4Rebin = (TH1D*) hist_mass4->Clone("hist_mass4Rebin");
 
 hist_massRebin->Rebin(10);
 hist_mass1Rebin->Rebin(10);
 hist_mass2Rebin->Rebin(10);
 hist_mass3Rebin->Rebin(10);
+hist_mass4Rebin->Rebin(10);
 
-
-Double_t Ntot=hist_mass->GetEntries();
-Double_t N1=hist_mass1->GetEntries();
-Double_t N2=hist_mass2->GetEntries();
-Double_t N3=hist_mass3->GetEntries();
+Ntot=hist_mass->GetEntries();
+N1=hist_mass1->GetEntries();
+N2=hist_mass2->GetEntries();
+N3=hist_mass3->GetEntries();
+N4=hist_mass4->GetEntries();
 
 cout<<"comparing the number of events"<<endl;
 cout<<"for 0<DeltaEta<0.5: "<<N1/Ntot*100<<" %"<<endl;
 cout<<"for 0.5<DeltaEta<1: "<<N2/Ntot*100<<" %"<<endl;
 cout<<"for 1<DeltaEta<1.3: "<<N3/Ntot*100<<" %"<<endl;
-cout<<"sum="<<N1/Ntot*100+N2/Ntot*100+N3/Ntot*100<<endl;
+cout<<"for 1.3<DeltaEta<2.0: "<<N4/Ntot*100<<" %"<<endl;
+cout<<"sum="<<N1/Ntot*100+N2/Ntot*100+N3/Ntot*100+N4/Ntot*100<<endl;
 
 
  Canvas->cd();
@@ -311,6 +331,16 @@ cout<<"sum="<<N1/Ntot*100+N2/Ntot*100+N3/Ntot*100<<endl;
    TFile *outputfileM2Pull3Rebin = new TFile(output.c_str(),"recreate");
    output = outputPlots + "CBM2SigSig3.root";
    TFile *outputfileM2Sig3 = new TFile(output.c_str(),"recreate");
+
+   string output = outputPlots + "CBM2MassSig4.root";
+   TFile *outputfileM2Mass4 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2PullSig4.root";
+   TFile *outputfileM2Pull4 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2PullRebinSig4.root";
+   TFile *outputfileM2Pull4Rebin = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2SigSig4.root";
+   TFile *outputfileM2Sig4 = new TFile(output.c_str(),"recreate");
+
  }
 
 
@@ -366,6 +396,7 @@ double M1Significance;
 double M2Significance1;
 double M2Significance2;
 double M2Significance3;
+double M2Significance4;
 double M3Significance1;
 double M3Significance2;
 double M3Significance3;
@@ -379,16 +410,21 @@ double *M2significance=new double[Nvalues];
 double *M2significance1=new double[Nvalues];
 double *M2significance2=new double[Nvalues];
 double *M2significance3=new double[Nvalues];
+double *M2significance4=new double[Nvalues];
 
 double *M1nevents=new double[Nvalues]; 
 double *M2nevents1=new double[Nvalues]; 
 double *M2nevents2=new double[Nvalues]; 
 double *M2nevents3=new double[Nvalues]; 
+double *M2nevents4=new double[Nvalues]; 
+
 
 double *M1chisq=new double[Nvalues]; 
 double *M2chisq1=new double[Nvalues]; 
 double *M2chisq2=new double[Nvalues]; 
 double *M2chisq3=new double[Nvalues]; 
+double *M2chisq4=new double[Nvalues]; 
+
 double *M3chisq1=new double[Nvalues]; 
 double *M3chisq2=new double[Nvalues]; 
 double *M3chisq3=new double[Nvalues]; 
@@ -401,6 +437,8 @@ double M2lnLB2;
 double M2lnLSpB2;
 double M2lnLB3;
 double M2lnLSpB3;
+double M2lnLB4;
+double M2lnLSpB4;
 double *x2=new double[Nvalues];
 double *y2=new double[Nvalues];
 //method3
@@ -422,6 +460,7 @@ double norm0;
 double norm1;
 double norm2;
 double norm3;
+double norm4;
 
 double *mass = new double[Nvalues];
 double *sMean = new double[Nvalues];
@@ -447,6 +486,7 @@ M2significance[i]=0;
 M2significance1[i]=0;
 M2significance2[i]=0;
 M2significance3[i]=0;
+M2significance4[i]=0;
 M3significance[i]=0;
 M3significance1[i]=0;
 M3significance2[i]=0;
@@ -468,7 +508,7 @@ if(exec1==1)
   TF1* M1Sig = new TF1("M1Sig", CBall, xmin, xmax, 8);
   TF1* M1SigBkg = new TF1("M1SigBkg", BKGpCBall, xmin, xmax, 11);
 
-  TH1D* M1M_divHist = new TH1D("M1M_divHist","Method 1: fit residuals for 0<#Delta#eta<1.3",NBin,minHist,maxHist);
+  TH1D* M1M_divHist = new TH1D("M1M_divHist","Method 1: fit residuals for 0<#Delta#eta<2.0",NBin,minHist,maxHist);
   M1M_divHist->Sumw2();
   TH1D* M1M_divHistSignal = new TH1D("M1M_divHistSignal","M1: signal",NBin,minHist,maxHist);
   M1M_divHistSignal->Sumw2();
@@ -550,6 +590,32 @@ if(exec2==1)
   TH1D* M2M_divHist3SignalRebin = new TH1D("M2M_divHist3SignalRebin","M2: Signal Rebin",NBin/10,minHist,maxHist);
   M2M_divHist3SignalRebin->Sumw2();
   TCanvas *M2CanvasDiv3Rebin = new TCanvas("M2CanvasDiv3Rebin","M2CanvasDiv3Rebin",11,51,700,500);
+
+
+  TH1D*  M2M_Hist4 = (TH1D*) hist_mass4->Clone("M2M_Hist4");
+  M2M_Hist4->SetTitle("Method2 : Invariant Mass (GeV) for 1.3<#Delta#eta<2.0");
+  M2M_Hist4->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  M2M_Hist4->GetXaxis()->SetTitleOffset(1.1);
+  M2M_Hist4->GetYaxis()->SetTitle("number of events");
+  TCanvas *M2Canvas4 = new TCanvas("M2Canvas4","M2Canvas4",11,51,700,500);
+  TF1 *M2Bkg4= new TF1("M2Bkg4","([0]*TMath::Power(1-x/8000,[1]))/(TMath::Power(x/8000,[2]))",xmin,xmax);
+  TF1* M2Sig4 = new TF1("M2Sig4", CBall, xmin, xmax, 8);
+  TF1* M2SigBkg4 = new TF1("M2SigBkg4", BKGpCBall, xmin, xmax, 11);
+
+  TH1D* M2M_divHist4 = new TH1D("M2M_divHist4","Method 2: fit residuals for 1.3<#Delta#eta<2.0",NBin,minHist,maxHist);
+  M2M_divHist4->Sumw2();
+  TH1D* M2M_divHist4Signal = new TH1D("M2M_divHist4Signal","M2: Signal",NBin,minHist,maxHist);
+  M2M_divHist4Signal->Sumw2();
+  TCanvas *M2CanvasDiv4 = new TCanvas("M2CanvasDiv4","M2CanvasDiv4",11,51,700,500);
+  TH1D* M2M_divHist4Rebin = new TH1D("M2M_divHist4Rebin","Method 2: fit residuals for 1.3<#Delta#eta<2.0",NBin/10,minHist,maxHist);
+  M2M_divHist4Rebin->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  M2M_divHist4Rebin->Sumw2();
+  TH1D* M2M_divHist4SignalRebin = new TH1D("M2M_divHist4SignalRebin","M2: Signal Rebin",NBin/10,minHist,maxHist);
+  M2M_divHist4SignalRebin->Sumw2();
+  TCanvas *M2CanvasDiv4Rebin = new TCanvas("M2CanvasDiv4Rebin","M2CanvasDiv4Rebin",11,51,700,500);
+
+
+
 }
 
 
@@ -638,7 +704,7 @@ for (int j=0;j<NvaluesLoop;j++)
 {
 
 if(meantest!=0) j=(meantest-minmass)/100;
-if(j<3 && meantest!=1000) j=3; // fit doesn't converge at 1000 GeV
+if(j<4 && meantest!=1000) continue; // fit doesn't converge at 1000 GeV
 cout<<"value nb "<<j+1<<endl;
 cout<<"mass: "<<mass[j]<<endl;
 int imass=mass[j];
@@ -652,7 +718,7 @@ if(exec1==1)
   TLegend* M1LegRebin = new TLegend(0.3, 0.2, .5, .35);
 
 
-M1SigBkg->SetParameters(2,7,5,sMean[j],sSigma[j],sAlphaHigh[j],sAlphaLow[j],sNHigh[j],sNLow[j],sFrac[j],50.);
+M1SigBkg->SetParameters(0.36,6.3,6.8,sMean[j],sSigma[j],sAlphaHigh[j],sAlphaLow[j],sNHigh[j],sNLow[j],sFrac[j],50.);
 M1SigBkg->FixParameter(3,sMean[j]);
 M1SigBkg->FixParameter(4,sSigma[j]);
 M1SigBkg->FixParameter(5,sAlphaHigh[j]);
@@ -660,6 +726,7 @@ M1SigBkg->FixParameter(6,sAlphaLow[j]);
 M1SigBkg->FixParameter(7,sNHigh[j]);
 M1SigBkg->FixParameter(8,sNLow[j]);
 M1SigBkg->FixParameter(9,sFrac[j]);
+
 
 //cout<<M1SigBkg->GetParameter(0)<<endl<<M1SigBkg->GetParameter(3)<<endl;
 //canvastest->cd();
@@ -799,6 +866,11 @@ M1LegRebin->Draw();
 if(savefile1==1) outputfileM1PullRebin->cd();
 //if(savefile1==1) M1M_divHistRebin->Write();
 if(savefile1==1) M1CanvasDivRebin->Write(Form("M1M_divHistRebin_%d",imass));
+if(meantest > 0.1 && savefile1==1) {
+  string output = outputPlots + "" + Form("M1M_divHistRebin_%d",imass) + ".png";
+  M1CanvasDivRebin->SaveAs(output.c_str());
+ }
+
 
 if(iPValue==1) PseudoExp(xmin,xmax,BinWidth,Ntot, iendPValue,savefilePValue, M1Bkg,sMean[j],sSigma[j],sAlphaHigh[j],sAlphaLow[j],sNHigh[j],sNLow[j],sFrac[j],M1significance[j]);
 
@@ -815,6 +887,8 @@ if(exec2==1)
   TLegend* M2LegRebin2 = new TLegend(0.3, 0.2, .5, .35);
   TLegend* M2LegMass3 =  new TLegend(0.6, 0.2, 0.9, .4);
   TLegend* M2LegRebin3 = new TLegend(0.3, 0.2, .5, .35);
+  TLegend* M2LegMass4 =  new TLegend(0.6, 0.2, 0.9, .4);
+  TLegend* M2LegRebin4 = new TLegend(0.3, 0.2, .5, .35);
 
 M2SigBkg1->SetParameters(2,7,5,sMean[j],sSigma[j],sAlphaHigh[j],sAlphaLow[j],sNHigh[j],sNLow[j],sFrac[j],50.);
 M2SigBkg1->FixParameter(3,sMean[j]);
@@ -956,7 +1030,10 @@ M2LegRebin1->AddEntry((TObject*)0,"","");
 M2LegRebin1->Draw();
 if(savefile2==1) outputfileM2Pull1Rebin->cd();
 if(savefile2==1) M2CanvasDiv1Rebin->Write(Form("M2M_divHist1Rebin_%d",imass));
-
+if(meantest > 0.1 && savefile2==1) {
+  string output = outputPlots + "" + Form("M2M_divHist1Rebin_%d",imass) + ".png";
+  M2CanvasDiv1Rebin->SaveAs(output.c_str());
+ }
 
 
 //  ***********                   **************
@@ -1072,7 +1149,6 @@ M2M_divHist2Signal->Draw("samehist");
 if(savefile2==1) outputfileM2Pull2->cd();
 if(savefile2==1) M2CanvasDiv2->Write(Form("M2M_divHist2_%d",imass));
 
-
 M2CanvasDiv2Rebin->cd();
 M2M_divHist2Rebin->SetLineColor(kBlack);
 M2M_divHist2Rebin->SetLineWidth(2);
@@ -1102,6 +1178,10 @@ M2LegRebin2->AddEntry((TObject*)0,"","");
 M2LegRebin2->Draw();
 if(savefile2==1) outputfileM2Pull2Rebin->cd();
 if(savefile2==1) M2CanvasDiv2Rebin->Write(Form("M2M_divHist2Rebin_%d",imass));
+if(meantest > 0.1 && savefile2==1) {
+  string output = outputPlots + "" + Form("M2M_divHist2Rebin_%d",imass) + ".png";
+  M2CanvasDiv2Rebin->SaveAs(output.c_str());
+ }
 
 
 //  **************                      ***************
@@ -1232,7 +1312,7 @@ CalcPullRebin(xmin,xmax,NBin,BinWidth,hist_mass3, hist_mass3Rebin, M2Bkg3,M2SigB
 
 M2chisq3[j] = chisquare;
  
-cout << "M2 rebinned chisq = " << chisquare << endl;
+cout << "M2 rebinned chisq bin 3 = " << chisquare << endl;
 
 
 M2M_divHist3Rebin->SetName(Form("M2M_divHist3Rebin_%d",imass));
@@ -1249,13 +1329,193 @@ M2LegRebin3->AddEntry((TObject*)0,"","");
 M2LegRebin3->Draw();
 if(savefile2==1) outputfileM2Pull3Rebin->cd();
 if(savefile2==1) M2CanvasDiv3Rebin->Write(Form("M2M_divHist3Rebin_%d",imass));
+if(meantest > 0.1 && savefile2==1) {
+  string output = outputPlots + "" + Form("M2M_divHist3Rebin_%d",imass) + ".png";
+  M2CanvasDiv3Rebin->SaveAs(output.c_str());
+ }
+
+
+
+
+
+
+
+
+//  **************                      ***************
+
+
+M2SigBkg4->SetParameters(0.3,6.8,5.2,sMean[j],sSigma[j],sAlphaHigh[j],sAlphaLow[j],sNHigh[j],sNLow[j],sFrac[j],50.);
+M2SigBkg4->FixParameter(3,sMean[j]);
+M2SigBkg4->FixParameter(4,sSigma[j]);
+M2SigBkg4->FixParameter(5,sAlphaHigh[j]);
+M2SigBkg4->FixParameter(6,sAlphaLow[j]);
+M2SigBkg4->FixParameter(7,sNHigh[j]);
+M2SigBkg4->FixParameter(8,sNLow[j]);
+M2SigBkg4->FixParameter(9,sFrac[j]);
+
+
+M2M_Hist4->SetName(Form("M2M_Hist4_%d",imass));
+M2Canvas4->cd();
+gPad->SetLogy();
+M2SigBkg4->SetLineColor(kRed);
+M2M_Hist4->Fit("M2SigBkg4","L","",xmin,xmax);
+
+M2Bkg4->FixParameter(0,M2SigBkg4->GetParameter(0));
+M2Bkg4->FixParameter(1,M2SigBkg4->GetParameter(1));
+M2Bkg4->FixParameter(2,M2SigBkg4->GetParameter(2));
+M2Bkg4->SetLineColor(kGreen);
+M2Bkg4->Draw("same");
+
+M2Sig4->FixParameter(0,M2SigBkg4->GetParameter(3));
+M2Sig4->FixParameter(1,M2SigBkg4->GetParameter(4));
+M2Sig4->FixParameter(2,M2SigBkg4->GetParameter(5));
+M2Sig4->FixParameter(3,M2SigBkg4->GetParameter(6));
+M2Sig4->FixParameter(4,M2SigBkg4->GetParameter(7));
+M2Sig4->FixParameter(5,M2SigBkg4->GetParameter(8));
+M2Sig4->FixParameter(6,M2SigBkg4->GetParameter(9));
+M2Sig4->FixParameter(7,M2SigBkg4->GetParameter(10));
+M2Sig4->SetLineColor(kViolet);
+M2Sig4->Draw("same");
+
+
+ M2LegMass4->AddEntry(M2M_Hist4,"invariant mass","l");
+ M2LegMass4->AddEntry((TObject*)0,"","");
+ M2LegMass4->AddEntry(M2SigBkg4,"fit from background and signal","l");
+ M2LegMass4->AddEntry((TObject*)0,"","");
+ M2LegMass4->AddEntry(M2Sig4,"signal fit","l");
+ M2LegMass4->AddEntry((TObject*)0,"","");
+ M2LegMass4->AddEntry(M2Bkg4,"background fit","l");
+ M2LegMass4->AddEntry((TObject*)0,"","");
+ M2LegMass4->Draw();
+
+
+cout<<"method2 hist4: number of signal events: "<<M2Sig4->Integral(xmin,xmax)/BinWidth<<endl;
+
+
+if(savefile2==1) outputfileM2Mass4->cd();
+//if(savefile2==1) M2M_Hist4->Write();
+if(savefile2==1) M2Canvas4->Write(Form("M2M_Hist4_%d",imass));
+
+if(iprint==1)
+{
+cout<<"method2 hist4 SigBkg par0: "<<M2SigBkg4->GetParameter(0)<<endl;
+cout<<"method2 hist4 SigBkg par1: "<<M2SigBkg4->GetParameter(1)<<endl;
+cout<<"method2 hist4 SigBkg par2: "<<M2SigBkg4->GetParameter(2)<<endl;
+cout<<"method2 hist4 SigBkg par3: "<<M2SigBkg4->GetParameter(3)<<endl;
+cout<<"method2 hist4 SigBkg par4: "<<M2SigBkg4->GetParameter(4)<<endl;
+cout<<"method2 hist4 SigBkg par5: "<<M2SigBkg4->GetParameter(5)<<endl;
+cout<<"method2 hist4 SigBkg par6: "<<M2SigBkg4->GetParameter(6)<<endl;
+cout<<"method2 hist4 SigBkg par7: "<<M2SigBkg4->GetParameter(7)<<endl;
+cout<<"method2 hist4 SigBkg par8: "<<M2SigBkg4->GetParameter(8)<<endl;
+cout<<"method2 hist4 SigBkg par9: "<<M2SigBkg4->GetParameter(9)<<endl;
+cout<<"method2 hist4 SigBkg par10: "<<M2SigBkg4->GetParameter(10)<<endl;
+cout<<"method2 hist4 Bkg par0: "<<M2Bkg4->GetParameter(0)<<endl;
+cout<<"method2 hist4 Bkg par1: "<<M2Bkg4->GetParameter(1)<<endl;
+cout<<"method2 hist4 Bkg par2: "<<M2Bkg4->GetParameter(2)<<endl;
+cout<<"method2 hist4 Sig par0: "<<M2Sig4->GetParameter(0)<<endl;
+cout<<"method2 hist4 Sig par1: "<<M2Sig4->GetParameter(1)<<endl;
+cout<<"method2 hist4 Sig par2: "<<M2Sig4->GetParameter(2)<<endl;
+cout<<"method2 hist4 Sig par4: "<<M2Sig4->GetParameter(3)<<endl;
+cout<<"method2 hist4 Sig par4: "<<M2Sig4->GetParameter(4)<<endl;
+cout<<"method2 hist4 Sig par5: "<<M2Sig4->GetParameter(5)<<endl;
+cout<<"method2 hist4 Sig par6: "<<M2Sig4->GetParameter(6)<<endl;
+cout<<"method2 hist4 Sig par7: "<<M2Sig4->GetParameter(7)<<endl;
+}
+
+
+if(M2SigBkg4->GetParameter(10)<0) {
+M2significance4[j]=0;
+M2lnLB4=0;
+M2lnLSpB4=0;
+}
+else
+{
+CalcSignificance(xmin,xmax,hist_mass4, M2Bkg4, M2SigBkg4, M2Significance4, M2lnLB4,M2lnLSpB4);
+M2significance4[j]=M2Significance4;
+  M2nevents4[j] = M2Sig4->Integral(xmin,xmax)/BinWidth;
+}
+cout<<"M2significance4 nb "<<j+1<<" (mass = "<<mass[j]<<") : "<<M2significance4[j]<<endl;
+
+M2CanvasDiv4->cd();
+M2M_divHist4->SetLineColor(kBlack);
+M2M_divHist4->SetLineWidth(2);
+M2M_divHist4->SetMarkerStyle(20);
+M2M_divHist4->SetMarkerColor(kBlack);
+M2M_divHist4Signal->SetLineColor(kRed);
+M2M_divHist4Signal->SetLineWidth(2);
+M2M_divHist4Signal->SetMarkerStyle(21);
+M2M_divHist4Signal->SetMarkerSize(0.7);
+M2M_divHist4Signal->SetMarkerColor(kRed);
+CalcPull(xmin,xmax,NBin,BinWidth,hist_mass4, M2Bkg4,M2SigBkg4,M2M_divHist4,M2M_divHist4Signal);
+M2M_divHist4->SetName(Form("M2M_divHist4_%d",imass));
+M2M_divHist4->GetXaxis()->SetRange(TMath::Floor(xmin/BinWidth),TMath::Floor(xmax/BinWidth));
+M2M_divHist4->Draw();
+M2M_divHist4Signal->Draw("samehist");
+if(savefile2==1) outputfileM2Pull4->cd();
+if(savefile2==1) M2CanvasDiv4->Write(Form("M2M_divHist4_%d",imass));
+
+
+M2CanvasDiv4Rebin->cd();
+M2M_divHist4Rebin->SetLineColor(kBlack);
+M2M_divHist4Rebin->SetLineWidth(2);
+M2M_divHist4Rebin->SetMarkerStyle(20);
+M2M_divHist4Rebin->SetMarkerColor(kBlack);
+M2M_divHist4SignalRebin->SetLineColor(kRed);
+M2M_divHist4SignalRebin->SetLineWidth(2);
+M2M_divHist4SignalRebin->SetMarkerStyle(21);
+M2M_divHist4SignalRebin->SetMarkerSize(0.7);
+M2M_divHist4SignalRebin->SetMarkerColor(kRed);
+CalcPullRebin(xmin,xmax,NBin,BinWidth,hist_mass4, hist_mass4Rebin, M2Bkg4,M2SigBkg4,M2M_divHist4Rebin,M2M_divHist4SignalRebin, chisquare);
+
+M2chisq4[j] = chisquare;
+ 
+cout << "M2 rebinned chisq bin 4 = " << chisquare << endl;
+
+
+M2M_divHist4Rebin->SetName(Form("M2M_divHist4Rebin_%d",imass));
+M2M_divHist4Rebin->GetXaxis()->SetRange(TMath::Floor(xmin/BinWidth/10),TMath::Floor(xmax/BinWidth/10));
+M2M_divHist4Rebin->SetMinimum(-4);
+M2M_divHist4Rebin->SetMaximum(4);
+M2M_divHist4Rebin->Draw();
+M2M_divHist4SignalRebin->Draw("samehist");
+M2LegRebin4->AddEntry((TObject*)0,"","");
+M2LegRebin4->AddEntry(M2M_divHist4Rebin,"#frac{Data - Fit(bkg)}{Error(data)}","l");
+M2LegRebin4->AddEntry((TObject*)0,"","");
+M2LegRebin4->AddEntry(M2M_divHist4SignalRebin,"#frac{Signal}{Error(data)}","l");
+M2LegRebin4->AddEntry((TObject*)0,"","");
+M2LegRebin4->Draw();
+if(savefile2==1) outputfileM2Pull4Rebin->cd();
+if(savefile2==1) M2CanvasDiv4Rebin->Write(Form("M2M_divHist4Rebin_%d",imass));
+if(meantest > 0.1 && savefile2==1) {
+  string output = outputPlots + "" + Form("M2M_divHist4Rebin_%d",imass) + ".png";
+  M2CanvasDiv4Rebin->SaveAs(output.c_str());
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //   ************              **************
 
 
-M2lnLB=M2lnLB1+M2lnLB2+M2lnLB3;
-M2lnLSpB=M2lnLSpB1+M2lnLSpB2+M2lnLSpB3;
+M2lnLB=M2lnLB1+M2lnLB2+M2lnLB3+M2lnLB4;
+M2lnLSpB=M2lnLSpB1+M2lnLSpB2+M2lnLSpB3+M2lnLSpB4;
 //cout<<"M2lnLB: "<<M2lnLB<<endl;
 //cout<<"M2lnLSpLB: "<<M2lnLSpB<<endl;
     if(M2lnLB<M2lnLSpB) M2significance[j] = TMath::Sqrt(-2*( M2lnLB - M2lnLSpB));
@@ -1775,9 +2035,9 @@ delete M3LegRebin3;
 
 }
 
-if(igraph==1 && (fabs(mass[j]-3500) < 1e-10 || meantest != 0))
+if(igraph==1 && (fabs(mass[j]-3500) < 1e-10 || meantest > 0.1))
 {
-  if(exec2==1 && exec3==1) graphratio(M2SigBkg1->GetParameter(10),M2SigBkg1->GetParError(10),M2SigBkg2->GetParameter(10), M2SigBkg2->GetParError(10),M2SigBkg3->GetParameter(10),M2SigBkg3->GetParError(10), outputPlots, mass[j]);
+if(exec2==1) graphratio(M2SigBkg1->GetParameter(10),M2SigBkg1->GetParError(10),M2SigBkg2->GetParameter(10), M2SigBkg2->GetParError(10),M2SigBkg3->GetParameter(10),M2SigBkg3->GetParError(10),M2SigBkg4->GetParameter(10),M2SigBkg4->GetParError(10), outputPlots, mass[j]);
 }
 
 }// loop j
@@ -1860,9 +2120,9 @@ TCanvas *M1CanvasSupport = new TCanvas("M1CanvasSupport","M1CanvasSupport",11,51
  M1graphEvents->SetMaximum(10000.);
 
  M1CanvasSupport->cd(2);
- M1graphChisq->Draw("AL");
+ M1graphChisq->Draw("ALP");
  M1graphChisq->SetMinimum(0);
- M1graphChisq->SetMaximum(80.);
+ M1graphChisq->SetMaximum(60.);
 
 
 M1CanvasSig->cd();
@@ -1920,7 +2180,7 @@ M2graph->SetMaximum(4);
   //----------------------------------------------------------
 
 
-  TGraph *M2graph1= new TGraph(Nvalues,x3,M2significance1);
+  TGraph *M2graph1= new TGraph(Nvalues,x2,M2significance1);
   M2graph1->SetTitle("method3: Significance as a function of the Invariant Mass");
   M2graph1->GetXaxis()->SetTitle("Invariant Mass (GeV)");
   M2graph1->GetYaxis()->SetTitle("Significance");
@@ -1939,7 +2199,7 @@ M2graph->SetMaximum(4);
   M2graph1->SetMaximum(4);
   
 
-  TGraph *M2graph2= new TGraph(Nvalues,x3,M2significance2);
+  TGraph *M2graph2= new TGraph(Nvalues,x2,M2significance2);
   M2graph2->SetTitle("method3: Significance as a function of the Invariant Mass");
   M2graph2->GetXaxis()->SetTitle("Invariant Mass (GeV)");
   M2graph2->GetYaxis()->SetTitle("Significance");
@@ -1957,8 +2217,8 @@ M2graph->SetMaximum(4);
   M2graph2->SetMinimum(0);
   M2graph2->SetMaximum(4);
 
-  TGraph *M2graph3= new TGraph(Nvalues,x3,M2significance3);
-  M2graph3->SetTitle("method3: Significance as a function of the Invariant Mass");
+  TGraph *M2graph3= new TGraph(Nvalues,x2,M2significance3);
+  M2graph3->SetTitle("method2: Significance as a function of the Invariant Mass");
   M2graph3->GetXaxis()->SetTitle("Invariant Mass (GeV)");
   M2graph3->GetYaxis()->SetTitle("Significance");
   M2graph3->SetLineColor(2);
@@ -1976,104 +2236,121 @@ M2graph->SetMaximum(4);
   M2graph3->SetMaximum(4);
 
 
+  TGraph *M2graph4= new TGraph(Nvalues,x2,M2significance4);
+  M2graph4->SetTitle("method2: Significance as a function of the Invariant Mass");
+  M2graph4->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+  M2graph4->GetYaxis()->SetTitle("Significance");
+  M2graph4->SetLineColor(2);
+  M2graph4->SetLineWidth(2);
+  M2graph4->SetMarkerColor(4);
+  M2graph4->SetMarkerStyle(21);
+  M2graph4->SetMarkerSize(0.7);
+  
+  TCanvas *M2CanvasSig4 = new TCanvas("M2CanvasSig4","M2CanvasSig4",11,51,700,500);
+  M2CanvasSig4->SetGrid();
+  
+  M2CanvasSig4->cd();
+  M2graph4->Draw("ALP");
+  M2graph4->SetMinimum(0);
+  M2graph4->SetMaximum(4);
 
 
-TGraph *M2graphEvents1= new TGraph(Nvalues,x1,M2nevents1);
+TGraph *M2graphEvents1= new TGraph(Nvalues,x2,M2nevents1);
 M2graphEvents1->SetTitle("method1: N events as a function of the Invariant Mass bin 1");
 M2graphEvents1->GetXaxis()->SetTitle("Invariant Mass (GeV)");
 M2graphEvents1->GetYaxis()->SetTitle("N events");
 M2graphEvents1->SetLineColor(kGreen);
 M2graphEvents1->SetLineWidth(2);
-M2graphEvents1->SetMarkerColor(kGreen);
-M2graphEvents1->SetMarkerStyle(21);
-M2graphEvents1->SetMarkerSize(1.5);
 
 
-TGraph *M2graphChisq1= new TGraph(Nvalues,x1,M2chisq1);
+TGraph *M2graphChisq1= new TGraph(Nvalues,x2,M2chisq1);
 M2graphChisq1->SetTitle("method1: #chi2 as a function of the Invariant Mass bin 1");
 M2graphChisq1->GetXaxis()->SetTitle("Invariant Mass (GeV)");
 M2graphChisq1->GetYaxis()->SetTitle("#chi2");
 M2graphChisq1->SetLineColor(kGreen);
 M2graphChisq1->SetLineWidth(2);
-M2graphChisq1->SetMarkerColor(kGreen);
-M2graphChisq1->SetMarkerStyle(21);
-M2graphChisq1->SetMarkerSize(1.5);
 
 
 
-TGraph *M2graphEvents2= new TGraph(Nvalues,x1,M2nevents2);
+TGraph *M2graphEvents2= new TGraph(Nvalues,x2,M2nevents2);
 M2graphEvents2->SetTitle("method2: N events as a function of the Invariant Mass bin 2");
 M2graphEvents2->GetXaxis()->SetTitle("Invariant Mass (GeV)");
 M2graphEvents2->GetYaxis()->SetTitle("N events");
 M2graphEvents2->SetLineColor(kBlue);
 M2graphEvents2->SetLineWidth(2);
-M2graphEvents2->SetMarkerColor(kBlue);
-M2graphEvents2->SetMarkerStyle(25);
-M2graphEvents2->SetMarkerSize(1.5);
 
 
-TGraph *M2graphChisq2= new TGraph(Nvalues,x1,M2chisq2);
+
+TGraph *M2graphChisq2= new TGraph(Nvalues,x2,M2chisq2);
 M2graphChisq2->SetTitle("method2: #chi2 as a function of the Invariant Mass bin 2");
 M2graphChisq2->GetXaxis()->SetTitle("Invariant Mass (GeV)");
 M2graphChisq2->GetYaxis()->SetTitle("#chi2");
 M2graphChisq2->SetLineColor(kBlue);
 M2graphChisq2->SetLineWidth(2);
-M2graphChisq2->SetMarkerColor(kBlue);
-M2graphChisq2->SetMarkerStyle(25);
-M2graphChisq2->SetMarkerSize(1.5);
 
-TGraph *M2graphEvents3= new TGraph(Nvalues,x1,M2nevents3);
+
+TGraph *M2graphEvents3= new TGraph(Nvalues,x2,M2nevents3);
 M2graphEvents3->SetTitle("method2: N events as a function of the Invariant Mass bin 3");
 M2graphEvents3->GetXaxis()->SetTitle("Invariant Mass (GeV)");
 M2graphEvents3->GetYaxis()->SetTitle("N events");
 M2graphEvents3->SetLineColor(kRed);
 M2graphEvents3->SetLineWidth(2);
-M2graphEvents3->SetMarkerColor(kRed);
-M2graphEvents3->SetMarkerStyle(23);
-M2graphEvents3->SetMarkerSize(1.5);
 
 
-TGraph *M2graphChisq3= new TGraph(Nvalues,x1,M2chisq3);
+TGraph *M2graphChisq3= new TGraph(Nvalues,x2,M2chisq3);
 M2graphChisq3->SetTitle("method2: #chi2 as a function of the Invariant Mass bin 3");
 M2graphChisq3->GetXaxis()->SetTitle("Invariant Mass (GeV)");
 M2graphChisq3->GetYaxis()->SetTitle("#chi2");
 M2graphChisq3->SetLineColor(kRed);
 M2graphChisq3->SetLineWidth(2);
-M2graphChisq3->SetMarkerColor(kRed);
-M2graphChisq3->SetMarkerStyle(23);
-M2graphChisq3->SetMarkerSize(1.5);
 
 
+
+TGraph *M2graphEvents4= new TGraph(Nvalues,x2,M2nevents4);
+M2graphEvents4->SetTitle("method2: N events as a function of the Invariant Mass bin 4");
+M2graphEvents4->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+M2graphEvents4->GetYaxis()->SetTitle("N events");
+M2graphEvents4->SetLineColor(kBlack);
+M2graphEvents4->SetLineWidth(2);
+
+
+TGraph *M2graphChisq4= new TGraph(Nvalues,x2,M2chisq4);
+M2graphChisq4->SetTitle("method2: #chi2 as a function of the Invariant Mass bin 4");
+M2graphChisq4->GetXaxis()->SetTitle("Invariant Mass (GeV)");
+M2graphChisq4->GetYaxis()->SetTitle("#chi2");
+M2graphChisq4->SetLineColor(kBlack);
+M2graphChisq4->SetLineWidth(2);
 
  
  TCanvas *M2CanvasSupport = new TCanvas("M2CanvasSupport","M2CanvasSupport",11,51,700,500);
  M2CanvasSupport->Divide(2,1);
 
  M2CanvasSupport->cd(1);
- M2graphEvents1->Draw("AL");
+ M2graphEvents1->Draw("ALP");
  gPad->SetLogy(1);
  M2graphEvents1->SetMinimum(0.5);
  M2graphEvents1->SetMaximum(10000.);
 
  M2graphEvents2->Draw("SAME");
  M2graphEvents3->Draw("SAME");
-
+ M2graphEvents4->Draw("SAME");
 
 
  M2CanvasSupport->cd(2);
- M2graphChisq1->Draw("AL");
+ M2graphChisq1->Draw("ALP");
  M2graphChisq1->SetMinimum(0);
  M2graphChisq1->SetMaximum(80.);
   
  M2graphChisq2->Draw("SAME");
  M2graphChisq3->Draw("SAME");
+ M2graphChisq4->Draw("SAME");
 
  TLegend* legend= new TLegend(0.20,0.70,0.55,0.89,"");
  legend->SetHeader("Method 2");
  legend->AddEntry(M2graphEvents1,"#eta bin 1","l");
  legend->AddEntry(M2graphEvents2,"#eta bin 2","l");
  legend->AddEntry(M2graphEvents3,"#eta bin 3","l");
-
+ legend->AddEntry(M2graphEvents4,"#eta bin 4","l");
  legend->Draw();
 
 if(savefile2==1) outputfileM2Sig->cd();
@@ -2091,6 +2368,9 @@ if(savefile2==1) M2graph->Write();
    M2CanvasSig2->SaveAs(output2.c_str());
    string output3 = outputPlots + "SigMethod2_Bin3.png";
    M2CanvasSig3->SaveAs(output3.c_str());
+   string output4 = outputPlots + "SigMethod2_Bin4.png";
+   M2CanvasSig4->SaveAs(output4.c_str());
+
  }
 
 }
@@ -2278,13 +2558,13 @@ void CalcPullRebin(double xmin, double xmax, int NBin,int binwidth,TH1D* pData, 
 	  //if (j%10==0) cout<<"j: "<<j<<"     :   "<<pDataRebin->GetXaxis()->GetBinLowEdge(j/10)<<" < "<< pData->GetBinCenter(j)<<" < "<<pDataRebin->GetXaxis()->GetBinUpEdge(j/10)<<endl;
 	  //else cout<<"j: "<<j<<"     :   "<<pDataRebin->GetXaxis()->GetBinLowEdge(TMath::Floor(j/10)+1)<<" < "<< pData->GetBinCenter(j)<<" < "<<pDataRebin->GetXaxis()->GetBinUpEdge(TMath::Floor(j/10)+1)<<endl;
 	  if(j%10==0) {
-	    //cout<<"j: "<<j<<endl;
-	    //cout<<"low edge: "<<pData->GetXaxis()->GetBinLowEdge(j-9)<<endl;
-	    //cout<<"up edge: "<<pData->GetXaxis()->GetBinUpEdge(j)<<endl;
-	    //cout<<"low edge: "<<pDataRebin->GetXaxis()->GetBinLowEdge(j/10)<<endl;
-	    //cout<<"up edge: "<<pDataRebin->GetXaxis()->GetBinUpEdge(j/10)<<endl;
-	    //cout<<"sum: "<<sumBKG<<endl;
-	    //cout<<"integral: "<<integral<<endl;
+// 	    cout<<"j: "<<j<<endl;
+// 	    cout<<"low edge: "<<pData->GetXaxis()->GetBinLowEdge(j-9)<<endl;
+// 	    cout<<"up edge: "<<pData->GetXaxis()->GetBinUpEdge(j)<<endl;
+// 	    cout<<"low edge: "<<pDataRebin->GetXaxis()->GetBinLowEdge(j/10)<<endl;
+// 	    cout<<"up edge: "<<pDataRebin->GetXaxis()->GetBinUpEdge(j/10)<<endl;
+// 	    cout<<"sum: "<<sumBKG<<endl;
+// 	    cout<<"integral: "<<integral<<endl;
 
 
 	    if(pDataRebin->GetBinError(j/10)!=0){
@@ -2303,7 +2583,7 @@ void CalcPullRebin(double xmin, double xmax, int NBin,int binwidth,TH1D* pData, 
 		error = sqrt(n);
 	      } 
     
-    
+	      
 	      double res = (n-sumBKG)/error;
     
 	      Mdiv_Hist->SetBinContent(j/10, res);
@@ -2478,73 +2758,90 @@ CanvasNEW_sigHist->Write(Form("PvalueHist_%d",nevt));
 
 
 
-void graphratio(double meth2p1,double meth2errorp1,double meth2p2, double meth2errorp2, double meth2p3, double meth2errorp3, string Rep, double mass)
+void graphratio(double meth2p1,double meth2errorp1,double meth2p2, double meth2errorp2, double meth2p3, double meth2errorp3, double meth2p4, double meth2errorp4, string Rep, double mass)
 {
 
-double *eta2=new double[3];
-double *eta3=new double[3];
-double *r2=new double[3];
-double *r3=new double[3];
-double *eta2errorlow=new double[3];
-double *eta3errorlow=new double[3];
-double *eta2errorhigh=new double[3];
-double *eta3errorhigh=new double[3];
-double *r2errorlow=new double[3];
-double *r3errorlow=new double[3];
-double *r2errorhigh=new double[3];
-double *r3errorhigh=new double[3];
+double *scale=new double[4];
+double *eta2=new double[4];
+double *eta3=new double[4];
+double *ar2=new double[4];
+double *ar3=new double[4];
+double *ar4=new double[4];
+double *eta2errorlow=new double[4];
+double *eta3errorlow=new double[4];
+double *eta2errorhigh=new double[4];
+double *eta3errorhigh=new double[4];
+double *r2errorlow=new double[4];
+double *r3errorlow=new double[4];
+double *r2errorhigh=new double[4];
+double *r3errorhigh=new double[4];
+
 
 eta2[0]=0.25;
 eta2[1]=0.75;
 eta2[2]=1.15;
-eta3[0]=0.25;
-eta3[1]=0.75;
-eta3[2]=1.15;
+eta2[3]=1.65;
 
-r2[0]=meth2p1/(meth2p1+meth2p2+meth2p3);
-r2[1]=meth2p2/(meth2p1+meth2p2+meth2p3);
-r2[2]=meth2p3/(meth2p1+meth2p2+meth2p3);
+ if (meth2p1 < 0) meth2p1 = 0;
+ if (meth2p2 < 0) meth2p2 = 0;
+ if (meth2p3 < 0) meth2p3 = 0;
+ if (meth2p4 < 0) meth2p4 = 0;
 
-r3[0]=0.436786; //ratio for signal
-r3[1]=0.375497;
-r3[2]=0.187717;
+ar2[0]=meth2p1/(meth2p1+meth2p2+meth2p3+meth2p4);
+ar2[1]=meth2p2/(meth2p1+meth2p2+meth2p3+meth2p4);
+ar2[2]=meth2p3/(meth2p1+meth2p2+meth2p3+meth2p4);
+ar2[3]=meth2p4/(meth2p1+meth2p2+meth2p3+meth2p4);
+
+
+
+ar3[0]=r1; //ratio for signal
+ar3[1]=r2;
+ar3[2]=r3;
+ar3[3]=0.;
+
+ ar4[0]=N1/Ntot;
+ ar4[1]=N2/Ntot;
+ ar4[2]=N3/Ntot;
+ ar4[3]=N4/Ntot;
 
 
 eta2errorlow[0]=0.25;
 eta2errorlow[1]=0.25;
 eta2errorlow[2]=0.15;
-eta3errorlow[0]=0.25;
-eta3errorlow[1]=0.25;
-eta3errorlow[2]=0.15;
+eta2errorlow[3]=0.35;
 eta2errorhigh[0]=0.25;
 eta2errorhigh[1]=0.25;
 eta2errorhigh[2]=0.15;
-eta3errorhigh[0]=0.25;
-eta3errorhigh[1]=0.25;
-eta3errorhigh[2]=0.15;
+eta2errorhigh[3]=0.35;
 
-r2errorlow[0]=r2[0]-(meth2p1-meth2errorp1)/(meth2p1-meth2errorp1+meth2p2+meth2p3);
-r2errorlow[1]=r2[1]-(meth2p2-meth2errorp2)/(meth2p1+meth2p2-meth2errorp2+meth2p3);
-r2errorlow[2]=r2[2]-(meth2p3-meth2errorp3)/(meth2p1+meth2p2+meth2p3-meth2errorp3);
-r2errorhigh[0]=(meth2p1+meth2errorp1)/(meth2p1+meth2errorp1+meth2p2+meth2p3)-r2[0];
-r2errorhigh[1]=(meth2p2+meth2errorp2)/(meth2p1+meth2p2+meth2errorp2+meth2p3)-r2[1];
-r2errorhigh[2]=(meth2p3+meth2errorp3)/(meth2p1+meth2p2+meth2p3+meth2errorp3)-r2[2];
+r2errorlow[0]=ar2[0]-(meth2p1-meth2errorp1)/(meth2p1-meth2errorp1+meth2p2+meth2p3+meth2p4);
+r2errorlow[1]=ar2[1]-(meth2p2-meth2errorp2)/(meth2p1+meth2p2-meth2errorp2+meth2p3+meth2p4);
+r2errorlow[2]=ar2[2]-(meth2p3-meth2errorp3)/(meth2p1+meth2p2+meth2p3-meth2errorp3+meth2p4);
+r2errorlow[3]=ar2[3]-(meth2p4-meth2errorp4)/(meth2p1+meth2p2+meth2p4-meth2errorp4+meth2p3);
+
+r2errorhigh[0]=(meth2p1+meth2errorp1)/(meth2p1+meth2errorp1+meth2p2+meth2p3+meth2p4)-ar2[0];
+r2errorhigh[1]=(meth2p2+meth2errorp2)/(meth2p1+meth2p2+meth2errorp2+meth2p3+meth2p4)-ar2[1];
+r2errorhigh[2]=(meth2p3+meth2errorp3)/(meth2p1+meth2p2+meth2p3+meth2errorp3+meth2p4)-ar2[2];
+r2errorhigh[3]=(meth2p4+meth2errorp4)/(meth2p1+meth2p2+meth2p3+meth2errorp4+meth2p4)-ar2[3];
+
 
 r3errorlow[0]=0.;
 r3errorlow[1]=0.;
 r3errorlow[2]=0.;
+r3errorlow[3]=0.;
 r3errorhigh[0]=0.;
 r3errorhigh[1]=0.;
 r3errorhigh[2]=0.;
+r3errorhigh[3]=0.;
 
 
-
-TGraphAsymmErrors *graph2= new TGraphAsymmErrors(3,eta2,r2,eta2errorlow,eta2errorhigh,r2errorlow,r2errorhigh);
-TGraphAsymmErrors *graph3= new TGraphAsymmErrors(3,eta3,r3,eta3errorlow,eta3errorhigh,r3errorlow,r3errorhigh);
+TGraphAsymmErrors *graph2= new TGraphAsymmErrors(4,eta2,ar2,eta2errorlow,eta2errorhigh,r2errorlow,r2errorhigh);
+TGraphAsymmErrors *graph3= new TGraphAsymmErrors(4,eta2,ar3,eta2errorlow,eta2errorhigh,r3errorlow,r3errorhigh);
+TGraphAsymmErrors *graph4= new TGraphAsymmErrors(4,eta2,ar4,eta2errorlow,eta2errorhigh,r3errorlow,r3errorhigh);
 
 
 TCanvas *CanvasRatio = new TCanvas("CanvasRatio","CanvasRatio",11,51,700,500);
-TLegend *LegRatio = new TLegend(0.4,0.6,0.6,0.8);
+TLegend *LegRatio = new TLegend(0.67,0.70,0.89,0.89);
 graph2->SetTitle("Signal ratio");
 graph2->GetXaxis()->SetTitle("#Delta#eta");
 graph2->GetYaxis()->SetTitle("");
@@ -2552,21 +2849,39 @@ graph2->SetLineColor(2);
 graph2->SetLineWidth(2);
 graph2->SetMarkerColor(2);
 graph2->SetMarkerStyle(21);
-graph2->SetMarkerSize(0.7);
+graph2->SetMarkerSize(1.5);
 
 graph3->SetLineColor(4);
 graph3->SetLineWidth(2);
 graph3->SetMarkerColor(4);
-graph3->SetMarkerStyle(21);
-graph3->SetMarkerSize(0.7);
+graph3->SetMarkerStyle(25);
+graph3->SetMarkerSize(1.5);
 
-graph2->GetXaxis()->SetLimits(0,1.3);
+graph4->SetLineColor(kBlack);
+graph4->SetLineWidth(2);
+graph4->SetMarkerColor(kBlack);
+graph4->SetMarkerStyle(28);
+graph4->SetMarkerSize(1.5);
+
+ TH1D* PLOTTER = new TH1D("PLOTTER", "#Delta #eta distribution", 1, 0, 2.0);
 
 CanvasRatio->cd();
-LegRatio->AddEntry(graph2,"method 2","l");
-LegRatio->AddEntry(graph3,"method 3","l");
-graph2->Draw("AP");
-graph3->Draw("P");
+LegRatio->AddEntry(graph2,"Best Signal Fit","l");
+LegRatio->AddEntry(graph3,"Q*","l");
+LegRatio->AddEntry(graph4,"Data","l");
+
+ PLOTTER->SetStats(0);
+ PLOTTER->SetMinimum(-0.02);
+ PLOTTER->SetMaximum(1.0);
+
+ PLOTTER->Draw();
+graph2->Draw("SAMEP");
+graph3->Draw("SAMEP");
+graph4->Draw("SAMEP");
+
+graph2->GetXaxis()->SetLimits(0,2.0);
+graph2->GetYaxis()->SetLimits(0,1.0);
+ CanvasRatio->Update();
 LegRatio->Draw();
 
  string out = Rep + "RatioAt" + Form("%.0f", mass) + ".png";
