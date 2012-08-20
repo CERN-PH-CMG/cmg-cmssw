@@ -1,5 +1,5 @@
 // -*- C++ -*-
-q//
+//
 // Package:    JetAnalyzer
 // Class:      JetAnalyzer
 // 
@@ -13,7 +13,7 @@ q//
 //
 // Original Author:  Martina Malberti,27 2-019,+41227678349,
 //         Created:  Mon Mar  5 16:39:53 CET 2012
-// $Id: JetAnalyzer.cc,v 1.21 2012/05/23 08:31:26 musella Exp $
+// $Id: JetAnalyzer.cc,v 1.22 2012/08/20 13:09:03 musella Exp $
 //
 //
 
