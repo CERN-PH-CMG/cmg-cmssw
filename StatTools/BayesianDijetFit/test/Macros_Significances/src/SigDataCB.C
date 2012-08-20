@@ -48,9 +48,9 @@ int Detaend=13;
 int exec1=1; //method1
 int exec2=1; //method2
 int exec3=1; //method3
-int savefile1=0; //method1
-int savefile2=0; //method2
-int savefile3=0; //method3
+int savefile1=1; //method1
+int savefile2=1; //method2
+int savefile3=1; //method3
 int iPValue=0; //generate pseudo experiment and calculate pvalue --> iPValue=1
 int iendPValue=10000; //number of pseudo experiments
 int savefilePValue=0; // to save the PValue plot -->savefilePValue=1
@@ -64,7 +64,7 @@ double r3=0.187717;
 double xmin=890; // range for the input histograms and fits
 double xmax=4700.;
 double minmass=1000.; // range for the significance scan only
-double maxmass=4700.;
+double maxmass=1300.;
 int Nvalues=(maxmass-minmass)/100+1; // number of values in the text file for Crystal Ball shapes, size of arrays and pointers
 int NvaluesLoop=(maxmass-minmass)/100+1; // number of values in the loop
 
@@ -253,30 +253,99 @@ cout<<"sum="<<N1/Ntot*100+N2/Ntot*100+N3/Ntot*100<<endl;
 
 // second part: fit and significance calculation
 
-  if(savefile1==1) TFile *outputfileM1Mass = new TFile("CBM1MassSig.root","recreate");
-  if(savefile2==1) TFile *outputfileM2Mass1 = new TFile("CBM2MassSig1.root","recreate");
-  if(savefile2==1) TFile *outputfileM2Mass2 = new TFile("CBM2MassSig2.root","recreate");
-  if(savefile2==1) TFile *outputfileM2Mass3 = new TFile("CBM2MassSig3.root","recreate");
-  if(savefile3==1) TFile *outputfileM3Mass1 = new TFile("CBM3MassSig1.root","recreate");
-  if(savefile3==1) TFile *outputfileM3Mass2 = new TFile("CBM3MassSig2.root","recreate");
-  if(savefile3==1) TFile *outputfileM3Mass3 = new TFile("CBM3MassSig3.root","recreate");
-  if(savefile1==1) TFile *outputfileM1Pull = new TFile("CBM1PullSig.root","recreate");
-  if(savefile2==1) TFile *outputfileM2Pull1 = new TFile("CBM2PullSig1.root","recreate");
-  if(savefile2==1) TFile *outputfileM2Pull2 = new TFile("CBM2PullSig2.root","recreate");
-  if(savefile2==1) TFile *outputfileM2Pull3 = new TFile("CBM2PullSig3.root","recreate");
-  if(savefile3==1) TFile *outputfileM3Pull1 = new TFile("CBM3PullSig1.root","recreate");
-  if(savefile3==1) TFile *outputfileM3Pull2 = new TFile("CBM3PullSig2.root","recreate");
-  if(savefile3==1) TFile *outputfileM3Pull3 = new TFile("CBM3PullSig3.root","recreate");
-  if(savefile1==1) TFile *outputfileM1PullRebin = new TFile("CBM1PullRebinSig.root","recreate");
-  if(savefile2==1) TFile *outputfileM2Pull1Rebin = new TFile("CBM2PullRebinSig1.root","recreate");
-  if(savefile2==1) TFile *outputfileM2Pull2Rebin = new TFile("CBM2PullRebinSig2.root","recreate");
-  if(savefile2==1) TFile *outputfileM2Pull3Rebin = new TFile("CBM2PullRebinSig3.root","recreate");
-  if(savefile3==1) TFile *outputfileM3Pull1Rebin = new TFile("CBM3PullRebinSig1.root","recreate");
-  if(savefile3==1) TFile *outputfileM3Pull2Rebin = new TFile("CBM3PullRebinSig2.root","recreate");
-  if(savefile3==1) TFile *outputfileM3Pull3Rebin = new TFile("CBM3PullRebinSig3.root","recreate");
-  if(savefile1==1) TFile *outputfileM1Sig = new TFile("CBM1SigSig.root","recreate");
-  if(savefile2==1) TFile *outputfileM2Sig = new TFile("CBM2SigSig.root","recreate");
-  if(savefile3==1) TFile *outputfileM3Sig = new TFile("CBM3SigSig.root","recreate");
+ if(savefile1==1) {
+   string output = outputPlots + "CBM1MassSig.root";
+   TFile *outputfileM1Mass = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM1PullSig.root";
+   TFile *outputfileM1Pull = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM1PullRebinSig.root";
+   TFile *outputfileM1PullRebin = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM1SigSig.root";
+   TFile *outputfileM1Sig = new TFile(output.c_str(),"recreate");
+
+ }
+
+ if(savefile2==1) {
+
+   string output = outputPlots + "CBM2MassSig.root";
+   TFile *outputfileM2Mass = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2PullSig.root";
+   TFile *outputfileM2Pull = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2PullRebinSig.root";
+   TFile *outputfileM2PullRebin = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2SigSig.root";
+   TFile *outputfileM2Sig = new TFile(output.c_str(),"recreate");
+
+
+   string output = outputPlots + "CBM2MassSig1.root";
+   TFile *outputfileM2Mass1 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2PullSig1.root";
+   TFile *outputfileM2Pull1 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2PullRebinSig1.root";
+   TFile *outputfileM2Pull1Rebin = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2SigSig1.root";
+   TFile *outputfileM2Sig1 = new TFile(output.c_str(),"recreate");
+
+   string output = outputPlots + "CBM2MassSig2.root";
+   TFile *outputfileM2Mass2 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2PullSig2.root";
+   TFile *outputfileM2Pull2 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2PullRebinSig2.root";
+   TFile *outputfileM2Pull2Rebin = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2SigSig2.root";
+   TFile *outputfileM2Sig2 = new TFile(output.c_str(),"recreate");
+
+
+   string output = outputPlots + "CBM2MassSig3.root";
+   TFile *outputfileM2Mass3 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2PullSig3.root";
+   TFile *outputfileM2Pull3 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2PullRebinSig3.root";
+   TFile *outputfileM2Pull3Rebin = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM2SigSig3.root";
+   TFile *outputfileM2Sig3 = new TFile(output.c_str(),"recreate");
+ }
+
+
+ if(savefile3==1) {
+
+   string output = outputPlots + "CBM3MassSig.root";
+   TFile *outputfileM3Mass = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3PullSig.root";
+   TFile *outputfileM3Pull = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3PullRebinSig.root";
+   TFile *outputfileM3PullRebin = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3SigSig.root";
+   TFile *outputfileM3Sig = new TFile(output.c_str(),"recreate");
+
+   string output = outputPlots + "CBM3MassSig1.root";
+   TFile *outputfileM3Mass1 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3PullSig1.root";
+   TFile *outputfileM3Pull1 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3PullRebinSig1.root";
+   TFile *outputfileM3Pull1Rebin = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3SigSig1.root";
+   TFile *outputfileM3Sig1 = new TFile(output.c_str(),"recreate");
+
+   string output = outputPlots + "CBM3MassSig2.root";
+   TFile *outputfileM3Mass2 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3PullSig2.root";
+   TFile *outputfileM3Pull2 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3PullRebinSig2.root";
+   TFile *outputfileM3Pull2Rebin = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3SigSig2.root";
+   TFile *outputfileM3Sig2 = new TFile(output.c_str(),"recreate");
+
+
+   string output = outputPlots + "CBM3MassSig3.root";
+   TFile *outputfileM3Mass3 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3PullSig3.root";
+   TFile *outputfileM3Pull3 = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3PullRebinSig3.root";
+   TFile *outputfileM3Pull3Rebin = new TFile(output.c_str(),"recreate");
+   output = outputPlots + "CBM3SigSig3.root";
+   TFile *outputfileM3Sig3 = new TFile(output.c_str(),"recreate");
+ }
 
 int NBin=hist_mass->GetNbinsX();
 double minHist=hist_mass->GetXaxis()->GetBinLowEdge(1);
@@ -1701,8 +1770,8 @@ M1graph->SetMaximum(4);
 if(savefile1==1) outputfileM1Sig->cd();
 if(savefile1==1) M1graph->Write();
  if(savefile1==1) {
-   string output = outputPlots + "SigMethod1.png"
-   M1CanvasSig->SaveAs(output);
+   string output = outputPlots + "SigMethod1.png";
+   M1CanvasSig->SaveAs(output.c_str());
  }
 }
 
@@ -1797,16 +1866,16 @@ M2graph->SetMaximum(4);
 if(savefile2==1) outputfileM2Sig->cd();
 if(savefile2==1) M2graph->Write();
  if(savefile2==1) {
-   string output = outputPlots + "SigMethod2.png"
-   M2CanvasSig->SaveAs(output);
+   string output = outputPlots + "SigMethod2.png";
+   M2CanvasSig->SaveAs(output.c_str());
 
 
-    string output1 = outputPlots + "SigMethod2_Bin1.png"
-      M2CanvasSig1->SaveAs(output);
-    string output2 = outputPlots + "SigMethod2_Bin2.png"
-      M2CanvasSig2->SaveAs(output);
-    string output3 = outputPlots + "SigMethod2_Bin3.png"
-      M2CanvasSig3->SaveAs(output);
+   string output1 = outputPlots + "SigMethod2_Bin1.png";
+   M2CanvasSig1->SaveAs(output.c_str());
+   string output2 = outputPlots + "SigMethod2_Bin2.png";
+   M2CanvasSig2->SaveAs(output.c_str());
+   string output3 = outputPlots + "SigMethod2_Bin3.png";
+   M2CanvasSig3->SaveAs(output.c_str());
  }
 
 }
@@ -1895,14 +1964,14 @@ if(exec3==1)
   if(savefile3==1) outputfileM3Sig->cd();
   if(savefile3==1) M3graph->Write();
   if(savefile3==1) {
-    string output = outputPlots + "SigMethod3.png"
-      M3CanvasSig->SaveAs(output);
-    string output1 = outputPlots + "SigMethod3_Bin1.png"
-      M3CanvasSig1->SaveAs(output);
-    string output2 = outputPlots + "SigMethod3_Bin2.png"
-      M3CanvasSig2->SaveAs(output);
-    string output3 = outputPlots + "SigMethod3_Bin3.png"
-      M3CanvasSig3->SaveAs(output);
+    string output = outputPlots + "SigMethod3.png";
+    M3CanvasSig->SaveAs(output.c_str());
+    string output1 = outputPlots + "SigMethod3_Bin1.png";
+    M3CanvasSig1->SaveAs(output.c_str());
+    string output2 = outputPlots + "SigMethod3_Bin2.png";
+    M3CanvasSig2->SaveAs(output.c_str());
+    string output3 = outputPlots + "SigMethod3_Bin3.png";
+    M3CanvasSig3->SaveAs(output.c_str());
   }
   
  }
