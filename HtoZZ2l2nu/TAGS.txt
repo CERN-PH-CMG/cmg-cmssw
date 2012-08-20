@@ -1,21 +1,23 @@
-cvs co -r cbern_sip_27Mar12	-d AnalysisDataFormats/CMGTools UserCode/CMG/AnalysisDataFormats/CMGTools                     
-cvs co -r cbern_nomitid_11Apr12 -d CMGTools/Common		UserCode/CMG/CMGTools/Common                                  
-cvs co -r V00-02-05		-d CMGTools/External		UserCode/CMG/CMGTools/External                                
-cvs co -r V12-08-03          	-d CMGTools/HtoZZ2l2nu		UserCode/CMG/CMGTools/HtoZZ2l2nu                              
-cvs co -r cbern_dasoff_11Apr12	-d CMGTools/Production		UserCode/CMG/CMGTools/Production                              
-cvs co -r V00-03-07-01						CommonTools/ParticleFlow                         
-cvs co -r Shervin20022012_2011Jan16ReRec0_and_Shervin05032012_Fall11MC_smearing -d EgammaCalibratedGsfElectrons/CalibratedElectronAlgos UserCode/ClaudeCharlot/EgammaCalibratedGsfElectrons/CalibratedElectronAlgos
-cvs co -r Shervin20022012_2011Jan16ReRec0_and_Shervin05032012_Fall11MC_smearing -d EgammaCalibratedGsfElectrons/CalibratedElectronProducers UserCode/ClaudeCharlot/EgammaCalibratedGsfElectrons/CalibratedElectronProducers
-cvs co -r Colin_TaggingMode_June30 JetMETAnalysis/ecalDeadCellTools                 
-cvs co -r V08-08-25      PhysicsTools/PatAlgos                            
-cvs co -r V03-09-18-03   PhysicsTools/PatUtils                            
-cvs co -r V08-03-16      PhysicsTools/Utilities                           
-cvs co -r V15-01-05      RecoParticleFlow/PFProducer                      
-cvs co -r Colin_June23   -d RecoParticleFlow/PostProcessing UserCode/RecoParticleFlow/PostProcessing                 
-cvs co -r V00-08-01      -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer        
-cvs co -r V00-00-05      -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools
-cvs co  HiggsAnalysis/CombinedLimit
+cvs co -r V00-02-05 -d CMGTools/External UserCode/CMG/CMGTools/External                                
+cvs co -r V02-08-20 -d CMGTools/HtoZZ2l2nu UserCode/CMG/CMGTools/HtoZZ2l2nu
+cvs co -r V00-03-16 CommonTools/ParticleFlow                         
+cvs co -r V00-03-23 CommonTools/RecoAlgos                            
+cvs co -r V00-00-12 CommonTools/RecoUtils                           
+cvs co -r V15-03-02 DataFormats/ParticleFlowCandidate                
+cvs co -r V10-02-02 DataFormats/TrackReco                            
+cvs co -r V02-00-04 DataFormats/VertexReco                           
+cvs co -r CutBasedId_V00-00-05 -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools                       
+cvs co HiggsAnalysis/CombinedLimit                      
+cvs co -r V08-09-23 PhysicsTools/PatAlgos                            
+cvs co -r V03-09-23 PhysicsTools/PatUtils                            
+cvs co -r V01-08-01 RecoBTag/SecondaryVertex                         
+cvs co -r V15-01-11 RecoParticleFlow/PFProducer                      
+cvs co -r V02-02-01 RecoVertex/AdaptiveVertexFinder                  
+cvs co -r V00-01 -d pharris/MVAMet         
+cd pharris/MVAMet
+rm src/GBRTree.cxx
+rm src/GBRForest.cxx
+rm src/PHMetAnalysisLinkDef.h
+cd -
 cmsenv
 
-#we don't use LandS any longer
-#cvs co -r t3-04-13	 UserCode/mschen/LandS

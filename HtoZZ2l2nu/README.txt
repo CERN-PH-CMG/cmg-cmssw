@@ -9,11 +9,17 @@ scramv1 project CMSSW CMSSW_4_4_4
 cd CMSSW_4_4_4/src/
 cvs co -r from_44x_and_52x -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS_44x.txt | sh
 
-# 55x
+# 52x
 export SCRAM_ARCH=slc5_amd64_gcc462
-scramv1 project CMSSW CMSSW_5_2_3_patch2
-cd CMSSW_5_2_3_patch2/src/
+scramv1 project CMSSW CMSSW_5_2_5
+cd CMSSW_5_2_5/src/
 cvs co -r V12-08-03 -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS.txt | sh
+
+# 53x
+export SCRAM_ARCH=slc5_amd64_gcc462
+scramv1 project CMSSW CMSSW_5_3_3_patch2
+cd CMSSW_5_3_3_patch2/src/
+cvs co -r V12-08-20 -p UserCode/CMG/CMGTools/HtoZZ2l2nu/TAGS.txt | sh
 
 # edit the BuildFile
 nano CMGTools/HtoZZ2l2nu/BuildFile.xml
