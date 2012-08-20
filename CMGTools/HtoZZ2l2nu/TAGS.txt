@@ -13,7 +13,7 @@ cvs co -r V03-09-23 PhysicsTools/PatUtils
 cvs co -r V01-08-01 RecoBTag/SecondaryVertex                         
 cvs co -r V15-01-11 RecoParticleFlow/PFProducer                      
 cvs co -r V02-02-01 RecoVertex/AdaptiveVertexFinder                  
-cvs co -r V00-01 -d pharris/MVAMet         
+cvs co -r V00-01 -d pharris/MVAMet UserCode/pharris/MVAMet        
 cd pharris/MVAMet
 rm src/GBRTree.cxx
 rm src/GBRForest.cxx

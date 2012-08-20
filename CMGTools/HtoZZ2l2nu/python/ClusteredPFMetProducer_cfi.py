@@ -1,4 +1,6 @@
 import FWCore.ParameterSet.Config as cms
+from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import *
+from CMGTools.External.puJetIDAlgo_cff import *
 
 ClusteredPFMetProducer = cms.EDProducer('ClusteredPFMetProducer',
                                         collectionTag = cms.InputTag("particleFlow"),
@@ -17,5 +19,16 @@ ClusteredPFMetProducer = cms.EDProducer('ClusteredPFMetProducer',
                                                             extra_param = cms.double(0),    # not used for anti-kt
                                                             recombination_scheme = cms.int32(0),   # E scheme
                                                             strategy = cms.int32(1)         # Best
-                                                            )
+                                                            ),
+
+                                        #stuff for MVA met
+                                        Vertices = BaseVertexSelection.clone(),
+                                        Muons = BaseMuonsSelection.clone(id=cms.string("medium")),
+                                        Electrons = BaseElectronsSelection.clone(id=cms.string("medium")),
+                                        Photons = BasePhotonsSelection.clone(),
+                                        mvaMet_CorrJetName     = cms.InputTag("ak5PFJetsL1L2L3ForMVAMET"),
+                                        mvaMet_JetName         = cms.InputTag("ak5PFJets"),
+                                        mvaMet_RhoName         = cms.InputTag('kt6PFJets','rho'),
+                                        mvaMet_dZMin           = cms.double(0.1),
+                                        JetIdParams = PhilV1
                                         )
