@@ -37,7 +37,9 @@ RooFitResult* FitHistWithCBShape(TH1* h, double mass)
 
   double avg = 0.97*mass;
   double rms = 0.05*mass;
-  double xmin = 0.67*mass;
+  double xmin = 0.60*mass;
+  // double xmax = 1.25*mass;
+  // double xmin = 0.80*mass;
   double xmax = 1.25*mass;
 
   RooRealVar E("E","Normalised Resonance Mass", xmin, xmax, "GeV");
@@ -46,12 +48,12 @@ RooFitResult* FitHistWithCBShape(TH1* h, double mass)
   RooPlot* frame = E.frame();
   dataSet.plotOn(frame);
 
-  RooRealVar mean("mean","mean", avg, 0.7*mass, 1.2*mass) ;
+  RooRealVar mean("mean","mean", avg, 0.92*mass, 1.2*mass) ;
   RooRealVar sigma("sigma","width", rms, 0.001*mass, 0.2*mass);
-  RooRealVar alphaLow("alphaLow","alpha", 0.8, 0, 10.0*mass);
-  RooRealVar nLow("nLow","n", 1.5, 0.00001, 10000.0);
-  RooRealVar alphaHigh("alphaHigh","alphaHigh", 2.0, 0, 10.0*mass);
-  RooRealVar nHigh("nHigh","nHigh", 3.0, 0.0000000001, 100000.0);
+  RooRealVar alphaLow("alphaLow","alpha", 0.8, 0.0, 3.0);
+  RooRealVar nLow("nLow","n", 20, 0.00001, 1000.0);
+  RooRealVar alphaHigh("alphaHigh","alphaHigh", 2.0, 0.0, 3.0);
+  RooRealVar nHigh("nHigh","nHigh", 100.0, 0.0000000001, 1000.0);
 
   RooFormulaVar minusE("minusE","Negate the data set","-1*E", E) ;
   RooFormulaVar minusMean("minusMean","Negate the mean","-1*mean", mean) ;
@@ -91,8 +93,12 @@ void FitterCBForSignificance(){
 
 
 
-	TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_Qstar_2012_D6T_ak5_fat30_save.root");
-   	for (int i = 0; i < 38; i++){
+  //  TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_Qstar_2012_D6T_ak5_fat30_save.root");
+  //  TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_RSGraviton_2012_D6T_ak5_GGtoGG_fat30_save.root");
+  TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_RSGraviton_2012_D6T_ak5_QQtoQQ_fat30_save.root");
+
+  //TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_Qstar_ak5_fat30.root");
+  for (int i = 0; i < 38; i++){
 	   TH1F* shape = (TH1F*) _shapes->Get(Form("h_qstar_%d;1", 1000+i*100));
 	   TH1F* shape_largeBinning = new TH1F("shape_large_binning", "", NBINS, BOUNDARIES);
 
