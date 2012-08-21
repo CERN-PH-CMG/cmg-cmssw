@@ -16,7 +16,7 @@ void fit_angular()
 
 
 
-  string File = "Signal/" +  Signal + "_D6T_" + Form("%.0f", mass) + ".root";
+  string File = "data/Signal/" +  Signal + "_D6T_" + Form("%.0f", mass) + ".root";
 
   cout << File.c_str() << endl;
 
