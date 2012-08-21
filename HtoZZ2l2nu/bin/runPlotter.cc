@@ -678,42 +678,50 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    legA->SetHeader("");
    legA->Draw("same");
    legA->SetTextFont(42);
-//    legB->SetFillColor(0); legB->SetFillStyle(0); legB->SetLineColor(0);
-//    legB->SetHeader("");
-//    legB->Draw("same");
-//   legB->SetTextFont(42);
-
-
-   if(data && mc){
-     c1->cd();
-     TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);
-     t2->Draw();
-     t2->cd();
-     t2->SetGridy(true);
-     t2->SetPad(0,0.0,1.0,0.2);
-     t2->SetTopMargin(0);
-     t2->SetBottomMargin(0.5);
-     float yscale = (1.0-0.2)/(0.18-0);
-     TH1D *dataToObsH = (TH1D*)data->Clone("CompHistogram");
-     dataToObsH->Divide(mc);
-     dataToObsH->Draw();
-     dataToObsH->GetYaxis()->SetTitle("Data/#Sigma MC");
-     dataToObsH->SetMinimum(0.4);
-     dataToObsH->SetMaximum(1.6);
-     dataToObsH->GetXaxis()->SetTitle("");
-     //dataToObsH->SetMinimum(0);
-     //dataToObsH->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
-     dataToObsH->GetXaxis()->SetTitleOffset(1.3);
-     dataToObsH->GetXaxis()->SetLabelSize(0.033*yscale);
-     dataToObsH->GetXaxis()->SetTitleSize(0.036*yscale);
-     dataToObsH->GetXaxis()->SetTickLength(0.03*yscale);
-     dataToObsH->GetYaxis()->SetTitleOffset(0.3);
-     dataToObsH->GetYaxis()->SetNdivisions(5);
-     dataToObsH->GetYaxis()->SetLabelSize(0.033*yscale);
-     dataToObsH->GetYaxis()->SetTitleSize(0.036*yscale);
-   }
-
-
+   //    legB->SetFillColor(0); legB->SetFillStyle(0); legB->SetLineColor(0);
+   //    legB->SetHeader("");
+   //    legB->Draw("same");
+   //   legB->SetTextFont(42);
+   
+   //
+   std::vector<TH1 *> compDists;
+   if(data)                   compDists.push_back(data);
+   else if(spimpose.size()>0) compDists=spimpose;
+   if(mc && compDists.size())
+     {
+       c1->cd();
+       TPad* t2 = new TPad("t2","t2", 0.0, 0.0, 1.0, 0.2);
+       t2->Draw();
+       t2->cd();
+       t2->SetGridy(true);
+       t2->SetPad(0,0.0,1.0,0.2);
+       t2->SetTopMargin(0);
+       t2->SetBottomMargin(0.5);
+       float yscale = (1.0-0.2)/(0.18-0);
+       for(size_t icd=0; icd<compDists.size(); icd++)
+	 {
+	   TString name("CompHistogram"); name+=icd;
+	   TH1D *dataToObsH = (TH1D*)compDists[icd]->Clone(name);
+	   dataToObsH->Divide(mc);
+	   dataToObsH->Draw(icd==0?"":"same");
+	   if(icd>0) continue;
+	   dataToObsH->GetYaxis()->SetTitle("Data/#Sigma MC");
+	   dataToObsH->SetMinimum(0.4);
+	   dataToObsH->SetMaximum(1.6);
+	   dataToObsH->GetXaxis()->SetTitle("");
+	   //dataToObsH->SetMinimum(0);
+	   //dataToObsH->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
+	   dataToObsH->GetXaxis()->SetTitleOffset(1.3);
+	   dataToObsH->GetXaxis()->SetLabelSize(0.033*yscale);
+	   dataToObsH->GetXaxis()->SetTitleSize(0.036*yscale);
+	   dataToObsH->GetXaxis()->SetTickLength(0.03*yscale);
+	   dataToObsH->GetYaxis()->SetTitleOffset(0.3);
+	   dataToObsH->GetYaxis()->SetNdivisions(5);
+	   dataToObsH->GetYaxis()->SetLabelSize(0.033*yscale);
+	   dataToObsH->GetYaxis()->SetTitleSize(0.036*yscale);
+	 }
+     }
+      
    c1->cd();
    string SavePath = SaveName + plotExt;
    while(SavePath.find("*")!=std::string::npos)SavePath.replace(SavePath.find("*"),1,"");
