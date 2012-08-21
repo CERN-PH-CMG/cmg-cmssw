@@ -178,7 +178,20 @@ int main(int argc, char *argv[])
 	  if(in==0)     statUnc=relErr;
 	  else if(in>0) relErr=sqrt(pow(relErr,2)-pow(statUnc,2));
 
-	  if(in<0)      { fr.r=ir;  fr.rmin=irmin; fr.rmax=irmax; fr.totalUnc=relErr; }
+	  if(in<0)      { 
+	    fr.r=ir;  fr.rmin=irmin; fr.rmax=irmax; fr.totalUnc=relErr; 
+
+	    //signal significance from null hypothesis
+	    /*
+	      RooArgSet* nullParams = new RooArgSet("nullParams");
+	      nullParams->addClone(firstPOI);
+	      nullParams->setRealValue(firstPOI->getName(),0);  // set the value of the parameter for the null hypothesis
+	      ProfileLikelihoodCalculator plCalc3(data,modelWithConstraints,poiList,0.05,nullParams);
+	      HypoTestResult* plHtr = plCalc3.GetHypoTest();
+	      std::cout << "The p-value for the null hypo. is " << plHtr->NullPValue() << std::endl;
+	      std::cout << "Corresponding to a signifcance of " << plHtr->Significance() << std::endl;
+	    */
+	    }
 	  if (in==0)    { fr.statUnc=statUnc;}
 	  else if(in>0) { fr.uncList[test]=relErr; }
 
