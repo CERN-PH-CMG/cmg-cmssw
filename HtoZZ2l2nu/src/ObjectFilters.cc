@@ -323,15 +323,6 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
     bool usePFIso                     = iConfig.getParameter<bool>("usePFIso");
     bool doDeltaBetaCorrection        = iConfig.getParameter<bool>("doDeltaBetaCorrection");
     double minDeltaRtoMuons           = iConfig.getParameter<double>("minDeltaRtoMuons");
-    if(ecorr)
-      {
-	if(!ecorr->IsInitialized())
-	  {
-	    TString path(iConfig.getParameter<std::string>("scCorrector"));
-	    gSystem->ExpandPathName(path);
-	    ecorr->Initialize(iSetup,path.Data());
-	  }
-      }
 
     //iterate over the electrons
     for(size_t iElec=0; iElec< hEle.product()->size(); ++iElec)
@@ -360,8 +351,23 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	lepId.charge=ele->charge();
 	std::pair<double,double> enSF(1.0,0);
 	try{
+
 	  if(ecorr) 
 	    {
+	      if(!ecorr->IsInitialized())
+		{
+		  TString path(iConfig.getParameter<std::string>("scCorrector"));
+		  gSystem->ExpandPathName(path);
+		  if(gSystem->AccessPathName(path))
+		    {
+		      path=TString("${CMSSW_BASE}/")+gSystem->BaseName(path);
+		      gSystem->ExpandPathName(path);
+		      
+		    }
+		  if(!gSystem->AccessPathName(path)) ecorr->Initialize(iSetup,path.Data());
+		  else /*{ cout << "Failed to find eSC corrector file" << endl;*/ throw std::exception(); 
+		}
+	      
 #if IS44x == 1
 	      enSF=ecorr->CorrectedEnergyWithError(dynamic_cast<const reco::GsfElectron &>(*ele),lazyTool);
 #else
@@ -879,7 +885,13 @@ vector<CandidatePtr> getGoodPhotons(edm::Handle<edm::View<reco::Candidate> > &hP
 		{
 		  TString path(iConfig.getParameter<std::string>("scCorrector"));
 		  gSystem->ExpandPathName(path);
-		  phocorr->Initialize(iSetup,path.Data());
+		  if(gSystem->AccessPathName(path))
+		    {
+		      path=TString("${CMSSW_BASE}/")+gSystem->BaseName(path);
+		      gSystem->ExpandPathName(path);
+		    }
+		  if(!gSystem->AccessPathName(path)) phocorr->Initialize(iSetup,path.Data());
+		  else /*{ cout << "Failed to find g SC corrector file" << endl;*/ throw std::exception(); 
 		}
 #if IS44x == 1
 	      enSF=phocorr->CorrectedEnergyWithError(*pho);
