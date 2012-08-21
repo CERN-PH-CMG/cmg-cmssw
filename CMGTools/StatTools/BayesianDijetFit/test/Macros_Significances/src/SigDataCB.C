@@ -31,7 +31,23 @@
 //    These values must be consistent with the Crystal Ball description in the text file CristalBall.txt (from 1000 to 4700 and divisible by 100 here)
 //10) Calculation of significance for a given mass only --> meantest= given mass , else put 0. to scan over all masses defined within minmass and maxmass
 
+double r1=0.436786; //ratio for signal
+double r2=0.375497;
+double r3=0.187717;
 
+double r1_gg = 0.35;
+double r2_gg = 0.40;
+double r3_gg = 0.25;
+
+double r1_qq = 0.52;
+double r2_qq = 0.35; 
+double r3_qq = 0.13;
+
+
+Double_t Ntot=1;
+Double_t N1=0;
+Double_t N2=0;
+Double_t N3=0;
 
 void SigDataCB()
 {
@@ -39,35 +55,24 @@ void SigDataCB()
 // variables definition and initialization
 
 
-  int filenumber=0; // check that you have created the proper Plot repertory. See below where filenumber is used
+  int filenumber=5; // check that you have created the proper Plot repertory. See below where filenumber is used
   int Detastart=1; // this is the bin number
   int Detacut1=5; // last bin for the 1st region
   int Detacut2=10; // last bin for the 2nd region
   int Detaend=13;
 
 int exec1=1; //method1
-int exec2=0; //method2
-int exec3=0; //method3
+int exec2=1; //method2
+int exec3=1; //method3
 int savefile1=1; //method1
-int savefile2=0; //method2
-int savefile3=0; //method3
+int savefile2=1; //method2
+int savefile3=1; //method3
 int iPValue=0; //generate pseudo experiment and calculate pvalue --> iPValue=1
 int iendPValue=10000; //number of pseudo experiments
 int savefilePValue=0; // to save the PValue plot -->savefilePValue=1
 int igraph=1;  // plot signal ratio for method 2 and 3 -->igraph=1
 int iprint=0;
 
-double r1=0.436786; //ratio for signal
-double r2=0.375497;
-double r3=0.187717;
-
- double r1_gg = 0.35;
- double r2_gg = 0.40;
- double r3_gg = 0.25;
-
- double r1_qq = 0.52;
- double r2_qq = 0.35;
- double r3_qq = 0.13;
 
 double xmin=900; // range for the input histograms and fits
 double xmax=4700.;
@@ -76,9 +81,13 @@ double maxmass=4700.;
 int Nvalues=(maxmass-minmass)/100+1; // number of values in the text file for Crystal Ball shapes, size of arrays and pointers
 int NvaluesLoop=(maxmass-minmass)/100+1; // number of values in the loop
 
- double meantest=1100.; // scan over all masses --> meantest=0. else choose the mass 
+ double meantest=0.; // scan over all masses --> meantest=0. else choose the mass 
 
  double chisquare = 0; // chisquare to control the fits convergence
+
+ string SignalShape("Qstar_8TeV");
+ //string SignalShape("RSG_gg_8TeV");
+ //string SignalShape("RSG_qq_8TeV");
 
 //*******************************************************************************
 
@@ -105,34 +114,39 @@ if(filenumber==1)
 {
   TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_3fbm1_190456_195947_8TeV.root");
   TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin10GeV;1");
-  string outputPlots("Plots_3fbm1_8TeV/");
+  string outputPlots("Plots_3fbm1_");
+  outputPlots = outputPlots + ""  + SignalShape + "/";
 }
 
 if(filenumber==2)
 {
   TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_5fbm1_8TeV.root");
   TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat;1");
-  string outputPlots("Plots_5fbm1_8TeV/");
+  string outputPlots("Plots_5fbm1_");
+  outputPlots = outputPlots + ""  + SignalShape + "/";
 }
 
 if(filenumber==3)
 {
   TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_7fbm1_8TeV.root");
   TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
-  string outputPlots("Plots_7fbm1_8TeV/");
+  string outputPlots("Plots_7fbm1_");
+  outputPlots = outputPlots + ""  + SignalShape + "/";
 }
 
 if(filenumber==4)
 {
   TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_2fbm1_POST_ICHEP_8TeV.root");
   TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
-  string outputPlots("Plots_2fbm1_POST_ICHEP_8TeV/");
+  string outputPlots("Plots_2fbm1_POST_ICHEP_");
+  outputPlots = outputPlots + ""  + SignalShape + "/";
 }
 if(filenumber==5)
 {
 TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_8p48fbm1_8TeV.root");
  TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
-  string outputPlots("Plots_8p5fbm1_8TeV/");
+  string outputPlots("Plots_8p5fbm1_");
+  outputPlots = outputPlots + ""  + SignalShape + "/";
 
 }
 
@@ -250,11 +264,10 @@ hist_mass1Rebin->Rebin(10);
 hist_mass2Rebin->Rebin(10);
 hist_mass3Rebin->Rebin(10);
 
-
-Double_t Ntot=hist_mass->GetEntries();
-Double_t N1=hist_mass1->GetEntries();
-Double_t N2=hist_mass2->GetEntries();
-Double_t N3=hist_mass3->GetEntries();
+Ntot=hist_mass->GetEntries();
+N1=hist_mass1->GetEntries();
+N2=hist_mass2->GetEntries();
+N3=hist_mass3->GetEntries();
 
 cout<<"comparing the number of events"<<endl;
 cout<<"for 0<DeltaEta<0.5: "<<N1/Ntot*100<<" %"<<endl;
@@ -466,7 +479,9 @@ double *sNLow = new double[Nvalues];
 double *sFrac = new double[Nvalues];
 
 ifstream flux;
-flux.open("data/CristalBall_Qstar_8TeV.txt");
+string shapes("data/CristalBall_");
+shapes = shapes + "" + SignalShape + ".txt";
+flux.open(shapes.c_str());
 for(int i=0;i<Nvalues;i++)
 {
 flux>>mass[i]>>sMean[i]>>sSigma[i]>>sAlphaHigh[i]>>sAlphaLow[i]>>sNHigh[i]>>sNLow[i]>>sFrac[i];
@@ -704,6 +719,7 @@ gPad->SetLogy();
 M1SigBkg->SetLineColor(kRed);
 M1M_Hist->Fit("M1SigBkg","L","",xmin,xmax);
 M1M_Hist->Fit("M1SigBkg","L","",xmin,xmax);
+M1M_Hist->Fit("M1SigBkg","L","",xmin,xmax);
 
 M1Bkg->FixParameter(0,M1SigBkg->GetParameter(0));
 M1Bkg->FixParameter(1,M1SigBkg->GetParameter(1));
@@ -895,6 +911,7 @@ gPad->SetLogy();
 M2SigBkg1->SetLineColor(kRed);
 M2M_Hist1->Fit("M2SigBkg1","L","",xmin,xmax);
 M2M_Hist1->Fit("M2SigBkg1","L","",xmin,xmax);
+M2M_Hist1->Fit("M2SigBkg1","L","",xmin,xmax);
 
 M2Bkg1->FixParameter(0,M2SigBkg1->GetParameter(0));
 M2Bkg1->FixParameter(1,M2SigBkg1->GetParameter(1));
@@ -1043,6 +1060,7 @@ gPad->SetLogy();
 M2SigBkg2->SetLineColor(kRed);
 M2M_Hist2->Fit("M2SigBkg2","L","",xmin,xmax);
 M2M_Hist2->Fit("M2SigBkg2","L","",xmin,xmax);
+M2M_Hist2->Fit("M2SigBkg2","L","",xmin,xmax);
 
 M2Bkg2->FixParameter(0,M2SigBkg2->GetParameter(0));
 M2Bkg2->FixParameter(1,M2SigBkg2->GetParameter(1));
@@ -1187,6 +1205,7 @@ M2M_Hist3->SetName(Form("M2M_Hist3_%d",imass));
 M2Canvas3->cd();
 gPad->SetLogy();
 M2SigBkg3->SetLineColor(kRed);
+M2M_Hist3->Fit("M2SigBkg3","L","",xmin,xmax);
 M2M_Hist3->Fit("M2SigBkg3","L","",xmin,xmax);
 M2M_Hist3->Fit("M2SigBkg3","L","",xmin,xmax);
 
@@ -1844,7 +1863,7 @@ delete M3LegRebin3;
 
 if(igraph==1 && (fabs(mass[j]-3500) < 1e-10 || meantest != 0))
 {
-  if(exec2==1 && exec3==1) graphratio(M2SigBkg1->GetParameter(10),M2SigBkg1->GetParError(10),M2SigBkg2->GetParameter(10), M2SigBkg2->GetParError(10),M2SigBkg3->GetParameter(10),M2SigBkg3->GetParError(10), outputPlots, mass[j]);
+  if(exec2==1) graphratio(M2SigBkg1->GetParameter(10),M2SigBkg1->GetParError(10),M2SigBkg2->GetParameter(10), M2SigBkg2->GetParError(10),M2SigBkg3->GetParameter(10),M2SigBkg3->GetParError(10), outputPlots, mass[j]);
 }
 
 }// loop j
@@ -2550,8 +2569,10 @@ void graphratio(double meth2p1,double meth2errorp1,double meth2p2, double meth2e
 
 double *eta2=new double[3];
 double *eta3=new double[3];
-double *r2=new double[3];
-double *r3=new double[3];
+double *ar2=new double[3];
+double *ar3=new double[3];
+double *ar3_gg=new double[3];
+double *ad=new double[3];
 double *eta2errorlow=new double[3];
 double *eta3errorlow=new double[3];
 double *eta2errorhigh=new double[3];
@@ -2561,6 +2582,12 @@ double *r3errorlow=new double[3];
 double *r2errorhigh=new double[3];
 double *r3errorhigh=new double[3];
 
+
+ if (meth2p1 < 0) meth2p1 = 0;
+ if (meth2p2 < 0) meth2p2 = 0;
+ if (meth2p3 < 0) meth2p3 = 0;
+
+
 eta2[0]=0.25;
 eta2[1]=0.75;
 eta2[2]=1.15;
@@ -2568,14 +2595,22 @@ eta3[0]=0.25;
 eta3[1]=0.75;
 eta3[2]=1.15;
 
-r2[0]=meth2p1/(meth2p1+meth2p2+meth2p3);
-r2[1]=meth2p2/(meth2p1+meth2p2+meth2p3);
-r2[2]=meth2p3/(meth2p1+meth2p2+meth2p3);
+ar2[0]=meth2p1/(meth2p1+meth2p2+meth2p3);
+ar2[1]=meth2p2/(meth2p1+meth2p2+meth2p3);
+ar2[2]=meth2p3/(meth2p1+meth2p2+meth2p3);
 
-r3[0]=0.436786; //ratio for signal
-r3[1]=0.375497;
-r3[2]=0.187717;
+ar3[0]=r1; //ratio for signal
+ar3[1]=r2;
+ar3[2]=r3;
 
+ar3_gg[0]=r1_gg; //ratio for signal
+ar3_gg[1]=r2_gg;
+ar3_gg[2]=r3_gg;
+
+
+ ad[0]=N1/Ntot;
+ ad[1]=N2/Ntot;
+ ad[2]=N3/Ntot;
 
 eta2errorlow[0]=0.25;
 eta2errorlow[1]=0.25;
@@ -2590,12 +2625,12 @@ eta3errorhigh[0]=0.25;
 eta3errorhigh[1]=0.25;
 eta3errorhigh[2]=0.15;
 
-r2errorlow[0]=r2[0]-(meth2p1-meth2errorp1)/(meth2p1-meth2errorp1+meth2p2+meth2p3);
-r2errorlow[1]=r2[1]-(meth2p2-meth2errorp2)/(meth2p1+meth2p2-meth2errorp2+meth2p3);
-r2errorlow[2]=r2[2]-(meth2p3-meth2errorp3)/(meth2p1+meth2p2+meth2p3-meth2errorp3);
-r2errorhigh[0]=(meth2p1+meth2errorp1)/(meth2p1+meth2errorp1+meth2p2+meth2p3)-r2[0];
-r2errorhigh[1]=(meth2p2+meth2errorp2)/(meth2p1+meth2p2+meth2errorp2+meth2p3)-r2[1];
-r2errorhigh[2]=(meth2p3+meth2errorp3)/(meth2p1+meth2p2+meth2p3+meth2errorp3)-r2[2];
+r2errorlow[0]=ar2[0]-(meth2p1-meth2errorp1)/(meth2p1-meth2errorp1+meth2p2+meth2p3);
+r2errorlow[1]=ar2[1]-(meth2p2-meth2errorp2)/(meth2p1+meth2p2-meth2errorp2+meth2p3);
+r2errorlow[2]=ar2[2]-(meth2p3-meth2errorp3)/(meth2p1+meth2p2+meth2p3-meth2errorp3);
+r2errorhigh[0]=(meth2p1+meth2errorp1)/(meth2p1+meth2errorp1+meth2p2+meth2p3)-ar2[0];
+r2errorhigh[1]=(meth2p2+meth2errorp2)/(meth2p1+meth2p2+meth2errorp2+meth2p3)-ar2[1];
+r2errorhigh[2]=(meth2p3+meth2errorp3)/(meth2p1+meth2p2+meth2p3+meth2errorp3)-ar2[2];
 
 r3errorlow[0]=0.;
 r3errorlow[1]=0.;
@@ -2606,8 +2641,10 @@ r3errorhigh[2]=0.;
 
 
 
-TGraphAsymmErrors *graph2= new TGraphAsymmErrors(3,eta2,r2,eta2errorlow,eta2errorhigh,r2errorlow,r2errorhigh);
-TGraphAsymmErrors *graph3= new TGraphAsymmErrors(3,eta3,r3,eta3errorlow,eta3errorhigh,r3errorlow,r3errorhigh);
+TGraphAsymmErrors *graph2= new TGraphAsymmErrors(3,eta2,ar2,eta2errorlow,eta2errorhigh,r2errorlow,r2errorhigh);
+TGraphAsymmErrors *qstar= new TGraphAsymmErrors(3,eta2,ar3,eta3errorlow,eta3errorhigh,r3errorlow,r3errorhigh);
+TGraphAsymmErrors *rsg= new TGraphAsymmErrors(3,eta2,ar3_gg,eta3errorlow,eta3errorhigh,r3errorlow,r3errorhigh);
+TGraphAsymmErrors *data= new TGraphAsymmErrors(3,eta2,ad,eta3errorlow,eta3errorhigh,r3errorlow,r3errorhigh);
 
 
 TCanvas *CanvasRatio = new TCanvas("CanvasRatio","CanvasRatio",11,51,700,500);
@@ -2619,21 +2656,45 @@ graph2->SetLineColor(2);
 graph2->SetLineWidth(2);
 graph2->SetMarkerColor(2);
 graph2->SetMarkerStyle(21);
-graph2->SetMarkerSize(0.7);
+graph2->SetMarkerSize(1.5);
 
-graph3->SetLineColor(4);
-graph3->SetLineWidth(2);
-graph3->SetMarkerColor(4);
-graph3->SetMarkerStyle(21);
-graph3->SetMarkerSize(0.7);
+qstar->SetLineColor(4);
+qstar->SetLineWidth(2);
+qstar->SetMarkerColor(4);
+qstar->SetMarkerStyle(23);
+ qstar->SetMarkerSize(1.5);
 
-graph2->GetXaxis()->SetLimits(0,1.3);
+rsg->SetLineColor(kGreen);
+rsg->SetLineWidth(2);
+rsg->SetMarkerColor(kGreen);
+rsg->SetMarkerStyle(25);
+ rsg->SetMarkerSize(1.5);
+
+data->SetLineColor(kBlack);
+data->SetLineWidth(2);
+data->SetMarkerColor(kBlack);
+data->SetMarkerStyle(27);
+ data->SetMarkerSize(1.5);
 
 CanvasRatio->cd();
-LegRatio->AddEntry(graph2,"method 2","l");
-LegRatio->AddEntry(graph3,"method 3","l");
-graph2->Draw("AP");
-graph3->Draw("P");
+LegRatio->AddEntry(graph2,"Best Signal Fit","l");
+LegRatio->AddEntry(qstar,"Q*","l");
+LegRatio->AddEntry(rsg,"gg->RSG->gg","l");
+LegRatio->AddEntry(data,"Data all mass cut","l");
+
+ TH1D* PLOTTER = new TH1D("PLOTTER", "#Delta #eta distribution", 1, 0, 1.3);
+
+ PLOTTER->SetStats(0);
+ PLOTTER->SetMinimum(-0.02);
+ PLOTTER->SetMaximum(1.0);
+
+ PLOTTER->Draw();
+
+
+graph2->Draw("SAMEP");
+qstar->Draw("SAMEP");
+rsg->Draw("SAMEP");
+data->Draw("SAMEP");
 LegRatio->Draw();
 
  string out = Rep + "RatioAt" + Form("%.0f", mass) + ".png";
