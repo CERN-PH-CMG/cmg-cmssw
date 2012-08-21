@@ -39,18 +39,18 @@ void SigDataCB()
 // variables definition and initialization
 
 
-  int filenumber=2; // check that you have created the proper Plot repertory. See below where filenumber is used
+  int filenumber=0; // check that you have created the proper Plot repertory. See below where filenumber is used
   int Detastart=1; // this is the bin number
   int Detacut1=5; // last bin for the 1st region
   int Detacut2=10; // last bin for the 2nd region
   int Detaend=13;
 
 int exec1=1; //method1
-int exec2=1; //method2
-int exec3=1; //method3
+int exec2=0; //method2
+int exec3=0; //method3
 int savefile1=1; //method1
-int savefile2=1; //method2
-int savefile3=1; //method3
+int savefile2=0; //method2
+int savefile3=0; //method3
 int iPValue=0; //generate pseudo experiment and calculate pvalue --> iPValue=1
 int iendPValue=10000; //number of pseudo experiments
 int savefilePValue=0; // to save the PValue plot -->savefilePValue=1
@@ -61,14 +61,22 @@ double r1=0.436786; //ratio for signal
 double r2=0.375497;
 double r3=0.187717;
 
+ double r1_gg = 0.35;
+ double r2_gg = 0.40;
+ double r3_gg = 0.25;
+
+ double r1_qq = 0.52;
+ double r2_qq = 0.35;
+ double r3_qq = 0.13;
+
 double xmin=900; // range for the input histograms and fits
 double xmax=4700.;
 double minmass=1000.; // range for the significance scan only
-double maxmass=4000.;
+double maxmass=4700.;
 int Nvalues=(maxmass-minmass)/100+1; // number of values in the text file for Crystal Ball shapes, size of arrays and pointers
 int NvaluesLoop=(maxmass-minmass)/100+1; // number of values in the loop
 
- double meantest=0.; // scan over all masses --> meantest=0. else choose the mass 
+ double meantest=1100.; // scan over all masses --> meantest=0. else choose the mass 
 
  double chisquare = 0; // chisquare to control the fits convergence
 
@@ -76,6 +84,22 @@ int NvaluesLoop=(maxmass-minmass)/100+1; // number of values in the loop
 
 // first part: display of data histograms
 
+
+if(filenumber==0)
+{
+  TFile *file0=TFile::Open("data/DataScouting_V00-01-03_Run2012B_runrange_193752-197044_dijet_alfaT_razor.root");
+  TDirectoryFile* DQMData_Merged_Runs_DataScouting_Run_summary_DiJet = (TDirectoryFile*) file0->Get("DQMData_Merged Runs_DataScouting_Run summary_DiJet;1");
+  //  DQMData_Merged_Runs_DataScouting_Run_summary_DiJet->cd();
+  TH2D* h_DEta_Mass = (TH2D*) DQMData_Merged_Runs_DataScouting_Run_summary_DiJet->Get("h2_DetajjVsMjjWide;1");
+  string outputPlots("Plots_DataScouting_5TeV/");
+  int Detastart=1; // this is the bin number
+  int Detacut1=10; // last bin for the 1st region
+  int Detacut2=20; // last bin for the 2nd region
+  int Detaend=26;
+  xmin = 500.;
+  minmass = 1000.;
+  h_DEta_Mass->Draw("COLZ");
+}
 
 if(filenumber==1)
 {
@@ -104,6 +128,15 @@ if(filenumber==4)
   TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
   string outputPlots("Plots_2fbm1_POST_ICHEP_8TeV/");
 }
+if(filenumber==5)
+{
+TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_8p48fbm1_8TeV.root");
+ TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
+  string outputPlots("Plots_8p5fbm1_8TeV/");
+
+}
+
+
 
  gStyle->SetOptFit(111); 
 
@@ -119,7 +152,7 @@ if(filenumber==1)
   h_DEta_Mass->GetYaxis()->SetTitleSize(0.04);
   h_DEta_Mass->GetYaxis()->SetTitleOffset(1.6);
 }
-if(filenumber==2 || filenumber==3 || filenumber==4)
+if(filenumber>1 || filenumber == 0 )
 {
   h_DEta_Mass->SetTitle("Invariant Mass VS #Delta#eta for data");
   h_DEta_Mass->GetYaxis()->SetTitle("Invariant Mass (GeV)");
@@ -159,7 +192,7 @@ if(filenumber==2 || filenumber==3 || filenumber==4)
 
 
 
-if(filenumber==1)
+if(filenumber==1 || filenumber == 0 )
 {
 hist_mass=h_DEta_Mass->ProjectionX("hist_mass",Detastart,Detaend,"e");
 hist_mass1=h_DEta_Mass->ProjectionX("hist_mass1",Detastart,Detacut1,"e");
@@ -167,7 +200,7 @@ hist_mass2=h_DEta_Mass->ProjectionX("hist_mass2",Detacut1+1,Detacut2,"e");
 hist_mass3=h_DEta_Mass->ProjectionX("hist_mass3",Detacut2+1,Detaend,"e");
 }
 
-if(filenumber==2 || filenumber==3 || filenumber==4)
+if(filenumber>1)
 {
 
 hist_mass=h_DEta_Mass->ProjectionY("hist_mass",Detastart,Detaend,"e");
@@ -177,7 +210,7 @@ hist_mass3=h_DEta_Mass->ProjectionY("hist_mass3",Detacut2+1,Detaend,"e");
 }
 
 
-if(filenumber==2 || filenumber==3 || filenumber==4)
+if(filenumber>1 || filenumber == 0 )
 {
 hist_mass->Rebin(10);
 hist_mass1->Rebin(10);
@@ -638,7 +671,7 @@ for (int j=0;j<NvaluesLoop;j++)
 {
 
 if(meantest!=0) j=(meantest-minmass)/100;
-if(j<3 && meantest!=1000) j=3; // fit doesn't converge at 1000 GeV
+if(j<3 && meantest!=1000 && filenumber!=0) j=3; // fit doesn't converge at 1000 GeV
 cout<<"value nb "<<j+1<<endl;
 cout<<"mass: "<<mass[j]<<endl;
 int imass=mass[j];
@@ -670,12 +703,43 @@ M1Canvas->cd();
 gPad->SetLogy();
 M1SigBkg->SetLineColor(kRed);
 M1M_Hist->Fit("M1SigBkg","L","",xmin,xmax);
+M1M_Hist->Fit("M1SigBkg","L","",xmin,xmax);
 
 M1Bkg->FixParameter(0,M1SigBkg->GetParameter(0));
 M1Bkg->FixParameter(1,M1SigBkg->GetParameter(1));
 M1Bkg->FixParameter(2,M1SigBkg->GetParameter(2));
 M1Bkg->SetLineColor(kGreen);
 M1Bkg->Draw("same");
+
+
+
+
+/*
+ 
+ for (int i = 0; i < 8; i++){
+   double rnd = M1Bkg->GetRandom(3700., 3900.);
+   M1M_Hist->Fill(rnd);
+   hist_mass->Fill(rnd);
+   hist_massRebin->Fill(rnd);
+  }
+
+
+M1M_Hist->Fit("M1SigBkg","L","",xmin,xmax);
+
+M1Bkg->FixParameter(0,M1SigBkg->GetParameter(0));
+M1Bkg->FixParameter(1,M1SigBkg->GetParameter(1));
+M1Bkg->FixParameter(2,M1SigBkg->GetParameter(2));
+M1Bkg->SetLineColor(kGreen);
+M1Bkg->Draw("same");
+*/
+
+
+
+
+
+
+
+
 
 M1Sig->FixParameter(0,M1SigBkg->GetParameter(3));
 M1Sig->FixParameter(1,M1SigBkg->GetParameter(4));
@@ -830,6 +894,7 @@ M2Canvas1->cd();
 gPad->SetLogy();
 M2SigBkg1->SetLineColor(kRed);
 M2M_Hist1->Fit("M2SigBkg1","L","",xmin,xmax);
+M2M_Hist1->Fit("M2SigBkg1","L","",xmin,xmax);
 
 M2Bkg1->FixParameter(0,M2SigBkg1->GetParameter(0));
 M2Bkg1->FixParameter(1,M2SigBkg1->GetParameter(1));
@@ -977,6 +1042,7 @@ M2Canvas2->cd();
 gPad->SetLogy();
 M2SigBkg2->SetLineColor(kRed);
 M2M_Hist2->Fit("M2SigBkg2","L","",xmin,xmax);
+M2M_Hist2->Fit("M2SigBkg2","L","",xmin,xmax);
 
 M2Bkg2->FixParameter(0,M2SigBkg2->GetParameter(0));
 M2Bkg2->FixParameter(1,M2SigBkg2->GetParameter(1));
@@ -1121,6 +1187,7 @@ M2M_Hist3->SetName(Form("M2M_Hist3_%d",imass));
 M2Canvas3->cd();
 gPad->SetLogy();
 M2SigBkg3->SetLineColor(kRed);
+M2M_Hist3->Fit("M2SigBkg3","L","",xmin,xmax);
 M2M_Hist3->Fit("M2SigBkg3","L","",xmin,xmax);
 
 M2Bkg3->FixParameter(0,M2SigBkg3->GetParameter(0));
