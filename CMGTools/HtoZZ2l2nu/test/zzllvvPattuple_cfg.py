@@ -20,7 +20,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 gt=''
 if ( not runOnMC ):
     gt='GR_P_V41_AN1::All'
-    if(process.source.fileNames[0].find('2012C')<0) : gt='GR_P_V39_AN1::All'
+    #if(process.source.fileNames[0].find('2012C')<0) : gt='GR_P_V39_AN1::All'
 else :
     gt = 'START53_V10::All'
 print 'Using the following global tag %s'%gt
@@ -49,7 +49,7 @@ from CMGTools.HtoZZ2l2nu.PreselectionSequences_cff import addPreselectionSequenc
 from CMGTools.HtoZZ2l2nu.PreselectionSequences_cff import addLumifilter
 if(not runOnMC ):
     addPreselectionSequences(process)
-    #addLumifilter(process,'/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-195016_8TeV_PromptReco_Collisions12_JSON_v2.txt')
+    #addLumifilter(process,'/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-200601_8TeV_PromptReco_Collisions12_JSON_v2.txt')
     
                       
 from CMGTools.HtoZZ2l2nu.SkimSequences_cff import addDileptonSkim, addPhotonSkim
@@ -69,8 +69,8 @@ from PhysicsTools.PatAlgos.tools.pfTools import *
 
 postfix = "PFlowNoPuSub"
 jetAlgo="AK5"
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=True, postfix="PFlow",typeIMetCorrections=True,jetCorrections=('AK5PFchs',jecLevels))
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=True, postfix=postfix,typeIMetCorrections=True,jetCorrections=('AK5PF',jecLevels))
+usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix="PFlow",typeIMetCorrections=True,jetCorrections=('AK5PFchs',jecLevels))
+usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=postfix,typeIMetCorrections=True,jetCorrections=('AK5PF',jecLevels))
 
 # to use GsfElectrons instead of PF electrons
 # this will destory the feature of top projection which solves the ambiguity between leptons and jets because

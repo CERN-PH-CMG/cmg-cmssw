@@ -299,7 +299,9 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
    T->SetFillColor(0);
    T->SetFillStyle(0);  T->SetLineColor(0);
    T->SetTextAlign(32);
-   char Buffer[1024]; sprintf(Buffer, "CMS preliminary, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
+   char Buffer[1024]; 
+   if(isSim) sprintf(Buffer, "CMS simulation, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
+   else      sprintf(Buffer, "CMS preliminary, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
    T->AddText(Buffer);
 
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
@@ -665,7 +667,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    T->SetFillStyle(0);  T->SetLineColor(0);
    T->SetTextAlign(22);
    char Buffer[1024]; 
-   if(isSim) sprintf(Buffer, "CMS simulation");
+   if(isSim) sprintf(Buffer, "CMS simulation, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
    else      sprintf(Buffer, "CMS preliminary, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
    T->AddText(Buffer);
    T->Draw("same");
@@ -947,7 +949,7 @@ int main(int argc, char* argv[]){
        }
        printf("Uncertainty band will be included for MC with base relative uncertainty of: %3.2f",baseRelUnc);
      }
-     if(arg.find("--cmsSim")!=string::npos){ isSim = true;    }
+     if(arg.find("--isSim")!=string::npos){ isSim = true;    }
      if(arg.find("--noLog")!=string::npos){ noLog = true;    }
      if(arg.find("--no2D"  )!=string::npos){ do2D = false;    }
      if(arg.find("--no1D"  )!=string::npos){ do1D = false;    }

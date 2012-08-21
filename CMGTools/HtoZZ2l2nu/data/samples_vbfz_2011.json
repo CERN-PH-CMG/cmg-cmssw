@@ -13,7 +13,8 @@
                 "dtag":"MC7TeV_VBFZ_interf_Madgraph",
                 "aoddir":["/store/cmst3/user/psilva/Madgraph/VBFZ_interf/AODSIM"],
                 "patdir":["/store/cmst3/user/psilva/Madgraph/VBFZ_interf/PAT"],
-                "xsec":0.4486
+                "xsec":0.148,
+		"br":[1.12]
                 }
          ]
         },

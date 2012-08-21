@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
   std::vector<double> optim_Cuts2_jet2_pt; 
   std::vector<double> optim_Cuts2_eta_gap;
   std::vector<double> optim_Cuts2_dijet_mass;
-  for(double jet1_pt=30;jet1_pt<60;jet1_pt+=10)  
+  for(double jet1_pt=30;jet1_pt<100;jet1_pt+=10)  
     {
       for(double jet2_pt=30;jet2_pt<=jet1_pt;jet2_pt+=10) 
 	{
@@ -215,6 +215,7 @@ int main(int argc, char* argv[])
   TString jetIds[]={"pf","pfpuloose","pfpumvaloose"};
   for(size_t i=0; i<sizeof(jetIds)/sizeof(TString); i++)
     {
+      mon.addHistogram( new TH2F(jetIds[i]+"njetsvsavginstlumi",  ";;Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5,10,0,5000) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjeteta"       , ";#eta;Jets",50,0,5) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjetdeta"       , ";|#Delta #eta|;Jets",50,0,10) );
       mon.addHistogram( new TH1F(jetIds[i]+"vbfcandjetpt"       , ";p_{T} [GeV/c];Jets",50,0,250) );
@@ -593,6 +594,19 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("mt",              ctf, mt,iweight);
 
 	      //VBF monitoring
+	      for(size_t ijetid=0; ijetid<sizeof(jetIds)/sizeof(TString); ijetid++)
+		{
+		  int jetIdToApply(JETID_LOOSE);
+		  if(jetIds[ijetid]=="pfpuloose")    jetIdToApply=JETID_CUTBASED_LOOSE;
+		  if(jetIds[ijetid]=="pfpumvaloose") jetIdToApply=JETID_OPT_LOOSE;
+		  int njetsPass=0;
+		  for(size_t ijet=0;ijet<selJets.size(); ijet++)
+		    {
+		      if(!hasObjectId(selJets[ijet].pid,jetIdToApply)) continue;
+		      njetsPass++;
+		    }
+		  mon.fillHisto(jetIds[ijetid]+"njetsvsavginstlumi", ctf, njetsPass,ev.curAvgInstLumi,weight);
+		}
 	      if(njets30>=2)
 		{
 		  for(size_t ijetid=0; ijetid<sizeof(jetIds)/sizeof(TString); ijetid++)
