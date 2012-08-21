@@ -48,7 +48,7 @@ void SigDataCB_Test()
 // variables definition and initialization
 
 
-  int filenumber=3; // check that you have created the proper Plot repertory. See below where filenumber is used
+  int filenumber=5; // check that you have created the proper Plot repertory. See below where filenumber is used
   int Detastart=1; // this is the bin number
   int Detacut1=5; // last bin for the 1st region
   int Detacut2=10; // last bin for the 2nd region
@@ -75,7 +75,7 @@ double maxmass=4000.;
 int Nvalues=(maxmass-minmass)/100+1; // number of values in the text file for Crystal Ball shapes, size of arrays and pointers
 int NvaluesLoop=(maxmass-minmass)/100+1; // number of values in the loop
 
-double meantest=0.; // scan over all masses --> meantest=0. else choose the mass 
+double meantest=3500.; // scan over all masses --> meantest=0. else choose the mass 
 
  double chisquare = 0; // chisquare to control the fits convergence
 
@@ -110,6 +110,14 @@ if(filenumber==4)
   TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_2fbm1_POST_ICHEP_8TeV.root");
   TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
   string outputPlots("Plots_2fbm1_POST_ICHEP_8TeV_4bins/");
+}
+
+if(filenumber==5)
+{
+TFile *file0=TFile::Open("data/histograms_delta_Mass_ak5_8p48fbm1_8TeV.root");
+ TH2D* h_DEta_Mass = (TH2D*) file0->Get("h_DEta_Mass_data_fat_bin1GeV;1");
+  string outputPlots("Plots_8p5fbm1_POST_ICHEP_8TeV_4bins/");
+
 }
 
  gStyle->SetOptFit(111); 
