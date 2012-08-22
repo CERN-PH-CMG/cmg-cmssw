@@ -143,14 +143,14 @@ int main(int argc, char* argv[])
   std::vector<double> optim_Cuts2_dijet_mass;
   for(double jet1_pt=30;jet1_pt<100;jet1_pt+=10)  
     {
-      for(double hpt=10;hpt<=50;hpt+=5) 
+      for(double jet2_pt=30;jet2_pt<=100;jet2_pt+=10) 
 	{
 	  for(double eta_gap=3.5;eta_gap<=5.0;eta_gap+=0.5)
             {
               for(double dijet_mass=400; dijet_mass<=1000; dijet_mass+=50)
 		{
 		  optim_Cuts2_jet1_pt.push_back(jet1_pt);
-		  optim_Cuts2_jet2_pt.push_back(hpt);
+		  optim_Cuts2_jet2_pt.push_back(jet2_pt);
 		  optim_Cuts2_eta_gap.push_back(eta_gap);
 		  optim_Cuts2_dijet_mass.push_back(dijet_mass);
 		}
@@ -672,8 +672,8 @@ int main(int argc, char* argv[])
 			  for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
 			    if(!hasObjectId(selJets[0].pid,JETID_CUTBASED_LOOSE) || !hasObjectId(selJets[1].pid,JETID_CUTBASED_LOOSE)) continue; 
 			    float minJet1Pt    = optim_Cuts2_jet1_pt[index];
-			    float minJet2Pt    = optim_Cuts2_jet1_pt[index];
-			    float minHardPt    = optim_Cuts2_jet2_pt[index];
+			    float minJet2Pt    = optim_Cuts2_jet2_pt[index];
+			    float minHardPt    = 999999.;//optim_Cuts2_jet2_pt[index];
 			    float minEtaGap    = optim_Cuts2_eta_gap[index];
 			    float minDijetMass = optim_Cuts2_dijet_mass[index];
 			    bool passLocalZmass(isGammaEvent || fabs(gamma.mass()-91)<15);
@@ -689,7 +689,7 @@ int main(int argc, char* argv[])
 			    bool passHardPt(hardpt<minHardPt);
 			    //bool passLocalPreselection(passLocalZmass && passLocalRedMet && passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass);		    
 			    //if(passLocalPreselection) mon.fillHisto("dijet_mass_shapes",ctf,index,(selJets[0]+selJets[1]).M(),iweight);
-			    if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && ncjv==0 && passHardPt)  
+			    if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && ncjv==0)
 			    {
 			      mon.fillHisto("dijet_mass_shapes", ctf, index, mjj, iweight);
 			      //			      if(index==1)
