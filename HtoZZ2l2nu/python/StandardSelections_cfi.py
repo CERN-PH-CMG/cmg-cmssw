@@ -63,9 +63,13 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlowNoPuS
                                                     ),
                                maxRelIso = cms.double(999999.),
                                usePFIso = cms.bool(True),
+                               reComputePFIso = cms.bool(True),
                                doDeltaBetaCorrection = cms.bool(False)
                                )
 
+if(selVersion==2011):
+    BaseMuonsSelection.usePFIso=cms.bool(False)
+    BaseMuonsSelection.reComputePFIso = cms.bool(True),
 
 # base values for loose muon selection ----------------------------------------------
 BaseLooseMuonsSelection = BaseMuonsSelection.clone( minPt = cms.double(3),
@@ -136,11 +140,15 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPF
                                    maxRelIso    = cms.double(999999.), #0.1),
                                    minDeltaRtoMuons = cms.double(0.1),
                                    usePFIso = cms.bool(True),
+                                   reComputePFIso = cms.bool(True),
                                    doDeltaBetaCorrection = cms.bool(False)
                                    )
 if(selVersion==2011):
     BaseElectronsSelection.scCorrector = cms.string("${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/EleEnRegress_2011.root")
+    BaseElectronsSelection.usePFIso = cms.bool(True)
+    BaseElectronsSelection.reComputePFIso = cms.bool(True)
     BaseElectronsSelection.vbtf2011.applyConversionVetoFrom = cms.string('eidVBTF80')
+    
 
 # base values for electron selection ----------------------------------------------
 BaseLooseElectronsSelection = BaseElectronsSelection.clone(minPt = cms.double(10))

@@ -73,6 +73,8 @@ private:
   //regression corrector for electrons/photons
   EGEnergyCorrector phocorr_,ecorr_;
 
+  PFIsolationEstimator eIsolator;
+
   float curAvgInstLumi_, curIntegLumi_;
   int iErr_;
 };
@@ -109,6 +111,10 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     controlHistos_.addHistogram("integlumi", ";Integrated luminosity ; Events",100,0,1e5);
     controlHistos_.addHistogram("instlumi", ";Max average inst. luminosity; Events",100,0,1e5);
     controlHistos_.addHistogram("pileuptrue", ";True pileup; Events",100,-0.5,99.5);
+
+    //configure PF isolation cone size=0.4 
+    eIsolator.initializeElectronIsolation(kTRUE);
+    eIsolator.setConeSize(0.4); 
   }
   catch(std::exception &e){
     cout << e.what() << endl;
@@ -380,8 +386,10 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     EcalClusterLazyTools lazyTool(event,iSetup,objConfig_["Photons"].getParameter<edm::InputTag>("ebrechits"),objConfig_["Photons"].getParameter<edm::InputTag>("eerechits"));
     edm::Handle<reco::ConversionCollection> hConversions;
     try{ event.getByLabel(objConfig_["Photons"].getParameter<edm::InputTag>("conversions"), hConversions); }  catch(std::exception &e){ cout << e.what() << endl; }
+    edm::Handle<reco::PFCandidateCollection> hPFCands;
+    event.getByLabel("particleFlow",hPFCands);
     std::vector<ObjectIdSummary> eleSummary;
-    std::vector<CandidatePtr> selElectrons   = getGoodElectrons(hEle, hMu, hVtx_, *beamSpot, hConversions, &ecorr_, lazyTool, *rho, objConfig_["Electrons"], iSetup, eleSummary);
+    std::vector<CandidatePtr> selElectrons   = getGoodElectrons(hEle, hMu, hVtx_, *beamSpot, hConversions, &ecorr_, lazyTool, &eIsolator, hPFCands, *rho, objConfig_["Electrons"], iSetup, eleSummary);
 
     //build the dilepton candidate
     ev.cat = UNKNOWN;
@@ -476,7 +484,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::vector<ObjectIdSummary> looseMuonSummary;
     std::vector<CandidatePtr>    looseMuons = getGoodMuons(hMu, primVertex, *rho, objConfig_["LooseMuons"], iSetup, looseMuonSummary);
     std::vector<ObjectIdSummary> looseEleSummary;
-    std::vector<CandidatePtr>    looseElectrons = getGoodElectrons(hEle, hMu, hVtx_, *beamSpot, hConversions, &ecorr_,  lazyTool, *rho, objConfig_["LooseElectrons"], iSetup, looseEleSummary);
+    std::vector<CandidatePtr>    looseElectrons = getGoodElectrons(hEle, hMu, hVtx_, *beamSpot, hConversions, &ecorr_,  lazyTool, &eIsolator, hPFCands, *rho, objConfig_["LooseElectrons"], iSetup, looseEleSummary);
     std::vector<ObjectIdSummary> selLooseLeptonsSummary = selLeptonsSummary;
     selLooseLeptonsSummary.insert( selLooseLeptonsSummary.end(), looseMuonSummary.begin(), looseMuonSummary.end() );
     selLooseLeptonsSummary.insert( selLooseLeptonsSummary.end(), looseEleSummary.begin(),  looseEleSummary.end() );

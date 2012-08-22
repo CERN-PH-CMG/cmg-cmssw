@@ -204,7 +204,9 @@ int main(int argc, char *argv[])
 	      LikelihoodIntervalPlot plot(interval);
 	      //plot.SetRange(0,3.5);
 	      //plot.SetNPoints(100);	      
-	      plot.SetRange(0,2);
+	      float maxX(2);
+	      if(fr.rmax>3) maxX=6;
+	      plot.SetRange(0,maxX);
 	      plot.SetNPoints(200);
 	      plot.Draw(""); 
 	      TIter nextpobj(c->GetListOfPrimitives());
@@ -352,12 +354,14 @@ void showPLR(std::vector<std::pair<TString,TGraph *> > &plotList, TString fout,T
       gr->Draw(ipl==0?"al":"l");
       leg->AddEntry(gr,tag,"l");
       if(ipl>0) continue;
-      gr->GetXaxis()->SetRangeUser(0,3);
+      float maxX=3;
+      if(rmax>3) maxX=6;
+      gr->GetXaxis()->SetRangeUser(0,maxX);
       gr->GetXaxis()->SetTitle("#sigma/#sigma_{th.}");
       gr->GetYaxis()->SetRangeUser(0,5);
       gr->GetYaxis()->SetTitle("- log #lambda");
       
-      TLine *l=new TLine(0,0.5,3,0.5); l->SetLineColor(kGreen); l->Draw();
+      TLine *l=new TLine(0,0.5,maxX,0.5); l->SetLineColor(kGreen); l->Draw();
       l=new TLine(rmin,0.,rmin,0.5); l->SetLineColor(kGreen); l->Draw();
       l=new TLine(rmax,0.,rmax,0.5); l->SetLineColor(kGreen); l->Draw();
     }

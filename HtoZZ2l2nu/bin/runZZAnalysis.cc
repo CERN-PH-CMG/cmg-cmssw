@@ -326,14 +326,14 @@ int main(int argc, char* argv[])
    std::vector<double> optim_Cuts2_dijet_mass;
    for(double jet1_pt=30;jet1_pt<100;jet1_pt+=10)
      {
-       for(double jet2_pt=30;jet2_pt<=jet1_pt;jet2_pt+=10)
+       for(double hpt=10;hpt<=50;hpt+=5)
 	 {
 	   for(double eta_gap=3.5;eta_gap<=5.0;eta_gap+=0.5)
 	     {
 	       for(double dijet_mass=400; dijet_mass<=1000; dijet_mass+=50)
                  {
                    optim_Cuts2_jet1_pt.push_back(jet1_pt);
-                   optim_Cuts2_jet2_pt.push_back(jet2_pt);
+                   optim_Cuts2_jet2_pt.push_back(hpt);
                    optim_Cuts2_eta_gap.push_back(eta_gap);
                    optim_Cuts2_dijet_mass.push_back(dijet_mass);
                  }
@@ -1073,8 +1073,10 @@ int main(int argc, char* argv[])
 	   }
 	   
 	   for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
+	     if(!hasObjectId(varJets[0].pid,JETID_CUTBASED_LOOSE) || !hasObjectId(varJets[1].pid,JETID_CUTBASED_LOOSE)) continue;
 	     float minJet1Pt=optim_Cuts2_jet1_pt[index];
-	     float minJet2Pt=optim_Cuts2_jet2_pt[index];
+	     float minJet2Pt=optim_Cuts2_jet1_pt[index];
+	     float minHardPt    = optim_Cuts2_jet2_pt[index];
 	     float minEtaGap=optim_Cuts2_eta_gap[index];
 	     float minDijetMass=optim_Cuts2_dijet_mass[index];
 	     bool passLocalZmass(fabs(zll.mass()-91)<15);
@@ -1083,15 +1085,14 @@ int main(int argc, char* argv[])
 	     bool passLocalJet1Pt(varJets[0].pt()>minJet1Pt);
 	     bool passLocalJet2Pt(varJets[1].pt()>minJet2Pt);
 	     bool passLocalEtaGap(fabs(varJets[0].eta()-varJets[1].eta())>minEtaGap);
-	     bool passLocalDijetMass((varJets[0]+varJets[1]).M()>minDijetMass);
-	     //bool passLocalPreselection(pass3dLeptonVeto && passLocalBveto && passLocalZmass && passLocalZpt && passLocalRedMet && passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass);		    
-	     //		    if(passLocalPreselection){
-	     //	mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
-	     // }
-	     if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt && ncjv==0 && pass3dLeptonVeto && passLocalBveto){
-	       mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,(varJets[0]+varJets[1]).M(),iweight);
-	       //if(index==1 && ivar==0)
-	       //cout << tags_full.size() << " " << varJets[0].pt() << " " << varJets[1].pt() << " " << fabs(varJets[0].eta()-varJets[1].eta()) << " " << minEtaGap << " " << (varJets[0]+varJets[1]).M() << " " << ncjv << " " << iweight << endl;
+	     LorentzVector vbfSyst=varJets[0]+varJets[1];
+	     bool passLocalDijetMass(vbfSyst.M()>minDijetMass);
+	     LorentzVector hardSyst=vbfSyst+zll; //+zvvs[0]                                                                                                                                                
+	     float hardpt=hardSyst.pt();
+	     bool passHardPt(hardpt<minHardPt);
+
+	     if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt && ncjv==0 && pass3dLeptonVeto && passLocalBveto && passHardPt){
+	       mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],tags_full,index,vbfSyst.M(),iweight);
 	     }
 	   }
 	 }

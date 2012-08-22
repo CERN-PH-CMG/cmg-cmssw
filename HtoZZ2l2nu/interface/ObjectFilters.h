@@ -23,6 +23,8 @@
 #include "RecoEgamma/EgammaTools/interface/EGEnergyCorrector.h"
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 
+#include "EGamma/EGammaAnalysisTools/interface/PFIsolationEstimator.h"
+
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 
@@ -124,6 +126,8 @@ std::vector<reco::CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Can
 						 edm::Handle<reco::ConversionCollection> &hConversions,
 						 EGEnergyCorrector *ecorr,
 						 EcalClusterLazyTools &lazyTool,
+						 PFIsolationEstimator *eIsolator,
+						 edm::Handle<reco::PFCandidateCollection> &hPFcands,
 						 const double& rho, 
 						 const edm::ParameterSet &iConfig,
 						 const edm::EventSetup & iSetup,

@@ -77,12 +77,8 @@ if(phase<0 or len(CMSSW_BASE)==0):
    sys.exit(1)
 
 #build the arguments for runLands
+#LandSArg='--blindWithSignal'
 LandSArg=''
-#LandSArg=' --indexvbf 78 '
-#LandSArg=' --indexvbf 9 '
-#LandSArg=' --bins eq0jets'
-#LandSArg=' --bins eq0jets'
-#LandSArg+=' --systpostfix _7TeV'
 LandSArg+=' --systpostfix _%sTeV'%sqrts
 if(len(dyTemplates)>0) : LandSArg+=' --subDY '+dyTemplates
 DataCardsDir='cards%s',sqrts
