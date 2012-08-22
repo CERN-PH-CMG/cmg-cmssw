@@ -3,7 +3,8 @@ import copy
 
 #FIXME add run numbers
 
-json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-196509_8TeV_PromptReco_Collisions12_JSON.txt'
+#json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-196509_8TeV_PromptReco_Collisions12_JSON.txt'
+json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-200601_8TeV_PromptReco_Collisions12_JSON_v2.txt'
 
 data_Run2012A = cfg.DataComponent(
     name = 'data_Run2012A',
@@ -53,6 +54,22 @@ data_Run2012B_start_196509 = cfg.DataComponent(
     json = json
     )
 
+data_Run2012B_PromptReco_v1 = cfg.DataComponent(
+    name = 'data_Run2012B',
+    files = [],
+    intLumi = 4420., #pixellumicalc
+    triggers = [],
+    json = json
+    )
+
+data_Run2012C_PromptReco_v1 = cfg.DataComponent(
+    name = 'data_Run2012C_PromptReco_v1',
+    files = [],
+    intLumi = 495.003, #lumicalc2
+    triggers = [],
+    json = json
+    )
+
 
 
 data_list_Run2012A = [ data_Run2012A ]
@@ -61,7 +78,10 @@ data_list_Run2012A = [ data_Run2012A ]
 #                       data_Run2012B_195017_195947,
 #                       data_Run2012B_195948_196509 ]
 
-data_list_Run2012B = [ data_Run2012B_start_196509 ]
+#data_list_Run2012B = [ data_Run2012B_start_196509 ]
+data_list_Run2012B = [ data_Run2012B_PromptReco_v1 ]
+data_list_Run2012C = [ data_Run2012C_PromptReco_v1 ]
 
 data_list_2012 = copy.copy(data_list_Run2012A)
 data_list_2012.extend(data_list_Run2012B)
+data_list_2012.extend(data_list_Run2012C)
