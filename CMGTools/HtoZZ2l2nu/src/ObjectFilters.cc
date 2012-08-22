@@ -141,12 +141,13 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
     vector<reco::CandidatePtr> selMuons;
     selMuonIds.clear();
 
-    bool sourceIsPF = iConfig.getParameter<bool>("sourceIsPF");
-    double minPt = iConfig.getParameter<double>("minPt");
-    double maxEta = iConfig.getParameter<double>("maxEta");
-    string id = iConfig.getParameter<string>("id");
-    double maxRelIso = iConfig.getParameter<double>("maxRelIso");
-    bool usePFIso = iConfig.getParameter<bool>("usePFIso");
+    bool sourceIsPF            = iConfig.getParameter<bool>("sourceIsPF");
+    double minPt               = iConfig.getParameter<double>("minPt");
+    double maxEta              = iConfig.getParameter<double>("maxEta");
+    string id                  = iConfig.getParameter<string>("id");
+    double maxRelIso           = iConfig.getParameter<double>("maxRelIso");
+    bool usePFIso              = iConfig.getParameter<bool>("usePFIso");
+    bool reComputePFIso        = iConfig.getParameter<bool>("reComputePFIso");
     bool doDeltaBetaCorrection = iConfig.getParameter<bool>("doDeltaBetaCorrection");
     edm::ParameterSet vbtf2011 = iConfig.getParameter<edm::ParameterSet>("vbtf2011"); 
     
@@ -166,6 +167,21 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 	  if(genLep) lepId.genP4 = LorentzVector(genLep->px(),genLep->py(),genLep->pz(),genLep->energy());
 	  lepId.charge=muon->charge();
 	  std::vector<double> isoVals = getLeptonIso( muonPtr, muon->pt(), rho );
+	  if(reComputePFIso)
+	    {
+	      const reco::MuonPFIsolation &muIso=muon->pfIsolationR04();
+	      cout << "mu" << endl;
+	      cout << isoVals[C_ISO] << " " << isoVals[CPU_ISO] << " " << isoVals[G_ISO] << " " << isoVals[N_ISO] << endl;
+	      isoVals[C_ISO]   = muIso.sumChargedHadronPt;
+	      isoVals[CPU_ISO] = muIso.sumPUPt;
+	      isoVals[G_ISO]   = muIso.sumPhotonEt;
+	      isoVals[N_ISO]   = muIso.sumNeutralHadronEt;
+	      cout << isoVals[C_ISO] << " " << isoVals[CPU_ISO] << " " << isoVals[G_ISO] << " " << isoVals[N_ISO] << endl;
+	      cout << "---"<< endl;
+	      isoVals[PFREL_ISO]        = (isoVals[N_ISO]+isoVals[G_ISO]+isoVals[C_ISO])/max(float(muon->pt()),float(20.0));
+	      isoVals[PFRELBETCORR_ISO] = (max(isoVals[N_ISO]+isoVals[G_ISO]-0.5*isoVals[CPU_ISO],0.)+isoVals[C_ISO])/max(float(muon->pt()),float(20.0));
+	    }
+
 	  for(size_t iiso=0; iiso<isoVals.size(); iiso++) lepId.isoVals[iiso] = isoVals[iiso]; 
 	  bool isTracker = muon->isTrackerMuon();
 	  if(isTracker)
@@ -295,6 +311,8 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 				      edm::Handle<reco::ConversionCollection> &hConversions,
 				      EGEnergyCorrector *ecorr,
 				      EcalClusterLazyTools &lazyTool,
+				      PFIsolationEstimator *eIsolator,
+				      edm::Handle<reco::PFCandidateCollection> &hPFCands,
 				      const double& rho, 
 				      const edm::ParameterSet &iConfig,
 				      const edm::EventSetup & iSetup,
@@ -321,6 +339,7 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
     string vbtfConversionVetoSource   = vbtfCfg.getParameter<string>("applyConversionVetoFrom");
     double maxRelIso                  = iConfig.getParameter<double>("maxRelIso");
     bool usePFIso                     = iConfig.getParameter<bool>("usePFIso");
+    bool reComputePFIso                 = iConfig.getParameter<bool>("reComputePFIso");
     bool doDeltaBetaCorrection        = iConfig.getParameter<bool>("doDeltaBetaCorrection");
     double minDeltaRtoMuons           = iConfig.getParameter<double>("minDeltaRtoMuons");
 
@@ -382,6 +401,20 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	lepId.ensferr           = enSF.second;
 	std::vector<double> isoVals=getLeptonIso( elePtr, lepId.p4.pt(), rho);
 	for(size_t iiso=0; iiso<isoVals.size(); iiso++)	lepId.isoVals[iiso] = isoVals[iiso];
+	if(reComputePFIso && eIsolator && hPFCands.isValid() && hVtx.isValid())
+	  {
+	    eIsolator->fGetIsolation(dynamic_cast<const reco::GsfElectron *>(ele),&(*hPFCands),primVtx,hVtx);
+	    cout << isoVals[C_ISO] << " " << isoVals[CPU_ISO] << " " << isoVals[G_ISO] << " " << isoVals[N_ISO] << endl;
+	    isoVals[C_ISO]   = eIsolator->getIsolationCharged();
+	    isoVals[CPU_ISO] = eIsolator->getIsolationChargedAll()-isoVals[C_ISO];
+	    isoVals[G_ISO]   = eIsolator->getIsolationPhoton();
+	    isoVals[N_ISO]   = eIsolator->getIsolationNeutral();
+	    cout << isoVals[C_ISO] << " " << isoVals[CPU_ISO] << " " << isoVals[G_ISO] << " " << isoVals[N_ISO] << endl;
+	    cout << "---"<< endl;
+	    isoVals[PFREL_ISO]        = (isoVals[N_ISO]+isoVals[G_ISO]+isoVals[C_ISO])/max(float(ele->pt()),float(20.0));
+	    isoVals[PFRELBETCORR_ISO] = (max(isoVals[N_ISO]+isoVals[G_ISO]-0.5*isoVals[CPU_ISO],0.)+isoVals[C_ISO])/max(float(ele->pt()),float(20.0));
+	  }
+	
 	lepId.hoe               = ele->hadronicOverEm();
 	lepId.hoebc             = ele->hcalOverEcalBc();
 	lepId.dPhiTrack         = ele->deltaPhiSuperClusterTrackAtVtx();

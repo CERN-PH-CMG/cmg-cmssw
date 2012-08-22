@@ -560,7 +560,7 @@ void ClusteredPFMetProducer::produceMVAMet(edm::Event& iEvent, const edm::EventS
   try{
     if(hEle.isValid() && hEle->size()>0)
       {
-	std::vector<reco::CandidatePtr> selElectrons   = getGoodElectrons(hEle, hMu, vtxH_, *beamSpot, hConversions, 0, lazyTool, lRho, dilObjConfig_["Electrons"], iSetup, lIds);
+	std::vector<reco::CandidatePtr> selElectrons   = getGoodElectrons(hEle, hMu, vtxH_, *beamSpot, hConversions, 0, lazyTool,0,pfCandsH_,lRho, dilObjConfig_["Electrons"], iSetup, lIds);
 	for(size_t iele=0; iele<selElectrons.size(); iele++)
 	  {
 	    LorentzVector ele4(selElectrons[iele]->px(),selElectrons[iele]->py(),selElectrons[iele]->pz(),selElectrons[iele]->energy());

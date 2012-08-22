@@ -19,8 +19,10 @@ process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 gt=''
 if ( not runOnMC ):
-    gt='GR_P_V41_AN1::All'
-    #if(process.source.fileNames[0].find('2012C')<0) : gt='GR_P_V39_AN1::All'
+    try:
+        if(is52xData is True) : gt='GR_P_V39_AN1::All'
+    except:
+        gt='GR_P_V41_AN1::All'
 else :
     gt = 'START53_V10::All'
 print 'Using the following global tag %s'%gt

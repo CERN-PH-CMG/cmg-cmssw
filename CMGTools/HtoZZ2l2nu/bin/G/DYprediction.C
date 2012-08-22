@@ -71,12 +71,12 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   std::vector<std::string> histos,dilSignal,dilcats,gcats;
   if(model==VBFZ) 
     {
-      //      gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
-      //      llFile="../../plotter_vbfz_2012.root";
+      //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/nvtx/plotter.root";
+      //llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2012/plotter_vbfz_2012.root";
 
-      gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-      llFile="../../plotter_vbfz_2011.root";
-      
+      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2011/nvtx/plotter.root";
+      llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2011/plotter_vbfz_2011.root";
+     
       histos.push_back("pfpuloosevbfcandjetdeta");
       histos.push_back("pfpuloosevbfcandjet1pt");
       histos.push_back("pfpuloosevbfcandjet2pt");
@@ -91,7 +91,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       histos.push_back("pfpuloosevbfhardpt50");
       histos.push_back("pfpuloosevbfdphijj50");
       histos.push_back("dijet_mass_shapes");
-      //histos.push_back("vbfz_mjj_shapes");
+      histos.push_back("vbfz_mjj_shapes");
 
       //dilSignal.push_back("VBF Z");
       //dilSignal.push_back("VBF Z (interference)");
