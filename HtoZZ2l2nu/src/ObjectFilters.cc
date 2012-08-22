@@ -404,13 +404,10 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	if(reComputePFIso && eIsolator && hPFCands.isValid() && hVtx.isValid())
 	  {
 	    eIsolator->fGetIsolation(dynamic_cast<const reco::GsfElectron *>(ele),&(*hPFCands),primVtx,hVtx);
-	    cout << isoVals[C_ISO] << " " << isoVals[CPU_ISO] << " " << isoVals[G_ISO] << " " << isoVals[N_ISO] << endl;
 	    isoVals[C_ISO]   = eIsolator->getIsolationCharged();
-	    isoVals[CPU_ISO] = eIsolator->getIsolationChargedAll()-isoVals[C_ISO];
+	    isoVals[CPU_ISO] = 0; //this one is not computed
 	    isoVals[G_ISO]   = eIsolator->getIsolationPhoton();
 	    isoVals[N_ISO]   = eIsolator->getIsolationNeutral();
-	    cout << isoVals[C_ISO] << " " << isoVals[CPU_ISO] << " " << isoVals[G_ISO] << " " << isoVals[N_ISO] << endl;
-	    cout << "---"<< endl;
 	    isoVals[PFREL_ISO]        = (isoVals[N_ISO]+isoVals[G_ISO]+isoVals[C_ISO])/max(float(ele->pt()),float(20.0));
 	    isoVals[PFRELBETCORR_ISO] = (max(isoVals[N_ISO]+isoVals[G_ISO]-0.5*isoVals[CPU_ISO],0.)+isoVals[C_ISO])/max(float(ele->pt()),float(20.0));
 	  }
