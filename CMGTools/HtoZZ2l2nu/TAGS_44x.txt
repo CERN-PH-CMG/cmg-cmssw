@@ -9,6 +9,14 @@ cvs co -r V00-07-01      -d SHarper/HEEPAnalyzer UserCode/SHarper/HEEPAnalyzer
 cvs co -r t3-04-13       UserCode/mschen/LandS              
 cvs co -r V01-13-02 HiggsAnalysis/CombinedLimit
 
+cvs co -r V00-01 -d pharris/MVAMet UserCode/pharris/MVAMet
+cd pharris/MVAMet
+rm src/GBRTree.cxx
+rm src/GBRForest.cxx
+rm src/PHMetAnalysisLinkDef.h
+cd -
+
+
 cmsenv
 #compile landS
 cd UserCode/mschen/LandS
