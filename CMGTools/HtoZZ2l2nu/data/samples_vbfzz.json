@@ -197,8 +197,8 @@
               }
           ]
 	},
-   {
-        "tag":"VBF ZZ",
+     {
+        "tag":"#alpha^{6}_{EW} ZZ (MG)",
 	"isdata":false,
 	"spimpose":true,
 	"color":"1",
@@ -209,33 +209,38 @@
 	"data":[
                 {
                 "dtag":"MC8TeV_VBFZZ_Madgraph",
-		"aoddir":["/store/cmst3/user/psilva/Madgraph/QuarticCoupling/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/Madgraph/QuarticCoupling/PAT"],
-		"xsec":0.05979,
-		"br":[0.0273387105]
+		"aoddir":["/store/cmst3/user/psilva/Madgraph/VBFZZ_8TeV/AODSIM"],
+		"patdir":["/store/cmst3/user/psilva/Madgraph/VBFZZ_8TeV/PAT"],
+		"xsec":0.01394,
+		"br":[2,1.035]
 		}
          ]
         },
-	{
-	"tag":"EWK Z",
+     {
+        "tag":"#alpha^{6}_{EW} ZZ (VBFNLO)",
 	"isdata":false,
 	"spimpose":true,
-	"normto":1,
-	"color":"1",
+	"color":"2",
 	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
-	"normto":1,
 	"data":[
-		{
-		"dtag":"MC8TeV_VBFZ_Madgraph",
-		"aoddir":["/store/cmst3/user/psilva/Madgraph/VBFZ/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/Madgraph/VBFZ/PAT"],         
-       		"xsec":7.743,
-		"br":[2,0.033658]
+                {
+                "dtag":"MC8TeV_VBFZZeevv_VBFNLO",
+		"aoddir":["/store/cmst3/user/psilva/VBFNLO/eevvjj/8TeV/AODSIM"],
+		"patdir":["/store/cmst3/user/psilva/VBFNLO/eevvjj/8TeV/PAT"],
+		"xsec":0.013945,
+		"br":[1.035]
+		},
+                {
+                "dtag":"MC8TeV_VBFZZmmvv_VBFNLO",
+		"aoddir":["/store/cmst3/user/psilva/VBFNLO/mmvvjj/8TeV/AODSIM"],
+		"patdir":["/store/cmst3/user/psilva/VBFNLO/mmvvjj/8TeV/PAT"],
+		"xsec":0.013945,
+		"br":[1.035]
 		}
-	 ]
-	}
+         ]
+        }
      ]
 }
