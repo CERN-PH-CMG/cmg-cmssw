@@ -1,6 +1,29 @@
 {
     "proc":[
         {
+        "tag":"#alpha^{4}_{EW}-ll (VBFNLO)",
+        "isdata":false,
+        "issignal":true,
+        "spimpose":false,
+        "color":"804",
+        "lcolor":1,
+        "marker":1,
+        "data":[
+                {
+                "dtag":"MC8TeV_eejj_VBFNLO",
+                "aoddir":["/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/AOD"],
+                "patdir":["/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/PAT"],
+                "xsec":0.7
+                },
+                {
+                "dtag":"MC8TeV_mmjj_VBFNLO",
+                "aoddir":["/store/cmst3/user/psilva/VBFNLO/mmjj/8TeV/AOD"],
+                "patdir":["/store/cmst3/user/psilva/VBFNLO/mmjj/8TeV/PAT"],
+                "xsec":0.7
+                }
+         ]
+        },
+        {
         "tag":"#alpha^{4}_{EW}-ll",
         "isdata":false,
         "issignal":true,
