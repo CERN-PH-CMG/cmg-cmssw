@@ -1,16 +1,11 @@
+<use   name="root"/>
+<use   name="rootrflx"/>
+<use   name="rootcore"/>
+<use   name="roottmva"/>
+<use   name="FWCore/ParameterSet"/>
 <use   name="DataFormats/ParticleFlowCandidate"/>
 <use   name="DataFormats/PatCandidates"/>
 <use   name="DataFormats/JetReco"/>
-<use   name="root"/>
-<use   name="roottmva"/>
-<use   name="rootcore"/>
-<use   name="rootinteractive"/>
-<use   name="rootrflx"/>
-<use   name="roothistmatrix"/>
-<use   name="FWCore/Framework"/>
-<use   name="FWCore/ParameterSet"/>
-<use   name="FWCore/Sources"/>
-<use   name="boost"/>
 <export>
   <lib   name="1"/>
 </export>
