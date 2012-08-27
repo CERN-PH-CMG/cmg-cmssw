@@ -6,6 +6,7 @@
 <use   name="DataFormats/ParticleFlowCandidate"/>
 <use   name="DataFormats/PatCandidates"/>
 <use   name="DataFormats/JetReco"/>
+<use   name="fastjet"/>
 <export>
   <lib   name="1"/>
 </export>
