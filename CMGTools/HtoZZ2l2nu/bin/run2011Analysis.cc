@@ -105,7 +105,8 @@ int main(int argc, char* argv[])
 		      "_puup","_pudown",
 		      "_renup","_rendown",
 		      "_factup","_factdown",
-		      "_btagup","_btagdown"};
+		      "_btagup","_btagdown",
+		      "_lshapeup","_lshapedown"};
   size_t nvarsToInclude(1);
   if(runSystematics)
     {
@@ -117,30 +118,56 @@ int main(int argc, char* argv[])
   double HiggsMass=0; string VBFString = ""; string GGString("");
   bool isMC_GG  = isMC && ( string(url.Data()).find("GG" )  != string::npos);
   bool isMC_VBF = isMC && ( string(url.Data()).find("VBF")  != string::npos);
-  std::vector<TGraph *> hWeightsGrVec;
-  if(isMC_GG && use2011Id){
+  int cmEnergy(8);
+  if(url.Contains("7TeV")) cmEnergy=7;
+  std::vector<TGraph *> hWeightsGrVec,hLineShapeGrVec;
+  if(isMC_GG){
+   
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     GGString = string(url.Data()).substr(GGStringpos);
-    TString hqtWeightsFileURL = runProcess.getParameter<std::string>("hqtWeightsFile"); gSystem->ExpandPathName(hqtWeightsFileURL);
-    TFile *fin=TFile::Open(hqtWeightsFileURL);
-    if(fin){
-      cout << "HpT weights (and uncertainties) will be applied from: " << hqtWeightsFileURL << endl;
-      for(int ivar=0; ivar<5; ivar++){
-	double ren=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_renDown)  ren/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_renUp)  ren *= 2;
-	double fac=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_factDown) fac/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_factUp) fac *= 2;
-	char buf[100]; sprintf(buf,"kfactors_mh%3.0f_ren%3.0f_fac%3.0f",HiggsMass,ren,fac);
-	TGraph *gr= (TGraph *) fin->Get(buf);
-	if(gr) hWeightsGrVec.push_back((TGraph *)gr->Clone());
+    TFile *fin;
+  
+    //H pT
+    if(cmEnergy==7){
+      TString hqtWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[0]; gSystem->ExpandPathName(hqtWeightsFileURL);
+      fin=TFile::Open(hqtWeightsFileURL);
+      if(fin){
+	cout << "HpT weights (and uncertainties) will be applied from: " << hqtWeightsFileURL << endl;
+	for(int ivar=0; ivar<5; ivar++){
+	  double ren=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_renDown)  ren/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_renUp)  ren *= 2;
+	  double fac=HiggsMass; if(ivar==ZZ2l2nuSummary_t::hKfactor_factDown) fac/=2; if(ivar==ZZ2l2nuSummary_t::hKfactor_factUp) fac *= 2;
+	  char buf[100]; sprintf(buf,"kfactors_mh%3.0f_ren%3.0f_fac%3.0f",HiggsMass,ren,fac);
+	  TGraph *gr= (TGraph *) fin->Get(buf);
+	  if(gr) hWeightsGrVec.push_back((TGraph *)gr->Clone());
+	}
+	fin->Close();
+	delete fin;
       }
-      fin->Close();
-      delete fin;
     }
+      
+    //LINE SHAPE
+    TString lineShapeWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[1]; gSystem->ExpandPathName(lineShapeWeightsFileURL);
+    fin=TFile::Open(lineShapeWeightsFileURL);
+    if(fin){
+      char buf[100]; sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
+      cout << "Line shape weights (and uncertainties) will be applied from " << buf << " @ " << lineShapeWeightsFileURL << endl;
+      TString wgts[]={"rwgtpint","rwgtpint_up","rwgtpint_down"};
+      for(size_t i=0; i<3; i++)
+	{
+	  TGraph *gr= (TGraph *) fin->Get(buf+wgts[i]);
+	  if(gr) hLineShapeGrVec.push_back((TGraph *)gr->Clone());
+	}
+    }
+    fin->Close();
+    delete fin;
+    
   }else if(isMC_VBF){
     size_t VBFStringpos =  string(url.Data()).find("VBF");
     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     VBFString = string(url.Data()).substr(VBFStringpos);
   }
+
 
 
 
@@ -368,6 +395,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mt_raw"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mt75", ";M_{T};Events", 100,0,1000) );
   
    std::vector<double> optim_Cuts1_met; 
@@ -580,9 +608,11 @@ int main(int argc, char* argv[])
       
       //pileup weight
       float weight = 1.0;
+      float noLShapeWeight=1.0;
       float signalWeight=1.0;
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
+      float lShapeWeights[3]={1.0,1.0,1.0};
       if(isMC){
         weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_plus  = PuShifters[PUUP]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
@@ -592,6 +622,11 @@ int main(int argc, char* argv[])
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
 	    ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
 	  weight *= ev.hptWeights[0];
+	  
+	  for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
+	    lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
+	  noLShapeWeight=weight;
+	  weight *= lShapeWeights[0];
 	}
       }
       Hcutflow->Fill(1,1);
@@ -1173,6 +1208,7 @@ int main(int argc, char* argv[])
 			  mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
 			  mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);
 			  mon.fillHisto("mt",tags_full,aMT,weight);
+			  mon.fillHisto("mt_raw",tags_full,aMT,noLShapeWeight);
                           if(zvvs[0].pt()>75) mon.fillHisto("mt75",tags_full,aMT,weight);
 
                           mon.fillHisto("RunDep_Yields",tags_full,ev.run,weight);
@@ -1229,6 +1265,7 @@ int main(int argc, char* argv[])
         if(ivar==9)                         iweight *=TotalWeight_plus;        //pu up
         if(ivar==10)                        iweight *=TotalWeight_minus;       //pu down
         if(ivar<=14 && ivar>=11 && isMC_GG) iweight *=ev.hptWeights[ivar-10]/ev.hptWeights[0];   //ren/fact     scales   
+	if((ivar==17 || ivar==18) && isMC_GG) iweight *=lShapeWeights[ivar-16]/lShapeWeights[0]; //lineshape weights
 
 	//recompute MET/MT if JES/JER was varied
 	LorentzVector zvv    = zvvs[ivar>8 ? 0 : ivar];
