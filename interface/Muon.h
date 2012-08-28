@@ -134,6 +134,10 @@ class MuonFactory;
     reco::isodeposit::AbsVetos neutralHadronVetos() const;
     /// photon vetoes
     reco::isodeposit::AbsVetos photonVetos() const;
+
+
+    AlgebraicSymMatrix66 covarianceMatrix() { return covarianceMatrix_; }
+
 	
     friend class cmg::MuonFactory;
 	
@@ -152,6 +156,9 @@ class MuonFactory;
     //used for all the isMuon type flags
     unsigned int type_;
 
+    //Adding Cov Matrix for momentum resolution
+    //Different than the track 5D curvilinear one
+    AlgebraicSymMatrix66 covarianceMatrix_;
    
   };
 
