@@ -16,6 +16,10 @@
 #include <memory>
 #include <string>
 
+#include "FWCore/Framework/interface/ESHandle.h"
+#include "MagneticField/Engine/interface/MagneticField.h"
+#include "MagneticField/Records/interface/IdealMagneticFieldRecord.h"
+
 namespace cmg{
 
 class MuonFactory : public Factory<cmg::Muon>, public SettingTool<pat::MuonPtr,cmg::Muon>{

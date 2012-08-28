@@ -1,5 +1,11 @@
 #include "CMGTools/Common/interface/MuonFactory.h"
 
+
+#include "TrackingTools/AnalyticalJacobians/interface/JacobianCurvilinearToCartesian.h"
+#include "TrackingTools/TrajectoryParametrization/interface/GlobalTrajectoryParameters.h"
+#include "TrackingTools/TrajectoryParametrization/interface/CartesianTrajectoryError.h"
+
+
 cmg::MuonFactory::event_ptr cmg::MuonFactory::create(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 	
   edm::Handle<pat::MuonCollection> muonCands;
@@ -43,6 +49,25 @@ void cmg::MuonFactory::set(const pat::MuonPtr& input, cmg::Muon* const output, c
 
     output->dB3D_ = input->dB( pat::Muon::PV3D );
     output->edB3D_ = input->edB( pat::Muon::PV3D );
+
+
+    //get the magnetic field and calculate the covariance
+    //matrix in cartesian coordinates
+    if( input->muonBestTrack().isNonnull()) {
+      edm::ESHandle<MagneticField> magfield;
+      iSetup.get<IdealMagneticFieldRecord>().get(magfield); 
+      
+      GlobalTrajectoryParameters gp(GlobalPoint(input->vx(), input->vy(),  input->vz()),
+				    GlobalVector(input->muonBestTrack()->px(),input->muonBestTrack()->py(),input->muonBestTrack()->pz()),
+				    input->muonBestTrack()->charge(),
+				    magfield.product());
+      JacobianCurvilinearToCartesian curv2cart(gp);
+      CartesianTrajectoryError cartErr= ROOT::Math::Similarity(curv2cart.jacobian(), input->muonBestTrack()->covariance());
+      AlgebraicSymMatrix66  m = cartErr.matrix();
+      output->covarianceMatrix_ = m;
+    }
+
+
 
     //we need the tracker track for this
     reco::TrackRef track = input->track();
