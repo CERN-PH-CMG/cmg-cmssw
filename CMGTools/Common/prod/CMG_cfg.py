@@ -54,7 +54,7 @@ process.load('CMGTools.Common.CMG.CMG_cff')
 if runOnMC is False:
     # removing MC stuff
     print 'removing MC stuff, as we are running on Data'
-    process.PATCMGSequence.remove(genSequence)
+    process.CMGSequence.remove(process.genSequence)
     
 print 'cloning the jet sequence to build PU chs jets'
 
@@ -101,3 +101,30 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) 
 print sep_line
 
 print 'starting CMSSW'
+
+
+########################################################
+## Conditions 
+########################################################
+
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X
+
+process.load("Configuration.StandardSequences.GeometryDB_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.MagneticField_38T_cff")
+
+GT = None
+if cmsswIs44X():
+    if runOnMC:
+        GT = 'START44_V13::All'
+    else:
+        GT = 'GR_R_44_V15::All'
+else:
+    if runOnMC:
+        GT = 'START52_V10::All'
+    else:
+        GT = 'GR_R_52_V8::All'
+process.GlobalTag.globaltag = GT
+
+print 'Global tag       : ', process.GlobalTag.globaltag
+
