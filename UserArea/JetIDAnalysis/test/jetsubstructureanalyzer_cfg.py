@@ -29,18 +29,17 @@ if(runOnMC) : process.GlobalTag.globaltag=cms.string(autoCond.get('startup',auto
 else        : process.GlobalTag.globaltag=cms.string(autoCond['com10'])
 use2012JecPreview(process)
 
-process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring(LISTOFFILES),
-                            skipEvents = cms.untracked.uint32(0)
-                            )
+#process.source = cms.Source("PoolSource",
+#                            fileNames = cms.untracked.vstring(LISTOFFILES),
+#                            skipEvents = cms.untracked.uint32(0)
+#                            )
 
                             
-#process.source = cms.Source("PoolSource",
+process.source = cms.Source("PoolSource",
     # replace 'myfile.root' with the source file you want to use
-#    fileNames = cms.untracked.vstring('/store/cmst3/group/cmgtools/CMG/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PFAOD_999.root'),
-#),
-#                            skipEvents = cms.untracked.uint32(0)                        
-#)
+                            fileNames = cms.untracked.vstring('/store/cmst3/group/cmgtools/CMG/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PFAOD_999.root'),
+                            skipEvents = cms.untracked.uint32(0)                        
+)
 
 
 # muon fileter
@@ -50,11 +49,11 @@ process.MuonsFilter = process.countPatMuons.clone(
     minNumber = cms.uint32(0)
 )
 
-from CMG.JetIDAnalysis.jetanalyzer_cfi import *
+from CMG.JetIDAnalysis.jetsubstructureanalyzer_cfi import *
 
 #Uses reco objects only right now
 
-process.pfjetanalyzer = jetanalyzer.clone(
+process.pfjetanalyzer = jetsubstructureanalyzer.clone(
     JetTag      = cms.InputTag("ak5PFJets",""),
     GenJetTag   = cms.InputTag("ak5GenJets",""),
     dataFlag = cms.untracked.bool(False),
@@ -65,7 +64,7 @@ process.pfjetanalyzer = jetanalyzer.clone(
 )
 
 #chs jets are not working need to add sequence
-process.chspfjetanalyzer = jetanalyzer.clone(
+process.chspfjetanalyzer = jetsubstructureanalyzer.clone(
     JetTag      = cms.InputTag("selectedPatJetsPFlow",""),            
     GenJetTag   = cms.InputTag("selectedPatJetsPFlow","genJets"), 
     dataFlag = cms.untracked.bool(False),
@@ -81,7 +80,7 @@ process.chspfjetanalyzer = jetanalyzer.clone(
 )
 
 process.TFileService = cms.Service("TFileService",
-                                       fileName = cms.string("OUTPUTFILENAME"),
+                                       fileName = cms.string("testTree.root"),
                                        closeFileFast = cms.untracked.bool(True)
                                    )
 

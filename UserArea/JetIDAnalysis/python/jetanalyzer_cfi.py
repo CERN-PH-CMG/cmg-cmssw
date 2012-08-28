@@ -7,9 +7,9 @@ jetanalyzer = cms.EDAnalyzer('JetAnalyzer',
                              
                              ## Loic's PATtuples 
                              MCPileupTag = cms.InputTag("addPileupInfo",""),  
-                             JetTag      = cms.InputTag("selectedPatJetsPFlow",""),                        
+                             JetTag      = cms.InputTag("ak5PFJets",""),
                              GenJetTag   = cms.InputTag("ak5GenJets",""),
-                             MuonTag     = cms.InputTag("selectedPatMuonsPFlow",""),
+                             MuonTag     = cms.InputTag("muons",""),
                              PVTag       = cms.InputTag("offlinePrimaryVertices",""),
                              dataFlag    = cms.untracked.bool(False),
                              computeTMVA = cms.untracked.bool(True),

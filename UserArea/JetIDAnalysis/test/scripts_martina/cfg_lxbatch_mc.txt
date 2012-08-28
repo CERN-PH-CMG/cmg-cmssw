@@ -1,4 +1,4 @@
-DATASETPATH    = /store/cmst3/user/musella/PATtuples/19_04_2012/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START50_V15-v1_AODSIM
+DATASETPATH    = /store/cmst3/user/musella/PATtuples/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball_Summer12-PU_S7_START52_V5-v2/
 
 CFGTEMPLATE    = jetanalyzerTEMPLATE_mc_cfg.py
 
