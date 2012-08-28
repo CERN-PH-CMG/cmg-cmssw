@@ -40,6 +40,7 @@ ObjectIdSummary::ObjectIdSummary()
   tche=0;                        csv=0;               jp=0;       tchp=0;
   beta=0;                        betaStar=0;          dRMean=0;
   ptD=0;                         ptRMS=0;
+  customTaggers.clear();
 }
 
 //
@@ -72,6 +73,7 @@ ObjectIdSummary::ObjectIdSummary(ObjectIdSummary const&other)
   tchp=other.tchp;
   beta=other.beta;                                         betaStar=other.betaStar;                                      dRMean=other.dRMean;
   ptD=other.ptD;                                           ptRMS=other.ptRMS;
+  customTaggers=other.customTaggers;
 }
 
 
@@ -730,6 +732,7 @@ vector<CandidatePtr> getGoodJets(edm::Handle<edm::View<reco::Candidate> > &hJet,
 				 vector<CandidatePtr> &selPhysicsObjects, 
 				 edm::Handle<reco::VertexCollection> &hVtx,
 				 std::vector<PileupJetIdAlgo *> &puJetIdAlgo,
+				 std::vector<edm::Handle<reco::JetTagCollection> > &jetTagsH,
 				 const edm::ParameterSet &iConfig,
 				 std::vector<ObjectIdSummary> &selJetsId)
 {
@@ -771,6 +774,14 @@ vector<CandidatePtr> getGoodJets(edm::Handle<edm::View<reco::Candidate> > &hJet,
 	jetId.tchp=jet->bDiscriminator("trackCountingHighPurBJetTags");
 	jetId.csv=jet->bDiscriminator("combinedSecondaryVertexBJetTags");
 	jetId.jp=jet->bDiscriminator("jetProbabilityBJetTags");
+	for(size_t ijt=0; ijt<jetTagsH.size(); ijt++)
+	  {
+	    int idx=getJetTag(jet,jetTagsH[ijt]);
+	    float disc(-1);
+	    if(idx>=0) disc=(*(jetTagsH[ijt]))[idx].second;
+	    jetId.customTaggers.push_back(disc);
+	  }
+
 	jetId.neutHadFrac = jet->neutralHadronEnergyFraction();
         jetId.neutEmFrac  = jet->neutralEmEnergyFraction();
         jetId.chHadFrac   = jet->chargedHadronEnergyFraction();
@@ -821,6 +832,23 @@ vector<CandidatePtr> getGoodJets(edm::Handle<edm::View<reco::Candidate> > &hJet,
   }
   
   return selJets;
+}
+
+//
+int getJetTag(const pat::Jet *jet, edm::Handle<reco::JetTagCollection > jetTags)
+{
+  int result = -1;
+  if(jet==0) return result;
+
+  //match by DeltaR
+  for (size_t t = 0; t < jetTags->size(); t++) {
+    edm::RefToBase<reco::Jet> jet_p = (*jetTags)[t].first;
+    if (jet_p.isNull())  continue;
+    if( deltaR( jet_p->eta(), jet_p->phi(), jet->eta(), jet->phi()) > 0.3 ) continue;
+    result = (int ) t;
+    break;
+  }
+  return result;
 }
 
 

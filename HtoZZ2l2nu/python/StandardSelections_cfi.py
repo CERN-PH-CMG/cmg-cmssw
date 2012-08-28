@@ -63,7 +63,7 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlowNoPuS
                                                     ),
                                maxRelIso = cms.double(999999.),
                                usePFIso = cms.bool(True),
-                               reComputePFIso = cms.bool(True),
+                               reComputePFIso = cms.bool(False),
                                doDeltaBetaCorrection = cms.bool(False)
                                )
 
@@ -140,7 +140,7 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPF
                                    maxRelIso    = cms.double(999999.), #0.1),
                                    minDeltaRtoMuons = cms.double(0.1),
                                    usePFIso = cms.bool(True),
-                                   reComputePFIso = cms.bool(True),
+                                   reComputePFIso = cms.bool(False),
                                    doDeltaBetaCorrection = cms.bool(False)
                                    )
 if(selVersion==2011):
@@ -159,7 +159,10 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJetsPFlow"),
                              minPt = cms.double(10),
                              maxEta = cms.double(5.0),
                              minDeltaRtoLepton = cms.double(0.4),
-                             puJetIds = pileupJetIdProducer.algos
+                             puJetIds = pileupJetIdProducer.algos,
+                             jetTags = cms.VInputTag("mySimpleInclusiveSecondaryVertexHighEffBJetTags",
+                                                     "mySimpleInclusiveSecondaryVertexHighPurBJetTags",
+                                                     "combinedInclusiveSecondaryVertexPositiveBJetTags")
                              )
 AssocJetSelection = BaseJetSelection.clone(source = cms.InputTag("selectedPatJetsPFlowNoPuSub"),
                                            puJetIds = pileupJetIdProducerChs.algos

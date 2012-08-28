@@ -1,6 +1,45 @@
 {
     "proc":[
         {
+        "tag":"#alpha^{4}_{EW}-ll (VBFNLO)",
+        "isdata":false,
+        "issignal":true,
+        "spimpose":false,
+        "color":"804",
+        "lcolor":1,
+        "marker":1,
+        "data":[
+                {
+                "dtag":"MC7TeV_eejj_VBFNLO",
+                "aoddir":["/store/cmst3/user/psilva/VBFNLO/eejj/7TeV/AOD"],
+                "patdir":["/store/cmst3/user/psilva/VBFNLO/eejj/7TeV/PAT"],
+                "xsec":0.7
+                },
+                {
+                "dtag":"MC7TeV_mmjj_VBFNLO",
+                "aoddir":["/store/cmst3/user/psilva/VBFNLO/mmjj/7TeV/AOD"],
+                "patdir":["/store/cmst3/user/psilva/VBFNLO/mmjj/7TeV/PAT"],
+                "xsec":0.7
+                }
+         ]
+        },
+        {
+        "tag":"#alpha^{4}_{EW}-ll (F11)",
+        "isdata":false,
+        "issignal":true,
+        "spimpose":false,
+        "color":"809",
+        "lcolor":1,
+        "marker":1,
+        "data":[
+                {
+                "dtag":"MC7TeV_DYToLL_M50toInf_Mjj120",
+                "patdir":["/store/cmst3/user/psilva/Madgraph/DYToLL_Mll-50_Mjj-120_7TeV_madgraph-pythia6"],
+                "xsec":0.7
+                }
+         ]
+        },
+        {
         "tag":"#alpha^{4}_{EW}-ll",
         "isdata":false,
         "issignal":true,
@@ -11,16 +50,16 @@
         "data":[
                 {
                 "dtag":"MC7TeV_VBFZ_interf_Madgraph",
-                "aoddir":["/store/cmst3/user/psilva/Madgraph/VBFZ_interf/AODSIM"],
-                "patdir":["/store/cmst3/user/psilva/Madgraph/VBFZ_interf/PAT"],
-                "xsec":0.148,
-		"br":[1.12]
+                "aoddir":["/store/cmst3/user/psilva/Madgraph/VBFZ_interf_7TeV/AODSIM"],
+                "patdir":["/store/cmst3/user/psilva/Madgraph/VBFZ_interf_7TeV/PAT"],
+                "xsec":0.4486
                 }
          ]
         },
 	{
 	"tag":"ZZ",
         "isdata":false,
+        "issignal":false,
 	"color":"590",
         "lcolor":1,
 	"marker":1,
@@ -144,7 +183,7 @@
         {
          "tag":"W#rightarrow l#nu",
          "isdata":false,
-         "color":"602",
+         "color":"809",
          "lcolor":1,
          "data":[
                 {

@@ -191,7 +191,7 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
   ZZ2l2nuSummary_t &ev = summaryHandler_.getEvent();
   ev.nmcparticles=0;
 
-  float weight(1.0);
+  //  float weight(1.0);
   ev.puWeight = 1.0;
   if(event.isRealData())  return;
 
@@ -588,9 +588,20 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     //
     Handle<View<Candidate> > hJet;
     event.getByLabel(objConfig_["Jets"].getParameter<edm::InputTag>("source"), hJet);
+    std::vector<edm::Handle<reco::JetTagCollection> > jetTagsH;
+    std::vector<edm::InputTag> jetTags=objConfig_["Jets"].getParameter<std::vector<edm::InputTag> >("jetTags");
+    for(size_t ijt=0; ijt<jetTags.size(); ijt++)
+      {
+	try{
+	  edm::Handle<reco::JetTagCollection>  iJetTagH;
+	  event.getByLabel(jetTags[ijt], iJetTagH);
+	  jetTagsH.push_back( iJetTagH );
+	}catch(std::exception &e){
+	}
+      }
     ev.jn=0;
     std::vector<ObjectIdSummary> selJetsId;
-    std::vector<CandidatePtr> selJets = getGoodJets(hJet, selLeptons, hVtx_, puJetIdAlgo_, objConfig_["Jets"],selJetsId);    
+    std::vector<CandidatePtr> selJets = getGoodJets(hJet, selLeptons, hVtx_, puJetIdAlgo_, jetTagsH, objConfig_["Jets"],selJetsId);    
     LorentzVector jetSum(0,0,0,0);
     for(size_t ijet=0; ijet<selJetsId.size(); ijet++)
       {
@@ -605,6 +616,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_btag2[ev.jn]       = selJetsId[ijet].csv;
 	ev.jn_btag3[ev.jn]       = selJetsId[ijet].jp;
 	ev.jn_btag4[ev.jn]       = selJetsId[ijet].tchp;
+	if(selJetsId[ijet].customTaggers.size()>0) ev.jn_btag5[ev.jn] = selJetsId[ijet].customTaggers[0];
+	if(selJetsId[ijet].customTaggers.size()>1) ev.jn_btag6[ev.jn] = selJetsId[ijet].customTaggers[1];
+	if(selJetsId[ijet].customTaggers.size()>2) ev.jn_btag7[ev.jn] = selJetsId[ijet].customTaggers[2];
 	ev.jn_neutHadFrac[ev.jn] = selJetsId[ijet].neutHadFrac;
 	ev.jn_neutEmFrac[ev.jn]  = selJetsId[ijet].neutEmFrac;
 	ev.jn_chHadFrac[ev.jn]   = selJetsId[ijet].chHadFrac;
@@ -638,7 +652,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     Handle<View<Candidate> > haJet;
     event.getByLabel(objConfig_["AssocJets"].getParameter<edm::InputTag>("source"), haJet);
     std::vector<ObjectIdSummary> selAJetsId;
-    std::vector<CandidatePtr> selaJets = getGoodJets(haJet, selLeptons, hVtx_,puJetIdAlgo_, objConfig_["AssocJets"],selAJetsId);
+    std::vector<CandidatePtr> selaJets = getGoodJets(haJet, selLeptons, hVtx_,puJetIdAlgo_, jetTagsH, objConfig_["AssocJets"],selAJetsId);
     for(size_t ijet=0; ijet<selAJetsId.size(); ijet++)
       {
 	ev.ajn_px[ev.ajn]          = selAJetsId[ijet].p4.px();
@@ -652,6 +666,9 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ajn_btag2[ev.ajn]       = selAJetsId[ijet].csv;
 	ev.ajn_btag3[ev.ajn]       = selAJetsId[ijet].jp;
 	ev.ajn_btag4[ev.ajn]       = selAJetsId[ijet].tchp;
+	if(selAJetsId[ijet].customTaggers.size()>0) ev.ajn_btag5[ev.ajn] = selAJetsId[ijet].customTaggers[0];
+	if(selAJetsId[ijet].customTaggers.size()>1) ev.ajn_btag6[ev.ajn] = selAJetsId[ijet].customTaggers[1];
+	if(selAJetsId[ijet].customTaggers.size()>2) ev.ajn_btag7[ev.ajn] = selAJetsId[ijet].customTaggers[2];
 	ev.ajn_neutHadFrac[ev.ajn] = selAJetsId[ijet].neutHadFrac;
 	ev.ajn_neutEmFrac[ev.ajn]  = selAJetsId[ijet].neutEmFrac;
 	ev.ajn_chHadFrac[ev.ajn]   = selAJetsId[ijet].chHadFrac;
