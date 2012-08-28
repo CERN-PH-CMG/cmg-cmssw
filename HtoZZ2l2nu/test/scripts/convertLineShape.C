@@ -1,0 +1,115 @@
+#include <map>
+#include <iostream>
+#include <fstream>
+#include "TString.h"
+#include "TGraph.h"
+#include "TFile.h"
+#include "TObjArray.h"
+#include "TSystem.h"
+
+void convertLineShape()
+{
+  TFile *outF=TFile::Open("LineShapeWeights.root","RECREATE");
+
+  TString baseUrl="http://tier2.ihepa.ufl.edu/~tongguang/LineShape_Reweight/";
+  TString files[]={"mZZ_Higgs400_7TeV_W.txt_I.txt",
+		   "mZZ_Higgs400_8TeV_W.txt_I.txt", 
+		   "mZZ_Higgs425_7TeV_W.txt_I.txt", 
+		   "mZZ_Higgs450_7TeV_W.txt_I.txt", 
+		   "mZZ_Higgs450_8TeV_W.txt_I.txt", 
+		   "mZZ_Higgs475_7TeV_W.txt_I.txt", 
+		   "mZZ_Higgs500_7TeV_W.txt_I.txt", 
+		   "mZZ_Higgs500_8TeV_W.txt_I.txt", 
+		   "mZZ_Higgs550_7TeV_W.txt_I.txt", 
+		   "mZZ_Higgs550_8TeV_W.txt_I.txt", 
+		   "mZZ_Higgs575_7TeV_W.txt_I.txt", 
+		   "mZZ_Higgs600_7TeV_W.txt_I.txt", 
+		   "mZZ_Higgs600_8TeV_W.txt_I.txt", 
+		   "mZZ_Higgs650_8TeV_W.txt_I.txt", 
+		   "mZZ_Higgs700_8TeV_W.txt_I.txt", 
+		   "mZZ_Higgs750_8TeV_W.txt_I.txt", 
+		   "mZZ_Higgs800_8TeV_W.txt_I.txt", 
+		   "mZZ_Higgs850_8TeV_W.txt_I.txt"
+  };
+  
+  
+  for(size_t i=0; i<sizeof(files)/sizeof(TString); i++)
+    {
+      TObjArray *tkns=files[i].Tokenize("_");
+      TString key(tkns->At(1)->GetName());
+      key += "_";
+      key += tkns->At(2)->GetName();
+      
+      gSystem->Exec("curl -O " + baseUrl + files[i]);
+
+      //parse file
+      ifstream in(files[i].Data());
+      std::map<float, std::vector<float> > dists;
+      if(!in.bad())
+	{   
+	  while (!in.eof()) {
+	    float mass, origShape, rwgtShape, rwgtShapePlus, rwgtShapeMinus, 
+	      rwgtPlusInterf, rwgtPlusInterfPlus, rwgtPlusInterfMinus;
+	    in >> mass;
+	    in >> origShape;
+	    in >> rwgtShape;
+	    in >> rwgtShapePlus;
+	    in >> rwgtShapeMinus;
+	    in >> rwgtPlusInterf;
+	    in >> rwgtPlusInterfPlus;
+	    in >> rwgtPlusInterfMinus;
+	    std::vector<float> ipt;
+	    ipt.push_back(origShape);
+	    ipt.push_back(rwgtShape);
+	    ipt.push_back(rwgtShapePlus);
+	    ipt.push_back(rwgtShapeMinus);
+	    ipt.push_back(rwgtPlusInterf);
+	    ipt.push_back(rwgtPlusInterfPlus);
+	    ipt.push_back(rwgtPlusInterfMinus);
+	    dists[mass]=ipt;
+	  }
+	  in.close();
+	}
+      if(dists.size()==0) continue;
+      std::vector<TGraph *> graphs;
+      for(std::map<float, std::vector<float> >::iterator it =dists.begin();
+	  it!= dists.end(); 
+	  it++)
+	{
+	  for(size_t p=0; p<it->second.size(); p++)
+	    {
+	      if(graphs.size()<=p) 
+		{
+		  TGraph *gr=new TGraph;
+		  TString grname="nominal";
+		  if(p==1) grname="rwgt";
+		  if(p==2) grname="rwgt_up";
+		  if(p==3) grname="rwgt_down";
+		  if(p==4) grname="rwgtpint";
+		  if(p==5) grname="rwgtpint_up";
+		  if(p==6) grname="rwgtpint_down";
+		  gr->SetName(grname);
+		  graphs.push_back(gr);
+		}
+	      
+	      if( (it->second)[0]==0)
+		graphs[p]->SetPoint(graphs[p]->GetN(),it->first,0);
+	      else
+		 graphs[p]->SetPoint(graphs[p]->GetN(),it->first,(it->second)[p]/(it->second)[0]);
+	    }
+	}
+      
+      TDirectory*dir=outF->mkdir(key);
+      dir->cd();
+      for(size_t p=1; p<graphs.size(); p++)
+	{
+	  graphs[p]->SetMarkerStyle(20+p);
+	  graphs[p]->SetFillStyle(0);
+	  graphs[p]->Write();
+	}
+
+      gSystem->Exec("rm " + files[i]);
+    }
+
+  outF->Close();
+}
