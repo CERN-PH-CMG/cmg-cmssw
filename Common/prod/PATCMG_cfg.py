@@ -21,13 +21,12 @@ runOnFastSim = False
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'cmgtools_group',
-    #'/DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S8_START52_V9-v1/AODSIM/V5'
     '/GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5'
-    #'CMS',
+    # 'CMS',
     # '/DoubleMu/Run2012B-PromptReco-v1/AOD'
    )
 
-process.source.fileNames = process.source.fileNames[:1]
+process.source.fileNames = process.source.fileNames[:20]
 
 print sep_line
 print process.source.fileNames
