@@ -21,8 +21,10 @@ from CMGTools.HToZZTo4Leptons.tools.FSRRecovery import FSRRecovery
 from CMGTools.HToZZTo4Leptons.tools.FakeRateCalculator import FakeRateCalculator
 from CMGTools.HToZZTo4Leptons.tools.EfficiencyCorrector import EfficiencyCorrector
 from CMGTools.HToZZTo4Leptons.tools.mela import MELACalculator
+from CMGTools.HToZZTo4Leptons.tools.massErrors import MassErrors
 
 from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
+
 
 
 
@@ -44,6 +46,7 @@ class FourLeptonAnalyzerBase( Analyzer ):
             self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
 
         self.mela = MELACalculator()
+        self.massRes = MassErrors()
 
     def declareHandles(self):
         super(FourLeptonAnalyzerBase, self).declareHandles()

@@ -164,6 +164,7 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_FSRMatch'.format(pName=pName))
         self.var('{pName}_FSRUncorrMass'.format(pName=pName))
         self.var('{pName}_MELA'.format(pName=pName))
+        self.var('{pName}_MassErr'.format(pName=pName))
         self.var('{pName}_DEta'.format(pName=pName))
         self.var('{pName}_DPhi'.format(pName=pName))
         self.var('{pName}_MJJ'.format(pName=pName))
@@ -200,6 +201,9 @@ class TreeProducer( Analyzer ):
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
         if hasattr(particle,'mela'):
             self.fill('{pName}_MELA'.format(pName=pName), particle.mela )
+        if hasattr(particle,'massErr'):
+            self.fill('{pName}_MassErr'.format(pName=pName), particle.massErr )
+
         if hasattr(particle,'jets'):
             self.fill('{pName}_DEta'.format(pName=pName), particle.jets['dEta'] )
             self.fill('{pName}_DPhi'.format(pName=pName), particle.jets['dPhi'] )

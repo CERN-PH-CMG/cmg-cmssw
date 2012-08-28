@@ -223,12 +223,12 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 0
+test = 1
 if test==1:
     dataset = GGH126
     selectedComponents = [dataset]
-    dataset.splitFactor = 7
-#    dataset.files=['root://cmsphys05//data/b/botta/V5_4_0/cmgTuple_H126Summer12.root']
+    dataset.splitFactor = 1
+    dataset.files=['cmgTuple.root']
 
 
    

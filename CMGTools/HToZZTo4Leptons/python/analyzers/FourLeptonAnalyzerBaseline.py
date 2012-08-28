@@ -186,11 +186,12 @@ class FourLeptonAnalyzerBaseline( FourLeptonAnalyzerBase ):
         #Pt Cuts (CAREFUL: The correct cut is : Any combination of leptons must be 20/10 not the Z1 ones
         passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds',1,'fourLeptonsFakeRateApp')
 
-        #calculate mela and vbf
+        #calculate mela massErrors and vbf
         for fl in event.fourLeptonsFakeRateApp:
             fl.mela=self.mela.calculate(fl)
+            fl.massErr = self.massRes.calculate(fl)
             self.calculateJetVars(fl,event.selectedJets)
-
+            
         if passed:
             event.higgsCandLoose = cutFlow.obj1[0]
 
