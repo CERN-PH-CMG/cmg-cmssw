@@ -173,6 +173,7 @@ class FourLeptonAnalyzerCMG( FourLeptonAnalyzerBase ):
         #calculate mela and vbf
         for fl in event.fourLeptonsFakeRateApp:
             fl.mela=self.mela.calculate(fl)
+            fl.massErr = self.massRes.calculate(fl)
             self.calculateJetVars(fl,event.selectedJets)
 
         if passed:

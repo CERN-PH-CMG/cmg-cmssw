@@ -2,7 +2,7 @@
 
 
 ##USE THIS TO RUN THE BASELINE
-#from FourLeptonAnalyzerBaseline import FourLeptonAnalyzerBaseline as FourLeptonAnalyzer
+from FourLeptonAnalyzerBaseline import FourLeptonAnalyzerBaseline as FourLeptonAnalyzer
 
 
 #THIS IS ONLY TO STUDY THE FSR IN MC ONLY!!!
@@ -11,7 +11,7 @@
 
 
 #Run improved CMG Analyzer
-from FourLeptonAnalyzerCMG import FourLeptonAnalyzerCMG as FourLeptonAnalyzer
+#from FourLeptonAnalyzerCMG import FourLeptonAnalyzerCMG as FourLeptonAnalyzer
 
 
 

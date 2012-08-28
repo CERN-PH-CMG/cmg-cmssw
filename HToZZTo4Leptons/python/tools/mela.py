@@ -1,30 +1,12 @@
 import os
+import ROOT
+from CMGTools.RootTools.RootTools import *
+from ROOT import gSystem
 
-from CMGTools.RootTools.RootTools import loadLibs
-import ROOT 
-
-
-# loadLibs()
-
-#ROOT.gSystem.Load("libCMGToolsHToZZTo4Leptons")
-#ROOT.gSystem.Load("libJHUMELA.so")
-
-templatePath = '/'.join([os.environ['CMSSW_BASE'],'src/MELA/datafiles/my8DTemplateNotNorm.root']) 
-
-libPath = '/'.join([os.environ['CMSSW_BASE'],'src/MELA/'])
+gSystem.Load("libCMGToolsHToZZTo4Leptons")
 
 
-ROOT.gSystem.AddIncludePath("-I/$ROOFITSYS/include/")
-ROOT.gROOT.ProcessLine('.L ' +libPath+'PDFs/RooXZsZs_5D.cxx+')
-ROOT.gROOT.ProcessLine('.L ' +libPath+'PDFs/RooqqZZ_JHU.cxx+')
-ROOT.gROOT.ProcessLine('.L ' +libPath+'src/AngularPdfFactory.cc+')
-ROOT.gROOT.ProcessLine('.L ' +libPath+'scripts/MELA.C+')
-
-
-# from ROOT import MELAAngles
-
-ROOT.setTemplate(templatePath); # need a better way to point to the input file
-
+from ROOT import Mela
 
 
 # you can even create a python class for high level stuff, like this: 
@@ -42,7 +24,8 @@ class MELACalculator(object):
         self.phi1=ROOT.Double(0)
         self.phi2=ROOT.Double(0)
 
-
+        self.melaCpp = Mela()
+        
     def calculate(self,FL):
         
 
@@ -81,23 +64,18 @@ class MELACalculator(object):
                 l4=l4+photon
                 
             
-        ROOT.calculateAngles(FL, FL.leg1 , l1 , l2,
+        self.melaCpp.calculateAngles(FL, FL.leg1 , l1 , l2,
                         FL.leg2 , l3, l4,
                         self.costheta1,  self.costheta2,  self.phi,  self.costhetastar,
                         self.phistar1,  self.phistar2,  self.phistar12,  self.phi1,  self.phi2)
 
-        
 
-        prob = ROOT.likelihoodDiscriminant( FL.mass(), FL.leg1.mass(), FL.leg2.mass(), self.costhetastar,
-                                            self.costheta1, self.costheta2, self.phi, self.phistar1)
-        self.MELAS = prob.first
-        self.MELAB = prob.second
-        denom = (self.MELAS  + self.MELAB)
-        if denom !=0:
-            self.MELA  = self.MELAS / denom
-        else:
-            self.MELA=-99
-            
+
+        self.melaCpp.computeLD(FL.mass(), FL.leg1.mass(),
+                               FL.leg2.mass(),self.costhetastar,
+                               self.costheta1, self.costheta2,
+                               self.phi, self.phistar1, 
+                               self.MELA,self.MELAS,self.MELAB)
         return self.MELA
     
 
