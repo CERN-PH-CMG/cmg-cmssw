@@ -7,6 +7,7 @@
 <use name="DataFormats/PatCandidates"/>
 <use name="AnalysisDataFormats/CMGTools"/>
 <use name="CondFormats/JetMETObjects"/>
+<use name="MagneticField/Engine"/>
 
 <use name="PhysicsTools/JetMCUtils"/>
 <use name="DataFormats/HepMCCandidate"/>
