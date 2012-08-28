@@ -76,7 +76,7 @@ runPlotter --json data/photon-samples_2012.json --inDir ~/work/gamma/2012/mc/ --
 ##############
 #    2011    #
 ##############
-runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2011.json -o test/results -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=True" -s 8nh 
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2011.json -o test/results -d /store/cmst3/user/psilva/28Aug2012_CMSSW53x_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
 runPlotter --json data/samples_2011.json --inDir test/results/ --outDir test/results/plots/ --outFile test/results/plotter.root --iEcm 7 --iLumi 5051
 
 #photon+jets

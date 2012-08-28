@@ -71,11 +71,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   std::vector<std::string> histos,dilSignal,dilcats,gcats;
   if(model==VBFZ) 
     {
-      //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/nvtx/plotter.root";
-      //llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2012/plotter_vbfz_2012.root";
+      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/nvtx/plotter.root";
+      llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2012/plotter_vbfz_2012.root";
 
-      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2011/nvtx/plotter.root";
-      llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2011/plotter_vbfz_2011.root";
+      //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2011/nvtx/plotter.root";
+      //llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2011/plotter_vbfz_2011.root";
      
       histos.push_back("pfpuloosevbfcandjetdeta");
       histos.push_back("pfpuloosevbfcandjet1pt");

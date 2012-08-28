@@ -5,7 +5,7 @@ process = cms.Process("PAT")
 # global options
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True),
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False),
                                       SkipEvent = cms.untracked.vstring('ProductNotFound')
                                       )
 
@@ -38,10 +38,6 @@ process.out = cms.OutputModule("PoolOutputModule",
                                SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
                                outputCommands = cms.untracked.vstring('keep *'))
 process.out.fileName = cms.untracked.string(outFile)
-
-if(runOnMC) :
-    from CMGTools.HtoZZ2l2nu.GeneratorLevelSequences_cff import addGeneratorLevelSequence
-    addGeneratorLevelSequence(process)
 
 
 ################
@@ -77,7 +73,7 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=post
 # to use GsfElectrons instead of PF electrons
 # this will destory the feature of top projection which solves the ambiguity between leptons and jets because
 # there will be overlap between non-PF electrons and jets even though top projection is ON!
-useGsfElectrons(process,postfix,"03") # to change isolation cone size to 0.3 as it is recommended by EGM POG, use "04" for cone size 0.4
+useGsfElectrons(process,postfix,"04") # to change isolation cone size to 0.3 as it is recommended by EGM POG, use "04" for cone size 0.4
 
 # add old VBTF ids
 process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
@@ -108,7 +104,27 @@ process.kt6PFJetsCentralNeutral = process.kt6PFJetsForIso.clone( src = cms.Input
                                                                  )
 
 #inclusive vertex finder
-process.load('RecoVertex/AdaptiveVertexFinder/inclusiveVertexing_cff')
+process.load("RecoBTau.JetTagComputer.jetTagRecord_cfi")
+process.load("RecoVertex.AdaptiveVertexFinder.inclusiveVertexing_cff")
+process.load("RecoBTag.SecondaryVertex.combinedSecondaryVertexPositiveES_cfi")
+process.load("RecoBTag.SecondaryVertex.combinedSecondaryVertexPositiveBJetTags_cfi")
+process.myInclusiveSecondaryVertexTagInfosFiltered = process.inclusiveSecondaryVertexFinderTagInfosFiltered.clone()
+process.mySimpleInclusiveSecondaryVertexHighPurBJetTags = process.simpleInclusiveSecondaryVertexHighPurBJetTags.clone(
+    tagInfos = cms.VInputTag(cms.InputTag("myInclusiveSecondaryVertexTagInfosFiltered"))
+    )
+process.mySimpleInclusiveSecondaryVertexHighEffBJetTags = process.simpleInclusiveSecondaryVertexHighEffBJetTags.clone(
+    tagInfos = cms.VInputTag(cms.InputTag("myInclusiveSecondaryVertexTagInfosFiltered"))
+    )
+process.combinedInclusiveSecondaryVertexPositiveBJetTags = process.combinedSecondaryVertexPositiveBJetTags.clone(
+    tagInfos = cms.VInputTag(cms.InputTag("impactParameterTagInfos"), cms.InputTag("myInclusiveSecondaryVertexTagInfosFiltered"))
+    )
+process.ivfSequence=cms.Sequence(process.inclusiveVertexing
+                                 *process.inclusiveMergedVerticesFiltered
+                                 *process.myInclusiveSecondaryVertexTagInfosFiltered
+                                 *process.mySimpleInclusiveSecondaryVertexHighEffBJetTags
+                                 *process.mySimpleInclusiveSecondaryVertexHighPurBJetTags
+                                 *process.combinedInclusiveSecondaryVertexPositiveBJetTags)
+
 
 #####################
 #  PATH DEFINITION  #
@@ -122,7 +138,7 @@ process.endCounter = cms.EDProducer("EventCountProducer")
 #pat sequence
 process.patSequence = cms.Sequence( process.startCounter
                                     + process.kt6PFJetsForIso + process.pfOnlyNeutrals + process.kt6PFJetsCentralNeutral
-                                    + process.inclusiveVertexing + process.simpleEleIdSequence
+                                    + process.ivfSequence + process.simpleEleIdSequence
                                     + getattr(process,"patPF2PATSequencePFlow")
                                     + getattr(process,"patPF2PATSequence"+postfix)
                                     )
@@ -149,17 +165,17 @@ defineAnalysis(process)
 #######################################
 if(not runStd) :
     configureOutput(process,selPaths=['patOnlyPath'],outFile=outFile)
-    if(runOnMC) : process.schedule = cms.Schedule( process.genLevelPath, process.patOnlyPath, process.e )
-    else        : process.schedule = cms.Schedule( process.genLevelPath, process.patOnlyPath, process.e )
+    if(runOnMC) : process.schedule = cms.Schedule( process.patOnlyPath, process.e )
+    else        : process.schedule = cms.Schedule( process.patOnlyPath, process.e )
 else :
     configureOutput(process,selPaths=['llPath','photonPath'],outFile=outFile)
     if(runFull) :
         process.TFileService = cms.Service("TFileService", fileName = cms.string("analysis.root"))
         process.e = cms.EndPath( process.endCounter )
-        if(runOnMC) : process.schedule = cms.Schedule( process.genLevelPath, process.llPath, process.photonPath, process.analysis )
+        if(runOnMC) : process.schedule = cms.Schedule( process.llPath, process.photonPath, process.analysis )
         else        : process.schedule = cms.Schedule( process.llPath, process.photonPath, process.analysis )
     else :
-        if(runOnMC) : process.schedule = cms.Schedule( process.genLevelPath, process.llPath, process.photonPath, process.e )
+        if(runOnMC) : process.schedule = cms.Schedule( process.llPath, process.photonPath, process.e )
         else        : process.schedule = cms.Schedule( process.llPath, process.photonPath, process.e )
 
 

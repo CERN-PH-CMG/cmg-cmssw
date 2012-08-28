@@ -186,14 +186,16 @@ elif(phase == 2):
       for f in fileList:
          exp = commands.getstatusoutput("cat " + f + " | grep \"Best fit r: \"")[1];
          if(len(exp)<=0):continue
-         median = float(exp.split()[3])
-         uncM = float(exp.split()[4].split('/')[0])
-         uncP = float(exp.split()[4].split('/')[1])
-         unc = (((median+uncP) + (median-uncM))/(2*median))-1
-         if(float(median)<=0.0):continue
-         index = int(f[f.rfind("_")+1:f.rfind(".log")])
-         BestLimit.append("mH="+str(m)+ " --> " + ('%07.3f%%' % float(100.0*unc)) + " " + ('%07.3fpb +- [%07.3f%%/%07.3f%%]' % (float(median*smXsec) , 100.0*uncM/median , 100.0*uncP/median) ) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5) + " " + str(cuts4.GetBinContent(index)).rjust(5))
-
+         try:
+            median = float(exp.split()[3])
+            uncM = float(exp.split()[4].split('/')[0])
+            uncP = float(exp.split()[4].split('/')[1])
+            unc = (((median+uncP) + (median-uncM))/(2*median))-1
+            if(float(median)<=0.0):continue
+            index = int(f[f.rfind("_")+1:f.rfind(".log")])
+            BestLimit.append("mH="+str(m)+ " --> " + ('%07.3f%%' % float(100.0*unc)) + " " + ('%07.3fpb +- [%07.3f%%/%07.3f%%]' % (float(median*smXsec) , 100.0*uncM/median , 100.0*uncP/median) ) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5) + " " + str(cuts4.GetBinContent(index)).rjust(5))
+         except:
+            print 'Failed with %s'%exp
       #sort the limits for this mass
       BestLimit.sort()
       for s in BestLimit:

@@ -23,6 +23,7 @@
 #include "RecoEgamma/EgammaTools/interface/EGEnergyCorrector.h"
 #include "DataFormats/EgammaCandidates/interface/Conversion.h"
 
+
 #include "EGamma/EGammaAnalysisTools/interface/PFIsolationEstimator.h"
 
 #include "DataFormats/Common/interface/TriggerResults.h"
@@ -75,6 +76,7 @@ class ObjectIdSummary
   double aeff;
   //jet specific
   double neutHadFrac,neutEmFrac,chHadFrac,tche, tchp, csv, jp,beta,betaStar,dRMean,ptD,ptRMS;
+  std::vector<double> customTaggers;
 };
 
 
@@ -165,9 +167,12 @@ std::vector<reco::CandidatePtr> getGoodJets(edm::Handle<edm::View<reco::Candidat
 					    std::vector<reco::CandidatePtr> &selPhysicsObjects, 
 					    edm::Handle<reco::VertexCollection> &hVtx,
 					    std::vector<PileupJetIdAlgo *> &puJetIdAlgo,
+					    std::vector<edm::Handle<reco::JetTagCollection> > &jetTagsH,
 					    const edm::ParameterSet &iConfig,
 					    std::vector<ObjectIdSummary> &selJetsId);
 std::pair<double,double> computeBetaForJet(const pat::Jet *jet, edm::Handle<reco::VertexCollection> &hVtx);
+int getJetTag(const pat::Jet *jet, edm::Handle<reco::JetTagCollection > jetTags);
+
 
 ///                           ///
 /// GENERATOR LEVEL UTILITIES ///
