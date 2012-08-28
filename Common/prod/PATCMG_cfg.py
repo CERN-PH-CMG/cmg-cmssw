@@ -34,7 +34,7 @@ print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(500) )
 
 print 'loading the main CMG sequence'
 
