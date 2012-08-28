@@ -64,7 +64,7 @@ private:
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
 
-  void produceMVAMet(edm::Event& iEvent, const edm::EventSetup& iSetup);
+  void produceMVAMet(edm::Event& iEvent, const edm::EventSetup& iSetup,float sumEt);
   double jetMVA (const reco::PFJet *iCorrJet,double iJec, const reco::Vertex *iPV, const reco::VertexCollection &iAllvtx);
   double pfCandDz(const reco::PFCandidate* iPFCand, const reco::Vertex *iPV);
   void makeCandidates(std::vector<std::pair<LorentzVector,double> > &iPFInfo, reco::PFCandidateCollection &iCands,const reco::Vertex *iPV);
@@ -130,8 +130,6 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   produces<reco::PFMET>("assocBeta");
   produces<reco::PFMET>("assocWithFwdBeta");
 
-  produces<reco::PFMET>("mvaMET");
-
   produces<std::vector<int> >("pvAssocCandidates");
   produces<std::vector<double> >("globalPfMetSums"); 
   produces<std::vector<reco::PFJet> >("JET");
@@ -139,13 +137,24 @@ ClusteredPFMetProducer::ClusteredPFMetProducer(const edm::ParameterSet& iConfig)
   //MVA MET specific
   mvaMet_PUJetIdAlgo    = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("JetIdParams"));
   mvaMet_               = new MVAMet(mvaMet_DZMin);
-  mvaMet_               ->Initialize(iConfig,
-			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmet_52.root"))),        //U
-			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmetphi_52.root"))),     //U Phi
-			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmetu1cov_52.root"))),   //U1 Cov
-			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmetu2cov_52.root"))) //U2 Cov
-			       );
 
+  TString cmsswbase(getenv("CMSSW_BASE"));
+  TString postfix("52"); 
+  if(cmsswbase.Contains("CMSSW_4")) postfix="42"; 
+  try{
+    cout << "[ClusteredPFMetProducer] initializing MVAMet for " << postfix << endl;
+    mvaMet_->Initialize(iConfig,
+			TString(cmsswbase+"/src/pharris/MVAMet/data/gbrmet_"+postfix+".root"),        //U
+			TString(cmsswbase+"/src/pharris/MVAMet/data/gbrmetphi_"+postfix+".root"),     //U Phi
+			TString(cmsswbase+"/src/pharris/MVAMet/data/gbrmetu1cov_"+postfix+".root"),   //U1 Cov
+			TString(cmsswbase+"/src/pharris/MVAMet/data/gbrmetu2cov_"+postfix+".root") //U2 Cov
+			);
+  }catch(std::exception &e){
+    cout << "[ClusteredPFMetProducer] failed to initialize mvaMET with " << e.what() << endl;
+    mvaMet_=0;
+  }
+  if(mvaMet_) produces<reco::PFMET>("mvaMET");
+  
   std::string objs[]={"Vertices", "Photons","Electrons", "Muons"};
   for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
     dilObjConfig_[ objs[iobj] ] = iConfig.getParameter<edm::ParameterSet>( objs[iobj] );
@@ -499,12 +508,12 @@ void ClusteredPFMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   iEvent.put(jetCollWithUnAssocPtr,"JET");
 
   //add the MVA MET
-  produceMVAMet(iEvent,iSetup);
+  if(mvaMet_)  produceMVAMet(iEvent,iSetup,set_standard);
 }
 
 
 // the following is based on https://twiki.cern.ch/twiki/bin/view/CMS/MVAMet
-void ClusteredPFMetProducer::produceMVAMet(edm::Event& iEvent, const edm::EventSetup& iSetup) {  
+void ClusteredPFMetProducer::produceMVAMet(edm::Event& iEvent, const edm::EventSetup& iSetup, float sumEt) {  
   //Uncorrected Jets
   edm::Handle<reco::PFJetCollection>       lHUCJets;
   iEvent.getByLabel(mvaMet_UnCorrJetName, lHUCJets);
@@ -521,11 +530,6 @@ void ClusteredPFMetProducer::produceMVAMet(edm::Event& iEvent, const edm::EventS
   // vertices    
   std::vector<reco::VertexRef> selVertices = getGoodVertices(vtxH_,dilObjConfig_["Vertices"]);
   const reco::Vertex *lPV = 0; if(selVertices.size() > 0) lPV = selVertices[0].get();
-
-  //Get PF Met
-  edm::Handle<std::vector<reco::PFMET> > lHPFMet;
-  iEvent.getByLabel("pfMet"      , lHPFMet); 
-  std::vector<reco::PFMET> lPFMET = *lHPFMet;
 
   //Get Rho
   edm::Handle<double>                                        lHRho;
@@ -589,7 +593,7 @@ void ClusteredPFMetProducer::produceMVAMet(edm::Event& iEvent, const edm::EventS
       
       //add PF mva met to the event
       reco::PFMET lDummy;
-      std::auto_ptr<reco::PFMET> lMVAMet(new reco::PFMET(lDummy.getSpecific(),lPFMET.at(0).sumEt(),lMVAMetInfo.first,lPV->position()) ); //Use PFMET sum Et
+      std::auto_ptr<reco::PFMET> lMVAMet(new reco::PFMET(lDummy.getSpecific(),sumEt,lMVAMetInfo.first,lPV->position()) ); //Use PFMET sum Et
       iEvent.put(lMVAMet,"mvaMET");
     }
 }
