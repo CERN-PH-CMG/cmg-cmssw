@@ -680,6 +680,7 @@ int main(int argc, char* argv[])
 	  float relIso = (lepStr=="mu") ? 
 	    phys.leptons[ilep].pfRelIsoDbeta(): //muPFRelIsoCorrected2012(ev.rho25Neut):
 	    phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho);
+	  cout << phys.leptons[ilep].chIso << " " << phys.leptons[ilep].nhIso << " " << phys.leptons[ilep].gIso << " " << phys.leptons[ilep].puchIso << " " << lepStr << " " << relIso << " " << relIso2011 << endl;
 	  std::vector<int> passIds;
 	  std::map<int,bool> passIsos;
 	  bool hasGoodId(false), isIso(false);
