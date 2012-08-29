@@ -34,6 +34,16 @@ from RecoBTag.Configuration.RecoBTag_cff import * # btagging sequence
 softMuonTagInfos.jets = jetSource
 softElectronTagInfos.jets = jetSource
 
+## add secondar vertex mass information
+## can be used in analysis level: jet->sourcePtr()->get()->userFloat("secvtxMass"); 
+patJets.addTagInfos = True
+patJets.tagInfoSources = cms.VInputTag(
+   cms.InputTag("secondaryVertexTagInfos")
+   )
+patJets.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
+                                                     "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
+patJets.userData.userFunctionLabels = cms.vstring('secvtxMass')
+
 # parton and gen jet matching
 
 from CommonTools.ParticleFlow.genForPF2PAT_cff import * 
