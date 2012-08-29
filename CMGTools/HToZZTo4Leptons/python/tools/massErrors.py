@@ -15,7 +15,7 @@ class MassErrors(object):
             if electron.sourcePtr().isEB():
                 p=[5.24e-2,2.01e-1,1e-2]
                 return ecalEnergy*self.energyError(ecalEnergy,p)
-            elif electron.souircePtr().isEE():
+            elif electron.sourcePtr().isEE():
                 p=[1.46e-1,9.21e-1,1.94e-3]
                 return ecalEnergy*self.energyError(ecalEnergy,p)
                 
