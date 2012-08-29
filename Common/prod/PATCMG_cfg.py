@@ -15,15 +15,16 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC      = True
+runOnMC      = False
 runOnFastSim = False
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
-    'cmgtools_group',
-    '/GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5'
     # 'CMS',
-    # '/DoubleMu/Run2012B-PromptReco-v1/AOD'
+    # '/GluGluToHToTauTau_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM'
+    # '/GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5'
+    'CMS',
+    '/DoubleMu/Run2012C-PromptReco-v2/AOD'
    )
 
 process.source.fileNames = process.source.fileNames[:20]
@@ -210,9 +211,13 @@ if cmsswIs44X():
         GT = 'GR_R_44_V15::All'
 else:
     if runOnMC:
-        GT = 'START52_V10::All'
+        # GT = 'START53_V10::All' # for 53X MC in >= 533
+        GT = 'START53_V7E::All' # for 53X MC in < 533
+        # GT = 'START52_V10::All' # for 52X MC
     else:
-        GT = 'GR_R_52_V8::All'
+        # GT = 'GR_P_V41_AN1::All' # for 53X data in >= 533
+        GT = 'GR_P_V40_AN1::All' # for 53X data in < 533
+        # GT = 'GR_R_52_V8::All' # for 52X data 
 process.GlobalTag.globaltag = GT
 
 print 'Global tag       : ', process.GlobalTag.globaltag
