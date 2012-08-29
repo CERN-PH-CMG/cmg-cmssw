@@ -38,6 +38,7 @@ def componentsWithData (selComps, weights) :
       if run2012:
         selCompsDataMass[mPoint]['data_Run2012A_PromptReco_v1']  = copy.deepcopy(selComps['data_Run2012A_PromptReco_v1'])
         selCompsDataMass[mPoint]['data_Run2012B_PromptReco_v1']  = copy.deepcopy(selComps['data_Run2012B_PromptReco_v1'])
+        #selCompsDataMass[mPoint]['data_Run2012A_PromptReco_v1']  = copy.deepcopy(selComps['QCD80'])
         selCompsDataMass[mPoint]['embed_Run2012A_PromptReco_v1'] = copy.deepcopy(selComps['embed_Run2012A_PromptReco_v1'])
         selCompsDataMass[mPoint]['embed_Run2012B_PromptReco_v1'] = copy.deepcopy(selComps['embed_Run2012B_PromptReco_v1'])
       else:
@@ -55,9 +56,22 @@ def componentsWithData (selComps, weights) :
       selCompsDataMass[mPoint]['HiggsVBF'+str(mPoint)]         = copy.deepcopy(selComps['HiggsVBF'+str(mPoint)])
       selCompsDataMass[mPoint]['HiggsVH' +str(mPoint)]         = copy.deepcopy(selComps['HiggsVH' +str(mPoint)])
 
+
+      #selCompsDataMass[mPoint]['GluGluToHToWWTo2LAndTau2Nu_M_125'] = copy.deepcopy(selComps['GluGluToHToWWTo2LAndTau2Nu_M_125'])
+      #selCompsDataMass[mPoint]['VBF_HToWWTo2LAndTau2Nu_M_125'] = copy.deepcopy(selComps['VBF_HToWWTo2LAndTau2Nu_M_125'])
+      #selCompsDataMass[mPoint]['GluGluToHToWWTo2Tau2Nu_M_120'] = copy.deepcopy(selComps['GluGluToHToWWTo2Tau2Nu_M_120'])
+      #selCompsDataMass[mPoint]['GluGluToHToWWToTauNuQQ_M_120'] = copy.deepcopy(selComps['GluGluToHToWWToTauNuQQ_M_120'])
+      #selCompsDataMass[mPoint]['VBF_HToWWToTauNuQQ_M_120'] = copy.deepcopy(selComps['VBF_HToWWToTauNuQQ_M_120'])
+      #selCompsDataMass[mPoint]['VBF_HToWWTo2Tau2Nu_M_120'] = copy.deepcopy(selComps['VBF_HToWWTo2Tau2Nu_M_120'])
+      #selCompsDataMass[mPoint]['GluGluToHToZZTo2L2Nu_M_125'] = copy.deepcopy(selComps['GluGluToHToZZTo2L2Nu_M_125'])
+      #selCompsDataMass[mPoint]['GluGluToHToZZTo2L2Q_M_125'] = copy.deepcopy(selComps['GluGluToHToZZTo2L2Q_M_125'])
+      #selCompsDataMass[mPoint]['VBF_ToHToZZTo2l2q_M_130'] = copy.deepcopy(selComps['VBF_ToHToZZTo2l2q_M_130'])
+      #selCompsDataMass[mPoint]['VBF_ToHToZZTo2L2NU_M_125'] = copy.deepcopy(selComps['VBF_ToHToZZTo2L2NU_M_125'])
+
       if run2012:
         weightsDataMass[mPoint]['data_Run2012A_PromptReco_v1'] = copy.deepcopy(weights['data_Run2012A_PromptReco_v1'])
         weightsDataMass[mPoint]['data_Run2012B_PromptReco_v1'] = copy.deepcopy(weights['data_Run2012B_PromptReco_v1'])
+        #weightsDataMass[mPoint]['data_Run2012A_PromptReco_v1']  = copy.deepcopy(weights['QCD80'])
         weightsDataMass[mPoint]['embed_Run2012A_PromptReco_v1'] = copy.deepcopy(weights['embed_Run2012A_PromptReco_v1'])
         weightsDataMass[mPoint]['embed_Run2012B_PromptReco_v1'] = copy.deepcopy(weights['embed_Run2012B_PromptReco_v1'])
       else:
@@ -74,6 +88,17 @@ def componentsWithData (selComps, weights) :
       weightsDataMass[mPoint]['Higgsgg' +str(mPoint)]          = copy.deepcopy(weights['Higgsgg' +str(mPoint)])
       weightsDataMass[mPoint]['HiggsVBF'+str(mPoint)]          = copy.deepcopy(weights['HiggsVBF'+str(mPoint)])
       weightsDataMass[mPoint]['HiggsVH' +str(mPoint)]          = copy.deepcopy(weights['HiggsVH' +str(mPoint)])
+
+      #weightsDataMass[mPoint]['GluGluToHToWWTo2LAndTau2Nu_M_125'] = copy.deepcopy(weights['GluGluToHToWWTo2LAndTau2Nu_M_125'])
+      #weightsDataMass[mPoint]['VBF_HToWWTo2LAndTau2Nu_M_125'] = copy.deepcopy(weights['VBF_HToWWTo2LAndTau2Nu_M_125'])
+      #weightsDataMass[mPoint]['GluGluToHToWWTo2Tau2Nu_M_120'] = copy.deepcopy(weights['GluGluToHToWWTo2Tau2Nu_M_120'])
+      #weightsDataMass[mPoint]['GluGluToHToWWToTauNuQQ_M_120'] = copy.deepcopy(weights['GluGluToHToWWToTauNuQQ_M_120'])
+      #weightsDataMass[mPoint]['VBF_HToWWToTauNuQQ_M_120'] = copy.deepcopy(weights['VBF_HToWWToTauNuQQ_M_120'])
+      #weightsDataMass[mPoint]['VBF_HToWWTo2Tau2Nu_M_120'] = copy.deepcopy(weights['VBF_HToWWTo2Tau2Nu_M_120'])
+      #weightsDataMass[mPoint]['GluGluToHToZZTo2L2Nu_M_125'] = copy.deepcopy(weights['GluGluToHToZZTo2L2Nu_M_125'])
+      #weightsDataMass[mPoint]['GluGluToHToZZTo2L2Q_M_125'] = copy.deepcopy(weights['GluGluToHToZZTo2L2Q_M_125'])
+      #weightsDataMass[mPoint]['VBF_ToHToZZTo2l2q_M_130'] = copy.deepcopy(weights['VBF_ToHToZZTo2l2q_M_130'])
+      #weightsDataMass[mPoint]['VBF_ToHToZZTo2L2NU_M_125'] = copy.deepcopy(weights['VBF_ToHToZZTo2L2NU_M_125'])
       
     return selCompsDataMass, weightsDataMass
 
@@ -139,6 +164,7 @@ def componentsWithOutSignal (selComps, weights) :
     if run2012:
         selCompsMCMass['data_Run2012A_PromptReco_v1']   = copy.deepcopy(selComps['data_Run2012A_PromptReco_v1'])
         selCompsMCMass['data_Run2012B_PromptReco_v1']   = copy.deepcopy(selComps['data_Run2012B_PromptReco_v1'])
+        #selCompsMCMass['data_Run2012A_PromptReco_v1']  = copy.deepcopy(selComps['QCD80'])
         selCompsMCMass['embed_Run2012A_PromptReco_v1']   = copy.deepcopy(selComps['embed_Run2012A_PromptReco_v1'])
         selCompsMCMass['embed_Run2012B_PromptReco_v1']   = copy.deepcopy(selComps['embed_Run2012B_PromptReco_v1'])
     else:
@@ -153,9 +179,11 @@ def componentsWithOutSignal (selComps, weights) :
     selCompsMCMass['ZZ']		   = copy.deepcopy(selComps['ZZ'])
     selCompsMCMass['TTJets']	   = copy.deepcopy(selComps['TTJets'])
 
+
     if run2012:
         weightsMCMass['data_Run2012A_PromptReco_v1']   = copy.deepcopy(weights['data_Run2012A_PromptReco_v1'])
         weightsMCMass['data_Run2012B_PromptReco_v1']   = copy.deepcopy(weights['data_Run2012B_PromptReco_v1'])
+        #weightsMCMass['data_Run2012A_PromptReco_v1']  = copy.deepcopy(weights['QCD80'])
         weightsMCMass['embed_Run2012A_PromptReco_v1']   = copy.deepcopy(weights['embed_Run2012A_PromptReco_v1'])
         weightsMCMass['embed_Run2012B_PromptReco_v1']   = copy.deepcopy(weights['embed_Run2012B_PromptReco_v1'])
     else:
@@ -169,5 +197,5 @@ def componentsWithOutSignal (selComps, weights) :
     weightsMCMass['WZ'] 		   = copy.deepcopy(weights['WZ'])
     weightsMCMass['ZZ'] 		   = copy.deepcopy(weights['ZZ'])
     weightsMCMass['TTJets']		   = copy.deepcopy(weights['TTJets'])
-      
+
     return selCompsMCMass, weightsMCMass
