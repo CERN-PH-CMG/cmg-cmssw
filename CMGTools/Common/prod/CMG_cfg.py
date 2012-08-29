@@ -11,7 +11,7 @@ process = cms.Process("CMG")
 print 'querying database for source files'
 
 
-runOnMC = True
+runOnMC = False
 
 
 from CMGTools.Production.datasetToSource import *
@@ -121,9 +121,14 @@ if cmsswIs44X():
         GT = 'GR_R_44_V15::All'
 else:
     if runOnMC:
-        GT = 'START52_V10::All'
+        # GT = 'START53_V10::All' # for 53X MC in >= 533
+        GT = 'START53_V7E::All' # for 53X MC in < 533
+        # GT = 'START52_V10::All' # for 52X MC
     else:
-        GT = 'GR_R_52_V8::All'
+        # GT = 'GR_P_V41_AN1::All' # for 53X data in >= 533
+        GT = 'GR_P_V40_AN1::All' # for 53X data in < 533
+        # GT = 'GR_R_52_V8::All' # for 52X data 
+
 process.GlobalTag.globaltag = GT
 
 print 'Global tag       : ', process.GlobalTag.globaltag
