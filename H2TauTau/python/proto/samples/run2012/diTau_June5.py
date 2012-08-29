@@ -321,6 +321,7 @@ W3Jets = cfg.MCComponent(
     files = getFiles('/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/{pat}/{htt}'.format(aod=aod, pat=pat2, htt=htt), user, filePattern),
     xSection = 304.0,
     nGenEvents = 7541595*1.99724/2.0,
+#    nGenEvents = 14725074*1.98661/2.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -360,6 +361,24 @@ ZZ = cfg.MCComponent(
 ZZ.files = getFiles('/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 ZZ.nGenEvents = 9799908
 
+QCD = cfg.DataComponent(
+    name = 'QCD',
+    files = getFiles('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12-PU_S7_START52_V9-v5/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    intLumi = 1.0, # dummy
+    triggers = [] )
+
+QCD50 = cfg.DataComponent(
+    name = 'QCD50',
+    files = getFiles('/QCD_Pt-50to80_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    intLumi = 1.0, # dummy
+    triggers = [] )
+
+QCD80 = cfg.DataComponent(
+    name = 'QCD80',
+    files = getFiles('/QCD_Pt-80to120_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    intLumi = 1.0, # dummy
+    triggers = [] )
+
 # Higgs Summer11 ----------------------------------------------------------------------------
 
 Higgsgg110.files = getFiles('/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
@@ -390,6 +409,7 @@ HiggsVH145.files = getFiles('/WH_ZH_TTH_HToTauTau_M-145_8TeV-pythia6-tauola/Summ
 mc_spring12 = copy.copy( mc_ewk )
 mc_spring12.extend( mc_higgs ) 
 mc_spring12.extend([W3Jets, WW, WZ, ZZ])
+mc_spring12.extend([QCD])
 
 for data in data_2012A:
     data.triggers = data_triggers_2012A

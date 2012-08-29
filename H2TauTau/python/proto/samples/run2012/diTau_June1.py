@@ -298,14 +298,15 @@ DYJets.nGenEvents = 30461028*0.9926   ### all but June1 v1
 #DYJets.nGenEvents = 1082838
 
 WJets.files = getFiles('/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-WJets.nGenEvents = 18393090*0.99689  ### all but June1 v1
-#WJets.nGenEvents = 18393090
+WJets.nGenEvents = 81345381
+#WJets.nGenEvents = 18393090*0.99689  ### all but June1 v1
 
 W3Jets = cfg.MCComponent(
     name = 'W3Jets',
     files = getFiles('/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12-PU_S7_START52_V9-v2/AODSIM/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
     xSection = 304.0,
-    nGenEvents = 14725074*1.98661/2.0,
+    nGenEvents = 7541595*1.99724/2.0,
+#    nGenEvents = 14725074*1.98661/2.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -345,6 +346,30 @@ ZZ = cfg.MCComponent(
 ZZ.files = getFiles('/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 ZZ.nGenEvents = 9799908
 
+QCD = cfg.MCComponent(
+    name = 'QCD',
+    files = getFiles('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12-PU_S7_START52_V9-v5/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    xSection = 1.0,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+QCD50 = cfg.MCComponent(
+    name = 'QCD50',
+    files = getFiles('/QCD_Pt-50to80_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    xSection = 1.0,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+QCD80 = cfg.MCComponent(
+    name = 'QCD80',
+    files = getFiles('/QCD_Pt-80to120_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    xSection = 1.0,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
 # Higgs Summer11 ----------------------------------------------------------------------------
 
 Higgsgg110.files = getFiles('/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
@@ -372,9 +397,125 @@ HiggsVH135.files = getFiles('/WH_ZH_TTH_HToTauTau_M-135_8TeV-pythia6-tauola/Summ
 HiggsVH140.files = getFiles('/WH_ZH_TTH_HToTauTau_M-140_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVH145.files = getFiles('/WH_ZH_TTH_HToTauTau_M-145_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
+VBF_HToWWTo2LAndTau2Nu_M_125 = cfg.MCComponent(
+    name = 'VBF_HToWWTo2LAndTau2Nu_M_125',
+    files = [],
+    xSection = 1.559*2.34e-2,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+VBF_HToWWTo2LAndTau2Nu_M_125.files = getFiles('/VBF_HToWWTo2LAndTau2Nu_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+VBF_HToWWTo2LAndTau2Nu_M_125.nGenEvents = 9799908
+
+GluGluToHToWWTo2LAndTau2Nu_M_125 = cfg.MCComponent(
+    name = 'GluGluToHToWWTo2LAndTau2Nu_M_125',
+    files = [],
+    xSection = 19.52*2.34e-2,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GluGluToHToWWTo2LAndTau2Nu_M_125.files = getFiles('/GluGluToHToWWTo2LAndTau2Nu_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+GluGluToHToWWTo2LAndTau2Nu_M_125.nGenEvents = 9799908
+
+
+# Higgs WW/ZZ Fall11 ----------------------------------------------------------------------------
+
+GluGluToHToWWTo2Tau2Nu_M_120 = cfg.MCComponent(
+    name = 'GluGluToHToWWTo2Tau2Nu_M_120',
+    files = [],
+    xSection = 16.63*(1.54e-2-6.94e-3),
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GluGluToHToWWTo2Tau2Nu_M_120.files = getFiles('/GluGluToHToWWTo2Tau2Nu_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/PAT_CMG_V5_4_1/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+GluGluToHToWWTo2Tau2Nu_M_120.nGenEvents = 54996
+
+GluGluToHToWWToTauNuQQ_M_120 = cfg.MCComponent(
+    name = 'GluGluToHToWWToTauNuQQ_M_120',
+    files = [],
+    xSection = 16.63*1.49e-3/3.,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GluGluToHToWWToTauNuQQ_M_120.files = getFiles('/GluGluToHToWWToTauNuQQ_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/PAT_CMG_V5_4_1/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+GluGluToHToWWToTauNuQQ_M_120.nGenEvents = 109994
+
+VBF_HToWWToTauNuQQ_M_120 = cfg.MCComponent(
+    name = 'VBF_HToWWToTauNuQQ_M_120',
+    files = [],
+    xSection = 1.263*1.49e-3/3.,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+VBF_HToWWToTauNuQQ_M_120.files = getFiles('/VBF_HToWWToTauNuQQ_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/PAT_CMG_V5_4_1/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+VBF_HToWWToTauNuQQ_M_120.nGenEvents = 109857
+
+VBF_HToWWTo2Tau2Nu_M_120 = cfg.MCComponent(
+    name = 'VBF_HToWWTo2Tau2Nu_M_120',
+    files = [],
+    xSection = 1.263*(1.54e-2-6.94e-3),
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+VBF_HToWWTo2Tau2Nu_M_120.files = getFiles('/VBF_HToWWTo2Tau2Nu_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/PAT_CMG_V5_4_1/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+VBF_HToWWTo2Tau2Nu_M_120.nGenEvents = 52803
+
+GluGluToHToZZTo2L2Nu_M_125 = cfg.MCComponent(
+    name = 'GluGluToHToZZTo2L2Nu_M_125',
+    files = [],
+    xSection = 15.31*2.36e-2,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GluGluToHToZZTo2L2Nu_M_125.files = getFiles('/GluGluToHToZZTo2L2Nu_M-125_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/PAT_CMG_V5_4_1/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+GluGluToHToZZTo2L2Nu_M_125.nGenEvents = 292174
+
+GluGluToHToZZTo2L2Q_M_125 = cfg.MCComponent(
+    name = 'GluGluToHToZZTo2L2Q_M_125',
+    files = [],
+    xSection = 15.31*3.73e-3,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+GluGluToHToZZTo2L2Q_M_125.files = getFiles('/GluGluToHToZZTo2L2Q_M-125_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/PAT_CMG_V5_4_1/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+GluGluToHToZZTo2L2Q_M_125.nGenEvents = 263973
+
+VBF_ToHToZZTo2l2q_M_130 = cfg.MCComponent(
+    name = 'VBF_ToHToZZTo2l2q_M_130',
+    files = [],
+    xSection = 1.211*3.73e-3,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+VBF_ToHToZZTo2l2q_M_130.files = getFiles('/VBF_ToHToZZTo2l2q_M-130_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/PAT_CMG_V5_4_1/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+VBF_ToHToZZTo2l2q_M_130.nGenEvents = 49944
+
+VBF_ToHToZZTo2L2NU_M_125 = cfg.MCComponent(
+    name = 'VBF_ToHToZZTo2L2NU_M_125',
+    files = [],
+    xSection = 1.211*2.36e-2,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+VBF_ToHToZZTo2L2NU_M_125.files = getFiles('/VBF_ToHToZZTo2L2NU_M-125_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/PAT_CMG_V5_4_1/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+VBF_ToHToZZTo2L2NU_M_125.nGenEvents = 49347
+
+
 mc_spring12 = copy.copy( mc_ewk )
 mc_spring12.extend( mc_higgs ) 
 mc_spring12.extend([W3Jets, WW, WZ, ZZ])
+mc_spring12.extend([QCD,QCD50,QCD80])
+mc_spring12.extend([GluGluToHToWWTo2LAndTau2Nu_M_125,VBF_HToWWTo2LAndTau2Nu_M_125])
 
 for data in data_2012A:
     data.triggers = data_triggers_2012A
