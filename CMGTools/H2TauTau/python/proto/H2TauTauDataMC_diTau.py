@@ -8,10 +8,11 @@ from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
 from CMGTools.RootTools.fwlite.Weight import Weight
 from CMGTools.RootTools.fwlite.Weight import printWeights
 from CMGTools.RootTools.Style import *
-from ROOT import kPink, kOrange, kViolet, kGreen
+from ROOT import kPink, kOrange, kViolet, kGreen, kGray
 
 sOrange = Style(lineColor=1, markerColor=kOrange, fillColor=kOrange)
 sViolet = Style(lineColor=1, markerColor=kViolet, fillColor=kViolet)
+sGray   = Style(lineColor=1, markerColor=kGray,   fillColor=kGray)
 
 sRedLine   = Style(lineColor=2     , markerColor=2     , fillStyle=0)
 sBlueLine  = Style(lineColor=4     , markerColor=4     , fillStyle=0)
@@ -254,11 +255,12 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['DYJets (emb)']                  = {'style':sYellow,   'layer':3}
         self.histPref['DYJets_Photon']                 = {'style':sYellow,   'layer':2.7}
         self.histPref['DYJets_Electron']               = {'style':sYellow,   'layer':2.6}
-        self.histPref['DYJets_Fakes']                  = {'style':sYellow,    'layer':2.5}
-        self.histPref['QCD15']                         = {'style':sGreen,    'layer':5.4}
-        self.histPref['QCD30']                         = {'style':sGreen,    'layer':5.3}
-        self.histPref['QCD50']                         = {'style':sGreen,    'layer':5.2}
-        self.histPref['QCD80']                         = {'style':sGreen,    'layer':5.1}
+        self.histPref['DYJets_Fakes']                  = {'style':sYellow,   'layer':2.5}
+        self.histPref['QCD15']                         = {'style':sGray,     'layer':5.4}
+        self.histPref['QCD30']                         = {'style':sGray,     'layer':5.3}
+        self.histPref['QCD50']                         = {'style':sGray,     'layer':5.2}
+        self.histPref['QCD80']                         = {'style':sGray,     'layer':5.1}
+        self.histPref['QCD']                           = {'style':sGray,     'layer':5.1}
 
         self.histPref['Higgsgg110']                    = {'style':sRedLine,  'layer':6.1}
         self.histPref['Higgsgg115']                    = {'style':sRedLine,  'layer':6.1}
