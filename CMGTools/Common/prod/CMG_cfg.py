@@ -11,7 +11,7 @@ process = cms.Process("CMG")
 print 'querying database for source files'
 
 
-runOnMC = False
+runOnMC = True
 
 
 from CMGTools.Production.datasetToSource import *
