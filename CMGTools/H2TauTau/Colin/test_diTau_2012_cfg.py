@@ -13,8 +13,18 @@ puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_190456_196531.r
 
 mc_vertexWeight = None
 mc_tauEffWeight_mc = 'effLooseTau15MC'
-mc_tauEffWeight='eff2012IsoTau5_1fb'
-mc_jetEffWeight='eff2012Jet30'
+#mc_tauEffWeight='eff2012IsoTau5_1fb'
+mc_tauEffWeight='eff2012IsoTau5fb'
+#mc_tauEffWeight='eff2012IsoTau5fbUp'
+#mc_tauEffWeight='eff2012IsoTau5fbDown'
+#mc_tauEffWeight='eff2012IsoTau5fbUpSlope'
+#mc_tauEffWeight='eff2012IsoTau5fbDownSlope'
+#mc_tauEffWeight='eff2012IsoTau5fbUpPlateau'
+#mc_tauEffWeight='eff2012IsoTau5fbDownPlateau'
+#mc_tauEffWeight='eff2012IsoTau5fbCrystalBall'
+#mc_tauEffWeight='eff2012IsoTau5fbFitFrom30'
+#mc_jetEffWeight='eff2012Jet30'
+mc_jetEffWeight='eff2012Jet5fb'
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer',
@@ -112,17 +122,22 @@ for mc in MC:
     mc.puFileMC = puFileMC
 
 selectedComponents = data_2012 + embedded_2012 + [DYJets, WJets, W3Jets, TTJets, WW, WZ, ZZ]
-selectedComponents += [ Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
-                        HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
-                        HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
+selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
+                        HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
+                        HiggsVH110 , HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
+#selectedComponents += [QCD50,QCD80]
+#selectedComponents += [ GluGluToHToWWTo2LAndTau2Nu_M_125, VBF_HToWWTo2LAndTau2Nu_M_125 ]
+#selectedComponents += [ GluGluToHToWWTo2Tau2Nu_M_120, GluGluToHToWWToTauNuQQ_M_120, VBF_HToWWToTauNuQQ_M_120, VBF_HToWWTo2Tau2Nu_M_120,
+#                        GluGluToHToZZTo2L2Nu_M_125, GluGluToHToZZTo2L2Q_M_125, VBF_ToHToZZTo2l2q_M_130, VBF_ToHToZZTo2L2NU_M_125]
 
 if runOnData:
     selectedComponents = data_2012
 if runOnMC:
-    selectedComponents = [DYJets, WJets, W3Jets, TTJets, WW, WZ, ZZ]
-    selectedComponents += [ Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
-                            HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145,
-                            HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
+    selectedComponents = [DYJets, TTJets, WW, WZ, ZZ] #WJets, W3Jets, 
+    selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
+                        HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
+                        HiggsVH110 , HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
+#    selectedComponents = [QCD50,QCD80]
 if runOnEmbedded:
     selectedComponents = embedded_2012
 
@@ -163,6 +178,9 @@ TTJets.splitFactor = 50
 WW.splitFactor = 10
 WZ.splitFactor = 10
 ZZ.splitFactor = 10
+#QCD.splitFactor = 50
+QCD50.splitFactor = 50
+QCD80.splitFactor = 50
 data_Run2012A_PromptReco_v1.splitFactor = 50
 data_Run2012B_PromptReco_v1.splitFactor = 50
 embed_Run2012A_PromptReco_v1.splitFactor = 50
@@ -173,7 +191,7 @@ if test==1:
     comp = DYJets
     #comp = WJets
     #comp = data_Run2012A_PromptReco_v1
-    #comp = Higgsgg125
+    #comp = GluGluToHToWWTo2LAndTau2Nu_M_125
     #comp = embed_Run2012A_PromptReco_v1
     selectedComponents = [comp]
     comp.splitFactor = 10
