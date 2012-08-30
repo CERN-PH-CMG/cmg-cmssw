@@ -17,7 +17,7 @@ baseJetFactory = cms.PSet(
                               ),
        fillJec = cms.bool(True),
        fillJecUncertainty = cms.bool(True),
-       jecPath = cms.string("CMGTools/Common/data/GR_R_52_V9_Uncertainty_AK5PFchs.txt")
+       jecPath = cms.string("CMGTools/Common/data/GR_P_V41_AN1_Uncertainty_AK5PF.txt")
        )
 
 cmgBaseJet = cms.EDFilter(
