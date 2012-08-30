@@ -18,3 +18,5 @@ data_triggers_2011B = [
 mc_triggers_fall11 = [
     'HLT_IsoMu15_LooseIsoPFTau15_v9',
     ]
+
+mc_triggers = mc_triggers_fall11

@@ -87,6 +87,6 @@ MC = copy.copy( mc_ewk )
 for sam in MC:
     sam.triggers = mc_triggers_fall11
 
-for data in data_2011A:
+for data in data_list_2011A:
     data.triggers = data_triggers_2011A
     
