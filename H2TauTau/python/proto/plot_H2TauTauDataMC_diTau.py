@@ -29,9 +29,10 @@ def lineno():
 ########## rootlogon8 for loose iso M          ##### don't forget to change weight at line ~401!
 ########## rootlogon9 for loose iso M   and Tau pT calculated post dR+nVert RW       ##### don't forget to change weight at line ~401!
 ########## rootlogon10 for loose iso LL4 POST BUG! RW                                ##### don't forget to change weight at line ~401!
+########## rootlogon11dBisoM for loose iso dBeta RW                                  ##### don't forget to change weight at line ~401!
 from os import path
-if path.exists('../proto/rootlogon10.C'):
-    gROOT.Macro('../proto/rootlogon10.C')  # Run ROOT logon script
+if path.exists( '/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon11.C'):
+    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon11.C')  # Run ROOT logon script
 
 run2012=True
 
@@ -125,7 +126,9 @@ if __name__ == '__main__':
 
     # SWITCH ON/OFF embedded samples
     options.embed = True
+    #options.embed = False
     crossCheckZee = True
+    #crossCheckZee = False
 
     if run2012:
       # 1.616/fb
@@ -209,11 +212,16 @@ if __name__ == '__main__':
 
     isolationMNM       =  ' && ((l1MedMVAIso>0.5 && l2MedMVAIso<0.5) || (l1MedMVAIso<0.5 && l2MedMVAIso>0.5))'
 
-    isolationM         =  ' && (l1MedMVAIso>0.5 || l2MedMVAIso>0.5)'
+    ###### cheat for old dB iso
+    #isolationM         =  ' && (l1MedMVAIso>0.5 || l2MedMVAIso>0.5)'
+    isolationM         =  ' && (l1MedIso>0.5 || l2MedIso>0.5)'
+
     isolationLL        =  ' && l1RawMVAIso>0.795 && l2RawMVAIso>0.795'
     isolationLL2       =  ' && l1RawMVAIso>0.7 && l2RawMVAIso>0.7'
     isolationLL3       =  ' && l1RawMVAIso>0.3 && l2RawMVAIso>0.3'
+
     isolationLL4       =  ' && l1RawMVAIso>0.5 && l2RawMVAIso>0.5'
+
     isolationLL1       =  ' && l1RawMVAIso>0.1 && l2RawMVAIso>0.1'
     isolationLL4old    =  ' && l1LooIso>0.5 && l2LooIso>0.5'
     isolationML        =  ' && ((l1MedMVAIso>0.5 && l2RawMVAIso>0.795) || (l1RawMVAIso>0.795 && l2MedMVAIso>0.5))'
@@ -222,6 +230,7 @@ if __name__ == '__main__':
     isolationTM        =  ' && ((l1MedMVAIso>0.5 && l2TigMVAIso>0.5) || (l1TigMVAIso>0.5 && l2MedMVAIso>0.5))'
     isolationTT        =  ' && l1TigMVAIso>0.5 && l2TigMVAIso>0.5'
     isolationTTold     =  ' && l1TigIso>0.5 && l2TigIso>0.5'
+
     Jet0               =  ' && jet1Pt<50'
     BOOSTED            =  ' && jet1Pt>50'
     VBF                =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet1Eta - jet2Eta)>2.5 && (jet1Eta*jet2Eta)<0 && mjj>250 && nCentralJets==0'
@@ -236,110 +245,17 @@ if __name__ == '__main__':
     cuts=[
 #### New default for HCP ####
 
-        ("CMS_2012_5_fb_forHCP_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-    
-#### Andreas ####    
-        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_dRRW_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<200.0'   , isolationMM , 5 ),
-        #("CMS_2012_5_fb_qcd5LL4_forRW_loose_BOOSTED"     , baselineSS + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb_qcd5M_Closure_loose_BOOSTED"     , baselineSS + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+#####  Riccardo  ############################################################################################################################### 
 
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<100.' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_dR3_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<3.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_dR2_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_iso04_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<100.' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_iso06_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<100.' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR3_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR2_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso04_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso06_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR3_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR2_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso04_VBF"    , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso06_VBF"    , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        ######## REWEIGHTING
+        ("CMS_2012_5_fb_forRW_loose_BOOSTED"    , baselineSS + BOOSTED       , ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_dBMedium_qcd5M_Closure_loose_BOOSTED"   , baselineSS + BOOSTED       , ' && dRtt<2.0'   , isolationMM , 5 ),
         
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_test_BOOSTED"  , baselineSS  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_test_VBF"      , baselineSS  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_test_VBFwider"      , baselineSS  + VBFlooser             , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_test_VBFiso06"      , baselineSS  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_sep_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_sep_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_nodR_loose_sep_BOOSTED"  , baseline  + BOOSTED + NOVBF , '' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_IsoTest_SS_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF, ' && dRtt<2.0' , isolationMM , 5 ),
+        ######## ANALYSIS' STANDARD #########
+        #("CMS_2012_5_fb_dBMedium_qcd5M_dRTest_loose_BOOSTED"    , baseline + BOOSTED + NOVBF , ' && dRtt<200.0'   , isolationMM , 5 ),
+        #("CMS_2012_5_fb_dBMedium_qcd5M_RWdR_loose_BOOSTED"    , baseline + BOOSTED + NOVBF , ' && dRtt<2.0'   , isolationMM , 5 ),
+        #("CMS_2012_5_fb_loose_BOOSTED"        , baseline + BOOSTED + NOVBF             , ' && dRtt<2.0'   , isolationMM , 5 ),
 
-        #("CMS_2012_5_fb_qcd5LL4_loose_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_isoChooseDiLepton_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_isoChooseDiLepton_forRW_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_isoChooseDiLepton_relaxed_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_isoChooseDiLepton_relaxed_forRW_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_isoChoosDiLepton_relaxe_SS_DR_FINE_BOOSTED"  , baselineSS  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_isoChoosDiLepton_relaxe_SS_NODR_FINE_BOOSTED"  , baselineSS  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_relaxed_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_relaxed_forRW_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_QCD_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationLL4 , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_QCD_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationLL4 , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_higgs_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_oldLIso_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_btag_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_newfit_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_plateauup_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_plateaudown_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_higgs_FINE_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_QCD_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF +' && weight<1e-4' , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_loose_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationLL4 , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_looseRef_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_stdMedium_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMMold , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_stdTight_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationTTold , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_oldloose_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationLL4old , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_default_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_oldDefault_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMMold , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_firstTight_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_scaleDY2_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_tightE_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF + ' && l1MVAEle>0.5' , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_btag_ldR2_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt>2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_btag_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_newfit_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_oldLIso_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_oneProng_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF+' && l1DecayMode<3 && l2DecayMode<3' , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_onePiProng_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF+' && l1DecayMode==0 && l2DecayMode==0' , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_twoPiProng_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF+' && l1DecayMode==1 && l2DecayMode==1' , ' && dRtt<200.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_threeProng_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF+' && l1DecayMode>=3 && l2DecayMode>=3' , ' && dRtt<200.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_forRW_Closure_FINE_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<200.0' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NOWEIGHT_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NOWEIGHT_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_SS_BOOSTED"  , baselineSS  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_WIDE_SS_VBF"      , baselineSS  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NODR_NOWEIGHT_BOOSTED"  , baseline  + BOOSTED + NOVBF , '' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_oneProng_FINE_NODR_NOWEIGHT_BOOSTED"  , baseline  + BOOSTED + NOVBF+' && l1DecayMode<3 && l2DecayMode<3' , '' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_onePiProng_FINE_NODR_NOWEIGHT_BOOSTED"  , baseline  + BOOSTED + NOVBF+' && l1DecayMode==0 && l2DecayMode==0' , '' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_twoPiProng_FINE_NODR_NOWEIGHT_BOOSTED"  , baseline  + BOOSTED + NOVBF+' && l1DecayMode==1 && l2DecayMode==1' , '' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_threeProng_FINE_NODR_NOWEIGHT_BOOSTED"  , baseline  + BOOSTED + NOVBF+' && l1DecayMode>=3 && l2DecayMode>=3' , '' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NODR_VBF"      , baseline  + VBF             , '' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_SS_NODR_BOOSTED"  , baselineSS  + BOOSTED + NOVBF , '' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_ptDRWeight9_SS_NODR_BOOSTED"  , baselineSS  + BOOSTED + NOVBF , '' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_firstRelaxed_SS_BOOSTED"  , baselineSS  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_WIDE_SS_NODR_VBF"      , baselineSS  + VBF             , '' , isolationMM , 5 ),
-
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NOEMBED_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NOEMBED_TRIGUP_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NOEMBED_TRIGDOWN_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NOEMBED_TRIGSLOPEUP_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NOEMBED_TRIGSLOPEDOWN_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NOEMBED_TRIGPLATEAUUP_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
-        #("CMS_2012_5_fb__qcd5LL4_PREAPP_FINE_NOEMBED_TRIGPLATEAUUP_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
 	  ]
     
     for prefix,cut,antiqcdcut,isocut,qcdEstimate in cuts:
@@ -354,37 +270,37 @@ if __name__ == '__main__':
         #('svfitMass'        ,int(20/rebin), 0 , 300    ), 
         #('svfitMass'        ,int(15/rebin), 0 , 300    ), 
         #('svfitMass*1.03'   ,int(300/rebin), 0 , 300    ),
-        ('svfitMass*1.03'   ,int(30/rebin), 0 , 300    ),
+        #('svfitMass*1.03'   ,int(30/rebin), 0 , 300    ),
         #('svfitMass*0.97'   ,int(300/rebin), 0 , 300    ),
-        ('svfitMass*0.97'   ,int(30/rebin), 0 , 300    ),
+        #('svfitMass*0.97'   ,int(30/rebin), 0 , 300    ),
         ('visMass'          ,int(30/rebin), 0 , 300    ),
         #('visMass*1.03'     ,int(30/rebin), 0 , 300    ),
         #('visMass*0.97'     ,int(30/rebin), 0 , 300    ),
         ('dRtt'             ,int(15/rebin), 0 , 5      ),
-        ('jet1Pt'           ,int(20/rebin), 0 , 600    ),
+        #('jet1Pt'           ,int(20/rebin), 0 , 600    ),
         ('nVert'            ,int(25/rebin), 0 , 50     ),
-        ('l1Pt'             ,int(15/rebin), 0 , 300    ),   # was 75 bins
-        ('l2Pt'             ,int(20/rebin), 0 , 200    ),   # was 75 bins
-        ('jet2Pt'           ,int(25/rebin), 0 , 500    ),
-        ('met'              ,int(40/rebin), 0 , 200    ),
-        ('l1Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
-        ('l2Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
-        ('jet1Eta'          ,int(20/rebin), -5, 5      ),
-        ('jet2Eta'          ,int(20/rebin), -5, 5      ),
-        ('mjj'              ,int(30/rebin), 0 , 800    ),
-        ('nJets'            ,10           , 0 , 10     ),
-        ('dPhitt'           ,int(40/rebin), 0 , 3.15   ),
-        ('mt'               ,int(40/rebin), 0 , 200    ),
-        ('pThiggs'          ,int(40/rebin), 0 , 300    ),
-        ('diTauPt'          ,int(40/rebin), 0 , 300    ),
-        ('l1jetPt'          ,15           , 0 , 300    ),
-        ('l2jetPt'          ,20           , 0 , 200    ),
-        ('l1jetMass'        ,30           , 0 , 100    ),
-        ('l2jetMass'        ,30           , 0 , 100    ),
-        ('l1jetWidth'       ,50           , 0 , 0.05   ),
-        ('l2jetWidth'       ,50           , 0 , 0.05   ),
-        ('l1jetBtag'        ,50           , -1 , 1     ),
-        ('l2jetBtag'        ,50           , -1 , 1     ),
+        #('l1Pt'             ,int(15/rebin), 0 , 300    ),   # was 75 bins
+        #('l2Pt'             ,int(20/rebin), 0 , 200    ),   # was 75 bins
+        #('jet2Pt'           ,int(25/rebin), 0 , 500    ),
+        #('met'              ,int(40/rebin), 0 , 200    ),
+        #('l1Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
+        #('l2Eta'            ,int(20/rebin), -3, 3      ),   # was 40 bins
+        #('jet1Eta'          ,int(20/rebin), -5, 5      ),
+        #('jet2Eta'          ,int(20/rebin), -5, 5      ),
+        #('mjj'              ,int(30/rebin), 0 , 800    ),
+        #('nJets'            ,10           , 0 , 10     ),
+        #('dPhitt'           ,int(40/rebin), 0 , 3.15   ),
+        #('mt'               ,int(40/rebin), 0 , 200    ),
+        #('pThiggs'          ,int(40/rebin), 0 , 300    ),
+        #('diTauPt'          ,int(40/rebin), 0 , 300    ),
+        #('l1jetPt'          ,15           , 0 , 300    ),
+        #('l2jetPt'          ,20           , 0 , 200    ),
+        #('l1jetMass'        ,30           , 0 , 100    ),
+        #('l2jetMass'        ,30           , 0 , 100    ),
+        #('l1jetWidth'       ,50           , 0 , 0.05   ),
+        #('l2jetWidth'       ,50           , 0 , 0.05   ),
+        #('l1jetBtag'        ,50           , -1 , 1     ),
+        #('l2jetBtag'        ,50           , -1 , 1     ),
         #('l1RawMVAIso'      ,int(30/rebin) , 0 , 1.00001),
         #('l1DecayMode'      ,12           , 0 , 12     ),
         #('l2DecayMode'      ,12           , 0 , 12     ),
@@ -494,7 +410,6 @@ if __name__ == '__main__':
      			                     xmin,                          \
      			                     xmax,                          \
      			                     cut = cutSS+isocut+antiqcdcut, \
-#                                             weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
      			                     weight=weight,                 \
      			                     embed=options.embed)
       #print lineno()
@@ -557,14 +472,14 @@ if __name__ == '__main__':
                                              #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
-                                             weight=weight+"*weightQCD_nVert(nVert)",\
-                                             #weight=weight,                    \
+                                             #weight=weight+"*weightQCD_nVert(nVert)",\
+                                             weight=weight,                    \
                                              embed=options.embed)
       #print lineno()
       
       WJets_looseisocut = isolationMNM + " && !(1 "+isocut+")"
-      if prefix.find('VBF')     > 0 : weightForWJets = 'weightWJets2011_nVert(nVert)'
-      if prefix.find('BOOSTED') > 0 : weightForWJets = 'weightW3Jets2011_nVert(nVert)'
+      if prefix.find('VBF')     > 0 : weightForWJets = 'weightW3Jets2011_nVert(nVert)'
+      if prefix.find('BOOSTED') > 0 : weightForWJets = 'weightWJets2011_nVert(nVert)'
       plotVarDataLooseIsoOS_WJets = H2TauTauDataMC(var,                                    \
                                                    anaDir,                                 \
                                                    selCompsNoSignal,                       \
@@ -577,8 +492,8 @@ if __name__ == '__main__':
      			                                   embed=options.embed)
 
       WJets_looseisocut = isolationMNM + " && !(1 "+isocut+")"
-      if prefix.find('VBF')     > 0 : weightForWJets = 'weightWJets2011_nVert(nVert)'
-      if prefix.find('BOOSTED') > 0 : weightForWJets = 'weightW3Jets2011_nVert(nVert)'
+      if prefix.find('VBF')     > 0 : weightForWJets = 'weightW3Jets2011_nVert(nVert)'
+      if prefix.find('BOOSTED') > 0 : weightForWJets = 'weightWJets2011_nVert(nVert)'
       plotVarDataLooseIsoSS_WJets = H2TauTauDataMC(var,                                      \
                                                    anaDir,                                   \
                                                    selCompsNoSignal,                         \
@@ -595,11 +510,12 @@ if __name__ == '__main__':
       ################# PLOTTING DATA/MC ####################
       #######################################################
       yields = False
-      if ( var == "svfitMass" or var == "svfitMass*1.03" or var == "svfitMass*0.97" ):
+      if ( var == "svfitMass" or var == "svfitMass*1.03" or var == "svfitMass*0.97" or\
+           var == "visMass"   or var == "visMass*1.03"   or var == "visMass*0.97"   ):
         massesRange = [110,115,120,125,130,135,140,145]
         #massesRange = [125]
         print 'I\'m plotting mass distribution for masses in [110,115,120,125,130,135,140,145] GeV'
-        if var == "svfitMass" :
+        if (var == "svfitMass" or var == "visMass") :
           yields = True
       else :
         massesRange = [125]
@@ -825,30 +741,30 @@ if __name__ == '__main__':
    	    print "Data:"		     , plotVarDataSS.Hist("Data").Integral()
    	    print "TTJets:"		     , plotVarDataSS.Hist("TTJets").Integral()
    	    print "DYJets:"		     , plotVarDataSS.Hist("DYJets").Integral()#+plotVarDataSS.Hist("DYJets_Photon").Integral()
-   	    print "DYJets_Electron:"	     , plotVarDataSS.Hist("DYJets_Electron").Integral()
-   	    print "DYJets_Fakes:"	     , plotVarDataSS.Hist("DYJets_Fakes").Integral()
+   	    print "DYJets_Electron:" , plotVarDataSS.Hist("DYJets_Electron").Integral()
+   	    print "DYJets_Fakes:"	 , plotVarDataSS.Hist("DYJets_Fakes").Integral()
    	    print "WJets:"		     , plotVarDataSS.Hist("WJets").Integral()+plotVarDataSS.Hist("WJets_Fakes").Integral()
-     	    print "DiBoson:"		     , plotVarDataSS.Hist("WW").Integral()+plotVarDataSS.Hist("WZ").Integral()+plotVarDataSS.Hist("ZZ").Integral()
+     	    print "DiBoson:"	 , plotVarDataSS.Hist("WW").Integral()+plotVarDataSS.Hist("WZ").Integral()+plotVarDataSS.Hist("ZZ").Integral()
 
          if True:
             print "loose OS"
             print "Data:"		     , plotVarDataLooseIsoOS.Hist("Data").Integral()
             print "TTJets:"		     , plotVarDataLooseIsoOS.Hist("TTJets").Integral()
             print "DYJets:"		     , plotVarDataLooseIsoOS.Hist("DYJets").Integral()#+plotVarDataLooseIsoOS.Hist("DYJets_Photon").Integral()
-            print "DYJets_Electron:"	     , plotVarDataLooseIsoOS.Hist("DYJets_Electron").Integral()
-            print "DYJets_Fakes:"	     , plotVarDataLooseIsoOS.Hist("DYJets_Fakes").Integral()
+            print "DYJets_Electron:" , plotVarDataLooseIsoOS.Hist("DYJets_Electron").Integral()
+            print "DYJets_Fakes:"	 , plotVarDataLooseIsoOS.Hist("DYJets_Fakes").Integral()
             print "WJets:"		     , plotVarDataLooseIsoOS.Hist("WJets").Integral()+plotVarDataLooseIsoOS.Hist("WJets_Fakes").Integral()
-            print "DiBoson:"		     , plotVarDataLooseIsoOS.Hist("WW").Integral()+plotVarDataLooseIsoOS.Hist("WZ").Integral()+plotVarDataLooseIsoOS.Hist("ZZ").Integral()
+            print "DiBoson:"		 , plotVarDataLooseIsoOS.Hist("WW").Integral()+plotVarDataLooseIsoOS.Hist("WZ").Integral()+plotVarDataLooseIsoOS.Hist("ZZ").Integral()
        
          if True:
             print "loose SS"
             print "Data:"		     , plotVarDataLooseIsoSS.Hist("Data").Integral()
             print "TTJets:"		     , plotVarDataLooseIsoSS.Hist("TTJets").Integral()
             print "DYJets:"		     , plotVarDataLooseIsoSS.Hist("DYJets").Integral()#+plotVarDataLooseIsoSS.Hist("DYJets_Photon").Integral()
-            print "DYJets_Electron:"	     , plotVarDataLooseIsoSS.Hist("DYJets_Electron").Integral()
-            print "DYJets_Fakes:"	     , plotVarDataLooseIsoSS.Hist("DYJets_Fakes").Integral()
+            print "DYJets_Electron:" , plotVarDataLooseIsoSS.Hist("DYJets_Electron").Integral()
+            print "DYJets_Fakes:"	 , plotVarDataLooseIsoSS.Hist("DYJets_Fakes").Integral()
             print "WJets:"		     , plotVarDataLooseIsoSS.Hist("WJets").Integral()+plotVarDataLooseIsoSS.Hist("WJets_Fakes").Integral()
-            print "DiBoson:"		     , plotVarDataLooseIsoSS.Hist("WW").Integral()+plotVarDataLooseIsoSS.Hist("WZ").Integral()+plotVarDataLooseIsoSS.Hist("ZZ").Integral()
+            print "DiBoson:"		 , plotVarDataLooseIsoSS.Hist("WW").Integral()+plotVarDataLooseIsoSS.Hist("WZ").Integral()+plotVarDataLooseIsoSS.Hist("ZZ").Integral()
 
          ymax = max(QCDShapePlot.GetMaximum(),QCDShapeSemiPlot.GetMaximum())*1.5
           
