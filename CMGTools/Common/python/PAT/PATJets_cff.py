@@ -41,8 +41,13 @@ patJets.tagInfoSources = cms.VInputTag(
    cms.InputTag("secondaryVertexTagInfos")
    )
 patJets.userData.userFunctions = cms.vstring( "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
-                                                     "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0")
-patJets.userData.userFunctionLabels = cms.vstring('secvtxMass')
+                                                     "tagInfoSecondaryVertex('secondaryVertex').secondaryVertex(0).p4().mass() : 0",
+                                              "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
+                                                     "tagInfoSecondaryVertex('secondaryVertex').flightDistance(0).value() : 0",
+                                              "? hasTagInfo('secondaryVertex') && tagInfoSecondaryVertex('secondaryVertex').nVertices() > 0 ? "
+                                                     "tagInfoSecondaryVertex('secondaryVertex').flightDistance(0).error() : 0",
+)
+patJets.userData.userFunctionLabels = cms.vstring('secvtxMass','Lxy','LxyErr')
 
 # parton and gen jet matching
 
