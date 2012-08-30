@@ -451,8 +451,8 @@ if __name__ == '__main__':
       #########################################################
       ############## change here the loose iso ################
       #########################################################
-      looseisocut = isolationM + " && !(1 "+isocut+")"
-      #looseisocut = isolationLL4+" && !(1 "+isocut+")"
+      #looseisocut = isolationM + " && !(1 "+isocut+")"
+      looseisocut = isolationLL4+" && !(1 "+isocut+")"
       #looseisocut = isolationLL4old +" && !(1 "+isocut+")"
       #looseisocut = ""
       #looseisocut = ' && l1RawMVAIso>0.5 && l2MedMVAIso>0.5'
@@ -557,8 +557,8 @@ if __name__ == '__main__':
                                              #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
-                                             weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
-                                             #weight=weight,                    \
+                                             #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
+                                             weight=weight,                    \
                                              embed=options.embed)
       #print lineno()
       
