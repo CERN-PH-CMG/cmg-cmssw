@@ -4,13 +4,15 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
+from CMGTools.H2TauTau.proto.weights.weighttable import mu_id_taumu_2011, mu_iso_taumu_2011
 from CMGTools.H2TauTau.proto.samples.sampleShift import selectShift
 from CMGTools.RootTools.RootTools import * 
 
 # 'Nom', 'Up', 'Down', or None
 shift = None
 # 1.0, 1.03, 0.97
-tauScaleShift = 0.97
+tauScaleShift = 1.0
+syncntuple = True
 
 mc_vertexWeight = 'vertexWeightFall112011AB'
 mc_tauEffWeight = None
@@ -25,7 +27,6 @@ mc_muEffWeight = 'effMu2011AB'
 
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
-    # fixme pick it up automatically
     )
 
 triggerAna = cfg.Analyzer(
@@ -57,7 +58,9 @@ TauMuAna = cfg.Analyzer(
     iso2 = 0.1,
     m_min = 10,
     m_max = 99999,
-    triggerMap = pathsAndFilters
+    triggerMap = pathsAndFilters,
+    mvametsigs = 'mvaMETTauMu',
+    verbose = False
     )
 
 dyJetsFakeAna = cfg.Analyzer(
@@ -76,7 +79,6 @@ tauWeighter = cfg.Analyzer(
     lepton = 'leg1',
     verbose = False,
     disable = False,
-    recEffVersion = None
     )
 
 muonWeighter = cfg.Analyzer(
@@ -86,7 +88,8 @@ muonWeighter = cfg.Analyzer(
     lepton = 'leg2',
     verbose = False,
     disable = False,
-    recEffVersion = '2011'
+    idWeight = mu_id_taumu_2011,
+    isoWeight = mu_iso_taumu_2011    
     )
 
 
@@ -110,19 +113,23 @@ treeProducer = cfg.Analyzer(
     'H2TauTauTreeProducerTauMu'
     )
 
+treeProducerXCheck = cfg.Analyzer(
+    'H2TauTauSyncTree'    
+    )
+
 #########################################################################################
 
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinJun25 import * 
-from CMGTools.H2TauTau.proto.samples.tauMu_ColinJul4 import * 
+# from CMGTools.H2TauTau.proto.samples.run2011.tauMu_ColinJun25 import * 
+# from CMGTools.H2TauTau.proto.samples.tauMu_ColinJul4 import * 
+from CMGTools.H2TauTau.proto.samples.tauMu_Sync_ColinAug30 import *
 
 #########################################################################################
 
 
 # MC_list = [WJets, DYJets, TTJets, W2Jets, W3Jets]
 MC_list = copy.copy(MC)
-data_list = copy.copy(data_2011)
-embed_list = copy.copy(embed_2011)
-
+data_list = copy.copy(data_list_2011)
+embed_list = copy.copy(embed_list_2011)
 
 for mc in MC_list:
     mc.splitFactor = 10
@@ -184,15 +191,17 @@ sequence = cfg.Sequence( [
     treeProducer
    ] )
 
+if syncntuple:
+    sequence.append( treeProducerXCheck)
 
-selectedComponents = mc_higgs_ggh
 
-test = 0
+test = 1
 if test==1:
-    comp = HiggsGGH125
-    comp.files = getFiles('/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_4_1/TAUMU_TestMetFix', 'cmgtools', 'tauMu.*root')
+    comp = HiggsVBF125
+    # comp.files = comp.files[:1]
+    # comp.files = 'cmgTuple_colinMinusJosh.root'
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 13
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1

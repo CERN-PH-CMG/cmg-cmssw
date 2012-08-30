@@ -13,15 +13,15 @@ MC.extend( mc_higgs )
 # MC.extend( mc_diboson ) 
 for sam in MC:
     sam.triggers = mc_triggers_fall11
-for data in data_2011A:
+for data in data_list_2011A:
     data.triggers = data_triggers_2011A
-for data in data_2011B:
+for data in data_list_2011B:
     data.triggers = data_triggers_2011B
     
 
 allsamples = copy.copy(MC)
-allsamples.extend( data_2011 )
-allsamples.extend( embed_2011 )
+allsamples.extend( data_list_2011 )
+allsamples.extend( embed_list_2011 )
 
 aliases = {
     '/VBF_HToTauTau':'HiggsVBF',

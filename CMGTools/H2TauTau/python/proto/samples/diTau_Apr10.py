@@ -69,10 +69,10 @@ VBFHTT125.nGenEvents = 198612
 # not available yet
 
 
-for data in data_2011A:
+for data in data_list_2011A:
     data.triggers = data_triggers_2011A
 
-for data in data_2011B:
+for data in data_list_2011B:
     data.triggers = data_triggers_2011B
 
 MC = []
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 
     print 'DATA 2011:'
     print 
-    printSamples(data_2011)
+    printSamples(data_list_2011)
 
     print 'MC FALL11:'
     print

@@ -67,7 +67,7 @@ data_Run2011B_PromptReco_v1.triggers = data_triggers_2011B
 MC = copy.copy( mc_ewk )
 #MC.extend( mc_higgs ) 
 
-for data in data_2011A:
+for data in data_list_2011A:
     data.triggers = data_triggers_2011A
     
 for mc in MC:

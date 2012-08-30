@@ -74,10 +74,10 @@ HiggsVBF135.nGenEvents = 198682
 mc_fall11 = copy.copy( mc_ewk )
 mc_fall11.extend( mc_higgs ) 
 
-for data in data_2011A:
+for data in data_list_2011A:
     data.triggers = data_triggers_2011A
 
-for data in data_2011B:
+for data in data_list_2011B:
     data.triggers = data_triggers_2011B
 
 MC = []
@@ -94,7 +94,7 @@ if __name__ == '__main__':
 
     print 'DATA 2011:'
     print 
-    printSamples(data_2011)
+    printSamples(data_list_2011)
 
     print 'MC FALL11:'
     print
