@@ -34,37 +34,35 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   WJetsToLNu->setDataType("MC");
   WJetsToLNu->setCrossection(36257.2);//https://twiki.cern.ch/twiki/bin/view/CMS/StandardModelCrossSectionsat8TeV
   WJetsToLNu->addRootFiles("WJetsToLNu2");//add previous sample with 18M events
-  WJetsToLNu->setSampleGenEvents(78000000.);//this number needs to checked
+  WJetsToLNu->setSampleGenEvents(60000000. + 18000000.);
   analysis->addSample(WJetsToLNu);  
 
 
 //   Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
 //   W2JetsToLNu->setDataType("MCCat");
-//   W2JetsToLNu->setCrossection(1435);//This is wrong only use for shape
+//   W2JetsToLNu->setCrossection(1000.);//dummy
 //   W2JetsToLNu->setSampleGenEvents(25400546);//This is wrong only use for shape
 //   analysis->addSample(W2JetsToLNu);  
    
   Sample * W3JetsToLNu=new Sample("W3JetsToLNu",path);
   W3JetsToLNu->setDataType("MCCat");
-  W3JetsToLNu->setCrossection(304.0);
-  W3JetsToLNu->setSampleGenEvents(7541595);//this probably wrong
+  W3JetsToLNu->setCrossection(1000);//dummy
+  W3JetsToLNu->setSampleGenEvents(15539503);//checked already
   analysis->addSample(W3JetsToLNu);  
    
   float CrossectionScaleFactor=0.976;
-  float BjetsscaleFactor=1.0;
   cout<<"WARNING applying scale factor for TTjets MC "<<CrossectionScaleFactor<<endl;
-  cout<<"WARNING applying b-jet scale factor for TTjets MC "<<BjetsscaleFactor<<endl;
   Sample* TTJets = new Sample("TTJets",path);
   TTJets->setDataType("MC");
-  TTJets->setCrossection(225.2*CrossectionScaleFactor*BjetsscaleFactor);
-  TTJets->setSampleGenEvents(13271892/2.);
+  TTJets->setCrossection(225.2*CrossectionScaleFactor);
+  TTJets->setSampleGenEvents(6736135);
   analysis->addSample(TTJets);
 
   cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
   Sample* ZToTauTau = new Sample("ZToTauTau",path);
   ZToTauTau->setDataType("MC");
   ZToTauTau->setCrossection(3503.71*CrossectionScaleFactor);
-  ZToTauTau->setSampleGenEvents(60318194/2.);
+  ZToTauTau->setSampleGenEvents(30237315); 
   analysis->addSample(ZToTauTau);
 
   Sample* ZToMuMu = new Sample("ZToMuMu",path);
@@ -79,41 +77,42 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   ZToLJet->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
   analysis->addSample(ZToLJet);
 
-  Sample* WW = new Sample("WW",path);
-  WW->setDataType("MC");
-  WW->setCrossection(27.83);
-  WW->setSampleGenEvents(4225916);
-  analysis->addSample(WW);
+//   Sample* WW = new Sample("WW",path);
+//   WW->setDataType("MC");
+//   WW->setCrossection(27.83);
+//   WW->setSampleGenEvents(4225916);
+//   analysis->addSample(WW);
 
-  Sample* WZ = new Sample("WZ",path);
-  WZ->setDataType("MC");
-  WZ->setCrossection(10.47);
-  WZ->setSampleGenEvents(4265243);
-  analysis->addSample(WZ);
+//   Sample* WZ = new Sample("WZ",path);
+//   WZ->setDataType("MC");
+//   WZ->setCrossection(10.47);
+//   WZ->setSampleGenEvents(4265243);
+//   analysis->addSample(WZ);
 
-  Sample* ZZ = new Sample("ZZ",path);
-  ZZ->setDataType("MC");
-  ZZ->setCrossection(4.287);
-  ZZ->setSampleGenEvents(4191045);
-  analysis->addSample(ZZ);
+//   Sample* ZZ = new Sample("ZZ",path);
+//   ZZ->setDataType("MC");
+//   ZZ->setCrossection(4.287);
+//   ZZ->setSampleGenEvents(4191045);
+//   analysis->addSample(ZZ);
+
 
 
 
   ///Crossections taken from here:
-  ///https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt7TeV#gluon_gluon_Fusion_Process 
+  //https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
   ///Higgs --> tau tau branching ratios taken from http://arxiv.org/abs/1101.0593 v3
   Int_t HiggsMass[8]={110,115,120,125,130,135,140,145};
   Float_t HiggsTauTauBF[8]={ 8.03e-2, 7.65e-2,  7.11e-2,  6.37e-2,  5.49e-2,  4.52e-2, 3.54e-2,2.62e-2};
 
-  //checked twiki on June 17 2012
-  Float_t HiggsGGcross[8]={   19.84,   18.13,    16.63,    15.31,    14.12,   13.08,   12.13,   11.27};
-  Int_t   HiggsGGNevt[8]={  199988,  196002,  199981,  199986,   199985,  198571,  191549, 199981};//V5
-  Float_t HiggsVBFcross[8]={   1.398,   1.332,    1.269,    1.211,    1.154,   1.100,   1.052,   1.004};
-  Int_t   HiggsVBFNevt[8]={  198435,  198051,   198632,   198612,   197236,  198682,  193846, 197095};//V5
-  Float_t HiggsWHcross[8]={  0.8754,  0.7546,   0.6561,   0.5729,   0.5008,  0.4390,  0.3857,  0.3406};
-  Float_t HiggsZHcross[8]={  0.4721,  0.4107,   0.3598,   0.3158,   0.2778,  0.2453,  0.2172,  0.1930};
-  Float_t HiggsttHcross[8]={  0.1257,  0.1106,  0.09756,  0.08634,  0.07658, 0.06810, 0.06072, 0.05435};
-  Int_t   HiggsVHNevt[8]={  216334,  220000,  2186302,   220000,   214501,   220000,  218704, 216885};// M=120 has 10x
+  Float_t HiggsGGcross[8]={25.04,22.96,21.13,19.52,18.07,16.79,15.63,14.59};
+  Int_t   HiggsGGNevt[8]={999907,917825,4989661,968134,999921,860729,999932,962119};
+  Float_t HiggsVBFcross[8]={ 1.809,1.729,1.649,1.578,1.511,1.448,1.389,1.333 };
+  Int_t   HiggsVBFNevt[8]={499385,998870,4798759,998836,990701,998817,998894,998883};
+                            
+  Float_t HiggsWHcross[8]={1.060,0.9165,0.7966,0.6966,0.6095,0.5351,0.4713,0.4164};
+  Float_t HiggsZHcross[8]={0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.2728,0.2424 };
+  Float_t HiggsttHcross[8]={ 0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246 };
+  Int_t   HiggsVHNevt[8]={200408,200460,200448,200124,200080,194464,200186,200384};
 
   char nam[100];
   for(Int_t i=0;i<8;i++){
