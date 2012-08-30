@@ -697,6 +697,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   if(higgs>0){
     if(MSSMFlag_){
       hHiggs=getSample("SUSYBB200");
+      hHiggs->SetName("hHiggs");
       TH1F*hHiggsGG=getSample("SUSYGG200");
       hHiggs->Add(hHiggsGG);
       hHiggs->Scale(higgs);
@@ -707,10 +708,12 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
       delete hHiggsGG;
     }else {
       hHiggs=getSample("HiggsVBF125");
+      hHiggs->SetName("hHiggs");
       TH1F*hHiggsGG=getSample("HiggsGG125");
       hHiggs->Add(hHiggsGG);
       TH1F*hHiggsVH=getSample("HiggsVH125");
       hHiggs->Add(hHiggsVH);
+      cout<<"Total Higgs yield : VBF="<<hHiggs->Integral()<<" GG="<<hHiggsGG->Integral()<<" VH="<<hHiggsVH->Integral()<<endl;
       hHiggs->Scale(higgs);
       if(nbins_==0)makeDensityHisto(hHiggs); 
       hHiggs->Add(hBkg);
@@ -738,7 +741,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   legend.AddEntry(hData,"Observed","P");  
   if(hHiggs){
     if(MSSMFlag_)legend.AddEntry(hHiggs,TString("Signal"),"L");
-    else legend.AddEntry(hHiggs,TString("")+(long)higgs+" x SM Higgs(125)","L");
+    else legend.AddEntry(hHiggs,TString("")+(long)higgs+" x SM H(125)","L");
   }
   legend.AddEntry(hZToTauTau,"Z#rightarrow#tau^{+}#tau^{-}","F");
   legend.AddEntry(hTTJets,"t#bar{t}","F");
@@ -876,8 +879,10 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   hEWK->Write();
   hData->Write();
   hBkg->Write();
+  hHiggs->Write();
   hDiff->Write();
   hRatio->Write();
+
 
   DiffFile.ls();
   DiffFile.Close();
