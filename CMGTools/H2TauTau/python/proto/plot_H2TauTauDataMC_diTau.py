@@ -30,8 +30,8 @@ def lineno():
 ########## rootlogon9 for loose iso M   and Tau pT calculated post dR+nVert RW       ##### don't forget to change weight at line ~401!
 ########## rootlogon10 for loose iso LL4 POST BUG! RW                                ##### don't forget to change weight at line ~401!
 from os import path
-if path.exists('../proto/rootlogon11.C'):
-    gROOT.Macro('../proto/rootlogon11.C')  # Run ROOT logon script
+if path.exists('../proto/rootlogon10.C'):
+    gROOT.Macro('../proto/rootlogon10.C')  # Run ROOT logon script
 
 run2012=True
 
@@ -557,8 +557,8 @@ if __name__ == '__main__':
                                              #weight=weight+"*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)",\
                                              #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_l1Pt(l1Pt)*weightQCD_l2Pt(l2Pt)*weightQCD_nVert(nVert)*weightQCD_jet1Pt(jet1Pt)",\
-                                             #weight=weight+"*weightQCD_dR(dRtt)*weightQCD_nVert(nVert)",\
-                                             weight=weight,                    \
+                                             weight=weight+"*weightQCD_nVert(nVert)",\
+                                             #weight=weight,                    \
                                              embed=options.embed)
       #print lineno()
       
