@@ -348,9 +348,10 @@ public:
   }
 
   double effTau2012AB(double pt, double eta) {
-    float weight_A = 696.09; 
-    float weight_B = 4327.0;
-
+    // float weight_A = 696.09; 
+    // float weight_B = 4327.0;
+    float weight_A = 0.14; // Andrew's weighting
+    float weight_B = 0.86;
     return (weight_A * eff2012ATau20(pt, eta) + weight_B * eff2012BTau20(pt, eta))/(weight_A+weight_B);
   }
 
