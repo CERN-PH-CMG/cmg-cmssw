@@ -1,7 +1,7 @@
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 
 
-class Skipper( Analyzer ):
+class EventSelector( Analyzer ):
     '''Insert that at the beginning of your sequence to skip events you do not want. 
     '''
 
@@ -9,8 +9,9 @@ class Skipper( Analyzer ):
         run = iEvent.eventAuxiliary().id().run()
         lumi = iEvent.eventAuxiliary().id().luminosityBlock()
         eId = iEvent.eventAuxiliary().id().event()
-        if eId == 755879:
+        if eId in self.cfg_ana.toSelect:
             # raise ValueError('found')
+            print 'Selecting', run, lumi, eId
             return True 
         else:
             return False
