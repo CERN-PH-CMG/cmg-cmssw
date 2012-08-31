@@ -62,7 +62,7 @@ vertexAna = cfg.Analyzer(
     goodVertices = 'goodPVFilter',
     vertexWeight = mc_vertexWeight,
     fixedWeight = 1,
-    verbose = False
+    verbose = False,
     )
 
 embedWeighter = cfg.Analyzer(
