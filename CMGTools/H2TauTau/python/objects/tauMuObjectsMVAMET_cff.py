@@ -20,9 +20,9 @@ cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
 
 # preselection 
 cmgTauMuPreSel = cmgTauMuSel.clone(
-    cut = ''
+    # cut = ''
     #WARNING
-    # cut = 'getSelection("cuts_baseline")'
+    cut = 'getSelection("cuts_baseline")'
     )
 
 tauMuStdSequence = cms.Sequence( cmgTauScaler +
@@ -78,9 +78,9 @@ cmgTauMuCorSVFitPreSel = tauMuSVFit.clone()
 cmgTauMuCorSVFitPreSel.diTauSrc = 'cmgTauMuCorPreSel'
 cmgTauMuCorSVFitPreSel.metsigSrc = 'mvaMETTauMu'
 cmgTauMuCorSVFitFullSel = cmgTauMuSel.clone( src = 'cmgTauMuCorSVFitPreSel',
-                                             cut = ''
+                                             # cut = ''
                                              # WARNING!
-                                             # cut = 'getSelection("cuts_baseline")'
+                                             cut = 'getSelection("cuts_baseline")'
                                              ) 
 
 tauMuCorSVFitSequence = cms.Sequence( #
