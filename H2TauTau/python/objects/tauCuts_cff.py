@@ -14,11 +14,13 @@ def getTauCuts( leg, channel='tauMu'):
     id = cms.PSet(
         decay = cms.string('{leg}().tauID("decayModeFinding")'.format(leg=leg)),
         )
+    iso = cms.string('{leg}().tauID("byRawIsoMVA") > 0.5'.format(leg=leg))
+    
 
     tauCuts = cms.PSet(
         kinematics = kinematics.clone(),
         id = id.clone(),
-        # iso = iso
+        iso = iso
         )
     
     return tauCuts
