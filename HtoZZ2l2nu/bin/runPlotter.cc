@@ -46,6 +46,7 @@ bool doPlot = true;
 bool splitCanvas = false;
 bool onlyCutIndex = false;
 string objectSearchKey = "";
+string objectSearchKeyStart = "";
 string inDir   = "OUTNew/";
 string jsonFile = "../../data/beauty-samples.json";
 string outDir  = "Img/";
@@ -918,6 +919,7 @@ int main(int argc, char* argv[]){
         printf("--outFile --> path of the output summary .root file\n");
         printf("--json    --> containing list of process (and associated style) to process to process\n");
         printf("--only    --> processing only the objects containing the following argument in their name\n");
+        printf("--onlyStartWith  --> processing only the objects starting with the following argument in their name\n");
         printf("--index   --> will do the projection on that index for histos of type cutIndex\n");
         printf("--chi2    --> show the data/MC chi^2\n"); 
         printf("--showUnc --> show stat uncertainty (if number is given use it as relative bin by bin uncertainty (e.g. lumi)\n"); 
@@ -943,6 +945,7 @@ int main(int argc, char* argv[]){
      if(arg.find("--outFile")!=string::npos && i+1<argc){ outFile  = argv[i+1];  i++; printf("output file = %s\n", outFile.c_str()); }
      if(arg.find("--json"   )!=string::npos && i+1<argc){ jsonFile = argv[i+1];  i++;  }
      if(arg.find("--only"   )!=string::npos && i+1<argc){ objectSearchKey = argv[i+1]; i++;    }
+     if(arg.find("--onlyStartWith"   )!=string::npos && i+1<argc){ objectSearchKeyStart = argv[i+1]; i++;    }
      if(arg.find("--index"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&cutIndex); i++; onlyCutIndex=(cutIndex>=0); printf("index = %i\n", cutIndex);  }
      if(arg.find("--chi2"  )!=string::npos){ showChi2 = true;  }
      if(arg.find("--showUnc") != string::npos) { 
@@ -996,6 +999,7 @@ int main(int argc, char* argv[]){
      {
        if(ictr%TreeStep==0){printf(".");fflush(stdout);}
        if(objectSearchKey != "" && it->name.find(objectSearchKey)==std::string::npos)continue;
+       if(objectSearchKeyStart != "" && it->name.find(objectSearchKeyStart)!=0)continue;
        system(("echo \"" + it->name + "\" >> " + csvFile).c_str());
 
        if(doTex && (it->name.find("eventflow")!=std::string::npos || it->name.find("evtflow")!=std::string::npos) && it->name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,*it); }
