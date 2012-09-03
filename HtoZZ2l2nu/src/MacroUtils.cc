@@ -138,6 +138,14 @@ double weightVBF(std::string SampleName, double m_gen, double mass){
    }else if(m_gen == 500){    decay_width =  68.00000;
    }else if(m_gen == 550){    decay_width =  93.15000;
    }else if(m_gen == 600){    decay_width = 123.00000;
+   }else if(m_gen == 650){    decay_width = 158.00000;
+   }else if(m_gen == 700){    decay_width = 199.00000;
+   }else if(m_gen == 750){    decay_width = 247.00000;
+   }else if(m_gen == 800){    decay_width = 304.00000;
+   }else if(m_gen == 850){    decay_width = 371.00000;
+   }else if(m_gen == 900){    decay_width = 449.00000;
+   }else if(m_gen == 950){    decay_width = 540.00000;
+   }else if(m_gen ==1000){    decay_width = 647.00000;
    }
 
    double s = pow(mass,2);

@@ -617,7 +617,7 @@ int main(int argc, char* argv[])
         weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_plus  = PuShifters[PUUP]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_minus = PuShifters[PUDOWN]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
-	if(isMC_VBF && use2011Id){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
+	if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
         if(isMC_GG) {
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
 	    ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
