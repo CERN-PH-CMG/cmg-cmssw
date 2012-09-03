@@ -77,10 +77,12 @@ cmgTauMuCorPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
 cmgTauMuCorSVFitPreSel = tauMuSVFit.clone()
 cmgTauMuCorSVFitPreSel.diTauSrc = 'cmgTauMuCorPreSel'
 cmgTauMuCorSVFitPreSel.metsigSrc = 'mvaMETTauMu'
+
+# This module is not really necessary anymore
 cmgTauMuCorSVFitFullSel = cmgTauMuSel.clone( src = 'cmgTauMuCorSVFitPreSel',
-                                             # cut = ''
+                                             cut = ''
                                              # WARNING!
-                                             cut = 'getSelection("cuts_baseline")'
+                                             # cut = 'getSelection("cuts_baseline")'
                                              ) 
 
 tauMuCorSVFitSequence = cms.Sequence( #
