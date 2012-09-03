@@ -23,7 +23,7 @@ allsamples = copy.copy(MC)
 
 HiggsVBF125Small.files = []
 
-HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_5_1/TAUMU_ColinAug30',
+HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_5_1_Test3/TAUMU_NewSVFit_ColinSep3',
                              'cbern', '.*root')
 
 

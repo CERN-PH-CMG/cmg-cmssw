@@ -23,6 +23,12 @@ mc_muEffWeight_mc = 'effIsoMu15MC'
 mc_tauEffWeight = 'effTau2011AB'
 mc_muEffWeight = 'effMu2011AB'
     
+eventSelector = cfg.Analyzer(
+    'EventSelector',
+    toSelect = [
+    70370
+    ]
+    )
 
 
 jsonAna = cfg.Analyzer(
@@ -178,12 +184,13 @@ selectedComponents.extend( embed_list )
 
 
 sequence = cfg.Sequence( [
+#     eventSelector,
     jsonAna,
     triggerAna,
     vertexAna,
     TauMuAna,
     dyJetsFakeAna,
-    higgsWeighter,
+    higgsWeighter, 
     vbfAna,
     embedWeighter, 
     tauWeighter, 
@@ -198,7 +205,7 @@ if syncntuple:
 test = 1
 if test==1:
     comp = HiggsVBF125
-    # comp.files = comp.files[:1]
+    # comp.files = comp.files[:2]
     # comp.files = 'cmgTuple_colinMinusJosh.root'
     selectedComponents = [comp]
     comp.splitFactor = 13

@@ -20,9 +20,9 @@ cmgTauEle.cfg.leg1Collection = 'cmgTauScaler'
 
 # preselection 
 cmgTauElePreSel = cmgTauEleSel.clone(
-    cut = ''
+    # cut = ''
     #WARNING
-    # cut = 'getSelection("cuts_baseline")'
+    cut = 'getSelection("cuts_baseline")'
     )
 
 tauEleStdSequence = cms.Sequence( cmgTauScaler +
