@@ -10,7 +10,7 @@ pfMetForRegression   = cms.EDProducer(
     PFCandidateName = cms.InputTag("particleFlow"),
     VertexName      = cms.InputTag("offlinePrimaryVertices"),
     RhoName         = cms.InputTag('kt6PFJets','rho'),
-    JetPtMin        = cms.double(0.),
+    JetPtMin        = cms.double(0.), # should be 0 for 5X and 1 for 4X
     dZMin           = cms.double(0.1),
     PhilV1          = PhilV1,
     full            = full,
@@ -45,6 +45,13 @@ pfMetForRegression   = cms.EDProducer(
     tmvaSpectators = cms.vstring(),
     JetIdParams = JetIdParams
     )
+
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X, isNewerThan
+if isNewerThan('CMSSW_5_2_0'):
+    pfMetForRegression.JetPtMin = 0.
+else:
+    pfMetForRegression.JetPtMin = 1.
+   
 
 tkMet     =  pfMetForRegression.clone(MetFlavor = cms.int32(1))
 nopuMet   =  pfMetForRegression.clone(MetFlavor = cms.int32(2))
