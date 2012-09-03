@@ -901,10 +901,12 @@ int main(int argc, char* argv[])
       //select dilepton
       mon.fillHisto("syncheventflow",tags_full,0,1);
       if(passId)       mon.fillHisto("syncheventflow",tags_full,1,1);
-      else   	    { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,0,ev.cat); continue; }
+      else   	    { //fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,0,ev.cat);
+              continue; }
 
       if(passIdAndIso) { mon.fillHisto("syncheventflow",tags_full,2,1); }
-      else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,1,ev.cat); continue; }
+      else { //fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,1,ev.cat);
+              continue; }
 
       if(isMC && use2011Id) weight *= llScaleFactor*llTriggerEfficiency;
       mon.fillHisto("eventflow",tags_full,0,weight);
@@ -1238,19 +1240,19 @@ int main(int argc, char* argv[])
 		mon.fillHisto("syncheventflow",tags_full,7,1);
 		if(passBveto) {
 		  mon.fillHisto("syncheventflow",tags_full,8,1);
-		  fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,8,ev.cat);
+//		  fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,8,ev.cat);
 		}
-		else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,7,ev.cat); }
+//		else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,7,ev.cat); }
 	      }
-	      else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,6,ev.cat); }
+//	      else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,6,ev.cat); }
 	    }
-	    else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,5,ev.cat); }
+//	    else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,5,ev.cat); }
 	  }
-	  else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,4,ev.cat); }
+//	  else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,4,ev.cat); }
 	}
-	else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,3,ev.cat); }
+//	else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,3,ev.cat); }
       }
-      else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,2,ev.cat); }
+//      else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,2,ev.cat); }
 
       bool passSB( ((zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200)) && zll.pt()>30 );
       if(passSB && pass3dLeptonVeto && passDphijmet && !passBveto) mon.fillHisto("met_metSB",tags_full,zvvs[0].pt(),weight);
