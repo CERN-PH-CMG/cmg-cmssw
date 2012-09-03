@@ -17,12 +17,12 @@ from CMGTools.Common.eventCleaning.HBHEFilters_cff import *
 
 # TP filter
 
-from JetMETAnalysis.ecalDeadCellTools.RA2TPfilter_cff import *
-ecalDeadCellTPfilter.taggingMode = True
+# from JetMETAnalysis.ecalDeadCellTools.RA2TPfilter_cff import *
+# ecalDeadCellTPfilter.taggingMode = True
 
-ecalDeadCellTaggingSequence = cms.Sequence(
-    ecalDeadCellTPfilter
-    )
+# ecalDeadCellTaggingSequence = cms.Sequence(
+#    ecalDeadCellTPfilter
+#    )
 
 # Filter against bad recovery of EE rechits
 
@@ -46,7 +46,7 @@ from CMGTools.Common.eventCleaning.scrapingFilter_cfi import *
 
 
 eventCleaningTaggingSequence = cms.Sequence(
-    ecalDeadCellTaggingSequence + 
+    # ecalDeadCellTaggingSequence + 
     HBHEFiltersTaggingSequence + 
     selectGoodPFEventsTaggingSequence +
     recovRecHitFilter +

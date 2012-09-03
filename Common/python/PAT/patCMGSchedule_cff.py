@@ -11,15 +11,15 @@ def getSchedule(process, runOnMC, runOnFastSim):
         process.trackingFailureFilterPath,
         process.primaryVertexFilterPath,
         process.noscrapingFilterPath,
-        process.eeBadScFilterPath,
         process.metNoiseCleaningPath
+        # process.eeBadScFilterPath,
         )
     if runOnMC:
         result.append(process.totalKinematicsFilterPath)
     if not( runOnFastSim ):
         result.append(process.CSCTightHaloFilterPath)
         result.append(process.HBHENoiseFilterPath)
-    if runOnFastSim :
+    else:
         process.metNoiseCleaningPath.remove(process.CSCTightHaloFilter)
         process.metNoiseCleaningPath.remove(process.HBHENoiseFilter)
     return result
