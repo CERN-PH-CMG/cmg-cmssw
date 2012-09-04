@@ -245,6 +245,29 @@ if __name__ == '__main__':
     cuts=[
 #### New default for HCP ####
 
+        ("CMS_2012_5_fb_forHCP_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 7 ),
+    
+#### Andreas ####    
+        #("CMS_2012_5_fb_l40_mm_dRtt20_qcd5M_dRRW_loose_BOOSTED" , baseline + l1Pt40l2Pt40 + BOOSTED + NOVBF , ' && dRtt<200.0'   , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5LL4_forRW_loose_BOOSTED"     , baselineSS + BOOSTED, ' && dRtt<200.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb_qcd5M_Closure_loose_BOOSTED"     , baselineSS + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<100.' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_dR3_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<3.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_dR2_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_iso04_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<100.' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_forRW_no_iso06_loose_BOOSTED"  , baselineSS  + BOOSTED, ' && dRtt<100.' , isolationMM , 5 ),
+
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR3_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR2_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso04_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso06_BOOSTED"  , baseline  + BOOSTED + NOVBF , ' && dRtt<2.0' , isolationMM , 5 ),
+
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR3_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_dR2_VBF"      , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso04_VBF"    , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+        #("CMS_2012_5_fb__qcd5LL4_IsoTest_loose_no_iso06_VBF"    , baseline  + VBF             , ' && dRtt<2.0' , isolationMM , 5 ),
+
 #####  Riccardo  ############################################################################################################################### 
 
         ######## REWEIGHTING
@@ -367,8 +390,9 @@ if __name__ == '__main__':
       #########################################################
       ############## change here the loose iso ################
       #########################################################
+      looseisocut = isolationLL4
       #looseisocut = isolationM + " && !(1 "+isocut+")"
-      looseisocut = isolationLL4+" && !(1 "+isocut+")"
+      #looseisocut = isolationLL4+" && !(1 "+isocut+")"
       #looseisocut = isolationLL4old +" && !(1 "+isocut+")"
       #looseisocut = ""
       #looseisocut = ' && l1RawMVAIso>0.5 && l2MedMVAIso>0.5'
@@ -592,7 +616,7 @@ if __name__ == '__main__':
         ###                 QCD ESTIMATION                ###
         #####################################################
 
-        if qcdEstimate == 4 or qcdEstimate == 5:			    
+        if qcdEstimate == 4 or qcdEstimate == 5 or qcdEstimate == 7:			    
          plotVarDataSemiLooseIsoSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
        			    nx, xmin, xmax,
        			    cut = cutSS+semilooseisocut+antiqcdcut, weight=weight,
@@ -644,6 +668,9 @@ if __name__ == '__main__':
         if qcdEstimate == 5:
    	 QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi , tightLooseErrSemi = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
    	 QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     , tightLooseErr	= QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoOSMC, plotVarDataLooseIsoSS, log)
+        if qcdEstimate == 7:
+   	 QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi , tightLooseErrSemi = QCDEstimate7(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
+   	 QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     , tightLooseErr	= QCDEstimate7(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoOSMC, plotVarDataLooseIsoSS, log)
    
    	if False:
    	 plotVarDataLooseIsoSS_sys1 = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal,
@@ -687,7 +714,7 @@ if __name__ == '__main__':
    	 if prefix.find('VBF') > 0 : 
    	     tightLooseErr=0.22
    
-        if qcdEstimate==5:
+        if qcdEstimate==5 or qcdEstimate==7:
    	 print "QCD yield uncertainty:", tightLooseErr
    	 if prefix.find('BOOSTED') > 0 : 
              f=TFile.Open("BOOSTED_shape.root")
@@ -815,6 +842,18 @@ if __name__ == '__main__':
          gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDosss.pdf")
          gPad.WaitPrimitive()
          QCDOSSSratio.weighted.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDosss.root")
+
+      	 QCDtightLooseratio=copy.deepcopy(QCDShape)
+	 QCDtightLooseratio.weighted.Divide(copy.deepcopy(QCDtightSS).weighted,QCDtightLooseratio.weighted,1,1)
+   	 QCDtightLooseratio.SetStyle( sBlueLine )
+
+         QCDtightLooseratio.weighted.Draw("HISTe")
+         QCDtightLooseratio.GetYaxis().SetRangeUser(0,2)
+
+         gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDtightloose.png")
+         gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDtightloose.pdf")
+         gPad.WaitPrimitive()
+         QCDtightLooseratio.weighted.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_QCDtightloose.root")
 
         plotVarDataOS.AddHistogram("QCDdata",QCDShape.weighted)
         plotVarDataOS.Hist('QCDdata').stack = True
