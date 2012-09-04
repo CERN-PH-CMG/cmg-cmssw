@@ -118,15 +118,15 @@ int main(int argc, char* argv[])
   double HiggsMass=0; string VBFString = ""; string GGString("");
   bool isMC_GG  = isMC && ( string(url.Data()).find("GG" )  != string::npos);
   bool isMC_VBF = isMC && ( string(url.Data()).find("VBF")  != string::npos);
+  TFile *fin;
   int cmEnergy(8);
   if(url.Contains("7TeV")) cmEnergy=7;
   std::vector<TGraph *> hWeightsGrVec,hLineShapeGrVec;
-  if(isMC_GG){
-   
+
+  if(isMC_GG){  
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     GGString = string(url.Data()).substr(GGStringpos);
-    TFile *fin;
   
     //H pT
     if(cmEnergy==7){
@@ -144,29 +144,29 @@ int main(int argc, char* argv[])
 	fin->Close();
 	delete fin;
       }
-    }
-      
-    //LINE SHAPE
-    TString lineShapeWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[1]; gSystem->ExpandPathName(lineShapeWeightsFileURL);
-    fin=TFile::Open(lineShapeWeightsFileURL);
-    if(fin){
-      char buf[100]; sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
-      cout << "Line shape weights (and uncertainties) will be applied from " << buf << " @ " << lineShapeWeightsFileURL << endl;
-      TString wgts[]={"rwgtpint","rwgtpint_up","rwgtpint_down"};
-      for(size_t i=0; i<3; i++)
-	{
-	  TGraph *gr= (TGraph *) fin->Get(buf+wgts[i]);
-	  if(gr) hLineShapeGrVec.push_back((TGraph *)gr->Clone());
-	}
-    }
-    fin->Close();
-    delete fin;
-    
+    }    
   }else if(isMC_VBF){
     size_t VBFStringpos =  string(url.Data()).find("VBF");
     string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     VBFString = string(url.Data()).substr(VBFStringpos);
   }
+
+  
+ //LINE SHAPE
+ TString lineShapeWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[1]; gSystem->ExpandPathName(lineShapeWeightsFileURL);
+ fin=TFile::Open(lineShapeWeightsFileURL);
+ if(fin){
+   char buf[100]; sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
+   cout << "Line shape weights (and uncertainties) will be applied from " << buf << " @ " << lineShapeWeightsFileURL << endl;
+   TString wgts[]={"rwgtpint","rwgtpint_up","rwgtpint_down"};
+   for(size_t i=0; i<3; i++)
+     {
+       TGraph *gr= (TGraph *) fin->Get(buf+wgts[i]);
+       if(gr) hLineShapeGrVec.push_back((TGraph *)gr->Clone());
+     }
+ }
+ fin->Close();
+ delete fin;
 
 
 
@@ -646,6 +646,7 @@ int main(int argc, char* argv[])
 	  lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
 	noLShapeWeight=weight;
 	weight *= lShapeWeights[0];
+        //printf("lsw=%f \n",lShapeWeights[0]);
         mon.fillHisto("higgsMass_3ls",tags_full, phys.genhiggs[0].mass(), weight);	
       }
       Hcutflow->Fill(1,1);
@@ -699,7 +700,7 @@ int main(int argc, char* argv[])
 	  float relIso = (lepStr=="mu") ? 
 	    phys.leptons[ilep].pfRelIsoDbeta(): //muPFRelIsoCorrected2012(ev.rho25Neut):
 	    phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho);
-	  cout << phys.leptons[ilep].chIso << " " << phys.leptons[ilep].nhIso << " " << phys.leptons[ilep].gIso << " " << phys.leptons[ilep].puchIso << " " << lepStr << " " << relIso << " " << relIso2011 << endl;
+	  //cout << phys.leptons[ilep].chIso << " " << phys.leptons[ilep].nhIso << " " << phys.leptons[ilep].gIso << " " << phys.leptons[ilep].puchIso << " " << lepStr << " " << relIso << " " << relIso2011 << endl;
 	  std::vector<int> passIds;
 	  std::map<int,bool> passIsos;
 	  bool hasGoodId(false), isIso(false);
