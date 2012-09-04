@@ -657,6 +657,10 @@ protected:
 
 
   void runSVFit(){
+    svfitmass_=0.;
+    //check covariance matrix:
+    float det=((*(metSig_->significance()))[0][0])*((*(metSig_->significance()))[1][1]) - ((*(metSig_->significance()))[1][0])*((*(metSig_->significance()))[0][1]);
+    if(det<1e-8)return;
 
     if(runSVFit_==1){  //old svfit  
       NSVfitStandalone2011::Vector measuredMET( metP4_.x(), metP4_.y(), 0);
