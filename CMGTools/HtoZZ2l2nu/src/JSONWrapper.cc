@@ -148,7 +148,7 @@ void Object::Load(const std::string& in){
    fclose(pFile);
    JsonFile = removeWhiteSpace(JsonFile);
    ParseObject(JsonFile);
-   print("  Done\n");
+   printf("  Done\n");fflush(stdout);
 }
 
 
