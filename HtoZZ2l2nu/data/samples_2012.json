@@ -150,24 +150,11 @@
          "lcolor":1,
          "data":[
    		{
-                 "dtag":"MC8TeV_WToENu",
-                 "dset":"/WToENu_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START50_V15-v1/AODSIM",
+                 "dtag":"MC8TeV_WJets",
                  "split":1,
-                "xsec":12085.73
-                },
-                {
-                 "dtag":"MC8TeV_WToMuNu",
-                 "dset":"/WToMuNu_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START50_V15-v1/AODSIM",
-                 "split":1,
-                "xsec":12085.73
-                },
-                {
-                 "dtag":"MC8TeV_WToTauNu",
-                 "dset":"/WToTauNu_TuneZ2star_8TeV_pythia6_tauola_cff/Summer12-PU_S7_START50_V15-v1/AODSIM",
-                 "split":1,
-                "xsec":12085.73
+                 "xsec":36263
                 }
-         ]
+          ]
         },
 	{
 	 "tag":"Z#rightarrow #tau#tau",
