@@ -58,9 +58,9 @@ string cutflowhisto = "all_cutflow";
 struct stSampleInfo{ double PURescale_up; double PURescale_down; double initialNumberOfEvents;};
 //std::map<string, stSampleInfo> sampleInfoMap;
 //std::map<string, bool> FileExist;
-struct hash_eqstr{  bool operator()(string s1, string s2) const  {return s1==s2;  }};
-__gnu_cxx::hash_map<string, stSampleInfo, hash<string>, hash_eqstr> sampleInfoMap;
-__gnu_cxx::hash_map<string, bool, hash<string>, hash_eqstr> FileExist;
+struct hash_eqstr{  bool operator()(const char* s1, const char* s2) const  {return strcmp(s1,s2)==0;  }};
+__gnu_cxx::hash_map<const char*, stSampleInfo, __gnu_cxx::hash<const char*>, hash_eqstr> sampleInfoMap;
+__gnu_cxx::hash_map<const char*, bool, __gnu_cxx::hash<const char*>, hash_eqstr> FileExist;
 
 
 //typedef std::pair<std::string,bool> NameAndType;
@@ -171,7 +171,7 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
 
             string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
             TFile* File = new TFile(FileName.c_str());
-            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) ){FileExist[FileName]=false; continue; }else{FileExist[FileName]=true;}
+            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) ){FileExist[FileName.c_str()]=false; continue; }else{FileExist[FileName.c_str()]=true;}
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name); 
 	    if(tmptmphist)
 	      {
@@ -185,7 +185,7 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
 	 bool isMC( !Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() );
 
 
-         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString().c_str()];
 
          double PUCentralnnorm =  1; if(tmphist->GetBinContent(3)>0)PUCentralnnorm = tmphist->GetBinContent(2) / tmphist->GetBinContent(3);
          double PUDownnorm     =  1; if(tmphist->GetBinContent(4)>0)PUDownnorm     = tmphist->GetBinContent(3) / tmphist->GetBinContent(4);
@@ -227,7 +227,7 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
 	 
 	 std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString().c_str()];
          Weight /= sampleInfo.initialNumberOfEvents;
 
          if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up;}
@@ -244,7 +244,7 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
             char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
             string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
-            if(!FileExist[FileName])continue;
+            if(!FileExist[FileName.c_str()])continue;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name); 
@@ -329,7 +329,7 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
          if(!Process[i]["isdata"].toBool()  && !Process[i]["isdatadriven"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString().c_str()];
          Weight /= sampleInfo.initialNumberOfEvents;
 
          if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up;}
@@ -342,7 +342,7 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
             char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
             string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
-            if(!FileExist[FileName])continue;
+            if(!FileExist[FileName.c_str()])continue;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name); 
@@ -436,7 +436,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
          if(!Process[i]["isdata"].toBool()  && !Process[i]["isdatadriven"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString().c_str()];
          Weight /= sampleInfo.initialNumberOfEvents;
 
          if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up;}
@@ -449,7 +449,7 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
             char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
             string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
-            if(!FileExist[FileName])continue;
+            if(!FileExist[FileName.c_str()])continue;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name); 
@@ -533,7 +533,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
          if(!Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() )Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString().c_str()];
          Weight /= sampleInfo.initialNumberOfEvents;
 
          if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up  ;}
@@ -548,7 +548,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
             char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
 	    string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
-            if(!FileExist[FileName])continue;
+            if(!FileExist[FileName.c_str()])continue;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = NULL; 
@@ -799,7 +799,7 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
          if(!Process[i]["isdata"].toBool()  && !Process[i]["isdatadriven"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString().c_str()];
          Weight /= sampleInfo.initialNumberOfEvents;
 
          if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up  ;}
@@ -813,7 +813,7 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
             char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",s);}else{sprintf(segmentExt,".root");}
 
             string FileName = RootDir + (Samples[j])["dtag"].toString() + segmentExt;
-            if(!FileExist[FileName])continue;
+            if(!FileExist[FileName.c_str()])continue;
             TFile* File = new TFile(FileName.c_str());
             if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) )continue;
             TH1* tmptmphist = NULL;
