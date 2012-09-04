@@ -4,6 +4,7 @@
 #include <list>
 #include <iterator>
 #include <algorithm>
+#include <ext/hash_map>
 
 #include "TROOT.h"
 #include "TFile.h"
@@ -54,10 +55,13 @@ string plotExt = ".png";
 string outFile = "plotter.root";
 string cutflowhisto = "all_cutflow";
 
-std::map<string, double> PURescale_up;
-std::map<string, double> PURescale_down;
-std::map<string, double> initialNumberOfEvents;
-std::map<string, bool>   FileExist;
+struct stSampleInfo{ double PURescale_up; double PURescale_down; double initialNumberOfEvents;};
+//std::map<string, stSampleInfo> sampleInfoMap;
+//std::map<string, bool> FileExist;
+struct hash_eqstr{  bool operator()(string s1, string s2) const  {return s1==s2;  }};
+__gnu_cxx::hash_map<string, stSampleInfo, hash<string>, hash_eqstr> sampleInfoMap;
+__gnu_cxx::hash_map<string, bool, hash<string>, hash_eqstr> FileExist;
+
 
 //typedef std::pair<std::string,bool> NameAndType;
 struct NameAndType{
@@ -155,6 +159,7 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
 void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, NameAndType HistoProperties){
    std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
    for(unsigned int i=0;i<Process.size();i++){
+      if(!StoreInFile && Process[i]["isinvisible"].toBool())continue;
       std::vector<JSONWrapper::Object> Samples = (Process[i])["data"].daughters();
       for(unsigned int j=0;j<Samples.size();j++){
 	 int split = 1;
@@ -179,11 +184,14 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
          
 	 bool isMC( !Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() );
 
+
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+
          double PUCentralnnorm =  1; if(tmphist->GetBinContent(3)>0)PUCentralnnorm = tmphist->GetBinContent(2) / tmphist->GetBinContent(3);
          double PUDownnorm     =  1; if(tmphist->GetBinContent(4)>0)PUDownnorm     = tmphist->GetBinContent(3) / tmphist->GetBinContent(4);
          double PUUpnorm       =  1; if(tmphist->GetBinContent(5)>0)PUUpnorm       = tmphist->GetBinContent(3) / tmphist->GetBinContent(5);
-         PURescale_down[(Samples[j])["dtag"].toString()] = PUDownnorm;
-         PURescale_up  [(Samples[j])["dtag"].toString()] = PUUpnorm;
+         sampleInfo.PURescale_down = PUDownnorm;
+         sampleInfo.PURescale_up   = PUUpnorm;
          if(isMC)printf("PU Renormalization %25s Shift Down --> %6.2f  Central = %6.2f  Up Down --> %6.2f\n",(Samples[j])["dtag"].toString().c_str(),PUDownnorm, PUCentralnnorm, PUUpnorm);	
 
 
@@ -197,7 +205,7 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
           //printf("VBFMCRescale for sample %s is %f\n", (Samples[j])["dtag"].toString().c_str(), VBFMCRescale );
           cnorm *= VBFMCRescale;
 
-         initialNumberOfEvents[(Samples[j])["dtag"].toString()] = cnorm / PUCentralnnorm;
+         sampleInfo.initialNumberOfEvents = cnorm / PUCentralnnorm;
 
          delete tmphist;
       }   
@@ -219,10 +227,11 @@ void SavingToFile(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
 	 
 	 std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         Weight /= sampleInfo.initialNumberOfEvents;
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up;}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= sampleInfo.PURescale_down;}
 
 
 
@@ -320,10 +329,11 @@ void Draw2DHistogramSplitCanvas(JSONWrapper::Object& Root, std::string RootDir, 
          if(!Process[i]["isdata"].toBool()  && !Process[i]["isdatadriven"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         Weight /= sampleInfo.initialNumberOfEvents;
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up;}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= sampleInfo.PURescale_down;}
 
          int split = 1;
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
@@ -426,10 +436,11 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
          if(!Process[i]["isdata"].toBool()  && !Process[i]["isdatadriven"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         Weight /= sampleInfo.initialNumberOfEvents;
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up;}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= sampleInfo.PURescale_down;}
 
          int split = 1;
          if(Samples[j].isTag("split"))split = Samples[j]["split"].toInt();
@@ -522,10 +533,11 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
          if(!Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() )Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         Weight /= sampleInfo.initialNumberOfEvents;
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up  ;}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= sampleInfo.PURescale_down;}
 
          if(HistoProperties.name.find("optim_cut")!=string::npos){Weight=1.0;}
 
@@ -787,10 +799,11 @@ void ConvertToTex(JSONWrapper::Object& Root, std::string RootDir, NameAndType Hi
          if(!Process[i]["isdata"].toBool()  && !Process[i]["isdatadriven"].toBool())Weight*= iLumi;
          if(Samples[j].isTag("xsec")     )Weight*= Samples[j]["xsec"].toDouble();
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
-         Weight /= initialNumberOfEvents[(Samples[j])["dtag"].toString()];
+         stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
+         Weight /= sampleInfo.initialNumberOfEvents;
 
-         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= PURescale_up  [(Samples[j])["dtag"].toString()];}
-         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= PURescale_down[(Samples[j])["dtag"].toString()];}
+         if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up  ;}
+         if(HistoProperties.name.find("pudown")!=string::npos){Weight *= sampleInfo.PURescale_down;}
 
 
          int split = 1;
