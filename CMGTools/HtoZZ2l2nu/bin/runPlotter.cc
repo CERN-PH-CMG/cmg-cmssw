@@ -46,8 +46,6 @@ bool StoreInFile = true;
 bool doPlot = true;
 bool splitCanvas = false;
 bool onlyCutIndex = false;
-string objectSearchKey = "";
-string objectSearchKeyStart = "";
 string inDir   = "OUTNew/";
 string jsonFile = "../../data/beauty-samples.json";
 string outDir  = "Img/";
@@ -109,16 +107,32 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
 
   if(parentPath=="" && !dir)
     {
+      int dataProcessed = 0;
+      int signProcessed = 0;
+      int bckgProcessed = 0; 
+
       std::vector<JSONWrapper::Object> Process = Root["proc"].daughters();
-      for(size_t ip=0; ip<Process.size(); ip++)
-	{
+      //loop on all Proc
+      for(size_t ip=0; ip<Process.size(); ip++){
+          if(Process[ip]["isinvisible"].toBool())continue;
+	  bool isData (  Process[ip]["isdata"].toBool()  );
+          bool isSign ( !isData &&  Process[ip].isTag("spimpose") && Process[ip]["spimpose"].toBool());
+  	  bool isMC   = !isData && !isSign; 
+
+          //just to make it faster, only consider the first 3 sample of a same kind
+          if(isData){if(dataProcessed>=1){continue;}else{dataProcessed++;}}
+          if(isSign){if(signProcessed>=2){continue;}else{signProcessed++;}}
+          if(isMC  ){if(bckgProcessed>=0){continue;}else{bckgProcessed++;}}
+
 	  std::vector<JSONWrapper::Object> Samples = (Process[ip])["data"].daughters();
-	  for(size_t id=0; id<Samples.size(); id++)
-	    {
+          //toMakeItFasteronly consider the first subsample 
+	  for(size_t id=0; id<Samples.size()&&id<2; id++){
 	      int split = 1;
 	      if(Samples[id].isTag("split"))split = Samples[id]["split"].toInt();
 	      char segmentExt[255];if(split>1){sprintf(segmentExt,"_%i.root",0);}else{sprintf(segmentExt,".root");}
-	      TFile* file = new TFile((RootDir + (Samples[id])["dtag"].toString() + segmentExt).c_str());
+              string FileName = RootDir + (Samples[id])["dtag"].toString() + segmentExt ;
+              printf("Adding all objects from %25s to the list of considered objects\n",  FileName.c_str());
+	      TFile* file = new TFile(FileName.c_str());
 	      GetListOfObject(Root,RootDir,histlist,(TDirectory*)file,"" );
 	      file->Close();
 	    }
@@ -917,6 +931,9 @@ int main(int argc, char* argv[]){
    gStyle->SetPalette(1);
    gStyle->SetNdivisions(505);
 
+   string histoNameMask = " ";
+   string histoNameMaskStart = " ";
+
    for(int i=1;i<argc;i++){
      string arg(argv[i]);
      //printf("--- %i - %s\n",i,argv[i]);
@@ -957,8 +974,8 @@ int main(int argc, char* argv[]){
      if(arg.find("--outDir" )!=string::npos && i+1<argc){ outDir   = argv[i+1];  i++;  printf("outDir = %s\n", outDir.c_str());  }
      if(arg.find("--outFile")!=string::npos && i+1<argc){ outFile  = argv[i+1];  i++; printf("output file = %s\n", outFile.c_str()); }
      if(arg.find("--json"   )!=string::npos && i+1<argc){ jsonFile = argv[i+1];  i++;  }
-     if(arg.find("--only"   )!=string::npos && i+1<argc){ objectSearchKey = argv[i+1]; i++;    }
-     if(arg.find("--onlyStartWith"   )!=string::npos && i+1<argc){ objectSearchKeyStart = argv[i+1]; i++;    }
+     if(arg.find("--onlyStartWith"   )!=string::npos && i+1<argc){ histoNameMaskStart = argv[i+1]; i++; printf("Only process Histo starting with '%s'\n", histoNameMaskStart.c_str());   }
+     if(arg.find("--only"   )!=string::npos && i+1<argc){ histoNameMask= argv[i+1]; i++; printf("Only process Histo containing '%s'\n", histoNameMask.c_str());   }
      if(arg.find("--index"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%i",&cutIndex); i++; onlyCutIndex=(cutIndex>=0); printf("index = %i\n", cutIndex);  }
      if(arg.find("--chi2"  )!=string::npos){ showChi2 = true;  }
      if(arg.find("--showUnc") != string::npos) { 
@@ -990,15 +1007,12 @@ int main(int argc, char* argv[]){
    sprintf(buf, "_Index%i", cutIndex);
    cutIndexStr = buf;
 
-
    JSONWrapper::Object Root(jsonFile, true);
    GetInitialNumberOfEvents(Root,inDir,NameAndType(cutflowhisto,true, false));  //Used to get the rescale factor based on the total number of events geenrated
-
    std::list<NameAndType> histlist;
    GetListOfObject(Root,inDir,histlist);
    histlist.sort();
-   histlist.unique();
-
+   histlist.unique();   
 
    TFile* OutputFile = NULL;
    if(StoreInFile) OutputFile = new TFile(outFile.c_str(),"RECREATE");
@@ -1010,9 +1024,11 @@ int main(int argc, char* argv[]){
    int ictr(0);
    for(std::list<NameAndType>::iterator it= histlist.begin(); it!= histlist.end(); it++,ictr++)
      {
+//       if(it->name.find("mass")!=std::string::npos)printf("%s\n",it->name.c_str());
+
        if(ictr%TreeStep==0){printf(".");fflush(stdout);}
-       if(objectSearchKey != "" && it->name.find(objectSearchKey)==std::string::npos)continue;
-       if(objectSearchKeyStart != "" && it->name.find(objectSearchKeyStart)!=0)continue;
+       if(histoNameMask != "" && it->name.find(histoNameMask)==std::string::npos)continue;
+       if(histoNameMaskStart != "" && it->name.find(histoNameMaskStart)!=0)continue;
        system(("echo \"" + it->name + "\" >> " + csvFile).c_str());
 
        if(doTex && (it->name.find("eventflow")!=std::string::npos || it->name.find("evtflow")!=std::string::npos) && it->name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,*it); }
