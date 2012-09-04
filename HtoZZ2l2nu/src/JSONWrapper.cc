@@ -136,7 +136,7 @@ Object::Object(const std::string& in, bool IsInputFile){
 }
 
 void Object::Load(const std::string& in){
-   printf("Loading: %s\n", in.c_str());
+   printf("Loading: %s...", in.c_str());
    FILE* pFile = fopen(in.c_str(),"r");
 
    char buffer[1024];
@@ -148,6 +148,7 @@ void Object::Load(const std::string& in){
    fclose(pFile);
    JsonFile = removeWhiteSpace(JsonFile);
    ParseObject(JsonFile);
+   print("  Done\n");
 }
 
 
