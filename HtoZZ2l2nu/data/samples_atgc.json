@@ -1,29 +1,7 @@
-
 {
     "proc":[
 	{
-	"tag":"VBF Z",
-	"isdata":false,
-	"spimpose":true,
-	"normto":1,
-	"color":"1",
-	"lcolor":1,
-	"lwidth":2,
-	"fill":0,
-	"marker":1,
-	"normto":1,
-	"data":[
-		{
-		"dtag":"MC8TeV_VBFZ_Madgraph",
-		"aoddir":["/store/cmst3/user/psilva/Madgraph/VBFZ/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/Madgraph/VBFZ/PAT"],         
-       		"xsec":7.743,
-		"br":[2,0.033658]
-		}
-	 ]
-	},
-	{
-	"tag":"VBF ZZ",
+	"tag":"SM",
 	"isdata":false,
 	"spimpose":true,
 	"color":"1",
@@ -33,16 +11,14 @@
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC8TeV_VBFZZ_Madgraph",
-		"aoddir":["/store/cmst3/user/psilva/Madgraph/QuarticCoupling/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/Madgraph/QuarticCoupling/PAT"],         
-       		"xsec":0.05979,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_Sherpa",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_0_f5z_0"],
+       		"xsec":0.120928
 		}
 	 ]
 	},
 	{
-	"tag":"=0 jets",
+	"tag":"F_{4}^{Z}=0.000 F_{5}^{Z}=-0.005",
 	"isdata":false,
 	"spimpose":true,
 	"color":"1",
@@ -52,16 +28,14 @@
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v0jets_Sherpa",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/test0723/sm0j/"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_0jets"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_0_f5z_M0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_0_f5z_M0p005"],
+       		"xsec":0.121171
 		}
 	 ]
 	},
 	{
-	"tag":"=1 jets",
+	"tag":"F_{4}^{Z}=0.000 F_{5}^{Z}=-0.010",
 	"isdata":false,
 	"spimpose":true,
 	"color":"1",
@@ -71,335 +45,791 @@
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v1jets_Sherpa",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/test0723/sm1j/"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_1jets"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_0_f5z_M0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_0_f5z_M0p01"],
+       		"xsec":0.122378
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=+0.1 F5Z=+0.1",
+	"tag":"F_{4}^{Z}=0.000 F_{5}^{Z}=-0.020",
 	"isdata":false,
 	"spimpose":true,
 	"color":"1",
-	"lcolor":4,
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5z0v1",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p1_p1/aodsim0607"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v1_f5z0v1"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_0_f5z_M0p02",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_0_f5z_M0p02"],
+       		"xsec":0.128506
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=+0.1 F5Z=+0.04",
+	"tag":"F_{4}^{Z}=0.000 F_{5}^{Z}=0.005",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5z0v04",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p1p04/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v1_f5z0v04"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_0_f5z_P0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_0_f5z_P0p005"],
+       		"xsec":0.120895
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=+0.1 F5Z=0",
+	"tag":"F_{4}^{Z}=0.000 F_{5}^{Z}=0.010",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5z0",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p1_p0/aodsim0607"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v1_f5z0"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_0_f5z_P0p010",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_0_f5z_P0p010"],
+       		"xsec":0.121881
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=+0.1 F5Z=-0.04",
+	"tag":"F_{4}^{Z}=0.000 F_{5}^{Z}=0.020",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5zm0v04",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p1mp04/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v1_f5zm0v04"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_0_f5z_P0p020",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_0_f5z_P0p020"],
+       		"xsec":0.128012
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=+0.1 F5Z=-0.1",
+	"tag":"F_{4}^{Z}=-0.005 F_{5}^{Z}=0.000",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v1_f5zm0v1",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p1mp1/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v1_f5zm0v1"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p005_f5z_0",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p005_f5z_0"],
+       		"xsec":0.121053
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=+0.04 F5Z=+0.1",
+	"tag":"F_{4}^{Z}=-0.005 F_{5}^{Z}=-0.005",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v04_f5z0v1",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p04p1/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v04_f5z0v1"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p005_f5z_M0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p005_f5z_M0p005"],
+       		"xsec":0.121213
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=+0.04 F5Z=+0.04",
+	"tag":"F_{4}^{Z}=-0.005 F_{5}^{Z}=-0.010",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v04_f5z0v04",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p04p04/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v04_f5z0v04"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p005_f5z_M0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p005_f5z_M0p01"],
+       		"xsec":0.123007
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=+0.04 F5Z=-0.04",
+	"tag":"F_{4}^{Z}=-0.005 F_{5}^{Z}=-0.020",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v04_f5zm0v04",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p04mp04/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v04_f5zm0v04"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p005_f5z_M0p02",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p005_f5z_M0p02"],
+       		"xsec":0.130023
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=+0.04 F5Z=-0.1",
+	"tag":"F_{4}^{Z}=-0.005 F_{5}^{Z}=+0.005",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4z0v04_f5zm0v1",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/p04mp1/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4z0v04_f5zm0v1"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p005_f5z_P0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p005_f5z_P0p005"],
+       		"xsec":0.121107
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=-0.04 F5Z=+0.1",
+	"tag":"F_{4}^{Z}=-0.005 F_{5}^{Z}=+0.010",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v04_f5z0v1",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/mp04p1/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4zm0v04_f5z0v1"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p005_f5z_P0p010",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p005_f5z_P0p01"],
+       		"xsec":0.122425
 		}
 	 ]
 	},
-
 	{
-	"tag":"F4Z=-0.04 F5Z=+0.04",
+	"tag":"F_{4}^{Z}=-0.005 F_{5}^{Z}=+0.020",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v04_f5z0v04",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/mp04p04/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4zm0v04_f5z0v04"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p005_f5z_P0p010",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p005_f5z_P0p02"],
+       		"xsec":0.128941
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=-0.04 F5Z=-0.04",
+	"tag":"F_{4}^{Z}=-0.010 F_{5}^{Z}=0.000",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v04_f5zm0v04",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/mp04mp04/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4zm0v04_f5zm0v04"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p01_f5z_0",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p01_f5z_0"],
+       		"xsec":0.121094
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=-0.04 F5Z=-0.1",
+	"tag":"F_{4}^{Z}=-0.010 F_{5}^{Z}=-0.005",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v04_f5zm0v1",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/mp04mp1/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4zm0v04_f5zm0v1"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p01_f5z_M0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p01_f5z_M0p005"],
+       		"xsec":0.123681
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=-0.1 F5Z=+0.1",
+	"tag":"F_{4}^{Z}=-0.010 F_{5}^{Z}=-0.010",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v1_f5z0v1",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/mp1p1/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4zm0v1_f5z0v1"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p01_f5z_M0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p01_f5z_M0p01"],
+       		"xsec":0.124618
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=-0.1 F5Z=+0.04",
+	"tag":"F_{4}^{Z}=-0.010 F_{5}^{Z}=-0.020",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v1_f5z0v04",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/mp1p04/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4zm0v1_f5z0v04"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p01_f5z_M0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p01_f5z_M0p02"],
+       		"xsec":0.12994
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=-0.1 F5Z=-0.04",
+	"tag":"F_{4}^{Z}=-0.010 F_{5}^{Z}=+0.005",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v1_f5zm0v04",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/mp1mp04/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4zm0v1_f5zm0v04"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p01_f5z_P0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p01_f5z_P0p005"],
+       		"xsec":0.122709
 		}
 	 ]
 	},
 	{
-	"tag":"F4Z=-0.1 F5Z=-0.1",
+	"tag":"F_{4}^{Z}=-0.010 F_{5}^{Z}=+0.010",
 	"isdata":false,
 	"spimpose":true,
-	"lcolor":2,
 	"color":"1",
+	"lcolor":1,
 	"lwidth":2,
 	"fill":0,
 	"marker":1,
 	"data":[
 		{
-		"dtag":"MC7TeV_ZZ2l2v_atgc_f4zm0v1_f5zm0v1",
-		"aoddir":["/castor/cern.ch/user/w/wangjian/atgc_zz2l2v/mp1mp1/aodsim"],
-		"patdir":["/store/cmst3/user/psilva/Sherpa/ZZ2l2v_atgc_f4zm0v1_f5zm0v1"],         
-       		"xsec":1.0,
-		"br":[1.0]
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p01_f5z_P0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p01_f5z_P0p01"],
+       		"xsec":0.12509
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=-0.010 F_{5}^{Z}=+0.020",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p01_f5z_P0p02",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p01_f5z_P0p02"],
+       		"xsec":0.131807
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=-0.020 F_{5}^{Z}=0.000",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p02_f5z_0",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p02_f5z_0"],
+       		"xsec":0.129292
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=-0.020 F_{5}^{Z}=-0.005",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p02_f5z_M0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p02_f5z_M0p005"],
+       		"xsec":0.129223
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=-0.020 F_{5}^{Z}=-0.010",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p02_f5z_M0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p02_f5z_M0p01"],
+       		"xsec":0.130113
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=-0.020 F_{5}^{Z}=-0.020",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p02_f5z_M0p02",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p02_f5z_M0p02"],
+       		"xsec":0.137671
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=-0.020 F_{5}^{Z}=0.005",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p02_f5z_P0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p02_f5z_P0p005"],
+       		"xsec":0.129353
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=-0.020 F_{5}^{Z}=0.010",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p02_f5z_P0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p02_f5z_P0p01"],
+       		"xsec":0.130969
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=-0.020 F_{5}^{Z}=0.020",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_M0p02_f5z_P0p02",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_M0p02_f5z_P0p02"],
+       		"xsec":0.137194
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.005 F_{5}^{Z}=0.000",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p005_f5z_0",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p005_f5z_0"],
+       		"xsec":0.120283
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.005 F_{5}^{Z}=-0.005",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p005_f5z_M0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p005_f5z_M0p005"],
+       		"xsec":0.121485
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.005 F_{5}^{Z}=-0.010",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p005_f5z_M0p010",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p005_f5z_M0p01"],
+       		"xsec":0.121822
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.005 F_{5}^{Z}=-0.020",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p005_f5z_M0p020",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p005_f5z_M0p02"],
+       		"xsec":0.129042
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.005 F_{5}^{Z}=0.005",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p005_f5z_P0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p005_f5z_P0p005"],
+       		"xsec":0.120925
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.005 F_{5}^{Z}=0.010",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p005_f5z_P0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p005_f5z_P0p01"],
+       		"xsec":0.122851
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.005 F_{5}^{Z}=0.020",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p005_f5z_P0p02",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p005_f5z_P0p02"],
+       		"xsec":0.129064
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.010 F_{5}^{Z}=0.000",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p01_f5z_0",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p01_f5z_0"],
+       		"xsec":0.122395
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.010 F_{5}^{Z}=-0.005",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p01_f5z_M0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p01_f5z_M0p005"],
+       		"xsec":0.122013
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.010 F_{5}^{Z}=-0.010",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p01_f5z_M0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p01_f5z_M0p01"],
+       		"xsec":0.124019
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.010 F_{5}^{Z}=-0.020",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p01_f5z_M0p02",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p01_f5z_M0p02"],
+       		"xsec":0.130062
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.010 F_{5}^{Z}=0.005",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p01_f5z_P0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p01_f5z_P0p005"],
+       		"xsec":0.122412
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.010 F_{5}^{Z}=0.010",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p01_f5z_P0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p01_f5z_P0p01"],
+       		"xsec":0.124944
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.010 F_{5}^{Z}=0.020",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p01_f5z_P0p02",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p01_f5z_P0p02"],
+       		"xsec":0.130269
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.020 F_{5}^{Z}=0.000",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p02_f5z_0",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p02_f5z_0"],
+       		"xsec":0.129739
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.020 F_{5}^{Z}=-0.005",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p02_f5z_M0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p02_f5z_M0p005"],
+       		"xsec":0.12784
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.020 F_{5}^{Z}=-0.010",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p02_f5z_M0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p02_f5z_M0p01"],
+       		"xsec":0.131216
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.020 F_{5}^{Z}=-0.020",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p02_f5z_M0p02",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p02_f5z_M0p02"],
+       		"xsec":0.138318
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.020 F_{5}^{Z}=+0.005",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p02_f5z_P0p005",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p02_f5z_P0p005"],
+       		"xsec":0.129782
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.020 F_{5}^{Z}=+0.010",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p02_f5z_P0p01",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p02_f5z_P0p01"],
+       		"xsec":0.133391
+		}
+	 ]
+	},
+	{
+	"tag":"F_{4}^{Z}=0.020 F_{5}^{Z}=+0.020",
+	"isdata":false,
+	"spimpose":true,
+	"color":"1",
+	"lcolor":1,
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+		"dtag":"MC7TeV_ZZ2l2v_f4z_P0p02_f5z_P0p02",
+		"aoddir":["/store/group/phys_electroweak/ZZ_2l2v/aTGC/Samples/AOD/aTGC_f4z_P0p02_f5z_P0p02"],
+       		"xsec":0.137
 		}
 	 ]
 	}
