@@ -547,8 +547,8 @@ int main(int argc, char* argv[])
   //EventCategory eventCategoryInst(0); //inclusive analysis
   //EventCategory eventCategoryInst(1); //jet binning
   //EventCategory eventCategoryInst(2); //vbf binning
-//  EventCategory eventCategoryInst(3); //jet(0,1,>=2)+vbf binning
-  EventCategory eventCategoryInst(4); //jet(0,>=1)+vbf binning
+  EventCategory eventCategoryInst(3); //jet(0,1,>=2)+vbf binning
+//  EventCategory eventCategoryInst(4); //jet(0,>=1)+vbf binning
 
 
 
