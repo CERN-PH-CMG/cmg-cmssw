@@ -204,10 +204,10 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,40,250) );
 
 
-  mon.addHistogram( new TH1F( "higgsMass_0raw", ";Gen Higgs Mass;Events", 500,0,1500) );
-  mon.addHistogram( new TH1F( "higgsMass_1vbf", ";Gen Higgs Mass;Events", 500,0,1500) );
-  mon.addHistogram( new TH1F( "higgsMass_2qt" , ";Gen Higgs Mass;Events", 500,0,1500) );
-  mon.addHistogram( new TH1F( "higgsMass_3ls" , ";Gen Higgs Mass;Events", 500,0,1500) );
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_0raw", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_1vbf", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_2qt" , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_3ls" , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
 
 
   mon.addHistogram( new TH1F( "thirdleptonpt", ";p_{T}^{l};Events", 50,0,500) );
@@ -410,7 +410,8 @@ int main(int argc, char* argv[])
          optim_Cuts1_met    .push_back(met);
   }
 
-   TH1F* Hoptim_cuts1_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
+   //make it as a TProfile so hadd does not change the value
+   TProfile* Hoptim_cuts1_met     =  (TProfile*) mon.addHistogram( new TProfile ("optim_cut1_met"    , ";cut index;met"    ,optim_Cuts1_met.size(),0,optim_Cuts1_met.size()) ) ;
    for(unsigned int index=0;index<optim_Cuts1_met.size();index++){
       Hoptim_cuts1_met    ->Fill(index, optim_Cuts1_met[index]);    
    }
@@ -457,11 +458,12 @@ int main(int argc, char* argv[])
                  optim_Cuts2_vbfmass.push_back(mass);
   }}}}}
 
-   TH1F* Hoptim_cuts2_met     =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_met"    , ";cut index;met"    ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
-   TH1F* Hoptim_cuts2_jet1    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_jet1"   , ";cut index;jet1"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
-   TH1F* Hoptim_cuts2_jet2    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_jet2"   , ";cut index;jet2"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
-   TH1F* Hoptim_cuts2_deta    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_deta"   , ";cut index;deta"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
-   TH1F* Hoptim_cuts2_mass    =  (TH1F*) mon.addHistogram( new TH1F ("optim_cut2_mass"   , ";cut index;mass"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   //make it as a TProfile so hadd does not change the value
+   TProfile* Hoptim_cuts2_met     =  (TProfile*) mon.addHistogram( new TProfile ("optim_cut2_met"    , ";cut index;met"    ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TProfile* Hoptim_cuts2_jet1    =  (TProfile*) mon.addHistogram( new TProfile ("optim_cut2_jet1"   , ";cut index;jet1"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TProfile* Hoptim_cuts2_jet2    =  (TProfile*) mon.addHistogram( new TProfile ("optim_cut2_jet2"   , ";cut index;jet2"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TProfile* Hoptim_cuts2_deta    =  (TProfile*) mon.addHistogram( new TProfile ("optim_cut2_deta"   , ";cut index;deta"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
+   TProfile* Hoptim_cuts2_mass    =  (TProfile*) mon.addHistogram( new TProfile ("optim_cut2_mass"   , ";cut index;mass"   ,optim_Cuts2_met.size(),0,optim_Cuts2_met.size()) ) ;
    for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
       Hoptim_cuts2_met    ->Fill(index, optim_Cuts2_met[index]);  
       Hoptim_cuts2_jet1   ->Fill(index, optim_Cuts2_vbfJ1pt[index]);  
