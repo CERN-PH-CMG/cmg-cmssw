@@ -2,16 +2,18 @@ import FWCore.ParameterSet.Config as cms
 
 from CMGTools.External.pujetidproducer_cfi import pileupJetIdProducer,pileupJetIdProducerChs
 from CMGTools.HtoZZ2l2nu.TriggerSequences_cff import getTriggerPaths
-
 import os
-try:
-    cmssw_version = os.environ["CMSSW_VERSION"].replace("CMSSW_","")
-except:
-    cmssw_version = "5_X"
 
-selVersion=2012
-if cmssw_version.startswith("4"):   selVersion=2011
+def getSelVersion():
+    try:
+        cmssw_version = os.environ["CMSSW_VERSION"].replace("CMSSW_","")
+    except:
+        cmssw_version = "5_X"
+    selVersion=2012
+    if cmssw_version.startswith("4"):   selVersion=2011
+    return selVersion
 
+selVersion=getSelVersion()
 print 'CMSSW version %s - selection adapted for %d'%(os.environ['CMSSW_BASE'],selVersion)
 
 DoubleElectronTrigs, DoubleMuTrigs, MuEGTrigs, PhotonTrigs, SingleMuTrigs, mcTrigs = getTriggerPaths(version=selVersion)
@@ -68,8 +70,8 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlowNoPuS
                                )
 
 if(selVersion==2011):
-    BaseMuonsSelection.usePFIso=cms.bool(False)
-    BaseMuonsSelection.reComputePFIso = cms.bool(True),
+    BaseMuonsSelection.usePFIso=cms.bool(True)
+    BaseMuonsSelection.reComputePFIso = cms.bool(True)
 
 # base values for loose muon selection ----------------------------------------------
 BaseLooseMuonsSelection = BaseMuonsSelection.clone( minPt = cms.double(3),
@@ -116,7 +118,7 @@ BasePhotonsSelection = cms.PSet( source = cms.InputTag("photons"),
                                  gsfTrackSource = cms.InputTag("gsfElectronTracks")
                                  )
 if(selVersion==2011):
-    BasePhotonsSelection.rho25 = cms.InputTag("kt6PFJets25:rho")
+    #    BasePhotonsSelection.rho25 = cms.InputTag("kt6PFJets25:rho")
     BasePhotonsSelection.scCorrector = cms.string("${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/PhoEnRegress_2011.root")
 
 # base values for electron selection ----------------------------------------------
@@ -147,7 +149,7 @@ if(selVersion==2011):
     BaseElectronsSelection.scCorrector = cms.string("${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/EleEnRegress_2011.root")
     BaseElectronsSelection.usePFIso = cms.bool(True)
     BaseElectronsSelection.reComputePFIso = cms.bool(True)
-    BaseElectronsSelection.vbtf2011.applyConversionVetoFrom = cms.string('eidVBTF80')
+    #BaseElectronsSelection.vbtf2011.applyConversionVetoFrom = cms.string('eidVBTF80')
     
 
 # base values for electron selection ----------------------------------------------
@@ -167,7 +169,7 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJetsPFlow"),
 AssocJetSelection = BaseJetSelection.clone(source = cms.InputTag("selectedPatJetsPFlowNoPuSub"),
                                            puJetIds = pileupJetIdProducerChs.algos
                                            )
-if(selVersion==2011): AssocJetSelection.source=cms.InputTag("selectedPatJets")
+#if(selVersion==2011): AssocJetSelection.source=cms.InputTag("selectedPatJets")
 
 # base values for the dilepton selection ------------------------------------------
 BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
