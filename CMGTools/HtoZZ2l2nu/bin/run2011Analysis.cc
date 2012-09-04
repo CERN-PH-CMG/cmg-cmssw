@@ -203,6 +203,13 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 50,-10,10) );
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,40,250) );
 
+
+  mon.addHistogram( new TH1F( "higgsMass_0raw", ";Gen Higgs Mass;Events", 500,0,1500) );
+  mon.addHistogram( new TH1F( "higgsMass_1vbf", ";Gen Higgs Mass;Events", 500,0,1500) );
+  mon.addHistogram( new TH1F( "higgsMass_2qt" , ";Gen Higgs Mass;Events", 500,0,1500) );
+  mon.addHistogram( new TH1F( "higgsMass_3ls" , ";Gen Higgs Mass;Events", 500,0,1500) );
+
+
   mon.addHistogram( new TH1F( "thirdleptonpt", ";p_{T}^{l};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "thirdleptoneta", ";#eta^{l};Events", 50,-2.6,2.6) );
   mon.addHistogram( new TH1F( "nleptons", ";Leptons;Events", 3,2,4) );
@@ -614,21 +621,30 @@ int main(int argc, char* argv[])
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
       float lShapeWeights[3]={1.0,1.0,1.0};
+
+
+
       if(isMC){
         weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_plus  = PuShifters[PUUP]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_minus = PuShifters[PUDOWN]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
+
+        mon.fillHisto("higgsMass_0raw",tags_full, phys.genhiggs[0].mass(), weight);
 	if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
+        mon.fillHisto("higgsMass_1vbf",tags_full, phys.genhiggs[0].mass(), weight);
+
         if(isMC_GG) {
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
 	    ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
 	  weight *= ev.hptWeights[0];
+        }
+        mon.fillHisto("higgsMass_2qt",tags_full, phys.genhiggs[0].mass(), weight);
 	  
-	  for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
-	    lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
-	  noLShapeWeight=weight;
-	  weight *= lShapeWeights[0];
-	}
+	for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
+	  lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
+	noLShapeWeight=weight;
+	weight *= lShapeWeights[0];
+        mon.fillHisto("higgsMass_3ls",tags_full, phys.genhiggs[0].mass(), weight);	
       }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
@@ -749,7 +765,7 @@ int main(int argc, char* argv[])
 	  if(!isIso) passIdAndIso=false;     
 	  
 
-	  //fill control histograms (constrained to the Z mass)
+	  //        fill control histograms (constrained to the Z mass)
 	  if(passZmass && isSameFlavor){
 	      if(matchid!=0){
 		  mon.fillHisto(lepStr+"genpt",tags_full, genP4.pt(), weight,true);
