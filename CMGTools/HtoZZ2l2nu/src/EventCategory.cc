@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/07/16 09:31:50 $
- *  $Revision: 1.15 $
+ *  $Date: 2012/08/06 07:45:49 $
+ *  $Revision: 1.16 $
  *  \author L. Quertenmont
  */
 
@@ -92,7 +92,8 @@ int EventCategory::Get(const PhysicsEvent_t& phys, PhysicsObjectJetCollection* J
       }else{
 	  if(phys.gammas[0].eta()>MinEta && phys.gammas[0].eta()<MaxEta)NCentralLepton=2;
       }
-      isVBF = (dEta>4.5) && (VBFSyst.M()>450) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2);
+      isVBF = (dEta>4.0) && (VBFSyst.M()>500) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2); //ICHEP2012 selection
+//      isVBF = (dEta>4.5) && (VBFSyst.M()>450) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2); //new selection optimized with datadriven backgrounds
     }
 
 
