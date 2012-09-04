@@ -770,3 +770,64 @@ def QCDEstimate6(prefix,prefix1,var,xmin,xmax,\
       QCDScale = OSoverSS
       
       return QCDtightSS, QCDScale, QCDlooseSS, QCDtightSS
+
+
+def QCDEstimate7(prefix,prefix1,var,xmin,xmax,\
+                 plotVarDataSS, plotVarDataLooseIsoOS, plotVarDataLooseIsoOSMC, plotVarDataLooseIsoSS,\
+                 log):
+      ymax=plotVarDataLooseIsoOS.Hist("Data").GetMaximum()*1.5
+      if log:
+          plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+	  gPad.SetLogy()
+      else:
+          plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
+	  gPad.SetLogy(False)
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.png")
+      
+      ymax=plotVarDataLooseIsoSS.Hist("Data").GetMaximum()*1.5
+      if log:
+          plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+	  gPad.SetLogy()
+      else:
+          plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
+	  gPad.SetLogy(False)
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+      
+      ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
+      if log:
+          plotVarDataSS.DrawStack("HIST",xmin,xmax,0.1,ymax)
+	  gPad.SetLogy()
+      else:
+          plotVarDataSS.DrawStack("HIST",xmin,xmax,0,ymax)
+	  gPad.SetLogy(False)
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.png")
+      
+      QCDlooseOS = copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
+      substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOSMC)
+
+      QCDlooseSS = copy.deepcopy(plotVarDataLooseIsoSS.Hist("Data"))
+      substractMCbackground(QCDlooseSS, plotVarDataLooseIsoSS)
+
+      QCDtightSS = copy.deepcopy(plotVarDataSS.Hist("Data"))
+      substractMCbackground(QCDtightSS, plotVarDataSS)
+
+      QCD_PrintOut = open( os.getcwd()+"/"+prefix+"/QCD_PrintOut_"+var+".txt","w")
+      print >> QCD_PrintOut, "QCDlooseOS:", QCDlooseOS.Integral()
+      print >> QCD_PrintOut, "QCDlooseSS:", QCDlooseSS.Integral()
+      print >> QCD_PrintOut, "QCDtightSS:", QCDtightSS.Integral()
+      tightLoose    = QCDtightSS.Integral()/QCDlooseSS.Integral()
+      tightLooseErr = tightLoose*math.sqrt(1./abs(QCDtightSS.Integral()) + 1./abs(QCDlooseSS.Integral()))
+      OSSS=QCDlooseOS.Integral()/QCDlooseSS.Integral()
+      OSSSErr=OSSS*math.sqrt(1./abs(QCDlooseOS.Integral()) + 1./abs(QCDlooseSS.Integral()))
+      print >> QCD_PrintOut, "QCDtightSS / QCDlooseSS", tightLoose, "+-", tightLooseErr
+      print >> QCD_PrintOut, "QCDlooseOS / QCDlooseSS", OSSS, "+-", OSSSErr
+      QCD_PrintOut.close()
+      
+      if OSSS<OSSSErr/2.:
+          OSSS=OSSSErr/2.
+      if tightLoose<tightLooseErr/2.:
+          tightLoose=tightLooseErr/2.
+      
+      QCDScale=tightLoose*OSSS
+      
+      return QCDlooseSS, QCDScale, QCDlooseOS, QCDtightSS, tightLooseErr/tightLoose
