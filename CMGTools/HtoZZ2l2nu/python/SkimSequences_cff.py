@@ -30,13 +30,14 @@ def addDileptonSkim(process):
 ##
 ## photon filter
 ##
-def addPhotonSkim(process):
+def addPhotonSkim(process,selVersion=2012):
     process.photonPreselectionCounter = cms.EDProducer("EventCountProducer")
     process.photonSelectionCounter = process.photonPreselectionCounter.clone()
     process.photonCandidates = cms.EDFilter("PhotonRefSelector",
                                             src = cms.InputTag("photons"),
                                             cut = cms.string("pt>30 && abs(eta)<1.5 && hadTowOverEm<0.15 && r9>0.8 && !hasPixelSeed")
                                             )
+    if(selVersion==2011): process.photonCandidates.cut=cms.string("pt>30 && abs(eta)<1.5 && hadronicOverEm<0.15 && r9>0.8 && !hasPixelSeed")
     process.countPhotons = cms.EDFilter("CandViewCountFilter",
                                         minNumber = cms.uint32(1),
                                         maxNumber = cms.uint32(1),

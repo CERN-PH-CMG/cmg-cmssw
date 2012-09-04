@@ -172,14 +172,10 @@ vector<reco::CandidatePtr> getGoodMuons(edm::Handle<edm::View<reco::Candidate> >
 	  if(reComputePFIso)
 	    {
 	      const reco::MuonPFIsolation &muIso=muon->pfIsolationR04();
-	      cout << "mu" << endl;
-	      cout << isoVals[C_ISO] << " " << isoVals[CPU_ISO] << " " << isoVals[G_ISO] << " " << isoVals[N_ISO] << endl;
 	      isoVals[C_ISO]   = muIso.sumChargedHadronPt;
 	      isoVals[CPU_ISO] = muIso.sumPUPt;
 	      isoVals[G_ISO]   = muIso.sumPhotonEt;
 	      isoVals[N_ISO]   = muIso.sumNeutralHadronEt;
-	      cout << isoVals[C_ISO] << " " << isoVals[CPU_ISO] << " " << isoVals[G_ISO] << " " << isoVals[N_ISO] << endl;
-	      cout << "---"<< endl;
 	      isoVals[PFREL_ISO]        = (isoVals[N_ISO]+isoVals[G_ISO]+isoVals[C_ISO])/max(float(muon->pt()),float(20.0));
 	      isoVals[PFRELBETCORR_ISO] = (max(isoVals[N_ISO]+isoVals[G_ISO]-0.5*isoVals[CPU_ISO],0.)+isoVals[C_ISO])/max(float(muon->pt()),float(20.0));
 	    }
@@ -388,7 +384,7 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 		  if(!gSystem->AccessPathName(path)) ecorr->Initialize(iSetup,path.Data());
 		  else /*{ cout << "Failed to find eSC corrector file" << endl;*/ throw std::exception(); 
 		}
-	      
+
 #if IS44x == 1
 	      enSF=ecorr->CorrectedEnergyWithError(dynamic_cast<const reco::GsfElectron &>(*ele),lazyTool);
 #else
@@ -402,7 +398,6 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	lepId.ensf              = enSF.first;
 	lepId.ensferr           = enSF.second;
 	std::vector<double> isoVals=getLeptonIso( elePtr, lepId.p4.pt(), rho);
-	for(size_t iiso=0; iiso<isoVals.size(); iiso++)	lepId.isoVals[iiso] = isoVals[iiso];
 	if(reComputePFIso && eIsolator && hPFCands.isValid() && hVtx.isValid())
 	  {
 	    eIsolator->fGetIsolation(dynamic_cast<const reco::GsfElectron *>(ele),&(*hPFCands),primVtx,hVtx);
@@ -413,6 +408,7 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	    isoVals[PFREL_ISO]        = (isoVals[N_ISO]+isoVals[G_ISO]+isoVals[C_ISO])/max(float(ele->pt()),float(20.0));
 	    isoVals[PFRELBETCORR_ISO] = (max(isoVals[N_ISO]+isoVals[G_ISO]-0.5*isoVals[CPU_ISO],0.)+isoVals[C_ISO])/max(float(ele->pt()),float(20.0));
 	  }
+	for(size_t iiso=0; iiso<isoVals.size(); iiso++)	lepId.isoVals[iiso] = isoVals[iiso];
 	
 	lepId.hoe               = ele->hadronicOverEm();
 	lepId.hoebc             = ele->hcalOverEcalBc();

@@ -15,16 +15,24 @@ process.source.fileNames=inputList
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # global tag
-process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+
+from CMGTools.HtoZZ2l2nu.StandardSelections_cfi import getSelVersion
 gt=''
-if ( not runOnMC ):
-    try:
-        if(is52xData is True) : gt='GR_P_V39_AN1::All'
-    except:
-        gt='GR_P_V41_AN1::All'
-else :
-    gt = 'START53_V10::All'
+if(getSelVersion()==2012) :
+    process.load("Configuration.Geometry.GeometryIdeal_cff")
+    if ( not runOnMC ):
+        try:
+            if(is52xData is True) : gt='GR_P_V39_AN1::All'
+        except:
+            gt='GR_P_V41_AN1::All'
+    else :
+        gt = 'START53_V10::All'
+else:
+    process.load("Configuration.StandardSequences.Geometry_cff")
+    if ( not runOnMC ) : gt='GR_R_44_V13::All'
+    else               : gt='START44_V12::All'
+    
 print 'Using the following global tag %s'%gt
 process.GlobalTag.globaltag = gt
 
@@ -52,8 +60,7 @@ if(not runOnMC ):
                       
 from CMGTools.HtoZZ2l2nu.SkimSequences_cff import addDileptonSkim, addPhotonSkim
 addDileptonSkim(process)
-addPhotonSkim(process)
-
+addPhotonSkim(process,selVersion=getSelVersion())
 
 if runOnMC : jecLevels=['L1FastJet','L2Relative','L3Absolute']
 else       : jecLevels=['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
@@ -73,8 +80,12 @@ usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=post
 # to use GsfElectrons instead of PF electrons
 # this will destory the feature of top projection which solves the ambiguity between leptons and jets because
 # there will be overlap between non-PF electrons and jets even though top projection is ON!
-useGsfElectrons(process,postfix,"04") # to change isolation cone size to 0.3 as it is recommended by EGM POG, use "04" for cone size 0.4
-
+if(getSelVersion()==2012) :
+    useGsfElectrons(process,postfix,"04") # to change isolation cone size to 0.3 as it is recommended by EGM POG, use "04" for cone size 0.4
+else:
+    process.patElectronsPFlowNoPuSub = process.patElectrons.clone()
+    process.patElectronsPFlowNoPuSub.genParticleMatch = cms.InputTag("electronMatchPFlowNoPuSub")
+    
 # add old VBTF ids
 process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
 applyPostfix(process,"patElectrons",postfix).electronIDSources = cms.PSet( simpleEleId95relIso= cms.InputTag("simpleEleId95relIso"),
@@ -118,6 +129,7 @@ process.mySimpleInclusiveSecondaryVertexHighEffBJetTags = process.simpleInclusiv
 process.combinedInclusiveSecondaryVertexPositiveBJetTags = process.combinedSecondaryVertexPositiveBJetTags.clone(
     tagInfos = cms.VInputTag(cms.InputTag("impactParameterTagInfos"), cms.InputTag("myInclusiveSecondaryVertexTagInfosFiltered"))
     )
+process.inclusiveMergedVerticesFiltered.secondaryVertices = cms.InputTag("inclusiveVertices")
 process.ivfSequence=cms.Sequence(process.inclusiveVertexing
                                  *process.inclusiveMergedVerticesFiltered
                                  *process.myInclusiveSecondaryVertexTagInfosFiltered
