@@ -199,18 +199,19 @@ public:
       cout<<" Category : "<<sm<<" undefined "<<endl;
       return TString("");
     }
-    TString metcut="(metpt>30)";
+    TString metcut="(metpt>25)";//30 for PFMET
     TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
     TString boostcut=TString("(njet>=1&&nbjet==0)")+"*"+metcut;
     TString notboostcut=TString("(!")+boostcut+")";
     TString bjetcut="(njet<2&&nbjet>=1)";
     TString notbjetcut=TString("(!")+bjetcut+")";
+    TString zerojetcut="(njet==0&&nbjet==0)";
     TString taulowcut="(taupt<40.)";
     TString tauhighcut="(taupt>=40.)";
     TString SMcut[7];
-    SMcut[0]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+metcut+"*"+taulowcut;
-    SMcut[1]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+metcut+"*"+tauhighcut;
+    SMcut[0]=zerojetcut+"*"+taulowcut;
+    SMcut[1]=zerojetcut+"*"+tauhighcut;
     SMcut[2]=notvbfcut+"*"+boostcut+"*"+taulowcut;
     SMcut[3]=notvbfcut+"*"+boostcut+"*"+tauhighcut;
     SMcut[4]=vbfcut;

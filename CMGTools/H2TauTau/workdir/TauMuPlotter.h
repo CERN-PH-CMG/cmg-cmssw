@@ -221,11 +221,14 @@ public:
     TString notboostcut=TString("(!")+boostcut+")";
     TString bjetcut="(njet<2&&nbjet>=1)";
     TString notbjetcut=TString("(!")+bjetcut+")";
+    TString zerojetcut="(njet==0&&nbjet==0)";
     TString taulowcut="(taupt<40.)";
     TString tauhighcut="(taupt>=40.)";
     TString SMcut[7];
-    SMcut[0]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+taulowcut;
-    SMcut[1]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+tauhighcut;
+//     SMcut[0]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+taulowcut;
+//     SMcut[1]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+tauhighcut;
+    SMcut[0]=zerojetcut+"*"+taulowcut;
+    SMcut[1]=zerojetcut+"*"+tauhighcut;
     SMcut[2]=notvbfcut+"*"+boostcut+"*"+taulowcut;
     SMcut[3]=notvbfcut+"*"+boostcut+"*"+tauhighcut;
     SMcut[4]=vbfcut;

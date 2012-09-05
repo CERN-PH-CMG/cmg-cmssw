@@ -19,13 +19,13 @@ export path="/data/benitezj/Samples"
 #export tag="TauMu2012V540_July7_2011WJets"
 #export tag="TauMu2012V551Aug8svfitPFMET"
 #export tag="TauMu2012V551Aug6svfit"
-
+export tag="muTau2012V551Sep4"
 
 ###e-tau 2012
 #export tag="TauEle2012V5_4_0_NewType1MET3"
 #export tag="TauEle2012V5_4_0_NewType1MET4"
 #export tag="TauEle2012V5_4_0_NewType1MET5"
-export tag="TauEle2012V551Aug8svfitPFMET"
+#export tag="TauEle2012V551Aug8svfitPFMET"
 #export tag="TauEle2012V551Aug7svfit"
 
 

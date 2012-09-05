@@ -19,7 +19,7 @@ TString catdirname[NCAT]={
  "boost_high",
  "vbf"};
 
-void histosForDataCardSM(Int_t channel,TString path,TString tag){
+void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
 
   if(tag!="")path=path+"_"+tag;
 
@@ -31,7 +31,10 @@ void histosForDataCardSM(Int_t channel,TString path,TString tag){
 
   Float_t xbinsValues[13+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
   
-  if(channel==1)TauMuPlotter * analysis=configTauMu2011("analysis",path);
+  if(channel==1){
+    if(year==2011)TauMuPlotter * analysis=configTauMu2011("analysis",path);
+    if(year==2012)TauMuPlotter * analysis=configTauMu2011("analysis",path);
+  }
   if(channel==2)TauElePlotter * analysis=configTauEle2011("analysis",path);
   
   analysis->plotvar_="svfitmass";

@@ -19,7 +19,9 @@ void plotTauMu2012(){
   //TString path="/data/benitezj/Samples/TauMu2012V540_July7_2012WJets"; // includes new 2012 W+jets sample
 
   //TString path="/data/benitezj/Samples/TauMu2012V551Aug6svfit"; //debugged MVA MET
-  TString path="/data/benitezj/Samples/TauMu2012V551Aug8svfitPFMET";//PFMET all samples
+  //TString path="/data/benitezj/Samples/TauMu2012V551Aug8svfitPFMET";//PFMET all samples
+
+  TString path="/data/benitezj/Samples/muTau2012V551Sep4"; //fixed svfit and weights
 
   TauMuPlotter*analysis=configTauMu2012("analysis",path);
   analysis->setQCDColor(kMagenta-10);
@@ -32,7 +34,7 @@ void plotTauMu2012(){
   analysis->setPlotTitle("CMS Preliminary 2012,   5.0 fb^{-1},     #sqrt{s} = 8 TeV,        #tau_{#mu}#tau_{h}");
 
   //raw yields to load samples now
-  //analysis->printRawYields("(categoryIso==1)");
+  analysis->printRawYields("(categoryIso==1)");
 
   
   //triggerEffWeight_ selectionEffWeight  btagEffWeight_ eventweight_ embeddedGenWeight_ pupWeight_
@@ -50,82 +52,78 @@ void plotTauMu2012(){
   Float_t xbinsValues[14]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
   analysis->setVariableBinning(13,xbinsValues);
 
-//   analysis->plotInc("nvtx",50,-.5,49.5,1,1,1,"","",0,0,"# of reco. vertices ","",c,0,"inclusive");
+  analysis->plotInc("nvtx",50,-.5,49.5,1,1,1,"","",2,0,"# of reco. vertices ","",c,0,"inclusive");
 
-//   analysis->plotInc("mupt",25,0,100,1,1,1,"","",2,0," muon pt   (GeV)","",c,0,"inclusive");
-//   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,"","",2,0," muon  #eta","",c3,0,"inclusive"); 
-//   analysis->plotInc("muphi",20,-3.5,3.5,1,1,1,"","",2,0," muon phi ","",c3,0,"inclusive");    
-//   analysis->plotInc("muiso",100,0,1,1,0,1,"(tauisodiscmva>=1)","",0,0," muon relIso","",c,0,"inclusive");
-//   analysis->plotInc("mudz",100,-.05,.05,1,1,1,"","",2,0," mu dz","",c,0,"inclusive");
-//   analysis->plotInc("mudxy",100,-.03,.03,1,1,1,"","",2,0," mu dxy","",c,0,"inclusive");
+  analysis->plotInc("mupt",25,0,100,1,1,1,"","",2,0," muon pt   (GeV)","",c,0,"inclusive");
+  analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,"","",2,0," muon  #eta","",c3,0,"inclusive"); 
+  analysis->plotInc("muphi",20,-3.5,3.5,1,1,1,"","",2,0," muon phi ","",c3,0,"inclusive");    
+  analysis->plotInc("muiso",100,0,1,1,0,1,"(tauisodiscmva>=1)","",0,0," muon relIso","",c,0,"inclusive");
+  analysis->plotInc("mudz",100,-.05,.05,1,1,1,"","",2,0," mu dz","",c,0,"inclusive");
+  analysis->plotInc("mudxy",100,-.03,.03,1,1,1,"","",2,0," mu dxy","",c,0,"inclusive");
 
-//   analysis->plotInc("taupt",25,0,100,1,1,1,"","",0,0," tau pt   (GeV)","",c,0,"inclusive");
-//   analysis->plotInc("taueta",20,-2.5,2.5,1,1,1,"","",2,0," tau  #eta","",c2,0,"inclusive"); 
-//   analysis->plotInc("tauphi",20,-3.5,3.5,1,1,1,"","",2,0," tau phi ","",c3,0,"inclusive");    
-//   analysis->plotInc("tauisomva",20,-1.0,1.01,1,0,1,"(muiso<0.1)","",0,0,"tau iso mva","",c,0,"inclusive");
-//   analysis->plotInc("taudz",100,-.05,.05,1,1,1,"","",2,0," tau dz","",c,0,"inclusive");
-//   analysis->plotInc("taudxy",100,-.03,.03,1,1,1,"","",2,0," tau dxy","",c,0,"inclusive");
-
-//   analysis->plotInc("metpt",30,0,150,2,1,0,"","",0,0," MET   (GeV)","",c,0,"inclusive"); //(0<eventweight&&eventweight<100.)
-//   analysis->plotInc("metphi",20,-3.5,3.5,2,1,0,"","",-1,0," MET  phi ","",c,0,"inclusive"); //(0.001<eventweight&&eventweight<50.)
-//   analysis->plotInc("1-cos(metphi-muphi)",40,0,2.001,1,1,0,"","",2,0," 1 - cos(#Delta#phi) ","",c,0,"inclusive");    
-//   analysis->plotInc("metpt*cos(metphi)",30,-150,150,1,1,0,"","",2,0," MET  X  (GeV)","",c2,0,"inclusive");    
-//   analysis->plotInc("metpt*sin(metphi)",30,-150,150,1,1,0,"","",2,0," MET  Y (GeV)","",c2,0,"inclusive");    
+  analysis->plotInc("taupt",25,0,100,1,1,1,"","",2,0," tau pt   (GeV)","",c,0,"inclusive");
+  analysis->plotInc("taueta",20,-2.5,2.5,1,1,1,"","",2,0," tau  #eta","",c2,0,"inclusive"); 
+  analysis->plotInc("tauphi",20,-3.5,3.5,1,1,1,"","",2,0," tau phi ","",c3,0,"inclusive");    
+  analysis->plotInc("tauisomva",20,-1.0,1.01,1,0,1,"(muiso<0.1)","",0,0,"tau iso mva","",c,0,"inclusive");
+  analysis->plotInc("taudz",100,-.05,.05,1,1,1,"","",2,0," tau dz","",c,0,"inclusive");
+  analysis->plotInc("taudxy",100,-.03,.03,1,1,1,"","",2,0," tau dxy","",c,0,"inclusive");
   
-//   analysis->plotInc("transversemass",20,0,200,1,1,0,"","",2,0,"M_{T}   [GeV]","",c,0,"inclusive");
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"","",2,0,"m_{vis}   (GeV)","Events / 5 GeV",c,0,"inclusive");
-//   analysis->plotInc("svfitmass",60,0,300,1,1,1,"","",2,0," m(#tau#tau)   (GeV)","Events / 5 GeV",c,0,"inclusive");
-//   analysis->plotInc("njet",5,-.5,4.5,1,1,1,"","",0,0," njet ","",c,0,"inclusive");
-
-//   analysis->plotInc("transversemass",20,0,200,1,1,0,"(njet>=1)","",2,0,"m_{T}   (GeV)","",c,0,"inclusive1Jet");
-//   analysis->plotInc("leadJetPt",20,0,200,1,1,1,"(njet>=1)","",2,0,"lead jet p_{T}   (GeV)","",c,0,"inclusive1Jet");
-//   analysis->plotInc("leadJetEta",20,-5,5,1,1,1,"(njet>=1)","",2,0,"lead jet #eta","",c2,0,"inclusive1Jet");
-//   analysis->plotInc("ditaumass",20,0,200,1,1,1,"(njet>=1)","",2,0," m_{vis}   (GeV)","",c,0,"inclusive1Jet");
-//   analysis->plotInc("svfitmass",30,0,300,1,1,1,"(njet>=1)","",2,0," m(#tau#tau)   (GeV)","",c,0,"inclusive1Jet");
-
-//   analysis->plotInc("transversemass",30,0,300,1,1,0,"(njet>=2)","",2,0,"m_{T}   (GeV)","",c,0,"inclusive2Jet");
-//   analysis->plotInc("leadJetPt",20,0,200,1,1,1,"(njet>=2)","",2,12,"lead jet p_{T}   (GeV)","",c,0,"inclusive2Jet");
-//   analysis->plotInc("leadJetEta",20,-5,5,1,1,1,"(njet>=2)","",2,12,"lead jet #eta","",c,0,"inclusive2Jet");
-//   analysis->plotInc("subleadJetPt",20,0,200,1,1,1,"(njet>=2)","",2,12,"sublead jet p_{T}   (GeV)","",c,0,"inclusive2Jet");
-//   analysis->plotInc("subleadJetEta",20,-5,5,1,1,1,"(njet>=2)","",2,12,"sublead jet #eta","",c,0,"inclusive2Jet"); 
-//   analysis->plotInc("diJetMass",20,0,1000,1,1,1,"(njet>=2)","",2,12,"M(jj)","",c,0,"inclusive2Jet"); 
-//   analysis->plotInc("abs(diJetDeltaEta)",20,0,10,1,1,1,"(njet>=2)","",2,12,"#Delta#eta","",c,0,"nomina2Jet"); 
- //  analysis->plotInc("svfitmass",18,0,360,1,1,1,"(njet>=2)","",2,0," m(#tau#tau)   (GeV)","",c,0,"inclusive2Jet");
-
-
-//   //////////2012 categories
-
-//   ////Plot the vbf mva variables
-//   analysis->plotInc("vbfvars0",20,0,1000,1,1,1,"(njet>1)","",2,12,"M(jj)","",c,0,"inclusive2Jet");
-//   analysis->plotInc("vbfvars1",20,0,10,1,1,1,"(njet>1)","",2,12,"#Delta#eta(jj)","",c,0,"inclusive2Jet");
-//   analysis->plotInc("vbfvars2",20,0,3.4,1,1,1,"(njet>1)","",2,12,"#Delta#phi(jj)","",c2,0,"inclusive2Jet");
-//   analysis->plotInc("vbfvars3",20,0,200,1,1,1,"(njet>1)","",2,12,"#tau#tau   p_{T}","",c,0,"inclusive2Jet");
-//   analysis->plotInc("vbfvars4",20,0,200,1,1,1,"(njet>1)","",2,12,"di-jet p_{T}","",c,0,"inclusive2Jet");
-//   analysis->plotInc("vbfvars5",20,0,3.4,1,1,1,"(njet>1)","",2,12,"#Delta#phi(#tau#tau-jj)","",c2,0,"inclusive2Jet");
-//   analysis->plotInc("vbfvars6",20,0,10,1,1,1,"(njet>1)","",2,12,"#Delta#eta(#mu#tau-j)","",c,0,"inclusive2Jet");
-//   analysis->plotInc("vbfvars7",20,0,200,1,1,1,"(njet>1)","",2,12,"#mu#tau p_{T}","",c,0,"inclusive2Jet");
-//   analysis->plotInc("vbfmva",20,-1.,1.001,1,1,1,"(njet>1&&0.5<triggerEffWeight&&triggerEffWeight<1.5)","(vbfmva<0.5)",2,12,"VBF MVA output","",c,10,"inclusive2Jet");
-//   analysis->plotInc("vbfmva",10,0.0,1.001,1,1,1,"(njet>1&&njetingap==0&&abs(svfitmass-125)<25.)","(vbfmva<0.5)",2,12,"VBF MVA output","",c,0,"inclusive2JetSignal");
-
-
+  analysis->plotInc("transversemass",20,0,200,1,1,0,"","",2,0,"M_{T}   [GeV]","",c,0,"inclusive");
+  analysis->plotInc("metpt",30,0,150,1,1,0,"","",2,0," MET   (GeV)","",c,0,"inclusive");
+  analysis->plotInc("metphi",20,-3.5,3.5,1,1,0,"","",2,0," MET  phi ","",c,0,"inclusive"); 
+  analysis->plotInc("1-cos(metphi-muphi)",40,0,2.001,1,1,0,"","",2,0," 1 - cos(#Delta#phi) ","",c,0,"inclusive");    
+  analysis->plotInc("metpt*cos(metphi)",30,-150,150,1,1,0,"","",2,0," MET  X  (GeV)","",c2,0,"inclusive");    
+  analysis->plotInc("metpt*sin(metphi)",30,-150,150,1,1,0,"","",2,0," MET  Y (GeV)","",c2,0,"inclusive");    
+  analysis->plotInc("ditaumass",40,0,200,1,1,1,"","",2,0,"m_{vis}   (GeV)","Events / 5 GeV",c,0,"inclusive");
+  analysis->plotInc("svfitmass",60,0,300,1,1,1,"","",2,0," m(#tau#tau)   (GeV)","Events / 5 GeV",c,0,"inclusive");
+  analysis->plotInc("njet",5,-.5,4.5,1,1,1,"","",2,0," njet ","",c,0,"inclusive");
   
-//   analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(0),"",2,0,"m_{T} ","",c,0,"0JetLow");
-//   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(0),"(svfitmass<100||160<svfitmass)",2,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"0JetLow");
+  analysis->plotInc("transversemass",20,0,200,1,1,0,"(njet>=1)","",2,0,"m_{T}   (GeV)","",c,0,"inclusive1Jet");
+  analysis->plotInc("leadJetPt",20,0,200,1,1,1,"(njet>=1)","",2,0,"lead jet p_{T}   (GeV)","",c,0,"inclusive1Jet");
+  analysis->plotInc("leadJetEta",20,-5,5,1,1,1,"(njet>=1)","",2,0,"lead jet #eta","",c2,0,"inclusive1Jet");
+  analysis->plotInc("ditaumass",20,0,200,1,1,1,"(njet>=1)","",2,0," m_{vis}   (GeV)","",c,0,"inclusive1Jet");
+  analysis->plotInc("svfitmass",30,0,300,1,1,1,"(njet>=1)","",2,0," m(#tau#tau)   (GeV)","",c,0,"inclusive1Jet");
+
+  analysis->plotInc("transversemass",30,0,300,1,1,0,"(njet>=2)","",2,12,"m_{T}   (GeV)","",c,0,"inclusive2Jet");
+  analysis->plotInc("leadJetPt",20,0,200,1,1,1,"(njet>=2)","",2,12,"lead jet p_{T}   (GeV)","",c,0,"inclusive2Jet");
+  analysis->plotInc("leadJetEta",20,-5,5,1,1,1,"(njet>=2)","",2,12,"lead jet #eta","",c,0,"inclusive2Jet");
+  analysis->plotInc("subleadJetPt",20,0,200,1,1,1,"(njet>=2)","",2,12,"sublead jet p_{T}   (GeV)","",c,0,"inclusive2Jet");
+  analysis->plotInc("subleadJetEta",20,-5,5,1,1,1,"(njet>=2)","",2,12,"sublead jet #eta","",c,0,"inclusive2Jet"); 
+  analysis->plotInc("diJetMass",20,0,1000,1,1,1,"(njet>=2)","",2,12,"M(jj)","",c,0,"inclusive2Jet"); 
+  analysis->plotInc("abs(diJetDeltaEta)",20,0,10,1,1,1,"(njet>=2)","",2,12,"#Delta#eta","",c,0,"nomina2Jet"); 
+  analysis->plotInc("svfitmass",18,0,360,1,1,1,"(njet>=2)","",2,12," m(#tau#tau)   (GeV)","",c,0,"inclusive2Jet");
+
+
+  //////////2012 categories
+
+  ////Plot the vbf mva variables
+  analysis->plotInc("vbfvars0",20,0,1000,1,1,1,"(njet>1)","",2,12,"M(jj)","",c,0,"inclusive2Jet");
+  analysis->plotInc("vbfvars1",20,0,10,1,1,1,"(njet>1)","",2,12,"#Delta#eta(jj)","",c,0,"inclusive2Jet");
+  analysis->plotInc("vbfvars2",20,0,3.4,1,1,1,"(njet>1)","",2,12,"#Delta#phi(jj)","",c2,0,"inclusive2Jet");
+  analysis->plotInc("vbfvars3",20,0,200,1,1,1,"(njet>1)","",2,12,"#tau#tau   p_{T}","",c,0,"inclusive2Jet");
+  analysis->plotInc("vbfvars4",20,0,200,1,1,1,"(njet>1)","",2,12,"di-jet p_{T}","",c,0,"inclusive2Jet");
+  analysis->plotInc("vbfvars5",20,0,3.4,1,1,1,"(njet>1)","",2,12,"#Delta#phi(#tau#tau-jj)","",c2,0,"inclusive2Jet");
+  analysis->plotInc("vbfvars6",20,0,10,1,1,1,"(njet>1)","",2,12,"#Delta#eta(#mu#tau-j)","",c,0,"inclusive2Jet");
+  analysis->plotInc("vbfvars7",20,0,200,1,1,1,"(njet>1)","",2,12,"#mu#tau p_{T}","",c,0,"inclusive2Jet");
+  analysis->plotInc("vbfmva",20,-1.,1.001,1,1,1,"(njet>1)","(vbfmva<0.5)",2,12,"VBF MVA output","",c,10,"inclusive2Jet");
+  analysis->plotInc("vbfmva",10,0.0,1.001,1,1,1,"(njet>1&&njetingap==0&&abs(svfitmass-125)<25.)","(vbfmva<0.5)",2,12,"VBF MVA output","",c,0,"inclusive2JetSignal");
   
-//   analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(1),"",2,0,"m_{T} ","",c,0,"0JetHigh");
-//   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(1),"(svfitmass<100||160<svfitmass)",2,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"0JetHigh");
+  analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(0),"",2,0,"m_{T} ","",c,0,"0JetLow");
+  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(0),"(svfitmass<100||160<svfitmass)",2,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"0JetLow");
   
-//  analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(2),"",2,0,"m_{T} ","",c,0,"BoostedLow");
-//  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(2),"(svfitmass<100||160<svfitmass)",2,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"BoostedLow");  
-
-//  analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcut(3),"",2,0,"m_{T} ","",c,0,"BoostedHigh");
-//  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(3),"(svfitmass<100||160<svfitmass)",2,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"BoostedHigh");     
-
-//+"*(1./pupWeight)" 
-//  analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(4),"",3,10,"m_{T} ","",c,0,"VBF");
-//  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(4),"(svfitmass<100||160<svfitmass)",3,10,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"VBF");
-//  analysis->plotInc("ditaumass",0,0,260,1,1,1,analysis->getSMcut(4),"(ditaumass<80||140<ditaumass)",3,10,"m(#mu#tau)   (GeV)","",c,0,"VBF");
-
+  analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(1),"",2,0,"m_{T} ","",c,0,"0JetHigh");
+  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(1),"(svfitmass<100||160<svfitmass)",2,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"0JetHigh");
+  
+  analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(2),"",2,0,"m_{T} ","",c,0,"BoostedLow");
+  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(2),"(svfitmass<100||160<svfitmass)",2,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"BoostedLow");  
+  
+  analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcut(3),"",2,0,"m_{T} ","",c,0,"BoostedHigh");
+  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(3),"(svfitmass<100||160<svfitmass)",2,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"BoostedHigh");     
+  
+  analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(4),"",3,12,"m_{T} ","",c,0,"VBF");
+  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(4),"(svfitmass<100||160<svfitmass)",3,12,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"VBF");
+  analysis->plotInc("ditaumass",0,0,260,1,1,1,analysis->getSMcut(4),"(ditaumass<80||140<ditaumass)",3,12,"m(#mu#tau)   (GeV)","",c,5,"VBF");
+ 
 
 /* ----------------MSSM ----------------------------------------*/
 

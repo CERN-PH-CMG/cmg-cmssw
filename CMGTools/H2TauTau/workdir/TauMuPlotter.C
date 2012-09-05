@@ -877,16 +877,16 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   hWJetsToLNu->Write();
   hVV->Write();
   hEWK->Write();
+
   hData->Write();
   hBkg->Write();
-  hHiggs->Write();
+  if(hHiggs)hHiggs->Write();
   hDiff->Write();
   hRatio->Write();
 
-
   DiffFile.ls();
   DiffFile.Close();
-
+  
   if(hQCD) delete hQCD;
   delete hTTJets;
   delete hZToTauTau;
