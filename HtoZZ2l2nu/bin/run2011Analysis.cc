@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
 
   if(isMC_GG){  
     size_t GGStringpos =  string(url.Data()).find("GG");
-    string StringMass = string(url.Data()).substr(GGStringpos+5,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
+    string StringMass = string(url.Data()).substr(GGStringpos+5,4);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     GGString = string(url.Data()).substr(GGStringpos);
   
     //H pT
@@ -147,7 +147,7 @@ int main(int argc, char* argv[])
     }    
   }else if(isMC_VBF){
     size_t VBFStringpos =  string(url.Data()).find("VBF");
-    string StringMass = string(url.Data()).substr(VBFStringpos+6,3);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
+    string StringMass = string(url.Data()).substr(VBFStringpos+6,4);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     VBFString = string(url.Data()).substr(VBFStringpos);
   }
 
@@ -208,6 +208,7 @@ int main(int argc, char* argv[])
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_1vbf", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_2qt" , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_3ls" , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_ls" ,  ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
 
 
   mon.addHistogram( new TH1F( "thirdleptonpt", ";p_{T}^{l};Events", 50,0,500) );
@@ -646,8 +647,9 @@ int main(int argc, char* argv[])
 	  lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
 	noLShapeWeight=weight;
 	weight *= lShapeWeights[0];
-        //printf("lsw=%f \n",lShapeWeights[0]);
+        printf("lsw=%f \n",lShapeWeights[0]);
         mon.fillHisto("higgsMass_3ls",tags_full, phys.genhiggs[0].mass(), weight);	
+        mon.fillHisto("higgsMass_ls" ,tags_full, phys.genhiggs[0].mass(), weight/=signalWeight);
       }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
