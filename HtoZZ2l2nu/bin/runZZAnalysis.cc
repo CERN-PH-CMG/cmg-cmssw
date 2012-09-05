@@ -324,9 +324,9 @@ int main(int argc, char* argv[])
    std::vector<double> optim_Cuts2_jet2_pt; 
    std::vector<double> optim_Cuts2_eta_gap;
    std::vector<double> optim_Cuts2_dijet_mass;
-   for(double jet1_pt=30;jet1_pt<100;jet1_pt+=10)
+   for(double jet2_pt=30;jet2_pt<=100;jet2_pt+=10)
      {
-       for(double jet2_pt=30;jet2_pt<=100;jet2_pt+=10)
+       for(double jet1_pt=jet2_pt;jet1_pt<=100;jet1_pt+=10)
 	 {
 	   for(double eta_gap=3.5;eta_gap<=5.0;eta_gap+=0.5)
 	     {
@@ -897,7 +897,7 @@ int main(int argc, char* argv[])
 			if(aGoodIdJets[0].pt()>50 && aGoodIdJets[1].pt()>50 && fabs(detajj)>3.5)
 			  {
 			    mon.fillHisto(jetIds[ijetid]+"vbfmjj50",          tags_full, vbfSyst.mass(),weight);
-			    if(vbfSyst.mass()>650)
+			    if(vbfSyst.mass()>800)
 			      {
 				mon.fillHisto(jetIds[ijetid]+"vbfhardpt50",     tags_full, hardpt,weight);
 				mon.fillHisto(jetIds[ijetid]+"vbfdphijj50",     tags_full, fabs(dphijj),weight);

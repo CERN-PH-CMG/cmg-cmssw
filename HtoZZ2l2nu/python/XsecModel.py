@@ -29,8 +29,8 @@ class XsecCorrelation(PhysicsModel):
 
         print 'XsecCorrelation creating POI'
         # --- Signal Strength and BSM contribution as POI --- 
-        self.modelBuilder.doVar("mu_8TeV[1,0,2]")
-        self.modelBuilder.doVar("mu_7TeV[1,0,2]")
+        self.modelBuilder.doVar("mu_8TeV[1,0,3]")
+        self.modelBuilder.doVar("mu_7TeV[1,0,3]")
         #self.modelBuilder.doVar("epsBSM[0,-1,1]")
         #self.modelBuilder.doVar('expr:mu_7TeV("@0*(@1+1)",mu_8TeV,epsBSM)')
 

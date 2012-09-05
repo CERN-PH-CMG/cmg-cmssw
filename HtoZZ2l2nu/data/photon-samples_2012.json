@@ -27,36 +27,26 @@
 	         "dtag":"Data8TeV_DoubleMu2012B",
                  "split":5
                 },
-		{
-                 "dtag":"Data8TeV_DoubleElectron2012B_195540to196509",
-    		 "split":5
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012C_197774to198913",
+                 "split":5
                 },
                 {
-                 "dtag":"Data8TeV_DoubleMu2012B_195540to196509",
+	         "dtag":"Data8TeV_DoubleMu2012C_197774to198913",
+                 "split":5
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012C_198913to200601",
+                 "split":5
+                },
+                {
+	         "dtag":"Data8TeV_DoubleMu2012C_198913to200601",
                  "split":5
                 }
 	    ]
 	},	
 	{
 	 "tag":"Z#rightarrow ll",
-         "isdata":false,
- 	 "color":"2",
-	 "lcolor":2,
-	 "fill":0,
-	 "mctruthmode":1,
-	 "spimpose":true,
-	 "isinvisible":true,	
-         "data":[
-	      {
-               "dtag":"MC8TeV_DYToEE",
-               "split":2,
-               "xsec":3532.8,
-	       "br":[0.333333]
-              }
-          ]
-	},
-	{
-	 "tag":"Z#rightarrow ll (MG)",
          "isdata":false,
  	 "color":"2",
 	 "lcolor":2,
@@ -71,60 +61,6 @@
                 "xsec":3532.8
               }
           ]
-	},
-	{
-         "tag":"Z#gamma#rightarrow#nu#nu#gamma",
-         "isdata":false,
-         "color":"8",
-         "lcolor":1,
-	 "mctruthmode":22,
-	 "data":[
-              {
-               "dtag":"MC8TeV_ZGToNuNu",
-               "dset":"ZGToNuNuG_TuneZ2_7TeV-madgraph",
-               "patdir":["/store/cmst3/user/psilva/v444/MC/ZGToNuNuG_TuneZ2_7TeV-madgraph"],
-               "xsec":3.426
-              },
-              {
-               "dtag":"MC8TeV_ZJetsToNuNu_50to100",
-               "dset":"",
-               "xsec":309.5
-              },
-              {
-               "dtag":"MC8TeV_ZJetsToNuNu_100to200",
-               "dset":"",
-               "xsec":125.2
-              },
-              {
-               "dtag":"MC8TeV_ZJetsToNuNu_200toInf",
-               "dset":"",
-               "xsec":32.92
-              }
-          ]
-        },
-	{
-	 "tag":"W#gamma#rightarrowl#nu#gamma",
-         "isdata":false,
-	 "color":"596",
-         "lcolor":1,
-         "mctruthmode":22,
-	 "data":[
-		{
-		 "dtag":"MC8TeV_WGToENuG",
-                 "xsec":114.7,
- 		 "split":1
-                },
-		{
-		 "dtag":"MC8TeV_WGToMuNuG",
-                 "xsec":114.6,
- 		 "split":1
-                },
-		{
-		 "dtag":"MC8TeV_WGToTauNuG",
-                 "xsec":104.6,
- 		 "split":1
-                }
-	 ]
 	},
 	{
 	 "tag":"W#rightarrow l#nu",
@@ -257,15 +193,23 @@
  		  "split":5
 		},
 		{
-                  "dtag":"Data8TeV_Photon2012B_195540to196509",
+		   "dtag":"Data8TeV_Photon2012C_197774to198913",
+		   "split":5
+		},
+		{
+                  "dtag":"Data8TeV_Photon2012C_198913to200601",
                   "split":5
                 },
-	 	{
-                 "dtag":"Data8TeV_DoubleElectron2012B_gamma",
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012B_gamma",
                  "split":5
                 },
- 		{
-                 "dtag":"Data8TeV_DoubleElectron2012B_195540to196509_gamma",
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012C_197774to198913_gamma",
+                 "split":5
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012C_198913to200601_gamma",
                  "split":5
                 }
 	   ]

@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
 	      LikelihoodIntervalPlot plot(interval);
 	      //plot.SetRange(0,3.5);
 	      //plot.SetNPoints(100);	      
-	      float maxX(2);
+	      float maxX(3);
 	      if(fr.rmax>3) maxX=6;
 	      plot.SetRange(0,maxX);
 	      plot.SetNPoints(200);
@@ -224,6 +224,7 @@ int main(int argc, char *argv[])
 		      nllCurve->GetPoint(ipt,ix,iy);
 		      gr->SetPoint(ipt,ix,iy);
 		    }		  
+		  gr->SetName(chTag);
 		  plotList.push_back(std::pair<TString,TGraph *>(test,gr));
 		  if(in<0) {
 		    finalPlotList.push_back( std::pair<TString,TGraph *>( chTag, gr) );

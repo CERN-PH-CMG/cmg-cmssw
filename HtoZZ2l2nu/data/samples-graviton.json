@@ -16,7 +16,6 @@
 		{
 		"dtag":"MC8TeV_G250toZZto2L2Nu",
 		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM250toZZto2l2nu/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM250toZZto2l2nu/PAT"],
        		"xsec":1.0,
 		"br":[1.0]
 		}
@@ -37,7 +36,6 @@
 		{
 		"dtag":"MC8TeV_G500toZZto2L2Nu",
 		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM500toZZto2l2nu/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM500toZZto2l2nu/PAT"],
        		"xsec":1.0,
 		"br":[1.0]
 		}
@@ -58,7 +56,6 @@
 		{
 		"dtag":"MC8TeV_G750toZZto2L2Nu",
 		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM750toZZto2l2nu/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM750toZZto2l2nu/PAT"],
        		"xsec":1.0,
 		"br":[1.0]
 		}
@@ -79,7 +76,6 @@
 		{
 		"dtag":"MC8TeV_G1000toZZto2L2Nu",
 		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM1000toZZto2l2nu/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM1000toZZto2l2nu/PAT"],
        		"xsec":1.0,
 		"br":[1.0]
 		}
@@ -100,7 +96,6 @@
 		{
 		"dtag":"MC8TeV_G1200toZZto2L2Nu",
 		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM1200toZZto2l2nu/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM1200toZZto2l2nu/PAT"],
        		"xsec":1.0,
 		"br":[1.0]
 		}
@@ -121,7 +116,6 @@
 		{
 		"dtag":"MC8TeV_G1400toZZto2L2Nu",
 		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM1400toZZto2l2nu/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM1400toZZto2l2nu/PAT"],
        		"xsec":1.0,
 		"br":[1.0]
 		}
@@ -142,7 +136,6 @@
 		{
 		"dtag":"MC8TeV_G1600toZZto2L2Nu",
 		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM1600toZZto2l2nu/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM1600toZZto2l2nu/PAT"],
        		"xsec":1.0,
 		"br":[1.0]
 		}
@@ -163,7 +156,6 @@
 		{
 		"dtag":"MC8TeV_G1800toZZto2L2Nu",
 		"aoddir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM1800toZZto2l2nu/AODSIM"],
-		"patdir":["/store/cmst3/user/psilva/JHU/Graviton8TeV/GravitonM1800toZZto2l2nu/PAT"],
        		"xsec":1.0,
 		"br":[1.0]
 		}

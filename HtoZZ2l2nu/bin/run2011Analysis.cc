@@ -647,7 +647,7 @@ int main(int argc, char* argv[])
 	  lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
 	noLShapeWeight=weight;
 	weight *= lShapeWeights[0];
-        printf("lsw=%f \n",lShapeWeights[0]);
+        //printf("lsw=%f \n",lShapeWeights[0]);
         mon.fillHisto("higgsMass_3ls",tags_full, phys.genhiggs[0].mass(), weight);	
         mon.fillHisto("higgsMass_ls" ,tags_full, phys.genhiggs[0].mass(), weight/=signalWeight);
       }

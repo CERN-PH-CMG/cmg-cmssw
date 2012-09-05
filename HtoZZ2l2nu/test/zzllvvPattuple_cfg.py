@@ -23,7 +23,7 @@ if(getSelVersion()==2012) :
     process.load("Configuration.Geometry.GeometryIdeal_cff")
     if ( not runOnMC ):
         try:
-            if(is52xData is True) : gt='GR_P_V39_AN1::All'
+            if(is52xData is True) : gt='FT_53_V10_AN1::All'
         except:
             gt='GR_P_V41_AN1::All'
     else :
@@ -32,7 +32,7 @@ else:
     process.load("Configuration.StandardSequences.Geometry_cff")
     if ( not runOnMC ) : gt='GR_R_44_V13::All'
     else               : gt='START44_V12::All'
-    
+
 print 'Using the following global tag %s'%gt
 process.GlobalTag.globaltag = gt
 
@@ -115,10 +115,13 @@ process.kt6PFJetsCentralNeutral = process.kt6PFJetsForIso.clone( src = cms.Input
                                                                  )
 
 #inclusive vertex finder
+process.load("RecoBTag.Configuration.RecoBTag_cff")
+process.load("RecoJets.JetAssociationProducers.ak5JTA_cff")
 process.load("RecoBTau.JetTagComputer.jetTagRecord_cfi")
 process.load("RecoVertex.AdaptiveVertexFinder.inclusiveVertexing_cff")
 process.load("RecoBTag.SecondaryVertex.combinedSecondaryVertexPositiveES_cfi")
 process.load("RecoBTag.SecondaryVertex.combinedSecondaryVertexPositiveBJetTags_cfi")
+process.ak5JetTracksAssociatorAtVertex.jets = "selectedPatJets"+postfix
 process.myInclusiveSecondaryVertexTagInfosFiltered = process.inclusiveSecondaryVertexFinderTagInfosFiltered.clone()
 process.mySimpleInclusiveSecondaryVertexHighPurBJetTags = process.simpleInclusiveSecondaryVertexHighPurBJetTags.clone(
     tagInfos = cms.VInputTag(cms.InputTag("myInclusiveSecondaryVertexTagInfosFiltered"))
@@ -129,8 +132,11 @@ process.mySimpleInclusiveSecondaryVertexHighEffBJetTags = process.simpleInclusiv
 process.combinedInclusiveSecondaryVertexPositiveBJetTags = process.combinedSecondaryVertexPositiveBJetTags.clone(
     tagInfos = cms.VInputTag(cms.InputTag("impactParameterTagInfos"), cms.InputTag("myInclusiveSecondaryVertexTagInfosFiltered"))
     )
-process.inclusiveMergedVerticesFiltered.secondaryVertices = cms.InputTag("inclusiveVertices")
-process.ivfSequence=cms.Sequence(process.inclusiveVertexing
+
+if(getSelVersion()==2011) :  process.inclusiveMergedVerticesFiltered.secondaryVertices = cms.InputTag("inclusiveVertices")
+process.ivfSequence=cms.Sequence(process.ak5JetTracksAssociatorAtVertex
+                                 *process.btagging
+                                 *process.inclusiveVertexing
                                  *process.inclusiveMergedVerticesFiltered
                                  *process.myInclusiveSecondaryVertexTagInfosFiltered
                                  *process.mySimpleInclusiveSecondaryVertexHighEffBJetTags
@@ -150,9 +156,10 @@ process.endCounter = cms.EDProducer("EventCountProducer")
 #pat sequence
 process.patSequence = cms.Sequence( process.startCounter
                                     + process.kt6PFJetsForIso + process.pfOnlyNeutrals + process.kt6PFJetsCentralNeutral
-                                    + process.ivfSequence + process.simpleEleIdSequence
+                                    + process.simpleEleIdSequence
                                     + getattr(process,"patPF2PATSequencePFlow")
                                     + getattr(process,"patPF2PATSequence"+postfix)
+                                    + process.ivfSequence
                                     )
 
 # define the paths
@@ -182,7 +189,8 @@ if(not runStd) :
 else :
     configureOutput(process,selPaths=['llPath','photonPath'],outFile=outFile)
     if(runFull) :
-        process.TFileService = cms.Service("TFileService", fileName = cms.string("analysis.root"))
+        #process.TFileService = cms.Service("TFileService", fileName = cms.string("analysis.root"))
+        process.TFileService = cms.Service("TFileService", fileName = cms.string(outFile))
         process.e = cms.EndPath( process.endCounter )
         if(runOnMC) : process.schedule = cms.Schedule( process.llPath, process.photonPath, process.analysis )
         else        : process.schedule = cms.Schedule( process.llPath, process.photonPath, process.analysis )

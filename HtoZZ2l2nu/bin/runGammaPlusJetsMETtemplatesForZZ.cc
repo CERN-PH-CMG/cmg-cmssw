@@ -141,9 +141,9 @@ int main(int argc, char* argv[])
   std::vector<double> optim_Cuts2_jet2_pt; 
   std::vector<double> optim_Cuts2_eta_gap;
   std::vector<double> optim_Cuts2_dijet_mass;
-  for(double jet1_pt=30;jet1_pt<100;jet1_pt+=10)  
+  for(double jet2_pt=30;jet2_pt<=100;jet2_pt+=10)  
     {
-      for(double jet2_pt=30;jet2_pt<=100;jet2_pt+=10) 
+      for(double jet1_pt=jet2_pt;jet1_pt<=100;jet1_pt+=10) 
 	{
 	  for(double eta_gap=3.5;eta_gap<=5.0;eta_gap+=0.5)
             {
@@ -507,7 +507,7 @@ int main(int argc, char* argv[])
       bool passMultiplicityVetoes (nextraleptons==0);
       bool passKinematics         (gamma.pt()>30);
       if(isGammaEvent && !isMC)    passKinematics &= (gamma.pt()>gammaEvHandler. triggerThr());
-      bool passEB                 (!isGammaEvent || fabs(gamma.eta())<1.4442); 
+      bool passEB                 (true); //(!isGammaEvent || fabs(gamma.eta())<1.4442); 
       bool passR9                 (!isGammaEvent || r9<1.0);
       bool passR9tight            (true); //!isGammaEvent || r9>0.85); 
       bool passBveto              (nbtags==0);
@@ -657,7 +657,7 @@ int main(int argc, char* argv[])
 			  if(selJets[0].pt()>50 && selJets[1].pt()>50 && fabs(detajj)>3.5)
 			    {
 			      mon.fillHisto(jetIds[ijetid]+"vbfmjj50",             ctf, vbfSyst.mass(),iweight);
-			      if(vbfSyst.mass()>650){
+			      if(vbfSyst.mass()>800){
 				mon.fillHisto(jetIds[ijetid]+"vbfhardpt50",     ctf, hardpt,iweight);
 				mon.fillHisto(jetIds[ijetid]+"vbfdphijj50",     ctf, fabs(dphijj),iweight);
 			      }
