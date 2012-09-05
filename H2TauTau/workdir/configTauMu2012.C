@@ -37,7 +37,6 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   WJetsToLNu->setSampleGenEvents(60000000. + 18000000.);
   analysis->addSample(WJetsToLNu);  
 
-
 //   Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
 //   W2JetsToLNu->setDataType("MCCat");
 //   W2JetsToLNu->setCrossection(1000.);//dummy
@@ -77,26 +76,23 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   ZToLJet->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
   analysis->addSample(ZToLJet);
 
-//   Sample* WW = new Sample("WW",path);
-//   WW->setDataType("MC");
-//   WW->setCrossection(27.83);
-//   WW->setSampleGenEvents(4225916);
-//   analysis->addSample(WW);
+  Sample* WW = new Sample("WW",path);
+  WW->setDataType("MC");
+  WW->setCrossection(57.1097);
+  WW->setSampleGenEvents(10000431);
+  analysis->addSample(WW);
 
-//   Sample* WZ = new Sample("WZ",path);
-//   WZ->setDataType("MC");
-//   WZ->setCrossection(10.47);
-//   WZ->setSampleGenEvents(4265243);
-//   analysis->addSample(WZ);
+  Sample* WZ = new Sample("WZ",path);
+  WZ->setDataType("MC");
+  WZ->setCrossection(32.3161);
+  WZ->setSampleGenEvents(9958966);
+  analysis->addSample(WZ);
 
-//   Sample* ZZ = new Sample("ZZ",path);
-//   ZZ->setDataType("MC");
-//   ZZ->setCrossection(4.287);
-//   ZZ->setSampleGenEvents(4191045);
-//   analysis->addSample(ZZ);
-
-
-
+  Sample* ZZ = new Sample("ZZ",path);
+  ZZ->setDataType("MC");
+  ZZ->setCrossection(8.25561);
+  ZZ->setSampleGenEvents(9789854);
+  analysis->addSample(ZZ);
 
   ///Crossections taken from here:
   //https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
@@ -109,9 +105,9 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   Float_t HiggsVBFcross[8]={ 1.809,1.729,1.649,1.578,1.511,1.448,1.389,1.333 };
   Int_t   HiggsVBFNevt[8]={499385,998870,4798759,998836,990701,998817,998894,998883};
                             
-  Float_t HiggsWHcross[8]={1.060,0.9165,0.7966,0.6966,0.6095,0.5351,0.4713,0.4164};
-  Float_t HiggsZHcross[8]={0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.2728,0.2424 };
-  Float_t HiggsttHcross[8]={ 0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246 };
+  Float_t HiggsWHcross[8]= {1.0600,0.9165,0.7966,0.6966,0.6095,0.5351,0.47130,0.41640};
+  Float_t HiggsZHcross[8]= {0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.27280,0.24240};
+  Float_t HiggsttHcross[8]={0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246 };
   Int_t   HiggsVHNevt[8]={200408,200460,200448,200124,200080,194464,200186,200384};
 
   char nam[100];

@@ -601,6 +601,24 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
 
+    if sampleAlias == 'WW' :        
+        module.path = "/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
+
+    if sampleAlias == 'WZ' :        
+        module.path = "/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
+
+    if sampleAlias == 'ZZ' :        
+        module.path = "/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
+
 
     for i in range(0,8):
 
