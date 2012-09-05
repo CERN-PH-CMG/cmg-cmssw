@@ -137,6 +137,9 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
 	      file->Close();
 	    }
 	}
+
+    //for(std::list<NameAndType>::iterator it= histlist.begin(); it!= histlist.end(); it++){printf("%s\n",it->name.c_str()); }
+
       return;
    }
 
@@ -164,8 +167,6 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
 
       delete tmp;
    }
-   
-
    
 
 }
@@ -931,8 +932,8 @@ int main(int argc, char* argv[]){
    gStyle->SetPalette(1);
    gStyle->SetNdivisions(505);
 
-   string histoNameMask = " ";
-   string histoNameMaskStart = " ";
+   string histoNameMask = "";
+   string histoNameMaskStart = "";
 
    for(int i=1;i<argc;i++){
      string arg(argv[i]);
