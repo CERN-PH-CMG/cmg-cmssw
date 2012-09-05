@@ -71,11 +71,12 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   std::vector<std::string> histos,dilSignal,dilcats,gcats;
   if(model==VBFZ) 
     {
-      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/nvtx/plotter.root";
-      llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2012/plotter_vbfz_2012.root";
+      //      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/nvtx/plotter.root";
+      //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/qt/plotter.root";
+      //llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2012/plotter_vbfz_2012.root";
 
-      //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2011/nvtx/plotter.root";
-      //llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2011/plotter_vbfz_2011.root";
+      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2011/nvtx/plotter.root";
+      llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2011/plotter_vbfz_2011.root";
      
       histos.push_back("pfpuloosevbfcandjetdeta");
       histos.push_back("pfpuloosevbfcandjet1pt");
@@ -95,7 +96,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 
       //dilSignal.push_back("VBF Z");
       //dilSignal.push_back("VBF Z (interference)");
-      dilSignal.push_back("#alpha^{4}_{EW}-ll");
+      dilSignal.push_back("#alpha^{4}_{EW}-ll (VBFNLO)");
 
       //dilcats.push_back("geq1jets");
       // dilcats.push_back("vbf");
@@ -331,6 +332,7 @@ endl;
 	      if(model==ZZ && histos[ih].find("met_redMet")!=string::npos) normBin=normH->GetXaxis()->FindBin(40);
 	      ////normalization factor (from deta_jj<3)
 	      //if(model==VBFZ && histos[ih].find("jetdeta")!=string::npos) normBin=normH->GetXaxis()->FindBin(3);
+	      //normalization factor (from Mjj<500) 
 	      if(model==VBFZ && histos[ih].find("premjj")!=string::npos) normBin=normH->GetXaxis()->FindBin(500);
 
 	      if(normBin<0) continue;

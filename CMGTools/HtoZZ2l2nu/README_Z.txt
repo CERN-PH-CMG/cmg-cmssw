@@ -15,7 +15,7 @@ mv gammaqtweights.root data/gammaqtweights_vbfz_2011.root
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_vbf_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/vbfz/gamma/2011/qt  -c test/runAnalysis_cfg.py.templ -p "@is2011=True @weightsFile='data/gammaqtweights_vbfz_2011.root'" -s 8nh
 runPlotter --json data/photon-samples_vbf_2011.json --inDir ~/work/vbfz/gamma/2011/qt/ --outDir ~/work/vbfz/gamma/2011/qt/plots/ --outFile ~/work/vbfz/gamma/2011/qt/plotter.root  --iLumi 5051 --iEcm 7
 root -b -q "bin/G/getGammaWeights.C+(\"~/work/vbfz/gamma/2011/qt/plotter.root\",\"nvtx\")"
-mv gammavtxweights.root data/gammanvtxweights_vbfz_2011.root
+mv gammanvtxweights.root data/gammanvtxweights_vbfz_2011.root
 
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_vbf_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/vbfz/gamma/2011/nvtx  -c test/runAnalysis_cfg.py.templ -p "@is2011=True @weightsFile='data/gammaqtweights_vbfz_2011.root','data/gammanvtxweights_vbfz_2011.root'" -s 8nh
 runPlotter --json data/photon-samples_vbf_2011.json --inDir ~/work/vbfz/gamma/2011/nvtx/ --outDir ~/work/vbfz/gamma/2011/nvtx/plots/ --outFile ~/work/vbfz/gamma/2011/nvtx/plotter.root  --iLumi 5051 --iEcm 7
@@ -60,6 +60,7 @@ python test/computeLimits/optimize_VBFZ.py -p 1 -m 0 -i ~/work/vbfz/results/2012
 #correlation plot
 combineCards.py ee_7TeV=hzz2l2v__7TeV_ee.dat ee_8TeV=hzz2l2v__8TeV_ee.dat mumu_7TeV=hzz2l2v__7TeV_mumu.dat mumu_8TeV=hzz2l2v__8TeV_mumu.dat > hzz2l2v__7p8TeV_combined.dat
 text2workspace.py hzz2l2v__7p8TeV_combined.dat -m 0 -P CMGTools.HtoZZ2l2nu.XsecModel:xsecCorrelation -v2
+combine -M  MultiDimFit --algo=singles --cl=0.68 hzz2l2v__7p8TeV_combined.dat.root 
 combine -M MultiDimFit --algo grid --points==10000 hzz2l2v__7p8TeV_combined.dat.root
 root -l higgsCombineTest.MultiDimFit.mH120.root
 limit->Draw("mu_8TeV:mu_7TeV>>(100,0,2,100,0,2)","deltaNLL*(deltaNLL<6)","colz")
