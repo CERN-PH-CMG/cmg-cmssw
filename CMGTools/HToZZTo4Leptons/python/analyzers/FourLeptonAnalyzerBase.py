@@ -480,11 +480,23 @@ class FourLeptonAnalyzerBase( Analyzer ):
             jetVars['dEta'] = cleanedJets[0].eta()-cleanedJets[1].eta()
             jetVars['dPhi'] = deltaPhi(cleanedJets[0].phi(),cleanedJets[1].phi())
             jetVars['Mjj'] = (cleanedJets[0].p4()+cleanedJets[1].p4()).M()
+            jetVars['Ptjj'] = (cleanedJets[0].p4()+cleanedJets[1].p4()).Pt()
         else:
             jetVars['dEta'] = -99
             jetVars['dPhi'] = -99
             jetVars['Mjj'] = -99
+            jetVars['Ptjj'] = -99
 
+        if  len(cleanedJets)>0:
+            #Add leading jet variables    
+            highestJet = max(cleanedJets,key=lambda x:x.pt())
+            jetVars['leadingPt']=highestJet.pt()
+            jetVars['leadingEta']=highestJet.eta()
+        else:
+            jetVars['leadingPt']=-99.
+            jetVars['leadingEta']=-99.
+            
+            
             
             
         fourLepton.jets = jetVars
