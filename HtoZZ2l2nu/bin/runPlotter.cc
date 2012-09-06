@@ -599,7 +599,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
       fixExtremities(hist,true,true);
       hist->SetTitle("");
       hist->SetStats(kFALSE);
-      hist->SetMinimum(0.5e-1);
+      hist->SetMinimum(1e-3);
       //hist->SetMaximum(1E6);
       hist->SetMaximum(hist->GetBinContent(hist->GetMaximumBin())*1.10);
       ObjectToDelete.push_back(hist);
@@ -640,6 +640,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
      stack->GetXaxis()->SetTitle(hist->GetXaxis()->GetTitle());
      stack->GetYaxis()->SetTitle(hist->GetYaxis()->GetTitle());
      stack->SetMinimum(hist->GetMinimum());
+     stack->SetMaximum(maximumFound);
      if(noLog)
        {
 	 stack->SetMaximum(maximumFound);
