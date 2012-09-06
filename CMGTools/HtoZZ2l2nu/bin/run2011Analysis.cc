@@ -628,28 +628,30 @@ int main(int argc, char* argv[])
 
 
       if(isMC){
+
         weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_plus  = PuShifters[PUUP]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_minus = PuShifters[PUDOWN]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
 
-        mon.fillHisto("higgsMass_0raw",tags_full, phys.genhiggs[0].mass(), weight);
+        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_0raw",tags_full, phys.genhiggs[0].mass(), weight);
 	if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
-        mon.fillHisto("higgsMass_1vbf",tags_full, phys.genhiggs[0].mass(), weight);
+        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_1vbf",tags_full, phys.genhiggs[0].mass(), weight); 
 
         if(isMC_GG) {
           for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
 	    ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
 	  weight *= ev.hptWeights[0];
         }
-        mon.fillHisto("higgsMass_2qt",tags_full, phys.genhiggs[0].mass(), weight);
-	  
+        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_2qt" ,tags_full, phys.genhiggs[0].mass(), weight);
+  
 	for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
 	  lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
 	noLShapeWeight=weight;
 	weight *= lShapeWeights[0];
         //printf("lsw=%f \n",lShapeWeights[0]);
-        mon.fillHisto("higgsMass_3ls",tags_full, phys.genhiggs[0].mass(), weight);	
-        mon.fillHisto("higgsMass_ls" ,tags_full, phys.genhiggs[0].mass(), weight/=signalWeight);
+
+        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_3ls" ,tags_full, phys.genhiggs[0].mass(), weight);	
+        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_ls"  ,tags_full, phys.genhiggs[0].mass(), weight/signalWeight);
       }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
