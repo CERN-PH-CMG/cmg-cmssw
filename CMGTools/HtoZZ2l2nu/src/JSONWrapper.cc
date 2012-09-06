@@ -136,13 +136,13 @@ Object::Object(const std::string& in, bool IsInputFile){
 }
 
 void Object::Load(const std::string& in){
-   printf("Loading: %s...", in.c_str());
+   printf("Loading: %s...", in.c_str());fflush(stdout);
    FILE* pFile = fopen(in.c_str(),"r");
 
-   char buffer[1024];
+   char buffer[4096];
    std::string JsonFile = "";
    while(!feof(pFile)){
-      fgets(buffer,1024,pFile);
+      fgets(buffer,4096,pFile);
       JsonFile += buffer;
    }
    fclose(pFile);
@@ -177,7 +177,8 @@ void Object::GetObjects(const std::string& in){
       start   = nextval;
       mid     = in.find(':', start);
       nextval = std::min(findComma(in,mid),end);
-      if(start==nextval)break;
+
+      if(start==nextval || nextval<=mid)break;
    }while(nextval<=end);
 }
 
