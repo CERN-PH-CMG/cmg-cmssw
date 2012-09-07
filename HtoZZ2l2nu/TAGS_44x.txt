@@ -7,6 +7,10 @@ cvs co -r V08-03-17      PhysicsTools/Utilities
 cvs co -r  regression_Dec3d RecoEgamma/EgammaTools                           
 cvs co -r V01-13-02 HiggsAnalysis/CombinedLimit
 cvs co -r simpleIVF_CMSSW533 RecoBTag/SecondaryVertex                         
+addpkg DataFormats/PatCandidates V06-05-01
+addpkg PhysicsTools/PatAlgos     V08-07-47
+addpkg PhysicsTools/PatUtils     V03-09-18-03
+addpkg CommonTools/ParticleFlow  V00-03-05-10
 cvs co -r V00-01 -d pharris/MVAMet UserCode/pharris/MVAMet
 cd pharris/MVAMet
 rm src/GBRTree.cxx

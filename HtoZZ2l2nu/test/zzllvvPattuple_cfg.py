@@ -113,7 +113,14 @@ process.kt6PFJetsCentralNeutral = process.kt6PFJetsForIso.clone( src = cms.Input
                                                                  Rho_EtaMax = cms.double(2.5),
                                                                  inputEtMin = cms.double(0.5)
                                                                  )
-
+if(getSelVersion()==2011) :
+    process.kt6PFJets = kt4PFJets.clone( rParam = cms.double(0.6),
+                                         doAreaFastjet = cms.bool(True),
+                                         doRhoFastjet = cms.bool(True) )
+    process.rhoSequence=cms.Sequence( process.kt6PFJets + process.kt6PFJetsForIso + process.pfOnlyNeutrals + process.kt6PFJetsCentralNeutral )
+else:
+    process.rhoSequence=cms.Sequence( process.kt6PFJetsForIso + process.pfOnlyNeutrals + process.kt6PFJetsCentralNeutral )
+    
 #inclusive vertex finder
 process.load("RecoBTag.Configuration.RecoBTag_cff")
 process.load("RecoJets.JetAssociationProducers.ak5JTA_cff")
@@ -155,11 +162,12 @@ process.endCounter = cms.EDProducer("EventCountProducer")
 
 #pat sequence
 process.patSequence = cms.Sequence( process.startCounter
-                                    + process.kt6PFJetsForIso + process.pfOnlyNeutrals + process.kt6PFJetsCentralNeutral
+                                    + process.rhoSequence
                                     + process.simpleEleIdSequence
                                     + getattr(process,"patPF2PATSequencePFlow")
                                     + getattr(process,"patPF2PATSequence"+postfix)
-                                    + process.ivfSequence
+                                    + process.btagging 
+                                    + process.ivfSequence 
                                     )
 
 # define the paths
