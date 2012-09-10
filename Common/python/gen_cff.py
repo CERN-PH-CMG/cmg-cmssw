@@ -15,5 +15,5 @@ genSequence = cms.Sequence(
     # + genLeptonsSequence
     + genJetsSequence
     + listParticles
-    + vertexWeightSequence
+    # + vertexWeightSequence
     )
