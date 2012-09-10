@@ -3,7 +3,13 @@
 ## @ CERN, Meyrin
 ## November 2nd 2011
 
-import sys, os, re, subprocess, glob, tempfile, tarfile
+import sys
+import os
+import re
+import subprocess
+import glob
+import tempfile
+import tarfile
 import CMGTools.Production.eostools as eostools
 import CMGTools.Production.castorBaseDir as castorBaseDir
 from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
@@ -58,39 +64,39 @@ class DatasetInformation(object):
 		self._logger_tar_object = None
 		
 		self.dataset_details = {"SampleName":sampleName,
-								"ParentSampleName":None,
-								"CMGDBName":None,
-								"ParentCMGDBName":None,
-								"Comment":comment,
-								"FileOwner":fileOwner,
-								"PrimaryDataset":None,
-								"LFN":None,
-								"EOSPath":None,
-								"FileGroups":None,
-								"Tags":None,
-								"Release":None,
-								"PhysicsGroup":None,
-								"TierList":None,
-								"DateCreated":None,
-								"TaskID":None,
-								"ParentTaskID":None,
-								"Status":None,
-								"CMGDBID":None,
-								"ParentCMGDBID":None,
-								"Test":test,
-								"ParentSavannahString":None,
-								"BadJobs":None,
-								"FileEntries":None,
-								"TotalJobs":None,
-								"TotalFilesMissing":None,
-								"TotalFilesGood":None,
-								"TotalFilesBad":None,
-								"PrimaryDatasetFraction":None,
-								"PrimaryDatasetEntries":None,
-								"TotalFileEntries":None,
-								"DirectorySizeInTB":None,
-								"SavannahOptions":dict()
-								}
+					"ParentSampleName":None,
+					"CMGDBName":None,
+					"ParentCMGDBName":None,
+					"Comment":comment,
+					"FileOwner":fileOwner,
+					"PrimaryDataset":None,
+					"LFN":None,
+					"EOSPath":None,
+					"FileGroups":None,
+					"Tags":None,
+					"Release":None,
+					"PhysicsGroup":None,
+					"TierList":None,
+					"DateCreated":None,
+					"TaskID":None,
+					"ParentTaskID":None,
+					"Status":None,
+					"CMGDBID":None,
+					"ParentCMGDBID":None,
+					"Test":test,
+					"ParentSavannahString":None,
+					"BadJobs":None,
+					"FileEntries":None,
+					"TotalJobs":None,
+					"TotalFilesMissing":None,
+					"TotalFilesGood":None,
+					"TotalFilesBad":None,
+					"PrimaryDatasetFraction":None,
+					"PrimaryDatasetEntries":None,
+					"TotalFileEntries":None,
+					"DirectorySizeInTB":None,
+					"SavannahOptions":dict()
+					}
 		# Check if directory is valid
 		self.checkDatasetDirectoryExists(sampleName, fileOwner)
 		# Build the basic details report
@@ -118,6 +124,7 @@ class DatasetInformation(object):
 			return re.match(".*_\d+_\d+_\w+$", base) is not None, base
 		
 		def removeIndex(name):
+			#COLIN I don't like that at all. This function should be general, see buildFIleEntriesReport. Should also be more pythonistic - e.g. use re.split
 			isCrab, base = isCrabFile(name)
 			tokens = base.split('_')
 			if isCrab and len(tokens) > 2:
@@ -140,6 +147,7 @@ class DatasetInformation(object):
 			return None
 		
 		self.dataset_details['FileGroups'] = dict()
+		# import pdb; pdb.set_trace()
 		for fileName in self.dataset.files:
 			
 			# Distinguish group
@@ -148,17 +156,17 @@ class DatasetInformation(object):
 				self.dataset_details['FileGroups'][name]['Files'].append(fileName)
 			else:
 				instanceGroup = {"SizeInTB":None,
-								"IsCrab":None,
-								"Files":None,
-								"FileEntries":None,
-								"PrimaryDatasetFraction":None, 
-								"BadFiles":None,
-								"NumberBadFiles":None,
-								"MissingFiles":None,
-								"NumberMissingFiles":None,
-								"GoodFiles":None,
-								"NumberGoodFiles":None,
-								"TotalJobs":None}
+						 "IsCrab":None,
+						 "Files":None,
+						 "FileEntries":None,
+						 "PrimaryDatasetFraction":None, 
+						 "BadFiles":None,
+						 "NumberBadFiles":None,
+						 "MissingFiles":None,
+						 "NumberMissingFiles":None,
+						 "GoodFiles":None,
+						 "NumberGoodFiles":None,
+						 "TotalJobs":None}
 				instanceGroup['Files']=[]
 				instanceGroup['Files'].append(fileName)
 				isCrab, base = isCrabFile(fileName)
@@ -176,6 +184,7 @@ class DatasetInformation(object):
 		"""Build a string containing the important information pertaining to a file group
 			
 		'group_name' takes the groups name as a string e.g. 'cmgtuple'"""
+		# import pdb; pdb.set_trace()
 		if self.dataset_details is None or 'FileGroups' not in self.dataset_details or group_name not in self.dataset_details['FileGroups']:
 			return None
 		string = "\t----"+group_name+"----\n"
@@ -383,7 +392,8 @@ class DatasetInformation(object):
 		nJobs = None
 		try:
 			# Open the file in the logger and get the value
-			nJobsFile=tar.extractfile("Logger/logger_jobs.txt")
+			# import pdb; pdb.set_trace()
+			nJobsFile=self._logger_tar_object.extractfile("Logger/logger_jobs.txt")
 			nJobs = int(nJobsFile.read().split(": ")[1].split("\n")[0])
 		except:
 			print "ERROR: No jobs file found in logger (non-fatal error)"
@@ -541,6 +551,7 @@ class DatasetInformation(object):
 	
 	def buildFileEntriesReport(self):
 		"""Use EDM data to calculate no. of entries, also calculate fraction of primary dataset used"""
+		# import pdb; pdb.set_trace()
 		if self._report is None:return None
 		files = self._report['Files']
 		if len(files) == 0: 
@@ -549,7 +560,9 @@ class DatasetInformation(object):
 		for group_name in self.dataset_details['FileGroups']:
 			entries = 0
 			for file_name in files:
-				if file_name.split("/")[-1].split("_")[0]==group_name:
+				if  re.split('_\d+\.root',
+					     os.path.basename(file_name))[0]==group_name:
+				# if file_name.split("/")[-1].split("_")[0]==group_name:
 					entries += files[file_name][1]
 			self.dataset_details['FileGroups'][group_name]['FileEntries']=entries
 			if self.dataset_details['PrimaryDatasetEntries'] is not None and entries != 0 and self.dataset_details['PrimaryDatasetEntries'] > 0:
