@@ -70,6 +70,9 @@ int main(int argc, char* argv[])
   int mctruthmode=runProcess.getParameter<int>("mctruthmode");
 
   TString url=runProcess.getParameter<std::string>("input");
+  TString outFileUrl(gSystem->BaseName(url)); 
+  outFileUrl.ReplaceAll(".root",""); 
+  if(mctruthmode!=0) { outFileUrl += "_filt"; outFileUrl += mctruthmode; }
   TString outdir=runProcess.getParameter<std::string>("outdir");
   TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
@@ -80,7 +83,7 @@ int main(int argc, char* argv[])
   if(url.Contains("SingleMu"))  fType=MUMU;
   bool isSingleMuPD(!isMC && url.Contains("SingleMu"));  
   
-  TString outTxtUrl= outUrl + "/" + gSystem->BaseName(url) + ".txt";
+  TString outTxtUrl= outUrl + "/" + outFileUrl + ".txt";
   FILE* outTxtFile = NULL;
   //if(!isMC)
   outTxtFile = fopen(outTxtUrl.Data(), "w");
@@ -1414,7 +1417,7 @@ int main(int argc, char* argv[])
   //##############################################
   //save control plots to file
   outUrl += "/";
-  outUrl += gSystem->BaseName(url);
+  outUrl += outFileUrl + ".root";
   printf("Results save in %s\n", outUrl.Data());
 
   //save all to the file

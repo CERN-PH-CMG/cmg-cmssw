@@ -68,11 +68,15 @@ int main(int argc, char* argv[])
   bool use2011Id = runProcess.getParameter<bool>("is2011");
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
 
-  TString url=runProcess.getParameter<std::string>("input");
-  TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
   bool runBlinded = runProcess.getParameter<bool>("runBlinded");
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
+
+  TString url=runProcess.getParameter<std::string>("input");
+  TString outFileUrl(gSystem->BaseName(url));
+  outFileUrl.ReplaceAll(".root","");
+  if(mctruthmode!=0) { outFileUrl += "_filt"; outFileUrl += mctruthmode; }
+  TString outdir=runProcess.getParameter<std::string>("outdir");
   TString dirname = runProcess.getParameter<std::string>("dirName");
   TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
   JetCorrectionUncertainty jecUnc(uncFile.Data());
@@ -633,12 +637,12 @@ int main(int argc, char* argv[])
 		      mon.fillHisto("pfvbfcandzeppenfeld", ctf, fabs(maxEta-avgEtajj)/fabs(detajj),iweight);
 		      mon.fillHisto("pfvbfcandzeppenfeld", ctf, fabs(minEta-avgEtajj)/fabs(detajj),iweight);
 		      mon.fillHisto("pfvbfpremjj",         ctf, vbfSyst.mass(),iweight);
-		      if(fabs(detajj)>4.0)
+		      if(fabs(detajj)>4.5)
 			{
 			  mon.fillHisto("pfvbfmjj",         ctf, vbfSyst.mass(),iweight);
 			  mon.fillHisto("pfvbfmjjvsdeta",   ctf, vbfSyst.mass(),fabs(detajj),iweight);
 			  mon.fillHisto("pfvbfmjjvshardpt", ctf, vbfSyst.mass(),hardpt,iweight);
-			  if(vbfSyst.mass()>500) 
+			  if(vbfSyst.mass()>450) 
 			    {
 			      mon.fillHisto("pfvbfhardpt",  ctf, hardpt,iweight);
 			      int ncjv(0);
@@ -694,7 +698,7 @@ int main(int argc, char* argv[])
   TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
   outUrl += "/";
-  outUrl += gSystem->BaseName(url);
+  outUrl += outFileUrl + ".root";
   printf("Results save in %s\n", outUrl.Data());
 
   TFile *ofile=TFile::Open(outUrl, "recreate");

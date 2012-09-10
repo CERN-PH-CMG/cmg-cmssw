@@ -108,22 +108,37 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
     }
   else
     {
-      //FIXME
-      //  TString llFile="../../test/results/plotter_2012.root";
-      // TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
-      // TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/qt/plotter.root";
-      //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2012/nvtx/plotter.root";
-      //  TString llFile="../../plotter_zz_2012.root"; 
-      
-      //  TString llFile="../../test/results/plotter_2011.root";
-      //  TString llFile="/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_4_4_3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
-      //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/qt/plotter.root";
-      //  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-      // TString llFile="../../plotter_zz_2011.root";
+      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
+      llFile    = "/afs/cern.ch/user/p/psilva/work/htozz/53x/ll/2012/plotter.root";
+     
+      histos.push_back("met_met");
+      //histos.push_back("met_redMet");
+      //histos.push_back("mt");
+      // histos.push_back("mindphijmet");
+      histos.push_back("pfvbfpremjj");
+      histos.push_back("pfvbfcandjetdeta");
+      histos.push_back("pfvbfmjj");
+      //histos.push_back("pfvbfcjv");
+      //histos.push_back("pfvbfhardpt");
+      // histos.push_back("mt_shapes");
 
-      gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
-      llFile="../../test/results/plotter.root";
-      
+      dilSignal.push_back("ggH(600)#rightarrow ZZ");
+      dilSignal.push_back("qqH(600)#rightarrow ZZ");
+
+      //      dilcats.push_back("eq0jets");
+      //  dilcats.push_back("eq1jets");
+      dilcats.push_back("geq2jets");
+      dilcats.push_back("vbf");
+      dilcats.push_back("");
+
+      //      gcats.push_back("eq0jets");
+      //      gcats.push_back("eq0softjets");  //0 soft jets to be subtracted
+      // gcats.push_back("eq1jets");
+      gcats.push_back("eq2jets");     //2+3jets to be merged
+      gcats.push_back("geq3jets");
+      gcats.push_back("vbf");
+      gcats.push_back("");
+
       //   string histos[] = {//"met_met",
       //     //    "met_redMet"//,
       //     "met_min3Met"//,
@@ -137,10 +152,6 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       // 		     //"mt_shapes"//,
       // 		     //"zpt_shapes",
       // 		     // "met_shapes"
-      dilSignal.push_back("ggH(350)#rightarrow ZZ");
-      dilSignal.push_back("qqH(350)#rightarrow ZZ");
-      //string dilcats[]= {"eq0jets","eq1jets","geq2jets","vbf",""};
-      //string gcats[]= {"eq0jets","eq0softjets","eq1jets","eq2jets","geq3jets","vbf",""};   // -> 2+3 jets to be merged, 0 soft jets to be subtracted
     };
 
 
@@ -326,14 +337,18 @@ endl;
 		}
 	      
 	      int normBin(-1);
+	      
 	      ////normalization factor (from MET<50)
-	      if(model==HZZ && histos[ih].find("met_met")!=string::npos)  normBin=normH->GetXaxis()->FindBin(50);
+	      //if(model==HZZ && histos[ih].find("met_met")!=string::npos)  normBin=normH->GetXaxis()->FindBin(50);
+	     
 	      ////normalization factor (from red-MET<40)
 	      if(model==ZZ && histos[ih].find("met_redMet")!=string::npos) normBin=normH->GetXaxis()->FindBin(40);
+	      
 	      ////normalization factor (from deta_jj<3)
-	      //if(model==VBFZ && histos[ih].find("jetdeta")!=string::npos) normBin=normH->GetXaxis()->FindBin(3);
+	      if(histos[ih].find("jetdeta")!=string::npos) normBin=normH->GetXaxis()->FindBin(3);
+	      
 	      //normalization factor (from Mjj<500) 
-	      if(model==VBFZ && histos[ih].find("premjj")!=string::npos) normBin=normH->GetXaxis()->FindBin(500);
+	      //if(model==VBFZ && histos[ih].find("premjj")!=string::npos) normBin=normH->GetXaxis()->FindBin(500);
 
 	      if(normBin<0) continue;
 	      cout << histos[ih] << " " << normBin << " " << " " << normKey << flush;
@@ -553,7 +568,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       stack->Draw();
       stack->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
       stack->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
-      stack->SetMinimum(1);//mc->GetMinimum());
+      stack->SetMinimum(0.1);//mc->GetMinimum());
       //if(SaveName.Contains("vbf") && !SaveName.Contains("novbf")) stack->SetMinimum(1e-2);
       stack->SetMaximum(1.5*max(mc->GetMaximum(),shape.data->GetMaximum()));
 
@@ -605,7 +620,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   if(is2011)
     sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5051./1000);
   else
-    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
+    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 10200./1000);
     T->AddText(Buffer);
   T->Draw("same");
   

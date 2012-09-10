@@ -88,11 +88,13 @@ for proc in procList :
 
         data = desc['data']
         for d in data :
-            dtag = getByLabel(d,'dtag','')
+            origdtag = getByLabel(d,'dtag','')
+            dtag = origdtag
             xsec = getByLabel(d,'xsec',-1)
             br = getByLabel(d,'br',[])
             if(onlytag!='all') :
                 if(dtag.find(onlytag)<0) : continue
+            if(mctruthmode!=0) : dtag+='_filt'+str(mctruthmode)
                                 
             if(xsec>0 and not isdata) :
                 for ibr in br :  xsec = xsec*ibr
@@ -100,9 +102,9 @@ for proc in procList :
 
 	    for segment in range(0,split) :
                 if(split==1): 
-	            	eventsFile=inputdir + '/' + dtag + '.root'
+	            	eventsFile=inputdir + '/' + origdtag + '.root'
                 else:
-                        eventsFile=inputdir + '/' + dtag + '_' + str(segment) + '.root'
+                        eventsFile=inputdir + '/' + origdtag + '_' + str(segment) + '.root'
 
                 if(eventsFile.find('/store/cmst3')==0)  : eventsFile = commands.getstatusoutput('cmsPfn ' + eventsFile)[1]
                         

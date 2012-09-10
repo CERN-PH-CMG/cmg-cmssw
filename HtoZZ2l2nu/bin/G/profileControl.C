@@ -1,21 +1,21 @@
 {
 
-  TString gammaFile="/afs/cern.ch/user/p/psilva/work/gamma/2011/nvtx/plotter.root";
+  TString gammaFile="/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
   TFile *_file0=TFile::Open(gammaFile);
   
   gStyle->SetOptStat(0);
   
-  //   TString histo("metvsavginstlumi");
-  //   TString histoY("<E_{T}^{miss}>");
-  //   TString histoX("<Inst. Lumi>");
+  //  TString histo("metvsavginstlumi");
+  //  TString histoY("<E_{T}^{miss}>");
+  //TString histoX("Avg. inst luminosity");
   
-  TString histo("met20vsrho");
-  TString histoY("<red-E_{T}^{miss}>");
-  TString histoX("Energy density (#rho)");
+//   TString histo("met20vsrho");
+//   TString histoY("<red-E_{T}^{miss}>");
+//   TString histoX("Energy density (#rho)");
   
-  //   TString histo("nvtxvsavginstlumi");
-  //  TString histoY("<N_{vtx}>");
-  //  TString histoX("<Inst. Lumi>");
+  TString histo("nvtxvsavginstlumi");
+  TString histoY("<N_{vtx}>");
+  TString histoX("Avg. inst luminosity");
  
   // TString histo("metvsrun");
   //  TString histoY("<E_{T}^{miss}>");
@@ -26,11 +26,11 @@
   //     TString histoX("Run number");
   
   
-  TString cats[]={"eq0jets"};//{"","eq0jets","eq1jets","eq2jets"};
-  TString titles[]={""}; //=0 jetsinclusive","=0 jets","=1 jets","#geq 2jets"};
+  TString cats[]={"","eq0jets","eq1jets","eq2jets"};
+  TString titles[]={"=0 jetsinclusive","=0 jets","=1 jets","#geq 2jets"};
   const size_t ncats=sizeof(cats)/sizeof(TString);
   TCanvas *c = new TCanvas("c","c",600,600);
-  //  c->Divide(2,2);
+  c->Divide(2,2);
   
   for(int i=0; i<ncats; i++)
     {
@@ -53,8 +53,9 @@
 
       TGraphErrors *grgamma=new TGraphErrors(gamma);
       grgamma->Draw("ap");
-      grgamma->GetYaxis()->SetTitle("<red-E_{T}^{miss}>");
-      grgamma->GetXaxis()->SetTitle("Energy density (#rho)");
+      grgamma->GetYaxis()->SetTitle(histoY);
+      //grgamma->GetXaxis()->SetTitle("Energy density (#rho)");
+      grgamma->GetXaxis()->SetTitle(histoX);
       TGraphErrors *grgammaee=new TGraphErrors(gammaee);
       //grgammaee->Draw("e1same");
       mumu->Draw("same");

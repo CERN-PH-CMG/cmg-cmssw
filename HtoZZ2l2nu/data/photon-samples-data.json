@@ -1,66 +1,79 @@
 {
     "proc":[
 	{
-	   "tag":"ll+jets",
+	   "tag":"2012A",
 	   "isdata":true,
-	   "color":"2",
-	   "lcolor":2,
-           "fill":0,
-           "marker":24,
-	   "mctruthmode":1,
 	   "spimpose":true,
+	   "color":"3",
+	   "lwidth":1,
+           "normto":1,
+           "fill":0,
+           "marker":20,
+           "mctruthmode":22,
+           "data":[
+		{
+                  "dtag":"Data8TeV_Photon2012A",
+		  "split":2
+		}
+    	    ]
+	},
+        {
+           "tag":"2012B",
+           "isdata":true,
+           "spimpose":true,
+           "color":2,
+           "lwidth":1,
+           "normto":1,
+           "fill":0,
+           "marker":20,
+           "mctruthmode":22,
            "data":[
                 {
-	         "dtag":"Data_DoubleElectron2011A",
-		 "dset":"/DoubleElectron/Run2011A-HZZ-08Nov2011-v1/AOD",
-		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2011A-HZZ-08Nov2011-v1/AOD/V3"],
-                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleElectron2011A"],
-                 "split":2
+                  "dtag":"Data8TeV_Photon2012B",
+ 		  "split":5
+		},
+               {
+                 "dtag":"Data8TeV_DoubleElectron2012B",
+                 "split":5
+                }
+	   ]
+	},
+        {
+           "tag":"2012C",
+           "isdata":true,
+           "spimpose":true,
+           "color":1,
+           "lwidth":1,
+           "normto":1,
+           "fill":0,
+           "marker":20,
+           "mctruthmode":22,
+           "data":[
+               {
+                   "dtag":"Data8TeV_Photon2012C_197774to198913",
+                   "split":5
                 },
                 {
-	         "dtag":"Data_DoubleElectron2011B",
-		 "dset":"/DoubleElectron/Run2011B-HZZ-19Nov2011-v1/AOD",
-		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleElectron/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
-                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleElectron2011B"],
-                 "split":2
+                  "dtag":"Data8TeV_Photon2012C_198913to200601",
+                  "split":5
+                },
+		{
+                  "dtag":"Data8TeV_Photon2012C_200519to202016",
+                  "split":2
                 },
                 {
-	         "dtag":"Data_DoubleMu2011A",
-		 "dset":"/DoubleMu/Run2011A-HZZ-08Nov2011-v1/AOD",
-		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011A-HZZ-08Nov2011-v1/AOD/V3"],
-                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleMu2011A"],
-                 "split":2
+                 "dtag":"Data8TeV_DoubleElectron2012C_197774to198913",
+                 "split":5
                 },
-                {
-	         "dtag":"Data_DoubleMu2011B",
-		 "dset":"/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD",
-		 "aoddir":["/store/cmst3/user/cmgtools/CMG/DoubleMu/Run2011B-HZZ-19Nov2011-v1/AOD/V3"],
-                 "patdir":["/store/cmst3/user/querten/12_03_13_HZZ2l2v_pat/DoubleMu2011B"],
+		{
+                 "dtag":"Data8TeV_DoubleElectron2012C_198913to200601",
+                 "split":5
+                },
+		{
+                 "dtag":"Data8TeV_DoubleElectron2012C_200519to202016",
                  "split":2
                 }
-	    ]
-	},	
-	{
-	"tag":"#gamma+jets",
-        "isdata":true,
-	"color":"1",
-	"lcolor":1,
-	"fill":0,
-        "mctruthmode":22,
-	"data":[
-                {
-                  "dtag":"Photon2011A",
-                  "dset":"",
-                  "patdir":[""],
-		  "split":2
-		},
-                {
-                  "dtag":"Photon2011B",
-                  "dset":"",
-                  "patdir":[""],
- 		  "split":2
-		}
-	   ]
+	  ]
 	}
     ]	
 }
