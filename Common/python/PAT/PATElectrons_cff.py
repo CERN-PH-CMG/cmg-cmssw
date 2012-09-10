@@ -2,15 +2,15 @@ import FWCore.ParameterSet.Config as cms
 
 
 # Energy scale corrections and MC smearing
-from EgammaCalibratedGsfElectrons.CalibratedElectronProducers.calibratedGsfElectrons_cfi import calibratedGsfElectrons as gsfElectrons
-gsfElectrons.updateEnergyError = cms.bool(True)
-gsfElectrons.isAOD = cms.bool(True)
-RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
-    gsfElectrons = cms.PSet(
-        initialSeed = cms.untracked.uint32(1),
-        engineName = cms.untracked.string('TRandom3')
-    ),
-)
+# from EgammaCalibratedGsfElectrons.CalibratedElectronProducers.calibratedGsfElectrons_cfi import calibratedGsfElectrons as gsfElectrons
+# gsfElectrons.updateEnergyError = cms.bool(True)
+# gsfElectrons.isAOD = cms.bool(True)
+# RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+#     gsfElectrons = cms.PSet(
+#         initialSeed = cms.untracked.uint32(1),
+#         engineName = cms.untracked.string('TRandom3')
+#     ),
+# )
 
 # prepare reco information
 # from PhysicsTools.PatAlgos.recoLayer0.electronId_cff import *
@@ -122,6 +122,6 @@ PATElectronSequence = cms.Sequence(
     patConversions 
     )
 
-if cmsswIs44X():
-    # the calibration doesn't exist yet for 52X
-    PATElectronSequence.insert( 0, gsfElectrons )
+# Skip this since calibration can now be applied on the cmgTuples
+# if cmsswIs44X():
+#     PATElectronSequence.insert( 0, gsfElectrons )
