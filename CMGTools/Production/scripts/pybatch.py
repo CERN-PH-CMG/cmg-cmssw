@@ -119,7 +119,7 @@ if __name__ == '__main__':
     config = cfo.config
     handle.close()
 
-    components = split( config.components )
+    components = split( [comp for comp in config.components if len(comp.files)>0] )
     listOfValues = range(0, len(components))
     listOfNames = [comp.name for comp in components]
 
