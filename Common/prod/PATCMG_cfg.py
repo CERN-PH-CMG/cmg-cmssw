@@ -21,8 +21,8 @@ runOnFastSim = False
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'CMS',
-    '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
-    #'/GluGluToHToTauTau_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM'
+    # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
+    '/GluGluToHToTauTau_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM'
     # '/GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5'
     # 'CMS',
     # '/DoubleMu/Run2012C-PromptReco-v2/AOD'
@@ -104,7 +104,7 @@ process.dump = cms.EDAnalyzer('EventContentAnalyzer')
 process.load('CMGTools.Common.PAT.addFilterPaths_cff')
 process.p = cms.Path(
     process.prePathCounter + 
-    process.PATCMGSequence + 
+    process.PATCMGSequence +
     process.PATCMGJetCHSSequence 
     )
 
@@ -146,15 +146,6 @@ if runOnFastSim :
     process.vertexWeightSequence.remove(process.vertexWeight3DFall112011B)
     process.vertexWeightSequence.remove(process.vertexWeight3DFall112011AB)
 
-########################################################
-## Setup electron energy corrections
-########################################################
-
-# Skip this since calibration can now be applied on the cmgTuples
-# if cmsswIs44X():
-#     from CMGTools.Common.Tools.setupGsfElectronCalibration import setupGsfElectronCalibration
-#     setupGsfElectronCalibration( process, runOnMC )
-
 
 ########################################################
 ## PAT output definition
@@ -176,7 +167,9 @@ process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
 #FIXME now keeping the whole event content...
 # process.out.outputCommands.append('keep *_*_*_*')
 
-process.outpath = cms.EndPath(process.out)
+process.outpath = cms.EndPath(
+    # process.out
+    )
 
 ########################################################
 ## CMG output definition
