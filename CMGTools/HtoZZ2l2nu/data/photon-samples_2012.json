@@ -42,6 +42,14 @@
                 {
 	         "dtag":"Data8TeV_DoubleMu2012C_198913to200601",
                  "split":5
+                },
+	   	{
+                 "dtag":"Data8TeV_DoubleElectron2012C_200519to202016",
+                 "split":2
+                },
+                {
+                 "dtag":"Data8TeV_DoubleMu2012C_200519to202016",
+                 "split":2
                 }
 	    ]
 	},	
@@ -70,19 +78,9 @@
  	 "mctruthmode":22,
          "data":[
                 {
-                 "dtag":"MC8TeV_WToENu",
+                 "dtag":"MC8TeV_WJets",
                  "split":1,
-                 "xsec":12085.73
-                },
-                {
-                 "dtag":"MC8TeV_WToMuNu",
-                 "split":1,
-                 "xsec":12085.73
-                },
-                {
-                 "dtag":"MC8TeV_WToTauNu",
-                 "split":1,
-                 "xsec":12085.73
+                 "xsec":36263
                 }
 	 ]
 	},
@@ -200,17 +198,25 @@
                   "dtag":"Data8TeV_Photon2012C_198913to200601",
                   "split":5
                 },
+		{
+                  "dtag":"Data8TeV_Photon2012C_200519to202016",
+                  "split":2
+                },
                 {
-	         "dtag":"Data8TeV_DoubleElectron2012B_gamma",
+	         "dtag":"Data8TeV_DoubleElectron2012B",
                  "split":5
                 },
                 {
-	         "dtag":"Data8TeV_DoubleElectron2012C_197774to198913_gamma",
+	         "dtag":"Data8TeV_DoubleElectron2012C_197774to198913",
                  "split":5
                 },
                 {
-	         "dtag":"Data8TeV_DoubleElectron2012C_198913to200601_gamma",
+	         "dtag":"Data8TeV_DoubleElectron2012C_198913to200601",
                  "split":5
+                },
+  		{
+                 "dtag":"Data8TeV_DoubleElectron2012C_200519to202016",
+                 "split":2
                 }
 	   ]
 	}
