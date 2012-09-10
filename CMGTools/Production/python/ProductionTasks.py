@@ -521,7 +521,9 @@ class RunCMSBatch(Task):
         parser.add_option("-q", "--queue", dest="queue", help="The LSF queue to use", default="1nh")        
         parser.add_option("-t", "--tier", dest="tier",
                           help="Tier: extension you can give to specify you are doing a new production. If you give a Tier, your new files will appear in sampleName/tierName, which will constitute a new dataset.",
-                          default="")               
+                          default="")
+        parser.add_option("-G", "--group", dest="group", help="The LSF user group to use, e.g. 'u_zh'", default=None)        
+        
     def run(self, input):
         find = FindOnCastor(self.dataset,self.options.batch_user,self.options)
         find.create = True
@@ -537,8 +539,11 @@ class RunCMSBatch(Task):
         cmd.extend(['-r',sampleDir])
         if self.options.run_batch:
             jname = "%s/%s" % (self.dataset,self.options.tier)
-            jname = jname.replace("//","/") 
-            cmd.extend(['-b',"'bsub -q %s -J %s -u cmgtoolslsf@gmail.com < ./batchScript.sh | tee job_id.txt'" % (self.options.queue,jname)])
+            jname = jname.replace("//","/")
+            user_group = ''
+            if self.options.group is not None:
+                user_group = '-G %s' % self.options.group
+            cmd.extend(['-b',"'bsub -q %s -J %s -u cmgtoolslsf@gmail.com %s < ./batchScript.sh | tee job_id.txt'" % (self.options.queue,jname,user_group)])
         print " ".join(cmd)
         
         pwd = os.getcwd()
@@ -805,13 +810,17 @@ class WriteJobReport(Task):
             output.write('#FilesGood: %i\n' % mask['FilesGood'])
             output.write('#FilesBad: %i\n' % mask['FilesBad'])        
         
+        user_group = ''
+        if self.options.group is not None:
+            user_group = '-G %s' % self.options.group
+
         for status, jobs in states.iteritems():
             output.write('# %d jobs found in state %s\n' % (len(jobs),status) )
             if status == 'VALID':
                 continue
             for j in jobs:
                 jdir = os.path.join(jobdir,j)
-                output.write('pushd %s; bsub -q %s -J RESUB -u cmgtoolslsf@gmail.com < ./batchScript.sh | tee job_id_resub.txt; popd\n' % (jdir,self.options.queue))
+                output.write('pushd %s; bsub -q %s -J RESUB -u cmgtoolslsf@gmail.com %s < ./batchScript.sh | tee job_id_resub.txt; popd\n' % (jdir,self.options.queue,user_group))
         output.close()
             
         return {'SummaryFile':report_file}
