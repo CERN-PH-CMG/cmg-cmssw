@@ -18,13 +18,13 @@ CMSSW_BASE=os.environ.get('CMSSW_BASE')
 #LandSArg=' --indexvbf 78 '
 LandSArg=' --indexvbf 9 '
 LandSArg+='--bins eq0jets,eq1jets,geq2jets,vbf'
-LandSArg+=' --subNRB --subDY $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/gamma_half_2012_5_0fb_fix.root --systpostfix _8TeV'
+LandSArg+=' --subNRB --subDY $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/computeLimits_HighMassPaper/gamma_half_2012_10fb.root --systpostfix _8TeV'
+#LandSArg+=' --subNRB --systpostfix _8TeV '
 DataCardsDir='cards8TeV'
 
-#MASS = [200,250, 300,350, 400,450, 500,550, 600]
-MASS = [200,250, 300, 350, 400, 450, 500, 600, 800, 900]
-SUBMASS = [200,225,250, 275,300,325,350,375, 400,425,450,475, 500,525,550,575, 600]
-#SUBMASS = [200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 360, 370, 380, 390, 400, 420, 440, 450, 460, 480, 500, 520, 540, 550, 560, 580, 600]
+MASS = [200,250, 300, 350, 400, 450, 500, 600, 650, 700, 750, 800, 850, 900, 950, 1000] #550 is missing
+SUBMASS = [200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 360, 370, 380, 390, 400, 420, 440, 460, 480, 500, 520, 540, 560, 580, 600, 625, 650, 675, 700, 725, 750, 775, 800, 825, 850, 875, 900, 925, 950, 975, 1000]
+
 
 cutList='' 
 def help() :
@@ -110,7 +110,6 @@ cuts2   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmin')
 cuts3   = file.Get('WW#rightarrow 2l2#nu/optim_cut1_mtmax') 
 
 
-
 ######################################################################
 
 if( phase == 1 ):
@@ -123,30 +122,45 @@ if( phase == 1 ):
 
    FILE = open(OUT+"/LIST.txt","w")
    for i in range(1,cuts1.GetNbinsX()):
-#      if(shapeBased=='1' and cuts3.GetBinContent(i)<780):continue
-      FILE.writelines("index="+str(i).rjust(5) + " --> met>" + str(cuts1.GetBinContent(i)).rjust(5) + " " + str(cuts2.GetBinContent(i)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(i)).rjust(5) + "\n")
+      #only run the optimization in step of 10GeV in MET (needed to reduce the number of points!)
+      if(cuts1.GetBinContent(i)%10!=0): continue;
 
-      #create wrappper script for each set of cuts ans submit it
-#      SCRIPT = open(OUT+'script_'+str(i)+'.sh',"w")
-#      SCRIPT.writelines('echo "TESTING SELECTION : ' + str(i).rjust(5) + ' --> met>' + str(cuts1.GetBinContent(i)).rjust(5) + ' ' + str(cuts2.GetBinContent(i)).rjust(5) + '<mt<'+str(cuts3.GetBinContent(i)).rjust(5)+'";\n')
-#      SCRIPT.writelines('cd ' + CMSSW_BASE + '/src;\n')
-#      SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc5_amd64_gcc462")+";\n")
-#      SCRIPT.writelines("eval `scram r -sh`;\n")
-#      SCRIPT.writelines('cd /tmp/;\n')
-#      for m in MASS:
-#         shapeBasedOpt=''
-#         if(shapeBased=='1') : shapeBasedOpt='--shape'
-#         cardsdir = 'H'+ str(m);
-#         if(shapeBased=='0'): cardsdir+='_count_'+str(i)
-#         if(shapeBased=='1'): cardsdir+='_shape_'+str(i)
-#         SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
-#         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(i)     + " --json " + jsonUrl +" --fast " + LandSArg + " ;\n")
-#         SCRIPT.writelines("sh combineCards.sh;\n")
-#         SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " --run expected card_combined.dat > COMB.log;\n")
-#         SCRIPT.writelines('tail -n 100 COMB.log > ' +OUT+str(m)+'_'+str(i)+'.log;\n')
-#         SCRIPT.writelines('cd ..;\n\n')
-#      SCRIPT.close()
-#      commandToRun.append("bsub -G u_zh -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
+      #X axis of the 2D histograms does not contains the MT variation anymore -> not a big deal we can anyway cut on it via the --shapeMin/--shapeMax arguments of runLandS.
+      for mtmin in range(125,550,25):
+         mtmin_ = mtmin
+         if(mtmin_<=125):mtmin_=0
+         if(mtmin_>350 and mtmin_%50!=0):continue;
+         if(mtmin_<450):continue #ONLY FOR HIGH MASS !!!!!!!!!!!!!!!!!
+         for mtmax in range(mtmin+50,mtmin+500,25):
+            mtmax_ = mtmax
+            if(mtmax_>=mtmin_+455):mtmax_=9000 
+            if(mtmin_==0 and mtmax_!=9000):continue;
+            if(mtmin_>350 and mtmax_%100!=0):continue;
+            if(mtmax_-mtmin_>200 and mtmax_%50!=0):continue;
+            #if(mtmax_!=9000):continue; #ONLY FOR HIGH MASS !!!!!!!!!!!!!!!!!
+            FILE.writelines("index="+str(i).rjust(5) + " --> met>" + str(cuts1.GetBinContent(i)).rjust(5) + " " + str(mtmin_).rjust(5) + '<mt<'+str(mtmax_).rjust(5) + "\n")
+
+            #create wrappper script for each set of cuts ans submit it
+            SCRIPT = open(OUT+'script_'+str(i)+'_'+str(mtmin_)+'_'+str(mtmax_)+'.sh',"w")
+            SCRIPT.writelines('echo "TESTING SELECTION : ' + str(i).rjust(5) + ' --> met>' + str(cuts1.GetBinContent(i)).rjust(5) + ' ' + str(mtmin_) + '<mt<'+str(mtmax_)+'";\n')
+            SCRIPT.writelines('cd ' + CMSSW_BASE + '/src;\n')
+            SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc5_amd64_gcc434")+";\n")
+            SCRIPT.writelines("eval `scram r -sh`;\n")
+            SCRIPT.writelines('cd /tmp/;\n')
+            for m in MASS:
+               shapeBasedOpt=''
+               if(shapeBased=='1') : shapeBasedOpt='--shape'
+               cardsdir = 'H'+ str(m);
+               if(shapeBased=='0'): cardsdir+='_count_'+str(i)
+               if(shapeBased=='1'): cardsdir+='_shape_'+str(i)
+               SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
+               SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(i)     + " --json " + jsonUrl +" --fast " + " --shapeMin " + str(mtmin_) + " --shapeMax " + str(mtmax_) + " " + LandSArg + " ;\n")
+               SCRIPT.writelines("sh combineCards.sh;\n")
+               SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " --run expected card_combined.dat > COMB.log;\n")
+               SCRIPT.writelines('tail -n 100 COMB.log > ' +OUT+str(m)+'_'+str(i)+'_'+str(mtmin_)+'_'+str(mtmax_)+'.log;\n')
+               SCRIPT.writelines('cd ..;\n\n')
+            SCRIPT.close()
+            commandToRun.append("bsub -G u_zh -q 8nh -J optim"+str(i)+'_'+str(mtmin_)+'_'+str(mtmax_) + " 'sh " + OUT+"script_"+str(i)+'_'+str(mtmin_)+'_'+str(mtmax_)+".sh &> "+OUT+"script_"+str(i)+'_'+str(mtmin_)+'_'+str(mtmax_)+".log'")
    FILE.close()
 
    for c in commandToRun:
@@ -164,7 +178,7 @@ elif(phase == 2):
    
    fileName = OUT + "/OPTIM_"
    if(shapeBased=='1'):  fileName+='SHAPE'
-   else:                 fileName+='COUNT8' 	
+   else:                 fileName+='COUNT' 	
 
    FILE = open(fileName+".txt","w")
    for m in MASS:
@@ -177,8 +191,9 @@ elif(phase == 2):
          if(len(exp)<=0):continue
          median = exp.split()[4]
          if(float(median)<=0.0):continue
-         index = int(f[f.rfind("_")+1:f.rfind(".log")])
-         BestLimit.append("mH="+str(m)+ " --> " + ('%07.3f' % float(median)) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5))
+         fields = f.split('_')
+         index = fields[1] 
+         BestLimit.append("mH="+str(m)+ " --> " + ('%07.3f' % float(median)) + " " + str(index).rjust(5) + " " + str(fields[2]).rjust(5) + " " + str(fields[3]).rjust(5))
 
       #sort the limits for this mass
       BestLimit.sort()
@@ -282,7 +297,7 @@ elif(phase == 3 ):
    #run limits for the cuts chosen (for intermediate masses use spline interpolation)
    for m in SUBMASS:
         index = findCutIndex(Gmet.Eval(m,0,""), cuts1, Gtmin.Eval(m,0,""), cuts2,  Gtmax.Eval(m,0,""), cuts3);
-        print("mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(index)).rjust(5) )
+#        print("mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + "<mt<"+str(cuts3.GetBinContent(index)).rjust(5) )
 
    while True:
         ans = raw_input('Use this fit and compute final limits? (y or n)\n')
@@ -297,7 +312,7 @@ elif(phase == 3 ):
         index = findCutIndex(Gmet.Eval(m,0,""), cuts1, Gtmin.Eval(m,0,""), cuts2,  Gtmax.Eval(m,0,""), cuts3);
         SCRIPT = open(OUT+'/script_mass_'+str(m)+'.sh',"w")
         SCRIPT.writelines('cd ' + CMSSW_BASE + ';\n')
-        SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc5_amd64_gcc462")+";\n")
+        SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc5_amd64_gcc434")+";\n")
         SCRIPT.writelines("eval `scram r -sh`;\n")
         SCRIPT.writelines('cd ' + CWD + ';\n')
         shapeBasedOpt=''
@@ -313,7 +328,7 @@ elif(phase == 3 ):
            SideMassesArgs += "--mL " + str(SideMasses[0]) + " --mR " + str(SideMasses[1]) + " --indexL " + str(Lindex) +  " --indexR " + str(Rindex) + " "
 
 
-        cardsdir=DataCardsDir+"/"+str(m);
+        cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
         SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + " --shapeMin " + str(Gtmin.Eval(m,0,"")) +" --shapeMax " + str(Gtmax.Eval(m,0,""))  +" ;\n")
         SCRIPT.writelines("sh combineCards.sh;\n")
@@ -340,7 +355,7 @@ elif(phase == 4 ):
    if(shapeBased=='1'):ouputName='SHAPE'
 
    os.system("hadd -f "+ouputName+"_LimitTree.root "+DataCardsDir+"/*/higgsCombineTest.Asymptotic.*.root")
-   os.system("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+ouputName+"_LimitTree.root\",  8 , 5.000 )'")
+   os.system("root -l -b -q plotLimit.C++'(\""+ouputName+"\",\""+ouputName+"_LimitTree.root\",  8 , 10.198 )'")
 
 ######################################################################
 

@@ -149,7 +149,6 @@ void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, d
 
    FILE* pFileSum = fopen((outputName+"_LimitSummary").Data(),"w");
    for(int i=0;i<N;i++){
-      if(((int)MassAxis[i])%50==0)
       fprintf(pFileSum, "$%7.3f$ & $%6.2f$ & $[%6.2f,%6.2f]$ & $[%6.2f,%6.2f]$ & $%6.2f$ \\\\\\hline\n",MassAxis[i], ExpLimit[i], ExpLimitm1[i], ExpLimitp1[i], ExpLimitm2[i],  ExpLimitp2[i], ObsLimit[i]);
       if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);
    }printf("\n");
@@ -174,7 +173,7 @@ void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, d
    TGObsLimit->SetLineWidth(2);  TGObsLimit->SetMarkerStyle(20);
 
    TCanvas* c1 = new TCanvas("c1", "c1",600,600);
-   TH1F* framework = new TH1F("Graph","Graph",1,190,610);
+   TH1F* framework = new TH1F("Graph","Graph",1,150,1050);
    framework->SetStats(false);
    framework->SetTitle("");
    framework->GetXaxis()->SetTitle("M_{H} [GeV/c^{2}]");
@@ -197,16 +196,14 @@ void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, d
 
    char LumiLabel[1024];
    if(energy<9){
-//      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #int L=%6.1ffb^{-1}   -   %20s",energy, luminosity,legendName.Data());
-      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #int L=%6.1ffb^{-1}",energy, luminosity);
+      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #int L=%6.1ffb^{-1}   -   %20s",energy, luminosity,legendName.Data());
    }else{
-//      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f/%.0f TeV, #int L=%6.1ffb^{-1}   -   %20s",7.0,8.0, luminosity,legendName.Data());
-      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f/%.0f TeV, #int L=%6.1ffb^{-1}",7.0,8.0, luminosity);
+      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f/%.0f TeV, #int L=%6.1ffb^{-1}   -   %20s",7.0,8.0, luminosity,legendName.Data());
    }
    TPaveText *pave = new TPaveText(0.1,0.96,0.94,0.99,"NDC");
    pave->SetBorderSize(0);
    pave->SetFillStyle(0);
-   pave->SetTextAlign(32);
+   pave->SetTextAlign(12);
    pave->SetTextFont(42);
    TObjArray* tokens = (TString(LumiLabel)).Tokenize("\\\\");
    int nt = tokens->GetEntries();
@@ -220,7 +217,7 @@ void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, d
    SMLine->Draw("same");
 
    TLegend* LEG = new TLegend(0.35,0.70,0.65,0.93);
-   LEG->SetHeader(legendName.Data());
+   LEG->SetHeader("");
    LEG->SetFillColor(0);
    LEG->SetBorderSize(0);
    LEG->AddEntry(TGExpLimit  , "median expected"  ,"L");
