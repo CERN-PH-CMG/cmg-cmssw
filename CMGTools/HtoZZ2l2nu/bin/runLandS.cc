@@ -38,11 +38,12 @@
 
 using namespace std;
 double NonResonnantSyst = 0.25;
-double GammaJetSyst = 0.5;//0.5, 1.0;
+double GammaJetSyst = 1.0; //0.5;//0.5, 1.0;
 
 //wrapper for a projected shape for a given set of cuts
-struct Shape_t
+class Shape_t
 {
+  public:
   TH1* data, *totalBckg;
   std::vector<TH1 *> bckg, signal;
   //the key corresponds to the proc name
@@ -50,6 +51,22 @@ struct Shape_t
   std::map<TString,std::vector<std::pair<TString, TH1*> > > bckgVars, signalVars;
 
   std::map<TString, double> xsections;
+
+  Shape_t(){}
+  ~Shape_t(){}
+
+
+  void clear(){std::cout<<"shape is destructed...";
+      if(data)delete data;
+      if(totalBckg)totalBckg->Delete();
+      for(unsigned int i=0;i<bckg.  size();i++){delete bckg  [i];} bckg  .clear();
+      for(unsigned int i=0;i<signal.size();i++){delete signal[i];} signal.clear();
+      for(std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator it=bckgVars  .begin(); it!=bckgVars  .end();it++){for(unsigned int i=0;i<(*it).second.size();i++){delete (*it).second[i].second;}} bckgVars  .clear();
+      for(std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator it=signalVars.begin(); it!=signalVars.end();it++){for(unsigned int i=0;i<(*it).second.size();i++){delete (*it).second[i].second;}} signalVars.clear();
+      std::cout<<"done\n";
+       
+   }
+
 
 };
 
@@ -67,7 +84,7 @@ struct DataCardInputs
 
 
 void printHelp();
-Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin,JSONWrapper::Object &Root,double minCut=0, double maxCut=9999);
+Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin,JSONWrapper::Object &Root,double minCut=0, double maxCut=9999, bool onlyData=false);
 void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName);
 void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName);
 
@@ -233,8 +250,10 @@ int main(int argc, char* argv[])
 
 
 //
-Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, JSONWrapper::Object &Root, double minCut, double maxCut)
+Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, JSONWrapper::Object &Root, double minCut, double maxCut, bool onlyData)
 {
+  gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
+
   Shape_t shape; shape.totalBckg=NULL;shape.data=NULL;
 
   std::vector<TString> BackgroundsInSignal;
@@ -248,7 +267,10 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
       if(pdir==0){ /*printf("Skip Proc=%s because its directory is missing in root file\n", proc.Data());*/ continue;}
 
       bool isData(Process[i]["isdata"].toBool());
+     if(onlyData && !isData)continue; //just here to speedup the NRB prediction
+
       bool isSignal(Process[i].isTag("issignal") && Process[i]["issignal"].toBool());
+      if(Process[i]["spimpose"].toBool() && (proc.Contains("ggH") || proc.Contains("qqH")))isSignal=true;
       bool isInSignal(Process[i].isTag("isinsignal") && Process[i]["isinsignal"].toBool());
       int color(1);       if(Process[i].isTag("color" ) ) color  = (int)Process[i]["color" ].toInt();
       int lcolor(color);  if(Process[i].isTag("lcolor") ) lcolor = (int)Process[i]["lcolor"].toInt();
@@ -295,7 +317,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
          //if current shape is the one to cut on, then apply the cuts
          if(shapeName == histo){
             for(int x=0;x<=hshape->GetXaxis()->GetNbins()+1;x++){
-               if(hshape->GetXaxis()->GetBinCenter(x)<=minCut || hshape->GetXaxis()->GetBinCenter(x)>=maxCut){hshape->SetBinContent(x,0); hshape->SetBinError(x,0);}
+               if(hshape->GetXaxis()->GetBinCenter(x)<=minCut || hshape->GetXaxis()->GetBinCenter(x)>=maxCut){ hshape->SetBinContent(x,0); hshape->SetBinError(x,0); }
             }
             hshape->Rebin(2);
             hshape->GetYaxis()->SetTitle("Entries (/25GeV)");
@@ -324,7 +346,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
                if(procIndex>=0) shape.signal[procIndex]->Add(hshape);
                else             {hshape->SetTitle(proc);shape.signal.push_back(hshape);}
 
-               printf("Adding signal %s\n",proc.Data());
+               //printf("Adding signal %s\n",proc.Data());
             }else{
                std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator it = shape.signalVars.find(proc);
                 
@@ -757,7 +779,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
          if(mass>0){
          fprintf(pFile,"%35s %10s ", "theoryUncXS_HighMH", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            if((int)j<=dci.nsignalproc){fprintf(pFile,"%6f ",1.0+1.5*pow((mass/1000.0),3));}else{fprintf(pFile,"%6s ","-");}
+            if((int)j<=dci.nsignalproc){fprintf(pFile,"%6f ",std::min(1.0+1.5*pow((mass/1000.0),3),2.0));}else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
          }
 
@@ -787,12 +809,12 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
          }
 
          if(mass>0){
-         fprintf(pFile,"%35s %10s ", "Signal_rescaling_8TeV", "lnN");
-         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-//            if(systpostfix.Contains('8') && (dci.procs[j-1].Contains("ggh") || dci.procs[j-1].Contains("qqh"))){fprintf(pFile,"%6f ",1.25);
-            if(systpostfix.Contains('8') && (dci.procs[j-1].Contains("qqh"))){fprintf(pFile,"%6f ",1.25);
-            }else{fprintf(pFile,"%6s ","-");}
-         }fprintf(pFile,"\n");
+//         fprintf(pFile,"%35s %10s ", "Signal_rescaling_8TeV", "lnN");
+//         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+////            if(systpostfix.Contains('8') && (dci.procs[j-1].Contains("ggh") || dci.procs[j-1].Contains("qqh"))){fprintf(pFile,"%6f ",1.25);
+//            if(systpostfix.Contains('8') && (dci.procs[j-1].Contains("qqh"))){fprintf(pFile,"%6f ",1.25);
+//            }else{fprintf(pFile,"%6s ","-");}
+//         }fprintf(pFile,"\n");
 
          fprintf(pFile,"%35s %10s ", "pdf_gg", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
@@ -878,6 +900,9 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             
          for(std::map<TString, std::map<RateKey_t,Double_t> >::iterator it=dci.systs.begin(); it!=dci.systs.end(); it++){
              if(!runSystematics && string(it->first.Data()).find("stat")>0 )continue;
+
+             //temporary bug fix
+             if(it->first.Contains("_lshape"))continue;
 
              isSyst=false;
              if(it->first.Contains("_sys_") || it->first.Contains("_interpol_")){
@@ -1044,7 +1069,6 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         else if(mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ2l2v";
         else if(mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
         else if(mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
-
         convertHistosForLimits_core(dci, proc, AnalysisBins[b], chbin, systs, hshapes);
         if(ich==0 && b==0)allProcs.push_back(proc);
         dci.nsignalproc++;
@@ -1347,12 +1371,13 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
            if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
            while(hCtrl_SI->Integral()<=0 && indexcut_>=0){
               double cutMin_=cutMin;
-              while(hCtrl_SI->Integral()<=0 && cutMin_>=0){
-                 hCtrl_SB=getShapeFromFile(inF, ctrlCh+AnalysisBins[b],sideBandHisto,indexcut_,Root,cutMin_, cutMax).data;
-                 hCtrl_SI=getShapeFromFile(inF, ctrlCh+AnalysisBins[b],mainHisto,indexcut_,Root,cutMin_, cutMax).data;
-                 hChan_SB=getShapeFromFile(inF, selCh[i]+AnalysisBins[b],sideBandHisto,indexcut_,Root,cutMin_, cutMax).data;
+              while(hCtrl_SI->Integral()<=0 && cutMin_>=0){               
+                 hCtrl_SB=getShapeFromFile(inF, ctrlCh+AnalysisBins[b],sideBandHisto,indexcut_,Root,cutMin_, cutMax, true).data;
+                 hCtrl_SI=getShapeFromFile(inF, ctrlCh+AnalysisBins[b],mainHisto,indexcut_,Root,cutMin_, cutMax, true).data;
+                 hChan_SB=getShapeFromFile(inF, selCh[i]+AnalysisBins[b],sideBandHisto,indexcut_,Root,cutMin_, cutMax, true).data;
                  //printf("indexcut_ = %i cutMin=%f --> Integral = %f\n",indexcut_, cutMin_, hCtrl_SI->Integral());
-                 cutMin_-=5;
+//                 cutMin_-=5;
+                 cutMin_-=50;
               }
               indexcut_--;
            }
@@ -1867,16 +1892,17 @@ void initializeTGraph(){
    qqH8TG_pdfp = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_pdfp);
    qqH8TG_pdfm = new TGraph(sizeof(qqH8_mass)/sizeof(double), qqH8_mass, qqH8_pdfm);
 
-   double QCDScaleMass   [] = {200, 250, 300, 350, 400, 450, 500, 550, 600};
-   double QCDScaleK0ggH0 [] = {1.15 , 1.16, 1.17, 1.20, 1.17, 1.19, 1.22, 1.24, 1.25};
-   double QCDScaleK0ggH1 [] = {0.88, 0.86, 0.84, 0.83, 0.82, 0.81, 0.80, 0.78, 0.78};
-   double QCDScaleK1ggH1 [] = {1.27, 1.27, 1.27, 1.27, 1.26, 1.26, 1.25, 1.26, 1.26};
-   double QCDScaleK1ggH2 [] = {0.96, 0.96, 0.95, 0.95, 0.95, 0.95, 0.95,  0.95, 0.94};
-   double QCDScaleK2ggH2 [] = { 1.20, 1.17, 1.20, 1.21, 1.20, 1.20, 1.17, 1.19, 1.19};
+   //#FIXME: extrapolated from 600 to 1TeVmissing points from 650GeV to 1TeV
+   double QCDScaleMass   [] = {200, 250, 300, 350, 400, 450, 500, 550, 600, 700, 800, 900, 1000};
+   double QCDScaleK0ggH0 [] = {1.15 , 1.16, 1.17, 1.20, 1.17, 1.19, 1.22, 1.24, 1.25, 1.25, 1.25, 1.25, 1.25};
+   double QCDScaleK0ggH1 [] = {0.88, 0.86, 0.84, 0.83, 0.82, 0.81, 0.80, 0.78, 0.78, 0.78, 0.78, 0.78, 0.78};
+   double QCDScaleK1ggH1 [] = {1.27, 1.27, 1.27, 1.27, 1.26, 1.26, 1.25, 1.26, 1.26, 1.26, 1.26, 1.26, 1.26};
+   double QCDScaleK1ggH2 [] = {0.96, 0.96, 0.95, 0.95, 0.95, 0.95, 0.95,  0.95, 0.94, 0.94, 0.94, 0.94, 0.94};
+   double QCDScaleK2ggH2 [] = { 1.20, 1.17, 1.20, 1.21, 1.20, 1.20, 1.17, 1.19, 1.19, 1.19, 1.19, 1.19, 1.19};
 
-   double UEPSf0 []         = {0.952, 0.955, 0.958, 0.964, 0.966, 0.954, 0.946, 0.931, 0.920};
-   double UEPSf1 []         = {1.055, 1.058, 1.061, 1.068, 1.078, 1.092, 1.102, 1.117, 1.121};
-   double UEPSf2 []         = {0.059, 0.990, 0.942, 0.889, 0.856, 0.864, 0.868, 0.861, 0.872}; 
+   double UEPSf0 []         = {0.952, 0.955, 0.958, 0.964, 0.966, 0.954, 0.946, 0.931, 0.920, 0.920, 0.920, 0.920, 0.920};
+   double UEPSf1 []         = {1.055, 1.058, 1.061, 1.068, 1.078, 1.092, 1.102, 1.117, 1.121, 1.121, 1.121, 1.121, 1.121};
+   double UEPSf2 []         = {0.059, 0.990, 0.942, 0.889, 0.856, 0.864, 0.868, 0.861, 0.872, 0.872, 0.872, 0.872, 0.872}; 
 
   TG_QCDScaleK0ggH0 = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleK0ggH0);
   TG_QCDScaleK0ggH1 = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleK0ggH1);
