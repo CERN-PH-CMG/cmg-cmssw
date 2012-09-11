@@ -95,6 +95,15 @@ namespace pat
 	// ---------------------------------------------------------
 
         float puJetId_nParticles() const { return (*puJetId_)[jets_->refAt(oindex)].nParticles(); }
+        float puJetId_nCharged() const { return (*puJetId_)[jets_->refAt(oindex)].nCharged(); }
+        float puJetId_leadChFrac() const { return (*puJetId_)[jets_->refAt(oindex)].leadChFrac(); }
+        float puJetId_secondChFrac() const { return (*puJetId_)[jets_->refAt(oindex)].secondChFrac(); }
+        float puJetId_thirdChFrac() const { return (*puJetId_)[jets_->refAt(oindex)].thirdChFrac(); }
+        float puJetId_fourthChFrac() const { return (*puJetId_)[jets_->refAt(oindex)].fourthChFrac(); }
+        float puJetId_leadNeutFrac() const { return (*puJetId_)[jets_->refAt(oindex)].leadNeutFrac(); }
+        float puJetId_secondNeutFrac() const { return (*puJetId_)[jets_->refAt(oindex)].secondNeutFrac(); }
+        float puJetId_thirdNeutFrac() const { return (*puJetId_)[jets_->refAt(oindex)].thirdNeutFrac(); }
+        float puJetId_fourthNeutFrac() const { return (*puJetId_)[jets_->refAt(oindex)].fourthNeutFrac(); }
         float puJetId_leadPt() const { return (*puJetId_)[jets_->refAt(oindex)].leadPt(); }
         float puJetId_leadEta() const { return (*puJetId_)[jets_->refAt(oindex)].leadEta(); }
         float puJetId_leadPhi() const { return (*puJetId_)[jets_->refAt(oindex)].leadPhi(); }
@@ -120,14 +129,89 @@ namespace pat
         float puJetId_leadCharge() const { return (*puJetId_)[jets_->refAt(oindex)].leadCharge(); }
         float puJetId_secondCharge() const { return (*puJetId_)[jets_->refAt(oindex)].secondCharge(); }
 
+        float daughter_0_puJetId_nParticles() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].nParticles():-999; }
+        float daughter_0_puJetId_nCharged() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].nCharged():-999; }
+        float daughter_0_puJetId_leadChFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].leadChFrac():-999; }
+        float daughter_0_puJetId_secondChFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].secondChFrac():-999; }
+        float daughter_0_puJetId_thirdChFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].thirdChFrac():-999; }
+        float daughter_0_puJetId_fourthChFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].fourthChFrac():-999; }
+        float daughter_0_puJetId_leadNeutFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].leadNeutFrac():-999; }
+        float daughter_0_puJetId_secondNeutFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].secondNeutFrac():-999; }
+        float daughter_0_puJetId_thirdNeutFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].thirdNeutFrac():-999; }
+        float daughter_0_puJetId_fourthNeutFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].fourthNeutFrac():-999; }
+        float daughter_0_puJetId_leadPt() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].leadPt():-999; }
+        float daughter_0_puJetId_leadEta() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].leadEta():-999; }
+        float daughter_0_puJetId_leadPhi() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].leadPhi():-999; }
+        float daughter_0_puJetId_secondPt() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].secondPt():-999; }
+        float daughter_0_puJetId_secondEta() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].secondEta():-999; }
+        float daughter_0_puJetId_secondPhi() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].secondPhi():-999; }
+        float daughter_0_puJetId_dRLeadCent() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].dRLeadCent():-999; }
+        float daughter_0_puJetId_dRLead2nd() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].dRLead2nd():-999; }
+        float daughter_0_puJetId_dRMean() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].dRMean():-999; }
+        float daughter_0_puJetId_dR2Mean() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].dR2Mean():-999; }
+        float daughter_0_puJetId_ptD() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].ptD():-999; }
+        float daughter_0_puJetId_ptMean() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].ptMean():-999; }
+        float daughter_0_puJetId_ptRMS() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].ptRMS():-999; }
+        float daughter_0_puJetId_pt2A() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].pt2A():-999; }
+        float daughter_0_puJetId_sumPt() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].sumPt():-999; }
+        float daughter_0_puJetId_leadFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].leadFrac():-999; }
+        float daughter_0_puJetId_secondFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].secondFrac():-999; }
+        float daughter_0_puJetId_frac01() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].frac01():-999; }
+        float daughter_0_puJetId_frac02() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].frac02():-999; }
+        float daughter_0_puJetId_frac03() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].frac03():-999; }
+        float daughter_0_puJetId_frac04() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].frac04():-999; }
+        float daughter_0_puJetId_frac05() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].frac05():-999; }
+        float daughter_0_puJetId_leadCharge() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].leadCharge():-999; }
+        float daughter_0_puJetId_secondCharge() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].secondCharge():-999; }
+
+        float daughter_1_puJetId_nParticles() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].nParticles():-999; }
+        float daughter_1_puJetId_nCharged() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].nCharged():-999; }
+        float daughter_1_puJetId_leadChFrac() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].leadChFrac():-999; }
+        float daughter_1_puJetId_secondChFrac() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].secondChFrac():-999; }
+        float daughter_1_puJetId_thirdChFrac() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].thirdChFrac():-999; }
+        float daughter_1_puJetId_fourthChFrac() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].fourthChFrac():-999; }
+        float daughter_1_puJetId_leadNeutFrac() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].leadNeutFrac():-999; }
+        float daughter_1_puJetId_secondNeutFrac() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].secondNeutFrac():-999; }
+        float daughter_1_puJetId_thirdNeutFrac() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].thirdNeutFrac():-999; }
+        float daughter_1_puJetId_fourthNeutFrac() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].fourthNeutFrac():-999; }
+        float daughter_1_puJetId_leadPt() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].leadPt():-999; }
+        float daughter_1_puJetId_leadEta() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].leadEta():-999; }
+        float daughter_1_puJetId_leadPhi() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].leadPhi():-999; }
+        float daughter_1_puJetId_secondPt() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].secondPt():-999; }
+        float daughter_1_puJetId_secondEta() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].secondEta():-999; }
+        float daughter_1_puJetId_secondPhi() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].secondPhi():-999; }
+        float daughter_1_puJetId_dRLeadCent() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].dRLeadCent():-999; }
+        float daughter_1_puJetId_dRLead2nd() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].dRLead2nd():-999; }
+        float daughter_1_puJetId_dRMean() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].dRMean():-999; }
+        float daughter_1_puJetId_dR2Mean() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].dR2Mean():-999; }
+        float daughter_1_puJetId_ptD() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].ptD():-999; }
+        float daughter_1_puJetId_ptMean() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].ptMean():-999; }
+        float daughter_1_puJetId_ptRMS() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].ptRMS():-999; }
+        float daughter_1_puJetId_pt2A() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].pt2A():-999; }
+        float daughter_1_puJetId_sumPt() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].sumPt():-999; }
+        float daughter_1_puJetId_leadFrac() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].leadFrac():-999; }
+        float daughter_1_puJetId_secondFrac() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].secondFrac():-999; }
+        float daughter_1_puJetId_frac01() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].frac01():-999; }
+        float daughter_1_puJetId_frac02() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].frac02():-999; }
+        float daughter_1_puJetId_frac03() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].frac03():-999; }
+        float daughter_1_puJetId_frac04() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].frac04():-999; }
+        float daughter_1_puJetId_frac05() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].frac05():-999; }
+        float daughter_1_puJetId_leadCharge() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].leadCharge():-999; }
+        float daughter_1_puJetId_secondCharge() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].secondCharge():-999; }
+
         float getTau(int num) const;
         float tau1() const { return getTau(1); }
         float tau2() const { return getTau(2); }
-	
+
+        float jetCharge() const;
+        float daughter_0_jetCharge() const;
+        float daughter_1_jetCharge() const;
+
   private:
     // -- User internals
-        edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > puJetId_;
         edm::Handle<edm::View<pat::Jet> > jets_;
+        edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > puJetId_;
+        edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > subJetpuJetId_;
 
   public:
 	
@@ -392,7 +476,7 @@ namespace pat
 
     float jetArea() const { return object->jetArea(); }
 
-    float jetCharge() const { return object->jetCharge(); }
+//    float jetCharge() const { return object->jetCharge(); }
 
     const reco::JetID jetID() const { return object->jetID(); }
 
