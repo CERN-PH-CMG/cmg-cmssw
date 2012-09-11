@@ -26,6 +26,7 @@ e.g.: %prog -u wreece -p -w 'PFAOD_*.root' /MultiJet/Run2011A-05Aug2011-v1/AOD/V
     group.add_option("-t","--timeout", dest="timeout", default=-1, type=int, help='Set a timeout on the edmFileUtil calls')
     group.add_option("--min-run", dest="min_run", default=-1, type=int, help='When querying DBS, require runs >= than this run')
     group.add_option("--max-run", dest="max_run", default=-1, type=int, help='When querying DBS, require runs <= than this run')
+    group.add_option("--max_threads", dest="max_threads", default=None,help='The maximum number of threads to use')
     das.parser.add_option_group(group)    
     (opts, datasets) = das.get_opt()
 
@@ -33,11 +34,8 @@ e.g.: %prog -u wreece -p -w 'PFAOD_*.root' /MultiJet/Run2011A-05Aug2011-v1/AOD/V
         print das.parser.print_help()
         print
         print 'need to provide a dataset in argument'
-        
-    for d in datasets:
-        
-        #allows us to specify the user in the dataset string
-        op = copy.deepcopy(opts)
+
+    def work(d,op):
         tokens = d.split('%')
         if len(tokens) == 2:
             op.user = tokens[0]
@@ -56,3 +54,18 @@ e.g.: %prog -u wreece -p -w 'PFAOD_*.root' /MultiJet/Run2011A-05Aug2011-v1/AOD/V
         report = check.structured()
         pub.publish(report)
 
+        return d
+
+    def callback(result):
+        print 'Checking thread done: ',str(result)
+    
+    #submit the main work in a multi-threaded way
+    import multiprocessing
+    if opts.max_threads is not None and opts.max_threads:
+        opts.max_threads = int(opts.max_threads)
+    pool = multiprocessing.Pool(processes=opts.max_threads)
+
+    for d in datasets:
+        pool.apply_async(work, args=(d,copy.deepcopy(opts)),callback=callback)
+    pool.close()
+    pool.join()
