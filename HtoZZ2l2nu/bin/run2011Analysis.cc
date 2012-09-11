@@ -683,7 +683,7 @@ int main(int argc, char* argv[])
       bool passZmass5(fabs(zll.mass()-91)<5);
       bool isZsideBand( (zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200));
       bool isZsideBandPlus( (zll.mass()>110 && zll.mass()<200));
-      bool passZpt(zll.pt()>55 && fabs(zll.eta())<1.442);
+      bool passZpt(zll.pt()>55);// && fabs(zll.eta())<1.442);
       //bool passZpt(zll.pt()>30);
 
       //check alternative selections for the dilepton
