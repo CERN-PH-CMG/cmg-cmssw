@@ -1297,7 +1297,7 @@ int main(int argc, char* argv[])
         if(ivar==9)                         iweight *=TotalWeight_plus;        //pu up
         if(ivar==10)                        iweight *=TotalWeight_minus;       //pu down
         if(ivar<=14 && ivar>=11 && isMC_GG) iweight *=ev.hptWeights[ivar-10]/ev.hptWeights[0];   //ren/fact     scales   
-	if((ivar==17 || ivar==18) && isMC_GG) iweight *=lShapeWeights[ivar-16]/lShapeWeights[0]; //lineshape weights
+	if((ivar==17 || ivar==18) && isMC_GG) iweight *= (lShapeWeights[0]!=0?lShapeWeights[ivar-16]/lShapeWeights[0] : 1.0); //lineshape weights
 
 	//recompute MET/MT if JES/JER was varied
 	LorentzVector zvv    = zvvs[ivar>8 ? 0 : ivar];
