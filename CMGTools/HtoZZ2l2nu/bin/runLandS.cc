@@ -303,6 +303,8 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
             histoName.ReplaceAll(ch,ch+"_proj"+procCtr);
    	    hshape   = hshape2D->ProjectionY(histoName,cutBin,cutBin);
             if(hshape->Integral()<=0 && varName=="" && !isData){hshape->Reset(); hshape->SetBinContent(1, 1E-10);}
+
+            if(isnan((float)hshape->Integral())){hshape->Reset();}
 	    hshape->SetDirectory(0);
 	    hshape->SetTitle(proc);
 	    fixExtremities(hshape,true,true);
@@ -776,12 +778,12 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             }fprintf(pFile,"\n");
          }
 
-         if(mass>0){
-         fprintf(pFile,"%35s %10s ", "theoryUncXS_HighMH", "lnN");
-         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            if((int)j<=dci.nsignalproc){fprintf(pFile,"%6f ",std::min(1.0+1.5*pow((mass/1000.0),3),2.0));}else{fprintf(pFile,"%6s ","-");}
-         }fprintf(pFile,"\n");
-         }
+//         if(mass>0){
+//         fprintf(pFile,"%35s %10s ", "theoryUncXS_HighMH", "lnN");
+//         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+//            if((int)j<=dci.nsignalproc){fprintf(pFile,"%6f ",std::min(1.0+1.5*pow((mass/1000.0),3),2.0));}else{fprintf(pFile,"%6s ","-");}
+//         }fprintf(pFile,"\n");
+//         }
 
          //Id+Trigger efficiencies combined
          if(dci.ch[i-1].Contains("ee")){
@@ -900,9 +902,6 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             
          for(std::map<TString, std::map<RateKey_t,Double_t> >::iterator it=dci.systs.begin(); it!=dci.systs.end(); it++){
              if(!runSystematics && string(it->first.Data()).find("stat")>0 )continue;
-
-             //temporary bug fix
-             if(it->first.Contains("_lshape"))continue;
 
              isSyst=false;
              if(it->first.Contains("_sys_") || it->first.Contains("_interpol_")){
@@ -1275,7 +1274,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
          }
        }else if(runSystematics && proc!="data" && (syst.Contains("Up") || syst.Contains("Down"))){
          //if empty histogram --> no variation is applied
-         if(hshape->Integral()<hshapes[0]->Integral()*0.01){hshape->Reset(); hshape->Add(hshapes[0],1); }
+         if(hshape->Integral()<hshapes[0]->Integral()*0.01 || isnan((float)hshape->Integral())){hshape->Reset(); hshape->Add(hshapes[0],1); }
 
          //write variation to file
          hshape->SetName(proc+syst);
@@ -1299,6 +1298,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
           TString systName(syst); 
           systName.ReplaceAll("Up",""); systName.ReplaceAll("Down","");//  systName.ReplaceAll("_","");
           if(systName.First("_")==0)systName.Remove(0,1);
+
 
           TH1 *temp=(TH1*) hshape->Clone();
           temp->Add(hshapes[0],-1);
