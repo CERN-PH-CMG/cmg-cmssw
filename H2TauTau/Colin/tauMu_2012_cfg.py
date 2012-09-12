@@ -36,16 +36,7 @@ mc_muEffWeight = 'effMu2012AB'
 eventSelector = cfg.Analyzer(
     'EventSelector',
     toSelect = [
-    6136,
-    23454,
-    40807,
-    46759,
-    52897,
-    55583,
-    56969,
-    64110,
-    73578,
-    74257,
+    755879,
     ]
     )
 
@@ -149,7 +140,8 @@ treeProducerXCheck = cfg.Analyzer(
 #########################################################################################
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinJul5 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinAug8 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinAug8 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinAug31 import *
 
 #########################################################################################
 
@@ -225,9 +217,7 @@ if syncntuple:
 
 test = 1
 if test==1:
-    comp = HiggsVBF125Small
-    # comp.files = comp.files[:1]
-    # comp.files = 'cmgTuple_colinMinusJosh.root'
+    comp = HiggsVBF125
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:
