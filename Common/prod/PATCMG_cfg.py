@@ -1,8 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,isNewerThan
-# if not cmsswIs44X():
-#    raise ValueError('Sorry, you are not working in 44X. use the correct cfg')
+from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
 sep_line = '-'*67
 print sep_line
@@ -21,15 +19,19 @@ runOnFastSim = False
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'CMS',
-    '/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM',
-    # '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5',
-    # '/GluGluToHToTauTau_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM'
-    # '/GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5'
-    # 'CMS',
-    # '/DoubleMu/Run2012C-PromptReco-v2/AOD'
+    # '/DoubleElectron/Run2012A-13Jul2012-v1/AOD'
+    # '/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM',
+    '/DoubleMu/Run2012C-PromptReco-v2/AOD'
+    # '/TTH_HToBB_M-135_8TeV-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',
+    # '/BTag/Run2012B-PromptReco-v1/RECO', 
+    # 'cmgtools_group',
+    # '/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
    )
 
 process.source.fileNames = process.source.fileNames[:20]
+
+# Don't remove that! : 
+###ProductionTaskHook$$$
 
 print sep_line
 print process.source.fileNames
@@ -194,30 +196,14 @@ process.outpath += process.outcmg
 ## Conditions 
 ########################################################
 
-
 process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
-GT = None
-if cmsswIs44X():
-    if runOnMC:
-        GT = 'START44_V13::All'
-    else:
-        GT = 'GR_R_44_V15::All'
-else:
-    if runOnMC:
-        GT = 'START53_V10::All' # for 53X MC in >= 533
-        # GT = 'START53_V7E::All' # for 53X MC in < 533
-        # GT = 'START52_V10::All' # for 52X MC
-    else:
-        GT = 'GR_P_V41_AN1::All' # for 53X data in >= 533
-        # GT = 'GR_P_V40_AN1::All' # for 53X data in < 533
-        # GT = 'GR_R_52_V8::All' # for 52X data 
-process.GlobalTag.globaltag = GT
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
+process.GlobalTag.globaltag = getGlobalTag( process.source.fileNames[0], runOnMC )
 print 'Global tag       : ', process.GlobalTag.globaltag
-
 
 ########################################################
 ## Below, stuff that you probably don't want to modify
