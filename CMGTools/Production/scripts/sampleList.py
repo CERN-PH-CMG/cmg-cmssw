@@ -114,10 +114,13 @@ if __name__ == '__main__':
     grid = []
     skipped = []
 
+    datasetsInTxt = []
+    datasetsInInputTable = [line['path'] for line in extable.lines]
     for dataset in txtlist:
         dataset = dataset.rstrip()
         if dataset == '':
             continue
+        datasetsInTxt.append(dataset)
         report = processDataset(dataset)
         if report is None:
             report = dict(
@@ -135,38 +138,13 @@ if __name__ == '__main__':
                          nfiles = report['number_of_files'],
                          nevts = report['number_of_events'],
                          location = location)
-##         if location=='CERN':
-##             cern.append([report['path'],
-##                          report['number_of_files'],
-##                          report['number_of_events'],
-##                          'CERN' ])
-##         elif location=='GRID':
-##             grid.append([report['path'],
-##                          report['number_of_files'],
-##                          report['number_of_events'],
-##                          'GRID' ])
-##         else:
-##             skipped.append([report['path'],
-##                             report['number_of_files'],
-##                             report['number_of_events'],
-##                             'GRID' ])
-##             assert(0)
+
     cern.sort()
     grid.sort()
 
-##     # import pdb; pdb.set_trace()
-##     print 'GRID'
-##     print '-'*70
-##     for dataset in grid:
-##         printDataset(dataset)
-##     print 'CERN'
-##     print '-'*70
-##     for dataset in cern:
-##         printDataset(dataset)
-    
-##     print '-'*70
-##     print 'SKIPPED:'
-##     pprint.pprint( map( str, skipped ) )
+    set_datasetsInInputTable = set(datasetsInInputTable)
+    set_datasetsInTxt = set(datasetsInTxt)
+
     print '-'*70
     print extable
     print '-'*70
@@ -180,3 +158,13 @@ if __name__ == '__main__':
         paths.append(line['path'])
     for p in sorted(paths):
         print p
+    print
+    print
+    print 'number of lines in text file    = ', len(datasetsInTxt)
+    print 'number of lines in input table  = ', len(extable.lines) 
+    print 'number of lines in output table = ', len(newtable.lines) 
+    print 'datasets added in text file since last time:'
+    pprint.pprint( set_datasetsInTxt - set_datasetsInInputTable )
+    print 'datasets removed from text file since last time or added to the twiki(!):'
+    pprint.pprint( set_datasetsInInputTable - set_datasetsInTxt)
+    
