@@ -15,7 +15,7 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC      = True
+runOnMC      = False
 runOnFastSim = False
 
 from CMGTools.Production.datasetToSource import *
@@ -249,5 +249,5 @@ print sep_line
 
 print 'starting CMSSW'
 
-if not runOnMC:
+if not runOnMC and isNewerThan('CMSSW_5_2_0'):
     process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
