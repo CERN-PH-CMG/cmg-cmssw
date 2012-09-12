@@ -20,6 +20,7 @@ from CMGTools.Production.nameOps import *
 from CMGTools.Production.dataset import *
 from datetime import *
 from CMGTools.Production.eostools import *
+from CMGTools.Production.fileNameUtils import getFileGroup
 
 class DatasetInformation(object):
 	
@@ -568,9 +569,8 @@ class DatasetInformation(object):
 		for group_name in self.dataset_details['FileGroups']:
 			entries = 0
 			for file_name in files:
-				if  re.split('_\d+\.root',
-					     os.path.basename(file_name))[0]==group_name:
-				# if file_name.split("/")[-1].split("_")[0]==group_name:
+				gr = getFileGroup(file_name)
+				if gr is not None and gr == group_name:
 					entries += files[file_name][1]
 			self.dataset_details['FileGroups'][group_name]['FileEntries']=entries
 			if self.dataset_details['PrimaryDatasetEntries'] is not None and entries != 0 and self.dataset_details['PrimaryDatasetEntries'] > 0:
@@ -609,8 +609,9 @@ if __name__ == '__main__':
 	#sampleName,fileOwner,comment, force, test, primary, username, password
 	d = DatasetInformation(dataset, owner, 'This is a test',True, True, False, user, pw)
 	d.buildMissingFileReport()
+	d.buildFileEntriesReport()
 
 	#print d.dataset_details
 	for group_name in d.dataset_details['FileGroups']:
 		print '='*72
-		print group_name#,d.dataset_details['FileGroups'][group_name]['MissingFiles']
+		print group_name, d.dataset_details['FileGroups'][group_name]['FileEntries']
