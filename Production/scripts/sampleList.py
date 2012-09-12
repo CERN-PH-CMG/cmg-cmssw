@@ -95,7 +95,7 @@ if __name__ == '__main__':
     from optparse import OptionParser
 
     parser = OptionParser()
-    
+    parser.usage = "%prog [options] <txt_file_list>\n"
     parser.add_option("-i","--input", dest="input",
                       default=None,
                       help="input table from the twiki")
