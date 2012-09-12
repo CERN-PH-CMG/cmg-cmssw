@@ -19,6 +19,7 @@ The script will write a file named 'multicrab.cfg' in the current working direct
     group.add_option("-c", "--cfg", dest="cfg", default='crab.cfg',help="The master crab cfg to use, e.g. 'crab.cfg'", metavar='FILE')
     group.add_option("-o", "--output", dest="output", default='multicrab.cfg',help="The multicrab cfg to write, e.g. 'multicrab.cfg'", metavar='FILE')
     group.add_option("-t", "--tier", dest="tier", default='',help="The data tier to use, e.g. 'PAT_CMG_5_6_0'")
+    group.add_option("-u", "--user", dest="user", default=None,help="The user space to write into")
     parser.add_option_group(group)    
     (opts, datasets) = parser.parse_args()
 
@@ -32,7 +33,7 @@ The script will write a file named 'multicrab.cfg' in the current working direct
 
     from CMGTools.Production.castorBaseDir import castorBaseDir
     import CMGTools.Production.eostools as castortools
-    topdir = castortools.lfnToCastor(castorBaseDir())
+    topdir = castortools.lfnToCastor(castorBaseDir(user=opts.user))
 
     for d in datasets:
 
