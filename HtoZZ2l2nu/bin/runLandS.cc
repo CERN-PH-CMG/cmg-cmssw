@@ -1335,7 +1335,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
      string LyieldMC = "yield mc";
 
      string Ccol   = "\\begin{tabular}{|l|c|c|c|c|";
-     string Cname  = "channel & $\\alpha$ measured & $\\alpha$ used & yield data & yield mc";
+     string Cname  = "channel & $\\alpha$ measured & $\\alpha$ used & yields $e\\mu$ & yield data & yield mc";
      string Cval   = "";
      FILE* pFile = NULL;
      if(!fast){
@@ -1361,16 +1361,17 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
         Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
 //        TH1* hChan_SI=shapeChan_SI.data;
 
-
+/*
         //IF HISTO IS EMPTY... LOWER THE CUT AND TAKE THIS WITH 100% UNCERTAINTY
         if(subNRB2011 && hCtrl_SI->Integral()<=0){
+           printf("LOWERING THE CUTS for %s\n",(selCh[i]+string(" - ")+AnalysisBins[b]).Data());
            TFile* inF = TFile::Open(url);
            if( !inF || inF->IsZombie() ){break;}
 
-           int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax;
+           int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax; double cutMin_;
            if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
            while(hCtrl_SI->Integral()<=0 && indexcut_>=0){
-              double cutMin_=cutMin;
+              cutMin_=cutMin;
               while(hCtrl_SI->Integral()<=0 && cutMin_>=0){               
                  hCtrl_SB=getShapeFromFile(inF, ctrlCh+AnalysisBins[b],sideBandHisto,indexcut_,Root,cutMin_, cutMax, true).data;
                  hCtrl_SI=getShapeFromFile(inF, ctrlCh+AnalysisBins[b],mainHisto,indexcut_,Root,cutMin_, cutMax, true).data;
@@ -1383,6 +1384,9 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
            }
            inF->Close();
 
+           printf("Cuts are %i (>%f) --> EMU events=\n", indexcut_, cutMin_, hCtrl_SI->Integral());
+
+
            //set stat error to 100%
            for(int b=1;b<=hCtrl_SB->GetXaxis()->GetNbins()+1;b++){
               hCtrl_SB->SetBinContent(b, hCtrl_SB->GetBinContent(b) *0.5 );
@@ -1393,7 +1397,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
               hChan_SB->SetBinError  (b, hChan_SB->GetBinContent(b) );
            }
         }
-
+*/
 
 
 	//printf("Channel = %s\n", selCh[i].Data());
@@ -1435,6 +1439,9 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 
         double valvalerr, valval;
         valval = NonResonant->IntegralAndError(1,NonResonant->GetXaxis()->GetNbins(),valvalerr);
+
+        Cval   += string(" &") + toLatexRounded(valval,valvalerr);
+
         printf("VALVAL=%f\n",valval);
         for(int b=1;b<=NonResonant->GetXaxis()->GetNbins()+1;b++){
            double val = NonResonant->GetBinContent(b);
