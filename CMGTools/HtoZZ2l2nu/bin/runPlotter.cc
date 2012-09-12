@@ -123,7 +123,8 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
 
 	  std::vector<JSONWrapper::Object> Samples = (Process[ip])["data"].daughters();
           //toMakeItFasteronly consider the first subsample 
-	  for(size_t id=0; id<Samples.size()&&id<2; id++){
+//	  for(size_t id=0; id<Samples.size()&&id<2; id++){
+          for(size_t id=0; id<Samples.size(); id++){
 	      int split = 1;
 	      if(Samples[id].isTag("split"))split = Samples[id]["split"].toInt();
 	      string segmentExt; if(split>1) { char buf[255]; sprintf(buf,"_%i",0); segmentExt += buf; }
