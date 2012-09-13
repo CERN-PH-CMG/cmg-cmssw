@@ -58,6 +58,7 @@ void convertLineShape()
 	    in >> rwgtPlusInterf;
 	    in >> rwgtPlusInterfPlus;
 	    in >> rwgtPlusInterfMinus;
+	    if(origShape==0) continue;
 	    std::vector<float> ipt;
 	    ipt.push_back(origShape);
 	    ipt.push_back(rwgtShape);

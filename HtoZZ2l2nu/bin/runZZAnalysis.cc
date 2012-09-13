@@ -70,6 +70,9 @@ int main(int argc, char* argv[])
   int mctruthmode=runProcess.getParameter<int>("mctruthmode");
 
   TString url=runProcess.getParameter<std::string>("input");
+  TString outFileUrl(gSystem->BaseName(url));
+  outFileUrl.ReplaceAll(".root","");
+  if(mctruthmode!=0) { outFileUrl += "_filt"; outFileUrl += mctruthmode; }
   TString outdir=runProcess.getParameter<std::string>("outdir");
   TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
@@ -80,7 +83,7 @@ int main(int argc, char* argv[])
   if(url.Contains("SingleMu"))  fType=MUMU;
   bool isSingleMuPD(!isMC && url.Contains("SingleMu"));  
   
-  TString outTxtUrl= outUrl + "/" + gSystem->BaseName(url) + ".txt";
+  TString outTxtUrl= outUrl + "/" + outFileUrl + ".txt";
   FILE* outTxtFile = NULL;
   if(!isMC)outTxtFile = fopen(outTxtUrl.Data(), "w");
   printf("TextFile URL = %s\n",outTxtUrl.Data());
@@ -516,7 +519,8 @@ int main(int argc, char* argv[])
       bool passIdAndIso(true);
       bool passZmass(fabs(zll.mass()-91)<7);
       bool passZsideBand( (zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200));
-      bool passZpt(zll.pt()>30);
+      //      bool passZpt(zll.pt()>30);
+      bool passZpt(zll.pt()>50 && fabs(zll.pt())<1.4442);
       
       //check alternative selections for the dilepton
       double llScaleFactor(1.0),llTriggerEfficiency(1.0);
@@ -1080,7 +1084,7 @@ int main(int argc, char* argv[])
 	     float minEtaGap=optim_Cuts2_eta_gap[index];
 	     float minDijetMass=optim_Cuts2_dijet_mass[index];
 	     bool passLocalZmass(fabs(zll.mass()-91)<15);
-	     bool passLocalZpt(zll.pt()>30); 
+	     bool passLocalZpt(zll.pt()>50 && fabs(zll.eta())<1.4442); 
 	     bool passLocalRedMet(aRedMet.pt()>60);
 	     bool passLocalJet1Pt(varJets[0].pt()>minJet1Pt);
 	     bool passLocalJet2Pt(varJets[1].pt()>minJet2Pt);
@@ -1107,7 +1111,7 @@ int main(int argc, char* argv[])
   //##############################################
   //save control plots to file
   outUrl += "/";
-  outUrl += gSystem->BaseName(url);
+  outUrl += outFileUrl + ".root";
   printf("Results save in %s\n", outUrl.Data());
 
   //save all to the file

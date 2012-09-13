@@ -504,7 +504,7 @@ int main(int argc, char* argv[])
       // EVENT SELECTION
       //
       bool passMultiplicityVetoes (isGammaEvent ? (nextraleptons==0 /*&& phys.gammas.size()==1*/) : (nextraleptons==0) );
-      bool passKinematics         (gamma.pt()>30); //55);
+      bool passKinematics         (gamma.pt()>55); //30);
       if(isGammaEvent && !isMC)    passKinematics &= (gamma.pt()>gammaEvHandler. triggerThr());
       bool passEB                 (!isGammaEvent || fabs(gamma.eta())<1.4442); // (fabs(gamma.eta())<1.4442); 
       bool passR9                 (!isGammaEvent || r9<1.0);

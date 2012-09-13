@@ -71,28 +71,28 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   std::vector<std::string> histos,dilSignal,dilcats,gcats;
   if(model==VBFZ) 
     {
-      //      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/nvtx/plotter.root";
+      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/nvtx/plotter.root";
       //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/qt/plotter.root";
-      //llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2012/plotter_vbfz_2012.root";
+      llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2012/plotter_vbfz_2012.root";
 
-      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2011/nvtx/plotter.root";
-      llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2011/plotter_vbfz_2011.root";
+      //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2011/nvtx/plotter.root";
+      //llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2011/plotter_vbfz_2011.root";
      
-      histos.push_back("pfpuloosevbfcandjetdeta");
-      histos.push_back("pfpuloosevbfcandjet1pt");
-      histos.push_back("pfpuloosevbfcandjet2pt");
-      histos.push_back("pfpuloosevbfcandjet1eta");
-      histos.push_back("pfpuloosevbfcandjet2eta");
-      histos.push_back("pfpuloosevbfcjv");
       histos.push_back("pfpuloosevbfpremjj");
-      histos.push_back("pfpuloosevbfmjj");
-      histos.push_back("pfpuloosevbfdphijj");
-      histos.push_back("pfpuloosevbfhardpt");
-      histos.push_back("pfpuloosevbfmjj50");
-      histos.push_back("pfpuloosevbfhardpt50");
-      histos.push_back("pfpuloosevbfdphijj50");
-      histos.push_back("dijet_mass_shapes");
-      histos.push_back("vbfz_mjj_shapes");
+      // histos.push_back("pfpuloosevbfcandjetdeta");
+//       histos.push_back("pfpuloosevbfcandjet1pt");
+//       histos.push_back("pfpuloosevbfcandjet2pt");
+//       histos.push_back("pfpuloosevbfcandjet1eta");
+//       histos.push_back("pfpuloosevbfcandjet2eta");
+//      histos.push_back("pfpuloosevbfcjv");
+//      histos.push_back("pfpuloosevbfmjj");
+//       histos.push_back("pfpuloosevbfdphijj");
+//       histos.push_back("pfpuloosevbfhardpt");
+//      histos.push_back("pfpuloosevbfmjj50");
+//      histos.push_back("pfpuloosevbfhardpt50");
+//      histos.push_back("pfpuloosevbfdphijj50");
+//       histos.push_back("dijet_mass_shapes");
+//       histos.push_back("vbfz_mjj_shapes");
 
       //dilSignal.push_back("VBF Z");
       //dilSignal.push_back("VBF Z (interference)");
@@ -108,32 +108,36 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
     }
   else
     {
-      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
-      llFile    = "/afs/cern.ch/user/p/psilva/work/htozz/53x/ll/2012/plotter.root";
+      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
+      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
+
+      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
+      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/qt/plotter.root";
+      llFile    = "/afs/cern.ch/work/q/querten/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
      
       histos.push_back("met_met");
       //histos.push_back("met_redMet");
-      //histos.push_back("mt");
-      // histos.push_back("mindphijmet");
-      histos.push_back("pfvbfpremjj");
-      histos.push_back("pfvbfcandjetdeta");
-      histos.push_back("pfvbfmjj");
-      //histos.push_back("pfvbfcjv");
+      histos.push_back("mt");
+      //histos.push_back("mindphijmet");
+      //histos.push_back("pfvbfpremjj");
+      //  histos.push_back("pfvbfcandjetdeta");
+      // histos.push_back("pfvbfmjj");
+      // histos.push_back("pfvbfcjv");
       //histos.push_back("pfvbfhardpt");
-      // histos.push_back("mt_shapes");
+      histos.push_back("mt_shapes");
 
       dilSignal.push_back("ggH(600)#rightarrow ZZ");
       dilSignal.push_back("qqH(600)#rightarrow ZZ");
 
-      //      dilcats.push_back("eq0jets");
-      //  dilcats.push_back("eq1jets");
+      dilcats.push_back("eq0jets");
+      dilcats.push_back("eq1jets");
       dilcats.push_back("geq2jets");
       dilcats.push_back("vbf");
       dilcats.push_back("");
 
-      //      gcats.push_back("eq0jets");
-      //      gcats.push_back("eq0softjets");  //0 soft jets to be subtracted
-      // gcats.push_back("eq1jets");
+      gcats.push_back("eq0jets");
+      gcats.push_back("eq0softjets");  //0 soft jets to be subtracted
+      gcats.push_back("eq1jets");
       gcats.push_back("eq2jets");     //2+3jets to be merged
       gcats.push_back("geq3jets");
       gcats.push_back("vbf");
@@ -339,16 +343,16 @@ endl;
 	      int normBin(-1);
 	      
 	      ////normalization factor (from MET<50)
-	      //if(model==HZZ && histos[ih].find("met_met")!=string::npos)  normBin=normH->GetXaxis()->FindBin(50);
+	      if(model==HZZ && histos[ih].find("met_met")!=string::npos)  normBin=normH->GetXaxis()->FindBin(50);
 	     
 	      ////normalization factor (from red-MET<40)
 	      if(model==ZZ && histos[ih].find("met_redMet")!=string::npos) normBin=normH->GetXaxis()->FindBin(40);
 	      
 	      ////normalization factor (from deta_jj<3)
-	      if(histos[ih].find("jetdeta")!=string::npos) normBin=normH->GetXaxis()->FindBin(3);
+	      //if(histos[ih].find("jetdeta")!=string::npos) normBin=normH->GetXaxis()->FindBin(3);
 	      
 	      //normalization factor (from Mjj<500) 
-	      //if(model==VBFZ && histos[ih].find("premjj")!=string::npos) normBin=normH->GetXaxis()->FindBin(500);
+	      if(model==VBFZ && histos[ih].find("premjj")!=string::npos) normBin=normH->GetXaxis()->FindBin(500);
 
 	      if(normBin<0) continue;
 	      cout << histos[ih] << " " << normBin << " " << " " << normKey << flush;
@@ -394,13 +398,14 @@ endl;
        }
 
      //do the subtraction for met related variables when MET>70
-     if(it->first.find("mt_shapes")!= string::npos || it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos)
+     if(it->first.find("mt_shapes")!= string::npos  /*|| it->first.find("_mt")!= string::npos*/ || it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos)
        {
 	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
 	
 	 if(subtractType==HALVE || subtractType==EWKSUBTRACTIONHALVE) {
-	   //int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(70) );
-	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(60) );
+	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(70) );
+	   if(it->first.find("_mt") != string::npos &&  !isTH2) fbin = corrGammaH->GetXaxis()->FindBin(300);
+	   //int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(60) );
 	   for(int ibin=fbin; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
 	     {
 	       if(isTH2)

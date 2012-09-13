@@ -33,9 +33,9 @@ def getTriggerPaths(version=2012) :
                   'HLT_Photon50_R9Id90_HE10_Iso40_EBOnly_v',
                   'HLT_Photon75_R9Id90_HE10_Iso40_EBOnly_v',
                   'HLT_Photon90_R9Id90_HE10_Iso40_EBOnly_v',
-                  'HLT_Photon135_v4_v',
-                  'HLT_Photon150_v1_v',
-                  'HLT_Photon160_v1_v',
+                  'HLT_Photon135_v',
+                  'HLT_Photon150_v',
+                  'HLT_Photon160_v',
                   'HLT_Photon250_NoHE_v1_v',
                   'HLT_Photon300_NoHE_v1_v']
 
