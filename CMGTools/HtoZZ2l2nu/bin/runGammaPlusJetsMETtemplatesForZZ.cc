@@ -68,13 +68,17 @@ int main(int argc, char* argv[])
   bool use2011Id = runProcess.getParameter<bool>("is2011");
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
 
-  TString url=runProcess.getParameter<std::string>("input");
-  TString outdir=runProcess.getParameter<std::string>("outdir");
   bool isMC = runProcess.getParameter<bool>("isMC");
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
   TString dirname = runProcess.getParameter<std::string>("dirName");
   TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
   JetCorrectionUncertainty jecUnc(uncFile.Data());
+
+  TString url=runProcess.getParameter<std::string>("input");
+  TString outFileUrl(gSystem->BaseName(url));
+  outFileUrl.ReplaceAll(".root","");
+  if(mctruthmode!=0) { outFileUrl += "_filt"; outFileUrl += mctruthmode; }
+  TString outdir=runProcess.getParameter<std::string>("outdir");
 
   int fType(0);
   if(url.Contains("DoubleEle")) fType=EE;
@@ -505,7 +509,7 @@ int main(int argc, char* argv[])
       // EVENT SELECTION
       //
       bool passMultiplicityVetoes (nextraleptons==0);
-      bool passKinematics         (gamma.pt()>30);
+      bool passKinematics         (gamma.pt()>50 && fabs(gamma.eta())<1.4442);
       if(isGammaEvent && !isMC)    passKinematics &= (gamma.pt()>gammaEvHandler. triggerThr());
       bool passEB                 (true); //(!isGammaEvent || fabs(gamma.eta())<1.4442); 
       bool passR9                 (!isGammaEvent || r9<1.0);
@@ -750,7 +754,7 @@ int main(int argc, char* argv[])
   TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
   outUrl += "/";
-  outUrl += gSystem->BaseName(url);
+  outUrl += outFileUrl + ".root";
   printf("Results save in %s\n", outUrl.Data());
 
   TFile *ofile=TFile::Open(outUrl, "recreate");

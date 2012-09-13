@@ -1041,7 +1041,6 @@ int main(int argc, char* argv[])
 			      mon.fillHisto(btagAlgos[ibtag]+"pfjetstags",  tags_small, ijetbtags[ibtag],weight);
 			    }
 			}
-		      if(aJets[ijet].pt()<30 ) continue;
 		      nAJetsLoose      += hasObjectId(aJets[ijet].pid,JETID_LOOSE);
 		      nAJetsTight      += hasObjectId(aJets[ijet].pid,JETID_TIGHT);
 		      nAJetsPUIdLoose  += hasObjectId(aJets[ijet].pid,JETID_OPT_LOOSE);
@@ -1277,7 +1276,7 @@ int main(int argc, char* argv[])
       }
 //      else { fprintf(outTxtFile,"\n%d %d %d %d %d",ev.run,ev.lumi,ev.event,2,ev.cat); }
 
-      bool passSB( ((zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200)) && zll.pt()>30 );
+      bool passSB( ((zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200)) && zll.pt()>55 );
       if(passSB && pass3dLeptonVeto && passDphijmet && !passBveto) mon.fillHisto("met_metSB",tags_full,zvvs[0].pt(),weight);
 
 
