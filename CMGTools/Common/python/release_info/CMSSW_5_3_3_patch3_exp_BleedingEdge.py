@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbernForMike_muonmatrix_28Aug12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_10Sep12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_52GTflag_14Sep12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-09'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_12Sep12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_12Sep12'),
@@ -22,12 +22,16 @@
     'Shervin20022012_2011Jan16ReRec0_and_Shervin05032012_Fall11MC_smearing_V01'),
   ('JetMETCorrections/Type1MET', 'JetMETCorrections/Type1MET', 'V04-06-09'),
   ('Muon/MuonAnalysisTools', 'UserCode/sixie/Muon/MuonAnalysisTools', 'V00-00-09'),
-  ('PhysicsTools/PatAlgos', 'PhysicsTools/PatAlgos', 'TJ_isPF_30Aug12'),
+  ('PhysicsTools/PatAlgos', 'PhysicsTools/PatAlgos', 'V08-09-33'),
   ('PhysicsTools/PatUtils', 'PhysicsTools/PatUtils', 'V03-09-23'),
   ('RecoMET/METAnalyzers', 'RecoMET/METAnalyzers', 'V00-00-08'),
   ('RecoMET/METFilters', 'RecoMET/METFilters', 'V00-00-07'),
+  ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-02-09'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'wreece_020512'),
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-03'),
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-01-04s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
+# The following packages were not in the input release_info.
+# Please make sure that the CVS module is correct!
+#	RecoParticleFlow/PFProducer              V15-02-09
