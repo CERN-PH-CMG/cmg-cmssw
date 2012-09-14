@@ -107,6 +107,7 @@ selectedPatElectrons.cut = 'pt()>5'
 
 from CMGTools.Common.PAT.patElectronsWithTrigger_cff import * 
 from CMGTools.Common.PAT.patElectronsWithMVA_cfi import * 
+from CMGTools.Common.PAT.patElectronsWithRegressionVars_cfi import * 
 
 # conversions
 from CMGTools.Common.PAT.patConversions_cfi import patConversions
@@ -118,6 +119,7 @@ PATElectronSequence = cms.Sequence(
     makePatElectrons +
     selectedPatElectrons + 
     patElectronsWithMVA +
+    patElectronsWithRegressionVars +
     patElectronsWithTriggerSequence +
     patConversions 
     )
