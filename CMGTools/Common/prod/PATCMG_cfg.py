@@ -14,7 +14,7 @@ print 'querying database for source files'
 
 
 runOnMC      = True
-runOn52Sample = False
+runOld5XGT = False
 runOnFastSim = False
 
 from CMGTools.Production.datasetToSource import *
@@ -201,7 +201,7 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
-process.GlobalTag.globaltag = getGlobalTag( runOnMC, runOn52Sample )
+process.GlobalTag.globaltag = getGlobalTag( runOnMC, runOld5XGT )
 print 'Global tag       : ', process.GlobalTag.globaltag
 
 ########################################################
