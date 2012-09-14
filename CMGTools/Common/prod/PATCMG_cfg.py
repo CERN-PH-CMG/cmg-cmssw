@@ -13,25 +13,24 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC      = False
+runOnMC      = True
+runOn52Sample = False
 runOnFastSim = False
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
-    'CMS',
+    # 'CMS',
     # '/DoubleElectron/Run2012A-13Jul2012-v1/AOD'
     # '/W3Jets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM',
-    '/DoubleMu/Run2012C-PromptReco-v2/AOD'
+    # '/DoubleMu/Run2012C-PromptReco-v2/AOD'
+    # '/DoubleMu/Run2012B-PromptReco-v1/AOD'
     # '/TTH_HToBB_M-135_8TeV-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',
     # '/BTag/Run2012B-PromptReco-v1/RECO', 
-    # 'cmgtools_group',
-    # '/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
+    'cmgtools_group',
+    '/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
    )
 
 process.source.fileNames = process.source.fileNames[:20]
-
-# Don't remove that! : 
-###ProductionTaskHook$$$
 
 print sep_line
 print process.source.fileNames
@@ -202,7 +201,7 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
-process.GlobalTag.globaltag = getGlobalTag( process.source.fileNames[0], runOnMC )
+process.GlobalTag.globaltag = getGlobalTag( runOnMC, runOn52Sample )
 print 'Global tag       : ', process.GlobalTag.globaltag
 
 ########################################################
