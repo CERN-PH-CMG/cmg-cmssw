@@ -431,7 +431,8 @@ PileupJetIdentifier PileupJetIdAlgo::computeIdVariables(const reco::Jet * jet, f
 	}
 	
 	// Finalize all variables
-	assert( lLead.isNonnull() );
+	if( lLead.isNull() )
+            return PileupJetIdentifier(internalId_);
 
 	if ( lSecond.isNull() )   { lSecond   = lTrail; }
 	if ( lLeadNeut.isNull() ) { lLeadNeut = lTrail; }
