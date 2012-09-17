@@ -18,13 +18,21 @@ evReportFreq = 100
 #for embedded samples
 #sampleTag = "/TauMu2012V540"
 
-dataset_user = 'cmgtools'
+#dataset_user = 'cmgtools'
 sampleTag = ""
 
 
+dataset_user  = os.environ['SAMPLEOWNER']
 sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
+
+
+#dataset_user  = 'cbern'
+#sampleName = 'HiggsVBF125'
+#sampleJobIdx = 1
+#sampleMergeFactor = 1
+
 
 #########################
 

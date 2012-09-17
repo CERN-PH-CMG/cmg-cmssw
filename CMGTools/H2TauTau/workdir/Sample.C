@@ -71,48 +71,55 @@ TH2F* Sample::getHistoNtpFile(TString xvar, Int_t xnbins, Float_t xmin, Float_t 
   return h;
 }
 
+int Sample::getNProcEvents(TString logfile){
+  Int_t Nevents=0;
 
+  ifstream InputStream;
+  InputStream.open((const char*)(logfile));
+  if(!InputStream.is_open()){cout<<"log file not found:"<<logfile<<endl; return 0;}
+
+  TString trigreport;
+  Int_t ntrigreports=0;
+  Bool_t END=0;
+  while(Nevents==0&&!InputStream.eof()&&!END){
+    InputStream>>trigreport;
+    if(trigreport=="END") END=1;
+    if(trigreport=="TrigReport"){
+      ntrigreports++;
+      if(ntrigreports==2){//found it 
+	InputStream>>trigreport>>trigreport>>trigreport;
+	InputStream>>Nevents;
+	END=1;
+      }
+    }
+  }
+
+  return Nevents;
+}
 
 bool Sample::openNtpFile(){
   if(ntpChain_) return 0;
 
   ntpChain_=new TChain("flatNtp/tree");
 
+  Int_t nProcEv=0;
   //chain the root files for this sample
   for(Int_t i=0;i<=NMAXFILES_;i++){
-    TString fname;
+    TString fname=TString(GetTitle())+"/"+GetName()+"/flatNtp_"+(long)i+".root";
+
+    ////check the file exists
     struct stat st;
-    bool found=0;
-    if(stat((TString(GetTitle())+"/"+GetName()+"/flatNtp_"+(long)i+".root").Data(),&st) == 0){
-      found=1;
-      fname=TString(GetTitle())+"/"+GetName()+"/flatNtp_"+(long)i+".root";
-    }
-    if(!found)
-      if(stat((TString(GetTitle())+"/flatNtp_"+GetName()+"_"+(long)i+".root").Data(),&st) == 0){
-	found=1;
-	fname=TString(GetTitle())+"/flatNtp_"+GetName()+"_"+(long)i+".root";
-      }
-    if(!found) continue;
+    if(stat(fname.Data(),&st) != 0) continue;
     
+    //check the file is good 
     TFile file(fname.Data(),"read");
     if(file.IsZombie()) continue;
     if(!file.GetListOfKeys()) continue;
     if(file.GetListOfKeys()->GetSize()==0) continue;
+    
+    //get the number of events processed for MC normalization
+    nProcEv+=getNProcEvents((TString(GetTitle())+"/"+GetName()+"/flatNtp_"+(long)i+".log").Data());
 
-    if(ntpChain_->GetNtrees()==0){
-      if(file.Get("flatNtp/tree")){
-	ntpChain_->SetName("flatNtp/tree");
-      }else if(file.Get("flatNtpTauMu/tree")){
-	ntpChain_->SetName("flatNtpTauMu/tree");
-      }else if(file.Get("flatNtpTauEle/tree")){
-	ntpChain_->SetName("flatNtpTauEle/tree");
-      }else{
-	cout<<"TTree name in files is not supported"<<endl;
-	return 0;
-      }
-    }
-    
-    
     ntpChain_->Add(fname.Data());
     if(i==NMAXFILES_){
       cout<<"Number of files added for sample "<<GetName()<<" "<<GetTitle()<<" is at max "<<NMAXFILES_<<endl;
@@ -124,27 +131,19 @@ bool Sample::openNtpFile(){
   //Add additional root files
   for(Int_t n=0;n<nNames_;n++){
     for(Int_t i=0;i<=NMAXFILES_;i++){
-      TString fname;//=TString(GetTitle())+"/flatNtp_"+addFileNames[n]+"_"+(long)i+".root";      
+      TString fname=TString(GetTitle())+"/"+addFileNames[n]+"/flatNtp_"+(long)i+".root";
       struct stat st;
-      bool found=0;
-      if(stat((TString(GetTitle())+"/"+addFileNames[n]+"/flatNtp_"+(long)i+".root").Data(),&st) == 0){
-	found=1;
-	fname=TString(GetTitle())+"/"+addFileNames[n]+"/flatNtp_"+(long)i+".root";
-      }
-      if(!found)
-	if(stat((TString(GetTitle())+"/flatNtp_"+addFileNames[n]+"_"+(long)i+".root").Data(),&st) == 0){
-	  found=1;
-	  fname=TString(GetTitle())+"/flatNtp_"+addFileNames[n]+"_"+(long)i+".root";
-	}
-      if(!found) continue;
-
-
+      if(stat(fname.Data(),&st) != 0) continue;
    
       TFile file(fname.Data(),"read");
       if(file.IsZombie()) continue;
       if(!file.GetListOfKeys()) continue;
       if(file.GetListOfKeys()->GetSize()==0) continue;            
       ntpChain_->Add(fname.Data());
+
+      nProcEv+=getNProcEvents((TString(GetTitle())+"/"+addFileNames[n]+"/flatNtp_"+(long)i+".log").Data());
+    
+
       if(i==NMAXFILES_){
 	cout<<"Number of files added for sample "<<GetName()<<" "<<GetTitle()<<" is at max "<<NMAXFILES_<<endl;
 	return 0;
@@ -158,8 +157,10 @@ bool Sample::openNtpFile(){
     return 0;
   }
 
+  //set the number of generated events for MC needed for normalization
+  setSampleGenEvents(nProcEv);
 
-  cout<<GetName()<<" "<<TString(GetTitle())<<" : files = "<<ntpChain_->GetNtrees()<<" , entries = "<<ntpChain_->GetEntries()<<endl;
+  cout<<GetName()<<" "<<TString(GetTitle())<<" : files = "<<ntpChain_->GetNtrees()<<" , nProcEv ="<<nProcEv<<" , entries = "<<ntpChain_->GetEntries()<<endl;
   
   return 1;
 }

@@ -4,8 +4,10 @@
 #include <TDirectory.h>
 #include "TauMuPlotter.h"
 #include "configTauMu2011.C"
+#include "configTauMu2012.C"
 #include "TauElePlotter.h"
 #include "configTauEle2011.C"
+#include "configTauEle2012.C"
 
 #define NMASS 8
 #define NCAT 5
@@ -33,9 +35,12 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
   
   if(channel==1){
     if(year==2011)TauMuPlotter * analysis=configTauMu2011("analysis",path);
-    if(year==2012)TauMuPlotter * analysis=configTauMu2011("analysis",path);
+    if(year==2012)TauMuPlotter * analysis=configTauMu2012("analysis",path);
   }
-  if(channel==2)TauElePlotter * analysis=configTauEle2011("analysis",path);
+  if(channel==2){
+    if(year==2011)TauElePlotter * analysis=configTauEle2011("analysis",path);
+    if(year==2012)TauElePlotter * analysis=configTauEle2012("analysis",path);
+  }
   
   analysis->plotvar_="svfitmass";
   //analysis->plotvar_="ditaumass";
@@ -57,16 +62,20 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
 
     gROOT->cd();
 
-    TH1F* ZTT = analysis->getZToTauTau();
-    ZTT->SetName("ZTT");
 
     TH1F* QCD = 0;
-    if(channel==1){//need to sync this channel with e-tau
-      if(sm==0) QCD=analysis->getQCDInc();
-      if(sm==1 || sm==2 || sm==3 ) QCD=analysis->getQCDIncLooseShape();
-      if(sm==4)          QCD=analysis->getQCDMike();
+    if(channel==1){//mu-tau
+      if(year==2011){
+	if(sm==0)                    QCD=analysis->getQCDInc();
+	if(sm==1 || sm==2 || sm==3 ) QCD=analysis->getQCDIncLooseShape();
+	if(sm==4)                    QCD=analysis->getQCDMike();
+      }
+      if(year==2012){
+	if(sm==0 || sm==1 || sm==2 || sm==3 ) QCD=analysis->getQCDIncLooseShape();
+	if(sm==4)                             QCD=analysis->getQCDMike();
+      }
     }
-    if(channel==2){
+    if(channel==2){//e-tau
       if(sm==0 || sm==1) QCD=analysis->getQCDIncLooseShape();//getQCDInc();
       if(sm==2 || sm==3) QCD=analysis->getQCDIncLooseShape();//getQCDInc();
       if(sm==4)          QCD=analysis->getQCDMike();
@@ -75,17 +84,26 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
 
 
     TH1F* W = 0;
-    if(channel==1){//need to sync this channel with e-tau
-      if(sm==0 || sm==1) W = analysis->getWJetsInc();
-      if(sm==2 || sm==3) W = analysis->getWJetsInc();
-      if(sm==4)          W = analysis->getW3JetsVBF();
+    if(channel==1){//mu-tau
+      if(year==2011){
+	if(sm==0 || sm==1) W = analysis->getWJetsInc();
+	if(sm==2 || sm==3) W = analysis->getWJetsInc();
+	if(sm==4)          W = analysis->getW3JetsVBF();
+      }
+      if(year==2012){
+	if(sm==0 || sm==1 || sm==2 || sm==3 ) W = analysis->getWJetsInc();
+	if(sm==4)                             W = analysis->getW3JetsVBF(); 
+      }
     }
-    if(channel==2){
+    if(channel==2){//e-tau
       if(sm==0 || sm==1) W = analysis->getWJetsInc();
       if(sm==2 || sm==3) W = analysis->getWJetsInc();
       if(sm==4)          W = analysis->getW3JetsVBF();
     }
     W->SetName("W");
+
+    TH1F* ZTT = analysis->getZToTauTau();
+    ZTT->SetName("ZTT");
 
     TH1F* TT = analysis->getTTJetsInc();
     TT->SetName("TT");
@@ -149,9 +167,9 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
       TH1F* VH = analysis->getSample(TString("HiggsVH")+ma);
       VH->SetName(TString("VH")+ma);
 
-      SM->Scale(1./analysis->findSample(TString("HiggsGG")+ma)->getCrossection());
-      VBF->Scale(1./analysis->findSample(TString("HiggsVBF")+ma)->getCrossection());
-      VH->Scale(1./analysis->findSample(TString("HiggsVH")+ma)->getCrossection());
+      //SM->Scale(1./analysis->findSample(TString("HiggsGG")+ma)->getCrossection());
+      //VBF->Scale(1./analysis->findSample(TString("HiggsVBF")+ma)->getCrossection());
+      //VH->Scale(1./analysis->findSample(TString("HiggsVH")+ma)->getCrossection());
       
       
       dir->cd();
@@ -235,14 +253,14 @@ void plotDataCard(TString file, Int_t channel){
       data_obs->GetYaxis()->SetRangeUser(0,1.2*MC->GetMaximum());
     else
       data_obs->GetYaxis()->SetRangeUser(0,1.2*data_obs->GetMaximum());
+    data_obs->SetTitle(catdirname[sm]);
     data_obs->Draw("histpe");
-    //MC->Draw("hist");
     hMCStack.Draw("histsame");
     data_obs->Draw("histpesame");
     C.Print(fname);
     delete MC;
 
-    ////////
+    ////////Draw the first and last Higgs signal
     C.Clear();
     TH1F * SM1=0;
     TH1F * SM2=0;
@@ -254,15 +272,14 @@ void plotDataCard(TString file, Int_t channel){
       if(m==0){SM1=(TH1F*)SM->Clone("SM1"); SM1->Add(VBF); SM1->Add(VH);}
       if(m==NMASS-1){SM2=(TH1F*)SM->Clone("SM2");SM2->Add(VBF);SM2->Add(VH);}
     }
-    
-    if(SM1->GetMaximum()>SM2->GetMaximum()){
-      SM1->Draw("hist");
-      SM2->Draw("histpesame");
-    }
-    if(SM1->GetMaximum()<SM2->GetMaximum()){
-      SM2->Draw("hist");
-      SM1->Draw("histpesame");
-    }
+    if(SM1->GetMaximum()>SM2->GetMaximum())
+      SM1->GetYaxis()->SetRangeUser(0,1.2*SM1->GetMaximum());
+    if(SM1->GetMaximum()<SM2->GetMaximum())
+      SM1->GetYaxis()->SetRangeUser(0,1.2*SM2->GetMaximum());
+
+    SM1->SetTitle(catdirname[sm]);
+    SM1->Draw("hist");
+    SM2->Draw("histsame");
     C.Print(fname);
  
   }
