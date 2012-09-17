@@ -21,6 +21,20 @@ data_Run2012B_PromptReco_v1 = cfg.DataComponent(
     triggers = [],
     )
 
+data_Run2012C_PromptReco_v1 = cfg.DataComponent(
+    name = 'data_Run2012C_PromptReco_v1',
+    files = [],
+    intLumi = 1.0, # dummy
+    triggers = [],
+    )
+
+data_Run2012C_PromptReco_v2 = cfg.DataComponent(
+    name = 'data_Run2012C_PromptReco_v2',
+    files = [],
+    intLumi = 1.0, # dummy
+    triggers = [],
+    )
+
 
 data_2012A = [
     data_Run2012A_PromptReco_v1
@@ -30,4 +44,9 @@ data_2012B = [
     data_Run2012B_PromptReco_v1
     ]
 
-data_2012 = data_2012A + data_2012B
+data_2012C = [
+    data_Run2012C_PromptReco_v1,
+    data_Run2012C_PromptReco_v2
+    ]
+
+data_2012 = data_2012A + data_2012B + data_2012C
