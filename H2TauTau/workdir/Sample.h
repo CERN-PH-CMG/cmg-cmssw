@@ -105,6 +105,7 @@ private:
   
   bool openNtpFile();
 
+  int getNProcEvents(TString logfile);
 
   ClassDef(Sample, 1);
 };

@@ -4,6 +4,7 @@
 #rootb histosForDataCardSM.C\(1\,\"\/data\/benitezj\/Samples\/TauMu2011FlatNtpJuly26svfit\"\,\"\"\)
 #rootb histosForDataCardSM.C\(1\,\"\/data\/benitezj\/Samples\/TauMu2011FlatNtpJuly26svfit\"\,\"tUp\"\)
 #rootb histosForDataCardSM.C\(1\,\"\/data\/benitezj\/Samples\/TauMu2011FlatNtpJuly26svfit\"\,\"tDown\"\)
+rootb histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau2012V551Sep4\"\,\"\"\)
 ###rootb mergeDataCardHistosSM.C\(1\,\"ditaumass\"\)
 #rootb mergeDataCardsSM.C\(1\,\"svfitmass\"\)
 
