@@ -23,7 +23,7 @@ if __name__ == '__main__':
     #find the destination LFN
     dest = args[1]
     if eostools.isDirectory(dest):
-        dest = os.path.join(dest,args[0])
+        dest = os.path.join(dest,os.path.basename(args[0]))
         
     for i in xrange(5):
         try:
