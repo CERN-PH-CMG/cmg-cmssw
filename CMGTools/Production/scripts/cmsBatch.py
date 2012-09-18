@@ -107,7 +107,11 @@ echo 'sending the job directory back'
   
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
-cmsStage -f $file %s/$newFileName 
+fullFileName=%s/$newFileName
+#this does cmsStage, but with retries
+cmsStageWithFailover.py -f $file $fullFileName
+#write the files as user readable but not writable
+eos chmod 755 /eos/cms/$fullFileName
 done
 """ % (index, remoteDir)         
       script += 'rm *.root\n'
