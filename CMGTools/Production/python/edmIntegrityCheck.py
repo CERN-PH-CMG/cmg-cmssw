@@ -174,6 +174,9 @@ class IntegrityCheck(object):
             filtered = filelist
             if self.options.wildcard is not None:
                 filtered = fnmatch.filter(filelist, self.options.wildcard)
+                if not filtered:
+                    print >> sys.stderr, "Warning: The wildcard '%s' does not match any files in '%s'. Please check you are using quotes." % (self.options.wildcard,self.directory)
+
             count = 0
             for ff in filtered:
                 fname = os.path.join(dir, ff)
