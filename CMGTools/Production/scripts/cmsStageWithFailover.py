@@ -24,7 +24,8 @@ if __name__ == '__main__':
     dest = args[1]
     if eostools.isDirectory(dest):
         dest = os.path.join(dest,os.path.basename(args[0]))
-        
+    
+    return_code = 0
     for i in xrange(5):
         try:
             #run cmsStage
@@ -33,10 +34,14 @@ if __name__ == '__main__':
 
         except SystemExit, e:
             print "cmsStage exited with code '%s'. Retrying... [%d/5]" % ( str(e), i+1 )
+            return_code = e.code
         
         #sleep for a while before checking
         time.sleep(1+i)
 
         if eostools.fileExists(dest) and eostools.isFile(dest):
             if source.size() == destination.size():
+                return_code = 0
                 break
+
+    sys.exit(return_code)
