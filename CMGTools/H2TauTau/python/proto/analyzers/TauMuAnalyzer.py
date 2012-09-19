@@ -72,7 +72,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         result, message  = super(TauMuAnalyzer, self).process(iEvent, event)
         if self.cfg_ana.verbose and result is False:
             print 'EventReport', event.run, event.lumi, event.eventId, ':', message
-        
+            import pdb; pdb.set_trace()
         if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
