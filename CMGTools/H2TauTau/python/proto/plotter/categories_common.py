@@ -4,9 +4,9 @@ cat_J2 = 'nJets>=2'
 # cat_VH  = 'nJets>=2 && VBF_mjj>60 && VBF_mjj<120 && VBF_dijetpt>150 && VBF_mva<0.5 && nBJets==0'
 cat_J1  = 'nJets>=1 && !({VBF}) && nBJets==0'.format(VBF=cat_VBF)
 cat_J1B = 'nBJets>=1 && nJets<2'
-cat_J0  = '!({VBF}) && !({J1}) && !({J1B})'.format(VBF=cat_VBF,
-                                                   J1=cat_J1,
-                                                   J1B=cat_J1B)
+cat_J0  = '!({VBF}) && !({J1}) && !({J1B}) && nJets==0'.format(VBF=cat_VBF,
+                                                               J1=cat_J1,
+                                                               J1B=cat_J1B)
 
 def replaceCategories(cutstr, categories):
     for catname, cat in categories.iteritems():
