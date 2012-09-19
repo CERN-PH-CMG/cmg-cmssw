@@ -468,28 +468,28 @@ public:
     double p0 = 0.886928;
     double p1 = 28.1136;
     double p2 = 1.04502;
-    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
   }
 
   double effIsoTau25(double pt, double eta){
     double p0 = 0.894481;
     double p1 = 32.7471;
     double p2 = 0.915929;
-    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
   }
 
   double effIsoTau35(double pt, double eta){
     double p0 = 0.930435;
     double p1 = 43.3497;
     double p2 = 1.03643;
-    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
   }
 
   double effIsoTau45(double pt, double eta){
     double p0 = 0.94552;
     double p1 = 56.6926;
     double p2 = 1.30613;
-    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
   }
 
   double effTau1fb(double pt, double eta){
@@ -516,14 +516,14 @@ public:
     double p0 = 0.86;
     double p1 = 36.0;
     double p2 = 1.15;
-    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
   }
 
   double eff2012IsoTau30(double pt, double eta){
     double p0 = 0.839697;
     double p1 = 38.3468;
     double p2 = 1.0334;
-    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
   }
 
   double eff2012IsoTau1_6fb(double pt, double eta){
@@ -544,10 +544,118 @@ public:
     double p0 = 0.9714;
     double p1 = 34.56;
     double p2 = 1.143;
-    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
   }
 
+  double eff2012Jet5fb(double pt, double eta){
+    double p0 = 0.989366;
+    double p1 = 33.5362;
+    double p2 = 1.27463;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
+  }
 
+  double eff2012IsoTau5fb(double pt, double eta){
+    double p0 = 0.829767;
+    double p1 = 38.4455;
+    double p2 = 1.06633;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
+  }
+  
+  double eff2012IsoTau5fbUp(double pt, double eta){
+    double p0 = 0.829767;
+    double p1 = 38.4455*1.03;
+    double p2 = 1.06633;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
+  }
+
+  double eff2012IsoTau5fbDown(double pt, double eta){
+    double p0 = 0.829767;
+    double p1 = 38.4455/1.03;
+    double p2 = 1.06633;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
+  }
+  
+  double eff2012IsoTau5fbUpSlope(double pt, double eta){
+    double p0 = 0.829767;
+    double p1 = 38.4455;
+    double p2 = 1.06633*1.06;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
+  }
+
+  double eff2012IsoTau5fbDownSlope(double pt, double eta){
+    double p0 = 0.829767;
+    double p1 = 38.4455;
+    double p2 = 1.06633/1.06;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
+  }
+  
+  double eff2012IsoTau5fbUpPlateau(double pt, double eta){
+    double p0 = 0.829767*1.03;
+    double p1 = 38.4455;
+    double p2 = 1.06633;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
+  }
+
+  double eff2012IsoTau5fbDownPlateau(double pt, double eta){
+    double p0 = 0.829767/1.03;
+    double p1 = 38.4455;
+    double p2 = 1.06633;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
+  }
+  
+double crystalballfunc(double m, double m0, double sigma, double alpha, double n,
+        double norm) {
+    const double sqrtPiOver2 = 1.2533141373;
+    const double sqrt2 = 1.4142135624;
+    double sig = fabs((double) sigma);
+    double t = (m - m0) / sig;
+    if (alpha < 0)
+        t = -t;
+    double absAlpha = fabs(alpha / sig);
+    double a = TMath::Power(n / absAlpha, n) * exp(-0.5 * absAlpha * absAlpha);
+    double b = absAlpha - n / absAlpha;
+    double ApproxErf;
+    double arg = absAlpha / sqrt2;
+    if (arg > 5.)
+        ApproxErf = 1;
+    else if (arg < -5.)
+        ApproxErf = -1;
+    else
+        ApproxErf = TMath::Erf(arg);
+    double leftArea = (1 + ApproxErf) * sqrtPiOver2;
+    double rightArea = (a * 1 / TMath::Power(absAlpha - b, n - 1)) / (n - 1);
+    double area = leftArea + rightArea;
+    if (t <= absAlpha) {
+        arg = t / sqrt2;
+        if (arg > 5.)
+            ApproxErf = 1;
+        else if (arg < -5.)
+            ApproxErf = -1;
+        else
+            ApproxErf = TMath::Erf(arg);
+        return norm * (1 + ApproxErf) * sqrtPiOver2 / area;
+    } else {
+        return norm * (leftArea + a * (1 / TMath::Power(t - b, n - 1) - 1
+                / TMath::Power(absAlpha - b, n - 1)) / (1 - n)) / area;
+    }
+}   
+
+  double eff2012IsoTau5fbCrystalBall(double pt, double eta){
+    double m0 = 37.6182;
+    double sigma = 6.9402;
+    double alpha = 14.4058;
+    double n = 1.00844;
+    double norm = 2.82596;
+    return crystalballfunc(pt, m0, sigma, alpha, n, norm);
+  }
+  
+  double eff2012IsoTau5fbFitFrom30(double pt, double eta){
+    double p0 = 0.808613;
+    double p1 = 37.7854;
+    double p2 = 0.901174;
+    return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
+  }
+  
 private:
 
   //function definition taken from AN-11-390 v4
