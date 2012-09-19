@@ -232,9 +232,9 @@ if __name__ == '__main__':
 
     can, pad, padr = buildCanvas()
     cutw = options.cut.replace('mt<40', '1')
-    fwss, fwos, ss, os = plot_W( anaDir, selComps, weights,
-                                 24, 70, 310, cutw,
-                                 weight=weight, embed=options.embed)
+    fwss, fwsserr, fwos, fwoserr, ss, os = plot_W( anaDir, selComps, weights,
+                                                   24, 70, 310, cutw,
+                                                   weight=weight, embed=options.embed)
 
 
     ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, shift=shift, replaceW=replaceW)
