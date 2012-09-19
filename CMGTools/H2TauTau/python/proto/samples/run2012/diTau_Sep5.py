@@ -260,9 +260,8 @@ mc_higgs = copy.copy( mc_higgs_gg ) + copy.copy( mc_higgs_vbf ) + copy.copy( mc_
 from CMGTools.H2TauTau.proto.samples.run2012.triggers_diTau import data_triggers_2012A, data_triggers_2012B, data_triggers_2012C, mc_triggers_spring12
 
 user = 'hinzmann'
-aod  = 'V5'
-pat  = 'PAT_CMG_V5_4_0'
-pat2 = 'PAT_CMG_V5_4_1'
+aod  = 'V5_B'
+pat  = 'PAT_CMG_V5_6_0_B'
 htt  = 'HTT_Sep12_hinzmann'
 filePattern = 'diTau.*fullsel.*root'
 
@@ -276,40 +275,41 @@ filePattern = 'diTau.*fullsel.*root'
 #                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195947/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
 #                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195948-196531/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
-data_Run2012C_PromptReco_v1.files = getFiles('/Tau/Run2012C-PromptReco-v1/AOD/PAT_CMG_V5_6_0_B/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-data_Run2012C_PromptReco_v2.files = getFiles('/Tau/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B_runrange_start-202016/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+data_Run2012A_PromptReco_v1.files = getFiles('/Tau/Run2012A-13Jul2012-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+data_Run2012B_PromptReco_v1.files = getFiles('/Tau/Run2012B-13Jul2012-v1/AOD/V5/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+data_Run2012C_PromptReco_v1.files = getFiles('/Tau/Run2012C-PromptReco-v1/AOD/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+data_Run2012C_PromptReco_v2.files = getFiles('/Tau/Run2012C-PromptReco-v2/AOD/{pat}_runrange_start-202016/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 # Embedded samples --------------------------------------------------------------------
 
 embed_Run2012A_PromptReco_v1 = cfg.EmbedComponent(
     name = 'embed_Run2012A_PromptReco_v1',
-    files = [],
-#    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
     triggers = [],
     )
 
 embed_Run2012B_PromptReco_v1 = cfg.EmbedComponent(
     name = 'embed_Run2012B_PromptReco_v1',
-    files = [],
-#    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
-#            getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
-#            getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run196090to196531_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
+            getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
+            getFiles('/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run196090to196531_embedded_trans1_tau132_pttau1_17had2_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
     triggers = [],
     )
 
 # MC spring12 ----------------------------------------------------------------------------
 
-#DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-DYJets.nGenEvents = 30461028*0.9926
+DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+DYJets.nGenEvents = 30459503*0.99749
 
 # WJets Spring12 
-#WJets.files = getFiles('/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#WJets.nGenEvents = 18393090*0.99689
+WJets.files = getFiles('/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
+              getFiles('/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+WJets.nGenEvents = 57709905*0.99126+18393090*0.98926
 
 # WJets Fall11 
 #WJets.files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat2, htt=htt), user, filePattern)
-WJets.nGenEvents = 81345381
-WJets.xSection = 36257.2
+#WJets.nGenEvents = 81345381
+#WJets.xSection = 36257.2
 
 # WJets Spring12
 #W3Jets = cfg.MCComponent(
