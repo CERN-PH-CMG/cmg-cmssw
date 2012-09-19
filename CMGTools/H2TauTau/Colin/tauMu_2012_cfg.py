@@ -142,10 +142,10 @@ treeProducerXCheck = cfg.Analyzer(
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinJul5 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinSep4 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_dcSync_ColinSep5 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_dcSync_ColinSep5 import *
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinAug8 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinAug31 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinSep19 import *
 
 #########################################################################################
 
@@ -221,14 +221,17 @@ if syncntuple:
 
 # selectedComponents = embed_list
 
-test = 0
+test = 1
 if test==1:
-    comp = DYJets
+    comp = WJets
     # comp = HiggsVBF125
-    comp.files = comp.files[:5]
+    # comp.files = comp.files[:5]
     # comp.files = 'cmgTuple_colinMinusJosh.root'
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    # comp.splitFactor = 14
+    # comp.files = comp.files[:1]
+    # for 53 MC: 
+    # comp.triggers = ['HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v*']
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
