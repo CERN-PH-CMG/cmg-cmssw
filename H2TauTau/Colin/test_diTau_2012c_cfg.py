@@ -3,8 +3,8 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
-runOnEmbedded = False
-runOnData = True
+runOnEmbedded = True
+runOnData = False
 runOnMC = False
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
@@ -133,10 +133,10 @@ selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higg
 if runOnData:
     selectedComponents = data_2012
 if runOnMC:
-    selectedComponents = [DYJets, TTJets, WW, WZ, ZZ] #WJets, W3Jets, 
-    selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
-                        HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
-                        HiggsVH110 , HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
+    selectedComponents = [DYJets, WJets] #TTJets, W3Jets, WW, WZ, ZZ
+    #selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
+    #                    HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
+    #                    HiggsVH110 , HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
 #    selectedComponents = [QCD50,QCD80]
 if runOnEmbedded:
     selectedComponents = embedded_2012
@@ -192,9 +192,9 @@ test = 0
 if test==1:
     #comp = DYJets
     #comp = WJets
-    comp = data_Run2012C_PromptReco_v1
+    #comp = data_Run2012C_PromptReco_v1
     #comp = GluGluToHToWWTo2LAndTau2Nu_M_125
-    #comp = embed_Run2012A_PromptReco_v1
+    comp = embed_Run2012A_PromptReco_v1
     selectedComponents = [comp]
     comp.splitFactor = 10
     comp.files = comp.files[:1]
