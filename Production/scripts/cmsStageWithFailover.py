@@ -25,8 +25,13 @@ if __name__ == '__main__':
     if eostools.isDirectory(dest):
         dest = os.path.join(dest,os.path.basename(args[0]))
     
+    sleep_lengths = [1,10,60,600,1800]
     return_code = 0
     for i in xrange(5):
+
+        #sleep for a while before running
+        time.sleep(sleep_lengths[i])
+
         try:
             #run cmsStage
             print 'cmsStage %s [%d/5]' % (' '.join(argv) , i+1)
@@ -36,8 +41,8 @@ if __name__ == '__main__':
             print "cmsStage exited with code '%s'. Retrying... [%d/5]" % ( str(e), i+1 )
             return_code = e.code
         
-        #sleep for a while before checking
-        time.sleep(1+i)
+        #sleep again before checking
+        time.sleep(3)
 
         if eostools.fileExists(dest) and eostools.isFile(dest):
             if source.size() == destination.size():
