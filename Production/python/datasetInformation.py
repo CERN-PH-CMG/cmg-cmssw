@@ -243,7 +243,7 @@ class DatasetInformation(object):
 		if len(eostools.matchingFiles(self.dataset_details['LFN'], "Logger.tgz"))  == 1 or self._force:
 			self.createLoggerTemporaryFile()
 			return True
-		else: raise NameError("ERROR: No Logger file found, and force not requested.\n")
+		else: raise NameError("ERROR: No Logger.tgz file found for this sample. If you would like to preceed anyway, please rerun publish with the --force option.\n")
 	
 	def createLoggerTemporaryFile(self):
 		"""Build a temporary logger file object and tarfile object to be used when retrieving tags and jobs"""
