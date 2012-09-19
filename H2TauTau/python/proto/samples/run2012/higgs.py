@@ -2,7 +2,7 @@ import copy
 import re 
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.yellowreport.YRParser import yrparser8TeV
-from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
+# from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
 
 HiggsVBF110 = cfg.MCComponent(
     name = 'HiggsVBF110',
@@ -290,8 +290,6 @@ for h in mc_higgs:
     print h.name, 'sigma*br =', h.xSection, 'sigma =', xSection, 'br =', h.branchingRatio
 
 
-print 'generating shifted samples'
-
-
-mc_higgs_up = sampleShift( locals(), mc_higgs, 'Up')
-mc_higgs_down = sampleShift( locals(), mc_higgs, 'Down')
+# print 'generating shifted samples'
+# mc_higgs_up = sampleShift( locals(), mc_higgs, 'Up')
+# mc_higgs_down = sampleShift( locals(), mc_higgs, 'Down')
