@@ -11,8 +11,7 @@ db = CmgdbApi()
 db.connect()
 
 def findFirstAncestor(dataset_id, info):
-    cols, rows = db.sql("select parent_dataset_id, path_name, primary_dataset_entries, number_total_jobs, number_files_missing, number_files_bad, dataset_fraction, task_id from dataset_details where dataset_id={dataset_id}".format(dataset_id=dataset_id))
-    # pprint.pprint(rows)
+    cols, rows = db.sql("select parent_dataset_id, path_name, primary_dataset_entries, number_total_jobs, task_id FROM dataset_details where dataset_id={dataset_id}".format(dataset_id=dataset_id))
     if len(rows)==0:
         print 'cannot find dataset with id', dataset_id
     elif len(rows)>1:
@@ -20,12 +19,52 @@ def findFirstAncestor(dataset_id, info):
     else:
         # print 'dataset', rows[0][1]
         parent_id = rows[0][0]
-        info.append(rows[0])
+
+        groups = ['tauMu_fullsel_tree_CMG', 'tauEle_fullsel_tree_CMG', 'cmgTuple', 'PFAOD']
+        igroup = 0
+        while 1:
+            ginfo = groupInfo(dataset_id, groups[igroup])
+            if ginfo != None:
+                break
+            igroup+=1
+        file_group_name, number_files_good, number_files_bad, number_files_missing, dataset_fraction = ginfo
+        dinfo=dict(
+            dataset_id = dataset_id, 
+            parent_dataset_id = rows[0][0],
+            path_name = rows[0][1],
+            primary_dataset_entries = rows[0][2],
+            number_total_jobs = rows[0][3],
+            file_group_name = file_group_name,
+            number_files_good = number_files_good,
+            number_files_bad = number_files_bad,
+            number_files_missing = number_files_missing,
+            task_id = rows[0][4],
+            dataset_fraction = dataset_fraction
+            )
+        
+        
+        # pprint.pprint(dinfo)
+        info.append(dinfo)
+        
         if parent_id is None:
             # print 'last in the DB'
             return 
         findFirstAncestor( parent_id, info )
 
+
+def groupInfo(dataset_id, group_name):
+    cols, rows = db.sql("select file_group_name, number_files_good, number_files_bad, number_files_missing, dataset_fraction from file_group_details where dataset_id={dataset_id} and file_group_name='{group_name}'".format(
+        dataset_id=dataset_id,
+        group_name=group_name
+        ))
+    if len(rows)==0:
+        return None
+    elif len(rows)>1:
+        raise ValueError('several dataset_id / group_name pairs found.')
+    else:
+        file_group_name, number_files_good, number_files_bad, number_files_missing, dataset_fraction = rows[0]
+        return file_group_name, number_files_good, number_files_bad, number_files_missing, dataset_fraction
+    
 
 
 class DatasetInfo(list):
@@ -53,7 +92,15 @@ def processInfo(info):
         fraction = None
         skim = False
         # print ds
-        pid, path_name, pde, njobs, nmiss, nbad, dataset_fraction, task_id = ds
+        pid = ds['parent_dataset_id']
+        path_name = ds['path_name']
+        pde = ds['primary_dataset_entries']
+        njobs = ds['number_total_jobs']
+        nmiss = ds['number_files_missing']
+        nbad = ds['number_files_bad']
+        dataset_fraction = ds['dataset_fraction']
+        task_id = ds['task_id']
+        # pid, path_name, pde, njobs, nmiss, nbad, dataset_fraction, task_id = ds
         # try to find the total number of entries in the CMS dataset
         if pde:
             if dsInfo.primary_dataset_entries is None:
@@ -63,21 +110,21 @@ def processInfo(info):
         # which step is that?
         base = os.path.basename(path_name)
         fraction = dataset_fraction
-        # print path_name, base
         if reTAU.match(base):
             step = 'TAUTAU'
         elif rePatPFAOD.match(base):
             step = 'PFAOD'
         elif rePatPATCMG.match(base):
             step = 'PATCMG'
-            if fraction:
-                fraction /=2.
+            # if fraction:
+            #     fraction /=2.
         else:
             step = 'Unknown'
         # print step
         # print 'fraction', fraction
         # processing efficiency using job information
-        if njobs:
+        # print njobs
+        if njobs and fraction :
             # print njobs, nmiss, nbad
             job_eff = 1 - (nmiss + nbad)/float(njobs)
             # print 'job efficiency', job_eff
@@ -97,6 +144,7 @@ def processInfo(info):
                              task_id=task_id
                              )
                        )
+        # pprint.pprint( dsInfo[-1] ) 
     return dsInfo
         
 
@@ -183,3 +231,8 @@ def connect(components, samplePattern, filePattern, aliases, cache, verbose=Fals
     
 if __name__ == '__main__':
     pass
+    info = []
+    #findFirstAncestor(4470, info)
+    # processInfo( info )
+    print groupInfo(3829,'cmgTuple')
+    # groupInfo(3829,'patTuple')
