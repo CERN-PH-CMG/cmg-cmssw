@@ -155,7 +155,7 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None):
     if doBlind:
         ratio.Blind(blindxmin, blindxmax, True)
     ratio.DrawRatioStack('HIST', ymin=0.01, ymax=2)
-    hr = ratio.stack.hists[0]
+    hr = ratio.stack.totalHist
     hr.GetYaxis().SetNdivisions(4)
     hr.GetYaxis().SetTitle('Exp./Obs.')
     hr.GetYaxis().SetTitleSize(0.1)
@@ -188,6 +188,8 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None):
     if plotprefix == None : plotname = plot.varName
     else : plotname = plotprefix + '_' + plot.varName
     can.SaveAs( plotname + '.png')
+    # can.Modified()
+    # can.Update()
 
 cantemp = None
 
