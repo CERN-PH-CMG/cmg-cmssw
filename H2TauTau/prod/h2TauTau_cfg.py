@@ -23,7 +23,7 @@ debugEventContent = False
 channel = 'tau-mu'
 jetRecalib = False
 useCHS = False 
-newSVFit = True 
+newSVFit = True
 tauScaling = 0
 
 print sep_line
@@ -42,12 +42,15 @@ print 'tau scaling =', tauScaling
 
 # process.setName_('H2TAUTAU')
 
+
 dataset_user = 'cmgtools' 
 # dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/H2TAUTAU/Sync/GluGlu/AOD/PAT_CMG_V5_5_0'
 # dataset_name = '/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1'
 # dataset_name = '/TauPlusX/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_5_1_runrange_start-200601'
-dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1'
+# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_6_0_B'
+# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+dataset_name = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
 # dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_5_1'
 
 dataset_files = 'cmgTuple.*root'
@@ -230,3 +233,5 @@ else:
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
 
 # process.tauMu_fullsel_tree_CMG.SelectEvents = cms.untracked.PSet()
+
+process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > -9999')

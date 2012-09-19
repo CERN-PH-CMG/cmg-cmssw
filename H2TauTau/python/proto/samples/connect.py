@@ -154,7 +154,8 @@ rePatMass = re.compile('M-(\d+)_')
 def findAlias(path_name, aliases):
     name = None
     for dsname, alias in aliases.iteritems():
-        if path_name.startswith(dsname):
+        pat = re.compile(dsname)
+        if pat.match(path_name):
             name = alias
     if name is None:
         return None
@@ -176,6 +177,11 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
     dsInfo = processInfo(info)
     if verbose:
         pprint.pprint( dsInfo )
+    path_name = dsInfo[0]['path_name']
+    compName = findAlias(path_name, aliases)
+    if compName is None:
+        print 'WARNING: cannot find alias for', path_name
+        return False
     globalEff = 1.
     nEvents = dsInfo.primary_dataset_entries 
     taskurl = 'https://savannah.cern.ch/task/?{task_id}'.format(task_id=dsInfo[0]['task_id'])
@@ -186,12 +192,11 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
             eff = step['fraction']
         else:
             continue
-        globalEff *= eff
-    path_name = dsInfo[0]['path_name']
-    compName = findAlias(path_name, aliases)
-    if compName is None:
-        print 'WARNING: cannot find alias for', path_name
-        return False
+        try:
+            globalEff *= eff
+        except TypeError:
+            pprint.pprint(dsInfo)
+            raise
     comps = [comp for comp in components if comp.name == compName]
     if len(comps)>1:
         print 'WARNING find several components for compName', compName
