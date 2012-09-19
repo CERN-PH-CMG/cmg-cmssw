@@ -5,17 +5,17 @@ import pickle
 
 keeper = []
 
-def readPickles(dir, config, embed=True, channel='TauMu',higgsMass=None):
-    selComps = dict( [ (comp.name, comp) for comp in config.components ])
-#    print selComps
-    pickleFiles = {}
-    for comp in selComps.values():
-        fileName = '/'.join([ dir,
-                              comp.dir,
-                              'TauEleAnalyzer/DiLepton.pck'])
+## def readPickles(dir, config, embed=True, channel='TauMu',higgsMass=None):
+##     selComps = dict( [ (comp.name, comp) for comp in config.components ])
+## #    print selComps
+##     pickleFiles = {}
+##     for comp in selComps.values():
+##         fileName = '/'.join([ dir,
+##                               comp.dir,
+##                               '{channel}Analyzer/DiLepton.pck'.format(channel=channel)])
 
-        pickleFiles[comp.name] = pickle.load( open( fileName, 'rb' ) )
-    return pickleFiles
+##         pickleFiles[comp.name] = pickle.load( open( fileName, 'rb' ) )
+##     return pickleFiles
 
 
 def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', higgsMass=None):
@@ -105,12 +105,12 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', hi
             # import pdb; pdb.set_trace()
             comp.embedFactor = embedFactor
  
-    pickles = readPickles(dir, config, embed, channel, higgsMass)
+##     pickles = readPickles(dir, config, embed, channel, higgsMass)
 #    print 'TTJets',pickles['TTJets']['all events'][1]
 
-    for pick in pickles:
-        print 'reading pickle file',pick,pickles[pick]['all events'][1]
-        newSelComps[pick].totEvents = pickles[pick]['all events'][1]
+##     for pick in pickles:
+##         print 'reading pickle file',pick,pickles[pick]['all events'][1]
+##         newSelComps[pick].totEvents = pickles[pick]['all events'][1]
 
 
     return newSelComps, weights, zComps
