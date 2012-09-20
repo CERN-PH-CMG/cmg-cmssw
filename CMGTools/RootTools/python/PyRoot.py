@@ -38,11 +38,13 @@ class Directory(object):
         self.tdir = tdir
     def __getattr__(self, attr):
         return getattr(self.tdir, attr)
-    def cd(self):
+    def cd(self, theLOCALS=None):
+        if theLOCALS is None:
+            theLOCALS = LOCALS
         self.tdir.cd()
-        hists = load(LOCALS, self, histTypes)
-        trees = load(LOCALS, self, [ROOT.TTree])
-        dirs = load(LOCALS, self, dirTypes)
+        hists = load(theLOCALS, self, histTypes)
+        trees = load(theLOCALS, self, [ROOT.TTree])
+        dirs = load(theLOCALS, self, dirTypes)
 
 def draw(pattern):
     '''Draw all histograms with a key matching pattern in separate canvases'''
