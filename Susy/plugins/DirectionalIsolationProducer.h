@@ -22,7 +22,7 @@
 #include <memory>
 #include <vector>
 
-#include "SandBox/Skims/interface/SAKLooseLepton.h"
+#include "CMGTools/Susy/interface/SAKLooseLepton.h"
 
 template <class Lepton>
 class DirectionalIsolationProducer : public edm::EDProducer{
@@ -53,23 +53,23 @@ class DirectionalIsolationProducer : public edm::EDProducer{
     //the vertex to use
     edm::Handle<reco::VertexCollection> vhandle;
     iEvent.getByLabel( vertexCollection_, vhandle );
-    
-    const reco::Vertex::Point& leadingVertex = vhandle->at(0).position(); 
 
-    std::auto_ptr<collection> result(new collection); 
-    for(typename collection::const_iterator it = handle->begin(); it != handle->end(); ++it){
-      bool selected = false;
-      if(it->isMuon()){
-	selected = isLooseLepton(*it, leadingVertex, *pf);
-      }else if(it->isElectron()){
-	selected = isLooseLepton(*it, leadingVertex, *pf);
-      }
-      if(selected){
-	result->push_back(*it);
+    std::auto_ptr<collection> result(new collection);
+    if(vhandle->size()){
+      const reco::Vertex::Point& leadingVertex = vhandle->at(0).position(); 
+      for(typename collection::const_iterator it = handle->begin(); it != handle->end(); ++it){
+	bool selected = false;
+	if(it->isMuon()){
+	  selected = isLooseLepton(*it, leadingVertex, *pf);
+	}else if(it->isElectron()){
+	  selected = isLooseLepton(*it, leadingVertex, *pf);
+	}
+	if(selected){
+	  result->push_back(*it);
+	}
       }
     }
     iEvent.put( result );
-
   }
 
  private:
