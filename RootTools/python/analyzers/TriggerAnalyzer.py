@@ -57,6 +57,7 @@ class TriggerAnalyzer( Analyzer ):
         if hasattr( self.cfg_ana, 'usePrescaled'):
             usePrescaled = self.cfg_ana.usePrescaled
 
+        # import pdb; pdb.set_trace()
         passed, hltPath = self.triggerList.triggerPassed(event.triggerObject,
                                                          run, lumi, self.cfg_comp.isData,
                                                          usePrescaled = usePrescaled)
