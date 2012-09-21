@@ -234,4 +234,4 @@ else:
 
 # process.tauMu_fullsel_tree_CMG.SelectEvents = cms.untracked.PSet()
 
-process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > -9999')
+process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > 0.5')
