@@ -2,7 +2,6 @@ import os
 from CMGTools.Common.Tools.applyJSON_cff import *
 from CMGTools.H2TauTau.tools.jsonPick import *
 
-
 def setupJSON( process ):
 
     print 'setting up JSON:'
