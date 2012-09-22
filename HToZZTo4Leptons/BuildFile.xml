@@ -7,7 +7,6 @@
 <use name="FWCore/ParameterSet"/>
 <use name="FWCore/FWLite"/>
 <use name="DataFormats/FWLite"/>
-<use name="MagneticField/Engine"/>
 <use name="FWCore/PythonParameterSet"/>
 <use name="root"/>
 
