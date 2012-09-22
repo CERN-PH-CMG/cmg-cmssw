@@ -1,0 +1,6 @@
+<use name="AnalysisDataFormats/CMGTools"/>
+
+<export></export>
+<library name="CMGToolsHToZZTo4LeptonsPlugins" file="*.cc">
+  <flags   EDM_PLUGIN="1"/>
+</library>
