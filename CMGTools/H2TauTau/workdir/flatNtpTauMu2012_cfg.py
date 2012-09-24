@@ -96,9 +96,12 @@ print process.source.fileNames
 
 # set up JSON ---------------------------------------------------------------
 if process.flatNtp.dataType != 0 :
-   from CMGTools.H2TauTau.tools.setupJSON import setupJSON
-   json = setupJSON(process)
+   #from CMGTools.H2TauTau.tools.setupJSON import setupJSON
+   #json = setupJSON(process)
+   json = process.flatNtp.jsonfile.value()
    print 'json:', json
+   from CMGTools.Common.Tools.applyJSON_cff import applyJSON
+   applyJSON(process, json )
    print process.PoolSource.lumisToProcess
 
 ## run the vertex weights

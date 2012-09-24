@@ -8,7 +8,8 @@ SUSYMass = cms.vstring(['90','100','120','130','140','160','180','200','250','30
 #recoilrootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
 import os 
 rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
-
+httjson_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/json/'
+ 
 #def loadFlatNtpSamples(process):
 def configureFlatNtpSampleTauMu2011(module,sampleAlias):
     if sampleAlias == 'TauPlusXMay' : 
@@ -512,42 +513,51 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
     module.tauPtCut = 20.
     module.fileZmmData = rootfile_dir + 'recoilfit_datamm52X_njet.root'
     module.fileZmmMC = rootfile_dir + 'recoilfit_zmm52X_njet.root'
+    #httjson_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/json/'
         
     if sampleAlias == 'TauPlusX2012A' : #DAS range: 190450 - 193686
-        module.path = "/TauPlusX/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_5_1"
+        module.path = "/TauPlusX/Run2012A-PromptReco-v1/AOD/PAT_CMG_V5_6_0_B"
         module.dataType = 1
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") # 190645 - 190738 | 28.303(/pb)  |
         module.trigPath2 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") # 191046 - 191411 | 299.117(/pb) |
         module.trigPath3 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") # 191695 - 193621 | 371.381(/pb) |
-
+        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON-LowPileupRunsRemoved.txt'
+        
     if sampleAlias == 'TauPlusX2012B' : #DAS range: 193752 - 197044
-        module.path = "/TauPlusX/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_5_1"
+        module.path = "/TauPlusX/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_6_0_B"
         module.dataType = 1
         module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") # 193834 - 196509 | 4.341(/fb) |
-
+        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON-LowPileupRunsRemoved.txt'
 
     if sampleAlias == 'TauPlusX2012C1' : #DAS range: 197770 - 198913
-        module.path = "/TauPlusX/Run2012C-PromptReco-v1/AOD/PAT_CMG_V5_5_1"
+        module.path = "/TauPlusX/Run2012C-PromptReco-v1/AOD/PAT_CMG_V5_6_0_B"
         module.dataType = 1
         module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") # 198049 - 199608 ## 494.968(1/pb)
 
 
     #/afs/cern.ch/user/c/cmgtools/scratch0/ProductionSoftware/V5_4_0/5X/Type1METColin/Embedded/CMSSW_5_2_5/src/CMGTools/Common/prod/
     if sampleAlias == 'Embedded2012A' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_5_1"
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_6_0_B"
         module.dataType = 2
-
+        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON-LowPileupRunsRemoved.txt'
+        
     if sampleAlias == 'Embedded2012B1' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_5_1"
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_6_0_B"
         module.dataType = 2
-
+        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON-LowPileupRunsRemoved.txt'
+        
     if sampleAlias == 'Embedded2012B2' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_5_1"
+        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_6_0_B"
         module.dataType = 2
+        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON-LowPileupRunsRemoved.txt'
 
+    if sampleAlias == 'Embedded2012B3' : 
+        module.path = "/store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run196090to196531_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_6_0_B"
+        module.dataType = 2
+        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON-LowPileupRunsRemoved.txt'        
 
     if sampleAlias == 'ZToTauTau' : 
-        module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.sampleGenEventType = 5
@@ -555,9 +565,8 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         #module.recoilCorrection = 11
         #module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root' 
 
-
     if sampleAlias == 'ZToMuMu' : 
-        module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.sampleGenEventType = 3
@@ -565,7 +574,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
         
     if sampleAlias == 'ZToLJet' : 
-        module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.sampleGenEventType = 3
@@ -573,7 +582,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
 
     if sampleAlias == 'WJetsToLNu' :
-        module.path = "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9_extension-v1/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.path = "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
@@ -581,15 +590,15 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         #module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
 
     if sampleAlias == 'WJetsToLNu2' :
-        module.path = "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.path = "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
         #module.recoilCorrection = 12
         #module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
         
-    if sampleAlias == 'W3JetsToLNu' : 
-        module.path = "/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_5_1" # V5 PFAOD was not made
+    if sampleAlias == 'W3JetsToLNu' :
+        module.path = "/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12-PU_S7_START52_V9-v2/AODSIM/PAT_CMG_V5_6_0_B" 
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
@@ -597,25 +606,57 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         #module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
 
     if sampleAlias == 'TTJets' :
-        module.path = "/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.path = "/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
 
-    if sampleAlias == 'WW' :        
-        module.path = "/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1"
+    if sampleAlias == 'WW' :
+        module.path = "/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
 
     if sampleAlias == 'WZ' :        
-        module.path = "/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.path = "/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
 
     if sampleAlias == 'ZZ' :        
-        module.path = "/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1"
+        module.path = "/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
+
+
+    if sampleAlias == 'TopS' :        
+        module.path = "/T_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
+    if sampleAlias == 'TopT' :        
+        module.path = "/T_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_PU_S7_START52_V9-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
+    if sampleAlias == 'TopTW' :        
+        module.path = "/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
+    if sampleAlias == 'TopBS' :        
+        module.path = "/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
+    if sampleAlias == 'TopBT' :        
+        module.path = "/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
+    if sampleAlias == 'TopBTW' :        
+        module.path = "/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
@@ -624,7 +665,10 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
     for i in range(0,8):
 
         if sampleAlias == "HiggsGG"+HiggsMass[i] :
-            module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1" % HiggsMass[i]
+            if i==2:
+                module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B" % HiggsMass[i]
+            else:
+               module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/PAT_CMG_V5_6_0_B" % HiggsMass[i]
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
@@ -633,9 +677,10 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.dataType = 0
-            module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1" % HiggsMass[i]
-            #print "Testing 52X !!!!!!"
-            #module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B" % HiggsMass[i]
+            if i==3:
+                module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B" % HiggsMass[i]
+            else:
+                module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/PAT_CMG_V5_6_0_B" % HiggsMass[i]
             module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
             #print "Testing 53X !!!!!!"
@@ -645,9 +690,9 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] : 
             if i==0:
-                module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v3/AODSIM/V5/PAT_CMG_V5_5_1" % HiggsMass[i]
+                module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v3/AODSIM/PAT_CMG_V5_6_0_B" % HiggsMass[i]
             else:
-                module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/V5/PAT_CMG_V5_5_1" % HiggsMass[i]
+                module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/PAT_CMG_V5_6_0_B" % HiggsMass[i]
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
@@ -655,7 +700,6 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
 
     for i in range(0,16):
         if sampleAlias == "SUSYBB"+SUSYMass[i] :
-            #if SUSYMass[i]=='120' || SUSYMass[i]=='140' || SUSYMass[i]=='250' || SUSYMass[i]=='300' || SUSYMass[i]=='400' || SUSYMass[i]=='500' || SUSYMass[i]=='1000':
             if (i==3 or i==5 or i==8 or i==9 or i==10 or i==12 or i==15):
                 module.path ="/SUSYBBHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"% SUSYMass[i]
             else:
@@ -665,8 +709,11 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
 
         if sampleAlias == "SUSYGG"+SUSYMass[i] :
-            #if SUSYMass[i]=='120' || SUSYMass[i]=='140' || SUSYMass[i]=='180' || SUSYMass[i]=='500':
-            if (i==3 or i==5 or i==7 or i==12):
+            if (i==13):
+                module.path ="/SUSYGluGluToHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v4/AODSIM/V5_B/PAT_CMG_V5_6_0_B"% SUSYMass[i]
+            elif (i==0):
+                module.path ="/SUSYGluGluToHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v3/AODSIM/V5_B/PAT_CMG_V5_6_0_B"% SUSYMass[i]
+            elif (i==3 or i==5 or i==7 or i==12):
                 module.path ="/SUSYGluGluToHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"% SUSYMass[i]
             else :
                 module.path ="/SUSYGluGluToHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B"% SUSYMass[i]
@@ -675,7 +722,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
 
     if sampleAlias == 'VBFSync' : 
-        module.path = "/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1"
+        module.path = "/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
