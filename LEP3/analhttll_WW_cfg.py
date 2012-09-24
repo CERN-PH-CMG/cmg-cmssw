@@ -116,7 +116,7 @@ WW = cfg.MCComponent(
 'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_108.root',
 'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_109.root',
 'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_110.root',
-'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_111.root',
+#'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_111.root',
 'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_112.root',
 'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_113.root',
 'root://eoscms//eos/cms/store/cmst3/user/pjanot/LEP3/WW/cmgTuple_WW_114.root',
