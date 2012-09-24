@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 import os 
 rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
 httdata_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/'
-
+httjson_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/json/'
 
 flatNtpTauMu = cms.EDAnalyzer(
     "TauMuFlatNtp",
@@ -49,6 +49,7 @@ flatNtpTauMu = cms.EDAnalyzer(
     tauEtaCut = cms.double(2.3),
     signalWeightDir =  cms.string(httdata_dir),
     signalWeightMass =  cms.string('0'),
+    jsonfile = cms.string(httjson_dir + 'json.txt'),
     )
 
 
@@ -96,4 +97,5 @@ flatNtpTauEle = cms.EDAnalyzer(
     tauEtaCut = cms.double(2.3),
     signalWeightDir =  cms.string(httdata_dir),
     signalWeightMass =  cms.string('0'),
+    jsonfile = cms.string(httjson_dir + 'json.txt'),
     )
