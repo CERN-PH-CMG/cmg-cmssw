@@ -587,7 +587,7 @@ class MonitorJobs(Task):
 
         #executes bjobs with a list of job IDs
         cmd = ['bjobs','-u',self.options.batch_user]
-        cmd.extend(jobs.values())
+        cmd.extend([v for v in jobs.values() if v is not None])#filter out unknown IDs
         child = subprocess.Popen(cmd, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
         stdout, stderr = child.communicate()
 
