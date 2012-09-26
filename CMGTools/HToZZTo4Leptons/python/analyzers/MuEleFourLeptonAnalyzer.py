@@ -49,45 +49,22 @@ class MuEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
 
 
 
-    def testLeptonLoose1(self, leg,sel=None):
+    def testLeptonLoose(self, leg,sel=None):
         if abs(leg.pdgId()) == 13:
             return self.testMuonLoose(leg) and \
-               super( MuEleFourLeptonAnalyzer, self).testLeptonLoose1( leg,sel )
+               super( MuEleFourLeptonAnalyzer, self).testLeptonLoose( leg,sel )
         else:
             return self.testElectronLoose(leg) and \
-            super( MuEleFourLeptonAnalyzer, self).testLeptonLoose1( leg,sel )
-
-    def testLeptonLoose2(self, leg,sel=None):
-        if abs(leg.pdgId()) == 13:
-            return self.testMuonLoose(leg) and \
-               super( MuEleFourLeptonAnalyzer, self).testLeptonLoose2( leg,sel )
-        else:
-            return self.testElectronLoose(leg) and \
-                   super( MuEleFourLeptonAnalyzer, self).testLeptonLoose2( leg,sel )
-
-
+            super( MuEleFourLeptonAnalyzer, self).testLeptonLoose( leg,sel )
 
                 
-    def testLeptonTight1(self, leg,sel=None):
+    def testLeptonTight(self, leg,sel=None):
         if abs(leg.pdgId()) == 13:
             return self.testMuonTight(leg) and \
-               super( MuEleFourLeptonAnalyzer, self).testLeptonTight1( leg,sel )
+               super( MuEleFourLeptonAnalyzer, self).testLeptonTight( leg,sel )
         if abs(leg.pdgId()) == 11:
             return self.testElectronTight(leg) and \
-               super( MuEleFourLeptonAnalyzer, self).testLeptonTight1( leg,sel )
-
-
-
-    def testLeptonTight2(self, leg,sel=None):
-        if abs(leg.pdgId()) == 13:
-            return self.testMuonTight(leg) and \
-               super( MuEleFourLeptonAnalyzer, self).testLeptonTight2( leg,sel )
-        if abs(leg.pdgId()) == 11:
-            return self.testElectronTight(leg) and \
-               super( MuEleFourLeptonAnalyzer, self).testLeptonTight2( leg,sel )
-
-
-
+               super( MuEleFourLeptonAnalyzer, self).testLeptonTight( leg,sel )
 
 
     def testFourLeptonSF(self, fourLepton):

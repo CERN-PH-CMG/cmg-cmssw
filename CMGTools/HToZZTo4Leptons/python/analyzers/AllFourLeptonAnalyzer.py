@@ -11,9 +11,7 @@ class AllFourLeptonAnalyzer( FourLeptonAnalyzer ):
     def declareHandles(self):
         super(AllFourLeptonAnalyzer, self).declareHandles()
 
-        muons = 'cmgMuonSelStdLep'
-        if self.cfg_ana.PF is True:
-            muons = 'cmgMuonSel'
+        muons = 'cmgMuonSel'
 
         self.handles['leptons1'] = AutoHandle(
             muons,
@@ -49,44 +47,21 @@ class AllFourLeptonAnalyzer( FourLeptonAnalyzer ):
 
 
 
-    def testLeptonLoose1(self, leg,sel=None):
+    def testLeptonLoose(self, leg,sel=None):
         if abs(leg.pdgId()) == 13:
             return self.testMuonLoose(leg) and \
-               super( AllFourLeptonAnalyzer, self).testLeptonLoose1( leg,sel )
+               super( AllFourLeptonAnalyzer, self).testLeptonLoose( leg,sel )
         else:
             return self.testElectronLoose(leg) and \
-            super( AllFourLeptonAnalyzer, self).testLeptonLoose1( leg,sel )
-
-    def testLeptonLoose2(self, leg,sel=None):
-        if abs(leg.pdgId()) == 13:
-            return self.testMuonLoose(leg) and \
-               super( AllFourLeptonAnalyzer, self).testLeptonLoose2( leg,sel )
-        else:
-            return self.testElectronLoose(leg) and \
-                   super( AllFourLeptonAnalyzer, self).testLeptonLoose2( leg,sel )
-
-
-
+            super( AllFourLeptonAnalyzer, self).testLeptonLoose( leg,sel )
                 
-    def testLeptonTight1(self, leg,sel=None):
+    def testLeptonTight(self, leg,sel=None):
         if abs(leg.pdgId()) == 13:
             return self.testMuonTight(leg) and \
-               super( AllFourLeptonAnalyzer, self).testLeptonTight1( leg,sel )
+               super( AllFourLeptonAnalyzer, self).testLeptonTight( leg,sel )
         if abs(leg.pdgId()) == 11:
             return self.testElectronTight(leg) and \
-               super( AllFourLeptonAnalyzer, self).testLeptonTight1( leg,sel )
-
-
-
-    def testLeptonTight2(self, leg,sel=None):
-        if abs(leg.pdgId()) == 13:
-            return self.testMuonTight(leg) and \
-               super( AllFourLeptonAnalyzer, self).testLeptonTight2( leg,sel )
-        if abs(leg.pdgId()) == 11:
-            return self.testElectronTight(leg) and \
-               super( AllFourLeptonAnalyzer, self).testLeptonTight2( leg,sel )
-
-
+               super( AllFourLeptonAnalyzer, self).testLeptonTight( leg,sel )
 
 
 

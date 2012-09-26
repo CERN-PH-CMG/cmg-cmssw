@@ -15,6 +15,8 @@ class DiObject( TLorentzVector ):
         self.leg2 = leg2
 
 
+
+
     def px(self):
          return self.Px()
     def py(self):
@@ -62,6 +64,10 @@ class DiObject( TLorentzVector ):
         
     def __str__(self):
         return ', '.join( ['DiObject:', str(self.leg1), str(self.leg2)] )
+
+    def daughterLeptons(self):
+        return [self.leg1,self.leg2]
+
 
 
 ############FSR variables

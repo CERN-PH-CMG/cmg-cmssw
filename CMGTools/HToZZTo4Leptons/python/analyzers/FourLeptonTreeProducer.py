@@ -45,13 +45,6 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.var('H_effUp')
         self.var('H_effDwn')
         
-        #Book the Z for fake rate measurement
-        self.bookBoson("ZFR")
-        self.bookLepton("ZFR_leg1")
-        self.bookLepton("ZFR_leg2")
-        self.bookLepton("ZFR_probe")
-        self.var("ZFR_nProbes",int)
-        self.var("ZFR_probe_FSR",int)
 
         self.var("vertices",int)
         self.var("vertexWeight")
@@ -65,11 +58,9 @@ class FourLeptonTreeProducer( TreeProducer ):
     def process(self, iEvent, event):
         self.reset()
 
-        #get the analyzer event
-        subevent = getattr( event, self.cfg_ana.anaName )
 
-        if hasattr(subevent,'recoil'):
-            self.fill('recoil',subevent.recoil)
+        if hasattr(event,'recoil'):
+            self.fill('recoil',event.recoil)
 
         #get the vertex analyzer event and fill the vertices
         self.fill('vertices',len(event.vertices))
@@ -77,71 +68,60 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.fill('eventWeight',(event.eventWeight))
 
 
-        self.fill('otherLeptons',len(subevent.otherLeptons))
-        self.fill('otherTightLeptons',len(subevent.otherTightLeptons))
+        self.fill('otherLeptons',len(event.otherLeptons))
+        self.fill('otherTightLeptons',len(event.otherTightLeptons))
 
         #Fill run,lumi,event
-        self.fillEventInfo(iEvent,subevent)
+        self.fillEventInfo(iEvent,event)
 
         #Fill the Higgs and legs
         self.fill('HExists',0)
         
-        if hasattr( subevent, 'higgsCand' ):
+        if hasattr( event, 'higgsCand' ):
             self.fill('HExists',1)
             
-            self.fillHiggs("H",subevent.higgsCand)
-            self.fillBoson("H_Z1",subevent.higgsCand.leg1)
-            self.fillBoson("H_Z2",subevent.higgsCand.leg2)
-            self.fillLepton("H_Z1_leg1",subevent.higgsCand.leg1.leg1,subevent)
-            self.fillLepton("H_Z1_leg2",subevent.higgsCand.leg1.leg2,subevent)
-            self.fillLepton("H_Z2_leg1",subevent.higgsCand.leg2.leg1,subevent)
-            self.fillLepton("H_Z2_leg2",subevent.higgsCand.leg2.leg2,subevent)
+            self.fillHiggs("H",event.higgsCand)
+            self.fillBoson("H_Z1",event.higgsCand.leg1)
+            self.fillBoson("H_Z2",event.higgsCand.leg2)
+            self.fillLepton("H_Z1_leg1",event.higgsCand.leg1.leg1,event)
+            self.fillLepton("H_Z1_leg2",event.higgsCand.leg1.leg2,event)
+            self.fillLepton("H_Z2_leg1",event.higgsCand.leg2.leg1,event)
+            self.fillLepton("H_Z2_leg2",event.higgsCand.leg2.leg2,event)
 
-            if hasattr(subevent.higgsCand.leg2.leg1,'eff'):
-                self.fill('H_eff',subevent.higgsCand.leg2.leg1.eff* \
-                          subevent.higgsCand.leg2.leg2.eff* \
-                          subevent.higgsCand.leg1.leg1.eff* \
-                          subevent.higgsCand.leg1.leg2.eff)
-                self.fill('H_effUp',subevent.higgsCand.leg2.leg1.effUp* \
-                          subevent.higgsCand.leg2.leg2.effUp* \
-                          subevent.higgsCand.leg1.leg1.effUp* \
-                          subevent.higgsCand.leg1.leg2.effUp)
+            if hasattr(event.higgsCand.leg2.leg1,'eff'):
+                self.fill('H_eff',event.higgsCand.leg2.leg1.eff* \
+                          event.higgsCand.leg2.leg2.eff* \
+                          event.higgsCand.leg1.leg1.eff* \
+                          event.higgsCand.leg1.leg2.eff)
+                self.fill('H_effUp',event.higgsCand.leg2.leg1.effUp* \
+                          event.higgsCand.leg2.leg2.effUp* \
+                          event.higgsCand.leg1.leg1.effUp* \
+                          event.higgsCand.leg1.leg2.effUp)
 
-                self.fill('H_effDwn',subevent.higgsCand.leg2.leg1.effDwn* \
-                          subevent.higgsCand.leg2.leg2.effDwn* \
-                          subevent.higgsCand.leg1.leg1.effDwn* \
-                          subevent.higgsCand.leg1.leg2.effDwn)
+                self.fill('H_effDwn',event.higgsCand.leg2.leg1.effDwn* \
+                          event.higgsCand.leg2.leg2.effDwn* \
+                          event.higgsCand.leg1.leg1.effDwn* \
+                          event.higgsCand.leg1.leg2.effDwn)
                 
 
 
 
-        if hasattr( subevent, 'higgsCandLoose' ):
+        if hasattr( event, 'higgsCandLoose' ):
             self.fill('HLooseExists',1)
-            self.fillHiggs("HLoose",subevent.higgsCandLoose)
-            self.fillBoson("HLoose_Z1",subevent.higgsCandLoose.leg1)
-            self.fillBoson("HLoose_Z2",subevent.higgsCandLoose.leg2)
-            self.fillLepton("HLoose_Z1_leg1",subevent.higgsCandLoose.leg1.leg1,subevent)
-            self.fillLepton("HLoose_Z1_leg2",subevent.higgsCandLoose.leg1.leg2,subevent)
-            self.fillLepton("HLoose_Z2_leg1",subevent.higgsCandLoose.leg2.leg1,subevent)
-            self.fillLepton("HLoose_Z2_leg2",subevent.higgsCandLoose.leg2.leg2,subevent)
+            self.fillHiggs("HLoose",event.higgsCandLoose)
+            self.fillBoson("HLoose_Z1",event.higgsCandLoose.leg1)
+            self.fillBoson("HLoose_Z2",event.higgsCandLoose.leg2)
+            self.fillLepton("HLoose_Z1_leg1",event.higgsCandLoose.leg1.leg1,event)
+            self.fillLepton("HLoose_Z1_leg2",event.higgsCandLoose.leg1.leg2,event)
+            self.fillLepton("HLoose_Z2_leg1",event.higgsCandLoose.leg2.leg1,event)
+            self.fillLepton("HLoose_Z2_leg2",event.higgsCandLoose.leg2.leg2,event)
 
-            if hasattr(subevent.higgsCandLoose.leg2.leg1,'fR'):
-                self.fill('HLoose_fakeRate',subevent.higgsCandLoose.leg2.leg1.fR*subevent.higgsCandLoose.leg2.leg2.fR)
-                self.fill('HLoose_fakeRateUp',subevent.higgsCandLoose.leg2.leg1.fRUp*subevent.higgsCandLoose.leg2.leg2.fRUp)
-                self.fill('HLoose_fakeRateDwn',subevent.higgsCandLoose.leg2.leg1.fRDwn*subevent.higgsCandLoose.leg2.leg2.fRDwn)
+            if hasattr(event.higgsCandLoose.leg2.leg1,'fR'):
+                self.fill('HLoose_fakeRate',event.higgsCandLoose.leg2.leg1.fR*event.higgsCandLoose.leg2.leg2.fR)
+                self.fill('HLoose_fakeRateUp',event.higgsCandLoose.leg2.leg1.fRUp*event.higgsCandLoose.leg2.leg2.fRUp)
+                self.fill('HLoose_fakeRateDwn',event.higgsCandLoose.leg2.leg1.fRDwn*event.higgsCandLoose.leg2.leg2.fRDwn)
 
 
-
-        #Fill the fake rate measurement info
-        if hasattr( subevent, 'bestZForFakeRate' ):
-            self.fillBoson("ZFR",subevent.bestZForFakeRate)
-            self.fillLepton("ZFR_leg1",subevent.bestZForFakeRate.leg1,subevent)
-            self.fillLepton("ZFR_leg2",subevent.bestZForFakeRate.leg2,subevent)
-            if hasattr( subevent,'leptonsForFakeRate'):
-                self.fill('ZFR_nProbes',len(subevent.leptonsForFakeRate))
-                if len(subevent.leptonsForFakeRate)>0:
-                    self.fillLepton("ZFR_probe",subevent.leptonsForFakeRate[0],subevent)
-                    self.fill("ZFR_probe_FSR",hasattr(subevent.leptonsForFakeRate[0],'fsrPhoton'))
 
         self.tree.Fill()
         

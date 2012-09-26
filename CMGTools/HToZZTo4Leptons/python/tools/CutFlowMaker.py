@@ -22,10 +22,12 @@ class CutFlowMaker():
 
     def applyCut(self,cut,text = '',minN = 1,name=None):
         selectedObjects=filter(cut,self.obj1)
+        if self.counter is not None:
+            if text not in self.counter.dico:
+                self.counter.register(text)
+
         if len(selectedObjects)>=minN:
-            if self.counter is not None:
-                if text not in self.counter.dico:
-                    self.counter.register(text)
+            if self.counter is not None: 
                 self.counter.inc(text)
             self.obj1=selectedObjects
 
@@ -48,11 +50,13 @@ class CutFlowMaker():
         isOK = (len(merged)>=minN) and \
                (len(selectedObjects1)>=minN1) and \
                (len(selectedObjects2)>=minN2)
+        if self.counter is not None:
+            if text not in self.counter.dico:
+                self.counter.register(text)
+
         if isOK:
             if self.counter is not None:
-                if text not in self.counter.dico:
-                    self.counter.register(text)
-            self.counter.inc(text)
+                self.counter.inc(text)
             self.obj1=selectedObjects1
             self.obj2=selectedObjects2
             if name1 is not None:

@@ -32,13 +32,9 @@ class EleEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
 
 
 
-    def testLeptonTight1(self, leg,sel=None):
+    def testLeptonTight(self, leg,sel=None):
         return self.testElectronTight(leg) and \
-               super( EleEleFourLeptonAnalyzer, self).testLeptonTight1( leg,sel )
-
-    def testLeptonTight2(self, leg,sel=None):
-        return self.testElectronTight(leg) and \
-               super( EleEleFourLeptonAnalyzer, self).testLeptonTight2( leg,sel )
+               super( EleEleFourLeptonAnalyzer, self).testLeptonTight( leg,sel )
 
 
     def testFourLeptonSF(self, fourLepton):
