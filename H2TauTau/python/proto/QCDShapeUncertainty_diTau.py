@@ -24,8 +24,13 @@ if __name__ == '__main__':
     colors=[2,3,4,6,7,8,9,10]
     styles=[2,3,4,5,6,7,8,9]
     
-    systematics=["","_dR2","_dR3","_iso04","_iso06"]
-    categories=["BOOSTED","VBF"]
+    prefix="CMS_2012_5_fb_forHCP_"
+    systematics=["NODR",
+                 "NODR_iso06",
+		 "NODR_iso07",
+		 "DR3",
+		 "DR4"]
+    categories=["BOOSTED"]#,"VBF"
     variables=["svfitMass"]#,"l1Pt"
 
     for category in categories:
@@ -39,7 +44,7 @@ if __name__ == '__main__':
       index=0
       for systematic in systematics:
         print category,systematic
-	f=TFile.Open("CMS_2012_5_fb__qcd5LL4_IsoTest_loose"+systematic+"_"+category+"/CMS_2012_5_fb__qcd5LL4_IsoTest_loose"+systematic+"_"+category+"_QCD_TauTau_mH125_PLOT.root")
+	f=TFile.Open(prefix+systematic+"_"+category+"/"+prefix+systematic+"_"+category+"_QCD_TauTau_mH125_PLOT.root")
 	files+=[f]
         hist=f.Get(variable+"/QCDlooseOS").Clone("QCDlooseOS"+systematic)
 	hist.SetLineColor(colors[index])
@@ -48,8 +53,8 @@ if __name__ == '__main__':
         hist.SetMarkerStyle(0)
         binning=array.array('d')
 	if variable=="svfitMass":
-            bins=[20,40,60,80,100,120,140,160,200,300]
-            #bins=[20,40,60,80,100,120,140,160,180,200,220,240,260,280,300]
+            #bins=[20,40,60,80,100,120,140,160,200,300]
+            bins=[20,40,60,80,100,120,140,160,180,200,220,240,260,280,300]
 	else:
             bins=[40,60,80,100,120,160,200]
 	for bin in bins:
@@ -59,6 +64,7 @@ if __name__ == '__main__':
 	if index==0:
 	    hist1=hist
         hist.Scale(hist1.Integral()/hist.Integral())
+
         ratio = hist.Clone("QCDlooseOSratio"+systematic)
         ratio.Divide(hist,hist1,1,1,"B")
         ratio.Add(TF1("offset","-1",bins[0],bins[-1]))
@@ -94,16 +100,16 @@ if __name__ == '__main__':
             ratio.Draw("he")
 	else:	
             ratio.Draw("histsame")
-	if systematic=="":
+	if systematic=="NODR":
             legend.AddEntry(ratio,"Nominal #pm stat unc.","l")
-	elif systematic=="_dR2":
-            legend.AddEntry(ratio,"#Delta R < 2","l")
-	elif systematic=="_dR3":
+	elif "DR3" in systematic:
             legend.AddEntry(ratio,"#Delta R < 3","l")
-	elif systematic=="_iso04":
-            legend.AddEntry(ratio,"#tau iso < 0.4","l")
-	elif systematic=="_iso06":
+	elif "DR4" in systematic:
+            legend.AddEntry(ratio,"#Delta R < 4","l")
+	elif "iso06" in systematic:
             legend.AddEntry(ratio,"#tau iso < 0.6","l")
+	elif "iso07" in systematic:
+            legend.AddEntry(ratio,"#tau iso < 0.7","l")
 	else:
             legend.AddEntry(ratio,systematic.strip("_"),"l")
 	index+=1

@@ -38,6 +38,9 @@ def componentsWithData (selComps, weights) :
       if run2012:
         selCompsDataMass[mPoint]['data_Run2012A_PromptReco_v1']  = copy.deepcopy(selComps['data_Run2012A_PromptReco_v1'])
         selCompsDataMass[mPoint]['data_Run2012B_PromptReco_v1']  = copy.deepcopy(selComps['data_Run2012B_PromptReco_v1'])
+	if 'data_Run2012C_PromptReco_v1' in selComps.keys():
+            selCompsDataMass[mPoint]['data_Run2012C_PromptReco_v1']  = copy.deepcopy(selComps['data_Run2012C_PromptReco_v1'])
+            selCompsDataMass[mPoint]['data_Run2012C_PromptReco_v2']  = copy.deepcopy(selComps['data_Run2012C_PromptReco_v2'])
         #selCompsDataMass[mPoint]['data_Run2012A_PromptReco_v1']  = copy.deepcopy(selComps['QCD80'])
         selCompsDataMass[mPoint]['embed_Run2012A_PromptReco_v1'] = copy.deepcopy(selComps['embed_Run2012A_PromptReco_v1'])
         selCompsDataMass[mPoint]['embed_Run2012B_PromptReco_v1'] = copy.deepcopy(selComps['embed_Run2012B_PromptReco_v1'])
@@ -71,6 +74,9 @@ def componentsWithData (selComps, weights) :
       if run2012:
         weightsDataMass[mPoint]['data_Run2012A_PromptReco_v1'] = copy.deepcopy(weights['data_Run2012A_PromptReco_v1'])
         weightsDataMass[mPoint]['data_Run2012B_PromptReco_v1'] = copy.deepcopy(weights['data_Run2012B_PromptReco_v1'])
+	if 'data_Run2012C_PromptReco_v1' in selComps.keys():
+            weightsDataMass[mPoint]['data_Run2012C_PromptReco_v1'] = copy.deepcopy(weights['data_Run2012C_PromptReco_v1'])
+            weightsDataMass[mPoint]['data_Run2012C_PromptReco_v2'] = copy.deepcopy(weights['data_Run2012C_PromptReco_v2'])
         #weightsDataMass[mPoint]['data_Run2012A_PromptReco_v1']  = copy.deepcopy(weights['QCD80'])
         weightsDataMass[mPoint]['embed_Run2012A_PromptReco_v1'] = copy.deepcopy(weights['embed_Run2012A_PromptReco_v1'])
         weightsDataMass[mPoint]['embed_Run2012B_PromptReco_v1'] = copy.deepcopy(weights['embed_Run2012B_PromptReco_v1'])
@@ -164,6 +170,9 @@ def componentsWithOutSignal (selComps, weights) :
     if run2012:
         selCompsMCMass['data_Run2012A_PromptReco_v1']   = copy.deepcopy(selComps['data_Run2012A_PromptReco_v1'])
         selCompsMCMass['data_Run2012B_PromptReco_v1']   = copy.deepcopy(selComps['data_Run2012B_PromptReco_v1'])
+	if 'data_Run2012C_PromptReco_v1' in selComps.keys():
+            selCompsMCMass['data_Run2012C_PromptReco_v1']   = copy.deepcopy(selComps['data_Run2012C_PromptReco_v1'])
+            selCompsMCMass['data_Run2012C_PromptReco_v2']   = copy.deepcopy(selComps['data_Run2012C_PromptReco_v2'])
         #selCompsMCMass['data_Run2012A_PromptReco_v1']  = copy.deepcopy(selComps['QCD80'])
         selCompsMCMass['embed_Run2012A_PromptReco_v1']   = copy.deepcopy(selComps['embed_Run2012A_PromptReco_v1'])
         selCompsMCMass['embed_Run2012B_PromptReco_v1']   = copy.deepcopy(selComps['embed_Run2012B_PromptReco_v1'])
@@ -183,6 +192,9 @@ def componentsWithOutSignal (selComps, weights) :
     if run2012:
         weightsMCMass['data_Run2012A_PromptReco_v1']   = copy.deepcopy(weights['data_Run2012A_PromptReco_v1'])
         weightsMCMass['data_Run2012B_PromptReco_v1']   = copy.deepcopy(weights['data_Run2012B_PromptReco_v1'])
+	if 'data_Run2012C_PromptReco_v1' in selComps.keys():
+            weightsMCMass['data_Run2012C_PromptReco_v1']   = copy.deepcopy(weights['data_Run2012C_PromptReco_v1'])
+            weightsMCMass['data_Run2012C_PromptReco_v2']   = copy.deepcopy(weights['data_Run2012C_PromptReco_v2'])
         #weightsMCMass['data_Run2012A_PromptReco_v1']  = copy.deepcopy(weights['QCD80'])
         weightsMCMass['embed_Run2012A_PromptReco_v1']   = copy.deepcopy(weights['embed_Run2012A_PromptReco_v1'])
         weightsMCMass['embed_Run2012B_PromptReco_v1']   = copy.deepcopy(weights['embed_Run2012B_PromptReco_v1'])
