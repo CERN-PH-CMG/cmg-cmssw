@@ -131,9 +131,6 @@ class TreeProducer( Analyzer ):
             self.fill('met',event.met.pt())
         if hasattr(event,'step'):
             self.fill('step',event.step)
-        if hasattr(event,'skim'):
-            self.fill('skim',event.skim)
-
             
         
     def bookBoson(self, pName ):
@@ -164,6 +161,8 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_FSRMatch'.format(pName=pName))
         self.var('{pName}_FSRUncorrMass'.format(pName=pName))
         self.var('{pName}_MELA'.format(pName=pName))
+        self.var('{pName}_PseudoMELA'.format(pName=pName))
+        self.var('{pName}_SpinTwoMELA'.format(pName=pName))
         self.var('{pName}_MassErr'.format(pName=pName))
         self.var('{pName}_DEta'.format(pName=pName))
         self.var('{pName}_DPhi'.format(pName=pName))
@@ -204,6 +203,10 @@ class TreeProducer( Analyzer ):
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
         if hasattr(particle,'mela'):
             self.fill('{pName}_MELA'.format(pName=pName), particle.mela )
+        if hasattr(particle,'pseudomela'):
+            self.fill('{pName}_PseudoMELA'.format(pName=pName), particle.pseudomela )
+        if hasattr(particle,'spintwomela'):
+            self.fill('{pName}_SpinTwoMELA'.format(pName=pName), particle.spintwomela )
         if hasattr(particle,'massErr'):
             self.fill('{pName}_MassErr'.format(pName=pName), particle.massErr )
 
@@ -229,7 +232,6 @@ class TreeProducer( Analyzer ):
         self.var('EVENT',int)
         self.var('met')
         self.var('step')
-        self.var('skim')
 
             
 

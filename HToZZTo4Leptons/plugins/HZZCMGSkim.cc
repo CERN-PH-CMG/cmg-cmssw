@@ -13,7 +13,7 @@
 //
 // Original Author:  Michail Bachtis,40 1-B08,+41227678176,
 //         Created:  Fri Sep 21 21:30:33 CEST 2012
-// $Id$
+// $Id: HZZCMGSkim.cc,v 1.1 2012/09/22 11:01:40 bachtis Exp $
 //
 //
 
@@ -24,6 +24,7 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/EDProducer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -56,8 +57,6 @@ class HZZCMGSkim : public edm::EDFilter {
 
       // ----------member data ---------------------------
       int NL_;
-      
-
 
 };
 
@@ -65,7 +64,6 @@ class HZZCMGSkim : public edm::EDFilter {
 HZZCMGSkim::HZZCMGSkim(const edm::ParameterSet& iConfig):
   NL_(iConfig.getParameter<int>("nLeptons"))
 {
-   //now do what ever initialization is needed
 
 }
 
@@ -107,7 +105,7 @@ HZZCMGSkim::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
        nElectrons20++;
      if (i->pt()>10 )
        nElectrons10++;
-     if (i->pt()>5 )
+     if (i->pt()>7 )
        nElectrons5++;
    }
 
@@ -133,6 +131,9 @@ HZZCMGSkim::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    if((nMuons10+nElectrons10) <2)
      decision=false;
+
+
+
 
    return decision;
 

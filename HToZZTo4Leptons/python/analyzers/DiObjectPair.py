@@ -94,6 +94,13 @@ class DiObjectPair( TLorentzVector ):
         new=z1+z2
         self.SetPxPyPzE(new.Px(),new.Py(),new.Pz(),new.Energy())
 
+
+
+    def daughterLeptons(self):
+        return [self.leg1.leg1,self.leg1.leg2,self.leg2.leg1,self.leg2.leg2]
+
+
+
         ###MELA#########################################
 
 

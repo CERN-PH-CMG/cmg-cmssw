@@ -1,4 +1,3 @@
-from ROOT import TMatrixDSym
 import ROOT
 
 from math import sqrt,pow,sin,cos,tan
@@ -43,7 +42,7 @@ class MassErrors(object):
 
 
     def calculateMuonMatrix(self,muon):
-        mtrx = TMatrixDSym(3)
+        mtrx = ROOT.TMatrixDSym(3)
         for i in range(0,3):
             for j in range(0,3):
                 mtrx[i][j] = muon.covarianceMatrix()(i+3,j+3)

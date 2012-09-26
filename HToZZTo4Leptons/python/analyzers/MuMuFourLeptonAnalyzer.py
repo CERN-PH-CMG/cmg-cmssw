@@ -14,9 +14,8 @@ class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer):
     def declareHandles(self):
         super(MuMuFourLeptonAnalyzer, self).declareHandles()
 
-        muons = 'cmgMuonSelStdLep'
-        if self.cfg_ana.PF is True:
-            muons = 'cmgMuonSel'
+
+        muons = 'cmgMuonSel'
             
         self.handles['leptons1'] = AutoHandle(
             muons, 
@@ -48,23 +47,13 @@ class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer):
                super( MuMuFourLeptonAnalyzer, self).testLeptonSkim2( leg,sel )
 
 
-    def testLeptonLoose1(self, leg,sel=None):
+    def testLeptonLoose(self, leg,sel=None):
         return self.testMuonLoose(leg) and \
-               super( MuMuFourLeptonAnalyzer, self).testLeptonLoose1( leg,sel )
+               super( MuMuFourLeptonAnalyzer, self).testLeptonLoose( leg,sel )
 
-    def testLeptonLoose2(self, leg,sel=None):
-        return self.testMuonLoose(leg) and \
-               super( MuMuFourLeptonAnalyzer, self).testLeptonLoose2( leg,sel )
-
-
-    def testLeptonTight1(self, leg,sel=None):
+    def testLeptonTight(self, leg,sel=None):
         return self.testMuonTight(leg) and \
-               super( MuMuFourLeptonAnalyzer, self).testLeptonTight1( leg,sel ) 
-
-    def testLeptonTight2(self, leg,sel=None):
-        return self.testMuonTight(leg) and \
-               super( MuMuFourLeptonAnalyzer, self).testLeptonTight2( leg,sel )
-
+               super( MuMuFourLeptonAnalyzer, self).testLeptonTight( leg,sel ) 
 
 
     def testFourLeptonSF(self, fourLepton):

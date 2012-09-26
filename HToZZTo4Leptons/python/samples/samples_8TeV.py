@@ -3,17 +3,18 @@ from CMGTools.HToZZTo4Leptons.samples.mc import *
 import os
 from copy import copy
 
-pat='V5_4_0/calib'
+pat='V5_7_0'
+skim='SKIM_Sep26_NoCal_MuClean'
 filepattern = 'cmgTuple.*root'
 userName='bachtis'
 
 
 
-# Triggers
+################### Triggers
 
 
 triggers_mumu = ["HLT_Mu17_Mu8_v*","HLT_Mu17_TkMu8_v*"]
-triggers_ee   = ["HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"]
+triggers_ee   = ["HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL"]
 
 
 triggers_mue   = [
@@ -24,11 +25,12 @@ triggers_mue   = [
 
 
 triggersMC_mumu = ["HLT_Mu17_Mu8_v*","HLT_Mu17_TkMu8_v*"]
-triggersMC_ee   = ["HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"]
+triggersMC_ee   = ["HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL"]
 
 
 triggersMC_mue   = [
     "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",
+    "HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL",
     "HLT_Mu17_Mu8_v*",
     "HLT_Mu17_TkMu8_v*",
     "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",
@@ -36,244 +38,150 @@ triggersMC_mue   = [
     ]
 
 
+#####COMPONENT CREATOR
+from CMGTools.HToZZTo4Leptons.samples.ComponentCreator import ComponentCreator
+kreator = ComponentCreator()
+
 #-----------MC---------------
 
-ZZ2mu2tau.files=getFiles('/ZZTo2mu2tau_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-ZZ4e.files=getFiles('/ZZTo4e_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-ZZ4mu.files=getFiles('/ZZTo4mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-ZZ2e2mu.files=getFiles('/ZZTo2e2mu_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-ZZ2e2tau.files=getFiles('/ZZTo2e2tau_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-TTJets.files=getFiles('/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START50_V15-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
+GGH119=kreator.makeMCComponent('GGH119','/GluGluToHToZZTo4L_M-119_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH121=kreator.makeMCComponent('GGH121','/GluGluToHToZZTo4L_M-121_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH127=kreator.makeMCComponent('GGH127','/GluGluToHToZZTo4L_M-127_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH128=kreator.makeMCComponent('GGH128','/GluGluToHToZZTo4L_M-128_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH135=kreator.makeMCComponent('GGH135','/GluGluToHToZZTo4L_M-135_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH145=kreator.makeMCComponent('GGH145','/GluGluToHToZZTo4L_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH170=kreator.makeMCComponent('GGH170','/GluGluToHToZZTo4L_M-170_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH180=kreator.makeMCComponent('GGH180','/GluGluToHToZZTo4L_M-180_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH200=kreator.makeMCComponent('GGH200','/GluGluToHToZZTo4L_M-200_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH220=kreator.makeMCComponent('GGH220','/GluGluToHToZZTo4L_M-220_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH325=kreator.makeMCComponent('GGH325','/GluGluToHToZZTo4L_M-325_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH375=kreator.makeMCComponent('GGH375','/GluGluToHToZZTo4L_M-375_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH475=kreator.makeMCComponent('GGH475','/GluGluToHToZZTo4L_M-475_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+#GGH900=kreator.makeMCComponent('GGH900','/GluGluToHToZZTo4L_M-900_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+
+VBF120=kreator.makeMCComponent('VBF120','/VBF_HToZZTo4L_M-120_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF121=kreator.makeMCComponent('VBF121','/VBF_HToZZTo4L_M-121_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF122=kreator.makeMCComponent('VBF122','/VBF_HToZZTo4L_M-122_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF124=kreator.makeMCComponent('VBF124','/VBF_HToZZTo4L_M-124_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF125=kreator.makeMCComponent('VBF125','/VBF_HToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF126=kreator.makeMCComponent('VBF126','/VBF_HToZZTo4L_M-126_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF127=kreator.makeMCComponent('VBF127','/VBF_HToZZTo4L_M-127_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF128=kreator.makeMCComponent('VBF128','/VBF_HToZZTo4L_M-128_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF130=kreator.makeMCComponent('VBF130','/VBF_HToZZTo4L_M-130_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF145=kreator.makeMCComponent('VBF145','/VBF_HToZZTo4L_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF190=kreator.makeMCComponent('VBF190','/VBF_HToZZTo4L_M-190_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF350=kreator.makeMCComponent('VBF350','/VBF_HToZZTo4L_M-350_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF400=kreator.makeMCComponent('VBF400','/VBF_HToZZTo4L_M-400_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF500=kreator.makeMCComponent('VBF500','/VBF_HToZZTo4L_M-500_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF600=kreator.makeMCComponent('VBF600','/VBF_HToZZTo4L_M-600_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VBF700=kreator.makeMCComponent('VBF700','/VBF_HToZZTo4L_M-700_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
 
 
+#-----------Background----------#XS
 
-
-GGH115.files=getFiles('/GluGluToHToZZTo4L_M-115_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH117.files=getFiles('/GluGluToHToZZTo4L_M-117_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH119.files=getFiles('/GluGluToHToZZTo4L_M-119_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH120.files=getFiles('/GluGluToHToZZTo4L_M-120_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH121.files=getFiles('/GluGluToHToZZTo4L_M-121_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH123.files=getFiles('/GluGluToHToZZTo4L_M-123_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH124.files=getFiles('/GluGluToHToZZTo4L_M-124_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH125.files=getFiles('/GluGluToHToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH126.files=getFiles('/GluGluToHToZZTo4L_M-126_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH127.files=getFiles('/GluGluToHToZZTo4L_M-127_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-VBF123.files=getFiles('/VBF_HToZZTo4L_M-123_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-VBF125.files=getFiles('/VBF_HToZZTo4L_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-VBF127.files=getFiles('/VBF_HToZZTo4L_M-127_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-
-GGH145.files=getFiles('/GluGluToHToZZTo4L_M-145_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH150.files=getFiles('/GluGluToHToZZTo4L_M-150_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH180.files=getFiles('/GluGluToHToZZTo4L_M-180_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH200.files=getFiles('/GluGluToHToZZTo4L_M-200_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH220.files=getFiles('/GluGluToHToZZTo4L_M-220_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH250.files=getFiles('/GluGluToHToZZTo4L_M-250_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH300.files=getFiles('/GluGluToHToZZTo4L_M-300_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-GGH325.files=getFiles('/GluGluToHToZZTo4L_M-325_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH350.files=getFiles('/GluGluToHToZZTo4L_M-350_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
+WG=kreator.makeMCComponent('WG','/WGToLNuG_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+WW=kreator.makeMCComponent('WW','/WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+WZ=kreator.makeMCComponent('WZ','/WZJetsTo3LNu_TuneZ2_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+ZZ2e2mu=kreator.makeMCComponent('ZZ2e2mu','/ZZTo2e2mu_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+ZZ2e2tau=kreator.makeMCComponent('ZZ2e2tau','/ZZTo2e2tau_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+ZZ2mu2tau=kreator.makeMCComponent('ZZ2mu2tau','/ZZTo2mu2tau_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+ZZ4mu=kreator.makeMCComponent('ZZ4mu','/ZZTo4mu_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+ZZ4tau=kreator.makeMCComponent('ZZ4tau','/ZZTo4tau_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
 
 
-GGH400.files=getFiles('/GluGluToHToZZTo4L_M-400_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH450.files=getFiles('/GluGluToHToZZTo4L_M-450_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH500.files=getFiles('/GluGluToHToZZTo4L_M-500_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH550.files=getFiles('/GluGluToHToZZTo4L_M-550_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH600.files=getFiles('/GluGluToHToZZTo4L_M-600_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH650.files=getFiles('/GluGluToHToZZTo4L_M-650_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH700.files=getFiles('/GluGluToHToZZTo4L_M-700_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH750.files=getFiles('/GluGluToHToZZTo4L_M-750_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH800.files=getFiles('/GluGluToHToZZTo4L_M-800_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH850.files=getFiles('/GluGluToHToZZTo4L_M-850_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-
-GGH900.files=getFiles('/GluGluToHToZZTo4L_M-900_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH950.files=getFiles('/GluGluToHToZZTo4L_M-950_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-GGH1000.files=getFiles('/GluGluToHToZZTo4L_M-1000_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_'+pat,userName,filepattern)
-
-mcSamples=[ZZ2mu2tau,
-           ZZ4e,
-           ZZ4mu,
-           ZZ2e2mu,
-           ZZ2e2tau,
-           TTJets,
-#           ZZ4tau,
-#           ZZGG4L,
-#           ZZGG2L2L,
-           GGH115,
-           GGH117,
-           GGH119,
-           GGH121,
-           GGH123,
-           GGH124,
-           GGH125,
-           GGH126,
-           GGH127,
-           GGH145,
-           VBF123,
-           VBF125,
-           VBF127,
-           GGH150,
-           GGH180,
-           GGH200,
-           GGH220,
-           GGH250,
-           GGH300,
-           GGH325,
-           GGH350,
-           GGH400,
-           GGH450,
-           GGH500,
-           GGH550,
-           GGH600,
-           GGH650,
-           GGH700,
-           GGH750,
-           GGH800,
-           GGH850,
-           GGH900,
-           GGH950,
-           GGH1000
-           ]
-
+mcSamples=[
+    GGH119,GGH121,GGH124,GGH127,GGH128,GGH135,GGH145,
+    GGH170,GGH180,GGH200,GGH220,GGH325,GGH375,GGH475,
+    GGH900,VBF120,VBF121,VBF122,VBF124,VBF125,VBF126,
+    VBF127,VBF128,VBF130,VBF145,VBF190,VBF350,VBF400,
+    VBF500,VBF600,VBF700,ZZ2e2mu,ZZ2e2tau,
+    ZZ2mu2tau,ZZ4mu,ZZ4tau,WG,WW,WZ
+    ]
 
 
 
 #-----------DATA---------------
-json ='/afs/cern.ch/user/m/mangano/public/ichep2012_json/Jun22_190456-196509_noLowPU.json'
+json ='/afs/cern.ch/user/m/mangano/public/hcp2012_json/hcp.reRecoJul13PlusReRecoAug06PlusPromptReco.json'  
 
+DoubleMuAB = cfg.DataComponent(
+    name = 'DoubleMuAB',
+    files = getFiles('/DoubleMu/Run2012A-13Jul2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleMu/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+
+            getFiles('/DoubleMu/Run2012B-13Jul2012-v4/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
 
-doubleMuFiles=getFiles('/DoubleMu/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076/calib', userName, filepattern)+ \
-               getFiles('/DoubleMu/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479/calib', userName, filepattern)+ \
-               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016/calib', userName, filepattern)+ \
-               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396/calib', userName, filepattern)+ \
-               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195775/calib', userName, filepattern)+ \
-               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195776-195947/calib', userName, filepattern)+ \
-               getFiles('/DoubleMu/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195948-196509/calib', userName, filepattern)
-
-
-
-doubleEleFiles=getFiles('/DoubleElectron/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076/calib', userName, filepattern)+ \
-               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479/calib', userName, filepattern)+ \
-               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016/calib', userName, filepattern)+ \
-               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396/calib', userName, filepattern)+ \
-               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195775/calib', userName, filepattern)+ \
-               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195776-195947/calib', userName, filepattern)+ \
-               getFiles('/DoubleElectron/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195948-196509/calib', userName, filepattern)
-
-               
-
-muEGFiles=getFiles('/MuEG/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076/calib', userName, filepattern)+ \
-           getFiles('/MuEG/Run2012B-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_start-194479/calib', userName, filepattern)+ \
-           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_194480-195016/calib', userName, filepattern)+ \
-           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195017-195396/calib', userName, filepattern)+ \
-           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195775/calib', userName, filepattern)+ \
-           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195776-195947/calib', userName, filepattern)+ \
-           getFiles('/MuEG/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195948-196509/calib', userName, filepattern)
-
-
-data_DoubleMu = cfg.DataComponent(
-    name = 'data_DoubleMu',
-    files = doubleMuFiles,
+DoubleMuC = cfg.DataComponent(
+    name = 'DoubleMuC',
+    files = getFiles('/DoubleMu/Run2012C-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleMu/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-202305/'+skim,userName,filepattern)+
+            getFiles('/DoubleMu/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_202314-203002/'+skim,userName,filepattern),
     intLumi = 1,
     triggers = [],
     json = json
     )
 
 
-data_DoubleElectron = cfg.DataComponent(
-    name = 'data_DoubleElectron',
-    files =doubleEleFiles,
+DoubleElectronAB = cfg.DataComponent(
+    name = 'DoubleElectronAB',
+    files = getFiles('/DoubleElectron/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleElectron/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+
+            getFiles('/DoubleElectron/Run2012B-13Jul2012-v1/AOD/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+DoubleElectronC = cfg.DataComponent(
+    name = 'DoubleElectronC',
+    files = getFiles('/DoubleElectron/Run2012C-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleElectron/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-202305/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleElectron/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_202314-203002/'+skim,userName,filepattern),
+
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+MuEGAB = cfg.DataComponent(
+    name = 'MuEGAB',
+    files = getFiles('/MuEG/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/MuEG/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+
+            getFiles('/MuEG/Run2012B-13Jul2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+MuEGC = cfg.DataComponent(
+    name = 'MuEGC',
+    files = getFiles('/MuEG/Run2012C-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/MuEG/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-202305/'+skim,userName,filepattern) + \
+            getFiles('/MuEG/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_202314-203002/'+skim,userName,filepattern),
+
     intLumi = 1,
     triggers = [],
     json = json
     )
 
 
-data_DoubleElectronRecovered = cfg.DataComponent(
-    name = 'data_DoubleElectronRecovered',
-    files =getFiles('/DoubleElectron/Run2012A-23May2012-v2/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
-    intLumi = 1,
-    triggers = [],
-    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/May23ReReco_190782-190949_noLowPU.json'
-    )
 
-
-data_DoubleMuRecovered = cfg.DataComponent(
-    name = 'data_DoubleMuRecovered',
-    files =getFiles('/DoubleMu/Run2012A-23May2012-v2/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
-    intLumi = 1,
-    triggers = [],
-    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/May23ReReco_190782-190949_noLowPU.json'
-
-    )
-
-data_MuEGRecovered = cfg.DataComponent(
-    name = 'data_MuEGRecovered',
-    files =getFiles('/MuEG/Run2012A-23May2012-v1/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
-    intLumi = 1,
-    triggers = [],
-    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/May23ReReco_190782-190949_noLowPU.json'
-    )
-
-
-data_DoubleElectronRecovered2 = cfg.DataComponent(
-    name = 'data_DoubleElectronRecovered2',
-    files =getFiles('/DoubleElectron/Run2012A-08Jun2012-v2/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
-    intLumi = 1,
-    triggers = [],
-    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/Jun08ReReco_noLowPileUp_noGoldetJsonJun22_noMay23.json'
-    )
-
-
-data_DoubleMuRecovered2 = cfg.DataComponent(
-    name = 'data_DoubleMuRecovered2',
-    files =getFiles('/DoubleMu/Run2012A-08Jun2012-v2/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
-    intLumi = 1,
-    triggers = [],
-    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/Jun08ReReco_noLowPileUp_noGoldetJsonJun22_noMay23.json'
-    )
-
-data_MuEGRecovered2 = cfg.DataComponent(
-    name = 'data_MuEGRecovered2',
-    files =getFiles('/MuEG/Run2012A-08Jun2012-v3/AOD/PAT_CMG_V5_4_0/calib', userName, filepattern),
-    intLumi = 1,
-    triggers = [],
-    json = '/afs/cern.ch/user/m/mangano/public/ichep2012_json/Jun08ReReco_noLowPileUp_noGoldetJsonJun22_noMay23.json'
-    )
-
-
-data_MuEG = cfg.DataComponent(
-    name = 'data_MuEG',
-    files = muEGFiles,
-    intLumi = 1,
-    triggers = [],
-    json = json
-    )
 
 
           
-dataSamplesMu=[data_DoubleMu,data_DoubleMuRecovered,data_DoubleMuRecovered2]
+dataSamplesMu=[DoubleMuAB,DoubleMuC]
 
-dataSamplesE=[data_DoubleElectron,data_DoubleElectronRecovered,data_DoubleElectronRecovered2]
+dataSamplesE=[DoubleElectronAB,DoubleElectronC]
 
-dataSamplesMuE=[data_MuEG,data_MuEGRecovered,data_MuEGRecovered2]
+dataSamplesMuE=[MuEGAB,MuEGC]
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
+
+
 
 
 from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
@@ -282,31 +190,23 @@ from CMGTools.HToZZTo4Leptons.setup.Efficiencies import *
 #Define splitting
 for comp in mcSamples:
     comp.isMC = True
-    comp.splitFactor = 50
-    comp.puFileMC=dataDir+"/puProfile_Summer12.root"
+    comp.splitFactor = 10
+    comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012
-    
+
 for comp in dataSamplesMu:
-    comp.splitFactor = 900
+    comp.splitFactor = 100
     comp.fakeRates=fakeRates2012
 for comp in dataSamplesE:
-    comp.splitFactor = 900
+    comp.splitFactor = 100
     comp.fakeRates=fakeRates2012
-
+    
 for comp in dataSamplesMuE:
-    comp.splitFactor = 900
+    comp.splitFactor = 100
     comp.fakeRates=fakeRates2012
 
-data_DoubleMuRecovered.splitFactor=50
-data_DoubleElectronRecovered.splitFactor=50
-data_MuEGRecovered.splitFactor=50
-data_DoubleMuRecovered2.splitFactor=50
-data_DoubleElectronRecovered2.splitFactor=50
-data_MuEGRecovered2.splitFactor=50
-
-
-             
+                                                            
 
     
 
