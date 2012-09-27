@@ -19,7 +19,7 @@ class ComponentCreator(object):
          return component
 
 
-    def makeDataComponent(self,name,datasets,json,user,pattern):
+    def makeDataComponent(self,name,datasets,user,pattern):
          files=[]
 
          for dataset in datasets:

@@ -1,39 +1,13 @@
-
-
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 
-
 from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2011 as effectiveAreas
 from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
-
-
-
-
 channel = 'all'
 
-
-
-###GEN LEVEL SELECTORS
-muMuGenSel = cfg.Analyzer(
-    'HZZGenSelector_MuMu',
-    col_label = 'genParticlesPruned',
-    channel = 'mu-mu'
-    )
-muEleGenSel = cfg.Analyzer(
-    'HZZGenSelector_EMu',
-    col_label = 'genParticlesPruned',
-    channel = 'mu-ele'
-    )
-
-eleEleGenSel = cfg.Analyzer(
-    'HZZGenSelector_EE',
-    col_label = 'genParticlesPruned',
-    channel = 'ele-ele'
-    )
-
+skimAnalyzer = cfg.Analyzer('SkimCountAnalyzer')
 
 A4Skim = cfg.Analyzer('A4Skim',
     muons='cmgMuonSel',
@@ -50,7 +24,8 @@ triggerAna = cfg.Analyzer(
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     fixedWeight = 1,
-    verbose = False
+    verbose = False,
+    makeHists=False
     )
 
 
@@ -59,7 +34,8 @@ puAna = cfg.Analyzer(
     "PileUpAnalyzer",
     # build unweighted pu distribution using number of pile up interactions if False
     # otherwise, use fill the distribution using number of true interactions
-    true = True
+    true = True,
+    makeHists=False
     )
 
 
@@ -77,7 +53,6 @@ muMuAna = cfg.Analyzer(
     minHMass=100.,
     minHMassZ2=12.,
     minMass=4.,
-    PF=True,
     keep=False,
     effectiveAreas=effectiveAreas,
     rhoMuon     = 'kt6PFJetsForIso',
@@ -93,14 +68,6 @@ muEleAna.maxEta1 = 2.4
 muEleAna.minPt2 = 7
 muEleAna.maxEta2 = 2.5
 
-allAna = copy.deepcopy( muMuAna)
-allAna.name = 'AllFourLeptonAnalyzer'
-allAna.minPt1 = 5
-allAna.maxEta1 = 2.4
-allAna.minPt2 = 7
-allAna.maxEta2 = 2.5
-
-
 
 eleEleAna = copy.deepcopy( muEleAna )
 eleEleAna.name = 'EleEleFourLeptonAnalyzer'
@@ -110,31 +77,17 @@ eleEleAna.minPt2 = 7
 eleEleAna.maxEta2 = 2.5
 
 
-#GenLevelAnalyzers
-muMuGenAna = copy.deepcopy(muMuAna)
-muMuGenAna.name = 'GenGenFourLeptonAnalyzer_MuMu'
-muMuGenAna.pdgId1 = 13
-muMuGenAna.pdgId2 = 13
-
-muEleGenAna = copy.deepcopy(muEleAna)
-muEleGenAna.name = 'GenGenFourLeptonAnalyzer_MuEle'
-muEleGenAna.pdgId1 = 13
-muEleGenAna.pdgId2 = 11
-
-eleEleGenAna = copy.deepcopy(eleEleAna)
-eleEleGenAna.name = 'GenGenFourLeptonAnalyzer_EleEle'
-eleEleGenAna.pdgId1 = 11
-eleEleGenAna.pdgId2 = 11
+allAna = copy.deepcopy( muMuAna)
+allAna.name = 'AllFourLeptonAnalyzer'
+allAna.minPt1 = 5
+allAna.maxEta1 = 2.4
+allAna.minPt2 = 7
+allAna.maxEta2 = 2.5
 
 
-
-
-def createTreeProducer( ana ):
-    tp = cfg.Analyzer( '_'.join( ['FourLeptonTreeProducer',ana.name] ),
-                       anaName = ana.name,
-                       effectiveAreas=effectiveAreas
-                       )
-    return tp
+zzTree = cfg.Analyzer( 'FourLeptonTreeProducer',
+                   effectiveAreas=effectiveAreas
+)
 
 
 ####################################################################################
@@ -153,47 +106,41 @@ jsonFilter = cfg.Analyzer(
     
 theAna = None
 if channel == 'mu_mu':
-    theGenSel = muMuGenSel
     theAna = muMuAna
-    theGenAna = muMuGenAna
     for data in dataSamplesMu:
         data.triggers = triggers_mumu
     for mc in mcSamples:
         mc.triggers = triggersMC_mumu
     selectedComponents=mcSamples+dataSamplesMu
     
-elif channel == 'mu_ele':
-    theGenSel = muEleGenSel
+elif channel == 'mu_ele' :
     theAna = muEleAna
-    theGenAna = muEleGenAna
-
+    for data in dataSamplesE:
+        data.triggers = triggers_ee
     for data in dataSamplesMu:
         data.triggers = triggers_mumu
         data.vetoTriggers = triggers_ee
-    for data in dataSamplesE:
-        data.triggers = triggers_ee
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
     selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
 
-
-elif channel == 'all':
+elif channel == 'all' :
     theAna = allAna
+    for data in dataSamplesE:
+        data.triggers = triggers_ee
     for data in dataSamplesMu:
         data.triggers = triggers_mumu
         data.vetoTriggers = triggers_ee
-    for data in dataSamplesE:
-        data.triggers = triggers_ee
+
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
     selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
 
 
+    
 
 elif channel == 'ele_ele':
-    theGenSel = eleEleGenSel
     theAna = eleEleAna
-    theGenAna = eleEleGenAna
     for data in dataSamplesE:
         data.triggers = triggers_ee
     for mc in mcSamples:
@@ -204,12 +151,13 @@ elif channel == 'ele_ele':
 
 
 dataSequence=[
+    skimAnalyzer,
     jsonFilter,
     puAna,
     triggerAna,
     vertexAna,
     theAna,
-    createTreeProducer( theAna )
+    zzTree
     ]
 
 
@@ -223,10 +171,11 @@ sequence = cfg.Sequence(dataSequence)
 
 test = 1
 if test==1:
-    dataset = GGH130
+    dataset = GGH120
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-    dataset.files=['root://cmsphys05//data/b/botta/V5_4_0/cmgTuple_H120Fall11_noSmearing.root']
+#    dataset.files=['cmgTuple.root']
+
 
    
 if test ==2:
