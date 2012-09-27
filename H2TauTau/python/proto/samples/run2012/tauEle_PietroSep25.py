@@ -44,7 +44,7 @@ allsamples = copy.copy(MC)
 allsamples.extend( data_list_2012 )
 allsamples.extend( embed_list_2012 )
 
-connect( allsamples, '%TAUMU_NewSVFit_Colin17Sep', 'tauMu.*root', aliases, cache=True, verbose=False)
+connect( allsamples, '%H2TauTau_tauEle_20Sep_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, cache=True, verbose=False)
 
 # this number is not in the DB (dbs says this sample is still in production)
 WJets.nGenEvents = 61444940
