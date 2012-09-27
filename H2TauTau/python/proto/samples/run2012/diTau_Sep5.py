@@ -336,7 +336,23 @@ mc_higgs_VH = [
     HiggsVH145,
     ]
 
-mc_higgs = copy.copy( mc_higgs_gg ) + copy.copy( mc_higgs_vbf ) + copy.copy( mc_higgs_VH ) 
+mc_higgs_SUSYBB = [
+    HiggsSUSYBB120,
+    HiggsSUSYBB180,
+    HiggsSUSYBB300,
+    HiggsSUSYBB600,
+    HiggsSUSYBB1000,
+    ]
+
+mc_higgs_SUSYGluGlu = [
+    HiggsSUSYGluGlu120,
+    HiggsSUSYGluGlu180,
+    HiggsSUSYGluGlu300,
+    HiggsSUSYGluGlu600,
+    HiggsSUSYGluGlu1000,
+    ]
+
+mc_higgs = copy.copy( mc_higgs_gg ) + copy.copy( mc_higgs_vbf ) + copy.copy( mc_higgs_VH ) + copy.copy( mc_higgs_SUSYBB )  + copy.copy( mc_higgs_SUSYGluGlu ) 
 
 
 
@@ -361,7 +377,7 @@ filePattern = 'diTau.*fullsel.*root'
 data_Run2012A_PromptReco_v1.files = getFiles('/Tau/Run2012A-13Jul2012-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 data_Run2012B_PromptReco_v1.files = getFiles('/Tau/Run2012B-13Jul2012-v1/AOD/V5/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 data_Run2012C_PromptReco_v1.files = getFiles('/Tau/Run2012C-PromptReco-v1/AOD/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-data_Run2012C_PromptReco_v2.files = getFiles('/Tau/Run2012C-PromptReco-v2/AOD/{pat}_runrange_start-202016/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+data_Run2012C_PromptReco_v2.files = getFiles('/Tau/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_7_0_runrange_start-202305/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 # Embedded samples --------------------------------------------------------------------
 
