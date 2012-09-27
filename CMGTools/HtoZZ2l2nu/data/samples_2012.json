@@ -413,7 +413,7 @@
                 "dtag":"MC8TeV_GGtoH450toZZto2L2Nu_clone",
                 "split":1,
 		"aoddir":["/store/cmst3/user/querten/12_08_31_missingHZZsamples/GG_H450ZZ"],
-                "xsec":2.924,
+                "xsec":2.003,
                 "xsecunc":[14.0,-13.6],
                 "br":[0.259,0.0269264]
 		}
