@@ -8,8 +8,8 @@ runOnData = False
 runOnMC = False
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
-puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
-puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_190456_196531.root'])
+puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_53X_true.root'])
+puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_Run2012ABC_202016_true.root'])
 
 mc_vertexWeight = None
 mc_tauEffWeight_mc = 'effLooseTau15MC'
@@ -121,6 +121,10 @@ for mc in MC:
     mc.puFileData = puFileData
     mc.puFileMC = puFileMC
 
+for emb in embedded_2012:
+    emb.puFileData = puFileData
+    emb.puFileMC = puFileData
+
 selectedComponents = data_2012 + embedded_2012 + [DYJets, WJets, W3Jets, TTJets, WW, WZ, ZZ]
 selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
                         HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
@@ -133,7 +137,12 @@ selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higg
 if runOnData:
     selectedComponents = data_2012
 if runOnMC:
-    selectedComponents = [DYJets, WJets] #TTJets, W3Jets, WW, WZ, ZZ
+    selectedComponents = [DYJets, WJets, W3Jets, TTJets, WW, WZ, ZZ]
+    selectedComponents += [ Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145,
+                        HiggsVBF110, HiggsVBF115, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, 
+                        HiggsVH115 , HiggsVH125 , HiggsVH130 , HiggsVH140 ]
+    selectedComponents += [ HiggsSUSYBB120, HiggsSUSYBB180, HiggsSUSYBB300, HiggsSUSYBB600, HiggsSUSYBB1000,
+                           HiggsSUSYGluGlu120, HiggsSUSYGluGlu180, HiggsSUSYGluGlu300, HiggsSUSYGluGlu600, HiggsSUSYGluGlu1000 ]
     #selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
     #                    HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
     #                    HiggsVH110 , HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
@@ -146,10 +155,10 @@ print [c.name for c in selectedComponents]
 if runOnMC or runOnEmbedded:
   sequence = cfg.Sequence( [
     TauTauAna,
+    vertexAna,
     vbfAna,
     pileUpAna,
     embedWeighter, 
-    vertexAna,
     tau1Weighter, 
     tau2Weighter,
     jetWeighter,
@@ -159,10 +168,10 @@ else:
   sequence = cfg.Sequence( [
     triggerAna,
     TauTauAna,
+    vertexAna,
     vbfAna,
     pileUpAna,
     embedWeighter, 
-    vertexAna,
     tau1Weighter, 
     tau2Weighter, 
     jetWeighter,
@@ -182,22 +191,23 @@ ZZ.splitFactor = 10
 QCD50.splitFactor = 50
 QCD80.splitFactor = 50
 data_Run2012A_PromptReco_v1.splitFactor = 50
-data_Run2012B_PromptReco_v1.splitFactor = 50
+data_Run2012B_PromptReco_v1.splitFactor = 200
 embed_Run2012A_PromptReco_v1.splitFactor = 50
 embed_Run2012B_PromptReco_v1.splitFactor = 50
 data_Run2012C_PromptReco_v1.splitFactor = 50
-data_Run2012C_PromptReco_v2.splitFactor = 50
+data_Run2012C_PromptReco_v2.splitFactor = 200
+Higgsgg120.splitFactor = 50
 
 test = 0
 if test==1:
-    #comp = DYJets
+    comp = DYJets
     #comp = WJets
     #comp = data_Run2012C_PromptReco_v1
     #comp = GluGluToHToWWTo2LAndTau2Nu_M_125
     comp = embed_Run2012A_PromptReco_v1
     selectedComponents = [comp]
     comp.splitFactor = 10
-    comp.files = comp.files[:1]
+    comp.files = comp.files[1:2]
 elif test==2:
     for comp in selectedComponents:
      comp.splitFactor = 1

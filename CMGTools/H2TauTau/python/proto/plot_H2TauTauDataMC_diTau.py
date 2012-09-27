@@ -151,8 +151,8 @@ if __name__ == '__main__':
       # 10.252/fb
       selComps['data_Run2012C_PromptReco_v1'].intLumi = 1000.
       weights[ 'data_Run2012C_PromptReco_v1'].intLumi = 1000.
-      selComps['data_Run2012C_PromptReco_v2'].intLumi = 4152.
-      weights[ 'data_Run2012C_PromptReco_v2'].intLumi = 4152.
+      selComps['data_Run2012C_PromptReco_v2'].intLumi = 5100.
+      weights[ 'data_Run2012C_PromptReco_v2'].intLumi = 5100.
     else:
       # 1fb
       selComps['data_Run2011A_05Aug2011_v1'].intLumi = 31.9
@@ -951,12 +951,12 @@ if __name__ == '__main__':
         #####################################################
         if ( var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
          for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>100 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<140 ):
+           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>110 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<140 ):
               plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
         if (var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03" ) and (str(prefix).find("BOOSTED") > 0 or str(prefix).find("VBF") > 0):
          for bin in range(plotVarDataOS.Hist("Data").weighted.GetNbinsX()):
-           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>80 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<120 ):
+           if ( plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)>90 and plotVarDataOS.Hist("Data").weighted.GetBinCenter(bin+1)<120 ):
               plotVarDataOS.Hist("Data").weighted.SetBinContent(bin+1,-1)
 
         ymax = max( plotVarDataOS.Hist("Data").GetMaximum()            ,
