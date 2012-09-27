@@ -14,7 +14,7 @@ userName='bachtis'
 
 
 triggers_mumu = ["HLT_Mu17_Mu8_v*","HLT_Mu17_TkMu8_v*"]
-triggers_ee   = ["HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL"]
+triggers_ee   = ["HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v*"]
 
 
 triggers_mue   = [
@@ -25,12 +25,12 @@ triggers_mue   = [
 
 
 triggersMC_mumu = ["HLT_Mu17_Mu8_v*","HLT_Mu17_TkMu8_v*"]
-triggersMC_ee   = ["HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL"]
+triggersMC_ee   = ["HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*","HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v*"]
 
 
 triggersMC_mue   = [
     "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",
-    "HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL",
+    "HLT_Ele15_Ele8_Ele5_CaloIdL_TrkIdVL_v*",
     "HLT_Mu17_Mu8_v*",
     "HLT_Mu17_TkMu8_v*",
     "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*",

@@ -1,16 +1,22 @@
 import ROOT
 
 from math import sqrt,pow,sin,cos,tan
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,isNewerThan
 
 class MassErrors(object):
+    def __init__(self):
+        self.is44X = cmsswIs44X() 
 
     def energyError(self,energy,p):
         return sqrt(pow(p[0]/sqrt(energy),2)+pow(p[1]/energy,2)+pow(p[2],2))
 
     def calculateElectronError(self,electron):
         if not electron.ecalDriven():
-            ecalEnergy = electron.sourcePtr().correctedEcalEnergy()
-#            ecalEnergy = electron.ecalEnergy()
+
+            if self.is44X:
+                ecalEnergy = electron.sourcePtr().ecalEnergy()
+            else:    
+                ecalEnergy = electron.sourcePtr().correctedEcalEnergy()
             if electron.sourcePtr().isEB():
                 p=[5.24e-2,2.01e-1,1e-2]
                 return ecalEnergy*self.energyError(ecalEnergy,p)
