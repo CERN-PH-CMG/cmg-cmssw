@@ -567,6 +567,7 @@ cms.EDAnalyzer("TheNtupleMaker",
     '   int   value("primaryVertexFilterPath")  primaryVertexFilterPath',
     '   int   value("noscrapingFilterPath")  noscrapingFilterPath',
     '   int   value("hcalLaserFilterFromAODPath")  hcalLaserFilterFromAODPath',
+    '   int   value("metNoiseCleaningPath")  metNoiseCleaningPath',
     ),
                edmTriggerResultsHelper =
                cms.untracked.
