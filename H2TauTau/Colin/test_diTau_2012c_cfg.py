@@ -5,7 +5,7 @@ from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
 runOnEmbedded = False
 runOnData = False
-runOnMC = False
+runOnMC = True
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_53X_true.root'])
@@ -135,17 +135,14 @@ selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higg
 #                        GluGluToHToZZTo2L2Nu_M_125, GluGluToHToZZTo2L2Q_M_125, VBF_ToHToZZTo2l2q_M_130, VBF_ToHToZZTo2L2NU_M_125]
 
 if runOnData:
-    selectedComponents = data_2012
+    selectedComponents = [data_Run2012C_PromptReco_v2]#data_2012
 if runOnMC:
     selectedComponents = [DYJets, WJets, W3Jets, TTJets, WW, WZ, ZZ]
-    selectedComponents += [ Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145,
-                        HiggsVBF110, HiggsVBF115, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, 
-                        HiggsVH115 , HiggsVH125 , HiggsVH130 , HiggsVH140 ]
     selectedComponents += [ HiggsSUSYBB120, HiggsSUSYBB180, HiggsSUSYBB300, HiggsSUSYBB600, HiggsSUSYBB1000,
                            HiggsSUSYGluGlu120, HiggsSUSYGluGlu180, HiggsSUSYGluGlu300, HiggsSUSYGluGlu600, HiggsSUSYGluGlu1000 ]
-    #selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
-    #                    HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
-    #                    HiggsVH110 , HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
+    selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
+                        HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
+                        HiggsVH110 , HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
 #    selectedComponents = [QCD50,QCD80]
 if runOnEmbedded:
     selectedComponents = embedded_2012
@@ -197,14 +194,26 @@ embed_Run2012B_PromptReco_v1.splitFactor = 50
 data_Run2012C_PromptReco_v1.splitFactor = 50
 data_Run2012C_PromptReco_v2.splitFactor = 200
 Higgsgg120.splitFactor = 50
+HiggsVBF120.splitFactor = 50
+HiggsSUSYBB120.splitFactor = 10
+HiggsSUSYBB180.splitFactor = 10
+HiggsSUSYBB300.splitFactor = 10
+HiggsSUSYBB600.splitFactor = 10
+HiggsSUSYBB1000.splitFactor = 10
+HiggsSUSYGluGlu120.splitFactor = 10
+HiggsSUSYGluGlu180.splitFactor = 10
+HiggsSUSYGluGlu300.splitFactor = 10
+HiggsSUSYGluGlu600.splitFactor = 10
+HiggsSUSYGluGlu1000.splitFactor = 10
 
 test = 0
 if test==1:
-    comp = DYJets
+    #comp = DYJets
     #comp = WJets
     #comp = data_Run2012C_PromptReco_v1
     #comp = GluGluToHToWWTo2LAndTau2Nu_M_125
-    comp = embed_Run2012A_PromptReco_v1
+    #comp = embed_Run2012A_PromptReco_v1
+    comp = HiggsSUSYBB300
     selectedComponents = [comp]
     comp.splitFactor = 10
     comp.files = comp.files[1:2]
