@@ -6,6 +6,8 @@ from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCo
 from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
+from CMGTools.RootTools.utils.DeltaR import deltaR2
 
 class VBFAnalyzer( Analyzer ):
     '''Analyze jets, and in particular VBF.
@@ -26,6 +28,9 @@ class VBFAnalyzer( Analyzer ):
 
         self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol,
                                            'std::vector<cmg::PFJet>' )
+        if self.cfg_comp.isMC and ("BB" in self.cfg_comp.name):
+            self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
+                                                     'std::vector<reco::GenParticle>' )
 
     def beginLoop(self):
         super(VBFAnalyzer,self).beginLoop()
@@ -89,6 +94,19 @@ class VBFAnalyzer( Analyzer ):
         if leg2.jet is None:
             leg2.jet = leg2
 
+	for jet in event.cleanJets:
+            jet.matchGenParton=999.0
+
+        if self.cfg_comp.isMC and "BB" in self.cfg_comp.name:
+            genParticles = self.mchandles['genParticles'].product()
+            event.genParticles = map( GenParticle, genParticles)
+	    for gen in genParticles:
+                if abs(gen.pdgId())==5 and gen.mother() and abs(gen.mother().pdgId())==21:
+		    for jet in event.cleanJets:
+			dR=deltaR2(jet.eta(), jet.phi(), gen.eta(), gen.phi() )
+		        if dR<jet.matchGenParton:
+			    jet.matchGenParton=dR
+
         if len( event.jets )>=2:
             self.counters.counter('VBF').inc('at least 2 good jets')
                
@@ -118,9 +136,9 @@ class VBFAnalyzer( Analyzer ):
         # 2 is loose pile-up jet id
         return jet.pt() > self.cfg_ana.jetPt and \
                abs( jet.eta() ) < self.cfg_ana.jetEta and \
-               jet.looseJetId() and \
-               jet.passPuJetId('full', 2) 
-               # jet.getSelection('cuts_looseJetId')
+               jet.getSelection('cuts_looseJetId') and \
+               jet.passPuJetId('full', 2)
+               #jet.looseJetId()
 
     def testBJet(self, jet):
         # medium csv working point
