@@ -115,10 +115,9 @@ struct Info{\
     Int_t nBJetLoose;\
     Int_t nMuonLoose;\
     Int_t nMuonTight;\
-    Int_t nMuonSAK;\
     Int_t nElectronLoose;\
     Int_t nElectronTight;\
-    Int_t nElectronSAK;\
+    Int_t nTauVeto;\
     Int_t nTauLoose;\
     Int_t nTauTight;\
     Int_t nLepton;\
@@ -141,19 +140,13 @@ struct Info{\
 
     rt.gROOT.ProcessLine("""
 struct Filters{\
-    Bool_t triggerFilter;\
     Bool_t hadBoxFilter;\
     Bool_t eleBoxFilter;\
     Bool_t muBoxFilter;\
     Bool_t tauBoxFilter;\
-    Bool_t quadTriggerFilter;\
-    Bool_t sixTriggerFilter;\
-    Bool_t eightTriggerFilter;\
-    Bool_t l1MultiJetFilter;\
-    Bool_t selectionFilter;\
-    Bool_t ht250TriggerFilter;\
-    Bool_t ht300TriggerFilter;\
-    Bool_t razorTriggerFilter;\
+    Bool_t eleTriggerFilter;\
+    Bool_t hadTriggerFilter;\
+    Bool_t muTriggerFilter;\
     Bool_t ecalDeadCellTPfilter;\
     Bool_t HBHENoiseFilterResultProducer2010;\
     Bool_t HBHENoiseFilterResultProducer2011IsoDefault;\
@@ -254,16 +247,15 @@ struct Filters{\
         event.getByLabel(('cmgTriggerObjectSel'),triggerH)
         hlt = triggerH.product()[0]
 
-        filters.quadTriggerFilter = hlt.getSelectionRegExp("^HLT_QuadJet[0-9]+.*_v[0-9]+$")
-        filters.sixTriggerFilter = hlt.getSelectionRegExp("^HLT_SixJet[0-9]+.*_v[0-9]+$")
-        filters.eightTriggerFilter = hlt.getSelectionRegExp("^HLT_EightJet[0-9]+.*_v[0-9]+$")
-        filters.l1MultiJetFilter = hlt.getSelectionRegExp("^HLT_L1MultiJet_v[0-9]+$")
-        filters.ht250TriggerFilter = hlt.getSelectionRegExp("^HLT_HT250_v[0-9]+$")
-        filters.ht300TriggerFilter = hlt.getSelectionRegExp("^HLT_HT300_v[0-9]+$")
-        filters.razorTriggerFilter = hlt.getSelectionRegExp("^HLT_R0[0-9]+_MR[0-9]+_v[0-9]+$")
-        filters.triggerFilter = filters.quadTriggerFilter or filters.sixTriggerFilter or filters.eightTriggerFilter
-        #if not filters.triggerFilter: continue
-        #if not filters.l1MultiJetFilter: continue
+        filters.eleTrigger = hlt.getSelectionRegExp("^HLT_Ele[0-9]+_WP80_v[0-9]+$")
+        filters.hadTrigger = hlt.getSelectionRegExp("^HLT_DiJet[0-9]+_DiJet[0-9]+_DiJet[0-9]+.*_v[0-9]+$") or \
+            hlt.getSelectionRegExp("^HLT_QuadJet[0-9]+_DiJet[0-9]+.*_v[0-9]+$") or \
+            hlt.getSelectionRegExp("^HLT_QuadJet[0-9]+_v[0-9]+$") or \
+            hlt.getSelectionRegExp("^HLT_QuadJet[0-9]+_L1FastJet_v[0-9]+$") or \
+            hlt.getSelectionRegExp("^HLT_SixJet[0-9]+.*_v[0-9]+$")
+        filters.muTrigger = hlt.getSelectionRegExp("^HLT_Mu[0-9]+_eta2p1_v[0-9]+$") or \
+            hlt.getSelectionRegExp("^HLT_IsoMu[0-9]+_eta2p1_v[0-9]+$")
+
         
         if not runOnMC:
             for f in filter_tags:
@@ -317,13 +309,9 @@ struct Filters{\
         info.nMuonTight = len(muonH.product())
         info.nTauTight = len(tauH.product())
         info.nLepton = info.nElectronTight + info.nMuonTight + info.nTauTight
-
-        #SAK lepton ID
-        event.getByLabel(('razorMJElectronSAKSel'),electronH)
-        event.getByLabel(('razorMJMuonSAKSel'),muonH)
         #
-        info.nElectronSAK = len(electronH.product())
-        info.nMuonSAK = len(muonH.product())
+        event.getByLabel(('razorMJTauVeto'),jetSel30H)
+        info.nTauVeto = len(jetSel30H.product())
 
         #event.getByLabel(('vertexSize'),countH)
         #info.nVertex = countH.product()[0]
