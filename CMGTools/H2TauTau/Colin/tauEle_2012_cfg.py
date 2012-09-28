@@ -72,6 +72,7 @@ TauEleAna = cfg.Analyzer(
     m_min = 10,
     m_max = 99999,
     triggerMap = pathsAndFilters,
+    mvametsigs = 'mvaMETTauEle',
     verbose = False
     )
 
@@ -136,7 +137,8 @@ treeProducerXCheck = cfg.Analyzer(
 #########################################################################################
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinJul5 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinAug8 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinAug8 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroSep25 import *
 
 #########################################################################################
 
@@ -179,11 +181,7 @@ for emb in embed_list:
     emb.splitFactor = 10
 
 data_Run2012A.splitFactor = 40
-data_Run2012B_start_194479.splitFactor = 50
-data_Run2012B_194480_195016.splitFactor = 40
-data_Run2012B_195017_195947.splitFactor = 40 
-data_Run2012B_195948_196509.splitFactor = 50
-data_Run2012B_start_196509.splitFactor = 200
+data_Run2012B.splitFactor = 300
 
 selectedComponents =  copy.copy(MC_list)
 selectedComponents.extend( data_list )
@@ -210,7 +208,12 @@ if syncntuple:
 
 
 test = 0
-if test==1:
+if test==0:
+    comp = HiggsVBF125
+    # comp.files = 'Aug14/joshMinusColin.root'
+    selectedComponents = [comp]
+    comp.splitFactor = 1
+elif test==1:
     comp = HiggsVBF125
     # comp.files = 'Aug14/joshMinusColin.root'
     selectedComponents = [comp]
