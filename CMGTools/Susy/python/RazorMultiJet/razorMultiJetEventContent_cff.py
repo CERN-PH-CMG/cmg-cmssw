@@ -5,10 +5,21 @@ from CMGTools.Common.eventContent.everything_cff import *
 razorMJjetEventContent = cms.untracked.vstring()
 
 razorMJjetEventContent += cms.untracked.vstring(
+                                           'drop *',
                                            'keep *_razorMJ*_*_*',
+                                           'drop cmgElectrons_razorMJElectronSAKCMG_*_*',
+                                           'drop cmgElectrons_razorMJIsolatedElectrons_*_*',
+                                           'drop cmgMuons_razorMJMuonSAKCMG_*_*',
+                                           'drop cmgPFJets_cmgPFJetTightJetIdFailed_*_*',
                                            'drop cmgPFJets_razorMJPFJetSelID_*_*',
-                                           'drop cmgPFJets_razorMJPFJetSel80_*_*',
-                                           'drop cmgTriggerObjects_razorMJ*TriggerSel_*_*',
+                                           'drop cmgPFJets_razorMJPFJetSel70_*_*',
+                                           'drop cmgPFJets_razorMJTightBtaggedJets_*_*',
+                                           'drop cmgPFJets_razorMJTightBtaggedVetoJets_*_*',
+                                           'drop cmgPFJets_razorMJPFJetSelIDLepton_*_*',
+                                           #'drop cmgTriggerObjects_razorMJ*TriggerSel_*_*',
+                                           'drop cmgTaus_razorMJTauCleaned_*_*',
+                                           'drop patElectrons_razorMJElectronSAK_*_*',
+                                           'drop patMuons_razorMJMuonSAK_*_*',
                                            'drop cmgHemispheres_razorMJHemiHadBox*_*_*',
                                            'drop recoCandidatesOwned_razorMJDiHemi*_*_*'
                                            )
