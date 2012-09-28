@@ -1,4 +1,5 @@
 from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
+from CMGTools.RootTools.utils.DeltaR import bestMatch
 from math import *
 
 def deltaPhi(phi1, phi2):
@@ -34,6 +35,10 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
             #var('{pName}Id'.format(pName=pName))
             
             
+        varInt('run')
+        varInt('lumi')
+        varInt('event')
+	
         var('visMass')
         var('svfitMass')
         var('mt')
@@ -45,10 +50,15 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 	var('mttj')
 
 	var('mjj')
-	var('deltaEta')
+	var('dEtajj')
+	var('dPhijj')
+	var('dPhittjj')
+	var('dEtattjj')
 	varInt('nCentralJets')
+	var('vbfMVA')
 
         var('dRtt')
+        var('dEtatt')
         var('dPhitt')
 
         particleVars('diTau')
@@ -56,45 +66,61 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         particleVars('l2')
 
         var('l1DecayMode')
-        #varInt('l1LooIso')
-        #varInt('l1MedIso')
-        #varInt('l1TigIso')
+        varInt('l1LooIso')
+        varInt('l1MedIso')
+        varInt('l1TigIso')
         var('l1RawMVAIso')
         varInt('l1MedMVAIso')
         varInt('l1TigMVAIso')
         #varInt('l1LooseEle')
+        varInt('l1MedEle')
         varInt('l1MVAEle')
         #varInt('l1LooseMu')
+        var('l1jetMass')
+        var('l1jetPt')
+        var('l1jetWidth')
+        var('l1jetBtag')
 
         var('l2DecayMode')
-        #varInt('l2LooIso')
-        #varInt('l2MedIso')
-        #varInt('l2TigIso')
+        varInt('l2LooIso')
+        varInt('l2MedIso')
+        varInt('l2TigIso')
         var('l2RawMVAIso')
         varInt('l2MedMVAIso')
         varInt('l2TigMVAIso')
         #varInt('l2LooseEle')
+        varInt('l2MedEle')
         varInt('l2MVAEle')
         #varInt('l2LooseMu')
+        var('l2jetMass')
+        var('l2jetPt')
+        var('l2jetWidth')
+        var('l2jetBtag')
 
-        var('genTauVisMass')
-        var('genJetVisMass')
+        #var('genTauVisMass')
+        #var('genJetVisMass')
 
         varInt('nJets')
         particleVars('jet1')
         particleVars('jet2')
+        var('jet1Btag')
+        var('jet2Btag')
+        var('jet1Bmatch')
+        var('jet2Bmatch')
 
         var('weight')
         var('vertexWeight')
+        var('embedWeight')
+        var('triggerWeight')
 
         varInt('nVert')
         
-        var('l1EffData')
-        var('l1EffMC')
-        var('l1Weight')
-        var('l2EffData')
-        var('l2EffMC')
-        var('l2Weight')
+        #var('l1EffData')
+        #var('l1EffMC')
+        #var('l1Weight')
+        #var('l2EffData')
+        #var('l2EffMC')
+        #var('l2Weight')
 
         varInt('isFake')
         varInt('isPhoton')
@@ -138,6 +164,13 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
                 
         #if "TTJets" in self.cfg_comp.name and not (event.diLepton.leg1().tauID("byMediumIsoMVA")>0.5 and \
 	#   event.diLepton.leg2().tauID("byMediumIsoMVA")>0.5): return
+
+        if hasattr(event,"run"):
+            fill('run', event.run)
+        if hasattr(event,"lumi"):
+            fill('lumi', event.lumi)
+        if hasattr(event,"eventId"):
+            fill('event', event.eventId)
                 
         fill('visMass', event.diLepton.mass()*scale)
         fill('svfitMass', event.diLepton.massSVFit()*scale)
@@ -149,6 +182,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         fill('met', event.diLepton.met().pt()*scale)
         fill('dRtt', sqrt(pow(deltaPhi(event.diLepton.leg1().phi(),event.diLepton.leg2().phi()),2)+pow(fabs(event.diLepton.leg1().eta()-event.diLepton.leg2().eta()),2)))
         fill('dPhitt', deltaPhi(event.diLepton.leg1().phi(),event.diLepton.leg2().phi()))
+        fill('dEtatt', fabs(event.diLepton.leg1().eta()-event.diLepton.leg2().eta()))
             
         fParticleVars('diTau', event.diLepton)
 	
@@ -164,27 +198,42 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         fParticleVars('l1', leg1 )
         fParticleVars('l2', leg2 )
 
+        l1jet = bestMatch( leg1, event.jets )[0]
+        l2jet = bestMatch( leg2, event.jets )[0]
+	
         fill('l1DecayMode', leg1.decayMode() )
-        #fill('l1LooIso', leg1.tauID("byLooseCombinedIsolationDeltaBetaCorr") )
-        #fill('l1MedIso', leg1.tauID("byMediumCombinedIsolationDeltaBetaCorr") )
-        #fill('l1TigIso', leg1.tauID("byTightCombinedIsolationDeltaBetaCorr") )
+        fill('l1LooIso', leg1.tauID("byLooseCombinedIsolationDeltaBetaCorr") )
+        fill('l1MedIso', leg1.tauID("byMediumCombinedIsolationDeltaBetaCorr") )
+        fill('l1TigIso', leg1.tauID("byTightCombinedIsolationDeltaBetaCorr") )
         fill('l1RawMVAIso', leg1.tauID("byRawIsoMVA") )
         fill('l1MedMVAIso', leg1.tauID("byMediumIsoMVA") )
         fill('l1TigMVAIso', leg1.tauID("byTightIsoMVA") )
         #fill('l1LooseEle', leg1.tauID("againstElectronLoose") )
+        fill('l1MedEle', leg1.tauID("againstElectronMedium") )
         fill('l1MVAEle', leg1.tauID("againstElectronMVA") )
         #fill('l1LooseMu', leg1.tauID("againstMuonLoose") )
+        fill('l1jetMass', leg1.jetRefp4().mass() )
+        fill('l1jetPt', leg1.jetRefp4().pt() )
+	if l1jet:
+          fill('l1jetWidth', l1jet.rms() )
+          fill('l1jetBtag', l1jet.btag("combinedSecondaryVertexBJetTags") )
 
         fill('l2DecayMode', leg2.decayMode() )
-        #fill('l2LooIso', leg2.tauID("byLooseCombinedIsolationDeltaBetaCorr") )
-        #fill('l2MedIso', leg2.tauID("byMediumCombinedIsolationDeltaBetaCorr") )
-        #fill('l2TigIso', leg2.tauID("byTightCombinedIsolationDeltaBetaCorr") )
+        fill('l2LooIso', leg2.tauID("byLooseCombinedIsolationDeltaBetaCorr") )
+        fill('l2MedIso', leg2.tauID("byMediumCombinedIsolationDeltaBetaCorr") )
+        fill('l2TigIso', leg2.tauID("byTightCombinedIsolationDeltaBetaCorr") )
         fill('l2RawMVAIso', leg2.tauID("byRawIsoMVA") )
         fill('l2MedMVAIso', leg2.tauID("byMediumIsoMVA") )
         fill('l2TigMVAIso', leg2.tauID("byTightIsoMVA") )
         #fill('l2LooseEle', leg2.tauID("againstElectronLoose") )
+        fill('l2MedEle', leg2.tauID("againstElectronMedium") )
         fill('l2MVAEle', leg2.tauID("againstElectronMVA") )
         #fill('l2LooseMu', leg2.tauID("againstMuonLoose") )
+        fill('l2jetMass', leg2.jetRefp4().mass() )
+        fill('l2jetPt', leg1.jetRefp4().pt() )
+	if l2jet:
+          fill('l2jetWidth', l2jet.rms() )
+          fill('l2jetBtag', l1jet.btag("combinedSecondaryVertexBJetTags") )
 
         #if event.diLepton.leg1().genTaup4() and event.diLepton.leg2().genTaup4():
         #  fill('genTauVisMass', sqrt(
@@ -206,29 +255,38 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         fill('nJets', nJets )
         if nJets>=1:
             fParticleVars('jet1', event.cleanJets[0] )
+            fill('jet1Btag', event.cleanJets[0].btag("combinedSecondaryVertexBJetTags") )
+            fill('jet1Bmatch', event.cleanJets[0].matchGenParton )
 	    fill('mttj', sqrt(pow(event.diLepton.energy()+event.cleanJets[0].energy(),2) - pow(event.diLepton.px()+event.cleanJets[0].px(),2) - pow(event.diLepton.py()+event.cleanJets[0].py(),2) - pow(event.diLepton.pz()+event.cleanJets[0].pz(),2)))
         if nJets>=2:
             fParticleVars('jet2', event.cleanJets[1] )
+            fill('jet2Btag', event.cleanJets[1].btag("combinedSecondaryVertexBJetTags") )
+            fill('jet2Bmatch', event.cleanJets[1].matchGenParton )
 	    fill('mjj', event.vbf.mjj)
-	    fill('deltaEta', event.vbf.deta)
+	    fill('dEtajj', event.vbf.deta)
+	    fill('dPhijj', deltaPhi(event.cleanJets[0].phi(), event.cleanJets[1].phi()))
+	    fill('dEtattjj', fabs(event.cleanJets[0].eta()+event.cleanJets[1].eta()-event.diLepton.eta()))
+	    fill('dPhittjj', deltaPhi(event.cleanJets[0].phi()+event.cleanJets[1].phi(),event.diLepton.phi()))
 	    fill('nCentralJets', len(event.vbf.centralJets))
-	    #fill('mjj', sqrt(pow(event.cleanJets[0].energy()+event.cleanJets[1].energy(),2) -
-	    #                 pow(event.cleanJets[0].px()+event.cleanJets[1].px(),2) - 
-		#	     pow(event.cleanJets[0].py()+event.cleanJets[1].py(),2) - 
-		#	     pow(event.cleanJets[0].pz()+event.cleanJets[1].pz(),2)))
+	    fill('vbfMVA', event.vbf.mva)
 
         fill('weight', event.eventWeight)
         if hasattr( event, 'vertexWeight'): 
             fill('vertexWeight', event.vertexWeight)
             fill('nVert', len(event.vertices) ) 
-        if hasattr( event, 'leg1_eff'): 
-            fill('l1EffData', event.leg1_eff)
-            fill('l1EffMC', event.leg1_effMC)
-            fill('l1Weight', event.leg1_weight)
-        if hasattr( event, 'leg2_eff'): 
-            fill('l2EffData', event.leg2_eff)
-            fill('l2EffMC', event.leg2_effMC)
-            fill('l2Weight', event.leg2_weight)
+        if hasattr( event, 'embedWeight'): 
+            fill('embedWeight', event.embedWeight)
+        if hasattr( event, 'triggerWeight'): 
+            fill('triggerWeight', event.triggerWeight)
+
+        #if hasattr( event, 'leg1_eff'): 
+        #    fill('l1EffData', event.leg1_eff)
+        #    fill('l1EffMC', event.leg1_effMC)
+        #    fill('l1Weight', event.leg1_weight)
+        #if hasattr( event, 'leg2_eff'): 
+        #    fill('l2EffData', event.leg2_eff)
+        #    fill('l2EffMC', event.leg2_effMC)
+        #    fill('l2Weight', event.leg2_weight)
 
         isFake = 1
         if hasattr( event, 'genMatched'): 
