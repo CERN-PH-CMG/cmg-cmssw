@@ -29,7 +29,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   LorentzVector l2P4(ev.l2_px,ev.l2_py,ev.l2_pz,ev.l2_en);
   if(l2P4.pt()>0)
     {
-      phys.leptons.push_back(PhysicsObject_Lepton(l2P4, ev.l2_id, ev.l2_genid, ev.l2_ptErr, ev.l2_ecalIso, ev.l2_hcalIso, ev.l2_trkIso, ev.l2_gIso, ev.l2_chIso, ev.l2_puchIso, ev.l1_nhIso, ev.l2_pid) );
+      phys.leptons.push_back(PhysicsObject_Lepton(l2P4, ev.l2_id, ev.l2_genid, ev.l2_ptErr, ev.l2_ecalIso, ev.l2_hcalIso, ev.l2_trkIso, ev.l2_gIso, ev.l2_chIso, ev.l2_puchIso, ev.l2_nhIso, ev.l2_pid) );
       phys.leptons[nlep].setTrackInfo(ev.l2_d0, ev.l2_dZ,ev.l2_trkpt,ev.l2_trketa,ev.l2_trkphi,ev.l2_trkchi2,ev.l2_trkValidPixelHits,ev.l2_trkValidTrackerHits,ev.l2_trkLostInnerHits);
       phys.leptons[nlep].setEnergyCorrections(ev.l2_ensf,ev.l2_ensferr);
       nlep++;
