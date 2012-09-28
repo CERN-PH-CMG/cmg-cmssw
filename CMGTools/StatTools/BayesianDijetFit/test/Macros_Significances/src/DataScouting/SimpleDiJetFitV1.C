@@ -6,6 +6,7 @@ void SimpleDiJetFitV1()
   gStyle->SetOptFit(111); 
 
   //### Modify this part
+  //char input_root_file[500] = "data/DataScouting_V00-01-05_Run2012B_runrange_193752-197044_dijet_alfaT_razor_dijetpairs_trijetpairs.root";
   char input_root_file[500] = "data/DataScouting_V00-01-03_Run2012B_runrange_193752-197044_dijet_alfaT_razor.root";
   char input_directory[500] = "DQMData_Merged Runs_DataScouting_Run summary_DiJet;1";
   char input_2Dhistogram[500] = "h2_DetajjVsMjjWide;1";
@@ -17,7 +18,7 @@ void SimpleDiJetFitV1()
   double maxX_mass = 4337.;
   //   double minX_mass = 270.;
   //   double maxX_mass = 1530.;
-  const int nPar=5; //number of fit parameters -  4 = default  , 5 = intermediate , 6 = fullCTEQ inspired
+  const int nPar=6; //number of fit parameters -  4 = default  , 5 = intermediate , 6 = fullCTEQ inspired
 
   int number_of_variableWidth_bins = 88 - 1;
   Double_t massBins[88] = {1, 3, 6, 10, 16, 23, 31, 40, 50, 61, 74, 88, 103, 119, 137, 156, 176, 197, 220, 244, 270, 296, 325, 354, 386, 419, 453, 489, 526, 565, 606, 649,  693, 740, 788, 838, 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383, 1455, 1530, 1607, 1687, 1770, 1856, 1945, 2037, 2132, 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019, 3147, 3279, 3416, 3558, 3704, 3854, 4010, 4171, 4337, 4509, 4686, 4869, 5058, 5253, 5455, 5663, 5877, 6099, 6328, 6564, 6808, 7000, 7250,7500,7750,8000}; 
