@@ -89,13 +89,13 @@ def setAxisLabels(axis):
 def getFullSelectionBox(tree):
 
     box = -1
-    if tree.muBoxFilter:
+    if tree.muBoxFilter and tree.muTriggerFilter:
         box = 2
-    elif tree.eleBoxFilter:
+    elif tree.eleBoxFilter and tree.eleTriggerFilter:
         box = 1
-    elif tree.tauBoxFilter:
+    elif tree.tauBoxFilter and tree.hadTriggerFilter:
         box = 3
-    elif tree.hadBoxFilter:
+    elif tree.hadBoxFilter and tree.hadTriggerFilter:
         box = 0
     return box
 
@@ -121,7 +121,6 @@ if __name__ == '__main__':
     setAxisLabels(genRecoBoxes.GetXaxis())
     setAxisLabels(genRecoBoxes.GetYaxis())
     genRecoBoxesNoCuts = genRecoBoxes.Clone('genRecoBoxesNoCuts')
-    genRecoBoxesSAK = genRecoBoxes.Clone('genRecoBoxesSAK')
     genRecoBoxesSel = genRecoBoxes.Clone('genRecoBoxesSel')
 
     genBoxesJets2D = rt.TH2F('genBoxesJets2D','genBoxesJets',10,0,10,10,0,10)
@@ -157,8 +156,6 @@ if __name__ == '__main__':
         genBoxesJets2D.Fill(genBox,tree.nJetCleaned)
 
         recoBox = getRecoBox(tree.nElectronTight,tree.nMuonTight,tree.nTauTight,tree.nElectronLoose,tree.nMuonLoose,tree.nTauLoose)
-        recoBoxSAK = getRecoBox(tree.nElectronTight,tree.nMuonTight,tree.nTauTight,tree.nElectronSAK,tree.nMuonSAK,tree.nTauLoose)
-        genRecoBoxesSAK.Fill(genBox,recoBoxSAK)
         genRecoBoxesNoCuts.Fill(genBox,recoBox)
 
         if (recoBox == 0 and tree.nJet < 6) or (recoBox > 0 and tree.nJetCleaned < 4):
@@ -167,11 +164,16 @@ if __name__ == '__main__':
 
         if recoBox not in [0,1,2,3,5]:
             continue
+        
+        mr = tree.mR
+        rsq = tree.Rsq
+        if mr < 500 or rsq < 0.03:
+            continue
+
         genRecoBoxes.Fill(genBox,recoBox)
         genBoxesBoxes.Fill(genBox)
 
-        mr = tree.mR
-        rsq = tree.Rsq
+    
         if recoBox == 0: mrRsqHad.Fill(mr,rsq)
         if recoBox == 1: mrRsqEle.Fill(mr,rsq)
         if recoBox == 2: mrRsqMu.Fill(mr,rsq)
@@ -190,7 +192,6 @@ if __name__ == '__main__':
     genRecoBoxes.Write()
     genBoxesJets2D.Write()
     genRecoBoxesNoCuts.Write()
-    genRecoBoxesSAK.Write()
     mrRsqHad.Write()
     mrRsqEle.Write()
     mrRsqMu.Write()
