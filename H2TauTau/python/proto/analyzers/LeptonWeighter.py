@@ -94,6 +94,8 @@ class LeptonWeighter( Analyzer ):
 
         # import pdb; pdb.set_trace()
         event.eventWeight *= lep.weight
+	if not hasattr(event,"triggerWeight"): event.triggerWeight=1.0
+        event.triggerWeight *= lep.triggerWeight
         self.averages['weight'].add( lep.weight )
         self.averages['triggerWeight'].add( lep.triggerWeight )
         self.averages['eff_data'].add( lep.triggerEffData )
