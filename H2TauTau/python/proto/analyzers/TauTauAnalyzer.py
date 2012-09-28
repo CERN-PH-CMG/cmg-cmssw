@@ -3,7 +3,6 @@ from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauTau
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Tau, GenParticle
-from CMGTools.H2TauTau.proto.analyzers.CountLeptons import electronAccept
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 from ROOT import TFile
 
@@ -26,29 +25,58 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         if self.cfg_comp.isMC and ("DY" in self.cfg_comp.name or "W" in self.cfg_comp.name or "Higgsgg" in self.cfg_comp.name):
             self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
+        if self.cfg_comp.isMC and "QCD" in self.cfg_comp.name:
+            self.mchandles['generator'] = AutoHandle( 'generator',
+                                                     'GenEventInfoProduct' )
 	if "Higgsgg" in self.cfg_comp.name:
 	    masspoint=self.cfg_comp.name[7:10]
             self.higgsPtWeightFile=TFile("$CMSSW_BASE/src/CMGTools/H2TauTau/data/weight_ptH_"+masspoint+".root")
             self.higgsPtWeightHistogram=self.higgsPtWeightFile.Get("powheg_weight/weight_hqt_fehipro_fit_"+masspoint)
 
+    def bestDiLepton(self, diLeptons):
+        '''Returns the best diLepton (the one with best isolation).'''
+        return max( [ (min(dilep.leg1().tauID("byRawIsoMVA"), dilep.leg2().tauID("byRawIsoMVA")), dilep) for dilep in diLeptons ] )[1]
+    
     def process(self, iEvent, event):
         # select signal dileptons with all cuts on both legs
-	result = super(TauTauAnalyzer, self).process(iEvent, event)
+
+        self.readCollections( iEvent )
+        # trigger stuff could be put in a separate analyzer
+        # event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
+        event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product(), event )
+        #event.leptons = self.buildLeptons( self.handles['leptons'].product(), event )
+        event.leptons = []
+	for diLepton in event.diLeptons:
+          if not diLepton.leg1() in event.leptons:
+            event.leptons += [diLepton.leg1()]
+          if not diLepton.leg2() in event.leptons:
+            event.leptons += [diLepton.leg2()]
+        # import pdb; pdb.set_trace()
+        self.shiftEnergyScale(event)
+	result = self.selectionSequence(event, fillCounter=True)
         
         # select non signal dileptons with loose cuts
         if result is False:
-            selDiLeptons = [ diL for diL in event.diLeptons if \
+            # Preapproval version
+	    selDiLeptons = [ diL for diL in event.diLeptons if \
                              self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
 			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
-			     (self.testLeg1( diL.leg1() ) or self.testLeg2( diL.leg2() )) ]
-            #if len(selDiLeptons)==0:
-            #    selDiLeptons = [ diL for diL in event.diLeptons if \
+			     (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
+            # loose reference version
+            #selDiLeptons = [ diL for diL in event.diLeptons if \
             #                 self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
-		#	     self.testLooseLeg( diL.leg1() ) and self.testLooseLeg( diL.leg2() ) ]
-            #if len(selDiLeptons)==0:
-            #    selDiLeptons = [ diL for diL in event.diLeptons if \
+		#	     self.testLooseLeg( diL.leg1() ) and self.testLooseLeg( diL.leg2() ) and \
+		#	     (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
+            # std. medium iso version
+            #selDiLeptons = [ diL for diL in event.diLeptons if \
             #                 self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
-		#	     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) ]
+		#	     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
+		#	     (self.testStdMediumLeg( diL.leg1() ) or self.testStdMediumLeg( diL.leg2() )) ]
+            # std. tight iso version
+            #selDiLeptons = [ diL for diL in event.diLeptons if \
+            #                 self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
+		#	     self.testLooseStdLeg( diL.leg1() ) and self.testLooseStdLeg( diL.leg2() ) and \
+		#	     (self.testStdTightLeg( diL.leg1() ) or self.testStdTightLeg( diL.leg2() )) ]
             if len(selDiLeptons)==0:
                 return False
             event.diLepton = self.bestDiLepton( selDiLeptons )
@@ -110,23 +138,46 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 		    higgsPt = gen.pt()
 		    break
 	    event.higgsPtWeight = self.higgsPtWeightHistogram.GetBinContent(self.higgsPtWeightHistogram.FindBin(higgsPt))
-            event.eventWeight *= event.higgsPtWeight
+            #event.eventWeight *= event.higgsPtWeight
+		
+        if self.cfg_comp.isMC and "QCD" in self.cfg_comp.name:
+            generator = self.mchandles['generator'].product()
+            event.generatorWeight = generator.weight()
+            event.eventWeight *= event.generatorWeight
 		
         return True
-        
 
-    def testLeg1(self, leg):
+    def testLeg1(self, leg, iso=None):
+        #return True
+        #return self.testNonLeg(leg)
+        return self.testLeg(leg)
+        #return self.testStdMediumLeg(leg)
+        #return self.testStdTightLeg(leg)
+    def testLeg2(self, leg, iso=None):
+        #return True
+        #return self.testNonLeg(leg)
+        return self.testLeg(leg)
+        #return self.testStdMediumLeg(leg)
+        #return self.testStdTightLeg(leg)
+
+    def testLeg(self, leg):
         return (leg.pt()>35 and abs(leg.eta())<2.1 and \
 	   leg.tauID("decayModeFinding")>0.5 and \
 	   leg.tauID("byMediumIsoMVA")>0.5 and \
 	   leg.tauID("againstElectronLoose")>0.5 and \
 	   leg.tauID("againstMuonLoose")>0.5)
 
-
-    def testLeg2(self, leg):
+    def testStdMediumLeg(self, leg):
         return (leg.pt()>35 and abs(leg.eta())<2.1 and \
 	   leg.tauID("decayModeFinding")>0.5 and \
-	   leg.tauID("byMediumIsoMVA")>0.5 and \
+	   leg.tauID("byMediumCombinedIsolationDeltaBetaCorr")>0.5 and \
+	   leg.tauID("againstElectronLoose")>0.5 and \
+	   leg.tauID("againstMuonLoose")>0.5)
+
+    def testStdTightLeg(self, leg):
+        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+	   leg.tauID("decayModeFinding")>0.5 and \
+	   leg.tauID("byTightCombinedIsolationDeltaBetaCorr")>0.5 and \
 	   leg.tauID("againstElectronLoose")>0.5 and \
 	   leg.tauID("againstMuonLoose")>0.5)
 
@@ -140,7 +191,15 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
     def testLooseLeg(self, leg):
         return (leg.pt()>35 and abs(leg.eta())<2.1 and \
 	   leg.tauID("decayModeFinding")>0.5 and \
-	   leg.tauID("byRawIsoMVA")>0.795 and \
+	   leg.tauID("byRawIsoMVA")>0.5 and \
+	   #leg.tauID("byRawIsoMVA")>0.795 and \
+	   leg.tauID("againstElectronLoose")>0.5 and \
+	   leg.tauID("againstMuonLoose")>0.5)
+
+    def testLooseStdLeg(self, leg):
+        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+	   leg.tauID("decayModeFinding")>0.5 and \
+	   leg.tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5 and \
 	   leg.tauID("againstElectronLoose")>0.5 and \
 	   leg.tauID("againstMuonLoose")>0.5)
 
