@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.PAT.PATCMG_cff import PATCMGTriggerSequence
+from CMGTools.Common.PAT.PATCMG_cff import *
 from CMGTools.Common.physicsObjectPrinter_cfi import physicsObjectPrinter
 from CMGTools.Common.skims.cmgCandCount_cfi import *
 from CMGTools.Common.skims.cmgTriggerObjectSel_cfi import *
@@ -17,7 +17,8 @@ razorMJHadTriggerSel = cmgTriggerObjectSel.clone(
 razorMJHadTriggerCount = cmgCandCount.clone( src = 'razorMJHadTriggerSel', minNumber = 1 )
 
 razorMJHadTriggerInfo = physicsObjectPrinter.clone(
-    inputCollection = cms.untracked.InputTag("razorMJHadTriggerSel"),
+    #inputCollection = cms.untracked.InputTag("razorMJHadTriggerSel"),
+    inputCollection = cms.untracked.InputTag("cmgTriggerObjectSel"),
     printSelections = cms.untracked.bool(True)
     )
 
@@ -55,8 +56,8 @@ razorMJHadTriggerSeq = cms.Sequence(razorMJTriggerSequence+
 razorMJMuTriggerSeq = cms.Sequence(razorMJTriggerSequence+
                                  razorMJMuTriggerCount)
 
-razorMJEleTriggerSeq = cms.Sequence(razorMJTriggerSequence+
-                                 razorMJEleTriggerCount)
+#razorMJEleTriggerSeq = cms.Sequence(razorMJTriggerSequence+
+#                                 razorMJEleTriggerCount)
 
 razorMJAllTriggerSeq = cms.Sequence(razorMJTriggerSequence+
                                  razorMJAllTriggerCount)
