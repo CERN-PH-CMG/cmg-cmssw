@@ -73,6 +73,8 @@ class JetWeighter( Analyzer ):
 ##         setattr( event, varName, self.jet1.weight )
 
         event.eventWeight *= self.jet1.weight
+	if not hasattr(event,"triggerWeight"): event.triggerWeight=1.0
+	event.triggerWeight *= self.jet1.triggerWeight
         self.averages['weight'].add( self.jet1.weight )
         self.averages['triggerWeight'].add( self.jet1.triggerWeight )
         self.averages['eff_data'].add( self.jet1.triggerEffData )
