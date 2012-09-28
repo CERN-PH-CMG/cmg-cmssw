@@ -89,22 +89,6 @@ def split(comps):
     return splitComps
 
 
-## def split(comps):
-##     def chunks(l, n):
-##         return [l[i:i+n] for i in range(0, len(l), n)]
-##     splitComps = []
-##     for comp in comps:
-##         if hasattr( comp, 'splitFactor') and comp.splitFactor>1:
-##             chunkSize = len(comp.files) / comp.splitFactor
-##             for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
-##                 newComp = copy.deepcopy(comp)
-##                 newComp.files = chunk
-##                 newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
-##                                                        index=ichunk)
-##                 splitComps.append( newComp )
-##         else:
-##             splitComps.append( comp )
-##     return splitComps
 
 def main( options, args ):
     
@@ -135,11 +119,10 @@ def main( options, args ):
                                  'src/CMGTools/HToZZTo4Leptons/python/analyzers'] ))
     sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
                                  'src/CMGTools/LEP3/python/analyzers'] ))
-    selComps = cfg.config.components
+    selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
     selComps = split(selComps)
     for comp in selComps:
         print comp
-    # sys.exit(1)
     if len(selComps)>14:
         raise ValueError('too many threads: {tnum}'.format(tnum=len(selComps)))
     if not createOutputDir(outDir, selComps, options.force):
