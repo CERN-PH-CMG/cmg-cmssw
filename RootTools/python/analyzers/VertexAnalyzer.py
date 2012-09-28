@@ -1,3 +1,5 @@
+import itertools
+
 from CMGTools.RootTools.analyzers.VertexHistograms import VertexHistograms
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
@@ -78,10 +80,10 @@ class VertexAnalyzer( Analyzer ):
 
         if self.doHists:
             self.pileup.hist.Fill( len(event.goodVertices) )
+            self.pileup.mindist.Fill( self.mindist(event.goodVertices) )
 
         self.count.inc('Events With Good Vertex')
         return True
-
 
 
     def testGoodVertex(self,vertex):
@@ -95,6 +97,14 @@ class VertexAnalyzer( Analyzer ):
             return False
      
         return True
+
+    def mindist(self, vertices):
+        mindist = 999999
+        for comb in itertools.combinations(vertices, 2):
+            dist = abs(comb[0].z() - comb[1].z())
+            if dist<mindist:
+                mindist = dist
+        return mindist
                                                                  
     def write(self):
         super(VertexAnalyzer, self).write()

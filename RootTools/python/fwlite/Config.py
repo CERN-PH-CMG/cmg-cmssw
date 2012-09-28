@@ -4,17 +4,22 @@ import glob
 
 def printComps(comps, details=False):
     nJobs = 0
+    nCompsWithFiles = 0
     for c in comps:
         if not hasattr(c, 'splitFactor'):
             c.splitFactor = 1
         print c.name, c.splitFactor, len(c.files)
-        if len(c.files):
+        if len(c.files)==0:
+            continue
+        else:
             if details:
                 print c.files[0]
             nJobs += c.splitFactor
+            nCompsWithFiles += 1
+            
     print '-'*70
-    print '# components = ', len(comps)
-    print '# jobs       = ', nJobs
+    print '# components with files = ', nCompsWithFiles
+    print '# jobs                  = ', nJobs
 
 
 class CFG(object):

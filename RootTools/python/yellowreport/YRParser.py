@@ -20,9 +20,23 @@ if __name__ == '__main__':
     import pprint
     import sys
     mass = float(sys.argv[1])
+
+    process = ['GGH', 'VBF', 'WH', 'ZH', 'TTH']
     
     print 'mass', mass 
     #pprint.pprint( yrparser7TeV.get(mass) )
-    print '7 TeV', yrparser7TeV.get(mass)['VBF']['sigma']
-    #pprint.pprint( yrparser8TeV.get(mass) )
-    print '8 TeV', yrparser8TeV.get(mass)['VBF']['sigma']
+
+    def printSigma(parser):
+        tot = 0
+        for p in process:
+            sigma = parser.get(mass)[p]['sigma']
+            print '\t', p, sigma
+            tot += sigma
+        print '\tTOTAL', tot
+            
+    print '7 TeV'
+    printSigma(yrparser7TeV)
+    print '8 TeV'
+    printSigma(yrparser8TeV)
+    
+  
