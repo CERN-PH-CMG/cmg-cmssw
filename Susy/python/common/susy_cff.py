@@ -16,5 +16,5 @@ susyGenSequence  = cms.Sequence(
     )
 
 susyDataSequence  = cms.Sequence(
-    boolToIntSequence
+    #boolToIntSequence
     )
