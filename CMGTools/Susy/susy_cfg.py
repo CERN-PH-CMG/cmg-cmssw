@@ -3,18 +3,20 @@ from PhysicsTools.PatAlgos.patTemplate_cfg import *
 ##########
 runOnMC = True
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
-json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/Prompt/Cert_160404-180252_7TeV_PromptReco_Collisions11_JSON.txt'
+json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-200245_8TeV_PromptReco_Collisions12_JSON.txt'
 if not runOnMC:
     applyJSON(process, json )
 ##########
 skimEvents = False
-runPAT = True
+runPAT = False
+runOld5XGT = False
 
 ##########
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
-process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC))
+#process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC, runOld5XGT))
+process.GlobalTag.globaltag = cms.string('START53_V10::All')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(200000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -30,11 +32,14 @@ process.setName_('MJSkim')
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'cmgtools',
-    '/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0_NewType1MET',
-    'patTuple_[0-9]+\\.root'
+    #'wreece',
+    '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B/',
+    #'/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B',
+    #'/MultiJet/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_6_0_B_QuadJet',
+    'patTuple_[0-9]+\\.root',
     #'cmgTuple_[0-9]+\\.root'
     ) 
-#process.source.fileNames = process.source.fileNames[:10]
+process.source.fileNames = process.source.fileNames[:10]
 
 ext = 'CMG'
 
@@ -49,12 +54,12 @@ outFileNameExt = ext
 process.p = cms.Path()
 
 if runPAT:
-    process.load('CMGTools.Common.CMG.CMG_cff')
+    process.load('CMGTools.Common.PAT.PATCMG_cff')
 
     if not runOnMC:
         # removing MC stuff
         print 'removing MC stuff, as we are running on Data'
-        process.PATCMGSequence.remove(genSequence)
+        process.PATCMGSequence.remove(process.PATCMGGenSequence)
 
     print 'cloning the jet sequence to build PU chs jets'
 
