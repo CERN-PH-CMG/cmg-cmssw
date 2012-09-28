@@ -13,7 +13,7 @@
 #include <map>
 #include "PhysicsTools/TheNtupleMaker/interface/HelperFor.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "CMGTools/External/interface/PileupJetIdentifier.h"
+//#include "CMGTools/External/interface/PileupJetIdentifier.h"
 #include "DataFormats/Common/interface/RefProd.h"
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Common/interface/Handle.h"
@@ -93,7 +93,7 @@ namespace pat
 	// ---------------------------------------------------------
 	// -- User access methods go here
 	// ---------------------------------------------------------
-
+	/*
         float puJetId_nParticles() const { return (*puJetId_)[jets_->refAt(oindex)].nParticles(); }
         float puJetId_nCharged() const { return (*puJetId_)[jets_->refAt(oindex)].nCharged(); }
         float puJetId_leadChFrac() const { return (*puJetId_)[jets_->refAt(oindex)].leadChFrac(); }
@@ -128,7 +128,7 @@ namespace pat
         float puJetId_frac05() const { return (*puJetId_)[jets_->refAt(oindex)].frac05(); }
         float puJetId_leadCharge() const { return (*puJetId_)[jets_->refAt(oindex)].leadCharge(); }
         float puJetId_secondCharge() const { return (*puJetId_)[jets_->refAt(oindex)].secondCharge(); }
-
+	
         float daughter_0_puJetId_nParticles() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].nParticles():-999; }
         float daughter_0_puJetId_nCharged() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].nCharged():-999; }
         float daughter_0_puJetId_leadChFrac() const { return (object->numberOfDaughters()>0)?(*subJetpuJetId_)[object->daughterPtr(0)].leadChFrac():-999; }
@@ -198,7 +198,7 @@ namespace pat
         float daughter_1_puJetId_frac05() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].frac05():-999; }
         float daughter_1_puJetId_leadCharge() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].leadCharge():-999; }
         float daughter_1_puJetId_secondCharge() const { return (object->numberOfDaughters()>1)?(*subJetpuJetId_)[object->daughterPtr(1)].secondCharge():-999; }
-
+	*/
         float getTau(int num) const;
         float tau1() const { return getTau(1); }
         float tau2() const { return getTau(2); }
@@ -210,8 +210,8 @@ namespace pat
   private:
     // -- User internals
         edm::Handle<edm::View<pat::Jet> > jets_;
-        edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > puJetId_;
-        edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > subJetpuJetId_;
+        //edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > puJetId_;
+        //edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > subJetpuJetId_;
 
   public:
 	

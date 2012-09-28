@@ -270,6 +270,7 @@ root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/WZ_TuneZ2star_8TeV_pythi
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/WZ_TuneZ2star_8TeV_pythia6_tauola_grid/ntuple_347_2_Kb2.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/WZ_TuneZ2star_8TeV_pythia6_tauola_grid/ntuple_348_2_ogx.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/WZ_TuneZ2star_8TeV_pythia6_tauola_grid/ntuple_34_3_fG1.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/WZ_TuneZ2star_8TeV_pythia6_tauola_grid/ntuple_351_2_DF0.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/WZ_TuneZ2star_8TeV_pythia6_tauola_grid/ntuple_352_3_JsS.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/WZ_TuneZ2star_8TeV_pythia6_tauola_grid/ntuple_354_2_gQC.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/WZ_TuneZ2star_8TeV_pythia6_tauola_grid/ntuple_355_2_EK8.root

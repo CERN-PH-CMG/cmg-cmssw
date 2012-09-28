@@ -319,6 +319,8 @@ int main(int argc, char** argv)
   // Loop over events
   //---------------------------------------------------------------------------
 
+  double weight=1;
+
   for(int entry=0; entry < nevents; ++entry)
 	{
 	  // Read event into memory
@@ -350,16 +352,16 @@ int main(int argc, char** argv)
 	     (fabs(jethelper_eta[1])<2.5)&&
 	     (fabs(jethelper_eta[0]-jethelper_eta[1])<1.3)&&
 	     
-	     (jethelper_neutralHadronEnergyFraction[0]<0.99)&&
-	     (jethelper_neutralEmEnergyFraction[0]<0.99)&&
+	     (jethelper_neutralHadronEnergyFraction[0]<0.90)&&
+	     (jethelper_neutralEmEnergyFraction[0]<0.90)&&
 	     (jethelper_nConstituents[0]>1)&&
 	     ((fabs(jethelper_eta[0])>2.4)||
 	      ((jethelper_chargedHadronEnergyFraction[0]>0)&&
 	       (jethelper_chargedMultiplicity[0]>0)&&
 	       (jethelper_chargedEmEnergyFraction[0]<0.99)))&&
 	     
-	     (jethelper_neutralHadronEnergyFraction[1]<0.99)&&
-	     (jethelper_neutralEmEnergyFraction[1]<0.99)&&
+	     (jethelper_neutralHadronEnergyFraction[1]<0.90)&&
+	     (jethelper_neutralEmEnergyFraction[1]<0.90)&&
 	     (jethelper_nConstituents[1]>1)&&
 	     ((fabs(jethelper_eta[1])>2.4)||
 	      ((jethelper_chargedHadronEnergyFraction[1]>0)&&
@@ -410,9 +412,10 @@ int main(int argc, char** argv)
 	  // -- fill histograms --
 	  // ---------------------	  
 
-          double weight=1;
           if(geneventinfoproduct_weight>0)
 	      weight=geneventinfoproduct_weight;
+	  else
+	      weight=1;
 
           mass->Fill(DijetMass, weight);
 	  if(((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.25)) ||
@@ -441,6 +444,18 @@ int main(int argc, char** argv)
              ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)&&(jethelper_combinedSecondaryVertexBJetTags[1]>0.244)))
               mass_2Hbtag->Fill(DijetMass, weight);
 
+	  if(((JetMass1>115)&&(JetMass1<135)) ||
+	     ((JetMass2>115)&&(JetMass2<135)))
+              mass_1Hmtag->Fill(DijetMass, weight);
+	  if(((JetMass1>115)&&(JetMass1<135)) &&
+	     ((JetMass2>115)&&(JetMass2<135)))
+              mass_2Hmtag->Fill(DijetMass, weight);
+	  if((((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)) &&
+	      ((JetMass2>115)&&(JetMass2<135)))||
+	     (((JetMass1>115)&&(JetMass1<135)) &&
+ 	      ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25))))
+              mass_1Hmtag_1Htag->Fill(DijetMass, weight);
+/*
 	  if(((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)&&(jethelper_muonEnergyFraction[0]>0.1)) ||
              ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)&&(jethelper_muonEnergyFraction[1]>0.1)))
               mass_1Hmtag->Fill(DijetMass, weight);
@@ -452,53 +467,64 @@ int main(int argc, char** argv)
 	  if(((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)&&(jethelper_muonEnergyFraction[0]>0.1)) &&
              ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)&&(jethelper_muonEnergyFraction[1]>0.1)))
               mass_2Hmtag->Fill(DijetMass, weight);
-
+*/
 	}
 
+  double y_min=0.5;
+  if(weight!=1) y_min=mass->GetMaximum()/1e6;
+
   TCanvas c1("c1","c1",200,200);
-  mass->Draw("histe");
-  mass->GetXaxis()->SetRangeUser(890,6000);
-  mass->GetYaxis()->SetRangeUser(0.5,mass->GetMaximum()*1.5);
+  mass->Draw("he");
+  mass->GetXaxis()->SetRangeUser(1200,6000);
+  mass->GetYaxis()->SetRangeUser(y_min,mass->GetMaximum()*1.5);
   gPad->SetLogy(true);
   mass_1Wtag->SetLineColor(2);
-  mass_1Wtag->Draw("histesame");
+  mass_1Wtag->Draw("hesame");
   mass_2Wtag->SetLineColor(3);
-  mass_2Wtag->Draw("histesame");
+  mass_2Wtag->Draw("hesame");
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Wtag_mass.pdf").c_str());
 
-  mass->Draw("histe");
-  mass->GetXaxis()->SetRangeUser(890,6000);
-  mass->GetYaxis()->SetRangeUser(0.5,mass->GetMaximum()*1.5);
+  mass->Draw("he");
+  mass->GetXaxis()->SetRangeUser(1200,6000);
+  mass->GetYaxis()->SetRangeUser(y_min,mass->GetMaximum()*1.5);
   gPad->SetLogy(true);
   mass_1Htag->SetLineColor(2);
-  mass_1Htag->Draw("histesame");
+  mass_1Htag->Draw("hesame");
   mass_2Htag->SetLineColor(3);
-  mass_2Htag->Draw("histesame");
+  mass_2Htag->Draw("hesame");
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Htag_mass.pdf").c_str());
 
-  mass->Draw("histe");
-  mass->GetXaxis()->SetRangeUser(890,6000);
-  mass->GetYaxis()->SetRangeUser(0.5,mass->GetMaximum()*1.5);
+  mass->Draw("he");
+  mass->GetXaxis()->SetRangeUser(1200,6000);
+  mass->GetYaxis()->SetRangeUser(y_min,mass->GetMaximum()*1.5);
   gPad->SetLogy(true);
   mass_1Hbtag->SetLineColor(2);
-  mass_1Hbtag->Draw("histesame");
+  mass_1Hbtag->Draw("hesame");
   mass_1Hbtag_1Htag->SetLineColor(3);
-  mass_1Hbtag_1Htag->Draw("histesame");
+  mass_1Hbtag_1Htag->Draw("hesame");
   mass_2Hbtag->SetLineColor(4);
-  mass_2Hbtag->Draw("histesame");
+  mass_2Hbtag->Draw("hesame");
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Hbtag_mass.pdf").c_str());
 
-  mass->Draw("histe");
-  mass->GetXaxis()->SetRangeUser(890,6000);
-  mass->GetYaxis()->SetRangeUser(0.5,mass->GetMaximum()*1.5);
+  mass->SetTitle("");
+  mass->GetXaxis()->SetTitle("dijet mass");
+  mass->GetYaxis()->SetTitle("events");
+  mass->Draw("he");
+  mass->GetXaxis()->SetRangeUser(500,6000);
+  mass->GetYaxis()->SetRangeUser(y_min,mass->GetMaximum()*1.5);
   gPad->SetLogy(true);
   mass_1Hmtag->SetLineColor(2);
-  mass_1Hmtag->Draw("histesame");
+  mass_1Hmtag->Draw("hesame");
+  mass_1Htag->SetLineColor(6);
+  mass_1Htag->Draw("hesame");
   mass_1Hmtag_1Htag->SetLineColor(3);
-  mass_1Hmtag_1Htag->Draw("histesame");
+  mass_1Hmtag_1Htag->Draw("hesame");
   mass_2Hmtag->SetLineColor(4);
-  mass_2Hmtag->Draw("histesame");
+  mass_2Hmtag->Draw("hesame");
+  mass_2Htag->SetLineColor(7);
+  mass_2Htag->Draw("hesame");
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Hmtag_mass.pdf").c_str());
+  c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Hmtag_mass.root").c_str());
 
   stream.close();
   ofile.close();

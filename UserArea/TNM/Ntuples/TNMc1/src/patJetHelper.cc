@@ -24,8 +24,8 @@ JetHelper::~JetHelper() {}
 void JetHelper::analyzeEvent()
 {
   event->getByLabel(labelname, jets_);
-  event->getByLabel(labelname+"puJetId", puJetId_);
-  event->getByLabel("ak5PFJetsCHSprunedSubJetspuJetId", subJetpuJetId_);
+  //event->getByLabel(labelname+"puJetId", puJetId_);
+  //event->getByLabel("ak5PFJetsCHSprunedSubJetspuJetId", subJetpuJetId_);
 }
 
 // -- Called once per object
@@ -88,6 +88,7 @@ float JetHelper::jetCharge() const
     }
     return val/object->energy(); 
 }
+
 
 float JetHelper::daughter_0_jetCharge() const
 {

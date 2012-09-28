@@ -13,6 +13,7 @@
 #endif
 
 #include "DataFormats/Math/interface/deltaR.h"
+#include "TLorentzVector.h"
 
 using namespace std;
 //-----------------------------------------------------------------------------
@@ -283,6 +284,15 @@ int main(int argc, char** argv)
       histsmetsumet[j]->Sumw2();
   }
   
+  std::vector<TH1F*> histsmptsumpt;
+  for ( size_t j = 0; j < (massBins.size()-1); ++j )
+  {
+      std::stringstream name;
+      name << "dijet_" << massBins[j] << "_" << massBins[j+1] << "_" << "mptsumpt";
+      histsmptsumpt.push_back(new TH1F(name.str().c_str(),name.str().c_str(),20,0,1.00001));
+      histsmptsumpt[j]->Sumw2();
+  }
+  
   std::vector<TH1F*> histsdphi;
   for ( size_t j = 0; j < (massBins.size()-1); ++j )
   {
@@ -429,6 +439,11 @@ int main(int argc, char** argv)
                   histsy2[j]->Fill(jethelper2_rapidity[1], weight);
                   histsyboost[j]->Fill(fabs(jethelper2_rapidity[0]+jethelper2_rapidity[1])/2., weight);
                   histsmetsumet[j]->Fill(met2_et/met2_sumEt, weight);
+		  TLorentzVector spt1;
+		  spt1.SetPtEtaPhiE(jethelper2_pt[0],jethelper2_eta[0],jethelper2_phi[0],jethelper2_energy[0]);
+		  TLorentzVector spt2;
+		  spt2.SetPtEtaPhiE(jethelper2_pt[1],jethelper2_eta[1],jethelper2_phi[1],jethelper2_energy[1]);
+                  histsmptsumpt[j]->Fill((spt1+spt2).Pt()/(jethelper2_pt[0]+jethelper2_pt[1]), weight);
                   histsdphi[j]->Fill(fabs(reco::deltaPhi(jethelper2_phi[0],jethelper2_phi[1])));
               }
           }
@@ -451,6 +466,7 @@ int main(int argc, char** argv)
       histsy2[j]->Write();
       histsyboost[j]->Write();
       histsmetsumet[j]->Write();
+      histsmptsumpt[j]->Write();
       histsdphi[j]->Write();
       hists[j]->Draw("histe");
       std::stringstream name;

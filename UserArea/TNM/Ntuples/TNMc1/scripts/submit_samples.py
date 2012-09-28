@@ -1,27 +1,30 @@
 import os
 
 samples = [
-('/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM',True,False),
-('/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
-('/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
+#('/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM',True,False),
+#('/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
+#('/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
 #('/WWtoAnything_ptmin500_TuneZ2Star_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
-('/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
-('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
+#('/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
+#('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
 #('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12-PU_S7_START52_V9-v5/AODSIM',True,False),
-('/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
-('/QCD_HT-500To1000_TuneZ2star_8TeV-madgraph-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
-('/HT/Run2012A-PromptReco-v1/RECO',False,False),
-('/JetHT/Run2012B-PromptReco-v1/AOD',False,False),
+#('/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
+#('/QCD_HT-500To1000_TuneZ2star_8TeV-madgraph-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
+#('/HT/Run2012A-PromptReco-v1/RECO',False,False),
+#('/JetHT/Run2012B-PromptReco-v1/AOD',False,False),
+('/JetHT/Run2012C-PromptReco-v1/AOD',False,False),
+('/JetHT/Run2012C-PromptReco-v2/AOD',False,False),
+('/HT/Run2012A-13Jul2012-v1/AOD',False,False),
+('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False),
 #('/yxin_RSG_WW_1000_pythia6_01/yxin-yxin_RSG_WW_1000_pythia6_01-52e9c298e8547223f910bab8db11615e/USER',True,True),
 #('/yxin_RSG_WW_2000_pythia6_01/yxin-yxin_RSG_WW_2000_pythia6_01-54dbdee3e49fbf0c9fb4ed9452c44bd3/USER',True,True),
+#('/RadionToHHTo4B_1TeV',True,True),
+#('/RadionToHHTo4B_2TeV',True,True),
 ]
 
 for sample, mc, fastsim in samples:
     print sample, "mc", mc, "fastsim", fastsim
-    if mc:
-        shortsample=sample.strip("/").split("/")[0]+"_grid"
-    else:
-        shortsample="_".join(sample.strip("/").split("/"))+"_grid"
+    shortsample="_".join(sample.strip("/").split("/"))+"_grid2"
     crabcfg=open("crab.cfg","w")
     crabcfg.writelines("""
 [CRAB]
@@ -49,12 +52,12 @@ scheduler = glite
 
 ### To configure CRAB as client. Let CRAB select one of the available servers for you
 ### CRAB will submit jobs to an available server, which will submit and manage for the users
-use_server = 1
+use_server = 0
 
 ### Only to debug propose, configure CRAB  as client and set the name of the server
 ### (e.g. pi, lnl etc etc )
 ### CRAB will submit jobs to the server, which will submit and manage for the users
-server_name = cern_vocms20
+#server_name = cern_vocms20
 
 [LSF]
 queue=2nd
@@ -139,10 +142,12 @@ pset=cfg.py
 """)
     if mc:
         crabcfg.writelines("""total_number_of_events=-1
-events_per_job = 10000""")
+events_per_job = 30000""")
     else:
         crabcfg.writelines("""total_number_of_lumis=-1
-lumis_per_job = 10""")
+lumis_per_job = 30
+lumi_mask = /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-202305_8TeV_PromptReco_Collisions12_JSON.txt
+""")
     crabcfg.writelines("""
 
 ### Number of jobs to be created per task
@@ -312,12 +317,12 @@ publish_data=0
 ### SE Black List:
 se_black_list = T0,T1,T3,T2_BE_UCL
 ### SE White List
-#se_white_list = infn
+#se_white_list = cern
 
 ### CE Black List:
 #ce_black_list = infn
 ### CE White List:
-#ce_white_list = infn
+#ce_white_list = cern
 
 ## fields written into jdl
 virtual_organization = cms
@@ -362,15 +367,74 @@ print 'querying database for source files'
 
 """)
     cfg.writelines("runOnMC = "+str(mc))
-    cfg.writelines("""
-
-
+    if "RadionToHHTo4B_1TeV" in sample:
+        cfg.writelines("""
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-'file:/afs/cern.ch/user/h/hinzmann/workspace/ditau/RSGravitonToWW_kMpl01_M_1000_TuneZ2star_8TeV_pythia6_cff_py_GEN_FASTSIM_HLT_10_1_fkb.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_10_1_Mvy.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_11_1_voa.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_1_1_jar.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_12_1_HEX.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_13_1_yvO.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_14_1_tFW.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_15_1_3Ji.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_16_1_zCN.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_17_1_Vzw.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_18_1_YLy.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_19_1_iF5.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_20_1_yaa.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_2_1_7S9.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_3_1_oFF.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_4_1_LMz.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_5_1_1eu.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_6_1_6tt.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_7_1_d4t.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_8_1_bhk.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_9_1_HYK.root',
     )
-)
+)""")
+    elif "RadionToHHTo4B_2TeV" in sample:
+        cfg.writelines("""
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_10_1_hbQ.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_11_1_y7o.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_1_1_K3X.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_12_1_Bik.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_13_1_YJe.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_14_1_ZjZ.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_15_1_OdQ.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_16_1_Kmo.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_17_1_ATD.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_18_1_g4b.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_19_1_s5w.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_20_1_qyp.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_2_1_qJI.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_3_1_f6F.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_4_1_Pok.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_5_1_S53.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_6_1_eyc.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_7_1_pUD.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_8_1_pJh.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_2TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_2TeV_9_1_6kk.root',
+    )
+)""")
+    else:
+        cfg.writelines("""
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(
+'/store/data/Run2012C/JetHT/AOD/PromptReco-v1/000/198/044/9852196C-E6C5-E111-AA60-003048F01E88.root'
+#'file:/afs/cern.ch/user/h/hinzmann/workspace/ditau/RSGravitonToWW_kMpl01_M_1000_TuneZ2star_8TeV_pythia6_cff_py_GEN_FASTSIM_HLT_10_1_fkb.root',
+    )
 
+#from CMGTools.Production.datasetToSource import *
+#process.source = datasetToSource(
+#   'CMS',
+#   '/JetHT/Run2012C-PromptReco-v1/AOD'
+#   )
+)""")
+
+    cfg.writelines("""
 print sep_line
 print process.source.fileNames
 print sep_line 
@@ -534,8 +598,8 @@ else:
         GT = 'START52_V9B::All' # for Summer12 MC
     else:
         #GT = 'GR_R_52_V7::All'
-        GT = 'GR_R_52_V7C::All' # for run2012A
-        #GT = 'GR_P_V41_AN1::All' # for run2012C
+        #GT = 'GR_R_52_V7C::All' # for run2012A
+        GT = 'GR_P_V41_AN1::All' # for run2012C
 process.GlobalTag.globaltag = GT
 
 print 'Global tag       : ', process.GlobalTag.globaltag
@@ -550,7 +614,7 @@ print 'Global tag       : ', process.GlobalTag.globaltag
 ## Geometry and Detector Conditions (needed for a few patTuple production steps)
 
 from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
-process.schedule = getSchedule(process, runOnMC)
+process.schedule = getSchedule(process, runOnMC, False)
 #process.schedule.append( process.outpath )
 
 ## MessageLogger
@@ -584,7 +648,7 @@ process.load("L1TriggerConfig.L1GtConfigProducers.L1GtConfig_cff")
 if runOnMC==False:
     from CMGTools.Common.Tools.applyJSON_cff import *
     #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON.txt'
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-200245_8TeV_PromptReco_Collisions12_JSON.txt'
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-202305_8TeV_PromptReco_Collisions12_JSON.txt'
     print 'json:', json
     applyJSON(process, json )
 
@@ -623,24 +687,34 @@ process.p += cms.Sequence(process.selectedPatJetspuJetId * process.selectedPatJe
 
 ### Tweaks to run PAT and ntuple in one go
 
-#process.demo.edmTriggerResultsHelper1[0]="edmTriggerResultsHelper          TriggerResults               1"
+process.demo.edmTriggerResultsHelper1[0]="edmTriggerResultsHelper          TriggerResults               1"
 
+### Tweaks to run on the grid
+
+process.p.remove(process.vertexWeightSequence)
+
+""")
+    if fastsim:
+        cfg.writelines("""
 ### Tweaks to run on fastsim samples
 
-process.schedule.remove(process.hcalLaserFilterFromAODPath)
+process.schedule.remove(process.metNoiseCleaningPath)
+#process.schedule.remove(process.hcalLaserFilterFromAODPath)
+process.schedule.remove(process.hcalLaserEventFilterPath)
 process.schedule.remove(process.CSCTightHaloFilterPath)
 process.schedule.remove(process.HBHENoiseFilterPath)
-process.demo.buffers.remove('edmTriggerResultsHelper1')
-process.p.remove(process.PATCMGTauSequence)
-process.demo.buffers.remove('patTau')
-process.p.remove(process.PATCMGMetSequence)
-process.p.remove(process.MetSignificanceSequence)
-process.demo.buffers.remove('patMET')
-process.demo.buffers.remove('patMET1')
-process.p.remove(process.vertexWeightSequence)
+#process.demo.buffers.remove('edmTriggerResultsHelper1')
+#process.p.remove(process.PATCMGTauSequence)
+#process.demo.buffers.remove('patTau')
+#process.p.remove(process.PATCMGMetSequence)
+#process.p.remove(process.MetSignificanceSequence)
+#process.demo.buffers.remove('patMET')
+#process.demo.buffers.remove('patMET1')
 """)
     cfg.close()
     #os.system("crab -create")
+    #for i in range(0,10):
+    #   os.system("crab -c crab_"+shortsample+" -submit "+str(i*300+1)+"-"+str((i+1)*300))
     #os.system("crab -c crab_"+shortsample+" -submit 1-1000")
     #os.system("crab -c crab_"+shortsample+" -submit 1001-2000")
     #os.system("crab -c crab_"+shortsample+" -submit 2001-3000")
@@ -648,5 +722,6 @@ process.p.remove(process.vertexWeightSequence)
     #os.system("crab -c crab_"+shortsample+" -submit 4001-5000")
     os.system("crab -c crab_"+shortsample+" -status")
     os.system("crab -c crab_"+shortsample+" -get")
+    #os.system("crab -c crab_"+shortsample+" -forceResubmit all")
     #os.system("crab -c crab_"+shortsample+" -resubmit all")
     #os.system("crab -c crab_"+shortsample+" -kill all")

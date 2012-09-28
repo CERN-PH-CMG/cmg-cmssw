@@ -96,11 +96,11 @@
 <use   name="rootmath"/>
 <use   name="rootrflx"/>
 <use name="Ntuples/TNMc1"/>
-<library file="userplugin_patElectronHelper.cc" name="patElectronHelper">
+<library file="userplugin_patJetHelper.cc" name="patJetHelper">
 </library>
 <library file="userplugin_patMuonHelper.cc" name="patMuonHelper">
 </library>
-<library file="userplugin_patJetHelper.cc" name="patJetHelper">
+<library file="userplugin_patElectronHelper.cc" name="patElectronHelper">
 </library>
 
 <use name="FWCore/Framework"/>
