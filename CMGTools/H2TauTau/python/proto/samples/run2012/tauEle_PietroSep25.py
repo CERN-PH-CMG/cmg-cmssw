@@ -25,6 +25,7 @@ aliases = {
     '/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1':'embed_Run2012A',
     '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135':'embed_Run2012B_193752_195135',
     '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070':'embed_Run2012B_195147_196070',
+    '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run196090to196531':'embed_Run2012B_196090_196531',
     '/WW_TuneZ2star.*START52.*':'WW',
     '/WZ_TuneZ2star.*START52.*':'WZ',
     '/ZZ_TuneZ2star.*START52.*':'ZZ' 
@@ -41,9 +42,8 @@ for data in data_list_2012:
 
     
 allsamples = copy.copy(MC)
-allsamples.extend( data_list_2012 )
+#allsamples.extend( data_list_2012 )
 allsamples.extend( embed_list_2012 )
-
 connect( allsamples, '%H2TauTau_tauEle_20Sep_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, cache=True, verbose=False)
 
 # this number is not in the DB (dbs says this sample is still in production)
