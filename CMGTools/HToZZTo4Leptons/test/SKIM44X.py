@@ -15,7 +15,7 @@ process.source = datasetToSource(
     '/DoubleMu/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_V5_6_0_B'
    )
 
-process.source.fileNames = process.source.fileNames[:10]
+#process.source.fileNames = cms.untracked.vstring('file:cmgTuplePreskim.root')
 
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
@@ -28,17 +28,20 @@ process.skim=cms.EDFilter('HZZCMGSkim',
                           nLeptons = cms.int32(3)
                           )
 
+
+process.correctedMuons = cms.EDProducer('RochesterPATMuonCorrector',
+             src = cms.InputTag("patMuonsWithTrigger"))
+
 process.cleanedMuons = cms.EDProducer('PATMuonCleanerBySegments',
-             src = cms.InputTag("patMuonsWithTrigger"),
+             src = cms.InputTag("correctedMuons"),
              preselection = cms.string("track.isNonnull"),
              passthrough = cms.string("isGlobalMuon && numberOfMatches >= 2"),
              fractionOfSharedSegments = cms.double(0.499))
 
 
-
 process.cmgMuon.cfg.inputCollection = 'cleanedMuons'
 
-process.p = cms.Path(process.cleanedMuons+process.cmgMuon+process.cmgMuonSel+process.skim)
+process.p = cms.Path(process.correctedMuons+process.cleanedMuons+process.cmgMuon+process.cmgMuonSel+process.skim)
 
 ########################################################
 ## CMG output definition
@@ -66,6 +69,7 @@ process.outcmg = cms.OutputModule(
     "drop *_cmgMuonSel_*_PAT",                     
     "drop *_patMuonsWithTrigger_*_PAT",                     
     "drop *_cmgMuon_*_CMG",                     
+    "drop *_correctedMuons_*_CMG",                     
     "drop *_tauGenJetsSelectorAllHadrons_*_*"
     ),
     dropMetaData = cms.untracked.string('PRIOR')

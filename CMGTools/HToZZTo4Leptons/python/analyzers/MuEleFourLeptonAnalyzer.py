@@ -11,9 +11,8 @@ class MuEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
     def declareHandles(self):
         super(MuEleFourLeptonAnalyzer, self).declareHandles()
 
-        muons = 'cmgMuonSelStdLep'
-        if self.cfg_ana.PF is True:
-            muons = 'cmgMuonSel'
+
+        muons = 'cmgMuonSel'
 
         self.handles['leptons1'] = AutoHandle(
             muons,

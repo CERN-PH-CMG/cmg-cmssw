@@ -46,6 +46,7 @@ kreator = ComponentCreator()
 
 GGH119=kreator.makeMCComponent('GGH119','/GluGluToHToZZTo4L_M-119_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH121=kreator.makeMCComponent('GGH121','/GluGluToHToZZTo4L_M-121_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH124=kreator.makeMCComponent('GGH124','/GluGluToHToZZTo4L_M-124_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH127=kreator.makeMCComponent('GGH127','/GluGluToHToZZTo4L_M-127_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH128=kreator.makeMCComponent('GGH128','/GluGluToHToZZTo4L_M-128_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH135=kreator.makeMCComponent('GGH135','/GluGluToHToZZTo4L_M-135_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
@@ -57,7 +58,7 @@ GGH220=kreator.makeMCComponent('GGH220','/GluGluToHToZZTo4L_M-220_8TeV-powheg-py
 GGH325=kreator.makeMCComponent('GGH325','/GluGluToHToZZTo4L_M-325_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH375=kreator.makeMCComponent('GGH375','/GluGluToHToZZTo4L_M-375_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH475=kreator.makeMCComponent('GGH475','/GluGluToHToZZTo4L_M-475_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-#GGH900=kreator.makeMCComponent('GGH900','/GluGluToHToZZTo4L_M-900_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH900=kreator.makeMCComponent('GGH900','/GluGluToHToZZTo4L_M-900_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
 VBF120=kreator.makeMCComponent('VBF120','/VBF_HToZZTo4L_M-120_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 VBF121=kreator.makeMCComponent('VBF121','/VBF_HToZZTo4L_M-121_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
@@ -88,7 +89,11 @@ ZZ2e2tau=kreator.makeMCComponent('ZZ2e2tau','/ZZTo2e2tau_8TeV-powheg-pythia6/Sum
 ZZ2mu2tau=kreator.makeMCComponent('ZZ2mu2tau','/ZZTo2mu2tau_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 ZZ4mu=kreator.makeMCComponent('ZZ4mu','/ZZTo4mu_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 ZZ4tau=kreator.makeMCComponent('ZZ4tau','/ZZTo4tau_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+ZZ4e=kreator.makeMCComponent('ZZ4e','/ZZTo4e_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
+
+GGZZ4L=kreator.makeMCComponent('GGZZ4L','/GluGluToZZTo4L_8TeV-gg2zz-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/PAT_CMG_5_7_0/'+skim,userName,filepattern)
+GGZZ2L2L=kreator.makeMCComponent('GGZZ2L2L','/GluGluToZZTo2L2L_TuneZ2star_8TeV-gg2zz-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/PAT_CMG_5_7_0/'+skim,userName,filepattern)
 
 
 mcSamples=[
@@ -97,7 +102,7 @@ mcSamples=[
     GGH900,VBF120,VBF121,VBF122,VBF124,VBF125,VBF126,
     VBF127,VBF128,VBF130,VBF145,VBF190,VBF350,VBF400,
     VBF500,VBF600,VBF700,ZZ2e2mu,ZZ2e2tau,
-    ZZ2mu2tau,ZZ4mu,ZZ4tau,WG,WW,WZ
+    ZZ2mu2tau,ZZ4mu,ZZ4tau,ZZ4e,GGZZ4L,GGZZ2L2L,WG,WW,WZ
     ]
 
 
@@ -190,20 +195,26 @@ from CMGTools.HToZZTo4Leptons.setup.Efficiencies import *
 #Define splitting
 for comp in mcSamples:
     comp.isMC = True
-    comp.splitFactor = 10
+    comp.splitFactor = 50
     comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012
 
+
+for comp in [GGZZ4L,GGZZ2L2L]:
+    comp.puFileMC=dataDir+"/puProfile_Summer12.root"
+    comp.puFileData=dataDir+"/puProfile_Data12.root"
+    
+
 for comp in dataSamplesMu:
-    comp.splitFactor = 100
+    comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
 for comp in dataSamplesE:
-    comp.splitFactor = 100
+    comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
     
 for comp in dataSamplesMuE:
-    comp.splitFactor = 100
+    comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
 
                                                             
