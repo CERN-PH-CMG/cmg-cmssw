@@ -25,8 +25,17 @@ allsamples = copy.copy(MC)
 # HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_6_0_B/TAUMU_NewSVFit_Colin17Sep',
 #                             'cbern', '.*root')
 
-HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B/TAUMU_NewSVFit_Colin17Sep',
+## HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B/TAUMU_NewSVFit_Colin17Sep',
+##                              'cbern', '.*root')
+
+# full new VBF recipe
+# good sync with andrew, but need to update PU weights for HCP, and to check full SVFit mass
+HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PATCMG_V5_8_0_Test/TAUMU_ColinSep28',
                              'cbern', '.*root')
 
+
+# last part of new recipe
+## HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_6_0_B/TAUMU_MVAMET2_ColinSep29',
+##                              'cbern', '.*root')
 
 
