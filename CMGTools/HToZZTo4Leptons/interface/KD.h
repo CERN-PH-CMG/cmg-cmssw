@@ -31,7 +31,7 @@ class KD
 		   int LHCsqrts = 8) {
     
     float melaKD,melaS,melaB;
-    mela_->computeLD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,
+    mela_->computeKD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,
 		    costhetastar_,costheta1_,costheta2_,phi_,phistar1_,melaKD,melaS,melaB,withPt,withY,LHCsqrts);
     return melaKD;
   }
@@ -44,7 +44,7 @@ class KD
 			  TLorentzVector Z2_lept2, int Z2_lept2Id) {
     
     float melaKD,melaS,melaB;
-    pseudomela_->eval(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,melaKD,melaS,melaB);
+    pseudomela_->computeKD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,melaKD,melaS,melaB);
     return melaKD;
   }
 
@@ -56,7 +56,7 @@ class KD
 			  TLorentzVector Z2_lept2, int Z2_lept2Id) {
     
     float melaKD,melaS,melaB;
-    spintwomela_->eval(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,melaKD,melaS,melaB);
+    spintwomela_->computeKD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,melaKD,melaS,melaB);
     return melaKD;
   }
 
