@@ -83,7 +83,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                                       embed, shift)
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
-    import pdb; pdb.set_trace()
+    # import pdb; pdb.set_trace()
     if 1:
         # replace QCD with a shape obtained from data in an anti-iso control region
         qcd_yield = osQCD.Hist('QCD').Integral()
