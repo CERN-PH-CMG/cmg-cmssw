@@ -16,30 +16,26 @@ tauScaleShift = 1.0
 syncntuple = True
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
-puFileData = None
-puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
-puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_start_196509.root'])
-# puFileData = '/'.join([puFileDir, 'Test/MyDataPileupHistogram_RLT.root'])
+
+# mine: 
+# puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
+# puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_start_196509.root'])
+
+# andrew:
+puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-09-12/MC_Summer12_PU_S7.root'
+puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-09-12/Data_Pileup_2012.root'
+
 
 vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
 vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
 
 mc_vertexWeight = None
-mc_tauEffWeight = None
-mc_muEffWeight = None
 
 mc_tauEffWeight_mc = 'effTau2012MC'
 mc_muEffWeight_mc = 'effMu2012MC'
 mc_tauEffWeight = 'effTau2012AB'
 mc_muEffWeight = 'effMu2012AB'
     
-
-eventSelector = cfg.Analyzer(
-    'EventSelector',
-    toSelect = [
-    755879,
-    ]
-    )
 
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
@@ -108,7 +104,7 @@ muonWeighter = cfg.Analyzer(
     effWeightMC = mc_muEffWeight_mc,
     lepton = 'leg2',
     verbose = False,
-    disable = True,
+    disable = False,
     idWeight = mu_id_taumu_2012,
     isoWeight = mu_iso_taumu_2012    
     )
@@ -143,17 +139,22 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinJul5 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinSep4 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_dcSync_ColinSep5 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_dcSync_ColinSep17 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinSep17 import *
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinAug8 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinSep19 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinSep19 import *
 
 #########################################################################################
 
 
-MC_list = [WJets, DYJets, TTJets, WW, WZ, ZZ]
+# MC_list = [WJets, DYJets, TTJets]
+MC_list = [HiggsVBF125]
 # MC_list = copy.copy(MC)
-data_list = [data_Run2012A, data_Run2012B]
-embed_list = [embed_Run2012A, embed_Run2012B_195147_196070, embed_Run2012B_193752_195135]
+data_list = copy.copy(data_list_Run2012A)
+data_list.extend(data_list_Run2012B)
+embed_list = copy.copy(embed_list_Run2012A)
+embed_list.extend(embed_list_Run2012B)
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
@@ -188,11 +189,6 @@ for emb in embed_list:
     emb.splitFactor = 10
 
 data_Run2012A.splitFactor = 40
-data_Run2012B_start_194479.splitFactor = 50
-data_Run2012B_194480_195016.splitFactor = 40
-data_Run2012B_195017_195947.splitFactor = 40 
-data_Run2012B_195948_196509.splitFactor = 50
-data_Run2012B_start_196509.splitFactor = 200
 data_Run2012B.splitFactor = 200
 
 selectedComponents =  copy.copy(MC_list)
@@ -223,15 +219,13 @@ if syncntuple:
 
 test = 1
 if test==1:
-    comp = WJets
-    # comp = HiggsVBF125
-    # comp.files = comp.files[:5]
-    # comp.files = 'cmgTuple_colinMinusJosh.root'
+    comp = HiggsVBF125
+    # comp.files = 'Aug14/joshMinusColin.root'
     selectedComponents = [comp]
-    # comp.splitFactor = 14
+    comp.splitFactor = 14
     # comp.files = comp.files[:1]
     # for 53 MC: 
-    # comp.triggers = ['HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v*']
+    comp.triggers = ['HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v*']
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
