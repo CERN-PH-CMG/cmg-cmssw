@@ -116,7 +116,7 @@ unitpat = re.compile('.*\((.*)\)\s*$')
 keeper = []
 
 
-def draw(plot, doBlind=True, channel='TauMu', plotprefix = None):
+def draw(plot, doBlind=False, channel='TauMu', plotprefix = None):
     print plot
     blindxmin = None
     blindxmax = None
