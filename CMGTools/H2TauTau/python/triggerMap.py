@@ -42,7 +42,9 @@ pathsAndFilters = {
     # for 2012A and MC: 
     'HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoEle20LooseIsoPFTau20', [15,0]),
                                                                           ('hltOverlapFilterIsoEle20LooseIsoPFTau20',[11])),
-    # for 2012B
+    # for 2012B hltOverlapFilterIsoEle22WP90LooseIsoPFTau20
+    # for 53 MC hltOverlapFilterIsoEle20WP90LooseIsoPFTau20
+    #WARNING MODIFYING IT FOR SYNC!!
     'HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoEle22WP90LooseIsoPFTau20', [15,0]),
                                                      ('hltOverlapFilterIsoEle22WP90LooseIsoPFTau20',[11])),
     #'HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoEle20LooseIsoPFTau20', [15,0]),
