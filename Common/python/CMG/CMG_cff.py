@@ -26,5 +26,6 @@ CMGSequence = cms.Sequence(
     jetSequence +
     tauSequence +
     cmgPFMET +
-    cmgPFMETRaw
+    cmgPFMETRaw +
+    miscSequence  
     )

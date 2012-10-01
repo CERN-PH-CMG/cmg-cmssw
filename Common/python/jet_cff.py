@@ -36,7 +36,7 @@ cmgCaloBaseJetLead.inputCollection = 'cmgCaloBaseJet'
 
 # this pt cut is also going to be used to select GenJets,
 # see CMGTools.Common.gen.generator.genJets_cff
-ptCut = 'pt()>10'
+ptCut = ''
 cmgPFJetSel.cut = ptCut
 # cmgPFBaseJetSel.cut = ptCut
 cmgCaloBaseJetSel.cut = ptCut

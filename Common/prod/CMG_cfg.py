@@ -33,10 +33,10 @@ process.source.inputCommands=cms.untracked.vstring('keep *',
     'drop cmgMuons_*_*_*',
     'drop cmgElectrons_*_*_*',
     'drop cmgPhotons_*_*_*',
-    'drop cmgBaseJets_*_*_*',
+    # 'drop cmgBaseJets_*_*_*',
     'drop cmgPFJets_*_*_*',
     'drop cmgTaus_*_*_*',
-    'drop cmgBaseMETs_*_*_*',
+    # 'drop cmgBaseMETs_*_*_*',
     'drop cmgPFMETs_*_*_*',
     )
 
@@ -133,3 +133,4 @@ process.GlobalTag.globaltag = GT
 
 print 'Global tag       : ', process.GlobalTag.globaltag
 
+process.cmgPFJetSel.cut = 'pt()>10'

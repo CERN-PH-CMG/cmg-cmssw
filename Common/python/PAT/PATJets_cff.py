@@ -71,8 +71,7 @@ jetsPtGt1 = cmgCandSel.clone( src = 'patJets', cut = jetsPtGt1Cut )
 from CMGTools.Common.miscProducers.collectionSize.candidateSize_cfi import candidateSize
 nJetsPtGt1 = candidateSize.clone( src = 'jetsPtGt1' )
 
-# FIXME is it ok for jet studies?
-selectedPatJets.cut = 'pt()>10'
+selectedPatJets.cut = ''
 
 from  CMGTools.External.pujetidsequence_cff import puJetId
 puJetId.jets = 'selectedPatJets'
