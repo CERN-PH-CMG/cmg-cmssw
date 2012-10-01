@@ -211,7 +211,7 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
              comp.name.startswith('embed_') ):
         comp.nGenEvents = nEvents
         comp.nGenEvents *= globalEff
-    print 'LOADING:', comp.name, nEvents, globalEff, taskurl
+    print 'LOADING:', comp.name, path_name, nEvents, globalEff, taskurl
     # print dsInfo
     comp.files = getFiles(path_name, file_owner, filePattern, cache)
     if comp.name.startswith('data_'):
