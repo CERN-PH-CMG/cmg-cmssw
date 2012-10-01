@@ -9,6 +9,7 @@ def kinFit5(jets,ebeam, mass):
 
     finalFourJetsp4_1 = fourJetfitter.fit(jets[0].p4(), jets[1].p4(), jets[2].p4(), jets[3].p4(), 0, 1)
     chi2fit_1 = fourJetfitter.getChi2()
+    probfit_1 = fourJetfitter.getChi2Prob()
     status_1 = fourJetfitter.getStatus()
     if (chi2fit_1<0 or status_1 !=0):
         print 'status and chi2 fit1 with problems :', status_1, chi2fit_1
@@ -16,6 +17,7 @@ def kinFit5(jets,ebeam, mass):
 
     finalFourJetsp4_2 = fourJetfitter.fit(jets[0].p4(), jets[1].p4(), jets[2].p4(), jets[3].p4(), 0, 2)
     chi2fit_2 = fourJetfitter.getChi2()
+    probfit_2 = fourJetfitter.getChi2Prob()
     status_2 = fourJetfitter.getStatus()
     if (chi2fit_2<0 or status_2 !=0):
         print 'status and chi2 fit2 with problems :', status_2, chi2fit_2
@@ -23,6 +25,7 @@ def kinFit5(jets,ebeam, mass):
 
     finalFourJetsp4_3 = fourJetfitter.fit(jets[0].p4(), jets[1].p4(), jets[2].p4(), jets[3].p4(), 0, 3)
     chi2fit_3 = fourJetfitter.getChi2()
+    probfit_3 = fourJetfitter.getChi2Prob()
     status_3 = fourJetfitter.getStatus()
     if (chi2fit_3<0 or status_3 !=0):
         print 'status and chi2 fit3 with problems :', status_3, chi2fit_3
@@ -30,6 +33,7 @@ def kinFit5(jets,ebeam, mass):
 
     finalFourJetsp4_4 = fourJetfitter.fit(jets[0].p4(), jets[1].p4(), jets[2].p4(), jets[3].p4(), 1, 2)
     chi2fit_4 = fourJetfitter.getChi2()
+    probfit_4 = fourJetfitter.getChi2Prob()
     status_4 = fourJetfitter.getStatus()
     if (chi2fit_4<0 or status_4 !=0):
         print 'status and chi2 fit4 with problems :', status_4, chi2fit_4
@@ -38,6 +42,7 @@ def kinFit5(jets,ebeam, mass):
 
     finalFourJetsp4_5 = fourJetfitter.fit(jets[0].p4(), jets[1].p4(), jets[2].p4(), jets[3].p4(), 1, 3)
     chi2fit_5 = fourJetfitter.getChi2()
+    probfit_5 = fourJetfitter.getChi2Prob()
     status_5 = fourJetfitter.getStatus()
     if (chi2fit_5<0 or status_5 !=0):
         print 'status and chi2 fit5 with problems :', status_5, chi2fit_5
@@ -45,6 +50,7 @@ def kinFit5(jets,ebeam, mass):
 
     finalFourJetsp4_6 = fourJetfitter.fit(jets[0].p4(), jets[1].p4(), jets[2].p4(), jets[3].p4(), 2, 3)
     chi2fit_6 = fourJetfitter.getChi2()
+    probfit_6 = fourJetfitter.getChi2Prob()
     status_6 = fourJetfitter.getStatus()
     if (chi2fit_6<0 or status_6 !=0):
         print 'status and chi2 fit6 with problems :', status_6, chi2fit_6
@@ -52,7 +58,7 @@ def kinFit5(jets,ebeam, mass):
 
     #print 'chi2s:', chi2fit_1, chi2fit_2, chi2fit_3, chi2fit_4, chi2fit_5, chi2fit_6
 
-    chi2s = [(chi2fit_1,finalFourJetsp4_1), (chi2fit_2,finalFourJetsp4_2), (chi2fit_3,finalFourJetsp4_3), (chi2fit_4, finalFourJetsp4_4), (chi2fit_5,finalFourJetsp4_5) , (chi2fit_6, finalFourJetsp4_6)]
+    chi2s = [(chi2fit_1, probfit_1, finalFourJetsp4_1), (chi2fit_2, probfit_2, finalFourJetsp4_2), (chi2fit_3, probfit_3, finalFourJetsp4_3), (chi2fit_4, probfit_4, finalFourJetsp4_4), (chi2fit_5, probfit_5, finalFourJetsp4_5) , (chi2fit_6, probfit_6, finalFourJetsp4_6)]
     chi2s.sort()
 
     #print 'chi2s first:', chi2s[0][0]
@@ -65,7 +71,7 @@ def kinFit5(jets,ebeam, mass):
     
     for i,jet in enumerate(jets):
 
-        finalFourJetsp4 = chi2s[0][1]
+        finalFourJetsp4 = chi2s[0][2]
         p4 = jet.p4()
         p4.SetPxPyPzE(finalFourJetsp4[i].Px(),finalFourJetsp4[i].Py(),finalFourJetsp4[i].Pz(),finalFourJetsp4[i].Energy())
         # do not reassign if fit failed for all combinations
@@ -77,4 +83,4 @@ def kinFit5(jets,ebeam, mass):
 #         print 'etas after:', jets[0].eta(), jets[1].eta(), jets[2].eta(), jets[3].eta()    
 #         print chi2s[0][0]
 
-    return chi2s[0][0]
+    return chi2s[0][0], chi2s[0][1]
