@@ -3,9 +3,12 @@
 #include "PhysicsTools/KinFitter/interface/TFitParticleEtEtaPhi.h"
 #include "PhysicsTools/KinFitter/interface/TFitConstraintM.h"
 
+
 #include <TLorentzVector.h>
+#include <TMath.h>
 #include <TString.h>
 #include <iostream>
+
 
 using namespace std;
 typedef reco::Candidate::LorentzVector LorentzVector;
@@ -120,6 +123,13 @@ double FourJetEpMKinFitter::getChi2( ) {
   double chi2 =  TKinFitter::getS();
   
   return chi2;
+}
+
+double FourJetEpMKinFitter::getChi2Prob( ) {
+  
+  //Get the Chi2 and ndf
+  double chi2Prob = TMath::Prob(TKinFitter::getS(),TKinFitter::getNDF());
+  return chi2Prob;
 }
 
 
