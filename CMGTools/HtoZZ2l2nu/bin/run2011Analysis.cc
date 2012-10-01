@@ -380,6 +380,11 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfcandjetdphi"       , ";#Delta#phi;Events",20,0,3.5) );
       mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvsdeta"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];|#Delta #eta|;Events",40,0,2000,25,0,10) );
       mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvshardpt"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Hard p_{T} [GeV/c];Events",40,0,2000,25,0,250) );
+
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_total"     , ";#generated vertices;Events",35,0,35) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tag"       , ";#generated vertices;Events",35,0,35) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tagzpt"    , ";#generated vertices;Events",35,0,35) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tagzptpuid", ";#generated vertices;Events",35,0,35) );
     }
 
 
@@ -1116,8 +1121,9 @@ int main(int argc, char* argv[])
 			  
 			  //VBF monitoring
 			  float dphijj(-1),hardpt(-1);
+                          mon.fillHisto("pfvbfcount_total",tags_cat,ev.ngenITpu,weight);
 			  if(nAJetsLoose>=2)
-			    {
+			  {
 			      LorentzVector vbfSyst=aGoodIdJets[0]+aGoodIdJets[1];
 			      LorentzVector hardSyst=vbfSyst+zvvs[0]+zll;
 			      hardpt=hardSyst.pt();
@@ -1135,12 +1141,12 @@ int main(int argc, char* argv[])
                                  mon.fillHisto("pfvbfcandzeppenfeld",     tags_cat, fabs(maxEta-avgEtajj)/fabs(detajj),weight);
                                  mon.fillHisto("pfvbfcandzeppenfeld",     tags_cat, fabs(minEta-avgEtajj)/fabs(detajj),weight);			      
                                  mon.fillHisto("pfvbfpremjj",     tags_cat, vbfSyst.mass(),weight);
-                                 if(fabs(detajj)>4.5)
+                                 if(fabs(detajj)>4.0)//4.5
                                    {
                                      mon.fillHisto("pfvbfmjj",     tags_cat, vbfSyst.mass(),weight);
                                      mon.fillHisto("pfvbfmjjvsdeta",     tags_cat, vbfSyst.mass(),fabs(detajj),weight);
                                      mon.fillHisto("pfvbfmjjvshardpt",     tags_cat, vbfSyst.mass(),hardpt,weight);
-                                     if(vbfSyst.mass()>450) 
+                                     if(vbfSyst.mass()>500)//500 
                                        {
                                          mon.fillHisto("pfvbfhardpt",     tags_cat, hardpt,weight);
                                          int ncjv(0);
@@ -1153,6 +1159,11 @@ int main(int argc, char* argv[])
                                            }
                                          mon.fillHisto("pfvbfcjv",tags_cat,ncjv,weight);
                                          mon.fillHisto("pfvbfhtcjv",tags_cat,htcjv,weight);
+
+                                         bool passJetPUId( hasObjectId(aGoodIdJets[0].pid, JETID_OPT_LOOSE) && hasObjectId(aGoodIdJets[1].pid, JETID_OPT_LOOSE)) ;
+                                         mon.fillHisto("pfvbfcount_tagzpt",tags_cat,ev.ngenITpu,weight);
+                                         if(passJetPUId)mon.fillHisto("pfvbfcount_tagzptpuid",tags_cat,ev.ngenITpu,weight);
+
                                        }
                                    }
                                }
