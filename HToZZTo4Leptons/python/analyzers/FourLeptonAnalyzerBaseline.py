@@ -166,6 +166,7 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
             event.otherLeptons = filter(lambda x:x.pt()>10,event.otherLeptons)
             event.otherTightLeptons = filter(self.testLeptonTight,event.otherLeptons)
             metV = TLorentzVector(event.met.px(),event.met.py(),event.met.pz(),event.met.energy())
+
             event.recoil = (-metV-event.higgsCand).Pt()
 
         #ZZ phase smace
