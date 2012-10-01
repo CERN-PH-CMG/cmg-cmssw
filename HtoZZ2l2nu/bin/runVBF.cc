@@ -7,7 +7,6 @@
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
 #include "CMGTools/HtoZZ2l2nu/interface/METUtils.h"
-#include "CMGTools/HtoZZ2l2nu/interface/GammaEventHandler.h"
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ObjectFilters.h"
@@ -70,13 +69,6 @@ int main(int argc, char* argv[])
   FILE* outTxtFile = NULL;
   if(!isMC)outTxtFile = fopen(outTxtUrl.Data(), "w");
   printf("TextFile URL = %s\n",outTxtUrl.Data());
-
-  //handler for gamma processes
-  GammaEventHandler *gammaEvHandler=0;
-  if(mctruthmode==22){
-     isMC=false;
-     gammaEvHandler = new GammaEventHandler(runProcess);
-  }
 
   //tree info
   int evStart=runProcess.getParameter<int>("evStart");
@@ -292,15 +284,6 @@ int main(int argc, char* argv[])
       if(isMC && mctruthmode==1 && !isDYToLL(ev.mccat) ) continue;
       if(isMC && mctruthmode==2 && !isDYToTauTau(ev.mccat) ) continue;
       
-
-      bool isGammaEvent = false;
-      if(gammaEvHandler)
-	{
-          isGammaEvent=gammaEvHandler->isGood(phys);
-          if(mctruthmode==22 && !isGammaEvent) continue;
-          tag_cat = "gamma";
-	}
-     
       //pileup and Higgs pT weight
       //float weight=ev.puWeight;
       float weight = 1.0;
@@ -564,11 +547,8 @@ int main(int argc, char* argv[])
                    double MinEta, MaxEta;
 
                    if(jets[0].eta()<jets[1].eta()){MinEta=jets[0].eta(); MaxEta=jets[1].eta();}else{MinEta=jets[1].eta(); MaxEta=jets[0].eta();}
-                   if(isGammaEvent){  if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)VBFCentralLeptons++;  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)VBFCentralLeptons++;
-                   }else{             if(zll.eta()>MinEta && zll.eta()<MaxEta) VBFCentralLeptons=2;
-                   }
-
-                   for(size_t ijet=2; ijet<jets.size(); ijet++){
+		   if(zll.eta()>MinEta && zll.eta()<MaxEta) VBFCentralLeptons=2;
+		   for(size_t ijet=2; ijet<jets.size(); ijet++){
                        if(jets[ijet].pt()<15)continue;
                        if(jets[ijet].eta()>MinEta && jets[ijet].eta()<MaxEta)VBFCentral15Jets++;
                        if(jets[ijet].pt()<30)continue; 

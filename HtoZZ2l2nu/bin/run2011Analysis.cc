@@ -161,8 +161,8 @@ int main(int argc, char* argv[])
  if(fin){
    char buf[100]; sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
    cout << "Line shape weights (and uncertainties) will be applied from " << buf << " @ " << lineShapeWeightsFileURL << endl;
-   TString wgts[]={"rwgtpint","rwgtpint_up","rwgtpint_down"};
-   for(size_t i=0; i<3; i++)
+   TString wgts[]={"rwgtpint","rwgtpint_up","rwgtpint_down","rwgt"};
+   for(size_t i=0; i<4; i++)
      {
        TGraph *gr= (TGraph *) fin->Get(buf+wgts[i]);
        if(gr) hLineShapeGrVec.push_back((TGraph *)gr->Clone());
@@ -210,6 +210,7 @@ int main(int argc, char* argv[])
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_0raw", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_1vbf", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_2qt" , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_sls" , ";Gen Higgs Mass;Events", 1000,0,2000) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_3ls" , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_ls" ,  ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
 
@@ -619,7 +620,7 @@ int main(int argc, char* argv[])
       float signalWeight=1.0;
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
-      float lShapeWeights[3]={1.0,1.0,1.0};
+      float lShapeWeights[4]={1.0,1.0,1.0,1.0};
 
 
 
@@ -645,7 +646,8 @@ int main(int argc, char* argv[])
 	noLShapeWeight=weight;
 	weight *= lShapeWeights[0];
         //printf("lsw=%f \n",lShapeWeights[0]);
-
+	
+        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_sls" ,tags_inc, phys.genhiggs[0].mass(), weight*lShapeWeights[3]/lShapeWeights[0]);	
         if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_3ls" ,tags_inc, phys.genhiggs[0].mass(), weight);	
         if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_ls"  ,tags_inc, phys.genhiggs[0].mass(), weight/signalWeight);
       }
@@ -1105,7 +1107,7 @@ int main(int argc, char* argv[])
 		      //passDphijmet=(mindphijmet15>0.5);
 		      passDphijmet=(mindphijmet>0.5);
 		      if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
-		      if(zvvs[0].pt()>30) mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet15:mindphijmet,weight);
+		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet15:mindphijmet,weight);
 
 		      if(passDphijmet) 
 			{
@@ -1294,8 +1296,8 @@ int main(int argc, char* argv[])
 
 	//recompute MET/MT if JES/JER was varied
 	LorentzVector zvv    = zvvs[ivar>8 ? 0 : ivar];
-	float mt3(0);
-	if(nextraleptons==1) mt3 = METUtils::transverseMass(extraLeptonsP4[0],zvv,false);
+	//float mt3(0);
+	//	if(nextraleptons==1) mt3 = METUtils::transverseMass(extraLeptonsP4[0],zvv,false);
 	PhysicsObjectJetCollection &varJets=variedAJets[ivar>4 ? 0  : ivar];
 	PhysicsObjectJetCollection tightVarJets;
 	LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
@@ -1310,7 +1312,7 @@ int main(int argc, char* argv[])
         }
 	bool passPreselection             (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passLocalBveto);
 	bool passPreselectionMbvetoMzmass (             passZpt && pass3dLeptonVeto && passDphijmet                  );          
-	bool passPreselectionM3dlep       (passZmass && passZpt                     && passDphijmet && passLocalBveto);
+	//bool passPreselectionM3dlep       (passZmass && passZpt                     && passDphijmet && passLocalBveto);
 	
 	float mt = METUtils::transverseMass(zll,zvv,true);
 	LorentzVector nullP4(0,0,0,0);

@@ -307,12 +307,12 @@ int main(int argc, char* argv[])
       bool hasEEtrigger = ev.triggerType & 0x1;
       bool hasMMtrigger = (ev.triggerType >> 1 ) & 0x1;
       bool hasMtrigger  = (ev.triggerType >> 3 ) & 0x1;
-      bool isGammaEvent    = gammaEvHandler.isGood(phys);
+      bool isGammaEvent    = gammaEvHandler.isGood(phys,use2011Id);
 
       //event weight
       float weight = 1.0;  
       if(isMC)                  { weight = LumiWeights.weight( ev.ngenITpu ); }
-      //if(!isMC && isGammaEvent) { weight = gammaEvHandler.getTriggerPrescaleWeight(); }
+      if(!isMC && isGammaEvent) { weight = gammaEvHandler.triggerWeight(); }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight);
