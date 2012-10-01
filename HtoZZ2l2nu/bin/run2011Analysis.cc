@@ -1099,9 +1099,10 @@ int main(int argc, char* argv[])
 		      TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
 		      tags_full.push_back(tag_cat+tag_subcat);
 		      //if(tag_subcat!="vbf") tags_full.push_back(tag_cat + "novbf");
-                      //if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(tag_cat + "geq1jets");
+                      if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(tag_cat + "geq1jets");
                       //if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
-                      if(tag_cat=="mumu" || tag_cat=="ee")tags_full.push_back(string("ll")+tag_subcat);
+                      //if(tag_cat=="mumu" || tag_cat=="ee")tags_full.push_back(string("ll")+tag_subcat);
+                      if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcat);  if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(string("ll")+string("geq1jets"));   }
 		      mon.fillHisto("npfjets",     tags_full, nAJetsLoose,weight);
 		      
 		      //passDphijmet=(mindphijmet15>0.5);
@@ -1325,9 +1326,10 @@ int main(int argc, char* argv[])
 	tags_full.push_back(tag_cat);
 	tags_full.push_back(tag_cat+tag_subcat);
 	//if(tag_subcat!="vbf") tags_full.push_back(tag_cat + "novbf");
-        //if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(tag_cat + "geq1jets");
+        if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(tag_cat + "geq1jets");
         //if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
-        if(tag_cat=="mumu" || tag_cat=="ee")tags_full.push_back(string("ll")+tag_subcat);
+        //if(tag_cat=="mumu" || tag_cat=="ee")tags_full.push_back(string("ll")+tag_subcat);
+        if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcat);  if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(string("ll")+string("geq1jets"));   }
 	
 	bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
 	if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
