@@ -1,0 +1,1 @@
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/RSGravitonToWW_kMpl04_M-1500_TuneZ2star_8TeV-pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_1_2_Lix.root
