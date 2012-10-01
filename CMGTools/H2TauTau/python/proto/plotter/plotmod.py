@@ -61,6 +61,7 @@ def addQCD( plot, dataName ):
     plotWithQCD = copy.deepcopy( plot )
     # QCD_data = data - DY - TTbar - W
     qcd = copy.deepcopy(plotWithQCD.Hist(dataName))
+    #SYNC WITH JOSH, comment the following line
     qcd.Add(plotWithQCD.Hist('Ztt'), -1)
     try:
         f1 = plot.Hist('Ztt_ZL')
@@ -106,9 +107,11 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
     
     # WJets_data = data - DY - TTbar
     wjet = copy.deepcopy(mtplot.Hist(dataName))
+    #SYNC with JOSH: remove the following line
     wjet.Add(mtplot.Hist('Ztt'), -1)
     removingFakes = False
     try:
+        #SYNC with JOSH: replace the following 4 lines by pass
         f1 = mtplot.Hist('Ztt_ZL')
         f2 = mtplot.Hist('Ztt_ZJ')
         wjet.Add(f1, -1)
