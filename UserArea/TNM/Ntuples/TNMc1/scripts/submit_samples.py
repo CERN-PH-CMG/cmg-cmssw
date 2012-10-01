@@ -12,19 +12,28 @@ samples = [
 #('/QCD_HT-500To1000_TuneZ2star_8TeV-madgraph-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
 #('/HT/Run2012A-PromptReco-v1/RECO',False,False),
 #('/JetHT/Run2012B-PromptReco-v1/AOD',False,False),
-('/JetHT/Run2012C-PromptReco-v1/AOD',False,False),
-('/JetHT/Run2012C-PromptReco-v2/AOD',False,False),
-('/HT/Run2012A-13Jul2012-v1/AOD',False,False),
-('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False),
+#('/JetHT/Run2012C-PromptReco-v1/AOD',False,False),
+#('/JetHT/Run2012C-PromptReco-v2/AOD',False,False),
+#('/HT/Run2012A-13Jul2012-v1/AOD',False,False),
+#('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False),
 #('/yxin_RSG_WW_1000_pythia6_01/yxin-yxin_RSG_WW_1000_pythia6_01-52e9c298e8547223f910bab8db11615e/USER',True,True),
 #('/yxin_RSG_WW_2000_pythia6_01/yxin-yxin_RSG_WW_2000_pythia6_01-54dbdee3e49fbf0c9fb4ed9452c44bd3/USER',True,True),
 #('/RadionToHHTo4B_1TeV',True,True),
 #('/RadionToHHTo4B_2TeV',True,True),
+('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+('/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S8_START53_V7A-v1/AODSIM',True,False),
+('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+('/RSGravitonToWW_kMpl01_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+('/RSGravitonToWW_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+('/RSGravitonToZZ_kMpl01_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+('/RSGravitonToZZ_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+('/RSGravitonToWW_kMpl02_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+('/RSGravitonToWW_kMpl04_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
 ]
 
 for sample, mc, fastsim in samples:
     print sample, "mc", mc, "fastsim", fastsim
-    shortsample="_".join(sample.strip("/").split("/"))+"_grid2"
+    shortsample="_".join(sample.strip("/").split("/"))+"_grid"
     crabcfg=open("crab.cfg","w")
     crabcfg.writelines("""
 [CRAB]
@@ -683,7 +692,8 @@ process.ak5PFJetsCHSprunedSubJetspuJetId = pileupJetIdProducer.clone(
     algos = cms.VPSet(cutbased)
     )
 
-process.p += cms.Sequence(process.selectedPatJetspuJetId * process.selectedPatJetsCHSpuJetId * process.ak5PFJetsCHSprunedSubJetspuJetId * process.demo)
+#process.p += cms.Sequence(process.selectedPatJetspuJetId * process.selectedPatJetsCHSpuJetId * process.ak5PFJetsCHSprunedSubJetspuJetId * process.demo)
+process.p += cms.Sequence(process.demo)
 
 ### Tweaks to run PAT and ntuple in one go
 
@@ -715,11 +725,6 @@ process.schedule.remove(process.HBHENoiseFilterPath)
     #os.system("crab -create")
     #for i in range(0,10):
     #   os.system("crab -c crab_"+shortsample+" -submit "+str(i*300+1)+"-"+str((i+1)*300))
-    #os.system("crab -c crab_"+shortsample+" -submit 1-1000")
-    #os.system("crab -c crab_"+shortsample+" -submit 1001-2000")
-    #os.system("crab -c crab_"+shortsample+" -submit 2001-3000")
-    #os.system("crab -c crab_"+shortsample+" -submit 3001-4000")
-    #os.system("crab -c crab_"+shortsample+" -submit 4001-5000")
     os.system("crab -c crab_"+shortsample+" -status")
     os.system("crab -c crab_"+shortsample+" -get")
     #os.system("crab -c crab_"+shortsample+" -forceResubmit all")

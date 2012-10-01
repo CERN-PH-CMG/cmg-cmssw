@@ -2,23 +2,23 @@ import os
 import subprocess
 
 samples = [
-('/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM',True,False, 'grid'),
-('/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
-('/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
-('/WWtoAnything_ptmin500_TuneZ2Star_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
-('/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
-('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
-('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12-PU_S7_START52_V9-v5/AODSIM',True,False, 'grid'),
-('/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
-('/QCD_HT-500To1000_TuneZ2star_8TeV-madgraph-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
-('/HT/Run2012A-PromptReco-v1/RECO',False,False, 'grid'),
-('/JetHT/Run2012B-PromptReco-v1/AOD',False,False, 'grid'),
-('/HT/Run2012A-13Jul2012-v1/AOD',False,False, 'grid'),
-('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False, 'grid'),
-('/JetHT/Run2012C-PromptReco-v1/AOD',False,False, 'grid'),
-('/JetHT/Run2012C-PromptReco-v2/AOD',False,False, 'ProductionTask'),
-('/RadionToHHTo4B_1TeV',True,True, 'cmsBatch'),
-('/RadionToHHTo4B_2TeV',True,True, 'cmsBatch'),
+#('/ZZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM',True,False, 'grid'),
+#('/WW_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
+#('/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
+#('/WWtoAnything_ptmin500_TuneZ2Star_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
+#('/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
+#('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
+#('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12-PU_S7_START52_V9-v5/AODSIM',True,False, 'grid'),
+#('/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
+#('/QCD_HT-500To1000_TuneZ2star_8TeV-madgraph-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False, 'grid'),
+#('/HT/Run2012A-PromptReco-v1/RECO',False,False, 'grid'),
+#('/JetHT/Run2012B-PromptReco-v1/AOD',False,False, 'grid'),
+('/HT/Run2012A-13Jul2012-v1/AOD',False,False, 'ProductionTask'),
+('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False, 'ProductionTask'),
+#('/JetHT/Run2012C-PromptReco-v1/AOD',False,False, 'ProductionTask'),
+#('/JetHT/Run2012C-PromptReco-v2/AOD',False,False, 'ProductionTask'),
+#('/RadionToHHTo4B_1TeV',True,True, 'cmsBatch'),
+#('/RadionToHHTo4B_2TeV',True,True, 'cmsBatch'),
 #('/yxin_RSG_WW_1000_pythia6_01/yxin-yxin_RSG_WW_1000_pythia6_01-52e9c298e8547223f910bab8db11615e/USER',True,True, 'grid'),
 #('/yxin_RSG_WW_2000_pythia6_01/yxin-yxin_RSG_WW_2000_pythia6_01-54dbdee3e49fbf0c9fb4ed9452c44bd3/USER',True,True, 'grid'),
 ]
@@ -31,9 +31,9 @@ for sample, mc, fastsim, production in samples:
     	shortsample="_".join(sample.strip("/").split("/"))+"_grid"
     filelist=open("fileList_"+shortsample+".txt","w")
     if production=="ProductionTask":
-      command="cmsLs -l /store/cmst3/user/hinzmann/CMG"+sample+"/NTUPLE_Sep17"+"""/ | awk '{size+=$2}END{print size/1024/1024/1024" GB"}'"""
+      command="cmsLs -l /store/cmst3/user/hinzmann/CMG"+sample+"/PAT_CMG_V5_6_0_B/NTUPLE_Oct1"+"""/ | awk '{size+=$2}END{print size/1024/1024/1024" GB"}'"""
       os.system(command)
-      command="cmsLs -l /store/cmst3/user/hinzmann/CMG"+sample+"/NTUPLE_Sep17"
+      command="cmsLs -l /store/cmst3/user/hinzmann/CMG"+sample+"/PAT_CMG_V5_6_0_B/NTUPLE_Oct1"
     elif production=="cmsBatch":
       command="cmsLs -l /store/cmst3/user/hinzmann/NTUPLE"+sample+""+"""/ | awk '{size+=$2}END{print size/1024/1024/1024" GB"}'"""
       os.system(command)
