@@ -232,7 +232,7 @@ razorMJDiHemiHadBox = cmgDiHemi.clone(
     )
     )      
 )
-razorMJDiHemiHadBoxSel = cmgCandSel.clone( src = 'razorMJDiHemiHadBox', cut = 'getSelection("cuts_razor")' )
+razorMJDiHemiHadBoxSel = cmgCandSel.clone( src = 'razorMJDiHemiHadBox', cut = 'getSelection("cuts_razor_r")' )
 
 #Now the JES scaled hemispheres
 razorMJHemiHadBoxUp = razorMJHemiHadBox.clone()
@@ -329,14 +329,12 @@ razorMJSkimSequenceHad = cms.Sequence(
     ~razorMJPFJetIDCount+
     #no loose electrons
     ~razorMJLooseElectronCount+
-    ~razorMJTightElectronCount+ 
     #no loose muons
     ~razorMJLooseMuonCount+
-    ~razorMJTightMuonCount+
-    #no loose taus
-    ~razorMJTightTauCount+  
+    #no tight taus - TODO - choose tau veto
+    ~razorMJTightTauCount#+  
     #apply the Razor cuts
-    razorMJDiHemiHadBoxSel 
+    #razorMJDiHemiHadBoxSel 
     )
 
 razorMJSkimSequenceEle = cms.Sequence(
@@ -354,11 +352,10 @@ razorMJSkimSequenceEle = cms.Sequence(
     razorMJTightElectronCount+ 
     #no loose muons
     ~razorMJLooseMuonCount+
-    ~razorMJTightMuonCount+
     #no tight taus
-    ~razorMJTightTauCount+
+    ~razorMJTightTauCount#+
     #apply the Razor cuts
-    razorMJDiHemiHadBoxSel 
+    #razorMJDiHemiHadBoxSel 
     )
 
 razorMJSkimSequenceMu = cms.Sequence(
@@ -374,13 +371,12 @@ razorMJSkimSequenceMu = cms.Sequence(
     ~razorMJPFJetIDLeptonCount+
     #no loose electrons
     ~razorMJLooseElectronCount+
-    ~razorMJTightElectronCount+ 
     #no loose muons, but a tight muon
     razorMJTightMuonCount+
     #no tight taus
-    ~razorMJTightTauCount+  
+    ~razorMJTightTauCount#+  
     #apply the Razor cuts
-    razorMJDiHemiHadBoxSel 
+    #razorMJDiHemiHadBoxSel 
     )
 
 razorMJSkimSequenceTau = cms.Sequence(
@@ -398,12 +394,10 @@ razorMJSkimSequenceTau = cms.Sequence(
     ~razorMJPFJetIDCount+
     #no loose electrons
     ~razorMJLooseElectronCount+
-    ~razorMJTightElectronCount+ 
     #no loose muons
     ~razorMJLooseMuonCount+
-    ~razorMJTightMuonCount+
-    #no loose taus, but a tight tau
-    razorMJTightTauCount+  
+    #a tight tau
+    razorMJTightTauCount#+  
     #apply the Razor cuts
-    razorMJDiHemiHadBoxSel 
+    #razorMJDiHemiHadBoxSel 
     )
