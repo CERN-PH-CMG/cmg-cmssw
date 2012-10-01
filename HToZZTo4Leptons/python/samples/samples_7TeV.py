@@ -188,6 +188,8 @@ dataSamplesMu=[DoubleMu]
 dataSamplesE=[DoubleElectron]
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
+
+from CMGTools.HToZZTo4Leptons.setup.FakeRates import *
 from CMGTools.HToZZTo4Leptons.setup.Efficiencies import *
 
 
@@ -212,3 +214,9 @@ for comp in uflSamples:
 
     
 
+for comp in dataSamplesMu:
+    comp.splitFactor = 100
+    comp.fakeRates=fakeRates2011
+for comp in dataSamplesE:
+    comp.splitFactor = 100
+    comp.fakeRates=fakeRates2011

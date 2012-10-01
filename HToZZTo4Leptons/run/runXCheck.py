@@ -2,7 +2,7 @@ import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
 
-from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2011 as effectiveAreas
+from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2012 as effectiveAreas
 from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
 channel = 'all'
@@ -55,8 +55,8 @@ muMuAna = cfg.Analyzer(
     minMass=4.,
     keep=False,
     effectiveAreas=effectiveAreas,
-    rhoMuon     = 'kt6PFJetsForIso',
-    rhoElectron = 'kt6PFJetsForIso',
+    rhoMuon     = 'kt6PFJetsCentralNeutral',
+    rhoElectron = 'kt6PFJets',
     FSR=fsr
     )
 
@@ -92,7 +92,7 @@ zzTree = cfg.Analyzer( 'FourLeptonTreeProducer',
 
 ####################################################################################
 
-from CMGTools.HToZZTo4Leptons.samples.samples_7TeV import * 
+from CMGTools.HToZZTo4Leptons.samples.samples_8TeV import * 
 
 ####################################################################################
 
@@ -120,9 +120,14 @@ elif channel == 'mu_ele' :
     for data in dataSamplesMu:
         data.triggers = triggers_mumu
         data.vetoTriggers = triggers_ee
+
+    for data in dataSamplesMuE:
+        data.triggers = triggers_mue
+        data.vetoTriggers=triggers_ee+triggers_mumu
+
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
-    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
+    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
 
 elif channel == 'all' :
     theAna = allAna
@@ -132,10 +137,14 @@ elif channel == 'all' :
         data.triggers = triggers_mumu
         data.vetoTriggers = triggers_ee
 
+    for data in dataSamplesMuE:
+        data.triggers = triggers_mue
+        data.vetoTriggers=triggers_ee+triggers_mumu
+
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
-    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
-
+    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
+#    selectedComponents=dataSamplesMu
 
     
 
@@ -154,6 +163,7 @@ dataSequence=[
     skimAnalyzer,
     jsonFilter,
     puAna,
+    A4Skim,
     triggerAna,
     vertexAna,
     theAna,
@@ -169,12 +179,12 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 0
+test = 1
 if test==1:
-    dataset = GGH120
+    dataset = GGH127
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-#    dataset.files=['cmgTuple.root']
+    dataset.files=['cmgTuple.root']
 
 
    

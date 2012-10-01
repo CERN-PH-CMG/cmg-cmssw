@@ -6,8 +6,6 @@ import os, sys, re, optparse,pickle,shutil
 if __name__ == '__main__':
     parser = optparse.OptionParser()
 
-
-
     parser.add_option("-c","--counter",dest="trigcounter",default='SkimCountAnalyzer/SkimReport.pck',help="counter")
     parser.add_option("-s","--sigma",dest="sigma",type=float,help="cross section")
     parser.add_option("-f","--finalState",dest="finalState",default='All',help="final state")

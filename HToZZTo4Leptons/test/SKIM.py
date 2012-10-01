@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
 
-runOnMC      = True
+runOnMC      = False
 runOld5XGT = False
 runOnFastSim = False
 
@@ -11,11 +11,11 @@ process = cms.Process("CMG")
 
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
-    'cmgtools_group',
-    '/GluGluToHToZZTo4L_M-900_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_7_0'
+    'cmgtools',
+    '/DoubleMu/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_V5_6_0_B'
    )
 
-process.source.fileNames = process.source.fileNames[:10]
+#process.source.fileNames = cms.untracked.vstring('file:cmgTuplePreskim.root')
 
 ## Maximal Number of Events
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
@@ -25,20 +25,23 @@ print 'loading the main CMG sequence'
 process.load('CMGTools.Common.PAT.PATCMG_cff')
 
 process.skim=cms.EDFilter('HZZCMGSkim',
-                          nLeptons = cms.int32(4)
+                          nLeptons = cms.int32(3)
                           )
 
+
+process.correctedMuons = cms.EDProducer('RochesterPATMuonCorrector',
+             src = cms.InputTag("patMuonsWithTrigger"))
+
 process.cleanedMuons = cms.EDProducer('PATMuonCleanerBySegments',
-             src = cms.InputTag("patMuonsWithTrigger"),
+             src = cms.InputTag("correctedMuons"),
              preselection = cms.string("track.isNonnull"),
              passthrough = cms.string("isGlobalMuon && numberOfMatches >= 2"),
              fractionOfSharedSegments = cms.double(0.499))
 
 
-
 process.cmgMuon.cfg.inputCollection = 'cleanedMuons'
 
-process.p = cms.Path(process.cleanedMuons+process.cmgMuon+process.cmgMuonSel+process.skim)
+process.p = cms.Path(process.correctedMuons+process.cleanedMuons+process.cmgMuon+process.cmgMuonSel+process.skim)
 
 ########################################################
 ## CMG output definition
@@ -66,6 +69,7 @@ process.outcmg = cms.OutputModule(
     "drop *_cmgMuonSel_*_PAT",                     
     "drop *_patMuonsWithTrigger_*_PAT",                     
     "drop *_cmgMuon_*_CMG",                     
+    "drop *_correctedMuons_*_CMG",                     
     "drop *_tauGenJetsSelectorAllHadrons_*_*"
     ),
     dropMetaData = cms.untracked.string('PRIOR')
@@ -86,7 +90,7 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
-process.GlobalTag.globaltag = getGlobalTag( runOnMC, runOld5XGT )
+process.GlobalTag.globaltag = getGlobalTag( runOnMC)
 print 'Global tag       : ', process.GlobalTag.globaltag
 
 ########################################################

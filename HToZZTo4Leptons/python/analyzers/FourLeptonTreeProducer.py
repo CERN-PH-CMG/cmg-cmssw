@@ -67,9 +67,10 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.fill('vertexWeight',(event.vertexWeight))
         self.fill('eventWeight',(event.eventWeight))
 
-
-        self.fill('otherLeptons',len(event.otherLeptons))
-        self.fill('otherTightLeptons',len(event.otherTightLeptons))
+        if hasattr(event,'otherLeptons'):
+            self.fill('otherLeptons',len(event.otherLeptons))
+        if hasattr(event,'otherTightLeptons'):
+            self.fill('otherTightLeptons',len(event.otherTightLeptons))
 
         #Fill run,lumi,event
         self.fillEventInfo(iEvent,event)
