@@ -5,6 +5,8 @@ from copy import copy
 
 pat='V5_6_0_B'
 skim='SKIM_Sep26_NoCal_MuClean'
+#skim='SKIM_Sep30_MuROCH_EleNo'
+
 filepattern = 'cmgTuple.*root'
 userName='bachtis'
 
