@@ -7,8 +7,9 @@ namespace cmg {
 
   /**
      A simple and light particle class. 
-     Can be used to store consistuents in cmg physics objects, 
+     Can be used to store constituents in cmg physics objects, 
      as is done in cmg::Tau.
+     Can also be used to store all PFCandidates in a light format.
   */
   class SimpleParticle : public math::PtEtaPhiMLorentzVector {
   public:

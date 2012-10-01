@@ -80,6 +80,8 @@
   
   <class name="cmg::SimpleParticle"/>
   <class name="std::vector<cmg::SimpleParticle>"/>
+  <class name="edm::Wrapper<cmg::SimpleParticle>"/>
+  <class name="edm::Wrapper<std::vector<cmg::SimpleParticle> >"/>
 
   <class name="cmg::Tau"/>
   <class name="cmg::Lepton<pat::TauPtr>" />

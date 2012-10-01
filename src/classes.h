@@ -111,6 +111,8 @@ namespace {
 
     cmg::SimpleParticle sp;
     std::vector<cmg::SimpleParticle> spv;    
+    edm::Wrapper<cmg::SimpleParticle> wsp;
+    edm::Wrapper<std::vector<cmg::SimpleParticle> > wvsp;
 
     cmg::Tau t;
     std::vector<cmg::Tau> tv;
