@@ -108,26 +108,37 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
     }
   else
     {
+      //10/fb @ 8 TeV
+      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
 
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
-      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/qt/plotter.root";
+      //5/fb @ 8 TeV
+      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotterab.root";
+      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotterab.root";
+      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012ab.root";
+
+      //5/fb @ 7 TeV
+      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/qt/plotter.root";
+      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       llFile    = "/afs/cern.ch/work/q/querten/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
      
       histos.push_back("met_met");
-      //histos.push_back("met_redMet");
+      // histos.push_back("met_met250");
+      //      histos.push_back("met_redMet");
       histos.push_back("mt");
-      //histos.push_back("mindphijmet");
+      histos.push_back("mindphijmet");
       //histos.push_back("pfvbfpremjj");
-      //  histos.push_back("pfvbfcandjetdeta");
-      // histos.push_back("pfvbfmjj");
-      // histos.push_back("pfvbfcjv");
+      //histos.push_back("pfvbfcandjetdeta");
+      //histos.push_back("pfvbfmjj");
+      //histos.push_back("pfvbfcjv");
       //histos.push_back("pfvbfhardpt");
       histos.push_back("mt_shapes");
 
       dilSignal.push_back("ggH(600)#rightarrow ZZ");
       dilSignal.push_back("qqH(600)#rightarrow ZZ");
+      dilSignal.push_back("ggH(300)#rightarrow ZZ");
+      dilSignal.push_back("qqH(300)#rightarrow ZZ");
 
       dilcats.push_back("eq0jets");
       dilcats.push_back("eq1jets");
@@ -216,8 +227,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 			      else                                             hsig->SetTitle("#alpha_{EW}^{4}-ll");			  
 			    }
 			  hsig->SetDirectory(0);
-			  hsig->SetLineColor(1);
-			  hsig->SetLineStyle(1+isig);
+			  hsig->SetLineColor(1+isig/2);
+			  hsig->SetLineStyle(1+isig%2);
 			  hsig->SetLineWidth(2);
 			  if(model==VBFZ)
 			    {
@@ -398,13 +409,13 @@ endl;
        }
 
      //do the subtraction for met related variables when MET>70
-     if(it->first.find("mt_shapes")!= string::npos  /*|| it->first.find("_mt")!= string::npos*/ || it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos)
+     if(it->first.find("mt_shapes")!= string::npos  || it->first.find("_mt")!= string::npos || it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos)
        {
 	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
 	
 	 if(subtractType==HALVE || subtractType==EWKSUBTRACTIONHALVE) {
-	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(70) );
-	   if(it->first.find("_mt") != string::npos &&  !isTH2) fbin = corrGammaH->GetXaxis()->FindBin(300);
+	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(60) );
+	   if(it->first.find("_mt") != string::npos &&  !isTH2) fbin = corrGammaH->GetXaxis()->FindBin(275);
 	   //int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(60) );
 	   for(int ibin=fbin; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
 	     {
@@ -626,6 +637,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
     sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5051./1000);
   else
     sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 10200./1000);
+  //sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
     T->AddText(Buffer);
   T->Draw("same");
   
@@ -681,7 +693,8 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
 	ratio->Draw("e1");
 	yaxis=ratio->GetYaxis(); xaxis=ratio->GetXaxis();
       }
-      yaxis->SetRangeUser(0.5,1.5);
+      //      yaxis->SetRangeUser(0.5,1.5);
+      yaxis->SetRangeUser(0.,2.04);
       yaxis->SetTitle("Data/#Sigma Bckg");
       xaxis->SetTitle("");
       xaxis->SetTitleOffset(1.3);
@@ -701,8 +714,10 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   c1->Modified();
   c1->Update();
   if(SaveName.BeginsWith("_")) SaveName="inc"+SaveName;
-  c1->SaveAs(SaveName+".png");
-  c1->SaveAs(SaveName+".pdf");
+  TString outName(SaveName);
+  if(is2011) outName += "_2011";
+  c1->SaveAs(outName+".png");
+  c1->SaveAs(outName+".pdf");
 
   if(!SaveName.Contains("hardpt") && !SaveName.Contains("dphijj") && !SaveName.Contains("mjj") ) return;
   bool doRebin(SaveName.Contains("mjj"));

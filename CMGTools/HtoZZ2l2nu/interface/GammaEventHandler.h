@@ -2,8 +2,8 @@
  * Wrapper for common operations on a gamma event
  * Get weights/mass shapes from file
  * Analyze event and assign trigger categories, weights and massive candidates
- * $Date: 2012/06/12 15:12:37 $
- * $Revision: 1.7 $
+ * $Date: 2012/06/17 10:35:45 $
+ * $Revision: 1.8 $
  * \author Pedro Silva
  */
 
@@ -25,10 +25,11 @@ class GammaEventHandler
   GammaEventHandler(const edm::ParameterSet &runProcess);
 
   //to be called event by event
-  bool isGood(PhysicsEvent_t &phys);
+  bool isGood(PhysicsEvent_t &phys,bool is2011);
 
   //getters
   float triggerThr() { return triggerThr_; }
+  float triggerWeight() { return triggerWgt_; }
   bool isGood() { return isGoodEvent_; }
   LorentzVector massiveGamma(TString channel) { return massiveGamma_[channel]; }
   std::map<TString,LorentzVector> getMassiveGamma() { return massiveGamma_; }
@@ -40,7 +41,7 @@ class GammaEventHandler
 
   //these can be accessed after call isGood(physics)
   bool isGoodEvent_;
-  float triggerThr_;
+  float triggerThr_,triggerWgt_;
   std::map<TString,LorentzVector> massiveGamma_;
   std::map<TString,float> evWeights_;
   

@@ -62,16 +62,65 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 
 
 //
-bool GammaEventHandler::isGood(PhysicsEvent_t &phys)
+bool GammaEventHandler::isGood(PhysicsEvent_t &phys, bool is2011)
 {
   //reset
   isGoodEvent_=false;
   massiveGamma_.clear();
   evWeights_.clear();
+  triggerWgt_=0;
 
   //check if it is a gamma event
   if( phys.cat<22) return isGoodEvent_;
   triggerThr_ =( phys.cat-22)/1000;
+
+  if(is2011) triggerWgt_=1;
+  else
+    { 
+      if(triggerThr_>90) return isGoodEvent_;
+      if(triggerThr_==22)
+	{
+	  if(phys.run<195398) triggerWgt_=50.28;
+	  if(phys.run<197774) triggerWgt_=194.74;
+	  if(phys.run<198913) triggerWgt_=207.38;
+	  if(phys.run<200519) triggerWgt_=209.99;
+	  else                triggerWgt_=211.76;
+	}
+      else if(triggerThr_==36)
+	{
+	  if(phys.run<195398) triggerWgt_=7.97;
+	  if(phys.run<197774) triggerWgt_=64.91;
+	  if(phys.run<198913) triggerWgt_=69.13;
+	  if(phys.run<200519) triggerWgt_=70.00;
+	  else                triggerWgt_=70.59;
+	}
+      else if(triggerThr_==50)
+	{
+	  if(phys.run<195398) triggerWgt_=2.74;
+	  if(phys.run<197774) triggerWgt_=30.00;
+	  if(phys.run<198913) triggerWgt_=30.00;
+	  if(phys.run<200519) triggerWgt_=30.00;
+	  else                triggerWgt_=30.00;
+	}
+      else if(triggerThr_==75)
+	{
+	  if(phys.run<195398) triggerWgt_=2.47;
+	  if(phys.run<197774) triggerWgt_=10.00;
+	  if(phys.run<198913) triggerWgt_=10.00;
+	  if(phys.run<200519) triggerWgt_=10.00;
+	  else                triggerWgt_=10.00;
+	}
+      else if(triggerThr_==90)
+       	{
+       	  if(phys.run<195398) triggerWgt_=2.14;
+       	  if(phys.run<197774) triggerWgt_=5.00;
+       	  if(phys.run<198913) triggerWgt_=5.00;
+       	  if(phys.run<200519) triggerWgt_=5.00;
+       	  else                triggerWgt_=5.00;
+       	}
+      //fixme once new ntuples with correct triggers are built
+      else if(triggerThr_>=250) triggerWgt_=1.0;
+    }
 
   //all done here
   isGoodEvent_=true;
