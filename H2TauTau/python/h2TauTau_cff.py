@@ -10,7 +10,7 @@ from CMGTools.H2TauTau.objects.tauMuObjectsMVAMET_cff import *
 from CMGTools.H2TauTau.objects.tauEleObjectsMVAMET_cff import *
 from CMGTools.H2TauTau.objects.muEleObjects_cff import *
 #from CMGTools.H2TauTau.objects.diTauObjects_cff import *
-from CMGTools.H2TauTau.objects.diTauObjectsMVAMET_cff import *
+from CMGTools.H2TauTau.objects.diTauObjects_cff import *
 from CMGTools.H2TauTau.skims.skim_cff import *
 
 #TODO:tau scaling could be general
