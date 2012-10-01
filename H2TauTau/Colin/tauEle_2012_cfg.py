@@ -1,3 +1,4 @@
+
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
@@ -15,17 +16,21 @@ tauScaleShift = 1.0
 syncntuple = True
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
-puFileData = None
-puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
-puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_start_196509.root'])
-# puFileData = '/'.join([puFileDir, 'Test/MyDataPileupHistogram_RLT.root'])
+
+# mine: 
+# puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
+# puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_start_196509.root'])
+
+# andrew:
+puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-09-12/MC_Summer12_PU_S7.root'
+puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-09-12/Data_Pileup_2012.root'
+
 
 vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
 vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
 
 mc_vertexWeight = None
 
-#COLIN need to set the right triggers and to pick the right efficiencies
 mc_tauEffWeight_mc = 'eff2012Tau20MC_TauEle'
 mc_eleEffWeight_mc = 'eff2012Ele20MC'
 mc_tauEffWeight = 'effTau2012AB_TauEle'
@@ -34,7 +39,6 @@ mc_eleEffWeight = 'effEle2012AB'
 
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
-    # fixme pick it up automatically
     )
 
 triggerAna = cfg.Analyzer(
@@ -85,7 +89,6 @@ higgsWeighter = cfg.Analyzer(
     'HiggsPtWeighter',
     )
 
-#COLIN enable efficiency weighting (make sure the efficiencies correspond to tau-ele triggers)
 tauWeighter = cfg.Analyzer(
     'LeptonWeighter_tau',
     effWeight = mc_tauEffWeight,
@@ -93,11 +96,8 @@ tauWeighter = cfg.Analyzer(
     lepton = 'leg1',
     verbose = False,
     disable = False,
-    recEffVersion = None
     )
 
-#COLIN enable efficiency weighting
-# trigger & reco
 electronWeighter = cfg.Analyzer(
     'LeptonWeighter_ele',
     effWeight = mc_eleEffWeight,
@@ -105,10 +105,10 @@ electronWeighter = cfg.Analyzer(
     lepton = 'leg2',
     verbose = False,
     disable = False,
-    recEffVersion = None,
     idWeight = ele_id_tauele_2012,
     isoWeight = ele_iso_tauele_2012    
     )
+
 
 
 # defined for vbfAna and eventSorter
@@ -138,15 +138,19 @@ treeProducerXCheck = cfg.Analyzer(
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinJul5 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinAug8 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroSep25 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauEle_Sync_ColinOct1 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroSep25 import *
 
 #########################################################################################
 
 
-# MC_list = [WJets, DYJets, TTJets, W2Jets, W3Jets]
-MC_list = copy.copy(MC)
-data_list = copy.copy(data_list_2012)
-embed_list = copy.copy(embed_list_2012)
+# MC_list = [WJets, DYJets, TTJets]
+MC_list = [HiggsVBF125]
+# MC_list = copy.copy(MC)
+data_list = copy.copy(data_list_Run2012A)
+data_list.extend(data_list_Run2012B)
+embed_list = copy.copy(embed_list_Run2012A)
+embed_list.extend(embed_list_Run2012B)
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
@@ -181,7 +185,7 @@ for emb in embed_list:
     emb.splitFactor = 10
 
 data_Run2012A.splitFactor = 40
-data_Run2012B.splitFactor = 300
+data_Run2012B.splitFactor = 200
 
 selectedComponents =  copy.copy(MC_list)
 selectedComponents.extend( data_list )
@@ -189,6 +193,7 @@ selectedComponents.extend( embed_list )
 
 
 sequence = cfg.Sequence( [
+    # eventSelector,
     jsonAna,
     triggerAna,
     vertexAna,
@@ -206,18 +211,17 @@ sequence = cfg.Sequence( [
 if syncntuple:
     sequence.append( treeProducerXCheck)
 
+# selectedComponents = embed_list
 
-test = 0
-if test==0:
+test = 1
+if test==1:
     comp = HiggsVBF125
     # comp.files = 'Aug14/joshMinusColin.root'
     selectedComponents = [comp]
     comp.splitFactor = 1
-elif test==1:
-    comp = HiggsVBF125
-    # comp.files = 'Aug14/joshMinusColin.root'
-    selectedComponents = [comp]
-    comp.splitFactor = 50
+    # comp.files = comp.files[:1]
+    # for 53 MC: 
+    comp.triggers = ['HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*']
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
