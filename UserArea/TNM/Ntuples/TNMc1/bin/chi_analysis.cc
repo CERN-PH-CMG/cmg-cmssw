@@ -124,15 +124,16 @@ int main(int argc, char** argv)
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v7", triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v7);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v8", triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v8);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v9", triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v9);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT650_v1", triggerresultshelper_HLT_HT650_v1);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT650_v2", triggerresultshelper_HLT_HT650_v2);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT650_v3", triggerresultshelper_HLT_HT650_v3);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT650_v4", triggerresultshelper_HLT_HT650_v4);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT650_v5", triggerresultshelper_HLT_HT650_v5);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT650_v6", triggerresultshelper_HLT_HT650_v6);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT650_v7", triggerresultshelper_HLT_HT650_v7);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT650_v8", triggerresultshelper_HLT_HT650_v8);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT650_v9", triggerresultshelper_HLT_HT650_v9);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v10", triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v10);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v1", triggerresultshelper_HLT_HT450_v1);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v2", triggerresultshelper_HLT_HT450_v2);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v3", triggerresultshelper_HLT_HT450_v3);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v4", triggerresultshelper_HLT_HT450_v4);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v5", triggerresultshelper_HLT_HT450_v5);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v6", triggerresultshelper_HLT_HT450_v6);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v7", triggerresultshelper_HLT_HT450_v7);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v8", triggerresultshelper_HLT_HT450_v8);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v9", triggerresultshelper_HLT_HT450_v9);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT750_v1", triggerresultshelper_HLT_HT750_v1);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT750_v2", triggerresultshelper_HLT_HT750_v2);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT750_v3", triggerresultshelper_HLT_HT750_v3);
@@ -151,28 +152,33 @@ int main(int argc, char** argv)
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT650_v7", triggerresultshelper_HLT_PFHT650_v7);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT650_v8", triggerresultshelper_HLT_PFHT650_v8);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT650_v9", triggerresultshelper_HLT_PFHT650_v9);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT700_v1", triggerresultshelper_HLT_PFHT700_v1);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT700_v2", triggerresultshelper_HLT_PFHT700_v2);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT700_v3", triggerresultshelper_HLT_PFHT700_v3);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT700_v4", triggerresultshelper_HLT_PFHT700_v4);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT700_v5", triggerresultshelper_HLT_PFHT700_v5);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT700_v6", triggerresultshelper_HLT_PFHT700_v6);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT700_v7", triggerresultshelper_HLT_PFHT700_v7);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT700_v8", triggerresultshelper_HLT_PFHT700_v8);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT700_v9", triggerresultshelper_HLT_PFHT700_v9);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT750_v1", triggerresultshelper_HLT_PFHT750_v1);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT750_v2", triggerresultshelper_HLT_PFHT750_v2);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT750_v3", triggerresultshelper_HLT_PFHT750_v3);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT750_v4", triggerresultshelper_HLT_PFHT750_v4);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT750_v5", triggerresultshelper_HLT_PFHT750_v5);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT750_v6", triggerresultshelper_HLT_PFHT750_v6);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT750_v7", triggerresultshelper_HLT_PFHT750_v7);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT750_v8", triggerresultshelper_HLT_PFHT750_v8);
-  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT750_v9", triggerresultshelper_HLT_PFHT750_v9);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v1", triggerresultshelper_HLT_DiPFJetAve400_v1);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v2", triggerresultshelper_HLT_DiPFJetAve400_v2);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v3", triggerresultshelper_HLT_DiPFJetAve400_v3);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v4", triggerresultshelper_HLT_DiPFJetAve400_v4);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v5", triggerresultshelper_HLT_DiPFJetAve400_v5);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v6", triggerresultshelper_HLT_DiPFJetAve400_v6);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v7", triggerresultshelper_HLT_DiPFJetAve400_v7);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v8", triggerresultshelper_HLT_DiPFJetAve400_v8);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v9", triggerresultshelper_HLT_DiPFJetAve400_v9);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v10", triggerresultshelper_HLT_DiPFJetAve400_v10);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v1", triggerresultshelper_HLT_PFJet400_v1);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v2", triggerresultshelper_HLT_PFJet400_v2);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v3", triggerresultshelper_HLT_PFJet400_v3);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v4", triggerresultshelper_HLT_PFJet400_v4);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v5", triggerresultshelper_HLT_PFJet400_v5);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v6", triggerresultshelper_HLT_PFJet400_v6);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v7", triggerresultshelper_HLT_PFJet400_v7);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v8", triggerresultshelper_HLT_PFJet400_v8);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v9", triggerresultshelper_HLT_PFJet400_v9);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.hcalLaserEventFilterPath", triggerresultshelper_hcalLaserEventFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.noscrapingFilterPath", triggerresultshelper_noscrapingFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.primaryVertexFilterPath", triggerresultshelper_primaryVertexFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.trackingFailureFilterPath", triggerresultshelper_trackingFailureFilterPath);
+  stream.select("edmTriggerResultsHelper_TriggerResults_PAT.CSCTightHaloFilterPath", triggerresultshelper_CSCTightHaloFilterPath);
+  stream.select("edmTriggerResultsHelper_TriggerResults_PAT.EcalDeadCellBoundaryEnergyFilterPath", triggerresultshelper_EcalDeadCellBoundaryEnergyFilterPath);
+  stream.select("edmTriggerResultsHelper_TriggerResults_PAT.EcalDeadCellTriggerPrimitiveFilterPath", triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath);
+  stream.select("edmTriggerResultsHelper_TriggerResults_PAT.HBHENoiseFilterPath", triggerresultshelper_HBHENoiseFilterPath);
 
   // The root application is needed to make canvases visible during
   // program execution. If this is not needed, just comment out the following
@@ -218,8 +224,12 @@ int main(int argc, char** argv)
   std::vector<double> massBins = {400,600,800,1000,1200,1500,1900,2400,3000,4000,5000,7000};
 
   TCanvas c1("c1","c1",200,200);
-  TH1F* h1=new TH1F("dijet_mass","M_{jj}",65,1500,8000);
+  TH1F* h1=new TH1F("dijet_mass","M_{jj}",76,400,8000);
   h1->Sumw2();
+  TH1F* h1_ref=new TH1F("dijet_mass_ref","M_{jj}",76,400,8000);
+  h1_ref->Sumw2();
+  TH1F* h1_trig=new TH1F("dijet_mass_trig","M_{jj}",76,400,8000);
+  h1_trig->Sumw2();
   
   std::vector<TH1F*> hists;
   for ( size_t j = 0; j < (massBins.size()-1); ++j )
@@ -280,7 +290,7 @@ int main(int argc, char** argv)
   {
       std::stringstream name;
       name << "dijet_" << massBins[j] << "_" << massBins[j+1] << "_" << "metsumet";
-      histsmetsumet.push_back(new TH1F(name.str().c_str(),name.str().c_str(),20,0,1.00001));
+      histsmetsumet.push_back(new TH1F(name.str().c_str(),name.str().c_str(),100,0,1.00001));
       histsmetsumet[j]->Sumw2();
   }
   
@@ -289,7 +299,7 @@ int main(int argc, char** argv)
   {
       std::stringstream name;
       name << "dijet_" << massBins[j] << "_" << massBins[j+1] << "_" << "mptsumpt";
-      histsmptsumpt.push_back(new TH1F(name.str().c_str(),name.str().c_str(),20,0,1.00001));
+      histsmptsumpt.push_back(new TH1F(name.str().c_str(),name.str().c_str(),50,0,1.00001));
       histsmptsumpt[j]->Sumw2();
   }
   
@@ -354,67 +364,15 @@ int main(int argc, char** argv)
 	      ((jethelper2_chargedHadronEnergyFraction[1]>0)&&
 	       (jethelper2_chargedMultiplicity[1]>0)&&
 	       (jethelper2_chargedEmEnergyFraction[1]<0.99)))
-	     /*
+	     
 	     &&
 	     (triggerresultshelper_primaryVertexFilterPath)&&
 	     (triggerresultshelper_noscrapingFilterPath)&&
 	     (triggerresultshelper_hcalLaserEventFilterPath)&&
-             
-	     ((triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v1)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v2)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v3)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v4)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v5)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v6)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v7)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v8)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v9)||
-	      (triggerresultshelper_HLT_PFHT650_v1)||
-	      (triggerresultshelper_HLT_PFHT650_v2)||
-	      (triggerresultshelper_HLT_PFHT650_v3)||
-	      (triggerresultshelper_HLT_PFHT650_v4)||
-	      (triggerresultshelper_HLT_PFHT650_v5)||
-	      (triggerresultshelper_HLT_PFHT650_v6)||
-	      (triggerresultshelper_HLT_PFHT650_v7)||
-	      (triggerresultshelper_HLT_PFHT650_v8)||
-	      (triggerresultshelper_HLT_PFHT650_v9)||
-	      (triggerresultshelper_HLT_PFHT700_v1)||
-	      (triggerresultshelper_HLT_PFHT700_v2)||
-	      (triggerresultshelper_HLT_PFHT700_v3)||
-	      (triggerresultshelper_HLT_PFHT700_v4)||
-	      (triggerresultshelper_HLT_PFHT700_v5)||
-	      (triggerresultshelper_HLT_PFHT700_v6)||
-	      (triggerresultshelper_HLT_PFHT700_v7)||
-	      (triggerresultshelper_HLT_PFHT700_v8)||
-	      (triggerresultshelper_HLT_PFHT700_v9)||
-	      (triggerresultshelper_HLT_PFHT750_v1)||
-	      (triggerresultshelper_HLT_PFHT750_v2)||
-	      (triggerresultshelper_HLT_PFHT750_v3)||
-	      (triggerresultshelper_HLT_PFHT750_v4)||
-	      (triggerresultshelper_HLT_PFHT750_v5)||
-	      (triggerresultshelper_HLT_PFHT750_v6)||
-	      (triggerresultshelper_HLT_PFHT750_v7)||
-	      (triggerresultshelper_HLT_PFHT750_v8)||
-	      (triggerresultshelper_HLT_PFHT750_v9)||
-	      (triggerresultshelper_HLT_HT650_v1)||
-	      (triggerresultshelper_HLT_HT650_v2)||
-	      (triggerresultshelper_HLT_HT650_v3)||
-	      (triggerresultshelper_HLT_HT650_v4)||
-	      (triggerresultshelper_HLT_HT650_v5)||
-	      (triggerresultshelper_HLT_HT650_v6)||
-	      (triggerresultshelper_HLT_HT650_v7)||
-	      (triggerresultshelper_HLT_HT650_v8)||
-	      (triggerresultshelper_HLT_HT650_v9)||
-	      (triggerresultshelper_HLT_HT750_v1)||
-	      (triggerresultshelper_HLT_HT750_v2)||
-	      (triggerresultshelper_HLT_HT750_v3)||
-	      (triggerresultshelper_HLT_HT750_v4)||
-	      (triggerresultshelper_HLT_HT750_v5)||
-	      (triggerresultshelper_HLT_HT750_v6)||
-	      (triggerresultshelper_HLT_HT750_v7)||
-	      (triggerresultshelper_HLT_HT750_v8)||
-	      (triggerresultshelper_HLT_HT750_v9))
-	     */
+	     (triggerresultshelper_HBHENoiseFilterPath)&&
+	     (triggerresultshelper_EcalDeadCellBoundaryEnergyFilterPath)&&
+	     (triggerresultshelper_CSCTightHaloFilterPath)&&
+	     (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath)
 	    )) continue;
 	   
 	  // ---------------------
@@ -426,6 +384,75 @@ int main(int argc, char** argv)
 	      weight=geneventinfoproduct_weight;
 
           h1->Fill(eventhelperextra_dijet_invmass, weight);
+	  
+	  if ((triggerresultshelper_HLT_HT450_v1>0)||
+	      (triggerresultshelper_HLT_HT450_v2>0)||
+	      (triggerresultshelper_HLT_HT450_v3>0)||
+	      (triggerresultshelper_HLT_HT450_v4>0)||
+	      (triggerresultshelper_HLT_HT450_v5>0)||
+	      (triggerresultshelper_HLT_HT450_v6>0)||
+	      (triggerresultshelper_HLT_HT450_v7>0)||
+	      (triggerresultshelper_HLT_HT450_v8>0)||
+	      (triggerresultshelper_HLT_HT450_v9>0))
+              h1_ref->Fill(eventhelperextra_dijet_invmass, weight);
+
+	  if(((triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v1>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v2>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v3>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v4>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v5>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v6>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v7>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v8>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v9>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v10>0)||
+	      (triggerresultshelper_HLT_PFHT650_v1>0)||
+	      (triggerresultshelper_HLT_PFHT650_v2>0)||
+	      (triggerresultshelper_HLT_PFHT650_v3>0)||
+	      (triggerresultshelper_HLT_PFHT650_v4>0)||
+	      (triggerresultshelper_HLT_PFHT650_v5>0)||
+	      (triggerresultshelper_HLT_PFHT650_v6>0)||
+	      (triggerresultshelper_HLT_PFHT650_v7>0)||
+	      (triggerresultshelper_HLT_PFHT650_v8>0)||
+	      (triggerresultshelper_HLT_PFHT650_v9>0)||
+	      (triggerresultshelper_HLT_PFJet400_v1>0)||
+	      (triggerresultshelper_HLT_PFJet400_v2>0)||
+	      (triggerresultshelper_HLT_PFJet400_v3>0)||
+	      (triggerresultshelper_HLT_PFJet400_v4>0)||
+	      (triggerresultshelper_HLT_PFJet400_v5>0)||
+	      (triggerresultshelper_HLT_PFJet400_v6>0)||
+	      (triggerresultshelper_HLT_PFJet400_v7>0)||
+	      (triggerresultshelper_HLT_PFJet400_v8>0)||
+	      (triggerresultshelper_HLT_PFJet400_v9>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v1>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v2>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v3>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v4>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v5>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v6>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v7>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v8>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v9>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v10>0)||
+	      (triggerresultshelper_HLT_HT750_v1>0)||
+	      (triggerresultshelper_HLT_HT750_v2>0)||
+	      (triggerresultshelper_HLT_HT750_v3>0)||
+	      (triggerresultshelper_HLT_HT750_v4>0)||
+	      (triggerresultshelper_HLT_HT750_v5>0)||
+	      (triggerresultshelper_HLT_HT750_v6>0)||
+	      (triggerresultshelper_HLT_HT750_v7>0)||
+	      (triggerresultshelper_HLT_HT750_v8>0)||
+	      (triggerresultshelper_HLT_HT750_v9>0))&&
+	     ((triggerresultshelper_HLT_HT450_v1>0)||
+	      (triggerresultshelper_HLT_HT450_v2>0)||
+	      (triggerresultshelper_HLT_HT450_v3>0)||
+	      (triggerresultshelper_HLT_HT450_v4>0)||
+	      (triggerresultshelper_HLT_HT450_v5>0)||
+	      (triggerresultshelper_HLT_HT450_v6>0)||
+	      (triggerresultshelper_HLT_HT450_v7>0)||
+	      (triggerresultshelper_HLT_HT450_v8>0)||
+	      (triggerresultshelper_HLT_HT450_v9>0)))
+              h1_trig->Fill(eventhelperextra_dijet_invmass, weight);
 
           for ( size_t j = 0; j < (massBins.size()-1); ++j )
           {
@@ -456,6 +483,9 @@ int main(int argc, char** argv)
   h1->Draw("histe");
   gPad->SetLogy(true);
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_mass.pdf").c_str());
+
+  h1_ref->Write();
+  h1_trig->Write();
 
   for ( size_t j = 0; j < (massBins.size()-1); ++j )
   {
