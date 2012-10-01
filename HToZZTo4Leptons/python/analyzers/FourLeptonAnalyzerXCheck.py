@@ -72,7 +72,7 @@ class FourLeptonAnalyzerXCheck( MultiLeptonAnalyzerBase ):
 
         #Remove any electrons that are near to tight muons!
         cleanOverlap = OverlapCleaner(event.skimmedLeptons,0.05,11,13,self.testMuonCleaning)
-        passed = cutFlow.applyCut(cleanOverlap,'electron cross cleaning',4,'cleanLeptons')
+        passed = cutFlow.applyCut(cleanOverlap,'electron cross cleaning',2,'cleanLeptons')
 
 
 
