@@ -1,3 +1,11 @@
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_201_3_Reb.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_202_3_zPe.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_203_3_HlR.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_204_3_4ER.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_205_3_52u.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_206_3_Pi6.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_210_3_Ope.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_211_3_wtB.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_287_2_cUP.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_326_2_GRz.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/NTUPLE/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6_Summer12_DR53X-PU_S10_START53_V7A-v1_AODSIM_grid/ntuple_38_2_kxe.root
