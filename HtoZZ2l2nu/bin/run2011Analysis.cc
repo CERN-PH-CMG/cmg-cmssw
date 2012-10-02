@@ -401,6 +401,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH2D( "metoverlpt_mindphilmet"  , ";E_{T}^{miss}/p_{T}^{lepton};min(#Delta#phi(lepton,E_{T}^{miss});Events", 50,0,2,40,0,4) );
   mon.addHistogram( new TH1F( "met_metSB"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_met_blind"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met250"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met3leptons"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_metRaw"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
@@ -1111,6 +1112,20 @@ int main(int argc, char* argv[])
                       //if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
                       //if(tag_cat=="mumu" || tag_cat=="ee")tags_full.push_back(string("ll")+tag_subcat);
                       if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcat);  if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(string("ll")+string("geq1jets"));   }
+
+
+                      //VBF SUBCATEGORY
+                       if(tag_subcat=="vbf"){
+                          TString tag_subcatVBF = tag_subcat;
+                          if(fabs(aGoodIdJets[0].eta())<2.1 && fabs(aGoodIdJets[1].eta())<2.1){tag_subcatVBF+="2";}else
+                          if(fabs(aGoodIdJets[0].eta())<2.1 || fabs(aGoodIdJets[1].eta())<2.1){tag_subcatVBF+="1";}else
+                                                                                              {tag_subcatVBF+="0";}
+
+                          tags_full.push_back(tag_cat+tag_subcatVBF);
+                          if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcatVBF); }
+                       }
+
+
 		      mon.fillHisto("npfjets",     tags_full, nAJetsLoose,weight);
 		      
 		      //passDphijmet=(mindphijmet15>0.5);
@@ -1175,7 +1190,7 @@ int main(int argc, char* argv[])
 			  //SIGNAL REGION NOW : PROCEED WITH CARE
 			  //
 			  bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
-			  if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
+			  if(runBlinded && (mustBlind || hasVbfBlinding) ) tags_full.clear();  //don't skip the event but don't fill any plot!
 			  
 			  if(zvvs[0].pt()>70){
 			      mon.fillHisto("eventflow",tags_full,6,weight);			      
@@ -1223,6 +1238,7 @@ int main(int argc, char* argv[])
 			  
 			  mon.fillHisto("met_met",tags_full,zvvs[0].pt(),weight);
 			  if(aMT>250) 			  mon.fillHisto("met_met250",tags_full,zvvs[0].pt(),weight);
+			  if(runBlinded && !(isMC_GG || isMC_VBF) && (evSummaryHandler.hasSpoilerAlert(!(isMC_GG || isMC_VBF)) || (tag_subcat=="vbf" && zvvs[0].pt()>70)) )mon.fillHisto("met_met_blind",tags_full,zvvs[0].pt(),weight);
 
 			  mon.fillProfile("metvsrun",          tags_full, ev.run,            zvvs[0].pt(), weight);
 			  mon.fillProfile("metvsavginstlumi",  tags_full, ev.curAvgInstLumi, zvvs[0].pt(), weight);
@@ -1343,10 +1359,19 @@ int main(int argc, char* argv[])
         //if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
         //if(tag_cat=="mumu" || tag_cat=="ee")tags_full.push_back(string("ll")+tag_subcat);
         if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcat);  if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(string("ll")+string("geq1jets"));   }
-	
-	bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
-	if(runBlinded && (mustBlind || hasVbfBlinding) ) continue;
-	
+
+        //VBF SUBCATEGORY
+        if(tag_subcat=="vbf"){
+           TString tag_subcatVBF = tag_subcat;
+           if(fabs(tightVarJets[0].eta())<2.1 && fabs(tightVarJets[1].eta())<2.1){tag_subcatVBF+="2";}else
+           if(fabs(tightVarJets[0].eta())<2.1 || fabs(tightVarJets[1].eta())<2.1){tag_subcatVBF+="1";}else
+                                                                                 {tag_subcatVBF+="0";}
+
+           tags_full.push_back(tag_cat+tag_subcatVBF);
+           if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcatVBF); }
+        }
+
+
 	if(passPreselection && zvv.pt()>30) mon.fillHisto("mtvar"+varNames[ivar],tags_full,mt,iweight);
 	
 	/*
