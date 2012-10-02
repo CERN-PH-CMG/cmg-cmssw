@@ -8,7 +8,7 @@ from CMGTools.H2TauTau.proto.samples.run2012.ewk import *
 from CMGTools.H2TauTau.proto.samples.run2012.diboson import *
 from CMGTools.H2TauTau.proto.samples.run2012.higgs import *
 
-from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauMu import data_triggers, mc_triggers
+from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauEle import data_triggers, mc_triggers
 
 aliases = {
     '/VBF_HToTauTau.*START52.*':'HiggsVBF',
@@ -35,16 +35,20 @@ aliases = {
 MC = copy.copy( mc_ewk )
 MC.extend( mc_higgs )
 MC.extend( mc_diboson ) 
+
+allsamples = copy.copy(MC)
+allsamples.extend( data_list_2012 )
+allsamples.extend( embed_list_2012 )
+
+# allsamples = copy.copy(data_list_2012)
+
+connect( allsamples, '%H2TauTau_tauEle_20Sep_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, cache=True, verbose=False)
+
 for sam in MC:
+    print 'setting trigger', mc_triggers,'for sample',sam.name
     sam.triggers = mc_triggers
 for data in data_list_2012:
     data.triggers = data_triggers
-
-    
-allsamples = copy.copy(MC)
-#allsamples.extend( data_list_2012 )
-allsamples.extend( embed_list_2012 )
-connect( allsamples, '%H2TauTau_tauEle_20Sep_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, cache=True, verbose=False)
 
 # this number is not in the DB (dbs says this sample is still in production)
 WJets.nGenEvents = 61444940
