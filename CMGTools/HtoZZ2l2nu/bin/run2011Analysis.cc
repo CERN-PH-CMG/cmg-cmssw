@@ -1238,7 +1238,7 @@ int main(int argc, char* argv[])
 			  
 			  mon.fillHisto("met_met",tags_full,zvvs[0].pt(),weight);
 			  if(aMT>250) 			  mon.fillHisto("met_met250",tags_full,zvvs[0].pt(),weight);
-			  if(runBlinded && !(isMC_GG || isMC_VBF) && (evSummaryHandler.hasSpoilerAlert(!(isMC_GG || isMC_VBF)) || (tag_subcat=="vbf" && zvvs[0].pt()>70)) )mon.fillHisto("met_met_blind",tags_full,zvvs[0].pt(),weight);
+			  if(!(runBlinded && !(isMC_GG || isMC_VBF) && (evSummaryHandler.hasSpoilerAlert(!(isMC_GG || isMC_VBF)) || (tag_subcat=="vbf" && zvvs[0].pt()>70)) ) )mon.fillHisto("met_met_blind",tags_full,zvvs[0].pt(),weight);
 
 			  mon.fillProfile("metvsrun",          tags_full, ev.run,            zvvs[0].pt(), weight);
 			  mon.fillProfile("metvsavginstlumi",  tags_full, ev.curAvgInstLumi, zvvs[0].pt(), weight);
