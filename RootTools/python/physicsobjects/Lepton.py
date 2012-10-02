@@ -4,7 +4,7 @@ class Lepton( PhysicsObject):
     def sip3D(self):
         '''3D impact parameter, for H to ZZ to 4l analysis.'''
         patLepton = self.physObj.sourcePtr()
-        return abs( patLepton.dB(2) ) / patLepton.edB(2) 
+        return abs(self.dB3D() / self.edB3D())
 
     def absIsoFromEA(self,rho,eta,effectiveArea1 = None,effectiveArea2 = None):
         '''MIKE< missing doc'''
