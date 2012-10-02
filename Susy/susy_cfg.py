@@ -87,6 +87,9 @@ if runOnMC:
 else:
     process.p += process.susyDataSequence
 
+#don't know where this comes from, but it screws things up and we don't use it
+del process.eIdSequence
+
 from CMGTools.Susy.susyEventContent_cff import susyEventContent
 process.out.fileName = cms.untracked.string('susy_tree_%s.root' %  outFileNameExt)
 process.out.outputCommands = cms.untracked.vstring('drop *')
