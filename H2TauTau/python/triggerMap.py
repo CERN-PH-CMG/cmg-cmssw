@@ -39,14 +39,15 @@ pathsAndFilters = {
     "HLT_Ele18_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_MediumIsoPFTau20_v1": ("hltPFTauMediumIso20TrackMediumIso","hltEle18CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilter"),
     #
     # 2012 TauEle
-    # for 2012A and MC: 
+    # 
+    # for 2012A and 52 MC: 
     'HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoEle20LooseIsoPFTau20', [15,0]),
-                                                                          ('hltOverlapFilterIsoEle20LooseIsoPFTau20',[11])),
-    # for 2012B hltOverlapFilterIsoEle22WP90LooseIsoPFTau20
-    # for 53 MC hltOverlapFilterIsoEle20WP90LooseIsoPFTau20
-    #WARNING MODIFYING IT FOR SYNC!!
-    'HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoEle22WP90LooseIsoPFTau20', [15,0]),
-                                                     ('hltOverlapFilterIsoEle22WP90LooseIsoPFTau20',[11])),
+                                                                          'hltEle20CaloIdVTCaloIsoTTrkIdTTrkIsoTTrackIsoFilterL1IsoEG18OrEG20'),
+    #
+    # 2012B and 53 MC
+    #
+    'HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoEle20WP90LooseIsoPFTau20', [15,0]),
+                                                     'hltEle22WP90RhoTrackIsoFilter' ),
     #'HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoEle20LooseIsoPFTau20', [15,0]),
     #                                                                      ('hltOverlapFilterIsoEle20LooseIsoPFTau20',[11])),    
     # note: pdgId for taus incorrectly set to 0...
