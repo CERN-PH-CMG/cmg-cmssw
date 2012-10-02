@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
 import ROOT as rt
-import os, sys, math, glob
+from ROOT import std
+import os, sys, math, glob, pickle
 from DataFormats.FWLite import Events, Handle
 from CMGTools.RootTools import RootFile
+from razorMJTopTag import topTag
 
 def listDirectory(dir, inputFiles, maxFiles):
     if not os.path.exists(dir):
@@ -31,7 +33,7 @@ def getFiles(datasets, user, pattern):
 
 if __name__ == '__main__':
 
-    runOnMC = True
+    skimEvents = False
 
     # https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideAboutPythonConfigFile#VarParsing_Example
     from FWCore.ParameterSet.VarParsing import VarParsing
@@ -57,6 +59,17 @@ if __name__ == '__main__':
                   VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.varType.int,          # string, int, or float
                   "The maximum number of files to read")
+    options.register ('index',
+                  -1, # default value
+                  VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.varType.int,          # string, int, or float
+                  "The file index to run on")
+    options.register ('model',
+                  None,
+                  VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.varType.string,          # string, int, or float
+                  "The SMS model to use in the error calculation")
+
     
     options.parseArguments()
     if not options.inputFiles:
@@ -65,6 +78,7 @@ if __name__ == '__main__':
         
         if True:
             names = [f for f in options.datasetName.split('/') if f]
+            options.model = names[0].split('-')[1].split('_')[0]
             name = '%s-%s-%s.root' % (names[0],names[1],names[-1])
             options.outputFile = os.path.join(options.outputDirectory,name)
         
@@ -78,30 +92,40 @@ if __name__ == '__main__':
         else:
             options.inputFiles = files
 
+    print 'The number of files to run on is: %d' % len(files)
+    if options.index > -1:
+        chunks = []
+        chunk = []
+        for f in files:
+            if len(chunk) <= options.maxFiles:
+                chunk.append(f)
+            if len(chunk) == options.maxFiles:
+                chunks.append(chunk)
+                chunk = []
+        print 'Created %d chunks of length %s' % (len(chunks),options.maxFiles)
+        options.inputFiles = chunks[options.index]
+    
+    pickleFile = options.outputFile.replace('.root','.pkl')
+
     rt.gROOT.ProcessLine("""
 struct Variables{\
-    Double_t mR;\
-    Double_t R;\
-    Double_t Rsq;\
-    Double_t maxTCHE;\
-    Double_t maxSSVP;\
-    Double_t nextTCHE;\
-    Double_t nextSSVP;\
-    Double_t met;\
-    Double_t jet1Pt;\
-    Double_t jet2Pt;\
-    Double_t jet3Pt;\
-    Double_t jet4Pt;\
-    Double_t jet5Pt;\
-    Double_t jet6Pt;\
-    Double_t jet1Eta;\
-    Double_t jet2Eta;\
-    Double_t jet3Eta;\
-    Double_t jet4Eta;\
-    Double_t jet5Eta;\
-    Double_t jet6Eta;\
+    Double_t MR;\
+    Double_t MR_JES_UP;\
+    Double_t MR_JES_DOWN;\
+    Double_t RSQ;\
+    Double_t RSQ_JES_UP;\
+    Double_t RSQ_JES_DOWN;\
     Double_t hemi1Mass;\
     Double_t hemi2Mass;\
+    Double_t hemi1TopMass;\
+    Double_t hemi1WMass;\
+    Double_t hemi1ThetaH;\
+    Double_t hemi2TopMass;\
+    Double_t hemi2WMass;\
+    Double_t hemi2ThetaH;\
+    Double_t mStop;\
+    Double_t mLSP;\
+    Double_t diTopPt;\
 };""")
     
     rt.gROOT.ProcessLine("""
@@ -110,54 +134,34 @@ struct Info{\
     Int_t run;\
     Int_t lumi;\
     Int_t nJet;\
-    Int_t nBJet;\
-    Int_t nBJetLoose;\
+    Int_t nJetNoLeptons;\
+    Int_t nCSVL;\
+    Int_t nCSVM;\
+    Int_t nCSVT;\
     Int_t nMuonLoose;\
     Int_t nMuonTight;\
     Int_t nElectronLoose;\
     Int_t nElectronTight;\
+    Int_t nTauVeto;\
     Int_t nTauLoose;\
     Int_t nTauTight;\
     Int_t nLepton;\
-    Int_t nVertex;\
     Int_t hemisphereBalance;\
+    Int_t hemi1Count;\
+    Int_t hemi2Count;\
     Int_t genInfo;\
 };""")
     
-    filter_tags = [('ecalDeadCellTPfilter'),
-                   ('HBHENoiseFilterResultProducer2010'),
-                   ('HBHENoiseFilterResultProducer2011IsoDefault'),
-                   ('HBHENoiseFilterResultProducer2011NonIsoRecommended'),
-                   ('eeNoiseFilter'),
-                   ('goodPrimaryVertexFilter'),
-                   ('greedyMuonsTagging'),
-                   ('inconsistentMuonsTagging'),
-                   ('recovRecHitFilter'),
-                   ('scrapingFilter'),
-                   ('trackingFailureFilter')]
-
     rt.gROOT.ProcessLine("""
 struct Filters{\
-    Bool_t triggerFilter;\
-    Bool_t quadTriggerFilter;\
-    Bool_t sixTriggerFilter;\
-    Bool_t eightTriggerFilter;\
-    Bool_t l1MultiJetFilter;\
-    Bool_t selectionFilter;\
-    Bool_t ht250TriggerFilter;\
-    Bool_t ht300TriggerFilter;\
-    Bool_t razorTriggerFilter;\
-    Bool_t ecalDeadCellTPfilter;\
-    Bool_t HBHENoiseFilterResultProducer2010;\
-    Bool_t HBHENoiseFilterResultProducer2011IsoDefault;\
-    Bool_t HBHENoiseFilterResultProducer2011NonIsoRecommended;\
-    Bool_t eeNoiseFilter;\
-    Bool_t goodPrimaryVertexFilter;\
-    Bool_t greedyMuonsTagging;\
-    Bool_t inconsistentMuonsTagging;\
-    Bool_t recovRecHitFilter;\
-    Bool_t scrapingFilter;\
-    Bool_t trackingFailureFilter;\
+    Bool_t hadBoxFilter;\
+    Bool_t eleBoxFilter;\
+    Bool_t muBoxFilter;\
+    Bool_t tauBoxFilter;\
+    Bool_t eleTriggerFilter;\
+    Bool_t hadTriggerFilter;\
+    Bool_t muTriggerFilter;\
+    Bool_t metFilter;\
 };""")
 
     from ROOT import Variables, Info, Filters
@@ -178,6 +182,20 @@ struct Filters{\
     setAddress(info,'I')
     setAddress(vars,'D')
 
+    CTEQ66_W = std.vector('double')()
+    MRST2006NNLO_W = std.vector('double')()
+    tree.Branch('CTEQ66_W',CTEQ66_W)
+    tree.Branch('MRST2006NNLO_W',MRST2006NNLO_W)
+
+    jet_pt = std.vector('double')()
+    tree.Branch('jet_pt',jet_pt)
+    jet_eta = std.vector('double')()
+    tree.Branch('jet_eta',jet_eta)
+    jet_csv = std.vector('double')()
+    tree.Branch('jet_csv',jet_csv)
+    jet_fl = std.vector('double')()
+    tree.Branch('jet_fl',jet_fl)
+
     # use Varparsing object
     events = Events(options)
     
@@ -186,6 +204,8 @@ struct Filters{\
     hemiHadH = Handle("std::vector<cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> >")
     metH = Handle("std::vector<cmg::BaseMET>")
     lheH = Handle('LHEEventProduct')
+    pdfH = Handle('std::vector<double>')
+    candH = Handle("std::vector<reco::LeafCandidate>")
 
     electronH = Handle("std::vector<cmg::Electron>")
     muonH = Handle("std::vector<cmg::Muon>")
@@ -195,16 +215,26 @@ struct Filters{\
     countH = Handle('int')
     filterH = Handle('int')
     
-    # path trigger
     pathTriggerH = Handle("edm::TriggerResults")
+    lheH = Handle('LHEEventProduct')
 
     store = RootFile.RootFile(options.outputFile)
     store.add(tree)
 
     count = 0
+    #for storing the counts of each model point
+    bins = {}
 
     # loop over events
     for event in events:
+
+        CTEQ66_W.clear()
+        MRST2006NNLO_W.clear()
+        
+        jet_pt.clear()
+        jet_eta.clear()
+        jet_csv.clear()
+        jet_fl.clear()
 
         info.event = event.object().id().event()
         info.lumi = event.object().id().luminosityBlock()
@@ -215,82 +245,112 @@ struct Filters{\
             tree.AutoSave()
         count += 1    
 
+        #get the LHE product info
+        vars.mStop = -1
+        vars.mLSP = -1
+        event.getByLabel(('source'),lheH)
+        if lheH.isValid():
+            lhe = lheH.product()
+            for i in xrange(lhe.comments_size()):
+                comment = lhe.getComment(i)
+                if 'model' not in comment: continue
+                comment = comment.replace('\n','')
+                parameters = comment.split(' ')[-1]
+                masses = map(float,parameters.split('_')[-2:])
+                vars.mStop = masses[0]
+                vars.mLSP = masses[1]
+
+        #store how many of each model we see
+        point = (vars.mStop,vars.mLSP)
+        if bins.has_key(point):
+            bins[point] = bins[point] + 1
+        else:
+            bins[point] = 1
+
         event.getByLabel(('TriggerResults','','MJSkim'),pathTriggerH)
         pathTrigger = pathTriggerH.product()
+        pathTriggerNames = event.object().triggerNames(pathTrigger)
 
         #start by vetoing events that didn't pass the offline selection
+        filters.hadBoxFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('razorMJSkimSequenceHadPath'))
+        filters.eleBoxFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('razorMJSkimSequenceElePath'))
+        filters.muBoxFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('razorMJSkimSequenceMuPath'))
+        filters.tauBoxFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('razorMJSkimSequenceTauPath'))  
+        path = filters.hadBoxFilter or filters.muBoxFilter or filters.eleBoxFilter or filters.tauBoxFilter
+        if skimEvents and not path: continue
+
+        #also get the MET filter
+        event.getByLabel(('TriggerResults','','PAT'),pathTriggerH)
+        pathTrigger = pathTriggerH.product()
         pathTriggerNames = event.object().triggerNames(pathTrigger)
-        path = pathTrigger.wasrun(pathTriggerNames.triggerIndex('multijetPathNoTrigger')) and \
-               pathTrigger.accept(pathTriggerNames.triggerIndex('multijetPathNoTrigger'))
-        filters.selectionFilter = path
-        #if not path: continue
+        filters.metFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('metNoiseCleaningPath'))
 
         event.getByLabel(('razorMJDiHemiHadBox'),hemiHadH)
-        if len(hemiHadH.product()):
+        if hemiHadH.isValid() and len(hemiHadH.product()):
             hemi = hemiHadH.product()[0]
-            vars.Rsq = hemi.Rsq()
-            vars.mR = hemi.mR()
+            vars.RSQ = hemi.Rsq()
+            vars.MR = hemi.mR()
             vars.hemi1Mass = hemi.leg1().mass()
             vars.hemi2Mass = hemi.leg2().mass()
             info.hemisphereBalance = (10*hemi.leg1().numConstituents()) + hemi.leg2().numConstituents()
 
-            if vars.Rsq < 0.03 or vars.mR < 500:
+            #run the hadronic top tagger
+            info.hemi1Count, vars.hemi1TopMass, vars.hemi1WMass, vars.hemi1ThetaH = topTag( hemi.leg1() )
+            info.hemi2Count, vars.hemi2TopMass, vars.hemi2WMass, vars.hemi2ThetaH = topTag( hemi.leg2() )
+            
+            #TODO: Place some cut here
+            if skimEvents and vars.RSQ < 0.03 or vars.MR < 500:
                 continue
+
+        event.getByLabel(('razorMJDiHemiHadBoxUp'),hemiHadH)
+        if hemiHadH.isValid() and len(hemiHadH.product()):
+            hemi = hemiHadH.product()[0]
+            vars.RSQ_JES_UP = hemi.Rsq()
+            vars.MR_JES_UP = hemi.mR()
+
+        event.getByLabel(('razorMJDiHemiHadBoxDown'),hemiHadH)
+        if hemiHadH.isValid() and len(hemiHadH.product()):
+            hemi = hemiHadH.product()[0]
+            vars.RSQ_JES_DOWN = hemi.Rsq()
+            vars.MR_JES_DOWN = hemi.mR()
+
 
         event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
         if not jetSel30H.isValid(): continue
         jets = jetSel30H.product()
         info.nJet = len(jets)
-        if info.nJet < 6:
-            continue
-
-        event.getByLabel(('cmgTriggerObjectSel'),triggerH)
-        hlt = triggerH.product()[0]
-
-        filters.quadTriggerFilter = hlt.getSelectionRegExp("^HLT_QuadJet[0-9]+.*_v[0-9]+$")
-        filters.sixTriggerFilter = hlt.getSelectionRegExp("^HLT_SixJet[0-9]+.*_v[0-9]+$")
-        filters.eightTriggerFilter = hlt.getSelectionRegExp("^HLT_EightJet[0-9]+.*_v[0-9]+$")
-        filters.l1MultiJetFilter = hlt.getSelectionRegExp("^HLT_L1MultiJet_v[0-9]+$")
-        filters.ht250TriggerFilter = hlt.getSelectionRegExp("^HLT_HT250_v[0-9]+$")
-        filters.ht300TriggerFilter = hlt.getSelectionRegExp("^HLT_HT300_v[0-9]+$")
-        filters.razorTriggerFilter = hlt.getSelectionRegExp("^HLT_R0[0-9]+_MR[0-9]+_v[0-9]+$")
-        filters.triggerFilter = filters.quadTriggerFilter or filters.sixTriggerFilter or filters.eightTriggerFilter
-        if not filters.triggerFilter: continue
-        #if not filters.l1MultiJetFilter: continue
         
-        if not runOnMC:
-            for f in filter_tags:
-                event.getByLabel(f,filterH)
-                if filterH.isValid():
-                    result = filterH.product()[0]
-                    setattr(filters,f,result)
+        event.getByLabel(('razorMJHadTriggerSel'),triggerH)
+        filters.hadTrigger = len(triggerH.product()) > 0
+        
+        event.getByLabel(('razorMJEleTriggerSel'),triggerH)
+        filters.eleTrigger = len(triggerH.product()) > 0
 
-        for i in xrange(len(jets)):
-            name = 'jet%iPt' % (i + 1)
-            if hasattr(vars,name):
-                jet = jets[i]
-                setattr(vars,name,jet.pt())
-                setattr(vars,'jet%iEta'%(i+1),jet.eta())
+        event.getByLabel(('razorMJMuTriggerSel'),triggerH)
+        filters.muTrigger = len(triggerH.product()) > 0
+        
+        for jet in jets:
+            jet_pt.push_back(jet.pt())
+            jet_eta.push_back(jet.eta())
+            jet_csv.push_back(jet.btag(6))
+            jet_fl.push_back(jet.partonFlavour())
 
-        tche = sorted([j.btag(0) for j in jets if abs(j.eta()) <= 2.4])
-        tcheMedium = sorted([(j.pt(),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 3.3])
-        info.nBJet = len(tcheMedium)
-        tcheLoose = sorted([(j.pt(),j) for j in jets if abs(j.eta()) <= 2.4 and j.btag(0) >= 1.7])
-        info.nBJetLoose = len(tcheLoose)
+        #store the number of btags at each working point
+        csv = sorted([j.btag(6) for j in jets], reverse=True)
+        info.nCSVL = len([c for c in csv if c >= 0.244])
+        info.nCSVM = len([c for c in csv if c >= 0.679])
+        info.nCSVT = len([c for c in csv if c >= 0.898])
 
-        ssvp = sorted([j.btag(5) for j in jets if abs(j.eta()) <= 2.4])
+        #the number of lepton cleaned jets
+        event.getByLabel(('razorMJJetCleanedLoose'),jetSel30H)
+        info.nJetNoLeptons = len(jetSel30H.product())
 
-        if len(tche) < 2:
-            continue
-
-        vars.maxTCHE = tche[-1]
-        vars.maxSSVP = ssvp[-1]
-        vars.nextTCHE = tche[-2]
-        vars.nextSSVP = ssvp[-2]
-
-        event.getByLabel(('cmgPFMET'),metH)
-        met = metH.product()[0]
-        vars.met = met.et()
+        #tau veto
+        event.getByLabel(('razorMJTauVeto'),jetSel30H)
+        if jetSel30H.isValid():
+            info.nTauVeto = len(jetSel30H.product())
+        else:
+            info.nTauVeto = -1
 
         #loose lepton ID
         event.getByLabel(('razorMJElectronLoose'),electronH)
@@ -311,13 +371,33 @@ struct Filters{\
         info.nTauTight = len(tauH.product())
         info.nLepton = info.nElectronTight + info.nMuonTight + info.nTauTight
 
-        event.getByLabel(('vertexSize'),countH)
-        info.nVertex = countH.product()[0]
+        #event.getByLabel(('vertexSize'),countH)
+        #info.nVertex = countH.product()[0]
+
+##        #dump the PDF weights
+##        Event.getByLabel(('dumpPdfWeights','cteq66'),pdfH)
+##        if pdfH.isValid():
+##            for w in pdfH.product():
+##                CTEQ66_W.push_back(w)
+##        event.getByLabel(('dumpPdfWeights','MRST2006nnlo'),pdfH)
+##        if pdfH.isValid():
+##            for w in pdfH.product():
+##                MRST2006NNLO_W.push_back(w)
+
+        event.getByLabel(('topGenInfo'),candH)
+        if candH.isValid() and len(candH.product()):
+            if 'T2' in options.model:
+                diTop = candH.product()[1]
+            elif 'T1' in options.model:
+                diTop = candH.product()[2]
+            else:
+                diTop = candH.product()[0]
+            vars.diTopPt = diTop.pt()
+
         
-        if runOnMC:
-            event.getByLabel(('simpleGenInfo'),filterH)
-            if filterH.isValid():
-                info.genInfo = filterH.product()[0]
+        event.getByLabel(('simpleGenInfo'),filterH)
+        if filterH.isValid():
+            info.genInfo = filterH.product()[0]
 
         tree.Fill()
 
@@ -325,3 +405,8 @@ struct Filters{\
 #    tree.Write()
 #    output.Close()
     store.write()
+
+    sample_counts = file(options.outputFile.replace('.root','.pkl'),'wb')
+    pickle.dump(bins,sample_counts)
+    sample_counts.close()
+    
