@@ -59,9 +59,6 @@ class FourLeptonAnalyzerXCheck( MultiLeptonAnalyzerBase ):
         #get jets
         self.buildJetList(event)
 
-        
-
-
         #create a cut flow
         cutFlow = CutFlowMaker(self.counters.counter("FourLepton"),event,event.leptons1,event.leptons2)
         #Cuts :Apply minimal criteria like sip<100 and min Pt and eta and require at least two leptons 
@@ -72,9 +69,13 @@ class FourLeptonAnalyzerXCheck( MultiLeptonAnalyzerBase ):
 
         #Remove any electrons that are near to tight muons!
         cleanOverlap = OverlapCleaner(event.skimmedLeptons,0.05,11,13,self.testMuonCleaning)
+<<<<<<< FourLeptonAnalyzerXCheck.py
+        passed = cutFlow.applyCut(cleanOverlap,'electron cross cleaning',2,'cleanLeptons')
+=======
         passed = cutFlow.applyCut(cleanOverlap,'electron cross cleaning',2,'cleanLeptons')
 
 
+>>>>>>> 1.2
 
         #Create pair
         event.leptonPairs = self.findPairs(cutFlow.obj1,event.photons)
@@ -89,9 +90,7 @@ class FourLeptonAnalyzerXCheck( MultiLeptonAnalyzerBase ):
 
         #Apply also M>40 and M<120 cut for comparing with others
         passed=cutFlow.applyCut(self.testZ1Mass,'2l MZ less than 120',1,'zBosonsMass')
-
-
-        if not passed: return False
+        if not passed: return False    
         
         event.bestZForFakeRate = self.bestZBosonByMass(cutFlow.obj1)
                 
@@ -122,7 +121,6 @@ class FourLeptonAnalyzerXCheck( MultiLeptonAnalyzerBase ):
 
         #Ghost Suppression
         passed=cutFlow.applyCut(self.testFourLeptonGhostSuppression,'ghost suppression',1,'fourLeptonsGhostSup')
-
 
         #tight ID for Z1
         passed=cutFlow.applyCut(self.testFourLeptonTightID,'4l  tight ID',1,'fourLeptonsTightID')
