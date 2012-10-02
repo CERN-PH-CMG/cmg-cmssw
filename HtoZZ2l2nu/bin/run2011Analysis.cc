@@ -1139,7 +1139,7 @@ int main(int argc, char* argv[])
 			  
 			  //VBF monitoring
 			  float dphijj(-1),hardpt(-1);
-			  if(nAJetsLoose>=2)
+			  if(aGoodIdJets.size()>=2)
 			  {
 			      LorentzVector vbfSyst=aGoodIdJets[0]+aGoodIdJets[1];
 			      LorentzVector hardSyst=vbfSyst+zvvs[0]+zll;
@@ -1366,7 +1366,6 @@ int main(int argc, char* argv[])
            if(fabs(tightVarJets[0].eta())<2.1 && fabs(tightVarJets[1].eta())<2.1){tag_subcatVBF+="2";}else
            if(fabs(tightVarJets[0].eta())<2.1 || fabs(tightVarJets[1].eta())<2.1){tag_subcatVBF+="1";}else
                                                                                  {tag_subcatVBF+="0";}
-
            tags_full.push_back(tag_cat+tag_subcatVBF);
            if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcatVBF); }
         }

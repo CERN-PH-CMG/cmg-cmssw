@@ -323,34 +323,34 @@ int main(int argc, char* argv[])
  
 
 
-   std::vector<double> optim_Cuts2_jet1_pt;
-   std::vector<double> optim_Cuts2_jet2_pt; 
+   std::vector<double> optim_Cuts2_z_pt;
+   std::vector<double> optim_Cuts2_jet_pt; 
    std::vector<double> optim_Cuts2_eta_gap;
    std::vector<double> optim_Cuts2_dijet_mass;
-   for(double jet2_pt=30;jet2_pt<=100;jet2_pt+=10)
+   for(double z_pt=30;z_pt<=100;z_pt+=10)
      {
-       for(double jet1_pt=jet2_pt;jet1_pt<=100;jet1_pt+=10)
+       for(double jet_pt=30;jet_pt<=100;jet_pt+=10)
 	 {
 	   for(double eta_gap=3.5;eta_gap<=5.0;eta_gap+=0.5)
 	     {
 	       for(double dijet_mass=400; dijet_mass<=1000; dijet_mass+=50)
                  {
-                   optim_Cuts2_jet1_pt.push_back(jet1_pt);
-                   optim_Cuts2_jet2_pt.push_back(jet2_pt);
+                   optim_Cuts2_z_pt.push_back(z_pt);
+                   optim_Cuts2_jet_pt.push_back(jet_pt);
                    optim_Cuts2_eta_gap.push_back(eta_gap);
                    optim_Cuts2_dijet_mass.push_back(dijet_mass);
                  }
             }
        }
    } 
-   TH1F* Hoptim_cuts2_jet1_pt=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_jet1_pt",";cut index;jet1_pt",optim_Cuts2_jet1_pt.size(),0,optim_Cuts2_jet1_pt.size())) ;
-   TH1F* Hoptim_cuts2_jet2_pt=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_jet2_pt",";cut index;jet2_pt",optim_Cuts2_jet2_pt.size(),0,optim_Cuts2_jet2_pt.size())) ;
+   TH1F* Hoptim_cuts2_z_pt=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_z_pt",";cut index;z_pt",optim_Cuts2_z_pt.size(),0,optim_Cuts2_z_pt.size())) ;
+   TH1F* Hoptim_cuts2_jet_pt=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_jet_pt",";cut index;jet_pt",optim_Cuts2_jet_pt.size(),0,optim_Cuts2_jet_pt.size())) ;
    TH1F* Hoptim_cuts2_eta_gap=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_eta_gap",";cut index;eta_gap",optim_Cuts2_eta_gap.size(),0,optim_Cuts2_eta_gap.size())) ;
    TH1F* Hoptim_cuts2_dijet_mass=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_dijet_mass",";cut index;dijet_mass", optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size()));
 
-   for(unsigned int index=0;index<optim_Cuts2_jet1_pt.size();index++){
-     Hoptim_cuts2_jet1_pt->Fill(index,optim_Cuts2_jet1_pt[index]);   
-     Hoptim_cuts2_jet2_pt->Fill(index,optim_Cuts2_jet2_pt[index]); 
+   for(unsigned int index=0;index<optim_Cuts2_z_pt.size();index++){
+     Hoptim_cuts2_z_pt->Fill(index,optim_Cuts2_z_pt[index]);   
+     Hoptim_cuts2_jet_pt->Fill(index,optim_Cuts2_jet_pt[index]); 
      Hoptim_cuts2_eta_gap->Fill(index,optim_Cuts2_eta_gap[index]);
      Hoptim_cuts2_dijet_mass->Fill(index,optim_Cuts2_dijet_mass[index]);
    }
@@ -1076,18 +1076,18 @@ int main(int argc, char* argv[])
 	     ncjv++;
 	   }
 	   
-	   for(unsigned int index=0; index<optim_Cuts2_jet1_pt.size();index++){
+	   for(unsigned int index=0; index<optim_Cuts2_z_pt.size();index++){
 	     if(!hasObjectId(varJets[0].pid,JETID_CUTBASED_LOOSE) || !hasObjectId(varJets[1].pid,JETID_CUTBASED_LOOSE)) continue;
-	     float minJet1Pt=optim_Cuts2_jet1_pt[index];
-	     float minJet2Pt=optim_Cuts2_jet2_pt[index];
+	     float minZPt=optim_Cuts2_z_pt[index];
+	     float minJetPt=optim_Cuts2_jet_pt[index];
 	     float minHardPt    = 99999.;//optim_Cuts2_jet2_pt[index];
 	     float minEtaGap=optim_Cuts2_eta_gap[index];
 	     float minDijetMass=optim_Cuts2_dijet_mass[index];
 	     bool passLocalZmass(fabs(zll.mass()-91)<15);
-	     bool passLocalZpt(zll.pt()>50 && fabs(zll.eta())<1.4442); 
+	     bool passLocalZpt(zll.pt()>minZPt && fabs(zll.eta())<1.4442); 
 	     bool passLocalRedMet(aRedMet.pt()>60);
-	     bool passLocalJet1Pt(varJets[0].pt()>minJet1Pt);
-	     bool passLocalJet2Pt(varJets[1].pt()>minJet2Pt);
+	     bool passLocalJet1Pt(varJets[0].pt()>minJetPt);
+	     bool passLocalJet2Pt(varJets[1].pt()>minJetPt);
 	     bool passLocalEtaGap(fabs(varJets[0].eta()-varJets[1].eta())>minEtaGap);
 	     LorentzVector vbfSyst=varJets[0]+varJets[1];
 	     bool passLocalDijetMass(vbfSyst.M()>minDijetMass);
