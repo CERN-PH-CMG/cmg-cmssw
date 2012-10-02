@@ -1,3 +1,5 @@
+#Colin&Will : this file is obsolete and will be removed soon
+
 import FWCore.ParameterSet.Config as cms
 
 from RecoParticleFlow.PostProcessing.selectGoodPFEvents_cff import *

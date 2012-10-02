@@ -56,9 +56,6 @@ from RecoMET.METFilters.EcalDeadCellTriggerPrimitiveFilter_cfi import EcalDeadCe
 EcalDeadCellTriggerPrimitiveFilter.tpDigiCollection = cms.InputTag("ecalTPSkimNA")
 EcalDeadCellTriggerPrimitiveFilterPath = cms.Path(EcalDeadCellTriggerPrimitiveFilter)
 
-## The EE bad SuperCrystal filter
-# from RecoMET.METFilters.eeBadScFilter_cfi import eeBadScFilter
-# eeBadScFilterPath = cms.Path(eeBadScFilter)
 
 ## The Good vertices collection needed by the tracking failure filter
 goodVertices = cms.EDFilter(
@@ -83,15 +80,18 @@ metNoiseCleaning = cms.Sequence(primaryVertexFilter+
                                 hcalLaserEventFilter+
                                 EcalDeadCellTriggerPrimitiveFilter+
                                 trackingFailureSequence
-                                # +
-                                # eeBadScFilter
                                 )
+
 metNoiseCleaningPath = cms.Path(metNoiseCleaning)
 
-#the HCal noise filter only works on AOD in 5.2
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 if isNewerThan('CMSSW_5_2_0'):
+    #the HCal noise filter works on AOD in 5.2. in 44, a list of events was used.
     hcalLaserEventFilter.vetoByRunEventNumber=cms.untracked.bool(False)
     hcalLaserEventFilter.vetoByHBHEOccupancy=cms.untracked.bool(True)
+    #the ee bad sc filter is only available in 5X 
+    from RecoMET.METFilters.eeBadScFilter_cfi import eeBadScFilter
+    eeBadScFilterPath = cms.Path(eeBadScFilter)
+    metNoiseCleaning +=  eeBadScFilter 
 else:
     print >> sys.stderr, 'hcalLaserFilterFromAOD only available in releases >= 5.2'

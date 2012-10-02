@@ -14,6 +14,8 @@ def getSchedule(process, runOnMC, runOnFastSim):
         process.metNoiseCleaningPath
         # process.eeBadScFilterPath,
         )
+    if isNewerThan('CMSSW_5_2_0'):
+        result.append( process.eeBadScFilterPath )
     if runOnMC:
         result.append(process.totalKinematicsFilterPath)
     if not( runOnFastSim ):
