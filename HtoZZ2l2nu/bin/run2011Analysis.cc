@@ -958,6 +958,8 @@ int main(int argc, char* argv[])
 	
 	  if(passZpt){
 	      mon.fillHisto  ("eventflow",tags_full,2,weight);
+              mon.fillHisto("pfvbfcount_total",tags_cat,ev.ngenITpu,weight);
+
 	      
 	      //analyze dilepton kinematics
 	      LorentzVector leadingLep(phys.leptons[0].pt()>phys.leptons[1].pt() ? phys.leptons[0]: phys.leptons[1]);
@@ -1022,7 +1024,8 @@ int main(int argc, char* argv[])
 		      if(aJets[ijet].pt()>30) if(idphijmet<mindphijmet)  mindphijmet=idphijmet;
 		      if(fabs(deltaPhi(aJets[ijet].phi(),zll.phi()))>2) recoilJets.push_back( aJets[ijet] );
 
-		      bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_LOOSE);//TIGHT);
+		      //bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_LOOSE);//TIGHT);
+                      bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_CUTBASED_LOOSE);
 		      if(isGoodJet)
 			{
 			  aClusteredMetP4 -= aJets[ijet];	  
@@ -1121,7 +1124,6 @@ int main(int argc, char* argv[])
 			  
 			  //VBF monitoring
 			  float dphijj(-1),hardpt(-1);
-                          mon.fillHisto("pfvbfcount_total",tags_cat,ev.ngenITpu,weight);
 			  if(nAJetsLoose>=2)
 			  {
 			      LorentzVector vbfSyst=aGoodIdJets[0]+aGoodIdJets[1];
