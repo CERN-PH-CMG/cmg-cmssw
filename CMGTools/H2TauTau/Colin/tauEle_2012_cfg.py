@@ -42,7 +42,8 @@ jsonAna = cfg.Analyzer(
     )
 
 triggerAna = cfg.Analyzer(
-    'TriggerAnalyzer'
+    'TriggerAnalyzer',
+#    verbose = True
     )
 
 vertexAna = cfg.Analyzer(
@@ -83,6 +84,11 @@ TauEleAna = cfg.Analyzer(
 dyJetsFakeAna = cfg.Analyzer(
     'DYJetsFakeAnalyzer',
     leptonType = 11
+    )
+
+WNJetsAna = cfg.Analyzer(
+    'WNJetsAnalyzer',
+    verbose = True
     )
 
 higgsWeighter = cfg.Analyzer(
@@ -199,6 +205,7 @@ sequence = cfg.Sequence( [
     vertexAna,
     TauEleAna,
     dyJetsFakeAna,
+    WNJetsAna,
     higgsWeighter, 
     vbfAna,
     pileUpAna,
@@ -216,7 +223,7 @@ if syncntuple:
 test = 1
 if test==1:
     comp = HiggsVBF125
-    # comp.files = 'Aug14/joshMinusColin.root'
+#    HiggsVBF125.triggers = []
     selectedComponents = [comp]
     comp.splitFactor = 1
     # comp.files = comp.files[:1]
