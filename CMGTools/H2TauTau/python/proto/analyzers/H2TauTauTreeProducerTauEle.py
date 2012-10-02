@@ -15,6 +15,7 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        var( tr, 'run', int)
        var( tr, 'lumi', int)
        var( tr, 'evt', int)
+       var( tr, 'NUP', int)
        
        bookDiLepton(tr)
 
@@ -60,6 +61,7 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        fill( tr, 'run', event.run) 
        fill( tr, 'lumi',event.lumi)
        fill( tr, 'evt', event.eventId)
+       fill( tr, 'NUP', event.NUP)
 
        fillDiLepton( tr, event.diLepton )
 
