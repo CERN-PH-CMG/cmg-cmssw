@@ -43,13 +43,31 @@ TTJets = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+T_tW = cfg.MCComponent(
+    name = 'T_tW',
+    files = [],
+    xSection = 11.1, # from the sync twiki
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+Tbar_tW = cfg.MCComponent(
+    name = 'Tbar_tW',
+    files = [],
+    xSection = 11.1, # from the sync twiki
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
 
 mc_ewk = [
     DYJets,
     WJets,
     W3Jets,
     # WJetsExt,
-    TTJets
+    TTJets,
+    T_tW,
+    Tbar_tW
     ]
 
 ## mc_ewk_up = sampleShift( locals(), [DYJets], 'Up')
