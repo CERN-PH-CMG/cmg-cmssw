@@ -130,7 +130,7 @@ vbfAna = cfg.Analyzer(
     vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.44X.xml',
     jetCol = 'cmgPFJetSel',
     jetPt = 30,
-    jetEta = 5.0,
+    jetEta = 4.7,
     **vbfKwargs
     )
 

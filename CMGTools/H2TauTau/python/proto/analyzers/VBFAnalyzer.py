@@ -44,9 +44,6 @@ class VBFAnalyzer( Analyzer ):
         count.register('no central jets')
         
     def process(self, iEvent, event):
-
-##         if event.eventId == 103606:
-##             import pdb; pdb.set_trace()
         
         self.readCollections( iEvent )
         cmgJets = self.handles['jets'].product()
@@ -88,7 +85,6 @@ class VBFAnalyzer( Analyzer ):
                                          leg2 ], allJets, 0.5*0.5)
         leg1.jet = pairs[leg1]
         leg2.jet = pairs[leg2]
-        # import pdb; pdb.set_trace()
         if leg1.jet is None:
             leg1.jet = leg1
         if leg2.jet is None:
@@ -107,12 +103,16 @@ class VBFAnalyzer( Analyzer ):
 		        if dR<jet.matchGenParton:
 			    jet.matchGenParton=dR
 
-        if len( event.jets )>=2:
+        event.jets30 = [jet for jet in event.jets if jet.pt()>30]
+        event.cleanJets30 = [jet for jet in event.cleanJets if jet.pt()>30]
+        
+        if len( event.jets30 )>=2:
             self.counters.counter('VBF').inc('at least 2 good jets')
                
-        if len( event.cleanJets )>=2:
+        if len( event.cleanJets30 )>=2:
             self.counters.counter('VBF').inc('at least 2 clean jets')
-        else:
+
+        if len(event.cleanJets)<2:
             return True
 
         event.vbf = VBF( event.cleanJets, event.diLepton, self.vbfMva.vbfMvaCalc)
@@ -137,8 +137,8 @@ class VBFAnalyzer( Analyzer ):
         return jet.pt() > self.cfg_ana.jetPt and \
                abs( jet.eta() ) < self.cfg_ana.jetEta and \
                jet.getSelection('cuts_looseJetId') and \
-               jet.passPuJetId('full', 2)
-               #jet.looseJetId()
+               jet.puJetId()
+               # jet.passPuJetId('full', 2)
 
     def testBJet(self, jet):
         # medium csv working point
@@ -146,4 +146,6 @@ class VBFAnalyzer( Analyzer ):
         return jet.pt()>20 and \
                abs( jet.eta() ) < 2.4 and \
                jet.btag("combinedSecondaryVertexBJetTags")>0.679 and \
-               jet.passPuJetId('full', 2)
+               jet.getSelection('cuts_looseJetId') and \
+               jet.puJetId()
+               # jet.passPuJetId('full', 2)

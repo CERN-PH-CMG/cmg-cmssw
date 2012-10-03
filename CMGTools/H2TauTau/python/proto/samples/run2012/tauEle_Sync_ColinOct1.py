@@ -18,7 +18,11 @@ for sam in MC:
 allsamples = copy.copy(MC)
 
 # full new VBF recipe
-HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PATCMG_V5_8_0_Test/TAUELE_MVAMET_ColinSep1',
+## HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PATCMG_V5_8_0_Test/TAUELE_MVAMET_ColinSep1',
+##                              'cbern', '.*root')
+
+# test 3
+HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0_Test3/TAUELE_OSVFit_ColinOct2',
                              'cbern', '.*root')
 
 

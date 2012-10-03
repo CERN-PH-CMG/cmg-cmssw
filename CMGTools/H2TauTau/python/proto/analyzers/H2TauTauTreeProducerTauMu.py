@@ -15,6 +15,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        var( tr, 'run', int)
        var( tr, 'lumi', int)
        var( tr, 'evt', int)
+       var( tr, 'NUP', int)
        
        bookDiLepton(tr)
        
@@ -27,6 +28,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        bookParticle(tr, 'l2Jet')
        
        var( tr, 'nJets')
+       var( tr, 'nJets20')
        bookJet(tr, 'jet1')
        bookJet(tr, 'jet2')
 
@@ -62,6 +64,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        fill( tr, 'run', event.run) 
        fill( tr, 'lumi',event.lumi)
        fill( tr, 'evt', event.eventId)
+       fill( tr, 'NUP', event.NUP)
 
        fillDiLepton( tr, event.diLepton )
 
@@ -76,8 +79,10 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        fillParticle(tr, 'l2Jet', event.diLepton.leg2().jet )
 
 
+       fill(tr, 'nJets20', len(event.cleanJets) )
+       nJets30 = len(event.cleanJets30)
+       fill(tr, 'nJets', nJets30 )
        nJets = len(event.cleanJets)
-       fill(tr, 'nJets', nJets )
        if nJets>=1:
            fillJet(tr, 'jet1', event.cleanJets[0] )
        if nJets>=2:
@@ -99,10 +104,6 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
           fill(tr, 'vertexWeight', event.vertexWeight)
           fill(tr, 'nVert', len(event.vertices) ) 
           
-##        isFake = 1
-##        if hasattr( event, 'genMatched'): 
-##           if event.genMatched == 1:
-##              isFake = 0
        fill(tr, 'isFake', event.isFake)
        fill(tr, 'isSignal', event.isSignal)
        

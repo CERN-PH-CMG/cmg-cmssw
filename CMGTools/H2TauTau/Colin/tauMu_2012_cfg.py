@@ -88,6 +88,11 @@ dyJetsFakeAna = cfg.Analyzer(
     leptonType = 13
     )
 
+WNJetsAna = cfg.Analyzer(
+    'WNJetsAnalyzer',
+    verbose = False
+    )
+
 higgsWeighter = cfg.Analyzer(
     'HiggsPtWeighter',
     )
@@ -123,8 +128,8 @@ vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
     vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.44X.xml',
     jetCol = 'cmgPFJetSel',
-    jetPt = 30,
-    jetEta = 5.0,
+    jetPt = 20,
+    jetEta = 4.7,
     **vbfKwargs
     )
 
@@ -143,9 +148,9 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinSep4 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_dcSync_ColinSep5 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_dcSync_ColinSep17 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinSep17 import *
-
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinAug8 import *
+
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinSep17 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinSep19 import *
 
 #########################################################################################
@@ -206,6 +211,7 @@ sequence = cfg.Sequence( [
     vertexAna,
     TauMuAna,
     dyJetsFakeAna,
+    WNJetsAna,
     higgsWeighter, 
     vbfAna,
     pileUpAna,
@@ -223,10 +229,11 @@ if syncntuple:
 test = 1
 if test==1:
     comp = HiggsVBF125
+    # comp = WJets
     # comp.files = 'Aug14/joshMinusColin.root'
     selectedComponents = [comp]
-    comp.splitFactor = 14
-    # comp.files = comp.files[:1]
+    comp.splitFactor = 1
+    comp.files = comp.files[:10]
     # for 53 MC: 
     comp.triggers = ['HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v*']
 elif test==2:
@@ -240,3 +247,4 @@ config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
 
 printComps(config.components, True)
+
