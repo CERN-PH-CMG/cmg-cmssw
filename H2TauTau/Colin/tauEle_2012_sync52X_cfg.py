@@ -219,11 +219,8 @@ if syncntuple:
 test = 0
 if test==1:
     comp = HiggsVBF125
-#    HiggsVBF125.triggers = []
     selectedComponents = [comp]
     comp.splitFactor = 1
-    # comp.files = comp.files[:1]
-    # for 53 MC: 
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
