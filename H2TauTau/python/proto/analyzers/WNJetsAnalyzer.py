@@ -21,14 +21,22 @@ class WNJetsAnalyzer( Analyzer ):
 
 
     def process(self, iEvent, event):
-        self.readCollections( iEvent )
         event.NUP = -1
+        try :
+            self.readCollections( iEvent )
+        except :
+            print 'WARNING source not available'
+            return True
+        
         if not self.cfg_comp.isMC:
             return True
         
         # check whether it's a WJets sample, can this be done?
         # save the NUP variable
-        event.NUP = self.mchandles['source'].product().hepeup().NUP
+        if self.mchandles['source'].isValid():
+            event.NUP = self.mchandles['source'].product().hepeup().NUP
+        else:
+            event.NUP = -1
 
         if self.cfg_ana.verbose:
             # import pdb; pdb.set_trace()
