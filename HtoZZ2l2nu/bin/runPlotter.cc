@@ -942,8 +942,8 @@ int main(int argc, char* argv[]){
    gStyle->SetPalette(1);
    gStyle->SetNdivisions(505);
 
-   string histoNameMask = "";
-   string histoNameMaskStart = "";
+   std::vector<string> histoNameMask;
+   std::vector<string> histoNameMaskStart;
 
    for(int i=1;i<argc;i++){
      string arg(argv[i]);
@@ -985,8 +985,8 @@ int main(int argc, char* argv[]){
      if(arg.find("--outDir" )!=string::npos && i+1<argc){ outDir   = argv[i+1];  i++;  printf("outDir = %s\n", outDir.c_str());  }
      if(arg.find("--outFile")!=string::npos && i+1<argc){ outFile  = argv[i+1];  i++; printf("output file = %s\n", outFile.c_str()); }
      if(arg.find("--json"   )!=string::npos && i+1<argc){ jsonFile = argv[i+1];  i++;  }
-     if(arg.find("--onlyStartWith"   )!=string::npos && i+1<argc){ histoNameMaskStart = argv[i+1]; i++; printf("Only process Histo starting with '%s'\n", histoNameMaskStart.c_str());   }
-     if(arg.find("--only"   )!=string::npos && i+1<argc){ histoNameMask= argv[i+1]; i++; printf("Only process Histo containing '%s'\n", histoNameMask.c_str());   }
+     if(arg.find("--onlyStartWith"   )!=string::npos && i+1<argc){ histoNameMaskStart.push_back(argv[i+1]); i++; printf("Only process Histo starting with '%s'\n", argv[i+1]);   }
+     if(arg.find("--only"   )!=string::npos && i+1<argc){ histoNameMask.push_back(argv[i+1]); i++; printf("Only process Histo containing '%s'\n", argv[i+1]);   }
      if(arg.find("--index"  )!=string::npos && i+1<argc){ sscanf(argv[i+1],"%d",&cutIndex); i++; onlyCutIndex=(cutIndex>=0); printf("index = %i\n", cutIndex);  }
      if(arg.find("--chi2"  )!=string::npos){ showChi2 = true;  }
      if(arg.find("--showUnc") != string::npos) { 
@@ -1036,8 +1036,12 @@ int main(int argc, char* argv[]){
    for(std::list<NameAndType>::iterator it= histlist.begin(); it!= histlist.end(); it++,ictr++)
      {
        if(ictr%TreeStep==0){printf(".");fflush(stdout);}
-       if(histoNameMask      != "" && it->name.find(histoNameMask     )==std::string::npos)continue;
-       if(histoNameMaskStart != "" && it->name.find(histoNameMaskStart)!=0                )continue;
+       bool passMasking = false;
+       for(unsigned int i=0;i<histoNameMask.size();i++){if(it->name.find(histoNameMask[i])!=std::string::npos)passMasking=true;}
+       for(unsigned int i=0;i<histoNameMaskStart.size();i++){if(it->name.find(histoNameMaskStart[i])==0)passMasking=true;}
+       if(histoNameMask.size()==0 && histoNameMaskStart.size()==0)passMasking = true;
+       if(!passMasking)continue;
+
        system(("echo \"" + it->name + "\" >> " + csvFile).c_str());
 
        if(doTex && (it->name.find("eventflow")!=std::string::npos || it->name.find("evtflow")!=std::string::npos) && it->name.find("optim_eventflow")==std::string::npos){    ConvertToTex(Root,inDir,*it); }
