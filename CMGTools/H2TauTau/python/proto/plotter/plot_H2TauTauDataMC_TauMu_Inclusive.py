@@ -7,7 +7,7 @@ import re
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
-from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw
+from CMGTools.H2TauTau.proto.plotter.rootutils import *
 from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
 from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
@@ -18,6 +18,8 @@ from CMGTools.H2TauTau.proto.plotter.embed import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, PlotInfo
 from CMGTools.RootTools.Style import *
 from ROOT import kPink, TH1, TPaveText, TPad
+
+
 
 cp = copy.deepcopy
 EWK = 'WJets'
@@ -33,7 +35,8 @@ def replaceShapeInclusive(plot, var, anaDir,
                           cut, weight,
                           embed, shift):
     '''Replace WJets with the shape obtained using a relaxed tau iso'''
-    cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.')
+    # cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.')
+    cut = cut.replace('nBJets>=1', '1')
     print '[INCLUSIVE] estimate',comp.name,'with cut',cut
     plotWithNewShape = cp( plot )
     wjyield = plot.Hist(comp.name).Integral()
@@ -100,7 +103,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
         osQCD.Replace('QCD', qcd_shape)
 
     osQCD.Group('VV', ['WW','WZ','ZZ'])
-    osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
+    osQCD.Group('electroweak', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
     return ssign, osign, ssQCD, osQCD
 
@@ -128,6 +131,9 @@ if __name__ == '__main__':
     import copy
     from optparse import OptionParser
     from CMGTools.RootTools.RootInit import *
+    from CMGTools.H2TauTau.proto.plotter.officialStyle import officialStyle
+    officialStyle(gStyle)
+
 
     parser = OptionParser()
     parser.usage = '''
@@ -193,7 +199,7 @@ if __name__ == '__main__':
     # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
-    replaceW = False
+    replaceW = True
     useW11 = False
     
     anaDir = args[0].rstrip('/')
@@ -231,6 +237,7 @@ if __name__ == '__main__':
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, options.embed, 'TauMu', options.higgs)
 
     can, pad, padr = buildCanvas()
+    ocan = buildCanvasOfficial()
     cutw = options.cut.replace('mt<40', '1')
     #SYNC WITH JOSH: he subtracts only TT and VV
     #SYNC VBF MT CONTROL: from 60 to 120
@@ -239,7 +246,6 @@ if __name__ == '__main__':
                                                    weight=weight, embed=options.embed)
 
 
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, shift=shift, replaceW=replaceW)
-    draw(osQCD, options.blind)
+    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, shift=shift, replaceW=replaceW); drawOfficial(osQCD)
       
     datacards(osQCD, cutstring, shift)
