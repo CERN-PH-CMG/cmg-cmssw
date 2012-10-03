@@ -69,6 +69,12 @@ void cmg::BaseJetFactory::set(const pat::JetPtr& input,
         output->btag_[i] = input->bDiscriminator(tag);
         output->btagNames_[i] = tag;
     }
+
+    //secondary vertex b-tagging information
+    if( input->hasUserFloat("secvtxMass") ) output->secvtxMass_ = input->userFloat("secvtxMass"); 
+    if( input->hasUserFloat("Lxy") ) output->Lxy_ = input->userFloat("Lxy"); 
+    if( input->hasUserFloat("LxyErr") ) output->LxyErr_ = input->userFloat("LxyErr"); 
+
     output->partonFlavour_ = input->partonFlavour();
     
     output->jetArea_ = input->jetArea();
