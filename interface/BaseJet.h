@@ -24,6 +24,9 @@ namespace cmg {
     BaseJet(){}
     BaseJet(const value& m):
       PhysicsObjectWithPtr<value>::PhysicsObjectWithPtr(m),
+      secvtxMass_(-1.),
+      Lxy_(-1.),
+      LxyErr_(-1.),
       partonFlavour_(UnSet(Int_t)),
       rawFactor_(1),
       uncOnFourVectorScale_(0.){
@@ -36,6 +39,11 @@ namespace cmg {
     double btag(const char* s) const;
     double bDiscriminator(const char* s) const{ return btag(s); }
 
+    /// \return secondary vertex b-tagging information
+    Float_t secvtxMass() const { return secvtxMass_ ; }
+    Float_t Lxy() const { return Lxy_ ; }
+    Float_t LxyErr() const { return LxyErr_; }
+   
     /// \return the matched MC parton flavour
     Int_t partonFlavour() const{ return partonFlavour_;}
     
@@ -63,7 +71,12 @@ namespace cmg {
     typedef boost::array<std::string,TagArray::static_size> TagNameArray;
     TagArray btag_;
     TagNameArray btagNames_;
-    
+   
+    /// b tagging information
+    Float_t secvtxMass_;
+    Float_t Lxy_;
+    Float_t LxyErr_;
+
     //parton flavour
     Int_t partonFlavour_;
 
