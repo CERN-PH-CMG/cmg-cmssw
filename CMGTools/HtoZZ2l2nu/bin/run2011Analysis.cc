@@ -385,6 +385,10 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tag"       , ";#generated vertices;Events",35,0,35) );
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tagzpt"    , ";#generated vertices;Events",35,0,35) );
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tagzptpuid", ";#generated vertices;Events",35,0,35) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tagzpttk0" , ";#generated vertices;Events",35,0,35) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tagzpttk1" , ";#generated vertices;Events",35,0,35) );
+      mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tagzpttk2" , ";#generated vertices;Events",35,0,35) );
+
     }
 
 
@@ -1181,6 +1185,9 @@ int main(int argc, char* argv[])
                                          mon.fillHisto("pfvbfcount_tagzpt",tags_cat,ev.ngenITpu,weight);
                                          if(passJetPUId)mon.fillHisto("pfvbfcount_tagzptpuid",tags_cat,ev.ngenITpu,weight);
 
+                                         if(fabs(minEta)<2.1 && fabs(maxEta)<2.1){mon.fillHisto("pfvbfcount_tagzpttk2",tags_cat,ev.ngenITpu,weight);}else
+                                         if(fabs(minEta)<2.1 || fabs(maxEta)<2.1){mon.fillHisto("pfvbfcount_tagzpttk1",tags_cat,ev.ngenITpu,weight);}else
+                                                                                 {mon.fillHisto("pfvbfcount_tagzpttk0",tags_cat,ev.ngenITpu,weight);}
                                        }
                                    }
                                }
