@@ -28,7 +28,13 @@ aliases = {
     '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run196090to196531':'embed_Run2012B_196090_196531',
     '/WW_TuneZ2star.*START52.*':'WW',
     '/WZ_TuneZ2star.*START52.*':'WZ',
-    '/ZZ_TuneZ2star.*START52.*':'ZZ' 
+    '/ZZ_TuneZ2star.*START52.*':'ZZ',
+    '/T_tW.*START52.*':'T_tW',
+    '/Tbar_tW.*START52.*':'Tbar_tW'
+#    '/T_t-.*START52.*':'T_t',
+#    '/Tbar_t-.*START52.*':'Tbar_t',
+#    '/T_s-.*START52.*':'T_s',
+#    '/Tbar_s-.*START52.*':'Tbar_s'
     }
 
 
@@ -44,11 +50,14 @@ allsamples.extend( embed_list_2012 )
 
 connect( allsamples, '%H2TauTau_tauEle_20Sep_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, cache=True, verbose=False)
 
+print
 for sam in MC:
     print 'setting trigger', mc_triggers,'for sample',sam.name
     sam.triggers = mc_triggers
 for data in data_list_2012:
+    print 'setting trigger', data_triggers,'for sample',data.name
     data.triggers = data_triggers
+print
 
 # this number is not in the DB (dbs says this sample is still in production)
 WJets.nGenEvents = 61444940

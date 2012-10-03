@@ -165,6 +165,10 @@ for mc in MC_list:
         mc.splitFactor = 25
     elif mc.name.find('TTJets')!=-1:
         mc.splitFactor = 80
+    elif mc.name.find('T_tW')!=-1:
+        mc.splitFactor = 1
+    elif mc.name.find('Tbar_tW')!=-1:
+        mc.splitFactor = 1
     elif mc.name.find('WW')!=-1 or \
          mc.name.find('WZ')!=-1 or \
          mc.name.find('ZZ')!=-1:
@@ -212,7 +216,7 @@ if syncntuple:
 
 # selectedComponents = embed_list
 
-test = 1
+test = 0
 if test==1:
     comp = HiggsVBF125
 #    HiggsVBF125.triggers = []
