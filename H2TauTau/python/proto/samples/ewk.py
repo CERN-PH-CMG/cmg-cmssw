@@ -1,5 +1,4 @@
 import CMGTools.RootTools.fwlite.Config as cfg
-from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
 
 valentinaFactor = 0.95
 
@@ -54,5 +53,3 @@ mc_ewk = [
     ]
 
 
-mc_ewk_up = sampleShift( locals(), [DYJets], 'Up')
-mc_ewk_down = sampleShift( locals(), [DYJets], 'Down')

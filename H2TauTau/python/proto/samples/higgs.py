@@ -2,7 +2,6 @@ import copy
 import re 
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.yellowreport.YRParser import yrparser7TeV
-# from CMGTools.H2TauTau.proto.samples.sampleShift import sampleShift
 
 HiggsVBF110 = cfg.MCComponent(
     name = 'HiggsVBF110',

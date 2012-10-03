@@ -1,37 +1,41 @@
 import re
 import copy
 import time
-from ROOT import gPad, TCanvas, TPad, TPaveText, TBox 
+from ROOT import gPad, TCanvas, TPad, TPaveText, TBox, gStyle
+from CMGTools.H2TauTau.proto.plotter.officialStyle import CMSPrelim as CMSPrelimOfficial
+from CMGTools.RootTools.DataMC.Stack import Stack
 
 can = None,
 pad = None
 padr = None
 ratio = None
+ocan = None
+save = []
 
 xtitles = {
-    'l1_pt':'p_{T,#tau} (GeV)',
-    'l1Jet_pt':'p_{T,#tau jet} (GeV)',
-    'l2_pt':'p_{T,#mu} (GeV)',
-    'l2Jet_pt':'p_{T,#mu jet} (GeV)',
+    'l1_pt':'p_{T,#tau} [GeV]',
+    'l1Jet_pt':'p_{T,#tau jet} [GeV]',
+    'l2_pt':'p_{T,#mu} [GeV]',
+    'l2Jet_pt':'p_{T,#mu jet} [GeV]',
     'l1_eta':'#eta_{#tau}',
     'l2_eta':'#eta_{#mu}',
     'l1_rawMvaIso':'MVA #tau iso',
     'l2_relIso05':'#mu iso',
-    'mt':'m_{T} (GeV/c^{2})',
-    'visMass':'m_{vis} (GeV)',
-    'svfitMass':'m_{sv} (GeV)',
+    'mt':'m_{T} [GeV]',
+    'visMass':'m_{vis} [GeV]',
+    'svfitMass':'m_{#tau#tau} [GeV]',
     'nJets':'N_{jets}',
-    'jet1_pt':'p_{T,jet1} (GeV)',
-    'jet2_pt':'p_{T,jet1} (GeV)',
+    'jet1_pt':'p_{T,jet1} [GeV]',
+    'jet2_pt':'p_{T,jet1} [GeV]',
     'jet1_eta':'#eta_{#tau}',
     'jet2_eta':'#eta_{#tau}',
     }
 
 xtitles_TauEle = {
-    'l1_pt':'p_{T,#tau} (GeV)',
-    'l1Jet_pt':'p_{T,#tau jet} (GeV)',
-    'l2_pt':'p_{T,e} (GeV)',
-    'l2Jet_pt':'p_{T,e jet} (GeV)',
+    'l1_pt':'p_{T,#tau} [GeV]',
+    'l1Jet_pt':'p_{T,#tau jet} [GeV]',
+    'l2_pt':'p_{T,e} [GeV]',
+    'l2Jet_pt':'p_{T,e jet} [GeV]',
     'l1_eta':'#eta_{#tau}',
     'l2_eta':'#eta_{e}',
     'l1_phi':'#phi_{#tau}',
@@ -41,15 +45,15 @@ xtitles_TauEle = {
     'l1_rawMvaIso':'MVA #tau iso',
     'l1_relIso05':'#tau iso',
     'l2_relIso05':'e iso',
-    'mt':'m_{T} (GeV/c^{2})',
-    'met':'MET (GeV/c^{2})',
-    'pfmet':'PF MET (GeV/c^{2})',
-    'visMass':'m_{vis} (GeV)',
-    'svfitMass':'m_{sv} (GeV)',
+    'mt':'m_{T} [GeV}]',
+    'met':'MET [GeV]',
+    'pfmet':'PF MET [GeV]',
+    'visMass':'m_{vis} [GeV]',
+    'svfitMass':'m_{#tau#tau} [GeV]',
     'nJets':'N_{jets}',
     'nVert':'N_{vertices}',
-    'jet1_pt':'p_{T,jet1} (GeV)',
-    'jet2_pt':'p_{T,jet1} (GeV)',
+    'jet1_pt':'p_{T,jet1} [GeV]',
+    'jet2_pt':'p_{T,jet1} [GeV]',
     'jet1_eta':'#eta_{#tau}',
     'jet2_eta':'#eta_{#tau}',
     }
@@ -79,36 +83,41 @@ def buildCanvas():
     return can, pad, padr
 
 
-def CMSPrelim(self, pad, channel ):
-    pad.cd()
+def datasetInfo(plot):
     year = ''
-    if self.dataComponents[0].find('2012')!=-1:
+    if plot.dataComponents[0].find('2012')!=-1:
         year = '2012'
         energy = 8
-    elif self.dataComponents[0].find('2011')!=-1:
+    elif plot.dataComponents[0].find('2011')!=-1:
         year = '2011'
         energy = 7       
-    lumi = self.weights['TTJets'].intLumi/1e3
+    lumi = plot.weights['TTJets'].intLumi/1e3
+    return year, lumi, energy 
+
+
+def CMSPrelim(plot, pad, channel ):
+    pad.cd()
+    year, lumi, energy = datasetInfo( plot )
     theStr = 'CMS Preliminary {year}, {lumi:3.3} fb^{{-1}}, #sqrt{{s}} = {energy:d} TeV'.format( year=year, lumi=lumi, energy=energy)
-    lowX = 0.06
-    lowY = 0.85
-    self.cmsprel = TPaveText(lowX, lowY, lowX+0.8, lowY+0.16, "NDC")
-    self.cmsprel.SetBorderSize(   0 )
-    self.cmsprel.SetFillStyle(    0 )
-    self.cmsprel.SetTextAlign(   12 )
-    self.cmsprel.SetTextSize ( 0.05 )
-    self.cmsprel.SetTextFont (   62 )
-    self.cmsprel.AddText(theStr)
-    self.cmsprel.Draw('same')
+    lowX = 0.11
+    lowY = 0.87
+    plot.cmsprel = TPaveText(lowX, lowY, lowX+0.8, lowY+0.16, "NDC")
+    plot.cmsprel.SetBorderSize(   0 )
+    plot.cmsprel.SetFillStyle(    0 )
+    plot.cmsprel.SetTextAlign(   12 )
+    plot.cmsprel.SetTextSize ( 0.05 )
+    plot.cmsprel.SetTextFont (   62 )
+    plot.cmsprel.AddText(theStr)
+    plot.cmsprel.Draw('same')
     
-    self.chan = TPaveText(0.8, lowY, 0.90, lowY+0.18, "NDC")
-    self.chan.SetBorderSize(   0 )
-    self.chan.SetFillStyle(    0 )
-    self.chan.SetTextAlign(   12 )
-    self.chan.SetTextSize ( 0.1 )
-    self.chan.SetTextFont (   62 )
-    self.chan.AddText(channel)
-    self.chan.Draw('same')
+    plot.chan = TPaveText(0.8, lowY, 0.90, lowY+0.18, "NDC")
+    plot.chan.SetBorderSize(   0 )
+    plot.chan.SetFillStyle(    0 )
+    plot.chan.SetTextAlign(   12 )
+    plot.chan.SetTextSize ( 0.1 )
+    plot.chan.SetTextFont (   62 )
+    plot.chan.AddText(channel)
+    plot.chan.Draw('same')
 
 
 unitpat = re.compile('.*\((.*)\)\s*$')
@@ -118,6 +127,7 @@ keeper = []
 
 def draw(plot, doBlind=False, channel='TauMu', plotprefix = None):
     print plot
+    Stack.STAT_ERRORS = True
     blindxmin = None
     blindxmax = None
     doBlind = (plot.varName == 'svfitMass') and doBlind
@@ -136,41 +146,32 @@ def draw(plot, doBlind=False, channel='TauMu', plotprefix = None):
         can, pad, padr = buildCanvas()
     pad.cd()
     plot.DrawStack('HIST')
-    h = plot.stack.hists[0]
+    h = plot.supportHist
     h.GetXaxis().SetLabelColor(0)
     h.GetXaxis().SetLabelSize(0)
     gevperbin = h.GetXaxis().GetBinWidth(1)
-    # mat = unitpat.match( xtitle )
-    # unit = ''
-    # if mat:
-    #     unit = mat.group(1)
-    #h.GetYaxis().SetTitle('Events/{gevperbin} {unit}'.format(gevperbin=gevperbin,
-    #                                                         unit=unit))
     h.GetYaxis().SetTitle('Events')
-    h.GetYaxis().SetTitleOffset(1.1)
-    # plot.CMSPrelim('#tau_{#mu}#tau_{h}')
+    h.GetYaxis().SetTitleOffset(1.4)
     padr.cd()
     ratio = copy.deepcopy(plot)
     ratio.legendOn = False
     if doBlind:
         ratio.Blind(blindxmin, blindxmax, True)
-    ratio.DrawRatioStack('HIST', ymin=0.01, ymax=2)
+    ratio.DrawRatioStack('HIST', ymin=0.4, ymax=1.6)
     hr = ratio.stack.totalHist
+    # hr.weighted.Fit('pol1')
     hr.GetYaxis().SetNdivisions(4)
     hr.GetYaxis().SetTitle('Exp./Obs.')
     hr.GetYaxis().SetTitleSize(0.1)
     hr.GetYaxis().SetTitleOffset(0.5)
     hr.GetXaxis().SetTitle('{xtitle}'.format(xtitle=xtitle))
     hr.GetXaxis().SetTitleSize(0.13)
+    hr.GetXaxis().SetTitleOffset(0.9)
     rls = 0.075
     hr.GetYaxis().SetLabelSize(rls)
     hr.GetXaxis().SetLabelSize(rls)
-    # hr.GetYaxis().SetTitleSize(0.08)
-    # hr.GetYaxis().SetTitleOffset(0.6)
-    # hr.GetXaxis().SetTitleSize(1)
-
-    padr.Update()
-    
+    hr.GetYaxis().SetRangeUser(0.01, 2)
+    padr.Update()    
     # blinding
     if plot.blindminx:
         pad.cd()
@@ -188,8 +189,66 @@ def draw(plot, doBlind=False, channel='TauMu', plotprefix = None):
     if plotprefix == None : plotname = plot.varName
     else : plotname = plotprefix + '_' + plot.varName
     can.SaveAs( plotname + '.png')
-    # can.Modified()
-    # can.Update()
+
+
+def buildCanvasOfficial():
+    global ocan
+    ocan = TCanvas('ocan','',600,600)
+    ocan.cd()
+    ocan.Draw()
+    return ocan 
+
+
+
+def drawOfficial(plot, doBlind=True, channel='TauMu', plotprefix = None):
+    global ocan
+    print plot
+    Stack.STAT_ERRORS = False
+    blindxmin = None
+    blindxmax = None
+    doBlind = (plot.varName == 'svfitMass') and doBlind
+    if doBlind:
+        blindxmin = 100
+        blindxmax = 160
+        plot.Blind(blindxmin, blindxmax, False)
+    titles = xtitles
+    if channel=='TauEle':
+        titles = xtitles_TauEle
+    xtitle = titles.get( plot.varName, None )
+    if xtitle is None:
+        xtitle = ''
+    global ocan
+    if ocan is None:
+        ocan = buildCanvasOfficial()
+    ocan.cd()
+    plot.DrawStack('HIST')
+    # import pdb; pdb.set_trace()
+    h = plot.supportHist
+    h.GetXaxis().SetTitle('{xtitle}'.format(xtitle=xtitle))
+    # blinding
+    if plot.blindminx:
+        ocan.cd()
+        max = plot.stack.totalHist.GetMaximum()
+        box = TBox( plot.blindminx, 0,  plot.blindmaxx, max )
+        box.SetFillColor(1)
+        box.SetFillStyle(3004)
+        box.Draw()
+        # import pdb; pdb.set_trace()
+        keeper.append(box)
+    year, lumi, energy = datasetInfo( plot )
+    datasetStr = "CMS Preliminary, #sqrt{{s}} = {energy} TeV, L = {lumi:3.1f} fb^{{-1}}".format(energy=energy, lumi=lumi)
+    if channel == 'TauMu' : a,b = CMSPrelimOfficial( datasetStr, '#tau_{#mu}#tau_{h}',0.15,0.835)
+    elif channel == 'TauEle' : a,b = CMSPrelimOfficial( datasetStr, '#tau_{e}#tau_{h}', 0.15, 0.835)
+    a.Draw()
+    b.Draw()
+    save.extend([a,b])
+    ocan.Modified()    
+    ocan.Update()    
+    ocan.cd()
+    if plotprefix == None : plotname = plot.varName
+    else : plotname = plotprefix + '_' + plot.varName
+    can.SaveAs( plotname + '.png')
+
 
 cantemp = None
 

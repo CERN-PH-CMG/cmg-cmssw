@@ -133,7 +133,7 @@ from CMGTools.H2TauTau.proto.samples.tauMu_ColinSep20 import *
 #########################################################################################
 
 
-MC_list = [WJets]
+MC_list = [WJets, DYJets, TTJets]
 # MC_list = copy.copy(MC)
 data_list = copy.copy(data_list_2011)
 embed_list = copy.copy(embed_list_2011)
@@ -203,13 +203,12 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 1
+test = 0
 if test==1:
-    comp = WJets
-    # comp.files = comp.files[:2]
-    # comp.files = 'cmgTuple_colinMinusJosh.root'
+    comp = DYJets
+    comp.files = comp.files[:2]
     selectedComponents = [comp]
-    # comp.splitFactor = 1
+    comp.splitFactor = 1
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
