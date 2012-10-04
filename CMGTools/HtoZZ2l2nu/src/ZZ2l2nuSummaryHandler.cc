@@ -211,6 +211,11 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("jn_etaW",        evSummary_.jn_etaW,        "jn_etaW[jn]/F");
   t_->Branch("jn_phiW",        evSummary_.jn_phiW,        "jn_phiW[jn]/F");
   t_->Branch("jn_idbits",      evSummary_.jn_idbits,      "jn_idbits[jn]/I");
+  t_->Branch("jn_isCfromGsplit", evSummary_.jn_isCfromGsplit, "jn_isCfromGsplit[jn]/O");
+  t_->Branch("jn_isBfromGsplit", evSummary_.jn_isBfromGsplit, "jn_isBfromGsplit[jn]/O");
+  t_->Branch("jn_lxy",           evSummary_.jn_lxy,           "jn_lxy[jn]/F");
+  t_->Branch("jn_lxyErr",        evSummary_.jn_lxyErr,        "jn_lxyErr[jn]/F");
+  t_->Branch("jn_svmass",        evSummary_.jn_svmass,        "jn_svmass[jn]/F");
 
   //selected PF jets 
   t_->Branch("ajn",             &evSummary_.ajn,            "ajn/I");
@@ -242,6 +247,11 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ajn_etaW",        evSummary_.ajn_etaW,        "ajn_etaW[jn]/F");
   t_->Branch("ajn_phiW",        evSummary_.ajn_phiW,        "ajn_phiW[jn]/F");
   t_->Branch("ajn_idbits",      evSummary_.ajn_idbits,      "ajn_idbits[ajn]/I");
+  t_->Branch("ajn_isCfromGsplit", evSummary_.ajn_isCfromGsplit, "ajn_isCfromGsplit[ajn]/O");
+  t_->Branch("ajn_isBfromGsplit", evSummary_.ajn_isBfromGsplit, "ajn_isBfromGsplit[ajn]/O");
+  t_->Branch("ajn_lxy",           evSummary_.ajn_lxy,           "ajn_lxy[ajn]/F");
+  t_->Branch("ajn_lxyErr",        evSummary_.ajn_lxyErr,        "ajn_lxyErr[ajn]/F");
+  t_->Branch("ajn_svmass",        evSummary_.ajn_svmass,        "ajn_svmass[ajn]/F");
 
   //HT
   t_->Branch("htvec_px",   &evSummary_.htvec_px, "htvec_px/F");
@@ -511,7 +521,12 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   t_->SetBranchAddress("jn_etaW",evSummary_.jn_etaW);
   t_->SetBranchAddress("jn_phiW",evSummary_.jn_phiW);
   t_->SetBranchAddress("jn_idbits",evSummary_.jn_idbits);
-  
+  if(t_->GetBranch("jn_isCfromGsplit")) t_->SetBranchAddress("jn_isCfromGsplit", evSummary_.jn_isCfromGsplit);
+  if(t_->GetBranch("jn_isBfromGsplit")) t_->SetBranchAddress("jn_isBfromGsplit", evSummary_.jn_isBfromGsplit);
+  if(t_->GetBranch("jn_lxy"))           t_->SetBranchAddress("jn_lxy",           evSummary_.jn_lxy);
+  if(t_->GetBranch("jn_lxyErr"))        t_->SetBranchAddress("jn_lxyErr",        evSummary_.jn_lxyErr);
+  if(t_->GetBranch("jn_svmass"))        t_->SetBranchAddress("jn_svmass",        evSummary_.jn_svmass);
+
   t_->SetBranchAddress("htvec_px",&evSummary_.htvec_px);
   t_->SetBranchAddress("htvec_py",&evSummary_.htvec_py);
   t_->SetBranchAddress("htvec_pz",&evSummary_.htvec_pz);
@@ -545,6 +560,11 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   t_->SetBranchAddress("ajn_etaW",        evSummary_.ajn_etaW);
   t_->SetBranchAddress("ajn_phiW",        evSummary_.ajn_phiW);
   t_->SetBranchAddress("ajn_idbits",      evSummary_.ajn_idbits);
+  if(t_->GetBranch("ajn_isCfromGsplit")) t_->SetBranchAddress("ajn_isCfromGsplit", evSummary_.ajn_isCfromGsplit);
+  if(t_->GetBranch("ajn_isBfromGsplit")) t_->SetBranchAddress("ajn_isBfromGsplit", evSummary_.ajn_isBfromGsplit);
+  if(t_->GetBranch("ajn_lxy"))           t_->SetBranchAddress("ajn_lxy",           evSummary_.ajn_lxy);
+  if(t_->GetBranch("ajn_lxyErr"))        t_->SetBranchAddress("ajn_lxyErr",        evSummary_.ajn_lxyErr);
+  if(t_->GetBranch("ajn_svmass"))        t_->SetBranchAddress("ajn_svmass",        evSummary_.ajn_svmass);
 
   //primary vertex
   t_->SetBranchAddress("vtx_px", &evSummary_.vtx_px);

@@ -75,7 +75,7 @@ class ObjectIdSummary
   //common to electron, photon, muon and jet
   double aeff;
   //jet specific
-  double neutHadFrac,neutEmFrac,chHadFrac,tche, tchp, csv, jp,beta,betaStar,dRMean,ptD,ptRMS;
+  double neutHadFrac,neutEmFrac,chHadFrac,tche, tchp, csv, jp,beta,betaStar,dRMean,ptD,ptRMS,lxy,slxy,svmass;
   std::vector<double> customTaggers;
 };
 
@@ -177,7 +177,10 @@ int getJetTag(const pat::Jet *jet, edm::Handle<reco::JetTagCollection > jetTags)
 ///                           ///
 /// GENERATOR LEVEL UTILITIES ///
 ///                           ///
+const reco::Candidate *getGeneratorFinalStateFor(const reco::Candidate *p);
 std::pair<int,std::vector<const reco::Candidate *> > assignPhysicsChannel(edm::Handle<edm::View<reco::Candidate> > &genParticles,const edm::ParameterSet &iConfig);
+std::vector<reco::CandidatePtr> filterHFfromGSplit(edm::Handle<edm::View<reco::Candidate> > &genParticles);
+const reco::Candidate *getHFmatchFromGSplit(reco::CandidatePtr &jet, std::vector<reco::CandidatePtr> &hfFromGsplit,int flavId);
 
 //                    //
 // TRIGGER UTILITILES //

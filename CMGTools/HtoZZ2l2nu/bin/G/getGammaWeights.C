@@ -36,7 +36,6 @@ bool gmcPure[] = { false,
 const size_t nGmcDirs=sizeof(gmcDirs)/sizeof(string);
 string gDir = "data (#gamma)";
 
-TF1 *qtFitFunc = new TF1("qtff","[0]*exp( - TMath::Abs(x-[1])/([2]+[3]*TMath::Abs(x-[1])) )",50,1000);
 			  
 //
 TObject* getObjectFromPath(TDirectory* File, std::string Path, bool GetACopy)
@@ -57,26 +56,6 @@ TObject* getObjectFromPath(TDirectory* File, std::string Path, bool GetACopy)
    if(!toReturn)       printf("BUG: %s\n",Path.c_str());
    else if(GetACopy && toReturn){ toReturn = toReturn->Clone();  }
    return toReturn;
-}
-
-//init 
-void resetQtFitFunc(TH1 *h)
-{
-  if(h==0) return;
-  if(h->Integral()==0) return;
-  Double_t xmin(h->GetXaxis()->GetBinLowEdge(1)), xmax(h->GetXaxis()->GetBinUpEdge(h->GetXaxis()->GetNbins()));
-  for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
-    {
-      Double_t val=h->GetBinContent(ibin);
-      if(val==0) continue;
-      qtFitFunc->SetParameter(0,h->Integral()); //qtFitFunc->SetParLimits(0,h->Integral()*0.5,h->Integral()*1.5);
-      xmin=h->GetBinLowEdge(ibin);
-      qtFitFunc->SetParameter(1,xmin-h->GetBinWidth(ibin)); // qtFitFunc->SetParLimits(1,xmin*0.9,xmin*1.1);
-      break;
-    }
-  qtFitFunc->SetParameter(2,10.);
-  qtFitFunc->SetParameter(3,0.02); qtFitFunc->SetParLimits(3,0.0,0.1);
-  qtFitFunc->SetRange(xmin,xmax);
 }
 
 //
@@ -156,17 +135,21 @@ void getGammaWeights(string inputFile="plotter.root",string varName="qt",int mod
 		  //PARAMETRIZED FUNCTION
 		  if(varName=="qt")
 		    {
-		      //resetQtFitFunc(hdy);
-		      //hdy->Fit(qtFitFunc,"WLMER+");
-		      TGraph *splHdy = new TGraph(hdy);
-		      hDataWgts   = (TH1F *) hdy->Clone((pName+"_datafitwgts").c_str()); 
-		      hDataWgts->SetDirectory(0);  
-		      hDataWgts->Reset("ICE");
-		      //		      for(int ibin=1; ibin<=hDataWgts->GetXaxis()->GetNbins(); ibin++) hDataWgts->SetBinContent(ibin,qtFitFunc->Eval(hDataWgts->GetBinCenter(ibin)));
-		      for(int ibin=1; ibin<=hDataWgts->GetXaxis()->GetNbins(); ibin++) hDataWgts->SetBinContent(ibin,splHdy->Eval(hDataWgts->GetBinCenter(ibin),0,"S"));
-		      hDataWgts->Divide(hg);
-		      dataWgts.push_back(hDataWgts);
-		      delete splHdy;
+		      float firstXParam(120.);
+		      hdy->Fit("landau","WLMER+","",firstXParam,hdy->GetXaxis()->GetXmax());
+		      TF1 *hdyParam=(TF1 *) hdy->GetFunction("landau");
+		      hg->Fit("landau","WLMER+","",firstXParam,hg->GetXaxis()->GetXmax());
+		      TF1 *hgParam=(TF1 *) hg->GetFunction("landau");
+		      
+		      int firstParamBin=hdy->GetXaxis()->FindBin(firstXParam);
+		      TH1F *hDataFitWgts = (TH1F *)hDataWgts->Clone((pName+"_datafitwgts").c_str()); 
+		      hDataFitWgts->SetDirectory(0);
+		      for(int ibin=firstParamBin; ibin<=hDataFitWgts->GetXaxis()->GetNbins(); ibin++) 
+			{
+			  float x= hDataFitWgts->GetXaxis()->GetBinCenter(ibin);
+			  hDataFitWgts->SetBinContent(ibin, hdyParam->Eval(x)/hgParam->Eval(x) );
+			}
+		      dataWgts.push_back(hDataFitWgts);
 		    }
 		}
 	    }

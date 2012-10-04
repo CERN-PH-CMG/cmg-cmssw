@@ -150,6 +150,10 @@ process.ivfSequence=cms.Sequence(process.ak5JetTracksAssociatorAtVertex
                                  *process.mySimpleInclusiveSecondaryVertexHighPurBJetTags
                                  *process.combinedInclusiveSecondaryVertexPositiveBJetTags)
 
+#save also the tag infos
+for pf in ['PFlow','PFlowNoPuSub']:
+    getattr(process,"patJets"+pf).addTagInfos = cms.bool(True)
+    getattr(process,"patJets"+pf).tagInfoSources = cms.VInputTag('secondaryVertexTagInfosAOD'+pf,'secondaryVertexNegativeTagInfosAOD'+pf)
 
 #####################
 #  PATH DEFINITION  #
@@ -179,7 +183,6 @@ else:
     process.llPath = cms.Path(process.startCounter * process.preselection * process.llCandidateSequence * process.patSequence )
     process.photonPath = cms.Path(process.startCounter * process.preselection * process.photonCandidateSequence * process.patSequence )
 process.e = cms.EndPath( process.endCounter*process.out )
-
 
 ######################################
 # ANALYSIS                           #

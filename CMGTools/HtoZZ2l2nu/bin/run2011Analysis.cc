@@ -391,7 +391,6 @@ int main(int argc, char* argv[])
 
     }
 
-
   mon.addHistogram( new TH1F( "mindphilmet", ";min(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "maxdphilmet", ";max(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
@@ -405,18 +404,23 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH2D( "metoverlpt_mindphilmet"  , ";E_{T}^{miss}/p_{T}^{lepton};min(#Delta#phi(lepton,E_{T}^{miss});Events", 50,0,2,40,0,4) );
   mon.addHistogram( new TH1F( "met_metSB"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_mvamet"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_metctrl"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_mvametctrl"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met_blind"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met250"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met3leptons"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_metRaw"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
   mon.addHistogram( new TH2F( "met_met_vspu", ";Pileup events; E_{T}^{miss};Events", 50,0,50,50,0,250) );
+  mon.addHistogram( new TH2F( "met_mvamet_vspu", ";Pileup events; E_{T}^{miss};Events", 50,0,50,50,0,250) );
   mon.addHistogram( new TH1F( "met_min3Met"  , ";min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,250) );
   mon.addHistogram( new TH2F( "met_min3Met_vspu", ";Pileup events; min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,250) );
-  mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,250) );
+  mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH2F( "met_redMet_vspu", ";Pileup events; red(E_{T}^{miss},clustered-E_{T}^{miss};Events", 50,0,50,50,0,250) );
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mvamt"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mt_raw"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mt75", ";M_{T};Events", 100,0,1000) );
   
@@ -438,6 +442,7 @@ int main(int argc, char* argv[])
      
      Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
      mon.addHistogram( new TH2F (TString("mt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );
+     mon.addHistogram( new TH2F (TString("mvamt_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );
 //     mon.addHistogram( new TH2F (TString("mt_shapesZ10")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
 //     mon.addHistogram( new TH2F (TString("mt_shapesZ5")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/25GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 1,150,950) );//only cut&count
      
@@ -672,8 +677,7 @@ int main(int argc, char* argv[])
       LorentzVectorCollection zvvs;
       METUtils::computeVariation(phys.ajets, phys.leptons, phys.met[0], variedAJets, zvvs, &jecUnc);
       
-
-
+      LorentzVector mvaMetP4=phys.met[7];
 
       //
       // LEPTON ANALYSIS
@@ -960,6 +964,9 @@ int main(int argc, char* argv[])
 	mon.fillHisto("nvtxraw"  ,   tags_full, ev.nvtx,      1);
 	mon.fillHisto("rho"      ,   tags_full, ev.rho,       weight);
 	mon.fillHisto("rho25"    ,   tags_full, ev.rho25Neut, weight);
+	mon.fillHisto("met_metctrl",    tags_full, zvvs[0].pt(),  weight);
+	mon.fillHisto("met_mvametctrl", tags_full, mvaMetP4.pt(), weight);
+
 	
 	  if(passZpt){
 	      mon.fillHisto  ("eventflow",tags_full,2,weight);
@@ -1134,8 +1141,8 @@ int main(int argc, char* argv[])
 		      
 		      //passDphijmet=(mindphijmet15>0.5);
 		      passDphijmet=(mindphijmet>0.5);
-		      if(nAJetsLoose==0) passDphijmet=(mindphijmet15>0.5);
-		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,nAJetsLoose==0 ? mindphijmet15:mindphijmet,weight);
+		      if(aGoodIdJets.size()==0) passDphijmet=(mindphijmet15>0.5);
+		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,aGoodIdJets.size()==0 ? mindphijmet15:mindphijmet,weight);
 
 		      if(passDphijmet) 
 			{
@@ -1210,6 +1217,7 @@ int main(int argc, char* argv[])
 			  double aRedMetL=aRedMetOut.redMET_l;
 			  double aRedMetT=aRedMetOut.redMET_t;
 			  double aMT=METUtils::transverseMass(zll,zvvs[0],true);
+			  double amvaMT=METUtils::transverseMass(zll,mvaMetP4,true);
 			  
 			  LorentzVector assocMetP4(phys.met[1]);
 			  LorentzVector min3Met( min(zvvs[0], min(assocMetP4,aClusteredMetP4)) );
@@ -1243,7 +1251,8 @@ int main(int argc, char* argv[])
 			      continue;
 			    }
 			  
-			  mon.fillHisto("met_met",tags_full,zvvs[0].pt(),weight);
+			  mon.fillHisto("met_met",    tags_full, zvvs[0].pt(),  weight);
+			  mon.fillHisto("met_mvamet", tags_full, mvaMetP4.pt(), weight);
 			  if(aMT>250) 			  mon.fillHisto("met_met250",tags_full,zvvs[0].pt(),weight);
 			  if(!(runBlinded && !(isMC_GG || isMC_VBF) && (evSummaryHandler.hasSpoilerAlert(!(isMC_GG || isMC_VBF)) || (tag_subcat=="vbf" && zvvs[0].pt()>70)) ) )mon.fillHisto("met_met_blind",tags_full,zvvs[0].pt(),weight);
 
@@ -1264,6 +1273,7 @@ int main(int argc, char* argv[])
 			  mon.fillHisto("metoverlpt_mindphilmet",tags_full,(dphil1met<dphil2met ? zvvs[0].pt()/lep1.pt() : zvvs[0].pt()/lep2.pt()),min(dphil1met,dphil2met),weight);
 
 			  mon.fillHisto("met_met_vspu",tags_full,ev.ngenITpu,zvvs[0].pt(),weight);
+			  mon.fillHisto("met_mvamet_vspu",tags_full,ev.ngenITpu,mvaMetP4.pt(),weight);
 			  mon.fillHisto("met_metRaw",tags_full,phys.met[0].pt(),weight);
 			  mon.fillHisto("met_min3Met",tags_full,min3Met.pt(),weight);
 			  mon.fillHisto("met_min3Met_vspu",tags_full,ev.ngenITpu,min3Met.pt(),weight);
@@ -1272,6 +1282,7 @@ int main(int argc, char* argv[])
 			  mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
 			  mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);
 			  mon.fillHisto("mt",tags_full,aMT,weight);
+			  mon.fillHisto("mvamt",tags_full,amvaMT,weight);
 			  mon.fillHisto("mt_raw",tags_full,aMT,noLShapeWeight);
                           if(zvvs[0].pt()>75) mon.fillHisto("mt75",tags_full,aMT,weight);
 
@@ -1409,6 +1420,8 @@ int main(int argc, char* argv[])
 	  
 	  if(redMet.pt()>optim_Cuts1_met[index])
 	    if(passPreselection                                        )          mon.fillHisto(TString("mt_redMet_shapes")+varNames[ivar],tags_full,index, mt,iweight);
+
+	  if(mvaMetP4.pt()>optim_Cuts1_met[index]) mon.fillHisto(TString("mvamt_shapes")+varNames[ivar],tags_full,index, mt,iweight);
 	  
 	  if(zvv.pt()>optim_Cuts1_met[index]){
 	      if(passPreselection                                                    )   mon.fillHisto(TString("mt_shapes")+varNames[ivar],tags_full,index, mt,iweight);

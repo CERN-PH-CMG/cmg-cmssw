@@ -75,6 +75,8 @@ private:
 
   PFIsolationEstimator eIsolator;
 
+  //heavy flavors from gluon splitting
+  std::vector<reco::CandidatePtr> hfFromGsplit; 
   float curAvgInstLumi_, curIntegLumi_;
   int iErr_;
 };
@@ -267,6 +269,8 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
 	  ev.nmcparticles++;
 	}
     }
+
+  hfFromGsplit = filterHFfromGSplit(hGen); 
    
   //add the generator level jets
   edm::Handle<edm::View<reco::Candidate> > genJetsH;
@@ -321,7 +325,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     ev.curIntegLumi=curIntegLumi_;
 
     saveMCtruth(event, iSetup );    
-    
+
     //
     // trigger (require at least for data)
     //
@@ -634,6 +638,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_puminmva[ev.jn]    = selJetsId[ijet].mva[0];
 	ev.jn_pumva[ev.jn]       = selJetsId[ijet].mva[1];
 	ev.jn_rawsf[ev.jn]       = selJetsId[ijet].ensf;
+	ev.jn_isBfromGsplit[ev.jn]      = (getHFmatchFromGSplit(selJets[ijet],hfFromGsplit,5)!=0);
+	ev.jn_isCfromGsplit[ev.jn]      = (getHFmatchFromGSplit(selJets[ijet],hfFromGsplit,4)!=0);
+	ev.jn_lxy[ev.jn]                = selJetsId[ijet].lxy;
+	ev.jn_lxyErr[ev.jn]             = selJetsId[ijet].slxy;
+	ev.jn_svmass[ev.jn]             = selJetsId[ijet].svmass;
 	ev.jn++;
       }
     ev.htvec_px = jetSum.px();
@@ -684,6 +693,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ajn_puminmva[ev.ajn]    = selAJetsId[ijet].mva[0];
 	ev.ajn_pumva[ev.ajn]       = selAJetsId[ijet].mva[1];
 	ev.ajn_rawsf[ev.ajn]       = selAJetsId[ijet].ensf;
+	ev.ajn_isBfromGsplit[ev.ajn]     = (getHFmatchFromGSplit(selaJets[ijet],hfFromGsplit,5)!=0);
+	ev.ajn_isCfromGsplit[ev.ajn]     = (getHFmatchFromGSplit(selaJets[ijet],hfFromGsplit,4)!=0);
+	ev.ajn_lxy[ev.ajn]                = selAJetsId[ijet].lxy;
+	ev.ajn_lxyErr[ev.ajn]             = selAJetsId[ijet].slxy;
+	ev.ajn_svmass[ev.ajn]             = selAJetsId[ijet].svmass;
 	ev.ajn++;
       }
    
