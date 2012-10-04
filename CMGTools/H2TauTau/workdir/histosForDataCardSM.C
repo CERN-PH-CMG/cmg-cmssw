@@ -51,7 +51,9 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
   analysis->Chcat_=1; 
   analysis->setZTTType(2);
 
-  
+  analysis->printRawYields("eventweight*(categoryIso==1&&abs(ditaucharge)==0)");//This might be needed to avoid some nan values
+
+
   TFile output(ChannelName+"SM"+"_"+analysis->plotvar_+"_"+tag+".root","recreate");
   for(long sm=0; sm<NCAT; sm++){
 
@@ -104,6 +106,7 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
 
     TH1F* ZTT = analysis->getZToTauTau();
     ZTT->SetName("ZTT");
+    //cout<<" ZTT "<<ZTT->Integral()<<endl;
 
     TH1F* TT = analysis->getTTJetsInc();
     TT->SetName("TT");
@@ -155,7 +158,6 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
 
     for(Int_t m=0;m<NMASS;m++){
       long ma=massValues[m];
-
 
       //Nominal h 
       TH1F* SM = analysis->getSample(TString("HiggsGG")+ma);

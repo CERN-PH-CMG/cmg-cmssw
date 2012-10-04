@@ -57,16 +57,11 @@ TauMuPlotter::~TauMuPlotter(){
 }
 
 bool TauMuPlotter::scaleSamplesLumi(){
-  
-  //reset all scales
+
+  cout<<"---------> Scaling all MC samples to Lumi "<<endl;
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     (*s)->resetScale();
-  
-
-
-  /////////determine total lumi and scale MCs
   float totalDataLumi=getTotalDataLumi();
-
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if((*s)->getDataType()=="MC" 
        || (*s)->getDataType()=="MCCat" 
@@ -80,47 +75,28 @@ bool TauMuPlotter::scaleSamplesLumi(){
   ///////////////////////////////////
   ////Scale the embedded samples at inclusive level:  Should there be separate scale factor for OS and SS ? --> should be Ok. ZTauTau is small in SS
   /////////////////////////////////
-  TString plotvarTmp=plotvar_;
-  Int_t nbinsTmp=nbins_;
-  Float_t xminTmp=xmin_;
-  Float_t xmaxTmp=xmax_;
-  Int_t IsocatTmp=Isocat_;
-  Int_t MTcatTmp=MTcat_;
-  Int_t ChcatTmp=Chcat_;
-  TString extraselTmp=extrasel_;
-  plotvar_="ditaumass";
-  nbins_=1000;
-  xmin_=0;
-  xmax_=1000;
-  Isocat_=1;
-  MTcat_=-1;
-  Chcat_=1;
-  extrasel_="1";
-  TH1F*hMC=getSample("ZToTauTau");
-  TH1F*hEmbedded=getTotalEmbedded();
-  Float_t ZToTauTauMC=hMC->Integral();
-  Float_t EmbeddedOS=hEmbedded->Integral();
-  plotvar_=plotvarTmp;
-  nbins_=nbinsTmp;
-  xmin_=xminTmp;
-  xmax_=xmaxTmp;
-  Isocat_=IsocatTmp;
-  MTcat_=MTcatTmp;
-  Chcat_=ChcatTmp;
-  extrasel_=extraselTmp;
-  delete hMC;
-  delete hEmbedded;
-
-  if(ZToTauTauMC==0. || EmbeddedOS==0.){
-    cout<<"Warning!!!: bad ZToTauTauMC or EmbeddedOS yields: ZToTauTauMC="<<ZToTauTauMC<<" EmbeddedOS="<<EmbeddedOS<<endl;
+  cout<<"---------> Scaling Embedded samples "<<endl;
+  TString sel="eventweight*(categoryIso==1&&abs(ditaucharge)==0&&1.<ditaumass&&ditaumass<1000.)";
+  Float_t ZToTauTauMC=0.;  
+  TH1F*hZTTMC=findSample("ZToTauTau")->getHistoNtpFile("ditaumass",10,1,1001,sel);
+  ZToTauTauMC=hZTTMC->Integral();
+  delete hZTTMC;
+  Float_t EmbeddedOS=0.;
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    if((*s)->getDataType()=="Embedded"){
+      TH1F*hEmbedded=findSample((*s)->GetName())->getHistoNtpFile("ditaumass",10,1,1001,sel);
+      EmbeddedOS+=hEmbedded->Integral();
+      delete hEmbedded;
+    }
+  }
+  cout<<"ZToTauTauMC= "<<ZToTauTauMC<<" EmbeddedOS="<<EmbeddedOS<<endl;
+  if(ZToTauTauMC==0. || EmbeddedOS==0. || ZToTauTauMC!=ZToTauTauMC || EmbeddedOS!=EmbeddedOS){
+    cout<<"ERROR---------------->Bad ZToTauTauMC or EmbeddedOS yields: ZToTauTauMC="<<ZToTauTauMC<<" EmbeddedOS="<<EmbeddedOS<<endl;
   } else {
     cout<<"Rescaling Embedded samples by factor : "<<ZToTauTauMC/EmbeddedOS<<endl;
     for(std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
       if((*s)->getDataType()=="Embedded") (*s)->scale(ZToTauTauMC/EmbeddedOS);
-
   }
-
-
 
   return 1;
 }
@@ -156,6 +132,7 @@ TH1F* TauMuPlotter::getSample(TString samplename){
       }
       
 
+      //cout<<sel<<endl;
       TH1F*hd=0;
       if(nbins_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
       else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
@@ -295,27 +272,26 @@ TH1F* TauMuPlotter::getDiBoson(){
   h->Add(hZZ);
   delete hZZ;
 
+  TH1F* hTopTW=getSample("TopTW");
+  if(!hTopTW)return 0;
+  h->Add(hTopTW);
+  delete hTopTW;
+
   //cout<<"DiBoson : "<<h->Integral()<<endl;
 
   return h;
 }
 
 
-
-
 TH1F* TauMuPlotter::getZToTauTau(){  
   TH1F*h=0;
   //TString tmpex=extrasel_;
   //extrasel_+="*(1+0.02*(mupt-25))";
-  if(ZTTType_==1){
-    h=getSample("ZToTauTau");
-  }
+  if(ZTTType_==1)h=getSample("ZToTauTau");
   if(ZTTType_==2)h=getTotalEmbedded(); 
   //extrasel_=tmpex;
   return h;
 }
-
-
 
 
 //WJets
@@ -582,6 +558,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   if(QCDType==2) hQCD=getQCDIncLooseShape();
   if(QCDType==3) hQCD=getQCDMike();
   if(QCDType==4) hQCD=getQCDKeti();
+  if(QCDType==5) hQCD=getQCDHCP();
   if(hQCD){
     hQCD->SetLineWidth(1);
     hQCD->SetLineColor(1);
@@ -589,7 +566,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   }else {
     cout<<"no QCD determined "<<endl;
   }
-  if(hQCD)hQCD->SetName("hQCDplotInc");
+  if(hQCD) hQCD->SetName("hQCDplotInc");
 
   if(hQCD) cout<<"QCD "<<hQCD->Integral()<<endl;
   if(nbins_==0) if(hQCD) makeDensityHisto(hQCD);
@@ -646,7 +623,6 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   hVV->SetName("hVVplotInc");
   if(nbins_==0)makeDensityHisto(hVV); 
   hEWK->Add(hVV);
-
 
   //combine ZLJet
   //TH1F*hZToLJet=getSample("ZToLJet");
@@ -1348,6 +1324,70 @@ TH1F* TauMuPlotter::getQCDMike(){
 }
 
 
+TH1F* TauMuPlotter::getQCDHCP(){
+
+  char isocuttxt[100];
+  sprintf(isocuttxt,"(0.2<muiso&&muiso<0.5&&tauisomva>0.7)");//for normalization
+  char isocuttxtshape[100];
+  sprintf(isocuttxtshape,"(0.2<muiso&&muiso<0.5&&tauisomva>0.7&&njet>2)");//for shape (add mva>0.)
+  
+  Int_t TmpIsocat=Isocat_;
+  TString TmpExtrasel=extrasel_;  
+  Int_t ChcatTmp=Chcat_;
+  Chcat_=2;
+
+  //SS incl QCD 
+  Isocat_=1;
+  extrasel_="1";
+  TH1F* hQCDInc = getQCDInc();  if(!hQCDInc){cout<<" QCDInc not determined "<<endl; return 0;}   hQCDInc->SetName("hQCDInc");
+ 
+  //SS Loose Incl QCD 
+  Isocat_=-1;
+  extrasel_=isocuttxt;
+  TH1F* hDataIncLoose = getTotalData();  if(!hDataIncLoose){cout<<" Total Data not determined "<<endl; return 0;}   hDataIncLoose->SetName("hDataIncLoose");
+
+  //SS Loose VBF QCD 
+  Isocat_=-1;  
+  extrasel_=TmpExtrasel+"*"+isocuttxt;
+  TH1F* hDataVBFLoose=getTotalData();  if(!hDataVBFLoose){cout<<" Total Data not determined "<<endl; return 0;}   hDataVBFLoose->SetName("hDataVBFLoose");
+
+  //QCD Shape
+  Isocat_=-1;  
+  extrasel_=TmpExtrasel+"*"+isocuttxtshape;
+  TH1F* hShape=getTotalData();  if(!hShape){cout<<" hShape not made "<<endl; return 0;}   hShape->SetName("hShape");
+
+  //return scale factors to normal
+  Isocat_=TmpIsocat;
+  extrasel_=TmpExtrasel;
+  Chcat_=ChcatTmp;
+
+  //OS VBF QCD = 1.11 * (SS VBF QCD with loose iso.) * [(SS incl QCD) / ( SS incl QCD with loose iso.)]
+  cout<<" QCDInc "<<hQCDInc->Integral()<<endl;
+  cout<<" DataVBFLoose "<<hDataVBFLoose->Integral()<<endl;
+  cout<<" DataIncLoose "<<hDataIncLoose->Integral()<<endl;
+  hShape->Scale(hQCDInc->Integral()*(hDataVBFLoose->Integral()/hDataIncLoose->Integral())/hShape->Integral());
+
+//   TString filetag=TString("FQCDMike_")+plotvar_+"_TauIso"+(long)Isocat_+"_MT"+(long)MTcat_+extrasel_+isocuttxt;
+//   fixFileTag(&filetag);
+//   TFile FQCD(outputpath_+"/"+filetag+".root","recreate");
+//   hQCDInc-Write();
+//   hDataIncLoose->Write();
+//   hDataVBFLoose->Write();
+//   hShape->Write();
+//   FQCD.ls();
+//   FQCD.Close();
+
+  delete hDataIncLoose;
+  delete hDataVBFLoose;
+  delete hQCDInc;
+
+  return hShape;
+
+
+}
+
+
+
 TH1F* TauMuPlotter::getQCDIsoSM(){
    
 
@@ -1908,54 +1948,60 @@ void TauMuPlotter::plotQCDSSOSRatio(){
 
 bool TauMuPlotter::printRawYields(TString selection){
   
-  Float_t totalData=0;
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="Data"){
-      TH1F*hmass=(TH1F*)((*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data()));
-      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
-      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
-      totalData+=hmass->Integral(0,hmass->GetNbinsX()+1);
-      delete hmass;
-    }
-  }
-  cout<<"Total Data  = "<<(int)(totalData)<<endl;
+//   Float_t totalData=0;
+//   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+//     if((*s)->getDataType()=="Data"){
+//       TH1F*hmass=(TH1F*)((*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data()));
+//       if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+//       cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+//       totalData+=hmass->Integral(0,hmass->GetNbinsX()+1);
+//       delete hmass;
+//     }
+//   }
+//   cout<<"Total Data  = "<<(int)(totalData)<<endl;
 
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="MC"){
-      TH1F*hmass=(TH1F*)((*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data()));
-      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
-      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
-      delete hmass;
-    }
-  } 
+//   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+//     if((*s)->getDataType()=="MC"){
+//       TH1F*hmass=(TH1F*)((*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data()));
+//       if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+//       cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+//       delete hmass;
+//     }
+//   } 
 
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="MCCat"){
-      TH1F*hmass=(TH1F*)((*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data()));
-      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
-      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
-      delete hmass;
-    }
-  }
+//   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+//     if((*s)->getDataType()=="MCCat"){
+//       TH1F*hmass=(TH1F*)((*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data()));
+//       if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+//       cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+//       delete hmass;
+//     }
+//   }
 
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="Embedded"){
-      TH1F*hmass=(TH1F*)((*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data()));
-      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
-      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
-      delete hmass;
-    }
-  }  
+//   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+//     if((*s)->getDataType()=="Embedded"){
+//       TH1F*hmass=(TH1F*)((*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data()));
+//       if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+//       cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+//       delete hmass;
+//     }
+//   }  
 
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="Signal"){
-      TH1F*hmass=(TH1F*)((*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data()));
-      if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
-      cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
-      delete hmass;
-    }
-  }
+//   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+//     if((*s)->getDataType()=="Signal"){
+//       TH1F*hmass=(TH1F*)((*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data()));
+//       if(!hmass){cout<<" no histo found for "<<(*s)->GetName()<<endl; return 0;}
+//       cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+//       delete hmass;
+//     }
+//   }
   
+
+  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
+    TH1F*hmass=(*s)->getHistoNtpFile("ditaumass",100,0,1000,selection.Data());
+    cout<<hmass->GetName()<<" "<<(int)(hmass->Integral(0,hmass->GetNbinsX()+1))<<endl;
+    delete hmass;
+  }
 
   return 1;
 }

@@ -492,28 +492,14 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
 
     
 ####--------------------------------------muTau 2012--------------------------------------------
-SUSYMass = cms.vstring(['90','100','110','120','130','140','160','180','250','300','400','450','500','600','800','1000'])
-
-###From pietro
-#   # 2012:
-#    # note: pdgId for taus incorrectly set to 0...
-#    'HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoMu18LooseIsoPFTau20', [15,0]), ('hltOverlapFilterIsoMu18LooseIsoPFTau20',[13])),
-#    'HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v*': ( ('hltOverlapFilterIsoMu17LooseIsoPFTau20', [15,0]), ('hltOverlapFilterIsoMu17LooseIsoPFTau20',[13])),
-
-#/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-196509_8TeV_PromptReco_Collisions12_JSON.txt
-#| HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4 |        833 | 28.303(/pb) 
-#| HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       5606 | 302.698(/pb) 
-#| HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 |       6858 | 377.184(/pb) 
-#| HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      50429 | 4.341(/fb) 
+SUSYMass = cms.vstring(['90','100','110','120','130','140','160','180','200','250','300','350','400','450','500','600','700','800','900','1000'])
     
 def configureFlatNtpSampleTauMu2012(module,sampleAlias):
-    ##common stuff
     module.dataPeriodFlag = 2012
     module.muPtCut = 20.
     module.tauPtCut = 20.
     module.fileZmmData = rootfile_dir + 'recoilfit_datamm52X_njet.root'
     module.fileZmmMC = rootfile_dir + 'recoilfit_zmm52X_njet.root'
-    #httjson_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/json/'
         
     if sampleAlias == 'TauPlusX2012A' : #DAS range: 190450 - 193686
         module.path = "/TauPlusX/Run2012A-PromptReco-v1/AOD/PAT_CMG_V5_6_0_B"
@@ -665,37 +651,25 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
     for i in range(0,8):
 
         if sampleAlias == "HiggsGG"+HiggsMass[i] :
-            if i==2:
-                module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B" % HiggsMass[i]
-            else:
-               module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/PAT_CMG_V5_6_0_B" % HiggsMass[i]
+            module.path ="" % HiggsMass[i]
             module.dataType = 0
-            module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
-            module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
+            module.pupWeightName = ''
             #module.recoilCorrection = 1
             #module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
             
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.dataType = 0
-            if i==3:
-                module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B" % HiggsMass[i]
-            else:
-                module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/PAT_CMG_V5_6_0_B" % HiggsMass[i]
-            module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
-            module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
-            #print "Testing 53X !!!!!!"
-            #module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_6_0_B" % HiggsMass[i]
+            module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
+            module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
+            module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
             #module.recoilCorrection = 1
             #module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] : 
-            if i==0:
-                module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v3/AODSIM/PAT_CMG_V5_6_0_B" % HiggsMass[i]
-            else:
-                module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/PAT_CMG_V5_6_0_B" % HiggsMass[i]
+            module.path = "" % HiggsMass[i]
             module.dataType = 0
-            module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
-            module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
+            module.pupWeightName = ''
+
 
 
     for i in range(0,16):
