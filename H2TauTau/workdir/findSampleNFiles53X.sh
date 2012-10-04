@@ -1,6 +1,6 @@
 
 echo VBF
-cmsLs /store/cmst3/user/cbern/CMG/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_6_0_B | grep cmgTuple | wc -l
+cmsLs /store/cmst3/user/cmgtools/CMG/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
 
 ##########2012 samples##################################
 #echo TauPlusX

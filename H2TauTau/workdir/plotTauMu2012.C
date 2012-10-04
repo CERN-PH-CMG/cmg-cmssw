@@ -21,7 +21,8 @@ void plotTauMu2012(){
   //TString path="/data/benitezj/Samples/TauMu2012V551Aug6svfit"; //debugged MVA MET
   //TString path="/data/benitezj/Samples/TauMu2012V551Aug8svfitPFMET";//PFMET all samples
 
-  TString path="/data/benitezj/Samples/muTau2012V551Sep4"; //fixed svfit and weights
+  //TString path="/data/benitezj/Samples/muTau2012V551Sep4"; //fixed svfit and weights
+  TString path="/data/benitezj/Samples/muTau2012V56052XSep25"; //fixed pu weight, added SUSY samples, embeddedB3, singleTop
 
   TauMuPlotter*analysis=configTauMu2012("analysis",path);
   analysis->setQCDColor(kMagenta-10);
@@ -31,10 +32,19 @@ void plotTauMu2012(){
   analysis->setZTauTauColor(kOrange-4);
   analysis->setSmearHistoRes(0.);
   analysis->setZTTType(2);
-  analysis->setPlotTitle("CMS Preliminary 2012,   5.0 fb^{-1},     #sqrt{s} = 8 TeV,        #tau_{#mu}#tau_{h}");
+  analysis->setPlotTitle("CMS Preliminary 2012,   5.1 fb^{-1},     #sqrt{s} = 8 TeV,        #tau_{#mu}#tau_{h}");
 
   //raw yields to load samples now
-  analysis->printRawYields("(categoryIso==1)");
+  //analysis->printRawYields("(categoryIso==1)");
+  analysis->printRawYields("eventweight*(categoryIso==1&&abs(ditaucharge)==0)");//This might be needed to avoid some nan values
+
+//   Sample*s=analysis->findSample("ZToTauTau");
+//   TH1F*h=s->getHistoNtpFile("ditaumass",100,0,1000,"eventweight*(categoryIso==1&&abs(ditaucharge)==0)");
+//   cout<<h->Integral()<<endl;
+
+//   Sample*sw=analysis->findSample("WJetsToLNu");
+//   TH1F*hw=sw->getHistoNtpFile("ditaumass",100,0,1000,"eventweight*(categoryIso==1&&abs(ditaucharge)==0)");
+//   cout<<hw->Integral()<<endl;
 
   
   //triggerEffWeight_ selectionEffWeight  btagEffWeight_ eventweight_ embeddedGenWeight_ pupWeight_
@@ -68,7 +78,7 @@ void plotTauMu2012(){
 //   analysis->plotInc("taudz",100,-.05,.05,1,1,1,"","",2,0," tau dz","",c,0,"inclusive");
 //   analysis->plotInc("taudxy",100,-.03,.03,1,1,1,"","",2,0," tau dxy","",c,0,"inclusive");
   
-  analysis->plotInc("transversemass",20,0,200,1,1,0,"","",2,0,"M_{T}   [GeV]","",c,0,"inclusive");
+//  analysis->plotInc("transversemass",20,0,200,2,1,0,"","",2,0,"M_{T}   [GeV]","",c,0,"inclusive");
 //   analysis->plotInc("metpt",30,0,150,1,1,0,"","",2,0," MET   (GeV)","",c,0,"inclusive");
 //   analysis->plotInc("metphi",20,-3.5,3.5,1,1,0,"","",2,0," MET  phi ","",c,0,"inclusive"); 
 //   analysis->plotInc("1-cos(metphi-muphi)",40,0,2.001,1,1,0,"","",2,0," 1 - cos(#Delta#phi) ","",c,0,"inclusive");    
@@ -92,6 +102,7 @@ void plotTauMu2012(){
 //   analysis->plotInc("diJetMass",20,0,1000,1,1,1,"(njet>=2)","",2,12,"M(jj)","",c,0,"inclusive2Jet"); 
 //   analysis->plotInc("abs(diJetDeltaEta)",20,0,10,1,1,1,"(njet>=2)","",2,12,"#Delta#eta","",c,0,"nomina2Jet"); 
 //   analysis->plotInc("svfitmass",18,0,360,1,1,1,"(njet>=2)","",2,12," m(#tau#tau)   (GeV)","",c,0,"inclusive2Jet");
+  analysis->plotInc("svfitmass",18,0,360,1,1,1,"(njet20>=2)","",5,12," m(#tau#tau)   (GeV)","",c,0,"inclusive2Jet");
 
 
 //   //////////2012 categories
@@ -107,6 +118,7 @@ void plotTauMu2012(){
 //   analysis->plotInc("vbfvars7",20,0,200,1,1,1,"(njet>1)","",2,12,"#mu#tau p_{T}","",c,0,"inclusive2Jet");
 //   analysis->plotInc("vbfmva",20,-1.,1.001,1,1,1,"(njet>1)","(vbfmva<0.5)",2,12,"VBF MVA output","",c,10,"inclusive2Jet");
 //   analysis->plotInc("vbfmva",10,0.0,1.001,1,1,1,"(njet>1&&njetingap==0&&abs(svfitmass-125)<25.)","(vbfmva<0.5)",2,12,"VBF MVA output","",c,0,"inclusive2JetSignal");
+//  analysis->plotInc("vbfmva",20,-1.0,1.001,1,1,1,"(njet20>1)","(vbfmva<0.5)",2,12,"VBF MVA output","",c,0,"inclusive2JetSignal");
   
 //   analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(0),"",2,0,"m_{T} ","",c,0,"0JetLow");
 //   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(0),"(svfitmass<100||160<svfitmass)",2,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"0JetLow");

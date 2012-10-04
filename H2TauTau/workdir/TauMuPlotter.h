@@ -127,6 +127,7 @@ public:
   //Boosted/VBF methods
   TH1F* getQCDMuIsoSM();//from muon isolation side-band
   TH1F* getQCDMike();//values from Josh for 2012 analysis
+  TH1F* getQCDHCP();//values from Josh for 2012 analysis
   TH1F* getQCDKeti();//values from Josh for 2012 analysis
   TString qcdTauIsoRatioMuNonIso_;//formula for the ratio
   TString qcdMuIsoRatioTauNonIso_;//formula for the ratio
