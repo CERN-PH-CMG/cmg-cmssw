@@ -30,17 +30,29 @@ aliases = {
     '/WZ_TuneZ2star.*START52.*':'WZ',
     '/ZZ_TuneZ2star.*START52.*':'ZZ',
     '/T_tW.*START52.*':'T_tW',
-    '/Tbar_tW.*START52.*':'Tbar_tW'
+    '/Tbar_tW.*START52.*':'Tbar_tW',
 #    '/T_t-.*START52.*':'T_t',
 #    '/Tbar_t-.*START52.*':'Tbar_t',
 #    '/T_s-.*START52.*':'T_s',
 #    '/Tbar_s-.*START52.*':'Tbar_s'
+    '/WWJetsTo2L2Nu_TuneZ2star_8TeV-madgraph.*START52.*':'WW2l2v',
+    '/WZJetsTo2L2Q_TuneZ2star_8TeV-madgraph.*START52.*':'WZ2l2q',
+    '/WZJetsTo3LNu_TuneZ2_8TeV-madgraph/.*START52.*':'WZ3lv',
+    '/ZZJetsTo2L2Q_TuneZ2star_8TeV-madgraph.*START52.*':'ZZ2l2q',
+    '/ZZJetsTo2L2Nu_TuneZ2star_8TeV-madgraph.*START52.*':'ZZ2l2v',
+    '/ZZJetsTo4L_TuneZ2star_8TeV-madgraph.*START52.*':'ZZ4l'
     }
 
 
 MC = copy.copy( mc_ewk )
-MC.extend( mc_higgs )
+
+#MC.extend( mc_higgs )
+# the following for 52X sync purposes only:
+MC.append (HiggsGGH120)
+MC.append (HiggsVBF125)
+
 MC.extend( mc_diboson ) 
+MC.extend( mc_diboson_xcl ) 
 
 allsamples = copy.copy(MC)
 allsamples.extend( data_list_2012 )
@@ -48,7 +60,7 @@ allsamples.extend( embed_list_2012 )
 
 # allsamples = copy.copy(data_list_2012)
 
-connect( allsamples, '%H2TauTau_tauEle_20Sep_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, cache=True, verbose=False)
+connect( allsamples, '%H2TauTau_tauEle_20Sep_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, cache=False, verbose=False)
 
 print
 for sam in MC:
