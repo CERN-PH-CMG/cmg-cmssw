@@ -48,5 +48,6 @@ vertexWeightSequence = cms.Sequence(
 
     #2012 weights use true pileup
     +vertexWeightSummer12MCICHEPData
+    +vertexWeightSummer12MC53XHCPData
     
     )
