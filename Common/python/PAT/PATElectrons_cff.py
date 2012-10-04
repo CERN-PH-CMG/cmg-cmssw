@@ -103,7 +103,7 @@ patElectrons.electronIDSources  = electronIDs.clone()
 
 patElectrons.embedTrack = True
 
-selectedPatElectrons.cut = 'pt()>5'
+selectedPatElectrons.cut = 'pt()>3'
 
 from CMGTools.Common.PAT.patElectronsWithTrigger_cff import * 
 from CMGTools.Common.PAT.patElectronsWithMVA_cfi import * 
