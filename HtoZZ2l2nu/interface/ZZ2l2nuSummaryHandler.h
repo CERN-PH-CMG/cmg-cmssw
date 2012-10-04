@@ -82,8 +82,10 @@ struct ZZ2l2nuSummary_t
   Float_t jn_px[MAXPARTICLES],    jn_py[MAXPARTICLES],      jn_pz[MAXPARTICLES],          jn_en[MAXPARTICLES];
   Float_t jn_btag1[MAXPARTICLES], jn_btag2[MAXPARTICLES],   jn_btag3[MAXPARTICLES], jn_btag4[MAXPARTICLES], jn_neutHadFrac[MAXPARTICLES], jn_neutEmFrac[MAXPARTICLES], jn_chHadFrac[MAXPARTICLES];
   Float_t jn_btag5[MAXPARTICLES], jn_btag6[MAXPARTICLES],   jn_btag7[MAXPARTICLES];
+  Float_t jn_lxy[MAXPARTICLES], jn_lxyErr[MAXPARTICLES], jn_svmass[MAXPARTICLES];
   Int_t   jn_genid[MAXPARTICLES], jn_genflav[MAXPARTICLES];
   Float_t jn_genpt[MAXPARTICLES], jn_pumva[MAXPARTICLES], jn_puminmva[MAXPARTICLES];
+  Bool_t  jn_isCfromGsplit[MAXPARTICLES], jn_isBfromGsplit[MAXPARTICLES];
   Float_t jn_beta[MAXPARTICLES],  jn_betaStar[MAXPARTICLES], jn_dRMean[MAXPARTICLES], jn_ptD[MAXPARTICLES], jn_ptRMS[MAXPARTICLES],jn_etaW[MAXPARTICLES],jn_phiW[MAXPARTICLES];
   Int_t jn_idbits[MAXPARTICLES];
 
@@ -94,8 +96,10 @@ struct ZZ2l2nuSummary_t
   Float_t ajn_px[MAXPARTICLES],    ajn_py[MAXPARTICLES],      ajn_pz[MAXPARTICLES],    ajn_en[MAXPARTICLES]; 
   Float_t ajn_btag1[MAXPARTICLES], ajn_btag2[MAXPARTICLES],   ajn_btag3[MAXPARTICLES], ajn_btag4[MAXPARTICLES], ajn_neutHadFrac[MAXPARTICLES], ajn_neutEmFrac[MAXPARTICLES], ajn_chHadFrac[MAXPARTICLES];
   Float_t ajn_btag5[MAXPARTICLES], ajn_btag6[MAXPARTICLES],   ajn_btag7[MAXPARTICLES];
+  Float_t ajn_lxy[MAXPARTICLES], ajn_lxyErr[MAXPARTICLES], ajn_svmass[MAXPARTICLES];
   Int_t   ajn_genid[MAXPARTICLES], ajn_genflav[MAXPARTICLES];
   Float_t ajn_genpt[MAXPARTICLES], ajn_pumva[MAXPARTICLES], ajn_puminmva[MAXPARTICLES];
+  Bool_t  ajn_isCfromGsplit[MAXPARTICLES],ajn_isBfromGsplit[MAXPARTICLES];
   Float_t ajn_beta[MAXPARTICLES],  ajn_betaStar[MAXPARTICLES], ajn_dRMean[MAXPARTICLES], ajn_ptD[MAXPARTICLES], ajn_ptRMS[MAXPARTICLES], ajn_etaW[MAXPARTICLES],ajn_phiW[MAXPARTICLES];
   Int_t ajn_idbits[MAXPARTICLES];
 

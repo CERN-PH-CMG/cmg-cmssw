@@ -40,6 +40,7 @@ ObjectIdSummary::ObjectIdSummary()
   tche=0;                        csv=0;               jp=0;       tchp=0;
   beta=0;                        betaStar=0;          dRMean=0;
   ptD=0;                         ptRMS=0;
+  lxy=0;                         slxy=0;              svmass=0;
   customTaggers.clear();
 }
 
@@ -74,6 +75,7 @@ ObjectIdSummary::ObjectIdSummary(ObjectIdSummary const&other)
   beta=other.beta;                                         betaStar=other.betaStar;                                      dRMean=other.dRMean;
   ptD=other.ptD;                                           ptRMS=other.ptRMS;
   customTaggers=other.customTaggers;
+  lxy=other.lxy;                         slxy=other.slxy;              svmass=other.svmass;
 }
 
 
@@ -777,7 +779,17 @@ vector<CandidatePtr> getGoodJets(edm::Handle<edm::View<reco::Candidate> > &hJet,
 	    if(idx>=0) disc=(*(jetTagsH[ijt]))[idx].second;
 	    jetId.customTaggers.push_back(disc);
 	  }
-
+	reco::SecondaryVertexTagInfo const *svTagInfos = jet->tagInfoSecondaryVertex("secondaryVertex");
+	if( svTagInfos != 0 )
+	  {
+	    int nSecVtx=svTagInfos->nVertices();
+	    if(nSecVtx>0)
+	      {
+		jetId.lxy=svTagInfos->flightDistance(0).value();
+		jetId.slxy=svTagInfos->flightDistance(0).error();
+		jetId.svmass=svTagInfos->secondaryVertex(0).p4().mass();
+	      }
+	  }
 	jetId.neutHadFrac = jet->neutralHadronEnergyFraction();
         jetId.neutEmFrac  = jet->neutralEmEnergyFraction();
         jetId.chHadFrac   = jet->chargedHadronEnergyFraction();
@@ -1194,6 +1206,40 @@ std::pair<int,vector<const reco::Candidate *> > assignPhysicsChannel(edm::Handle
 
   return std::pair<int,vector<const reco::Candidate *> >(mcChannel,genTree);
 }
+
+//
+std::vector<reco::CandidatePtr> filterHFfromGSplit(edm::Handle<edm::View<reco::Candidate> > &genParticles)
+{
+  std::vector<reco::CandidatePtr> hfFromGsplit;
+  for (size_t ip=0; ip<genParticles.product()->size(); ++ip) 
+    {
+      reco::CandidatePtr genP = genParticles->ptrAt(ip);
+      if( genP->status()!=2 ) continue;
+      if( abs(genP->pdgId())!=5 && abs(genP->pdgId ())!=4) continue;
+      hfFromGsplit.push_back( genP );
+    }
+  return hfFromGsplit;
+}
+
+//
+const reco::Candidate *getHFmatchFromGSplit(reco::CandidatePtr &jet, std::vector<reco::CandidatePtr> &hfFromGsplit,int flavId)
+{
+  if(hfFromGsplit.size()==0) return 0;
+
+  const reco::Candidate *cand=0;
+  double minDR(9999.);
+  for(size_t ip=0; ip<hfFromGsplit.size(); ip++)
+    {
+      if( abs(hfFromGsplit[ip]->pdgId())!=flavId ) continue;
+      double dR=deltaR(jet->eta(),jet->phi(),hfFromGsplit[ip]->eta(),hfFromGsplit[ip]->phi());
+      if(dR>minDR) continue;
+      minDR=dR;
+      cand=hfFromGsplit[ip].get();
+    }
+  if(minDR>0.3) return 0;
+  return cand;
+}
+
 
 
 //                    //    

@@ -92,6 +92,7 @@ public :
     Int_t genid,flavid;
     Float_t beta,betaStar,dRMean,ptD,ptRMS;
     Float_t btag1, btag2, btag3, btag4, neutHadFrac, neutEmFrac, chHadFrac, genPt,pumva;
+    Float_t btag5,btag6,btag7;
     Int_t pid;
 };
 bool JetPtOrdering (PhysicsObject_Jet i,PhysicsObject_Jet j);
