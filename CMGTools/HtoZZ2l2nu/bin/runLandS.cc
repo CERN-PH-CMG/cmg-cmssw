@@ -51,6 +51,7 @@ class Shape_t
   std::map<TString,std::vector<std::pair<TString, TH1*> > > bckgVars, signalVars;
 
   std::map<TString, double> xsections;
+  std::map<TString, double> BRs;
 
   Shape_t(){}
   ~Shape_t(){}
@@ -87,6 +88,10 @@ void printHelp();
 Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin,JSONWrapper::Object &Root,double minCut=0, double maxCut=9999, bool onlyData=false);
 void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TString mainHisto, TString SaveName);
 void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName);
+void getEffFromShape(std::vector<TString> ch, const map<TString, Shape_t> &allShapes, TString shName);
+
+
+
 
 void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bin, TString& ch, std::vector<TString>& systs, std::vector<TH1*>& hshapes);
 DataCardInputs convertHistosForLimits(Int_t mass,TString histo="finalmt",TString url="plotter.root",TString Json="");
@@ -342,6 +347,11 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 
             if(varName==""){
                if(Process[i]["data"].daughters()[0].isTag("xsec"))shape.xsections[proc] = Process[i]["data"].daughters()[0]["xsec"].toDouble();
+               if(Process[i]["data"].daughters()[0].isTag("br")){
+                  std::vector<JSONWrapper::Object> BRs = Process[i]["data"].daughters()[0]["br"].daughters();
+                  double totalBR=1.0; for(size_t ipbr=0; ipbr<BRs.size(); ipbr++){totalBR*=BRs[ipbr].toDouble();}   
+                  shape.BRs[proc] = totalBR;
+               }
 
                int procIndex = -1;
                for(unsigned int i=0;i<shape.signal.size();i++){ if(string(proc.Data())==shape.signal[i]->GetTitle() ){procIndex=i;break;}  }
@@ -535,7 +545,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
       axis->GetYaxis()->SetTitle(b==0?mc->GetYaxis()->GetTitle():"");
       axis->SetMinimum(mc->GetMinimum());
       axis->SetMaximum(1.1*std::max(mcErorMax, alldata->GetMaximum()));
-      //axis->GetXaxis()->SetRangeUser(150,700);
+      axis->GetXaxis()->SetRangeUser(150,700);//
       axis->Draw();
       stack->Draw("same");
       
@@ -607,7 +617,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   c1->cd();
   TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
   T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
-  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV, #scale[0.5]{#int} L=5.0  fb^{-1}");
+  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV, #scale[0.5]{#int} L=10.0  fb^{-1}");
   }else{                         T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV, #scale[0.5]{#int} L=5.0  fb^{-1}");
   }T->Draw();
   c1->Update();
@@ -708,6 +718,64 @@ void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &al
   fprintf(pFile,"\\hline\n");
   fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n");
   fprintf(pFile,"\n\n\n\n");
+  fclose(pFile);
+}
+
+
+void getEffFromShape(std::vector<TString> ch, map<TString, Shape_t> &allShapes, TString shName)
+{
+  FILE* pFile = fopen("Efficiency.tex","w");
+//  fprintf(pFile,"\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
+
+  string Ccol   = "\\begin{tabular}{|c|";
+  string Cname  = "channel";
+  string Cval   = "";
+
+  TString massStr(""); if(mass>0)massStr += mass;
+
+
+  TH1* h;
+  Double_t valerr, val, syst;
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+  for(size_t ich=0; ich<ch.size(); ich++) {
+    TString icol(ch[ich]+"-"+AnalysisBins[b]);
+    icol.ReplaceAll("mu","\\mu"); icol.ReplaceAll("_"," ");
+    Cval = "$ "+icol+" $";
+
+    //signal
+    size_t nsig=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal.size();
+    for(size_t isig=0; isig<nsig; isig++){
+       Shape_t& shape  = allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second;
+       h=shape.signal[isig];
+       TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
+
+       if(mass>0 && !procTitle.Contains(massStr))continue;
+            if(mass>0 && procTitle.Contains("ggH") && procTitle.Contains("ZZ"))procTitle = "ggH("+massStr+")";
+       else if(mass>0 && procTitle.Contains("qqH") && procTitle.Contains("ZZ"))procTitle = "qqH("+massStr+")";
+       else if(mass>0 && procTitle.Contains("ggH") && procTitle.Contains("WW"))procTitle = "ggH("+massStr+")WW";
+       else if(mass>0 && procTitle.Contains("qqH") && procTitle.Contains("WW"))procTitle = "qqH("+massStr+")WW";
+
+       if(b==0&&ich==0)Ccol  += "c|";
+       if(b==0&&ich==0)Cname += "&$" + procTitle+"$";
+
+//       printf("%s --> Xsec=%E x %E\n",h->GetTitle(), shape.xsections[h->GetTitle()], shape.BRs[h->GetTitle()]);
+       double xsecXbr = shape.xsections[h->GetTitle()] * shape.BRs[h->GetTitle()];
+
+       val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+       if(val<1E-6){val=0.0; valerr=0.0;}
+       Cval += "&" + toLatexRounded(val/xsecXbr,valerr/xsecXbr);
+
+       fprintf(pFile,"%30s %30s %4.0f %6.2E %6.2E %6.2E %6.2E\n",icol.Data(), procTitle.Data(), (double)mass, shape.xsections[h->GetTitle()], shape.BRs[h->GetTitle()], val/xsecXbr, valerr/xsecXbr);
+    }
+
+    //endline
+//    if(b==0&&ich==0)fprintf(pFile,"%s}\\hline\n", Ccol.c_str());
+//    if(b==0&&ich==0)fprintf(pFile,"%s\\\\\\hline\n", Cname.c_str());
+//    fprintf(pFile,"%s\\\\\n", Cval.c_str());
+  }}
+//  fprintf(pFile,"\\hline\n");
+//  fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n");
+//  fprintf(pFile,"\n\n\n\n");
   fclose(pFile);
 }
 
@@ -817,6 +885,16 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 //            if(systpostfix.Contains('8') && (dci.procs[j-1].Contains("qqh"))){fprintf(pFile,"%6f ",1.25);
 //            }else{fprintf(pFile,"%6s ","-");}
 //         }fprintf(pFile,"\n");
+
+
+//verify cross section!
+         for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
+            if(dci.procs[j-1].Contains("ggh") || dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); printf("850 XSECTION=%6f ",TG_xsec->Eval(850,NULL,"S")); }
+            if(dci.procs[j-1].Contains("ggh") || dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); printf("900 XSECTION=%6f ",TG_xsec->Eval(900,NULL,"S")); }
+            if(dci.procs[j-1].Contains("ggh") || dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); printf("950 XSECTION=%6f ",TG_xsec->Eval(950,NULL,"S")); }
+
+         }
+
 
          fprintf(pFile,"%35s %10s ", "pdf_gg", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
@@ -983,12 +1061,12 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   for(size_t i=0; i<nch; i++){
      for(size_t b=0; b<AnalysisBins.size(); b++){
        int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax;
-       if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
+       if(indexvbf>=0 && AnalysisBins[b].Contains("vbf")){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
         for(size_t j=0; j<nsh; j++){
              printf("i=%i b=%i j=%i\n",(int)i,(int)b,(int)j);
 	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcut_,Root,cutMin, cutMax);
              if(indexcutL>=0 && indexcutR>=0){
-                if(indexvbf>=0 && AnalysisBins[b] =="vbf"){
+                if(indexvbf>=0 && AnalysisBins[b].Contains("vbf")){
                    allShapesL[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexvbf,Root,cutMin, cutMax);
                    allShapesR[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexvbf,Root,cutMin, cutMax);
                 }else{
@@ -1029,6 +1107,8 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
   //print event yields from the mt shapes
   if(!fast)getYieldsFromShape(selCh,allShapes,histo);
+  if(!fast)getEffFromShape(selCh,allShapes,histo);
+
 
   if(!fast)showShape(selCh,allShapes,histo,"plot");
 
@@ -1369,7 +1449,7 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
            if( !inF || inF->IsZombie() ){break;}
 
            int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax; double cutMin_;
-           if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
+           if(indexvbf>=0 && AnalysisBins[b].Contains("vbf")){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
            while(hCtrl_SI->Integral()<=0 && indexcut_>=0){
               cutMin_=cutMin;
               while(hCtrl_SI->Integral()<=0 && cutMin_>=0){               
@@ -1583,7 +1663,7 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
 
            //replace DY histogram by G+Jets data
            int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax;
-           if(indexvbf>=0 && AnalysisBins[b] =="vbf"){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
+           if(indexvbf>=0 && AnalysisBins[b].Contains("vbf")){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
 
            TH2* gjets2Dshape  = (TH2*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+mainHisto);
            TH1* gjets1Dshape  = gjets2Dshape->ProjectionY("tmpName",indexcut_,indexcut_);
@@ -1592,7 +1672,7 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
            for(int x=0;x<=gjets1Dshape->GetXaxis()->GetNbins()+1;x++){
               if(gjets1Dshape->GetXaxis()->GetBinCenter(x)<=cutMin || gjets1Dshape->GetXaxis()->GetBinCenter(x)>=cutMax){gjets1Dshape->SetBinContent(x,0); gjets1Dshape->SetBinError(x,0);}
            }
-           gjets1Dshape->Rebin(5);
+           gjets1Dshape->Rebin(2);
 
 
            shapeChan_SI.bckg[ibckg]->SetTitle(DYProcName + " (data)");    
