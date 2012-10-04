@@ -55,5 +55,6 @@ class JSONAnalyzer( Analyzer ):
         
 
     def write(self):
+        super(JSONAnalyzer, self).write()
         self.rltInfo.write( self.dirName )
 
