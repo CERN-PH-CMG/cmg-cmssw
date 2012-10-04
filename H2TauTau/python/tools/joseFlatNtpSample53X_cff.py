@@ -8,7 +8,9 @@ SUSYMass = cms.vstring(['90','100','120','130','140','160','180','200','250','30
 #recoilrootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
 import os 
 rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
+recoilCorr_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/metRecoilCorrection/'
 httjson_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/json/'
+httdata_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/'
  
 #def loadFlatNtpSamples(process):
 def configureFlatNtpSampleTauMu2011(module,sampleAlias):
@@ -287,7 +289,6 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
         module.recoilCorrection = 2 
         module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
 
-
     if sampleAlias == 'TTJets' :
         module.path = "/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5/HTTSKIM1/PAT_CMG_V5_4_1"
         module.dataType = 0
@@ -498,9 +499,11 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
     module.dataPeriodFlag = 2012
     module.muPtCut = 20.
     module.tauPtCut = 20.
-    module.fileZmmData = rootfile_dir + 'recoilfit_datamm52X_njet.root'
-    module.fileZmmMC = rootfile_dir + 'recoilfit_zmm52X_njet.root'
-        
+    module.fileZmmData = recoilCorr_dir + 'recoilfit_datamm53X_20pv_njet.root'
+    module.fileZmmMC = recoilCorr_dir + 'recoilfit_zmm53X_20pv_njet.root'
+    module.mvaWeights2012 = cms.string(httdata_dir + 'VBFMVA_BDTG_HCP_52X.weights.xml')
+    
+    
     if sampleAlias == 'TauPlusX2012A' : #DAS range: 190450 - 193686
         module.path = "/TauPlusX/Run2012A-PromptReco-v1/AOD/PAT_CMG_V5_6_0_B"
         module.dataType = 1
@@ -548,8 +551,8 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.sampleGenEventType = 5
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
-        #module.recoilCorrection = 11
-        #module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root' 
+        module.recoilCorrection = 31
+        module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
 
     if sampleAlias == 'ZToMuMu' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
@@ -572,24 +575,20 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
-        #module.recoilCorrection = 12
-        #module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
+        module.recoilCorrection = 32
+        module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_wjets53X_20pv_njet.root' 
 
     if sampleAlias == 'WJetsToLNu2' :
         module.path = "/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
-        #module.recoilCorrection = 12
-        #module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
         
     if sampleAlias == 'W3JetsToLNu' :
         module.path = "/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12-PU_S7_START52_V9-v2/AODSIM/PAT_CMG_V5_6_0_B" 
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20")
-        #module.recoilCorrection = 12 
-        #module.fileCorrectTo =  rootfile_dir + 'recoilfit_wjets_njet.root'
 
     if sampleAlias == 'TTJets' :
         module.path = "/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B"
@@ -654,16 +653,16 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.path ="" % HiggsMass[i]
             module.dataType = 0
             module.pupWeightName = ''
-            #module.recoilCorrection = 1
-            #module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+
             
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.dataType = 0
             module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
-            #module.recoilCorrection = 1
-            #module.fileCorrectTo =  rootfile_dir + 'recoilfit_zjets_ltau_njet.root'
+            module.recoilCorrection = 31
+            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_zmm53X_20pv_njet.root' 
+
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] : 
             module.path = "" % HiggsMass[i]
