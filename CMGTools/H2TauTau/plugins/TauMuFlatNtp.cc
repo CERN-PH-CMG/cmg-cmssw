@@ -543,6 +543,8 @@ bool TauMuFlatNtp::fill(){
   //VBF variables
   vbfmva_=0.;
   if(njet_>=2) fillVBFMVA();
+  vbfmva2012_=0.;
+  if(njet_>=2) fillVBFMVA2012();
 
   return 1;
 }

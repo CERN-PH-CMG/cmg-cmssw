@@ -43,6 +43,7 @@ flatNtpTauMu = cms.EDAnalyzer(
     mvaMETSigTag = cms.InputTag("mvaMETTauMu"),
     runSVFit = cms.int32(2), # 0 do not run, 1 run old version, 2 run new version
     mvaWeights = cms.string(httdata_dir + 'VBFMVA_BDTG.weights.44X.xml'),
+    mvaWeights2012 = cms.string(httdata_dir + 'VBFMVA_BDTG_HCP_42X.weights.xml'),
     muPtCut = cms.double(17.),
     tauPtCut = cms.double(20.),
     muEtaCut = cms.double(2.1),

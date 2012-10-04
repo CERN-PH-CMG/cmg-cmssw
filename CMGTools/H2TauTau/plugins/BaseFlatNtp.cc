@@ -16,8 +16,12 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   signalWeightHisto_(NULL),
   btagWP_(0.679),
   corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
+  corrector2012_(iConfig.getParameter<std::string>("fileCorrectTo")),
   mvaWeights_(iConfig.getParameter<std::string>("mvaWeights")),
-  reader_(mvaWeights_.c_str()){
+  reader_(mvaWeights_.c_str()),
+  mvaWeights2012_(iConfig.getParameter<std::string>("mvaWeights2012")),
+  reader2012_(mvaWeights2012_.c_str())
+{
 
   //for debugging
   printSelectionPass_ = iConfig.getParameter<int>("printSelectionPass");
@@ -100,11 +104,13 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
 
   fileZmmData_ = iConfig.getParameter<std::string>("fileZmmData");
   cout<<"fileZmmData_ : "<<fileZmmData_.c_str()<<endl;
-  corrector_.addDataFile( fileZmmData_);
-
   fileZmmMC_ = iConfig.getParameter<std::string>("fileZmmMC");
   cout<<"fileZmmMC_  : "<<fileZmmMC_.c_str()<<endl;
+
+  corrector_.addDataFile( fileZmmData_);
   corrector_.addMCFile( fileZmmMC_);
+  corrector2012_.addDataFile( fileZmmData_);
+  corrector2012_.addMCFile( fileZmmMC_);
 
   recoiliScale_ = iConfig.getParameter<double>("recoiliScale");
   cout<<"recoiliScale_   : "<<recoiliScale_<<endl;
@@ -270,11 +276,15 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("vbfvars5",&vbfvars_[5],"vbfvars5/D");
   tree_->Branch("vbfvars6",&vbfvars_[6],"vbfvars6/D");
   tree_->Branch("vbfvars7",&vbfvars_[7],"vbfvars7/D");
-  
+
+  tree_->Branch("vbfmva2012",&vbfmva2012_,"vbfmva2012/F");
+  tree_->Branch("vbfvars20120",&vbfvars2012_[0],"vbfvars20120/D");
+  tree_->Branch("vbfvars20121",&vbfvars2012_[1],"vbfvars20121/D");
+  tree_->Branch("vbfvars20122",&vbfvars2012_[2],"vbfvars20122/D");
+  tree_->Branch("vbfvars20123",&vbfvars2012_[3],"vbfvars20123/D");
   
   tree_->Branch("muLCleadJetPt",&muLCleadJetPt_,"muLCleadJetPt/F");
   tree_->Branch("muLCleadJetEta",&muLCleadJetEta_,"muLCleadJetEta/F");
-
 
   tree_->Branch("categoryIso",&categoryIso_,"categoryIso/I");
   tree_->Branch("categorySM",&categorySM_,"categorySM/I");

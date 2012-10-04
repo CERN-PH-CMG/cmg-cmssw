@@ -48,6 +48,7 @@
 
 
 #include "CMGTools/Common/interface/RecoilCorrector.h"
+#include "CMGTools/H2TauTau/interface/RecoilCorrector2012.h"
 
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
@@ -58,6 +59,7 @@
 
 //#include "TMVA/Reader.h"
 #include "CMGTools/H2TauTau/interface/VBFMVA.h"
+#include "CMGTools/H2TauTau/interface/VBFMVA2012.h"
 
 using namespace std;
 
@@ -348,6 +350,7 @@ protected:
   edm::InputTag mvaMETSigTag_;
 
   RecoilCorrector corrector_;
+  RecoilCorrector2012 corrector2012_;
   int recoilCorreciton_;
   double recoiliScale_;
   std::string fileZmmData_;
@@ -417,6 +420,10 @@ protected:
 	corrector_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
       else if(recoilCorreciton_<20)
 	corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+      else if(recoilCorreciton_<30) //2012 MVA corrector
+	corrector2012_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+      else if(recoilCorreciton_<40) //2012 MVA corrector
+	corrector2012_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
       
       //smear the met even more
       //metpt_=metpt_*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);
@@ -477,6 +484,43 @@ protected:
 
     vbfmva_ = reader_.val(vbfvars_[0],vbfvars_[1],vbfvars_[2],vbfvars_[3],vbfvars_[4],vbfvars_[5],vbfvars_[6],vbfvars_[7]);
   }
+
+
+  float vbfmva2012_;
+  double vbfvars2012_[8];
+  std::string mvaWeights2012_;
+  VBFMVA2012 reader2012_;
+  void fillVBFMVA2012(){
+    TVector3 vTau, vMu, vMET, vDiTau, vDiTauVis;
+    vTau.SetPtEtaPhi(taupt_,taueta_,tauphi_);
+    vMu.SetPtEtaPhi(mupt_,mueta_,muphi_);
+    vMET.SetPtEtaPhi(metpt_,0,metphi_); 
+
+    vDiTau = vTau + vMu + vMET;
+    vDiTauVis = vTau + vMu;
+    
+    TVector3 vJet1, vJet2, vDiJet;
+    vJet1.SetPtEtaPhi(leadJet_->pt(), leadJet_->eta(), leadJet_->phi());
+    vJet2.SetPtEtaPhi(subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi());
+    vDiJet = vJet1 + vJet2;
+
+    Double_t mjj = massPtEtaPhiM(leadJet_->pt(), leadJet_->eta(), leadJet_->phi(), leadJet_->mass(),subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi(), subleadJet_->mass());
+    Double_t dEta = fabs(leadJet_->eta() - subleadJet_->eta());
+
+    // Lorenzo's variables
+    Double_t C1 = min(fabs(vDiTauVis.Eta() - leadJet_->eta()), fabs(vDiTauVis.Eta() - subleadJet_->eta()));
+    Double_t C2 = vDiTauVis.Pt();
+    
+    // Fill input vector
+    vbfvars2012_[0] = mjj;
+    vbfvars2012_[1] = dEta;
+    vbfvars2012_[2] = C1;
+    vbfvars2012_[3] = C2;
+
+    vbfmva2012_ = reader2012_.val(vbfvars2012_[0],vbfvars2012_[1],vbfvars2012_[2],vbfvars2012_[3]);
+  }
+
+
 
   edm::Handle< std::vector<reco::GenParticle> > genParticles_;
   void printMCGen(edm::Handle< std::vector<reco::GenParticle> > & genList);
