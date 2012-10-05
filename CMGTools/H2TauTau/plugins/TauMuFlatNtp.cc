@@ -363,6 +363,7 @@ bool TauMuFlatNtp::applySelections(){
   countertruth_++;
 
 
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passed TauMu selections "<<endl;
 
   return 1;
 }
@@ -370,6 +371,7 @@ bool TauMuFlatNtp::applySelections(){
 bool TauMuFlatNtp::fill(){
   
   BaseFlatNtp::fill();
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass BaseFlatNtp fill "<<endl;
 
   /////mu and tau trigger efficiency weight
   triggerEffWeight_=1.;
@@ -411,6 +413,8 @@ bool TauMuFlatNtp::fill(){
   }
   
   eventweight_=pupWeight_*embeddedGenWeight_*triggerEffWeight_*selectionEffWeight_*signalWeight_;
+
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass weights "<<endl;
 
   mupt_=diTauSel_->leg2().pt();
   mueta_=diTauSel_->leg2().eta();
@@ -463,15 +467,17 @@ bool TauMuFlatNtp::fill(){
   if(diTauSel_->leg1().tauID("byMediumIsoMVA")>0.5)tauisodiscmva_=2;
   if(diTauSel_->leg1().tauID("byTightIsoMVA")>0.5)tauisodiscmva_=3;
 
-  
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass object vars "<<endl;  
+
   ditaumass_=diTauSel_->mass();
   ditaucharge_=diTauSel_->charge();
   ditaueta_=diTauSel_->eta();
   ditaupt_=diTauSel_->pt();
   ditauphi_=diTauSel_->phi();
-  svfitmass_=diTauSel_->massSVFit();
+  svfitmass_=0.;//diTauSel_->massSVFit();
   mutaucostheta_=diTauSel_->leg1().p4().Vect().Dot(diTauSel_->leg2().p4().Vect());
 
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass ditau vars"<<endl;
 
   ///get the jets //need the jets here because of randomization of mT
   edm::Handle< std::vector<cmg::PFJet> > eventJetList;
@@ -483,15 +489,36 @@ bool TauMuFlatNtp::fill(){
   //apply pt and eta cuts on jets
   fillPFJetList(&fullJetList_,&pfJetList_);
 
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass jet30 fill"<<endl;
+
   //lepton clean the jet list //need to fill njet_ here 
   fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetList_,&pfJetListLC_);
+
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass Jets LC "<<endl;
 
   //Also the list cleaned only with the muon //njetLepLC needed in recoil correction
   fillPFJetListLepLC(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetList_,&pfJetListLepLC_);
 
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass Jets LepLC "<<endl;
+
   //
   fillJetVariables();
-    
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass Jets fillJetVariables "<<endl;
+
+
+  //jets with pT>20 and  b-tagged jets  
+  fillPFJetListB(&fullJetList_,&pfJetListB_);
+  fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetListB_,&pfJetListBLC_);
+  fillPFJetListBTag(&pfJetListBLC_,&pfJetListBTagLC_);
+
+  fillJetVariables20();
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass Jets fillJetVariables20 "<<endl;
+
+  fillBJetVariables();
+  fillBTagWeight();
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass b-tag "<<endl;
+
+
   //find the jet matching to the tau
   taujetpt_=0.;
   taujeteta_=0.;
@@ -506,7 +533,7 @@ bool TauMuFlatNtp::fill(){
   if(mujet) mujetpt_=mujet->pt();
   if(mujet) mujeteta_=mujet->eta();
   
-
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass Jets "<<endl;
 
   ///////here decide which met 
   metSig_=0;
@@ -526,26 +553,23 @@ bool TauMuFlatNtp::fill(){
   transversemass_=sqrt(2*mupt_*metP4_.pt()*(1-cos(muphi_-metP4_.phi())));
   compZeta(diTauSel_->leg2().p4(),diTauSel_->leg1().p4(),metP4_.px(),metP4_.py(),&pZeta_,&pZetaVis_);
 
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass MET "<<endl;
   
   //----SVFit
   taup4_=diTauSel_->leg1().p4();
   mup4_=diTauSel_->leg2().p4();
   runSVFit();
 
-  //--- b-tagged jets  
-  fillPFJetListB(&fullJetList_,&pfJetListB_);
-  fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetListB_,&pfJetListBLC_);
-  fillPFJetListBTag(&pfJetListBLC_,&pfJetListBTagLC_);
-  fillBJetVariables();
-  fillBTagWeight();
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass SVFit  "<<endl;
 
 
   //VBF variables
   vbfmva_=0.;
-  if(njet_>=2) fillVBFMVA();
+  if(njet20_>=2) fillVBFMVA();
   vbfmva2012_=0.;
-  if(njet_>=2) fillVBFMVA2012();
+  if(njet20_>=2) fillVBFMVA2012();
 
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Done fill "<<endl;
   return 1;
 }
 

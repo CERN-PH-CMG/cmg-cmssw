@@ -47,7 +47,7 @@ configureFlatNtpSampleTauMu2012(process.flatNtp,sampleName)
 process.flatNtp.diTauTag = 'cmgTauMuPreSel'
 process.flatNtp.metType = 2
 process.flatNtp.runSVFit = 2
-
+process.flatNtp.printSelectionPass=0
 
 ### input files
 #inputfiles = "tauMu_fullsel_tree_CMG_.*root"

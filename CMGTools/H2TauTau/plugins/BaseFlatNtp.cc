@@ -267,6 +267,31 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("leadBJetPt",&leadBJetPt_,"leadBJetPt/F");
   tree_->Branch("leadBJetEta",&leadBJetEta_,"leadBJetEta/F");
 
+  tree_->Branch("jet20pt1",&jet20pt1_,"jet20pt1/F");
+  tree_->Branch("jet20eta1",&jet20eta1_,"jet20eta1/F");
+  tree_->Branch("jet20phi1",&jet20phi1_,"jet20phi1/F");
+  tree_->Branch("jet20mass1",&jet20mass1_,"jet20mass1/F");
+  tree_->Branch("jet20flavor1",&jet20flavor1_,"jet20flavor1/I");
+
+  tree_->Branch("jet20pt2",&jet20pt2_,"jet20pt2/F");
+  tree_->Branch("jet20eta2",&jet20eta2_,"jet20eta2/F");
+  tree_->Branch("jet20phi2",&jet20phi2_,"jet20phi2/F");
+  tree_->Branch("jet20mass2",&jet20mass2_,"jet20mass2/F");
+  tree_->Branch("jet20flavor2",&jet20flavor2_,"jet20flavor2/I");
+
+  tree_->Branch("jet20pt3",&jet20pt3_,"jet20pt3/F");
+  tree_->Branch("jet20eta3",&jet20eta3_,"jet20eta3/F");
+  tree_->Branch("jet20phi3",&jet20phi3_,"jet20phi3/F");
+  tree_->Branch("jet20mass3",&jet20mass3_,"jet20mass3/F");
+  tree_->Branch("jet20flavor3",&jet20flavor3_,"jet20flavor3/I");
+
+  tree_->Branch("jet20pt4",&jet20pt4_,"jet20pt4/F");
+  tree_->Branch("jet20eta4",&jet20eta4_,"jet20eta4/F");
+  tree_->Branch("jet20phi4",&jet20phi4_,"jet20phi4/F");
+  tree_->Branch("jet20mass4",&jet20mass4_,"jet20mass4/F");
+  tree_->Branch("jet20flavor4",&jet20flavor4_,"jet20flavor4/I");
+
+
   tree_->Branch("vbfmva",&vbfmva_,"vbfmva/F");
   tree_->Branch("vbfvars0",&vbfvars_[0],"vbfvars0/D");
   tree_->Branch("vbfvars1",&vbfvars_[1],"vbfvars1/D");
@@ -433,6 +458,7 @@ bool BaseFlatNtp::applySelections(){
   countergen_++;
 
 
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passed BaseFlatNtp selections "<<endl;
   
   return 1;
 }

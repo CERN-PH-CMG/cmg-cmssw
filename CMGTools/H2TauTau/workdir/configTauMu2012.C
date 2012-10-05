@@ -10,31 +10,44 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
-  //TauPlusX2012A->setSampleLumi(28+299+371);
-  TauPlusX2012A->setSampleLumi(700.);
+  TauPlusX2012A->setSampleLumi(96.977+316.128+396.213);
   analysis->addSample(TauPlusX2012A);
+
+  Sample* TauPlusX2012A2 = new Sample("TauPlusX2012A2",path);
+  TauPlusX2012A2->setDataType("Data");
+  TauPlusX2012A2->setSampleLumi(82.136);
+  analysis->addSample(TauPlusX2012A2);
 
   Sample* TauPlusX2012B = new Sample("TauPlusX2012B",path);
   TauPlusX2012B->setDataType("Data");
-  //TauPlusX2012B->setSampleLumi(4341);
-  TauPlusX2012B->setSampleLumi(4400.);
+  TauPlusX2012B->setSampleLumi(4403.);
   analysis->addSample(TauPlusX2012B);
 
-  Sample* Embedded2012A = new Sample("Embedded2012A",path);
-  Embedded2012A->setDataType("Embedded");
-  analysis->addSample(Embedded2012A);
+  Sample* TauPlusX2012Cv1 = new Sample("TauPlusX2012Cv1",path);
+  TauPlusX2012Cv1->setDataType("Data");
+  TauPlusX2012Cv1->setSampleLumi(495.003);
+  analysis->addSample(TauPlusX2012Cv1);
 
-  Sample* Embedded2012B1 = new Sample("Embedded2012B1",path);
-  Embedded2012B1->setDataType("Embedded");
-  analysis->addSample(Embedded2012B1);
+//   Sample* TauPlusX2012Cv2 = new Sample("TauPlusX2012Cv2",path);
+//   TauPlusX2012Cv2->setDataType("Data");
+//   TauPlusX2012Cv2->setSampleLumi(1288.0 + 4751.0 + 272.040);
+//   analysis->addSample(TauPlusX2012Cv2);
 
-  Sample* Embedded2012B2 = new Sample("Embedded2012B2",path);
-  Embedded2012B2->setDataType("Embedded");
-  analysis->addSample(Embedded2012B2);
+//   Sample* Embedded2012A = new Sample("Embedded2012A",path);
+//   Embedded2012A->setDataType("Embedded");
+//   analysis->addSample(Embedded2012A);
 
-  Sample* Embedded2012B3 = new Sample("Embedded2012B3",path);
-  Embedded2012B3->setDataType("Embedded");
-  analysis->addSample(Embedded2012B3);
+//   Sample* Embedded2012B1 = new Sample("Embedded2012B1",path);
+//   Embedded2012B1->setDataType("Embedded");
+//   analysis->addSample(Embedded2012B1);
+
+//   Sample* Embedded2012B2 = new Sample("Embedded2012B2",path);
+//   Embedded2012B2->setDataType("Embedded");
+//   analysis->addSample(Embedded2012B2);
+
+//   Sample* Embedded2012B3 = new Sample("Embedded2012B3",path);
+//   Embedded2012B3->setDataType("Embedded");
+//   analysis->addSample(Embedded2012B3);
 
 
   float CrossectionScaleFactor=0.976;
@@ -48,15 +61,25 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   WJetsToLNu->addRootFiles("WJetsToLNu2");//add previous sample with 18M events
   analysis->addSample(WJetsToLNu);  
 
-//   Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
-//   W2JetsToLNu->setDataType("MCCat");
-//   W2JetsToLNu->setCrossection(1000.);//dummy
-//   analysis->addSample(W2JetsToLNu);  
+  Sample * W1JetsToLNu=new Sample("W1JetsToLNu",path);
+  W1JetsToLNu->setDataType("MCCat");
+  W1JetsToLNu->setCrossection(0.175999);//dummy
+  analysis->addSample(W1JetsToLNu);  
+
+  Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
+  W2JetsToLNu->setDataType("MCCat");
+  W2JetsToLNu->setCrossection(0.0562617);//dummy
+  analysis->addSample(W2JetsToLNu);  
    
   Sample * W3JetsToLNu=new Sample("W3JetsToLNu",path);
   W3JetsToLNu->setDataType("MCCat");
-  W3JetsToLNu->setCrossection(1000);//dummy value
+  W3JetsToLNu->setCrossection(0.0168926);//dummy value
   analysis->addSample(W3JetsToLNu);  
+
+  Sample * W4JetsToLNu=new Sample("W4JetsToLNu",path);
+  W4JetsToLNu->setDataType("MCCat");
+  W4JetsToLNu->setCrossection(0.00692218);//dummy
+  analysis->addSample(W4JetsToLNu);  
    
 
   /////////////Z+Jets
@@ -83,46 +106,58 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   analysis->addSample(TTJets);
 
   ///Di-Bosons
-  Sample* WW = new Sample("WW",path);
-  WW->setDataType("MC");
-  WW->setCrossection(57.1097);
-  analysis->addSample(WW);
+//   Sample* WW = new Sample("WW",path);
+//   WW->setDataType("MC");
+//   WW->setCrossection(57.1097);
+//   analysis->addSample(WW);
 
-  Sample* WZ = new Sample("WZ",path);
-  WZ->setDataType("MC");
-  WZ->setCrossection(32.3161);
-  analysis->addSample(WZ);
+//   Sample* WZ = new Sample("WZ",path);
+//   WZ->setDataType("MC");
+//   WZ->setCrossection(32.3161);
+//   analysis->addSample(WZ);
 
-  Sample* ZZ = new Sample("ZZ",path);
-  ZZ->setDataType("MC");
-  ZZ->setCrossection(8.25561);
-  analysis->addSample(ZZ);
+//   Sample* ZZ = new Sample("ZZ",path);
+//   ZZ->setDataType("MC");
+//   ZZ->setCrossection(8.25561);
+//   analysis->addSample(ZZ);
+
+
+
+  Sample* WW2L2Nu = new Sample("WW2L2Nu",path);
+  WW2L2Nu->setDataType("MC");
+  WW2L2Nu->setCrossection(5.824);
+  analysis->addSample(WW2L2Nu);
+
+  Sample* WZ3LNu = new Sample("WZ3LNu",path);
+  WZ3LNu->setDataType("MC");
+  WZ3LNu->setCrossection(1.058);
+  analysis->addSample(WZ3LNu);
+
+  Sample* WZ2L2Q = new Sample("WZ2L2Q",path);
+  WZ2L2Q->setDataType("MC");
+  WZ2L2Q->setCrossection(2.207);
+  analysis->addSample(WZ2L2Q);
+
+  Sample* ZZ4L = new Sample("ZZ4L",path);
+  ZZ4L->setDataType("MC");
+  ZZ4L->setCrossection(0.181);
+  analysis->addSample(ZZ4L);
+
+  Sample* ZZ2L2Nu = new Sample("ZZ2L2Nu",path);
+  ZZ2L2Nu->setDataType("MC");
+  ZZ2L2Nu->setCrossection(0.716);
+  analysis->addSample(ZZ2L2Nu);
+
+  Sample* ZZ2L2Q = new Sample("ZZ2L2Q",path);
+  ZZ2L2Q->setDataType("MC");
+  ZZ2L2Q->setCrossection(2.502);
+  analysis->addSample(ZZ2L2Q);
 
   ////SingleTop
-//   Sample* TopS = new Sample("TopS",path);
-//   TopS->setDataType("MC");
-//   TopS->setCrossection(57.1097);
-//   analysis->addSample(TopS);
-
-//   Sample* TopT = new Sample("TopT",path);
-//   TopT->setDataType("MC");
-//   TopT->setCrossection(57.1097);
-//   analysis->addSample(TopT);
-
   Sample* TopTW = new Sample("TopTW",path);
   TopTW->setDataType("MC");
   TopTW->setCrossection(11.1);
   analysis->addSample(TopTW);
-
-//   Sample* TopBS = new Sample("TopBS",path);
-//   TopBS->setDataType("MC");
-//   TopBS->setCrossection(57.1097);
-//   analysis->addSample(TopBS);
-
-//   Sample* TopBT = new Sample("TopBT",path);
-//   TopBT->setDataType("MC");
-//   TopBT->setCrossection(57.1097);
-//   analysis->addSample(TopBT);
 
   Sample* TopBTW = new Sample("TopBTW",path);
   TopBTW->setDataType("MC");
