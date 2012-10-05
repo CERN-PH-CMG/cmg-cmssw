@@ -126,7 +126,6 @@ protected:
 
   edm::InputTag diMuonVetoListTag_;
 
-
   edm::InputTag pfJetListTag_;
   std::vector<const cmg::PFJet * > fullJetList_;
   std::vector<const cmg::PFJet * > pfJetList_;
@@ -257,7 +256,6 @@ protected:
 
   //jet variables
   int njet_;
-  int njetLepLC_;
   float leadJetPt_;
   float leadJetEta_;
   float leadJetRawFactor_;
@@ -270,11 +268,37 @@ protected:
   float diJetEta1Eta2_;
   int   njetingap_;
 
+
+  //need up to 4 jets (pT20): pt, eta, phi, flavor
   int njet20_;
+  float jet20pt1_;
+  float jet20eta1_;
+  float jet20phi1_;
+  float jet20mass1_;
+  int jet20flavor1_;
+  float jet20pt2_;
+  float jet20eta2_;
+  float jet20phi2_;
+  float jet20mass2_;
+  int jet20flavor2_;
+  float jet20pt3_;
+  float jet20eta3_;
+  float jet20phi3_;
+  float jet20mass3_;
+  int jet20flavor3_;
+  float jet20pt4_;
+  float jet20eta4_;
+  float jet20phi4_;
+  float jet20mass4_;
+  int jet20flavor4_;
+
+
   int nbjet_;
   float leadBJetBTagProb_;
   float leadBJetPt_;
   float leadBJetEta_;
+
+  int njetLepLC_;
   float muLCleadJetPt_;//jets where only the muon has been removed
   float muLCleadJetEta_;
 
@@ -459,17 +483,24 @@ protected:
     vDiTauVis = vTau + vMu;
     
     TVector3 vJet1, vJet2, vDiJet;
-    vJet1.SetPtEtaPhi(leadJet_->pt(), leadJet_->eta(), leadJet_->phi());
-    vJet2.SetPtEtaPhi(subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi());
+    //vJet1.SetPtEtaPhi(leadJet_->pt(), leadJet_->eta(), leadJet_->phi());
+    //vJet2.SetPtEtaPhi(subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi());
+    vJet1.SetPtEtaPhi(jet20pt1_,jet20eta1_,jet20phi1_);
+    vJet2.SetPtEtaPhi(jet20pt2_,jet20eta2_,jet20phi2_);
+
     vDiJet = vJet1 + vJet2;
 
-    Double_t mjj = massPtEtaPhiM(leadJet_->pt(), leadJet_->eta(), leadJet_->phi(), leadJet_->mass(),subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi(), subleadJet_->mass());
-    Double_t dEta = fabs(leadJet_->eta() - subleadJet_->eta());
-    Double_t dPhi = deltaPhi(leadJet_->phi(), subleadJet_->phi());
+//     Double_t mjj = massPtEtaPhiM(leadJet_->pt(), leadJet_->eta(), leadJet_->phi(), leadJet_->mass(),subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi(), subleadJet_->mass());
+//     Double_t dEta = fabs(leadJet_->eta() - subleadJet_->eta());
+//     Double_t dPhi = deltaPhi(leadJet_->phi(), subleadJet_->phi());
+    Double_t mjj = massPtEtaPhiM(jet20pt1_,jet20eta1_,jet20phi1_,jet20mass1_,jet20pt2_,jet20eta2_,jet20phi2_,jet20mass2_);
+    Double_t dEta = fabs(jet20eta1_ - jet20eta2_);
+    Double_t dPhi = deltaPhi(jet20phi1_,jet20phi2_);
+
     Double_t dPhi_hj = deltaPhi(vDiTau.Phi(), vDiJet.Phi());
 
     // Lorenzo's variables
-    Double_t C1 = min(fabs(vDiTauVis.Eta() - leadJet_->eta()), fabs(vDiTauVis.Eta() - subleadJet_->eta()));
+    Double_t C1 = min(fabs(vDiTauVis.Eta() - jet20eta1_), fabs(vDiTauVis.Eta() - jet20eta2_));
     Double_t C2 = vDiTauVis.Pt();
     
     // Fill input vector
@@ -500,15 +531,16 @@ protected:
     vDiTauVis = vTau + vMu;
     
     TVector3 vJet1, vJet2, vDiJet;
-    vJet1.SetPtEtaPhi(leadJet_->pt(), leadJet_->eta(), leadJet_->phi());
-    vJet2.SetPtEtaPhi(subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi());
+    vJet1.SetPtEtaPhi(jet20pt1_,jet20eta1_,jet20phi1_);
+    vJet2.SetPtEtaPhi(jet20pt2_,jet20eta2_,jet20phi2_);
     vDiJet = vJet1 + vJet2;
 
-    Double_t mjj = massPtEtaPhiM(leadJet_->pt(), leadJet_->eta(), leadJet_->phi(), leadJet_->mass(),subleadJet_->pt(), subleadJet_->eta(), subleadJet_->phi(), subleadJet_->mass());
-    Double_t dEta = fabs(leadJet_->eta() - subleadJet_->eta());
+
+    Double_t mjj = massPtEtaPhiM(jet20pt1_,jet20eta1_,jet20phi1_,jet20mass1_,jet20pt2_,jet20eta2_,jet20phi2_,jet20mass2_);
+    Double_t dEta = fabs(jet20eta1_ - jet20eta2_);
 
     // Lorenzo's variables
-    Double_t C1 = min(fabs(vDiTauVis.Eta() - leadJet_->eta()), fabs(vDiTauVis.Eta() - subleadJet_->eta()));
+    Double_t C1 = min(fabs(vDiTauVis.Eta() - jet20eta1_), fabs(vDiTauVis.Eta() - jet20eta2_));
     Double_t C2 = vDiTauVis.Pt();
     
     // Fill input vector
@@ -602,7 +634,6 @@ protected:
   }
 
   void fillBJetVariables(){
-    njet20_=pfJetListBLC_.size();
     nbjet_=pfJetListBTagLC_.size();
     leadBJet_ = 0 ;
     if(nbjet_>0){
@@ -613,6 +644,66 @@ protected:
     }
     
   }
+
+  
+
+  void fillJetVariables20(){
+    njet20_=pfJetListBLC_.size();
+
+    jet20pt1_=0.;
+    jet20eta1_=0.;
+    jet20phi1_=0.;
+    jet20mass1_=0.;
+    jet20flavor1_=0.;
+    jet20pt2_=0.;
+    jet20eta2_=0.;
+    jet20phi2_=0.;
+    jet20mass2_=0.;
+    jet20flavor2_=0.;
+    jet20pt3_=0.;
+    jet20eta3_=0.;
+    jet20phi3_=0.;
+    jet20mass3_=0.;
+    jet20flavor3_=0.;
+    jet20pt4_=0.;
+    jet20eta4_=0.;
+    jet20phi4_=0.;
+    jet20mass4_=0.;
+    jet20flavor4_=0.;
+
+    if(njet20_>=1){
+      jet20pt1_=pfJetListBLC_[0]->pt();
+      jet20eta1_=pfJetListBLC_[0]->eta();
+      jet20phi1_=pfJetListBLC_[0]->phi();
+      jet20mass1_=pfJetListBLC_[0]->mass();
+      jet20flavor1_=pfJetListBLC_[0]->partonFlavour();  
+    }
+    if(njet20_>=2){
+      jet20pt2_=pfJetListBLC_[1]->pt();
+      jet20eta2_=pfJetListBLC_[1]->eta();
+      jet20phi2_=pfJetListBLC_[1]->phi();
+      jet20mass2_=pfJetListBLC_[1]->mass();
+      jet20flavor2_=pfJetListBLC_[1]->partonFlavour();  
+    }
+
+    if(njet20_>=3){
+      jet20pt3_=pfJetListBLC_[2]->pt();
+      jet20eta3_=pfJetListBLC_[2]->eta();
+      jet20phi3_=pfJetListBLC_[2]->phi();
+      jet20mass3_=pfJetListBLC_[2]->mass();
+      jet20flavor3_=pfJetListBLC_[2]->partonFlavour();  
+    }
+
+    if(njet20_>=4){
+      jet20pt4_=pfJetListBLC_[3]->pt();
+      jet20eta4_=pfJetListBLC_[3]->eta();
+      jet20phi4_=pfJetListBLC_[3]->phi();
+      jet20mass4_=pfJetListBLC_[3]->mass();
+      jet20flavor4_=pfJetListBLC_[3]->partonFlavour();  
+    }
+    
+  }
+
 
   void fillBTagWeight(){
     btagEffWeight_ = 1.;

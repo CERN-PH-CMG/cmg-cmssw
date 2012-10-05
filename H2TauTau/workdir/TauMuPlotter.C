@@ -76,7 +76,7 @@ bool TauMuPlotter::scaleSamplesLumi(){
   ////Scale the embedded samples at inclusive level:  Should there be separate scale factor for OS and SS ? --> should be Ok. ZTauTau is small in SS
   /////////////////////////////////
   cout<<"---------> Scaling Embedded samples "<<endl;
-  TString sel="eventweight*(categoryIso==1&&abs(ditaucharge)==0&&1.<ditaumass&&ditaumass<1000.)";
+  TString sel="pupWeight*(categoryIso==1&&abs(ditaucharge)==0&&1.<ditaumass&&ditaumass<1000.)";
   Float_t ZToTauTauMC=0.;  
   TH1F*hZTTMC=findSample("ZToTauTau")->getHistoNtpFile("ditaumass",10,1,1001,sel);
   ZToTauTauMC=hZTTMC->Integral();
@@ -104,7 +104,7 @@ bool TauMuPlotter::scaleSamplesLumi(){
 
 TH1F* TauMuPlotter::getSample(TString samplename){
 
-  TString sel="eventweight";
+  TString sel="pupWeight";
   if(Chcat_==1)  sel += "*(abs(ditaucharge)==0)";
   if(Chcat_==2)  sel += "*(abs(ditaucharge)==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
@@ -149,7 +149,7 @@ TH1F* TauMuPlotter::getSample(TString samplename){
 
 
 TH1F* TauMuPlotter::getTotalData(){
-  TString sel="eventweight";
+  TString sel="pupWeight";
   if(Chcat_==1)  sel += "*(abs(ditaucharge)==0)";
   if(Chcat_==2)  sel += "*(abs(ditaucharge)==2)";
   if(Isocat_>0)  sel += TString("*(categoryIso==")+(long)Isocat_+")";
@@ -185,7 +185,7 @@ TH1F* TauMuPlotter::getTotalData(){
 
 
 TH1F* TauMuPlotter::getTotalMC(){
-  TString sel="eventweight";
+  TString sel="pupWeight";
   if(Chcat_==1)  sel += "*(abs(ditaucharge)==0)";
   if(Chcat_==2)  sel += "*(abs(ditaucharge)==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
@@ -220,7 +220,7 @@ TH1F* TauMuPlotter::getTotalMC(){
 
 
 TH1F* TauMuPlotter::getTotalEmbedded(){
-  TString sel="eventweight";
+  TString sel="pupWeight";
   if(Chcat_==1)  sel += "*(abs(ditaucharge)==0)";
   if(Chcat_==2)  sel += "*(abs(ditaucharge)==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
@@ -885,7 +885,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
 
 
 TH1F* TauMuPlotter::getQCDMuIsoSM(){
-  TString sel="eventweight*(abs(ditaucharge)==0&&0.3<muiso&&muiso<0.5)";
+  TString sel="pupWeight*(abs(ditaucharge)==0&&0.3<muiso&&muiso<0.5)";
   //if(MTcat_>0)  sel += TString("*(categoryMT==")+(long)MTcat_+")";
   if(MTcat_==1)  sel += "*(transversemass<40.)";
   if(MTcat_==3)  sel += "*(transversemass>70.)";
