@@ -16,10 +16,10 @@ from CMGTools.LEP3.analyzers.EMiss import EMiss, EVis
 from CMGTools.RootTools.utils.DeltaR import deltaR
 from math import pi, sqrt, acos, asin, log
         
-class TauTauLLAnalyzer( Analyzer ):
+class TauTauLLAnalyzerPF( Analyzer ):
 
     def declareHandles(self):
-        super(TauTauLLAnalyzer, self).declareHandles()
+        super(TauTauLLAnalyzerPF, self).declareHandles()
 
         self.handles['jets'] = AutoHandle ('cmgPFJetSel',
                                            'std::vector<cmg::PFJet>')
@@ -43,7 +43,7 @@ class TauTauLLAnalyzer( Analyzer ):
 
         
     def beginLoop(self):
-        super(TauTauLLAnalyzer,self).beginLoop()
+        super(TauTauLLAnalyzerPF,self).beginLoop()
         self.counters.addCounter('TauTauLL')
         self.counters.addCounter('TauTauLLGen')
         counts = []
@@ -101,17 +101,20 @@ class TauTauLLAnalyzer( Analyzer ):
                 continue
             self.hadtaus.append(Tau(ptj))
 
+
         self.jets = []
         for ptj in self.handles['jets'].product():
             # check if they are close to jets and then remove them from the jet list
             thisjet=Jet(ptj)
             matched=False
-            for tau in self.hadtaus:
-                if deltaR(tau.eta(),tau.phi(),thisjet.eta(),this.phi()) < 0.2:
-                    matched=True
-                    break
+            # use the following if you want to remove hadtaus from jets
+#            for tau in self.hadtaus:
+#                if deltaR(tau.eta(),tau.phi(),thisjet.eta(),thisjet.phi()) < 0.2:
+#                    matched=True
+#                    break
             if not matched:
                 self.jets.append(Jet(ptj))
+
 
         self.leptons = []
         for pte in self.handles['electrons'].product():
@@ -169,8 +172,7 @@ class TauTauLLAnalyzer( Analyzer ):
         # self.leptonJets contains all jets close to a lepton
         # self.jets contains jets (if close to leptons the p4 is the one from leptons)
 
-# need to understand how buildtaulist works....
-# maybe we should treat pftaus(had) as standard leptons....
+# maybe we should treat pftaus(had) as standard leptons?
 
     def buildTauList(self,event):
             
@@ -190,17 +192,47 @@ class TauTauLLAnalyzer( Analyzer ):
         event.zLeptons = self.zLeptons
         event.zPair = llpairs[llindex]
 
-        tmpJets = set(self.jets)
-        tmpLeptons = set(event.zLeptons)
-        for leptonJet in tmpLeptons:
-            tmpJets.remove(leptonJet)
+        # define also an umatched jet list to see what is remaining
+        self.unmatch=set(self.jets)
 
+        # tau candidates (including low energy leptons)
         self.tauJets = []
-        for jet in tmpJets:
-            self.tauJets.append(jet)
+        for hadtau in self.hadtaus:
+            self.tauJets.append(hadtau)
+            for jet in self.jets:
+                if deltaR(hadtau.eta(),hadtau.phi(),jet.eta(),jet.phi()) < 0.2:
+                    self.unmatch.remove(jet)
+                    
+        for leptonJet in set(self.leptonJets):
+            if leptonJet in self.unmatch:
+                self.unmatch.remove(leptonJet)
+            if leptonJet not in event.zLeptons:
+                self.tauJets.append(leptonJet)
 
-        self.tauJets.sort(key=lambda a: a.energy(), reverse = True)
+        
+# this is before pfjets
+#        tmpJets = set(self.jets)
+#        tmpLeptons = set(event.zLeptons)
+#        for leptonJet in tmpLeptons:
+#            tmpJets.remove(leptonJet)
+
+#        self.tauJets = []
+#        for jet in tmpJets:
+#            self.tauJets.append(jet)
             
+        self.tauJets.sort(key=lambda a: a.energy(), reverse = True)
+
+        # self.tauJets is the list of jets excluding the leptons (e and mu) which pair closest to mz 
+        # self.taucand is the list of pftau + leptons (e and mu)excluding the lepton-pair closest to mz 
+        # self.unmatch contains all jets not matched with tauJets (candidates taus) and Z leptons
+        
+        
+
+
+
+
+
+
 
 ##     def buildJetList(self, event):
 
