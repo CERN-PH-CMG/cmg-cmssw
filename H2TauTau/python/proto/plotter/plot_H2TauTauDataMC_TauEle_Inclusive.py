@@ -43,6 +43,9 @@ def plotPurity (orig, num, den,plotname):
     can0.Print(plotname+'.png','png')
 
 
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
 def replaceShapeInclusive(plot, var, anaDir,
                           comp, weights, 
                           cut, weight,
@@ -67,11 +70,14 @@ def replaceShapeInclusive(plot, var, anaDir,
     # plotWithNewShape.Hist(comp.name).on = False 
     return plotWithNewShape
 
-    
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
 
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
-              cut='', weight='weight', embed=False, shift=None, replaceW=False):
+              cut='', weight='weight', embed=False, shift=None, replaceW=False,
+              useExclusiveVV=True):
     
     print 'making the plot:', var, 'cut', cut
 
@@ -118,20 +124,34 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 #        # qcd_shape.Scale( qcd_yield )
 #        osQCD.Replace('QCD', qcd_shape)
 
-    osQCD.Group('VV', ['WW','WZ','ZZ'])
+    if useExclusiveVV :
+        osQCD.Group('VV', ['WW2l2v', 'WZ2l2q', 'WZ3lv', 'ZZ2l2q', 'ZZ2l2v', 'ZZ4l'])
+        print 'grouping the exclusive samples into VV:'
+        for VV in ['WW2l2v', 'WZ2l2q', 'WZ3lv', 'ZZ2l2q', 'ZZ2l2v', 'ZZ4l'] :
+            print '    - ',VV,selComps[VV].nGenEvents, selComps[VV].xSection, selComps[VV].effCorrFactor, selComps[VV].intLumi 
+    else :
+        osQCD.Group('VV', ['WW','WZ','ZZ'])
+        print 'grouping the inclusive samples into VV'
+        for VV in ['WW','WZ','ZZ'] :
+            print '    - ',VV,selComps[VV].nGenEvents, selComps[VV].xSection, selComps[VV].effCorrFactor, selComps[VV].intLumi 
+    
     osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
     return ssign, osign, ssQCD, osQCD
 
 
-def drawAll(cut, plots, embed, selComps, weights, fwss, fwos):
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+def drawAll(cut, plots, embed, selComps, weights, fwss, fwos,useExcusiveVV):
     '''See plotinfo for more information'''
     for plot in plots.values():
         print plot.var
         ss, os, ssQ, osQ = makePlot( plot.var, anaDir,
                                      selComps, weights, fwss, fwos,
                                      plot.nbins, plot.xmin, plot.xmax,
-                                     cut, weight=weight, embed=embed)
+                                     cut, weight=weight, embed=embed,
+                                     useExclusiveVV=useExclusiveVV)
 
         osQ.legendOn = False
         print 'drawing ', plot.var
@@ -143,6 +163,7 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos):
         time.sleep(1)
 
 
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
 if __name__ == '__main__':
@@ -170,6 +191,11 @@ if __name__ == '__main__':
     parser.add_option("-E", "--embed", 
                       dest="embed", 
                       help="Use embedd samples.",
+                      action="store_true",
+                      default=False)
+    parser.add_option("-X", "--exclusiveVV", 
+                      dest="useExcusiveVV", 
+                      help="Use exclusive VV.",
                       action="store_true",
                       default=False)
     parser.add_option("-B", "--blind", 
@@ -244,6 +270,7 @@ if __name__ == '__main__':
     
     # WJet normalization
     comps = []
+    useExcusiveVV = True
     for comp in cfg.config.components:
         if comp.name == 'W3Jets': continue
         if comp.name == 'W2Jets': continue
@@ -252,6 +279,17 @@ if __name__ == '__main__':
             if comp.name == 'WJets': continue
         else:
             if comp.name == 'WJets11': continue
+        if options.useExcusiveVV :
+            if comp.name == 'WW' : continue
+            if comp.name == 'ZZ' : continue
+            if comp.name == 'WZ' : continue
+        else :
+            if comp.name == 'WW2l2v' : continue
+            if comp.name == 'WZ2l2q' : continue
+            if comp.name == 'WZ3lv' : continue
+            if comp.name == 'ZZ2l2q' : continue
+            if comp.name == 'ZZ2l2v' : continue
+            if comp.name == 'ZZ4l' : continue
         comps.append( comp )
     aliases = None
     if useW11:
@@ -352,14 +390,15 @@ if __name__ == '__main__':
     #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
     if (options.plots == 'True') :
-        drawAll(options.cut, plots_TauEle, options.embed, selComps, weights, fwss, fwos)
+        drawAll(options.cut, plots_TauEle, options.embed, selComps, weights, fwss, fwos,
+                useExclusiveVV=options.useExcusiveVV)
         #PG this does not work yet, it does not get the DY right
     else :
     
         ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, 
                                                fwss, fwos, NBINS, XMIN, XMAX, 
                                                options.cut, weight=weight, embed=options.embed, 
-                                               replaceW=replaceW )
+                                               replaceW=replaceW,useExclusiveVV=options.useExcusiveVV )
         # ssign = all cuts, same sign, before QCD estimate
         # osign = all cuts, opposite sign, before QCD estimate
         # ssQCD = all cuts, same sign, after QCD estimate, i.e. the QCD is in
