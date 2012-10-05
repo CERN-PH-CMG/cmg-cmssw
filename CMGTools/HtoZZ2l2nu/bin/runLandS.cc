@@ -372,9 +372,12 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
                }
             }
 	 }else{
-	    if(varName=="")  shape.bckg.push_back(hshape);
-	    else             shape.bckgVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
-            if(isInSignal && varName==""){BackgroundsInSignal.push_back(proc);}
+            if(isInSignal && varName==""){
+               BackgroundsInSignal.push_back(proc);
+            }else{
+   	       if(varName=="")  shape.bckg.push_back(hshape);
+	       else             shape.bckgVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
+            }
 
 	    //printf("histoName = B %i -- %i  -- %s - %s --> %s\n", i, int(varName==""), proc.Data(), histoName.Data(), hshape->GetTitle());
 	 }
