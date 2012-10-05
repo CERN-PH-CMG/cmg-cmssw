@@ -27,14 +27,25 @@ class DiObject ( TLorentzVector ):
         self.leg2 = leg2
         self.btag_ = []
         self.component_ = []
+        # protect in case non standard object (as taus...) checking with hasattr
         for i in range(8):
-            self.btag_.append ( max(self.leg1.btag(i),self.leg2.btag(i)) )
-            self.component_.append ( Component(self,i) )
+            if hasattr(leg1,"btag"):
+                self.btag_.append ( max(self.leg1.btag(i),self.leg2.btag(i)) )
+            else:
+                self.btag_.append ( -999.)
+            if hasattr(leg1,"component"):    
+                self.component_.append ( Component(self,i) )
+            else:
+                self.component_.append ( -999. )
+                
         self.pdgId_ = 0
         if self.leg1.pdgId() != 0 : self.pdgId_ = self.leg1.pdgId()
         if self.leg2.pdgId() != 0 : self.pdgId_ = self.leg2.pdgId()
             
-        self.nConstituents_ = self.leg1.nConstituents() + self.leg2.nConstituents()
+        if hasattr(leg1,"nConstituents"):
+            self.nConstituents_ = self.leg1.nConstituents() + self.leg2.nConstituents()
+        else:
+            self.nConstituents_ = -999.
 
     def __getattr__(self, name):
         '''Trick to preserve the interface in use in CMSSW.'''
