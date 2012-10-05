@@ -313,7 +313,7 @@ if __name__ == '__main__':
 
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwss_error, fwos, fwos_error, ss, os = plot_W(anaDir, selComps, weights,
-                                                        12, 70, 130, cutw,
+                                                        12, 60, 120, cutw,
                                                         weight=weight, embed=options.embed,
                                                         treeName='H2TauTauTreeProducerTauEle')
     #PG fwss = W normalization factor for the same sign plots
