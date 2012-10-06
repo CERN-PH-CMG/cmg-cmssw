@@ -103,7 +103,7 @@ def processInfo(info):
         # pid, path_name, pde, njobs, nmiss, nbad, dataset_fraction, task_id = ds
         # try to find the total number of entries in the CMS dataset
         if pde:
-            if dsInfo.primary_dataset_entries is None:
+            if dsInfo.primary_dataset_entries is None and pde!=-1:  
                 dsInfo.primary_dataset_entries=pde
             elif dsInfo.primary_dataset_entries != pde:
                 print 'WARNING! there can only be one value for primary_dataset_entries in the history of a dataset, see task',task_id 
@@ -161,7 +161,7 @@ def findAlias(path_name, aliases):
         return None
         # raise ValueError('dataset name not recognized: ' + path_name)
     match = rePatMass.search(path_name)
-    if match and name != 'DYJets':
+    if match and name.find('DYJets')==-1:
         mass = match.group(1)
         return name + mass
     else:
