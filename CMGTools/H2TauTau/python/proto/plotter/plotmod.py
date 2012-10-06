@@ -198,6 +198,19 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
     return scale_WJets, scale_WJets_error
 
 
+def w_lowHighMTRatio( var, anaDir,
+                      comp, weights, 
+                      cut, weight, lowerMTCut, upperMTCut, chargeRequirement):
+    cutWithChargeReq = ' && '.join([cut, chargeRequirement]) 
+    max = 1000
+    mt = shape(var, anaDir,
+               comp, weights, 200, 0, max,
+               cutWithChargeReq, weight,
+               None, None, None)
+    mt_low = mt.Integral(True, 0, lowerMTCut)
+    mt_high = mt.Integral(True, upperMTCut, max)
+    mt_ratio = mt_low / mt_high    
+    return mt_ratio
 
 def plot_W(anaDir,
            comps, weights, nbins, xmin, xmax,
