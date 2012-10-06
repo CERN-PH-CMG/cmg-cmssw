@@ -62,4 +62,9 @@ jsonMap = {
     #
     '/TauPlusX/Run2012C-PromptReco-v1/AOD':pr2012C,
     '/TauPlusX/Run2012C-PromptReco-v2/AOD':pr2012C,
+    #
+    # non Tau samples
+    #
+    '/DoubleMu/Run2011A-16Jan2012-v1/AOD':pr2011,
+    '/DoubleMu/Run2011B-16Jan2012-v1/AOD':pr2011,    
     }
