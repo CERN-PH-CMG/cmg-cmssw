@@ -5,7 +5,8 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA
+# from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA
+from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA2012 as VBFMVA
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 

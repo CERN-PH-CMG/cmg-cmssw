@@ -3,5 +3,6 @@
  <class name="TriggerEfficiency"/>
  <class name="QCDEstimate"/>
  <class name="VBFMVA"/>
+ <class name="VBFMVA2012"/>
 
 </lcgdict>
