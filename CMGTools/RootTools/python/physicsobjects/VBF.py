@@ -43,10 +43,16 @@ class VBF( object ):
         # visible higgs pt = di-lepton pt
         self.ptvis = visDiLepton.pt()
         ## self.ptvis = diLepton.pt()
-        self.mva = self.vbfMvaCalc.val (self.mjj, abs(self.deta), abs(self.dphi), 
-                                        self.higgsp4.pt (), self.dijetpt, 
-                                        abs (self.dphidijethiggs), 
-                                        self.visjeteta, self.ptvis) 
+        # old VBF MVA
+##         self.mva = self.vbfMvaCalc.val (self.mjj, abs(self.deta), abs(self.dphi), 
+##                                         self.higgsp4.pt (), self.dijetpt, 
+##                                         abs (self.dphidijethiggs), 
+##                                         self.visjeteta, self.ptvis) 
+        # new VBF MVA, based on 4 variables
+        self.mva = self.vbfMvaCalc.val( self.mjj,
+                                        abs(self.deta),
+                                        self.visjeteta,
+                                        self.ptvis ) 
 
 #  double mjj      , // the invariant mass of the two tag jets
 #  double dEta     , // the pseudorapidity difference between the two tag jets
