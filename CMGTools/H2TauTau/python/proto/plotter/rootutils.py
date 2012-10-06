@@ -25,6 +25,7 @@ xtitles = {
     'visMass':'m_{vis} [GeV]',
     'svfitMass':'m_{#tau#tau} [GeV]',
     'nJets':'N_{jets}',
+    'nVert':'N_{vertices}',
     'jet1_pt':'p_{T,jet1} [GeV]',
     'jet2_pt':'p_{T,jet1} [GeV]',
     'jet1_eta':'#eta_{#tau}',
@@ -221,8 +222,7 @@ def drawOfficial(plot, doBlind=True, channel='TauMu', plotprefix = None):
     if ocan is None:
         ocan = buildCanvasOfficial()
     ocan.cd()
-    plot.DrawStack('HIST')
-    # import pdb; pdb.set_trace()
+    plot.DrawStack('HIST', ymin=0.1)
     h = plot.supportHist
     h.GetXaxis().SetTitle('{xtitle}'.format(xtitle=xtitle))
     # blinding
@@ -247,7 +247,10 @@ def drawOfficial(plot, doBlind=True, channel='TauMu', plotprefix = None):
     ocan.cd()
     if plotprefix == None : plotname = plot.varName
     else : plotname = plotprefix + '_' + plot.varName
-    can.SaveAs( plotname + '.png')
+    ocan.SaveAs( plotname + '.png')
+    ocan.SetLogy()
+    ocan.SaveAs( plotname + '_log.png')
+    ocan.SetLogy(0)
 
 
 cantemp = None
