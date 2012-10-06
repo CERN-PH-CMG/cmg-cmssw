@@ -53,6 +53,9 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         #initialize mass errors
         self.massRes = MassErrors()
 
+        if  hasattr(self.cfg_ana,"FSR"):
+            self.FSR=FSRRecovery(self.cfg_ana.FSR)
+
     def declareHandles(self):
         ''' Here declare handles of all objects we possibly need
         '''
@@ -80,7 +83,6 @@ class MultiLeptonAnalyzerBase( Analyzer ):
     def buildPhotonList(self, event):
         '''Build the list of FSR photons and attach it to the event'''
         event.photons = map( Photon,self.handles['photons'].product() )
-
 
     def buildJetList(self, event):
         '''Build the list of jets and attach it to the event
@@ -148,6 +150,19 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         event.step=0
 
 
+
+        
+        #get leptons
+        self.buildLeptonList( event )
+
+        #Get photons
+        self.buildPhotonList( event )
+
+        #get jets
+        self.buildJetList(event)
+
+
+
         return True
     
 
@@ -155,22 +170,28 @@ class MultiLeptonAnalyzerBase( Analyzer ):
     #Combinatorial METHODS
     #####################################################################
 
+    def mergePairs(self,pair1,pair2):
+        quadObject =DiObjectPair(pair1.leg1, pair1.leg2,pair2.leg1,pair2.leg2)
+        if hasattr(pair1,'fsrPhoton'):
+            quadObject.leg1.setFSR(pair1.fsrPhoton)
+        if hasattr(pair2,'fsrPhoton'):
+            quadObject.leg2.setFSR(pair2.fsrPhoton)
+        quadObject.updateP4()
+        return quadObject    
+            
+        
 
-    def findPairs(self, leptons,photons):
+
+    def findPairs(self, leptons):
         '''Make combinatorics and make dilepton pairs
            Include FSR if in cfg file
         '''
         out = []
         for l1, l2 in itertools.combinations(leptons, 2):
             z = DiObject(l1, l2)
-            if not hasattr(self.cfg_ana,"FSR"):
-                out.append(z)
-            else:    
-                fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
-                fsrAlgo.setPhotons(photons)
-                fsrAlgo.setZ(z)
-                fsrAlgo.recoverZ()
-                out.append(z)
+            if hasattr(self,'FSR'):
+                self.FSR.recoverZ(z)
+            out.append(z)
         return out
 
 
@@ -181,21 +202,17 @@ class MultiLeptonAnalyzerBase( Analyzer ):
            Cut the permutation sin half
            Include FSR if in cfg file
         '''
-
         out = []
         for l1, l2,l3,l4 in itertools.permutations(leptons, 4):
             if l1.pt()>l2.pt() and l3.pt()>l4.pt():
                 quadObject =DiObjectPair(l1, l2,l3,l4)
-                if not hasattr(self.cfg_ana,"FSR"):
-                    out.append(quadObject)
-                else:    
-                    fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
-                    fsrAlgo.setPhotons(photons)
-                    fsrAlgo.setZZ(quadObject)
-                    #recover FSR photons
-                    fsrAlgo.recoverZZ()
-                    #Now Z 2
+                if  hasattr(self,"FSR"):
+                    fsrAlgo.setBoson(quadObject)
+                    fsrAlgo.attachPhotons(photons)
+                    fsrAlgo.recoverZ(quadObject.leg1)
+                    fsrAlgo.recoverZ(quadObject.leg2)
                     quadObject.updateP4()
+                if abs(quadObject.leg1.M()-91.188)<abs(quadObject.leg2.M()-91.188):    
                     out.append(quadObject)
         return out
 
@@ -231,6 +248,10 @@ class MultiLeptonAnalyzerBase( Analyzer ):
     def testLeptonLoose(self, lepton,sel=None):
         return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1.
 
+    def testLeptonGood(self, lepton,sel=None):
+        return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
+
+
     def testLeptonTight(self, lepton,sel=None):
         return abs(lepton.dxy())<0.5 and abs(lepton.dz())<1. and abs(lepton.sip3D())<4.
 
@@ -261,10 +282,21 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         iso  = muon.absEffAreaIso(self.rhoMu,self.cfg_ana.effectiveAreas)/muon.pt()<0.4 #warning:you need to set the self.rho !!!
         return self.testMuonLoose(muon) and self.testMuonPF(muon) and iso
 
+    def testMuonGood(self, muon):
+        '''Returns True if a muon passes a set of cuts.
+        Can be used in testLepton1 and testLepton2, in child classes.'''
+
+        return self.testMuonLoose(muon) and self.testMuonPF(muon) 
+
+
     def testElectronLoose(self, electron):
         looseID = electron.numberOfHits()<=1
         return looseID
 
+    def testElectronGood(self,lepton):
+        id = lepton.mvaIDZZ()
+        return id
+    
     def testElectronTight(self, electron):
         '''Returns True if a electron passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
@@ -394,6 +426,16 @@ class MultiLeptonAnalyzerBase( Analyzer ):
                 return False
         return True    
 
+    def testDiLeptonGhostSuppression(self, diLepton):
+        leptons = [diLepton.leg1, \
+                   diLepton.leg2]
+
+        for l1,l2 in itertools.combinations(leptons,2):
+            if deltaR(l1.eta(),l1.phi(),l2.eta(),l2.phi())<0.02:
+                return False
+        return True    
+
+
     def testFourLeptonMassZ2(self, fourLepton):
         return  self.testZ2Mass(fourLepton.leg2)
 
@@ -466,7 +508,7 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         
     def calculateJetObservables(self,object,jets,cleanDR = 0.5):
         #Apply ID
-        leptons = object.daughterLeptons()
+        leptons = object.daughterLeptons()+object.daughterPhotons()
 
         cleanedJets=[]
 

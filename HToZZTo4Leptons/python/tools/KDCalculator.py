@@ -22,7 +22,7 @@ class KDCalculator(object):
         if FL.M()<100:
             FL.mela=-99
             FL.pseudomela=-99
-            FL.spinrwomela=-99
+            FL.spintwomela=-99
             return
         
         l1 = ROOT.TLorentzVector(FL.leg1.leg1.px(),FL.leg1.leg1.py(),FL.leg1.leg1.pz(),FL.leg1.leg1.energy())

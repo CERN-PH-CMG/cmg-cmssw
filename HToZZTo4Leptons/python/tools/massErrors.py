@@ -6,6 +6,7 @@ from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,isNewerThan
 class MassErrors(object):
     def __init__(self):
         self.is44X = cmsswIs44X() 
+#        self.is44X = True
 
     def energyError(self,energy,p):
         return sqrt(pow(p[0]/sqrt(energy),2)+pow(p[1]/energy,2)+pow(p[2],2))

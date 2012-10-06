@@ -31,10 +31,19 @@ class EleEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
         
 
 
+    def testLeptonLoose(self, leg,sel=None):
+        return self.testElectronLoose(leg) and \
+               super( EleEleFourLeptonAnalyzer, self).testLeptonLoose( leg,sel )
+
+
 
     def testLeptonTight(self, leg,sel=None):
         return self.testElectronTight(leg) and \
                super( EleEleFourLeptonAnalyzer, self).testLeptonTight( leg,sel )
+
+    def testLeptonGood(self, leg,sel=None):
+        return self.testElectronGood(leg) and \
+               super( EleEleFourLeptonAnalyzer, self).testLeptonGood( leg,sel )
 
 
     def testFourLeptonSF(self, fourLepton):

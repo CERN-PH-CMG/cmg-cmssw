@@ -27,12 +27,12 @@ class KD
 		   TLorentzVector Z2_lept1, int Z2_lept1Id,
 		   TLorentzVector Z2_lept2, int Z2_lept2Id,
 		   bool withPt = false,
-		   bool withY = false,
-		   int LHCsqrts = 8) {
+		    bool withY = false) {
+
     
     float melaKD,melaS,melaB;
     mela_->computeKD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,
-		    costhetastar_,costheta1_,costheta2_,phi_,phistar1_,melaKD,melaS,melaB,withPt,withY,LHCsqrts);
+		     costhetastar_,costheta1_,costheta2_,phi_,phistar1_,melaKD,melaS,melaB,withPt,withY);
     return melaKD;
   }
 

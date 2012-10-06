@@ -68,6 +68,13 @@ class DiObject( TLorentzVector ):
     def daughterLeptons(self):
         return [self.leg1,self.leg2]
 
+    def daughterPhotons(self):
+        if hasattr(self,'fsrPhoton'):
+            return [self.fsrPhoton]
+        else:
+            return []
+    
+
 
 
 ############FSR variables
