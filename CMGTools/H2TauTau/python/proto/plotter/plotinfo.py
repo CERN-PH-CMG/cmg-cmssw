@@ -1,3 +1,6 @@
+from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass,  binning_svfitMass_finer
+
+
 class PlotInfo(object):
     def __init__(self, var, nbins, xmin, xmax):
         self.var = var
@@ -7,22 +10,64 @@ class PlotInfo(object):
         
 
 plots_All = {
+    'l2_pt': PlotInfo('l2_pt', 100, 0, 200),
+    'l2_eta': PlotInfo('l2_eta', 50, -3, 3),
+    'l2_relIso05': PlotInfo('l2_relIso05', 50, 0, 0.1),
+    'l1_pt': PlotInfo('l1_pt', 100, 0, 200),
+    'l1_eta': PlotInfo('l1_eta', 50, -3, 3),
+    # 'mt': PlotInfo('mt', 50, 0, 150),
+    'visMass': PlotInfo('visMass', 50, 0, 200),
+    'svfitMass': PlotInfo('svfitMass', 50, 0, 300),
+    'nJets': PlotInfo('nJets', 7, 0, 7),
+    'nVert': PlotInfo('nVert', 50, 0, 50)
+    }
+
+plots_J0 = {
+    'l2_pt': PlotInfo('l2_pt', 100, 0, 200),
+    'l2_eta': PlotInfo('l2_eta', 50, -3, 3),
+    'l2_relIso05': PlotInfo('l2_relIso05', 50, 0, 0.1),
+    'l1_pt': PlotInfo('l1_pt', 100, 0, 200),
+    'l1_eta': PlotInfo('l1_eta', 50, -3, 3),
+    # 'mt': PlotInfo('mt', 50, 0, 150),
+    'visMass': PlotInfo('visMass', binning_svfitMass_finer, None, None),
+    'svfitMass': PlotInfo('svfitMass', binning_svfitMass_finer, None, None),
+    }
+
+plots_J0_high = {
     'l2_pt': PlotInfo('l2_pt', 50, 0, 200),
     'l2_eta': PlotInfo('l2_eta', 20, -3, 3),
     'l2_relIso05': PlotInfo('l2_relIso05', 50, 0, 0.1),
     'l1_pt': PlotInfo('l1_pt', 50, 0, 200),
     'l1_eta': PlotInfo('l1_eta', 20, -3, 3),
     # 'mt': PlotInfo('mt', 50, 0, 150),
-    'visMass': PlotInfo('visMass', 30, 0, 210),
-    'svfitMass': PlotInfo('svfitMass', 30, 0, 300),
-    'nJets': PlotInfo('nJets', 5, 0, 5),
-    'nVert': PlotInfo('nVert', 20, 0, 40)
+    'visMass': PlotInfo('visMass', binning_svfitMass_finer, None, None),
+    'svfitMass': PlotInfo('svfitMass', binning_svfitMass_finer, None, None),
     }
 
 plots_J1 = {
+    'l2_pt': PlotInfo('l2_pt', 40, 0, 200),
+    'l2_eta': PlotInfo('l2_eta', 20, -3, 3),
+    'l2_relIso05': PlotInfo('l2_relIso05', 50, 0, 0.1),
+    'l1_pt': PlotInfo('l1_pt', 40, 0, 200),
+    'l1_eta': PlotInfo('l1_eta', 20, -3, 3),
+    # 'mt': PlotInfo('mt', 25, 0, 150),
+    'visMass': PlotInfo('visMass', binning_svfitMass_finer, None, None),
+    'svfitMass': PlotInfo('svfitMass', binning_svfitMass_finer, None, None),
     'jet1_pt': PlotInfo('jet1_pt', 30, 0, 300),
-    'jet1_eta': PlotInfo('jet1_eta', 10, -5, 5),
-    'svfitMass': PlotInfo('svfitMass', 30, 0, 300)    
+    'jet1_eta': PlotInfo('jet1_eta', 25, -5, 5),
+    }
+
+plots_J1_high = {
+    'l2_pt': PlotInfo('l2_pt', 40, 0, 200),
+    'l2_eta': PlotInfo('l2_eta', 20, -3, 3),
+    'l2_relIso05': PlotInfo('l2_relIso05', 50, 0, 0.1),
+    'l1_pt': PlotInfo('l1_pt', 40, 0, 200),
+    'l1_eta': PlotInfo('l1_eta', 20, -3, 3),
+    # 'mt': PlotInfo('mt', 20, 0, 150),
+    'visMass': PlotInfo('visMass', binning_svfitMass_finer, None, None),
+    'svfitMass': PlotInfo('svfitMass', binning_svfitMass_finer, None, None),
+    'jet1_pt': PlotInfo('jet1_pt', 30, 0, 300),
+    'jet1_eta': PlotInfo('jet1_eta', 25, -5, 5),
     }
 
 plots_J2 = {
