@@ -110,6 +110,7 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
     #SYNC with JOSH: remove the following line
     wjet.Add(mtplot.Hist('Ztt'), -1)
     removingFakes = False
+    #COLIN why a try block?
     try:
         #SYNC with JOSH: replace the following 4 lines by pass
         f1 = mtplot.Hist('Ztt_ZL')
@@ -121,6 +122,7 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
         pass
     # FIXME
     wjet.Add(mtplot.Hist('TTJets'), -1)
+    #COLIN need to subtract VV
 
     # adding the WJets_data estimation to the stack
     mtplot.AddHistogram( 'Data - DY - TT', wjet.weighted, 1010)
