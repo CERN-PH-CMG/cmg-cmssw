@@ -99,6 +99,9 @@ class DiObjectPair( TLorentzVector ):
     def daughterLeptons(self):
         return [self.leg1.leg1,self.leg1.leg2,self.leg2.leg1,self.leg2.leg2]
 
+    def daughterPhotons(self):
+        return self.leg1.daughterPhotons()+self.leg2.daughterPhotons()
+
 
 
         ###MELA#########################################

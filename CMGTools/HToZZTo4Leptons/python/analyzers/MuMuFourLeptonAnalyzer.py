@@ -51,6 +51,10 @@ class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer):
         return self.testMuonLoose(leg) and \
                super( MuMuFourLeptonAnalyzer, self).testLeptonLoose( leg,sel )
 
+    def testLeptonGood(self, leg,sel=None):
+        return self.testMuonGood(leg) and \
+               super( MuMuFourLeptonAnalyzer, self).testLeptonGood( leg,sel )
+
     def testLeptonTight(self, leg,sel=None):
         return self.testMuonTight(leg) and \
                super( MuMuFourLeptonAnalyzer, self).testLeptonTight( leg,sel ) 
