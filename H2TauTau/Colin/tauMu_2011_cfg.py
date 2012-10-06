@@ -74,6 +74,11 @@ dyJetsFakeAna = cfg.Analyzer(
     leptonType = 13
     )
 
+WNJetsAna = cfg.Analyzer(
+    'WNJetsAnalyzer',
+    verbose = False
+    )
+
 higgsWeighter = cfg.Analyzer(
     'HiggsPtWeighter',
     )
@@ -107,7 +112,8 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
-    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.44X.xml',
+    # vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.44X.xml',
+    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_42X.weights.xml',
     jetCol = 'cmgPFJetSel',
     jetPt = 30,
     jetEta = 5.0,
@@ -133,7 +139,7 @@ from CMGTools.H2TauTau.proto.samples.tauMu_ColinSep20 import *
 #########################################################################################
 
 
-MC_list = [WJets, DYJets, TTJets]
+MC_list = [WJets, DYJets, TTJets, HiggsVBF125]
 # MC_list = copy.copy(MC)
 data_list = copy.copy(data_list_2011)
 embed_list = copy.copy(embed_list_2011)
@@ -191,6 +197,7 @@ sequence = cfg.Sequence( [
     vertexAna,
     TauMuAna,
     dyJetsFakeAna,
+    WNJetsAna, 
     higgsWeighter, 
     vbfAna,
     embedWeighter, 
@@ -203,9 +210,9 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 0
+test = 1
 if test==1:
-    comp = DYJets
+    comp = HiggsVBF125
     comp.files = comp.files[:2]
     selectedComponents = [comp]
     comp.splitFactor = 1
