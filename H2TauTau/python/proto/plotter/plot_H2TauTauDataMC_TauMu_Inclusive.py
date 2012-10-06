@@ -15,7 +15,7 @@ from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
 from CMGTools.H2TauTau.proto.plotter.datacards import *
 from CMGTools.H2TauTau.proto.plotter.embed import *
-from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, PlotInfo
+from CMGTools.H2TauTau.proto.plotter.plotinfo import *
 from CMGTools.RootTools.Style import *
 from ROOT import kPink, TH1, TPaveText, TPad
 
@@ -87,7 +87,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
     # import pdb; pdb.set_trace()
-    if 1:
+    if 0:
         # replace QCD with a shape obtained from data in an anti-iso control region
         qcd_yield = osQCD.Hist('QCD').Integral()
         
@@ -108,7 +108,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
     return ssign, osign, ssQCD, osQCD
 
 
-def drawAll(cut, plots, embed):
+def drawAll(cut, plots, embed=True):
     '''See plotinfo for more information'''
     for plot in plots.values():
         print plot.var
@@ -116,7 +116,7 @@ def drawAll(cut, plots, embed):
                                      selComps, weights, fwss, fwos,
                                      plot.nbins, plot.xmin, plot.xmax,
                                      cut, weight=weight, embed=embed)
-        draw(osQ, False)
+        drawOfficial(osQ, False)
         plot.ssign = cp(ss)
         plot.osign = cp(os)
         plot.ssQCD = cp(ssQ)
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
-    replaceW = True
+    replaceW = False
     useW11 = False
     
     anaDir = args[0].rstrip('/')
@@ -242,7 +242,7 @@ if __name__ == '__main__':
     #SYNC WITH JOSH: he subtracts only TT and VV
     #SYNC VBF MT CONTROL: from 60 to 120
     fwss, fwsserr, fwos, fwoserr, ss, os = plot_W( anaDir, selComps, weights,
-                                                   24, 70, 310, cutw,
+                                                   25, 70, 970, cutw,
                                                    weight=weight, embed=options.embed)
 
 
