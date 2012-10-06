@@ -42,7 +42,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         
         super(H2TauTauDataMC, self).__init__(varName, directory, weights)
 
-        self.legendBorders = 0.651, 0.463, 0.895, 0.892
+        self.legendBorders = 0.68, 0.68, 0.89, 0.89
 
         self.dataComponents = [ key for key, value in selComps.iteritems() \
                                 if value.isData is True ]
