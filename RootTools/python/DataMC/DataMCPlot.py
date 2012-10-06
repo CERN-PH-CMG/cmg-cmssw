@@ -18,6 +18,7 @@ class DataMCPlot(object):
     def __init__(self, name):
         self.histosDict = {}
         self.histos = []
+        self.supportHist = None
         self.name = name
         self.stack = None
         self.legendOn = True
@@ -304,9 +305,13 @@ class DataMCPlot(object):
             if self.blindminx:
                 hist.Blind(self.blindminx, self.blindmaxx)
             hist.Draw()
+            if not self.supportHist:
+                self.supportHist = hist
             if not self.axisWasSet:
                 max =  hist.weighted.GetBinContent(hist.weighted.GetMaximumBin())
-                hist.GetYaxis().SetRangeUser(0.01, max*1.3)
+                if ymin is None: ymin = 0.01
+                if ymax is None: ymax = max*1.3
+                hist.GetYaxis().SetRangeUser(ymin, ymax)
                 self.axisWasSet = True
         self.stack.Draw(opt+same,
                         xmin=xmin, xmax=xmax,
