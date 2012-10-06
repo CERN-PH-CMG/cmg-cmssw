@@ -1,5 +1,6 @@
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
+# working points from Matthew, Oct 6
 VBF_mva_WP = 0.676
 if isNewerThan('CMSSW_5_2_0'):
     VBF_mva_WP = 0.978

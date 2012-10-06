@@ -57,6 +57,7 @@ def replaceShapeInclusive(plot, var, anaDir,
     
 
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
+              w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio,
               nbins=None, xmin=None, xmax=None,
               cut='', weight='weight', embed=False, shift=None, replaceW=False):
     
@@ -67,7 +68,10 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            selComps, weights, nbins, xmin, xmax,
                            cut=oscut, weight=weight, shift=shift,
                            embed=embed)
-    osign.Hist(EWK).Scale( wJetScaleOS )
+    osign.Hist(EWK).Scale( wJetScaleOS ) # * w_mt_ratio / w_mt_ratio_os )
+    if cut.find('mt<')!=-1:
+        print 'correcting high->low mT extrapolation factor, OS', w_mt_ratio / w_mt_ratio_os
+        osign.Hist(EWK).Scale( w_mt_ratio / w_mt_ratio_os )
     if replaceW:
         osign = replaceShapeInclusive(osign, var, anaDir,
                                       selComps['WJets'], weights, 
@@ -78,7 +82,10 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            selComps, weights, nbins, xmin, xmax,
                            cut=sscut, weight=weight, shift=shift,
                            embed=embed)
-    ssign.Hist(EWK).Scale( wJetScaleSS ) 
+    ssign.Hist(EWK).Scale( wJetScaleSS )
+    if cut.find('mt<')!=-1:
+        print 'correcting high->low mT extrapolation factor, SS', w_mt_ratio / w_mt_ratio_ss
+        ssign.Hist(EWK).Scale( w_mt_ratio / w_mt_ratio_ss  ) 
     if replaceW:
         ssign = replaceShapeInclusive(ssign, var, anaDir,
                                       selComps['WJets'], weights, 
@@ -86,7 +93,6 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                                       embed, shift)
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
-    # import pdb; pdb.set_trace()
     if 0:
         # replace QCD with a shape obtained from data in an anti-iso control region
         qcd_yield = osQCD.Hist('QCD').Integral()
@@ -238,14 +244,22 @@ if __name__ == '__main__':
 
     can, pad, padr = buildCanvas()
     ocan = buildCanvasOfficial()
+
+    # WARNINGG!!! if mt cut is optimized, this needs to change.
+    highMTCut = 70
+    lowMTCut = 40
     cutw = options.cut.replace('mt<40', '1')
     #SYNC WITH JOSH: he subtracts only TT and VV
     #SYNC VBF MT CONTROL: from 60 to 120
     fwss, fwsserr, fwos, fwoserr, ss, os = plot_W( anaDir, selComps, weights,
-                                                   25, 70, 970, cutw,
+                                                   25, highMTCut, 970, cutw,
                                                    weight=weight, embed=options.embed)
 
+    w_mt_ratio_ss = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cutw, weight, lowMTCut, highMTCut, 'diTau_charge!=0');
+    w_mt_ratio_os = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cutw, weight, lowMTCut, highMTCut, 'diTau_charge==0');
+    w_mt_ratio = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cutw, weight, lowMTCut, highMTCut, '1');
+    
 
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, shift=shift, replaceW=replaceW); drawOfficial(osQCD)
+    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, shift=shift, replaceW=replaceW); draw(osQCD)
       
     datacards(osQCD, cutstring, shift)
