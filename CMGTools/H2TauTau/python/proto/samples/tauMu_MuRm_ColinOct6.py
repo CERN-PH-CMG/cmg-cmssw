@@ -38,7 +38,8 @@ aliases = {
     
 allsamples = [DYJetsMuRm, WJets, data_Run2011A_MuRm, data_Run2011B_MuRm]
 
-connect( allsamples, '%TAUMU_%MuRm_ColinSep28', 'tauMu.*root', aliases, cache=True, verbose=False)
+# connect( allsamples, '%TAUMU_%MuRm_ColinSep28', 'tauMu.*root', aliases, cache=True, verbose=False)
+connect( allsamples, '%TAUMU_MuRm_rlxTauIso_ColinOct6', 'tauMu.*root', aliases, cache=True, verbose=False)
 
 MC_list = [DYJetsMuRm, WJets]
 data_list_2011 = [data_Run2011A_MuRm, data_Run2011B_MuRm]
