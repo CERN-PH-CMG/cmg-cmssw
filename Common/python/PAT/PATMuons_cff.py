@@ -49,7 +49,7 @@ patMuons.isolationValues = cms.PSet(
     user = cms.VInputTag( cms.InputTag("muIsoFromDepsTkOptimized") )
     )
 
-selectedPatMuons.cut = 'pt()>3'
+selectedPatMuons.cut = 'pt()>0'
 
 from CMGTools.Common.PAT.patMuonsWithPF_cfi import * 
 from CMGTools.Common.PAT.patMuonsWithMVA_cfi import * 

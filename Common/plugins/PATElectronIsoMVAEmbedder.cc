@@ -70,7 +70,7 @@ PATElectronIsoMVAEmbedder::PATElectronIsoMVAEmbedder(const edm::ParameterSet& ps
                                  EGammaMvaEleEstimator::kIsoRings,
                                  true,
                                  eleiso_weightfiles) ;
-  fElectronIsoMVA_->SetPrintMVADebug (kFALSE) ;
+
 
   produces<pat::ElectronCollection>();
 
