@@ -11,7 +11,7 @@ db = CmgdbApi()
 db.connect()
 
 def findFirstAncestor(dataset_id, info):
-    cols, rows = db.sql("select parent_dataset_id, path_name, primary_dataset_entries, number_total_jobs, task_id FROM dataset_details where dataset_id={dataset_id}".format(dataset_id=dataset_id))
+    cols, rows = db.sql("select parent_dataset_id, path_name, primary_dataset_entries, number_total_jobs, task_id, dataset_entries FROM dataset_details where dataset_id={dataset_id}".format(dataset_id=dataset_id))
     if len(rows)==0:
         print 'cannot find dataset with id', dataset_id
     elif len(rows)>1:
@@ -39,6 +39,7 @@ def findFirstAncestor(dataset_id, info):
             number_files_bad = number_files_bad,
             number_files_missing = number_files_missing,
             task_id = rows[0][4],
+            dataset_entries = rows[0][5],
             dataset_fraction = dataset_fraction
             )
         
@@ -102,16 +103,19 @@ def processInfo(info):
         task_id = ds['task_id']
         # pid, path_name, pde, njobs, nmiss, nbad, dataset_fraction, task_id = ds
         # try to find the total number of entries in the CMS dataset
-        if pde:
-            if dsInfo.primary_dataset_entries is None and pde!=-1:  
+        if pde>0:
+            if dsInfo.primary_dataset_entries is None:  
                 dsInfo.primary_dataset_entries=pde
             elif dsInfo.primary_dataset_entries != pde:
                 print 'WARNING! there can only be one value for primary_dataset_entries in the history of a dataset, see task',task_id 
+        else:
+            print 'WARNING! primary_dataset_entries==-1'
         # which step is that?
         base = os.path.basename(path_name)
         fraction = dataset_fraction
         if reTAU.match(base):
             step = 'TAUTAU'
+            dsInfo.dataset_entries = ds['dataset_entries']
         elif rePatPFAOD.match(base):
             step = 'PFAOD'
         elif rePatPATCMG.match(base):
@@ -141,7 +145,8 @@ def processInfo(info):
                              jobeff=job_eff,
                              fraction=fraction,
                              skim=skim,
-                             task_id=task_id
+                             task_id=task_id,
+                             pde = pde
                              )
                        )
         # pprint.pprint( dsInfo[-1] ) 
@@ -183,16 +188,22 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
         print 'WARNING: cannot find alias for', path_name
         return False
     globalEff = 1.
-    nEvents = dsInfo.primary_dataset_entries 
+    nEvents = dsInfo.primary_dataset_entries
     taskurl = 'https://savannah.cern.ch/task/?{task_id}'.format(task_id=dsInfo[0]['task_id'])
     for step in dsInfo:
+        eff = 0.
         if step['step']=='TAUTAU':
             eff = step['jobeff']
         elif step['step']=='PATCMG':
             eff = step['fraction']
+        elif step['step']=='PFAOD':
+            eff = 1.0
         else:
-            continue
-        try:
+            eff = None
+        if eff is None:
+            print 'WARNING: efficiency not determined.'
+            eff = 0.0
+        try: 
             globalEff *= eff
         except TypeError:
             pprint.pprint(dsInfo)
@@ -207,10 +218,18 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
         # import pdb; pdb.set_trace()
         return False
     comp = comps[0]
+    comp.dataset_entries = dsInfo.dataset_entries
     if not ( comp.name.startswith('data_') or \
              comp.name.startswith('embed_') ):
         comp.nGenEvents = nEvents
-        comp.nGenEvents *= globalEff
+        if comp.nGenEvents is None:
+            print 'WARNING: nGenEvents is None, setting it to 1.'            
+            comp.nGenEvents = 1.
+        if comp.nGenEvents != 1.:
+            comp.nGenEvents *= globalEff
+        else:
+            globalEff = -1.
+            comp.nGenEvents = 0
     print 'LOADING:', comp.name, path_name, nEvents, globalEff, taskurl
     # print dsInfo
     comp.files = getFiles(path_name, file_owner, filePattern, cache)
@@ -220,7 +239,7 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
             print dsInfo
     else:
         if globalEff<0.9:
-            print 'WEIRD! Efficiency is way too low! you might have to edit your cfg manually.'
+            print 'WEIRD! Efficiency is way too low ({globalEff})! you might have to edit your cfg manually.'.format(globalEff=globalEff)
             print dsInfo
 
     
