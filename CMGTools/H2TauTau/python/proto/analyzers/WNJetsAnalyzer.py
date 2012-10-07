@@ -2,6 +2,9 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
 from CMGTools.RootTools.utils.DeltaR import matchObjectCollection
 from CMGTools.RootTools.physicsobjects.genutils import *
+from CMGTools.RootTools.statistics.Average import Average
+
+from ROOT import TFile, TH1F
 
 class WNJetsAnalyzer( Analyzer ):
 #class WNJetsAnalyzer( GenParticleAnalyzer ):
@@ -18,15 +21,19 @@ class WNJetsAnalyzer( Analyzer ):
 
     def beginLoop(self):
         super(WNJetsAnalyzer,self).beginLoop()        
-
-
+        self.averages.add('NUP', Average('NUP') )
+        self.averages.add('NJets', Average('NJets') )
+        if self.cfg_comp.isMC:
+            self.rootfile = TFile('/'.join([self.dirName,
+                                            'NUP.root']),
+                                  'recreate')
+            self.nup = TH1F('nup', 'nup', 20,0,20)
+            self.njets = TH1F('njets', 'njets', 10,0,10)
+        
+        
     def process(self, iEvent, event):
         event.NUP = -1
-        try :
-            self.readCollections( iEvent )
-        except :
-            print 'WARNING source not available'
-            return True
+        self.readCollections( iEvent )
         
         if not self.cfg_comp.isMC:
             return True
@@ -38,8 +45,15 @@ class WNJetsAnalyzer( Analyzer ):
         else:
             event.NUP = -1
 
+        self.averages['NUP'].add( event.NUP )
+        # removing the 2 incoming partons, a boson,
+        # and the 2 partons resulting from the decay of a boson
+        njets = event.NUP-5
+        self.averages['NJets'].add( njets )
+        self.nup.Fill(event.NUP)
+        self.njets.Fill(njets)
+        
         if self.cfg_ana.verbose:
-            # import pdb; pdb.set_trace()
             print 'NUP : ',event.NUP
         return True
     
@@ -51,3 +65,9 @@ class WNJetsAnalyzer( Analyzer ):
             'source',
             'LHEEventProduct'
             )
+        
+    def write(self):
+        super(WNJetsAnalyzer, self).write()
+        if self.cfg_comp.isMC:
+            self.rootfile.Write()
+            self.rootfile.Close()
