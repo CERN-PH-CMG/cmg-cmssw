@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # cut = cat_Inc_RlxTauIso + '&& nJets20>0'
     cut = cat_Inc_RlxTauIso
 
-    if 0:
+    if 1:
         h1, h2 = draw('mt',cat_Inc, trees['t1'], trees['t2'])
         mtrw = ReWeighter('mt', h1, h2)
         weightFile = shelve.open('weights.txt')

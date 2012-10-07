@@ -139,51 +139,10 @@ from CMGTools.H2TauTau.proto.samples.tauMu_ColinSep20 import *
 #########################################################################################
 
 
-MC_list = [WJets, DYJets, TTJets, HiggsVBF125]
+MC_list = [WJets, W3Jets, DYJets, TTJets, HiggsVBF125, WW, WZ, ZZ]
 # MC_list = copy.copy(MC)
 data_list = copy.copy(data_list_2011)
 embed_list = copy.copy(embed_list_2011)
-
-for mc in MC_list:
-    mc.splitFactor = 10
-    if mc.name.find('DYJets')!=-1:
-        mc.splitFactor = 100
-        mc.fakes = True
-    elif mc.name.find('WJets')!=-1:
-        mc.splitFactor = 50
-    elif mc.name.find('W2Jets')!=-1:
-        mc.splitFactor = 50
-    elif mc.name.find('W3Jets')!=-1:
-        mc.splitFactor = 25
-    elif mc.name.find('TTJets')!=-1:
-        mc.splitFactor = 200
-    elif mc.name.find('WW')!=-1 or \
-         mc.name.find('WZ')!=-1 or \
-         mc.name.find('ZZ')!=-1:
-        mc.splitFactor = 50
-    elif mc.name.find('HiggsVBF120')!=-1 or \
-         mc.name.find('HiggsGGH120')!=-1 or \
-         mc.name.find('HiggsVH120')!=-1:
-        mc.splitFactor = 50
-    elif mc.name.find('HiggsVBF150')!=-1 or \
-         mc.name.find('HiggsGGH150')!=-1 or \
-         mc.name.find('HiggsVH150')!=-1:
-        mc.splitFactor = 30
-for emb in embed_list:
-    emb.splitFactor = 10
-
-
-data_Run2011A_May10ReReco_v1.splitFactor = 50
-data_Run2011A_PromptReco_v4.splitFactor = 200
-data_Run2011A_05Aug2011_v1.splitFactor = 50
-data_Run2011A_03Oct2011_v1.splitFactor = 50
-data_Run2011B_PromptReco_v1.splitFactor = 100
-
-embed_Run2011A_May10ReReco_v1.splitFactor = 5
-embed_Run2011A_PromptReco_v4.splitFactor = 5
-embed_Run2011A_05Aug2011_v1.splitFactor = 5
-embed_Run2011A_03Oct2011_v1.splitFactor = 5
-embed_Run2011B_PromptReco_v1.splitFactor = 20
 
 selectedComponents =  copy.copy(MC_list)
 selectedComponents.extend( data_list )
@@ -210,13 +169,16 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 1
+test = 0
 if test==1:
     comp = HiggsVBF125
     comp.files = comp.files[:2]
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:
+    selectedComponents = [MC_list[0]]
+    selectedComponents.extend(data_list)
+    selectedComponents.extend(embed_list)
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:5]
