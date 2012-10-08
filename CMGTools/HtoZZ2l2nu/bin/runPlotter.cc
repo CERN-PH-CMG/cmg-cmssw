@@ -131,6 +131,12 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
               string FileName = RootDir + (Samples[id])["dtag"].toString() + segmentExt + filtExt + ".root";
               printf("Adding all objects from %25s to the list of considered objects\n",  FileName.c_str());
 	      TFile* file = new TFile(FileName.c_str());
+	      if(file->IsZombie())
+		{
+		  if(isData) dataProcessed--;
+		  if(isSign) signProcessed--;
+		  if(isMC) bckgProcessed--;
+		}
 	      GetListOfObject(Root,RootDir,histlist,(TDirectory*)file,"" );
 	      file->Close();
 	    }

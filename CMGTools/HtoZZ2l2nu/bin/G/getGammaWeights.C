@@ -111,18 +111,18 @@ void getGammaWeights(string inputFile="plotter.root",string varName="qt",int mod
 	  //get the histos 
 	  string pName=dilCats[id]+cats[ic]+"_"+varName;
 	  TH1F *hdy   = 0;
-	  if(mode != ONLYMC )  { hdy   = (TH1F *) getObjectFromPath(fin,dyDir+"/"+pName,true);   if(hdy==0) continue;  hdy->SetDirectory(0);   }
+	  if(mode != ONLYMC )  { hdy   = (TH1F *) getObjectFromPath(fin,dyDir+"/"+pName,true);   if(hdy==0)   { if(mode==ONLYDATA) continue; } else hdy->SetDirectory(0);   }
 	  TH1F *hmcdy = 0;
-	  if(mode != ONLYDATA) { hmcdy = (TH1F *) getObjectFromPath(fin,dymcDir+"/"+pName,true); if(hmcdy==0) { if(mode==ONLYMC) continue; } else hmcdy->SetDirectory(0); }
+	  if(mode != ONLYDATA) { hmcdy = (TH1F *) getObjectFromPath(fin,dymcDir+"/"+pName,true); if(hmcdy==0) { if(mode==ONLYMC) continue; }   else hmcdy->SetDirectory(0); }
 
 	  //DERIVE WEIGHTS
 	  string gPName(pName);
 	  TH1F *hg    = 0;
 	  TH1F *hDataWgts = 0;
 	  
-	  if(mode!=ONLYMC)
+	  if(mode!=ONLYMC &&  hdy)
 	    {
-	      cout << " ----> " <<  gDir << endl;
+	      cout << __LINE__ << endl;
 	      hg = (TH1F *) getObjectFromPath(fin,gDir+"/"+gPName,true);
 	      if(hg)
 		{
@@ -155,8 +155,9 @@ void getGammaWeights(string inputFile="plotter.root",string varName="qt",int mod
 	    }
 	  
 	  //MC
-	  if(mode != ONLYDATA)
+	  if(mode != ONLYDATA && hmcdy)
 	    {
+	      cout << __LINE__ << endl;
 	      TH1F *hmcg=0;
 	      TH1F *hMCwgts=0;
 	      TH1F *hMCfitWgts=0; 
@@ -170,8 +171,8 @@ void getGammaWeights(string inputFile="plotter.root",string varName="qt",int mod
 	      
 	      //SIMPLE RATIO
 	      //reweight to ZpT observed
-	      if(mode==ONLYMC && hmcdy) hMCwgts   = (TH1F *) hmcdy->Clone((pName+"_mcwgts").c_str()); 
-	      else if (hdy)             hMCwgts   = (TH1F *) hdy->Clone((pName+"_mcwgts").c_str()); 
+	      if((mode==ONLYMC && hmcdy) || hdy==0) hMCwgts   = (TH1F *) hmcdy->Clone((pName+"_mcwgts").c_str()); 
+	      else if (hdy)                         hMCwgts   = (TH1F *) hdy->Clone((pName+"_mcwgts").c_str()); 
 	      if(hMCwgts)
 		{
 		  hMCwgts->SetDirectory(0);   
@@ -181,24 +182,27 @@ void getGammaWeights(string inputFile="plotter.root",string varName="qt",int mod
 		
 	      if(varName=="qt")
 		{
-		  
+		  cout << __LINE__ << endl;
 		  //PARAMETRIZED ZPT
 		  //reset parameterization for boson pt
 		  if(hmcdy)
 		    {
-		      hMCfitWgts   = (TH1F *) hmcdy->Clone((pName+"_mcfitwgts").c_str()); 
-		      hMCfitWgts->SetDirectory(0);  
-		      hMCfitWgts->Reset("ICE");
-		      TGraph *splHdy=0;
-		      if(mode==ONLYMC && hmcdy)  { splHdy=new TGraph(hmcdy); }
-		      else if (hdy)              { splHdy=new TGraph(hdy); }
-		      //if(mode==ONLYMC && hmcdy)  { resetQtFitFunc(hmcdy); hmcdy->Fit(qtFitFunc,"MER+"); }
-		      //else if (hdy)              { resetQtFitFunc(hdy);   hdy->Fit(qtFitFunc,"MER+");   }
-		      //for(int ibin=1; ibin<=hMCfitWgts->GetXaxis()->GetNbins(); ibin++) hMCfitWgts->SetBinContent(ibin,qtFitFunc->Eval(hMCfitWgts->GetBinCenter(ibin)));
-		      for(int ibin=1; ibin<=hMCfitWgts->GetXaxis()->GetNbins(); ibin++) hMCfitWgts->SetBinContent(ibin,splHdy->Eval(hMCfitWgts->GetBinCenter(ibin),0,"S"));
-		      hMCfitWgts->Divide(hmcg);
-		      if(splHdy) delete splHdy;
-		      mcWgts.push_back(hMCfitWgts);
+		      float firstXParam(120.);
+		      hmcdy->Fit("landau","WLMER+","",firstXParam,hmcdy->GetXaxis()->GetXmax());
+		      TF1 *hmcdyParam=(TF1 *) hmcdy->GetFunction("landau");
+		      hmcg->Fit("landau","WLMER+","",firstXParam,hmcg->GetXaxis()->GetXmax());
+		      TF1 *hmcgParam=(TF1 *) hmcg->GetFunction("landau");
+		      
+		      int firstParamBin=hmcdy->GetXaxis()->FindBin(firstXParam);
+		      cout << hMCwgts << " " << hmcdyParam << " " << hmcgParam << endl;
+		      TH1F *hMCFitWgts = (TH1F *)hMCwgts->Clone((pName+"_mcfitwgts").c_str()); 
+		      hMCFitWgts->SetDirectory(0);
+		      for(int ibin=firstParamBin; ibin<=hMCFitWgts->GetXaxis()->GetNbins(); ibin++) 
+			{
+			  float x= hMCFitWgts->GetXaxis()->GetBinCenter(ibin);
+			  hMCFitWgts->SetBinContent(ibin, hmcdyParam->Eval(x)/hmcgParam->Eval(x) );
+			}
+		      mcWgts.push_back(hMCFitWgts);
 		    }
 		}
 	    }
