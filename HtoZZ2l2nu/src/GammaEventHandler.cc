@@ -21,7 +21,7 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
       if(fwgt)
 	{
 	  TString wgtName("qt");
-	  TString wgtType( isMC_ ? "mcwgts" : "datafitwgts");
+	  TString wgtType( isMC_ ? "mcfitwgts" : "datafitwgts");
 	  if (gammaPtWeightsFile.Contains("nvtx")) 
 	    {
 	      wgtName="nvtx";

@@ -71,8 +71,12 @@ runPlotter --json data/photon-samples_2012.json --inDir ~/work/htozz/53x/gamma/2
 
 #photon+jets (closure)
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2012/mc -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh -t MC
-runPlotter --json data/photon-samples_2012.json --inDir ~/work/gamma/2012/mc/ --outDir ~/work/gamma/2012/mc/plots/ --outFile ~/work/gamma/2012/mc/plotter.root --only qt
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2012/mc -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_mc8tev.root'" -s 8nh -t MC
+runPlotter --json data/photon-samples_2012.json --inDir ~/work/gamma/2012/mc/ --outDir ~/work/gamma/2012/mc/plots/ --outFile ~/work/gamma/2012/mc/plotter.root --isSim --iLumi 10198
+root -b -q "bin/G/getGammaWeights.C+(\"~/work/gamma/2012/mc/plotter.root\",\"qt\")"
+
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2012/mc -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_mc_2012.root'" -s 8nh -t MC
+runPlotter --json data/photon-samples_2012.json --inDir ~/work/gamma/2012/mc/ --outDir ~/work/gamma/2012/mc/plots/ --outFile ~/work/gamma/2012/mc/plotter_qt.root --isSim --iLumi 10198
+
 runPlotter --json data/photon-samples_2012.json --inDir ~/work/gamma/2012/mc/ --outDir ~/work/gamma/2012/mc/plots/ --outFile ~/work/gamma/2012/mc/plotter_qt.root 
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2012/mc -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_mc8tev.root','data/gammanvtxweights_mc8tev.root'" -s 8nh -t MC
 runPlotter --json data/photon-samples_2012.json --inDir ~/work/gamma/2012/mc/ --outDir ~/work/gamma/2012/mc/plots/ --outFile ~/work/gamma/2012/mc/plotter_nvtx.root 
