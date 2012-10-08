@@ -48,6 +48,10 @@ jsonMap = {
     # 
     # 2012A & B
     #
+    '/TauPlusX/Run2012B-13Jul2012-v1/AOD':pr2012AB,
+    '/TauPlusX/Run2012A-recover-06Aug2012-v1':pr2012AB,
+    '/TauPlusX/Run2012A-13Jul2012-v1/AOD':pr2012AB,
+    '/TauPlusX/Run2012A-recover-06Aug2012-v1/AOD/':pr2012AB,
     '/TauPlusX/Run2012A-PromptReco-v1/AOD':pr2012AB,
     '/TauPlusX/Run2012B-PromptReco-v1/AOD':pr2012AB,
     '/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER':pr2012AB,
@@ -61,6 +65,7 @@ jsonMap = {
     # 2012C
     #
     '/TauPlusX/Run2012C-PromptReco-v1/AOD':pr2012C,
+    '/TauPlusX/Run2012C-24Aug2012-v1/AOD':pr2012C,
     '/TauPlusX/Run2012C-PromptReco-v2/AOD':pr2012C,
     #
     # non Tau samples
