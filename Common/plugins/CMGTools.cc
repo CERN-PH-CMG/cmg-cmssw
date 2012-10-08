@@ -76,6 +76,11 @@ DEFINE_FWK_MODULE(CmgDiMuonDiElectronSelector);
 DEFINE_FWK_MODULE(CmgQuadElectronSelector);
 // DEFINE_FWK_MODULE(CmgTriMuonMETSelector);
 
+DEFINE_FWK_MODULE(DeltaRVetoProducerBaseJet);
+DEFINE_FWK_MODULE(DeltaRVetoProducerPFJet);
+DEFINE_FWK_MODULE(DeltaRVetoProducerElectron);
+DEFINE_FWK_MODULE(DeltaRVetoProducerMuon);
+DEFINE_FWK_MODULE(DeltaRVetoProducerTau);
 
 DEFINE_FWK_MODULE(GenericBaseMETHistograms);
 DEFINE_FWK_MODULE(GenericPOHistograms);
