@@ -498,6 +498,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   t_->SetBranchAddress("jn_py",          evSummary_.jn_py);
   t_->SetBranchAddress("jn_pz",          evSummary_.jn_pz);
   t_->SetBranchAddress("jn_en",          evSummary_.jn_en);
+  t_->SetBranchAddress("jn_rawsf",       evSummary_.jn_rawsf);
   t_->SetBranchAddress("jn_genid",       evSummary_.jn_genid);
   t_->SetBranchAddress("jn_genflav",     evSummary_.jn_genflav);
   t_->SetBranchAddress("jn_btag1",       evSummary_.jn_btag1);
@@ -537,6 +538,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   t_->SetBranchAddress("ajn_py",          evSummary_.ajn_py);
   t_->SetBranchAddress("ajn_pz",          evSummary_.ajn_pz);
   t_->SetBranchAddress("ajn_en",          evSummary_.ajn_en);
+  t_->SetBranchAddress("ajn_rawsf",       evSummary_.ajn_rawsf);
   t_->SetBranchAddress("ajn_genid",       evSummary_.ajn_genid);
   t_->SetBranchAddress("ajn_genflav",     evSummary_.ajn_genflav);
   t_->SetBranchAddress("ajn_btag1",       evSummary_.ajn_btag1);

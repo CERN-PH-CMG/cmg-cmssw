@@ -119,12 +119,12 @@ void GetListOfObject(JSONWrapper::Object& Root, std::string RootDir, std::list<N
           //just to make it faster, only consider the first 3 sample of a same kind
           if(isData){if(dataProcessed>=1){continue;}else{dataProcessed++;}}
           if(isSign){if(signProcessed>=2){continue;}else{signProcessed++;}}
-          if(isMC  ){if(bckgProcessed>=0){continue;}else{bckgProcessed++;}}
+          if(isMC  ){if(bckgProcessed>0) {continue;}else{bckgProcessed++;}}
 
 	  std::vector<JSONWrapper::Object> Samples = (Process[ip])["data"].daughters();
-          //toMakeItFasteronly consider the first subsample 
-//	  for(size_t id=0; id<Samples.size()&&id<2; id++){
-          for(size_t id=0; id<Samples.size(); id++){
+          //to make it faster only consider the first samples 
+	  //for(size_t id=0; id<Samples.size()&&id<2; id++){
+	  for(size_t id=0; id<Samples.size(); id++){
 	      int split = 1;
 	      if(Samples[id].isTag("split"))split = Samples[id]["split"].toInt();
 	      string segmentExt; if(split>1) { char buf[255]; sprintf(buf,"_%i",0); segmentExt += buf; }

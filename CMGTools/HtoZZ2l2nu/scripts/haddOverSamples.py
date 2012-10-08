@@ -9,6 +9,7 @@ from ROOT import TFile
 
 #get input file List
 def checkCastorDirectory(dir, FilePrefix=''):
+    os.system('removeDuplicates.py -d ' + dir) 
     if(dir.endswith('/')!=True):     dir+='/'
     if(dir.find('/store/cmst3')==0) :
         rfdir_cmd='cmsLs ' + dir + ' | grep root | awk \'{print $5}\''

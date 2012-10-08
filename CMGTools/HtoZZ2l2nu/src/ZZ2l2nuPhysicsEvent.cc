@@ -51,6 +51,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
     phys.jets[i].setGenFlavor(ev.jn_genflav[i]);
     phys.jets[i].setPUmva(ev.jn_pumva[i]);
     phys.jets[i].setShapeVariables(ev.jn_beta[i],ev.jn_betaStar[i],ev.jn_dRMean[i],ev.jn_ptD[i],ev.jn_ptRMS[i]);
+    phys.jets[i].setRawCorrFactor(ev.jn_rawsf[i]);
   }
 
   for(Int_t i=0;i<ev.ajn;i++){
@@ -62,6 +63,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
     phys.ajets[i].setGenFlavor(ev.ajn_genflav[i]);
     phys.ajets[i].setPUmva(ev.ajn_pumva[i]);
     phys.ajets[i].setShapeVariables(ev.ajn_beta[i],ev.ajn_betaStar[i],ev.ajn_dRMean[i],ev.ajn_ptD[i],ev.ajn_ptRMS[i]);
+    phys.ajets[i].setRawCorrFactor(ev.ajn_rawsf[i]);
   }
 
   //  //order the jet vector
