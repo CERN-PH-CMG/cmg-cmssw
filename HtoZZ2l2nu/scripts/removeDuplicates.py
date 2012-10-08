@@ -20,7 +20,7 @@ def checkCastorDirectory(outdir):
     if(outdir.find('/store/cmst3')==0) :
         isEOS=True
         splitOnString=','
-        rfdir_cmd='cmsLs ' + dir + ' | grep root | awk \'{print $5}\''	
+        rfdir_cmd='cmsLs ' + outdir + ' | grep root | awk \'{print $5}\''	
     nOutFile = 0
     outCastorDir_out = commands.getstatusoutput(rfdir_cmd)
     jobNumbers = []
@@ -69,16 +69,15 @@ def checkCastorDirectory(outdir):
 #print usage
 def usage() :
     print ' '
-    print 'runOverSamples.py [options]'
-    print '  -j : json file containing the samples'
-    print '  -d : sample input dir as described in the json'
+    print 'removeDuplicates.py [options]'
+    print '  -d : sample input directory'
     print ' '
     exit(-1)
 
 #parse the options 
 try:
      # retrive command line options
-     shortopts  = "j:d:h?"
+     shortopts  = "d:h?"
      opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
      # print help information and exit:
@@ -86,42 +85,21 @@ except getopt.GetoptError:
      usage()
      sys.exit(1)
 
-samplesDB=''
-dirtag='aoddir'
+dirtag=''
 for o,a in opts:
     if o in("-?", "-h"):
         usage()
         sys.exit(0)
-    elif o in('-j'): samplesDB = a
     elif o in('-d'): dirtag = a
 
-
-jsonFile = open(samplesDB,'r')
-procList=json.load(jsonFile,encoding='utf-8').items()
+if(len(dirtag)==0):
+    usage()
+    sys.exit(0)
 
 from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
 
-#run over sample
-for proc in procList :
-
-    #run over processes
-    for desc in proc[1] :
-                
-        #run over items in process
-        data = desc['data']
-        for d in data :
-	    dtag = d["dtag"]
-            alldirs=[]
-            try :
-                alldirs = d[dirtag]
-            except:
-                continue
-            
-            idir=0
-            for dir in alldirs:
-	        print('#' + dtag + ' --> ' + dir + ' : ' )
-                idir=idir+1
-                duplicatedFiles=checkCastorDirectory(dir)
-		for f in duplicatedFiles :
-		    	if(f.find('/store/cmst3')==0) : print('cmsRm ' + f)
-			else      		      : print('rfrm ' +outdir + '/' + f)
+duplicatedFiles=checkCastorDirectory(dirtag)
+print 'Removing ' + str(len(duplicatedFiles)) + ' duplicated files in ' + dirtag
+for f in duplicatedFiles :
+    if(f.find('/store/cmst3')==0) : print('cmsRm ' + f)
+    else      		      : print('rfrm ' +outdir + '/' + f)

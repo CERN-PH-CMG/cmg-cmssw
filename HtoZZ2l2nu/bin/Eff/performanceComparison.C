@@ -471,6 +471,7 @@ void performanceSummary(string OutDir, string evcat, string signal, string backg
     c1->SetBottomMargin(0.15);
     c1->Update();
     c1->SaveAs((OutDir + "summary_1DB" + names[i] + ".png").c_str());
+    c1->SaveAs((OutDir + "summary_1DB" + names[i] + ".C").c_str());
     delete l1;
     delete c1;
 
@@ -491,6 +492,7 @@ std::cout << "TESTF\n";
      c2->SetBottomMargin(0.15);
      c2->Update();
      c2->SaveAs((OutDir + "summary_1DS" + names[i] + ".png").c_str());
+     c2->SaveAs((OutDir + "summary_1DS" + names[i] + ".C").c_str());
      delete l2;
      delete c2;
 std::cout << "TESTG\n";
@@ -798,6 +800,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
     legTit.ReplaceAll("#rightarrow","");
     legTit = "CMS simulation, "+ legTit;
     puC->SaveAs( (OutDir + "puC.png").c_str());
+    puC->SaveAs( (OutDir + "puC.C").c_str());
     delete puC;
     
     cout << "Or here" << endl;
@@ -828,6 +831,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
     leg=effC->BuildLegend(0.20, 0.60, 0.60, 0.90);
     formatForCmsPublic(effC,leg,legTit,ntouse);
     effC->SaveAs( (OutDir + "effC.png").c_str());
+    effC->SaveAs( (OutDir + "effC.C").c_str());
     delete effC;
     
     cout << "Survived up to here" << endl;
@@ -858,6 +862,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
     leg=effC25pu->BuildLegend(0.20, 0.60, 0.60, 0.90);
     formatForCmsPublic(effC25pu,leg,legTit,ntouse);
     effC25pu->SaveAs( (OutDir + "effC25pu.png").c_str());
+    effC25pu->SaveAs( (OutDir + "effC25pu.C").c_str());
     delete effC25pu;
         
     //efficiency degradation  
@@ -886,6 +891,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
 	formatForCmsPublic(p,leg,legTit,ntouse);
       }
     effC->SaveAs((OutDir + "effpuC.png").c_str());
+    effC->SaveAs((OutDir + "effpuC.C").c_str());
     delete effC;
     
     //another view of efficiency degradation
@@ -923,6 +929,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
 	
 	incEffGrList[ip]->Draw("p");
 	effC->SaveAs( (OutDir + "effpertypeC_" + names[ip] + ".png").c_str());
+	effC->SaveAs( (OutDir + "effpertypeC_" + names[ip] + ".C").c_str());
 	delete effC;
       }
     
@@ -964,6 +971,7 @@ void performancePU(string OutDir, string evcat, string signal, string background
     //leg=effC->BuildLegend(0.15, 0.60, 0.60, 0.95);
     //leg->Draw("same");
     effC->SaveAs( (OutDir + "effpertypeC.png").c_str());
+    effC->SaveAs( (OutDir + "effpertypeC.C").c_str());
     delete effC;
 
 }
@@ -1056,6 +1064,8 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
   //pseudo-METs
   names.clear();                             titles.clear();
   names.push_back(pre+"met"                 );   titles.push_back("E_{T}^{miss}");
+  //  names.push_back(pre+"typeImet"                 );   titles.push_back("Type I E_{T}^{miss}'");
+  names.push_back(pre+"fulltypeImet"                 );   titles.push_back("Type I E_{T}^{miss}");
   //  names.push_back(pre+"minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
   // names.push_back(pre+"minAssocMet"  );          titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss})");
   //names.push_back(pre+"min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");

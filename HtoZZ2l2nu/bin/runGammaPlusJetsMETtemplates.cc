@@ -437,7 +437,8 @@ int main(int argc, char* argv[])
       //
       // JET/MET
       //
-      LorentzVector metP4(phys.met[0]);
+      //LorentzVector metP4(phys.met[0]);
+      LorentzVector metP4(phys.met[2]);
       LorentzVectorCollection zvvs;
       std::vector<PhysicsObjectJetCollection> jets;
       METUtils::computeVariation(phys.ajets, phys.leptons, metP4, jets, zvvs, &jecUnc);
@@ -456,7 +457,7 @@ int main(int argc, char* argv[])
         {
 	  LorentzVector ijetP4=jetsToUse[ijet];
 	  if(isGammaEvent && ijetP4.pt()>30 && deltaR(ijetP4,gamma)<0.1) continue;
-	  
+
 	  //dphi(jet,MET)
 	  double idphijmet( fabs(deltaPhi(ijetP4.phi(),metP4.phi()) ) );	  
 	  if(idphijmet<mindphijmet15) mindphijmet15=idphijmet;
@@ -501,7 +502,8 @@ int main(int argc, char* argv[])
       float weight = 1.0;  
       if(isMC)                  { weight = LumiWeights.weight( ev.ngenITpu ); }
       if(!isMC && isGammaEvent && !use2011Id) { 
-	weight = (gamma.pt()>135? 1.0 : gammaEvHandler.triggerWeight());    
+	//weight = (gamma.pt()>135? 1.0 : gammaEvHandler.triggerWeight());    
+	weight = 1;
       }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);

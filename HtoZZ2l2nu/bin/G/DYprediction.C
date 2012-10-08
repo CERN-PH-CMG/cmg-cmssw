@@ -71,8 +71,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   std::vector<std::string> histos,dilSignal,dilcats,gcats;
   if(model==VBFZ) 
     {
-      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/nvtx/plotter.root";
-      //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/qt/plotter.root";
+      //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/nvtx/plotter.root";
+      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2012/qt/plotter.root";
       llFile="/afs/cern.ch/user/p/psilva/work/vbfz/results/2012/plotter_vbfz_2012.root";
 
       //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/gamma/2011/nvtx/plotter.root";
@@ -141,8 +141,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       dilSignal.push_back("qqH(300)#rightarrow ZZ");
 
       dilcats.push_back("eq0jets");
-      dilcats.push_back("eq1jets");
-      dilcats.push_back("geq2jets");
+      dilcats.push_back("geq1jets");
+      // dilcats.push_back("geq2jets");
       dilcats.push_back("vbf");
       dilcats.push_back("");
 
@@ -316,10 +316,11 @@ endl;
                       normH=shapeToCorrect.data;
                     }
 		}
-	      else if(gcats[icat]=="geq3jets" || gcats[icat]=="eq0softjets")
+	      else if(gcats[icat]=="eq2jets" || gcats[icat]=="geq3jets" || gcats[icat]=="eq0softjets")
 		{
 		  int sign(+1);
-		  TString normKeyPostFix("geq2jets");
+		  TString normKeyPostFix("geq1jets");
+		  //TString normKeyPostFix("geq2jets");
 		  if(gcats[icat]=="eq0softjets") { sign=-1; normKeyPostFix="eq0jets"; }
 		  normKey += normKeyPostFix;
 		  
@@ -339,10 +340,12 @@ endl;
 		      key=ch[ich]+"geq1jets"+"_"+histos[ih];
 		      normKey += "geq1jets";
 		    }		  
-		  else if(gcats[icat]=="eq2jets") 
+		  else if(gcats[icat]=="eq1jets") 
 		    {
-		      key=ch[ich]+"geq2jets"+"_"+histos[ih];
-		      normKey += "geq2jets";
+		      //key=ch[ich]+"geq2jets"+"_"+histos[ih];
+		      //normKey += "geq2jets";
+		      key=ch[ich]+"geq1jets"+"_"+histos[ih];
+		      normKey += "geq1jets";
 		    }
 		  else
 		    normKey += gcats[icat];
