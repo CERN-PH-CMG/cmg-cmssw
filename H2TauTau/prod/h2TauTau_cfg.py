@@ -8,7 +8,7 @@ sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(200) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -20,10 +20,10 @@ numberOfFilesToProcess = 10
 debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
-channel = 'tau-ele'
+channel = 'tau-mu'
 jetRecalib = False
 useCHS = False 
-newSVFit = False
+newSVFit = True
 tauScaling = 0
 
 print sep_line
@@ -44,20 +44,10 @@ print 'tau scaling =', tauScaling
 
 
 dataset_user = 'cmgtools' 
-# dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
-# dataset_name = '/H2TAUTAU/Sync/GluGlu/AOD/PAT_CMG_V5_5_0'
-# dataset_name = '/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1'
-# dataset_name = '/TauPlusX/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_5_1_runrange_start-200601'
-# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_6_0_B'
-# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_5_1'
 # dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PATCMG_V5_8_0_Test'
-# dataset_name = '/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_V5_8_0'
+dataset_name = '/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_V5_8_0'
 # dataset_name = '/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
-# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PATCMG_V5_8_0_Test'
-dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0_Test2'
+# dataset_name = '/W1JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
 
 dataset_files = 'cmgTuple.*root'
 
