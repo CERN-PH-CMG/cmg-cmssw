@@ -47,6 +47,6 @@ embed_list_Run2012B = [embed_Run2012B_193752_195135,
                        embed_Run2012B_195147_196070,
                        embed_Run2012B_196090_196531 ]
 
-embed_list_2012 = copy.copy(embed_list_Run2012A)
-embed_list_2012.extend(embed_list_Run2012B)
+embed_list = copy.copy(embed_list_Run2012A)
+embed_list.extend(embed_list_Run2012B)
 
