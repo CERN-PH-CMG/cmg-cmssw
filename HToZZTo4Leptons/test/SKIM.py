@@ -9,10 +9,19 @@ runOnFastSim = False
 
 process = cms.Process("CMG")
 
+
+process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
+  sourceSeed = cms.untracked.uint32(414000),
+  moduleSeeds = cms.PSet(
+    calibratedElectrons = cms.untracked.uint32(1041963),
+  )
+)
+
+
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'cmgtools',
-    '/DoubleMu/Run2011A-16Jan2012-v1/AOD/V5/PAT_CMG_V5_6_0_B'
+    '/DoubleMu/Run2012A-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_7_0'
    )
 
 #process.source.fileNames = cms.untracked.vstring('file:cmgTuplePreskim.root')
@@ -41,7 +50,36 @@ process.cleanedMuons = cms.EDProducer('PATMuonCleanerBySegments',
 
 process.cmgMuon.cfg.inputCollection = 'cleanedMuons'
 
-process.p = cms.Path(process.correctedMuons+process.cleanedMuons+process.cmgMuon+process.cmgMuonSel+process.skim)
+process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
+                                             src = cms.InputTag("offlinePrimaryVertices"),
+                                             cut = cms.string("!isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2"),
+                                             filter = cms.bool(True),
+                                           )
+
+process.patElectronsWithRegression = cms.EDProducer("UCSDRegressionEnergyPatElectronProducer",
+                                                 inputPatElectronsTag = cms.InputTag("patElectronsWithTrigger"),
+                                                 debug = cms.bool(False),
+                                                 energyRegressionType = cms.uint32(1),
+                                                 regressionInputFile = cms.string("EGamma/EGammaAnalysisTools/data/eleEnergyRegWeights_V1.root")
+)                                                 
+
+process.calibratedElectrons = cms.EDProducer("CJLSTCalibratedPatElectronProducer",
+                                             inputPatElectronsTag = cms.InputTag("patElectronsWithRegression"),
+#                                             inputDataset = cms.string("Summer12_DR53X_HCP2012"),
+                                             inputDataset = cms.string("2012Jul13ReReco"),
+                                             applyCorrections=cms.int32(1),
+                                             isMC    = cms.bool(runOnMC),
+                                             isAOD   = cms.bool(True),
+                                             updateEnergyError = cms.bool(True),
+                                             debug   = cms.bool(False)
+) 
+                                                 
+process.cmgElectron.cfg.inputCollection = 'calibratedElectrons'
+
+
+process.p = cms.Path(process.goodPrimaryVertices+process.correctedMuons+process.cleanedMuons+process.cmgMuon+process.cmgMuonSel+\
+                     process.patElectronsWithRegression+process.calibratedElectrons+\
+                     process.cmgElectron+process.cmgElectronSel+process.skim)
 
 ########################################################
 ## CMG output definition
@@ -68,7 +106,10 @@ process.outcmg = cms.OutputModule(
     "drop *_cmgTauSel_*_*",                     
     "drop *_cmgMuonSel_*_PAT",                     
     "drop *_patMuonsWithTrigger_*_PAT",                     
+    "drop *_patElectronsWithTrigger_*_PAT",                     
+    "drop *_patElectronsWithRegression_*_PAT",                     
     "drop *_cmgMuon_*_CMG",                     
+    "drop *_cmgElectron_*_CMG",                     
     "drop *_correctedMuons_*_CMG",                     
     "drop *_tauGenJetsSelectorAllHadrons_*_*"
     ),
@@ -90,7 +131,7 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
-process.GlobalTag.globaltag = getGlobalTag( runOnMC)
+process.GlobalTag.globaltag = getGlobalTag( runOnMC,runOld5XGT)
 print 'Global tag       : ', process.GlobalTag.globaltag
 
 ########################################################
