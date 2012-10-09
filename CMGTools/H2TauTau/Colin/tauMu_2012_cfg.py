@@ -126,7 +126,7 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
-    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.44X.xml',
+    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
     jetCol = 'cmgPFJetSel',
     jetPt = 20,
     jetEta = 4.7,
@@ -144,65 +144,23 @@ treeProducerXCheck = cfg.Analyzer(
 
 #########################################################################################
 
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinJul5 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinSep4 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_dcSync_ColinSep5 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_dcSync_ColinSep17 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinAug8 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_PietroOct05 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinSep17 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_PietroOct05 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinSep19 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_MuRm_ColinOct9 import * 
 
 #########################################################################################
-
-
-# MC_list = [WJets, DYJets, TTJets]
-MC_list = [HiggsVBF125]
-# MC_list = copy.copy(MC)
-data_list = copy.copy(data_list_Run2012A)
-data_list.extend(data_list_Run2012B)
-embed_list = copy.copy(embed_list_Run2012A)
-embed_list.extend(embed_list_Run2012B)
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
     mc.puFileData = puFileData
-    mc.splitFactor = 10
-    if mc.name.find('DYJets')!=-1:
-        mc.splitFactor = 100
-        mc.fakes = True
-    elif mc.name.find('WJets')!=-1:
-        mc.splitFactor = 50
-    elif mc.name.find('W2Jets')!=-1:
-        mc.splitFactor = 50
-    elif mc.name.find('W3Jets')!=-1:
-        mc.splitFactor = 25
-    elif mc.name.find('TTJets')!=-1:
-        mc.splitFactor = 80
-    elif mc.name.find('WW')!=-1 or \
-         mc.name.find('WZ')!=-1 or \
-         mc.name.find('ZZ')!=-1:
-        mc.splitFactor = 50
-    elif mc.name.find('HiggsVBF120')!=-1 or \
-         mc.name.find('HiggsGGH120')!=-1 or \
-         mc.name.find('HiggsVH120')!=-1:
-        mc.splitFactor = 50
-    elif mc.name.find('HiggsVBF150')!=-1 or \
-         mc.name.find('HiggsGGH150')!=-1 or \
-         mc.name.find('HiggsVH150')!=-1:
-        mc.splitFactor = 30
+
 for emb in embed_list:
     emb.puFileData = None
     emb.puFileMC = None
-    emb.splitFactor = 10
 
-data_Run2012A.splitFactor = 40
-data_Run2012B.splitFactor = 200
 
-selectedComponents =  copy.copy(MC_list)
-selectedComponents.extend( data_list )
-selectedComponents.extend( embed_list )
-
+selectedComponents = allsamples
+# selectedComponents = [data_Run2012A_aug6, data_Run2012C_v2]
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -213,7 +171,7 @@ sequence = cfg.Sequence( [
     dyJetsFakeAna,
     WNJetsAna,
     higgsWeighter, 
-#    vbfAna,
+    vbfAna,
     pileUpAna,
     embedWeighter, 
     tauWeighter, 
@@ -224,23 +182,17 @@ sequence = cfg.Sequence( [
 if syncntuple:
     sequence.append( treeProducerXCheck)
 
-# selectedComponents = embed_list
 
-test = 1
+test = 0
 if test==1:
-    comp = HiggsVBF125
-    # comp = WJets
-    # comp.files = 'Aug14/joshMinusColin.root'
+    comp = data_Run2012C_v2
     selectedComponents = [comp]
-#    comp.splitFactor = 1
-#    comp.files = comp.files[:10]
-    # for 53 MC: 
-    comp.triggers = ['HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v*']
+    comp.splitFactor = 1
+    # comp.files = comp.files[:10]
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:5]
-
 
 
 config = cfg.Config( components = selectedComponents,
