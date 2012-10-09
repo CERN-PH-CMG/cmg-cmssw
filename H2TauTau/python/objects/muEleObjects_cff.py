@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.diTau_cff import *
 from CMGTools.H2TauTau.objects.muEleCuts_cff import * 
 
-from CMGTools.Common.generator.metRecoilCorrection.metRecoilCorrection_cff import *
+from CMGTools.H2TauTau.generator.metRecoilCorrection.metRecoilCorrection_cff import *
 # from CMGTools.Common.factories.cmgTauScaler_cfi import  cmgTauScaler
 from CMGTools.Common.factories.cmgMuEleCor_cfi import cmgMuEleCor 
 from CMGTools.H2TauTau.objects.muEleSVFit_cfi import muEleSVFit 
@@ -37,7 +37,7 @@ muEleStdSequence = cms.Sequence(
 
 # recoil correction
 
-recoilCorMETMuEle =  recoilCorrectedMETMuEle.clone( recBosonSrc = 'cmgMuElePreSel')
+recoilCorMETMuEle =  recoilCorrectedMETMuEle2012.clone( recBosonSrc = 'cmgMuElePreSel')
 
 cmgMuEleCorPreSel = cmgMuEleCor.clone()
 cmgMuEleCorPreSel.cfg.metCollection = 'recoilCorMETMuEle'

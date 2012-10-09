@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 
-from CMGTools.Common.generator.metRecoilCorrection.metRecoilCorrection_cff import *
+from CMGTools.H2TauTau.generator.metRecoilCorrection.metRecoilCorrection_cff import *
 
 from CMGTools.H2TauTau.objects.tauMuObjects_cff import *
 from CMGTools.H2TauTau.objects.tauEleObjects_cff import *

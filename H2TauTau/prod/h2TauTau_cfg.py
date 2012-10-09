@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+from CMGTools.Common.Tools.cmsswRelease import isNewerThan, cmsswIs44X,cmsswIs52X
 
 sep_line = '-'*70
 
@@ -8,7 +8,7 @@ sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(200) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -20,7 +20,7 @@ numberOfFilesToProcess = 10
 debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
-channel = 'tau-mu'
+channel = 'tau-ele'
 jetRecalib = False
 useCHS = False 
 newSVFit = False
@@ -54,6 +54,9 @@ dataset_user = 'cmgtools'
 # dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5/PAT_CMG_V5_5_1'
 # dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
 # dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PATCMG_V5_8_0_Test'
+# dataset_name = '/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_V5_8_0'
+# dataset_name = '/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PATCMG_V5_8_0_Test'
 dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0_Test2'
 
 dataset_files = 'cmgTuple.*root'
@@ -86,7 +89,6 @@ if runOnMC==False:
     json = setupJSON(process)
 
 
-
 # load the channel paths -------------------------------------------
 process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
@@ -95,7 +97,7 @@ process.load('CMGTools.H2TauTau.h2TauTau_cff')
 print sep_line
 from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
 # WARNING DISABLING RECOIL CORRECTIONS FOR 2012!!!
-setupRecoilCorrection( process, runOnMC, True, cmsswIs52X())
+setupRecoilCorrection( process, runOnMC, True, isNewerThan('CMSSW_5_2_X'))
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
