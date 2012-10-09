@@ -25,19 +25,48 @@ def addPreselectionSequences(process) :
                                                maxAbsZ = cms.double(24),
                                                maxd0 = cms.double(2)
                                                )
-            
-    # HB/HE noise filter
+
+    #MET filters
     # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFilters
+    
+    # HB/HE noise filter
     process.load('CommonTools/RecoAlgos/HBHENoiseFilter_cfi')
     process.HBHENoiseFilter.minIsolatedNoiseSumE = cms.double(999999.)
     process.HBHENoiseFilter.minNumIsolatedNoiseChannels = cms.int32(999999)
     process.HBHENoiseFilter.minIsolatedNoiseSumEt = cms.double(999999.)
 
+    # EB/EE Xtals with large laser calibration
+    process.load('RecoMET.METFilters.ecalLaserCorrFilter_cfi')
+
+    #Bad EE Supercrystal filter
+    process.load('RecoMET.METFilters.eeBadScFilter_cfi')
+
+    #CSC Beam Halo Filter 
+    process.load('RecoMET.METAnalyzers.CSCHaloFilter_cfi')
+
+    #HCAL laser events
+    process.load("RecoMET.METFilters.hcalLaserEventFilter_cfi")
+    process.hcalLaserEventFilter.vetoByRunEventNumber=cms.untracked.bool(False)
+    process.hcalLaserEventFilter.vetoByHBHEOccupancy=cms.untracked.bool(True)
+
+    #ECAL dead cell filter  
+    process.load('RecoMET.METFilters.EcalDeadCellTriggerPrimitiveFilter_cfi')
+    process.EcalDeadCellTriggerPrimitiveFilter.tpDigiCollection = cms.InputTag("ecalTPSkimNA")
+    process.load('RecoMET.METFilters.EcalDeadCellBoundaryEnergyFilter_cfi')
+    process.EcalDeadCellBoundaryEnergyFilter.taggingMode = cms.bool(False)
+    process.EcalDeadCellBoundaryEnergyFilter.cutBoundEnergyDeadCellsEB=cms.untracked.double(10)
+    process.EcalDeadCellBoundaryEnergyFilter.cutBoundEnergyDeadCellsEE=cms.untracked.double(10)
+    process.EcalDeadCellBoundaryEnergyFilter.cutBoundEnergyGapEB=cms.untracked.double(100)
+    process.EcalDeadCellBoundaryEnergyFilter.cutBoundEnergyGapEE=cms.untracked.double(100)
+    process.EcalDeadCellBoundaryEnergyFilter.enableGap=cms.untracked.bool(False)
+    process.EcalDeadCellBoundaryEnergyFilter.limitDeadCellToChannelStatusEB = cms.vint32(12,14)
+    process.EcalDeadCellBoundaryEnergyFilter.limitDeadCellToChannelStatusEE = cms.vint32(12,14)
+
     # filter counters
     process.preSelectionCounter = cms.EDProducer("EventCountProducer")
     process.noScrapCounter = process.preSelectionCounter.clone()
     process.goodVertexCounter = process.preSelectionCounter.clone()
-    process.noHBHEnoiseCounter = process.preSelectionCounter.clone()
+    process.noBadMetCounter = process.preSelectionCounter.clone()
     
     # define a preselection sequence
     process.preselection = cms.Sequence(
@@ -47,7 +76,12 @@ def addPreselectionSequences(process) :
         process.primaryVertexFilter*
         process.goodVertexCounter*
         process.HBHENoiseFilter*
-        process.noHBHEnoiseCounter
+        process.ecalLaserCorrFilter*
+        process.eeBadScFilter*
+        process.CSCTightHaloFilter*
+        process.hcalLaserEventFilter*
+        process.EcalDeadCellTriggerPrimitiveFilter*
+        process.noBadMetCounter
         )
     
     print " *** Event preselection defined"
