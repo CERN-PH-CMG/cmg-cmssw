@@ -71,3 +71,28 @@ float BTagWeight::weight(vector<vector<JetInfo> >jets){
   if(pMC==0) return 0; 
   return pData/pMC;
 }
+
+
+int BTagWeight::addJet(double eff, double sf)
+{
+  JetInfo jetinfo(eff,sf);
+  vector<BTagWeight::JetInfo> jetInfoForAllOPs;
+  jetInfoForAllOPs.push_back(jetinfo);
+  jets_.push_back(jetInfoForAllOPs);
+  return jets_.size () ;
+}
+
+
+float BTagWeight::weight()
+{
+  return weight(jets_) ;
+}
+
+
+
+void BTagWeight::cleanVector()
+{
+  jets_.clear () ;
+}
+
+

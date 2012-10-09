@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 using namespace std; 
+
 class BTagWeight {
  public:
   struct JetInfo {
@@ -18,8 +19,13 @@ class BTagWeight {
     
     virtual bool filter(vector<int> tags);
     float weight(vector<vector<JetInfo> > jets);
+    int addJet(double eff, double sf);
+    float weight();
+    void cleanVector();
+
  private:
     int taggers;
+    vector<vector<JetInfo> > jets_ ;
     
 };
 
