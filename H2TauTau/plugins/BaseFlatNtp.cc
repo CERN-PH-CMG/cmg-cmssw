@@ -91,8 +91,15 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   diTauTag_               = iConfig.getParameter<edm::InputTag>("diTauTag");
   cout<<"diTauTag_  : "<<diTauTag_.label()<<endl;
     
-  diMuonVetoListTag_      = iConfig.getParameter<edm::InputTag>("diMuonVetoListTag");
-  cout<<"diMuonVetoListTag : "<<diMuonVetoListTag_.label()<<endl;
+  muonVetoListTag_      = iConfig.getParameter<edm::InputTag>("muonVetoListTag");
+  cout<<"muonVetoListTag : "<<muonVetoListTag_.label()<<endl;
+
+  electronVetoListTag_      = iConfig.getParameter<edm::InputTag>("electronVetoListTag");
+  cout<<"electronVetoListTag : "<<electronVetoListTag_.label()<<endl;
+
+  tauVetoListTag_      = iConfig.getParameter<edm::InputTag>("tauVetoListTag");
+  cout<<"tauVetoListTag : "<<tauVetoListTag_.label()<<endl;
+
 
   pfJetListTag_           = iConfig.getParameter<edm::InputTag>("pfJetListTag");
   cout<<"pfJetListTag_ : "<<pfJetListTag_.label()<<endl;
@@ -271,24 +278,28 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("jet20eta1",&jet20eta1_,"jet20eta1/F");
   tree_->Branch("jet20phi1",&jet20phi1_,"jet20phi1/F");
   tree_->Branch("jet20mass1",&jet20mass1_,"jet20mass1/F");
+  tree_->Branch("jet20tagprob1",&jet20tagprob1_,"jet20tagprob1/F");
   tree_->Branch("jet20flavor1",&jet20flavor1_,"jet20flavor1/I");
 
   tree_->Branch("jet20pt2",&jet20pt2_,"jet20pt2/F");
   tree_->Branch("jet20eta2",&jet20eta2_,"jet20eta2/F");
   tree_->Branch("jet20phi2",&jet20phi2_,"jet20phi2/F");
   tree_->Branch("jet20mass2",&jet20mass2_,"jet20mass2/F");
+  tree_->Branch("jet20tagprob2",&jet20tagprob2_,"jet20tagprob2/F");
   tree_->Branch("jet20flavor2",&jet20flavor2_,"jet20flavor2/I");
 
   tree_->Branch("jet20pt3",&jet20pt3_,"jet20pt3/F");
   tree_->Branch("jet20eta3",&jet20eta3_,"jet20eta3/F");
   tree_->Branch("jet20phi3",&jet20phi3_,"jet20phi3/F");
   tree_->Branch("jet20mass3",&jet20mass3_,"jet20mass3/F");
+  tree_->Branch("jet20tagprob3",&jet20tagprob3_,"jet20tagprob3/F");
   tree_->Branch("jet20flavor3",&jet20flavor3_,"jet20flavor3/I");
 
   tree_->Branch("jet20pt4",&jet20pt4_,"jet20pt4/F");
   tree_->Branch("jet20eta4",&jet20eta4_,"jet20eta4/F");
   tree_->Branch("jet20phi4",&jet20phi4_,"jet20phi4/F");
   tree_->Branch("jet20mass4",&jet20mass4_,"jet20mass4/F");
+  tree_->Branch("jet20tagprob4",&jet20tagprob4_,"jet20tagprob4/F");
   tree_->Branch("jet20flavor4",&jet20flavor4_,"jet20flavor4/I");
 
 
@@ -413,6 +424,12 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   }
 
  
+  //get the muons for the di-lepton veto
+  iEvent.getByLabel(muonVetoListTag_,leptonVetoListMuon_);
+  iEvent.getByLabel(electronVetoListTag_,leptonVetoListElectron_);
+  iEvent.getByLabel(tauVetoListTag_,leptonVetoListTau_);
+
+
   return 1;
 }
 
@@ -550,28 +567,39 @@ void BaseFlatNtp::fillPFJetList(std::vector<const cmg::PFJet * > * fulllist, std
   list->clear();
   for(std::vector<const cmg::PFJet *>::const_iterator jet=fulllist->begin(); jet!=fulllist->end(); ++jet){
     if((*jet)->pt()<30.0)continue;  
-    if(fabs((*jet)->eta())>5.0)continue; 
+    if(fabs((*jet)->eta())>4.7)continue; 
     if(!checkPFJetId((*jet)))continue;
     if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
     list->push_back((*jet));
   }
 }
 
-
-void BaseFlatNtp::fillPFJetListB(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list){
+void BaseFlatNtp::fillPFJetList20(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list){
   list->clear();
   for(std::vector<const cmg::PFJet *>::const_iterator jet=fulllist->begin(); jet!=fulllist->end(); ++jet){
     if((*jet)->pt()<20.0)continue;  
-    if(fabs((*jet)->eta())>2.4)continue; 
+    if(fabs((*jet)->eta())>4.7)continue; 
     if(!checkPFJetId((*jet)))continue;
     if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
     list->push_back((*jet));
   }
 }
+
+// void BaseFlatNtp::fillPFJetListB(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list){
+//   list->clear();
+//   for(std::vector<const cmg::PFJet *>::const_iterator jet=fulllist->begin(); jet!=fulllist->end(); ++jet){
+//     if((*jet)->pt()<20.0)continue;  
+//     if(fabs((*jet)->eta())>2.4)continue; 
+//     if(!checkPFJetId((*jet)))continue;
+//     if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
+//     list->push_back((*jet));
+//   }
+// }
 
 void BaseFlatNtp::fillPFJetListBTag(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list){
   list->clear();
   for(std::vector<const cmg::PFJet *>::const_iterator jet=fulllist->begin(); jet!=fulllist->end(); ++jet){
+    if(fabs((*jet)->eta())>2.4)continue; 
     if((*jet)->btag("combinedSecondaryVertexBJetTags")<btagWP_)continue;//CSV medium
     list->push_back((*jet));
   }

@@ -129,6 +129,7 @@ public:
   TH1F* getQCDMike();//values from Josh for 2012 analysis
   TH1F* getQCDHCP();//values from Josh for 2012 analysis
   TH1F* getQCDKeti();//values from Josh for 2012 analysis
+  TH1F* getQCDKetiHCP();//
   TString qcdTauIsoRatioMuNonIso_;//formula for the ratio
   TString qcdMuIsoRatioTauNonIso_;//formula for the ratio
   TString qcdTauIsoRatio_;//formula for the ratio
@@ -137,6 +138,7 @@ public:
   //TH1F* getQCDTauIsoSMSS();//from anti-isolated taus
   TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
   //TH1F* getQCDIsoSMSS();//from anti-isolated taus or anti iso muons  
+  TH1F* getWJetsNJet();//Exclusive W+jets samples combined and normalized to data
   TH1F* getWJetsIncShape();
   //TH1F* getWJetsIncShapeSS();
   TH1F* getW3Jets();
@@ -216,7 +218,9 @@ public:
       cout<<" Category : "<<sm<<" undefined "<<endl;
       return TString("");
     }
-    TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
+    //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
+    TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.9)";
+    //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.978)";
     TString notvbfcut=TString("(!")+vbfcut+")";
     TString boostcut="(njet>=1&&nbjet==0)";
     TString notboostcut=TString("(!")+boostcut+")";
@@ -233,8 +237,8 @@ public:
     SMcut[2]=notvbfcut+"*"+boostcut+"*"+taulowcut;
     SMcut[3]=notvbfcut+"*"+boostcut+"*"+tauhighcut;
     SMcut[4]=vbfcut;
-    SMcut[5]=notvbfcut+"*"+notboostcut+"*"+bjetcut+"*"+taulowcut;
-    SMcut[6]=notvbfcut+"*"+notboostcut+"*"+bjetcut+"*"+tauhighcut;
+    SMcut[5]=bjetcut+"*"+taulowcut;
+    SMcut[6]=bjetcut+"*"+tauhighcut;
     cout<<"Category selection : "<<SMcut[sm]<<endl;
     return SMcut[sm];
   }

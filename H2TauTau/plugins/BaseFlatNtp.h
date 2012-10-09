@@ -124,7 +124,12 @@ protected:
 
   edm::InputTag diTauTag_;
 
-  edm::InputTag diMuonVetoListTag_;
+  edm::InputTag muonVetoListTag_;
+  edm::Handle< std::vector<cmg::Muon> > leptonVetoListMuon_;
+  edm::InputTag electronVetoListTag_;
+  edm::Handle< std::vector<cmg::Electron> > leptonVetoListElectron_;
+  edm::InputTag tauVetoListTag_;
+  edm::Handle< std::vector<cmg::Tau> > leptonVetoListTau_;
 
   edm::InputTag pfJetListTag_;
   std::vector<const cmg::PFJet * > fullJetList_;
@@ -134,8 +139,9 @@ protected:
   const cmg::PFJet * leadJet_;
   const cmg::PFJet * subleadJet_;
 
-  std::vector<const cmg::PFJet * > pfJetListB_;
-  std::vector<const cmg::PFJet * > pfJetListBLC_;
+  std::vector<const cmg::PFJet * > pfJetList20_;//Jets pf pT>20
+  std::vector<const cmg::PFJet * > pfJetList20LC_;
+
   std::vector<const cmg::PFJet * > pfJetListBTagLC_;
   const cmg::PFJet * leadBJet_;
 
@@ -275,21 +281,25 @@ protected:
   float jet20eta1_;
   float jet20phi1_;
   float jet20mass1_;
+  float jet20tagprob1_;
   int jet20flavor1_;
   float jet20pt2_;
   float jet20eta2_;
   float jet20phi2_;
   float jet20mass2_;
+  float jet20tagprob2_;
   int jet20flavor2_;
   float jet20pt3_;
   float jet20eta3_;
   float jet20phi3_;
   float jet20mass3_;
+  float jet20tagprob3_;
   int jet20flavor3_;
   float jet20pt4_;
   float jet20eta4_;
   float jet20phi4_;
   float jet20mass4_;
+  float jet20tagprob4_;
   int jet20flavor4_;
 
 
@@ -381,7 +391,14 @@ protected:
   std::string fileZmmMC_;
   
   void fillMET(){
-    
+
+    //carry the PFMET always but dont use for SVFit
+    edm::Handle<std::vector< cmg::BaseMET> > pfMET;
+    iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
+    pfmetpt_=pfMET->begin()->pt();
+    pfmetphi_=pfMET->begin()->phi();
+
+    ////Below choose the MET for SVFit and transverse mass
     if(metType_==1){//PFMET
       edm::Handle<std::vector< cmg::BaseMET> > pfMET;
       iEvent_->getByLabel(edm::InputTag("cmgPFMETRaw"),pfMET);
@@ -563,10 +580,10 @@ protected:
   int truthMatchLeg(float legeta, float legphi);
 
   void fillPFJetList(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list);
+  void fillPFJetList20(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list);
   void fillPFJetListLC(float leg1eta, float leg1phi, float leg2eta, float leg2phi, std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC);
   void fillPFJetListLepLC(float lepeta, float lepphi, std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC);
 
-  void fillPFJetListB(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list);
   void fillPFJetListBTag(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list);
 
   const cmg::PFJet * findJet(std::vector<const cmg::PFJet * > * fulllist, float eta, float phi);
@@ -648,58 +665,66 @@ protected:
   
 
   void fillJetVariables20(){
-    njet20_=pfJetListBLC_.size();
+    njet20_=pfJetList20LC_.size();
 
     jet20pt1_=0.;
     jet20eta1_=0.;
     jet20phi1_=0.;
     jet20mass1_=0.;
+    jet20tagprob1_=0.;
     jet20flavor1_=0.;
     jet20pt2_=0.;
     jet20eta2_=0.;
     jet20phi2_=0.;
     jet20mass2_=0.;
+    jet20tagprob2_=0.;
     jet20flavor2_=0.;
     jet20pt3_=0.;
     jet20eta3_=0.;
     jet20phi3_=0.;
     jet20mass3_=0.;
+    jet20tagprob3_=0.;
     jet20flavor3_=0.;
     jet20pt4_=0.;
     jet20eta4_=0.;
     jet20phi4_=0.;
     jet20mass4_=0.;
+    jet20tagprob4_=0.;
     jet20flavor4_=0.;
 
     if(njet20_>=1){
-      jet20pt1_=pfJetListBLC_[0]->pt();
-      jet20eta1_=pfJetListBLC_[0]->eta();
-      jet20phi1_=pfJetListBLC_[0]->phi();
-      jet20mass1_=pfJetListBLC_[0]->mass();
-      jet20flavor1_=pfJetListBLC_[0]->partonFlavour();  
+      jet20pt1_=pfJetList20LC_[0]->pt();
+      jet20eta1_=pfJetList20LC_[0]->eta();
+      jet20phi1_=pfJetList20LC_[0]->phi();
+      jet20mass1_=pfJetList20LC_[0]->mass();
+      jet20tagprob1_=pfJetList20LC_[0]->btag("combinedSecondaryVertexBJetTags");;
+      jet20flavor1_=pfJetList20LC_[0]->partonFlavour();  
     }
     if(njet20_>=2){
-      jet20pt2_=pfJetListBLC_[1]->pt();
-      jet20eta2_=pfJetListBLC_[1]->eta();
-      jet20phi2_=pfJetListBLC_[1]->phi();
-      jet20mass2_=pfJetListBLC_[1]->mass();
-      jet20flavor2_=pfJetListBLC_[1]->partonFlavour();  
+      jet20pt2_=pfJetList20LC_[1]->pt();
+      jet20eta2_=pfJetList20LC_[1]->eta();
+      jet20phi2_=pfJetList20LC_[1]->phi();
+      jet20mass2_=pfJetList20LC_[1]->mass();
+      jet20tagprob2_=pfJetList20LC_[1]->btag("combinedSecondaryVertexBJetTags");;
+      jet20flavor2_=pfJetList20LC_[1]->partonFlavour();  
     }
 
     if(njet20_>=3){
-      jet20pt3_=pfJetListBLC_[2]->pt();
-      jet20eta3_=pfJetListBLC_[2]->eta();
-      jet20phi3_=pfJetListBLC_[2]->phi();
-      jet20mass3_=pfJetListBLC_[2]->mass();
-      jet20flavor3_=pfJetListBLC_[2]->partonFlavour();  
+      jet20pt3_=pfJetList20LC_[2]->pt();
+      jet20eta3_=pfJetList20LC_[2]->eta();
+      jet20phi3_=pfJetList20LC_[2]->phi();
+      jet20mass3_=pfJetList20LC_[2]->mass();
+      jet20tagprob3_=pfJetList20LC_[2]->btag("combinedSecondaryVertexBJetTags");;
+      jet20flavor3_=pfJetList20LC_[2]->partonFlavour();  
     }
 
     if(njet20_>=4){
-      jet20pt4_=pfJetListBLC_[3]->pt();
-      jet20eta4_=pfJetListBLC_[3]->eta();
-      jet20phi4_=pfJetListBLC_[3]->phi();
-      jet20mass4_=pfJetListBLC_[3]->mass();
-      jet20flavor4_=pfJetListBLC_[3]->partonFlavour();  
+      jet20pt4_=pfJetList20LC_[3]->pt();
+      jet20eta4_=pfJetList20LC_[3]->eta();
+      jet20phi4_=pfJetList20LC_[3]->phi();
+      jet20mass4_=pfJetList20LC_[3]->mass();
+      jet20tagprob4_=pfJetList20LC_[3]->btag("combinedSecondaryVertexBJetTags");;
+      jet20flavor4_=pfJetList20LC_[3]->partonFlavour();  
     }
     
   }
@@ -710,11 +735,12 @@ protected:
     if(dataType_!=0) return;//only done for MC
 
     vector<vector<BTagWeight::JetInfo> > jetinfovec;
-    for (unsigned int i=0; i<pfJetListB_.size(); ++i) {
-      //    int index = pfJetListB_[i];
-      double jetpt = pfJetListB_[i]->pt(); 
-      double jeteta = pfJetListB_[i]->eta(); 
-      double jetflavor = TMath::Abs(pfJetListB_[i]->partonFlavour());
+    for (unsigned int i=0; i<pfJetList20LC_.size(); ++i) {//was pfJetListB which has eta cut 2.4, pt>20, and no Lepton cleaning
+      if(abs(pfJetList20LC_[i]->eta())>2.4) continue;
+      //    int index = pfJetList20LC_[i];
+      double jetpt = pfJetList20LC_[i]->pt(); 
+      double jeteta = pfJetList20LC_[i]->eta(); 
+      double jetflavor = TMath::Abs(pfJetList20LC_[i]->partonFlavour());
       double discr = btagWP_;//1.7;
     
       double eff = 1.;
@@ -822,6 +848,64 @@ protected:
     }
 
   }
+
+  
+  //custom electron isolation
+  float electronRelIsoDBCorr(const cmg::Electron * cand){
+    if(!cand) return 9999.;
+
+    //these are ok in the cmgElectron
+    float neutralhad=cand->neutralHadronIso();
+    float puchhad=cand->puChargedHadronIso();
+
+    //these two need to be recomputed with proper cone vetos
+    float charged=0.;//cand->chargedAllIsoWithConeVeto();
+    float photon=cand->photonIso();
+    const pat::Electron * input= &(*(*(cand->sourcePtr())));
+
+    //charged particle iso
+    reco::isodeposit::AbsVetos allChargedVetoesCollection ;
+    float coneSizeCh = 0.01 ;
+    if (input->isEE()) coneSizeCh = 0.015 ;
+    reco::isodeposit::ConeVeto allChargedVeto (reco::isodeposit::Direction(input->eta (), input->phi ()), coneSizeCh) ;
+    allChargedVetoesCollection.push_back (&allChargedVeto) ;
+    charged = (input->isoDeposit(pat::PfChargedAllIso)->depositAndCountWithin(0.4,allChargedVetoesCollection,false ).first);
+    
+
+    //photon iso
+    reco::isodeposit::AbsVetos photonVetoesCollection ;
+    float coneSizePhoton = 0.08 ;
+    if (input->isEE()) coneSizePhoton = 0.08 ;
+    reco::isodeposit::ConeVeto photonVeto (reco::isodeposit::Direction(input->eta (), input->phi ()), coneSizePhoton) ;
+    photonVetoesCollection.push_back (&photonVeto) ;    
+    photon = input->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4,photonVetoesCollection,false ).first ;
+    
+    //cout<<" "<<charged<<" "<<photon<<endl;
+
+    if(cand->pt()>0.)
+      return (charged + TMath::Max(neutralhad+photon - 0.5*puchhad,0.))/cand->pt();
+    else return 9999.;
+  }
+
+
+  //electron id WP95
+  bool electronIDWP95(const cmg::Electron * cand){
+    ///https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
+    if(!cand) return 0;
+    if((*(cand->sourcePtr()))->isEB()
+       && cand->deltaEtaSuperClusterTrackAtVtx()<0.007
+       && cand->deltaPhiSuperClusterTrackAtVtx()<0.800
+       && cand->sigmaIetaIeta()<0.01
+       && cand->hadronicOverEm()<0.15
+       ) return 1;
+    else if((*(cand->sourcePtr()))->isEE()
+	    && cand->deltaEtaSuperClusterTrackAtVtx()<0.01
+	    && cand->deltaPhiSuperClusterTrackAtVtx()<0.70
+	    && cand->sigmaIetaIeta()<0.03
+	    )return 1;
+    else return 0;
+  }
+
 
 
 private:

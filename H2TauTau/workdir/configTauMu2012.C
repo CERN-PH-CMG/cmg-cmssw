@@ -7,6 +7,7 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   TauMuPlotter * analysis = new TauMuPlotter(name);
   analysis->setOutputPath(path);
   analysis->setQCDOStoSSRatio(1.1);//1.05);//my measured value July 6
+  analysis->setZTTType(1);
   
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
@@ -28,10 +29,10 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   TauPlusX2012Cv1->setSampleLumi(495.003);
   analysis->addSample(TauPlusX2012Cv1);
 
-//   Sample* TauPlusX2012Cv2 = new Sample("TauPlusX2012Cv2",path);
-//   TauPlusX2012Cv2->setDataType("Data");
-//   TauPlusX2012Cv2->setSampleLumi(1288.0 + 4751.0 + 272.040);
-//   analysis->addSample(TauPlusX2012Cv2);
+  Sample* TauPlusX2012Cv2 = new Sample("TauPlusX2012Cv2",path);
+  TauPlusX2012Cv2->setDataType("Data");
+  TauPlusX2012Cv2->setSampleLumi(1288.0 + 4751.0 + 272.040);
+  analysis->addSample(TauPlusX2012Cv2);
 
 //   Sample* Embedded2012A = new Sample("Embedded2012A",path);
 //   Embedded2012A->setDataType("Embedded");
@@ -50,7 +51,7 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
 //   analysis->addSample(Embedded2012B3);
 
 
-  float CrossectionScaleFactor=0.976;
+  float CrossectionScaleFactor=1.011;
   cout<<"WARNING applying scale factor for TTjets MC "<<CrossectionScaleFactor<<endl;
 
 
@@ -63,22 +64,22 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
 
   Sample * W1JetsToLNu=new Sample("W1JetsToLNu",path);
   W1JetsToLNu->setDataType("MCCat");
-  W1JetsToLNu->setCrossection(0.175999);//dummy
+  W1JetsToLNu->setCrossection(WJetsToLNu->getCrossection()*0.175999);
   analysis->addSample(W1JetsToLNu);  
 
   Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
   W2JetsToLNu->setDataType("MCCat");
-  W2JetsToLNu->setCrossection(0.0562617);//dummy
+  W2JetsToLNu->setCrossection(WJetsToLNu->getCrossection()*0.0562617);
   analysis->addSample(W2JetsToLNu);  
    
   Sample * W3JetsToLNu=new Sample("W3JetsToLNu",path);
   W3JetsToLNu->setDataType("MCCat");
-  W3JetsToLNu->setCrossection(0.0168926);//dummy value
+  W3JetsToLNu->setCrossection(WJetsToLNu->getCrossection()*0.0168926);
   analysis->addSample(W3JetsToLNu);  
 
   Sample * W4JetsToLNu=new Sample("W4JetsToLNu",path);
   W4JetsToLNu->setDataType("MCCat");
-  W4JetsToLNu->setCrossection(0.00692218);//dummy
+  W4JetsToLNu->setCrossection(WJetsToLNu->getCrossection()*0.00692218);
   analysis->addSample(W4JetsToLNu);  
    
 

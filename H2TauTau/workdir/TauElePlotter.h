@@ -104,6 +104,7 @@ public:
   TH1F* getZToMuMuInc(){return 0;}//dummy method just make script work for datacard
   TH1F* getZToEEInc();
   TH1F* getWJetsInc();
+  TH1F* getWJetsNJet();
   TH1F* getWJetsInc2012();
   TH1F* getWJetsIncShape();
   TH1F* getWJetsIncShape2012();
@@ -116,6 +117,7 @@ public:
   TH1F* getQCDIncFit();
   TH1F* getQCDMike();
   TH1F* getQCDKeti();
+  TH1F* getQCDHCP();//values from Josh for 2012 analysis
 
   ///
   bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
@@ -200,13 +202,14 @@ public:
       return TString("");
     }
     TString metcut="(metpt>25)";//30 for PFMET
-    TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
+    //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
+    TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.9)";
     TString notvbfcut=TString("(!")+vbfcut+")";
     TString boostcut=TString("(njet>=1&&nbjet==0)")+"*"+metcut;
     TString notboostcut=TString("(!")+boostcut+")";
     TString bjetcut="(njet<2&&nbjet>=1)";
     TString notbjetcut=TString("(!")+bjetcut+")";
-    TString zerojetcut="(njet==0&&nbjet==0)";
+    TString zerojetcut=TString("(njet==0&&nbjet==0)")+"*"+metcut;
     TString taulowcut="(taupt<40.)";
     TString tauhighcut="(taupt>=40.)";
     TString SMcut[7];
@@ -215,8 +218,8 @@ public:
     SMcut[2]=notvbfcut+"*"+boostcut+"*"+taulowcut;
     SMcut[3]=notvbfcut+"*"+boostcut+"*"+tauhighcut;
     SMcut[4]=vbfcut;
-    SMcut[5]=notvbfcut+"*"+notboostcut+"*"+bjetcut+"*"+taulowcut;
-    SMcut[6]=notvbfcut+"*"+notboostcut+"*"+bjetcut+"*"+tauhighcut;
+    SMcut[5]=bjetcut+"*"+taulowcut;
+    SMcut[6]=bjetcut+"*"+tauhighcut;
     cout<<"Category selection : "<<SMcut[sm]<<endl;
     return SMcut[sm];
   }

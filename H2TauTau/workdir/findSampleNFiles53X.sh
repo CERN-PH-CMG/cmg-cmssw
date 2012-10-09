@@ -7,7 +7,7 @@
 #cmsLs /store/cmst3/user/cmgtools/CMG/TauPlusX/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 
 
-echo MC
+#echo MC
 #cmsLs /store/cmst3/user/cmgtools/CMG/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
@@ -50,7 +50,7 @@ echo MC
 #cmsLs /store/cmst3/user/cmgtools/CMG/GluGluToHToTauTau_M-140_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/GluGluToHToTauTau_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #
-echo WH
+#echo WH
 #cmsLs /store/cmst3/user/cmgtools/CMG/WH_ZH_TTH_HToTauTau_M-110_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/WH_ZH_TTH_HToTauTau_M-115_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/WH_ZH_TTH_HToTauTau_M-120_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
@@ -59,6 +59,56 @@ echo WH
 #cmsLs /store/cmst3/user/cmgtools/CMG/WH_ZH_TTH_HToTauTau_M-135_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/WH_ZH_TTH_HToTauTau_M-140_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/WH_ZH_TTH_HToTauTau_M-145_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+
+
+#echo SUSYBB
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-80_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-90_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-100_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-110_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-120_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-130_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-140_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-160_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-180_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-200_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-250_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-300_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-350_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-400_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-450_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-500_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-600_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-700_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-800_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-900_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-1000_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#
+#echo SUSYGlu
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-80_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-90_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-100_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-110_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-120_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-130_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-140_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-160_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-180_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-200_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-250_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-300_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-350_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-400_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-450_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-500_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-600_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-700_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-800_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-900_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYGluGluToHToTauTau_M-1000_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+
+
+
 
 
 
