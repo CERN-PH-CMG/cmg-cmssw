@@ -31,12 +31,21 @@ embed_Run2012B_195147_196070 = cfg.EmbedComponent(
     json = json,
     )
 
+embed_Run2012B_196090_196531 = cfg.EmbedComponent(
+    name = 'embed_Run2012B_196090_196531',
+    files = [],
+    intLumi = 1.0, # dummy
+    triggers = [],
+    json = json,
+    )
+
 
 
 
 embed_list_Run2012A = [embed_Run2012A]
 embed_list_Run2012B = [embed_Run2012B_193752_195135,
-                       embed_Run2012B_195147_196070 ]
+                       embed_Run2012B_195147_196070,
+                       embed_Run2012B_196090_196531 ]
 
 embed_list_2012 = copy.copy(embed_list_Run2012A)
 embed_list_2012.extend(embed_list_Run2012B)
