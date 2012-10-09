@@ -51,11 +51,6 @@ void TauEleFlatNtp::beginJob(){
    ///get the TauEle cands 
    iEvent.getByLabel(diTauTag_,diTauList_);
 
-   //get the muons for the di-lepton veto
-   iEvent.getByLabel(diMuonVetoListTag_,diLeptonVetoList_);
-
-
-
    return 1;
  }
 
@@ -391,19 +386,34 @@ void TauEleFlatNtp::beginJob(){
 
      if(dataPeriodFlag_==2012){
        
+//        if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
+// 	 if(triggerEff_.eff2012Tau20MC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+// 	   triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+// 	     /triggerEff_.eff2012Tau20MC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+// 	 if(triggerEff_.eff2012Ele20MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+// 	   triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+// 	     /triggerEff_.eff2012Ele20MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+//        }else{//no trigger applied --> apply efficiency
+// 	 triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+// 	 triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+//        }
+//        //id+isolation corrections
+//        selectionEffWeight_ *= selectionEff_.effCorrEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
        if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
-	 if(triggerEff_.eff2012Tau20MC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	   triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	     /triggerEff_.eff2012Tau20MC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 if(triggerEff_.eff2012Ele20MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	   triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	     /triggerEff_.eff2012Ele20MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	 if(triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	   triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	     /triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	 if(triggerEff_.effEle2012MC53X(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	   triggerEffWeight_ *= triggerEff_.effEle2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	     /triggerEff_.effEle2012MC53X(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
        }else{//no trigger applied --> apply efficiency
-	 triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	 triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	 triggerEffWeight_ *= triggerEff_.effEle2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
        }
        //id+isolation corrections
-       selectionEffWeight_ *= selectionEff_.effCorrEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+       selectionEffWeight_ *= selectionEff_.effCorrEle2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
      }
 
    }
@@ -478,16 +488,28 @@ void TauEleFlatNtp::beginJob(){
 
    //apply pt and eta cuts on jets
    fillPFJetList(&fullJetList_,&pfJetList_);
-
-   //lepton clean the jet list //need to fill njet_ here 
    fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetList_,&pfJetListLC_);
-   
-   //Also the list cleaned only with the muon //njetLepLC needed in recoil correction
    fillPFJetListLepLC(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetList_,&pfJetListLepLC_);
-
-   //
    fillJetVariables();
-    
+
+   //jets of pt>20
+   fillPFJetList20(&fullJetList_,&pfJetList20_);
+   fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetList20_,&pfJetList20LC_);
+   fillJetVariables20();
+   fillBTagWeight();
+
+   //B-jets
+   fillPFJetListBTag(&pfJetList20LC_,&pfJetListBTagLC_);
+   fillBJetVariables();
+
+ //   ///---- b-jets
+//    fillPFJetListB(&fullJetList_,&pfJetListB_);
+//    fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetListB_,&pfJetListBLC_);
+//    fillPFJetListBTag(&pfJetListBLC_,&pfJetListBTagLC_);
+//    fillBJetVariables();
+//    fillBTagWeight();
+
+
    //find the jet matching to the tau
    taujetpt_=0.;
    taujeteta_=0.;
@@ -517,6 +539,7 @@ void TauEleFlatNtp::beginJob(){
    fillMET();
   
    //
+   pftransversemass_=sqrt(2*mupt_*pfmetpt_*(1-cos(muphi_-pfmetphi_)));
    transversemass_=sqrt(2*mupt_*metP4_.pt()*(1-cos(muphi_-metP4_.phi())));
    compZeta(diTauSel_->leg2().p4(),diTauSel_->leg1().p4(),metP4_.px(),metP4_.py(),&pZeta_,&pZetaVis_);
 
@@ -526,17 +549,13 @@ void TauEleFlatNtp::beginJob(){
    runSVFit();
 
 
-   ///---- b-jets
-   fillPFJetListB(&fullJetList_,&pfJetListB_);
-   fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetListB_,&pfJetListBLC_);
-   fillPFJetListBTag(&pfJetListBLC_,&pfJetListBTagLC_);
-   fillBJetVariables();
-   fillBTagWeight();
-
 
    //VBF 
    vbfmva_=0.;
-   if(njet_>=2)fillVBFMVA();
+   if(njet20_>=2) fillVBFMVA();
+   vbfmva2012_=0.;
+   if(njet20_>=2) fillVBFMVA2012();
+
 
    return 1;
  }
@@ -555,7 +574,7 @@ void TauEleFlatNtp::beginJob(){
 
    bool muminus=0;
    bool muplus=0;
-   for(std::vector<cmg::Electron>::const_iterator m=diLeptonVetoList_->begin(); m!=diLeptonVetoList_->end(); ++m){  
+   for(std::vector<cmg::Electron>::const_iterator m=leptonVetoListElectron_->begin(); m!=leptonVetoListElectron_->end(); ++m){  
      if(m->pt()<=15.0)continue;
      if(fabs(m->eta())>=2.5)continue;
      if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
@@ -565,8 +584,51 @@ void TauEleFlatNtp::beginJob(){
      if(m->charge()==-1)muminus=1;
      if(m->charge()==1)muplus=1;
    }
-
    if(muminus&&muplus) return 1;
+
+   //3rd lepton veto
+   int nleptons=0;
+   for(std::vector<cmg::Muon>::const_iterator m=leptonVetoListMuon_->begin(); m!=leptonVetoListMuon_->end(); ++m){  
+     if(m->pt()<=10.0)continue;
+     if(fabs(m->eta())>=2.4)continue;
+     if(!(m->isTracker()))continue; 
+     if(!(m->isGlobal()))continue; 
+     if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
+     if(!(m->normalizedChi2() < 10))continue;
+     if(!(m->numberOfValidMuonHits() > 0))continue; 
+     if(!(m->numberOfMatches() > 1))continue; //cout<<"pass"<<endl;
+     if(!(m->trackerLayersWithMeasurement() > 5))continue; 
+   
+     ///this is crashing saying track is not there , so must check 
+     if(!((*(m->sourcePtr()))->innerTrack().isNonnull()))continue;
+     if(!((*(m->sourcePtr()))->innerTrack().isAvailable()))continue;
+     if(!((*(m->sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits() > 0))continue;
+     if(fabs((*(m->sourcePtr()))->innerTrack()->dz(PV_->position()))  > 0.2 ) continue;
+
+     if(m->relIso(0.5,1)>=0.3)continue;        
+     nleptons++;
+   }
+   for(std::vector<cmg::Electron>::const_iterator m=leptonVetoListElectron_->begin(); m!=leptonVetoListElectron_->end(); ++m){  
+     if(m->pt()<=10.0)continue;
+     if(fabs(m->eta())>=2.5)continue;
+     if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
+     if(m->numberOfHits()!=0) continue;
+     if(m->passConversionVeto()!=1) continue;
+
+     float mvaid=m->mvaNonTrigV0();
+     float eta=(*(m->sourcePtr()))->superCluster()->eta();
+     if(fabs(eta)<0.8)
+       if(mvaid<0.925)continue; 
+     if(0.8<=fabs(eta)&&fabs(eta)<1.479)
+       if(mvaid<0.975)continue;
+     if(1.479<=fabs(eta))
+       if(mvaid<0.985)continue; 
+     
+     if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
+     nleptons++;
+   }
+   if(nleptons>=3)return 1;
+   
    return 0;
  }
 

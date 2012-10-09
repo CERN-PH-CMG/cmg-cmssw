@@ -27,7 +27,6 @@ protected:
 
 private:
 
-  edm::Handle< std::vector<cmg::Muon> > diLeptonVetoList_;
   bool vetoDiLepton();
 
 

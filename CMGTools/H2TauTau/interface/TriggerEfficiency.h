@@ -395,6 +395,49 @@ public:
   
 
 
+
+  ////////////////////////////HCP 2012/////////////////////////////////////
+  // ///2012C Data curve from Josh Friday 5pm
+  // EffMuEB_Data   m0 = 16.00061526; sigma = 0.00737246; alpha = 0.00029014; n = 2.12854792; norm = 0.93371791;
+  // EffMuEE_Data   m0 = 16.65093710; sigma = 0.48774518; alpha = 0.56076820; n = 1.73768135; norm = 0.86107187;
+  double eff2012CMu17(double pt, double eta) {
+    if(fabs(eta)<1.2) 
+      return efficiency(pt,16.00061526,0.00737246,0.00029014,2.12854792,0.93371791);
+    else
+      return efficiency(pt,16.65093710,0.48774518,0.56076820,1.73768135,0.86107187);
+  }
+
+  /////Muon effiency for full 2012A+B+C
+  double effMu2012ABC(double pt, double eta) {
+    float weight_A = 696.09; 
+    float weight_B = 4327.0;
+    float weight_C = 7000.0;
+    return (weight_A * eff2012AMu18(pt, eta) + weight_B * eff2012BMu17(pt, eta) + weight_C  * eff2012CMu17(pt, eta)  )/(weight_A+weight_B+weight_C);
+  }
+
+  //   ////53X MC numbers from Josh's fit Friday 5pm
+  // EffMuEB_MC   m0 = 16.00073094; sigma = 0.00779095; alpha = 0.00029834; n = 2.13782323; norm = 0.95571348;
+  // EffMuEE_MC   m0 = 17.03319591; sigma = 0.73033173; alpha = 1.02903291; n = 1.46732719; norm = 0.89420534;
+  double effMu2012MC53X(double pt, double eta) {
+    if(fabs(eta)<1.2) 
+      return efficiency(pt,16.00073094,0.00779095,0.00029834,2.13782323,0.95571348);
+    else
+      return efficiency(pt,17.03319591,0.73033173,1.02903291,1.46732719,0.89420534);
+  }
+
+
+  ////////////Tau effiency for Full 2012A+B+C Data-set
+  // 2012BET   m0 = 18.48663118; sigma = 1.63417147; alpha = 20.25695815; n = 138.55422224; norm = 0.89456038;
+  double effTau2012ABC(double pt, double eta) {
+    return efficiency(pt,18.48663118,1.63417147,20.25695815,138.55422224,0.89456038);
+  }
+  ///Tau Efficiency for 53X MC
+  //// Eff53XMCET   m0 = 18.62733399; sigma = 0.51301539; alpha = 0.38517573; n = 5.68099833; norm = 0.91536401;
+  double effTau2012MC53X(double pt, double eta) {
+    return efficiency(pt,18.62733399,0.51301539,0.38517573,5.68099833,0.91536401);
+  }
+
+
   
   //********************************
   //e-tau 2012
@@ -457,6 +500,37 @@ public:
   double eff2012Tau20MC_TauEle(double pt, double eta) {
     return efficiency(pt, 18.77448606 , 0.45765507,  0.26077509,  13.43372485, 0.88037836);
   }
+
+
+  ////////////////////////////HCP 2012/////////////////////////////////////
+  // EffEleEB_MC   m0 = 22.00666445; sigma = 0.00036058; alpha = 0.00000251; n = 1.38456083; norm = 1.02640579; 
+  // EffEleEE_MC   m0 = 22.18226941; sigma = 1.07762306; alpha = 1.23712775; n = 1.27324238; norm = 1.15312185;
+  double effEle2012MC53X(double pt, double eta) {
+    if(fabs(eta)<1.479) 
+      return efficiency(pt,22.00666445,0.00036058,0.00000251,1.38456083,1.02640579);
+    else
+      return efficiency(pt,22.18226941,1.07762306,1.23712775,1.27324238,1.15312185);
+  }
+
+  // for 2012C Data
+  // EffEleEB_Data   m0 = 23.05556088; sigma = 0.96047151; alpha = 1.24782044; n = 1.26042277; norm = 1.09675041; 
+  // EffEleEE_Data   m0 = 21.99911375; sigma = 1.15806380; alpha = 0.80675262; n = 1.98765770; norm = 0.97138507; 
+  double eff2012CEle22(double pt, double eta) {
+    if(fabs(eta)<1.479) 
+      return efficiency(pt,23.05556088,0.96047151,1.24782044,1.26042277,1.09675041);
+    else
+      return efficiency(pt,21.99911375,1.15806380,0.80675262,1.98765770,0.97138507);
+  }
+
+  double effEle2012ABC(double pt, double eta) {
+    float weight_A = 696.09; 
+    float weight_B = 4327.0;    
+    float weight_C = 7000.;    
+    return (weight_A * eff2012AEle20(pt, eta) + weight_B * eff2012BEle22(pt, eta) + weight_C * eff2012CEle22(pt, eta))/(weight_A+weight_B+weight_C);
+  } 
+
+
+
 
 
   //****************

@@ -7,16 +7,36 @@ TauElePlotter * configTauEle2012(TString name, TString path){
   TauElePlotter * analysis = new TauElePlotter(name);
   analysis->setOutputPath(path);
   analysis->setQCDOStoSSRatio(1.1);
-  
+  analysis->setZTTType(1);
+
+  float CrossectionScaleFactor=1.011;
+  cout<<"WARNING applying scale factor for TTjets MC "<<CrossectionScaleFactor<<endl;
+
+
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
-  TauPlusX2012A->setSampleLumi(28+299+371);
+  TauPlusX2012A->setSampleLumi(96.977+316.128+396.213);
   analysis->addSample(TauPlusX2012A);
+
+  Sample* TauPlusX2012A2 = new Sample("TauPlusX2012A2",path);
+  TauPlusX2012A2->setDataType("Data");
+  TauPlusX2012A2->setSampleLumi(82.136);
+  analysis->addSample(TauPlusX2012A2);
 
   Sample* TauPlusX2012B = new Sample("TauPlusX2012B",path);
   TauPlusX2012B->setDataType("Data");
-  TauPlusX2012B->setSampleLumi(4341);
+  TauPlusX2012B->setSampleLumi(4403.);
   analysis->addSample(TauPlusX2012B);
+
+  Sample* TauPlusX2012Cv1 = new Sample("TauPlusX2012Cv1",path);
+  TauPlusX2012Cv1->setDataType("Data");
+  TauPlusX2012Cv1->setSampleLumi(495.003);
+  analysis->addSample(TauPlusX2012Cv1);
+
+  Sample* TauPlusX2012Cv2 = new Sample("TauPlusX2012Cv2",path);
+  TauPlusX2012Cv2->setDataType("Data");
+  TauPlusX2012Cv2->setSampleLumi(1288.0 + 4751.0 + 272.040);
+  analysis->addSample(TauPlusX2012Cv2);
 
   Sample* Embedded2012A = new Sample("Embedded2012A",path);
   Embedded2012A->setDataType("Embedded");
@@ -30,84 +50,112 @@ TauElePlotter * configTauEle2012(TString name, TString path){
   Embedded2012B2->setDataType("Embedded");
   analysis->addSample(Embedded2012B2);
 
-  Sample * WJetsToLNu=new Sample("WJetsToLNu",path);
-  WJetsToLNu->setDataType("MC");
-  WJetsToLNu->setCrossection(36257.2);//https://twiki.cern.ch/twiki/bin/view/CMS/StandardModelCrossSectionsat8TeV
-  WJetsToLNu->addRootFiles("WJetsToLNu2");//add previous sample with 18M events
-  WJetsToLNu->setSampleGenEvents(60000000 + 18000000.);
-  analysis->addSample(WJetsToLNu);  
-  
 
-//   Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
-//   W2JetsToLNu->setDataType("MCCat");
-//   W2JetsToLNu->setCrossection(1.);//This is wrong only use for shape
-//   W2JetsToLNu->setSampleGenEvents(25400546);//This is wrong only use for shape
-//   analysis->addSample(W2JetsToLNu);  
-   
-  Sample * W3JetsToLNu=new Sample("W3JetsToLNu",path);
-  W3JetsToLNu->setDataType("MCCat");
-  W3JetsToLNu->setCrossection(1.0);//this is wrong
-  W3JetsToLNu->setSampleGenEvents(15539503);
-  analysis->addSample(W3JetsToLNu);  
-   
-  float CrossectionScaleFactor=0.976;
-  cout<<"WARNING applying scale factor for TTjets MC "<<CrossectionScaleFactor<<endl;
-  Sample* TTJets = new Sample("TTJets",path);
-  TTJets->setDataType("MC");
-  TTJets->setCrossection(225.2*CrossectionScaleFactor);
-  TTJets->setSampleGenEvents(6736135);
-  analysis->addSample(TTJets);
-
+  ///DY
   cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
   Sample* ZToTauTau = new Sample("ZToTauTau",path);
   ZToTauTau->setDataType("MC");
   ZToTauTau->setCrossection(3503.71*CrossectionScaleFactor);
-  ZToTauTau->setSampleGenEvents(30237315);
   analysis->addSample(ZToTauTau);
 
   Sample* ZToEE = new Sample("ZToEE",path);
   ZToEE->setDataType("MC");
   ZToEE->setCrossection(ZToTauTau->getCrossection());
-  ZToEE->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
   analysis->addSample(ZToEE);
 
   Sample* ZToLJet = new Sample("ZToLJet",path);
   ZToLJet->setDataType("MC");
   ZToLJet->setCrossection(ZToTauTau->getCrossection());
-  ZToLJet->setSampleGenEvents(ZToTauTau->getSampleGenEvents());
   analysis->addSample(ZToLJet);
 
-//   Sample* WW = new Sample("WW",path);
-//   WW->setDataType("MC");
-//   WW->setCrossection(27.83);
-//   WW->setSampleGenEvents(4225916);
-//   analysis->addSample(WW);
+  /////////W+jets
+  Sample * WJetsToLNu=new Sample("WJetsToLNu",path);
+  WJetsToLNu->setDataType("MC");
+  WJetsToLNu->setCrossection(36257.2);//https://twiki.cern.ch/twiki/bin/view/CMS/StandardModelCrossSectionsat8TeV
+  WJetsToLNu->addRootFiles("WJetsToLNu2");//add previous sample with 18M events
+  analysis->addSample(WJetsToLNu);  
 
-//   Sample* WZ = new Sample("WZ",path);
-//   WZ->setDataType("MC");
-//   WZ->setCrossection(10.47);
-//   WZ->setSampleGenEvents(4265243);
-//   analysis->addSample(WZ);
+  Sample * W1JetsToLNu=new Sample("W1JetsToLNu",path);
+  W1JetsToLNu->setDataType("MCCat");
+  W1JetsToLNu->setCrossection(WJetsToLNu->getCrossection()*0.175999);
+  analysis->addSample(W1JetsToLNu);  
 
-//   Sample* ZZ = new Sample("ZZ",path);
-//   ZZ->setDataType("MC");
-//   ZZ->setCrossection(4.287);
-//   ZZ->setSampleGenEvents(4191045);
-//   analysis->addSample(ZZ);
+  Sample * W2JetsToLNu=new Sample("W2JetsToLNu",path);
+  W2JetsToLNu->setDataType("MCCat");
+  W2JetsToLNu->setCrossection(WJetsToLNu->getCrossection()*0.0562617);
+  analysis->addSample(W2JetsToLNu);  
+   
+  Sample * W3JetsToLNu=new Sample("W3JetsToLNu",path);
+  W3JetsToLNu->setDataType("MCCat");
+  W3JetsToLNu->setCrossection(WJetsToLNu->getCrossection()*0.0168926);
+  analysis->addSample(W3JetsToLNu);  
 
+  Sample * W4JetsToLNu=new Sample("W4JetsToLNu",path);
+  W4JetsToLNu->setDataType("MCCat");
+  W4JetsToLNu->setCrossection(WJetsToLNu->getCrossection()*0.00692218);
+  analysis->addSample(W4JetsToLNu);  
+   
+
+  ///TTJets
+  Sample* TTJets = new Sample("TTJets",path);
+  TTJets->setDataType("MC");
+  TTJets->setCrossection(225.2*CrossectionScaleFactor);
+  analysis->addSample(TTJets);
+
+
+  //Di-Bosons
+  
+
+  Sample* WW2L2Nu = new Sample("WW2L2Nu",path);
+  WW2L2Nu->setDataType("MC");
+  WW2L2Nu->setCrossection(5.824);
+  analysis->addSample(WW2L2Nu);
+
+  Sample* WZ3LNu = new Sample("WZ3LNu",path);
+  WZ3LNu->setDataType("MC");
+  WZ3LNu->setCrossection(1.058);
+  analysis->addSample(WZ3LNu);
+
+  Sample* WZ2L2Q = new Sample("WZ2L2Q",path);
+  WZ2L2Q->setDataType("MC");
+  WZ2L2Q->setCrossection(2.207);
+  analysis->addSample(WZ2L2Q);
+
+  Sample* ZZ4L = new Sample("ZZ4L",path);
+  ZZ4L->setDataType("MC");
+  ZZ4L->setCrossection(0.181);
+  analysis->addSample(ZZ4L);
+
+  Sample* ZZ2L2Nu = new Sample("ZZ2L2Nu",path);
+  ZZ2L2Nu->setDataType("MC");
+  ZZ2L2Nu->setCrossection(0.716);
+  analysis->addSample(ZZ2L2Nu);
+
+  Sample* ZZ2L2Q = new Sample("ZZ2L2Q",path);
+  ZZ2L2Q->setDataType("MC");
+  ZZ2L2Q->setCrossection(2.502);
+  analysis->addSample(ZZ2L2Q);
+
+  ////SingleTop
+  Sample* TopTW = new Sample("TopTW",path);
+  TopTW->setDataType("MC");
+  TopTW->setCrossection(11.1);
+  analysis->addSample(TopTW);
+
+  Sample* TopBTW = new Sample("TopBTW",path);
+  TopBTW->setDataType("MC");
+  TopBTW->setCrossection(11.1);
+  analysis->addSample(TopBTW);
 
 
   //copied from mu-tau 
   Int_t HiggsMass[8]={110,115,120,125,130,135,140,145};
   Float_t HiggsTauTauBF[8]={ 8.03e-2, 7.65e-2,  7.11e-2,  6.37e-2,  5.49e-2,  4.52e-2, 3.54e-2,2.62e-2};
   Float_t HiggsGGcross[8]={25.04,22.96,21.13,19.52,18.07,16.79,15.63,14.59};
-  Int_t   HiggsGGNevt[8]={999907,917825,4989661,968134,999921,860729,999932,962119};
   Float_t HiggsVBFcross[8]={ 1.809,1.729,1.649,1.578,1.511,1.448,1.389,1.333 };
-  Int_t   HiggsVBFNevt[8]={499385,998870,4798759,998836,990701,998817,998894,998883};
   Float_t HiggsWHcross[8]={1.060,0.9165,0.7966,0.6966,0.6095,0.5351,0.4713,0.4164};
   Float_t HiggsZHcross[8]={0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.2728,0.2424 };
   Float_t HiggsttHcross[8]={ 0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246 };
-  Int_t   HiggsVHNevt[8]={200408,200460,200448,200124,200080,194464,200186,200384};
 
   char nam[100];
   for(Int_t i=0;i<8;i++){
@@ -116,21 +164,18 @@ TauElePlotter * configTauEle2012(TString name, TString path){
     Sample* HiggsGG = new Sample(nam,path);
     HiggsGG->setDataType("Signal");
     HiggsGG->setCrossection(HiggsGGcross[i]*HiggsTauTauBF[i]);
-    HiggsGG->setSampleGenEvents(HiggsGGNevt[i]);
     analysis->addSample(HiggsGG);    
 
     sprintf(nam,"HiggsVBF%d",HiggsMass[i]);
     Sample* HiggsVBF=new Sample(nam,path);
     HiggsVBF->setDataType("Signal");
     HiggsVBF->setCrossection(HiggsVBFcross[i]*HiggsTauTauBF[i]);
-    HiggsVBF->setSampleGenEvents(HiggsVBFNevt[i]);
     analysis->addSample(HiggsVBF);    
 
     sprintf(nam,"HiggsVH%d",HiggsMass[i]);
     Sample* HiggsVH=new Sample(nam,path);
     HiggsVH->setDataType("Signal");
     HiggsVH->setCrossection((HiggsWHcross[i]+HiggsZHcross[i]+HiggsttHcross[i])*HiggsTauTauBF[i]);
-    HiggsVH->setSampleGenEvents(HiggsVHNevt[i]);
     analysis->addSample(HiggsVH);    
   }
 

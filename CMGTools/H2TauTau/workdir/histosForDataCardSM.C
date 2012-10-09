@@ -11,8 +11,16 @@
 
 #define NMASS 8
 #define NCAT 5
-
 long massValues[NMASS]={110,115,120,125,130,135,140,145};
+
+//#define NMASS 20
+//#define NCAT 7
+//long massValues[NMASS]={90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
+
+#define NXBINS 22
+//Float_t xbinsValues[13+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
+float xbinsValues[NXBINS]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
+
 
 TString catdirname[NCAT]={
  "0jet_low",
@@ -30,8 +38,6 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
   else if(channel==2)ChannelName="eTau";
   else return;
   cout<<"ChannelName "<<ChannelName<<endl;
-
-  Float_t xbinsValues[13+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
   
   if(channel==1){
     if(year==2011)TauMuPlotter * analysis=configTauMu2011("analysis",path);
@@ -42,14 +48,14 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
     if(year==2012)TauElePlotter * analysis=configTauEle2012("analysis",path);
   }
   
-  analysis->plotvar_="svfitmass";
+  //analysis->plotvar_="svfitmass";
   //analysis->plotvar_="ditaumass";
-  analysis->setVariableBinning(13,xbinsValues);
+  analysis->plotvar_="mupt";
+  analysis->setVariableBinning(NXBINS-1,xbinsValues);
   analysis->nbins_=0;
   analysis->Isocat_=1;
   analysis->MTcat_=1; 
   analysis->Chcat_=1; 
-  analysis->setZTTType(2);
 
   analysis->printRawYields("eventweight*(categoryIso==1&&abs(ditaucharge)==0)");//This might be needed to avoid some nan values
 
@@ -73,14 +79,20 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
 	if(sm==4)                    QCD=analysis->getQCDMike();
       }
       if(year==2012){
-	if(sm==0 || sm==1 || sm==2 || sm==3 ) QCD=analysis->getQCDIncLooseShape();
-	if(sm==4)                             QCD=analysis->getQCDMike();
+	if(sm==0 || sm==1 || sm==2 || sm==3 ) QCD=analysis->getQCDInc();
+	if(sm==4)                             QCD=analysis->getQCDHCP();
       }
     }
     if(channel==2){//e-tau
-      if(sm==0 || sm==1) QCD=analysis->getQCDIncLooseShape();//getQCDInc();
-      if(sm==2 || sm==3) QCD=analysis->getQCDIncLooseShape();//getQCDInc();
-      if(sm==4)          QCD=analysis->getQCDMike();
+      if(year==2011){
+	if(sm==0 || sm==1) QCD=analysis->getQCDIncLooseShape();//getQCDInc();
+	if(sm==2 || sm==3) QCD=analysis->getQCDIncLooseShape();//getQCDInc();
+	if(sm==4)          QCD=analysis->getQCDMike();
+      }
+      if(year==2012){
+	if(sm==0 || sm==1 || sm==2 || sm==3 ) QCD=analysis->getQCDInc();
+	if(sm==4)                             QCD=analysis->getQCDHCP();
+      }
     }
     QCD->SetName("QCD");
 
@@ -93,14 +105,22 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
 	if(sm==4)          W = analysis->getW3JetsVBF();
       }
       if(year==2012){
-	if(sm==0 || sm==1 || sm==2 || sm==3 ) W = analysis->getWJetsInc();
-	if(sm==4)                             W = analysis->getW3JetsVBF(); 
+	if(sm==0 || sm==1 ) W = analysis->getWJetsInc();
+	if(sm==2 || sm==3 ) W = analysis->getWJetsNJet();
+	if(sm==4)           W = analysis->getWJetsNJet(); 
       }
     }
     if(channel==2){//e-tau
-      if(sm==0 || sm==1) W = analysis->getWJetsInc();
-      if(sm==2 || sm==3) W = analysis->getWJetsInc();
-      if(sm==4)          W = analysis->getW3JetsVBF();
+      if(year==2011){
+	if(sm==0 || sm==1) W = analysis->getWJetsInc();
+	if(sm==2 || sm==3) W = analysis->getWJetsInc();
+	if(sm==4)          W = analysis->getW3JetsVBF();
+      }
+      if(year==2012){
+	if(sm==0 || sm==1) W = analysis->getWJetsInc();
+	if(sm==2 || sm==3) W = analysis->getWJetsNJet();
+	if(sm==4)          W = analysis->getWJetsNJet(); 
+      }
     }
     W->SetName("W");
 
@@ -127,8 +147,12 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
     ZLL->SetName("ZLL");
     ZLL->Add(ZJ);
 
+    //blind
+    TString tmpsel=analysis->extrasel_;
+    //analysis->extrasel_ += "*(svfitmass<100||160<svfitmass)"; 
     TH1F* data_obs = analysis->getTotalData();
     data_obs->SetName("data_obs");
+    analysis->extrasel_ =tmpsel;
 
 
     dir->cd();
@@ -169,9 +193,9 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
       TH1F* VH = analysis->getSample(TString("HiggsVH")+ma);
       VH->SetName(TString("VH")+ma);
 
-      //SM->Scale(1./analysis->findSample(TString("HiggsGG")+ma)->getCrossection());
-      //VBF->Scale(1./analysis->findSample(TString("HiggsVBF")+ma)->getCrossection());
-      //VH->Scale(1./analysis->findSample(TString("HiggsVH")+ma)->getCrossection());
+      SM->Scale(1./analysis->findSample(TString("HiggsGG")+ma)->getCrossection());
+      VBF->Scale(1./analysis->findSample(TString("HiggsVBF")+ma)->getCrossection());
+      VH->Scale(1./analysis->findSample(TString("HiggsVH")+ma)->getCrossection());
       
       
       dir->cd();
@@ -214,6 +238,7 @@ void plotDataCard(TString file, Int_t channel){
   for(long sm=0;sm<NCAT;sm++){
 
     TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
+    if(!ZTT)continue;
     TH1F* QCD = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
     TH1F* W = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/W");
     TH1F* TT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/TT");

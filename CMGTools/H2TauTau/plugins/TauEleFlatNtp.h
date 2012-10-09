@@ -43,63 +43,6 @@ private:
   edm::Handle< std::vector<cmg::Electron> > diLeptonVetoList_;
   bool vetoDiLepton();
 
-  //electron id WP95
-  bool electronIDWP95(const cmg::Electron * cand){
-    ///https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
-    if(!cand) return 0;
-    if((*(cand->sourcePtr()))->isEB()
-       && cand->deltaEtaSuperClusterTrackAtVtx()<0.007
-       && cand->deltaPhiSuperClusterTrackAtVtx()<0.800
-       && cand->sigmaIetaIeta()<0.01
-       && cand->hadronicOverEm()<0.15
-       ) return 1;
-    else if((*(cand->sourcePtr()))->isEE()
-	    && cand->deltaEtaSuperClusterTrackAtVtx()<0.01
-	    && cand->deltaPhiSuperClusterTrackAtVtx()<0.70
-	    && cand->sigmaIetaIeta()<0.03
-	    )return 1;
-    else return 0;
-  }
-
-  //custom electron isolation
-  float electronRelIsoDBCorr(const cmg::Electron * cand){
-    if(!cand) return 9999.;
-
-    //these are ok in the cmgElectron
-    float neutralhad=cand->neutralHadronIso();
-    float puchhad=cand->puChargedHadronIso();
-
-    //these two need to be recomputed with proper cone vetos
-    float charged=0.;//cand->chargedAllIsoWithConeVeto();
-    float photon=cand->photonIso();
-    const pat::Electron * input= &(*(*(cand->sourcePtr())));
-
-    //charged particle iso
-    reco::isodeposit::AbsVetos allChargedVetoesCollection ;
-    float coneSizeCh = 0.01 ;
-    if (input->isEE()) coneSizeCh = 0.015 ;
-    reco::isodeposit::ConeVeto allChargedVeto (reco::isodeposit::Direction(input->eta (), input->phi ()), coneSizeCh) ;
-    allChargedVetoesCollection.push_back (&allChargedVeto) ;
-    charged = (input->isoDeposit(pat::PfChargedAllIso)->depositAndCountWithin(0.4,allChargedVetoesCollection,false ).first);
-    
-
-    //photon iso
-    reco::isodeposit::AbsVetos photonVetoesCollection ;
-    float coneSizePhoton = 0.08 ;
-    if (input->isEE()) coneSizePhoton = 0.08 ;
-    reco::isodeposit::ConeVeto photonVeto (reco::isodeposit::Direction(input->eta (), input->phi ()), coneSizePhoton) ;
-    photonVetoesCollection.push_back (&photonVeto) ;    
-    photon = input->isoDeposit(pat::PfGammaIso)->depositAndCountWithin(0.4,photonVetoesCollection,false ).first ;
-    
-    //cout<<" "<<charged<<" "<<photon<<endl;
-
-    if(cand->pt()>0.)
-      return (charged + TMath::Max(neutralhad+photon - 0.5*puchhad,0.))/cand->pt();
-    else return 9999.;
-  }
-
-
-
 
   int counterev_;
   int counterveto_;
