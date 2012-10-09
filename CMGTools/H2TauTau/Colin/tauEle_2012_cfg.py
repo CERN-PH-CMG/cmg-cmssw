@@ -147,7 +147,7 @@ treeProducerXCheck = cfg.Analyzer(
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinJul5 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinAug8 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauEle_Sync_ColinOct1 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_Sync_ColinOct1 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroSep25 import *
 
 #########################################################################################
@@ -231,7 +231,7 @@ if test==1:
     comp.splitFactor = 14
     # comp.files = comp.files[:1]
     # for 53 MC: 
-    comp.triggers = ['HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*']
+#    comp.triggers = ['HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*']
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1

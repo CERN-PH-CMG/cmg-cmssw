@@ -149,8 +149,8 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_dcSync_ColinSep5 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_dcSync_ColinSep17 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinAug8 import *
-
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinSep17 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_PietroOct05 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_ColinSep17 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinSep19 import *
 
 #########################################################################################
@@ -213,7 +213,7 @@ sequence = cfg.Sequence( [
     dyJetsFakeAna,
     WNJetsAna,
     higgsWeighter, 
-    vbfAna,
+#    vbfAna,
     pileUpAna,
     embedWeighter, 
     tauWeighter, 
@@ -232,8 +232,8 @@ if test==1:
     # comp = WJets
     # comp.files = 'Aug14/joshMinusColin.root'
     selectedComponents = [comp]
-    comp.splitFactor = 1
-    comp.files = comp.files[:10]
+#    comp.splitFactor = 1
+#    comp.files = comp.files[:10]
     # for 53 MC: 
     comp.triggers = ['HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v*']
 elif test==2:

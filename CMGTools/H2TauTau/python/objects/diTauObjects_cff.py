@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.diTau_cff import *
 from CMGTools.H2TauTau.objects.diTauCuts_cff import * 
 
-from CMGTools.Common.generator.metRecoilCorrection.metRecoilCorrection_cff import *
+from CMGTools.H2TauTau.generator.metRecoilCorrection.metRecoilCorrection_cff import *
 from CMGTools.Common.factories.cmgTauScaler_cfi import  cmgTauScaler
 from CMGTools.Common.factories.cmgDiTauCor_cfi import cmgDiTauCor 
 from CMGTools.H2TauTau.objects.diTauSVFit_cfi import diTauSVFit 
