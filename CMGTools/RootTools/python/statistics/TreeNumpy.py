@@ -2,11 +2,20 @@ import numpy
 from ROOT import TTree
 
 class TreeNumpy(object):
-
+    
     def __init__(self, name, title):
         self.vars = {}
         self.tree = TTree(name, title)
-
+        
+    def copyStructure(self, tree):
+        for branch in tree.GetListOfBranches():
+            name = branch.GetName() 
+            typeName = branch.GetListOfLeaves()[0].GetTypeName()
+            type = float
+            if typeName == 'Int_t':
+                type = int
+            self.var(name, type)            
+            
     def var(self, varName,type=float ):
         self.vars[varName]=numpy.zeros(1,type)
         if type is float  : 
@@ -15,11 +24,11 @@ class TreeNumpy(object):
             self.tree.Branch(varName,self.vars[varName],varName+'/I')
         else:
             print 'Unknown type '
-
+            
     def reset(self):
         for name,value in self.vars.iteritems():
             value[0]=-99
-
+            
     def fill(self, varName, value ):
         self.vars[varName][0]=value
 

@@ -1,4 +1,5 @@
 from CMGTools.RootTools.PyRoot import * 
+from CMGTools.RootTools.Style import * 
 
 num = 0
 def hname():
@@ -6,19 +7,34 @@ def hname():
     num+=1
     return 'h_{num}'.format(num=num)
 
-def draw(var, cut, t1, t2, w1='1', w2='1'):
-    h1 = TH1F(hname(), '1', 10, 0, 200)
+legend = None
+
+def draw(var, cut, t1, t2, w1='1', w2='1', name1=None, name2=None,normalize=True, nbins=20):
+    global legend
+    h1 = TH1F(hname(), '1', nbins, 0, 200)
     h1.Sumw2()
     t1.Project(h1.GetName(), var,'({cut})*({w1})'.format(cut=cut,w1=w1),'')
-    h1.Scale(1./h1.Integral())
     h2 = h1.Clone(hname())
     h2.Sumw2()
     t2.Project(h2.GetName(), var,'({cut})*({w2})'.format(cut=cut,w2=w2),'')
-    h2.Scale(1./h2.Integral())
+    if normalize:
+        h1.Scale(1./h1.Integral())
+        h2.Scale(1./h2.Integral())
+    else:
+        h2.Scale(h1.Integral()/h2.Integral())
     h2.Draw()
-    h1.SetLineColor(4)
+    sBlue.formatHisto(h1)
+    sBlack.formatHisto(h2)
+    h1.SetMarkerSize(0.8)
+    h2.SetMarkerSize(0.8)
     h1.Draw('same')
     gPad.Update()
+    if name1 is None: name1 = t1.GetTitle()
+    if name2 is None: name2 = t2.GetTitle()
+    legend = TLegend(0.55,0.7,0.9,0.9)
+    legend.AddEntry(h1, name1, 'lpf')
+    legend.AddEntry(h2, name2, 'lpf')
+    legend.Draw('same')
     return h1, h2
 
 # hw, hdy = draw('diTau.obj.mTLeg2()', 'diTau.obj.mTLeg2()<300')

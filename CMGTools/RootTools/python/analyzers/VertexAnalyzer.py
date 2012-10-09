@@ -7,7 +7,15 @@ from CMGTools.RootTools.statistics.Average import Average
 from CMGTools.RootTools.physicsobjects.PileUpSummaryInfo import PileUpSummaryInfo
 
 class VertexAnalyzer( Analyzer ):
-    '''Analyze vertices, add weight to MC events'''
+    '''Analyze vertices, add weight to MC events.
+
+    Example:
+
+    vertexAna = cfg.Analyzer(
+      "VertexAnalyzer",
+      fixedWeight = 1.
+    )
+    '''
 
     def declareHandles(self):
         super(VertexAnalyzer, self).declareHandles()

@@ -99,7 +99,8 @@ class Component( CFG ):
                                           triggers = triggers, **kwargs)
         self.isMC = False
         self.isData = False
-        self.isEmbed = False 
+        self.isEmbed = False
+        self.dataset_entries = 0
 
 
 class DataComponent( Component ):
