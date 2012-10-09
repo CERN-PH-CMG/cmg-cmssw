@@ -13,6 +13,12 @@ import copy
 
 class BTagEffWeighter( GenParticleAnalyzer ):
     '''Weight the event to get the NLO Higgs pT distribution for ggH events
+
+       btagEffAna = cfg.Analyzer(
+          'BTagEffWeighter',
+          workingPoint = 0.679, 
+          verbose = True
+          )
     '''
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
