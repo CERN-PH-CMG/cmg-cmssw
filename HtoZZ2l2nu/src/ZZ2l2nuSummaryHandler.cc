@@ -660,7 +660,8 @@ bool ZZ2l2nuSummaryHandler::hasSpoilerAlert(bool isData)
   LorentzVector l1(evSummary_.l1_px,evSummary_.l1_py,evSummary_.l1_pz,evSummary_.l1_en);
   LorentzVector l2(evSummary_.l2_px,evSummary_.l2_py,evSummary_.l2_pz,evSummary_.l2_en);
   LorentzVector visible(l1+l2);
-  LorentzVector invisible(evSummary_.met_pt[0]*cos(evSummary_.met_phi[0]),evSummary_.met_pt[0]*sin(evSummary_.met_phi[0]),0,evSummary_.met_pt[0]);
+  //  LorentzVector invisible(evSummary_.met_pt[0]*cos(evSummary_.met_phi[0]),evSummary_.met_pt[0]*sin(evSummary_.met_phi[0]),0,evSummary_.met_pt[0]);
+  LorentzVector invisible(evSummary_.met_pt[2]*cos(evSummary_.met_phi[2]),evSummary_.met_pt[2]*sin(evSummary_.met_phi[2]),0,evSummary_.met_pt[2]);
   LorentzVector sum=visible+invisible;
   Double_t tMass = TMath::Power(TMath::Sqrt(TMath::Power(visible.pt(),2)+pow(visible.mass(),2))+TMath::Sqrt(TMath::Power(invisible.pt(),2)+pow(visible.mass(),2)),2);
   tMass-=TMath::Power(sum.pt(),2);

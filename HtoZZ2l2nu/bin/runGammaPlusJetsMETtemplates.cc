@@ -201,19 +201,15 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "met_phi"  , ";#phi [rad];Events", 50,0,3.5) );
   mon.addHistogram( new TH1F( "met_rawmet"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "met_met250"  , ";E_{T}^{miss};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "met_min3Met"  , ";min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,250) );
-  mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,250) );
+  mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 15,76,106) );
   mon.addHistogram( new TH2F( "met_met_vspu"       , ";Vertices;E_{T}^{miss};Events", 50,0,50,50,0,500) );
-  mon.addHistogram( new TH2F( "met_min3Met_vspu"       , ";Vertices;min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,500) );
   mon.addHistogram( new TH2F( "met_redMet_vspu"       , ";Vertices;red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,500) );
-  
   mon.addHistogram( new TH2F ("mt_shapes", ";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 160,150,950) );  
+  mon.addHistogram( new TH2F ("mt_redMet_shapes", ";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 160,150,950) );  
   
-
   //jet id efficiencies
   TString jetRegs[]={"TK","HEin","HEout","HF"};
   const size_t nJetRegs=sizeof(jetRegs)/sizeof(TString);
@@ -439,6 +435,7 @@ int main(int argc, char* argv[])
       //
       //LorentzVector metP4(phys.met[0]);
       LorentzVector metP4(phys.met[2]);
+
       LorentzVectorCollection zvvs;
       std::vector<PhysicsObjectJetCollection> jets;
       METUtils::computeVariation(phys.ajets, phys.leptons, metP4, jets, zvvs, &jecUnc);
@@ -520,9 +517,9 @@ int main(int argc, char* argv[])
       if(isGammaEvent)
 	{
 	  passKinematics &= (fabs(gamma.eta())<1.4442); 
-	  passKinematics &= (r9>0.9 && r9<1.0);
+	  passKinematics &= (/*r9>0.9 &&*/ r9<1.0);
 	  if(!isMC)    passKinematics &= (gamma.pt()>gammaEvHandler.triggerThr());
-	  passKinematics &= (njets15>0);
+	  //passKinematics &= (njets15>0);
 	}
       bool passBveto              (nbtags==0);
       bool passMinDphiJmet        (mindphijmet>0.5);
@@ -536,14 +533,23 @@ int main(int argc, char* argv[])
       if(njets30==0)
 	{
 	  subcats.push_back("eq0jets");
-	  //if(njets15==0)         subcats.push_back("eq0softjets");
-	  //else                   subcats.push_back("eq0hardjets");
+	  if(njets15==0)         subcats.push_back("eq0softjets");
+	  else                   subcats.push_back("eq0hardjets");
 	} 
       else if(njets30==1)        subcats.push_back("eq1jets");
-      else if(tag_subcat=="vbf") subcats.push_back("vbf");
+      else if(tag_subcat=="vbf") {
+	subcats.push_back(tag_subcat);
+	TString tag_subcatVBF(tag_subcat);
+	if(fabs(jetsToUse[0].eta())<2.1 && fabs(jetsToUse[1].eta())<2.1)      { tag_subcatVBF+="2"; }
+	else if(fabs(jetsToUse[0].eta())<2.1 || fabs(jetsToUse[1].eta())<2.1) { tag_subcatVBF+="1"; }
+	else                                                                  { tag_subcatVBF+="0"; }
+	subcats.push_back(tag_subcatVBF);
+      }
       else if(njets30==2)        { subcats.push_back("eq2jets");  tag_subcat="eq2jets"; }
       else if(njets30>2)         { subcats.push_back("geq3jets"); tag_subcat="geq3jets"; }
       
+
+
       //add blinding (dilepton only)
       bool mustBlind = (!isMC && !isGammaEvent && runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC));
       bool hasVbfBlinding(!isMC && !isGammaEvent && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
@@ -688,10 +694,7 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("met_rawmet",      ctf, phys.met[0].pt(),iweight);
 		  mon.fillHisto("metoverqt",       ctf, metP4.pt()/gamma.pt(),iweight);
 		  mon.fillHisto("met_met",         ctf, metP4.pt(),iweight);
-		  if(mt>250) mon.fillHisto("met_met250",         ctf, metP4.pt(),iweight);
 		  mon.fillHisto("met_met_vspu",    ctf, ev.nvtx,metP4.pt(),iweight);
-		  mon.fillHisto("met_min3Met",     ctf, min3Met.pt(),iweight);
-		  mon.fillHisto("met_min3Met_vspu",ctf, ev.nvtx,min3Met.pt(),iweight);
 		  mon.fillHisto("met_redMet",      ctf, redMet.pt(),iweight);
 		  mon.fillHisto("met_redMet_vspu", ctf, ev.nvtx,redMet.pt(),iweight);
 		  mon.fillHisto("met_redMetT",     ctf, redMetL,iweight);
@@ -707,7 +710,8 @@ int main(int argc, char* argv[])
 		  for(unsigned int index=0;index<nOptimCuts;index++){
 		    if ( index<nOptimCuts-1 && zvvs[0].pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
 		      mon.fillHisto("mt_shapes",ctf,index, mt,iweight);
-		   
+		    if ( index<nOptimCuts-1 && redMet.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
+		      mon.fillHisto("mt_redMet_shapes",ctf,index, mt,iweight);
 		  } 
 		}
 	    }

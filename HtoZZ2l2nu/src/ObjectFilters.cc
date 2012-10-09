@@ -1145,9 +1145,27 @@ std::pair<int,vector<const reco::Candidate *> > assignPhysicsChannel(edm::Handle
   bool isSignal(false);
   int nZgs(0), nWs(0), nTops(0);
   int nElecs(0), nMuons(0), nTaus(0), nNeutrinos(0);
+  int nPromptPhotons(0);
   for(size_t i = 0; i < genParticles->size(); ++ i)
     {
       const reco::GenParticle & p = dynamic_cast<const reco::GenParticle &>( (*genParticles)[i] );
+
+      //PROMPT PHOTON COUNTING from Hgg
+      if(p.status()==1 && abs(p.pdgId()==22) && p.pt()>20)
+	{
+	  bool isPromptOrRad(false);
+	  for(size_t b = 0; b < p.numberOfMothers(); ++ b)
+	    {
+	      const reco::Candidate *p_m = p.mother(b);
+	      if(abs(p_m->pdgId())>25) continue;
+	      isPromptOrRad=true;
+	    }
+	  if(isPromptOrRad){
+	    genTree.push_back(&p);
+	    nPromptPhotons++;
+	  }
+	}
+
       if( p.status()!=3) continue;
       int id_p   = abs(p.pdgId());         
       if(id_p== filterId) { genTree.push_back(&p); isSignal=true; continue; }
@@ -1203,6 +1221,7 @@ std::pair<int,vector<const reco::Candidate *> > assignPhysicsChannel(edm::Handle
 	}
       else if(nWs==1 && nZgs==1) mcChannel |= (WZ_CH << 8);
     }
+  mcChannel += (nPromptPhotons << 28);
 
   return std::pair<int,vector<const reco::Candidate *> >(mcChannel,genTree);
 }

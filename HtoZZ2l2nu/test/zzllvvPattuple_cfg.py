@@ -26,12 +26,36 @@ if(getSelVersion()==2012) :
             if(is52xData is True) : gt='FT_53_V10_AN1::All'
         except:
             gt='GR_P_V41_AN1::All'
+            
+        #cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagJetProbabilityCalibration#Calibration_in_53x_Data_and_MC
+        process.GlobalTag.toGet = cms.VPSet( cms.PSet(record = cms.string("BTagTrackProbability2DRcd"),
+                                                      tag = cms.string("TrackProbabilityCalibration_2D_Data53X_v2"),
+                                                      connect = cms.untracked.string("frontier://FrontierPrep/CMS_COND_BTAU")),
+                                             cms.PSet(record = cms.string("BTagTrackProbability3DRcd"),
+                                                      tag = cms.string("TrackProbabilityCalibration_3D_Data53X_v2"),
+                                                      connect = cms.untracked.string("frontier://FrontierPrep/CMS_COND_BTAU"))
+                                             )
     else :
         gt = 'START53_V10::All'
+        process.GlobalTag.toGet = cms.VPSet(cms.PSet(record = cms.string("BTagTrackProbability2DRcd"),
+                                                     tag = cms.string("TrackProbabilityCalibration_2D_MC53X_v2"),
+                                                     connect = cms.untracked.string("frontier://FrontierPrep/CMS_COND_BTAU")),
+                                            cms.PSet(record = cms.string("BTagTrackProbability3DRcd"),
+                                                     tag = cms.string("TrackProbabilityCalibration_3D_MC53X_v2"),
+                                                     connect = cms.untracked.string("frontier://FrontierPrep/CMS_COND_BTAU"))
+                                            )
 else:
     process.load("Configuration.StandardSequences.Geometry_cff")
     if ( not runOnMC ) : gt='GR_R_44_V13::All'
-    else               : gt='START44_V12::All'
+    else               :
+        gt='START44_V12::All'
+        process.GlobalTag.toGet = cms.VPSet(cms.PSet(record = cms.string("BTagTrackProbability2DRcd"),
+                                                     tag = cms.string("TrackProbabilityCalibration_2D_MC_80_Ali44_v1"),
+                                                     connect = cms.untracked.string("frontier://FrontierPrep/CMS_COND_BTAU")),
+                                            cms.PSet(record = cms.string("BTagTrackProbability3DRcd"),
+                                                     tag = cms.string("TrackProbabilityCalibration_3D_MC_80_Ali44_v1"),
+                                                     connect = cms.untracked.string("frontier://FrontierPrep/CMS_COND_BTAU"))
+                                            )
 
 print 'Using the following global tag %s'%gt
 process.GlobalTag.globaltag = gt

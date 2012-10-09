@@ -109,9 +109,12 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   else
     {
       //10/fb @ 8 TeV
-      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
+      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
-      llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
+      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
+
+      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
+      llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
 
       //5/fb @ 8 TeV
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotterab.root";
@@ -124,14 +127,14 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //llFile    = "/afs/cern.ch/work/q/querten/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
      
       histos.push_back("met_met");
-      // histos.push_back("met_met250");
       histos.push_back("met_redMet");
       histos.push_back("mt");
-      //histos.push_back("mindphijmet");
-      //histos.push_back("pfvbfpremjj");
-      //histos.push_back("pfvbfcandjetdeta");
+//       histos.push_back("mindphijmet");
+//       histos.push_back("pfvbfpremjj");
+//       histos.push_back("pfvbfcandjeteta");
+//       histos.push_back("pfvbfcandjetdeta");
       //histos.push_back("pfvbfmjj");
-      //histos.push_back("pfvbfcjv");
+      //      histos.push_back("pfvbfcjv");
       //histos.push_back("pfvbfhardpt");
       histos.push_back("mt_shapes");
 
@@ -142,7 +145,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 
       dilcats.push_back("eq0jets");
       dilcats.push_back("geq1jets");
-      // dilcats.push_back("geq2jets");
+      //dilcats.push_back("eq1jets");
+      //dilcats.push_back("geq2jets");
       dilcats.push_back("vbf");
       dilcats.push_back("");
 
@@ -310,9 +314,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
                     {
                       Shape_t &shapeToCorrect=gShapesMap[keyToGet];
                       addToShape(shapeToCorrect,m_shape);
-		      cout << keyToGet << " " <<
-			
-endl;
+		      cout << keyToGet << " " << endl;
                       normH=shapeToCorrect.data;
                     }
 		}
@@ -341,6 +343,7 @@ endl;
 		      normKey += "geq1jets";
 		    }		  
 		  else if(gcats[icat]=="eq1jets") 
+		    //else if(gcats[icat]=="eq2jets") 
 		    {
 		      //key=ch[ich]+"geq2jets"+"_"+histos[ih];
 		      //normKey += "geq2jets";
@@ -417,8 +420,8 @@ endl;
 	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
 	
 	 if(subtractType==HALVE || subtractType==EWKSUBTRACTIONHALVE) {
-	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(60) );
-	   if(it->first.find("_mt") != string::npos &&  !isTH2) fbin = corrGammaH->GetXaxis()->FindBin(275);
+	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(75) );
+	   if(it->first.find("_mt") != string::npos &&  !isTH2) fbin = corrGammaH->GetXaxis()->FindBin(300);
 	   //int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(60) );
 	   for(int ibin=fbin; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
 	     {
