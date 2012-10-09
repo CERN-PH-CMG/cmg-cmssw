@@ -19,6 +19,14 @@ WJets = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+W1Jets = cfg.MCComponent(
+    name = 'W1Jets',
+    files = [],
+    xSection = 1.,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
 W2Jets = cfg.MCComponent(
     name = 'W2Jets',
     files = [],
@@ -29,6 +37,14 @@ W2Jets = cfg.MCComponent(
 
 W3Jets = cfg.MCComponent(
     name = 'W3Jets',
+    files = [],
+    xSection = 1.,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+W4Jets = cfg.MCComponent(
+    name = 'W4Jets',
     files = [],
     xSection = 1.,
     nGenEvents = 1,
@@ -95,15 +111,17 @@ Tbar_tW = cfg.MCComponent(
 mc_ewk = [
     DYJets,
     WJets,
+    W1Jets, 
     W2Jets, 
     W3Jets, 
+    W4Jets, 
     TTJets,
-    T_s,
-    T_t,
+#    T_s,
+#    T_t,
     T_tW,
-    Tbar_s,
-    Tbar_t,
     Tbar_tW,
+#    Tbar_s,
+#    Tbar_t,
     ]
 
 
