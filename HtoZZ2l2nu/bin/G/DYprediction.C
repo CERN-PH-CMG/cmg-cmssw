@@ -60,6 +60,26 @@ void addToShape(Shape_t &a, Shape_t &b,int sign=+1)
 }
 
 //
+Shape_t cloneShape(Shape_t &orig,TString newName)
+{
+  Shape_t newShape;
+  newShape.data      = (TH1 *) orig.data->Clone(newName+"data");           newShape.data->SetDirectory(0);
+  newShape.totalBckg = (TH1 *) orig.totalBckg->Clone(newName+"totalbckg"); newShape.totalBckg->SetDirectory(0);
+  for(std::map<TString, TH1 *>::iterator it = orig.bckg.begin(); it != orig.bckg.end(); it++)
+    {
+      TH1 *h=(TH1 *)it->second->Clone(newName+it->first); h->SetDirectory(0);
+      newShape.bckg[it->first]=h;
+    }
+  for(std::map<TString, TH1 *>::iterator it = orig.signal.begin(); it != orig.signal.end(); it++)
+    {
+      TH1 *h=(TH1 *)it->second->Clone(newName+it->first); h->SetDirectory(0);
+      newShape.signal[it->first]=h;
+    }
+  return newShape;
+}
+
+
+//
 enum SubtractionTypes {NOSUBTRACTION, HALVE, EWKSUBTRACTION, EWKSUBTRACTIONHALVE};
 enum ModelType { HZZ,ZZ,VBFZ};
 void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
@@ -127,35 +147,41 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //llFile    = "/afs/cern.ch/work/q/querten/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
      
       histos.push_back("met_met");
-      histos.push_back("met_redMet");
-      histos.push_back("mt");
-//       histos.push_back("mindphijmet");
-//       histos.push_back("pfvbfpremjj");
-//       histos.push_back("pfvbfcandjeteta");
-//       histos.push_back("pfvbfcandjetdeta");
+      //      histos.push_back("met_redMet");
+      //  histos.push_back("mt");
+      //       histos.push_back("mindphijmet");
+      //       histos.push_back("pfvbfpremjj");
+      //       histos.push_back("pfvbfcandjeteta");
+      //       histos.push_back("pfvbfcandjetdeta");
       //histos.push_back("pfvbfmjj");
       //      histos.push_back("pfvbfcjv");
       //histos.push_back("pfvbfhardpt");
       histos.push_back("mt_shapes");
-
+      
       dilSignal.push_back("ggH(600)#rightarrow ZZ");
       dilSignal.push_back("qqH(600)#rightarrow ZZ");
       dilSignal.push_back("ggH(300)#rightarrow ZZ");
       dilSignal.push_back("qqH(300)#rightarrow ZZ");
 
       dilcats.push_back("eq0jets");
+      dilcats.push_back("eq1jets");
       dilcats.push_back("geq1jets");
-      //dilcats.push_back("eq1jets");
-      //dilcats.push_back("geq2jets");
+      dilcats.push_back("geq2jets");
       dilcats.push_back("vbf");
+      dilcats.push_back("vbf0");
+      dilcats.push_back("vbf1");
+      dilcats.push_back("vbf2");
       dilcats.push_back("");
 
-      gcats.push_back("eq0jets");
       gcats.push_back("eq0softjets");  //0 soft jets to be subtracted
+      gcats.push_back("eq0jets");
       gcats.push_back("eq1jets");
-      gcats.push_back("eq2jets");     //2+3jets to be merged
+      gcats.push_back("eq2jets");
       gcats.push_back("geq3jets");
       gcats.push_back("vbf");
+      gcats.push_back("vbf0");
+      gcats.push_back("vbf1");
+      gcats.push_back("vbf2");
       gcats.push_back("");
 
       //   string histos[] = {//"met_met",
@@ -188,9 +214,10 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   string gprocs[]={"Z#gamma#rightarrow#nu#nu#gamma","W#gamma#rightarrowl#nu#gamma","W#rightarrow l#nu","data (#gamma)"};
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
 
-  std::map<string,Shape_t> shapesMap,gShapesMap;
+  std::map<string,Shape_t> shapesMap,gShapesMap, gFinalShapesMap;
+  std::map<string,float>   scaleFactors;
 
-  //get histos from files
+  //get dilepton histos from files
   TFile *llIn=TFile::Open(llFile);
   for(size_t ich=0; ich<nchs; ich++)
     {
@@ -203,14 +230,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 		{
 		  string hname=dilprocs[iproc]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)llIn->Get(hname.c_str());
-		  if(h==0)  { cout << "Missing " << hname << endl; continue; }
-		  if(histos[ih]=="mt_shapes" || histos[ih]=="dijet_mass_shapes")
-		    {
-		      cout << h->GetXaxis()->GetNbins() << endl;
-		      cout << h->InheritsFrom("TH2")<< endl;
-		    }
-		  //	  if(histos[ih]=="mt_shapes")
-		    //	    h = ((TH2 *)h)->ProjectionY((string(h->GetName())+"proj").c_str(),cutIndex,cutIndex);
+		  if(h==0)  { /*cout << "Missing " << hname << endl;*/ continue; }
 		  h->SetTitle(dilprocs[iproc].c_str());
 		  
 		  //detach and save (also signal)
@@ -223,7 +243,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 			{
 			  string hsigname = dilSignal[isig]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
 			  TH1 *hsig       = (TH1 *)llIn->Get(hsigname.c_str());
-			  if(hsig==0) { cout << "Missing " << hsigname << endl; continue; }
+			  if(hsig==0) { /*cout << "Missing " << hsigname << endl;*/ continue; }
 			  hsig->SetTitle(dilSignal[isig].c_str());
 			  if(dilSignal[isig].find("VBF Z")!=string::npos)
 			    {
@@ -265,8 +285,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
     }
   llIn->Close();
 
-  //add the gamma estimation
-  std::map<string,float> scaleFactors;
+  //get gamma histos from file
   TFile *gIn=TFile::Open(gammaFile);
   for(size_t ich=0; ich<nchs; ich++)
     {
@@ -279,10 +298,10 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 		{
 		  string hname=gprocs[iproc]+"/"+ch[ich]+gcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)gIn->Get(hname.c_str());
-		  if(h==0) { cout << hname <<endl; continue; }
-		  		  
-		  //detach and save
+		  if(h==0) { /* cout << " Missing: " << hname <<endl;*/ continue; }
 		  h->SetDirectory(0);
+		  h->SetName( TString("g") + h->GetName() );
+		  
 		  if(gprocs[iproc].find("data") != string::npos) {
 		    if(model==VBFZ) h->SetTitle("QCD Z");
 		    else            h->SetTitle("#splitline{Instr. bkg}{(data)}");
@@ -301,89 +320,79 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 		      m_shape.bckg[gprocs[iproc]]=h;
 		    }
 		}
-
-	      //finalize shape
-	      string normKey(ch[ich]);
-	      TH1 *normH=0;
-	      if(model==VBFZ && (gcats[icat]=="eq2jets" || gcats[icat]=="geq3jets"))
-		{
-                  TString normKeyPostFix("geq1jets");
-                  normKey += normKeyPostFix;
-                  string keyToGet(ch[ich]+normKeyPostFix+"_"+histos[ih]);
-                  if(gShapesMap.find(keyToGet)!= gShapesMap.end())
-                    {
-                      Shape_t &shapeToCorrect=gShapesMap[keyToGet];
-                      addToShape(shapeToCorrect,m_shape);
-		      cout << keyToGet << " " << endl;
-                      normH=shapeToCorrect.data;
-                    }
-		}
-	      else if(gcats[icat]=="eq2jets" || gcats[icat]=="geq3jets" || gcats[icat]=="eq0softjets")
-		{
-		  int sign(+1);
-		  TString normKeyPostFix("geq1jets");
-		  //TString normKeyPostFix("geq2jets");
-		  if(gcats[icat]=="eq0softjets") { sign=-1; normKeyPostFix="eq0jets"; }
-		  normKey += normKeyPostFix;
-		  
-		  string keyToGet(ch[ich]+normKeyPostFix+"_"+histos[ih]);
-		  if(gShapesMap.find(keyToGet)!= gShapesMap.end())
-		    {
-		      Shape_t &shapeToCorrect=gShapesMap[keyToGet];
-		      addToShape(shapeToCorrect,m_shape,sign);
-		      normH=shapeToCorrect.data;
-		    }
-		}
-	      else 
-		{
-		  string key=ch[ich]+gcats[icat]+"_"+histos[ih];
-		  if(model==VBFZ && gcats[icat]=="eq1jets") 
-		    {
-		      key=ch[ich]+"geq1jets"+"_"+histos[ih];
-		      normKey += "geq1jets";
-		    }		  
-		  else if(gcats[icat]=="eq1jets") 
-		    //else if(gcats[icat]=="eq2jets") 
-		    {
-		      //key=ch[ich]+"geq2jets"+"_"+histos[ih];
-		      //normKey += "geq2jets";
-		      key=ch[ich]+"geq1jets"+"_"+histos[ih];
-		      normKey += "geq1jets";
-		    }
-		  else
-		    normKey += gcats[icat];
-		 
-		  gShapesMap[key]=m_shape;
-		  normH=m_shape.data;
-		}
-	      
-	      int normBin(-1);
-	      
-	      ////normalization factor (from MET<50)
-	      if(model==HZZ && histos[ih].find("met_met")!=string::npos)  normBin=normH->GetXaxis()->FindBin(50);
-	     
-	      ////normalization factor (from red-MET<40)
-	      if(model==ZZ && histos[ih].find("met_redMet")!=string::npos) normBin=normH->GetXaxis()->FindBin(40);
-	      
-	      ////normalization factor (from deta_jj<3)
-	      //if(histos[ih].find("jetdeta")!=string::npos) normBin=normH->GetXaxis()->FindBin(3);
-	      
-	      //normalization factor (from Mjj<500) 
-	      if(model==VBFZ && histos[ih].find("premjj")!=string::npos) normBin=normH->GetXaxis()->FindBin(500);
-
-	      if(normBin<0) continue;
-	      cout << histos[ih] << " " << normBin << " " << " " << normKey << flush;
-	      Shape_t &dilMetShape = shapesMap[normKey+"_"+histos[ih]];
-	      float sf=dilMetShape.data->Integral(1,normBin)/normH->Integral(1,normBin);
-	      cout << " " << sf << endl;
-	      scaleFactors[normKey]=sf;
+	      string key=ch[ich]+gcats[icat]+"_"+histos[ih];
+	      gShapesMap[key]=m_shape;
 	    }
 	}
     }
   gIn->Close();
+  
+  //now merge: >=1 from 1,2 >=3 and >=2 from 2,>=3 bins
+  for(std::map<string,Shape_t>::iterator sIt = gShapesMap.begin(); sIt != gShapesMap.end(); sIt++)
+    {
+      if(sIt->first.find("eq1jets")!=string::npos || sIt->first.find("eq2jets")!=string::npos)
+	{
+	  //clone to build the inclusive shape
+	  TString newName(sIt->first.c_str());
+	  newName=newName.ReplaceAll("eq1jets","geq1jets");
+	  newName=newName.ReplaceAll("eq2jets","geq2jets");
+	  gFinalShapesMap[string(newName.Data())]=cloneShape(sIt->second,newName);
+	
+	  //add the 2 jets bin to the inclusive 1 jets bin also
+	  if(sIt->first.find("eq2jets")!=string::npos)
+	    {
+	      TString incKey(sIt->first.c_str());
+	      incKey=incKey.ReplaceAll("eq2jets","geq1jets");
+	      Shape_t &shapeToCorrect=gFinalShapesMap[string(incKey.Data())];
+	      addToShape(shapeToCorrect,sIt->second,+1);
+	    }
+	}
+      else if(sIt->first.find("geq3jets")!=string::npos)
+	{
+	  TString binsToIncrement[]={"geq2jets","geq1jets"};
+	  for(size_t ibin=0; ibin<sizeof(binsToIncrement)/sizeof(TString); ibin++)
+	    {
+	      TString incKey(sIt->first.c_str());
+	      incKey=incKey.ReplaceAll("geq3jets",binsToIncrement[ibin]);
+	      Shape_t &shapeToCorrect=gFinalShapesMap[string(incKey.Data())];
+	      addToShape(shapeToCorrect,sIt->second,+1);
+	    }
+	}
+      gFinalShapesMap[sIt->first]=sIt->second;
+    }
+  
+
+  //now compute the normalization factors
+  for(std::map<string,Shape_t>::iterator it=gFinalShapesMap.begin(); it != gFinalShapesMap.end(); it++)
+    {
+      int normBin(-1);
+      TH1 *normH=it->second.data;
+
+      ////normalization factor (from MET<50)
+      if(model==HZZ && it->first.find("met_met")!=string::npos)   normBin=normH->GetXaxis()->FindBin(50);
+      
+      ////normalization factor (from red-MET<40)
+      if(model==ZZ && it->first.find("met_redMet")!=string::npos) normBin=normH->GetXaxis()->FindBin(40);
+	      
+      ////normalization factor (from deta_jj<3)
+      //if(it->first.find("jetdeta")!=string::npos)               normBin=normH->GetXaxis()->FindBin(3);
+      
+      //normalization factor (from Mjj<500) 
+      if(model==VBFZ && it->first.find("premjj")!=string::npos)   normBin=normH->GetXaxis()->FindBin(500);
+
+      if(normBin<0) continue;
+      if(shapesMap.find(it->first)==shapesMap.end()) continue;
+      TString normKey(it->first);
+      normKey = normKey.Tokenize("_")->At(0)->GetName();
+      cout << normKey << "\t will be normalized from " << normH->GetXaxis()->GetTitle() << "<" << normH->GetXaxis()->GetBinCenter(normBin) << flush;
+      Shape_t &dilMetShape = shapesMap[it->first];
+      float sf=dilMetShape.data->Integral(1,normBin)/normH->Integral(1,normBin);
+      cout << "\t scale-factor=" << sf << endl;
+      scaleFactors[string(normKey.Data())]=sf;
+    }
 
 
-  //
+  //now produce the final histos
   TFile *gOut = TFile::Open("gamma_out.root","RECREATE");
   TDirectory *gOutDir = gOut->mkdir("Instr. background (data)");
   for(std::map<string,Shape_t>::iterator it=shapesMap.begin(); it!=shapesMap.end(); it++) 
@@ -395,15 +404,18 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
      else if(it->first.find("eq1jets_")!=string::npos)  normKey+="eq1jets";
      if(it->first.find("geq2jets_")!=string::npos)      normKey+="geq2jets";
      if(it->first.find("vbf_")!=string::npos)           normKey+="vbf";
+     if(it->first.find("vbf0_")!=string::npos)           normKey+="vbf0";
+     if(it->first.find("vbf1_")!=string::npos)           normKey+="vbf1";
+     if(it->first.find("vbf2_")!=string::npos)           normKey+="vbf2";
      float sf = scaleFactors[normKey];
      
      if(sf==0) continue;
-     if(gShapesMap.find(it->first)==gShapesMap.end()) cout << "BUG: " << it->first << " not found in gamma sample..." << endl;
-     Shape_t &gShape=gShapesMap[it->first];
+     if(gFinalShapesMap.find(it->first)==gFinalShapesMap.end()) cout << "BUG: " << it->first << " not found in gamma sample..." << endl;
+     Shape_t &gShape=gFinalShapesMap[it->first];
 
      TH1 *corrGammaH=(TH1 *)gShape.data->Clone((it->first+"corrg").c_str());
      corrGammaH->SetDirectory(0);
-
+     
 
      if(it->first.find("balance")!= string::npos && (subtractType==HALVE || subtractType==EWKSUBTRACTION  || subtractType==EWKSUBTRACTIONHALVE))
        {
