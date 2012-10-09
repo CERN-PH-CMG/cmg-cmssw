@@ -47,8 +47,8 @@ WJets.files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_STA
 selectedComponents = [DYJets, WJets]
 
 
-DYJets.splitFactor = 200
-WJets.splitFactor = 400
+DYJets.splitFactor = 5
+WJets.splitFactor = 5
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
