@@ -43,13 +43,14 @@ data_Run2012C_v1 = cfg.DataComponent(
 data_Run2012C_v2 = cfg.DataComponent(
     name = 'data_Run2012C_v2',
     files = [],
+    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |      17991 | 1.464(/fb) | 1.464(/fb) |
+    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 |      46975 | 4.358(/fb) | 4.358(/fb) |
     intLumi = 1, #lumicalc2
     triggers = [],
     json = None
     )
-
-
-
+#  lumiCalcVersion -i $Json2012 recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7 missing! 
+# running nohup in  /afs/cern.ch/work/c/cbern/ProductionSoftware/5X/V5_8_0/CMSSW_5_3_3_patch3/src
 
 data_list = [
     data_Run2012A,
