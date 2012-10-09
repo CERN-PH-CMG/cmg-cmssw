@@ -8,7 +8,7 @@ data_Run2012A = cfg.DataComponent(
     # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4 |        833 | 28.303(/pb) | 28.303(/pb) |
     # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       5606 | 302.772(/pb) | 299.191(/pb) |
     # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 |       6858 | 377.239(/pb) | 371.436(/pb) |
-    intLumi = 696.069, # 698.93 = 28.303 + 299.191 + 371.436
+    intLumi = 28.303 + 299.191 + 371.436, 
     triggers = [],
     json = None
     )
@@ -26,7 +26,7 @@ data_Run2012B = cfg.DataComponent(
     name = 'data_Run2012B',
     files = [],
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      50799 | 4.389(/fb) | 4.389(/fb) |
-    intLumi = 4420., #pixellumicalc 4389
+    intLumi = 4389., #pixellumicalc 4389
     triggers = [],
     json = None
     )
