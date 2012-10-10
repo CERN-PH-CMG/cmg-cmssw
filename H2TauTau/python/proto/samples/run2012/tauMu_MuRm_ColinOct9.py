@@ -2,6 +2,7 @@ import copy
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.H2TauTau.proto.samples.connect import connect
 from CMGTools.H2TauTau.proto.samples.splitFactor import splitFactor
+from CMGTools.H2TauTau.proto.samples.computeLumi import computeLumi
 from CMGTools.H2TauTau.tools.jsonPick import jsonPick
 
 from CMGTools.H2TauTau.proto.samples.run2012.data import *
@@ -38,3 +39,7 @@ for data in data_list:
 for c in allsamples:
     c.splitFactor = splitFactor(c)
 
+
+
+for c in data_list:
+    computeLumi(c, test=True)
