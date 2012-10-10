@@ -35,6 +35,7 @@ The script will write a file named 'multicrab.cfg' in the current working direct
     import CMGTools.Production.eostools as castortools
     topdir = castortools.lfnToCastor(castorBaseDir(user=opts.user))
 
+    output_dirs = []
     for d in datasets:
 
         #accept the user%dataset syntax, but ignore the user name for grid
@@ -56,7 +57,9 @@ The script will write a file named 'multicrab.cfg' in the current working direct
         directory = directory.replace('//','/')
 
         config.set(safe_name,'CMSSW.datasetpath',d)
-        config.set(safe_name,'USER.user_remote_dir',castortools.castorToLFN(directory))
+        lfn = castortools.castorToLFN(directory)
+        config.set(safe_name,'USER.user_remote_dir',lfn)
+        output_dirs.append(lfn)
         
         #create the directory on EOS
         if not castortools.fileExists(directory):
@@ -66,3 +69,14 @@ The script will write a file named 'multicrab.cfg' in the current working direct
             raise Exception("Dataset directory '%s' does not exist or could not be created" % directory)
         
     config.write(file(opts.output,'wb'))
+
+    from logger import logger
+    logDir = 'Logger'
+    os.mkdir(logDir)
+    log = logger( logDir )
+    log.logCMSSW()
+    log.addFile( os.path.join( os.getcwd(), opts.cfg) )
+    log.addFile( os.path.join( os.getcwd(), opts.output) )
+
+    for d in output_dirs:
+        log.stageOut(d)
