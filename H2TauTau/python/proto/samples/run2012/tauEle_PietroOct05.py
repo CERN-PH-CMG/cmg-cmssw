@@ -69,7 +69,7 @@ print
 for sam in MC:
     print 'setting trigger', mc_triggers,'for sample',sam.name
     sam.triggers = mc_triggers
-for data in data_list_2012:
+for data in data_list:
     print 'setting trigger', data_triggers,'for sample',data.name
     data.triggers = data_triggers
 print
