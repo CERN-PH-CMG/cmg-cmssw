@@ -3,48 +3,48 @@ import CMGTools.RootTools.fwlite.Config as cfg
 # exclusive madgraph samples
 # -- -- -- -- -- -- -- -- 
 
-WW2l2v = cfg.MCComponent(
-    name = 'WW2l2v',
+WWJetsTo2L2Nu = cfg.MCComponent(
+    name = 'WWJetsTo2L2Nu',
     files = [],
     xSection = 5.824, #PG from twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2012#MC_samples_and_cross_sections
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
 
-WZ2l2q = cfg.MCComponent(
-    name = 'WZ2l2q',
+WZJetsTo2L2Q = cfg.MCComponent(
+    name = 'WZJetsTo2L2Q',
     files = [],
     xSection = 2.207, #PG from twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2012#MC_samples_and_cross_sections
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
 
-WZ3lv = cfg.MCComponent(
-    name = 'WZ3lv',
+WZJetsTo3LNu = cfg.MCComponent(
+    name = 'WZJetsTo3LNu',
     files = [],
     xSection = 1.058, #PG from twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2012#MC_samples_and_cross_sections
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
 
-ZZ2l2q = cfg.MCComponent(
-    name = 'ZZ2l2q',
-    files = [],
-    xSection = 2.502, #PG from twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2012#MC_samples_and_cross_sections
-    nGenEvents = 1,
-    triggers = [],
-    effCorrFactor = 1 )
-
-ZZ2l2v = cfg.MCComponent(
-    name = 'ZZ2l2v',
+ZZJetsTo2L2Nu = cfg.MCComponent(
+    name = 'ZZJetsTo2L2Nu',
     files = [],
     xSection = 0.716, #PG from twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2012#MC_samples_and_cross_sections
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
 
-ZZ4l = cfg.MCComponent(
-    name = 'ZZ4l',
+ZZJetsTo2L2Q = cfg.MCComponent(
+    name = 'ZZJetsTo2L2Q',
+    files = [],
+    xSection = 2.502, #PG from twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2012#MC_samples_and_cross_sections
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+ZZJetsTo4L = cfg.MCComponent(
+    name = 'ZZJetsTo4L',
     files = [],
     xSection = 0.181, #PG from twiki: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsToTauTauWorkingSummer2012#MC_samples_and_cross_sections
     nGenEvents = 1,
@@ -52,12 +52,12 @@ ZZ4l = cfg.MCComponent(
     effCorrFactor = 1 )
 
 mc_diboson_xcl = [
-    WW2l2v,
-    WZ2l2q,
-    WZ3lv,
-    ZZ2l2q,
-    ZZ2l2v,
-    ZZ4l
+    WWJetsTo2L2Nu,
+    WZJetsTo2L2Q,
+    WZJetsTo3LNu,
+    ZZJetsTo2L2Nu,
+    ZZJetsTo2L2Q,
+    ZZJetsTo4L
     ]
 
 
