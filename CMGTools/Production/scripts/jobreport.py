@@ -15,7 +15,7 @@ def jobDir( allJobsDir, job ):
     return '{all}/Job_{job}'.format(all=allJobsDir,
                                     job=job)
 
-def lsfReport( stdoutgz, unzip=False):
+def lsfReport( stdoutgz, unzip=False, nLines=100):
     sep_line = '-'*70
     print
     print sep_line
@@ -26,19 +26,21 @@ def lsfReport( stdoutgz, unzip=False):
         stdout = gzip.open(stdoutgz)
     else:
         stdout = open(stdoutgz)
-    for line in stdout.readlines()[-50:]:
+    lines = stdout.readlines()
+    nLines = min(nLines, len(lines))
+    for line in lines[-nLines:]:
         line = line.rstrip('\n')
         print line
 
-def jobReport( allJobsDir, job ):
+def jobReport( allJobsDir, job, nLines=100):
     jdir = jobDir( allJobsDir, job )
     for root, dirs, files in os.walk(jdir):
         stdout = 'STDOUT.gz'
         if stdout in files:
-            lsfReport('/'.join( [root, stdout] ), True)
+            lsfReport('/'.join( [root, stdout] ), True, nLines)
         stdout = 'STDOUT'       
         if stdout in files:
-            lsfReport('/'.join( [root, stdout] ))
+            lsfReport('/'.join( [root, stdout] ), False, nLines)
 
 def jobSubmit( allJobsDir, job, cmd):    
     jdir = jobDir( allJobsDir, job )
@@ -64,6 +66,9 @@ if __name__ == '__main__':
                       action = 'store_true',
                       default=False,
                       help='Print report for bad jobs.')
+    parser.add_option("-n", "--nlines", dest="nlines",
+                      default=100,
+                      help='Number of lines in the report for each job.')
     parser.add_option("-s", "--submit", dest="submit",
                       action = 'store_true',
                       default=False,
@@ -129,7 +134,7 @@ if __name__ == '__main__':
 
     if options.report:
         for job in badJobs:
-            jobReport(allJobsDir, job)
+            jobReport(allJobsDir, job, int(options.nlines) )
     elif options.submit:
         for job in badJobs:
             jobSubmit(allJobsDir, job, options.batch)
