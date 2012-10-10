@@ -91,7 +91,7 @@ dyJetsFakeAna = cfg.Analyzer(
 
 WNJetsAna = cfg.Analyzer(
     'WNJetsAnalyzer',
-    verbose = True
+    verbose = False
     )
 
 higgsWeighter = cfg.Analyzer(
@@ -149,9 +149,11 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinAug8 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_Sync_ColinOct1 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroSep25 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct05 import *
 
 #########################################################################################
 
+# FIXME make it comprehensive, for the flat ntuples production
 
 # MC_list = [WJets, DYJets, TTJets]
 MC_list = [HiggsVBF125]
