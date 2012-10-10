@@ -8,7 +8,7 @@ data_Run2012A = cfg.DataComponent(
     # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4 |       2809 |  96.404(/pb) |  96.404(/pb) |
     # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       5258 | 316.016(/pb) | 316.016(/pb) |
     # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 |       6514 | 395.991(/pb) | 395.991(/pb) |
-    intLumi = 96.404+316.016+ 395.991, 
+    intLumi = 96.404+316.016+ 395.991, # 806.194 from Colin
     triggers = [],
     json = None
     )
@@ -17,7 +17,7 @@ data_Run2012A_aug6 = cfg.DataComponent( # update
     name = 'data_Run2012A_aug6',
     files = [],
     # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       1810 | 82.136(/pb) | 82.136(/pb) |
-    intLumi = 82.136, 
+    intLumi = 82.136, # same from Colin
     triggers = [],
     json = None
     )
@@ -26,7 +26,7 @@ data_Run2012B = cfg.DataComponent(
     name = 'data_Run2012B',
     files = [],
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      51089 | 4.428(/fb) | 4.428(/fb) |
-    intLumi = 4428., 
+    intLumi = 4428., # 4420. from Colin
     triggers = [],
     json = None
     )
@@ -35,7 +35,7 @@ data_Run2012C_v1 = cfg.DataComponent(
     name = 'data_Run2012C_v1',
     files = [],
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |       6719 | 495.003(/pb) | 495.003(/pb) |
-    intLumi = 495.003,
+    intLumi = 495.003, # 493.975 from Colin
     triggers = [],
     json = None
     )
@@ -48,7 +48,7 @@ data_Run2012C_v2 = cfg.DataComponent( # update
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |      17991 |   1.464(/fb) |   1.464(/fb) |
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 |      46975 |   4.358(/fb) |   4.358(/fb) |
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7 |       3425 | 281.155(/pb) | 281.155(/pb) |
-    intLumi = 1464 + 4358 + 281.155,
+    intLumi = 1464 + 4358 + 281.155, #  5720.0 from Colin
     triggers = [],
     json = None
     )
