@@ -1,28 +1,7 @@
 import CMGTools.RootTools.fwlite.Config as cfg
 
-WW = cfg.MCComponent(
-    name = 'WW',
-    files = [],
-    xSection = 43.,
-    nGenEvents = 1,
-    triggers = [],
-    effCorrFactor = 1)
-
-WZ = cfg.MCComponent(
-    name = 'WZ',
-    files = [],
-    xSection = 18.2,
-    nGenEvents = 1,
-    triggers = [],
-    effCorrFactor = 1)
-
-ZZ = cfg.MCComponent(
-    name = 'ZZ',
-    files = [],
-    xSection = 5.9,
-    nGenEvents = 1,
-    triggers = [],
-    effCorrFactor = 1)
+# exclusive madgraph samples
+# -- -- -- -- -- -- -- -- 
 
 WWJetsTo2L2Nu = cfg.MCComponent(
     name = 'WWJetsTo2L2Nu',
@@ -73,16 +52,47 @@ ZZJetsTo4L = cfg.MCComponent(
     effCorrFactor = 1)
 
 
-
-mc_diboson = [
-    WW,
-    WZ,
-    ZZ,
+mc_diboson_xcl = [
     WWJetsTo2L2Nu,
     WZJetsTo2L2Q,
     WZJetsTo3LNu,
     ZZJetsTo2L2Nu,
     ZZJetsTo2L2Q,
     ZZJetsTo4L
+    ]
+
+
+# inclusive pythia samples
+# -- -- -- -- -- -- -- -- 
+
+WW = cfg.MCComponent(
+    name = 'WW',
+    files = [],
+    xSection = 43.,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+WZ = cfg.MCComponent(
+    name = 'WZ',
+    files = [],
+    xSection = 18.2,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+ZZ = cfg.MCComponent(
+    name = 'ZZ',
+    files = [],
+    xSection = 5.9,
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1)
+
+
+mc_diboson = [
+    WW,
+    WZ,
+    ZZ,
     ]
 

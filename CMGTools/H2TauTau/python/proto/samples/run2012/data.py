@@ -45,7 +45,8 @@ data_Run2012C_v2 = cfg.DataComponent(
     files = [],
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |      17991 | 1.464(/fb) | 1.464(/fb) |
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 |      46975 | 4.358(/fb) | 4.358(/fb) |
-    intLumi = 1, #lumicalc2
+    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7 |       3425 | 281.155(/pb) | 281.155(/pb) |
+    intLumi = 1464+4358+281.155
     triggers = [],
     json = None
     )
