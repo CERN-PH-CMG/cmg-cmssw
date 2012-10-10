@@ -5,7 +5,10 @@ pr2011 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11/7TeV/
 
 pr2012AB = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON.txt'
 pr2012C = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON.txt'
+aug6_2012 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
 aug24_2012 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
+jul13_2012 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
+
 
 jsonMap = {
     #
@@ -49,11 +52,11 @@ jsonMap = {
     # 
     # 2012A & B
     #
-    '/TauPlusX/Run2012B-13Jul2012-v1/AOD':pr2012AB,
-    '/TauPlusX/Run2012A-recover-06Aug2012-v1/AOD':pr2012AB,
-    '/TauPlusX/Run2012A-13Jul2012-v1/AOD':pr2012AB,
     '/TauPlusX/Run2012A-PromptReco-v1/AOD':pr2012AB,
     '/TauPlusX/Run2012B-PromptReco-v1/AOD':pr2012AB,
+    '/TauPlusX/Run2012B-13Jul2012-v1/AOD':jul13_2012,
+    '/TauPlusX/Run2012A-recover-06Aug2012-v1/AOD':aug6_2012,
+    '/TauPlusX/Run2012A-13Jul2012-v1/AOD':jul13_2012,
     '/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER':pr2012AB,
     '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER':pr2012AB,
     '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER':pr2012AB,

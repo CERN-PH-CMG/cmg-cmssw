@@ -48,5 +48,5 @@ embed_list = []
 for mc in MC_list:
     mc.triggers = mc_triggers
 for data in data_list_2011:
-    data.json = jsonPick( data.files[0])
+    data.json = jsonPick( data.files[0] )
     
