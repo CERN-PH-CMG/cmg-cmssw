@@ -15,5 +15,7 @@
  <bin name="runGenScanner" file="runGenScanner.cc"></bin>
  <bin name="runPLRanalysis" file="runPLRanalysis.cc"></bin>
  <bin name="makeEfficiencyPlot" file="makeEfficiencyPlot.cc"></bin>
+ <bin name="runMVAtree" file="runMVAtree.cc"></bin>
 </environment>
 <Flags CXXFLAGS="-g -std=c++0x"/>
+
