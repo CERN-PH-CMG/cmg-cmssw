@@ -45,7 +45,7 @@ def runEOSCommand(path, cmd, *args):
     tokens = cmsIO.splitPFN(pfn)
     
     #obviously, this is not nice
-    command = ['/afs/cern.ch/project/eos/installation/0.1.0-22d/bin/eos.select', cmd]
+    command = ['/afs/cern.ch/project/eos/installation/pro/bin/eos.select', cmd]
     command.extend(args)
     command.append(tokens[2])
     runner = cmsIO.cmsFileManip()
