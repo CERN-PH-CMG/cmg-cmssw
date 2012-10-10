@@ -87,6 +87,13 @@ double hzz_lept1_nIso;
 double hzz_lept2_nIso;
 double hzz_rho;
 double lineshape_weight;
+double hzz_BTag;
+double hzz_RedMet;
+double hzz_RedMetL;
+double hzz_RedMetT;
+double hzz_RawMet;
+double hzz_MVAMet;
+
 
 
 TBranch *b_hzz_Jet_SumPT = hzz_tree->Branch("hzz_Jet_SumPT",&hzz_Jet_SumPT,"hzz_Jet_SumPT/D");
@@ -134,6 +141,13 @@ TBranch *b_hzz_lept1_nIso = hzz_tree->Branch("hzz_lept1_nIso", &hzz_lept1_nIso ,
 TBranch *b_hzz_lept2_nIso = hzz_tree->Branch("hzz_lept2_nIso", &hzz_lept2_nIso , "hzz_lept2_nIso/D");
 TBranch *b_hzz_rho = hzz_tree->Branch("hzz_rho", &hzz_rho , "hzz_rho/D");
 TBranch *b_lineshape_weight = hzz_tree->Branch("lineshape_weight", &lineshape_weight , "lineshape_weight/D");
+TBranch *b_hzz_BTag = hzz_tree->Branch("hzz_BTag", &hzz_BTag , "hzz_BTag/D");
+TBranch *b_hzz_RedMet = hzz_tree->Branch("hzz_RedMet", &hzz_RedMet , "hzz_RedMet/D");
+TBranch *b_hzz_RedMetL = hzz_tree->Branch("hzz_RedMetL", &hzz_RedMetL , "hzz_RedMetL/D");
+TBranch *b_hzz_RedMetT = hzz_tree->Branch("hzz_RedMetT", &hzz_RedMetT , "hzz_RedMetT/D");
+TBranch *b_hzz_RawMet = hzz_tree->Branch("hzz_RawMet", &hzz_RawMet , "hzz_RawMet/D");
+TBranch *b_hzz_MVAMet = hzz_tree->Branch("hzz_MVAMet", &hzz_MVAMet , "hzz_MVAMet/D");
+
 
 
   // check arguments
@@ -319,8 +333,8 @@ std::cout << "xsec =  " << xsec << std::endl;
 
 
   //event Categorizer
-  EventCategory eventCategoryInst(0); //inclusive analysis
-  //EventCategory eventCategoryInst(2); //VBF, no VBF
+//  EventCategory eventCategoryInst(0); //inclusive analysis
+  EventCategory eventCategoryInst(2); //VBF, no VBF
 
   //##############################################
   //########           EVENT LOOP         ########
@@ -398,6 +412,7 @@ event_weight = xsec/cnorm;
 
 //if(vbfFlag == 1) {
 //cout <<"vbf flag = " << vbfFlag << endl;
+//cout << "********************************************************"<<endl;
 //}
 
       //pileup and Higgs pT weight
@@ -413,36 +428,25 @@ event_weight = xsec/cnorm;
 
       if(isMC){
 
-  //      weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
-   //     TotalWeight_plus  = PuShifters[PUUP]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
-    //    TotalWeight_minus = PuShifters[PUDOWN]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
-
- //       if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_0raw",tags_inc, phys.genhiggs[0].mass(), weight);
-//	if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
-  //      if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_1vbf",tags_inc, phys.genhiggs[0].mass(), weight); 
-
+	if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
 //cout << " weight = " << weight << endl;
-
-
         if(isMC_GG) {
-          for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
-	    ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
-	  weight *= ev.hptWeights[0];
+        for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
+	 ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
+	 weight *= ev.hptWeights[0];
 //cout << "weight (ev.hptWeights[0]) = " << weight << endl;
         }
-  //      if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_2qt" ,tags_inc, phys.genhiggs[0].mass(), weight);
-  
 	for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
 	  lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
 	noLShapeWeight=weight;
 	weight *= lShapeWeights[0];
-//cout << "weight(lShapeWeights[0])  = " << weight << endl;
-        //printf("lsw=%f \n",lShapeWeights[0]);
+//cout << "weight after line shape = " << weight << endl;
 	
       }
 
 
-      //analyze the leptons
+//=================================================== Lepton Analysis ===================================================
+
       bool passIds(true);
       bool pass3dLeptonVeto(true);
       int nextraleptons(0);
@@ -479,7 +483,6 @@ if(!use2011Id)
 
 }
 
-
 if(fabs(phys.leptons[1].id)==13)  
 {
 if(!use2011Id)
@@ -494,14 +497,10 @@ if(!use2011Id)
 
 }
 
-
-
 //cout << " llTriggerEfficiency = " << llTriggerEfficiency <<  endl;
 
 
-
      LorentzVector zll=lep1+lep2;
-
 
 // 3rd LEPTON ANALYSIS
 	      //
@@ -535,11 +534,35 @@ if(!use2011Id)
 
 //cout << " pass3dLeptonVeto = " << pass3dLeptonVeto << endl;
 
+
+//========================================= JET/MET ANALYSIS ===================================================================
+
+      //MET variables
+      LorentzVector rawMetP4=phys.met[2];
+      LorentzVector fullTypeIMetP4=phys.met[0];
+      LorentzVector typeIMetP4=rawMetP4;
+      for(size_t ijet=0; ijet<phys.ajets.size();ijet++)
+        {
+          LorentzVector jetP4=phys.ajets[ijet];
+          LorentzVector rawJetP4=jetP4*phys.ajets[ijet].rawCorrFact;
+          typeIMetP4 -= (jetP4-rawJetP4);
+        }
+      LorentzVector mvaMetP4=phys.met[7];
+
+//      std::vector<PhysicsObjectJetCollection> variedAJets;
+  //    LorentzVectorCollection zvvs;
+
+
+    std::vector<PhysicsObjectJetCollection> variedAJets;
+     LorentzVectorCollection zvvs;
+     METUtils::computeVariation(phys.ajets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc); //analyze the leptons
+
+                  LorentzVector aClusteredMetP4(zll); aClusteredMetP4 *= -1;
       
       //analyze JET/MET
       LorentzVectorCollection jetsP4;
       std::vector<double> genJetsPt;
-      int nbtags(0);
+     int nbtags(0);
 double btag_discrm = 0;
 double tmp = -999.; 
       for(size_t ijet=0; ijet<phys.ajets.size(); ijet++)
@@ -550,62 +573,51 @@ double tmp = -999.;
 {
 //cout << "phys.ajets[ijet].btag3 = " << phys.ajets[ijet].btag3 << endl;
 tmp = phys.ajets[ijet].btag3;
-cout << "phys.ajets[ijet].btag3 = " << tmp << endl;
+//cout << "phys.ajets[ijet].btag3 = " << tmp << endl;
 if(tmp > btag_discrm) { btag_discrm = tmp ; } 
 nbtags += (phys.ajets[ijet].btag3>0.275);
 	} 
 }
 
-cout << "Maximum value of B-tag = " << btag_discrm << endl;
-cout << "****************************************************************" <<endl; 
-//      bool passBveto(nbtags==0);
+//cout << "Maximum value of B-tag = " << btag_discrm << endl;
+//cout << "****************************************************************" <<endl; 
       bool passBveto(nbtags==0);
-
-
+//      bool passBveto(nbtags==0);
 
 //cout << " passBveto = " << passBveto << endl;
 
-     //base raw METs
-     // LorentzVector assocMetP4(phys.met[1]);
-      LorentzVector zvvRaw(phys.met[0]);
-      
-      //prepare variations (first variation is the baseline, corrected for JER) 
-      LorentzVectorCollection zvvs,redMets, min3Mets;
-      std::vector<Float_t>  mts,mt3s,redMetLs,redMetTs;
-      std::vector<PhysicsObjectJetCollection> jets;
-       METUtils::computeVariation(phys.ajets, phys.leptons, phys.met[0], jets, zvvs, &jecUnc);
+                METUtils::stRedMET aRedMetOut;
+                LorentzVector aRedMet=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, aClusteredMetP4, zvvs[0],false,&aRedMetOut);
+                double aRedMetL=aRedMetOut.redMET_l;
+                double aRedMetT=aRedMetOut.redMET_t;
+                double aMT=METUtils::transverseMass(zll,zvvs[0],true);
+                double amvaMT=METUtils::transverseMass(zll,mvaMetP4,true);
 
 
-      for(size_t ivars=0; ivars<zvvs.size(); ivars++)
-	{
-	  LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
-	  for(size_t ijet=0; ijet<jets[ivars].size(); ijet++) clusteredMetP4 -= jets[ivars][ijet];
-	  METUtils::stRedMET redMetOut; 
-	  redMets.push_back(   METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, clusteredMetP4, zvvs[ivars],false,&redMetOut) );
-	  redMetLs.push_back( redMetOut.redMET_l );
-	  redMetTs.push_back( redMetOut.redMET_t );
-	  mts.push_back(METUtils::transverseMass(zll,zvvs[ivars],true));
-	}
-      
+//cout << "reduced MET = " << aRedMet.pt() << endl;
+//cout << "Type 1 MET = " << zvvs[0].pt() << endl;
+//cout << "RAW MET = " << rawMetP4.pt() << endl;
+//cout << "MVA MET = " << mvaMetP4.pt() << endl;
 
-if(mustBlind == 1) {cout << "mustBlind = " << mustBlind << endl;      }
-      //##############################################   EVENT LOOP ENDS   ##############################################
-	if(passIds && pass3rdLeptonVeto && passBveto && mustBlind == 0) {
-//      if(passIds && pass3rdLeptonVeto) {
-
-//	if(passIds && pass3dLeptonVeto) {
-//        if(passIds && pass3rdLeptonVeto) {
-
-
-//cout <<"phys.leptons[0].nhIso() = " << phys.leptons[0].nhIso << endl;
-//cout <<"phys.leptons[1].nhIso() = " << phys.leptons[1].nhIso << endl;
-//cout <<"phys.leptons[0].chIso() = " << phys.leptons[0].chIso << endl;
-//cout <<"phys.leptons[1].chIso() = " << phys.leptons[1].chIso << endl;
-//cout << " Normal Eta :" << lep1.eta() << " " << lep2.eta() << endl;
-//cout << " SC Eta :" << phys.leptons[0].sceta << " " << phys.leptons[1].sceta << endl;
 
 
 
+if(mustBlind == 1) {cout << "mustBlind = " << mustBlind << endl;      }
+
+//============================================================ FILLING OF BRANCHES===========================================================
+
+
+//	if(passIds && pass3rdLeptonVeto && passBveto && mustBlind == 0) {
+      if(passIds && pass3rdLeptonVeto &&  mustBlind == 0) {
+
+
+
+hzz_RedMet = aRedMet.pt();
+hzz_RedMetL = aRedMetL;
+hzz_RedMetT = aRedMetT;
+hzz_RawMet = rawMetP4.pt();
+hzz_MVAMet = mvaMetP4.pt();
+hzz_BTag = btag_discrm;
 lineshape_weight = weight;
 hzz_lept1_gIso = phys.leptons[0].gIso;
 hzz_lept2_gIso = phys.leptons[1].gIso;
@@ -642,7 +654,8 @@ hzz_rho = ev.rho25;
       PUWeight = weight;
       hzz_PFMET = zvvs[0].pt();
       hzz_MET_Phi = zvvs[0].phi();
-      hzz_TransMass_Higgs = mts[0];
+//      hzz_TransMass_Higgs = mts[0];
+      hzz_TransMass_Higgs = aMT;
       ev_category = ev.cat;
 
       //cout << " Z mass =  " << hzz_Z_Mass << endl;
@@ -651,29 +664,25 @@ hzz_rho = ev.rho25;
       //cout << " lepton 1 PT =  " << lep1.pt() << "Particle ID = " << phys.leptons[0].pid << " lepton 1 PT =  " << phys.leptons[0].pt()<< endl;
       //cout << " Event category =  " << ev.cat << endl;
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Jets Filling ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-PhysicsObjectJetCollection correctedJets = jets[0];
+//PhysicsObjectJetCollection correctedJets = phys.ajets;
 //cout << " Number of Jets = " << correctedJets.size() << endl;
 vector<int>jetmarker;
 jetmarker.clear();
-double tmp = -1.0;
+double tmpPT = -1.0;
 double sumet = 0.;
-//double tmp1 = 0.;
-//double tmp2 = 0.;
-//double tmp3 = 0.;
 int njets = 0;
 Float_t mindphijmet(9999.);
-      for(size_t corjet=0; corjet<correctedJets.size(); corjet++)
-        {
-if(correctedJets[corjet].pt() > 30. ) {
-Float_t idphijmet=fabs(deltaPhi(hzz_MET_Phi,correctedJets[corjet].phi()));
+for(size_t corjet=0; corjet<phys.ajets.size(); corjet++) {
+if(phys.ajets[corjet].pt() > 30. ) {
+Float_t idphijmet=fabs(deltaPhi(hzz_MET_Phi,phys.ajets[corjet].phi()));
 if(idphijmet<mindphijmet) mindphijmet=idphijmet;
 //cout << " Delta Phi of Jet and MET = " << idphijmet << endl;
 //if(correctedJets[corjet].pt() > 30. ) {
-double jetpt = correctedJets[corjet].pt();
-double jetE = correctedJets[corjet].energy();
+double jetpt = phys.ajets[corjet].pt();
+double jetE = phys.ajets[corjet].energy();
 sumet = jetpt+sumet;
-if(jetpt > tmp) {tmp = jetpt; }
-//cout << "PT of Jets = " << correctedJets[corjet].pt() << endl;
+if(jetpt > tmpPT) {tmpPT = jetpt; }
+//cout << "PT of Jets = " << phys.ajets[corjet].pt() << endl;
 njets++;
 jetmarker.push_back(corjet);
 } // PT requirement on Jets
@@ -681,10 +690,11 @@ jetmarker.push_back(corjet);
 //cout<< "sumet = " << sumet <<endl;
 //cout << " Number of Jets = " << hzz_N_Jets << endl;
 //cout << "***************************************************************" <<endl;
-hzz_Jet_PT = tmp;
+hzz_Jet_PT = tmpPT;
 hzz_N_Jets = njets;
 //cout << " Leading Jet PT = " << hzz_Jet_PT << endl;
 //cout << " Number of Jets = " << hzz_N_Jets << endl;
+//hzz_dPhi_JetMet = mindphijmet;
 hzz_dPhi_JetMet = mindphijmet;
 hzz_Jet_SumPT = sumet;
 //cout << " Minimum dPhi of jet and Met = " << hzz_dPhi_JetMet << endl;
@@ -696,10 +706,6 @@ hzz_Jet_SumPT = sumet;
   printf("\n"); 
   file->Close();
 
-  //##############################################
-  //########     SAVING HISTO TO FILE     ########
-  //##############################################
-  //save control plots to file
   outUrl += "/";
   outUrl += gSystem->BaseName(url);
   printf("Results save in %s\n", outUrl.Data());
