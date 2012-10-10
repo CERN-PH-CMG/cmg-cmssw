@@ -11,6 +11,6 @@ def setupJSON( process ):
     # in case filename is a local filename, removing CMGLOCALBASEDIR
     #Jose: dont know where this var is set
     #fileName = fileName.replace( os.environ['CMGLOCALBASEDIR'],'' ) 
-    json = jsonPick( fileName )
+    json = jsonPick( fileName, True )
     applyJSON(process, json )
     return json
