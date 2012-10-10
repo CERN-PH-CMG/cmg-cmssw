@@ -23,6 +23,7 @@ def findFirstAncestor(dataset_id, info):
         groups = ['tauMu_fullsel_tree_CMG', 'tauEle_fullsel_tree_CMG', 'cmgTuple', 'PFAOD']
         igroup = 0
         while 1:
+            print rows
             ginfo = groupInfo(dataset_id, groups[igroup])
             if ginfo != None:
                 break
@@ -88,6 +89,7 @@ rePatPATCMG = re.compile('PAT_CMG\S+')
 def processInfo(info):
     dsInfo = DatasetInfo()
     dsInfo.primary_dataset_entries = None
+    dsInfo.dataset_entries = None
     for ds in info:
         job_eff = None
         fraction = None
@@ -113,9 +115,10 @@ def processInfo(info):
         # which step is that?
         base = os.path.basename(path_name)
         fraction = dataset_fraction
+        if dsInfo.dataset_entries == None:
+            dsInfo.dataset_entries = ds['dataset_entries']
         if reTAU.match(base):
             step = 'TAUTAU'
-            dsInfo.dataset_entries = ds['dataset_entries']
         elif rePatPFAOD.match(base):
             step = 'PFAOD'
         elif rePatPATCMG.match(base):
