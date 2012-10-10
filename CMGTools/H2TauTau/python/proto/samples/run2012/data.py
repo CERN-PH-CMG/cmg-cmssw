@@ -5,15 +5,15 @@ import copy
 data_Run2012A = cfg.DataComponent(
     name = 'data_Run2012A',
     files = [],
-    # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4 |        833 | 28.303(/pb) | 28.303(/pb) |
-    # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       5606 | 302.772(/pb) | 299.191(/pb) |
-    # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 |       6858 | 377.239(/pb) | 371.436(/pb) |
-    intLumi = 28.303 + 299.191 + 371.436, 
+    # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4 |       2809 |  96.404(/pb) |  96.404(/pb) |
+    # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       5258 | 316.016(/pb) | 316.016(/pb) |
+    # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 |       6514 | 395.991(/pb) | 395.991(/pb) |
+    intLumi = 96.404+316.016+ 395.991, 
     triggers = [],
     json = None
     )
 
-data_Run2012A_aug6 = cfg.DataComponent(
+data_Run2012A_aug6 = cfg.DataComponent( # update
     name = 'data_Run2012A_aug6',
     files = [],
     # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       1810 | 82.136(/pb) | 82.136(/pb) |
@@ -25,8 +25,8 @@ data_Run2012A_aug6 = cfg.DataComponent(
 data_Run2012B = cfg.DataComponent(
     name = 'data_Run2012B',
     files = [],
-    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      50799 | 4.389(/fb) | 4.389(/fb) |
-    intLumi = 4389., #pixellumicalc 4389
+    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      51089 | 4.428(/fb) | 4.428(/fb) |
+    intLumi = 4428., 
     triggers = [],
     json = None
     )
@@ -40,18 +40,18 @@ data_Run2012C_v1 = cfg.DataComponent(
     json = None
     )
 
-data_Run2012C_v2 = cfg.DataComponent(
+data_Run2012C_v2 = cfg.DataComponent( # update
     name = 'data_Run2012C_v2',
     files = [],
-    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |      17991 | 1.464(/fb) | 1.464(/fb) |
-    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 |      46975 | 4.358(/fb) | 4.358(/fb) |
+    # what is the v2? 
+    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      49752 |   4.252(/fb) |   4.252(/fb) |
+    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |      17991 |   1.464(/fb) |   1.464(/fb) |
+    # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 |      46975 |   4.358(/fb) |   4.358(/fb) |
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7 |       3425 | 281.155(/pb) | 281.155(/pb) |
-    intLumi = 1464+4358+281.155,
+    intLumi = 1464 + 4358 + 281.155,
     triggers = [],
     json = None
     )
-#  lumiCalcVersion -i $Json2012 recorded --hltpath HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7 | grep HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7 missing! 
-# running nohup in  /afs/cern.ch/work/c/cbern/ProductionSoftware/5X/V5_8_0/CMSSW_5_3_3_patch3/src
 
 data_list = [
     data_Run2012A,
