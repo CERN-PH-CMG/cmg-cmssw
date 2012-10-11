@@ -1,7 +1,7 @@
 from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauElectron
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
 from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
@@ -10,6 +10,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     DiObjectClass = TauElectron
     LeptonClass = Electron
+    OtherLeptonClass = Muon
 
     def declareHandles(self):
         super(TauEleAnalyzer, self).declareHandles()
@@ -25,10 +26,16 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
                 'std::vector<cmg::METSignificance>'
                 )
         
+        self.handles['otherLeptons'] = AutoHandle(
+            'cmgMuonSel',
+            'std::vector<cmg::Muon>'
+            )
+
         self.handles['leptons'] = AutoHandle(
             'cmgElectronSel',
             'std::vector<cmg::Electron>'
             )
+
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
 
@@ -76,11 +83,28 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
+    def buildOtherLeptons(self, cmgOtherLeptons, event):
+        '''Build muons for third lepton veto, associate best vertex.
+        '''
+        otherLeptons = []
+        for index, lep in enumerate(cmgOtherLeptons):
+            pyl = self.__class__.LeptonClass(lep)
+            pyl.associatedVertex = event.goodVertices[0]
+            if not pyl.testMuonIDLoose():
+                continue
+            otherLeptons.append( pyl )
+        return otherLeptons
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
     def process(self, iEvent, event):
         
         #        import pdb; pdb.set_trace()
         
         result, message = super(TauEleAnalyzer, self).process(iEvent, event)
+
         if self.cfg_ana.verbose and result is False:
             print event.run, event.lumi, event.eventId, message
             for dl in event.diLeptons:
@@ -186,20 +210,34 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-#PG eleID parameters (implemented in Electron)
-# 30.05.12, from Lorenzo
-# loose, pt > 20: {0.925, 0.975, 0.985}
-# tight, pt > 20: {0.925, 0.985, 0.985}
-# 13.06.12, numbers from the twiki
+    def testTightOtherLepton(self, muon):
+        '''Tight muon selection, no isolation requirement'''
+        return muon.tightId()                    and \
+               self.testVertex( muon )           and \
+               abs (muon.eta()) < 2.4            and \
+               muon.relIsoAllChargedDB05() < 0.3
 
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+    def thridLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
+        # count tight electrons
+        tightLeptons = [electron for electron in leptons if self.testLeg2ID(electron) and self.testLeg2Iso(electron, 0.3)] 
+        # count tight muons
+        tightOtherLeptons = [muon for muon in otherLeptons if self.testTightOtherLepton(muon)]
+        if len (tightLeptons) + len(tightOtherLeptons) > 1 :
+             return False
+        return True
+        
+        
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
     def leptonAccept(self, leptons, isoCut = 0.3) :
         ''' returns True if the additional lepton veto is successful'''
-        #PG FIXME how do I pass the isolation argument to testLooseLeg2?
-        # import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()        
         looseLeptons = filter( self.testLooseLeg2, leptons)
         nLeptons = len(looseLeptons)
 #        return nLeptons < 2 #PG according to AN 2012/150 of 12/07/2012
