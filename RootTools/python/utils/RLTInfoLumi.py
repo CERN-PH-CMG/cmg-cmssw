@@ -6,9 +6,9 @@ import re
 from ROOT import TFile, TTree
 
 class RLTInfoLumi(object):
-    def __init__(self, inputRootFileName):
+    def __init__(self, inputRootFileName, treename):
         self.file = TFile(inputRootFileName)
-        self.tree = self.file.Get('RLTInfo')
+        self.tree = self.file.Get(treename)
         self.rawDict = {}
         for ie in self.tree:
             # print ie.run
@@ -112,10 +112,13 @@ if __name__ == '__main__':
     parser.add_option("-l", "--lumicalc", dest="lumicalc",
                       default='pixelLumiCalc.py',
                       help='Lumi calc command (e.g. lumiCalc2.py, pixelLumiCalc.py)')
+    parser.add_option("-t", "--treename", dest="treename",
+                      default='RLTInfo',
+                      help='name of the RLT tree')
 
     (options,args) = parser.parse_args()
 
-    rltlum = RLTInfoLumi(sys.argv[1])
+    rltlum = RLTInfoLumi(sys.argv[1], options.treename)
     # rltlum.tree.Print()
     # import pprint
     # pprint.pprint( rltlum.rawDict )
