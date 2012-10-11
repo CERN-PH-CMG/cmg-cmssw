@@ -111,7 +111,7 @@ def processInfo(info):
             elif dsInfo.primary_dataset_entries != pde:
                 print 'WARNING! there can only be one value for primary_dataset_entries in the history of a dataset, see task',task_id 
         else:
-            print 'WARNING! primary_dataset_entries==-1'
+            print 'WARNING! primary_dataset_entries==-1 for',path_name
         # which step is that?
         base = os.path.basename(path_name)
         fraction = dataset_fraction
