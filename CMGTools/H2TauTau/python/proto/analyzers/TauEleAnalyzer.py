@@ -150,6 +150,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def testLeg1ID(self, tau):
         return tau.tauID("againstElectronMVA") >0.5 and \
+               tau.tauID("againstElectronMVA2") >0.5 and \
                tau.tauID("againstElectronMedium") > 0.5 and \
                tau.tauID("againstMuonLoose")>0.5 and \
                self.testVertex( tau )
