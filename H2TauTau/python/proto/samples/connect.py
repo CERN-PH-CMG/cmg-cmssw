@@ -204,7 +204,7 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
         else:
             eff = None
         if eff is None:
-            print 'WARNING: efficiency not determined.'
+            print 'WARNING: efficiency not determined for',compName
             eff = 0.0
         try: 
             globalEff *= eff
