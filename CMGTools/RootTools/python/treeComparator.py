@@ -9,9 +9,11 @@ def hname():
 
 legend = None
 
-def draw(var, cut, t1, t2, w1='1', w2='1', name1=None, name2=None,normalize=True, nbins=20):
+def draw(var, cut, t1, t2, w1='1', w2='1',
+         name1=None, name2=None,
+         normalize=True, nbins=20, graphics=True):
     global legend
-    h1 = TH1F(hname(), '1', nbins, 0, 200)
+    h1 = TH1F(hname(), '', nbins, 0, 200)
     h1.Sumw2()
     t1.Project(h1.GetName(), var,'({cut})*({w1})'.format(cut=cut,w1=w1),'')
     h2 = h1.Clone(hname())
@@ -22,20 +24,24 @@ def draw(var, cut, t1, t2, w1='1', w2='1', name1=None, name2=None,normalize=True
         h2.Scale(1./h2.Integral())
     else:
         h2.Scale(h1.Integral()/h2.Integral())
-    h2.Draw()
     sBlue.formatHisto(h1)
     sBlack.formatHisto(h2)
     h1.SetMarkerSize(0.8)
     h2.SetMarkerSize(0.8)
-    h1.Draw('same')
-    gPad.Update()
+    h1.SetStats(0)
+    h2.SetStats(0)
     if name1 is None: name1 = t1.GetTitle()
     if name2 is None: name2 = t2.GetTitle()
-    legend = TLegend(0.55,0.7,0.9,0.9)
-    legend.AddEntry(h1, name1, 'lpf')
-    legend.AddEntry(h2, name2, 'lpf')
-    legend.Draw('same')
-    return h1, h2
+    legend = TLegend(0.55,0.7,0.88,0.88)
+    legend.SetFillColor(0)
+    legend.AddEntry(h1, name1, 'lp')
+    legend.AddEntry(h2, name2, 'lp')
+    if graphics:
+        h2.Draw()
+        h1.Draw('same')
+        legend.Draw('same')
+        gPad.Update()
+    return h1, h2, legend
 
 # hw, hdy = draw('diTau.obj.mTLeg2()', 'diTau.obj.mTLeg2()<300')
 
