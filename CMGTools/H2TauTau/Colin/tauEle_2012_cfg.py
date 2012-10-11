@@ -125,14 +125,17 @@ vbfKwargs = dict( Mjj = 400,
                   deltaEta = 4.0    
                   )
 
+
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
-    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.44X.xml',
+    vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
     jetCol = 'cmgPFJetSel',
-    jetPt = 30,
+    jetPt = 20,
     jetEta = 4.7,
     **vbfKwargs
     )
+
+
 
 
 treeProducer = cfg.Analyzer(
@@ -149,19 +152,20 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinAug8 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_Sync_ColinOct1 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroSep25 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct05 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct05 import *
 
 #########################################################################################
 
 # FIXME make it comprehensive, for the flat ntuples production
 
 # MC_list = [WJets, DYJets, TTJets]
-MC_list = [HiggsVBF125]
+# MC_list = [HiggsVBF125]
+MC_list = [DYJets]
 # MC_list = copy.copy(MC)
-data_list = copy.copy(data_list_Run2012A)
-data_list.extend(data_list_Run2012B)
-embed_list = copy.copy(embed_list_Run2012A)
-embed_list.extend(embed_list_Run2012B)
+#data_list = copy.copy(data_list_Run2012A)
+#data_list.extend(data_list_Run2012B)
+#embed_list = copy.copy(embed_list_Run2012A)
+#embed_list.extend(embed_list_Run2012B)
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
@@ -199,8 +203,8 @@ data_Run2012A.splitFactor = 40
 data_Run2012B.splitFactor = 200
 
 selectedComponents =  copy.copy(MC_list)
-selectedComponents.extend( data_list )
-selectedComponents.extend( embed_list )
+#selectedComponents.extend( data_list )
+#selectedComponents.extend( embed_list )
 
 
 sequence = cfg.Sequence( [
@@ -227,10 +231,10 @@ if syncntuple:
 
 test = 1
 if test==1:
-    comp = HiggsVBF125
+    comp = DYJets
 #    HiggsVBF125.triggers = []
     selectedComponents = [comp]
-    comp.splitFactor = 14
+    comp.splitFactor = 1
     # comp.files = comp.files[:1]
     # for 53 MC: 
 #    comp.triggers = ['HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*']
