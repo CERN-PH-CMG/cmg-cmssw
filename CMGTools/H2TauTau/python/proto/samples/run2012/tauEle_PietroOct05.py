@@ -53,7 +53,7 @@ MC = copy.copy( mc_ewk )
 # MC.extend( mc_higgs )
 # the following for 52X sync purposes only:
 MC.append (HiggsGGH125)
-MC.append (HiggsVBF125)
+MC.append (HiggsVBF110)
 
 MC.extend( mc_diboson ) 
 
@@ -63,7 +63,7 @@ allsamples.extend( data_list )
 
 print 'start connecting... \n\n'
 
-connect( allsamples, '%H2TauTau_tauEle_06oct_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, cache=False, verbose=True)
+connect( allsamples, '/VBF%-110%H2TauTau_tauEle_06oct_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, cache=False, verbose=True)
 
 print
 for sam in MC:
