@@ -23,7 +23,7 @@ def findFirstAncestor(dataset_id, info):
         groups = ['tauMu_fullsel_tree_CMG', 'tauEle_fullsel_tree_CMG', 'cmgTuple', 'PFAOD']
         igroup = 0
         while 1:
-            print rows
+            # print rows
             ginfo = groupInfo(dataset_id, groups[igroup])
             if ginfo != None:
                 break
@@ -117,7 +117,7 @@ def processInfo(info):
         fraction = dataset_fraction
         if dsInfo.dataset_entries == None:
             dsInfo.dataset_entries = ds['dataset_entries']
-        if reTAU.match(base):
+        if base.lower().find('tauele')!=-1 or base.lower().find('taumu')!=-1 :
             step = 'TAUTAU'
         elif rePatPFAOD.match(base):
             step = 'PFAOD'
