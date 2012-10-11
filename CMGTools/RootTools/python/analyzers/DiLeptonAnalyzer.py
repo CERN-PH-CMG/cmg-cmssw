@@ -15,6 +15,7 @@ class DiLeptonAnalyzer( Analyzer ):
     # ... not sure other people can understand this comment ;-)
     DiObjectClass = DiObject
     LeptonClass = Lepton 
+    OtherLeptonClass = Lepton 
 
     def beginLoop(self):
         super(DiLeptonAnalyzer,self).beginLoop()
@@ -23,6 +24,7 @@ class DiLeptonAnalyzer( Analyzer ):
         count.register('all events')
         count.register('> 0 di-lepton')
         # count.register('di-lepton cut string ok')
+        count.register('third lepton veto')
         count.register('lepton accept')
         count.register('leg1 offline cuts passed')
         count.register('leg1 trig matched')
@@ -45,6 +47,12 @@ class DiLeptonAnalyzer( Analyzer ):
         return map( self.__class__.LeptonClass, cmgLeptons )
 
 
+    def buildOtherLeptons(self, cmgLeptons, event):
+        '''Creates python Leptons from the leptons read from the disk.
+        to be overloaded if needed.'''
+        return map( self.__class__.LeptonClass, cmgLeptons )
+
+
         
     def process(self, iEvent, event):
         # access di-object collection
@@ -59,6 +67,7 @@ class DiLeptonAnalyzer( Analyzer ):
         # event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product(), event )
         event.leptons = self.buildLeptons( self.handles['leptons'].product(), event )
+        event.otherLeptons = self.buildOtherLeptons( self.handles['otherLeptons'].product(), event )
         # import pdb; pdb.set_trace()
         self.shiftEnergyScale(event)
         return self.selectionSequence(event, fillCounter=True)
@@ -101,6 +110,11 @@ class DiLeptonAnalyzer( Analyzer ):
         if not self.leptonAccept( event.leptons ):
             return False, 'di-lepton veto failed'
         if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
+
+        if not self.thirdLeptonVeto(event.leptons, event.otherLeptons, 0.3) :
+            return False
+            return False, 'third lepton veto failed'
+        if fillCounter: self.counters.counter('DiLepton').inc('third lepton veto')
 
         # testing leg1
         selDiLeptons = [ diL for diL in selDiLeptons if \
@@ -171,6 +185,11 @@ class DiLeptonAnalyzer( Analyzer ):
         '''Should implement a default version running on event.leptons.'''
         return True
     
+
+    def thridLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
+        '''Should implement a default version running on event.leptons.'''
+        return True
+
 
     def testLeg1(self, leg, isocut=None):
         '''returns testLeg1ID && testLeg1Iso && testLegKine for leg1'''
