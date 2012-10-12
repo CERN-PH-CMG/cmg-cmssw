@@ -182,7 +182,6 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(lambda x: x.jets['nJets']==2,'NJEtsTwo',1,'fourLeptonsTwoJets')
         passed=cutFlow.applyCut(lambda x: x.jets['nJets']==2 and abs(x.jets['dEta'])>3 and x.jets['Mjj']>300.,'VBF',1,'fourLeptonsVBF')  
 
-#        import pdb;pdb.set_trace()
 
 
 
@@ -231,6 +230,8 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         if passed:
             event.higgsCandLoose = cutFlow.obj1[0]
 
+
+#        import pdb;pdb.set_trace()
 
 
         if hasattr(event,'higgsCand') or hasattr(event,'higgsCandLoose'):
