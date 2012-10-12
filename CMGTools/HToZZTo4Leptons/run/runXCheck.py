@@ -6,7 +6,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2012 as effectiveAreas
 from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
-channel = 'ele_ele'
+channel = 'all'
 
 skimAnalyzer = cfg.Analyzer('SkimCountAnalyzer')
 
@@ -161,7 +161,7 @@ elif channel == 'ele_ele':
 
 EventSelector = cfg.Analyzer(
     'EventSelector',
-    toSelect = [9708]
+    toSelect = [45744,24264,26251,35912]
     )
 
 
@@ -192,7 +192,7 @@ if test==1:
     selectedComponents = [dataset]
     dataset.splitFactor = 1
     dataset.files=['cmgTuple.root']
-    dataset.files=['cmgTupleVBF.root']
+#    dataset.files=['cmgTupleVBF.root']
 
 
    

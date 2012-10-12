@@ -48,10 +48,10 @@ class AllFourLeptonAnalyzer( FourLeptonAnalyzer ):
     def testLeptonGood(self, leg,sel=None):
         if abs(leg.pdgId()) == 13:
             return self.testMuonGood(leg) and \
-               super( MuEleFourLeptonAnalyzer, self).testLeptonGood( leg,sel )
+               super( AllFourLeptonAnalyzer, self).testLeptonGood( leg,sel )
         else:
             return self.testElectronGood(leg) and \
-            super( MuEleFourLeptonAnalyzer, self).testLeptonGood( leg,sel )
+            super( AllFourLeptonAnalyzer, self).testLeptonGood( leg,sel )
 
 
     def testLeptonLoose(self, leg,sel=None):

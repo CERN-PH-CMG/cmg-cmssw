@@ -4,7 +4,8 @@ import os
 from copy import copy
 
 pat='V5_7_0'
-skim='SKIM_Sep26_NoCal_MuClean'
+#skim='SKIM_Sep26_NoCal_MuClean'
+skim='SKIM_Oct8_EleRegCal_MuNoCal'
 filepattern = 'cmgTuple.*root'
 userName='bachtis'
 
@@ -100,8 +101,11 @@ ZZ4tau=kreator.makeMCComponent('ZZ4tau','/ZZTo4tau_8TeV-powheg-pythia6/Summer12_
 ZZ4e=kreator.makeMCComponent('ZZ4e','/ZZTo4e_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
 
-GGZZ4L=kreator.makeMCComponent('GGZZ4L','/GluGluToZZTo4L_8TeV-gg2zz-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/PAT_CMG_5_7_0/'+skim,userName,filepattern)
-GGZZ2L2L=kreator.makeMCComponent('GGZZ2L2L','/GluGluToZZTo2L2L_TuneZ2star_8TeV-gg2zz-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/PAT_CMG_5_7_0/'+skim,userName,filepattern)
+GGZZ4L=kreator.makeMCComponent('GGZZ4L','/GluGluToZZTo4L_8TeV-gg2zz-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_7_0/'+skim,userName,filepattern)
+GGZZ2L2L=kreator.makeMCComponent('GGZZ2L2L','/GluGluToZZTo2L2L_TuneZ2star_8TeV-gg2zz-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_7_0/'+skim,userName,filepattern)
+
+
+
 
 
 mcSamples=[
