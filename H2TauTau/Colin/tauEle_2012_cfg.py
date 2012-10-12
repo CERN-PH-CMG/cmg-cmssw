@@ -17,10 +17,6 @@ syncntuple = True
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
-# mine: 
-# puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_true.root'])
-# puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_true_AB_start_196509.root'])
-
 # andrew ICHEP
 # puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-09-12/MC_Summer12_PU_S7.root'
 # puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-09-12/Data_Pileup_2012.root'
@@ -34,11 +30,10 @@ vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_19594
 
 mc_vertexWeight = None
 
-mc_tauEffWeight_mc = 'eff2012Tau20MC_TauEle'
-mc_eleEffWeight_mc = 'eff2012Ele20MC'
-mc_tauEffWeight = 'effTau2012AB_TauEle'
-mc_eleEffWeight = 'effEle2012AB'
-    
+hlt_tauEffWeight_mc = 'eff2012Tau20MC_TauEle'
+hlt_tauEffWeight = 'effTau2012AB_TauEle'
+hlt_eleEffWeight_mc = 'eff_2012_Rebecca_TauEle_Ele2253XMC'
+hlt_eleEffWeight = 'effEle2012_Rebecca_TauEle_ABC'
 
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
@@ -46,7 +41,7 @@ jsonAna = cfg.Analyzer(
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer',
-#    verbose = True
+    verbose = True
     )
 
 vertexAna = cfg.Analyzer(
@@ -100,8 +95,8 @@ higgsWeighter = cfg.Analyzer(
 
 tauWeighter = cfg.Analyzer(
     'LeptonWeighter_tau',
-    effWeight = mc_tauEffWeight,
-    effWeightMC = mc_tauEffWeight_mc,
+    effWeight = hlt_tauEffWeight,
+    effWeightMC = hlt_tauEffWeight_mc,
     lepton = 'leg1',
     verbose = False,
     disable = False,
@@ -109,8 +104,8 @@ tauWeighter = cfg.Analyzer(
 
 electronWeighter = cfg.Analyzer(
     'LeptonWeighter_ele',
-    effWeight = mc_eleEffWeight,
-    effWeightMC = mc_eleEffWeight_mc,
+    effWeight = hlt_eleEffWeight,
+    effWeightMC = hlt_eleEffWeight_mc,
     lepton = 'leg2',
     verbose = False,
     disable = False,
@@ -160,12 +155,12 @@ from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct05 import *
 
 # MC_list = [WJets, DYJets, TTJets]
 # MC_list = [HiggsVBF125]
-MC_list = [DYJets]
-# MC_list = copy.copy(MC)
+# MC_list = [DYJets]
 #data_list = copy.copy(data_list_Run2012A)
 #data_list.extend(data_list_Run2012B)
 #embed_list = copy.copy(embed_list_Run2012A)
 #embed_list.extend(embed_list_Run2012B)
+# MC_list = copy.copy(MC)
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
@@ -203,7 +198,7 @@ data_Run2012A.splitFactor = 40
 data_Run2012B.splitFactor = 200
 
 selectedComponents =  copy.copy(MC_list)
-#selectedComponents.extend( data_list )
+selectedComponents.extend( data_list )
 #selectedComponents.extend( embed_list )
 
 
@@ -231,8 +226,12 @@ if syncntuple:
 
 test = 1
 if test==1:
-    comp = DYJets
+#    comp = DYJets
+#    comp = data_Run2012A
+#    comp = HiggsVBF125
+    comp = Tbar_tW
 #    HiggsVBF125.triggers = []
+    comp.files = comp.files[:5]
     selectedComponents = [comp]
     comp.splitFactor = 1
     # comp.files = comp.files[:1]
@@ -241,7 +240,7 @@ if test==1:
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.files = comp.files[:5]
+        comp.files = comp.files[:10]
 
 
 
