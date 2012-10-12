@@ -212,7 +212,7 @@ class FindOnCastor(Task):
         if not castortools.fileExists(directory):
             if hasattr(self,'create') and self.create:
                 castortools.createCastorDir(directory)
-                castortools.chmod(directory,'775')
+                #castortools.chmod(directory,'775')
         if not castortools.isDirectory(directory): 
             raise Exception("Dataset directory '%s' does not exist or could not be created" % directory)
         return {'Topdir':topdir,'Directory':directory}  

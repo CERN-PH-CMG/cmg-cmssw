@@ -3,7 +3,7 @@
 Classes to check that a set of ROOT files are OK and publish a report
 """
 
-import datetime, fnmatch, json, os, shutil, sys, tempfile
+import datetime, fnmatch, json, os, shutil, sys, tempfile, time
 import subprocess
 
 import CMGTools.Production.eostools as castortools
@@ -33,8 +33,10 @@ class PublishToFileSystem(object):
             
             castor_path = castortools.lfnToCastor(path)
             new_name = '%s/%s' % (castor_path, fname)
+            castortools.xrdcp(nname,path)
+            time.sleep(1)
             
-            if not castortools.xrdcp(nname,path) and castortools.fileExists(new_name):
+            if castortools.fileExists(new_name):
                 
                 #castortools.move(old_name, new_name)
                 #castortools.chmod(new_name, '644')
@@ -44,7 +46,7 @@ class PublishToFileSystem(object):
             else:
                 pathhash = path.replace('/','.')
                 hashed_name = 'PublishToFileSystem-%s-%s' % (pathhash, fname)
-                shutil.move(name, hashed_name)
+                shutil.move(nname, hashed_name)
                 print >> sys.stderr, "Cannot write to directory '%s' - written to local file '%s' instead." % (castor_path, hashed_name)
                 
     def read(self, lfn, local = False):
