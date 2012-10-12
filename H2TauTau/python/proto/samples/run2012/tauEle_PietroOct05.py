@@ -14,9 +14,9 @@ aliases = {
     '/VBF_HToTauTau.*START53.*':'HiggsVBF',
     '/GluGluToHToTauTau.*START53.*':'HiggsGGH',
     '/WH_ZH_TTH_HToTauTau.*START53.*':'HiggsVH',
-    '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START53_V9-v2':'WJets',
+#    '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1.*':'WJets',
+    '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v2.*':'WJets',
     '/DYJets.*START53.*':'DYJets',
-    # '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START53_V9-v1.*':'WJets',
     '/W1Jets.*START53.*':'W1Jets',
     '/W2Jets.*START53.*':'W2Jets',
     '/W3Jets.*START53.*':'W3Jets',
@@ -48,25 +48,26 @@ aliases = {
     '/ZZJetsTo4L_TuneZ2star_8TeV-madgraph.*START53.*':'ZZJetsTo4L'
     }
 
-MC = copy.copy( mc_ewk )
+MC_list = copy.copy( mc_ewk )
+MC_list.extend( mc_diboson ) 
+MC_list.extend( mc_higgs )
 
-# MC.extend( mc_higgs )
 # the following for 52X sync purposes only:
-MC.append (HiggsGGH125)
-MC.append (HiggsVBF110)
+#MC_list.append (HiggsGGH125)
+#MC_list.append (HiggsVBF125)
 
-MC.extend( mc_diboson ) 
-
-allsamples = copy.copy(MC)
+allsamples = copy.copy(MC_list)
 allsamples.extend( data_list )
 # allsamples.extend( embed_list )
 
+
 print 'start connecting... \n\n'
 
-connect( allsamples, '/VBF%-110%H2TauTau_tauEle_06oct_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, cache=False, verbose=True)
+connect( allsamples, '%H2TauTau_tauEle_06oct_PG_newSVFit_MVAMET', 'tauEle.*root', aliases, 
+         cache=True, verbose=False)
 
 print
-for sam in MC:
+for sam in MC_list:
     print 'setting trigger', mc_triggers,'for sample',sam.name
     sam.triggers = mc_triggers
 for data in data_list:
