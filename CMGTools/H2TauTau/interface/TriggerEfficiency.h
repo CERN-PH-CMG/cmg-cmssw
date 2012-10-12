@@ -505,6 +505,34 @@ public:
   ////////////////////////////HCP 2012/////////////////////////////////////
   // EffEleEB_MC   m0 = 22.00666445; sigma = 0.00036058; alpha = 0.00000251; n = 1.38456083; norm = 1.02640579; 
   // EffEleEE_MC   m0 = 22.18226941; sigma = 1.07762306; alpha = 1.23712775; n = 1.27324238; norm = 1.15312185;
+
+
+  double eff_2012_Rebecca_A (double pt, double eta){
+    if (fabs (eta) < 1.479) return efficiency (20.4669, 1.20429, 1.84954, 1.38645, 0.891122) ; 
+    else                    return efficiency (21.4136, 1.93922, 2.43562, 1.00186, 51.947  ) ; 
+  }
+
+  double eff_2012_Rebecca_B (double pt, double eta){
+    if (fabs (eta) < 1.479) return efficiency (22.8618, 0.844755,  1.07941, 1.27956, 1.07722 ) ;
+    else                    return efficiency (22.1045, 1.08481 , 0.780119, 1.91846, 0.962174) ;
+  }
+
+  double eff_2012_Rebecca_C (double pt, double eta){
+    if (fabs (eta) < 1.479) return efficiency (22.8598, 0.855666, 1.02951 , 1.32713, 1.05486 ) ;
+    else                    return efficiency (21.7643, 1.45024 , 0.785753, 3.14722, 0.926788) ;
+  }
+
+  double eff_2012_Rebecca_BC (double pt, double eta){
+    if (fabs (eta) < 1.479) return efficiency (22.8925, 0.86372, 1.13289, 1.22478, 1.13184 ) ;
+    else                    return efficiency (22.0292, 1.4626 , 0.97438, 2.47942, 0.937275) ;
+  }
+
+  double eff_2012_Rebecca_53XMC (double pt, double eta){
+    if (fabs (eta) < 1.479) return efficiency (21.4136, 0.000422, 2.47314e-06, 1.42487, 1.00104) ;
+    else                    return efficiency (20.9985, 0.002918, 3.43131e-05, 1.41479, 1.06506) ;
+  }
+
+
   double effEle2012MC53X(double pt, double eta) {
     if(fabs(eta)<1.479) 
       return efficiency(pt,22.00666445,0.00036058,0.00000251,1.38456083,1.02640579);
@@ -528,6 +556,15 @@ public:
     float weight_C = 7000.;    
     return (weight_A * eff2012AEle20(pt, eta) + weight_B * eff2012BEle22(pt, eta) + weight_C * eff2012CEle22(pt, eta))/(weight_A+weight_B+weight_C);
   } 
+
+  // functions measured by Rebecca
+
+  double effEle2012MC53X(double pt, double eta) {
+    if(fabs(eta)<1.479) 
+      return efficiency(pt,22.00666445,0.00036058,0.00000251,1.38456083,1.02640579);
+    else
+      return efficiency(pt,22.18226941,1.07762306,1.23712775,1.27324238,1.15312185);
+  }
 
 
 
