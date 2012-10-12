@@ -463,7 +463,7 @@ public:
     else                  return efficiency (pt, 15.9951, 7.45044e-05, 3.06986e-08, 1.76431, 0.872391) ;
   }
 
-  double effEle2012_Rebecca_TauMu_ABC(double pt, double eta) {
+  double effMu2012_Rebecca_TauMu_ABC(double pt, double eta) {
     float weight_A = 888.33; 
     float weight_B = 4420.0;    
     float weight_C = 6890.975;    
