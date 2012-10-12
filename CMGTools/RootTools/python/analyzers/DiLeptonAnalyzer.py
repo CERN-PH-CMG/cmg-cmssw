@@ -112,7 +112,6 @@ class DiLeptonAnalyzer( Analyzer ):
         if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
 
         if not self.thirdLeptonVeto(event.leptons, event.otherLeptons, 0.3) :
-            return False
             return False, 'third lepton veto failed'
         if fillCounter: self.counters.counter('DiLepton').inc('third lepton veto')
 
