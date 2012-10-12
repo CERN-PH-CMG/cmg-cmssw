@@ -533,9 +533,9 @@ public:
   }
 
   double effEle2012_Rebecca_ABC(double pt, double eta) {
-    float weight_A = 696.09; 
-    float weight_B = 4327.0;    
-    float weight_C = 7000.;    
+    float weight_A = 888.33; 
+    float weight_B = 4420.0;    
+    float weight_C = 6890.975;    
     return (weight_A * eff_2012_Rebecca_Ele20A(pt, eta) + 
             weight_B * eff_2012_Rebecca_Ele22B(pt, eta) + 
             weight_C * eff_2012_Rebecca_Ele22C(pt, eta))/(weight_A+weight_B+weight_C);
