@@ -231,8 +231,8 @@ HiggsVH150 = cfg.MCComponent(
 #############
 
 mc_higgs_vbf = [
-    # HiggsVBF110,
-    # HiggsVBF115,
+    HiggsVBF110,
+    HiggsVBF115,
     HiggsVBF120,
     HiggsVBF125,
     HiggsVBF130,
@@ -243,8 +243,8 @@ mc_higgs_vbf = [
     ]
 
 mc_higgs_ggh = [
-    # HiggsGGH110,
-    # HiggsGGH115,
+    HiggsGGH110,
+    HiggsGGH115,
     HiggsGGH120,
     HiggsGGH125,
     HiggsGGH130,
@@ -255,8 +255,8 @@ mc_higgs_ggh = [
     ]
 
 mc_higgs_vh = [
-    # HiggsVH110,
-    # HiggsVH115,
+    HiggsVH110,
+    HiggsVH115,
     HiggsVH120,
     HiggsVH125,
     HiggsVH130,
