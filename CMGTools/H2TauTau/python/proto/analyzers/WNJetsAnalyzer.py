@@ -33,7 +33,10 @@ class WNJetsAnalyzer( Analyzer ):
         
     def process(self, iEvent, event):
         event.NUP = -1
-        self.readCollections( iEvent )
+        try :
+            self.readCollections( iEvent )
+        except :
+            return True
         
         if not self.cfg_comp.isMC:
             return True
