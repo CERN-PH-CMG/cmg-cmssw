@@ -86,14 +86,14 @@ class FSRRecovery(object):
         if len(photonsHighPt)>0:
             photon=photonsHighPt[0]
         elif len(photonsLowPt):
-            photonsLowPt = sorted(photonsLowPt,key=deltaR(x.eta(),x.phi(),leg.eta(),leg.phi()))
+            photonsLowPt = sorted(photonsLowPt,key=lambda x: deltaR(x.eta(),x.phi(),leg.eta(),leg.phi()))
             photon=photonsLowPt[0]
 
             
         if photon is not None:    
-            if deltaR(photon.eta(),photon.phi(),self.leg.eta(),self.leg.phi())<self.cfg.leptonIsoCone:
-                self.leg.fsrPhoton=photon
-            self.photons.remove(photon)
+            if deltaR(photon.eta(),photon.phi(),leg.eta(),leg.phi())<self.cfg.leptonIsoCone:
+                leg.fsrPhoton=photon
+
 
             
 
