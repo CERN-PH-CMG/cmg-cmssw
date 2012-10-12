@@ -700,6 +700,8 @@ int main(int argc, char* argv[])
       std::vector<PhysicsObjectJetCollection> variedAJets;
       LorentzVectorCollection zvvs;
       METUtils::computeVariation(phys.ajets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
+//      METUtils::computeVariation(phys.ajets, phys.leptons, phys.met[0], variedAJets, zvvs, &jecUnc);
+
 
       //
       // LEPTON ANALYSIS
@@ -1044,7 +1046,7 @@ int main(int argc, char* argv[])
 		  PhysicsObjectJetCollection aJets= variedAJets[0];
 		  PhysicsObjectJetCollection aGoodIdJets;
 		  LorentzVector aClusteredMetP4(zll); aClusteredMetP4 *= -1;
-		  int nAJetsLoose(0), nAJetsTight(0), nAJetsPUIdLoose(0), nAJetsPUIdMedium(0);
+		  int nAJetsLoose(0), nAJetsTight(0), nAJetsPUIdLoose(0), nAJetsPUIdMedium(0), nAJetsGood30(0);
 		  int nABtags[3]={0,0,0};
 		  float mindphijmet(999999.),mindphijmet15(999999.);
 		  PhysicsObjectJetCollection recoilJets;
@@ -1055,10 +1057,12 @@ int main(int argc, char* argv[])
 		      if(aJets[ijet].pt()>30) if(idphijmet<mindphijmet)  mindphijmet=idphijmet;
 		      if(fabs(deltaPhi(aJets[ijet].phi(),zll.phi()))>2) recoilJets.push_back( aJets[ijet] );
 
+
 		      //bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_LOOSE);//TIGHT);
                       bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_CUTBASED_LOOSE);
 		      if(isGoodJet)
 			{
+                          if(aJets[ijet].pt()>30)nAJetsGood30++;
 			  aClusteredMetP4 -= aJets[ijet];	  
 			  aGoodIdJets.push_back(aJets[ijet]);
 			  mon.fillHisto("pfjetpt",  tags_small, aJets[ijet].pt(),weight);
@@ -1160,8 +1164,8 @@ int main(int argc, char* argv[])
 		      
 		      //passDphijmet=(mindphijmet15>0.5);
 		      passDphijmet=(mindphijmet>0.5);
-		      if(aGoodIdJets.size()==0) passDphijmet=(mindphijmet15>0.5);
-		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,aGoodIdJets.size()==0 ? mindphijmet15:mindphijmet,weight);
+		      if(nAJetsGood30==0) passDphijmet=(mindphijmet15>0.5);
+		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,nAJetsGood30==0 ? mindphijmet15:mindphijmet,weight);
 
 		      if(passDphijmet) 
 			{
