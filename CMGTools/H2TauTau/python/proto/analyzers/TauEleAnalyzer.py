@@ -83,14 +83,28 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
+    def testMuonIDLoose(self, muon):
+        '''Loose muon ID and kine, no isolation requirement, for lepton veto'''        
+        return muon.pt() > 15 and \
+               abs( muon.eta() ) < 2.4 and \
+               muon.isGlobalMuon() and \
+               muon.isTrackerMuon() and \
+               muon.sourcePtr().userFloat('isPFMuon') and \
+               abs(muon.dz()) < 0.2
+               # self.testVertex( muon ) 
+            
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
     def buildOtherLeptons(self, cmgOtherLeptons, event):
         '''Build muons for third lepton veto, associate best vertex.
         '''
         otherLeptons = []
         for index, lep in enumerate(cmgOtherLeptons):
-            pyl = self.__class__.LeptonClass(lep)
+            pyl = self.__class__.OtherLeptonClass(lep)
             pyl.associatedVertex = event.goodVertices[0]
-            if not pyl.testMuonIDLoose():
+            if not self.testMuonIDLoose(pyl):
                 continue
             otherLeptons.append( pyl )
         return otherLeptons
@@ -222,9 +236,10 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def thridLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
+    def thirdLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
         # count tight electrons
-        tightLeptons = [electron for electron in leptons if self.testLeg2ID(electron) and self.testLeg2Iso(electron, 0.3)] 
+        tightLeptons = [electron for electron in leptons if self.testLeg2ID(electron) 
+                                                            and self.testLeg2Iso(electron, 0.3)] 
         # count tight muons
         tightOtherLeptons = [muon for muon in otherLeptons if self.testTightOtherLepton(muon)]
         if len (tightLeptons) + len(tightOtherLeptons) > 1 :
