@@ -21,13 +21,13 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'cmgtools',
-    '/DoubleMu/Run2012A-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_7_0'
+    '/DoubleMu/Run2012A-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_10_0'
    )
 
-#process.source.fileNames = cms.untracked.vstring('file:cmgTuplePreskim.root')
+process.source.fileNames = cms.untracked.vstring(process.source.fileNames[0])
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 print 'loading the main CMG sequence'
 
@@ -56,23 +56,27 @@ process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
                                              filter = cms.bool(True),
                                            )
 
-process.patElectronsWithRegression = cms.EDProducer("UCSDRegressionEnergyPatElectronProducer",
-                                                 inputPatElectronsTag = cms.InputTag("patElectronsWithTrigger"),
-                                                 debug = cms.bool(False),
-                                                 energyRegressionType = cms.uint32(1),
-                                                 regressionInputFile = cms.string("EGamma/EGammaAnalysisTools/data/eleEnergyRegWeights_V1.root")
-)                                                 
+process.patElectronsWithRegression = cms.EDProducer("RegressionEnergyPatElectronProducer",
+                                                    debug = cms.untracked.bool(False),
+                                                    inputPatElectronsTag = cms.InputTag('patElectronsWithTrigger'),
+                                                    regressionInputFile = cms.string("EGamma/EGammaAnalysisTools/data/eleEnergyRegWeights_V1.root"),
+                                                    energyRegressionType = cms.uint32(1),
+                                                    rhoCollection = cms.InputTag('kt6PFJets:rho'),
+                                                    vertexCollection = cms.InputTag('goodPrimaryVertices')
+)
 
-process.calibratedElectrons = cms.EDProducer("CJLSTCalibratedPatElectronProducer",
-                                             inputPatElectronsTag = cms.InputTag("patElectronsWithRegression"),
-#                                             inputDataset = cms.string("Summer12_DR53X_HCP2012"),
-                                             inputDataset = cms.string("2012Jul13ReReco"),
-                                             applyCorrections=cms.int32(1),
-                                             isMC    = cms.bool(runOnMC),
-                                             isAOD   = cms.bool(True),
-                                             updateEnergyError = cms.bool(True),
-                                             debug   = cms.bool(False)
-) 
+
+process.calibratedElectrons = cms.EDProducer("CalibratedPatElectronProducer",
+    inputPatElectronsTag = cms.InputTag("patElectronsWithRegression"),
+    isMC = cms.bool(runOnMC),
+    isAOD = cms.bool(False),
+    debug = cms.bool(False),
+    updateEnergyError = cms.bool(True),
+    applyCorrections = cms.int32(1),
+    inputDataset = cms.string("2012Jul13ReReco"),
+    
+)
+
                                                  
 process.cmgElectron.cfg.inputCollection = 'calibratedElectrons'
 
