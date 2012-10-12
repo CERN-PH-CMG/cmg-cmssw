@@ -97,6 +97,12 @@ ZZ = cfg.MCComponent(
 
 
 mc_diboson = [
+    WWJetsTo2L2Nu,
+    WZJetsTo2L2Q,
+    WZJetsTo3LNu,
+    ZZJetsTo2L2Nu,
+    ZZJetsTo2L2Q,
+    ZZJetsTo4L,
     WW,
     WZ,
     ZZ
