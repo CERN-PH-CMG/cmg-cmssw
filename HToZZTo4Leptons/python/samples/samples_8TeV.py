@@ -117,6 +117,8 @@ mcSamples=[
     ZZ2mu2tau,ZZ4mu,ZZ4tau,ZZ4e,GGZZ4L,GGZZ2L2L,WG,WW,WZ
     ]
 
+skim='SKIM_Oct12_All'
+pat='V5_10_0'
 
 
 #-----------DATA---------------
@@ -134,9 +136,9 @@ DoubleMuAB = cfg.DataComponent(
 
 DoubleMuC = cfg.DataComponent(
     name = 'DoubleMuC',
-    files = getFiles('/DoubleMu/Run2012C-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
-            getFiles('/DoubleMu/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-202305/'+skim,userName,filepattern)+
-            getFiles('/DoubleMu/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_202314-203002/'+skim,userName,filepattern),
+    files = getFiles('/DoubleMu/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleMu/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-203002/'+skim,userName,filepattern),
+
     intLumi = 1,
     triggers = [],
     json = json
@@ -155,9 +157,9 @@ DoubleElectronAB = cfg.DataComponent(
 
 DoubleElectronC = cfg.DataComponent(
     name = 'DoubleElectronC',
-    files = getFiles('/DoubleElectron/Run2012C-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
-            getFiles('/DoubleElectron/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-202305/'+skim,userName,filepattern)+ \
-            getFiles('/DoubleElectron/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_202314-203002/'+skim,userName,filepattern),
+    files = getFiles('/DoubleElectron/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleElectron/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-203002/'+skim,userName,filepattern),
+
 
     intLumi = 1,
     triggers = [],
@@ -176,9 +178,9 @@ MuEGAB = cfg.DataComponent(
 
 MuEGC = cfg.DataComponent(
     name = 'MuEGC',
-    files = getFiles('/MuEG/Run2012C-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
-            getFiles('/MuEG/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-202305/'+skim,userName,filepattern) + \
-            getFiles('/MuEG/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_202314-203002/'+skim,userName,filepattern),
+    files = getFiles('/MuEG/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/MuEG/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-203002/'+skim,userName,filepattern),
+
 
     intLumi = 1,
     triggers = [],

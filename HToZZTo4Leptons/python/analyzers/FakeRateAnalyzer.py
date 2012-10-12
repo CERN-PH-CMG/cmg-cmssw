@@ -94,7 +94,14 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
         if len(event.cleanLeptons) !=3:
             return False
 
-        event.leptonPairs = self.findPairs(cutFlow.obj1,event.photons)
+
+
+        self.FSR.setElectronID(self.testElectronGood)
+        self.FSR.setLeptons(cutFlow.obj1)
+        self.FSR.attachPhotons(event.photons)
+
+
+        event.leptonPairs = self.findPairs(cutFlow.obj1)
         cutFlow.setSource1(event.leptonPairs)
 
         
@@ -115,8 +122,14 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
         event.leptonsForFakeRate = copy.copy(event.cleanLeptons)
         event.leptonsForFakeRate.remove( event.bestZForFakeRate.leg1)
         event.leptonsForFakeRate.remove( event.bestZForFakeRate.leg2)
-
-
+        #if FSR remove
+        if hasattr(event.bestZForFakeRate,'fsrPhoton'):
+            event.photons.remove(event.bestZForFakeRate.fsrPhoton)
+            self.FSR.setLeptons(event.leptonsForFakeRate)
+            self.FSR.attachPhotons(event.photons)
+            
+        if len(event.leptonsForFakeRate) ==0:
+            return False
 
         if deltaR(event.leptonsForFakeRate[0].eta(),event.leptonsForFakeRate[0].phi(), \
                   event.bestZForFakeRate.leg1.eta(),event.bestZForFakeRate.leg1.phi())>0.02 and \
@@ -131,16 +144,10 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
                 minmass=False
 
 
-            if  hasattr(self.cfg_ana,"FSR"):
-                fsrAlgo=FSRRecovery(self.cfg_ana.FSR)
-                fsrAlgo.setPhotons(event.photons)
-                fsrAlgo.setLeg(event.leptonsForFakeRate[0])
-                fsrAlgo.recoverLeg()
-                if not minmass:
-                    event.leptonsForFakeRate=[]
-
-                    
-
+                
+            self.FSR.recoverLeg(event.leptonsForFakeRate[0])
+            if not minmass:
+                event.leptonsForFakeRate=[]
         
         
         return True
