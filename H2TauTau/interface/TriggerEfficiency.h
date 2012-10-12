@@ -438,6 +438,40 @@ public:
   }
 
 
+  double eff_2012_Rebecca_TauMu_IsoMu18A (double pt, double eta){
+    if (fabs (eta) < 1.2) return efficiency (pt, 17.0055, 0.007058, 0.0004652, 1.56169, 0.963324) ;
+    else                  return efficiency (pt, 17.5451, 0.416753, 0.374504 , 1.56159, 0.881856) ;
+  }
+
+  double eff_2012_Rebecca_TauMu_IsoMu17B (double pt, double eta){
+    if (fabs (eta) < 1.2) return efficiency (pt, 15.9477, 0.007510  , 0.0002642  , 2.09333, 0.932723) ;
+    else                  return efficiency (pt, 15.999 ,7.52516e-05, 6.77183e-08, 1.62932, 0.855128) ;
+  }
+
+  double eff_2012_Rebecca_TauMu_IsoMu17C (double pt, double eta){
+    if (fabs (eta) < 1.2) return efficiency (pt, 15.9162, 0.007649, 0.0002533, 2.14652, 0.933307) ;
+    else                  return efficiency (pt, 16.8844, 1.15563 , 1.96536  , 1.37044, 0.883499) ;
+  }
+
+  double eff_2012_Rebecca_TauMu_IsoMu17BC (double pt, double eta){
+    if (fabs (eta) < 1.2) return efficiency (pt, 15.9199, 0.007744  , 0.0002486  , 2.16741, 0.932644) ;
+    else                  return efficiency (pt, 15.998 ,7.76568e-05, 6.33412e-08, 1.65649, 0.861397) ;
+  }
+
+  double eff_2012_Rebecca_TauMu_IsoMu1753XMC (double pt, double eta){
+    if (fabs (eta) < 1.2) return efficiency (pt, 15.9562, 0.007615   , 0.0002460  , 2.09189, 0.955486) ;
+    else                  return efficiency (pt, 15.9951, 7.45044e-05, 3.06986e-08, 1.76431, 0.872391) ;
+  }
+
+  double effEle2012_Rebecca_TauMu_ABC(double pt, double eta) {
+    float weight_A = 888.33; 
+    float weight_B = 4420.0;    
+    float weight_C = 6890.975;    
+    return (weight_A * eff_2012_Rebecca_TauMu_IsoMu18A(pt, eta) + 
+            weight_B * eff_2012_Rebecca_TauMu_IsoMu17B(pt, eta) + 
+            weight_C * eff_2012_Rebecca_TauMu_IsoMu17C(pt, eta))/(weight_A+weight_B+weight_C);
+  } 
+
   
   //********************************
   //e-tau 2012
@@ -507,48 +541,39 @@ public:
   // EffEleEE_MC   m0 = 22.18226941; sigma = 1.07762306; alpha = 1.23712775; n = 1.27324238; norm = 1.15312185;
 
 
-  double eff_2012_Rebecca_Ele20A (double pt, double eta){
-    if (fabs (eta) < 1.479) return efficiency (20.4669, 1.20429, 1.84954, 1.38645, 0.891122) ; 
-    else                    return efficiency (21.4136, 1.93922, 2.43562, 1.00186, 51.947  ) ; 
+  double eff_2012_Rebecca_TauEle_Ele20A (double pt, double eta){
+    if (fabs (eta) < 1.479) return efficiency (pt,20.4669, 1.20429, 1.84954, 1.38645, 0.891122) ; 
+    else                    return efficiency (pt,21.4136, 1.93922, 2.43562, 1.00186, 51.947  ) ; 
   }
 
-  double eff_2012_Rebecca_Ele22B (double pt, double eta){
-    if (fabs (eta) < 1.479) return efficiency (22.8618, 0.844755,  1.07941, 1.27956, 1.07722 ) ;
-    else                    return efficiency (22.1045, 1.08481 , 0.780119, 1.91846, 0.962174) ;
+  double eff_2012_Rebecca_TauEle_Ele22B (double pt, double eta){
+    if (fabs (eta) < 1.479) return efficiency (pt,22.8618, 0.844755,  1.07941, 1.27956, 1.07722 ) ;
+    else                    return efficiency (pt,22.1045, 1.08481 , 0.780119, 1.91846, 0.962174) ;
   }
 
-  double eff_2012_Rebecca_Ele22C (double pt, double eta){
-    if (fabs (eta) < 1.479) return efficiency (22.8598, 0.855666, 1.02951 , 1.32713, 1.05486 ) ;
-    else                    return efficiency (21.7643, 1.45024 , 0.785753, 3.14722, 0.926788) ;
+  double eff_2012_Rebecca_TauEle_Ele22C (double pt, double eta){
+    if (fabs (eta) < 1.479) return efficiency (pt,22.8598, 0.855666, 1.02951 , 1.32713, 1.05486 ) ;
+    else                    return efficiency (pt,21.7643, 1.45024 , 0.785753, 3.14722, 0.926788) ;
   }
 
-  double eff_2012_Rebecca_Ele22BC (double pt, double eta){
-    if (fabs (eta) < 1.479) return efficiency (22.8925, 0.86372, 1.13289, 1.22478, 1.13184 ) ;
-    else                    return efficiency (22.0292, 1.4626 , 0.97438, 2.47942, 0.937275) ;
+  double eff_2012_Rebecca_TauEle_Ele22BC (double pt, double eta){
+    if (fabs (eta) < 1.479) return efficiency (pt,22.8925, 0.86372, 1.13289, 1.22478, 1.13184 ) ;
+    else                    return efficiency (pt,22.0292, 1.4626 , 0.97438, 2.47942, 0.937275) ;
   }
 
-  double eff_2012_Rebecca_Ele2253XMC (double pt, double eta){
-    if (fabs (eta) < 1.479) return efficiency (21.4136, 0.000422, 2.47314e-06, 1.42487, 1.00104) ;
-    else                    return efficiency (20.9985, 0.002918, 3.43131e-05, 1.41479, 1.06506) ;
+  double eff_2012_Rebecca_TauEle_Ele2253XMC (double pt, double eta){
+    if (fabs (eta) < 1.479) return efficiency (pt,21.4136, 0.000422, 2.47314e-06, 1.42487, 1.00104) ;
+    else                    return efficiency (pt,20.9985, 0.002918, 3.43131e-05, 1.41479, 1.06506) ;
   }
 
-  double effEle2012_Rebecca_ABC(double pt, double eta) {
+  double effEle2012_Rebecca_TauEle_ABC(double pt, double eta) {
     float weight_A = 888.33; 
     float weight_B = 4420.0;    
     float weight_C = 6890.975;    
-    return (weight_A * eff_2012_Rebecca_Ele20A(pt, eta) + 
-            weight_B * eff_2012_Rebecca_Ele22B(pt, eta) + 
-            weight_C * eff_2012_Rebecca_Ele22C(pt, eta))/(weight_A+weight_B+weight_C);
+    return (weight_A * eff_2012_Rebecca_TauEle_Ele20A(pt, eta) + 
+            weight_B * eff_2012_Rebecca_TauEle_Ele22B(pt, eta) + 
+            weight_C * eff_2012_Rebecca_TauEle_Ele22C(pt, eta))/(weight_A+weight_B+weight_C);
   } 
-
-
-
-  double effEle2012MC53X(double pt, double eta) {
-    if(fabs(eta)<1.479) 
-      return efficiency(pt,22.00666445,0.00036058,0.00000251,1.38456083,1.02640579);
-    else
-      return efficiency(pt,22.18226941,1.07762306,1.23712775,1.27324238,1.15312185);
-  }
 
   // for 2012C Data
   // EffEleEB_Data   m0 = 23.05556088; sigma = 0.96047151; alpha = 1.24782044; n = 1.26042277; norm = 1.09675041; 
