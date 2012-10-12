@@ -48,8 +48,8 @@ class TriggerAnalyzer( Analyzer ):
         event.lumi = lumi
         event.eventId = eventId
 
-        if self.cfg_ana.verbose:
-            self.printTriggerObject( event.triggerObject )
+##        if self.cfg_ana.verbose:
+##            self.printTriggerObject( event.triggerObject )
         
         self.counters.counter('Trigger').inc('All events')
         # import pdb; pdb.set_trace()
