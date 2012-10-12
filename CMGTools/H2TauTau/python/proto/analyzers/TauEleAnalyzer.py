@@ -247,7 +247,6 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         return True
         
         
-
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
