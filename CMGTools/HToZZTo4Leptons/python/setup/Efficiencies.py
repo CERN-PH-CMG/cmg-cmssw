@@ -6,6 +6,8 @@ eff2011 = CFG(
     name='eff',
     muonFile = 'data/eff_mu.root',
     muonHisto = 'eff2011',
+#    muonHisto = 'TH2D_ALL_2012',
+
     eleFile = 'data/eff_ele.root',    
     eleHisto = 'heff'
     )

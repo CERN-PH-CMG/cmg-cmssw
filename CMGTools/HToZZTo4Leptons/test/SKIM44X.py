@@ -18,8 +18,7 @@ process.source = datasetToSource(
 #process.source.fileNames = cms.untracked.vstring('file:cmgTuplePreskim.root')
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
-process.source.fileNames = cms.untracked.vstring(process.source.fileNames[0])
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 print 'loading the main CMG sequence'
 
@@ -42,25 +41,19 @@ process.cleanedMuons = cms.EDProducer('PATMuonCleanerBySegments',
 
 process.cmgMuon.cfg.inputCollection = 'cleanedMuons'
 
-process.goodPrimaryVertices = cms.EDFilter("VertexSelector",
-                                             src = cms.InputTag("offlinePrimaryVertices"),
-                                             cut = cms.string("!isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2"),
-                                             filter = cms.bool(True),
-                                           )
-
 
 process.patElectronsWithRegression = cms.EDProducer("RegressionEnergyPatElectronProducer",
                          debug = cms.untracked.bool(False),
                          inputPatElectronsTag = cms.InputTag('patElectronsWithTrigger'),
                          regressionInputFile = cms.string("EGamma/EGammaAnalysisTools/data/eleEnergyRegWeights_V1.root"),
                          energyRegressionType = cms.uint32(1),
-                         rhoCollection = cms.InputTag('kt6PFJets:rho::RECO'),
-                         vertexCollection = cms.InputTag('goodPrimaryVertices')
+                         rhoCollection = cms.InputTag('kt6PFJets:rho'),
+                         vertexCollection = cms.InputTag('offlinePrimaryVertices')
 )
 
-process.calibratedElectrons = cms.EDProducer("CalibratedPatElectronProducer",
+process.calibratedPatElectrons = cms.EDProducer("CalibratedPatElectronProducer",
                                             inputPatElectronsTag = cms.InputTag("patElectronsWithRegression"),
-                                            isMC = cms.bool(runOnMC),
+                                            isMC = cms.bool(False),
                                             updateEnergyError = cms.bool(True),
                                             isAOD = cms.bool(False),
                                             debug = cms.bool(False),
@@ -68,9 +61,9 @@ process.calibratedElectrons = cms.EDProducer("CalibratedPatElectronProducer",
                                             inputDataset = cms.string("Jan16ReReco"),
                                             )
 
-process.cmgElectron.cfg.inputCollection = 'calibratedElectrons'
+process.cmgElectron.cfg.inputCollection = 'calibratedPatElectrons'
 
-process.p = cms.Path(process.goodPrimaryVertices+process.correctedMuons+process.cleanedMuons+process.cmgMuon+process.cmgMuonSel+process.patElectronsWithRegression+process.calibratedElectrons+process.cmgElectron+process.cmgElectronSel+process.skim)
+process.p = cms.Path(process.correctedMuons+process.cleanedMuons+process.cmgMuon+process.skim)
 
 ########################################################
 ## CMG output definition
@@ -98,10 +91,7 @@ process.outcmg = cms.OutputModule(
     "drop *_cmgMuonSel_*_PAT",                     
     "drop *_patMuonsWithTrigger_*_PAT",                     
     "drop *_cmgMuon_*_CMG",                     
-    "drop *_cmgElectron_*_CMG",                     
     "drop *_correctedMuons_*_CMG",                     
-    "drop *_patElectronsWithRegression_*_CMG",                     
-    "drop *_patElectronsWithTrigger_*_CMG",                     
     "drop *_tauGenJetsSelectorAllHadrons_*_*"
     ),
     dropMetaData = cms.untracked.string('PRIOR')
