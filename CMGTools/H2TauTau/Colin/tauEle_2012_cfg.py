@@ -228,20 +228,23 @@ if syncntuple:
 
 # selectedComponents = embed_list
 
-test = 1
+test = 0
 if test==1:
 #    comp = DYJets
 #    comp = data_Run2012A
-    comp = HiggsVBF125
+    comp = data_Run2012C_v2
+#    comp = HiggsVBF125
+#    comp = HiggsVH125
 #    comp = Tbar_tW
 #    HiggsVBF125.triggers = []
-    comp.files = comp.files[:5]
+    comp.files = comp.files[:20]
     selectedComponents = [comp]
     comp.splitFactor = 1
     # comp.files = comp.files[:1]
     # for 53 MC: 
 #    comp.triggers = ['HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*']
 elif test==2:
+#    selectedComponents = copy.copy (data_list)
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:10]
