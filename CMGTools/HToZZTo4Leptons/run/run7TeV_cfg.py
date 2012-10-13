@@ -5,7 +5,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2011 as effectiveAreas
 from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
-channel = 'all'
+channel = 'mu_mu'
 
 skimAnalyzer = cfg.Analyzer('SkimCountAnalyzer')
 
@@ -175,7 +175,7 @@ if test==1:
     selectedComponents = [dataset]
     dataset.splitFactor = 1
     dataset.files=['cmgTuple.root']
-
+    dataset.files='root://lxcms00//data3/2012/HZZ_cmgTuple/synchHCP2/H120_44X_V590.root'
 
    
 if test ==2:
