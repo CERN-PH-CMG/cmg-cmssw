@@ -3,10 +3,8 @@ from CMGTools.HToZZTo4Leptons.samples.mc import *
 import os
 from copy import copy
 
-pat='V5_6_0_B'
-skim='SKIM_Sep26_NoCal_MuClean'
-#skim='SKIM_Sep30_MuROCH_EleNo'
-
+pat='V5_9_0'
+skim='SKIM_Oct12_All'
 filepattern = 'cmgTuple.*root'
 userName='bachtis'
 
@@ -42,8 +40,11 @@ from CMGTools.HToZZTo4Leptons.samples.ComponentCreator import ComponentCreator
 kreator = ComponentCreator()
 
 #-----------MC---------------
-
+GGH115=kreator.makeMCComponent('GGH115','/GluGluToHToZZTo4L_M-115_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH120=kreator.makeMCComponent('GGH120','/GluGluToHToZZTo4L_M-120_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH124=kreator.makeMCComponent('GGH124','/GluGluToHToZZTo4L_M-124_mll1_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH125=kreator.makeMCComponent('GGH125','/GluGluToHToZZTo4L_M-125_mll1_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH126=kreator.makeMCComponent('GGH126','/GluGluToHToZZTo4L_M-126_mll1_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH130=kreator.makeMCComponent('GGH130','/GluGluToHToZZTo4L_M-130_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH140=kreator.makeMCComponent('GGH140','/GluGluToHToZZTo4L_M-140_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH150=kreator.makeMCComponent('GGH150','/GluGluToHToZZTo4L_M-150_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
@@ -54,6 +55,7 @@ GGH190=kreator.makeMCComponent('GGH190','/GluGluToHToZZTo4L_M-190_7TeV-powheg-py
 GGH200=kreator.makeMCComponent('GGH200','/GluGluToHToZZTo4L_M-200_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH210=kreator.makeMCComponent('GGH210','/GluGluToHToZZTo4L_M-210_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH220=kreator.makeMCComponent('GGH220','/GluGluToHToZZTo4L_M-220_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GGH230=kreator.makeMCComponent('GGH230','/GluGluToHToZZTo4L_M-230_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH250=kreator.makeMCComponent('GGH250','/GluGluToHToZZTo4L_M-250_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH275=kreator.makeMCComponent('GGH275','/GluGluToHToZZTo4L_M-275_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGH300=kreator.makeMCComponent('GGH300','/GluGluToHToZZTo4L_M-300_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
@@ -78,8 +80,8 @@ GGH1000=kreator.makeMCComponent('GGH1000','/GluGluToHToZZTo4L_M-1000_7TeV-powheg
 GGZZ2L2L=kreator.makeMCComponent('GGZZ2L2L','/GluGluToZZTo2L2L_7TeV-gg2zz-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 GGZZ4L  =kreator.makeMCComponent('GGZZ4L','/GluGluToZZTo4L_7TeV-gg2zz-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
-GRAV125  =kreator.makeMCComponent('GRAV125','/Graviton2PMToZZTo4L_M-125_7TeV-jhu-PYTHIA6_Tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-PSH125  =kreator.makeMCComponent('PSH125','/Higgs0MToZZTo4L_M-125_7TeV-jhu-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+GRAVITON  =kreator.makeMCComponent('GRAVITON','/Graviton2PMToZZTo4L_M-125_7TeV-jhu-PYTHIA6_Tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+PSH  =kreator.makeMCComponent('PSH','/Higgs0MToZZTo4L_M-125_7TeV-jhu-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
 ZZ2e2mu  =kreator.makeMCComponent('ZZ2e2mu','/Summer11/zz2e2m_powheg_GENSIMRECO_v2/USER/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 ZZ2e2tau  =kreator.makeMCComponent('ZZ2e2tau','/Summer11/zz2e2tau_powheg_GENSIMRECO_v2/USER/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
@@ -91,11 +93,9 @@ ZZ4tau   =kreator.makeMCComponent('ZZ4tau','/Summer11/zz4tau_powheg_GENSIMRECO_v
 
 WW=kreator.makeMCComponent('WW','/WWJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 WZ=kreator.makeMCComponent('WZ','/WZJetsTo3LNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-ZGEE=kreator.makeMCComponent('ZGEE','/ZGToEEG_TuneZ2_7TeV-madgraph/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-ZGMM=kreator.makeMCComponent('ZGMM','/ZGToMuMuG_TuneZ2_7TeV-madgraph/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-TT=kreator.makeMCComponent('ZGTT','/TTTo2L2Nu2B_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-ZJETSL=kreator.makeMCComponent('ZJETSL','/DYJetsToLL_M-10To50_TuneZ2_7TeV-madgraph/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-ZJETS=kreator.makeMCComponent('ZJETS','/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+TT=kreator.makeMCComponent('TT','/TTTo2L2Nu2B_7TeV-powheg-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+DYLOW=kreator.makeMCComponent('DYLOW','/DYJetsToLL_M-10To50_TuneZ2_7TeV-madgraph/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+DY=kreator.makeMCComponent('DY','/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
 
 
@@ -140,14 +140,14 @@ VBF1000=kreator.makeMCComponent('VBF1000','/VBF_ToHToZZTo4L_M-1000_7TeV-powheg-p
 
 
 mcSamples=[
-    GGH120,GGH130,GGH140,GGH150,GGH160,GGH170,
-    GGH180,GGH190,GGH200,GGH210,GGH220,GGH250,
+    GGH115,GGH120,GGH124,GGH125,GGH126,GGH130,GGH140,GGH150,GGH160,GGH170,
+    GGH180,GGH190,GGH200,GGH210,GGH220,GGH230,GGH250,
     GGH275,GGH300,GGH325,GGH350,GGH400,GGH425,
     GGH450,GGH475,GGH525,GGH550,GGH575,GGH600,
     GGH650,GGH700,GGH750,GGH800,GGH900,GGH1000,
-    GGZZ2L2L,GGZZ4L,GRAV125,PSH125,ZZ2e2mu,ZZ2e2tau,
-    ZZ2mu2tau,ZZ4e,ZZ4mu,ZZ4tau,WW,WZ,ZGEE,ZGMM,
-    TT,ZJETSL,ZJETS,VBF115,VBF120,VBF125,VBF130,VBF140,
+    GGZZ2L2L,GGZZ4L,GRAVITON,PSH,ZZ2e2mu,ZZ2e2tau,
+    ZZ2mu2tau,ZZ4e,ZZ4mu,ZZ4tau,WW,WZ,
+    TT,DYLOW,DY,VBF115,VBF120,VBF125,VBF130,VBF140,
     VBF150,VBF160,VBF170,VBF180,VBF190,VBF200,VBF210,
     VBF220,VBF230,VBF250,VBF275,VBF300,VBF325,VBF350,VBF375,
     VBF400,VBF425,VBF450,VBF475,VBF500,VBF575,VBF600,VBF650,
@@ -159,6 +159,8 @@ uflSamples=[
     ]
 
 
+pat='V5_9_0'
+skim='SKIM_Oct12_All'
 
 
 json='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11//7TeV/Reprocessing/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2.txt'
