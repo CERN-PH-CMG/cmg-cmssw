@@ -127,7 +127,7 @@ class FSRRecovery(object):
                 dr=drNew
                 nearestLepton=lepton
         
-        if nearestLepton is not None and  dr<self.cfg.maxLeptonPhotonDR:
+        if (nearestLepton is not None) and  dr<self.cfg.maxLeptonPhotonDR:
             if dr<self.cfg.maxLeptonPhotonDRTight or (dr> self.cfg.maxLeptonPhotonDRTight and (photon.chargedHadronIso()+photon.photonIso()+photon.neutralHadronIso()+photon.puChargedHadronIso())/photon.pt()<self.cfg.maxPhotonDBIso and photon.pt()>self.cfg.minPhotonPtTight):
                 nearestLepton.photons.append(photon)
                 
