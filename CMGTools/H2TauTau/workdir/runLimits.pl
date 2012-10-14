@@ -20,17 +20,23 @@ $channel=shift;
 #$eTauUncsDir="/afs/cern.ch/user/b/benitezj/scratch0/V5_5_0_44X/CMGTools/CMSSW_4_4_4/src/HiggsAnalysis/HiggsToTauTau/setup/et";
 
 
-
+##limit.py --asymptotic --expectedOnly --noprefit
 
 ###plot layout
-$layoutDir="/afs/cern.ch/user/b/benitezj/public/datacards";
+$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout.py";
 
 $Ncat=5;
 @cat=(0,1,2,3,5);
 $Nmass=8;
 @mass=(110,115,120,125,130,135,140,145);
 
-if($channel==1){
+$ECMS="7";
+if($channel>100){
+    $ECMS="8";
+    $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012.py";
+}
+
+if($channel==1||$channel==101){
 
     #####setup root file
     print "Setup root file\n";
@@ -38,14 +44,14 @@ if($channel==1){
     `mkdir muTau`;
     chdir("muTau");
     `cp ${muTauInput} ./muTauSM.root`;
-    `scale2SM.py -i muTauSM.root  -e 7 -v 110-145:5`;
+    `scale2SM.py -i muTauSM.root  -e ${ECMS} -v 110-145:5`;
 
     ##########create datacards
     print "make the data cards:\n";
     foreach $d (@cat){
 	foreach $i (@mass){
 	    #print "SM${d}_${i}\n";
-	    `create-datacard.py -i muTauSM.root -o muTau_${d}_${i}.txt -c ${muTauUncsDir}/cgs-sm-7TeV-0${d}.conf -u ${muTauUncsDir}/unc-sm-7TeV-0${d}.vals -d ${muTauUncsDir}/unc-sm-7TeV-0${d}.conf ${i}`;
+	    `create-datacard.py -i muTauSM.root -o muTau_${d}_${i}.txt -c ${muTauUncsDir}/cgs-sm-${ECMS}TeV-0${d}.conf -u ${muTauUncsDir}/unc-sm-${ECMS}TeV-0${d}.vals -d ${muTauUncsDir}/unc-sm-${ECMS}TeV-0${d}.conf ${i}`;
 	}
     }
     
@@ -67,14 +73,14 @@ if($channel==1){
     print "computing limits per category:\n";
     foreach $d (@cat){
 	#print "SM${d}\n";
-	`limit.py --asymptotic --expectedOnly  --userOpt '--minosAlgo stepping ' SM${d}/*`;
+	`limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping ' SM${d}/*`;
     }
     ######plot the limits 
     `rm -f limits_sm.root`;
     foreach $d (@cat){
 	#print "plot $d\n";
 	`rm -f SM$d_sm.*`;
-	`plot asymptotic $layoutDir/sm_htt_layout.py SM$d`;
+	`plot asymptotic ${layout} SM$d`;
     }
    
     #######Compute combined limit
@@ -93,8 +99,8 @@ if($channel==1){
 	}
     }
     print "compute combined limit:\n";
-    `limit.py --asymptotic --expectedOnly  --userOpt '--minosAlgo stepping ' SMAll/*`;
-    `plot asymptotic $layoutDir/sm_htt_layout.py SMAll`;
+    `limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping ' SMAll/*`;
+    `plot asymptotic ${layout} SMAll`;
 
     chdir("..");
 }
@@ -108,14 +114,14 @@ if($channel==2){
     `mkdir eTau`;
     chdir("eTau");
     `cp ${eTauInput} ./eTauSM.root`;
-    `scale2SM.py -i eTauSM.root  -e 7 -v 110-145:5`;
+    `scale2SM.py -i eTauSM.root  -e ${ECMS} -v 110-145:5`;
 
     ##########create datacards
     print "make the data cards:\n";
     foreach $d (@cat){
 	foreach $i (@mass){
 	    #print "SM${d}_${i}\n";
-	    `create-datacard.py -i eTauSM.root -o eTau_${d}_${i}.txt -c ${eTauUncsDir}/cgs-sm-7TeV-0${d}.conf -u ${eTauUncsDir}/unc-sm-7TeV-0${d}.vals -d ${eTauUncsDir}/unc-sm-7TeV-0${d}.conf ${i}`;
+	    `create-datacard.py -i eTauSM.root -o eTau_${d}_${i}.txt -c ${eTauUncsDir}/cgs-sm-${ECMS}TeV-0${d}.conf -u ${eTauUncsDir}/unc-sm-${ECMS}TeV-0${d}.vals -d ${eTauUncsDir}/unc-sm-${ECMS}TeV-0${d}.conf ${i}`;
 	}
     }
     
@@ -137,14 +143,14 @@ if($channel==2){
     print "computing limits per category:\n";
     foreach $d (@cat){
 	#print "SM${d}\n";
-	`limit.py --asymptotic --expectedOnly  --userOpt '--minosAlgo stepping ' SM${d}/*`;
+	`limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping ' SM${d}/*`;
     }
     ######plot the limits 
     `rm -f limits_sm.root`;
     foreach $d (@cat){
 	#print "plot $d\n";
 	`rm -f SM$d_sm.*`;
-	`plot asymptotic $layoutDir/sm_htt_layout.py SM$d`;
+	`plot asymptotic ${layout} SM$d`;
     }
    
     #######Compute combined limit
@@ -163,8 +169,8 @@ if($channel==2){
 	}
     }
     print "compute combined limit:\n";
-    `limit.py --asymptotic --expectedOnly  --userOpt '--minosAlgo stepping ' SMAll/*`;
-    `plot asymptotic $layoutDir/sm_htt_layout.py SMAll`;
+    `limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping ' SMAll/*`;
+    `plot asymptotic ${layout} SMAll`;
 
     chdir("..");
 }
@@ -179,16 +185,16 @@ if($channel==12){
     chdir("muTaueTau");
     `cp ${muTauInput} ./muTauSM.root`;
     `cp ${eTauInput} ./eTauSM.root`;
-    `scale2SM.py -i muTauSM.root  -e 7 -v 110-145:5`;
-    `scale2SM.py -i eTauSM.root  -e 7 -v 110-145:5`;
+    `scale2SM.py -i muTauSM.root  -e ${ECMS} -v 110-145:5`;
+    `scale2SM.py -i eTauSM.root  -e ${ECMS} -v 110-145:5`;
 
     ##########create datacards
     print "make the data cards:\n";
     foreach $d (@cat){
 	foreach $i (@mass){
 	    #print "SM${d}_${i}\n";
-	    `create-datacard.py -i muTauSM.root -o muTau_${d}_${i}.txt -c ${muTauUncsDir}/cgs-sm-7TeV-0${d}.conf -u ${muTauUncsDir}/unc-sm-7TeV-0${d}.vals -d ${muTauUncsDir}/unc-sm-7TeV-0${d}.conf ${i}`;
-	    `create-datacard.py -i eTauSM.root -o eTau_${d}_${i}.txt -c ${eTauUncsDir}/cgs-sm-7TeV-0${d}.conf -u ${eTauUncsDir}/unc-sm-7TeV-0${d}.vals -d ${eTauUncsDir}/unc-sm-7TeV-0${d}.conf ${i}`;
+	    `create-datacard.py -i muTauSM.root -o muTau_${d}_${i}.txt -c ${muTauUncsDir}/cgs-sm-${ECMS}TeV-0${d}.conf -u ${muTauUncsDir}/unc-sm-${ECMS}TeV-0${d}.vals -d ${muTauUncsDir}/unc-sm-${ECMS}TeV-0${d}.conf ${i}`;
+	    `create-datacard.py -i eTauSM.root -o eTau_${d}_${i}.txt -c ${eTauUncsDir}/cgs-sm-${ECMS}TeV-0${d}.conf -u ${eTauUncsDir}/unc-sm-${ECMS}TeV-0${d}.vals -d ${eTauUncsDir}/unc-sm-${ECMS}TeV-0${d}.conf ${i}`;
 
 	}
     }
@@ -218,14 +224,14 @@ if($channel==12){
     print "computing limits per category:\n";
     foreach $d (@cat){
 	#print "SM${d}\n";
-	`limit.py --asymptotic --expectedOnly  --userOpt '--minosAlgo stepping ' SM${d}/*`;
+	`limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping ' SM${d}/*`;
     }
     ######plot the limits 
     `rm -f limits_sm.root`;
     foreach $d (@cat){
 	#print "plot $d\n";
 	`rm -f SM$d_sm.*`;
-	`plot asymptotic $layoutDir/sm_htt_layout.py SM$d`;
+	`plot asymptotic ${layout} SM$d`;
     }
    
     #######Compute combined limit
@@ -252,8 +258,8 @@ if($channel==12){
 	}
     }
     print "compute combined limit:\n";
-    `limit.py --asymptotic --expectedOnly  --userOpt '--minosAlgo stepping ' SMAll/*`;
-    `plot asymptotic $layoutDir/sm_htt_layout.py SMAll`;
+    `limit.py --asymptotic --expectedOnly --noprefit  --userOpt '--minosAlgo stepping ' SMAll/*`;
+    `plot asymptotic ${layout} SMAll`;
 
     chdir("..");
 }

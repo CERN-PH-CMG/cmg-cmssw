@@ -76,24 +76,15 @@ bool TauMuFlatNtp::applySelections(){
   }
   counterveto_++;
 
+  if(diTauList_->size()==0){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterpresel"<<endl;  
+    return 0;
+  }
+  counterpresel_++;
 
   std::vector<cmg::TauMu> tmpditaulist=*diTauList_;
   diTauSelList_.clear();
 
-//   ///basic skims which should have been applied in H2TAUTAU step  
-//   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-//     if(cand->mass()>10.0
-//        && cand->leg1().pt() > tauPtCut_
-//        && fabs(cand->leg1().eta()) < tauEtaCut_
-//        && cand->leg1().tauID("decayModeFinding") > 0.5
-//        && cand->leg2().pt() > muPtCut_
-//        && fabs(cand->leg2().eta()) < muEtaCut_
-//        )     
-//       diTauSelList_.push_back(*cand);
-//   }
-//   if(diTauSelList_.size()==0) return 0;
-//   counterpresel_++;
-//   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterpresel"<<endl;
 
   //muon vtx 
   //  tmpditaulist=diTauSelList_;
@@ -410,12 +401,13 @@ bool TauMuFlatNtp::fill(){
 	if(triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
 	  triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
 	    /triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	if(triggerEff_.effMu2012MC53X(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	  triggerEffWeight_ *= triggerEff_.effMu2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	    /triggerEff_.effMu2012MC53X(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
+	if(triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC (diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeight_ *= triggerEff_.effMu2012_Rebecca_TauMu_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC (diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       }else{
 	triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	triggerEffWeight_ *= triggerEff_.effMu2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	triggerEffWeight_ *= triggerEff_.effMu2012_Rebecca_TauMu_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       }
       //id+isolation corrections
       selectionEffWeight_ *= selectionEff_.effCorrMu2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());

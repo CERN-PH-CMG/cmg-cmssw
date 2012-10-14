@@ -6,8 +6,8 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
 
   TauMuPlotter * analysis = new TauMuPlotter(name);
   analysis->setOutputPath(path);
-  analysis->setQCDOStoSSRatio(1.1);//1.05);//my measured value July 6
-  analysis->setZTTType(1);
+  analysis->setQCDOStoSSRatio(1.11);//1.05);//my measured value July 6
+  analysis->setZTTType(2);
   
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
@@ -38,21 +38,53 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
 //   Embedded2012A->setDataType("Embedded");
 //   analysis->addSample(Embedded2012A);
 
-//   Sample* Embedded2012B1 = new Sample("Embedded2012B1",path);
-//   Embedded2012B1->setDataType("Embedded");
-//   analysis->addSample(Embedded2012B1);
+  Sample* Embedded2012A2 = new Sample("Embedded2012A2",path);
+  Embedded2012A2->setDataType("Embedded");
+  analysis->addSample(Embedded2012A2);
 
-//   Sample* Embedded2012B2 = new Sample("Embedded2012B2",path);
-//   Embedded2012B2->setDataType("Embedded");
-//   analysis->addSample(Embedded2012B2);
+  Sample* Embedded2012B = new Sample("Embedded2012B",path);
+  Embedded2012B->setDataType("Embedded");
+  analysis->addSample(Embedded2012B);
 
-//   Sample* Embedded2012B3 = new Sample("Embedded2012B3",path);
-//   Embedded2012B3->setDataType("Embedded");
-//   analysis->addSample(Embedded2012B3);
+  Sample* Embedded2012Cv1 = new Sample("Embedded2012Cv1",path);
+  Embedded2012Cv1->setDataType("Embedded");
+  analysis->addSample(Embedded2012Cv1);
+
+  Sample* Embedded2012Cv2 = new Sample("Embedded2012Cv2",path);
+  Embedded2012Cv2->setDataType("Embedded");
+  analysis->addSample(Embedded2012Cv2);
 
 
+  /////////////Z+Jets
   float CrossectionScaleFactor=1.011;
-  cout<<"WARNING applying scale factor for TTjets MC "<<CrossectionScaleFactor<<endl;
+  cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
+  Sample* ZToTauTau = new Sample("ZToTauTau",path);
+  ZToTauTau->setDataType("MC");
+  ZToTauTau->setCrossection(3503.71*CrossectionScaleFactor);
+  analysis->addSample(ZToTauTau);
+
+  Sample* ZToMuMu = new Sample("ZToMuMu",path);
+  ZToMuMu->setDataType("MC");
+  ZToMuMu->setCrossection(ZToTauTau->getCrossection());
+  analysis->addSample(ZToMuMu);
+
+  Sample* ZToLJet = new Sample("ZToLJet",path);
+  ZToLJet->setDataType("MC");
+  ZToLJet->setCrossection(ZToTauTau->getCrossection());
+  analysis->addSample(ZToLJet);
+
+
+  //////////TTJets
+  float TTCrossectionScaleFactor=1.08;//apply this globally
+  cout<<"WARNING applying scale factor to TT MC "<<TTCrossectionScaleFactor<<endl;
+  analysis->TTJetsCorrFactor[0]=1.;
+  analysis->TTJetsCorrFactor[1]=1.01/TTCrossectionScaleFactor;
+  analysis->TTJetsCorrFactor[2]=1.03/TTCrossectionScaleFactor;
+
+  Sample* TTJets = new Sample("TTJets",path);
+  TTJets->setDataType("MC");
+  TTJets->setCrossection(225.2*TTCrossectionScaleFactor);
+  analysis->addSample(TTJets);
 
 
   /////////W+jets
@@ -83,47 +115,8 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   analysis->addSample(W4JetsToLNu);  
    
 
-  /////////////Z+Jets
-  cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
-  Sample* ZToTauTau = new Sample("ZToTauTau",path);
-  ZToTauTau->setDataType("MC");
-  ZToTauTau->setCrossection(3503.71*CrossectionScaleFactor);
-  analysis->addSample(ZToTauTau);
 
-  Sample* ZToMuMu = new Sample("ZToMuMu",path);
-  ZToMuMu->setDataType("MC");
-  ZToMuMu->setCrossection(ZToTauTau->getCrossection());
-  analysis->addSample(ZToMuMu);
-
-  Sample* ZToLJet = new Sample("ZToLJet",path);
-  ZToLJet->setDataType("MC");
-  ZToLJet->setCrossection(ZToTauTau->getCrossection());
-  analysis->addSample(ZToLJet);
-
-  //////////TTJets
-  Sample* TTJets = new Sample("TTJets",path);
-  TTJets->setDataType("MC");
-  TTJets->setCrossection(225.2*CrossectionScaleFactor);
-  analysis->addSample(TTJets);
-
-  ///Di-Bosons
-//   Sample* WW = new Sample("WW",path);
-//   WW->setDataType("MC");
-//   WW->setCrossection(57.1097);
-//   analysis->addSample(WW);
-
-//   Sample* WZ = new Sample("WZ",path);
-//   WZ->setDataType("MC");
-//   WZ->setCrossection(32.3161);
-//   analysis->addSample(WZ);
-
-//   Sample* ZZ = new Sample("ZZ",path);
-//   ZZ->setDataType("MC");
-//   ZZ->setCrossection(8.25561);
-//   analysis->addSample(ZZ);
-
-
-
+  /////di-Bosons
   Sample* WW2L2Nu = new Sample("WW2L2Nu",path);
   WW2L2Nu->setDataType("MC");
   WW2L2Nu->setCrossection(5.824);

@@ -569,7 +569,15 @@ void BaseFlatNtp::fillPFJetList(std::vector<const cmg::PFJet * > * fulllist, std
     if((*jet)->pt()<30.0)continue;  
     if(fabs((*jet)->eta())>4.7)continue; 
     if(!checkPFJetId((*jet)))continue;
-    if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
+    //if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
+
+    float eta=fabs((*jet)->eta());
+    float mva=(*jet)->puMva("full");
+    if(0.00<=eta&&eta<2.50) if(mva<-0.80) continue;
+    if(2.50<=eta&&eta<2.75) if(mva<-0.74) continue;
+    if(2.75<=eta&&eta<3.00) if(mva<-0.68) continue;
+    if(3.00<=eta&&eta<5.00) if(mva<-0.77) continue;
+    
     list->push_back((*jet));
   }
 }
@@ -580,7 +588,15 @@ void BaseFlatNtp::fillPFJetList20(std::vector<const cmg::PFJet * > * fulllist, s
     if((*jet)->pt()<20.0)continue;  
     if(fabs((*jet)->eta())>4.7)continue; 
     if(!checkPFJetId((*jet)))continue;
-    if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
+    //if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
+
+    float eta=fabs((*jet)->eta());
+    float mva=(*jet)->puMva("full");
+    if(0.00<=eta&&eta<2.50) if(mva<-0.80) continue;
+    if(2.50<=eta&&eta<2.75) if(mva<-0.74) continue;
+    if(2.75<=eta&&eta<3.00) if(mva<-0.68) continue;
+    if(3.00<=eta&&eta<5.00) if(mva<-0.77) continue;
+    
     list->push_back((*jet));
   }
 }
