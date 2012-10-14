@@ -12,7 +12,7 @@ class FSRRecovery(object):
         
         
     def setLeptons(self,leptons):
-        self.leptons = leptons
+        self.leptons =leptons
 
     def setBoson(self,boson):
         self.leptons = boson.daughterLeptons()
@@ -25,6 +25,7 @@ class FSRRecovery(object):
         self.photons = filter(lambda x: x.pt()>self.cfg.minPhotonPt and \
                              abs(x.eta())<self.cfg.maxPhotonEta and self.photonPreFilter(x),photons)
             
+
         if self.verbose:
             print 'initial photons'
             for g in self.photons:
@@ -37,7 +38,12 @@ class FSRRecovery(object):
         for photon in self.photons:
             self.attachToClosestLepton(photon)
                 
-
+        if self.verbose:
+            for lepton in self.leptons:
+                print 'LEPTON ',lepton.pt(),lepton.eta(),lepton.phi()
+                for photon in lepton.photons:
+                    print '--->attached photon ',photon.pt(),photon.eta(),photon.phi()
+                    
 
     def recoverZ(self,z):
         ''' Run the recovewry algorithm. Associates a photon to the Z'''
@@ -49,6 +55,10 @@ class FSRRecovery(object):
 
         #filter by mass improvement
         photons= filter(lambda x: abs((TLorentzVector(x.px(),x.py(),x.pz(),x.energy())+z).M()-91.188)<abs(z.M()-91.188),photons)
+
+        if self.verbose:
+            for photon in photons:
+                print 'photon for recovery',photon.pt(),photon.eta(),photon.phi()
 
         #Split the high Pt and low Pt region
         photonsHighPt = filter(lambda x: x.pt()>self.cfg.minPhotonPtTight,photons)
@@ -102,12 +112,16 @@ class FSRRecovery(object):
 
     def photonPreFilter(self,photon):
         '''Generic cross cleaning of photons''' 
+        if self.verbose:
+            print 'prefilter gamma',photon.pt(),photon.eta(),photon.phi()
+
         for leg in self.leptons:
             DR = deltaR(photon.eta(),photon.phi(),leg.eta(),leg.phi())
             Deta = abs(photon.eta()-leg.eta())
             Dphi = abs(deltaPhi(photon.phi(),leg.phi()))
             if self.verbose:
-                print 'prefilter gamma',photon.pt(),photon.eta(),DR,Deta,Dphi
+                print '---->vs leg',leg.pdgId(),self.electronID(leg),leg.pt(),leg.eta(),leg.phi(),'|',DR,Deta,Dphi
+                
                 
             if  abs(leg.pdgId())==11 and self.electronID(leg):
                 if DR<self.cfg.vetoElectronDR:
