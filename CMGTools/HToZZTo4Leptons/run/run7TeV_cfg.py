@@ -5,7 +5,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.HToZZTo4Leptons.setup.EffectiveAreas import effectiveAreas2011 as effectiveAreas
 from CMGTools.HToZZTo4Leptons.setup.FSR import FSRConfig as fsr
 
-channel = 'mu_mu'
+channel = 'all'
 
 skimAnalyzer = cfg.Analyzer('SkimCountAnalyzer')
 
@@ -169,7 +169,7 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 1
+test = 0
 if test==1:
     dataset = GGH120
     selectedComponents = [dataset]
