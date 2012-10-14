@@ -96,7 +96,7 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
 
 
 
-        self.FSR.setElectronID(self.testElectronGood)
+        self.FSR.setElectronID(self.testLeptonGood)
         self.FSR.setLeptons(cutFlow.obj1)
         self.FSR.attachPhotons(event.photons)
 
@@ -125,6 +125,7 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
         #if FSR remove
         if hasattr(event.bestZForFakeRate,'fsrPhoton'):
             event.photons.remove(event.bestZForFakeRate.fsrPhoton)
+            self.FSR.setElectronID(self.testLeptonLoose)
             self.FSR.setLeptons(event.leptonsForFakeRate)
             self.FSR.attachPhotons(event.photons)
             
@@ -142,8 +143,6 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
             if event.leptonsForFakeRate[0].charge()+event.bestZForFakeRate.leg2.charge()==0 and \
                    (event.leptonsForFakeRate[0].p4()+event.bestZForFakeRate.leg2.p4()).M()<self.cfg_ana.minMass:
                 minmass=False
-
-
                 
             self.FSR.recoverLeg(event.leptonsForFakeRate[0])
             if not minmass:
@@ -166,6 +165,14 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
                    super( FakeRateAnalyzer, self).testLeptonSkim1( leg,sel )
         else:
             return super( FakeRateAnalyzer, self).testLeptonSkim2( leg,sel )
+
+    def testLeptonGood(self, leg,sel=None):
+        if abs(leg.pdgId()) == 13:
+            return self.testMuonGood(leg) and \
+               super( FakeRateAnalyzer, self).testLeptonGood( leg,sel )
+        else:
+            return self.testElectronGood(leg) and \
+            super( FakeRateAnalyzer, self).testLeptonGood( leg,sel )
 
 
 

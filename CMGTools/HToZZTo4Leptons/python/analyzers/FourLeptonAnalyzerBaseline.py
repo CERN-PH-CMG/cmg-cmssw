@@ -66,7 +66,7 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         passed = cutFlow.applyCut(self.testLeptonGood,'Good leptons',2,'goodLeptons')
 
 
-        self.FSR.setElectronID(self.testElectronGood)
+        self.FSR.setElectronID(self.testLeptonGood)
         self.FSR.setLeptons(cutFlow.obj1)
         self.FSR.attachPhotons(event.photons)
 
@@ -99,7 +99,7 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
             event.leptonsForZ2=[]
 
         cutFlow.setSource1(event.leptonsForZ2)
-        passed=cutFlow.applyCut(self.testLeptonGood,'4 loose leptons',2,'looseLeptons2')
+        passed=cutFlow.applyCut(self.testLeptonGood,'4 good leptons',2,'looseLeptons2')
 
             
         #make pairs for Z2
@@ -193,7 +193,7 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
 
         else:
             event.leptonsForLooseZ2=[]
-            
+        self.FSR.setElectronID(self.testLeptonLoose)
         self.FSR.setLeptons(event.leptonsForLooseZ2)
         self.FSR.attachPhotons(event.photons)
         event.leptonPairsLoose = self.findPairs(event.leptonsForLooseZ2)
