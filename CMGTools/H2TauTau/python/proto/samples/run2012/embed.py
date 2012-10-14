@@ -7,46 +7,56 @@ vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweigh
 
 json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-196509_8TeV_PromptReco_Collisions12_JSON.txt'
 
-embed_Run2012A = cfg.EmbedComponent(
-    name = 'embed_Run2012A',
+
+embed_Run2012A_13Jul2012_v1 = cfg.EmbedComponent(
+    name = 'embed_Run2012A_13Jul2012_v1',
     files = [],
     intLumi = 1.0, # dummy
     triggers = [],
     json = json,
     )
 
-embed_Run2012B_193752_195135 = cfg.EmbedComponent(
-    name = 'embed_Run2012B_193752_195135',
+embed_Run2012A_recover_06Aug2012_v1 = cfg.EmbedComponent(
+    name = 'embed_Run2012A_recover_06Aug2012_v1',
     files = [],
     intLumi = 1.0, # dummy
     triggers = [],
     json = json,
     )
 
-embed_Run2012B_195147_196070 = cfg.EmbedComponent(
-    name = 'embed_Run2012B_195147_196070',
+embed_Run2012B_13Jul2012_v4 = cfg.EmbedComponent(
+    name = 'embed_Run2012B_13Jul2012_v4',
     files = [],
     intLumi = 1.0, # dummy
     triggers = [],
     json = json,
     )
-
-embed_Run2012B_196090_196531 = cfg.EmbedComponent(
-    name = 'embed_Run2012B_196090_196531',
+    
+embed_Run2012C_24Aug2012_v1 = cfg.EmbedComponent(
+    name = 'embed_Run2012C_24Aug2012_v1',
     files = [],
     intLumi = 1.0, # dummy
     triggers = [],
     json = json,
     )
+    
+embed_Run2012C_PromptReco_v2 = cfg.EmbedComponent(
+    name = 'embed_Run2012C_PromptReco_v2',
+    files = [],
+    intLumi = 1.0, # dummy
+    triggers = [],
+    json = json,
+    )
+    
+    
+
+embed_list = [embed_Run2012A_13Jul2012_v1,
+    embed_Run2012A_recover_06Aug2012_v1,
+    embed_Run2012B_13Jul2012_v4,
+    embed_Run2012C_24Aug2012_v1,
+    embed_Run2012C_PromptReco_v2
+]
 
 
 
-
-embed_list_Run2012A = [embed_Run2012A]
-embed_list_Run2012B = [embed_Run2012B_193752_195135,
-                       embed_Run2012B_195147_196070,
-                       embed_Run2012B_196090_196531 ]
-
-embed_list = copy.copy(embed_list_Run2012A)
-embed_list.extend(embed_list_Run2012B)
 
