@@ -201,9 +201,10 @@ public:
       cout<<" Category : "<<sm<<" undefined "<<endl;
       return TString("");
     }
-    TString metcut="(metpt>25)";//30 for PFMET
+    TString metcut="(metpt>15)";//30 for PFMET
     //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
-    TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.9)";
+    //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.9)";
+    TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
     TString boostcut=TString("(njet>=1&&nbjet==0)")+"*"+metcut;
     TString notboostcut=TString("(!")+boostcut+")";

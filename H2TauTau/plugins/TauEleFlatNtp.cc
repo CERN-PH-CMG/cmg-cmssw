@@ -258,6 +258,7 @@ void TauEleFlatNtp::beginJob(){
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
      if(cand->leg1().tauID("againstElectronMedium")<0.5)continue;
      if(cand->leg1().tauID("againstElectronMVA")<0.5)continue;
+     if(cand->leg1().tauID("againstElectronTightMVA2")<0.5)continue; 
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
@@ -401,15 +402,16 @@ void TauEleFlatNtp::beginJob(){
 //        selectionEffWeight_ *= selectionEff_.effCorrEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
        if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
-	 if(triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	   triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	     /triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 if(triggerEff_.effEle2012MC53X(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	   triggerEffWeight_ *= triggerEff_.effEle2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	     /triggerEff_.effEle2012MC53X(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	 if(triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	   triggerEffWeight_ *= triggerEff_.effTau2012ABC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	     /triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+
+	 if(triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	   triggerEffWeight_ *= triggerEff_.effEle2012_Rebecca_TauEle_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	     /triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
        }else{//no trigger applied --> apply efficiency
 	 triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 triggerEffWeight_ *= triggerEff_.effEle2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	 triggerEffWeight_ *= triggerEff_.effEle2012_Rebecca_TauEle_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
        }
        //id+isolation corrections
        selectionEffWeight_ *= selectionEff_.effCorrEle2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());

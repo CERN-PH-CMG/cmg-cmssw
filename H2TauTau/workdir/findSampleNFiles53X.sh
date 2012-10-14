@@ -6,6 +6,20 @@
 #cmsLs /store/cmst3/user/cmgtools/CMG/TauPlusX/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/TauPlusX/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 
+#echo embeddedMuTau
+#cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012A-recover_06Aug2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012C_24Aug2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012C_PromptReco_v2_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
+
+#echo embeddedETau
+#cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012A_13Jul2012_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012A-recover_06Aug2012_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012C_24Aug2012_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012C_PromptReco_v2_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
+
+
 
 #echo MC
 #cmsLs /store/cmst3/user/cmgtools/CMG/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
@@ -73,7 +87,7 @@
 #cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-180_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-200_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-250_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
-cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-300_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
+#cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-300_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-350_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-400_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/SUSYBBHToTauTau_M-450_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l

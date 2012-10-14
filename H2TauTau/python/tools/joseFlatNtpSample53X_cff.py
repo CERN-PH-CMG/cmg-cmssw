@@ -536,30 +536,33 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
         module.trigPath2 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20")
         module.trigPath3 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
-        module.jsonfile = httjson_dir + 'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON.txt'
+        module.jsonfile = httjson_dir + 'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
 
 
-
-    #/afs/cern.ch/user/c/cmgtools/scratch0/ProductionSoftware/V5_4_0/5X/Type1METColin/Embedded/CMSSW_5_2_5/src/CMGTools/Common/prod/
     if sampleAlias == 'Embedded2012A' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_6_0_B"
+        module.path = ""
         module.dataType = 2
-        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON-LowPileupRunsRemoved.txt'
-        
-    if sampleAlias == 'Embedded2012B1' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_6_0_B"
-        module.dataType = 2
-        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON-LowPileupRunsRemoved.txt'
-        
-    if sampleAlias == 'Embedded2012B2' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_6_0_B"
-        module.dataType = 2
-        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON-LowPileupRunsRemoved.txt'
+        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
 
-    if sampleAlias == 'Embedded2012B3' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run196090to196531_embedded_trans1_tau116_ptmu1_13had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_6_0_B"
+    if sampleAlias == 'Embedded2012A2' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012A-recover_06Aug2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0"
         module.dataType = 2
-        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_PromptReco_Collisions12_JSON-LowPileupRunsRemoved.txt'        
+        module.jsonfile = httjson_dir + 'Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt'
+        
+    if sampleAlias == 'Embedded2012B' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0"
+        module.dataType = 2
+        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
+        
+    if sampleAlias == 'Embedded2012Cv1' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012C_24Aug2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0"
+        module.dataType = 2
+        module.jsonfile = httjson_dir + 'Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
+
+    if sampleAlias == 'Embedded2012Cv2' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012C_PromptReco_v2_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0"
+        module.dataType = 2
+        module.jsonfile = httjson_dir + 'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'  
 
 
 
@@ -800,20 +803,35 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.trigPath5 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v6","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
         module.trigPath6 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v7","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
         module.trigPath7 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v8","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
-        module.jsonfile = httjson_dir + 'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON.txt'
+        module.jsonfile = httjson_dir + 'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
 
+
+    if sampleAlias == 'Embedded2012A' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012A_13Jul2012_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0"
+        module.dataType = 2
+        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
+
+    if sampleAlias == 'Embedded2012A2' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012A-recover_06Aug2012_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0"
+        module.dataType = 2
+        module.jsonfile = httjson_dir + 'Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt'
         
-    if sampleAlias == 'Embedded2012A' :
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1_embedded_trans1_tau115_ptelec1_17had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_5_1"
+    if sampleAlias == 'Embedded2012B' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0"
         module.dataType = 2
+        module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
+        
+    if sampleAlias == 'Embedded2012Cv1' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012C_24Aug2012_v1_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0"
+        module.dataType = 2
+        module.jsonfile = httjson_dir + 'Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
 
-    if sampleAlias == 'Embedded2012B1' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135_embedded_trans1_tau115_ptelec1_17had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_5_1"
+    if sampleAlias == 'Embedded2012Cv2' : 
+        module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012C_PromptReco_v2_embedded_trans1_tau115_ptelec1_17had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0"
         module.dataType = 2
+        module.jsonfile = httjson_dir + 'Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
 
-    if sampleAlias == 'Embedded2012B2' : 
-        module.path = "/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070_embedded_trans1_tau115_ptelec1_17had1_17_v2-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_5_1"
-        module.dataType = 2
+ 
 
     if sampleAlias == 'ZToTauTau' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0"

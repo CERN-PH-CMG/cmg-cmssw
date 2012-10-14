@@ -3,6 +3,22 @@ TauPlusX2012A2 cmgtools 10  56
 TauPlusX2012B cmgtools 30 3007
 TauPlusX2012Cv1 cmgtools 20 312
 TauPlusX2012Cv2 cmgtools 30 4592
+
+###muTau
+Embedded2012A2 cmgtools 3 10
+Embedded2012B cmgtools 10 543
+Embedded2012Cv1 cmgtools 5 57
+Embedded2012Cv2 cmgtools 10 757
+
+
+##eTau
+Embedded2012A cmgtools 5 97
+Embedded2012A2 cmgtools 3 9
+Embedded2012B cmgtools 10 533
+Embedded2012Cv1 cmgtools 5 54
+Embedded2012Cv2 cmgtools 10 736
+
+
 ZToTauTau cmgtools 30 2573
 ZToMuMu cmgtools 30 2573
 ZToLJet cmgtools 30 2573

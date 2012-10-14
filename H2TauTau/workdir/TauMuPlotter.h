@@ -127,7 +127,6 @@ public:
   //Boosted/VBF methods
   TH1F* getQCDMuIsoSM();//from muon isolation side-band
   TH1F* getQCDMike();//values from Josh for 2012 analysis
-  TH1F* getQCDHCP();//values from Josh for 2012 analysis
   TH1F* getQCDKeti();//values from Josh for 2012 analysis
   TH1F* getQCDKetiHCP();//
   TString qcdTauIsoRatioMuNonIso_;//formula for the ratio
@@ -138,6 +137,7 @@ public:
   //TH1F* getQCDTauIsoSMSS();//from anti-isolated taus
   TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
   //TH1F* getQCDIsoSMSS();//from anti-isolated taus or anti iso muons  
+  TH1F* getWNJetSum();//Exclusive W+jets samples combined 
   TH1F* getWJetsNJet();//Exclusive W+jets samples combined and normalized to data
   TH1F* getWJetsIncShape();
   //TH1F* getWJetsIncShapeSS();
@@ -155,6 +155,15 @@ public:
   //TH1F* getTotalMCSMSS();//sum of SS backgrounds execpt for the QCD
   //bool plotSM(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax,  TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
   //bool plotSMSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
+
+  //Methods for VBF category with loose shape selections
+  TH1F* getWJetsNJetVBFHCP();//not loose selections here are different
+  TH1F* getQCDHCP();
+  TH1F* getSampleVBFHCP(TString sample);//used for the methods below
+  TH1F* getTTJetsVBFHCP();
+  TH1F* getZToLJetVBFHCP();
+  TH1F* getZToMuMuVBFHCP();
+  TH1F* getDiBosonVBFHCP();
 
 
   ////Methods unrelated to the main plots
@@ -219,8 +228,9 @@ public:
       return TString("");
     }
     //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
-    TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.9)";
+    //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.98)";
     //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.978)";
+    TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
     TString boostcut="(njet>=1&&nbjet==0)";
     TString notboostcut=TString("(!")+boostcut+")";
@@ -243,6 +253,7 @@ public:
     return SMcut[sm];
   }
 
+  Float_t TTJetsCorrFactor[3];
 
 protected:
  

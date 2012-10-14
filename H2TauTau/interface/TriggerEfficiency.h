@@ -427,14 +427,20 @@ public:
 
 
   ////////////Tau effiency for Full 2012A+B+C Data-set
-  // 2012BET   m0 = 18.48663118; sigma = 1.63417147; alpha = 20.25695815; n = 138.55422224; norm = 0.89456038;
+  // 2012AllEB   m0 = 18.50940288; sigma = 1.62285299; alpha = 2.73232995; n = 1.79135412; norm = 0.91481432; 
+  // 2012AllEE   m0 = 18.45678784; sigma = 0.68697618; alpha = 0.57008697; n = 3.73470825; norm = 0.84747211; 
   double effTau2012ABC(double pt, double eta) {
-    return efficiency(pt,18.48663118,1.63417147,20.25695815,138.55422224,0.89456038);
+    if(fabs(eta)<1.5)  return efficiency(pt,18.50940288,1.62285299,2.73232995,1.79135412,0.91481432);
+    else               return efficiency(pt,18.45678784,0.68697618,0.57008697,3.73470825,0.84747211);
   }
+
+
   ///Tau Efficiency for 53X MC
-  //// Eff53XMCET   m0 = 18.62733399; sigma = 0.51301539; alpha = 0.38517573; n = 5.68099833; norm = 0.91536401;
+  /// 53XMCEB   m0 = 18.80484409; sigma = 0.19082817; alpha = 0.19983010; n = 1.81979820; norm = 0.93270649; 
+  /// 53XMCEE   m0 = 18.25975478; sigma = 1.32745225; alpha = 1.70380810; n = 149.18410074; norm = 0.87377770;
   double effTau2012MC53X(double pt, double eta) {
-    return efficiency(pt,18.62733399,0.51301539,0.38517573,5.68099833,0.91536401);
+    if(fabs(eta)<1.5)  return efficiency(pt,18.80484409,0.19082817,0.19983010,1.81979820,0.93270649);
+    else               return efficiency(pt,18.25975478,1.32745225,1.70380810,149.18410074,0.87377770);
   }
 
 
@@ -592,8 +598,6 @@ public:
     return (weight_A * eff2012AEle20(pt, eta) + weight_B * eff2012BEle22(pt, eta) + weight_C * eff2012CEle22(pt, eta))/(weight_A+weight_B+weight_C);
   } 
 
-  // functions measured by Rebecca
-
   double effEle2012MC53X(double pt, double eta) {
     if(fabs(eta)<1.479) 
       return efficiency(pt,22.00666445,0.00036058,0.00000251,1.38456083,1.02640579);
@@ -601,7 +605,23 @@ public:
       return efficiency(pt,22.18226941,1.07762306,1.23712775,1.27324238,1.15312185);
   }
 
-
+  
+  //For Tau curves see email from Josh
+  // Tau, EleTau (2012)
+  // Loose Tau 20 - Run < 193686 	        18.84658959 	0.25958704 	0.17300958 	2.43491208 	0.85872017
+  // Loose Tau 20 - Run >= 193686 	18.48663118 	1.63417147 	20.25695815 	138.55422224 	0.89456038
+  //He has not measured the C period therefore just use from 2012B curve which has same trigger
+  double effTau2012ABC_TauEle(double pt, double eta) {
+    float weight_A = 696.09; 
+    float weight_B = 4327.0;
+    float weight_C = 7000.;
+    return (weight_A * eff2012ATau20_TauEle(pt, eta) + weight_B * eff2012BTau20_TauEle(pt, eta)+ weight_C * eff2012BTau20_TauEle(pt, eta))/(weight_A+weight_B+weight_C);
+  }
+  // And this for the MC:
+  // Eff53XMCET   m0 = 18.62733399; sigma = 0.51301539; alpha = 0.38517573; n = 5.68099833; norm = 0.91536401;
+  double eff2012Tau20MC53X_TauEle(double pt, double eta) {
+    return efficiency(pt, 18.62733399 , 0.51301539, 0.38517573 , 5.68099833 , 0.91536401);
+  }
 
 
 

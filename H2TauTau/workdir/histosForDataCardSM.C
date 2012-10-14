@@ -10,24 +10,45 @@
 #include "configTauEle2012.C"
 
 #define NMASS 8
-#define NCAT 5
 long massValues[NMASS]={110,115,120,125,130,135,140,145};
 
-//#define NMASS 20
-//#define NCAT 7
-//long massValues[NMASS]={90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
-
-#define NXBINS 22
-//Float_t xbinsValues[13+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
-float xbinsValues[NXBINS]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
-
-
+#define NCAT 5
 TString catdirname[NCAT]={
  "0jet_low",
  "0jet_high",
  "boost_low",
  "boost_high",
  "vbf"};
+
+
+//#define NMASS 20
+//#define NCAT 7
+//long massValues[NMASS]={90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
+
+//#define NXBINS 13
+//Float_t xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
+//#define NXBINS 21
+//float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
+
+///For study of MSSM performance
+//#define NXBINS 19
+//float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,900,1200,1500};  
+//#define NXBINS 16
+//float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,500,1000,1500};  
+
+
+// ////Old binning
+// #define NXBINS 13
+// Float_t xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
+// #define NXBINSVBF 13
+// Float_t xbinsValuesVBF[NXBINSVBF+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
+
+/////New fine binning
+#define NXBINS 26
+Float_t xbinsValues[NXBINS+1]={0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350};
+#define NXBINSVBF 13
+Float_t xbinsValuesVBF[NXBINSVBF+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
+
 
 void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
 
@@ -48,10 +69,10 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
     if(year==2012)TauElePlotter * analysis=configTauEle2012("analysis",path);
   }
   
-  //analysis->plotvar_="svfitmass";
+  analysis->plotvar_="svfitmass";
   //analysis->plotvar_="ditaumass";
-  analysis->plotvar_="mupt";
-  analysis->setVariableBinning(NXBINS-1,xbinsValues);
+  //analysis->plotvar_="mupt";
+  bool Blind=1;
   analysis->nbins_=0;
   analysis->Isocat_=1;
   analysis->MTcat_=1; 
@@ -59,12 +80,13 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
 
   analysis->printRawYields("eventweight*(categoryIso==1&&abs(ditaucharge)==0)");//This might be needed to avoid some nan values
 
-
   TFile output(ChannelName+"SM"+"_"+analysis->plotvar_+"_"+tag+".root","recreate");
   for(long sm=0; sm<NCAT; sm++){
 
     TDirectory* dir = output.mkdir(ChannelName+"_"+catdirname[sm]);  
 
+    if(sm==4)analysis->setVariableBinning(NXBINSVBF,xbinsValuesVBF);
+    else analysis->setVariableBinning(NXBINS,xbinsValues);
     analysis->extrasel_ = analysis->getSMcut(sm);
     if(!analysis->scaleSamplesLumi())return;
 
@@ -74,24 +96,26 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
     TH1F* QCD = 0;
     if(channel==1){//mu-tau
       if(year==2011){
-	if(sm==0)                    QCD=analysis->getQCDInc();
-	if(sm==1 || sm==2 || sm==3 ) QCD=analysis->getQCDIncLooseShape();
-	if(sm==4)                    QCD=analysis->getQCDMike();
+	if(sm==0 || sm==2 ) QCD=analysis->getQCDInc();
+	if(sm==1 || sm==3 ) QCD=analysis->getQCDIncLooseShape();
+	if(sm==4)           QCD=analysis->getQCDMike();
       }
       if(year==2012){
-	if(sm==0 || sm==1 || sm==2 || sm==3 ) QCD=analysis->getQCDInc();
-	if(sm==4)                             QCD=analysis->getQCDHCP();
+	if(sm==0 || sm==2 ) QCD=analysis->getQCDInc(); 
+	if(sm==1 || sm==3 ) QCD=analysis->getQCDIncLooseShape(); 
+	if(sm==4)           QCD=analysis->getQCDHCP();
       }
     }
     if(channel==2){//e-tau
       if(year==2011){
-	if(sm==0 || sm==1) QCD=analysis->getQCDIncLooseShape();//getQCDInc();
-	if(sm==2 || sm==3) QCD=analysis->getQCDIncLooseShape();//getQCDInc();
+	if(sm==0 || sm==2) QCD=analysis->getQCDInc();
+	if(sm==1 || sm==3) QCD=analysis->getQCDIncLooseShape();
 	if(sm==4)          QCD=analysis->getQCDMike();
       }
       if(year==2012){
-	if(sm==0 || sm==1 || sm==2 || sm==3 ) QCD=analysis->getQCDInc();
-	if(sm==4)                             QCD=analysis->getQCDHCP();
+	if(sm==0 || sm==2 ) QCD=analysis->getQCDInc(); 
+	if(sm==1 || sm==3 ) QCD=analysis->getQCDIncLooseShape();
+	if(sm==4)           QCD=analysis->getQCDHCP();
       }
     }
     QCD->SetName("QCD");
@@ -107,7 +131,7 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
       if(year==2012){
 	if(sm==0 || sm==1 ) W = analysis->getWJetsInc();
 	if(sm==2 || sm==3 ) W = analysis->getWJetsNJet();
-	if(sm==4)           W = analysis->getWJetsNJet(); 
+	if(sm==4)           W = analysis->getWJetsNJetVBFHCP(); 
       }
     }
     if(channel==2){//e-tau
@@ -128,19 +152,28 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
     ZTT->SetName("ZTT");
     //cout<<" ZTT "<<ZTT->Integral()<<endl;
 
-    TH1F* TT = analysis->getTTJetsInc();
+    TH1F* TT = 0;
+    if(sm==0 || sm==2 || sm==1 || sm==3) TT=analysis->getTTJetsInc(); 
+    if(sm==4)                            TT=analysis->getTTJetsVBFHCP(); 
     TT->SetName("TT");
 
     //cout<<"channel "<<channel<<endl;
     TH1F* ZL =0;
-    if(channel==1){  ZL =analysis->getZToMuMuInc();}
+    if(channel==1){
+      if(sm==0 || sm==2 || sm==1 || sm==3) 	ZL =analysis->getZToMuMuInc();
+      if(sm==4)                            	ZL =analysis->getZToMuMuVBFHCP();
+    }
     if(channel==2){  ZL =analysis->getZToEEInc();}
     ZL->SetName("ZL");
 
-    TH1F* ZJ = analysis->getZToLJetInc();
+    TH1F* ZJ = 0;
+    if(sm==0 || sm==2 || sm==1 || sm==3) ZJ=analysis->getZToLJetInc();
+    if(sm==4)                            ZJ=analysis->getZToLJetVBFHCP();                   
     ZJ->SetName("ZJ");
 
-    TH1F* VV = analysis->getDiBoson();
+    TH1F* VV = 0;
+    if(sm==0 || sm==2 || sm==1 || sm==3)     VV=analysis->getDiBoson();
+    if(sm==4)                                VV=analysis->getDiBosonVBFHCP();
     VV->SetName("VV");
 
     TH1F* ZLL=(TH1F*)ZL->Clone("ZLL");
@@ -149,7 +182,7 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
 
     //blind
     TString tmpsel=analysis->extrasel_;
-    //analysis->extrasel_ += "*(svfitmass<100||160<svfitmass)"; 
+    if(Blind)analysis->extrasel_ += "*(svfitmass<100||160<svfitmass)"; 
     TH1F* data_obs = analysis->getTotalData();
     data_obs->SetName("data_obs");
     analysis->extrasel_ =tmpsel;
