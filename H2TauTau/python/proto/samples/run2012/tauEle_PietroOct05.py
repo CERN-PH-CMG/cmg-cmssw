@@ -25,12 +25,13 @@ aliases = {
     '/TauPlusX/Run2012A-recover-06Aug2012-v1.*':'data_Run2012A_aug6',
     '/TauPlusX/Run2012A-13Jul2012-v1.*':'data_Run2012A',
     '/TauPlusX/Run2012B-13Jul2012-v1.*':'data_Run2012B',
-    '/TauPlusX/Run2012C-PromptReco-v2.*':'data_Run2012C_v2',
     '/TauPlusX/Run2012C-24Aug2012-v1.*':'data_Run2012C_v1',
-#    '/DoubleMu/StoreResults-DoubleMu_2012A_PromptReco_v1.*':'embed_Run2012A',
-#    '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run193752to195135.*':'embed_Run2012B_193752_195135',
-#    '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run195147to196070.*':'embed_Run2012B_195147_196070',
-#    '/DoubleMu/StoreResults-DoubleMu_2012B_PromptReco_v1_Run196090to196531.*':'embed_Run2012B_196090_196531',
+    '/TauPlusX/Run2012C-PromptReco-v2.*':'data_Run2012C_v2',
+    '/DoubleMu/StoreResults-DoubleMu_Run2012A_13Jul2012_v1_embedded_trans1_tau115_ptelec1.*':'embed_Run2012A_13Jul2012_v1',
+    '/DoubleMu/StoreResults-DoubleMu_Run2012A-recover_06Aug2012_v1_embedded_trans1_tau115_ptelec1.*':'embed_Run2012A_recover_06Aug2012_v1',
+    '/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau115_ptelec1.*':'embed_Run2012B_13Jul2012_v4',
+    '/DoubleMu/StoreResults-DoubleMu_Run2012C_24Aug2012_v1_embedded_trans1_tau115_ptelec1.*':'embed_Run2012C_24Aug2012_v1',
+    '/DoubleMu/StoreResults-DoubleMu_Run2012C_PromptReco_v2_embedded_trans1_tau115_ptelec1.*':'embed_Run2012C_PromptReco_v2',
     '/T_tW.*START53.*':'T_tW',
     '/Tbar_tW.*START53.*':'Tbar_tW',
 #    '/T_t-.*START53.*':'T_t',
@@ -58,7 +59,7 @@ MC_list.extend( mc_higgs )
 
 allsamples = copy.copy(MC_list)
 allsamples.extend( data_list )
-# allsamples.extend( embed_list )
+allsamples.extend( embed_list )
 
 
 print 'start connecting... \n\n'
