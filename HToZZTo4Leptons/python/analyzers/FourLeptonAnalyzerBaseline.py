@@ -195,6 +195,8 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
             event.leptonsForLooseZ2=[]
         self.FSR.setElectronID(self.testLeptonLoose)
         self.FSR.setLeptons(event.leptonsForLooseZ2)
+        if hasattr(event.bestZ,'fsrPhoton'):
+            event.photons.remove(event.bestZ.fsrPhoton)
         self.FSR.attachPhotons(event.photons)
         event.leptonPairsLoose = self.findPairs(event.leptonsForLooseZ2)
         cutFlow.setSource1(event.leptonPairsLoose)

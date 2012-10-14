@@ -86,6 +86,7 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
         cleanOverlap = OverlapCleaner(event.skimmedLeptons,0.05,11,13,self.testMuonCleaning)
         passed = cutFlow.applyCut(cleanOverlap,'electron cross cleaning',3,'cleanLeptons')
 
+        passed = cutFlow.applyCut(self.testLeptonGood,'goodID',2,'goodLeptons')
 
 
         if not passed: return False
@@ -117,7 +118,7 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
         if not passed: return False
         
         event.bestZForFakeRate = self.bestZBosonByMass(cutFlow.obj1)
-                
+
         #find the additional lepton
         event.leptonsForFakeRate = copy.copy(event.cleanLeptons)
         event.leptonsForFakeRate.remove( event.bestZForFakeRate.leg1)
@@ -125,9 +126,10 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
         #if FSR remove
         if hasattr(event.bestZForFakeRate,'fsrPhoton'):
             event.photons.remove(event.bestZForFakeRate.fsrPhoton)
-            self.FSR.setElectronID(self.testLeptonLoose)
-            self.FSR.setLeptons(event.leptonsForFakeRate)
-            self.FSR.attachPhotons(event.photons)
+
+        self.FSR.setElectronID(self.testLeptonLoose)
+        self.FSR.setLeptons(event.leptonsForFakeRate)
+        self.FSR.attachPhotons(event.photons)
             
         if len(event.leptonsForFakeRate) ==0:
             return False
