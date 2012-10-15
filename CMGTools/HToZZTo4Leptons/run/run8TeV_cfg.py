@@ -178,12 +178,12 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 0
+test = 1
 if test==1:
     dataset = GGH127
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-#    dataset.files=['cmgTuple.root']
+    dataset.files=['cmgTuple.root']
 
 
    
