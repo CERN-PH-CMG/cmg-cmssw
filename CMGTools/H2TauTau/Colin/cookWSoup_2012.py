@@ -17,9 +17,11 @@ class Component(object):
         self.file = TFile(fileName)
         self.tree = self.file.Get(treeName)
         self.tree.SetName('H2TauTauTreeProducerTauEle_{0:d}'.format(self.numberForNaming))
-        print self.tree.GetName()
 
 
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+    
 class H2TauTauSoup(TreeNumpy):
 
     def __init__(self, name, title):
@@ -40,24 +42,61 @@ class H2TauTauSoup(TreeNumpy):
             0.00703947368421
             ]
 
-        # number of events in the inclusive sample
-        self.ninc = 57142200.4185
-        #s number of events in the excusive samples, corrected for efficiency
-        self.n = [
+        # number of events in the inclusive sample, corrected for prod efficiency
+        self.ninc = 57142200.4185   # 57709905 w/o weights
+        # approximate number of events in each exclusive component of the inclusive sample
+        self.Ninc = [frac * self.ninc for frac in self.fractions]
+
+        #s number of events in the excusive samples, corrected for prod efficiency
+        self.Nexc = [
             0,
-            21715355.1552,
-            33438921.4062,
-            715214991.5589,
-            13129814.4921,
+            0, # 21715355.1552,         # 23141598 w/o weights
+            33438921.4062,         # 34044921 w/o weights
+            0, # 15214991.5589,         # 15539503 w/o weights
+            0  # 13129814.4921          # 13382803 w/o weights
             ]
-        self.Ni = [frac*self.ninc for frac in self.fractions]
-        # self.nTot = sum(self.n)
+
+        self.WJetWeights = []
+        for nJets in range (5):
+            self.WJetWeights.append (self.Ninc[nJets] / ( self.Ninc[nJets] + self.Nexc[nJets]))
+            print nJets, self.WJetWeights[nJets]
+
+        # weights from Christian
+#        self.WJetWeights[0] = 1
+#        self.WJetWeights[1] = 0.37
+#        self.WJetWeights[2] = 0.11
+#        self.WJetWeights[3] = 0.077
+#        self.WJetWeights[4] = 0.038
+
+        # weights that let the two distributions match 
+#        self.WJetWeights[0] = 1
+#        self.WJetWeights[1] = 0.37
+#        self.WJetWeights[2] = 0.125
+#        self.WJetWeights[3] = 0.077
+#        self.WJetWeights[4] = 0.038
+
+        self.WJetWeights[0] = 1
+#        self.WJetWeights[1] = 1
+        self.WJetWeights[2] = 1
+        self.WJetWeights[3] = 1
+        self.WJetWeights[4] = 1
+
+#        self.Nexc = [
+#            0,
+#            21715355.1552,
+#            0, # 33438921.4062,
+#            0, # 715214991.5589,
+#            0  # 13129814.4921
+#            ]
+
+
+
+# .... .... .... .... .... .... .... .... .... .... .... .... ....
+
     
-    def importEntries(self, comp, inclusive, nEntries=-1):
+    def importEntries(self, comp, nEntries=-1):
         print 'importing', comp.name
         tree = comp.tree
-        if inclusive:
-            self.ninc = tree.GetEntries()
         for index, ie in enumerate(tree):
             if index%1000==0: print 'entry:', index
             for varName in self.vars:
@@ -67,14 +106,15 @@ class H2TauTauSoup(TreeNumpy):
                 self.fill(varName, val)
                 if varName == 'NUP':
                     nJets = int(val-5)
-                    # print nJets, self.Ni[nJets], self.n[nJets]
-                    WJetWeight = self.Ni[nJets] / ( self.Ni[nJets] + self.n[nJets] )
-                    self.fill('WJetWeight', WJetWeight)
-                    # print 'nJets', nJets, WJetWeight
+                    self.fill('WJetWeight', self.WJetWeights[nJets])
             self.tree.Fill()
             if nEntries>0 and index+1>=nEntries:
                 return 
 
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+    
 if __name__ == '__main__':
 
     # import sys
@@ -107,7 +147,10 @@ if __name__ == '__main__':
     soupFile = TFile('soup.root','recreate')
     soup = H2TauTauSoup('H2TauTauTreeProducerTauEle', 'H2TauTauTreeProducerTauEle')
     soup.copyStructure( incComp.tree )
-    inclusive = True
+
     for c in components:
-        soup.importEntries (c, inclusive=inclusive)
-        inclusive = False
+        soup.importEntries (c)
+#        soup.importEntries (c, nEntries = 20)
+
+    soupFile.Write()
+    soupFile.Close()
