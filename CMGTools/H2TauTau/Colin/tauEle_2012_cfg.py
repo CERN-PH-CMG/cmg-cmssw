@@ -200,11 +200,14 @@ for emb in embed_list:
 
 data_Run2012A.splitFactor = 40
 data_Run2012B.splitFactor = 200
+data_Run2012C_v1.splitFactor = 20
+data_Run2012C_v2.splitFactor = 300
+
 
 selectedComponents =  copy.copy(MC_list)
 selectedComponents.extend( data_list )
-#selectedComponents.extend( embed_list )
-
+selectedComponents.extend( embed_list )
+#selectedComponents = copy.copy (embed_list)
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -228,7 +231,7 @@ if syncntuple:
 
 # selectedComponents = embed_list
 
-test = 0
+test = 5
 if test==1:
 #    comp = DYJets
 #    comp = data_Run2012A
@@ -244,11 +247,17 @@ if test==1:
     # for 53 MC: 
 #    comp.triggers = ['HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*']
 elif test==2:
-#    selectedComponents = copy.copy (data_list)
+    selectedComponents = copy.copy (embed_list)
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:10]
-
+elif test==5:
+    # run this with python to get numbers for the soup
+    print 'WJets  : ', WJets.nGenEvents,  WJets.effCorrFactor
+    print 'W1Jets : ', W1Jets.nGenEvents, W1Jets.effCorrFactor
+    print 'W2Jets : ', W2Jets.nGenEvents, W2Jets.effCorrFactor
+    print 'W3Jets : ', W3Jets.nGenEvents, W3Jets.effCorrFactor
+    print 'W4Jets : ', W4Jets.nGenEvents, W4Jets.effCorrFactor
 
 
 config = cfg.Config( components = selectedComponents,
