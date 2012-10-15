@@ -5,9 +5,10 @@ from CMGTools.RootTools.statistics.TreeNumpy import *
 files = []
 
 class Component(object):
-    def __init__(self, name):
+    def __init__(self, name, numberForNaming = 99):
         self.name = name.rstrip('/')
         self.tree = None
+        self.numberForNaming = numberForNaming
         self.attachTree()
 
     def attachTree(self):
@@ -15,6 +16,8 @@ class Component(object):
         treeName = 'H2TauTauTreeProducerTauEle'
         self.file = TFile(fileName)
         self.tree = self.file.Get(treeName)
+        self.tree.SetName('H2TauTauTreeProducerTauEle_{0:d}'.format(self.numberForNaming))
+        print self.tree.GetName()
 
 
 class H2TauTauSoup(TreeNumpy):
@@ -89,19 +92,22 @@ if __name__ == '__main__':
 
     components = []
     
-    incComp = Component( args[0] )  
+    numberForNaming = 0
+    incComp = Component( args[0], numberForNaming )
+    numberForNaming = numberForNaming + 1  
     components.append( incComp )
     print 'Inclusive WJets sample: ', incComp.name
 
     excNames = args[1:]
     for arg in excNames:
         print 'Exclusive WJets sample: ', arg
-        components.append( Component(arg) )
+        components.append( Component(arg, numberForNaming) )
+        numberForNaming = numberForNaming + 1  
     
     soupFile = TFile('soup.root','recreate')
-    soup = H2TauTauSoup('soup', 'WJetSoup')
+    soup = H2TauTauSoup('H2TauTauTreeProducerTauEle', 'H2TauTauTreeProducerTauEle')
     soup.copyStructure( incComp.tree )
     inclusive = True
     for c in components:
-        soup.importEntries( c, inclusive=inclusive)
+        soup.importEntries (c, inclusive=inclusive)
         inclusive = False
