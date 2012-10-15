@@ -359,7 +359,7 @@ bool mustBlind(false);
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       if(!isMC && duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-       mustBlind = (!isMC && runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC));
+//       mustBlind = (!isMC && runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC));
  
 
     
@@ -452,7 +452,14 @@ event_weight = xsec/cnorm;
       int nextraleptons(0);
       double llScaleFactor(1.0),llTriggerEfficiency(1.0);
       LorentzVector lep1=phys.leptons[0];
-      float relIso1 = phys.leptons[0].relIsoRho(ev.rho);
+      TString lepStr1( fabs(phys.leptons[0].id)==13 ? "mu" : "e");
+
+         float relIso1 = (lepStr1=="mu") ?
+          phys.leptons[0].pfRelIsoDbeta(): //muPFRelIsoCorrected2012(ev.rho25Neut):
+          phys.leptons[0].ePFRelIsoCorrected2012(ev.rho);
+
+
+//      float relIso1 = phys.leptons[0].relIsoRho(ev.rho);
 //cout << "relIso1 = " << relIso1 << endl;
 //cout << "particle id = " << phys.leptons[0].id << endl;
       int lpid=phys.leptons[0].pid;
@@ -461,13 +468,22 @@ event_weight = xsec/cnorm;
 //      else if(fabs(phys.leptons[0].id)==11) passIds &= hasObjectId(ev.en_idbits[lpid], EID_VBTF2011);
 
 
-
       LorentzVector lep2=phys.leptons[1];
-      float relIso2 = phys.leptons[1].relIsoRho(ev.rho);
+  //    float relIso2 = phys.leptons[1].relIsoRho(ev.rho);
+      TString lepStr2( fabs(phys.leptons[1].id)==13 ? "mu" : "e");
+          float relIso2 = (lepStr2=="mu") ?
+            phys.leptons[1].pfRelIsoDbeta(): //muPFRelIsoCorrected2012(ev.rho25Neut):
+            phys.leptons[1].ePFRelIsoCorrected2012(ev.rho);
+
+
+
       lpid=phys.leptons[1].pid;
       if(fabs(phys.leptons[1].id)==13)      passIds &= hasObjectId(ev.mn_idbits[lpid], MID_TIGHT);
       else if(fabs(phys.leptons[1].id)==11) passIds &= hasObjectId(ev.en_idbits[lpid], EID_MEDIUM); 
 //      else if(fabs(phys.leptons[1].id)==11) passIds &= hasObjectId(ev.en_idbits[lpid], EID_VBTF2011); 
+
+//cout << "relIso1 = " << relIso1 << " " << "relIso2 = " << relIso2 << endl;
+
 
 if(fabs(phys.leptons[0].id)==13) 
 {
@@ -595,20 +611,26 @@ nbtags += (phys.ajets[ijet].btag3>0.275);
 
 
 //cout << "reduced MET = " << aRedMet.pt() << endl;
+//cout << "zvvs[0].pt() = " << zvvs[0].pt() << endl;
 //cout << "Type 1 MET = " << zvvs[0].pt() << endl;
-//cout << "RAW MET = " << rawMetP4.pt() << endl;
+//cout << "rawMetP4.pt() = " << rawMetP4.pt() << endl;
+//cout << "zvvs[2].pt() = " << zvvs[2].pt() << endl;
+//cout << "typeIMetP4v = " <<typeIMetP4.pt() << endl;
+//cout << "***************************************************************" <<endl;
+
 //cout << "MVA MET = " << mvaMetP4.pt() << endl;
 
 
 
 
-if(mustBlind == 1) {cout << "mustBlind = " << mustBlind << endl;      }
+//if(mustBlind == 1) {cout << "mustBlind = " << mustBlind << endl;      }
 
 //============================================================ FILLING OF BRANCHES===========================================================
 
 
 //	if(passIds && pass3rdLeptonVeto && passBveto && mustBlind == 0) {
-      if(passIds && pass3rdLeptonVeto &&  mustBlind == 0) {
+//      if(passIds && pass3rdLeptonVeto &&  mustBlind == 0) {
+if(passIds && pass3rdLeptonVeto) {
 
 
 
@@ -637,7 +659,8 @@ hzz_rho = ev.rho25;
       hzz_lept1_PHI = lep1.phi();
       hzz_lept1_DetIso = phys.leptons[0].relIsoRho(ev.rho);
       hzz_lept1_PFIsoDbeta = phys.leptons[0].pfRelIsoDbeta();
-      hzz_lept1_PFIso2012 = phys.leptons[0].ePFRelIsoCorrected2012(ev.rho);
+//      hzz_lept1_PFIso2012 = phys.leptons[0].ePFRelIsoCorrected2012(ev.rho);
+      hzz_lept1_PFIso2012 = relIso1;
 
       hzz_lept2_ID = fabs(phys.leptons[1].id);
       hzz_lept2_PT = lep2.pt();
@@ -645,7 +668,8 @@ hzz_rho = ev.rho25;
       hzz_lept2_PHI = lep2.phi();
       hzz_lept2_DetIso = phys.leptons[1].relIsoRho(ev.rho);
       hzz_lept2_PFIsoDbeta = phys.leptons[1].pfRelIsoDbeta();
-      hzz_lept2_PFIso2012 = phys.leptons[1].ePFRelIsoCorrected2012(ev.rho);
+//      hzz_lept2_PFIso2012 = phys.leptons[1].ePFRelIsoCorrected2012(ev.rho);
+      hzz_lept2_PFIso2012 = relIso2;
 
       hzz_Z_Mass = zll.mass();
       hzz_Z_PT = zll.pt();
@@ -662,7 +686,11 @@ hzz_rho = ev.rho25;
       //cout << " PU Weight =  " << weight << endl;
       //cout << " PFMET = " << zvvs[0].pt() << endl;
       //cout << " lepton 1 PT =  " << lep1.pt() << "Particle ID = " << phys.leptons[0].pid << " lepton 1 PT =  " << phys.leptons[0].pt()<< endl;
-      //cout << " Event category =  " << ev.cat << endl;
+//      cout << " Event category =  " << ev.cat << endl;
+
+//cout << " hzz_lept1_PFIso2012 = " << hzz_lept1_PFIso2012 << " " << "hzz_lept2_PFIso2012 = " << hzz_lept2_PFIso2012 << endl;
+//cout << " hzz_lept1_PFIsoDbeta = " << hzz_lept1_PFIsoDbeta << " " << "hzz_lept2_PFIsoDbeta = " << hzz_lept2_PFIsoDbeta << endl;
+//cout <<"****************************************************************************************************" <<endl;
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Jets Filling ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //PhysicsObjectJetCollection correctedJets = phys.ajets;
 //cout << " Number of Jets = " << correctedJets.size() << endl;
@@ -700,7 +728,7 @@ hzz_Jet_SumPT = sumet;
 //cout << " Minimum dPhi of jet and Met = " << hzz_dPhi_JetMet << endl;
 //cout << "***********************************************************************************************************" << endl;
       hzz_tree->Fill();
-}
+}//
   }
   
   printf("\n"); 
