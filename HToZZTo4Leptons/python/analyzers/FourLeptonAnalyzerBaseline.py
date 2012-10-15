@@ -203,6 +203,8 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         #Z2 SF 
         passed=cutFlow.applyCut(self.testZSF,'SF for Z2 Loose',1,'zBosons2SFLoose')
 
+        #Z2 SIP CUT
+        passed=cutFlow.applyCut(lambda x: abs(x.leg1.sip3D())<4 and abs(x.leg2.sip3D())<4,'SIP cut for Z2 loose',1,'zBosons2SIP')
         #pick the highest pt pair
         sortedZ2ByPtLoose=sorted(cutFlow.obj1,key=lambda x: x.leg1.pt()+x.leg2.pt(),reverse=True)
 
