@@ -50,10 +50,10 @@ class H2TauTauSoup(TreeNumpy):
         #s number of events in the excusive samples, corrected for prod efficiency
         self.Nexc = [
             0,
-            0, # 21715355.1552,         # 23141598 w/o weights
+            21715355.1552,         # 23141598 w/o weights
             33438921.4062,         # 34044921 w/o weights
-            0, # 15214991.5589,         # 15539503 w/o weights
-            0  # 13129814.4921          # 13382803 w/o weights
+            15214991.5589,         # 15539503 w/o weights
+            13129814.4921          # 13382803 w/o weights
             ]
 
         self.WJetWeights = []
@@ -75,11 +75,11 @@ class H2TauTauSoup(TreeNumpy):
 #        self.WJetWeights[3] = 0.077
 #        self.WJetWeights[4] = 0.038
 
-        self.WJetWeights[0] = 1
+#        self.WJetWeights[0] = 1
 #        self.WJetWeights[1] = 1
-        self.WJetWeights[2] = 1
-        self.WJetWeights[3] = 1
-        self.WJetWeights[4] = 1
+#        self.WJetWeights[2] = 1
+#        self.WJetWeights[3] = 1
+#        self.WJetWeights[4] = 1
 
 #        self.Nexc = [
 #            0,
