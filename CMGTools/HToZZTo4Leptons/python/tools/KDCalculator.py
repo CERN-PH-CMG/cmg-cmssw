@@ -1,3 +1,4 @@
+
 import os
 import ROOT
 from CMGTools.RootTools.RootTools import *
@@ -50,6 +51,9 @@ class KDCalculator(object):
                                         l3,FL.leg2.leg1.pdgId(),
                                         l4,FL.leg2.leg2.pdgId())
 
+        FL.melaS = self.KD.melaS()
+        FL.melaB = self.KD.melaB()
+        
         FL.pseudomela = self.KD.computePseudoMELA(l1,FL.leg1.leg1.pdgId(),
                                         l2,FL.leg1.leg2.pdgId(),
                                         l3,FL.leg2.leg1.pdgId(),

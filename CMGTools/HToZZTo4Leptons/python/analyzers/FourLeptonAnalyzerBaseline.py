@@ -202,7 +202,8 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         cutFlow.setSource1(event.leptonPairsLoose)
         #Z2 SF 
         passed=cutFlow.applyCut(self.testZSF,'SF for Z2 Loose',1,'zBosons2SFLoose')
-
+        #Z2 SS 
+        passed=cutFlow.applyCut(lambda x: x.charge()!=0,'SF for Z2 Loose',1,'zBosons2SFLoose')
         #Z2 SIP CUT
         passed=cutFlow.applyCut(lambda x: abs(x.leg1.sip3D())<4 and abs(x.leg2.sip3D())<4,'SIP cut for Z2 loose',1,'zBosons2SIP')
         #pick the highest pt pair
