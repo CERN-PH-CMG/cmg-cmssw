@@ -22,6 +22,8 @@ class KDCalculator(object):
 
         if FL.M()<100:
             FL.mela=-99
+            FL.melaS=-99
+            FL.melaB=-99
             FL.pseudomela=-99
             FL.spintwomela=-99
             return
@@ -53,7 +55,8 @@ class KDCalculator(object):
 
         FL.melaS = self.KD.melaS()
         FL.melaB = self.KD.melaB()
-        
+
+
         FL.pseudomela = self.KD.computePseudoMELA(l1,FL.leg1.leg1.pdgId(),
                                         l2,FL.leg1.leg2.pdgId(),
                                         l3,FL.leg2.leg1.pdgId(),
