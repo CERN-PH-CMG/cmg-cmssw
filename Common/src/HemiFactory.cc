@@ -5,84 +5,17 @@
 //--------------------------------------------------------------------
 
 #include "CMGTools/Common/interface/HemiFactory.h"
+#include "CMGTools/Common/interface/next_combination.h"
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "DataFormats/Common/interface/View.h"
 
 #include <limits>
+#include <map>
 #include <utility>
 
 typedef edm::View<reco::Candidate>::size_type size_type;
 
-//--------------------------------------------------------------------
-
-// Happily copy-pasted from here:
-// http://photon.poly.edu/~hbr/boost/combinations.html
-// until this is accepted into the BOOST library.
-template<class BidirectionalIterator>
-bool next_combination(BidirectionalIterator first1,
-                      BidirectionalIterator last1,
-                      BidirectionalIterator first2,
-                      BidirectionalIterator last2)
-{
-  if ((first1 == last1) || (first2 == last2)) {
-    return false;
-  }
-
-  BidirectionalIterator m1 = last1;
-  BidirectionalIterator m2 = last2; --m2;
-
-  // Find first m1 not less than *m2 (i.e., lower_bound(first1, last1, *m2)).
-  // Actually, this loop stops at one position before that, except perhaps
-  // if m1 == first1 (in which case one must compare *first1 with *m2).
-  while (--m1 != first1 && !(*m1 < *m2)) {
-  }
-
-  // Test if all elements in [first1, last1) not less than *m2.
-  bool result = (m1 == first1) && !(*first1 < *m2);
-
-  if (!result) {
-
-    // Find first first2 greater than *m1 (since *m1 < *m2, we know it
-    // can't pass m2 and there's no need to test m2).
-    while (first2 != m2 && !(*m1 < *first2)) {
-      ++first2;
-    }
-
-    first1 = m1;
-    std::iter_swap (first1, first2);
-    ++first1;
-    ++first2;
-  }
-
-  // Merge [first1, last1) with [first2, last2), given that the rest of the
-  // original ranges are sorted and compare appropriately.
-  if ((first1 != last1) && (first2 != last2)) {
-    for (m1 = last1, m2 = first2;  (m1 != first1) && (m2 != last2); ++m2) {
-      std::iter_swap (--m1, m2);
-    }
-
-    std::reverse (first1, m1);
-    std::reverse (first1, last1);
-
-    std::reverse (m2, last2);
-    std::reverse (first2, last2);
-  }
-
-  return !result;
-}
-
-//--------------------------------------------------------------------
-
-template<class BidirectionalIterator>
-bool next_combination(BidirectionalIterator first,
-                      BidirectionalIterator middle,
-                      BidirectionalIterator last)
-{
-  return next_combination(first, middle, middle, last);
-}
-
-//--------------------------------------------------------------------
 
 cmg::HemisphereFactory::event_ptr
 cmg::HemisphereFactory::create(const edm::Event& iEvent,
@@ -90,6 +23,9 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
 {
   typedef std::vector<cmg::Hemisphere> collection;
   cmg::HemisphereFactory::event_ptr result(new collection);
+
+  typedef std::map<double, std::pair<cmg::Hemisphere, cmg::Hemisphere>, std::less<double> > sorted_map;
+  sorted_map all_hemi;
 
   // Step one is to take all candidates from all input collections and
   // store them into a single vector.
@@ -156,8 +92,29 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
                 tmp1.push_back(candidates[*it]);
         }        
         assert( (tmp0.size() + tmp1.size()) == indVec.size() );
-        
-        double diff = balance_->balance(tmp0,tmp1);
+
+	double diff = std::numeric_limits<double>::max();
+	if( (minObjectsPerHemi0_ == 0 && minObjectsPerHemi1_ == 0) || //the hemi count cut is turned off
+	    (candidates.size() < (minObjectsPerHemi0_ + minObjectsPerHemi1_) ) || //we don't have enough candidates to ever pass the cut
+	    ( ( (tmp0.size() >= minObjectsPerHemi0_) && (tmp1.size() >= minObjectsPerHemi1_) ) ||  //at least one hemi passes the cut
+	      ( (tmp0.size() >= minObjectsPerHemi1_) && (tmp1.size() >= minObjectsPerHemi0_) ) )
+	    ){
+	  diff = balance_->balance(tmp0,tmp1);
+	  if(keepAll_){
+	    cmg::Hemisphere hemi0(tmp0);
+	    cmg::Hemisphere hemi1(tmp1);
+
+	    // Set all internal hemisphere variables.
+	    set(tmp0, hemi0);
+	    set(tmp1, hemi1);
+	    
+	    all_hemi.insert( std::make_pair( diff, std::make_pair(hemi0, hemi1) ) );
+
+	  }
+	}else{
+	  continue;
+	}
+
         if (diff < minImbalance) {
           minImbalance = diff;
           bestCombination.resize(i);
@@ -179,37 +136,54 @@ cmg::HemisphereFactory::create(const edm::Event& iEvent,
 
     assert(bestCombination.size() > 0);
 
-    std::vector<edm::Ptr<reco::Candidate> > tmp0;
-    std::vector<edm::Ptr<reco::Candidate> > tmp1;
+    if(keepAll_){//keep all valid combinations
+      collection all;
+      for(sorted_map::const_iterator it = all_hemi.begin(); it != all_hemi.end(); ++it){
+	//pt order
+	if(it->second.first.pt() > it->second.second.pt()){
+	  result->push_back(it->second.first);
+	  result->push_back(it->second.second);
+	}else{
+	  result->push_back(it->second.second);
+	  result->push_back(it->second.first);
+	}
+      }
+    }else{ //just return the best hemi
+      std::vector<edm::Ptr<reco::Candidate> > tmp0;
+      std::vector<edm::Ptr<reco::Candidate> > tmp1;
+      
+      for (size_t i = 0; i != numCand; ++i) {
+	if (std::binary_search(bestCombination.begin(),
+			       bestCombination.end(), i)) {
+	  tmp0.push_back(candidates.at(i));
+	} else {
+	  tmp1.push_back(candidates.at(i));
+	}
+      }
 
-    for (size_t i = 0; i != numCand; ++i) {
-      if (std::binary_search(bestCombination.begin(),
-                             bestCombination.end(), i)) {
-        tmp0.push_back(candidates.at(i));
+      assert((tmp0.size() + tmp1.size()) == numCand);
+
+      cmg::Hemisphere hemi0(tmp0);
+      cmg::Hemisphere hemi1(tmp1);
+
+      // Set all internal hemisphere variables.
+      set(tmp0, hemi0);
+      set(tmp1, hemi1);
+
+      // Don't forget to return pT ordered results.
+      if (hemi0.pt() > hemi1.pt()) {
+	result->push_back(hemi0);
+	result->push_back(hemi1);
       } else {
-        tmp1.push_back(candidates.at(i));
+	result->push_back(hemi1);
+	result->push_back(hemi0);
       }
     }
+    
 
-    assert((tmp0.size() + tmp1.size()) == numCand);
-
-    cmg::Hemisphere hemi0(tmp0);
-    cmg::Hemisphere hemi1(tmp1);
-
-    // Set all internal hemisphere variables.
-    set(tmp0, hemi0);
-    set(tmp1, hemi1);
-
-    // Don't forget to return pT ordered results.
-    if (hemi0.pt() > hemi1.pt()) {
-      result->push_back(hemi0);
-      result->push_back(hemi1);
-    } else {
-      result->push_back(hemi1);
-      result->push_back(hemi0);
-    }
 
   } // if (numCand)
+
 
   return result;
 }
