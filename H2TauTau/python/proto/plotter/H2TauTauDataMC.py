@@ -42,7 +42,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         
         super(H2TauTauDataMC, self).__init__(varName, directory, weights)
 
-        self.legendBorders = 0.68, 0.68, 0.89, 0.89
+#        self.legendBorders = 0.68, 0.68, 0.89, 0.89
+        self.legendBorders = 0.6, 0.4, 0.89, 0.89
 
         self.dataComponents = [ key for key, value in selComps.iteritems() \
                                 if value.isData is True ]
@@ -228,7 +229,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['ZZ'] = {'style':sGreen, 'layer':0.7, 'legend':None} 
         self.histPref['ZZ*'] = {'style':sGreen, 'layer':0.7, 'legend':None} 
         self.histPref['QCD'] = {'style':sHTT_QCD, 'layer':2, 'legend':None}
-        self.histPref['W*Jets'] = {'style':sHTT_WJets, 'layer':3, 'legend':None}  
+        self.histPref['WJets*'] = {'style':sHTT_WJets, 'layer':3, 'legend':None}  
         self.histPref['Ztt_ZJ'] = {'style':sGreen, 'layer':3.1, 'legend':None}
         self.histPref['Ztt_ZL'] = {'style':sBlue, 'layer':3.2, 'legend':None}
         self.histPref['Higgs*'] = {'style':sHTT_Higgs, 'layer':1001, 'legend':None}
