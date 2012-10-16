@@ -29,7 +29,7 @@ XMIN  = 0
 XMAX  = 200
 
 
-def plotPurity (orig, num, den,plotname):
+def plotPurity (orig, num, den, plotname):
     local = copy.deepcopy(orig)
     h_num = local.Hist(num).weighted
     h_den = local.Hist(den).weighted
@@ -124,14 +124,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 #        # qcd_shape.Scale( qcd_yield )
 #        osQCD.Replace('QCD', qcd_shape)
 
-    if useExclusiveVV :
-        osQCD.Group('VV', ['WWJetsTo2L2Nu', 'WZJetsTo2L2Q', 'WZJetsTo3LNu', 'ZZJetsTo2L2Nu', 'ZZJetsTo2L2Q', 'ZZJetsTo4L','T_tW','Tbar_tW'])
-        print 'grouping the exclusive samples into VV'
-    else :
-        osQCD.Group('VV', ['WW','WZ','ZZ','T_tW','Tbar_tW'])
-        print 'grouping the inclusive samples into VV'
-    
-#    osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
+    osQCD.Group('VV', cfg.VVgroup)
     osQCD.Group('EWK', ['WJets', 'Ztt_ZJ','VV'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
     return ssign, osign, ssQCD, osQCD
@@ -199,7 +192,7 @@ if __name__ == '__main__':
                       dest="blind", 
                       help="Blind.",
                       action="store_true",
-                      default=False)
+                      default=True)
     parser.add_option("-W", "--replaceW", 
                       dest="replaceW", 
                       help="replace W shape by relaxing isolation on the hadronic tau",
@@ -262,6 +255,9 @@ if __name__ == '__main__':
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 #    embed = options.embed
 
+    #PG (STEP 0) prepare the samples on which to run
+    #PG ---- ---- ---- ---- ---- ---- ---- ---- ----
+
     origComps = copy.deepcopy(cfg.config.components)
 
     comps = []
@@ -302,11 +298,16 @@ if __name__ == '__main__':
 #        print 'READ',pick,pickles[pick]['all events'][1]
 #        selComps[pick].totEvents = pickles[pick]['all events'][1]
 
+
+    #PG (STEP 1) evaluate the WJets contribution from high mT sideband
+    #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwss_error, fwos, fwos_error, ss, os = plot_W(anaDir, selComps, weights,
                                                         12, 60, 120, cutw,
-                                                        weight=weight, embed=options.embed,
-                                                        treeName='H2TauTauTreeProducerTauEle')
+                                                        weight = weight, embed = options.embed,
+                                                        VVgroup = cfg.VVgroup,
+                                                        treeName = 'H2TauTauTreeProducerTauEle')
     #PG fwss = W normalization factor for the same sign plots
     #PG fwos = W normalization factor for the opposite sign plots
     #PG ss   = mt plot with the scaled W, according to fwss
@@ -325,6 +326,10 @@ if __name__ == '__main__':
     W_ss_Data.GetXaxis().SetTitle ('mt')
     W_ss_WJets.Draw ('hist')
     W_ss_Data.Draw ('same')
+    leg_W_ss = TLegend (0.6,0.6,0.9,0.9)
+    leg_W_ss.AddEntry (W_ss_Data,  'data - DY - TT', 'pl')
+    leg_W_ss.AddEntry (W_ss_WJets, 'WJets',          'pl')
+    leg_W_ss.Draw ()
     can0.Print ('compare_W_ss.png','png')
     W_ss_Data.Divide (W_ss_WJets)
     W_ss_WJets.Divide (W_ss_WJets)
@@ -337,9 +342,6 @@ if __name__ == '__main__':
     W_ss_WJets.Draw ('sameE3')
     can0.Print ('compare_W_ss_ratio.png','png')
 
-
-    #import pdb ; pdb.set_trace()
-
     #PG compare the MC-subtracted data to the WJets MC only for OS
     #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
@@ -351,6 +353,11 @@ if __name__ == '__main__':
     W_os_Data.GetXaxis().SetTitle ('mt')
     W_os_WJets.Draw ('hist')
     W_os_Data.Draw ('same')
+    leg_W_os = TLegend (0.6,0.6,0.9,0.9)
+    leg_W_os.AddEntry (W_os_Data,  'data - DY - TT', 'pl')
+    leg_W_os.AddEntry (W_os_WJets, 'WJets',          'pl')
+    leg_W_os.Draw ()
+
     can0.Print ('compare_W_os.png','png')
 
     #PG save the sidebands to be able and get numbers for the systematics
