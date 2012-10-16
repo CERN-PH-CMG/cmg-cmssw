@@ -99,14 +99,22 @@ class H2TauTauSoup(TreeNumpy):
         tree = comp.tree
         for index, ie in enumerate(tree):
             if index%1000==0: print 'entry:', index
+            # get the additional weight
+            nJets = None
+            for varName in self.vars:
+                if not hasattr(ie, varName):
+                    continue
+                if varName == 'NUP':
+                    val = getattr(ie, varName)
+                    nJets = int(val-5)
+            # fill all the variables
             for varName in self.vars:
                 if not hasattr(ie, varName):
                     continue
                 val = getattr(ie, varName)
+                if varName == 'weight':
+                    val = val * self.WJetWeights[nJets]
                 self.fill(varName, val)
-                if varName == 'NUP':
-                    nJets = int(val-5)
-                    self.fill('WJetWeight', self.WJetWeights[nJets])
             self.tree.Fill()
             if nEntries>0 and index+1>=nEntries:
                 return 
