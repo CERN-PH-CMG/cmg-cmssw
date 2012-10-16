@@ -30,6 +30,7 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', hi
         aliases['DYJets'] = 'Ztt' 
     else:
         aliases = {'DYJets':'Ztt'}
+    aliases['WJetsSoup'] = 'WJets'
     
     totIntLumi = 0
     newSelComps = {}
