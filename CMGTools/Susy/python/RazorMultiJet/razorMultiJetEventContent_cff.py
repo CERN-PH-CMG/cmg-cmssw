@@ -6,6 +6,9 @@ razorMJjetEventContent = cms.untracked.vstring()
 
 razorMJjetEventContent += cms.untracked.vstring(
                                            'drop *',
+                                           #'keep patJets_selectedPatJetsCHS__PAT',
+                                           'keep cmgBaseMETs_cmgPFMET__PAT',
+                                           'keep cmgBaseMETs_cmgPFMETRaw__PAT',
                                            'keep *_razorMJ*_*_*',
                                            'drop cmgElectrons_razorMJElectronSAKCMG_*_*',
                                            'drop cmgElectrons_razorMJIsolatedElectrons_*_*',
