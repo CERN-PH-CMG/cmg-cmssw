@@ -4,7 +4,7 @@ import os
 from copy import copy
 
 pat='V5_9_0'
-skim='SKIM_Oct12_All'
+skim='SKIM_Oct15_All'
 filepattern = 'cmgTuple.*root'
 userName='bachtis'
 
@@ -160,9 +160,6 @@ uflSamples=[
 
 
 
-skim='SKIM_Oct14_All'
-
-
 json='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11//7TeV/Reprocessing/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2.txt'
 
 
@@ -219,8 +216,8 @@ for comp in uflSamples:
     
 
 for comp in dataSamplesMu:
-    comp.splitFactor = 100
+    comp.splitFactor = 500
     comp.fakeRates=fakeRates2011
 for comp in dataSamplesE:
-    comp.splitFactor = 100
+    comp.splitFactor = 500
     comp.fakeRates=fakeRates2011

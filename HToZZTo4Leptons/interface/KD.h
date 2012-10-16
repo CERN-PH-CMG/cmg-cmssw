@@ -36,6 +36,8 @@ class KD
     return melaKD;
   }
 
+  float melaS() {return sig_;}
+  float melaB() {return bkg_;}
 
 
   float computePseudoMELA(TLorentzVector Z1_lept1, int Z1_lept1Id,
@@ -68,8 +70,6 @@ class KD
   float costheta2() {return costheta2_;}
   float phi() {return phi_;}
   float phistar1() {return phistar1_;}
-  float melaS() {return sig_;}
-  float melaB() {return bkg_;}
 
 
  private:

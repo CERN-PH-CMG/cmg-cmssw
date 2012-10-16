@@ -149,6 +149,11 @@ elif channel == 'ele_ele':
 
 #Define Sequences for data and MC
 
+EventSelector = cfg.Analyzer(
+    'EventSelector',
+    toSelect = [66761]
+    )
+
 
 dataSequence=[
     skimAnalyzer,

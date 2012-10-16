@@ -161,12 +161,12 @@ elif channel == 'ele_ele':
 
 EventSelector = cfg.Analyzer(
     'EventSelector',
-    toSelect = [45744,24264,26251,35912]
+    toSelect = [66761]
     )
 
 
 dataSequence=[
-#    EventSelector,
+    EventSelector,
     skimAnalyzer,
     jsonFilter,
     puAna,

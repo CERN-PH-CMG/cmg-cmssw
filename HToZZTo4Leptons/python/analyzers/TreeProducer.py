@@ -161,6 +161,8 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_FSRMatch'.format(pName=pName))
         self.var('{pName}_FSRUncorrMass'.format(pName=pName))
         self.var('{pName}_MELA'.format(pName=pName))
+        self.var('{pName}_MELAS'.format(pName=pName))
+        self.var('{pName}_MELAB'.format(pName=pName))
         self.var('{pName}_PseudoMELA'.format(pName=pName))
         self.var('{pName}_SpinTwoMELA'.format(pName=pName))
         self.var('{pName}_MassErr'.format(pName=pName))
@@ -203,6 +205,8 @@ class TreeProducer( Analyzer ):
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
         if hasattr(particle,'mela'):
             self.fill('{pName}_MELA'.format(pName=pName), particle.mela )
+            self.fill('{pName}_MELAS'.format(pName=pName), particle.melaS )
+            self.fill('{pName}_MELAB'.format(pName=pName), particle.melaB )
         if hasattr(particle,'pseudomela'):
             self.fill('{pName}_PseudoMELA'.format(pName=pName), particle.pseudomela )
         if hasattr(particle,'spintwomela'):
