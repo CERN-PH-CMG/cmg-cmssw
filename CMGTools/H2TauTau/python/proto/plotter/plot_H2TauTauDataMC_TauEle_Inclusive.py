@@ -268,19 +268,8 @@ if __name__ == '__main__':
 
     origComps = copy.deepcopy(cfg.config.components)
 
-    # WJet normalization
-    useWJetsSoup = True
     comps = []
     for comp in cfg.config.components:
-        if useWJetsSoup == True and comp.name == 'WJets':
-            WJetsSoup = copy.copy (comp)
-            WJetsSoup.name = 'WJetsSoup'
-            # leave the and number of generated events as the inclusive sample,
-            # as the weighted sum of the generated events should be the same 
-            # as the inclusive sample, by construction of the weights;
-            # need to think of the stats uncertainty on the mc in this case
-            comps.append (WJetsSoup)
-            continue
         if comp.name == 'W1Jets': continue
         if comp.name == 'W2Jets': continue
         if comp.name == 'W3Jets': continue
@@ -301,13 +290,15 @@ if __name__ == '__main__':
             if comp.name == 'ZZ4l' : continue
         comps.append( comp )
     aliases = None
-    if useWJetsSoup:
-        aliases = {'WJetsSoup':'WJets'}
+#    if useWJetsSoup:
+#        aliases = {'WJetsSoup':'WJets'}
 
     cfg.config.components = comps
 
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, 
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, 
                                                   options.embed, 'TauEle', options.higgs)
+
+#    import pdb ; pdb.set_trace()
 
 #    pickles = readPickles(anaDir, cfg.config, options.embed, 'TauMu', options.higgs)
 #    print 'TTJets',pickles['TTJets']['all events'][1]
