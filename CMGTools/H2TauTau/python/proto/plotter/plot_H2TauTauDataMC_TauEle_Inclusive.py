@@ -125,9 +125,9 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 #        osQCD.Replace('QCD', qcd_shape)
 
     if useExclusiveVV :
-        osQCD.Group('VV', ['WW2l2v', 'WZ2l2q', 'WZ3lv', 'ZZ2l2q', 'ZZ2l2v', 'ZZ4l'])
+        osQCD.Group('VV', ['WWJetsTo2L2Nu', 'WZJetsTo2L2Q', 'WZJetsTo3LNu', 'ZZJetsTo2L2Nu', 'ZZJetsTo2L2Q', 'ZZJetsTo4L'])
         print 'grouping the exclusive samples into VV:'
-        for VV in ['WW2l2v', 'WZ2l2q', 'WZ3lv', 'ZZ2l2q', 'ZZ2l2v', 'ZZ4l'] :
+        for VV in ['WWJetsTo2L2Nu', 'WZJetsTo2L2Q', 'WZJetsTo3LNu', 'ZZJetsTo2L2Nu', 'ZZJetsTo2L2Q', 'ZZJetsTo4L'] :
             print '    - ',VV,selComps[VV].nGenEvents, selComps[VV].xSection, selComps[VV].effCorrFactor, selComps[VV].intLumi 
     else :
         osQCD.Group('VV', ['WW','WZ','ZZ'])
