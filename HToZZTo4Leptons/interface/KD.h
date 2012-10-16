@@ -32,7 +32,7 @@ class KD
     
     float melaKD,melaS,melaB;
     mela_->computeKD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,
-		     costhetastar_,costheta1_,costheta2_,phi_,phistar1_,melaKD,melaS,melaB,withPt,withY);
+		     costhetastar_,costheta1_,costheta2_,phi_,phistar1_,melaKD,sig_,bkg_,withPt,withY);
     return melaKD;
   }
 
@@ -68,7 +68,8 @@ class KD
   float costheta2() {return costheta2_;}
   float phi() {return phi_;}
   float phistar1() {return phistar1_;}
-
+  float melaS() {return sig_;}
+  float melaB() {return bkg_;}
 
 
  private:
@@ -80,7 +81,9 @@ class KD
   float costheta2_;
   float phi_;
   float phistar1_;
-  
+  float sig_;
+  float bkg_;
+
 
 
 
