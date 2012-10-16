@@ -135,7 +135,8 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
         for VV in ['WW','WZ','ZZ'] :
             print '    - ',VV,selComps[VV].nGenEvents, selComps[VV].xSection, selComps[VV].effCorrFactor, selComps[VV].intLumi 
     
-    osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
+#    osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
+    osQCD.Group('EWK', ['WJets', 'Ztt_ZJ','VV'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
     return ssign, osign, ssQCD, osQCD
 
@@ -252,7 +253,6 @@ if __name__ == '__main__':
     dataName = 'Data'
     weight='weight'
     replaceW = options.replaceW
-    useW11 = False
     
     anaDir = args[0].rstrip('/')
     shift = None
@@ -267,19 +267,27 @@ if __name__ == '__main__':
 #    embed = options.embed
 
     origComps = copy.deepcopy(cfg.config.components)
-    
+
     # WJet normalization
+    useWJetsSoup = True
     comps = []
     for comp in cfg.config.components:
+        if useWJetsSoup == True and comp.name == 'WJets':
+            WJetsSoup = copy.copy (comp)
+            WJetsSoup.name = 'WJetsSoup'
+            # leave the and number of generated events as the inclusive sample,
+            # as the weighted sum of the generated events should be the same 
+            # as the inclusive sample, by construction of the weights;
+            # need to think of the stats uncertainty on the mc in this case
+            comps.append (WJetsSoup)
+            continue
         if comp.name == 'W1Jets': continue
         if comp.name == 'W2Jets': continue
         if comp.name == 'W3Jets': continue
         if comp.name == 'W4Jets': continue
-        if comp.name == 'TTJets11': continue
-        if useW11:
-            if comp.name == 'WJets': continue
+        if comp.name == 'TTJets11': continue #PG remove me
         else:
-            if comp.name == 'WJets11': continue
+            if comp.name == 'WJets11': continue #PG remove me
         if options.useExcusiveVV :
             if comp.name == 'WW' : continue
             if comp.name == 'ZZ' : continue
@@ -293,14 +301,13 @@ if __name__ == '__main__':
             if comp.name == 'ZZ4l' : continue
         comps.append( comp )
     aliases = None
-    if useW11:
-        aliases = {'WJets11':'WJets'}
+    if useWJetsSoup:
+        aliases = {'WJetsSoup':'WJets'}
 
     cfg.config.components = comps
 
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, 
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, 
                                                   options.embed, 'TauEle', options.higgs)
-
 
 #    pickles = readPickles(anaDir, cfg.config, options.embed, 'TauMu', options.higgs)
 #    print 'TTJets',pickles['TTJets']['all events'][1]
@@ -308,9 +315,6 @@ if __name__ == '__main__':
 #    for pick in pickles:
 #        print 'READ',pick,pickles[pick]['all events'][1]
 #        selComps[pick].totEvents = pickles[pick]['all events'][1]
-
-    #import pdb ; pdb.set_trace()
-    #print 'SELCOMPS:',selComps
 
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwss_error, fwos, fwos_error, ss, os = plot_W(anaDir, selComps, weights,
