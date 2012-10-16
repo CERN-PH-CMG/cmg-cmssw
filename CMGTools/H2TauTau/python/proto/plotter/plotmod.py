@@ -122,7 +122,11 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
         pass
     # FIXME
     wjet.Add(mtplot.Hist('TTJets'), -1)
-    #COLIN need to subtract VV
+    
+    if mtplot.histosDict.get('VV', None) != None :
+        wjet.Add(mtplot.Hist('VV'), -1)
+    else:
+        print 'VV group not found, VV not subtracted'
 
     # adding the WJets_data estimation to the stack
     mtplot.AddHistogram( 'Data - DY - TT', wjet.weighted, 1010)
@@ -215,7 +219,7 @@ def w_lowHighMTRatio( var, anaDir,
 def plot_W(anaDir,
            comps, weights, nbins, xmin, xmax,
            cut, weight,
-           embed, treeName=None):
+           embed, VVgroup = None, treeName=None):
 
     # get WJet scaling factor for same sign
     var = 'mt'
@@ -236,6 +240,8 @@ def plot_W(anaDir,
                           nbins, xmin, xmax,
                           cut = sscut, weight=weight,
                           embed=embed, treeName=treeName)
+    if VVgroup != None :
+        mtSS.Group ('VV',VVgroup)
         
     # replaceWJetShape( mtSS, var, sscut)
     # import pdb; pdb.set_trace()
@@ -247,6 +253,8 @@ def plot_W(anaDir,
                           nbins, xmin, xmax, 
                           cut = oscut, weight=weight,
                           embed=embed, treeName=treeName)
+    if VVgroup != None :
+        mtOS.Group ('VV',VVgroup)
 
     # replaceWJetShape( mtOS, var, oscut)
     fW_OS, fW_OS_error = fW( mtOS, 'Data', xmin, xmax)
