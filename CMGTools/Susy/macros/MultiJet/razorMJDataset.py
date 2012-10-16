@@ -33,7 +33,8 @@ def getFiles(datasets, user, pattern):
 
 if __name__ == '__main__':
 
-    skimEvents = False
+    skimEvents = True
+    runOnMC = False
 
     # https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideAboutPythonConfigFile#VarParsing_Example
     from FWCore.ParameterSet.VarParsing import VarParsing
@@ -78,9 +79,14 @@ if __name__ == '__main__':
         
         if True:
             names = [f for f in options.datasetName.split('/') if f]
-            options.model = names[0].split('-')[1].split('_')[0]
-            name = '%s-%s-%s.root' % (names[0],names[1],names[-1])
+            if runOnMC:
+                options.model = names[0].split('-')[1].split('_')[0]
+            if options.index < 0:
+                name = '%s-%s-%s.root' % (names[0],names[1],names[-1])
+            else:
+                name = '%s-%s-%s_%d.root' % (names[0],names[1],names[-1],options.index)
             options.outputFile = os.path.join(options.outputDirectory,name)
+            print options.outputFile
         
         files = getFiles(
             [options.datasetName],
@@ -91,8 +97,8 @@ if __name__ == '__main__':
             options.inputFiles = files[0:options.maxFiles]
         else:
             options.inputFiles = files
+        print 'The number of files to run on is: %d' % len(files)
 
-    print 'The number of files to run on is: %d' % len(files)
     if options.index > -1:
         chunks = []
         chunk = []
@@ -248,17 +254,18 @@ struct Filters{\
         #get the LHE product info
         vars.mStop = -1
         vars.mLSP = -1
-        event.getByLabel(('source'),lheH)
-        if lheH.isValid():
-            lhe = lheH.product()
-            for i in xrange(lhe.comments_size()):
-                comment = lhe.getComment(i)
-                if 'model' not in comment: continue
-                comment = comment.replace('\n','')
-                parameters = comment.split(' ')[-1]
-                masses = map(float,parameters.split('_')[-2:])
-                vars.mStop = masses[0]
-                vars.mLSP = masses[1]
+        if runOnMC:
+            event.getByLabel(('source'),lheH)
+            if lheH.isValid():
+                lhe = lheH.product()
+                for i in xrange(lhe.comments_size()):
+                    comment = lhe.getComment(i)
+                    if 'model' not in comment: continue
+                    comment = comment.replace('\n','')
+                    parameters = comment.split(' ')[-1]
+                    masses = map(float,parameters.split('_')[-2:])
+                    vars.mStop = masses[0]
+                    vars.mLSP = masses[1]
 
         #store how many of each model we see
         point = (vars.mStop,vars.mLSP)
@@ -299,8 +306,25 @@ struct Filters{\
             info.hemi2Count, vars.hemi2TopMass, vars.hemi2WMass, vars.hemi2ThetaH = topTag( hemi.leg2() )
             
             #TODO: Place some cut here
-            if skimEvents and vars.RSQ < 0.03 or vars.MR < 500:
+            if skimEvents and vars.RSQ < 0.03:
                 continue
+
+            jets = [j for j in hemi.leg1().sourcePtrs()]
+            jets.extend([j for j in hemi.leg2().sourcePtrs()])
+            info.nJet = len(jets)
+
+            for jet in jets:
+                jet_pt.push_back(jet.pt())
+                jet_eta.push_back(jet.eta())
+                jet_csv.push_back(jet.btag(6))
+                jet_fl.push_back(jet.partonFlavour())
+
+            #store the number of btags at each working point
+            csv = sorted([j.btag(6) for j in jets], reverse=True)
+            info.nCSVL = len([c for c in csv if c >= 0.244])
+            info.nCSVM = len([c for c in csv if c >= 0.679])
+            info.nCSVT = len([c for c in csv if c >= 0.898])
+            
 
         event.getByLabel(('razorMJDiHemiHadBoxUp'),hemiHadH)
         if hemiHadH.isValid() and len(hemiHadH.product()):
@@ -314,43 +338,29 @@ struct Filters{\
             vars.RSQ_JES_DOWN = hemi.Rsq()
             vars.MR_JES_DOWN = hemi.mR()
 
-
-        event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
-        if not jetSel30H.isValid(): continue
-        jets = jetSel30H.product()
-        info.nJet = len(jets)
-        
         event.getByLabel(('razorMJHadTriggerSel'),triggerH)
-        filters.hadTrigger = len(triggerH.product()) > 0
+        filters.hadTriggerFilter = len(triggerH.product()) > 0
         
         event.getByLabel(('razorMJEleTriggerSel'),triggerH)
-        filters.eleTrigger = len(triggerH.product()) > 0
+        filters.eleTriggerFilter = len(triggerH.product()) > 0
 
         event.getByLabel(('razorMJMuTriggerSel'),triggerH)
-        filters.muTrigger = len(triggerH.product()) > 0
+        filters.muTriggerFilter = len(triggerH.product()) > 0
         
-        for jet in jets:
-            jet_pt.push_back(jet.pt())
-            jet_eta.push_back(jet.eta())
-            jet_csv.push_back(jet.btag(6))
-            jet_fl.push_back(jet.partonFlavour())
-
-        #store the number of btags at each working point
-        csv = sorted([j.btag(6) for j in jets], reverse=True)
-        info.nCSVL = len([c for c in csv if c >= 0.244])
-        info.nCSVM = len([c for c in csv if c >= 0.679])
-        info.nCSVT = len([c for c in csv if c >= 0.898])
-
         #the number of lepton cleaned jets
         event.getByLabel(('razorMJJetCleanedLoose'),jetSel30H)
         info.nJetNoLeptons = len(jetSel30H.product())
 
+        #event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
+        #if not jetSel30H.isValid(): continue
+        #jets = jetSel30H.product()
+
         #tau veto
-        event.getByLabel(('razorMJTauVeto'),jetSel30H)
-        if jetSel30H.isValid():
-            info.nTauVeto = len(jetSel30H.product())
-        else:
-            info.nTauVeto = -1
+        #event.getByLabel(('razorMJTauVeto'),jetSel30H)
+        #if jetSel30H.isValid():
+        #    info.nTauVeto = len(jetSel30H.product())
+        #else:
+        #    info.nTauVeto = -1
 
         #loose lepton ID
         event.getByLabel(('razorMJElectronLoose'),electronH)
@@ -383,21 +393,22 @@ struct Filters{\
 ##        if pdfH.isValid():
 ##            for w in pdfH.product():
 ##                MRST2006NNLO_W.push_back(w)
-
-        event.getByLabel(('topGenInfo'),candH)
-        if candH.isValid() and len(candH.product()):
-            if 'T2' in options.model:
-                diTop = candH.product()[1]
-            elif 'T1' in options.model:
-                diTop = candH.product()[2]
-            else:
-                diTop = candH.product()[0]
-            vars.diTopPt = diTop.pt()
+        
+        if runOnMC:
+            event.getByLabel(('topGenInfo'),candH)
+            if options.model is not None and candH.isValid() and len(candH.product()):
+                if 'T2' in options.model:
+                    diTop = candH.product()[1]
+                elif 'T1' in options.model:
+                    diTop = candH.product()[2]
+                else:
+                    diTop = candH.product()[0]
+                vars.diTopPt = diTop.pt()
 
         
-        event.getByLabel(('simpleGenInfo'),filterH)
-        if filterH.isValid():
-            info.genInfo = filterH.product()[0]
+            event.getByLabel(('simpleGenInfo'),filterH)
+            if filterH.isValid():
+                info.genInfo = filterH.product()[0]
 
         tree.Fill()
 
