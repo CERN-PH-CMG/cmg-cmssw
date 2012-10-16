@@ -14,11 +14,11 @@
 #include "CMGTools/Common/interface/MultiObjectSettingTool.h"
 
 #include <memory>
+#include <utility>
 
 namespace cmg {
 
   typedef std::vector<edm::InputTag> VInputTag;
-
 
   class HemisphereFactory : public Factory<cmg::Hemisphere>,
     public SettingTool<std::vector<edm::Ptr<reco::Candidate> >, cmg::Hemisphere> {
@@ -27,6 +27,9 @@ namespace cmg {
     HemisphereFactory(const edm::ParameterSet& ps) :
       hemisphereLabel_(ps.getParameter<VInputTag>("inputCollection")),
       maxNCand_(ps.getParameter<uint32_t>("maxCand")),
+      minObjectsPerHemi0_(ps.getUntrackedParameter<uint32_t>("minObjectsPerHemi0", 0)),	
+      minObjectsPerHemi1_(ps.getUntrackedParameter<uint32_t>("minObjectsPerHemi1", 0)),
+      keepAll_(ps.getUntrackedParameter<bool>("keepAll", false)),
       balance_(new cmg::PtBalance){
         if(ps.exists("balanceAlgorithm")){
             if(ps.getParameter<uint32_t>("balanceAlgorithm") == cmg::Balance::MassBalance){
@@ -36,7 +39,7 @@ namespace cmg {
             }
         }
       }
-        
+
     typedef cmg::Factory<cmg::Hemisphere>::event_ptr event_ptr;
     virtual event_ptr create(const edm::Event&,
                              const edm::EventSetup&);
@@ -45,9 +48,13 @@ namespace cmg {
 
   private:
     VInputTag const hemisphereLabel_;
-    size_t maxNCand_;
+    const size_t maxNCand_;
+    const unsigned int minObjectsPerHemi0_;
+    const unsigned int minObjectsPerHemi1_;
+    const bool keepAll_;
     MultiObjectSettingTool const multiObjectFactory_;
     std::auto_ptr<cmg::Balance> balance_;
+
   };
 
 } // namespace cmg
