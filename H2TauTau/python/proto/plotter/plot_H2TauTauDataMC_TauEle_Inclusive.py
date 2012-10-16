@@ -125,15 +125,11 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 #        osQCD.Replace('QCD', qcd_shape)
 
     if useExclusiveVV :
-        osQCD.Group('VV', ['WWJetsTo2L2Nu', 'WZJetsTo2L2Q', 'WZJetsTo3LNu', 'ZZJetsTo2L2Nu', 'ZZJetsTo2L2Q', 'ZZJetsTo4L'])
-        print 'grouping the exclusive samples into VV:'
-        for VV in ['WWJetsTo2L2Nu', 'WZJetsTo2L2Q', 'WZJetsTo3LNu', 'ZZJetsTo2L2Nu', 'ZZJetsTo2L2Q', 'ZZJetsTo4L'] :
-            print '    - ',VV,selComps[VV].nGenEvents, selComps[VV].xSection, selComps[VV].effCorrFactor, selComps[VV].intLumi 
+        osQCD.Group('VV', ['WWJetsTo2L2Nu', 'WZJetsTo2L2Q', 'WZJetsTo3LNu', 'ZZJetsTo2L2Nu', 'ZZJetsTo2L2Q', 'ZZJetsTo4L','T_tW','Tbar_tW'])
+        print 'grouping the exclusive samples into VV'
     else :
-        osQCD.Group('VV', ['WW','WZ','ZZ'])
+        osQCD.Group('VV', ['WW','WZ','ZZ','T_tW','Tbar_tW'])
         print 'grouping the inclusive samples into VV'
-        for VV in ['WW','WZ','ZZ'] :
-            print '    - ',VV,selComps[VV].nGenEvents, selComps[VV].xSection, selComps[VV].effCorrFactor, selComps[VV].intLumi 
     
 #    osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
     osQCD.Group('EWK', ['WJets', 'Ztt_ZJ','VV'])
@@ -275,8 +271,7 @@ if __name__ == '__main__':
         if comp.name == 'W3Jets': continue
         if comp.name == 'W4Jets': continue
         if comp.name == 'TTJets11': continue #PG remove me
-        else:
-            if comp.name == 'WJets11': continue #PG remove me
+        if comp.name == 'WJets11': continue #PG remove me
         if options.useExcusiveVV :
             if comp.name == 'WW' : continue
             if comp.name == 'ZZ' : continue
