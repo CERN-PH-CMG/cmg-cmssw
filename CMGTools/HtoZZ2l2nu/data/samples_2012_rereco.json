@@ -918,67 +918,79 @@
                  "split":2
                 },
                 {
+	         "dtag":"Data8TeV_DoubleMu2012A_recover"
+                },
+                {
+	         "dtag":"Data8TeV_SingleMu2012A_recover"
+                },
+                {
+                 "dtag":"Data8TeV_MuEG2012A_recover"
+                },
+	        {
+	         "dtag":"Data8TeV_DoubleElectron2012A_recover"
+                },
+                {
 	         "dtag":"Data8TeV_DoubleElectron2012B",
-                 "split":5
+                 "split":2
                 },
                 {
 	         "dtag":"Data8TeV_DoubleMu2012B",
-                 "split":5
+                 "split":2
                 },
                 {
 	         "dtag":"Data8TeV_SingleMu2012B",
-                 "split":5
+                 "split":2
                 },
                 {
                  "dtag":"Data8TeV_MuEG2012B",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_DoubleElectron2012C_197774to198913",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_DoubleMu2012C_197774to198913",
-                 "split":5
-                },
-                {
-		 "dtag":"Data8TeV_SingleMu2012C_197774to198913",
-                 "split":5
-                },
-                {
-                 "dtag":"Data8TeV_MuEG2012C_197774to198913",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_DoubleElectron2012C_198913to200601",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_DoubleMu2012C_198913to200601",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_SingleMu2012C_198913to200601",
-                 "split":5
-                },
-                {
-                 "dtag":"Data8TeV_MuEG2012C_198913to200601",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_DoubleElectron2012C_200519to202016",
                  "split":2
                 },
                 {
-	         "dtag":"Data8TeV_DoubleMu2012C_200519to202016",
+	         "dtag":"Data8TeV_DoubleElectron2012C_v1",
                  "split":2
                 },
                 {
-	         "dtag":"Data8TeV_SingleMu2012C_200519to202016",
+	         "dtag":"Data8TeV_DoubleMu2012C_v1",
                  "split":2
                 },
                 {
-                 "dtag":"Data8TeV_MuEG2012C_200519to202016",
+		 "dtag":"Data8TeV_SingleMu2012C_v1",
+                 "split":2
+                },
+                {
+                 "dtag":"Data8TeV_MuEG2012C_v1",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012C_v2",
+                 "split":4
+                },
+                {
+	         "dtag":"Data8TeV_DoubleMu2012C_v2",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_SingleMu2012C_v2",
+                 "split":2
+                },
+                {
+                 "dtag":"Data8TeV_MuEG2012C_v2",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012D_a",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_DoubleMu2012D_a",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_SingleMu2012D_a",
+                 "split":2
+                },
+                {
+                 "dtag":"Data8TeV_MuEG2012D_a",
                  "split":2
                 }
 	    ]

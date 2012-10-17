@@ -26,6 +26,8 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+
 #include "TH1.h"
 #include "TH2.h"
 #include "TFile.h"
@@ -57,9 +59,9 @@ public:
   virtual void analyze( const edm::Event &iEvent, const edm::EventSetup &iSetup) ;
   void beginLuminosityBlock(const edm::LuminosityBlock &iLumi, const edm::EventSetup & iSetup );
   void endLuminosityBlock(const edm::LuminosityBlock & iLumi, const edm::EventSetup & iSetup);
-  
+  virtual void beginRun(const edm::Run & iRun, edm::EventSetup const & iSetup); 
+ 
 private:
-
   void saveMCtruth(const edm::Event &event, const edm::EventSetup &iSetup );
   int addPidSummary(ObjectIdSummary &obj);
 
@@ -75,6 +77,8 @@ private:
 
   PFIsolationEstimator eIsolator;
 
+  HLTConfigProvider hltConfig_;
+  
   //heavy flavors from gluon splitting
   std::vector<reco::CandidatePtr> hfFromGsplit; 
   float curAvgInstLumi_, curIntegLumi_;
@@ -89,7 +93,6 @@ DileptonPlusMETEventAnalyzer::DileptonPlusMETEventAnalyzer(const edm::ParameterS
     curAvgInstLumi_(0), curIntegLumi_(0),iErr_(0)
 {
   try{
-
     std::string objs[]={"Generator", "Trigger", "Vertices", "Photons",
 			"Electrons", "LooseElectrons", "Muons","LooseMuons", "Dileptons", "Jets", "AssocJets", "MET" };
     for(size_t iobj=0; iobj<sizeof(objs)/sizeof(string); iobj++)
@@ -336,6 +339,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::vector<std::string> triggerPaths=objConfig_["Trigger"].getParameterSet("triggerPaths").getParameterNames();
     std::map<std::string,bool> triggerBits; 
     std::pair<std::string,double> photonTrig;
+    int photonPrescale(1);
     ev.hasTrigger=false;
     for(size_t it=0; it<triggerPaths.size(); it++)
       {
@@ -344,6 +348,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.hasTrigger |= triggerBits[ triggerPaths[it] ];
 	if(triggerPaths[it]!="gamma") continue;
 	photonTrig = getHighestPhotonTrigThreshold( triggerBitsH, triggerNames , itriggers);
+	if(!photonTrig.first.empty())
+	  photonPrescale=hltConfig_.prescaleValue(event, iSetup, photonTrig.first);
       }
     if(triggerBits["singleMu"]==true && triggerBits["mumu"]==true) triggerBits["singleMu"]=false;   //veto overlaps: single muon triggers should be used exclusively 
 	    
@@ -581,7 +587,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.gn++;
       }
     if(ev.cat==UNKNOWN && selPhotons.size())
-      if(!event.isRealData() || triggerBits["gamma"]==true)  ev.cat=GAMMA+1000*photonTrig.second;
+      if(!event.isRealData() || triggerBits["gamma"]==true) 
+	{
+	  ev.cat=GAMMA+1000*photonTrig.second;
+	  ev.gn_prescale=photonPrescale;
+	}
 
     //quit if no gamma or dilepton candidate
     if(ev.cat==UNKNOWN) return;
@@ -790,6 +800,17 @@ void DileptonPlusMETEventAnalyzer::endLuminosityBlock(const edm::LuminosityBlock
     }
 }
 
+//
+void DileptonPlusMETEventAnalyzer::beginRun(const edm::Run & iRun, const edm::EventSetup & iSetup) 
+{
+  bool changed(true);
+  hltConfig_.init(iRun, iSetup,"HLT",changed);
+}
+
+
  
+ 
+
+
 DEFINE_FWK_MODULE(DileptonPlusMETEventAnalyzer);
 

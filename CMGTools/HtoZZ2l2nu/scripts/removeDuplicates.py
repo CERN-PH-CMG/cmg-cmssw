@@ -55,17 +55,8 @@ def checkCastorDirectory(outdir):
 		    else:
 			    print("   #corrupted file found : " + fileName)
 			    duplicatedFiles.append(fileName)
-                        
-    #print '   - Found ' + str(len(duplicatedJobs)) + ' job id duplicates @ ' + outdir
-    #print '   - Removing ' + str(len(duplicatedFiles)) + ' files'
-
-    #for f in duplicatedFiles :
-        #if(isEOS) : commands.getstatusoutput('cmsRm ' + f)
-        #else : commands.getstatusoutput('rfrm ' +outdir + '/' + f)
     return duplicatedFiles
-
-
-
+                        
 #print usage
 def usage() :
     print ' '
@@ -100,6 +91,12 @@ from CMGTools.HtoZZ2l2nu.localPatTuples_cff import fillFromCastor
 
 duplicatedFiles=checkCastorDirectory(dirtag)
 print 'Removing ' + str(len(duplicatedFiles)) + ' duplicated files in ' + dirtag
+
+isEOS=False
+if(dirtag.find('/store/cmst3')==0) : isEOS=True
 for f in duplicatedFiles :
-    if(f.find('/store/cmst3')==0) : print('cmsRm ' + f)
-    else      		      : print('rfrm ' +outdir + '/' + f)
+    print f
+    if(isEOS) : commands.getstatusoutput('cmsRm ' + f)
+    else : commands.getstatusoutput('rfrm ' +outdir + '/' + f)
+        
+

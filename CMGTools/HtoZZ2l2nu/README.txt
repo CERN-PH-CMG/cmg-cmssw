@@ -55,6 +55,10 @@ haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json
 runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2012.json -o ~/work/htozz/53x/ll/2012 -d /store/cmst3/user/psilva/29Aug2012_CMSSW_53x_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
 runPlotter --json data/samples_2012.json --inDir ~/work/htozz/53x/ll/2012/ --outDir ~/work/htozz/53x/ll/2012/plots/ --outFile ~/work/htozz/53x/ll/2012/plotter.root --iEcm 8 --iLumi 10198
 
+#re-reco
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2012_rereco.json -o ~/work/htozz/53x_rereco/ll/2012 -d /store/cmst3/user/psilva/10Oct2012_CMSSW53x_ntuples/ -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
+runPlotter --json data/samples_2012_rereco.json --inDir ~/work/htozz/53x_rereco/ll/2012/ --outDir ~/work/htozz/53x_rereco/ll/2012/plots/ --outFile ~/work/htozz/53x_rereco/ll/2012/plotter.root --iEcm 8 --iLumi 12910
+
 #photon+jets
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/29Aug2012_CMSSW_53x_ntuples -o ~/work/htozz/53x/gamma/2012/raw -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh -t Data
 runPlotter --json data/photon-samples_2012.json --inDir ~/work/htozz/53x/gamma/2012/raw/ --outDir ~/work/htozz/53x/gamma/2012/raw/plots/ --outFile ~/work/htozz/53x/gamma/2012/raw/plotter.root --iEcm 8 --iLumi 10198

@@ -228,7 +228,6 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
           cnorm *= VBFMCRescale;
 
          sampleInfo.initialNumberOfEvents = cnorm / PUCentralnnorm;
-
          delete tmphist;
       }   
    }
@@ -563,10 +562,9 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
          std::vector<JSONWrapper::Object> BR = Samples[j]["br"].daughters();for(unsigned int b=0;b<BR.size();b++){Weight*=BR[b].toDouble();}
          stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
          Weight /= sampleInfo.initialNumberOfEvents;
-
+	 //	 cout << (Samples[j])["dtag"].toString() << " " << (iLumi/1000)*(1/Weight) <<  " /fb" << endl;
          if(HistoProperties.name.find("puup"  )!=string::npos){Weight *= sampleInfo.PURescale_up  ;}
          if(HistoProperties.name.find("pudown")!=string::npos){Weight *= sampleInfo.PURescale_down;}
-
          if(HistoProperties.name.find("optim_cut")!=string::npos){Weight=1.0;}
 
          int split = 1; 

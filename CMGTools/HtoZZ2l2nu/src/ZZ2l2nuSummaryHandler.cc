@@ -287,6 +287,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
 
   //Gamma Info
   t_->Branch("gn",          &evSummary_.gn,         "gn/I"); 
+  t_->Branch("gn_prescale",          &evSummary_.gn_prescale,         "gn_prescale/I"); 
   t_->Branch("g_px",        evSummary_.g_px,        "g_px[gn]/F");
   t_->Branch("g_py",        evSummary_.g_py,        "g_py[gn]/F");
   t_->Branch("g_pz",        evSummary_.g_pz,        "g_pz[gn]/F");
@@ -594,6 +595,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   
   //Gamma Info
   t_->SetBranchAddress("gn",          &evSummary_.gn);
+  if(t_->GetBranch("gn_prescale")) t_->SetBranchAddress("gn_prescale",          &evSummary_.gn_prescale);
   t_->SetBranchAddress("g_px",        evSummary_.g_px);
   t_->SetBranchAddress("g_py",        evSummary_.g_py);
   t_->SetBranchAddress("g_pz",        evSummary_.g_pz);
