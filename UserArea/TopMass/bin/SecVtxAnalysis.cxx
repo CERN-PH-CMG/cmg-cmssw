@@ -40,7 +40,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "JetMETCorrections/Objects/interface/JetCorrector.h"
 
-#include "UserCode/SecVtxAnalysis/interface/SecVtxAnalysisTree.h"
+#include "UserCode/TopMass/interface/SecVtxAnalysisTree.h"
 #include <stdio.h>
 #include <algorithm>
 
