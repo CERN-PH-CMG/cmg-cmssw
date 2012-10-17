@@ -222,8 +222,7 @@ process.cmgTopEleTriggerSel = cmgTriggerObjectSel.clone(
    debugOn = cms.untracked.bool(True),
    )
 
-tightElectron = "(pt()>30 && abs(eta())<2.5&& (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && isConv()==0 && mvaTrigV0()>0.0 && numberOfHits()==0 && relIso(0.5)<0.1)"
-#tightElectron = "(pt()>30 && abs(eta())<2.5&& (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(0.5)<0.1)"
+tightElectron = "(pt()>30 && abs(eta())<2.5&& (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(0.5)<0.1)"
 
 #Apply electron selection for electron veto
 process.cmgTopElectronSel = cmgElectronSel.clone(
