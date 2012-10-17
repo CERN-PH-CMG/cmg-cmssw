@@ -6,6 +6,7 @@ import os, sys, math, glob, pickle
 from DataFormats.FWLite import Events, Handle
 from CMGTools.RootTools import RootFile
 from razorMJTopTag import topTag
+from histoSMSTree import getBoxGenLevel, getBox
 
 def listDirectory(dir, inputFiles, maxFiles):
     if not os.path.exists(dir):
@@ -30,6 +31,51 @@ def getFiles(datasets, user, pattern):
         files.extend(ds.fileNames)
 
     return ['root://eoscms//eos/cms%s' % f for f in files]
+
+def deltaR(a,b):
+    deta = a.eta() - b.eta()
+    dphi = a.phi() - b.phi()
+    dr = deta*deta + dphi*dphi
+    return math.sqrt(dr)
+
+def mt(l1, l2):
+    c = l1.p4() + l2.p4()
+    t = (l1.pt()+l2.pt())**2
+    x = (l1.px()+l2.px())**2
+    y = (l1.py()+l2.py())**2
+    s = t - x - y
+    if s < 0:
+        return -1*math.sqrt(abs(s))
+    return math.sqrt(s)
+
+def find_lepton_hemi(hemi_vector, leptons, best = None):
+    """Find the best hemispheres that have the lepton on one side and at least 3 jets on the other"""
+
+    for i in xrange(0,len(hemi_vector),2):
+        
+        hemi1 = hemi_vector.at(i)
+        hemi2 = hemi_vector.at(i+1)
+        
+        nHemi1 = hemi1.numConstituents()
+        nHemi2 = hemi2.numConstituents()
+        
+        for j in hemi1.sourcePtrs():
+            for l in leptons:
+                if deltaR(j,l) < 0.4:
+                    nHemi1 -= 1
+        for j in hemi2.sourcePtrs():
+            for l in leptons:
+                if deltaR(j,l) < 0.4:
+                    nHemi2 -= 1
+
+        #break out with the first hemi pair that is ok
+        if (hemi1.numConstituents() >= 3 and nHemi1 == hemi1.numConstituents() and (best is None or best == 1) ):#can specify which must be hadronic side
+            return (hemi1, hemi2, 1) #hemi 1 is the hadronic side
+        elif (hemi2.numConstituents() >= 3 and nHemi2 == hemi2.numConstituents() and (best is None or best == 2) ):
+            return (hemi1, hemi2, 2) #hemi 2 is the hadronic side
+        
+    return (None, None, -1)
+    
 
 if __name__ == '__main__':
 
@@ -121,6 +167,9 @@ struct Variables{\
     Double_t RSQ;\
     Double_t RSQ_JES_UP;\
     Double_t RSQ_JES_DOWN;\
+    Double_t met;\
+    Double_t met_up;\
+    Double_t met_down;\
     Double_t hemi1Mass;\
     Double_t hemi2Mass;\
     Double_t hemi1TopMass;\
@@ -132,6 +181,12 @@ struct Variables{\
     Double_t mStop;\
     Double_t mLSP;\
     Double_t diTopPt;\
+    Double_t hemi1Pt;\
+    Double_t hemi2Pt;\
+    Double_t hemi1Eta;\
+    Double_t hemi2Eta;\
+    Double_t hemi1Phi;\
+    Double_t hemi2Phi;\
 };""")
     
     rt.gROOT.ProcessLine("""
@@ -144,6 +199,7 @@ struct Info{\
     Int_t nCSVL;\
     Int_t nCSVM;\
     Int_t nCSVT;\
+    Int_t NBJET;\
     Int_t nMuonLoose;\
     Int_t nMuonTight;\
     Int_t nElectronLoose;\
@@ -156,6 +212,9 @@ struct Info{\
     Int_t hemi1Count;\
     Int_t hemi2Count;\
     Int_t genInfo;\
+    Int_t BOX_NUM;\
+    Int_t BOX_NUM_GEN;\
+    Int_t bestHemi;\
 };""")
     
     rt.gROOT.ProcessLine("""
@@ -170,7 +229,9 @@ struct Filters{\
     Bool_t metFilter;\
 };""")
 
-    from ROOT import Variables, Info, Filters
+    rt.gROOT.ProcessLine(".L /afs/cern.ch/user/w/wreece/work/CMGTools/V5_6_0/CMGTools/CMSSW_5_3_3_patch3/src/CMGTools/Susy/macros/MultiJet/calcVariables.C+")
+
+    from ROOT import Variables, Info, Filters, mR, mRT
 
 #    output = rt.TFile.Open(options.outputFile,'recreate')
     tree = rt.TTree('RMRTree','Multijet events')
@@ -197,10 +258,24 @@ struct Filters{\
     tree.Branch('jet_pt',jet_pt)
     jet_eta = std.vector('double')()
     tree.Branch('jet_eta',jet_eta)
+    jet_phi = std.vector('double')()
+    tree.Branch('jet_phi',jet_phi)
     jet_csv = std.vector('double')()
     tree.Branch('jet_csv',jet_csv)
     jet_fl = std.vector('double')()
     tree.Branch('jet_fl',jet_fl)
+    jet_mult = std.vector('double')()
+    tree.Branch('jet_mult',jet_mult)
+    jet_girth = std.vector('double')()
+    tree.Branch('jet_girth',jet_girth)
+
+    tauveto_mt = std.vector('double')()
+    tree.Branch('tauveto_mt',tauveto_mt)
+    pftau_mt = std.vector('double')()
+    tree.Branch('pftau_mt',pftau_mt)
+
+    jet_veto = std.vector('int')()
+    tree.Branch('jet_veto',jet_veto)
 
     # use Varparsing object
     events = Events(options)
@@ -208,6 +283,7 @@ struct Filters{\
     #make some handles
     jetSel30H = Handle("std::vector<cmg::PFJet>")
     hemiHadH = Handle("std::vector<cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> >")
+    hemiLepH = Handle("std::vector<cmg::Hemisphere>")
     metH = Handle("std::vector<cmg::BaseMET>")
     lheH = Handle('LHEEventProduct')
     pdfH = Handle('std::vector<double>')
@@ -220,6 +296,7 @@ struct Filters{\
     triggerH = Handle('std::vector<cmg::TriggerObject>')
     countH = Handle('int')
     filterH = Handle('int')
+    doubleH = Handle('std::vector<double>')
     
     pathTriggerH = Handle("edm::TriggerResults")
     lheH = Handle('LHEEventProduct')
@@ -239,8 +316,15 @@ struct Filters{\
         
         jet_pt.clear()
         jet_eta.clear()
+        jet_phi.clear()
         jet_csv.clear()
         jet_fl.clear()
+        jet_mult.clear()
+        jet_girth.clear()
+        jet_veto.clear()
+
+        tauveto_mt.clear()
+        pftau_mt.clear()
 
         info.event = event.object().id().event()
         info.lumi = event.object().id().luminosityBlock()
@@ -305,27 +389,22 @@ struct Filters{\
             info.hemi1Count, vars.hemi1TopMass, vars.hemi1WMass, vars.hemi1ThetaH = topTag( hemi.leg1() )
             info.hemi2Count, vars.hemi2TopMass, vars.hemi2WMass, vars.hemi2ThetaH = topTag( hemi.leg2() )
             
-            #TODO: Place some cut here
-            if skimEvents and vars.RSQ < 0.03:
-                continue
+            #calculate a chi2
+            chi1 = (abs(vars.hemi1TopMass-173.5)/57.)+(abs(vars.hemi1WMass-80.385)/44.)
+            chi2 = (abs(vars.hemi2TopMass-173.5)/57.)+(abs(vars.hemi2WMass-80.385)/44.)
+            if chi1 <= chi2:
+                info.bestHemi = 1
+            else:
+                info.bestHemi = 2
 
-            jets = [j for j in hemi.leg1().sourcePtrs()]
-            jets.extend([j for j in hemi.leg2().sourcePtrs()])
-            info.nJet = len(jets)
+            vars.hemi1Pt = hemi.leg1().pt()
+            vars.hemi1Eta = hemi.leg1().eta()
+            vars.hemi1Phi = hemi.leg1().phi()
+            vars.hemi2Pt = hemi.leg2().pt()
+            vars.hemi2Eta = hemi.leg2().eta()
+            vars.hemi2Phi = hemi.leg2().phi()
 
-            for jet in jets:
-                jet_pt.push_back(jet.pt())
-                jet_eta.push_back(jet.eta())
-                jet_csv.push_back(jet.btag(6))
-                jet_fl.push_back(jet.partonFlavour())
-
-            #store the number of btags at each working point
-            csv = sorted([j.btag(6) for j in jets], reverse=True)
-            info.nCSVL = len([c for c in csv if c >= 0.244])
-            info.nCSVM = len([c for c in csv if c >= 0.679])
-            info.nCSVT = len([c for c in csv if c >= 0.898])
-            
-
+                        
         event.getByLabel(('razorMJDiHemiHadBoxUp'),hemiHadH)
         if hemiHadH.isValid() and len(hemiHadH.product()):
             hemi = hemiHadH.product()[0]
@@ -350,17 +429,54 @@ struct Filters{\
         #the number of lepton cleaned jets
         event.getByLabel(('razorMJJetCleanedLoose'),jetSel30H)
         info.nJetNoLeptons = len(jetSel30H.product())
+        jet_param_veto = [ (j.pt(), j.eta()) for j in jetSel30H.product()]
 
-        #event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
-        #if not jetSel30H.isValid(): continue
-        #jets = jetSel30H.product()
+        event.getByLabel(('razorMJPFJetSel30'),jetSel30H)
+        if not jetSel30H.isValid(): continue
+        jets = jetSel30H.product()
+        info.nJet = len(jets)
+
+        event.getByLabel(('razorMJJetGirth'),doubleH)
+        if doubleH.isValid():
+            for g in doubleH.product():
+                #girth
+                jet_girth.push_back(g)
+        
+        for jet in jets:
+            jet_pt.push_back(jet.pt())
+            jet_eta.push_back(jet.eta())
+            jet_phi.push_back(jet.phi())
+            jet_csv.push_back(jet.btag(6))
+            jet_fl.push_back(jet.partonFlavour())
+            #charged multiplicity
+            jet_mult.push_back(jet.component(1).number() + jet.component(2).number() + jet.component(3).number() )
+            #store whether or not this was removed from the lepton veto jets
+            jet_veto.push_back( int( (jet.pt(), jet.eta() ) in jet_param_veto) )
+
+        #store the number of btags at each working point
+        csv = sorted([j.btag(6) for j in jets], reverse=True)
+        info.nCSVL = len([c for c in csv if c >= 0.244])
+        info.nCSVM = len([c for c in csv if c >= 0.679])
+        info.nCSVT = len([c for c in csv if c >= 0.898])
+
+        event.getByLabel(('cmgPFMET'),metH)
+        met = metH.product()[0]
+        vars.met = met.et()
+
+        #set the number of btags
+        if info.nCSVL == 0:
+            info.NBJET = 0 #bjet veto
+        else:
+            info.NBJET = info.nCSVM #minimum is one medium
 
         #tau veto
-        #event.getByLabel(('razorMJTauVeto'),jetSel30H)
-        #if jetSel30H.isValid():
-        #    info.nTauVeto = len(jetSel30H.product())
-        #else:
-        #    info.nTauVeto = -1
+        event.getByLabel(('razorMJTauVeto'),jetSel30H)
+        if jetSel30H.isValid():
+            info.nTauVeto = len(jetSel30H.product())
+            for j in jets:
+                tauveto_mt.push_back(mt(j,met))
+        else:
+            info.nTauVeto = -1
 
         #loose lepton ID
         event.getByLabel(('razorMJElectronLoose'),electronH)
@@ -370,6 +486,9 @@ struct Filters{\
         info.nElectronLoose = len(electronH.product())
         info.nMuonLoose = len(muonH.product())
         info.nTauLoose = len(tauH.product())
+        
+        for t in tauH.product():
+            pftau_mt.push_back(mt(t,met))
 
         #tight lepton ID
         event.getByLabel(('razorMJElectronTight'),electronH)
@@ -380,6 +499,77 @@ struct Filters{\
         info.nMuonTight = len(muonH.product())
         info.nTauTight = len(tauH.product())
         info.nLepton = info.nElectronTight + info.nMuonTight + info.nTauTight
+        
+        #store the leptons for future use
+        leptons = [l for l in electronH.product()]
+        leptons.extend([l for l in muonH.product()])
+        leptons.extend([l for l in tauH.product()])
+
+        info.BOX_NUM = getBox(info.NBJET,info.nElectronTight,info.nMuonTight,info.nTauTight)
+
+        if info.nLepton == 1 and info.nJetNoLeptons >= 4:
+            event.getByLabel(('razorMJHemiLepBox'),hemiLepH)
+            if hemiLepH.isValid():
+                hemi_vector = hemiLepH.product()
+                hemi1, hemi2, info.bestHemi = find_lepton_hemi(hemi_vector, leptons)
+
+                vars.MR = mR(hemi1.p4(), hemi2.p4())
+                mrt = mRT(hemi1.p4(), hemi2.p4(), met.p4())
+                vars.RSQ = (mrt/vars.MR)**2
+
+                vars.hemi1Mass = hemi1.mass()
+                vars.hemi2Mass = hemi2.mass()
+                info.hemisphereBalance = (10*hemi1.numConstituents()) + hemi2.numConstituents()
+                
+                #run the hadronic top tagger
+                info.hemi1Count, vars.hemi1TopMass, vars.hemi1WMass, vars.hemi1ThetaH = topTag( hemi1 )
+                info.hemi2Count, vars.hemi2TopMass, vars.hemi2WMass, vars.hemi2ThetaH = topTag( hemi2 )
+
+                vars.hemi1Pt = hemi1.pt()
+                vars.hemi1Eta = hemi1.eta()
+                vars.hemi1Phi = hemi1.phi()
+                vars.hemi2Pt = hemi2.pt()
+                vars.hemi2Eta = hemi2.eta()
+                vars.hemi2Phi = hemi2.phi()
+
+                #now need to take care of the systematics...
+                #UP
+                event.getByLabel(('razorMJMetUp'),metH)
+                met = metH.product()[0]
+                event.getByLabel(('razorMJHemiLepBoxUp'),hemiLepH)
+                if hemiLepH.isValid():
+                    hemi_vector = hemiLepH.product()
+                    hemi1, hemi2, _ = find_lepton_hemi(hemi_vector, leptons)
+                    if hemi1 is None or hemi2 is None:
+                        vars.MR_JES_UP = vars.MR
+                        vars.RSQ_JES_UP = vars.RSQ
+                    else:
+                        vars.MR_JES_UP = mR(hemi1.p4(), hemi2.p4())
+                        mrt = mRT(hemi1.p4(), hemi2.p4(), met.p4())
+                        vars.RSQ_JES_UP = (mrt/vars.MR_JES_UP)**2
+
+                #DOWN
+                event.getByLabel(('razorMJMetDown'),metH)
+                met = metH.product()[0]
+                event.getByLabel(('razorMJHemiLepBoxDown'),hemiLepH)
+                if hemiLepH.isValid():
+                    hemi_vector = hemiLepH.product()
+                    hemi1, hemi2, _ = find_lepton_hemi(hemi_vector, leptons, best=info.bestHemi)
+                    if hemi1 is None or hemi2 is None:
+                        vars.MR_JES_DOWN = vars.MR
+                        vars.RSQ_JES_DOWN = vars.RSQ
+                    else:
+                        vars.MR_JES_DOWN = mR(hemi1.p4(), hemi2.p4())
+                        mrt = mRT(hemi1.p4(), hemi2.p4(), met.p4())
+                        vars.RSQ_JES_DOWN = (mrt/vars.MR_JES_DOWN)**2
+
+        event.getByLabel(('razorMJMetUp'),metH)
+        met = metH.product()[0]
+        vars.met_up = met.et()
+
+        event.getByLabel(('razorMJMetDown'),metH)
+        met = metH.product()[0]
+        vars.met_down = met.et()
 
         #event.getByLabel(('vertexSize'),countH)
         #info.nVertex = countH.product()[0]
@@ -409,6 +599,11 @@ struct Filters{\
             event.getByLabel(('simpleGenInfo'),filterH)
             if filterH.isValid():
                 info.genInfo = filterH.product()[0]
+                info.BOX_NUM_GEN = getBoxGenLevel(info.genInfo)
+
+        #TODO: Place some cut here
+        if skimEvents and vars.RSQ < 0.03 or vars.MR < 350:
+            continue
 
         tree.Fill()
 
