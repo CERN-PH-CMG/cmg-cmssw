@@ -399,12 +399,14 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH2D( "metoverlpt_mindphilmet"  , ";E_{T}^{miss}/p_{T}^{lepton};min(#Delta#phi(lepton,E_{T}^{miss});Events", 50,0,2,40,0,4) );
   mon.addHistogram( new TH1F( "met_metSB",        ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met",          ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_metbeforedphilmet",          ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met_blind",    ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_mvamet",       ";MVA E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_mvamet_blind",       ";MVA E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_typeImet",     ";Type I E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_typeImet_blind",     ";Type I E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_fulltypeImet", ";Type I E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_fulltypeImetbeforedphilmet", ";Type I E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_fulltypeImet_blind", ";Type I E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet",       ";Reduced E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet_blind",       ";Reduced E_{T}^{miss};Events", 50,0,500) );
@@ -417,6 +419,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH2F( "met_typeImet_vspu",     ";Pileup events; Type I E_{T}^{miss};Events", 50,0,50,50,0,250) );
   mon.addHistogram( new TH2F( "met_fulltypeImet_vspu", ";Pileup events; Type I E_{T}^{miss};Events", 50,0,50,50,0,250) );
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mt_blind"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mvamt"  , ";M_{T};Events", 100,0,1000) );
     
    std::vector<double> optim_Cuts1_met; 
@@ -1249,6 +1252,9 @@ int main(int argc, char* argv[])
 			  
 			  mon.fillHisto("mindphilmet",tags_full, min(dphil1met,dphil2met) ,weight);
 			  mon.fillHisto("maxdphilmet",tags_full, max(dphil1met,dphil2met) ,weight);
+			  mon.fillHisto("met_metbeforedphilmet",         tags_full,  zvvs[0].pt(),  weight);
+			  mon.fillHisto("met_fulltypeImetbeforedphilmet", tags_full, fullTypeIMetP4.pt(), weight);
+			  mon.fillHisto("met_mindphilmet",tags_full,zvvs[0].pt(),min(dphil1met,dphil2met),weight);
 			  mon.fillHisto("deltaleptonpt",tags_full, leadingLep.pt()-trailerLep.pt()    ,weight);
 			  mon.fillHisto("deltazpt",tags_full, zll.pt()-zvvs[0].pt(),weight);
 			  mon.fillHisto("balance",tags_full, zvvs[0].pt()/zll.pt(),weight);
@@ -1287,13 +1293,13 @@ int main(int argc, char* argv[])
                              mon.fillHisto("met_typeImet_blind",    tags_full,  typeIMetP4.pt(),  weight);
                              mon.fillHisto("met_fulltypeImet_blind", tags_full, fullTypeIMetP4.pt(), weight);
                              mon.fillHisto("met_redMet_blind",tags_full,aRedMet.pt(),weight);
+			     mon.fillHisto("mt_blind",tags_full,aMT,weight);
                           }
 			  
 			  mon.fillProfile("metvsrun",          tags_full, ev.run,            zvvs[0].pt(), weight);
 			  mon.fillProfile("metvsavginstlumi",  tags_full, ev.curAvgInstLumi, zvvs[0].pt(), weight);
 			  mon.fillProfile("nvtxvsrun",         tags_full, ev.run,            ev.nvtx,      weight);
 			  mon.fillProfile("nvtxvsavginstlumi", tags_full, ev.curAvgInstLumi, ev.nvtx,      weight);
-			  mon.fillHisto("met_mindphilmet",tags_full,zvvs[0].pt(),min(dphil1met,dphil2met),weight);
 			  
 			  mon.fillHisto("met_met_vspu",         tags_full,ev.ngenITpu,zvvs[0].pt(),       weight);
 			  mon.fillHisto("met_mvamet_vspu",      tags_full,ev.ngenITpu,mvaMetP4.pt(),      weight);

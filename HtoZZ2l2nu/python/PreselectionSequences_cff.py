@@ -42,7 +42,7 @@ def addPreselectionSequences(process) :
     process.load('RecoMET.METFilters.eeBadScFilter_cfi')
 
     #CSC Beam Halo Filter 
-    process.load('RecoMET.METAnalyzers.CSCHaloFilter_cfi')
+    #process.load('RecoMET.METAnalyzers.CSCHaloFilter_cfi')
 
     #HCAL laser events
     process.load("RecoMET.METFilters.hcalLaserEventFilter_cfi")
@@ -78,7 +78,7 @@ def addPreselectionSequences(process) :
         process.HBHENoiseFilter*
         process.ecalLaserCorrFilter*
         process.eeBadScFilter*
-        process.CSCTightHaloFilter*
+        #process.CSCTightHaloFilter*
         process.hcalLaserEventFilter*
         process.EcalDeadCellTriggerPrimitiveFilter*
         process.noBadMetCounter

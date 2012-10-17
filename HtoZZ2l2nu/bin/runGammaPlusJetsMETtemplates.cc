@@ -517,7 +517,7 @@ int main(int argc, char* argv[])
       if(isGammaEvent)
 	{
 	  passKinematics &= (fabs(gamma.eta())<1.4442); 
-	  passKinematics &= (/*r9>0.9 &&*/ r9<1.0);
+	  passKinematics &= (r9>0.9 && r9<1.0);
 	  if(!isMC)    passKinematics &= (gamma.pt()>gammaEvHandler.triggerThr());
 	  //passKinematics &= (njets15>0);
 	}

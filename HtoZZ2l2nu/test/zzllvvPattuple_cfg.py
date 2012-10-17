@@ -22,11 +22,18 @@ gt=''
 if(getSelVersion()==2012) :
     process.load("Configuration.Geometry.GeometryIdeal_cff")
     if ( not runOnMC ):
-        try:
-            if(is52xData is True) : gt='FT_53_V10_AN1::All'
+        gt='GR_P_V42_AN2::All'
+        try :
+            if(dataTag=='Aug24'):     gt='FT_53_V10_AN2::All'
+            elif(dataTag=='July13'):  gt='FT_53_V6_AN2::All'
+            elif(dataTag=='Aug06'):   gt='FT_53_V6C_AN2::All'
+            elif(dataTag=='2012Cv2'): gt='GR_P_V41_AN2::All'
+            elif(dataTag=='2012D'):   gt='GR_P_V42_AN2::All'
+            elif(dataTag=='2012Cv1'): gt='GR_P_V41_AN2::All'
+            else :                    gt='GR_P_V41_AN1::All'
         except:
-            gt='GR_P_V41_AN1::All'
-            
+            print 'Assuming nominal Global Tag for prompt preco'
+
         #cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagJetProbabilityCalibration#Calibration_in_53x_Data_and_MC
         process.GlobalTag.toGet = cms.VPSet( cms.PSet(record = cms.string("BTagTrackProbability2DRcd"),
                                                       tag = cms.string("TrackProbabilityCalibration_2D_Data53X_v2"),

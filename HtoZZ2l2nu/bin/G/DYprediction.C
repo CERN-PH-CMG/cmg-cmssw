@@ -25,6 +25,34 @@ struct Shape_t
 void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model);
 void setTDRStyle();
 
+//
+void fixExtremities(TH1* h,bool addOverflow, bool addUnderflow)
+{
+  if(h==0) return;
+
+  if(addUnderflow){
+      double fbin  = h->GetBinContent(0) + h->GetBinContent(1);
+      double fbine = sqrt(h->GetBinError(0)*h->GetBinError(0)
+                          + h->GetBinError(1)*h->GetBinError(1));
+      h->SetBinContent(1,fbin);
+      h->SetBinError(1,fbine);
+      h->SetBinContent(0,0);
+      h->SetBinError(0,0);
+    }
+  
+  if(addOverflow){  
+      int nbins = h->GetNbinsX();
+      double fbin  = h->GetBinContent(nbins) + h->GetBinContent(nbins+1);
+      double fbine = sqrt(h->GetBinError(nbins)*h->GetBinError(nbins) 
+                          + h->GetBinError(nbins+1)*h->GetBinError(nbins+1));
+      h->SetBinContent(nbins,fbin);
+      h->SetBinError(nbins,fbine);
+      h->SetBinContent(nbins+1,0);
+      h->SetBinError(nbins+1,0);
+    }
+}
+
+
 
 //
 void addToShape(Shape_t &a, Shape_t &b,int sign=+1)
@@ -129,12 +157,12 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   else
     {
       //10/fb @ 8 TeV
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
+      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
-      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
+      llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
 
-      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
-      llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
+      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
+      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
 
       //5/fb @ 8 TeV
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotterab.root";
@@ -146,18 +174,13 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/work/q/querten/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
      
-      histos.push_back("met_met");
-      //      histos.push_back("met_redMet");
-      //  histos.push_back("mt");
-      //       histos.push_back("mindphijmet");
-      //       histos.push_back("pfvbfpremjj");
-      //       histos.push_back("pfvbfcandjeteta");
-      //       histos.push_back("pfvbfcandjetdeta");
-      //histos.push_back("pfvbfmjj");
-      //      histos.push_back("pfvbfcjv");
-      //histos.push_back("pfvbfhardpt");
-      histos.push_back("mt_shapes");
-      
+      histos.push_back("met_met");                
+      histos.push_back("met_redMet");             
+      histos.push_back("mt");                     
+      histos.push_back("mindphijmet");            
+      histos.push_back("mt_shapes");              
+      histos.push_back("mt_redMet_shapes");       
+     
       dilSignal.push_back("ggH(600)#rightarrow ZZ");
       dilSignal.push_back("qqH(600)#rightarrow ZZ");
       dilSignal.push_back("ggH(300)#rightarrow ZZ");
@@ -215,7 +238,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
 
   std::map<string,Shape_t> shapesMap,gShapesMap, gFinalShapesMap;
-  std::map<string,float>   scaleFactors;
+  std::map<string, std::map<string,float> >   scaleFactors;
 
   //get dilepton histos from files
   TFile *llIn=TFile::Open(llFile);
@@ -232,7 +255,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 		  TH1 *h=(TH1 *)llIn->Get(hname.c_str());
 		  if(h==0)  { /*cout << "Missing " << hname << endl;*/ continue; }
 		  h->SetTitle(dilprocs[iproc].c_str());
-		  
+		  fixExtremities(h,true,true);
+
 		  //detach and save (also signal)
 		  h->SetDirectory(0);
 		  if(dilprocs[iproc].find("data") != string::npos) 
@@ -244,6 +268,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 			  string hsigname = dilSignal[isig]+"/"+ch[ich]+dilcats[icat]+"_"+histos[ih];
 			  TH1 *hsig       = (TH1 *)llIn->Get(hsigname.c_str());
 			  if(hsig==0) { /*cout << "Missing " << hsigname << endl;*/ continue; }
+			  fixExtremities(hsig,true,true);
 			  hsig->SetTitle(dilSignal[isig].c_str());
 			  if(dilSignal[isig].find("VBF Z")!=string::npos)
 			    {
@@ -299,6 +324,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 		  string hname=gprocs[iproc]+"/"+ch[ich]+gcats[icat]+"_"+histos[ih];
 		  TH1 *h=(TH1 *)gIn->Get(hname.c_str());
 		  if(h==0) { /* cout << " Missing: " << hname <<endl;*/ continue; }
+		  fixExtremities(h,true,true);
 		  h->SetDirectory(0);
 		  h->SetName( TString("g") + h->GetName() );
 		  
@@ -361,21 +387,25 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       gFinalShapesMap[sIt->first]=sIt->second;
     }
   
-
   //now compute the normalization factors
   for(std::map<string,Shape_t>::iterator it=gFinalShapesMap.begin(); it != gFinalShapesMap.end(); it++)
     {
       int normBin(-1);
       TH1 *normH=it->second.data;
 
+      string distNormKey("");
+
       ////normalization factor (from MET<50)
-      if(model==HZZ && it->first.find("met_met")!=string::npos)   normBin=normH->GetXaxis()->FindBin(50);
+      if(it->first.find("met_met")!=string::npos)   { distNormKey="met"; normBin=normH->GetXaxis()->FindBin(50); }
       
       ////normalization factor (from red-MET<40)
-      if(model==ZZ && it->first.find("met_redMet")!=string::npos) normBin=normH->GetXaxis()->FindBin(40);
+      if(it->first.find("met_redMet")!=string::npos) { distNormKey="redMet"; normBin=normH->GetXaxis()->FindBin(40); }
 	      
       ////normalization factor (from deta_jj<3)
-      //if(it->first.find("jetdeta")!=string::npos)               normBin=normH->GetXaxis()->FindBin(3);
+      if(it->first.find("jetdeta")!=string::npos)    { distNormKey="jetdeta"; normBin=normH->GetXaxis()->FindBin(3); }
+      
+      ////normalization factor (from mindphijmet<0.5)
+      if(it->first.find("mindphijmet")!=string::npos)    { distNormKey="mindphijmet"; normBin=normH->GetXaxis()->FindBin(0.5); }
       
       //normalization factor (from Mjj<500) 
       if(model==VBFZ && it->first.find("premjj")!=string::npos)   normBin=normH->GetXaxis()->FindBin(500);
@@ -388,7 +418,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       Shape_t &dilMetShape = shapesMap[it->first];
       float sf=dilMetShape.data->Integral(1,normBin)/normH->Integral(1,normBin);
       cout << "\t scale-factor=" << sf << endl;
-      scaleFactors[string(normKey.Data())]=sf;
+      scaleFactors[distNormKey][string(normKey.Data())]=sf;
     }
 
 
@@ -407,8 +437,13 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
      if(it->first.find("vbf0_")!=string::npos)           normKey+="vbf0";
      if(it->first.find("vbf1_")!=string::npos)           normKey+="vbf1";
      if(it->first.find("vbf2_")!=string::npos)           normKey+="vbf2";
-     float sf = scaleFactors[normKey];
      
+     //normalization factor
+     float sf(1.0);
+     if(it->first.find("met_redMet")!= string::npos || it->first.find("mt_redMet_shapes")!=string::npos) sf=scaleFactors["redMet"][normKey];
+     else if(it->first.find("mindphijmet") != string::npos)                                              sf=scaleFactors["mindphijmet"][normKey];
+     else                                                                                                sf=scaleFactors["met"][normKey];
+
      if(sf==0) continue;
      if(gFinalShapesMap.find(it->first)==gFinalShapesMap.end()) cout << "BUG: " << it->first << " not found in gamma sample..." << endl;
      Shape_t &gShape=gFinalShapesMap[it->first];
@@ -427,10 +462,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
        }
 
      //do the subtraction for met related variables when MET>70
-     if(it->first.find("mt_shapes")!= string::npos  || it->first.find("_mt")!= string::npos || it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos)
+     if(it->first.find("mt_shapes")!= string::npos  || it->first.find("mt_redMet_shapes")!= string::npos || it->first.find("_mt")!= string::npos || it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos)
        {
 	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
-	
+	 cout << it->first << " " << isTH2 << endl;
+
 	 if(subtractType==HALVE || subtractType==EWKSUBTRACTIONHALVE) {
 	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(75) );
 	   if(it->first.find("_mt") != string::npos &&  !isTH2) fbin = corrGammaH->GetXaxis()->FindBin(300);
