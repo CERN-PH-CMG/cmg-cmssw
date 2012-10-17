@@ -167,6 +167,7 @@ RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* d
   RooFitResult *fit = pdf->fitTo(*data, Save(kTRUE), Extended(kTRUE), Strategy(2), PrintLevel(printLevel), RooFit::Range(range));
   if (verbose) fit->Print();
 
+/*
 
     // plot fit
     TCanvas* cfit = new TCanvas(TString("cfit")+label,"fit",500,500);
@@ -279,7 +280,8 @@ RooFitResult* DijetHelper::doFit(std::string name, RooAbsPdf* pdf, RooAbsData* d
   diff->Draw("E");
   tex.DrawLatex(0.22,0.88, title);
   if (verbose) cdiff->SaveAs(label+"_diff.gif");
-  
+
+*/  
 
   return fit;
 }
