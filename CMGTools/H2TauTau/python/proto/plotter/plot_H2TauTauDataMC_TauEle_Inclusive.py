@@ -313,72 +313,14 @@ if __name__ == '__main__':
     #PG ss   = mt plot with the scaled W, according to fwss
     #PG os   = mt plot with the scaled W, according to fwos
 
-    can0 = TCanvas('can0','',100,100,600,600)
-
-    #PG compare the MC-subtracted data to the WJets MC only for SS
-    #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
-    W_ss = copy.deepcopy( ss )
-    W_ss_WJets = W_ss.Hist('WJets').weighted
-    W_ss_Data = W_ss.Hist('Data - DY - TT').weighted
-    W_ss_WJets.SetFillColor (0)
-    W_ss_WJets.GetXaxis().SetTitle ('mt')
-    W_ss_Data.GetXaxis().SetTitle ('mt')
-    W_ss_WJets.Draw ('hist')
-    W_ss_Data.Draw ('same')
-    leg_W_ss = TLegend (0.6,0.6,0.9,0.9)
-    leg_W_ss.AddEntry (W_ss_Data,  'data - DY - TT', 'pl')
-    leg_W_ss.AddEntry (W_ss_WJets, 'WJets',          'pl')
-    leg_W_ss.Draw ()
-    can0.Print ('compare_W_ss.png','png')
-    W_ss_Data.Divide (W_ss_WJets)
-    W_ss_WJets.Divide (W_ss_WJets)
-#    W_ss_WJets.Divide (W_ss_Data)
-    can0.DrawFrame(W_ss_WJets.GetXaxis().GetXmin(), 0.5,W_ss_WJets.GetXaxis().GetXmax(), 2)
-    W_ss_Data.Draw ('same')
-    W_ss_WJets.SetFillStyle (4001)
-    W_ss_WJets.SetFillColor (2)
-    W_ss_WJets.SetMarkerStyle (9)
-    W_ss_WJets.Draw ('sameE3')
-    can0.Print ('compare_W_ss_ratio.png','png')
-
-    #PG compare the MC-subtracted data to the WJets MC only for OS
-    #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
-    W_os = copy.deepcopy( os )
-    W_os_WJets = W_os.Hist('WJets').weighted
-    W_os_Data = W_os.Hist('Data - DY - TT').weighted
-    W_os_WJets.SetFillColor (0)
-    W_os_WJets.GetXaxis().SetTitle ('mt')
-    W_os_Data.GetXaxis().SetTitle ('mt')
-    W_os_WJets.Draw ('hist')
-    W_os_Data.Draw ('same')
-    leg_W_os = TLegend (0.6,0.6,0.9,0.9)
-    leg_W_os.AddEntry (W_os_Data,  'data - DY - TT', 'pl')
-    leg_W_os.AddEntry (W_os_WJets, 'WJets',          'pl')
-    leg_W_os.Draw ()
-
-    can0.Print ('compare_W_os.png','png')
-
     #PG save the sidebands to be able and get numbers for the systematics
 #    currdir = copy(gDirectory)
     wsyst_file = TFile ('wsyst.root','recreate')
     wsyst_file.cd()
-    W_os_WJets.Write('W_os_WJets')
-    W_os_Data.Write('W_os_Data')    
+    os.Hist('WJets').weighted.Write('W_os_WJets')
+    os.Hist('Data - DY - TT').weighted.Write('W_os_Data')    
     wsyst_file.Close()
 #    currdir.cd()
-
-    W_os_Data.Divide (W_os_WJets)
-    W_os_WJets.Divide (W_os_WJets)
-#    W_os_WJets.Divide (W_os_Data)
-    can0.DrawFrame(W_os_WJets.GetXaxis().GetXmin(), 0.5,W_os_WJets.GetXaxis().GetXmax(), 2)
-    W_os_Data.Draw ('same')
-    W_os_WJets.SetFillStyle (4001)
-    W_os_WJets.SetFillColor (2)
-    W_os_WJets.SetMarkerStyle (9)
-    W_os_WJets.Draw ('sameE3')
-    can0.Print ('compare_W_os_ratio.png','png')
 
     can, pad, padr = buildCanvas()
     draw(ss, False, 'TauEle', plotprefix = 'W_ss')
