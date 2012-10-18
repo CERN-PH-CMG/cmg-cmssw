@@ -53,6 +53,7 @@ if __name__ == '__main__':
     samples = ['/TauPlusX/Run2011A-May10ReReco-v1/AOD/foo/bar',
                '/TauPlusX/Run2011B-PromptReco-v1/AOD/blah',
                '/TauPlusX/Run2012B-PromptReco-v1/AOD/blah',
+               '/TauPlusX/Run2012C-24Aug2012-v1/AOD/blah',
                '/store/cmst3/user/cmgtools/CMG/TauPlusX/Run2011A-PromptReco-v4/AOD/V2/PAT_CMG_V2_4_0/tree_CMG_648.root',
                'should_fail_for_this_sample_name']
 
