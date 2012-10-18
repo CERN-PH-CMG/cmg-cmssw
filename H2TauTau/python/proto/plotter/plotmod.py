@@ -17,7 +17,10 @@ def buildPlot( var, anaDir,
                         str(cut), weight,
                         embed, shift, treeName )
     return pl
-
+    
+    
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
+    
 
 def hist( var, anaDir,
           comp, weights, nbins, xmin, xmax,
@@ -29,7 +32,10 @@ def hist( var, anaDir,
                     embed, shift, treeName )
     histo = copy.deepcopy( pl.Hist(comp.name) )    
     return histo
-
+    
+    
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
+    
 
 def shape( var, anaDir,
            comp, weights, nbins, xmin, xmax,
@@ -41,7 +47,10 @@ def shape( var, anaDir,
                   embed, shift, treeName )
     shape.Normalize()
     return shape
-
+    
+    
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
+    
 
 def shape_and_yield( var, anaDir,
                      comp, weights, nbins, xmin, xmax,
@@ -54,8 +63,11 @@ def shape_and_yield( var, anaDir,
     yi = shape.Integral()
     shape.Normalize()
     return shape, yi
-
     
+    
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
+    
+
 def addQCD( plot, dataName ):
     # import pdb; pdb.set_trace()
     plotWithQCD = copy.deepcopy( plot )
@@ -74,12 +86,20 @@ def addQCD( plot, dataName ):
         pass    
     qcd.Add(plotWithQCD.Hist('TTJets'), -1)
     qcd.Add(plotWithQCD.Hist('WJets'), -1)
+    if plotWithQCD.histosDict.get('VV', None) != None:
+        qcd.Add(plotWithQCD.Hist('VV'), -1)
+    else:
+        print 'addQCD: VV group not found, VV not subtracted'
+
     # adding the QCD data-driven estimation to the  plot
     plotWithQCD.AddHistogram( 'QCD', qcd.weighted, 888)
     plotWithQCD.Hist('QCD').stack = True
     plotWithQCD.Hist('QCD').SetStyle( sHTT_QCD )
     return plotWithQCD
-
+    
+    
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
+    
 
 def getQCD( plotSS, plotOS, dataName, scale=1.11 ):
 
@@ -101,7 +121,10 @@ def getQCD( plotSS, plotOS, dataName, scale=1.11 ):
     plotOSWithQCD.Hist('QCD').SetStyle(sHTT_QCD)
 
     return plotSSWithQCD, plotOSWithQCD
-
+    
+    
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
+    
 
 def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
     
@@ -117,6 +140,7 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
         f2 = mtplot.Hist('Ztt_ZJ')
         wjet.Add(f1, -1)
         wjet.Add(f2, -1)
+        removingFakes = True
     except:
         print 'cannot find Ztt_Fakes in W+jets estimate'
         pass
@@ -126,7 +150,7 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
     if mtplot.histosDict.get('VV', None) != None :
         wjet.Add(mtplot.Hist('VV'), -1)
     else:
-        print 'VV group not found, VV not subtracted'
+        print 'fW: VV group not found, VV not subtracted'
 
     # adding the WJets_data estimation to the stack
     mtplot.AddHistogram( 'Data - DY - TT', wjet.weighted, 1010)
@@ -138,12 +162,14 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
 
     # determine scaling factor for the WJet MC
     mtmin, mtmax = xmin, xmax
-    # scale = WJets_data / WJets
     # import pdb; pdb.set_trace()
-    scale_WJets = mtplot.Hist('Data - DY - TT').Integral(True, xmin, xmax) \
-                  / mtplot.Hist('WJets').Integral(True, xmin, xmax)
- 
+
     data_error = Double(0.)
+    data_integral = mtplot.Hist('Data - DY - TT').weighted.IntegralAndError(
+            0 if xmin == None else mtplot.Hist('Data - DY - TT').weighted.FindFixBin (xmin), 
+            mtplot.Hist('Data - DY - TT').weighted.GetNbinsX() if xmax == None else mtplot.Hist('Data - DY - TT').weighted.FindFixBin(xmax) - 1, 
+            data_error)
+
     data_integral = mtplot.Hist('Data - DY - TT').weighted.IntegralAndError(
             0 if xmin == None else mtplot.Hist('Data - DY - TT').weighted.FindFixBin (xmin), 
             mtplot.Hist('Data - DY - TT').weighted.GetNbinsX() if xmax == None else mtplot.Hist('Data - DY - TT').weighted.FindFixBin(xmax) - 1, 
@@ -156,8 +182,6 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
             wjets_error)
 
     scale_WJets = data_integral / wjets_integral
-#    scale_WJets_error = scale_WJets * math.sqrt (data_error * data_error / (data_integral * data_integral) + 
-#                          wjets_error * wjets_error / (wjets_integral * wjets_integral))
                   
     # apply this additional scaling factor to the WJet component
     mtplot.Hist('WJets').Scale(scale_WJets)
@@ -200,7 +224,10 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
     scale_WJets_error = scale_WJets * scale_WJets_error
 
     return scale_WJets, scale_WJets_error
-
+    
+    
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
+    
 
 def w_lowHighMTRatio( var, anaDir,
                       comp, weights, 
@@ -215,9 +242,13 @@ def w_lowHighMTRatio( var, anaDir,
     mt_high = mt.Integral(True, upperMTCut, max)
     mt_ratio = mt_low / mt_high    
     return mt_ratio
+    
+    
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
+    
 
-def plot_W(anaDir,
-           comps, weights, nbins, xmin, xmax,
+def plot_W(anaDir, comps, weights, 
+           nbins, xmin, xmax,
            cut, weight,
            embed, VVgroup = None, treeName=None):
 
