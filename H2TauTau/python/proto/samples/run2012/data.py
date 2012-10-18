@@ -10,7 +10,7 @@ data_Run2012A = cfg.DataComponent(
     # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 |       6514 | 395.991(/pb) | 395.991(/pb) |
     intLumi = 806.194, # 806.194 from Colin
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
+    json = None
     )
 
 data_Run2012A_aug6 = cfg.DataComponent( # update
@@ -19,7 +19,7 @@ data_Run2012A_aug6 = cfg.DataComponent( # update
     # | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       1810 | 82.136(/pb) | 82.136(/pb) |
     intLumi = 82.136, # same from Colin
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt'
+    json = None
     )
 
 data_Run2012B = cfg.DataComponent(
@@ -28,7 +28,7 @@ data_Run2012B = cfg.DataComponent(
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      51089 | 4.428(/fb) | 4.428(/fb) |
     intLumi = 4420., # 4420. from Colin
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt' 
+    json = None
     )
 
 data_Run2012C_v1 = cfg.DataComponent(
@@ -37,7 +37,7 @@ data_Run2012C_v1 = cfg.DataComponent(
     # | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |       6719 | 495.003(/pb) | 495.003(/pb) |
     intLumi = 493.975, # 493.975 from Colin
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
+    json = None
     )
 
 data_Run2012C_v2 = cfg.DataComponent( # update
@@ -45,7 +45,7 @@ data_Run2012C_v2 = cfg.DataComponent( # update
     files = [],
     intLumi = 6397, #  from Colin
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON.txt'
+    json = None
     )
 
 data_list = [
