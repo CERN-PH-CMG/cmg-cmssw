@@ -21,7 +21,6 @@ from CMGTools.RootTools.Style import *
 from ROOT import kGray, kPink, TH1, TPaveText, TPad, TCanvas
 
 cp = copy.deepcopy
-EWK = 'WJets'
 
     
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -113,7 +112,7 @@ if __name__ == '__main__':
 
     cutw = options.cut.replace('mt<40', '1')
     # loosen electron isolation
-    cutw = cutw.replace('l2_relIso05<0.1', 'l2_relIso05<1')    
+    # cutw = cutw.replace('l2_relIso05<0.1', 'l2_relIso05<1')    
     # loosen tau isolation
 
 
@@ -186,6 +185,7 @@ if __name__ == '__main__':
     p_main  = TPad ("p1","",0,0.3,1,1)
     p_ratio = TPad ("p1","",0,0,1,0.3)
     p_main.Draw()
+    p_main.SetLogy ()
     p_ratio.Draw()
 
     p_main.cd()
