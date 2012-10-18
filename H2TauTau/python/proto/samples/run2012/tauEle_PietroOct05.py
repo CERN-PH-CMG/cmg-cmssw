@@ -1,6 +1,7 @@
 import itertools
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.H2TauTau.proto.samples.connect import connect
+from CMGTools.H2TauTau.tools.jsonPick import jsonPick
 
 from CMGTools.H2TauTau.proto.samples.run2012.data import *
 from CMGTools.H2TauTau.proto.samples.run2012.embed import *
@@ -72,6 +73,11 @@ for sam in MC_list:
     print 'setting trigger', mc_triggers,'for sample',sam.name
     sam.triggers = mc_triggers
 for data in data_list:
-    print 'setting trigger', data_triggers,'for sample',data.name
     data.triggers = data_triggers
+    print 'setting trigger', data.triggers,'for sample',data.name
+    data.json = jsonPick (data.files[0])
+    print 'setting json', data.json, 'for sample', data.name
+for emb in embed_list:
+    emb.json = jsonPick (data.files[0])
+    print 'setting json', emb.json, 'for sample', emb.name
 print
