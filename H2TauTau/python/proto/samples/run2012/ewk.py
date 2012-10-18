@@ -4,7 +4,7 @@ import CMGTools.RootTools.fwlite.Config as cfg
 DYJets = cfg.MCComponent(
     name = 'DYJets',
     files = [],
-    xSection = 3503.71 * 0.976, # correction factor from Valentina
+    xSection = 3503.71 * 1.011, # correction factor from Valentina through Jose (18/10)
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
