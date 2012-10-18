@@ -163,6 +163,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def testLeg1ID(self, tau):
+        if tau.decayMode() == 0 and \
+               tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
+            return false
         return tau.tauID("againstElectronMVA") >0.5 and \
                tau.tauID("againstElectronTightMVA2") >0.5 and \
                tau.tauID("againstElectronMedium") > 0.5 and \
