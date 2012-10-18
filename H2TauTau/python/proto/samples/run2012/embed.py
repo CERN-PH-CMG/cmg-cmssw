@@ -11,7 +11,7 @@ embed_Run2012A_13Jul2012_v1 = cfg.EmbedComponent(
     files = [],
     intLumi = 1.0, # dummy
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
+    json = None
     )
 
 embed_Run2012A_recover_06Aug2012_v1 = cfg.EmbedComponent(
@@ -19,7 +19,7 @@ embed_Run2012A_recover_06Aug2012_v1 = cfg.EmbedComponent(
     files = [],
     intLumi = 1.0, # dummy
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt'
+    json = None
     )
 
 embed_Run2012B_13Jul2012_v4 = cfg.EmbedComponent(
@@ -27,7 +27,7 @@ embed_Run2012B_13Jul2012_v4 = cfg.EmbedComponent(
     files = [],
     intLumi = 1.0, # dummy
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt' 
+    json = None
     )
     
 embed_Run2012C_24Aug2012_v1 = cfg.EmbedComponent(
@@ -35,7 +35,7 @@ embed_Run2012C_24Aug2012_v1 = cfg.EmbedComponent(
     files = [],
     intLumi = 1.0, # dummy
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
+    json = None
     )
     
 embed_Run2012C_PromptReco_v2 = cfg.EmbedComponent(
@@ -43,7 +43,7 @@ embed_Run2012C_PromptReco_v2 = cfg.EmbedComponent(
     files = [],
     intLumi = 1.0, # dummy
     triggers = [],
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON.txt'
+    json = None
     )
     
     
