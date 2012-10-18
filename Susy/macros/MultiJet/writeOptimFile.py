@@ -3,7 +3,7 @@ import pickle, os, sys
 
 class BranchDumper(object):
 
-    def __init__(self, tree, norm, xs):
+    def __init__(self, tree, norm = None, xs = None):
 
         self.tree = tree
         self.norm = norm
@@ -11,86 +11,105 @@ class BranchDumper(object):
         self.lumi = 5000.
         self.filter = 1.0
 
-        point = (-1,-1)
-        #point = (200,0)
-        self.weightVal = (self.lumi*float(xs)*self.filter)/(1.0*int(self.norm[point]))
-        print self.weightVal
-
-        self.hemi = 1
+        self.weightVal = 1.0
+        if norm is not None:
+            point = (-1,-1)
+            #point = (200,0)
+            self.weightVal = (self.lumi*float(xs)*self.filter)/(1.0*int(self.norm[point]))
+            print self.weightVal
 
         self.vars = None
 
     def select(self):
-        return self.tree.hadBoxFilter and self.tree.hadTriggerFilter and self.tree.nCSVM > 0 and self.tree.MR >= 450 and self.tree.RSQ >= 0.03 and self.tree.hemi1Count > 1 and self.tree.hemi2Count > 1 #and self.tree.genInfo == 22000 
-        #return self.tree.BOX_NUM == 6 and  self.tree.hemi1Count > 1 and self.tree.hemi2Count > 1 and self.tree.MR >= 450 #and self.tree.genInfo == 22000 
+        return self.tree.BOX_NUM == 6 and self.tree.hadBoxFilter and self.tree.hadTriggerFilter and self.tree.NBJET > 0 and self.tree.MR >= 450 and self.tree.RSQ >= 0.03 and\
+            self.tree.nMuonTight == 0 and self.tree.nElectronTight == 0 and self.tree.nTauTight == 0 and self.tree.nMuonLoose == 0 and self.tree.nElectronLoose == 0 #and self.tree.genInfo == 22000 
     
     def weight(self):
         return self.weightVal
         #return 1.0
 
-    def chi2(self):
-        chi1 = (abs(self.tree.hemi1TopMass-173.5)/57.)+(abs(self.tree.hemi1WMass-80.385)/44.)
-        chi2 = (abs(self.tree.hemi2TopMass-173.5)/57.)+(abs(self.tree.hemi2WMass-80.385)/44.)
-        if chi1 <= chi2:
-            self.hemi = 1
-        else:
-            self.hemi = 2
-        return min(chi1,chi2)
-
     def thetaH1(self):
-        if self.hemi == 1:
+        if self.tree.bestHemi == 1:
             return self.tree.hemi1ThetaH
         return self.tree.hemi2ThetaH
     def thetaH2(self):
-        if self.hemi == 2:
+        if self.tree.bestHemi == 2:
             return self.tree.hemi1ThetaH
         return self.tree.hemi2ThetaH
 
     def topMass1(self):
-        if self.hemi == 1:
+        if self.tree.bestHemi == 1:
             return self.tree.hemi1TopMass
         return self.tree.hemi2TopMass
     def topMass2(self):
-        if self.hemi == 2:
+        if self.tree.bestHemi == 2:
             return self.tree.hemi1TopMass
         return self.tree.hemi2TopMass
 
     def wMass1(self):
-        if self.hemi == 1:
+        if self.tree.bestHemi == 1:
             return self.tree.hemi1WMass
         return self.tree.hemi2WMass
     def wMass2(self):
-        if self.hemi == 2:
+        if self.tree.bestHemi == 2:
             return self.tree.hemi1WMass
         return self.tree.hemi2WMass
 
     def jetNpt(self, n):
-        pts = sorted([pt for pt in self.tree.jet_pt], reverse = True)
-        return pts[n]
+        return self.tree.jet_pt.at(n)
 
     def jet1pt(self):
         return self.jetNpt(0)
-
     def jet2pt(self):
         return self.jetNpt(1)
-
     def jet3pt(self):
         return self.jetNpt(2)
-
     def jet4pt(self):
         return self.jetNpt(3)
-
     def jet5pt(self):
         return self.jetNpt(4)
-
     def jet6pt(self):
         return self.jetNpt(5)
 
+    def jet1mult(self):
+        return self.tree.jet_mult.at(0)
+    def jet2mult(self):
+        return self.tree.jet_mult.at(1)
+    def jet3mult(self):
+        return self.tree.jet_mult.at(2)
+    def jet4mult(self):
+        return self.tree.jet_mult.at(3)
+    def jet5mult(self):
+        return self.tree.jet_mult.at(4)
+    def jet6mult(self):
+        return self.tree.jet_mult.at(5)
+
+    def jet1girth(self):
+        return self.tree.jet_girth.at(0)
+    def jet2girth(self):
+        return self.tree.jet_girth.at(1)
+    def jet3girth(self):
+        return self.tree.jet_girth.at(2)
+    def jet4girth(self):
+        return self.tree.jet_girth.at(3)
+    def jet5girth(self):
+        return self.tree.jet_girth.at(4)
+    def jet6girth(self):
+        return self.tree.jet_girth.at(5)
+
+
     def headers(self):
-        return ['weight','thetaH1','thetaH2','topMass1','topMass2','wMass1','wMass2','jet1pt','jet2pt','jet3pt','jet4pt','jet5pt','jet6pt']
+        return ['weight','thetaH1','thetaH2','topMass1','topMass2','wMass1','wMass2',\
+                    'jet1pt','jet2pt','jet3pt','jet4pt','jet5pt','jet6pt',\
+                    'jet1mult','jet2mult','jet3mult','jet4mult','jet5mult','jet6mult',\
+                    'jet1girth','jet2girth','jet3girth','jet4girth','jet5girth','jet6girth']
+
+    def headers_for_MVA(self):
+        return ['thetaH1','thetaH2','topMass1','topMass2','wMass1','wMass2',\
+                    'jet1mult','jet2mult','jet3mult','jet4mult','jet5mult','jet6mult',\
+                    'jet1girth','jet2girth','jet3girth','jet4girth','jet5girth','jet6girth']
 
     def values(self):
-        c = self.chi2()
         values = []
         for h in self.headers():
             values.append(getattr(self,h)())
@@ -113,6 +132,18 @@ struct BranchDumper{\
     Double_t jet4pt;\
     Double_t jet5pt;\
     Double_t jet6pt;\
+    Double_t jet1mult;\
+    Double_t jet2mult;\
+    Double_t jet3mult;\
+    Double_t jet4mult;\
+    Double_t jet5mult;\
+    Double_t jet6mult;\
+    Double_t jet1girth;\
+    Double_t jet2girth;\
+    Double_t jet3girth;\
+    Double_t jet4girth;\
+    Double_t jet5girth;\
+    Double_t jet6girth;\
     Double_t MR;\
     Double_t RSQ;\
 };""")
