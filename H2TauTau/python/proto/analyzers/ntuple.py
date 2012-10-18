@@ -117,6 +117,7 @@ def bookTau( tree, pName ):
 
     var(tree, '{pName}_byLooseIsoMVA'.format(pName=pName))    
     var(tree, '{pName}_againstElectronMVA'.format(pName=pName))    
+    var(tree, '{pName}_againstElectronTightMVA2'.format(pName=pName))
     var(tree, '{pName}_againstElectronMedium'.format(pName=pName))    
     var(tree, '{pName}_againstMuonLoose'.format(pName=pName))    
 
@@ -148,6 +149,8 @@ def fillTau( tree, pName, tau ):
          tau.tauID("byLooseIsoMVA"))
     fill(tree, '{pName}_againstElectronMVA'.format(pName=pName),
          tau.tauID("againstElectronMVA"))
+    fill(tree, '{pName}_againstElectronTightMVA2'.format(pName=pName),
+         tau.tauID("againstElectronTightMVA2"))
     fill(tree, '{pName}_againstElectronMedium'.format(pName=pName),
          tau.tauID("againstElectronMedium"))
     fill(tree, '{pName}_againstMuonLoose'.format(pName=pName),
