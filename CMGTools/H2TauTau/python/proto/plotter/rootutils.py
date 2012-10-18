@@ -33,30 +33,31 @@ xtitles = {
     }
 
 xtitles_TauEle = {
-    'l1_pt':'p_{T,#tau} [GeV]',
-    'l1Jet_pt':'p_{T,#tau jet} [GeV]',
-    'l2_pt':'p_{T,e} [GeV]',
-    'l2Jet_pt':'p_{T,e jet} [GeV]',
-    'l1_eta':'#eta_{#tau}',
-    'l2_eta':'#eta_{e}',
-    'l1_phi':'#phi_{#tau}',
-    'l2_phi':'#phi_{e}',
-    'l1_charge':'charge_{#tau}',
-    'l2_charge':'charge_{e}',
+    'l1_pt'       :'p_{T,#tau} [GeV]',
+    'l1Jet_pt'    :'p_{T,#tau jet} [GeV]',
+    'l2_pt'       :'p_{T,e} [GeV]',
+    'l2Jet_pt'    :'p_{T,e jet} [GeV]',
+    'l1_eta'      :'#eta_{#tau}',
+    'l2_eta'      :'#eta_{e}',
+    'l1_phi'      :'#phi_{#tau}',
+    'l2_phi'      :'#phi_{e}',
+    'l1_charge'   :'charge_{#tau}',
+    'l2_charge'   :'charge_{e}',
     'l1_rawMvaIso':'MVA #tau iso',
-    'l1_relIso05':'#tau iso',
-    'l2_relIso05':'e iso',
-    'mt':'m_{T} [GeV}]',
-    'met':'MET [GeV]',
-    'pfmet':'PF MET [GeV]',
-    'visMass':'m_{vis} [GeV]',
-    'svfitMass':'m_{#tau#tau} [GeV]',
-    'nJets':'N_{jets}',
-    'nVert':'N_{vertices}',
-    'jet1_pt':'p_{T,jet1} [GeV]',
-    'jet2_pt':'p_{T,jet1} [GeV]',
-    'jet1_eta':'#eta_{#tau}',
-    'jet2_eta':'#eta_{#tau}',
+    'l1_relIso05' :'#tau iso',
+    'l2_relIso05' :'e iso',
+    'mt'          :'m_{T} [GeV]',
+    'met'         :'MET [GeV]',
+    'pfmet'       :'PF MET [GeV]',
+    'visMass'     :'m_{vis} [GeV]',
+    'svfitMass'   :'m_{#tau#tau} [GeV]',
+    'nJets'       :'N_{jets}',
+    'nVert'       :'N_{vertices}',
+    'jet1_pt'     :'p_{T,jet1} [GeV]',
+    'jet2_pt'     :'p_{T,jet1} [GeV]',
+    'jet1_eta'    :'#eta_{#tau}',
+    'jet2_eta'    :'#eta_{#tau}',
+    'l1_EOverp'   :'#tau E/p',
     }
 
 def savePlot(name):
@@ -171,7 +172,7 @@ def draw(plot, doBlind=False, channel='TauMu', plotprefix = None):
     rls = 0.075
     hr.GetYaxis().SetLabelSize(rls)
     hr.GetXaxis().SetLabelSize(rls)
-    hr.GetYaxis().SetRangeUser(0.01, 2)
+    hr.GetYaxis().SetRangeUser(0.5, 1.5)
     padr.Update()    
     # blinding
     if plot.blindminx:
