@@ -167,7 +167,6 @@ def findAlias(path_name, aliases):
             name = alias
     if name is None:
         return None
-        # raise ValueError('dataset name not recognized: ' + path_name)
     match = rePatMass.search(path_name)
     if match and name.find('DYJets')==-1:
         mass = match.group(1)
@@ -186,6 +185,9 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
     if verbose:
         pprint.pprint( dsInfo )
     path_name = dsInfo[0]['path_name']
+    # alias = findAlias(path_name, aliases)
+    # if alias is None:
+    #     print 'Skip: no alias found for',path_name
     compName = findAlias(path_name, aliases)
     if compName is None:
         print 'WARNING: cannot find alias for', path_name
