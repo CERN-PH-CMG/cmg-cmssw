@@ -1,3 +1,4 @@
+
 /***************************************************************************** 
  * Project: RooFit                                                           * 
  *                                                                           * 
@@ -71,6 +72,7 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
   if ( uR > 3000 && uR < 4000 ) M_CUT = 890.0;
   if ( uR > 3000 && uR < 4000 ) INIT_MASS = 1000.0;
 
+
   cout << "M_CUT = " << M_CUT << " INIT_MASS = " << INIT_MASS << endl;
 
   int bin_cut = TMath::Abs((M_CUT-SHAPE_BINS_MIN)/SHAPE_BINS_STEPS)+1;
@@ -86,6 +88,9 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
 
   switch (uR){
 
+  case 10: 
+    stitle = string("RSGraviton_ak5_fat30");
+    break;
   case 11: 
     stitle = string("RSGraviton_ak5_GGtoGG_fat30");
      break;
@@ -254,6 +259,24 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
   case 3912:
     stitle = string("RSGravitonQQ_k0p9_fat30_ak5");
     break;
+  case 4011: 
+    stitle = string("RSGraviton_2012_Z2star_ak5_GGtoGG_fat30");
+     break;
+  case 4012:   
+    stitle = string("RSGraviton_2012_Z2star_ak5_QQtoQQ_fat30");
+     break;
+  case 4013:   
+    stitle = string("Qstar_2012_Z2star_ak5_fat30"); 
+     break;
+  case 4014: 
+    stitle = string("RSGraviton_2012_D6T_ak5_GGtoGG_fat30");
+     break;
+  case 4015:   
+    stitle = string("RSGraviton_2012_D6T_ak5_QQtoQQ_fat30");
+     break;
+  case 4016:   
+    stitle = string("Qstar_2012_D6T_ak5_fat30"); 
+     break;
   default:
     std::cout << "Nothing would crash" << std::endl; 
     break;
