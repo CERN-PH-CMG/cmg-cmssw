@@ -122,7 +122,6 @@ os.system(command)
 #print command 
 #os.system(command)
 
-<<<<<<< SimpleLimit.py
 ## command = "dijetStatsNewBackground 4100 0 0 QBH62_ak5_fat 0"
 ## print command 
 ## os.system(command)
