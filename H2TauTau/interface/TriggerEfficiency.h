@@ -573,7 +573,7 @@ public:
   }
 
   double effEle2012_Rebecca_TauEle_ABC(double pt, double eta) {
-    float weight_A = 888.33; 
+    float weight_A = 888.33; // see python/proto/samples/run2012/data.py
     float weight_B = 4420.0;    
     float weight_C = 6890.975;    
     return (weight_A * eff_2012_Rebecca_TauEle_Ele20A(pt, eta) + 
@@ -597,6 +597,8 @@ public:
     float weight_C = 7000.;    
     return (weight_A * eff2012AEle20(pt, eta) + weight_B * eff2012BEle22(pt, eta) + weight_C * eff2012CEle22(pt, eta))/(weight_A+weight_B+weight_C);
   } 
+
+  // This function is the old one used by Jose (from Valentina, probably):
 
   double effEle2012MC53X(double pt, double eta) {
     if(fabs(eta)<1.479) 
@@ -622,8 +624,6 @@ public:
   double eff2012Tau20MC53X_TauEle(double pt, double eta) {
     return efficiency(pt, 18.62733399 , 0.51301539, 0.38517573 , 5.68099833 , 0.91536401);
   }
-
-
 
   //****************
   //first trigger turn-ons for the di-tau trigger from Simone
