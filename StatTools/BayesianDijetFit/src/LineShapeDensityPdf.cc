@@ -466,6 +466,8 @@ double shape_2012_D6T_Qstar_qg_4500[50] = {
 
 
 
+double gg_ratio[6] = {0.37, 0.39, 0.46, 0.52, 0.56, 0.56};
+
 double bincenter[50]={
   0.31,  0.33,  0.35,  0.37,  0.39,  0.41,  0.43,  0.45,  0.47,  0.49,
   0.51,  0.53,  0.55,  0.57,  0.59,  0.61,  0.63,  0.65,  0.67,  0.69,
@@ -510,6 +512,45 @@ void LineShapeDensity_pdf(double mass, int iResonance){
 
   switch (iResonance){
 
+  case 4017: 
+    std::cout << "RSGraviton_ak5_fat30_D6T" << std::endl;
+    dv500 = new TArrayD(50,  shape_2012_D6T_RSG_gg_500);
+    dv700 = new TArrayD(50,  shape_2012_D6T_RSG_gg_700);
+    dv1200 = new TArrayD(50, shape_2012_D6T_RSG_gg_1200);
+    dv2000 = new TArrayD(50, shape_2012_D6T_RSG_gg_2000);
+    dv3500 = new TArrayD(50, shape_2012_D6T_RSG_gg_3500);
+    dv4500 = new TArrayD(50, shape_2012_D6T_RSG_gg_4500);
+
+
+    for (int i = 0; i < 50; i++){
+      dv500->SetAt(dv500->GetAt(i)*gg_ratio[0]+shape_2012_D6T_RSG_qq_500[i]*(1-gg_ratio[0]), i);
+      dv700->SetAt(dv700->GetAt(i)*gg_ratio[1]+shape_2012_D6T_RSG_qq_700[i]*(1-gg_ratio[1]), i);
+      dv1200->SetAt(dv1200->GetAt(i)*gg_ratio[2]+shape_2012_D6T_RSG_qq_1200[i]*(1-gg_ratio[2]), i);
+      dv2000->SetAt(dv2000->GetAt(i)*gg_ratio[3]+shape_2012_D6T_RSG_qq_2000[i]*(1-gg_ratio[3]), i);
+      dv3500->SetAt(dv3500->GetAt(i)*gg_ratio[4]+shape_2012_D6T_RSG_qq_3500[i]*(1-gg_ratio[4]), i);
+      dv4500->SetAt(dv4500->GetAt(i)*gg_ratio[5]+shape_2012_D6T_RSG_qq_4500[i]*(1-gg_ratio[5]), i);
+    }
+    std::cout << "RSGraviton_ak5_fat30_D6T done" << std::endl;
+    break;
+  case 10: 
+    std::cout << "RSGraviton_ak5_fat30" << std::endl;
+    dv500 = new TArrayD(50,  RSGravitonToJJ_M_500_TuneD6T_ak5GGtoGG_fat30);
+    dv700 = new TArrayD(50,  RSGravitonToJJ_M_700_TuneD6T_ak5GGtoGG_fat30);
+    dv1200 = new TArrayD(50, RSGravitonToJJ_M_1200_TuneD6T_ak5GGtoGG_fat30);
+    dv2000 = new TArrayD(50, RSGravitonToJJ_M_2000_TuneD6T_ak5GGtoGG_fat30);
+    dv3500 = new TArrayD(50, RSGravitonToJJ_M_3500_TuneD6T_ak5GGtoGG_fat30);
+    dv4000 = new TArrayD(50, RSGravitonToJJ_M_4000_TuneD6T_ak5GGtoGG_fat30);
+
+
+    for (int i = 0; i < 50; i++){
+      dv500->SetAt(dv500->GetAt(i)*gg_ratio[0]+RSGravitonToJJ_M_500_TuneD6T_ak5QQtoQQ_fat30[i]*(1-gg_ratio[0]), i);
+      dv700->SetAt(dv700->GetAt(i)*gg_ratio[1]+RSGravitonToJJ_M_700_TuneD6T_ak5QQtoQQ_fat30[i]*(1-gg_ratio[1]), i);
+      dv1200->SetAt(dv1200->GetAt(i)*gg_ratio[2]+RSGravitonToJJ_M_1200_TuneD6T_ak5QQtoQQ_fat30[i]*(1-gg_ratio[2]), i);
+      dv2000->SetAt(dv2000->GetAt(i)*gg_ratio[3]+RSGravitonToJJ_M_2000_TuneD6T_ak5QQtoQQ_fat30[i]*(1-gg_ratio[3]), i);
+      dv3500->SetAt(dv3500->GetAt(i)*gg_ratio[4]+RSGravitonToJJ_M_3500_TuneD6T_ak5QQtoQQ_fat30[i]*(1-gg_ratio[4]), i);
+      dv4000->SetAt(dv4000->GetAt(i)*gg_ratio[5]+RSGravitonToJJ_M_4000_TuneD6T_ak5QQtoQQ_fat30[i]*(1-gg_ratio[5]), i);
+    }
+    break;
   case 11: 
     std::cout << "RSGraviton_ak5_GGtoGG_fat30" << std::endl;
     dv500 = new TArrayD(50,  RSGravitonToJJ_M_500_TuneD6T_ak5GGtoGG_fat30);
@@ -589,7 +630,7 @@ void LineShapeDensity_pdf(double mass, int iResonance){
     dv500 = new TArrayD(50,  finalResults_QstarToJJ_M_700_qg_M_PFJet1PFJet2_shifted_2);
     dv700 = new TArrayD(50,  finalResults_QstarToJJ_M_700_qg_M_PFJet1PFJet2_shifted_2);
     dv1200 = new TArrayD(50, finalResults_QstarToJJ_M_1200_qg_M_PFJet1PFJet2_shifted_3);
-    dv2000 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_PFJet1PFJet2_shifted_4);
+    dv2000 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_PFJet1PFJet2_shifted_4); 
     dv3500 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_PFJet1PFJet2_shifted_4);
     dv4000 = new TArrayD(50, finalResults_QstarToJJ_M_2000_qg_M_PFJet1PFJet2_shifted_4);
     std::cout << "End of sample filling" << std::endl;
