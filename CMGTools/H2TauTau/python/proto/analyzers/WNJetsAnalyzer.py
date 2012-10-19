@@ -33,10 +33,13 @@ class WNJetsAnalyzer( Analyzer ):
         
     def process(self, iEvent, event):
         event.NUP = -1
-        try :
-            self.readCollections( iEvent )
-        except :
+
+        # VH samples don't contain the collection necessary
+        # for this analyzer to run
+        if self.cfg_comp.name.find('HiggsVH')!=-1:
             return True
+        
+        self.readCollections( iEvent )
         
         if not self.cfg_comp.isMC:
             return True
