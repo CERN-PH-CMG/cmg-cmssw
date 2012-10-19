@@ -108,13 +108,13 @@ int main(int argc, char* argv[])
   bool ALLOWSNEGATIVE=true;
   
   // histogram binning (for display only)
-  const int NBINS=54;
+  const int NBINS=56;
   Double_t BOUNDARIES[NBINS] = { 220, 244, 270, 296, 325, 354, 386, 419, 453,
 				 489, 526, 565, 606, 649, 693, 740, 788, 838,
 				 890, 944, 1000, 1058, 1118, 1181, 1246, 1313, 1383,
 				 1455, 1530, 1607, 1687, 1770, 1856, 1945, 2037, 2132,
 				 2231, 2332, 2438, 2546, 2659, 2775, 2895, 3019, 3147,
-	                         3279, 3416, 3558, 3704, 3854, 4010, 4171, 4337, 4509};
+	                         3279, 3416, 3558, 3704, 3854, 4010, 4171, 4337, 4509, 4686, 4869};
   
   // start the timer
   TStopwatch t;
@@ -147,7 +147,9 @@ int main(int argc, char* argv[])
       WRITE = true;
   }
 
-  if (sResonance.find("RSGraviton_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 11;
+ 
+  if (sResonance.find("RSGraviton_ak5_fat30") != std::string::npos) iResonance = 10;
+  else if (sResonance.find("RSGraviton_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 11;
   else if (sResonance.find("RSGraviton_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 12;
   else if (sResonance.find("Qstar_ak5_fat30") != std::string::npos) iResonance = 13;
   else if (sResonance.find("RSGraviton_HLT_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 21;
@@ -224,6 +226,7 @@ int main(int argc, char* argv[])
   else if (sResonance.find("RSGraviton_2012_D6T_ak5_GGtoGG_fat30") != std::string::npos) iResonance = 4014;
   else if (sResonance.find("RSGraviton_2012_D6T_ak5_QQtoQQ_fat30") != std::string::npos) iResonance = 4015;
   else if (sResonance.find("Qstar_2012_D6T_ak5_fat30") != std::string::npos) iResonance = 4016;
+  else if (sResonance.find("RSGraviton_2012_D6T_ak5_fat30") != std::string::npos) iResonance = 4017;
 
   if (iResonance > 20 && iResonance < 29)  {
     DATASETFN="../data/PFDiFatJetMassList_DATA.txt";
@@ -246,7 +249,7 @@ int main(int argc, char* argv[])
     JERERROR=0.11;   // relative error on JER
   }
      
-  if (iResonance > 1000 && iResonance < 1020)  {
+  if (iResonance > 1000 && iResonance < 1999)  {
     MININVMASS = 890.;
     MAXINVMASS = 5500.;
   }
@@ -275,7 +278,8 @@ int main(int argc, char* argv[])
   if (iResonance > 4000 && iResonance < 5000)  {
     DATASETFN="../data/dijet_mass_fat_3949pbm1_fatMass_190456_195947.txt";
     MININVMASS = 890.;
-    MAXINVMASS = 4686.;
+    MAXINVMASS = 4869.;
+    //MAXINVMASS = 4686.;
     LUMI = 3950.;
     LUMIERROR=0.050; // relative error on luminosity
     JESERROR=0.0125;   // relative error on JES
@@ -498,6 +502,9 @@ int main(int argc, char* argv[])
 
 
   for(int PE=0; PE<=numPEs; PE++) {
+
+    cout << "Start to loop over PEs" << endl;
+
     if(numPEs>0 && PE==0) continue; // skip the 0th entry if we are running PEs
 
     system( "ps -v | grep RSS" );
@@ -559,16 +566,16 @@ int main(int argc, char* argv[])
 	ws->var("pc3")->setConstant(true);
 	ws->var("nbkg")->setConstant(true);
     } else
-    if (PE!=0){
-      if(ALLOWSNEGATIVE)
+      if (PE!=0){
+	if(ALLOWSNEGATIVE)
           xs->setRange(-maxXS*1000.0,maxXS*1000.0);
-      else    
+	else    
           xs->setRange(0,maxXS*1000.0);
-      xs->setVal(maxXS/1.0);
+	xs->setVal(maxXS/1.0);
+	
+	fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
 
-      fit=doFit(std::string("bsfita")+pelabel, ws->pdf("modela"), binnedData, invmass, ws->function("nsig"), ws->var("nbkg"), NBINS-1, BOUNDARIES, "FULL", 0, verbose_);
-
-    }
+      }
 
     // set parameters for limit calculation
     if(statlevel==1 || statlevel==11 || statlevel==12 || statlevel==13 || statlevel==14 || (statlevel>=100 && statlevel < 1000)) {
@@ -594,6 +601,8 @@ int main(int argc, char* argv[])
       ws->var("lumi")->setConstant(false);
     }
     
+    cout << "Set here the value of the signal for final calculation" << endl;
+
     if(xs->getVal()<0)
         xs->setVal(0);
     xs->setRange(0,maxXS);
@@ -745,37 +754,57 @@ int main(int argc, char* argv[])
          histA->Scale(3); // 3 times the central value plus up/down variations along 3 axes
          TVector g(nPar);
 	 for(Int_t v=1; v<nPar;v++){
-          if(USENEWCOVARIANCE)
-          {
-	      for(Int_t k= 0; k < nPar; k++) g(k)=eigenValues(v)*eigenVectors[k][v]; 
+          if(USENEWCOVARIANCE) {
+	    for(Int_t k= 0; k < nPar; k++) {
+	      if (eigenVectors[0][v] != 0) 
+		g(k)=eigenValues(v)*eigenVectors[k][v]*(eigenVectors[0][v])/fabs(eigenVectors[0][v]);
+	      else g(k)=eigenValues(v)*eigenVectors[k][v];
+	    }
 	  } else {
 	      for(Int_t k= 0; k < nPar; k++) g(k)=eigenVectors[v][k];
               // multiply this vector by Lt to introduce the appropriate correlations
               g*= (*_Lt);
 	  }
+	  cout << "Up iPar = " << nPar << endl;
+	  cout << "p1val+g(1) = " <<  p1val+g(1) << endl;
+	  cout << "p2val+g(2) = " <<  p2val+g(2) << endl;
+	  cout << "p3val+g(3) = " <<  p3val+g(3) << endl;
+
 	  if(g(1)<0)
 	      for(Int_t k= 0; k < nPar; k++) g(k)=-g(k);
+
 	  ws->var("nbkg")->setVal(nbkgValInit);
 	  ws->var("p1")->setVal(p1ValInit+g(1));
 	  ws->var("p2")->setVal(p2ValInit+g(2));
 	  ws->var("p3")->setVal(p3ValInit+g(3));
+
 	  TH1D* histAHi=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histAHi"));
 	  histA->Add(histAHi);
 	  delete histAHi;
           if(USENEWCOVARIANCE)
           {
-	      for(Int_t k= 0; k < nPar; k++) g(k)=-eigenValues(v)*eigenVectors[k][v]; 
+	    for(Int_t k= 0; k < nPar; k++) {
+	      if (eigenVectors[0][v] != 0) g(k)= -eigenValues(v)*eigenVectors[k][v]*(eigenVectors[0][v])/fabs(eigenVectors[0][v]); 
+	      else g(k)= -eigenValues(v)*eigenVectors[k][v];
+	    }
 	  } else {
-	      for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[v][k];
-              // multiply this vector by Lt to introduce the appropriate correlations
-              g*= (*_Lt);
+	    for(Int_t k= 0; k < nPar; k++) g(k)=-eigenVectors[v][k];
+	    // multiply this vector by Lt to introduce the appropriate correlations
+	    g*= (*_Lt);
 	  }
+
+	  cout << "Do iPar = " << nPar << endl;
+	  cout << "p1val+g(1) = " <<  p1val+g(1) << endl;
+	  cout << "p2val+g(2) = " <<  p2val+g(2) << endl;
+	  cout << "p3val+g(3) = " <<  p3val+g(3) << endl;
+
 	  if(g(1)>=0)
-	      for(Int_t k= 0; k < nPar; k++) g(k)=-g(k);
+	    for(Int_t k= 0; k < nPar; k++) g(k)=-g(k);
 	  ws->var("nbkg")->setVal(nbkgValInit);
 	  ws->var("p1")->setVal(p1ValInit+g(1));
 	  ws->var("p2")->setVal(p2ValInit+g(2));
 	  ws->var("p3")->setVal(p3ValInit+g(3));
+
 	  TH1D* histALo=dynamic_cast<TH1D*>(mcA.GetPosteriorHistForce()->Clone("histALo"));
 	  histA->Add(histALo);
 	  delete histALo;
