@@ -27,6 +27,7 @@ recoilCorrectedMETMuEle2012 = cms.EDProducer(
     fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm53X_20pv_njet.root'),
     fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm53X_20pv_njet.root'),
     enable = cms.bool(True),
+    force = cms.bool(False),
     verbose = cms.untracked.bool( False )
     #COLIN: make delta R a parameter
     )

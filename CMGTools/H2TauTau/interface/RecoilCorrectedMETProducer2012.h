@@ -66,6 +66,11 @@ private:
   RecoilCorrector2012*  corrector_;
 
   bool enable_;
+  
+  // disable a few consistency checks to e.g. be able to run the W recoil correction
+  // on ersatz DYJets
+  bool force_;
+
   bool verbose_;
 };
 
@@ -80,6 +85,7 @@ RecoilCorrectedMETProducer2012< RecBosonType >::RecoilCorrectedMETProducer2012(c
   leptonLeg_( iConfig.getParameter<int>("leptonLeg") ),
   correctionType_( static_cast<CorrectionType>( iConfig.getParameter<int>("correctionType") ) ), 
   enable_( iConfig.getParameter<bool>("enable") ),
+  force_( iConfig.getParameter<bool>("force") ),
   verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ) {
   
   std::string fileCorrectTo = iConfig.getParameter<std::string>("fileCorrectTo");
@@ -137,29 +143,31 @@ void RecoilCorrectedMETProducer2012<RecBosonType>::produce(edm::Event & iEvent, 
   if( genBosonH->size()!=1) 
     throw cms::Exception("Input GenBoson collection should have size 1.");
  
-    const reco::GenParticle& genBoson = (*genBosonH)[0];
-    double genPt = genBoson.pt(); 
-    double genPhi = genBoson.phi();
+  const reco::GenParticle& genBoson = (*genBosonH)[0];
+  double genPt = genBoson.pt(); 
+  double genPhi = genBoson.phi();
 
 
   // check that the user is doing nothing wrong. 
   // leptonLeg = 1 or 2 ok for W, but not for Z 
   // leptonLeg = 0 ok for Z 
   //COLIN should add a force mode to bypass these exceptions
-  switch( genBoson.pdgId() ) {
-  case 24: // W+
-  case -24:// W-
-    if( leptonLeg_ != 1 && leptonLeg_ != 2) 
-      throw cms::Exception("leptonLeg should be equal to 1 or 2 when running on W events.");
-    break;
-  case 22: // photon 
-  case 23: // Z0
-  case 25: // Higgs
-    if( leptonLeg_ != 0 ) 
-      throw cms::Exception("leptonLeg should be equal to 0 when running on Higgs or Drell-Yan events.");   
-    break;
-  default:
-    throw cms::Exception("input genBoson should be a W or a Z0/gamma.");
+  if(!force_) {
+    switch( genBoson.pdgId() ) {
+    case 24: // W+
+    case -24:// W-
+      if( leptonLeg_ != 1 && leptonLeg_ != 2) 
+	throw cms::Exception("leptonLeg should be equal to 1 or 2 when running on W events.");
+      break;
+    case 22: // photon 
+    case 23: // Z0
+    case 25: // Higgs
+      if( leptonLeg_ != 0 ) 
+	throw cms::Exception("leptonLeg should be equal to 0 when running on Higgs or Drell-Yan events.");   
+      break;
+    default:
+      throw cms::Exception("input genBoson should be a W or a Z0/gamma.");
+    }
   }
 
 

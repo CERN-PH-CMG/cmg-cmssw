@@ -8,9 +8,12 @@ def lookup( fileName, stringToFind ):
     else:
         return False
 
-def fileAndLeg(fileName, is53X):
+def fileAndLeg(fileName, is53X, mode=None):
     correctFileName = None
     leptonLeg = None
+    if mode:
+        # forcing a mode
+        fileName = mode
     if lookup( fileName, 'DYJets' ) :
         print '\tENABLED : Z->l tau mode (tau is true)'
         if is53X :
@@ -45,9 +48,11 @@ def fileAndLeg(fileName, is53X):
     return correctFileName, leptonLeg
 
 
-def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True):
+def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True, mode=None):
 
     print 'setting up recoil corrections:'
+    if not runOnMC:
+        enable=False
 
     if not hasattr( process, 'recoilCorMETTauMu') and \
        not hasattr( process, 'recoilCorMETTauEle') :
@@ -56,6 +61,9 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True):
         
     fileName = process.source.fileNames[0]
     print fileName
+
+    if mode:
+        print 'FORCING TO', mode
 
     if is53X:
         print 'picking up 53X recoil fits'
@@ -73,15 +81,19 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True):
     correctFileName = None
     leptonLeg = None
     if enable:
-        correctFileName, leptonLeg = fileAndLeg(fileName, is53X)
+        correctFileName, leptonLeg = fileAndLeg(fileName, is53X, mode)
         if correctFileName is None:
             enable = False
     if enable:
         if hasattr( process, 'recoilCorMETTauMu'):
+            if mode:
+                process.recoilCorMETTauMu.force = True
             process.recoilCorMETTauMu.enable = True
             process.recoilCorMETTauMu.fileCorrectTo = correctFileName
             process.recoilCorMETTauMu.leptonLeg = leptonLeg
         if hasattr( process, 'recoilCorMETTauEle'):
+            if mode:
+                process.recoilCorMETTauEle.force = True
             process.recoilCorMETTauEle.enable = True
             process.recoilCorMETTauEle.fileCorrectTo = correctFileName
             process.recoilCorMETTauEle.leptonLeg = leptonLeg 
