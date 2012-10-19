@@ -47,6 +47,14 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        
        var( tr, 'isFake')
        var( tr, 'isSignal')
+
+       bookGenParticle(tr, 'genW')
+       bookGenParticle(tr, 'genZ')
+       bookGenParticle(tr, 'genWlep')
+       bookGenParticle(tr, 'genWnu')
+       bookGenParticle(tr, 'genZleg1')
+       bookGenParticle(tr, 'genZleg2')
+       
        
     def declareHandles(self):
         super(H2TauTauTreeProducerTauMu, self).declareHandles()
@@ -106,5 +114,16 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
           
        fill(tr, 'isFake', event.isFake)
        fill(tr, 'isSignal', event.isSignal)
+
+       if hasattr( event, 'genZs'):
+           if len(event.genZs):
+               fillGenParticle(tr, 'genZ', event.genZs[0])
+               fillGenParticle(tr, 'genZleg1', event.genZs[0].leg1)
+               fillGenParticle(tr, 'genZleg2', event.genZs[0].leg2)
+       if hasattr( event, 'genWs'):
+           if len(event.genWs):
+               fillGenParticle(tr, 'genW', event.genWs[0])
+               fillGenParticle(tr, 'genWlep', event.genWs[0].lep)
+               fillGenParticle(tr, 'genWnu', event.genWs[0].nu)
        
        self.tree.tree.Fill()
