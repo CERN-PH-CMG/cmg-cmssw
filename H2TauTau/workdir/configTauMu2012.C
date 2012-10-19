@@ -6,8 +6,9 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
 
   TauMuPlotter * analysis = new TauMuPlotter(name);
   analysis->setOutputPath(path);
-  analysis->setQCDOStoSSRatio(1.11);//1.05);//my measured value July 6
+  analysis->setQCDOStoSSRatio(1.06);
   analysis->setZTTType(2);
+  analysis->mTCut_=10;
   
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
@@ -34,9 +35,9 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   TauPlusX2012Cv2->setSampleLumi(1288.0 + 4751.0 + 272.040);
   analysis->addSample(TauPlusX2012Cv2);
 
-//   Sample* Embedded2012A = new Sample("Embedded2012A",path);
-//   Embedded2012A->setDataType("Embedded");
-//   analysis->addSample(Embedded2012A);
+  Sample* Embedded2012A = new Sample("Embedded2012A",path);
+  Embedded2012A->setDataType("Embedded");
+  analysis->addSample(Embedded2012A);
 
   Sample* Embedded2012A2 = new Sample("Embedded2012A2",path);
   Embedded2012A2->setDataType("Embedded");
@@ -74,8 +75,8 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   analysis->addSample(ZToLJet);
 
 
-  //////////TTJets
-  float TTCrossectionScaleFactor=1.08;//apply this globally
+  //////////TTJets 
+  float TTCrossectionScaleFactor=1.08;//apply this globally // old factors are for 52X MC
   cout<<"WARNING applying scale factor to TT MC "<<TTCrossectionScaleFactor<<endl;
   analysis->TTJetsCorrFactor[0]=1.;
   analysis->TTJetsCorrFactor[1]=1.01/TTCrossectionScaleFactor;

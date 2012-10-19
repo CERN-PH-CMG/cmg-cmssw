@@ -5,9 +5,11 @@
 #include "TauMuPlotter.h"
 #include "configTauMu2011.C"
 #include "configTauMu2012.C"
+#include "configTauMu2012AB.C"
 #include "TauElePlotter.h"
 #include "configTauEle2011.C"
 #include "configTauEle2012.C"
+//#include "configTauEle2012AB.C"
 
 #define NMASS 8
 long massValues[NMASS]={110,115,120,125,130,135,140,145};
@@ -30,12 +32,16 @@ TString catdirname[NCAT]={
 //#define NXBINS 21
 //float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
 
-///For study of MSSM performance
-//#define NXBINS 19
-//float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,900,1200,1500};  
-//#define NXBINS 16
-//float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,500,1000,1500};  
+// ///For study of MSSM performance
+// #define NXBINS 19
+// float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,900,1200,1500};  
+// #define NXBINSVBF 19
+// Float_t xbinsValuesVBF[NXBINSVBF+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,900,1200,1500}; 
 
+// #define NXBINS 16
+// float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,500,1000,1500};  
+// #define NXBINSVBF 16
+// Float_t xbinsValuesVBF[NXBINSVBF+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,500,1000,1500};  
 
 // ////Old binning
 // #define NXBINS 13
@@ -50,7 +56,7 @@ Float_t xbinsValues[NXBINS+1]={0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,
 Float_t xbinsValuesVBF[NXBINSVBF+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
 
 
-void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
+void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t option=0){
 
   if(tag!="")path=path+"_"+tag;
 
@@ -63,6 +69,7 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
   if(channel==1){
     if(year==2011)TauMuPlotter * analysis=configTauMu2011("analysis",path);
     if(year==2012)TauMuPlotter * analysis=configTauMu2012("analysis",path);
+    //if(year==2012)TauMuPlotter * analysis=configTauMu2012AB("analysis",path);
   }
   if(channel==2){
     if(year==2011)TauElePlotter * analysis=configTauEle2011("analysis",path);
@@ -77,6 +84,8 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag){
   analysis->Isocat_=1;
   analysis->MTcat_=1; 
   analysis->Chcat_=1; 
+
+  analysis->mTCut_=option; 
 
   analysis->printRawYields("eventweight*(categoryIso==1&&abs(ditaucharge)==0)");//This might be needed to avoid some nan values
 

@@ -23,22 +23,15 @@ TauMuPlotter::TauMuPlotter(const char * name):
   MTcat_(-1),
   extrasel_("1"),
   blindsel_("1"),
+  MSSMFlag_(0),
+  QCDOStoSSRatio_(1.11),
+  ZTTType_(1),
+  WJetsType_(0),
+  mTCut_(30),
   plotvar_("ditaumass"),
   nbins_(100),
   xmin_(0.),
   xmax_(1000.),
-  QCDOStoSSRatio_(1.11),
-  QCDOStoSSRatioErr_(0.02),
-  QCDMuIsoSideRatio_(0.),
-  QCDOSTauIsoSideRatio_(0),
-  QCDSSTauIsoSideRatio_(0),
-  WJetsOSSideCorr_(1.),
-  WJetsSSSideCorr_(1.),
-  WJetsOSSideCorrErr_(0.),
-  WJetsSSSideCorrErr_(0.),
-  ZTTType_(1),
-  WJetsType_(0),
-  MSSMFlag_(0),
   nbinsVariable_(0),
   xbinsVariable_(0),
   plotTitle_("")
@@ -47,7 +40,6 @@ TauMuPlotter::TauMuPlotter(const char * name):
   TTJetsCorrFactor[0]=1.;
   TTJetsCorrFactor[1]=1.;
   TTJetsCorrFactor[2]=1.;
-
 
   qcdTauIsoRatio_ = "((20<taujetpt&&taujetpt<=25)*2.85+(25<taujetpt&&taujetpt<=30)*1+(30<taujetpt&&taujetpt<=35)*0.411+(35<taujetpt&&taujetpt<=40)*0.196+(40<taujetpt&&taujetpt<=45)*0.109+(45<taujetpt&&taujetpt<=50)*0.0644+(50<taujetpt&&taujetpt<=55)*0.0458+(55<taujetpt&&taujetpt<=60)*0.0349+(60<taujetpt&&taujetpt<=65)*0.0338)";
   qcdMuIsoRatio_  = "((17<mujetpt&&mujetpt<=22)*1.51+(22<mujetpt&&mujetpt<=27)*0.462+(27<mujetpt&&mujetpt<=32)*0.2+(32<mujetpt&&mujetpt<=37)*0.12+(37<mujetpt&&mujetpt<=42)*0.101+(42<mujetpt&&mujetpt<=47)*0.0964+(47<mujetpt&&mujetpt<=52)*0.14+(52<mujetpt&&mujetpt<=57)*0.116)";
@@ -112,15 +104,12 @@ TH1F* TauMuPlotter::getSample(TString samplename){
   if(Chcat_==1)  sel += "*(abs(ditaucharge)==0)";
   if(Chcat_==2)  sel += "*(abs(ditaucharge)==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<30)";
-  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<130.)";
-  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
-  if(MTcat_==101)  sel += "*(-20<(pZeta-1.5*pZetaVis))";
-  //if(MTcat_==101)  sel += "*(-30<(pZeta-1.5*pZetaVis)&&(pZeta-1.5*pZetaVis)<30.)";
-  //if(MTcat_==103)  sel += "*((pZeta-1.5*pZetaVis)<-40.)";
-  if(MTcat_==103)  sel += "*(-100<(pZeta-1.5*pZetaVis)&&(pZeta-1.5*pZetaVis)<-40.)";
+  if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
+  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
+  //cout<<sel<<endl;
 
   TH1F* h=getPlotHisto(samplename);
 
@@ -157,14 +146,9 @@ TH1F* TauMuPlotter::getTotalData(){
   if(Chcat_==1)  sel += "*(abs(ditaucharge)==0)";
   if(Chcat_==2)  sel += "*(abs(ditaucharge)==2)";
   if(Isocat_>0)  sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  //if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<30)";
-  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<130.)";
-  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
-  if(MTcat_==101)  sel += "*((pZeta-1.5*pZetaVis)>-20.)";
-  //if(MTcat_==101)  sel += "*(-30<(pZeta-1.5*pZetaVis)&&(pZeta-1.5*pZetaVis)<30.)";
-  //if(MTcat_==103)  sel += "*((pZeta-1.5*pZetaVis)<-40.)";
-  if(MTcat_==103)  sel += "*(-100<(pZeta-1.5*pZetaVis)&&(pZeta-1.5*pZetaVis)<-40.)";
+  if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
+  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
   if(blindsel_.CompareTo("1")!=0)sel += TString("*")+blindsel_;
   
@@ -180,8 +164,6 @@ TH1F* TauMuPlotter::getTotalData(){
       h->Add(hd);
       delete hd;
     }
- 
-  //cout<<"TotalData : "<<h->Integral()<<endl;
 
   return h;
 }
@@ -193,15 +175,9 @@ TH1F* TauMuPlotter::getTotalMC(){
   if(Chcat_==1)  sel += "*(abs(ditaucharge)==0)";
   if(Chcat_==2)  sel += "*(abs(ditaucharge)==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  //  if(MTcat_>0) sel += TString("*(categoryMT==")+(long)MTcat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<30)";
-  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<130.)";
-  //if(MTcat_==13)  sel += "*(transversemass>50.)";
-  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
-  if(MTcat_==101)  sel += "*((pZeta-1.5*pZetaVis)>-20.)";
-  //if(MTcat_==101)  sel += "*(-30<(pZeta-1.5*pZetaVis)&&(pZeta-1.5*pZetaVis)<30.)";
-  //if(MTcat_==103)  sel += "*((pZeta-1.5*pZetaVis)<-40.)";
-  if(MTcat_==103)  sel += "*(-100<(pZeta-1.5*pZetaVis)&&(pZeta-1.5*pZetaVis)<-40.)";
+  if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
+  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
 
@@ -228,13 +204,9 @@ TH1F* TauMuPlotter::getTotalEmbedded(){
   if(Chcat_==1)  sel += "*(abs(ditaucharge)==0)";
   if(Chcat_==2)  sel += "*(abs(ditaucharge)==2)";
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<30)";
-  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<130.)";
-  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
-  if(MTcat_==101)  sel += "*((pZeta-1.5*pZetaVis)>-20.)";
-  //if(MTcat_==101)  sel += "*(-30<(pZeta-1.5*pZetaVis)&&(pZeta-1.5*pZetaVis)<30.)";
-  //if(MTcat_==103)  sel += "*((pZeta-1.5*pZetaVis)<-40.)";
-  if(MTcat_==103)  sel += "*(-100<(pZeta-1.5*pZetaVis)&&(pZeta-1.5*pZetaVis)<-40.)";
+  if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
+  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
+  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
 
@@ -294,26 +266,23 @@ TH1F* TauMuPlotter::getDiBosonVBFHCP(){
 
 TH1F* TauMuPlotter::getZToTauTau(){  
   TH1F*h=0;
-  //TString tmpex=extrasel_;
-  //extrasel_+="*(1+0.02*(mupt-25))";
   if(ZTTType_==1)h=getSample("ZToTauTau");
   if(ZTTType_==2)h=getTotalEmbedded(); 
-  //extrasel_=tmpex;
   return h;
 }
 
 
 //WJets
 TH1F* TauMuPlotter::getWJetsInc(){
-  TH1F*hShape=getSample("WJetsToLNu");
+
+  TString sample="WJetsToLNu";
+  TH1F*hShape=getSample(sample);
   hShape->SetName("getWJetsInc");
 
   //determine normalization
   Int_t tmpCategoryMT=MTcat_;//switch to high mT
   MTcat_=3;
-  if(MSSMFlag_)  MTcat_=103;//use pZeta
-  //cout<<"  **** Normalzing WJets from MTcat=="<<MTcat_<<endl;
-  TH1F* HW=getSample("WJetsToLNu");
+  TH1F* HW=getSample(sample);
   TH1F* HData=getTotalData();
   TH1F* HMC=getZToTauTau();
   TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
@@ -324,13 +293,14 @@ TH1F* TauMuPlotter::getWJetsInc(){
   //return to Category
   MTcat_=tmpCategoryMT;
 
-
-  if(HW->Integral()>1.){
-    hShape->Scale((HData->Integral()-HMC->Integral())/HW->Integral());
+  float corr=0.;
+  if(HW->Integral()>1.&&(HData->Integral()>HMC->Integral())){//avoid nan and negative values
+    corr=(HData->Integral()-HMC->Integral())/HW->Integral();
+    cout<<" WJets Inc correction factor : "<<corr<<endl;
   }else {
     cout<<"WARNING HW->Integral is 0"<<endl;
-    hShape->Scale(0.);
   }
+  hShape->Scale(corr);
   delete HData;
   delete HMC;
   delete HW;
@@ -398,6 +368,7 @@ TH1F* TauMuPlotter::getWJetsNJetVBFHCP(){
   TH1F*hShape=getWNJetSum();
   hShape->SetName("getWJetsNJetShape");
   extrasel_=tmpextrasel;
+  //cout<<" integral of hShape "<<hShape->Integral()<<endl;
 
   ///get Data - MC at high mT without relaxed selection
   MTcat_=13;
@@ -1045,15 +1016,9 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
 
 TH1F* TauMuPlotter::getQCDMuIsoSM(){
   TString sel="eventweight*(abs(ditaucharge)==0&&0.3<muiso&&muiso<0.5)";
-  //if(MTcat_>0)  sel += TString("*(categoryMT==")+(long)MTcat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<30)";
-  if(MTcat_==3)  sel += "*(transversemass>70.)";
-  //if(MTcat_==13)  sel += "*(transversemass>50.)";
-  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120.)";
-  if(MTcat_==101)  sel += "*((pZeta-1.5*pZetaVis)>-20.)";
-  //if(MTcat_==101)  sel += "*(-30<(pZeta-1.5*pZetaVis)&&(pZeta-1.5*pZetaVis)<30.)";
-  //if(MTcat_==103)  sel += "*((pZeta-1.5*pZetaVis)<-40.)";
-  if(MTcat_==103)  sel += "*(-100<(pZeta-1.5*pZetaVis)&&(pZeta-1.5*pZetaVis)<-40.)";
+  if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
+  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
+  if(MTcat_==13) sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
   TH1F* h=getPlotHisto("hSMQCD");
@@ -1543,7 +1508,8 @@ TH1F* TauMuPlotter::getQCDHCP(){
   char isocuttxt[100];
   sprintf(isocuttxt,"(0.2<muiso&&muiso<0.5&&tauisomva>0.7)");//for normalization
   char isocuttxtshape[100];
-  sprintf(isocuttxtshape,"(0.2<muiso&&muiso<0.5&&tauisomva>0.7&&njet20>=2&&diJetMass>200&&abs(diJetDeltaEta)>2.0)");//for shape (add mva>0.)
+  sprintf(isocuttxtshape,"(0.2<muiso&&muiso<0.5&&tauisomva>0.7&&njet20>=2&&diJetMass>200&&abs(diJetDeltaEta)>2.0)");
+  //sprintf(isocuttxtshape,"(0.2<muiso&&muiso<0.5&&tauisomva>0.7&&njet20>=2)");
   
 
   //incl QCD 
@@ -1564,7 +1530,7 @@ TH1F* TauMuPlotter::getQCDHCP(){
   TH1F* hDataVBFLoose=getTotalData();  if(!hDataVBFLoose){cout<<" Total Data not determined "<<endl; return 0;}   hDataVBFLoose->SetName("hDataVBFLoose");
 
   //QCD Shape
-  extrasel_=TmpExtrasel+"*"+isocuttxtshape;
+  extrasel_=isocuttxtshape;
   TH1F* hShape=getTotalData();  if(!hShape){cout<<" hShape not made "<<endl; return 0;}   hShape->SetName("hShape");
 
   //return selections to normal
@@ -2042,9 +2008,10 @@ void TauMuPlotter::plotQCDSSOSRatio(){
   xmin_=0;
   xmax_=0.7;
   Isocat_=-1;
-  MTcat_=1;
+  MTcat_=-1;
   Chcat_=2;
   extrasel_="(muiso>0.2&&tauisomva>-1.0)";
+  //extrasel_="(muiso>0.2&&tauisomva>-1.0&&njet==1)";
   scaleSamplesLumi();
 
   TCanvas C("plotQCDSSOSRatio");

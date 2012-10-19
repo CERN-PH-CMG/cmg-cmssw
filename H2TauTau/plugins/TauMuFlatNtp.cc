@@ -397,6 +397,21 @@ bool TauMuFlatNtp::fill(){
 //       //id+isolation corrections
 //       selectionEffWeight_ *= selectionEff_.effCorrMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
+//       ////2012 A + B crosscheck with 53X MC
+//       if(trigPaths_.size()>0){
+// 	if(triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+// 	  triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+// 	    /triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+
+// 	if(triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+// 	  triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+// 	    /triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC (diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+//       }else{
+// 	triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+// 	triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+//       }
+
+      //////////2012 A+B+C
       if(trigPaths_.size()>0){
 	if(triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
 	  triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
@@ -409,6 +424,8 @@ bool TauMuFlatNtp::fill(){
 	triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	triggerEffWeight_ *= triggerEff_.effMu2012_Rebecca_TauMu_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       }
+
+
       //id+isolation corrections
       selectionEffWeight_ *= selectionEff_.effCorrMu2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
     }
@@ -602,6 +619,7 @@ bool TauMuFlatNtp::vetoDiLepton(){
     if(!((*(m->sourcePtr()))->innerTrack().isAvailable()))continue;
     if(!((*(m->sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits() > 0))continue;
     if(fabs((*(m->sourcePtr()))->innerTrack()->dz(PV_->position()))  > 0.2 ) continue;
+    if(fabs((*(m->sourcePtr()))->innerTrack()->dxy(PV_->position())) > 0.045 ) continue;
 
     if(m->relIso(0.5,1)>=0.3)continue;        
     nleptons++;
@@ -609,18 +627,23 @@ bool TauMuFlatNtp::vetoDiLepton(){
   for(std::vector<cmg::Electron>::const_iterator m=leptonVetoListElectron_->begin(); m!=leptonVetoListElectron_->end(); ++m){  
     if(m->pt()<=10.0)continue;
     if(fabs(m->eta())>=2.5)continue;
-    if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
     if(m->numberOfHits()!=0) continue;
     if(m->passConversionVeto()!=1) continue;
 
-     float mvaid=m->mvaNonTrigV0();
-     float eta=(*(m->sourcePtr()))->superCluster()->eta();
-     if(fabs(eta)<0.8)
-       if(mvaid<0.925)continue; 
-     if(0.8<=fabs(eta)&&fabs(eta)<1.479)
-       if(mvaid<0.975)continue;
-     if(1.479<=fabs(eta))
-       if(mvaid<0.985)continue; 
+    if(!((*(m->sourcePtr()))->gsfTrack().isNonnull()))continue;
+    if(!((*(m->sourcePtr()))->gsfTrack().isAvailable()))continue;     
+    if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) continue;
+    if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;
+
+    
+    float mvaid=m->mvaNonTrigV0();
+    float eta=(*(m->sourcePtr()))->superCluster()->eta();
+    if(fabs(eta)<0.8)
+      if(mvaid<0.925)continue; 
+    if(0.8<=fabs(eta)&&fabs(eta)<1.479)
+      if(mvaid<0.975)continue;
+    if(1.479<=fabs(eta))
+      if(mvaid<0.985)continue; 
 
     if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
     nleptons++;

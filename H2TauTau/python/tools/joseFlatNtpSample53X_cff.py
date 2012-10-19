@@ -540,7 +540,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
 
 
     if sampleAlias == 'Embedded2012A' : 
-        module.path = ""
+        module.path = "/DoubleMu/StoreResults-DoubleMu_Run2012A_13Jul2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0"
         module.dataType = 2
         module.jsonfile = httjson_dir + 'Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt'
 
@@ -706,7 +706,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
             module.recoilCorrection = 31
-            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_zmm53X_20pv_njet.root' 
+            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
 
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.dataType = 0
@@ -714,7 +714,7 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
             module.recoilCorrection = 31
-            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_zmm53X_20pv_njet.root' 
+            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
 
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] :
@@ -729,23 +729,24 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
 
     for i in range(0,21):
         if sampleAlias == "SUSYBB"+SUSYMass[i] :
-            module.path ="/SUSYBBHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % SUSYMass[i]
+            if i==11:
+                module.path ="/SUSYBBHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_8_0"% SUSYMass[i]
+            else:
+                module.path ="/SUSYBBHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % SUSYMass[i]
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
+            module.recoilCorrection = 31
+            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
+
 
         if sampleAlias == "SUSYGG"+SUSYMass[i] :
             module.path ="/SUSYGluGluToHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % SUSYMass[i]
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
-
-
-    if sampleAlias == 'VBFSync' : 
-        module.path = "/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_6_0_B"
-        module.dataType = 0
-        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
-        module.trigPath1 = cms.InputTag("HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4","hltOverlapFilterIsoMu18LooseIsoPFTau20","hltOverlapFilterIsoMu18LooseIsoPFTau20") 
+            module.recoilCorrection = 31
+            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
 
 
     
@@ -973,7 +974,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
             module.recoilCorrection = 31
-            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_zmm53X_20pv_njet.root' 
+            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
 
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
             module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
@@ -982,7 +983,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
            #hltOverlapFilterEle20LooseIsoPFTau20, hltIsoElePFTau20TrackLooseIso, hltOverlapFilterIsoEle20WP90LooseIsoPFTau20, hltOverlapFilterEle20LooseIsoPFTau20
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
             module.recoilCorrection = 31
-            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_zmm53X_20pv_njet.root' 
+            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
 
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] :
@@ -998,10 +999,15 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
 
     for i in range(0,21):
         if sampleAlias == "SUSYBB"+SUSYMass[i] :
-            module.path ="/SUSYBBHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % SUSYMass[i]
+            if i==11:
+                module.path ="/SUSYBBHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_8_0" % SUSYMass[i]
+            else:
+                module.path ="/SUSYBBHToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % SUSYMass[i]
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
+            module.recoilCorrection = 31
+            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
 
 
         if sampleAlias == "SUSYGG"+SUSYMass[i] :
@@ -1009,11 +1015,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
+            module.recoilCorrection = 31
+            module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
 
-
-    if sampleAlias == 'VBFSync' : 
-        module.path = "/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1"
-        module.dataType = 0
-        module.pupWeightName = 'vertexWeightSummer12MCICHEPData'
-        module.trigPath1 = cms.InputTag("HLT_Ele20_CaloIdVT_CaloIsoRhoT_TrkIdT_TrkIsoT_LooseIsoPFTau20_v4","hltOverlapFilterIsoEle20LooseIsoPFTau20","hltOverlapFilterIsoEle20LooseIsoPFTau20")
 
