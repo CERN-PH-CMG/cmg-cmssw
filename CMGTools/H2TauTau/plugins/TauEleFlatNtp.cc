@@ -401,6 +401,23 @@ void TauEleFlatNtp::beginJob(){
 //        //id+isolation corrections
 //        selectionEffWeight_ *= selectionEff_.effCorrEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
+       
+
+//        ///2012 A + B crosscheck with 53X MC
+//        if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
+// 	 if(triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+// 	   triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+// 	     /triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+
+// 	 if(triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+// 	   triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+// 	     /triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+//        }else{//no trigger applied --> apply efficiency
+// 	 triggerEffWeight_ *= triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+// 	 triggerEffWeight_ *= triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+//        }
+
+       ///////////////////2012 A + B +C
        if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
 	 if(triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
 	   triggerEffWeight_ *= triggerEff_.effTau2012ABC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
@@ -606,16 +623,21 @@ void TauEleFlatNtp::beginJob(){
      if(!((*(m->sourcePtr()))->innerTrack().isAvailable()))continue;
      if(!((*(m->sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits() > 0))continue;
      if(fabs((*(m->sourcePtr()))->innerTrack()->dz(PV_->position()))  > 0.2 ) continue;
-
+     if(fabs((*(m->sourcePtr()))->innerTrack()->dxy(PV_->position())) > 0.045 ) continue;
+    
      if(m->relIso(0.5,1)>=0.3)continue;        
      nleptons++;
    }
    for(std::vector<cmg::Electron>::const_iterator m=leptonVetoListElectron_->begin(); m!=leptonVetoListElectron_->end(); ++m){  
      if(m->pt()<=10.0)continue;
      if(fabs(m->eta())>=2.5)continue;
-     if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
      if(m->numberOfHits()!=0) continue;
      if(m->passConversionVeto()!=1) continue;
+
+     if(!((*(m->sourcePtr()))->gsfTrack().isNonnull()))continue;
+     if(!((*(m->sourcePtr()))->gsfTrack().isAvailable()))continue;     
+     if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) continue;
+     if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;
 
      float mvaid=m->mvaNonTrigV0();
      float eta=(*(m->sourcePtr()))->superCluster()->eta();

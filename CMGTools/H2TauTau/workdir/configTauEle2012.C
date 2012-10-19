@@ -6,11 +6,8 @@ TauElePlotter * configTauEle2012(TString name, TString path){
 
   TauElePlotter * analysis = new TauElePlotter(name);
   analysis->setOutputPath(path);
-  analysis->setQCDOStoSSRatio(1.1);
-  analysis->setZTTType(1);
-
-  float CrossectionScaleFactor=1.011;
-  cout<<"WARNING applying scale factor for TTjets MC "<<CrossectionScaleFactor<<endl;
+  analysis->setQCDOStoSSRatio(1.06);
+  analysis->setZTTType(2);
 
 
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
@@ -52,6 +49,7 @@ TauElePlotter * configTauEle2012(TString name, TString path){
 
 
   ///DY
+  float CrossectionScaleFactor=1.011;
   cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
   Sample* ZToTauTau = new Sample("ZToTauTau",path);
   ZToTauTau->setDataType("MC");
@@ -97,6 +95,7 @@ TauElePlotter * configTauEle2012(TString name, TString path){
    
 
   ///TTJets
+  cout<<"WARNING applying scale factor for TTjets MC "<<CrossectionScaleFactor<<endl;
   Sample* TTJets = new Sample("TTJets",path);
   TTJets->setDataType("MC");
   TTJets->setCrossection(225.2*CrossectionScaleFactor);
@@ -104,8 +103,6 @@ TauElePlotter * configTauEle2012(TString name, TString path){
 
 
   //Di-Bosons
-  
-
   Sample* WW2L2Nu = new Sample("WW2L2Nu",path);
   WW2L2Nu->setDataType("MC");
   WW2L2Nu->setCrossection(5.824);

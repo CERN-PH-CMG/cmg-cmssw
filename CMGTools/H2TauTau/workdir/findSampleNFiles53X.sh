@@ -7,6 +7,7 @@
 #cmsLs /store/cmst3/user/cmgtools/CMG/TauPlusX/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_8_0  | grep cmgTuple | wc -l
 
 #echo embeddedMuTau
+#cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012A_13Jul2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012A-recover_06Aug2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l
 #cmsLs /store/cmst3/user/cmgtools/CMG/DoubleMu/StoreResults-DoubleMu_Run2012C_24Aug2012_v1_embedded_trans1_tau116_ptmu1_13had1_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0 | grep cmgTuple | wc -l

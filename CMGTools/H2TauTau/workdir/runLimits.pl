@@ -7,7 +7,8 @@ $eTauInput=shift;
 $eTauUncsDir=shift;
 #1=muTau, 2=eTau, 12=muTau+eTau
 $channel=shift;
-
+#choose mass point or do all
+$mass=shift;
 
 ####inputs
 #$muTauInput="/afs/cern.ch/user/b/bianchi/public/Roger/datacards2011v3/muTauSM.root";
@@ -20,7 +21,8 @@ $channel=shift;
 #$eTauUncsDir="/afs/cern.ch/user/b/benitezj/scratch0/V5_5_0_44X/CMGTools/CMSSW_4_4_4/src/HiggsAnalysis/HiggsToTauTau/setup/et";
 
 
-##limit.py --asymptotic --expectedOnly --noprefit
+$limitcommand="limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping'";
+#$limitcommand="limit.py --asymptotic --expectedOnly  --userOpt '--minosAlgo stepping'";
 
 ###plot layout
 $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout.py";
@@ -28,13 +30,19 @@ $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout.py";
 $Ncat=5;
 @cat=(0,1,2,3,5);
 $Nmass=8;
-@mass=(110,115,120,125,130,135,140,145);
+if($mass==0){
+    @mass=(110,115,120,125,130,135,140,145);
+}else{
+    @mass=($mass);
+}
+
 
 $ECMS="7";
 if($channel>100){
     $ECMS="8";
     $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012.py";
 }
+
 
 if($channel==1||$channel==101){
 
@@ -73,7 +81,7 @@ if($channel==1||$channel==101){
     print "computing limits per category:\n";
     foreach $d (@cat){
 	#print "SM${d}\n";
-	`limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping ' SM${d}/*`;
+	`${limitcommand} SM${d}/*`;
     }
     ######plot the limits 
     `rm -f limits_sm.root`;
@@ -99,7 +107,7 @@ if($channel==1||$channel==101){
 	}
     }
     print "compute combined limit:\n";
-    `limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping ' SMAll/*`;
+    `${limitcommand} SMAll/*`;
     `plot asymptotic ${layout} SMAll`;
 
     chdir("..");
@@ -143,7 +151,7 @@ if($channel==2){
     print "computing limits per category:\n";
     foreach $d (@cat){
 	#print "SM${d}\n";
-	`limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping ' SM${d}/*`;
+	`${limitcommand} SM${d}/*`;
     }
     ######plot the limits 
     `rm -f limits_sm.root`;
@@ -169,7 +177,7 @@ if($channel==2){
 	}
     }
     print "compute combined limit:\n";
-    `limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping ' SMAll/*`;
+    `${limitcommand} SMAll/*`;
     `plot asymptotic ${layout} SMAll`;
 
     chdir("..");
@@ -224,7 +232,7 @@ if($channel==12){
     print "computing limits per category:\n";
     foreach $d (@cat){
 	#print "SM${d}\n";
-	`limit.py --asymptotic --expectedOnly --noprefit   --userOpt '--minosAlgo stepping ' SM${d}/*`;
+	`${limitcommand} SM${d}/*`;
     }
     ######plot the limits 
     `rm -f limits_sm.root`;
@@ -258,7 +266,7 @@ if($channel==12){
 	}
     }
     print "compute combined limit:\n";
-    `limit.py --asymptotic --expectedOnly --noprefit  --userOpt '--minosAlgo stepping ' SMAll/*`;
+    `${limitcommand} SMAll/*`;
     `plot asymptotic ${layout} SMAll`;
 
     chdir("..");

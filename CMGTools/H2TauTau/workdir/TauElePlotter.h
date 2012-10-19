@@ -105,6 +105,7 @@ public:
   TH1F* getZToEEInc();
   TH1F* getWJetsInc();
   TH1F* getWJetsNJet();
+  TH1F* getWNJetSum();
   TH1F* getWJetsInc2012();
   TH1F* getWJetsIncShape();
   TH1F* getWJetsIncShape2012();
@@ -117,6 +118,8 @@ public:
   TH1F* getQCDIncFit();
   TH1F* getQCDMike();
   TH1F* getQCDKeti();
+
+  TH1F* getWJetsNJetVBFHCP();
   TH1F* getQCDHCP();//values from Josh for 2012 analysis
 
   ///
@@ -146,6 +149,10 @@ public:
   //tau fake rate
   //void plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",TString IsoSel="(tauisodisc>=2)",Float_t ymax=50,Bool_t log=1);//
   void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
+
+
+  //
+  void plotQCDSSOSRatio();
 
 
   //utilities
@@ -234,14 +241,7 @@ private:
   TString outputpath_;
   std::vector<Sample*> samples_;   
   Float_t QCDOStoSSRatio_;
-  Float_t QCDOStoSSRatioErr_;
   Float_t QCDMuIsoSideRatio_;
-  Float_t QCDOSTauIsoSideRatio_;
-  Float_t QCDSSTauIsoSideRatio_;
-  Float_t WJetsOSSideCorr_;
-  Float_t WJetsSSSideCorr_;
-  Float_t WJetsOSSideCorrErr_;
-  Float_t WJetsSSSideCorrErr_;
 
   TString plotTitle_;
 

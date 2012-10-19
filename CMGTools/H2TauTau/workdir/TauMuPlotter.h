@@ -93,35 +93,23 @@ public:
   }
 
   ///basic methods which can be used by all categories
-  //TH1F* getTotalDataSS();//sum of SS Data samples 
   TH1F* getTotalData();
-  //TH1F* getTotalEmbeddedSS();
   TH1F* getTotalEmbedded();
   TH1F* getTotalMC();//sum of all OS MCs 
-  //TH1F* getTotalMCSS();//sum of all SS MC's 
   TH1F* getSample(TString samplename);//can be used to get histo for any MC or Data sample
-  //TH1F* getSampleSS(TString samplename);//can be used to get histo for any MC or Data sample
   TH1F* getDiBoson();
-  //TH1F* getDiBosonSS();
   TH1F* getZToTauTau();//Z-->tau tau (either from MC or Embedded)
-  //TH1F* getZToTauTauSS();
-
  
   //Inclusive/SM0 methods
   TH1F* getWJetsInc();
-  //TH1F* getWJetsIncSS();
   TH1F* getTTJetsInc();
-  //TH1F* getTTJetsIncSS();
   TH1F* getZToLJetInc();
-  //TH1F* getZToLJetIncSS();
   TH1F* getZToMuMuInc();
-  //TH1F* getZToMuMuIncSS();
   TH1F* getZToEEInc(){return 0;}//dummy method just to make script work for datacard
   TH1F* getQCDInc();//uses the same sign samples
   TH1F* getQCDIncLooseShape();
   TH1F* getQCDIncWJetsShape();
   bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
-  //bool plotIncSS(TString variable, Int_t nbins, Float_t xmin, Float_t xmax,  Int_t Isocat, Int_t SMcat, TString extrasel="", Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0,TString filetag="");
 
 
   //Boosted/VBF methods
@@ -133,31 +121,20 @@ public:
   TString qcdMuIsoRatioTauNonIso_;//formula for the ratio
   TString qcdTauIsoRatio_;//formula for the ratio
   TString qcdMuIsoRatio_;//formula for the ratio
-  //TH1F* getQCDTauIsoSM();//from anti-isolated taus
-  //TH1F* getQCDTauIsoSMSS();//from anti-isolated taus
   TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
-  //TH1F* getQCDIsoSMSS();//from anti-isolated taus or anti iso muons  
   TH1F* getWNJetSum();//Exclusive W+jets samples combined 
   TH1F* getWJetsNJet();//Exclusive W+jets samples combined and normalized to data
   TH1F* getWJetsIncShape();
-  //TH1F* getWJetsIncShapeSS();
   TH1F* getW3Jets();
-  //TH1F* getW3JetsSS();
   TH1F* getW3JetsVBF();
-  //TH1F* getW3JetsVBFSS();
   TH1F* getW2JetsBJet();
-  //TH1F* getW2JetsBJetSS();
   TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
   TH1F* getWJetsTauIsoSM();//from anti-isolated taus
   TString wjetsTauIsoRatioSS_;//formula for the ratio for W+jets 
-  //TH1F* getWJetsTauIsoSMSS();//from anti-isolated taus
   TH1F* getTotalMCSM();//sum of OS backgrounds execpt for the QCD
-  //TH1F* getTotalMCSMSS();//sum of SS backgrounds execpt for the QCD
-  //bool plotSM(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax,  TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
-  //bool plotSMSS(TString variable, Int_t Isocat, Int_t MTcat, Int_t SMcat, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="", TString xlabel="", TString ylabel="", Float_t* legendcoords=0, bool log=0);
 
   //Methods for VBF category with loose shape selections
-  TH1F* getWJetsNJetVBFHCP();//not loose selections here are different
+  TH1F* getWJetsNJetVBFHCP();//note loose selections here are different
   TH1F* getQCDHCP();
   TH1F* getSampleVBFHCP(TString sample);//used for the methods below
   TH1F* getTTJetsVBFHCP();
@@ -196,11 +173,22 @@ public:
 
 
   //selections used for each plot made inside this class
+
   Int_t Isocat_;
   Int_t Chcat_;
   Int_t MTcat_;
   TString extrasel_;
   TString blindsel_;
+  Bool_t MSSMFlag_;
+
+  Float_t QCDOStoSSRatio_;
+  Int_t ZTTType_;
+  Int_t WJetsType_;
+  long mTCut_;
+
+  Float_t TTJetsCorrFactor[3];
+  float tauLooseIsoCut_;
+  float muLooseIsoCut_;
 
   TString plotvar_;
   Int_t nbins_;
@@ -211,9 +199,12 @@ public:
   Int_t nbins2_;
   Float_t xmin2_;
   Float_t xmax2_;
-  
 
-  //
+  Int_t nbinsVariable_;
+  Float_t* xbinsVariable_;
+
+  TString plotTitle_;
+  
   Int_t QCDColor_;
   Int_t WJetsColor_;
   Int_t TTJetsColor_;
@@ -228,7 +219,7 @@ public:
       return TString("");
     }
     //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
-    //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.98)";
+    //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.94)";
     //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.978)";
     TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
@@ -253,7 +244,7 @@ public:
     return SMcut[sm];
   }
 
-  Float_t TTJetsCorrFactor[3];
+
 
 protected:
  
@@ -262,31 +253,10 @@ private:
 
   TString outputpath_;
   std::vector<Sample*> samples_;   
-  Float_t QCDOStoSSRatio_;
-  Float_t QCDOStoSSRatioErr_;
+
   Float_t QCDMuIsoSideRatio_;
-  Float_t QCDOSTauIsoSideRatio_;
-  Float_t QCDSSTauIsoSideRatio_;
-  Float_t WJetsOSSideCorr_;
-  Float_t WJetsSSSideCorr_;
-  Float_t WJetsOSSideCorrErr_;
-  Float_t WJetsSSSideCorrErr_;
 
-  Int_t ZTTType_;
 
-  Int_t WJetsType_;
-
-  Bool_t MSSMFlag_;
-  
-  float tauLooseIsoCut_;
-  float muLooseIsoCut_;
-
-  Int_t nbinsVariable_;//for variable with binning
-  Float_t* xbinsVariable_;
-
-  TString plotTitle_;
-
-  ///
   void fixFileTag(TString * filetag);
 
   ClassDef(TauMuPlotter, 1);

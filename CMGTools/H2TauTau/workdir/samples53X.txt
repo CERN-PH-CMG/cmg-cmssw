@@ -5,6 +5,7 @@ TauPlusX2012Cv1 cmgtools 20 312
 TauPlusX2012Cv2 cmgtools 30 4592
 
 ###muTau
+Embedded2012A cmgtools 10 100
 Embedded2012A2 cmgtools 3 10
 Embedded2012B cmgtools 10 543
 Embedded2012Cv1 cmgtools 5 57
