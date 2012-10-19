@@ -13,6 +13,10 @@
 #include <algorithm>
 #include <functional>
 
+#include <TRandom.h>
+// #include <TMath.h>
+#include "Math/VectorUtil.h"
+
 class MuonRemover : public edm::EDFilter {
 
 public:
@@ -32,6 +36,8 @@ private:
   edm::InputTag leptonSrc_;
   bool verbose_;
   bool removeFirstLeg_;
+
+  TRandom rand_;
 };
 
 typedef math::XYZTLorentzVector  LV; 
@@ -58,6 +64,41 @@ MuonRemover::MuonRemover(const edm::ParameterSet & iConfig) :
 
   produces< std::vector< Lepton > >();
   produces< std::vector< Lepton > >("removed");
+  produces< std::vector< Lepton > >("corrected");
+  produces< std::vector< Lepton > >("correction");
+}
+
+
+std::pair<LV, LV> ZToWCorrection(const LV& lv1, const LV& lv2) {
+  
+  // uncomment to deactivate correction
+  // return std::make_pair(lv1, lv2);
+
+  LV boson = lv1;
+  boson += lv2; 
+  double energy = boson.E();
+
+  ROOT::Math::Boost boostToCM(-boson.Px()/energy, -boson.Py()/energy, -boson.Pz()/energy);
+  LV lv1cm = boostToCM(lv1);
+  LV lv2cm = boostToCM(lv2);
+  double mW = 80.4;
+  double mZ = 91.2;
+  double ratio = mW / mZ;
+  lv1cm *= ratio;
+  lv2cm *= ratio;
+
+  double newMass = (lv1cm+lv2cm).mass();
+  double energyW = sqrt( boson.Px()*boson.Px() + 
+			 boson.Py()*boson.Py() + 
+			 boson.Pz()*boson.Pz() + newMass*newMass);
+
+  ROOT::Math::Boost boostToLabW(boson.Px()/energyW, boson.Py()/energyW, boson.Pz()/energyW);
+  
+  ROOT::Math::Boost boostToLab(boson.Px()/energy, boson.Py()/energy, boson.Pz()/energy);
+  LV lv1cor = boostToLabW(lv1cm);
+  LV lv2cor = boostToLabW(lv2cm);
+
+  return std::make_pair(lv1cor, lv2cor);
 }
 
 
@@ -105,28 +146,94 @@ bool MuonRemover::filter(edm::Event & iEvent, const edm::EventSetup & iSetup) {
     return false;
   }
 
+  // sorting according to the distance to mZ
   std::sort(zbosons.begin(), zbosons.end());
-  OutPtr pOut( new LeptonCollection() );
-  OutPtr pOutRm( new LeptonCollection() );
   // in case several Zs are found, take the one closest to the Z mass
   const Boson& theBoson = zbosons[0];
+  const LV& li = leptonH->at(theBoson.i_).p4();
+  const LV& lj = leptonH->at(theBoson.j_).p4();
+  std::pair<LV, LV> corrected = ZToWCorrection(li, lj);
+  const LV& lci = corrected.first;
+  const LV& lcj = corrected.second;
+  LV corrbos = lci + lcj;
+
+  if (verbose_) {
+    std::cout<<"boson "<<theBoson.mass()<<", "
+	     <<theBoson.pt()<<", "<<theBoson.eta()<<std::endl;
+    std::cout<<"\t"
+	     <<li.pt()<<", "<<li.eta()<<" | cor: "
+	     <<lci.pt()<<", "<<lci.eta()<<std::endl;
+    std::cout<<"\t naive "<<li.pt()*80.4 / 91.2<<", "<<li.eta()<<std::endl;
+    std::cout<<"\t"
+	     <<lj.pt()<<", "<<lj.eta()<<" | cor: "
+	     <<lcj.pt()<<", "<<lcj.eta()<<std::endl;
+    std::cout<<"\t naive "<<lj.pt()*80.4 / 91.2<<", "<<lj.eta()<<std::endl;
+    std::cout<<"corrected boson: "<<corrbos.mass()<<", "
+	     <<corrbos.pt()<<", "<<corrbos.eta()<<std::endl;
+  }
+  // pseudo random choice of the leg to be removed.
+  unsigned toRemove = theBoson.i_;
+  unsigned toCorrect = theBoson.j_;
+  LV lcrm = lci;
+  LV lccor = lcj;
+
+  double randNum = rand_.Rndm();
+    // if(!removeFirstLeg_) {
+  if(randNum<0.5){
+    if(verbose_)
+      std::cout<<"remove second leg"<<std::endl;
+    toRemove = theBoson.j_;
+    toCorrect = theBoson.i_;
+    lcrm = lcj;
+    lccor = lci;
+    removeFirstLeg_ = true;
+  }
+  else {
+    if(verbose_)
+      std::cout<<"remove first leg"<<std::endl;
+    removeFirstLeg_ = false;
+  }
+  if (verbose_)
+    std::cout<<"rem, cor indices "<<toRemove<<" "<<toCorrect<<std::endl;
+
+  OutPtr pOut( new LeptonCollection() );
+  OutPtr pOutRm( new LeptonCollection() );
+  OutPtr pOutCorrect( new LeptonCollection() );
+  OutPtr pOutCorrection( new LeptonCollection() );
   for( unsigned i=0; i<leptonH->size(); ++i) {
+    if(verbose_) std::cout<<"2dn lepton loop, "<<i<<" "<<leptonH->at(i).pt()<<std::endl;
     // remove either the first or second leg not to introduce a pT bias. 
     // using a deterministic algorithm for reproducible results
-    if( removeFirstLeg_ && i==theBoson.i_) {
-      pOutRm->push_back(leptonH->at(i));
+    if(i==toRemove) {
+      // will be used to correct the MET and clean up other physics objects
+      // need to put a corrected lepton here. 
+      // don't mess up the indices... 
+      Lepton newlep( leptonH->at(i) );
+      newlep.setP4(lcrm);
+      if(verbose_) std::cout<<"rem "<<newlep.pt()<<std::endl;
+      pOutRm->push_back(newlep);
+      // pOut->push_back(newlep); that was a bug...
     }
-    else if( !removeFirstLeg_ && i==theBoson.j_ ) {
-      pOutRm->push_back(leptonH->at(i));
+    else if(i==toCorrect) {
+      // this one will be used to correct the MET
+      Lepton newlep( leptonH->at(i) );
+      newlep.setP4(lccor);
+      if(verbose_) std::cout<<"cor "<<newlep.pt()<<std::endl;
+      pOutCorrect->push_back(newlep);
+      pOut->push_back(newlep);
+      Lepton correction( leptonH->at(i) );
+      correction.setP4(leptonH->at(i).p4() - lccor);
+      pOutCorrection->push_back(correction);
     }
-    else  pOut->push_back(leptonH->at(i));
+    else {
+      pOut->push_back(leptonH->at(i));
+    }
   }
-  // at next event, will remove the other leg. 
-  if( removeFirstLeg_ ) removeFirstLeg_ = false;
-  else removeFirstLeg_ = true;
   
   iEvent.put(pOut);
   iEvent.put(pOutRm, "removed");
+  iEvent.put(pOutCorrect, "corrected");
+  iEvent.put(pOutCorrection, "correction");
   
   return true;
 }
