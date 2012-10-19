@@ -20,6 +20,16 @@ def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
     fill(tree, '{pName}_charge'.format(pName=pName), particle.charge() )
 
+def bookGenParticle(tree, pName):
+    bookParticle(tree, pName)
+    var(tree, '{pName}_mass'.format(pName=pName))
+    var(tree, '{pName}_pdgId'.format(pName=pName))
+    
+def fillGenParticle( tree, pName, particle ):
+    fillParticle( tree, pName, particle )
+    fill(tree, '{pName}_mass'.format(pName=pName), particle.mass() )
+    fill(tree, '{pName}_pdgId'.format(pName=pName), particle.pdgId() )
+
 # di-tau
 
 def bookDiLepton(tree):
