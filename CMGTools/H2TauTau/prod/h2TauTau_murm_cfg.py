@@ -8,7 +8,7 @@ sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -43,7 +43,7 @@ print 'tau scaling =', tauScaling
 # process.setName_('H2TAUTAU')
 
 
-dataset_user = 'cmgtools' 
+dataset_user = 'cbern' 
 # dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0'
 # dataset_name = '/H2TAUTAU/Sync/GluGlu/AOD/PAT_CMG_V5_5_0'
 # dataset_name = '/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1'
@@ -57,7 +57,9 @@ dataset_user = 'cmgtools'
 # dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
 # dataset_name = '/DoubleMu/Run2011B-16Jan2012-v1/AOD/V5/PAT_CMG_V5_6_0_B'
 # dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+# dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/DIMU_Colin17Oct'
+# dataset_name = '/TauPlusX/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_8_0'
 
 dataset_files = 'cmgTuple.*root'
 
@@ -98,7 +100,7 @@ process.load('CMGTools.H2TauTau.h2TauTau_cff')
 print sep_line
 from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
 # WARNING DISABLING RECOIL CORRECTIONS FOR 2012!!!
-setupRecoilCorrection( process, runOnMC, True, cmsswIs52X())
+setupRecoilCorrection( process, runOnMC, True, cmsswIs52X(), 'WJetsToLNu')
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
@@ -149,6 +151,41 @@ process.cmgTauSel =  cms.EDProducer(
     )
 
 
+
+## process.pfMetForRegressionCor = cms.EDProducer(
+##     'PFMetModificationProducer',
+##     candSrc = cms.InputTag('cmgMuonSel:removed'),
+##     metSrc = cms.InputTag('pfMetForRegression'),
+##     operator = cms.string('-')
+##     )
+## process.pfMetForRegression = cms.EDProducer(
+##     'PFMetModificationProducer',
+##     candSrc = cms.InputTag('cmgMuonSel:correction'),
+##     metSrc = cms.InputTag('pfMetForRegressionCor'),
+##     operator = cms.string('-')
+##     )
+
+## process.nopuMetCor = process.pfMetForRegressionCor.clone(metSrc='nopuMet')
+## process.nopuMet = process.pfMetForRegression.clone(metSrc='nopuMetCor')
+## process.pcMetCor = process.pfMetForRegressionCor.clone(metSrc='pcMet')
+## process.pcMet = process.pfMetForRegression.clone(metSrc='pcMetCor')
+## process.tkMetCor = process.pfMetForRegressionCor.clone(metSrc='tkMet')
+## process.tkMet = process.pfMetForRegression.clone(metSrc='tkMetCor')
+
+
+## process.pfMetModificationSequence = cms.Sequence(
+##     process.pfMetForRegressionCor +
+##     process.pfMetForRegression +
+##     process.nopuMetCor +
+##     process.nopuMet +
+##     process.pcMetCor +
+##     process.pcMet +
+##     process.tkMetCor +
+##     process.tkMet
+##     )
+
+
+
 process.pfMetForRegression = cms.EDProducer(
     'PFMetModificationProducer',
     candSrc = cms.InputTag('cmgMuonSel:removed'),
@@ -159,6 +196,7 @@ process.pfMetForRegression = cms.EDProducer(
 process.nopuMet = process.pfMetForRegression.clone(metSrc='nopuMet')
 process.pcMet = process.pfMetForRegression.clone(metSrc='pcMet')
 process.tkMet = process.pfMetForRegression.clone(metSrc='tkMet')
+
 
 process.pfMetModificationSequence = cms.Sequence(
     process.pfMetForRegression +
