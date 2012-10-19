@@ -326,6 +326,7 @@ class SourceCFG(Task):
     def addOption(self, parser):
         parser.add_option("--min-run", dest="min_run", default=-1, type=int, help='When querying DBS, require runs >= than this run')
         parser.add_option("--max-run", dest="max_run", default=-1, type=int, help='When querying DBS, require runs <= than this run')
+        parser.add_option("--input-prescale", dest="prescale", default=1, type=int, help='Randomly prescale the number of good files by this factor.')
     def run(self, input):
 
         jobdir = input['CreateJobDirectory']['JobDir']
@@ -333,12 +334,13 @@ class SourceCFG(Task):
         
         run_range = (self.options.min_run, self.options.max_run)
         data = createDataset(self.user, self.dataset, pattern, run_range = run_range)
-        good_files = data.listOfGoodFiles()
+        good_files = data.listOfGoodFilesWithPrescale(self.options.prescale)
+        #will mark prescale removed files as bad in comments
         bad_files = [fname for fname in data.listOfFiles() if not fname in good_files]
         
         source = os.path.join(jobdir,'source_cfg.py')
         output = file(source,'w')
-        output.write('###SourceCFG:\t%d GoodFiles; %d BadFiles found in mask\n' % (len(good_files),len(bad_files)) )
+        output.write('###SourceCFG:\t%d GoodFiles; %d BadFiles found in mask; Input prescale factor %d\n' % (len(good_files),len(bad_files),self.options.prescale) )
         output.write('files = ' + str(good_files) + '\n')
         for bad_file in bad_files:
             output.write("###SourceCFG:\tBadInMask '%s'\n" % bad_file)

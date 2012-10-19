@@ -78,8 +78,36 @@ class BaseDataset( object ):
             if not self.bad_files.has_key(file):
                 self.good_files.append( file )
         return self.good_files
-    
 
+    def listOfGoodFilesWithPrescale(self, prescale):
+        """Takes the list of good files and selects a random sample from them according to the prescale factor. E.g. a prescale of 10 will select 1 in 10 files."""
+
+        good_files = self.listOfGoodFiles()
+        if prescale < 2:
+            return self.good_files
+        
+        #the number of files to select from the dataset
+        num_files = int( (len(good_files)/(1.0*prescale)) + 0.5)
+        if num_files < 1:
+            num_files = 1
+        if num_files > len(good_files):
+            num_files = len(good_files)
+        
+        #pick unique good files randomly
+        import random
+        subset = set()
+        while len(subset) < num_files:
+            #pick a random file from the list
+            choice = random.choice(good_files)
+            slen = len(subset)
+            #add to the set
+            subset.add(choice)
+            #if this was a unique file remove so we don't get very slow corner cases where prescale is small
+            if len(subset) > slen:
+                good_files.remove(choice)
+        assert len(subset) == num_files, 'The number of files should matcht the expected'
+
+        return [f for f in subset]
 
 class CMSDataset( BaseDataset ):
 
