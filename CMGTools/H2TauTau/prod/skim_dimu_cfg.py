@@ -1,102 +1,71 @@
-from PhysicsTools.PatAlgos.patTemplate_cfg import *
+import FWCore.ParameterSet.Config as cms
+
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 sep_line = '-'*70
+
 ########## CONTROL CARDS
 
+process = cms.Process("DIMU")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
     )
 
 # -1 : process all files
-numberOfFilesToProcess = 5
+numberOfFilesToProcess = 100
 
-dataset_user = 'cmgtools' 
-dataset_name = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11-PU_S4_START42_V11-v1/AODSIM/V2/PAT_CMG_V2_4_0'
-dataset_pattern = 'tree.*root'
 
-##########
 
 
 # Input  & JSON             -------------------------------------------------
 
-process.setName_('DIMU')
+
+# process.setName_('H2TAUTAU')
+
+
+dataset_user = 'cmgtools' 
+dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+dataset_files = 'cmgTuple.*root'
 
 # creating the source
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     dataset_user,
     dataset_name,
-    dataset_pattern) 
+    dataset_files,
+    )
 
 # restricting the number of files to process to a given number
-if numberOfFilesToProcess > 0:
+if numberOfFilesToProcess>0:
     process.source.fileNames = process.source.fileNames[:numberOfFilesToProcess]
 
+
 ###ProductionTaskHook$$$
-
-runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.fileNames[0].find('embedded')==-1
-
-
-# Sequence & path definition -------------------------------------------------
-
+    
 process.load('CMGTools.Common.skims.cmgDiMuonSel_cfi')
 process.load('CMGTools.Common.skims.cmgDiMuonCount_cfi')
 
 process.cmgDiMuonSel.src = 'cmgDiMuonSel'
-process.cmgDiMuonSel.cut = ('mass()>50 && leg1().pt()>15 && leg2().pt()>15 && charge()==0 && leg1.relIso(0.5)<0.5 && leg2.relIso(0.5)<0.5')
+process.cmgDiMuonSel.cut = ('mass()>50 && leg1().pt()>15 && charge()==0')
 process.cmgDiMuonCount.minNumber = 1
 
 process.p = cms.Path( process.cmgDiMuonSel +
                       process.cmgDiMuonCount )
 
-# set up JSON ---------------------------------------------------------------
-if runOnMC==False:
-    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
-    json = setupJSON(process)
+process.out = cms.OutputModule(
+    "PoolOutputModule",
+    fileName = cms.untracked.string('cmgTuple.root'),
+    # save only events passing the full path
+    SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
+    # save PAT Layer 1 output; you need a '*' to
+    # unpack the list of commands 'patEventContent'
+    outputCommands = cms.untracked.vstring('keep *')
+    )
 
-# setting up vertex weighting -----------------------------------------------
+process.endpath = cms.EndPath(process.out)
 
-if runOnMC:
-    #SIMULATION
-    process.load('CMGTools.Common.generator.vertexWeight.vertexWeight_cff')
-    process.p += process.vertexWeightSequence
-
-
-# OUTPUT definition ----------------------------------------------------------
-
-outFileNameExt = 'CMG'
-basicName = 'tree_dimu_%s.root' %  outFileNameExt
-process.out.fileName = cms.untracked.string( basicName )
-from CMGTools.H2TauTau.eventContent.tauMu_cff import tauMu as tauMuEventContent
-process.out.outputCommands.extend( tauMuEventContent )
-process.out.SelectEvents = cms.untracked.PSet( SelectEvents = cms.vstring('p') )
-
-
-# Message logger setup.
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
-process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-
-# histograms                 ------
-
-print sep_line
-print 'INPUT:'
-print sep_line
-print process.source.fileNames
-print
-if runOnMC==False:
-    print 'json:', json
-print
-print sep_line
-print 'PROCESSING'
-print sep_line
-print 'runOnMC:', runOnMC
-print 
-print sep_line
-print 'OUPUT:'
-print sep_line
-justn = 30 
-print 'selection EDM output'.ljust(justn), basicName
-
+process.load("FWCore.MessageLogger.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 1000
