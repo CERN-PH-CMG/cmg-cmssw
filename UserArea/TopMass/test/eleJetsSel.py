@@ -214,6 +214,19 @@ process.primaryVertexFilter = cms.EDFilter("VertexSelector",
    debugOn = cms.untracked.bool(True),
    )
 
+# Filters defined in CMGTools/Common/python/PAT/addFilterPaths_cff.py
+from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+process.scrapingFilter = hltHighLevel.clone()
+process.scrapingFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","PAT")
+process.scrapingFilter.andOr = cms.bool(False)
+process.scrapingFilter.HLTPaths = cms.vstring('noscrapingFilterPath')
+
+process.metFilter = hltHighLevel.clone()
+process.metFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","PAT")
+process.metFilter.andOr = cms.bool(False)
+#process.metFilter.HLTPaths = cms.vstring('HBHENoiseFilterPath', 'CSCTightHaloFilterPath', 'hcalLaserEventFilterPath', 'EcalDeadCellTriggerPrimitiveFilterPath', 'trackingFailureFilterPath', 'eeBadScFilterPath')
+process.metFilter.HLTPaths = cms.vstring('HBHENoiseFilterPath', 'CSCTightHaloFilterPath', 'hcalLaserEventFilterPath', 'EcalDeadCellTriggerPrimitiveFilterPath', 'trackingFailureFilterPath')
+
 
 process.cmgTopEleTriggerSel = cmgTriggerObjectSel.clone(
    src = 'cmgTriggerObjectSel',
@@ -359,6 +372,8 @@ process.printerTTbar = physicsObjectPrinter.clone(
 
 
 print process.primaryVertexFilter.dumpPython() 	 
+print process.scrapingFilter.dumpPython() 	 
+print process.metFilter.dumpPython() 	 
 print process.cmgTopEleTriggerSel.dumpPython() 	 
 print process.cmgTopElectronSel.dumpPython() 		 		 
 print process.cmgTopLooseMuonSel.dumpPython() 	 	 
@@ -382,7 +397,9 @@ process.p = cms.Path(
    #process.printerTTbar             +
    #process.vertexWeightSequence     +
    process.primaryVertexFilter      +
-   process.cmgTopEleTriggerSel     +
+   process.scrapingFilter           + 	 
+   process.metFilter                + 	 
+   process.cmgTopEleTriggerSel      +
    process.cmgTopElectronSel	    +		    
    process.cmgTopLooseMuonSel	    +	    
    process.cmgTopLooseElectronSel   +	    
