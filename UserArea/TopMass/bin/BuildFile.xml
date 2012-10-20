@@ -15,6 +15,6 @@
 <use   name="PhysicsTools/Utilities"/>
 <use   name="PhysicsTools/SelectorUtils"/>
 <environment>
-  <bin   file="SecVtxAnalysis.cxx"></bin>
   <bin   file="FitKinTemplates.cxx"></bin>
+  <bin   file="FitSecVtxDistributions.cxx"></bin>
 </environment>
