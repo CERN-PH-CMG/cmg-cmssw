@@ -60,6 +60,8 @@ public:
     mass_data   = other.mass_data;
     lxy_signal  = other.lxy_signal;
     mass_signal = other.mass_signal;
+    lxy_signalSysts  = other.lxy_signalSysts;
+    mass_signalSysts = other.mass_signalSysts;
     lxy_bckg    = other.lxy_bckg;
     mass_bckg   = other.mass_bckg;
   }
@@ -67,6 +69,7 @@ public:
   TString m_tag;
   TH1F *lxy_data, *mass_data;
   std::map<Float_t, TH1F *> lxy_signal, mass_signal;
+  std::map<Float_t, std::map<TString, TH1F *> > lxy_signalSysts, mass_signalSysts;
   std::map<TString, TH1F *> lxy_bckg;
   std::map<TString, TH1F *> mass_bckg;
 };
@@ -209,14 +212,14 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       w->import(RooArgSet(mtop,templateCategories),RenameConflictNodes(ch));
 
       //base parameterization of the lxy
-      RooRealVar alpha1(ch+"alpha1","#alpha_{1}",1.72,  0,      3); 
-      RooRealVar alpha2(ch+"alpha2","#alpha_{2}",0,     0.,   0.1);
-      RooRealVar alpha3(ch+"alpha3","#alpha_{3}",6.2,   0.,      10);
-      RooRealVar alpha4(ch+"alpha4","#alpha_{4}",0.079, 0.,  0.1);
+      RooRealVar alpha1(ch+"alpha1","#alpha_{1}",0.14, 0.,   1.0); 
+      RooRealVar alpha2(ch+"alpha2","#alpha_{2}",0.0,  0.,   0.1);
+      RooRealVar alpha3(ch+"alpha3","#alpha_{3}",0.46, 0.,   1.0);
+      RooRealVar alpha4(ch+"alpha4","#alpha_{4}",0.0,  0.,   0.1);
       RooFormulaVar pfunc(ch+"pfunc","p","@0+@1*@2",RooArgSet(alpha1,alpha2,mtop)); 
       RooFormulaVar qfunc(ch+"qfunc","q","@0+@1*@2",RooArgSet(alpha3,alpha4,mtop));
-      RooRealVar thr(ch+"thr","#lambda",0.5,0,1);
-      RooRealVar wid(ch+"wid","#sigma",0,5);
+      RooRealVar thr(ch+"thr","#lambda",0.11);//,0,0.2);
+      RooRealVar wid(ch+"wid","#sigma",0.035,0,0.1);
       TString F_form(  "(1.0/qfunc)*(1.0/TMath::Gamma(1+pfunc,thr/qfunc))*pow(var/qfunc,pfunc)*(exp(-var/qfunc)/(1+exp((thr-var)/wid)))"); 
       F_form.ReplaceAll("thr",   "@0");
       F_form.ReplaceAll("wid",   "@1");
@@ -270,11 +273,20 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  frame->GetXaxis()->SetTitle("L_{xy} [cm]");
 	  frame->GetYaxis()->SetTitle("Jets");
 	  frame->SetMinimum(0);
-	
+
+	  TPaveText *pave = new TPaveText(0.65,0.9,0.9,0.95,"NDC");
+	  pave->SetBorderSize(0);
+	  pave->SetFillStyle(0);
+	  pave->SetTextAlign(32);
+	  pave->SetTextFont(42);
+	  char buf[200]; sprintf(buf,"%f",mIt->second);
+	  pave->AddText(ch);
+	  pave->Draw();
+	  
 	  //print the fit in the first canvas
 	  if(ipad>1) continue;
 	  fitres->Print("v");
-	  TPaveText *pave = new TPaveText(0.5,0.5,0.88,0.88,"NDC");
+	  pave = new TPaveText(0.5,0.5,0.88,0.88,"NDC");
 	  pave->AddText("Fit results");
 	  pave->AddText("");
 	  RooArgSet varSet=w->allVars();
@@ -286,7 +298,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	    if(!varName.BeginsWith(ch)) continue;
 	    if(varName.Contains("mtop")) continue;
 	    char line[100];
-	    sprintf(line,"%s=%3.3f #pm %3.3f", var->GetTitle(),var->getVal(),var->getError());
+	    sprintf(line,"%s=%3.4f #pm %3.4f", var->GetTitle(),var->getVal(),var->getError());
 	    pave->AddText(line); 
 	  }
 	  pave->SetBorderSize(0);
@@ -297,15 +309,40 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 
       c->SaveAs("SignalPDFs_"+ch+".png");  
       
-      //draw the evolution of the momentum of the Lxy distribution
+      //draw the evolution of the momenta of the Lxy distribution
+      //create the inversion formulae based on the momenta
       cqt->cd(is+1);
       TGraph *grframe=new TGraph;
-      grframe->SetPoint(0,160,0); grframe->SetPoint(1,185,1.5); grframe->Draw("ap");
+      grframe->SetPoint(0,160,0.2); grframe->SetPoint(1,185,1.2); grframe->Draw("ap");
       grframe->GetXaxis()->SetTitle("m_{top} [GeV]");
       grframe->GetYaxis()->SetTitle("L_{xy} momentum");
+
       grmean->Draw("p");  grmean->Fit("pol1");
+      RooFormulaVar *invForm=new RooFormulaVar(ch+"meanInv",
+					       "(@0-@1)/@2",
+					       RooArgSet(lxy,RooConst(grmean->GetFunction("pol1")->GetParameter(0)),RooConst(grmean->GetFunction("pol1")->GetParameter(1))));
+      w->import(*invForm);
+
       gr25->Draw("p");    gr25->Fit("pol1");  
+      invForm = new RooFormulaVar(ch+"25qInv",
+				  "(@0-@1)/@2",
+				  RooArgSet(lxy,RooConst(gr25->GetFunction("pol1")->GetParameter(0)),RooConst(gr25->GetFunction("pol1")->GetParameter(1))));
+      w->import(*invForm);
+
       gr50->Draw("p");    gr50->Fit("pol1");
+      invForm = new RooFormulaVar(ch+"50qInv",
+				  "(@0-@1)/@2",
+				  RooArgSet(lxy,RooConst(gr50->GetFunction("pol1")->GetParameter(0)),RooConst(gr50->GetFunction("pol1")->GetParameter(1))));
+      w->import(*invForm);
+
+      TPaveText *pave = new TPaveText(0.65,0.9,0.9,0.95,"NDC");
+      pave->SetBorderSize(0);
+      pave->SetFillStyle(0);
+      pave->SetTextAlign(32);
+      pave->SetTextFont(42);
+      TString title(ch); title.ReplaceAll("mu","#mu");
+      pave->AddText(title);
+      pave->Draw();
       if(is>0) continue;
       TLegend *leg=new TLegend(0.5,0.8,0.9,0.9);
       leg->AddEntry(grmean,grmean->GetTitle(),"p");
@@ -345,9 +382,14 @@ int main(int argc, char *argv[])
   // initialize command line parser                  
   optutl::CommandLineParser parser ("[FitSecVtxDistrutions]");
   parser.addOption("templ",   optutl::CommandLineParser::kString, "input file with templates");
+  parser.addOption("ws",      optutl::CommandLineParser::kString, "input file with pre-defined workspace");
+  parser.addOption("calib",   optutl::CommandLineParser::kBool,   "if true calibration is run");
+  parser.stringValue("ws")="";
+  parser.boolValue("calib")=false;
   parser.parseArguments (argc, argv);
   std::string templateInputFile = parser.stringValue("templ");
-
+  std::string wsInUrl           = parser.stringValue("ws");
+  bool doCalib                  = parser.boolValue("calib");
 
   //
   // READ HISTOGRAMS FROM INPUT FILE AND DEFINE CATEGORIES
@@ -382,6 +424,9 @@ int main(int argc, char *argv[])
 	  if(var.BeginsWith("c"))    { jetFlav="c";      h->SetLineColor(1); h->SetMarkerColor(592); h->SetFillColor(592); h->SetFillStyle(1001); }
 	  if(var.BeginsWith("udsg"))  {jetFlav="udsg";   h->SetLineColor(1); h->SetMarkerColor(590); h->SetFillColor(590); h->SetFillStyle(1001); }
 	  TString proc    = tkns->At(2)->GetName();
+	  TString syst("");
+	  TObjArray *systTkns=proc.Tokenize("syst");
+	  if(systTkns->GetEntriesFast()>1) syst=systTkns->At(1)->GetName();
 	  TString massStr = tkns->At(3)->GetName(); 
 	  float mass      = massStr.Atof()/10.;
 	  if(mass != 0 ) { h->SetLineColor(1); h->SetMarkerColor(1); h->SetFillColor(804); h->SetFillStyle(1001); } 
@@ -394,10 +439,18 @@ int main(int argc, char *argv[])
 	    }
 	  else if(mass!=0 && jetFlav=="b")
 	    {
-	      if(var.Contains("lxy"))  m_shape.lxy_signal[mass]=h;
-	      if(var.Contains("mass")) m_shape.mass_signal[mass]=h;
+	      if(syst=="")
+		{
+		  if(var.Contains("lxy"))  m_shape.lxy_signal[mass]=h;
+		  if(var.Contains("mass")) m_shape.mass_signal[mass]=h;
+		}
+	      else
+		{
+		  if(var.Contains("lxy"))  m_shape.lxy_signalSysts[mass][syst]=h;
+		  if(var.Contains("mass")) m_shape.mass_signalSysts[mass][syst]=h;
+		}
 	    }
-	  else if((mass==0 || mass==172.5) && jetFlav!="")
+	  else if((mass==0 || (mass==172.5 && syst=="") ) && jetFlav!="")
 	    {
 	      if(var.Contains("lxy"))
 		{
@@ -425,8 +478,17 @@ int main(int argc, char *argv[])
 
   cout << "[FitSecVtxDistributions] defining workspace" << endl;
   RooWorkspace *w=0;
-  w=defineWorkspace(chShapes);
-  //w=readWorkspace(wsUrl);
+  if(wsInUrl=="")
+    {
+      w=defineWorkspace(chShapes);
+      w->writeToFile("FitSecVtxDistributionsWS.root",kTRUE);
+    }
+  else
+    {
+      TFile *inF=TFile::Open(wsInUrl.c_str());
+      w = new RooWorkspace( *((RooWorkspace *)inF->Get("w") ) );
+      inF->Close();
+    }
 
   cout << "[FitSecVtxDistributions] studying bias" << endl;
   //  studyBias(chShapes,w);
