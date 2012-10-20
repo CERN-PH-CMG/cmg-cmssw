@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id$
+// $Id: TtbarLeptonJets.cc,v 1.1 2012/10/20 14:22:01 psilva Exp $
 //
 //
 
@@ -155,30 +155,72 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   using namespace reco;
   //using namespace isodeposit;
   
-  int verbose = 0;
+  int verbose = 1;
   
   if(verbose) std::cout << iEvent.eventAuxiliary().id() << std::endl;
   
   edm::Handle<std::vector<cmg::Muon> > muons;
-  iEvent.getByLabel("cmgMuonSel", muons); 
+  iEvent.getByLabel("cmgTopTightMuonMuJetSel", muons); 
   std::vector<cmg::Muon>::const_iterator MUO;
   if(!muons.isValid())     cerr << "  WARNING: muons is not valid! " << endl;
   
   edm::Handle<std::vector<cmg::Electron> > electrons;
-  iEvent.getByLabel("cmgElectronSel", electrons); 
+  iEvent.getByLabel("cmgTopTightElecEleJetSel", electrons); 
   std::vector<cmg::Electron>::const_iterator ELE;
   if(!electrons.isValid())     cerr << " WARNING: electrons is not valid! " << endl;
   
-  edm::Handle<std::vector<cmg::PFJet> > jets;
-  iEvent.getByLabel("cmgPFJetSel", jets); 
-  std::vector<cmg::PFJet>::const_iterator JET;
-  if(!jets.isValid())     cerr << "  WARNING: jets is not valid! " << endl;
+  edm::Handle<std::vector<cmg::PFJet> > eleJets;
+  iEvent.getByLabel("cmgTopJetEleJetSel", eleJets); 
+  std::vector<cmg::PFJet>::const_iterator eleJET;
+  if(!eleJets.isValid())     cerr << "  WARNING: eleJets is not valid! " << endl;
+  
+  edm::Handle<std::vector<cmg::PFJet> > muJets;
+  iEvent.getByLabel("cmgTopJetMuJetSel", muJets); 
+  std::vector<cmg::PFJet>::const_iterator muJET;
+  if(!muJets.isValid())     cerr << "  WARNING: muJets is not valid! " << endl;
+
+  edm::Handle<std::vector<cmg::TriggerObject> > triggerPath;
+  iEvent.getByLabel("cmgTriggerObjectSel", triggerPath); 
+  std::vector<cmg::TriggerObject>::const_iterator TRIGGER;
+  if(!triggerPath.isValid())     cerr << "  WARNING: trigger is not valid! " << endl;
+
+  edm::Handle<double> puWeight2012AB;
+  iEvent.getByLabel("vertexWeightSummer12MC53XHCPData", puWeight2012AB);
+  if(!puWeight2012AB.isValid()) cerr << "  WARNING: puWeight2012AB is not valid! " << endl;
+
+
+  // Info for PDFs weights
+  edm::Handle<GenEventInfoProduct> pdfstuff;
+  iEvent.getByLabel("generator", pdfstuff);
+  if(!pdfstuff.isValid())  cerr<<"genInfoProd handle invalid."<<endl;
+
+  // Infor for PU weights
+  edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+  iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+  std::vector<PileupSummaryInfo>::const_iterator PVI;
+  if(!PupInfo.isValid())     cerr << "  WARNING: PU is not valid! " << endl;
+  
+  
+  
+  
   
   nTot++;
   countAll_h ->Fill(1);
   
   
-  
+  double puWeightCMG = *puWeight2012AB;
+  if(verbose) std::cout << "  pu weight = " << puWeightCMG << std::endl;
+
+
+
+  int passEleTrig = 0, passMuoTrig = 0;
+  if(triggerPath.isValid()){
+     for(TRIGGER = triggerPath->begin(); TRIGGER != triggerPath->end(); ++TRIGGER) {
+	if (TRIGGER->getSelectionRegExp("HLT_IsoMu24_eta2p1_v*")) passMuoTrig++;
+	if (TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v1")) passEleTrig++;	
+     }   
+  }
+ 
   if(muons.isValid()){
     for(MUO = muons->begin(); MUO != muons->end(); ++MUO) {
       if(verbose) std::cout << "  muon pt = " << MUO->pt() << ", eta = " << MUO->eta() << std::endl;
@@ -196,11 +238,21 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   
   
   
-  if(jets.isValid()){
-    for(JET = jets->begin(); JET != jets->end(); ++JET) {
-      if(verbose) std::cout << "  jet pt = " << JET->pt() << ", eta = " << JET->eta() << std::endl;           
+  if(muJets.isValid()){
+    for(muJET = muJets->begin(); muJET != muJets->end(); ++muJET) {
+      if(verbose) std::cout << "  mu-jet pt = " << muJET->pt() << ", eta = " << muJET->eta() << ", lxy = " << muJET->Lxy() <<  std::endl;           
     } 
   }
+  
+  
+  if(eleJets.isValid()){
+    for(eleJET = eleJets->begin(); eleJET != eleJets->end(); ++eleJET) {
+      if(verbose) std::cout << "  ele-jet pt = " << eleJET->pt() << ", eta = " << eleJET->eta() << ", lxy = " << eleJET->Lxy() << std::endl;           
+    } 
+  }
+
+
+
 }
 
 
