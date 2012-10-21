@@ -277,6 +277,9 @@ Qstar_qg_3::Qstar_qg_3(const char *name, const char *title,
   case 4016:   
     stitle = string("Qstar_2012_D6T_ak5_fat30"); 
      break;
+  case 4017:   
+    stitle = string("RSGraviton_2012_D6T_ak5_fat30");
+     break;
   default:
     std::cout << "Nothing would crash" << std::endl; 
     break;
