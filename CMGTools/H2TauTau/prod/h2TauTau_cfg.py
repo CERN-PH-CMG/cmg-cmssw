@@ -45,9 +45,11 @@ print 'tau scaling =', tauScaling
 
 dataset_user = 'cmgtools' 
 # dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-dataset_name = '/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_V5_8_0'
+# dataset_name = '/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_V5_8_0'
 # dataset_name = '/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+# dataset_name = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_8_0'
 # dataset_name = '/W1JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
 
 dataset_files = 'cmgTuple.*root'
 
@@ -229,4 +231,5 @@ else:
 
 # process.tauMu_fullsel_tree_CMG.SelectEvents = cms.untracked.PSet()
 
-process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > 0.5')
+# process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > 0.5')
+# process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > -9999')
