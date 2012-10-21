@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.2 2012/10/20 18:23:00 palencia Exp $
+// $Id: TtbarLeptonJets.cc,v 1.3 2012/10/21 12:26:43 palencia Exp $
 //
 //
 
@@ -165,6 +165,11 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   int verbose = 0;
   
   if(verbose) std::cout << "\n" << iEvent.eventAuxiliary().id() << std::endl;
+
+  edm::Handle<std::vector<reco::Vertex> > vertices;
+  iEvent.getByLabel("primaryVertexFilter", vertices);
+  std::vector<reco::Vertex>::const_iterator PVTX;
+  if(!vertices.isValid())     cerr << "  WARNING: PV is not valid! " << endl;
   
   edm::Handle<std::vector<cmg::Muon> > tightMuonMJ;
   iEvent.getByLabel("cmgTopTightMuonMuJetSel", tightMuonMJ); 
@@ -253,6 +258,8 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   int  goodJetMJ = 0, goodJetLxyMJ = 0; 
   float maxLxyMJ = -999., maxLxyEJ = -999.;
   float muo_pT = -999., ele_pT = -999.;
+  float jetMJ_pT[jetsMJ->size()], jetEJ_pT[jetsEJ->size()];
+  float jetMJ_lxy[jetsMJ->size()], jetEJ_lxy[jetsEJ->size()];
   
   if(nMuoTrig == 1){
      passMuoTrig++;
@@ -284,6 +291,12 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   
   if(passMJsel || passEJsel){
  
+     if(vertices.isValid()){
+        for(PVTX = vertices->begin(); PVTX != vertices->end(); ++PVTX) {
+  	   if(verbose) std::cout << "  PupInfo ndof = " << PVTX->ndof() << ", z = " << PVTX->z() << ", rho = " << PVTX->position().rho() << std::endl;
+        }
+     }
+ 
  
      if(tightMuonMJ.isValid() && passMJsel){
         for(MUOtight = tightMuonMJ->begin(); MUOtight != tightMuonMJ->end(); ++MUOtight) {
@@ -302,46 +315,60 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
      }
   
   
+     int jetMuoIndex = 0;
      if(jetsMJ.isValid() && passMJsel){
         for(muJET = jetsMJ->begin(); muJET != jetsMJ->end(); ++muJET) {
-           if(verbose) std::cout << "  mu-jet pt = " << muJET->pt() << ", eta = " << muJET->eta() << ", lxy = " << muJET->Lxy() <<  std::endl; 
-	   if(muJET->pt()>35){
-	      goodJetMJ++;          
-	      if(muJET->Lxy()>0) goodJetLxyMJ++;   
-	      if(muJET->Lxy()>maxLxyMJ) maxLxyMJ = muJET->Lxy() ;       
-           } 
+	   jetMJ_pT[jetMuoIndex]  = muJET->pt();
+	   jetMJ_lxy[jetMuoIndex] = muJET->Lxy();
+           if(verbose) std::cout << "  mu-jet pt = " << muJET->pt() << ", eta = " << muJET->eta() << ", lxy = " << muJET->Lxy() << "  my mu-jet pt = " << jetMJ_pT[jetMuoIndex] <<  std::endl; 
+	   jetMuoIndex++;
         } // muJET loop
+     }
+     if(jetMJ_pT[0]>45 && jetMJ_pT[1]>45 && jetMJ_pT[2]>45 && jetMJ_pT[3]>20) {
+        goodJetMJ++;
+        for(unsigned int i=0; i < jetsMJ->size(); ++i) {
+	   if(jetMJ_pT[i]>20 && jetMJ_lxy[i]>0) goodJetLxyMJ++;
+	   if(jetMJ_lxy[i]>maxLxyMJ) maxLxyMJ = jetMJ_lxy[i] ;       
+        }
      }
   
   
+     int jetEleIndex = 0;
      if(jetsEJ.isValid() && passEJsel){
         for(eleJET = jetsEJ->begin(); eleJET != jetsEJ->end(); ++eleJET) {
+	   jetEJ_pT[jetEleIndex]  = eleJET->pt();
+	   jetEJ_lxy[jetEleIndex] = eleJET->Lxy();
            if(verbose) std::cout << "  ele-jet pt = " << eleJET->pt() << ", eta = " << eleJET->eta() << ", lxy = " << eleJET->Lxy() << std::endl;           
-	   if(eleJET->pt()>35) {
-	      goodJetEJ++;          
-	      if(eleJET->Lxy()>0) goodJetLxyEJ++;          
-	      if(eleJET->Lxy()>maxLxyEJ) maxLxyEJ = eleJET->Lxy();        
-           } 
+	   jetEleIndex++;
         } // eleJET loop
+     }
+     if(jetEJ_pT[0]>45 && jetEJ_pT[1]>45 && jetEJ_pT[2]>45 && jetEJ_pT[3]>20) {
+        goodJetEJ++;
+        for(unsigned int i=0; i < jetsEJ->size(); ++i) {
+	   if(jetEJ_pT[i]>20 && jetEJ_lxy[i]>0) goodJetLxyEJ++;
+	   if(jetEJ_lxy[i]>maxLxyEJ) maxLxyEJ = jetEJ_lxy[i] ;       
+        }
      }
 
   }// if(passMJsel || passEJsel)
   
-  if (goodJetMJ>=4){
+  if (goodJetMJ>=1){
      pass4jetsMJ++;
      if (goodJetLxyMJ>0){
         passMJ++;
+        //fprintf (outFile, "%i : %i\n", iEvent.eventAuxiliary().event(), iEvent.eventAuxiliary().luminosityBlock());
+        //myfile << iEvent.eventAuxiliary().event() << " : " << iEvent.eventAuxiliary().luminosityBlock() << "\n" ;   
      }
   }
-  if (goodJetEJ>=4){
+  if (goodJetEJ>=1){
      pass4jetsEJ++;
      if (goodJetLxyEJ>0){
         passEJ++;
      }
   }
   
-  if (goodJetMJ<=3 || goodJetLxyMJ<1) passMJsel = false;
-  if (goodJetEJ<=3 || goodJetLxyEJ<1) passEJsel = false;
+  if (goodJetMJ<1 || goodJetLxyMJ<1) passMJsel = false;
+  if (goodJetEJ<1 || goodJetLxyEJ<1) passEJsel = false;
 
 
   // Fill histograms after full selection
