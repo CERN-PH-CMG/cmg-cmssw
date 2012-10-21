@@ -9,23 +9,31 @@ def hname():
 
 legend = None
 
-def draw(var, cut, t1, t2, w1='1', w2='1',
+def draw(var1, cut, t1, t2, w1='1', w2='1',
          name1=None, name2=None,
-         normalize=True, nbins=20, graphics=True):
+         normalize=True, nbins=20, xmin=0, xmax=200, graphics=True, var2=None):
+    print var1
+    print var2
+    print w1
+    print w2
+    print cut
+    if var2 is None:
+        var2 = var1
     global legend
-    h1 = TH1F(hname(), '', nbins, 0, 200)
+    h1 = TH1F(hname(), '', nbins, xmin, xmax)
     h1.Sumw2()
-    t1.Project(h1.GetName(), var,'({cut})*({w1})'.format(cut=cut,w1=w1),'')
+    t1.Project(h1.GetName(), var1,'({cut})*({w1})'.format(cut=cut,w1=w1),'')
     h2 = h1.Clone(hname())
     h2.Sumw2()
-    t2.Project(h2.GetName(), var,'({cut})*({w2})'.format(cut=cut,w2=w2),'')
+    t2.Project(h2.GetName(), var2,'({cut})*({w2})'.format(cut=cut,w2=w2),'')
     if normalize:
         h1.Scale(1./h1.Integral())
         h2.Scale(1./h2.Integral())
     else:
         h2.Scale(h1.Integral()/h2.Integral())
-    sBlue.formatHisto(h1)
-    sBlack.formatHisto(h2)
+    sBlue.markerStyle = 25
+    sBlue.formatHisto(h2)
+    sBlack.formatHisto(h1)
     h1.SetMarkerSize(0.8)
     h2.SetMarkerSize(0.8)
     h1.SetStats(0)
