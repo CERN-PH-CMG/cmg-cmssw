@@ -2,11 +2,13 @@ from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauMuon
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, GenParticle
+from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
 
 class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     DiObjectClass = TauMuon
     LeptonClass = Muon
+    OtherLeptonClass = Electron
 
     def declareHandles(self):
         super(TauMuAnalyzer, self).declareHandles()
@@ -22,6 +24,11 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
                 self.cfg_ana.mvametsigs, # 'mvaMETTauMu'
                 'std::vector<cmg::METSignificance>'
                 )
+
+        self.handles['otherLeptons'] = AutoHandle(
+            'cmgElectronSel',
+            'std::vector<cmg::Electron>'
+            )
         
         self.handles['leptons'] = AutoHandle(
             'cmgMuonSel',
@@ -61,6 +68,20 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
                 continue
             leptons.append( pyl )
         return leptons
+
+
+    def buildOtherLeptons(self, cmgOtherLeptons, event):
+        '''Build electrons for third lepton veto, associate best vertex.
+        '''
+        otherLeptons = []
+        for index, lep in enumerate(cmgOtherLeptons):
+            pyl = self.__class__.OtherLeptonClass(lep)
+            pyl.associatedVertex = event.goodVertices[0]
+            #COLINTLV check ID 
+            # if not self.testMuonIDLoose(pyl):
+            #    continue
+            otherLeptons.append( pyl )
+        return otherLeptons
 
 
     def process(self, iEvent, event):
@@ -131,8 +152,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         '''Tight muon selection, no isolation requirement'''
         return muon.tightId() and \
                self.testVertex( muon )
-#    muon.pt() > self.cfg_ana.pt2 and \
-#    abs( muon.eta() ) < self.cfg_ana.eta2 and \
                
 
     def testLeg2Iso(self, muon, isocut):
@@ -163,6 +182,35 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         #COLIN: not sure the vertex constraints should be kept 
         return self.testMuonIDLoose(muon) and \
                self.muonIso(muon)<0.3
+
+
+    def testTightOtherLepton(self, electron, isoCut):
+        '''Tight electron selection, no isolation requirement'''
+        return self.testLegKine(electron, ptcut=10, etacut=2.5) and \
+               electron.tightIdForEleTau()           and \
+               self.testVertex( electron )           and \
+               electron.relIsoAllChargedDB05() < isoCut
+    
+
+    def thirdLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
+        # count tight muons
+        tightLeptons = [lep for lep in leptons if
+                        self.testLegKine(lep, ptcut=10, etacut=2.4) and 
+                        self.testLeg2ID(lep) and
+                        self.testLeg2Iso(lep, isoCut) ]
+        # count tight electrons
+        tightOtherLeptons = [olep for olep in otherLeptons
+                             if self.testTightOtherLepton(olep, isoCut)]
+        if len(tightOtherLeptons) + len(tightLeptons)> 1:
+            print '-'*100
+            print 'muons'
+            print map(str, tightLeptons)
+            print 'electrons'
+            print map(str, tightOtherLeptons)            
+            return False
+        else:
+            return True
+        
 
     def leptonAccept(self, leptons):
         looseLeptons = set(filter( self.testMuonLoose, leptons ))
