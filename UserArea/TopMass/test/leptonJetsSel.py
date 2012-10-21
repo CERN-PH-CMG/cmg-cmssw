@@ -7,35 +7,31 @@ runOnData = False
 
 lumiFile = 'None'
 
-#############################################################################################################
-### edmFileUtil -P -f file:/data/PF2PAT/fall387_ttbarAOD_v2/Fall10-START38_V12-v2_ttbar_387_10_0_yep.root ###
-#############################################################################################################
-
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 500
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 
 # source
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
     )
 
-#if(len(sys.argv)!=3):
-#   print 'Wrong parameters. Exiting... Usage: cmsRun muoHitFit.py ttbar \n'
-#   exit(0)
+if(len(sys.argv)!=3):
+   print 'Wrong parameters. Exiting... Usage: cmsRun leptonJetsSel.py ttbar \n'
+   exit(0)
 
-#sample = sys.argv[2]
-#print 'Selected dataset: {0}'.format(sample)
+sample = sys.argv[2]
+print 'Selected dataset: {0}'.format(sample)
 
 sampleLocation = ""
 
 #sample = "test" 
-#sample = "muDataRun2011A" 
-#sample = "muDataRun2011B" 
-sample = "ttbar" 
+#sample = "muDataRun2012A" 
+#sample = "muDataRun2012B" 
+#sample = "ttbar" 
 #sample = "wjets" 
 #sample = "zjets" 
 #sample = "qcd" 
@@ -53,12 +49,16 @@ sample = "ttbar"
 #sample = "ttbar1785" 
 #sample = "ttbar1815" 
 #sample = "ttbar1845" 
+#sample = "ttbarMatchingUp" 
+#sample = "ttbarMatchingDown" 
+#sample = "ttbarScaleUp" 
+#sample = "ttbarScaleDown" 
 
 
 
 ## getInfo.py -s "select path_name,dataset_fraction,dataset_entries,NUMBER_FILES_GOOD from dataset_details where path_name like '%all11%5_10_0' order by path_name"
 ## PATH_NAME                                                                                               DATASET_FRACTION   DATASET_ENTRIES  NUMBER_FILES_GOOD
-## /SingleMu/Run2012B-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_10_0 ||     1.0 ||  59538958 ||     4294
+## /SingleMu/Run2012B-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_10_0                                                                 ||      1.0 || 59538958 ||    4294
 ## /TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0 ||      2.0 || 13847500 ||    1444
 ## /DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0       || 0.999175 || 30434389 ||    2575
 ## /WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0            || 0.993301 || 18269870 ||    1601
@@ -75,48 +75,61 @@ sample = "ttbar"
 ## /TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0    ||      2.0 || 10953456 ||    1212
 ## /TTJets_matchingup_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0      ||      2.0 || 10830020 ||    1314 
 
-if(sample == "muDataRun2011A"):
-   sampleLocation = '/SingleMu/Run2011A-08Nov2011-v1/AOD/V5_B/PAT_CMG_V5_6_0_B'
+if(sample == "muDataRun2012A"):
+   sampleLocation = '//AOD/V5_B/PAT_CMG_V5_10_0'
    runOnData = True
-elif(sample == "muDataRun2011B"):
+elif(sample == "muDataRun2012B"):
    sampleLocation = '/SingleMu/Run2012B-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_10_0'
    runOnData = True
+if(sample == "muDataRun2012C"):
+   sampleLocation = '//AOD/V5_B/PAT_CMG_V5_10_0'
+   runOnData = True
 elif(sample == "ttbar" or sample == "ttbarPDF" or sample == "ttbarJESup" or sample == "ttbarJESdown" or sample == "test"):
-   sampleLocation = '//TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
+   sampleLocation = '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1615" ):
-   sampleLocation = '/TTJets_TuneZ2_mass161_5_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v3/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1635" ):
-   sampleLocation = '/TTJets_TuneZ2_mass163_5_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1665" ):
-   sampleLocation = '/TTJets_TuneZ2_mass166_5_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1695" ):
-   sampleLocation = '/TTJets_TuneZ2_mass169_5_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1755" ):
-   sampleLocation = '/TTJets_TuneZ2_mass175_5_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1785" ):
-   sampleLocation = '/TTJets_TuneZ2_mass178_5_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1815" ):
-   sampleLocation = '/TTJets_TuneZ2_mass181_5_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1845" ):
-   sampleLocation = '/TTJets_TuneZ2_mass184_5_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-elif(sample == "wjets"):
-   sampleLocation = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
+elif(sample == "ttbarScaleUp" ):
+   sampleLocation = '/TTJets_scaleup_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
+elif(sample == "ttbarScaleDown" ):
+   sampleLocation = '/TTJets_scaledown_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
+elif(sample == "ttbarMatchingUp" ):
+   sampleLocation = '/TTJets_matchingup_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
+elif(sample == "ttbarMatchingDown" ):
+   sampleLocation = '/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
+elif(sample == "wjetsV1"):
+   sampleLocation = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
+elif(sample == "wjetsV2"):
+   sampleLocation = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "zjets"):
-   sampleLocation = '/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+   sampleLocation = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "qcd"):
-   sampleLocation = '/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+   sampleLocation = '/'
 elif(sample == "stop_s"):
-   sampleLocation = '/T_TuneZ2_s-channel_7TeV-powheg-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_5_6_0_B'
+   sampleLocation = '/T_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "stop_t"):
-   sampleLocation = '/T_TuneZ2_t-channel_7TeV-powheg-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_5_6_0_B'
+   sampleLocation = '/T_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "stop_tW"):
-   sampleLocation = '/T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_5_6_0_B'
+   sampleLocation = '/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "stbar_s"):
-   sampleLocation = '/Tbar_TuneZ2_s-channel_7TeV-powheg-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_5_6_0_B'
+   sampleLocation = '/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "stbar_t"):
-   sampleLocation = '/Tbar_TuneZ2_t-channel_7TeV-powheg-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_5_6_0_B'
+   sampleLocation = '/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "stbar_tW"):
-   sampleLocation = '/Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/PAT_CMG_5_6_0_B'
+   sampleLocation = '/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 
 
 print "\n Sample locations:"
@@ -147,8 +160,6 @@ if runOnData:
    from CMGTools.Common.Tools.applyJSON_cff import *
    applyJSON(process, lumiFile)
 
-
-
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
 from CMGTools.Common.skims.cmgTauSel_cfi import *
@@ -156,9 +167,6 @@ from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 from CMGTools.Common.skims.cmgDiMuonSel_cfi import *
 from CMGTools.Common.skims.cmgWMuNuSel_cfi import *
 from CMGTools.Common.skims.cmgTriggerObjectSel_cfi import *
-
-
-
 
 process.primaryVertexFilter = cms.EDFilter("VertexSelector",
    src = cms.InputTag("offlinePrimaryVertices"),
@@ -178,20 +186,18 @@ process.metFilter = hltHighLevel.clone()
 process.metFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","PAT")
 process.metFilter.andOr = cms.bool(False)
 process.metFilter.HLTPaths = cms.vstring('HBHENoiseFilterPath', 'CSCTightHaloFilterPath', 'hcalLaserEventFilterPath', 'EcalDeadCellTriggerPrimitiveFilterPath', 'trackingFailureFilterPath', 'eeBadScFilterPath')
+ 
 
-
-
-# Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/summary.
-#### the trigger paths need to be updated!!!! 
+# Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/2012/summary
 if runOnData:
-   muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu24_eta2p1_v*\") || getSelectionRegExp(\"HLT_IsoMu24_v*\") )"   
-   eleTriggerList = "( getSelectionRegExp(\"HLT_IsoMu24_eta2p1_v*\") || getSelectionRegExp(\"HLT_IsoMu24_v*\") )"   
+   muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*\")  )"   
+   eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet45_35_25_v*\") )"   
 else:
-   muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu24_eta2p1_v*\") )"
-   eleTriggerList = "( getSelectionRegExp(\"HLT_IsoMu24_eta2p1_v*\") )"
+   muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1\") )"
+   eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1\") )"
 
 
-process.cmgTopMuonTriggerSel = cmgTriggerObjectSel.clone(
+process.cmgTopTriggerSel = cmgTriggerObjectSel.clone(
    src = 'cmgTriggerObjectSel',
    cut = cms.string( muTriggerList +' || ' + eleTriggerList),
    filter = cms.bool(True),
@@ -199,8 +205,8 @@ process.cmgTopMuonTriggerSel = cmgTriggerObjectSel.clone(
    )
 
 ## Muon definitions in CMGTools/Common/python/selections/muonIDs_cfi.py
-tightMuon = "(isPF() && isGlobal() && pt()>26 && abs(eta())<2.1 && normalizedChi2()<10  && trackerLayersWithMeasurement()>5  && numberOfValidMuonHits()>0 && abs(dxy())<0.02  && abs(dz())<0.5 && relIso(0.5)<0.12 && numberOfValidPixelHits()>0 && numberOfMatches()>1)"
-tightElectron = "(pt()>30 && abs(eta())<2.5&& (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(0.5)<0.1)"
+tightMuon     = "(isPF() && isGlobal() && pt()>26 && abs(eta())<2.1 && normalizedChi2()<10  && trackerLayersWithMeasurement()>5  && numberOfValidMuonHits()>0 && abs(dxy())<0.02  && abs(dz())<0.5 && relIso(0.5)<0.12 && numberOfValidPixelHits()>0 && numberOfMatches()>1)"
+tightElectron = "(pt()>30 && abs(eta())<2.5 && (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(0.5)<0.1)"
 
 
 # Apply top muon selection (as VBTF with looser dxy) + db() cut + kinematics + isolation
@@ -229,12 +235,12 @@ process.cmgTopLooseMuonEleJetSel = cmgMuonSel.clone(
 #Apply electron selection for electron veto
 process.cmgTopLooseElecMuJetSel = cmgElectronSel.clone(
    src = 'cmgElectronSel',
-   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5)<0.2 && mvaTrigV0()>0.0")
+   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5)<0.15 && mvaTrigV0()>0.0")
    )
 
 process.cmgTopLooseElecEleJetSel = cmgElectronSel.clone(
    src = 'cmgElectronSel',
-   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5)<0.2 && mvaTrigV0()>0.0&& !" + tightElectron)
+   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5)<0.15 && mvaTrigV0()>0.0&& !" + tightElectron)
    )
 
 
@@ -265,13 +271,13 @@ process.cleanElectronJets = cms.EDProducer("DeltaRVetoProducerPFJet",
    )
 
 #Apply Jet selection: loose jet Id (from Common/python/selections/jetid_cfi.py and CMGTools/Common/src/PFJetFactory.cc) and kinematics
-process.cmgTopJetMuJetSel     = cmgPFJetSel.clone(
+process.cmgTopJetMuJetSel = cmgPFJetSel.clone(
    src = 'cleanMuonJets',
    cut = cms.string( " pt()>15 && abs(eta())<2.5 && abs(phi()) < 3.2  &&  getSelection(\"cuts_looseJetId\") " )
    )
 
 
-process.cmgTopJetEleJetSel     = cmgPFJetSel.clone(
+process.cmgTopJetEleJetSel = cmgPFJetSel.clone(
    src = 'cleanElectronJets',
    cut = cms.string( " pt()>15 && abs(eta())<2.5 && abs(phi()) < 3.2  &&  getSelection(\"cuts_looseJetId\") " )
    )
@@ -292,7 +298,6 @@ process.genSequence = cms.Sequence(
 
 
 
-
 from CMGTools.Common.physicsObjectPrinter_cfi import *
 process.printerTTbar = physicsObjectPrinter.clone(
     inputCollection = cms.untracked.InputTag("cmgTriggerObjectSel"),
@@ -308,7 +313,7 @@ process.printerTTbar = physicsObjectPrinter.clone(
 print process.primaryVertexFilter.dumpPython() 	 
 print process.scrapingFilter.dumpPython() 	 
 print process.metFilter.dumpPython() 	 
-print process.cmgTopMuonTriggerSel.dumpPython() 	 
+print process.cmgTopTriggerSel.dumpPython() 	 
 print process.cmgTopTightMuonMuJetSel.dumpPython() 		 		 
 print process.cmgTopLooseMuonMuJetSel.dumpPython() 	 	 
 print process.cmgTopLooseElecMuJetSel.dumpPython() 	 	 
@@ -322,7 +327,7 @@ print process.cmgTopJetEleJetSel.dumpPython()
 process.ana = cms.EDAnalyzer('TtbarLeptonJets')
 
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string('outHistos_test.root')
+    fileName = cms.string(sample+'Histos.root')
     )
 
 
@@ -331,7 +336,7 @@ process.p = cms.Path(
    process.primaryVertexFilter      +
    process.scrapingFilter           + 	 
    process.metFilter                + 	 
-   process.cmgTopMuonTriggerSel     +
+   #process.cmgTopTriggerSel         +
    process.cmgTopTightMuonMuJetSel  +		    
    process.cmgTopLooseMuonMuJetSel  +	    
    process.cmgTopLooseElecMuJetSel  +	    
@@ -351,8 +356,7 @@ process.p += process.ana
    
 # Setup event content.
 process.out = cms.OutputModule("PoolOutputModule",
-                               #fileName = cms.untracked.string('/data/CMG/topMass/'+sample+'_tree_CMG_muonSel.root'),
-                               fileName = cms.untracked.string(sample+'_treeCMG_muonJetsSel.root'),
+                               fileName = cms.untracked.string(sample+'_treeCMG_leptonJetsSel.root'),
                                SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('p')),
                                #outputCommands = cms.untracked.vstring('keep *')
                                outputCommands = cms.untracked.vstring( 'drop *',
@@ -370,8 +374,8 @@ process.out = cms.OutputModule("PoolOutputModule",
  								      ) 
 )
 
-
-process.outpath = cms.EndPath(process.out)
+# uncomment the line below to keep the CMG tree
+#process.outpath = cms.EndPath(process.out)   
 
 print process.out.dumpPython()
 
