@@ -7,7 +7,17 @@ from CMGTools.H2TauTau.generator.metRecoilCorrection.recoilCorrectedMETDiTau_cfi
 from CMGTools.Common.generator.genWorZ_cfi import *
 from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
 
-from CMGTools.Common.generator.metRecoilCorrection.metRecoilCorrection_cff import cmgPFJetForRecoil, metRecoilCorrectionInputSequence
+
+from CMGTools.Common.skims.cmgPFJetSel_cfi import cmgPFJetSel
+cmgPFJetForRecoil = cmgPFJetSel.clone(
+    cut = 'pt()>30 && abs(eta)<4.5 && getSelection("cuts_looseJetId") && passLooseFullPuJetId()',
+    src = 'cmgPFJetSel')
+
+
+metRecoilCorrectionInputSequence = cms.Sequence(
+    cmgPFJetForRecoil +
+    genWorZ 
+    )
 
 metRecoilCorrectionSequence2012 = cms.Sequence(
     metRecoilCorrectionInputSequence +
