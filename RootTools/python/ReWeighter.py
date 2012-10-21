@@ -1,6 +1,7 @@
 class ReWeighter(object):
 
     def __init__(self, name, hto, hfrom):
+        self.name = name
         self.hto = hto
         self.hfrom = hfrom
         self.hto.Scale(1/hto.Integral())
@@ -8,7 +9,9 @@ class ReWeighter(object):
         self.weights = self.hto.Clone( '_'.join(['weights',name]))
         self.weights.Divide(hfrom)
         
-    def weightStr(self, var):
+    def weightStr(self, var=None):
+        if var is None:
+            var = self.name
         cuts = []
         for i in range(1, self.weights.GetNbinsX()+1):
             xmin = self.weights.GetBinLowEdge(i)
