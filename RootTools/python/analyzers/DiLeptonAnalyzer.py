@@ -185,7 +185,7 @@ class DiLeptonAnalyzer( Analyzer ):
         return True
     
 
-    def thridLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
+    def thirdLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
         '''Should implement a default version running on event.leptons.'''
         return True
 
