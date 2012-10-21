@@ -24,8 +24,8 @@ class DiLeptonAnalyzer( Analyzer ):
         count.register('all events')
         count.register('> 0 di-lepton')
         # count.register('di-lepton cut string ok')
-        count.register('third lepton veto')
         count.register('lepton accept')
+        count.register('third lepton veto')
         count.register('leg1 offline cuts passed')
         count.register('leg1 trig matched')
         count.register('leg2 offline cuts passed')
@@ -111,7 +111,7 @@ class DiLeptonAnalyzer( Analyzer ):
             return False, 'di-lepton veto failed'
         if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
 
-        if not self.thirdLeptonVeto(event.leptons, event.otherLeptons, 0.3) :
+        if not self.thirdLeptonVeto(event.leptons, event.otherLeptons) :
             return False, 'third lepton veto failed'
         if fillCounter: self.counters.counter('DiLepton').inc('third lepton veto')
 
