@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.1 2012/10/20 14:22:01 psilva Exp $
+// $Id: TtbarLeptonJets.cc,v 1.2 2012/10/20 18:23:00 palencia Exp $
 //
 //
 
@@ -95,7 +95,7 @@ private:
   virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
   
   // ----------member data ---------------------------
-  TH1D *countAll_h;
+  TH1D *countAll_h, *mu_maxLxy_h, *e_maxLxy_h, *mu_pT_h, *e_pT_h;
   
   FILE *outFile;
   ofstream myfile;
@@ -108,8 +108,8 @@ private:
   //
   // static data member definitions
   int nTot;
-  int nMuoTrigg, nStep0, nStep1, nStep2, nStep3, nStep4, nStep4a, nStep4b, nStep4c, nStep5, nStep6;
-  int nEleTrigg, nStep0_eleSel, nStep1_eleSel, nStep2_eleSel, nStep3_eleSel, nStep4a_eleSel, nStep4b_eleSel, nStep5a_eleSel, nStep5b_eleSel, nStep5c_eleSel, nStep5d_eleSel, nStep6_eleSel;
+  int passMuoTrig, passTightMuoMJ, passLooseMuoMJ, passLooseEleMJ, pass4jetsMJ, passMJ;
+  int passEleTrig, passTightEleEJ, passLooseMuoEJ, passLooseEleEJ, pass4jetsEJ, passEJ;
   
 };
 
@@ -123,11 +123,18 @@ TtbarLeptonJets::TtbarLeptonJets(const edm::ParameterSet& iConfig)
 {
    //now do what ever initialization is needed
   edm::Service<TFileService> fs;
-  countAll_h               = fs->make<TH1D>("countAll_h"   , "countAll_h"   , 5 , 0. , 5. );
+  countAll_h    = fs->make<TH1D>("countAll_h"  , "countAll_h"   , 5   , 0. ,   5. );
+  mu_maxLxy_h   = fs->make<TH1D>("mu_maxLxy_h" , "mu_maxLxy_h"  , 100 , 0. ,  10. );
+  e_maxLxy_h    = fs->make<TH1D>("e_maxLxy_h"  , "e_maxLxy_h"   , 100 , 0. ,  10. );
+  mu_pT_h       = fs->make<TH1D>("mu_pT_h"     , "mu_pT_h"      ,  60 , 0. , 300. );
+  e_pT_h        = fs->make<TH1D>("e_pT_h"      , "e_pT_h"       ,  60 , 0. , 300. );
   
   // set total counters
-  nTot = 0; nMuoTrigg = 0; nStep0 = 0; nStep1 = 0; nStep2 = 0; nStep3 = 0; nStep4 = 0; nStep4a = 0; nStep4b = 0; nStep4c = 0; nStep5 = 0; nStep6 = 0; 
-  nTot = 0; nEleTrigg = 0; nStep0_eleSel = 0; nStep1_eleSel = 0; nStep2_eleSel = 0; nStep3_eleSel = 0; nStep4a_eleSel = 0; nStep4b_eleSel = 0; nStep5a_eleSel = 0; nStep5b_eleSel = 0; nStep5c_eleSel = 0; nStep5d_eleSel = 0; nStep6_eleSel = 0; 
+  nTot = 0;
+  passMuoTrig = 0, passTightMuoMJ = 0; passLooseMuoMJ = 0; passLooseEleMJ = 0; pass4jetsMJ = 0; passMJ = 0;
+  passEleTrig = 0, passTightEleEJ = 0; passLooseMuoEJ = 0; passLooseEleEJ = 0; pass4jetsEJ = 0; passEJ = 0;
+  
+
   
   outFile = fopen ("outInfo.txt", "wu" );
   myfile.open ("example.txt");
@@ -155,29 +162,49 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   using namespace reco;
   //using namespace isodeposit;
   
-  int verbose = 1;
+  int verbose = 0;
   
-  if(verbose) std::cout << iEvent.eventAuxiliary().id() << std::endl;
+  if(verbose) std::cout << "\n" << iEvent.eventAuxiliary().id() << std::endl;
   
-  edm::Handle<std::vector<cmg::Muon> > muons;
-  iEvent.getByLabel("cmgTopTightMuonMuJetSel", muons); 
-  std::vector<cmg::Muon>::const_iterator MUO;
-  if(!muons.isValid())     cerr << "  WARNING: muons is not valid! " << endl;
+  edm::Handle<std::vector<cmg::Muon> > tightMuonMJ;
+  iEvent.getByLabel("cmgTopTightMuonMuJetSel", tightMuonMJ); 
+  std::vector<cmg::Muon>::const_iterator MUOtight;
+  if(!tightMuonMJ.isValid())     cerr << "  WARNING: tightMuonMJ is not valid! " << endl;
   
-  edm::Handle<std::vector<cmg::Electron> > electrons;
-  iEvent.getByLabel("cmgTopTightElecEleJetSel", electrons); 
-  std::vector<cmg::Electron>::const_iterator ELE;
-  if(!electrons.isValid())     cerr << " WARNING: electrons is not valid! " << endl;
+  edm::Handle<std::vector<cmg::Muon> > looseMuonMJ;
+  iEvent.getByLabel("cmgTopLooseMuonMuJetSel", looseMuonMJ); 
+  std::vector<cmg::Muon>::const_iterator MUOlooseMJ;
+  if(!looseMuonMJ.isValid())     cerr << "  WARNING: looseMuonMJ is not valid! " << endl;
   
-  edm::Handle<std::vector<cmg::PFJet> > eleJets;
-  iEvent.getByLabel("cmgTopJetEleJetSel", eleJets); 
-  std::vector<cmg::PFJet>::const_iterator eleJET;
-  if(!eleJets.isValid())     cerr << "  WARNING: eleJets is not valid! " << endl;
+  edm::Handle<std::vector<cmg::Electron> > looseElectronMJ;
+  iEvent.getByLabel("cmgTopLooseElecMuJetSel", looseElectronMJ); 
+  std::vector<cmg::Electron>::const_iterator ELElooseMJ;
+  if(!looseElectronMJ.isValid())     cerr << " WARNING: looseElectronMJ is not valid! " << endl;
   
-  edm::Handle<std::vector<cmg::PFJet> > muJets;
-  iEvent.getByLabel("cmgTopJetMuJetSel", muJets); 
+  edm::Handle<std::vector<cmg::PFJet> > jetsMJ;
+  iEvent.getByLabel("cmgTopJetMuJetSel", jetsMJ); 
   std::vector<cmg::PFJet>::const_iterator muJET;
-  if(!muJets.isValid())     cerr << "  WARNING: muJets is not valid! " << endl;
+  if(!jetsMJ.isValid())     cerr << "  WARNING: jetsMJ is not valid! " << endl;
+  
+  edm::Handle<std::vector<cmg::Electron> > tightElectronEJ;
+  iEvent.getByLabel("cmgTopTightElecEleJetSel", tightElectronEJ); 
+  std::vector<cmg::Electron>::const_iterator ELEtight;
+  if(!tightElectronEJ.isValid())     cerr << " WARNING: tightElectronEJ is not valid! " << endl;
+  
+  edm::Handle<std::vector<cmg::Muon> > looseMuonEJ;
+  iEvent.getByLabel("cmgTopLooseMuonEleJetSel", looseMuonEJ); 
+  std::vector<cmg::Muon>::const_iterator MUOlooseEJ;
+  if(!looseMuonEJ.isValid())     cerr << "  WARNING: looseMuonEJ is not valid! " << endl;
+  
+  edm::Handle<std::vector<cmg::Electron> > looseElectronEJ;
+  iEvent.getByLabel("cmgTopLooseElecEleJetSel", looseElectronEJ); 
+  std::vector<cmg::Electron>::const_iterator ELElooseEJ;
+  if(!looseElectronEJ.isValid())     cerr << " WARNING: looseElectronEJ is not valid! " << endl;
+  
+  edm::Handle<std::vector<cmg::PFJet> > jetsEJ;
+  iEvent.getByLabel("cmgTopJetEleJetSel", jetsEJ); 
+  std::vector<cmg::PFJet>::const_iterator eleJET;
+  if(!jetsEJ.isValid())     cerr << "  WARNING: jetsEJ is not valid! " << endl;
 
   edm::Handle<std::vector<cmg::TriggerObject> > triggerPath;
   iEvent.getByLabel("cmgTriggerObjectSel", triggerPath); 
@@ -192,13 +219,13 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   // Info for PDFs weights
   edm::Handle<GenEventInfoProduct> pdfstuff;
   iEvent.getByLabel("generator", pdfstuff);
-  if(!pdfstuff.isValid())  cerr<<"genInfoProd handle invalid."<<endl;
+  if(!pdfstuff.isValid())  cerr<<"  WARNING: genInfoProd handle invalid."<<endl;
 
   // Infor for PU weights
-  edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-  iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
-  std::vector<PileupSummaryInfo>::const_iterator PVI;
-  if(!PupInfo.isValid())     cerr << "  WARNING: PU is not valid! " << endl;
+  //edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+  //iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+  //std::vector<PileupSummaryInfo>::const_iterator PVI;
+  //if(!PupInfo.isValid())     cerr << "  WARNING: PU is not valid! " << endl;
   
   
   
@@ -208,50 +235,124 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   countAll_h ->Fill(1);
   
   
-  double puWeightCMG = *puWeight2012AB;
-  if(verbose) std::cout << "  pu weight = " << puWeightCMG << std::endl;
+  //double puWeightCMG = *puWeight2012AB;
+  //if(verbose) std::cout << "  pu weight = " << puWeightCMG << std::endl;
 
 
-
-  int passEleTrig = 0, passMuoTrig = 0;
+  int nMuoTrig = 0, nEleTrig= 0;
   if(triggerPath.isValid()){
      for(TRIGGER = triggerPath->begin(); TRIGGER != triggerPath->end(); ++TRIGGER) {
-	if (TRIGGER->getSelectionRegExp("HLT_IsoMu24_eta2p1_v*")) passMuoTrig++;
-	if (TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v1")) passEleTrig++;	
+	if (TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1")) nMuoTrig++;
+	if (TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5") || TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1")) nEleTrig++;	
      }   
   }
  
-  if(muons.isValid()){
-    for(MUO = muons->begin(); MUO != muons->end(); ++MUO) {
-      if(verbose) std::cout << "  muon pt = " << MUO->pt() << ", eta = " << MUO->eta() << std::endl;
-    }
+  
+  bool passMJsel = false, passEJsel = false;
+  int  goodJetEJ = 0, goodJetLxyEJ = 0; 
+  int  goodJetMJ = 0, goodJetLxyMJ = 0; 
+  float maxLxyMJ = -999., maxLxyEJ = -999.;
+  float muo_pT = -999., ele_pT = -999.;
+  
+  if(nMuoTrig == 1){
+     passMuoTrig++;
+     if(tightMuonMJ->size() == 1){
+        passTightMuoMJ++;
+        if(looseMuonMJ->size() == 0){
+           passLooseMuoMJ++;
+	   if(looseElectronMJ->size() == 0){ 
+	      passLooseEleMJ++;
+	      passMJsel = true;
+	   }
+        }   
+     }   
+  }   
+  if(nEleTrig == 1){
+     passEleTrig++;
+     if(tightElectronEJ->size() == 1){
+        passTightEleEJ++;
+        if(looseElectronEJ->size() == 0){
+           passLooseEleEJ++;
+	   if(looseMuonEJ->size() == 0){ 
+	      passLooseMuoEJ++;
+	      passEJsel = true;
+	   }
+        }   
+     }   
+  }   
+  
+  
+  if(passMJsel || passEJsel){
+ 
+ 
+     if(tightMuonMJ.isValid() && passMJsel){
+        for(MUOtight = tightMuonMJ->begin(); MUOtight != tightMuonMJ->end(); ++MUOtight) {
+           if(verbose) std::cout << "  tight muon pt = " << MUOtight->pt() << ", eta = " << MUOtight->eta() << std::endl;
+           muo_pT = MUOtight->pt();
+	}  // tightMuonMJ loop
+     }
+  
+  
+  
+     if(tightElectronEJ.isValid() && passEJsel){
+        for(ELEtight = tightElectronEJ->begin(); ELEtight != tightElectronEJ->end(); ++ELEtight) {
+           if(verbose) std::cout << " tight ele pt = " << ELEtight->pt() << ", eta = " << ELEtight->eta() << std::endl; 
+           ele_pT = ELEtight->pt();
+        }  // tightElectronEJ loop
+     }
+  
+  
+     if(jetsMJ.isValid() && passMJsel){
+        for(muJET = jetsMJ->begin(); muJET != jetsMJ->end(); ++muJET) {
+           if(verbose) std::cout << "  mu-jet pt = " << muJET->pt() << ", eta = " << muJET->eta() << ", lxy = " << muJET->Lxy() <<  std::endl; 
+	   if(muJET->pt()>35){
+	      goodJetMJ++;          
+	      if(muJET->Lxy()>0) goodJetLxyMJ++;   
+	      if(muJET->Lxy()>maxLxyMJ) maxLxyMJ = muJET->Lxy() ;       
+           } 
+        } // muJET loop
+     }
+  
+  
+     if(jetsEJ.isValid() && passEJsel){
+        for(eleJET = jetsEJ->begin(); eleJET != jetsEJ->end(); ++eleJET) {
+           if(verbose) std::cout << "  ele-jet pt = " << eleJET->pt() << ", eta = " << eleJET->eta() << ", lxy = " << eleJET->Lxy() << std::endl;           
+	   if(eleJET->pt()>35) {
+	      goodJetEJ++;          
+	      if(eleJET->Lxy()>0) goodJetLxyEJ++;          
+	      if(eleJET->Lxy()>maxLxyEJ) maxLxyEJ = eleJET->Lxy();        
+           } 
+        } // eleJET loop
+     }
+
+  }// if(passMJsel || passEJsel)
+  
+  if (goodJetMJ>=4){
+     pass4jetsMJ++;
+     if (goodJetLxyMJ>0){
+        passMJ++;
+     }
+  }
+  if (goodJetEJ>=4){
+     pass4jetsEJ++;
+     if (goodJetLxyEJ>0){
+        passEJ++;
+     }
   }
   
-  
-  
-  if(electrons.isValid()){
-    for(ELE = electrons->begin(); ELE != electrons->end(); ++ELE) {
-      if(verbose) std::cout << "  ele pt = " << ELE->pt() << ", eta = " << ELE->eta() << std::endl; 
-    }
-  }
-  
-  
-  
-  
-  if(muJets.isValid()){
-    for(muJET = muJets->begin(); muJET != muJets->end(); ++muJET) {
-      if(verbose) std::cout << "  mu-jet pt = " << muJET->pt() << ", eta = " << muJET->eta() << ", lxy = " << muJET->Lxy() <<  std::endl;           
-    } 
-  }
-  
-  
-  if(eleJets.isValid()){
-    for(eleJET = eleJets->begin(); eleJET != eleJets->end(); ++eleJET) {
-      if(verbose) std::cout << "  ele-jet pt = " << eleJET->pt() << ", eta = " << eleJET->eta() << ", lxy = " << eleJET->Lxy() << std::endl;           
-    } 
-  }
+  if (goodJetMJ<=3 || goodJetLxyMJ<1) passMJsel = false;
+  if (goodJetEJ<=3 || goodJetLxyEJ<1) passEJsel = false;
 
 
+  // Fill histograms after full selection
+  if(passMJsel){
+     mu_maxLxy_h->Fill(maxLxyMJ);
+     mu_pT_h->Fill(muo_pT);
+  }
+  if(passEJsel){
+     e_maxLxy_h->Fill(maxLxyEJ);
+     e_pT_h->Fill(ele_pT);
+  }
 
 }
 
@@ -265,10 +366,13 @@ void TtbarLeptonJets::beginJob()
 void 
 TtbarLeptonJets::endJob() 
 {
-  std::cout << "\nTot\tTrig\tstep0\tstep1\tstep2\tstep3\tstep4a\tstep4b\tstep4c\tstep5\tstep6" << std::endl;
+  std::cout << "\nFilters\tmuoTrig\tTightMuo\tLooseMuo\tLooseEle\t4jets\tLxy" << std::endl;
+  std::cout << nTot << "\t" << passMuoTrig << "\t" << passTightMuoMJ << "\t" << passLooseMuoMJ << "\t" << passLooseEleMJ << "\t" << pass4jetsMJ << "\t" << passMJ << std::endl;
+
+  std::cout << "\nFilters\teleTrig\tTightEle\tLooseEle\tLooseMuo\t4jets\tLxy" << std::endl;
+  std::cout << nTot << "\t" << passEleTrig << "\t" << passTightEleEJ << "\t" << passLooseEleEJ << "\t" << passLooseMuoEJ << "\t" << pass4jetsEJ << "\t" << passEJ << std::endl;
 
 
-  std::cout << "\nTot\tTrig\tstep0\tstep1\tstep2\tstep3\tstep4a\tstep4b\tstep5a\tstep5b\tstep5c\tstep5d\tstep6" << std::endl;
 
   myfile.close();
   fclose ( outFile ) ;
