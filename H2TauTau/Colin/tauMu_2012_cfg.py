@@ -13,7 +13,7 @@ from CMGTools.RootTools.RootTools import *
 shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
-syncntuple = True
+syncntuple = False
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
@@ -66,6 +66,10 @@ pileUpAna = cfg.Analyzer(
     true = True
     )
 
+genErsatzAna = cfg.Analyzer(
+    'GenErsatzAnalyzer',
+    verbose = False
+    )
 
 TauMuAna = cfg.Analyzer(
     'TauMuAnalyzer',
@@ -146,7 +150,8 @@ treeProducerXCheck = cfg.Analyzer(
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_PietroOct05 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinSep19 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_MuRm_ColinOct9 import * 
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_MuRm_ColinOct9 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinOct10 import * 
 
 #########################################################################################
 
@@ -160,13 +165,17 @@ for emb in embed_list:
 
 
 selectedComponents = allsamples
-# selectedComponents = [data_Run2012A_aug6, data_Run2012C_v2]
+# selectedComponents = [data_Run2012A_aug6, data_Run2012A, data_Run2012C_v1, ]
+# selectedComponents = [DYJets]
+
+WJets.splitFactor = 50
 
 sequence = cfg.Sequence( [
     # eventSelector,
     jsonAna,
     triggerAna,
     vertexAna,
+    genErsatzAna,
     TauMuAna,
     dyJetsFakeAna,
     WNJetsAna,
@@ -183,12 +192,12 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 0
+test = 1
 if test==1:
-    comp = data_Run2012C_v2
+    comp = HiggsVH125
     selectedComponents = [comp]
     comp.splitFactor = 1
-    # comp.files = comp.files[:10]
+    comp.files = comp.files[:10]
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
