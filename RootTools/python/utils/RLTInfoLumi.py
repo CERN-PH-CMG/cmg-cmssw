@@ -65,6 +65,8 @@ class RLTInfoLumi(object):
         self.sumdlum = 0
         self.sumrlum = 0
         pattern = re.compile( '\w\((\S+)\)' )
+        dunit = None
+        runit = None
         for line in lumiFile:
             spl = line.split('|')
             # print spl
