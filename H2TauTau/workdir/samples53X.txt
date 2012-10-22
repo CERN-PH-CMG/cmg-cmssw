@@ -19,6 +19,8 @@ Embedded2012B cmgtools 10 533
 Embedded2012Cv1 cmgtools 5 54
 Embedded2012Cv2 cmgtools 10 736
 
+##Special
+Wbb cmgtools 20 1814
 
 ZToTauTau cmgtools 30 2573
 ZToMuMu cmgtools 30 2573

@@ -95,10 +95,15 @@ TauElePlotter * configTauEle2012(TString name, TString path){
    
 
   ///TTJets
-  cout<<"WARNING applying scale factor for TTjets MC "<<CrossectionScaleFactor<<endl;
+  float TTCrossectionScaleFactor=1.08;
+  cout<<"WARNING applying scale factor to TT MC "<<TTCrossectionScaleFactor<<endl;
+  analysis->TTJetsCorrFactor[0]=1.;
+  analysis->TTJetsCorrFactor[1]=1.01/TTCrossectionScaleFactor;
+  analysis->TTJetsCorrFactor[2]=1.03/TTCrossectionScaleFactor;
+
   Sample* TTJets = new Sample("TTJets",path);
   TTJets->setDataType("MC");
-  TTJets->setCrossection(225.2*CrossectionScaleFactor);
+  TTJets->setCrossection(225.2*TTCrossectionScaleFactor);
   analysis->addSample(TTJets);
 
 

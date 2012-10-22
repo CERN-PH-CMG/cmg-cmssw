@@ -151,6 +151,10 @@ public:
   //
   void plotQCDSSOSRatio();
 
+  //
+  void compareZTTEmbedded();
+  void compareZTTEmbeddedUnfolding();
+
 
   //utilities
   void setSmearHistoRes(float res){smearHistoRes_=res;}

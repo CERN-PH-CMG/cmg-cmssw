@@ -84,10 +84,9 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
   analysis->Isocat_=1;
   analysis->MTcat_=1; 
   analysis->Chcat_=1; 
+  //analysis->mTCut_=option; 
 
-  analysis->mTCut_=option; 
-
-  analysis->printRawYields("eventweight*(categoryIso==1&&abs(ditaucharge)==0)");//This might be needed to avoid some nan values
+  analysis->printRawYields("eventweight*(categoryIso==1&&abs(ditaucharge)==0)");//need to load files before scaling by lumi
 
   TFile output(ChannelName+"SM"+"_"+analysis->plotvar_+"_"+tag+".root","recreate");
   for(long sm=0; sm<NCAT; sm++){
@@ -110,9 +109,11 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
 	if(sm==4)           QCD=analysis->getQCDMike();
       }
       if(year==2012){
-	if(sm==0 || sm==2 ) QCD=analysis->getQCDInc(); 
-	if(sm==1 || sm==3 ) QCD=analysis->getQCDIncLooseShape(); 
-	if(sm==4)           QCD=analysis->getQCDHCP();
+	if(sm==0) QCD=analysis->getQCDInc(); 
+	if(sm==1) QCD=analysis->getQCDIncLooseShape(); 
+	if(sm==2) QCD=analysis->getQCDMuIsoSM(); 
+	if(sm==3) QCD=analysis->getQCDIncLooseShape(); 
+	if(sm==4) QCD=analysis->getQCDHCP();
       }
     }
     if(channel==2){//e-tau

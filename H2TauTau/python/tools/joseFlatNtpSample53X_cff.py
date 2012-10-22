@@ -639,6 +639,14 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.recoilCorrection = 32
         module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_wjets53X_20pv_njet.root' 
 
+    if sampleAlias == 'Wbb' :
+        module.path = "/WbbJetsToLNu_Massive_TuneZ2star_8TeV-madgraph-pythia6_tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_V5_8_0"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
+        module.recoilCorrection = 32
+        module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_wjets53X_20pv_njet.root' 
+
     if sampleAlias == 'TTJets' :
         module.path = "/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0"
         module.dataType = 0

@@ -109,8 +109,6 @@ public:
   TH1F* getWJetsInc2012();
   TH1F* getWJetsIncShape();
   TH1F* getWJetsIncShape2012();
-  TH1F* getW3Jets();
-  TH1F* getW3JetsVBF();
   TH1F* getW2JetsBJet();
   TH1F* getQCDInc();
   TH1F* getQCDIncLooseShape();
@@ -119,8 +117,21 @@ public:
   TH1F* getQCDMike();
   TH1F* getQCDKeti();
 
+  //VBF Methodss
+  TH1F* getW3JetsVBF();
+  TH1F* getW3Jets();
+
+
+  ///HCP 2012 VBF Methods
   TH1F* getWJetsNJetVBFHCP();
-  TH1F* getQCDHCP();//values from Josh for 2012 analysis
+  TH1F* getQCDHCP();
+  TH1F* getSampleVBFHCP(TString sample);//used for the methods below
+  TH1F* getTTJetsVBFHCP();
+  TH1F* getZToLJetVBFHCP();
+  TH1F* getZToEEVBFHCP();
+  TH1F* getDiBosonVBFHCP();
+  TH1F* getZToTauTauVBFHCP();
+
 
   ///
   bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
@@ -153,6 +164,9 @@ public:
 
   //
   void plotQCDSSOSRatio();
+
+  //
+  void compareZTTEmbedded();
 
 
   //utilities
@@ -194,6 +208,8 @@ public:
   Float_t xmax2_;
   
 
+  Float_t TTJetsCorrFactor[3];
+
   //
   Int_t QCDColor_;
   Int_t WJetsColor_;
@@ -208,7 +224,7 @@ public:
       cout<<" Category : "<<sm<<" undefined "<<endl;
       return TString("");
     }
-    TString metcut="(metpt>15)";//30 for PFMET
+    TString metcut="(metpt>30)";//30 for PFMET
     //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
     //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.9)";
     TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
@@ -217,7 +233,7 @@ public:
     TString notboostcut=TString("(!")+boostcut+")";
     TString bjetcut="(njet<2&&nbjet>=1)";
     TString notbjetcut=TString("(!")+bjetcut+")";
-    TString zerojetcut=TString("(njet==0&&nbjet==0)")+"*"+metcut;
+    TString zerojetcut=TString("(njet==0&&nbjet==0)");
     TString taulowcut="(taupt<40.)";
     TString tauhighcut="(taupt>=40.)";
     TString SMcut[7];
