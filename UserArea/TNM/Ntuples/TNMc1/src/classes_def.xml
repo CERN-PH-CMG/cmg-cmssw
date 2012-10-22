@@ -7,4 +7,6 @@
  <class name="pat::ElectronHelper"/>
  <class name="HelperFor<edm::Event>"/>
  <class name="edm::EventHelperExtra"/>
+ <class name="HelperFor<LHEEventProduct>"/>
+ <class name="LHEEventProductHelper"/>
 </lcgdict>
