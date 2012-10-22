@@ -822,6 +822,29 @@ double crystalballfunc(double m, double m0, double sigma, double alpha, double n
     return p0*0.5*(TMath::Erf((pt-p1)/2./p2/sqrt(pt))+1.);
   }
   
+  double eff2012IsoTau12fb(double pt, double eta){
+    return (808.411*(0.764166*0.5*(TMath::Erf((pt-33.2236)/2./0.97289/sqrt(pt))+1.))+
+            4428.0*(0.802387*0.5*(TMath::Erf((pt-38.0971)/2./0.82842/sqrt(pt))+1.))+
+            1783.003*(0.818051*0.5*(TMath::Erf((pt-37.3669)/2./0.74847/sqrt(pt))+1.))+
+            5109.155*(0.796086*0.5*(TMath::Erf((pt-37.3302)/2./0.757558/sqrt(pt))+1.))
+            )/(808.411+4428.0+1783.003+5109.155);
+  }
+  
+  double eff2012Jet12fb(double pt, double eta){
+    return (abs(eta)<=2.1)*
+           ((808.411*(0.99212*0.5*(TMath::Erf((pt-31.3706)/2./1.22821/sqrt(pt))+1.))+
+            4428.0*(0.99059*0.5*(TMath::Erf((pt-32.1104)/2./1.23292/sqrt(pt))+1.))+
+            1783.003*(0.988256*0.5*(TMath::Erf((pt-31.3103)/2./1.18766/sqrt(pt))+1.))+
+            5109.155*(0.988578*0.5*(TMath::Erf((pt-31.6391)/2./1.22826/sqrt(pt))+1.))
+            )/(808.411+4428.0+1783.003+5109.155))+
+	   (abs(eta)>2.1)*
+	   ((808.411*(0.969591*0.5*(TMath::Erf((pt-36.8179)/2./0.904254/sqrt(pt))+1.))+
+            4428.0*(0.975932*0.5*(TMath::Erf((pt-37.2121)/2./0.961693/sqrt(pt))+1.))+
+            1783.003*(0.990305*0.5*(TMath::Erf((pt-36.3096)/2./0.979524/sqrt(pt))+1.))+
+            5109.155*(0.971612*0.5*(TMath::Erf((pt-36.2294)/2./0.871726/sqrt(pt))+1.))
+            )/(808.411+4428.0+1783.003+5109.155));
+  }
+  
 private:
 
   //function definition taken from AN-11-390 v4
