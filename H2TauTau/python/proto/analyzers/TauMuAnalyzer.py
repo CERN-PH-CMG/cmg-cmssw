@@ -57,6 +57,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             diLeptons.append( pydil )
         return diLeptons
 
+
     def buildLeptons(self, cmgLeptons, event):
         '''Build muons for veto, associate best vertex, select loose ID muons.
         The loose ID selection is done to ensure that the muon has an inner track.'''
@@ -92,6 +93,7 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         #    import pdb; pdb.set_trace()
         result, message  = super(TauMuAnalyzer, self).process(iEvent, event)
         if self.cfg_ana.verbose and result is False:
+        # if 1:
             print 'EventReport', event.run, event.lumi, event.eventId, ':', message
             import pdb; pdb.set_trace()
         if result is False:
@@ -184,29 +186,30 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
                self.muonIso(muon)<0.3
 
 
-    def testTightOtherLepton(self, electron, isoCut):
-        '''Tight electron selection, no isolation requirement'''
+    def testOtherLepton(self, electron, isoCut):
+        '''Electron selection for tri-lepton veto'''
         return self.testLegKine(electron, ptcut=10, etacut=2.5) and \
-               electron.tightIdForEleTau()           and \
+               electron.looseIdForTriLeptonVeto()           and \
                self.testVertex( electron )           and \
                electron.relIsoAllChargedDB05() < isoCut
     
 
     def thirdLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
-        # count tight muons
-        tightLeptons = [lep for lep in leptons if
-                        self.testLegKine(lep, ptcut=10, etacut=2.4) and 
-                        self.testLeg2ID(lep) and
-                        self.testLeg2Iso(lep, isoCut) ]
-        # count tight electrons
-        tightOtherLeptons = [olep for olep in otherLeptons
-                             if self.testTightOtherLepton(olep, isoCut)]
-        if len(tightOtherLeptons) + len(tightLeptons)> 1:
-            print '-'*100
-            print 'muons'
-            print map(str, tightLeptons)
-            print 'electrons'
-            print map(str, tightOtherLeptons)            
+        # count muons
+        leptons = [lep for lep in leptons if
+                   self.testLegKine(lep, ptcut=10, etacut=2.4) and 
+                   self.testLeg2ID(lep) and
+                   self.testLeg2Iso(lep, isoCut) ]
+        # count electrons
+        otherLeptons = [olep for olep in otherLeptons
+                        if self.testOtherLepton(olep, isoCut)]
+        if len(leptons) + len(otherLeptons)> 1:
+            # import pdb; pdb.set_trace()
+##             print '-'*100
+##             print 'muons'
+##             print map(str, leptons)
+##             print 'electrons'
+##             print map(str, otherLeptons)    
             return False
         else:
             return True
