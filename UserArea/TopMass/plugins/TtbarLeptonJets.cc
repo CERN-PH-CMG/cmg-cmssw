@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.4 2012/10/21 15:00:57 palencia Exp $
+// $Id: TtbarLeptonJets.cc,v 1.5 2012/10/22 13:23:13 palencia Exp $
 //
 //
 
@@ -95,7 +95,7 @@ private:
   virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
   
   // ----------member data ---------------------------
-  TH1D *countAll_h, *mu_maxLxy_h, *e_maxLxy_h, *mu_pT_h, *e_pT_h;
+  TH1D *countAll_h, *mu_maxLxy_h, *e_maxLxy_h, *mu_pT_h, *e_pT_h, *mu_PV_h, *e_PV_h;
   
   FILE *outFile;
   ofstream myfile;
@@ -123,11 +123,13 @@ TtbarLeptonJets::TtbarLeptonJets(const edm::ParameterSet& iConfig)
 {
    //now do what ever initialization is needed
   edm::Service<TFileService> fs;
-  countAll_h    = fs->make<TH1D>("countAll_h"  , "countAll_h"   , 5   , 0. ,   5. );
-  mu_maxLxy_h   = fs->make<TH1D>("mu_maxLxy_h" , "mu_maxLxy_h"  , 100 , 0. ,  10. );
-  e_maxLxy_h    = fs->make<TH1D>("e_maxLxy_h"  , "e_maxLxy_h"   , 100 , 0. ,  10. );
-  mu_pT_h       = fs->make<TH1D>("mu_pT_h"     , "mu_pT_h"      ,  60 , 0. , 300. );
-  e_pT_h        = fs->make<TH1D>("e_pT_h"      , "e_pT_h"       ,  60 , 0. , 300. );
+  countAll_h    = fs->make<TH1D>("countAll_h"  , "countAll_h"   , 5   ,   0. ,    5. );
+  mu_maxLxy_h   = fs->make<TH1D>("mu_maxLxy_h" , "mu_maxLxy_h"  , 100 ,   0. ,   10. );
+  mu_pT_h       = fs->make<TH1D>("mu_pT_h"     , "mu_pT_h"      ,  60 ,   0. ,  300. );
+  mu_PV_h       = fs->make<TH1D>("mu_PV_h"     , "mu_PV_h"      ,  41 , -0.5 , 40.5  );
+  e_maxLxy_h    = fs->make<TH1D>("e_maxLxy_h"  , "e_maxLxy_h"   , 100 ,   0. ,   10. );
+  e_pT_h        = fs->make<TH1D>("e_pT_h"      , "e_pT_h"       ,  60 ,   0. ,  300. );
+  e_PV_h        = fs->make<TH1D>("e_PV_h"      , "e_PV_h"       ,  41 , -0.5 , 40.5  );
   
   // set total counters
   nTot = 0;
@@ -238,15 +240,26 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   nTot++;
   countAll_h ->Fill(1);
   
+  double finalWeight;
+  
+  double puWeightCMG = 1.0;
   if(!isData){
-     double puWeightCMG = *puWeight2012AB;
+     puWeightCMG = *puWeight2012AB;
      if(verbose) std::cout << "  pu weight = " << puWeightCMG << std::endl;
   }
   
-  //# Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/2012/summary
-  //# 2012A: HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*                                                        ---> 45, 45, 45, 20 jet pT cuts
-  //# 2012B: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v* || HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*   ---> 45, 45, 45, 20 jet pT cuts
-  //# 2012C and D: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*                                            ---> 55, 45, 35, 20 jet pT cuts
+  finalWeight = puWeightCMG;
+  
+  // Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/2012/summary
+  // 2012A: HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v* 						       ---> 45, 45, 45, 20 jet pT cuts
+  // 2012B: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v* || HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*   ---> 45, 45, 45, 20 jet pT cuts
+  //# 2012C and D: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*                                           ---> 55, 45, 35, 20 jet pT cuts
+  // 2012A (190456<=run<=193621): HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v* with (45,45,45,20) jet pT cuts
+  // 2012B (193834<=run<=194225): HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v1 with (45,45,45,20) jet pT cuts
+  // 2012B (194270<=run<=196531): HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v1 with (45,45,35,20) jet pT cuts
+  // 198022<=run<=199608:         HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v2 with (45,45,35,20) jet pT cuts
+  // 199698<=run<=202504:         HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v1 with (55,45,35,20) jet pT cuts
+  // 202970<=run<=203002:         HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v2 with (55,45,35,20) jet pT cuts
 
   int nMuoTrig = 0, nEleTrig= 0;
   if(triggerPath.isValid()){
@@ -255,10 +268,10 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	   if(iEvent.eventAuxiliary().run()>=190456 && iEvent.eventAuxiliary().run()<=193621){
               if ( TRIGGER->getSelectionRegExp("HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*"))                         nMuoTrig++;
               if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*")) nEleTrig++;
-           }else if(iEvent.eventAuxiliary().run()>=193834 && iEvent.eventAuxiliary().run()<=196531){
+           }else if(iEvent.eventAuxiliary().run()>=193834 && iEvent.eventAuxiliary().run()<=199608){
               if ( TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v*") || TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*") ) nMuoTrig++;
               if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v*") )                                                       nEleTrig++;
-	   }else if(iEvent.eventAuxiliary().run()>=198022){
+	   }else if(iEvent.eventAuxiliary().run()>=199698){
               if ( TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*") )                           nMuoTrig++;
               if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet45_35_25_v*") ) nEleTrig++;
            } else std::cout << "  wrong run number???? = " << std::endl;
@@ -313,7 +326,7 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
  
      if(vertices.isValid()){
         for(PVTX = vertices->begin(); PVTX != vertices->end(); ++PVTX) {
-  	   if(verbose) std::cout << "  PupInfo ndof = " << PVTX->ndof() << ", z = " << PVTX->z() << ", rho = " << PVTX->position().rho() << std::endl;
+  	   if(verbose) std::cout << "  PV ndof = " << PVTX->ndof() << ", z = " << PVTX->z() << ", rho = " << PVTX->position().rho() << std::endl;
         }
      }
  
@@ -390,16 +403,19 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   if (goodJetMJ<1 || goodJetLxyMJ<1) passMJsel = false;
   if (goodJetEJ<1 || goodJetLxyEJ<1) passEJsel = false;
 
-
   // Fill histograms after full selection
   if(passMJsel){
-     mu_maxLxy_h->Fill(maxLxyMJ);
-     mu_pT_h->Fill(muo_pT);
+     mu_PV_h->Fill(vertices->size(), finalWeight);
+     mu_maxLxy_h->Fill(maxLxyMJ, finalWeight);
+     mu_pT_h->Fill(muo_pT, finalWeight);
   }
   if(passEJsel){
-     e_maxLxy_h->Fill(maxLxyEJ);
-     e_pT_h->Fill(ele_pT);
+     e_PV_h->Fill(vertices->size(), finalWeight);
+     e_maxLxy_h->Fill(maxLxyEJ, finalWeight);
+     e_pT_h->Fill(ele_pT, finalWeight);
   }
+
+  if(passMJsel && passEJsel) std::cout << " WARNING: event  " << iEvent.eventAuxiliary().event() << " passes both selections..." <<  std::endl;
 
 }
 
