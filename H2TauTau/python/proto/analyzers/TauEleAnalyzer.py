@@ -205,7 +205,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def testLeg2Iso(self, leg, isocut):
+    def testLeg2Iso(self, leg, isocut): #electron
         if isocut is None:
            isocut = self.cfg_ana.iso2
         return leg.relIsoAllChargedDB05() < isocut
@@ -214,7 +214,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def testLooseLeg2 (self, leg):
+    def testLooseLeg2 (self, leg): # electrons
         if leg.relIsoAllChargedDB05() > 0.3 : return False
         if abs( leg.eta() )           > 2.5 : return False
         if leg.pt()                   < 15  : return False
@@ -225,24 +225,27 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-    def testTightOtherLepton(self, muon):
+    def testTightOtherLepton (self, muon):
         '''Tight muon selection, no isolation requirement'''
-        return muon.tightId()                    and \
-               self.testVertex( muon )           and \
-               abs (muon.eta()) < 2.4            and \
-               muon.relIsoAllChargedDB05() < 0.3
+        return muon.tightId ()                   and \
+               self.testVertex (muon)            and \
+               abs (muon.eta ()) < 2.4           and \
+               muon.pt () > 10.                  and \
+               muon.relIsoAllChargedDB05 () < 0.3
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
     def thirdLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
-        # count tight electrons
-        tightLeptons = [electron for electron in leptons if self.testLeg2ID(electron) 
-                                                            and self.testLeg2Iso(electron, 0.3)] 
+        # count tight electrons (leg 2)
+        tightLeptons = [electron for electron in leptons if self.testLeg2ID (electron) 
+                    and self.testLeg2Iso (electron, 0.3)
+                    and self.testLegKine (electron, 10., 2.5)]
+                                                                                                                         
         # count tight muons
-        tightOtherLeptons = [muon for muon in otherLeptons if self.testTightOtherLepton(muon)]
-        if len (tightLeptons) + len(tightOtherLeptons) > 1 :
+        tightOtherLeptons = [muon for muon in otherLeptons if self.testTightOtherLepton (muon)]
+        if len (tightLeptons) + len (tightOtherLeptons) > 1 :
              return False
         return True
         
