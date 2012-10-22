@@ -205,10 +205,10 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
             fill( tr, 'mvacov01', mvametsig(0,1))
             fill( tr, 'mvacov10', mvametsig(1,0))
             fill( tr, 'mvacov11', mvametsig(1,1))
-        
-        nJets = len(event.cleanJets)
+        jets = event.cleanJets30
+        nJets = len(jets)
         if nJets>=1:
-            j1 = event.cleanJets[0]
+            j1 = jets[0]
             fill( tr, 'jpt_1', j1.pt())
             fill( tr, 'jeta_1', j1.eta())
             fill( tr, 'jphi_1', j1.phi())
@@ -219,7 +219,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
             fill( tr, 'jpass_1', j1.passPuJetId("full", 2))
 
         if nJets>=2:
-            j2 = event.cleanJets[1]
+            j2 = jets[1]
             fill( tr, 'jpt_2', j2.pt())
             fill( tr, 'jeta_2', j2.eta())
             fill( tr, 'jphi_2', j2.phi())
@@ -251,7 +251,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
             fill( tr, 'ptvis', vbf.ptvis)
 
         fill( tr, 'nbtag', len(event.cleanBJets))
-        fill( tr, 'njets', len(event.cleanJets))
+        fill( tr, 'njets', len(jets))
        
         self.tree.tree.Fill()
         return True
