@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.3 2012/10/21 12:26:43 palencia Exp $
+// $Id: TtbarLeptonJets.cc,v 1.4 2012/10/21 15:00:57 palencia Exp $
 //
 //
 
@@ -163,6 +163,7 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   //using namespace isodeposit;
   
   int verbose = 0;
+  bool isData = true;
   
   if(verbose) std::cout << "\n" << iEvent.eventAuxiliary().id() << std::endl;
 
@@ -218,20 +219,18 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
   edm::Handle<double> puWeight2012AB;
   iEvent.getByLabel("vertexWeightSummer12MC53XHCPData", puWeight2012AB);
-  if(!puWeight2012AB.isValid()) cerr << "  WARNING: puWeight2012AB is not valid! " << endl;
-
+  if(!puWeight2012AB.isValid() && !isData) cerr << "  WARNING: puWeight2012AB is not valid! " << endl;
 
   // Info for PDFs weights
   edm::Handle<GenEventInfoProduct> pdfstuff;
   iEvent.getByLabel("generator", pdfstuff);
-  if(!pdfstuff.isValid())  cerr<<"  WARNING: genInfoProd handle invalid."<<endl;
-
-  // Infor for PU weights
-  //edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
-  //iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
-  //std::vector<PileupSummaryInfo>::const_iterator PVI;
-  //if(!PupInfo.isValid())     cerr << "  WARNING: PU is not valid! " << endl;
+  if(!pdfstuff.isValid() && !isData)  cerr<<"  WARNING: genInfoProd handle invalid."<<endl;
   
+  // Infor for PU weights
+  edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+  iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+  std::vector<PileupSummaryInfo>::const_iterator PVI;
+  if(!PupInfo.isValid() && !isData)     cerr << "  WARNING: PU is not valid! " << endl;
   
   
   
@@ -239,16 +238,37 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   nTot++;
   countAll_h ->Fill(1);
   
+  if(!isData){
+     double puWeightCMG = *puWeight2012AB;
+     if(verbose) std::cout << "  pu weight = " << puWeightCMG << std::endl;
+  }
   
-  //double puWeightCMG = *puWeight2012AB;
-  //if(verbose) std::cout << "  pu weight = " << puWeightCMG << std::endl;
-
+  //# Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/2012/summary
+  //# 2012A: HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*                                                        ---> 45, 45, 45, 20 jet pT cuts
+  //# 2012B: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v* || HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*   ---> 45, 45, 45, 20 jet pT cuts
+  //# 2012C and D: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*                                            ---> 55, 45, 35, 20 jet pT cuts
 
   int nMuoTrig = 0, nEleTrig= 0;
   if(triggerPath.isValid()){
      for(TRIGGER = triggerPath->begin(); TRIGGER != triggerPath->end(); ++TRIGGER) {
-	if (TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1")) nMuoTrig++;
-	if (TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5") || TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1")) nEleTrig++;	
+        if(isData){
+	   if(iEvent.eventAuxiliary().run()>=190456 && iEvent.eventAuxiliary().run()<=193621){
+              if ( TRIGGER->getSelectionRegExp("HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*"))                         nMuoTrig++;
+              if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*")) nEleTrig++;
+           }else if(iEvent.eventAuxiliary().run()>=193834 && iEvent.eventAuxiliary().run()<=196531){
+              if ( TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v*") || TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*") ) nMuoTrig++;
+              if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v*") )                                                       nEleTrig++;
+	   }else if(iEvent.eventAuxiliary().run()>=198022){
+              if ( TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*") )                           nMuoTrig++;
+              if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet45_35_25_v*") ) nEleTrig++;
+           } else std::cout << "  wrong run number???? = " << std::endl;
+	}else{	 
+	   // Last recommendation is to not apply HLT in MC
+	   //if (TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1")) nMuoTrig++;
+	   //if (TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5") || TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1")) nEleTrig++;	
+	  nMuoTrig++;
+	  nEleTrig++;
+        }   
      }   
   }
  
@@ -324,10 +344,10 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	   jetMuoIndex++;
         } // muJET loop
      }
-     if(jetMJ_pT[0]>45 && jetMJ_pT[1]>45 && jetMJ_pT[2]>45 && jetMJ_pT[3]>20) {
+     if(jetMJ_pT[0]>=45 && jetMJ_pT[1]>=45 && jetMJ_pT[2]>=45 && jetMJ_pT[3]>=20) {
         goodJetMJ++;
         for(unsigned int i=0; i < jetsMJ->size(); ++i) {
-	   if(jetMJ_pT[i]>20 && jetMJ_lxy[i]>0) goodJetLxyMJ++;
+	   if(jetMJ_pT[i]>=20 && jetMJ_lxy[i]>0) goodJetLxyMJ++;
 	   if(jetMJ_lxy[i]>maxLxyMJ) maxLxyMJ = jetMJ_lxy[i] ;       
         }
      }
@@ -342,10 +362,10 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	   jetEleIndex++;
         } // eleJET loop
      }
-     if(jetEJ_pT[0]>45 && jetEJ_pT[1]>45 && jetEJ_pT[2]>45 && jetEJ_pT[3]>20) {
+     if(jetEJ_pT[0]>=45 && jetEJ_pT[1]>=45 && jetEJ_pT[2]>=45 && jetEJ_pT[3]>=20) {
         goodJetEJ++;
         for(unsigned int i=0; i < jetsEJ->size(); ++i) {
-	   if(jetEJ_pT[i]>20 && jetEJ_lxy[i]>0) goodJetLxyEJ++;
+	   if(jetEJ_pT[i]>=20 && jetEJ_lxy[i]>0) goodJetLxyEJ++;
 	   if(jetEJ_lxy[i]>maxLxyEJ) maxLxyEJ = jetEJ_lxy[i] ;       
         }
      }
