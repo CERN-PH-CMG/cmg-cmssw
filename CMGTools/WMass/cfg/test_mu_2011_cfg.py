@@ -19,14 +19,34 @@ vertexAna = cfg.Analyzer(
 
 WAna = cfg.Analyzer(
     'WAnalyzer',
-    pt = 20,
+    recoilcut = 20,
+    pfmetcut = 25,
+    jetptcut = 30,
+    pt = 30,
     eta = 2.4,
     iso = 0.5,
+    savegenp = True,
     verbose = True
     )
 
-treeProducer = cfg.Analyzer(
+WtreeProducer = cfg.Analyzer(
     'WTreeProducer'
+    )
+
+ZAna = cfg.Analyzer(
+    'ZAnalyzer',
+    recoilcut = 25, # rised from 20 to 25 to allow offline MZ/MW scaled analysis cut
+    pfmetcut = 25,
+    jetptcut = 30,
+    pt = 30,
+    eta = 2.4,
+    iso = 0.5,
+    savegenp = True,
+    verbose = True
+    )
+
+ZtreeProducer = cfg.Analyzer(
+    'ZTreeProducer'
     )
 
 sequence = cfg.Sequence( [
@@ -34,23 +54,37 @@ sequence = cfg.Sequence( [
     triggerAna,
     vertexAna,
     WAna,
-    treeProducer
+    WtreeProducer,
+    ZAna,
+    ZtreeProducer
    ] )
 
 
-from CMGTools.H2TauTau.proto.samples.ewk import WJets, DYJets
+from CMGTools.H2TauTau.proto.samples.ewk import WJets, DYJets, TTJets
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
 DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
+DYJets.files = DYJets.files[:5]
+DYJets.triggers = ["HLT_IsoMu24_v*"]
+
 WJets.files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
+WJets.files = WJets.files[:5]
+WJets.triggers = ["HLT_IsoMu24_v*"]
+
+TTJets.files = getFiles('/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
 
 selectedComponents = [DYJets, WJets]
+# selectedComponents = [WJets]
+# selectedComponents = [DYJets]
 
 
-DYJets.splitFactor = 5
-WJets.splitFactor = 5
+DYJets.splitFactor = 1
+WJets.splitFactor = 1
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
 
+                     
 printComps(config.components, True)
+
+
