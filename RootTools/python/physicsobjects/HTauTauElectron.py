@@ -45,26 +45,22 @@ class HTauTauElectron( Electron ):
 
         https://twiki.cern.ch/twiki/bin/view/CMS/HiggsToTauTauWorking2012#2012_Baseline_Selection
         """
-##         if self.eventId == 14636: 
-##             print 'STOPPING'
-##             import pdb
-##             pdb.set_trace()
-
-        #COLIN: loose id shouldn't be required here (Jose said)
-        # if self.looseIdForEleTau() == False : return False
-        #BUT: need to apply conversion rejection and missing inner hits cuts
-        if self.numberOfHits() != 0: return False
-        if not self.passConversionVeto(): return False
         
-        # eta = abs( self.eta() )
+        if self.numberOfHits() != 0: return False
+        if not self.passConversionVeto(): return False        
         eta = abs( self.sourcePtr().superCluster().eta() )
-        if eta > 2.1 : return False
-        lmvaID = -99999 # identification
-        if self.pt() < 20 :
-            if   eta<0.8:   lmvaID = 0.925
-            elif eta<1.479: lmvaID = 0.915
-            else :          lmvaID = 0.965
-        else:
+        #Colin: no eta cut should be done here...
+##        if eta > 2.1 : return False
+##         lmvaID = -99999 # identification
+##         if self.pt() < 20 :
+##             if   eta<0.8:   lmvaID = 0.925
+##             elif eta<1.479: lmvaID = 0.915
+##             else :          lmvaID = 0.965
+##        else:
+        #Colin: the numbers above don't exist anymore
+        #the tight ID is only defined for pT>20 electrons
+        #we're going to use the numbers below even for lower pT electrons. 
+        if 1:
             if   eta<0.8:   lmvaID = 0.925
             elif eta<1.479: lmvaID = 0.975
             else :          lmvaID = 0.985
@@ -72,6 +68,28 @@ class HTauTauElectron( Electron ):
         #self.tightIdResult = result
         return result
     
+
+    def looseIdForTriLeptonVeto(self):
+        '''To be used in the tri-lepton veto for both the etau and mutau channels.
+        Agreed at the CMS center with Josh, Andrew, Valentina, Jose on the 22nd of October
+        '''
+        if self.numberOfHits() != 0: return False
+        if not self.passConversionVeto(): return False
+        eta = abs( self.sourcePtr().superCluster().eta() )
+        #Colin no eta cut should be done here.
+        #        if eta > 2.1 : return False
+        lmvaID = -99999 # identification
+        if self.pt() < 20 :
+            if   eta<0.8:   lmvaID = 0.925
+            elif eta<1.479: lmvaID = 0.915
+            else :          lmvaID = 0.965
+        else:
+            if   eta<0.8:   lmvaID = 0.905
+            elif eta<1.479: lmvaID = 0.955
+            else :          lmvaID = 0.975
+        result = self.mvaNonTrigV0()  > lmvaID
+        return result
+        
 
     def tightId( self ):
         return self.tightIdForEleTau()
@@ -108,3 +126,15 @@ class HTauTauElectron( Electron ):
         else : return False #PG is this correct? does this take cracks into consideration?
         return True    
 
+    def __str__(self):
+        base = [super(HTauTauElectron, self).__str__()]
+        spec = [
+            'vertex    : dxy = {dxy}, dz = {dz}'.format(dxy=self.dxy(), dz=self.dz()),
+            'mva       = {mva}'.format(mva=self.mvaNonTrigV0()),
+            'nmisshits = {nhits}'.format(nhits=self.numberOfHits()),
+            'conv veto = {conv}'.format(conv=self.passConversionVeto()),
+            'tight ID  = {id}'.format(id=self.tightId()),
+            '3-veto ID = {id}'.format(id=self.looseIdForTriLeptonVeto()),
+            '2-veto ID = {id}'.format(id=self.looseIdForEleTau()),
+            ]
+        return '\n\t'.join( base + spec )
