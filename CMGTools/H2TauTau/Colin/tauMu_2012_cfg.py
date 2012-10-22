@@ -13,7 +13,7 @@ from CMGTools.RootTools.RootTools import *
 shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
-syncntuple = False
+syncntuple = True
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
@@ -34,11 +34,63 @@ vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_19594
 
 mc_vertexWeight = None
 
-mc_tauEffWeight_mc = 'effTau2012MC'
-mc_muEffWeight_mc = 'effMu2012MC'
-mc_tauEffWeight = 'effTau2012AB'
-mc_muEffWeight = 'effMu2012AB'
+mc_tauEffWeight_mc = 'effTau2012MC53X'
+mc_muEffWeight_mc = 'eff_2012_Rebecca_TauMu_IsoMu1753XMC'
+mc_tauEffWeight = 'effTau2012ABC'
+mc_muEffWeight = 'effMu2012_Rebecca_TauMu_ABC'
     
+    
+eventSelector = cfg.Analyzer(
+    'EventSelector',
+    toSelect = [
+##    376085 ,
+##    576766 ,
+##    585849 ,
+##    138712 ,
+##    462372 ,
+##    647749 ,
+##    794711 ,
+##    397814 ,
+##    168577 ,
+##    752021 ,
+##    955981 ,
+##    144732 ,
+##    253983 ,
+##    967335 ,
+##    593390 ,
+##    312587 ,
+##     95728 ,
+##     78807 ,
+##    433140 ,
+##    501604 ,
+##    990370 ,
+##    496868 ,
+##     65293 ,
+##    479335 ,
+##     19791 ,
+   # selected by me and not by Jose
+   343405 ,
+   900535 ,
+    55498 ,
+   600255 ,
+   523634 ,
+   755769 ,
+   192915 ,
+   569949 ,
+   268302 ,
+   840192 ,
+   746810 ,
+   776229 ,
+   992574 ,
+   387821 ,
+   523969 ,
+   878407 ,
+   661467 ,
+   145475 ,
+
+    ]
+    )
+
 
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
@@ -148,10 +200,10 @@ treeProducerXCheck = cfg.Analyzer(
 
 #########################################################################################
 
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_PietroOct05 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinSep19 import *
+
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_MuRm_ColinOct9 import * 
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinOct10 import * 
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinOct10 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
 
 #########################################################################################
 
@@ -192,9 +244,9 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 1
+test = 0
 if test==1:
-    comp = HiggsVH125
+    comp = HiggsVBF125
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.files = comp.files[:10]
