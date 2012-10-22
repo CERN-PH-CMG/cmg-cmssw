@@ -106,3 +106,5 @@
 <use name="FWCore/Framework"/>
 <library file="userplugin_edmEventHelperExtra.cc" name="edmEventHelperExtra">
 </library>
+<library file="userplugin_LHEEventProductHelper.cc" name="LHEEventProductHelper">
+</library>
