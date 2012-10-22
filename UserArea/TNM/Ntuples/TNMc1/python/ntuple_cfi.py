@@ -6,7 +6,8 @@ import FWCore.ParameterSet.Config as cms
 demo =\
 cms.EDAnalyzer("TheNtupleMaker",
                ntupleName = cms.untracked.string("ntuple.root"),
-               analyzerName = cms.untracked.string("TNMc1analyzer.cc"),
+               #analyzerName = cms.untracked.string("TNMc1analyzer.cc"),
+               analyzerName = cms.untracked.string("rzrBTanalyzer.cc"),
 
                buffers =
                cms.untracked.
@@ -16,6 +17,7 @@ cms.EDAnalyzer("TheNtupleMaker",
     'GenEventInfoProduct',
     'GenRunInfoProduct',
     'LHEEventProduct',
+    'LHEEventProductHelper',
     'patJetHelper',
     'patJet1Helper',
     'patJet2Helper',
@@ -30,6 +32,16 @@ cms.EDAnalyzer("TheNtupleMaker",
     'recoGenParticleHelper',
     'edmTriggerResultsHelper',
     'edmTriggerResultsHelper1',
+    'sint',
+    'cmgBaseMET',
+    'cmgBaseMET1',
+    'cmgElectron',
+    'cmgElectron1',
+    'cmgMuon',
+    'cmgMuon1',
+    'cmgTau',
+    'cmgTau1',
+    'recoLeafCandidate'
     ),
                edmEventHelper =
                cms.untracked.
@@ -113,6 +125,14 @@ cms.EDAnalyzer("TheNtupleMaker",
     'double  hepeup().SCALUP',
     'double  hepeup().AQEDUP',
     'double  hepeup().AQCDUP'
+    ),
+               LHEEventProductHelper =
+               cms.untracked.                          
+               vstring(
+    'LHEEventProductHelper            source                            1',
+    #---------------------------------------------------------------------
+    'double  mt1()',
+    'double  mz1()',
     ),
                patJetHelper =
                cms.untracked.
@@ -501,7 +521,7 @@ cms.EDAnalyzer("TheNtupleMaker",
                recoVertex =
                cms.untracked.
                vstring(
-    'recoVertex                      offlinePrimaryVertices          200',
+    'recoVertex                      offlinePrimaryVertices          2',
     #---------------------------------------------------------------------
     'bool  isFake()',
     'double  chi2()',
@@ -577,31 +597,11 @@ cms.EDAnalyzer("TheNtupleMaker",
     "edmTriggerResultsHelper          TriggerResults::HLT               1",
     #---------------------------------------------------------------------
     # HLT_PFJet
-    #'   int   value("HLT_PFJet40_v1...3")',
-    #'   int   prescale("HLT_PFJet40_v1...3")',
-    #'   int   value("HLT_PFJet80_v1...3")',
-    #'   int   prescale("HLT_PFJet80_v1...3")',
-    #'   int   value("HLT_PFJet140_v1...3")',
-    #'   int   prescale("HLT_PFJet140_v1...3")',
-    #'   int   value("HLT_PFJet200_v1...3")',
-    #'   int   prescale("HLT_PFJet200_v1...3")',
-    #'   int   value("HLT_PFJet260_v1...3")',
-    #'   int   prescale("HLT_PFJet260_v1...3")',
     '   int   value("HLT_PFJet320_v3...11")',
     '   int   prescale("HLT_PFJet320_v3...11")',
     '   int   value("HLT_PFJet400_v3...11")',
     '   int   prescale("HLT_PFJet400_v3...11")',
     # HLT_HT
-    #'   int   value("HLT_HT200_v1...3")',
-    #'   int   prescale("HLT_HT200_v1...3")',
-    #'   int   value("HLT_HT250_v1...3")',
-    #'   int   prescale("HLT_HT250_v1...3")',
-    #'   int   value("HLT_HT300_v1...3")',
-    #'   int   prescale("HLT_HT300_v1...3")',
-    #'   int   value("HLT_HT350_v1...3")',
-    #'   int   prescale("HLT_HT350_v1...3")',
-    #'   int   value("HLT_HT400_v1...3")',
-    #'   int   prescale("HLT_HT400_v1...3")',
     '   int   value("HLT_HT450_v1...9")',
     '   int   prescale("HLT_HT450_v1...9")',
     '   int   value("HLT_HT500_v1...9")',
@@ -613,14 +613,19 @@ cms.EDAnalyzer("TheNtupleMaker",
     '   int   value("HLT_HT750_v1...9")',
     '   int   prescale("HLT_HT750_v1...9")',
     # HLT_PFHT
-    #'   int   value("HLT_PFHT350_v1...6")',
-    #'   int   prescale("HLT_PFHT350_v1...6")',
     '   int   value("HLT_PFHT650_v5...11")',
     '   int   prescale("HLT_PFHT650_v5...11")',
-    '   int   value("HLT_PFHT700_v1...6")',
-    '   int   prescale("HLT_PFHT700_v1...6")',
-    '   int   value("HLT_PFHT750_v1...6")',
-    '   int   prescale("HLT_PFHT750_v1...6")',
+    '   int   value("HLT_PFHT700_v5...11")',
+    '   int   prescale("HLT_PFHT700_v5...11")',
+    '   int   value("HLT_PFHT750_v5...11")',
+    '   int   prescale("HLT_PFHT750_v5...11")',
+    # HLT_PFNoPUHT
+    '   int   value("HLT_PFNoPUHT650_v1...6")',
+    '   int   prescale("HLT_PFNoPUHT650_v1...6")',
+    '   int   value("HLT_PFNoPUHT700_v1...6")',
+    '   int   prescale("HLT_PFNoPUHT700_v1...6")',
+    '   int   value("HLT_PFNoPUHT750_v1...6")',
+    '   int   prescale("HLT_PFNoPUHT750_v1...6")',
     # HLT_FatDiPFJetMass_DR_Deta
     '   int   value("HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v2...12")',
     '   int   prescale("HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v2...12")',
@@ -629,5 +634,120 @@ cms.EDAnalyzer("TheNtupleMaker",
     '   int   prescale("HLT_DiPFJetAve320_v2...12")',
     '   int   value("HLT_DiPFJetAve400_v2...12")',
     '   int   prescale("HLT_DiPFJetAve400_v2...12")',
+    ),
+               sint =
+               cms.untracked.
+               vstring(
+    'sint                            simpleGenInfo                     1',
+    #---------------------------------------------------------------------
+    'int value()'
+    ),
+               cmgBaseMET =
+               cms.untracked.
+               vstring(
+    'cmgBaseMET                      razorMJMetDown                  200',
+    #---------------------------------------------------------------------
+    'double  energy()',
+    'double  et()',                                 
+    'double  pt()',
+    'double  phi()',
+    'double  sumEt()'
+    ),
+               cmgBaseMET1 =
+               cms.untracked.
+               vstring(
+    'cmgBaseMET                      razorMJMetUp                    200',
+    #---------------------------------------------------------------------
+    'double  energy()',
+    'double  et()',
+    'double  pt()',
+    'double  phi()',
+    'double  sumEt()'
+    ),
+               cmgElectron =
+               cms.untracked.
+               vstring(
+    'cmgElectron                     razorMJElectronLoose            200',
+    #---------------------------------------------------------------------
+    'int  charge()',
+    'double  energy()',
+    'double  et()',
+    'double  pt()',
+    'double  phi()',
+    'double  eta()'                                    
+    ),
+               cmgElectron1 =
+               cms.untracked.
+               vstring(
+    'cmgElectron                     razorMJElectronTight            200',
+    #---------------------------------------------------------------------
+    'int  charge()',
+    'double  energy()',
+    'double  et()',
+    'double  pt()',
+    'double  phi()',
+    'double  eta()'
+    ),
+               cmgMuon =
+               cms.untracked.
+               vstring(
+    'cmgMuon                         razorMJMuonLoose                200',
+    #---------------------------------------------------------------------
+    'int  charge()',
+    'double  energy()',
+    'double  et()',
+    'double  pt()',
+    'double  phi()',
+    'double  eta()'
+    ),
+               cmgMuon1 =
+               cms.untracked.
+               vstring(
+    'cmgMuon                         razorMJMuonTight                200',
+    #---------------------------------------------------------------------
+    'int  charge()',
+    'double  energy()',
+    'double  et()',
+    'double  pt()',
+    'double  phi()',
+    'double  eta()'
+    ),
+               cmgTau =
+               cms.untracked.
+               vstring(
+    'cmgTau                          razorMJTauLoose                 200',
+    #---------------------------------------------------------------------
+    'int  charge()',
+    'double  energy()',
+    'double  et()',
+    'double  pt()',
+    'double  phi()',
+    'double  eta()',
+    'float  tauID("byLooseCombinedIsolationDeltaBetaCorr") byLooseCombinedIsolationDeltaBetaCorr'
+    ),
+               cmgTau1 =
+               cms.untracked.
+               vstring(
+    'cmgTau                          razorMJTauTight                 200',
+    #---------------------------------------------------------------------
+    'int  charge()',
+    'double  energy()',
+    'double  et()',
+    'double  pt()',
+    'double  phi()',
+    'double  eta()',
+    'float  tauID("byTightCombinedIsolationDeltaBetaCorr") byTightCombinedIsolationDeltaBetaCorr'
+    ),
+               recoLeafCandidate =
+               cms.untracked.
+               vstring(
+    'recoLeafCandidate               topGenInfo                      200',
+    #---------------------------------------------------------------------
+    'int  charge()',
+    'double  energy()',
+    'double  et()',
+    'double  pt()',
+    'double  phi()',
+    'double  eta()'
     )
                )
