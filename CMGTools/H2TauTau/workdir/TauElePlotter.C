@@ -49,6 +49,11 @@ TauElePlotter::TauElePlotter(const char * name):
 {
  
 
+  TTJetsCorrFactor[0]=1.;
+  TTJetsCorrFactor[1]=1.;
+  TTJetsCorrFactor[2]=1.;
+
+
   //after sync
   qcdTauIsoRatio_ = "((20<taujetpt&&taujetpt<=25)*2.85+(25<taujetpt&&taujetpt<=30)*1+(30<taujetpt&&taujetpt<=35)*0.411+(35<taujetpt&&taujetpt<=40)*0.196+(40<taujetpt&&taujetpt<=45)*0.109+(45<taujetpt&&taujetpt<=50)*0.0644+(50<taujetpt&&taujetpt<=55)*0.0458+(55<taujetpt&&taujetpt<=60)*0.0349+(60<taujetpt&&taujetpt<=65)*0.0338)";
   qcdMuIsoRatio_  = "((17<mujetpt&&mujetpt<=22)*1.51+(22<mujetpt&&mujetpt<=27)*0.462+(27<mujetpt&&mujetpt<=32)*0.2+(32<mujetpt&&mujetpt<=37)*0.12+(37<mujetpt&&mujetpt<=42)*0.101+(42<mujetpt&&mujetpt<=47)*0.0964+(47<mujetpt&&mujetpt<=52)*0.14+(52<mujetpt&&mujetpt<=57)*0.116)";
@@ -123,7 +128,7 @@ TH1F* TauElePlotter::getSample(TString samplename){
   if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
   if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<30)";
+  if(MTcat_==1)  sel += "*(transversemass<20)";
   if(MTcat_==3)  sel += "*(transversemass>70)";
   if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
@@ -162,7 +167,7 @@ TH1F* TauElePlotter::getTotalData(){
   if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
   if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
   if(Isocat_>0)  sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<30)";
+  if(MTcat_==1)  sel += "*(transversemass<20)";
   if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
   if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
@@ -193,7 +198,7 @@ TH1F* TauElePlotter::getTotalMC(){
   if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
   if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<30)";
+  if(MTcat_==1)  sel += "*(transversemass<20)";
   if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
   if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
@@ -223,7 +228,7 @@ TH1F* TauElePlotter::getTotalEmbedded(){
   if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
   if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<30)";
+  if(MTcat_==1)  sel += "*(transversemass<20)";
   if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
   if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
@@ -813,6 +818,9 @@ TH1F* TauElePlotter::getQCDInc(){
 
   Chcat_=ChcatTmp;
 
+  for(Int_t b=1;b<=h->GetNbinsX();b++)
+    if(h->GetBinContent(b)<0.)h->SetBinContent(b,0.);
+
   cout<<"Scaling QCDInc by OS/SS factor "<<QCDOStoSSRatio_<<endl;
   h->Scale(QCDOStoSSRatio_);
 
@@ -1276,9 +1284,9 @@ TH1F* TauElePlotter::getQCDMike(){
 TH1F* TauElePlotter::getQCDHCP(){
 
   char isocuttxt[100];
-  sprintf(isocuttxt,"(0.2<muiso&&muiso<0.5&&tauisomva>0.7)");//for normalization
+  sprintf(isocuttxt,"(0.2<muiso&&muiso<0.5&&tauisomva>0.)");//for normalization
   char isocuttxtshape[100];
-  sprintf(isocuttxtshape,"(0.2<muiso&&muiso<0.5&&tauisomva>0.7&&njet20>=2)");//for shape (add mva>0.)
+  sprintf(isocuttxtshape,"(0.2<muiso&&muiso<0.5&&tauisomva>0.&&njet20>=2&&diJetMass>200&&abs(diJetDeltaEta)>2.0)");//for shape (add mva>0.)
   
   Int_t TmpIsocat=Isocat_;
   TString TmpExtrasel=extrasel_;  
@@ -1323,6 +1331,83 @@ TH1F* TauElePlotter::getQCDHCP(){
   return hShape;
 
 
+}
+
+
+///HCP 2012 VBF methods
+TH1F* TauElePlotter::getSampleVBFHCP(TString sample){
+  TH1F*h=getSample(sample);
+  h->SetName(sample+"VBFHCP");
+
+  TString shapesel="(njet>=2&&njetingap==0&&diJetMass>200&&abs(diJetDeltaEta)>2.0)";
+  TString tmpextrasel=extrasel_;
+  extrasel_=shapesel;
+  TH1F*hShape=getSample(sample);
+  hShape->SetName(sample+"VBFHCPShape");
+  extrasel_=tmpextrasel;
+  
+  if(hShape->Integral()>0){
+    hShape->Scale(h->Integral()/hShape->Integral());
+    delete h;
+    return hShape;
+  }
+  delete hShape;
+  return h;
+}
+
+TH1F* TauElePlotter::getDiBosonVBFHCP(){
+  TH1F* h=getPlotHisto("hVV");
+
+  TH1F* hWW2L2Nu=getSampleVBFHCP("WW2L2Nu"); if(!hWW2L2Nu)return 0;  h->Add(hWW2L2Nu);   delete hWW2L2Nu;
+  TH1F* hWZ3LNu=getSampleVBFHCP("WZ3LNu");   if(!hWZ3LNu)return 0;   h->Add(hWZ3LNu);   delete hWZ3LNu;
+  TH1F* hWZ2L2Q=getSampleVBFHCP("WZ2L2Q");   if(!hWZ2L2Q)return 0;   h->Add(hWZ2L2Q);  delete hWZ2L2Q;
+  TH1F* hZZ4L=getSampleVBFHCP("ZZ4L");       if(!hZZ4L)return 0;     h->Add(hZZ4L);  delete hZZ4L;
+  TH1F* hZZ2L2Nu=getSampleVBFHCP("ZZ2L2Nu"); if(!hZZ2L2Nu)return 0;  h->Add(hZZ2L2Nu);  delete hZZ2L2Nu;
+  TH1F* hZZ2L2Q=getSampleVBFHCP("ZZ2L2Q");   if(!hZZ2L2Q)return 0;   h->Add(hZZ2L2Q);  delete hZZ2L2Q;
+
+  TH1F* hTopTW=getSampleVBFHCP("TopTW");  if(!hTopTW)return 0;  h->Add(hTopTW);  delete hTopTW;
+  TH1F* hTopBTW=getSampleVBFHCP("TopBTW");  if(!hTopBTW)return 0;  h->Add(hTopBTW);  delete hTopBTW;
+
+  h->SetName("getDiBosonVBFHCP");
+  return h;
+
+}
+TH1F* TauElePlotter::getTTJetsVBFHCP(){
+  TH1F*h=getSampleVBFHCP("TTJets");
+  h->Scale(TTJetsCorrFactor[2]);
+  h->SetName("getTTJetsVBFHCP");
+  return h;
+}
+TH1F* TauElePlotter::getZToLJetVBFHCP(){
+  TH1F*h=getSampleVBFHCP("ZToLJet");
+  h->SetName("getZToLJetVBFHCP");
+  return h;
+}
+TH1F* TauElePlotter::getZToEEVBFHCP(){
+  TH1F*h=getSampleVBFHCP("ZToEE");
+  h->SetName("getZToEEVBFHCP");
+  return h;
+}
+
+TH1F* TauElePlotter::getZToTauTauVBFHCP(){  
+  TH1F*hnorm=getZToTauTau();
+  hnorm->SetName("ZTTVBFHCPNorm");
+
+  TString shapesel="(njet>=2&&njetingap==0&&diJetMass>200.&&abs(diJetDeltaEta)>2.0)";
+  TString tmpextrasel=extrasel_;
+  extrasel_=shapesel;
+  TH1F*hshape=getZToTauTau();
+  hshape->SetName("ZTTVBFHCPShape");
+  extrasel_=tmpextrasel;
+
+  //cout<<" hshape : "<<hshape->Integral()<<endl;
+  if(hshape->Integral()>0.){
+    hshape->Scale(hnorm->Integral()/hshape->Integral());
+    delete hnorm;
+    return hshape;
+  }
+  delete hshape;
+  return hnorm;
 }
 
 
@@ -1384,7 +1469,9 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   cout<<"hWJetsToLNu "<<hWJetsToLNu->Integral()<<endl;
   if(nbins_==0) makeDensityHisto(hWJetsToLNu);  
 
-  TH1F*hTTJets=getTTJetsInc();
+  TH1F*hTTJets=0;
+  if(QCDType==5)  hTTJets=getTTJetsVBFHCP();
+  else hTTJets=getTTJetsInc();
   if(!hTTJets)return 0;
   hTTJets->SetName("hTTJetsplotInc");
   hTTJets->SetLineWidth(1);
@@ -1394,7 +1481,9 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   if(nbins_==0)makeDensityHisto(hTTJets);  
 
   ///Z->tau tau
-  TH1F*hZToTauTau=getZToTauTau();
+  TH1F*hZToTauTau=0;
+  if(QCDType==5) hZToTauTau=getZToTauTauVBFHCP();
+  else hZToTauTau=getZToTauTau();
   if(!hZToTauTau)return 0;
   hZToTauTau->SetName("hZToTauTauplotInc");
   hZToTauTau->SetLineWidth(1);
@@ -1407,14 +1496,18 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   TH1F*hEWK=(TH1F*)hWJetsToLNu->Clone("hElectroWeak");
 
   //combine Di-Bosons
-  TH1F*hVV=getDiBoson();
+  TH1F*hVV=0;
+  if(QCDType==5)  hVV=getDiBosonVBFHCP();
+  else hVV=getDiBoson();
   if(!hVV)return 0;
   hVV->SetName("hVVplotInc");
   if(nbins_==0)makeDensityHisto(hVV); 
   hEWK->Add(hVV);
 
   //combine ZLJet
-  TH1F*hZToLJet=getZToLJetInc();
+  TH1F*hZToLJet=0;
+  if(QCDType==5)  hZToLJet=getZToLJetVBFHCP();
+  else hZToLJet=getZToLJetInc();
   if(!hZToLJet)return 0;
   hZToLJet->SetName("hZToLJetplotInc");
   if(nbins_==0)makeDensityHisto(hZToLJet); 
@@ -1422,7 +1515,9 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
 
 
   //keep ZEE separate
-  TH1F*hZToEE=getZToEEInc();
+  TH1F*hZToEE=0;
+  if(QCDType==5)  hZToEE=getZToEEVBFHCP();
+  else hZToEE=getZToEEInc();
   if(!hZToEE)return 0;
   hZToEE->SetName("hZToEEplotInc");
   hZToEE->SetLineWidth(1);
@@ -1578,7 +1673,6 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   C.Update();
   C.Print(filename+".ps");  
   C.Print(filename+".png");  
-  C.Print(filename+".eps");  
   C.Print(filename+".pdf");  
   C.Print(filename+".C");  
   hData->GetYaxis()->SetRangeUser(0.1,hData->GetMaximum()*100);
@@ -1586,7 +1680,6 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   C.SetLogy(1);
   C.Print(filename+".ps"); 
   C.Print(filename+"_log.png");   
-  C.Print(filename+"_log.eps");   
   C.Print(filename+"_log.pdf");   
   C.Print(filename+"_log.C");   
   C.SetLogy(0);
@@ -1691,7 +1784,7 @@ TH1F* TauElePlotter::getWJetsSM(){
 
 TH1F* TauElePlotter::getQCDMuIsoSM(){
   TString sel="eventweight*(abs(ditaucharge)==0&&0.3<muiso&&muiso<0.5)";
-  if(MTcat_==1)  sel += "*(transversemass<30)";
+  if(MTcat_==1)  sel += "*(transversemass<20)";
   if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
   if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
@@ -2532,5 +2625,87 @@ void TauElePlotter::fixFileTag(TString * filetag){
 
 }
 
+
+void TauElePlotter::compareZTTEmbedded(){
+
+  plotvar_="ditaumass";
+  //plotvar_="svfitmass";
+  nbins_=30;
+  xmin_=0;
+  xmax_=150;
+  Chcat_=0;
+  Isocat_=1;
+  MTcat_=1;
+  extrasel_="1";//reset for multiple plotting
+
+  scaleSamplesLumi();
+
+  TCanvas C("compareZTTEmbedded");
+  C.Print("compareZTTEmbedded.pdf[");
+  char text[100];
+  TLatex title;
+  
+  ZTTType_=1;
+  TH1F*HMC=getZToTauTau();
+  ZTTType_=2;
+  TH1F*HData=getZToTauTau();
+  C.Clear();
+  HMC->SetMarkerColor(4);
+  HMC->SetLineColor(4);
+  HMC->SetTitle("");
+  HMC->GetXaxis()->SetTitle("m(e#tau)");
+  //HMC->GetXaxis()->SetTitle("m(#tau#tau)");
+  HMC->GetYaxis()->SetTitle("Inclusive");
+  HMC->Draw("histpe");
+  HData->Draw("histpesame");
+  title.SetTextSize ( 0.025 ); 
+  title.SetTextFont (   62 );
+  title.SetTextColor(4);
+  sprintf(text,"MC (histogram)        : integral = %.0f  mean = %.2f   rms = %.2f",HMC->Integral(),HMC->GetMean(),HMC->GetRMS());
+  title.DrawTextNDC(0.2,0.96,text);
+  title.SetTextColor(1);
+  sprintf(text,"Embedded (points)  : integral = %.0f  mean = %.2f   rms = %.2f",HData->Integral(),HData->GetMean(),HData->GetRMS());
+  title.DrawTextNDC(0.2,0.93,text);
+  C.Print("compareZTTEmbedded.pdf");
+  
+  delete HMC;
+  delete HData;
+
+  for(Int_t c=0;c<5;c++){
+    extrasel_=getSMcut(c);
+    
+    ZTTType_=1;
+    TH1F*HMCcat=getZToTauTau();
+    ZTTType_=2;
+    TH1F*HDatacat=getZToTauTau();
+    C.Clear();
+    HMCcat->SetTitle("");
+    HMCcat->GetXaxis()->SetTitle("m(e#tau)");
+    //HMCcat->GetXaxis()->SetTitle("m(#tau#tau)");
+    if(c==0)HMCcat->GetYaxis()->SetTitle("0-Jet low");
+    if(c==1)HMCcat->GetYaxis()->SetTitle("0-Jet high");
+    if(c==2)HMCcat->GetYaxis()->SetTitle("1-Jet low");
+    if(c==3)HMCcat->GetYaxis()->SetTitle("1-Jet high");
+    if(c==4)HMCcat->GetYaxis()->SetTitle("VBF");
+    HMCcat->SetMarkerColor(4);
+    HMCcat->SetLineColor(4);
+    HMCcat->Draw("histpe");
+    HDatacat->Draw("histpesame");
+    title.SetTextColor(4);
+    sprintf(text,"MC (histogram)        : integral = %.0f  mean = %.2f   rms = %.2f",HMCcat->Integral(),HMCcat->GetMean(),HMCcat->GetRMS());
+    title.DrawTextNDC(0.2,0.96,text);
+    title.SetTextColor(1);
+    sprintf(text,"Embedded (points)  : integral = %.0f  mean = %.2f   rms = %.2f",HDatacat->Integral(),HDatacat->GetMean(),HDatacat->GetRMS());
+    title.DrawTextNDC(0.2,0.93,text);
+    C.Print("compareZTTEmbedded.pdf");
+      
+    delete HMCcat;
+    delete HDatacat;
+  }
+
+
+  C.Print("compareZTTEmbedded.pdf]");
+
+}
 
 

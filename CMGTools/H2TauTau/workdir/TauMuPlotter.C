@@ -103,10 +103,10 @@ TH1F* TauMuPlotter::getSample(TString samplename){
   TString sel="eventweight";
   if(Chcat_==1)  sel += "*(abs(ditaucharge)==0)";
   if(Chcat_==2)  sel += "*(abs(ditaucharge)==2)";
-  if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
+  if(Isocat_>0)  sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
   if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
-  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
+  if(MTcat_==13) sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
   //cout<<sel<<endl;
@@ -588,6 +588,31 @@ TH1F* TauMuPlotter::getQCDIncLooseShape(){
   return h;
 }
 
+TH1F* TauMuPlotter::getQCDMuIsoSM(){
+  cout<<"Calling method getQCDMuIsoSM"<<endl;
+
+  TH1F* hNorm=getQCDInc();
+  
+  int ChcatTmp=Chcat_;
+  Chcat_=2;
+  int IsocatTmp=Isocat_;
+  Isocat_=0;
+
+  TString extraselTmp=extrasel_;
+  extrasel_+="*(0.2<muiso&&muiso<0.5)";  
+  TH1F* hShape=getTotalData();
+
+  Isocat_=IsocatTmp;
+  Chcat_=ChcatTmp;
+  extrasel_=extraselTmp;
+
+  if(hShape->Integral()>0)
+    hShape->Scale(hNorm->Integral()/hShape->Integral());
+  else hShape->Scale(0.);
+  
+  return hShape;
+}
+
 
 TH1F* TauMuPlotter::getQCDIncWJetsShape(){
   cout<<"Calling method getQCDIncWJetsShape"<<endl;
@@ -681,7 +706,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   
   TH1F*hQCD = 0;
   if(QCDType==0) hQCD=getQCDInc();
-  if(QCDType==1) hQCD=getQCDIncWJetsShape();
+  if(QCDType==1) hQCD=getQCDMuIsoSM();
   if(QCDType==2) hQCD=getQCDIncLooseShape();
   if(QCDType==3) hQCD=getQCDMike();
   if(QCDType==4) hQCD=getQCDKeti();
@@ -1014,30 +1039,6 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
 
 
 
-TH1F* TauMuPlotter::getQCDMuIsoSM(){
-  TString sel="eventweight*(abs(ditaucharge)==0&&0.3<muiso&&muiso<0.5)";
-  if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
-  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
-  if(MTcat_==13) sel += "*(60<transversemass&&transversemass<120)";
-  if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
-
-  TH1F* h=getPlotHisto("hSMQCD");
- 
-  for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){
-    if((*s)->getDataType()=="Data"){
-      TH1F*hd=0;//(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
-      if(nbins_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbins_,xmin_,xmax_,sel);
-      else if(nbinsVariable_>0) hd=(*s)->getHistoNtpFile(plotvar_,nbinsVariable_,xbinsVariable_,sel);
-      else { cout<<"binning not recognized "<<endl; return 0;}
-      h->Add(hd);
-      delete hd;
-    }
-  }
-
-  h->Scale(QCDMuIsoSideRatio_);
-
-  return h;
-}
 
 TH1F* TauMuPlotter::getTotalMCSM(){
   TH1F* h=getPlotHisto("hTotalsMCSM");
@@ -2116,6 +2117,178 @@ void TauMuPlotter::plotQCDSSOSRatio(){
 
   delete hDataSS;
   delete hDataOS;
+}
+
+
+void TauMuPlotter::compareZTTEmbedded(){
+
+  //plotvar_="ditaumass";
+  plotvar_="svfitmass";
+  nbins_=30;
+  xmin_=0;
+  xmax_=150;
+  Chcat_=1;
+  Isocat_=1;
+  MTcat_=1;
+  extrasel_="1";//reset for multiple plotting
+
+  scaleSamplesLumi();
+
+  TCanvas C("compareZTTEmbedded");
+  C.Print("compareZTTEmbedded.pdf[");
+  char text[100];
+  TLatex title;
+  
+  ZTTType_=1;
+  TH1F*HMC=getZToTauTau();
+  ZTTType_=2;
+  TH1F*HData=getZToTauTau();
+  C.Clear();
+  HMC->SetMarkerColor(4);
+  HMC->SetLineColor(4);
+  HMC->SetTitle("");
+  //HMC->GetXaxis()->SetTitle("m(#mu#tau)");
+  HMC->GetXaxis()->SetTitle("m(#tau#tau)");
+  HMC->GetYaxis()->SetTitle("Inclusive");
+  HMC->Draw("histpe");
+  HData->Draw("histpesame");
+  title.SetTextSize ( 0.025 ); 
+  title.SetTextFont (   62 );
+  title.SetTextColor(4);
+  sprintf(text,"MC (histogram)        : integral = %.0f  mean = %.2f   rms = %.2f",HMC->Integral(),HMC->GetMean(),HMC->GetRMS());
+  title.DrawTextNDC(0.2,0.96,text);
+  title.SetTextColor(1);
+  sprintf(text,"Embedded (points)  : integral = %.0f  mean = %.2f   rms = %.2f",HData->Integral(),HData->GetMean(),HData->GetRMS());
+  title.DrawTextNDC(0.2,0.93,text);
+  C.Print("compareZTTEmbedded.pdf");
+  
+  delete HMC;
+  delete HData;
+
+  for(Int_t c=0;c<5;c++){
+    extrasel_=getSMcut(c);
+    
+    ZTTType_=1;
+    TH1F*HMCcat=getZToTauTau();
+    ZTTType_=2;
+    TH1F*HDatacat=getZToTauTau();
+    C.Clear();
+    HMCcat->SetTitle("");
+    //HMCcat->GetXaxis()->SetTitle("m(#mu#tau)");
+    HMCcat->GetXaxis()->SetTitle("m(#tau#tau)");
+    if(c==0)HMCcat->GetYaxis()->SetTitle("0-Jet low");
+    if(c==1)HMCcat->GetYaxis()->SetTitle("0-Jet high");
+    if(c==2)HMCcat->GetYaxis()->SetTitle("1-Jet low");
+    if(c==3)HMCcat->GetYaxis()->SetTitle("1-Jet high");
+    if(c==4)HMCcat->GetYaxis()->SetTitle("VBF");
+    HMCcat->SetMarkerColor(4);
+    HMCcat->SetLineColor(4);
+    HMCcat->Draw("histpe");
+    HDatacat->Draw("histpesame");
+    title.SetTextColor(4);
+    sprintf(text,"MC (histogram)        : integral = %.0f  mean = %.2f   rms = %.2f",HMCcat->Integral(),HMCcat->GetMean(),HMCcat->GetRMS());
+    title.DrawTextNDC(0.2,0.96,text);
+    title.SetTextColor(1);
+    sprintf(text,"Embedded (points)  : integral = %.0f  mean = %.2f   rms = %.2f",HDatacat->Integral(),HDatacat->GetMean(),HDatacat->GetRMS());
+    title.DrawTextNDC(0.2,0.93,text);
+    C.Print("compareZTTEmbedded.pdf");
+      
+    delete HMCcat;
+    delete HDatacat;
+  }
+
+
+  C.Print("compareZTTEmbedded.pdf]");
+
+}
+
+
+
+void TauMuPlotter::compareZTTEmbeddedUnfolding(){
+
+
+  scaleSamplesLumi();
+
+  TCanvas C("compareZTTEmbeddedUnfolding");
+  C.Print("compareZTTEmbeddedUnfolding.ps[");
+
+  TLine line;
+
+  ///plot the difference in eta
+  plotvar_="mueta";
+  nbins_=20;
+  xmin_=-2.5;
+  xmax_=2.5;
+  Chcat_=1;
+  Isocat_=1;
+  MTcat_=1;
+  extrasel_="1";
+  ZTTType_=1;
+  TH1F*HMCEta=getZToTauTau();
+  ZTTType_=2;
+  TH1F*HDataEta=getZToTauTau();
+  C.Clear();
+  HMCEta->SetMarkerColor(4);
+  HMCEta->SetLineColor(4);
+  HMCEta->SetTitle("");
+  HMCEta->GetXaxis()->SetTitle("muon eta");
+  HMCEta->GetYaxis()->SetTitle("");
+  HMCEta->Draw("histpe");
+  HDataEta->Draw("histpesame");
+  C.Print("compareZTTEmbeddedUnfolding.ps");
+
+  C.Clear();
+  HDataEta->Divide(HMCEta);
+  HDataEta->GetYaxis()->SetRangeUser(0,1.2);
+  HDataEta->GetYaxis()->SetTitle("MC/Embedded");
+  HDataEta->Draw("histpe");
+  line.DrawLine(-2.5,1,2.5,1);
+  C.Print("compareZTTEmbeddedUnfolding.ps");
+
+  //print out the reweighting string:
+  for(Int_t b=1;b<=HDataEta->GetNbinsX();b++){
+    cout<<b<<" "<<HDataEta->GetLowEdge(b)<<" "<<HDataEta->GetBinWidth(b)<<" "<<HDataEta->GetBinContent(b)<<endl;
+  }
+
+  delete HMCEta;
+  delete HDataEta;
+
+  ///plot the difference in pT
+  plotvar_="mupt";
+  nbins_=15;
+  xmin_=20;
+  xmax_=50;
+  Chcat_=1;
+  Isocat_=1;
+  MTcat_=1;
+  extrasel_="1";
+  ZTTType_=1;
+  TH1F*HMCPt=getZToTauTau();
+  ZTTType_=2;
+  TH1F*HDataPt=getZToTauTau();
+  C.Clear();
+  HMCPt->SetMarkerColor(4);
+  HMCPt->SetLineColor(4);
+  HMCPt->SetTitle("");
+  HMCPt->GetXaxis()->SetTitle("muon eta");
+  HMCPt->GetYaxis()->SetTitle("");
+  HMCPt->Draw("histpe");
+  HDataPt->Draw("histpesame");
+  C.Print("compareZTTEmbeddedUnfolding.ps");
+
+  C.Clear();
+  HDataPt->Divide(HMCPt);
+  HDataPt->GetYaxis()->SetRangeUser(0.,1.2);
+  HDataPt->GetYaxis()->SetTitle("MC/Embedded");
+  HDataPt->Draw("histpe");
+  line.DrawLine(20,1,50,1);
+  C.Print("compareZTTEmbeddedUnfolding.ps");
+  delete HMCPt;
+  delete HDataPt;
+
+
+  C.Print("compareZTTEmbeddedUnfolding.ps]");
+
 }
 
 

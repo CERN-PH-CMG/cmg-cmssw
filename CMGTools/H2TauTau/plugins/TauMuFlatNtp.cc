@@ -648,7 +648,7 @@ bool TauMuFlatNtp::vetoDiLepton(){
     if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
     nleptons++;
   }
-  if(nleptons>=3)return 1;
+  if(nleptons>=2)return 1;
 
 
   return 0;

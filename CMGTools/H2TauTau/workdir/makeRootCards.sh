@@ -16,13 +16,13 @@
 #rootb histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253XAB_580Oct16\"\,\"tUp\"\)
 #rootb histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253XAB_580Oct16\"\,\"tDown\"\)
 
-#rootb histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\)
-#rootb histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tUp\"\)
-#rootb histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tDown\"\)
-#
-#
-#####rootb mergeDataCardHistosSM.C\(1\,\"ditaumass\"\)
-#rootb mergeDataCardsSM.C\(1\,\"svfitmass\"\)
+rootb histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\)
+rootb histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tUp\"\)
+rootb histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tDown\"\)
+
+
+####rootb mergeDataCardHistosSM.C\(1\,\"ditaumass\"\)
+rootb mergeDataCardsSM.C\(1\,\"svfitmass\"\)
 
 #############mT Limit Scan
 #rootb histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\,10\)

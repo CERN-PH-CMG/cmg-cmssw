@@ -8,7 +8,7 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   analysis->setOutputPath(path);
   analysis->setQCDOStoSSRatio(1.06);
   analysis->setZTTType(2);
-  analysis->mTCut_=10;
+  analysis->mTCut_=20;
   
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
