@@ -189,13 +189,19 @@ process.metFilter.HLTPaths = cms.vstring('HBHENoiseFilterPath', 'CSCTightHaloFil
  
 
 # Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/2012/summary
-if runOnData:
-   muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*\")  )"   
-   eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet45_35_25_v*\") )"   
-else:
-   muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1\") )"
-   eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1\") )"
+# 2012A: HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*                                                        ---> 45, 45, 45, 20 jet pT cuts
+# 2012B: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v* || HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*   ---> 45, 45, 45, 20 jet pT cuts
+# 2012C and D: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*                                            ---> 55, 45, 35, 20 jet pT cuts
 
+if runOnData:
+   muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*\") )"   
+   eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v*\") )"   
+else:
+   #muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1\") )"
+   #eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1\") )"
+   # Last recommendation is to not apply HLT in MC
+   muTriggerList  = "( getSelectionRegExp(\"*\") )"
+   eleTriggerList = "( getSelectionRegExp(\"*\") )"
 
 process.cmgTopTriggerSel = cmgTriggerObjectSel.clone(
    src = 'cmgTriggerObjectSel',
@@ -205,8 +211,8 @@ process.cmgTopTriggerSel = cmgTriggerObjectSel.clone(
    )
 
 ## Muon definitions in CMGTools/Common/python/selections/muonIDs_cfi.py
-tightMuon     = "(isPF() && isGlobal() && pt()>26 && abs(eta())<2.1 && normalizedChi2()<10  && trackerLayersWithMeasurement()>5  && numberOfValidMuonHits()>0 && abs(dxy())<0.02  && abs(dz())<0.5 && relIso(0.5)<0.12 && numberOfValidPixelHits()>0 && numberOfMatches()>1)"
-tightElectron = "(pt()>30 && abs(eta())<2.5 && (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(0.5)<0.1)"
+tightMuon     = "(isPF() && isGlobal() && pt()>26 && abs(eta())<2.1 && normalizedChi2()<10  && trackerLayersWithMeasurement()>5  && numberOfValidMuonHits()>0 && abs(dxy())<0.02  && abs(dz())<0.5 && relIso(0.5, 0, 0.4)<0.12 && numberOfValidPixelHits()>0 && numberOfMatches()>1)"
+tightElectron = "(pt()>30 && abs(eta())<2.5 && (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(1.0, 0, 0.3)<0.1)"
 
 
 # Apply top muon selection (as VBTF with looser dxy) + db() cut + kinematics + isolation
@@ -223,24 +229,24 @@ process.cmgTopTightElecEleJetSel = cmgElectronSel.clone(
 # Apply selection for loose muon veto
 process.cmgTopLooseMuonMuJetSel = cmgMuonSel.clone(
    src = 'cmgMuonSel',
-   cut = cms.string( "isPF() && (isGlobal() || isTracker()) && pt()>10 && abs(eta())<2.5 && relIso(0.5)<0.2 && !" + tightMuon  )
+   cut = cms.string( "isPF() && (isGlobal() || isTracker()) && pt()>10 && abs(eta())<2.5 && relIso(0.5, 0, 0.4)<0.2 && !" + tightMuon  )
    )
 
 process.cmgTopLooseMuonEleJetSel = cmgMuonSel.clone(
    src = 'cmgMuonSel',
-   cut = cms.string( "isPF() && (isGlobal() || isTracker()) && pt()>10 && abs(eta())<2.5 && relIso(0.5)<0.2" )
+   cut = cms.string( "isPF() && (isGlobal() || isTracker()) && pt()>10 && abs(eta())<2.5 && relIso(0.5, 0, 0.4)<0.2" )
    )
 
 
 #Apply electron selection for electron veto
 process.cmgTopLooseElecMuJetSel = cmgElectronSel.clone(
    src = 'cmgElectronSel',
-   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5)<0.15 && mvaTrigV0()>0.0")
+   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(1.0, 0, 0.3)<0.15 && mvaTrigV0()>0.0")
    )
 
 process.cmgTopLooseElecEleJetSel = cmgElectronSel.clone(
    src = 'cmgElectronSel',
-   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5)<0.15 && mvaTrigV0()>0.0&& !" + tightElectron)
+   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(1.0, 0, 0.3)<0.15 && mvaTrigV0()>0.0&& !" + tightElectron)
    )
 
 
