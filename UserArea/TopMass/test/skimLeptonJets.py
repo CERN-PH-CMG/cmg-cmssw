@@ -68,113 +68,6 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
     )
 
-#if(len(sys.argv)!=3):
-#   print 'Wrong parameters. Exiting... Usage: cmsRun muoHitFit.py ttbar \n'
-#   exit(0)
-
-#sample = sys.argv[2]
-#print 'Selected dataset: {0}'.format(sample)
-
-##sampleLocation = ""
-
-#sample = "test" 
-#sample = "muDataRun2012A" 
-#sample = "muDataRun2012B" 
-##sample = "ttbar" 
-#sample = "wjets" 
-#sample = "zjets" 
-#sample = "qcd" 
-#sample = "stop_s"
-#sample = "stop_t"
-#sample = "stop_tW"
-#sample = "stbar_s"
-#sample = "stbar_t"
-#sample = "stbar_tW"
-#sample = "ttbar1615" 
-#sample = "ttbar1635" 
-#sample = "ttbar1665" 
-#sample = "ttbar1695" 
-#sample = "ttbar1755" 
-#sample = "ttbar1785" 
-#sample = "ttbar1815" 
-#sample = "ttbar1845" 
-
-
-
-## getInfo.py -s "select path_name,dataset_fraction,dataset_entries,NUMBER_FILES_GOOD from dataset_details where path_name like '%all11%5_10_0' order by path_name"
-## PATH_NAME                                                                                               DATASET_FRACTION   DATASET_ENTRIES  NUMBER_FILES_GOOD
-## /SingleMu/Run2012B-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_10_0 ||     1.0 ||  59538958 ||     4294
-## /TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0 ||      2.0 || 13847500 ||    1444
-## /DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0       || 0.999175 || 30434389 ||    2575
-## /WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0            || 0.993301 || 18269870 ||    1601
-## /WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_10_0            || 0.990817 || 57179973 ||    4691
-## /T_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0              ||      1.0 ||   259961 ||      52
-## /T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0          ||      1.0 ||   497658 ||     100
-## /Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0           ||      1.0 ||   139974 ||      28
-## /Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0       ||      1.0 ||   493460 ||      53
-## /Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0           ||      1.0 ||  1935072 ||     388
-## /T_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0              ||      1.0 ||  3758227 ||     753
-
-## /TTJets_scaledown_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0       ||      2.0 || 10774362 ||    1232
-## /TTJets_scaleup_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0         ||      2.0 || 10018976 ||    1098
-## /TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0    ||      2.0 || 10953456 ||    1212
-## /TTJets_matchingup_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0      ||      2.0 || 10830020 ||    1314 
-
-## if(sample == "muDataRun2012A"):
-##    sampleLocation = '//AOD/V5_B/PAT_CMG_V5_10_0'
-##    runOnData = True
-## elif(sample == "muDataRun2012B"):
-##    sampleLocation = '/SingleMu/Run2012B-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_10_0'
-##    runOnData = True
-## if(sample == "muDataRun2012C"):
-##    sampleLocation = '//AOD/V5_B/PAT_CMG_V5_10_0'
-##    runOnData = True
-## elif(sample == "ttbar" or sample == "ttbarPDF" or sample == "ttbarJESup" or sample == "ttbarJESdown" or sample == "test"):
-##    sampleLocation = '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbar1615" ):
-##    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbar1635" ):
-##    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbar1665" ):
-##    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbar1695" ):
-##    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbar1755" ):
-##    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbar1785" ):
-##    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbar1815" ):
-##    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbar1845" ):
-##    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbarScaleUp" ):
-##    sampleLocation = '/TTJets_scaleup_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbarScaleDown" ):
-##    sampleLocation = '/TTJets_scaledown_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbarMatchingUp" ):
-##    sampleLocation = '/TTJets_matchingup_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "ttbarMatchingDown" ):
-##    sampleLocation = '/TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "wjetsV1"):
-##    sampleLocation = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "wjetsV2"):
-##    sampleLocation = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "zjets"):
-##    sampleLocation = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "qcd"):
-##    sampleLocation = '/'
-## elif(sample == "stop_s"):
-##    sampleLocation = '/T_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "stop_t"):
-##    sampleLocation = '/T_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "stop_tW"):
-##    sampleLocation = '/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "stbar_s"):
-##    sampleLocation = '/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "stbar_t"):
-##    sampleLocation = '/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
-## elif(sample == "stbar_tW"):
-##    sampleLocation = '/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 
 
 print "\n Sample locations:"
@@ -478,44 +371,6 @@ if not runOnData:
    process.pEle += process.vertexWeightSequence
    process.pMu  += process.vertexWeightSequence
    
-#process.pEle += process.ana
-#process.pMu  += process.ana
-
-# Setup event content.
-## process.outEle = cms.OutputModule("PoolOutputModule",
-##                                fileName = cms.untracked.string(sample+'_treeCMG_eleJetsSel.root'),
-##                                SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('pEle')),
-##                                outputCommands = cms.untracked.vstring( 'drop *',
-##                                				               'keep *_TriggerResults*_*_*'	  ,
-##                                				               'keep *_cmgPFMET*_*_*'		   ,
-##                                 				       'keep *_offlinePrimaryVertices*_*_*',
-##                                 				       'keep *_addPileupInfo_*_*',
-##                                 				       'keep *_generator_*_*',
-##                                 				       'keep *_cmgTop*_*_*',
-## 								       'keep *_vertexWeightSummer12*_*_*',
-## 								       'keep *_*Filter*_*_*',
-## 								       'keep *_primaryVertexFilter*_*_*'  ,
-## 								       'keep *_genJetSel*_*_*'  ,
-## 								       'keep cmgPFJets_cmgPFJetSel_*_*'
-##  								      ) 
-## )
-## process.outMu = cms.OutputModule("PoolOutputModule",
-##                                fileName = cms.untracked.string(sample+'_treeCMG_muJetsSel.root'),
-##                                SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('pMu')),
-##                                outputCommands = cms.untracked.vstring( 'drop *',
-##                                				               'keep *_TriggerResults*_*_*'	  ,
-##                                				               'keep *_cmgPFMET*_*_*'		   ,
-##                                 				       'keep *_offlinePrimaryVertices*_*_*',
-##                                 				       'keep *_addPileupInfo_*_*',
-##                                 				       'keep *_generator_*_*',
-##                                 				       'keep *_cmgTop*_*_*',
-## 								       'keep *_vertexWeightSummer12*_*_*',
-## 								       'keep *_*Filter*_*_*',
-## 								       'keep *_primaryVertexFilter*_*_*'  ,
-## 								       'keep *_genJetSel*_*_*'  ,
-## 								       'keep cmgPFJets_cmgPFJetSel_*_*'
-##  								      ) 
-## )
 process.outLepton = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string(options.sampleName+'_treeCMG_leptonJetsSel.root'),
                                SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('pMu || pEle')),
@@ -536,16 +391,10 @@ process.outLepton = cms.OutputModule("PoolOutputModule",
 
 
 
-## process.outpath = cms.EndPath(process.outEle + process.outMu)
-## process.outpath = cms.EndPath(process.outEle + process.outMu)
 process.outpath = cms.EndPath(process.outLepton)
 
-## print process.outEle.dumpPython()
-## print process.outMu.dumpPython()
 print process.outLepton.dumpPython()
 
-## print "Output file Ele: '%s'" % process.outEle.fileName
-## print "Output file Mu: '%s'"  % process.outMu.fileName
 print "Output file Lepton: '%s'"  % process.outLepton.fileName
 
 ######################################################################
