@@ -33,7 +33,7 @@ void JetHelper::analyzeObject()
 {
   // write only jets with pt > 15:
 
-  if (!(object->pt() > 15)) {
+  if (!(object->pt() > 30)) {
     count = 0;
   }
 
