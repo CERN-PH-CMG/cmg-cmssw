@@ -676,14 +676,14 @@ int main(int argc, char* argv[])
         TotalWeight_minus = PuShifters[PUDOWN]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
 
         if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_0raw",tags_inc, phys.genhiggs[0].mass(), weight);
-	if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
+	//if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
         if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_1vbf",tags_inc, phys.genhiggs[0].mass(), weight); 
 
-        if(isMC_GG) {
-          for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
-	    ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
-	  weight *= ev.hptWeights[0];
-        }
+        //if(isMC_GG) {
+	for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
+	  ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
+	weight *= ev.hptWeights[0];
+	  //}
         if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_2qt" ,tags_inc, phys.genhiggs[0].mass(), weight);
   
 	for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
