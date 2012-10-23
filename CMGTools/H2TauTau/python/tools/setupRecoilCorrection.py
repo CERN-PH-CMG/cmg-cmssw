@@ -19,7 +19,7 @@ def fileAndLeg(fileName, is53X, mode=None):
         if is53X :
             correctFileName = '/'.join([rootfile_dir,'recoilfit_zmm53X_20pv_njet.root'])
         else :
-            correctFileName = '/'.join([rootfile_dir,'recoilfit_zjets_ltau_njet.root'])
+            correctFileName = '/'.join([rootfile_dir,'recoilfit_zmm42X_20pv_njet.root'])
         leptonLeg = 0
     if lookup( fileName, 'GluGluToHToTauTau' ) or \
            lookup( fileName, 'VBF_HToTauTau' ):
@@ -27,7 +27,7 @@ def fileAndLeg(fileName, is53X, mode=None):
         if is53X : 
             correctFileName = '/'.join([rootfile_dir,'recoilfit_higgs53X_20pv_njet.root'])
         else :
-            correctFileName = '/'.join([rootfile_dir,'recoilfit_zjets_ltau_njet.root'])
+            correctFileName = '/'.join([rootfile_dir,'recoilfit_higgs42X_20pv_njet.root'])
         leptonLeg = 0
     elif lookup( fileName, 'WJetsToLNu' ) or \
              lookup( fileName, 'W1Jet' ) or \
@@ -38,7 +38,7 @@ def fileAndLeg(fileName, is53X, mode=None):
         if is53X : 
             correctFileName = '/'.join([rootfile_dir,'recoilfit_wjets53X_20pv_njet.root'])
         else :
-            correctFileName = '/'.join([rootfile_dir,'recoilfit_wjets_njet.root'])
+            correctFileName = '/'.join([rootfile_dir,'recoilfit_wjets42X_20pv_njet.root'])
         leptonLeg = 2            
     else:
         pass
@@ -46,6 +46,24 @@ def fileAndLeg(fileName, is53X, mode=None):
         print '\tCorrecting to:', correctFileName
         print '\tLeg number   :',leptonLeg
     return correctFileName, leptonLeg
+
+
+
+def basicParameters(is53X):
+    fileZmmData = None
+    fileZmmMC = None
+    correctionType = None
+    if is53X:
+        print 'picking up 53X recoil fits'
+        fileZmmData = rootfile_dir + 'recoilfit_datamm53X_20pv_njet.root'
+        fileZmmMC = rootfile_dir + 'recoilfit_zmm53X_20pv_njet.root'
+        correctionType = 2
+    else:
+        print 'picking up 44X recoil fits'
+        fileZmmData = rootfile_dir + 'recoilfit_datamm42X_20pv_njet.root'
+        fileZmmMC = rootfile_dir + 'recoilfit_zmm42X_20pv_njet.root'        
+        correctionType = 1
+    return fileZmmData, fileZmmMC, correctionType
 
 
 def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True, mode=None):
@@ -65,19 +83,8 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True, mode=None)
     if mode:
         print 'FORCING TO', mode
 
-    if is53X:
-        print 'picking up 53X recoil fits'
-        if hasattr( process, 'recoilCorMETTauMu'):
-            process.recoilCorMETTauMu.fileZmmData = rootfile_dir + 'recoilfit_datamm53X_20pv_njet.root'
-            process.recoilCorMETTauMu.fileZmmMC = rootfile_dir + 'recoilfit_zmm53X_20pv_njet.root'
-        if hasattr( process, 'recoilCorMETTauEle'):
-            process.recoilCorMETTauEle.fileZmmData = rootfile_dir + 'recoilfit_datamm53X_20pv_njet.root'
-            process.recoilCorMETTauEle.fileZmmMC = rootfile_dir + 'recoilfit_zmm53X_20pv_njet.root'
-    else:
-        pass
-        #the default in the cfg file will have to point to the 2011 data things
-    #recoil correction does not handle WH_ZH_TTH_HToTauTau, because there are two bosons
-    # the 2 parameters below depend on the type of events being processed:
+    fileZmmData, fileZmmMC, correctionType = basicParameters(is53X)
+
     correctFileName = None
     leptonLeg = None
     if enable:
@@ -91,12 +98,18 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True, mode=None)
             process.recoilCorMETTauMu.enable = True
             process.recoilCorMETTauMu.fileCorrectTo = correctFileName
             process.recoilCorMETTauMu.leptonLeg = leptonLeg
+            process.recoilCorMETTauMu.fileZmmData = fileZmmData
+            process.recoilCorMETTauMu.fileZmmMC = fileZmmMC
+            process.recoilCorMETTauMu.correctionType = correctionType
         if hasattr( process, 'recoilCorMETTauEle'):
             if mode:
                 process.recoilCorMETTauEle.force = True
             process.recoilCorMETTauEle.enable = True
             process.recoilCorMETTauEle.fileCorrectTo = correctFileName
             process.recoilCorMETTauEle.leptonLeg = leptonLeg 
+            process.recoilCorMETTauEle.fileZmmData = fileZmmData
+            process.recoilCorMETTauEle.fileZmmMC = fileZmmMC
+            process.recoilCorMETTauMu.correctionType = correctionType
     else:
         print '\tDISABLED'
         if runOnMC:
@@ -110,6 +123,13 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True, mode=None)
 if __name__ == '__main__':
 
     import sys
+    from CMGTools.Common.Tools.cmsswRelease import isNewerThan
+
+    data, mc, type = basicParameters(isNewerThan('CMSSW_5_2_X'))
+    print 'data', data
+    print 'mc', mc
+    print 'type', type
+    
     for line in sys.stdin:
         print 
         line = line.rstrip()
