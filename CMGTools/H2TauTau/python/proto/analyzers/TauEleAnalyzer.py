@@ -239,7 +239,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def thirdLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
         # count tight electrons (leg 2)
-        tightLeptons = [electron for electron in leptons if self.testLeg2ID (electron) 
+        tightLeptons = [electron for electron in leptons if electron.looseIdForTriLeptonVeto ()
                     and self.testLeg2Iso (electron, 0.3)
                     and self.testLegKine (electron, 10., 2.5)]
                                                                                                                          
