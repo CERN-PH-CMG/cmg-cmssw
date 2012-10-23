@@ -247,8 +247,8 @@ if __name__ == '__main__':
 
     # WARNINGG!!! if mt cut is optimized, this needs to change.
     highMTCut = 70
-    lowMTCut = 40
-    cutw = options.cut.replace('mt<40', '1')
+    lowMTCut = 20
+    cutw = options.cut.replace('mt<20', '1')
     #SYNC WITH JOSH: he subtracts only TT and VV
     #SYNC VBF MT CONTROL: from 60 to 120
     fwss, fwsserr, fwos, fwoserr, ss, os = plot_W( anaDir, selComps, weights,

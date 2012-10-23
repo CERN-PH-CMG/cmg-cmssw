@@ -222,11 +222,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['embed_*'] = {'style':sViolet, 'layer':4.1, 'legend':None}
         self.histPref['TTJets*'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'t#bar{t}'} 
         self.histPref['T*tW*'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'t#bar{t}'} 
-        self.histPref['WW'] = {'style':sBlue, 'layer':0.9, 'legend':None} 
         self.histPref['WW*'] = {'style':sBlue, 'layer':0.9, 'legend':None} 
-        self.histPref['WZ'] = {'style':sRed, 'layer':0.8, 'legend':None} 
         self.histPref['WZ*'] = {'style':sRed, 'layer':0.8, 'legend':None} 
-        self.histPref['ZZ'] = {'style':sGreen, 'layer':0.7, 'legend':None} 
         self.histPref['ZZ*'] = {'style':sGreen, 'layer':0.7, 'legend':None} 
         self.histPref['QCD'] = {'style':sHTT_QCD, 'layer':2, 'legend':None}
         self.histPref['WJets*'] = {'style':sHTT_WJets, 'layer':3, 'legend':None}  
