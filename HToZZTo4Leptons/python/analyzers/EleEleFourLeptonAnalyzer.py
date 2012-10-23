@@ -21,9 +21,6 @@ class EleEleFourLeptonAnalyzer( FourLeptonAnalyzer ):
             'std::vector<cmg::Electron>'
             )
         
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
-                                                     'std::vector<reco::GenParticle>' )
-
 
     def process(self, iEvent, event):
         result = super(EleEleFourLeptonAnalyzer, self).process(iEvent, event)

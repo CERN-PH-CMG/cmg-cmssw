@@ -27,8 +27,6 @@ class MuMuFourLeptonAnalyzer( FourLeptonAnalyzer):
             'std::vector<cmg::Muon>'
             )
         
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
-                                                     'std::vector<reco::GenParticle>' )
 
 
     def process(self, iEvent, event):

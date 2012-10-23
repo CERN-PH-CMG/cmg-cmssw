@@ -54,6 +54,12 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.var('otherTightLeptons',int)
         self.var('recoil')
 
+        if self.cfg_comp.isMC:
+            self.var("genHMass")
+            self.var('genHDecay')
+            
+
+
         
     def process(self, iEvent, event):
         self.reset()
@@ -78,6 +84,16 @@ class FourLeptonTreeProducer( TreeProducer ):
 
         #Fill the Higgs and legs
         self.fill('HExists',0)
+
+        if self.cfg_comp.isMC:
+            if hasattr(event,'higgsGen'):
+                self.fill("genHMass",event.higgsGen.mass())
+            if hasattr(event,'genDecay'):
+                self.fill('genHDecay',event.genDecay)
+
+
+
+
         
         if hasattr( event, 'higgsCand' ):
             self.fill('HExists',1)
