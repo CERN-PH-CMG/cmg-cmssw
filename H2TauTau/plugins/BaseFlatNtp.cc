@@ -15,6 +15,7 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   deltaRTruth_(0.3),
   signalWeightHisto_(NULL),
   btagWP_(0.679),
+  btagsf(12345),
   corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
   corrector2012_(iConfig.getParameter<std::string>("fileCorrectTo")),
   mvaWeights_(iConfig.getParameter<std::string>("mvaWeights")),
@@ -273,6 +274,8 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("nbjet",&nbjet_,"nbjet/I");
   tree_->Branch("leadBJetPt",&leadBJetPt_,"leadBJetPt/F");
   tree_->Branch("leadBJetEta",&leadBJetEta_,"leadBJetEta/F");
+
+  tree_->Branch("nbjetLoose",&nbjetLoose_,"nbjetLoose/I");
 
   tree_->Branch("jet20pt1",&jet20pt1_,"jet20pt1/F");
   tree_->Branch("jet20eta1",&jet20eta1_,"jet20eta1/F");
@@ -616,7 +619,28 @@ void BaseFlatNtp::fillPFJetListBTag(std::vector<const cmg::PFJet * > * fulllist,
   list->clear();
   for(std::vector<const cmg::PFJet *>::const_iterator jet=fulllist->begin(); jet!=fulllist->end(); ++jet){
     if(fabs((*jet)->eta())>2.4)continue; 
-    if((*jet)->btag("combinedSecondaryVertexBJetTags")<btagWP_)continue;//CSV medium
+    //if((*jet)->btag("combinedSecondaryVertexBJetTags")<btagWP_)continue;//CSV medium
+
+    ///btagWP value is now hard coded inside this class:
+    if(!(btagsf.isbtagged((*jet)->pt(),
+			(*jet)->eta(),
+			(*jet)->btag("combinedSecondaryVertexBJetTags"),
+			TMath::Abs((*jet)->partonFlavour()),
+			dataType_==1
+			,0 , 0,
+			dataPeriodFlag_==2012))) continue;    
+    
+
+    list->push_back((*jet));
+  }
+}
+
+///counter of loose b-jets for mT extrapolation factor
+void BaseFlatNtp::fillPFJetListBTagLoose(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list){
+  list->clear();
+  for(std::vector<const cmg::PFJet *>::const_iterator jet=fulllist->begin(); jet!=fulllist->end(); ++jet){
+    if(fabs((*jet)->eta())>2.4)continue; 
+    if((*jet)->btag("combinedSecondaryVertexBJetTags")<0.244)continue;//CSV medium
     list->push_back((*jet));
   }
 }

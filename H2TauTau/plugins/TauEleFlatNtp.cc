@@ -515,10 +515,11 @@ void TauEleFlatNtp::beginJob(){
    fillPFJetList20(&fullJetList_,&pfJetList20_);
    fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetList20_,&pfJetList20LC_);
    fillJetVariables20();
-   fillBTagWeight();
+   //fillBTagWeight();
 
    //B-jets
    fillPFJetListBTag(&pfJetList20LC_,&pfJetListBTagLC_);
+   fillPFJetListBTagLoose(&pfJetList20LC_,&pfJetListBTagLCLoose_);
    fillBJetVariables();
 
  //   ///---- b-jets
