@@ -289,6 +289,7 @@ void RecoilCorrector2012::metDistributionType1(double &iMet,double &iMPhi,double
 					   TF1 *iU2MSZDatFit, TF1 *iU2MSZMCFit, 		   		   
 					   //TF1 *iU1U2ZDatCorr,TF1 *iU1U2ZMCCorr,
 					   double &iU1,double &iU2,double iFluc,double iScale) {
+  if(iLepPt < 3) return;
   double lRescale  = sqrt((TMath::Pi())/2.);		     
   double pU1       = iU1RZDatFit->Eval(iGenPt)/iU1RZMCFit->Eval(iGenPt);
   double pU2       = 0; //Right guys are for cumulants => code deleted
