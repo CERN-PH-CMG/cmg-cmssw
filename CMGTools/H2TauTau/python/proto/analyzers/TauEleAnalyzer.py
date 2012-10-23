@@ -119,10 +119,16 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         
         result, message = super(TauEleAnalyzer, self).process(iEvent, event)
 
-        if self.cfg_ana.verbose and result is False:
+        # if self.cfg_ana.verbose and result is False:
+        if 1:
             print event.run, event.lumi, event.eventId, message
-            for dl in event.diLeptons:
-                print dl.leg2(), dl.leg2().relIsoAllChargedDB05()
+            for l in event.leptons:
+                print l
+            for l in event.otherLeptons:
+                print l
+            
+            # for dl in event.diLeptons:
+            #     print dl.leg2(), dl.leg2().relIsoAllChargedDB05()
             # import pdb; pdb.set_trace()
 
         if result is False:
@@ -238,16 +244,19 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
 
     def thirdLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
-        # count tight electrons (leg 2)
-        tightLeptons = [electron for electron in leptons if electron.looseIdForTriLeptonVeto ()
-                    and self.testLeg2Iso (electron, 0.3)
-                    and self.testLegKine (electron, 10., 2.5)]
-                                                                                                                         
+        # count electrons (leg 2)
+        selLeptons = [electron for electron in leptons if
+                      self.testLegKine(electron, ptcut=10, etacut=2.5) and \
+                      electron.looseIdForTriLeptonVeto() and \
+                      self.testVertex(electron) and \
+                      self.testLeg2Iso(electron, isoCut) ]                                                                                                    
+
         # count tight muons
         tightOtherLeptons = [muon for muon in otherLeptons if self.testTightOtherLepton (muon)]
-        if len (tightLeptons) + len (tightOtherLeptons) > 1 :
-             return False
-        return True
+        if len (selLeptons) + len (tightOtherLeptons) > 1 :
+            return False
+        else:
+            return True
         
         
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
