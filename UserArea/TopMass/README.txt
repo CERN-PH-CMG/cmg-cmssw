@@ -56,3 +56,23 @@ where "-n" defines the number of files per job, "-o" the local
 outputdirectory and "-r" the remote output directory (see also
 cmsBatch.py -h for details, they are the same.
 Or do submitJobs.py -h
+
+#
+# SKIMMING cfg FILES
+#
+The skimming config files are in /test. The latest version is: 
+skimLeptonJets.py
+
+It has some command line functionalities which can be changed; i.e.
+- sampleLocation: the CMG style sample location, default is
+'/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
+
+- the sampleName: which is the variable name characteizing the sample;
+  default is ttbar
+
+- the maxEvents variable; default is '-1'(!)
+
+In order to run it do the following:
+cmsRun skimLeptonJets.py sampleLocation=<SAMPLELOCATION>
+sampleName=<SAMPLENAME> maxEvents=1234
+
