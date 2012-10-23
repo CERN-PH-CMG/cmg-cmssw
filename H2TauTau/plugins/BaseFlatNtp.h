@@ -56,6 +56,7 @@
 
 #include "CMGTools/H2TauTau/interface/BTagEfficiency.h"
 #include "CMGTools/H2TauTau/interface/BTagWeight.h"
+#include "CMGTools/H2TauTau/interface/BtagSF.h"
 
 //#include "TMVA/Reader.h"
 #include "CMGTools/H2TauTau/interface/VBFMVA.h"
@@ -741,7 +742,7 @@ protected:
       double jetpt = pfJetList20LC_[i]->pt(); 
       double jeteta = pfJetList20LC_[i]->eta(); 
       double jetflavor = TMath::Abs(pfJetList20LC_[i]->partonFlavour());
-      double discr = btagWP_;//1.7;
+      double discr = btagWP_;
     
       double eff = 1.;
       double sf = 1.;
@@ -763,8 +764,33 @@ protected:
     
     }
     btagEffWeight_ = btagWeight_.weight(jetinfovec);
-  }
+  }// fillBtagWeight()
+
   
+  void reclassifyBtagJets(){
+    BtagSF* btsf = new BtagSF(12345);
+    
+    for (unsigned int i=0; i<pfJetList20LC_.size(); ++i) {
+      if(abs(pfJetList20LC_[i]->eta())>2.4) continue;
+      //Get Jet kinematic variables
+      double jetpt = pfJetList20LC_[i]->pt(); 
+      double jeteta = pfJetList20LC_[i]->eta(); 
+      double jetflavor = TMath::Abs(pfJetList20LC_[i]->partonFlavour());
+      //Need to get jet CSV discrimiantor value;
+      double jetcsv = pfJetList20LC_[i]->btag("combinedSecondaryVertexBJetTags");
+      bool isdata = true;
+      unsigned int btagsys = 0, mistagsys = 0;   // 0 = central, 1 = down, 2 = up
+      bool is2012 = true;
+      bool btagged = (jetcsv > btagWP_); 
+      
+      //    cout << "Before modification: Is tagged = "<< btagged << endl;   
+      btagged = btsf->isbtagged(jetpt, jeteta, jetcsv, jetflavor, isdata ,btagsys, mistagsys, is2012);    
+      //    cout << "After modification: Is tagged = "<< btagged << endl;
+      
+    }
+    
+  }
+
   //function definitions from Matthews mva
   Double_t deltaPhi(Double_t phi1, Double_t phi2){
     Double_t dphi = fabs(phi1 - phi2);
