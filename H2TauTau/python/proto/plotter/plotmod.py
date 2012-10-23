@@ -101,7 +101,7 @@ def addQCD( plot, dataName ):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
     
 
-def getQCD( plotSS, plotOS, dataName, scale=1.11 ):
+def getQCD( plotSS, plotOS, dataName, scale=1.06 ):
 
     # use SS data as a control region
     # to get the expected QCD shape and yield
