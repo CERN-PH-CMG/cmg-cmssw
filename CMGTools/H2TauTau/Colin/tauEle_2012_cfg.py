@@ -30,8 +30,8 @@ vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_19594
 
 mc_vertexWeight = None
 
-hlt_tauEffWeight_mc = 'eff2012Tau20MC_TauEle'
-hlt_tauEffWeight = 'effTau2012AB_TauEle'
+hlt_tauEffWeight_mc = 'eff2012Tau20MC53X_TauEle'
+hlt_tauEffWeight = 'effTau2012ABC_TauEle'
 hlt_eleEffWeight_mc = 'eff_2012_Rebecca_TauEle_Ele2253XMC'
 hlt_eleEffWeight = 'effEle2012_Rebecca_TauEle_ABC'
 
@@ -147,11 +147,11 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinAug8 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_Sync_ColinOct1 import *
 # from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroSep25 import *
-from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct05 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct05 import *
+# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct19 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct22 import *
 
 #########################################################################################
-
-# FIXME make it comprehensive, for the flat ntuples production
 
 # MC_list = [WJets, DYJets, TTJets]
 # MC_list = [HiggsVBF125]
@@ -203,11 +203,11 @@ data_Run2012B.splitFactor = 200
 data_Run2012C_v1.splitFactor = 20
 data_Run2012C_v2.splitFactor = 300
 
-
 selectedComponents =  copy.copy(MC_list)
 selectedComponents.extend( data_list )
 selectedComponents.extend( embed_list )
 #selectedComponents = copy.copy (embed_list)
+#selectedComponents = copy.copy (data_list)
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -231,12 +231,12 @@ if syncntuple:
 
 # selectedComponents = embed_list
 
-test = 5
+test = 4
 if test==1:
 #    comp = DYJets
 #    comp = data_Run2012A
-    comp = data_Run2012C_v2
-#    comp = HiggsVBF125
+#    comp = data_Run2012C_v2
+    comp = HiggsVBF125
 #    comp = HiggsVH125
 #    comp = Tbar_tW
 #    HiggsVBF125.triggers = []
@@ -247,10 +247,12 @@ if test==1:
     # for 53 MC: 
 #    comp.triggers = ['HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*']
 elif test==2:
-    selectedComponents = copy.copy (embed_list)
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:10]
+elif test==4:
+    comp = HiggsVBF125
+    selectedComponents = [comp]
 elif test==5:
     # run this with python to get numbers for the soup
     print 'WJets  : ', WJets.nGenEvents,  WJets.effCorrFactor
