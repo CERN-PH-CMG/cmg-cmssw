@@ -41,7 +41,7 @@ jsonAna = cfg.Analyzer(
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer',
-    verbose = True
+    verbose = False
     )
 
 vertexAna = cfg.Analyzer(
@@ -127,6 +127,8 @@ vbfAna = cfg.Analyzer(
     jetCol = 'cmgPFJetSel',
     jetPt = 20,
     jetEta = 5,
+    btagSFseed = 12345,
+    is2012Flag = True,
     **vbfKwargs
     )
 
@@ -198,14 +200,15 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 0
+test = 1
 if test==1:
 #    comp = DYJets
 #    comp = data_Run2012A
 #    comp = data_Run2012C_v2
-    comp = HiggsVBF125
+#    comp = HiggsVBF125
 #    comp = HiggsVH125
 #    comp = Tbar_tW
+    comp = TTJets
 #    HiggsVBF125.triggers = []
     comp.files = comp.files[:20]
     selectedComponents = [comp]
