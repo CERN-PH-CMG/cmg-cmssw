@@ -116,8 +116,8 @@ electronWeighter = cfg.Analyzer(
 
 
 # defined for vbfAna and eventSorter
-vbfKwargs = dict( Mjj = 400,
-                  deltaEta = 4.0    
+vbfKwargs = dict( Mjj = 500,
+                  deltaEta = 3.5    
                   )
 
 
@@ -126,7 +126,7 @@ vbfAna = cfg.Analyzer(
     vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
     jetCol = 'cmgPFJetSel',
     jetPt = 20,
-    jetEta = 4.7,
+    jetEta = 5,
     **vbfKwargs
     )
 
@@ -165,43 +165,11 @@ from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct22 import *
 for mc in MC_list:
     mc.puFileMC = puFileMC
     mc.puFileData = puFileData
-    mc.splitFactor = 10
     if mc.name.find('DYJets')!=-1:
-        mc.splitFactor = 100
         mc.fakes = True
-    elif mc.name.find('WJets')!=-1:
-        mc.splitFactor = 60
-    elif mc.name.find('W1Jets')!=-1:
-        mc.splitFactor = 45
-    elif mc.name.find('W2Jets')!=-1:
-        mc.splitFactor = 100
-    elif mc.name.find('W3Jets')!=-1:
-        mc.splitFactor = 70
-    elif mc.name.find('W4Jets')!=-1:
-        mc.splitFactor = 80
-    elif mc.name.find('TTJets')!=-1:
-        mc.splitFactor = 80
-    elif mc.name.find('WW')!=-1 or \
-         mc.name.find('WZ')!=-1 or \
-         mc.name.find('ZZ')!=-1:
-        mc.splitFactor = 40
-    elif mc.name.find('HiggsVBF120')!=-1 or \
-         mc.name.find('HiggsGGH120')!=-1 or \
-         mc.name.find('HiggsVH120')!=-1:
-        mc.splitFactor = 50
-    elif mc.name.find('HiggsVBF150')!=-1 or \
-         mc.name.find('HiggsGGH150')!=-1 or \
-         mc.name.find('HiggsVH150')!=-1:
-        mc.splitFactor = 30
 for emb in embed_list:
     emb.puFileData = None
     emb.puFileMC = None
-    emb.splitFactor = 10
-
-data_Run2012A.splitFactor = 40
-data_Run2012B.splitFactor = 200
-data_Run2012C_v1.splitFactor = 20
-data_Run2012C_v2.splitFactor = 300
 
 selectedComponents =  copy.copy(MC_list)
 selectedComponents.extend( data_list )
@@ -229,9 +197,8 @@ sequence = cfg.Sequence( [
 if syncntuple:
     sequence.append( treeProducerXCheck)
 
-# selectedComponents = embed_list
 
-test = 4
+test = 0
 if test==1:
 #    comp = DYJets
 #    comp = data_Run2012A
@@ -252,6 +219,7 @@ elif test==2:
         comp.files = comp.files[:10]
 elif test==4:
     comp = HiggsVBF125
+    comp.splitFactor = 52
     selectedComponents = [comp]
 elif test==5:
     # run this with python to get numbers for the soup
