@@ -6,7 +6,8 @@ razorMJjetEventContent = cms.untracked.vstring()
 
 razorMJjetEventContent += cms.untracked.vstring(
                                            'drop *',
-                                           #'keep patJets_selectedPatJetsCHS__PAT',
+                                           'keep PileupSummaryInfos_addPileupInfo_*_HLT',
+                                           'keep recoVertexs_goodOfflinePrimaryVertices_*_PAT',
                                            'keep cmgBaseMETs_cmgPFMET__PAT',
                                            'keep cmgBaseMETs_cmgPFMETRaw__PAT',
                                            'keep *_razorMJ*_*_*',
@@ -24,5 +25,6 @@ razorMJjetEventContent += cms.untracked.vstring(
                                            'drop patElectrons_razorMJElectronSAK_*_*',
                                            'drop patMuons_razorMJMuonSAK_*_*',
                                            'drop cmgHemispheres_razorMJHemiHadBox*_*_*',
-                                           'drop recoCandidatesOwned_razorMJDiHemi*_*_*'
+                                           'drop recoCandidatesOwned_razorMJDiHemi*_*_*',
+                                           'keep double_vertexWeight*_*_MJSkim'
                                            )
