@@ -30,9 +30,9 @@ class DiLeptonAnalyzer( Analyzer ):
         count.register('leg1 trig matched')
         count.register('leg2 offline cuts passed')
         count.register('leg2 trig matched')
-        count.register('exactly 1 di-lepton')
         count.register('{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
                                                              max = self.cfg_ana.m_max ))
+        count.register('exactly 1 di-lepton')
         
 
     def buildDiLeptons(self, cmgDiLeptons, event):
