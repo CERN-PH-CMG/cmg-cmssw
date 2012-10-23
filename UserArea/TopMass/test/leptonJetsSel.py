@@ -70,6 +70,11 @@ sampleLocation = ""
 ## /Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0           ||      1.0 ||  1935072 ||     388
 ## /T_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0              ||      1.0 ||  3758227 ||     753
 
+## /TTJets_mass166_5_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0       ||   1.0 ||  4469095 ||      496
+## /TTJets_mass169_5_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0       ||   1.0 ||  5202817 ||      523
+## /TTJets_mass178_5_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0       ||   1.0 ||  4733483 ||      514
+## /TTJets_mass181_5_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0       ||   0.998084 ||     5135282 ||      521
+
 ## /TTJets_scaledown_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0       ||      2.0 || 10774362 ||    1232
 ## /TTJets_scaleup_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0         ||      2.0 || 10018976 ||    1098
 ## /TTJets_matchingdown_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0    ||      2.0 || 10953456 ||    1212
@@ -91,15 +96,15 @@ elif(sample == "ttbar1615" ):
 elif(sample == "ttbar1635" ):
    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1665" ):
-   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
+   sampleLocation = '/TTJets_mass166_5_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1695" ):
-   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
+   sampleLocation = '/TTJets_mass169_5_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1755" ):
    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1785" ):
-   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
+   sampleLocation = '/TTJets_mass178_5_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1815" ):
-   sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
+   sampleLocation = '/TTJets_mass181_5_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbar1845" ):
    sampleLocation = '//AODSIM/V5_B/PAT_CMG_V5_10_0'
 elif(sample == "ttbarScaleUp" ):
@@ -212,7 +217,7 @@ process.cmgTopTriggerSel = cmgTriggerObjectSel.clone(
 
 ## Muon definitions in CMGTools/Common/python/selections/muonIDs_cfi.py
 tightMuon     = "(isPF() && isGlobal() && pt()>26 && abs(eta())<2.1 && normalizedChi2()<10  && trackerLayersWithMeasurement()>5  && numberOfValidMuonHits()>0 && abs(dxy())<0.02  && abs(dz())<0.5 && relIso(0.5, 0, 0.4)<0.12 && numberOfValidPixelHits()>0 && numberOfMatches()>1)"
-tightElectron = "(pt()>30 && abs(eta())<2.5 && (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(1.0, 0, 0.3)<0.1)"
+tightElectron = "(pt()>30 && abs(eta())<2.5 && (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(0.5, 0, 0.3)<0.1)"
 
 
 # Apply top muon selection (as VBTF with looser dxy) + db() cut + kinematics + isolation
@@ -241,12 +246,12 @@ process.cmgTopLooseMuonEleJetSel = cmgMuonSel.clone(
 #Apply electron selection for electron veto
 process.cmgTopLooseElecMuJetSel = cmgElectronSel.clone(
    src = 'cmgElectronSel',
-   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(1.0, 0, 0.3)<0.15 && mvaTrigV0()>0.0")
+   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5, 0, 0.3)<0.15 && mvaTrigV0()>0.0")
    )
 
 process.cmgTopLooseElecEleJetSel = cmgElectronSel.clone(
    src = 'cmgElectronSel',
-   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(1.0, 0, 0.3)<0.15 && mvaTrigV0()>0.0&& !" + tightElectron)
+   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5, 0, 0.3)<0.15 && mvaTrigV0()>0.0&& !" + tightElectron)
    )
 
 
