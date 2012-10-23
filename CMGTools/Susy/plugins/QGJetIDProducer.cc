@@ -22,7 +22,8 @@ class QGJetIDProducer : public edm::EDFilter{
   typedef std::vector<double> collection;
   
   QGJetIDProducer(const edm::ParameterSet& ps):
-    src_(ps.getParameter<edm::InputTag>("src")){
+    src_(ps.getParameter<edm::InputTag>("src")),
+    useCharged_(ps.getParameter<bool>("useCharged")){
     produces<collection>("");
   }
 
@@ -33,6 +34,7 @@ class QGJetIDProducer : public edm::EDFilter{
 
     const std::vector<reco::PFCandidatePtr>& constituents = jet->getPFConstituents();
     for(std::vector<reco::PFCandidatePtr>::const_iterator it = constituents.begin(); it != constituents.end(); ++it){
+      if(useCharged_ && (*it)->charge() == 0) continue;
       const double dr = reco::deltaR(**it,*jet);
       gsum += (dr*( (*it)->pt()/jet->pt() ) ); 
     }
@@ -63,6 +65,7 @@ class QGJetIDProducer : public edm::EDFilter{
 
  private:
   edm::InputTag src_;
+  const bool useCharged_;
 };
 
 #include "FWCore/Framework/interface/MakerMacros.h"
