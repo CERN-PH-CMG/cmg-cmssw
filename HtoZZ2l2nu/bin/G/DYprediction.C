@@ -157,8 +157,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   else
     {
       //10/fb @ 8 TeV
-      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
+      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
+      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
       llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
 
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";

@@ -416,7 +416,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	
 	//require trigger for each event category
 	ev.triggerType=0;
-	if(event.isRealData())
+	//if(event.isRealData())
 	  {
 	    if(ev.cat==EE   && triggerBits["ee"]==false)   return;
 	    if(ev.cat==MUMU && triggerBits["singleMu"]==false && triggerBits["mumu"]==false) return;  
@@ -427,7 +427,7 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	      (triggerBits["emu"] << 2 ) |
 	      (triggerBits["singleMu"] << 3 );
 	  }
-	ev.hasTrigger=true;
+	  //ev.hasTrigger=true;
 
 	//leading lepton
 	ev.l1_px                   = selLeptonsSummary[l1idx].p4.px();

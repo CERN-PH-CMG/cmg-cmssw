@@ -76,27 +76,62 @@ class PhysicsObject_Lepton : public LorentzVector
 class PhysicsObject_Jet : public LorentzVector
 {
 public :
-  PhysicsObject_Jet(LorentzVector vec, Int_t genid_=0, Float_t btag1_=0, Float_t btag2_=0, Float_t btag3_=0, Float_t btag4_=0, Float_t neutHadFrac_=0, Float_t neutEmFrac_=0, Float_t chHadFrac_=0, Int_t pid_=0):
-    LorentzVector(vec), genid(genid_), btag1(btag1_), btag2(btag2_), btag3(btag3_), btag4(btag4_), neutHadFrac(neutHadFrac_), neutEmFrac(neutEmFrac_), chHadFrac(chHadFrac_), pid(pid_) 
+  PhysicsObject_Jet(LorentzVector vec, Float_t neutHadFrac_=0, Float_t neutEmFrac_=0, Float_t chHadFrac_=0, Int_t pid_=0):
+    LorentzVector(vec), neutHadFrac(neutHadFrac_), neutEmFrac(neutEmFrac_), chHadFrac(chHadFrac_), pid(pid_) 
     {
       genPt=0;
       pumva=-9999.;
     }
-    void setGenFlavor(Int_t flavid_){ flavid=flavid_;}
-    void setGenPt(float val) { if(val<0 || val>1000) genPt=0; else genPt=val; }
-    void setPUmva(float val) { pumva=val; }
-    void setShapeVariables(float beta_,  float betaStar_, float dRMean_, float ptD_, float ptRMS_)
-    {
-      beta=beta_; betaStar=betaStar_; dRMean=dRMean_; ptD=ptD_; ptRMS=ptRMS_;
+    void setGenInfo(Int_t genid_,Float_t genPt_, Int_t flavid_, Bool_t isCfromGsplit_, Bool_t isBfromGsplit_)
+    { 
+      genid=genid_;
+      if(genPt_<0 || genPt_>1000) genPt=0; 
+      else                        genPt=genPt_; 
+      flavid=flavid_;
+      isCfromGsplit=isCfromGsplit_;
+      isBfromGsplit=isBfromGsplit_;
     }
-    void setRawCorrFactor(float val) { rawCorrFact=val; }
+    void setPUmva(float val) { pumva=val; }
+    void setBtagInfo(Float_t btag1_=0, Float_t btag2_=0, Float_t btag3_=0, Float_t btag4_=0, Float_t btag5_=0, Float_t btag6_=0, Float_t btag7_=0)
+    {
+      btag1=btag1_;
+      btag2=btag2_;
+      btag3=btag3_;
+      btag4=btag4_;
+      btag5=btag5_;
+      btag6=btag6_;
+      btag7=btag7_;
+    }
+    void setSecVtxInfo(float lxy_, float lxyerr_, float svmass_)
+    {
+      lxy=lxy_;
+      lxyerr=lxyerr_;
+      svmass=svmass_;
+    }
+    void setShapeVariables(float beta_,  float betaStar_, float dRMean_, float ptD_, float ptRMS_, float etaW_, float phiW_)
+    {
+      beta=beta_; 
+      betaStar=betaStar_; 
+      dRMean=dRMean_; 
+      ptD=ptD_; 
+      ptRMS=ptRMS_;
+      etaW=etaW_;
+      phiW=phiW_;
+    }
+    void setRawCorrFactor(float val) 
+    { 
+      rawCorrFact=val; 
+    }
+    Float_t neutHadFrac, neutEmFrac, chHadFrac, genPt,pumva;
+    Int_t pid;
     Int_t genid,flavid;
     Float_t rawCorrFact;
-    Float_t beta,betaStar,dRMean,ptD,ptRMS;
-    Float_t btag1, btag2, btag3, btag4, neutHadFrac, neutEmFrac, chHadFrac, genPt,pumva;
-    Float_t btag5,btag6,btag7;
-    Int_t pid;
+    Float_t beta,betaStar,dRMean,ptD,ptRMS,etaW,phiW;
+    Float_t btag1, btag2, btag3, btag4, btag5,btag6,btag7;
+    Float_t lxy, lxyerr, svmass; 
+    Bool_t isCfromGsplit, isBfromGsplit;
 };
+
 bool JetPtOrdering (PhysicsObject_Jet i,PhysicsObject_Jet j);
 
 

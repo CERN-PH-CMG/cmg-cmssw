@@ -159,6 +159,8 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("unclusteredmet",     ";Unclustered E_{T}^{miss} [GeV];Events",50,0,250) );
   mon.addHistogram( new TH1F ("mht",     ";MHT [GeV];Events",50,0,250) );
   mon.addHistogram( new TH1F ("njets",     ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
+  mon.addHistogram( new TProfile( "njetsvspu", ";Vertices;N_{jets}",50,0,50) );
+  mon.addHistogram( new TProfile( "nloosejetsvspu", ";Vertices;N_{jets}",50,0,50) );
   mon.addHistogram( new TH1F ("nsoftjets", ";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TH1F ("nbtags",    ";b-tag multiplicity; Events", 5,0,5) );
   for(size_t ibin=1; ibin<=5; ibin++){
@@ -172,6 +174,7 @@ int main(int argc, char* argv[])
   
   mon.addHistogram( new TH1F ("r9", ";R9;Events", 100,0.8,1) );
   mon.addHistogram( new TH1F ("sietaieta", ";#sigma i#eta i#eta;Events", 100,0,0.03) );
+  mon.addHistogram( new TProfile( "mindphijmetvspu", ";Vertices;min #Delta#phi(jet,E_{T}^{miss});Events",50,0,50) );
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmet_0", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmet30_0", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
@@ -196,12 +199,15 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "nvtx", ";Vertices;Events", 50,0,50) );  
   mon.addHistogram( new TH1F( "rho", ";#rho;Events", 50,0,25) );  
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
+  mon.addHistogram( new TH1F( "mt_blind"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mt75"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mtevetounsafe"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "met_phi"  , ";#phi [rad];Events", 50,0,3.5) );
   mon.addHistogram( new TH1F( "met_rawmet"  , ";E_{T}^{miss} (raw);Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met"  , ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_met_blind"  , ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMet"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_redMet_blind"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "met_redMetT"  , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 15,76,106) );
@@ -383,6 +389,8 @@ int main(int argc, char* argv[])
 	    }
 	  if(!isGood) continue;
 	  if(fabs(gamma.mass()-91)>15) continue;
+	  if(!isMC && ev.cat==MUMU && !hasMMtrigger) continue;
+	  if(!isMC && ev.cat==EE && !hasEEtrigger) continue;
 	  if(ev.cat==MUMU) dilCats.push_back("mumu");
 	  if(ev.cat==EE)   dilCats.push_back("ee");
 	}
@@ -444,7 +452,7 @@ int main(int argc, char* argv[])
       if(disableJERSmear) jetsToUse=phys.ajets;
      
       //count the jets
-      int nbtags(0),njets30(0),njets15(0);
+      int nbtags(0),npfjets30(0),njets30(0),njets15(0);
       double ht(0);
       double mindphijmet(9999.),mindphijmet15(9999.);
       PhysicsObjectJetCollection selJets,recoilJets;
@@ -461,27 +469,21 @@ int main(int argc, char* argv[])
 	  if(ijetP4.pt()>30) if(idphijmet<mindphijmet) mindphijmet = idphijmet;
 	  if( fabs(deltaPhi(ijetP4.phi(),gamma.phi())>2 ) ) recoilJets.push_back( jetsToUse[ijet] );
 	  
-	  //	  bool isGoodJet=hasObjectId(jetsToUse[ijet].pid,JETID_LOOSE);//TIGHT);
+	  //base jet id
+	  bool isGoodPFJet=hasObjectId(jetsToUse[ijet].pid,JETID_LOOSE);
+	  if(isGoodPFJet && ijetP4.pt()>30) npfjets30++;
+
+	  //tighten id
 	  bool isGoodJet=hasObjectId(jetsToUse[ijet].pid,JETID_CUTBASED_LOOSE);
-	  if(isGoodJet)
-	    {
-	      selJets.push_back(jetsToUse[ijet]);
-	      clusteredMet -= ijetP4;
-	      mht -= ijetP4;
-	      ht += ijetP4.pt();
-	    }
-	  
+	  if(!isGoodJet) continue;
+	  selJets.push_back(jetsToUse[ijet]);
+	  clusteredMet -= ijetP4;
+	  mht -= ijetP4;
+	  ht += ijetP4.pt();
 	  if(ijetP4.pt()>15)  njets15++; 
 	  if(ijetP4.pt()<30) continue;
 	  if(fabs(ijetP4.eta())<2.5) nbtags += (jetsToUse[ijet].btag2>0.244);
 	  njets30++;
-	  // 	  TString reg=getJetRegion(jets[0][ijet].eta());
-	  // 	  mon.fillHisto(reg+"pfjetbeta",     tags_full,jets[0][ijet].beta,     weight);
-	  // 	  mon.fillHisto(reg+"pfjetbetastar", tags_full,jets[0][ijet].betaStar, weight);
-	  // 	  mon.fillHisto(reg+"pfjetdrmean",   tags_full,jets[0][ijet].dRMean,   weight);
-	  // 	  mon.fillHisto(reg+"pfjetptd",      tags_full,jets[0][ijet].ptD,      weight);
-	  // 	  mon.fillHisto(reg+"pfjetptrms",    tags_full,jets[0][ijet].ptRMS,    weight);
-	  // 	  mon.fillHisto(reg+"pfjetmva",      tags_full,jets[0][ijet].pumva,    weight);
 	}
       
       //other mets
@@ -498,16 +500,12 @@ int main(int argc, char* argv[])
       //event weight
       float weight = 1.0;  
       if(isMC)                  { weight = LumiWeights.weight( ev.ngenITpu ); }
-      if(!isMC && isGammaEvent && !use2011Id) { 
-	//weight = (gamma.pt()>135? 1.0 : gammaEvHandler.triggerWeight());    
-	weight = 1;
-      }
+      if(!isMC && isGammaEvent && !use2011Id) { weight *= ev.gn_prescale;  }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight);
       Hcutflow->Fill(4,weight);
       Hcutflow->Fill(5,1);
-
         
       //  
       // EVENT SELECTION
@@ -549,12 +547,6 @@ int main(int argc, char* argv[])
       else if(njets30>2)         { subcats.push_back("geq3jets"); tag_subcat="geq3jets"; }
       
 
-
-      //add blinding (dilepton only)
-      bool mustBlind = (!isMC && !isGammaEvent && runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC));
-      bool hasVbfBlinding(!isMC && !isGammaEvent && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
-      mustBlind |= hasVbfBlinding;
-
       //now do the control plots
       std::map<TString, float> qtWeights;
       if(isGammaEvent) qtWeights = gammaEvHandler.getWeights(phys,tag_subcat);
@@ -593,6 +585,8 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("rho",ctf, ev.rho,iweight);
 	      mon.fillHisto("zmass",ctf, zmass,iweight);
 	      mon.fillHisto("njets",ctf, njets30,iweight);
+	      mon.fillProfile("nloosejetsvspu",ctf,ev.nvtx,npfjets30,iweight);	      	      
+	      mon.fillProfile("njetsvspu",ctf,ev.nvtx,njets30,iweight);	      	      
 	      mon.fillHisto("ht",ctf, ht,iweight);
 	      for(size_t ijet=0; ijet<selJets.size(); ijet++) mon.fillHisto("jetpt",ctf, selJets[ijet].pt(),iweight);
 	      mon.fillHisto("clusteredmet",ctf,clusteredMet.pt(),iweight);
@@ -624,8 +618,7 @@ int main(int argc, char* argv[])
 			}
 		    }
 		}
-
-
+   
 	      mon.fillHisto("mindphijmet_0",ctf,njets30==0? mindphijmet15:mindphijmet,iweight);	      
 	      mon.fillHisto("mindphijmet30_0",ctf,mindphijmet,iweight);	      
 	      if(metP4.pt()>25)
@@ -638,7 +631,8 @@ int main(int argc, char* argv[])
 		{
 		  mon.fillHisto("mindphijmet_50",ctf,njets30==0? mindphijmet15:mindphijmet,iweight);	      
 		  mon.fillHisto("mindphijmet30_50",ctf,mindphijmet,iweight);	      
-		  mon.fillHisto("mindphijmet",ctf,njets30==0? mindphijmet15:mindphijmet,iweight);	      
+		  mon.fillHisto("mindphijmet",ctf,njets30==0? mindphijmet15:mindphijmet,iweight);
+		  mon.fillProfile("mindphijmetvspu",ctf,ev.nvtx,njets30==0? mindphijmet15:mindphijmet,iweight);	      	      
 		  mon.fillHisto("dphibmet",ctf,fabs(deltaPhi(gamma.phi(),metP4.phi())),iweight);	      
 		  mon.fillHisto("ht50",ctf,ht,iweight);	      
 		}
@@ -690,7 +684,15 @@ int main(int argc, char* argv[])
 		    }
 		
 		  mon.fillHisto("met_phi",         ctf, fabs(phys.met[0].phi()),iweight);
-		  if(mustBlind) continue;  
+
+		  bool blind(false);
+		  if(tag_subcat.Contains("vbf")) blind = (mt>250);
+		  else                           blind=(metP4.pt()>70);
+		  if(blind){
+		    mon.fillHisto("met_met_blind",         ctf, metP4.pt(),iweight);
+		    mon.fillHisto("met_redMet_blind",      ctf, redMet.pt(),iweight);
+		    mon.fillHisto("mt_blind",              ctf, mt,iweight);
+		  }
 		  mon.fillHisto("met_rawmet",      ctf, phys.met[0].pt(),iweight);
 		  mon.fillHisto("metoverqt",       ctf, metP4.pt()/gamma.pt(),iweight);
 		  mon.fillHisto("met_met",         ctf, metP4.pt(),iweight);

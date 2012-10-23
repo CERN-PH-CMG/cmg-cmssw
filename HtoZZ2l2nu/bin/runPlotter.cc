@@ -438,9 +438,9 @@ void Draw2DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
       if(Process[i]["isinvisible"].toBool())continue;
       NSampleToDraw++;
    }
-   int CanvasX = 4;
+   int CanvasX = 3;
    int CanvasY = ceil(NSampleToDraw/CanvasX);
-   TCanvas* c1 = new TCanvas("c1","c1",1000,1000);
+   TCanvas* c1 = new TCanvas("c1","c1",CanvasX*350,CanvasY*350);
    c1->Divide(CanvasX,CanvasY,0,0);
 
 
@@ -652,14 +652,17 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    if(stack && stack->GetStack() && stack->GetStack()->GetEntriesFast()>0){
      stack->Draw("");
      TH1 *hist=(TH1*)stack->GetStack()->At(0);
-     stack->GetXaxis()->SetTitle(hist->GetXaxis()->GetTitle());
-     stack->GetYaxis()->SetTitle(hist->GetYaxis()->GetTitle());
-     stack->SetMinimum(hist->GetMinimum());
-     stack->SetMaximum(maximumFound);
-     if(noLog)
+     if(stack->GetXaxis())
        {
+	 stack->GetXaxis()->SetTitle(hist->GetXaxis()->GetTitle());
+	 stack->GetYaxis()->SetTitle(hist->GetYaxis()->GetTitle());
+	 stack->SetMinimum(hist->GetMinimum());
 	 stack->SetMaximum(maximumFound);
-	 //stack->GetXaxis()->SetRangeUser(hist->GetMinimum(),maximumFound);
+	 if(noLog)
+	   {
+	     stack->SetMaximum(maximumFound);
+	     //stack->GetXaxis()->SetRangeUser(hist->GetMinimum(),maximumFound);
+	   }
        }
      ObjectToDelete.push_back(stack);
      canvasIsFilled=true;
