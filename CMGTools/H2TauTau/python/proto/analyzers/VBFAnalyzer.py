@@ -7,6 +7,7 @@ from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 # from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA
 from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA2012 as VBFMVA
+from CMGTools.H2TauTau.proto.BtagSF import BtagSF
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 
@@ -23,6 +24,10 @@ class VBFAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(VBFAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
         self.vbfMva = VBFMVA (cfg_ana.vbfMvaWeights)
+        self.btagSF = BtagSF (cfg_ana.btagSFseed)
+#        print 'PIETRO',cfg_ana.isDataFlag
+#        self.isDataFlag = cfg_ana.isDataFlag
+#        self.is2012Flag = cfg_ana.is2012Flag
 
     def declareHandles(self):
         super(VBFAnalyzer, self).declareHandles()
@@ -144,9 +149,18 @@ class VBFAnalyzer( Analyzer ):
     def testBJet(self, jet):
         # medium csv working point
         # https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagPerformanceOP#B_tagging_Operating_Points_for_3
+        jet.btagMVA = jet.btag("combinedSecondaryVertexBJetTags")
+        jet.btagFlag = self.btagSF.BtagSFcalc.isbtagged(jet.pt(), 
+                          jet.eta(),
+                          jet.btag("combinedSecondaryVertexBJetTags"),
+                          abs(jet.partonFlavour()),
+                          self.cfg_comp.isData,
+                          0,0,
+                          self.cfg_ana.is2012Flag)
         return jet.pt()>20 and \
                abs( jet.eta() ) < 2.4 and \
-               jet.btag("combinedSecondaryVertexBJetTags")>0.679 and \
+               jet.btagFlag and \
                jet.getSelection('cuts_looseJetId') and \
                jet.puJetId()
                # jet.passPuJetId('full', 2)
+               # jet.btag("combinedSecondaryVertexBJetTags")>0.679 and \
