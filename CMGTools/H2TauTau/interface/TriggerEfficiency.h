@@ -444,30 +444,71 @@ public:
   }
 
 
+//   double eff_2012_Rebecca_TauMu_IsoMu18A (double pt, double eta){
+//     if (fabs (eta) < 1.2) return efficiency (pt, 17.0055, 0.007058, 0.0004652, 1.56169, 0.963324) ;
+//     else                  return efficiency (pt, 17.5451, 0.416753, 0.374504 , 1.56159, 0.881856) ;
+//   }
+
+//   double eff_2012_Rebecca_TauMu_IsoMu17B (double pt, double eta){
+//     if (fabs (eta) < 1.2) return efficiency (pt, 15.9477, 0.007510  , 0.0002642  , 2.09333, 0.932723) ;
+//     else                  return efficiency (pt, 15.999 ,7.52516e-05, 6.77183e-08, 1.62932, 0.855128) ;
+//   }
+
+//   double eff_2012_Rebecca_TauMu_IsoMu17C (double pt, double eta){
+//     if (fabs (eta) < 1.2) return efficiency (pt, 15.9162, 0.007649, 0.0002533, 2.14652, 0.933307) ;
+//     else                  return efficiency (pt, 16.8844, 1.15563 , 1.96536  , 1.37044, 0.883499) ;
+//   }
+
+//   double eff_2012_Rebecca_TauMu_IsoMu17BC (double pt, double eta){
+//     if (fabs (eta) < 1.2) return efficiency (pt, 15.9199, 0.007744  , 0.0002486  , 2.16741, 0.932644) ;
+//     else                  return efficiency (pt, 15.998 ,7.76568e-05, 6.33412e-08, 1.65649, 0.861397) ;
+//   }
+
+//   double eff_2012_Rebecca_TauMu_IsoMu1753XMC (double pt, double eta){
+//     if (fabs (eta) < 1.2) return efficiency (pt, 15.9562, 0.007615   , 0.0002460  , 2.09189, 0.955486) ;
+//     else                  return efficiency (pt, 15.9951, 7.45044e-05, 3.06986e-08, 1.76431, 0.872391) ;
+//   }
+
+
   double eff_2012_Rebecca_TauMu_IsoMu18A (double pt, double eta){
-    if (fabs (eta) < 1.2) return efficiency (pt, 17.0055, 0.007058, 0.0004652, 1.56169, 0.963324) ;
-    else                  return efficiency (pt, 17.5451, 0.416753, 0.374504 , 1.56159, 0.881856) ;
+    if (eta < -1.2)              return efficiency (pt,16.9993,8.82202e-5,7.91529e-8,1.40792,0.928102) ;
+    if (-1.2<eta && eta <= -0.8) return efficiency (pt,16.9824,0.0694986,0.0186614,1.66577,0.908218) ;
+    if (-0.8<eta && eta <= 0.0)  return efficiency (pt,17.2736,0.13896,0.198452,1.13119,1.21897) ;
+    if ( 0.0<eta && eta <= 0.8)  return efficiency (pt,17.9605,0.500059,0.865294,1.04633,1.69027) ;
+    if ( 0.8<eta && eta <= 1.2)  return efficiency (pt,18.094,0.607997,0.89385,1.36337,0.92399) ;
+    if ( 1.2<eta )               return efficiency (pt,16.9805,9.18396e-5,2.81836e-8,1.83783,0.858988) ;
+    return 0.;
   }
 
   double eff_2012_Rebecca_TauMu_IsoMu17B (double pt, double eta){
-    if (fabs (eta) < 1.2) return efficiency (pt, 15.9477, 0.007510  , 0.0002642  , 2.09333, 0.932723) ;
-    else                  return efficiency (pt, 15.999 ,7.52516e-05, 6.77183e-08, 1.62932, 0.855128) ;
+    if (eta < -1.2)              return efficiency (pt,16.0015,5.59745e-07,1.3395e-07,1.37357,0.891284) ;
+    if (-1.2<eta && eta <= -0.8) return efficiency (pt,18.015,0.0512973,0.0603545,1.36001,0.907481) ;
+    if (-0.8<eta && eta <= 0.0)  return efficiency (pt,16.4569,0.214484,0.302707,1.42363,0.982643) ;
+    if ( 0.0<eta && eta <= 0.8)  return efficiency (pt,15.9829,0.0435624,0.0196399,1.71605,0.967839) ;
+    if ( 0.8<eta && eta <= 1.2)  return efficiency (pt,17.4688,0.0494554,0.0628053,1.34067,0.904989) ;
+    if ( 1.2<eta )               return efficiency (pt,16.0029,4.01862e-5,6.62491e-8,1.42189,0.880251) ;
+    return 0.;
   }
 
   double eff_2012_Rebecca_TauMu_IsoMu17C (double pt, double eta){
-    if (fabs (eta) < 1.2) return efficiency (pt, 15.9162, 0.007649, 0.0002533, 2.14652, 0.933307) ;
-    else                  return efficiency (pt, 16.8844, 1.15563 , 1.96536  , 1.37044, 0.883499) ;
+    if (eta < -1.2)              return efficiency (pt,15.9974,7.20337e-05,7.72238e-08,1.5461,0.87064) ;
+    if (-1.2<eta && eta <= -0.8) return efficiency (pt,17.446,0.760355,1.58032,1.0623,1.10472) ;
+    if (-0.8<eta && eta <= 0.0)  return efficiency (pt,15.9788,0.044455,0.0215911,1.71024,0.965673) ;
+    if ( 0.0<eta && eta <= 0.8)  return efficiency (pt,15.9762,0.0552286,0.0231409,1.78576,0.96848) ;
+    if ( 0.8<eta && eta <= 1.2)  return efficiency (pt,17.462,0.804351,1.62323,1.22776,0.900085) ;
+    if ( 1.2<eta )               return efficiency (pt,16.0051,-4.10239e-05,1.15509e-08,1.82463,0.865417) ;
+    return 0.;
   }
-
-  double eff_2012_Rebecca_TauMu_IsoMu17BC (double pt, double eta){
-    if (fabs (eta) < 1.2) return efficiency (pt, 15.9199, 0.007744  , 0.0002486  , 2.16741, 0.932644) ;
-    else                  return efficiency (pt, 15.998 ,7.76568e-05, 6.33412e-08, 1.65649, 0.861397) ;
-  }
-
   double eff_2012_Rebecca_TauMu_IsoMu1753XMC (double pt, double eta){
-    if (fabs (eta) < 1.2) return efficiency (pt, 15.9562, 0.007615   , 0.0002460  , 2.09189, 0.955486) ;
-    else                  return efficiency (pt, 15.9951, 7.45044e-05, 3.06986e-08, 1.76431, 0.872391) ;
+    if (eta < -1.2)              return efficiency (pt,15.997,8.73042e-05,5.36172e-08,1.67934,0.871415) ;
+    if (-1.2<eta && eta <= -0.8) return efficiency (pt,17.3339,0.768105,1.31172,1.35161,0.942887) ;
+    if (-0.8<eta && eta <= 0.0)  return efficiency (pt,15.959,0.0229759,0.00597735,1.76124,0.980734) ;
+    if ( 0.0<eta && eta <= 0.8)  return efficiency (pt,15.9618,0.0587497,0.0189749,1.94016,0.978294) ;
+    if ( 0.8<eta && eta <= 1.2)  return efficiency (pt,16.7859,0.443337,0.571078,1.62214,0.919211) ;
+    if ( 1.2<eta )               return efficiency (pt,15.9974,8.50572e-05,5.53033e-08,1.64714,0.888026) ;
+    return 0.;
   }
+
 
   double effMu2012_Rebecca_TauMu_ABC(double pt, double eta) {
     float weight_A = 888.33; 
@@ -477,6 +518,8 @@ public:
             weight_B * eff_2012_Rebecca_TauMu_IsoMu17B(pt, eta) + 
             weight_C * eff_2012_Rebecca_TauMu_IsoMu17C(pt, eta))/(weight_A+weight_B+weight_C);
   } 
+
+
 
   
   //********************************
@@ -609,20 +652,35 @@ public:
 
   
   //For Tau curves see email from Josh
-  // Tau, EleTau (2012)
-  // Loose Tau 20 - Run < 193686 	        18.84658959 	0.25958704 	0.17300958 	2.43491208 	0.85872017
-  // Loose Tau 20 - Run >= 193686 	18.48663118 	1.63417147 	20.25695815 	138.55422224 	0.89456038
-  //He has not measured the C period therefore just use from 2012B curve which has same trigger
+//   // Tau, EleTau (2012)
+//   // Loose Tau 20 - Run < 193686 	        18.84658959 	0.25958704 	0.17300958 	2.43491208 	0.85872017
+//   // Loose Tau 20 - Run >= 193686 	18.48663118 	1.63417147 	20.25695815 	138.55422224 	0.89456038
+//   //He has not measured the C period therefore just use from 2012B curve which has same trigger
+//   double effTau2012ABC_TauEle(double pt, double eta) {
+//     float weight_A = 696.09; 
+//     float weight_B = 4327.0;
+//     float weight_C = 7000.;
+//     return (weight_A * eff2012ATau20_TauEle(pt, eta) + weight_B * eff2012BTau20_TauEle(pt, eta)+ weight_C * eff2012BTau20_TauEle(pt, eta))/(weight_A+weight_B+weight_C);
+//   }
+//   // And this for the MC:
+//   // Eff53XMCET   m0 = 18.62733399; sigma = 0.51301539; alpha = 0.38517573; n = 5.68099833; norm = 0.91536401;
+//   double eff2012Tau20MC53X_TauEle(double pt, double eta) {
+//     return efficiency(pt, 18.62733399 , 0.51301539, 0.38517573 , 5.68099833 , 0.91536401);
+//   }
+
+
+// ///Email from Josh on October 15: measured one curve for whole 2012 period and separated Barrel and Endcap
+// 2012AllETEB   m0 = 18.43442868; sigma = 2.08967536; alpha = 3.27357845; n = 6.96327309; norm = 0.85564484;
+// 2012AllETEE   m0 = 18.16839440; sigma = 1.86184564; alpha = 4.39116712; n = 1.01410741; norm = 1.39240481;
+// Eff53XMCETEB   m0 = 18.40815138; sigma = 1.53235636; alpha = 3.55989632; n = 1.74542709; norm = 0.90118450;
+// Eff53XMCETEE   m0 = 18.29028052; sigma = 1.56239255; alpha = 11.03605631; n = 155.89290151; norm = 0.85683995; 
   double effTau2012ABC_TauEle(double pt, double eta) {
-    float weight_A = 696.09; 
-    float weight_B = 4327.0;
-    float weight_C = 7000.;
-    return (weight_A * eff2012ATau20_TauEle(pt, eta) + weight_B * eff2012BTau20_TauEle(pt, eta)+ weight_C * eff2012BTau20_TauEle(pt, eta))/(weight_A+weight_B+weight_C);
+    if(fabs(eta)<1.5) return efficiency(pt,18.43442868,2.08967536,3.27357845,6.96327309,0.85564484);
+    else              return efficiency(pt,18.16839440,1.86184564,4.39116712,1.01410741,1.39240481);
   }
-  // And this for the MC:
-  // Eff53XMCET   m0 = 18.62733399; sigma = 0.51301539; alpha = 0.38517573; n = 5.68099833; norm = 0.91536401;
   double eff2012Tau20MC53X_TauEle(double pt, double eta) {
-    return efficiency(pt, 18.62733399 , 0.51301539, 0.38517573 , 5.68099833 , 0.91536401);
+     if(fabs(eta)<1.5) return efficiency(pt,18.40815138,1.53235636,3.55989632,1.74542709,0.90118450);
+     else              return efficiency(pt,18.29028052,1.56239255,11.03605631,155.89290151,0.85683995);
   }
 
   //****************
