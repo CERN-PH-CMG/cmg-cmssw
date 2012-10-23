@@ -174,12 +174,12 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 0
+test = 1
 if test==1:
-    dataset = GGH120
+    dataset = ggH400
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-    dataset.files=['cmgTuple.root']
+#    dataset.files=['cmgTuple.root']
 #    dataset.files='root://lxcms00//data3/2012/HZZ_cmgTuple/synchHCP2/H120_44X_V590.root'
 
    

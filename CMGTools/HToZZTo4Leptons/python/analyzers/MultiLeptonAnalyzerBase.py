@@ -77,6 +77,11 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         #jets
         self.handles['jets'] = AutoHandle( ('cmgPFJetSel',''),'std::vector<cmg::PFJet>')
 
+        #mc information
+        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
+                                                     'std::vector<reco::GenParticle>' )
+
+
     def beginLoop(self):
         super(MultiLeptonAnalyzerBase,self).beginLoop()
 
@@ -136,6 +141,31 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         else:
             event.leptons2 = event.leptons1
 
+    def doMC(self, iEvent, event):
+        event.genParticles=self.mchandles['genParticles'].product()
+        event.higgsesGen=filter(lambda x:abs(x.pdgId())==25,event.genParticles)
+        if len(event.higgsesGen)>0:
+            event.higgsGen =event.higgsesGen[0]
+            nelectrons=0
+            nmuons=0
+            for i in  range(0,event.higgsGen.numberOfDaughters()):
+                if event.higgsGen.daughter(i).pdgId()==23: # z
+                    for j in  range(0,event.higgsGen.daughter(i).numberOfDaughters()):
+                        if abs(event.higgsGen.daughter(i).daughter(j).pdgId())==11:
+                            nelectrons=nelectrons+1
+                        if abs(event.higgsGen.daughter(i).daughter(j).pdgId())==13:
+                            nmuons=nmuons+1
+            if nmuons==4:
+                event.genDecay=2
+            elif nmuons==2 and nelectrons==2:
+                event.genDecay=1
+            elif nelectrons==4:
+                event.genDecay=0
+
+                
+            
+        
+
        
     def process(self, iEvent, event):
         self.event = iEvent.eventAuxiliary().id().event()
@@ -149,7 +179,14 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         self.rhoMu = event.rhoMu
         self.rhoEle = event.rhoEle
         event.step=0
+        if self.cfg_comp.isMC:
+            self.doMC(iEvent,event)
 
+
+
+
+
+            
 
 
         
