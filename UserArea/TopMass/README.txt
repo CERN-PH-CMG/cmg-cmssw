@@ -35,3 +35,24 @@ SecVtxAnalysis inputDir=/store/cmst3/user/psilva/SecVtx/TTJets
 
 
 FitKinTemplates templ=data/histoPt.root npe=10 onlySignal=0
+
+
+
+#
+# SCRIPTS
+#
+
+There are scrips in /scripts, some using information stored in /python/topinfo.py.
+
+*scripts/submitJobs.py
+Submits  multiple jobs to the batch system based on the list of
+samples defined in the dictionary in /python/topinfo.py.
+It uses the cmsBatch.py command and the /test/skimLeptonJets.py config
+file. 
+e.g. from /test do:
+./../scripts/submitJobs.py -n 25 -o ntuplesOut -r
+/store/cmst3/user/USERNAME/ntuples
+where "-n" defines the number of files per job, "-o" the local
+outputdirectory and "-r" the remote output directory (see also
+cmsBatch.py -h for details, they are the same.
+Or do submitJobs.py -h
