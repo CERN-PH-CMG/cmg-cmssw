@@ -29,16 +29,18 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 	    }
 	    
 	  //event weights
-	  std::map<TString, TH1*> iWgtsH;
+	  std::map<TString, TGraph*> iWgtsH;
+	  //std::map<TString, TH1*> iWgtsH;
 	  for(size_t ic=0; ic<sizeof(cats)/sizeof(TString); ic++)
 	    {
 	      for(size_t id=0; id<sizeof(dilCats)/sizeof(TString); id++)
 		{
 		  TString key = dilCats[id] + cats[ic] + "_" + wgtName + "_" + wgtType;
-		  TH1 *h = (TH1 *) fwgt->Get(key);
+		  //TH1 *h = (TH1 *) fwgt->Get(key);
+		  TGraph *h = (TGraph *) fwgt->Get(key);
 		  if(h!=0)
 		    {
-		      h->SetDirectory(0);
+		      //h->SetDirectory(0);
 		      key = dilCats[id] + cats[ic];
 		      iWgtsH[key] = h;
 		    }
@@ -47,12 +49,13 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 		  key = dilCats[id] + (isMC_ ? "" : cats[ic]);
 		  if(zmassH_.find(key)!=zmassH_.end()) continue;
 		      
-		  TString hname= key+ (isMC_ ? "_mczmass" : "_datazmass"); 
-		  h = (TH1 *) fwgt->Get(hname);
-		  if(h!=0)
+		  TString hname= key+ (isMC_ ? "_mczmass" : "_zmass"); 
+		  //		  TString hname= key+ (isMC_ ? "_mczmass" : "_datazmass"); 
+		  TH1 *massh = (TH1 *) fwgt->Get(hname);
+		  if(massh!=0)
 		    {
-		      h->SetDirectory(0);
-		      zmassH_[key]= h;
+		      massh->SetDirectory(0);
+		      zmassH_[key]= massh;
 		    }
 		}
 	    }
@@ -78,52 +81,7 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, bool is2011)
   if( phys.cat<22) return isGoodEvent_;
   triggerThr_ =( phys.cat-22)/1000;
 
-  triggerWgt_=1.0;
-  if(!is2011)
-    { 
-      if(triggerThr_==22)
-	{
-	  if(phys.run<195398)      triggerWgt_=50.22;
-	  else if(phys.run<197774) triggerWgt_=194.74;
-	  else if(phys.run<198913) triggerWgt_=207.38;
-	  else if(phys.run<200519) triggerWgt_=209.99;
-	  else                     triggerWgt_=211.76;
-	}
-      else if(triggerThr_==36)
-	{
-	  if(phys.run<195398)      triggerWgt_=7.96;
-	  else if(phys.run<197774) triggerWgt_=64.91;
-	  else if(phys.run<198913) triggerWgt_=69.13;
-	  else if(phys.run<200519) triggerWgt_=70.00;
-	  else                     triggerWgt_=70.59;
-	}
-      else if(triggerThr_==50)
-	{
-	  if(phys.run<195398)      triggerWgt_=2.74;
-	  else if(phys.run<197774) triggerWgt_=30.00;
-	  else if(phys.run<198913) triggerWgt_=30.00;
-	  else if(phys.run<200519) triggerWgt_=30.00;
-	  else                     triggerWgt_=30.00;
-	}
-      else if(triggerThr_==75)
-	{
-	  if(phys.run<195398)      triggerWgt_=2.46;
-	  else if(phys.run<197774) triggerWgt_=10.00;
-	  else if(phys.run<198913) triggerWgt_=10.00;
-	  else if(phys.run<200519) triggerWgt_=10.00;
-	  else                     triggerWgt_=10.00;
-	}
-      else if(triggerThr_==90)
-       	{
-       	  if(phys.run<195398)      triggerWgt_=2.14;
-       	  else if(phys.run<197774) triggerWgt_=5.00;
-       	  else if(phys.run<198913) triggerWgt_=5.00;
-       	  else if(phys.run<200519) triggerWgt_=5.00;
-       	  else                     triggerWgt_=5.00;
-       	}
-      //fixme once new ntuples with correct triggers are built
-      else triggerWgt_=1.0;
-    }
+  triggerWgt_=phys.gammaPrescale;
 
   //all done here
   isGoodEvent_=true;
@@ -154,27 +112,35 @@ std::map<TString,float> GammaEventHandler::getWeights(PhysicsEvent_t &phys, TStr
       //get event weight (will be 0 by default if we're running in weighting mode)
       key = dilCats[id]+evCategoryLabel;
       float weight(1.0);//wgtsH_.size() ? 0.0 : 1.0);
-      for(std::map<TString, std::map<TString,TH1 *> >::iterator wIt = wgtsH_.begin(); wIt != wgtsH_.end(); wIt++)
+      for(std::map<TString, std::map<TString,TGraph *> >::iterator wIt = wgtsH_.begin(); wIt != wgtsH_.end(); wIt++)
+	//      for(std::map<TString, std::map<TString,TH1 *> >::iterator wIt = wgtsH_.begin(); wIt != wgtsH_.end(); wIt++)
 	{
 	  if(wIt->second.find(key) == wIt->second.end()) continue; // { cout << key; continue; }
-	  TH1 *h = wIt->second[key];
-
-	  float iweight(1.0);
-	  for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
+	  TGraph *h = wIt->second[key];
+	  //TH1 *h = wIt->second[key];
+	  weight=h->Eval(gamma.pt());
+	  if(gamma.pt()>900)                        weight=h->Eval(900);
+	  if(key.Contains("vbf") && gamma.pt()>600) weight=h->Eval(600);
+	  if(weight<0) weight=0;
+	  cout << gamma.pt() << " " << weight << endl;
+	  /*
+	    float iweight(1.0);
+	    for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
 	    {
-	      if(wIt->first=="qt")
-		{
-		  if(gamma.pt()<h->GetXaxis()->GetBinLowEdge(ibin) ) break; 
-		  iweight = h->GetBinContent(ibin);
-		}
-	      else if(wIt->first=="nvtx")
-		{
-		  if(phys.nvtx<h->GetXaxis()->GetBinLowEdge(ibin)) break;
-		  iweight = h->GetBinContent(ibin); 
-		}
+	    if(wIt->first=="qt")
+	    {
+	    if(gamma.pt()<h->GetXaxis()->GetBinLowEdge(ibin) ) break; 
+	    iweight = h->GetBinContent(ibin);
 	    }
-	  //	  cout << wIt->first << " " << iweight << "\t";
-	  weight *= iweight;
+	    else if(wIt->first=="nvtx")
+	    {
+	    if(phys.nvtx<h->GetXaxis()->GetBinLowEdge(ibin)) break;
+	    iweight = h->GetBinContent(ibin); 
+	    }
+	    }
+	    //	  cout << wIt->first << " " << iweight << "\t";
+	    weight *= iweight;
+	  */
 	}
       //      cout << endl;
       evWeights_[dilCats[id]]=weight;

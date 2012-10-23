@@ -2,8 +2,8 @@
  * Wrapper for common operations on a gamma event
  * Get weights/mass shapes from file
  * Analyze event and assign trigger categories, weights and massive candidates
- * $Date: 2012/06/17 10:35:45 $
- * $Revision: 1.8 $
+ * $Date: 2012/10/01 09:19:05 $
+ * $Revision: 1.9 $
  * \author Pedro Silva
  */
 
@@ -14,6 +14,7 @@
 #include "TSystem.h"
 #include "TFile.h"
 #include "TH1.h"
+#include "TGraph.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuPhysicsEvent.h"
@@ -48,7 +49,8 @@ class GammaEventHandler
  private:
 
   bool isMC_;
-  std::map<TString, std::map<TString,TH1 *> > wgtsH_;
+  std::map<TString, std::map<TString,TGraph *> > wgtsH_;
+  //std::map<TString, std::map<TString,TH1 *> > wgtsH_;
   std::map<TString, TH1 *> zmassH_;  
 };
 

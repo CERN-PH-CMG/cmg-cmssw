@@ -36,7 +36,7 @@ double iLumi = 2007;
 double iEcm=8;
 bool showChi2 = false;
 bool showUnc=false;
-double baseRelUnc=1.0;
+double baseRelUnc=0.044;
 bool noLog=false;
 bool isSim=false;
 bool do2D  = true;
@@ -745,7 +745,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 	 {
 	   TString name("CompHistogram"); name+=icd;
 	   TH1D *dataToObsH = (TH1D*)compDists[icd]->Clone(name);
-	   dataToObsH->Divide(mc);
+	   if(mcPlusRelUnc) dataToObsH->Divide(mcPlusRelUnc);
+	   else             dataToObsH->Divide(mc);
 	   dataToObsH->Draw(icd==0?"":"same");
 	   if(icd>0) continue;
 	   dataToObsH->GetYaxis()->SetTitle("Data/#Sigma MC");
