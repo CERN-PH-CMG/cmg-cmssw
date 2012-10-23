@@ -63,6 +63,9 @@ def basicParameters(is53X):
         fileZmmData = rootfile_dir + 'recoilfit_datamm42X_20pv_njet.root'
         fileZmmMC = rootfile_dir + 'recoilfit_zmm42X_20pv_njet.root'        
         correctionType = 1
+    print '\tZmm data:',fileZmmData
+    print '\tZmm MC  :',fileZmmMC
+    print '\ttype    :',correctionType
     return fileZmmData, fileZmmMC, correctionType
 
 
@@ -126,9 +129,6 @@ if __name__ == '__main__':
     from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
     data, mc, type = basicParameters(isNewerThan('CMSSW_5_2_X'))
-    print 'data', data
-    print 'mc', mc
-    print 'type', type
     
     for line in sys.stdin:
         print 
