@@ -5,8 +5,8 @@
 // found on file: ZTreeProducer_tree.root
 //////////////////////////////////////////////////////////
 
-#ifndef Zanalysis_h
-#define Zanalysis_h
+#ifndef Templates_from_Zanalysis_h
+#define Templates_from_Zanalysis_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -14,11 +14,11 @@
 #include <iostream>
 #include <TSystem.h>
 
-class Zanalysis {
+class Templates_from_Zanalysis {
   public :
   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
   Int_t           fCurrent; //!current Tree number in a TChain
-  double          muon_etamax;
+  TString         outputdir;
 
   // Declaration of leaf types
   Int_t           run;
@@ -160,8 +160,8 @@ class Zanalysis {
   TBranch        *b_Jet_leading_eta;   //!
   TBranch        *b_Jet_leading_phi;   //!
 
-  Zanalysis(TString f_str=0, double etamax=2.4, TTree *tree=0);
-  virtual ~Zanalysis();
+  Templates_from_Zanalysis(TString f_str=0, TString outputdir_str=0, TTree *tree=0);
+  virtual ~Templates_from_Zanalysis();
   virtual Int_t    Cut(Long64_t entry);
   virtual Int_t    GetEntry(Long64_t entry);
   virtual Long64_t LoadTree(Long64_t entry);
@@ -173,8 +173,8 @@ class Zanalysis {
 
 #endif
 
-#ifdef Zanalysis_cxx
-Zanalysis::Zanalysis(TString f_str, double etamax, TTree *tree)
+#ifdef Templates_from_Zanalysis_cxx
+Templates_from_Zanalysis::Templates_from_Zanalysis(TString f_str, TString outputdir_str, TTree *tree)
 {
   // if parameter tree is not specified (or zero), connect the file
   // used to generate this class and read the Tree.
@@ -187,23 +187,23 @@ Zanalysis::Zanalysis(TString f_str, double etamax, TTree *tree)
     tree = (TTree*)gDirectory->Get("ZTreeProducer");
 
   }
-  muon_etamax=etamax;
+  outputdir=outputdir_str;
   Init(tree);
 }
 
-Zanalysis::~Zanalysis()
+Templates_from_Zanalysis::~Templates_from_Zanalysis()
 {
   if (!fChain) return;
   delete fChain->GetCurrentFile();
 }
 
-Int_t Zanalysis::GetEntry(Long64_t entry)
+Int_t Templates_from_Zanalysis::GetEntry(Long64_t entry)
 {
   // Read contents of entry.
   if (!fChain) return 0;
   return fChain->GetEntry(entry);
 }
-Long64_t Zanalysis::LoadTree(Long64_t entry)
+Long64_t Templates_from_Zanalysis::LoadTree(Long64_t entry)
 {
   // Set the environment to read one entry
   if (!fChain) return -5;
@@ -218,7 +218,7 @@ Long64_t Zanalysis::LoadTree(Long64_t entry)
   return centry;
 }
 
-void Zanalysis::Init(TTree *tree)
+void Templates_from_Zanalysis::Init(TTree *tree)
 {
   // The Init() function is called when the selector needs to initialize
   // a new tree or chain. Typically here the branch addresses and branch
@@ -305,7 +305,7 @@ void Zanalysis::Init(TTree *tree)
   Notify();
 }
 
-Bool_t Zanalysis::Notify()
+Bool_t Templates_from_Zanalysis::Notify()
 {
   // The Notify() function is called when a new file is opened. This
   // can be either for a new TTree in a TChain or when when a new TTree
@@ -316,18 +316,18 @@ Bool_t Zanalysis::Notify()
   return kTRUE;
 }
 
-void Zanalysis::Show(Long64_t entry)
+void Templates_from_Zanalysis::Show(Long64_t entry)
 {
   // Print contents of entry.
   // If entry is not specified, print current entry
   if (!fChain) return;
   fChain->Show(entry);
 }
-Int_t Zanalysis::Cut(Long64_t entry)
+Int_t Templates_from_Zanalysis::Cut(Long64_t entry)
 {
   // This function may be called from Loop.
   // returns  1 if entry is accepted.
   // returns -1 otherwise.
   return 1;
 }
-#endif // #ifdef Zanalysis_cxx
+#endif // #ifdef Templates_from_Zanalysis_cxx

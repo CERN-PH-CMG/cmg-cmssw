@@ -33,6 +33,7 @@ class Wanalysis {
   Double_t        pfmet_phi;
   Double_t        pfmet_sumEt;
   Double_t        W_pt;
+  Double_t        W_mt;
   Double_t        W_phi;
   Double_t        WGen_pt;
   Double_t        WGen_phi;
@@ -46,7 +47,8 @@ class Wanalysis {
   Double_t        Mu_phi;
   Double_t        Mu_mass;
   Double_t        Mu_charge;
-  Int_t           MuIsTight;
+  Double_t        Mu_dxy;
+  Int_t           MuIsTightAndIso;
   Double_t        MuRelIso;
   Double_t        MuGen_pt;
   Double_t        MuGen_eta;
@@ -63,7 +65,6 @@ class Wanalysis {
   Double_t        Jet_leading_eta;
   Double_t        Jet_leading_phi;
 
-
   // List of branches
   TBranch        *b_run;   //!
   TBranch        *b_lumi;   //!
@@ -77,6 +78,7 @@ class Wanalysis {
   TBranch        *b_pfmet_phi;   //!
   TBranch        *b_pfmet_sumEt;   //!
   TBranch        *b_W_pt;   //!
+  TBranch        *b_W_mt;   //!
   TBranch        *b_W_phi;   //!
   TBranch        *b_WGen_pt;   //!
   TBranch        *b_WGen_phi;   //!
@@ -90,7 +92,8 @@ class Wanalysis {
   TBranch        *b_Mu_phi;   //!
   TBranch        *b_Mu_mass;   //!
   TBranch        *b_Mu_charge;   //!
-  TBranch        *b_MuIsTight;   //!
+  TBranch        *b_Mu_dxy;   //!
+  TBranch        *b_MuIsTightAndIso;   //!
   TBranch        *b_MuRelIso;   //!
   TBranch        *b_MuGen_pt;   //!
   TBranch        *b_MuGen_eta;   //!
@@ -193,6 +196,7 @@ void Wanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("pfmet_phi", &pfmet_phi, &b_pfmet_phi);
   fChain->SetBranchAddress("pfmet_sumEt", &pfmet_sumEt, &b_pfmet_sumEt);
   fChain->SetBranchAddress("W_pt", &W_pt, &b_W_pt);
+  fChain->SetBranchAddress("W_mt", &W_mt, &b_W_mt);
   fChain->SetBranchAddress("W_phi", &W_phi, &b_W_phi);
   fChain->SetBranchAddress("WGen_pt", &WGen_pt, &b_WGen_pt);
   fChain->SetBranchAddress("WGen_phi", &WGen_phi, &b_WGen_phi);
@@ -206,7 +210,8 @@ void Wanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("Mu_phi", &Mu_phi, &b_Mu_phi);
   fChain->SetBranchAddress("Mu_mass", &Mu_mass, &b_Mu_mass);
   fChain->SetBranchAddress("Mu_charge", &Mu_charge, &b_Mu_charge);
-  fChain->SetBranchAddress("MuIsTight", &MuIsTight, &b_MuIsTight);
+  fChain->SetBranchAddress("Mu_dxy", &Mu_dxy, &b_Mu_dxy);
+  fChain->SetBranchAddress("MuIsTightAndIso", &MuIsTightAndIso, &b_MuIsTightAndIso);
   fChain->SetBranchAddress("MuRelIso", &MuRelIso, &b_MuRelIso);
   fChain->SetBranchAddress("MuGen_pt", &MuGen_pt, &b_MuGen_pt);
   fChain->SetBranchAddress("MuGen_eta", &MuGen_eta, &b_MuGen_eta);
