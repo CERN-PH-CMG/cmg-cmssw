@@ -39,8 +39,8 @@ if path.exists( '/afs/cern.ch/work/m/manzoni/diTau2012_12fb/CMGTools/CMSSW_5_2_5
 run2012  = True
 blinding = True
 #blinding = False
-just125  = True
-#just125  = False
+#just125  = True
+just125  = False
 RW_only  = True
 simple   = False
 
@@ -140,15 +140,15 @@ if __name__ == '__main__':
     #print [co for co in selComps]
 
     # SWITCH ON/OFF embedded samples
-    options.embed = True
-    #options.embed = False
-    crossCheckZee = True
-    #crossCheckZee = False
+    #options.embed = True
+    options.embed = False
+    #crossCheckZee = True
+    crossCheckZee = False
 
     if run2012:
       # 1.616/fb
-      selComps['data_Run2012A_PromptReco_v1'].intLumi = 920.039
-      weights[ 'data_Run2012A_PromptReco_v1'].intLumi = 920.039
+      selComps['data_Run2012A_PromptReco_v1'].intLumi = 806.194 
+      weights[ 'data_Run2012A_PromptReco_v1'].intLumi = 806.194 
       selComps['data_Run2012B_PromptReco_v1'].intLumi = 696.0
       weights[ 'data_Run2012B_PromptReco_v1'].intLumi = 696.0
       # 2.4/fb
@@ -161,13 +161,13 @@ if __name__ == '__main__':
       selComps['data_Run2012B_PromptReco_v1'].intLumi = 3010.
       weights[ 'data_Run2012B_PromptReco_v1'].intLumi = 3010.
       # 5.1/fb
-      selComps['data_Run2012B_PromptReco_v1'].intLumi = 4180.
-      weights[ 'data_Run2012B_PromptReco_v1'].intLumi = 4180.
-      # 11.252/fb
-      selComps['data_Run2012C_PromptReco_v1'].intLumi = 1000.
-      weights[ 'data_Run2012C_PromptReco_v1'].intLumi = 1000.
-      selComps['data_Run2012C_PromptReco_v2'].intLumi = 5100.
-      weights[ 'data_Run2012C_PromptReco_v2'].intLumi = 5100.
+      selComps['data_Run2012B_PromptReco_v1'].intLumi = 4420.
+      weights[ 'data_Run2012B_PromptReco_v1'].intLumi = 4420.
+      # 12.1/fb
+      selComps['data_Run2012C_PromptReco_v1'].intLumi = 493.975
+      weights[ 'data_Run2012C_PromptReco_v1'].intLumi = 493.975
+      selComps['data_Run2012C_PromptReco_v2'].intLumi = 6397.
+      weights[ 'data_Run2012C_PromptReco_v2'].intLumi = 6397.
 
     else:
       # 1fb
@@ -219,10 +219,10 @@ if __name__ == '__main__':
     baselineSS         =  'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge!=0 && jet1Pt>50. ' #&& abs(jet1Eta)<2.1 ' #abs(jet1Eta) < 3.0'
     baseline           += ' && l2MVAEle>0.5 '#&& l1MVAEle>0.5' 
     baselineSS         += ' && l2MVAEle>0.5 '#&& l1MVAEle>0.5'
-    baseline           += ' && ( (run<198272 && abs(jet1Eta)<3.0) || (run>=198272 && abs(jet1Eta)<2.1) ) '
-    baselineSS         += ' && ( (run<198272 && abs(jet1Eta)<3.0) || (run>=198272 && abs(jet1Eta)<2.1) ) '
-    #baseline           += ' && abs(jet1Eta)<3.0 '
-    #baselineSS         += ' && abs(jet1Eta)<3.0 '
+    #baseline           += ' && ( (run<198272 && abs(jet1Eta)<3.0) || (run>=198272 && abs(jet1Eta)<2.1) ) '
+    #baselineSS         += ' && ( (run<198272 && abs(jet1Eta)<3.0) || (run>=198272 && abs(jet1Eta)<2.1) ) '
+    baseline           += ' && abs(jet1Eta)<2.1 '
+    baselineSS         += ' && abs(jet1Eta)<2.1 '
     baseline           += ' && l1TrigMatched!=0 && l2TrigMatched!=0 '
     baselineSS         += ' && l1TrigMatched!=0 && l2TrigMatched!=0 '
     
@@ -286,9 +286,17 @@ if __name__ == '__main__':
       NOVBFtight  = ''
     
     cuts=[
-        ("CMS_2012_ABC_HpT110_pT40_isoMM_mjj250_dEtajj25_qcdFromBoost_VBF"      + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '40', ' && pThiggs>110. ' , isolationMM , 5 ),
-        ("CMS_2012_ABC_HpT140_pT40_isoTM_vetoMjj250Deta25_BOOSTED"              + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '40', ' && pThiggs>140. ' , isolationTM , 5 ),
-        #("CMS_2012_ABC_SS_1_pT50_isoTM_BOOSTED" + rewStr   , baselineSS + BOOSTED , '50', ' && pThiggs>0. ' , isolationTM , 5 ),
+        #("CMS_2012_ABC_12fb_HpT110_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_VBF"      + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
+        #("CMS_2012_ABC_12fb_HpT140_pT45_isoTM_vetoMjj250Deta25_BOOSTED"              + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationTM , 5 ),
+
+        #("CMS_2012_ABC_HpT110_pT45_isoMM_mjj275_dEtajj25_qcdFromBoost_VBF"      + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>275 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
+        #("CMS_2012_ABC_HpT110_pT45_isoMM_mjj300_dEtajj25_qcdFromBoost_VBF"      + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>300 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
+        #("CMS_2012_ABC_HpT110_pT45_isoMM_mjj300_dEtajj28_qcdFromBoost_VBF"      + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.8 && mjj>300 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
+        #("CMS_2012_ABC_SS_pT50_isoMM_BOOSTED" + rewStr   , baselineSS + BOOSTED , '50', ' && pThiggs>0. ' , isolationMM , 5 ),
+        #("CMS_2012_ABC_SS_pT45_isoMM_BOOSTED" + rewStr   , baselineSS + BOOSTED , '45', ' && pThiggs>0. ' , isolationMM , 5 ),
+        #("CMS_2012_ABC_SS_pT50_isoTM_BOOSTED" + rewStr   , baselineSS + BOOSTED , '50', ' && pThiggs>0. ' , isolationTM , 5 ),
+        ("CMS_2012_ABC_SS_pT40_isoMM_BOOSTED" + rewStr   , baselineSS + BOOSTED , '40', ' && pThiggs>0. ' , isolationMM , 5 ),
+        ("CMS_2012_ABC_OS_pT45_isoMM_BOOSTED" + rewStr   , baseline   + BOOSTED , '45', ' && pThiggs>0. ' , isolationMM , 5 ),
          ]
     
     for prefix,cut,ptcut,antiqcdcut,isocut,qcdEstimate in cuts:
@@ -322,15 +330,15 @@ if __name__ == '__main__':
       else :
         variables = [
           #('svfitMass'        ,int(1000/rebin), 0 , 500    ),
-          #('svfitMass'        ,int(300/rebin), 0 , 300    ),
-          ('svfitMass'        ,int(30/rebin), 0 , 300    ), 
+          #('svfitMass'        ,300          , 0 , 300    ),
+          #('svfitMass'        ,int(30/rebin), 0 , 300    ), 
           #('svfitMass'        ,int(20/rebin), 0 , 300    ), 
           #('svfitMass'        ,int(15/rebin), 0 , 300    ), 
-          #('svfitMass*1.03'   ,int(300/rebin), 0 , 300    ),
-          ('svfitMass*1.03'   ,int(30/rebin), 0 , 300    ),
-          #('svfitMass*0.97'   ,int(300/rebin), 0 , 300    ),
-          ('svfitMass*0.97'   ,int(30/rebin), 0 , 300    ),
-          #('visMass'          ,int(300/rebin), 0 , 300    ),
+          #('svfitMass*1.03'   ,300          , 0 , 300    ),
+          #('svfitMass*1.03'   ,int(30/rebin), 0 , 300    ),
+          #('svfitMass*0.97'   ,300          , 0 , 300    ),
+          #('svfitMass*0.97'   ,int(30/rebin), 0 , 300    ),
+          #('visMass'          ,300          , 0 , 300    ),
           #('visMass'          ,int(30/rebin), 0 , 300    ),
           #('visMass*1.03'     ,int(300/rebin), 0 , 300    ),
           #('visMass*1.03'     ,int(30/rebin), 0 , 300    ),
@@ -359,7 +367,7 @@ if __name__ == '__main__':
           #('dPhitt'           ,int(16/rebin), 0 , 3.2    ),
           #('dEtatt'           ,int(22/rebin), 0 , 4.5    ),
           #('mt'               ,int(25/rebin), 0 , 200    ),
-          #('pThiggs'          ,int(30/rebin), 0 , 300    ),
+          ('pThiggs'          ,int(30/rebin), 0 , 300    ),
           #('diTauPt'          ,int(20/rebin), 0 , 300    ),
           #('l1jetPt'          ,30           , 0 , 300    ),
           #('l2jetPt'          ,20           , 0 , 200    ),
@@ -406,7 +414,7 @@ if __name__ == '__main__':
       for var, nx, xmin, xmax in variables:
         
         ## no need to smooth BOOSTED shapes, saves some time
-        if 'BOOSTED' in prefix and 'svfitMass' in var and nx>100 : continue
+        #if 'BOOSTED' in prefix and 'svfitMass' in var and nx>100 : continue
         
         var1  = prefix.replace('_VBF','')
         var1 += '_forRW/' 
@@ -687,7 +695,8 @@ if __name__ == '__main__':
         if ( var == "svfitMass" or var == "svfitMass*1.03" or var == "svfitMass*0.97" or\
              var == "visMass"   or var == "visMass*1.03"   or var == "visMass*0.97"   ):
           if just125 : massesRange = [125]
-          else       : massesRange = [110,115,120,125,130,135,140,145]
+          #else       : massesRange = [110,115,120,125,130,135,140,145]
+          else       : massesRange = [125,110,115,120,130,135,140,145]
           print 'I\'m plotting mass distribution for masses in [110,115,120,125,130,135,140,145] GeV'
           if (var == "svfitMass" or var == "visMass") :
             yields = True
@@ -1111,10 +1120,19 @@ if __name__ == '__main__':
             elif var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03":
               saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"visMass","SM2")
           elif str(prefix).find("BOOSTED") > 0 :
-            if var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03":
+            if "svfitMass" in var and nx>100:
+              saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"svfitMass","SM1_for_smoothing")
+            elif var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03":
               saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"svfitMass","SM1")
-            if var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03":
+            if "visMass" in var and nx>100:
+              saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"visMass","SM1_for_smoothing")
+            elif var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03":
               saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"visMass","SM1")
+
+            #if var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03":
+            #  saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"svfitMass","SM1")
+            #if var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03":
+            #  saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"visMass","SM1")
 
           #####################################################
           ### SAVE ROOT FILES FOR *DUMMY* LIMIT COMPUTATION ###
@@ -1189,8 +1207,8 @@ if __name__ == '__main__':
           #####################################################
           ###  SAVE ROOT FILE FOR PLOTTING PRETTIER HISTOS  ###
           #####################################################
-          if not "svfitMass" in var or nx<10000000:
-          #if not "svfitMass" in var or nx<100:
+          #if not "svfitMass" in var or nx<10000000:
+          if not "svfitMass" in var or nx<100:
           #if not "visMass" in var or nx<100:
             saveForPlotting(copy.deepcopy(plotVarDataOS),prefix,mIndex)
            
