@@ -52,9 +52,6 @@ else:
 
 lumiFile = 'None'
 
-#############################################################################################################
-### edmFileUtil -P -f file:/data/PF2PAT/fall387_ttbarAOD_v2/Fall10-START38_V12-v2_ttbar_387_10_0_yep.root ###
-#############################################################################################################
 
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -132,35 +129,38 @@ process.metFilter.HLTPaths = cms.vstring('HBHENoiseFilterPath', 'CSCTightHaloFil
  
 
 # Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/2012/summary
-if runOnData:
-   muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*\")  )"   
-   eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet45_35_25_v*\") )"   
-else:
-   muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1\") )"
-   eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1\") )"
+# Since HLT paths depend on the run number, we will require them later on
+# if runOnData:
+#    muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*\")  )"   
+#    eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet45_35_25_v*\") )"   
+# else:
+#    muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1\") )"
+#    eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1\") )"
 
 
-process.cmgTopEleTriggerSel = cmgTriggerObjectSel.clone(
-   src = 'cmgTriggerObjectSel',
-   cut = cms.string( eleTriggerList ),
-   filter = cms.bool(True),
-   debugOn = cms.untracked.bool(True),
-   )
+# process.cmgTopEleTriggerSel = cmgTriggerObjectSel.clone(
+#    src = 'cmgTriggerObjectSel',
+#    cut = cms.string( eleTriggerList ),
+#    filter = cms.bool(True),
+#    debugOn = cms.untracked.bool(True),
+#    )
 
-process.cmgTopMuoTriggerSel = cmgTriggerObjectSel.clone(
-   src = 'cmgTriggerObjectSel',
-   cut = cms.string( muTriggerList ),
-   filter = cms.bool(True),
-   debugOn = cms.untracked.bool(True),
-   )
+# process.cmgTopMuoTriggerSel = cmgTriggerObjectSel.clone(
+#    src = 'cmgTriggerObjectSel',
+#    cut = cms.string( muTriggerList ),
+#    filter = cms.bool(True),
+#    debugOn = cms.untracked.bool(True),
+#    )
 
+
+
+#######################################
+#### Muon + jets selection
+#######################################
+
+# Apply top tight muon selection (as VBTF with looser dxy) + db() cut + kinematics + isolation
 ## Muon definitions in CMGTools/Common/python/selections/muonIDs_cfi.py
-tightMuon     = "(isPF() && isGlobal() && pt()>26 && abs(eta())<2.1 && normalizedChi2()<10  && trackerLayersWithMeasurement()>5  && numberOfValidMuonHits()>0 && abs(dxy())<0.02  && abs(dz())<0.5 && relIso(0.5)<0.12 && numberOfValidPixelHits()>0 && numberOfMatches()>1)"
-
-tightElectron = "(pt()>30 && abs(eta())<2.5&& (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(0.5)<0.1)"
-
-
-# Apply top muon selection (as VBTF with looser dxy) + db() cut + kinematics + isolation
+tightMuon = "(isPF() && isGlobal() && pt()>26 && abs(eta())<2.1 && normalizedChi2()<10  && trackerLayersWithMeasurement()>5  && numberOfValidMuonHits()>0 && abs(dxy())<0.02  && abs(dz())<0.5 && relIso(0.5, 0, 0.4)<0.12 && numberOfValidPixelHits()>0 && numberOfMatches()>1)"
 process.cmgTopTightMuonMuJetSel = cmgMuonSel.clone(
    src = 'cmgMuonSel',
    cut = cms.string( tightMuon ),
@@ -171,20 +171,11 @@ process.oneTightMuonMuJetSel = cms.EDFilter("PATCandViewCountFilter",
      src       = cms.InputTag("cmgTopTightMuonMuJetSel"),
 )
 
-process.cmgTopTightElecEleJetSel = cmgElectronSel.clone(
-   src = 'cmgElectronSel',
-   cut = cms.string(tightElectron)
-   ) 
-process.oneTightElecEleJetSel = cms.EDFilter("PATCandViewCountFilter",
-     minNumber = cms.uint32  (1),
-     maxNumber = cms.uint32  (1),
-     src       = cms.InputTag("cmgTopTightElecEleJetSel"),
-)
 
 # Apply selection for loose muon veto
 process.cmgTopLooseMuonMuJetSel = cmgMuonSel.clone(
    src = 'cmgMuonSel',
-   cut = cms.string( "isPF() && (isGlobal() || isTracker()) && pt()>10 && abs(eta())<2.5 && relIso(0.5)<0.2 && !" + tightMuon )
+   cut = cms.string( "isPF() && (isGlobal() || isTracker()) && pt()>10 && abs(eta())<2.5 && relIso(0.5, 0, 0.4)<0.2 && !" + tightMuon  )
    )
 process.zeroLooseMuonsMuJetSel = cms.EDFilter("PATCandViewCountFilter",
      minNumber = cms.uint32  (0),
@@ -192,36 +183,16 @@ process.zeroLooseMuonsMuJetSel = cms.EDFilter("PATCandViewCountFilter",
      src       = cms.InputTag("cmgTopLooseMuonMuJetSel"),
 )
 
-process.cmgTopLooseMuonEleJetSel = cmgMuonSel.clone(
-   src = 'cmgMuonSel',
-   cut = cms.string( "isPF() && (isGlobal() || isTracker()) && pt()>10 && abs(eta())<2.5 && relIso(0.5)<0.2" )
-   )
-process.zeroLooseMuonsEleJetSel = cms.EDFilter("PATCandViewCountFilter",
-     minNumber = cms.uint32  (0),
-     maxNumber = cms.uint32  (0),
-     src       = cms.InputTag("cmgTopLooseMuonEleJetSel"),
-)
-
 
 #Apply electron selection for electron veto
 process.cmgTopLooseElecMuJetSel = cmgElectronSel.clone(
    src = 'cmgElectronSel',
-   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5)<0.15 && mvaTrigV0()>0.0")
+   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5, 0, 0.3)<0.15 && mvaTrigV0()>0.0")
    )
 process.zeroLooseElecsMuJetSel = cms.EDFilter("PATCandViewCountFilter",
      minNumber = cms.uint32  (0),
      maxNumber = cms.uint32  (0),
      src       = cms.InputTag("cmgTopLooseElecMuJetSel"),
-)
-
-process.cmgTopLooseElecEleJetSel = cmgElectronSel.clone(
-   src = 'cmgElectronSel',
-   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5)<0.15 && mvaTrigV0()>0.0&& !" + tightElectron)
-   )
-process.zeroLooseElecsEleJetSel = cms.EDFilter("PATCandViewCountFilter",
-     minNumber = cms.uint32  (0),
-     maxNumber = cms.uint32  (0),
-     src       = cms.InputTag("cmgTopLooseElecEleJetSel"),
 )
 
 
@@ -240,16 +211,6 @@ process.cleanMuonJets = cms.EDProducer("DeltaRVetoProducerPFJet",
    verbose = cms.untracked.bool(False)
    )
 
-process.cleanElectronJets = cms.EDProducer("DeltaRVetoProducerPFJet",
-   inputCollection = cms.InputTag('cmgPFJetSelCHS'),
-   MatchingParams = cms.VPSet(cms.PSet( 				    
-      vetoCollection=cms.InputTag("cmgTopTightElecEleJetSel"),
-      minDeltaR=cms.double(0.3),
-      removeMatchedObject=cms.bool(True)
-      )
-   ),
-   verbose = cms.untracked.bool(False)
-   )
 
 #Apply Jet selection: loose jet Id (from Common/python/selections/jetid_cfi.py and CMGTools/Common/src/PFJetFactory.cc) and kinematics
 process.cmgTopJetMuJetSel     = cmgPFJetSel.clone(
@@ -263,7 +224,59 @@ process.fourJetsMuJetSel = cms.EDFilter("PATCandViewCountFilter",
 )
 
 
-process.cmgTopJetEleJetSel     = cmgPFJetSel.clone(
+
+
+#######################################
+#### Electron + jets selection
+#######################################
+
+tightElectron = "(pt()>30 && abs(eta())<2.5&& (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(0.5, 0, 0.3)<0.1)"
+process.cmgTopTightElecEleJetSel = cmgElectronSel.clone(
+   src = 'cmgElectronSel',
+   cut = cms.string(tightElectron)
+   ) 
+process.oneTightElecEleJetSel = cms.EDFilter("PATCandViewCountFilter",
+     minNumber = cms.uint32  (1),
+     maxNumber = cms.uint32  (1),
+     src       = cms.InputTag("cmgTopTightElecEleJetSel"),
+)
+
+
+process.cmgTopLooseElecEleJetSel = cmgElectronSel.clone(
+   src = 'cmgElectronSel',
+   cut = cms.string( "pt()>20 && abs(eta())<2.5 && relIso(0.5, 0, 0.3)<0.15 && mvaTrigV0()>0.0&& !" + tightElectron)
+   )
+process.zeroLooseElecsEleJetSel = cms.EDFilter("PATCandViewCountFilter",
+     minNumber = cms.uint32  (0),
+     maxNumber = cms.uint32  (0),
+     src       = cms.InputTag("cmgTopLooseElecEleJetSel"),
+)
+
+
+process.cmgTopLooseMuonEleJetSel = cmgMuonSel.clone(
+   src = 'cmgMuonSel',
+   cut = cms.string( "isPF() && (isGlobal() || isTracker()) && pt()>10 && abs(eta())<2.5 && relIso(0.5, 0, 0.4)<0.2" )
+   )
+process.zeroLooseMuonsEleJetSel = cms.EDFilter("PATCandViewCountFilter",
+     minNumber = cms.uint32  (0),
+     maxNumber = cms.uint32  (0),
+     src       = cms.InputTag("cmgTopLooseMuonEleJetSel"),
+)
+
+
+process.cleanElectronJets = cms.EDProducer("DeltaRVetoProducerPFJet",
+   inputCollection = cms.InputTag('cmgPFJetSelCHS'),
+   MatchingParams = cms.VPSet(cms.PSet( 				    
+      vetoCollection=cms.InputTag("cmgTopTightElecEleJetSel"),
+      minDeltaR=cms.double(0.3),
+      removeMatchedObject=cms.bool(True)
+      )
+   ),
+   verbose = cms.untracked.bool(False)
+   )
+
+
+process.cmgTopJetEleJetSel = cmgPFJetSel.clone(
    src = 'cleanElectronJets',
    cut = cms.string( " pt()>15 && abs(eta())<2.5 && abs(phi()) < 3.2  &&  getSelection(\"cuts_looseJetId\") " )
    )
@@ -274,14 +287,7 @@ process.fourJetsEleJetSel = cms.EDFilter("PATCandViewCountFilter",
 )
 
 
-#Apply Jet selection: loose jet Id, kinematics and btagging (combinedSecondaryVertexBJetTags, medium working point); https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagPerformanceOP
-process.cmgTopPFbTagCSVMJetSel  = cmgPFJetSel.clone(
-   src = 'cmgTopPFJetSel',
-   cut = cms.string( " btag(6)>0.679 " )
-   )
-
-
-
+# Run the weights for PU
 process.load('CMGTools.RootTools.utils.vertexWeight.vertexWeight_cff')
 process.genSequence = cms.Sequence(
    process.vertexWeightSequence 
@@ -306,7 +312,7 @@ print process.primaryVertexFilter.dumpPython()
 print process.scrapingFilter.dumpPython() 	 
 print process.metFilter.dumpPython() 	 
 
-print process.cmgTopMuoTriggerSel.dumpPython() 	 
+#print process.cmgTopMuoTriggerSel.dumpPython() 	 
 print process.cmgTopTightMuonMuJetSel.dumpPython() 		 		 
 print process.cmgTopLooseMuonMuJetSel.dumpPython() 	 	 
 print process.cmgTopLooseElecMuJetSel.dumpPython() 	 	 
@@ -317,7 +323,7 @@ print process.zeroLooseElecsMuJetSel.dumpPython()
 print process.fourJetsMuJetSel.dumpPython()
 
 
-print process.cmgTopEleTriggerSel.dumpPython() 	 
+#print process.cmgTopEleTriggerSel.dumpPython() 	 
 print process.cmgTopTightElecEleJetSel.dumpPython() 		 		 
 print process.cmgTopLooseMuonEleJetSel.dumpPython() 	 	 
 print process.cmgTopLooseElecEleJetSel.dumpPython() 	 	 
@@ -328,16 +334,10 @@ print process.zeroLooseMuonsEleJetSel.dumpPython()
 print process.fourJetsEleJetSel.dumpPython()
 
 
-process.ana = cms.EDAnalyzer('TtbarLeptonJets')
-
-process.TFileService = cms.Service("TFileService",
-    fileName = cms.string(options.sampleName+'Histos.root')
-    )
-
 
 process.pEle = cms.Path( 
    process.primaryVertexFilter      +
-   ##process.scrapingFilter           + 	 
+   process.scrapingFilter           + 	 
    process.metFilter                + 	 
    #process.cmgTopEleTriggerSel      +
    process.cmgTopTightElecEleJetSel +		    
@@ -353,9 +353,9 @@ process.pEle = cms.Path(
 
 process.pMu = cms.Path( 
    process.primaryVertexFilter      +
-   ##process.scrapingFilter           + 	 
+   process.scrapingFilter           + 	 
    process.metFilter                + 	 
-   ##process.cmgTopMuoTriggerSel      +
+   #process.cmgTopMuoTriggerSel      +
    process.cmgTopTightMuonMuJetSel  +		    
    process.cmgTopLooseMuonMuJetSel  +	    
    process.cmgTopLooseElecMuJetSel  +	    
@@ -372,11 +372,12 @@ if not runOnData:
    process.pMu  += process.vertexWeightSequence
    
 process.outLepton = cms.OutputModule("PoolOutputModule",
-                               fileName = cms.untracked.string(options.sampleName+'_treeCMG_leptonJetsSel.root'),
+                               fileName = cms.untracked.string(options.sampleName+'_treeCMG_leptonJetsSkim.root'),
                                SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('pMu || pEle')),
                                outputCommands = cms.untracked.vstring( 'drop *',
                                				               'keep *_TriggerResults*_*_*'	  ,
-                               				               'keep *_cmgPFMET*_*_*'		   ,
+                                				       'keep *_cmgTriggerObjectSel*_*_*'		   ,
+                              				               'keep *_cmgPFMET*_*_*'		   ,
                                 				       'keep *_offlinePrimaryVertices*_*_*',
                                 				       'keep *_addPileupInfo_*_*',
                                 				       'keep *_generator_*_*',
