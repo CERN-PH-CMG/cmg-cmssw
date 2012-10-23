@@ -36,7 +36,11 @@ class WNJetsAnalyzer( Analyzer ):
 
         # VH samples don't contain the collection necessary
         # for this analyzer to run
-        if self.cfg_comp.name.find('HiggsVH')!=-1:
+        #PG NB any other pythia samples have this problem!
+        if self.cfg_comp.name.find('HiggsVH')!=-1 or \
+           self.cfg_comp.name == 'WW'             or \
+           self.cfg_comp.name == 'ZZ'             or \
+           self.cfg_comp.name == 'WZ' :
             return True
         
         self.readCollections( iEvent )
