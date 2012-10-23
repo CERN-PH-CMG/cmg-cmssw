@@ -1,0 +1,32 @@
+
+namespace WMass{
+
+  static const double ZMass = PAR_ZMASS;
+  static const int WMassCentral_MeV = PAR_WMASS_CENTRAL;
+  static const int WMassStep_MeV = PAR_WMASS_STEP;
+  static const int WMassNSteps = PAR_WMASS_NSTEPS;
+  static const int etaMuonNSteps = PAR_ETA_NSTEP;
+  static const float etaMaxMuons[etaMuonNSteps] = { PAR_ETA_STEPS };
+
+  bool isGood_WGenPos_1_Gen(double WGen_m,
+                            int MuGen_charge
+                            ){
+    return (WGen_m>0 && MuGen_charge>0);
+  }
+
+  bool isGood_WGenPos_2_ZGenMassCut(double WGen_m,
+                                    int MuGen_charge
+                                    ){
+    return isGood_WGenPos_1_Gen(WGen_m,MuGen_charge);
+  }
+  
+  bool isGood_WGenPos_3_Mu1GenCut(double WGen_m,
+                                    int MuGen_charge,
+                                    double MuGen_eta,
+                                    double etaMax
+                                    ){
+    return (isGood_WGenPos_2_ZGenMassCut(WGen_m,MuGen_charge)
+            && TMath::Abs(MuGen_eta)<etaMax);
+  }
+  
+}
