@@ -114,12 +114,14 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
                                      VVgroup = VVgroup)
 
         osQ.legendOn = False
+        ssQ.legendOn = False
         print 'drawing ', plot.var
-        draw(osQ, False, 'TauEle', plotprefix = 'CTRL')
-	ss = None
-	os = None
-	ssQ = None
-	osQ = None
+        draw(osQ, False, 'TauEle', plotprefix = 'CTRL_OS')
+        draw(ssQ, False, 'TauEle', plotprefix = 'CTRL_SS')
+        ss = None
+        os = None
+        ssQ = None
+        osQ = None
 #        plot.ssign = cp(ss)
 #        plot.osign = cp(os)
 #        plot.ssQCD = cp(ssQ)
@@ -286,7 +288,7 @@ if __name__ == '__main__':
 
     cutw = options.cut.replace('mt<40', '1')
     fwss, fwss_error, fwos, fwos_error, ss, os = plot_W(anaDir, selComps, weights,
-                                                        12, 60, 120, cutw,
+                                                        16, 70, 150, cutw,
                                                         weight = weight, embed = options.embed,
                                                         VVgroup = cfg.VVgroup,
                                                         treeName = 'H2TauTauTreeProducerTauEle')
