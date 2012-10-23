@@ -125,7 +125,6 @@ int main(int argc, char* argv[])
   int cmEnergy(8);
   if(url.Contains("7TeV")) cmEnergy=7;
   std::vector<TGraph *> hWeightsGrVec,hLineShapeGrVec;
-
   if(isMC_GG){  
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,4);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
@@ -153,25 +152,41 @@ int main(int argc, char* argv[])
     string StringMass = string(url.Data()).substr(VBFStringpos+6,4);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
     VBFString = string(url.Data()).substr(VBFStringpos);
   }
-
   
- //LINE SHAPE
- TString lineShapeWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[1]; gSystem->ExpandPathName(lineShapeWeightsFileURL);
- fin=TFile::Open(lineShapeWeightsFileURL);
- if(fin){
-   char buf[100]; sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
-   cout << "Line shape weights (and uncertainties) will be applied from " << buf << " @ " << lineShapeWeightsFileURL << endl;
-   TString wgts[]={"rwgtpint","rwgtpint_up","rwgtpint_down","rwgt"};
-   for(size_t i=0; i<4; i++)
-     {
-       TGraph *gr= (TGraph *) fin->Get(buf+wgts[i]);
-       if(gr) hLineShapeGrVec.push_back((TGraph *)gr->Clone());
-     }
- }
- fin->Close();
- delete fin;
-
-
+  //LINE SHAPE WEIGHTS
+  TString lineShapeWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[1]; gSystem->ExpandPathName(lineShapeWeightsFileURL);
+  fin=0;
+  std::vector<TString> wgts;
+  if(isMC_VBF)
+    {
+      char buf[100]; sprintf(buf,"H%d/",int(HiggsMass));
+      wgts.push_back(buf+TString("cpsWgt"));
+      wgts.push_back(buf+TString("cpsUpWgt"));
+      wgts.push_back(buf+TString("cpsDownWgt"));
+      wgts.push_back(buf+TString("cpsWgt"));
+      lineShapeWeightsFileURL.ReplaceAll("LineShapeWeights","VBFLineShapeWeights");
+      fin=TFile::Open(lineShapeWeightsFileURL);     
+    }
+  else
+    {
+      char buf[100]; sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
+      wgts.push_back(buf+TString("rwgtpint"));
+      wgts.push_back(buf+TString("rwgtpint_up"));
+      wgts.push_back(buf+TString("rwgtpint_down"));
+      wgts.push_back(buf+TString("rwgt"));
+      fin=TFile::Open(lineShapeWeightsFileURL);     
+    }
+  if(fin)
+    {
+      cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
+      for(size_t i=0; i<wgts.size(); i++)
+	{
+	  TGraph *gr= (TGraph *) fin->Get(wgts[i]);
+	  if(gr) hLineShapeGrVec.push_back((TGraph *)gr->Clone());
+       	}
+      fin->Close();
+      delete fin;
+    }
 
 
   //##############################################
@@ -764,7 +779,7 @@ int main(int argc, char* argv[])
 	      else
 		{
 		  llScaleFactor *= 1;
-		  llTriggerEfficiency *= muonTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),2012);
+		  llTriggerEfficiency *= 1.0; //muonTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),2012);
 		}
 	    }
 	  else
@@ -802,7 +817,7 @@ int main(int argc, char* argv[])
 		      if(!use2011Id)
 			{
 			  llScaleFactor *= 1;
-			  llTriggerEfficiency *= electronTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),2012);
+			  llTriggerEfficiency *= 1.0; //electronTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),2012);
 			}
 		    }
 		}
