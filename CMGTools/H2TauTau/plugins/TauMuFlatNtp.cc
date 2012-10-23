@@ -517,11 +517,12 @@ bool TauMuFlatNtp::fill(){
   fillPFJetList20(&fullJetList_,&pfJetList20_);
   fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetList20_,&pfJetList20LC_);
   fillJetVariables20();
-  fillBTagWeight();//uses pfJetList20LC
+  //fillBTagWeight();//not used any more
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass Jets fillJetVariables20 "<<endl;
 
 
   fillPFJetListBTag(&pfJetList20LC_,&pfJetListBTagLC_);
+  fillPFJetListBTagLoose(&pfJetList20LC_,&pfJetListBTagLCLoose_);
   fillBJetVariables();
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass b-tag fillJetVariables"<<endl;
 

@@ -58,6 +58,7 @@
 #include "CMGTools/H2TauTau/interface/BTagWeight.h"
 #include "CMGTools/H2TauTau/interface/BtagSF.h"
 
+
 //#include "TMVA/Reader.h"
 #include "CMGTools/H2TauTau/interface/VBFMVA.h"
 #include "CMGTools/H2TauTau/interface/VBFMVA2012.h"
@@ -146,6 +147,8 @@ protected:
   std::vector<const cmg::PFJet * > pfJetListBTagLC_;
   const cmg::PFJet * leadBJet_;
 
+  std::vector<const cmg::PFJet * > pfJetListBTagLCLoose_;
+
   const cmg::METSignificance * metSig_;
 
   TriggerEfficiency triggerEff_;
@@ -163,6 +166,9 @@ protected:
 
   //for MSSM
   float btagWP_;
+
+  BtagSF btagsf;
+
   std::vector<const cmg::PFJet * > pfJetListBTagWeight_;
   BTagWeight btagWeight_;
   BTagEfficiency btagEff_;
@@ -308,6 +314,8 @@ protected:
   float leadBJetBTagProb_;
   float leadBJetPt_;
   float leadBJetEta_;
+
+  int nbjetLoose_;
 
   int njetLepLC_;
   float muLCleadJetPt_;//jets where only the muon has been removed
@@ -586,6 +594,7 @@ protected:
   void fillPFJetListLepLC(float lepeta, float lepphi, std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC);
 
   void fillPFJetListBTag(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list);
+  void fillPFJetListBTagLoose(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list);
 
   const cmg::PFJet * findJet(std::vector<const cmg::PFJet * > * fulllist, float eta, float phi);
 
@@ -660,6 +669,9 @@ protected:
       leadBJetEta_ = leadBJet_->eta();
       leadBJetBTagProb_ = leadBJet_->btag("combinedSecondaryVertexBJetTags");
     }
+
+    //Loose b-tag jets
+    nbjetLoose_=pfJetListBTagLCLoose_.size();
     
   }
 
@@ -742,7 +754,7 @@ protected:
       double jetpt = pfJetList20LC_[i]->pt(); 
       double jeteta = pfJetList20LC_[i]->eta(); 
       double jetflavor = TMath::Abs(pfJetList20LC_[i]->partonFlavour());
-      double discr = btagWP_;
+      double discr = btagWP_;//1.7;
     
       double eff = 1.;
       double sf = 1.;
@@ -764,33 +776,8 @@ protected:
     
     }
     btagEffWeight_ = btagWeight_.weight(jetinfovec);
-  }// fillBtagWeight()
-
-  
-  void reclassifyBtagJets(){
-    BtagSF* btsf = new BtagSF(12345);
-    
-    for (unsigned int i=0; i<pfJetList20LC_.size(); ++i) {
-      if(abs(pfJetList20LC_[i]->eta())>2.4) continue;
-      //Get Jet kinematic variables
-      double jetpt = pfJetList20LC_[i]->pt(); 
-      double jeteta = pfJetList20LC_[i]->eta(); 
-      double jetflavor = TMath::Abs(pfJetList20LC_[i]->partonFlavour());
-      //Need to get jet CSV discrimiantor value;
-      double jetcsv = pfJetList20LC_[i]->btag("combinedSecondaryVertexBJetTags");
-      bool isdata = true;
-      unsigned int btagsys = 0, mistagsys = 0;   // 0 = central, 1 = down, 2 = up
-      bool is2012 = true;
-      bool btagged = (jetcsv > btagWP_); 
-      
-      //    cout << "Before modification: Is tagged = "<< btagged << endl;   
-      btagged = btsf->isbtagged(jetpt, jeteta, jetcsv, jetflavor, isdata ,btagsys, mistagsys, is2012);    
-      //    cout << "After modification: Is tagged = "<< btagged << endl;
-      
-    }
-    
   }
-
+  
   //function definitions from Matthews mva
   Double_t deltaPhi(Double_t phi1, Double_t phi2){
     Double_t dphi = fabs(phi1 - phi2);
