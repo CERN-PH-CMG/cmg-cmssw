@@ -10,7 +10,7 @@ from CMGTools.H2TauTau.proto.samples.run2012.ewk import *
 from CMGTools.H2TauTau.proto.samples.run2012.diboson import *
 from CMGTools.H2TauTau.proto.samples.run2012.higgs import *
 
-from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauMu import data_triggers, mc_triggers
+from CMGTools.H2TauTau.proto.samples.run2012.triggers_tauEle import data_triggers, mc_triggers
 
 MC_list = [HiggsVBF125]
 for sam in MC_list:
@@ -44,12 +44,7 @@ allsamples = copy.copy(MC_list)
 
 
 
-## HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/TAUMU_2012_Colin_Sync_OSVFit_21Oct',
-##                              'cbern', '.*root')
-
-HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/TAUMU_2012_Colin_Sync_23Oct',
+HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/TAUELE_2012_Colin_Sync_OSVFit_23Oct',
                              'cbern', '.*root')
-
-
 HiggsVBF125.splitFactor = 14
 
