@@ -119,8 +119,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         
         result, message = super(TauEleAnalyzer, self).process(iEvent, event)
 
-        # if self.cfg_ana.verbose and result is False:
-        if 1:
+        if self.cfg_ana.verbose and result is False:
             print event.run, event.lumi, event.eventId, message
             for l in event.leptons:
                 print l
