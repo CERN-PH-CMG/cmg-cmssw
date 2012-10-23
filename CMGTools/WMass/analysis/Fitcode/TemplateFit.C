@@ -1,19 +1,20 @@
 #include <utility>
+#include "../includes/common.h"
 
-void TemplateFit(TString fDATA_str=0, TString fMC_str=0, double xmin=0.75, double xmax=1.4 ){
+void TemplateFit(TString fWDATA_str=0, TString fMCtemplates_str=0, double xmin=0.75, double xmax=1.4 ){
 
-  int WMassCentral = 80385;
-  int WMassStep = 15;
-  static const int WMassNSteps = 60;
-  static const int etaMuonNSteps = 5;
-  double etaMaxMuons[etaMuonNSteps] = {0.6, 0.8, 1.2, 1.6, 2.1};
+  // int WMass::WMassCentral = 80385;
+  // int WMass::WMassStep = 15;
+  // static const int WMass::WMassNSteps = 60;
+  // static const int WMass::etaMuonNSteps = 5;
+  // double WMass::etaMaxMuons[etaMuonNSteps] = {0.6, 0.8, 1.2, 1.6, 2.1};
   
   static const int FitCombinations = 16;
-  double lowerFit[FitCombinations]={0.75,0.85,0.95,1.05,0.75,0.85,0.95,1.05,0.75,0.85,0.95,1.05,0.75,0.85,0.95,1.05};
+  double lowerFit[FitCombinations]={0.75,0.8, 0.9, 1.0, 0.75,0.8, 0.9, 1.0, 0.75,0.8, 0.9, 1.0, 0.75,0.8, 0.9, 1.0};
   double upperFit[FitCombinations]={1.4 ,1.4 ,1.4 ,1.4 ,1.3 ,1.3 ,1.3 ,1.3, 1.2 ,1.2 ,1.2 ,1.2 ,1.1 ,1.1 ,1.1 ,1.1 };
 
-  TFile*fDATA=new TFile(Form("%s",fDATA_str.Data()));
-  TFile*fMC=new TFile(Form("%s",fMC_str.Data()));
+  TFile*fWDATA=new TFile(Form("%s",fWDATA_str.Data()));
+  TFile*fMCtemplates=new TFile(Form("%s",fMCtemplates_str.Data()));
 
   TFile *fout=new TFile("FitResults.root","RECREATE");
   
@@ -40,19 +41,19 @@ void TemplateFit(TString fDATA_str=0, TString fMC_str=0, double xmin=0.75, doubl
     WMassErrorVsEta->SetMarkerStyle(20);
     WMassErrorVsEta->SetMarkerSize(1);
 
-    for(int i=0; i<etaMuonNSteps; i++){
+    for(int i=0; i<WMass::etaMuonNSteps; i++){
 
-      TString eta_str = Form("%.1f",etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
+      TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
       TGraph*chi2res=new TGraph();
       chi2res->SetName(Form("chi2res_%s_eta%s",fit_str.Data(),eta_str.Data()));
       chi2res->SetTitle(Form("chi2res_%s_eta%s",fit_str.Data(),eta_str.Data()));
-      for(int j=0; j<2*WMassNSteps+1; j++){
+      for(int j=0; j<2*WMass::WMassNSteps+1; j++){
       // for(int j=0; j<1; j++){
       
-        int jWmass = WMassCentral-(WMassNSteps-j)*WMassStep;
+        int jWmass = WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassStep_MeV;
 
-        data = (TH1D*)fDATA->Get(Form("Wmu_pt_eta%s_%d",eta_str.Data(),jWmass));
-        mc0 = (TH1D*)fMC->Get(Form("hWtemplates_eta%s_%d",eta_str.Data(),jWmass));
+        data = (TH1D*)fWDATA->Get(Form("hWPos_PtScaled_8_JetCut_eta%s_%d",eta_str.Data(),jWmass));
+        mc0 = (TH1D*)fMCtemplates->Get(Form("hWlikePos_PtScaled_RWeighted_Templates_eta%s_%d",eta_str.Data(),jWmass));
 
         data->GetXaxis()->SetRangeUser(lowerFit[fitlimits],upperFit[fitlimits]);
         mc0->GetXaxis()->SetRangeUser(lowerFit[fitlimits],upperFit[fitlimits]);
@@ -86,10 +87,10 @@ void TemplateFit(TString fDATA_str=0, TString fMC_str=0, double xmin=0.75, doubl
       cout << "Best M_W value = " << ffit->GetParameter(1) << " +/- " << ffit->GetParameter(2) << endl;
       cout << "Best chi2 value = " << ffit->GetParameter(0) << endl;
       
-      WMassVsEta->SetPoint(i,etaMaxMuons[i],ffit->GetParameter(1));
+      WMassVsEta->SetPoint(i,WMass::etaMaxMuons[i],ffit->GetParameter(1));
       WMassVsEta->SetPointError(i,0,ffit->GetParameter(2));
-      WMassErrorVsEta->SetPoint(i,etaMaxMuons[i],ffit->GetParameter(2));
-      chi2resVsEta->SetPoint(i,etaMaxMuons[i],ffit->GetParameter(0));
+      WMassErrorVsEta->SetPoint(i,WMass::etaMaxMuons[i],ffit->GetParameter(2));
+      chi2resVsEta->SetPoint(i,WMass::etaMaxMuons[i],ffit->GetParameter(0));
       
       fout->cd();
       c_chi2->Write();

@@ -55,6 +55,7 @@ Zanalysis_C.so: /afs/cern.ch/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms30/inclu
 Zanalysis_C.so: /afs/cern.ch/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms30/include/TSysEvtHandler.h
 Zanalysis_C.so: /afs/cern.ch/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms30/include/TQObject.h
 Zanalysis_C.so: /afs/cern.ch/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms30/include/TTime.h
+Zanalysis_C.so: ../includes/common.h
 Zanalysis_C.so: /afs/cern.ch/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms30/include/TH2.h
 Zanalysis_C.so: /afs/cern.ch/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms30/include/TH1.h
 Zanalysis_C.so: /afs/cern.ch/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms30/include/TAxis.h
