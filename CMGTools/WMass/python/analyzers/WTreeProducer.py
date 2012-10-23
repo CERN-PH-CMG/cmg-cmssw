@@ -101,6 +101,7 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       bookMET( tr, 'pfmet')
       
       bookW( tr, 'W')
+      var( tr, 'W_mt')
       bookW( tr, 'WGen')
       var( tr, 'WGen_rap')
       var( tr, 'WGen_m')
@@ -139,6 +140,7 @@ class WTreeProducer( TreeAnalyzerNumpy ):
         if event.WGoodEvent == True :
                       
           fillW( tr, 'W',event.W4V)
+          fill(tr, 'W_mt', event.W4V_mt)
           fill(tr, 'u1', event.u1)
           fill(tr, 'u2', event.u2)
 
