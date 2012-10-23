@@ -2217,8 +2217,8 @@ void TauMuPlotter::compareZTTEmbeddedUnfolding(){
   ///plot the difference in eta
   plotvar_="mueta";
   nbins_=20;
-  xmin_=-2.5;
-  xmax_=2.5;
+  xmin_=-2.1;
+  xmax_=2.1;
   Chcat_=1;
   Isocat_=1;
   MTcat_=1;
@@ -2241,14 +2241,16 @@ void TauMuPlotter::compareZTTEmbeddedUnfolding(){
   HDataEta->Divide(HMCEta);
   HDataEta->GetYaxis()->SetRangeUser(0,1.2);
   HDataEta->GetYaxis()->SetTitle("MC/Embedded");
+  HDataEta->SetTitle("");
   HDataEta->Draw("histpe");
-  line.DrawLine(-2.5,1,2.5,1);
+  line.DrawLine(-2.1,1,2.1,1);
   C.Print("compareZTTEmbeddedUnfolding.ps");
 
   //print out the reweighting string:
-  for(Int_t b=1;b<=HDataEta->GetNbinsX();b++){
-    cout<<b<<" "<<HDataEta->GetLowEdge(b)<<" "<<HDataEta->GetBinWidth(b)<<" "<<HDataEta->GetBinContent(b)<<endl;
+  for(Int_t b=1;b<=HDataEta->GetNbinsX()/2;b++){
+    cout<<"("<<fabs(HDataEta->GetBinLowEdge(b))<<">mueta&&mueta>"<<fabs(HDataEta->GetBinLowEdge(b)+HDataEta->GetBinWidth(b))<<")*"<<(HDataEta->GetBinContent(b)+HDataEta->GetBinContent(HDataEta->GetNbinsX()+1-b))/2<<"+";
   }
+  cout<<endl;
 
   delete HMCEta;
   delete HDataEta;
@@ -2270,8 +2272,9 @@ void TauMuPlotter::compareZTTEmbeddedUnfolding(){
   HMCPt->SetMarkerColor(4);
   HMCPt->SetLineColor(4);
   HMCPt->SetTitle("");
-  HMCPt->GetXaxis()->SetTitle("muon eta");
+  HMCPt->GetXaxis()->SetTitle("muon pT");
   HMCPt->GetYaxis()->SetTitle("");
+  HMCPt->SetTitle("");
   HMCPt->Draw("histpe");
   HDataPt->Draw("histpesame");
   C.Print("compareZTTEmbeddedUnfolding.ps");
@@ -2286,6 +2289,46 @@ void TauMuPlotter::compareZTTEmbeddedUnfolding(){
   delete HMCPt;
   delete HDataPt;
 
+
+  ////////////Now apply the reweighting to the embedded and check the difference inthe mass
+  TString weight="((2.1>abs(mueta)&&abs(mueta)>1.89)*1.14967+(1.89>abs(mueta)&&abs(mueta)>1.68)*1.00897+(1.68>abs(mueta)&&abs(mueta)>1.47)*0.956634+(1.47>abs(mueta)&&abs(mueta)>1.26)*0.933614+(1.26>abs(mueta)&&abs(mueta)>1.05)*1.06881+(1.05>abs(mueta)&&abs(mueta)>0.84)*1.01936+(0.84>abs(mueta)&&abs(mueta)>0.63)*0.98277+(0.63>abs(mueta)&&abs(mueta)>0.42)*0.990675+(0.42>abs(mueta)&&abs(mueta)>0.21)*0.935568+(0.21>abs(mueta)&&abs(mueta)>0)*0.953869)";
+
+  ///plot the difference in mass
+  plotvar_="svfitmass";
+  nbins_=25;
+  xmin_=0;
+  xmax_=250;
+  Chcat_=1;
+  Isocat_=1;
+  MTcat_=1;
+  ZTTType_=2;
+  extrasel_="1";
+  TH1F*HData=getZToTauTau();
+  extrasel_=weight;
+  TH1F*HDataWeight=getZToTauTau();
+  C.Clear();
+  HData->SetMarkerColor(4);
+  HData->SetLineColor(4);
+  HData->SetTitle("");
+  HData->GetXaxis()->SetTitle("m(#tau#tau)");
+  HData->GetYaxis()->SetTitle("");
+  HData->Draw("hist");
+  HDataWeight->Scale(HData->Integral()/HDataWeight->Integral());
+  HDataWeight->Draw("histpesame");
+  C.Print("compareZTTEmbeddedUnfolding.ps");
+
+  HDataWeight->Divide(HData);
+  C.Clear();
+  HDataWeight->SetTitle("");
+  HDataWeight->GetYaxis()->SetTitle("");
+  HDataWeight->GetYaxis()->SetRangeUser(0.9,1.1);
+  HDataWeight->Draw("histp");
+  line.DrawLine(0,1,250,1);
+  C.Print("compareZTTEmbeddedUnfolding.ps");
+
+  delete HDataWeight;
+  delete HData;
+  
 
   C.Print("compareZTTEmbeddedUnfolding.ps]");
 

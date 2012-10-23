@@ -641,17 +641,22 @@ void TauEleFlatNtp::beginJob(){
 
      float mvaid=m->mvaNonTrigV0();
      float eta=(*(m->sourcePtr()))->superCluster()->eta();
-     if(fabs(eta)<0.8)
-       if(mvaid<0.925)continue; 
-     if(0.8<=fabs(eta)&&fabs(eta)<1.479)
-       if(mvaid<0.975)continue;
-     if(1.479<=fabs(eta))
-       if(mvaid<0.985)continue; 
-     
+     if(m->pt()<20){
+       if(fabs(eta)<0.8)                  if(mvaid<0.925)continue; 
+       if(0.8<=fabs(eta)&&fabs(eta)<1.479)if(mvaid<0.915)continue;
+       if(1.479<=fabs(eta))               if(mvaid<0.965)continue; 
+     }
+     if(m->pt()>=20){
+       if(fabs(eta)<0.8)                  if(mvaid<0.905)continue; 
+       if(0.8<=fabs(eta)&&fabs(eta)<1.479)if(mvaid<0.955)continue;
+       if(1.479<=fabs(eta))               if(mvaid<0.975)continue; 
+     }
+
      if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
      nleptons++;
    }
-   if(nleptons>=3)return 1;
+
+   if(nleptons>=2)return 1;
    
    return 0;
  }
