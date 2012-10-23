@@ -339,7 +339,15 @@ razorMJHemiSequence = cms.Sequence(
     razorMJDiHemiHadBoxSel
 )
 
+from CMGTools.Susy.common.trackIsolationMaker_cfi import trackIsolationMaker
+razorMJTrackIsolationMaker = trackIsolationMaker.clone()
+razorMJTrackIsolationMaker.vertexInputTag = cms.InputTag("goodOfflinePrimaryVertices")
+razorMJTrackIsolationMaker.minPt_PFCandidate = cms.double(5.0)
+razorMJTrackIsolationMaker.pfCandidatesTag = cms.InputTag("pfNoPileUp")
+razorMJTrackIsolationMaker.dz_CutValue = cms.double(101.)
+
 razorMJObjectSequence = cms.Sequence(
+    razorMJTrackIsolationMaker+
     razorMJLeptonSequence+
     razorMJJetSequence + 
     razorMJTriggerSequence+
