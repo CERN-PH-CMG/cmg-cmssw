@@ -94,6 +94,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
     if 0:
+        print 'WARNING RELAXING ISO FOR QCD SHAPE'
         # replace QCD with a shape obtained from data in an anti-iso control region
         qcd_yield = osQCD.Hist('QCD').Integral()
         
@@ -243,7 +244,7 @@ if __name__ == '__main__':
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, options.embed, 'TauMu', options.higgs)
 
     can, pad, padr = buildCanvas()
-    ocan = buildCanvasOfficial()
+    # ocan = buildCanvasOfficial()
 
     # WARNINGG!!! if mt cut is optimized, this needs to change.
     highMTCut = 70
