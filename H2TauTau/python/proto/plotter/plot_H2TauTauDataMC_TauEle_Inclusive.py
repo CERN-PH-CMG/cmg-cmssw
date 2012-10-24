@@ -7,7 +7,7 @@ import re
 #from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents #, readPickles
-from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw
+from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw, drawOfficial
 from CMGTools.H2TauTau.proto.plotter.categories_TauEle import *
 from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
@@ -97,6 +97,10 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
         
     osQCD.Group('EWK', ['WJets', 'Ztt_ZJ','VV'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
+
+    ssQCD.Group('EWK', ['WJets', 'Ztt_ZJ','VV'])
+    ssQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
+
     return ssign, osign, ssQCD, osQCD
 
 
@@ -116,21 +120,31 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
                                      thecut, weight = weight, embed = embed,
                                      VVgroup = VVgroup)
 
-        osQ.legendOn = False
-        ssQ.legendOn = False
+
+        osQ.legendOn = True
+        osQ.Hist('Higgs 125').stack = False
+        osQ.Hist('Higgs 125').weighted.SetMarkerStyle (1)
+        osQ.Hist('Higgs 125').Scale = 1000
+
+        ssQ.legendOn = True
+        ssQ.Hist('Higgs 125').stack = False
+        ssQ.Hist('Higgs 125').weighted.SetMarkerStyle (1)
+        ssQ.Hist('Higgs 125').Scale = 1000
+
         print 'drawing ', plot.var
         blindMe = False
         if plot.var == 'svfitMass' and \
            (thecut.find('nJets>') != -1 or \
             thecut.find('nBJets>') != -1) : blindMe = True
-        draw(osQ, blindMe, 'TauEle', plotprefix = 'CTRL_OS_lin')
-        draw(osQ, blindMe, 'TauEle', plotprefix = 'CTRL_OS_log', SetLogy = 1)
-        draw(ssQ, False,   'TauEle', plotprefix = 'CTRL_SS_lin')
+
+        draw (osQ, blindMe, 'TauEle', plotprefix = 'CTRL_OS_lin')
+        draw (osQ, blindMe, 'TauEle', plotprefix = 'CTRL_OS_log', SetLogy = 1)
+        draw (ssQ, False,   'TauEle', plotprefix = 'CTRL_SS_lin')
+
         ss = None
         os = None
         ssQ = None
         osQ = None
-        time.sleep(1)
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -306,11 +320,11 @@ if __name__ == '__main__':
 
     if (options.plots == True) :
         print 'CONTOL PLOTS'
-        plots_TauEle = {
-          'l1_pt'      : PlotInfo ('l1_pt',       25,  0,    100), # tau
-          'svfitMass'  : PlotInfo ('svfitMass',   30,  0,    300)
-          }
-        drawAll(options.cut, plots_TauEle, options.embed, selComps, weights, fwss, fwos,
+#        plots_TauEle_basic = {
+#            'l1_pt'      : PlotInfo ('l1_pt',       25,  0,    100), # tau
+#            'svfitMass'  : PlotInfo ('svfitMass',   30,  0,    300),
+#           }
+        drawAll(options.cut, plots_TauEle_basic, options.embed, selComps, weights, fwss, fwos,
                 VVgroup = cfg.VVgroup)
     else :
     
