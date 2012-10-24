@@ -51,6 +51,15 @@ aliases = {
     '/ZZJetsTo4L_TuneZ2star_8TeV-madgraph.*START53.*':'ZZJetsTo4L'
     }
 
+
+# PG the RUN12A_aug6 is not used for HCP
+data_list = [
+    data_Run2012A,
+    data_Run2012B,
+    data_Run2012C_v1,
+    data_Run2012C_v2,
+    ]
+
 MC_list = copy.copy( mc_ewk )
 MC_list.extend( mc_diboson ) 
 MC_list.extend( mc_higgs )
