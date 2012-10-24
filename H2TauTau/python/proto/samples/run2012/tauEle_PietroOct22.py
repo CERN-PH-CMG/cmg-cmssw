@@ -24,7 +24,7 @@ aliases = {
     '/W3Jets.*START53.*':'W3Jets',
     '/W4Jets.*START53.*':'W4Jets',
     '/TTJets.*START53.*':'TTJets',
-    '/TauPlusX/Run2012A-recover-06Aug2012-v1.*':'data_Run2012A_aug6',
+#    '/TauPlusX/Run2012A-recover-06Aug2012-v1.*':'data_Run2012A_aug6',
     '/TauPlusX/Run2012A-13Jul2012-v1.*':'data_Run2012A',
     '/TauPlusX/Run2012B-13Jul2012-v1.*':'data_Run2012B',
     '/TauPlusX/Run2012C-24Aug2012-v1.*':'data_Run2012C_v1',
