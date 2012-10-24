@@ -16,11 +16,11 @@ def embedScaleFactor(selComps):
             embedChain.Add(comp.tree)
         elif comp.name=='Ztt':
             zttChain = comp.tree
-    cut = cat_Inc
+    cut = cat_Inc + ' && diTau_charge==0'
     embcut = cut 
-    zttcut = ' && '.join( [cat_Inc, 'isFake==0'] )
-    eh = TH1F('eh','eh', 100, 0, 200)
-    zh = TH1F('zh','zh', 100, 0, 200)
+    zttcut = ' && '.join( [cut, 'isFake==0'] )
+    eh = TH1F('eh','eh', 100, 0, 2000)
+    zh = TH1F('zh','zh', 100, 0, 2000)
     zh.SetLineColor(4)
     eh.Sumw2()
     zh.Sumw2()
