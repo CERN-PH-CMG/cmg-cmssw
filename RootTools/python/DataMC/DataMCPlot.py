@@ -159,6 +159,7 @@ class DataMCPlot(object):
         if self.legend is None:
             self.legend = TLegend( *self.legendBorders )
             self.legend.SetFillColor(0)
+            self.legend.SetFillStyle(0)
             self.legend.SetLineColor(0)
         else:
             self.legend.Clear()
