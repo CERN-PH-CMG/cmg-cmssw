@@ -105,14 +105,6 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', hi
         for comp in embedComps:
             # import pdb; pdb.set_trace()
             comp.embedFactor = embedFactor
- 
-##     pickles = readPickles(dir, config, embed, channel, higgsMass)
-#    print 'TTJets',pickles['TTJets']['all events'][1]
-
-##     for pick in pickles:
-##         print 'reading pickle file',pick,pickles[pick]['all events'][1]
-##         newSelComps[pick].totEvents = pickles[pick]['all events'][1]
-
 
     return newSelComps, weights, zComps
     
