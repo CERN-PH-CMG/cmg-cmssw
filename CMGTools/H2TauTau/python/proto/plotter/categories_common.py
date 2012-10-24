@@ -6,7 +6,8 @@ if isNewerThan('CMSSW_5_2_0'):
     VBF_mva_WP = 0.978
   
 
-cat_VBF = 'nJets>=2 && VBF_nCentral==0 && VBF_mva>{VBF_mva_WP}'.format(VBF_mva_WP=VBF_mva_WP)
+#cat_VBF = 'nJets>=2 && VBF_nCentral==0 && VBF_mva>{VBF_mva_WP}'.format(VBF_mva_WP=VBF_mva_WP)
+cat_VBF = 'nJets>=2 && VBF_nCentral==0 && VBF_mjj > 500 && VBF_deta > 3.5'
 cat_VBF_Rel = 'nJets>=2 && VBF_nCentral==0 && VBF_mva>-0.7'
 cat_J2 = 'nJets>=2'
 # cat_VH  = 'nJets>=2 && VBF_mjj>60 && VBF_mjj<120 && VBF_dijetpt>150 && VBF_mva<0.5 && nBJets==0'
