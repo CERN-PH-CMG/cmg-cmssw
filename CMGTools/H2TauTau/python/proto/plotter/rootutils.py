@@ -127,7 +127,7 @@ unitpat = re.compile('.*\((.*)\)\s*$')
 keeper = []
 
 
-def draw(plot, doBlind=True, channel='TauMu', plotprefix = None):
+def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
     print plot
     Stack.STAT_ERRORS = True
     blindxmin = None
@@ -147,6 +147,7 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None):
     if pad is None:
         can, pad, padr = buildCanvas()
     pad.cd()
+    pad.SetLogy (SetLogy)
     plot.DrawStack('HIST')
     h = plot.supportHist
     h.GetXaxis().SetLabelColor(0)
@@ -191,6 +192,7 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None):
     if plotprefix == None : plotname = plot.varName
     else : plotname = plotprefix + '_' + plot.varName
     can.SaveAs( plotname + '.png')
+    pad.SetLogy (0)
 
 
 def buildCanvasOfficial():
