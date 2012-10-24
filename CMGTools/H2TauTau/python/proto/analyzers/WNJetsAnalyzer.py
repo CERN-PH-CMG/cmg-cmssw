@@ -48,8 +48,6 @@ class WNJetsAnalyzer( Analyzer ):
 #           self.cfg_comp.name == 'WZ' :
 #            return True
         
-        self.readCollections( iEvent )
-        
         if not self.cfg_comp.isMC:
             return True
         
