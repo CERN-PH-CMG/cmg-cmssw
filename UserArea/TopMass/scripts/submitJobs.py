@@ -38,6 +38,6 @@ if __name__ == '__main__':
         samplename = sample.split('_Tune')[0].replace('/','')
         spec = 'sampleName='+samplename+' sampleLocation='+sample+'\''
         
-        cmd = 'cmsBatch.py '+str(nfiles)+' skimLeptonJets.py -f -c \''+spec+' -o \''+outputdir+'\' -r '+remotecopy+' -b \'bsub -q 2nd < ./batchScript.sh\' '
+        cmd = 'cmsBatch.py '+str(nfiles)+' skimLeptonJets.py -c \''+spec+' -o \''+outputdir+'/'+samplename+'\' -r '+remotecopy+' -b \'bsub -q 2nd < ./batchScript.sh\' '
         print cmd
-        #os.system(cmd)
+        os.system(cmd)
