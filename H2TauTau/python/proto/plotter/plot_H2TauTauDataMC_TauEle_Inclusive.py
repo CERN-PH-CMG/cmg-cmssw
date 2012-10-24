@@ -120,16 +120,20 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
                                      thecut, weight = weight, embed = embed,
                                      VVgroup = VVgroup)
 
-
+        scaleFactor = 1.
         osQ.legendOn = True
         osQ.Hist('Higgs 125').stack = False
         osQ.Hist('Higgs 125').weighted.SetMarkerStyle (1)
-        osQ.Hist('Higgs 125').Scale = 1000
+        osQ.Hist ('HiggsVBF125').Scale (scaleFactor)
+        osQ.Hist ('HiggsGGH125').Scale (scaleFactor)
+        osQ.Hist ('HiggsVH125').Scale  (scaleFactor)
 
         ssQ.legendOn = True
         ssQ.Hist('Higgs 125').stack = False
         ssQ.Hist('Higgs 125').weighted.SetMarkerStyle (1)
-        ssQ.Hist('Higgs 125').Scale = 1000
+        ssQ.Hist ('HiggsVBF125').Scale (scaleFactor)
+        ssQ.Hist ('HiggsGGH125').Scale (scaleFactor)
+        ssQ.Hist ('HiggsVH125').Scale  (scaleFactor)
 
         print 'drawing ', plot.var
         blindMe = False
@@ -320,10 +324,10 @@ if __name__ == '__main__':
 
     if (options.plots == True) :
         print 'CONTOL PLOTS'
-#        plots_TauEle_basic = {
-#            'l1_pt'      : PlotInfo ('l1_pt',       25,  0,    100), # tau
-#            'svfitMass'  : PlotInfo ('svfitMass',   30,  0,    300),
-#           }
+        plots_TauEle_basic = {
+            'l1_pt'      : PlotInfo ('l1_pt',       25,  0,    100), # tau
+            'svfitMass'  : PlotInfo ('svfitMass',   30,  0,    300),
+           }
         drawAll(options.cut, plots_TauEle_basic, options.embed, selComps, weights, fwss, fwos,
                 VVgroup = cfg.VVgroup)
     else :
