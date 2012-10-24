@@ -107,25 +107,29 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
     '''See plotinfo for more information'''
     for plot in plots.values():
         print 'PLOTTING',plot.var
+        thecut = copy.copy (cut)
+        if plot.var == 'mt' or plot.var == 'met' or plot.var == 'pfmet':
+           thecut = cut.replace('mt<20', '1')
         ss, os, ssQ, osQ = makePlot( plot.var, anaDir,
                                      selComps, weights, fwss, fwos,
                                      plot.nbins, plot.xmin, plot.xmax,
-                                     cut, weight = weight, embed = embed,
+                                     thecut, weight = weight, embed = embed,
                                      VVgroup = VVgroup)
 
         osQ.legendOn = False
         ssQ.legendOn = False
         print 'drawing ', plot.var
-        draw(osQ, False, 'TauEle', plotprefix = 'CTRL_OS')
-        draw(ssQ, False, 'TauEle', plotprefix = 'CTRL_SS')
+        blindMe = False
+        if plot.var == 'svfitMass' and \
+           (thecut.find('nJets>') != -1 or \
+            thecut.find('nBJets>') != -1) : blindMe = True
+        draw(osQ, blindMe, 'TauEle', plotprefix = 'CTRL_OS_lin')
+        draw(osQ, blindMe, 'TauEle', plotprefix = 'CTRL_OS_log', SetLogy = 1)
+        draw(ssQ, False,   'TauEle', plotprefix = 'CTRL_SS_lin')
         ss = None
         os = None
         ssQ = None
         osQ = None
-#        plot.ssign = cp(ss)
-#        plot.osign = cp(os)
-#        plot.ssQCD = cp(ssQ)
-#        plot.osQCD = cp(osQ)
         time.sleep(1)
 
 
@@ -286,7 +290,7 @@ if __name__ == '__main__':
     #PG (STEP 1) evaluate the WJets contribution from high mT sideband
     #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
-    cutw = options.cut.replace('mt<40', '1')
+    cutw = options.cut.replace('mt<20', '1')
     fwss, fwss_error, fwos, fwos_error, ss, os = plot_W(anaDir, selComps, weights,
                                                         16, 70, 150, cutw,
                                                         weight = weight, embed = options.embed,
@@ -302,6 +306,10 @@ if __name__ == '__main__':
 
     if (options.plots == True) :
         print 'CONTOL PLOTS'
+        plots_TauEle = {
+          'l1_pt'      : PlotInfo ('l1_pt',       25,  0,    100), # tau
+          'svfitMass'  : PlotInfo ('svfitMass',   30,  0,    300)
+          }
         drawAll(options.cut, plots_TauEle, options.embed, selComps, weights, fwss, fwos,
                 VVgroup = cfg.VVgroup)
     else :
