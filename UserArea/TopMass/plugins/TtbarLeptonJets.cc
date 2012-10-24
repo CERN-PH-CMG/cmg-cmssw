@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.5 2012/10/22 13:23:13 palencia Exp $
+// $Id: TtbarLeptonJets.cc,v 1.6 2012/10/22 16:12:57 palencia Exp $
 //
 //
 
@@ -165,7 +165,7 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   //using namespace isodeposit;
   
   int verbose = 0;
-  bool isData = true;
+  bool isData = false;
   
   if(verbose) std::cout << "\n" << iEvent.eventAuxiliary().id() << std::endl;
 
@@ -214,6 +214,11 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   std::vector<cmg::PFJet>::const_iterator eleJET;
   if(!jetsEJ.isValid())     cerr << "  WARNING: jetsEJ is not valid! " << endl;
 
+  edm::Handle<std::vector<cmg::PhysicsObjectWithPtr<edm::Ptr<reco::GenJet> > > >genJets;
+  iEvent.getByLabel("genJetSel", genJets); 
+  std::vector<cmg::PhysicsObjectWithPtr<edm::Ptr<reco::GenJet> > >::const_iterator genJET;
+  if(!genJets.isValid())     cerr << "  WARNING: genJets is not valid! " << endl;
+
   edm::Handle<std::vector<cmg::TriggerObject> > triggerPath;
   iEvent.getByLabel("cmgTriggerObjectSel", triggerPath); 
   std::vector<cmg::TriggerObject>::const_iterator TRIGGER;
@@ -253,7 +258,7 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   // Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/2012/summary
   // 2012A: HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v* 						       ---> 45, 45, 45, 20 jet pT cuts
   // 2012B: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v* || HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*   ---> 45, 45, 45, 20 jet pT cuts
-  //# 2012C and D: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*                                           ---> 55, 45, 35, 20 jet pT cuts
+  // 2012C and D: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*                                           ---> 55, 45, 35, 20 jet pT cuts
   // 2012A (190456<=run<=193621): HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v* with (45,45,45,20) jet pT cuts
   // 2012B (193834<=run<=194225): HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v1 with (45,45,45,20) jet pT cuts
   // 2012B (194270<=run<=196531): HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v1 with (45,45,35,20) jet pT cuts
