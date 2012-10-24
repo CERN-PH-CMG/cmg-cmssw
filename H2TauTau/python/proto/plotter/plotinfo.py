@@ -78,6 +78,17 @@ plots_J2 = {
     'svfitMass': PlotInfo('svfitMass', 30, 0, 300)    
     }
 
+plots_TauEle_basic = {
+    'l1_pt'      : PlotInfo ('l1_pt',       25,  0,    100), # tau
+    'l1_eta'     : PlotInfo ('l1_eta',      40,  -2.5, 2.5),
+    'l2_pt'      : PlotInfo ('l2_pt',       25,  0,    100), # electron
+    'l2_eta'     : PlotInfo ('l2_eta',      40,  -2.5, 2.5),
+    'mt'         : PlotInfo ('mt',          40,  0,    200),
+    'met'        : PlotInfo ('met',         30,  0,    150),
+    'svfitMass'  : PlotInfo ('svfitMass',   30,  0,    300),
+    'nJets'      : PlotInfo ('nJets',       10,  0,     10),
+    }
+
 plots_TauEle = {
     'l1_pt'      : PlotInfo ('l1_pt',       25,  0,    100), # tau
     'l1_eta'     : PlotInfo ('l1_eta',      40,  -2.5, 2.5),
