@@ -22,6 +22,7 @@ from CMGTools.HToZZTo4Leptons.tools.FSRRecovery import FSRRecovery
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
+from CMGTools.HToZZTo4Leptons.tools.LineShapeWeights import LineShapeWeights
 
 
         
@@ -39,12 +40,14 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         count = self.counters.counter('FourLepton')
         count.register('all events')
 
-        
+        self.lineShapeWeights = LineShapeWeights(self.cfg_comp)
 
        
     def process(self, iEvent, event):
         super(FourLeptonAnalyzerBaseline,self).process(iEvent,event)
         
+        #apply lineshape weights
+        self.lineShapeWeights.applyWeight(event)
 
         #startup counter
         self.counters.counter('FourLepton').inc('all events')
@@ -236,10 +239,47 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
             event.higgsCandLoose = cutFlow.obj1[0]
 
 
-#        import pdb;pdb.set_trace()
 
+        ##################NOW A SECONDPATH FOR FAKES
 
-        if hasattr(event,'higgsCand') or hasattr(event,'higgsCandLoose'):
+        
+        cutFlow.setSource1(event.leptonPairsLoose)
+        #Z2 SF 
+        passed=cutFlow.applyCut(self.testZSF,'OS for Z2 Loose',1,'zBosons3SFLoose')
+        #Z2 OS 
+        passed=cutFlow.applyCut(lambda x: x.charge()==0,'SF for Z2 Loose',1,'zBosons3SFLoose')
+        #Z2 SIP CUT
+        passed=cutFlow.applyCut(lambda x: abs(x.leg1.sip3D())<4 and abs(x.leg2.sip3D())<4,'SIP cut for Z2 loose',1,'zBosons3SIP')
+        #pick the highest pt pair
+        sortedZ3ByPtLoose=sorted(cutFlow.obj1,key=lambda x: x.leg1.pt()+x.leg2.pt(),reverse=True)
+
+        if len(sortedZ3ByPtLoose)>0:
+            event.bestZ3Loose = sortedZ3ByPtLoose[0]
+            cutFlow.setSource1([event.bestZ3Loose])
+        else:
+            cutFlow.setSource1([])
+            event.bestZ3Loose = None
+        #Z2 mass
+        passed=cutFlow.applyCut(self.testZ2Mass,'Mass for Z2 Loose',1,'zBosons3MassLoose')
+
+        if event.bestZ is not None and passed:
+            event.fourLeptonsLooseOS = [self.mergePairs(event.bestZ,cutFlow.obj1[0])]
+            self.boostFourLeptons(event.fourLeptonsLooseOS,event)
+            cutFlow.setSource1(event.fourLeptonsLooseOS)
+        else:
+            cutFlow.setSource1([])
+        #Ghost Suppression
+        passed=cutFlow.applyCut(self.testFourLeptonGhostSuppression,'ghost suppression Loose OS',1,'fourLeptonsGhostSupLooseOS')
+        #Check SF for both pairs 
+        passed=cutFlow.applyCut(self.testFourLeptonSF,'4l pair SF Loose OS',1,'fourLeptonsSFZ2LooseOS')
+        #Pt Cuts (CAREFUL: The correct cut is : Any combination of leptons must be 20/10 not the Z1 ones
+        passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds Loose OS',1,'fourLeptonsPtLooseOS')
+        #Z -> 4 l phase space
+        passed=cutFlow.applyCut(self.testFourLeptonMassZ,'4l Z phase space LooseOS',1,'fourLeptonsZPhaseSpaceLooseOS')
+        if passed:
+            event.higgsCandLooseOS = cutFlow.obj1[0]
+
+        if hasattr(event,'higgsCand') or hasattr(event,'higgsCandLoose') or hasattr(event,'higgsCandLooseOS'):
             return True
         
         return  False

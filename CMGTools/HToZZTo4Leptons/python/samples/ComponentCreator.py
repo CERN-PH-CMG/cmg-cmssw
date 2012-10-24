@@ -6,6 +6,7 @@ class ComponentCreator(object):
     def makeMCComponent(self,name,dataset,user,pattern):
         
          component = cfg.MCComponent(
+             dataset=dataset,
              name = name,
              files = self.getFiles(dataset,user,pattern),
              xSection = 1,
