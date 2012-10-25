@@ -18,6 +18,7 @@ from CMGTools.H2TauTau.proto.plotter.embed import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import *
 from CMGTools.RootTools.statistics.Counter import Counters
 from CMGTools.RootTools.Style import *
+from CMGTools.H2TauTau.proto.plotter.categories_TauEle import categories
 from ROOT import kGray, kPink, TH1, TPaveText, TPad, TCanvas
 
 cp = copy.deepcopy
@@ -122,15 +123,11 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
 
         scaleFactor = 1.
         osQ.legendOn = True
-        osQ.Hist('Higgs 125').stack = False
-        osQ.Hist('Higgs 125').weighted.SetMarkerStyle (1)
         osQ.Hist ('HiggsVBF125').Scale (scaleFactor)
         osQ.Hist ('HiggsGGH125').Scale (scaleFactor)
         osQ.Hist ('HiggsVH125').Scale  (scaleFactor)
 
         ssQ.legendOn = True
-        ssQ.Hist('Higgs 125').stack = False
-        ssQ.Hist('Higgs 125').weighted.SetMarkerStyle (1)
         ssQ.Hist ('HiggsVBF125').Scale (scaleFactor)
         ssQ.Hist ('HiggsGGH125').Scale (scaleFactor)
         ssQ.Hist ('HiggsVH125').Scale  (scaleFactor)
@@ -142,8 +139,13 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
             thecut.find('nBJets>') != -1) : blindMe = True
 
         draw (osQ, blindMe, 'TauEle', plotprefix = 'CTRL_OS_lin')
+        osQ.Hist('Higgs 125').stack = False
+        osQ.Hist('Higgs 125').weighted.SetMarkerStyle (1)
         draw (osQ, blindMe, 'TauEle', plotprefix = 'CTRL_OS_log', SetLogy = 1)
         draw (ssQ, False,   'TauEle', plotprefix = 'CTRL_SS_lin')
+#        ssQ.Hist('Higgs 125').stack = False
+#        ssQ.Hist('Higgs 125').weighted.SetMarkerStyle (1)
+#        draw (ssQ, False,   'TauEle', plotprefix = 'CTRL_SS_lin', SetLogy = 1)
 
         ss = None
         os = None
@@ -324,10 +326,10 @@ if __name__ == '__main__':
 
     if (options.plots == True) :
         print 'CONTOL PLOTS'
-        plots_TauEle_basic = {
-            'l1_pt'      : PlotInfo ('l1_pt',       25,  0,    100), # tau
-            'svfitMass'  : PlotInfo ('svfitMass',   30,  0,    300),
-           }
+#        plots_TauEle_basic = {
+#            'l1_pt'      : PlotInfo ('l1_pt',       25,  0,    100), # tau
+#            'svfitMass'  : PlotInfo ('svfitMass',   30,  0,    300),
+#           }
         drawAll(options.cut, plots_TauEle_basic, options.embed, selComps, weights, fwss, fwos,
                 VVgroup = cfg.VVgroup)
     else :
