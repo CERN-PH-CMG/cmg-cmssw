@@ -24,13 +24,13 @@ aliases = {
     '/W3Jets.*START53.*':'W3Jets',
     '/W4Jets.*START53.*':'W4Jets',
     '/TTJets.*START53.*':'TTJets',
-#    '/TauPlusX/Run2012A-recover-06Aug2012-v1.*':'data_Run2012A_aug6',
     '/TauPlusX/Run2012A-13Jul2012-v1.*':'data_Run2012A',
+#    '/TauPlusX/Run2012A-recover-06Aug2012-v1.*':'data_Run2012A_aug6',
     '/TauPlusX/Run2012B-13Jul2012-v1.*':'data_Run2012B',
     '/TauPlusX/Run2012C-24Aug2012-v1.*':'data_Run2012C_v1',
     '/TauPlusX/Run2012C-PromptReco-v2.*':'data_Run2012C_v2',
     '/DoubleMu/StoreResults-DoubleMu_Run2012A_13Jul2012_v1_embedded_trans1_tau115_ptelec1.*':'embed_Run2012A_13Jul2012_v1',
-    '/DoubleMu/StoreResults-DoubleMu_Run2012A-recover_06Aug2012_v1_embedded_trans1_tau115_ptelec1.*':'embed_Run2012A_recover_06Aug2012_v1',
+#    '/DoubleMu/StoreResults-DoubleMu_Run2012A-recover_06Aug2012_v1_embedded_trans1_tau115_ptelec1.*':'embed_Run2012A_recover_06Aug2012_v1',
     '/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau115_ptelec1.*':'embed_Run2012B_13Jul2012_v4',
     '/DoubleMu/StoreResults-DoubleMu_Run2012C_24Aug2012_v1_embedded_trans1_tau115_ptelec1.*':'embed_Run2012C_24Aug2012_v1',
     '/DoubleMu/StoreResults-DoubleMu_Run2012C_PromptReco_v2_embedded_trans1_tau115_ptelec1.*':'embed_Run2012C_PromptReco_v2',
@@ -52,13 +52,21 @@ aliases = {
     }
 
 
-# PG the RUN12A_aug6 is not used for HCP
+#PG the RUN12A_aug6 is not used for HCP
+#PG and furthermore the json does not look like is working for them
 data_list = [
     data_Run2012A,
     data_Run2012B,
     data_Run2012C_v1,
     data_Run2012C_v2,
     ]
+embed_list = [
+    embed_Run2012A_13Jul2012_v1,
+    embed_Run2012B_13Jul2012_v4,
+    embed_Run2012C_24Aug2012_v1,
+    embed_Run2012C_PromptReco_v2
+]
+
 
 MC_list = copy.copy( mc_ewk )
 MC_list.extend( mc_diboson ) 
