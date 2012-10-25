@@ -1,4 +1,4 @@
-#$Revision: 1.10 $
+#$Revision: 1.11 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -110,7 +110,7 @@ if not runOnMC:
     process.patJetsAK7CHSpruned.addGenPartonMatch = False
     process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
 
-process.load("PAT_ak7jets_cff")
+process.load("Ntuples.TNMc1.PAT_ak7jets_cff")
 if not runOnMC:
     process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
     process.patJetsAK7CHS.addGenJetMatch = False
