@@ -21,10 +21,15 @@ class Component(object):
         self.tree = self.file.Get(treeName)
 
 
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
+    
 class H2TauTauSoup(TreeNumpy):
     '''Manages the creation of a soup tree, using an inclusive WJet sample,
     and some exclusive WJet samples.
+
+    usage example: 
+    python ../Colin/cookWSoup.py WJets W1Jets W2Jets W3Jets W4Jets -f ../Colin/fractions_tauEle.txt -n ../Colin/events_tauEle.txt -c TauEle
 
     All variables in the input trees are copied to the soup tree.
     A new event weight "WJetWeight" is added.
@@ -59,6 +64,13 @@ class H2TauTauSoup(TreeNumpy):
         self.ninc = self.nexc[0]
         self.nexc[0] = 0.
         self.Ni = [frac*self.ninc for frac in self.fractions]
+        self.WJetWeights = []
+        for nJets in range (5):
+            self.WJetWeights.append (self.Ni[nJets] / ( self.Ni[nJets] + self.nexc[nJets]))
+            print nJets, self.WJetWeights[nJets]
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
     
     def importEntries(self, comp, nEntries=-1):
@@ -72,20 +84,22 @@ class H2TauTauSoup(TreeNumpy):
             # calculating the W+jets weight
             nup = getattr(ie, 'NUP')
             nJets = int(nup-5)
-            WJetWeight = self.Ni[nJets] / ( self.Ni[nJets] + self.nexc[nJets] )
-            # print nJets, self.Ni[nJets], self.nexc[nJets], WJetWeight
-            self.fill('WJetWeight', WJetWeight)
+            self.fill('WJetWeight', self.WJetWeights[nJets])
             for varName in self.vars:
                 if not hasattr(ie, varName):
                     continue
                 val = getattr(ie, varName)
                 if varName == 'weight':
-                    val *= WJetWeight
+                    val *= self.WJetWeights[nJets]
                 self.fill(varName, val)
             self.tree.Fill()
             if nEntries>0 and index+1>=nEntries:
                 return 
 
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+    
 if __name__ == '__main__':
 
     import imp
