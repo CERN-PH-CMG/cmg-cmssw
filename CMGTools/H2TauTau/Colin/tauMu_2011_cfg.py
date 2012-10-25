@@ -112,11 +112,11 @@ vbfKwargs = dict( Mjj = 400,
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
-    # vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG.weights.44X.xml',
     vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_42X.weights.xml',
     jetCol = 'cmgPFJetSel',
     jetPt = 30,
     jetEta = 5.0,
+    btagSFseed = 123456,
     **vbfKwargs
     )
 
@@ -134,19 +134,37 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2011.tauMu_ColinJun25 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinJul4 import * 
 # from CMGTools.H2TauTau.proto.samples.tauMu_Sync_ColinAug30 import *
-from CMGTools.H2TauTau.proto.samples.tauMu_ColinSep20 import *
+
+# from CMGTools.H2TauTau.proto.samples.tauMu_ColinSep20 import *
+from CMGTools.H2TauTau.proto.samples.tauMu_ColinOct23 import *
 
 #########################################################################################
 
 
-MC_list = [WJets, W3Jets, DYJets, TTJets, HiggsVBF125, WW, WZ, ZZ]
+# MC_list = [WJets, W3Jets, DYJets, TTJets, HiggsVBF125, WW, WZ, ZZ]
 # MC_list = copy.copy(MC)
-data_list = copy.copy(data_list_2011)
-embed_list = copy.copy(embed_list_2011)
+# data_list = copy.copy(data_list_2011)
+# embed_list = copy.copy(embed_list_2011)
 
-selectedComponents =  copy.copy(MC_list)
-selectedComponents.extend( data_list )
-selectedComponents.extend( embed_list )
+# selectedComponents = allsamples
+diboson_list = [    WWJetsTo2L2Nu,
+                    WZJetsTo2L2Q,
+                    WZJetsTo3LNu,
+                    ZZJetsTo2L2Nu,
+                    ZZJetsTo2L2Q,
+                    ZZJetsTo4L,
+                    T_tW,
+                    Tbar_tW
+                    ]
+WJetsSoup = copy.copy(WJets)
+WJetsSoup.name = 'WJetsSoup'
+VVgroup = [comp.name for comp in diboson_list]
+higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
+selectedComponents =  [WJetsSoup, TTJets, DYJets]
+selectedComponents.extend( higgs )
+selectedComponents.extend( diboson_list )
+selectedComponents.extend( data_list_2011 )
+selectedComponents.extend( embed_list_2011 )
 
 
 sequence = cfg.Sequence( [
@@ -176,12 +194,13 @@ if test==1:
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:
-    selectedComponents = [MC_list[0]]
-    selectedComponents.extend(data_list)
-    selectedComponents.extend(embed_list)
+    selectedComponents = copy.copy(data_list_2011)
+    selectedComponents.extend(embed_list_2011)
+    selectedComponents.extend(MC_list[0:3])
+    
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.files = comp.files[:5]
+        comp.files = comp.files[:3]
 
 
 
