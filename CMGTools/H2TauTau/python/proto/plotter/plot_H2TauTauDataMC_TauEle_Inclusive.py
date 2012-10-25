@@ -8,16 +8,16 @@ import re
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents #, readPickles
 from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw, drawOfficial
-from CMGTools.H2TauTau.proto.plotter.categories_TauEle import *
 from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
-from CMGTools.H2TauTau.proto.plotter.datacards import *
-from CMGTools.H2TauTau.proto.plotter.embed import *
+from CMGTools.H2TauTau.proto.plotter.datacards import datacards
+# from CMGTools.H2TauTau.proto.plotter.embed import *
 from CMGTools.H2TauTau.proto.plotter.plotinfo import *
 from CMGTools.RootTools.statistics.Counter import Counters
 from CMGTools.RootTools.Style import *
+from CMGTools.H2TauTau.proto.plotter.categories_common import replaceCategories
 from CMGTools.H2TauTau.proto.plotter.categories_TauEle import categories
 from ROOT import kGray, kPink, TH1, TPaveText, TPad, TCanvas
 
@@ -29,33 +29,6 @@ NBINS = 100
 XMIN  = 0
 XMAX  = 200
 
-
-def replaceShapeInclusive(plot, var, anaDir,
-                          comp, weights, 
-                          cut, weight,
-                          embed, shift=None, 
-                          treeName = 'H2TauTauTreeProducerTauEle'):
-    '''Replace WJets with the shape obtained using a relaxed tau iso'''
-    cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
-    print '[INCLUSIVE] estimate',comp.name,'with cut',cut
-    plotWithNewShape = cp( plot )
-    wjyield = plot.Hist(comp.name).Integral()
-    nbins = plot.bins
-    xmin = plot.xmin
-    xmax = plot.xmax
-    wjshape = shape(var, anaDir,
-                    comp, weights, nbins, xmin, xmax,
-                    cut, weight,
-                    embed, shift=shift, treeName = treeName)
-    # import pdb; pdb.set_trace()
-    wjshape.Scale( wjyield )
-    # import pdb; pdb.set_trace()
-    plotWithNewShape.Replace(comp.name, wjshape) 
-    # plotWithNewShape.Hist(comp.name).on = False 
-    return plotWithNewShape
-
-
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
@@ -74,11 +47,6 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
     if VVgroup != None:
          osign.Group('VV', cfg.VVgroup)
          
-    if replaceW:
-        osign = replaceShapeInclusive(osign, var, anaDir,
-                                      selComps['WJets'], weights, 
-                                      oscut, weight,
-                                      embed, shift=shift)    
     sscut = cut+' && diTau_charge!=0'
     ssign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
@@ -88,13 +56,33 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
     if VVgroup != None:
          ssign.Group('VV', cfg.VVgroup)
     # import pdb; pdb.set_trace()
-    if replaceW:
-        ssign = replaceShapeInclusive(ssign, var, anaDir,
-                                      selComps['WJets'], weights, 
-                                      sscut, weight,
-                                      embed, shift=shift)
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data', 1.06 ) #PG scale value according Jose, 18/10
+
+    if cut.find('nJets>') or (cut.find('nJets==0') and cut.find('l1_pt>40')):
+        print 'WARNING RELAXING ISO FOR QCD SHAPE'
+        # replace QCD with a shape obtained from data in an anti-iso control region
+        qcd_yield = osQCD.Hist('QCD').Integral()
+        
+        sscut_qcdshape = cut.replace('l2_relIso05<0.1', '(l2_relIso05<0.5 && l2_relIso05>0.2)') + ' && diTau_charge!=0'
+        ssign_qcdshape = H2TauTauDataMC(var, anaDir,
+                                        selComps, weights, nbins, xmin, xmax,
+                                        cut=sscut_qcdshape, weight=weight,
+                                        embed=embed, treeName = 'H2TauTauTreeProducerTauEle')
+        qcd_shape = copy.deepcopy( ssign_qcdshape.Hist('Data') )
+        # subtract subtracting off templates from ZLL (no real taus) and ttbar with the same selection
+        # ignore the others as they're small
+        try:
+            qcd_shape.Add(ssign_qcdshape.Hist('Ztt_ZL'), -1)
+            qcd_shape.Add(ssign_qcdshape.Hist('Ztt_ZJ'), -1)
+        except:
+            print 'cannot find Ztt_Fakes in W+jets estimate'
+            pass    
+        qcd_shape.Add(ssign_qcdshape.Hist('TTJets'), -1)
+
+        qcd_shape.Normalize()
+        qcd_shape.Scale(qcd_yield)
+        osQCD.Replace('QCD', qcd_shape)
         
     osQCD.Group('EWK', ['WJets', 'Ztt_ZJ','VV'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
