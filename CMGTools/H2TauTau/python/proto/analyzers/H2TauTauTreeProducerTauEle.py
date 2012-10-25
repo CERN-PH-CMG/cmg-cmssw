@@ -28,6 +28,7 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        bookParticle(tr, 'l2Jet')
        
        var( tr, 'nJets')
+       var( tr, 'nJets20')
        bookJet(tr, 'jet1')
        bookJet(tr, 'jet2')
 
@@ -76,15 +77,19 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        fillParticle(tr, 'l1Jet', event.diLepton.leg1().jet )
        fillParticle(tr, 'l2Jet', event.diLepton.leg2().jet )
 
-
-       nJets = len(event.cleanJets)
-       fill(tr, 'nJets', nJets )
+       #PG maybe in the future I want to take the two highest pt jets 
+       #PG if they have pT > 20 GeV 
+       #PG if jets are sorted in pT, it's traightforward
+       nJets = len(event.cleanJets30)
+       fill(tr, 'nJets', nJets)
+       nJets20 = len(event.cleanJets)
+       fill(tr, 'nJets20', nJets20)
        if nJets>=1:
-           fillJet(tr, 'jet1', event.cleanJets[0] )
+           fillJet(tr, 'jet1', event.cleanJets30[0] )
            # What is this stuff? shouldn't it be computed in the VBF object? 
 ## 	    fill('mttj', sqrt(pow(event.diLepton.energy()+event.cleanJets[0].energy(),2) - pow(event.diLepton.px()+event.cleanJets[0].px(),2) - pow(event.diLepton.py()+event.cleanJets[0].py(),2) - pow(event.diLepton.pz()+event.cleanJets[0].pz(),2)))
        if nJets>=2:
-           fillJet(tr, 'jet2', event.cleanJets[1] )
+           fillJet(tr, 'jet2', event.cleanJets30[1] )
 
        nBJets = len(event.cleanBJets)
        if nBJets>0:
