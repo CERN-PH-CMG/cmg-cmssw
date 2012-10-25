@@ -114,7 +114,8 @@ class CMSDataset( BaseDataset ):
     def __init__(self, name, run_range = None):
         super(CMSDataset, self).__init__( name, 'CMS', run_range=run_range)
 
-    def buildListOfFiles(self, pattern='.*root'):
+    def buildListOfFilesDBS(self, pattern, begin=-1, end=-1):
+        print 'buildListOfFilesDBS',begin,end
         sampleName = self.name.rstrip('/')
         query = sampleName
         if self.run_range is not None:
@@ -123,15 +124,34 @@ class CMSDataset( BaseDataset ):
             if self.run_range[1] > 0:
                 query = "%s and run <= %i" % (query,self.run_range[1])
         dbs = 'dbs search --query="find file where dataset like %s"' % query
-        #print 'dbs\t: %s' % dbs
+        if begin >= 0:
+            dbs += ' --begin %d' % begin
+        if end >= 0:
+            dbs += ' --end %d' % end
+        print 'dbs\t: %s' % dbs
         dbsOut = os.popen(dbs)
-        self.files = []
+        files = []
         for line in dbsOut:
             if line.find('/store')==-1:
                 continue
             line = line.rstrip()
             # print 'line',line
-            self.files.append(line)
+            files.append(line)
+        return files
+
+    def buildListOfFiles(self, pattern='.*root'):
+        runs = (-1,-1)
+        if self.run_range is not None:
+            runs = self.run_range
+        num_files = self.findPrimaryDatasetNumFiles(self.name.rstrip('/'),runs[0],runs[1])
+        limit = 10000
+        if num_files > limit:
+            num_steps = int(num_files/limit)+1
+            self.files = []
+            for i in xrange(num_steps):
+                self.files.extend(self.buildListOfFilesDBS(pattern,i*limit,((i+1)*limit)-1))
+        else:
+            self.files = self.buildListOfFilesDBS(pattern)
             
     @staticmethod
     def findPrimaryDatasetEntries(dataset, runmin, runmax):
@@ -155,6 +175,30 @@ class CMSDataset( BaseDataset ):
         if entries:
             return sum(entries)
         return -1
+
+    @staticmethod
+    def findPrimaryDatasetNumFiles(dataset, runmin, runmax):
+
+        query = dataset
+        if runmin > 0:
+            query = "%s and run >= %i" % (query,runmin)
+        if runmax > 0:
+            query = "%s and run <= %i" % (query,runmax)
+        dbs = 'dbs search --query="find sum(block.numfiles) where dataset like %s"' % query
+        dbsOut = os.popen(dbs).readlines()
+
+        entries = []
+        for line in dbsOut:
+            line = line.replace('\n','')
+            if line:
+                try:
+                    entries.append(int(line))
+                except ValueError:
+                    pass
+        if entries:
+            return sum(entries)
+        return -1
+
 
     def getPrimaryDatasetEntries(self):
         runmin = -1
