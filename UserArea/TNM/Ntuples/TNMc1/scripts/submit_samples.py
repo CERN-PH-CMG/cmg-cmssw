@@ -12,14 +12,15 @@ samples = [
 #('/QCD_HT-500To1000_TuneZ2star_8TeV-madgraph-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',True,False),
 #('/HT/Run2012A-PromptReco-v1/RECO',False,False),
 #('/JetHT/Run2012B-PromptReco-v1/AOD',False,False),
-#('/JetHT/Run2012C-PromptReco-v1/AOD',False,False),
-#('/JetHT/Run2012C-PromptReco-v2/AOD',False,False),
-#('/HT/Run2012A-13Jul2012-v1/AOD',False,False),
-#('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False),
 #('/yxin_RSG_WW_1000_pythia6_01/yxin-yxin_RSG_WW_1000_pythia6_01-52e9c298e8547223f910bab8db11615e/USER',True,True),
 #('/yxin_RSG_WW_2000_pythia6_01/yxin-yxin_RSG_WW_2000_pythia6_01-54dbdee3e49fbf0c9fb4ed9452c44bd3/USER',True,True),
-#('/RadionToHHTo4B_1TeV',True,True),
-#('/RadionToHHTo4B_2TeV',True,True),
+
+('/RadionToHHTo4B_1TeV',True,True),
+('/RadionToHHTo4B_2TeV',True,True),
+('/JetHT/Run2012C-PromptReco-v1/AOD',False,False),
+('/JetHT/Run2012C-PromptReco-v2/AOD',False,False),
+('/HT/Run2012A-13Jul2012-v1/AOD',False,False),
+('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False),
 ('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
 ('/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S8_START53_V7A-v1/AODSIM',True,False),
 ('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
@@ -455,6 +456,11 @@ print 'loading the main CMG sequence'
 
 process.load('CMGTools.Common.PAT.PATCMG_cff')
 
+#### Adding AK7 pruned jets
+
+from CMGTools.Common.PAT.jetSubstructure_cff import *
+process.PATCMGSequence += PATCMGJetSequenceAK7CHSpruned
+
 if runOnMC is False:
     # removing MC stuff
     print 'removing MC stuff, as we are running on Data'
@@ -475,6 +481,9 @@ if runOnMC is False:
         process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
         process.patJetsCHSpruned.addGenJetMatch = False
         process.patJetsCHSpruned.addGenPartonMatch = False
+        process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
+        process.patJetsAK7CHSpruned.addGenJetMatch = False
+        process.patJetsAK7CHSpruned.addGenPartonMatch = False
 
     process.PATCMGTauSequence.remove( process.tauGenJets )
     process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
@@ -496,6 +505,7 @@ if runOnMC is False:
     process.patJetCorrFactors.levels.append('L2L3Residual')
     if cmsswIs52X():
         process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
+        process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
 
 
 print 'cloning the jet sequence to build PU chs jets'
@@ -508,6 +518,13 @@ replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
 replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
 process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
 
+from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+process.PATCMGJetCHSSequence = cloneProcessingSnippet(process, process.PATCMGJetSequence, 'AK7CHS')
+process.PATCMGJetCHSSequence.insert( 0, process.ak7PFJetsCHS )
+from CMGTools.Common.Tools.visitorUtils import replaceSrc
+replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak7PFJetsCHS')
+replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
+process.patJetCorrFactorsCHS.payload = 'AK7PFchs'
 
 ########################################################
 ## Path definition
@@ -725,8 +742,8 @@ process.schedule.remove(process.HBHENoiseFilterPath)
     #os.system("crab -create")
     #for i in range(0,10):
     #   os.system("crab -c crab_"+shortsample+" -submit "+str(i*300+1)+"-"+str((i+1)*300))
-    os.system("crab -c crab_"+shortsample+" -status")
-    os.system("crab -c crab_"+shortsample+" -get")
+    #os.system("crab -c crab_"+shortsample+" -status")
+    #os.system("crab -c crab_"+shortsample+" -get")
     #os.system("crab -c crab_"+shortsample+" -forceResubmit all")
     #os.system("crab -c crab_"+shortsample+" -resubmit all")
     #os.system("crab -c crab_"+shortsample+" -kill all")

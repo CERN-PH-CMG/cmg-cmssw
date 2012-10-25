@@ -202,6 +202,7 @@ namespace pat
         float getTau(int num) const;
         float tau1() const { return getTau(1); }
         float tau2() const { return getTau(2); }
+        float tau3() const { return getTau(3); }
 
         float jetCharge() const;
         float daughter_0_jetCharge() const;

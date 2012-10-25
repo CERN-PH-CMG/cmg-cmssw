@@ -57,8 +57,8 @@ void EventHelperExtra::analyzeEvent()
 
   // for selectedPatJetsCHS:
   std::vector<const pat::Jet*> seljetsCHS15;
-  for (unsigned int i=0; i<jets->size(); i++) {
-    const pat::Jet* j = &((*jets)[i]);
+  for (unsigned int i=0; i<jetsCHS->size(); i++) {
+    const pat::Jet* j = &((*jetsCHS)[i]);
     if (!(j->pt() > 15) ) continue;
     seljetsCHS15.push_back(j);
     if (seljetsCHS15.size() == 2) break;
@@ -74,8 +74,8 @@ void EventHelperExtra::analyzeEvent()
 
   // for selectedPatJetsCHSpruned:
   std::vector<const pat::Jet*> seljetsCHSp15;
-  for (unsigned int i=0; i<jets->size(); i++) {
-    const pat::Jet* j = &((*jets)[i]);
+  for (unsigned int i=0; i<jetsCHSpruned->size(); i++) {
+    const pat::Jet* j = &((*jetsCHSpruned)[i]);
     if (!(j->pt() > 15) ) continue;
     seljetsCHSp15.push_back(j);
     if (seljetsCHSp15.size() == 2) break;
