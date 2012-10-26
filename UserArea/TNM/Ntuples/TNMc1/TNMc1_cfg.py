@@ -1,4 +1,4 @@
-#$Revision: 1.15 $
+#$Revision: 1.16 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -48,9 +48,9 @@ print 'input:', process.source.fileNames
 if runOnMC==False:
     from CMGTools.Common.Tools.applyJSON_cff import *
     # Run2012 A+B 13Jul2012ReReco
-    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
     # Run2012C v1+v2
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203853_8TeV_PromptReco_Collisions12_JSON_v2.txt'
+    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203853_8TeV_PromptReco_Collisions12_JSON_v2.txt'
     # Run2012D
     #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-204567_8TeV_PromptReco_Collisions12_JSON.txt'
     print 'json:', json
@@ -148,10 +148,13 @@ else:
 
 if not runOnMC:
     process.load("Ntuples.TNMc1.hcallasereventfilter2012_cfi")
-    inputfilelist=["data/AllBadHCALLaser.txt"]
-    for f in inputfilelist:
-  	mylist=open(f,'r').readlines()
-    	for j in mylist:
-    	    process.hcallasereventfilter2012.EventList.append(j.strip())
+    #inputfilelist=["data/AllBadHCALLaser.txt"]
+    #for f in inputfilelist:
+    #    mylist=open(f,'r').readlines()
+    #     for j in mylist:
+    #         process.hcallasereventfilter2012.EventList.append(j.strip())
+    print "load laser event list"
+    from Ntuples.TNMc1.AllBadHCALLaser import eventlist
+    process.hcallasereventfilter2012.EventList=eventlist
     process.hcallasereventfilter2012Path=cms.Path(process.hcallasereventfilter2012)
     process.schedule = cms.Schedule(process.hcallasereventfilter2012Path,process.p)
