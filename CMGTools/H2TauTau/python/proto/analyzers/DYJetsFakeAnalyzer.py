@@ -35,7 +35,7 @@ class DYJetsFakeAnalyzer( GenParticleAnalyzer ):
                                                genLegs, 0.3**2 )
                 if pairs[event.diLepton.leg1()] and pairs[event.diLepton.leg2()]:
                     # import pdb; pdb.set_trace()
-                    print 'fake1',event.diLepton.leg1().pdgId(), event.diLepton.leg2().pdgId()
+                    # print 'fake1',event.diLepton.leg1().pdgId(), event.diLepton.leg2().pdgId()
                     event.isFake = 1
                 else:
                     event.isFake = 2
