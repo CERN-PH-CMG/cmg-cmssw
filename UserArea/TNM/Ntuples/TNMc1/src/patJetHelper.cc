@@ -59,8 +59,8 @@ float JetHelper::getTau(int num) const
         const reco::PFCandidate *thisParticle = all_particles.at(particle);
         FJparticles.push_back( fastjet::PseudoJet( thisParticle->px(), thisParticle->py(), thisParticle->pz(), thisParticle->energy() ) );	
     }
-    NsubParameters paraNsub = NsubParameters(1.0, 0.5); //assume R=0.5 jet clusering used
-    Nsubjettiness routine(nsub_kt_axes, paraNsub);
+    NsubParameters paraNsub = NsubParameters(1.0, 0.7); //assume R=0.7 jet clusering used
+    Nsubjettiness routine(nsub_1pass_from_kt_axes, paraNsub);
     return routine.getTau(num, FJparticles); 
 }
 

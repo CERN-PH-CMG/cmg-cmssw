@@ -108,3 +108,8 @@
 </library>
 <library file="userplugin_LHEEventProductHelper.cc" name="LHEEventProductHelper">
 </library>
+
+<library name="Passed" file="Passed.cc">
+</library>
+<library name="Passed" file="HcalLaserEventFilter2012.cc">
+</library>

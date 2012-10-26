@@ -1,4 +1,4 @@
-#$Revision: 1.13 $
+#$Revision: 1.14 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -143,3 +143,15 @@ if runOnMC==True:
 else:
     #process.p = cms.Path(process.PATCMGJetSequenceAK7CHS+process.PATCMGJetSequenceAK7CHSpruned+process.demo)
     process.p = cms.Path(process.razorMJObjectSequence+process.PATCMGJetSequenceAK7CHS+process.PATCMGJetSequenceAK7CHSpruned+process.demo)
+
+##### HCAL laser filter for 2012
+
+if not runOnMC:
+    process.load("Ntuples.TNMc1.hcallasereventfilter2012_cfi")
+    inputfilelist=["data/AllBadHCALLaser.txt"]
+    for f in inputfilelist:
+  	mylist=open(f,'r').readlines()
+    	for j in mylist:
+    	    process.hcallasereventfilter2012.EventList.append(j.strip())
+    process.hcallasereventfilter2012Path=cms.Path(process.hcallasereventfilter2012)
+    process.schedule = cms.Schedule(process.hcallasereventfilter2012Path,process.p)

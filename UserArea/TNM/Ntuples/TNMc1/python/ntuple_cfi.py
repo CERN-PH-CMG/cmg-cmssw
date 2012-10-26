@@ -43,7 +43,8 @@ cms.EDAnalyzer("TheNtupleMaker",
     'cmgMuon1',
     'cmgTau',
     'cmgTau1',
-    'recoLeafCandidate'
+    'recoLeafCandidate',
+    'hcalFilter'
     ),
                edmEventHelper =
                cms.untracked.
@@ -792,7 +793,6 @@ cms.EDAnalyzer("TheNtupleMaker",
     '   int   value("HBHENoiseFilterPath")  HBHENoiseFilterPath',
     '   int   value("primaryVertexFilterPath")  primaryVertexFilterPath',
     '   int   value("noscrapingFilterPath")  noscrapingFilterPath',
-    '   int   value("hcalLaserFilterPath")  hcalLaserFilterPath',
     '   int   value("metNoiseCleaningPath")  metNoiseCleaningPath',
     ),
                edmTriggerResultsHelper =
@@ -955,5 +955,12 @@ cms.EDAnalyzer("TheNtupleMaker",
     'double  pt()',
     'double  phi()',
     'double  eta()'
+    ),
+               hcalFilter =
+               cms.untracked.
+               vstring(
+    'sint                             hcallasereventfilter2012         1',
+    #---------------------------------------------------------------------
+    'int value()'
     )
                )

@@ -366,13 +366,14 @@ int main(int argc, char** argv)
 	       (jethelper2_chargedEmEnergyFraction[1]<0.99)))
 	     
 	     &&
-	     (triggerresultshelper_primaryVertexFilterPath)&&
-	     (triggerresultshelper_noscrapingFilterPath)&&
-	     (triggerresultshelper_hcalLaserEventFilterPath)&&
-	     (triggerresultshelper_HBHENoiseFilterPath)&&
-	     (triggerresultshelper_EcalDeadCellBoundaryEnergyFilterPath)&&
-	     (triggerresultshelper_CSCTightHaloFilterPath)&&
-	     (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath)
+	     (sdouble_kt6PFJets_rho_value<40)&&
+	     (triggerresultshelper_primaryVertexFilterPath!=0)&&
+	     (triggerresultshelper_noscrapingFilterPath!=0)&&
+	     (triggerresultshelper_hcalLaserEventFilterPath!=0)&&
+	     (triggerresultshelper_HBHENoiseFilterPath!=0)&&
+	     (triggerresultshelper_EcalDeadCellBoundaryEnergyFilterPath!=0)&&
+	     (triggerresultshelper_CSCTightHaloFilterPath!=0)&&
+	     (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath!=0)
 	    )) continue;
 	   
 	  // ---------------------
