@@ -2098,7 +2098,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
     c12->SaveAs("Plots/DefaultFitAndPull_noStat.png");
     c12->SaveAs("Plots/DefaultFitAndPull_noStat.eps");
     c12->SaveAs("Plots/DefaultFitAndPull_noStat.C");
-
+    c12->SaveAs("Plots/DefaultFitAndPull_noStat.root");
  
 
 }
