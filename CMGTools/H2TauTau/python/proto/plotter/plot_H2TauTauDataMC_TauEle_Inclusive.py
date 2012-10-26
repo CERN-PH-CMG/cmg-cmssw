@@ -58,7 +58,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data', 1.06 ) #PG scale value according Jose, 18/10
 
-    if cut.find('nJets>') or (cut.find('nJets==0') and cut.find('l1_pt>40')):
+    if cut.find('nJets>') != -1 or (cut.find('nJets==0') != -1 and cut.find('l1_pt>40') != -1):
         print 'WARNING RELAXING ISO FOR QCD SHAPE'
         # replace QCD with a shape obtained from data in an anti-iso control region
         qcd_yield = osQCD.Hist('QCD').Integral()
@@ -122,8 +122,7 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
         print 'drawing ', plot.var
         blindMe = False
         if plot.var == 'svfitMass' and \
-           (thecut.find('nJets>') != -1 or \
-            thecut.find('nBJets>') != -1) : blindMe = True
+           thecut.find('nJets') != -1 : blindMe = True
 
         draw (osQ, blindMe, 'TauEle', plotprefix = 'CTRL_OS_lin')
         osQ.Hist('Higgs 125').stack = False
