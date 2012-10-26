@@ -35,12 +35,14 @@ ObjectIdSummary::ObjectIdSummary()
   kfhits=0;                      kfhitsall=0;         sihip=0;
   nbrems=0;                      etawidth=0;          phiwidth=0;
   e1x5e5x5=0;                    preShowerOverRaw=0;  eopout=0;
+  emvatrigv0=0;                  emvanontrigv0=0;
   aeff=0;
   neutHadFrac=0;                 neutEmFrac=0;        chHadFrac=0;
   tche=0;                        csv=0;               jp=0;       tchp=0;
   beta=0;                        betaStar=0;          dRMean=0;
   ptD=0;                         ptRMS=0;
-  lxy=0;                         slxy=0;              svmass=0;
+  lxy=0;                         slxy=0;              svmass=0;  svpt=0; svdr=0;
+  ssvhe=0;                       ssvhp=0;
   customTaggers.clear();
 }
 
@@ -68,6 +70,7 @@ ObjectIdSummary::ObjectIdSummary(ObjectIdSummary const&other)
   kfhits=other.kfhits;                                     kfhitsall=other.kfhitsall;                                    sihip=other.sihip;
   nbrems=other.nbrems;                                     etawidth=other.etawidth;                                      phiwidth=other.phiwidth;
   e1x5e5x5=other.e1x5e5x5;                                 preShowerOverRaw=other.preShowerOverRaw;                      eopout=other.eopout;
+  emvatrigv0=other.emvatrigv0;                             emvanontrigv0=other.emvanontrigv0;
   aeff=other.aeff;
   neutHadFrac=other.neutHadFrac;                           neutEmFrac=other.neutEmFrac;                                  chHadFrac=other.chHadFrac;
   tche=other.tche;                                         csv=other.csv;                                                jp=other.jp;
@@ -76,6 +79,8 @@ ObjectIdSummary::ObjectIdSummary(ObjectIdSummary const&other)
   ptD=other.ptD;                                           ptRMS=other.ptRMS;
   customTaggers=other.customTaggers;
   lxy=other.lxy;                         slxy=other.slxy;              svmass=other.svmass;
+  svpt=other.svpt;                       svdr=other.svdr;
+  ssvhe=other.ssvhe;                     ssvhp=other.ssvhp;
 }
 
 
@@ -447,6 +452,8 @@ vector<CandidatePtr> getGoodElectrons(edm::Handle<edm::View<reco::Candidate> > &
 	lepId.eopout            =  ele->eEleClusterOverPout();
 	lepId.preShowerOverRaw  =  ele->superCluster()->preshowerEnergy() / ele->superCluster()->rawEnergy();
 	lepId.etawidth          =  ele->superCluster()->etaWidth();
+	lepId.emvatrigv0        = ele->electronID("mvaTrigV0");
+	lepId.emvanontrigv0     = ele->electronID("mvaNonTrigV0");
 	lepId.phiwidth          =  ele->superCluster()->phiWidth();
 	lepId.e1x5e5x5          =  (ele->e5x5()) !=0. ? 1.-(ele->e1x5()/ele->e5x5()) : -1. ; 
 	lepId.dEtaCalo          = ele->deltaEtaSeedClusterTrackAtCalo();
@@ -771,6 +778,8 @@ vector<CandidatePtr> getGoodJets(edm::Handle<edm::View<reco::Candidate> > &hJet,
 	jetId.tche=jet->bDiscriminator("trackCountingHighEffBJetTags");
 	jetId.tchp=jet->bDiscriminator("trackCountingHighPurBJetTags");
 	jetId.csv=jet->bDiscriminator("combinedSecondaryVertexBJetTags");
+	jetId.ssvhe=jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
+	jetId.ssvhp=jet->bDiscriminator("simpleSecondaryVertexHighPurBJetTags");
 	jetId.jp=jet->bDiscriminator("jetProbabilityBJetTags");
 	for(size_t ijt=0; ijt<jetTagsH.size(); ijt++)
 	  {
@@ -788,6 +797,9 @@ vector<CandidatePtr> getGoodJets(edm::Handle<edm::View<reco::Candidate> > &hJet,
 		jetId.lxy=svTagInfos->flightDistance(0).value();
 		jetId.slxy=svTagInfos->flightDistance(0).error();
 		jetId.svmass=svTagInfos->secondaryVertex(0).p4().mass();
+		jetId.svpt=svTagInfos->secondaryVertex(0).p4().pt();
+		jetId.svdr=deltaR(svTagInfos->secondaryVertex(0).p4(),jet->p4());
+
 	      }
 	  }
 	jetId.neutHadFrac = jet->neutralHadronEnergyFraction();

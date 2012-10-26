@@ -45,7 +45,7 @@ BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
                                 )
 
 # base values for muon selection ----------------------------------------------
-BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlowNoPuSub"),
+BaseMuonsSelection = cms.PSet( source = cms.InputTag("patMuons"), #selectedPatMuonsPFlowNoPuSub"),
                                sourceIsPF = cms.bool(False),
                                rho25Neut = cms.InputTag("kt6PFJetsCentralNeutral:rho"),
                                minPt = cms.double(20),
@@ -65,7 +65,7 @@ BaseMuonsSelection = cms.PSet( source = cms.InputTag("selectedPatMuonsPFlowNoPuS
                                                     ),
                                maxRelIso = cms.double(999999.),
                                usePFIso = cms.bool(True),
-                               reComputePFIso = cms.bool(False),
+                               reComputePFIso = cms.bool(True), #False),
                                doDeltaBetaCorrection = cms.bool(False)
                                )
 

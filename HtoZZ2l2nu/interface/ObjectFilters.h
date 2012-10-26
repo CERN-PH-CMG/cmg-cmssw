@@ -68,14 +68,14 @@ class ObjectIdSummary
   //muon specific
   double trkValidMuonHits,trkMatches,trkMatchedStations,innerTrackChi2,trkLayersWithMeasurement,pixelLayersWithMeasurement;
   //electron specific
-  double dPhiTrack,dEtaTrack,ooemoop,fbrem,eopin;
+  double dPhiTrack,dEtaTrack,ooemoop,fbrem,eopin,emvatrigv0,emvanontrigv0;
   double dEtaCalo, dPhiCalo, kfchi2, kfhits, kfhitsall, sihip, nbrems, etawidth, phiwidth, e1x5e5x5, preShowerOverRaw, eopout;
   //common to photon and electron
   double hoe,hoebc,sihih,sipip,sce,sceta,scphi,e2x5max,e1x5,e5x5,h2te,h2tebc,r9;
   //common to electron, photon, muon and jet
   double aeff;
   //jet specific
-  double neutHadFrac,neutEmFrac,chHadFrac,tche, tchp, csv, jp,beta,betaStar,dRMean,ptD,ptRMS,lxy,slxy,svmass;
+  double neutHadFrac,neutEmFrac,chHadFrac,tche, tchp, csv, jp,beta,betaStar,dRMean,ptD,ptRMS,lxy,slxy,svmass,svpt,svdr,ssvhe,ssvhp;
   std::vector<double> customTaggers;
 };
 
