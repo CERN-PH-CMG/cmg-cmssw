@@ -23,13 +23,17 @@ samples = [
 #('/yxin_RSG_WW_2000_pythia6_01/yxin-yxin_RSG_WW_2000_pythia6_01-54dbdee3e49fbf0c9fb4ed9452c44bd3/USER',True,True, 'grid'),
 #('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
 #('/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S8_START53_V7A-v1/AODSIM',True,False,'grid'),
-('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
-('/RSGravitonToWW_kMpl01_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
-('/RSGravitonToWW_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
-('/RSGravitonToZZ_kMpl01_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
-('/RSGravitonToZZ_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
-('/RSGravitonToWW_kMpl02_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
-('/RSGravitonToWW_kMpl04_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
+#('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
+#('/RSGravitonToWW_kMpl01_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
+#('/RSGravitonToWW_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
+#('/RSGravitonToZZ_kMpl01_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
+#('/RSGravitonToZZ_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
+#('/RSGravitonToWW_kMpl02_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
+#('/RSGravitonToWW_kMpl04_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
+#('/HT/Run2012A-13Jul2012-v1/AOD',False,False,'ProductionTask'),
+#('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False,'ProductionTask'),
+('/JetHT/Run2012C-PromptReco-v1/AOD,False,False,'ProductionTask'),
+('/JetHT/Run2012C-PromptReco-v2/AOD,False,False,'ProductionTask'),
 ]
 
 for sample, mc, fastsim, production in samples:
@@ -40,9 +44,9 @@ for sample, mc, fastsim, production in samples:
     shortsample="_".join(sample.strip("/").split("/"))+"_grid"
     filelist=open("fileList_"+shortsample+".txt","w")
     if production=="ProductionTask":
-      command="cmsLs -l /store/cmst3/user/hinzmann/CMG"+sample+"/PAT_CMG_V5_6_0_B/NTUPLE_Oct1"+"""/ | awk '{size+=$2}END{print size/1024/1024/1024" GB"}'"""
+      command="cmsLs -l /store/cmst3/user/hinzmann/CMG"+sample+"/PAT_CMG_V5_6_0_B/NTUPLE_Oct25"+"""/ | awk '{size+=$2}END{print size/1024/1024/1024" GB"}'"""
       os.system(command)
-      command="cmsLs -l /store/cmst3/user/hinzmann/CMG"+sample+"/PAT_CMG_V5_6_0_B/NTUPLE_Oct1"
+      command="cmsLs -l /store/cmst3/user/hinzmann/CMG"+sample+"/PAT_CMG_V5_6_0_B/NTUPLE_Oct25"
     elif production=="cmsBatch":
       command="cmsLs -l /store/cmst3/user/hinzmann/NTUPLE"+sample+""+"""/ | awk '{size+=$2}END{print size/1024/1024/1024" GB"}'"""
       os.system(command)
