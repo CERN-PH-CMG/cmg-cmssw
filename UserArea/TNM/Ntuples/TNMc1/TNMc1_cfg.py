@@ -1,4 +1,4 @@
-#$Revision: 1.12 $
+#$Revision: 1.13 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -30,7 +30,7 @@ dataset_user = 'cmgtools'
 #dataset_name = '/SingleMu/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B'
 #dataset_name = '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
 #dataset_name = '/HT/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076'
-dataset_name = '/JetHT/Run2012C-PromptReco-v1/AOD/PAT_CMG_V5_6_0_B'
+dataset_name = '/HT/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B'
 #dataset_name = '/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12-PU_S7_START52_V9-v5/AODSIM/V5/PAT_CMG_V5_4_0'
 dataset_files = 'patTuple.*root'
 
@@ -50,7 +50,7 @@ if runOnMC==False:
     # Run2012 A+B 13Jul2012ReReco
     json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
     # Run2012C v1+v2
-    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203853_8TeV_PromptReco_Collisions12_JSON_v2.txt
+    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203853_8TeV_PromptReco_Collisions12_JSON_v2.txt'
     # Run2012D
     #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-204567_8TeV_PromptReco_Collisions12_JSON.txt'
     print 'json:', json
@@ -100,10 +100,8 @@ GT = None
 if runOnMC:
     GT = 'START53_V10::All' # for Summer12 MC
 else:
-    GT = 'GR_P_V41_AN1::All' # for run2012C
+    GT = 'GR_P_V41_AN2::All' # for run2012C
 process.GlobalTag.globaltag = GT
-
-print 'Global tag       : ', process.GlobalTag.globaltag
 
 ##### AK7 jets
 
@@ -136,6 +134,8 @@ if not runOnMC:
     process.demo.buffers.remove('recoLeafCandidate')
 
 ##### Sequence
+
+print 'Global tag       : ', process.GlobalTag.globaltag
 
 if runOnMC==True:
     #process.p = cms.Path(process.PATCMGJetSequenceAK7CHS+process.PATCMGJetSequenceAK7CHSpruned+process.demo)

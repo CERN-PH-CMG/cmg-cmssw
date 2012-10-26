@@ -792,7 +792,7 @@ cms.EDAnalyzer("TheNtupleMaker",
     '   int   value("HBHENoiseFilterPath")  HBHENoiseFilterPath',
     '   int   value("primaryVertexFilterPath")  primaryVertexFilterPath',
     '   int   value("noscrapingFilterPath")  noscrapingFilterPath',
-    '   int   value("hcalLaserFilterFromAODPath")  hcalLaserFilterFromAODPath',
+    '   int   value("hcalLaserFilterPath")  hcalLaserFilterPath',
     '   int   value("metNoiseCleaningPath")  metNoiseCleaningPath',
     ),
                edmTriggerResultsHelper =
