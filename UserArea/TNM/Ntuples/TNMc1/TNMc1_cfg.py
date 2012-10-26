@@ -1,4 +1,4 @@
-#$Revision: 1.16 $
+#$Revision: 1.17 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -28,9 +28,9 @@ runOnMC = False
 
 dataset_user = 'cmgtools' 
 #dataset_name = '/SingleMu/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B'
-#dataset_name = '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+dataset_name = '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
 #dataset_name = '/HT/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_4_0_runrange_190605-194076'
-dataset_name = '/HT/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B'
+#dataset_name = '/HT/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B'
 #dataset_name = '/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12-PU_S7_START52_V9-v5/AODSIM/V5/PAT_CMG_V5_4_0'
 dataset_files = 'patTuple.*root'
 
@@ -132,6 +132,11 @@ process.razorMJTauSequence.remove(process.razorMJTauVeto)
 if not runOnMC:
     process.demo.buffers.remove('sint')
     process.demo.buffers.remove('recoLeafCandidate')
+
+if runOnMC:
+    process.demo.buffers.remove('hcalFilter')
+    process.demo.buffers.remove('edmTriggerResultsHelper')
+    process.demo.buffers.remove('edmTriggerResultsHelper1')
 
 ##### Sequence
 
