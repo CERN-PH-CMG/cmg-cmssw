@@ -107,6 +107,10 @@ postfix = "PFlowNoPuSub"
 jetAlgo="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix="PFlow",typeIMetCorrections=True,jetCorrections=('AK5PFchs',jecLevels))
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=postfix,typeIMetCorrections=True,jetCorrections=('AK5PF',jecLevels))
+if not runOnMC:
+    from PhysicsTools.PatAlgos.tools.coreTools import removeMCMatching
+    removeMCMatching(process, names=['Muons'], postfix="")
+
 
 # to use GsfElectrons instead of PF electrons
 # this will destory the feature of top projection which solves the ambiguity between leptons and jets because
@@ -116,7 +120,10 @@ if(getSelVersion()==2012) :
 else:
     process.patElectronsPFlowNoPuSub = process.patElectrons.clone()
     process.patElectronsPFlowNoPuSub.genParticleMatch = cms.InputTag("electronMatchPFlowNoPuSub")
-    
+
+# MVA id
+process.load('EGamma.EGammaAnalysisTools.electronIdMVAProducer_cfi')
+process.mvaID = cms.Sequence(  process.mvaTrigV0 + process.mvaNonTrigV0 )
 # add old VBTF ids
 process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
 applyPostfix(process,"patElectrons",postfix).electronIDSources = cms.PSet( simpleEleId95relIso= cms.InputTag("simpleEleId95relIso"),
@@ -124,9 +131,10 @@ applyPostfix(process,"patElectrons",postfix).electronIDSources = cms.PSet( simpl
                                                                            simpleEleId85relIso= cms.InputTag("simpleEleId85relIso"),
                                                                            simpleEleId80relIso= cms.InputTag("simpleEleId80relIso"),
                                                                            simpleEleId70relIso= cms.InputTag("simpleEleId70relIso"),
-                                                                           simpleEleId60relIso= cms.InputTag("simpleEleId60relIso")
+                                                                           simpleEleId60relIso= cms.InputTag("simpleEleId60relIso"),
+                                                                           mvaTrigV0 = cms.InputTag("mvaTrigV0"),
+                                                                           mvaNonTrigV0 = cms.InputTag("mvaNonTrigV0"),
                                                                            )
-
 
 # rho for JEC and isolation
 from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
@@ -198,9 +206,11 @@ process.endCounter = cms.EDProducer("EventCountProducer")
 #pat sequence
 process.patSequence = cms.Sequence( process.startCounter
                                     + process.rhoSequence
+                                    + process.mvaID
                                     + process.simpleEleIdSequence
                                     + getattr(process,"patPF2PATSequencePFlow")
                                     + getattr(process,"patPF2PATSequence"+postfix)
+                                    + process.makePatMuons
                                     + process.btagging 
                                     + process.ivfSequence 
                                     )

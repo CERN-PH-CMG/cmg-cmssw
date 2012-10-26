@@ -156,6 +156,8 @@ int DileptonPlusMETEventAnalyzer::addPidSummary(ObjectIdSummary &obj)
       ev.en_ooemoop[ev.en]=obj.ooemoop;
       ev.en_fbrem[ev.en]=obj.fbrem;
       ev.en_eopin[ev.en]=obj.eopin;
+      ev.en_mvatrigv0[ev.en]=obj.emvatrigv0;
+      ev.en_mvanontrigv0[ev.en]=obj.emvanontrigv0;
       ev.en_dEtaCalo[ev.en]=obj.dEtaCalo;
       ev.en_dPhiCalo[ev.en]=obj.dPhiCalo;
       ev.en_kfchi2[ev.en]=obj.kfchi2;
@@ -633,6 +635,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	if(selJetsId[ijet].customTaggers.size()>0) ev.jn_btag5[ev.jn] = selJetsId[ijet].customTaggers[0];
 	if(selJetsId[ijet].customTaggers.size()>1) ev.jn_btag6[ev.jn] = selJetsId[ijet].customTaggers[1];
 	if(selJetsId[ijet].customTaggers.size()>2) ev.jn_btag7[ev.jn] = selJetsId[ijet].customTaggers[2];
+	ev.jn_btag8[ev.jn]       = selJetsId[ijet].ssvhe;
+	ev.jn_btag9[ev.jn]       = selJetsId[ijet].ssvhp;
 	ev.jn_neutHadFrac[ev.jn] = selJetsId[ijet].neutHadFrac;
 	ev.jn_neutEmFrac[ev.jn]  = selJetsId[ijet].neutEmFrac;
 	ev.jn_chHadFrac[ev.jn]   = selJetsId[ijet].chHadFrac;
@@ -653,6 +657,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.jn_lxy[ev.jn]                = selJetsId[ijet].lxy;
 	ev.jn_lxyErr[ev.jn]             = selJetsId[ijet].slxy;
 	ev.jn_svmass[ev.jn]             = selJetsId[ijet].svmass;
+	ev.jn_svpt[ev.jn]             = selJetsId[ijet].svpt;
+	ev.jn_svdr[ev.jn]             = selJetsId[ijet].svdr;
 	ev.jn++;
       }
     ev.htvec_px = jetSum.px();
@@ -688,6 +694,8 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	if(selAJetsId[ijet].customTaggers.size()>0) ev.ajn_btag5[ev.ajn] = selAJetsId[ijet].customTaggers[0];
 	if(selAJetsId[ijet].customTaggers.size()>1) ev.ajn_btag6[ev.ajn] = selAJetsId[ijet].customTaggers[1];
 	if(selAJetsId[ijet].customTaggers.size()>2) ev.ajn_btag7[ev.ajn] = selAJetsId[ijet].customTaggers[2];
+	ev.ajn_btag8[ev.ajn]       = selAJetsId[ijet].ssvhe;
+	ev.ajn_btag9[ev.ajn]       = selAJetsId[ijet].ssvhp;
 	ev.ajn_neutHadFrac[ev.ajn] = selAJetsId[ijet].neutHadFrac;
 	ev.ajn_neutEmFrac[ev.ajn]  = selAJetsId[ijet].neutEmFrac;
 	ev.ajn_chHadFrac[ev.ajn]   = selAJetsId[ijet].chHadFrac;
@@ -705,9 +713,11 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	ev.ajn_rawsf[ev.ajn]       = selAJetsId[ijet].ensf;
 	ev.ajn_isBfromGsplit[ev.ajn]     = (getHFmatchFromGSplit(selaJets[ijet],hfFromGsplit,5)!=0);
 	ev.ajn_isCfromGsplit[ev.ajn]     = (getHFmatchFromGSplit(selaJets[ijet],hfFromGsplit,4)!=0);
-	ev.ajn_lxy[ev.ajn]                = selAJetsId[ijet].lxy;
-	ev.ajn_lxyErr[ev.ajn]             = selAJetsId[ijet].slxy;
-	ev.ajn_svmass[ev.ajn]             = selAJetsId[ijet].svmass;
+	ev.ajn_lxy[ev.ajn]              = selAJetsId[ijet].lxy;
+	ev.ajn_lxyErr[ev.ajn]           = selAJetsId[ijet].slxy;
+	ev.ajn_svmass[ev.ajn]           = selAJetsId[ijet].svmass;
+	ev.ajn_svpt[ev.ajn]             = selAJetsId[ijet].svpt;
+	ev.ajn_svdr[ev.ajn]             = selAJetsId[ijet].svdr;
 	ev.ajn++;
       }
    

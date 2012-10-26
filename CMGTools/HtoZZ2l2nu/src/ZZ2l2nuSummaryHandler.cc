@@ -159,6 +159,8 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("en_ooemoop", evSummary_.en_ooemoop,  "en_ooemoop[en]/F");
   t_->Branch("en_fbrem",   evSummary_.en_fbrem,    "en_fbrem[en]/F");
   t_->Branch("en_eopin",   evSummary_.en_eopin,    "en_eopin[en]/F");
+  t_->Branch("en_mvatrigv0",   evSummary_.en_mvatrigv0,    "en_mvatrigv0[en]/F");
+  t_->Branch("en_mvanontrigv0",   evSummary_.en_mvanontrigv0,    "en_mvanontrigv0[en]/F");
   t_->Branch("en_dEtaCalo",   evSummary_.en_dEtaCalo,    "en_dEtaCalo[en]/F");
   t_->Branch("en_dPhiCalo",   evSummary_.en_dPhiCalo,    "en_dPhiCalo[en]/F");
   t_->Branch("en_kfchi2",   evSummary_.en_kfchi2,    "en_kfchi2[en]/F");
@@ -197,6 +199,8 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("jn_btag5",       evSummary_.jn_btag5,       "jn_btag5[jn]/F");
   t_->Branch("jn_btag6",       evSummary_.jn_btag6,       "jn_btag6[jn]/F");
   t_->Branch("jn_btag7",       evSummary_.jn_btag7,       "jn_btag7[jn]/F");
+  t_->Branch("jn_btag8",       evSummary_.jn_btag8,       "jn_btag8[jn]/F");
+  t_->Branch("jn_btag9",       evSummary_.jn_btag9,       "jn_btag9[jn]/F");
   t_->Branch("jn_neutHadFrac", evSummary_.jn_neutHadFrac, "jn_neutHadFrac[jn]/F");
   t_->Branch("jn_neutEmFrac",  evSummary_.jn_neutEmFrac,  "jn_neutEmFrac[jn]/F");
   t_->Branch("jn_chHadFrac",   evSummary_.jn_chHadFrac,   "jn_chHadFrac[jn]/F");
@@ -216,6 +220,8 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("jn_lxy",           evSummary_.jn_lxy,           "jn_lxy[jn]/F");
   t_->Branch("jn_lxyErr",        evSummary_.jn_lxyErr,        "jn_lxyErr[jn]/F");
   t_->Branch("jn_svmass",        evSummary_.jn_svmass,        "jn_svmass[jn]/F");
+  t_->Branch("jn_svpt",        evSummary_.jn_svpt,        "jn_svpt[jn]/F");
+  t_->Branch("jn_svdr",        evSummary_.jn_svdr,        "jn_svdr[jn]/F");
 
   //selected PF jets 
   t_->Branch("ajn",             &evSummary_.ajn,            "ajn/I");
@@ -233,6 +239,8 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ajn_btag5",       evSummary_.ajn_btag5,       "ajn_btag5[ajn]/F");
   t_->Branch("ajn_btag6",       evSummary_.ajn_btag6,       "ajn_btag6[ajn]/F");
   t_->Branch("ajn_btag7",       evSummary_.ajn_btag7,       "ajn_btag7[ajn]/F");
+  t_->Branch("ajn_btag8",       evSummary_.ajn_btag8,       "ajn_btag8[ajn]/F");
+  t_->Branch("ajn_btag9",       evSummary_.ajn_btag9,       "ajn_btag9[ajn]/F");
   t_->Branch("ajn_neutHadFrac", evSummary_.ajn_neutHadFrac, "ajn_neutHadFrac[ajn]/F");
   t_->Branch("ajn_neutEmFrac",  evSummary_.ajn_neutEmFrac,  "ajn_neutEmFrac[ajn]/F");
   t_->Branch("ajn_chHadFrac",   evSummary_.ajn_chHadFrac,   "ajn_chHadFrac[ajn]/F");
@@ -252,6 +260,9 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
   t_->Branch("ajn_lxy",           evSummary_.ajn_lxy,           "ajn_lxy[ajn]/F");
   t_->Branch("ajn_lxyErr",        evSummary_.ajn_lxyErr,        "ajn_lxyErr[ajn]/F");
   t_->Branch("ajn_svmass",        evSummary_.ajn_svmass,        "ajn_svmass[ajn]/F");
+  t_->Branch("ajn_svpt",        evSummary_.ajn_svpt,        "ajn_svpt[jn]/F");
+  t_->Branch("ajn_svdr",        evSummary_.ajn_svdr,        "ajn_svdr[jn]/F");
+
 
   //HT
   t_->Branch("htvec_px",   &evSummary_.htvec_px, "htvec_px/F");

@@ -106,8 +106,8 @@ for proc in procList :
                 else:
                         eventsFile=inputdir + '/' + origdtag + '_' + str(segment) + '.root'
 
-                if(eventsFile.find('/store/cmst3')==0)  : eventsFile = commands.getstatusoutput('cmsPfn ' + eventsFile)[1]
-                        
+                if(eventsFile.find('/store/')==0)  : eventsFile = commands.getstatusoutput('cmsPfn ' + eventsFile)[1]
+
             	sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
             	if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
                 if(params.find('@weightsFile')<0) :     params = '@weightsFile= ' + params

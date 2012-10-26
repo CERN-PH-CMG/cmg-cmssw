@@ -686,9 +686,9 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("met_phi",         ctf, fabs(phys.met[0].phi()),iweight);
 
 		  bool blind(false);
-		  if(tag_subcat.Contains("vbf")) blind = (mt>250);
-		  else                           blind=(metP4.pt()>70);
-		  if(blind){
+		  if(!tag_subcat.Contains("vbf")) blind = (mt>250);
+		  else                            blind=(metP4.pt()>70);
+		  if(!blind){
 		    mon.fillHisto("met_met_blind",         ctf, metP4.pt(),iweight);
 		    mon.fillHisto("met_redMet_blind",      ctf, redMet.pt(),iweight);
 		    mon.fillHisto("mt_blind",              ctf, mt,iweight);

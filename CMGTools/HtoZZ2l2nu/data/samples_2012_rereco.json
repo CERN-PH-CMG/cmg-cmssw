@@ -229,7 +229,7 @@
 	"marker":1,
 	"data":[
 		{	
-                "dtag":"MC8TeV_VBFtoH200toZZto2L2Nu",
+                "dtag":"MC8TeV_VBFtoH130toZZto2L2Nu",
                 "split":1,
                 "xsec":0.8441,
                 "xsecunc":[3.2,-3.0],
