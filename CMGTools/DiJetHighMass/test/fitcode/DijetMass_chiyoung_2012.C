@@ -1949,10 +1949,10 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 
     pave_fit->Draw("same");
 
-    gr_qstar1->Draw("same");
+    gr_qstar1->Draw("Csame");
     //   gr_qstar2->Draw("same");
     //    gr_string1->Draw("same");
-    gr_qstar2->Draw("same");
+    gr_qstar2->Draw("Csame");
 
     TPaveText *pt_c11_string1 = new TPaveText(0.45,0.50,0.6,0.6,"NDC");
     pt_c11_string1->SetFillColor(0);
@@ -2087,7 +2087,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
     leg->SetLineStyle(1);
     leg->SetLineWidth(1);
     leg->SetFillColor(0);
-    leg->AddEntry(g,Form("CMS Preliminary (%.1f fb^{-1})   ", lumi/1000.),"PL"); 
+    leg->AddEntry(g,Form("CMS (%.1f fb^{-1})   ", lumi/1000.),"PL"); 
     leg->AddEntry(fit,"Fit","L");
     leg->AddEntry(f_qcd,"QCD Pythia","L");
     leg->AddEntry(htmp,"Jet Energy Scale Uncertainty","F");
@@ -2097,10 +2097,76 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 
     pave_fit_publi->Draw("same");
 
-    gr_qstar1->Draw("sameC");
-    gr_qstar2->Draw("sameC");
-    //   gr_string1->Draw("sameC");
-    //gr_string2->Draw("sameC");
+    int size = gr_qstar1->GetN();
+    double* centers = gr_qstar1->GetX();
+    double* vals  = gr_qstar1->GetY();
+
+    Double_t new_centers[100000];
+    Double_t new_vals[100000];
+
+    int nBinsToSum = 0;
+    int nbinsMax = -1;
+    double vref = -100;
+    double binCenter = 0;
+    for (int i = 0; i < size; i++){
+      if ((fabs(vals[i] - vref) > 1e-10 && i != 0) || i == size -1 ) {
+	nbinsMax++;
+	new_vals[nbinsMax] = vref;
+	new_centers[nbinsMax] = binCenter/nBinsToSum;
+	nBinsToSum = 0;
+	vref = vals[i];
+	binCenter = 0;
+      } else {
+	binCenter += centers[i];
+	nBinsToSum++;
+	if (i==0) vref = vals[i];
+      }
+    }
+
+    TGraph* gr_qstar1_smooth = new TGraph(nbinsMax+1, new_centers, new_vals);
+    gr_qstar1_smooth->SetLineColor(kRed);
+    gr_qstar1_smooth->SetLineWidth(2);
+    gr_qstar1_smooth->SetLineStyle(5);
+
+    gr_qstar1_smooth->Draw("Csame");
+ 
+  
+    int size = gr_qstar2->GetN();
+    cout << "Size" << size << endl;
+
+    double* centers = gr_qstar2->GetX();
+    double* vals  = gr_qstar2->GetY();
+
+    Double_t new_centers[100000];
+    Double_t new_vals[100000];
+
+    int nBinsToSum = 0;
+    int nbinsMax = -1;
+    double vref = -100;
+    double binCenter = 0;
+    for (int i = 0; i < size; i++){
+      if ((fabs(vals[i] - vref) > 1e-10 && i != 0) || i == size -1 ) {
+	nbinsMax++;
+	new_vals[nbinsMax] = vref;
+	new_centers[nbinsMax] = binCenter/nBinsToSum;
+	nBinsToSum = 0;
+	vref = vals[i];
+	binCenter = 0;
+      } else {
+	binCenter += centers[i];
+	nBinsToSum++;
+	if (i==0) vref = vals[i];
+      }
+    }
+
+    TGraph* gr_qstar2_smooth = new TGraph(nbinsMax+1, new_centers, new_vals);
+    gr_qstar2_smooth->SetLineColor(ci_g);
+    gr_qstar2_smooth->SetLineWidth(2);
+    gr_qstar2_smooth->SetLineStyle(7);
+
+    gr_qstar2_smooth->Draw("Csame");
+    //    gr_qstar2->Draw("Csame");
+ 
 
     TPaveText *pt_c12_string1 = new TPaveText(0.47,0.50,0.64,0.6,"NDC");
     pt_c12_string1->SetFillColor(0);
@@ -2152,7 +2218,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
     vFrame2->SetTitle("");
     vFrame2->SetXTitle("Dijet Mass (GeV)");
     vFrame2->GetXaxis()->SetTitleSize(0.06);
-    vFrame2->SetYTitle("Residuals");
+    vFrame2->SetYTitle("(Data-Fit)/#sigma_{Data} ");
     vFrame2->GetYaxis()->SetTitleSize(0.12);
     vFrame2->GetYaxis()->SetLabelSize(0.10);
     vFrame2->GetYaxis()->SetTitleOffset(0.50);
