@@ -1,8 +1,5 @@
 {
 
-  gROOT->ProcessLine(".L setDefaultStyle.C");
-  gROOT->ProcessLine("setDefaultStyle()");
-
 
   TCanvas* C = new TCanvas("C", "canvas", 1200., 400.);
   C->SetFillColor(10);
@@ -12,37 +9,39 @@
   vector<string> vNames;
   TObjArray* histos = new TObjArray();
   vector<string> sHeader; 
-  sHeader.push_back("CMS Simulation: qq->RS->qq");
-  sHeader.push_back("CMS Simulation: qg->Q*->qg"); 
-  sHeader.push_back("CMS Simulation: gg->RS->gg");
+  sHeader.push_back("CMS Simulation: MBH=MD");
+  sHeader.push_back("CMS Simulation: MD=2"); 
+  sHeader.push_back("CMS Simulation: MD=4");
 
   for (int j = 0; j < 3; j++){
     histos->Clear();
     switch(j){
     case 0:
       vNames.clear();
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-1200_TuneD6T_ak5QQtoQQ.root");
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-1200_TuneD6T_ak7QQtoQQ.root"); 
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-2000_TuneD6T_ak5QQtoQQ.root");
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-2000_TuneD6T_ak7QQtoQQ.root"); 
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-4000_TuneD6T_ak5QQtoQQ.root");
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-4000_TuneD6T_ak7QQtoQQ.root"); break;
+      for (int k = 0; k < 3; k++){
+	int iMD = 2*k+1;
+	vNames.push_back(Form("histograms_qbh5%d%d_ak5.root",iMD,iMD));
+	vNames.push_back(Form("histograms_qbh10%d%d_ak5.root",iMD,iMD));
+      }
+      break;
     case 1: 
       vNames.clear();
-      vNames.push_back("histograms_Fat30_mc_QstarToJJ_M-1200_TuneD6T_ak5.root");
-      vNames.push_back("histograms_Fat30_mc_QstarToJJ_M-1200_TuneD6T_ak7.root"); 
-      vNames.push_back("histograms_Fat30_mc_QstarToJJ_M-2000_TuneD6T_ak5.root");
-      vNames.push_back("histograms_Fat30_mc_QstarToJJ_M-2000_TuneD6T_ak7.root"); 
-      vNames.push_back("histograms_Fat30_mc_QstarToJJ_M-4000_TuneD6T_ak5.root");
-      vNames.push_back("histograms_Fat30_mc_QstarToJJ_M-4000_TuneD6T_ak7.root"); break;
+      vNames.push_back(Form("histograms_qbh5230_ak5.root",iMD,iMD));
+      vNames.push_back(Form("histograms_qbh10230_ak5.root",iMD,iMD));
+      vNames.push_back(Form("histograms_qbh5245_ak5.root",iMD,iMD));
+      vNames.push_back(Form("histograms_qbh10245_ak5.root",iMD,iMD));
+      vNames.push_back(Form("histograms_qbh5260_ak5.root",iMD,iMD));
+      vNames.push_back(Form("histograms_qbh10260_ak5.root",iMD,iMD));
+      break;
     case 2: 
       vNames.clear();
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-1200_TuneD6T_ak5GGtoGG.root");
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-1200_TuneD6T_ak7GGtoGG.root"); 
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-2000_TuneD6T_ak5GGtoGG.root");
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-2000_TuneD6T_ak7GGtoGG.root"); 
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-4000_TuneD6T_ak5GGtoGG.root");
-      vNames.push_back("histograms_Fat30_mc_RSGravitonToJJ_M-4000_TuneD6T_ak7GGtoGG.root"); break;
+      vNames.push_back(Form("histograms_qbh5445_ak5.root",iMD,iMD));
+      vNames.push_back(Form("histograms_qbh10445_ak5.root",iMD,iMD));
+      vNames.push_back(Form("histograms_qbh5450_ak5.root",iMD,iMD));
+      vNames.push_back(Form("histograms_qbh10450_ak5.root",iMD,iMD));
+      vNames.push_back(Form("histograms_qbh5460_ak5.root",iMD,iMD));
+      vNames.push_back(Form("histograms_qbh10460_ak5.root",iMD,iMD));
+      break;
     default: break;
     }
     
@@ -52,13 +51,14 @@
 	  
       TH1D* hMass;
 
-      if (vNames[i].find("ak5") != string::npos) {
-	hMass =  (TH1D*) file->Get("h_DijetMass_data_fat;");
+      if (vNames[i].find("qbh5") != string::npos) {
+	hMass =  (TH1D*) file->Get("h_DijetMass_data_fat;1");
 	hMass->SetLineColor(i/2+1);
+	hMass->SetLineStyle(1);
 
       }
       else {
-	hMass = (TH1D*) file->Get("h_DijetMass_data_pf;");
+	hMass = (TH1D*) file->Get("h_DijetMass_data_fat;1");
 	hMass->SetLineColor(i/2+1);
 	hMass->SetLineStyle(2);
       }
@@ -72,7 +72,7 @@
 	    
     C->cd(j+1);
 
-    TH1F *vFrame2 = gPad->DrawFrame(0.0,0.0,5000.,0.30);
+    TH1F *vFrame2 = gPad->DrawFrame(0.0,0.0,7000.,0.40);
     vFrame2->SetTitle(sHeader[j].c_str());
     vFrame2->SetTitleSize(0.2);
     vFrame2->SetXTitle("Reconstructed Resonance mass (GeV)");
@@ -93,59 +93,47 @@
 
 
 
-    if (j == 2) {
-      TLegend* Legend = new TLegend(0.40, 0.55, 0.87, 0.88);
-      Legend->AddEntry((TH1D*) histos->At(0), "1.2 TeV: AK5 Wide jets", "l");
-      Legend->AddEntry((TH1D*) histos->At(1), "1.2 TeV: AK7 jets", "l");
-      Legend->AddEntry((TH1D*) histos->At(2), "2.0 TeV: AK5 Wide jets", "l");
-      Legend->AddEntry((TH1D*) histos->At(3), "2.0 TeV: AK7 jets", "l");
-      Legend->AddEntry((TH1D*) histos->At(4), "4.0 TeV: AK5 Wide jets", "l");
-      Legend->AddEntry((TH1D*) histos->At(5), "4.0 TeV: AK7 jets", "l");
-
-      Legend->Draw();
+    if (j == 0) {
+      TLegend* Legend = new TLegend(0.13, 0.55, 0.60, 0.88,NULL,"brNDC");
+      Legend->AddEntry((TH1D*) histos->At(0), "MD=MBH=1.0 TeV, n=1", "l");
+      Legend->AddEntry((TH1D*) histos->At(1), "MD=MBH=1.0 TeV, n=6", "l");
+      Legend->AddEntry((TH1D*) histos->At(2), "MD=MBH=3.0 TeV, n=1", "l");
+      Legend->AddEntry((TH1D*) histos->At(3), "MD=MBH=3.0 TeV, n=6", "l");
+      Legend->AddEntry((TH1D*) histos->At(4), "MD=MBH=5.0 TeV, n=1", "l");
+      Legend->AddEntry((TH1D*) histos->At(5), "MD=MBH=5.0 TeV: n=6", "l");
     }  
+
+    if (j == 1) {
+      TLegend* Legend = new TLegend(0.13, 0.55, 0.60, 0.88,NULL,"brNDC");
+      Legend->AddEntry((TH1D*) histos->At(0), "MBH=3.0 TeV, n=1", "l");
+      Legend->AddEntry((TH1D*) histos->At(1), "MBH=3.0 TeV, n=6", "l");
+      Legend->AddEntry((TH1D*) histos->At(2), "MBH=4.5 TeV, n=1", "l");
+      Legend->AddEntry((TH1D*) histos->At(3), "MBH=4.5 TeV, n=6", "l");
+      Legend->AddEntry((TH1D*) histos->At(4), "MBH=6.0 TeV, n=1", "l");
+      Legend->AddEntry((TH1D*) histos->At(5), "MBH=6.0 TeV: n=6", "l");
+
+    }  
+    if (j == 2) {
+      TLegend* Legend = new TLegend(0.13, 0.55, 0.60, 0.88,NULL,"brNDC");
+      Legend->AddEntry((TH1D*) histos->At(0), "MBH=4.5 TeV, n=1", "l");
+      Legend->AddEntry((TH1D*) histos->At(1), "MBH=4.5 TeV, n=6", "l");
+      Legend->AddEntry((TH1D*) histos->At(2), "MBH=5.0 TeV, n=1", "l");
+      Legend->AddEntry((TH1D*) histos->At(3), "MBH=5.0 TeV, n=6", "l");
+      Legend->AddEntry((TH1D*) histos->At(4), "MBH=6.0 TeV, n=1", "l");
+      Legend->AddEntry((TH1D*) histos->At(5), "MBH=6.0 TeV: n=6", "l");
+    } 
+
+    Legend->SetFillColor(0);
+    Legend->SetFillStyle(0);
+    //    Legend->SetLineColor(0);
+    Legend->DrawClone("sames");
 
   }    
 
 
-  C->SaveAs("histograms_Fat30_mc_Fat30vsAK7_TuneD6T.png"); 
-  C->SaveAs("histograms_Fat30_mc_Fat30vsAK7_TuneD6T.eps"); 
-  C->SaveAs("histograms_Fat30_mc_Fat30vsAK7_TuneD6T.root"); 
+  C->SaveAs("histograms_Fat30_mc_QBH_TuneD6T.png"); 
 
-  TPaveText *modelQQ =  new TPaveText(0.2527517,0.8455401,0.8473826,0.9387805,"brNDC");
-  TPaveText *modelQG =  new TPaveText(0.2527517,0.8455401,0.8473826,0.9387805,"brNDC");
-  TPaveText *modelGG =  new TPaveText(0.2527517,0.8455401,0.8473826,0.9387805,"brNDC");
-
-  modelQQ->SetFillColor(0);
-  modelQQ->SetFillStyle(0);
-  modelQQ->SetBorderSize(0);
-  modelQQ->SetLineColor(0);
-  modelQQ->SetTextSize(0.04);
-  modelQQ->SetTextColor(kRed);
-  modelQQ->SetTextAlign(12);
-	
-  modelQQ->AddText("PYTHIA + CMS Simulation: qq->RS->qq");
-
-  modelQG->SetFillColor(0);
-  modelQG->SetFillStyle(0);
-  modelQG->SetBorderSize(0);
-  modelQG->SetLineColor(0);
-  modelQG->SetTextSize(0.04);
-  modelQG->SetTextColor(kRed);
-  modelQG->SetTextAlign(12);
-
-  modelQG->AddText("PYTHIA + CMS Simulation: qg->Q*->qg");
-
-  modelGG->SetFillColor(0);
-  modelGG->SetFillStyle(0);
-  modelGG->SetBorderSize(0);
-  modelGG->SetLineColor(0);
-  modelGG->SetTextSize(0.04);
-  modelGG->SetTextAlign(12);
-  modelGG->SetTextColor(kRed);
-  modelGG->AddText("PYTHIA + CMS Simulation: gg->RS->gg");
-
-
+/*
   for (int j = 0; j < 3; j++){
     histos->Clear();
     switch(j){
@@ -197,16 +185,12 @@
 	    
     C->cd(j+1);
 
-    TH1F *vFrame2 = gPad->DrawFrame(0.0,0.0,4999.,0.30);
+    TH1F *vFrame2 = gPad->DrawFrame(0.0,0.0,5000.,0.30);
     vFrame2->SetTitle(sHeader[j].c_str());
     vFrame2->SetTitleSize(0.2);
     if (j==0) vFrame2->SetXTitle("Quark-Quark Resonance mass (GeV)");
     if (j==1) vFrame2->SetXTitle("Quark-Gluon Resonance mass (GeV)");
     if (j==2) vFrame2->SetXTitle("Gluon-Gluon Resonance mass (GeV)");
-    if (j==0) vFrame2->SetTitle("");
-    if (j==1) vFrame2->SetTitle("");
-    if (j==2) vFrame2->SetTitle("");
-
     vFrame2->GetYaxis()->SetLabelSize(0.03);
     vFrame2->GetYaxis()->SetTitleSize(0.04);
     vFrame2->GetYaxis()->SetTitleOffset(1.2);
@@ -218,30 +202,21 @@
 	
     vFrame2->DrawClone();
 
-    if (j==0) modelQQ->Draw("same");
-    if (j==1) modelQG->Draw("same");    
-    if (j==2) modelGG->Draw("same");    
-
-
-
     for (int i = 0; i < 6; i++){
       ((TH1D*) histos->At(i))->DrawClone("SAME");
     }
 
-    if (j == 2) {
-      TLegend* Legend = new TLegend(0.68, 0.52, 0.88, 0.84,NULL,"brNDC");
-      Legend->SetLineColor(1);
-      Legend->SetLineStyle(1);
-      Legend->SetLineWidth(0);
-      Legend->SetFillColor(0);
 
+
+    if (j == 2) {
+      TLegend* Legend = new TLegend(0.40, 0.55, 0.87, 0.88);
       Legend->AddEntry((TH1D*) histos->At(0), "0.5 TeV", "l");
       Legend->AddEntry((TH1D*) histos->At(1), "0.7 TeV", "l");
       Legend->AddEntry((TH1D*) histos->At(2), "1.2 TeV", "l");
       Legend->AddEntry((TH1D*) histos->At(3), "2.0 TeV", "l");
       Legend->AddEntry((TH1D*) histos->At(4), "3.5 TeV", "l");
       Legend->AddEntry((TH1D*) histos->At(5), "4.0 TeV", "l");
-      Legend->Draw("SAME");
+      Legend->Draw();
     }  
 
     
@@ -251,11 +226,9 @@
 
 
   C->SaveAs("histograms_Fat30_mc_Fat30_TuneD6T.png"); 
-  C->SaveAs("histograms_Fat30_mc_Fat30_TuneD6T.eps"); 
-  C->SaveAs("histograms_Fat30_mc_Fat30_TuneD6T.root"); 
 
 
-
+*/
 
 
 
