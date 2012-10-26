@@ -45,6 +45,9 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        
        var( tr, 'isFake')
        var( tr, 'isSignal')
+       var( tr, 'leptonAccept')
+       var( tr, 'thirdLeptonVeto')
+
        
     def declareHandles(self):
         super(H2TauTauTreeProducerTauEle, self).declareHandles()
@@ -109,7 +112,9 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
 ##        if hasattr( event, 'genMatched'): 
 ##           if event.genMatched == 1:
 ##              isFake = 0
-       fill(tr, 'isFake', event.isFake)
-       fill(tr, 'isSignal', event.isSignal)
+       fill(tr, 'isFake',          event.isFake)
+       fill(tr, 'isSignal',        event.isSignal)
+       fill(tr, 'leptonAccept',    event.leptonAccept)
+       fill(tr, 'thirdLeptonVeto', event.thirdLeptonVeto)
        
        self.tree.tree.Fill()
