@@ -9,8 +9,12 @@ class BTagPlotter( Analyzer ):
         fileName = '/'.join([self.dirName,
                              self.name+'_plots.root'])
         self.file = TFile( fileName, 'recreate' )
-        self.h_mva_btag = TH1F ('h_mva_btag', 'h_mva_btag', 100, 0, 1)
-        self.h_mva_bvet = TH1F ('h_mva_bvet', 'h_mva_bvet', 100, 0, 1)
+        self.h_mva_b_btag = TH1F ('h_mva_b_btag', 'h_mva_b_btag', 100, 0, 1)
+        self.h_mva_b_bvet = TH1F ('h_mva_b_bvet', 'h_mva_b_bvet', 100, 0, 1)
+        self.h_mva_l_btag = TH1F ('h_mva_l_btag', 'h_mva_l_btag', 100, 0, 1)
+        self.h_mva_l_bvet = TH1F ('h_mva_l_bvet', 'h_mva_l_bvet', 100, 0, 1)
+        self.h_mva_g_btag = TH1F ('h_mva_g_btag', 'h_mva_g_btag', 100, 0, 1)
+        self.h_mva_g_bvet = TH1F ('h_mva_g_bvet', 'h_mva_g_bvet', 100, 0, 1)
 
 
     def beginLoop(self):
@@ -19,10 +23,15 @@ class BTagPlotter( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         for jet in event.jets:
+            pf = abs(jet.partonFlavour())
             if jet.btagFlag == True :
-                self.h_mva_btag.Fill (jet.btagMVA)
+                if (pf < 5)     : self.h_mva_l_btag.Fill (jet.btagMVA)
+                elif (pf == 5)  : self.h_mva_b_btag.Fill (jet.btagMVA)
+                elif (pf == 21) : self.h_mva_g_btag.Fill (jet.btagMVA)
             else :
-                self.h_mva_bvet.Fill (jet.btagMVA)
+                if (pf < 5)     : self.h_mva_l_bvet.Fill (jet.btagMVA)
+                elif (pf == 5)  : self.h_mva_b_bvet.Fill (jet.btagMVA)
+                elif (pf == 21) : self.h_mva_g_bvet.Fill (jet.btagMVA)
 
 
     def write(self):
