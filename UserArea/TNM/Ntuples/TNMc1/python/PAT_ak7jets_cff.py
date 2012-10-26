@@ -56,8 +56,10 @@ selectedPatJetsAK7CHS.src = 'patJetsAK7CHS'
 selectedPatJetsAK7CHS.cut = 'pt()>10'
 
 from RecoJets.Configuration.RecoGenJets_cff import ak7GenJetsNoNu
+from RecoJets.Configuration.GenJetParticles_cff import genParticlesForJetsNoNu
 jetMCSequenceAK7CHS = cms.Sequence(
     patJetPartonMatchAK7CHS +
+    genParticlesForJetsNoNu +
     ak7GenJetsNoNu +
     patJetGenJetMatchAK7CHS
     )
