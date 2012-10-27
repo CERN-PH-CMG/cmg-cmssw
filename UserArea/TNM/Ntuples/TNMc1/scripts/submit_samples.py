@@ -15,21 +15,22 @@ samples = [
 #('/yxin_RSG_WW_1000_pythia6_01/yxin-yxin_RSG_WW_1000_pythia6_01-52e9c298e8547223f910bab8db11615e/USER',True,True),
 #('/yxin_RSG_WW_2000_pythia6_01/yxin-yxin_RSG_WW_2000_pythia6_01-54dbdee3e49fbf0c9fb4ed9452c44bd3/USER',True,True),
 
-('/RadionToHHTo4B_1TeV',True,True),
+#('/RadionToHHTo4B_1TeV',True,True),
+#('/RadionToHHTo4B_1p5TeV',True,True),
 ('/RadionToHHTo4B_2TeV',True,True),
-('/JetHT/Run2012C-PromptReco-v1/AOD',False,False),
-('/JetHT/Run2012C-PromptReco-v2/AOD',False,False),
-('/HT/Run2012A-13Jul2012-v1/AOD',False,False),
-('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False),
-('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
-('/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S8_START53_V7A-v1/AODSIM',True,False),
-('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
-('/RSGravitonToWW_kMpl01_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
-('/RSGravitonToWW_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
-('/RSGravitonToZZ_kMpl01_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
-('/RSGravitonToZZ_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
-('/RSGravitonToWW_kMpl02_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
-('/RSGravitonToWW_kMpl04_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+#('/JetHT/Run2012C-PromptReco-v1/AOD',False,False),
+#('/JetHT/Run2012C-PromptReco-v2/AOD',False,False),
+#('/HT/Run2012A-13Jul2012-v1/AOD',False,False),
+#('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False),
+#('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+#('/QCD_Pt-15to3000_TuneEE3C_Flat_8TeV_herwigpp/Summer12_DR53X-PU_S8_START53_V7A-v1/AODSIM',True,False),
+#('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+#('/RSGravitonToWW_kMpl01_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+#('/RSGravitonToWW_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+#('/RSGravitonToZZ_kMpl01_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+#('/RSGravitonToZZ_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+#('/RSGravitonToWW_kMpl02_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
+#('/RSGravitonToWW_kMpl04_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False),
 ]
 
 for sample, mc, fastsim in samples:
@@ -403,6 +404,22 @@ process.source = cms.Source("PoolSource",
 'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1TeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1TeV_9_1_HYK.root',
     )
 )""")
+    elif "RadionToHHTo4B_1p5TeV" in sample:
+        cfg.writelines("""
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1500GeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1500GeV_10_1_oRN.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1500GeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1500GeV_1_1_wjd.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1500GeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1500GeV_2_1_Ki6.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1500GeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1500GeV_3_1_pK4.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1500GeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1500GeV_4_1_6JK.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1500GeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1500GeV_5_1_HfD.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1500GeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1500GeV_6_1_S3c.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1500GeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1500GeV_7_1_Z4v.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1500GeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1500GeV_8_1_izE.root',
+'root://xrootd.unl.edu//store/user/sertac/2012/Radion/MR_1500GeV/MadGraph_PYTHIA6_FastSim53X_RadionToHH_Hbb_1500GeV_9_1_vav.root ',
+    )
+)""")
     elif "RadionToHHTo4B_2TeV" in sample:
         cfg.writelines("""
 process.source = cms.Source("PoolSource",
@@ -456,11 +473,6 @@ print 'loading the main CMG sequence'
 
 process.load('CMGTools.Common.PAT.PATCMG_cff')
 
-#### Adding AK7 pruned jets
-
-from CMGTools.Common.PAT.jetSubstructure_cff import *
-process.PATCMGSequence += PATCMGJetSequenceAK7CHSpruned
-
 if runOnMC is False:
     # removing MC stuff
     print 'removing MC stuff, as we are running on Data'
@@ -481,9 +493,6 @@ if runOnMC is False:
         process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
         process.patJetsCHSpruned.addGenJetMatch = False
         process.patJetsCHSpruned.addGenPartonMatch = False
-        process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
-        process.patJetsAK7CHSpruned.addGenJetMatch = False
-        process.patJetsAK7CHSpruned.addGenPartonMatch = False
 
     process.PATCMGTauSequence.remove( process.tauGenJets )
     process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
@@ -505,7 +514,6 @@ if runOnMC is False:
     process.patJetCorrFactors.levels.append('L2L3Residual')
     if cmsswIs52X():
         process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
-        process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
 
 
 print 'cloning the jet sequence to build PU chs jets'
@@ -517,14 +525,6 @@ from CMGTools.Common.Tools.visitorUtils import replaceSrc
 replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
 replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
 process.patJetCorrFactorsCHS.payload = 'AK5PFchs'
-
-from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
-process.PATCMGJetCHSSequence = cloneProcessingSnippet(process, process.PATCMGJetSequence, 'AK7CHS')
-process.PATCMGJetCHSSequence.insert( 0, process.ak7PFJetsCHS )
-from CMGTools.Common.Tools.visitorUtils import replaceSrc
-replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak7PFJetsCHS')
-replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
-process.patJetCorrFactorsCHS.payload = 'AK7PFchs'
 
 ########################################################
 ## Path definition
@@ -601,34 +601,6 @@ process.outcmg = cms.OutputModule(
 #process.outpath += process.outcmg
 
 
-
-
-########################################################
-## Conditions 
-########################################################
-
-
-process.load("Configuration.StandardSequences.GeometryDB_cff")
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-process.load("Configuration.StandardSequences.MagneticField_38T_cff")
-
-GT = None
-if cmsswIs44X():
-    if runOnMC:
-        GT = 'START44_V13::All'
-    else:
-        GT = 'GR_R_44_V15::All'
-else:
-    if runOnMC:
-        #GT = 'START52_V9::All'
-        GT = 'START52_V9B::All' # for Summer12 MC
-    else:
-        #GT = 'GR_R_52_V7::All'
-        #GT = 'GR_R_52_V7C::All' # for run2012A
-        GT = 'GR_P_V41_AN1::All' # for run2012C
-process.GlobalTag.globaltag = GT
-
-print 'Global tag       : ', process.GlobalTag.globaltag
 
 
 ########################################################
@@ -709,8 +681,80 @@ process.ak5PFJetsCHSprunedSubJetspuJetId = pileupJetIdProducer.clone(
     algos = cms.VPSet(cutbased)
     )
 
-#process.p += cms.Sequence(process.selectedPatJetspuJetId * process.selectedPatJetsCHSpuJetId * process.ak5PFJetsCHSprunedSubJetspuJetId * process.demo)
-process.p += cms.Sequence(process.demo)
+#process.p = cms.Path(process.selectedPatJetspuJetId * process.selectedPatJetsCHSpuJetId * process.ak5PFJetsCHSprunedSubJetspuJetId * process.demo)
+
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
+process.load("Configuration.StandardSequences.GeometryDB_cff")
+process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+process.load("Configuration.StandardSequences.MagneticField_38T_cff")
+
+GT = None
+if runOnMC:
+    GT = 'START53_V10::All' # for Summer12 MC
+else:
+    GT = 'GR_P_V41_AN2::All' # for run2012C
+process.GlobalTag.globaltag = GT
+
+##### AK7 jets
+
+process.load('CMGTools.Common.PAT.PATCMG_cff')
+process.load("CMGTools.Common.PAT.jetSubstructure_cff")
+if not runOnMC:
+    process.PATCMGJetSequenceAK7CHSpruned.remove( process.jetMCSequenceAK7CHSpruned )
+    process.patJetsAK7CHSpruned.addGenJetMatch = False
+    process.patJetsAK7CHSpruned.addGenPartonMatch = False
+    process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
+
+process.load("Ntuples.TNMc1.PAT_ak7jets_cff")
+if not runOnMC:
+    process.PATCMGJetSequenceAK7CHS.remove( process.jetMCSequenceAK7CHS )
+    process.patJetsAK7CHS.addGenJetMatch = False
+    process.patJetsAK7CHS.addGenPartonMatch = False
+    process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
+
+##### Razor stuff
+
+process.load("CMGTools.Susy.RazorMultiJet.razorMultijet_cff")
+process.load("CMGTools.Susy.common.susy_cff")
+
+process.razorMJObjectSequence.remove(process.razorMJHemiSequence)
+# This is the UCSB tau veto.  Need to remove for SMSs:
+process.razorMJTauSequence.remove(process.razorMJTauVeto)
+
+if not runOnMC:
+    process.demo.buffers.remove('sint')
+    process.demo.buffers.remove('recoLeafCandidate')
+
+if runOnMC:
+    process.demo.buffers.remove('hcalFilter')
+    process.demo.buffers.remove('edmTriggerResultsHelper')
+    process.demo.buffers.remove('edmTriggerResultsHelper1')
+
+##### Sequence
+
+print 'Global tag       : ', process.GlobalTag.globaltag
+
+if runOnMC==True:
+    #process.p += cms.Sequence(process.PATCMGJetSequenceAK7CHS+process.PATCMGJetSequenceAK7CHSpruned+process.demo)
+    process.p += cms.Sequence(process.razorMJObjectSequence+process.susyGenSequence+process.PATCMGJetSequenceAK7CHS+process.PATCMGJetSequenceAK7CHSpruned+process.demo)
+else:
+    #process.p += cms.Sequence(process.PATCMGJetSequenceAK7CHS+process.PATCMGJetSequenceAK7CHSpruned+process.demo)
+    process.p += cms.Sequence(process.razorMJObjectSequence+process.PATCMGJetSequenceAK7CHS+process.PATCMGJetSequenceAK7CHSpruned+process.demo)
+
+##### HCAL laser filter for 2012
+
+if not runOnMC:
+    process.load("Ntuples.TNMc1.hcallasereventfilter2012_cfi")
+    #inputfilelist=["data/AllBadHCALLaser.txt"]
+    #for f in inputfilelist:
+    #    mylist=open(f,'r').readlines()
+    #     for j in mylist:
+    #         process.hcallasereventfilter2012.EventList.append(j.strip())
+    print "load laser event list"
+    from Ntuples.TNMc1.AllBadHCALLaser import eventlist
+    process.hcallasereventfilter2012.EventList=eventlist
+    process.hcallasereventfilter2012Path=cms.Path(process.hcallasereventfilter2012)
+    process.schedule = cms.Schedule(process.hcallasereventfilter2012Path,process.p)
 
 ### Tweaks to run PAT and ntuple in one go
 
@@ -726,10 +770,11 @@ process.p.remove(process.vertexWeightSequence)
 ### Tweaks to run on fastsim samples
 
 process.schedule.remove(process.metNoiseCleaningPath)
-#process.schedule.remove(process.hcalLaserFilterFromAODPath)
 process.schedule.remove(process.hcalLaserEventFilterPath)
 process.schedule.remove(process.CSCTightHaloFilterPath)
 process.schedule.remove(process.HBHENoiseFilterPath)
+process.schedule.remove(process.trackingFailureFilterPath)
+
 #process.demo.buffers.remove('edmTriggerResultsHelper1')
 #process.p.remove(process.PATCMGTauSequence)
 #process.demo.buffers.remove('patTau')
