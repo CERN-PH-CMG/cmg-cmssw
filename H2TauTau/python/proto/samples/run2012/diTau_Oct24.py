@@ -204,11 +204,67 @@ HiggsVH145 = cfg.MCComponent(
     effCorrFactor = 1 )
 
 
+HiggsSUSYBB80 = cfg.MCComponent(
+    name = 'HiggsSUSYBB80',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB90 = cfg.MCComponent(
+    name = 'HiggsSUSYBB90',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB100 = cfg.MCComponent(
+    name = 'HiggsSUSYBB100',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB110 = cfg.MCComponent(
+    name = 'HiggsSUSYBB110',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 HiggsSUSYBB120 = cfg.MCComponent(
     name = 'HiggsSUSYBB120',
     files = [],
     xSection = 1.0,
     nGenEvents = 991913*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB130 = cfg.MCComponent(
+    name = 'HiggsSUSYBB130',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB140 = cfg.MCComponent(
+    name = 'HiggsSUSYBB140',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB160 = cfg.MCComponent(
+    name = 'HiggsSUSYBB160',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -220,6 +276,22 @@ HiggsSUSYBB180 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+HiggsSUSYBB200 = cfg.MCComponent(
+    name = 'HiggsSUSYBB200',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB250 = cfg.MCComponent(
+    name = 'HiggsSUSYBB250',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 HiggsSUSYBB300 = cfg.MCComponent(
     name = 'HiggsSUSYBB300',
     files = [],
@@ -228,11 +300,67 @@ HiggsSUSYBB300 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+HiggsSUSYBB350 = cfg.MCComponent(
+    name = 'HiggsSUSYBB350',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB400 = cfg.MCComponent(
+    name = 'HiggsSUSYBB400',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB450 = cfg.MCComponent(
+    name = 'HiggsSUSYBB450',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB500 = cfg.MCComponent(
+    name = 'HiggsSUSYBB500',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 HiggsSUSYBB600 = cfg.MCComponent(
     name = 'HiggsSUSYBB600',
     files = [],
     xSection = 1.0, 
     nGenEvents = 987577*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB700 = cfg.MCComponent(
+    name = 'HiggsSUSYBB700',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB800 = cfg.MCComponent(
+    name = 'HiggsSUSYBB800',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYBB900 = cfg.MCComponent(
+    name = 'HiggsSUSYBB900',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -245,11 +373,67 @@ HiggsSUSYBB1000 = cfg.MCComponent(
     effCorrFactor = 1 )
 
 
+HiggsSUSYGluGlu80 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu80',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu90 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu90',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu100 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu100',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu110 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu110',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 HiggsSUSYGluGlu120 = cfg.MCComponent(
     name = 'HiggsSUSYGluGlu120',
     files = [],
     xSection = 1.0,
     nGenEvents = 1000620*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu130 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu130',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu140 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu140',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu160 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu160',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -261,6 +445,22 @@ HiggsSUSYGluGlu180 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+HiggsSUSYGluGlu200 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu200',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu250 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu250',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 HiggsSUSYGluGlu300 = cfg.MCComponent(
     name = 'HiggsSUSYGluGlu300',
     files = [],
@@ -269,11 +469,59 @@ HiggsSUSYGluGlu300 = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+HiggsSUSYGluGlu350 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu350',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu400 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu400',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu450 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu450',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu500 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu500',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
 HiggsSUSYGluGlu600 = cfg.MCComponent(
     name = 'HiggsSUSYGluGlu600',
     files = [],
     xSection = 1.0, 
     nGenEvents = 980316*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu700 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu700',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
+    triggers = [],
+    effCorrFactor = 1 )
+
+HiggsSUSYGluGlu800 = cfg.MCComponent(
+    name = 'HiggsSUSYGluGlu800',
+    files = [],
+    xSection = 1.0,
+    nGenEvents = 1000000*1.0,
     triggers = [],
     effCorrFactor = 1 )
 
@@ -337,18 +585,48 @@ mc_higgs_VH = [
     ]
 
 mc_higgs_SUSYBB = [
+    HiggsSUSYBB80,
+    HiggsSUSYBB90,
+    HiggsSUSYBB100,
+    HiggsSUSYBB110,
     HiggsSUSYBB120,
+    HiggsSUSYBB130,
+    HiggsSUSYBB140,
+    HiggsSUSYBB160,
     HiggsSUSYBB180,
+    HiggsSUSYBB200,
+    HiggsSUSYBB250,
     HiggsSUSYBB300,
+    HiggsSUSYBB350,
+    HiggsSUSYBB400,
+    HiggsSUSYBB450,
+    HiggsSUSYBB500,
     HiggsSUSYBB600,
+    HiggsSUSYBB700,
+    HiggsSUSYBB800,
     HiggsSUSYBB1000,
     ]
 
 mc_higgs_SUSYGluGlu = [
+    HiggsSUSYGluGlu80,
+    HiggsSUSYGluGlu90,
+    HiggsSUSYGluGlu100,
+    HiggsSUSYGluGlu110,
     HiggsSUSYGluGlu120,
+    HiggsSUSYGluGlu130,
+    HiggsSUSYGluGlu140,
+    HiggsSUSYGluGlu160,
     HiggsSUSYGluGlu180,
+    HiggsSUSYGluGlu200,
+    HiggsSUSYGluGlu250,
     HiggsSUSYGluGlu300,
+    HiggsSUSYGluGlu350,
+    HiggsSUSYGluGlu400,
+    HiggsSUSYGluGlu450,
+    HiggsSUSYGluGlu500,
     HiggsSUSYGluGlu600,
+    HiggsSUSYGluGlu700,
+    HiggsSUSYGluGlu800,
     HiggsSUSYGluGlu1000,
     ]
 
@@ -427,7 +705,7 @@ W3Jets = cfg.MCComponent(
     effCorrFactor = 1 )
 
 TTJets.files = getFiles('/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-TTJets.nGenEvents = 13812502*0.99747
+TTJets.nGenEvents = 6923750*0.99747
 
 WW = cfg.MCComponent(
     name = 'WW',
@@ -465,21 +743,21 @@ ZZ.nGenEvents = 9799908*0.99878
 QCD = cfg.DataComponent(
     name = 'QCD',
     files = [],
-    #files = getFiles('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12-PU_S7_START52_V9-v5/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    #files = getFiles('/QCD_Pt-15to3000_TuneZ2star_Flat_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v5/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
     intLumi = 1.0, # dummy
     triggers = [] )
 
 QCD50 = cfg.DataComponent(
     name = 'QCD50',
     files = [],
-    #files = getFiles('/QCD_Pt-50to80_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    #files = getFiles('/QCD_Pt-50to80_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
     intLumi = 1.0, # dummy
     triggers = [] )
 
 QCD80 = cfg.DataComponent(
     name = 'QCD80',
     files = [],
-    #files = getFiles('/QCD_Pt-80to120_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    #files = getFiles('/QCD_Pt-80to120_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
     intLumi = 1.0, # dummy
     triggers = [] )
 
@@ -511,17 +789,47 @@ HiggsVH140.files = getFiles('/WH_ZH_TTH_HToTauTau_M-140_8TeV-pythia6-tauola/Summ
 HiggsVH145.files = getFiles('/WH_ZH_TTH_HToTauTau_M-145_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 
-#HiggsSUSYBB120.files = getFiles('/SUSYBBHToTauTau_M-120_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsSUSYBB180.files = getFiles('/SUSYBBHToTauTau_M-180_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsSUSYBB300.files = getFiles('/SUSYBBHToTauTau_M-300_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsSUSYBB600.files = getFiles('/SUSYBBHToTauTau_M-600_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsSUSYBB1000.files = getFiles('/SUSYBBHToTauTau_M-1000_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB80.files = getFiles('/SUSYBBHToTauTau_M-80_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB90.files = getFiles('/SUSYBBHToTauTau_M-90_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB100.files = getFiles('/SUSYBBHToTauTau_M-100_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB110.files = getFiles('/SUSYBBHToTauTau_M-110_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB120.files = getFiles('/SUSYBBHToTauTau_M-120_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB130.files = getFiles('/SUSYBBHToTauTau_M-130_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB140.files = getFiles('/SUSYBBHToTauTau_M-140_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB160.files = getFiles('/SUSYBBHToTauTau_M-160_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB180.files = getFiles('/SUSYBBHToTauTau_M-180_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB200.files = getFiles('/SUSYBBHToTauTau_M-200_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB250.files = getFiles('/SUSYBBHToTauTau_M-250_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB300.files = getFiles('/SUSYBBHToTauTau_M-300_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB350.files = getFiles('/SUSYBBHToTauTau_M-350_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB400.files = getFiles('/SUSYBBHToTauTau_M-400_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB450.files = getFiles('/SUSYBBHToTauTau_M-450_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB500.files = getFiles('/SUSYBBHToTauTau_M-500_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB600.files = getFiles('/SUSYBBHToTauTau_M-600_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB700.files = getFiles('/SUSYBBHToTauTau_M-700_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB800.files = getFiles('/SUSYBBHToTauTau_M-800_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYBB1000.files = getFiles('/SUSYBBHToTauTau_M-1000_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
-#HiggsSUSYGluGlu120.files = getFiles('/SUSYGluGluToHToTauTau_M-120_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsSUSYGluGlu180.files = getFiles('/SUSYGluGluToHToTauTau_M-180_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsSUSYGluGlu300.files = getFiles('/SUSYGluGluToHToTauTau_M-300_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v2/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsSUSYGluGlu600.files = getFiles('/SUSYGluGluToHToTauTau_M-120_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsSUSYGluGlu1000.files = getFiles('/SUSYGluGluToHToTauTau_M-120_8TeV-pythia6-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu80.files = getFiles('/SUSYGluGluToHToTauTau_M-80_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu90.files = getFiles('/SUSYGluGluToHToTauTau_M-90_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu100.files = getFiles('/SUSYGluGluToHToTauTau_M-100_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu110.files = getFiles('/SUSYGluGluToHToTauTau_M-110_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu120.files = getFiles('/SUSYGluGluToHToTauTau_M-120_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu130.files = getFiles('/SUSYGluGluToHToTauTau_M-130_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu140.files = getFiles('/SUSYGluGluToHToTauTau_M-140_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu160.files = getFiles('/SUSYGluGluToHToTauTau_M-160_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu180.files = getFiles('/SUSYGluGluToHToTauTau_M-180_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu200.files = getFiles('/SUSYGluGluToHToTauTau_M-200_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu250.files = getFiles('/SUSYGluGluToHToTauTau_M-250_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu300.files = getFiles('/SUSYGluGluToHToTauTau_M-300_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu350.files = getFiles('/SUSYGluGluToHToTauTau_M-350_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu400.files = getFiles('/SUSYGluGluToHToTauTau_M-400_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu450.files = getFiles('/SUSYGluGluToHToTauTau_M-450_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu500.files = getFiles('/SUSYGluGluToHToTauTau_M-500_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu600.files = getFiles('/SUSYGluGluToHToTauTau_M-600_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu700.files = getFiles('/SUSYGluGluToHToTauTau_M-700_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu800.files = getFiles('/SUSYGluGluToHToTauTau_M-800_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsSUSYGluGlu1000.files = getFiles('/SUSYGluGluToHToTauTau_M-1000_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 mc_spring12 = copy.copy( mc_ewk )
 mc_spring12.extend( mc_higgs ) 
