@@ -5,6 +5,7 @@ root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-13Jul2012-v1/AO
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_12.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_13.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_14.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_15.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_16.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_17.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_18.root
