@@ -27,6 +27,7 @@ class ComponentCreator(object):
              files=files+self.getFiles(dataset,user,pattern)
         
          component = cfgDataComponent(
+             dataset=dataset,
              name = name,
              files = files,
              intLumi=1,

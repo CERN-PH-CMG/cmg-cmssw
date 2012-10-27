@@ -196,6 +196,8 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
 
         else:
             event.leptonsForLooseZ2=[]
+
+        self.correctFakeWeights(event)
         self.FSR.setElectronID(self.testLeptonLoose)
         self.FSR.setLeptons(event.leptonsForLooseZ2)
         if hasattr(event.bestZ,'fsrPhoton'):

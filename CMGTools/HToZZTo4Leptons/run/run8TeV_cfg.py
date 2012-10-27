@@ -1,3 +1,6 @@
+
+
+
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
@@ -180,7 +183,7 @@ sequence = cfg.Sequence(dataSequence)
 
 test = 0
 if test==1:
-    dataset = GGH127
+    dataset = ggH127
     selectedComponents = [dataset]
     dataset.splitFactor = 1
     dataset.files=['cmgTuple.root']
