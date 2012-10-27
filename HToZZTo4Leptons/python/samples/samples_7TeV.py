@@ -198,6 +198,7 @@ from CMGTools.HToZZTo4Leptons.setup.Efficiencies import *
 #Define splitting
 for comp in mcSamples:
     comp.isMC = True
+    comp.isData = False
     comp.splitFactor = 10
     comp.puFileMC=dataDir+"/puProfile_Fall11.root"
     comp.puFileData=dataDir+"/puProfile_Data11.root"
@@ -219,6 +220,11 @@ for comp in uflSamples:
 for comp in dataSamplesMu:
     comp.splitFactor = 500
     comp.fakeRates=fakeRates2011
+    comp.isMC = False
+    comp.isData = True
+
 for comp in dataSamplesE:
     comp.splitFactor = 500
     comp.fakeRates=fakeRates2011
+    comp.isMC = False
+    comp.isData = True

@@ -11,12 +11,12 @@ class LineShapeWeights(object):
         self.method=lambda x: 1
 
 
-        if comp.dataset.find('7TeV')>-1:
-            period='7TeV'
-        else:    
-            period='8TeV'
         
         if comp.isMC:
+            if comp.dataset.find('7TeV')>-1:
+                period='7TeV'
+            else:    
+                period='8TeV'
             mass=''
             for char in comp.name:
                 if char in ['1','2','3','4','5','6','7','8','9','0']:

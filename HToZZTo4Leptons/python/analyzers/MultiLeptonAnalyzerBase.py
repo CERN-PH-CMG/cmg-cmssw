@@ -117,9 +117,6 @@ class MultiLeptonAnalyzerBase( Analyzer ):
 
         for lepton in event.leptons1:
             lepton.associatedVertex = event.vertex
-            if hasattr(self,'fakeRates'):
-                for fr in self.fakeRates:
-                    fr.attachToObject(lepton)
 
             if hasattr(self,'efficiency'):
                 self.efficiency.attachToObject(lepton)
@@ -132,14 +129,13 @@ class MultiLeptonAnalyzerBase( Analyzer ):
 
             for lepton in event.leptons2:
                 lepton.associatedVertex = event.vertex
-                if hasattr(self,'fakeRates'):
-                    for fr in self.fakeRates:
-                        fr.attachToObject(lepton)
                 if hasattr(self,'efficiency'):
                     self.efficiency.attachToObject(lepton)
-
         else:
             event.leptons2 = event.leptons1
+
+
+
 
     def doMC(self, iEvent, event):
         event.genParticles=self.mchandles['genParticles'].product()
@@ -203,6 +199,21 @@ class MultiLeptonAnalyzerBase( Analyzer ):
 
         return True
     
+
+
+    def correctFakeWeights(self, event):
+        '''correct the fake rates attached to the LooseZ2 leptons,
+           using the channel-dependent fake rates.
+           needs knowldege of the Z1 decay mode.'''
+        if not hasattr(event,'bestZ'):  return
+        if not hasattr(event.bestZ, 'leg1'):  return
+        z1Flav = event.bestZ.leg1.pdgId()
+        if not hasattr(event,'leptonsForLooseZ2'): return
+        for lepton in event.leptonsForLooseZ2:
+            if hasattr(self,'fakeRates'):
+                for fr in self.fakeRates:
+                    fr.attachToObject(lepton, z1Flav)
+
 
     #####################################################################
     #Combinatorial METHODS

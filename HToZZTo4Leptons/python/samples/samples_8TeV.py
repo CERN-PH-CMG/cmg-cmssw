@@ -184,7 +184,9 @@ GGZZ2L2L,DY,DYLOW,TT
 ]
 
 #-----------DATA---------------
+
 json='/afs/cern.ch/user/m/mangano/public/hcp2012_json_v2/hcp.json'
+skim='SKIM_Oct27_All'
 
 DoubleMuAB = cfg.DataComponent(
     name = 'DoubleMuAB',
@@ -271,6 +273,7 @@ from CMGTools.HToZZTo4Leptons.setup.Efficiencies import *
 #Define splitting
 for comp in mcSamples:
     comp.isMC = True
+    comp.isData = False
     comp.splitFactor = 50
     comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
@@ -280,13 +283,19 @@ for comp in mcSamples:
 for comp in dataSamplesMu:
     comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
+    comp.isMC = False
+    comp.isData = True
+
 for comp in dataSamplesE:
     comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
+    comp.isMC = False
+    comp.isData = True
     
 for comp in dataSamplesMuE:
     comp.splitFactor = 500
     comp.fakeRates=fakeRates2012
+
 
                                                             
 
