@@ -8,7 +8,7 @@
 #include "Ntuples/TNMc1/interface/patJetHelper.h"
 
 #include <fastjet/PseudoJet.hh>
-#include "Nsubjettiness.h"
+#include "Njettiness.hh"
 
 //-----------------------------------------------------------------------------
 using namespace std;
@@ -60,7 +60,7 @@ float JetHelper::getTau(int num) const
         FJparticles.push_back( fastjet::PseudoJet( thisParticle->px(), thisParticle->py(), thisParticle->pz(), thisParticle->energy() ) );	
     }
     NsubParameters paraNsub = NsubParameters(1.0, 0.7); //assume R=0.7 jet clusering used
-    Nsubjettiness routine(nsub_1pass_from_kt_axes, paraNsub);
+    Njettiness routine(Njettiness::onepass_kt_axes, paraNsub);
     return routine.getTau(num, FJparticles); 
 }
 

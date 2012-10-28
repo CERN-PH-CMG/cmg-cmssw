@@ -17,8 +17,9 @@ samples = [
 #('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False, 'ProductionTask'),
 #('/JetHT/Run2012C-PromptReco-v1/AOD',False,False, 'ProductionTask'),
 #('/JetHT/Run2012C-PromptReco-v2/AOD',False,False, 'ProductionTask'),
-#('/RadionToHHTo4B_1TeV',True,True, 'cmsBatch'),
-#('/RadionToHHTo4B_2TeV',True,True, 'cmsBatch'),
+('/RadionToHHTo4B_1TeV',True,True, 'cmsBatch'),
+('/RadionToHHTo4B_1p5TeV',True,True, 'cmsBatch'),
+('/RadionToHHTo4B_2TeV',True,True, 'cmsBatch'),
 #('/yxin_RSG_WW_1000_pythia6_01/yxin-yxin_RSG_WW_1000_pythia6_01-52e9c298e8547223f910bab8db11615e/USER',True,True, 'grid'),
 #('/yxin_RSG_WW_2000_pythia6_01/yxin-yxin_RSG_WW_2000_pythia6_01-54dbdee3e49fbf0c9fb4ed9452c44bd3/USER',True,True, 'grid'),
 #('/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
@@ -30,10 +31,10 @@ samples = [
 #('/RSGravitonToZZ_kMpl01_M-1500_Tune23_8TeV-herwigpp/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
 #('/RSGravitonToWW_kMpl02_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
 #('/RSGravitonToWW_kMpl04_M-1500_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM',True,False,'grid'),
-('/HT/Run2012A-13Jul2012-v1/AOD',False,False,'ProductionTask'),
-('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False,'ProductionTask'),
-('/JetHT/Run2012C-PromptReco-v1/AOD',False,False,'ProductionTask'),
-('/JetHT/Run2012C-PromptReco-v2/AOD',False,False,'ProductionTask'),
+#('/HT/Run2012A-13Jul2012-v1/AOD',False,False,'ProductionTask'),
+#('/JetHT/Run2012B-13Jul2012-v1/AOD',False,False,'ProductionTask'),
+#('/JetHT/Run2012C-PromptReco-v1/AOD',False,False,'ProductionTask'),
+#('/JetHT/Run2012C-PromptReco-v2/AOD',False,False,'ProductionTask'),
 ]
 
 for sample, mc, fastsim, production in samples:

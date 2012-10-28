@@ -179,6 +179,7 @@ int main(int argc, char** argv)
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.EcalDeadCellBoundaryEnergyFilterPath", triggerresultshelper_EcalDeadCellBoundaryEnergyFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.EcalDeadCellTriggerPrimitiveFilterPath", triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.HBHENoiseFilterPath", triggerresultshelper_HBHENoiseFilterPath);
+  stream.select("sint_hcallasereventfilter2012.value", triggerresultshelper_hcallasereventfilter2012);
 
   // The root application is needed to make canvases visible during
   // program execution. If this is not needed, just comment out the following
@@ -369,11 +370,12 @@ int main(int argc, char** argv)
 	     (sdouble_kt6PFJets_rho_value<40)&&
 	     (triggerresultshelper_primaryVertexFilterPath!=0)&&
 	     (triggerresultshelper_noscrapingFilterPath!=0)&&
+	     (triggerresultshelper_trackingFailureFilterPath!=0)&&
 	     (triggerresultshelper_hcalLaserEventFilterPath!=0)&&
 	     (triggerresultshelper_HBHENoiseFilterPath!=0)&&
-	     (triggerresultshelper_EcalDeadCellBoundaryEnergyFilterPath!=0)&&
 	     (triggerresultshelper_CSCTightHaloFilterPath!=0)&&
-	     (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath!=0)
+	     (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath!=0)&&
+	     (triggerresultshelper_hcallasereventfilter2012!=0)
 	    )) continue;
 	   
 	  // ---------------------
