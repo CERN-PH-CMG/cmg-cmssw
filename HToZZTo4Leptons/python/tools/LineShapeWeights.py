@@ -12,7 +12,7 @@ class LineShapeWeights(object):
 
 
         
-        if comp.isMC:
+        if comp.isMC: 
             if comp.dataset.find('7TeV')>-1:
                 period='7TeV'
             else:    
@@ -22,7 +22,7 @@ class LineShapeWeights(object):
                 if char in ['1','2','3','4','5','6','7','8','9','0']:
                     mass+=char
             if len(mass)>2:        
-                if int(mass)>399:
+                if int(mass)>399 and mass in data[period]:
                     dictionary =data[period][mass]
                     self.g=ROOT.TGraph()
                     i=0
