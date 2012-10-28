@@ -1,5 +1,4 @@
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
-from CMGTools.RootTools.utils.DeltaR import matchObjectCollection
 
 class DYLLReweighterTauEle( Analyzer ):
     '''Apply the reweighting calculated by Jose on the basis of the data/mc agreement
@@ -8,7 +7,6 @@ class DYLLReweighterTauEle( Analyzer ):
     '''
 
     def process(self, iEvent, event):
-        event.isFake = 0
         if not self.cfg_comp.isMC:
             return True
 
@@ -29,3 +27,5 @@ class DYLLReweighterTauEle( Analyzer ):
         
         event.eventWeight = event.eventWeight * localweight
         return True
+
+# FIXME read from cfg file the scaling factors
