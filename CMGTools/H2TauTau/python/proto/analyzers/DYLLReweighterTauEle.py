@@ -11,11 +11,11 @@ class DYLLReweighterTauEle( Analyzer ):
             return True
 
         # do nothing in all cases, but the DY -> ll
-        if event.isFake != 1:
+        if event.isFake != 1 or self.cfg_comp.name != 'DYJets':
             return True
 
         if self.cfg_ana.verbose:
-            print 'DYLLReweighterTauEle VERBOSE'
+            print 'DYLLReweighterTauEle processing',self.cfg_comp.name
             
         localweight = 1
         if event.diLepton.leg1().decayMode() == 0 :   # 1prong 0pi
