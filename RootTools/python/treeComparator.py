@@ -30,10 +30,13 @@ def draw(var1, cut, t1, t2, w1='1', w2='1',
         h1.Scale(1./h1.Integral())
         h2.Scale(1./h2.Integral())
     else:
-        h2.Scale(h1.Integral()/h2.Integral())
+        pass
+        # h2.Scale(h1.Integral()/h2.Integral())
     sBlue.markerStyle = 25
     sBlue.formatHisto(h2)
     sBlack.formatHisto(h1)
+    h2.SetFillStyle(1001)
+    h2.SetFillColor(5)
     h1.SetMarkerSize(0.8)
     h2.SetMarkerSize(0.8)
     h1.SetStats(0)
@@ -43,9 +46,9 @@ def draw(var1, cut, t1, t2, w1='1', w2='1',
     legend = TLegend(0.55,0.7,0.88,0.88)
     legend.SetFillColor(0)
     legend.AddEntry(h1, name1, 'lp')
-    legend.AddEntry(h2, name2, 'lp')
+    legend.AddEntry(h2, name2, 'lpf')
     if graphics:
-        h2.Draw()
+        h2.Draw('e2')
         h1.Draw('same')
         legend.Draw('same')
         gPad.Update()
