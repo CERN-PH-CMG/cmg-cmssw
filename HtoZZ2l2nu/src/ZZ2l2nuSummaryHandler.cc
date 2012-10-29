@@ -495,6 +495,8 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   t_->SetBranchAddress("en_e1x5e5x5"     ,evSummary_.en_e1x5e5x5);
   t_->SetBranchAddress("en_preShowerOverRaw",evSummary_.en_preShowerOverRaw);
   t_->SetBranchAddress("en_eopout"        ,evSummary_.en_eopout);
+  if(t_->GetBranch("en_mvatrigv0"))    t_->SetBranchAddress("en_mvatrigv0",     evSummary_.en_mvatrigv0);
+  if(t_->GetBranch("en_mvanontrigv0")) t_->SetBranchAddress("en_mvanontrigv0",  evSummary_.en_mvanontrigv0);
   t_->SetBranchAddress("mn"              ,&evSummary_.mn);
   t_->SetBranchAddress("mn_idbits"       ,evSummary_.mn_idbits);
   t_->SetBranchAddress("mn_nMatches"     ,evSummary_.mn_nMatches);
@@ -520,6 +522,8 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   if(t_->GetBranch("jn_btag5"))  t_->SetBranchAddress("jn_btag5",       evSummary_.jn_btag5);
   if(t_->GetBranch("jn_btag6"))  t_->SetBranchAddress("jn_btag6",       evSummary_.jn_btag6);
   if(t_->GetBranch("jn_btag7"))  t_->SetBranchAddress("jn_btag7",       evSummary_.jn_btag7);
+  if(t_->GetBranch("jn_btag8"))  t_->SetBranchAddress("jn_btag8",       evSummary_.jn_btag8);
+  if(t_->GetBranch("jn_btag9"))  t_->SetBranchAddress("jn_btag9",       evSummary_.jn_btag9);
   t_->SetBranchAddress("jn_neutHadFrac", evSummary_.jn_neutHadFrac);
   t_->SetBranchAddress("jn_neutEmFrac",  evSummary_.jn_neutEmFrac);
   t_->SetBranchAddress("jn_chHadFrac",   evSummary_.jn_chHadFrac);
@@ -539,7 +543,9 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   if(t_->GetBranch("jn_lxy"))           t_->SetBranchAddress("jn_lxy",           evSummary_.jn_lxy);
   if(t_->GetBranch("jn_lxyErr"))        t_->SetBranchAddress("jn_lxyErr",        evSummary_.jn_lxyErr);
   if(t_->GetBranch("jn_svmass"))        t_->SetBranchAddress("jn_svmass",        evSummary_.jn_svmass);
-
+  if(t_->GetBranch("jn_svpt"))          t_->SetBranchAddress("jn_svpt",          evSummary_.jn_svpt);
+  if(t_->GetBranch("jn_svdr"))          t_->SetBranchAddress("jn_svdr",          evSummary_.jn_svdr);
+  
   t_->SetBranchAddress("htvec_px",&evSummary_.htvec_px);
   t_->SetBranchAddress("htvec_py",&evSummary_.htvec_py);
   t_->SetBranchAddress("htvec_pz",&evSummary_.htvec_pz);
@@ -560,6 +566,8 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   if(t_->GetBranch("ajn_btag5"))  t_->SetBranchAddress("ajn_btag5",       evSummary_.ajn_btag5);
   if(t_->GetBranch("ajn_btag6"))  t_->SetBranchAddress("ajn_btag6",       evSummary_.ajn_btag6);
   if(t_->GetBranch("ajn_btag7"))  t_->SetBranchAddress("ajn_btag7",       evSummary_.ajn_btag7);
+  if(t_->GetBranch("ajn_btag8"))  t_->SetBranchAddress("ajn_btag8",       evSummary_.ajn_btag8);
+  if(t_->GetBranch("ajn_btag9"))  t_->SetBranchAddress("ajn_btag9",       evSummary_.ajn_btag9);
   t_->SetBranchAddress("ajn_neutHadFrac", evSummary_.ajn_neutHadFrac);
   t_->SetBranchAddress("ajn_neutEmFrac",  evSummary_.ajn_neutEmFrac);
   t_->SetBranchAddress("ajn_chHadFrac",   evSummary_.ajn_chHadFrac);
@@ -579,6 +587,8 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   if(t_->GetBranch("ajn_lxy"))           t_->SetBranchAddress("ajn_lxy",           evSummary_.ajn_lxy);
   if(t_->GetBranch("ajn_lxyErr"))        t_->SetBranchAddress("ajn_lxyErr",        evSummary_.ajn_lxyErr);
   if(t_->GetBranch("ajn_svmass"))        t_->SetBranchAddress("ajn_svmass",        evSummary_.ajn_svmass);
+  if(t_->GetBranch("ajn_svpt"))          t_->SetBranchAddress("ajn_svpt",          evSummary_.ajn_svpt);
+  if(t_->GetBranch("ajn_svdr"))          t_->SetBranchAddress("ajn_svdr",          evSummary_.ajn_svdr);
 
   //primary vertex
   t_->SetBranchAddress("vtx_px", &evSummary_.vtx_px);

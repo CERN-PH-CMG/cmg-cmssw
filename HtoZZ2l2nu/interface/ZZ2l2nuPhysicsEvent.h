@@ -66,7 +66,7 @@ class PhysicsObject_Lepton : public LorentzVector
     void setEnergyCorrections(Float_t ensf_, Float_t ensferr_) { ensf=ensf_; ensferr=ensferr_; }
  
     Int_t id,genid;
-    Float_t ensf, ensferr;
+    Float_t nonTrigMvaId, trigMvaId, ensf,ensferr;
     Float_t d0, dZ, trkpt,trketa,trkphi,trkchi2,trkValidPixelHits,trkValidTrackerHits,trkLostInnerHits;
     Float_t ptErr, ecalIso, hcalIso, trkIso, gIso, chIso, puchIso, nhIso;
     Int_t  pid;
@@ -102,11 +102,15 @@ public :
       btag6=btag6_;
       btag7=btag7_;
     }
-    void setSecVtxInfo(float lxy_, float lxyerr_, float svmass_)
+    void setSecVtxInfo(float lxy_, float lxyerr_, float svmass_, float svpt_, float svdr_, float ssvhe_, float ssvhp_)
     {
       lxy=lxy_;
       lxyerr=lxyerr_;
       svmass=svmass_;
+      svpt=svpt_;
+      svdr=svdr_;
+      ssvhe=ssvhe_;
+      ssvhp=ssvhp_;
     }
     void setShapeVariables(float beta_,  float betaStar_, float dRMean_, float ptD_, float ptRMS_, float etaW_, float phiW_)
     {
@@ -128,7 +132,7 @@ public :
     Float_t rawCorrFact;
     Float_t beta,betaStar,dRMean,ptD,ptRMS,etaW,phiW;
     Float_t btag1, btag2, btag3, btag4, btag5,btag6,btag7;
-    Float_t lxy, lxyerr, svmass; 
+    Float_t lxy, lxyerr, svmass, svpt, svdr, ssvhe, ssvhp; 
     Bool_t isCfromGsplit, isBfromGsplit;
 };
 

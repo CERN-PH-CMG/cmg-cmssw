@@ -46,7 +46,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
     phys.jets.push_back(PhysicsObject_Jet(LorentzVector(ev.jn_px[i],ev.jn_py[i],ev.jn_pz[i],ev.jn_en[i]), ev.jn_neutHadFrac[i], ev.jn_neutEmFrac[i], ev.jn_chHadFrac[i], ev.jn_idbits[i]));
     phys.jets[i].setRawCorrFactor(ev.jn_rawsf[i]);
     phys.jets[i].setBtagInfo(ev.jn_btag1[i], ev.jn_btag2[i],ev.jn_btag3[i], ev.jn_btag4[i], ev.jn_btag5[i], ev.jn_btag6[i], ev.jn_btag7[i]);
-    phys.jets[i].setSecVtxInfo(ev.jn_lxy[i],ev.jn_lxyErr[i],ev.jn_svmass[i]);
+    phys.jets[i].setSecVtxInfo(ev.jn_lxy[i],ev.jn_lxyErr[i],ev.jn_svmass[i],ev.jn_svpt[i],ev.jn_svdr[i],ev.jn_btag8[i],ev.jn_btag9[i]);
     phys.jets[i].setGenInfo(ev.jn_genid[i], ev.jn_genpt[i], ev.jn_genflav[i], ev.jn_isCfromGsplit[i], ev.jn_isBfromGsplit[i]);
     phys.jets[i].setShapeVariables(ev.jn_beta[i],ev.jn_betaStar[i],ev.jn_dRMean[i],ev.jn_ptD[i],ev.jn_ptRMS[i], ev.jn_etaW[i],ev.jn_phiW[i]);
     phys.jets[i].setPUmva(ev.jn_pumva[i]);
@@ -56,7 +56,7 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
     phys.ajets.push_back(PhysicsObject_Jet(LorentzVector(ev.ajn_px[i],ev.ajn_py[i],ev.ajn_pz[i],ev.ajn_en[i]), ev.ajn_neutHadFrac[i], ev.ajn_neutEmFrac[i], ev.ajn_chHadFrac[i], ev.ajn_idbits[i]));
     phys.ajets[i].setRawCorrFactor(ev.ajn_rawsf[i]);
     phys.ajets[i].setBtagInfo(ev.ajn_btag1[i], ev.ajn_btag2[i],ev.ajn_btag3[i], ev.ajn_btag4[i], ev.ajn_btag5[i], ev.ajn_btag6[i], ev.ajn_btag7[i]);
-    phys.ajets[i].setSecVtxInfo(ev.ajn_lxy[i],ev.ajn_lxyErr[i],ev.ajn_svmass[i]);
+    phys.ajets[i].setSecVtxInfo(ev.ajn_lxy[i],ev.ajn_lxyErr[i],ev.ajn_svmass[i],ev.ajn_svpt[i],ev.ajn_svdr[i],ev.ajn_btag8[i],ev.ajn_btag9[i]);
     phys.ajets[i].setGenInfo(ev.ajn_genid[i], ev.ajn_genpt[i], ev.ajn_genflav[i], ev.ajn_isCfromGsplit[i], ev.ajn_isBfromGsplit[i]);
     phys.ajets[i].setShapeVariables(ev.ajn_beta[i],ev.ajn_betaStar[i],ev.ajn_dRMean[i],ev.ajn_ptD[i],ev.ajn_ptRMS[i], ev.ajn_etaW[i],ev.ajn_phiW[i]);
     phys.ajets[i].setPUmva(ev.ajn_pumva[i]);

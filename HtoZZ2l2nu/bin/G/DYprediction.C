@@ -177,9 +177,9 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/work/q/querten/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
      
-      histos.push_back("met_met_blind");                
-      histos.push_back("met_redMet_blind");             
-      histos.push_back("mt_blind");                     
+//       histos.push_back("met_met_blind");                
+//       histos.push_back("met_redMet_blind");             
+//       histos.push_back("mt_blind");                     
       histos.push_back("mindphijmet");            
       //      histos.push_back("mt_shapes");              
       //  histos.push_back("mt_redMet_shapes");       
@@ -199,7 +199,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       dilcats.push_back("vbf2");
       dilcats.push_back("");
 
-      gcats.push_back("eq0softjets");  //0 soft jets to be subtracted
+      //gcats.push_back("eq0softjets");  //0 soft jets to be subtracted
       gcats.push_back("eq0jets");
       gcats.push_back("eq1jets");
       gcats.push_back("eq2jets");
@@ -408,7 +408,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       if(it->first.find("jetdeta")!=string::npos)    { distNormKey="jetdeta"; normBin=normH->GetXaxis()->FindBin(3); }
       
       ////normalization factor (from mindphijmet<0.5)
-      if(it->first.find("mindphijmet")!=string::npos)    { distNormKey="mindphijmet"; normBin=normH->GetXaxis()->FindBin(0.5); }
+      if(it->first.find("mindphijmet")!=string::npos)    { distNormKey="mindphijmet"; normBin=normH->GetXaxis()->FindBin(0.5); } 
       
       //normalization factor (from Mjj<500) 
       if(model==VBFZ && it->first.find("premjj")!=string::npos)   normBin=normH->GetXaxis()->FindBin(500);
@@ -523,10 +523,10 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
      corrGammaH->Scale(sf);
      if(it->first.find("mindphijmet")!= string::npos)
        {
-	 int normBin=corrGammaH->GetXaxis()->FindBin(0.5);
-       	 float newSF = it->second.data->Integral(1,normBin)/corrGammaH->Integral(1,normBin);
-	 corrGammaH->Scale(newSF);
-       }
+ 	 int normBin=corrGammaH->GetXaxis()->FindBin(0.5);
+	 float newSF = it->second.data->Integral(1,normBin)/(corrGammaH->Integral(1,normBin)+it->second.totalBckg->Integral(1,normBin));
+ 	 corrGammaH->Scale(newSF);
+        }
 
      corrGammaH->SetFillColor(831);
      cout << it->second.totalBckg->GetName() << " " << corrGammaH->GetName() << " " << sf << endl;
