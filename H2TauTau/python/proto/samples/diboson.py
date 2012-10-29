@@ -30,7 +30,8 @@ WZJetsTo3LNu = cfg.MCComponent(
 ZZJetsTo2L2Nu = cfg.MCComponent(
     name = 'ZZJetsTo2L2Nu',
     files = [],
-    xSection = 0.119,
+    # xSection = 0.119,
+    xSection = 0.283, # from Andrew, not checked
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1)
@@ -38,7 +39,8 @@ ZZJetsTo2L2Nu = cfg.MCComponent(
 ZZJetsTo2L2Q = cfg.MCComponent(
     name = 'ZZJetsTo2L2Q',
     files = [],
-    xSection = 0.417,
+    # xSection = 0.417,
+    xSection = 0.833, # from Andrew, not checked
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1)
@@ -91,8 +93,14 @@ ZZ = cfg.MCComponent(
 
 
 mc_diboson = [
+    WWJetsTo2L2Nu,
+    WZJetsTo2L2Q,
+    WZJetsTo3LNu,
+    ZZJetsTo2L2Nu,
+    ZZJetsTo2L2Q,
+    ZZJetsTo4L,
     WW,
     WZ,
-    ZZ,
+    ZZ
     ]
 

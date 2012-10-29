@@ -9,7 +9,7 @@ from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
 from CMGTools.H2TauTau.proto.plotter.rootutils import *
 from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
-from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
+from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass_finer
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
@@ -35,8 +35,8 @@ def replaceShapeInclusive(plot, var, anaDir,
                           cut, weight,
                           embed, shift):
     '''Replace WJets with the shape obtained using a relaxed tau iso'''
-    # cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.')
-    cut = cut.replace('nBJets>=1', '1')
+    cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.5')
+    # cut = cut.replace('nBJets>=1', '1')
     print '[INCLUSIVE] estimate',comp.name,'with cut',cut
     plotWithNewShape = cp( plot )
     wjyield = plot.Hist(comp.name).Integral()
@@ -59,7 +59,8 @@ def replaceShapeInclusive(plot, var, anaDir,
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio,
               nbins=None, xmin=None, xmax=None,
-              cut='', weight='weight', embed=False, shift=None, replaceW=False):
+              cut='', weight='weight', embed=False, shift=None, replaceW=False,
+              VVgroup=None, antiMuIsoForQCD=False):
     
     print 'making the plot:', var, 'cut', cut
 
@@ -69,6 +70,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            cut=oscut, weight=weight, shift=shift,
                            embed=embed)
     osign.Hist(EWK).Scale( wJetScaleOS ) # * w_mt_ratio / w_mt_ratio_os )
+    
     if cut.find('mt<')!=-1:
         print 'correcting high->low mT extrapolation factor, OS', w_mt_ratio / w_mt_ratio_os
         osign.Hist(EWK).Scale( w_mt_ratio / w_mt_ratio_os )
@@ -91,14 +93,18 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                                       selComps['WJets'], weights, 
                                       sscut, weight,
                                       embed, shift)
-
+    if VVgroup:
+        ssign.Group('VV',VVgroup)
+        osign.Group('VV',VVgroup)
+    
     ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
-    if 0:
+    if antiMuIsoForQCD:
         print 'WARNING RELAXING ISO FOR QCD SHAPE'
         # replace QCD with a shape obtained from data in an anti-iso control region
         qcd_yield = osQCD.Hist('QCD').Integral()
         
-        sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.7') + ' && diTau_charge!=0' 
+        # sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5') + ' && diTau_charge!=0' 
+        sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.5') + ' && diTau_charge!=0'
         ssign_qcdshape = H2TauTauDataMC(var, anaDir,
                                         selComps, weights, nbins, xmin, xmax,
                                         cut=sscut_qcdshape, weight=weight,
@@ -109,7 +115,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
         # qcd_shape.Scale( qcd_yield )
         osQCD.Replace('QCD', qcd_shape)
 
-    osQCD.Group('VV', ['WW','WZ','ZZ'])
+    # osQCD.Group('VV', ['WW','WZ','ZZ'])
     osQCD.Group('electroweak', ['WJets', 'Ztt_ZL', 'Ztt_ZJ','VV'])
     osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])
     return ssign, osign, ssQCD, osQCD
@@ -131,6 +137,22 @@ def drawAll(cut, plots, embed=True):
         time.sleep(1)
 
 
+def handleW( anaDir, selComps, weights,
+             cut, weight, embed, VVgroup, nbins=50, highMTMin=70., highMTMax=1070,
+             lowMTMax=20.):
+    
+    cut = cut.replace('mt<20', '1')
+    fwss, fwos, ss, os = plot_W(
+        anaDir, selComps, weights,
+        nbins, highMTMin, highMTMax, cut,
+        weight=weight, embed=embed,
+        VVgroup = VVgroup)
+
+    w_mt_ratio_ss = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, 'diTau_charge!=0');
+    w_mt_ratio_os = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, 'diTau_charge==0');
+    w_mt_ratio = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, '1');
+
+    return fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio
 
 
 if __name__ == '__main__':
@@ -192,7 +214,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if options.nbins is None:
-        NBINS = binning_svfitMass
+        NBINS = binning_svfitMass_finer
         XMIN = None
         XMAX = None
     else:
@@ -201,12 +223,13 @@ if __name__ == '__main__':
         XMAX = float(options.xmax)
         
     cutstring = options.cut
+    antiMuIsoForQCD = cutstring.find('l1_pt>40')!=-1 or cutstring.find('Xcat_J1X')!=-1
     options.cut = replaceCategories(options.cut, categories) 
     
     # TH1.AddDirectory(False)
     dataName = 'Data'
     weight='weight'
-    replaceW = False
+    replaceW = True
     useW11 = False
     
     anaDir = args[0].rstrip('/')
@@ -221,46 +244,18 @@ if __name__ == '__main__':
     cfg = imp.load_source( 'cfg', cfgFileName, file)
     embed = options.embed
 
-    origComps = copy.deepcopy(cfg.config.components)
-    
-    # WJet normalization
-    comps = []
-    for comp in cfg.config.components:
-        if comp.name == 'WJetsExt': continue
-        if comp.name == 'W3Jets': continue
-        if comp.name == 'W2Jets': continue
-        if comp.name == 'TTJets11': continue
-        if useW11:
-            if comp.name == 'WJets': continue
-        else:
-            if comp.name == 'WJets11': continue
-        comps.append( comp )
     aliases = None
-    if useW11:
-        aliases = {'WJets11':'WJets'}
-
-    cfg.config.components = comps
-    
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases, options.embed, 'TauMu', options.higgs)
 
-    can, pad, padr = buildCanvas()
-    # ocan = buildCanvasOfficial()
-
-    # WARNINGG!!! if mt cut is optimized, this needs to change.
-    highMTCut = 70
-    lowMTCut = 20
-    cutw = options.cut.replace('mt<20', '1')
-    #SYNC WITH JOSH: he subtracts only TT and VV
-    #SYNC VBF MT CONTROL: from 60 to 120
-    fwss, fwsserr, fwos, fwoserr, ss, os = plot_W( anaDir, selComps, weights,
-                                                   25, highMTCut, 970, cutw,
-                                                   weight=weight, embed=options.embed)
-
-    w_mt_ratio_ss = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cutw, weight, lowMTCut, highMTCut, 'diTau_charge!=0');
-    w_mt_ratio_os = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cutw, weight, lowMTCut, highMTCut, 'diTau_charge==0');
-    w_mt_ratio = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cutw, weight, lowMTCut, highMTCut, '1');
+    # can, pad, padr = buildCanvas()
+    ocan = buildCanvasOfficial()
     
-
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, shift=shift, replaceW=replaceW); draw(osQCD)
+    fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio = handleW(
+        anaDir, selComps, weights,
+        options.cut, weight, options.embed, cfg.VVgroup
+        )
+    
+    ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, shift=shift, replaceW=replaceW, VVgroup=cfg.VVgroup, antiMuIsoForQCD=antiMuIsoForQCD);
+    drawOfficial(osQCD, options.blind)
       
     datacards(osQCD, cutstring, shift)

@@ -23,7 +23,13 @@ class DYJetsFakeAnalyzer( GenParticleAnalyzer ):
         if not bosonPresent:
             event.isFake = 0
         else:
-            isZtautau = len( tauDaus )==2
+            # isZtautau = len( tauDaus )==2
+            taus = filter(lambda x: x.status()==3 and abs(x.pdgId())==15,
+                          event.genParticles)
+            isZtautau = len(taus)==2
+            # print '-'*50
+            # print map(str, taus)
+            # print isZtautau
             if isZtautau:
                 event.isFake = 0
             else:

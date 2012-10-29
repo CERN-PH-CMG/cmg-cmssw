@@ -26,6 +26,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
         var( tr, 'weight')
         
         var( tr, 'm_sv')
+        var( tr, 'mvis')
         var( tr, 'm_sv_Up')
         var( tr, 'm_sv_Down')
         
@@ -33,6 +34,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
         var( tr, 'phi_1')
         var( tr, 'eta_1')
         var( tr, 'm_1')
+        var( tr, 'q_1')
         var( tr, 'iso_1')
         var( tr, 'mva_1')
         var( tr, 'd0_1')
@@ -49,6 +51,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
         var( tr, 'phi_2')
         var( tr, 'eta_2')
         var( tr, 'm_2')
+        var( tr, 'q_2')
         var( tr, 'iso_2')
         var( tr, 'mva_2')
         var( tr, 'passid_2', int)
@@ -109,6 +112,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
         
         var( tr, 'nbtag', int)
         var( tr, 'njets', int)
+        var( tr, 'njetspt20', int)
 
 
     def declareHandles(self):
@@ -151,6 +155,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
         fill( tr, 'effweight', leg1.weight*leg2.weight) 
         fill( tr, 'weight', event.eventWeight ) 
         
+        fill( tr, 'mvis', event.diLepton.mass() ) 
         fill( tr, 'm_sv', event.diLepton.massSVFit() ) 
         fill( tr, 'm_sv_Up', -1) #? tau up 3%
         fill( tr, 'm_sv_Down', -1) #? tau down 3%
@@ -159,6 +164,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
         fill( tr, 'phi_1', leg1.phi())
         fill( tr, 'eta_1', leg1.eta())
         fill( tr, 'm_1', leg1.mass())
+        fill( tr, 'q_1', leg1.charge())
         fill( tr, 'iso_1', leg1.relIsoAllChargedDB05())
         fill( tr, 'mva_1', leg1.mvaId()) # should be filled for e-tau: mva id
         fill( tr, 'd0_1', leg1.dxy() )
@@ -174,6 +180,7 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
         fill( tr, 'phi_2', leg2.phi())
         fill( tr, 'eta_2', leg2.eta())
         fill( tr, 'm_2', leg2.mass())
+        fill( tr, 'q_2', leg2.charge())
         fill( tr, 'iso_2', leg2.tauID("byRawIsoMVA"))
         fill( tr, 'mva_2', leg2.tauID("againstElectronMVA")) # we probably need the mva output here. I guess this is a working point
         fill( tr, 'passid_2',  1)
@@ -205,8 +212,11 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
             fill( tr, 'mvacov01', mvametsig(0,1))
             fill( tr, 'mvacov10', mvametsig(1,0))
             fill( tr, 'mvacov11', mvametsig(1,1))
+        nJets = len(event.cleanJets30)
+        nJetsPt20 = len(event.cleanJets)
         jets = event.cleanJets30
-        nJets = len(jets)
+        if self.cfg_ana.pt20:
+            jets = event.cleanJets
         if nJets>=1:
             j1 = jets[0]
             fill( tr, 'jpt_1', j1.pt())
@@ -251,7 +261,8 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
             fill( tr, 'ptvis', vbf.ptvis)
 
         fill( tr, 'nbtag', len(event.cleanBJets))
-        fill( tr, 'njets', len(jets))
-       
+        fill( tr, 'njets', nJets)
+        fill( tr, 'njetspt20', nJetsPt20)
+            
         self.tree.tree.Fill()
         return True

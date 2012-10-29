@@ -8,7 +8,7 @@ sep_line = '-'*70
 
 process = cms.Process("H2TAUTAU")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -25,6 +25,9 @@ jetRecalib = False
 useCHS = False 
 newSVFit = True
 tauScaling = 0
+# increase to 1000 before running on the batch, to reduce size of log files
+# on your account
+reportInterval = 1000
 
 print sep_line
 print 'channel', channel
@@ -44,12 +47,8 @@ print 'tau scaling =', tauScaling
 
 
 dataset_user = 'cmgtools' 
-# dataset_name = '/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_V5_8_0'
-# dataset_name = '/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
-# dataset_name = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_8_0'
-# dataset_name = '/W1JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
-dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+dataset_name = '/W1Jet_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+
 
 dataset_files = 'cmgTuple.*root'
 
@@ -88,8 +87,10 @@ process.load('CMGTools.H2TauTau.h2TauTau_cff')
 
 print sep_line
 from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
-# WARNING DISABLING RECOIL CORRECTIONS FOR 2012!!!
-setupRecoilCorrection( process, runOnMC, True, isNewerThan('CMSSW_5_2_X'))
+
+recoilEnabled = True
+setupRecoilCorrection( process, runOnMC,
+                       enable=recoilEnabled, is53X=isNewerThan('CMSSW_5_2_X'))
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
@@ -173,7 +174,7 @@ if channel=='di-tau' or channel=='all':
 
 # Message logger setup.
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = 100
+process.MessageLogger.cerr.FwkReport.reportEvery = reportInterval
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 
@@ -224,7 +225,6 @@ if useCHS:
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
-    process.MessageLogger.cerr.FwkReport.reportEvery = 1
 else:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
