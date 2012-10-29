@@ -4,10 +4,11 @@ from CMGTools.RootTools.utils.DeltaR import deltaPhi, deltaR2
 
 class VBF( object ):
     '''Computes and holds VBF quantities'''
-    def __init__(self, jets, diLepton, vbfMvaCalc):
+    def __init__(self, jets, diLepton, vbfMvaCalc, cjvPtCut):
         '''jets: jets cleaned from the diLepton legs.
         diLepton: the di-tau, for example. Necessary to compute input variables for MVA selection
         '''
+        self.cjvPtCut = cjvPtCut
         self.vbfMvaCalc = vbfMvaCalc
         self.jets = jets
         # the MET is taken from the di-lepton, because it can depend on it
@@ -43,11 +44,6 @@ class VBF( object ):
         # visible higgs pt = di-lepton pt
         self.ptvis = visDiLepton.pt()
         ## self.ptvis = diLepton.pt()
-        # old VBF MVA
-##         self.mva = self.vbfMvaCalc.val (self.mjj, abs(self.deta), abs(self.dphi), 
-##                                         self.higgsp4.pt (), self.dijetpt, 
-##                                         abs (self.dphidijethiggs), 
-##                                         self.visjeteta, self.ptvis) 
         # new VBF MVA, based on 4 variables
         self.mva = self.vbfMvaCalc.val( self.mjj,
                                         abs(self.deta),
@@ -66,12 +62,15 @@ class VBF( object ):
         
     def findCentralJets( self, leadJets, otherJets ):
         '''Finds all jets between the 2 leading jets, for central jet veto.'''
+        if not len(otherJets):
+            return []
         etamin = leadJets[0].eta()
         etamax = leadJets[1].eta()
         if etamin > etamax:
             etamin, etamax = etamax, etamin
         def isCentral( jet ):
-            #COLIN: shouln't I take a margin? 
+            if jet.pt()<self.cjvPtCut:
+                return False
             eta = jet.eta()
             if etamin < eta and eta < etamax:
                 return True
