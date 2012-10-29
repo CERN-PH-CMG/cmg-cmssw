@@ -47,13 +47,13 @@ def datacards(plot, cutstring, shift, channel='muTau'):
 
     category = 'Unknown'
     if cutstring.find('Xcat_IncX')!=-1:
-        category = 'X'
+        category = 'inclusive'
     if cutstring.find('Xcat_J1X')!=-1:
         category = 'boosted'
         if cutstring.find('l1_pt<40')!=-1:
-            category = 'boosted_low'
+            category = 'boost_low'
         elif cutstring.find('l1_pt>40')!=-1:
-            category = 'boosted_high'
+            category = 'boost_high'
     if cutstring.find('Xcat_J0X')!=-1:
         category = '0jet'
         if cutstring.find('l1_pt<40')!=-1:

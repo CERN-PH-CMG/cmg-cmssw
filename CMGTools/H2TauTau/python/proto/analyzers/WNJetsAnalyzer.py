@@ -19,10 +19,22 @@ class WNJetsAnalyzer( Analyzer ):
     In case of other MCs, the value is saved.
     '''
 
+    def __init__(self, cfg_ana, cfg_comp, looperName):
+        super(WNJetsAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
+
+        self.ninc = self.cfg_ana.nevents[0]
+        self.cfg_ana.nevents[0] = 0.
+        self.ni = [frac*self.ninc for frac in self.cfg_ana.fractions]
+        assert(len(self.cfg_ana.nevents)==len(self.cfg_ana.fractions))
+        self.weighti = []
+        for ninc, nexc in zip(self.ni, self.cfg_ana.nevents ):
+            self.weighti.append( ninc/(ninc+nexc) )
+
     def beginLoop(self):
         super(WNJetsAnalyzer,self).beginLoop()        
         self.averages.add('NUP', Average('NUP') )
         self.averages.add('NJets', Average('NJets') )
+        self.averages.add('WJetWeight', Average('WJetWeight') )
         if self.cfg_comp.isMC:
             self.rootfile = TFile('/'.join([self.dirName,
                                             'NUP.root']),
@@ -33,41 +45,34 @@ class WNJetsAnalyzer( Analyzer ):
         
     def process(self, iEvent, event):
         event.NUP = -1
-
-        try :
-            self.readCollections( iEvent )
-        except :
-            return True
-
-        # VH samples don't contain the collection necessary
-        # for this analyzer to run
-        #PG NB any other pythia samples have this problem!
-#        if self.cfg_comp.name.find('HiggsVH')!=-1 or \
-#           self.cfg_comp.name == 'WW'             or \
-#           self.cfg_comp.name == 'ZZ'             or \
-#           self.cfg_comp.name == 'WZ' :
-#            return True
+        event.WJetWeight = 1
         
         if not self.cfg_comp.isMC:
             return True
         
-        # check whether it's a WJets sample, can this be done?
-        # save the NUP variable
-        if self.mchandles['source'].isValid():
+        try :
+            self.readCollections( iEvent )
             event.NUP = self.mchandles['source'].product().hepeup().NUP
-        else:
-            event.NUP = -1
+        except :
+            return True
 
-        self.averages['NUP'].add( event.NUP )
+        assert(event.NUP>0)
+
         # removing the 2 incoming partons, a boson,
         # and the 2 partons resulting from the decay of a boson
         njets = event.NUP-5
+        event.WJetWeight = self.weighti[njets]
+        event.eventWeight *= event.WJetWeight
+
+        self.averages['NUP'].add( event.NUP )
         self.averages['NJets'].add( njets )
+        self.averages['WJetWeight'].add( event.WJetWeight )
         self.nup.Fill(event.NUP)
         self.njets.Fill(njets)
+
         
         if self.cfg_ana.verbose:
-            print 'NUP : ',event.NUP
+            print 'NUP, njets, weight',event.NUP, njets, event.WJetWeight
         return True
     
 

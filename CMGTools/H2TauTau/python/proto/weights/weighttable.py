@@ -108,7 +108,12 @@ class WeightTable(list):
             if weight.includes( pt, eta ):
                 selectedWeights.append( weight )
         if len(selectedWeights) == 0:
-            return None
+            errmsg = []
+            errmsg.append( 'no weight found in table ' + self.name )
+            errmsg.append( str(self) )
+            errmsg.append('for pt={pt}, eta={eta}'.format(pt=pt,
+                                                          eta=eta))
+            raise ValueError( '\n'.join(errmsg) )
         elif len(selectedWeights) == 1:
             return selectedWeights[0]
         else:

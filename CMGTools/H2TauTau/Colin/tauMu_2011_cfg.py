@@ -22,11 +22,16 @@ mc_tauEffWeight_mc = 'effLooseTau15MC'
 mc_muEffWeight_mc = 'effIsoMu15MC'
 mc_tauEffWeight = 'effTau2011AB'
 mc_muEffWeight = 'effMu2011AB'
-    
+
+
+# selected by Andrew
+#   *   113591 * 203.66099 *    179452 *       387 * 587118487 *
+
+
 eventSelector = cfg.Analyzer(
     'EventSelector',
     toSelect = [
-    70370
+    587118487
     ]
     )
 
@@ -106,16 +111,17 @@ muonWeighter = cfg.Analyzer(
 
 
 # defined for vbfAna and eventSorter
-vbfKwargs = dict( Mjj = 400,
-                  deltaEta = 4.0    
+vbfKwargs = dict( Mjj = 500,
+                  deltaEta = 3.5    
                   )
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
     vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_42X.weights.xml',
     jetCol = 'cmgPFJetSel',
-    jetPt = 30,
-    jetEta = 5.0,
+    jetPt = 20.,
+    jetEta = 4.7,
+    cjvPtCut = 30.,
     btagSFseed = 123456,
     **vbfKwargs
     )
@@ -161,11 +167,11 @@ WJetsSoup.name = 'WJetsSoup'
 VVgroup = [comp.name for comp in diboson_list]
 higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
 selectedComponents =  [WJetsSoup, TTJets, DYJets]
+# selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
 selectedComponents.extend( higgs )
 selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list_2011 )
 selectedComponents.extend( embed_list_2011 )
-
 
 sequence = cfg.Sequence( [
 #     eventSelector,
@@ -189,7 +195,7 @@ if syncntuple:
 
 test = 0
 if test==1:
-    comp = HiggsVBF125
+    comp = data_Run2011B_PromptReco_v1
     comp.files = comp.files[:2]
     selectedComponents = [comp]
     comp.splitFactor = 1

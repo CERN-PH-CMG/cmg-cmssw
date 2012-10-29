@@ -3,18 +3,26 @@ import math
 import copy
 import time
 import re
+from numpy import array
 
 from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
-from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw
-from CMGTools.H2TauTau.proto.plotter.categories import *
+from CMGTools.H2TauTau.proto.plotter.rootutils import *
+from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
+from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
-from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, plots_J1, drawAll
+from CMGTools.H2TauTau.proto.plotter.datacards import *
+from CMGTools.H2TauTau.proto.plotter.plotinfo import plots_All, plots_J1
+from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauMu_Inclusive import makePlot as makePlotInclusive
+from CMGTools.H2TauTau.proto.plotter.plot_H2TauTauDataMC_TauMu_Inclusive import handleW as handleW
+
 from CMGTools.RootTools.Style import *
 from ROOT import kPink, TH1, TPaveText, TPad
+
+
 
 cp = copy.deepcopy
 EWK = 'WJets'
@@ -24,266 +32,114 @@ NBINS = 100
 XMIN  = 0
 XMAX  = 200
 
+# cutwJ2 = ' && '.join([cat_Inc, cat_J2]) 
+
+cut_VBF_Rel_W = ' && '.join( [cat_Inc, cat_VBF_Rel_30,'diTau_charge==0'])
+cut_VBF_Rel_QCD =  ' && '.join( [cat_Inc, cat_VBF_Rel_20])
 
 
-## def replaceShape(plot, var, cut, comp):
-##     mvaTauIsoCut = -999
-##     # import pdb; pdb.set_trace()
-##     # if cut.find('isSignal')!=-1:
-##     # cut = cut.replace('isSignal', cutstr_rlxtauiso(str(inc_sig), mvaTauIsoCut))
-##     #    # cut = cut.replace('isSignal', '1')
-##     # cut = cut.replace( 'diTau_charge==0', '1') 
-##     # cut = cut.replace( 'diTau_charge!=0', '1') 
-##     cut = cut.replace( cat_VBF, cat_VBF_Rel )
-##     # cut = cut.replace( str(inc_sig_mu), '1' )
-##     print '[VBF] estimate',comp,'with cut',cut
-##     plotWithNewShape = cp( plot )
-##     # wjyield = plot.Hist(comp).Integral()
-##     nbins = plot.Hist(comp).obj.GetNbinsX()
-##     xmin = plot.Hist(comp).obj.GetXaxis().GetXmin()
-##     xmax = plot.Hist(comp).obj.GetXaxis().GetXmax()
-##     wjshape, wjyield = shape_and_yield(var, anaDir,
-##                                        selComps[comp], weights,
-##                                        nbins, xmin, xmax,
-##                                        cut, weight,
-##                                        embed)
-##     import pdb; pdb.set_trace()
-##     effnum = zComps['zdata_Run2012A'].tree.Draw('VBF_mva', cat_VBF)
-##     effdenom =  zComps['zdata_Run2012A'].tree.Draw('VBF_mva', cat_VBF_rel)
-##     wjshape.Scale( wjyield * effnum / float(effdenom))
-##     # import pdb; pdb.set_trace()
-##     plotWithNewShape.Replace(comp, wjshape) 
-##     # plotWithNewShape.Hist(comp).on = False 
-##     return plotWithNewShape
+def makePlot( var, weights,
+              w_yield,
+              vbf_qcd_yield,
+              vbf_zl_yield,
+              vbf_zj_yield,
+              nbins, xmin, xmax, cut,
+              weight='weight', embed=False, shift=None, VVgroup=None):
 
-       
-
-
-def makePlot( var, weights, wJetScaleSS, wJetScaleOS,
-              nbins=None, xmin=None, xmax=None,
-              weight='weight', embed=False):
-    
-    if nbins is None: nbins = NBINS
-    if xmin is None: xmin = XMIN
-    if xmax is None: xmax = XMAX
-
-    oscut = str(inc_sig & Cut('l1_charge*l2_charge<0 && mt<40') & cat_VBF)
+    oscut = '&&'.join( [cat_Inc, cat_VBF, 'diTau_charge==0', cut])
+    # oscut = str(inc_sig & Cut('l1_charge*l2_charge<0 && mt<40') & cat_VBF)
     print '[OS]', oscut
     osign = H2TauTauDataMC(var, anaDir,
                            selComps, weights, nbins, xmin, xmax,
-                           cut=oscut, weight=weight,
+                           cut=oscut, weight=weight, shift=shift,
                            embed=embed)
-    osign.Hist(EWK).Scale( wJetScaleOS ) 
-    osign = replaceWJets(osign, var,'l1_charge*l2_charge<0', weight, embed)
+
+    # osign.Hist(EWK).Scale( wJetScaleOS ) 
     # import pdb; pdb.set_trace()
-    osign = replaceZtt(osign, var,'l1_charge*l2_charge<0', weight, embed)
-    # osign = replaceShape(osign, var, oscut, 'Ztt')
+    # if cut.find('mt<')!=-1:
+    #    print 'correcting high->low mT extrapolation factor, OS', w_mt_ratio / w_mt_ratio_os
+    #    osign.Hist(EWK).Scale( w_mt_ratio / w_mt_ratio_os )
+    osign.Hist('WJets').Normalize()
+    osign.Hist('WJets').Scale(w_yield)
+
+    cut_shape = ' && '.join([cut, cut_VBF_Rel_W])
     
-    # boxss = box.replace('OS','SS')
-    sscut = str(inc_sig & Cut('l1_charge*l2_charge>0') & cat_VBF)
-    print '[SS]', sscut
-    ssign = H2TauTauDataMC(var, anaDir,
-                           selComps, weights, nbins, xmin, xmax,
-                           cut=sscut, weight=weight,
-                           embed=embed)
-    ssign.Hist(EWK).Scale( wJetScaleSS ) 
-    # import pdb; pdb.set_trace()
-    # import pdb; pdb.set_trace()
-    ssign = replaceWJets(ssign, var, 'l1_charge*l2_charge>0 && mt<40' , weight, embed)
-    ssign = replaceZtt(ssign, var, 'l1_charge*l2_charge>0 && mt<40' , weight, embed)
-    # ssign = replaceShape(ssign, var, sscut, 'Ztt')
+    def replaceShape(compName):
+        print compName, 'shape replaced', cut_shape
+        nshape = shape(var, anaDir, 
+                       selComps[compName], weights,
+                       nbins, xmin, xmax,
+                       cut_shape, weight,
+                       embed, shift)
+        nshape.Scale( osign.Hist(compName).Integral() )
+        osign.Replace(compName, nshape )
 
-    ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
+    #  import pdb; pdb.set_trace()
+    replaceShape('WJets')
+    replaceShape('TTJets')
+    for vvname in VVgroup:
+        replaceShape(vvname)
 
-    groupEWK( osQCD )
-    return ssign, osign, ssQCD, osQCD
+    # ZL and ZJ shapes
+    dycomp = selComps['Ztt']
+    dyplot = buildPlot(var, anaDir, 
+                       {dycomp.name:dycomp}, weights,
+                       nbins, xmin, xmax,
+                       cut_shape, weight,
+                       embed, shift)
+    zlshape = dyplot.Hist('Ztt_ZL')
+    zlshape.Scale( vbf_zl_yield / zlshape.Integral())
+    osign.Replace('Ztt_ZL', zlshape)
+    zjshape = dyplot.Hist('Ztt_ZJ')
+    zjshape.Scale( vbf_zj_yield / zjshape.Integral())
+    osign.Replace('Ztt_ZJ', zjshape)
 
+    # Ztt shape
+    # from embedded samples, with relaxed cut
 
-def replaceZtt(plot, var, chargecut, weight, embed):
-    plotWithNewShape = cp( plot )
-    oldh = plotWithNewShape.Hist('Ztt').weighted
-    dyjets = Ztt_VBF(var, anaDir, chargecut, selComps,
-                     zComps, weights,
-                     oldh.GetNbinsX(),
-                     oldh.GetXaxis().GetXmin(), oldh.GetXaxis().GetXmax(),
-                     weight, embed)
-
-    plotWithNewShape.Replace('Ztt', dyjets) 
-    return plotWithNewShape
+    embComps = dict( (comp.name, comp) for comp in selComps.values() if comp.isEmbed )
+    emb_plot = buildPlot( var, anaDir,
+                          embComps, weights,
+                          nbins, xmin, xmax,
+                          cut_shape, weight, embed)
+    names = []
+    for h in emb_plot.histos:
+        h.stack = True
+        names.append(h.name)
+    emb_plot.Group('Embed', names)
+    zttshape = emb_plot.Hist('Embed')
+    zttshape.Scale( osign.Hist('Ztt').Integral() / zttshape.Integral())
+    osign.Replace('Ztt', zttshape)
+    
+    
+    qcd_cut = '&&'.join( [cat_Inc_AntiMuTauIsoJosh,
+                          'diTau_charge!=0',
+                          cat_VBF_Rel_20,
+                          cut] )
+    print 'QCD shape', qcd_cut
+    qcd_plot = buildPlot( options.hist, anaDir,
+                          dataComps, weights, NBINS, XMIN, XMAX,
+                          qcd_cut, weight, options.embed)
+    qcd_shape = qcd_plot.Hist('Data')
+    qcd_shape.Scale( vbf_qcd_yield/qcd_shape.Integral() )
     
 
-def replaceWJets(plot, var, chargecut, weight, embed):
-    plotWithNewShape = cp( plot )
-    oldh = plotWithNewShape.Hist('WJets').weighted
-    wjets = WJets_VBF(var, anaDir, chargecut, selComps,
-                      zComps, weights,
-                      oldh.GetNbinsX(),
-                      oldh.GetXaxis().GetXmin(), oldh.GetXaxis().GetXmax(),
-                      weight, embed)
+    osQCD = copy.deepcopy( osign )
+    osQCD.AddHistogram('QCD', qcd_shape.weighted, 1.5)   
+    osQCD.Hist('QCD').stack = True
+    osQCD.Hist('QCD').SetStyle( sHTT_QCD )
 
-    plotWithNewShape.Replace('WJets', wjets) 
-    return plotWithNewShape
-
-
-def eff_VBF(var, anaDir,
-            comp, weights,
-            nbins, xmin, xmax,
-            cut, weight,
-            embed, treeName=None ):
-    relcut = cut.replace( cat_VBF, cat_VBF_Rel )
-    relhisto = hist(var, anaDir,
-                   comp, weights,
-                   nbins, xmin, xmax,
-                   relcut, weight,
-                   embed, treeName )
-    histo = hist(var, anaDir,
-                 comp, weights,
-                 nbins, xmin, xmax,
-                 cut, weight,
-                 embed, treeName )
-##     relhisto.Draw()
-##     h = histo.weighted
-##     h.SetFillStyle(3001)
-##     h.SetFillColor(5)
-##     h.SetMarkerColor(4)
-##     histo.Draw('same')
-##     gPad.Update()
-    eff = histo.Integral() / relhisto.Integral()
-    print eff
-    return histo, relhisto, eff
-
-
-
-def WJets_shape_VBF(var, anaDir,
-                    selComps, zComps, weights,
-                    nbins, xmin, xmax, weight,
-                    embed):
-    # to get the shape.
-    # we need to fully relax the tau iso, and
-    # to relax VBF to -0.7.
-    # if I relax more VBF, I'm not sure I can estimate the yield
-    # with z data
-    cutforshape = Cut( cutstr_rlxtauiso( str(inc_sig), -999) )
-    cutforshape = cutforshape & Cut(cat_VBF_Rel)
-    print cutforshape
     
-    wjshape = shape(var, anaDir,
-                    selComps['WJets'], weights,
-                    nbins, xmin, xmax,
-                    cutforshape, weight,
-                    embed)
-    return wjshape
+    osQCD.Group('VV', VVgroup)
+    osQCD.Group('EWK', ['WJets', 'Ztt_ZL', 'Ztt_ZJ', 'VV'])
+    osQCD.Group('Higgs 125', ['HiggsVBF125', 'HiggsGGH125', 'HiggsVH125'])    
 
-
-def WJets_yield_VBF(var, anaDir, chargecut,
-                    selComps, zComps, weights,
-                    nbins, xmin, xmax, weight,
-                    embed):
-    # import pdb; pdb.set_trace()
-    # to get the yield, we only relax the VBF cuts, to get y_rel
-    # then, y_s = y_rel * eff_VBF,
-    # where eff_VBF is obtained using a Z->mumu data sample
-    wjcutforyield = inc_sig & 'mt<40' & Cut(cat_VBF_Rel) & Cut(chargecut)
-    print 'cut for yield', wjcutforyield
-    
-    wjrelshape, y_rel = shape_and_yield(var, anaDir,
-                                        selComps['WJets'], weights,
-                                        nbins, xmin, xmax,
-                                        wjcutforyield, weight,
-                                        embed)
-    print 'yield, relaxed VBF cuts', y_rel
-    zvbfcut = 'visMass>50 && l1_relIso05<0.2 && l2_relIso05<0.2 && l1_charge*l2_charge<0 && l1_tightId>0.5 && l2_tightId>0.5 && l1_charge*l2_charge<0'+' && ' + cat_VBF 
-    h, relh, eff = eff_VBF(var, anaDir,
-                           zComps['zdata_Run2012A'], weights,
-                           nbins, xmin, xmax,
-                           zvbfcut, weight,
-                           embed, 'H2TauTauTreeProducerMuMu')
-    print 'VBF efficiency from Z data', eff
-    return y_rel * eff
-
-
-def WJets_VBF(var, anaDir, chargecut,
-              selComps, zComps, weights,
-              nbins, xmin, xmax, weight,
-              embed):
-    # import pdb; pdb.set_trace()
-    wjshape = WJets_shape_VBF(var, anaDir,
-                              selComps, zComps, weights,
-                              nbins, xmin, xmax, weight,
-                              embed)
-    wjyield = WJets_yield_VBF(var, anaDir, chargecut, 
-                              selComps, zComps, weights,
-                              nbins, xmin, xmax, weight,
-                              embed)
-    wjshape.Scale(wjyield)
-    return wjshape
+    return osign, osQCD 
 
 
 
-def Ztt_shape_VBF(var, anaDir,
-                  selComps, zComps, weights,
-                  nbins, xmin, xmax, weight,
-                  embed):
-    # to get the shape.
-    # we need to fully relax the tau iso, and
-    # to relax VBF to -0.7.
-    # if I relax more VBF, I'm not sure I can estimate the yield
-    # with z data
-    cutforshape = Cut( cutstr_rlxtauiso( str(inc_sig), -0.5) )
-    cutforshape = cutforshape & Cut(cat_VBF_Rel)
-    print cutforshape
-    
-    zjshape = shape(var, anaDir,
-                    selComps['Ztt'], weights,
-                    nbins, xmin, xmax,
-                    cutforshape, weight,
-                    embed)
-    # import pdb; pdb.set_trace()
-    return zjshape
 
 
-def Ztt_yield_VBF(var, anaDir, chargecut,
-                    selComps, zComps, weights,
-                    nbins, xmin, xmax, weight,
-                    embed):
-    # to get the yield, we only relax the VBF cuts, to get y_rel
-    # then, y_s = y_rel * eff_VBF,
-    # where eff_VBF is obtained using a Z->mumu data sample
-    wjcutforyield = inc_sig & 'mt<40' & Cut(cat_VBF_Rel) & Cut(chargecut)
-    print 'cut for yield', wjcutforyield
-    
-    wjrelshape, y_rel = shape_and_yield(var, anaDir,
-                                        selComps['Ztt'], weights,
-                                        nbins, xmin, xmax,
-                                        wjcutforyield, weight,
-                                        embed)
-    print 'yield, relaxed VBF cuts', y_rel
-    zvbfcut = 'visMass>50 && l1_relIso05<0.2 && l2_relIso05<0.2 && l1_charge*l2_charge<0 && l1_tightId>0.5 && l2_tightId>0.5 && l1_charge*l2_charge<0'+' && ' + cat_VBF 
-    h, relh, eff = eff_VBF(var, anaDir,
-                           zComps['zdata_Run2012A'], weights,
-                           nbins, xmin, xmax,
-                           zvbfcut, weight,
-                           embed, 'H2TauTauTreeProducerMuMu')
-    print 'VBF efficiency from Z data', eff
-    return y_rel * eff
-
-
-
-def Ztt_VBF(var, anaDir, chargecut,
-              selComps, zComps, weights,
-              nbins, xmin, xmax, weight,
-              embed):
-    # import pdb; pdb.set_trace()
-    zjshape = Ztt_shape_VBF(var, anaDir,
-                            selComps, zComps, weights,
-                            nbins, xmin, xmax, weight,
-                            embed)
-    zjyield = Ztt_yield_VBF(var, anaDir, chargecut, 
-                            selComps, zComps, weights,
-                            nbins, xmin, xmax, weight,
-                            embed)
-    zjshape.Scale(zjyield)
-    return zjshape
 
 
 if __name__ == '__main__':
@@ -304,25 +160,25 @@ if __name__ == '__main__':
                       dest="hist", 
                       help="histogram list",
                       default=None)
+    parser.add_option("-C", "--cut", 
+                      dest="cut", 
+                      help="cut",
+                      default='1')
     parser.add_option("-E", "--embed", 
                       dest="embed", 
                       help="Use embedd samples.",
                       action="store_true",
                       default=False)
-    parser.add_option("-n", "--nbins", 
-                      dest="nbins", 
-                      help="Number of bins",
-                      default=50)
-    parser.add_option("-m", "--min", 
-                      dest="xmin", 
-                      help="xmin",
-                      default=0)
-    parser.add_option("-M", "--max", 
-                      dest="xmax", 
-                      help="xmax",
-                      default=200)
+    parser.add_option("-g", "--higgs", 
+                      dest="higgs", 
+                      help="Higgs mass: 125, 130,... or dummy",
+                      default=None)
 
-    
+    print '''
+    IMPORTANT!! CALL THIS MACRO WITH ONLY THE MT CUT (OR WITHOUT IT IF YOU PLOT MT).
+    SO IF THE 
+    -C mt<40
+    '''
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
@@ -330,36 +186,158 @@ if __name__ == '__main__':
         sys.exit(1)
 
 
-    NBINS = int(options.nbins)
-    XMIN = float(options.xmin)
-    XMAX = float(options.xmax)
+    NBINS = binning_svfitMass
+    XMIN = None
+    XMAX = None
+
+    can, pad, padr = buildCanvas()
+    
+    weight='weight'
+    # qcd_vbf_eff = 0.0025 # for 2012
+    # qcd_vbf_eff = 0.001908 # for 2011
+    # qcd_vbf_eff = 0.00142595233245 # 2011
+    # emb_vbf_eff = 0.000828983358008 # 2011
+    qcd_vbf_eff = None
+    emb_vbf_eff = None
+    
+    anaDir = args[0].rstrip('/')
+    shift = None
+    if anaDir.endswith('_Down'):
+        shift = 'Down'
+    elif anaDir.endswith('_Up'):
+        shift = 'Up'
 
     
-    # TH1.AddDirectory(False)
-    dataName = 'Data'
-    weight='weight'
-    
-    anaDir = args[0]
     cfgFileName = args[1]
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
     embed = options.embed
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config)
-
-
-    can, pad, padr = buildCanvas()
-
-    fwss, fwos, ss, os = plot_W_inclusive( options.hist, anaDir, selComps, weights,
-                                           30, 60, 300, 'isSignal',
-                                           weight=weight, embed=options.embed)
-
-    ssign, osign, ssQCD, osQCD = makePlot( options.hist, weights, fwss, fwos, NBINS, XMIN, XMAX, weight=weight, embed=options.embed); draw(osQCD)
     
-##     shape, relshape, eff = eff_VBF('visMass', anaDir,
-##                                    zComps['zdata_Run2012A'], weights,
-##                                    NBINS,XMIN,XMAX,
-##                                    'visMass>50 && l1_relIso05<0.2 && l2_relIso05<0.2 && l1_charge*l2_charge<0 && l1_tightId>0.5 && l2_tightId>0.5'+' && ' + cat_VBF, weight,
-##                                    options.embed,
-##                                    'H2TauTauTreeProducerMuMu')
+    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, options.embed, 'TauMu', options.higgs)
 
-##     wjshape = WJets_VBF('jet1_pt', anaDir, selComps, zComps, weights, 10, 0, 200, weight, False); wjshape.Draw()
+    inc_fwss, inc_fwos, inc_w_mt_ratio_ss, inc_w_mt_ratio_os, inc_w_mt_ratio = handleW(
+        anaDir, selComps, weights,
+        cat_Inc, weight, options.embed, cfg.VVgroup
+        )
+
+
+    # inclusive QCD yield in signal region
+    # this yield will be multiplied by the VBF efficiency
+    insig_qcd_cut = '&&'.join([cat_Inc, options.cut])
+    inc_ssign, inc_osign, inc_ssQCD, inc_osQCD = makePlotInclusive(
+        options.hist, anaDir,
+        selComps, weights,
+        inc_fwss, inc_fwos, inc_w_mt_ratio_ss, inc_w_mt_ratio_os, inc_w_mt_ratio,
+        NBINS, XMIN, XMAX, insig_qcd_cut,
+        weight=weight, embed=options.embed, VVgroup=cfg.VVgroup
+        )
+
+    incsig_qcd_yield = inc_osQCD.Hist('QCD').Integral()
+    incsig_zl_yield = inc_osQCD.Hist('Ztt_ZL').Integral()
+    incsig_zj_yield = inc_osQCD.Hist('Ztt_ZJ').Integral()
+
+    print 'Inclusive QCD yield =', incsig_qcd_yield
+    print 'Inclusive ZL  yield =', incsig_zl_yield
+    print 'Inclusive ZJ  yield =', incsig_zj_yield
+
+    dataComps = dict( (comp.name, comp) for comp in selComps.values() if comp.isData )
+    
+    embComps = dict( (comp.name, comp) for comp in selComps.values() if comp.isEmbed )
+    
+    if qcd_vbf_eff is None:
+        # computing VBF efficiency, in anti-isolated region ==================
+
+        # QCD, Inclusive, SS, anti-isolation, for QCD efficiency
+        inc_qcd_cut = ' && '.join([cat_Inc_AntiMuTauIsoJosh,
+                                   options.cut,
+                                   'diTau_charge!=0'])
+        inc_qcd_plot = buildPlot( options.hist, anaDir,
+                                  dataComps, weights, NBINS, XMIN, XMAX,
+                                  inc_qcd_cut, weight, options.embed)
+        inc_qcd_yield = inc_qcd_plot.Hist('Data').Integral()
+        
+        # QCD VBF, SS, anti-isolation, for QCD efficiency
+        vbf_qcd_cut = '&&'.join( [inc_qcd_cut, cat_VBF] )
+        
+        vbf_qcd_plot = buildPlot( options.hist, anaDir,
+                                  dataComps, weights, NBINS, XMIN, XMAX,
+                                  vbf_qcd_cut, weight, options.embed)
+        vbf_qcd_yield = vbf_qcd_plot.Hist('Data').Integral()
+        
+        qcd_vbf_eff = vbf_qcd_yield / inc_qcd_yield
+
+        print 'QCD VBF Efficiency =', vbf_qcd_yield, '/', inc_qcd_yield, '=', qcd_vbf_eff
+
+    if emb_vbf_eff is None:
+        inc_emb_cut = ' && '.join([cat_Inc,
+                                   options.cut,
+                                   'diTau_charge==0'])
+        inc_emb_plot = buildPlot( options.hist, anaDir,
+                                  embComps, weights, NBINS, XMIN, XMAX,
+                                  inc_emb_cut, weight, options.embed)
+        names = []
+        for h in inc_emb_plot.histos:
+            h.stack = True
+            names.append(h.name)
+        inc_emb_plot.Group('Embed', names)
+        inc_emb_yield = inc_emb_plot.Hist('Embed').Integral()
+
+
+        vbf_emb_cut = '&&'.join( [inc_emb_cut, cat_VBF] )        
+        vbf_emb_plot = buildPlot( options.hist, anaDir,
+                                  embComps, weights, NBINS, XMIN, XMAX,
+                                  vbf_emb_cut, weight, options.embed)
+        names = []
+        for h in vbf_emb_plot.histos:
+            h.stack = True
+            names.append(h.name)
+        vbf_emb_plot.Group('Embed', names)        
+        vbf_emb_yield = vbf_emb_plot.Hist('Embed').Integral()
+        
+        emb_vbf_eff = vbf_emb_yield / inc_emb_yield
+                
+        print 'Emb. VBF Efficiency =', vbf_emb_yield, '/', inc_emb_yield, '=', emb_vbf_eff
+    
+    vbf_w_cut = ' && '.join([cat_Inc, cat_VBF])
+    vbf_fwss, vbf_fwos, vbf_w_mt_ratio_ss, vbf_w_mt_ratio_os, vbf_w_mt_ratio = handleW(
+        anaDir, selComps, weights,
+        vbf_w_cut, weight, options.embed, cfg.VVgroup,
+        3, 60, 120
+        )
+
+    # relaxed vbf cut for the low / high mT extrapolation ratio
+    vbf_w_cut_rel = ' && '.join([cat_Inc, cat_J2])
+    w_lowhigh_plot = buildPlot( 'mt', anaDir,
+                                {'WJets':selComps['WJets']}, weights, 200, 0, 200,
+                                vbf_w_cut_rel, weight, options.embed)
+    w_mt_hist = w_lowhigh_plot.Hist('WJets')
+    w_low_yield = w_mt_hist.Integral(True, 0,20)
+    w_high_yield = w_mt_hist.Integral(True, 60,120)
+    w_lowhigh_ratio = w_low_yield / w_high_yield
+    
+    # full VBF cut for W normalization in high mT sideband
+    vbf_w_cut = ' && '.join([cat_Inc, cat_VBF, 'diTau_charge==0'])
+    w_plot = buildPlot( 'mt', anaDir,
+                        {'WJets':selComps['WJets']}, weights, 200, 0, 200,
+                        vbf_w_cut, weight, options.embed)
+         
+    # yield in high mT sideband
+    w_high_yield_vbf = w_plot.Hist('WJets').Integral(True, 60, 120)
+    # now normalized to the data
+    w_high_yield_vbf *= vbf_fwos
+    # extrapolating to low mt region
+    w_low_yield_vbf = w_high_yield_vbf * w_lowhigh_ratio
+    
+    osign, osQCD  = makePlot( options.hist, weights,
+                              w_low_yield_vbf,
+                              qcd_vbf_eff * incsig_qcd_yield,
+                              emb_vbf_eff * incsig_zl_yield,
+                              emb_vbf_eff * incsig_zj_yield,                              
+                              NBINS, XMIN, XMAX, options.cut, weight=weight,
+                              embed=options.embed, shift=shift,
+                              VVgroup = cfg.VVgroup);
+
+    draw(osQCD, False)
+    datacards(osQCD, 'Xcat_VBFX', shift)
+
+

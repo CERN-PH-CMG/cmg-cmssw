@@ -131,10 +131,14 @@ def processInfo(info):
         # print 'fraction', fraction
         # processing efficiency using job information
         # print njobs
-        if njobs and fraction :
-            # print njobs, nmiss, nbad
+        # print njobs, nmiss, nbad
+        # print ds
+        if nmiss+nbad == 0:
+            job_eff = 1
+        else:
             job_eff = 1 - (nmiss + nbad)/float(njobs)
-            # print 'job efficiency', job_eff
+        # print 'job efficiency', job_eff
+        if njobs and fraction :
             if job_eff - fraction > 0.1:
                 # high job efficiency, but low dataset_fraction.
                 # print 'skimmin'
@@ -201,6 +205,8 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
             eff = step['jobeff']
         elif step['step']=='PATCMG':
             eff = step['fraction']
+            if eff is None:
+                eff = step['jobeff']
         elif step['step']=='PFAOD':
             eff = 1.0
         else:

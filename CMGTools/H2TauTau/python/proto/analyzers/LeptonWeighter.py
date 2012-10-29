@@ -66,33 +66,25 @@ class LeptonWeighter( Analyzer ):
                 else:
                     lep.triggerWeight = 1.                    
 
+            def getWeight(weightMap, lepton):
+                try:
+                    weight = weightMap.weight(
+                        pt=lep.pt(),
+                        eta=abs(lep.eta()) ).weight.value
+                except AttributeError:
+                    print 'cannot find weight!'
+                    print weightMap
+                    print lep.pt(), lep.eta()
+                    raise
+
             if hasattr( self.cfg_ana, 'idWeight'):
-                # import pdb; pdb.set_trace()
-                lep.idWeight = self.cfg_ana.idWeight.weight( pt=lep.pt(),
-                                                             eta=abs(lep.eta()) ).weight.value
+                lep.idWeight = self.cfg_ana.idWeight.weight(lep.pt(), abs(lep.eta()) ).weight.value
             if hasattr( self.cfg_ana, 'isoWeight'):
-                lep.isoWeight = self.cfg_ana.isoWeight.weight( pt=lep.pt(),
-                                                               eta=abs(lep.eta()) ).weight.value
-            
-##             recEffMap = None
-##             if self.cfg_ana.recEffVersion == '2011':
-##                 if abs(lep.pdgId()) == 11:
-##                     recEffMap = recEffMapEle
-##                 elif abs(lep.pdgId()) == 13:
-##                     recEffMap = recEffMapMu
-##                 elif abs(lep.pdgId()) == 15:
-##                     pass
-##                 else:
-##                     raise ValueError('bad lepton pdgid: {pdgid}'.format(pdgid = lep.pdgId()))
-            
-##             if recEffMap is not None:
-##                 lep.recEffWeight = recEffMap.effCor( lep.pt(), lep.eta())[0]
-            
+                lep.isoWeight = self.cfg_ana.isoWeight.weight(lep.pt(), abs(lep.eta()) ).weight.value
             
         lep.recEffWeight = lep.idWeight * lep.isoWeight
         lep.weight = lep.triggerWeight * lep.recEffWeight
 
-        # import pdb; pdb.set_trace()
         event.eventWeight *= lep.weight
 	if not hasattr(event,"triggerWeight"): event.triggerWeight=1.0
         event.triggerWeight *= lep.triggerWeight

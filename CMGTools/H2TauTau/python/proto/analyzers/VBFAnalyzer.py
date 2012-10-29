@@ -135,7 +135,8 @@ class VBFAnalyzer( Analyzer ):
         if len(event.cleanJets)<2:
             return True
 
-        event.vbf = VBF( event.cleanJets, event.diLepton, self.vbfMva.vbfMvaCalc)
+        event.vbf = VBF( event.cleanJets, event.diLepton,
+                         self.vbfMva.vbfMvaCalc, self.cfg_ana.cjvPtCut )
         if event.vbf.mjj > self.cfg_ana.Mjj:
             self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )
         else:
