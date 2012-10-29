@@ -93,6 +93,9 @@ double hzz_RedMetL;
 double hzz_RedMetT;
 double hzz_RawMet;
 double hzz_MVAMet;
+double hzz_vbfdetajj;
+double hzz_vbfmjj;
+double hzz_vbfdphijj;
 
 
 
@@ -147,6 +150,9 @@ TBranch *b_hzz_RedMetL = hzz_tree->Branch("hzz_RedMetL", &hzz_RedMetL , "hzz_Red
 TBranch *b_hzz_RedMetT = hzz_tree->Branch("hzz_RedMetT", &hzz_RedMetT , "hzz_RedMetT/D");
 TBranch *b_hzz_RawMet = hzz_tree->Branch("hzz_RawMet", &hzz_RawMet , "hzz_RawMet/D");
 TBranch *b_hzz_MVAMet = hzz_tree->Branch("hzz_MVAMet", &hzz_MVAMet , "hzz_MVAMet/D");
+TBranch *b_hzz_vbfdetajj = hzz_tree->Branch("hzz_vbfdetajj", &hzz_vbfdetajj , "hzz_vbfdetajj/D");
+TBranch *b_hzz_vbfdphijj = hzz_tree->Branch("hzz_vbfdphijj", &hzz_vbfdphijj , "hzz_vbfdphijj/D");
+TBranch *b_hzz_vbfmjj = hzz_tree->Branch("hzz_vbfmjj", &hzz_vbfmjj , "hzz_vbfmjj/D");
 
 
 
@@ -565,39 +571,87 @@ if(!use2011Id)
         }
       LorentzVector mvaMetP4=phys.met[7];
 
-//      std::vector<PhysicsObjectJetCollection> variedAJets;
-  //    LorentzVectorCollection zvvs;
-
-
-    std::vector<PhysicsObjectJetCollection> variedAJets;
-     LorentzVectorCollection zvvs;
-     METUtils::computeVariation(phys.ajets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc); //analyze the leptons
-
+      //apply JER base corrections to jets (and compute associated variations on the MET variable)
+      std::vector<PhysicsObjectJetCollection> variedAJets;
+      LorentzVectorCollection zvvs;
+      METUtils::computeVariation(phys.ajets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
+                  //std PF
+                  PhysicsObjectJetCollection aJets= variedAJets[0];
+                  PhysicsObjectJetCollection aGoodIdJets;
                   LorentzVector aClusteredMetP4(zll); aClusteredMetP4 *= -1;
-      
-      //analyze JET/MET
-      LorentzVectorCollection jetsP4;
-      std::vector<double> genJetsPt;
-     int nbtags(0);
-double btag_discrm = 0;
-double tmp = -999.; 
-      for(size_t ijet=0; ijet<phys.ajets.size(); ijet++)
-	{
-	  jetsP4.push_back( phys.ajets[ijet] );
-	  genJetsPt.push_back( phys.ajets[ijet].genPt);
-	  if(phys.ajets[ijet].pt()>30 && fabs(phys.ajets[ijet].eta())<2.5) 
-{
-//cout << "phys.ajets[ijet].btag3 = " << phys.ajets[ijet].btag3 << endl;
-tmp = phys.ajets[ijet].btag3;
-//cout << "phys.ajets[ijet].btag3 = " << tmp << endl;
-if(tmp > btag_discrm) { btag_discrm = tmp ; } 
-nbtags += (phys.ajets[ijet].btag3>0.275);
-	} 
+                  int nAJetsLoose(0), nAJetsTight(0), nAJetsPUIdLoose(0), nAJetsPUIdMedium(0), nAJetsGood30(0);
+                  int nABtags[3]={0,0,0};
+		  double sumet(0);
+                  float mindphijmet(999999.),mindphijmet15(999999.);
+                  PhysicsObjectJetCollection recoilJets;
+                  for(size_t ijet=0; ijet<aJets.size(); ijet++)
+                    {
+  // 		cout << "aJets[ijet].pt() = " << aJets[ijet].pt() << endl;
+                      float idphijmet( fabs(deltaPhi(aJets[ijet].phi(),zvvs[0].phi()) ) );
+//cout << "idphijmet = " << idphijmet << endl;
+                      if(idphijmet<mindphijmet15)  mindphijmet15=idphijmet;
+                      if(aJets[ijet].pt()>30) if(idphijmet<mindphijmet)  mindphijmet=idphijmet;
+                      if(fabs(deltaPhi(aJets[ijet].phi(),zll.phi()))>2) recoilJets.push_back( aJets[ijet] );
+
+//cout << "mindphijmet = " << mindphijmet << endl;
+
+                      //bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_LOOSE);//TIGHT);
+                      bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_CUTBASED_LOOSE);
+                      if(isGoodJet)
+                        {
+                          if(aJets[ijet].pt()>30)nAJetsGood30++;
+                          aClusteredMetP4 -= aJets[ijet];
+                          aGoodIdJets.push_back(aJets[ijet]);
+			  sumet+=aJets[ijet].pt();
+                        }
+
+                      if(aJets[ijet].pt()<30) continue;
+
+                      if(fabs(aJets[ijet].eta())<2.5)
+                        {
+                          nABtags[0] += (aJets[ijet].btag1>2.0);
+                          nABtags[1] += (aJets[ijet].btag2>0.244);
+                          nABtags[2] += (aJets[ijet].btag3>0.275);
+                          Float_t ijetbtags[]={aJets[ijet].btag1, aJets[ijet].btag2, aJets[ijet].btag3};
+                        }
+                      nAJetsLoose      += hasObjectId(aJets[ijet].pid,JETID_LOOSE);
+                      nAJetsTight      += hasObjectId(aJets[ijet].pid,JETID_TIGHT);
+                      nAJetsPUIdLoose  += hasObjectId(aJets[ijet].pid,JETID_OPT_LOOSE);
+                      nAJetsPUIdMedium += hasObjectId(aJets[ijet].pid,JETID_OPT_MEDIUM);
+                    }
+
+
+    bool passBveto(nABtags[2]==0);
+
+
+//VBF monitoring
+                          double dphijj(-1),hardpt(-1), vbfmjj(0.), vbfdetajj(-1.), vbfdphijj(-1.);
+                          if(aGoodIdJets.size()>=2)
+                          {
+                              LorentzVector vbfSyst=aGoodIdJets[0]+aGoodIdJets[1];
+                              LorentzVector hardSyst=vbfSyst+zvvs[0]+zll;
+                              hardpt=hardSyst.pt();
+                              dphijj=deltaPhi(aGoodIdJets[0].phi(),aGoodIdJets[1].phi());
+                              double maxEta=max(aGoodIdJets[0].eta(),aGoodIdJets[1].eta());
+                              double minEta=min(aGoodIdJets[0].eta(),aGoodIdJets[1].eta());
+                              float avgEtajj=0.5*(maxEta+minEta);
+                              float detajj=maxEta-minEta;
+                              if(aGoodIdJets[0].pt()>30 && aGoodIdJets[1].pt()>30){
+                                vbfdetajj =   fabs(detajj);
+                                 vbfmjj =  vbfSyst.mass(); 
+				 vbfdphijj = dphijj;} 
 }
 
-//cout << "Maximum value of B-tag = " << btag_discrm << endl;
+//cout << "mindphijmet = " << mindphijmet << endl; 
+
+//cout <<"aJets.size() = " << aJets.size() << endl;
+//cout <<" nAJetsGood30 =  " << nAJetsGood30 << endl;
+//cout <<"aGoodIdJets.size() = " << aGoodIdJets.size() << endl; 
+//cout <<" nABtags[2] = " << nABtags[2] << endl;
+//cout << " passBveto = " << passBveto << endl;
 //cout << "****************************************************************" <<endl; 
-      bool passBveto(nbtags==0);
+
+
 //      bool passBveto(nbtags==0);
 
 //cout << " passBveto = " << passBveto << endl;
@@ -628,18 +682,20 @@ nbtags += (phys.ajets[ijet].btag3>0.275);
 //============================================================ FILLING OF BRANCHES===========================================================
 
 
-//	if(passIds && pass3rdLeptonVeto && passBveto && mustBlind == 0) {
+	if(passIds && pass3rdLeptonVeto && passBveto) {
 //      if(passIds && pass3rdLeptonVeto &&  mustBlind == 0) {
-if(passIds && pass3rdLeptonVeto) {
+//if(passIds && pass3rdLeptonVeto) {
 
 
-
+hzz_vbfdetajj = vbfdetajj;
+hzz_vbfmjj = vbfmjj;
+hzz_vbfdphijj = vbfdphijj;
 hzz_RedMet = aRedMet.pt();
 hzz_RedMetL = aRedMetL;
 hzz_RedMetT = aRedMetT;
 hzz_RawMet = rawMetP4.pt();
 hzz_MVAMet = mvaMetP4.pt();
-hzz_BTag = btag_discrm;
+//hzz_BTag = btag_discrm;
 lineshape_weight = weight;
 hzz_lept1_gIso = phys.leptons[0].gIso;
 hzz_lept2_gIso = phys.leptons[1].gIso;
@@ -694,35 +750,21 @@ hzz_rho = ev.rho25;
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Jets Filling ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //PhysicsObjectJetCollection correctedJets = phys.ajets;
 //cout << " Number of Jets = " << correctedJets.size() << endl;
-vector<int>jetmarker;
-jetmarker.clear();
-double tmpPT = -1.0;
-double sumet = 0.;
-int njets = 0;
-Float_t mindphijmet(9999.);
-for(size_t corjet=0; corjet<phys.ajets.size(); corjet++) {
-if(phys.ajets[corjet].pt() > 30. ) {
-Float_t idphijmet=fabs(deltaPhi(hzz_MET_Phi,phys.ajets[corjet].phi()));
-if(idphijmet<mindphijmet) mindphijmet=idphijmet;
-//cout << " Delta Phi of Jet and MET = " << idphijmet << endl;
-//if(correctedJets[corjet].pt() > 30. ) {
-double jetpt = phys.ajets[corjet].pt();
-double jetE = phys.ajets[corjet].energy();
-sumet = jetpt+sumet;
-if(jetpt > tmpPT) {tmpPT = jetpt; }
-//cout << "PT of Jets = " << phys.ajets[corjet].pt() << endl;
-njets++;
-jetmarker.push_back(corjet);
-} // PT requirement on Jets
-        } // for loop on Jets
 //cout<< "sumet = " << sumet <<endl;
 //cout << " Number of Jets = " << hzz_N_Jets << endl;
 //cout << "***************************************************************" <<endl;
-hzz_Jet_PT = tmpPT;
-hzz_N_Jets = njets;
+//hzz_Jet_PT = high_PT;
+//hzz_N_Jets = njets;
+if(aGoodIdJets.size() !=0){
+hzz_Jet_PT = aGoodIdJets[0].pt();
+hzz_Jet_ETA = aGoodIdJets[0].eta();
+hzz_Jet_PHI = aGoodIdJets[0].phi();
+hzz_Jet_Energy = aGoodIdJets[0].energy();
+}
+
+hzz_N_Jets = nAJetsGood30;
 //cout << " Leading Jet PT = " << hzz_Jet_PT << endl;
 //cout << " Number of Jets = " << hzz_N_Jets << endl;
-//hzz_dPhi_JetMet = mindphijmet;
 hzz_dPhi_JetMet = mindphijmet;
 hzz_Jet_SumPT = sumet;
 //cout << " Minimum dPhi of jet and Met = " << hzz_dPhi_JetMet << endl;
