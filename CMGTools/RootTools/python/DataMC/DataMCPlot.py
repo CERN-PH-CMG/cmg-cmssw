@@ -302,22 +302,29 @@ class DataMCPlot(object):
         same = 'same'
         if len(self.nostack) == 0:
             same = ''
+        self.supportHist=None
         for hist in self.nostack:
-            if self.blindminx:
-                hist.Blind(self.blindminx, self.blindmaxx)
             hist.Draw()
             if not self.supportHist:
                 self.supportHist = hist
-            if not self.axisWasSet:
-                max =  hist.weighted.GetBinContent(hist.weighted.GetMaximumBin())
-                if ymin is None: ymin = 0.01
-                if ymax is None: ymax = max*1.3
-                hist.GetYaxis().SetRangeUser(ymin, ymax)
-                self.axisWasSet = True
         self.stack.Draw(opt+same,
                         xmin=xmin, xmax=xmax,
                         ymin=ymin, ymax=ymax )
+        if not self.axisWasSet:
+            mxsup =  self.supportHist.weighted.GetBinContent(
+                self.supportHist.weighted.GetMaximumBin()
+                )
+            mxstack = self.stack.totalHist.weighted.GetBinContent(
+                self.stack.totalHist.weighted.GetMaximumBin()
+                )
+            mx = max(mxsup, mxstack)
+            if ymin is None: ymin = 0.01
+            if ymax is None: ymax = mx*1.3
+            self.supportHist.GetYaxis().SetRangeUser(ymin, ymax)
+            self.axisWasSet = True
         for hist in self.nostack:
+            if self.blindminx:
+                hist.Blind(self.blindminx, self.blindmaxx)
             hist.Draw('same')
         self.DrawLegend()
         if TPad.Pad():
