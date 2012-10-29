@@ -128,6 +128,10 @@ class Histogram( object ):
         return self
 
     def Integral(self, weighted=True, xmin=None, xmax=None ):
+        '''
+        Returns the weighted or unweighted integral of this histogram.
+        If xmin and xmax are None, underflows and overflows are included.
+        '''
         if type( weighted ) is not bool:
             raise ValueError('weighted should be a boolean')
         if xmin is not None:
