@@ -5,6 +5,7 @@ samples = {
     '/SingleMu/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_V5_10_0':'  6076746',
     '/ElectronHad/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_V5_10_0':' 779825',
     '/ElectronHad/Run2012A-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_10_0':' 8092832',
+    '/SingleElectron/Run2012B-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_10_0':'',
     '/SingleElectron/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_V5_10_0':' 7466918',
     '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0':' 6923750', 
     '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0':' 30434389', 
