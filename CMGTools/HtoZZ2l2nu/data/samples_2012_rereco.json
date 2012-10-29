@@ -26,7 +26,7 @@
                 "dtag":"MC8TeV_ZZ",
                 "split":2,
                 "xsec":7.92,
-		"br":[0.0403896,1.14]
+		"br":[0.0403896]
              }
 	]
 	},
@@ -52,18 +52,17 @@
          "lcolor":1,
          "data":[
                 {
-                "dtag":"MC8TeV_TTJets",
-                "split":1,
-                "xsec":225.197
+                "dtag":"MC8TeV_TTTo2L2Nu2B_powheg",
+                "split":2,
+		"xsec":225.197,
+		"br":[0.0985326486]
                 },
                 {
                 "dtag":"MC8TeV_TTWJets",
-                "split":1,
                 "xsec":0.232
                 },
                 {
                 "dtag":"MC8TeV_TTZJets",
-                "split":1,
                 "xsec":0.208
                 }
           ]
@@ -119,13 +118,11 @@
 	     },
 	     {	
 		"dtag":"MC8TeV_QCDPt80to170",
-		"split":4,
 		"xsec":1191000,
 		"br":[0.1539]
 	     },
 	     {	
 		"dtag":"MC8TeV_QCDPt170to250",
-		"split":4,
 		"xsec":30990,
 		"br":[0.148]
 	     },
@@ -141,7 +138,6 @@
 	     },
      	     {	
 		"dtag":"MC8TeV_QCDMuPt20toInf",
-		"split":4,
 		"xsec":364000000,
 		"br":[0.00037]
 	     }
@@ -155,7 +151,6 @@
          "data":[
    		{
                  "dtag":"MC8TeV_WJets",
-                 "split":2,
                  "xsec":36263
                 }
           ]
@@ -229,7 +224,7 @@
 	"marker":1,
 	"data":[
 		{	
-                "dtag":"MC8TeV_VBFtoH130toZZto2L2Nu",
+                "dtag":"MC8TeV_VBFtoH200toZZto2L2Nu",
                 "split":1,
                 "xsec":0.8441,
                 "xsecunc":[3.2,-3.0],
@@ -895,19 +890,19 @@
                 },
                 {
 	         "dtag":"Data8TeV_DoubleElectron2012B",
-                 "split":2
+                 "split":4
                 },
                 {
 	         "dtag":"Data8TeV_DoubleMu2012B",
-                 "split":2
+                 "split":4
                 },
                 {
 	         "dtag":"Data8TeV_SingleMu2012B",
-                 "split":2
+                 "split":4
                 },
                 {
                  "dtag":"Data8TeV_MuEG2012B",
-                 "split":2
+                 "split":4
                 },
                 {
 	         "dtag":"Data8TeV_DoubleElectron2012C_v1",
@@ -942,19 +937,19 @@
                  "split":2
                 },
                 {
-	         "dtag":"noData8TeV_DoubleElectron2012D_a",
+	         "dtag":"Data8TeV_DoubleElectron2012D_203894to205618",
                  "split":2
                 },
                 {
-	         "dtag":"noData8TeV_DoubleMu2012D_a",
+	         "dtag":"Data8TeV_DoubleMu2012D_203894to205618",
                  "split":2
                 },
                 {
-	         "dtag":"noData8TeV_SingleMu2012D_a",
+	         "dtag":"Data8TeV_SingleMu2012D_203894to205618",
                  "split":2
                 },
                 {
-                 "dtag":"noData8TeV_MuEG2012D_a",
+                 "dtag":"Data8TeV_MuEG2012D_203894to205618",
                  "split":2
                 }
 	    ]

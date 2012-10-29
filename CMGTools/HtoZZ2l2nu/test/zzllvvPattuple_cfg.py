@@ -107,9 +107,11 @@ postfix = "PFlowNoPuSub"
 jetAlgo="AK5"
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix="PFlow",typeIMetCorrections=True,jetCorrections=('AK5PFchs',jecLevels))
 usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=postfix,typeIMetCorrections=True,jetCorrections=('AK5PF',jecLevels))
+process.makeStdMuons=process.makePatMuons
 if not runOnMC:
-    from PhysicsTools.PatAlgos.tools.coreTools import removeMCMatching
-    removeMCMatching(process, names=['Muons'], postfix="")
+    process.patMuons.addGenMatch   = cms.bool(False)
+    process.patMuons.embedGenMatch = cms.bool(False)
+    process.makeStdMuons=cms.Sequence(process.patMuons)    
 
 
 # to use GsfElectrons instead of PF electrons
@@ -210,7 +212,7 @@ process.patSequence = cms.Sequence( process.startCounter
                                     + process.simpleEleIdSequence
                                     + getattr(process,"patPF2PATSequencePFlow")
                                     + getattr(process,"patPF2PATSequence"+postfix)
-                                    + process.makePatMuons
+                                    + process.makeStdMuons
                                     + process.btagging 
                                     + process.ivfSequence 
                                     )

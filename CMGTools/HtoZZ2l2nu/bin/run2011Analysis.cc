@@ -408,6 +408,9 @@ int main(int argc, char* argv[])
 
   mon.addHistogram( new TH1F( "mindphilmet", ";min(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "maxdphilmet", ";max(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "mindphijmet_0", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "mindphijmet_25", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "mindphijmet_50", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,2.5) );
   mon.addHistogram( new TH2D( "met_mindphilmet"  , ";E_{T}^{miss};min(#Delta#phi(lepton,E_{T}^{miss});Events", 50,0,250,40,0,4) );
@@ -651,6 +654,12 @@ int main(int argc, char* argv[])
 	    if(hasMtrigger && hasMMtrigger) continue;
 	  }
       }
+      else
+	{
+	  if(ev.cat==EE   && !hasEEtrigger) continue;
+	  if(ev.cat==MUMU && !(hasMMtrigger || hasMtrigger) ) continue;
+	  if(ev.cat==EMU  && !hasEMtrigger) continue;
+	}
       
       //prepare the tag's vectors for histo filling
       std::vector<TString> tags_inc(1,"all");
@@ -764,7 +773,6 @@ int main(int argc, char* argv[])
 	  bool hasGoodId(false), isIso(false);
 	  if(fabs(phys.leptons[ilep].id)==13)
 	    {
-	      cout << relIso << endl;
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) )    { passIds.push_back(0); passIsos[0]=(relIso<0.2); if(!use2011Id) { hasGoodId=true; isIso=passIsos[0]; } }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) )    { passIds.push_back(1); passIsos[1]=(relIso<0.2); }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) { passIds.push_back(2); passIsos[2]=(relIso2011<0.15); if(use2011Id) {hasGoodId=true; isIso=passIsos[2];} }
@@ -1184,8 +1192,10 @@ int main(int argc, char* argv[])
 		      //passDphijmet=(mindphijmet15>0.5);
 		      passDphijmet=(mindphijmet>0.5);
 		      if(nAJetsGood30==0) passDphijmet=(mindphijmet15>0.5);
-		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",tags_full,nAJetsGood30==0 ? mindphijmet15:mindphijmet,weight);
-
+		      if(zvvs[0].pt()>0)  mon.fillHisto("mindphijmet_0",  tags_full, nAJetsGood30==0 ? mindphijmet15:mindphijmet,weight);
+		      if(zvvs[0].pt()>25) mon.fillHisto("mindphijmet_25", tags_full, nAJetsGood30==0 ? mindphijmet15:mindphijmet,weight);
+		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet_50", tags_full, nAJetsGood30==0 ? mindphijmet15:mindphijmet,weight);
+		      if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",    tags_full, nAJetsGood30==0 ? mindphijmet15:mindphijmet,weight);
 		      if(passDphijmet) 
 			{
 			  mon.fillHisto("eventflow",tags_full,5,weight);
