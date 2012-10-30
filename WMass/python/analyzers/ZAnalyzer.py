@@ -21,7 +21,12 @@ class ZAnalyzer( Analyzer ):
         count.register('Z >= 2 lepton')
         count.register('Z at least 1 lep trig matched')
         count.register('Z good muon pair found')
-        count.register('Z pass')
+        count.register('Z Inv Mass>50')
+        count.register('Z pos Mu is MuIsTightAndIso')
+        count.register('Z pos Mu_eta<2.1 && Mu_pt>30*MZ/MW')
+        count.register('Z pfmet>25*MZ/MW')
+        count.register('Z pt<20*MZ/MW')
+        count.register('Z Jet_leading_pt<30')
 
     def buildLeptons(self, cmgMuons, event):
         '''Creates python Leptons from the muons read from the disk.
@@ -52,7 +57,9 @@ class ZAnalyzer( Analyzer ):
         # access MET
         event.pfmet = self.handles['pfmet'].product()[0]
         # access genP
-        event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )
+        event.genParticles = []
+        if self.cfg_comp.isMC :
+          event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )
         # define good event bool
         event.ZGoodEvent = False
           # select event
@@ -180,6 +187,12 @@ class ZAnalyzer( Analyzer ):
         event.BestZNegMuonIsTightAndIso=0
         if self.testLeg( event.BestZNegMuon ):
             event.BestZNegMuonIsTightAndIso=1
+        event.BestZPosMuonIsTight=0
+        if self.testLegID( event.BestZPosMuon ):
+            event.BestZPosMuonIsTight=1
+        event.BestZNegMuonIsTight=0
+        if self.testLegID( event.BestZNegMuon ):
+            event.BestZNegMuonIsTight=1
                 
         # if event.BestZPosMuon.sourcePtr().innerTrack():
           # event.BestZPosMuon_dxy = event.BestZPosMuon.dxy()
@@ -219,8 +232,26 @@ class ZAnalyzer( Analyzer ):
         event.Zu1 = u1
         event.Zu2 = u2
 
+        if fillCounter:
+          if event.Wpos4VfromZ.M() > 50: 
+            self.counters.counter('ZAna').inc('Z Inv Mass>50')
+            if event.BestZPosMuonIsTightAndIso : 
+              self.counters.counter('ZAna').inc('Z pos Mu is MuIsTightAndIso')
+              if self.testLegKine( event.BestZPosMuon , 30*91.1876/80.385 , 2.1 ) : 
+                self.counters.counter('ZAna').inc('Z pos Mu_eta<2.1 && Mu_pt>30*MZ/MW')
+                if event.ZpfmetWpos.Pt() >25*91.1876/80.385: 
+                  self.counters.counter('ZAna').inc('Z pfmet>25*MZ/MW')
+                  if event.Wpos4VfromZ.Pt() < 20*91.1876/80.385: 
+                    self.counters.counter('ZAna').inc('Z pt<20*MZ/MW')
+                    if len(event.ZselJets) > 0: 
+                      if event.ZselJets[0].pt() < 30: 
+                        self.counters.counter('ZAna').inc('Z Jet_leading_pt<30')
+                    else:
+                      self.counters.counter('ZAna').inc('Z Jet_leading_pt<30')
+
+        
         # event is fully considered as good
-        self.counters.counter('ZAna').inc('Z pass')
+        # self.counters.counter('ZAna').inc('Z pass')
         event.ZGoodEvent = True
         return True
         

@@ -112,6 +112,7 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       bookParticle(tr, 'Mu')
       var(tr, 'Mu_dxy')
       var(tr, 'MuIsTightAndIso', int)
+      var(tr, 'MuIsTight', int)
       var(tr, 'MuRelIso')
       bookParticle(tr, 'MuGen')
       var(tr, 'MuDRGenP')
@@ -148,6 +149,7 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           if ( event.selMuons[0].isGlobalMuon() or event.selMuons[0].isTrackerMuon() ) and event.HasGoodVertices:
             fill(tr, 'Mu_dxy', math.fabs(event.selMuons[0].dxy()))
           fill(tr, 'MuIsTightAndIso', event.selMuonIsTightAndIso)
+          fill(tr, 'MuIsTight', event.selMuonIsTight)
           fill(tr, 'MuRelIso', event.selMuons[0].relIso(0.5))
 
           
