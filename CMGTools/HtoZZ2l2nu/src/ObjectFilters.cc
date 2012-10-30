@@ -1279,8 +1279,9 @@ const reco::Candidate *getHFmatchFromGSplit(reco::CandidatePtr &jet, std::vector
 
 //
 pair<string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResults> &triggerBitsH,
-							    const edm::TriggerNames &triggerNames,
-							    vector<string> &gammaTriggers)
+						  const edm::TriggerNames &triggerNames,
+						  vector<string> &gammaTriggers,
+						  unsigned int &gammaTriggerWord)
 {
   int maxthr(0);
   string selTrigger("");
@@ -1296,7 +1297,8 @@ pair<string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResult
       string trigName = triggerNames.triggerName(itrig);
       if( trigName.find("Photon") == string::npos ) continue;
       bool keepTrigger(false);
-      for(vector<string>::iterator tIt = gammaTriggers.begin(); tIt != gammaTriggers.end(); tIt++)
+      int gTrigCount(0);
+      for(vector<string>::iterator tIt = gammaTriggers.begin(); tIt != gammaTriggers.end(); tIt++,gTrigCount++)
 	{
             if(trigName.find(*tIt) == string::npos) continue;
 	    keepTrigger=true;
@@ -1312,6 +1314,7 @@ pair<string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResult
 
       phoName.ReplaceAll("Photon","");
       Int_t thr=phoName.Atoi();
+      gammaTriggerWord |= (1<<gTrigCount);
 
       if(thr<maxthr) continue;
       maxthr=thr;

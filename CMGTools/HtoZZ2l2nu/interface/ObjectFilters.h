@@ -185,7 +185,10 @@ const reco::Candidate *getHFmatchFromGSplit(reco::CandidatePtr &jet, std::vector
 //                    //
 // TRIGGER UTILITILES //
 //                    //
-std::pair<std::string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResults> &triggerBitsH, const edm::TriggerNames &triggerNames,  std::vector<std::string> &gammaTriggers);
+std::pair<std::string,double> getHighestPhotonTrigThreshold(edm::Handle<edm::TriggerResults> &triggerBitsH, 
+							    const edm::TriggerNames &triggerNames, 
+							    std::vector<std::string> &gammaTriggers,
+							    unsigned int &gammaTriggerWord);
 bool checkIfTriggerFired(edm::Handle<edm::TriggerResults> &allTriggerBis, const edm::TriggerNames &triggerNames, std::vector<std::string> &trigList); 
 
 
