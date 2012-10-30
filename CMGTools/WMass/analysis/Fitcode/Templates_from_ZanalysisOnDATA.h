@@ -5,8 +5,8 @@
 // found on file: ZTreeProducer_tree.root
 //////////////////////////////////////////////////////////
 
-#ifndef Templates_from_Zanalysis_h
-#define Templates_from_Zanalysis_h
+#ifndef Templates_from_ZanalysisOnDATA_h
+#define Templates_from_ZanalysisOnDATA_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -14,10 +14,11 @@
 #include <iostream>
 #include <TSystem.h>
 
-class Templates_from_Zanalysis {
+class Templates_from_ZanalysisOnDATA {
   public :
   TTree          *fChain;   //!pointer to the analyzed TTree or TChain
   Int_t           fCurrent; //!current Tree number in a TChain
+  double          lumi_scaling;
   TString         outputdir;
 
   // Declaration of leaf types
@@ -160,21 +161,21 @@ class Templates_from_Zanalysis {
   TBranch        *b_Jet_leading_eta;   //!
   TBranch        *b_Jet_leading_phi;   //!
 
-  Templates_from_Zanalysis(TString f_str=0, TString outputdir_str=0, TTree *tree=0);
-  virtual ~Templates_from_Zanalysis();
+  Templates_from_ZanalysisOnDATA(TString f_str=0, TString outputdir_str=0, double lumi_scaling_input=1, TTree *tree=0);
+  virtual ~Templates_from_ZanalysisOnDATA();
   virtual Int_t    Cut(Long64_t entry);
   virtual Int_t    GetEntry(Long64_t entry);
   virtual Long64_t LoadTree(Long64_t entry);
   virtual void     Init(TTree *tree);
-  virtual void     Loop();
+  virtual void     Loop(int IS_MC_CLOSURE_TEST=0);
   virtual Bool_t   Notify();
   virtual void     Show(Long64_t entry = -1);
 };
 
 #endif
 
-#ifdef Templates_from_Zanalysis_cxx
-Templates_from_Zanalysis::Templates_from_Zanalysis(TString f_str, TString outputdir_str, TTree *tree)
+#ifdef Templates_from_ZanalysisOnDATA_cxx
+Templates_from_ZanalysisOnDATA::Templates_from_ZanalysisOnDATA(TString f_str, TString outputdir_str, double lumi_scaling_input, TTree *tree)
 {
   // if parameter tree is not specified (or zero), connect the file
   // used to generate this class and read the Tree.
@@ -188,22 +189,23 @@ Templates_from_Zanalysis::Templates_from_Zanalysis(TString f_str, TString output
 
   }
   outputdir=outputdir_str;
+  lumi_scaling=lumi_scaling_input;
   Init(tree);
 }
 
-Templates_from_Zanalysis::~Templates_from_Zanalysis()
+Templates_from_ZanalysisOnDATA::~Templates_from_ZanalysisOnDATA()
 {
   if (!fChain) return;
   delete fChain->GetCurrentFile();
 }
 
-Int_t Templates_from_Zanalysis::GetEntry(Long64_t entry)
+Int_t Templates_from_ZanalysisOnDATA::GetEntry(Long64_t entry)
 {
   // Read contents of entry.
   if (!fChain) return 0;
   return fChain->GetEntry(entry);
 }
-Long64_t Templates_from_Zanalysis::LoadTree(Long64_t entry)
+Long64_t Templates_from_ZanalysisOnDATA::LoadTree(Long64_t entry)
 {
   // Set the environment to read one entry
   if (!fChain) return -5;
@@ -218,7 +220,7 @@ Long64_t Templates_from_Zanalysis::LoadTree(Long64_t entry)
   return centry;
 }
 
-void Templates_from_Zanalysis::Init(TTree *tree)
+void Templates_from_ZanalysisOnDATA::Init(TTree *tree)
 {
   // The Init() function is called when the selector needs to initialize
   // a new tree or chain. Typically here the branch addresses and branch
@@ -262,11 +264,11 @@ void Templates_from_Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("Z_phi", &Z_phi, &b_Z_phi);
   fChain->SetBranchAddress("Z_mass", &Z_mass, &b_Z_mass);
   fChain->SetBranchAddress("Z_mt", &Z_mt, &b_Z_mt);
-  fChain->SetBranchAddress("ZGen_pt", &ZGen_pt, &b_ZGen_pt);
-  fChain->SetBranchAddress("ZGen_rap", &ZGen_rap, &b_ZGen_rap);
-  fChain->SetBranchAddress("ZGen_phi", &ZGen_phi, &b_ZGen_phi);
-  fChain->SetBranchAddress("ZGen_mass", &ZGen_mass, &b_ZGen_mass);
-  fChain->SetBranchAddress("ZGen_mt", &ZGen_mt, &b_ZGen_mt);
+  // fChain->SetBranchAddress("ZGen_pt", &ZGen_pt, &b_ZGen_pt);
+  // fChain->SetBranchAddress("ZGen_rap", &ZGen_rap, &b_ZGen_rap);
+  // fChain->SetBranchAddress("ZGen_phi", &ZGen_phi, &b_ZGen_phi);
+  // fChain->SetBranchAddress("ZGen_mass", &ZGen_mass, &b_ZGen_mass);
+  // fChain->SetBranchAddress("ZGen_mt", &ZGen_mt, &b_ZGen_mt);
   fChain->SetBranchAddress("u1", &u1, &b_u1);
   fChain->SetBranchAddress("u2", &u2, &b_u2);
   fChain->SetBranchAddress("MuPos_pt", &MuPos_pt, &b_MuPos_pt);
@@ -278,12 +280,12 @@ void Templates_from_Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("MuPosRelIso", &MuPosRelIso, &b_MuPosRelIso);
   fChain->SetBranchAddress("MuPosTrg", &MuPosTrg, &b_MuPosTrg);
   fChain->SetBranchAddress("MuPosIsTightAndIso", &MuPosIsTightAndIso, &b_MuPosIsTightAndIso);
-  fChain->SetBranchAddress("MuPosGen_pt", &MuPosGen_pt, &b_MuPosGen_pt);
-  fChain->SetBranchAddress("MuPosGen_eta", &MuPosGen_eta, &b_MuPosGen_eta);
-  fChain->SetBranchAddress("MuPosGen_phi", &MuPosGen_phi, &b_MuPosGen_phi);
-  fChain->SetBranchAddress("MuPosGen_mass", &MuPosGen_mass, &b_MuPosGen_mass);
-  fChain->SetBranchAddress("MuPosGen_charge", &MuPosGen_charge, &b_MuPosGen_charge);
-  fChain->SetBranchAddress("MuPosDRGenP", &MuPosDRGenP, &b_MuPosDRGenP);
+  // fChain->SetBranchAddress("MuPosGen_pt", &MuPosGen_pt, &b_MuPosGen_pt);
+  // fChain->SetBranchAddress("MuPosGen_eta", &MuPosGen_eta, &b_MuPosGen_eta);
+  // fChain->SetBranchAddress("MuPosGen_phi", &MuPosGen_phi, &b_MuPosGen_phi);
+  // fChain->SetBranchAddress("MuPosGen_mass", &MuPosGen_mass, &b_MuPosGen_mass);
+  // fChain->SetBranchAddress("MuPosGen_charge", &MuPosGen_charge, &b_MuPosGen_charge);
+  // fChain->SetBranchAddress("MuPosDRGenP", &MuPosDRGenP, &b_MuPosDRGenP);
   fChain->SetBranchAddress("MuNeg_pt", &MuNeg_pt, &b_MuNeg_pt);
   fChain->SetBranchAddress("MuNeg_eta", &MuNeg_eta, &b_MuNeg_eta);
   fChain->SetBranchAddress("MuNeg_phi", &MuNeg_phi, &b_MuNeg_phi);
@@ -293,19 +295,19 @@ void Templates_from_Zanalysis::Init(TTree *tree)
   fChain->SetBranchAddress("MuNegRelIso", &MuNegRelIso, &b_MuNegRelIso);
   fChain->SetBranchAddress("MuNegTrg", &MuNegTrg, &b_MuNegTrg);
   fChain->SetBranchAddress("MuNegIsTightAndIso", &MuNegIsTightAndIso, &b_MuNegIsTightAndIso);
-  fChain->SetBranchAddress("MuNegGen_pt", &MuNegGen_pt, &b_MuNegGen_pt);
-  fChain->SetBranchAddress("MuNegGen_eta", &MuNegGen_eta, &b_MuNegGen_eta);
-  fChain->SetBranchAddress("MuNegGen_phi", &MuNegGen_phi, &b_MuNegGen_phi);
-  fChain->SetBranchAddress("MuNegGen_mass", &MuNegGen_mass, &b_MuNegGen_mass);
-  fChain->SetBranchAddress("MuNegGen_charge", &MuNegGen_charge, &b_MuNegGen_charge);
-  fChain->SetBranchAddress("MuNegDRGenP", &MuNegDRGenP, &b_MuNegDRGenP);
+  // fChain->SetBranchAddress("MuNegGen_pt", &MuNegGen_pt, &b_MuNegGen_pt);
+  // fChain->SetBranchAddress("MuNegGen_eta", &MuNegGen_eta, &b_MuNegGen_eta);
+  // fChain->SetBranchAddress("MuNegGen_phi", &MuNegGen_phi, &b_MuNegGen_phi);
+  // fChain->SetBranchAddress("MuNegGen_mass", &MuNegGen_mass, &b_MuNegGen_mass);
+  // fChain->SetBranchAddress("MuNegGen_charge", &MuNegGen_charge, &b_MuNegGen_charge);
+  // fChain->SetBranchAddress("MuNegDRGenP", &MuNegDRGenP, &b_MuNegDRGenP);
   fChain->SetBranchAddress("Jet_leading_pt", &Jet_leading_pt, &b_Jet_leading_pt);
   fChain->SetBranchAddress("Jet_leading_eta", &Jet_leading_eta, &b_Jet_leading_eta);
   fChain->SetBranchAddress("Jet_leading_phi", &Jet_leading_phi, &b_Jet_leading_phi);
   Notify();
 }
 
-Bool_t Templates_from_Zanalysis::Notify()
+Bool_t Templates_from_ZanalysisOnDATA::Notify()
 {
   // The Notify() function is called when a new file is opened. This
   // can be either for a new TTree in a TChain or when when a new TTree
@@ -316,18 +318,18 @@ Bool_t Templates_from_Zanalysis::Notify()
   return kTRUE;
 }
 
-void Templates_from_Zanalysis::Show(Long64_t entry)
+void Templates_from_ZanalysisOnDATA::Show(Long64_t entry)
 {
   // Print contents of entry.
   // If entry is not specified, print current entry
   if (!fChain) return;
   fChain->Show(entry);
 }
-Int_t Templates_from_Zanalysis::Cut(Long64_t entry)
+Int_t Templates_from_ZanalysisOnDATA::Cut(Long64_t entry)
 {
   // This function may be called from Loop.
   // returns  1 if entry is accepted.
   // returns -1 otherwise.
   return 1;
 }
-#endif // #ifdef Templates_from_Zanalysis_cxx
+#endif // #ifdef Templates_from_ZanalysisOnDATA_cxx
