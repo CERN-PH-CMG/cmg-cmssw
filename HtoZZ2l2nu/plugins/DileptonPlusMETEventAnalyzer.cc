@@ -341,7 +341,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
     std::vector<std::string> triggerPaths=objConfig_["Trigger"].getParameterSet("triggerPaths").getParameterNames();
     std::map<std::string,bool> triggerBits; 
     std::pair<std::string,double> photonTrig;
-    int photonPrescale(1);
     ev.hasTrigger=false;
     for(size_t it=0; it<triggerPaths.size(); it++)
       {
@@ -349,9 +348,10 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	triggerBits[ triggerPaths[it] ] = checkIfTriggerFired( triggerBitsH, triggerNames,itriggers);
 	ev.hasTrigger |= triggerBits[ triggerPaths[it] ];
 	if(triggerPaths[it]!="gamma") continue;
-	photonTrig = getHighestPhotonTrigThreshold( triggerBitsH, triggerNames , itriggers);
-	if(!photonTrig.first.empty())
-	  photonPrescale=hltConfig_.prescaleValue(event, iSetup, photonTrig.first);
+	unsigned int gn_triggerWord=0;
+	photonTrig = getHighestPhotonTrigThreshold( triggerBitsH, triggerNames , itriggers, gn_triggerWord);
+	ev.gn_triggerWord=gn_triggerWord;
+	if(!photonTrig.first.empty()) ev.gn_prescale=hltConfig_.prescaleValue(event, iSetup, photonTrig.first);
       }
     if(triggerBits["singleMu"]==true && triggerBits["mumu"]==true) triggerBits["singleMu"]=false;   //veto overlaps: single muon triggers should be used exclusively 
 	    
@@ -592,7 +592,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
       if(!event.isRealData() || triggerBits["gamma"]==true) 
 	{
 	  ev.cat=GAMMA+1000*photonTrig.second;
-	  ev.gn_prescale=photonPrescale;
 	}
 
     //quit if no gamma or dilepton candidate
