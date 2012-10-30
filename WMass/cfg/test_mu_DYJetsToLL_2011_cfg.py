@@ -19,9 +19,12 @@ vertexAna = cfg.Analyzer(
 
 WAna = cfg.Analyzer(
     'WAnalyzer',
-    recoilcut = 20,
-    pfmetcut = 25,
-    jetptcut = 30,
+    # recoilcut = 20,
+    # pfmetcut = 25,
+    # jetptcut = 30,
+    recoilcut = 1000,
+    pfmetcut = 0,
+    jetptcut = 1000,
     pt = 30,
     eta = 2.1,
     iso = 0.5,
@@ -35,9 +38,12 @@ WtreeProducer = cfg.Analyzer(
 
 ZAna = cfg.Analyzer(
     'ZAnalyzer',
-    recoilcut = 25, # rised from 20 to 25 to allow offline MZ/MW scaled analysis cut
-    pfmetcut = 25,
-    jetptcut = 30,
+    # recoilcut = 25, # rised from 20 to 25 to allow offline MZ/MW scaled analysis cut
+    # pfmetcut = 25,
+    # jetptcut = 30,
+    recoilcut = 1000,
+    pfmetcut = 0,
+    jetptcut = 1000,
     pt = 30,
     eta = 2.1,
     iso = 0.5,
@@ -56,7 +62,7 @@ sequence = cfg.Sequence( [
     WAna,
     WtreeProducer,
     ZAna,
-    ZtreeProducer
+    # ZtreeProducer
    ] )
 
 
@@ -64,26 +70,22 @@ from CMGTools.H2TauTau.proto.samples.ewk import WJets, DYJets, TTJets
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
 DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
-DYJets.files = DYJets.files[:5]
+# DYJets.files = DYJets.files[:10]
 DYJets.triggers = ["HLT_IsoMu24_v*"]
 
 WJets.files = getFiles('/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
-WJets.files = WJets.files[:5]
+# WJets.files = WJets.files[:10]
 WJets.triggers = ["HLT_IsoMu24_v*"]
 
 TTJets.files = getFiles('/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
-TTJets.files = TTJets.files[:5]
-TTJets.triggers = ["HLT_IsoMu24_v*"]
 
-selectedComponents = [DYJets, WJets]
+# selectedComponents = [DYJets, WJets]
 # selectedComponents = [WJets]
-# selectedComponents = [DYJets]
-# selectedComponents = [TTJets]
+selectedComponents = [DYJets]
 
 
-DYJets.splitFactor = 1
-WJets.splitFactor = 1
-TTJets.splitFactor = 1
+DYJets.splitFactor = 750
+WJets.splitFactor = 750
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
