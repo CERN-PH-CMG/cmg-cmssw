@@ -18,10 +18,14 @@ class WAnalyzer( Analyzer ):
         self.counters.addCounter('WAna')
         count = self.counters.counter('WAna')
         count.register('W all events')
-        count.register('W >= 1 lepton')
         count.register('W at least 1 lep trig matched')
+        count.register('W ev trig, good vertex and >= 1 lepton')
         count.register('W only 1 lep trig matched')
-        count.register('W pass')
+        count.register('W lep is MuIsTightAndIso')
+        count.register('W Mu_eta<2.1 && Mu_pt>30')
+        count.register('W pfmet>25')
+        count.register('W pt<20')
+        count.register('W Jet_leading_pt<30')
 
     def buildLeptons(self, cmgMuons, event):
         '''Creates python Leptons from the muons read from the disk.
@@ -53,7 +57,9 @@ class WAnalyzer( Analyzer ):
         # access MET
         event.pfmet = self.handles['pfmet'].product()[0]
         # access genP
-        event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )        
+        event.genParticles = []
+        if self.cfg_comp.isMC :
+          event.genParticles = self.buildGenParticles( self.mchandles['genpart'].product(), event )        
         # define good event bool
         event.WGoodEvent = False
         # select event
@@ -121,7 +127,7 @@ class WAnalyzer( Analyzer ):
         # ...and at lest one reco muon...
         if len(event.selMuons) == 0:
             return True
-        if fillCounter: self.counters.counter('WAna').inc('W >= 1 lepton')
+        if fillCounter: self.counters.counter('WAna').inc('W ev trig, good vertex and >= 1 lepton')
         
         #check if the event is triggered according to cfg_ana
         if len(self.cfg_comp.triggers)>0:
@@ -151,6 +157,7 @@ class WAnalyzer( Analyzer ):
                 
         # testing offline muon cuts (tight+iso, no kinematical cuts)
         event.selMuonIsTightAndIso = self.testLeg( event.selMuons[0] ) 
+        event.selMuonIsTight = self.testLegID( event.selMuons[0] ) 
           
         # define a W from lepton and MET
         event.W4V = event.selMuons[0].p4() + event.pfmet.p4()
@@ -173,9 +180,24 @@ class WAnalyzer( Analyzer ):
 
         event.u1 = u1
         event.u2 = u2
+        
+        if fillCounter:
+          if event.selMuonIsTightAndIso : 
+            self.counters.counter('WAna').inc('W lep is MuIsTightAndIso')
+            if self.testLegKine( event.selMuons[0] , 30 , 2.1 ) : 
+              self.counters.counter('WAna').inc('W Mu_eta<2.1 && Mu_pt>30')
+              if event.pfmet.pt() >25: 
+                self.counters.counter('WAna').inc('W pfmet>25')
+                if event.W4V.Pt() < 20: 
+                  self.counters.counter('WAna').inc('W pt<20')
+                  if len(event.selJets) > 0: 
+                    if event.selJets[0].pt()<30: 
+                      self.counters.counter('WAna').inc('W Jet_leading_pt<30')
+                  else:
+                    self.counters.counter('WAna').inc('W Jet_leading_pt<30')
 
         # event is fully considered as good
-        self.counters.counter('WAna').inc('W pass')
+        # if fillCounter: self.counters.counter('WAna').inc('W pass')
         event.WGoodEvent = True
         return True
 

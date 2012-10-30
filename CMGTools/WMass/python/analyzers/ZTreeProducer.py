@@ -132,6 +132,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       var(tr, 'MuPosRelIso')
       var(tr, 'MuPosTrg', int)
       var(tr, 'MuPosIsTightAndIso', int)
+      var(tr, 'MuPosIsTight', int)
       bookParticle(tr, 'MuPosGen')
       # var(tr, 'MuPosGen_pdgId', int)
       var(tr, 'MuPosDRGenP')
@@ -140,6 +141,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       var(tr, 'MuNegRelIso')
       var(tr, 'MuNegTrg', int)
       var(tr, 'MuNegIsTightAndIso', int)
+      var(tr, 'MuNegIsTight', int)
       bookParticle(tr, 'MuNegGen')
       # var(tr, 'MuNegGen_pdgId', int)
       var(tr, 'MuNegDRGenP')
@@ -181,12 +183,14 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fill(tr, 'MuPosRelIso', event.BestZPosMuon.relIso(0.5))
           fill(tr, 'MuPosTrg', event.BestZPosMuonHasTriggered)
           fill(tr, 'MuPosIsTightAndIso',event.BestZPosMuonIsTightAndIso)
+          fill(tr, 'MuPosIsTight',event.BestZPosMuonIsTight)
           fillParticle(tr, 'MuNeg', event.BestZNegMuon)
           if ( event.BestZNegMuon.isGlobalMuon() or event.BestZNegMuon.isTrackerMuon() ) and event.HasGoodVertices:
             fill(tr, 'MuNeg_dxy', math.fabs(event.BestZNegMuon.dxy()))
           fill(tr, 'MuNegRelIso', event.BestZNegMuon.relIso(0.5))
           fill(tr, 'MuNegTrg', event.BestZNegMuonHasTriggered)
           fill(tr, 'MuNegIsTightAndIso',event.BestZNegMuonIsTightAndIso)
+          fill(tr, 'MuNegIsTight',event.BestZNegMuonIsTight)
           
         if (event.savegenpZ and self.cfg_comp.isMC) or event.ZGoodEvent:
           fill( tr, 'run', event.run) 
