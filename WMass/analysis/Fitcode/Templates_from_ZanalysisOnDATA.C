@@ -1,5 +1,5 @@
-#define Templates_from_Zanalysis_cxx
-#include "Templates_from_Zanalysis.h"
+#define Templates_from_ZanalysisOnDATA_cxx
+#include "Templates_from_ZanalysisOnDATA.h"
 #include "../includes/common.h"
 #include <TH2.h>
 #include <TH1.h>
@@ -8,11 +8,11 @@
 #include <TMath.h>
 #include <TLorentzVector.h>
 
-void Templates_from_Zanalysis::Loop()
+void Templates_from_ZanalysisOnDATA::Loop(int IS_MC_CLOSURE_TEST)
 {
 //   In a ROOT session, you can do:
-//      Root > .L Templates_from_Zanalysis.C
-//      Root > Templates_from_Zanalysis t
+//      Root > .L Templates_from_ZanalysisOnDATA.C
+//      Root > Templates_from_ZanalysisOnDATA t
 //      Root > t.GetEntry(12); // Fill t data members with entry number 12
 //      Root > t.Show();       // Show values of entry 12
 //      Root > t.Show(16);     // Read and show values of entry 16
@@ -35,7 +35,7 @@ void Templates_from_Zanalysis::Loop()
 //by  b_branchname->GetEntry(ientry); //read only this branch
 
   TFile*fin = new TFile(Form("%s/R_WdivZ_OnMC.root",outputdir.Data()));
-  TFile*fout = new TFile("Templates_from_ZanalysisOnMC.root","RECREATE");
+  TFile*fout = new TFile("Templates_from_ZanalysisOnDATA.root","RECREATE");
 
   TH1D *hWlikePos_PtScaled_RWeighted_Templates[WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
   TH1D*hWlikePos_R_WdivZ[WMass::etaMuonNSteps][2*WMass::WMassNSteps+1];
@@ -68,10 +68,12 @@ void Templates_from_Zanalysis::Loop()
 
    if (fChain == 0) return;
 
-   Long64_t nentries = fChain->GetEntriesFast();
+  Long64_t nentries = fChain->GetEntriesFast();
+  Long64_t first_entry = 0;
+  if(IS_MC_CLOSURE_TEST==1) first_entry=nentries/2;
 
-   Long64_t nbytes = 0, nb = 0;
-   for (Long64_t jentry=0; jentry<nentries;jentry++) {
+  Long64_t nbytes = 0, nb = 0;
+  for (Long64_t jentry=first_entry; jentry<nentries;jentry++) {
   // for (Long64_t jentry=0; jentry<5e5;jentry++) {
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
@@ -104,7 +106,7 @@ void Templates_from_Zanalysis::Loop()
                 if(Jet_leading_pt<30){
                   double weight=hWlikePos_R_WdivZ[i][j]->GetBinContent(hWlikePos_R_WdivZ[i][j]->GetXaxis()->FindBin(MuPos_pt_jacobian));
                   // cout << "etamax= " << WMass::etaMaxMuons[i] << " mass= " << iWmass << " MuPos_pt_jacobian= " << MuPos_pt_jacobian << " weight= " << weight << endl;
-                  hWlikePos_PtScaled_RWeighted_Templates[i][j]->Fill(MuPos_pt_jacobian,weight);
+                  hWlikePos_PtScaled_RWeighted_Templates[i][j]->Fill(MuPos_pt_jacobian,weight*lumi_scaling);
                 }
               }
             }
