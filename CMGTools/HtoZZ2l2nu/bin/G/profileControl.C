@@ -5,25 +5,21 @@
   
   gStyle->SetOptStat(0);
   
-    TString histo("metvsavginstlumi");
-    TString histoY("<E_{T}^{miss}>");
-  TString histoX("Avg. inst luminosity");
-  
-//   TString histo("met20vsrho");
-//   TString histoY("<red-E_{T}^{miss}>");
-//   TString histoX("Energy density (#rho)");
-  
-//  TString histo("nvtxvsavginstlumi");
-//  TString histoY("<N_{vtx}>");
-  // TString histoX("Avg. inst luminosity");
- 
-  // TString histo("metvsrun");
+  //    TString histo("metvsavginstlumi");
   //  TString histoY("<E_{T}^{miss}>");
-  //  TString histoX("Run number");
+  //  TString histoX("Avg. inst luminosity");
+    
+//   TString histo("nvtxvsavginstlumi");
+//   TString histoY("<N_{vtx}>");
+//   TString histoX("Avg. inst luminosity");
+ 
+//   TString histo("metvsrun");
+//   TString histoY("<E_{T}^{miss}>");
+//   TString histoX("Run number");
   
-  //    TString histo("nvtxvsrun");
-  //     TString histoY("<N_{vtx}>");
-  //    TString histoX("Run number");
+  TString histo("nvtxvsrun");
+  TString histoY("<N_{vtx}>");
+  TString histoX("Run number");
   
   
   TString cats[]={"","eq0jets","eq1jets","eq2jets"};
@@ -60,6 +56,16 @@
       //grgammaee->Draw("e1same");
       mumu->Draw("same");
       ee->Draw("same");
+
+      TPaveText *pt = new TPaveText(0.7,0.8,0.9,0.9,"NDC");
+      pt->SetBorderSize(0);
+      pt->SetFillStyle(0);
+      if(i==0) pt->AddText("=0 jets");
+      if(i==1) pt->AddText("=1 jets");
+      if(i==2) pt->AddText("=2 jets");
+      if(i==3) pt->AddText("#geq3 jets");
+      pt->SetTextFont(42);
+      pt->Draw();
 
       if(i) continue;
       TLegend *leg= new TLegend(0.6,0.6,0.9,0.9);

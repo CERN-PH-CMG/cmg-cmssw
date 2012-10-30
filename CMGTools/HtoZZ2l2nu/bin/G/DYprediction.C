@@ -162,7 +162,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
 
       gammaFile = "~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
-      llFile    = "~/work/htozz/53x_rereco/ll/2012/plotter.root";
+      llFile    = "~/work/htozz/53x_rereco/ll/2012/plotter2012.root";
 
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
@@ -177,12 +177,24 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/work/q/querten/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
      
-//       histos.push_back("met_met_blind");                
+      histos.push_back("met_met_blind");                
 //       histos.push_back("met_redMet_blind");             
 //       histos.push_back("mt_blind");                     
-      histos.push_back("mindphijmet");            
-      //      histos.push_back("mt_shapes");              
-      //  histos.push_back("mt_redMet_shapes");       
+//       histos.push_back("pfvbfcanddeta");
+//       histos.push_back("pfvbfcandeta");
+      histos.push_back("pfvbfcandjetdeta");
+      histos.push_back("pfvbfmjj");
+      histos.push_back("pfvbfpremjj");
+      histos.push_back("pfvbfcjv");
+      histos.push_back("pfvbfcandjetpt");
+      histos.push_back("pfvbfcandjeteta");
+
+//       histos.push_back("mindphijmet_0");            
+//       histos.push_back("mindphijmet_25");            
+//       histos.push_back("mindphijmet_50");   
+//       histos.push_back("mindphijmet");                     
+//       histos.push_back("mt_shapes");              
+//       histos.push_back("mt_redMet_shapes");       
      
       dilSignal.push_back("ggH(600)#rightarrow ZZ");
       dilSignal.push_back("qqH(600)#rightarrow ZZ");
@@ -405,10 +417,23 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       if(it->first.find("met_redMet")!=string::npos) { distNormKey="redMet"; normBin=normH->GetXaxis()->FindBin(40); }
 	      
       ////normalization factor (from deta_jj<3)
-      if(it->first.find("jetdeta")!=string::npos)    { distNormKey="jetdeta"; normBin=normH->GetXaxis()->FindBin(3); }
+      if(it->first.find("pfvbf")!=string::npos)
+	{
+	  distNormKey="jetdeta"; 
+	  if(it->first.find("jetdeta")!=string::npos) normBin=normH->GetXaxis()->FindBin(3);
+	}
+      ////normalization factor (from m_jj<500)
+      if(it->first.find("mjj")!=string::npos)    { distNormKey="mjj"; normBin=normH->GetXaxis()->FindBin(500); }
+
+      ////normalization factor (from eta<2.5)
+      if(it->first.find("jeteta")!=string::npos)    { distNormKey="jeteta"; normBin=normH->GetXaxis()->FindBin(2.5); }
+      
       
       ////normalization factor (from mindphijmet<0.5)
-      if(it->first.find("mindphijmet")!=string::npos)    { distNormKey="mindphijmet"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+      if(it->first.find("mindphijmet_0")!=string::npos)          { distNormKey="mindphijmet_0"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+      else if(it->first.find("mindphijmet_25")!=string::npos)    { distNormKey="mindphijmet_25"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+      else if(it->first.find("mindphijmet_50")!=string::npos)    { distNormKey="mindphijmet_50"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+      else if(it->first.find("mindphijmet")!=string::npos)       { distNormKey="mindphijmet"; normBin=normH->GetXaxis()->FindBin(0.5); } 
       
       //normalization factor (from Mjj<500) 
       if(model==VBFZ && it->first.find("premjj")!=string::npos)   normBin=normH->GetXaxis()->FindBin(500);
@@ -693,7 +718,8 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   if(is2011)
     sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5051./1000);
   else
-    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 10200./1000);
+    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 12196./1000);
+  //    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 10200./1000);
   //sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
     T->AddText(Buffer);
   T->Draw("same");
