@@ -1,3 +1,5 @@
+import re
+
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.analyzers.GenParticleAnalyzer import *
 from CMGTools.RootTools.utils.DeltaR import matchObjectCollection
@@ -30,6 +32,12 @@ class WNJetsAnalyzer( Analyzer ):
         for ninc, nexc in zip(self.ni, self.cfg_ana.nevents ):
             self.weighti.append( ninc/(ninc+nexc) )
 
+        cname = self.cfg_comp.name
+        wpat = re.compile('W\d?Jet.*')
+        match = wpat.match(self.cfg_comp.name)
+        self.isWJets = not (match is None)
+
+        
     def beginLoop(self):
         super(WNJetsAnalyzer,self).beginLoop()        
         self.averages.add('NUP', Average('NUP') )
@@ -49,14 +57,16 @@ class WNJetsAnalyzer( Analyzer ):
         
         if not self.cfg_comp.isMC:
             return True
-        
-        try :
-            self.readCollections( iEvent )
-            event.NUP = self.mchandles['source'].product().hepeup().NUP
-        except :
-            return True
 
-        assert(event.NUP>0)
+        if not self.isWJets:
+            return True
+        
+        #        try:
+        self.readCollections( iEvent )
+        event.NUP = self.mchandles['source'].product().hepeup().NUP
+        # except :
+        #    return True
+        # assert(event.NUP>0)
 
         # removing the 2 incoming partons, a boson,
         # and the 2 partons resulting from the decay of a boson
