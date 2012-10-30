@@ -22,6 +22,12 @@ class Comparator(object):
         self.filter = re.compile(filter)
 
     def browse(self):
+        self.can = TCanvas ()
+        threshold = 0.3
+        self.pad_ratio = TPad ('ratio','ratio',0,0,1,threshold)
+        self.pad_ratio.Draw()
+        self.pad_main  = TPad ('main','main',0,threshold,1,1)
+        self.pad_main.Draw()
         maindir = 'Plots_Comparator'
         if os.path.isdir(maindir):
             os.system( 'rm -r ' + maindir)
@@ -47,14 +53,18 @@ class Comparator(object):
                 
     def drawHists(self, h1, h2, h1name):
         print 'Draw', h1name
-        h1.SetMarkerColor(4)
-        h2.SetMarkerColor(1)                    
-        h1.SetLineColor(4)
-        h1.SetFillColor(5)
+        h1.SetMarkerColor(1) # gray
+        h1.SetMarkerStyle(29) # gray
+        h1.SetLineColor(16) # blue
+        h1.SetFillColor(16) # yellow
         h1.SetFillStyle(1001)
+
+        h2.SetMarkerColor(1) # black                    
+        h2.SetMarkerStyle(4) # empty circle                  
         h2.SetLineColor(1)
-        maximum = max(h1.GetBinContent(h1.GetMaximumBin()),
-                      h2.GetBinContent(h2.GetMaximumBin()))
+        maximum = max(h1.GetBinContent(h1.GetMaximumBin()) + h1.GetBinError(h1.GetMaximumBin()),
+                      h2.GetBinContent(h2.GetMaximumBin()) + h2.GetBinError(h2.GetMaximumBin()))
+        self.pad_main.cd()              
         h1.Draw('E2')
         h2.Draw('same')
         if self.legend is None:
@@ -63,6 +73,15 @@ class Comparator(object):
             self.legend.AddEntry(h2, self.info2.name, 'p')
         h1.GetYaxis().SetRangeUser(0.001, maximum*1.2)
         self.legend.Draw('same')
+        self.pad_ratio.cd()
+        self.pad_ratio.SetGrid ()
+        self.pad_ratio.DrawFrame(h1.GetBinLowEdge (1), 0.5, h1.GetBinLowEdge (h1.GetNbinsX () + 1), 1.5)
+        ratio = h1.Clone('ratio_'+h1.GetName())
+        ratio.Divide (h2)
+        ratio.Draw ('same')
+#        one = TLine (h1.GetBinLowEdge (1), 1, h1.GetBinLowEdge (h1.GetNbinsX () + 1), 1)
+#        one.Draw ('same')
+        self.can.cd()
         gPad.Update()
         pngname = '/'.join(['Plots_Comparator',h1name+'.png'])
         print pngname
