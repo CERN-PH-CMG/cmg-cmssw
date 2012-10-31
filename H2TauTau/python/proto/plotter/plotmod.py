@@ -250,13 +250,13 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
 
 def w_lowHighMTRatio( var, anaDir,
                       comp, weights, 
-                      cut, weight, lowMTMax, highMTMin, highMTMax, chargeRequirement):
+                      cut, weight, lowMTMax, highMTMin, highMTMax, chargeRequirement, treeName = None):
     cutWithChargeReq = ' && '.join([cut, chargeRequirement]) 
     max = 1000
     mt = shape(var, anaDir,
                comp, weights, max, 0, max,
                cutWithChargeReq, weight,
-               None, None, None)
+               None, None, treeName = treeName)
     mt_low = mt.Integral(True, 0, lowMTMax)
     mt_high = mt.Integral(True, highMTMin, highMTMax)
     mt_ratio = mt_low / mt_high    
