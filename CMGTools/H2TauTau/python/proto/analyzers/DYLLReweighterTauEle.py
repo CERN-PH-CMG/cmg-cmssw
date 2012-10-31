@@ -11,7 +11,7 @@ class DYLLReweighterTauEle( Analyzer ):
             return True
 
         # do nothing in all cases, but the DY -> ll
-        if event.isFake != 1 or self.cfg_comp.name != 'DYJets':
+        if event.isFake != 1 or self.cfg_comp.name.find('DYJets') == -1 :
             return True
 
         if self.cfg_ana.verbose:
