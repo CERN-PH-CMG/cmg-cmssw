@@ -90,11 +90,7 @@ dyLLReweighterTauEle = cfg.Analyzer(
     W1p0PE = 0.76,
     W1p1PB = 1.65,
     W1p1PE = 0.24,
-#    W1p0PB = 0.,
-#    W1p0PE = 0.,
-#    W1p1PB = 0.,
-#    W1p1PE = 0.,
-    verbose = True
+    verbose = False
     # remember that scaling factors are hardcoded in the analyzer
     )
 
