@@ -7,8 +7,8 @@ import re
 #from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents #, readPickles
-from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw, drawOfficial
-from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
+from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw, drawOfficial, buildCanvasOfficial
+from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass, binning_svfitMass_finer
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
 from CMGTools.H2TauTau.proto.plotter.plotmod import *
@@ -30,6 +30,33 @@ XMAX  = 200
 
 
 
+def replaceShapeInclusive(plot, var, anaDir,
+                          comp, weights, 
+                          cut, weight,
+                          embed, shift):
+    '''Replace WJets with the shape obtained using a relaxed tau iso'''
+    cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
+    print '[INCLUSIVE] estimate',comp.name,'with cut',cut
+    plotWithNewShape = cp( plot )
+    wjyield = plot.Hist(comp.name).Integral()
+    nbins = plot.bins
+    xmin = plot.xmin
+    xmax = plot.xmax
+    wjshape = shape(var, anaDir,
+                    comp, weights, nbins, xmin, xmax,
+                    cut, weight,
+                    embed, shift, treeName = 'H2TauTauTreeProducerTauEle')
+    # import pdb; pdb.set_trace()
+    wjshape.Scale( wjyield )
+    # import pdb; pdb.set_trace()
+    plotWithNewShape.Replace(comp.name, wjshape) 
+    # plotWithNewShape.Hist(comp.name).on = False 
+    return plotWithNewShape
+
+    
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
               cut='', weight='weight', embed=False, shift=None, replaceW=False,
@@ -43,6 +70,13 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            cut=oscut, weight=weight,
                            embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
     osign.Hist(EWK).Scale( wJetScaleOS )
+
+    replaceW = False
+    if replaceW:
+        osign = replaceShapeInclusive(osign, var, anaDir,
+                                      selComps['WJets'], weights, 
+                                      oscut, weight,
+                                      embed, shift)
     if VVgroup != None:
          osign.Group('VV', cfg.VVgroup)
          
@@ -52,6 +86,11 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            cut=sscut, weight=weight,
                            embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
     ssign.Hist(EWK).Scale( wJetScaleSS ) 
+    if replaceW:
+        ssign = replaceShapeInclusive(ssign, var, anaDir,
+                                      selComps['WJets'], weights, 
+                                      sscut, weight,
+                                      embed, shift)
     if VVgroup != None:
          ssign.Group('VV', cfg.VVgroup)
     # import pdb; pdb.set_trace()
@@ -142,6 +181,28 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
+def handleW( anaDir, selComps, weights,
+             cut, weight, embed, VVgroup, nbins=50, highMTMin=70., highMTMax=1070,
+             lowMTMax=20.):
+    
+    cut = cut.replace('mt<20', '1')
+    fwss, fwos, ss, os = plot_W(
+        anaDir, selComps, weights,
+        nbins, highMTMin, highMTMax, cut,
+        weight=weight, embed=embed,
+        VVgroup = VVgroup,
+        treeName = 'H2TauTauTreeProducerTauEle')
+
+    w_mt_ratio_ss = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, 'diTau_charge!=0', treeName = 'H2TauTauTreeProducerTauEle')
+    w_mt_ratio_os = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, 'diTau_charge==0', treeName = 'H2TauTauTreeProducerTauEle')
+    w_mt_ratio    = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, '1',               treeName = 'H2TauTauTreeProducerTauEle')
+
+    return fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio
+
+
+# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
 if __name__ == '__main__':
 
     import copy
@@ -177,7 +238,7 @@ if __name__ == '__main__':
     parser.add_option("-B", "--blind", 
                       dest="blind", 
                       help="Blind.",
-                      action="store_true",
+                      action="store_false",
                       default=True)
     parser.add_option("-W", "--replaceW", 
                       dest="replaceW", 
@@ -213,7 +274,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     if options.nbins is None:
-        NBINS = binning_svfitMass
+        NBINS = binning_svfitMass_finer
         XMIN = None
         XMAX = None
     else:
@@ -296,12 +357,20 @@ if __name__ == '__main__':
     #PG (STEP 1) evaluate the WJets contribution from high mT sideband
     #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
-    cutw = options.cut.replace('mt<20', '1')
-    fwss, fwss_error, fwos, fwos_error, ss, os = plot_W(anaDir, selComps, weights,
-                                                        16, 70, 150, cutw,
-                                                        weight = weight, embed = options.embed,
-                                                        VVgroup = cfg.VVgroup,
-                                                        treeName = 'H2TauTauTreeProducerTauEle')
+    # can, pad, padr = buildCanvas()
+    ocan = buildCanvasOfficial()
+    
+    # Jose calculates this factor within the svfit mass cuts
+    fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio = handleW(
+        anaDir, selComps, weights,
+        options.cut, 
+        weight  = weight, 
+        embed   = options.embed, 
+        VVgroup = cfg.VVgroup
+        )
+
+    print 'PIETRO', fwss, fwos
+
     #PG fwss = W normalization factor for the same sign plots
     #PG fwos = W normalization factor for the opposite sign plots
     #PG ss   = mt plot with the scaled W, according to fwss
@@ -322,9 +391,11 @@ if __name__ == '__main__':
     
         ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, 
                                                fwss, fwos, NBINS, XMIN, XMAX, 
-                                               options.cut, weight=weight, embed=options.embed,
-                                               VVgroup = cfg.VVgroup,
-                                               replaceW=replaceW)
+                                               options.cut, 
+                                               weight   = weight, 
+                                               embed    = options.embed,
+                                               VVgroup  = cfg.VVgroup,
+                                               replaceW = replaceW)
         # ssign = all cuts, same sign, before QCD estimate
         # osign = all cuts, opposite sign, before QCD estimate
         # ssQCD = all cuts, same sign, after QCD estimate, i.e. the QCD is in
@@ -333,7 +404,6 @@ if __name__ == '__main__':
         # draw(osign, False, 'TauEle', 'QCD_os')
 
 #        osQCD.legendOn = False
-        can, pad, padr = buildCanvas()
-        draw(osQCD, options.blind, 'TauEle')
+        drawOfficial(osQCD, options.blind, 'TauEle')
         datacards(osQCD, cutstring, shift, 'eTau')
 
