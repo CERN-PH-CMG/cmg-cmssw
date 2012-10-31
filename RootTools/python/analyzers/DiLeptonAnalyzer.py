@@ -107,13 +107,15 @@ class DiLeptonAnalyzer( Analyzer ):
         selDiLeptons = event.diLeptons
         # selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
         
-        if not self.leptonAccept( event.leptons ):
-            return False, 'di-lepton veto failed'
-        if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
+        event.leptonAccept = False
+        if self.leptonAccept( event.leptons ):
+            if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
+            event.leptonAccept = True
 
-        if not self.thirdLeptonVeto(event.leptons, event.otherLeptons) :
-            return False, 'third lepton veto failed'
-        if fillCounter: self.counters.counter('DiLepton').inc('third lepton veto')
+        event.thirdLeptonVeto = False
+        if self.thirdLeptonVeto(event.leptons, event.otherLeptons):
+            if fillCounter: self.counters.counter('DiLepton').inc('third lepton veto')
+            event.thirdLeptonVeto = True
 
         # testing leg1
         selDiLeptons = [ diL for diL in selDiLeptons if \
