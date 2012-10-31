@@ -160,6 +160,11 @@ if __name__ == '__main__':
                       dest="hist", 
                       help="histogram list",
                       default=None)
+    parser.add_option("-b", "--batch", 
+                      dest="batch", 
+                      help="Set batch mode.",
+                      action="store_true",
+                      default=False)
     parser.add_option("-C", "--cut", 
                       dest="cut", 
                       help="cut",
@@ -185,6 +190,8 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
+    if options.batch:
+        gROOT.SetBatch()
 
     NBINS = binning_svfitMass
     XMIN = None
