@@ -130,7 +130,9 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         
-        if not event.isSignal:
+        if not event.isSignal or \
+           not event.thirdLeptonVeto or \
+           not event.leptonAccept:
             return False
         tr = self.tree
         tr.reset()
