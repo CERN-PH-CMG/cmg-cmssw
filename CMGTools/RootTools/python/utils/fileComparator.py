@@ -21,7 +21,7 @@ class Comparator(object):
         self.legend = None
         self.filter = re.compile(filter)
 
-    def browse(self):
+    def browse(self, wait = True):
         self.can = TCanvas ()
         threshold = 0.3
         self.pad_ratio = TPad ('ratio','ratio',0,0,1,threshold)
@@ -49,7 +49,7 @@ class Comparator(object):
                     print 'Skipping', h1name
                     continue
                 self.drawHists(h1, h2, h1name)
-                res = raw_input('')
+                if wait : res = raw_input('')
                 
     def drawHists(self, h1, h2, h1name):
         print 'Draw', h1name
@@ -121,6 +121,12 @@ if __name__ == '__main__':
                       help="Filtering regexp pattern to select histograms.",
                       default='.*')
 
+    parser.add_option("-w", "--nowait", 
+                      dest="wait", 
+                      help="not waiting for a keystroke between one plot and the following one.",
+                      action="store_false",
+                      default=True)
+
     (options,args) = parser.parse_args()
 
     
@@ -131,5 +137,4 @@ if __name__ == '__main__':
     file1 = FlatFile( d1, name1)
     file2 = FlatFile( d2, name2)
     comparator = Comparator(file1, file2, options.filter)
-    comparator.browse()
-
+    comparator.browse(wait = options.wait)
