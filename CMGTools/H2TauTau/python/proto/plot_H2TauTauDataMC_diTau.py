@@ -24,21 +24,19 @@ def lineno():
     return inspect.currentframe().f_back.f_lineno
 
 from os import path
-if path.exists( '/afs/cern.ch/work/m/manzoni/diTau2012_12fb/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon12.C'):
-    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012_12fb/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon12.C')  # Run ROOT logon script
-    print '********************'
-    print '****',gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon12.C')  # Run ROOT logon script
-    print '********************'
+if path.exists( '/afs/cern.ch/work/m/manzoni/diTau2012_HCP/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon12.C'):
+    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012_HCP/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon12.C')  # Run ROOT logon script
 
 #if path.exists( '/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon_WJets.C'):
 #    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon_WJets.C')  # Run ROOT logon script
 
-
+binBoost = [0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350]
+binVBF   = [0,20,40,60,80,100,120,140,160,180,200,250,300,350]
 
 
 run2012  = True
-blinding = True
-#blinding = False
+#blinding = True
+blinding = False
 just125  = True
 #just125  = False
 RW_only  = True
@@ -218,7 +216,9 @@ if __name__ == '__main__':
     baseline           =  'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && jet1Pt>50. ' #&& abs(jet1Eta)<2.1 ' #abs(jet1Eta) < 3.0'
     baselineSS         =  'l1Pt>35 && l2Pt>35 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge!=0 && jet1Pt>50. ' #&& abs(jet1Eta)<2.1 ' #abs(jet1Eta) < 3.0'
     baseline           += ' && l2MVAEle>0.5 '#&& l1MVAEle>0.5' 
+    #baseline           += ' && ((l1RawMVAIso>l2RawMVAIso && l2MVAEle>0.5) || (l1RawMVAIso<l2RawMVAIso && l1MVAEle>0.5)) '#&& l1MVAEle>0.5' 
     baselineSS         += ' && l2MVAEle>0.5 '#&& l1MVAEle>0.5'
+    #baseline           += ' && ((l1RawMVAIso>l2RawMVAIso && l2MVAEle>0.5) || (l1RawMVAIso<l2RawMVAIso && l1MVAEle>0.5)) '#&& l1MVAEle>0.5' 
     #baseline           += ' && ( (run<198272 && abs(jet1Eta)<3.0) || (run>=198272 && abs(jet1Eta)<2.1) ) '
     #baselineSS         += ' && ( (run<198272 && abs(jet1Eta)<3.0) || (run>=198272 && abs(jet1Eta)<2.1) ) '
     baseline           += ' && abs(jet1Eta)<2.1 '
@@ -281,15 +281,29 @@ if __name__ == '__main__':
       rewStr = ''
    
     if RW_only : 
-      NOVBF       = ''
+      NOVBF       = '' 
       NOVBFmedium = ''
       NOVBFtight  = ''
     
-    cuts=[
-        #("CMS_2012_ABC_12fb_HpT110_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_VBF"      + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
-        #("CMS_2012_ABC_12fb_HpT140_pT45_isoTM_vetoMjj250Deta25_BOOSTED"              + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationTM , 5 ),
-        ("CMS_2012_ABC_12fb_dRtt20_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_VBF"      + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && dRtt<2. ' , isolationMM , 5 ),
-        ("CMS_2012_ABC_12fb_dRtt20_pT45_isoTM_vetoMjj250Deta25_BOOSTED"              + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && dRtt<2. ' , isolationTM , 5 ),
+    cuts=[  
+        ("CMS_2012_ABC_12fb_HpT140_pT45_isoTM_vetoMjj250Deta25_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationTM , 5 ),
+        ("CMS_2012_ABC_12fb_HpT140_pT45_isoMM_vetoMjj250Deta25_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationMM , 5 ),
+        #("CMS_2012_ABC_12fb_HpT000_pT45_isoTM_vetoMjj250Deta25_dRttRW_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>0. ' , isolationTM , 5 ),
+        #("CMS_2012_ABC_12fb_HpT140_pT45_isoMM_vetoMjj250Deta25_Raw05_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationMM , 5 ),
+        #("CMS_2012_ABC_12fb_HpT110_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_dRttRW_VBF" + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
+
+
+        #("CMS_2012_ABC_12fb_HpT140_pT45_isoMM2D_vetoMjj300Deta30_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<3.0 || mjj<300 || nCentralJets >0)', '45', ' && pThiggs>130. ' , isolationMM2D_3 , 5 ),
+        #("CMS_2012_ABC_12fb_HpT120_pT45_isoMM2D_mjj300_dEtajj30_qcdFromBoost_VBF" + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>3.0 && mjj>300 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM2D_3 , 5 ),
+        #("CMS_2012_ABC_12fb_HpT140_pT50_isoMM2D_vetoMjj325Deta30_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<3.0 || mjj<325 || nCentralJets >0)', '50', ' && pThiggs>140. ' , isolationMM2D_3 , 5 ),
+        #("CMS_2012_ABC_12fb_HpT100_pT45_isoMM2D_mjj325_dEtajj30_qcdFromBoost_VBF" + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>3.0 && mjj>325 && nCentralJets==0 ', '45', ' && pThiggs>100. ' , isolationMM2D_3 , 5 ),
+
+        #("CMS_2012_ABC_12fb_HpT130_pT50_isoMM2D_vetoMjj300Deta25_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<300 || nCentralJets >0)', '50', ' && pThiggs>130. ' , isolationMM2D_3 , 5 ),
+        #("CMS_2012_ABC_12fb_HpT130_pT45_isoMM2D4_vetoMjj300Deta30_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<3.0 || mjj<300 || nCentralJets >0)', '45', ' && pThiggs>130. ' , isolationMM2D_4 , 5 ),
+        #("CMS_2012_ABC_12fb_HpT140_pT45_isoMM2D4_vetoMjj300Deta30_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<3.0 || mjj<300 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationMM2D_4 , 5 ),
+
+        #("CMS_2012_ABC_12fb_dRtt20_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_VBF"      + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && dRtt<2. ' , isolationMM , 5 ),
+        #("CMS_2012_ABC_12fb_dRtt20_pT45_isoTM_vetoMjj250Deta25_BOOSTED"              + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && dRtt<2. ' , isolationTM , 5 ),
 
         #("CMS_2012_ABC_12fb_SS_HpT110_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_VBF"      + rewStr   , baselineSS           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
         #("CMS_2012_ABC_12fb_SS_HpT140_pT45_isoTM_vetoMjj250Deta25_BOOSTED"              + rewStr   , baselineSS + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationTM , 5 ),
@@ -334,11 +348,13 @@ if __name__ == '__main__':
         mjjMin = 100
         mjjMax = 1000
         mjjBin = 30
+        massBins = binVBF
       else :
         rebin = 1
         mjjMin = 0
         mjjMax = 800
         mjjBin = 20
+        massBins = binBoost
       
       if RW_only : 
         variables = [ ('dRtt'      ,int(15/rebin), 0 , 5      ), # don't comment this line, otherwise RW dies
@@ -348,36 +364,43 @@ if __name__ == '__main__':
       else :
         variables = [
           #('svfitMass'        ,int(1000/rebin), 0 , 500    ),
-          #('svfitMass'        ,300          , 0 , 300    ),
+          #('svfitMass'        ,27,massBins), 
+          #('svfitMass'        ,massBins, 0 , 300    ), 
           ('svfitMass'        ,int(30/rebin), 0 , 300    ), 
-          #('svfitMass'        ,int(20/rebin), 0 , 300    ), 
-          #('svfitMass'        ,int(15/rebin), 0 , 300    ), 
-          #('svfitMass*1.03'   ,300          , 0 , 300    ),
-          #('svfitMass*1.03'   ,int(30/rebin), 0 , 300    ),
-          #('svfitMass*0.97'   ,300          , 0 , 300    ),
-          #('svfitMass*0.97'   ,int(30/rebin), 0 , 300    ),
-          #('visMass'          ,300          , 0 , 300    ),
-          ('visMass'          ,int(30/rebin), 0 , 300    ),
-          #('visMass*1.03'     ,300          , 0 , 300    ),
-          #('visMass*1.03'     ,int(30/rebin), 0 , 300    ),
-          #('visMass*0.97'     ,300          , 0 , 300    ),
-          #('visMass*0.97'     ,int(30/rebin), 0 , 300    ),
-          ('dRtt'		,int(20/rebin), 0 , 5 	 ),
+          #('svfitMass'        ,350, 0 , 350    ),
+          #('svfitMass'        ,70 , 0 , 350    ), 
+          #('svfitMass*1.03'   ,350, 0 , 350    ),
+          #('svfitMass*1.03'   ,70 , 0 , 350    ),
+          #('svfitMass*0.97'   ,350, 0 , 350    ),
+          #('svfitMass*0.97'   ,70 , 0 , 350    ),
+          ('visMass'          ,30, 0 , 300    ),
+          #('visMass'          ,350, 0 , 350    ),
+          #('visMass'          ,70 , 0 , 350    ),
+          #('visMass*1.03'     ,350, 0 , 350    ),
+          #('visMass*1.03'     ,70 , 0 , 350    ),
+          #('visMass*0.97'     ,350, 0 , 350    ),
+          #('visMass*0.97'     ,70 , 0 , 350    ),
+          #('dRtt'		,int(20/rebin), 0 , 5 	 ),
           #('nVert'  		  ,int(25/rebin), 0 , 50	 ),
           #('l1Pt'             ,int(15/rebin), 0 , 300    ),   
-          ('l1Pt'             ,int(60/rebin), 0 , 300    ),   
-          #('l1Pt'             ,int(60/rebin), 0 , 300    ),   
+          #('l1Pt'             ,300          , 0 , 300    ),   
+          #('l1Pt'             ,int(15/rebin), 0 , 300    ),   
+          #('l1Pt*1.03'        ,300          , 0 , 300    ),   
+          #('l1Pt*1.03'        ,int(15/rebin), 0 , 300    ),   
+          #('l1Pt*0.97'        ,300          , 0 , 300    ),   
+          #('l1Pt*0.97'        ,int(15/rebin), 0 , 300    ),   
+          #('l1Pt'             ,int(60/rebin), 0 , 300    ),    
           #('l2Pt'             ,int(20/rebin), 0 , 200    ),   
-          ('l2Pt'             ,int(40/rebin), 0 , 200    ),   
           #('l2Pt'             ,int(40/rebin), 0 , 200    ),   
-          ('jet1Pt'           ,int(20/rebin), 0 , 600    ),
+          #('l2Pt'             ,int(40/rebin), 0 , 200    ),   
+          #('jet1Pt'           ,int(20/rebin), 0 , 600    ),
           #('jet2Pt'           ,int(25/rebin), 0 , 500    ),
           #('met'              ,int(25/rebin), 0 , 200    ),
-          ('l1Eta'            ,int(30/rebin), -3, 3      ),   
-          ('l2Eta'            ,int(30/rebin), -3, 3      ),   
+          #('l1Eta'            ,int(30/rebin), -3, 3      ),   
+          #('l2Eta'            ,int(30/rebin), -3, 3      ),   
           #('l1Eta'            ,int(15/rebin), -3, 3      ),   
           #('l2Eta'            ,int(15/rebin), -3, 3      ),   
-          ('jet1Eta'          ,int(20/rebin), -5, 5      ),
+          #('jet1Eta'          ,int(20/rebin), -5, 5      ),
           #('jet2Eta'          ,int(20/rebin), -5, 5      ),
           #('mjj'              ,mjjBin , mjjMin , mjjMax  ),
           #('dEtajj'           ,int(18/rebin), -6 , 6     ),
@@ -385,8 +408,10 @@ if __name__ == '__main__':
           #('dPhitt'           ,int(16/rebin), 0 , 3.2    ),
           #('dEtatt'           ,int(22/rebin), 0 , 4.5    ),
           #('mt'               ,int(25/rebin), 0 , 200    ),
-          ('pThiggs'          ,int(30/rebin), 0 , 300    ),
-          ('diTauPt'          ,int(20/rebin), 0 , 300    ),
+          #('pThiggs'          ,int(30/rebin), 0 , 300    ),
+          #('diTauPt'          ,int(20/rebin), 0 , 300    ),
+          #('l1JetInvMass'      ,30           , 0 , 600    ),
+          #('l2JetInvMass'      ,30           , 0 , 600    ),
           #('l1jetPt'          ,30           , 0 , 300    ),
           #('l2jetPt'          ,20           , 0 , 200    ),
           #('l1jetMass'        ,30           , 0 , 150    ),
@@ -428,9 +453,11 @@ if __name__ == '__main__':
       print >> Cutlist, prefix
       print >> Cutlist, cut+antiqcdcut+isocut, 'Taus pT', ptCutString,  'QCD estimate', qcdEstimate
       print >> Cutlist, '\n\n'
+      
+      
             
       for var, nx, xmin, xmax in variables:
-        
+                
         ## no need to smooth BOOSTED shapes, saves some time
         #if 'BOOSTED' in prefix and 'svfitMass' in var and nx>100 : continue
         
@@ -452,9 +479,9 @@ if __name__ == '__main__':
             
         cut     = bareCut
         print 'I\'ve stripped the old pt cut\n', cut
-        if   ( var == 'svfitMass*1.03' or var == 'visMass*1.03' ):
+        if   ( var == 'svfitMass*1.03' or var == 'visMass*1.03' or var == 'l1Pt*1.03' ):
           cut += ptCutString_up
-        elif ( var == 'svfitMass*0.97' or var == 'visMass*0.97' ):
+        elif ( var == 'svfitMass*0.97' or var == 'visMass*0.97' or var == 'l1Pt*0.97' ):
           cut += ptCutString_down 
         else :
           cut += ptCutString
@@ -556,15 +583,15 @@ if __name__ == '__main__':
            cutLooseSSWJets = baselineSS + ptCutString + antiqcdcut + isolationMNM + ' && (l1MedMVAIso<0.5 || l2MedMVAIso<0.5) ' + ' && jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 ' #&& abs(jet1Eta - jet2Eta)>2.2 && mjj>200 && nCentralJets==0  '
         else :
            ############# for SS only, comment for ususal business ############ 
-           cutLooseOS      = baseline   + ptCutString + looseisocut + antiqcdcut
-           cutLooseSS      = baselineSS + ptCutString + looseisocut + antiqcdcut
-           cutLooseOSWJets = baseline   + ptCutString + WJets_looseisocut + antiqcdcut
-           cutLooseSSWJets = baselineSS + ptCutString + WJets_looseisocut + antiqcdcut
+           #cutLooseOS      = baseline   + ptCutString + looseisocut + antiqcdcut
+           #cutLooseSS      = baselineSS + ptCutString + looseisocut + antiqcdcut
+           #cutLooseOSWJets = baseline   + ptCutString + WJets_looseisocut + antiqcdcut
+           #cutLooseSSWJets = baselineSS + ptCutString + WJets_looseisocut + antiqcdcut
 
-           #cutLooseOS      = cut   + looseisocut + antiqcdcut
-           #cutLooseSS      = cutSS + looseisocut + antiqcdcut
-           #cutLooseOSWJets = cut   + WJets_looseisocut + antiqcdcut
-           #cutLooseSSWJets = cutSS + WJets_looseisocut + antiqcdcut
+           cutLooseOS      = cut   + looseisocut + antiqcdcut
+           cutLooseSS      = cutSS + looseisocut + antiqcdcut
+           cutLooseOSWJets = cut   + WJets_looseisocut + antiqcdcut
+           cutLooseSSWJets = cutSS + WJets_looseisocut + antiqcdcut
            
            
         print 'trovami ',cutLooseOS        
@@ -683,7 +710,8 @@ if __name__ == '__main__':
                                        #weight=weight+"*weightQCD_nVert(nVert)*weightQCD_dRtt(dRtt)",
                                        #weight=weight+"*weightQCD_nVert(nVert)*weightQCD_HpT(pThiggs)",
                                        #weight=weight+"*weightQCD_nVert(nVert)*weightQCD_diTpT(diTauPt)",
-                                       weight=weight+jetRecoveryWeight,#+"*weightQCD_nVert(nVert)*weightQCD_HpT(pThiggs)",                    
+                                       #weight=weight+jetRecoveryWeight,#+"*weightQCD_nVert(nVert)*weightQCD_HpT(pThiggs)",                    
+                                       weight=weight+jetRecoveryWeight+"*weightQCD_nVert(nVert)",##*weightQCD_dRtt(dRtt)",                    
                                        embed=options.embed)
         #print lineno()    
         
@@ -693,7 +721,7 @@ if __name__ == '__main__':
         plotVarDataLooseIsoOS_WJets = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal, nx, xmin, xmax,     
                                        cut = cutLooseOSWJets, 
                                        #cut = cut+WJets_looseisocut+antiqcdcut, 
-                                       weight=weight+"*"+weightForWJets+jetRecoveryWeight,       
+                                       weight=weight,#+"*"+weightForWJets+jetRecoveryWeight,       
                                        embed=options.embed)
   
         #WJets_looseisocut = isolationMNM + " && !(1 "+isocut+")"
@@ -702,7 +730,7 @@ if __name__ == '__main__':
         plotVarDataLooseIsoSS_WJets = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal, nx, xmin, xmax,    
                                        cut = cutLooseSS,
                                        #cut = cutSS+WJets_looseisocut+antiqcdcut, 
-                                       weight=weight+"*"+weightForWJets+jetRecoveryWeight,         
+                                       weight=weight,#+"*"+weightForWJets+jetRecoveryWeight,         
                                        embed=options.embed)
   
         
@@ -711,7 +739,8 @@ if __name__ == '__main__':
         #######################################################
         yields = False
         if ( var == "svfitMass" or var == "svfitMass*1.03" or var == "svfitMass*0.97" or\
-             var == "visMass"   or var == "visMass*1.03"   or var == "visMass*0.97"   ):
+             var == "visMass"   or var == "visMass*1.03"   or var == "visMass*0.97"   or\
+             var == "l1Pt"      or var == "l1Pt*1.03"      or var == "l1Pt*0.97"       ):
           if just125 : massesRange = [125]
           #else       : massesRange = [110,115,120,125,130,135,140,145]
           else       : massesRange = [125,110,115,120,130,135,140,145]
@@ -845,6 +874,7 @@ if __name__ == '__main__':
           if qcdEstimate == 5:
             QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi , tightLooseErrSemi = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
             QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     , tightLooseErr     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoOS    , plotVarDataLooseIsoOSMC  , plotVarDataLooseIsoSS    , log)
+            #QCDShape    , QCDScale    , QCDlooseSS    , QCDtightSS     , tightLooseErr     = QCDEstimate2(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataLooseIsoSS    , plotVarDataLooseIsoSS  , plotVarDataLooseIsoSS    , log)
           if qcdEstimate == 7:
             ######## DANGER!!: QCDlooseSS is actually OS !!!!!!!!
             QCDShapeSemi, QCDScaleSemi, QCDlooseSSSemi, QCDtightSSSemi , tightLooseErrSemi = QCDEstimate7(prefix,prefix1,var,xmin,xmax,plotVarDataSS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoOS, plotVarDataSemiLooseIsoSS, log)
@@ -1133,6 +1163,10 @@ if __name__ == '__main__':
               saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"svfitMass","SM2_for_smoothing")
             elif var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03":
               saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"svfitMass","SM2")
+            if "l1Pt" in var and nx>100:
+              saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"l1Pt","SM2_for_smoothing")
+            elif var=="l1Pt" or var=="l1Pt*0.97" or var=="l1Pt*1.03":
+              saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"l1Pt","SM2")
             if "visMass" in var and nx>100:
               saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"visMass","SM2_for_smoothing")
             elif var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03":
@@ -1142,6 +1176,10 @@ if __name__ == '__main__':
               saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"svfitMass","SM1_for_smoothing")
             elif var=="svfitMass" or var=="svfitMass*0.97" or var=="svfitMass*1.03":
               saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"svfitMass","SM1")
+            if "l1Pt" in var and nx>100:
+              saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"l1Pt","SM1_for_smoothing")
+            elif var=="l1Pt" or var=="l1Pt*0.97" or var=="l1Pt*1.03":
+              saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"l1Pt","SM1")
             if "visMass" in var and nx>100:
               saveForLimit(copy.deepcopy(plotVarDataOS),prefix,mIndex,"visMass","SM1_for_smoothing")
             elif var=="visMass" or var=="visMass*0.97" or var=="visMass*1.03":
@@ -1226,8 +1264,9 @@ if __name__ == '__main__':
           ###  SAVE ROOT FILE FOR PLOTTING PRETTIER HISTOS  ###
           #####################################################
           #if not "svfitMass" in var or nx<10000000:
-          #if not "svfitMass" in var or nx<100:
-          if not "visMass" in var or nx<100:
+          if not "svfitMass" in var or nx<100:
+          #if not "visMass" in var or nx<100:
+          #if not "l1Pt" in var or nx<100:
             saveForPlotting(copy.deepcopy(plotVarDataOS),prefix,mIndex)
            
           #####################################################
