@@ -39,3 +39,5 @@ data_triggers_2011B = [
 mc_triggers_fall11 = [
     'HLT_Ele18_{blah}_MediumIsoPFTau20_v1'.format(blah=blah)
     ]
+
+mc_triggers = mc_triggers_fall11
