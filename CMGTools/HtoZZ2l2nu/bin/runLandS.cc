@@ -37,7 +37,7 @@
 
 
 using namespace std;
-double NonResonnantSyst = 0.25;
+double NonResonnantSyst = 0.1;//0.25;
 double GammaJetSyst = 1.0; //0.5;//0.5, 1.0;
 
 //wrapper for a projected shape for a given set of cuts
@@ -101,7 +101,7 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
 void doWZSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto);
 void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, bool addSignal);
 
-//void SignalInterpolation(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, JSONWrapper::Object &Root);
+void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& allShapes, TString mainHisto);
 void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allShapesL, map<TString, Shape_t>& allShapes, map<TString, Shape_t>& allShapesR, TString mainHisto);
 
 
@@ -142,7 +142,7 @@ double shapeMin = 0;
 double shapeMax = 9999;
 double shapeMinVBF = 0;
 double shapeMaxVBF = 9999;
-
+bool doInterf = false;
 
 int indexvbf = -1;
 int indexcut   = -1, indexcutL=-1, indexcutR=-1;
@@ -184,6 +184,7 @@ void printHelp()
   printf("--postfix    --> use this to specify a postfix that will be added to the process names)\n");
   printf("--systpostfix    --> use this to specify a syst postfix that will be added to the process names)\n");
   printf("--MCRescale    --> use this to specify a syst postfix that will be added to the process names)\n");
+  printf("--interf     --> use this to rescale xsection according to WW interferences)\n");
 }
 
 //
@@ -225,6 +226,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--shapeMaxVBF") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&shapeMaxVBF); i++; printf("Max cut on shape for VBF = %f\n", shapeMaxVBF);}
     else if(arg.find("--shapeMin") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&shapeMin); i++; printf("Min cut on shape = %f\n", shapeMin);}
     else if(arg.find("--shapeMax") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&shapeMax); i++; printf("Max cut on shape = %f\n", shapeMax);}
+    else if(arg.find("--interf")    !=string::npos) { doInterf=true; printf("doInterf = True\n");}
     else if(arg.find("--indexvbf") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexvbf); i++; printf("indexVBF = %i\n", indexvbf);}
     else if(arg.find("--indexL")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexcutL); i++; printf("indexL = %i\n", indexcutL);}
     else if(arg.find("--indexR")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&indexcutR); i++; printf("indexR = %i\n", indexcutR);}
@@ -721,6 +723,117 @@ void getYieldsFromShape(std::vector<TString> ch, const map<TString, Shape_t> &al
   fprintf(pFile,"\\hline\n");
   fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n");
   fprintf(pFile,"\n\n\n\n");
+
+
+//SAME THING BUT SUMMING UP ALL CHANNELS
+
+
+
+
+
+  fprintf(pFile,"\\begin{sidewaystable}[htp]\n\\begin{center}\n\\caption{Event yields expected for background and signal processes and observed in data.}\n\\label{tab:table}\n");
+
+  Ccol   = "\\begin{tabular}{|c|";
+  Cname  = "channel";
+  Cval   = "";
+
+  double VAL = 0; double VALERR = 0; double SYST = 0;
+
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+    TString icol(AnalysisBins[b]);
+    icol.ReplaceAll("mu","\\mu"); icol.ReplaceAll("_"," ");
+    Cval = "$ "+icol+" $";
+
+    //bckg
+    size_t nbckg=allShapes.find(ch[0]+AnalysisBins[b]+shName)->second.bckg.size();
+    for(size_t ibckg=0; ibckg<nbckg; ibckg++){
+       VAL = 0; VALERR = 0; SYST = 0;
+       for(size_t ich=0; ich<ch.size(); ich++) {
+          TH1* h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.bckg[ibckg];       
+          TString procTitle(h->GetTitle()); 
+          if(procTitle.Contains("QCD"))continue;
+          if(procTitle.Contains("W#rightarrow l#nu"))continue;
+          if(procTitle.Contains("Z#rightarrow #tau#tau"))continue;
+          procTitle.ReplaceAll("#","\\");
+          if(b==0&&ich==0)Ccol  += "c|";
+          if(b==0&&ich==0)Cname += "&$" + procTitle + "$";
+
+          val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+          syst = h->GetBinError(0)<=0 ? -1 : h->GetBinError(0); 
+          if(val<1E-6){val=0.0; valerr=0.0; syst=-1;}
+          VAL += val; VALERR=sqrt(VALERR*VALERR+valerr*valerr); SYST=syst;
+       }
+       Cval += "&" + toLatexRounded(VAL,VALERR, SYST);
+    }
+
+    //total bckg
+    if(b==0)Ccol  += "c|";
+    if(b==0)Cname += "&$Total$";
+    VAL = 0; VALERR = 0; SYST = 0;
+    for(size_t ich=0; ich<ch.size(); ich++) {
+       h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.totalBckg;
+       val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+       syst = h->GetBinError(0)<=0 ? -1 : h->GetBinError(0);
+       if(val<1E-6){val=0.0; valerr=0.0; syst=-1;}
+       VAL += val; VALERR=sqrt(VALERR*VALERR+valerr*valerr); SYST=syst;
+    }
+    Cval += "&\\boldmath " + toLatexRounded(VAL,VALERR,SYST);
+
+    //signal
+    size_t nsig=allShapes.find(ch[0]+AnalysisBins[b]+shName)->second.signal.size();
+    for(size_t isig=0; isig<nsig; isig++){
+       h=allShapes.find(ch[0]+AnalysisBins[b]+shName)->second.signal[isig];
+       TString procTitle(h->GetTitle()); procTitle.ReplaceAll("#","\\");
+
+       if(mass>0 && !procTitle.Contains(massStr))continue;
+            if(mass>0 && procTitle.Contains("ggH") && procTitle.Contains("ZZ"))procTitle = "ggH("+massStr+")";
+       else if(mass>0 && procTitle.Contains("qqH") && procTitle.Contains("ZZ"))procTitle = "qqH("+massStr+")";
+       else if(mass>0 && procTitle.Contains("ggH") && procTitle.Contains("WW"))procTitle = "ggH("+massStr+")WW";
+       else if(mass>0 && procTitle.Contains("qqH") && procTitle.Contains("WW"))procTitle = "qqH("+massStr+")WW";
+
+       if(b==0)Ccol  += "c|";
+       if(b==0)Cname += "&$" + procTitle+"$";
+
+       VAL = 0; VALERR = 0; SYST = 0;
+       for(size_t ich=0; ich<ch.size(); ich++) {
+          h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.signal[isig];
+
+          val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+          if(val<1E-6){val=0.0; valerr=0.0;}
+          VAL += val; VALERR=sqrt(VALERR*VALERR+valerr*valerr);
+       }
+       Cval += "&" + toLatexRounded(VAL, VALERR);
+    }
+
+    //data
+    if(b==0)Ccol  += "c|";
+    if(b==0)Cname += "&$Data$";
+    VAL = 0; VALERR = 0; SYST = 0;
+    for(size_t ich=0; ich<ch.size(); ich++) {
+       h=allShapes.find(ch[ich]+AnalysisBins[b]+shName)->second.data;
+       val = h->IntegralAndError(1,h->GetXaxis()->GetNbins(),valerr);
+       if(val<1E-6){val=0.0; valerr=0.0;}
+       VAL += val;
+    }
+    char tmpchar[255];
+    sprintf(tmpchar,"%.0f",VAL);
+    Cval += "&\\boldmath $" + string(tmpchar)+"$";
+//    Cval += "&\\boldmath " + toLatexRounded(val,0.0);
+
+    //endline
+    if(b==0)fprintf(pFile,"%s}\\hline\n", Ccol.c_str());
+    if(b==0)fprintf(pFile,"%s\\\\\\hline\n", Cname.c_str());
+    fprintf(pFile,"%s\\\\\n", Cval.c_str());
+  }
+  fprintf(pFile,"\\hline\n");
+  fprintf(pFile,"\\end{tabular}\n\\end{center}\n\\end{sidewaystable}\n");
+  fprintf(pFile,"\n\n\n\n");
+
+
+
+
+
+
   fclose(pFile);
 }
 
@@ -1057,7 +1170,8 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   const size_t nch=sizeof(ch)/sizeof(TString);
   std::vector<TString> sh;
   sh.push_back(histo);
-  if(subNRB2011 || subNRB2012)sh.push_back("nonresbckg_ctrl");
+//  if(subNRB2011 || subNRB2012)sh.push_back("nonresbckg_ctrl");
+  if(subNRB2011 || subNRB2012)sh.push_back(histo+"_NRBctrl");
   if(subNRB2012)sh.push_back(histo+"BTagSB");
   if(subWZ)sh.push_back(histo+"_3rdLepton");
   const size_t nsh=sh.size();
@@ -1094,7 +1208,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   //estimateNonResonantBackground(selCh,"emu",allShapes,"nonresbckg_ctrl");
 
   //remove the non-resonant background from data
-  if(subNRB2011 || subNRB2012)doBackgroundSubtraction(selCh,"emu",allShapes,histo,"nonresbckg_ctrl", url, Root);
+  if(subNRB2011 || subNRB2012)doBackgroundSubtraction(selCh,"emu",allShapes,histo,histo+"_NRBctrl", url, Root);
 
   //replace WZ by its estimate from 3rd Lepton SB
   if(subWZ)doWZSubtraction(selCh,"emu",allShapes,histo,histo+"_3rdLepton");
@@ -1107,6 +1221,11 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
   //interpollate signal sample if desired mass point is not available
   SignalInterpolation(selCh,allShapesL, allShapes, allShapesR, histo);
+
+
+   if(doInterf)RescaleForInterference(selCh,allShapes, histo);
+
+
 
   //print event yields from the mt shapes
   if(!fast)getYieldsFromShape(selCh,allShapes,histo);
@@ -1134,16 +1253,6 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
      size_t nsignal=allShapes.find(chbin+histo)->second.signal.size();
      for(size_t isignal=0; isignal<nsignal; isignal++){
 	TH1* h=shapeSt.signal[isignal];
-	std::vector<std::pair<TString, TH1*> > vars = shapeSt.signalVars[h->GetTitle()];
-
-        std::vector<TString> systs;        
-	std::vector<TH1*>    hshapes;
-	systs.push_back("");
-        hshapes.push_back(shapeSt.signal[isignal]);
-	for(size_t v=0;v<vars.size();v++){
-           systs.push_back(vars[v].first);
-           hshapes.push_back(vars[v].second);
-        }
 
         TString proc(h->GetTitle());
 	if(mass>0 && !proc.Contains(massStr))continue;
@@ -1151,6 +1260,18 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
         else if(mass>0 && proc.Contains("qqH") && proc.Contains("ZZ"))proc = "qqHZZ2l2v";
         else if(mass>0 && proc.Contains("ggH") && proc.Contains("WW"))proc = "ggHWW2l2v";
         else if(mass>0 && proc.Contains("qqH") && proc.Contains("WW"))proc = "qqHWW2l2v";
+
+	std::vector<std::pair<TString, TH1*> > vars = shapeSt.signalVars[h->GetTitle()];
+        std::vector<TString> systs;        
+	std::vector<TH1*>    hshapes;
+	systs.push_back("");
+        hshapes.push_back(shapeSt.signal[isignal]);
+	for(size_t v=0;v<vars.size();v++){
+           //printf("SYSTEMATIC FOR SIGNAL %s : %s\n",h->GetTitle(), vars[v].first.Data());
+           systs.push_back(vars[v].first);
+           hshapes.push_back(vars[v].second);
+        }
+
         convertHistosForLimits_core(dci, proc, AnalysisBins[b], chbin, systs, hshapes);
         if(ich==0 && b==0)allProcs.push_back(proc);
         dci.nsignalproc++;
@@ -1301,6 +1422,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
        }else if(syst.BeginsWith("_pu" )){syst.ReplaceAll("_pu", "_CMS_hzz2l2v_pu");
        }else if(syst.BeginsWith("_ren" )){continue;   //already accounted for in QCD scales
        }else if(syst.BeginsWith("_fact" )){continue; //skip this one
+       }else if(syst.BeginsWith("_interf" )){ 
        }else{   syst="_CMS_hzz2l2v"+syst;
        }
 
@@ -1385,7 +1507,7 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
 
           TH1 *temp=(TH1*) hshape->Clone();
           temp->Add(hshapes[0],-1);
-          if(temp->Integral()!=0){
+          if(temp->Integral()!=0 || syst.BeginsWith("_interf" )){
              if(shape){
                 dci.systs[systName][RateKey_t(proc,ch)]=1.0;
              }else{
@@ -1624,11 +1746,12 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
   TDirectory *pdir = (TDirectory *)inF->Get(DYProcName);        
   if(!pdir){ printf("Skip Z+Jet estimation because %s directory is missing in root file\n", DYProcName.Data()); return;}
 
-//  for(size_t i=0;i<selCh.size();i++){
-//  for(size_t b=0; b<AnalysisBins.size(); b++){
-//     TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);
-//     LowMetIntegral[selCh[i]+AnalysisBins[b]] = met->Integral(1,met->GetXaxis()->FindBin(50));
-//  }}
+  //Just to redo what we did for the HIGHMASS pape
+  for(size_t i=0;i<selCh.size();i++){
+  for(size_t b=0; b<AnalysisBins.size(); b++){
+     TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);
+     LowMetIntegral[selCh[i]+AnalysisBins[b]] = met->Integral(1,met->GetXaxis()->FindBin(50));
+  }}
 
   //all done with input file
   inF->Close();
@@ -1651,11 +1774,16 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
         TString proc(shapeChan_SI.bckg[ibckg]->GetTitle());
         if( proc.Contains(DYProcName) ){
 
+std::cout<<"DYTEST1  " << selCh[i]+string(" - ")+AnalysisBins[b] << "  \n";
+
+           double rescaleFactor = 1.0;
+/*
            //compute rescale factor using low MET events
-//           TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);           
-//           double integral = met->Integral(1,met->GetXaxis()->FindBin(50));
-           double rescaleFactor = 1.0;//LowMetIntegral[selCh[i]+AnalysisBins[b]] / integral;
-//           printf("Rescale in %s = %f/%f = %f\n",  (selCh[i]+AnalysisBins[b]).Data(), LowMetIntegral[selCh[i]+AnalysisBins[b]], integral, rescaleFactor);         
+           TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);           
+           double integral = met->Integral(1,met->GetXaxis()->FindBin(50));
+           double rescaleFactor = LowMetIntegral[selCh[i]+AnalysisBins[b]] / integral; //Just to redo what we did for the HIGHMASS paper
+           printf("Rescale in %s = %f/%f = %f\n",  (selCh[i]+AnalysisBins[b]).Data(), LowMetIntegral[selCh[i]+AnalysisBins[b]], integral, rescaleFactor);         
+*/
            char buffer[255]; sprintf(buffer,"%6.3f",rescaleFactor);
            Cval   += string(" &") + buffer;
 
@@ -1664,18 +1792,31 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
            string MCTruth = toLatexRounded(val,valerr);
            double systError = val;
 
+
+std::cout<<"DYTEST2\n";
+
            //replace DY histogram by G+Jets data
            int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax;
            if(indexvbf>=0 && AnalysisBins[b].Contains("vbf")){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
 
+std::cout<<"DYTEST2a " << selCh[i]+AnalysisBins[b]+"_"+mainHisto <<"\n";
+
+
            TH2* gjets2Dshape  = (TH2*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+mainHisto);
+           if(!gjets2Dshape)printf("Can't find histo: %s in g+jets template\n",(selCh[i]+AnalysisBins[b]+"_"+mainHisto).Data());
+std::cout<<"DYTEST2b\n";
+
            TH1* gjets1Dshape  = gjets2Dshape->ProjectionY("tmpName",indexcut_,indexcut_);
+std::cout<<"DYTEST2c\n";
 
            //apply the cuts
            for(int x=0;x<=gjets1Dshape->GetXaxis()->GetNbins()+1;x++){
               if(gjets1Dshape->GetXaxis()->GetBinCenter(x)<=cutMin || gjets1Dshape->GetXaxis()->GetBinCenter(x)>=cutMax){gjets1Dshape->SetBinContent(x,0); gjets1Dshape->SetBinError(x,0);}
            }
            gjets1Dshape->Rebin(2);
+
+
+std::cout<<"DYTEST3\n";
 
 
            shapeChan_SI.bckg[ibckg]->SetTitle(DYProcName + " (data)");    
@@ -1692,6 +1833,7 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
 
            shapeChan_SI.bckg[ibckg]->Scale(DDRescale);
 
+std::cout<<"DYTEST4\n";
 
            val  = shapeChan_SI.bckg[ibckg]->IntegralAndError(1,shapeChan_SI.bckg[ibckg]->GetXaxis()->GetNbins(),valerr);
            //systError = std::min(GammaJetSyst * val, fabs(systError - val) ); //syst is difference between G+Jet estimate and MC
@@ -1816,6 +1958,10 @@ void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TS
 }
 
 
+
+
+
+
 void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allShapesL, map<TString, Shape_t>& allShapes, map<TString, Shape_t>& allShapesR, TString mainHisto){
    if(massL<0 || massR<0 || massL==massR)return;
 
@@ -1884,7 +2030,38 @@ void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allS
 }
 
 
+void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& allShapes, TString mainHisto){
+      TString massStr(""); if(mass>0)massStr += mass;
+      for(size_t i=0;i<selCh.size();i++){
+      for(size_t b=0; b<AnalysisBins.size(); b++){
+           Shape_t& shape  = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
+              //signals
+              size_t nsignal=shape.signal.size();
+              for(size_t isignal=0; isignal<nsignal; isignal++){
+                 TString proc(((TH1D*)shape.signal[isignal])->GetTitle());
+                 if(mass>0 && !proc.Contains(massStr))continue;
+                 if(!proc.Contains("ggH"))continue;
+                 if(mass<400)continue;
+                 double scaleFactor = 1.45 - 0.00218 * mass + 0.000002625 * mass * mass;
+                 double scaleFactorDown = 1.0;
+                 double scaleFactorUp = 1 + (scaleFactor-1)*2;
+                 printf("Scale Factor : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
 
+                 ((TH1D*)shape.signal[isignal])->Scale(scaleFactor);
+                 std::vector<std::pair<TString, TH1*> >& vars = shape.signalVars[proc];
+                 for(size_t v=0;v<vars.size();v++){
+                    ((TH1D*)vars[v].second)->Scale(scaleFactor);
+                 }
+
+                 //((TH1D*)shape.signal[isignal])->SetBinContent(0,scaleFactor);
+
+                 TH1* down = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHDown"); down->Scale(scaleFactorDown);
+                 TH1* up   = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHUp"  ); up  ->Scale(scaleFactorUp  );
+                 vars.push_back(std::make_pair("_interf_ggHDown", down) );
+                 vars.push_back(std::make_pair("_interf_ggHUp"  , up  ) );
+               }
+      }}
+}
 
 
 //TGraph *ggH7TG_xsec=NULL, *ggH7TG_errp=NULL, *ggH7TG_errm=NULL, *ggH7TG_scap=NULL, *ggH7TG_scam=NULL, *ggH7TG_pdfp=NULL, *ggH7TG_pdfm=NULL;
