@@ -85,13 +85,12 @@ dyJetsFakeAna = cfg.Analyzer(
 
 dyLLReweighterTauEle = cfg.Analyzer(
     'DYLLReweighterTauEle',
-# 2012 
+    # 2012 
     W1p0PB = 0.82, # weight for 1 prong 0 Pi Barrel
     W1p0PE = 0.76,
     W1p1PB = 1.65,
     W1p1PE = 0.24,
     verbose = False
-    # remember that scaling factors are hardcoded in the analyzer
     )
 
 WNJetsAna = cfg.Analyzer(
