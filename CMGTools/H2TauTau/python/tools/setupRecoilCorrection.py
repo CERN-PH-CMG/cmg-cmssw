@@ -112,7 +112,7 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True, mode=None)
             process.recoilCorMETTauEle.leptonLeg = leptonLeg 
             process.recoilCorMETTauEle.fileZmmData = fileZmmData
             process.recoilCorMETTauEle.fileZmmMC = fileZmmMC
-            process.recoilCorMETTauMu.correctionType = correctionType
+            process.recoilCorMETTauEle.correctionType = correctionType
     else:
         print '\tDISABLED'
         if runOnMC:
