@@ -24,8 +24,8 @@ def lineno():
     return inspect.currentframe().f_back.f_lineno
 
 from os import path
-if path.exists( '/afs/cern.ch/work/m/manzoni/diTau2012_HCP/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon12.C'):
-    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012_HCP/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon12.C')  # Run ROOT logon script
+#if path.exists( '/afs/cern.ch/work/m/manzoni/diTau2012_HCP/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon12.C'):
+#    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012_HCP/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon12.C')  # Run ROOT logon script
 
 #if path.exists( '/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon_WJets.C'):
 #    gROOT.Macro('/afs/cern.ch/work/m/manzoni/diTau2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/rootlogon_WJets.C')  # Run ROOT logon script
@@ -37,8 +37,8 @@ binVBF   = [0,20,40,60,80,100,120,140,160,180,200,250,300,350]
 run2012  = True
 #blinding = True
 blinding = False
-just125  = True
-#just125  = False
+#just125  = True
+just125  = False
 RW_only  = True
 simple   = False
 
@@ -258,8 +258,8 @@ if __name__ == '__main__':
     isolationMM2D_4      =  ' && (sqrt(l1RawMVAIso*l1RawMVAIso + l2RawMVAIso*l2RawMVAIso)>1.32) && l1MedMVAIso>0.5 && l2MedMVAIso>0.5'
     isolationMM2D_5      =  ' && (sqrt(l1RawMVAIso*l1RawMVAIso + l2RawMVAIso*l2RawMVAIso)>1.34) && l1MedMVAIso>0.5 && l2MedMVAIso>0.5'
     
-    Jet0               =  ' && jet1Pt<50'	
-    BOOSTED            =  ' && jet1Pt>50'
+    Jet0               =  ' && jet1Pt<50.'	
+    BOOSTED            =  ' && jet1Pt>50.'
     VBF                =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0' 	#&& (jet1Eta*jet2Eta)<0
     VBFlooser          =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.0 && mjj>150 && nCentralJets==0' 	#&& (jet1Eta*jet2Eta)<0
     VBFtight           =  ' &&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>4.0 && mjj>400 && nCentralJets==0 '	#&& (jet1Eta*jet2Eta)<0
@@ -286,8 +286,9 @@ if __name__ == '__main__':
       NOVBFtight  = ''
     
     cuts=[  
-        ("CMS_2012_ABC_12fb_HpT140_pT45_isoTM_vetoMjj250Deta25_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationTM , 5 ),
-        ("CMS_2012_ABC_12fb_HpT140_pT45_isoMM_vetoMjj250Deta25_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationMM , 5 ),
+        #("CMS_2012_ABC_12fb_HpT140_pT45_isoTM_vetoMjj250Deta25_allMasses_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50. || jet2Pt<30. || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationTM , 5 ),
+        #("CMS_2012_ABC_12fb_HpT140_pT45_isoMM_vetoMjj250Deta25_allMasses_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50. || jet2Pt<30. || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationMM , 5 ),
+        ("CMS_2012_ABC_12fb_HpT110_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_allMasses_VBF" + rewStr   , baseline           + '&&  jet1Pt>50. && jet2Pt>30. && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
         #("CMS_2012_ABC_12fb_HpT000_pT45_isoTM_vetoMjj250Deta25_dRttRW_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>0. ' , isolationTM , 5 ),
         #("CMS_2012_ABC_12fb_HpT140_pT45_isoMM_vetoMjj250Deta25_Raw05_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationMM , 5 ),
         #("CMS_2012_ABC_12fb_HpT110_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_dRttRW_VBF" + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
@@ -555,12 +556,12 @@ if __name__ == '__main__':
         cutSS=cut.replace("diTauCharge==0","diTauCharge!=0")
         #print lineno()    
 
-        jetRecoveryWeight = '*weightJet1Eta(jet1Eta,run)' 
+        #jetRecoveryWeight = '*weightJet1Eta(jet1Eta,run)' 
         #jetRecoveryWeight = '' 
   
         plotVarDataSS = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal, nx, xmin, xmax,  
                                        cut = cutSS+isocut+antiqcdcut, 
-                                       weight=weight+jetRecoveryWeight,                 
+                                       weight=weight,#+jetRecoveryWeight,                 
                                        embed=options.embed)
         #print lineno()    
         
@@ -603,7 +604,7 @@ if __name__ == '__main__':
                                        #weight=weight+"*weightQCD_nVert(nVert)*weightQCD_dRtt(dRtt)",
                                        #weight=weight+"*weightQCD_nVert(nVert)*weightQCD_HpT(pThiggs)",
                                        #weight=weight+"*weightQCD_nVert(nVert)*weightQCD_diTpT(diTauPt)",
-                                       weight=weight+reWeight+jetRecoveryWeight,#+"*weightQCD_nVert(nVert)*weightQCD_HpT(pThiggs)",                     
+                                       weight=weight+reWeight,#+jetRecoveryWeight,#+"*weightQCD_nVert(nVert)*weightQCD_HpT(pThiggs)",                     
                                        embed=options.embed) 
         #print lineno()    
  
@@ -700,7 +701,7 @@ if __name__ == '__main__':
         plotVarDataLooseIsoOSMC = H2TauTauDataMC(var, anaDir, selCompsNoSignal, weightsNoSignal, nx, xmin, xmax,                             
                                        cut = cutLooseOS, 
                                        #cut = cut+looseisocut+antiqcdcut, 
-                                       weight = weight+jetRecoveryWeight,                  
+                                       weight = weight,#+jetRecoveryWeight,                  
                                        embed=options.embed)
         
         
@@ -711,7 +712,7 @@ if __name__ == '__main__':
                                        #weight=weight+"*weightQCD_nVert(nVert)*weightQCD_HpT(pThiggs)",
                                        #weight=weight+"*weightQCD_nVert(nVert)*weightQCD_diTpT(diTauPt)",
                                        #weight=weight+jetRecoveryWeight,#+"*weightQCD_nVert(nVert)*weightQCD_HpT(pThiggs)",                    
-                                       weight=weight+jetRecoveryWeight+"*weightQCD_nVert(nVert)",##*weightQCD_dRtt(dRtt)",                    
+                                       weight=weight,#+jetRecoveryWeight,#+"*weightQCD_nVert(nVert)",##*weightQCD_dRtt(dRtt)",                    
                                        embed=options.embed)
         #print lineno()    
         
@@ -755,7 +756,7 @@ if __name__ == '__main__':
           plotVarDataOS = H2TauTauDataMC(var, anaDir, selCompsDataMass[mIndex], weightsDataMass[mIndex], nx, xmin, xmax,
                                        ####### for eta dependent trigger Turn On #######
                                        #cut = cut+isocut+antiqcdcut, weight=weight+'*weightZTT_Eta(l1Eta)*weightZTT_Eta(l2Eta)',
-                                       cut = cut+isocut+antiqcdcut, weight=weight+jetRecoveryWeight,
+                                       cut = cut+isocut+antiqcdcut, weight=weight,#+jetRecoveryWeight,
                                        embed=options.embed)
   
           #print lineno()    
