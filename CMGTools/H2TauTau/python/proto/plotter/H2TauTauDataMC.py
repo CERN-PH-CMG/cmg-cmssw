@@ -89,7 +89,14 @@ class H2TauTauDataMC( AnalysisDataMC ):
                     var = varName + '* sqrt(0.97)'
             else:
                 raise ValueError( self.shift + ' is not recognized. Use None, "Up" or "Down".')
-            
+
+        # hack to account for the shift determined for HCP, see:
+        # https://indico.cern.ch/getFile.py/access?contribId=38&resId=0&materialId=slides&confId=212612
+        if compName == 'Ztt_ZL' and self.treeName.find('TauEle') != -1:
+            if varName == 'visMass' or varName == 'svfitMass':
+                    print 'Shifting visMass and svfitMass by 1.015 for', compName
+                    var = varName + '* 1.015'
+
         tree.Project( histName, var, '{weight}*({cut})'.format(cut=cut,
                                                                weight=weight) )
         hist.SetStats(0)
