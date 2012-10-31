@@ -1,4 +1,3 @@
-
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
@@ -82,6 +81,21 @@ TauEleAna = cfg.Analyzer(
 dyJetsFakeAna = cfg.Analyzer(
     'DYJetsFakeAnalyzer',
     leptonType = 11
+    )
+
+dyLLReweighterTauEle = cfg.Analyzer(
+    'DYLLReweighterTauEle',
+# 2012 
+    W1p0PB = 0.82, # weight for 1 prong 0 Pi Barrel
+    W1p0PE = 0.76,
+    W1p1PB = 1.65,
+    W1p1PE = 0.24,
+#    W1p0PB = 0.,
+#    W1p0PE = 0.,
+#    W1p1PB = 0.,
+#    W1p1PE = 0.,
+    verbose = True
+    # remember that scaling factors are hardcoded in the analyzer
     )
 
 WNJetsAna = cfg.Analyzer(
@@ -186,6 +200,7 @@ sequence = cfg.Sequence( [
     vertexAna,
     TauEleAna,
     dyJetsFakeAna,
+    dyLLReweighterTauEle,
     WNJetsAna,
     higgsWeighter, 
     vbfAna,
@@ -202,13 +217,16 @@ if syncntuple:
 
 test = 1
 if test==1:
-#    comp = DYJets
+    comp = DYJets
+#    comp = ZZJetsTo2L2Q
 #    comp = data_Run2012A
 #    comp = data_Run2012C_v2
 #    comp = HiggsVBF125
 #    comp = HiggsVH125
 #    comp = Tbar_tW
-    comp = TTJets
+#    comp = WW
+#    comp = embed_Run2012A_13Jul2012_v1
+#    comp = TTJets
 #    HiggsVBF125.triggers = []
     comp.files = comp.files[:20]
     selectedComponents = [comp]
@@ -221,8 +239,7 @@ elif test==2:
         comp.splitFactor = 1
         comp.files = comp.files[:10]
 elif test==4:
-    comp = HiggsVBF125
-    comp.splitFactor = 52
+    comp = DYJets 
     selectedComponents = [comp]
 elif test==5:
     # run this with python to get numbers for the soup

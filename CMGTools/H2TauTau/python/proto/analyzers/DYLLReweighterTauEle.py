@@ -15,15 +15,18 @@ class DYLLReweighterTauEle( Analyzer ):
             return True
 
         if self.cfg_ana.verbose:
-            print 'DYLLReweighterTauEle processing',self.cfg_comp.name
+            print 'DYLLReweighterTauEle processing',self.cfg_comp.name,
             
         localweight = 1
         if event.diLepton.leg1().decayMode() == 0 :   # 1prong 0pi
-            if abs (event.diLepton.leg1().eta()) < 1.5 : localweight = 0.82
-            else                                       : localweight = 0.76 
+            if abs (event.diLepton.leg1().eta()) < 1.5 : localweight = self.cfg_ana.W1p0PB #0.82
+            else                                       : localweight = self.cfg_ana.W1p0PE #0.76 
         elif event.diLepton.leg1().decayMode() == 1 : # 1prong 1pi
-            if abs (event.diLepton.leg1().eta()) < 1.5 : localweight = 1.65
-            else                                       : localweight = 0.24 
+            if abs (event.diLepton.leg1().eta()) < 1.5 : localweight = self.cfg_ana.W1p1PB #1.65
+            else                                       : localweight = self.cfg_ana.W1p1PE #0.24 
+
+        if self.cfg_ana.verbose:
+            print 'DYLLReweighterTauEle',event.diLepton.leg1().decayMode(),event.diLepton.leg1().eta(),localweight
         
         event.eventWeight = event.eventWeight * localweight
         return True
