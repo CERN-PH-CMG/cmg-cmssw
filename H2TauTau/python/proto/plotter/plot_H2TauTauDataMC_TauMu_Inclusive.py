@@ -190,6 +190,11 @@ if __name__ == '__main__':
                       help="Blind.",
                       action="store_true",
                       default=False)
+    parser.add_option("-b", "--batch", 
+                      dest="batch", 
+                      help="Set batch mode.",
+                      action="store_true",
+                      default=False)
     parser.add_option("-n", "--nbins", 
                       dest="nbins", 
                       help="Number of bins",
@@ -212,7 +217,8 @@ if __name__ == '__main__':
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
-
+    if options.batch:
+        gROOT.SetBatch()
     if options.nbins is None:
         NBINS = binning_svfitMass_finer
         XMIN = None
