@@ -17,13 +17,11 @@ def findFirstAncestor(dataset_id, info):
     elif len(rows)>1:
         assert(False)
     else:
-        # print 'dataset', rows[0][1]
         parent_id = rows[0][0]
-
-        groups = ['tauMu_fullsel_tree_CMG', 'tauEle_fullsel_tree_CMG', 'cmgTuple', 'PFAOD']
+        groups = ['tauMu_fullsel_tree_CMG', 'tauMu_fullsel_tree', 'tauEle_fullsel_tree_CMG',
+                  'tauEle_fullsel_tree', 'cmgTuple', 'PFAOD']
         igroup = 0
         while 1:
-            # print rows
             ginfo = groupInfo(dataset_id, groups[igroup])
             if ginfo != None:
                 break
@@ -82,6 +80,7 @@ class DatasetInfo(list):
         return '\n'.join(theStrs)
 
 reTAU = re.compile('TAU\S+')
+rePatMerge = re.compile('Merge\S*')
 rePatPFAOD = re.compile('V\d+')
 rePatPATCMG = re.compile('PAT_CMG\S+')
 
@@ -125,6 +124,8 @@ def processInfo(info):
             step = 'PATCMG'
             # if fraction:
             #     fraction /=2.
+        elif rePatMerge.match(base):
+            step = 'MERGE'
         else:
             step = 'Unknown'
         # print step
@@ -184,24 +185,23 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
     path_name = row[1]
     file_owner = row[2]
     info = []
+    compName = findAlias(path_name, aliases)
+    if compName is None:
+        print 'WARNING: cannot find alias for', path_name
+        return False
     findFirstAncestor(id, info)
     dsInfo = processInfo(info)
     if verbose:
         pprint.pprint( dsInfo )
     path_name = dsInfo[0]['path_name']
-    # alias = findAlias(path_name, aliases)
-    # if alias is None:
-    #     print 'Skip: no alias found for',path_name
-    compName = findAlias(path_name, aliases)
-    if compName is None:
-        print 'WARNING: cannot find alias for', path_name
-        return False
     globalEff = 1.
     nEvents = dsInfo.primary_dataset_entries
     taskurl = 'https://savannah.cern.ch/task/?{task_id}'.format(task_id=dsInfo[0]['task_id'])
     for step in dsInfo:
         eff = 0.
         if step['step']=='TAUTAU':
+            eff = step['jobeff']
+        elif step['step']=='MERGE':
             eff = step['jobeff']
         elif step['step']=='PATCMG':
             eff = step['fraction']
