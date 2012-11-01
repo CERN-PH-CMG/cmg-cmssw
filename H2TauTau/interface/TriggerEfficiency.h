@@ -169,16 +169,14 @@ public:
   }
 
   double effTau2011AB_TauEle( double pt, double eta) {
-    double tau15Weight = 168.6;
-    double tau20Weight = 139.1 + 524.9 + 265.7;
+    double tau20Weight = 168.6 + 139.1 + 524.9 + 265.7;
     double tightIsoTau20Weight = 780.4;
     double mediumIsoTau20Weight = 246.5 + 1698 + 694.8 + 117.6;
 
-    return (tau15Weight * effLooseTau15(pt, eta) + 
-	    tau20Weight * effLooseTau20_TauEle(pt,eta) + 
+	  return (tau20Weight * effLooseTau20_TauEle(pt,eta) + 
 	    tightIsoTau20Weight * effTightIsoTau20(pt,eta) + 
 	    mediumIsoTau20Weight * effMediumIsoTau20(pt,eta)) 
-      / ( tau15Weight + tau20Weight + tightIsoTau20Weight + mediumIsoTau20Weight);
+      / ( tau20Weight + tightIsoTau20Weight + mediumIsoTau20Weight);
   }
 
 
