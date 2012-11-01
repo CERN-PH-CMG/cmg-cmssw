@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.6 2012/10/22 16:12:57 palencia Exp $
+// $Id: TtbarLeptonJets.cc,v 1.7 2012/10/24 08:22:29 palencia Exp $
 //
 //
 
@@ -97,6 +97,8 @@ private:
   // ----------member data ---------------------------
   TH1D *countAll_h, *mu_maxLxy_h, *e_maxLxy_h, *mu_pT_h, *e_pT_h, *mu_PV_h, *e_PV_h;
   
+  bool isData;
+
   FILE *outFile;
   ofstream myfile;
 
@@ -119,7 +121,8 @@ private:
 //
 // constructors and destructor
 //
-TtbarLeptonJets::TtbarLeptonJets(const edm::ParameterSet& iConfig)
+TtbarLeptonJets::TtbarLeptonJets(const edm::ParameterSet& iConfig) :
+  isData(iConfig.getUntrackedParameter<bool>("isData",false))
 {
    //now do what ever initialization is needed
   edm::Service<TFileService> fs;
@@ -165,8 +168,15 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   //using namespace isodeposit;
   
   int verbose = 0;
-  bool isData = false;
-  
+  //bool isData = false;
+  // if (isData == false) {
+  //   cout << "Assuming running over MC" << endl;
+  // }
+  // else if (isData == true) {
+  //   cout << "Assuming running over Data" << endl;
+  // }
+
+
   if(verbose) std::cout << "\n" << iEvent.eventAuxiliary().id() << std::endl;
 
   edm::Handle<std::vector<reco::Vertex> > vertices;
