@@ -30,11 +30,11 @@ aliases = {
     '/TauPlusX/Run2011A-May10ReReco-v1.*':'data_Run2011A_May10ReReco_v1',
     '/TauPlusX/Run2011A-PromptReco-v4.*':'data_Run2011A_PromptReco_v4',
     '/TauPlusX/Run2011B-PromptReco-v1':'data_Run2011B_PromptReco_v1',
-##     '/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011_v1.*':'embed_Run2011A_03Oct2011_v1',
-##     '/DoubleMu/StoreResults-DoubleMu_2011A_05Aug2011_v1.*':'embed_Run2011A_05Aug2011_v1',
-##     '/DoubleMu/StoreResults-DoubleMu_2011A_10May2011_v1.*':'embed_Run2011A_May10ReReco_v1',
-##     '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4.*':'embed_Run2011A_PromptReco_v4',
-##     '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1.*':'embed_Run2011B_PromptReco_v1',
+    '/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011.*':'embed_Run2011A_03Oct2011_v1',
+    '/DoubleMu/StoreResults-DoubleMu_2011A_05Aug2011_v1.*':'embed_Run2011A_05Aug2011_v1',
+    '/DoubleMu/StoreResults-DoubleMu_2011A_10May2011.*':'embed_Run2011A_May10ReReco_v1',
+    '/DoubleMu/StoreResults-DoubleMu_2011A_PR_v4.*':'embed_Run2011A_PromptReco_v4',
+    '/DoubleMu/StoreResults-DoubleMu_2011B_PR_v1.*':'embed_Run2011B_PromptReco_v1',
     '/WW_TuneZ2.*START42.*':'WW',
     '/WZ_TuneZ2.*START42.*':'WZ',
     '/ZZ_TuneZ2.*START42.*':'ZZ',
@@ -64,7 +64,7 @@ allsamples.extend( embed_list_2011 )
 
 #  pat = '/VBF%TAUELE_2011_Colin_Oct25'
 # pat = '/VBF%/TAUELE_2011_ColinOct31_Test1'
-pat = '/VBF%/TAUELE_2011_ColinOct31_Test2'
+pat = '%/TAUELE_2011_OK_ColinOct31'
 connect( allsamples, pat, 'tauEle.*root', aliases, cache=True, verbose=False)
 Tbar_tW.nGenEvents = 809984.
 
