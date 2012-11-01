@@ -81,7 +81,13 @@ dyJetsFakeAna = cfg.Analyzer(
 
 WNJetsAna = cfg.Analyzer(
     'WNJetsAnalyzer',
-    verbose = False
+    verbose = False,
+    fractions = [ 0.752276599407,
+                  0.171668857336,
+                  0.0536961443722,
+                  0.0159474294633,
+                  0.00641100015491,
+                  ],
     )
 
 higgsWeighter = cfg.Analyzer(
@@ -132,7 +138,8 @@ treeProducer = cfg.Analyzer(
     )
 
 treeProducerXCheck = cfg.Analyzer(
-    'H2TauTauSyncTree'    
+    'H2TauTauSyncTree',
+    pt20 = False
     )
 
 #########################################################################################
@@ -152,6 +159,13 @@ from CMGTools.H2TauTau.proto.samples.tauMu_ColinOct23 import *
 # data_list = copy.copy(data_list_2011)
 # embed_list = copy.copy(embed_list_2011)
 
+WNJetsAna.nevents = [ WJets.nGenEvents,
+                      W1Jets.nGenEvents,
+                      W2Jets.nGenEvents,
+                      W3Jets.nGenEvents,
+                      W4Jets.nGenEvents
+                      ]
+
 # selectedComponents = allsamples
 diboson_list = [    WWJetsTo2L2Nu,
                     WZJetsTo2L2Q,
@@ -166,8 +180,8 @@ WJetsSoup = copy.copy(WJets)
 WJetsSoup.name = 'WJetsSoup'
 VVgroup = [comp.name for comp in diboson_list]
 higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
-selectedComponents =  [WJetsSoup, TTJets, DYJets]
-# selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
+# selectedComponents =  [WJetsSoup, TTJets, DYJets]
+selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
 selectedComponents.extend( higgs )
 selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list_2011 )
