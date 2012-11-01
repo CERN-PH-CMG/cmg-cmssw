@@ -17,19 +17,19 @@ aliases = {
     '/GluGluToHToTauTau.*START42.*':'HiggsGGH',
     '/WH_ZH_TTH_HToTauTau.*START42.*':'HiggsVH',
     '/DYJets.*START42.*':'DYJets',
-    '/WJetsToLNu.*START42.*':'WJets',
-    '/W1Jet.*START42.*':'W1Jets',
-    '/W2Jets.*START42.*':'W2Jets',
-    '/W3Jets.*START42.*':'W3Jets',
-    '/W4Jets.*START42.*':'W4Jets',
-    '/TTJets.*START42.*':'TTJets',
+    '/WJetsToLNu.*START42.*Merge':'WJets',
+    '/W1Jet.*START42.*Merge':'W1Jets',
+    '/W2Jets.*START42.*Merge':'W2Jets',
+    '/W3Jets.*START42.*Merge':'W3Jets',
+    '/W4Jets.*START42.*Merge':'W4Jets',
+    '/TTJets.*START42.*Merge':'TTJets',
     '/T_TuneZ2_tW-channel.*START42.*':'T_tW',       
     '/Tbar_TuneZ2_tW-channel.*START42.*':'Tbar_tW',    
-    '/TauPlusX/Run2011A-03Oct2011-v1.*':'data_Run2011A_03Oct2011_v1',
     '/TauPlusX/Run2011A-05Aug2011-v1.*':'data_Run2011A_05Aug2011_v1',
-    '/TauPlusX/Run2011A-May10ReReco-v1.*':'data_Run2011A_May10ReReco_v1',
-    '/TauPlusX/Run2011A-PromptReco-v4.*':'data_Run2011A_PromptReco_v4',
-    '/TauPlusX/Run2011B-PromptReco-v1':'data_Run2011B_PromptReco_v1',
+    '/TauPlusX/Run2011A-03Oct2011-v1.*Merge':'data_Run2011A_03Oct2011_v1',
+    '/TauPlusX/Run2011A-May10ReReco-v1.*Merge':'data_Run2011A_May10ReReco_v1',
+    '/TauPlusX/Run2011A-PromptReco-v4.*Merge':'data_Run2011A_PromptReco_v4',
+    '/TauPlusX/Run2011B-PromptReco-v1.*Merge':'data_Run2011B_PromptReco_v1',
     '/DoubleMu/StoreResults-DoubleMu_2011A_03Oct2011.*':'embed_Run2011A_03Oct2011_v1',
     '/DoubleMu/StoreResults-DoubleMu_2011A_05Aug2011_v1.*':'embed_Run2011A_05Aug2011_v1',
     '/DoubleMu/StoreResults-DoubleMu_2011A_10May2011.*':'embed_Run2011A_May10ReReco_v1',
@@ -45,7 +45,6 @@ aliases = {
     '/ZZJetsTo2L2Q.*START42.*':'ZZJetsTo2L2Q',
     '/ZZJetsTo4L.*START42.*':'ZZJetsTo4L',
     }
-
 
 MC_list = copy.copy( mc_ewk )
 MC_list.extend( mc_higgs )
@@ -64,7 +63,7 @@ allsamples.extend( embed_list_2011 )
 
 #  pat = '/VBF%TAUELE_2011_Colin_Oct25'
 # pat = '/VBF%/TAUELE_2011_ColinOct31_Test1'
-pat = '%/TAUELE_2011_OK_ColinOct31'
+pat = '%/TAUELE_2011_OK_ColinOct31%'
 connect( allsamples, pat, 'tauEle.*root', aliases, cache=True, verbose=False)
 Tbar_tW.nGenEvents = 809984.
 
