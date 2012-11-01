@@ -50,8 +50,8 @@ if __name__ == '__main__':
         parser.error('No output directory defined!')
     if opt.remotecopy is None:
         parser.error('No remote output directory defined!')
-    ## if opt.config is None:
-    ##     parser.error('No config file specified!')
+    if opt.config is None:
+        parser.error('No config file specified!')
         
 
     nfiles = opt.nfiles
@@ -63,12 +63,13 @@ if __name__ == '__main__':
     
     if config == 'skimLeptonJets.py':
         for sample in topinfo.samples:
+            print sample
             samplename = sample.split('_Tune')[0].replace('/','')
             spec = 'sampleName='+samplename+' sampleLocation='+sample+'\''
         
-            cmd = 'cmsBatch.py '+str(nfiles)+' skimLeptonJets.py -c \''+spec+' -o \''+outputdir+'/'+samplename+'\' -r '+remotecopy+' -b \'bsub -q 2nd < ./batchScript.sh\' '
+            cmd = 'cmsBatch.py '+str(nfiles)+' skimLeptonJets.py -f -c \''+spec+' -o \''+outputdir+'/'+samplename+'\' -r '+remotecopy+' -b \'bsub -q 2nd < ./batchScript.sh\' '
             print cmd
-            #os.system(cmd)
+            os.system(cmd)
 
     if config == 'finalSelLeptonJets.py':
 
