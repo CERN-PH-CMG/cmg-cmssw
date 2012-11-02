@@ -1,5 +1,6 @@
 from CMGTools.RootTools.PyRoot import * 
 from CMGTools.RootTools.Style import * 
+from CMGTools.RootTools.HistComparator import * 
 
 num = 0
 def hname():
@@ -43,6 +44,8 @@ def draw(var1, cut, t1, t2, w1='1', w2='1',
     h2.SetStats(0)
     if name1 is None: name1 = t1.GetTitle()
     if name2 is None: name2 = t2.GetTitle()
+    h1.SetTitle(name1)
+    h2.SetTitle(name2)
     legend = TLegend(0.55,0.7,0.88,0.88)
     legend.SetFillColor(0)
     legend.AddEntry(h1, name1, 'lp')
@@ -52,9 +55,10 @@ def draw(var1, cut, t1, t2, w1='1', w2='1',
         h1.Draw('same')
         legend.Draw('same')
         gPad.Update()
-    return h1, h2, legend
 
-# hw, hdy = draw('diTau.obj.mTLeg2()', 'diTau.obj.mTLeg2()<300')
+    comparator = HistComparator(var1, h1, h2)
+    return comparator
+
 
 def getTrees( treeName, patterns ):
     trees = dict()
@@ -72,5 +76,9 @@ if __name__ == '__main__':
     a1,p1 = sys.argv[1].split(':')
     a2,p2 = sys.argv[2].split(':')
     patterns = [ (a1, p1), (a2, p2) ]
-    trees = getTrees('H2TauTauTreeProducerTauMu', patterns)
+    trees = getTrees(None, patterns)
     pprint.pprint(trees)
+    comp = draw('svfitMass', '1', trees[a1], trees[a2],
+                name1 = a1, name2 = a2,
+                graphics=False)
+    comp.draw()
