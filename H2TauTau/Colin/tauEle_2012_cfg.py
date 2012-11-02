@@ -95,7 +95,13 @@ dyLLReweighterTauEle = cfg.Analyzer(
 
 WNJetsAna = cfg.Analyzer(
     'WNJetsAnalyzer',
-    verbose = False
+    verbose = False,
+    fractions = [ 0.743912391955,
+                  0.175996204386,
+                  0.0562852166761,
+                  0.0168876628296,
+                  0.00691852415316,
+                ],
     )
 
 higgsWeighter = cfg.Analyzer(
@@ -122,56 +128,44 @@ electronWeighter = cfg.Analyzer(
     isoWeight = ele_iso_tauele_2012    
     )
 
-
-
 # defined for vbfAna and eventSorter
 vbfKwargs = dict( Mjj = 500,
                   deltaEta = 3.5    
                   )
-
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
     vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
     jetCol = 'cmgPFJetSel',
     jetPt = 20,
-    jetEta = 5,
+    jetEta = 4.7,
+    cjvPtCut = 30.,
     btagSFseed = 12345,
     is2012Flag = True,
     **vbfKwargs
     )
-
-
-
 
 treeProducer = cfg.Analyzer(
     'H2TauTauTreeProducerTauEle'
     )
 
 treeProducerXCheck = cfg.Analyzer(
-    'H2TauTauSyncTree'    
+    'H2TauTauSyncTree',   
+    pt20 = False
     )
 
 #########################################################################################
 
-# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinJul5 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_ColinAug8 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_Sync_ColinOct1 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroSep25 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct05 import *
-# from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct19 import *
 from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct22 import *
 
 #########################################################################################
 
-# MC_list = [WJets, DYJets, TTJets]
-# MC_list = [HiggsVBF125]
-# MC_list = [DYJets]
-#data_list = copy.copy(data_list_Run2012A)
-#data_list.extend(data_list_Run2012B)
-#embed_list = copy.copy(embed_list_Run2012A)
-#embed_list.extend(embed_list_Run2012B)
-# MC_list = copy.copy(MC)
+WNJetsAna.nevents = [ WJets.nGenEvents,
+                      W1Jets.nGenEvents,
+                      W2Jets.nGenEvents,
+                      W3Jets.nGenEvents,
+                      W4Jets.nGenEvents
+                      ]
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
@@ -187,6 +181,7 @@ selectedComponents.extend( data_list )
 selectedComponents.extend( embed_list )
 #selectedComponents = copy.copy (embed_list)
 #selectedComponents = copy.copy (data_list)
+
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -210,13 +205,13 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 1
+test = 0
 if test==1:
-    comp = DYJets
+#    comp = DYJets
 #    comp = ZZJetsTo2L2Q
 #    comp = data_Run2012A
 #    comp = data_Run2012C_v2
-#    comp = HiggsVBF125
+    comp = HiggsVBF125
 #    comp = HiggsVH125
 #    comp = Tbar_tW
 #    comp = WW
@@ -234,7 +229,8 @@ elif test==2:
         comp.splitFactor = 1
         comp.files = comp.files[:10]
 elif test==4:
-    comp = DYJets 
+    comp = HiggsVBF125 
+    comp.splitFactor = 52
     selectedComponents = [comp]
 elif test==5:
     # run this with python to get numbers for the soup
