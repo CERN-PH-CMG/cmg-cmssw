@@ -100,10 +100,10 @@ class H2TauTauDataMC( AnalysisDataMC ):
                 if varName == 'visMass' or varName == 'svfitMass':
                     print 'Shifting visMass and svfitMass by 1.015 for', compName
                     var = varName + '* 1.015'
-        else:
-            if compName == 'Ztt_ZL':
-                weight = weight + '/zllWeight'
-                weight = weight + '*((l1_decayMode==1)*1.3 + (l1_decayMode!=1)*1.0)'
+##         else:
+##             if compName == 'Ztt_ZL':
+##                 weight = weight + '/zllWeight'
+##                 weight = weight + '*((l1_decayMode==1)*1.3 + (l1_decayMode!=1)*1.0)'
 
         tree.Project( histName, var, '{weight}*({cut})'.format(cut=cut,
                                                                weight=weight) )
@@ -242,8 +242,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['ZZ*'] = {'style':sGreen, 'layer':0.7, 'legend':None} 
         self.histPref['QCD'] = {'style':sHTT_QCD, 'layer':2, 'legend':None}
         self.histPref['WJets*'] = {'style':sHTT_WJets, 'layer':3, 'legend':None}  
-        self.histPref['Ztt_ZJ'] = {'style':sGreen, 'layer':3.1, 'legend':None}
-        self.histPref['Ztt_ZL'] = {'style':sBlue, 'layer':3.2, 'legend':None}
+        self.histPref['Ztt_ZJ'] = {'style':sHTT_ZL, 'layer':3.1, 'legend':None}
+        self.histPref['Ztt_ZL'] = {'style':sHTT_ZL, 'layer':3.2, 'legend':None}
         self.histPref['Higgs*'] = {'style':sHTT_Higgs, 'layer':1001, 'legend':None}
 
 
