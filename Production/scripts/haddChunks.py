@@ -20,6 +20,9 @@ if __name__ == '__main__':
     parser.add_option("-r","--remove", dest="remove",
                       default=False,action="store_true",
                       help="remove existing destination directories.")
+    parser.add_option("-c","--clean", dest="clean",
+                      default=False,action="store_true",
+                      help="move chunks to Chunks/ after processing.")
 
     (options,args) = parser.parse_args()
 
@@ -29,14 +32,5 @@ if __name__ == '__main__':
 
     dir = args[0]
 
-    haddChunks(dir, options.remove)
+    haddChunks(dir, options.remove, options.clean)
 
-##     # below, a hack for Colin's analysis. 
-##     os.chdir( dir )
-##     dy = 'DYJets'
-##     if dy in os.listdir('.') and os.environ['USER']=='cbern':
-##         fakes = '/'.join([dy,'Fakes'])
-##         if os.path.exists( fakes ):
-##             os.rename( fakes, '_'.join([dy,'Fakes']))
-##         else:
-##             print 'warning: DYJets/Fakes not found. Maybe you ran hadd already?'
