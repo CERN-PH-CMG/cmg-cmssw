@@ -149,7 +149,7 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.tauMu_Sync_ColinAug30 import *
 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinSep20 import *
-from CMGTools.H2TauTau.proto.samples.tauMu_ColinOct23 import *
+from CMGTools.H2TauTau.proto.samples.tauMu_ColinOct23_Up import *
 
 #########################################################################################
 
@@ -182,6 +182,7 @@ VVgroup = [comp.name for comp in diboson_list]
 higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
 # selectedComponents =  [WJetsSoup, TTJets, DYJets]
 selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
+# higgs = mc_higgs
 selectedComponents.extend( higgs )
 selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list_2011 )

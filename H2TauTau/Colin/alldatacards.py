@@ -7,12 +7,12 @@ from ROOT import gROOT
 oldpwd = os.getcwd()
 
 plotterdir = '/'.join([ os.environ['CMSSW_BASE'], 'src/CMGTools/H2TauTau/python/proto/plotter'] )
-inclusive_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauMu_Inclusive.py'])
-vbf_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauMu_VBF.py'])
+inclusive_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauEle_Inclusive_Colin.py'])
+vbf_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauEle_VBF.py'])
 mc_macro = '/'.join([plotterdir,'H2TauTauMC.py'])
 
-cfg = 'tauMu_2011_cfg.py'
-dir = 'Prod_Oct30'
+cfg = 'tauEle_2011_cfg.py'
+dir = 'Prod_Nov1'
 
 cfg = '/'.join([oldpwd, cfg])
 dir = '/'.join([oldpwd, dir])
@@ -25,8 +25,8 @@ inclusive_cuts = {
     'Inclusive':'Xcat_IncX && mt<20',
     '0jet_low':'Xcat_IncX && Xcat_J0X && l1_pt<40 && mt<20',
     '0jet_high':'Xcat_IncX && Xcat_J0X && l1_pt>40 && mt<20',
-    '1jet_low':'Xcat_IncX && Xcat_J1X && l1_pt<40 && mt<20',
-    '1jet_high':'Xcat_IncX && Xcat_J1X && l1_pt>40 && mt<20',    
+    '1jet_low':'Xcat_IncX && Xcat_J1X && l1_pt<40 && mt<20 && met>30',
+    '1jet_high':'Xcat_IncX && Xcat_J1X && l1_pt>40 && mt<20 && met>30',    
     }
 
 vbf_cuts = {
@@ -111,6 +111,7 @@ def mcTemplates(dir, cuts, refilter):
 
 def chdir(dir, subdir):
     # oldpwd = os.getcwd()
+    # import pdb; pdb.set_trace()
     os.chdir(dir)
     dcdir = subdir
     if not os.path.isdir(dcdir):
@@ -121,13 +122,13 @@ def chdir(dir, subdir):
 
 
 for dir in dirs:
-    
-##     chdir(dir, 'Datacards/DataAndBackground')
-##     #    dataAndBackground(dir, inclusive_cuts, inclusive_macro)
-##     dataAndBackground(dir, vbf_cuts, vbf_macro)    
-##     os.chdir(oldpwd)
-    
-    chdir(dir, 'Datacards/MC')
-    mcTemplates(dir, inclusive_cuts, 'Higgs.*')
-    mcTemplates(dir, vbf_mc_cuts, 'Higgs.*')
+    print dir
+    chdir(dir, 'Datacards/DataAndBackground')
+    dataAndBackground(dir, inclusive_cuts, inclusive_macro)
+    # dataAndBackground(dir, vbf_cuts, vbf_macro)    
     os.chdir(oldpwd)
+    
+##     chdir(dir, 'Datacards/MC')
+##     mcTemplates(dir, inclusive_cuts, 'Higgs.*')
+##     mcTemplates(dir, vbf_mc_cuts, 'Higgs.*')
+##     os.chdir(oldpwd)

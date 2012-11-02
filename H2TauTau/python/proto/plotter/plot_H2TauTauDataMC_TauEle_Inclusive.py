@@ -60,7 +60,7 @@ def replaceShapeInclusive(plot, var, anaDir,
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
               nbins=None, xmin=None, xmax=None,
               cut='', weight='weight', embed=False, shift=None, replaceW=False,
-              VVgroup = None):
+              VVgroup = None, antiMuIsoForQCD=False):
     
     print 'making the plot:', var, 'cut', cut
 
@@ -70,6 +70,8 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            cut=oscut, weight=weight,
                            embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
     osign.Hist(EWK).Scale( wJetScaleOS )
+
+    import pdb; pdb.set_trace()
 
     replaceW = False
     if replaceW:
@@ -97,12 +99,14 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data', 1.06 ) #PG scale value according Jose, 18/10
 
-    if cut.find('nJets>') != -1 or (cut.find('nJets==0') != -1 and cut.find('l1_pt>40') != -1):
+    #COLIN was buggy. iso was relaxed even in the 0jet low category, and the QCD
+    # estimation clearly wrong
+    if antiMuIsoForQCD:
         print 'WARNING RELAXING ISO FOR QCD SHAPE'
         # replace QCD with a shape obtained from data in an anti-iso control region
         qcd_yield = osQCD.Hist('QCD').Integral()
         
-        sscut_qcdshape = cut.replace('l2_relIso05<0.1', '(l2_relIso05<0.5 && l2_relIso05>0.2)') + ' && diTau_charge!=0'
+        sscut_qcdshape = cut.replace('l2_relIso05<0.1', '(l2_relIso05<0.5 && l2_relIso05>0.2)').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.7') + ' && diTau_charge!=0'
         ssign_qcdshape = H2TauTauDataMC(var, anaDir,
                                         selComps, weights, nbins, xmin, xmax,
                                         cut=sscut_qcdshape, weight=weight,
@@ -238,8 +242,8 @@ if __name__ == '__main__':
     parser.add_option("-B", "--blind", 
                       dest="blind", 
                       help="Blind.",
-                      action="store_false",
-                      default=True)
+                      action="store_true",
+                      default=False)
     parser.add_option("-W", "--replaceW", 
                       dest="replaceW", 
                       help="replace W shape by relaxing isolation on the hadronic tau",
@@ -283,6 +287,7 @@ if __name__ == '__main__':
         XMAX = float(options.xmax)
         
     cutstring = options.cut
+    antiMuIsoForQCD = cutstring.find('l1_pt>40')!=-1 or cutstring.find('Xcat_J1X')!=-1
     options.cut = replaceCategories(options.cut, categories) 
 
     print 'CUT APPLIED:', options.cut
@@ -303,35 +308,6 @@ if __name__ == '__main__':
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 #    embed = options.embed
-
-    #PG (STEP 0) prepare the samples on which to run
-    #PG ---- ---- ---- ---- ---- ---- ---- ---- ----
-
-    origComps = copy.deepcopy(cfg.config.components)
-
-    comps = []
-    for comp in cfg.config.components:
-        if comp.name == 'W1Jets': continue
-        if comp.name == 'W2Jets': continue
-        if comp.name == 'W3Jets': continue
-        if comp.name == 'W4Jets': continue
-        if comp.name == 'TTJets11': continue #PG remove me
-        if comp.name == 'WJets11': continue #PG remove me
-        if options.useExcusiveVV :
-            if comp.name == 'WW' : continue
-            if comp.name == 'ZZ' : continue
-            if comp.name == 'WZ' : continue
-        else :
-            if comp.name == 'WW2l2v' : continue
-            if comp.name == 'WZ2l2q' : continue
-            if comp.name == 'WZ3lv' : continue
-            if comp.name == 'ZZ2l2q' : continue
-            if comp.name == 'ZZ2l2v' : continue
-            if comp.name == 'ZZ4l' : continue
-        comps.append( comp )
-    aliases = None
-
-    cfg.config.components = comps
 
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, 
                                                   options.embed, 'TauEle', options.higgs)
@@ -395,7 +371,8 @@ if __name__ == '__main__':
                                                weight   = weight, 
                                                embed    = options.embed,
                                                VVgroup  = cfg.VVgroup,
-                                               replaceW = replaceW)
+                                               replaceW = replaceW,
+                                               antiMuIsoForQCD = antiMuIsoForQCD)
         # ssign = all cuts, same sign, before QCD estimate
         # osign = all cuts, opposite sign, before QCD estimate
         # ssQCD = all cuts, same sign, after QCD estimate, i.e. the QCD is in

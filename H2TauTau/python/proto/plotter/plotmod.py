@@ -71,25 +71,13 @@ def shape_and_yield( var, anaDir,
 def addQCD( plot, dataName ):
     # import pdb; pdb.set_trace()
     plotWithQCD = copy.deepcopy( plot )
-    # QCD_data = data - DY - TTbar - W
     qcd = copy.deepcopy(plotWithQCD.Hist(dataName))
-    #SYNC WITH JOSH, comment the following line
     qcd.Add(plotWithQCD.Hist('Ztt'), -1)
-    try:
-        f1 = plot.Hist('Ztt_ZL')
-        f2 = plot.Hist('Ztt_ZJ')
-        qcd.Add(f1, -1)
-        qcd.Add(f2, -1)
-    except:
-        print 'cannot find Ztt_Fakes in W+jets estimate'
-        print plot
-        pass    
+    qcd.Add(plotWithQCD.Hist('Ztt_ZL'), -1)
+    qcd.Add(plotWithQCD.Hist('Ztt_ZJ'), -1)  
     qcd.Add(plotWithQCD.Hist('TTJets'), -1)
     qcd.Add(plotWithQCD.Hist('WJets'), -1)
-    if plotWithQCD.histosDict.get('VV', None) != None:
-        qcd.Add(plotWithQCD.Hist('VV'), -1)
-    else:
-        print 'addQCD: VV group not found, VV not subtracted'
+    qcd.Add(plotWithQCD.Hist('VV'), -1)
 
     # adding the QCD data-driven estimation to the  plot
     plotWithQCD.AddHistogram( 'QCD', qcd.weighted, 888)
@@ -109,12 +97,14 @@ def getQCD( plotSS, plotOS, dataName, scale=1.06 ):
 
     # extrapolate the expected QCD shape and yield to the
     # signal region
-
+    qcd_yield = plotSSWithQCD.Hist('QCD').Integral()
+    qcd_yield *= scale
+    
     plotOSWithQCD = copy.deepcopy( plotOS )
 
     qcdOS = copy.deepcopy( plotSSWithQCD.Hist('QCD') )
-    qcdOS.RemoveNegativeValues()
-    qcdOS.Scale( scale )
+    # qcdOS.RemoveNegativeValues()
+    qcdOS.Scale( qcd_yield / qcdOS.Integral() )
 
     plotOSWithQCD.AddHistogram('QCD', qcdOS.weighted, 1030)
     plotOSWithQCD.Hist('QCD').layer=1.5

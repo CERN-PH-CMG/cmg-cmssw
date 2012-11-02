@@ -168,7 +168,7 @@ if __name__ == '__main__':
     from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
     from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
     from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw
-
+    from CMGTools.H2TauTau.proto.plotter.datacards import *
 
     parser = OptionParser()
     parser.usage = '''
@@ -181,11 +181,11 @@ if __name__ == '__main__':
     parser.add_option("-H", "--hist", 
                       dest="hist", 
                       help="histogram list",
-                      default='mt')
+                      default='svfitMass')
     parser.add_option("-C", "--cut", 
                       dest="cut", 
                       help="cut to apply in TTree::Draw",
-                      default='Xcat_IncX')
+                      default=None)
     parser.add_option("-n", "--nbins", 
                       dest="nbins", 
                       help="Number of bins",
@@ -206,13 +206,20 @@ if __name__ == '__main__':
                       dest="filter", 
                       help="Regexp filter to select components",
                       default=None)
+    parser.add_option("-b", "--batch", 
+                      dest="batch", 
+                      help="Set batch mode.",
+                      action="store_true",
+                      default=False)
 
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
-
+        
+    if options.batch:
+        gROOT.SetBatch()
     if options.nbins is None:
         NBINS = binning_svfitMass
         XMIN = None
@@ -242,8 +249,10 @@ if __name__ == '__main__':
                                                   options.higgs)
 
     filteredComps = filterComps(selComps, options.filter)
-
+    
     can, pad, padr = buildCanvas()
     plot = H2TauTauMC( options.hist, anaDir, filteredComps, weights, NBINS, XMIN, XMAX, options.cut,
                        weight=weight, shift=shift )
-    plot.DrawStack('HIST')
+    plot.Draw()
+    
+    datacards(plot, cutstring, shift, prefix='MC')

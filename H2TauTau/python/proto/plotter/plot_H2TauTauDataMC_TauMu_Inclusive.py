@@ -104,7 +104,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
         qcd_yield = osQCD.Hist('QCD').Integral()
         
         # sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5') + ' && diTau_charge!=0' 
-        sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.5') + ' && diTau_charge!=0'
+        sscut_qcdshape = cut.replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.7') + ' && diTau_charge!=0'
         ssign_qcdshape = H2TauTauDataMC(var, anaDir,
                                         selComps, weights, nbins, xmin, xmax,
                                         cut=sscut_qcdshape, weight=weight,

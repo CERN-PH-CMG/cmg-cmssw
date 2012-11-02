@@ -142,10 +142,6 @@ from CMGTools.H2TauTau.proto.samples.tauEle_ColinOct31 import *
 #########################################################################################
 
 
-# MC_list = [WJets, W3Jets, DYJets, TTJets, HiggsVBF125, WW, WZ, ZZ]
-# MC_list = copy.copy(MC)
-# data_list = copy.copy(data_list_2011)
-# embed_list = copy.copy(embed_list_2011)
 
 WNJetsAna.nevents = [ WJets.nGenEvents,
                       W1Jets.nGenEvents,
@@ -168,12 +164,14 @@ WJetsSoup = copy.copy(WJets)
 WJetsSoup.name = 'WJetsSoup'
 VVgroup = [comp.name for comp in diboson_list]
 higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
-# selectedComponents =  [WJetsSoup, TTJets, DYJets]
-selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
+selectedComponents =  [WJetsSoup, TTJets, DYJets]
+# selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
 selectedComponents.extend( higgs )
 selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list_2011 )
 selectedComponents.extend( embed_list_2011 )
+
+# selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets]
 
 sequence = cfg.Sequence( [
 #     eventSelector,
@@ -197,10 +195,10 @@ if syncntuple:
 
 test = 0
 if test==1:
-    comp = HiggsVBF125
+    comp = WJets
     # comp.files = comp.files[:2]
     selectedComponents = [comp]
-    comp.splitFactor = 14
+    comp.splitFactor = 1
 elif test==2:
     selectedComponents = copy.copy(data_list_2011)
     selectedComponents.extend(embed_list_2011)

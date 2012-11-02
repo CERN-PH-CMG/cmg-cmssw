@@ -48,6 +48,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        
        var( tr, 'isFake')
        var( tr, 'isSignal')
+       var( tr, 'leptonAccept')
+       var( tr, 'thirdLeptonVeto')
 
        bookGenParticle(tr, 'genW')
        bookGenParticle(tr, 'genZ')
@@ -80,6 +82,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        # import pdb; pdb.set_trace()
        pfmet = self.handles['pfmetraw'].product()[0]
        fill(tr, 'pfmet', pfmet.pt())
+
        
        fillParticle(tr, 'diTau', event.diLepton)
        fillTau(tr, 'l1', event.diLepton.leg1() )
@@ -116,6 +119,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
           
        fill(tr, 'isFake', event.isFake)
        fill(tr, 'isSignal', event.isSignal)
+       fill(tr, 'leptonAccept',    event.leptonAccept)
+       fill(tr, 'thirdLeptonVeto', event.thirdLeptonVeto)
 
        if hasattr( event, 'genZs'):
            if len(event.genZs):

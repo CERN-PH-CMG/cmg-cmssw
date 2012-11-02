@@ -4,31 +4,34 @@ class DYLLReweighterTauEle( Analyzer ):
     '''Apply the reweighting calculated by Jose on the basis of the data/mc agreement
        in the inclusive sample, see here:
        https://indico.cern.ch/getFile.py/access?contribId=38&resId=0&materialId=slides&confId=212612
+       event.zllWeight is added to the event and multiplied to event.eventWeight
     '''
 
     def process(self, iEvent, event):
+        event.zllWeight = 1
         if not self.cfg_comp.isMC:
             return True
 
         # do nothing in all cases, but the DY -> ll
         if event.isFake != 1 or self.cfg_comp.name.find('DYJets') == -1 :
             return True
-
-        if self.cfg_ana.verbose:
-            print 'DYLLReweighterTauEle processing',self.cfg_comp.name,
             
-        localweight = 1
-        if event.diLepton.leg1().decayMode() == 0 :   # 1prong 0pi
-            if abs (event.diLepton.leg1().eta()) < 1.5 : localweight = self.cfg_ana.W1p0PB #0.82
-            else                                       : localweight = self.cfg_ana.W1p0PE #0.76 
-        elif event.diLepton.leg1().decayMode() == 1 : # 1prong 1pi
-            if abs (event.diLepton.leg1().eta()) < 1.5 : localweight = self.cfg_ana.W1p1PB #1.65
-            else                                       : localweight = self.cfg_ana.W1p1PE #0.24 
+        tau = event.diLepton.leg1()
+        if tau.decayMode() == 0 :   # 1prong 0pi
+            if abs (tau.eta()) < 1.5 :
+                event.zllWeight = self.cfg_ana.W1p0PB 
+            else:
+                event.zllWeight = self.cfg_ana.W1p0PE 
+        elif tau.decayMode() == 1 : # 1prong 1pi
+            if abs (tau.eta()) < 1.5 :
+                event.zllWeight = self.cfg_ana.W1p1PB 
+            else:
+                event.zllWeight = self.cfg_ana.W1p1PE 
 
         if self.cfg_ana.verbose:
-            print 'DYLLReweighterTauEle',event.diLepton.leg1().decayMode(),event.diLepton.leg1().eta(),localweight
+            print 'DYLLReweighterTauEle',tau.decayMode(),tau.eta(),event.zllWeight
         
-        event.eventWeight = event.eventWeight * localweight
+        event.eventWeight = event.eventWeight * event.zllWeight
         return True
 
 # FIXME read from cfg file the scaling factors
