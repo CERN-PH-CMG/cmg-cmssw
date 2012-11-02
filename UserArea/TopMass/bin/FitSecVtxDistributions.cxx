@@ -18,6 +18,8 @@
 #include "RooArgList.h"
 #include "RooRandom.h"
 #include "RooMinuit.h"
+#include "RooDataHist.h"
+#include "RooHistPdf.h"
 
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "PhysicsTools/FWLite/interface/CommandLineParser.h"
@@ -185,6 +187,11 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       std::map<std::string,TH1 *> templates;
       std::map<std::string,float> masses;
       
+
+      //
+      // SIGNAL
+      //
+
       //lxy templates
       const Int_t nq = 4;
       Double_t xq[nq];  // position where to compute the quantiles in [0,1]
@@ -279,8 +286,8 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  pave->SetFillStyle(0);
 	  pave->SetTextAlign(32);
 	  pave->SetTextFont(42);
-	  char buf[200]; sprintf(buf,"%f",mIt->second);
-	  pave->AddText(ch);
+	  char buf[200]; sprintf(buf,"%3.1f",mIt->second);
+	  pave->AddText(buf);
 	  pave->Draw();
 	  
 	  //print the fit in the first canvas
@@ -343,16 +350,58 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       TString title(ch); title.ReplaceAll("mu","#mu");
       pave->AddText(title);
       pave->Draw();
-      if(is>0) continue;
-      TLegend *leg=new TLegend(0.5,0.8,0.9,0.9);
-      leg->AddEntry(grmean,grmean->GetTitle(),"p");
-      leg->AddEntry(gr25,gr25->GetTitle(),"p");  
-      leg->AddEntry(gr50,gr50->GetTitle(),"p");    
-      leg->SetBorderSize(0);
-      leg->SetFillStyle(0);
-      leg->SetTextFont(42);
-      leg->SetNColumns(3);
-      leg->Draw();
+      if(is==0)
+	{
+	  TLegend *leg=new TLegend(0.5,0.8,0.9,0.9);
+	  leg->AddEntry(grmean,grmean->GetTitle(),"p");
+	  leg->AddEntry(gr25,gr25->GetTitle(),"p");  
+	  leg->AddEntry(gr50,gr50->GetTitle(),"p");    
+	  leg->SetBorderSize(0);
+	  leg->SetFillStyle(0);
+	  leg->SetTextFont(42);
+	  leg->SetNColumns(3);
+	  leg->Draw();
+	}
+    
+      //
+      // BACKGROUND
+      //
+
+      Float_t dataObs=chShapes[is].mass_data->Integral(0,chShapes[is].mass_data->GetXaxis()->GetNbins()+1);
+
+      //define the PDFs to fit signal and background in the Lxy and SecVtx mass categories
+      TH1F *vtxMassSignalH=chShapes[is].mass_signal[172.5];
+      TString hname(ch+"_vtxmass_signal");
+      RooDataHist *vtxMassSignalData = new RooDataHist(hname,hname,RooArgList(secvtxmass),Import(*vtxMassSignalH));
+      RooHistPdf *vtxMassSignalPdf   = new RooHistPdf(hname+"pdf",hname+"pdf",RooArgSet(secvtxmass),*vtxMassSignalData);
+      w->import(*vtxMassSignalPdf);
+      Float_t signalExp=vtxMassSignalH->Integral(0,vtxMassSignalH->GetXaxis()->GetNbins()+1);
+      RooRealVar *signalYields = new RooRealVar("signalyields","signalyields",signalExp,0,dataObs);
+      w->import(*signalYields);
+      for(map<TString, TH1F *>::iterator it=chShapes[is].mass_bckg.begin(); it != chShapes[is].mass_bckg.end(); it++)
+	{
+	  RooDataHist *vtxMassData = new RooDataHist(ch+"_vtxmass_"+it->first,    ch+"_vtxmass_"+it->first, RooArgList(secvtxmass),Import(*it->second));
+	  RooHistPdf *vtxMassPdf   = new RooHistPdf(vtxMassData->GetName()+TString("pdf"), vtxMassData->GetName()+TString("pdf"), RooArgSet(secvtxmass),*vtxMassData);
+	  w->import(*vtxMassPdf);
+
+	  Double_t flavYieldsExpUnc(0);
+	  Float_t flavYieldsExp=it->second->IntegralAndError(0,it->second->GetXaxis()->GetNbins()+1,flavYieldsExpUnc);
+	  flavYieldsExpUnc *= sqrt(1+pow(0.044,2));  // add lumi unc.
+	  TString flav("udsg");
+	  if(it->first.BeginsWith("c")) flav="c";
+	  if(it->first.BeginsWith("b")) flav="b";
+	  RooRealVar *flavYields = new RooRealVar(ch+flav+"yields",ch+flav+"yields",flavYieldsExp,0,dataObs);
+	  RooGaussian *flavYieldsConstraint = new RooGaussian(ch+flav+"constr",ch+flav+"constr",*flavYields,RooConst(flavYieldsExp),RooConst(flavYieldsExpUnc)); 
+	  w->import(*flavYields);
+	  w->import(*flavYieldsConstraint);
+	}
+
+      for(map<TString, TH1F *>::iterator it=chShapes[is].lxy_bckg.begin(); it != chShapes[is].lxy_bckg.end(); it++)
+	{
+	  RooDataHist *lxyData = new RooDataHist(ch+"_lxy_"+it->first,    ch+"_lxy_"+it->first,     RooArgList(lxy), Import(*it->second));
+	  RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName()+TString("pdf"), lxyData->GetName()+TString("pdf"), RooArgSet(lxy), *lxyData);
+	  w->import(*lxyPdf);
+	}
     }
   cqt->SaveAs("SignalPDFsMomenta.png");
 
