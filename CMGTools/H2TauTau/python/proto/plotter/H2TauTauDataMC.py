@@ -8,6 +8,7 @@ from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
 from CMGTools.RootTools.fwlite.Weight import Weight
 from CMGTools.RootTools.fwlite.Weight import printWeights
 from CMGTools.RootTools.Style import *
+from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
 class H2TauTauDataMC( AnalysisDataMC ):
 
@@ -92,11 +93,17 @@ class H2TauTauDataMC( AnalysisDataMC ):
 
         # hack to account for the shift determined for HCP, see:
         # https://indico.cern.ch/getFile.py/access?contribId=38&resId=0&materialId=slides&confId=212612
-        if compName == 'Ztt_ZL' and self.treeName.find('TauEle') != -1:
-            if varName == 'visMass' or varName == 'svfitMass':
+
+        if isNewerThan('CMSSW_5_2_0'):
+            # Andrew doesn't do the shift in 2011.
+            if compName == 'Ztt_ZL' and self.treeName.find('TauEle') != -1:
+                if varName == 'visMass' or varName == 'svfitMass':
                     print 'Shifting visMass and svfitMass by 1.015 for', compName
                     var = varName + '* 1.015'
 
+        if compName == 'Ztt_ZL':
+            weight = weight + '/zllWeight'
+            weight = weight + '*((l1_decayMode==1)*1.3 + (l1_decayMode!=1)*1.0)'
         tree.Project( histName, var, '{weight}*({cut})'.format(cut=cut,
                                                                weight=weight) )
         hist.SetStats(0)

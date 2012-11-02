@@ -43,7 +43,7 @@ datacards_aliases = {
 
 
 
-def datacards(plot, cutstring, shift, channel='muTau'):
+def datacards(plot, cutstring, shift, channel='muTau', prefix=None):
 
     category = 'Unknown'
     if cutstring.find('Xcat_IncX')!=-1:
@@ -77,6 +77,9 @@ def datacards(plot, cutstring, shift, channel='muTau'):
         fileName = '{channel}_{category}_{ext}.root'.format(channel=channel,
                                                           category=category,
                                                           ext=ext)
+    if prefix:
+        fileName = '_'.join([prefix, fileName])
+        
     file = TFile(fileName, 'recreate')
     print 'output file', fileName
     zttzl = None

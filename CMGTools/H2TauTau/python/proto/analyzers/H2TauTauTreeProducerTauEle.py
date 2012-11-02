@@ -40,6 +40,10 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        
        var( tr, 'weight')
        var( tr, 'vertexWeight')
+       var( tr, 'embedWeight')
+       var( tr, 'hqtWeight')
+       var( tr, 'WJetWeight')
+       var( tr, 'zllWeight')
        
        var( tr, 'nVert')
        
@@ -48,6 +52,13 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        var( tr, 'leptonAccept')
        var( tr, 'thirdLeptonVeto')
 
+       bookGenParticle(tr, 'genW')
+       bookGenParticle(tr, 'genZ')
+       bookGenParticle(tr, 'genWlep')
+       bookGenParticle(tr, 'genWnu')
+       bookGenParticle(tr, 'genZleg1')
+       bookGenParticle(tr, 'genZleg2')
+       
        
     def declareHandles(self):
         super(H2TauTauTreeProducerTauEle, self).declareHandles()
@@ -80,19 +91,15 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
        fillParticle(tr, 'l1Jet', event.diLepton.leg1().jet )
        fillParticle(tr, 'l2Jet', event.diLepton.leg2().jet )
 
-       #PG maybe in the future I want to take the two highest pt jets 
-       #PG if they have pT > 20 GeV 
-       #PG if jets are sorted in pT, it's traightforward
-       nJets = len(event.cleanJets30)
-       fill(tr, 'nJets', nJets)
-       nJets20 = len(event.cleanJets)
-       fill(tr, 'nJets20', nJets20)
+
+       fill(tr, 'nJets20', len(event.cleanJets) )
+       nJets30 = len(event.cleanJets30)
+       fill(tr, 'nJets', nJets30 )
+       nJets = len(event.cleanJets)
        if nJets>=1:
-           fillJet(tr, 'jet1', event.cleanJets30[0] )
-           # What is this stuff? shouldn't it be computed in the VBF object? 
-## 	    fill('mttj', sqrt(pow(event.diLepton.energy()+event.cleanJets[0].energy(),2) - pow(event.diLepton.px()+event.cleanJets[0].px(),2) - pow(event.diLepton.py()+event.cleanJets[0].py(),2) - pow(event.diLepton.pz()+event.cleanJets[0].pz(),2)))
+           fillJet(tr, 'jet1', event.cleanJets[0] )
        if nJets>=2:
-           fillJet(tr, 'jet2', event.cleanJets30[1] )
+           fillJet(tr, 'jet2', event.cleanJets[1] )
 
        nBJets = len(event.cleanBJets)
        if nBJets>0:
@@ -103,18 +110,29 @@ class H2TauTauTreeProducerTauEle( TreeAnalyzerNumpy ):
            fillVBF( tr, 'VBF', event.vbf )
 
        fill(tr, 'weight', event.eventWeight)
+       fill(tr, 'embedWeight', event.embedWeight)
+       fill(tr, 'hqtWeight', event.higgsPtWeight)
+       fill(tr, 'WJetWeight', event.WJetWeight)
+       fill(tr, 'zllWeight', event.zllWeight)
 
        if hasattr( event, 'vertexWeight'): 
           fill(tr, 'vertexWeight', event.vertexWeight)
           fill(tr, 'nVert', len(event.vertices) ) 
           
-##        isFake = 1
-##        if hasattr( event, 'genMatched'): 
-##           if event.genMatched == 1:
-##              isFake = 0
-       fill(tr, 'isFake',          event.isFake)
-       fill(tr, 'isSignal',        event.isSignal)
+       fill(tr, 'isFake', event.isFake)
+       fill(tr, 'isSignal', event.isSignal)
        fill(tr, 'leptonAccept',    event.leptonAccept)
        fill(tr, 'thirdLeptonVeto', event.thirdLeptonVeto)
+
+       if hasattr( event, 'genZs'):
+           if len(event.genZs):
+               fillGenParticle(tr, 'genZ', event.genZs[0])
+               fillGenParticle(tr, 'genZleg1', event.genZs[0].leg1)
+               fillGenParticle(tr, 'genZleg2', event.genZs[0].leg2)
+       if hasattr( event, 'genWs'):
+           if len(event.genWs):
+               fillGenParticle(tr, 'genW', event.genWs[0])
+               fillGenParticle(tr, 'genWlep', event.genWs[0].lep)
+               fillGenParticle(tr, 'genWnu', event.genWs[0].nu)
        
        self.tree.tree.Fill()

@@ -204,7 +204,7 @@ def buildCanvasOfficial():
 
 
 
-def drawOfficial(plot, doBlind=True, channel='TauMu', plotprefix = None):
+def drawOfficial(plot, doBlind=False, channel='TauMu', plotprefix = None):
     global ocan
     print plot
     Stack.STAT_ERRORS = False
