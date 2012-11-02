@@ -197,7 +197,7 @@ if __name__ == '__main__':
     XMIN = None
     XMAX = None
 
-    can, pad, padr = buildCanvas()
+    can = buildCanvasOfficial()
     
     weight='weight'
     # qcd_vbf_eff = 0.0025 # for 2012
@@ -344,7 +344,7 @@ if __name__ == '__main__':
                               embed=options.embed, shift=shift,
                               VVgroup = cfg.VVgroup);
 
-    draw(osQCD, False)
+    drawOfficial(osQCD, False)
     datacards(osQCD, 'Xcat_VBFX', shift)
 
 
