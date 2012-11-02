@@ -204,7 +204,7 @@ def buildCanvasOfficial():
 
 
 
-def drawOfficial(plot, doBlind=False, channel='TauMu', plotprefix = None):
+def drawOfficial(plot, doBlind=False, channel='TauMu', plotprefix = None, ymin = 0.1):
     global ocan
     print plot
     Stack.STAT_ERRORS = False
@@ -225,7 +225,7 @@ def drawOfficial(plot, doBlind=False, channel='TauMu', plotprefix = None):
     if ocan is None:
         ocan = buildCanvasOfficial()
     ocan.cd()
-    plot.DrawStack('HIST', ymin=0.1)
+    plot.DrawStack('HIST', ymin=ymin)
     h = plot.supportHist
     h.GetXaxis().SetTitle('{xtitle}'.format(xtitle=xtitle))
     # blinding
@@ -239,7 +239,7 @@ def drawOfficial(plot, doBlind=False, channel='TauMu', plotprefix = None):
         # import pdb; pdb.set_trace()
         keeper.append(box)
     year, lumi, energy = datasetInfo( plot )
-    datasetStr = "CMS Preliminary, #sqrt{{s}} = {energy} TeV, L = {lumi:3.1f} fb^{{-1}}".format(energy=energy, lumi=lumi)
+    datasetStr = "CMS Preliminary, #sqrt{{s}} = {energy} TeV, L = {lumi:3.2f} fb^{{-1}}".format(energy=energy, lumi=lumi)
     if channel == 'TauMu' : a,b = CMSPrelimOfficial( datasetStr, '#tau_{#mu}#tau_{h}',0.15,0.835)
     elif channel == 'TauEle' : a,b = CMSPrelimOfficial( datasetStr, '#tau_{e}#tau_{h}', 0.15, 0.835)
     a.Draw()
