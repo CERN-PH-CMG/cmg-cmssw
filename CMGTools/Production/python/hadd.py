@@ -77,7 +77,7 @@ def haddRec(odir, idirs):
         for file in files:
             hadd('/'.join([root, file]), odir, idirs)
 
-def haddChunks(idir, removeDestDir):
+def haddChunks(idir, removeDestDir, cleanUp=False):
     chunks = {}
     for file in sorted(os.listdir(idir)):
         filepath = '/'.join( [idir, file] )
@@ -94,16 +94,23 @@ def haddChunks(idir, removeDestDir):
     if len(chunks)==0:
         print 'warning: no chunk found.'
         return
-    pprint.pprint(chunks)
-    for comp, chunks in chunks.iteritems():
+    for comp, cchunks in chunks.iteritems():
         odir = '/'.join( [idir, comp] )
-        print odir, chunks
+        print odir, cchunks
         if removeDestDir:
             if os.path.isdir( odir ):
                 shutil.rmtree(odir)
-        haddRec(odir, chunks)
-
-    
+        haddRec(odir, cchunks)
+    if cleanUp:
+        chunkDir = 'Chunks'
+        if os.path.isdir('Chunks'):
+            shutil.rmtree(chunkDir)
+        os.mkdir(chunkDir)
+        print chunks
+        for comp, chunks in chunks.iteritems():
+            for chunk in chunks:
+                shutil.move(chunk, chunkDir)
+        
 if __name__ == '__main__':
     import sys
     args = sys.argv
