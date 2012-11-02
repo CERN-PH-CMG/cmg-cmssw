@@ -64,6 +64,15 @@ class Histogram( object ):
         self.obj.Rebin( factor )
         self.weighted.Rebin(factor)
     
+    def NormalizeToBinWidth(self):
+        '''Divides each bin content and error by the bin size'''
+        for i in range (1,self.obj.GetNbinsX()+1) :
+           self.obj.SetBinContent(i, self.obj.GetBinContent(i) / self.obj.GetBinWidth(i))
+           self.obj.SetBinError  (i, self.obj.GetBinError(i)   / self.obj.GetBinWidth(i))
+        for i in range (1,self.weighted.GetNbinsX()+1) :
+           self.weighted.SetBinContent(i, self.weighted.GetBinContent(i) / self.weighted.GetBinWidth(i))
+           self.weighted.SetBinError  (i, self.weighted.GetBinError(i)   / self.weighted.GetBinWidth(i))
+    
     def SetWeight(self, weight):
         '''Set the weight and create the weighted histogram.'''
         self.weighted = copy.deepcopy(self.obj)

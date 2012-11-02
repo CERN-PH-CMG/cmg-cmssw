@@ -375,6 +375,12 @@ class DataMCPlot(object):
 ##             self.DrawRatio(*self.lastDrawArgs)
 
 
+    def NormalizeToBinWidth(self):
+        '''Normalize each Histogram's bin to the bin width.'''
+        for hist in self.histos:
+            hist.NormalizeToBinWidth()
+
+
     def _BuildStack(self, hists, ytitle=None):
         '''build a stack from a list of Histograms.
 
