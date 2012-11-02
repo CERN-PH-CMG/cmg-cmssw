@@ -4,41 +4,6 @@ import shutil
 
 from ROOT import gROOT
 
-oldpwd = os.getcwd()
-
-plotterdir = '/'.join([ os.environ['CMSSW_BASE'], 'src/CMGTools/H2TauTau/python/proto/plotter'] )
-inclusive_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauEle_Inclusive_Colin.py'])
-vbf_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauEle_VBF.py'])
-mc_macro = '/'.join([plotterdir,'H2TauTauMC.py'])
-
-cfg = 'tauEle_2011_cfg.py'
-dir = 'Prod_Nov1'
-
-cfg = '/'.join([oldpwd, cfg])
-dir = '/'.join([oldpwd, dir])
-
-dirs = [dir]
-
-# dirs = [dir]
-
-inclusive_cuts = {
-    'Inclusive':'Xcat_IncX && mt<20',
-    '0jet_low':'Xcat_IncX && Xcat_J0X && l1_pt<40 && mt<20',
-    '0jet_high':'Xcat_IncX && Xcat_J0X && l1_pt>40 && mt<20',
-    '1jet_low':'Xcat_IncX && Xcat_J1X && l1_pt<40 && mt<20 && met>30',
-    '1jet_high':'Xcat_IncX && Xcat_J1X && l1_pt>40 && mt<20 && met>30',    
-    }
-
-vbf_cuts = {
-    'vbf':'mt<20'
-    }
-
-vbf_mc_cuts = {
-    'vbf':'Xcat_IncX && Xcat_VBFX && mt<20 && diTau_charge==0'
-    }
-
-remove_all = False
-
 
 def mkdir_p(path):
     try:
@@ -120,15 +85,84 @@ def chdir(dir, subdir):
     shutil.copyfile( cfg, '/'.join(['.', os.path.basename(cfg)]))
 
 
+if __name__ == '__main__':
 
-for dir in dirs:
-    print dir
-    chdir(dir, 'Datacards/DataAndBackground')
-    dataAndBackground(dir, inclusive_cuts, inclusive_macro)
-    # dataAndBackground(dir, vbf_cuts, vbf_macro)    
-    os.chdir(oldpwd)
+
+    import os
+    import sys
+    from optparse import OptionParser
+
+    parser = OptionParser()
+    parser.usage = """
+    %prog <datacards_dir> <flat_tree_dir> <channel>
+    """    
     
-##     chdir(dir, 'Datacards/MC')
-##     mcTemplates(dir, inclusive_cuts, 'Higgs.*')
-##     mcTemplates(dir, vbf_mc_cuts, 'Higgs.*')
-##     os.chdir(oldpwd)
+    (options,args) = parser.parse_args()
+    
+    if len(args)!=2:
+        parser.print_usage()
+        print 'provide exactly 2 arguments.'
+        sys.exit(1) 
+
+    # dir = 'Prod_MC_AndrewTrigger_Nov2'
+    dir = args[0]
+    channel = args[1]
+
+    oldpwd = os.getcwd()
+
+    plotterdir = '/'.join([ os.environ['CMSSW_BASE'], 'src/CMGTools/H2TauTau/python/proto/plotter'] )
+    mc_macro = '/'.join([plotterdir,'H2TauTauMC.py'])
+
+    inclusive_macro = None
+    vbf_macro = None
+    inclusive_cuts = None
+    vbf_cuts = {
+        'vbf':'mt<20'
+        }
+    vbf_mc_cuts = {
+        'vbf':'Xcat_IncX && Xcat_VBFX && mt<20 && diTau_charge==0'
+        }
+    
+    if channel=='TauEle':
+        inclusive_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauEle_Inclusive_Colin.py'])
+        vbf_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauEle_VBF_Colin.py'])
+        cfg = 'tauEle_2011_cfg.py'
+        inclusive_cuts = {
+            'Inclusive':'Xcat_IncX && mt<20',
+            '0jet_low':'Xcat_IncX && Xcat_J0X && l1_pt<40 && mt<20',
+            '0jet_high':'Xcat_IncX && Xcat_J0X && l1_pt>40 && mt<20',
+            'boost_low':'Xcat_IncX && Xcat_J1X && l1_pt<40 && mt<20 && met>30',
+            'boost_high':'Xcat_IncX && Xcat_J1X && l1_pt>40 && mt<20 && met>30',    
+            }
+    elif channel=='TauMu':
+        inclusive_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauMu_Inclusive.py'])
+        vbf_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauMu_VBF.py'])
+        cfg = 'tauMu_2011_cfg.py'
+        inclusive_cuts = {
+            'Inclusive':'Xcat_IncX && mt<20',
+            '0jet_low':'Xcat_IncX && Xcat_J0X && l1_pt<40 && mt<20',
+            '0jet_high':'Xcat_IncX && Xcat_J0X && l1_pt>40 && mt<20',
+            'boost_low':'Xcat_IncX && Xcat_J1X && l1_pt<40 && mt<20',
+            'boost_high':'Xcat_IncX && Xcat_J1X && l1_pt>40 && mt<20',    
+            }
+    else:
+        print 'channel not recognized:', channel
+        
+    cfg = '/'.join([oldpwd, cfg])
+    dir = '/'.join([oldpwd, dir])
+
+    dirs = [dir]
+
+    remove_all = False
+
+    for dir in dirs:
+        print dir
+        chdir(dir, 'Datacards/DataAndBackground')
+        dataAndBackground(dir, inclusive_cuts, inclusive_macro)
+        dataAndBackground(dir, vbf_cuts, vbf_macro)    
+        os.chdir(oldpwd)
+
+    ##     chdir(dir, 'Datacards/MC')
+    ##     mcTemplates(dir, inclusive_cuts, 'Higgs.*')
+    ##     mcTemplates(dir, vbf_mc_cuts, 'Higgs.*')
+    ##     os.chdir(oldpwd)
