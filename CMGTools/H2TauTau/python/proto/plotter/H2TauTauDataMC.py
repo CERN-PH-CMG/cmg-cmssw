@@ -100,10 +100,11 @@ class H2TauTauDataMC( AnalysisDataMC ):
                 if varName == 'visMass' or varName == 'svfitMass':
                     print 'Shifting visMass and svfitMass by 1.015 for', compName
                     var = varName + '* 1.015'
+        else:
+            if compName == 'Ztt_ZL':
+                weight = weight + '/zllWeight'
+                weight = weight + '*((l1_decayMode==1)*1.3 + (l1_decayMode!=1)*1.0)'
 
-        if compName == 'Ztt_ZL':
-            weight = weight + '/zllWeight'
-            weight = weight + '*((l1_decayMode==1)*1.3 + (l1_decayMode!=1)*1.0)'
         tree.Project( histName, var, '{weight}*({cut})'.format(cut=cut,
                                                                weight=weight) )
         hist.SetStats(0)
