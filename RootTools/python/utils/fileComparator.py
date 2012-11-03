@@ -48,12 +48,12 @@ class Comparator(object):
 
         if wait is True, waits for any key before moving to next histogram.
         '''
-        self.can = TCanvas ()
-        threshold = 0.3
-        self.pad_ratio = TPad ('ratio','ratio',0,0,1,threshold)
-        self.pad_ratio.Draw()
-        self.pad_main  = TPad ('main','main',0,threshold,1,1)
-        self.pad_main.Draw()
+        # self.can = TCanvas ()
+        # threshold = 0.3
+        # self.pad_ratio = TPad ('ratio','ratio',0,0,1,threshold)
+        # self.pad_ratio.Draw()
+        # self.pad_main  = TPad ('main','main',0,threshold,1,1)
+        # self.pad_main.Draw()
         maindir = self.outdir
         if os.path.isdir(maindir):
             os.system( 'rm -r ' + maindir)
