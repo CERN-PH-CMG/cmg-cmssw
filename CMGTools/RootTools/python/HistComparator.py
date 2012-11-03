@@ -40,6 +40,7 @@ class HistComparator(object):
         self.h2.SetTitle('')
         self.ratio = h1.Clone( '_'.join([name, 'ratio']))
         self.ratio.Divide(self.h2)
+        self.ratio.SetStats(0)
         
     def draw(self):
         '''The canvas is created if needed.'''
@@ -53,6 +54,7 @@ class HistComparator(object):
         self.h1.Draw('same')
         self.h2.GetYaxis().SetRangeUser(1e-3,
                                         self.ymax(self.h1, self.h2)*1.2)
+        self.h2.GetYaxis().SetLabelSize(0.045)
         self.legend = TLegend(0.6, 0.7, 0.9, 0.9)
         self.legend.AddEntry(self.h1.GetName(), self.title1, 'lp')
         self.legend.AddEntry(self.h2.GetName(), self.title2, 'lpf')
@@ -83,7 +85,7 @@ class HistComparator(object):
         sep = 0.35
         pad = TPad('pad','',0.01,sep,0.99, 0.99)
         pad.SetBottomMargin(0.04)
-        padr = TPad('padr','',0.01, 0.01, 0.99, sep)
+        padr = TPad('padr','',0.01, 0.01, 0.99, sep+0.02)
         padr.SetTopMargin(0.04)
         padr.SetBottomMargin(0.3)
         padr.SetGridy()
