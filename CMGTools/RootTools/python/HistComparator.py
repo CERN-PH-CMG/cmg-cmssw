@@ -4,17 +4,26 @@ from ROOT import TCanvas, TPad, TH1F, TLegend
 
 class HistComparator(object):
 
-    def __init__(self, name, h1, h2):
+    def __init__(self, name, h1, h2, title1=None, title2=None):
+        self.can, self.pad_main, self.pad_ratio = self.buildCanvas()
+        self.set(name, h1, h2, title1, title2)
+        
+    def set(self, name, h1, h2, title1=None, title2=None):
         self.name = name 
         self.h1 = h1
         self.h2 = h2
-        self.title1 = h1.GetTitle()
-        self.title2 = h2.GetTitle()
+        if title1 is None:
+            self.title1 = h1.GetTitle()
+        else:
+            self.title1 = title1
+        if title2 is None:
+            self.title2 = h2.GetTitle()
+        else:
+            self.title2 = title2            
         self.h1.SetTitle('')
         self.h2.SetTitle('')
         self.ratio = h1.Clone( '_'.join([name, 'ratio']))
         self.ratio.Divide(self.h2)
-        self.can, self.pad_main, self.pad_ratio = self.buildCanvas()
         
     def draw(self):
         if type(self.can) is not TCanvas:

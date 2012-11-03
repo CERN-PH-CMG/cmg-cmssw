@@ -1,10 +1,15 @@
 import time
 import os
 import re
+from CMGTools.RootTools.HistComparator import *
 from CMGTools.RootTools.PyRoot import *
 from CMGTools.RootTools.utils.file_dir import file_dir, file_dir_names
 
 def mkdir_p(path):
+    '''equivalent to mkdir -p.
+
+    If path exists, nothing is done.
+    '''
     try:
         os.makedirs(path)
     except OSError as exc: # Python >2.5
@@ -14,21 +19,42 @@ def mkdir_p(path):
 
 
 class Comparator(object):
+    '''Compare the histograms in a TDirectory to the histograms in another TDirectory'''
 
-    def __init__(self, info1, info2, filter):
+    def __init__(self, info1, info2, outdir='Plots_Comparator', filter='.*',
+                 title1=None, title2=None):
+        '''
+
+        info1 and info2 are of the form <root_file>:<directory_in_file>
+
+        filter is a regexp pattern to select histograms to be compared according
+        to their name.
+
+        title1 and title2 are titles for both sets of histograms.
+
+        outdir is the directory where all plots will be saved.
+        '''
         self.info1 = info1
         self.info2 = info2
+        self.outdir = outdir
         self.legend = None
         self.filter = re.compile(filter)
+        self.hcomp = None
+        self.title1 = title1
+        self.title2 = title2
 
     def browse(self, wait = True):
+        '''Browse the two directories and make the plots.
+
+        if wait is True, waits for any key before moving to next histogram.
+        '''
         self.can = TCanvas ()
         threshold = 0.3
         self.pad_ratio = TPad ('ratio','ratio',0,0,1,threshold)
         self.pad_ratio.Draw()
         self.pad_main  = TPad ('main','main',0,threshold,1,1)
         self.pad_main.Draw()
-        maindir = 'Plots_Comparator'
+        maindir = self.outdir
         if os.path.isdir(maindir):
             os.system( 'rm -r ' + maindir)
         os.mkdir(maindir)
@@ -48,44 +74,35 @@ class Comparator(object):
                 if not self.filter.search( h1name ):
                     print 'Skipping', h1name
                     continue
-                self.drawHists(h1, h2, h1name)
+                self._drawHists(h1, h2, h1name)
                 if wait : res = raw_input('')
                 
-    def drawHists(self, h1, h2, h1name):
-        print 'Draw', h1name
-        h1.SetMarkerColor(1) # gray
-        h1.SetMarkerStyle(29) # gray
-        h1.SetLineColor(16) # blue
-        h1.SetFillColor(16) # yellow
-        h1.SetFillStyle(1001)
-
-        h2.SetMarkerColor(1) # black                    
-        h2.SetMarkerStyle(4) # empty circle                  
+    def _drawHists(self, h1, h2, h1name):
+        '''Compare 2 histograms'''
+        h1.SetMarkerColor(1) 
+        h1.SetMarkerStyle(21) 
+        h1.SetLineColor(1) 
+        
+        h2.SetFillColor(16) 
+        h2.SetFillStyle(1001)
+        h2.SetMarkerColor(1)                    
+        h2.SetMarkerStyle(4)                   
         h2.SetLineColor(1)
-        maximum = max(h1.GetBinContent(h1.GetMaximumBin()) + h1.GetBinError(h1.GetMaximumBin()),
-                      h2.GetBinContent(h2.GetMaximumBin()) + h2.GetBinError(h2.GetMaximumBin()))
-        self.pad_main.cd()              
-        h1.Draw('E2')
-        h2.Draw('same')
-        if self.legend is None:
-            self.legend = TLegend(0.5, 0.65, 0.89, 0.8)
-            self.legend.AddEntry(h1, self.info1.name, 'pf')
-            self.legend.AddEntry(h2, self.info2.name, 'p')
-        h1.GetYaxis().SetRangeUser(0.001, maximum*1.2)
-        self.legend.Draw('same')
-        self.pad_ratio.cd()
-        self.pad_ratio.SetGrid ()
-        self.pad_ratio.DrawFrame(h1.GetBinLowEdge (1), 0.5, h1.GetBinLowEdge (h1.GetNbinsX () + 1), 1.5)
-        ratio = h1.Clone('ratio_'+h1.GetName())
-        ratio.Divide (h2)
-        ratio.Draw ('same')
-#        one = TLine (h1.GetBinLowEdge (1), 1, h1.GetBinLowEdge (h1.GetNbinsX () + 1), 1)
-#        one.Draw ('same')
-        self.can.cd()
-        gPad.Update()
-        pngname = '/'.join(['Plots_Comparator',h1name+'.png'])
+        title1=self.title1
+        title2=self.title2
+        if title1 is None:
+            title1 = self.info1.name
+        if title2 is None:
+            title2 = self.info2.name            
+        if not self.hcomp:
+            self.hcomp = HistComparator(h1name,h1,h2, title1, title2)
+        else:
+            self.hcomp.set(h1name, h1, h2, title1, title2)
+        self.hcomp.draw()
+        print 'Draw', h1name, 'done'
+        pngname = '/'.join([self.outdir,h1name+'.png'])
         print pngname
-        gPad.SaveAs(pngname)
+        self.hcomp.can.SaveAs(pngname)
         return True
 
         
@@ -121,14 +138,44 @@ if __name__ == '__main__':
                       help="Filtering regexp pattern to select histograms.",
                       default='.*')
 
+    parser.add_option("-1", "--t1", 
+                      dest="title1", 
+                      help="Title for first set of histograms.",
+                      default=None)
+
+    parser.add_option("-2", "--t2", 
+                      dest="title2", 
+                      help="Title for second set of histograms.",
+                      default=None)
+
+    parser.add_option("-o", "--outdir", 
+                      dest="outdir", 
+                      help="Output directory for all plots.",
+                      default=None)
+
+
     parser.add_option("-w", "--nowait", 
                       dest="wait", 
                       help="not waiting for a keystroke between one plot and the following one.",
                       action="store_false",
                       default=True)
 
+    parser.add_option("-b", "--batch", 
+                      dest="batch", 
+                      help="Set batch mode.",
+                      action="store_true",
+                      default=False)
+
+
     (options,args) = parser.parse_args()
 
+    if len(args)!=2:
+        parser.print_usage()
+        print 'provide 2 sets of histograms'
+
+    if options.batch:
+        gROOT.SetBatch()
+        options.wait=False
     
     f1, d1 = file_dir(args[0])
     f2, d2 = file_dir(args[1])
@@ -136,5 +183,6 @@ if __name__ == '__main__':
     name2 = '/'.join( [f2.GetName(), d2.GetName()])
     file1 = FlatFile( d1, name1)
     file2 = FlatFile( d2, name2)
-    comparator = Comparator(file1, file2, options.filter)
+    comparator = Comparator(file1, file2, options.outdir, options.filter,
+                            options.title1, options.title2)
     comparator.browse(wait = options.wait)
