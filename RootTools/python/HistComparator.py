@@ -3,12 +3,28 @@ from ROOT import TCanvas, TPad, TH1F, TLegend
 
 
 class HistComparator(object):
+    '''Comparison of two histograms.
 
+    The histograms are superimposed in the top pad, and their ratio
+    is shown in the bottom pad.
+
+    This class manipulates histograms that behave like a TH1.
+    (TH1F, TH1D, and probably TProfile and RooDataSets).
+    '''
+    
     def __init__(self, name, h1, h2, title1=None, title2=None):
+        '''Constructor.
+
+        h1, h2: two TH1.
+        title1 and title2: will be used in the legend.
+        name: will be used on the X axis.
+        '''
         self.can, self.pad_main, self.pad_ratio = self.buildCanvas()
         self.set(name, h1, h2, title1, title2)
         
     def set(self, name, h1, h2, title1=None, title2=None):
+        '''Change the histograms, in case we want to keep the same canvas
+        to draw different histograms.'''
         self.name = name 
         self.h1 = h1
         self.h2 = h2
@@ -26,6 +42,7 @@ class HistComparator(object):
         self.ratio.Divide(self.h2)
         
     def draw(self):
+        '''The canvas is created if needed.'''
         if type(self.can) is not TCanvas:
             self.can, self.pad_main, self.pad_ratio = self.buildCanvas()
         self.can.Draw()
@@ -73,6 +90,7 @@ class HistComparator(object):
         return can, pad, padr
 
     def ymax(self, h1=None, h2=None):
+        '''Returns the best y axis maximum so that h1 and h2 are both visible.'''
         def getmax(h):
             return  h.GetBinContent(h.GetMaximumBin())
         if h1 is None: h1 = self.h1
