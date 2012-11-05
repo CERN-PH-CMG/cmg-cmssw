@@ -55,20 +55,10 @@ class DiLeptonAnalyzer( Analyzer ):
 
         
     def process(self, iEvent, event):
-        # access di-object collection
-        # test first leg
-        # test second leg
-        # test di-lepton
-        # apply lepton veto
-        # choose best di-lepton
-        # put in the event
         self.readCollections( iEvent )
-        # trigger stuff could be put in a separate analyzer
-        # event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
         event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product(), event )
         event.leptons = self.buildLeptons( self.handles['leptons'].product(), event )
         event.otherLeptons = self.buildOtherLeptons( self.handles['otherLeptons'].product(), event )
-        # import pdb; pdb.set_trace()
         self.shiftEnergyScale(event)
         return self.selectionSequence(event, fillCounter=True)
 
@@ -106,7 +96,7 @@ class DiLeptonAnalyzer( Analyzer ):
         # testing di-lepton itself
         selDiLeptons = event.diLeptons
         # selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
-        
+
         event.leptonAccept = False
         if self.leptonAccept( event.leptons ):
             if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')

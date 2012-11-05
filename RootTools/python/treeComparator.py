@@ -12,7 +12,7 @@ legend = None
 
 def draw(var1, cut, t1, t2, w1='1', w2='1',
          name1=None, name2=None,
-         normalize=True, nbins=20, xmin=0, xmax=200, graphics=True, var2=None):
+         normalize=True, nbins=20, xmin=0, xmax=200, var2=None):
     print var1
     print var2
     print w1
@@ -50,11 +50,6 @@ def draw(var1, cut, t1, t2, w1='1', w2='1',
     legend.SetFillColor(0)
     legend.AddEntry(h1, name1, 'lp')
     legend.AddEntry(h2, name2, 'lpf')
-    if graphics:
-        h2.Draw('e2')
-        h1.Draw('same')
-        legend.Draw('same')
-        gPad.Update()
 
     comparator = HistComparator(var1, h1, h2)
     return comparator
