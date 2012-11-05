@@ -74,8 +74,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         for index, lep in enumerate(cmgLeptons):
             pyl = self.__class__.LeptonClass(lep)
             pyl.associatedVertex = event.goodVertices[0]
-            if not pyl.looseIdForEleTau():
-                continue
+            # if not pyl.looseIdForEleTau():
+            #     continue
             leptons.append( pyl )
         return leptons
 
@@ -104,8 +104,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
         for index, lep in enumerate(cmgOtherLeptons):
             pyl = self.__class__.OtherLeptonClass(lep)
             pyl.associatedVertex = event.goodVertices[0]
-            if not self.testMuonIDLoose(pyl):
-                continue
+            # if not self.testMuonIDLoose(pyl):
+            #     continue
             otherLeptons.append( pyl )
         return otherLeptons
 
@@ -116,9 +116,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
     def process(self, iEvent, event):
         
         #        import pdb; pdb.set_trace()
-        
         result, message = super(TauEleAnalyzer, self).process(iEvent, event)
-
+        
         if self.cfg_ana.verbose and result is False:
             print event.run, event.lumi, event.eventId, message
             for l in event.leptons:
@@ -130,6 +129,8 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             #     print dl.leg2(), dl.leg2().relIsoAllChargedDB05()
             # import pdb; pdb.set_trace()
 
+        event.isSignal = False
+        # import pdb; pdb.set_trace()
         if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
@@ -144,7 +145,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
                 return False
             event.isSignal = False
         else:
-            event.isSignal = True
+            event.isSignal = (True and event.leptonAccept and event.thirdLeptonVeto)
        
         event.genMatched = None
         if self.cfg_comp.isMC:
@@ -244,6 +245,7 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
 
     def thirdLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
         # count electrons (leg 2)
+        # import pdb; pdb.set_trace()
         selLeptons = [electron for electron in leptons if
                       self.testLegKine(electron, ptcut=10, etacut=2.5) and \
                       electron.looseIdForTriLeptonVeto() and \
