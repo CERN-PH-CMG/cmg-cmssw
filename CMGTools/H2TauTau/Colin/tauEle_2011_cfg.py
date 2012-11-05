@@ -67,6 +67,16 @@ dyJetsFakeAna = cfg.Analyzer(
     leptonType = 11
     )
 
+dyLLReweighterTauEle = cfg.Analyzer(
+    'DYLLReweighterTauEle',
+    # 2012 
+    W1p0PB = 0.87, # weight for 1 prong 0 Pi Barrel
+    W1p0PE = 0.40,
+    W1p1PB = 1.19,
+    W1p1PE = 0.72,
+    verbose = False
+    )
+
 WNJetsAna = cfg.Analyzer(
     'WNJetsAnalyzer',
     verbose = False,
@@ -163,9 +173,10 @@ diboson_list = [    WWJetsTo2L2Nu,
 WJetsSoup = copy.copy(WJets)
 WJetsSoup.name = 'WJetsSoup'
 VVgroup = [comp.name for comp in diboson_list]
-higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
+# higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
 selectedComponents =  [WJetsSoup, TTJets, DYJets]
 # selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
+higgs = mc_higgs
 selectedComponents.extend( higgs )
 selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list_2011 )
@@ -180,6 +191,7 @@ sequence = cfg.Sequence( [
     vertexAna,
     tauEleAna,
     dyJetsFakeAna,
+    dyLLReweighterTauEle,
     WNJetsAna, 
     higgsWeighter, 
     vbfAna,

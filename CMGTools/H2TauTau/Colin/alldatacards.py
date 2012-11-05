@@ -54,7 +54,7 @@ def dataAndBackground(dir, cuts, macro):
 
 
 
-def mcTemplates(dir, cuts, refilter):
+def mcTemplates(dir, cuts, refilter, channel, prefix):
     print os.getcwd()
     macro = mc_macro
     for cutname, cut in cuts.iteritems():
@@ -62,12 +62,15 @@ def mcTemplates(dir, cuts, refilter):
         op = os.getcwd()
         os.chdir(cutname)
         # in batch mode, and don't plot the signal
-        cmd = "nohup python {macro} {dir} {cfg} -f {refilter} -H svfitMass -C '{cut}' -b &".format(
+        print refilter
+        cmd = "nohup python {macro} {dir} {cfg} -E -f '{refilter}' -c {channel} -p {prefix} -H svfitMass -C '{cut}' -b &".format(
             macro=macro,
             dir=dir,
             cfg=cfg,
             cut=cut,
-            refilter=refilter
+            refilter=refilter,
+            channel=channel,
+            prefix=prefix
             )
         print cmd
         os.system(cmd)
@@ -96,6 +99,10 @@ if __name__ == '__main__':
     parser.usage = """
     %prog <datacards_dir> <flat_tree_dir> <channel>
     """    
+    parser.add_option("-f", "--filter", 
+                      dest="filter", 
+                      help="Regexp filters to select components for the MC-only templates, separated by semicolons, e.g. Higgs;ZTT",
+                      default='Higgs.*;Ztt.*')
     
     (options,args) = parser.parse_args()
     
@@ -111,7 +118,7 @@ if __name__ == '__main__':
     oldpwd = os.getcwd()
 
     plotterdir = '/'.join([ os.environ['CMSSW_BASE'], 'src/CMGTools/H2TauTau/python/proto/plotter'] )
-    mc_macro = '/'.join([plotterdir,'H2TauTauMC.py'])
+    mc_macro = '/'.join([plotterdir,'plot_H2TauTauMC.py'])
 
     inclusive_macro = None
     vbf_macro = None
@@ -128,7 +135,7 @@ if __name__ == '__main__':
         vbf_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauEle_VBF_Colin.py'])
         cfg = 'tauEle_2011_cfg.py'
         inclusive_cuts = {
-            'Inclusive':'Xcat_IncX && mt<20',
+            'inclusive':'Xcat_IncX && mt<20',
             '0jet_low':'Xcat_IncX && Xcat_J0X && l1_pt<40 && mt<20',
             '0jet_high':'Xcat_IncX && Xcat_J0X && l1_pt>40 && mt<20',
             'boost_low':'Xcat_IncX && Xcat_J1X && l1_pt<40 && mt<20 && met>30',
@@ -139,7 +146,7 @@ if __name__ == '__main__':
         vbf_macro = '/'.join([plotterdir,'plot_H2TauTauDataMC_TauMu_VBF.py'])
         cfg = 'tauMu_2011_cfg.py'
         inclusive_cuts = {
-            'Inclusive':'Xcat_IncX && mt<20',
+            'inclusive':'Xcat_IncX && mt<20',
             '0jet_low':'Xcat_IncX && Xcat_J0X && l1_pt<40 && mt<20',
             '0jet_high':'Xcat_IncX && Xcat_J0X && l1_pt>40 && mt<20',
             'boost_low':'Xcat_IncX && Xcat_J1X && l1_pt<40 && mt<20',
@@ -161,8 +168,8 @@ if __name__ == '__main__':
         dataAndBackground(dir, inclusive_cuts, inclusive_macro)
         dataAndBackground(dir, vbf_cuts, vbf_macro)    
         os.chdir(oldpwd)
-
-    ##     chdir(dir, 'Datacards/MC')
-    ##     mcTemplates(dir, inclusive_cuts, 'Higgs.*')
-    ##     mcTemplates(dir, vbf_mc_cuts, 'Higgs.*')
-    ##     os.chdir(oldpwd)
+        
+        chdir(dir, 'Datacards/MC')
+        mcTemplates(dir, inclusive_cuts, options.filter, channel, prefix='MC')
+        mcTemplates(dir, vbf_mc_cuts, options.filter, channel, prefix='MC')
+        os.chdir(oldpwd)
