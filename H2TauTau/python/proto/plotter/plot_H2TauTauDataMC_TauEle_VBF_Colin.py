@@ -357,6 +357,6 @@ if __name__ == '__main__':
                               VVgroup = cfg.VVgroup);
 
     drawOfficial(osQCD, False)
-    datacards(osQCD, 'Xcat_VBFX', shift, 'eTau')
+    datacards(osQCD, 'Xcat_VBFX', shift, 'eleTau')
 
 

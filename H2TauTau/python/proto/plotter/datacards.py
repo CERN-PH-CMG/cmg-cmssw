@@ -64,13 +64,14 @@ def datacards(plot, cutstring, shift, channel='muTau', prefix=None):
         category = 'vbf'
     ext = None
     if shift:
-        if shift == 'Up':
-            ext = 'CMS_scale_tUp'
-        elif shift == 'Down':
-            ext = 'CMS_scale_tDown'
-        else:
-            raise ValueError('shift should be "Up", "Down", or None. You gave shift='+str(shift))
-        
+        ch = 'mutau'
+        if channel.lower()=='eletau':
+            ch = 'etau'
+        ext = 'CMS_scale_t_{chan}_{energy}{shift}'.format(
+            chan=ch,
+            energy='7TeV',
+            shift=shift
+            )
     fileName = '{channel}_{category}.root'.format(channel=channel,
                                                   category=category)
     if ext:

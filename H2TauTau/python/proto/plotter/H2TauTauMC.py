@@ -164,7 +164,7 @@ if __name__ == '__main__':
     import re 
     from optparse import OptionParser
     from CMGTools.RootTools.RootInit import *
-    from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass
+    from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass,binning_svfitMass_finer
     from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents
     from CMGTools.H2TauTau.proto.plotter.categories_TauMu import *
     from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw
@@ -186,6 +186,10 @@ if __name__ == '__main__':
                       dest="cut", 
                       help="cut to apply in TTree::Draw",
                       default=None)
+    parser.add_option("-c", "--channel", 
+                      dest="channel", 
+                      help="channel: TauEle or TauMu (default)",
+                      default='TauMu')
     parser.add_option("-n", "--nbins", 
                       dest="nbins", 
                       help="Number of bins",
@@ -211,17 +215,28 @@ if __name__ == '__main__':
                       help="Set batch mode.",
                       action="store_true",
                       default=False)
+    parser.add_option("-p", "--prefix", 
+                      dest="prefix", 
+                      help="Prefix for the root files, eg. MC to get MC_eleTau_vbf.root",
+                      default=None)
+    
 
     
     (options,args) = parser.parse_args()
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
+
+    cutstring = options.cut
+    isVBF = cutstring.find('Xcat_VBFX') != -1 
+    options.cut = replaceCategories(options.cut, categories) 
         
     if options.batch:
         gROOT.SetBatch()
     if options.nbins is None:
-        NBINS = binning_svfitMass
+        NBINS = binning_svfitMass_finer
+        if isVBF:
+            NBINS = binning_svfitMass
         XMIN = None
         XMAX = None
     else:
@@ -229,8 +244,6 @@ if __name__ == '__main__':
         XMIN = float(options.xmin)
         XMAX = float(options.xmax)
         
-    cutstring = options.cut
-    options.cut = replaceCategories(options.cut, categories) 
     
     weight='weight'
     anaDir = args[0].rstrip('/')
@@ -239,20 +252,29 @@ if __name__ == '__main__':
         shift = 'Down'
     elif anaDir.endswith('_Up'):
         shift = 'Up'
-        
+
+    treeName = 'H2TauTauTreeProducer' + options.channel
+    
     cfgFileName = args[1]
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
 
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, False, 'TauMu',
-                                                  options.higgs)
+    selComps, weights, zComps = prepareComponents(
+        anaDir, cfg.config, None, True, options.channel,
+        options.higgs)
 
     filteredComps = filterComps(selComps, options.filter)
     
     can, pad, padr = buildCanvas()
-    plot = H2TauTauMC( options.hist, anaDir, filteredComps, weights, NBINS, XMIN, XMAX, options.cut,
-                       weight=weight, shift=shift )
+    # shift is now done at the skim level
+    plot = H2TauTauMC( options.hist, anaDir, filteredComps,
+                       weights, NBINS, XMIN, XMAX, options.cut,
+                       weight=weight, shift=None,
+                       treeName=treeName)
     plot.Draw()
-    
-    datacards(plot, cutstring, shift, prefix='MC')
+
+    dcchan = None
+    if options.channel == 'TauEle':
+        dcchan = 'eleTau'
+    datacards(plot, cutstring, shift, channel=dcchan, prefix=options.prefix)
