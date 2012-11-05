@@ -21,6 +21,8 @@
 #include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 
 #include "CMGTools/HtoZZ2l2nu/interface/EfficiencyMap.h"
+#include "CMGTools/HtoZZ2l2nu/interface/SmartSelectionMonitor.h"
+
 
 #include "TSystem.h"
 #include "TFile.h"
@@ -31,7 +33,7 @@
 #include "TProfile.h"
 #include "TEventList.h"
 #include "TROOT.h"
- 
+#include <vector> 
 using namespace std;
 
 
@@ -96,7 +98,32 @@ double hzz_MVAMet;
 double hzz_vbfdetajj;
 double hzz_vbfmjj;
 double hzz_vbfdphijj;
-
+float hzz_weight_PUup;
+float hzz_weight_PUdown;
+double hzz_TransMass_Higgs_JERup;
+double hzz_TransMass_Higgs_JERdown;
+double hzz_TransMass_Higgs_JESup;
+double hzz_TransMass_Higgs_JESdown;
+double hzz_TransMass_Higgs_UMETup;
+double hzz_TransMass_Higgs_UMETdown;
+double hzz_TransMass_Higgs_LESup;
+double hzz_TransMass_Higgs_LESdown;
+double hzz_RawMet_JERup;
+double hzz_RawMet_JERdown;
+double hzz_RawMet_JESup;
+double hzz_RawMet_JESdown;
+double hzz_RawMet_UMETup;
+double hzz_RawMet_UMETdown;
+double hzz_RawMet_LESup;
+double hzz_RawMet_LESdown;
+double hzz_dPhi_JetMet_JERup;
+double hzz_dPhi_JetMet_JERdown;
+double hzz_dPhi_JetMet_JESup;
+double hzz_dPhi_JetMet_JESdown;
+double hzz_dPhi_JetMet_UMETup;
+double hzz_dPhi_JetMet_UMETdown;
+double hzz_dPhi_JetMet_LESup;
+double hzz_dPhi_JetMet_LESdown;
 
 
 TBranch *b_hzz_Jet_SumPT = hzz_tree->Branch("hzz_Jet_SumPT",&hzz_Jet_SumPT,"hzz_Jet_SumPT/D");
@@ -153,7 +180,32 @@ TBranch *b_hzz_MVAMet = hzz_tree->Branch("hzz_MVAMet", &hzz_MVAMet , "hzz_MVAMet
 TBranch *b_hzz_vbfdetajj = hzz_tree->Branch("hzz_vbfdetajj", &hzz_vbfdetajj , "hzz_vbfdetajj/D");
 TBranch *b_hzz_vbfdphijj = hzz_tree->Branch("hzz_vbfdphijj", &hzz_vbfdphijj , "hzz_vbfdphijj/D");
 TBranch *b_hzz_vbfmjj = hzz_tree->Branch("hzz_vbfmjj", &hzz_vbfmjj , "hzz_vbfmjj/D");
-
+TBranch *b_hzz_weight_PUup = hzz_tree->Branch("hzz_weight_PUup", &hzz_weight_PUup, "hzz_weight_PUup/F");
+TBranch *b_hzz_weight_PUdown = hzz_tree->Branch("hzz_weight_PUdown", &hzz_weight_PUdown, "hzz_weight_PUdown/F");
+TBranch *b_hzz_TransMass_Higgs_JERup = hzz_tree->Branch("hzz_TransMass_Higgs_JERup", &hzz_TransMass_Higgs_JERup ,"hzz_TransMass_Higgs_JERup/D");
+TBranch *b_hzz_TransMass_Higgs_JERdown = hzz_tree->Branch("hzz_TransMass_Higgs_JERdown", &hzz_TransMass_Higgs_JERdown ,"hzz_TransMass_Higgs_JERdown/D");
+TBranch *b_hzz_TransMass_Higgs_JESup = hzz_tree->Branch("hzz_TransMass_Higgs_JESup", &hzz_TransMass_Higgs_JESup ,"hzz_TransMass_Higgs_JESup/D");
+TBranch *b_hzz_TransMass_Higgs_JESdown = hzz_tree->Branch("hzz_TransMass_Higgs_JESdown", &hzz_TransMass_Higgs_JESdown ,"hzz_TransMass_Higgs_JESdown/D");
+TBranch *b_hzz_TransMass_Higgs_UMETup = hzz_tree->Branch("hzz_TransMass_Higgs_UMETup", &hzz_TransMass_Higgs_UMETup ,"hzz_TransMass_Higgs_UMETup/D");
+TBranch *b_hzz_TransMass_Higgs_UMETdown = hzz_tree->Branch("hzz_TransMass_Higgs_UMETdown", &hzz_TransMass_Higgs_UMETdown ,"hzz_TransMass_Higgs_UMETdown/D");
+TBranch *b_hzz_TransMass_Higgs_LESup = hzz_tree->Branch("hzz_TransMass_Higgs_LESup", &hzz_TransMass_Higgs_LESup ,"hzz_TransMass_Higgs_LESup/D");
+TBranch *b_hzz_TransMass_Higgs_LESdown = hzz_tree->Branch("hzz_TransMass_Higgs_LESdown", &hzz_TransMass_Higgs_LESdown ,"hzz_TransMass_Higgs_LESdown/D");
+TBranch *b_hzz_RawMet_JERup = hzz_tree->Branch("hzz_RawMet_JERup", &hzz_RawMet_JERup , "hzz_RawMet_JERup/D");
+TBranch *b_hzz_RawMet_JERdown = hzz_tree->Branch("hzz_RawMet_JERdown", &hzz_RawMet_JERdown , "hzz_RawMet_JERdown/D");
+TBranch *b_hzz_RawMet_JESup = hzz_tree->Branch("hzz_RawMet_JESup", &hzz_RawMet_JESup , "hzz_RawMet_JESup/D");
+TBranch *b_hzz_RawMet_JESdown = hzz_tree->Branch("hzz_RawMet_JESdown", &hzz_RawMet_JESdown , "hzz_RawMet_JESdown/D");
+TBranch *b_hzz_RawMet_UMETup = hzz_tree->Branch("hzz_RawMet_UMETup", &hzz_RawMet_UMETup , "hzz_RawMet_UMETup/D");
+TBranch *b_hzz_RawMet_UMETdown = hzz_tree->Branch("hzz_RawMet_UMETdown", &hzz_RawMet_UMETdown , "hzz_RawMet_UMETdown/D");
+TBranch *b_hzz_RawMet_LESup = hzz_tree->Branch("hzz_RawMet_LESup", &hzz_RawMet_LESup , "hzz_RawMet_LESup/D");
+TBranch *b_hzz_RawMet_LESdown = hzz_tree->Branch("hzz_RawMet_LESdown", &hzz_RawMet_LESdown , "hzz_RawMet_LESdown/D");
+TBranch *b_hzz_dPhi_JetMet_JERup = hzz_tree->Branch("hzz_dPhi_JetMet_JERup", &hzz_dPhi_JetMet_JERup , "hzz_dPhi_JetMet_JERup/D");
+TBranch *b_hzz_dPhi_JetMet_JERdown = hzz_tree->Branch("hzz_dPhi_JetMet_JERdown", &hzz_dPhi_JetMet_JERdown , "hzz_dPhi_JetMet_JERdown/D");
+TBranch *b_hzz_dPhi_JetMet_JESup = hzz_tree->Branch("hzz_dPhi_JetMet_JESup", &hzz_dPhi_JetMet_JESup , "hzz_dPhi_JetMet_JESup/D");
+TBranch *b_hzz_dPhi_JetMet_JESdown = hzz_tree->Branch("hzz_dPhi_JetMet_JESdown", &hzz_dPhi_JetMet_JESdown , "hzz_dPhi_JetMet_JESdown/D");
+TBranch *b_hzz_dPhi_JetMet_UMETup = hzz_tree->Branch("hzz_dPhi_JetMet_UMETup", &hzz_dPhi_JetMet_UMETup , "hzz_dPhi_JetMet_UMETup/D");
+TBranch *b_hzz_dPhi_JetMet_UMETdown = hzz_tree->Branch("hzz_dPhi_JetMet_UMETdown", &hzz_dPhi_JetMet_UMETdown , "hzz_dPhi_JetMet_UMETdown/D");
+TBranch *b_hzz_dPhi_JetMet_LESup = hzz_tree->Branch("hzz_dPhi_JetMet_LESup", &hzz_dPhi_JetMet_LESup , "hzz_dPhi_JetMet_LESup/D");
+TBranch *b_hzz_dPhi_JetMet_LESdown = hzz_tree->Branch("hzz_dPhi_JetMet_LESdown", &hzz_dPhi_JetMet_LESdown , "hzz_dPhi_JetMet_LESdown/D");
 
 
   // check arguments
@@ -203,18 +255,29 @@ std::cout << "xsec =  " << xsec << std::endl;
   TString dirname = runProcess.getParameter<std::string>("dirName");
   
 
-//systematic uncertainties
+  //jet energy scale uncertainties
   TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
   JetCorrectionUncertainty jecUnc(uncFile.Data());
-  bool runSystematics                        = runProcess.getParameter<bool>("runSystematics");
-  TString varNames[]={"","_jesup","_jesdown","_jerup","_jerdown","_puup","_pudown","_renup","_rendown","_factup","_factdown","_btagup","_btagdown"};
+ bool runSystematics = runProcess.getParameter<bool>("runSystematics");
+  TString varNames[]={"",
+                      "_jerup","_jerdown",
+                      "_jesup","_jesdown",
+                      "_umetup","_umetdown",
+                      "_lesup","_lesdown",
+                      "_puup","_pudown",
+                      "_renup","_rendown",
+                      "_factup","_factdown",
+                      "_btagup","_btagdown",
+                      "_lshapeup","_lshapedown"};
+
   size_t nvarsToInclude(1);
   if(runSystematics) 
     { 
       cout << "Systematics will be computed for this analysis" << endl;
       nvarsToInclude=sizeof(varNames)/sizeof(TString);
     }
-  
+ 
+
 
   // this is disabled for the moment
   double HiggsMass=0; string VBFString = ""; string GGString("");
@@ -253,22 +316,49 @@ std::cout << "xsec =  " << xsec << std::endl;
     VBFString = string(url.Data()).substr(VBFStringpos);
   }
 
-  
- //LINE SHAPE
- TString lineShapeWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[1]; gSystem->ExpandPathName(lineShapeWeightsFileURL);
- fin=TFile::Open(lineShapeWeightsFileURL);
- if(fin){
-   char buf[100]; sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
-   cout << "Line shape weights (and uncertainties) will be applied from " << buf << " @ " << lineShapeWeightsFileURL << endl;
-   TString wgts[]={"rwgtpint","rwgtpint_up","rwgtpint_down","rwgt"};
-   for(size_t i=0; i<4; i++)
-     {
-       TGraph *gr= (TGraph *) fin->Get(buf+wgts[i]);
-       if(gr) hLineShapeGrVec.push_back((TGraph *)gr->Clone());
-     }
- }
- fin->Close();
- delete fin;
+
+  //LINE SHAPE WEIGHTS
+  TString lineShapeWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[1]; gSystem->ExpandPathName(lineShapeWeightsFileURL);
+  fin=0;
+  std::vector<TString> wgts;
+  if(isMC_VBF)
+    {
+      char buf[100]; sprintf(buf,"H%d/",int(HiggsMass));
+      wgts.push_back(buf+TString("cpsWgt"));
+      wgts.push_back(buf+TString("cpsUpWgt"));
+      wgts.push_back(buf+TString("cpsDownWgt"));
+      wgts.push_back(buf+TString("cpsWgt"));
+      lineShapeWeightsFileURL.ReplaceAll("LineShapeWeights","VBFLineShapeWeights");
+      fin=TFile::Open(lineShapeWeightsFileURL);
+    }
+  else
+    {
+      char buf[100]; sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
+      wgts.push_back(buf+TString("rwgtpint"));
+      wgts.push_back(buf+TString("rwgtpint_up"));
+      wgts.push_back(buf+TString("rwgtpint_down"));
+      wgts.push_back(buf+TString("rwgt"));
+      fin=TFile::Open(lineShapeWeightsFileURL);
+    }
+  if(fin)
+    {
+      cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
+      for(size_t i=0; i<wgts.size(); i++)
+        {
+          TGraph *gr= (TGraph *) fin->Get(wgts[i]);
+          if(gr) hLineShapeGrVec.push_back((TGraph *)gr->Clone());
+        }
+      fin->Close();
+      delete fin;
+    }
+
+  SmartSelectionMonitor mon;
+ TH1F* Hoptim_systs     =  (TH1F*) mon.addHistogram( new TH1F ("optim_systs"    , ";syst;", nvarsToInclude,0,nvarsToInclude) ) ;
+
+
+   for(size_t ivar=0; ivar<nvarsToInclude; ivar++) {
+     Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
+}
 
 
   //##############################################
@@ -328,12 +418,12 @@ std::cout << "xsec =  " << xsec << std::endl;
   gROOT->cd();  //THIS LINE IS NEEDED TO MAKE SURE THAT HISTOGRAM INTERNALLY PRODUCED IN LumiReWeighting ARE NOT DESTROYED WHEN CLOSING THE FILE
   edm::LumiReWeighting *LumiWeights=0;
   PuShifter_t PuShifters;
-    reweight::PoissonMeanShifter *PShiftUp=0, *PShiftDown=0;
+ //   reweight::PoissonMeanShifter *PShiftUp=0, *PShiftDown=0;
   if(isMC){
       LumiWeights= new edm::LumiReWeighting(mcPileupDistribution,dataPileupDistribution);
       PuShifters=getPUshifters(dataPileupDistribution,0.05);
-            PShiftUp = new reweight::PoissonMeanShifter(+0.8);
-            PShiftDown = new reweight::PoissonMeanShifter(-0.8);
+   //         PShiftUp = new reweight::PoissonMeanShifter(+0.8);
+     //       PShiftDown = new reweight::PoissonMeanShifter(-0.8);
   }
 
 
@@ -424,6 +514,7 @@ event_weight = xsec/cnorm;
       //pileup and Higgs pT weight
       //float weight=ev.puWeight;
       //pileup weight
+/*
       float weight = 1.0;
       float noLShapeWeight=1.0;
       float signalWeight=1.0;
@@ -449,7 +540,47 @@ event_weight = xsec/cnorm;
 //cout << "weight after line shape = " << weight << endl;
 	
       }
+*/
 
+      //pileup weight
+      float weight = 1.0;
+      float noLShapeWeight=1.0;
+      float signalWeight=1.0;
+      double TotalWeight_plus = 1.0;
+      double TotalWeight_minus = 1.0;
+      float lShapeWeights[4]={1.0,1.0,1.0,1.0};
+
+
+
+      if(isMC){
+
+ //       weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
+       TotalWeight_plus  = PuShifters[PUUP]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
+       TotalWeight_minus = PuShifters[PUDOWN]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
+
+  //      if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_0raw",tags_inc, phys.genhiggs[0].mass(), weight);
+        //if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
+  //      if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_1vbf",tags_inc, phys.genhiggs[0].mass(), weight);
+
+        //if(isMC_GG) {
+        for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++)
+          ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
+        weight *= ev.hptWeights[0];
+          //}
+ //       if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_2qt" ,tags_inc, phys.genhiggs[0].mass(), weight);
+
+        for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
+          lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
+        noLShapeWeight=weight;
+        weight *= lShapeWeights[0];
+        //printf("lsw=%f \n",lShapeWeights[0]);
+//cout << "lShapeWeights[0] = " << lShapeWeights[0] << endl;
+//cout << "lShapeWeights[1] = " << lShapeWeights[1] << endl;
+//cout << "lShapeWeights[2] = " << lShapeWeights[2] << endl;
+//cout << "lShapeWeights[3] = " << lShapeWeights[3] << endl;
+}
+
+//cout << "*******************************************************************"<<endl;
 
 //=================================================== Lepton Analysis ===================================================
 
@@ -618,7 +749,8 @@ if(!use2011Id)
                       nAJetsTight      += hasObjectId(aJets[ijet].pid,JETID_TIGHT);
                       nAJetsPUIdLoose  += hasObjectId(aJets[ijet].pid,JETID_OPT_LOOSE);
                       nAJetsPUIdMedium += hasObjectId(aJets[ijet].pid,JETID_OPT_MEDIUM);
-                    }
+
+                    } // for(size_t ijet=0; ijet<aJets.size(); ijet++)
 
 
     bool passBveto(nABtags[2]==0);
@@ -674,11 +806,78 @@ if(!use2011Id)
 
 //cout << "MVA MET = " << mvaMetP4.pt() << endl;
 
+//cout << "size of zvvs = " << zvvs.size() << endl;
+/*
+cout << "zvvs[0] = " << zvvs[0].pt() << endl;
+cout << "zvvs[1] = " << zvvs[1].pt() << endl;
+cout << "zvvs[2] = " << zvvs[2].pt() << endl;
+cout << "zvvs[3] = " << zvvs[3].pt() << endl;
+cout << "zvvs[4] = " << zvvs[4].pt() << endl;
+cout << "zvvs[5] = " << zvvs[5].pt() << endl;
+cout << "zvvs[6] = " << zvvs[6].pt() << endl;
+cout << "zvvs[7] = " << zvvs[7].pt() << endl;
+cout << "zvvs[8] = " << zvvs[8].pt() << endl;
+*/
 
 
 
 //if(mustBlind == 1) {cout << "mustBlind = " << mustBlind << endl;      }
 
+//===================================================================== Systematics ========================================================
+
+//cout << " nvarsToInclude = " << nvarsToInclude << endl;
+
+        float weight_PUup = 1.0;
+        float weight_PUdown = 1.0;
+	std::vector<double> mtvar;
+	std::vector<double> metvar;
+	std::vector<double> dphijetmetvar;
+
+      for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
+        float iweight = weight;                                               //nominal
+        if(ivar==9)                         weight_PUup = TotalWeight_plus;        //pu up
+        if(ivar==10)                        weight_PUdown = TotalWeight_minus;       //pu down
+        if(ivar<=14 && ivar>=11 && isMC_GG) iweight *=ev.hptWeights[ivar-10]/ev.hptWeights[0];   //ren/fact     scales   
+        if((ivar==17 || ivar==18) && isMC_GG) iweight *= (lShapeWeights[0]!=0?lShapeWeights[ivar-16]/lShapeWeights[0] : 1.0); //lineshape weights
+
+        //recompute MET/MT if JES/JER was varied
+        LorentzVector zvv    = zvvs[ivar>8 ? 0 : ivar];
+        //float mt3(0);
+        //      if(nextraleptons==1) mt3 = METUtils::transverseMass(extraLeptonsP4[0],zvv,false);
+        PhysicsObjectJetCollection &varJets=variedAJets[ivar>4 ? 0  : ivar];
+        PhysicsObjectJetCollection tightVarJets;
+        LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
+        bool passLocalBveto(passBveto);
+	float mindphijmet_var(999999.);
+        for(size_t ijet=0; ijet<varJets.size(); ijet++){
+            if(!hasObjectId(varJets[ijet].pid,JETID_LOOSE)) continue;
+            clusteredMetP4 -= varJets[ijet];
+            tightVarJets.push_back( varJets[ijet] );
+            float idphijmet_var( fabs(deltaPhi(varJets[ijet].phi(),zvv.phi()) ) );
+            if(varJets[ijet].pt()>30) if(idphijmet_var<mindphijmet_var)  mindphijmet_var=idphijmet_var;
+            if(varJets[ijet].pt()<30 || fabs(varJets[ijet].eta())>2.5)continue;
+            if(ivar==15)      passLocalBveto &= (varJets[ijet].btag3<0.285);
+            else if(ivar==16) passLocalBveto &= (varJets[ijet].btag3<0.265);
+//cout << " ivar = " << ivar << endl;
+        }
+
+	dphijetmetvar.push_back(mindphijmet_var);
+//cout << "mindphijmet_var = " << mindphijmet_var <<endl;
+         mtvar.push_back(METUtils::transverseMass(zll,zvv,true));
+        LorentzVector nullP4(0,0,0,0);
+        LorentzVector redMet = METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, zll, 0, nullP4, 0, clusteredMetP4, zvv,true);
+
+//if(ivar < 9 && ivar > 0) {
+
+
+//cout << " ivar = " << ivar << endl;
+//cout << "ivar = " << ivar << " mt = " << (METUtils::transverseMass(zll,zvv,true)) << endl;
+//cout << "weight_PUup = " << weight_PUup << " weight_PUdown =  " << weight_PUdown << endl;
+
+}
+
+//cout << " hzz_TransMass_Higgs_JERup = " << hzz_TransMass_Higgs_JERup << endl;
+//cout << "***************************************************************************** " <<endl;
 //============================================================ FILLING OF BRANCHES===========================================================
 
 
@@ -686,6 +885,38 @@ if(!use2011Id)
 //      if(passIds && pass3rdLeptonVeto &&  mustBlind == 0) {
 //if(passIds && pass3rdLeptonVeto) {
 
+hzz_weight_PUup = weight_PUup;
+hzz_weight_PUdown = weight_PUdown;
+
+hzz_TransMass_Higgs_JERup = mtvar[1];
+hzz_TransMass_Higgs_JERdown = mtvar[2];
+hzz_TransMass_Higgs_JESup = mtvar[3];
+hzz_TransMass_Higgs_JESdown = mtvar[4];
+hzz_TransMass_Higgs_UMETup = mtvar[5];
+hzz_TransMass_Higgs_UMETdown = mtvar[6];
+hzz_TransMass_Higgs_LESup = mtvar[7];
+hzz_TransMass_Higgs_LESdown = mtvar[8];
+
+hzz_RawMet_JERup = zvvs[1].pt();
+hzz_RawMet_JERdown = zvvs[2].pt();
+hzz_RawMet_JESup = zvvs[3].pt();
+hzz_RawMet_JESdown = zvvs[4].pt();
+hzz_RawMet_UMETup = zvvs[5].pt();
+hzz_RawMet_UMETdown = zvvs[6].pt();
+hzz_RawMet_LESup = zvvs[7].pt();
+hzz_RawMet_LESdown = zvvs[8].pt();
+
+hzz_dPhi_JetMet_JERup = dphijetmetvar[1];
+hzz_dPhi_JetMet_JERdown = dphijetmetvar[2];
+hzz_dPhi_JetMet_JESup = dphijetmetvar[3];
+hzz_dPhi_JetMet_JESdown = dphijetmetvar[4];
+hzz_dPhi_JetMet_UMETup = dphijetmetvar[5];
+hzz_dPhi_JetMet_UMETdown = dphijetmetvar[6];
+hzz_dPhi_JetMet_LESup = dphijetmetvar[7];
+hzz_dPhi_JetMet_LESdown = dphijetmetvar[8];
+
+
+//cout << "weight_PUup = " << hzz_weight_PUup << " weight_PUdown =  " << hzz_weight_PUdown << endl;
 
 hzz_vbfdetajj = vbfdetajj;
 hzz_vbfmjj = vbfmjj;
@@ -752,6 +983,7 @@ hzz_rho = ev.rho25;
 //cout << " Number of Jets = " << correctedJets.size() << endl;
 //cout<< "sumet = " << sumet <<endl;
 //cout << " Number of Jets = " << hzz_N_Jets << endl;
+//cout << " hzz_TransMass_Higgs = " << hzz_TransMass_Higgs << endl;
 //cout << "***************************************************************" <<endl;
 //hzz_Jet_PT = high_PT;
 //hzz_N_Jets = njets;
@@ -784,6 +1016,7 @@ hzz_Jet_SumPT = sumet;
   TFile *ofile=TFile::Open(outUrl, "recreate");
 //  mon.Write();
 hzz_tree->Write();
+Hoptim_systs->Write();
   ofile->Close();
 
   if(outTxtFile)fclose(outTxtFile);
