@@ -270,4 +270,4 @@ if __name__ == '__main__':
     ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio, NBINS, XMIN, XMAX, options.cut, weight=weight, embed=options.embed, shift=shift, replaceW=replaceW, VVgroup=cfg.VVgroup, antiEleIsoForQCD=antiEleIsoForQCD);
     drawOfficial(osQCD, options.blind)
       
-    datacards(osQCD, cutstring, shift, 'eTau')
+    datacards(osQCD, cutstring, shift, 'eleTau')

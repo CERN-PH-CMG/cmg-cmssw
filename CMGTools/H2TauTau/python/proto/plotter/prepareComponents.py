@@ -5,19 +5,6 @@ import pickle
 
 keeper = []
 
-## def readPickles(dir, config, embed=True, channel='TauMu',higgsMass=None):
-##     selComps = dict( [ (comp.name, comp) for comp in config.components ])
-## #    print selComps
-##     pickleFiles = {}
-##     for comp in selComps.values():
-##         fileName = '/'.join([ dir,
-##                               comp.dir,
-##                               '{channel}Analyzer/DiLepton.pck'.format(channel=channel)])
-
-##         pickleFiles[comp.name] = pickle.load( open( fileName, 'rb' ) )
-##     return pickleFiles
-
-
 def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', higgsMass=None):
     '''Selects all components in configuration file. computes the integrated lumi
     from data components, and set it on the MC components.
