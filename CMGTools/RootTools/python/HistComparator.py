@@ -97,8 +97,10 @@ class HistComparator(object):
             return  h.GetBinContent(h.GetMaximumBin())
         if h1 is None: h1 = self.h1
         if h2 is None: h2 = self.h2
-        return max(getmax(h1), getmax(h2))
-        
+        ymax = max(getmax(h1), getmax(h2))
+        if ymax == 0:
+            ymax = 1
+        return ymax
         
         
         

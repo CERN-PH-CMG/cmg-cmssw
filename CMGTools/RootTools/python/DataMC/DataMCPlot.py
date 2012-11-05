@@ -7,6 +7,16 @@ from CMGTools.RootTools.DataMC.Histogram import Histogram
 from CMGTools.RootTools.DataMC.Stack import Stack
 
 
+def ymax(hists):
+    def getmax(h):
+        hw = h.weighted
+        return  hw.GetBinContent(hw.GetMaximumBin())
+    maxs = map(getmax, hists)
+    ymax = max( maxs )*1.1
+    if ymax == 0:
+        ymax = 1
+    return ymax
+
 
 class DataMCPlot(object):
     '''Handles a Data vs MC plot.
@@ -144,10 +154,15 @@ class DataMCPlot(object):
     def Draw(self, opt = ''):
         '''All histograms are drawn.'''
         same = ''
+        self.supportHist=None
         for hist in self._SortedHistograms():
+            if self.supportHist is None:
+                self.supportHist = hist
             hist.Draw( same + opt)
             if same == '':
                 same = 'same'
+        yaxis = self.supportHist.GetYaxis()
+        yaxis.SetRangeUser(0.01, ymax(self._SortedHistograms()) )
         self.DrawLegend()
         if TPad.Pad():
             TPad.Pad().Update()

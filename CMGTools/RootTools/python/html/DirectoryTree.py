@@ -1,6 +1,7 @@
 import glob
 import os 
 import markup
+import operator
 from markup import oneliner as e
 
 def allowedType(fname, types):
@@ -20,13 +21,13 @@ class Image(str):
         if not allowedType(fname, self.__class__.TYPES):
             raise ValueError('Type not allowed for file'+fname)
         super(Image, self).__init__(fname)
-        print self
+        # print self
 
 
 class Directory(object):
     '''Can contain other directories, images, and an index.html'''
 
-    def __init__(self, path):
+    def __init__(self, path, title=None):
         print 'creating directory', path
 
         # page parameters
@@ -44,7 +45,7 @@ class Directory(object):
         self._addDirs()
         self._addHTML()
 
-        print self
+        # print self
 
     def _addImages(self):
         '''Add all images in this directory'''
@@ -78,11 +79,13 @@ class Directory(object):
             header=self.header, 
             footer=self.footer
             )
+        
         page.h1(self.title)
         
         if len(self.subdirs):
             links = []
-            for s in self.subdirs:
+            for s in sorted(self.subdirs, key=operator.attrgetter('path')):
+                print s.path
                 base = os.path.basename(s.path)
                 link = e.a(base,
                            href='/'.join([base, 'index.html']))
@@ -94,7 +97,7 @@ class Directory(object):
 
         size = 100/self.nimagesperrow - 1
         if len(self.images):
-            for rimgs in split(self.images, self.nimagesperrow):
+            for rimgs in split(sorted(self.images), self.nimagesperrow):
                 page.img( src=rimgs, width='{size}%'.format(size=size),
                           alt=rimgs)
                 page.br()

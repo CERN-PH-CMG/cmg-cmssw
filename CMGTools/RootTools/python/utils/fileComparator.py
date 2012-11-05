@@ -3,6 +3,7 @@ import os
 import re
 from CMGTools.RootTools.HistComparator import *
 from CMGTools.RootTools.PyRoot import *
+from CMGTools.RootTools.html.DirectoryTree import Directory
 from CMGTools.RootTools.utils.file_dir import file_dir, file_dir_names
 
 def mkdir_p(path):
@@ -151,7 +152,7 @@ if __name__ == '__main__':
     parser.add_option("-o", "--outdir", 
                       dest="outdir", 
                       help="Output directory for all plots.",
-                      default=None)
+                      default='Plots_Comparator')
 
 
     parser.add_option("-w", "--nowait", 
@@ -186,3 +187,5 @@ if __name__ == '__main__':
     comparator = Comparator(file1, file2, options.outdir, options.filter,
                             options.title1, options.title2)
     comparator.browse(wait = options.wait)
+    dir = Directory(options.outdir)
+
