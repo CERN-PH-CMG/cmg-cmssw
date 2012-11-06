@@ -86,6 +86,12 @@ print 'start connecting... \n\n'
 connect( allsamples, '%H2TauTau_tauEle_22oct_PG', 'tauEle.*root', aliases, 
          cache=True, verbose=False)
 
+from CMGTools.H2TauTau.proto.samples.density import *
+print
+print 'density test'
+density (allsamples)
+print
+
 print
 for sam in MC_list:
     print 'setting trigger', mc_triggers,'for sample',sam.name
