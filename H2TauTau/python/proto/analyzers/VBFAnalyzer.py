@@ -103,12 +103,20 @@ class VBFAnalyzer( Analyzer ):
 
         pairs = matchObjectCollection( [ leg1,
                                          leg2 ], allJets, 0.5*0.5)
+
+        # associating a jet to each leg
         leg1.jet = pairs[leg1]
         leg2.jet = pairs[leg2]
-        if leg1.jet is None:
+        if leg1.jet is None: #COLIN: I don't understand the code below...
             leg1.jet = leg1
         if leg2.jet is None:
-            leg2.jet = leg2
+            leg2.jet = leg2        
+
+        # associating a leg to each clean jet
+        invpairs = matchObjectCollection( event.cleanJets, [ leg1,leg2 ], 99999. )
+        for jet in event.cleanJets:
+            leg = invpairs[jet]
+            jet.leg = leg
 
 	for jet in event.cleanJets:
             jet.matchGenParton=999.0
@@ -152,14 +160,23 @@ class VBFAnalyzer( Analyzer ):
         
         return True
         
+
+    def testJetID(self, jet):
+        jet.puJetIdPassed = jet.puJetId()
+        jet.pfJetIdPassed = jet.getSelection('cuts_looseJetId')
+        if self.cfg_ana.relaxJetId:
+            return True
+        else:
+            return jet.puJetId and jet.pfJetId
+        
         
     def testJet( self, jet ):
         # 2 is loose pile-up jet id
         return jet.pt() > self.cfg_ana.jetPt and \
                abs( jet.eta() ) < self.cfg_ana.jetEta and \
-               jet.getSelection('cuts_looseJetId') and \
-               jet.puJetId()
+               self.testJetID(jet)
                # jet.passPuJetId('full', 2)
+
 
     def testBJet(self, jet):
         # medium csv working point
@@ -175,7 +192,6 @@ class VBFAnalyzer( Analyzer ):
         return jet.pt()>20 and \
                abs( jet.eta() ) < 2.4 and \
                jet.btagFlag and \
-               jet.getSelection('cuts_looseJetId') and \
-               jet.puJetId()
+               self.testJetID(jet)
                # jet.passPuJetId('full', 2)
                # jet.btag("combinedSecondaryVertexBJetTags")>0.679 and \

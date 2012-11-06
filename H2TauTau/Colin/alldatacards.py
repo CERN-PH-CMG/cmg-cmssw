@@ -103,6 +103,17 @@ if __name__ == '__main__':
                       dest="filter", 
                       help="Regexp filters to select components for the MC-only templates, separated by semicolons, e.g. Higgs;ZTT",
                       default='Higgs.*;Ztt.*')
+    parser.add_option("-d", "--disabledata", 
+                      dest="disabledata",
+                      action='store_true',
+                      help="Disable datacard production for the data and background estimation",
+                      default=False)
+    parser.add_option("-m", "--disablemc", 
+                      dest="disablemc",
+                      action='store_false',
+                      help="Disable datacard production for MC",
+                      default=False)
+
     
     (options,args) = parser.parse_args()
     
@@ -164,12 +175,15 @@ if __name__ == '__main__':
 
     for dir in dirs:
         print dir
-        chdir(dir, 'Datacards/DataAndBackground')
-        dataAndBackground(dir, inclusive_cuts, inclusive_macro)
-        dataAndBackground(dir, vbf_cuts, vbf_macro)    
-        os.chdir(oldpwd)
         
-        chdir(dir, 'Datacards/MC')
-        mcTemplates(dir, inclusive_cuts, options.filter, channel, prefix='MC')
-        mcTemplates(dir, vbf_mc_cuts, options.filter, channel, prefix='MC')
-        os.chdir(oldpwd)
+        if not options.disabledata:
+            chdir(dir, 'Datacards/DataAndBackground')
+            dataAndBackground(dir, inclusive_cuts, inclusive_macro)
+            dataAndBackground(dir, vbf_cuts, vbf_macro)    
+            os.chdir(oldpwd)
+
+        if not options.disablemc:
+            chdir(dir, 'Datacards/MC')
+            mcTemplates(dir, inclusive_cuts, options.filter, channel, prefix='MC')
+            mcTemplates(dir, vbf_mc_cuts, options.filter, channel, prefix='MC')
+            os.chdir(oldpwd)

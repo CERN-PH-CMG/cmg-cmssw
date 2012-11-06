@@ -24,10 +24,10 @@ channel = 'tau-mu'
 jetRecalib = False
 useCHS = False 
 newSVFit = True
-tauScaling = 0
+tauScaling = 1
 # increase to 1000 before running on the batch, to reduce size of log files
 # on your account
-reportInterval = 1000
+reportInterval = 100
 
 print sep_line
 print 'channel', channel
@@ -47,8 +47,8 @@ print 'tau scaling =', tauScaling
 
 
 dataset_user = 'cmgtools' 
-dataset_name = '/W1Jet_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-
+# dataset_name = '/W1Jet_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
 
 dataset_files = 'cmgTuple.*root'
 
