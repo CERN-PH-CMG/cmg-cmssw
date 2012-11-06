@@ -385,8 +385,8 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       
       for(map<TString, TH1F *>::iterator it=chShapes[is].lxy_bckg.begin(); it != chShapes[is].lxy_bckg.end(); it++)
 	{
-	  RooDataHist *lxyData = new RooDataHist(ch+"_lxy_"+it->first,    ch+"_lxy_"+it->first,     RooArgList(lxy), Import(*it->second));
-	  RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName()+TString("pdf"), lxyData->GetName()+TString("pdf"), RooArgSet(lxy), *lxyData);
+	  RooDataHist *lxyData = new RooDataHist(ch+"lxy_"+it->first,    ch+"lxy_"+it->first,     RooArgList(lxy), Import(*it->second));
+	  RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName()+TString("bkg"), lxyData->GetName()+TString("bkg"), RooArgSet(lxy), *lxyData);
 	  w->import(*lxyPdf);
 	  w->factory("EDIT::"+ch+"flxy_bkg("+ch+"flxy,"+ch+"pfunc="+ch+"beta1[0.02,0.,10],"+ch+"qfunc="+ch+"beta2[0.6,0.,10],"+ch+"thr="+ch+"thr_bckg[0.11],"+ch+"wid="+ch+"wid_bkg[0.035,0,0.1])");
 	  w->pdf(ch+"flxy_bkg")->fitTo(*lxyData,Save(kTRUE),SumW2Error(kTRUE));
@@ -398,6 +398,9 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  frame->Draw();
 	  c->SaveAs("SecVtxBckg_"+ch+".png");
 
+	  RooRealVar *sigfrac =new RooRealVar(ch+"sigfrac",ch+"sigfrac",0.9,0.1);
+	  RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf("flxy_"+ch+"sim"),*w->pdf(ch+"flxy_bkg")),*sigfrac);
+	  w->import(*model);
 	}
 
 
