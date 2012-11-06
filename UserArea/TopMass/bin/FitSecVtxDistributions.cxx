@@ -86,7 +86,7 @@ void showSecVtxShapeCollection(std::vector<SecVtxShape_t> &shapes, float mtop)
   if(shapes.size()==0) return;
 
   TCanvas *c=new TCanvas("c","c",400*shapes.size(),800);
-  c->Divide(shapes.size(),2);
+  c->Divide(shapes.size(),1);
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
 
@@ -106,29 +106,36 @@ void showSecVtxShapeCollection(std::vector<SecVtxShape_t> &shapes, float mtop)
       c->cd(is+1);
       TString name("lxy"); name+=is;
       THStack *hstack=new THStack(name,name);
-      TLegend *leg=new TLegend(0.4,0.6,0.9,0.9);
+      TLegend *leg=new TLegend(0.4,0.75,0.9,0.9);
       leg->SetNColumns(3);
       leg->SetBorderSize(0);
       leg->SetFillStyle(0);
       leg->SetTextFont(42);
-      leg->AddEntry(m_shape.lxy_data,"data","lp");
+      if(m_shape.lxy_data) leg->AddEntry(m_shape.lxy_data,"data","lp");
       for(std::map<TString, TH1F *>::const_iterator it = m_shape.lxy_bckg.begin(); it != m_shape.lxy_bckg.end(); it++)
 	{
 	  hstack->Add(it->second,"HIST");
-	  TString title(it->first); if(title=="b") title="other b";
+	  //TString title(it->first); if(title=="b") title="other b";
+	  TString title("#Sigma bckg");
 	  leg->AddEntry(it->second,title,"F");
 	}
       if(m_shape.lxy_signal.find(mtop)!= m_shape.lxy_signal.end())
 	{
 	  TH1F *h=m_shape.lxy_signal.find(mtop)->second;
 	  hstack->Add( h, "HIST" );
-	  leg->AddEntry( h,"b","F");
+	  //leg->AddEntry( h,"b","F");
+	  leg->AddEntry( h,"Signal","F");
 	}
       hstack->Draw("");
       hstack->GetXaxis()->SetTitle(m_shape.lxy_data->GetXaxis()->GetTitle());
       hstack->GetYaxis()->SetTitle("Jets");
-
-      m_shape.lxy_data->Draw("e1 same");
+      if(m_shape.lxy_data) 
+	{
+	  m_shape.lxy_data->SetLineColor(1);
+	  m_shape.lxy_data->SetMarkerColor(1);
+	  m_shape.lxy_data->SetMarkerStyle(20);
+	  m_shape.lxy_data->Draw("e1 same");
+	}
       if(is==0)	leg->Draw();
       TPaveText *pave = new TPaveText(0.65,0.9,0.9,0.95,"NDC");
       pave->SetBorderSize(0);
@@ -138,6 +145,7 @@ void showSecVtxShapeCollection(std::vector<SecVtxShape_t> &shapes, float mtop)
       pave->AddText(ch);
       pave->Draw();
       
+      /*
      
       //sec vtx mass
       c->cd(is+1+shapes.size());
@@ -156,6 +164,9 @@ void showSecVtxShapeCollection(std::vector<SecVtxShape_t> &shapes, float mtop)
       hstack->GetXaxis()->SetTitle(m_shape.mass_data->GetXaxis()->GetTitle());
       hstack->GetYaxis()->SetTitle("Jets");
       m_shape.mass_data->Draw("e1 same");
+ 
+      */
+      
     }
 
   c->Modified();
@@ -185,14 +196,15 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       TString ch=chShapes[is].m_tag;
       RooCategory templateCategories(ch+"categs",ch+"categs") ; 
       std::map<std::string,TH1 *> templates;
+      std::map<std::string,RooDataHist *> rooTemplates;
       std::map<std::string,float> masses;
       
-
       //
       // SIGNAL
       //
 
       //lxy templates
+      lxy.setBins( chShapes[is].lxy_signal.begin()->second->GetXaxis()->GetNbins()/2 );
       const Int_t nq = 4;
       Double_t xq[nq];  // position where to compute the quantiles in [0,1]
       Double_t yq[nq];  // array to contain the quantiles
@@ -205,17 +217,21 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  it++)
 	{
 	  TString catName(ch); catName += (int)(it->first*10);
+	  templateCategories.defineType(catName);
+	  templateCategories.setLabel(catName.Data());
 	  masses[catName.Data()]    = it->first;
 	  templates[catName.Data()] = it->second;
-	  templateCategories.defineType(catName.Data());
-
+	  rooTemplates[catName.Data()] = new RooDataHist(catName+"templ",catName+"templ",lxy,it->second);
+	  
 	  it->second->GetQuantiles(nq,yq,xq);
 	  gr25->SetPoint(gr25->GetN(),it->first,yq[0]);
 	  gr50->SetPoint(gr50->GetN(),it->first,yq[1]);
 	  grmean->SetPoint(grmean->GetN(),it->first,it->second->GetMean());
+
 	}
 
-      RooDataHist combTempl("combTempl","combTempl",RooArgSet(lxy),templateCategories,templates);
+      //RooDataHist combTempl("combTempl","combTempl",RooArgList(lxy),templateCategories,templates); 
+      RooDataHist combTempl("combTempl","combTempl",RooArgList(lxy),templateCategories,rooTemplates);  
       w->import(RooArgSet(mtop,templateCategories),RenameConflictNodes(ch));
 
       //base parameterization of the lxy
@@ -251,7 +267,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       
       //now fit the template parameters and plot the results
       RooFitResult *fitres = w->pdf("flxy_"+ch+"sim")->fitTo(combTempl,Range(0.,5.),Save(kTRUE),SumW2Error(kTRUE)); 
-
+      //RooFitResult *fitres = w->pdf("flxy_"+ch+"sim")->chi2FitTo(combTempl,Range(0.,5.),Save(kTRUE));
       int ncats=templates.size();
       int npadsx=ncats/2+1;
       int npadsy=ncats/2+1;
@@ -263,19 +279,19 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	{
 	  c->cd(ipad);
 	  string key=mIt->first;
-	  float imass=mIt->second;
+	  //float imass=mIt->second;
 
-	  char title[200]; sprintf(title,"m_{top}=%3.2f GeV",imass);
-	  RooPlot* frame = lxy.frame(Title(title));
+	  RooPlot* frame = lxy.frame();
 
-	  //project the dataset for a given category
-	  RooDataHist* dataslice = (RooDataHist *)combTempl.reduce((string(ch.Data())+"categs=="+string(ch.Data())+"categs::"+key).c_str());
+	  //Project the dataset for a given category
+	  TString cut=ch+"categs=="+ch+"categs::"+key;
+	  RooDataHist* dataslice = (RooDataHist *)combTempl.reduce(cut.Data());
 	  dataslice->plotOn(frame,DataError(RooAbsData::SumW2));
 
 	  //get the PDF corresponding to the required category
 	  RooCategory theCategory(key.c_str(),key.c_str());
-	  w->pdf("flxy_"+ch+"sim")->plotOn(frame,Slice(theCategory),ProjWData(lxy,*dataslice));
-      
+	  w->pdf("flxy_"+ch+"sim")->plotOn(frame,ProjWData(lxy,*dataslice),MoveToBack());
+
 	  frame->Draw();
 	  frame->GetXaxis()->SetTitle("L_{xy} [cm]");
 	  frame->GetYaxis()->SetTitle("Jets");
@@ -320,7 +336,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       //create the inversion formulae based on the momenta
       cqt->cd(is+1);
       TGraph *grframe=new TGraph;
-      grframe->SetPoint(0,160,0.2); grframe->SetPoint(1,185,1.2); grframe->Draw("ap");
+      grframe->SetPoint(0,160,0.2); grframe->SetPoint(1,185,1.8); grframe->Draw("ap");
       grframe->GetXaxis()->SetTitle("m_{top} [GeV]");
       grframe->GetYaxis()->SetTitle("L_{xy} momentum");
 
@@ -366,7 +382,8 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       //
       // BACKGROUND
       //
-
+      
+      /*
       Float_t dataObs=chShapes[is].mass_data->Integral(0,chShapes[is].mass_data->GetXaxis()->GetNbins()+1);
 
       //define the PDFs to fit signal and background in the Lxy and SecVtx mass categories
@@ -402,6 +419,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName()+TString("pdf"), lxyData->GetName()+TString("pdf"), RooArgSet(lxy), *lxyData);
 	  w->import(*lxyPdf);
 	}
+      */
     }
   cqt->SaveAs("SignalPDFsMomenta.png");
 
@@ -486,7 +504,8 @@ int main(int argc, char *argv[])
 	      if(var.Contains("lxy"))  m_shape.lxy_data=h;
 	      if(var.Contains("mass")) m_shape.mass_data=h;
 	    }
-	  else if(mass!=0 && jetFlav=="b")
+	  //else if(mass!=0 && jetFlav=="b")
+	  else if(mass!=0 && jetFlav=="")
 	    {
 	      if(syst=="")
 		{
@@ -499,7 +518,8 @@ int main(int argc, char *argv[])
 		  if(var.Contains("mass")) m_shape.mass_signalSysts[mass][syst]=h;
 		}
 	    }
-	  else if((mass==0 || (mass==172.5 && syst=="") ) && jetFlav!="")
+	  //else if((mass==0 || (mass==172.5 && syst=="") ) && jetFlav!="")
+	  else if(mass==0 && jetFlav=="")
 	    {
 	      if(var.Contains("lxy"))
 		{
