@@ -325,6 +325,8 @@ class DataMCPlot(object):
         self.stack.Draw(opt+same,
                         xmin=xmin, xmax=xmax,
                         ymin=ymin, ymax=ymax )
+        if self.supportHist is None:
+            self.supportHist = self.stack.totalHist
         if not self.axisWasSet:
             mxsup =  self.supportHist.weighted.GetBinContent(
                 self.supportHist.weighted.GetMaximumBin()
