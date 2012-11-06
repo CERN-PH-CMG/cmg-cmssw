@@ -38,6 +38,11 @@ class JSONAnalyzer( Analyzer ):
         self.readCollections( iEvent )
         run = iEvent.eventAuxiliary().id().run()
         lumi = iEvent.eventAuxiliary().id().luminosityBlock()
+        eventId = iEvent.eventAuxiliary().id().event()
+
+        event.run = run
+        event.lumi = lumi
+        event.eventId = eventId
 
         if self.cfg_comp.isMC:
             return True
