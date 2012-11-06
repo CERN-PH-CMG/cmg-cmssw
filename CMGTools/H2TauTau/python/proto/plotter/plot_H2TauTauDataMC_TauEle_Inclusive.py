@@ -30,10 +30,10 @@ XMAX  = 200
 
 
 
-def replaceShapeInclusive(plot, var, anaDir,
-                          comp, weights, 
-                          cut, weight,
-                          embed, shift):
+def replaceShapeRelIso(plot, var, anaDir,
+                       comp, weights, 
+                       cut, weight,
+                       embed, shift):
     '''Replace WJets with the shape obtained using a relaxed tau iso'''
     cut = cut.replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>-0.5')
     print '[INCLUSIVE] estimate',comp.name,'with cut',cut
@@ -58,9 +58,10 @@ def replaceShapeInclusive(plot, var, anaDir,
 
 
 def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
+              w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio,
               nbins=None, xmin=None, xmax=None,
               cut='', weight='weight', embed=False, shift=None, replaceW=False,
-              VVgroup = None, antiMuIsoForQCD=False):
+              VVgroup = None, antiEleIsoForQCD = False):
     
     print 'making the plot:', var, 'cut', cut
 
@@ -71,16 +72,19 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
     osign.Hist(EWK).Scale( wJetScaleOS )
 
-    import pdb; pdb.set_trace()
-
-    replaceW = False
+    #PG correct for the differnce in shape between SS and OS for the WJets MC
+    #PG why should this be done only if the mt cut is present?
+    if cut.find('mt<')!=-1:
+        print 'correcting high->low mT extrapolation factor, OS', w_mt_ratio / w_mt_ratio_os
+        osign.Hist(EWK).Scale( w_mt_ratio / w_mt_ratio_os )
+#    replaceW = False
     if replaceW:
-        osign = replaceShapeInclusive(osign, var, anaDir,
-                                      selComps['WJets'], weights, 
-                                      oscut, weight,
-                                      embed, shift)
+        osign = replaceShapeRelIso(osign, var, anaDir,
+                                   selComps['WJets'], weights, 
+                                   oscut, weight,
+                                   embed, shift)
     if VVgroup != None:
-         osign.Group('VV', cfg.VVgroup)
+         osign.Group('VV', VVgroup)
          
     sscut = cut+' && diTau_charge!=0'
     ssign = H2TauTauDataMC(var, anaDir,
@@ -88,20 +92,25 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                            cut=sscut, weight=weight,
                            embed=embed, shift=shift, treeName = 'H2TauTauTreeProducerTauEle')
     ssign.Hist(EWK).Scale( wJetScaleSS ) 
+
+    #PG correct for the differnce in shape between SS and OS for the WJets MC
+    #PG why should this be done only if the mt cut is present?
+    if cut.find('mt<')!=-1:
+        print 'correcting high->low mT extrapolation factor, SS', w_mt_ratio / w_mt_ratio_ss
+        ssign.Hist(EWK).Scale( w_mt_ratio / w_mt_ratio_ss  ) 
+
     if replaceW:
-        ssign = replaceShapeInclusive(ssign, var, anaDir,
-                                      selComps['WJets'], weights, 
-                                      sscut, weight,
-                                      embed, shift)
+        ssign = replaceShapeRelIso(ssign, var, anaDir,
+                                   selComps['WJets'], weights, 
+                                   sscut, weight,
+                                   embed, shift)
     if VVgroup != None:
-         ssign.Group('VV', cfg.VVgroup)
+         ssign.Group('VV', VVgroup)
     # import pdb; pdb.set_trace()
 
     ssQCD, osQCD = getQCD( ssign, osign, 'Data', 1.06 ) #PG scale value according Jose, 18/10
 
-    #COLIN was buggy. iso was relaxed even in the 0jet low category, and the QCD
-    # estimation clearly wrong
-    if antiMuIsoForQCD:
+    if antiEleIsoForQCD:
         print 'WARNING RELAXING ISO FOR QCD SHAPE'
         # replace QCD with a shape obtained from data in an anti-iso control region
         qcd_yield = osQCD.Hist('QCD').Integral()
@@ -112,15 +121,6 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
                                         cut=sscut_qcdshape, weight=weight,
                                         embed=embed, treeName = 'H2TauTauTreeProducerTauEle')
         qcd_shape = copy.deepcopy( ssign_qcdshape.Hist('Data') )
-        # subtract subtracting off templates from ZLL (no real taus) and ttbar with the same selection
-        # ignore the others as they're small
-        try:
-            qcd_shape.Add(ssign_qcdshape.Hist('Ztt_ZL'), -1)
-            qcd_shape.Add(ssign_qcdshape.Hist('Ztt_ZJ'), -1)
-        except:
-            print 'cannot find Ztt_Fakes in W+jets estimate'
-            pass    
-        qcd_shape.Add(ssign_qcdshape.Hist('TTJets'), -1)
 
         qcd_shape.Normalize()
         qcd_shape.Scale(qcd_yield)
@@ -138,7 +138,8 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
 
-def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
+def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, 
+            w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio, VVgroup = None, antiEleIsoForQCD = False):
     '''See plotinfo for more information'''
     for plot in plots.values():
         print 'PLOTTING',plot.var
@@ -146,10 +147,14 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
         if plot.var == 'mt' or plot.var == 'met' or plot.var == 'pfmet':
            thecut = cut.replace('mt<20', '1')
         ss, os, ssQ, osQ = makePlot( plot.var, anaDir,
-                                     selComps, weights, fwss, fwos,
+                                     selComps, weights, 
+                                     fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio,
                                      plot.nbins, plot.xmin, plot.xmax,
-                                     thecut, weight = weight, embed = embed,
-                                     VVgroup = VVgroup)
+                                     thecut, 
+                                     weight  = weight, 
+                                     embed   = embed,
+                                     VVgroup = VVgroup, 
+                                     antiEleIsoForQCD = antiEleIsoForQCD)
 
         scaleFactor = 1.
         osQ.legendOn = True
@@ -164,8 +169,8 @@ def drawAll(cut, plots, embed, selComps, weights, fwss, fwos, VVgroup = None):
 
         print 'drawing ', plot.var
         blindMe = False
-        if plot.var == 'svfitMass' and \
-           thecut.find('nJets') != -1 : blindMe = True
+#        if plot.var == 'svfitMass' and \
+#           thecut.find('nJets') != -1 : blindMe = True
 
         draw (osQ, blindMe, 'TauEle', plotprefix = 'CTRL_OS_lin')
         osQ.Hist('Higgs 125').stack = False
@@ -201,7 +206,17 @@ def handleW( anaDir, selComps, weights,
     w_mt_ratio_os = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, 'diTau_charge==0', treeName = 'H2TauTauTreeProducerTauEle')
     w_mt_ratio    = w_lowHighMTRatio('mt', anaDir, selComps['WJets'], weights, cut, weight, lowMTMax, highMTMin, highMTMax, '1',               treeName = 'H2TauTauTreeProducerTauEle')
 
+    print '[handleW] w_mt_ratio_ss = ',w_mt_ratio_ss
+    print '[handleW] w_mt_ratio_os = ',w_mt_ratio_os
+    print '[handleW] w_mt_ratio = ',w_mt_ratio
+
     return fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio
+    #PG fwss          = W data/MC factor for the same sign plots
+    #PG fwos          = W data/MC factor for the opposite sign plots
+    #PG w_mt_ratio_ss = low / high mt ratio for same sign plots 
+    #PG w_mt_ratio_os = low / high mt ratio for opposite sign plots 
+    #PG w_mt_ratio    = low / high mt ratio w/o sign requirements
+
 
 
 # ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -287,15 +302,16 @@ if __name__ == '__main__':
         XMAX = float(options.xmax)
         
     cutstring = options.cut
-    antiMuIsoForQCD = cutstring.find('l1_pt>40')!=-1 or cutstring.find('Xcat_J1X')!=-1
+    antiEleIsoForQCD = cutstring.find('l1_pt>40')!=-1 or cutstring.find('Xcat_J1X')!=-1
     options.cut = replaceCategories(options.cut, categories) 
 
     print 'CUT APPLIED:', options.cut
     
     # TH1.AddDirectory(False)
     dataName = 'Data'
-    weight='weight'
+    weight   = 'weight'
     replaceW = options.replaceW
+    replaceW = False
     
     anaDir = args[0].rstrip('/')
     shift = None
@@ -307,7 +323,6 @@ if __name__ == '__main__':
     cfgFileName = args[1]
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
-#    embed = options.embed
 
     selComps, weights, zComps = prepareComponents(anaDir, cfg.config, None, 
                                                   options.embed, 'TauEle', options.higgs)
@@ -349,8 +364,6 @@ if __name__ == '__main__':
 
     #PG fwss = W normalization factor for the same sign plots
     #PG fwos = W normalization factor for the opposite sign plots
-    #PG ss   = mt plot with the scaled W, according to fwss
-    #PG os   = mt plot with the scaled W, according to fwos
 
     #PG final drawing
     #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -359,20 +372,22 @@ if __name__ == '__main__':
         print 'CONTOL PLOTS'
 #        plots_TauEle_basic = {
 #            'l1_pt'      : PlotInfo ('l1_pt',       25,  0,    100), # tau
-#            'svfitMass'  : PlotInfo ('svfitMass',   30,  0,    300),
+#            'svfitMass'  : PlotInfo ('svfitMass',   60,  0,    300),
 #           }
-        drawAll(options.cut, plots_TauEle_basic, options.embed, selComps, weights, fwss, fwos,
-                VVgroup = cfg.VVgroup)
+        drawAll(options.cut, plots_TauEle_basic, options.embed, selComps, weights, fwss, fwos, 
+                w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio,
+                VVgroup = cfg.VVgroup, antiEleIsoForQCD = antiEleIsoForQCD)
     else :
     
         ssign, osign, ssQCD, osQCD = makePlot( options.hist, anaDir, selComps, weights, 
-                                               fwss, fwos, NBINS, XMIN, XMAX, 
+                                               fwss, fwos, w_mt_ratio_ss, w_mt_ratio_os, w_mt_ratio,
+                                               NBINS, XMIN, XMAX, 
                                                options.cut, 
                                                weight   = weight, 
                                                embed    = options.embed,
                                                VVgroup  = cfg.VVgroup,
-                                               replaceW = replaceW,
-                                               antiMuIsoForQCD = antiMuIsoForQCD)
+                                               replaceW = replaceW, 
+                                               antiEleIsoForQCD = antiEleIsoForQCD)
         # ssign = all cuts, same sign, before QCD estimate
         # osign = all cuts, opposite sign, before QCD estimate
         # ssQCD = all cuts, same sign, after QCD estimate, i.e. the QCD is in
@@ -381,6 +396,9 @@ if __name__ == '__main__':
         # draw(osign, False, 'TauEle', 'QCD_os')
 
 #        osQCD.legendOn = False
-        drawOfficial(osQCD, options.blind, 'TauEle')
-        datacards(osQCD, cutstring, shift, 'eTau')
+        datacards (osQCD, cutstring, shift, 'eTau')
+#        drawOfficial (osQCD, options.blind, 'TauEle')
+#        draw (osQCD, False,   'TauEle', plotprefix = 'BEFORE')
+        osQCD.NormalizeToBinWidth()
+        drawOfficial (osQCD, False, 'TauEle')
 
