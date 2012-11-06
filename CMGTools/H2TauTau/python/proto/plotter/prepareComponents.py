@@ -5,7 +5,8 @@ import pickle
 
 keeper = []
 
-def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', higgsMass=None):
+def prepareComponents(dir, config, aliases=None, embed=True,
+                      channel='TauMu', higgsMass=None, forcedLumi=None):
     '''Selects all components in configuration file. computes the integrated lumi
     from data components, and set it on the MC components.
     '''
@@ -62,7 +63,8 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', hi
     # newSelComps now contains the actual components for H->tau tau
     # z->mu mu data is put in zComps
 
-    # compute integrated luminosity
+    if totIntLumi == 0 and forcedLumi:
+        totIntLumi = forcedLumi
     for comp in selComps.values():
         if comp.isMC is True:
             comp.intLumi = totIntLumi
@@ -75,12 +77,17 @@ def prepareComponents(dir, config, aliases=None, embed=True, channel='TauMu', hi
 
     # attach the corresponding tree to each component
     def attachTree(comps, channel):
+        treeName = 'H2TauTauTreeProducer{channel}'.format(channel=channel)
+        fileName = 'H2TauTauTreeProducer{channel}_tree.root'.format(channel=channel)
+        if channel == 'MuMu':
+            treeName = 'ZJetsTreeProducer'
+            fileName = '{treeName}_tree.root'.format(treeName=treeName)
         for comp in comps.values():
             fileName = '/'.join([ dir,
                                   comp.dir,
-                                  'H2TauTauTreeProducer{channel}'.format(channel=channel),
-                                  'H2TauTauTreeProducer{channel}_tree.root'.format(channel=channel)])
-            tree = TChain('H2TauTauTreeProducer{channel}'.format(channel=channel))
+                                  treeName,
+                                  fileName] )
+            tree = TChain(treeName)
             tree.Add(fileName)
             comp.tree = tree
     attachTree(zComps,'MuMu')

@@ -116,10 +116,10 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
     def process(self, iEvent, event):
         
         #        import pdb; pdb.set_trace()
-        result, message = super(TauEleAnalyzer, self).process(iEvent, event)
+        result = super(TauEleAnalyzer, self).process(iEvent, event)
         
         if self.cfg_ana.verbose and result is False:
-            print event.run, event.lumi, event.eventId, message
+            print event.run, event.lumi, event.eventId
             for l in event.leptons:
                 print l
             for l in event.otherLeptons:
@@ -136,9 +136,9 @@ class TauEleAnalyzer( DiLeptonAnalyzer ):
             # it must have well id'ed and trig matched legs,
             # and di-lepton veto must pass
             # i.e. only the iso requirement is relaxed
-            result, message = self.selectionSequence(event, fillCounter=False,
-                                                     leg1IsoCut = -9999,
-                                                     leg2IsoCut = 9999)
+            result = self.selectionSequence(event, fillCounter=False,
+                                            leg1IsoCut = -9999,
+                                            leg2IsoCut = 9999)
             if result is False:
                 # really no way to find a suitable di-lepton,
                 # even in the control region
