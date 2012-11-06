@@ -20,6 +20,11 @@ class ZMuMuAnalyzer( DiLeptonAnalyzer ):
             'cmgMuonSel',
             'std::vector<cmg::Muon>'
             )
+        self.handles['otherLeptons'] = AutoHandle(
+            'cmgElectronSel',
+            'std::vector<cmg::Electron>'
+            )
+
 
     def buildDiLeptons(self, cmgDiLeptons, event):
         '''Build di-leptons, associate best vertex to both legs,
@@ -39,23 +44,20 @@ class ZMuMuAnalyzer( DiLeptonAnalyzer ):
     def buildLeptons(self, cmgLeptons, event):
         '''Build muons for veto, associate best vertex, select loose ID muons.
         The loose ID selection is done to ensure that the muon has an inner track.'''
-        leptons = []
-        for index, lep in enumerate(cmgLeptons):
-            pyl = self.__class__.LeptonClass(lep)
-            pyl.associatedVertex = event.goodVertices[0]
-            if not self.testMuonIDLoose( pyl ):
-                continue
-            leptons.append( pyl )
-        return leptons
+##         leptons = []
+##         for index, lep in enumerate(cmgLeptons):
+##             pyl = self.__class__.LeptonClass(lep)
+##             pyl.associatedVertex = event.goodVertices[0]
+##             if not self.testMuonIDLoose( pyl ):
+##                 continue
+##             leptons.append( pyl )
+##         return leptons
+        return []
+
+
+    def buildOtherLeptons(self, cmgLeptons, event):
+        return []
     
-
-    def testLeg1(self, leg, isoCut):
-        return self.testMuonLoose(leg) and \
-               super( ZMuMuAnalyzer, self).testLeg1( leg, isoCut )
-
-    def testLeg2(self, leg, isoCut):
-        return self.testMuonLoose(leg) and \
-               super( ZMuMuAnalyzer, self).testLeg2( leg, isoCut )
 
     def testVertex(self, lepton):
         '''Tests vertex constraints, for mu and tau'''
@@ -63,34 +65,29 @@ class ZMuMuAnalyzer( DiLeptonAnalyzer ):
                abs(lepton.dz()) < 0.2 
 
 
-    def testMuonIDTight(self, muon):
+##     def testLeg1Iso(self, muon, isocut):
+##         '''Tight muon selection, with isolation requirement'''
+##         return self.muonIso(muon)<isocut
+
+##     def testLeg2Iso(self, muon, isocut):
+##         '''Tight muon selection, with isolation requirement'''
+##         return self.muonIso(muon)<isocut
+
+
+    def testMuonIso(self, muon, isocut ):
+        '''dbeta corrected pf isolation with all charged particles instead of
+        charged hadrons'''
+        return muon.relIsoAllChargedDB05()<isocut
+
+    testLeg1Iso = testMuonIso
+    testLeg2Iso = testMuonIso
+
+    def testMuonID(self, muon):
         '''Tight muon selection, no isolation requirement'''
-        return muon.pt() > self.cfg_ana.pt2 and \
-               abs( muon.eta() ) < self.cfg_ana.eta2 and \
-               muon.tightId() and \
-               self.testVertex( muon )
-
-    def testMuonTight(self, muon ):
-        '''Tight muon selection, with isolation requirement'''
-        return self.testMuonIDTight(muon) and \
-               self.muonIso(muon)<self.cfg_ana.iso2
-
-    def testMuonIDLoose(self, muon):
-        '''Loose muon selection, no isolation requirement'''        
-        return muon.pt() > 15 and \
-               abs( muon.eta() ) < 2.5 and \
-               muon.looseId() and \
-               self.testVertex( muon ) 
-        
-    
-    def testMuonLoose( self, muon ):
-        '''Loose muon selection, with isolation requirement (for di-lepton veto)'''
-        #COLIN: not sure the vertex constraints should be kept 
-        return self.testMuonIDLoose(muon) and \
-               self.muonIso(muon)<0.5
+        # import pdb; pdb.set_trace()
+        return muon.tightId() and \
+               self.testVertex( muon )          
 
 
-    def muonIso(self, muon ):
-        return muon.relIsoAllChargedDB05()
-    
-
+    testLeg1ID = testMuonID
+    testLeg2ID = testMuonID
