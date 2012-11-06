@@ -85,7 +85,7 @@ void showSecVtxShapeCollection(std::vector<SecVtxShape_t> &shapes, float mtop)
 {
   if(shapes.size()==0) return;
 
-  TCanvas *c=new TCanvas("c","c",400*shapes.size(),800);
+  TCanvas *c=new TCanvas("c","c",400*shapes.size(),400);
   c->Divide(shapes.size(),1);
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
@@ -383,43 +383,52 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       // BACKGROUND
       //
       
-      /*
-      Float_t dataObs=chShapes[is].mass_data->Integral(0,chShapes[is].mass_data->GetXaxis()->GetNbins()+1);
-
-      //define the PDFs to fit signal and background in the Lxy and SecVtx mass categories
-      TH1F *vtxMassSignalH=chShapes[is].mass_signal[172.5];
-      TString hname(ch+"_vtxmass_signal");
-      RooDataHist *vtxMassSignalData = new RooDataHist(hname,hname,RooArgList(secvtxmass),Import(*vtxMassSignalH));
-      RooHistPdf *vtxMassSignalPdf   = new RooHistPdf(hname+"pdf",hname+"pdf",RooArgSet(secvtxmass),*vtxMassSignalData);
-      w->import(*vtxMassSignalPdf);
-      Float_t signalExp=vtxMassSignalH->Integral(0,vtxMassSignalH->GetXaxis()->GetNbins()+1);
-      RooRealVar *signalYields = new RooRealVar("signalyields","signalyields",signalExp,0,dataObs);
-      w->import(*signalYields);
-      for(map<TString, TH1F *>::iterator it=chShapes[is].mass_bckg.begin(); it != chShapes[is].mass_bckg.end(); it++)
-	{
-	  RooDataHist *vtxMassData = new RooDataHist(ch+"_vtxmass_"+it->first,    ch+"_vtxmass_"+it->first, RooArgList(secvtxmass),Import(*it->second));
-	  RooHistPdf *vtxMassPdf   = new RooHistPdf(vtxMassData->GetName()+TString("pdf"), vtxMassData->GetName()+TString("pdf"), RooArgSet(secvtxmass),*vtxMassData);
-	  w->import(*vtxMassPdf);
-
-	  Double_t flavYieldsExpUnc(0);
-	  Float_t flavYieldsExp=it->second->IntegralAndError(0,it->second->GetXaxis()->GetNbins()+1,flavYieldsExpUnc);
-	  flavYieldsExpUnc *= sqrt(1+pow(0.044,2));  // add lumi unc.
-	  TString flav("udsg");
-	  if(it->first.BeginsWith("c")) flav="c";
-	  if(it->first.BeginsWith("b")) flav="b";
-	  RooRealVar *flavYields = new RooRealVar(ch+flav+"yields",ch+flav+"yields",flavYieldsExp,0,dataObs);
-	  RooGaussian *flavYieldsConstraint = new RooGaussian(ch+flav+"constr",ch+flav+"constr",*flavYields,RooConst(flavYieldsExp),RooConst(flavYieldsExpUnc)); 
-	  w->import(*flavYields);
-	  w->import(*flavYieldsConstraint);
-	}
-
       for(map<TString, TH1F *>::iterator it=chShapes[is].lxy_bckg.begin(); it != chShapes[is].lxy_bckg.end(); it++)
 	{
 	  RooDataHist *lxyData = new RooDataHist(ch+"_lxy_"+it->first,    ch+"_lxy_"+it->first,     RooArgList(lxy), Import(*it->second));
 	  RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName()+TString("pdf"), lxyData->GetName()+TString("pdf"), RooArgSet(lxy), *lxyData);
 	  w->import(*lxyPdf);
+	  w->factory("EDIT::"+ch+"flxy_bkg("+ch+"flxy,"+ch+"pfunc="+ch+"beta1[0.02,0.,10],"+ch+"qfunc="+ch+"beta2[0.6,0.,10],"+ch+"thr="+ch+"thr_bckg[0.11],"+ch+"wid="+ch+"wid_bkg[0.035,0,0.1])");
+	  w->pdf(ch+"flxy_bkg")->fitTo(*lxyData,Save(kTRUE),SumW2Error(kTRUE));
+
+	  TCanvas *c=new TCanvas("c","c",500,500);
+	  RooPlot* frame = lxy.frame();
+	  lxyData->plotOn(frame,DataError(RooAbsData::SumW2));
+	  w->pdf(ch+"flxy_bkg")->plotOn(frame,ProjWData(lxy,*lxyData),MoveToBack());
+	  frame->Draw();
+	  c->SaveAs("SecVtxBckg_"+ch+".png");
+
 	}
-      */
+
+
+
+      //Float_t dataObs=chShapes[is].mass_data->Integral(0,chShapes[is].mass_data->GetXaxis()->GetNbins()+1);
+      //define the PDFs to fit signal and background in the Lxy and SecVtx mass categories
+      //TH1F *vtxMassSignalH=chShapes[is].mass_signal[172.5];
+      // TString hname(ch+"_vtxmass_signal");
+      //RooDataHist *vtxMassSignalData = new RooDataHist(hname,hname,RooArgList(secvtxmass),Import(*vtxMassSignalH));
+      //RooHistPdf *vtxMassSignalPdf   = new RooHistPdf(hname+"pdf",hname+"pdf",RooArgSet(secvtxmass),*vtxMassSignalData);
+      // w->import(*vtxMassSignalPdf);
+      //Float_t signalExp=vtxMassSignalH->Integral(0,vtxMassSignalH->GetXaxis()->GetNbins()+1);
+      //RooRealVar *signalYields = new RooRealVar("signalyields","signalyields",signalExp,0,dataObs);
+      //w->import(*signalYields);
+      // for(map<TString, TH1F *>::iterator it=chShapes[is].mass_bckg.begin(); it != chShapes[is].mass_bckg.end(); it++)
+      // 	{
+      // 	  RooDataHist *vtxMassData = new RooDataHist(ch+"_vtxmass_"+it->first,    ch+"_vtxmass_"+it->first, RooArgList(secvtxmass),Import(*it->second));
+      // 	  RooHistPdf *vtxMassPdf   = new RooHistPdf(vtxMassData->GetName()+TString("pdf"), vtxMassData->GetName()+TString("pdf"), RooArgSet(secvtxmass),*vtxMassData);
+      // 	  w->import(*vtxMassPdf);
+      
+      // 	  Double_t flavYieldsExpUnc(0);
+      // 	  Float_t flavYieldsExp=it->second->IntegralAndError(0,it->second->GetXaxis()->GetNbins()+1,flavYieldsExpUnc);
+      // 	  flavYieldsExpUnc *= sqrt(1+pow(0.044,2));  // add lumi unc.
+      // 	  TString flav("udsg");
+      // 	  if(it->first.BeginsWith("c")) flav="c";
+      // 	  if(it->first.BeginsWith("b")) flav="b";
+      // 	  RooRealVar *flavYields = new RooRealVar(ch+flav+"yields",ch+flav+"yields",flavYieldsExp,0,dataObs);
+      // 	  RooGaussian *flavYieldsConstraint = new RooGaussian(ch+flav+"constr",ch+flav+"constr",*flavYields,RooConst(flavYieldsExp),RooConst(flavYieldsExpUnc)); 
+      // 	  w->import(*flavYields);
+      // 	  w->import(*flavYieldsConstraint);
+      //	}
     }
   cqt->SaveAs("SignalPDFsMomenta.png");
 
