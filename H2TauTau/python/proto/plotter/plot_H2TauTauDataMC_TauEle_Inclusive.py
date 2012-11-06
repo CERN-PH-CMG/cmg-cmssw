@@ -227,6 +227,8 @@ if __name__ == '__main__':
     import copy
     from optparse import OptionParser
     from CMGTools.RootTools.RootInit import *
+		from CMGTools.H2TauTau.proto.plotter.officialStyle import
+		officialStyle(gStyle)
 
     parser = OptionParser()
     parser.usage = '''
@@ -285,12 +287,20 @@ if __name__ == '__main__':
                       help="plots: set it to true to make control plots",
                       action="store_true",
                       default=False)
+    parser.add_option("-b", "--batch", 
+                      dest="batch", 
+                      help="Set batch mode.",
+                      action="store_true",
+                      default=False)
 
     (options,args) = parser.parse_args()
 
     if len(args) != 2:
         parser.print_help()
         sys.exit(1)
+
+		if options.batch:
+		gROOT.SetBatch()
 
     if options.nbins is None:
         NBINS = binning_svfitMass_finer
@@ -340,6 +350,9 @@ if __name__ == '__main__':
         print 'using 2J scale factor for TTJets'
 
     #PG when I will use the cut "cat_VBF" in my code, I can change this here above
+
+    #PG assuming it's set in the component cross-section already
+    if not isNewerThan('CMSSW_5_2_0'): TTfactor = 1 
 
     #PG WARNING assuming the TTbar will not change name
     selComps['TTJets'].xSection = selComps['TTJets'].xSection * TTfactor
