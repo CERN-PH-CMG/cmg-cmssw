@@ -208,9 +208,9 @@ def connectSample(components, row, filePattern, aliases, cache, verbose):
             if eff is None:
                 eff = step['jobeff']
         elif step['step']=='PFAOD':
-            eff = 1.0
+            eff = 1.0 # not to double count with PATCMG
         else:
-            eff = None
+            eff = step['jobeff']
         if eff is None:
             print 'WARNING: efficiency not determined for',compName
             eff = 0.0
