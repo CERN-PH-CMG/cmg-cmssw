@@ -1,7 +1,9 @@
 
 #include "ZZMatrixElement/MELA/interface/Mela.h"
+#include "ZZMatrixElement/MELA/interface/PsMela.h"
 #include "ZZMatrixElement/MELA/interface/PseudoMELA.h"
 #include "ZZMatrixElement/MELA/interface/SpinTwoMinimalMELA.h"
+
 
 
 class KD 
@@ -10,6 +12,7 @@ class KD
   KD() {
     mela_ = new Mela();
     pseudomela_ = new PseudoMELA();
+    psMela_ = new PsMela();
     spintwomela_ = new SpinTwoMinimalMELA();
 
 
@@ -18,6 +21,7 @@ class KD
 
   ~KD() {
     if(mela_ !=0) delete mela_;
+    if(psMela_ !=0) delete psMela_;
     if(pseudomela_ !=0) delete pseudomela_;
     if(spintwomela_ !=0) delete spintwomela_;
   }
@@ -35,6 +39,22 @@ class KD
 		     costhetastar_,costheta1_,costheta2_,phi_,phistar1_,melaKD,sig_,bkg_,withPt,withY);
     return melaKD;
   }
+
+
+  float computePsMELA(TLorentzVector Z1_lept1, int Z1_lept1Id,
+		   TLorentzVector Z1_lept2, int Z1_lept2Id,
+		   TLorentzVector Z2_lept1, int Z2_lept1Id,
+		   TLorentzVector Z2_lept2, int Z2_lept2Id,
+		   bool withPt = false,
+		    bool withY = false) {
+
+    
+    float melaKD,melaS,melaB;
+    psMela_->computeKD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,
+		     costhetastar_,costheta1_,costheta2_,phi_,phistar1_,melaKD,sig_,bkg_,withPt,withY);
+    return melaKD;
+  }
+
 
   float melaS() {return sig_;}
   float melaB() {return bkg_;}
@@ -75,6 +95,7 @@ class KD
  private:
   Mela * mela_;
   PseudoMELA * pseudomela_;
+  PsMela * psMela_;
   SpinTwoMinimalMELA * spintwomela_;
   float costhetastar_;
   float costheta1_; 

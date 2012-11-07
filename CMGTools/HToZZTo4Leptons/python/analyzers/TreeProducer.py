@@ -168,6 +168,7 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_MELAS'.format(pName=pName))
         self.var('{pName}_MELAB'.format(pName=pName))
         self.var('{pName}_PseudoMELA'.format(pName=pName))
+        self.var('{pName}_PSMELA'.format(pName=pName))
         self.var('{pName}_SpinTwoMELA'.format(pName=pName))
         self.var('{pName}_MassErr'.format(pName=pName))
         self.var('{pName}_DEta'.format(pName=pName))
@@ -213,6 +214,9 @@ class TreeProducer( Analyzer ):
             self.fill('{pName}_MELAB'.format(pName=pName), particle.melaB )
         if hasattr(particle,'pseudomela'):
             self.fill('{pName}_PseudoMELA'.format(pName=pName), particle.pseudomela )
+        if hasattr(particle,'psmela'):
+            self.fill('{pName}_PSMELA'.format(pName=pName), particle.psmela )
+
         if hasattr(particle,'spintwomela'):
             self.fill('{pName}_SpinTwoMELA'.format(pName=pName), particle.spintwomela )
         if hasattr(particle,'massErr'):
