@@ -124,6 +124,8 @@ double hzz_dPhi_JetMet_UMETup;
 double hzz_dPhi_JetMet_UMETdown;
 double hzz_dPhi_JetMet_LESup;
 double hzz_dPhi_JetMet_LESdown;
+double lineshape_weight_up;
+double lineshape_weight_down;
 
 
 TBranch *b_hzz_Jet_SumPT = hzz_tree->Branch("hzz_Jet_SumPT",&hzz_Jet_SumPT,"hzz_Jet_SumPT/D");
@@ -206,6 +208,9 @@ TBranch *b_hzz_dPhi_JetMet_UMETup = hzz_tree->Branch("hzz_dPhi_JetMet_UMETup", &
 TBranch *b_hzz_dPhi_JetMet_UMETdown = hzz_tree->Branch("hzz_dPhi_JetMet_UMETdown", &hzz_dPhi_JetMet_UMETdown , "hzz_dPhi_JetMet_UMETdown/D");
 TBranch *b_hzz_dPhi_JetMet_LESup = hzz_tree->Branch("hzz_dPhi_JetMet_LESup", &hzz_dPhi_JetMet_LESup , "hzz_dPhi_JetMet_LESup/D");
 TBranch *b_hzz_dPhi_JetMet_LESdown = hzz_tree->Branch("hzz_dPhi_JetMet_LESdown", &hzz_dPhi_JetMet_LESdown , "hzz_dPhi_JetMet_LESdown/D");
+TBranch *b_lineshape_weight_up = hzz_tree->Branch("lineshape_weight_up", &lineshape_weight_up , "lineshape_weight_up/D");
+TBranch *b_lineshape_weight_down = hzz_tree->Branch("lineshape_weight_down", &lineshape_weight_down , "lineshape_weight_down/D");
+
 
 
   // check arguments
@@ -511,39 +516,11 @@ event_weight = xsec/cnorm;
 //cout << "********************************************************"<<endl;
 //}
 
-      //pileup and Higgs pT weight
-      //float weight=ev.puWeight;
-      //pileup weight
-/*
-      float weight = 1.0;
-      float noLShapeWeight=1.0;
-      float signalWeight=1.0;
-      double TotalWeight_plus = 1.0;
-      double TotalWeight_minus = 1.0;
-      float lShapeWeights[4]={1.0,1.0,1.0,1.0};
-
-
-      if(isMC){
-
-	if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
-//cout << " weight = " << weight << endl;
-        if(isMC_GG) {
-        for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
-	 ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
-	 weight *= ev.hptWeights[0];
-//cout << "weight (ev.hptWeights[0]) = " << weight << endl;
-        }
-	for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
-	  lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
-	noLShapeWeight=weight;
-	weight *= lShapeWeights[0];
-//cout << "weight after line shape = " << weight << endl;
-	
-      }
-*/
-
       //pileup weight
       float weight = 1.0;
+      float weight_lsup = 1.0;
+      float weight_lsdown = 1.0;
+      float pu_weight = 1.0;
       float noLShapeWeight=1.0;
       float signalWeight=1.0;
       double TotalWeight_plus = 1.0;
@@ -554,7 +531,7 @@ event_weight = xsec/cnorm;
 
       if(isMC){
 
- //       weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
+       pu_weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
        TotalWeight_plus  = PuShifters[PUUP]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
        TotalWeight_minus = PuShifters[PUDOWN]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
 
@@ -573,6 +550,9 @@ event_weight = xsec/cnorm;
           lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
         noLShapeWeight=weight;
         weight *= lShapeWeights[0];
+        weight_lsup *= lShapeWeights[1];
+        weight_lsdown *= lShapeWeights[2];
+
         //printf("lsw=%f \n",lShapeWeights[0]);
 //cout << "lShapeWeights[0] = " << lShapeWeights[0] << endl;
 //cout << "lShapeWeights[1] = " << lShapeWeights[1] << endl;
@@ -928,6 +908,8 @@ hzz_RawMet = rawMetP4.pt();
 hzz_MVAMet = mvaMetP4.pt();
 //hzz_BTag = btag_discrm;
 lineshape_weight = weight;
+lineshape_weight_up =  weight_lsup;
+lineshape_weight_down =  weight_lsdown;
 hzz_lept1_gIso = phys.leptons[0].gIso;
 hzz_lept2_gIso = phys.leptons[1].gIso;
 hzz_lept1_chIso = phys.leptons[0].chIso;
@@ -962,7 +944,7 @@ hzz_rho = ev.rho25;
       hzz_Z_PT = zll.pt();
       hzz_Z_Eta = zll.eta();
       hzz_Z_Phi = zll.phi();
-      PUWeight = weight;
+      PUWeight = pu_weight;
       hzz_PFMET = zvvs[0].pt();
       hzz_MET_Phi = zvvs[0].phi();
 //      hzz_TransMass_Higgs = mts[0];
@@ -1000,6 +982,12 @@ hzz_N_Jets = nAJetsGood30;
 hzz_dPhi_JetMet = mindphijmet;
 hzz_Jet_SumPT = sumet;
 //cout << " Minimum dPhi of jet and Met = " << hzz_dPhi_JetMet << endl;
+
+//cout <<"hzz_weight_PUup = " << hzz_weight_PUup << endl;
+//cout <<"hzz_weight_PUdown = " << hzz_weight_PUdown << endl;
+//cout <<"hzz_weight_PU = " << PUWeight << endl;
+
+
 //cout << "***********************************************************************************************************" << endl;
       hzz_tree->Fill();
 }//
