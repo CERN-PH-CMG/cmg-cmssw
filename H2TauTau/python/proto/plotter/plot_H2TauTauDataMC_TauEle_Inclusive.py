@@ -7,7 +7,7 @@ import re
 #from CMGTools.H2TauTau.proto.HistogramSet import histogramSet
 from CMGTools.H2TauTau.proto.plotter.H2TauTauDataMC import H2TauTauDataMC
 from CMGTools.H2TauTau.proto.plotter.prepareComponents import prepareComponents #, readPickles
-from CMGTools.H2TauTau.proto.plotter.rootutils import buildCanvas, draw, drawOfficial, buildCanvasOfficial
+from CMGTools.H2TauTau.proto.plotter.rootutils import *
 from CMGTools.H2TauTau.proto.plotter.binning import binning_svfitMass, binning_svfitMass_finer
 from CMGTools.H2TauTau.proto.plotter.titles import xtitles
 from CMGTools.H2TauTau.proto.plotter.blind import blind
@@ -19,6 +19,7 @@ from CMGTools.RootTools.Style import *
 from CMGTools.H2TauTau.proto.plotter.categories_common import replaceCategories
 from CMGTools.H2TauTau.proto.plotter.categories_TauEle import categories
 from ROOT import kGray, kPink, TH1, TPaveText, TPad, TCanvas
+from CMGTools.RootTools.Style import *
 
 cp = copy.deepcopy
 EWK = 'WJets'
@@ -227,7 +228,7 @@ if __name__ == '__main__':
     import copy
     from optparse import OptionParser
     from CMGTools.RootTools.RootInit import *
-    from CMGTools.H2TauTau.proto.plotter.officialStyle import
+    from CMGTools.H2TauTau.proto.plotter.officialStyle import *
     officialStyle(gStyle)
 
     parser = OptionParser()
@@ -299,8 +300,8 @@ if __name__ == '__main__':
         parser.print_help()
         sys.exit(1)
 
-		if options.batch:
-		gROOT.SetBatch()
+    if options.batch:
+        gROOT.SetBatch()
 
     if options.nbins is None:
         NBINS = binning_svfitMass_finer
