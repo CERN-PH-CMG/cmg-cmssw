@@ -160,7 +160,7 @@ if __name__ == '__main__':
     dataName = 'Data'
 
     #WARNING!
-    weight='1'
+    weight='weight'
     
     anaDir = args[0].rstrip('/')
 
