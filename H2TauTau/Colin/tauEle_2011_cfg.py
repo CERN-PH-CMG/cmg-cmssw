@@ -11,7 +11,7 @@ from CMGTools.RootTools.RootTools import *
 # 'Nom', 'Up', 'Down', or None
 shift = None
 # 1.0, 1.03, 0.97
-tauScaleShift = 1.0
+tauScaleShift = 1.03
 syncntuple = True
 
 mc_vertexWeight = 'vertexWeightFall112011AB'
@@ -51,7 +51,7 @@ tauEleAna = cfg.Analyzer(
     scaleShift1 = tauScaleShift,
     pt1 = 20,
     eta1 = 2.3,
-    iso1 = 999,
+    iso1 = None,
     pt2 = 20,
     eta2 = 2.1,
     iso2 = 0.1,
@@ -127,6 +127,7 @@ vbfAna = cfg.Analyzer(
     jetEta = 4.7,
     cjvPtCut = 30.,
     btagSFseed = 123456,
+    relaxJetId = False,
     **vbfKwargs
     )
 
@@ -205,12 +206,12 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 0
+test = 1
 if test==1:
-    comp = WJets
-    # comp.files = comp.files[:2]
+    comp = HiggsVBF125
+    comp.files = comp.files[:100]
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 14
 elif test==2:
     selectedComponents = copy.copy(data_list_2011)
     selectedComponents.extend(embed_list_2011)
