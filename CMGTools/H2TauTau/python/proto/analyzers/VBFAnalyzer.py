@@ -167,7 +167,7 @@ class VBFAnalyzer( Analyzer ):
         if self.cfg_ana.relaxJetId:
             return True
         else:
-            return jet.puJetId and jet.pfJetId
+            return jet.puJetIdPassed and jet.pfJetIdPassed
         
         
     def testJet( self, jet ):
