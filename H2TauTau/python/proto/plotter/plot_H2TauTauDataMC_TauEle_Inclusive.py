@@ -227,8 +227,8 @@ if __name__ == '__main__':
     import copy
     from optparse import OptionParser
     from CMGTools.RootTools.RootInit import *
-		from CMGTools.H2TauTau.proto.plotter.officialStyle import
-		officialStyle(gStyle)
+    from CMGTools.H2TauTau.proto.plotter.officialStyle import
+    officialStyle(gStyle)
 
     parser = OptionParser()
     parser.usage = '''
