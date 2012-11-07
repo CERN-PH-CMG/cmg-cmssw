@@ -267,7 +267,6 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       
       //now fit the template parameters and plot the results
       RooFitResult *fitres = w->pdf("flxy_"+ch+"sim")->fitTo(combTempl,Range(0.,5.),Save(kTRUE),SumW2Error(kTRUE)); 
-      //RooFitResult *fitres = w->pdf("flxy_"+ch+"sim")->chi2FitTo(combTempl,Range(0.,5.),Save(kTRUE));
       int ncats=templates.size();
       int npadsx=ncats/2+1;
       int npadsy=ncats/2+1;
@@ -399,7 +398,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  c->SaveAs("SecVtxBckg_"+ch+".png");
 
 	  RooRealVar *sigfrac =new RooRealVar(ch+"sigfrac",ch+"sigfrac",0.9,0.1);
-	  RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf("flxy_"+ch+"sim"),*w->pdf(ch+"flxy_bkg")),*sigfrac);
+	  RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf(ch+"flxy"),*w->pdf(ch+"flxy_bkg")),*sigfrac);
 	  w->import(*model);
 	}
 
