@@ -128,7 +128,7 @@ TauMuAna = cfg.Analyzer(
     scaleShift1 = tauScaleShift,
     pt1 = 20,
     eta1 = 2.3,
-    iso1 = 999,
+    iso1 = None,
     pt2 = 20,
     eta2 = 2.1,
     iso2 = 0.1,
@@ -186,6 +186,9 @@ vbfAna = cfg.Analyzer(
     jetCol = 'cmgPFJetSel',
     jetPt = 20,
     jetEta = 4.7,
+    cjvPtCut = 30.,
+    btagSFseed = 123456,
+    relaxJetId = False,
     **vbfKwargs
     )
 

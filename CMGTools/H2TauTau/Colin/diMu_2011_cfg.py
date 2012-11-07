@@ -18,7 +18,7 @@ vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     goodVertices = 'offlinePrimaryVertices',
     vertexWeight = mc_vertexWeight,
-    fixedWeight = 1,
+    # fixedWeight = 1,
     verbose = False
     )
 
@@ -90,8 +90,8 @@ from CMGTools.H2TauTau.proto.samples.diMu_ColinNov6 import *
 
 #########################################################################################
 
-selectedComponents = copy.copy(data_list_2011)
-# selectedComponents = data_list_2011
+# selectedComponents = copy.copy(data_list_2011)
+selectedComponents = data_list_2011
 # selectedComponents.append( DYJets )
 # selectedComponents = []
 selectedComponents.extend([TTJets, DYJets])
@@ -112,12 +112,12 @@ sequence = cfg.Sequence( [
    ] )
 
 
-test = 1
+test = 0
 if test==1:
     comp = DYJets
-    # comp.files = comp.files[:10]
+    comp.files = comp.files[:10]
     selectedComponents = [comp]
-    comp.splitFactor = 14
+    comp.splitFactor = 1
 elif test==2:
     selectedComponents = copy.copy(data_list_2011)
     selectedComponents.extend(embed_list_2011)
