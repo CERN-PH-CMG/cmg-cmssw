@@ -31,6 +31,7 @@ class ZJetsTreeProducer( TreeAnalyzerNumpy ):
         bookVBF( tr, 'VBF' )
 
         var( tr, 'nVert')
+        var( tr, 'weight')
         
 
     def process(self, iEvent, event):
@@ -61,6 +62,7 @@ class ZJetsTreeProducer( TreeAnalyzerNumpy ):
             fillVBF( tr, 'VBF', event.vbf )
 
         fill(tr, 'nVert', len(event.goodVertices) )
+        fill(tr, 'weight', event.eventWeight )
         
         self.tree.tree.Fill()
        
