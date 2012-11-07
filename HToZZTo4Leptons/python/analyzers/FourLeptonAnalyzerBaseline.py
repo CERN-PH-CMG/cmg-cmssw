@@ -1,4 +1,3 @@
-\
 import operator 
 import itertools
 import copy

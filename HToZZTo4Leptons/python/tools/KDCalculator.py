@@ -57,6 +57,13 @@ class KDCalculator(object):
         FL.melaB = self.KD.melaB()
 
 
+        FL.psmela = self.KD.computePsMELA(l1,FL.leg1.leg1.pdgId(),
+                                          l2,FL.leg1.leg2.pdgId(),
+                                          l3,FL.leg2.leg1.pdgId(),
+                                          l4,FL.leg2.leg2.pdgId())
+
+
+
         FL.pseudomela = self.KD.computePseudoMELA(l1,FL.leg1.leg1.pdgId(),
                                         l2,FL.leg1.leg2.pdgId(),
                                         l3,FL.leg2.leg1.pdgId(),

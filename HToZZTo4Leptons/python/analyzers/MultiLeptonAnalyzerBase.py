@@ -52,7 +52,7 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         #initialize MELA    
         self.kdCalc = KDCalculator()
         #initialize mass errors
-        self.massRes = MassErrors()
+        self.massRes = MassErrors(cfg_comp.isData)
 
         if  hasattr(self.cfg_ana,"FSR"):
             self.FSR=FSRRecovery(self.cfg_ana.FSR)

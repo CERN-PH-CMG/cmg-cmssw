@@ -2,11 +2,31 @@ import ROOT
 
 from math import sqrt,pow,sin,cos,tan
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,isNewerThan
+from CMGTools.HToZZTo4Leptons.tools.fullPath import getFullPath
+
 ROOT.gSystem.Load("libCMGToolsHToZZTo4Leptons")
 
 class MassErrors(object):
-    def __init__(self):
-        self.is44X = cmsswIs44X() 
+    def __init__(self,isData = True,doComponents = True,scaleErrors = True ):
+        self.is44X = cmsswIs44X()
+        self.doComponents = doComponents
+        if scaleErrors:
+            self.rootfile = ROOT.TFile(getFullPath('data/ebe_scalefactors.root'))
+            if self.is44X:
+                if isData:
+                    self.muonHisto = self.rootfile.Get('mu_reco42x')
+                    self.eleHisto = self.rootfile.Get('el_reco42x')
+                else:
+                    self.muonHisto = self.rootfile.Get('mu_mc42x')
+                    self.eleHisto = self.rootfile.Get('el_mc42x')
+            else:
+                if isData:
+                    self.muonHisto = self.rootfile.Get('mu_reco53x')
+                    self.eleHisto = self.rootfile.Get('el_reco53x')
+                else:
+                    self.muonHisto = self.rootfile.Get('mu_mc53x')
+                    self.eleHisto = self.rootfile.Get('el_mc53x')
+                
 
 
     def calculateElectronMatrix(self,electron,matrix,offset):
@@ -99,7 +119,20 @@ class MassErrors(object):
 
       return sqrt(C*C*energy*energy + S*S*energy*energy + N*N);
 
-
+    def errorScale(self,lepton):
+        if abs(lepton.pdgId())==11:
+            histo=self.eleHisto
+        else:
+            histo=self.muonHisto
+        binx = histo.GetXaxis().FindBin(lepton.pt())
+        if binx>histo.GetNbinsX():
+            binx = histo.GetNbinsX()
+        biny = histo.GetYaxis().FindBin(abs(lepton.eta()))
+        if biny>histo.GetNbinsY():
+            biny = histo.GetNbinsX()
+        scalefactor=histo.GetBinContent(binx,biny)
+        return scalefactor
+        
     def calculate(self,fourLepton):
 
         N = len(fourLepton.daughterLeptons()+fourLepton.daughterPhotons())    
@@ -107,7 +140,11 @@ class MassErrors(object):
         bigCov = ROOT.TMatrixDSym(NDIM)
         jacobian = ROOT.TMatrixD(1,NDIM)
         offset=0
-
+#        print 'DIMENSIONS',NDIM, 'DAUGHTERS',N
+#        print 'leptons+photons',fourLepton.daughterLeptons()+fourLepton.daughterPhotons()
+#        print 'Empty Covariance Matrix'
+#        bigCov.Print()
+        
         for lepton in fourLepton.daughterLeptons():
             self.calculateLeptonMatrix(lepton,bigCov,offset)
             jacobian[0][offset] = (fourLepton.energy()*(lepton.px()/lepton.energy()) - fourLepton.px())/fourLepton.mass()
@@ -122,10 +159,47 @@ class MassErrors(object):
             jacobian[0][offset+2] = (fourLepton.energy()*(lepton.pz()/lepton.energy()) - fourLepton.pz())/fourLepton.mass()
             offset=offset+3                           
 
-   
-        massCov = bigCov.Similarity(jacobian)
-   
-        dm2 = massCov(0,0)
+            
+        if not self.doComponents:
+            massCov = bigCov.Similarity(jacobian)
+            dm2 = massCov(0,0)
+            if dm2>0:
+                return sqrt(dm2)
+            else:
+                return 0
+
+        errs = []
+        offset=0
+        for i in range(0,N):
+            bigCovOne = ROOT.TMatrixDSym(NDIM)
+            for ir in range(0,3):
+                for ic in range(0,3):
+                    bigCovOne[offset+ir][offset+ic]=bigCov(offset+ir,offset+ic)
+            dmOneCov = bigCovOne.Similarity(jacobian)
+            dmOne2 =dmOneCov(0,0) 
+            if dmOne2>0.0:
+                errs.append(sqrt(dmOne2))
+            else:    
+                errs.append(0.0)
+            offset=offset+3     
+#            print 'CovarianceMatrix Per Lepton'
+#            bigCovOne.Print()
+
+        #Now that the components have been calculated
+        #let's scale them.Recall the way we do it here
+        #is to have the 4 leptons first. Then the FSR photons
+#        print 'Errors before scale',errs
+        for Ni,lepton in enumerate(fourLepton.daughterLeptons()):
+            errs[Ni]=errs[Ni]*self.errorScale(lepton)
+
+#        print 'Errors after scale',errs
+                
+            #Now recalculate the error
+        dm2=0.0
+        for component in errs: 
+            dm2=dm2+component*component
+
+#        print 'error=',dm2    
         if dm2>0:
             return sqrt(dm2)
         else:
