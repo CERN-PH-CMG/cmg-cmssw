@@ -11,6 +11,8 @@ class HistComparator(object):
     This class manipulates histograms that behave like a TH1.
     (TH1F, TH1D, and probably TProfile and RooDataSets).
     '''
+
+    CAN_NUM = 0
     
     def __init__(self, name, h1, h2, title1=None, title2=None):
         '''Constructor.
@@ -79,7 +81,9 @@ class HistComparator(object):
         self.can.cd()
 
     def buildCanvas(self):
-        can = TCanvas('can','',600,600)
+        can = TCanvas('can_{num}'.format(num=self.__class__.CAN_NUM),
+                      '',600,600)
+        self.__class__.CAN_NUM += 1
         can.cd()
         can.Draw()
         sep = 0.35
