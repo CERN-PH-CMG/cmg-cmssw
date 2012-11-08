@@ -207,7 +207,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       RooDataHist *lxy_data = new RooDataHist(ch+"data",ch+"data",lxy,chShapes[is].lxy_data);
       w->import(*lxy_data);
 
-      lxy.setBins( chShapes[is].lxy_signal.begin()->second->GetXaxis()->GetNbins()/2 );
+      lxy.setBins( chShapes[is].lxy_signal.begin()->second->GetXaxis()->GetNbins() );///2 );
       const Int_t nq = 4;
       Double_t xq[nq];  // position where to compute the quantiles in [0,1]
       Double_t yq[nq];  // array to contain the quantiles
@@ -215,6 +215,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       TGraph *gr25 = new TGraph;   gr25->SetName(ch+"q25");    gr25->SetTitle("1^{st} quart.");  gr25->SetMarkerStyle(24);    gr25->SetFillStyle(0);
       TGraph *gr50 = new TGraph;   gr50->SetName(ch+"q50");    gr50->SetTitle("median");         gr50->SetMarkerStyle(25);    gr50->SetFillStyle(0);
       TGraph *grmean = new TGraph; grmean->SetName(ch+"mean"); grmean->SetTitle("average");      grmean->SetMarkerStyle(20);  grmean->SetFillStyle(0);
+      Double_t signalExp(chShapes[is].lxy_data->Integral());
       for(std::map<Float_t,TH1F *>::iterator it=chShapes[is].lxy_signal.begin();
 	  it!=chShapes[is].lxy_signal.end();
 	  it++)
@@ -225,7 +226,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  masses[catName.Data()]    = it->first;
 	  templates[catName.Data()] = it->second;
 	  rooTemplates[catName.Data()] = new RooDataHist(catName+"templ",catName+"templ",lxy,it->second);
-	  
+	  if(it->first==172.5) signalExp=it->second->Integral();
 	  it->second->GetQuantiles(nq,yq,xq);
 	  gr25->SetPoint(gr25->GetN(),it->first,yq[0]);
 	  gr50->SetPoint(gr50->GetN(),it->first,yq[1]);
@@ -244,7 +245,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       RooRealVar alpha4(ch+"alpha4","#alpha_{4}",0.0,  0.,   0.1);
       RooFormulaVar pfunc(ch+"pfunc","p","@0+@1*@2",RooArgSet(alpha1,alpha2,mtop)); 
       RooFormulaVar qfunc(ch+"qfunc","q","@0+@1*@2",RooArgSet(alpha3,alpha4,mtop));
-      RooRealVar thr(ch+"thr","#lambda",0.11);//,0,0.2);
+      RooRealVar thr(ch+"thr","#lambda",0.11,0.1,0.2);//,0,0.2);
       RooRealVar wid(ch+"wid","#sigma",0.035,0,0.1);
       TString F_form(  "(1.0/qfunc)*(1.0/TMath::Gamma(1+pfunc,thr/qfunc))*pow(var/qfunc,pfunc)*(exp(-var/qfunc)/(1+exp((thr-var)/wid)))"); 
       F_form.ReplaceAll("thr",   "@0");
@@ -277,6 +278,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       TCanvas *c=new TCanvas("c","c",npadsx*400,npadsy*400);
       c->Divide(npadsx,npadsy);
       int ipad(1);
+      int npar(0);
       for(std::map<string,float>::iterator mIt=masses.begin(); mIt != masses.end(); mIt++,ipad++)
 	{
 	  c->cd(ipad);
@@ -297,35 +299,49 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  frame->Draw();
 	  frame->GetXaxis()->SetTitle("L_{xy} [cm]");
 	  frame->GetYaxis()->SetTitle("Jets");
-	  frame->SetMinimum(0);
+	  frame->SetMinimum(0.001);
+	  
+	  if(ipad==0)
+	    {
+	      fitres->Print("v");
+	      TPaveText *pave = new TPaveText(0.5,0.5,0.88,0.88,"NDC");
+	      pave->AddText("Fit results");
+	      pave->AddLine();
+	      RooArgSet varSet=w->allVars();
+	      TIterator *iter=varSet.createIterator();
+	      RooRealVar *var;
+	      while((var=(RooRealVar*)iter->Next())) {
+		if(var->getError()==0) continue;
+		TString varName(var->GetName()); 
+		if(!varName.BeginsWith(ch)) continue;
+		if(varName.Contains("mtop")) continue;
+		char line[100];
+		sprintf(line,"%s=%3.4f #pm %3.4f", var->GetTitle(),var->getVal(),var->getError());
+		pave->AddText(line); 
+		npar++;
+	      }
+	    }
+	  
+	  TPaveText *pave = new TPaveText(0.1,0.9,0.4,0.95,"NDC");
+	  pave->SetBorderSize(0);
+	  pave->SetFillStyle(0);
+	  pave->SetTextAlign(12);
+	  pave->SetTextFont(42);
+	  char buf[200]; sprintf(buf,"m_{t}^{gen}=%3.1f",mIt->second);
+	  pave->AddText(buf);
+	  pave->Draw();
 
-	  TPaveText *pave = new TPaveText(0.65,0.9,0.9,0.95,"NDC");
+	  pave = new TPaveText(0.65,0.9,0.9,0.95,"NDC");
 	  pave->SetBorderSize(0);
 	  pave->SetFillStyle(0);
 	  pave->SetTextAlign(32);
 	  pave->SetTextFont(42);
-	  char buf[200]; sprintf(buf,"%3.1f",mIt->second);
+	  float chi2=frame->chiSquare(0); //npar);
+	  int myndof = frame->GetNbinsX() - npar;
+	  sprintf(buf,"#chi^{2} %3.2f",chi2);
 	  pave->AddText(buf);
 	  pave->Draw();
 	  
-	  //print the fit in the first canvas
-	  if(ipad>1) continue;
-	  fitres->Print("v");
-	  pave = new TPaveText(0.5,0.5,0.88,0.88,"NDC");
-	  pave->AddText("Fit results");
-	  pave->AddText("");
-	  RooArgSet varSet=w->allVars();
-	  TIterator *iter=varSet.createIterator();
-	  RooRealVar *var;
-	  while((var=(RooRealVar*)iter->Next())) {
-	    if(var->getError()==0) continue;
-	    TString varName(var->GetName()); 
-	    if(!varName.BeginsWith(ch)) continue;
-	    if(varName.Contains("mtop")) continue;
-	    char line[100];
-	    sprintf(line,"%s=%3.4f #pm %3.4f", var->GetTitle(),var->getVal(),var->getError());
-	    pave->AddText(line); 
-	  }
 	  pave->SetBorderSize(0);
 	  pave->SetFillStyle(0);
 	  pave->SetTextFont(42);
@@ -398,9 +414,30 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  lxyData->plotOn(frame,DataError(RooAbsData::SumW2));
 	  w->pdf(ch+"flxy_bkg")->plotOn(frame,ProjWData(lxy,*lxyData),MoveToBack());
 	  frame->Draw();
-	  c->SaveAs("SecVtxBckg_"+ch+".png");
+	  frame->SetMinimum(0.001);
+	  TPaveText *pave = new TPaveText(0.2,0.9,0.9,0.95,"NDC");
+          pave->SetBorderSize(0);
+          pave->SetFillStyle(0);
+          pave->SetTextFont(42);
+	  TString chTitle(ch); chTitle.ReplaceAll("mu","#mu"); chTitle += " background";
+	  pave->AddText(chTitle);
+          pave->Draw();
 
-	  RooRealVar *sigfrac =new RooRealVar(ch+"sigfrac",ch+"sigfrac",0.9,0.1);
+	  pave = new TPaveText(0.65,0.9,0.9,0.95,"NDC");
+	  pave->SetBorderSize(0);
+	  pave->SetFillStyle(0);
+	  pave->SetTextAlign(32);
+	  pave->SetTextFont(42);
+	  float chi2=frame->chiSquare(0);
+	  char buf[200];
+	  sprintf(buf,"#chi^{2} %3.2f",chi2);
+	  pave->AddText(buf);
+	  pave->Draw();
+
+	  c->SaveAs("SecVtxBckg_"+ch+".png");
+	  
+	  Double_t bckgExp=it->second->Integral();
+	  RooRealVar *sigfrac =new RooRealVar(ch+"sigfrac",ch+"sigfrac",signalExp/(signalExp+bckgExp),0,1.0);
 	  RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf(ch+"flxy"),*w->pdf(ch+"flxy_bkg")),*sigfrac);
 	  w->import(*model);
 	}
