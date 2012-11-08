@@ -204,6 +204,9 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       //
 
       //lxy templates
+      RooDataHist *lxy_data = new RooDataHist(ch+"data",ch+"data",lxy,chShapes[is].lxy_data);
+      w->import(*lxy_data);
+
       lxy.setBins( chShapes[is].lxy_signal.begin()->second->GetXaxis()->GetNbins()/2 );
       const Int_t nq = 4;
       Double_t xq[nq];  // position where to compute the quantiles in [0,1]
