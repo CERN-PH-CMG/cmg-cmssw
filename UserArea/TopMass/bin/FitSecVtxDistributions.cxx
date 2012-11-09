@@ -301,13 +301,17 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  frame->GetYaxis()->SetTitle("Jets");
 	  frame->SetMinimum(0.001);
 	  
-	  if(ipad==0)
+	  if(ipad==1)
 	    {
 	      fitres->Print("v");
 	      TPaveText *pave = new TPaveText(0.5,0.5,0.88,0.88,"NDC");
+	      pave->SetBorderSize(0);
+	      pave->SetFillStyle(0);
+	      pave->SetTextAlign(12);
+	      pave->SetTextFont(42);
 	      pave->AddText("Fit results");
-	      pave->AddLine();
-	      RooArgSet varSet=w->allVars();
+	      RooArgList varSet=fitres->floatParsFinal();
+	      //RooArgSet varSet=w->allVars();
 	      TIterator *iter=varSet.createIterator();
 	      RooRealVar *var;
 	      while((var=(RooRealVar*)iter->Next())) {
@@ -320,6 +324,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 		pave->AddText(line); 
 		npar++;
 	      }
+	      pave->Draw();
 	    }
 	  
 	  TPaveText *pave = new TPaveText(0.1,0.9,0.4,0.95,"NDC");
@@ -407,7 +412,11 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName()+TString("bkg"), lxyData->GetName()+TString("bkg"), RooArgSet(lxy), *lxyData);
 	  w->import(*lxyPdf);
 	  w->factory("EDIT::"+ch+"flxy_bkg("+ch+"flxy,"+ch+"pfunc="+ch+"beta1[0.02,0.,10],"+ch+"qfunc="+ch+"beta2[0.6,0.,10],"+ch+"thr="+ch+"thr_bckg[0.11],"+ch+"wid="+ch+"wid_bkg[0.035,0,0.1])");
-	  w->pdf(ch+"flxy_bkg")->fitTo(*lxyData,Save(kTRUE),SumW2Error(kTRUE));
+	  w->var(ch+"beta1")->SetTitle("p");
+	  w->var(ch+"beta2")->SetTitle("q");
+	  w->var(ch+"thr_bckg")->SetTitle("#lambda");
+	  w->var(ch+"wid_bkg")->SetTitle("#sigma");
+	  RooFitResult *fitRes=w->pdf(ch+"flxy_bkg")->fitTo(*lxyData,Save(kTRUE),SumW2Error(kTRUE));
 
 	  TCanvas *c=new TCanvas("c","c",500,500);
 	  RooPlot* frame = lxy.frame();
@@ -432,6 +441,28 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  char buf[200];
 	  sprintf(buf,"#chi^{2} %3.2f",chi2);
 	  pave->AddText(buf);
+	  pave->Draw();
+
+	  fitres->Print("v");
+	  pave = new TPaveText(0.5,0.5,0.88,0.88,"NDC");
+	  pave->AddText("Fit results");
+	  pave->SetBorderSize(0);
+          pave->SetFillStyle(0);
+          pave->SetTextAlign(12);
+          pave->SetTextFont(42);
+	  RooArgList varSet=fitRes->floatParsFinal();
+	  TIterator *iter=varSet.createIterator();
+	  RooRealVar *var;
+	  while((var=(RooRealVar*)iter->Next())) {
+	    if(var->getError()==0) continue;
+	    TString varName(var->GetName()); 
+	    if(!varName.BeginsWith(ch)) continue;
+	    if(varName.Contains("mtop")) continue;
+	    char line[100];
+	    sprintf(line,"%s=%3.4f #pm %3.4f", var->GetTitle(),var->getVal(),var->getError());
+	    pave->AddText(line); 
+	    npar++;
+	  }
 	  pave->Draw();
 
 	  c->SaveAs("SecVtxBckg_"+ch+".png");
