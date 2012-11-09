@@ -59,11 +59,11 @@ The basic flow is:
 
 Example:
 
-ProductionTasks.py -u cbern -w 'PFAOD*.root' -c -N 1 -q 8nh -t PAT_CMG_V2_2_0 --output_wildcard '[!h]*.root' --cfg patTuple_PF2PAT_forCMG_cfg.py /QCD_Pt-1800_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2
+ProductionTasks.py -u cbern -w 'PFAOD*.root' -c -N 1 -q 8nh -t PAT_CMG_V5_10_0 --output_wildcard '*.root' --cfg PATCMG_cfg.py /QCD_Pt-1800_TuneZ2_7TeV_pythia6/Summer11-PU_S3_START42_V11-v2/AODSIM/V2
 
 It is often useful to store the sample names in a file, in which case you could instead do:
 
-ProductionTasks.py -w 'PFAOD*.root' -c -N 1 -q 8nh -t PAT_CMG_V2_2_0 --output_wildcard '[!h]*.root' --cfg patTuple_PF2PAT_forCMG_cfg.py `cat samples_mc.txt`
+ProductionTasks.py -w '*.root' -c -N 1 -q 8nh -t PAT_CMG_V5_10_0 --output_wildcard '*.root' --cfg PATCMG_cfg.py `cat samples_mc.txt`
 
 An example file might contain:
 
@@ -380,6 +380,7 @@ class FullCFG(Task):
         Task.__init__(self,'FullCFG', dataset, user, options)
     def addOption(self, parser):
         parser.add_option("--cfg", dest="cfg", default=None, help='The top level CFG to run')           
+        parser.add_option("--nEventsPerJob", dest="nEventsPerJob", default=None, help='Number of events per job (for testing)')           
     def run(self, input):
         
         jobdir = input['CreateJobDirectory']['JobDir']
@@ -395,9 +396,13 @@ class FullCFG(Task):
         source = os.path.join(jobdir,'full_cfg.py')
         output = file(source,'w')
 
+        nEventsPerJob = -1
+        if self.options.nEventsPerJob:
+            nEventsPerJob = int(self.options.nEventsPerJob)
+        
         toInsert = ['\nfrom %s import *\n' % sourceFile,
                     'process.source.fileNames = files\n',
-                    'if hasattr(process,"maxEvents"): process.maxEvents.input = cms.untracked.int32(-1)\n'
+                    'if hasattr(process,"maxEvents"): process.maxEvents.input = cms.untracked.int32({nEvents})\n'.format(nEvents=nEventsPerJob),
                     'if hasattr(process,"maxLuminosityBlocks"): process.maxLuminosityBlocks.input = cms.untracked.int32(-1)\n'
                     ]
         config = insertLines( config, toInsert )
