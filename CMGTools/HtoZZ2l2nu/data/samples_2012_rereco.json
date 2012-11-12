@@ -190,6 +190,27 @@
               }
           ]
 	},
+        {
+        "tag":"#alpha^{4}_{EW}-ll",
+        "isdata":false,
+        "issignal":true,
+        "spimpose":false,
+        "color":"804",
+        "lcolor":1,
+        "marker":1,
+        "data":[
+                {
+                "dtag":"MC8TeV_eejj_VBFNLO",
+                "xsec":0.095,
+		"br":[1.11]
+                },
+                {
+                "dtag":"MC8TeV_mmjj_VBFNLO",
+                "xsec":0.095,
+		"br":[1.11]
+                }
+         ]
+        },
 	{
 	 "tag":"Z#rightarrow ll",
          "isdata":false,

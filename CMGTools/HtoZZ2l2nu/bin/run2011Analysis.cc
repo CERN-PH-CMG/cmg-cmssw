@@ -65,9 +65,9 @@ int main(int argc, char* argv[])
   bool use2011Id = runProcess.getParameter<bool>("is2011");
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
 
-  bool isMC = runProcess.getParameter<bool>("isMC");
+  bool isMC       = runProcess.getParameter<bool>("isMC");
   bool runBlinded = runProcess.getParameter<bool>("runBlinded"); 
-  int mctruthmode=runProcess.getParameter<int>("mctruthmode");
+  int mctruthmode = runProcess.getParameter<int>("mctruthmode");
 
   TString url=runProcess.getParameter<std::string>("input");
   TString outFileUrl(gSystem->BaseName(url)); 
@@ -90,12 +90,12 @@ int main(int argc, char* argv[])
   printf("TextFile URL = %s\n",outTxtUrl.Data());
 
   //tree info
-  int evStart=runProcess.getParameter<int>("evStart");
-  int evEnd=runProcess.getParameter<int>("evEnd");
+  int evStart     = runProcess.getParameter<int>("evStart");
+  int evEnd       = runProcess.getParameter<int>("evEnd");
   TString dirname = runProcess.getParameter<std::string>("dirName");
 
   //jet energy scale uncertainties
-  TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
+  TString uncFile = runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
   JetCorrectionUncertainty jecUnc(uncFile.Data());
 
   //systematics
@@ -741,7 +741,7 @@ int main(int argc, char* argv[])
       //apply JER base corrections to jets (and compute associated variations on the MET variable)
       std::vector<PhysicsObjectJetCollection> variedAJets;
       LorentzVectorCollection zvvs;
-      METUtils::computeVariation(recoJets, phys.leptons, phys.met[0], variedAJets, zvvs, &jecUnc);
+      METUtils::computeVariation(recoJets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
 
 
       //
