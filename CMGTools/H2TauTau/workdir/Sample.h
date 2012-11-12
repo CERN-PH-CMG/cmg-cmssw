@@ -44,7 +44,7 @@ public:
   void setLineStyle(Int_t lstyle){lstyle_=lstyle;}
   void setDataType(TString type){    dataType_=type;  }
   void resetScale(){ normFactor_=1.;}
-  void scale(Float_t factor){ normFactor_ *= factor;}
+  void scale(Float_t factor){if(!ntpChain_) openNtpFile(); normFactor_ *= factor;}
 
   void setSignalMass(Float_t mass){signalMass_=mass;}
   float getSignalMass(){return signalMass_;}

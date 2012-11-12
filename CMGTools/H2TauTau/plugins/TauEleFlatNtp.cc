@@ -201,16 +201,16 @@ void TauEleFlatNtp::beginJob(){
    countermumatch_++;
 
 
-   //Tau E/P cut
-   tmpditaulist=diTauSelList_;
-   diTauSelList_.clear();
-   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
-       if(cand->leg1().eOverP()<0.2)
- 	continue;
+//    //Tau E/P cut  ---> This is not needed for this channel as Z->mumu is not a problem
+//    tmpditaulist=diTauSelList_;
+//    diTauSelList_.clear();
+//    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//      if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
+//        if(cand->leg1().eOverP()<0.2)
+//  	continue;
   
-     diTauSelList_.push_back(*cand);
-   }
+//      diTauSelList_.push_back(*cand);
+//    }
    if(diTauSelList_.size()==0){
      if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
      return 0;
@@ -430,9 +430,11 @@ void TauEleFlatNtp::beginJob(){
 	 triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	 triggerEffWeight_ *= triggerEff_.effEle2012_Rebecca_TauEle_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
        }
-       //id+isolation corrections
-       selectionEffWeight_ *= selectionEff_.effCorrEle2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
+       //id+isolation corrections
+       selectionEffWeight_ *= selectionEff_.effCorrEleID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+       if(dataType_==0)
+	 selectionEffWeight_ *= selectionEff_.effCorrEleIso2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
      }
 
    }
@@ -449,7 +451,7 @@ void TauEleFlatNtp::beginJob(){
    mux_=diTauSel_->leg2().vertex().x();
    muy_=diTauSel_->leg2().vertex().y();
    muz_=diTauSel_->leg2().vertex().z();
-   mutruth_=truthMatchLeg(diTauSel_->leg2().eta(),diTauSel_->leg2().phi());
+   mutruth_=truthMatchLeg(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),mutruthpt_,mutrutheta_,mutruthstatus_);
    mumvaid_=diTauSel_->leg2().mvaNonTrigV0();
  
    taumass_=diTauSel_->leg1().p4().M();
@@ -458,9 +460,10 @@ void TauEleFlatNtp::beginJob(){
    tauphi_=diTauSel_->leg1().phi();
    taudz_=diTauSel_->leg1().dz();
    taudxy_=diTauSel_->leg1().dxy();
-   tautruth_=truthMatchLeg(diTauSel_->leg1().eta(),diTauSel_->leg1().phi());
+   tautruth_=truthMatchLeg(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),tautruthpt_,tautrutheta_,tautruthstatus_);
    tauehop_=diTauSel_->leg1().eOverP();
    taueop_=diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p();
+   tauhoe_=diTauSel_->leg1().leadChargedHadrHcalEnergy()/diTauSel_->leg1().leadChargedHadrEcalEnergy();
    taudecaymode_=diTauSel_->leg1().decayMode();
    taux_=diTauSel_->leg1().leadChargedHadrVertex().x();
    tauy_=diTauSel_->leg1().leadChargedHadrVertex().y();
@@ -468,6 +471,9 @@ void TauEleFlatNtp::beginJob(){
    tauiso_=diTauSel_->leg1().relIso(0.5);
    tauisomva_=diTauSel_->leg1().tauID("byRawIsoMVA");
 
+   tauleadpt_=diTauSel_->leg1().leadChargedHadrPt();  
+   tauleadhcal_=diTauSel_->leg1().leadChargedHadrHcalEnergy();
+   tauleadecal_=diTauSel_->leg1().leadChargedHadrEcalEnergy();
 
    tauantie_=0;
    if(diTauSel_->leg1().tauID("againstElectronLoose")>0.5)tauantie_=1;

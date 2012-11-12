@@ -10,7 +10,7 @@ Embedded2012A2 cmgtools 3 10
 Embedded2012B cmgtools 10 543
 Embedded2012Cv1 cmgtools 5 57
 Embedded2012Cv2 cmgtools 10 757
-
+ZToMuMu cmgtools 30 2573
 
 ##eTau
 Embedded2012A cmgtools 5 97
@@ -18,12 +18,14 @@ Embedded2012A2 cmgtools 3 9
 Embedded2012B cmgtools 10 533
 Embedded2012Cv1 cmgtools 5 54
 Embedded2012Cv2 cmgtools 10 736
+ZToEE cmgtools 30 2573
 
 ##Special
 Wbb cmgtools 20 1814
+Wg cmgtools 40 418
 
+##
 ZToTauTau cmgtools 30 2573
-ZToMuMu cmgtools 30 2573
 ZToLJet cmgtools 30 2573
 TTJets cmgtools 5 720
 WJetsToLNu2 cmgtools 10 1601

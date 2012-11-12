@@ -137,22 +137,40 @@ public:
 // pT > 30, 0.8 < eta < 1.2     	0.9361 ± 0.0003 	0.9239 ± 0.0002 	0.9870 ± 0.0004
 // pT > 30, 1.2 < eta < 2.1     	0.9389 ± 0.0003 	0.9397 ± 0.0002 	1.0008 ± 0.0004
 
-  double effCorrMu2012ABC(double pt,double eta){
+  double effCorrMuID2012ABC(double pt,double eta){
     if(fabs(eta)<0.8) {
-      if(20.0<pt&&pt<=30.0) return 0.9870*0.9715;
-      if(30.0<pt) return 0.9871*0.9880;
+      if(20.0<pt&&pt<=30.0) return 0.9870;
+      if(30.0<pt) return 0.9871;
       return 0;
     }else if(fabs(eta)<1.2) {
-      if(20.0<pt&&pt<=30.0) return 0.9837*0.9826;
-      if(30.0<pt) return 0.9817*0.9870;
+      if(20.0<pt&&pt<=30.0) return 0.9837;
+      if(30.0<pt) return 0.9817;
       return 0;
     }else if(fabs(eta)<2.1){
-      if(20.0<pt&&pt<=30.0) return 0.9914*0.9960;
-      if(30.0<pt) return 1.0018*1.0008;
+      if(20.0<pt&&pt<=30.0) return 0.9914;
+      if(30.0<pt) return 1.0018;
       return 0;
     }
     return 0;
   }
+
+  double effCorrMuIso2012ABC(double pt,double eta){
+    if(fabs(eta)<0.8) {
+      if(20.0<pt&&pt<=30.0) return 0.9715;
+      if(30.0<pt) return 0.9880;
+      return 0;
+    }else if(fabs(eta)<1.2) {
+      if(20.0<pt&&pt<=30.0) return 0.9826;
+      if(30.0<pt) return 0.9870;
+      return 0;
+    }else if(fabs(eta)<2.1){
+      if(20.0<pt&&pt<=30.0) return 0.9960;
+      if(30.0<pt) return 1.0008;
+      return 0;
+    }
+    return 0;
+  }
+
 
 
   ///factors from Rebecca
@@ -168,14 +186,27 @@ public:
 // pT > 30 Barrel 	0.9084 ± 0.0002 	0.8956 ± 0.0001 	0.9858 ± 0.0002
 // pT > 30 Endcap 	0.9240 ± 0.0001 	0.9187 ± 0.0003 	0.9942 ± 0.0003
 
-  double effCorrEle2012ABC(double pt,double eta){
+  double effCorrEleID2012ABC(double pt,double eta){
     if(fabs(eta)<1.479) {//Barrel
-      if(24.0<pt&&pt<=30.0) return 0.9130*0.9602;
-      if(30.0<pt) return 0.9567*0.9858;
+      if(24.0<pt&&pt<=30.0) return 0.9130;
+      if(30.0<pt) return 0.9567;
       return 0;
     }else if(1.479<fabs(eta)&&fabs(eta)<2.1){//Endcap
-      if(24.0<pt&&pt<=30.0) return 0.8509*0.9661;
-      if(30.0<pt) return 0.9239*0.9942;
+      if(24.0<pt&&pt<=30.0) return 0.8509;
+      if(30.0<pt) return 0.9239;
+      return 0;
+    }
+    return 0;
+  }
+
+  double effCorrEleIso2012ABC(double pt,double eta){
+    if(fabs(eta)<1.479) {//Barrel
+      if(24.0<pt&&pt<=30.0) return 0.9602;
+      if(30.0<pt) return 0.9858;
+      return 0;
+    }else if(1.479<fabs(eta)&&fabs(eta)<2.1){//Endcap
+      if(24.0<pt&&pt<=30.0) return 0.9661;
+      if(30.0<pt) return 0.9942;
       return 0;
     }
     return 0;

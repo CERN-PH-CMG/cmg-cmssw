@@ -9,7 +9,7 @@
 #include "TauElePlotter.h"
 #include "configTauEle2011.C"
 #include "configTauEle2012.C"
-//#include "configTauEle2012AB.C"
+#include "configTauEle2012AB.C"
 
 #define NMASS 8
 long massValues[NMASS]={110,115,120,125,130,135,140,145};
@@ -62,7 +62,7 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
 
   TString ChannelName;
   if(channel==1)ChannelName="muTau";
-  else if(channel==2)ChannelName="eTau";
+  else if(channel==2)ChannelName="eleTau";
   else return;
   cout<<"ChannelName "<<ChannelName<<endl;
   
@@ -74,12 +74,13 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
   if(channel==2){
     if(year==2011)TauElePlotter * analysis=configTauEle2011("analysis",path);
     if(year==2012)TauElePlotter * analysis=configTauEle2012("analysis",path);
+    //if(year==2012)TauElePlotter * analysis=configTauEle2012AB("analysis",path);
   }
   
   analysis->plotvar_="svfitmass";
   //analysis->plotvar_="ditaumass";
   //analysis->plotvar_="mupt";
-  bool Blind=1;
+  bool Blind=0;
   analysis->nbins_=0;
   analysis->Isocat_=1;
   analysis->MTcat_=1; 
@@ -87,18 +88,17 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
   //analysis->mTCut_=option; 
 
   analysis->printRawYields("eventweight*(categoryIso==1&&abs(ditaucharge)==0)");//need to load files before scaling by lumi
+  analysis->scaleSamplesLumi();
 
   TFile output(ChannelName+"SM"+"_"+analysis->plotvar_+"_"+tag+".root","recreate");
-  for(long sm=0; sm<NCAT; sm++){
+  for(long sm=0; sm<NCAT; sm++){//NCAT
 
     TDirectory* dir = output.mkdir(ChannelName+"_"+catdirname[sm]);  
+    gROOT->cd();
 
     if(sm==4)analysis->setVariableBinning(NXBINSVBF,xbinsValuesVBF);
     else analysis->setVariableBinning(NXBINS,xbinsValues);
     analysis->extrasel_ = analysis->getSMcut(sm);
-    if(!analysis->scaleSamplesLumi())return;
-
-    gROOT->cd();
 
 
     TH1F* QCD = 0;
@@ -112,8 +112,8 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
 	if(sm==0) QCD=analysis->getQCDInc(); 
 	if(sm==1) QCD=analysis->getQCDIncLooseShape(); 
 	if(sm==2) QCD=analysis->getQCDMuIsoSM(); 
-	if(sm==3) QCD=analysis->getQCDIncLooseShape(); 
-	if(sm==4) QCD=analysis->getQCDHCP();
+	if(sm==3) QCD=analysis->getQCDIncHighPt(); 
+	if(sm==4) QCD=analysis->getQCDVBFHCP();
       }
     }
     if(channel==2){//e-tau
@@ -123,9 +123,11 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
 	if(sm==4)          QCD=analysis->getQCDMike();
       }
       if(year==2012){
-	if(sm==0 || sm==2 ) QCD=analysis->getQCDInc(); 
-	if(sm==1 || sm==3 ) QCD=analysis->getQCDIncLooseShape();
-	if(sm==4)           QCD=analysis->getQCDHCP();
+	if(sm==0) QCD=analysis->getQCDInc(); 
+	if(sm==1) QCD=analysis->getQCDIncLooseShape();
+	if(sm==2) QCD=analysis->getQCDIncLowPt();
+	if(sm==3) QCD=analysis->getQCDIncHighPt();
+	if(sm==4) QCD=analysis->getQCDVBFHCP2();
       }
     }
     QCD->SetName("QCD");
@@ -136,54 +138,59 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
       if(year==2011){
 	if(sm==0 || sm==1) W = analysis->getWJetsInc();
 	if(sm==2 || sm==3) W = analysis->getWJetsInc();
-	if(sm==4)          W = analysis->getW3JetsVBF();
+	if(sm==4) W = analysis->getW3JetsVBF();
       }
       if(year==2012){
-	if(sm==0 || sm==1 ) W = analysis->getWJetsInc();
-	if(sm==2 || sm==3 ) W = analysis->getWJetsNJet();
-	if(sm==4)           W = analysis->getWJetsNJetVBFHCP(); 
+	if(sm==0) W = analysis->getWJetsInc();
+	if(sm==1) W = analysis->getWJetsInc();
+	if(sm==2) W = analysis->getWJetsNJet();
+	if(sm==3) W = analysis->getWJetsNJet();
+	if(sm==4) W = analysis->getWJetsNJetVBFHCP(); 
       }
     }
     if(channel==2){//e-tau
       if(year==2011){
 	if(sm==0 || sm==1) W = analysis->getWJetsInc();
 	if(sm==2 || sm==3) W = analysis->getWJetsInc();
-	if(sm==4)          W = analysis->getW3JetsVBF();
+	if(sm==4)  W = analysis->getW3JetsVBF();
       }
       if(year==2012){
-	if(sm==0 || sm==1) W = analysis->getWJetsInc();
-	if(sm==2 || sm==3) W = analysis->getWJetsNJet();
-	if(sm==4)          W = analysis->getWJetsNJet(); 
+	if(sm==0) W = analysis->getWJetsInc();
+	if(sm==1) W = analysis->getWJetsInc();
+	if(sm==2) W = analysis->getWJetsNJetLooseTau();
+	if(sm==3) W = analysis->getWJetsNJetLooseTau();
+	if(sm==4) W = analysis->getWJetsNJetVBFHCP(); 
       }
     }
     W->SetName("W");
 
     TH1F* ZTT = analysis->getZToTauTau();
     ZTT->SetName("ZTT");
-    //cout<<" ZTT "<<ZTT->Integral()<<endl;
 
     TH1F* TT = 0;
-    if(sm==0 || sm==2 || sm==1 || sm==3) TT=analysis->getTTJetsInc(); 
-    if(sm==4)                            TT=analysis->getTTJetsVBFHCP(); 
+    if(sm==0 || sm==2 || sm==1 || sm==3)        TT=analysis->getTTJetsInc(); 
+    if(sm==4)                                   TT=analysis->getTTJetsVBFHCP(); 
     TT->SetName("TT");
 
-    //cout<<"channel "<<channel<<endl;
     TH1F* ZL =0;
     if(channel==1){
-      if(sm==0 || sm==2 || sm==1 || sm==3) 	ZL =analysis->getZToMuMuInc();
-      if(sm==4)                            	ZL =analysis->getZToMuMuVBFHCP();
+      if(sm==0 || sm==2 || sm==1 || sm==3) 	ZL =analysis->getZLInc();
+      if(sm==4)                            	ZL =analysis->getZLVBFHCP();
     }
-    if(channel==2){  ZL =analysis->getZToEEInc();}
+    if(channel==2){
+      if(sm==0 || sm==2 || sm==1 || sm==3) 	ZL =analysis->getZL2012();
+      if(sm==4)                            	ZL =analysis->getZLVBFHCP();
+    }
     ZL->SetName("ZL");
 
     TH1F* ZJ = 0;
-    if(sm==0 || sm==2 || sm==1 || sm==3) ZJ=analysis->getZToLJetInc();
-    if(sm==4)                            ZJ=analysis->getZToLJetVBFHCP();                   
+    if(sm==0 || sm==2 || sm==1 || sm==3)        ZJ=analysis->getZToLJetInc();
+    if(sm==4)                                   ZJ=analysis->getZToLJetVBFHCP();                   
     ZJ->SetName("ZJ");
 
     TH1F* VV = 0;
-    if(sm==0 || sm==2 || sm==1 || sm==3)     VV=analysis->getDiBoson();
-    if(sm==4)                                VV=analysis->getDiBosonVBFHCP();
+    if(sm==0 || sm==2 || sm==1 || sm==3)        VV=analysis->getDiBoson();
+    if(sm==4)                                   VV=analysis->getDiBosonVBFHCP();
     VV->SetName("VV");
 
     TH1F* ZLL=(TH1F*)ZL->Clone("ZLL");
@@ -240,7 +247,11 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
       VBF->Scale(1./analysis->findSample(TString("HiggsVBF")+ma)->getCrossection());
       VH->Scale(1./analysis->findSample(TString("HiggsVH")+ma)->getCrossection());
       
-      
+      //check for empty histos
+      if( SM->Integral()<=0.){ SM->SetBinContent(SM->GetNbinsX()/2,1e-4);  SM->SetBinError(SM->GetNbinsX()/2,1e-4); }
+      if( VBF->Integral()<=0.){ VBF->SetBinContent(VBF->GetNbinsX()/2,1e-4);  VBF->SetBinError(VBF->GetNbinsX()/2,1e-4); }
+      if( VH->Integral()<=0.){ VH->SetBinContent(VH->GetNbinsX()/2,1e-4);  VH->SetBinError(VH->GetNbinsX()/2,1e-4); }
+
       dir->cd();
       VH->Write();
       SM->Write();
@@ -267,7 +278,7 @@ void plotDataCard(TString file, Int_t channel){
 
   TString ChannelName;
   if(channel==1)ChannelName="muTau";
-  else if(channel==2)ChannelName="eTau";
+  else if(channel==2)ChannelName="eleTau";
   else return;
   
   TFile nominal(file,"read");
@@ -278,7 +289,7 @@ void plotDataCard(TString file, Int_t channel){
   TCanvas C;
   C.Print(fname+"[");
 
-  for(long sm=0;sm<NCAT;sm++){
+  for(long sm=0;sm<NCAT;sm++){//
 
     TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
     if(!ZTT)continue;

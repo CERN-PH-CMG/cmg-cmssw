@@ -114,15 +114,16 @@ if($channel==1||$channel==101){
 }
 
 
-if($channel==2){
+if($channel==2 || $channel==102){
 
     #####setup root file
     print "Setup root file\n";
     `rm -rf eTau`;
     `mkdir eTau`;
-    chdir("eTau");
+    chdir("./eTau");
     `cp ${eTauInput} ./eTauSM.root`;
     `scale2SM.py -i eTauSM.root  -e ${ECMS} -v 110-145:5`;
+
 
     ##########create datacards
     print "make the data cards:\n";
@@ -133,6 +134,7 @@ if($channel==2){
 	}
     }
     
+
     #######compute limit for each category
     print "make directories per category:\n";
     foreach $d (@cat){
@@ -184,7 +186,7 @@ if($channel==2){
 }
 
 
-if($channel==12){
+if($channel==12 || $channel==112){
     
     #####setup root file
     print "Setup root file\n";

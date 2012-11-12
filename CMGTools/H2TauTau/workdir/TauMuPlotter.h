@@ -102,11 +102,12 @@ public:
  
   //Inclusive/SM0 methods
   TH1F* getWJetsInc();
+  TH1F* getWJetsIncLooseTau();
   TH1F* getTTJetsInc();
   TH1F* getZToLJetInc();
-  TH1F* getZToMuMuInc();
-  TH1F* getZToEEInc(){return 0;}//dummy method just to make script work for datacard
-  TH1F* getQCDInc();//uses the same sign samples
+  TH1F* getZLInc();
+  TH1F* getQCDInc(Int_t WType=0);
+  TH1F* getQCDIncWNJet();
   TH1F* getQCDIncLooseShape();
   TH1F* getQCDIncWJetsShape();
   bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
@@ -135,25 +136,32 @@ public:
 
   //Methods for VBF category with loose shape selections
   TH1F* getWJetsNJetVBFHCP();//note loose selections here are different
-  TH1F* getQCDHCP();
+  TH1F* getQCDVBFHCP();
   TH1F* getSampleVBFHCP(TString sample);//used for the methods below
   TH1F* getTTJetsVBFHCP();
   TH1F* getZToLJetVBFHCP();
-  TH1F* getZToMuMuVBFHCP();
+  TH1F* getZLVBFHCP();
   TH1F* getDiBosonVBFHCP();
 
+  TH1F* getQCDIncLowPt();
+  TH1F* getQCDIncHighPt();
+  TH1F* getZL2012(){return 0;}
+  TH1F* getQCDVBFHCP2(){return 0;}
+  TH1F* getWJetsNJetLooseTau(){return 0;}
 
   ////Methods unrelated to the main plots
   //tau fake rate
   void plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",TString IsoSel="(tauisodisc>=2)",Float_t ymax=50,Bool_t log=1);//
   void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
 
-  //
+  //HCP Studies
   void plotQCDSSOSRatio();
-
-  //
+  void plotQCDSSOSRatioBTag();
+  void fitZToMuMu();
   void compareZTTEmbedded();
   void compareZTTEmbeddedUnfolding();
+  void plotZTTShape();
+
 
 
   //utilities
