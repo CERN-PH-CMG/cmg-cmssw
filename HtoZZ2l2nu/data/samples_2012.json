@@ -211,7 +211,7 @@
 	{
 	"tag":"ggH(200)#rightarrow ZZ",
 	"isdata":false,
-	"isinvisible":true,
+	"isinvisible":false,
 	"spimpose":true,
 	"color":"800",
 	"lwidth":2,
@@ -374,7 +374,7 @@
 	{
 	"tag":"ggH(400)#rightarrow ZZ",
 	"isdata":false,
-        "isinvisible":true,
+        "isinvisible":false,
 	"spimpose":true,
 	"color":"805",
 	"lwidth":2,

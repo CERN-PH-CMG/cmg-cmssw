@@ -614,7 +614,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
       fixExtremities(hist,true,true);
       hist->SetTitle("");
       hist->SetStats(kFALSE);
-      hist->SetMinimum(1e-3);
+      hist->SetMinimum(5e-2);
       //hist->SetMaximum(1E6);
       hist->SetMaximum(hist->GetBinContent(hist->GetMaximumBin())*1.10);
       ObjectToDelete.push_back(hist);
@@ -678,7 +678,6 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 	 mcPlusRelUnc->SetFillStyle(3427);
 	 mcPlusRelUnc->SetFillColor(kGray+1);
 	 mcPlusRelUnc->SetMarkerStyle(1);
-	 mcPlusRelUnc->Draw("e4same");
        }
    }
    if(data){
@@ -740,29 +739,50 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
        t2->SetPad(0,0.0,1.0,0.2);
        t2->SetTopMargin(0);
        t2->SetBottomMargin(0.5);
-       float yscale = (1.0-0.2)/(0.18-0);
+
+       //mc stats
+       TH1D *denRelUncH=0;
+       if(mcPlusRelUnc) denRelUncH=(TH1D *) mcPlusRelUnc->Clone("mcrelunc");
+       else             denRelUncH=(TH1D *) mc->Clone("mcrelunc");
+       for(int xbin=1; xbin<=denRelUncH->GetXaxis()->GetNbins(); xbin++)
+	 {
+	   if(denRelUncH->GetBinContent(xbin)==0) continue;
+	   Double_t err=denRelUncH->GetBinError(xbin)/denRelUncH->GetBinContent(xbin);
+	   denRelUncH->SetBinContent(xbin,1);
+	   denRelUncH->SetBinError(xbin,err);
+	 }
+       TGraphErrors *denRelUnc=new TGraphErrors(denRelUncH);
+       denRelUnc->SetLineColor(1);
+       denRelUnc->SetFillStyle(3001);
+       denRelUnc->SetFillColor(kGray);
+       denRelUnc->SetMarkerColor(1);
+       denRelUnc->SetMarkerStyle(1);
+       denRelUncH->Reset("ICE");       
+       denRelUncH->Draw();
+       denRelUnc->Draw("3");
+       float yscale = (1.0-0.2)/(0.18-0);       
+       denRelUncH->GetYaxis()->SetTitle("Data/#Sigma MC");
+       denRelUncH->SetMinimum(0.4);
+       denRelUncH->SetMaximum(1.6);
+       denRelUncH->GetXaxis()->SetTitle("");
+       //denRelUncH->SetMinimum(0);
+       //denRelUncH->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
+       denRelUncH->GetXaxis()->SetTitleOffset(1.3);
+       denRelUncH->GetXaxis()->SetLabelSize(0.033*yscale);
+       denRelUncH->GetXaxis()->SetTitleSize(0.036*yscale);
+       denRelUncH->GetXaxis()->SetTickLength(0.03*yscale);
+       denRelUncH->GetYaxis()->SetTitleOffset(0.3);
+       denRelUncH->GetYaxis()->SetNdivisions(5);
+       denRelUncH->GetYaxis()->SetLabelSize(0.033*yscale);
+       denRelUncH->GetYaxis()->SetTitleSize(0.036*yscale);
+       
+       //add comparisons
        for(size_t icd=0; icd<compDists.size(); icd++)
 	 {
 	   TString name("CompHistogram"); name+=icd;
 	   TH1D *dataToObsH = (TH1D*)compDists[icd]->Clone(name);
-	   if(mcPlusRelUnc) dataToObsH->Divide(mcPlusRelUnc);
-	   else             dataToObsH->Divide(mc);
-	   dataToObsH->Draw(icd==0?"":"same");
-	   if(icd>0) continue;
-	   dataToObsH->GetYaxis()->SetTitle("Data/#Sigma MC");
-	   dataToObsH->SetMinimum(0.4);
-	   dataToObsH->SetMaximum(1.6);
-	   dataToObsH->GetXaxis()->SetTitle("");
-	   //dataToObsH->SetMinimum(0);
-	   //dataToObsH->SetMaximum(data->GetBinContent(data->GetMaximumBin())*1.10);
-	   dataToObsH->GetXaxis()->SetTitleOffset(1.3);
-	   dataToObsH->GetXaxis()->SetLabelSize(0.033*yscale);
-	   dataToObsH->GetXaxis()->SetTitleSize(0.036*yscale);
-	   dataToObsH->GetXaxis()->SetTickLength(0.03*yscale);
-	   dataToObsH->GetYaxis()->SetTitleOffset(0.3);
-	   dataToObsH->GetYaxis()->SetNdivisions(5);
-	   dataToObsH->GetYaxis()->SetLabelSize(0.033*yscale);
-	   dataToObsH->GetYaxis()->SetTitleSize(0.036*yscale);
+	   dataToObsH->Divide(mc);
+	   dataToObsH->Draw("same");
 	 }
      }
       

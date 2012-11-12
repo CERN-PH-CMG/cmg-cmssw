@@ -103,40 +103,41 @@ else       : jecLevels=['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 from PhysicsTools.PatAlgos.tools.pfTools import *
 
-postfix = "PFlowNoPuSub"
-jetAlgo="AK5"
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix="PFlow",typeIMetCorrections=True,jetCorrections=('AK5PFchs',jecLevels))
-usePF2PAT(process,runPF2PAT=True, jetAlgo=jetAlgo, runOnMC=runOnMC, postfix=postfix,typeIMetCorrections=True,jetCorrections=('AK5PF',jecLevels))
-process.makeStdMuons=process.makePatMuons
+#configure PF2PAT
+usePF2PAT(process,runPF2PAT=True, jetAlgo='AK5', runOnMC=runOnMC, postfix="PFlow",typeIMetCorrections=True,jetCorrections=('AK5PFchs',jecLevels))
+if(getSelVersion()==2012) : useGsfElectrons(process,'PFlow',"04") # to change isolation cone size to 0.3 as it is recommended by EGM POG, use "04" for cone size 0.4
+
+#configure std pat to use pf jets/MET
+from PhysicsTools.PatAlgos.tools.metTools import *
+addPfMET(process, 'PF')
+from PhysicsTools.PatAlgos.tools.jetTools import *
+switchJetCollection(process,cms.InputTag('ak5PFJets'),
+                    doJTA        = True,
+                    doBTagging   = True,
+                    jetCorrLabel = ('AK5PF',jecLevels),
+                    doType1MET   = True,
+                    genJetCollection=cms.InputTag("ak5GenJets"),
+                    doJetID      = True
+                    )
 if not runOnMC:
-    process.patMuons.addGenMatch   = cms.bool(False)
-    process.patMuons.embedGenMatch = cms.bool(False)
-    process.makeStdMuons=cms.Sequence(process.patMuons)    
-
-
-# to use GsfElectrons instead of PF electrons
-# this will destory the feature of top projection which solves the ambiguity between leptons and jets because
-# there will be overlap between non-PF electrons and jets even though top projection is ON!
-if(getSelVersion()==2012) :
-    useGsfElectrons(process,postfix,"04") # to change isolation cone size to 0.3 as it is recommended by EGM POG, use "04" for cone size 0.4
-else:
-    process.patElectronsPFlowNoPuSub = process.patElectrons.clone()
-    process.patElectronsPFlowNoPuSub.genParticleMatch = cms.InputTag("electronMatchPFlowNoPuSub")
+    removeMCMatchingPF2PAT(process,'')
+    process.patMETsPF.addGenMET=cms.bool(False)
 
 # MVA id
 process.load('EGamma.EGammaAnalysisTools.electronIdMVAProducer_cfi')
 process.mvaID = cms.Sequence(  process.mvaTrigV0 + process.mvaNonTrigV0 )
+
 # add old VBTF ids
 process.load("ElectroWeakAnalysis.WENu.simpleEleIdSequence_cff")
-applyPostfix(process,"patElectrons",postfix).electronIDSources = cms.PSet( simpleEleId95relIso= cms.InputTag("simpleEleId95relIso"),
-                                                                           simpleEleId90relIso= cms.InputTag("simpleEleId90relIso"),
-                                                                           simpleEleId85relIso= cms.InputTag("simpleEleId85relIso"),
-                                                                           simpleEleId80relIso= cms.InputTag("simpleEleId80relIso"),
-                                                                           simpleEleId70relIso= cms.InputTag("simpleEleId70relIso"),
-                                                                           simpleEleId60relIso= cms.InputTag("simpleEleId60relIso"),
-                                                                           mvaTrigV0 = cms.InputTag("mvaTrigV0"),
-                                                                           mvaNonTrigV0 = cms.InputTag("mvaNonTrigV0"),
-                                                                           )
+applyPostfix(process,'patElectrons','').electronIDSources = cms.PSet( simpleEleId95relIso= cms.InputTag("simpleEleId95relIso"),
+                                                                   simpleEleId90relIso= cms.InputTag("simpleEleId90relIso"),
+                                                                   simpleEleId85relIso= cms.InputTag("simpleEleId85relIso"),
+                                                                   simpleEleId80relIso= cms.InputTag("simpleEleId80relIso"),
+                                                                   simpleEleId70relIso= cms.InputTag("simpleEleId70relIso"),
+                                                                   simpleEleId60relIso= cms.InputTag("simpleEleId60relIso"),
+                                                                   mvaTrigV0 = cms.InputTag("mvaTrigV0"),
+                                                                   mvaNonTrigV0 = cms.InputTag("mvaNonTrigV0"),
+                                                                   )
 
 # rho for JEC and isolation
 from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
@@ -169,7 +170,7 @@ process.load("RecoBTau.JetTagComputer.jetTagRecord_cfi")
 process.load("RecoVertex.AdaptiveVertexFinder.inclusiveVertexing_cff")
 process.load("RecoBTag.SecondaryVertex.combinedSecondaryVertexPositiveES_cfi")
 process.load("RecoBTag.SecondaryVertex.combinedSecondaryVertexPositiveBJetTags_cfi")
-process.ak5JetTracksAssociatorAtVertex.jets = "selectedPatJets"+postfix
+process.ak5JetTracksAssociatorAtVertex.jets = "selectedPatJets"
 process.myInclusiveSecondaryVertexTagInfosFiltered = process.inclusiveSecondaryVertexFinderTagInfosFiltered.clone()
 process.mySimpleInclusiveSecondaryVertexHighPurBJetTags = process.simpleInclusiveSecondaryVertexHighPurBJetTags.clone(
     tagInfos = cms.VInputTag(cms.InputTag("myInclusiveSecondaryVertexTagInfosFiltered"))
@@ -192,7 +193,7 @@ process.ivfSequence=cms.Sequence(process.ak5JetTracksAssociatorAtVertex
                                  *process.combinedInclusiveSecondaryVertexPositiveBJetTags)
 
 #save also the tag infos
-for pf in ['PFlow','PFlowNoPuSub']:
+for pf in ['PFlow','']:
     getattr(process,"patJets"+pf).addTagInfos = cms.bool(True)
     getattr(process,"patJets"+pf).tagInfoSources = cms.VInputTag('secondaryVertexTagInfosAOD'+pf,'secondaryVertexNegativeTagInfosAOD'+pf)
 
@@ -211,8 +212,7 @@ process.patSequence = cms.Sequence( process.startCounter
                                     + process.mvaID
                                     + process.simpleEleIdSequence
                                     + getattr(process,"patPF2PATSequencePFlow")
-                                    + getattr(process,"patPF2PATSequence"+postfix)
-                                    + process.makeStdMuons
+                                    + process.patDefaultSequence
                                     + process.btagging 
                                     + process.ivfSequence 
                                     )

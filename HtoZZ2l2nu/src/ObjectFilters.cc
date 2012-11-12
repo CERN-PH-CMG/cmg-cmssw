@@ -1246,9 +1246,18 @@ std::vector<reco::CandidatePtr> filterHFfromGSplit(edm::Handle<edm::View<reco::C
     {
       reco::CandidatePtr genP = genParticles->ptrAt(ip);
       if( genP->status()!=2 ) continue;
-      if( abs(genP->pdgId())!=5 && abs(genP->pdgId ())!=4) continue;
-      hfFromGsplit.push_back( genP );
+
+      //quarks
+      if( abs(genP->pdgId())==5 || abs(genP->pdgId ())==4)    hfFromGsplit.push_back( genP );
+   
+      //B-hadrons
+      if ( (abs(genP->pdgId())>= 5122 && abs(genP->pdgId())<= 5554) || (abs(genP->pdgId())>=20513 && abs(genP->pdgId())<=20543) ||
+	   (abs(genP->pdgId())>=10511 && abs(genP->pdgId())<=10543) || (abs(genP->pdgId())>=  511 && abs(genP->pdgId())<=  545) ) 
+	{
+	  hfFromGsplit.push_back( genP );
+	}
     }
+
   return hfFromGsplit;
 }
 

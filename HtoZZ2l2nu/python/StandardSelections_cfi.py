@@ -31,7 +31,7 @@ BaseTriggerSelection = cms.PSet( source = cms.InputTag("TriggerResults::HLT"),
 # base values for the vertex selection ------------------------------------------
 BaseGeneratorSelection = cms.PSet( source = cms.InputTag("genParticles"),
                                    filterId = cms.int32(25),
-                                   genJets=cms.InputTag("selectedPatJetsPFlowNoPuSub")
+                                   genJets=cms.InputTag("selectedPatJets")
                                    )
 if(selVersion==2011): BaseGeneratorSelection.genJets=cms.InputTag("ak5GenJets")
 
@@ -45,7 +45,7 @@ BaseVertexSelection = cms.PSet( source = cms.InputTag("offlinePrimaryVertices"),
                                 )
 
 # base values for muon selection ----------------------------------------------
-BaseMuonsSelection = cms.PSet( source = cms.InputTag("patMuons"), #selectedPatMuonsPFlowNoPuSub"),
+BaseMuonsSelection = cms.PSet( source = cms.InputTag("patMuons"), 
                                sourceIsPF = cms.bool(False),
                                rho25Neut = cms.InputTag("kt6PFJetsCentralNeutral:rho"),
                                minPt = cms.double(20),
@@ -122,7 +122,7 @@ if(selVersion==2011):
     BasePhotonsSelection.scCorrector = cms.string("${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/PhoEnRegress_2011.root")
 
 # base values for electron selection ----------------------------------------------
-BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectronsPFlowNoPuSub"), 
+BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectrons"),
                                    id=cms.string("veto"),
                                    #cf. https://twiki.cern.ch/twiki/bin/view/CMS/RegressionSCCorrections
                                    scCorrector = cms.string("${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/EleEnRegress.root"),
@@ -156,7 +156,7 @@ if(selVersion==2011):
 BaseLooseElectronsSelection = BaseElectronsSelection.clone(minPt = cms.double(10))
 
 #my base values for jet selection -------------------------------------------------
-BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJetsPFlow"),
+BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJets"),
                              rho = cms.InputTag("kt6PFJets:rho"),
                              minPt = cms.double(10),
                              maxEta = cms.double(5.0),
@@ -166,7 +166,7 @@ BaseJetSelection = cms.PSet( source = cms.InputTag("selectedPatJetsPFlow"),
                                                      "mySimpleInclusiveSecondaryVertexHighPurBJetTags",
                                                      "combinedInclusiveSecondaryVertexPositiveBJetTags")
                              )
-AssocJetSelection = BaseJetSelection.clone(source = cms.InputTag("selectedPatJetsPFlowNoPuSub"),
+AssocJetSelection = BaseJetSelection.clone(source = cms.InputTag("selectedPatJetsPFlow"),
                                            puJetIds = pileupJetIdProducerChs.algos
                                            )
 #if(selVersion==2011): AssocJetSelection.source=cms.InputTag("selectedPatJets")
@@ -178,7 +178,7 @@ BaseDileptonSelection = cms.PSet( minDileptonMass = cms.double(0),
                                   )
 
 # base values for met selection -----------------------------------------------------
-BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlowNoPuSub"),
+BaseMetSelection = cms.PSet( source = cms.InputTag("patMETsPFlow"),
                              trksource = cms.InputTag("trackMetProducer"),
                              hzzmetSources = cms.VInputTag("ClusteredPFMetProducer:assoc",                #1
                                                            "ClusteredPFMetProducer:standard",             #2  
