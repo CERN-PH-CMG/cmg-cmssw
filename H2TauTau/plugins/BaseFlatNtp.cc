@@ -12,7 +12,7 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   sampleTruthEventType_(0),
   genEventType_(0),
   truthEventType_(0),
-  deltaRTruth_(0.3),
+  deltaRTruth_(0.2),
   signalWeightHisto_(NULL),
   btagWP_(0.679),
   btagsf(12345),
@@ -212,7 +212,11 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("tauphi",&tauphi_,"tauphi/F");
   tree_->Branch("tauehop",&tauehop_,"tauehop/F");
   tree_->Branch("taueop",&taueop_,"taueop/F");
+  tree_->Branch("tauhoe",&tauhoe_,"tauhoe/F");
   tree_->Branch("tautruth",&tautruth_,"tautruth/I");
+  tree_->Branch("tautruthstatus",&tautruthstatus_,"tautruthstatus/I");
+  tree_->Branch("tautruthpt",&tautruthpt_,"tautruthpt/F");
+  tree_->Branch("tautrutheta",&tautrutheta_,"tautrutheta/F");
   tree_->Branch("taudecaymode",&taudecaymode_,"taudecaymode/I");
   tree_->Branch("taudz",&taudz_,"taudz/F");
   tree_->Branch("taudxy",&taudxy_,"taudxy/F");
@@ -227,6 +231,10 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("tauz",&tauz_,"tauz/F");
   tree_->Branch("taujetpt",&taujetpt_,"taujetpt/F");
   tree_->Branch("taujeteta",&taujeteta_,"taujeteta/F");
+  tree_->Branch("tauleadpt",&tauleadpt_,"tauleadpt/F");
+  tree_->Branch("tauleadhcal",&tauleadhcal_,"tauleadhcal/F");
+  tree_->Branch("tauleadecal",&tauleadecal_,"tauleadecal/F");
+
 
   tree_->Branch("mupt",&mupt_,"mupt/F");
   tree_->Branch("mueta",&mueta_,"mueta/F");
@@ -241,6 +249,9 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("mujetpt",&mujetpt_,"mujetpt/F");
   tree_->Branch("mujeteta",&mujeteta_,"mujeteta/F");
   tree_->Branch("mutruth",&mutruth_,"mutruth/I");
+  tree_->Branch("mutruthstatus",&mutruthstatus_,"mutruthstatus/I");
+  tree_->Branch("mutruthpt",&mutruthpt_,"mutruthpt/F");
+  tree_->Branch("mutrutheta",&mutrutheta_,"mutrutheta/F");
 
   tree_->Branch("pfmetpt",&pfmetpt_,"pfmetpt/D");
   tree_->Branch("pfmetphi",&pfmetphi_,"pfmetphi/D");
@@ -665,13 +676,18 @@ void BaseFlatNtp::fillPFJetListLepLC(float lepeta, float lepphi,std::vector<cons
 }
 
 
-int BaseFlatNtp::truthMatchLeg(float legeta, float legphi){
+int BaseFlatNtp::truthMatchLeg(float legeta, float legphi,float& truthpt,float& trutheta,int& truthstatus){
   if(dataType_!=0) return 0;
 
+  truthpt=0.;
+  trutheta=0.;
+  truthstatus=-1;
+
   for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
-    if(abs(g->pdgId())==11) if(reco::deltaR(legeta,legphi,g->eta(),g->phi())<deltaRTruth_) return 1;
-    if(abs(g->pdgId())==13) if(reco::deltaR(legeta,legphi,g->eta(),g->phi())<deltaRTruth_) return 3;
-    if(abs(g->pdgId())==15) if(reco::deltaR(legeta,legphi,g->eta(),g->phi())<deltaRTruth_) return 5;
+    if(abs(g->pdgId())==11) if(reco::deltaR(legeta,legphi,g->eta(),g->phi())<deltaRTruth_){truthpt=g->pt(); trutheta=g->eta(); truthstatus=g->status(); return 1;}
+    if(abs(g->pdgId())==13) if(reco::deltaR(legeta,legphi,g->eta(),g->phi())<deltaRTruth_){truthpt=g->pt(); trutheta=g->eta(); truthstatus=g->status(); return 3;}
+    if(abs(g->pdgId())==15) if(reco::deltaR(legeta,legphi,g->eta(),g->phi())<deltaRTruth_){truthpt=g->pt(); trutheta=g->eta(); truthstatus=g->status(); return 5;}
+    if(abs(g->pdgId())==22) if(reco::deltaR(legeta,legphi,g->eta(),g->phi())<deltaRTruth_){truthpt=g->pt(); trutheta=g->eta(); truthstatus=g->status(); return 6;}
   }
   
   return 9;

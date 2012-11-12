@@ -426,8 +426,11 @@ bool TauMuFlatNtp::fill(){
       }
 
 
-      //id+isolation corrections
-      selectionEffWeight_ *= selectionEff_.effCorrMu2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      //id correction to both MC and Embedded
+      selectionEffWeight_ *= selectionEff_.effCorrMuID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      //iso correction only to MC
+      if(dataType_==0)
+	selectionEffWeight_ *= selectionEff_.effCorrMuIso2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
     }
 
   }
@@ -448,26 +451,30 @@ bool TauMuFlatNtp::fill(){
   mux_=diTauSel_->leg2().vertex().x();
   muy_=diTauSel_->leg2().vertex().y();
   muz_=diTauSel_->leg2().vertex().z();
-  mutruth_=-1;
+  mutruth_=truthMatchLeg(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),mutruthpt_,mutrutheta_,mutruthstatus_);
 
   taumass_=diTauSel_->leg1().p4().M();
   taupt_=diTauSel_->leg1().pt();
   taueta_=diTauSel_->leg1().eta();
   tauphi_=diTauSel_->leg1().phi();
-  //taudz_=diTauSel_->leg1().dz();
-  //taudxy_=diTauSel_->leg1().dxy();
-  taudz_=computeDz(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());
-  taudxy_=computeDxy(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());
-  
-  tautruth_=truthMatchLeg(diTauSel_->leg1().eta(),diTauSel_->leg1().phi());
+  taudz_=computeDz(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());   //taudz_=diTauSel_->leg1().dz();
+  taudxy_=computeDxy(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());   //taudxy_=diTauSel_->leg1().dxy();
+
+  tautruth_=truthMatchLeg(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),tautruthpt_,tautrutheta_,tautruthstatus_);
+  //cout<<tautruth_<<" "<<tautruthstatus_<<endl;
   tauehop_=diTauSel_->leg1().eOverP();
   taueop_=diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p();
+  tauhoe_=diTauSel_->leg1().leadChargedHadrHcalEnergy()/diTauSel_->leg1().leadChargedHadrEcalEnergy();
   taudecaymode_=diTauSel_->leg1().decayMode();
   taux_=diTauSel_->leg1().leadChargedHadrVertex().x();
   tauy_=diTauSel_->leg1().leadChargedHadrVertex().y();
   tauz_=diTauSel_->leg1().leadChargedHadrVertex().z();
   tauiso_=diTauSel_->leg1().relIso(0.5);
   tauisomva_=diTauSel_->leg1().tauID("byRawIsoMVA");
+
+  tauleadpt_=diTauSel_->leg1().leadChargedHadrPt();  
+  tauleadhcal_=diTauSel_->leg1().leadChargedHadrHcalEnergy();
+  tauleadecal_=diTauSel_->leg1().leadChargedHadrEcalEnergy();
 
   tauantie_=0;
   if(diTauSel_->leg1().tauID("againstElectronLoose")>0.5)tauantie_=1;

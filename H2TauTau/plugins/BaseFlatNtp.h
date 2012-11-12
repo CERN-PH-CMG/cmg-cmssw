@@ -224,6 +224,9 @@ protected:
   float mujetpt_;
   float mujeteta_;
   int   mutruth_; 
+  int   mutruthstatus_;
+  float mutruthpt_;
+  float mutrutheta_;
   math::XYZTLorentzVector mup4_;
   
 
@@ -233,8 +236,12 @@ protected:
   float taueta_;
   float tauphi_;
   int   tautruth_;
+  int   tautruthstatus_;
+  float tautruthpt_;
+  float tautrutheta_;
   float tauehop_;
   float taueop_;
+  float tauhoe_;
   int   taudecaymode_;
   float taudz_;
   float taudxy_;
@@ -249,6 +256,9 @@ protected:
   float tauisomva_;
   float taujetpt_;
   float taujeteta_;
+  float tauleadpt_;
+  float tauleadhcal_;
+  float tauleadecal_;
   math::XYZTLorentzVector taup4_;
 
 
@@ -586,7 +596,7 @@ protected:
   edm::Handle< std::vector<cmg::TriggerObject> > trigObjs_;
   bool trigObjMatch(float eta, float phi, std::string path, std::string filter, int pdgid=-1);
 
-  int truthMatchLeg(float legeta, float legphi);
+  int truthMatchLeg(float legeta, float legphi,float& truthpt,float& trutheta,int& truthstatus);
 
   void fillPFJetList(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list);
   void fillPFJetList20(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list);

@@ -51,8 +51,8 @@ public:
   void setZTauTauColor(Int_t color){ZTauTauColor_=color;}
   void setSignalColor(Int_t color){SignalColor_=color;}
 
-  void setTauLooseIsoCut(Float_t cut=0.7){tauLooseIsoCut_=cut;}
-  void setMuLooseIsoCut(Float_t cut=0.5){muLooseIsoCut_=cut;}
+  //void setTauLooseIsoCut(Float_t cut=0.7){tauLooseIsoCut_=cut;}
+  //void setMuLooseIsoCut(Float_t cut=0.5){muLooseIsoCut_=cut;}
   
   void setPlotTitle(TString title){plotTitle_=title;}
 
@@ -90,66 +90,55 @@ public:
     return totalDataLumi;
   }
 
-  ///basic methods which can be used by all categories
+  ///basic methods 
+  TH1F* getSample(TString samplename);
   TH1F* getTotalData();
   TH1F* getTotalEmbedded();
-  TH1F* getTotalMC();//sum of all OS MCs 
-  TH1F* getSample(TString samplename);//can be used to get histo for any MC or Data sample
   TH1F* getDiBoson();
   TH1F* getZToTauTau();//Z-->tau tau (either from MC or Embedded)
  
-  //Inclusive/SM0 methods
+  //Inclusive methods
   TH1F* getTTJetsInc();
   TH1F* getZToLJetInc();
-  TH1F* getZToMuMuInc(){return 0;}//dummy method just make script work for datacard
-  TH1F* getZToEEInc();
+  TH1F* getZLInc();
   TH1F* getWJetsInc();
   TH1F* getWJetsNJet();
   TH1F* getWNJetSum();
-  TH1F* getWJetsInc2012();
+  TH1F* getTotalMCSM(Int_t WType=0);//sum of OS backgrounds execpt for the QCD
+  TH1F* getQCDInc(Int_t WType=0);
+  TH1F* getQCDIncWNJet();
+
+  //
+  TH1F* getWJetsNJetLooseTau();
   TH1F* getWJetsIncShape();
-  TH1F* getWJetsIncShape2012();
   TH1F* getW2JetsBJet();
-  TH1F* getQCDInc();
-  TH1F* getQCDIncLooseShape();
+  TH1F* getW3JetsVBF();
+  TH1F* getQCDMuIsoSM();
   TH1F* getQCDIncWJetsShape();
   TH1F* getQCDIncFit();
   TH1F* getQCDMike();
   TH1F* getQCDKeti();
+  TH1F* getQCDIncLooseShape();
+  TH1F* getQCDIncHighPt();
+  TH1F* getQCDIncLowPt();
 
-  //VBF Methodss
-  TH1F* getW3JetsVBF();
-  TH1F* getW3Jets();
-
-
-  ///HCP 2012 VBF Methods
+  ///HCP 2012 Methods
   TH1F* getWJetsNJetVBFHCP();
-  TH1F* getQCDHCP();
+  TH1F* getQCDVBFHCP();
+  TH1F* getQCDVBFHCP2();
   TH1F* getSampleVBFHCP(TString sample);//used for the methods below
   TH1F* getTTJetsVBFHCP();
   TH1F* getZToLJetVBFHCP();
-  TH1F* getZToEEVBFHCP();
+  TH1F* getZLVBFHCP();
   TH1F* getDiBosonVBFHCP();
   TH1F* getZToTauTauVBFHCP();
+  TH1F* getZL2012();
+
 
 
   ///
   bool plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel="", TString blindsel = "",  Int_t QCDType=0, Int_t WJetsType=0, TString xlabel="", TString ylabel="", Float_t* legendcoords=0, int higgs=0,TString filetag="");
 
-
-  //Boosted/VBF methods
-  TH1F* getQCDMuIsoSM();//from muon isolation side-band
-  TH1F* getWJetsSM();
-  TString qcdTauIsoRatioMuNonIso_;//formula for the ratio
-  TString qcdMuIsoRatioTauNonIso_;//formula for the ratio
-  TString qcdTauIsoRatio_;//formula for the ratio
-  TString qcdMuIsoRatio_;//formula for the ratio
-  //TH1F* getQCDTauIsoSM();//from anti-isolated taus
-  TH1F* getQCDIsoSM();//from anti-isolated taus or anti iso muons
-  TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
-  TH1F* getWJetsTauIsoSM();//from anti-isolated taus
-  TString wjetsTauIsoRatioSS_;//formula for the ratio for W+jets 
-  TH1F* getTotalMCSM();//sum of OS backgrounds execpt for the QCD
 
 
   ///MSSM methods
@@ -207,7 +196,7 @@ public:
   Float_t xmin2_;
   Float_t xmax2_;
   
-
+  Float_t QCDOStoSSRatio_;
   Float_t TTJetsCorrFactor[3];
 
   //
@@ -256,8 +245,6 @@ private:
 
   TString outputpath_;
   std::vector<Sample*> samples_;   
-  Float_t QCDOStoSSRatio_;
-  Float_t QCDMuIsoSideRatio_;
 
   TString plotTitle_;
 
@@ -267,13 +254,9 @@ private:
 
   Bool_t MSSMFlag_;
   
-  float tauLooseIsoCut_;
-  float muLooseIsoCut_;
-
-  Int_t nbinsVariable_;//for variable with binning
+  Int_t nbinsVariable_;
   Float_t* xbinsVariable_;
 
-  ///
   void fixFileTag(TString * filetag);
 
   ClassDef(TauElePlotter, 1);

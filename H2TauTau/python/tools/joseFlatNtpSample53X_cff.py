@@ -645,6 +645,15 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
         module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
         module.recoilCorrection = 32
+        module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_wjets53X_20pv_njet.root'
+
+
+    if sampleAlias == 'Wg' :
+        module.path = "/WGToLNuG_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0"
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
+        module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
+        module.recoilCorrection = 32
         module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_wjets53X_20pv_njet.root' 
 
     if sampleAlias == 'TTJets' :
@@ -864,7 +873,7 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
-        module.sampleGenEventType = 3
+        module.sampleGenEventType = 1
         module.sampleTruthEventType = 6
         module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
         
@@ -911,6 +920,15 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
 
     if sampleAlias == 'W4JetsToLNu' :
         module.path = "/W4JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" 
+        module.dataType = 0
+        module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
+        module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
+        module.recoilCorrection = 32
+        module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_wjets53X_20pv_njet.root' 
+
+
+    if sampleAlias == 'Wg' :
+        module.path = "/WGToLNuG_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0"
         module.dataType = 0
         module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
         module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
