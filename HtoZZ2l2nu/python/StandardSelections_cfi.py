@@ -142,7 +142,7 @@ BaseElectronsSelection = cms.PSet( source = cms.InputTag("selectedPatElectrons")
                                    maxRelIso    = cms.double(999999.), #0.1),
                                    minDeltaRtoMuons = cms.double(0.1),
                                    usePFIso = cms.bool(True),
-                                   reComputePFIso = cms.bool(False),
+                                   reComputePFIso = cms.bool(True),
                                    doDeltaBetaCorrection = cms.bool(False)
                                    )
 if(selVersion==2011):
