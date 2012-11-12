@@ -15,16 +15,11 @@ def getTriggerPaths(version=2012) :
         DoubleElectron = ['HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v',
                           'HLT_DoubleEle33_CaloIdL_GsfTrkIdVL_v']
         
-        DoubleMu = ['HLT_Mu17_Mu8_v',
-                    'HLT_Mu17_TkMu8_v',
-                    'HLT_Mu22_TkMu8_v',
-                    'HLT_Mu22_TkMu22_v']
+        DoubleMu = ['HLT_Mu17_Mu8_v']
+
         
-        MuEG = ['HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v',
-                'HLT_Mu17_Mu8_v',
-                'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v',
-                'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v'
-                ]
+        MuEG = ['HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v',
+                'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v']
         
         SingleMu = ['HLT_IsoMu24_eta2p1_v']
         

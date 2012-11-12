@@ -122,27 +122,7 @@ std::map<TString,float> GammaEventHandler::getWeights(PhysicsEvent_t &phys, TStr
 	  if(gamma.pt()>900)                        weight=h->Eval(900);
 	  if(key.Contains("vbf") && gamma.pt()>600) weight=h->Eval(600);
 	  if(weight<0) weight=0;
-	  cout << gamma.pt() << " " << weight << endl;
-	  /*
-	    float iweight(1.0);
-	    for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
-	    {
-	    if(wIt->first=="qt")
-	    {
-	    if(gamma.pt()<h->GetXaxis()->GetBinLowEdge(ibin) ) break; 
-	    iweight = h->GetBinContent(ibin);
-	    }
-	    else if(wIt->first=="nvtx")
-	    {
-	    if(phys.nvtx<h->GetXaxis()->GetBinLowEdge(ibin)) break;
-	    iweight = h->GetBinContent(ibin); 
-	    }
-	    }
-	    //	  cout << wIt->first << " " << iweight << "\t";
-	    weight *= iweight;
-	  */
 	}
-      //      cout << endl;
       evWeights_[dilCats[id]]=weight;
     }
   

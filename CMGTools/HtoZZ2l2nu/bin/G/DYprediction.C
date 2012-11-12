@@ -161,39 +161,42 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
 
-      gammaFile = "~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
-      llFile    = "~/work/htozz/53x_rereco/ll/2012/plotter2012.root";
+      //gammaFile = "~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
+      // llFile    = "~/work/htozz/53x_rereco/ll/2012/plotter2012.root";
 
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
 
+      //
+      //HIGH MASS PAPER INPUTS
+      //
       //5/fb @ 8 TeV
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotterab.root";
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotterab.root";
-      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012ab.root";
+      gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
+      llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012HighMass.root";
 
       //5/fb @ 7 TeV
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/qt/plotter.root";
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
-      //llFile    = "/afs/cern.ch/work/q/querten/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
+      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011HighMass.root";
+      
      
-      histos.push_back("met_met_blind");                
+      histos.push_back("met_met");
+      //      histos.push_back("met_met_blind");                
 //       histos.push_back("met_redMet_blind");             
 //       histos.push_back("mt_blind");                     
 //       histos.push_back("pfvbfcanddeta");
 //       histos.push_back("pfvbfcandeta");
-      histos.push_back("pfvbfcandjetdeta");
-      histos.push_back("pfvbfmjj");
-      histos.push_back("pfvbfpremjj");
-      histos.push_back("pfvbfcjv");
-      histos.push_back("pfvbfcandjetpt");
-      histos.push_back("pfvbfcandjeteta");
+//       histos.push_back("pfvbfcandjetdeta");
+//       histos.push_back("pfvbfmjj");
+//       histos.push_back("pfvbfpremjj");
+//       histos.push_back("pfvbfcjv");
+//       histos.push_back("pfvbfcandjetpt");
+//       histos.push_back("pfvbfcandjeteta");
 
 //       histos.push_back("mindphijmet_0");            
 //       histos.push_back("mindphijmet_25");            
 //       histos.push_back("mindphijmet_50");   
 //       histos.push_back("mindphijmet");                     
-//       histos.push_back("mt_shapes");              
+      histos.push_back("mt_shapes");              
 //       histos.push_back("mt_redMet_shapes");       
      
       dilSignal.push_back("ggH(600)#rightarrow ZZ");
@@ -718,9 +721,9 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   if(is2011)
     sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5051./1000);
   else
-    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 12196./1000);
+    //  sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 12196./1000);
   //    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 10200./1000);
-  //sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
+    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
     T->AddText(Buffer);
   T->Draw("same");
   
@@ -801,6 +804,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   if(is2011) outName += "_2011";
   c1->SaveAs(outName+".png");
   c1->SaveAs(outName+".pdf");
+  c1->SaveAs(outName+".C");
 
   if(!SaveName.Contains("hardpt") && !SaveName.Contains("dphijj") && !SaveName.Contains("mjj") ) return;
   bool doRebin(SaveName.Contains("mjj"));
@@ -869,6 +873,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   SaveName.ReplaceAll("mjj","mjj_sub");
   c1->SaveAs(SaveName+".png");
   c1->SaveAs(SaveName+".pdf");
+  c1->SaveAs(SaveName+".C");
 }
 
 
