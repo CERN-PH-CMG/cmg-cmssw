@@ -1,4 +1,8 @@
-# cfg to merge root files together
+# CFG to add the vertex weight collection to the cmgtuple. 
+
+# WARNING: I THINK THERE MIGHT BE A MEMORY LEAK IN THE CODE RAN BY THIS CFG,
+# AS SEVERAL JOBS CRASHED WITH BAD_ALLOC (1/1000 JOBS).
+# TIP: GROUP YOUR INPUT FILES BY 20 IN PRODUCTIONTASKS.PY, NOT MORE
 
 import FWCore.ParameterSet.Config as cms
 
