@@ -10,11 +10,28 @@ class VertexAnalyzer( Analyzer ):
     '''Analyze vertices, add weight to MC events.
 
     Example:
-
+    
     vertexAna = cfg.Analyzer(
-      "VertexAnalyzer",
-      fixedWeight = 1.
-    )
+      'VertexAnalyzer',
+      goodVertices = 'goodPVFilter',
+      vertexWeight = 'vertexWeightFall112011AB',
+      # uncomment the following line if you want a vertex weight = 1 (no weighting)
+      # fixedWeight = 1, 
+      verbose = False
+      )
+
+    If fixedWeight is set to None, the vertex weight is read from the EDM collection with module name
+    'vertexWeightFall112011AB'.
+    Otherwise, the weight is set to fixedWeight.
+
+    The vertex weight collection was at some point produced in the PAT+CMG step,
+    and could directly be accessed from the PAT or CMG tuple. 
+    In the most recent versions of the PAT+CMG tuple, this collection is not present anymore,
+    and an additional full framework process must be ran to produce this collection,
+    so that this analyzer can read it. An example cfg to do that can be found here:
+    http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/H2TauTau/prod/vertexWeight2011_cfg.py?view=markup
+
+    
     '''
 
     def declareHandles(self):
