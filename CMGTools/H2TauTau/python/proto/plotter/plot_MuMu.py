@@ -52,7 +52,9 @@ def normalizeDY(comps):
     
 
 def plot(var, cut=None,
-         nbins=100, xmin=0, xmax=200):
+         nbins=100, xmin=0, xmax=200, weight=None):
+    if weight is None:
+        weight = 'weight'
     if cut is None:
         cut = options.cut
     osign = makePlot( var, anaDir, selComps, weights,
