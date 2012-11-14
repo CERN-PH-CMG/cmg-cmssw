@@ -7,13 +7,23 @@ from CMGTools.RootTools.utils.RLTInfo import RLTInfo
 
 class JSONAnalyzer( Analyzer ):
     '''Apply a json filter, and creates an RLTInfo TTree.
-    See RLTInfo for more information
+    See CMGTools.RootTools.utils.RLTInfo for more information
 
     example:
     
     jsonFilter = cfg.Analyzer(
       "JSONAnalyzer",
       )
+
+    The path of the json file to be used is set as a component attribute.
+
+    The process function returns:
+      - True if
+         - the component is MC or
+         - if the run/lumi pair is in the JSON file
+         - if the json file was not set for this component
+      - False if the component is MC or embed (for H->tau tau),
+          and if the run/lumi pair is not in the JSON file.
     '''
 
     def __init__(self, cfg_ana, cfg_comp, looperName):

@@ -7,7 +7,14 @@ from CMGTools.RootTools.statistics.Average import Average
 from CMGTools.RootTools.physicsobjects.PileUpSummaryInfo import PileUpSummaryInfo
 
 class VertexAnalyzer( Analyzer ):
-    '''Analyze vertices, add weight to MC events.
+    """selects a list of good primary vertices,
+    and optionally add a pile-up weight to MC events.
+
+    The list of good primary vertices is put in event.goodVertices.
+    if no good vertex is found, the process function returns False.
+
+    The weight is put in event.vertexWeight, and is multiplied to
+    the global event weight, event.eventWeight. 
 
     Example:
     
@@ -32,7 +39,7 @@ class VertexAnalyzer( Analyzer ):
     http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/CMG/CMGTools/H2TauTau/prod/vertexWeight2011_cfg.py?view=markup
 
     
-    '''
+    """
 
     def declareHandles(self):
         super(VertexAnalyzer, self).declareHandles()

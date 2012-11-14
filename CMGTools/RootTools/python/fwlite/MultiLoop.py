@@ -121,6 +121,8 @@ def main( options, args ):
                                  'src/CMGTools/LEP3/python/analyzers'] ))
     sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
                                  'src/CMGTools/WMass/python/analyzers'] ))
+    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
+                                 'src/CMGTools/ZJetsTutorial/python/analyzers'] ))
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
     selComps = split(selComps)
     for comp in selComps:

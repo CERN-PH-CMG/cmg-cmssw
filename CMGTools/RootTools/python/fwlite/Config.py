@@ -3,6 +3,11 @@ import glob
 
 
 def printComps(comps, details=False):
+    '''
+    Summary printout for  a list of components comps.
+    The components are assumed to have a name, and a list of files,
+    like the ones from this module.
+    '''
     nJobs = 0
     nCompsWithFiles = 0
     for c in comps:
