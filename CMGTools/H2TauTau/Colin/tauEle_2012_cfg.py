@@ -207,7 +207,7 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 0
+test = 1
 if test==1:
 #    comp = DYJets
 #    comp = ZZJetsTo2L2Q
