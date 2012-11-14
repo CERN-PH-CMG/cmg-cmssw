@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.7 2012/10/24 08:22:29 palencia Exp $
+// $Id: TtbarLeptonJets.cc,v 1.8 2012/11/01 09:57:32 jueugste Exp $
 //
 //
 
@@ -75,6 +75,11 @@
 #include <iostream>
 #include <fstream>
 #include "TH2.h"
+
+// include the top HLT weights code
+#include "./TopTriggerEfficiencyProvider.h"
+
+
 
 class TtbarLeptonJets : public edm::EDAnalyzer {
 public:
@@ -249,8 +254,8 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   std::vector<PileupSummaryInfo>::const_iterator PVI;
   if(!PupInfo.isValid() && !isData)     cerr << "  WARNING: PU is not valid! " << endl;
   
-  
-  
+  // Trigger weights
+  TopTriggerEfficiencyProvider *weight_provider = new TopTriggerEfficiencyProvider();
   
   nTot++;
   countAll_h ->Fill(1);
@@ -262,8 +267,30 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
      puWeightCMG = *puWeight2012AB;
      if(verbose) std::cout << "  pu weight = " << puWeightCMG << std::endl;
   }
+  // adding tihher weights for MC
+  // the last numbers in get_weight are:
+  // [number of jets], [is muon] (1==muon, 0==electron), [is complete dataset] (0==no),
+  // [fraction runA], [fraction runB], [fraction runC], [fraction runD], 
+  //
+  // Remark:
+  // we are applying the trigger weights on preselected events from teh skimming step. this 
+  // can result in jets below 20 GeV, which is not according to the Top group base selection.
+  // the trigger weight function assigns then 100% efficiency for the lepton.
+  double triggerWeight = 1.0;
+  if(!isData) {
+    if(tightMuonMJ->size() == 1 && jetsMJ->size()>=4) {
+      if(verbose) std::cout << " jet pt = " << (*jetsMJ)[3].pt() << std::endl;
+      triggerWeight = weight_provider->get_weight((*tightMuonMJ)[0].pt(), (*tightMuonMJ)[0].eta(), (*jetsMJ)[3].pt(), (*jetsMJ)[3].eta(), vertices->size(), jetsMJ->size(), 1, 0, 1., 1., 0., 0.);
+    }
+    if(tightElectronEJ->size() == 1 && jetsEJ->size()>=4) {
+      if(verbose) std::cout << " jet pt = " << (*jetsEJ)[3].pt() << std::endl;
+      triggerWeight = weight_provider->get_weight((*tightElectronEJ)[0].pt(), (*tightElectronEJ)[0].eta(), (*jetsEJ)[3].pt(), (*jetsEJ)[3].eta(), vertices->size(), jetsEJ->size(), 0, 0, 1., 1., 0., 0.);
+    }
+    if(verbose) std::cout << " trigger weight = " << triggerWeight << std::endl;
+  }
   
-  finalWeight = puWeightCMG;
+
+  finalWeight = puWeightCMG * triggerWeight;
   
   // Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/2012/summary
   // 2012A: HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v* 						       ---> 45, 45, 45, 20 jet pT cuts
