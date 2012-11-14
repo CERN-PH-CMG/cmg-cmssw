@@ -173,6 +173,8 @@ if __name__ == '__main__':
                                  'src/CMGTools/LEP3/python/analyzers'] ))
     sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
                                  'src/CMGTools/WMass/python/analyzers'] ))
+    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
+                                 'src/CMGTools/ZJetsTutorial/python/analyzers'] ))
     sys.path.append( '.' )
     
     cfgFileName = sys.argv[1]

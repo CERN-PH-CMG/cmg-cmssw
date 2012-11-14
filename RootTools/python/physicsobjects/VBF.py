@@ -45,10 +45,13 @@ class VBF( object ):
         self.ptvis = visDiLepton.pt()
         ## self.ptvis = diLepton.pt()
         # new VBF MVA, based on 4 variables
-        self.mva = self.vbfMvaCalc.val( self.mjj,
-                                        abs(self.deta),
-                                        self.visjeteta,
-                                        self.ptvis ) 
+        if self.vbfMvaCalc is not None:
+            self.mva = self.vbfMvaCalc.val( self.mjj,
+                                            abs(self.deta),
+                                            self.visjeteta,
+                                            self.ptvis )
+        else:
+            self.mva = -99.
 
 #  double mjj      , // the invariant mass of the two tag jets
 #  double dEta     , // the pseudorapidity difference between the two tag jets

@@ -15,6 +15,14 @@ class PileUpAnalyzer( Analyzer ):
 
     THESE HISTOGRAMS MUST BE CONSISTENT, SEE
     https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsPileUpReweighting#Generating_pile_up_distributions
+
+    If the component is not MC, or if the puFileData and puFileMC are not
+    set for the component, the reweighting is not done. 
+    
+    The analyzer sets event.vertexWeight.
+    This weight is multiplied to the global event weight, event.eventWeight.
+    When using this analyzer, make sure that the VertexAnalyzer is disabled,
+    as you would be reweighting the MC PU distribution twice!
     
     Additionally, this analyzer writes in the output an histogram containing the unweighting MC
     pile-up distribution, to be used in input of the weighting for a later pass. 
