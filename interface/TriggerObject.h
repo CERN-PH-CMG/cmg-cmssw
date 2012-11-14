@@ -50,6 +50,7 @@ class TriggerObject : public PhysicsObjectWithPtr<pat::TriggerObjectPtr>, public
 
    private:
     friend class TriggerObjectFactory;
+    friend class L1TriggerObjectFactory;
     prescaleMap prescales_;
     int minPrescale_;
 };
