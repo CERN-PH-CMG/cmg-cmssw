@@ -5,7 +5,6 @@
 #include "CMGTools/H2TauTau/interface/VBFMVA2012.h"
 #include "CMGTools/H2TauTau/interface/BTagEfficiency.h"
 #include "CMGTools/H2TauTau/interface/BTagWeight.h"
-#include "CMGTools/H2TauTau/interface/BtagSF.h"
 
 namespace {
   struct CMGTools_H2TauTau {
@@ -16,6 +15,5 @@ namespace {
     VBFMVA2012        vbfMva2012 ;
     BTagEfficiency    btageff;
     BTagWeight        btagw;
-    BtagSF            btagsf;
   };
 }

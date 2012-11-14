@@ -4,11 +4,11 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
-from CMGTools.H2TauTau.proto.weights.weighttable import mu_id_taumu_2011, mu_iso_taumu_2011
+from CMGTools.H2TauTau.proto.weights.weighttable import mu_id_taumu_2012, mu_iso_taumu_2012
 from CMGTools.H2TauTau.proto.samples.sampleShift import selectShift
 from CMGTools.RootTools.RootTools import * 
 
-mc_vertexWeight = 'vertexWeightFall112011AB'
+mc_vertexWeight = 'vertexWeightFall112012AB'
 
 jsonAna = cfg.Analyzer(
     'JSONAnalyzer',
@@ -44,8 +44,8 @@ leg1Weighter = cfg.Analyzer(
     lepton = 'leg1',
     verbose = False,
     disable = True,
-    idWeight = mu_id_taumu_2011,
-    isoWeight = mu_iso_taumu_2011    
+    idWeight = mu_id_taumu_2012,
+    isoWeight = mu_iso_taumu_2012    
     )
 
 leg2Weighter = cfg.Analyzer(
@@ -55,8 +55,8 @@ leg2Weighter = cfg.Analyzer(
     lepton = 'leg2',
     verbose = False,
     disable = True,
-    idWeight = mu_id_taumu_2011,
-    isoWeight = mu_iso_taumu_2011    
+    idWeight = mu_id_taumu_2012,
+    isoWeight = mu_iso_taumu_2012    
     )
 
 
@@ -90,8 +90,8 @@ from CMGTools.H2TauTau.proto.samples.diMu_ColinNov6 import *
 
 #########################################################################################
 
-# selectedComponents = copy.copy(data_list_2011)
-selectedComponents = data_list_2011
+# selectedComponents = copy.copy(data_list_2012)
+selectedComponents = data_list_2012
 # selectedComponents.append( DYJets )
 # selectedComponents = []
 selectedComponents.extend([TTJets, DYJets])
@@ -119,8 +119,8 @@ if test==1:
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:
-    selectedComponents = copy.copy(data_list_2011)
-    selectedComponents.extend(embed_list_2011)
+    selectedComponents = copy.copy(data_list_2012)
+    selectedComponents.extend(embed_list_2012)
     selectedComponents.extend(MC_list[0:3])
     
     for comp in selectedComponents:
