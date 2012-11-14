@@ -23,7 +23,7 @@ process.source = datasetToSource(
    # '/TauPlusX/Run2011A-03Oct2011-v1/AOD'
    )
 
-process.source.fileNames = ['file:patTuple.root']
+#process.source.fileNames = ['file:patTuple.root']
 
 # drop all CMG objects from the input, to recreate them.
 # This is important if there was a change in AnalysisDataFormats after the patTuple was create.
