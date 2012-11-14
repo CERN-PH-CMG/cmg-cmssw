@@ -7,7 +7,7 @@ from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 # from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA
 from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA2012 as VBFMVA
-from CMGTools.H2TauTau.proto.BtagSF import BtagSF
+from CMGTools.RootTools.physicsobjects.BTagSF import BTagSF
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
@@ -39,7 +39,7 @@ class VBFAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(VBFAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
         self.vbfMva = VBFMVA (cfg_ana.vbfMvaWeights)
-        self.btagSF = BtagSF (cfg_ana.btagSFseed)
+        self.btagSF = BTagSF (cfg_ana.btagSFseed)
         # import pdb; pdb.set_trace()
         self.is2012 = isNewerThan('CMSSW_5_2_0')
 
@@ -182,7 +182,7 @@ class VBFAnalyzer( Analyzer ):
         # medium csv working point
         # https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagPerformanceOP#B_tagging_Operating_Points_for_3
         jet.btagMVA = jet.btag("combinedSecondaryVertexBJetTags")
-        jet.btagFlag = self.btagSF.BtagSFcalc.isbtagged(jet.pt(), 
+        jet.btagFlag = self.btagSF.BTagSFcalc.isbtagged(jet.pt(), 
                           jet.eta(),
                           jet.btag("combinedSecondaryVertexBJetTags"),
                           abs(jet.partonFlavour()),
