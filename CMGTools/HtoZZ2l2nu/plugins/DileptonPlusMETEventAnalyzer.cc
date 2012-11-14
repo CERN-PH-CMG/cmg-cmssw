@@ -25,6 +25,8 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenRunInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "SimDataFormats/TrackingAnalysis/interface/TrackingVertexContainer.h"
 
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
@@ -248,6 +250,14 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
   ev.hptWeights[ZZ2l2nuSummary_t::hKfactor_factDown]=1;
 
   //generator level event
+  try{
+    Handle<LHEEventProduct> lheH;
+    event.getByType(lheH);
+    ev.mc_nup=0;
+    if(lheH.isValid()) ev.mc_nup=lheH->hepeup().NUP;
+  }catch(std::exception &e){
+  }
+
   Handle<View<Candidate> > hGen;
   event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("source"), hGen);
   std::pair<int,std::vector<const reco::Candidate *> > genEvent = assignPhysicsChannel(hGen,objConfig_["Generator"]);
@@ -270,13 +280,59 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
 	  ev.mc_py[ev.nmcparticles]=genpart->py();  
 	  ev.mc_pz[ev.nmcparticles]=genpart->pz(); 
 	  ev.mc_en[ev.nmcparticles]=genpart->energy();  
+	  ev.mc_lxy[ev.nmcparticles]=0;
 	  ev.mc_id[ev.nmcparticles]=genpart->pdgId();
+	  ev.mc_status[ev.nmcparticles]=genpart->status();
 	  ev.nmcparticles++;
 	}
     }
 
+  //   try{
+  //     edm::Handle<TrackingVertexCollection> TVCollection;
+  //     event.getByType(TVCollection);
+  //     for (std::size_t index = 0; index < TVCollection->size(); index++)
+  //       {
+  // 	TrackingVertexRef vertex(TVCollection, index);
+  // 	cout << *vertex << endl;
+  //       }
+  //   }catch(std::exception &e){
+  //     cout << e.what() << endl;
+  //   }
+  
+  //heavy flavors
   hfFromGsplit = filterHFfromGSplit(hGen); 
-   
+  for(size_t i=0; i<hfFromGsplit.size(); i++)
+    {
+      const reco::Candidate *genpart = hfFromGsplit[i].get();
+      ev.mc_px[ev.nmcparticles]=genpart->px();  
+      ev.mc_py[ev.nmcparticles]=genpart->py();  
+      ev.mc_pz[ev.nmcparticles]=genpart->pz(); 
+      ev.mc_en[ev.nmcparticles]=genpart->energy();  
+      ev.mc_lxy[ev.nmcparticles]=0;
+      if(abs(genpart->pdgId())>500)
+	{
+	  float vxMother = genpart->vx();
+	  float vyMother = genpart->vy();
+	  //float vzMother = genpart->vz();
+	  const reco::Candidate *fsPart=getGeneratorFinalStateFor(genpart);
+	  if(fsPart)
+	    {
+	      for(size_t id=0; id<fsPart->numberOfDaughters(); id++)
+		{
+		  float vxDaughter = fsPart->daughter(id)->vx();
+		  float vyDaughter = fsPart->daughter(id)->vy();
+		  //float vzDaughter = fsPart->daughter(id)->vz();
+		  float bDecayLength = sqrt(pow(vxMother-vxDaughter,2)+pow(vyMother-vyDaughter,2));
+		  //float bDecayLength3D = sqrt(pow(vxMother-vxDaughter,2)+pow(vyMother-vyDaughter,2)+pow(vzMother-vzDaughter,2));
+		  ev.mc_lxy[ev.nmcparticles]=max(ev.mc_lxy[ev.nmcparticles],bDecayLength);
+		}
+	    }
+	}
+      ev.mc_id[ev.nmcparticles]=genpart->pdgId();
+      ev.mc_status[ev.nmcparticles]=genpart->status();
+      ev.nmcparticles++;
+    }
+       
   //add the generator level jets
   edm::Handle<edm::View<reco::Candidate> > genJetsH;
   event.getByLabel(objConfig_["Generator"].getParameter<edm::InputTag>("genJets"), genJetsH );
@@ -301,6 +357,8 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
       ev.mc_py[ev.nmcparticles]=gjIt->py();  
       ev.mc_pz[ev.nmcparticles]=gjIt->pz(); 
       ev.mc_en[ev.nmcparticles]=gjIt->energy();  
+      ev.mc_lxy[ev.nmcparticles]=0;
+      ev.mc_status[ev.nmcparticles]=0;
       ev.mc_id[ev.nmcparticles]=1;
       ev.nmcparticles++;
     }
@@ -350,8 +408,22 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	if(triggerPaths[it]!="gamma") continue;
 	unsigned int gn_triggerWord=0;
 	photonTrig = getHighestPhotonTrigThreshold( triggerBitsH, triggerNames , itriggers, gn_triggerWord);
+
+	//save all triggers that fired and individual pre-scales
 	ev.gn_triggerWord=gn_triggerWord;
-	if(!photonTrig.first.empty()) ev.gn_prescale=hltConfig_.prescaleValue(event, iSetup, photonTrig.first);
+	int ntrigs = triggerBitsH->size();
+	for (int itrig = 0; itrig < ntrigs; itrig++) {
+	  string trigName = triggerNames.triggerName(itrig);
+	  if ( trigName.find("Photon") == string::npos ) continue;
+	  int gTrigCount = 0;
+	  for (vector<string>::iterator tIt = itriggers.begin(); tIt != itriggers.end(); tIt++, gTrigCount++) {
+	    if (trigName.find(*tIt) != string::npos) {
+	      ev.gn_prescale[gTrigCount]=hltConfig_.prescaleValue(event, iSetup, trigName);
+	      break;
+	    }
+	  }
+	}
+	//if(!photonTrig.first.empty()) ev.gn_prescale=hltConfig_.prescaleValue(event, iSetup, photonTrig.first);
       }
     if(triggerBits["singleMu"]==true && triggerBits["mumu"]==true) triggerBits["singleMu"]=false;   //veto overlaps: single muon triggers should be used exclusively 
 	    

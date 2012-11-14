@@ -503,7 +503,7 @@ int main(int argc, char* argv[])
       //event weight
       float weight = 1.0;  
       if(isMC)                  { weight = LumiWeights.weight( ev.ngenITpu ); }
-      if(!isMC && isGammaEvent && !use2011Id) { weight *= ev.gn_prescale;  }
+      if(!isMC && isGammaEvent && !use2011Id) { weight *= ev.gn_prescale[0];  }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight);
