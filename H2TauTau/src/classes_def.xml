@@ -4,6 +4,5 @@
  <class name="QCDEstimate"/>
  <class name="VBFMVA"/>
  <class name="VBFMVA2012"/>
- <class name="BtagSF"/>
  
 </lcgdict>

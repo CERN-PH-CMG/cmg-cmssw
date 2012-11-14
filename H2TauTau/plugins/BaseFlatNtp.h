@@ -56,7 +56,7 @@
 
 #include "CMGTools/H2TauTau/interface/BTagEfficiency.h"
 #include "CMGTools/H2TauTau/interface/BTagWeight.h"
-#include "CMGTools/H2TauTau/interface/BtagSF.h"
+#include "CMGTools/RootTools/interface/BTagSF.h"
 
 
 //#include "TMVA/Reader.h"
@@ -167,7 +167,7 @@ protected:
   //for MSSM
   float btagWP_;
 
-  BtagSF btagsf;
+  BTagSF btagsf;
 
   std::vector<const cmg::PFJet * > pfJetListBTagWeight_;
   BTagWeight btagWeight_;
