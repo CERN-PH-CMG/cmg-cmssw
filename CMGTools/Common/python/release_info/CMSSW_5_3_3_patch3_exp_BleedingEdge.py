@@ -1,9 +1,10 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'michalis_bleedingedge_oct8'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cris_bleedingedge_oct9'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_cleanup_13Nov12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'cris_09Oct12'),
-  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cris_09Oct12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cris_09Oct12'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cris_09Oct12'),
+  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_tuto_14Nov12'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_cleanup_13Nov12'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_tuto_14Nov12'),
+  ('CMGTools/ZJetsTutorial', 'UserCode/CMG/CMGTools/ZJetsTutorial', 'cbern_tuto_14Nov12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-16'),
   ('CommonTools/RecoAlgos', 'CommonTools/RecoAlgos', 'V00-03-24'),
   ('CommonTools/RecoUtils', 'CommonTools/RecoUtils', 'V00-00-12'),
@@ -28,4 +29,3 @@
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-01-04s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
-
