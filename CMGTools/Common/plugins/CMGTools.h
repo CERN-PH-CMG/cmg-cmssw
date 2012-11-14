@@ -45,6 +45,7 @@
 #include "CMGTools/Common/interface/METScaler.h"
 #include "CMGTools/Common/plugins/PhysicsObjectProducer.h"
 #include "CMGTools/Common/interface/TriggerObjectFactory.h"
+#include "CMGTools/Common/interface/L1TriggerObjectFactory.h"
 
 #include "CMGTools/Common/interface/GenericPhysicsObjectSelectorDefinition.h"
 
@@ -126,6 +127,7 @@ typedef PhysicsObjectProducer<cmg::WENuFactory> WENuPOProducer;
 typedef PhysicsObjectProducer<cmg::WMuNuFactory> WMuNuPOProducer;
 typedef PhysicsObjectProducer<cmg::WTauNuFactory> WTauNuPOProducer;
 typedef PhysicsObjectProducer<cmg::TriggerObjectFactory> TriggerObjectPOProducer;
+typedef PhysicsObjectProducer<cmg::L1TriggerObjectFactory> L1TriggerObjectPOProducer;
 
 typedef PhysicsObjectProducer<cmg::TauEleFactory> TauElePOProducer;
 typedef PhysicsObjectProducer<cmg::TauMuFactory> TauMuPOProducer;

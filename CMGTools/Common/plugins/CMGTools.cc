@@ -64,6 +64,7 @@ DEFINE_FWK_MODULE(METPOScaler);
 DEFINE_FWK_MODULE(PATMETPOProducer);
 DEFINE_FWK_MODULE(PFMETPOProducer);
 DEFINE_FWK_MODULE(TriggerObjectPOProducer);
+DEFINE_FWK_MODULE(L1TriggerObjectPOProducer);
 DEFINE_FWK_MODULE(PFJetHistogramsAnalyzer);
 DEFINE_FWK_MODULE(TriggerResultHistogramsAnalyzer);
 
