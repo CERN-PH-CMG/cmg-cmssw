@@ -1242,20 +1242,31 @@ std::pair<int,vector<const reco::Candidate *> > assignPhysicsChannel(edm::Handle
 std::vector<reco::CandidatePtr> filterHFfromGSplit(edm::Handle<edm::View<reco::Candidate> > &genParticles)
 {
   std::vector<reco::CandidatePtr> hfFromGsplit;
-  for (size_t ip=0; ip<genParticles.product()->size(); ++ip) 
+  for (size_t ip=0; ip<genParticles.product()->size()-1; ip++)
     {
       reco::CandidatePtr genP = genParticles->ptrAt(ip);
-      if( genP->status()!=2 ) continue;
+      int absid=abs(genP->pdgId());
+      bool isHFquark( genP->status()==2 && (absid==5 || absid==4) );
+      bool isBhadron( genP->status()==2 && ( (absid>= 5122 && absid<= 5554) || 
+					     (absid>=20513 && absid<=20543) ||
+					     (absid>=10511 && absid<=10543) || 
+					     (absid>=  511 && absid<=  545) ) );
+      if(!isHFquark && !isBhadron) continue;
 
-      //quarks
-      if( abs(genP->pdgId())==5 || abs(genP->pdgId ())==4)    hfFromGsplit.push_back( genP );
-   
-      //B-hadrons
-      if ( (abs(genP->pdgId())>= 5122 && abs(genP->pdgId())<= 5554) || (abs(genP->pdgId())>=20513 && abs(genP->pdgId())<=20543) ||
-	   (abs(genP->pdgId())>=10511 && abs(genP->pdgId())<=10543) || (abs(genP->pdgId())>=  511 && abs(genP->pdgId())<=  545) ) 
+      //check if it has not been stored previously
+      if(!isBhadron)
 	{
-	  hfFromGsplit.push_back( genP );
+	  bool hasOverlap(false);
+	  for(size_t jp=0; jp<hfFromGsplit.size(); jp++)
+	    {
+	      float dR=deltaR(genP->eta(),genP->phi(),hfFromGsplit[jp]->eta(),hfFromGsplit[jp]->phi());
+	      if(dR>0.1) continue;
+	      hasOverlap=true;
+	      break;
+	    }
+	  if(hasOverlap) continue;
 	}
+      hfFromGsplit.push_back( genP );
     }
 
   return hfFromGsplit;

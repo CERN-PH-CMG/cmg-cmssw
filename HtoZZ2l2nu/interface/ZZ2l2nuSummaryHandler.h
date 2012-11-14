@@ -117,15 +117,16 @@ struct ZZ2l2nuSummary_t
   Float_t neutsumEt, neutsumEtcentral, primVertexNeutSumEt, otherVertexNeutSumEt;
 
   //gamma candidate (iso1=ecalIso, iso2=hcalIso, iso3=trkIso - have to modify these names in the future)
-  Int_t gn,gn_prescale, gn_triggerWord;
+  Int_t gn,gn_prescale[16], gn_triggerWord;
   Float_t g_px[MAXPARTICLES], g_py[MAXPARTICLES]  , g_pz[MAXPARTICLES]  , g_en[MAXPARTICLES], g_iso1[MAXPARTICLES], g_iso2[MAXPARTICLES], g_iso3[MAXPARTICLES], g_sihih[MAXPARTICLES], g_r9[MAXPARTICLES], g_hoe[MAXPARTICLES], g_htoe[MAXPARTICLES], g_sipip[MAXPARTICLES];
   Float_t g_corren[MAXPARTICLES], g_correnerr[MAXPARTICLES];
   Int_t g_idbits[MAXPARTICLES];
   
   //gen level event
   Float_t h_px, h_py, h_pz, h_en;
-  Int_t nmcparticles;
-  Float_t mc_px[MAXMCPARTICLES],mc_py[MAXMCPARTICLES],mc_pz[MAXMCPARTICLES],mc_en[MAXMCPARTICLES]; Int_t mc_id[MAXMCPARTICLES];
+  Int_t nmcparticles,mc_nup;
+  Float_t mc_px[MAXMCPARTICLES],mc_py[MAXMCPARTICLES],mc_pz[MAXMCPARTICLES],mc_en[MAXMCPARTICLES], mc_lxy[MAXPARTICLES]; 
+  Int_t mc_id[MAXPARTICLES], mc_status[MAXPARTICLES];
 
   //additional measurements you may want to add
   Int_t nmeasurements;

@@ -51,11 +51,11 @@
          "color":"8",
          "lcolor":1,
          "data":[
-                {
-                "dtag":"MC8TeV_TTTo2L2Nu2B_powheg",
-                "split":2,
-		"xsec":225.197,
-		"br":[0.0985326486]
+		{
+ 	        "dtag":"MC8TeV_TTJetsFullLeptMGDecays",
+                "xsec":225.197,
+		"split":5,
+		"br":[0.10608049]
                 },
                 {
                 "dtag":"MC8TeV_TTWJets",
@@ -168,6 +168,11 @@
                  "dtag":"MC8TeV_W4Jets",
                  "xsec":214.0,
 		 "br":[1.19286]
+                },
+		{
+                 "dtag":"MC8TeV_WG",
+		 "xsec":461.6,
+                 "split":1
                 }
           ]
         },
@@ -190,27 +195,6 @@
               }
           ]
 	},
-        {
-        "tag":"#alpha^{4}_{EW}-ll",
-        "isdata":false,
-        "issignal":true,
-        "spimpose":false,
-        "color":"804",
-        "lcolor":1,
-        "marker":1,
-        "data":[
-                {
-                "dtag":"MC8TeV_eejj_VBFNLO",
-                "xsec":0.095,
-		"br":[1.11]
-                },
-                {
-                "dtag":"MC8TeV_mmjj_VBFNLO",
-                "xsec":0.095,
-		"br":[1.11]
-                }
-         ]
-        },
 	{
 	 "tag":"Z#rightarrow ll",
          "isdata":false,
@@ -227,6 +211,11 @@
                "dtag":"MC8TeV_DYJetsToLL_10to50",
                "split":2,
                 "xsec":860.5
+              },
+	      {
+               "dtag":"MC8TeV_ZG",
+	       "xsec":123.9,	
+               "split":1
               }
           ]
 	},
@@ -246,27 +235,6 @@
                 "xsec":7.127,
                 "xsecunc":[13.4,-14.5],
 		"br":[0.255,0.0403896]
-		}
-	   ]
-	},
-	{
-	"tag":"clone ggH(200)#rightarrow ZZ",
-	"isdata":false,
-	"isinvisible":true,
-	"spimpose":true,
-	"color":"800",
-	"lwidth":2,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-                "dtag":"MC8TeV_GGtoH200toZZto2L2Nu_clone",
-		"aoddir":["/store/cmst3/user/querten/12_06_25/ggH200ZZ.root"],
-		"patdir":["/store/cmst3/user/psilva/Powheg/GG_200/PAT"],
-                "split":1,
-                "xsec":7.127,
-                "xsecunc":[13.4,-14.5],
-		"br":[0.255,0.0273387105]
 		}
 	   ]
 	},

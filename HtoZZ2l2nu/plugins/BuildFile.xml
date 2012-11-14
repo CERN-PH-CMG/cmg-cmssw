@@ -21,6 +21,7 @@
   <use name="FWCore/Services"/>
   <use name="DQMServices/Core"/>
   <use name="SimDataFormats/GeneratorProducts"/>
+  <use name="SimDataFormats/TrackingAnalysis"/>
   <use name="DataFormats/ParticleFlowCandidate"/>
   <use name="DataFormats/METReco"/>
   <use name="RecoMET/METAlgorithms"/>

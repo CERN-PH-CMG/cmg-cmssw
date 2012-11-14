@@ -298,7 +298,7 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
 
   //Gamma Info
   t_->Branch("gn",          &evSummary_.gn,         "gn/I"); 
-  t_->Branch("gn_prescale",          &evSummary_.gn_prescale,         "gn_prescale/I"); 
+  t_->Branch("gn_prescale",          evSummary_.gn_prescale,         "gn_prescale[16]/I"); 
   t_->Branch("gn_triggerWord",       &evSummary_.gn_triggerWord,      "gn_triggerWord/I"); 
   t_->Branch("g_px",        evSummary_.g_px,        "g_px[gn]/F");
   t_->Branch("g_py",        evSummary_.g_py,        "g_py[gn]/F");
@@ -324,11 +324,14 @@ bool ZZ2l2nuSummaryHandler::initTree(TTree *t, bool needsToRecreate)
 
   //mc truth
   t_->Branch("nmcparticles", &evSummary_.nmcparticles, "nmcparticles/I");
+  t_->Branch("mc_nup", &evSummary_.mc_nup, "mc_nup/I");
   t_->Branch("mc_px", evSummary_.mc_px, "mc_px[nmcparticles]/F");
   t_->Branch("mc_py", evSummary_.mc_py, "mc_py[nmcparticles]/F");
   t_->Branch("mc_pz", evSummary_.mc_pz, "mc_pz[nmcparticles]/F");
   t_->Branch("mc_en", evSummary_.mc_en, "mc_en[nmcparticles]/F");
+  t_->Branch("mc_lxy", evSummary_.mc_lxy, "mc_lxy[nmcparticles]/F");
   t_->Branch("mc_id", evSummary_.mc_id, "mc_id[nmcparticles]/I");
+  t_->Branch("mc_status", evSummary_.mc_status, "mc_status[nmcparticles]/I");
 
   t_->Branch("nmeasurements", &evSummary_.nmeasurements, "nmeasurements/I");
   t_->Branch("measurements", evSummary_.measurements, "measurements[nmeasurements]/F");
@@ -617,7 +620,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   
   //Gamma Info
   t_->SetBranchAddress("gn",          &evSummary_.gn);
-  if(t_->GetBranch("gn_prescale")) t_->SetBranchAddress("gn_prescale",          &evSummary_.gn_prescale);
+  if(t_->GetBranch("gn_prescale")) t_->SetBranchAddress("gn_prescale",          evSummary_.gn_prescale);
   t_->SetBranchAddress("g_px",        evSummary_.g_px);
   t_->SetBranchAddress("g_py",        evSummary_.g_py);
   t_->SetBranchAddress("g_pz",        evSummary_.g_pz);
@@ -647,6 +650,9 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   t_->SetBranchAddress("mc_pz",        evSummary_.mc_pz);
   t_->SetBranchAddress("mc_en",        evSummary_.mc_en);
   t_->SetBranchAddress("mc_id",        evSummary_.mc_id);
+  if(t_->GetBranch("mc_nup"))    t_->SetBranchAddress("mc_nup", &evSummary_.mc_nup);
+  if(t_->GetBranch("mc_lxy"))    t_->SetBranchAddress("mc_lxy", &evSummary_.mc_lxy);
+  if(t_->GetBranch("mc_status")) t_->SetBranchAddress("mc_status", &evSummary_.mc_status);
 
   //additional measurements you may want to add  
   t_->SetBranchAddress("nmeasurements",&evSummary_.nmeasurements);
