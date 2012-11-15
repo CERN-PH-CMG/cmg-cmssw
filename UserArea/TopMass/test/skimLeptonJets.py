@@ -15,7 +15,7 @@ options = VarParsing.VarParsing ('analysis')
 
 
 # setup any defaults you want
-options.maxEvents = 100 # -1 
+options.maxEvents = -1 
 ## options.outputFile = '/uscms/home/cplager/nobackup/outputFiles/try_3.root'
 ## options.inputFiles= 'file1.root', 'file2.root'
 
