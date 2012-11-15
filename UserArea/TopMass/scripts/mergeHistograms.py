@@ -60,6 +60,11 @@ sampleName = {
     'QCD_Pt_20_MuEnrichedPt_15':'qcd_0',
     'QCD_Pt_30_80_BCtoE'       :'qcd_0',
     'QCD_Pt_80_170_BCtoE'      :'qcd_0',
+    'QCD_Pt_20_30_EMEnriched'  :'qcd_0',
+    'QCD_Pt_80_170_EMEnriched' :'qcd_0',
+    'QCD_Pt_30_80_EMEnriched'  :'qcd_0',
+    '':'',
+    '':'',
     ## '':'',
     }
 
