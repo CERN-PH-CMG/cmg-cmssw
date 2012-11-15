@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+##
+## small script to submit the calibration (using massfitter2.py) step to the bacth system
+## it takes an output directory, and optionally the number of toy experiments
+## the samplesize and the channel
+##
+
 import os
 import optparse
 
