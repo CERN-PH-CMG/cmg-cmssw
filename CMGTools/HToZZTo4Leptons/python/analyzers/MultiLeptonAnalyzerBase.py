@@ -81,6 +81,9 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
 
+        self.handles['BR'] = AutoHandle( ('genInfo','BR'),'int')
+        self.handles['processID'] = AutoHandle( ('genInfo','processID'),'int')
+
 
     def beginLoop(self):
         super(MultiLeptonAnalyzerBase,self).beginLoop()
@@ -100,7 +103,22 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         event.prunedJets = filter(lambda x:x.pt()>30 and abs(x.eta())<4.7,event.jets)
 
         event.selectedJets = filter(lambda x:x.getSelection("cuts_looseJetId") and  x.passPuJetId('full', 2),event.prunedJets) 
+        event.shiftedJetsUp  = self.makeShiftedJets(event.selectedJets,1.0)
+        event.shiftedJetsDwn = self.makeShiftedJets(event.selectedJets,-1.0)
+        
+        
 
+
+    def makeShiftedJets(self,jets,sigma):
+        shiftedJets=[]
+        for jet in jets:
+
+            copiedJet = copy.deepcopy(jet)
+            copiedJet.scaleEnergy((1+sigma*jet.uncOnFourVectorScale()))
+            shiftedJets.append(copiedJet)
+            
+        return shiftedJets
+    
 
 
 
@@ -142,25 +160,10 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         event.higgsesGen=filter(lambda x:abs(x.pdgId())==25,event.genParticles)
         if len(event.higgsesGen)>0:
             event.higgsGen =event.higgsesGen[0]
-            nelectrons=0
-            nmuons=0
-            for i in  range(0,event.higgsGen.numberOfDaughters()):
-                if event.higgsGen.daughter(i).pdgId()==23: # z
-                    for j in  range(0,event.higgsGen.daughter(i).numberOfDaughters()):
-                        if abs(event.higgsGen.daughter(i).daughter(j).pdgId())==11:
-                            nelectrons=nelectrons+1
-                        if abs(event.higgsGen.daughter(i).daughter(j).pdgId())==13:
-                            nmuons=nmuons+1
-            if nmuons==4:
-                event.genDecay=2
-            elif nmuons==2 and nelectrons==2:
-                event.genDecay=1
-            elif nelectrons==4:
-                event.genDecay=0
 
-                
+        event.genDecay   = self.handles['BR'].product()[0]        
+        event.genProcess = self.handles['processID'].product()[0]        
             
-        
 
        
     def process(self, iEvent, event):
@@ -178,14 +181,6 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         if self.cfg_comp.isMC:
             self.doMC(iEvent,event)
 
-
-
-
-
-            
-
-
-        
         #get leptons
         self.buildLeptonList( event )
 
@@ -545,7 +540,9 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         for obj in objColl:
             self.kdCalc.calculate(obj)
             obj.massErr = self.massRes.calculate(obj)
-            self.calculateJetObservables(obj,event.selectedJets)
+            self.calculateJetObservables(obj,event.selectedJets,'jets')
+            self.calculateJetObservables(obj,event.shiftedJetsUp,'jetsUp')
+            self.calculateJetObservables(obj,event.shiftedJetsDwn,'jetsDwn')
 
 
 
@@ -555,7 +552,7 @@ class MultiLeptonAnalyzerBase( Analyzer ):
     ##High level calculations
     ##################################################################    
         
-    def calculateJetObservables(self,object,jets,cleanDR = 0.5):
+    def calculateJetObservables(self,object,jets,prefix = 'jets',cleanDR = 0.5):
         #Apply ID
         leptons = object.daughterLeptons()+object.daughterPhotons()
 
@@ -622,8 +619,9 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         else:
             jetVars['leadingPt']=-99.
             jetVars['leadingEta']=-99.
-            
-        object.jets = jetVars
+
+        setattr(object,prefix,jetVars)    
+
 
 
        
