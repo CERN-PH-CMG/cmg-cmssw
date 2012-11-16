@@ -79,39 +79,39 @@ massbindict = {
     }
 
 
-def getCalibration(allmassfits):
-    ## split in different channels
-    for chan in channels:
-        c_bias_summary = TCanvas('c_bias_summary_'+chan,'c_bias_summary_'+chan,400,400)
-        ## one histogram per channel
-        ## get all mass points for the channel
-        allfits = set([f for f in allmassfits if chan in f])
-        ## FIXME: get the binning from the masses automatically => now hardcoded
-        binning = [160.5,162.5,165,168,171,174,177,180,183,186]
-        hist = TH1F('bias_summary','bias_summary',len(binning)-1,array('d',binning))
+## def getCalibration(allmassfits):
+##     ## split in different channels
+##     for chan in channels:
+##         c_bias_summary = TCanvas('c_bias_summary_'+chan,'c_bias_summary_'+chan,400,400)
+##         ## one histogram per channel
+##         ## get all mass points for the channel
+##         allfits = set([f for f in allmassfits if chan in f])
+##         ## FIXME: get the binning from the masses automatically => now hardcoded
+##         binning = [160.5,162.5,165,168,171,174,177,180,183,186]
+##         hist = TH1F('bias_summary','bias_summary',len(binning)-1,array('d',binning))
         
-        for tag in allfits:
-            print tag
-            mass = tag.split('_')[-1]
-            m = float(mass)/10.
-            hist.SetBinContent(massbindict[mass],allmassfits[chan+'_'+mass].histograms[chan+'_'+mass+'_bias'].GetMean())
-            hist.SetBinError(massbindict[mass],allmassfits[chan+'_'+mass].histograms[chan+'_'+mass+'_bias'].GetMeanError())
+##         for tag in allfits:
+##             print tag
+##             mass = tag.split('_')[-1]
+##             m = float(mass)/10.
+##             hist.SetBinContent(massbindict[mass],allmassfits[chan+'_'+mass].histograms[chan+'_'+mass+'_bias'].GetMean())
+##             hist.SetBinError(massbindict[mass],allmassfits[chan+'_'+mass].histograms[chan+'_'+mass+'_bias'].GetMeanError())
 
-        ## perform a linear fit to the histogram
-        lfunc = TF1('linfunc','[0]+[1]*x',160,185)
-        lfunc.SetLineWidth(3)
-        lfunc.SetLineColor(2)
-        lfunc.SetParameters(0.,0.)
-        hist.Fit('linfunc')
-        a = lfunc.GetParameter(0)
-        b = lfunc.GetParameter(1)
-        hist.Draw('e1')
-        lfunc.Draw('lsame')
+##         ## perform a linear fit to the histogram
+##         lfunc = TF1('linfunc','[0]+[1]*x',160,185)
+##         lfunc.SetLineWidth(3)
+##         lfunc.SetLineColor(2)
+##         lfunc.SetParameters(0.,0.)
+##         hist.Fit('linfunc')
+##         a = lfunc.GetParameter(0)
+##         b = lfunc.GetParameter(1)
+##         hist.Draw('e1')
+##         lfunc.Draw('lsame')
 
-        c_bias_summary.Print('c_bias_summary_'+chan+'.pdf')
-        c_bias_summary.Print('c_bias_summary_'+chan+'.png')
+##         c_bias_summary.Print('c_bias_summary_'+chan+'.pdf')
+##         c_bias_summary.Print('c_bias_summary_'+chan+'.png')
         
-        return [a,b]
+##         return [a,b]
 
 
     #def makeDataFit():
@@ -143,10 +143,26 @@ class toyResult():
         mod_bkg = workspace.pdf(self.channel+self.variable+'_bkg')
         mod_sig = workspace.pdf(self.channel+'f'+self.variable+'_'+self.channel+self.mass)
 
+        ## the top mass and the relative signal fractions are not constant
+        ## define the range of mtop
+        workspace.var('mtop').setConstant(kFALSE)
+        workspace.var('mtop').setRange(140,200) 
+        ## define the range of the signal fraction
+        ## workspace.var(self.channel+'sigfrac').setConstant(kTRUE)
+        ## workspace.var(self.channel+'sigfrac').setRange(0.,1.)
+        ## make sure lxy is not constant
+        var = w.var(self.variable)
+        var.setConstant(kFALSE)
+        var.setRange(0.,5.) ## FIXME: range can be variable
+
         ## sum the signal and background pdfs to use for the generation step
         sigfrac = workspace.var(self.channel+'sigfrac')
+        sigfrac.setConstant(kFALSE)  ## FIXME
         mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig,mod_bkg),RooArgList(sigfrac))
 
+        getattr(w,'import')(mod_gen)
+        ## FIXME is this needed?
+        
         ## set some of the variables constant and define the correct ranges
         print ' * initializing variables'
         workspace.var(self.channel+'alpha1').setConstant(kTRUE)
@@ -157,22 +173,13 @@ class toyResult():
         workspace.var(self.channel+'beta2').setConstant(kTRUE)
         workspace.var(self.channel+'thr').setConstant(kTRUE)
         workspace.var(self.channel+'wid').setConstant(kTRUE)
+
         workspace.var(self.channel+'wid_bkg').setConstant(kTRUE)
         
-        ## the top mass and the relative signal fractions are not constant
-        ## define the range of mtop
-        workspace.var('mtop').setConstant(kFALSE)
-        workspace.var('mtop').setRange(150,200) 
-        ## define the range of the signal fraction
-        workspace.var(self.channel+'sigfrac').setConstant(kTRUE)
-        ## workspace.var(self.channel+'sigfrac').setRange(0.,1.)
-        ## make sure lxy is not constant
-        var = w.var(self.variable)
-        var.setConstant(kFALSE)
-        var.setRange(0.,5.) ## FIXME: range can be variable
-
+        ## change here for the closure test...
         rooargs = RooArgSet(workspace.var(self.variable))
-        mc = RooMCStudy(mod_gen, rooargs,
+        ## mc = RooMCStudy(mod_gen, rooargs,
+        mc = RooMCStudy(mod_sig, rooargs,
                     RooCmdArg(RooFit.FitModel(mod_fit)),
                     RooCmdArg(RooFit.Binned(kTRUE)),
                     RooCmdArg(RooFit.Silence()),
@@ -227,8 +234,8 @@ class toyResult():
     def makeControlPlots(self,mc,workspace):
         print ' * making control hitograms'
         ## first mtop...
-        c_mtop = TCanvas('c_mtop','c_mtop',900,300)
-        c_mtop.Divide(3,1)
+        c_mtop = TCanvas('c_mtop','c_mtop',600,300)
+        c_mtop.Divide(2,1)
         ## get the results of the MC study
         mtop_frame = mc.plotParam(workspace.var('mtop'),RooFit.Bins(40))
         c_mtop.cd(1)
@@ -244,23 +251,23 @@ class toyResult():
         c_mtop.Update()
         c_mtop.Print('c_mtop_'+self.channel+'_'+self.mass+'.pdf')
         c_mtop.Print('c_mtop_'+self.channel+'_'+self.mass+'.png')
-
-        ## plot signal fraction information
-        c_sigfrac = TCanvas('c_sigfrac','c_sigfrac',900,300)
-        c_sigfrac.Divide(3,1)
-        ## get the results of the MC study
-        sigfrac_frame = mc.plotParam(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
-        c_sigfrac.cd(1)
-        sigfrac_frame.Draw()
-        sigfrac_error_frame = mc.plotError(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
-        c_sigfrac.cd(2)
-        sigfrac_error_frame.Draw()        
-        sigfrac_pull_frame = mc.plotPull(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40),RooFit.FitGauss(kTRUE))
-        c_sigfrac.cd(3)
-        sigfrac_pull_frame.Draw()
-        c_sigfrac.Update()
-        c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.pdf')
-        c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.png')
+ 
+        ## ## plot signal fraction information
+        ## c_sigfrac = TCanvas('c_sigfrac','c_sigfrac',900,300)
+        ## c_sigfrac.Divide(3,1)
+        ## ## get the results of the MC study
+        ## sigfrac_frame = mc.plotParam(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
+        ## c_sigfrac.cd(1)
+        ## sigfrac_frame.Draw()
+        ## sigfrac_error_frame = mc.plotError(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
+        ## c_sigfrac.cd(2)
+        ## sigfrac_error_frame.Draw()        
+        ## sigfrac_pull_frame = mc.plotPull(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40),RooFit.FitGauss(kTRUE))
+        ## c_sigfrac.cd(3)
+        ## sigfrac_pull_frame.Draw()
+        ## c_sigfrac.Update()
+        ## c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.pdf')
+        ## c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.png')
 
 
 
@@ -391,15 +398,41 @@ def main():
         
             for mass in masses:
                 hist = getHist(rfile, 'bias_histo_'+chan+'_'+mass)
+                hist.SetTitle('m_{gen} = '+str(float(mass)/10.)+' GeV, '+chan+' channel')
+                c_hist_fit = TCanvas('c_hist_fit'+chan,'c_hist_fit_'+chan,400,400)
+
+                ROOT.gStyle.SetOptFit(1)
+                ROOT.gStyle.SetOptStat(0)
+                #ROOT.gStyle.SetOptTitle(0)
+            
+                gfunc = TF1('f1','gaus',-20.,20)
+                gfunc.SetLineWidth(3)
+                gfunc.SetLineColor(4)
+                gfunc.SetParameters(50.,0.,5.)
+                ## p0: height, p1: mean, p2: width, 
+                hist.Fit('f1')
+                mean = gfunc.GetParameter(1)
+                width = gfunc.GetParameter(2)
+                hist.Draw('e1')
+                gfunc.Draw("same")
+
+                c_hist_fit.Print('c_bias_fitted_'+chan+'_'+mass+'.pdf')
+                c_hist_fit.Print('c_bias_fitted_'+chan+'_'+mass+'.png')
+
+                
                 m = float(mass)/10.
-                h_bias.SetBinContent(massbindict[mass],hist.GetMean())
-                h_bias.SetBinError(massbindict[mass],hist.GetMeanError())
+                ## h_bias.SetBinContent(massbindict[mass],hist.GetMean())
+                ## h_bias.SetBinError(massbindict[mass],hist.GetMeanError())
+                h_bias.SetBinContent(massbindict[mass],mean)
+                h_bias.SetBinError(massbindict[mass],width)
 
             ## write gbias summary to a file
             outfile = ROOT.TFile().Open('bias_summary_'+chan+'.root','RECREATE')
             h_bias.Write()
             outfile.Close()
 
+            h_bias.Draw()
+            
             c_bias_summary.Print('c_bias_fitted_'+chan+'.pdf')
             c_bias_summary.Print('c_bias_fitted_'+chan+'.png')
 
@@ -417,30 +450,37 @@ def main():
             rfile = openTFile(rootfile)
             h_bias = getHist(rfile,'h_bias_summary_'+chan)
 
-            lfunc = TF1('linfunc','[0]+[1]*x',160,185)
+            print '******************************************* fitting'
+
+            ROOT.gStyle.SetOptStat(0)
+            ROOT.gStyle.SetOptFit(1)
+            lfunc = TF1('lf','[0]+[1]*x',165,180)
             lfunc.SetLineWidth(3)
             lfunc.SetLineColor(2)
             lfunc.SetParameters(0.,0.)
-            h_bias.Fit('linfunc')
+            h_bias.Fit('lf')
             a = lfunc.GetParameter(0)
             b = lfunc.GetParameter(1)
             h_bias.Draw('e1')
             lfunc.Draw('lsame')
 
-            
-
-            c_bias_fitted.Print('c_bias_fitted_'+chan+'.pdf')
-            c_bias_fitted.Print('c_bias_fitted_'+chan+'.png')
-            
             print'*********************************************'
             print 'Calibration bias:'
             print 'a = ',a
             print 'b = ',b
 
+
+            c_bias_fitted.Print('c_bias_fitted_'+chan+'.pdf')
+            c_bias_fitted.Print('c_bias_fitted_'+chan+'.png')
+            
+
             workspace = getWorkspace(inputfile,'w')
-            mtop           = workspace.var('mtop')
+
+            workspace.Print()
+
+            mtop = workspace.var('mtop')
             mtop.setConstant(kFALSE)
-            mtop.setRange(150,200)
+            mtop.setRange(140,200)
             lxy = workspace.var('lxy')
             lxy.setConstant(kFALSE)
             lxy.setRange(0.,5.)
@@ -454,35 +494,41 @@ def main():
             workspace.var(''+chan+'thr').setConstant(kTRUE)    
             workspace.var(''+chan+'wid').setConstant(kTRUE)    
             workspace.var(''+chan+'wid_bkg').setConstant(kTRUE)
+            workspace.var(''+chan+'sigfrac').setConstant(kFALSE)
 
             c_data_fit = TCanvas('c_data_fit_'+chan,'c_data_fit_'+chan,400,400)
 
             ## now, retrieve the data from the workspace
             data = workspace.data(chan+'data')
             data.Print("v")
-
-            pa = RooRealVar('pa','pa',a)
+            
+            pa = RooRealVar('pa','pa',-1.*a)
             pa.setConstant(kTRUE)
-            pb = RooRealVar('pb','pb',b)
+            pb = RooRealVar('pb','pb',-1.*b)
             pb.setConstant(kTRUE)
 
             mtopcalib = RooFormulaVar('mtopcalib','mtopcalib','@0+@1*@2',RooArgList(pa,pb,mtop))
             getattr(workspace,'import')(mtopcalib)
-            workspace.factory("EDIT::new"+chan+"model("+chan+"model,mtop=mtopcalib)")
+            newmodel = workspace.factory("EDIT::new"+chan+"model("+chan+"model,mtop=mtopcalib)")
+            ## getattr(workspace,'import')(newmodel)
+            
+
 
             newframe = lxy.frame()
-            workspace.pdf('new'+chan+'model').fitTo(data)
+            workspace.pdf('new'+chan+'model').fitTo(data,RooCmdArg(RooFit.FitOptions(RooFit.Save(kTRUE),RooFit.SumW2Error(kTRUE))))
+
             print '--------------------------'
             print mtop.getVal()
             print mtop.getError()
 
             data.plotOn(newframe)
+            workspace.pdf(chan+'model').plotOn(newframe)
             workspace.pdf('new'+chan+'model').plotOn(newframe)
             newframe.Draw()
 
 
-        c_data_fit.Print('c_data_fit.pdf')
-        c_data_fit.Print('c_data_fit.png')
+        c_data_fit.Print('c_data_fit_'+chan+'.pdf')
+        c_data_fit.Print('c_data_fit_'+chan+'.png')
         
         
 
