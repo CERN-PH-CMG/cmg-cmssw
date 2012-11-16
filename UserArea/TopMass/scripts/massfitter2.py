@@ -13,10 +13,6 @@
 ##
 ##
 ##
-## PROBLEMS
-## * something's very wrong with the memory!
-## * getting seg fault after a few toys...
-##
 
 import os
 import optparse
@@ -178,8 +174,8 @@ class toyResult():
         
         ## change here for the closure test...
         rooargs = RooArgSet(workspace.var(self.variable))
-        ## mc = RooMCStudy(mod_gen, rooargs,
-        mc = RooMCStudy(mod_sig, rooargs,
+        mc = RooMCStudy(mod_gen, rooargs,
+        ## mc = RooMCStudy(mod_sig, rooargs,
                     RooCmdArg(RooFit.FitModel(mod_fit)),
                     RooCmdArg(RooFit.Binned(kTRUE)),
                     RooCmdArg(RooFit.Silence()),
