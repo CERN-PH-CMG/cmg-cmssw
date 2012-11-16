@@ -18,11 +18,8 @@ import os
 import optparse
 import sys
 from array import array
-
-
 import ROOT
 from ROOT import *
-
 
 def openTFile(path, option='r'):
     f =  ROOT.TFile.Open(path,option)
@@ -153,7 +150,7 @@ class toyResult():
 
         ## sum the signal and background pdfs to use for the generation step
         sigfrac = workspace.var(self.channel+'sigfrac')
-        sigfrac.setConstant(kFALSE)  ## FIXME
+        sigfrac.setConstant(kTRUE)  ## FIXME
         mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig,mod_bkg),RooArgList(sigfrac))
 
         getattr(w,'import')(mod_gen)
@@ -248,31 +245,22 @@ class toyResult():
         c_mtop.Print('c_mtop_'+self.channel+'_'+self.mass+'.pdf')
         c_mtop.Print('c_mtop_'+self.channel+'_'+self.mass+'.png')
  
-        ## ## plot signal fraction information
-        ## c_sigfrac = TCanvas('c_sigfrac','c_sigfrac',900,300)
-        ## c_sigfrac.Divide(3,1)
-        ## ## get the results of the MC study
-        ## sigfrac_frame = mc.plotParam(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
-        ## c_sigfrac.cd(1)
-        ## sigfrac_frame.Draw()
-        ## sigfrac_error_frame = mc.plotError(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
-        ## c_sigfrac.cd(2)
-        ## sigfrac_error_frame.Draw()        
-        ## sigfrac_pull_frame = mc.plotPull(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40),RooFit.FitGauss(kTRUE))
-        ## c_sigfrac.cd(3)
-        ## sigfrac_pull_frame.Draw()
-        ## c_sigfrac.Update()
-        ## c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.pdf')
-        ## c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.png')
-
-
-
-
-
-
-
-
-
+        ## plot signal fraction information
+        c_sigfrac = TCanvas('c_sigfrac','c_sigfrac',900,300)
+        c_sigfrac.Divide(3,1)
+        ## get the results of the MC study
+        sigfrac_frame = mc.plotParam(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
+        c_sigfrac.cd(1)
+        sigfrac_frame.Draw()
+        sigfrac_error_frame = mc.plotError(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
+        c_sigfrac.cd(2)
+        sigfrac_error_frame.Draw()        
+        sigfrac_pull_frame = mc.plotPull(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40),RooFit.FitGauss(kTRUE))
+        c_sigfrac.cd(3)
+        sigfrac_pull_frame.Draw()
+        c_sigfrac.Update()
+        c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.pdf')
+        c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.png')
 
 ## FIXME: read masses from command line
 masses = [ '1615','1635','1665','1695','1725','1755','1785','1815','1845' ]
@@ -393,14 +381,27 @@ def main():
             h_bias = TH1F('h_bias_summary_'+chan,'h_bias_summary_'+chan,len(binning)-1,array('d',binning))
         
             for mass in masses:
-                hist = getHist(rfile, 'bias_histo_'+chan+'_'+mass)
-                hist.SetTitle('m_{gen} = '+str(float(mass)/10.)+' GeV, '+chan+' channel')
-                c_hist_fit = TCanvas('c_hist_fit'+chan,'c_hist_fit_'+chan,400,400)
-
                 ROOT.gStyle.SetOptFit(1)
                 ROOT.gStyle.SetOptStat(0)
-                #ROOT.gStyle.SetOptTitle(0)
-            
+                ROOT.gStyle.SetOptTitle(0)
+
+                c_hist_fit = TCanvas('c_hist_fit'+chan,'c_hist_fit_'+chan,400,400)
+
+                hist = getHist(rfile, 'bias_histo_'+chan+'_'+mass)
+                hist.SetTitle('m_{gen} = '+str(float(mass)/10.)+' GeV, '+chan+' channel')
+                hist.SetMarkerStyle(20)
+                hist.SetMarkerColor(1)
+                hist.SetLineColor(1)
+
+
+                ## FIXME: CMS Preliminary is not working...
+                l = ROOT.TLatex()
+                l.SetNDC()
+                l.SetTextAlign(22)
+                anchorCMS = [0.15,0.04]
+                l.SetTextSize(0.9*l.GetTextSize())
+                l.DrawLatex(ROOT.gPad.GetLeftMargin()+anchorCMS[0],1-ROOT.gPad.GetTopMargin()-anchorCMS[1],'CMS Preliminary')
+
                 gfunc = TF1('f1','gaus',-20.,20)
                 gfunc.SetLineWidth(3)
                 gfunc.SetLineColor(4)
@@ -412,6 +413,25 @@ def main():
                 hist.Draw('e1')
                 gfunc.Draw("same")
 
+                ## plot a vertical line at zero
+                vline = ROOT.TGraph()
+                vline.SetPoint(0,0,10000)
+                vline.SetPoint(1,0,-100)
+                vline.SetLineWidth(2)
+                vline.SetLineColor(2)
+                vline.SetLineStyle(2)
+                vline.Draw('L')
+
+
+
+                leg = ROOT.TLegend(0.55,0.6,0.89,0.75)
+                leg.SetFillColor(0)
+                leg.SetLineColor(0)
+                leg.SetHeader('m_{gen} = '+str(float(mass)/10.)+' GeV, '+chan+' channel')
+                leg.AddEntry(hist,'MC toy experiment','p')
+                leg.AddEntry(gfunc,'Gaussian fit','l')
+                leg.Draw()
+                
                 c_hist_fit.Print('c_bias_fitted_'+chan+'_'+mass+'.pdf')
                 c_hist_fit.Print('c_bias_fitted_'+chan+'_'+mass+'.png')
 
@@ -429,9 +449,6 @@ def main():
 
             h_bias.Draw()
             
-            c_bias_summary.Print('c_bias_fitted_'+chan+'.pdf')
-            c_bias_summary.Print('c_bias_fitted_'+chan+'.png')
-
             
     ## third step
             
@@ -445,34 +462,74 @@ def main():
                 rootfile = opt.rootfile
             rfile = openTFile(rootfile)
             h_bias = getHist(rfile,'h_bias_summary_'+chan)
+            h_bias.GetXaxis().SetTitle('m_{gen} [GeV]')
+            h_bias.GetYaxis().SetTitle('m_{fit toys} - m_{gen} [GeV]')
+            h_bias.SetMarkerStyle(20)
 
             print '******************************************* fitting'
 
+
+            ROOT.gStyle.SetOptTitle(0)
             ROOT.gStyle.SetOptStat(0)
             ROOT.gStyle.SetOptFit(1)
+
             lfunc = TF1('lf','[0]+[1]*x',165,180)
             lfunc.SetLineWidth(3)
-            lfunc.SetLineColor(2)
+            lfunc.SetLineColor(8)
             lfunc.SetParameters(0.,0.)
             h_bias.Fit('lf')
             a = lfunc.GetParameter(0)
             b = lfunc.GetParameter(1)
+            h_bias.SetMaximum(5)
+            h_bias.SetMinimum(-5)
             h_bias.Draw('e1')
             lfunc.Draw('lsame')
 
-            print'*********************************************'
-            print 'Calibration bias:'
-            print 'a = ',a
-            print 'b = ',b
 
+            l = ROOT.TLatex()
+            l.SetNDC()
+            l.SetTextAlign(22)
+            anchorCMS = [0.15,-0.04]
+            l.SetTextSize(0.9*l.GetTextSize())
+            l.DrawLatex(ROOT.gPad.GetLeftMargin()+anchorCMS[0],1-ROOT.gPad.GetTopMargin()-anchorCMS[1],'CMS Preliminary')
+            
+            ## r = ROOT.TLatex()
+            ## r.SetNDC()
+            ## r.SetTextAlign(22)
+            ## anchorCMS = [0.15,-0.04]
+            ## r.SetTextSize(0.9*l.GetTextSize())
+            ## r.DrawLatex(ROOT.gPad.GetLeftMargin()+0.5,1-ROOT.gPad.GetTopMargin()-0.1,'%.2f' % a+' + %.2f' % b+'m_{gen}' )
+            
+
+            ## plot a line at zero
+            line = ROOT.TGraph()
+            line.SetPoint(0,-200,0)
+            line.SetPoint(1,1500,0)
+            line.SetLineWidth(2)
+            line.SetLineColor(2)
+            line.SetLineStyle(2)
+            line.Draw('L')
 
             c_bias_fitted.Print('c_bias_fitted_'+chan+'.pdf')
             c_bias_fitted.Print('c_bias_fitted_'+chan+'.png')
+
+            print'*********************************************'
+            print 'Calibration bias fit result:'
+            print 'liner function: '+str(a)+' + '+str(b)+' * mtop'
+
+
+            ## calculate the statistical error on the top mass
+            ## get the average width of the bias fits
+
+            errorbars = [h_bias.GetBinError(i) for i in range(1,len(masses)) if h_bias.GetBinError(i) > 0.]
+            print errorbars
+            calib_error = sum(errorbars)/float(len(errorbars))
+            print 'average error on bias: +-'+str(calib_error)
             
 
             workspace = getWorkspace(inputfile,'w')
 
-            workspace.Print()
+            ## workspace.Print()
 
             mtop = workspace.var('mtop')
             mtop.setConstant(kFALSE)
@@ -490,7 +547,7 @@ def main():
             workspace.var(''+chan+'thr').setConstant(kTRUE)    
             workspace.var(''+chan+'wid').setConstant(kTRUE)    
             workspace.var(''+chan+'wid_bkg').setConstant(kTRUE)
-            workspace.var(''+chan+'sigfrac').setConstant(kFALSE)
+            workspace.var(''+chan+'sigfrac').setConstant(kTRUE)
 
             c_data_fit = TCanvas('c_data_fit_'+chan,'c_data_fit_'+chan,400,400)
 
@@ -498,9 +555,9 @@ def main():
             data = workspace.data(chan+'data')
             data.Print("v")
             
-            pa = RooRealVar('pa','pa',-1.*a)
+            pa = RooRealVar('pa','pa',a)
             pa.setConstant(kTRUE)
-            pb = RooRealVar('pb','pb',-1.*b)
+            pb = RooRealVar('pb','pb',b+1)
             pb.setConstant(kTRUE)
 
             mtopcalib = RooFormulaVar('mtopcalib','mtopcalib','@0+@1*@2',RooArgList(pa,pb,mtop))
@@ -509,18 +566,40 @@ def main():
             ## getattr(workspace,'import')(newmodel)
             
 
+            ROOT.gStyle.SetOptStat(0)
+            ROOT.gStyle.SetOptFit(1)
 
             newframe = lxy.frame()
             workspace.pdf('new'+chan+'model').fitTo(data,RooCmdArg(RooFit.FitOptions(RooFit.Save(kTRUE),RooFit.SumW2Error(kTRUE))))
 
+            fit_res = mtop.getVal()
+            fit_error = mtop.getError()
+            stat_error = mtop.getError() * calib_error
+            
             print '--------------------------'
-            print mtop.getVal()
-            print mtop.getError()
+            print 'Fit Results:'
+            print '--------------------------'
+            print 'mtop: ',fit_res
+            print 'fit error: ',fit_error
+            print 'calibration error: ',calib_error
+            print 'statistical error: ',stat_error
+            print '--------------------------'
+
 
             data.plotOn(newframe)
             workspace.pdf(chan+'model').plotOn(newframe)
             workspace.pdf('new'+chan+'model').plotOn(newframe)
             newframe.Draw()
+
+            ## print the top mass on the plot
+            pave = TPaveText(0.3,0.6,0.9,0.8,"NDC")
+            pave.SetBorderSize(0);
+            pave.SetFillStyle(0);
+            pave.SetTextAlign(12);
+            pave.SetTextFont(42);
+            topmass = 'm_{Top} = '+str("%.2f" % fit_res)+' #pm '+str("%.2f" % stat_error)+' (stat.) GeV'
+            pave.AddText(topmass);
+            pave.Draw();
 
 
         c_data_fit.Print('c_data_fit_'+chan+'.pdf')
