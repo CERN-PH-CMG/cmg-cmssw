@@ -5,7 +5,8 @@ import os
 from copy import copy
 
 pat='V5_10_0'
-skim='SKIM_Oct13_All'
+#skim='SKIM_Oct13_All'
+skim='SKIM_Nov12_All'
 filepattern = 'cmgTuple.*root'
 userName='bachtis'
 
@@ -138,6 +139,27 @@ qqH950=kreator.makeMCComponent('qqH950','/VBF_HToZZTo4L_M-950_8TeV-powheg-pythia
 qqH1000=kreator.makeMCComponent('qqH1000','/VBF_HToZZTo4L_M-950_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
 
+VH126=kreator.makeMCComponent('VH126','/WH_ZH_TTH_HToZZ_M-126_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH127=kreator.makeMCComponent('VH127','/WH_ZH_TTH_HToZZ_M-127_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH128=kreator.makeMCComponent('VH128','/WH_ZH_TTH_HToZZ_M-128_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH129=kreator.makeMCComponent('VH129','/WH_ZH_TTH_HToZZ_M-129_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH130=kreator.makeMCComponent('VH130','/WH_ZH_TTH_HToZZ_M-130_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH135=kreator.makeMCComponent('VH135','/WH_ZH_TTH_HToZZ_M-135_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH140=kreator.makeMCComponent('VH140','/WH_ZH_TTH_HToZZ_M-140_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH145=kreator.makeMCComponent('VH145','/WH_ZH_TTH_HToZZ_M-145_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH150=kreator.makeMCComponent('VH150','/WH_ZH_TTH_HToZZ_M-150_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH160=kreator.makeMCComponent('VH160','/WH_ZH_TTH_HToZZ_M-160_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH170=kreator.makeMCComponent('VH170','/WH_ZH_TTH_HToZZ_M-170_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH180=kreator.makeMCComponent('VH180','/WH_ZH_TTH_HToZZ_M-180_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH190=kreator.makeMCComponent('VH190','/WH_ZH_TTH_HToZZ_M-190_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH200=kreator.makeMCComponent('VH200','/WH_ZH_TTH_HToZZ_M-200_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH210=kreator.makeMCComponent('VH210','/WH_ZH_TTH_HToZZ_M-210_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH220=kreator.makeMCComponent('VH220','/WH_ZH_TTH_HToZZ_M-220_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH230=kreator.makeMCComponent('VH230','/WH_ZH_TTH_HToZZ_M-230_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH250=kreator.makeMCComponent('VH250','/WH_ZH_TTH_HToZZ_M-250_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH275=kreator.makeMCComponent('VH275','/WH_ZH_TTH_HToZZ_M-275_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+VH300=kreator.makeMCComponent('VH300','/WH_ZH_TTH_HToZZ_M-300_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+
 
 #-----------Background----------#XS
 
@@ -178,7 +200,9 @@ ggH128,ggH129,ggH130,ggH135,ggH140,ggH145,ggH150,ggH160,
 ggH170,ggH180,ggH190,ggH200,ggH220,ggH250,ggH275,ggH300,
 ggH325,ggH375,ggH400,ggH425,ggH450,ggH475,ggH500,ggH525,
 ggH550,ggH575,ggH600,ggH650,ggH700,ggH750,ggH800,ggH850,
-ggH900,ggH1000,
+ggH900,ggH1000,VH126,VH127,VH128,VH129,VH130,VH135,VH140,
+VH145,VH150,VH160,VH170,VH180,VH190,VH200,VH210,VH220,VH230,
+VH250,VH275,VH300,
 ZZ2e2mu,ZZ2mu2tau,ZZ2e2tau,
 ZZ4mu,ZZ4tau,ZZ4e,GGZZ4L,
 GGZZ2L2L,DY,DYLOW,TT
@@ -187,7 +211,7 @@ GGZZ2L2L,DY,DYLOW,TT
 #-----------DATA---------------
 
 json='/afs/cern.ch/user/m/mangano/public/hcp2012_json_v2/hcp.json'
-skim='SKIM_Oct27_All'
+#skim='SKIM_Oct27_All'
 
 DoubleMuAB = cfg.DataComponent(
     name = 'DoubleMuAB',

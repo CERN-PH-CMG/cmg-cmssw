@@ -183,7 +183,7 @@ sequence = cfg.Sequence(dataSequence)
 
 test = 0
 if test==1:
-    dataset = ggH126
+    dataset = VH126
     selectedComponents = [dataset]
     dataset.splitFactor = 1
 #    dataset.files=['cmgTuple.root']
