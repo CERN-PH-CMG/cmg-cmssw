@@ -70,10 +70,17 @@ class TriggerAnalyzer( Analyzer ):
             veto,hltVetoPath = self.vetoTriggerList.triggerPassed(event.triggerObject,
                                                          run,lumi,self.cfg_comp.isData,
                                                          usePrescaled = usePrescaled)
+
+        # Check if events needs to be skipped if no trigger is found (useful for generator level studies)
+        keepFailingEvents = False
+        if hasattr( self.cfg_ana, 'keepFailingEvents'):
+            keepFailingEvents = self.cfg_ana.keepFailingEvents
         if not passed or (passed and veto):
-            return False
-
-
+            event.passedTriggerAnalyzer = False
+            if not keepFailingEvents:
+                return False
+        else:
+            event.passedTriggerAnalyzer = True
 
         event.hltPath = hltPath 
 
@@ -84,6 +91,7 @@ class TriggerAnalyzer( Analyzer ):
             event.triggerObjects = selTriggerObjects( trigObjs, hltPath )
             
         self.counters.counter('Trigger').inc('HLT')
+        event.TriggerFired = 1
         return True
 
     def write(self):
