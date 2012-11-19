@@ -107,8 +107,16 @@ class VertexAnalyzer( Analyzer ):
             print 'VertexAnalyzer: #vert = ', len(event.vertices), \
                   ', weight = ', event.vertexWeight
 
+        # Check if events needs to be skipped if no good vertex is found (useful for generator level studies)
+        keepFailingEvents = False
+        if hasattr( self.cfg_ana, 'keepFailingEvents'):
+            keepFailingEvents = self.cfg_ana.keepFailingEvents
         if len(event.goodVertices)==0:
-            return False
+            event.passedVertexAnalyzer=False
+            if not keepFailingEvents:
+                return False
+        else:
+            event.passedVertexAnalyzer=True
 
         if self.doHists:
             self.pileup.hist.Fill( len(event.goodVertices) )
