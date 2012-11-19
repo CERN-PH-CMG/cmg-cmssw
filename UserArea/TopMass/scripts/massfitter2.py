@@ -130,12 +130,15 @@ class toyResult():
         ## self.nToys = 10000
 
 
-    def doCalibrationStep(self,workspace,nSamples,nToys):
+    def doCalibrationStep(self,workspace,nSamples,nToys,fittype,floatSignal):
         ## get the model for the fit, the signal and the background
-        mod_fit = workspace.pdf(self.channel+'model')
-        mod_bkg = workspace.pdf(self.channel+self.variable+'_bkg')
-        mod_sig = workspace.pdf(self.channel+'f'+self.variable+'_'+self.channel+self.mass)
-
+        mod_fit  = workspace.pdf(self.channel+'model')
+        mod_bkg  = workspace.pdf(self.channel+self.variable+'_bkg')
+        mod_sig  = workspace.pdf(self.channel+'f'+self.variable+'_'+self.channel+self.mass)
+        mod_25q  = workspace.function(self.channel+'25qInv')
+        mod_50q  = workspace.function(self.channel+'50qInv')
+        mod_mean = workspace.function(self.channel+'meanInv')
+        
         ## the top mass and the relative signal fractions are not constant
         ## define the range of mtop
         workspace.var('mtop').setConstant(kFALSE)
@@ -150,7 +153,7 @@ class toyResult():
 
         ## sum the signal and background pdfs to use for the generation step
         sigfrac = workspace.var(self.channel+'sigfrac')
-        sigfrac.setConstant(kTRUE)  ## FIXME
+        if(not floatSignal) : sigfrac.setConstant(kTRUE) 
         mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig,mod_bkg),RooArgList(sigfrac))
 
         getattr(w,'import')(mod_gen)
@@ -170,98 +173,209 @@ class toyResult():
         workspace.var(self.channel+'wid_bkg').setConstant(kTRUE)
         
         ## change here for the closure test...
-        rooargs = RooArgSet(workspace.var(self.variable))
-        mc = RooMCStudy(mod_gen, rooargs,
+        #rooargs = RooArgSet(workspace.var(self.variable))
+        #mc = RooMCStudy(mod_gen, rooargs,
         ## mc = RooMCStudy(mod_sig, rooargs,
-                    RooCmdArg(RooFit.FitModel(mod_fit)),
-                    RooCmdArg(RooFit.Binned(kTRUE)),
-                    RooCmdArg(RooFit.Silence()),
-                    #RooCmdArg(RooFit.Extended()),
-            RooCmdArg(RooFit.FitOptions(RooFit.Save(kTRUE), RooFit.PrintEvalErrors(0) ) )
-        ) 
-
-        print ' * starting the generation and fitting procedure'
-        mc.generateAndFit(nSamples,nToys)
-
-        self.makeControlPlots(mc,workspace)
+        #            RooCmdArg(RooFit.FitModel(mod_fit)),
+        #            RooCmdArg(RooFit.Binned(kTRUE)),
+        #            RooCmdArg(RooFit.Silence()),
+        #            #RooCmdArg(RooFit.Extended()),
+        #    RooCmdArg(RooFit.FitOptions(RooFit.Save(kTRUE), RooFit.PrintEvalErrors(0) ) )
+        #) 
+        #print ' * starting the generation and fitting procedure'
+        #mc.generateAndFit(nSamples,nToys)
+        #self.makeControlPlots(mc,workspace)
         ## keep the histogram for the summary plot
-        hist = self.makeBiasPlot(mc,nSamples)
-        self.biasHistos.append(hist)
+        #hist = self.makeBiasPlot(mc,nSamples)
+        #self.biasHistos.append(hist)
 
-    def makeBiasPlot(self,mc,nSamples):
-        print 'making bias histogram'
-        ## loop over the results from the toy experiments
-        ## and fill a histogram with the difference of the fit result to
-        ## the generated top mass
-        hist = ROOT.TH1F('bias_histo_'+self.channel+'_'+self.mass,'bias_histo_'+self.channel+'_'+self.mass,60,-15,15)
+        #save the default parameters
+        nullParams = workspace.allVars().snapshot()
+        workspace.saveSnapshot("default",nullParams,kTRUE)
+        
+        mtop=workspace.var('mtop')
+        observable=workspace.var(self.variable)
+        modelConfig=None
+        if(fittype.find('plr')>=0) :
+            modelConfig=RooStats.ModelConfig("mc",workspace)
+            modelConfig.SetPdf(mod_fit)
+            modelConfig.SetParametersOfInterest(RooArgSet(mtop))
+            modelConfig.SetObservables(RooArgSet(observable))
+            modelConfig.SetNuisanceParameters(RooArgSet(sigfrac))
 
-        ## some cosmetics
-        hist.GetXaxis().SetTitle('m_{fit}-m_{gen} [GeV]')
-        hist.GetYaxis().SetTitle('1 / 0.5 GeV')
+        #run the pseudo-experiments
+        resultsSummary={}
+        resultsSummary["fit"]=[]
+        resultsSummary["mean"]=[]
+        resultsSummary["q25"]=[]
+        resultsSummary["q50"]=[]
+        import array
+        xq=array.array('d',[0.25,0.5,0.75,1])
+        yq=array.array('d',[0,   0,  0,   0])
+        for toy in xrange(0,nSamples):
 
-        gen_mass = float(self.mass)/10.
-        for n in xrange(nSamples):
-            res_val = self.getResult(mc,'mtop',n)
-            #res_val = 
-            hist.Fill(res_val-gen_mass)
-        ## and save it as a picture
-        c_bias_hist = TCanvas('c_bias_hist_'+self.channel+'_'+self.mass,'c_bias_hist_'+self.channel+'_'+self.mass,400,400)
-        hist.Draw()
-        c_bias_hist.Print('c_bias_hist_'+self.channel+'_'+self.mass+'.pdf')
-        c_bias_hist.Print('c_bias_hist_'+self.channel+'_'+self.mass+'.png')
-        return hist
+            #load the defaults
+            workspace.loadSnapshot("default")
 
-    def getResult(self,mc,var,n):
-        try:
-            val = mc.fitResult(n).floatParsFinal().find(var).getValV()
-        except (RuntimeError,ValueError):
-            print 'Oops!'
-            val = -1
-        return val
+            #generate (binned or not)
+            toyData=None
+            if(fittype=='plr' or fittype=='ll'):
+                toyData=mod_gen.generateBinned(RooArgSet(observable),nToys)
+            else:
+                toyData=mod_gen.generate(RooArgSet(observable),nToys)
+
+            #momenta of the distribution
+            binnedData=toyData.createHistogram("tmp",observable)
+
+            observable.setVal(binnedData.GetMean())
+            res=mod_mean.getVal()
+            observable.setVal(binnedData.GetMean()+binnedData.GetMeanError())
+            eHigh=mod_mean.getVal()-res
+            observable.setVal(binnedData.GetMean()-binnedData.GetMeanError())
+            eLow=res-mod_mean.getVal()
+            eStat=0.5*(fabs(eLow)+fabs(eHigh))
+            pull  = (res-float(self.mass)/10)/eStat
+            resultsSummary["mean"].append([res,eStat,pull,eHigh,eLow])
+            
+            binnedData.GetQuantiles(4,yq,xq)
+            observable.setVal(yq[0])
+            resultsSummary["q25"].append([mod_25q.getVal(),0,0,0,0])
+            observable.setVal(yq[1])
+            resultsSummary["q50"].append([mod_50q.getVal(),0,0,0,0])
+
+            #fit
+            if(fittype.find('plr')>=0):
+                pl=RooStats.ProfileLikelihoodCalculator(toyData,modelConfig)
+                pl.SetConfidenceLevel(0.68)
+                interval = pl.GetInterval();
+                res   = modelConfig.GetParametersOfInterest().first().getVal()
+                eLow  = res-interval.LowerLimit(mtop)
+                eHigh = interval.UpperLimit(mtop)-res
+            else:
+                mod_fit.fitTo(toyData)
+                res   = mtop.getVal()
+                eLow  = mtop.getErrorLo()
+                eHigh = mtop.getErrorHi()
+            eStat = 0.5*(fabs(eLow)+fabs(eHigh))
+            pull  = (res-float(self.mass)/10)/eStat
+            resultsSummary["fit"].append([res,eStat,pull,eHigh,eLow])
+
+        #display the results
+        for method in resultsSummary.items() :
+            biasH,pullH=self.makeControlPlots(method[0],method[1])
+            if(method[0]=='fit') : self.biasHistos.append(biasH)
 
 
+    def makeControlPlots(self,method,resultsSummary):
 
+        #define and fill the histograms
+        fitResH  = ROOT.TH1F(method+'res_'+self.channel+'_'+self.mass,        ';Fitted m_{top} [GeV];Toys / (1 GeV)',                    50,  150,   200)
+        biasH    = ROOT.TH1F(method+'bias_histo_'+self.channel+'_'+self.mass, ';Fitted m_{top}-Generated m_{top} [GeV];Toys / 0.5 GeV',  50,  -12.25, 12.75)
+        asymErrH = ROOT.TH1F(method+'asymerr_'+self.channel+'_'+self.mass,    ';#sigma_{m_{top}} [GeV];Toys / (0.25 GeV)',               100,  -12.375, 12.625)
+        errH     = ROOT.TH1F(method+'err_'+self.channel+'_'+self.mass,        ';#sigma_{m_{top}} [GeV];Toys / (0.5 GeV)',                25,  0,     12.5)
+        pullH    = ROOT.TH1F(method+'pull_'+self.channel+'_'+self.mass,       ';Pull;Toys / (0.05)',                                     50,  -2.45, 2.55)
 
+        for r in resultsSummary:
+            fitResH.Fill(r[0])
+            biasH.Fill(r[0]-float(self.mass)/10)
+            errH.Fill(r[1])
+            pullH.Fill(r[2])
+            asymErrH.Fill(+fabs(r[3]))
+            asymErrH.Fill(-fabs(r[4]))
 
-
-    def makeControlPlots(self,mc,workspace):
-        print ' * making control hitograms'
-        ## first mtop...
-        c_mtop = TCanvas('c_mtop','c_mtop',600,300)
-        c_mtop.Divide(2,1)
-        ## get the results of the MC study
-        mtop_frame = mc.plotParam(workspace.var('mtop'),RooFit.Bins(40))
+        #show the results
+        c_mtop = TCanvas('c_mtop','c_mtop',600,600)
+        c_mtop.Divide(2,2)
         c_mtop.cd(1)
-        mtop_frame.Draw()
-        mtop_error_frame = mc.plotError(workspace.var('mtop'),RooFit.Bins(40))
+        fitResH.Draw()  
         c_mtop.cd(2)
-        mtop_error_frame.Draw() 
-        ## FIXME: pull doesn't work....
-        ## mtop_pull_frame = mc.plotPull(mtop,-10,10,RooFit.Bins(50),RooFit.FitGauss(kTRUE))
-        ## mtop_pull_frame = mc.plotPull(mtop)
-        ## c_mtop.cd(3)
-        ## mtop_pull_frame.Draw()
+        asymErrH.Draw()
+        c_mtop.cd(3)
+        errH.Draw()  
+        c_mtop.cd(4)
+        pullH.Draw()
         c_mtop.Update()
-        c_mtop.Print('c_mtop_'+self.channel+'_'+self.mass+'.pdf')
-        c_mtop.Print('c_mtop_'+self.channel+'_'+self.mass+'.png')
- 
-        ## plot signal fraction information
-        c_sigfrac = TCanvas('c_sigfrac','c_sigfrac',900,300)
-        c_sigfrac.Divide(3,1)
-        ## get the results of the MC study
-        sigfrac_frame = mc.plotParam(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
-        c_sigfrac.cd(1)
-        sigfrac_frame.Draw()
-        sigfrac_error_frame = mc.plotError(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
-        c_sigfrac.cd(2)
-        sigfrac_error_frame.Draw()        
-        sigfrac_pull_frame = mc.plotPull(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40),RooFit.FitGauss(kTRUE))
-        c_sigfrac.cd(3)
-        sigfrac_pull_frame.Draw()
-        c_sigfrac.Update()
-        c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.pdf')
-        c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.png')
+        c_mtop.Print('c_mtop_'+method+'_'+self.channel+'_'+self.mass+'.pdf')
+        c_mtop.Print('c_mtop_'+method+'_'+self.channel+'_'+self.mass+'.png')
 
+        c_bias = TCanvas('c_bias_'+self.channel+'_'+self.mass,'c_bias_'+self.channel+'_'+self.mass,400,400)
+        biasH.Draw()
+        c_bias.Print('c_bias_'+method+'_'+self.channel+'_'+self.mass+'.pdf')
+        c_bias.Print('c_bias_'+method+'_'+self.channel+'_'+self.mass+'.png')
+
+        return biasH,pullH
+ 
+#    def makeBiasPlot(self,mc,nSamples):
+#        print 'making bias histogram'
+#        ## loop over the results from the toy experiments
+#        ## and fill a histogram with the difference of the fit result to
+#        ## the generated top mass
+#        hist = ROOT.TH1F('bias_histo_'+self.channel+'_'+self.mass,'bias_histo_'+self.channel+'_'+self.mass,60,-15,15)
+#
+#        ## some cosmetics
+#        hist.GetXaxis().SetTitle('m_{fit}-m_{gen} [GeV]')
+#        hist.GetYaxis().SetTitle('1 / 0.5 GeV')
+#
+#        gen_mass = float(self.mass)/10.
+#        for n in xrange(nSamples):
+#            res_val = self.getResult(mc,'mtop',n)
+#            #res_val = 
+#            hist.Fill(res_val-gen_mass)
+#        ## and save it as a picture
+#        c_bias_hist = TCanvas('c_bias_hist_'+self.channel+'_'+self.mass,'c_bias_hist_'+self.channel+'_'+self.mass,400,400)
+#        hist.Draw()
+#        c_bias_hist.Print('c_bias_hist_'+self.channel+'_'+self.mass+'.pdf')
+#        c_bias_hist.Print('c_bias_hist_'+self.channel+'_'+self.mass+'.png')
+#        return hist
+#
+#    def getResult(self,mc,var,n):
+#        try:
+#            val = mc.fitResult(n).floatParsFinal().find(var).getValV()
+#        except (RuntimeError,ValueError):
+#            print 'Oops!'
+#            val = -1
+#        return val
+
+
+
+#    def makeControlPlots(self,mc,workspace):
+#        print ' * making control hitograms'
+#        ## first mtop...
+#        c_mtop = TCanvas('c_mtop','c_mtop',600,300)
+#        c_mtop.Divide(2,1)
+#        ## get the results of the MC study
+#        mtop_frame = mc.plotParam(workspace.var('mtop'),RooFit.Bins(40))
+#        c_mtop.cd(1)
+#        mtop_frame.Draw()
+#        mtop_error_frame = mc.plotError(workspace.var('mtop'),RooFit.Bins(40))
+#        c_mtop.cd(2)
+#        mtop_error_frame.Draw() 
+#        ## FIXME: pull doesn't work....
+#        ## mtop_pull_frame = mc.plotPull(mtop,-10,10,RooFit.Bins(50),RooFit.FitGauss(kTRUE))
+#        ## mtop_pull_frame = mc.plotPull(mtop)
+#        ## c_mtop.cd(3)
+#        ## mtop_pull_frame.Draw()
+#        c_mtop.Update()
+#        c_mtop.Print('c_mtop_'+self.channel+'_'+self.mass+'.pdf')
+#        c_mtop.Print('c_mtop_'+self.channel+'_'+self.mass+'.png')
+# 
+#        ## plot signal fraction information
+#        c_sigfrac = TCanvas('c_sigfrac','c_sigfrac',900,300)
+#        c_sigfrac.Divide(3,1)
+#        ## get the results of the MC study
+#        sigfrac_frame = mc.plotParam(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
+#        c_sigfrac.cd(1)
+#        sigfrac_frame.Draw()
+#        sigfrac_error_frame = mc.plotError(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40))
+#        c_sigfrac.cd(2)
+#        sigfrac_error_frame.Draw()        
+#        sigfrac_pull_frame = mc.plotPull(workspace.var(self.channel+'sigfrac'),RooFit.Bins(40),RooFit.FitGauss(kTRUE))
+#        c_sigfrac.cd(3)
+#        sigfrac_pull_frame.Draw()
+#        c_sigfrac.Update()
+#        c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.pdf')
+#        c_sigfrac.Print('c_sigfrac_'+self.channel+'_'+self.mass+'.png')
+#
 ## FIXME: read masses from command line
 masses = [ '1615','1635','1665','1695','1725','1755','1785','1815','1845' ]
 #masses = ['1695','1725'] 
@@ -276,6 +390,8 @@ def main():
     parser.add_option('-i', '--inputfile' ,    dest='inputfile'      , help='Name of the local input file.'          , default=None)
     parser.add_option('-r', '--rootfile'  ,    dest='rootfile'       , help='Name of the root file.'                 , default=None)
     parser.add_option('-c', '--channel'   ,    dest='channel'        , help='If only one channel is processed.'      , default=None)
+    parser.add_option('-f', '--fit'       ,    dest='fittype'        , help='Choose fit type ll,ull,plr,uplr'        , default='ll')
+    parser.add_option('-S', '--floatsignal',   dest='floatsignal'    , help='Signal is left to float in the fit'     , default=False,  action="store_true")
     parser.add_option('-m', '--mass'      ,    dest='mass'           , help='If only one mass is processed.'         , default=None)
     parser.add_option('-n', '--ntoys'     ,    dest='ntoys'          , help='Number of toy experiments.'             , default=25      ,type = int)
     parser.add_option('-s', '--samplesize',    dest='samplesize'     , help='Number of events per toy experiment.'   , default=50000   ,type = int)
@@ -334,7 +450,7 @@ def main():
                 thisResult.variable = 'lxy'
                 thisResult.channel = chan
                 thisResult.mass = mass
-                thisResult.doCalibrationStep(workspace,opt.ntoys,opt.samplesize)
+                thisResult.doCalibrationStep(workspace,opt.ntoys,opt.samplesize,opt.fittype,opt.floatsignal)
                 print thisResult.biasHistos
                 tag = thisResult.channel+'_'+thisResult.mass
                 allFitResults[tag] = thisResult
