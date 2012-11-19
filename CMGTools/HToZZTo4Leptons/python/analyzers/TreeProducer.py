@@ -35,7 +35,6 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_E'.format(pName=pName))
 
 
-
     def bookRecoFSR(self, pName ):
         self.bookGenFSR(pName)
         self.var('{pName}_Match'.format(pName=pName))
@@ -171,18 +170,19 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_PSMELA'.format(pName=pName))
         self.var('{pName}_SpinTwoMELA'.format(pName=pName))
         self.var('{pName}_MassErr'.format(pName=pName))
-        self.var('{pName}_DEta'.format(pName=pName))
-        self.var('{pName}_DPhi'.format(pName=pName))
-        self.var('{pName}_MJJ'.format(pName=pName))
-        self.var('{pName}_MJJJ'.format(pName=pName))
-        self.var('{pName}_MBB'.format(pName=pName))
-        self.var('{pName}_HT'.format(pName=pName))
-        self.var('{pName}_Ptjj'.format(pName=pName))
-        self.var('{pName}_NJets'.format(pName=pName),int)
-        self.var('{pName}_NBJets'.format(pName=pName),int)
-        self.var('{pName}_NBJetsTight'.format(pName=pName),int)
-        self.var('{pName}_LeadingJetPt'.format(pName=pName))
-        self.var('{pName}_LeadingJetEta'.format(pName=pName))
+        for postfix in ['','Up','Dwn']:
+            self.var('{pName}_DEta'.format(pName=pName)+postfix)
+            self.var('{pName}_DPhi'.format(pName=pName)+postfix)
+            self.var('{pName}_MJJ'.format(pName=pName)+postfix)
+            self.var('{pName}_MJJJ'.format(pName=pName)+postfix)
+            self.var('{pName}_MBB'.format(pName=pName)+postfix)
+            self.var('{pName}_HT'.format(pName=pName)+postfix)
+            self.var('{pName}_Ptjj'.format(pName=pName)+postfix)
+            self.var('{pName}_NJets'.format(pName=pName)+postfix,int)
+            self.var('{pName}_NBJets'.format(pName=pName)+postfix,int)
+            self.var('{pName}_NBJetsTight'.format(pName=pName)+postfix,int)
+            self.var('{pName}_LeadingJetPt'.format(pName=pName)+postfix)
+            self.var('{pName}_LeadingJetEta'.format(pName=pName)+postfix)
 
 
     def fillBoson(self, pName,particle ):
@@ -223,18 +223,19 @@ class TreeProducer( Analyzer ):
             self.fill('{pName}_MassErr'.format(pName=pName), particle.massErr )
 
         if hasattr(particle,'jets'):
-            self.fill('{pName}_DEta'.format(pName=pName), particle.jets['dEta'] )
-            self.fill('{pName}_DPhi'.format(pName=pName), particle.jets['dPhi'] )
-            self.fill('{pName}_MJJ'.format(pName=pName), particle.jets['Mjj'] )
-            self.fill('{pName}_MJJJ'.format(pName=pName), particle.jets['Mjjj'] )
-            self.fill('{pName}_MBB'.format(pName=pName), particle.jets['Mbb'] )
-            self.fill('{pName}_HT'.format(pName=pName), particle.jets['HT'] )
-            self.fill('{pName}_NJets'.format(pName=pName), particle.jets['nJets'] )
-            self.fill('{pName}_NBJets'.format(pName=pName), particle.jets['nBJets'] )
-            self.fill('{pName}_NBJetsTight'.format(pName=pName), particle.jets['nBJetsTight'] )
-            self.fill('{pName}_Ptjj'.format(pName=pName), particle.jets['Ptjj'] )
-            self.fill('{pName}_LeadingJetPt'.format(pName=pName), particle.jets['leadingPt'] )
-            self.fill('{pName}_LeadingJetEta'.format(pName=pName), particle.jets['leadingEta'] )
+            for postfix in ['','Up','Dwn']: 
+                self.fill('{pName}_DEta'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['dEta'] )
+                self.fill('{pName}_DPhi'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['dPhi'] )
+                self.fill('{pName}_MJJ'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['Mjj'] )
+                self.fill('{pName}_MJJJ'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['Mjjj'] )
+                self.fill('{pName}_MBB'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['Mbb'] )
+                self.fill('{pName}_HT'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['HT'] )
+                self.fill('{pName}_NJets'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['nJets'] )
+                self.fill('{pName}_NBJets'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['nBJets'] )
+                self.fill('{pName}_NBJetsTight'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['nBJetsTight'] )
+                self.fill('{pName}_Ptjj'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['Ptjj'] )
+                self.fill('{pName}_LeadingJetPt'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['leadingPt'] )
+                self.fill('{pName}_LeadingJetEta'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['leadingEta'] )
             
 
 

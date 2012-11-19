@@ -73,6 +73,7 @@ class FourLeptonTreeProducer( TreeProducer ):
         if self.cfg_comp.isMC:
             self.var("genHMass")
             self.var('genHDecay')
+            self.var('genHProcess')
             
 
 
@@ -106,6 +107,8 @@ class FourLeptonTreeProducer( TreeProducer ):
                 self.fill("genHMass",event.higgsGen.mass())
             if hasattr(event,'genDecay'):
                 self.fill('genHDecay',event.genDecay)
+            if hasattr(event,'genProcess'):
+                self.fill('genHProcess',event.genProcess)
 
 
 
