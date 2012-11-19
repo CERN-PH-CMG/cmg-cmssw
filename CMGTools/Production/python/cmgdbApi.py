@@ -23,6 +23,7 @@ class CmgdbApi(object):
         self.selectConn = None
         self.selectCur = None
         self.insertCur = None
+        self._masterCur = None
         
     def connect(self):
         """ 
@@ -35,10 +36,10 @@ class CmgdbApi(object):
         """
         try:
             # Connect to insert account
-            self.insertConn = cx_Oracle.connect("cms_cmgdb_w/Bamboo66@(DESCRIPTION=(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr1-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr2-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr3-s.cern.ch) (PORT=10121) )(LOAD_BALANCE=on)(ENABLE=BROKEN)(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=cmsr_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
+            self.insertConn = cx_Oracle.connect("cms_cmgdb_w/DaiEnkaiEntei2010@(DESCRIPTION=(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr1-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr2-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr3-s.cern.ch) (PORT=10121) )(LOAD_BALANCE=on)(ENABLE=BROKEN)(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=cmsr_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
             # Connect to select account
-            self.selectConn = cx_Oracle.connect("cms_cmgdb_r/Chocolate100@(DESCRIPTION=(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr1-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr2-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr3-s.cern.ch) (PORT=10121) )(LOAD_BALANCE=on)(ENABLE=BROKEN)(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=cmsr_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
-            self._masterConn = cx_Oracle.connect("cms_cmgdb/Concrete32@(DESCRIPTION=(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr1-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr2-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr3-s.cern.ch) (PORT=10121) )(LOAD_BALANCE=on)(ENABLE=BROKEN)(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=cmsr_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
+            self.selectConn = cx_Oracle.connect("cms_cmgdb_r/DaiEnkaiEntei2010@(DESCRIPTION=(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr1-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr2-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr3-s.cern.ch) (PORT=10121) )(LOAD_BALANCE=on)(ENABLE=BROKEN)(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=cmsr_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
+            self._masterConn = cx_Oracle.connect("cms_cmgdb/DaiEnkaiEntei2012@(DESCRIPTION=(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr1-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr2-s.cern.ch) (PORT=10121) )(ADDRESS= (PROTOCOL=TCP) (HOST=cmsr3-s.cern.ch) (PORT=10121) )(LOAD_BALANCE=on)(ENABLE=BROKEN)(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=cmsr_lb.cern.ch) (FAILOVER_MODE = (TYPE = SELECT)(METHOD = BASIC)(RETRIES = 200)(DELAY = 15))))")
             # Create cx_Oracle cursor objects from connections
             self.selectCur = self.selectConn.cursor()
             self._masterCur = self._masterConn.cursor()
