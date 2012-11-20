@@ -12,10 +12,13 @@ def getSchedule(process, runOnMC, runOnFastSim):
         process.primaryVertexFilterPath,
         process.noscrapingFilterPath,
         process.metNoiseCleaningPath
-        # process.eeBadScFilterPath,
         )
+
     if isNewerThan('CMSSW_5_2_0'):
         result.append( process.eeBadScFilterPath )
+    if isNewerThan('CMSSW_5_3_0'):
+        result.append( process.ecalLaserFilterPath )
+
     if runOnMC:
         result.append(process.totalKinematicsFilterPath)
     if not( runOnFastSim ):
