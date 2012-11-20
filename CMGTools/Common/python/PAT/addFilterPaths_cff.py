@@ -72,6 +72,15 @@ trackingFailureFilter.JetSource = 'ak5PFJets'
 trackingFailureSequence = cms.Sequence(goodVertices*trackingFailureFilter)
 trackingFailureFilterPath = cms.Path(trackingFailureSequence)
 
+## Bad EE Supercrystal filter
+from RecoMET.METFilters.eeBadScFilter_cfi import eeBadScFilter
+eeBadScSequence = cms.Sequence(eeBadScFilter)
+eeBadScFilterPath = cms.Path(eeBadScSequence)
+
+## EB or EE Xtals with large laser calibration correction
+from RecoMET.METFilters.ecalLaserCorrFilter_cfi import ecalLaserCorrFilter
+ecalLaserCorrSequence = cms.Sequence(ecalLaserCorrFilter)
+ecalLaserFilterPath = cms.Path(ecalLaserCorrSequence)
 
 metNoiseCleaning = cms.Sequence(primaryVertexFilter+
                                 noscraping+
@@ -79,7 +88,9 @@ metNoiseCleaning = cms.Sequence(primaryVertexFilter+
                                 HBHENoiseFilter+
                                 hcalLaserEventFilter+
                                 EcalDeadCellTriggerPrimitiveFilter+
-                                trackingFailureSequence
+                                trackingFailureSequence+
+                                eeBadScSequence+
+                                ecalLaserCorrSequence
                                 )
 
 metNoiseCleaningPath = cms.Path(metNoiseCleaning)
