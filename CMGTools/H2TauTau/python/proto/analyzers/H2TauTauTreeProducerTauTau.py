@@ -49,6 +49,8 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 	var('met')
 	var('mttj')
 
+	var('rawMET')
+
 	var('mjj')
 	var('dEtajj')
 	var('dPhijj')
@@ -96,6 +98,16 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         var('l2jetPt')
         var('l2jetWidth')
         var('l2jetBtag')
+        var('l1match')
+        var('l2match')
+
+        var('genMass')
+        var('genMassSmeared')
+        var('svfitMassSmeared')
+        var('l1JetInvMass')
+        var('l2JetInvMass')
+        varInt('l1TrigMatched')
+        varInt('l2TrigMatched')
 
         #var('genTauVisMass')
         #var('genJetVisMass')
@@ -125,6 +137,19 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         varInt('isFake')
         varInt('isPhoton')
         varInt('isElectron')
+
+        varInt('hasW')
+        varInt('hasZ')
+
+	self.triggers=['HLT_LooseIsoPFTau35_Trk20_Prong1_v6',
+         'HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v6',
+         'HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v6',
+         'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_Jet30_v2',
+         'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_v2',
+         'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v6',
+         'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v6']
+        for trig in self.triggers:
+            varInt(trig)
 	
         self.tree.book()
 
@@ -180,6 +205,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         fill('mex', event.diLepton.met().px()*scale)
         fill('mey', event.diLepton.met().py()*scale)
         fill('met', event.diLepton.met().pt()*scale)
+        fill('rawMET', event.rawMET[0].pt())
         fill('dRtt', sqrt(pow(deltaPhi(event.diLepton.leg1().phi(),event.diLepton.leg2().phi()),2)+pow(fabs(event.diLepton.leg1().eta()-event.diLepton.leg2().eta()),2)))
         fill('dPhitt', deltaPhi(event.diLepton.leg1().phi(),event.diLepton.leg2().phi()))
         fill('dEtatt', fabs(event.diLepton.leg1().eta()-event.diLepton.leg2().eta()))
@@ -234,6 +260,36 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 	if l2jet:
           fill('l2jetWidth', l2jet.rms() )
           fill('l2jetBtag', l1jet.btag("combinedSecondaryVertexBJetTags") )
+	  
+	if hasattr(event,"leg1DeltaR"):
+            fill('l1match', event.leg1DeltaR )
+            fill('l2match', event.leg2DeltaR )
+	else:
+            fill('l1match', -1 )
+            fill('l2match', -1 )
+
+	if hasattr(event,"genMass"):
+            fill('genMass', event.genMass )
+	    from ROOT import TFile,TH1F
+            f = TFile("/afs/cern.ch/user/h/hinzmann/workspace/stable2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/embeddedWeights.root")
+            hEmbed = f.Get("hemb")
+            shift=hEmbed.GetRandom()/event.genMass
+            fill('genMassSmeared', event.genMass*shift )
+            fill('svfitMassSmeared', event.diLepton.massSVFit()*scale*shift )
+	else:
+            fill('genMass', -1 )
+            fill('genMassSmeared', -1 )
+            fill('svfitMassSmeared', -1 )
+
+	if hasattr(event,"l1TrigMatched"):
+            fill('l1TrigMatched', event.l1TrigMatched )
+	else:
+            fill('l1TrigMatched', -1 )
+
+	if hasattr(event,"l2TrigMatched"):
+            fill('l2TrigMatched', event.l2TrigMatched )
+	else:
+            fill('l2TrigMatched', -1 )
 
         #if event.diLepton.leg1().genTaup4() and event.diLepton.leg2().genTaup4():
         #  fill('genTauVisMass', sqrt(
@@ -258,6 +314,8 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
             fill('jet1Btag', event.cleanJets[0].btag("combinedSecondaryVertexBJetTags") )
             fill('jet1Bmatch', event.cleanJets[0].matchGenParton )
 	    fill('mttj', sqrt(pow(event.diLepton.energy()+event.cleanJets[0].energy(),2) - pow(event.diLepton.px()+event.cleanJets[0].px(),2) - pow(event.diLepton.py()+event.cleanJets[0].py(),2) - pow(event.diLepton.pz()+event.cleanJets[0].pz(),2)))
+	    fill('l1JetInvMass', sqrt(pow(leg1.energy()+event.cleanJets[0].energy(),2) - pow(leg1.px()+event.cleanJets[0].px(),2) - pow(leg1.py()+event.cleanJets[0].py(),2) - pow(leg1.pz()+event.cleanJets[0].pz(),2)))
+	    fill('l2JetInvMass', sqrt(pow(leg2.energy()+event.cleanJets[0].energy(),2) - pow(leg2.px()+event.cleanJets[0].px(),2) - pow(leg2.py()+event.cleanJets[0].py(),2) - pow(leg2.pz()+event.cleanJets[0].pz(),2)))
         if nJets>=2:
             fParticleVars('jet2', event.cleanJets[1] )
             fill('jet2Btag', event.cleanJets[1].btag("combinedSecondaryVertexBJetTags") )
@@ -301,5 +359,16 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         isElectron = 0
         if hasattr(event,'isElectron') and event.isElectron == 1: isElectron = 1
         fill('isElectron', isElectron)
+
+        hasW = 0
+        if hasattr(event,'hasW') and event.hasW == 1: hasW = 1
+        fill('hasW', hasW)
+
+        hasZ = 0
+        if hasattr(event,'hasZ') and event.hasZ == 1: hasZ = 1
+        fill('hasZ', hasZ)
+
+        for trig in self.triggers:
+            fill(trig, getattr(event,trig))
 
         self.tree.fill()
