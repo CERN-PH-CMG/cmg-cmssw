@@ -16,6 +16,8 @@ PhysicsEvent_t getPhysicsEventFrom(ZZ2l2nuSummary_t &ev)
   phys.cat = ev.cat;
   phys.nvtx = ev.nvtx;
   phys.vtx = LorentzVector(ev.vtx_px,ev.vtx_py,ev.vtx_pz,ev.vtx_en);
+  phys.gammaPrescale = std::vector<int>(ev.gn_prescale,ev.gn_prescale+16);
+  
   
   size_t nlep(0);
   LorentzVector l1P4(ev.l1_px,ev.l1_py,ev.l1_pz,ev.l1_en);

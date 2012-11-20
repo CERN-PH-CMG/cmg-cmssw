@@ -53,22 +53,8 @@ haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json
 #    2012    #
 ##############
 
-
-runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2011.json -o ~/work/htozz/test/2011 -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=False @is2011=True" -s 8nh 
-runPlotter --json data/samples_2011.json --inDir ~/work/htozz/test/2011/ --outDir ~/work/htozz/test/2011/ --outFile ~/work/htozz/test/2011/plotter.root --only eventflow --only mindphijmet --only met_met --iEcm 7 --iLumi 5051
-
-runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2012_rereco.json -o ~/work/htozz/test/2012_std -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=False @is2011=False" -t GGtoH250
-runPlotter --json data/samples_2012ABC_rereco.json --inDir ~/work/htozz/test/2012_std/ --outDir ~/work/htozz/test/2012_std/ --outFile ~/work/htozz/test/2012_std/plotter.root --only eventflow --only mindphijmet --only met_met --iEcm 8 --iLumi 5041
-
-runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2012ABC_rereco.json -o  ~/work/htozz/test/2012_chs -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=False @is2011=False" -t GGtoH250
-runPlotter --json data/samples_2012ABC_rereco.json --inDir ~/work/htozz/test/2012_chs/ --outDir ~/work/htozz/test/2012_chs/ --outFile ~/work/htozz/test/2012_chs/plotter.root --only eventflow --only mindphijmet --only met_met --iEcm 8 --iLumi 5041
-
-
-runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2012.json -o ~/work/htozz/53x/ll/2012 -d /store/cmst3/user/psilva/29Aug2012_CMSSW_53x_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
-runPlotter --json data/samples_2012.json --inDir ~/work/htozz/53x/ll/2012/ --outDir ~/work/htozz/53x/ll/2012/plots/ --outFile ~/work/htozz/53x/ll/2012/plotter.root --iEcm 8 --iLumi 10198
-
 #re-reco
-runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2012_rereco.json -o  ~/work/htozz/53x_rereco/ll/2012 -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=False @is2011=False" -s 8nh 
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2012_rereco.json -o  ~/work/htozz/53x_rereco/ll/2012 -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
 runPlotter --json data/samples_2012_rereco.json --inDir ~/work/htozz/53x_rereco/ll/2012/ --outDir ~/work/htozz/53x_rereco/ll/2012/plots/ --outFile ~/work/htozz/53x_rereco/ll/2012/plotter.root --iEcm 8 --iLumi 12196
 
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012_rereco.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/htozz/53x_rereco/gamma/2012/raw -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh -t Data
