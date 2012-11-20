@@ -7,14 +7,15 @@ runOnEmbedded = False
 runOnData = False
 runOnMC = True
 
-puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
-puFileMC = '/'.join([puFileDir, 'MyMCPileupHistogram_53X_true.root'])
-puFileData = '/'.join([puFileDir, 'MyDataPileupHistogram_Run2012ABC_202016_true.root'])
+puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/vertexWeight'
+puFileMC = '/'.join([puFileDir, 'Pileup_Summer12MC53X.true.root'])
+puFileData = '/'.join([puFileDir, 'Pileup_2012HCP_190456_203002.true.root'])
 
 mc_vertexWeight = None
 mc_tauEffWeight_mc = 'effLooseTau15MC'
 #mc_tauEffWeight='eff2012IsoTau5_1fb'
-mc_tauEffWeight='eff2012IsoTau5fb'
+#mc_tauEffWeight='eff2012IsoTau5fb'
+mc_tauEffWeight='eff2012IsoTau12fb'
 #mc_tauEffWeight='eff2012IsoTau5fbUp'
 #mc_tauEffWeight='eff2012IsoTau5fbDown'
 #mc_tauEffWeight='eff2012IsoTau5fbUpSlope'
@@ -24,7 +25,8 @@ mc_tauEffWeight='eff2012IsoTau5fb'
 #mc_tauEffWeight='eff2012IsoTau5fbCrystalBall'
 #mc_tauEffWeight='eff2012IsoTau5fbFitFrom30'
 #mc_jetEffWeight='eff2012Jet30'
-mc_jetEffWeight='eff2012Jet5fb'
+#mc_jetEffWeight='eff2012Jet5fb'
+mc_jetEffWeight='eff2012Jet12fb'
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer',
@@ -33,15 +35,15 @@ triggerAna = cfg.Analyzer(
 
 TauTauAna = cfg.Analyzer(
     'TauTauAnalyzer',
-    pt1 = 20,
-    pt2 = 20,
+    pt1 = 0,
+    pt2 = 0,
     iso1 = 999,
     iso2 = 999,
     eta1 = 999,
     eta2 = 999,
-    m_min = 10,
+    m_min = 0,
     m_max = 99999,
-    diLeptonCutString = 'cuts_baseline',
+    diLeptonCutString = '',
     # No trigger matching for the moment since MC only contains too high threshold trigger
     triggerMap = pathsAndFilters
     )
@@ -108,7 +110,7 @@ treeProducer = cfg.Analyzer(
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.run2012.diTau_Sep5 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.diTau_Oct24 import * 
 
 #########################################################################################
 
@@ -135,22 +137,44 @@ selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higg
 #                        GluGluToHToZZTo2L2Nu_M_125, GluGluToHToZZTo2L2Q_M_125, VBF_ToHToZZTo2l2q_M_130, VBF_ToHToZZTo2L2NU_M_125]
 
 if runOnData:
-    selectedComponents = [data_Run2012C_PromptReco_v2]#data_2012
+    selectedComponents = data_2012
+    #selectedComponents = [data_Run2012A_PromptReco_v1]
+    #selectedComponents = [data_Run2012B_PromptReco_v1]
+    #selectedComponents = [data_Run2012C_PromptReco_v1]
+    #selectedComponents = [data_Run2012C_PromptReco_v2]
 if runOnMC:
     selectedComponents = [DYJets, WJets, W3Jets, TTJets, WW, WZ, ZZ]
-    selectedComponents += [ HiggsSUSYBB120, HiggsSUSYBB180, HiggsSUSYBB300, HiggsSUSYBB600, HiggsSUSYBB1000,
-                           HiggsSUSYGluGlu120, HiggsSUSYGluGlu180, HiggsSUSYGluGlu300, HiggsSUSYGluGlu600, HiggsSUSYGluGlu1000 ]
     selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
                         HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
                         HiggsVH110 , HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
-#    selectedComponents = [QCD50,QCD80]
+    selectedComponents += [ HiggsSUSYBB80, HiggsSUSYBB90, HiggsSUSYBB100, HiggsSUSYBB110, HiggsSUSYBB120, HiggsSUSYBB130, HiggsSUSYBB140, HiggsSUSYBB160, HiggsSUSYBB180, HiggsSUSYBB200, HiggsSUSYBB250, HiggsSUSYBB300, HiggsSUSYBB350, HiggsSUSYBB400, HiggsSUSYBB450, HiggsSUSYBB500, HiggsSUSYBB600, HiggsSUSYBB700, HiggsSUSYBB800, HiggsSUSYBB1000,
+                           HiggsSUSYGluGlu80, HiggsSUSYGluGlu90, HiggsSUSYGluGlu100, HiggsSUSYGluGlu110, HiggsSUSYGluGlu120, HiggsSUSYGluGlu130, HiggsSUSYGluGlu140, HiggsSUSYGluGlu160, HiggsSUSYGluGlu180, HiggsSUSYGluGlu200, HiggsSUSYGluGlu250, HiggsSUSYGluGlu300, HiggsSUSYGluGlu350, HiggsSUSYGluGlu400, HiggsSUSYGluGlu450, HiggsSUSYGluGlu500, HiggsSUSYGluGlu600, HiggsSUSYGluGlu700, HiggsSUSYGluGlu800, HiggsSUSYGluGlu1000 ]
+    #selectedComponents = [ TTJets, WZ, ZZ, HiggsVBF120, Higgsgg110, Higgsgg120, Higgsgg125 ]
+    #selectedComponents = [ DYJets ]
+    #selectedComponents = [ HiggsVH130, ZZ , HiggsSUSYBB110 , HiggsSUSYBB130 , HiggsSUSYBB140 , HiggsSUSYBB600 , HiggsSUSYBB1000 , HiggsSUSYGluGlu100, HiggsSUSYGluGlu600 , Higgsgg110 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 , HiggsVBF110 , HiggsVBF115 , HiggsVBF120 , HiggsVBF125 , HiggsVBF130 , HiggsVBF135 , HiggsVBF140 , HiggsVBF145 ]
+    #selectedComponents = [ Higgsgg120 ]
+    #selectedComponents = [QCD80,QCD120]
 if runOnEmbedded:
     selectedComponents = embedded_2012
 
 print [c.name for c in selectedComponents]
 
-if runOnMC or runOnEmbedded:
+if runOnMC:
   sequence = cfg.Sequence( [
+    triggerAna,
+    TauTauAna,
+    vertexAna,
+    vbfAna,
+    pileUpAna,
+    embedWeighter, 
+    tau1Weighter, 
+    tau2Weighter,
+    jetWeighter,
+    treeProducer
+   ] )
+elif runOnEmbedded:
+  sequence = cfg.Sequence( [
+    #triggerAna,
     TauTauAna,
     vertexAna,
     vbfAna,
@@ -185,38 +209,86 @@ WW.splitFactor = 10
 WZ.splitFactor = 10
 ZZ.splitFactor = 10
 #QCD.splitFactor = 50
-QCD50.splitFactor = 50
 QCD80.splitFactor = 50
+QCD120.splitFactor = 50
 data_Run2012A_PromptReco_v1.splitFactor = 50
 data_Run2012B_PromptReco_v1.splitFactor = 200
-embed_Run2012A_PromptReco_v1.splitFactor = 50
-embed_Run2012B_PromptReco_v1.splitFactor = 50
 data_Run2012C_PromptReco_v1.splitFactor = 50
 data_Run2012C_PromptReco_v2.splitFactor = 200
+embed_Run2012A_PromptReco_v1.splitFactor = 50
+embed_Run2012B_PromptReco_v1.splitFactor = 50
+embed_Run2012C_PromptReco_v1.splitFactor = 50
+embed_Run2012C_PromptReco_v2.splitFactor = 50
+Higgsgg110.splitFactor = 20
+HiggsVBF110.splitFactor = 20
+Higgsgg115.splitFactor = 20
+HiggsVBF115.splitFactor = 20
 Higgsgg120.splitFactor = 50
 HiggsVBF120.splitFactor = 50
+Higgsgg125.splitFactor = 20
+HiggsVBF125.splitFactor = 20
+Higgsgg130.splitFactor = 20
+HiggsVBF130.splitFactor = 20
+Higgsgg135.splitFactor = 20
+HiggsVBF135.splitFactor = 20
+Higgsgg140.splitFactor = 20
+HiggsVBF140.splitFactor = 20
+Higgsgg145.splitFactor = 20
+HiggsVBF145.splitFactor = 20
+HiggsSUSYBB80.splitFactor = 10
+HiggsSUSYBB90.splitFactor = 10
+HiggsSUSYBB100.splitFactor = 10
+HiggsSUSYBB110.splitFactor = 10
 HiggsSUSYBB120.splitFactor = 10
+HiggsSUSYBB130.splitFactor = 10
+HiggsSUSYBB140.splitFactor = 10
+HiggsSUSYBB160.splitFactor = 10
 HiggsSUSYBB180.splitFactor = 10
+HiggsSUSYBB200.splitFactor = 10
+HiggsSUSYBB250.splitFactor = 10
 HiggsSUSYBB300.splitFactor = 10
+HiggsSUSYBB350.splitFactor = 10
+HiggsSUSYBB400.splitFactor = 10
+HiggsSUSYBB450.splitFactor = 10
+HiggsSUSYBB500.splitFactor = 10
 HiggsSUSYBB600.splitFactor = 10
+HiggsSUSYBB700.splitFactor = 10
+HiggsSUSYBB800.splitFactor = 10
 HiggsSUSYBB1000.splitFactor = 10
+HiggsSUSYGluGlu80.splitFactor = 10
+HiggsSUSYGluGlu90.splitFactor = 10
+HiggsSUSYGluGlu100.splitFactor = 10
+HiggsSUSYGluGlu110.splitFactor = 10
 HiggsSUSYGluGlu120.splitFactor = 10
+HiggsSUSYGluGlu130.splitFactor = 10
+HiggsSUSYGluGlu140.splitFactor = 10
+HiggsSUSYGluGlu160.splitFactor = 10
 HiggsSUSYGluGlu180.splitFactor = 10
+HiggsSUSYGluGlu200.splitFactor = 10
+HiggsSUSYGluGlu250.splitFactor = 10
 HiggsSUSYGluGlu300.splitFactor = 10
+HiggsSUSYGluGlu350.splitFactor = 10
+HiggsSUSYGluGlu400.splitFactor = 10
+HiggsSUSYGluGlu450.splitFactor = 10
+HiggsSUSYGluGlu500.splitFactor = 10
 HiggsSUSYGluGlu600.splitFactor = 10
+HiggsSUSYGluGlu700.splitFactor = 10
+HiggsSUSYGluGlu800.splitFactor = 10
 HiggsSUSYGluGlu1000.splitFactor = 10
 
 test = 0
 if test==1:
-    #comp = DYJets
+    #DYJets.files = ["~/workspace/ditau/diTau_fullsel_tree_CMG.root"]
+    comp = DYJets
     #comp = WJets
-    #comp = data_Run2012C_PromptReco_v1
+    #comp = data_Run2012B_PromptReco_v1
     #comp = GluGluToHToWWTo2LAndTau2Nu_M_125
-    #comp = embed_Run2012A_PromptReco_v1
-    comp = HiggsSUSYBB300
+    #comp = embed_Run2012B_PromptReco_v1
+    #comp = HiggsSUSYBB300
+    #comp = Higgsgg125
     selectedComponents = [comp]
-    comp.splitFactor = 10
-    comp.files = comp.files[1:2]
+    comp.splitFactor = 1
+    comp.files = comp.files[:1]
 elif test==2:
     for comp in selectedComponents:
      comp.splitFactor = 1
