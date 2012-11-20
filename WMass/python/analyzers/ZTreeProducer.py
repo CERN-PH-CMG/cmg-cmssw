@@ -3,6 +3,7 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton, Muon, Electron
 from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
+from CMGTools.RootTools.physicsobjects.PileUpSummaryInfo import PileUpSummaryInfo
 
 def var( tree, varName, type=float ):
     tree.var(varName, type)
@@ -76,17 +77,14 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
         'cmgPFMET',
         'std::vector<cmg::BaseMET>' 
         )
-    
       self.handles['muons'] = AutoHandle(
             'cmgMuonSel',
             'std::vector<cmg::Muon>'
             )
-
       self.handles['electrons'] = AutoHandle(
             'cmgElectronSel',
             'std::vector<cmg::Electron>'
             )
-    
       self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
             'std::vector<reco::GenParticle>' )
 
@@ -94,6 +92,10 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           'offlinePrimaryVertices',
           'std::vector<reco::Vertex>'
           )
+      self.mchandles['pusi'] =  AutoHandle(
+          'addPileupInfo',
+          'std::vector<PileupSummaryInfo>' 
+          ) 
             
     
     def declareVariables(self):
@@ -103,6 +105,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       var( tr, 'lumi', int)
       var( tr, 'evt', int)
       var( tr, 'nvtx', int)
+      var( tr, 'npu', int)
       var( tr, 'evtHasGoodVtx', int)
       var( tr, 'evtHasTrg', int)
       var( tr, 'evtZSel', int)
@@ -178,14 +181,14 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fillMET(tr, 'pfmetWlikeNeg', event.ZpfmetWneg)
           
           fillParticle(tr, 'MuPos', event.BestZPosMuon)
-          if ( event.BestZPosMuon.isGlobalMuon() or event.BestZPosMuon.isTrackerMuon() ) and event.HasGoodVertices:
+          if ( event.BestZPosMuon.isGlobalMuon() or event.BestZPosMuon.isTrackerMuon() ) and event.passedVertexAnalyzer:
             fill(tr, 'MuPos_dxy', math.fabs(event.BestZPosMuon.dxy()))
           fill(tr, 'MuPosRelIso', event.BestZPosMuon.relIso(0.5))
           fill(tr, 'MuPosTrg', event.BestZPosMuonHasTriggered)
           fill(tr, 'MuPosIsTightAndIso',event.BestZPosMuonIsTightAndIso)
           fill(tr, 'MuPosIsTight',event.BestZPosMuonIsTight)
           fillParticle(tr, 'MuNeg', event.BestZNegMuon)
-          if ( event.BestZNegMuon.isGlobalMuon() or event.BestZNegMuon.isTrackerMuon() ) and event.HasGoodVertices:
+          if ( event.BestZNegMuon.isGlobalMuon() or event.BestZNegMuon.isTrackerMuon() ) and event.passedVertexAnalyzer:
             fill(tr, 'MuNeg_dxy', math.fabs(event.BestZNegMuon.dxy()))
           fill(tr, 'MuNegRelIso', event.BestZNegMuon.relIso(0.5))
           fill(tr, 'MuNegTrg', event.BestZNegMuonHasTriggered)
@@ -197,11 +200,19 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fill( tr, 'lumi',event.lumi)
           fill( tr, 'evt', event.eventId)
           fill( tr, 'nvtx', len(self.handles['vertices'].product()))
+
+          event.pileUpInfo = map( PileUpSummaryInfo,
+                                  self.mchandles['pusi'].product() )
+          for puInfo in event.pileUpInfo:
+            if puInfo.getBunchCrossing()==0:
+              fill( tr, 'npu', puInfo.nTrueInteractions())
+              # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
+
           fill( tr, 'nMuons', len(event.ZallMuons))
           fill( tr, 'nTrgMuons', len(event.ZselTriggeredMuons))
           fill( tr, 'nNoTrgMuons', len(event.ZselNoTriggeredMuons))
-          fill( tr, 'evtHasGoodVtx', event.HasGoodVertices)
-          fill( tr, 'evtHasTrg', event.HasTriggerFired)
+          fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
+          fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
           fill( tr, 'evtZSel', event.ZGoodEvent)
           fillMET(tr, 'pfmet', event.ZpfmetNoMu)
           fill(tr, 'pfmet_sumEt', event.pfmet.sumEt())
