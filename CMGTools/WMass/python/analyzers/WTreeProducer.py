@@ -3,6 +3,7 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.H2TauTau.proto.analyzers.ntuple import *
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton, Muon, Electron
 from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
+from CMGTools.RootTools.physicsobjects.PileUpSummaryInfo import PileUpSummaryInfo
 
 def var( tree, varName, type=float ):
     tree.var(varName, type)
@@ -66,17 +67,14 @@ class WTreeProducer( TreeAnalyzerNumpy ):
         'cmgPFMET',
         'std::vector<cmg::BaseMET>' 
         )
-    
       self.handles['muons'] = AutoHandle(
             'cmgMuonSel',
             'std::vector<cmg::Muon>'
             )
-
       self.handles['electrons'] = AutoHandle(
             'cmgElectronSel',
             'std::vector<cmg::Electron>'
             )
-    
       self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
             'std::vector<reco::GenParticle>' )
     
@@ -84,6 +82,10 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           'offlinePrimaryVertices',
           'std::vector<reco::Vertex>'
           )
+      self.mchandles['pusi'] =  AutoHandle(
+          'addPileupInfo',
+          'std::vector<PileupSummaryInfo>' 
+          ) 
     
     def declareVariables(self):
       tr = self.tree
@@ -92,6 +94,7 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       var( tr, 'lumi', int)
       var( tr, 'evt', int)
       var( tr, 'nvtx', int)
+      var( tr, 'npu', int)
       var( tr, 'evtHasGoodVtx', int)
       var( tr, 'evtHasTrg', int)
       var( tr, 'evtWSel', int)
@@ -146,7 +149,7 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fill(tr, 'u2', event.u2)
 
           fillParticle(tr, 'Mu', event.selMuons[0])
-          if ( event.selMuons[0].isGlobalMuon() or event.selMuons[0].isTrackerMuon() ) and event.HasGoodVertices:
+          if ( event.selMuons[0].isGlobalMuon() or event.selMuons[0].isTrackerMuon() ) and event.passedVertexAnalyzer:
             fill(tr, 'Mu_dxy', math.fabs(event.selMuons[0].dxy()))
           fill(tr, 'MuIsTightAndIso', event.selMuonIsTightAndIso)
           fill(tr, 'MuIsTight', event.selMuonIsTight)
@@ -157,10 +160,19 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fill( tr, 'run', event.run) 
           fill( tr, 'lumi',event.lumi)
           fill( tr, 'evt', event.eventId)
-          fill( tr, 'nvtx', len(self.handles['vertices'].product()))           
+          fill( tr, 'nvtx', len(self.handles['vertices'].product()))          
+          event.pileUpInfo = map( PileUpSummaryInfo,
+                                  self.mchandles['pusi'].product() )
+          for puInfo in event.pileUpInfo:
+            if puInfo.getBunchCrossing()==0:
+              fill( tr, 'npu', puInfo.nTrueInteractions())
+              # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
+            # else:
+              # print 'NO INFO FOR puInfo.getBunchCrossing()==0 !!!!'
+          
           fill( tr, 'nMuons', event.nMuons)
-          fill( tr, 'evtHasGoodVtx', event.HasGoodVertices)
-          fill( tr, 'evtHasTrg', event.HasTriggerFired)
+          fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
+          fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
           fill( tr, 'evtWSel', event.WGoodEvent)
           fillMET(tr, 'pfmet', event.pfmet)
           if len(event.selJets)>0:

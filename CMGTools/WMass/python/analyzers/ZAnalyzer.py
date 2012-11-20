@@ -24,6 +24,7 @@ class ZAnalyzer( Analyzer ):
         count.register('Z Inv Mass>50')
         count.register('Z pos Mu is MuIsTightAndIso')
         count.register('Z pos Mu_eta<2.1 && Mu_pt>30*MZ/MW')
+        count.register('Z neg Mu_eta<2.4 && Mu_pt>10')
         count.register('Z pfmet>25*MZ/MW')
         count.register('Z pt<20*MZ/MW')
         count.register('Z Jet_leading_pt<30')
@@ -122,7 +123,7 @@ class ZAnalyzer( Analyzer ):
                           ]
 
         # reco events must have good reco vertex and trigger fired...                          
-        if not (event.HasGoodVertices and event.HasTriggerFired):
+        if not (event.passedVertexAnalyzer and event.passedTriggerAnalyzer):
           return True
         # ...and at lest two reco muons...
         if len(event.ZallMuons) < 2 :
@@ -214,12 +215,12 @@ class ZAnalyzer( Analyzer ):
         event.Z4V = event.BestZPosMuon.p4() + event.BestZNegMuon.p4()
         event.Z4V_mt = self.mT(event.BestZPosMuon.p4() , event.BestZNegMuon.p4())
         
-        # Code to study the recoil
+        # Code to study the Z recoil
         metVect = event.ZpfmetNoMu.Vect()
         metVect.SetZ(0.) # use only transverse info
         ZVect = event.Z4V.Vect()
         ZVect.SetZ(0.) # use only transverse info
-        recoilVect = copy.deepcopy(metVect)
+        recoilVect = copy.deepcopy(metVect)                # XCHECK FOR A BUG !!!! SHOULD THE MET SIGN BE INVERTED?!?!?!?!?  vU = - vMET - vZ !!!
         recoilVect -= ZVect
         
         uZVect = ZVect.Unit()
@@ -231,6 +232,29 @@ class ZAnalyzer( Analyzer ):
 
         event.Zu1 = u1
         event.Zu2 = u2
+        
+        # test
+        # recoilVect_test = - event.ZpfmetNoMu.Vect() - event.Z4V.Vect
+        # recoilVect_test.SetZ(0.)
+        # event.Zu1_test = recoilVect_test.Dot()
+
+        # # Code to study the WPos-like recoil
+        # metVectWlikePos = event.ZpfmetWpos.Vect()
+        # metVectWlikePos.SetZ(0.) # use only transverse info
+        # MuPosVect = event.BestZPosMuon.p4().Vect()
+        # MuPosVect.SetZ(0.) # use only transverse info
+        # recoilMuPosVect = copy.deepcopy(metVectWlikePos)
+        # recoilMuPosVect -= MuPosVect
+        
+        # uMuPosVect = MuPosVect.Unit()
+        # zAxis = type(MuPosVect)(0,0,1)
+        # uMuPosVectPerp = MuPosVect.Cross(zAxis).Unit()
+
+        # u1WPos = - recoilMuPosVect.Dot(uMuPosVect) # recoil parallel to WlikePos lepton pt
+        # u2WPos = recoilMuPosVect.Dot(uMuPosVectPerp) # recoil perpendicular to WlikePos lepton pt
+
+        # event.Zu1WPos = u1WPos
+        # event.Zu2WPos = u2WPos
 
         if fillCounter:
           if event.Wpos4VfromZ.M() > 50: 
@@ -239,15 +263,17 @@ class ZAnalyzer( Analyzer ):
               self.counters.counter('ZAna').inc('Z pos Mu is MuIsTightAndIso')
               if self.testLegKine( event.BestZPosMuon , 30*91.1876/80.385 , 2.1 ) : 
                 self.counters.counter('ZAna').inc('Z pos Mu_eta<2.1 && Mu_pt>30*MZ/MW')
-                if event.ZpfmetWpos.Pt() >25*91.1876/80.385: 
-                  self.counters.counter('ZAna').inc('Z pfmet>25*MZ/MW')
-                  if event.Wpos4VfromZ.Pt() < 20*91.1876/80.385: 
-                    self.counters.counter('ZAna').inc('Z pt<20*MZ/MW')
-                    if len(event.ZselJets) > 0: 
-                      if event.ZselJets[0].pt() < 30: 
+                if self.testLegKine( event.BestZNegMuon , 10 , 2.4 ) : 
+                  self.counters.counter('ZAna').inc('Z neg Mu_eta<2.4 && Mu_pt>10')
+                  if event.ZpfmetWpos.Pt() >25*91.1876/80.385: 
+                    self.counters.counter('ZAna').inc('Z pfmet>25*MZ/MW')
+                    if event.Wpos4VfromZ.Pt() < 20*91.1876/80.385: 
+                      self.counters.counter('ZAna').inc('Z pt<20*MZ/MW')
+                      if len(event.ZselJets) > 0: 
+                        if event.ZselJets[0].pt() < 30: 
+                          self.counters.counter('ZAna').inc('Z Jet_leading_pt<30')
+                      else:
                         self.counters.counter('ZAna').inc('Z Jet_leading_pt<30')
-                    else:
-                      self.counters.counter('ZAna').inc('Z Jet_leading_pt<30')
 
         
         # event is fully considered as good

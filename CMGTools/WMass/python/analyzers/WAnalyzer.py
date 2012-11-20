@@ -122,7 +122,7 @@ class WAnalyzer( Analyzer ):
                         ]
 
         # reco events must have good reco vertex and trigger fired...
-        if not (event.HasGoodVertices and event.HasTriggerFired):
+        if not (event.passedVertexAnalyzer and event.passedTriggerAnalyzer):
           return True
         # ...and at lest one reco muon...
         if len(event.selMuons) == 0:
@@ -261,7 +261,11 @@ class WAnalyzer( Analyzer ):
 
 
     def mT(self, leg1, leg2):
-        return math.sqrt( 2*leg1.Pt()*leg2.Pt()*( 1 - (leg1.Px()*leg2.Px() + leg1.Py()*leg2.Py()) / ( leg1.Pt()*leg2.Pt() ) ) )
+        # print 'leg1.Pt() ',leg1.Pt(),' leg2.Pt() ',leg2.Pt(),' leg1.Px() ',leg1.Px(),' leg2.Px() ',leg2.Px(),' leg2.Py() ',leg2.Py(),' leg1.Pt() ',leg1.Pt(),' leg2.Pt() ',leg2.Pt(),' before sqrt ',( 2*leg1.Pt()*leg2.Pt()*( 1 - (leg1.Px()*leg2.Px() + leg1.Py()*leg2.Py()) / ( leg1.Pt()*leg2.Pt() ) ) )
+        if (2*leg1.Pt()*leg2.Pt()*( 1 - (leg1.Px()*leg2.Px() + leg1.Py()*leg2.Py()) / ( leg1.Pt()*leg2.Pt() ) )) > 0:
+            return math.sqrt( 2*leg1.Pt()*leg2.Pt()*( 1 - (leg1.Px()*leg2.Px() + leg1.Py()*leg2.Py()) / ( leg1.Pt()*leg2.Pt() ) ) )
+        else:
+            return 0
 
 
     def trigMatched(self, event, leg):
