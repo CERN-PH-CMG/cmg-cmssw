@@ -73,8 +73,17 @@ pathsAndFilters = {
     'HLT_DoubleMediumIsoPFTau25_Trk5_eta2p1_Jet30_v2': ("hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02"),
     'HLT_DoubleMediumIsoPFTau25_Trk5_eta2p1_Jet30_v3': ("hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02"),
     'HLT_DoubleMediumIsoPFTau25_Trk5_eta2p1_Jet30_v4': ("hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02"),
+
     'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_Jet30_v1': ("hltDoublePFTau30TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt5MediumIsolationProng4Dz02"),
     'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_Jet30_v2': ("hltDoublePFTau30TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt5MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_Jet30_v3': ("hltDoublePFTau30TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt5MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_Jet30_v4': ("hltDoublePFTau30TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt5MediumIsolationProng4Dz02"),
+
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v1': ("hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v2': ("hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v3': ("hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v4': ("hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v5': ("hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02"),
     }
     
 

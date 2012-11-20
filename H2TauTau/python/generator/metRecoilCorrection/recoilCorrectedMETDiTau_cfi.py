@@ -22,7 +22,8 @@ recoilCorrectedMETDiTau2012 = cms.EDProducer(
     leptonLeg = cms.int32(0),
     # 1: type 1; 2 : type 2; 0 : all (use 1)
     correctionType = cms.int32(2),
-    fileCorrectTo = cms.string(rootfile_dir + 'recoilfit_wjets53X_20pv_njet.root'),
+    #fileCorrectTo = cms.string(rootfile_dir + 'recoilfit_htt53X_20pv_njet.root'),
+    fileCorrectTo = cms.string(rootfile_dir + 'recoilfit_ztt53X_20pv_njet.root'),
     # you should not have to change the files below
     fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm53X_20pv_njet.root'),
     fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm53X_20pv_njet.root'),

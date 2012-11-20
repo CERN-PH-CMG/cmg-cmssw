@@ -39,31 +39,37 @@ from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 from CMGTools.Common.miscProducers.mvaMET.mvaMET_cff import *
 from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
 mvaMETDiTau.recBosonSrc = 'cmgDiTauPreSel'
-mvaBaseMETDiTau = cmgBaseMETFromPFMET.clone()
-mvaBaseMETDiTau.cfg.inputCollection = 'mvaMETDiTau'
 
 cmgDiTauMVAPreSel = cmgDiTauCor.clone()
 cmgDiTauMVAPreSel.cfg.metCollection = 'mvaBaseMETDiTau'
 cmgDiTauMVAPreSel.cfg.diObjectCollection = 'cmgDiTauPreSel'
 
+# recoil correction
+
+metForRecoil = 'mvaMETDiTau'
+diTausForRecoil = 'cmgDiTauPreSel'
+recoilCorMETDiTau =  recoilCorrectedMETDiTau2012.clone(
+    recBosonSrc = diTausForRecoil,
+    metSrc = metForRecoil
+    )
+
+mvaBaseMETDiTau = cmgBaseMETFromPFMET.clone()
+mvaBaseMETDiTau.cfg.inputCollection = 'recoilCorMETDiTau'
+
+# SWITCH OFF RECOIL CORRECTIONS HERE
+
+mvaBaseMETDiTau.cfg.inputCollection = 'mvaMETDiTau'
+
+# sequence
+
 mvaMETSequence = cms.Sequence( goodPVFilter + 
                                mvaMETDiTau +
+			       recoilCorMETDiTau +
                                mvaBaseMETDiTau
                                #    # +
                                #    # cmgDiTauMVAPreSel
                                )
 
-# recoil correction
-
-# IN 52X: should be type1 MET. In 44X, should be raw MET
-# metForRecoil = 'cmgPFMET'
-# if cmsswIs44X():
-#     metForRecoil = 'cmgPFMETRaw'
-# diTausForRecoil = 'cmgDiTauPreSel'
-# recoilCorMETDiTau =  recoilCorrectedMETDiTau.clone(
-#     recBosonSrc = diTausForRecoil,
-#     metSrc = metForRecoil
-#     )
 
 cmgDiTauCorPreSel = cmgDiTauCor.clone()
 cmgDiTauCorPreSel.cfg.metCollection = 'mvaBaseMETDiTau'
