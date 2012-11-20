@@ -687,7 +687,6 @@ embed_Run2012C_PromptReco_v2 = cfg.EmbedComponent(
 # MC spring12 ----------------------------------------------------------------------------
 
 DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoil'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 #DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 #DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_rawMET'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 DYJets.nGenEvents = 30459503*0.99836254
@@ -747,17 +746,17 @@ QCD = cfg.DataComponent(
     intLumi = 1.0, # dummy
     triggers = [] )
 
-QCD50 = cfg.DataComponent(
-    name = 'QCD50',
-    files = [],
-    #files = getFiles('/QCD_Pt-50to80_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+QCD80 = cfg.DataComponent(
+    name = 'QCD80',
+    #files = [],
+    files = getFiles('/QCD_Pt-80to120_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v3/AODSIM/{aod}/V5_B/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
     intLumi = 1.0, # dummy
     triggers = [] )
 
-QCD80 = cfg.DataComponent(
-    name = 'QCD80',
-    files = [],
-    #files = getFiles('/QCD_Pt-80to120_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/H2TAUTAU_hinzmann1June12'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+QCD120 = cfg.DataComponent(
+    name = 'QCD120',
+    #files = [],
+    files = getFiles('/QCD_Pt-120to170_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v3/AODSIM/{aod}/V5_B/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
     intLumi = 1.0, # dummy
     triggers = [] )
 
@@ -788,6 +787,25 @@ HiggsVH135.files = getFiles('/WH_ZH_TTH_HToTauTau_M-135_8TeV-pythia6-tauola/Summ
 HiggsVH140.files = getFiles('/WH_ZH_TTH_HToTauTau_M-140_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVH145.files = getFiles('/WH_ZH_TTH_HToTauTau_M-145_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
+# add recoil
+
+DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilZnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg110.files = getFiles('/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg115.files = getFiles('/GluGluToHToTauTau_M-115_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg120.files = getFiles('/GluGluToHToTauTau_M-120_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg125.files = getFiles('/GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg130.files = getFiles('/GluGluToHToTauTau_M-130_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg135.files = getFiles('/GluGluToHToTauTau_M-135_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg140.files = getFiles('/GluGluToHToTauTau_M-140_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+Higgsgg145.files = getFiles('/GluGluToHToTauTau_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF110.files = getFiles('/VBF_HToTauTau_M-110_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF115.files = getFiles('/VBF_HToTauTau_M-115_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF120.files = getFiles('/VBF_HToTauTau_M-120_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF130.files = getFiles('/VBF_HToTauTau_M-130_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF135.files = getFiles('/VBF_HToTauTau_M-135_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF140.files = getFiles('/VBF_HToTauTau_M-140_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+HiggsVBF145.files = getFiles('/VBF_HToTauTau_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 HiggsSUSYBB80.files = getFiles('/SUSYBBHToTauTau_M-80_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsSUSYBB90.files = getFiles('/SUSYBBHToTauTau_M-90_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
