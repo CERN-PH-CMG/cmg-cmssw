@@ -423,7 +423,6 @@ void DileptonPlusMETEventAnalyzer::analyze(const edm::Event &event, const edm::E
 	    }
 	  }
 	}
-	//if(!photonTrig.first.empty()) ev.gn_prescale=hltConfig_.prescaleValue(event, iSetup, photonTrig.first);
       }
     if(triggerBits["singleMu"]==true && triggerBits["mumu"]==true) triggerBits["singleMu"]=false;   //veto overlaps: single muon triggers should be used exclusively 
 	    

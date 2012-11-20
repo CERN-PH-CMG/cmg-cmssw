@@ -81,7 +81,20 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, bool is2011)
   if( phys.cat<22) return isGoodEvent_;
   triggerThr_ =( phys.cat-22)/1000;
 
-  triggerWgt_=phys.gammaPrescale;
+
+  //get from 
+  int triggerIdx=0;
+  if(triggerThr_==36)  triggerIdx=1;
+  if(triggerThr_==60)  triggerIdx=2;
+  if(triggerThr_==75)  triggerIdx=3;
+  if(triggerThr_==90)  triggerIdx=4;
+  if(triggerThr_==135) triggerIdx=5;
+  if(triggerThr_==150) triggerIdx=6;
+  if(triggerThr_==160) triggerIdx=7;
+  if(triggerThr_==250) triggerIdx=8;
+  if(triggerThr_==300) triggerIdx=9;
+  triggerWgt_=phys.gammaPrescale[triggerIdx];
+  if(triggerWgt_==0 || is2011) triggerWgt_=1;
 
   //all done here
   isGoodEvent_=true;

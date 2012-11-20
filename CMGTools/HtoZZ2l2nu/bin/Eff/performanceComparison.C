@@ -25,16 +25,18 @@ int markers[] = {20, 24,       21,       25,    22,    24,     20,   24,   25,  
 
 double PUdata[] = {1.344651e+07,   5.90653e+07,   1.409027e+08,   2.413012e+08,   3.337449e+08,   3.98711e+08,   4.301064e+08,   4.32283e+08,   4.138202e+08,   3.82846e+08,   3.451637e+08,   3.043438e+08,   2.62555e+08,   2.213308e+08,   1.819826e+08,   1.456898e+08,   1.134134e+08,   8.577886e+07,   6.301239e+07,   4.495959e+07,   3.116904e+07, 2.100786e+07,   1.377588e+07,   8796407,   5474418,   3323776,   1970638,   1142040,   647538.6,   359547.2,   195673.2,   104459.9,   54745.15,   28185.57,   28005.55,   0.008 }; 
 
+//double PUdata[]={1.07136e-05,7.34842e-05,0.000302144,0.0009003,0.00214054,0.0042994,0.00757119,0.0119952,0.0174243,0.0235452,0.0299398,0.0361653,0.0418271,0.0466281,0.050387,0.0530314,0.0545751,0.0550901,0.0546808,0.0534645,0.0515597,0.0490808,0.0461365,0.0428308,0.0392652,0.0355386,0.0317474,0.0279831,0.0243299,0.0208608,0.0176357,0.0146985,0.0120768,0.00978206,0.00781167,0.00615097,0.00477641,0.00365852,0.00276474,0.00206184,0.00151783,0.00110326,0.000792022,0.000561729,0.000393701,0.000272756,0.000186838,0.000126576,8.48286e-05,5.62521e-05,3.69183e-05,2.39853e-05,1.5429e-05,9.82905e-06,6.20219e-06,3.87723e-06,2.4017e-06,1.4744e-06,8.97192e-07,5.4126e-07,3.23782e-07,1.92089e-07,1.1304e-07,6.59968e-08,3.82344e-08,2.19843e-08,1.25482e-08,7.11134e-09,4.00234e-09,2.2375e-09,1.24278e-09,6.85978e-10,3.76365e-10,2.05303e-10,1.11371e-10,6.00961e-11,3.22643e-11,1.72387e-11,9.16844e-12,4.85512e-12,2.56044e-12,1.34504e-12,7.03975e-13,3.67167e-13,1.90871e-13,9.89141e-14,5.11084e-14,2.63333e-14,1.35318e-14,6.93571e-15,3.54617e-15,1.80883e-15,9.20535e-16,4.67425e-16,2.3683e-16,1.19737e-16,6.04093e-17,3.04137e-17,1.52803e-17,7.66115e-18};
+
 double PUReweightAvr05[36];
 double PUReweightAvr15[36];
 double PUReweightAvr25[36];
 
 double* PUScenaraio[] = {PUReweightAvr05, PUReweightAvr15, PUReweightAvr25};
-string  PUName[] = {"<PU> = 10", "<PU> = 17", "<PU> = 25"};
+string  PUName[] = {"<PU> = 5", "<PU> = 15", "<PU> = 25"};
 
 void initPU(){
-    GetWeights(10 ,PUdata,PUReweightAvr05, 36);
-    GetWeights(17 ,PUdata,PUReweightAvr15, 36);
+    GetWeights(5 ,PUdata,PUReweightAvr05, 36);
+    GetWeights(15 ,PUdata,PUReweightAvr15, 36);
     GetWeights(25 ,PUdata,PUReweightAvr25, 36);
 }
 
@@ -324,9 +326,9 @@ stArray  makeArray(string evcat, string name, string title, string signal, strin
 
 
 void performanceSummary(string OutDir, string evcat, string signal, string background,  string fname, const std::vector<string>& names, const std::vector<TString>& titles){
-  int colors[]  = {4,  kGreen+3, kRed,     kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange};
-  int styles[]  = {1,  9,        2,        9,        9,     1,     1,      1,    1,    2};
-  int markers[] = {20, 22,       21,       25,    22,    24,     20,   24,   25};
+   int colors[]  = {4,  kGreen+3, kRed,     kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange};
+   int styles[]  = {1,  9,        2,        9,        9,     1,     1,      1,    1,    2};
+   int markers[] = {20, 22,       21,       25,    22,    24,     20,   24,   25};
 
 
    int ntouse = names.size();
@@ -594,9 +596,9 @@ void performanceJetId(string OutDir, string evcat, string signal, string backgro
 
 void performancePU(string OutDir, string evcat, string signal, string background,  string fname, const std::vector<string>& names, const std::vector<TString>& titles)
 {
-   int colors[]  = {1,  kGreen-3, kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange, kOrange, kOrange};
-   int styles[]  = {1,  2,        9,        9,     1,     1,      1,    1,    2,       1,     1};
-   int markers[] = {20, 24,       21,       25,    22,    24,     20,   24,   25,      21,    20};
+    int colors[]  = {1,  kGreen-3, kGreen+3, kBlue, kBlue, kRed+3, kRed, kRed, kOrange, kOrange, kOrange};
+    int styles[]  = {1,  2,        9,        9,     1,     1,      1,    1,    2,       1,     1};
+    int markers[] = {20, 24,       21,       25,    22,    24,     20,   24,   25,      21,    20};
 
   int ntouse = names.size();
   TString meanFitFunc("pol3");
@@ -1064,8 +1066,8 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
   //pseudo-METs
   names.clear();                             titles.clear();
   names.push_back(pre+"met"                 );   titles.push_back("E_{T}^{miss}");
-  //  names.push_back(pre+"typeImet"                 );   titles.push_back("Type I E_{T}^{miss}'");
-  names.push_back(pre+"fulltypeImet"                 );   titles.push_back("Type I E_{T}^{miss}");
+  names.push_back(pre+"typeImet"                 );   titles.push_back("Type I E_{T}^{miss}'");
+  //names.push_back(pre+"fulltypeImet"                 );   titles.push_back("Type I E_{T}^{miss}");
   //  names.push_back(pre+"minAssocChargedMet"  );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss}(charged))");
   // names.push_back(pre+"minAssocMet"  );          titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss})");
   //names.push_back(pre+"min3Met"             );   titles.push_back("min(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
@@ -1073,6 +1075,7 @@ void performanceComparison(string OutDir="Img", string evcat="mumu", string sign
   //  names.push_back(pre+"minProjAssocChargedMet"); titles.push_back("min(proj-E_{T}^{miss},proj-assoc-E_{T}^{miss}(charged))");
   // names.push_back(pre+"minProjAssocMet");        titles.push_back("min(proj-E_{T}^{miss},proj-assoc-E_{T}^{miss}");
   names.push_back(pre+"redMet"     );            titles.push_back("red(E_{T}^{miss},clustered-E_{T}^{miss})");
+  names.push_back(pre+"redMetCHS"     );            titles.push_back("red(E_{T}^{miss},CHS clustered-E_{T}^{miss})");
   //  names.push_back(pre+"red3Met"             );   titles.push_back("red(E_{T}^{miss},assoc-E_{T}^{miss},clustered-E_{T}^{miss})");
   performancePU(OutDir+"Combined_", evcat, signal, background,  fname, names, titles);
   performanceSummary(OutDir, evcat, signal, background,  fname, names, titles);

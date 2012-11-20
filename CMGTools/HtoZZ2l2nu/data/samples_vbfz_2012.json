@@ -11,15 +11,13 @@
         "data":[
                 {
                 "dtag":"MC8TeV_eejj_VBFNLO",
-                "aoddir":["/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/AOD"],
-                "patdir":["/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/PAT"],
+                "aoddir":["/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/AODSIM"],
                 "xsec":0.095,
 		"br":[1.11]
                 },
                 {
                 "dtag":"MC8TeV_mmjj_VBFNLO",
-                "aoddir":["/store/cmst3/user/psilva/VBFNLO/mmjj/8TeV/AOD"],
-                "patdir":["/store/cmst3/user/psilva/VBFNLO/mmjj/8TeV/PAT"],
+                "aoddir":["/store/cmst3/user/psilva/VBFNLO/mmjj/8TeV/AODSIM"],
                 "xsec":0.095,
 		"br":[1.11]
                 }
