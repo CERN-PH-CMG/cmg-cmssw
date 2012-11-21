@@ -11,6 +11,7 @@ def getSchedule(process, runOnMC, runOnFastSim):
         process.trackingFailureFilterPath,
         process.primaryVertexFilterPath,
         process.noscrapingFilterPath,
+        process.trackIsolationMakerFilterPath,
         process.metNoiseCleaningPath
         )
 
