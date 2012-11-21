@@ -35,14 +35,14 @@ class PhysicsObject_Lepton : public LorentzVector
     Float_t relTkIso()                            { return trkIso/pt(); }
     Float_t ePFRelIsoCorrected2012(double rho)
     {
-      //cf. https://twiki.cern.ch/twiki/bin/view/CMS/EgammaEARhoCorrection
-      Float_t aeff(0.19);
-      if(fabs(eta())>2.4)        aeff=0.52;
-      else if(fabs(eta())>2.3)   aeff=0.43;
-      else if(fabs(eta())>2.2)   aeff=0.27;
-      else if(fabs(eta())>2.0)   aeff=0.21;
-      else if(fabs(eta())>1.479) aeff=0.12;
-      else if(fabs(eta())>1.0)   aeff=0.25;
+      //cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection#Isolation_cone_R_0_4
+      Float_t aeff(0.21);
+      if(fabs(eta())>2.4)        aeff=0.26;
+      else if(fabs(eta())>2.3)   aeff=0.19;
+      else if(fabs(eta())>2.2)   aeff=0.18;
+      else if(fabs(eta())>2.0)   aeff=0.14;
+      else if(fabs(eta())>1.479) aeff=0.11;
+      else if(fabs(eta())>1.0)   aeff=0.21;
       
       return (chIso+TMath::Max(gIso+nhIso-rho*aeff,0.))/pt();
     }
