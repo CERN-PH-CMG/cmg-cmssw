@@ -2,9 +2,9 @@
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_cleanup_13Nov12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'cris_09Oct12'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_tuto_14Nov12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_cleanup_13Nov12'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_tuto_14Nov12'),
-  ('CMGTools/ZJetsTutorial', 'UserCode/CMG/CMGTools/ZJetsTutorial', 'cbern_tuto_14Nov12'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_Nov21'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_Nov21'),
+  ('CMGTools/ZJetsTutorial', 'UserCode/CMG/CMGTools/ZJetsTutorial', 'cbern_Nov21'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-16'),
   ('CommonTools/RecoAlgos', 'CommonTools/RecoAlgos', 'V00-03-24'),
   ('CommonTools/RecoUtils', 'CommonTools/RecoUtils', 'V00-00-12'),
@@ -21,6 +21,7 @@
   ('PhysicsTools/PatAlgos', 'PhysicsTools/PatAlgos', 'V08-09-41'),
   ('PhysicsTools/PatUtils', 'PhysicsTools/PatUtils', 'V03-09-26'),
   ('RecoEgamma/EgammaTools', 'RecoEgamma/EgammaTools', 'V09-00-00'),
+  ('RecoLuminosity/LumiDB', 'RecoLuminosity/LumiDB', 'V04-01-09'),
   ('RecoMET/METAnalyzers', 'RecoMET/METAnalyzers', 'V00-00-08'),
   ('RecoMET/METFilters', 'RecoMET/METFilters', 'V00-00-07'),
   ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-02-09'),
@@ -29,3 +30,6 @@
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-01-04s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
+# The following packages were not in the input release_info.
+# Please make sure that the CVS module is correct!
+#	RecoLuminosity/LumiDB                    V04-01-09
