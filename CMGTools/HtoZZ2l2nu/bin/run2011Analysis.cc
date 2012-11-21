@@ -64,8 +64,8 @@ int main(int argc, char* argv[])
 
   bool use2011Id = runProcess.getParameter<bool>("is2011");
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
-  bool useCHS(true);
-  bool nodphisofjet(false);
+  bool useCHS(false);
+  bool nodphisofjet(true);
 
   bool isMC       = runProcess.getParameter<bool>("isMC");
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
@@ -1264,8 +1264,8 @@ int main(int argc, char* argv[])
 	for(size_t ijet=0; ijet<varJets.size(); ijet++){
 	    if(!hasObjectId(varJets[ijet].pid,JETID_LOOSE)) continue;
 	    clusteredMetP4 -= varJets[ijet];
-	    bool( hasObjectId(varJets[ijet].pid,JETID_CUTBASED_LOOSE) ) tightVarJets.push_back( varJets[ijet] );
-	    if(varJets[ijet].pt()<30 || fabs(varJets[ijet].eta())>2.5)continue;
+	    if( hasObjectId(varJets[ijet].pid,JETID_CUTBASED_LOOSE) ) tightVarJets.push_back( varJets[ijet] );
+	    if(varJets[ijet].pt()<30 || fabs(varJets[ijet].eta())>2.5) continue;
 	    if(ivar==15)      passLocalBveto &= (varJets[ijet].btag2<0.250);
 	    else if(ivar==16) passLocalBveto &= (varJets[ijet].btag2<0.240);
         }
