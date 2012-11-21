@@ -64,9 +64,10 @@ int main(int argc, char* argv[])
 
   bool use2011Id = runProcess.getParameter<bool>("is2011");
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
+  bool useCHS(true);
+  bool nodphisofjet(false);
 
   bool isMC       = runProcess.getParameter<bool>("isMC");
-  bool runBlinded = runProcess.getParameter<bool>("runBlinded"); 
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
 
   TString url=runProcess.getParameter<std::string>("input");
@@ -382,8 +383,6 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfpremjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",40,0,2000) );
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfmjj"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Events",40,0,2000) );
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfcandjetdphi"       , ";#Delta#phi;Events",20,0,3.5) );
-      mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvsdeta"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];|#Delta #eta|;Events",40,0,2000,25,0,10) );
-      mon.addHistogram( new TH2F(jetTypes[i]+"vbfmjjvshardpt"       , ";M(jet_{1},jet_{2}) [GeV/c^{2}];Hard p_{T} [GeV/c];Events",40,0,2000,25,0,250) );
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_total"     , ";#generated vertices;Events",35,0,35) );
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tag"       , ";#generated vertices;Events",35,0,35) );
       mon.addHistogram( new TH1F(jetTypes[i]+"vbfcount_tagzpt"    , ";#generated vertices;Events",35,0,35) );
@@ -617,7 +616,6 @@ int main(int argc, char* argv[])
       ZZ2l2nuSummary_t &ev=evSummaryHandler.getEvent();
       if(!isMC && duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
       PhysicsEvent_t phys=getPhysicsEventFrom(ev);
-      bool mustBlind = (!isMC && runBlinded && evSummaryHandler.hasSpoilerAlert(!isMC));
 
       //event category
       bool isSameFlavor(ev.cat==MUMU || ev.cat==EE);
@@ -655,9 +653,9 @@ int main(int argc, char* argv[])
       }
       else 
 	{
-	  if(ev.cat==EE   && hasEEtrigger) hasTrigger=true;
+	  if(ev.cat==EE   && hasEEtrigger)                   hasTrigger=true;
 	  if(ev.cat==MUMU && (hasMMtrigger || hasMtrigger) ) hasTrigger=true;
-	  if(ev.cat==EMU  && hasEMtrigger) hasTrigger=true;
+	  if(ev.cat==EMU  && hasEMtrigger)                   hasTrigger=true;
 	}
       
       //prepare the tag's vectors for histo filling
@@ -719,8 +717,9 @@ int main(int argc, char* argv[])
       // std PF
       std::vector<PhysicsObjectJetCollection> variedAJets;
       LorentzVectorCollection zvvs;
-      METUtils::computeVariation(phys.jets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
-      
+      if(!useCHS) METUtils::computeVariation(phys.jets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
+      else        METUtils::computeVariation(phys.ajets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
+
       // CHS PF
       std::vector<PhysicsObjectJetCollection> variedCHSJets;
       LorentzVectorCollection CHSzvvs;
@@ -768,8 +767,8 @@ int main(int argc, char* argv[])
 	  if(fabs(phys.leptons[ilep].id)==13)
 	    {
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) )    { passIds.push_back(0); passIsos[0]=(relIso<0.2); }
-	      if( hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) )    { passIds.push_back(1); passIsos[1]=(relIso<0.2); if(!use2011Id) { hasGoodId=true; isIso=passIsos[0]; } }
-	      if( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) { passIds.push_back(2); passIsos[2]=(relIso2011<0.15); if(use2011Id) {hasGoodId=true; isIso=passIsos[2];} }
+	      if( hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) )    { passIds.push_back(1); passIsos[1]=(relIso<0.2);      if(!use2011Id) {hasGoodId=true; isIso=passIsos[1];} }
+	      if( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) { passIds.push_back(2); passIsos[2]=(relIso2011<0.15); if(use2011Id)  {hasGoodId=true; isIso=passIsos[2];} }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_SOFT) )     { passIds.push_back(3); passIsos[3]=true;}
 	      if(use2011Id) 
 		{
@@ -965,6 +964,7 @@ int main(int argc, char* argv[])
 	      nAJetsPUIdMedium += hasObjectId(aJets[ijet].pid,JETID_OPT_MEDIUM);
 	    }
 	}
+      if(nodphisofjet) mindphijmet15=99999.;
       passBveto=(nABtags[1]==0);
       passDphijmet=(mindphijmet>0.5);
       if(nAJetsGood30==0) passDphijmet=(mindphijmet15>0.5);
@@ -1108,7 +1108,7 @@ int main(int argc, char* argv[])
 			  
 			  //VBF monitoring
 			  float dphijj(-1),hardpt(-1);
-			  if(aGoodIdJets.size()>=2)
+			  if(nAJetsGood30>=2 && aGoodIdJets.size()>=2)
 			  {
 			      LorentzVector vbfSyst=aGoodIdJets[0]+aGoodIdJets[1];
 			      LorentzVector hardSyst=vbfSyst+zvvs[0]+zll;
@@ -1127,9 +1127,7 @@ int main(int argc, char* argv[])
                                  if(fabs(detajj)>4.0)//4.5
                                    {
                                      mon.fillHisto("pfvbfmjj",         tags_cat, vbfSyst.mass(), weight);
-                                     mon.fillHisto("pfvbfmjjvsdeta",   tags_cat, vbfSyst.mass(), fabs(detajj),weight);
-                                     mon.fillHisto("pfvbfmjjvshardpt", tags_cat, vbfSyst.mass(), hardpt,weight);
-                                     if(vbfSyst.mass()>500)//500 
+				     if(vbfSyst.mass()>500)//500 
                                        {
                                          mon.fillHisto("pfvbfhardpt",     tags_cat, hardpt,weight);
                                          int ncjv(0);
@@ -1158,8 +1156,8 @@ int main(int argc, char* argv[])
 			  //
 			  //SIGNAL REGION NOW : PROCEED WITH CARE
 			  //
-			  bool hasVbfBlinding(!isMC && runBlinded && tag_subcat=="vbf" && zvvs[0].pt()>70);
-			  if(runBlinded && (mustBlind || hasVbfBlinding) ) tags_full.clear();  //don't skip the event but don't fill any plot!
+			  bool hasGGBlinding(evSummaryHandler.hasSpoilerAlert(true));
+			  bool hasVbfBlinding(tag_subcat=="vbf" && zvvs[0].pt()>70);
 			  
 			  if(zvvs[0].pt()>70){
 			      mon.fillHisto("eventflow",tags_full,8,weight);			      
@@ -1183,13 +1181,14 @@ int main(int argc, char* argv[])
 			      mon.fillHisto("met_redMet",tags_full,aRedMet.pt(),weight);
 			      mon.fillHisto("met_redMetL",tags_full,aRedMetT,weight);
 			      mon.fillHisto("met_redMetT",tags_full,aRedMetL,weight);
-			      if( (mustBlind || hasVbfBlinding || isMC_GG || isMC_VBF) ) {
-				mon.fillHisto("met_met_blind",tags_full,zvvs[0].pt(),weight);
-				mon.fillHisto("met_mvamet_blind",      tags_full,  mvaMetP4.pt(), weight);
-				mon.fillHisto("met_typeImet_blind",    tags_full,  fullTypeIMetP4.pt(),  weight);
-				mon.fillHisto("met_redMet_blind",tags_full,aRedMet.pt(),weight);
-				mon.fillHisto("mt_blind",tags_full,aMT,weight);
-			      }
+			      if( (!hasGGBlinding && !hasVbfBlinding) || isMC_GG || isMC_VBF ) 
+				{
+				  mon.fillHisto("met_met_blind",tags_full,zvvs[0].pt(),weight);
+				  mon.fillHisto("met_mvamet_blind",      tags_full,  mvaMetP4.pt(), weight);
+				  mon.fillHisto("met_typeImet_blind",    tags_full,  fullTypeIMetP4.pt(),  weight);
+				  mon.fillHisto("met_redMet_blind",tags_full,aRedMet.pt(),weight);
+				  mon.fillHisto("mt_blind",tags_full,aMT,weight);
+				}
 			      
 			      mon.fillProfile("metvsrun",          tags_full, ev.run,            zvvs[0].pt(), weight);
 			      mon.fillProfile("metvsavginstlumi",  tags_full, ev.curAvgInstLumi, zvvs[0].pt(), weight);
@@ -1265,10 +1264,10 @@ int main(int argc, char* argv[])
 	for(size_t ijet=0; ijet<varJets.size(); ijet++){
 	    if(!hasObjectId(varJets[ijet].pid,JETID_LOOSE)) continue;
 	    clusteredMetP4 -= varJets[ijet];
-	    tightVarJets.push_back( varJets[ijet] );
+	    bool( hasObjectId(varJets[ijet].pid,JETID_CUTBASED_LOOSE) ) tightVarJets.push_back( varJets[ijet] );
 	    if(varJets[ijet].pt()<30 || fabs(varJets[ijet].eta())>2.5)continue;
-	    if(ivar==15)      passLocalBveto &= (varJets[ijet].btag3<0.285);
-	    else if(ivar==16) passLocalBveto &= (varJets[ijet].btag3<0.265);
+	    if(ivar==15)      passLocalBveto &= (varJets[ijet].btag2<0.250);
+	    else if(ivar==16) passLocalBveto &= (varJets[ijet].btag2<0.240);
         }
 	bool passPreselection             (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passLocalBveto && passLMetVeto);
 	bool passPreselectionMbvetoMzmass (             passZpt && pass3dLeptonVeto && passDphijmet                   && passLMetVeto);          
