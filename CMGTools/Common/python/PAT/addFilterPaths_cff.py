@@ -30,6 +30,21 @@ noscrapingFilterPath = cms.Path(noscraping)
 from GeneratorInterface.GenFilters.TotalKinematicsFilter_cfi import totalKinematicsFilter
 totalKinematicsFilterPath = cms.Path(totalKinematicsFilter)
 
+#this is an isolated track veto - see AN2012-379 for details
+from CMGTools.Common.miscProducers.trackIsolationMaker_cfi import trackIsolationMaker
+
+trackIsolationFilter = cms.EDFilter(
+    "TrackIsolationFilter",
+    pfcands_trkiso = cms.InputTag('trackIsolationMaker','pfcandstrkiso','PAT'),
+    pfcands_pt = cms.InputTag('trackIsolationMaker','pfcandspt','PAT'),
+    pfcands_chg = cms.InputTag('trackIsolationMaker','pfcandschg','PAT'),
+    pt_cut = cms.double(10.0),
+    relIso_cut = cms.double(0.1)
+    )
+
+trackIsolationMakerSequence = cms.Sequence(trackIsolationMaker*trackIsolationFilter)
+trackIsolationMakerFilterPath = cms.Path(trackIsolationMakerSequence)
+
 ##
 # MET related
 ## 
