@@ -13,28 +13,11 @@ useJets = 'cmgPFJetSelCHS'
 #useJets = 'cmgPFJetSel'
 
 #Leptons
-
-#make the SAK muons first
-razorMJMuonSAK = cms.EDProducer(
-    "DirectionalIsolationProducerMuon",
-    src = cms.InputTag('patMuonsWithTrigger'),
-    pfCands = cms.InputTag('pfNoPileUp'),
-    vertexCollection = cms.InputTag('goodOfflinePrimaryVertices')
-    )
-
-#make a cmg lepton from it
-from CMGTools.Common.factories.cmgMuon_cfi import cmgMuon
-razorMJMuonSAKCMG = cmgMuon.clone()
-razorMJMuonSAKCMG.cfg.inputCollection = 'razorMJMuonSAK'
-razorMJMuonSAKCMG.cfg.leptonFactory.vertexCollection = 'goodOfflinePrimaryVertices'
-
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
-razorMJMuonLoose = cmgMuonSel.clone(src = "razorMJMuonSAKCMG", cut = "(pt() > 5.) && (abs(eta()) < 2.4)")
-razorMJMuonTight = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 25.) && (abs(eta()) < 2.4) && isPF() && relIso(0.5) < 0.15 && getSelection('cuts_tightmuonNoVtx') && abs(dxy()) < 0.02 && abs(dz()) < 0.5")
+razorMJMuonLoose = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 5.) && (abs(eta()) < 2.4) && isPF() && (isTracker() || isGlobal())")
+razorMJMuonTight = cmgMuonSel.clone(src = "razorMJMuonLoose", cut = "(pt() > 25.) && relIso(0.5) < 0.15 && getSelection('cuts_tightmuonNoVtx') && abs(dxy()) < 0.2 && abs(dz()) < 0.5")
 razorMJMuonSequence = cms.Sequence(
-    razorMJMuonSAK+
-    razorMJMuonSAKCMG+
-    razorMJMuonLoose+
+    razorMJMuonLoose*
     razorMJMuonTight
     )
 #will invert later
@@ -42,20 +25,6 @@ razorMJMuonSequence = cms.Sequence(
 razorMJTightMuonCount = cmgCandCount.clone( src = 'razorMJMuonTight', minNumber = 1 )
 
 ############### Electrons
-#start off by making the veto electrons
-razorMJElectronSAK = cms.EDProducer(
-    "DirectionalIsolationProducerElectron",
-    src = cms.InputTag('patElectronsWithTrigger'),
-    pfCands = cms.InputTag('pfNoPileUp'),
-    vertexCollection = cms.InputTag('goodOfflinePrimaryVertices')
-    )
-
-#make a cmg lepton from it
-from CMGTools.Common.factories.cmgElectron_cfi import cmgElectron
-razorMJElectronSAKCMG = cmgElectron.clone()
-razorMJElectronSAKCMG.cfg.inputCollection = 'razorMJElectronSAK'
-razorMJElectronSAKCMG.cfg.primaryVertexCollection = 'goodOfflinePrimaryVertices'
-
 razorMJIsolatedElectrons = cms.EDProducer(
     "ElectronIsolationProducer",
     electronTag = cms.InputTag('cmgElectronSel'),
@@ -65,14 +34,12 @@ razorMJIsolatedElectrons = cms.EDProducer(
     )
 
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
-razorMJElectronLoose = cmgElectronSel.clone(src = "razorMJElectronSAKCMG", cut = '(pt()> 5.) && (abs(eta()) < 2.5)')
-razorMJElectronTight = cmgElectronSel.clone(src = "razorMJIsolatedElectrons", cut = 'pt() >= 30 && getSelection("cuts_mediumNoVtx") && abs(dxy()) < 0.02 && abs(dz()) < 0.1 && (abs(sourcePtr().superCluster().eta()) <= 1.4442 || abs(sourcePtr().superCluster().eta()) > 1.566)')
+razorMJElectronLoose = cmgElectronSel.clone(src = "razorMJIsolatedElectrons", cut = '(pt()> 5.) && (abs(eta()) < 2.5) && getSelection("cuts_vetoNoVtx") && abs(dxy()) < 0.04 && abs(dz()) < 0.2')
+razorMJElectronTight = cmgElectronSel.clone(src = "razorMJElectronLoose", cut = 'pt() >= 30 && getSelection("cuts_mediumNoVtx") && abs(dxy()) < 0.02 && abs(dz()) < 0.1 && (abs(sourcePtr().superCluster().eta()) <= 1.4442 || abs(sourcePtr().superCluster().eta()) > 1.566)')
 
 razorMJElectronSequence = cms.Sequence(
-    razorMJElectronSAK+
-    razorMJElectronSAKCMG+
-    razorMJElectronLoose+
     razorMJIsolatedElectrons*
+    razorMJElectronLoose*
     razorMJElectronTight
     )
 
@@ -114,20 +81,11 @@ razorMJTauCleaned = cms.EDProducer(
 razorMJTauLoose = cmgTauSel.clone(src = "razorMJTauCleaned", cut = '(pt() >= 15.) && (abs(eta()) <= 2.4) && (abs(tauID("byLooseCombinedIsolationDeltaBetaCorr") - 1.0) < 1e-3)')
 razorMJTauTight = cmgTauSel.clone(src = "razorMJTauLoose", cut = '(abs(tauID("byTightCombinedIsolationDeltaBetaCorr") - 1.0) < 1e-3)')
 
-#also run the UCSB TauVeto code
-razorMJTauVeto = cms.EDProducer(
-    "IndirectTauVetoProducer",
-    jetTag = cms.InputTag('razorMJTightBtaggedVetoJets'),
-    metTag = cms.InputTag('cmgPFMET')
-    )
-
 razorMJTauSequence = cms.Sequence(
     razorMJTightBtaggedJets*
     razorMJTauCleaned*
     razorMJTauLoose*
-    razorMJTauTight+
-    razorMJTightBtaggedVetoJets*
-    razorMJTauVeto
+    razorMJTauTight
     )
 #will invert later
 razorMJLooseTauCount = cmgCandCount.clone( src = 'razorMJTauLoose', minNumber = 1 )
@@ -144,12 +102,11 @@ razorMJLeptonSequence = cms.Sequence(
 #require 6 jets offline
 razorMJPFJetSel20 = cmgPFJetSel.clone( src = useJets, cut = 'pt()>=20 && abs(eta)<=2.4' )
 razorMJPFJetSel30 = cmgPFJetSel.clone( src = 'razorMJPFJetSel20', cut = 'pt()>=30' )
-razorMJPFJetSel70 = cmgPFJetSel.clone( src = 'razorMJPFJetSel30', cut = 'pt()>=70' )
 
 #we start by filtering very jetty events as we can't cope with them
 razorPFJetSelCount = cmgCandCount.clone( src = useJets, minNumber = 20 )
 razorMJPFJetSel20Count6j = cmgCandCount.clone( src = 'razorMJPFJetSel20', minNumber = 6 )
-razorMJPFJetSel70Count2j = cmgCandCount.clone( src = 'razorMJPFJetSel70', minNumber = 2 )
+razorMJPFJetSel30Count5j = cmgCandCount.clone( src = 'razorMJPFJetSel30', minNumber = 5 )
 
 # id the jets
 #used to veto event - the number of jets that fail loose jet ID
@@ -199,11 +156,6 @@ razorMJJetCleanedLoose = cms.EDProducer(
             vetoCollection=cms.InputTag("razorMJMuonTight"),
             minDeltaR=cms.double(0.4),
             removeMatchedObject=cms.bool(True)
-            ),
-        cms.PSet(                                     
-            vetoCollection=cms.InputTag("razorMJTauTight"),
-            minDeltaR=cms.double(0.4),
-            removeMatchedObject=cms.bool(True)
             )
         ),
     verbose = cms.untracked.bool(False)
@@ -216,10 +168,8 @@ razorMJPFJetIDLeptonCount = cmgCandCount.clone( src = 'razorMJPFJetSelIDLepton',
 
 #used to select the events
 razorMJPFJetSel20Count4j = cmgCandCount.clone( src = 'razorMJJetCleanedLoose', minNumber = 4 )
-
-###finally, try with the pruned jets too
-from CMGTools.Common.skims.cmgStructuredPFJetSel_cfi import cmgStructuredPFJetSel
-razorMJStructureJetSel30 = cmgStructuredPFJetSel.clone( src = 'cmgStructuredPFJetSel', cut = 'pt()>=30 && abs(eta)<=2.4' )
+razorMJJetCleanedLoose30 = cmgPFJetSel.clone( src = 'razorMJJetCleanedLoose', cut = 'pt() >= 30.0' )
+razorMJPFJetSel30Count3j = cmgCandCount.clone( src = 'razorMJJetCleanedLoose30', minNumber = 3 )
 
 ############### MR and R
 #make the hemispheres
@@ -290,17 +240,6 @@ razorMJDiHemiHadBox20 = cmgDiHemi.clone(
 )
 
 
-#now with substructure too
-razorMJHemiHadBoxSS = razorMJHemiHadBox.clone()
-razorMJHemiHadBoxSS.cfg.inputCollection[0] = "razorMJStructureJetSel30"
-razorMJDiHemiHadBoxSS = cmgDiHemi.clone(
-    cfg = cmgDiHemi.cfg.clone(
-    leg1Collection = cms.InputTag('razorMJHemiHadBoxSS'),
-    leg2Collection = cms.InputTag('razorMJHemiHadBoxSS'),
-    metCollection = cms.InputTag('cmgPFMET')                  
-    )    
-)
-
 #now for the lepton boxes - we keep everything so we can find a lepton friendly combo
 razorMJHemiLepBox = razorMJHemiHadBox.clone()
 razorMJHemiLepBox.cfg.minObjectsPerHemi0 = cms.untracked.uint32(1)
@@ -322,25 +261,25 @@ razorMJTriggerSequence = cms.Sequence(
     razorMJHadTriggerSel+
     #razorMJHadTriggerInfo+
     razorMJEleTriggerSel+
-    razorMJMuTriggerSel
+    razorMJMuTriggerSel+
+    razorMJAllTriggerSel
     )
 
 razorMJJetSequence = cms.Sequence(                             
     razorMJPFJetSel20*
     razorMJPFJetSel30*
-    razorMJPFJetSel70*
     razorMJJetGirth+
     razorMJJetGirthCharged+
     razorMJPFJetSelID+
     razorMJJetCleanedLoose*
+    razorMJJetCleanedLoose30*
     razorMJPFJetSelIDLepton*
     razorPFJetsUp*
     razorMJPFJetSel30Up+
     razorPFJetsDown*
     razorMJPFJetSel30Down+
     razorMJMetUp+
-    razorMJMetDown+
-    razorMJStructureJetSel30
+    razorMJMetDown
 )
 
 razorMJHemiSequence = cms.Sequence(
@@ -352,8 +291,6 @@ razorMJHemiSequence = cms.Sequence(
     razorMJDiHemiHadBoxDown+
     razorMJHemiHadBox20*
     razorMJDiHemiHadBox20+
-    razorMJHemiHadBoxSS*
-    razorMJDiHemiHadBoxSS+
     razorMJHemiLepBox+
     razorMJHemiLepBoxUp+
     razorMJHemiLepBoxDown+
@@ -384,23 +321,29 @@ razorMJSequence = cms.Sequence(
 
 ###Selections for analysis and side bands
 razorMJSkimSequenceHad = cms.Sequence(
+    #require *some* trigger fired
+    razorMJTriggerSequence+
     #veto events with too many jets
     ~razorPFJetSelCount+ 
     #now make the sequence
     razorMJObjectSequence +
-    #only take 6jets
+    #require at least 5 jets above 30 
+    razorMJPFJetSel30Count5j + 
+    #only take 6jets above 20
     razorMJPFJetSel20Count6j+
-    # two above 70
-    razorMJPFJetSel70Count2j+
     #filter is inverted
     ~razorMJPFJetIDCount
     )
 
 razorMJSkimSequenceEle = cms.Sequence(
+    #require *some* trigger fired
+    razorMJTriggerSequence+
     #veto events with too many jets
     ~razorPFJetSelCount+ 
     #now make the sequence
     razorMJObjectSequence +
+    #at least 3 are hard
+    razorMJPFJetSel30Count3j+ 
     #only take 4jets, excluding leptons
     razorMJPFJetSel20Count4j+
     #filter is inverted
@@ -410,10 +353,14 @@ razorMJSkimSequenceEle = cms.Sequence(
     )
 
 razorMJSkimSequenceMu = cms.Sequence(
+    #require *some* trigger fired
+    razorMJTriggerSequence+
     #veto events with too many jets
     ~razorPFJetSelCount+ 
     #now make the sequence
     razorMJObjectSequence +
+    #at least 3 are hard
+    razorMJPFJetSel30Count3j+ 
     #only take 4jets
     razorMJPFJetSel20Count4j+
     #filter is inverted
@@ -423,14 +370,16 @@ razorMJSkimSequenceMu = cms.Sequence(
     )
 
 razorMJSkimSequenceTau = cms.Sequence(
+    #require *some* trigger fired
+    razorMJTriggerSequence+
     #veto events with too many jets
     ~razorPFJetSelCount+ 
     #now make the sequence
     razorMJObjectSequence +
+    #require at least 5 jets above 30 
+    razorMJPFJetSel30Count5j + 
     #only take 6jets
     razorMJPFJetSel20Count6j+
-    # two above 70
-    razorMJPFJetSel70Count2j+
     #filter is inverted
     ~razorMJPFJetIDCount+
     #a tight tau
