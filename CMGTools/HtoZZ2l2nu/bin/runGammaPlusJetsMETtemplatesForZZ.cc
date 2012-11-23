@@ -312,7 +312,7 @@ int main(int argc, char* argv[])
       //event weight
       float weight = 1.0;  
       if(isMC)                  { weight = LumiWeights.weight( ev.ngenITpu ); }
-      if(!isMC && isGammaEvent) { weight = gammaEvHandler.triggerWeight(); }
+      //if(!isMC && isGammaEvent) { weight = gammaEvHandler.triggerWeight(); }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight);
@@ -440,33 +440,50 @@ int main(int argc, char* argv[])
 	    }
 	}
       
+      bool useCHS(true);
+      bool useJERsmearing(true); 
+      bool useJetsOnlyInTracker(true); 
+      bool usePUsubJetId(true); 
+      // invert ajets <-> jets ...
+      // 2011:  ajets -> non CHS,  jets -> CHS
+      // 2012:  ajets -> CHS,      jets -> non CHS
+      if(use2011Id) useCHS = !useCHS; 
+
+
       //
       // JET/MET
       //
-      LorentzVector metP4(phys.met[0]);
+      LorentzVector metP4(phys.met[2]);
       LorentzVectorCollection zvvs;
       std::vector<PhysicsObjectJetCollection> jets;
-      METUtils::computeVariation(phys.ajets, phys.leptons, metP4, jets, zvvs, &jecUnc);
+      METUtils::computeVariation( ( useCHS ? phys.ajets : phys.jets) , phys.leptons, metP4, jets, zvvs, &jecUnc);
       metP4=zvvs[0];
+      if( !useJERsmearing ) metP4=phys.met[2];
       
       //count the jets
       int nbtags(0),njets30(0),njets15(0);
       double ht(0);
-      double mindphijmet(9999.),mindphijmet20(9999.);
+      double mindphijmet(9999.),mindphijmet20(9999.), mindphijmet15(9999.);
       PhysicsObjectJetCollection selJets;
       LorentzVector clusteredMet(gamma);  clusteredMet *= -1;
       LorentzVector clustered15Met(clusteredMet),clustered20Met(clusteredMet);
       LorentzVector mht(0,0,0,0),unclusteredMet(0,0,0,0);
-      PhysicsObjectJetCollection & jetsToUse=jets[0];
+      PhysicsObjectJetCollection & jetsToUse= (useJERsmearing ? jets[0] : ( useCHS ? phys.ajets : phys.jets) );
       if(disableJERSmear) jetsToUse=phys.ajets;
       for(size_t ijet=0; ijet<jetsToUse.size(); ijet++)
         {
-	  bool isGoodJet    =hasObjectId(jetsToUse[ijet].pid,JETID_LOOSE);
+	  double idphijmet( fabs(deltaPhi(jetsToUse[ijet].phi(),zvvs[0].phi()) ) );
+	  if( jetsToUse[ijet].pt()>15 ) if(idphijmet<mindphijmet15)  mindphijmet15=idphijmet;
+	  if( jetsToUse[ijet].pt()>30 ) if(idphijmet<mindphijmet) mindphijmet=idphijmet;
+
+	  bool isGoodJet = hasObjectId(jetsToUse[ijet].pid,JETID_LOOSE); // TIGHT);
+	  if(usePUsubJetId)  isGoodJet =hasObjectId(jetsToUse[ijet].pid,JETID_CUTBASED_LOOSE);
+
 	  if(!isGoodJet) continue;
 
 	  LorentzVector ijetP4=jetsToUse[ijet];
 	  if(isGammaEvent && deltaR(ijetP4,gamma)<0.2) continue;
-
+	  if(useJetsOnlyInTracker && fabs(ijetP4.eta())>2.5) continue;
 	  selJets.push_back(jetsToUse[ijet]);
 	  clusteredMet -= ijetP4;
 	  if(ijetP4.pt()>15) { clustered15Met -= ijetP4; njets15++; }
@@ -475,15 +492,14 @@ int main(int argc, char* argv[])
 	  ht += ijetP4.pt();
 
 	  //b-tag
-	  if(ijetP4.pt()>20 && fabs(ijetP4.eta())<2.5) nbtags += (jetsToUse[ijet].btag2>0.244);
+	  if( ijetP4.pt()>20 && fabs(ijetP4.eta())<2.5) nbtags += (jetsToUse[ijet].btag2>0.244);
 
 	  //dphi(jet,MET)
-	  double idphijmet=fabs(deltaPhi(metP4.phi(),ijetP4.phi()));	  
 	  if(ijetP4.pt()>20) mindphijmet20=min(idphijmet,mindphijmet20);
 	  
 	  if(ijetP4.pt()<30) continue;
 	  njets30++;
-	  mindphijmet=min(idphijmet,mindphijmet);
+
 	}
       
       //other mets
@@ -494,7 +510,8 @@ int main(int argc, char* argv[])
       METUtils::stRedMET redMetOut;
       LorentzVector redMet15=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clustered15Met, zvvs[0],true,&redMetOut);
       LorentzVector redMet20=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clustered20Met, zvvs[0],true,&redMetOut);
-      LorentzVector redMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clusteredMet, metP4,true,&redMetOut));
+      //LorentzVector redMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clusteredMet, metP4,true,&redMetOut));
+      LorentzVector redMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clusteredMet, metP4,true, &redMetOut));
       double redMetL=redMetOut.redMET_l;
       double redMetT=redMetOut.redMET_t;
       float balance=metP4.pt()/gamma.pt();
@@ -509,17 +526,18 @@ int main(int argc, char* argv[])
       // EVENT SELECTION
       //
       bool passMultiplicityVetoes (nextraleptons==0);
-      bool passKinematics         (gamma.pt()>50 && fabs(gamma.eta())<1.4442);
+      bool passKinematics         (gamma.pt()> 50 && fabs(gamma.eta())<1.4442); //50
+      //@@bool passKinematics         (gamma.pt()>(use2011Id ? 40 : 45 ) && fabs(gamma.eta())<1.4442); //50
       if(isGammaEvent && !isMC)    passKinematics &= (gamma.pt()>gammaEvHandler. triggerThr());
       bool passEB                 (true); //(!isGammaEvent || fabs(gamma.eta())<1.4442); 
       bool passR9                 (!isGammaEvent || r9<1.0);
       bool passR9tight            (true); //!isGammaEvent || r9>0.85); 
       bool passBveto              (nbtags==0);
       //       bool passJetVeto            (njets30==0); 
-      bool passRedMet(redMet.pt()>70);
+      bool passRedMet(redMet.pt()> (use2011Id ? 60 : 70 ) );
       bool passBalance(balance > 0.4 && balance < 1.8);
-      bool passDphijmet        (mindphijmet>0.5);
-      if(njets30==0)  passDphijmet=(mindphijmet20>0.5);
+      bool passDphijmet=(mindphijmet>0.5);
+      if(njets30==0)  passDphijmet=(mindphijmet15>0.5);
       bool passShapePreSelection(passBveto /*&& passJetVeto*/ && passDphijmet);
       
       //event category
