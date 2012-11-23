@@ -124,3 +124,8 @@ haddOverSamples.py -j data/samples-graviton.json -d /store/cmst3/user/psilva/12_
 runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples-graviton.json -d /store/cmst3/user/psilva/12_05_06_HZZ2l2v_44x_ntuples/ -o ~/work/gzz -c test/runAnalysis_cfg.py.templ -s 8nh -t Graviton
 runPlotter --iLumi 4616 --inDir ~/work/gzz/ --outDir ~/work/gzz/plots --json data/samples-graviton.json --outFile ~/work/gzz/plotter.root
 
+
+##
+## OPTIMIZATION
+##
+python optimize.py -p 1 -m 0 -s mt_shapes -i /afs/cern.ch/user/p/psilva/public/HtoZZ/Council_chsnodphisoftjet/plotter.root -o /afs/cern.ch/user/p/psilva/work/CMSSW_5_3_3_patch2/src/CMGTools/HtoZZ2l2nu/test/computeLimits/JOBS_chsnodphisoftjmet/ -g /afs/cern.ch/user/p/psilva/public/HtoZZ/Council_chsnodphisoftjet/gamma_half_2012_12fbinv.root

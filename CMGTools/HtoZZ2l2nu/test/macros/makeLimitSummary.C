@@ -21,7 +21,8 @@
 #include "TGraphAsymmErrors.h"
 #include "TMultiGraph.h"
 #include "TPaveText.h"
-#include "tdrstyle.C"
+#include "TStyle.h"
+//#include "tdrstyle.C"
 
 
 TGraph* getGraph(string name, int color, int width, int style, TLegend* LEG, TGraph* Ref, string filePath){
@@ -50,7 +51,9 @@ TGraph* getGraph(string name, int color, int width, int style, TLegend* LEG, TGr
 
 
 void makeLimitSummary(){
-   setTDRStyle();
+  gStyle->SetOptStat(0);
+  gStyle->SetOptTitle(0);
+  //   setTDRStyle();
    gStyle->SetPadTopMargin   (0.04);
    gStyle->SetPadBottomMargin(0.12);
    gStyle->SetPadRightMargin (0.05);
@@ -62,7 +65,8 @@ void makeLimitSummary(){
    gStyle->SetNdivisions(505);
 
    char LumiLabel[1024];
-   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=7 TeV, #int L=%6.1ffb^{-1}",5.035);
+   //   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=7 TeV, #int L=%6.1ffb^{-1}",5.035);
+   sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=8 TeV, #int L=%6.1ffb^{-1}",12.2);
    TPaveText *pave = new TPaveText(0.5,0.96,0.94,0.99,"NDC");
    pave->SetBorderSize(0);
    pave->SetFillStyle(0);
@@ -75,9 +79,9 @@ void makeLimitSummary(){
    TLegend* LEG, *LEG2;
    TGraph* Ref;
 
-   c1 = new TCanvas("c1", "c1",600,600);
+   c1 = new TCanvas("c", "c",600,600);
    c1->SetLogy(true);
-   framework = new TH1F("Graph","Graph",1,150,650);
+   framework = new TH1F("Graph","Graph",1,150,1000);
    framework->SetStats(false);
    framework->SetTitle("");
    framework->GetXaxis()->SetTitle("M_{H} [GeV/c^{2}]");
@@ -96,35 +100,39 @@ void makeLimitSummary(){
    LEG2->SetBorderSize(0);
    LEG2->SetHeader(" ");
 
+   getGraph("Baseline"                  ,1, 2, 1, LEG , NULL, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8_LimitSummary")->Draw("C same");
+   getGraph("red-E_{T}^{miss}"                  ,2, 2, 2, LEG , NULL, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8RMET_LimitSummary")->Draw("C same");
+   getGraph("no #Delta#phi(soft jet,E_{T}^{miss})",2, 2, 1, LEG , NULL, "../computeLimits/JOBS_nodphisoftjmet/_LimitSummary")->Draw("C same");
+   getGraph("CHS jets",3, 2, 1, LEG , NULL, "../computeLimits/JOBS_chs/_LimitSummary")->Draw("C same");
 
-   getGraph("0jet"                  ,42, 2, 2, LEG , NULL, "../computeLimits_0/COUNT_LimitSummary")->Draw("C same");
-   getGraph("1jet"                  ,44, 2, 2, LEG , NULL, "../computeLimits_1/COUNT_LimitSummary")->Draw("C same");
-   getGraph("2jets"                 ,46, 2, 2, LEG , NULL, "../computeLimits_2/COUNT_LimitSummary")->Draw("C same");
-   getGraph("VBF"                   ,40, 2, 2, LEG , NULL, "../computeLimits_VonlyFixed/COUNT_LimitSummary")->Draw("C same");
-//   getGraph("VonlyFree"           , 5, 2, 1, LEG , NULL, "../computeLimits_VonlyFree/COUNT_LimitSummary")->Draw("C same");
-   getGraph("Inclusive"             , 1, 2, 1, LEG , NULL, "../computeLimits_Inc/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("0jet"                  ,42, 2, 2, LEG , NULL, "../computeLimits_0/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("1jet"                  ,44, 2, 2, LEG , NULL, "../computeLimits_1/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("2jets"                 ,46, 2, 2, LEG , NULL, "../computeLimits_2/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("VBF"                   ,40, 2, 2, LEG , NULL, "../computeLimits_VonlyFixed/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("VonlyFree"           , 5, 2, 1, LEG , NULL, "../computeLimits_VonlyFree/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("Inclusive"             , 1, 2, 1, LEG , NULL, "../computeLimits_Inc/COUNT_LimitSummary")->Draw("C same");
 
-   getGraph("VBF/noVBF"             , 6, 2, 1, LEG2, NULL, "../computeLimits_VnoV/COUNT_LimitSummary")->Draw("C same");
-   getGraph("0,#geq1jet,VBF"            , 8, 2, 1, LEG2, NULL, "../computeLimits_01V/COUNT_LimitSummary")->Draw("C same");
-   getGraph("0,1,#geq2jets"             ,16, 2, 1, LEG2, NULL, "../computeLimits_012/COUNT_LimitSummary")->Draw("C same");
-   getGraph("0,1,#geq2jets,VBF"         , 2, 2, 1, LEG2, NULL, "../computeLimits_012V/COUNT_LimitSummary")->Draw("C same");
-//   getGraph("012V_NRBDY"          , 1, 2, 1, LEG2, NULL, "../computeLimits_012V_NRBDY/COUNT_LimitSummary")->Draw("C same");
-   getGraph("0,1,#geq2jets,VBF (redMET)", 4, 2, 1, LEG2, NULL, "../computeLimits_012V_redMET/COUNT_LimitSummary")->Draw("C same");
-//   getGraph("012V_Z10"            , 1, 2, 1, LEG2, NULL, "../computeLimits_012V_Z10/COUNT_LimitSummary")->Draw("C same");
-//   getGraph("012V_Z5"             , 1, 2, 1, LEG2, NULL, "../computeLimits_012V_Z5/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("VBF/noVBF"             , 6, 2, 1, LEG2, NULL, "../computeLimits_VnoV/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("0,#geq1jet,VBF"            , 8, 2, 1, LEG2, NULL, "../computeLimits_01V/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("0,1,#geq2jets"             ,16, 2, 1, LEG2, NULL, "../computeLimits_012/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("0,1,#geq2jets,VBF"         , 2, 2, 1, LEG2, NULL, "../computeLimits_012V/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("012V_NRBDY"          , 1, 2, 1, LEG2, NULL, "../computeLimits_012V_NRBDY/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("0,1,#geq2jets,VBF (redMET)", 4, 2, 1, LEG2, NULL, "../computeLimits_012V_redMET/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("012V_Z10"            , 1, 2, 1, LEG2, NULL, "../computeLimits_012V_Z10/COUNT_LimitSummary")->Draw("C same");
+   //   getGraph("012V_Z5"             , 1, 2, 1, LEG2, NULL, "../computeLimits_012V_Z5/COUNT_LimitSummary")->Draw("C same");
    
    LEG ->Draw("same");
-   LEG2->Draw("same");
+   //LEG2->Draw("same");
 
    system("mkdir -p LimitPlots");
    c1->SaveAs("LimitPlots/LimitSummary.png");
    c1->SaveAs("LimitPlots/LimitSummary.pdf");
    c1->SaveAs("LimitPlots/LimitSummary.C");
-   delete c1;
+   //   delete c1;
 
 
    c1 = new TCanvas("c1", "c1",600,600);
-   framework = new TH1F("Graph","Graph",1,150,650);
+   framework = new TH1F("Graph","Graph",1,150,1000);
    framework->SetStats(false);
    framework->SetTitle("");
    framework->GetXaxis()->SetTitle("M_{H} [GeV/c^{2}]");
@@ -138,14 +146,19 @@ void makeLimitSummary(){
    LEG->SetFillStyle(0);
    LEG->SetBorderSize(0);
    LEG->SetHeader(NULL);
+   
+   Ref = getGraph("Baseline"                  ,2, 2, 1, LEG , NULL, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8_LimitSummary");
+   getGraph("red-E_{T}^{miss}"                  ,2, 2, 2, LEG , Ref, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8RMET_LimitSummary")->Draw("L same");
+   getGraph("no #Delta#phi(soft jet,E_{T}^{miss})",3, 2, 1, LEG , Ref, "../computeLimits/JOBS_nodphisoftjmet/_LimitSummary")->Draw("L same");
+   getGraph("CHS jets",48, 2, 2, LEG , Ref, "../computeLimits/JOBS_chs/_LimitSummary")->Draw("L same");
 
-   Ref = getGraph("Inclusive", 1, 2, 1, NULL, NULL, "../computeLimits_Inc/COUNT_LimitSummary");
-   getGraph("Inclusive"             , 1, 2, 1, LEG, Ref, "../computeLimits_Inc/COUNT_LimitSummary")->Draw("L same");
-   getGraph("VBF/noVBF"             , 6, 2, 1, LEG, Ref, "../computeLimits_VnoV/COUNT_LimitSummary")->Draw("L same");
-   getGraph("0,#geq1jet,VBF"            , 8, 2, 1, LEG, Ref, "../computeLimits_01V/COUNT_LimitSummary")->Draw("L same");
-   getGraph("0,1,#geq2jets"             ,16, 2, 1, LEG, Ref, "../computeLimits_012/COUNT_LimitSummary")->Draw("L same");
-   getGraph("0,1,#geq2jets,VBF"         , 2, 2, 1, LEG, Ref, "../computeLimits_012V/COUNT_LimitSummary")->Draw("L same");
-   getGraph("0,1,#geq2jets,VBF (redMET)", 4, 2, 1, LEG, Ref, "../computeLimits_012V_redMET/COUNT_LimitSummary")->Draw("L same");
+//    Ref = getGraph("Inclusive", 1, 2, 1, NULL, NULL, "../computeLimits_Inc/COUNT_LimitSummary");
+//    getGraph("Inclusive"             , 1, 2, 1, LEG, Ref, "../computeLimits_Inc/COUNT_LimitSummary")->Draw("L same");
+//    getGraph("VBF/noVBF"             , 6, 2, 1, LEG, Ref, "../computeLimits_VnoV/COUNT_LimitSummary")->Draw("L same");
+//    getGraph("0,#geq1jet,VBF"            , 8, 2, 1, LEG, Ref, "../computeLimits_01V/COUNT_LimitSummary")->Draw("L same");
+//    getGraph("0,1,#geq2jets"             ,16, 2, 1, LEG, Ref, "../computeLimits_012/COUNT_LimitSummary")->Draw("L same");
+//    getGraph("0,1,#geq2jets,VBF"         , 2, 2, 1, LEG, Ref, "../computeLimits_012V/COUNT_LimitSummary")->Draw("L same");
+//    getGraph("0,1,#geq2jets,VBF (redMET)", 4, 2, 1, LEG, Ref, "../computeLimits_012V_redMET/COUNT_LimitSummary")->Draw("L same");
 
    
    LEG ->Draw("same");
@@ -153,9 +166,10 @@ void makeLimitSummary(){
    c1->SaveAs("LimitPlots/LimitRatio.png");
    c1->SaveAs("LimitPlots/LimitRatio.pdf");
    c1->SaveAs("LimitPlots/LimitRatio.C");
-   delete c1;
+   //delete c1;
 
 
+   /*
    c1 = new TCanvas("c1", "c1",600,600);
    framework = new TH1F("Graph","Graph",1,150,650);
    framework->SetStats(false);
@@ -211,7 +225,7 @@ void makeLimitSummary(){
    c1->SaveAs("LimitPlots/LimitShape.pdf");
    c1->SaveAs("LimitPlots/LimitShape.C");
    delete c1;
-
+   */
 
 }
 

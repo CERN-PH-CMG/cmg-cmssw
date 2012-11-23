@@ -64,8 +64,8 @@ int main(int argc, char* argv[])
 
   bool use2011Id = runProcess.getParameter<bool>("is2011");
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
-  bool useCHS(false);
-  bool nodphisofjet(true);
+  bool useCHS(true);
+  bool nodphisoftjet(true);
 
   bool isMC       = runProcess.getParameter<bool>("isMC");
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
@@ -964,7 +964,7 @@ int main(int argc, char* argv[])
 	      nAJetsPUIdMedium += hasObjectId(aJets[ijet].pid,JETID_OPT_MEDIUM);
 	    }
 	}
-      if(nodphisofjet) mindphijmet15=99999.;
+      if(nodphisoftjet) mindphijmet15=99999.;
       passBveto=(nABtags[1]==0);
       passDphijmet=(mindphijmet>0.5);
       if(nAJetsGood30==0) passDphijmet=(mindphijmet15>0.5);

@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 
   bool use2011Id = runProcess.getParameter<bool>("is2011");
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
-  bool useCHS(false);
+  bool useCHS(true);
   bool nodphisoftjet(true);
 
   bool isMC = runProcess.getParameter<bool>("isMC");

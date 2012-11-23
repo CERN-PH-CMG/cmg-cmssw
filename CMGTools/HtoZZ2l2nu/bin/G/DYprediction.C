@@ -161,8 +161,17 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
 
-      gammaFile = "~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
-      llFile    = "~/work/htozz/53x_rereco/ll/2012/plotter.root";
+      //gammaFile = "~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
+      //llFile    = "~/work/htozz/53x_rereco/ll/2012/plotter.root";
+
+      //gammaFile = "~/work/htozz/53x_rereco/gamma/2012_nomindphisoftjet/qt/plotter.root";
+      //llFile="~/work/htozz/53x_rereco/ll/2012_nomindphisoftjet/plotter.root";
+
+      //gammaFile="~/work/htozz/53x_rereco/gamma/2012_chs/qt/plotter.root";
+      //llFile="~/work/htozz/53x_rereco/ll/2012_chs/plotter.root";
+
+      gammaFile="~/work/htozz/53x_rereco/gamma/2012_chsnomindphisoftjet/qt/plotter.root";
+      llFile="~/work/htozz/53x_rereco/ll/2012_chsnomindphisoftjet/plotter.root";
 
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
