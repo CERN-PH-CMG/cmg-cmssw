@@ -10,11 +10,13 @@ jsonAna = cfg.Analyzer(
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
+     keepFailingEvents = True
     )
 
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     fixedWeight = 1.
+    keepFailingEvents = True
     )
 
 WAna = cfg.Analyzer(
@@ -62,14 +64,15 @@ sequence = cfg.Sequence( [
     WAna,
     WtreeProducer,
     ZAna,
-    # ZtreeProducer
+    ZtreeProducer
    ] )
 
 
 from CMGTools.H2TauTau.proto.samples.ewk import WJets, DYJets, TTJets
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
-DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
+# DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
+DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START44_V9B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
 # DYJets.files = DYJets.files[:10]
 DYJets.triggers = ["HLT_IsoMu24_v*"]
 
