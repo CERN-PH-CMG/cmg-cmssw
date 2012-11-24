@@ -10,11 +10,13 @@ jsonAna = cfg.Analyzer(
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer'
+     keepFailingEvents = False    
     )
 
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     fixedWeight = 1.
+    keepFailingEvents = False    
     )
 
 WAna = cfg.Analyzer(
