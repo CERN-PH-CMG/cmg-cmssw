@@ -156,7 +156,8 @@ class ZAnalyzer( Analyzer ):
                   
         # check that a good muon pair exists, otherwise reject reco event
         if event.BestZMuonPairList[0] > 1e6 :
-          return True, 'good muon pair not found (probably same charge)'
+          # return True, 'good muon pair not found (probably same charge)'
+          return True, 'good muon pair not found'
         else:
             if fillCounter : self.counters.counter('ZAna').inc('Z good muon pair found')
 
@@ -352,7 +353,8 @@ class ZAnalyzer( Analyzer ):
       mu2hastriggered=0
       for lep1 in ZselTriggeredMuons:
         for lep2 in ZselTriggeredMuons:
-          if( lep1 != lep2 and lep1.charge() != lep2.charge() ):
+          # if( lep1 != lep2 and lep1.charge() != lep2.charge() ):
+          if( lep1 != lep2 ):
             if(math.fabs((lep1.p4()+lep2.p4()).M()-mZpole) < math.fabs(mZ-mZpole) ):
               mZ=(lep1.p4()+lep2.p4()).M()
               bestmu1=lep1
@@ -360,7 +362,8 @@ class ZAnalyzer( Analyzer ):
               mu2hastriggered=1
       for lep1 in ZselTriggeredMuons:
         for lep2 in ZselNoTriggeredMuons:
-          if( lep1 != lep2 and lep1.charge() != lep2.charge() ):
+          # if( lep1 != lep2 and lep1.charge() != lep2.charge() ):
+          if( lep1 != lep2 ):
             if(math.fabs((lep1.p4()+lep2.p4()).M()-mZpole) < math.fabs(mZ-mZpole) ):
               mZ=(lep1.p4()+lep2.p4()).M()
               bestmu1=lep1
