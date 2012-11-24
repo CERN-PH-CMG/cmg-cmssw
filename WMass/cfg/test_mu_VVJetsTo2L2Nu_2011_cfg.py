@@ -60,9 +60,9 @@ sequence = cfg.Sequence( [
     triggerAna,
     vertexAna,
     WAna,
-    # WtreeProducer,
+    WtreeProducer,
     ZAna,
-    # ZtreeProducer
+    ZtreeProducer
    ] )
 
 

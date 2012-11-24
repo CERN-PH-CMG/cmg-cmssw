@@ -9,12 +9,14 @@ jsonAna = cfg.Analyzer(
     )
 
 triggerAna = cfg.Analyzer(
-    'TriggerAnalyzer'
+    'TriggerAnalyzer',
+    keepFailingEvents = False
     )
 
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
-    fixedWeight = 1.
+    fixedWeight = 1.,
+    keepFailingEvents = False
     )
 
 WAna = cfg.Analyzer(
@@ -63,7 +65,8 @@ sequence = cfg.Sequence( [
 from CMGTools.H2TauTau.proto.samples.ewk import WJets, DYJets, TTJets
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
-DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
+# DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
+DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START44_V9B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
 DYJets.files = DYJets.files[:5]
 DYJets.triggers = ["HLT_IsoMu24_v*"]
 
@@ -75,9 +78,9 @@ TTJets.files = getFiles('/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START4
 TTJets.files = TTJets.files[:5]
 TTJets.triggers = ["HLT_IsoMu24_v*"]
 
-selectedComponents = [DYJets, WJets]
+# selectedComponents = [DYJets, WJets]
 # selectedComponents = [WJets]
-# selectedComponents = [DYJets]
+selectedComponents = [DYJets]
 # selectedComponents = [TTJets]
 
 
