@@ -1,9 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
-from CMGTools.Utilities.generator.metRecoilCorrection.recoilCorrectedMETTauMu_cfi import *
-from CMGTools.Utilities.generator.metRecoilCorrection.recoilCorrectedMETTauEle_cfi import *
-from CMGTools.Utilities.generator.metRecoilCorrection.recoilCorrectedMETMuEle_cfi import *
-from CMGTools.Utilities.generator.metRecoilCorrection.recoilCorrectedMETDiTau_cfi import *
+from CMGTools.Utilities.metRecoilCorrection.recoilCorrectedMETTauMu_cfi import *
+from CMGTools.Utilities.metRecoilCorrection.recoilCorrectedMETTauEle_cfi import *
+from CMGTools.Utilities.metRecoilCorrection.recoilCorrectedMETMuEle_cfi import *
+from CMGTools.Utilities.metRecoilCorrection.recoilCorrectedMETDiTau_cfi import *
 from CMGTools.Common.generator.genWorZ_cfi import *
 from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
 
