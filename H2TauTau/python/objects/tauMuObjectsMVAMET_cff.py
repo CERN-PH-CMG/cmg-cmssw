@@ -5,7 +5,7 @@ from CMGTools.H2TauTau.objects.tauMuCuts_cff import *
 
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
-from CMGTools.H2TauTau.generator.metRecoilCorrection.metRecoilCorrection_cff import *
+from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
 
 from CMGTools.Common.factories.cmgTauScaler_cfi import  cmgTauScaler
 from CMGTools.Common.factories.cmgTauMuCor_cfi import cmgTauMuCor 

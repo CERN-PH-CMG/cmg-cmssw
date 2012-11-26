@@ -46,9 +46,9 @@
 #include "CMGTools/H2TauTau/interface/SelectionEfficiency.h"
 //#include "CMGTools/H2TauTau/interface/TauRate.h"
 
-
-#include "CMGTools/Common/interface/RecoilCorrector.h"
-#include "CMGTools/H2TauTau/interface/RecoilCorrector2012.h"
+//COLIN
+// #include "CMGTools/Common/interface/RecoilCorrector.h"
+#include "CMGTools/Utilities/interface/RecoilCorrector.h"
 
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
@@ -402,8 +402,8 @@ protected:
   int diobjectindex_;
   edm::InputTag mvaMETSigTag_;
 
-  RecoilCorrector corrector_;
-  RecoilCorrector2012 corrector2012_;
+  // RecoilCorrector corrector_;
+  RecoilCorrector corrector2012_;
   int recoilCorreciton_;
   double recoiliScale_;
   std::string fileZmmData_;
@@ -477,9 +477,11 @@ protected:
       }
       
       if(recoilCorreciton_<10) 
-	corrector_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+	;
+/* 	corrector_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult ); */
       else if(recoilCorreciton_<20)
-	corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+/* 	corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult ); */
+	;
       else if(recoilCorreciton_<30) //2012 MVA corrector
 	corrector2012_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
       else if(recoilCorreciton_<40) //2012 MVA corrector
