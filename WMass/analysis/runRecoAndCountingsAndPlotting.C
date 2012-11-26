@@ -14,15 +14,16 @@ void runRecoAndCountingsAndPlotting(){
   
   // TString foldername = "RecoCountingPlotting_test44X_testRecoil";
   // TString foldername = "RecoCountingPlotting_test44X_tightMuNeg";
-  TString foldername = "results_test44X_bugfix";
+  // TString foldername = "results_test44X_bugfix_Run2011A";
+  TString foldername = "results_test44X_testtempl";
   // TString foldername = "RecoCountingPlotting_test44X_newPileupSF_gen";
   
   int usePileupSF = 1; // 0=no, 1=yes
   int useEffSF = 1; // 0=no, 1=yes
-  int useMomentumCorr = 0; // 0=none, 1=Rochester, 2=MuscleFit
+  int useMomentumCorr = 1; // 0=none, 1=Rochester, 2=MuscleFit
   int smearRochCorrByNsigma = 0;
   // CHOOSE WETHER IS MC CLOSURE OR NOT (half statistics used as DATA, half as MC)
-  bool IS_MC_CLOSURE_TEST= 0; 
+  bool IS_MC_CLOSURE_TEST= 1; 
   bool normalize_lumi_MC_CLOSURE_TEST = 1;
   double intLumi_MC_CLOSURE_TEST_fb = 5.1;// data = 5.1 ; works only if normalize_lumi_MC_CLOSURE_TEST is TRUE
   bool useAlsoGenPforSig= 0;
@@ -30,22 +31,22 @@ void runRecoAndCountingsAndPlotting(){
   TString ZMass = "91.1876"; // 91.1876
   TString WMassCentral_MeV = "80385"; // 80385
   TString WMassStep_MeV = "50"; // 15
-  TString WMassNSteps = "0"; // 60
-  TString etaMuonNSteps = "2"; // 5
-  TString etaMaxMuons = "0.6, 2.1"; // 0.6, 0.8, 1.2, 1.6, 2.1
+  TString WMassNSteps = "10"; // 60
+  TString etaMuonNSteps = "1"; // 5
+  TString etaMaxMuons = "0.6"; // 0.6, 0.8, 1.2, 1.6, 2.1
 
   bool runWanalysis = 0;
   bool runZanalysis = 0;
   
   bool mergeEWKbkg   = 0;
 
-  bool ExtractNumbers = 0;
+  bool ExtractNumbers = 1;
 
   
   bool runWSigBkgFit = 0;
   bool runZSigBkgFit = 0;
   
-  bool run_Z_MCandDATAcomparisons_stack = 1;
+  bool run_Z_MCandDATAcomparisons_stack = 0;
   bool run_W_MCandDATAcomparisons_stack = 0;
   bool run_Z_MCandDATAcomparison = 0;
   bool run_W_MCandDATAcomparison = 0;
@@ -58,9 +59,9 @@ void runRecoAndCountingsAndPlotting(){
   
   
   // PRODUCE R(X)=W/Z DISTRIBUTION TO REWEIGHT Z in DATA
-  bool runR_WdivZ        = 0;
+  bool runR_WdivZ_andSimpleTemplates= 0;
   // PRODUCE TEMPLATES, i.e. Z(DATA)*R(X)
-  bool run_BuildTemplates= 0;
+  bool run_BuildEvByEvTemplates= 0;
   // PERFORM W MASS FIT
   bool run_MassFit       = 0;
   int fitType            = 0; // 0 = ROOT, 1 = CUSTOM
@@ -249,8 +250,12 @@ void runRecoAndCountingsAndPlotting(){
       
       if(ExtractNumbers){
         gROOT->ProcessLine(Form(".! root -l -b -q \'R_WdivZ.C(\"../JobOutputs/%s/%s\",1,%d)\' > numbers.txt",foldername.Data(),outputdir.Data(),tot_N_evts));
+        // gROOT->ProcessLine(Form(".! root -l -b -q \'R_WdivZ.C(\"../JobOutputs/%s/%s\",0,%d)\'",foldername.Data(),outputdir.Data(),tot_N_evts));
         // gROOT->ProcessLine(Form(".! mv R_WdivZ_OnMC.root ../JobOutputs/%s/%s/R_WdivZ_OnMC.root",foldername.Data(),outputdir.Data()));
         gROOT->ProcessLine(Form(".! mv \*.txt ../JobOutputs/%s/%s/",foldername.Data(),outputdir.Data()));
+        gROOT->ProcessLine(Form(".! mv R_WdivZ_OnMC.root ../JobOutputs/%s/%s/R_WdivZ_OnMC.root",foldername.Data(),outputdir.Data()));
+        gROOT->ProcessLine(Form(".! mv \*.root ../JobOutputs/%s/%s/",foldername.Data(),outputdir.Data()));
+        gROOT->ProcessLine(Form(".! cp R_WdivZ.C ../JobOutputs/%s/%s/",foldername.Data(),outputdir.Data()));
         // gROOT->ProcessLine(Form(".! cp R_WdivZ.C ../JobOutputs/%s/%s/",foldername.Data(),outputdir.Data()));
       }
       
@@ -261,7 +266,7 @@ void runRecoAndCountingsAndPlotting(){
   
   gSystem->ChangeDirectory("AnalysisCode/");
   
-  if(runR_WdivZ){
+  if(runR_WdivZ_andSimpleTemplates){
     // gSystem->ChangeDirectory("../MCcode/");
     gROOT->ProcessLine(Form(".x R_WdivZ.C(\"../JobOutputs/%s\")",foldername.Data()));
     gROOT->ProcessLine(Form(".! mv R_WdivZ_OnMC.root ../JobOutputs/%s/R_WdivZ_OnMC.root",foldername.Data()));
@@ -270,7 +275,7 @@ void runRecoAndCountingsAndPlotting(){
     // gSystem->ChangeDirectory("../AnalysisCode/");
   }
 
-  if(run_BuildTemplates){  
+  if(run_BuildEvByEvTemplates){  
     // gSystem->CompileMacro("Templates_from_ZanalysisOnDATA.C");
     // gROOT->ProcessLine(Form("Templates_from_ZanalysisOnDATA zTEMPLATESOnDATA(\"%s\",\"../JobOutputs/%s/\",%f)",ZfileDATA.Data(),outputdir.Data(),ZfileDATA_lumi_SF));
     // gROOT->ProcessLine(Form("zTEMPLATESOnDATA.Loop(%d)",IS_MC_CLOSURE_TEST));

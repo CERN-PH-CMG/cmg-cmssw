@@ -13,6 +13,8 @@ namespace WMass{
   static const int WMassNSteps = PAR_WMASS_NSTEPS;
   static const int etaMuonNSteps = PAR_ETA_NSTEP;
   static const float etaMaxMuons[etaMuonNSteps] = { PAR_ETA_STEPS };
+  static const int nSigOrQCD = 2;
+  TString nSigOrQCD_str[nSigOrQCD] = {"Sig","QCD"};
 
   bool isGood_WGenPos_1_Gen(double WGen_m,
                             int MuGen_charge
