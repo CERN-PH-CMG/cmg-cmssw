@@ -48,7 +48,7 @@ cmgDiTauMVAPreSel.cfg.diObjectCollection = 'cmgDiTauPreSel'
 
 metForRecoil = 'mvaMETDiTau'
 diTausForRecoil = 'cmgDiTauPreSel'
-recoilCorMETDiTau =  recoilCorrectedMETDiTau2012.clone(
+recoilCorMETDiTau =  recoilCorrectedMETDiTau.clone(
     recBosonSrc = diTausForRecoil,
     metSrc = metForRecoil
     )

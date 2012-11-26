@@ -20,7 +20,7 @@ numberOfFilesToProcess = 10
 debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
-channel = 'tau-mu'
+channel = 'di-tau'
 jetRecalib = False
 useCHS = False 
 newSVFit = True
@@ -48,7 +48,8 @@ print 'tau scaling =', tauScaling
 
 dataset_user = 'cmgtools' 
 # dataset_name = '/W1Jet_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+# dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
 
 dataset_files = 'cmgTuple.*root'
 
@@ -59,6 +60,12 @@ process.source = datasetToSource(
     dataset_name,
     dataset_files,
     )
+
+process.source.inputCommands=cms.untracked.vstring(
+    'keep *',
+    'drop cmgStructuredPFJets_cmgStructuredPFJetSel__PAT'
+    )
+
 
 # process.source.fileNames = ['file:VBF_HToTauTau.root']
 

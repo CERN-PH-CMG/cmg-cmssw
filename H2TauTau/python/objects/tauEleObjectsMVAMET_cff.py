@@ -53,7 +53,7 @@ cmgTauEleMVAPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
 #IN 52X: should be type1 MET. In 44X, should be raw MET
 metForRecoil = 'mvaMETTauEle'
 diTausForRecoil = 'cmgTauElePreSel'
-recoilCorMETTauEle =  recoilCorrectedMETTauEle2012.clone(
+recoilCorMETTauEle =  recoilCorrectedMETTauEle.clone(
     recBosonSrc = diTausForRecoil,
     metSrc = metForRecoil
     )
