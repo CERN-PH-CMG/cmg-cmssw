@@ -526,11 +526,11 @@ int main(int argc, char* argv[])
       // EVENT SELECTION
       //
       bool passMultiplicityVetoes (nextraleptons==0);
-      bool passKinematics         (gamma.pt()> 50 && fabs(gamma.eta())<1.4442); //50
-      //@@bool passKinematics         (gamma.pt()>(use2011Id ? 40 : 45 ) && fabs(gamma.eta())<1.4442); //50
+      //bool passKinematics         (gamma.pt()> 50 && fabs(gamma.eta())<1.4442); //50
+      bool passKinematics         (gamma.pt()>(use2011Id ? 40 : 45 ) && fabs(gamma.eta())<1.4442); //50
       if(isGammaEvent && !isMC)    passKinematics &= (gamma.pt()>gammaEvHandler. triggerThr());
       bool passEB                 (true); //(!isGammaEvent || fabs(gamma.eta())<1.4442); 
-      bool passR9                 (!isGammaEvent || r9<1.0);
+      bool passR9                 (!isGammaEvent || (r9<1.0 && r9>0.9) );
       bool passR9tight            (true); //!isGammaEvent || r9>0.85); 
       bool passBveto              (nbtags==0);
       //       bool passJetVeto            (njets30==0); 
