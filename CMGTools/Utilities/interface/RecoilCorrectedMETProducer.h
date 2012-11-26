@@ -14,7 +14,6 @@
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
-// #include "CMGTools/H2TauTau/interface/RecoilCorrector.h"
 #include "CMGTools/Utilities/interface/RecoilCorrector.h"
 
 #include <sstream>
