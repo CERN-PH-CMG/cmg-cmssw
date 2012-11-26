@@ -1,6 +1,5 @@
-#ifndef CMGTools_H2TauTau_RecoilCorrector_H
-#define CMGTools_H2TauTau_RecoilCorrector_H
-
+#ifndef CMGTools_Utilities_RecoilCorrector_H
+#define CMGTools_Utilities_RecoilCorrector_H
 
 
 #include <vector>
