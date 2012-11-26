@@ -127,7 +127,7 @@ void std_pileupreweighting(){
   
   // TFile*f2011=new TFile("pileup_data.root");
   // TH1D*hpileup_DATA11=(TH1D*)f2011->Get("pileup7TeV");
-  TFile*f2011=new TFile("new/pileupTruth_Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2.root");
+  TFile*f2011=new TFile("pileupTruth_Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2.root");
   TH1D*hpileup_DATA11=(TH1D*)f2011->Get("pileup");
   hpileup_DATA11->Scale(1/hpileup_DATA11->Integral());
   
