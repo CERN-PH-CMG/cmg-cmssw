@@ -38,7 +38,7 @@ print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(4000) )
 
 print 'loading the main CMG sequence'
 
@@ -172,7 +172,7 @@ process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
 # process.out.outputCommands.append('keep *_*_*_*')
 
 process.outpath = cms.EndPath(
-    #process.out
+    process.out
     )
 
 ########################################################

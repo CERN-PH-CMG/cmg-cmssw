@@ -13,17 +13,10 @@ print 'querying database for source files'
 
 runOnMC = True
 
-
-from CMGTools.Production.datasetToSource import *
-process.source = datasetToSource(
-   'cmgtools',
-   '/DYToTauTau_M_20_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S8_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_4_0',
-   # '/TauPlusX/Run2011A-PromptReco-v4/AOD/V5'
-   # 'CMS',
-   # '/TauPlusX/Run2011A-03Oct2011-v1/AOD'
-   )
-
-#process.source.fileNames = ['file:patTuple.root']
+process.source = cms.Source(
+    'PoolSource',
+    fileNames = cms.untracked.vstring('file:patTuple.root')
+    )
 
 # drop all CMG objects from the input, to recreate them.
 # This is important if there was a change in AnalysisDataFormats after the patTuple was create.
