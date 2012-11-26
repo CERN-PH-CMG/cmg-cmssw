@@ -1,4 +1,3 @@
-// #include "CMGTools/H2TauTau/interface/RecoilCorrector.h"
 #include "CMGTools/Utilities/interface/RecoilCorrector.h"
 
 
