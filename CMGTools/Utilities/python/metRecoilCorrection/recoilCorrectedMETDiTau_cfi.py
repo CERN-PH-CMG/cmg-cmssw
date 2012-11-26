@@ -1,14 +1,6 @@
-'''By default, this module is configured for correcting
-W+jets -> l + fake tau + jets events.
-
-To configure it for Z + jets -> l + tau + jets events,
-you need to change "fileCorrectTo", and to change leptonLeg to 0,
-as we need to add the momentum of both leptons to the recoil to get the MET.
-'''
 import FWCore.ParameterSet.Config as cms
 
 import os 
-# rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/metRecoilCorrection/'
 rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/metRecoilCorrection/'
 
 recoilCorrectedMETDiTau  = cms.EDProducer(
@@ -23,7 +15,6 @@ recoilCorrectedMETDiTau  = cms.EDProducer(
     leptonLeg = cms.int32(0),
     # 1: type 1; 2 : type 2; 0 : all (use 1)
     correctionType = cms.int32(2),
-    #fileCorrectTo = cms.string(rootfile_dir + 'recoilfit_htt53X_20pv_njet.root'),
     fileCorrectTo = cms.string(rootfile_dir + 'recoilfit_ztt53X_20pv_njet.root'),
     # you should not have to change the files below
     fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm53X_20pv_njet.root'),
@@ -31,6 +22,5 @@ recoilCorrectedMETDiTau  = cms.EDProducer(
     enable = cms.bool(True),
     force = cms.bool(False),
     verbose = cms.untracked.bool( False )
-    #COLIN: make delta R a parameter
     )
 
