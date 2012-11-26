@@ -49,7 +49,6 @@
 
 #include "CMGTools/Common/interface/GenericPhysicsObjectSelectorDefinition.h"
 
-#include "CMGTools/Common/interface/RecoilCorrectedMETProducer.h"
 #include "CMGTools/Common/interface/MVAMETProducer.h"
 
 
@@ -138,10 +137,6 @@ typedef PhysicsObjectProducer<cmg::TauEleUpdateFactory> TauEleUpdatePOProducer;
 typedef PhysicsObjectProducer<cmg::MuEleUpdateFactory> MuEleUpdatePOProducer;
 typedef PhysicsObjectProducer<cmg::DiTauUpdateFactory> DiTauUpdatePOProducer;
 
-typedef RecoilCorrectedMETProducer<cmg::TauMu> RecoilCorrectedMETProducerTauMu; 
-typedef RecoilCorrectedMETProducer<cmg::TauEle> RecoilCorrectedMETProducerTauEle; 
-typedef RecoilCorrectedMETProducer<cmg::MuEle> RecoilCorrectedMETProducerMuEle; 
-typedef RecoilCorrectedMETProducer<cmg::DiTau> RecoilCorrectedMETProducerDiTau; 
 
 typedef MVAMETProducer<cmg::TauMu>    MVAMETProducerTauMu; 
 typedef MVAMETProducer<cmg::TauEle>    MVAMETProducerTauEle; 
