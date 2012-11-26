@@ -6,3 +6,6 @@ DEFINE_FWK_MODULE(RecoilCorrectedMETProducerTauEle);
 DEFINE_FWK_MODULE(RecoilCorrectedMETProducerMuEle); 
 DEFINE_FWK_MODULE(RecoilCorrectedMETProducerDiTau); 
 
+DEFINE_FWK_MODULE(MVAMETProducerTauMu);
+DEFINE_FWK_MODULE(MVAMETProducerTauEle);
+DEFINE_FWK_MODULE(MVAMETProducerDiTau);

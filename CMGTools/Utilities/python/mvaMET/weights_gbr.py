@@ -7,7 +7,7 @@ weights_gbrmetu1cov = None
 weights_gbrmetu2cov = None
 
 weightdir = '/'.join([os.environ['CMSSW_BASE'],
-                      'src/CMGTools/Common/data/MVAMet'])
+                      'src/CMGTools/Utilities/data/mvaMET'])
 
 #COLIN: add gbrmet_53 files (check package)
 if isNewerThan('CMSSW_5_3_3'):

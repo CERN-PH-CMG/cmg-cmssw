@@ -19,7 +19,7 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/METReco/interface/PFMET.h"
 
-#include "CMGTools/Common/interface/GBRForest.h"
+#include "CMGTools/Utilities/interface/GBRForest.h"
 #include "CMGTools/Common/interface/MetUtilities.h"
 
 class MVAMet {

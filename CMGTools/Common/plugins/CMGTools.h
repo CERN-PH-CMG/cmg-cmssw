@@ -49,7 +49,6 @@
 
 #include "CMGTools/Common/interface/GenericPhysicsObjectSelectorDefinition.h"
 
-#include "CMGTools/Common/interface/MVAMETProducer.h"
 
 
 // COLIN why not in plugins?
@@ -137,11 +136,6 @@ typedef PhysicsObjectProducer<cmg::TauEleUpdateFactory> TauEleUpdatePOProducer;
 typedef PhysicsObjectProducer<cmg::MuEleUpdateFactory> MuEleUpdatePOProducer;
 typedef PhysicsObjectProducer<cmg::DiTauUpdateFactory> DiTauUpdatePOProducer;
 
-
-typedef MVAMETProducer<cmg::TauMu>    MVAMETProducerTauMu; 
-typedef MVAMETProducer<cmg::TauEle>    MVAMETProducerTauEle; 
-// typedef MVAMETProducer<cmg::DiMuon>   MVAMETProducerDiMuon; 
-typedef MVAMETProducer<cmg::DiTau>    MVAMETProducerDiTau; 
 
 
 //Michalis : Four lepton Types and helpfull gen types
