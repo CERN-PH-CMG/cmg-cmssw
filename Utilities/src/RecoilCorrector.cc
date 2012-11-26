@@ -1,9 +1,9 @@
-// #include "CMGTools/H2TauTau/interface/RecoilCorrector2012.h"
-#include "CMGTools/Utilities/interface/RecoilCorrector2012.h"
+// #include "CMGTools/H2TauTau/interface/RecoilCorrector.h"
+#include "CMGTools/Utilities/interface/RecoilCorrector.h"
 
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-RecoilCorrector2012::RecoilCorrector2012(string iNameZDat,std::string iPrefix, int iSeed) {
+RecoilCorrector::RecoilCorrector(string iNameZDat,std::string iPrefix, int iSeed) {
 
   fRandom = new TRandom1(iSeed);
 
@@ -14,7 +14,7 @@ RecoilCorrector2012::RecoilCorrector2012(string iNameZDat,std::string iPrefix, i
   fId = 0; fJet = 0;
 }
 
-RecoilCorrector2012::RecoilCorrector2012(string iNameZ, int iSeed) {
+RecoilCorrector::RecoilCorrector(string iNameZ, int iSeed) {
 
   fRandom = new TRandom1(iSeed);
   // get fits for Z data
@@ -25,19 +25,19 @@ RecoilCorrector2012::RecoilCorrector2012(string iNameZ, int iSeed) {
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector2012::addDataFile(std::string iNameData) { 
+void RecoilCorrector::addDataFile(std::string iNameData) { 
   readRecoil(fD1U1Fit,fD1U1RMSSMFit,fD1U1RMS1Fit,fD1U1RMS2Fit,fD1U2Fit,fD1U2RMSSMFit,fD1U2RMS1Fit,fD1U2RMS2Fit,iNameData,"PF");
   readRecoil(fD2U1Fit,fD2U1RMSSMFit,fD2U1RMS1Fit,fD2U1RMS2Fit,fD2U2Fit,fD2U2RMSSMFit,fD2U2RMS1Fit,fD2U2RMS2Fit,iNameData,"TK");
   //readCorr(iNameData);
   fId++;   
 }
-void RecoilCorrector2012::addMCFile  (std::string iNameMC) { 
+void RecoilCorrector::addMCFile  (std::string iNameMC) { 
   fId++;
   readRecoil(fM1U1Fit,fM1U1RMSSMFit,fM1U1RMS1Fit,fM1U1RMS2Fit,fM1U2Fit,fM1U2RMSSMFit,fM1U2RMS1Fit,fM1U2RMS2Fit,iNameMC,"PF");
   readRecoil(fM2U1Fit,fM2U1RMSSMFit,fM2U1RMS1Fit,fM2U1RMS2Fit,fM2U2Fit,fM2U2RMSSMFit,fM2U2RMS1Fit,fM2U2RMS2Fit,iNameMC,"TK");
   readCorr  (iNameMC ,fM1U1U2Corr,fM2U1U2Corr,fM1M2U1Corr,fM1M2U2Corr,fM1M2U1U2Corr,fM1M2U2U1Corr);
 }
-void RecoilCorrector2012::CorrectAll(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
+void RecoilCorrector::CorrectAll(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
   fJet = njet; if(njet > 2) fJet = 2;  
   if(fJet >= int(fF1U1Fit.size())) fJet = 0; 
   metDistribution(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
@@ -52,7 +52,7 @@ void RecoilCorrector2012::CorrectAll(double &met, double &metphi, double lGenPt,
 		  iU1, iU2,iFluc,iScale
 		  );
 }
-void RecoilCorrector2012::CorrectType1(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
+void RecoilCorrector::CorrectType1(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
   fJet = njet; if(njet > 2) fJet = 2;  
   if(fJet >= int(fF1U1Fit.size())) fJet = 0; 
   metDistributionType1(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
@@ -63,7 +63,7 @@ void RecoilCorrector2012::CorrectType1(double &met, double &metphi, double lGenP
 		       iU1,iU2,iFluc,iScale
 		       );
 }
-void RecoilCorrector2012::CorrectType2(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
+void RecoilCorrector::CorrectType2(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
   fJet = njet; if(njet > 2) fJet = 2;  
   if(fJet >= int(fF1U1Fit.size())) fJet = 0; 
   metDistributionType2(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fF1U1Fit[fJet],
@@ -77,7 +77,7 @@ void RecoilCorrector2012::CorrectType2(double &met, double &metphi, double lGenP
 		       fF1U1U2Corr  [fJet],fM1U1U2Corr  [fJet], 
 		       iU1,iU2,iFluc,iScale);
 }
-void RecoilCorrector2012::Correct(double &pfmet, double &pfmetphi, double &trkmet, double &trkmetphi, 
+void RecoilCorrector::Correct(double &pfmet, double &pfmetphi, double &trkmet, double &trkmetphi, 
                               double lGenPt, double lGenPhi, double lepPt, double lepPhi,double iFluc,double iScale,int njet) {
   double lU1 = 0; double lU2 = 0;
   fJet = njet; if(njet > 2) fJet = 2;  
@@ -97,7 +97,7 @@ void RecoilCorrector2012::Correct(double &pfmet, double &pfmetphi, double &trkme
 		  iFluc,              iScale
 		  );
 }
-void RecoilCorrector2012::CorrectU1U2(double &iPFU1, double &iPFU2, double &iTKU1, double &iTKU2, 
+void RecoilCorrector::CorrectU1U2(double &iPFU1, double &iPFU2, double &iTKU1, double &iTKU2, 
 				  double lGenPt, double lGenPhi, double lepPt, double lepPhi,double iFluc,double iScale,int njet) {
   double pfmet = 0; double pfmetphi = 0; //double trkmet = 0; double trkmetphi = 0;
   fJet = njet; if(njet > 2) fJet = 2;  
@@ -118,7 +118,7 @@ void RecoilCorrector2012::CorrectU1U2(double &iPFU1, double &iPFU2, double &iTKU
 		  );
   //iTKU1 = 0; iTKU2 = 0;
 }
-double RecoilCorrector2012::CorrVal(double iPt, double iVal, Recoil iType) { 
+double RecoilCorrector::CorrVal(double iPt, double iVal, Recoil iType) { 
   if(fId == 0 || fId == 1) return iVal;
   switch(iType) {
   case PFU1   : return iVal*(fD1U1Fit     [fJet]->Eval(iPt)/fM1U1Fit     [fJet]->Eval(iPt));
@@ -140,7 +140,7 @@ double RecoilCorrector2012::CorrVal(double iPt, double iVal, Recoil iType) {
   }
   return iVal;
 }
-TF1* RecoilCorrector2012::getFunc(bool iMC, Recoil iType) { 
+TF1* RecoilCorrector::getFunc(bool iMC, Recoil iType) { 
   if(fId == 0 || fId == 1) return 0;
   switch(iType) {
   case PFU1   : if(iMC) {return fD1U1Fit     [fJet];} return fM1U1Fit     [fJet];
@@ -163,11 +163,11 @@ TF1* RecoilCorrector2012::getFunc(bool iMC, Recoil iType) {
   return 0;
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector2012::readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,
+void RecoilCorrector::readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*> &iU1MRMSFit,std::vector<TF1*> &iU1RMS1Fit,std::vector<TF1*> &iU1RMS2Fit,
 		                 std::vector<TF1*> &iU2Fit,std::vector<TF1*> &iU2MRMSFit,std::vector<TF1*> &iU2RMS1Fit,std::vector<TF1*> &iU2RMS2Fit,
 		                 std::string iFName,std::string iPrefix) {
 //  if(!getenv("CMSSW_BASE")) {
-//    printf("error! RecoilCorrector2012 called without input files. Define CMSSW_BASE or add by hand.\n");
+//    printf("error! RecoilCorrector called without input files. Define CMSSW_BASE or add by hand.\n");
 //    assert(0);
 //  }
   TFile *lFile  = new TFile(iFName.c_str());
@@ -188,7 +188,7 @@ void RecoilCorrector2012::readRecoil(std::vector<TF1*> &iU1Fit,std::vector<TF1*>
   lFile->Close();
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector2012::readCorr(std::string iName,
+void RecoilCorrector::readCorr(std::string iName,
 			       std::vector<TF1*> &iF1U1U2Corr  ,std::vector<TF1*> &iF2U1U2Corr,std::vector<TF1*> &iF1F2U1Corr,std::vector<TF1*> &iF1F2U2Corr,
 			       std::vector<TF1*> &iF1F2U1U2Corr,std::vector<TF1*> &iF1F2U2U1Corr,int iType) {
   TFile *lFile = new TFile(iName.c_str());
@@ -209,7 +209,7 @@ void RecoilCorrector2012::readCorr(std::string iName,
   lFile->Close();
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------
-void RecoilCorrector2012::metDistribution(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+void RecoilCorrector::metDistribution(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 		                      double iLepPt,double iLepPhi,TRandom1 *iRand,
 		                      TF1 *iU1RZDatFit,
 		                      TF1 *iU1MSZDatFit, 
@@ -283,7 +283,7 @@ void RecoilCorrector2012::metDistribution(double &iMet,double &iMPhi,double iGen
   iU2   = pU2;
   return;
 }
-void RecoilCorrector2012::metDistributionType1(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+void RecoilCorrector::metDistributionType1(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 					   double iLepPt,double iLepPhi,TRandom1 *iRand,
 					   TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
 					   TF1 *iU1MSZDatFit, TF1 *iU1MSZMCFit, 
@@ -335,10 +335,10 @@ void RecoilCorrector2012::metDistributionType1(double &iMet,double &iMPhi,double
   iU2   = pU2;
   return;
 }
-double RecoilCorrector2012::diGausPVal(double iVal,double iFrac,double iSigma1,double iSigma2) { 
+double RecoilCorrector::diGausPVal(double iVal,double iFrac,double iSigma1,double iSigma2) { 
   return iFrac*TMath::Erf(iVal/iSigma1) + (1-iFrac)*TMath::Erf(iVal/iSigma2);
 }
-double RecoilCorrector2012::diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2) { 
+double RecoilCorrector::diGausPInverse(double iPVal,double iFrac,double iSigma1,double iSigma2) { 
   double lVal = TMath::ErfInverse(iPVal);
   double lMin = lVal * ((iSigma1 < iSigma2) ? iSigma1 : iSigma2);
   double lMax = lVal * ((iSigma1 < iSigma2) ? iSigma2 : iSigma1);
@@ -359,7 +359,7 @@ double RecoilCorrector2012::diGausPInverse(double iPVal,double iFrac,double iSig
   //cout << "-- Final Val "  <<  (lMin + (lId-0.5)*lDiff/lN2) << " -- " << lId << endl;
   return (lMin + (lId-0.5)*lDiff/lN2);
 }
-void RecoilCorrector2012::metDistributionType2(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
+void RecoilCorrector::metDistributionType2(double &iMet,double &iMPhi,double iGenPt,double iGenPhi,
 					   double iLepPt,double iLepPhi,
 					   TF1 *iU1Default,
 					   TF1 *iU1RZDatFit,  TF1 *iU1RZMCFit,
@@ -465,7 +465,7 @@ void RecoilCorrector2012::metDistributionType2(double &iMet,double &iMPhi,double
   iU1U2ZDatCorr->Eval(iGenPt);
 }
 
-void RecoilCorrector2012::metDistribution(double &iPFMet,double &iPFMPhi,double &iTKMet,double &iTKMPhi,
+void RecoilCorrector::metDistribution(double &iPFMet,double &iPFMPhi,double &iTKMet,double &iTKMPhi,
 				      double iGenPt,double iGenPhi,
 		                      double iLepPt,double iLepPhi,TRandom1 *iRand,
 		                      TF1 *iU1RPFFit,   TF1 *iU1RTKFit,
@@ -614,7 +614,7 @@ void RecoilCorrector2012::metDistribution(double &iPFMet,double &iPFMPhi,double 
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector2012::calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2) { 
+double RecoilCorrector::calculate(int iMet,double iEPt,double iEPhi,double iWPhi,double iU1,double iU2) { 
   double lMX = -iEPt*cos(iEPhi) - iU1*cos(iWPhi) + iU2*sin(iWPhi);
   double lMY = -iEPt*sin(iEPhi) - iU1*sin(iWPhi) - iU2*cos(iWPhi);
   if(iMet == 0) return sqrt(lMX*lMX + lMY*lMY);
@@ -625,14 +625,14 @@ double RecoilCorrector2012::calculate(int iMet,double iEPt,double iEPhi,double i
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector2012::getCorError2(double iVal,TF1 *iFit) { 
+double RecoilCorrector::getCorError2(double iVal,TF1 *iFit) { 
   double lE = sqrt(iFit->GetParError(0))  + iVal*sqrt(iFit->GetParError(2));
   if(fabs(iFit->GetParError(4)) > 0) lE += iVal*iVal*sqrt(iFit->GetParError(4));
   return lE*lE;
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector2012::getError2(double iVal,TF1 *iFit) { 
+double RecoilCorrector::getError2(double iVal,TF1 *iFit) { 
   return iFit->GetParError(0);
   double lE2 = iFit->GetParError(0) + iVal*iFit->GetParError(1) + iVal*iVal*iFit->GetParError(2);
   if(fabs(iFit->GetParError(3)) > 0) lE2 += iVal*iVal*iVal*     iFit->GetParError(3);
@@ -644,7 +644,7 @@ double RecoilCorrector2012::getError2(double iVal,TF1 *iFit) {
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector2012::getError(double iVal,TF1 *iFit,Recoil iType) {
+double RecoilCorrector::getError(double iVal,TF1 *iFit,Recoil iType) {
   if(fId == 0) return sqrt(getError2(iVal,iFit));
   if(fId != 2) return sqrt(getError2(iVal,iFit)); 
   double lEW2  = getError2(iVal,iFit);
@@ -662,20 +662,20 @@ double RecoilCorrector2012::getError(double iVal,TF1 *iFit,Recoil iType) {
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector2012::mag(double iV0,double iV1,double iV2,double iV3) { 
+double RecoilCorrector::mag(double iV0,double iV1,double iV2,double iV3) { 
   return sqrt(iV0+iV1*iV1+2*iV1*0.88 + iV2*iV2+2.*iV2*0.88+ iV3*iV3+2.*iV3*0.88);//
   //return sqrt(iV0*iV0 + iV1*iV1 + iV2*iV2 + iV3*iV3);
 }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-double RecoilCorrector2012::correlatedSeed(double iVal, double iCorr1,double iCorr2,double iCorr3,double iSeed0,double iSeed1,double iSeed2,double iSeed3) { 
+double RecoilCorrector::correlatedSeed(double iVal, double iCorr1,double iCorr2,double iCorr3,double iSeed0,double iSeed1,double iSeed2,double iSeed3) { 
   double lMag = mag(1.,iCorr1,iCorr2,iCorr3); 
   //double lVal = ((1./lMag)*iSeed0 + (iCorr1/lMag)*iSeed1 + (iCorr2/lMag)*iSeed2 + (iCorr3/lMag)*iSeed3)*iVal;
   double lVal = ((1./lMag) + (iCorr1/lMag)*(iSeed1) + (iCorr2/lMag)*fabs(iSeed2) + (iCorr3/lMag)*fabs(iSeed3))*iVal;
   lVal*=iSeed0;
   return lVal;
 }
-double RecoilCorrector2012::deCorrelate(double iVal, double iCorr1,double iCorr2,double iCorr3,double iSeed0,double iSeed1,double iSeed2,double iSeed3) { 
+double RecoilCorrector::deCorrelate(double iVal, double iCorr1,double iCorr2,double iCorr3,double iSeed0,double iSeed1,double iSeed2,double iSeed3) { 
   double lMag = mag(1.,iCorr1,iCorr2,iCorr3); 
   double lVal =  (1 - iCorr1*fabs(iSeed1) - iCorr2*fabs(iSeed2) - iCorr3*fabs(iSeed3))*lMag;
   return lVal*iVal*iSeed0;

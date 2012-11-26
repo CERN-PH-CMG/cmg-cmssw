@@ -14,13 +14,13 @@
 #include "AnalysisDataFormats/CMGTools/interface/BaseMET.h"
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
-// #include "CMGTools/H2TauTau/interface/RecoilCorrector2012.h"
-#include "CMGTools/Utilities/interface/RecoilCorrector2012.h"
+// #include "CMGTools/H2TauTau/interface/RecoilCorrector.h"
+#include "CMGTools/Utilities/interface/RecoilCorrector.h"
 
 #include <sstream>
 
 template< typename RecBosonType >
-class RecoilCorrectedMETProducer2012 : public edm::EDProducer {
+class RecoilCorrectedMETProducer : public edm::EDProducer {
 
 public:
   // typedef cmg::TauMu RecBosonType;
@@ -30,8 +30,8 @@ public:
   typedef cmg::PFJet   JetType;
   typedef edm::View<JetType>           JetCollectionType;
 
-  explicit RecoilCorrectedMETProducer2012(const edm::ParameterSet & iConfig);
-  virtual ~RecoilCorrectedMETProducer2012() { 
+  explicit RecoilCorrectedMETProducer(const edm::ParameterSet & iConfig);
+  virtual ~RecoilCorrectedMETProducer() { 
     // delete corrector_; 
   }
   
@@ -64,7 +64,7 @@ private:
   /// type of correction
   CorrectionType correctionType_;
 
-  RecoilCorrector2012*  corrector_;
+  RecoilCorrector*  corrector_;
 
   bool enable_;
   
@@ -77,7 +77,7 @@ private:
 
 
 template< typename RecBosonType >
-RecoilCorrectedMETProducer2012< RecBosonType >::RecoilCorrectedMETProducer2012(const edm::ParameterSet & iConfig) : 
+RecoilCorrectedMETProducer< RecBosonType >::RecoilCorrectedMETProducer(const edm::ParameterSet & iConfig) : 
   metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ), 
   genBosonSrc_( iConfig.getParameter<edm::InputTag>("genBosonSrc") ),
   recBosonSrc_( iConfig.getParameter<edm::InputTag>("recBosonSrc") ),
@@ -99,7 +99,7 @@ RecoilCorrectedMETProducer2012< RecBosonType >::RecoilCorrectedMETProducer2012(c
   }
   
 
-  corrector_ = new RecoilCorrector2012(fileCorrectTo);
+  corrector_ = new RecoilCorrector(fileCorrectTo);
   corrector_->addDataFile( fileZmmData );
   corrector_->addMCFile( fileZmmMC );
    
@@ -109,7 +109,7 @@ RecoilCorrectedMETProducer2012< RecBosonType >::RecoilCorrectedMETProducer2012(c
 
 
 template< typename RecBosonType >
-void RecoilCorrectedMETProducer2012<RecBosonType>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
+void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
   typedef std::auto_ptr< std::vector< MetType > >  OutPtr;
 
@@ -180,7 +180,7 @@ void RecoilCorrectedMETProducer2012<RecBosonType>::produce(edm::Event & iEvent, 
   
   if(verbose_) {
     std::cout<<"---"<<std::endl;
-    std::cout<<"RecoilCorrectedMETProducer2012, type = "<<correctionType_<<std::endl;
+    std::cout<<"RecoilCorrectedMETProducer, type = "<<correctionType_<<std::endl;
     std::cout<<"gen boson, pdgId="<<genBoson.pdgId()
 	     <<", pt="<<genBoson.pt()<<", phi="<<genBoson.phi()<<std::endl;
     std::cout<<"# rec bosons ="<<recBosonH->size()<<std::endl;
@@ -274,7 +274,7 @@ void RecoilCorrectedMETProducer2012<RecBosonType>::produce(edm::Event & iEvent, 
   iEvent.put( pOut ); 
 
   if(verbose_) {
-    std::cout<<"RecoilCorrectedMETProducer2012 done"<<std::endl;
+    std::cout<<"RecoilCorrectedMETProducer done"<<std::endl;
     std::cout<<"***"<<std::endl;
   }
 }
@@ -282,7 +282,7 @@ void RecoilCorrectedMETProducer2012<RecBosonType>::produce(edm::Event & iEvent, 
 
 
 template< typename RecBosonType >
-int  RecoilCorrectedMETProducer2012< RecBosonType >::nJets( const JetCollectionType& jets, 
+int  RecoilCorrectedMETProducer< RecBosonType >::nJets( const JetCollectionType& jets, 
 							const RecBosonType& boson, float deltaR) {
   
   //COLIN : check that I should really remove jets matched to both legs
@@ -323,4 +323,4 @@ int  RecoilCorrectedMETProducer2012< RecBosonType >::nJets( const JetCollectionT
 
 // #include "FWCore/Framework/interface/MakerMacros.h"
 
-// DEFINE_FWK_MODULE(RecoilCorrectedMETProducer2012);
+// DEFINE_FWK_MODULE(RecoilCorrectedMETProducer);
