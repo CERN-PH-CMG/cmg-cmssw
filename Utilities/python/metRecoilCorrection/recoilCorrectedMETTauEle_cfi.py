@@ -7,9 +7,7 @@ as we need to add the momentum of both leptons to the recoil to get the MET.
 '''
 import FWCore.ParameterSet.Config as cms
 
-import os 
-# rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/metRecoilCorrection/'
-rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/metRecoilCorrection/'
+from CMGTools.Utilities.metRecoilCorrection.rootfile_dir import rootfile_dir
 
 recoilCorrectedMETTauEle  = cms.EDProducer(
     "RecoilCorrectedMETProducerTauEle",

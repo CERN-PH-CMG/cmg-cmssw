@@ -1,7 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-import os 
-rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Utilities/data/metRecoilCorrection/'
+from CMGTools.Utilities.metRecoilCorrection.rootfile_dir import rootfile_dir
 
 recoilCorrectedMETDiTau  = cms.EDProducer(
     "RecoilCorrectedMETProducerDiTau",
