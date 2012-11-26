@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'lucieg_13Nov12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'wreece_211112'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_collections_Nov26'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'cris_09Oct12'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_utilities_Nov26'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_Nov21'),
