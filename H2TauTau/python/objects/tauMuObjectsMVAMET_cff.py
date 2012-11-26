@@ -42,7 +42,7 @@ tauMuStdSequence = cms.Sequence( cmgTauScaler +
 
 from CMGTools.Common.eventCleaning.goodPVFilter_cfi import goodPVFilter
 
-from CMGTools.Common.miscProducers.mvaMET.mvaMET_cff import *
+from CMGTools.Utilities.mvaMET.mvaMET_cff import *
 from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFMET
 mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
 
