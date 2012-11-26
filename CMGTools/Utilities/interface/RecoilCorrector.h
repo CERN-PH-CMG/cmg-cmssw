@@ -1,5 +1,5 @@
-#ifndef CMGTools_H2TauTau_RecoilCorrector2012_H
-#define CMGTools_H2TauTau_RecoilCorrector2012_H
+#ifndef CMGTools_H2TauTau_RecoilCorrector_H
+#define CMGTools_H2TauTau_RecoilCorrector_H
 
 
 
@@ -32,12 +32,12 @@
 
 using namespace std;
 
-class RecoilCorrector2012
+class RecoilCorrector
 {
   
 public:
-  RecoilCorrector2012(string iNameZDat, int iSeed=0xDEADBEEF);
-  RecoilCorrector2012(string iNameZDat1, string iPrefix, int iSeed=0xDEADBEEF);
+  RecoilCorrector(string iNameZDat, int iSeed=0xDEADBEEF);
+  RecoilCorrector(string iNameZDat1, string iPrefix, int iSeed=0xDEADBEEF);
   void CorrectAll(double &met, double &metphi, double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double &iU1,double &iU2,double iFluc,double iScale=0,int njet=0);
   void Correct(double &pfmet, double &pfmetphi, double &trkmet, double &trkmetphi, 
 	       double iGenPt, double iGenPhi, double iLepPt, double iLepPhi,double iFluc    ,double iScale=0,int njet=0);
