@@ -7,5 +7,6 @@ trigger = cms.untracked.vstring(
     'keep cmgTriggerObjects_cmgL1TriggerObjectSel_*_*',
     'keep *_TriggerResults_*_ANA',
     'keep *_TriggerResults_*_PAT',
+    'keep *_l1extraParticles_*_*'
     )
 
