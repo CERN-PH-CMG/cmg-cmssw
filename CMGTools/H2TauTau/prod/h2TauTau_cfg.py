@@ -20,7 +20,7 @@ numberOfFilesToProcess = 10
 debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
-channel = 'di-tau'
+channel = 'tau-mu'
 jetRecalib = False
 useCHS = False 
 newSVFit = True
