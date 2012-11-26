@@ -1,4 +1,4 @@
-#include "CMGTools/Common/interface/GBRForest.h"
+#include "CMGTools/Utilities/interface/GBRForest.h"
 //#include <iostream>
 #include "TMVA/DecisionTree.h"
 #include "TMVA/MethodBDT.h"

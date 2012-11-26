@@ -1,6 +1,6 @@
 
 
-#include "CMGTools/Common/interface/GBRTree.h"
+#include "CMGTools/Utilities/interface/GBRTree.h"
 
 using namespace std;
 #include "TMVA/DecisionTreeNode.h"

@@ -2,7 +2,7 @@
 #include <TMath.h>
 #include <TLorentzVector.h>
 #include "Cintex/Cintex.h"
-#include "CMGTools/Common/interface/MVAMet.h"
+#include "CMGTools/Utilities/interface/MVAMet.h"
 
 
 //--------------------------------------------------------------------------------------------------

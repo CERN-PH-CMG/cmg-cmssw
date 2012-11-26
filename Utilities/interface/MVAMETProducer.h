@@ -17,7 +17,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 #include "AnalysisDataFormats/CMGTools/interface/METSignificance.h"
 
-#include "CMGTools/Common/interface/MVAMet.h"
+#include "CMGTools/Utilities/interface/MVAMet.h"
 #include "CMGTools/Common/interface/MetUtilities.h"
 #include "CMGTools/External/interface/PileupJetIdentifier.h"
 

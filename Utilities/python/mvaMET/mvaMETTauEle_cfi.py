@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
-from CMGTools.Common.miscProducers.mvaMET.weights_gbr import weights_gbrmet,weights_gbrmetphi, weights_gbrmetu1cov, weights_gbrmetu2cov
+
+from CMGTools.Utilities.mvaMET.weights_gbr import weights_gbrmet,weights_gbrmetphi, weights_gbrmetu1cov, weights_gbrmetu2cov
 
 mvaMETTauEle = cms.EDProducer(
     "MVAMETProducerTauEle",
