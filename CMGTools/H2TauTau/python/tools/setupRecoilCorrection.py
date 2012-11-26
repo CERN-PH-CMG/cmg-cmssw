@@ -1,4 +1,4 @@
-from CMGTools.H2TauTau.generator.metRecoilCorrection.recoilCorrectedMET_cfi import rootfile_dir
+from CMGTools.Utilities.metRecoilCorrection.rootfile_dir import rootfile_dir
 import copy
 
 def lookup( fileName, stringToFind ):

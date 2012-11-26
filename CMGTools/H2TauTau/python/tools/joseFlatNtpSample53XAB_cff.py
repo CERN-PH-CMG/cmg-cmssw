@@ -8,8 +8,13 @@ SUSYMass = cms.vstring(['80','90','100','110','120','130','140','160','180','200
 #import os 
 #recoilrootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
 import os 
-rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
-recoilCorr_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/metRecoilCorrection/'
+
+#COLIN: these directories don't exist anymore
+# rootfile_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/Common/data/metRecoilCorrection/'
+# recoilCorr_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/metRecoilCorrection/'
+from CMGTools.Utilities.metRecoilCorrection.rootfile_dir import rootfile_dir
+recoilCorr_dir = rootfile_dir
+
 httjson_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/json/'
 httdata_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/'
 

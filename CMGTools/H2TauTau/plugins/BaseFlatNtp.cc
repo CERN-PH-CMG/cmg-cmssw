@@ -16,7 +16,7 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   signalWeightHisto_(NULL),
   btagWP_(0.679),
   btagsf(12345),
-  corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
+  // corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
   corrector2012_(iConfig.getParameter<std::string>("fileCorrectTo")),
   mvaWeights_(iConfig.getParameter<std::string>("mvaWeights")),
   reader_(mvaWeights_.c_str()),
@@ -115,8 +115,8 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   fileZmmMC_ = iConfig.getParameter<std::string>("fileZmmMC");
   cout<<"fileZmmMC_  : "<<fileZmmMC_.c_str()<<endl;
 
-  corrector_.addDataFile( fileZmmData_);
-  corrector_.addMCFile( fileZmmMC_);
+  // corrector_.addDataFile( fileZmmData_);
+  // corrector_.addMCFile( fileZmmMC_);
   corrector2012_.addDataFile( fileZmmData_);
   corrector2012_.addMCFile( fileZmmMC_);
 
