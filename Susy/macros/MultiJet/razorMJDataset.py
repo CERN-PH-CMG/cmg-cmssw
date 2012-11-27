@@ -2,7 +2,7 @@
 
 import ROOT as rt
 from ROOT import std
-import os, sys, math, glob, pickle
+import array, os, sys, math, glob, pickle
 from DataFormats.FWLite import Events, Handle
 from CMGTools.RootTools import RootFile
 from razorMJTopTag import topTag
@@ -42,6 +42,15 @@ def mt(j, met):
     result = 2*j.pt()*met.et()*(1-math.cos(j.phi()-met.phi()))
     return math.sqrt(result)
 
+def mct(calc, h1, h2):
+    v1 = array.array('d')
+    v2 = array.array('d')
+    
+    v1.extend([h1.E(),h1.Px(),h1.Py(),h1.Pz()])
+    v2.extend([h2.E(),h2.Px(),h2.Py(),h2.Pz()])
+
+    return calc.mct(v1,v2)
+
 def find_lepton_hemi(hemi_vector, leptons, best = None):
     """Find the best hemispheres that have the lepton on one side and at least 3 jets on the other"""
 
@@ -74,7 +83,6 @@ def find_lepton_hemi(hemi_vector, leptons, best = None):
 if __name__ == '__main__':
 
     skimEvents = True
-    runOnMC = True
 
     # https://twiki.cern.ch/twiki/bin/view/CMS/SWGuideAboutPythonConfigFile#VarParsing_Example
     from FWCore.ParameterSet.VarParsing import VarParsing
@@ -110,9 +118,14 @@ if __name__ == '__main__':
                   VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.varType.string,          # string, int, or float
                   "The SMS model to use in the error calculation")
+    options.register ('runOnMC',
+                  True,
+                  VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.varType.bool,          # string, int, or float
+                  "Run on MC or data")
 
-    
     options.parseArguments()
+    runOnMC = options.runOnMC
     if not options.inputFiles:
         if options.inputDirectory is not None:
             listDirectory(options.inputDirectory, options.inputFiles, options.maxFiles)
@@ -182,6 +195,9 @@ struct Variables{\
     Double_t hemi1Phi;\
     Double_t hemi2Phi;\
     Double_t pileUpWeight;\
+    Double_t MRT;\
+    Double_t MCT;\
+    Double_t MEFF;\
 };""")
     
     rt.gROOT.ProcessLine("""
@@ -202,7 +218,6 @@ struct Info{\
     Int_t nMuonTight;\
     Int_t nElectronLoose;\
     Int_t nElectronTight;\
-    Int_t nTauVeto;\
     Int_t nTauLoose;\
     Int_t nTauTight;\
     Int_t nLepton;\
@@ -230,9 +245,14 @@ struct Filters{\
     Bool_t isolatedTrack10Filter;\
 };""")
 
-    rt.gROOT.ProcessLine(".L /afs/cern.ch/user/w/wreece/work/CMGTools/V5_6_0/CMGTools/CMSSW_5_3_3_patch3/src/CMGTools/Susy/macros/MultiJet/calcVariables.C+")
+    top_dir = os.path.join(os.environ['CMSSW_BASE'],'src/CMGTools/Susy/macros/MultiJet')
+    rt.gROOT.ProcessLine(".L %s/calcVariables.C+" % top_dir)
+    #see http://mctlib.hepforge.org/
+    rt.gROOT.ProcessLine(".L %s/mctlib.C+" % top_dir)
 
     from ROOT import Variables, Info, Filters, mR, mRT
+    from ROOT import mctlib
+    mct_calc = mctlib()
 
 #    output = rt.TFile.Open(options.outputFile,'recreate')
     tree = rt.TTree('RMRTree','Multijet events')
@@ -272,9 +292,6 @@ struct Filters{\
     jet_girth_ch = std.vector('double')()
     tree.Branch('jet_girth_ch',jet_girth_ch)
 
-
-    tauveto_mt = std.vector('double')()
-    tree.Branch('tauveto_mt',tauveto_mt)
     pftau_mt = std.vector('double')()
     tree.Branch('pftau_mt',pftau_mt)
 
@@ -287,6 +304,9 @@ struct Filters{\
     
     #make some handles
     jetSel30H = Handle("std::vector<cmg::PFJet>")
+    jetSel20H = Handle("std::vector<cmg::PFJet>")
+    jetSelCleanedH = Handle("std::vector<cmg::PFJet>")
+
     hemiHadH = Handle("std::vector<cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> >")
     hemiLepH = Handle("std::vector<cmg::Hemisphere>")
     metH = Handle("std::vector<cmg::BaseMET>")
@@ -335,7 +355,6 @@ struct Filters{\
         jet_girth_ch.clear()
         jet_veto.clear()
 
-        tauveto_mt.clear()
         pftau_mt.clear()
 
         vars.pileUpWeight = 1.0
@@ -401,28 +420,20 @@ struct Filters{\
             hemi = hemiHadH.product()[0]
             vars.RSQ_JES_DOWN = hemi.Rsq()
             vars.MR_JES_DOWN = hemi.mR()
-
-        event.getByLabel(('razorMJHadTriggerSel'),triggerH)
-        filters.hadTriggerFilter = len(triggerH.product()) > 0
-        
-        event.getByLabel(('razorMJEleTriggerSel'),triggerH)
-        filters.eleTriggerFilter = len(triggerH.product()) > 0
-
-        event.getByLabel(('razorMJMuTriggerSel'),triggerH)
-        filters.muTriggerFilter = len(triggerH.product()) > 0
         
         #the number of lepton cleaned jets
-        event.getByLabel(('razorMJJetCleanedLoose'),jetSel30H)
-        info.nJetNoLeptons = len([j for j in jetSel30H.product() if j.pt() >= 30.])
-        info.nJetNoLeptons20 = len(jetSel30H.product())
-        jet_param_veto = [ (j.pt(), j.eta()) for j in jetSel30H.product()]
         jet_param_veto = []
-
-        event.getByLabel(('razorMJPFJetSel20'),jetSel30H)
-        if not jetSel30H.isValid(): continue
-        jets = jetSel30H.product()
+        event.getByLabel(('razorMJJetCleanedLoose'),jetSelCleanedH)
+        if jetSelCleanedH.isValid():
+            info.nJetNoLeptons = len([j for j in jetSelCleanedH.product() if j.pt() >= 30.])
+            info.nJetNoLeptons20 = len(jetSelCleanedH.product())
+            jet_param_veto = [ (j.pt(), j.eta()) for j in jetSelCleanedH.product()]
+        
+        event.getByLabel(('razorMJPFJetSel20'),jetSel20H)
+        if not jetSel20H.isValid(): continue
+        jets = jetSel20H.product()
         info.nJet20 = len(jets)
-        info.nJet = len([j for j in jetSel30H.product() if j.pt() >= 30.])
+        info.nJet = len([j for j in jetSel20H.product() if j.pt() >= 30.])
 
         #all PFCands
         event.getByLabel(('razorMJJetGirth'),doubleH)
@@ -436,7 +447,8 @@ struct Filters{\
             for g in doubleH.product():
                 #girth
                 jet_girth_ch.push_back(g)
-        
+
+        vars.MEFF = 0.0
         for jet in jets:
             jet_pt.push_back(jet.pt())
             jet_eta.push_back(jet.eta())
@@ -447,6 +459,7 @@ struct Filters{\
             jet_mult.push_back(jet.component(1).number() + jet.component(2).number() + jet.component(3).number() )
             #store whether or not this was removed from the lepton veto jets
             jet_veto.push_back( int( (jet.pt(), jet.eta() ) in jet_param_veto) )
+            vars.MEFF += jet.pt()
 
         #store the number of btags at each working point
         csv = sorted([j.btag(6) for j in jets if j.pt() >= 30.], reverse=True)
@@ -459,21 +472,13 @@ struct Filters{\
         event.getByLabel(('cmgPFMET'),metH)
         met = metH.product()[0]
         vars.met = met.et()
+        vars.MEFF += met.et()
 
         #set the number of btags
         if info.nCSVL == 0:
             info.NBJET = 0 #bjet veto
         else:
             info.NBJET = info.nCSVM #minimum is one medium
-
-        #tau veto
-        event.getByLabel(('razorMJTauVeto'),jetSel30H)
-        if jetSel30H.isValid():
-            info.nTauVeto = len(jetSel30H.product())
-            for j in jets:
-                tauveto_mt.push_back(mt(j,met))
-        else:
-            info.nTauVeto = -1
 
         #loose lepton ID
         event.getByLabel(('razorMJElectronLoose'),electronH)
@@ -483,7 +488,8 @@ struct Filters{\
         info.nElectronLoose = len(electronH.product())
         info.nMuonLoose = len(muonH.product())
         info.nTauLoose = len(tauH.product())
-        
+
+        #loop over loose PF taus
         for t in tauH.product():
             pftau_mt.push_back(mt(t,met))
 
@@ -529,8 +535,6 @@ struct Filters{\
                     break
             filters.isolatedTrack5Filter = veto5
             filters.isolatedTrack10Filter = veto10
-        
-
 
         info.BOX_NUM = getBox(info.NBJET,info.nElectronTight,info.nMuonTight,info.nTauTight)
 
@@ -538,10 +542,8 @@ struct Filters{\
             #if we have 4 jets above 30, we use them, otherwise take the 20 GeV jets
             if info.nJetNoLeptons >= 4:
                 event.getByLabel(('razorMJHemiLepBox'),hemiLepH)
-                print 'lep box sr'
             else:
                 event.getByLabel(('razorMJHemiLepBox20'),hemiLepH)
-                print 'lep box cr'
 
             if hemiLepH.isValid():
                 hemi_vector = hemiLepH.product()
@@ -565,6 +567,10 @@ struct Filters{\
                 vars.hemi2Pt = hemi2.pt()
                 vars.hemi2Eta = hemi2.eta()
                 vars.hemi2Phi = hemi2.phi()
+
+                #MCT etc
+                vars.MCT = mct(mct_calc,hemi1.p4(),hemi2.p4())
+                vars.MRT = mrt
 
                 #now need to take care of the systematics...
                 #UP
@@ -601,10 +607,8 @@ struct Filters{\
             #take the 20Gev jet control sample if relevant
             if info.nJet20 >= 6 and info.nJet < 6:
                 event.getByLabel(('razorMJDiHemiHadBox20'),hemiHadH)
-                print 'had box cr'
             else:
                 event.getByLabel(('razorMJDiHemiHadBox'),hemiHadH)
-                print 'had box sr'
 
             if hemiHadH.isValid() and len(hemiHadH.product()):
                 hemi = hemiHadH.product()[0]
@@ -633,6 +637,10 @@ struct Filters{\
                 vars.hemi2Eta = hemi.leg2().eta()
                 vars.hemi2Phi = hemi.leg2().phi()
 
+                #MCT etc
+                vars.MCT = mct(mct_calc,hemi.leg1().p4(),hemi.leg2().p4())
+                vars.MRT = hemi.mRT()
+
 
         event.getByLabel(('razorMJMetUp'),metH)
         met = metH.product()[0]
@@ -654,6 +662,23 @@ struct Filters{\
 ##        if pdfH.isValid():
 ##            for w in pdfH.product():
 ##                MRST2006NNLO_W.push_back(w)
+
+        event.getByLabel(('razorMJAllTriggerSel'),triggerH)
+        if len(triggerH.product()):
+            trigger = triggerH.product()[0]
+            filters.hadTriggerFilter =  trigger.getSelectionRegExp("^HLT_DiJet[0-9]+_DiJet[0-9]+_DiJet[0-9]+.*_v[0-9]+$") or\
+                trigger.getSelectionRegExp("^HLT_QuadJet[0-9]+_DiJet[0-9]+.*_v[0-9]+$") or\
+                trigger.getSelectionRegExp("^HLT_QuadJet[0-9]+_v[0-9]+$") or\
+                trigger.getSelectionRegExp("^HLT_QuadJet[0-9]+_L1FastJet_v[0-9]+$") or \
+                trigger.getSelectionRegExp("^HLT_SixJet[0-9]+.*_v[0-9]+$")
+            filters.eleTriggerFilter = trigger.getSelectionRegExp("^HLT_Ele[0-9]+_WP80_v[0-9]+$")
+            filters.muTriggerFilter = trigger.getSelectionRegExp("^HLT_Mu[0-9]+_eta2p1_v[0-9]+$") or \
+                trigger.getSelectionRegExp("^HLT_IsoMu[0-9]+_eta2p1_v[0-9]+$")
+            del trigger
+        else:
+            filters.hadTriggerFilter = False
+            filters.muTriggerFilter = False
+            filters.eleTriggerFilter = False
         
         if runOnMC:
             event.getByLabel(('topGenInfo'),candH)
@@ -681,7 +706,7 @@ struct Filters{\
 
 
         #TODO: Place some cut here
-        if skimEvents and vars.RSQ < 0.03 or vars.MR < 250:
+        if skimEvents and vars.RSQ < 0.03 or vars.MR < 300:
             continue
 
         tree.Fill()
