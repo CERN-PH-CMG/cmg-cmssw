@@ -68,7 +68,9 @@ void printLimits(TGraph* graph, double Mmin=200, double Mmax=600){
 
 
 
-void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, double luminosity=5.035, TString legendName="ee and #mu#mu channels"){
+void plotLimit(TString outputName="Limit", TString inputs="", bool blind=false, double energy=7, double luminosity=5.035, TString legendName="ee and #mu#mu channels", TString thXsecUrl="")
+{
+  //style options
   gStyle->SetCanvasBorderMode(0);
   gStyle->SetCanvasColor(kWhite);
   gStyle->SetFrameBorderMode(0);
@@ -112,129 +114,190 @@ void plotLimit(TString outputName="Limit", TString inputs="", double energy=7, d
   gStyle->SetErrorX(0.);
   gStyle->SetMarkerStyle(20); 
   gROOT->ForceStyle();
-//   setTDRStyle();
-   gStyle->SetPadTopMargin   (0.06);
-   gStyle->SetPadBottomMargin(0.12);
-   gStyle->SetPadRightMargin (0.06);
-   gStyle->SetPadLeftMargin  (0.14);
-   gStyle->SetTitleSize(0.04, "XYZ");
-   gStyle->SetTitleXOffset(1.1);
-   gStyle->SetTitleYOffset(1.45);
-   gStyle->SetPalette(1);
-   gStyle->SetNdivisions(505);
+  gStyle->SetPadTopMargin   (0.06);
+  gStyle->SetPadBottomMargin(0.12);
+  gStyle->SetPadRightMargin (0.06);
+  gStyle->SetPadLeftMargin  (0.14);
+  gStyle->SetTitleSize(0.04, "XYZ");
+  gStyle->SetTitleXOffset(1.1);
+  gStyle->SetTitleYOffset(1.45);
+  gStyle->SetPalette(1);
+  gStyle->SetNdivisions(505);
+  
+  
+  //get the limits from the tree
+  TFile* file = TFile::Open(inputs);
+  printf("Looping on %s\n",inputs.Data());
+  if(!file) return;
+  if(file->IsZombie()) return;
+  TTree* tree = (TTree*)file->Get("limit");
+  tree->GetBranch("mh"              )->SetAddress(&Tmh      );
+  tree->GetBranch("limit"           )->SetAddress(&Tlimit   );
+  tree->GetBranch("limitErr"        )->SetAddress(&TlimitErr);
+  tree->GetBranch("quantileExpected")->SetAddress(&TquantExp);
+  int N = tree->GetEntriesFast() / 6 ;// 6Limits per mass point (observed, meand , +-1sigma, +-2sigma)
+  double* MassAxis   = new double[N];
+  double* ObsLimit   = new double[N];  fillLimitArray(tree,-1   ,ObsLimit,MassAxis);
+  double* ExpLimitm2 = new double[N];  fillLimitArray(tree,0.025,ExpLimitm2);
+  double* ExpLimitm1 = new double[N];  fillLimitArray(tree,0.160,ExpLimitm1);
+  double* ExpLimit   = new double[N];  fillLimitArray(tree,0.500,ExpLimit  );
+  double* ExpLimitp1 = new double[N];  fillLimitArray(tree,0.840,ExpLimitp1);
+  double* ExpLimitp2 = new double[N];  fillLimitArray(tree,0.975,ExpLimitp2);
+  file->Close();
+    
+  //limits in terms of signal strength
+  TCanvas* c = new TCanvas("c", "c",600,600);
+  TH1F* framework = new TH1F("Graph","Graph",1,150,1050);
+  framework->SetStats(false);
+  framework->SetTitle("");
+  framework->GetXaxis()->SetTitle("Higgs boson mass [GeV]");
+  framework->GetYaxis()->SetTitle("#mu = #sigma_{95%} / #sigma_{th}");
+  framework->GetYaxis()->SetTitleOffset(1.70);
+  framework->GetYaxis()->SetRangeUser(0,40);
+  framework->Draw();
+
+  TGraph* TGObsLimit   = new TGraph(N,MassAxis,ObsLimit);  TGObsLimit->SetLineWidth(2);
+  TGraph* TGExpLimit   = new TGraph(N,MassAxis,ExpLimit);  TGExpLimit->SetLineWidth(2); TGExpLimit->SetLineStyle(2);
+  TCutG* TGExpLimit1S = GetErrorBand("1S", N, MassAxis, ExpLimitm1, ExpLimitp1);  
+  TCutG* TGExpLimit2S = GetErrorBand("2S", N, MassAxis, ExpLimitm2, ExpLimitp2);  TGExpLimit2S->SetFillColor(5);
+  TGExpLimit->SetLineColor(2);  TGExpLimit->SetLineStyle(1);
+  TGObsLimit->SetLineWidth(2);  TGObsLimit->SetMarkerStyle(20);
+  TGExpLimit2S->Draw("fc same");
+  TGExpLimit1S->Draw("fc same");
+  if(!blind) TGObsLimit->Draw("same CP");
+  TGExpLimit->Draw("same C");
+
+  TPaveText *pave = new TPaveText(0.1,0.96,0.99,0.99,"NDC");
+  char LumiLabel[1024];
+  if(energy<9){
+    sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #scale[0.5]{#int} L=%6.1ffb^{-1} - %20s",energy, luminosity,legendName.Data());
+  }else{
+    sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f/%.0f TeV, #scale[0.5]{#int} L=%6.1ffb^{-1} - %20s",7.0,8.0, luminosity,legendName.Data());
+  }
+  pave->SetBorderSize(0);
+  pave->SetFillStyle(0);
+  pave->SetTextFont(42);
+  TObjArray* tokens = (TString(LumiLabel)).Tokenize("\\\\");
+  int nt = tokens->GetEntries();
+  for(int it=0; it<nt; ++it){
+    TObjString * t = (TObjString *)tokens->At(it);
+    pave->AddText(t->GetString());
+  }
+  pave->Draw("same");
+
+  TLine* SMLine = new TLine(framework->GetXaxis()->GetXmin(),1.0,framework->GetXaxis()->GetXmax(),1.0);
+  SMLine->Draw("same");
+
+  TLegend* LEG = new TLegend(0.35,0.70,0.65,0.93);
+  LEG->SetHeader("");
+  LEG->SetFillColor(0);
+  LEG->SetFillStyle(0);
+  LEG->SetTextFont(42);
+  LEG->SetBorderSize(0);
+  LEG->AddEntry(TGExpLimit  , "median expected"  ,"L");
+  LEG->AddEntry(TGExpLimit1S  , "expected #pm 1#sigma"  ,"F");
+  LEG->AddEntry(TGExpLimit2S  , "expected #pm 2#sigma"  ,"F");
+  if(!blind) LEG->AddEntry(TGObsLimit  , "observed"  ,"LP");
+  LEG->Draw();
+  //c->SetLogy(true);
+  c->SaveAs(outputName+"_Limit.png");
+  c->SaveAs(outputName+"_Limit.C");
+  c->SaveAs(outputName+"_Limit.pdf"); 
 
 
-   TFile* file = TFile::Open(inputs);
-   printf("Looping on %s\n",inputs.Data());
-   if(!file) return;
-   if(file->IsZombie()) return;
-   TTree* tree = (TTree*)file->Get("limit");
-
-   tree->GetBranch("mh"              )->SetAddress(&Tmh      );
-   tree->GetBranch("limit"           )->SetAddress(&Tlimit   );
-   tree->GetBranch("limitErr"        )->SetAddress(&TlimitErr);
-   tree->GetBranch("quantileExpected")->SetAddress(&TquantExp);
-
-   int N = tree->GetEntriesFast() / 6 ;// 6Limits per mass point (observed, meand , +-1sigma, +-2sigma)
-   double* MassAxis   = new double[N];
-   double* ObsLimit   = new double[N];  fillLimitArray(tree,-1   ,ObsLimit,MassAxis);
-   double* ExpLimitm2 = new double[N];  fillLimitArray(tree,0.025,ExpLimitm2);
-   double* ExpLimitm1 = new double[N];  fillLimitArray(tree,0.160,ExpLimitm1);
-   double* ExpLimit   = new double[N];  fillLimitArray(tree,0.500,ExpLimit  );
-   double* ExpLimitp1 = new double[N];  fillLimitArray(tree,0.840,ExpLimitp1);
-   double* ExpLimitp2 = new double[N];  fillLimitArray(tree,0.975,ExpLimitp2);
-   file->Close();
-
-
-
-   FILE* pFileSum = fopen((outputName+"_LimitSummary").Data(),"w");
-   for(int i=0;i<N;i++){
-      fprintf(pFileSum, "$%7.3f$ & $%6.2f$ & $[%6.2f,%6.2f]$ & $[%6.2f,%6.2f]$ & $%6.2f$ \\\\\\hline\n",MassAxis[i], ExpLimit[i], ExpLimitm1[i], ExpLimitp1[i], ExpLimitm2[i],  ExpLimitp2[i], ObsLimit[i]);
-      if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);
-   }printf("\n");
-   fclose(pFileSum);
-
-
-   TGraph* TGObsLimit   = new TGraph(N,MassAxis,ObsLimit);  TGObsLimit->SetLineWidth(2);
-   TGraph* TGExpLimit   = new TGraph(N,MassAxis,ExpLimit);  TGExpLimit->SetLineWidth(2); TGExpLimit->SetLineStyle(2);
-   TCutG* TGExpLimit1S = GetErrorBand("1S", N, MassAxis, ExpLimitm1, ExpLimitp1);  
-   TCutG* TGExpLimit2S = GetErrorBand("2S", N, MassAxis, ExpLimitm2, ExpLimitp2);  TGExpLimit2S->SetFillColor(5);
-
-
-   printf("EXPECTED LIMIT --> ");   printLimits(TGExpLimit, MassAxis[0], MassAxis[N-1]);
-   printf("OBSERVED LIMIT --> ");   printLimits(TGObsLimit, MassAxis[0], MassAxis[N-1]);
-
-
-
-   printf("Obs Limits for Model are: ");for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);}printf("\n");
-   printf("Exp Limits for Model are: ");for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; printf("%f+-%f ",ExpLimit[i], (ExpLimitp1[i]-ExpLimitm1[i]))/2.0;}printf("\n");
-
-   TGExpLimit->SetLineColor(2);  TGExpLimit->SetLineStyle(1);
-   TGObsLimit->SetLineWidth(2);  TGObsLimit->SetMarkerStyle(20);
-
-   TCanvas* c1 = new TCanvas("c1", "c1",600,600);
-   TH1F* framework = new TH1F("Graph","Graph",1,150,1050);
-   framework->SetStats(false);
-   framework->SetTitle("");
-   framework->GetXaxis()->SetTitle("M_{H} [GeV/c^{2}]");
-   framework->GetYaxis()->SetTitle("#sigma_{95%}/#sigma_{SM}");
-   framework->GetYaxis()->SetTitleOffset(1.70);
-   framework->GetYaxis()->SetRangeUser(0.1,40);
-   framework->Draw();
-
-   TGExpLimit2S->Draw("fc same");
-   TGExpLimit1S->Draw("fc same");
-
-   TGObsLimit->Draw("same CP");
-   TGExpLimit->Draw("same C");
-
-//   TMultiGraph* MG = new TMultiGraph();
-////   MG->Add(TGObsLimit       ,"CP");
-//   MG->Add(TGExpLimit       ,"C");
-//   MG->SetTitle("");
-//   MG->Draw("same");
-
-   char LumiLabel[1024];
-   if(energy<9){
-      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #int L=%6.1ffb^{-1}   -   %20s",energy, luminosity,legendName.Data());
-   }else{
-      sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f/%.0f TeV, #int L=%6.1ffb^{-1}   -   %20s",7.0,8.0, luminosity,legendName.Data());
-   }
-   TPaveText *pave = new TPaveText(0.1,0.96,0.94,0.99,"NDC");
-   pave->SetBorderSize(0);
-   pave->SetFillStyle(0);
-   pave->SetTextAlign(12);
-   pave->SetTextFont(42);
-   TObjArray* tokens = (TString(LumiLabel)).Tokenize("\\\\");
-   int nt = tokens->GetEntries();
-   for(int it=0; it<nt; ++it){
-      TObjString * t = (TObjString *)tokens->At(it);
-      pave->AddText(t->GetString());
-   }
-   pave->Draw("same");
-
-   TLine* SMLine = new TLine(framework->GetXaxis()->GetXmin(),1.0,framework->GetXaxis()->GetXmax(),1.0);
-   SMLine->Draw("same");
-
-   TLegend* LEG = new TLegend(0.35,0.70,0.65,0.93);
-   LEG->SetHeader("");
-   LEG->SetFillColor(0);
-   LEG->SetBorderSize(0);
-   LEG->AddEntry(TGExpLimit  , "median expected"  ,"L");
-   LEG->AddEntry(TGExpLimit1S  , "expected #pm 1#sigma"  ,"F");
-   LEG->AddEntry(TGExpLimit2S  , "expected #pm 2#sigma"  ,"F");
-   LEG->AddEntry(TGObsLimit  , "observed"  ,"LP");
-   LEG->Draw();
-   //c1->SetGridx(true);
-//   c1->SetGridy(true);
-   c1->SetLogy(true);
-   c1->SaveAs(outputName+"_Limit.png");
-   c1->SaveAs(outputName+"_Limit.C");
-   c1->SaveAs(outputName+"_Limit.pdf");
-   delete c1;
+  //save a summary of the limits
+  FILE* pFileSum = fopen((outputName+"_LimitSummary").Data(),"w");
+  for(int i=0;i<N;i++){
+    fprintf(pFileSum, "$%7.3f$ & $%6.2f$ & $[%6.2f,%6.2f]$ & $[%6.2f,%6.2f]$ & $%6.2f$ \\\\\\hline\n",MassAxis[i], ExpLimit[i], ExpLimitm1[i], ExpLimitp1[i], ExpLimitm2[i],  ExpLimitp2[i], ObsLimit[i]);
+    if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);
+  }printf("\n");
+  fclose(pFileSum);
+  printf("EXPECTED LIMIT --> ");                   printLimits(TGExpLimit, MassAxis[0], MassAxis[N-1]);
+  if(!blind) printf("OBSERVED LIMIT --> ");        printLimits(TGObsLimit, MassAxis[0], MassAxis[N-1]);
+  printf("Exp Limits for Model are: ");            for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; printf("%f+-%f ",ExpLimit[i], (ExpLimitp1[i]-ExpLimitm1[i]))/2.0;}printf("\n");
+  if(!blind) { printf("Obs Limits for Model are: "); for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);}printf("\n"); }
 
 
 
+  //limits in terms of cross section
+  if(thXsecUrl=="") return;
+  TFile *fIn = TFile::Open(thXsecUrl);
+  std::vector<TGraphAsymmErrors *> thXsecGrs;
+  thXsecGrs.push_back((TGraphAsymmErrors *)fIn->Get("total"));
+  thXsecGrs.push_back((TGraphAsymmErrors *)fIn->Get("gg"));
+  thXsecGrs.push_back((TGraphAsymmErrors *)fIn->Get("vbf"));
+  fIn->Close();
+
+  for(size_t igr=0; igr<thXsecGrs.size(); igr++)
+    {
+      TGraphAsymmErrors *thXsec=thXsecGrs[igr];
+
+      c->Clear();
+      c->SetLogy();
+      framework->GetYaxis()->SetTitle("#sigma (" + TString(thXsec->GetTitle()) + ") [pb]");
+      framework->GetYaxis()->SetRangeUser(0.05,15);
+      framework->Draw();
+
+      thXsec->Sort();
+      thXsec->SetMarkerColor(1);
+      thXsec->SetLineColor(1);
+      thXsec->SetFillColor(1);
+      thXsec->SetMarkerStyle(1);
+      thXsec->SetFillStyle(3001);
+      TGraph *absTGObsLimit=(TGraph *)TGObsLimit->Clone();
+      TGraph *absTGExpLimit=(TGraph *)TGExpLimit->Clone();
+      TCutG  *absTGExpLimit1S=(TCutG *)TGExpLimit1S->Clone();
+      TCutG  *absTGExpLimit2S=(TCutG *)TGExpLimit2S->Clone();
+      for(int n=0; n<absTGObsLimit->GetN(); n++)
+	{
+	  Double_t x,y;
+	  absTGObsLimit->GetPoint(n,x,y);
+	  Double_t absy=thXsec->Eval(x);
+	  absTGObsLimit->SetPoint(n,x,y*absy);
+	  absTGExpLimit->GetPoint(n,x,y);
+	  absTGExpLimit->SetPoint(n,x,y*absy);
+	  for(int m=0; m<absTGExpLimit1S->GetN(); m++)
+	    {
+	      Double_t xx,yy;
+	      absTGExpLimit1S->GetPoint(m,xx,yy);
+	      if(xx!=x) continue;
+	      absTGExpLimit1S->SetPoint(m,xx,yy*absy);
+	      absTGExpLimit2S->GetPoint(m,xx,yy);
+	      absTGExpLimit2S->SetPoint(m,xx,yy*absy);
+	    }
+	}
+      absTGExpLimit2S->Draw("fc same");
+      absTGExpLimit1S->Draw("fc same");
+      if(!blind) absTGObsLimit->Draw("same CP");
+      absTGExpLimit->Draw("same C");
+      thXsec->Draw("3 same");
+      
+      pave = new TPaveText(0.1,0.96,0.99,0.99,"NDC");
+      pave->SetBorderSize(0);
+      pave->SetFillStyle(0);
+      pave->SetTextFont(42);
+      for(int it=0; it<nt; ++it){
+	TObjString * t = (TObjString *)tokens->At(it);
+	pave->AddText(t->GetString());
+      }
+      pave->Draw("2p same");
+      
+      LEG = new TLegend(0.2,0.15,0.5,0.35);
+      LEG->SetHeader("");
+      LEG->SetFillColor(0);
+      LEG->SetFillStyle(0);
+      LEG->SetTextFont(42);
+      LEG->SetBorderSize(0);
+      LEG->AddEntry(thXsec,       "theory"  ,              "F");
+      LEG->AddEntry(absTGExpLimit,   "median expected",       "L");
+      LEG->AddEntry(absTGExpLimit1S, "expected #pm 1#sigma",  "F");
+      LEG->AddEntry(absTGExpLimit2S, "expected #pm 2#sigma",  "F");
+      if(!blind) LEG->AddEntry(absTGObsLimit,   "observed",              "LP");
+      LEG->Draw();
+      c->SaveAs(outputName+"_"+thXsec->GetName()+"_Limit.png");
+      c->SaveAs(outputName+"_"+thXsec->GetName()+"_Limit.C");
+      c->SaveAs(outputName+"_"+thXsec->GetName()+"_Limit.pdf");
+    }
 }
 
 

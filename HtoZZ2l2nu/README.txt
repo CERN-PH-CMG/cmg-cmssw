@@ -126,6 +126,6 @@ runPlotter --iLumi 4616 --inDir ~/work/gzz/ --outDir ~/work/gzz/plots --json dat
 
 
 ##
-## OPTIMIZATION
+## OPTIMIZATION repeat for -p 1-4 to get the final plot (add -b if you want to blind)
 ##
-python optimize.py -p 1 -m 0 -s mt_shapes -i /afs/cern.ch/user/p/psilva/public/HtoZZ/Council_chsnodphisoftjet/plotter.root -o /afs/cern.ch/user/p/psilva/work/CMSSW_5_3_3_patch2/src/CMGTools/HtoZZ2l2nu/test/computeLimits/JOBS_chsnodphisoftjmet/ -g /afs/cern.ch/user/p/psilva/public/HtoZZ/Council_chsnodphisoftjet/gamma_half_2012_12fbinv.root
+python optimize.py -p 1 -m 0 -s mt_shapes -i /afs/cern.ch/user/p/psilva/public/HtoZZ/Council_chsnodphisoftjet/plotter.root -o /afs/cern.ch/user/p/psilva/work/CMSSW_5_3_3_patch2/src/CMGTools/HtoZZ2l2nu/test/computeLimits/JOBS_chsnodphisoftjmet/ -g /afs/cern.ch/user/p/psilva/public/HtoZZ/Council_chsnodphisoftjet/gamma_half_2012_12fbinv.root -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples.json

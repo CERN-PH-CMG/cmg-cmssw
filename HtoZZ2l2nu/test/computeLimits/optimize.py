@@ -10,19 +10,17 @@ from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 #default values
 shapeBased='1'
 shapeName='mt_shapes'
+useBins='eq0jets,geq1jets,vbf'
 inUrl='/afs/cern.ch/user/p/psilva/public/HtoZZ/Council_chs/plotter.root'
 gammaUrl='/afs/cern.ch/user/p/psilva/public/HtoZZ/Council_chs/gamma_half_2012_12fb_chs.root'
 CWD=os.getcwd()
 phase=-1
 jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012_rereco.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
-#LandSArg=' --indexvbf 78 '
 LandSArg=' --indexvbf 9 '
-LandSArg+='--bins eq0jets,geq1jets,vbf'
-LandSArg+=' --subNRB --systpostfix _8TeV --interf'
-#LandSArg+=' --subNRB --systpostfix _8TeV '
+LandSArg+='--subDY --subNRB --systpostfix _8TeV --interf'
 DataCardsDir='cards8TeV'
-
+blind=False
 
 MASS = [200,250, 300, 350, 400, 450, 500, 550, 600, 700, 800, 900, 1000]
 #SUBMASS = [200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 360, 370, 380, 390, 400, 420, 440, 460, 480, 500, 520, 540, 560, 580, 600, 625, 650, 675, 700, 725, 750, 775, 800, 825, 850, 875, 900, 925, 950, 975, 1000]
@@ -48,6 +46,8 @@ def help() :
    print ' -i inputfile (default='+inUrl+')'
    print ' -o output (default='+CWD+')'
    print ' -j jsonfile (default='+jsonUrl+')'
+   print ' -u use bins (default='+useBins+')'
+   print ' -b blind (default='+str(blind)+')'
    print ' -g gammafile (default='+gammaUrl+')'
    print '\nUsage example: \033[92m python optimize.py -m 0 -i ~/work/plotter.root -o ~/work/ -p 1 \033[0m'
    print '\nNote: CMSSW_BASE must be set when launching optimize.py (current values is: ' + CMSSW_BASE + ')\n' 
@@ -55,7 +55,7 @@ def help() :
 #parse the options
 try:
    # retrive command line options
-   shortopts  = "p:f:m:i:s:j:g:o:h?"
+   shortopts  = "p:f:m:i:s:j:g:u:b:o:h?"
    opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
    # print help information and exit:
@@ -75,6 +75,8 @@ for o,a in opts:
    elif o in('-s'): shapeName=a
    elif o in('-f'): cutList=a
    elif o in('-g'): gammaUrl=a
+   elif o in('-b'): blind=int(a)
+   elif o in('-u'): useBins=a
       
 if(phase<0 or len(CMSSW_BASE)==0):
    help()
@@ -108,6 +110,9 @@ else:		     OUT+='COUNT8/'
 os.system('mkdir -p ' + OUT)
 
 if(shapeBased=='1'): DataCardsDir+='Shape'
+
+if(len(gammaUrl)) : LandSArg += ' --subDY ' + gammaUrl
+LandSArg +=' --bins ' + useBins
 
 #get the cuts
 file = ROOT.TFile(inUrl)
@@ -160,7 +165,6 @@ if( phase == 1 ):
                if(shapeBased=='0'): cardsdir+='_count_'+str(i)
                if(shapeBased=='1'): cardsdir+='_shape_'+str(i)
                SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
-               if(len(gammaUrl)) : LandSArg += '--subDY ' + gammaUrl
                SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(i)     + " --json " + jsonUrl +" --fast " + " --shapeMin " + str(mtmin_) + " --shapeMax " + str(mtmax_) + " " + LandSArg + " ;\n")
                SCRIPT.writelines("sh combineCards.sh;\n")
                SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " --run expected card_combined.dat > COMB.log;\n")
@@ -362,7 +366,11 @@ elif(phase == 4 ):
    print '#            #'
 
    os.system("hadd -f "+CWD+"_LimitTree.root "+CWD+'/'+DataCardsDir+"/*/higgsCombineTest.Asymptotic.*.root")
-   os.system("root -l -b -q plotLimit.C++'(\""+CWD+"\",\""+CWD+"_LimitTree.root\",  8 , 12.2 )'")
+   if(len(jsonUrl)>0) :
+      os.system("python getThXsec.py -j " +jsonUrl)
+      os.system("root -l -b -q plotLimit.C++'(\""+CWD+"\",\""+CWD+"_LimitTree.root\","+str(int(blind))+ ", 8 , 12.2,\"ee and #mu#mu events\", \"thxsec.root\" )'")
+   else:
+      os.system("root -l -b -q plotLimit.C++'(\""+CWD+"\",\""+CWD+"_LimitTree.root\","+str(int(blind))+", 8 , 12.2)'")
 
 ######################################################################
 

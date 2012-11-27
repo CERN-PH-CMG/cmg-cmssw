@@ -8,7 +8,7 @@ import commands
 #print usage
 def usage() :
     print ' '
-    print 'drawSignalXsec.py [options]'
+    print 'getThXsec.py [options]'
     print '  -j : json file containing the samples'
     print ' '
     exit(-1)
@@ -134,6 +134,5 @@ glugluGr.Write()
 vbfGr.Write()
 fout.Close()
 
-raw_input('')
 
 

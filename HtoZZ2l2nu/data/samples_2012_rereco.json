@@ -184,9 +184,33 @@
 	 "mctruthmode":2,
          "data":[
 	      {
-               "dtag":"MC8TeV_DYJetsToLL_50toInf",
+               "dtag":"MC8TeV_DY0JetsToLL_50toInf",
                "split":10,
                 "xsec":3532.8
+              },
+	      {
+                "dtag":"MC8TeV_DY1JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.1901694915]
+              },
+	      {
+                "dtag":"MC8TeV_DY2JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0613559322]
+              },
+	       {
+                "dtag":"MC8TeV_DY3JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0173220339]
+              },
+	      {
+                "dtag":"MC8TeV_DY4JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0078101695]
               },
 	      {
                "dtag":"MC8TeV_DYJetsToLL_10to50",
@@ -203,9 +227,33 @@
 	 "mctruthmode":1,
          "data":[
 	      {
-               "dtag":"MC8TeV_DYJetsToLL_50toInf",
+               "dtag":"MC8TeV_DY0JetsToLL_50toInf",
                "split":10,
                 "xsec":3532.8
+              },
+	      {
+                "dtag":"MC8TeV_DY1JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.1901694915]
+              },
+	      {
+                "dtag":"MC8TeV_DY2JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0613559322]
+              },
+	       {
+                "dtag":"MC8TeV_DY3JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0173220339]
+              },
+	      {
+                "dtag":"MC8TeV_DY4JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0078101695]
               },
 	      {
                "dtag":"MC8TeV_DYJetsToLL_10to50",
@@ -261,7 +309,7 @@
 	{
 	"tag":"ggH(250)#rightarrow ZZ",
 	"isdata":false,
-	"isinvisible":false,
+	"isinvisible":true,
 	"spimpose":true,
 	"color":"800",
 	"lwidth":2,
@@ -279,7 +327,7 @@
 	},
 	{
 	"tag":"qqH(250)#rightarrow ZZ",
-        "isinvisible":false,
+        "isinvisible":true,
 	"isdata":false,
 	"spimpose":true,
 	"color":"800",
@@ -377,7 +425,7 @@
 	{
 	"tag":"ggH(400)#rightarrow ZZ",
 	"isdata":false,
-        "isinvisible":false,
+        "isinvisible":true,
 	"spimpose":true,
 	"color":"805",
 	"lwidth":2,
@@ -396,7 +444,7 @@
 	{
 	"tag":"qqH(400)#rightarrow ZZ",
 	"isdata":false,
-        "isinvisible":false,
+        "isinvisible":true,
 	"spimpose":true,
 	"color":"805",
         "lwidth":3,

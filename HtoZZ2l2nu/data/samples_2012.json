@@ -184,9 +184,38 @@
 	 "mctruthmode":2,
          "data":[
 	      {
-               "dtag":"MC8TeV_DYJetsToLL_50toInf",
+               "dtag":"MC8TeV_DY0JetsToLL_50toInf",
                "split":10,
                 "xsec":3532.8
+              },
+	      {
+                "dtag":"MC8TeV_DY1JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.1901694915]
+              },
+	      {
+                "dtag":"MC8TeV_DY2JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0613559322]
+              },
+	       {
+                "dtag":"MC8TeV_DY3JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0173220339]
+              },
+	      {
+                "dtag":"MC8TeV_DY4JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0078101695]
+              },
+	      {
+               "dtag":"MC8TeV_DYJetsToLL_10to50",
+               "split":2,
+                "xsec":860.5
               },
 	      {
                "dtag":"MC8TeV_DYJetsToLL_10to50",
@@ -203,9 +232,33 @@
 	 "mctruthmode":1,
          "data":[
 	      {
-               "dtag":"MC8TeV_DYJetsToLL_50toInf",
+               "dtag":"MC8TeV_DY0JetsToLL_50toInf",
                "split":10,
                 "xsec":3532.8
+              },
+	      {
+                "dtag":"MC8TeV_DY1JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.1901694915]
+              },
+	      {
+                "dtag":"MC8TeV_DY2JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0613559322]
+              },
+	       {
+                "dtag":"MC8TeV_DY3JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0173220339]
+              },
+	      {
+                "dtag":"MC8TeV_DY4JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0078101695]
               },
 	      {
                "dtag":"MC8TeV_DYJetsToLL_10to50",
@@ -252,8 +305,8 @@
 		{	
                 "dtag":"MC8TeV_VBFtoH200toZZto2L2Nu",
                 "split":1,
-                "xsec":0.8441,
-                "xsecunc":[3.2,-3.0],
+                "xsec":0.8685,
+                "xsecunc":[2.8,-2.8],
 		"br":[0.255,0.0403896]
 		}
 	   ]
@@ -291,7 +344,7 @@
 		{	
 		"dtag":"MC8TeV_VBFtoH250toZZto2L2Nu",
 		"split":1,
-                "xsec":0.5802,
+                "xsec":0.6225,
                 "xsecunc":[2.8,-2.7],
 		"br":[0.297,0.0403896]
 		}
@@ -369,7 +422,7 @@
 		"dtag":"MC8TeV_VBFtoH350toZZto2L2Nu",
 		"split":1,
                 "xsec":0.3200,
-                "xsecunc":[2.8,-3.9],
+                "xsecunc":[2.8,-2.9],
 		"br":[0.307,0.0403896]
 		}
 	   ]
@@ -408,7 +461,7 @@
                 "dtag":"MC8TeV_VBFtoH400toZZto2L2Nu",
                 "split":1,
                 "xsec":0.2543,
-                "xsecunc":[3.3,-3.4],
+                "xsecunc":[2.9,-3.2],
                 "br":[0.269,0.0403896]
 		}
 	   ]
@@ -427,7 +480,7 @@
                 "dtag":"MC8TeV_GGtoH450toZZto2L2Nu",
                 "split":1,
                 "xsec":2.003,
-                "xsecunc":[14.0,-13.6],
+                "xsecunc":[14.4,-13.6],
                 "br":[0.259,0.0403896]
 		}
 	   ]
@@ -486,7 +539,7 @@
                 "dtag":"MC8TeV_VBFtoH500toZZto2L2Nu",
 		"split":1,
                 "xsec":0.1561,
-                "xsecunc":[3.5,-4.1],
+                "xsecunc":[3.4,-3.7],
 		"br":[0.261,0.0403896]
 		}
 	   ]
@@ -505,7 +558,7 @@
                 "dtag":"MC8TeV_GGtoH550toZZto2L2Nu",
                 "split":1,
                 "xsec":0.8141,
-                "xsecunc":[15.2 ,-13.2],
+                "xsecunc":[15.2 ,-13.8],
                 "br":[0.266,0.0403896]
 		}
 	   ]
@@ -620,7 +673,7 @@
 		"dtag":"MC8TeV_GGtoH800toZZto2L2Nu",
 		"split":1,
                 "xsec":0.1095,
-                "xsecunc":[16.0,-15.0],
+                "xsecunc":[16.7,-15.0],
 		"br":[0.296,0.0403896]
 		}
 	   ]
@@ -658,7 +711,7 @@
 		{
 		"dtag":"MC8TeV_GGtoH900toZZto2L2Nu",
 		"split":1,
-                "xsec":0.0568,
+                "xsec":0.05684,
                 "xsecunc":[17.4,-15.5],
 		"br":[0.304,0.0403896]
 		}
@@ -807,19 +860,19 @@
                  "split":2
                 },
                 {
-	         "dtag":"nData8TeV_DoubleElectron2012D_203894to206539",
+	         "dtag":"Data8TeV_DoubleElectron2012D_203894to206940",
                  "split":2
                 },
                 {
-	         "dtag":"nData8TeV_DoubleMu2012D_203894to206539",
+	         "dtag":"Data8TeV_DoubleMu2012D_203894to206940",
                  "split":2
                 },
                 {
-	         "dtag":"nData8TeV_SingleMu2012D_203894to206539",
+	         "dtag":"Data8TeV_SingleMu2012D_203894to206940",
                  "split":2
                 },
                 {
-                 "dtag":"nData8TeV_MuEG2012D_203894to206539",
+                 "dtag":"Data8TeV_MuEG2012D_203894to206940",
                  "split":2
                 }
 	    ]

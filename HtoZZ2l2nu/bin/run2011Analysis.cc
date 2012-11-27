@@ -83,7 +83,8 @@ int main(int argc, char* argv[])
   if(url.Contains("MuEG"))      fType=EMU;
   if(url.Contains("SingleMu"))  fType=MUMU;
   bool isSingleMuPD(!isMC && url.Contains("SingleMu"));  
-  
+  bool isV0JetsMC(isMC && url.Contains("0Jets"));
+
   TString outTxtUrl= outUrl + "/" + outFileUrl + ".txt";
   FILE* outTxtFile = NULL;
   //if(!isMC)
@@ -358,7 +359,8 @@ int main(int argc, char* argv[])
       mon.addHistogram( new TH1F(jetTypes[i]+"jeteta"       , ";|#eta|;Events",25,0,5) );
       mon.addHistogram( new TH2F("n"+jetTypes[i]+"jetsvspu",          ";Pileup interactions;Jet multiplicity (p_{T}>30 GeV/c);Events",50,0,50,5,0,5) );
       mon.addHistogram( new TH2F("n"+jetTypes[i]+"jetstightvspu",     ";Pileup interactions;Jet multiplicity (p_{T}>30 GeV/c);Events",50,0,50,5,0,5) );
-      TH1 *h=mon.addHistogram( new TH1F("n"+jetTypes[i]+"jets",  ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
+      TH1 *h=mon.addHistogram( new TH1F("n"+jetTypes[i]+"jetspresel",  ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
+      TH1 *h2=mon.addHistogram( new TH1F("n"+jetTypes[i]+"jets",  ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
       for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
 	{
 	  TString label("");
@@ -366,6 +368,7 @@ int main(int argc, char* argv[])
 	  else                                label +="=";
 	  label += (ibin-1);
 	  h->GetXaxis()->SetBinLabel(ibin,label);
+	  h2->GetXaxis()->SetBinLabel(ibin,label);
 	} 
       mon.addHistogram( new TH2F("n"+jetTypes[i]+"jetspuidloosevspu", ";Pileup interactions;Jet multiplicity (p_{T}>30 GeV/c);Events",50,0,50,5,0,5) );
       mon.addHistogram( new TH2F("n"+jetTypes[i]+"jetspuidmediumvspu",";Pileup interactions;Jet multiplicity (p_{T}>30 GeV/c);Events",50,0,50,5,0,5) );  
@@ -627,8 +630,9 @@ int main(int argc, char* argv[])
          default   : continue;
       }
       //      if(isMC && mctruthmode==1 && !isDYToLL(ev.mccat) && !isZZ2l2nu(ev.mccat) ) continue;
-      if(isMC && mctruthmode==1 && !isDYToLL(ev.mccat) ) continue;
+      if(isMC && mctruthmode==1 && !isDYToLL(ev.mccat) )     continue;
       if(isMC && mctruthmode==2 && !isDYToTauTau(ev.mccat) ) continue;
+      if(isV0JetsMC && ev.mc_nup>5)                          continue; 
 
       //require compatibilitiy of the event with the PD
       bool hasTrigger(false);
@@ -1025,6 +1029,8 @@ int main(int argc, char* argv[])
 	mon.fillHisto("rho"      ,   tags_full, ev.rho,       weight);
 	mon.fillHisto("rho25"    ,   tags_full, ev.rho25Neut, weight);
 	
+	mon.fillHisto("npfjetspresel",              tags_full, nAJetsLoose,weight);
+
 	  if(passZpt){
 	      mon.fillHisto("eventflow",tags_full,4,weight);
               mon.fillHisto("pfvbfcount_total",tags_cat,ev.ngenITpu,weight);
@@ -1046,7 +1052,13 @@ int main(int argc, char* argv[])
 	      if(pass3dLeptonVeto){
 		  mon.fillHisto("eventflow",tags_full,5,weight);
 
-		  //pre-tagged jet control
+
+		  //jet control
+		  mon.fillHisto("npfjets",              tags_full, nAJetsLoose,weight);
+		  mon.fillHisto("npfjetsvspu",          tags_small, ev.ngenITpu, nAJetsLoose,weight);
+		  mon.fillHisto("npfjetstightvspu",     tags_small, ev.ngenITpu, nAJetsTight,weight);
+		  mon.fillHisto("npfjetspuidloosevspu", tags_small, ev.ngenITpu, nAJetsPUIdLoose,weight);
+		  mon.fillHisto("npfjetspuidmediumvspu",tags_small, ev.ngenITpu, nAJetsPUIdMedium,weight);
 		  for(size_t ij=0; ij<aGoodIdJets.size(); ij++)
 		    {
 		      mon.fillHisto("pfjetpt",  tags_small, aGoodIdJets[ij].pt(),weight);
@@ -1071,13 +1083,6 @@ int main(int argc, char* argv[])
 		  if(passBveto)
 		    {
 		      mon.fillHisto("eventflow",tags_full,6,weight);
-
-		      //final jet control
-		      mon.fillHisto("npfjets",              tags_full, nAJetsLoose,weight);
-		      mon.fillHisto("npfjetsvspu",          tags_small, ev.ngenITpu, nAJetsLoose,weight);
-		      mon.fillHisto("npfjetstightvspu",     tags_small, ev.ngenITpu, nAJetsTight,weight);
-		      mon.fillHisto("npfjetspuidloosevspu", tags_small, ev.ngenITpu, nAJetsPUIdLoose,weight);
-		      mon.fillHisto("npfjetspuidmediumvspu",tags_small, ev.ngenITpu, nAJetsPUIdMedium,weight);
 		      
 		      //sub-divide for good jets
 		      int eventSubCat  = eventCategoryInst.Get(phys,&aGoodIdJets);
@@ -1114,8 +1119,8 @@ int main(int argc, char* argv[])
 			      LorentzVector hardSyst=vbfSyst+zvvs[0]+zll;
 			      hardpt=hardSyst.pt();
 			      dphijj=deltaPhi(aGoodIdJets[0].phi(),aGoodIdJets[1].phi());
-			      double maxEta=max(fabs(aGoodIdJets[0].eta()),fabs(aGoodIdJets[1].eta()));
-			      double minEta=min(fabs(aGoodIdJets[0].eta()),fabs(aGoodIdJets[1].eta()));
+			      double maxEta=max(aGoodIdJets[0].eta(),aGoodIdJets[1].eta());
+			      double minEta=min(aGoodIdJets[0].eta(),aGoodIdJets[1].eta());
 			      float detajj=maxEta-minEta;
 			      mon.fillHisto("pfvbfcandjetpt",     tags_cat, fabs(aGoodIdJets[0].pt()),weight);
 			      mon.fillHisto("pfvbfcandjetpt",     tags_cat, fabs(aGoodIdJets[1].pt()),weight);
