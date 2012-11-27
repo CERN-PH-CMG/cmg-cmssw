@@ -10,7 +10,7 @@
  <bin name="runMETStudy" file="runMETStudy.cc"></bin>
  <bin name="runVBF" file="runVBF.cc"></bin>
  <bin name="run2011Analysis" file="run2011Analysis.cc"></bin>
- <bin name="runICHEPAnalysis" file="runICHEPAnalysis.cc"></bin>
+ <bin name="run2011ZZAnalysis" file="run2011ZZAnalysis.cc"></bin>
  <bin name="runZZAnalysis" file="runZZAnalysis.cc"></bin>
  <bin name="runVBFZAnalysis" file="runVBFZAnalysis.cc"></bin>
  <bin name="runLandS" file="runLandS.cc"></bin>
