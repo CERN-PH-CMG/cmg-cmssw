@@ -42,8 +42,8 @@ tightNoVtx = cms.PSet(
 )
 
 premvaTrig = cms.PSet(
-  sigmaIetaIeta = cms.string('( sourcePtr().superCluster().get().eta() < 1.479 && sourcePtr().sigmaIetaIeta() < 0.014 ) || ( sourcePtr().superCluster().get().eta() >= 1.479 && sourcePtr().sigmaIetaIeta() < 0.035 )'),
-  hadronicOverEm = cms.string('( sourcePtr().superCluster().get().eta() < 1.479 && sourcePtr().hadronicOverEm() < 0.15 ) || ( sourcePtr().superCluster().get().eta() >= 1.479 && sourcePtr().hadronicOverEm() < 0.10 )'),
+  sigmaIetaIeta = cms.string('( abs(sourcePtr().superCluster().get().eta()) < 1.479 && sourcePtr().sigmaIetaIeta() < 0.014 ) || ( abs(sourcePtr().superCluster().get().eta()) >= 1.479 && sourcePtr().sigmaIetaIeta() < 0.035 )'),
+  hadronicOverEm = cms.string('( abs(sourcePtr().superCluster().get().eta()) < 1.479 && sourcePtr().hadronicOverEm() < 0.15 ) || ( abs(sourcePtr().superCluster().get().eta()) >= 1.479 && sourcePtr().hadronicOverEm() < 0.10 )'),
   dr03Trk = cms.string('sourcePtr().dr03TkSumPt()/pt() < 0.2'), 
   dr03Ecal = cms.string('sourcePtr().dr03EcalRecHitSumEt()/pt() < 0.2'),
   dr03Hcal = cms.string('sourcePtr().dr03HcalTowerSumEt()/pt() < 0.2'),
