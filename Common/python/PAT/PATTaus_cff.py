@@ -58,6 +58,16 @@ patTaus.tauIDSources = cms.PSet(
     byLooseIsoMVA = cms.InputTag('hpsPFTauDiscriminationByLooseIsolationMVA'),
     byMediumIsoMVA = cms.InputTag('hpsPFTauDiscriminationByMediumIsolationMVA'),
     byTightIsoMVA = cms.InputTag('hpsPFTauDiscriminationByTightIsolationMVA'),
+    againstElectronMVA3raw = cms.InputTag('hpsPFTauDiscriminationByMVA3rawElectronRejection'),
+    againstElectronMVA3category = cms.InputTag('hpsPFTauDiscriminationByMVA3rawElectronRejection:category'),
+    againstElectronLooseMVA3 = cms.InputTag('hpsPFTauDiscriminationByMVA3LooseElectronRejection'),
+    againstElectronMediumMVA3 = cms.InputTag('hpsPFTauDiscriminationByMVA3MediumElectronRejection'),
+    againstElectronTightMVA3 = cms.InputTag('hpsPFTauDiscriminationByMVA3TightElectronRejection'),
+    againstElectronVTightMVA3 = cms.InputTag('hpsPFTauDiscriminationByMVA3VTightElectronRejection'),
+    againstElectronDeadECAL = cms.InputTag('hpsPFTauDiscriminationByDeadECALElectronRejection'),
+    byLooseCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('hpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits'),
+    byMediumCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('hpsPFTauDiscriminationByMediumCombinedIsolationDBSumPtCorr3Hits'),
+    byTightCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('hpsPFTauDiscriminationByTightCombinedIsolationDBSumPtCorr3Hits'),
     )
 
 

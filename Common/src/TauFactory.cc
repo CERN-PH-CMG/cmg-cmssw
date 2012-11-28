@@ -84,13 +84,10 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
   
   //copy the the tauIDs 
   std::vector<pat::Tau::IdPair> tauids = input->tauIDs();
-  Int_t i=0;
-  for (std::vector<pat::Tau::IdPair>::const_iterator it = tauids.begin() ; it != tauids.end() ; ++it) {
+  int i=0;
+  for (std::vector<pat::Tau::IdPair>::const_iterator it = tauids.begin() ; it != tauids.end() ; ++it,i++) {
     if( i == NCMGTAUIDS)
-      throw cms::Exception( " Trying to add too many tauIDs");
-    //save only the names of the ids which are passed
-    // if(it->second==1.0) 
-    // output->tauID_[i++]=it->first;
+      throw cms::Exception( " Trying to add more tauIDs than reserved slots in cmg::Tau");
     output->tauIDLabels_.push_back( it->first);
     output->tauID_.push_back( it->second);
   }
