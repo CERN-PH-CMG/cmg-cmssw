@@ -785,7 +785,16 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
 	   dataToObsH->Draw("same");
 	 }
      }
+   else
+     {
+       //if not comparison resize the canvas
+       c1->SetWindowSize(600,400);
+       c1->SetCanvasSize(600,400);
+       t1->SetPad(0,0,1,1);
+     }
       
+   c1->Modified();
+   c1->Update();
    c1->cd();
    string SavePath = SaveName + plotExt;
    while(SavePath.find("*")!=std::string::npos)SavePath.replace(SavePath.find("*"),1,"");

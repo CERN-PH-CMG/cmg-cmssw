@@ -3,8 +3,8 @@
 ##############
 #    2011    #
 ##############
-runLocalAnalysisOverSamples.py -e runZZAnalysis -j data/samples_ZZ.json -o test/results -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=True" -s 8nh 
-runPlotter --json data/samples_ZZ.json --inDir test/results/ --outDir test/results/plots/ --iLumi 5051 --iEcm 7 --outFile plotter_zz_2011.root
+runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_sm_2012.json -o  ~/work/zz/ll/2012 -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=False @is2011=False" -s 8nh 
+runPlotter --json data/samples_sm_2012.json --inDir ~/work/zz/ll/2012/ --outDir ~/work/zz/ll/2012/plots --outFile ~/work/zz/ll/2012/plotter.root --iEcm 8 --iLumi 12196
 
 #the photon pain
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/gamma/2011/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=True" -s 8nh

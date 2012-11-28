@@ -405,10 +405,12 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mindphijmetNM1", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphichsjmetNM1", ";min #Delta#phi(CHS jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,2.5) );
+  mon.addHistogram( new TH1D( "balance", ";|E_{T}^{miss}-q_{T}|/q_{T};Events", 25,0,1) );
   mon.addHistogram( new TH2D( "met_mindphilmet"  , ";E_{T}^{miss};min(#Delta#phi(lepton,E_{T}^{miss});Events", 50,0,250,40,0,4) );
   mon.addHistogram( new TH2D( "metoverlpt_mindphilmet"  , ";E_{T}^{miss}/p_{T}^{lepton};min(#Delta#phi(lepton,E_{T}^{miss});Events", 50,0,2,40,0,4) );
   mon.addHistogram( new TH1F( "met_metSB",        ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met",          ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_metaxial",     ";Axial E_{T}^{miss};Events", 50,-100,150) );
   mon.addHistogram( new TH1F( "met_metNM1",          ";Reduced E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetNM1",       ";Reduced E_{T}^{miss} CHS;Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetCHSNM1",    ";E_{T}^{miss};Events", 50,0,500) );
@@ -1176,11 +1178,16 @@ int main(int argc, char* argv[])
 			  mon.fillHisto("met_mindphilmet",tags_full,zvvs[0].pt(),min(dphil1met,dphil2met),weight);
 			  mon.fillHisto("deltaleptonpt",tags_full, leadingLep.pt()-trailerLep.pt()    ,weight);
 			  mon.fillHisto("deltazpt",tags_full, zll.pt()-zvvs[0].pt(),weight);
-			  mon.fillHisto("balance",tags_full, zvvs[0].pt()/zll.pt(),weight);
-			  
+	  
 			  if(passLMetVeto)
 			    {
+			      TVector2 met2(zvvs[0].px(),zvvs[0].py());
+			      TVector2 dil2(zll.px(), zll.py());
+			      double axialMet(dil2*met2);
+			      mon.fillHisto("balance",tags_full, zvvs[0].pt()/zll.pt(),weight);
+			      mon.fillHisto("balancedif",tags_full, fabs(zvvs[0].pt()-zll.pt())/zll.pt(),weight);
 			      mon.fillHisto("met_met",         tags_full,  zvvs[0].pt(),  weight);
+			      mon.fillHisto("met_metaxial",         tags_full,  -axialMet/zll.pt(),  weight);
 			      mon.fillHisto("met_mvamet",      tags_full,  mvaMetP4.pt(), weight);
 			      mon.fillHisto("met_typeImet",    tags_full,  fullTypeIMetP4.pt(),  weight);
 			      mon.fillHisto("met_redMet",tags_full,aRedMet.pt(),weight);

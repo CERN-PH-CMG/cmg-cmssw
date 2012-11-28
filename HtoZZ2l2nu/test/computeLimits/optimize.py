@@ -18,7 +18,7 @@ phase=-1
 jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012_rereco.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
 LandSArg=' --indexvbf 9 '
-LandSArg+='--subDY --subNRB --systpostfix _8TeV --interf'
+LandSArg+='--subNRB --systpostfix _8TeV --interf'
 DataCardsDir='cards8TeV'
 blind=False
 
@@ -111,7 +111,7 @@ os.system('mkdir -p ' + OUT)
 
 if(shapeBased=='1'): DataCardsDir+='Shape'
 
-if(len(gammaUrl)) : LandSArg += ' --subDY ' + gammaUrl
+if(len(gammaUrl)>0) : LandSArg += ' --subDY ' + gammaUrl
 LandSArg +=' --bins ' + useBins
 
 #get the cuts
