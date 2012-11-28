@@ -520,7 +520,7 @@ int main(int argc, char* argv[])
       bool passZmass(fabs(zll.mass()-91)<7);
       bool passZsideBand( (zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200));
       //      bool passZpt(zll.pt()>30);
-      bool passZpt(zll.pt()>50 && fabs(zll.pt())<1.4442);
+      bool passZpt(zll.pt()>50 && fabs(zll.eta())<1.4442);
       
       //check alternative selections for the dilepton
       double llScaleFactor(1.0),llTriggerEfficiency(1.0);
@@ -858,7 +858,7 @@ int main(int argc, char* argv[])
 		    int jetIdToApply(JETID_LOOSE);
 		    if(jetIds[ijetid]=="pfpuloose")    jetIdToApply=JETID_CUTBASED_LOOSE;
 		    if(jetIds[ijetid]=="pfpumvaloose") jetIdToApply=JETID_OPT_LOOSE;
-		    if(!hasObjectId(aGoodIdJets[0].pid,jetIdToApply) || !hasObjectId(aGoodIdJets[0].pid,jetIdToApply)) continue; 
+		    if(!hasObjectId(aGoodIdJets[0].pid,jetIdToApply) || !hasObjectId(aGoodIdJets[1].pid,jetIdToApply)) continue; 
 		    
 		    LorentzVector vbfSyst=aGoodIdJets[0]+aGoodIdJets[1];
 		    LorentzVector hardSyst=vbfSyst+zll; //+zvvs[0]
@@ -1067,7 +1067,6 @@ int main(int argc, char* argv[])
 	 }
 
 	 if(varJets.size()>1){
-
 	   int ncjv(0);
 	   double maxEta=max(varJets[0].eta(),varJets[1].eta());
 	   double minEta=min(varJets[0].eta(),varJets[1].eta());
