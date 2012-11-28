@@ -20,7 +20,7 @@
 namespace cmg
 {
 
-#define NCMGTAUIDS 35
+#define NCMGTAUIDS 45
 
 
   //forward def needed
