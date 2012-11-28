@@ -224,9 +224,8 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
          if(!isMC)PUCentralnnorm = 1;
 
           double VBFMCRescale = tmphist->GetXaxis()->GetNbins()>5 ? tmphist->GetBinContent(6) / tmphist->GetBinContent(2) : 1.0;
+	  if(VBFMCRescale!=0)          cnorm *= VBFMCRescale;
           //printf("VBFMCRescale for sample %s is %f\n", (Samples[j])["dtag"].toString().c_str(), VBFMCRescale );
-          cnorm *= VBFMCRescale;
-
          sampleInfo.initialNumberOfEvents = cnorm / PUCentralnnorm;
          delete tmphist;
       }   
@@ -792,7 +791,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
        c1->SetCanvasSize(600,400);
        t1->SetPad(0,0,1,1);
      }
-      
+
    c1->Modified();
    c1->Update();
    c1->cd();

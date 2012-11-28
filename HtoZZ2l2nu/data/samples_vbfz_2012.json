@@ -25,7 +25,7 @@
 	{
         "tag":"VV",
         "isdata":false,
-        "color":"592",
+        "color":"590",
         "lcolor":1,
         "marker":1,
         "data":[
@@ -104,7 +104,7 @@
 	{
 	"tag":"QCD/W+jets",
         "isdata":false,
-	"color":"809",
+	"color":"400",
 	"lcolor":1,
 	"data":[
 	     {	
