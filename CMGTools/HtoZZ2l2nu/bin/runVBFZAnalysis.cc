@@ -370,6 +370,7 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight*TotalWeight_minus);
       Hcutflow->Fill(4,weight*TotalWeight_plus);
+      Hcutflow->Fill(5,weight);
 
       //
       //
