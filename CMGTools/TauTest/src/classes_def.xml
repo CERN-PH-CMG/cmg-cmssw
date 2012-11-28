@@ -7,6 +7,5 @@
   <class name="TestTrig"/>
   <class name="TestGenParticles"/>
   <class name="TauEfficiencyPlot"/>
-  <class name="TauEfficiency"/>
 
 </lcgdict>

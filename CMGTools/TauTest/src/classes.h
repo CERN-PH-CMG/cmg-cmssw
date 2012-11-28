@@ -1,4 +1,4 @@
-#include "DataFormats/Common/interface/Wrapper.h"
+//#include "DataFormats/Common/interface/Wrapper.h"
 #include "CMGTools/TauTest/interface/TestPatTaus.h"
 #include "CMGTools/TauTest/interface/TestCMGTaus.h"
 #include "CMGTools/TauTest/interface/TestCMGElectrons.h"
@@ -6,7 +6,7 @@
 #include "CMGTools/TauTest/interface/TestTrig.h"
 #include "CMGTools/TauTest/interface/TestGenParticles.h"
 #include "CMGTools/TauTest/interface/TauEfficiencyPlot.h"
-#include "CMGTools/TauTest/interface/TauEfficiency.h"
+//#include "CMGTools/TauTest/interface/TauEfficiency.h"
 
 namespace {
   struct CMGTools_TauTest {
@@ -18,7 +18,7 @@ namespace {
     TestTrig testtrig;
     TestGenParticles testgenparticles;
     TauEfficiencyPlot taueffplot;
-    TauEfficiency taueff;
+    //TauEfficiency taueff;
     
   };  
 }

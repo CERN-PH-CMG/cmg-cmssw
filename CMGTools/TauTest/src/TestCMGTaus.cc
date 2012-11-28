@@ -42,9 +42,11 @@ void TestCMGTaus::testTau(TString inputtag){
   edm::InputTag tag_((const char*)inputtag);
     
   std::vector<string> files;
-  for(Int_t i=firstfile_;i<=lastfile_;i++){
-    files.push_back((string)(dirname_+(long)i+".root"));
-  }
+  if(firstfile_==0 && lastfile_==0) files.push_back((string)(dirname_));
+  else 
+    for(Int_t i=firstfile_;i<=lastfile_;i++){
+      files.push_back((string)(dirname_+(long)i+".root"));
+    }
   fwlite::ChainEvent ev(files);
   
   //TFile File(dirname_,"read");
@@ -77,23 +79,61 @@ void TestCMGTaus::testTau(TString inputtag){
   std::string pfTauMode[5]={"oneProng0Pi0","oneProng1Pi0","oneProng2Pi0","threeProng0Pi0","other"};
   
 
-  TH1F HTauIDPass("HTtauIDPass","tauID passed",NTauID+1,0,NTauID+1); HTauIDPass.GetXaxis()->SetTitle(" ");
-  TH1F HTauIDFail("HTtauIDFail","tauID fail",NTauID+1,0,NTauID+1); HTauIDFail.GetXaxis()->SetTitle(" ");
-  std::string tauidname[NTauID]={  "againstElectronLoose" ,
-			       "againstElectronMedium" ,
-			       "againstElectronTight" ,
-			       "againstMuonLoose"   ,
-			       "againstMuonTight"  ,
-			       "byLooseIsolation"  ,
-			       "byMediumIsolation" ,
-			       "byTightIsolation"  ,
-			       "byVLooseIsolation"  ,
-			       "decayModeFinding"  ,
-			       "byVLooseCombinedIsolationDeltaBetaCorr",
-			       "byLooseCombinedIsolationDeltaBetaCorr",
-			       "byMediumCombinedIsolationDeltaBetaCorr",
-			       "byTightCombinedIsolationDeltaBetaCorr"
-  };
+//   TH1F HTauIDPass("HTtauIDPass","tauID passed",NTauID+1,0,NTauID+1); HTauIDPass.GetXaxis()->SetTitle(" ");
+//   TH1F HTauIDFail("HTtauIDFail","tauID fail",NTauID+1,0,NTauID+1); HTauIDFail.GetXaxis()->SetTitle(" ");
+//   std::string tauidname[NTauID]={  "againstElectronLoose" ,
+// 			       "againstElectronMedium" ,
+// 			       "againstElectronTight" ,
+// 			       "againstMuonLoose"   ,
+// 			       "againstMuonTight"  ,
+// 			       "byLooseIsolation"  ,
+// 			       "byMediumIsolation" ,
+// 			       "byTightIsolation"  ,
+// 			       "byVLooseIsolation"  ,
+// 			       "decayModeFinding"  ,
+// 			       "byVLooseCombinedIsolationDeltaBetaCorr",
+// 			       "byLooseCombinedIsolationDeltaBetaCorr",
+// 			       "byMediumCombinedIsolationDeltaBetaCorr",
+// 			       "byTightCombinedIsolationDeltaBetaCorr"
+//   };
+
+
+  std::vector<string> tauidname;
+  tauidname.push_back("decayModeFinding");
+  tauidname.push_back("byVLooseCombinedIsolationDeltaBetaCorr");
+  tauidname.push_back("byLooseCombinedIsolationDeltaBetaCorr");
+  tauidname.push_back("byMediumCombinedIsolationDeltaBetaCorr");
+  tauidname.push_back("byTightCombinedIsolationDeltaBetaCorr");
+  tauidname.push_back("againstElectronLoose");
+  tauidname.push_back("againstElectronMedium");
+  tauidname.push_back("againstElectronTight");
+  tauidname.push_back("againstElectronMVA");
+  tauidname.push_back("againstElectronMVA2raw");
+  tauidname.push_back("againstElectronVLooseMVA2");
+  tauidname.push_back("againstElectronLooseMVA2");
+  tauidname.push_back("againstElectronMediumMVA2");
+  tauidname.push_back("againstElectronTightMVA2");
+  tauidname.push_back("againstMuonLoose");
+  tauidname.push_back("againstMuonMedium");
+  tauidname.push_back("againstMuonTight");
+  tauidname.push_back("byRawIsoMVA");
+  tauidname.push_back("byLooseIsoMVA");
+  tauidname.push_back("byMediumIsoMVA");
+  tauidname.push_back("byTightIsoMVA");
+  tauidname.push_back("againstElectronMVA3raw");
+  tauidname.push_back("againstElectronMVA3category");
+  tauidname.push_back("againstElectronLooseMVA3");
+  tauidname.push_back("againstElectronMediumMVA3");
+  tauidname.push_back("againstElectronTightMVA3");
+  tauidname.push_back("againstElectronVTightMVA3");
+  tauidname.push_back("againstElectronDeadECAL");
+  tauidname.push_back("byLooseCombinedIsolationDeltaBetaCorr3Hits");
+  tauidname.push_back("byMediumCombinedIsolationDeltaBetaCorr3Hits");
+  tauidname.push_back("byTightCombinedIsolationDeltaBetaCorr3Hits");
+ 
+  TH1F HTauIDPass("HTtauIDPass","tauID passed",tauidname.size()+1,0,tauidname.size()+1); HTauIDPass.GetXaxis()->SetTitle(" ");
+  TH1F HTauIDFail("HTtauIDFail","tauID fail",tauidname.size()+1,0,tauidname.size()+1); HTauIDFail.GetXaxis()->SetTitle(" ");
+
 
   //generator info 
   TH1F HptGen("HptGen","genJet pt",100,1,101); HptGen.GetXaxis()->SetTitle(" p_{T} (GeV) ");
@@ -163,10 +203,14 @@ void TestCMGTaus::testTau(TString inputtag){
       else if(cand->decayMode()==10)HDecaymode.Fill(3);
       else HDecaymode.Fill(4);
 
-      for(Int_t i=0;i<NTauID;i++)
-	if(cand->tauID( tauidname[i] ))  HTauIDPass.AddBinContent(i+1); 
-	else HTauIDFail.AddBinContent(i+1);
- 
+//       for(Int_t i=0;i<NTauID;i++)
+// 	if(cand->tauID( tauidname[i] ))  HTauIDPass.AddBinContent(i+1); 
+// 	else HTauIDFail.AddBinContent(i+1);
+
+      for(unsigned int i=0;i<tauidname.size();i++)
+	if(cand->tauID( tauidname[i] ) > 0.)  HTauIDPass.AddBinContent(i+1); 
+	else HTauIDFail.AddBinContent(i+1); 
+
       if(cand->genJetp4().pt() > 0.0 ){
 	HptGen.Fill(cand->genJetp4().pt());
 	HptRes.Fill(cand->pt()-cand->genJetp4().pt());
@@ -275,24 +319,28 @@ void TestCMGTaus::testTau(TString inputtag){
 
   Canv.Clear();
   HTauIDPass.SetStats(0);
-  HTauIDPass.GetXaxis()->SetNdivisions(0);
+  //HTauIDPass.GetXaxis()->SetNdivisions(0);
   HTauIDPass.SetLineColor(1);
   HTauIDPass.SetFillStyle(1);
   HTauIDPass.Draw("hist bar");
   text.SetTextAngle(-25.);
-  for(Int_t i=0;i<NTauID;i++)
-    text.DrawText(i+0.4,0.0-0.02*HTauIDPass.GetMaximum(),TString(tauidname[i]));
+//   for(Int_t i=0;i<NTauID;i++)
+//     text.DrawText(i+0.4,0.0-0.02*HTauIDPass.GetMaximum(),TString(tauidname[i]));
   Canv.Print(psfile);
   Canv.Clear();
   HTauIDFail.SetStats(0);
-  HTauIDFail.GetXaxis()->SetNdivisions(0);
+  //HTauIDFail.GetXaxis()->SetNdivisions(0);
   HTauIDFail.SetLineColor(1);
   HTauIDFail.SetFillStyle(1);
   HTauIDFail.Draw("hist bar");  
-  for(Int_t i=0;i<NTauID;i++)
-    text.DrawText(i+0.4,0.0-0.02*HTauIDFail.GetMaximum(),TString(tauidname[i]));
+//   for(Int_t i=0;i<NTauID;i++)
+//     text.DrawText(i+0.4,0.0-0.02*HTauIDFail.GetMaximum(),TString(tauidname[i]));
   Canv.Print(psfile);
   text.SetTextAngle(-45.);
+  cout<<"Tau ID's indexes :"<<endl;
+  for(unsigned int i=0;i<tauidname.size();i++)
+    cout<<"Bin "<<i+1<<" ID Name : "<<tauidname[i]<<endl;  
+
 
 
   Canv.Clear();
