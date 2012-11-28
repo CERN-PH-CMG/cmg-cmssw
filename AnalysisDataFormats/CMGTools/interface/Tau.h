@@ -20,7 +20,7 @@
 namespace cmg
 {
 
-#define NCMGTAUIDS 25
+#define NCMGTAUIDS 35
 
 
   //forward def needed
@@ -48,8 +48,6 @@ namespace cmg
       //COLIN Ecal should be ECAL or Ecal. Same for Hcal
       leadNeutralCandEcalEnergy_(UnSet(double)),
       particleIso_(UnSet(double)),
-/*       trackIso_(UnSet(double)), */
-/*       gammaIso_(UnSet(double)), */
       isolationPFChargedHadrCandsPtSum_( UnSet(double) ),
       isolationPFNeutralHadrCandsPtSum_( UnSet(double) ),
       isolationPFGammaCandsEtSum_( UnSet(double) ),
@@ -62,10 +60,6 @@ namespace cmg
       genJetDecayMode_(""),
       genTaup4_(math::XYZTLorentzVector(0.,0.,0.,0.))
     {
-      
-      //      for(int i=0;i<NCMGTAUIDS;i++)	
-      //	tauID_[i]="";
-      
       
     }
 
@@ -133,13 +127,11 @@ namespace cmg
     float leadNeutralCandEcalEnergy_;   
    
     float particleIso_;
-/*     float trackIso_; */
-/*     float gammaIso_; */
     float isolationPFChargedHadrCandsPtSum_;
     float isolationPFNeutralHadrCandsPtSum_;
     float isolationPFGammaCandsEtSum_;
     int decayMode_;
-    // std::string tauID_[NCMGTAUIDS];
+
     std::vector<float>        tauID_;
     std::vector<std::string>  tauIDLabels_;
     
