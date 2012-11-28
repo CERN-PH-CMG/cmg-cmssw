@@ -1,10 +1,14 @@
 ### SPECIFIC TO SM VBF Z CROSS SECTION
 
 ##############
-#    2011    #
+#    2012    #
 ##############
-runLocalAnalysisOverSamples.py -e runZZAnalysis -j data/samples_vbfz_2011.json -o ~/work/vbfz/results/2011 -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=True" -s 8nh 
-runPlotter --json data/samples_vbfz_2011.json --inDir ~/work/vbfz/results/2011/ --outDir ~/work/vbfz/results/2011/plots/ --iLumi 5051 --iEcm 7 --outFile  ~/work/vbfz/results/2011/plotter_vbfz_2011.root
+runLocalAnalysisOverSamples.py -e runVBFZAnalysis -j data/samples_vbfz_2012.json -o ~/work/vbfz/results/2012 -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
+runPlotter --json data/samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012/ --outDir ~/work/vbfz/results/2012/plots/ --iLumi 12196 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_2012.root
+
+
+
+#CHECK ME FROM THIS POINT FORWARD
 
 #the photon pain strikes back
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_vbf_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/vbfz/gamma/2011/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=True" -s 8nh

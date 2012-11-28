@@ -4,7 +4,6 @@
         "tag":"#alpha^{4}_{EW}-ll (VBFNLO)",
         "isdata":false,
         "issignal":true,
-        "spimpose":false,
         "color":"804",
         "lcolor":1,
         "marker":1,
@@ -24,23 +23,7 @@
          ]
         },
 	{
-	"tag":"ZZ",
-        "isdata":false,
-	"color":"590",
-        "lcolor":1,
-	"marker":1,
-	"data":[
-	    {
-                "dtag":"MC8TeV_ZZ",
-                "split":2,
-	        "mctruthmode":1,
-                "xsec":7.92,
-		"br":[0.0403896,1.14]
-             }
-	]
-	},
-	{
-        "tag":"WW#rightarrow 2l2#nu",
+        "tag":"VV",
         "isdata":false,
         "color":"592",
         "lcolor":1,
@@ -49,21 +32,17 @@
 	    {
                 "dtag":"MC8TeV_WW",
                 "split":1,
-                "xsec":69.9,
+                "xsec":57.1097,
 		"br":[0.104976]
-             }
-	]
-	},
-        {
-        "tag":"WZ#rightarrow 3l#nu",
-        "isdata":false,
-        "color":"596",
-        "lcolor":1,
-        "marker":1,
-        "data":[
+             },
+	    {
+                "dtag":"MC8TeV_ZZ",
+                "split":2,
+                "xsec":7.92,
+		"br":[0.0403896]
+             },
             {
                 "dtag":"MC8TeV_WZ",
-                "dset":"/WZ_TuneZ2star_8TeV_pythia6_tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
                 "split":2,
                 "xsec":22.9,
 		"br":[0.032715576]
@@ -71,55 +50,61 @@
            ]
         },
 	{
-         "tag":"t#bar{t}",
+         "tag":"Top",
          "isdata":false,
          "color":"8",
          "lcolor":1,
          "data":[
+		{
+ 	        "dtag":"MC8TeV_TTJetsFullLeptMGDecays",
+                "xsec":225.197,
+		"split":5,
+		"br":[0.10608049]
+                },
                 {
-                "dtag":"MC8TeV_TTJets",
-                "dset":"/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START50_V15-v1/AODSIM",
-                "split":1,
-                "xsec":225.197
-                }
-          ]
-        },
-	{
-         "tag":"Single top",
-         "isdata":false,
-         "color":"824",
-         "lcolor":1,
-         "data":[
+                "dtag":"MC8TeV_TTWJets",
+                "xsec":0.232
+                },
+                {
+                "dtag":"MC8TeV_TTZJets",
+                "xsec":0.208
+                },
                 {
                 "dtag":"MC8TeV_SingleTbar_tW",
-                "dset":"",
                 "split":1,
-                "xsec":11.1773
+                "xsec":11.1
                 },
                 {
                 "dtag":"MC8TeV_SingleT_tW",
-                "dset":"",
                 "split":1,
-                "xsec":11.1773
+                "xsec":11.1
                 },
                 {
                 "dtag":"MC8TeV_SingleTbar_t",
-                "dset":"",
                 "split":1,
-                "xsec":55.531
+                "xsec":30.7
+                },
+                {
+                "dtag":"MC8TeV_SingleT_t",
+                "split":1,
+                "xsec":56.4
                 },
                 {
                 "dtag":"MC8TeV_SingleTbar_s",
-                "dset":"",
                 "split":1,
-                "xsec":3.89394
+                "xsec":1.76
+                },
+                {
+                "dtag":"MC8TeV_SingleT_s",
+                "split":1,
+                "xsec":3.79
                 }
           ]
         },
 	{
-	"tag":"QCD",
+	"tag":"QCD/W+jets",
         "isdata":false,
-	"color":"400",
+	"color":"809",
 	"lcolor":1,
 	"data":[
 	     {	
@@ -151,76 +136,87 @@
 		"dtag":"MC8TeV_QCDMuPt20toInf",
 		"xsec":364000000,
 		"br":[0.00037]
-	     }
-	  ]
-    	},
-        {
-         "tag":"W#rightarrow l#nu",
-         "isdata":false,
-         "color":"602",
-         "lcolor":1,
-         "data":[
+	     },
    		{
-                 "dtag":"MC8TeV_WToENu",
-                 "dset":"/WToENu_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START50_V15-v1/AODSIM",
-                 "split":1,
-                "xsec":12085.73
+                 "dtag":"MC8TeV_W1Jets",
+                 "xsec":5400.0,
+		 "br":[1.19286]
                 },
-                {
-                 "dtag":"MC8TeV_WToMuNu",
-                 "dset":"/WToMuNu_TuneZ2star_8TeV_pythia6/Summer12-PU_S7_START50_V15-v1/AODSIM",
-                 "split":1,
-                "xsec":12085.73
+   		{
+                 "dtag":"MC8TeV_W2Jets",
+                 "xsec":1750.0,
+ 		 "br":[1.19286]
                 },
-                {
-                 "dtag":"MC8TeV_WToTauNu",
-                 "dset":"/WToTauNu_TuneZ2star_8TeV_pythia6_tauola_cff/Summer12-PU_S7_START50_V15-v1/AODSIM",
-                 "split":1,
-                "xsec":12085.73
+   		{
+                 "dtag":"MC8TeV_W3Jets",
+                 "xsec":519.0,
+		 "br":[1.19286]
+                },
+   		{
+                 "dtag":"MC8TeV_W4Jets",
+                 "xsec":214.0,
+		 "br":[1.19286]
+                },
+		{
+                 "dtag":"MC8TeV_WG",
+		 "xsec":461.6,
+                 "split":1
                 }
-         ]
-        },
-	{
-	 "tag":"Z#rightarrow #tau#tau",
-         "isdata":false,
-         "color":"834",
-	 "lcolor":1,
-	 "mctruthmode":2,
-         "data":[
-	      {
-               "dtag":"MC8TeV_DYJetsToLL_50toInf",
-               "split":10,
-                "xsec":3532.8
-              },
-	      {
-               "dtag":"MC8TeV_DYJetsToLL_10to50",
-	       "patdir":[""],
-	       "dset":"",
-               "split":2,
-                "xsec":860.5
-              }
           ]
-	},
+        },
 	{
 	 "tag":"Z#rightarrow ll",
          "isdata":false,
          "color":"831",
 	 "lcolor":1,
-	 "mctruthmode":1,
          "data":[
 	      {
-               "dtag":"MC8TeV_DYJetsToLL_50toInf",
+               "dtag":"MC8TeV_DY0JetsToLL_50toInf",
                "split":10,
                 "xsec":3532.8
+              },
+	      {
+                "dtag":"MC8TeV_DY1JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.1901694915]
+              },
+	      {
+                "dtag":"MC8TeV_DY2JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0613559322]
+              },
+	       {
+                "dtag":"MC8TeV_DY3JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0173220339]
+              },
+	      {
+                "dtag":"MC8TeV_DY4JetsToLL_50toInf",
+                "split":5,
+                "xsec":3532.8,
+		"br":[0.0078101695]
               },
 	      {
                "dtag":"MC8TeV_DYJetsToLL_10to50",
                "split":2,
                 "xsec":860.5
+              },
+	      {
+               "dtag":"MC8TeV_DYJetsToLL_10to50",
+               "split":2,
+                "xsec":860.5
+              },
+	      {
+               "dtag":"MC8TeV_ZG",
+	       "xsec":123.9,	
+               "split":1
               }
           ]
 	},
-	{
+        {
 	   "tag":"data",
 	   "isdata":true,
 	   "color":1,
@@ -244,67 +240,63 @@
                  "split":2
                 },
                 {
+	         "dtag":"Data8TeV_DoubleMu2012A_recover"
+                },
+                {
+	         "dtag":"Data8TeV_SingleMu2012A_recover"
+                },
+                {
+                 "dtag":"Data8TeV_MuEG2012A_recover"
+                },
+	        {
+	         "dtag":"Data8TeV_DoubleElectron2012A_recover"
+                },
+                {
 	         "dtag":"Data8TeV_DoubleElectron2012B",
-                 "split":5
+                 "split":4
                 },
                 {
 	         "dtag":"Data8TeV_DoubleMu2012B",
-                 "split":5
+                 "split":4
                 },
                 {
 	         "dtag":"Data8TeV_SingleMu2012B",
-                 "split":5
+                 "split":4
                 },
                 {
                  "dtag":"Data8TeV_MuEG2012B",
-                 "split":5
+                 "split":4
                 },
                 {
-	         "dtag":"Data8TeV_DoubleElectron2012C_197774to198913",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_DoubleMu2012C_197774to198913",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_SingleMu2012C_197774to198913",
-                 "split":5
-                },
-                {
-                 "dtag":"Data8TeV_MuEG2012C_197774to198913",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_DoubleElectron2012C_198913to200601",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_DoubleMu2012C_198913to200601",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_SingleMu2012C_198913to200601",
-                 "split":5
-                },
-                {
-                 "dtag":"Data8TeV_MuEG2012C_198913to200601",
-                 "split":5
-                },
-                {
-	         "dtag":"Data8TeV_DoubleElectron2012C_200519to202016",
+	         "dtag":"Data8TeV_DoubleElectron2012C_v1",
                  "split":2
                 },
                 {
-	         "dtag":"Data8TeV_DoubleMu2012C_200519to202016",
+	         "dtag":"Data8TeV_DoubleMu2012C_v1",
                  "split":2
                 },
                 {
-	         "dtag":"Data8TeV_SingleMu2012C_200519to202016",
+		 "dtag":"Data8TeV_SingleMu2012C_v1",
                  "split":2
                 },
                 {
-                 "dtag":"Data8TeV_MuEG2012C_200519to202016",
+                 "dtag":"Data8TeV_MuEG2012C_v1",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012C_v2",
+                 "split":4
+                },
+                {
+	         "dtag":"Data8TeV_DoubleMu2012C_v2",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_SingleMu2012C_v2",
+                 "split":4
+                },
+                {
+                 "dtag":"Data8TeV_MuEG2012C_v2",
                  "split":2
                 }
 	    ]
