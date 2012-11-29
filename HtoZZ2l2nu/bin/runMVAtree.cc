@@ -981,7 +981,8 @@ hzz_N_Jets = nAJetsGood30;
 //cout << " Number of Jets = " << hzz_N_Jets << endl;
 hzz_dPhi_JetMet = mindphijmet;
 hzz_Jet_SumPT = sumet;
-//cout << " Minimum dPhi of jet and Met = " << hzz_dPhi_JetMet << endl;
+//if(ev_num == 587401) {
+//cout << "ev_num = " << ev_num << " hzz_dPhi_JetMet = " << hzz_dPhi_JetMet << endl; }
 
 //cout <<"hzz_weight_PUup = " << hzz_weight_PUup << endl;
 //cout <<"hzz_weight_PUdown = " << hzz_weight_PUdown << endl;
