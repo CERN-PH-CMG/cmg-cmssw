@@ -7,16 +7,18 @@ import pprint
 
 from optparse import OptionParser
 
-parser = OptionParser()
+parser = OptionParser(usage='%prog <target_directories> [options]',
+                      description='Check one or more chunck folders. Wildcard (*) can be used to specify multiple directories')
 
 parser.add_option("-b","--batch", dest="batch",
                   default=None,
-                  help="batch command for resubmission")
+                  help="batch command for resubmission"
+                  )
 
 (options,args) = parser.parse_args()
 
 if len(args)==0:
-    print 'provide at least one directory in argument'
+    print 'provide at least one directory in argument. Use -h to display help'
 
 dirs = sys.argv[1:]
 
