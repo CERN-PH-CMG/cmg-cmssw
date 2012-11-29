@@ -1,7 +1,7 @@
 {
     "proc":[
         {
-        "tag":"#alpha^{4}_{EW}-ll (VBFNLO)",
+        "tag":"#alpha^{4}_{EW}-ll",
         "isdata":false,
         "issignal":true,
         "color":"804",
@@ -198,11 +198,6 @@
                 "split":5,
                 "xsec":3532.8,
 		"br":[0.0078101695]
-              },
-	      {
-               "dtag":"MC8TeV_DYJetsToLL_10to50",
-               "split":2,
-                "xsec":860.5
               },
 	      {
                "dtag":"MC8TeV_DYJetsToLL_10to50",

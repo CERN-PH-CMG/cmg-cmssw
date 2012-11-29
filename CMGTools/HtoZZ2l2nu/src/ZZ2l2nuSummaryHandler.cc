@@ -621,6 +621,7 @@ bool ZZ2l2nuSummaryHandler::attachToTree(TTree *t, bool full)
   //Gamma Info
   t_->SetBranchAddress("gn",          &evSummary_.gn);
   if(t_->GetBranch("gn_prescale")) t_->SetBranchAddress("gn_prescale",          evSummary_.gn_prescale);
+  if(t_->GetBranch("gn_triggerWord")) t_->SetBranchAddress("gn_triggerWord",       &evSummary_.gn_triggerWord);
   t_->SetBranchAddress("g_px",        evSummary_.g_px);
   t_->SetBranchAddress("g_py",        evSummary_.g_py);
   t_->SetBranchAddress("g_pz",        evSummary_.g_pz);

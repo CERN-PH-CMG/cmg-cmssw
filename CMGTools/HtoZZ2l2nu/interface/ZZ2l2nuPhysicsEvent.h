@@ -185,6 +185,7 @@ struct PhysicsEvent_t
   float puWeight;
   int cat;
   int nvtx;
+  int gammaTriggerWord;
   std::vector<int> gammaPrescale;
   LorentzVectorCollection met;
   LorentzVector vtx;
