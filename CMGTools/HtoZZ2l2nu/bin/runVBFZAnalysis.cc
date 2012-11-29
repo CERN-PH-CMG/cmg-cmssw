@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
   std::vector<double> optim_Cuts2_jet_pt; 
   std::vector<double> optim_Cuts2_eta_gap;
   std::vector<double> optim_Cuts2_dijet_mass;
-  for(double z_pt=30;z_pt<=100;z_pt+=10)
+  for(double z_pt=50;z_pt<=100;z_pt+=10)
     {
       for(double jet_pt=30;jet_pt<=100;jet_pt+=10)
 	{
@@ -217,20 +217,23 @@ int main(int argc, char* argv[])
             }
 	}
     } 
-  TH1F* Hoptim_cuts2_z_pt      =(TH1F*)mon.addHistogram(new TH1F("optim_cut2_z_pt",      ";cut index;z_pt",       optim_Cuts2_z_pt.size(),0,optim_Cuts2_z_pt.size())) ;
-  TH1F* Hoptim_cuts2_jet_pt    =(TH1F*)mon.addHistogram(new TH1F("optim_cut2_jet_pt",    ";cut index;jet_pt",     optim_Cuts2_jet_pt.size(),0,optim_Cuts2_jet_pt.size())) ;
-  TH1F* Hoptim_cuts2_eta_gap   =(TH1F*)mon.addHistogram(new TH1F("optim_cut2_eta_gap",   ";cut index;eta_gap",    optim_Cuts2_eta_gap.size(),0,optim_Cuts2_eta_gap.size())) ;
-  TH1F* Hoptim_cuts2_dijet_mass=(TH1F*)mon.addHistogram(new TH1F("optim_cut2_dijet_mass",";cut index;dijet_mass", optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size()));
+  TH1F* Hoptim_cuts2_z_pt      =(TH1F*)mon.addHistogram(new TProfile("optim_cut2_z_pt",      ";cut index;z_pt",       optim_Cuts2_z_pt.size(),0,optim_Cuts2_z_pt.size())) ;
+  TH1F* Hoptim_cuts2_jet_pt    =(TH1F*)mon.addHistogram(new TProfile("optim_cut2_jet_pt",    ";cut index;jet_pt",     optim_Cuts2_jet_pt.size(),0,optim_Cuts2_jet_pt.size())) ;
+  TH1F* Hoptim_cuts2_eta_gap   =(TH1F*)mon.addHistogram(new TProfile("optim_cut2_eta_gap",   ";cut index;eta_gap",    optim_Cuts2_eta_gap.size(),0,optim_Cuts2_eta_gap.size())) ;
+  TH1F* Hoptim_cuts2_dijet_mass=(TH1F*)mon.addHistogram(new TProfile("optim_cut2_dijet_mass",";cut index;dijet_mass", optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size()));
   for(unsigned int index=0;index<optim_Cuts2_z_pt.size();index++){
     Hoptim_cuts2_z_pt->Fill(index,optim_Cuts2_z_pt[index]);   
     Hoptim_cuts2_jet_pt->Fill(index,optim_Cuts2_jet_pt[index]); 
     Hoptim_cuts2_eta_gap->Fill(index,optim_Cuts2_eta_gap[index]);
     Hoptim_cuts2_dijet_mass->Fill(index,optim_Cuts2_dijet_mass[index]);
   }
-  
+ 
+  TH1F* Hoptim_systs     =  (TH1F*) mon.addHistogram( new TH1F ("optim_systs"    , ";syst;", nvarsToInclude,0,nvarsToInclude) ) ;
   for(size_t ivar=0; ivar<nvarsToInclude; ivar++)
+  {
+    Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
     mon.addHistogram( new TH2F (TString("dijet_mass_shapes")+varNames[ivar],";cut index;M_Z [GeV];#events (/1GeV)",optim_Cuts2_dijet_mass.size(),0,optim_Cuts2_dijet_mass.size(),120,0,3000) );
-
+  }
   
   //##############################################
   //######## GET READY FOR THE EVENT LOOP ########
