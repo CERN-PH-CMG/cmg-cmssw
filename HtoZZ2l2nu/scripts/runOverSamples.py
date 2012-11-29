@@ -83,7 +83,8 @@ for proc in procList :
                 idir=idir+1
                 filenames=fillFromCastor(dir,0,-1,False)
                 nfiles=len(filenames)
-
+                print dir
+                print nfiles
                 njobs=1
 		sleep=0;
                 if(fperjob>0) : 

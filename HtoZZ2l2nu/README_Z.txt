@@ -3,15 +3,18 @@
 ##############
 #    2012    #
 ##############
-runLocalAnalysisOverSamples.py -e runVBFZAnalysis -j data/samples_vbfz_2012.json -o ~/work/vbfz/results/2012 -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
+runLocalAnalysisOverSamples.py -e runVBFZAnalysis -j data/samples_vbfz_2012.json -o ~/work/vbfz/results/2012 -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=False @is2011=False" -s 8nh 
 runPlotter --json data/samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012/ --outDir ~/work/vbfz/results/2012/plots/ --iLumi 12196 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_2012.root
+
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForVBFZ -j data/photon-samples_vbfz_2012.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/vbfz/results/2012_gamma/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh
+runPlotter --json data/photon-samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012_gamma/raw/ --outDir ~/work/vbfz/results/2012_gamma/raw/plots/ --iLumi 12196 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_gamma_raw_2012.root
 
 
 
 #CHECK ME FROM THIS POINT FORWARD
 
 #the photon pain strikes back
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_vbf_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/vbfz/gamma/2011/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=True" -s 8nh
+
 runPlotter --json data/photon-samples_vbf_2011.json --inDir ~/work/vbfz/gamma/2011/raw/ --outDir ~/work/vbfz/gamma/2011/raw/plots/ --outFile ~/work/vbfz/gamma/2011/raw/plotter.root --only qt --iLumi 5051 --iEcm 7
 root -b -q "bin/G/getGammaWeights.C+(\"~/work/vbfz/gamma/2011/raw/plotter.root\",\"qt\")"
 mv gammaqtweights.root data/gammaqtweights_vbfz_2011.root

@@ -78,24 +78,67 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, bool is2011)
   triggerWgt_=0;
 
   //check if it is a gamma event
+  if(phys.gammas.size()==0) return isGoodEvent_;
   if( phys.cat<22) return isGoodEvent_;
-  triggerThr_ =( phys.cat-22)/1000;
 
-
-  //get from 
-  int triggerIdx=0;
-  if(triggerThr_==36)  triggerIdx=1;
-  if(triggerThr_==60)  triggerIdx=2;
-  if(triggerThr_==75)  triggerIdx=3;
-  if(triggerThr_==90)  triggerIdx=4;
-  if(triggerThr_==135) triggerIdx=5;
-  if(triggerThr_==150) triggerIdx=6;
-  if(triggerThr_==160) triggerIdx=7;
-  if(triggerThr_==250) triggerIdx=8;
-  if(triggerThr_==300) triggerIdx=9;
-  triggerWgt_=phys.gammaPrescale[triggerIdx];
-  if(triggerWgt_==0 || is2011) triggerWgt_=1;
-
+  float pt = phys.gammas[0].pt();
+  if(!is2011)
+    {
+      if(pt<39)
+	{
+	  if( !(phys.gammaTriggerWord & 0x1) ) return isGoodEvent_;
+	  triggerThr_=22; 
+	  triggerWgt_=phys.gammaPrescale[0];
+	}
+      else if(pt>=39  && pt<55)
+	{
+	  if( !( (phys.gammaTriggerWord>>1) & 0x1) ) return isGoodEvent_;
+	  triggerThr_=36; 
+	  triggerWgt_=phys.gammaPrescale[1];
+	}
+      else if(pt>=55  && pt<82)
+	{
+	  if( !( (phys.gammaTriggerWord>>2) & 0x1) ) return isGoodEvent_;
+	  triggerThr_=50; 
+	  triggerWgt_=phys.gammaPrescale[2];
+	}
+      else if(pt>=82  && pt<100)
+	{
+	  if( !( (phys.gammaTriggerWord>>3) & 0x1) ) return isGoodEvent_;
+	  triggerThr_=75; 
+	  triggerWgt_=phys.gammaPrescale[3];
+	}
+      else if(pt>=100 && pt<170)
+	{
+	  if( !( (phys.gammaTriggerWord>>4) & 0x1) ) return isGoodEvent_;
+	  triggerThr_=90; 
+	  triggerWgt_=phys.gammaPrescale[4];
+	}
+      else if(pt>=170 && pt<270)
+	{
+	  bool has150(( (phys.gammaTriggerWord>>6) & 0x1));
+	  bool has160(( (phys.gammaTriggerWord>>7) & 0x1));
+	  if(!has150 && !has160) return isGoodEvent_;
+	  if(has150)
+	    {
+	      triggerThr_=150; 
+	      triggerWgt_=phys.gammaPrescale[6];
+	    }
+	  else
+	    {
+	      triggerThr_=160; 
+	      triggerWgt_=phys.gammaPrescale[7];
+	    }
+	}
+      else if(pt>=270)
+	{
+	  if( !( (phys.gammaTriggerWord>>8) & 0x1) ) return isGoodEvent_;
+	  triggerThr_=250; 
+	  triggerWgt_=phys.gammaPrescale[8];
+	}
+    }
+  else {   triggerThr_ =( phys.cat-22)/1000; triggerWgt_=1;}
+  
   //all done here
   isGoodEvent_=true;
   return isGoodEvent_;
