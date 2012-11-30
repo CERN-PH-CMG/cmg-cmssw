@@ -1,6 +1,5 @@
 from ROOT import TFile, TTree, TChain
 from CMGTools.RootTools.Chain import Chain
-from CMGTools.H2TauTau.proto.plotter.embed import embedScaleFactor
 import pickle
 
 keeper = []
@@ -77,28 +76,18 @@ def prepareComponents(dir, config, aliases=None, embed=True,
 
     # attach the corresponding tree to each component
     def attachTree(comps, channel):
-        treeName = 'H2TauTauTreeProducer{channel}'.format(channel=channel)
-        fileName = 'H2TauTauTreeProducer{channel}_tree.root'.format(channel=channel)
-        if channel == 'MuMu':
-            treeName = 'ZJetsTreeProducer'
-            fileName = '{treeName}_tree.root'.format(treeName=treeName)
+        treeName = 'ZJetsTreeProducer'
+        fileName = '{treeName}_tree.root'.format(treeName=treeName)
         for comp in comps.values():
-            fileName = '/'.join([ dir,
+            fullName = '/'.join([ dir,
                                   comp.dir,
                                   treeName,
                                   fileName] )
             tree = TChain(treeName)
-            tree.Add(fileName)
+            tree.Add(fullName)
             comp.tree = tree
     attachTree(zComps,'MuMu')
     attachTree(newSelComps, channel)
-
-    # compute the embedded sample weighting factor
-    if embed and newSelComps.get('Ztt', False):
-        eh, zh, embedFactor = embedScaleFactor(newSelComps)
-        for comp in embedComps:
-            # import pdb; pdb.set_trace()
-            comp.embedFactor = embedFactor
 
     return newSelComps, weights, zComps
     

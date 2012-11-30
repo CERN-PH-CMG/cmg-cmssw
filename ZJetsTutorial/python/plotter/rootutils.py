@@ -2,7 +2,7 @@ import re
 import copy
 import time
 from ROOT import gPad, TCanvas, TPad, TPaveText, TBox, gStyle
-from CMGTools.H2TauTau.proto.plotter.officialStyle import CMSPrelim as CMSPrelimOfficial
+# from CMGTools.H2TauTau.proto.plotter.officialStyle import CMSPrelim as CMSPrelimOfficial
 from CMGTools.RootTools.DataMC.Stack import Stack
 
 can = None,
@@ -100,8 +100,8 @@ def datasetInfo(plot):
 def CMSPrelim(plot, pad, channel ):
     pad.cd()
     year, lumi, energy = datasetInfo( plot )
-    theStr = 'CMS Preliminary {year}, {lumi:3.3} fb^{{-1}}, #sqrt{{s}} = {energy:d} TeV'.format( year=year, lumi=lumi, energy=energy)
-    lowX = 0.11
+    theStr = 'CMS Prelim. {year}, {lumi:3.3} fb^{{-1}}, #sqrt{{s}} = {energy:d} TeV'.format( year=year, lumi=lumi, energy=energy)
+    lowX = 0.21
     lowY = 0.87
     plot.cmsprel = TPaveText(lowX, lowY, lowX+0.8, lowY+0.16, "NDC")
     plot.cmsprel.SetBorderSize(   0 )
@@ -112,7 +112,7 @@ def CMSPrelim(plot, pad, channel ):
     plot.cmsprel.AddText(theStr)
     plot.cmsprel.Draw('same')
     
-    plot.chan = TPaveText(0.8, lowY, 0.90, lowY+0.18, "NDC")
+    plot.chan = TPaveText(0.85, lowY, 0.90, lowY+0.18, "NDC")
     plot.chan.SetBorderSize(   0 )
     plot.chan.SetFillStyle(    0 )
     plot.chan.SetTextAlign(   12 )
@@ -127,16 +127,11 @@ unitpat = re.compile('.*\((.*)\)\s*$')
 keeper = []
 
 
-def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
-    print plot
+def draw(plot, channel='MuMu', plotprefix = None, SetLogy = 0):
+    # print plot
     Stack.STAT_ERRORS = True
     blindxmin = None
     blindxmax = None
-    doBlind = (plot.varName == 'svfitMass') and doBlind
-    if doBlind:
-        blindxmin = 100
-        blindxmax = 160
-        plot.Blind(blindxmin, blindxmax, False)
     titles = xtitles
     if channel=='TauEle':
         titles = xtitles_TauEle
@@ -158,8 +153,6 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
     padr.cd()
     ratio = copy.deepcopy(plot)
     ratio.legendOn = False
-    if doBlind:
-        ratio.Blind(blindxmin, blindxmax, True)
     ratio.DrawRatioStack('HIST', ymin=0.4, ymax=1.6)
     hr = ratio.stack.totalHist
     # hr.weighted.Fit('pol1')
@@ -186,8 +179,7 @@ def draw(plot, doBlind=True, channel='TauMu', plotprefix = None, SetLogy = 0):
         # import pdb; pdb.set_trace()
         keeper.append(box)
     print channel
-    if channel == 'TauMu' : CMSPrelim( plot, pad, '#tau_{#mu}#tau_{h}')
-    elif channel == 'TauEle' : CMSPrelim ( plot, pad, '#tau_{e}#tau_{h}')
+    if channel == 'MuMu' : CMSPrelim( plot, pad, '#mu#mu')
     can.cd()
     if plotprefix == None : plotname = plot.varName
     else : plotname = plotprefix + '_' + plot.varName
@@ -204,56 +196,56 @@ def buildCanvasOfficial():
 
 
 
-def drawOfficial(plot, doBlind=False, channel='TauMu', plotprefix = None, ymin = 0.1):
-    global ocan
-    print plot
-    Stack.STAT_ERRORS = False
-    blindxmin = None
-    blindxmax = None
-    doBlind = (plot.varName == 'svfitMass') and doBlind
-    if doBlind:
-        blindxmin = 100
-        blindxmax = 160
-        plot.Blind(blindxmin, blindxmax, False)
-    titles = xtitles
-    if channel=='TauEle':
-        titles = xtitles_TauEle
-    xtitle = titles.get( plot.varName, None )
-    if xtitle is None:
-        xtitle = ''
-    global ocan
-    if ocan is None:
-        ocan = buildCanvasOfficial()
-    ocan.cd()
-    plot.DrawStack('HIST', ymin=ymin)
-    h = plot.supportHist
-    h.GetXaxis().SetTitle('{xtitle}'.format(xtitle=xtitle))
-    # blinding
-    if plot.blindminx:
-        ocan.cd()
-        max = plot.stack.totalHist.GetMaximum()
-        box = TBox( plot.blindminx, 0,  plot.blindmaxx, max )
-        box.SetFillColor(1)
-        box.SetFillStyle(3004)
-        box.Draw()
-        # import pdb; pdb.set_trace()
-        keeper.append(box)
-    year, lumi, energy = datasetInfo( plot )
-    datasetStr = "CMS Preliminary, #sqrt{{s}} = {energy} TeV, L = {lumi:3.2f} fb^{{-1}}".format(energy=energy, lumi=lumi)
-    if channel == 'TauMu' : a,b = CMSPrelimOfficial( datasetStr, '#tau_{#mu}#tau_{h}',0.15,0.835)
-    elif channel == 'TauEle' : a,b = CMSPrelimOfficial( datasetStr, '#tau_{e}#tau_{h}', 0.15, 0.835)
-    a.Draw()
-    b.Draw()
-    save.extend([a,b])
-    ocan.Modified()    
-    ocan.Update()    
-    ocan.cd()
-    if plotprefix == None : plotname = plot.varName
-    else : plotname = plotprefix + '_' + plot.varName
-    ocan.SaveAs( plotname + '.png')
-    ocan.SetLogy()
-    ocan.SaveAs( plotname + '_log.png')
-    ocan.SetLogy(0)
+## def drawOfficial(plot, doBlind=False, channel='TauMu', plotprefix = None, ymin = 0.1):
+##     global ocan
+##     print plot
+##     Stack.STAT_ERRORS = False
+##     blindxmin = None
+##     blindxmax = None
+##     doBlind = (plot.varName == 'svfitMass') and doBlind
+##     if doBlind:
+##         blindxmin = 100
+##         blindxmax = 160
+##         plot.Blind(blindxmin, blindxmax, False)
+##     titles = xtitles
+##     if channel=='TauEle':
+##         titles = xtitles_TauEle
+##     xtitle = titles.get( plot.varName, None )
+##     if xtitle is None:
+##         xtitle = ''
+##     global ocan
+##     if ocan is None:
+##         ocan = buildCanvasOfficial()
+##     ocan.cd()
+##     plot.DrawStack('HIST', ymin=ymin)
+##     h = plot.supportHist
+##     h.GetXaxis().SetTitle('{xtitle}'.format(xtitle=xtitle))
+##     # blinding
+##     if plot.blindminx:
+##         ocan.cd()
+##         max = plot.stack.totalHist.GetMaximum()
+##         box = TBox( plot.blindminx, 0,  plot.blindmaxx, max )
+##         box.SetFillColor(1)
+##         box.SetFillStyle(3004)
+##         box.Draw()
+##         # import pdb; pdb.set_trace()
+##         keeper.append(box)
+##     year, lumi, energy = datasetInfo( plot )
+##     datasetStr = "CMS Preliminary, #sqrt{{s}} = {energy} TeV, L = {lumi:3.2f} fb^{{-1}}".format(energy=energy, lumi=lumi)
+##     if channel == 'TauMu' : a,b = CMSPrelimOfficial( datasetStr, '#tau_{#mu}#tau_{h}',0.15,0.835)
+##     elif channel == 'TauEle' : a,b = CMSPrelimOfficial( datasetStr, '#tau_{e}#tau_{h}', 0.15, 0.835)
+##     a.Draw()
+##     b.Draw()
+##     save.extend([a,b])
+##     ocan.Modified()    
+##     ocan.Update()    
+##     ocan.cd()
+##     if plotprefix == None : plotname = plot.varName
+##     else : plotname = plotprefix + '_' + plot.varName
+##     ocan.SaveAs( plotname + '.png')
+##     ocan.SetLogy()
+##     ocan.SaveAs( plotname + '_log.png')
+##     ocan.SetLogy(0)
 
 
 cantemp = None
