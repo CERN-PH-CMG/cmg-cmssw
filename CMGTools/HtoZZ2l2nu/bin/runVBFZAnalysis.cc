@@ -254,7 +254,7 @@ int main(int argc, char* argv[])
                      if(dijet_mass>800 && int(dijet_mass)%100!=0)continue;
                      optim_Cuts2_z_pt.push_back(z_pt);
                      optim_Cuts2_jet_pt1.push_back(jet_pt1);
-                     optim_Cuts2_jet_pt1.push_back(jet_pt2);
+                     optim_Cuts2_jet_pt2.push_back(jet_pt2);
                      optim_Cuts2_eta_gap.push_back(eta_gap);
                      optim_Cuts2_dijet_mass.push_back(dijet_mass);
                    }
