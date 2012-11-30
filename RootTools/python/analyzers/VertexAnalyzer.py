@@ -41,6 +41,17 @@ class VertexAnalyzer( Analyzer ):
     
     """
 
+    def __init__(self, cfg_ana, cfg_comp, looperName):
+        super(VertexAnalyzer, self).__init__(cfg_ana, cfg_comp, looperName)
+
+        self.doHists=True
+        if (hasattr(self.cfg_ana,'makeHists')) and (not self.cfg_ana.makeHists):
+            self.doHists=False
+        if self.doHists:    
+            self.pileup = VertexHistograms('/'.join([self.dirName,
+                                                     'pileup.root']))
+        
+
     def declareHandles(self):
         super(VertexAnalyzer, self).declareHandles()
         self.handles['vertices'] =  AutoHandle(
@@ -68,19 +79,11 @@ class VertexAnalyzer( Analyzer ):
     def beginLoop(self):
         super(VertexAnalyzer,self).beginLoop()
         self.averages.add('vertexWeight', Average('vertexWeight') )
-
         self.counters.addCounter('GoodVertex')
         self.count = self.counters.counter('GoodVertex')
         self.count.register('All Events')
         self.count.register('Events With Good Vertex')
 
-        self.doHists=True
-        
-        if (hasattr(self.cfg_ana,'makeHists')) and (not self.cfg_ana.makeHists):
-            self.doHists=False
-        if self.doHists:    
-            self.pileup = VertexHistograms('/'.join([self.dirName,
-                                                 'pileup.root']))
         
     def process(self, iEvent, event):
         self.readCollections( iEvent )

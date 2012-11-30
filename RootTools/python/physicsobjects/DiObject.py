@@ -1,27 +1,26 @@
 import math
 
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Tau, Electron
+from CMGTools.RootTools.physicsobjects.PhysicsObject import PhysicsObject
 from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 
-class DiObject( object ):
+class DiObject( PhysicsObject ):
+    '''Generic di-object class, to handle di-objects from the EDM file
+    '''
     
     def __init__(self, diobject):
+        '''diobject is the di-object read from the edm file'''
         self.diobject = diobject
-        #p4 = LorentzVector( 1,0,0,1)
-        # self.diobject.setP4(p4)
         self.leg1Gen = None
         self.leg2Gen = None
         self.leg1DeltaR = -1
         self.leg2DeltaR = -1
+        super(DiObject, self).__init__(diobject)
 
     def sumPt(self):
-        '''pt_leg1 + pt_leg2. used for finding the best DiTau.'''
+        '''pt_leg1 + pt_leg2, e.g. used for finding the best DiTau.'''
         return self.leg1().pt() + self.leg2().pt()
-
-    def __getattr__(self, name):
-        '''all accessors  from cmg::DiObject are transferred to this class.'''
-        return getattr(self.diobject, name)
 
     def __str__(self):
         header = '{cls}: mvis={mvis}, mT={mt}, sumpT={sumpt}'.format(
@@ -49,12 +48,12 @@ class DiMuon( DiObject ):
         return self.mu2
 
     def __str__(self):
-        header = 'DiMuon: mvis=%3.2f, sumpT=%3.2f' \
-                 % (self.diobject.mass(),
-                    self.sumPt() )
-        return '\n'.join( [header] )
-
-
+        return 'DiMuon: mass={mass:5.2f}, sumpt={sumpt:5.2f}, pt={pt:5.2f}'.format(
+            mass = self.mass(),
+            sumpt = self.sumPt(),
+            pt = self.pt()
+            )
+    
 
 class DiElectron( DiObject ):
 

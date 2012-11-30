@@ -1,15 +1,28 @@
 import copy
-from ROOT import Math
+from CMGTools.RootTools.physicsobjects.Particle import Particle
 
+#COLIN should make a module for lorentz vectors (and conversions)
 #instanciating template
+from ROOT import Math
 PtEtaPhiE4DLV = Math.PtEtaPhiE4D(float)
 PtEtaPhiM4DLV = Math.PtEtaPhiM4D(float)
 
-class PhysicsObject(object):
+
+class PhysicsObject(Particle):
     '''Extends the cmg::PhysicsObject functionalities.'''
 
     def __init__(self, physObj):
         self.physObj = physObj
+        super(PhysicsObject, self).__init__()
+
+    def __copy__(self):
+        '''Very dirty trick, the physObj is deepcopied...'''
+        # print 'call copy', self
+        physObj = copy.deepcopy( self.physObj )
+        newone = type(self)(physObj)
+        newone.__dict__.update(self.__dict__)
+        newone.physObj = physObj
+        return newone        
 
     def scaleEnergy( self, scale ):
         p4 = self.physObj.p4()
@@ -41,10 +54,3 @@ class PhysicsObject(object):
         '''all accessors  from cmg::DiTau are transferred to this class.'''
         return getattr(self.physObj, name)
 
-    def __str__(self):
-        tmp = '{className} : {pdgId:>3}, pt = {pt:5.1f}, eta = {eta:5.2f}, phi = {phi:5.2f}'
-        return tmp.format( className = self.__class__.__name__,
-                           pdgId = self.pdgId(),
-                           pt = self.pt(),
-                           eta = self.eta(),
-                           phi = self.phi() )
