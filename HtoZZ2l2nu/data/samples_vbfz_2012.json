@@ -293,6 +293,22 @@
                 {
                  "dtag":"Data8TeV_MuEG2012C_v2",
                  "split":2
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012D_203894to206940",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_DoubleMu2012D_203894to206940",
+                 "split":2
+                },
+                {
+	         "dtag":"Data8TeV_SingleMu2012D_203894to206940",
+                 "split":2
+                },
+                {
+                 "dtag":"Data8TeV_MuEG2012D_203894to206940",
+                 "split":2
                 }
 	    ]
 	}

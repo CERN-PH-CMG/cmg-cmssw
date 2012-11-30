@@ -114,7 +114,7 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, bool is2011)
 	  triggerThr_=90; 
 	  triggerWgt_=phys.gammaPrescale[4];
 	}
-      else if(pt>=170 && pt<270)
+      else if(pt>=170)
 	{
 	  bool has150(( (phys.gammaTriggerWord>>6) & 0x1));
 	  bool has160(( (phys.gammaTriggerWord>>7) & 0x1));
@@ -129,12 +129,6 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, bool is2011)
 	      triggerThr_=160; 
 	      triggerWgt_=phys.gammaPrescale[7];
 	    }
-	}
-      else if(pt>=270)
-	{
-	  if( !( (phys.gammaTriggerWord>>8) & 0x1) ) return isGoodEvent_;
-	  triggerThr_=250; 
-	  triggerWgt_=phys.gammaPrescale[8];
 	}
     }
   else {   triggerThr_ =( phys.cat-22)/1000; triggerWgt_=1;}

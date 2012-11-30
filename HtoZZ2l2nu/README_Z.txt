@@ -4,10 +4,10 @@
 #    2012    #
 ##############
 runLocalAnalysisOverSamples.py -e runVBFZAnalysis -j data/samples_vbfz_2012.json -o ~/work/vbfz/results/2012 -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=False @is2011=False" -s 8nh 
-runPlotter --json data/samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012/ --outDir ~/work/vbfz/results/2012/plots/ --iLumi 12196 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_2012.root
+runPlotter --json data/samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012/ --outDir ~/work/vbfz/results/2012/plots/ --iLumi 16602 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_2012.root
 
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForVBFZ -j data/photon-samples_vbfz_2012.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/vbfz/results/2012_gamma/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh
-runPlotter --json data/photon-samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012_gamma/raw/ --outDir ~/work/vbfz/results/2012_gamma/raw/plots/ --iLumi 12196 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_gamma_raw_2012.root
+runPlotter --json data/photon-samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012_gamma/raw/ --outDir ~/work/vbfz/results/2012_gamma/raw/plots/ --iLumi 16602 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_gamma_raw_2012.root
 
 
 
