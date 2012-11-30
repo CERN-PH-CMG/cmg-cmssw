@@ -20,8 +20,13 @@ class ZJetsTreeProducer( TreeAnalyzerNumpy ):
         bookParticle(tr, 'diL')
         var(tr, 'diL_mass')
 
+        bookParticle(tr, 'diLRaw')
+        var(tr, 'diLRaw_mass')
+
         bookLepton(tr, 'leg1')
         bookLepton(tr, 'leg2')
+##         bookLepton(tr, 'leg1Raw')
+##         bookLepton(tr, 'leg2Raw')
         
         var( tr, 'nJets')
         var( tr, 'nJets20')
@@ -45,8 +50,12 @@ class ZJetsTreeProducer( TreeAnalyzerNumpy ):
        
         fillParticle(tr, 'diL', event.diLepton)
         fill(tr, 'diL_mass', event.diLepton.mass())
+        fillParticle(tr, 'diLRaw', event.diLeptonRaw)
+        fill(tr, 'diLRaw_mass', event.diLeptonRaw.mass())
         fillLepton(tr, 'leg1', event.diLepton.leg1())
         fillLepton(tr, 'leg2', event.diLepton.leg2())
+##         fillLepton(tr, 'leg1Raw', event.diLeptonRaw.leg1())
+##         fillLepton(tr, 'leg2Raw', event.diLeptonRaw.leg2())
 
 
         fill(tr, 'nJets20', len(event.cleanJets) )

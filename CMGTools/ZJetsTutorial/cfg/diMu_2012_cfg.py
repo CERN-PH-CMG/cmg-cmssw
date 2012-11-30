@@ -64,6 +64,10 @@ ZMuMuAna = cfg.Analyzer(
     triggerMap = pathsAndFilters
     )
 
+ZMuMuRochCor = cfg.Analyzer(
+    'ZMuMuRochCorAnalyzer'
+    )
+
 
 # defined for vbfAna and eventSorter
 vbfKwargs = dict( Mjj = 500,
@@ -97,9 +101,9 @@ from CMGTools.ZJetsTutorial.samples.run2012.diMu_ColinNov13 import *
 
 VVgroup = [c.name for c in mc_diboson_inc]
 
-allsamples = copy.copy(mc_diboson_inc)
+allsamples = copy.copy(data_list)
 allsamples.extend([TTJets, DYJets])
-allsamples.extend(data_list)
+allsamples.extend(mc_diboson_inc)
 
 for c in allsamples:
     c.triggers = [
@@ -129,6 +133,7 @@ sequence = cfg.Sequence( [
     vertexAna,
     pileUpAna,
     ZMuMuAna,
+    ZMuMuRochCor, 
     jetAna,
     treeProducer
    ] )
@@ -140,10 +145,9 @@ if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = DYJets
-    comp.files = comp.files[:10]
+    comp.files = comp.files[:20]
     selectedComponents = [comp]
     comp.splitFactor = 1
-    # comp.triggers = ['HLT_Mu17_Mu8_v*']
 elif test==2:    
     # test all components (1 thread per component.
     # important to make sure that your code runs on any kind of component

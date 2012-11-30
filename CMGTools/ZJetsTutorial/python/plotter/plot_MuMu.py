@@ -38,14 +38,15 @@ def normalizeDY(comps, weight=None):
         weight = 'weight'    
     oscut = 'diL_charge==0 && leg1_relIso05<0.1 && leg2_relIso05<0.1'
     print 'normalizing with cut', oscut,
-    min = 50
-    max = 120
+    min = 80
+    max = 100
     nbins = max - min
     osign = ZDataMC('diL_mass', anaDir,
                     selComps, weights, nbins, min, max,
                     cut=oscut, weight=weight, 
                     treeName = treeName)
     factor = osign.Hist('Data').Integral(True, min, max) / osign.Hist('Ztt').Integral(True, min, max)
+    # import pdb; pdb.set_trace()
     weights['Ztt'].addWeight *= factor
     print weights['Ztt']
 
@@ -58,14 +59,8 @@ def plot(var, cut=None,
     osign = makePlot( var, anaDir, selComps, weights,
                       nbins, xmin, xmax,
                       cut, weight=weight,
-                      VVgroup=cfg.VVgroup, treeName=treeName);
-    osign.DrawStack('HIST')
-    osign.supportHist.GetXaxis().SetTitle(var)
-    gPad.SaveAs(var+'.png')
-    gPad.SetLogy()
-    gPad.SaveAs(var+'_log.png')
-    gPad.SetLogy(0)
-    gPad.Update()
+                      VVgroup=cfg.VVgroup, treeName=treeName)
+    draw(osign)
     print osign
     return osign
     
@@ -146,9 +141,9 @@ if __name__ == '__main__':
     if options.batch:
         gROOT.SetBatch()
     if options.nbins is None:
-        NBINS = 400
-        XMIN = 0
-        XMAX = 200
+        NBINS = 200
+        XMIN = 70
+        XMAX = 120
     else:
         NBINS = int(options.nbins)
         XMIN = float(options.xmin)
@@ -170,14 +165,15 @@ if __name__ == '__main__':
     treeName = 'ZJetsTreeProducer'
 
     aliases = None
-    selComps, weights, zComps = prepareComponents(anaDir, cfg.config, aliases,
-                                                  options.embed,
-                                                  channel=options.channel, higgsMass=options.higgs,
-                                                  forcedLumi = 5000.)
+    selComps, weights, zComps = prepareComponents(
+        anaDir, cfg.config, aliases,
+        options.embed,
+        channel=options.channel, higgsMass=options.higgs,
+        forcedLumi = 5000.)
 
     normalizeDY( selComps )
     
-    ocan = buildCanvasOfficial()
+    ocan = buildCanvas()
     
     osign = plot(options.hist, options.cut, NBINS, XMIN, XMAX)
     
