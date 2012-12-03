@@ -48,6 +48,7 @@ def normalizeDY(comps, weight=None):
     factor = osign.Hist('Data').Integral(True, min, max) / osign.Hist('Ztt').Integral(True, min, max)
     # import pdb; pdb.set_trace()
     weights['Ztt'].addWeight *= factor
+    print 'factor=',factor 
     print weights['Ztt']
 
 def plot(var, cut=None,
@@ -174,6 +175,7 @@ if __name__ == '__main__':
     normalizeDY( selComps )
     
     ocan = buildCanvas()
-    
+
+    jetcut = 'jet1_pt>30 && jet1_looseJetId>0.5 && jet1_puJetId>0.5 && diL_charge==0 && leg1_relIso05<0.1 && leg2_relIso05<0.1 && diL_charge==0 && abs(diL_mass-91.2)<15'
     osign = plot(options.hist, options.cut, NBINS, XMIN, XMAX)
     

@@ -93,7 +93,7 @@ def datasetInfo(plot):
     elif plot.dataComponents[0].find('2011')!=-1:
         year = '2011'
         energy = 7       
-    lumi = plot.weights['TTJets'].intLumi/1e3
+    lumi = plot.intLumi/1e3
     return year, lumi, energy 
 
 
