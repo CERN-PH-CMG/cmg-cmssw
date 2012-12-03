@@ -37,7 +37,7 @@
 
 
 using namespace std;
-double NonResonnantSyst = 0.1;//0.25;
+double NonResonnantSyst = 0.25; //0.1;//0.25;
 double GammaJetSyst = 1.0; //0.5;//0.5, 1.0;
 
 //wrapper for a projected shape for a given set of cuts
@@ -143,6 +143,10 @@ double shapeMax = 9999;
 double shapeMinVBF = 0;
 double shapeMaxVBF = 9999;
 bool doInterf = false;
+double minSignalYield = 0;
+
+bool dirtyFix1 = false;
+bool dirtyFix2 = false;
 
 int indexvbf = -1;
 int indexcut   = -1, indexcutL=-1, indexcutR=-1;
@@ -185,6 +189,10 @@ void printHelp()
   printf("--systpostfix    --> use this to specify a syst postfix that will be added to the process names)\n");
   printf("--MCRescale    --> use this to specify a syst postfix that will be added to the process names)\n");
   printf("--interf     --> use this to rescale xsection according to WW interferences)\n");
+  printf("--minSignalYield   --> use this to specify the minimum Signal yield you want in each channel)\n");
+
+
+
 }
 
 //
@@ -210,6 +218,7 @@ int main(int argc, char* argv[])
   for(int i=1;i<argc;i++){
     string arg(argv[i]);
     if(arg.find("--help")          !=string::npos) { printHelp(); return -1;} 
+    else if(arg.find("--minSignalYield") !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%lf",&minSignalYield ); i++; printf("minSignalYield = %f\n", minSignalYield);}
     else if(arg.find("--subNRB12") !=string::npos) { subNRB2012=true; skipWW=false; printf("subNRB2012 = True\n");}
     else if(arg.find("--subNRB")   !=string::npos) { subNRB2011=true; skipWW=true; printf("subNRB2011 = True\n");}
     else if(arg.find("--subDY")    !=string::npos) { subDY=true; DYFile=argv[i+1];  i++; printf("Z+Jets will be replaced by %s\n",DYFile.Data());}
@@ -244,6 +253,8 @@ int main(int argc, char* argv[])
     else if(arg.find("--systpostfix")   !=string::npos && i+1<argc)  { systpostfix = argv[i+1];  i++;  printf("systpostfix '%s' will be used\n", systpostfix.Data());  }
     else if(arg.find("--syst")     !=string::npos) { runSystematics=true; printf("syst = True\n");}
     else if(arg.find("--shape")    !=string::npos) { shape=true; printf("shapeBased = True\n");}
+    else if(arg.find("--dirtyFix2")    !=string::npos) { dirtyFix2=true; printf("dirtyFix2 = True\n");}
+    else if(arg.find("--dirtyFix1")    !=string::npos) { dirtyFix1=true; printf("dirtyFix1 = True\n");}
   }
   if(jsonFile.IsNull() || inFileUrl.IsNull() || histo.IsNull() || indexcut == -1 || mass==-1) { printHelp(); return -1; }
   if(AnalysisBins.size()==0)AnalysisBins.push_back("");
@@ -360,7 +371,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
                if(procIndex>=0) shape.signal[procIndex]->Add(hshape);
                else             {hshape->SetTitle(proc);shape.signal.push_back(hshape);}
 
-               //printf("Adding signal %s\n",proc.Data());
+               printf("Adding signal %s\n",proc.Data());
             }else{
                std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator it = shape.signalVars.find(proc);
                 
@@ -374,6 +385,10 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
                }
             }
 	 }else{
+             if(dirtyFix1 && proc.Contains("ZZ")){
+               hshape->Scale(0.86); //scale down the xsection by 14%
+             }
+
             if(isInSignal && varName==""){
                BackgroundsInSignal.push_back(proc);
             }else{
@@ -381,7 +396,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 	       else             shape.bckgVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
             }
 
-	    //printf("histoName = B %i -- %i  -- %s - %s --> %s\n", i, int(varName==""), proc.Data(), histoName.Data(), hshape->GetTitle());
+	    printf("histoName = B %i -- %i  -- %s - %s --> %s\n", i, int(varName==""), proc.Data(), histoName.Data(), hshape->GetTitle());
 	 }
       }
     }
@@ -908,6 +923,8 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
   TString mumucard = "";
   TString combinedcard = "";
 
+  bool PassMinSignalYield=true;
+
   //build the datacard separately for each channel
   for(size_t i=1; i<=dci.ch.size(); i++){  
       TString dcName=dci.shapesFile;
@@ -945,6 +962,9 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
       for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue; fprintf(pFile,"%6f ", dci.rates[RateKey_t(dci.procs[j-1],dci.ch[i-1])] );}  fprintf(pFile,"\n");
       fprintf(pFile, "-------------------------------\n");
 
+      double SignalYield = 0; procCtr = 1-dci.nsignalproc;
+      for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end() || procCtr>0 ) continue; procCtr++; SignalYield+=dci.rates[RateKey_t(dci.procs[j-1],dci.ch[i-1])]; }
+      if(SignalYield<minSignalYield)PassMinSignalYield = false;
 
       //systematics
       char sFile[2048];
@@ -1130,11 +1150,15 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
       dcUrls.push_back(dcName);
   }
 
+   if(PassMinSignalYield){
    FILE* pFile = fopen("combineCards.sh","w");
-   fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedcard + " > " + "card_combined.dat").Data());
-   fprintf(pFile,"%s;\n",(TString("combineCards.py ") + eecard       + " > " + "card_ee.dat").Data());
-   fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mumucard     + " > " + "card_mumu.dat").Data());
-   fclose(pFile);
+      fprintf(pFile,"%s;\n",(TString("combineCards.py ") + combinedcard + " > " + "card_combined.dat").Data());
+      fprintf(pFile,"%s;\n",(TString("combineCards.py ") + eecard       + " > " + "card_ee.dat").Data());
+      fprintf(pFile,"%s;\n",(TString("combineCards.py ") + mumucard     + " > " + "card_mumu.dat").Data());
+      fclose(pFile);
+   }else{
+      printf("Not all the channels have enough events inside... don't produce the combined datacards and therefore don't run the limit\n");
+   }
 
 //  gSystem->Exec(TString("combineCards.py ") + combinedcard + " > " + outDir+"/card_combined.dat");
 //  gSystem->Exec(TString("combineCards.py ") + eecard       + " > " + outDir+"/card_ee.dat");
@@ -1777,13 +1801,13 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
 std::cout<<"DYTEST1  " << selCh[i]+string(" - ")+AnalysisBins[b] << "  \n";
 
            double rescaleFactor = 1.0;
-/*
+
            //compute rescale factor using low MET events
            TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);           
            double integral = met->Integral(1,met->GetXaxis()->FindBin(50));
-           double rescaleFactor = LowMetIntegral[selCh[i]+AnalysisBins[b]] / integral; //Just to redo what we did for the HIGHMASS paper
+           rescaleFactor = LowMetIntegral[selCh[i]+AnalysisBins[b]] / integral; //Just to redo what we did for the HIGHMASS paper
            printf("Rescale in %s = %f/%f = %f\n",  (selCh[i]+AnalysisBins[b]).Data(), LowMetIntegral[selCh[i]+AnalysisBins[b]], integral, rescaleFactor);         
-*/
+
            char buffer[255]; sprintf(buffer,"%6.3f",rescaleFactor);
            Cval   += string(" &") + buffer;
 
@@ -2041,10 +2065,19 @@ void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& a
                  TString proc(((TH1D*)shape.signal[isignal])->GetTitle());
                  if(mass>0 && !proc.Contains(massStr))continue;
                  if(!proc.Contains("ggH"))continue;
-                 if(mass<400)continue;
                  double scaleFactor = 1.45 - 0.00218 * mass + 0.000002625 * mass * mass;
                  double scaleFactorDown = 1.0;
                  double scaleFactorUp = 1 + (scaleFactor-1)*2;
+
+                 if(mass<400){
+                    scaleFactor = 1.0; scaleFactorDown=1.0; scaleFactorUp=1.0;
+                 }
+
+                 if(dirtyFix2){
+                    scaleFactor *= 0.80; scaleFactorDown*=1.00; scaleFactorUp*=1.00;                  
+                    printf("apply dirty fix --> %f\n",scaleFactor);
+                 } 
+
                  printf("Scale Factor : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
 
                  ((TH1D*)shape.signal[isignal])->Scale(scaleFactor);
