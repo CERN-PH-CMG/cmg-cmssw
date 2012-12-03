@@ -102,7 +102,8 @@ from CMGTools.ZJetsTutorial.samples.run2012.diMu_ColinNov13 import *
 VVgroup = [c.name for c in mc_diboson_inc]
 
 allsamples = copy.copy(data_list)
-allsamples.extend([TTJets, DYJets])
+allsamples.extend([DYJets])
+allsamples.extend([TTJets])
 allsamples.extend(mc_diboson_inc)
 
 for c in allsamples:
