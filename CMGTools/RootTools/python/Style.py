@@ -77,7 +77,7 @@ sGreenSquares = Style( lineColor=8, markerStyle = 21, markerColor=8 )
 sRedSquares = Style(lineColor=2, markerStyle = 21, markerColor=2)
 
 
-styleSet = [sBlack, sBlue, sGreen, sRed, sBlackSquares, sBlueSquares, sGreenSquares, sRedSquares]
+styleSet = [sBlue, sGreen, sRed, sYellow, sViolet, sBlackSquares, sBlueSquares, sGreenSquares, sRedSquares]
 iStyle = 0
 
 def nextStyle():
