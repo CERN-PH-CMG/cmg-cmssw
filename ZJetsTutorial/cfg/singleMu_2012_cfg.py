@@ -49,44 +49,23 @@ pileUpAna = cfg.Analyzer(
     true = True
     )
 
-
-ZMuMuAna = cfg.Analyzer(
-    'ZMuMuAnalyzer',
-    pt1 = 10,
-    eta1 = 2.4,
-    iso1 = 0.3,
-    pt2 = 10,
-    eta2 = 2.4,
-    iso2 = 0.3,
-    m_min = 50,
-    m_max = 120,
-    verbose = False,
-    triggerMap = pathsAndFilters
+SingleMuAna = cfg.Analyzer(
+    'SingleMuAnalyzer',
     )
-
-ZMuMuRochCor = cfg.Analyzer(
-    'ZMuMuRochCorAnalyzer'
-    )
-
 
 jetAna = cfg.Analyzer(
     'JetAnalyzer',
     jetCol = 'cmgPFJetSel',
     jetPt = 20.,
     jetEta = 4.7,
+    cjvPtCut = 30.,
     btagSFseed = 123456,
     relaxJetId = True, 
     )
 
-vbfAna = cfg.Analyzer(
-    'VBFSimpleAnalyzer',
-    Mjj = 500,
-    deltaEta = 3.5,
-    cjvPtCut = 30.,
-    )
 
 treeProducer = cfg.Analyzer(
-    'ZJetsTreeProducer'
+    'SingleMuJetsTreeProducer'
     )
 
 
@@ -132,10 +111,8 @@ sequence = cfg.Sequence( [
     triggerAna,
     vertexAna,
     pileUpAna,
-    ZMuMuAna,
-    ZMuMuRochCor, 
+    SingleMuAna,
     jetAna,
-    vbfAna,
     treeProducer
    ] )
 
@@ -146,9 +123,9 @@ if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = DYJets
-    comp.files = comp.files[:28]
+    comp.files = comp.files[:10]
     selectedComponents = [comp]
-    comp.splitFactor = 14
+    comp.splitFactor = 1
 elif test==2:    
     # test all components (1 thread per component.
     # important to make sure that your code runs on any kind of component
