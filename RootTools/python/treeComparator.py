@@ -12,14 +12,16 @@ legend = None
 
 def draw(var1, cut, t1, t2, w1='1', w2='1',
          name1=None, name2=None,
-         normalize=True, nbins=20, xmin=0, xmax=200, var2=None):
-    print var1
-    print var2
-    print w1
-    print w2
-    print cut
+         normalize=False, nbins=20, xmin=0, xmax=200, var2=None):
     if var2 is None:
         var2 = var1
+    print 'tree1',
+    print '\t var   : ' , var1
+    print '\t weight:', w1
+    print 'tree2',
+    print '\t var   : ' , var2
+    print '\t weight:', w2
+    print 'cut', cut
     global legend
     h1 = TH1F(hname(), '', nbins, xmin, xmax)
     h1.Sumw2()
@@ -51,9 +53,10 @@ def draw(var1, cut, t1, t2, w1='1', w2='1',
     legend.AddEntry(h1, name1, 'lp')
     legend.AddEntry(h2, name2, 'lpf')
 
+    print 'number of selected rows:', t1.GetSelectedRows(), t2.GetSelectedRows()
+
     comparator = HistComparator(var1, h1, h2)
     return comparator
-
 
 def getTrees( treeName, patterns ):
     trees = dict()
