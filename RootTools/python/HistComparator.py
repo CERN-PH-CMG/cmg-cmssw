@@ -21,8 +21,11 @@ class HistComparator(object):
         title1 and title2: will be used in the legend.
         name: will be used on the X axis.
         '''
-        self.can, self.pad_main, self.pad_ratio = self.buildCanvas()
         self.set(name, h1, h2, title1, title2)
+        self.can, self.pad_main, self.pad_ratio = self.buildCanvas()
+
+    def __del__(self):
+        self.can.Close()
         
     def set(self, name, h1, h2, title1=None, title2=None):
         '''Change the histograms, in case we want to keep the same canvas
@@ -82,7 +85,7 @@ class HistComparator(object):
 
     def buildCanvas(self):
         can = TCanvas('can_{num}'.format(num=self.__class__.CAN_NUM),
-                      '',600,600)
+                      self.name,600,600)
         self.__class__.CAN_NUM += 1
         can.cd()
         can.Draw()
