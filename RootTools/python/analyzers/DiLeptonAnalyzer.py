@@ -163,6 +163,7 @@ class DiLeptonAnalyzer( Analyzer ):
         event.diLepton = self.bestDiLepton( selDiLeptons )
         event.leg1 = event.diLepton.leg1()
         event.leg2 = event.diLepton.leg2()
+        event.selectedLeptons = [event.leg1, event.leg2]
 
         return True
     

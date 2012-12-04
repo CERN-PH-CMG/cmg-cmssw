@@ -3,7 +3,7 @@ from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
-from CMGTools.RootTools.physicsobjects.VBF import VBF
+# from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.BTagSF import BTagSF
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
@@ -11,34 +11,29 @@ from CMGTools.RootTools.utils.DeltaR import deltaR2
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
 class JetAnalyzer( Analyzer ):
-    """Analyze jets, and in particular VBF.
+    """Analyze jets ;-)
 
-    This analyzer filters the jets that do not correspond to the di-lepton
-    legs, and stores in the event:
+    This analyzer filters the jets that do not correspond to the leptons
+    stored in event.selectedLeptons, and puts in the event:
     - jets: all jets passing the pt and eta cuts
     - cleanJets: the collection of clean jets
-    - vbf: the VBF object with all necessary variables, if it can be defined
     - bJets: the bjets passing testBJet (see this method)
 
     Example configuration:
-    
-    vbfKwargs = dict( Mjj = 500,
-                      deltaEta = 3.5 )
 
-    vbfAna = cfg.Analyzer(
+    jetAna = cfg.Analyzer(
       'JetAnalyzer',
+      # cmg jet input collection
       jetCol = 'cmgPFJetSel',
+      # pt threshold
       jetPt = 30,
+      # eta range definition
       jetEta = 5.0,
+      # seed for the btag scale factor
       btagSFseed = 123456,
+      # if True, the PF and PU jet ID are not applied, and the jets get flagged
       relaxJetId = False,
-      **vbfKwargs
     )
-
-    You can of course write the vbf parameters directly in the call to the
-    cfg.Analyzer constructor, instead of defining a dictionary of arguments
-    as done here. 
-
     """
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
@@ -53,18 +48,15 @@ class JetAnalyzer( Analyzer ):
                                            'std::vector<cmg::PFJet>' )
         if self.cfg_comp.isMC and ("BB" in self.cfg_comp.name):
             self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
-                                                     'std::vector<reco::GenParticle>' )
+                                                         'std::vector<reco::GenParticle>' )
 
     def beginLoop(self):
         super(JetAnalyzer,self).beginLoop()
-        self.counters.addCounter('VBF')
-        count = self.counters.counter('VBF')
+        self.counters.addCounter('jets')
+        count = self.counters.counter('jets')
         count.register('all events')
         count.register('at least 2 good jets')
         count.register('at least 2 clean jets')
-        count.register('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj))
-        count.register('delta Eta > {cut:3.1f}'.format(cut=self.cfg_ana.deltaEta) )
-        count.register('no central jets')
         
     def process(self, iEvent, event):
         
@@ -77,8 +69,7 @@ class JetAnalyzer( Analyzer ):
         event.cleanJets = []
         event.cleanBJets = []
 
-        leg1 = event.diLepton.leg1()
-        leg2 = event.diLepton.leg2()
+        leptons = event.selectedLeptons
      
         for cmgJet in cmgJets:
             jet = Jet( cmgJet )
@@ -91,32 +82,30 @@ class JetAnalyzer( Analyzer ):
                 event.jets.append(jet)
             if self.testBJet(jet):
                 event.bJets.append(jet)
-        self.counters.counter('VBF').inc('all events')
+        self.counters.counter('jets').inc('all events')
 
         event.cleanJets, dummy = cleanObjectCollection( event.jets,
-                                                        masks = [leg1,
-                                                                 leg2 ],
+                                                        masks = leptons,
                                                         deltaRMin = 0.5 )
         
 
         event.cleanBJets, dummy = cleanObjectCollection( event.bJets,
-                                                         masks = [leg1,
-                                                                  leg2 ],
+                                                         masks = leptons,
                                                          deltaRMin = 0.5 )        
 
-        pairs = matchObjectCollection( [ leg1,
-                                         leg2 ], allJets, 0.5*0.5)
+        pairs = matchObjectCollection( leptons, allJets, 0.5*0.5)
 
-        # associating a jet to each leg
-        leg1.jet = pairs[leg1]
-        leg2.jet = pairs[leg2]
-        if leg1.jet is None: #COLIN: I don't understand the code below...
-            leg1.jet = leg1
-        if leg2.jet is None:
-            leg2.jet = leg2        
+
+        # associating a jet to each lepton
+        for lepton in leptons:
+            jet = pairs[lepton]
+            if jet is None:
+                lepton.jet = lepton
+            else:
+                lepton.jet = jet
 
         # associating a leg to each clean jet
-        invpairs = matchObjectCollection( event.cleanJets, [ leg1,leg2 ], 99999. )
+        invpairs = matchObjectCollection( event.cleanJets, leptons, 99999. )
         for jet in event.cleanJets:
             leg = invpairs[jet]
             jet.leg = leg
@@ -138,29 +127,14 @@ class JetAnalyzer( Analyzer ):
         event.cleanJets30 = [jet for jet in event.cleanJets if jet.pt()>30]
         
         if len( event.jets30 )>=2:
-            self.counters.counter('VBF').inc('at least 2 good jets')
+            self.counters.counter('jets').inc('at least 2 good jets')
                
         if len( event.cleanJets30 )>=2:
-            self.counters.counter('VBF').inc('at least 2 clean jets')
+            self.counters.counter('jets').inc('at least 2 clean jets')
 
         if len(event.cleanJets)<2:
             return True
 
-        event.vbf = VBF( event.cleanJets, event.diLepton,
-                         None, self.cfg_ana.cjvPtCut )
-        if event.vbf.mjj > self.cfg_ana.Mjj:
-            self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )
-        else:
-            return True 
-        if abs(event.vbf.deta) > self.cfg_ana.deltaEta:
-            self.counters.counter('VBF').inc('delta Eta > {cut:3.1f}'.format(cut=self.cfg_ana.deltaEta) )
-        else:
-            return True 
-        if len(event.vbf.centralJets)==0:
-            self.counters.counter('VBF').inc('no central jets')
-        else:
-            return True
-        
         return True
         
 
@@ -196,5 +170,3 @@ class JetAnalyzer( Analyzer ):
                abs( jet.eta() ) < 2.4 and \
                jet.btagFlag and \
                self.testJetID(jet)
-               # jet.passPuJetId('full', 2)
-               # jet.btag("combinedSecondaryVertexBJetTags")>0.679 and \
