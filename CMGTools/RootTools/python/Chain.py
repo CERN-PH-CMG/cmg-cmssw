@@ -13,7 +13,7 @@ class Chain( object ):
             self.chain.Add(file)
             nFiles += 1
         if nFiles==0:
-            raise ValueError('no matching file name')
+            raise ValueError('no matching file name: '+pattern)
 
     def guessTreeName(self, pattern):
         names = []

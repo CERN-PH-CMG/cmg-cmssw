@@ -67,13 +67,40 @@ def getTrees( treeName, patterns ):
 if __name__ == '__main__':
     import sys
     import pprint
+    from optparse import OptionParser
     
-    a1,p1 = sys.argv[1].split(':')
-    a2,p2 = sys.argv[2].split(':')
+    parser = OptionParser()
+    
+    parser.usage = """
+    %prog -i <tree_alias:root_file_name> <tree_alias:root_file_name>
+
+    if you do not provide the var option, you can e.g. do:
+    comp = draw('jet2_eta', 'jet2_pt>30', trees[a1], trees[a2], name1=a1, name2=a2, xmin=-5, xmax=5); comp.draw()
+    """
+    parser.add_option("-v", "--var", 
+                      dest="var", 
+                      help="variable to draw.",
+                      default=None)
+    parser.add_option("-c", "--cut", 
+                      dest="cut", 
+                      help="cut to apply",
+                      default='1')
+
+    (options,args) = parser.parse_args()
+
+    if len(args)!=2:
+        parser.print_usage()
+        sys.exit(1)
+    
+    a1,p1 = args[0].split(':')
+    a2,p2 = args[1].split(':')
     patterns = [ (a1, p1), (a2, p2) ]
     trees = getTrees(None, patterns)
     pprint.pprint(trees)
-    comp = draw('svfitMass', '1', trees[a1], trees[a2],
-                name1 = a1, name2 = a2,
-                graphics=False)
-    comp.draw()
+
+    comp = None
+    if options.var:
+        comp = draw(options.var, options.cut,
+                    trees[a1], trees[a2],
+                    name1=a1, name2=a2);
+        comp.draw()
