@@ -21,12 +21,61 @@ data_triggers_2012C = [
     'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_Jet30_v2',
     'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_Jet30_v3',
     'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_Jet30_v4',
-
     'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v1',
     'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v2',
     'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v3',
     'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v4',
     'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v5',
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Reg_Jet30_v1',
+    ]
+
+data_triggers_2012D = [
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v1',
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v2',
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v3',
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v4',
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v5',
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Reg_Jet30_v1',
+    ]
+
+data_triggers_1prong_2012A = [
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v1',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v2',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v3',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v4',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v5',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v6',
+    ]
+
+data_triggers_1prong_2012B = [
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v1',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v2',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v3',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v4',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v5',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v6',
+    ]
+
+data_triggers_1prong_2012C = [
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v1',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v2',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v3',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v4',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v5',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v6',
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v1',
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v2',
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v3',
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v4',
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_Reg_v1',
+    ]
+
+data_triggers_1prong_2012D = [
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v1',
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v2',
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v3',
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v4',
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_Reg_v1',
     ]
 
 mc_triggers_spring12 = [
