@@ -65,14 +65,16 @@ class ttHLepAnalyzerBase( Analyzer ):
     def makeLeptons(self, event):
         
         event.looseLeptons = []
+        event.selectedLeptons = []
                 
         allmuons = map( Muon, self.handles['muons'].product() )
         for mu in allmuons:
+            #import pdb; pdb.set_trace()
             mu.associatedVertex = event.goodVertices[0]
-            if mu.pt > 5 and abs(mu.dxy())<0.5 and abs(mu.dz())<1.and abs(mu.eta)<2.5 and (mu.isGlobal() or (mu.isTracker() and mu.numberOfMatches()>0)):
+            if mu.pt > 5 #and abs(mu.dxy())<0.5 :#and abs(mu.dz())<1. and abs(mu.eta)<2.5 and (mu.isGlobal() or (mu.isTracker() and mu.numberOfMatches()>0)):
                 event.looseLeptons.append(mu)
                 event.selectedLeptons.append(mu)
-
+                
         allelectrons = map( Electron, self.handles['electrons'].product() )
         for ele in allelectrons:
             ele.associatedVertex = event.goodVertices[0]
@@ -93,10 +95,8 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         eventNumber = iEvent.eventAuxiliary().id().event()
         print 'Event ',eventNumber
-        # creating a "sub-event" for this analyzer
-        myEvent = Event(event.iEv)
-        setattr(event, self.name, myEvent)
-        event = myEvent
+        
+        #import pdb; pdb.set_trace()
 
         #call the leptons functions
         self.makeLeptons(event)    
