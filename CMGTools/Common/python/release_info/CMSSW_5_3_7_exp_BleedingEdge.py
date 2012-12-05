@@ -1,5 +1,5 @@
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'lucieg_13Nov12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'TJ_PreTrigger_27Nov12'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'joseNov28'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_taudf_5Dec12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'cris_09Oct12'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_mvametInUtilities'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_5Dec12'),
@@ -24,7 +24,3 @@
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-20'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-01-04s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
-# The following packages were not in the input release_info.
-# Please make sure that the CVS module is correct!
-#	DataFormats/StdDictionaries              V00-02-14
-#	FWCore/GuiBrowsers                       V00-00-70
