@@ -7,8 +7,8 @@ import copy
 from multiprocessing import Pool
 from pprint import pprint
 
-# from CMGTools.H2TauTau.macros.DiMuAnalyzer import DiMuAnalyzer as Analyzer
 from CMGTools.RootTools.fwlite.Looper import Looper
+from CMGTools.RootTools.fwlite.PythonPath import pythonpath
 
 # global, to be used interactively when only one component is processed.
 loop = None 
@@ -111,20 +111,8 @@ def main( options, args ):
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/H2TauTau/python/proto/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/RootTools/python/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/HToZZTo4Leptons/python/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/LEP3/python/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/WMass/python/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/ZJetsTutorial/python/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/TTHAnalysis/python/analyzers'] ))    
+    sys.path = pythonpath + sys.path
+ 
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
     selComps = split(selComps)
     for comp in selComps:

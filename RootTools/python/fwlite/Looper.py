@@ -6,6 +6,7 @@ import logging
 import pprint 
 from DataFormats.FWLite import Events, Handle
 from CMGTools.RootTools.fwlite.Event import Event 
+from CMGTools.RootTools.fwlite.PythonPath import pythonpath
 
                 
 class Looper(object):
@@ -81,6 +82,7 @@ class Looper(object):
                 #if hasattr( cfg_ana, 'instanceName'):
                 #    cfg_ana.name = cfg_ana.instanceName
                 print 'loading class', theClass
+                print '  from', file
                 obj = theClass( cfg_ana, self.cfg_comp, self.outDir )
             finally:
                 try:
@@ -161,22 +163,9 @@ if __name__ == '__main__':
     import pickle
     import sys
     import os
-    
-    print 'current working directory:', os.getcwd()
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/H2TauTau/python/proto/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/RootTools/python/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/HToZZTo4Leptons/python/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/LEP3/python/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/WMass/python/analyzers'] ))
-    sys.path.append( '/'.join( [ os.environ['CMSSW_BASE'],
-                                 'src/CMGTools/ZJetsTutorial/python/analyzers'] ))
-    sys.path.append( '.' )
-    
+    from CMGTools.RootTools.fwlite.PythonPath import pythonpath
+    sys.path = pythonpath + sys.path
+
     cfgFileName = sys.argv[1]
     pckfile = open( cfgFileName, 'r' )
     config = pickle.load( pckfile )
