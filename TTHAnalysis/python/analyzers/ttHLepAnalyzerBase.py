@@ -25,9 +25,9 @@ class ttHLepAnalyzerBase( Analyzer ):
         super(ttHLepAnalyzerBase,self).__init__(cfg_ana,cfg_comp,looperName)
 
 
-    #-------------------------------------------------------
-    # DECLARATION OF HANDLES OF ALL OBJECTS WE POSSIBLY NEED   
-    #-------------------------------------------------------   
+    #----------------------------------------
+    # DECLARATION OF HANDLES OF LEPTONS STUFF   
+    #----------------------------------------
         
 
     def declareHandles(self):
@@ -45,21 +45,6 @@ class ttHLepAnalyzerBase( Analyzer ):
         #rho for electrons
         self.handles['rhoEle'] = AutoHandle( (self.cfg_ana.rhoElectron, 'rho'),
                                           'double')
-        #met
-        self.handles['met'] = AutoHandle( ('cmgPFMET',''),'std::vector<cmg::BaseMET>')
-       
-        #jets
-        self.handles['jets'] = AutoHandle( ('cmgPFJetSel',''),'std::vector<cmg::PFJet>')
-
-        #mc information
-        self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
-                                                     'std::vector<reco::GenParticle>' )
-
-  #     self.handles['BR'] = AutoHandle( ('genInfo','BR'),'int')
-  #     self.handles['processID'] = AutoHandle( ('genInfo','processID'),'int')
-
-
-
 
     def beginLoop(self):
         super(ttHLepAnalyzerBase,self).beginLoop()
@@ -70,35 +55,37 @@ class ttHLepAnalyzerBase( Analyzer ):
     # MAKE LEPTON LISTS
     #------------------
 
+    # A SKIM STEP WAS RUN BEFORE:
+    # the muons are already corrected with Rochester corrections, are already cleaned with the ghost cleaning
+    # the electrons have already the electron energy regression and calibration applied
+    # the V5_10_0 cmgTuple, have been corrected with Mike's patch for the SIP computation -> cmgMuons have been remade ->
+    # (cvs up -r michalis_sipPatchBranch  CMGTools/Common/src/MuonFactory.cc) 
+    # nb: the event vertex needs to be defined first -> using the vertex analyzer
 
-    def makeLooseLeptons(self, event):
+    def makeLeptons(self, event):
         
         event.looseLeptons = []
-        event.goodLeptons = []
-        
+                
         allmuons = map( Muon, self.handles['muons'].product() )
         for mu in allmuons:
-            if mu.pt > 5:
+            mu.associatedVertex = event.goodVertices[0]
+            if mu.pt > 5 and abs(mu.dxy())<0.5 and abs(mu.dz())<1.and abs(mu.eta)<2.5 and (mu.isGlobal() or (mu.isTracker() and mu.numberOfMatches()>0)):
                 event.looseLeptons.append(mu)
+                event.selectedLeptons.append(mu)
 
         allelectrons = map( Electron, self.handles['electrons'].product() )
         for ele in allelectrons:
+            ele.associatedVertex = event.goodVertices[0]
             if ele.pt > 7:
                 event.looseLeptons.append(ele)
+                event.selectedLeptons.append(ele)
 
         event.looseLeptons.sort(key = lambda l : l.pt(), reverse = True)
+        event.selectedLeptons.sort(key = lambda l : l.pt(), reverse = True)
 
         print "Found ",len(event.looseLeptons)," loose leptons"
-
-
-     #------------------
-     # MAKE JET LISTS
-     #------------------    
-
-    def makeJets(self, event):
-
-        event.jets = []
-        event.cleanedjets = [] #cleaned the jets with up to 4 highest pT goodLeptons available
+        print "Found ",len(event.selectedLeptons)," good leptons"
+       
 
 
     def process(self, iEvent, event):
@@ -111,17 +98,7 @@ class ttHLepAnalyzerBase( Analyzer ):
         setattr(event, self.name, myEvent)
         event = myEvent
 
-        #call the leptons and jets functions
-        self.makeLooseLeptons(event)
-
-
-        #----------------------
-        # DEFINE THE CATEGORIES
-        #----------------------   
-
-        # here we want to define in which categories an event goes
-        # the categories will be carachterized by flags, the flags will be stored in the tree
-        
-        
+        #call the leptons functions
+        self.makeLeptons(event)    
         
         return True
