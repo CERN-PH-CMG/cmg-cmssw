@@ -54,6 +54,7 @@ def mct(calc, h1, h2):
 def find_lepton_hemi(hemi_vector, leptons, best = None):
     """Find the best hemispheres that have the lepton on one side and at least 3 jets on the other"""
 
+    print 'n hemispheres',len(hemi_vector)
     for i in xrange(0,len(hemi_vector),2):
         
         hemi1 = hemi_vector.at(i)
@@ -143,7 +144,7 @@ if __name__ == '__main__':
         
         files = getFiles(
             [options.datasetName],
-            'wreece',
+            'lucieg',
             'susy_tree_CMG_[0-9]+.root'                
             )
         if options.maxFiles > 0:
@@ -247,10 +248,11 @@ struct Filters{\
 
     top_dir = os.path.join(os.environ['CMSSW_BASE'],'src/CMGTools/Susy/macros/MultiJet')
     rt.gROOT.ProcessLine(".L %s/calcVariables.C+" % top_dir)
+    
     #see http://mctlib.hepforge.org/
     rt.gROOT.ProcessLine(".L %s/mctlib.C+" % top_dir)
 
-    from ROOT import Variables, Info, Filters, mR, mRT
+    from ROOT import Variables, Info, Filters#, mR, mRT
     from ROOT import mctlib
     mct_calc = mctlib()
 
@@ -371,18 +373,18 @@ struct Filters{\
         #get the LHE product info
         vars.mStop = -1
         vars.mLSP = -1
-        if runOnMC:
-            event.getByLabel(('source'),lheH)
-            if lheH.isValid():
-                lhe = lheH.product()
-                for i in xrange(lhe.comments_size()):
-                    comment = lhe.getComment(i)
-                    if 'model' not in comment: continue
-                    comment = comment.replace('\n','')
-                    parameters = comment.split(' ')[-1]
-                    masses = map(float,parameters.split('_')[-2:])
-                    vars.mStop = masses[0]
-                    vars.mLSP = masses[1]
+     ##    if runOnMC:
+##             event.getByLabel(('source'),lheH)
+##             if lheH.isValid():
+##                 lhe = lheH.product()
+##                 for i in xrange(lhe.comments_size()):
+##                     comment = lhe.getComment(i)
+##                     if 'model' not in comment: continue
+##                     comment = comment.replace('\n','')
+##                     parameters = comment.split(' ')[-1]
+##                     masses = map(float,parameters.split('_')[-2:])
+##                     vars.mStop = masses[0]
+##                     vars.mLSP = masses[1]
 
         #store how many of each model we see
         point = (vars.mStop,vars.mLSP)
@@ -527,6 +529,7 @@ struct Filters{\
                     reliso = pfcandstrkiso.at(i)/pfcandspt.at(i)
                     if reliso < 0.1:
                         veto10 = True
+                        veto5  = True
                 elif pfcandspt.at(i) >= 5. and pfcandschg.at(i) > 0:
                     reliso = pfcandstrkiso.at(i)/pfcandspt.at(i)
                     if reliso < 0.1:
@@ -539,8 +542,14 @@ struct Filters{\
         info.BOX_NUM = getBox(info.NBJET,info.nElectronTight,info.nMuonTight,info.nTauTight)
 
         if info.nLepton == 1 and info.nJetNoLeptons20 >= 4:
+            print 'nTaus', info.nTauTight
+            print 'nEles', info.nElectronTight
+            print 'nMus', info.nMuonTight
+            print 'nJets20', info.nJetNoLeptons20
+            print 'nJets', info.nJetNoLeptons
             #if we have 4 jets above 30, we use them, otherwise take the 20 GeV jets
             if info.nJetNoLeptons >= 4:
+                print 'using razorMJHemiLepBox'
                 event.getByLabel(('razorMJHemiLepBox'),hemiLepH)
             else:
                 event.getByLabel(('razorMJHemiLepBox20'),hemiLepH)
@@ -548,7 +557,7 @@ struct Filters{\
             if hemiLepH.isValid():
                 hemi_vector = hemiLepH.product()
                 hemi1, hemi2, info.bestHemi = find_lepton_hemi(hemi_vector, leptons)
-
+                from ROOT import  mR, mRT
                 vars.MR = mR(hemi1.p4(), hemi2.p4())
                 mrt = mRT(hemi1.p4(), hemi2.p4(), met.p4())
                 vars.RSQ = (mrt/vars.MR)**2
