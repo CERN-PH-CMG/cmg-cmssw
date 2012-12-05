@@ -1,61 +1,51 @@
-from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
+from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
+from CMGTools.TTHAnalysis.analyzers.ntuple import *
 
-class ttHLepTreeProducerBase( TreeAnalyzer ):
+def var( tree, varName, type=float ):
+    tree.var(varName, type)
+
+def fill( tree, varName, value ):
+    tree.fill( varName, value )
+
+    
+
+class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
 
     #-----------------------------------
     # TREE PRODUCER FOR THE TTH ANALYSIS
     #-----------------------------------
-    
 
     def declareVariables(self):
 
-        def ivar( varName ):
-            self.tree.addVar('int', varName)
-            
-        def var( varName ):
-            self.tree.addVar('float', varName)
+        tr = self.tree
+        var( tr, 'run', int)
+        var( tr, 'lumi', int)
+        var( tr, 'evt', int)
+        var( tr, 'nVert')
+        var( tr, 'nLepLoose', int)
+        var( tr, 'nJet20', int)
+        for i in range(8):
+            bookLepton(tr,"Lep%d"%(i+1))
+            bookJet(tr,"Jet%d"%(i+1))
 
-        def particleVars( pName ):
-            var('{pName}Mass'.format(pName=pName))
-            var('{pName}Pt'.format(pName=pName))
-            var('{pName}Energy'.format(pName=pName))
-            var('{pName}Eta'.format(pName=pName))
-            var('{pName}Phi'.format(pName=pName))
-
-
-        def leptonVars( pName ):
-            particleVars(pName)
-            var('{pName}PdgId'.format(pName=pName))
-            var('{pName}Charge'.format(pName=pName))
-
-
-        ivar("nLep")
-        for i in range(4):
-            leptonVars("Lep%d"%(i+1))
-
-    
-        self.tree.book()
 
     def process(self, iEvent, event):
-        def fill( varName, value ):
-            setattr( self.tree.s, varName, value )
+         
+        tr = self.tree
+        tr.reset()
+
+        fill( tr, 'run', event.run) 
+        fill( tr, 'lumi',event.lumi)
+        fill( tr, 'evt', event.eventId)    
+        fill( tr, 'nVert', len(event.goodVertices) )
             
-        def fParticleVars( pName, particle ):
-            fill('{pName}Mass'.format(pName=pName), particle.mass() )
-            fill('{pName}Pt'.format(pName=pName), particle.pt() )
-            fill('{pName}Energy'.format(pName=pName), particle.energy() )
-            fill('{pName}Eta'.format(pName=pName), particle.eta() )
-            fill('{pName}Phi'.format(pName=pName), particle.phi() )
+        fill(tr, 'nLepLoose', len(event.looseLeptons))
+        for i in range(min(8,len(event.looseLeptons))):
+            fillLepton( tr, "Lep%d"%(i+1), event.looseLeptons[i])
 
-        def fLeptonVars( pName, particle ):
-            fParticleVars(pName, particle)
-            fill('{pName}PdgId'.format(pName=pName), particle.pdgId() )
-            fill('{pName}Charge'.format(pName=pName), particle.charge() )
+        fill(tr, 'nJet20', len(event.looseLeptons))      
+        for i in range(min(8,len(event.cleanJets))):
+            fillJet(tr, "Lep%d"%(i+1), event.looseLeptons[i])        
+              
+        self.tree.tree.Fill()      
 
-        subevent = getattr(event, self.cfg_ana.anaName)
-
-        fill('nLep', len(subevent.looseLeptons))
-        for i in range(min(4,len(subevent.looseLeptons))):
-             fLeptonVars("Lep%d"%(i+1), subevent.looseLeptons[i])
-
-        self.tree.fill()
