@@ -6,7 +6,7 @@ from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 runOnMC      = True
 runOld5XGT   = False
 runOnFastSim = False
-
+runOnCMGV56  = False
 process = cms.Process("CMG")
 
 
@@ -173,6 +173,8 @@ process.p = cms.Path(
     process.electronSequence +
     process.skimSequence
 )
+if runOnCMGV56:
+    process.p.remove(process.electronSequence)
 
 ########################################################
 ## CMG output definition
@@ -211,7 +213,9 @@ process.outcmg = cms.OutputModule(
     "keep *_patElectronsWithTrigger_*_CMG",                     
     ),
     dropMetaData = cms.untracked.string('PRIOR')
-    )
+)
+if runOnCMGV56:
+    process.outcmg.outputCommands += [ "keep *_cmgElectronSel_*_PAT", "keep *_patElectronsWithTrigger_*_PAT" ]
 
 process.outpath = cms.EndPath(process.outcmg)
 
