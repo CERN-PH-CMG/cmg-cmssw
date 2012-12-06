@@ -1,3 +1,6 @@
+# Starting point: BE 533
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/CMGToolsReleasesExperimental#Colin_535_Bleeding_Edge
+
 #For mu ghost cleaning
 cvs co -r U09-04-03-00-01 DataFormats/MuonReco 
 
@@ -11,3 +14,7 @@ cvs update -r1.15.4.2 CMGTools/Common/src/MuonFactory.cc
 
 # Fix CMG-from-CMG workflow for electrons
 patch -p0 < /afs/cern.ch/work/g/gpetrucc/ttH/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/ElectronFactory.gio.patch
+
+# For the python analysis
+cbern_jetvbfsplit_4Dec12 CMGTools/RootTools                               
+cbern_jetvbfsplit_4Dec12 CMGTools/ZJetsTutorial          
