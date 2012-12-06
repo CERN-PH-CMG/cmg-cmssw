@@ -1,0 +1,10 @@
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="DataFormats/PatCandidates"/>
+<use name="CommonTools/Utils"/>
+<use name="CMGTools/RootTools"/>
+<use name="CMGTools/TTHAnalysis"/>
+<library file="*.cc" name="CMGToolsTTHAnalysisPlugins"> 
+    <Flags CPPDEFINES="CMSSW_VERSION=$(shell echo ${CMSSW_VERSION}|sed -e s/CMSSW_// -e s/_//g -e s/patch\.//)"/> 
+    <flags EDM_PLUGIN="1"/> 
+</library> 
