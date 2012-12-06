@@ -6,6 +6,13 @@ from CMGTools.RootTools.RootTools import *
 
 
 
+
+#This analyzer finds the initial events before the skim
+skimAnalyzer = cfg.Analyzer(
+    'skimAnalyzerCount'
+    )
+
+
 ## Useful common stuff: event selector, trigger, json, pureweighting, vertex selection
 
 # pathsAndFilters = {
@@ -127,6 +134,7 @@ selectedComponents = [
 #-------- SEQUENCE
 
 sequence = cfg.Sequence([
+    #skimAnalyzer,
     #eventSelector,
     #jsonAna,
     #triggerAna,
@@ -149,7 +157,7 @@ if test==1:
     comp = TTH
     comp.files = comp.files[:20]
     selectedComponents = [comp]
-    comp.splitFactor = 6
+    comp.splitFactor = 1
 elif test==2:    
     # test all components (1 thread per component.
     # important to make sure that your code runs on any kind of component
