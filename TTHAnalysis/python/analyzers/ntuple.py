@@ -33,13 +33,13 @@ def bookLepton( tree, pName ):
     bookParticle(tree, pName )
     var(tree, '{pName}_pdgId'.format(pName=pName))
     var(tree, '{pName}_charge'.format(pName=pName))
-    var(tree, '{pName}_isGood'.format(pName=pName),bool)
+    #var(tree, '{pName}_isGood'.format(pName=pName),bool)
     
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
     fill(tree, '{pName}_pdgId'.format(pName=pName), lepton.pdgId() )
     fill(tree, '{pName}_charge'.format(pName=pName), lepton.charge() )
-    fill(tree, '{pName}_charge'.format(pName=pName), lepton.isGood() )
+    #fill(tree, '{pName}_charge'.format(pName=pName), lepton.isGood() )
     
 
 # jet
