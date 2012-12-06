@@ -1,0 +1,13 @@
+#For mu ghost cleaning
+cvs co -r U09-04-03-00-01 DataFormats/MuonReco 
+
+# Egamma official recipe for corrections/smearing
+cvs co -r V09-00-00 RecoEgamma/EgammaTools
+cvs co -r V00-00-30 -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools 
+cvs co -r HCP2012_V03-02 EgammaAnalysis/ElectronTools
+
+# Fix muon SIP from Mike
+cvs update -r1.15.4.2 CMGTools/Common/src/MuonFactory.cc
+
+# Fix CMG-from-CMG workflow for electrons
+patch -p0 < /afs/cern.ch/work/g/gpetrucc/ttH/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/ElectronFactory.gio.patch
