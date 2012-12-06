@@ -1,0 +1,11 @@
+# To run the skim on V5_6_0_B samples
+
+- in skim.py  runOnCMGV56  = True
+- run the command: 
+ProductionTasks.py -w 'cmgTuple*.root' -c -N 1 -q 2nd -t TTH_061212 --output_wildcard '[!h]*.root' --cfg skim.py --max_threads 6 `cat ttHsamplesSkim_V560B.txt`
+
+# To run the skim on V5_10_0 samples 
+
+- in skim.py  runOnCMGV56  = False
+- run the command: 
+ProductionTasks.py -w 'cmgTuple*.root' -c -N 1 -q 2nd -t TTH_061212 --output_wildcard '[!h]*.root' --cfg skim.py --max_threads 6 `cat ttHsamplesSkim_V5100.txt`
