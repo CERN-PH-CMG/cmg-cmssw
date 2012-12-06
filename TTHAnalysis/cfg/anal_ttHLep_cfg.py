@@ -134,7 +134,7 @@ selectedComponents = [
 #-------- SEQUENCE
 
 sequence = cfg.Sequence([
-    #skimAnalyzer,
+    skimAnalyzer,
     #eventSelector,
     #jsonAna,
     #triggerAna,
@@ -144,6 +144,7 @@ sequence = cfg.Sequence([
     ttHLepAna,
     ttHJetAna,
     treeProducer,
+    
     ])
 
 
