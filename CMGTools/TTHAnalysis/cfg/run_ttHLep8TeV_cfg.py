@@ -97,7 +97,7 @@ sequence = cfg.Sequence([
     skimAnalyzer,
     #eventSelector,
     #jsonAna,
-    #triggerAna,
+    triggerAna,
     #pileUpAna,
     ttHGenAna,
     ttHVertexAna,
