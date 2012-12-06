@@ -7,7 +7,7 @@ from CMGTools.RootTools.statistics.Counter import Counter, Counters
 
 from DataFormats.FWLite import Events, Handle,Lumis
 
-class SkimCountAnalyzer( Analyzer ):
+class skimAnalyzerCount( Analyzer ):
 
 
     #---------------------------------------------
@@ -16,11 +16,11 @@ class SkimCountAnalyzer( Analyzer ):
     
 
     def declareHandles(self):
-        super(SkimCountAnalyzer, self).declareHandles()
+        super(skimAnalyzerCount, self).declareHandles()
         self.counterHandle = Handle("edm::MergeableCounter")
         
     def beginLoop(self):
-        super(SkimCountAnalyzer,self).beginLoop()
+        super(skimAnalyzerCount,self).beginLoop()
 
         print 'Counting the total events before the skim by accessing luminosity blocks'
         lumis = Lumis(self.cfg_comp.files)
