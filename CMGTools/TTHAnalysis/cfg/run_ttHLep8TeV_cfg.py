@@ -50,7 +50,7 @@ pileUpAna = cfg.Analyzer(
 ttHGenAna = cfg.Analyzer(
     'ttHGenLevelAnalyzer',
     filterHiggsDecays = [0, 15, 23, 24],
-    verbose = True,
+    verbose = False,
     )
 
 # Lepton Analyzer
@@ -71,6 +71,13 @@ ttHJetAna = cfg.Analyzer(
     cjvPtCut = 30.,
     btagSFseed = 123456,
     relaxJetId = False,  
+    )
+
+# Event Analyzer
+ttHEventAna = cfg.Analyzer(
+    'ttHLepEventAnalyzer',
+    maxLeps = 4, ## leptons to use
+    verbose = True,
     )
 
 # Tree Producer
@@ -103,6 +110,7 @@ sequence = cfg.Sequence([
     ttHVertexAna,
     ttHLepAna,
     ttHJetAna,
+    ttHEventAna,
     treeProducer,
     
     ])

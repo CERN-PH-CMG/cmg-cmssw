@@ -25,22 +25,31 @@ def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_energy'.format(pName=pName), particle.energy() )
     
 
+
 #----------
 # LEPTON
 #----------
 
 def bookLepton( tree, pName ):
     bookParticle(tree, pName )
-    var(tree, '{pName}_pdgId'.format(pName=pName))
-    var(tree, '{pName}_charge'.format(pName=pName))
+    var(tree, '{pName}_pdgId'.format(pName=pName), int)
+    var(tree, '{pName}_charge'.format(pName=pName), int)
+    var(tree, '{pName}_sip3d'.format(pName=pName))
+    var(tree, '{pName}_dxy'.format(pName=pName))
+    var(tree, '{pName}_dz'.format(pName=pName))
+    var(tree, '{pName}_relIso'.format(pName=pName))
     #var(tree, '{pName}_isGood'.format(pName=pName),bool)
     
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
     fill(tree, '{pName}_pdgId'.format(pName=pName), lepton.pdgId() )
     fill(tree, '{pName}_charge'.format(pName=pName), lepton.charge() )
+    fill(tree, '{pName}_sip3d'.format(pName=pName), lepton.sip3D() )
+    fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy() )
+    fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz() )
+    fill(tree, '{pName}_relIso'.format(pName=pName), lepton.relIso(dBetaFactor=0.5))
     #fill(tree, '{pName}_charge'.format(pName=pName), lepton.isGood() )
-    
+     
 
 # jet
 
@@ -91,3 +100,21 @@ def fillJet( tree, pName, jet ):
     if hasattr(jet, 'leg') and jet.leg:
         fillParticle(tree, '{pName}_leg'.format(pName=pName), jet.leg )
     
+#----------
+# GEN PARTICLE
+#----------
+
+def bookGenParticle( tree, pName, withSourceId=False ):
+    bookParticle(tree, pName )
+    var(tree, '{pName}_pdgId'.format(pName=pName), int)
+    var(tree, '{pName}_charge'.format(pName=pName), int)
+    if withSourceId:
+        var(tree, '{pName}_sourceId'.format(pName=pName), int)
+    
+def fillGenParticle( tree, pName, lepton, withSourceId=False ):
+    fillParticle(tree, pName, lepton )
+    fill(tree, '{pName}_pdgId'.format(pName=pName), lepton.pdgId() )
+    fill(tree, '{pName}_charge'.format(pName=pName), lepton.charge() )
+    if withSourceId:
+        fill(tree, '{pName}_sourceId'.format(pName=pName), lepton.sourceId )
+ 
