@@ -30,7 +30,7 @@ def fillParticle( tree, pName, particle ):
 # LEPTON
 #----------
 
-def bookLepton( tree, pName ):
+def bookLepton( tree, pName, isMC=False ):
     bookParticle(tree, pName )
     var(tree, '{pName}_pdgId'.format(pName=pName), int)
     var(tree, '{pName}_charge'.format(pName=pName), int)
@@ -39,7 +39,8 @@ def bookLepton( tree, pName ):
     var(tree, '{pName}_dz'.format(pName=pName))
     var(tree, '{pName}_relIso'.format(pName=pName))
     var(tree, '{pName}_drBJet'.format(pName=pName))
-    
+    if isMC:
+        var(tree, '{pName}_mcMatchId'.format(pName=pName), int)
     
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
@@ -50,6 +51,8 @@ def fillLepton( tree, pName, lepton ):
     fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz() )
     fill(tree, '{pName}_relIso'.format(pName=pName), lepton.relIso(dBetaFactor=0.5))
     fill(tree, '{pName}_drBJet'.format(pName=pName), lepton.drBJet)
+    if hasattr(lepton, 'mcMatchId'):
+        fill(tree, '{pName}_mcMatchId'.format(pName=pName), lepton.mcMatchId)
    
      
 
@@ -67,7 +70,7 @@ def fillLepton( tree, pName, lepton ):
 ##       egamma_HF    // HF tower identified as an EM particle
 ##     };
 
-def bookJet( tree, pName ):
+def bookJet( tree, pName, isMC=False ):
     bookParticle(tree, pName )
     var(tree, '{pName}_btagCSV'.format(pName=pName))
 #     var(tree, '{pName}_puMvaFull'.format(pName=pName))
@@ -83,10 +86,13 @@ def bookJet( tree, pName ):
 #     var(tree, '{pName}_hhfFrac'.format(pName=pName))
 #     var(tree, '{pName}_ehfFrac'.format(pName=pName))
     bookParticle(tree, '{pName}_leg'.format(pName=pName))
+    if isMC:
+        var(tree, '{pName}_mcMatchId'.format(pName=pName),   int)
+        var(tree, '{pName}_mcMatchFlav'.format(pName=pName), int)
 
 def fillJet( tree, pName, jet ):
     fillParticle(tree, pName, jet )
-    fill(tree, '{pName}_btagCSV'.format(pName=pName), jet.btag('') )
+    fill(tree, '{pName}_btagCSV'.format(pName=pName), jet.btag('combinedSecondaryVertexBJetTags') )
 #     fill(tree, '{pName}_puMvaFull'.format(pName=pName), jet.puMva('full') )
 #     fill(tree, '{pName}_puMvaSimple'.format(pName=pName), jet.puMva('simple'))
 #     fill(tree, '{pName}_puMvaCutBased'.format(pName=pName), jet.puMva('cut-based'))
@@ -101,6 +107,9 @@ def fillJet( tree, pName, jet ):
 #     fill(tree, '{pName}_ehfFrac'.format(pName=pName), jet.component(7).fraction() )
     if hasattr(jet, 'leg') and jet.leg:
         fillParticle(tree, '{pName}_leg'.format(pName=pName), jet.leg )
+    if hasattr(jet, 'mcMatchId'):
+        fill(tree, '{pName}_mcMatchId'.format(pName=pName),   jet.mcMatchId)
+        fill(tree, '{pName}_mcMatchFlav'.format(pName=pName), jet.mcMatchFlav)
     
 #----------
 # GEN PARTICLE
