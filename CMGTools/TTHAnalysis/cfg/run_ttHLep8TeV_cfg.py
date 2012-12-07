@@ -80,6 +80,11 @@ ttHEventAna = cfg.Analyzer(
     verbose = True,
     )
 
+# Event Analyzer
+ttHMCMatchAna = cfg.Analyzer(
+    'ttHLepMCMatchAnalyzer',
+    )
+
 # Tree Producer
 treeProducer = cfg.Analyzer(
     'ttHLepTreeProducerBase'
@@ -111,6 +116,7 @@ sequence = cfg.Sequence([
     ttHLepAna,
     ttHJetAna,
     ttHEventAna,
+    ttHMCMatchAna,
     treeProducer,
     
     ])

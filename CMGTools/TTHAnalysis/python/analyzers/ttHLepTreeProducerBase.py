@@ -17,6 +17,8 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
 
     def declareVariables(self):
 
+        isMC = self.cfg_comp.isMC 
+
         tr = self.tree
         # var( tr, 'run', int)
         # var( tr, 'lumi', int)
@@ -29,9 +31,9 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'nJet30', int)
         for i in range(8):
             bookLepton(tr,"LepLoose%d"%(i+1))
-            bookLepton(tr,"LepGood%d"%(i+1))
+            bookLepton(tr,"LepGood%d"%(i+1), isMC)
         for i in range(8):
-            bookJet(tr,"Jet%d"%(i+1))
+            bookJet(tr,"Jet%d"%(i+1), isMC)
         var( tr, 'nBJetLoose20', int )
         var( tr, 'nBJetMedium20', int )
         var( tr, 'nBJetLoose30', int )

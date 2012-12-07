@@ -99,6 +99,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
             for i in xrange( tq.numberOfDaughters() ):
                 dau = GenParticle(tq.daughter(i))
                 if abs(dau.pdgId()) == 5:
+                    dau.sourceId = 6
                     event.genbquarks.append( dau )
                 elif abs(dau.pdgId()) == 24:
                     self.fillGenLeptons( event, dau, sourceId=6 )
@@ -119,6 +120,31 @@ class ttHGenLevelAnalyzer( Analyzer ):
 
         if len(higgsBosons) == 0:
             event.genHiggsDecayMode = 0
+
+            ## Matching that can be done also on non-Higgs events
+            ## First, top quarks
+            self.fillTopQuarks( event )
+
+            ## Then W,Z,gamma from hard scattering and that don't come from a top and don't rescatter
+            def hasAncestor(particle, filter):
+                for i in xrange(particle.numberOfMothers()):
+                    mom = particle.mother(i)
+                    if filter(mom) or hasAncestor(mom, filter): 
+                        return True
+                return False
+            def hasDescendent(particle, filter):
+                for i in xrange(particle.numberOfDaughters()):
+                    dau = particle.daughter(i)
+                    if filter(dau) or hasAncestor(dau, filter):
+                        return True
+                return False
+
+            bosons = [ gp for gp in event.genParticles if gp.status() == 3 and abs(gp.pdgId()) in [22,23,34] ]
+            for b in bosons:
+                if hasAncestor(b,   lambda gp : abs(gp.pdgId()) == 6): continue
+                if hasDescendent(b, lambda gp : abs(gp.pdgId()) in [22,23,34] and gp.status() == 3): continue
+                self.fillGenLeptons(event, b, sourceId=abs(b.pdgId()))
+                self.fillWZQuarks(event, b, isWZ=True, sourceId=abs(b.pdgId()))
         else:
             if len(higgsBosons) > 1: 
                 print "More than one higgs? \n%s\n" % higgsBosons
