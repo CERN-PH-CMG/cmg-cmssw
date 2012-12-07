@@ -22,9 +22,9 @@ from CMGTools.RootTools.physicsobjects.genutils import *
 class ttHGenLevelAnalyzer( Analyzer ):
     """Do generator-level analysis of a ttH->leptons decay:
 
-       Creates in a subevent:
+       Creates in the event:
          event.genParticles   = the gen particles (pruned, as default)
-         event.higgsDecayMode =   0  for non-Higgs
+         event.genHiggsDecayMode =   0  for non-Higgs
                                  15  for H -> tau tau
                                  23  for H -> Z Z
                                  24  for H -> W W
@@ -60,67 +60,76 @@ class ttHGenLevelAnalyzer( Analyzer ):
     def beginLoop(self):
         super(ttHGenLevelAnalyzer,self).beginLoop()
 
-    def fillGenLeptons(self, event, particle, isTau=False):
+    def fillGenLeptons(self, event, particle, isTau=False, sourceId=25):
         """Get the gen level light leptons (prompt and/or from tau decays)"""
 
         for i in xrange( particle.numberOfDaughters() ):
-            dau = particle.daughter(i)
+            dau = GenParticle(particle.daughter(i))
+            dau.sourceId = sourceId
             id = abs(dau.pdgId())
             if id in [11,13]:
-                if isTau: event.gentauleps.append(GenParticle(dau))
-                else:     event.genleps.append(GenParticle(dau))
+                if isTau: event.gentauleps.append(dau)
+                else:     event.genleps.append(dau)
             elif id == 15:
-                self.fillGenLeptons(event, dau, True)
+                self.fillGenLeptons(event, dau, True, sourceId)
             elif id in [22,23,24]:
-                self.fillGenLeptons(event, dau, False)
+                self.fillGenLeptons(event, dau, False, sourceId)
 
-    def fillWZQuarks(self, event, particle, isWZ=False):
+    def fillWZQuarks(self, event, particle, isWZ=False, sourceId=25):
         """Descend daughters of 'particle', and add quarks from W,Z to event.genwzquarks
            isWZ is set to True if already processing daughters of W,Z's, to False before it"""
 
         for i in xrange( particle.numberOfDaughters() ):
-            dau = particle.daughter(i)
+            dau = GenParticle(particle.daughter(i))
+            dau.sourceId = sourceId
             id = abs(dau.pdgId())
             if id <= 5 and isWZ:
-                event.genwzquarks.append(GenParticle(dau))
+                event.genwzquarks.append(dau)
             elif id in [22,23,24]:
-                self.fillWZQuarks(event, dau, True)
+                self.fillWZQuarks(event, dau, True, sourceId)
 
     def fillTopQuarks(self, event):
         """Get the b quarks from top decays into event.genbquarks"""
 
-        topQuarks = [ p for p in event.genParticles if (p.status() == 3 and abs(p.pdgId()) == 6) ]
-        if len(topQuarks) != 2:
-            print "Not two top quarks? \n%s\n" % topQuarks
+        event.gentopquarks = [ p for p in event.genParticles if (p.status() == 3 and abs(p.pdgId()) == 6) ]
+        if len(event.gentopquarks) != 2:
+            print "Not two top quarks? \n%s\n" % event.gentopquarks
 
-        for tq in topQuarks:
+        for tq in event.gentopquarks:
             for i in xrange( tq.numberOfDaughters() ):
-                if abs(tq.daughter(i).pdgId()) == 5:
-                    event.genbquarks.append( GenParticle(tq.daughter(i)) )
+                dau = GenParticle(tq.daughter(i))
+                if abs(dau.pdgId()) == 5:
+                    event.genbquarks.append( dau )
+                elif abs(dau.pdgId()) == 24:
+                    self.fillGenLeptons( event, dau, sourceId=6 )
+                    self.fillWZQuarks(   event, dau, sourceId=6 )
+
         
     def makeMCInfo(self, event):
         event.genParticles = map( GenParticle, self.mchandles['genParticles'].product() )
 
+        event.genHiggsBoson = None
         event.genleps    = []
         event.gentauleps = []
         event.genbquarks  = []
         event.genwzquarks = []
+        event.gentopquarks  = []
 
         higgsBosons = [ p for p in event.genParticles if (p.status() == 3 and p.pdgId() == 25) ]
 
         if len(higgsBosons) == 0:
-            event.higgsDecayMode = 0
+            event.genHiggsDecayMode = 0
         else:
             if len(higgsBosons) > 1: 
                 print "More than one higgs? \n%s\n" % higgsBosons
 
-            event.higgsDecayMode = abs( higgsBosons[-1].daughter(0).pdgId() )
-            self.fillGenLeptons( event, higgsBosons[-1] )
-            self.fillWZQuarks(   event, higgsBosons[-1] )
+            event.genHiggsBoson = GenParticle(higgsBosons[-1])
+            event.genHiggsDecayMode = abs( event.genHiggsBoson.daughter(0).pdgId() )
             self.fillTopQuarks( event )
-
+            self.fillWZQuarks(   event, event.genHiggsBoson )
+            self.fillGenLeptons( event, event.genHiggsBoson, sourceId=25 )
             if self.cfg_ana.verbose:
-                print "Higgs boson decay mode: ", event.higgsDecayMode
+                print "Higgs boson decay mode: ", event.genHiggsDecayMode
                 print "Generator level prompt light leptons:\n", "\n".join(["\t%s" % p for p in event.genleps])
                 print "Generator level light leptons from taus:\n", "\n".join(["\t%s" % p for p in event.gentauleps])
                 print "Generator level b quarks from top:\n", "\n".join(["\t%s" % p for p in event.genbquarks])
@@ -129,10 +138,10 @@ class ttHGenLevelAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
-        # creating a "sub-event" for this analyzer
-        myEvent = Event(event.iEv)
-        setattr(event, self.name, myEvent)
-        event = myEvent
+        ## creating a "sub-event" for this analyzer
+        #myEvent = Event(event.iEv)
+        #setattr(event, self.name, myEvent)
+        #event = myEvent
 
         # if not MC, nothing to do
         if not self.cfg_comp.isMC: 
@@ -144,7 +153,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
         # if MC and filtering on the Higgs decay mode, 
         # them do filter events
         if self.cfg_ana.filterHiggsDecays:
-            if event.higgsDecayMode not in self.cfg_ana.filterHiggsDecays:
+            if event.genHiggsDecayMode not in self.cfg_ana.filterHiggsDecays:
                 return False
 
         return True
