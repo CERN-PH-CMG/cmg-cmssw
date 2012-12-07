@@ -38,6 +38,7 @@ def bookLepton( tree, pName ):
     var(tree, '{pName}_dxy'.format(pName=pName))
     var(tree, '{pName}_dz'.format(pName=pName))
     var(tree, '{pName}_relIso'.format(pName=pName))
+    var(tree, '{pName}_drBJet'.format(pName=pName))
     
     
 def fillLepton( tree, pName, lepton ):
@@ -48,6 +49,7 @@ def fillLepton( tree, pName, lepton ):
     fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy() )
     fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz() )
     fill(tree, '{pName}_relIso'.format(pName=pName), lepton.relIso(dBetaFactor=0.5))
+    fill(tree, '{pName}_drBJet'.format(pName=pName), lepton.drBJet)
    
      
 
