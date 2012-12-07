@@ -13,7 +13,7 @@ process = cms.Process("CMG")
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
   sourceSeed = cms.untracked.uint32(414000),
   moduleSeeds = cms.PSet(
-    calibratedElectrons = cms.untracked.uint32(1041963),
+    patElectronsWithTrigger = cms.untracked.uint32(1041963),
   )
 )
 
@@ -53,17 +53,17 @@ process.correctedMuons = cms.EDProducer('RochesterPATMuonCorrector',
     src = cms.InputTag("patMuonsWithTrigger")
 )
 
-process.cleanMuons = cms.EDProducer('CMGPATMuonCleanerBySegments',
+process.patMuonsWithTrigger = cms.EDProducer('CMGPATMuonCleanerBySegments',
     src = cms.InputTag("correctedMuons"),
     preselection = cms.string("track.isNonnull"),
     passthrough = cms.string("isGlobalMuon && numberOfMatches >= 2"),
     fractionOfSharedSegments = cms.double(0.499)
 )
 
-process.cmgMuon.cfg.inputCollection = 'cleanMuons'
+process.cmgMuon.cfg.inputCollection = 'patMuonsWithTrigger'
 
 process.muonSequence = cms.Sequence(
-    process.correctedMuons+process.cleanMuons+process.cmgMuon+process.cmgMuonSel
+    process.correctedMuons+process.patMuonsWithTrigger+process.cmgMuon+process.cmgMuonSel
 )
 
 ########################################################
@@ -79,7 +79,7 @@ process.patElectronsWithRegression = cms.EDProducer("RegressionEnergyPatElectron
 )
 
 
-process.calibratedElectrons = cms.EDProducer("CalibratedPatElectronProducer",
+process.patElectronsWithTrigger = cms.EDProducer("CalibratedPatElectronProducer",
     inputPatElectronsTag = cms.InputTag("patElectronsWithRegression"),
     isMC = cms.bool(runOnMC),
     isAOD = cms.bool(False),
@@ -89,12 +89,12 @@ process.calibratedElectrons = cms.EDProducer("CalibratedPatElectronProducer",
     inputDataset = cms.string("Summer12_DR53X_HCP2012" if runOnMC else "2012Jul13ReReco"),
 )
                                                  
-process.cmgElectron.cfg.inputCollection = 'calibratedElectrons'
+process.cmgElectron.cfg.inputCollection = 'patElectronsWithTrigger'
 process.cmgElectron.cfg.updateConversionVeto = cms.bool(False) ## needed for CMG-on-CMG
 
 process.electronSequence = cms.Sequence(
     process.patElectronsWithRegression +
-    process.calibratedElectrons +
+    process.patElectronsWithTrigger +
     process.cmgElectron +
     process.cmgElectronSel
 )
