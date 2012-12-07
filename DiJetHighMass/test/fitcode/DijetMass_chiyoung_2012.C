@@ -1113,7 +1113,7 @@ c01->SaveAs("Plots/DijetMassCrossSectionWithWindowFits.eps");
 
       cout << "mass = " << mass << " fitt = " << fitt << " prob = " << prob << endl;
 
-      if (prob>1e-4){
+      if (prob>1e-4 && mass < 3500 || prob>3e-5 && mass > 3500.0001){
 	v_qstar2.push_back(prob *  diquark_newcut_2012[qbin2]);
 	v_qstar2_2.push_back(((prob * diquark_newcut_2012[qbin2])+fitt)/fitt);
 	v_qstar2_3.push_back(((prob * diquark_newcut_2012[qbin2]))/fitt);
