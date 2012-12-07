@@ -36,6 +36,18 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'nBJetMedium20', int )
         var( tr, 'nBJetLoose30', int )
         var( tr, 'nBJetMedium30', int )
+        ## --- MET, HT, MHT ---
+        var( tr, 'met' )
+        var( tr, 'htJet30' )
+        var( tr, 'htJet20' )
+        var( tr, 'mhtJet30' )
+        var( tr, 'mhtJet20' )
+        ## --- DILEPTON MASSES ---
+        var( tr, 'mZ1' )
+        var( tr, 'mZ2' )
+        var( tr, 'minMllSFOS' )
+        var( tr, 'minMllAFOS' )
+        var( tr, 'minMllAFAS' )
 
         if self.cfg_comp.isMC: 
             self.declareMCVariables()
@@ -66,6 +78,20 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill(tr, 'nBJetMedium20', len(event.bjetsMedium))      
         fill(tr, 'nBJetMedium30', sum([(j.pt() > 30) for j in event.bjetsMedium]))      
 
+        ## --- MET, MHT, HT ---
+        fill( tr, 'met', event.met.pt() )
+        fill( tr, 'htJet30', event.htJet30 )
+        fill( tr, 'htJet20', event.htJet20 )
+        fill( tr, 'mhtJet30', event.mhtJet30 )
+        fill( tr, 'mhtJet20', event.mhtJet20 )
+
+        ## --- DILEPTON MASSES ---
+        fill( tr, 'mZ1', event.bestZ1[0] )
+        fill( tr, 'mZ2', event.bestZ2[3] )
+        fill( tr, 'minMllSFOS', event.minMllSFOS )
+        fill( tr, 'minMllAFOS', event.minMllAFOS )
+        fill( tr, 'minMllAFAS', event.minMllAFAS )
+         
         if self.cfg_comp.isMC: 
             self.fillMCVariables(iEvent, event)
               

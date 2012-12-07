@@ -15,7 +15,7 @@ from CMGTools.RootTools.physicsobjects.Electron import Electron
 from CMGTools.RootTools.physicsobjects.Muon import Muon
 from CMGTools.RootTools.physicsobjects.Jet import Jet
 
-from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
+from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi,bestMatch
 
 
         
@@ -26,6 +26,7 @@ class ttHLepEventAnalyzer( Analyzer ):
 
     def declareHandles(self):
         super(ttHLepEventAnalyzer, self).declareHandles()
+        self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
 
     def beginLoop(self):
         super(ttHLepEventAnalyzer,self).beginLoop()
@@ -69,15 +70,32 @@ class ttHLepEventAnalyzer( Analyzer ):
                     pairs.append( (l1.p4() + l2.p4()).M() )
         if pairs == []: pairs.append(-1)
         return pairs
+    
+    def makeLepBJetDeltaR(self, event):
+        for l in event.selectedLeptons + event.looseLeptons:
+            match, dr = bestMatch(l, event.bjetsLoose)
+            l.drBJet = dr
+        
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
         eventNumber = iEvent.eventAuxiliary().id().event()
+
+        event.met = self.handles['met'].product()[0]
         event.bjetsLoose  = [ j for j in event.cleanJets if j.getSelection("cuts_csv_loose")  ]
         event.bjetsMedium = [ j for j in event.cleanJets if j.getSelection("cuts_csv_medium") ]
 
+        objects20 = [ j for j in event.cleanJets if j.pt() > 20 ] + event.selectedLeptons
+        objects30 = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
+        event.htJet20 = sum([x.pt() for x in objects20])
+        event.mhtJet20 = hypot(sum([x.px() for x in objects20]), sum([x.py() for x in objects20]))
+        event.htJet30 = sum([x.pt() for x in objects30])
+        event.mhtJet30 = hypot(sum([x.px() for x in objects30]), sum([x.py() for x in objects30]))
+
         self.makeZs(event, self.maxLeps)
         self.makeMlls(event, self.maxLeps)
+
+        self.makeLepBJetDeltaR(event)
 
         if self.cfg_ana.verbose:
             print 'Event ',eventNumber
