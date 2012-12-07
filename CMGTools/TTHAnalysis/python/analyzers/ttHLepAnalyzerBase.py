@@ -61,34 +61,39 @@ class ttHLepAnalyzerBase( Analyzer ):
     # the V5_10_0 cmgTuple, have been corrected with Mike's patch for the SIP computation -> cmgMuons have been remade ->
     # (cvs up -r michalis_sipPatchBranch  CMGTools/Common/src/MuonFactory.cc) 
     # nb: the event vertex needs to be defined first -> using the vertex analyzer
+    # nb: in the following dxy and dz are computed with respect to the PV good vertex, sip with respect to the PV
 
     def makeLeptons(self, event):
         
         event.looseLeptons = []
         event.selectedLeptons = []
-                
+
+        #muons
         allmuons = map( Muon, self.handles['muons'].product() )
         for mu in allmuons:
-            #import pdb; pdb.set_trace()
             mu.associatedVertex = event.goodVertices[0]
-            if mu.pt > 5: #and abs(mu.dxy())<0.5 :#and abs(mu.dz())<1. and abs(mu.eta)<2.5 and (mu.isGlobal() or (mu.isTracker() and mu.numberOfMatches()>0)):
-                event.looseLeptons.append(mu)
-                event.selectedLeptons.append(mu)
-                
+            if mu.pt()>5 and abs(mu.dxy())<0.5 and abs(mu.dz())<1. and abs(mu.eta())<2.4 and (mu.isGlobal() or (mu.isTracker() and mu.numberOfMatches()>0)):
+                if muon.sourcePtr().userFloat("isPFMuon")>0.5 and mu.sip3D()<10 and mu.relIso(dBetaFactor=0.5)<0.4:
+                    event.selectedLeptons.append(mu)
+                else:
+                    event.looseLeptons.append(mu)
+                    
+        #electrons        
         allelectrons = map( Electron, self.handles['electrons'].product() )
         for ele in allelectrons:
             ele.associatedVertex = event.goodVertices[0]
-            if ele.pt > 7:
-                event.looseLeptons.append(ele)
-                event.selectedLeptons.append(ele)
-
+            if ele.pt()>7 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and abs(ele.eta())<2.5 and ele.numberOfHits()<=1:
+                 if ele.mvaIDZZ() and ele.sip3D()<10 and ele.relIso(dBetaFactor=0.5)<0.4:
+                    event.selectedLeptons.append(ele)
+                else:
+                    event.looseLeptons.append(ele)
+                    
         event.looseLeptons.sort(key = lambda l : l.pt(), reverse = True)
         event.selectedLeptons.sort(key = lambda l : l.pt(), reverse = True)
 
         print "Found ",len(event.looseLeptons)," loose leptons"
         print "Found ",len(event.selectedLeptons)," good leptons"
        
-
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
@@ -99,6 +104,8 @@ class ttHLepAnalyzerBase( Analyzer ):
         #import pdb; pdb.set_trace()
 
         #call the leptons functions
-        self.makeLeptons(event)    
+        self.makeLeptons(event)
+        if len(event.selectedLeptons)<3:
+            return False
         
         return True

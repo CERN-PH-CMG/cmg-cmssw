@@ -23,11 +23,14 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         # var( tr, 'evt', int)
         var( tr, 'nVert')
         var( tr, 'nLepLoose', int)
+        var( tr, 'nLepGood', int)
         ## --- JETS ---
         var( tr, 'nJet20', int)
         var( tr, 'nJet30', int)
         for i in range(8):
-            bookLepton(tr,"Lep%d"%(i+1))
+            bookLepton(tr,"LepLoose%d"%(i+1))
+            bookLepton(tr,"LepGood%d"%(i+1))
+        for i in range(8):
             bookJet(tr,"Jet%d"%(i+1))
         var( tr, 'nBJetLoose20', int )
         var( tr, 'nBJetMedium20', int )
@@ -49,7 +52,10 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
             
         fill(tr, 'nLepLoose', len(event.looseLeptons))
         for i in range(min(8,len(event.looseLeptons))):
-            fillLepton( tr, "Lep%d"%(i+1), event.looseLeptons[i])
+            fillLepton( tr, "LepLoose%d"%(i+1), event.looseLeptons[i])
+        fill(tr, 'nLepGood', len(event.selectedLeptons))
+        for i in range(min(8,len(event.selectedLeptons))):
+            fillLepton( tr, "LepGood%d"%(i+1), event.selectedLeptons[i])    
 
         fill(tr, 'nJet20', len(event.cleanJets))      
         fill(tr, 'nJet30', sum([(j.pt() > 30) for j in event.cleanJets]))      
