@@ -120,17 +120,17 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
     def fillMCVariables(self, iEvent, event):
         tr = self.tree
         fill( tr, 'GenHiggsDecayMode', event.genHiggsDecayMode )
-        if event.genHiggsDecayMode == 0: return
-        
-        fillGenParticle(tr, 'GenHiggs', event.genHiggsBoson)
-        fillGenParticle(tr, 'GenTop1', event.gentopquarks[0])
-        fillGenParticle(tr, 'GenTop2', event.gentopquarks[1])
+
+        if event.genHiggsBoson: 
+            fillGenParticle(tr, 'GenHiggs', event.genHiggsBoson)
 
         fill( tr, 'nGenLeps', len(event.genleps) )
         fill( tr, 'nGenLepsFromTau', len(event.gentauleps) )
         fill( tr, 'nGenBQuarks', len(event.genbquarks) )
         fill( tr, 'nGenQuarks', len(event.genwzquarks) )
         
+        for i in range(min(2,len(event.gentopquarks))):
+            fillGenParticle(tr, 'GenTop%d'%(i+1), event.gentopquarks[i])
         for i in range(min(6,len(event.genleps))): 
             fillGenParticle(tr, 'GenLep%d'%(i+1), event.genleps[i], withSourceId=True)
         for i in range(min(6,len(event.gentauleps))): 
