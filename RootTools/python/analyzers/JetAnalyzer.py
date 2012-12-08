@@ -8,7 +8,7 @@ from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.BTagSF import BTagSF
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
-from CMGTools.Common.Tools.cmsswRelease import isNewerThan
+from CMGTools.RootTools.utils.cmsswRelease import isNewerThan
 
 class JetAnalyzer( Analyzer ):
     """Analyze jets ;-)
