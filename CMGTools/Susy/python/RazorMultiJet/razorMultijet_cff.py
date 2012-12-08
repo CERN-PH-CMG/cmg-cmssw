@@ -29,6 +29,7 @@ razorMJMuonSAKCMG.cfg.inputCollection = 'razorMJMuonSAK'
 razorMJMuonSAKCMG.cfg.leptonFactory.vertexCollection = 'goodOfflinePrimaryVertices'
 
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
+
 razorMJMuonLoose = cmgMuonSel.clone(src = "razorMJMuonSAKCMG", cut = "(pt() > 5.) && (abs(eta()) < 2.4)")
 razorMJMuonTight = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 25.) && (abs(eta()) < 2.4) && isPF() && relIso(0.5) < 0.15 && getSelection('cuts_tightmuonNoVtx') && abs(dxy()) < 0.02 && abs(dz()) < 0.5")
 razorMJMuonSequence = cms.Sequence(
@@ -40,6 +41,8 @@ razorMJMuonSequence = cms.Sequence(
 #will invert later
 
 razorMJTightMuonCount = cmgCandCount.clone( src = 'razorMJMuonTight', minNumber = 1 )
+
+
 
 ############### Electrons
 #start off by making the veto electrons
@@ -331,13 +334,54 @@ razorMJHemiSequence = cms.Sequence(
     razorMJHemiLepBox20
 )
 
+###Isolated Tracks veto, hadronic
+
 from CMGTools.Susy.common.trackIsolationMaker_cfi import trackIsolationMaker
 razorMJTrackIsolationMaker = trackIsolationMaker.clone()
 razorMJTrackIsolationMaker.vertexInputTag = cms.InputTag("goodOfflinePrimaryVertices")
 razorMJTrackIsolationMaker.minPt_PFCandidate = cms.double(5.0)
 razorMJTrackIsolationMaker.pfCandidatesTag = cms.InputTag("pfNoPileUp")
 razorMJTrackIsolationMaker.dz_CutValue = cms.double(101.)
+razorMJTrackIsolationMaker.vetoCollections = cms.VInputTag()
 
+### Isolated Tracks veto, leptonic
+from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import *
+from CMGTools.Common.skims.leadingCMGTauSelector_cfi      import *
+from CMGTools.Susy.common.trackIsolationMaker_cfi         import trackIsolationMaker
+
+##muons
+razorMJMuonTightLead = leadingCMGMuonSelector.clone(
+        inputCollection = 'razorMJMuonTight',
+            index = 1
+            )
+
+##electrons
+razorMJElectronTightLead = leadingCMGElectronSelector.clone(
+        inputCollection = 'razorMJElectronTight', index = 1
+            )
+
+##taus
+razorMJTauTightLead = leadingCMGTauSelector.clone(
+        inputCollection = 'razorMJTauTight', index = 1
+            )
+
+razorMJLeptonTrackIsolationMaker                   = trackIsolationMaker.clone()
+razorMJLeptonTrackIsolationMaker.vertexInputTag    = cms.InputTag("goodOfflinePrimaryVertices")
+razorMJLeptonTrackIsolationMaker.minPt_PFCandidate = cms.double(5.0)
+razorMJLeptonTrackIsolationMaker.pfCandidatesTag   = cms.InputTag("pfNoPileUp")
+razorMJLeptonTrackIsolationMaker.dz_CutValue       = cms.double(101.)
+razorMJLeptonTrackIsolationMaker.vetoCollections   = cms.VInputTag(cms.InputTag("razorMJMuonTightLead"),
+                                                                   cms.InputTag("razorMJElectronTightLead"),
+                                                                   cms.InputTag("razorMJTauTightLead"))
+
+razorMJTrackIsolationMakerForLepBoxSequence = cms.Sequence(
+    razorMJMuonTightLead            +
+    razorMJElectronTightLead        +
+    razorMJTauTightLead             +
+    razorMJLeptonTrackIsolationMaker
+    )
+
+###
 razorMJObjectSequence = cms.Sequence(
     razorMJTrackIsolationMaker+
     razorMJLeptonSequence+
@@ -417,4 +461,9 @@ razorMJSkimSequenceTau = cms.Sequence(
     ~razorMJPFJetIDCount+
     #a tight tau
     razorMJTightTauCount 
+    )
+
+trkVetoLeptonSequence = cms.Sequence(
+    ~razorPFJetSelCount       +
+    razorMJTrackIsolationMakerForLepBoxSequence
     )
