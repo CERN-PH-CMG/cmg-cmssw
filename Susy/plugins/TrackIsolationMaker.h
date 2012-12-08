@@ -50,6 +50,7 @@ private:
 
   edm::InputTag pfCandidatesTag_;
   edm::InputTag vertexInputTag_;
+  std::vector<edm::InputTag> vetoCollectionTags_;
 
   const reco::PFCandidateCollection *pfCandidates;
 

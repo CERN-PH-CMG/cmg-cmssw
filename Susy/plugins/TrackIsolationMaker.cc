@@ -33,10 +33,14 @@
 #include "DataFormats/ParticleFlowReco/interface/PFBlock.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 
+#include "AnalysisDataFormats/CMGTools/interface/Lepton.h"
+
 #include "CMGTools/Susy/plugins/TrackIsolationMaker.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "TMath.h"
+
+#include <utility>
 
 typedef math::XYZTLorentzVectorF LorentzVector;
 typedef math::XYZPoint Point;
@@ -60,7 +64,9 @@ TrackIsolationMaker::TrackIsolationMaker(const edm::ParameterSet& iConfig) {
   dR_               = iConfig.getParameter<double>          ("dR_ConeSize");       // dR value used to define the isolation cone                (default 0.3 )
   dzcut_            = iConfig.getParameter<double>          ("dz_CutValue");       // cut value for dz(trk,vtx) for track to include in iso sum (default 0.05)
   minPt_            = iConfig.getParameter<double>          ("minPt_PFCandidate"); // store PFCandidates with pt above this cut                 (default 0   )
-  
+
+  vetoCollectionTags_ =  iConfig.getParameter< std::vector<edm::InputTag> >("vetoCollections");  
+
   produces<vector<float> >("pfcandstrkiso").setBranchAlias("pfcands_trkiso");
   produces<vector<float> >("pfcandsdzpv"  ).setBranchAlias("pfcands_dzpv");
   produces<vector<float> >("pfcandspt"    ).setBranchAlias("pfcands_pt");
@@ -117,19 +123,43 @@ void TrackIsolationMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
+  //-----------------------------------
+  // get veto collections' candidates
+  //----------------------------------
+  std::vector< std::pair < double, double > > vetoesEtaPhi;
+
+  for ( std::vector<edm::InputTag>::const_iterator tag = vetoCollectionTags_.begin() ; tag != vetoCollectionTags_.end() ; tag++  ){
+    Handle<edm::View<reco::Candidate> > vetos;
+    iEvent.getByLabel(*tag, vetos);
+    for ( edm::View<reco::Candidate>::const_iterator jt = vetos->begin(); jt != vetos->end(); ++jt){
+      vetoesEtaPhi.push_back( std::make_pair( jt -> eta(), jt -> phi()));
+    }
+  }
+ 
+
   //-------------------------------------------------------------------------------------------------
   // loop over PFCandidates and calculate the trackIsolation and dz w.r.t. 1st good PV for each one
   // for neutral PFCandidates, store trkiso = 999 and dzpv = 999
   //-------------------------------------------------------------------------------------------------
-
   for( PFCandidateCollection::const_iterator pf_it = pfCandidates->begin(); pf_it != pfCandidates->end(); pf_it++ ) {
-
     //-------------------------------------------------------------------------------------
     // only store PFCandidate values if pt > minPt
     //-------------------------------------------------------------------------------------
 
-    if( pf_it->pt() < minPt_ ) continue;
+    // if( pf_it->pt() < minPt_ ) continue;
 
+    //-------------------------------------------------------------------------------------
+    // skip candidate if it matches a veto object
+    //-------------------------------------------------------------------------------------
+    double dR = 1000.;
+    for ( std::vector< std::pair < double, double > >::const_iterator v_it = vetoesEtaPhi.begin();
+	  v_it != vetoesEtaPhi.end();
+	  v_it++){
+      
+      dR = min(dR, reco::deltaR( pf_it -> eta(), pf_it -> phi(), v_it -> first, v_it -> second  ));
+    }
+    if (dR < 0.02)
+      continue;
     //-------------------------------------------------------------------------------------
     // store pt and charge of PFCandidate
     //-------------------------------------------------------------------------------------
@@ -199,6 +229,7 @@ void TrackIsolationMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     }
 
   }
+  
             
   // put trkiso and dz values back into event
   iEvent.put(pfcands_trkiso,"pfcandstrkiso");
