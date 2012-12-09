@@ -11,7 +11,7 @@ def parseFile(url) :
     return ev_dict
 
 if(len(sys.argv)<3):
-    print 'python synchSel.py file1 file2'
+    print 'synchSel.py file_A file_B'
     print 'Prints differences found between the two selection files'
     sys.exit(-1)
     
