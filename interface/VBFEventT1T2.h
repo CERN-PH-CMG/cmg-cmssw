@@ -45,13 +45,13 @@ template<typename T1, typename T2> class VBFEventT1T2 : public reco::LeafCandida
   const T2PtrVector & vetoObjects() const {return vetoObjects_;}
 
   /// access to the veto object
-  const T2Ptr vetoObject(uint i=0) const {
+  const T2Ptr vetoObject(unsigned i=0) const {
     if(vetoObjects_.size()<i+1) return T2Ptr();
     else return vetoObjects_[i];}
 
  /// access to the veto object, which is separated from particular 4-vector
   const T2Ptr vetoObject(math::XYZTLorentzVector p4, float deltaR) const {
-    for(uint i=0;i<vetoObjects_.size();++i){
+    for(unsigned i=0;i<vetoObjects_.size();++i){
       if(ROOT::Math::VectorUtil::DeltaR(p4,vetoObject(i)->p4())>deltaR)
 	return vetoObject(i);
     }
@@ -59,7 +59,7 @@ template<typename T1, typename T2> class VBFEventT1T2 : public reco::LeafCandida
   }
 
   /// return the Zepperfeld variable: eta_j3 - (etaMin + etaMax )/2
-  float etaZepperfeld(uint i = 0) const {
+  float etaZepperfeld(unsigned i = 0) const {
     if(!vetoObject(i)) return -99;
     else return vetoObject(i)->p4().Eta() - (etaMax_ + etaMin_)/2.0;
   }
