@@ -91,15 +91,15 @@ class ttHLepAnalyzerBase( Analyzer ):
         event.looseLeptons.sort(key = lambda l : l.pt(), reverse = True)
         event.selectedLeptons.sort(key = lambda l : l.pt(), reverse = True)
 
-        print "Found ",len(event.looseLeptons)," loose leptons"
-        print "Found ",len(event.selectedLeptons)," good leptons"
+        #print "Found ",len(event.looseLeptons)," loose leptons"
+        #print "Found ",len(event.selectedLeptons)," good leptons"
        
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
         eventNumber = iEvent.eventAuxiliary().id().event()
-        print 'Event ',eventNumber
+        #print 'Event ',eventNumber
         
         #import pdb; pdb.set_trace()
 

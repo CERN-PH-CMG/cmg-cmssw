@@ -36,7 +36,25 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
         for lep in event.selectedLeptons:
             gen = match[lep]
             lep.mcMatchId = (gen.sourceId if gen != None else 0)
-    
+
+    def isFromB(self,particle):
+        maxflavour = 0
+        for i in xrange( particle.numberOfMothers() ): 
+            mom  = particle.mother(i)
+            momid = abs(mom.pdgId())
+            if momid / 1000 == 5 or momid / 100 == 5: 
+                return True
+            elif mom.status() == 2 and self.isFromB(mom):
+                return True
+        return False
+                
+    def matchAnyLeptons(self, event): 
+        event.anyLeptons = [ x for x in event.genParticles if x.status() == 1 and abs(x.pdgId()) in [11,13] ]
+        match = matchObjectCollection2(event.selectedLeptons, event.anyLeptons, deltaRMax = 0.3)
+        for lep in event.selectedLeptons:
+            gen = match[lep]
+            lep.mcMatchAny = ((1 + self.isFromB(gen)) if gen != None else 0)
+
     def matchJets(self, event):
         match = matchObjectCollection2(event.cleanJets,
                                        event.genbquarks + event.genwzquarks,
@@ -53,6 +71,8 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
             return True
 
         self.matchLeptons(event)
+
+        self.matchAnyLeptons(event)
 
         self.matchJets(event)
 

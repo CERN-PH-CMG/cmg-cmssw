@@ -77,7 +77,7 @@ ttHJetAna = cfg.Analyzer(
 ttHEventAna = cfg.Analyzer(
     'ttHLepEventAnalyzer',
     maxLeps = 4, ## leptons to use
-    verbose = True,
+    verbose = False,
     )
 
 # Event Analyzer
