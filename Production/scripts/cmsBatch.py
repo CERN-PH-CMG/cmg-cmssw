@@ -97,6 +97,7 @@ echo 'running'
 if [ $? != 0 ]; then
     echo wrong exit code! removing all root files
     rm *.root
+    exit 1 
 fi
 echo 'sending the job directory back'
 """ % prog
@@ -129,6 +130,7 @@ echo 'running'
 if [ $? != 0 ]; then
     echo wrong exit code! removing all root files
     rm *.root
+    exit 1 
 fi
 echo 'sending the job directory back'
 """ % prog
@@ -138,7 +140,8 @@ echo 'sending the job directory back'
       script += """
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
-cmsStage -f $file %s/$newFileName 
+cmsStageWithFailover.py -f $file $fullFileName
+eos chmod 755 /eos/cms/$fullFileName
 done
 """ % (index, remoteDir)
       script += 'rm *.root\n'
