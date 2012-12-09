@@ -13,7 +13,8 @@ def parseFile(url) :
 if(len(sys.argv)<3):
     print 'python synchSel.py file1 file2'
     print 'Prints differences found between the two selection files'
-
+    sys.exit(-1)
+    
 logA=parseFile(sys.argv[1])
 logB=parseFile(sys.argv[2])
 
