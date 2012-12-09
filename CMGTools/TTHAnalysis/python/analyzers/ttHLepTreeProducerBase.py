@@ -116,6 +116,8 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         for i in range(2):
             bookGenParticle(tr, 'GenBQuark%d'%(i+1))
  
+        var( tr, 'nGoodLepsMatchId',  int) 
+        var( tr, 'nGoodLepsMatchAny', int) 
  
     def fillMCVariables(self, iEvent, event):
         tr = self.tree
@@ -139,4 +141,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
             fillGenParticle(tr, 'GenQuark%d'%(i+1), event.genwzquarks[i], withSourceId=True)
         for i in range(min(2,len(event.genbquarks))): 
             fillGenParticle(tr, 'GenBQuark%d'%(i+1), event.genbquarks[i])
+
+        fill( tr, 'nGoodLepsMatchId',  sum([x.mcMatchId  > 0 for x in event.selectedLeptons]) )
+        fill( tr, 'nGoodLepsMatchAny', sum([x.mcMatchAny > 0 for x in event.selectedLeptons]) )
         

@@ -41,6 +41,7 @@ def bookLepton( tree, pName, isMC=False ):
     var(tree, '{pName}_drBJet'.format(pName=pName))
     if isMC:
         var(tree, '{pName}_mcMatchId'.format(pName=pName), int)
+        var(tree, '{pName}_mcMatchAny'.format(pName=pName), int)
     
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
@@ -53,6 +54,7 @@ def fillLepton( tree, pName, lepton ):
     fill(tree, '{pName}_drBJet'.format(pName=pName), lepton.drBJet)
     if hasattr(lepton, 'mcMatchId'):
         fill(tree, '{pName}_mcMatchId'.format(pName=pName), lepton.mcMatchId)
+        fill(tree, '{pName}_mcMatchAny'.format(pName=pName), lepton.mcMatchAny)
    
      
 
