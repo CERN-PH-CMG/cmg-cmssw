@@ -16,6 +16,9 @@ if __name__ == '__main__':
     argv = sys.argv[1:]
     (args, debug, force ) = parseOpts( argv )
 
+    if not os.path.isfile(args[0]):
+        print args[0], 'does not exist.'
+        sys.exit(1)
     source = cmsFile( args[0], "rfio" )
     destination = cmsFile( args[1], "stageout" )
     checkArgs( source, destination, force )
