@@ -603,14 +603,15 @@ class MonitorJobs(Task):
             tokens = [t for t in header.split(' ') if t]
             result = {}
             for i in xrange(len(tokens)):
-                result[tokens[i]] = i
+                result[tokens[i]] = i          
+
             return result
 
         result = {}
         if stdout:
             lines = stdout.split('\n')
             if lines:
-                header = parseHeader(lines[0])
+                header = parseHeader(lines[0])                                 
                 if not 'STAT' in header or not 'JOBID' in header:
                     print >> sys.stderr, 'Problem parsing bjobs header\n',lines
                     return result
@@ -622,7 +623,7 @@ class MonitorJobs(Task):
                     user = tokens[header['USER']]
                     status = tokens[header['STAT']]
 
-                    result[id] = status
+                    result[id] = status               
                     
         if stderr:
             lines = stderr.split('\n')
