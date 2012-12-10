@@ -134,6 +134,11 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
            not event.thirdLeptonVeto or \
            not event.leptonAccept:
             return False
+
+        if hasattr(self.cfg_ana, 'isFake') and \
+               event.isFake != self.cfg_ana.isFake:
+            return False
+        
         tr = self.tree
         tr.reset()
         
