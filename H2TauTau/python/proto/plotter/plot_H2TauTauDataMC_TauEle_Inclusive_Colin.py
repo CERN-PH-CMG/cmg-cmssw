@@ -19,7 +19,6 @@ from CMGTools.RootTools.Style import *
 from ROOT import kPink, TH1, TPaveText, TPad
 
 
-
 cp = copy.deepcopy
 EWK = 'WJets'
 

@@ -12,6 +12,7 @@ def embedScaleFactor(selComps):
             #if embedChain is None:
             #    embedChain = copy.deepcopy( comp.tree )
             #    continue
+            # import pdb; pdb.set_trace()
             print 'chaining', comp.name, comp.tree.GetEntries()
             embedChain.Add(comp.tree)
         elif comp.name=='Ztt':
