@@ -135,33 +135,26 @@ TtbarLeptonJets::TtbarLeptonJets(const edm::ParameterSet& iConfig) :
    //now do what ever initialization is needed
   edm::Service<TFileService> fs;
   countAll_h    = fs->make<TH1D>("countAll_h"  , "countAll_h"   , 5   ,   0. ,    5. );
-  mu_maxLxy_h   = fs->make<TH1D>("mu_maxLxy_h" , "mu_maxLxy_h"  , 50  ,   0. ,    5. );
+  mu_maxLxy_h   = fs->make<TH1D>("mu_maxlxy_h" , "mu_maxlxy_h"  , 50  ,   0. ,    5. );
   mu_pT_h       = fs->make<TH1D>("mu_pT_h"     , "mu_pT_h"      ,  60 ,   0. ,  300. );
   mu_PV_h       = fs->make<TH1D>("mu_PV_h"     , "mu_PV_h"      ,  41 , -0.5 , 40.5  );
-  e_maxLxy_h    = fs->make<TH1D>("e_maxLxy_h"  , "e_maxLxy_h"   , 100 ,   0. ,   10. );
+  e_maxLxy_h    = fs->make<TH1D>("e_maxlxy_h"  , "e_maxlxy_h"   , 100 ,   0. ,   10. );
   e_pT_h        = fs->make<TH1D>("e_pT_h"      , "e_pT_h"       ,  60 ,   0. ,  300. );
   e_PV_h        = fs->make<TH1D>("e_PV_h"      , "e_PV_h"       ,  41 , -0.5 , 40.5  );
   
-  e_bjetLxy_h     = fs->make<TH1D>("e_bjetLxy_h",       "e_bjetLxy_h"     , 50, 0., 5 );
-  e_cjetLxy_h     = fs->make<TH1D>("e_cjetLxy_h",       "e_cjetLxy_h"     , 50, 0., 5 );
-  e_udsgjetLxy_h  = fs->make<TH1D>("e_udsgjetLxy_h",    "e_udsgjetLxy_h"  , 50, 0., 5 );
+  e_bjetLxy_h     = fs->make<TH1D>("e_bjetlxy_h",       "e_bjetlxy_h"     , 50, 0., 5 );
+  e_cjetLxy_h     = fs->make<TH1D>("e_cjetlxy_h",       "e_cjetlxy_h"     , 50, 0., 5 );
+  e_udsgjetLxy_h  = fs->make<TH1D>("e_udsgjetlxy_h",    "e_udsgjetlxy_h"  , 50, 0., 5 );
   e_bjetMass_h    = fs->make<TH1D>("e_bjetMass_h",      "e_bjetMass_h"    , 50, 0., 10 );
   e_cjetMass_h    = fs->make<TH1D>("e_cjetMass_h",      "e_cjetMass_h"    , 50, 0., 10 );
   e_udsgjetMass_h = fs->make<TH1D>("e_udsgjetMass_h",   "e_udsgjetMass_h" , 50, 0., 10 );
 
-  mu_bjetLxy_h     = fs->make<TH1D>("mu_bjetLxy_h",       "mu_bjetLxy_h"     , 50, 0., 5 );
-  mu_cjetLxy_h     = fs->make<TH1D>("mu_cjetLxy_h",       "mu_cjetLxy_h"     , 50, 0., 5 );
-  mu_udsgjetLxy_h  = fs->make<TH1D>("mu_udsgjetLxy_h",    "mu_udsgjetLxy_h"  , 50, 0., 5 );
+  mu_bjetLxy_h     = fs->make<TH1D>("mu_bjetlxy_h",       "mu_bjetlxy_h"     , 50, 0., 5 );
+  mu_cjetLxy_h     = fs->make<TH1D>("mu_cjetlxy_h",       "mu_cjetlxy_h"     , 50, 0., 5 );
+  mu_udsgjetLxy_h  = fs->make<TH1D>("mu_udsgjetlxy_h",    "mu_udsgjetlxy_h"  , 50, 0., 5 );
   mu_bjetMass_h    = fs->make<TH1D>("mu_bjetMass_h",      "mu_bjetMass_h"    , 50, 0., 10 );
   mu_cjetMass_h    = fs->make<TH1D>("mu_cjetMass_h",      "mu_cjetMass_h"    , 50, 0., 10 );
   mu_udsgjetMass_h = fs->make<TH1D>("mu_udsgjetMass_h",   "mu_udsgjetMass_h" , 50, 0., 10 );
-
-
-  // e_bjetLxy_h    = fs->make<TH1D>("mu_bjetLxy_h",      "mu_bjetLxy_h"    , 50, 0., 5 );
-  // m_cjetLxy_h    = fs->make<TH1D>("mu_cjetLxy_h",      "mu_cjetLxy_h"    , 50, 0., 5 );
-
-  // mu_bjetMass_h    = fs->make<TH1D>("mu_bjetMass_h",    "mu_bjetMass_h"   , 50, 0., 10 );
-  // mu_cjetMass_h    = fs->make<TH1D>("mu_cjetMass_h",    "mu_cjetMass_h"   , 50, 0., 10 );
 
   mu_jetMass_h  = fs->make<TH1D>("mu_jetMass_h",  "mu_jetMass_h", 50, 0., 10 );
   e_jetMass_h   = fs->make<TH1D>("e_jetMass_h",   "e_jetMass_h", 50, 0., 10 );
