@@ -1,4 +1,6 @@
 #!/bin/env python
+from CMGTools.RootTools.utils.DeltaR import deltaR
+from CMGTools.TTHAnalysis.signedSip import *
 
 def var( tree, varName, type=float ):
     tree.var(varName, type)
@@ -35,26 +37,47 @@ def bookLepton( tree, pName, isMC=False ):
     var(tree, '{pName}_pdgId'.format(pName=pName), int)
     var(tree, '{pName}_charge'.format(pName=pName), int)
     var(tree, '{pName}_sip3d'.format(pName=pName))
+    var(tree, '{pName}_sip3ds'.format(pName=pName))
+    var(tree, '{pName}_ip3ds'.format(pName=pName))
     var(tree, '{pName}_dxy'.format(pName=pName))
     var(tree, '{pName}_dz'.format(pName=pName))
     var(tree, '{pName}_relIso'.format(pName=pName))
     var(tree, '{pName}_drBJet'.format(pName=pName))
+    var(tree, '{pName}_jetPtRatio'.format(pName=pName))
+    var(tree, '{pName}_jetBTagCSV'.format(pName=pName))
+    var(tree, '{pName}_jetBTagTCHE'.format(pName=pName))
+    var(tree, '{pName}_ptRelJet'.format(pName=pName))
+    var(tree, '{pName}_jetDR'.format(pName=pName))
+    var(tree, '{pName}_jetSelf'.format(pName=pName), 'int')
     if isMC:
         var(tree, '{pName}_mcMatchId'.format(pName=pName), int)
         var(tree, '{pName}_mcMatchAny'.format(pName=pName), int)
+        var(tree, '{pName}_mcDeltaRB'.format(pName=pName))
     
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
     fill(tree, '{pName}_pdgId'.format(pName=pName), lepton.pdgId() )
     fill(tree, '{pName}_charge'.format(pName=pName), lepton.charge() )
     fill(tree, '{pName}_sip3d'.format(pName=pName), lepton.sip3D() )
-    fill(tree, '{pName}_dxy'.format(pName=pName), lepton.dxy() )
-    fill(tree, '{pName}_dz'.format(pName=pName), lepton.dz() )
+    fill(tree, '{pName}_sip3ds'.format(pName=pName), signedSip3D(lepton) )
+    fill(tree, '{pName}_ip3ds'.format(pName=pName),  signedIp3D(lepton) )
+    fill(tree, '{pName}_dxy'.format(pName=pName), abs(lepton.dxy()) )
+    fill(tree, '{pName}_dz'.format(pName=pName), abs(lepton.dz()) )
     fill(tree, '{pName}_relIso'.format(pName=pName), lepton.relIso(dBetaFactor=0.5))
     fill(tree, '{pName}_drBJet'.format(pName=pName), lepton.drBJet)
+    if hasattr(lepton, 'jet'):
+        fill(tree, '{pName}_ptRelJet'.format(pName=pName), lepton.ptRelJet)
+        fill(tree, '{pName}_jetPtRatio'.format(pName=pName), lepton.pt()/lepton.jet.pt())
+        fill(tree, '{pName}_jetBTagCSV'.format(pName=pName), 
+            lepton.jet.btag('combinedSecondaryVertexBJetTags') if hasattr(lepton.jet, 'btag') else -99)
+        fill(tree, '{pName}_jetBTagTCHE'.format(pName=pName), 
+            lepton.jet.btag('trackCountingHighEffBJetTags') if hasattr(lepton.jet, 'btag') else -99)
+        fill(tree, '{pName}_jetDR'.format(pName=pName), deltaR(lepton.eta(),lepton.phi(),lepton.jet.eta(),lepton.jet.phi()))
+        fill(tree, '{pName}_jetSelf'.format(pName=pName), lepton.jet.pdgId() == lepton.pdgId())
     if hasattr(lepton, 'mcMatchId'):
         fill(tree, '{pName}_mcMatchId'.format(pName=pName), lepton.mcMatchId)
         fill(tree, '{pName}_mcMatchAny'.format(pName=pName), lepton.mcMatchAny)
+        fill(tree, '{pName}_mcDeltaRB'.format(pName=pName), lepton.mcDeltaRB)
    
      
 

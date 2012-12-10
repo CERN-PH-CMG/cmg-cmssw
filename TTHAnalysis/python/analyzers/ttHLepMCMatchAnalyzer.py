@@ -47,6 +47,16 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
             elif mom.status() == 2 and self.isFromB(mom):
                 return True
         return False
+
+    def sourceBQuark(self,particle,event):
+        for i in xrange( particle.numberOfMothers() ):
+            mom  = particle.mother(i)
+            if mom.status() == 3 and abs(mom.pdgId()) == 5:
+                return mom
+            elif mom.status() == 2:
+                momB = self.sourceBQuark(mom,event)
+                if momB != None: return momB
+        return None
                 
     def matchAnyLeptons(self, event): 
         event.anyLeptons = [ x for x in event.genParticles if x.status() == 1 and abs(x.pdgId()) in [11,13] ]
@@ -54,6 +64,11 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
         for lep in event.selectedLeptons:
             gen = match[lep]
             lep.mcMatchAny = ((1 + self.isFromB(gen)) if gen != None else 0)
+            lep.mcDeltaRB  = 999
+            if gen != None:
+                bgen = self.sourceBQuark(gen,event)
+                if bgen != None:
+                    lep.mcDeltaRB = deltaR(bgen.eta(),bgen.phi(),lep.eta(),lep.phi())
 
     def matchJets(self, event):
         match = matchObjectCollection2(event.cleanJets,
