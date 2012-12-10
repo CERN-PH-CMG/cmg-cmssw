@@ -1,4 +1,6 @@
 # from PhysicsTools.PatAlgos.patSequences_cff import *
+from CMGTools.Common.Tools.cmsswRelease import isNewerThan
+
 from PhysicsTools.PatAlgos.producersLayer1.tauProducer_cff import *
 from PhysicsTools.PatAlgos.selectionLayer1.tauSelector_cfi import selectedPatTaus
 
@@ -33,10 +35,8 @@ tauIsoDepositPFGammas.src = 'hpsPFTauProducer'
 
 # 44X : HPS taus are not yet the default. 
 patTaus.tauSource = 'hpsPFTauProducer'
-patTaus.tauIDSources = cms.PSet(
-    # configure many IDs as InputTag <someName> = <someTag>
-    # you can comment out those you don't want to save some
-    # disk space
+
+tauIDs = dict(
     decayModeFinding = cms.InputTag("hpsPFTauDiscriminationByDecayModeFinding"),
     byVLooseCombinedIsolationDeltaBetaCorr = cms.InputTag("hpsPFTauDiscriminationByVLooseCombinedIsolationDBSumPtCorr"),
     byLooseCombinedIsolationDeltaBetaCorr = cms.InputTag("hpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr"),
@@ -58,6 +58,9 @@ patTaus.tauIDSources = cms.PSet(
     byLooseIsoMVA = cms.InputTag('hpsPFTauDiscriminationByLooseIsolationMVA'),
     byMediumIsoMVA = cms.InputTag('hpsPFTauDiscriminationByMediumIsolationMVA'),
     byTightIsoMVA = cms.InputTag('hpsPFTauDiscriminationByTightIsolationMVA'),
+    )
+
+tauIDsNew = dict(
     againstElectronMVA3raw = cms.InputTag('hpsPFTauDiscriminationByMVA3rawElectronRejection'),
     againstElectronMVA3category = cms.InputTag('hpsPFTauDiscriminationByMVA3rawElectronRejection:category'),
     againstElectronLooseMVA3 = cms.InputTag('hpsPFTauDiscriminationByMVA3LooseElectronRejection'),
@@ -67,7 +70,18 @@ patTaus.tauIDSources = cms.PSet(
     againstElectronDeadECAL = cms.InputTag('hpsPFTauDiscriminationByDeadECALElectronRejection'),
     byLooseCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('hpsPFTauDiscriminationByLooseCombinedIsolationDBSumPtCorr3Hits'),
     byMediumCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('hpsPFTauDiscriminationByMediumCombinedIsolationDBSumPtCorr3Hits'),
-    byTightCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('hpsPFTauDiscriminationByTightCombinedIsolationDBSumPtCorr3Hits'),
+    byTightCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('hpsPFTauDiscriminationByTightCombinedIsolationDBSumPtCorr3Hits'),        
+    )
+
+if isNewerThan('CMSSW_5_3_5'):
+    # deactivated until we have a 2011 tau id recipe
+    tauIDs = dict( tauIDs.items() + tauIDsNew.items() )
+
+patTaus.tauIDSources = cms.PSet(
+    # configure many IDs as InputTag <someName> = <someTag>
+    # you can comment out those you don't want to save some
+    # disk space
+    **tauIDs
     )
 
 

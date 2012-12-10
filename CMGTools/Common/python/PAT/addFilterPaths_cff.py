@@ -88,14 +88,14 @@ trackingFailureSequence = cms.Sequence(goodVertices*trackingFailureFilter)
 trackingFailureFilterPath = cms.Path(trackingFailureSequence)
 
 ## Bad EE Supercrystal filter
-from RecoMET.METFilters.eeBadScFilter_cfi import eeBadScFilter
-eeBadScSequence = cms.Sequence(eeBadScFilter)
-eeBadScFilterPath = cms.Path(eeBadScSequence)
+# from RecoMET.METFilters.eeBadScFilter_cfi import eeBadScFilter
+# eeBadScSequence = cms.Sequence(eeBadScFilter)
+# eeBadScFilterPath = cms.Path(eeBadScSequence)
 
 ## EB or EE Xtals with large laser calibration correction
-from RecoMET.METFilters.ecalLaserCorrFilter_cfi import ecalLaserCorrFilter
-ecalLaserCorrSequence = cms.Sequence(ecalLaserCorrFilter)
-ecalLaserFilterPath = cms.Path(ecalLaserCorrSequence)
+# from RecoMET.METFilters.ecalLaserCorrFilter_cfi import ecalLaserCorrFilter
+# ecalLaserCorrSequence = cms.Sequence(ecalLaserCorrFilter)
+# ecalLaserFilterPath = cms.Path(ecalLaserCorrSequence)
 
 metNoiseCleaning = cms.Sequence(primaryVertexFilter+
                                 noscraping+
@@ -103,9 +103,9 @@ metNoiseCleaning = cms.Sequence(primaryVertexFilter+
                                 HBHENoiseFilter+
                                 hcalLaserEventFilter+
                                 EcalDeadCellTriggerPrimitiveFilter+
-                                trackingFailureSequence+
-                                eeBadScSequence+
-                                ecalLaserCorrSequence
+                                trackingFailureSequence
+                                # eeBadScSequence+
+                                # ecalLaserCorrSequence
                                 )
 
 metNoiseCleaningPath = cms.Path(metNoiseCleaning)
@@ -119,5 +119,8 @@ if isNewerThan('CMSSW_5_2_0'):
     from RecoMET.METFilters.eeBadScFilter_cfi import eeBadScFilter
     eeBadScFilterPath = cms.Path(eeBadScFilter)
     metNoiseCleaning +=  eeBadScFilter 
+    from RecoMET.METFilters.ecalLaserCorrFilter_cfi import ecalLaserCorrFilter
+    ecalLaserFilterPath = cms.Path(ecalLaserCorrSequence)
+    metNoiseCleaning += ecalLaserCorrFilter
 else:
-    print >> sys.stderr, 'hcalLaserFilterFromAOD only available in releases >= 5.2'
+    print >> sys.stderr, 'hcalLaserFilterFromAOD, eeBadScFilter and ecalLaserFilter only available in releases >= 5.2'
