@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
     parser = OptionParser()
     parser.usage = """
-    %prog <datacards_dir> <flat_tree_dir> <channel>
+    %prog <flat_tree_dir> <channel>
     """    
     parser.add_option("-f", "--filter", 
                       dest="filter", 

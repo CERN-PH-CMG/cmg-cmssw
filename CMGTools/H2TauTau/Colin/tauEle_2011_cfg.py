@@ -11,7 +11,7 @@ from CMGTools.RootTools.RootTools import *
 # 'Nom', 'Up', 'Down', or None
 shift = None
 # 1.0, 1.03, 0.97
-tauScaleShift = 1.03
+tauScaleShift = 1.0
 syncntuple = True
 
 mc_vertexWeight = 'vertexWeightFall112011AB'
@@ -138,7 +138,8 @@ treeProducer = cfg.Analyzer(
 
 treeProducerXCheck = cfg.Analyzer(
     'H2TauTauSyncTree',
-    pt20 = False
+    pt20 = False,
+    isFake = 0
     )
 
 #########################################################################################
@@ -148,7 +149,10 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.tauMu_Sync_ColinAug30 import *
 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinSep20 import *
-from CMGTools.H2TauTau.proto.samples.tauEle_ColinOct31 import *
+
+# from CMGTools.H2TauTau.proto.samples.tauEle_Up_ColinOct31 import *
+# from CMGTools.H2TauTau.proto.samples.tauEle_Down_ColinOct31 import *
+from CMGTools.H2TauTau.proto.samples.tauEle_Down_ColinDec6 import *
 
 #########################################################################################
 
@@ -183,7 +187,7 @@ selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list_2011 )
 selectedComponents.extend( embed_list_2011 )
 
-# selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets]
+selectedComponents = [DYJets]
 
 sequence = cfg.Sequence( [
 #     eventSelector,
@@ -206,12 +210,12 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 1
+test = 0
 if test==1:
-    comp = HiggsVBF125
-    comp.files = comp.files[:100]
+    comp = DYJets
+    comp.files = comp.files[:5]
     selectedComponents = [comp]
-    comp.splitFactor = 14
+    comp.splitFactor = 1
 elif test==2:
     selectedComponents = copy.copy(data_list_2011)
     selectedComponents.extend(embed_list_2011)
