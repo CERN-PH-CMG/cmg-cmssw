@@ -83,14 +83,15 @@ def prepareComponents(dir, config, aliases=None, embed=True,
             treeName = 'ZJetsTreeProducer'
             fileName = '{treeName}_tree.root'.format(treeName=treeName)
         for comp in comps.values():
-            fileName = '/'.join([ dir,
-                                  comp.dir,
-                                  treeName,
-                                  fileName] )
+            fullFileName = '/'.join([ dir,
+                                      comp.dir,
+                                      treeName,
+                                      fileName] )
             tree = TChain(treeName)
-            tree.Add(fileName)
+            tree.Add(fullFileName)
+            # print comp.dir, fullFileName
             comp.tree = tree
-    attachTree(zComps,'MuMu')
+    # attachTree(zComps,'MuMu')
     attachTree(newSelComps, channel)
 
     # compute the embedded sample weighting factor

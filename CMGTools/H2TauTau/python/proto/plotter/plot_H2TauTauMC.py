@@ -187,7 +187,7 @@ if __name__ == '__main__':
     osign = makePlot( options.hist, anaDir, filteredComps, weights,
                       NBINS, XMIN, XMAX,
                       options.cut, weight=weight, embed=options.embed,
-                      shift=shift, VVgroup=cfg.VVgroup, treeName=treeName);
+                      shift=None, VVgroup=cfg.VVgroup, treeName=treeName);
     # drawOfficial(osign, options.blind)
 
     osign.Draw()
