@@ -55,13 +55,19 @@ void TreeReader::Loop(TString mode) {
     if (nBJetLoose20>=2) {
       steps->Fill(1.,weight);
       
-      if (nBJetMedium20>=2) {
+      if(met>30 && (mZ1>(91.+5.)|| mZ1<(91.-5.))){
 	steps->Fill(2.,weight);
+	
+	if((max(LepGood1_sip3d,max(LepGood2_sip3d,LepGood3_sip3d)))<4.&& (max(LepGood1_relIso,max(LepGood2_relIso,LepGood3_relIso)))<0.2){
+	  steps->Fill(3.,weight);
 
+	  if (nBJetMedium20>=2) {
+	    steps->Fill(4.,weight);
+	  }
+	}
       }
     }
   }
-
   steps->Write();
 }
 

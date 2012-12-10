@@ -6,7 +6,7 @@ void plot() {
   // input dir
   // --------------------------------
  
-  TString inputDir="TTH_plots/081212/";
+  TString inputDir="TTH_plots/091212/";
   //TString inputDir="root://lxcms00//data3/2012/HZZ_root/191012/PRODFSR_8TeV";
   
   
@@ -44,11 +44,11 @@ void plot() {
    
   vector<TString> samples;
   
-  //samples.push_back("TTHWW");     //signal splitted in 3 components
-  //samples.push_back("TTHZZ");     //signal splitted in 3 components
-  //samples.push_back("TTHtautau"); //signal splitted in 3 components
+  samples.push_back("TTHWW");     //signal splitted in 3 components
+  samples.push_back("TTHZZ");     //signal splitted in 3 components
+  samples.push_back("TTHtautau"); //signal splitted in 3 components
   //samples.push_back("TTHXX");     //signal splitted in 3 components
-  samples.push_back("TTH");       //inclusive signal
+  //samples.push_back("TTH");       //inclusive signal
   samples.push_back("TTWJets");   
   samples.push_back("TTZJets");
   samples.push_back("WWWJets");
@@ -83,7 +83,11 @@ void plot() {
   // Note that "data" is special!                              
   // stacker->setGroup("data",   true, kBlack, 20, 0);      
      
-  stacker->setGroup("TTH126",true, kOrange+10,  20, 50);          
+
+  stacker->setGroup("TTHWW126",true, kOrange+10,  20, 50);          
+  stacker->setGroup("TTHZZ126",true, kOrange+10,  20, 50);          
+  stacker->setGroup("TTHtautau126",true, kOrange+10,  20, 50);          
+  //stacker->setGroup("TTH126",true, kOrange+10,  20, 50);          
   stacker->setGroup("TTW", false, kGreen-5,  28, 6);   
   stacker->setGroup("TTZ", false, kSpring+2,  8, 2);
   stacker->setGroup("ZZ", false, kAzure-9, 23, 1);
@@ -99,7 +103,10 @@ void plot() {
   //--- There's no need to assign data samples to "data" groups, providing
   //--- that the sample name starts with "DoubleMu", "DoubleEle", "DoubleOr", or "data".
   
-  stacker->assignToGroup("TTH","TTH126");
+  //stacker->assignToGroup("TTH","TTH126");
+  stacker->assignToGroup("TTHWW","TTHWW126");
+  stacker->assignToGroup("TTHZZ","TTHZZ126");
+  stacker->assignToGroup("TTHtautau","TTHtautau126");
   stacker->assignToGroup("TTWJets", "TTW");
   stacker->assignToGroup("TTZJets", "TTZ");
   stacker->assignToGroup("ZZ2e2mu", "ZZ");
@@ -162,8 +169,8 @@ void plot() {
     c->SetLogy();
     s = stacker->getStack("nEvent");
     d = stacker->getData("nEvent");
-    drawStepPlot(s,d,"Cut","Events",1,5);
-    stepPlotYield2(s, d,1,5);
+    drawStepPlot(s,d,"Cut","Events",1,7);
+    stepPlotYield2(s, d,1,7);
   } 
 
   delete stacker;
