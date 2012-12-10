@@ -75,7 +75,12 @@ class ttHLepEventAnalyzer( Analyzer ):
         for l in event.selectedLeptons + event.looseLeptons:
             match, dr = bestMatch(l, event.bjetsLoose)
             l.drBJet = dr
-        
+
+        for l in event.selectedLeptons:
+            (px,py,pz) = (l.px(),l.py(),l.pz())
+            (jx,jy,jz) = (l.jet.px(),l.jet.py(),l.jet.pz())
+            cross = (px*jy-py*jx, py*jz-pz*jy, pz*jx-px*jz)
+            l.ptRelJet = sqrt(sum([v*v for v in cross]))/l.jet.p()
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
@@ -85,10 +90,10 @@ class ttHLepEventAnalyzer( Analyzer ):
         event.bjetsLoose  = [ j for j in event.cleanJets if j.getSelection("cuts_csv_loose")  ]
         event.bjetsMedium = [ j for j in event.cleanJets if j.getSelection("cuts_csv_medium") ]
 
-        objects20 = [ j for j in event.cleanJets if j.pt() > 20 ] + event.selectedLeptons
+        objects25 = [ j for j in event.cleanJets if j.pt() > 25 ] + event.selectedLeptons
         objects30 = [ j for j in event.cleanJets if j.pt() > 30 ] + event.selectedLeptons
-        event.htJet20 = sum([x.pt() for x in objects20])
-        event.mhtJet20 = hypot(sum([x.px() for x in objects20]), sum([x.py() for x in objects20]))
+        event.htJet25 = sum([x.pt() for x in objects25])
+        event.mhtJet25 = hypot(sum([x.px() for x in objects25]), sum([x.py() for x in objects25]))
         event.htJet30 = sum([x.pt() for x in objects30])
         event.mhtJet30 = hypot(sum([x.px() for x in objects30]), sum([x.py() for x in objects30]))
 

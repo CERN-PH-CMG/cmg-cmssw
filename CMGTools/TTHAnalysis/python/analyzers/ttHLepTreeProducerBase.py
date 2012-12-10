@@ -27,23 +27,23 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'nLepLoose', int)
         var( tr, 'nLepGood', int)
         ## --- JETS ---
-        var( tr, 'nJet20', int)
+        var( tr, 'nJet25', int)
         var( tr, 'nJet30', int)
         for i in range(8):
             bookLepton(tr,"LepLoose%d"%(i+1))
             bookLepton(tr,"LepGood%d"%(i+1), isMC)
         for i in range(8):
             bookJet(tr,"Jet%d"%(i+1), isMC)
-        var( tr, 'nBJetLoose20', int )
-        var( tr, 'nBJetMedium20', int )
+        var( tr, 'nBJetLoose25', int )
+        var( tr, 'nBJetMedium25', int )
         var( tr, 'nBJetLoose30', int )
         var( tr, 'nBJetMedium30', int )
         ## --- MET, HT, MHT ---
         var( tr, 'met' )
         var( tr, 'htJet30' )
-        var( tr, 'htJet20' )
+        var( tr, 'htJet25' )
         var( tr, 'mhtJet30' )
-        var( tr, 'mhtJet20' )
+        var( tr, 'mhtJet25' )
         ## --- DILEPTON MASSES ---
         var( tr, 'mZ1' )
         var( tr, 'mZ2' )
@@ -71,21 +71,21 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         for i in range(min(8,len(event.selectedLeptons))):
             fillLepton( tr, "LepGood%d"%(i+1), event.selectedLeptons[i])    
 
-        fill(tr, 'nJet20', len(event.cleanJets))      
+        fill(tr, 'nJet25', len(event.cleanJets))      
         fill(tr, 'nJet30', sum([(j.pt() > 30) for j in event.cleanJets]))      
         for i in range(min(8,len(event.cleanJets))):
             fillJet(tr, "Jet%d"%(i+1), event.cleanJets[i])        
-        fill(tr, 'nBJetLoose20', len(event.bjetsLoose))      
+        fill(tr, 'nBJetLoose25', len(event.bjetsLoose))      
         fill(tr, 'nBJetLoose30', sum([(j.pt() > 30) for j in event.bjetsLoose]))      
-        fill(tr, 'nBJetMedium20', len(event.bjetsMedium))      
+        fill(tr, 'nBJetMedium25', len(event.bjetsMedium))      
         fill(tr, 'nBJetMedium30', sum([(j.pt() > 30) for j in event.bjetsMedium]))      
 
         ## --- MET, MHT, HT ---
         fill( tr, 'met', event.met.pt() )
         fill( tr, 'htJet30', event.htJet30 )
-        fill( tr, 'htJet20', event.htJet20 )
+        fill( tr, 'htJet25', event.htJet25 )
         fill( tr, 'mhtJet30', event.mhtJet30 )
-        fill( tr, 'mhtJet20', event.mhtJet20 )
+        fill( tr, 'mhtJet25', event.mhtJet25 )
 
         ## --- DILEPTON MASSES ---
         fill( tr, 'mZ1', event.bestZ1[0] )

@@ -66,7 +66,7 @@ ttHLepAna = cfg.Analyzer(
 ttHJetAna = cfg.Analyzer(
     'JetAnalyzer',
     jetCol = 'cmgPFJetSel',
-    jetPt = 20.,
+    jetPt = 25.,
     jetEta = 4.7,
     cjvPtCut = 30.,
     btagSFseed = 123456,
@@ -139,6 +139,16 @@ elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
         comp.files = comp.files[:3]
+elif test==3:
+    # test two components, using many threads, to check if variables are ok
+    comp = TTH
+    comp.files = comp.files[:20]
+    comp.splitFactor = 2
+    selectedComponents = [comp]
+    comp = TTLep
+    comp.files = comp.files[:50]
+    comp.splitFactor = 4
+    selectedComponents += [comp]
 
 # creation of the processing configuration.
 # we define here on which components to run, and
