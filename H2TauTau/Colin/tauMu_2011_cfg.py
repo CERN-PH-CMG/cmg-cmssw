@@ -180,10 +180,10 @@ diboson_list = [    WWJetsTo2L2Nu,
 WJetsSoup = copy.copy(WJets)
 WJetsSoup.name = 'WJetsSoup'
 VVgroup = [comp.name for comp in diboson_list]
-higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
+# higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
 selectedComponents =  [WJetsSoup, TTJets, DYJets]
-# selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
-# higgs = mc_higgs
+selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
+higgs = mc_higgs
 selectedComponents.extend( higgs )
 selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list_2011 )
@@ -208,10 +208,14 @@ sequence = cfg.Sequence( [
 if syncntuple:
     sequence.append( treeProducerXCheck)
 
+selectedComponents = [HiggsVH125, HiggsVH130]
+HiggsVH125.splitFactor = 5
+HiggsVH130.splitFactor = 5
+
 
 test = 0
 if test==1:
-    comp = data_Run2011B_PromptReco_v1
+    comp = HiggsVH125
     comp.files = comp.files[:2]
     selectedComponents = [comp]
     comp.splitFactor = 1
