@@ -60,6 +60,7 @@ ttHLepAna = cfg.Analyzer(
     rhoElectron = 'kt6PFJets',
     muons='cmgMuonSel',
     electrons='cmgElectronSel',
+    minGoodLeptons=3,
     )
 
 # Jets Analyzer 
@@ -141,14 +142,14 @@ elif test==2:
         comp.files = comp.files[:3]
 elif test==3:
     # test two components, using many threads, to check if variables are ok
-    comp = TTH
-    comp.files = comp.files[:20]
-    comp.splitFactor = 2
-    selectedComponents = [comp]
-    comp = TTLep
+    #comp = TTH
+    #comp.files = comp.files[:20]
+    #comp.splitFactor = 2
+    #selectedComponents = [comp]
+    comp = DYJetsM50
     comp.files = comp.files[:50]
-    comp.splitFactor = 4
-    selectedComponents += [comp]
+    comp.splitFactor = 5
+    selectedComponents = [comp]
 
 # creation of the processing configuration.
 # we define here on which components to run, and

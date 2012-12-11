@@ -105,7 +105,7 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         #call the leptons functions
         self.makeLeptons(event)
-        if len(event.selectedLeptons)<3:
+        if len(event.selectedLeptons) < self.cfg_ana.minGoodLeptons:
             return False
         
         return True
