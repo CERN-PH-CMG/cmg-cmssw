@@ -40,6 +40,12 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'nBJetMedium30', int )
         ## --- MET, HT, MHT ---
         var( tr, 'met' )
+        var( tr, 'metSignificance' )
+        var( tr, 'projMetAll1S' )
+        var( tr, 'projMetAll2S' )
+        var( tr, 'projMetJet1S' )
+        var( tr, 'projMetJet2S' )
+        ## --- HT, MHT ---
         var( tr, 'htJet30' )
         var( tr, 'htJet25' )
         var( tr, 'mhtJet30' )
@@ -80,8 +86,15 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill(tr, 'nBJetMedium25', len(event.bjetsMedium))      
         fill(tr, 'nBJetMedium30', sum([(j.pt() > 30) for j in event.bjetsMedium]))      
 
-        ## --- MET, MHT, HT ---
+        ## --- MET ---
         fill( tr, 'met', event.met.pt() )
+        fill( tr, 'metSignificance', event.metSignificance )
+        fill( tr, 'projMetAll1S', event.projMetAll1S )
+        fill( tr, 'projMetAll2S', event.projMetAll2S )
+        fill( tr, 'projMetJet1S', event.projMetJets1S )
+        fill( tr, 'projMetJet2S', event.projMetJets2S )
+
+        ## --- MHT, HT ---
         fill( tr, 'htJet30', event.htJet30 )
         fill( tr, 'htJet25', event.htJet25 )
         fill( tr, 'mhtJet30', event.mhtJet30 )

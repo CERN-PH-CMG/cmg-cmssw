@@ -3,7 +3,7 @@ import itertools
 import copy
 from math import *
 
-from ROOT import TLorentzVector
+from ROOT import TLorentzVector, TVectorD
 
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.Event import Event
@@ -16,7 +16,7 @@ from CMGTools.RootTools.physicsobjects.Muon import Muon
 from CMGTools.RootTools.physicsobjects.Jet import Jet
 
 from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi,bestMatch
-
+from CMGTools.TTHAnalysis.leptonMVA import LeptonMVA
 
         
 class ttHLepEventAnalyzer( Analyzer ):
@@ -24,9 +24,19 @@ class ttHLepEventAnalyzer( Analyzer ):
         super(ttHLepEventAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
         self.maxLeps = cfg_ana.maxLeps
 
+        variables = []
+        variables.append(  ('sip3d', 'F', lambda lep : lep.sip3D()) )
+        variables.append(  ('dxy := min(abs(dxy),0.2)', 'F', lambda lep : min(abs(lep.dxy()), 0.2)) )
+        variables.append(  ('dz := min(abs(dz),0.3)', 'F', lambda lep : min(abs(lep.dz()), 0.3)) )
+        variables.append(  ('relIso', 'F', lambda lep : lep.relIso(dBetaFactor=0.5)) )
+        variables.append(  ('jetPtRatio := min(jetPtRatio,1)', 'F', lambda lep : min(lep.pt()/lep.jet.pt(), 1)) )
+        variables.append(  ('jetBTagCSV := max(jetBTagCSV,0)', 'F', lambda lep : max(0,
+                                    lep.jet.btag('combinedSecondaryVertexBJetTags') if hasattr(lep.jet, 'btag') else -99)) )
+        self.leptonMVA = LeptonMVA("BDTG", variables, "/afs/cern.ch/user/b/botta/public/prova_BDTG.weights.xml")
     def declareHandles(self):
         super(ttHLepEventAnalyzer, self).declareHandles()
         self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
+        self.handles['metSignificance'] = AutoHandle( 'pfMetSignificance', 'cmg::METSignificance' )
 
     def beginLoop(self):
         super(ttHLepEventAnalyzer,self).beginLoop()
@@ -81,12 +91,42 @@ class ttHLepEventAnalyzer( Analyzer ):
             (jx,jy,jz) = (l.jet.px(),l.jet.py(),l.jet.pz())
             cross = (px*jy-py*jx, py*jz-pz*jy, pz*jx-px*jz)
             l.ptRelJet = sqrt(sum([v*v for v in cross]))/l.jet.p()
+
+    def jetProjectedMET(self, met, jets, oneSided=True):
+        import math
+        projfactor = 1.0
+        for j in jets:
+            dphi = abs(deltaPhi(j.phi(), met.phi()))
+            proj = sin(dphi)
+            if oneSided and dphi > 0.5*math.pi:
+                continue
+            if projfactor > proj: projfactor = proj
+        return met.pt()*projfactor
+
+    def makeMETs(self, event):
+        event.met = self.handles['met'].product()[0]
+        metMatrix = self.handles['metSignificance'].product().significance()
+        metMatrix.Invert();
+        import array
+        metVector = TVectorD(2,array.array('d',[event.met.px(), event.met.py()]))
+        event.metSignificance = metMatrix.Similarity(metVector) 
+        event.projMetAll1S  = self.jetProjectedMET(event.met, event.jets,True)
+        event.projMetAll2S  = self.jetProjectedMET(event.met, event.jets,False)
+        event.projMetJets1S = self.jetProjectedMET(event.met, event.cleanJets,True)
+        event.projMetJets2S = self.jetProjectedMET(event.met, event.cleanJets,False)
+        #print "MET value:  ", event.met.pt()
+        #print "MET sumET:  ", event.met.sumEt()
+        #print "MET signif: ", event.metSignificance
+        #print "PrMETAll 1S:", event.projMetAll1S 
+        #print "PrMETAll 2S:", event.projMetAll2S 
+        #print "PrMETJet 1S:", event.projMetJets1S 
+        #print "PrMETJet 2S:", event.projMetJets2S
+
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
         eventNumber = iEvent.eventAuxiliary().id().event()
 
-        event.met = self.handles['met'].product()[0]
         event.bjetsLoose  = [ j for j in event.cleanJets if j.getSelection("cuts_csv_loose")  ]
         event.bjetsMedium = [ j for j in event.cleanJets if j.getSelection("cuts_csv_medium") ]
 
@@ -97,10 +137,16 @@ class ttHLepEventAnalyzer( Analyzer ):
         event.htJet30 = sum([x.pt() for x in objects30])
         event.mhtJet30 = hypot(sum([x.px() for x in objects30]), sum([x.py() for x in objects30]))
 
+        self.makeMETs(event);
         self.makeZs(event, self.maxLeps)
         self.makeMlls(event, self.maxLeps)
 
         self.makeLepBJetDeltaR(event)
+
+        for lep in event.selectedLeptons:
+            mva = self.leptonMVA(lep)
+            print "for lepton ",lep," MVA = ",mva
+            lep.mvaValue = mva
 
         if self.cfg_ana.verbose:
             print 'Event ',eventNumber
