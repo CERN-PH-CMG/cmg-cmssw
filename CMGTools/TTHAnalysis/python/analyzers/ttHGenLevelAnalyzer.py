@@ -92,8 +92,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
         """Get the b quarks from top decays into event.genbquarks"""
 
         event.gentopquarks = [ p for p in event.genParticles if (p.status() == 3 and abs(p.pdgId()) == 6) ]
-        if len(event.gentopquarks) != 2:
-            print "Not two top quarks? \n%s\n" % event.gentopquarks
+        #if len(event.gentopquarks) != 2:
+        #    print "Not two top quarks? \n%s\n" % event.gentopquarks
 
         for tq in event.gentopquarks:
             for i in xrange( tq.numberOfDaughters() ):
