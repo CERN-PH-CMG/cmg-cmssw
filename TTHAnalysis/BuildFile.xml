@@ -3,6 +3,7 @@
 <use name="TrackingTools/IPTools"/>
 <use name="MagneticField/UniformEngine"/>
 <use name="rootrflx"/>
+<use name="roottmva"/>
 <export>
   <lib   name="1"/>
 </export>
