@@ -279,6 +279,8 @@ int main(int argc, char* argv[])
   // Final distributions
   mon.addHistogram( new TH1F( "mt_final"  , ";M_{T};Events", 25,0,1000) );
   mon.addHistogram( new TH1F( "zpt_final", ";p_{T}^{ll};Events", 25,0,500) );
+  double zpt_bins[] = {0., 20., 40., 60., 80., 100., 150., 200., 300., 400., 500., 510.}; 
+  mon.addHistogram( new TH1F( "zpt_rebin_final", ";p_{T}^{ll};Events", 11, zpt_bins) );
   mon.addHistogram( new TH1F( "met_met_final"  , ";E_{T}^{miss};Events", 25,0,250) );
   mon.addHistogram( new TH1F( "met_redMet_final"  , ";Reduced E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL_final"  , ";Longitudinal Reduced E_{T}^{miss};Events", 25,-100,400) );
@@ -900,6 +902,7 @@ int main(int argc, char* argv[])
 			  // Final distributions
 			  mon.fillHisto("mt_final",          tags, aMT,          weight);
 			  mon.fillHisto("zpt_final",         tags, zll.pt(),     weight);
+			  mon.fillHisto("zpt_rebin_final",   tags, zll.pt(),     weight);
 			  mon.fillHisto("met_met_final",     tags, zvvs[0].pt(), weight);
 			  mon.fillHisto("met_redMet_final",  tags, aRedMet.pt(), weight);
 			  mon.fillHisto("met_redMetL_final", tags, aRedMetL,     weight);	
