@@ -83,6 +83,11 @@ class HistComparator(object):
         self.can.Update()
         self.can.cd()
 
+    def save(self, fname=None):
+        if fname is None:
+            fname = self.name
+        self.can.SaveAs( self.name + '.png' )
+
     def buildCanvas(self):
         can = TCanvas('can_{num}'.format(num=self.__class__.CAN_NUM),
                       self.name,600,600)
