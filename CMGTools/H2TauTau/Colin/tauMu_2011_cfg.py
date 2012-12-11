@@ -150,7 +150,7 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.tauMu_Sync_ColinAug30 import *
 
 # from CMGTools.H2TauTau.proto.samples.tauMu_ColinSep20 import *
-from CMGTools.H2TauTau.proto.samples.tauMu_ColinOct23 import *
+from CMGTools.H2TauTau.proto.samples.tauMu_Sync_Colin import *
 
 #########################################################################################
 
@@ -208,17 +208,13 @@ sequence = cfg.Sequence( [
 if syncntuple:
     sequence.append( treeProducerXCheck)
 
-selectedComponents = [HiggsVH125, HiggsVH130]
-HiggsVH125.splitFactor = 5
-HiggsVH130.splitFactor = 5
 
-
-test = 0
+test = 1
 if test==1:
-    comp = HiggsVH125
-    comp.files = comp.files[:2]
+    comp = HiggsVBF125
+    # comp.files = comp.files[:2]
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 14
 elif test==2:
     selectedComponents = copy.copy(data_list_2011)
     selectedComponents.extend(embed_list_2011)

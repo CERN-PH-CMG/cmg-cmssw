@@ -139,7 +139,7 @@ treeProducer = cfg.Analyzer(
 treeProducerXCheck = cfg.Analyzer(
     'H2TauTauSyncTree',
     pt20 = False,
-    isFake = 0
+    # isFake = 0
     )
 
 #########################################################################################
@@ -152,7 +152,7 @@ treeProducerXCheck = cfg.Analyzer(
 
 # from CMGTools.H2TauTau.proto.samples.tauEle_Up_ColinOct31 import *
 # from CMGTools.H2TauTau.proto.samples.tauEle_Down_ColinOct31 import *
-from CMGTools.H2TauTau.proto.samples.tauEle_Down_ColinDec6 import *
+from CMGTools.H2TauTau.proto.samples.tauEle_Sync_Colin import *
 
 #########################################################################################
 
@@ -210,12 +210,12 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 0
+test = 1
 if test==1:
-    comp = DYJets
-    comp.files = comp.files[:5]
+    comp = HiggsVBF125
+    # comp.files = comp.files[:5]
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 14
 elif test==2:
     selectedComponents = copy.copy(data_list_2011)
     selectedComponents.extend(embed_list_2011)
