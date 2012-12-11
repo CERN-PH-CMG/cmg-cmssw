@@ -10,7 +10,7 @@ def hname():
 
 legend = None
 
-def draw(var1, cut, t1, t2, w1='1', w2='1',
+def draw(var1=None, cut=None, t1=None, t2=None, w1='1', w2='1',
          name1=None, name2=None,
          normalize=False, nbins=20, xmin=0, xmax=200, var2=None):
     if var2 is None:
@@ -56,6 +56,7 @@ def draw(var1, cut, t1, t2, w1='1', w2='1',
     print 'number of selected rows:', t1.GetSelectedRows(), t2.GetSelectedRows()
 
     comparator = HistComparator(var1, h1, h2)
+    comparator.draw()
     return comparator
 
 def getTrees( treeName, patterns ):
@@ -67,7 +68,7 @@ def getTrees( treeName, patterns ):
         # tree.SetWeight(1./tree.GetEntries(), 'global')
     return trees
 
-if __name__ == '__main__':
+def main():
     import sys
     import pprint
     from optparse import OptionParser
@@ -88,6 +89,10 @@ if __name__ == '__main__':
                       dest="cut", 
                       help="cut to apply",
                       default='1')
+    parser.add_option("-o", "--outdir", 
+                      dest="outdir", 
+                      help="output director for plots",
+                      default='Comparator_OutDir')
 
     (options,args) = parser.parse_args()
 
@@ -107,3 +112,8 @@ if __name__ == '__main__':
                     trees[a1], trees[a2],
                     name1=a1, name2=a2);
         comp.draw()
+        
+    return trees, a1, a2, options
+
+if __name__ == '__main__':
+    trees, a1, a2, options = main() 
