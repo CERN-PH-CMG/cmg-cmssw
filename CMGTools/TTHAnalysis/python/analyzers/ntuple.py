@@ -48,7 +48,8 @@ def bookLepton( tree, pName, isMC=False ):
     var(tree, '{pName}_jetBTagTCHE'.format(pName=pName))
     var(tree, '{pName}_ptRelJet'.format(pName=pName))
     var(tree, '{pName}_jetDR'.format(pName=pName))
-    var(tree, '{pName}_jetSelf'.format(pName=pName), 'int')
+    var(tree, '{pName}_jetSelf'.format(pName=pName), int)
+    var(tree, '{pName}_innerHits'.format(pName=pName), int)
     if isMC:
         var(tree, '{pName}_mcMatchId'.format(pName=pName), int)
         var(tree, '{pName}_mcMatchAny'.format(pName=pName), int)
@@ -74,6 +75,10 @@ def fillLepton( tree, pName, lepton ):
             lepton.jet.btag('trackCountingHighEffBJetTags') if hasattr(lepton.jet, 'btag') else -99)
         fill(tree, '{pName}_jetDR'.format(pName=pName), deltaR(lepton.eta(),lepton.phi(),lepton.jet.eta(),lepton.jet.phi()))
         fill(tree, '{pName}_jetSelf'.format(pName=pName), lepton.jet.pdgId() == lepton.pdgId())
+    if abs(lepton.pdgId())==11:
+        fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.numberOfHits())
+    if abs(lepton.pdgId())==13:
+        fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.sourcePtr().innerTrack().hitPattern().numberOfValidPixelHits())
     if hasattr(lepton, 'mcMatchId'):
         fill(tree, '{pName}_mcMatchId'.format(pName=pName), lepton.mcMatchId)
         fill(tree, '{pName}_mcMatchAny'.format(pName=pName), lepton.mcMatchAny)
