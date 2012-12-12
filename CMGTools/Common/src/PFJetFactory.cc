@@ -25,7 +25,7 @@ cmg::PFJetFactory::PFJetFactory(const edm::ParameterSet& ps):
     assert( mvaLabel == idLabel );
     puNames_.push_back(mvaLabel);
   }
-  
+  std::cout<<"jet collection in the PFJetFactory = "<<jetLabel_<<std::endl;
 }
 
 cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent, 
@@ -68,7 +68,7 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
       cmgjet.puIdNames_[ii] = puNames_[ii];
       cmgjet.puIds_[ii]  = (*puIds[ii])[jetPtr];
       cmgjet.puMvas_[ii] = (*puMvas[ii])[jetPtr];
-    }
+    } 
 
     result->push_back(cmgjet);
   }
@@ -214,9 +214,7 @@ void cmg::PFJetFactory::setPFproperties(const pat::Jet& jet, cmg::PFJet* cmgjet,
       fractionPhotons = jet.photonEnergyFraction();
       fractionNeutral = jet.neutralHadronEnergyFraction();
       fractionHFEM = jet.HFEMEnergyFraction();
-      fractionHFHad = jet.HFHadronEnergyFraction();
-      
-	
+      fractionHFHad = jet.HFHadronEnergyFraction();	
     }
 
     cmgjet->components_[reco::PFCandidate::h].setNumber(nCharged);
@@ -253,4 +251,29 @@ void cmg::PFJetFactory::setPFproperties(const pat::Jet& jet, cmg::PFJet* cmgjet,
 
     cmgjet->ptd_ = ptd;
 
+    cmgjet->setUncOnFourVectorScale(jet.userFloat("jecUnc"));
+
+    cmgjet->ptd_qc_             = jet.userFloat("ptD_QC");
+    cmgjet->vtxpt_              = jet.userFloat("vtxPt");
+    cmgjet->vtx3dL_             = jet.userFloat("vtx3dL");
+    cmgjet->vtx3deL_            = jet.userFloat("vtx3deL");
+    cmgjet->axis_major_         = jet.userFloat("axis1");
+    cmgjet->axis_minor_         = jet.userFloat("axis2"); 
+    cmgjet->axis_major_qc_      = jet.userFloat("axis1_QC");
+    cmgjet->axis_minor_qc_      = jet.userFloat("axis2_QC"); 
+    cmgjet->pt_max_             = jet.userFloat("ptMax");
+    cmgjet->tana_               = jet.userFloat("tana");
+    cmgjet->ttheta_             = jet.userFloat("ttheta");
+    cmgjet->pull_               = jet.userFloat("pull");
+    cmgjet->pull_qc_            = jet.userFloat("pull_QC");
+    cmgjet->fmax_               = jet.userFloat("jetR");
+    cmgjet->fmax_charged_       = jet.userFloat("jetRchg");
+    cmgjet->fmax_charged_qc_    = jet.userFloat("jetRchg_QC");
+    cmgjet->fmax_neutral_       = jet.userFloat("jetRneutral");
+    cmgjet->n_charged_          = jet.userInt("nChg");
+    cmgjet->n_charged_ptcut_    = jet.userInt("nChg_ptCut");
+    cmgjet->n_charged_qc_       = jet.userInt("nChg_QC");
+    cmgjet->n_charged_ptcut_qc_ = jet.userInt("nChg_ptCut_QC");
+    cmgjet->n_neutral_          = jet.userInt("nNeutral");
+    cmgjet->n_neutral_ptcut_    = jet.userInt("nNeutral_ptCut");      
 }
