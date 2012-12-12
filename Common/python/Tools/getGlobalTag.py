@@ -24,17 +24,16 @@ def getGlobalTag(runOnMC, runOld5XGT):
     else:
         if runOnMC:
             if runOld5XGT:
-                GT = 'START52_V10::All'
-            else:
                 GT = 'START53_V10::All' # for 53X MC in >= 533
                 # GT = 'START53_V7E::All' # for 53X MC in < 533
+            else:
+                GT = 'START53_V15::All' # Moriond calibration
         else:
             if runOld5XGT:
-                GT = 'GR_R_52_V8::All'
-            else:
                 GT = 'GR_P_V41_AN1::All' # for 53X data in >= 533
                 # GT = 'GR_P_V40_AN1::All' # for 53X data in < 533
-
+            else:
+                GT = 'GR_P_V39_AN3::All' # Moriond calibration
     return GT
 
 
