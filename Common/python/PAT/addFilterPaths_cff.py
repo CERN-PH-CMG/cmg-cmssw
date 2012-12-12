@@ -120,7 +120,7 @@ if isNewerThan('CMSSW_5_2_0'):
     eeBadScFilterPath = cms.Path(eeBadScFilter)
     metNoiseCleaning +=  eeBadScFilter 
     from RecoMET.METFilters.ecalLaserCorrFilter_cfi import ecalLaserCorrFilter
-    ecalLaserFilterPath = cms.Path(ecalLaserCorrSequence)
+    ecalLaserFilterPath = cms.Path(ecalLaserCorrFilter)
     metNoiseCleaning += ecalLaserCorrFilter
 else:
     print >> sys.stderr, 'hcalLaserFilterFromAOD, eeBadScFilter and ecalLaserFilter only available in releases >= 5.2'

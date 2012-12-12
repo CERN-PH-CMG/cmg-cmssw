@@ -55,10 +55,6 @@ particleFlowW = cms.untracked.vstring(
     'keep *_cmgWTauNu_*_*'                                  
     )
 
-particleFlowVBF = cms.untracked.vstring(
-    'keep *_vbfEventJetJetPF_*_*'                                 
-    )
-
 particleFlowHemispheres = cms.untracked.vstring(
     'keep *_cmgHemi_*_*',
     'keep *_cmgDiHemi_*_*',
@@ -75,7 +71,7 @@ particleFlowMisc = cms.untracked.vstring(
     'keep double_generator_weight_EmbeddedRECO'
     )
 
-particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowTaus + particleFlowElectrons + particleFlowPhotons + particleFlowW + particleFlowVBF + particleFlowHemispheres + particleFlowMisc
+particleFlow = particleFlowJets + particleFlowMET + particleFlowMuons + particleFlowTaus + particleFlowElectrons + particleFlowPhotons + particleFlowW + particleFlowHemispheres + particleFlowMisc
 
 
 particleFlowBase = cms.untracked.vstring(

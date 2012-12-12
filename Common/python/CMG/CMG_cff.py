@@ -1,7 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.analysis_cff import *
-
 from CMGTools.Common.gen_cff import *
 
 cmgMuon.cfg.inputCollection = 'patMuonsWithTrigger'

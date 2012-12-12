@@ -80,7 +80,7 @@ patJetsWithVar = cms.EDProducer('JetExtendedProducer',
 )
 
 outTracks = cms.EDProducer('VbfHbbTracksOutOfJets',
-    jets    = cms.InputTag('selectedPatJets'),
+    jets    = cms.InputTag('patJetsWithVar'),
     vtx     = cms.InputTag('goodOfflinePrimaryVertices'),
     tracks  = cms.InputTag('generalTracks'),
     btagger = cms.string('combinedSecondaryVertexBJetTags')
