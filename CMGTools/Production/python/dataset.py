@@ -4,6 +4,7 @@ import os
 import pprint
 import re
 import pickle
+import sys
 
 from CMGTools.Production.castorBaseDir import castorBaseDir
 import CMGTools.Production.eostools as castortools
@@ -264,10 +265,15 @@ class Dataset( BaseDataset ):
         When the integrity check file is not available,
         files are considered as good.'''
         mask = "IntegrityCheck"
-        file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
+        #file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
+        #if not file_mask:
+           #os.system("/afs/cern.ch/user/a/anantoni/CMSSW_5_3_3_patch3/src/CMGTools/Production/scripts/edmIntegrityCheck.py " + self.name + " -u " + self.user )
+           
         self.bad_files = {}
         self.good_files = []
         # import pdb; pdb.set_trace()
+
+        file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
         if file_mask:
             from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
             p = PublishToFileSystem(mask)
@@ -284,6 +290,9 @@ class Dataset( BaseDataset ):
                         self.bad_files[name] = 'ValidDup'
                     else:
                         self.good_files.append( name )
+        else:
+            raise IOError( "ERROR: IntegrityCheck log file IntegrityCheck_XXXXXXXXXX.txt not found" )
+       
 
     def extractFileSizes(self):
         '''Get the file size for each file, from the eos ls -l command.'''
