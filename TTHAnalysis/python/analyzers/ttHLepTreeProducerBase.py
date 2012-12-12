@@ -77,6 +77,9 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         for i in range(min(8,len(event.selectedLeptons))):
             fillLepton( tr, "LepGood%d"%(i+1), event.selectedLeptons[i])    
 
+        #ordering the jets
+        event.cleanJets.sort(key = lambda j : j.btag('combinedSecondaryVertexBJetTags'), reverse = True)
+            
         fill(tr, 'nJet25', len(event.cleanJets))      
         fill(tr, 'nJet30', sum([(j.pt() > 30) for j in event.cleanJets]))      
         for i in range(min(8,len(event.cleanJets))):

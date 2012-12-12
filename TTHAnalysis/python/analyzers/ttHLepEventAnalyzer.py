@@ -145,8 +145,8 @@ class ttHLepEventAnalyzer( Analyzer ):
 
         for lep in event.selectedLeptons:
             mva = self.leptonMVA(lep)
-            print "for lepton ",lep," MVA = ",mva
-            lep.mvaValue = mva
+            #print "for selected lepton ",lep," MVA = ",mva
+            lep.mvaValue = mva   
 
         if self.cfg_ana.verbose:
             print 'Event ',eventNumber
