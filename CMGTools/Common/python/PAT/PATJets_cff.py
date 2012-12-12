@@ -71,10 +71,28 @@ jetsPtGt1 = cmgCandSel.clone( src = 'patJets', cut = jetsPtGt1Cut )
 from CMGTools.Common.miscProducers.collectionSize.candidateSize_cfi import candidateSize
 nJetsPtGt1 = candidateSize.clone( src = 'jetsPtGt1' )
 
+# jet extender
+patJetsWithVar = cms.EDProducer('JetExtendedProducer',
+    jets     = cms.InputTag('selectedPatJets'),
+    vertices = cms.InputTag('goodOfflinePrimaryVertices'),
+    #debug   = cms.untracked.bool(True),
+    payload  = cms.string('AK5PF')
+)
+
+outTracks = cms.EDProducer('VbfHbbTracksOutOfJets',
+    jets    = cms.InputTag('selectedPatJets'),
+    vtx     = cms.InputTag('goodOfflinePrimaryVertices'),
+    tracks  = cms.InputTag('generalTracks'),
+    btagger = cms.string('combinedSecondaryVertexBJetTags')
+)
+#from RecoJets.JetProducers.TrackJetParameters_cfi import *
+from RecoJets.JetProducers.ak5TrackJets_cfi import *
+ak5SoftTrackJetsForVbfHbb = ak5TrackJets.clone(src = 'outTracks',jetPtMin = 1.0)
+
 selectedPatJets.cut = ''
 
 from  CMGTools.External.pujetidsequence_cff import puJetId
-puJetId.jets = 'selectedPatJets'
+puJetId.jets = cms.InputTag('patJetsWithVar')
 
 jetMCSequence = cms.Sequence(
     patJetPartonMatch +
@@ -92,5 +110,8 @@ PATJetSequence = cms.Sequence(
     jetsPtGt1 +
     nJetsPtGt1 + 
     selectedPatJets +
-    puJetId 
+    patJetsWithVar +
+    puJetId +
+    outTracks +
+    ak5SoftTrackJetsForVbfHbb
     )
