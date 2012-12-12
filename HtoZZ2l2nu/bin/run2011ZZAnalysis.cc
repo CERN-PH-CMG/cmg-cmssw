@@ -516,12 +516,12 @@ int main(int argc, char* argv[])
       bool passId(true);
       bool passIdAndIso(true);
       //bool passZmass(fabs(zll.mass()-91)<15);
-      bool passZmass(fabs(zll.mass()-91)<7.5); if(!use2011Id) passZmass = (fabs(zll.mass()-91)<7.5);
+      bool passZmass(fabs(zll.mass()-91)<7.5);
       //bool passZmass10(fabs(zll.mass()-91)<10);
       //bool passZmass5(fabs(zll.mass()-91)<5);
       bool isZsideBand( (zll.mass()>40 && zll.mass()<70) || (zll.mass()>110 && zll.mass()<200));
       bool isZsideBandPlus( (zll.mass()>110 && zll.mass()<200));
-      bool passZpt(zll.pt()>40); if(!use2011Id)  passZpt = (zll.pt()>45);
+      bool passZpt(zll.pt()>40);
       //bool passZpt(zll.pt()>55);// && fabs(zll.eta())<1.442);
       //bool passZpt(zll.pt()>30);
 
@@ -727,7 +727,7 @@ int main(int argc, char* argv[])
       TVector2 aClusteredMet2(aClusteredMetP4.px(),aClusteredMetP4.py());
       double clusteredMetL=aRedMetOut.a_l*aClusteredMet2;
       double clusteredMetT=aRedMetOut.a_t*aClusteredMet2;
-      passRedMet=(aRedMet.pt()>60); if(!use2011Id) passRedMet=(aRedMet.pt()>70);
+      passRedMet=(aRedMet.pt()>65);
 
       //transverse masses
       double aMT=METUtils::transverseMass(zll,zvvs[0],true);
