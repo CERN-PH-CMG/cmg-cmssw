@@ -12,34 +12,10 @@ from CMGTools.External.pujetidsequence_cff import puJetMva
 
 # PF jets -------------------------------------------------------
 
-# leading jets
-# cmgPFJetLead = leadingCMGPFJetSelector.clone()
-# cmgPFJetLead.inputCollection = 'cmgPFJet'
-
-# PF base jets (light PF jets, do not store constituents) -------
-# cmgPFBaseJet = cmgBaseJet.clone()
-# cmgPFBaseJet.cfg.inputCollection = 'selectedPatJetsAK5'
-
-# cmgPFBaseJetSel = cmgBaseJetSel.clone(src = 'cmgPFBaseJet')
-
-# cmgPFBaseJetLead = leadingCMGBaseJetSelector.clone()
-# cmgPFBaseJetLead.inputCollection = 'cmgPFBaseJet'
-
-# Light calo jets -----------------------------------------------
-cmgCaloBaseJet = cmgBaseJet.clone()
-cmgCaloBaseJet.cfg.inputCollection = 'selectedPatJetsAK5'
-
-cmgCaloBaseJetSel = cmgBaseJetSel.clone(src = 'cmgCaloBaseJet')
-
-cmgCaloBaseJetLead = leadingCMGBaseJetSelector.clone()
-cmgCaloBaseJetLead.inputCollection = 'cmgCaloBaseJet'
-
 # this pt cut is also going to be used to select GenJets,
 # see CMGTools.Common.gen.generator.genJets_cff
 ptCut = 'pt()>10'
 cmgPFJetSel.cut = ptCut
-# cmgPFBaseJetSel.cut = ptCut
-cmgCaloBaseJetSel.cut = ptCut
 
 # Jets for Type 1 MET corrections
 cmgPFJetType1MET = cmgPFJetSel.clone(src = 'cmgPFJet',cut='pt() >= 10 && abs(eta()) < 4.7')
@@ -64,14 +40,7 @@ pfJetSequence = cms.Sequence(
     # cmgPFBaseJetLead
     )
 
-caloJetSequence = cms.Sequence(
-    cmgCaloBaseJet +
-    cmgCaloBaseJetSel +
-    cmgCaloBaseJetLead
-#    caloJetLorentzVector
-    )
 
 jetSequence = cms.Sequence(
     pfJetSequence
-    # + caloJetSequence
     )

@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.selections.btaggedjet_cfi import trackCountingHighEffBJetTags, jetProbabilityBJetTags, combinedSecondaryVertexBJetTags
 
 baseJetFactory = cms.PSet(
-       inputCollection = cms.InputTag("selectedPatJets"),
+       inputCollection = cms.InputTag("patJetsWithVar"),
        btagType = cms.vstring(
                               #see https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBTagPerformance
                               'trackCountingHighEffBJetTags',#0

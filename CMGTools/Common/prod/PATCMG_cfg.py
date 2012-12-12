@@ -26,8 +26,8 @@ process.source = datasetToSource(
     # '/TTH_HToBB_M-135_8TeV-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',
     # '/BTag/Run2012B-PromptReco-v1/RECO', 
     'cmgtools_group',
-    '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B',
-    # '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
+    # '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B',
+    '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
     # '/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
    )
 

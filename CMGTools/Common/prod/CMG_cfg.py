@@ -106,24 +106,8 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
-GT = None
-if cmsswIs44X():
-    if runOnMC:
-        GT = 'START44_V13::All'
-    else:
-        GT = 'GR_R_44_V15::All'
-else:
-    if runOnMC:
-        GT = 'START53_V10::All' # for 53X MC in >= 533
-        # GT = 'START53_V7E::All' # for 53X MC in < 533
-        # GT = 'START52_V10::All' # for 52X MC
-    else:
-        GT = 'GR_P_V41_AN1::All' # for 53X data in >= 533
-        # GT = 'GR_P_V40_AN1::All' # for 53X data in < 533
-        # GT = 'GR_R_52_V8::All' # for 52X data 
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 
-process.GlobalTag.globaltag = GT
-
+process.GlobalTag.globaltag = getGlobalTag( runOnMC, False )
 print 'Global tag       : ', process.GlobalTag.globaltag
 
-process.cmgPFJetSel.cut = 'pt()>10'
