@@ -34,6 +34,10 @@ namespace cmg {
       }
 
     virtual ~BaseJet(){}
+
+    /// \setter for the jec uncertainty: needed for the PFJetFactory.cc 
+    void setUncOnFourVectorScale(float fUnc) {uncOnFourVectorScale_ = fUnc;}
+
     /// \return btag discriminator
     double btag(unsigned int index = 0) const{ return index < btag_.size() ? btag_.at(index) : UnSet(double); }
     double btag(const char* s) const;
