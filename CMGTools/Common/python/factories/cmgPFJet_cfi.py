@@ -5,7 +5,8 @@ from CMGTools.External.pujetidsequence_cff import stdalgos
 algolables = [ a.label.value() for a in stdalgos ]
 
 pfJetFactory = cms.PSet(
-       inputCollection = cms.InputTag("selectedPatJetsAK5"),
+       #inputCollection = cms.InputTag("selectedPatJetsAK5"),
+       inputCollection = cms.InputTag('patJetWithVar'),
        baseJetFactory = baseJetFactory.clone(),
        useConstituents = cms.bool( True ),
        puVariables = cms.InputTag("puJetId"),
