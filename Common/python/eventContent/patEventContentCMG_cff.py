@@ -61,7 +61,13 @@ patEventContentCMG.extend([
     'keep *_phPFIsoDepositGamma_*_*',
     'keep *_phPFIsoDepositPU_*_*',
     'keep *_pfSelectedPhotons_*_*',
-    'keep *_particleFlow_*_PAT'
+    'keep *_particleFlow_*_PAT',
+    # drop selectedPatJets
+    'drop *_selectedPatJets_*_*',
+    'drop *_selectedPatJetsCHS_*_*',
+    # keep extended pat jets 
+    'keep *_patJetsWithVar*_*_*',
+    'keep *_ak5SoftTrackJetsForVbfHbb__*' 
     ])
 
 patEventContentCMG.extend( everything )
