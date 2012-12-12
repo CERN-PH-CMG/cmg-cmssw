@@ -13,6 +13,9 @@
 
 #include "CommonTools/Utils/interface/PtComparator.h"
 
+#include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
@@ -37,7 +40,8 @@ class JetEnergyCorrector : public edm::EDProducer {
     levels_(ps.getParameter<std::vector<std::string> >("levels")),
     payload_(ps.getParameter<std::string>("payload")),
     src_(ps.getParameter<edm::InputTag>("src")),
-    rho_(ps.getParameter<edm::InputTag>("rho")),
+    rho_(ps.getParameter<edm::InputTag>("rho")), 
+    vtx_(ps.getParameter<edm::InputTag>("vertices")),
     verbose_(ps.getUntrackedParameter<bool>("verbose",false)),
     sort_(ps.getParameter<bool>("sort")),
     initialized_(false){
@@ -52,6 +56,7 @@ class JetEnergyCorrector : public edm::EDProducer {
   const std::string payload_;
   const edm::InputTag src_;
   const edm::InputTag rho_;
+  const edm::InputTag vtx_;
   const bool verbose_;
   const bool sort_;
   bool initialized_;
@@ -91,6 +96,10 @@ void cmg::JetEnergyCorrector<T>::produce(edm::Event& iEvent, const edm::EventSet
     iEvent.getByLabel(rho_, rhoHandle);
     double rho = *rhoHandle;
 
+    edm::Handle<reco::VertexCollection> vtxHandle;
+    iEvent.getByLabel(vtx_,vtxHandle);
+    unsigned nvtx = vtxHandle->size();
+
     if(verbose_){
       std::cout << "correcting jet collection " << src_.label() << " with " << cands->size() << " entries." << std::endl;
     }
@@ -105,7 +114,9 @@ void cmg::JetEnergyCorrector<T>::produce(edm::Event& iEvent, const edm::EventSet
       jecCor_->setJetEta(cand.eta());
       jecCor_->setJetPt(raw_pt);
       jecCor_->setJetA(cand.jetArea());
+      jecCor_->setJetE(cand.energy());
       jecCor_->setRho(rho);
+      jecCor_->setNPV(nvtx);
       float jec = jecCor_->getCorrection();
       float cor_pt = raw_pt * jec;
       jecUnc_->setJetEta(cand.eta());
