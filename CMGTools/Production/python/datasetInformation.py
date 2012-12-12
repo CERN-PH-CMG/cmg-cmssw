@@ -486,7 +486,7 @@ class DatasetInformation(object):
 					revision_info = [item for item in p.communicate()[0].split("Existing Tags:")[1].split('\n') if item != '' ]
 				except:
 					raise IOError( "ERROR: Unexpected output from 'cvs status scripts/cmsBatch' execution" )
-
+				
 				tag_to_revision = dict()
 				for item in revision_info: 
 					try:

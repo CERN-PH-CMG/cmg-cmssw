@@ -2,7 +2,6 @@
 # Colin
 # batch mode for cmsRun, March 2009
 
-
 import os, sys,  imp, re, pprint, string, time,shutil,copy,pickle,math
 from optparse import OptionParser
 
@@ -79,8 +78,6 @@ cp -r $jobdir $PBS_O_WORKDIR
 
 
 def batchScriptCERN(  remoteDir, index ):
-   print "remoteDir: " + repr( remoteDir )
-   print "INDEX: " + repr( index )
    '''prepare the LSF version of the batch script, to run on LSF'''
    script = """#!/bin/bash
 # sets the queue
@@ -189,8 +186,6 @@ class MyBatchManager( BatchManager ):
          randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
          randSvc.populate()
       else:
-         print "grouping : ", grouping
-         print "value : ", value 
          iFileMin = (value)*grouping 
          iFileMax = (value+1)*grouping 
          process.source.fileNames = fullSource.fileNames[iFileMin:iFileMax]
