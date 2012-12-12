@@ -4,11 +4,11 @@ void trainLeptonID(TString name, TString train="GB") {
     TFile *fOut = new TFile(name+".root","RECREATE");
     TMVA::Factory *factory = new TMVA::Factory(name, fOut, "!V:Color");
 
-    factory->AddSpectator("pdgId", 'I');
-    factory->AddSpectator("charge", 'I');
-    factory->AddSpectator("mcId", 'I');
-    factory->AddSpectator("pt", 'D');
-    factory->AddSpectator("eta", 'D');
+    //factory->AddSpectator("pdgId", 'I');
+    //factory->AddSpectator("charge", 'I');
+    //factory->AddSpectator("mcId", 'I');
+    //factory->AddSpectator("pt", 'D');
+    //factory->AddSpectator("eta", 'D');
 
     if (!name.Contains("NoIP")) {
         factory->AddVariable("sip3d", 'D');
@@ -46,7 +46,7 @@ void trainLeptonID(TString name, TString train="GB") {
     // Boosted Decision Trees with bagging
     //factory->BookMethod( TMVA::Types::kLD, "LDB", "!H:!V:Boost_Num=10:Boost_Type=Bagging:Boost_Transform=linear" );
     // Cut optmisation using Genetic Algorithm
-    factory->BookMethod( TMVA::Types::kCuts, "CutsGA", "!H:!V:FitMethod=GA" );
+    // factory->BookMethod( TMVA::Types::kCuts, "CutsGA", "!H:!V:FitMethod=GA" );
 
     // Boosted Decision Trees with gradient boosting
     factory->BookMethod( TMVA::Types::kBDT, "BDTG",
