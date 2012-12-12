@@ -34,9 +34,10 @@ namespace cmg {
   public:
     ///number of PFCandidates types, see PFCandidate.h
     static const unsigned NCANDTYPES;
-    
-    PFJet() : components_(NCANDTYPES), ptd_(-999), rms_(UnSet(float)), beta_(UnSet(float)) {}
-    PFJet(const value& m): BaseJet(m), components_(NCANDTYPES), ptd_(-999), rms_(UnSet(float)), beta_(UnSet(float)) {}
+
+    PFJet() : components_(NCANDTYPES), ptd_(-999), rms_(UnSet(float)), beta_(UnSet(float)), vtxpt_(UnSet (float)), vtx3dL_(UnSet (float)), vtx3deL_(UnSet (float)), axis_major_(UnSet (float)), axis_minor_(UnSet (float)), pt_max_(UnSet (float)), tana_(UnSet (float)), ttheta_(UnSet (float)), pull_(UnSet (float)), fmax_charged_(UnSet (float)), fmax_neutral_(UnSet (float)), fmax_(UnSet (float)), n_charged_(UnSet (int)), n_neutral_(UnSet (int)), n_charged_ptcut_(UnSet (int)), n_neutral_ptcut_(UnSet (int)),       axis_major_qc_(UnSet (float)), axis_minor_qc_(UnSet (float)), ptd_qc_(UnSet (float)), pull_qc_(UnSet (float)), fmax_charged_qc_(UnSet (float)), n_charged_qc_(UnSet (int)), n_charged_ptcut_qc_(UnSet (int)) {}
+
+    PFJet(const value& m): BaseJet(m), components_(NCANDTYPES), ptd_(-999), rms_(UnSet(float)), vtxpt_(UnSet (float)), vtx3dL_(UnSet (float)), vtx3deL_(UnSet (float)), axis_major_(UnSet (float)), axis_minor_(UnSet (float)), pt_max_(UnSet (float)), tana_(UnSet (float)), ttheta_(UnSet (float)), pull_(UnSet (float)), fmax_charged_(UnSet (float)), fmax_neutral_(UnSet (float)), fmax_(UnSet (float)), n_charged_(UnSet (int)), n_neutral_(UnSet (int)), n_charged_ptcut_(UnSet (int)), n_neutral_ptcut_(UnSet (int)),       axis_major_qc_(UnSet (float)), axis_minor_qc_(UnSet (float)), ptd_qc_(UnSet (float)), pull_qc_(UnSet (float)), fmax_charged_qc_(UnSet (float)), n_charged_qc_(UnSet (int)), n_charged_ptcut_qc_(UnSet (int)) {}
 	
     virtual ~PFJet(){}
     
@@ -50,6 +51,30 @@ namespace cmg {
     
     /// \return total number of consistuents in the jet
     const int nConstituents() const;
+
+    float vtxPt()         const {return vtxpt_;}
+    float vtx3dL()        const {return vtx3dL_;}
+    float vtx3deL()       const {return vtx3deL_;}
+    float axisMajor()     const {return axis_major_;}
+    float axisMinor()     const {return axis_minor_;}
+    float axisMajorQC()   const {return axis_major_qc_;}
+    float axisMinorQC()   const {return axis_minor_qc_;}
+    float tanAxisAngle()  const {return tana_;}
+    float thrustAngle()   const {return ttheta_;}
+    float pull()          const {return pull_;}
+    float pullQC()        const {return pull_qc_;}
+    float ptMax()         const {return pt_max_;}
+    float fmax()          const {return fmax_;}
+    float fmaxCharged()   const {return fmax_charged_;}
+    float fmaxChargedQC() const {return fmax_charged_qc_;}
+    float fmaxNeutral()   const {return fmax_neutral_;}
+    int nCharged()        const {return n_charged_;}
+    int nChargedQC()      const {return n_charged_qc_;}
+    int nChargedPtCut()   const {return n_charged_ptcut_;}
+    int nChargedPtCutQC() const {return n_charged_ptcut_qc_;}
+    int nNeutral()        const {return n_neutral_;}
+    int nNeutralPtCut()   const {return n_neutral_ptcut_;}
+    float ptdQC()         const {return ptd_qc_;}
 
     /// \return the ptd variable, for quark-gluon jet discrimination 
     /// \sum pt^2 / (\sum pt)^2
@@ -112,7 +137,35 @@ namespace cmg {
     PuIdNames puIdNames_;
     float rms_;
     float beta_;
-    
+
+    // variables associated to a secondary vertex inside a jet
+    float vtxpt_;
+    float vtx3dL_;
+    float vtx3deL_;
+
+    // variables needed for extended quark-gluon tagger
+    float axis_major_;
+    float axis_minor_; 
+    float pt_max_;
+    float tana_;
+    float ttheta_;
+    float pull_;
+    float fmax_charged_;
+    float fmax_neutral_;
+    float fmax_;
+    int n_charged_;
+    int n_neutral_;
+    int n_charged_ptcut_;
+    int n_neutral_ptcut_;
+   
+    // variables with quality cuts  
+    float axis_major_qc_;
+    float axis_minor_qc_; 
+    float ptd_qc_;
+    float pull_qc_;
+    float fmax_charged_qc_;
+    int n_charged_qc_;
+    int n_charged_ptcut_qc_;
   };
 }
 
