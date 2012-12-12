@@ -42,6 +42,7 @@ def bookLepton( tree, pName, isMC=False ):
     var(tree, '{pName}_dxy'.format(pName=pName))
     var(tree, '{pName}_dz'.format(pName=pName))
     var(tree, '{pName}_relIso'.format(pName=pName))
+    var(tree, '{pName}_chargedIso'.format(pName=pName))
     var(tree, '{pName}_drBJet'.format(pName=pName))
     var(tree, '{pName}_jetPtRatio'.format(pName=pName))
     var(tree, '{pName}_jetBTagCSV'.format(pName=pName))
@@ -50,6 +51,9 @@ def bookLepton( tree, pName, isMC=False ):
     var(tree, '{pName}_jetDR'.format(pName=pName))
     var(tree, '{pName}_jetSelf'.format(pName=pName), int)
     var(tree, '{pName}_innerHits'.format(pName=pName), int)
+    var(tree, '{pName}_mvaId'.format(pName=pName))
+    var(tree, '{pName}_tightId'.format(pName=pName))
+    var(tree, '{pName}_mva'.format(pName=pName))
     if isMC:
         var(tree, '{pName}_mcMatchId'.format(pName=pName), int)
         var(tree, '{pName}_mcMatchAny'.format(pName=pName), int)
@@ -65,6 +69,7 @@ def fillLepton( tree, pName, lepton ):
     fill(tree, '{pName}_dxy'.format(pName=pName), abs(lepton.dxy()) )
     fill(tree, '{pName}_dz'.format(pName=pName), abs(lepton.dz()) )
     fill(tree, '{pName}_relIso'.format(pName=pName), lepton.relIso(dBetaFactor=0.5))
+    fill(tree, '{pName}_chargedIso'.format(pName=pName), lepton.chargedHadronIso())
     fill(tree, '{pName}_drBJet'.format(pName=pName), lepton.drBJet)
     if hasattr(lepton, 'jet'):
         fill(tree, '{pName}_ptRelJet'.format(pName=pName), lepton.ptRelJet)
@@ -77,8 +82,12 @@ def fillLepton( tree, pName, lepton ):
         fill(tree, '{pName}_jetSelf'.format(pName=pName), lepton.jet.pdgId() == lepton.pdgId())
     if abs(lepton.pdgId())==11:
         fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.numberOfHits())
+        fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.mvaId())
     if abs(lepton.pdgId())==13:
         fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.sourcePtr().innerTrack().hitPattern().numberOfValidPixelHits())
+    if hasattr(lepton, 'jet'):    
+        fill(tree, '{pName}_mva'.format(pName=pName), lepton.mvaValue)
+        fill(tree, '{pName}_tightId'.format(pName=pName), lepton.tightId())
     if hasattr(lepton, 'mcMatchId'):
         fill(tree, '{pName}_mcMatchId'.format(pName=pName), lepton.mcMatchId)
         fill(tree, '{pName}_mcMatchAny'.format(pName=pName), lepton.mcMatchAny)
