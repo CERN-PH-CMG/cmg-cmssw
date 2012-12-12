@@ -111,14 +111,14 @@ from CMGTools.Common.PAT.PATJets_cff import *
 # Pile-up jet ID
 # cmgPUJetMva.jets = 'selectedPatJets'
 
-patJetSource = 'selectedPatJets'
+#patJetSource = 'selectedPatJets'
+patJetSource = cms.InputTag('patJetsWithVar')
 cmgPFJet.cfg.inputCollection = patJetSource
-cmgPUJetMva.jets = patJetSource
 
 # leading jets for MET regression
 from CMGTools.Common.factories.cmgBaseJet_cfi import cmgBaseJet
 cmgPFBaseJetAll = cmgBaseJet.clone()
-cmgPFBaseJetAll.cfg.inputCollection = 'patJets'
+cmgPFBaseJetAll.cfg.inputCollection = 'patJetsWithVar'
 
 from CMGTools.Common.skims.leadingCMGBaseJetSelector_cfi import leadingCMGBaseJetSelector
 cmgPFBaseJetLead = leadingCMGBaseJetSelector.clone()

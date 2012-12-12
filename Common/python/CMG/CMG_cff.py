@@ -7,9 +7,9 @@ from CMGTools.Common.gen_cff import *
 cmgMuon.cfg.inputCollection = 'patMuonsWithTrigger'
 cmgElectron.cfg.inputCollection = 'patElectronsWithTrigger'
 
-cmgPFJet.cfg.inputCollection = 'selectedPatJets'
+cmgPFJet.cfg.inputCollection = 'patJetsWithVar'
 # cmgPFBaseJet.cfg.inputCollection = 'selectedPatJets'
-cmgPUJetMva.jets = 'selectedPatJets'
+cmgPUJetMva.jets = 'patJetsWithVar'
 
 cmgTau.cfg.inputCollection = 'selectedPatTaus'
 

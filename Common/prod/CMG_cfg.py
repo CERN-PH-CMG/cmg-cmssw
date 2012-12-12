@@ -54,7 +54,7 @@ print 'cloning the jet sequence to build PU chs jets'
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 process.jetCHSSequence = cloneProcessingSnippet(process, process.jetSequence, 'CHS')
 from CMGTools.Common.Tools.visitorUtils import replaceSrc
-replaceSrc( process.jetCHSSequence, 'selectedPatJets', 'selectedPatJetsCHS')
+replaceSrc( process.jetCHSSequence, 'patJetsWithVar', 'patJetsWithVarCHS')
 replaceSrc( process.jetCHSSequence, 'puJetId', 'puJetIdCHS')
 
 
