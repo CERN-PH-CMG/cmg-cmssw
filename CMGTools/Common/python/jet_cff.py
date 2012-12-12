@@ -46,7 +46,7 @@ cmgPFJetType1MET = cmgPFJetSel.clone(src = 'cmgPFJet',cut='pt() >= 10 && abs(eta
 
 # PU JetID
 cmgPUJetMva = puJetMva.clone()
-cmgPUJetMva.jets = 'selectedPatJetsAK5'
+cmgPUJetMva.jets = cms.InputTag('patJetsWithVar')
 
 from CMGTools.Common.jetId_cff import *
 
