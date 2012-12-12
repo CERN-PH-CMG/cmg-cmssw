@@ -20,6 +20,7 @@ from IOMC.RandomEngine.RandomServiceHelper import RandomNumberServiceHelper
 def batchScriptCCIN2P3():
    script = """!/usr/bin/env bash
 #PBS -l platform=LINUX,u_sps_cmsf,M=2000MB,T=2000000
+# sets the queue
 #PBS -q T
 #PBS -eo
 #PBS -me
@@ -78,9 +79,13 @@ cp -r $jobdir $PBS_O_WORKDIR
 
 
 def batchScriptCERN(  remoteDir, index ):
+   print "remoteDir: " + repr( remoteDir )
+   print "INDEX: " + repr( index )
    '''prepare the LSF version of the batch script, to run on LSF'''
    script = """#!/bin/bash
+# sets the queue
 #BSUB -q 8nm
+
 echo 'environment:'
 echo
 env
@@ -105,7 +110,6 @@ echo 'sending the job directory back'
    if remoteDir != '':
       remoteDir = remoteDir.replace('/eos/cms','')
       script += """
-  
 for file in *.root; do
 newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
 fullFileName=%s/$newFileName
@@ -114,7 +118,7 @@ cmsStageWithFailover.py -f $file $fullFileName
 #write the files as user readable but not writable
 eos chmod 755 /eos/cms/$fullFileName
 done
-""" % (index, remoteDir)         
+""" % (index+1, remoteDir)         
       script += 'rm *.root\n'
    script += 'cp -rf * $LS_SUBCWD\n'
    
@@ -143,7 +147,7 @@ newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
 cmsStageWithFailover.py -f $file $fullFileName
 eos chmod 755 /eos/cms/$fullFileName
 done
-""" % (index, remoteDir)
+""" % (index+1, remoteDir)
       script += 'rm *.root\n'
    return script
 
@@ -172,9 +176,9 @@ class MyBatchManager( BatchManager ):
       storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
       mode = self.RunningMode(options.batch)
       if mode == 'LXPLUS':
-         scriptFile.write( batchScriptCERN( storeDir, value) )
+         scriptFile.write( batchScriptCERN( storeDir, value) )    #here is the call to batchScriptCERN, i need to change value
       elif mode == 'LOCAL':
-         scriptFile.write( batchScriptLocal( storeDir, value) ) 
+         scriptFile.write( batchScriptLocal( storeDir, value) )   #same as above but for batchScriptLocal
       scriptFile.close()
       os.system('chmod +x %s' % scriptFileName)
       
@@ -298,9 +302,6 @@ sys.argv = trueArgv
 
 # keep track of the original source
 fullSource = process.source.clone()
-
-
-
 generator = False
 
 try:
@@ -308,22 +309,20 @@ try:
 except:
    print 'No input file. This is a generator process.'
    generator = True
-   listOfValues = range( 0, nJobs)
+   listOfValues = range( nJobs ) #Here is where the list of values is created 
 else:
    print "Number of files in the source:",len(process.source.fileNames), ":"
    pprint.pprint(process.source.fileNames)
-   
    nFiles = len(process.source.fileNames)
    nJobs = nFiles / grouping
    if (nJobs!=0 and (nFiles % grouping) > 0) or nJobs==0:
       nJobs = nJobs + 1
       
    print "number of jobs to be created: ", nJobs
+   listOfValues = range( nJobs ) #OR Here is where the list of values is created
+   #here i change from e.g 0-19 to 1-20
 
-   listOfValues = range( 0, nJobs)
-
-
-batchManager.PrepareJobs( listOfValues )
+batchManager.PrepareJobs( listOfValues ) #PrepareJobs with listOfValues as param
 
 # preparing master cfg file
 

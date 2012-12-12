@@ -86,8 +86,8 @@ class BatchManager:
         self.listOfJobs_ = []
         print listOfValues
         if listOfDirNames is None:
-            for value in listOfValues:
-                self.PrepareJob( value )
+            for value in listOfValues:       
+                self.PrepareJob( value )      
         else:
             for value, name in zip( listOfValues, listOfDirNames):
                 self.PrepareJob( value, name )
