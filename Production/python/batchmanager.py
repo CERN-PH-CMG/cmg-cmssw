@@ -84,7 +84,7 @@ class BatchManager:
     def PrepareJobs(self, listOfValues, listOfDirNames=None):
         print 'PREPARING JOBS ======== '
         self.listOfJobs_ = []
-        print listOfValues
+
         if listOfDirNames is None:
             for value in listOfValues:       
                 self.PrepareJob( value )      
