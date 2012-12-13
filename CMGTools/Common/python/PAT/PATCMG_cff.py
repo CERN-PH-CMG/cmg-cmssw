@@ -214,5 +214,5 @@ PATCMGSequence = cms.Sequence(
     PATCMGMetRegressionSequence
     )
 
-if isNewerThan('CMSSW_5_2_0'):
-    PATCMGSequence += PATCMGJetSequenceCHSpruned
+#if isNewerThan('CMSSW_5_2_0'):
+#    PATCMGSequence += PATCMGJetSequenceCHSpruned

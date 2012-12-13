@@ -60,10 +60,10 @@ if runOnMC is False:
     process.patJets.addGenJetMatch = False
     process.patJets.addGenPartonMatch = False
 
-    if isNewerThan('CMSSW_5_2_0'):
-        process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
-        process.patJetsCHSpruned.addGenJetMatch = False
-        process.patJetsCHSpruned.addGenPartonMatch = False
+    #if isNewerThan('CMSSW_5_2_0'):
+    #    process.PATCMGJetSequenceCHSpruned.remove( process.jetMCSequenceCHSpruned )
+    #    process.patJetsCHSpruned.addGenJetMatch = False
+    #    process.patJetsCHSpruned.addGenPartonMatch = False
 
     process.PATCMGTauSequence.remove( process.tauGenJets )
     process.PATCMGTauSequence.remove( process.tauGenJetsSelectorAllHadrons )
@@ -83,8 +83,8 @@ if runOnMC is False:
 
     # adding L2L3Residual corrections
     process.patJetCorrFactors.levels.append('L2L3Residual')
-    if isNewerThan('CMSSW_5_2_0'):
-        process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
+    #if isNewerThan('CMSSW_5_2_0'):
+    #    process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
 
 
 print 'cloning the jet sequence to build PU chs jets'
