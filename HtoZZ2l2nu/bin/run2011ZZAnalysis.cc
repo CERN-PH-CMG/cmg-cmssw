@@ -192,6 +192,10 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "Ctrl_WZ_RedMet",";RedMet [GeV];Events",100,0,300) );
   mon.addHistogram( new TH1F( "Ctrl_WZ_zmass","Mass [GeV];Ctrl_WZ;Events",100,40,170) );
   mon.addHistogram( new TH1F( "Ctrl_WZ_Mt","Trasv. Mass [GeV];Ctrl_WZ;Events",100,0.,130) );
+  mon.addHistogram( new TH1F( "Ctrl_WZ_Mt1","Trasv. Mass [GeV];Ctrl_WZ;Events",100,0.,130) );
+  mon.addHistogram( new TH1F( "Ctrl_WZ_Mt2","Trasv. Mass [GeV];Ctrl_WZ;Events",100,0.,130) );
+  mon.addHistogram( new TH1F( "Ctrl_WZ_Mt3","Trasv. Mass [GeV];Ctrl_WZ;Events",100,0.,130) );
+  mon.addHistogram( new TH1F( "Ctrl_WZ_Mt4","Trasv. Mass [GeV];Ctrl_WZ;Events",100,0.,130) );
   mon.addHistogram( new TH1F( "Ctrl_T_zmass",";Mass [GeV];Events",50,40,300) );
   mon.addHistogram( new TH1F( "Ctrl_Tside_RedMet",";RedMet [GeV];Events",50,0,300) );
   mon.addHistogram( new TH1F( "Ctrl_WW_RedMet",";RedMet [GeV];Events",50,0,300) );
@@ -229,11 +233,15 @@ int main(int argc, char* argv[])
 
   //MET control
   mon.addHistogram( new TH1F( "mindphilmet", ";min(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "mindphilmet_aftPhijPt", ";min(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "mindphilmet_aftPhij", ";min(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "mindphilmet_aftMet", ";min(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "maxdphilmet", ";max(#Delta#phi(lepton,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmet_0", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmet_25", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmet_50", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
+  mon.addHistogram( new TH1F( "mindphijmet_aftPhil", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmetNM1", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1D( "balancedif",    ";|E_{T}^{miss}-q_{T}|/q_{T};Events", 5,0,1.0) );
   mon.addHistogram( new TH1D( "balance",    ";E_{T}^{miss}/q_{T};Events", 25,0,5) );
@@ -761,9 +769,14 @@ int main(int argc, char* argv[])
       bool WW_ctrl_m  ( passZpt && passRedMet  && passBveto && passBalanceCut && (nAJetsGood30==0) && passDphijmet && pass3dLeptonVeto);
       if(WZ_ctrl_pt)  mon.fillHisto("Ctrl_WZ_RedMet",tags,aRedMet.pt(),weight);
       if(WZ_ctrl_m){
-	mon.fillHisto("Ctrl_WZ_zmass",tags,zll.mass(),weight);
-	if(passZmass) mon.fillHisto("Ctrl_WZ_Mt", tags, sqrt((2*zvvs[0].pt()*extraLeptonsP4[0].pt())*(1-cos(deltaPhi(zvvs[0].phi(),extraLeptonsP4[0].phi())))), weight);
-      }
+	  mon.fillHisto("Ctrl_WZ_zmass",tags,zll.mass(),weight);
+	  if(passZmass) mon.fillHisto("Ctrl_WZ_Mt", tags, sqrt((2*zvvs[0].pt()*extraLeptonsP4[0].pt())*(1-cos(deltaPhi(zvvs[0].phi(),extraLeptonsP4[0].phi())))), weight);
+	  if(passZmass) mon.fillHisto("Ctrl_WZ_Mt1", tags, sqrt((2*zvvs[0].pt()*extraLeptonsP4[0].pt())*(1-cos(deltaPhi(zvvs[0].phi(),extraLeptonsP4[0].phi())))), weight);
+	  }
+	if(passZmass && passRedMet && nextraleptons==1) mon.fillHisto("Ctrl_WZ_Mt2", tags, sqrt((2*zvvs[0].pt()*extraLeptonsP4[0].pt())*(1-cos(deltaPhi(zvvs[0].phi(),extraLeptonsP4[0].phi())))), weight);
+	if(passZmass  && aRedMet.pt()>50 && nextraleptons==1) mon.fillHisto("Ctrl_WZ_Mt3", tags, sqrt((2*zvvs[0].pt()*extraLeptonsP4[0].pt())*(1-cos(deltaPhi(zvvs[0].phi(),extraLeptonsP4[0].phi())))), weight);
+	if(passZmass  && aRedMet.pt()>70 && nextraleptons==1) mon.fillHisto("Ctrl_WZ_Mt4", tags, sqrt((2*zvvs[0].pt()*extraLeptonsP4[0].pt())*(1-cos(deltaPhi(zvvs[0].phi(),extraLeptonsP4[0].phi())))), weight);
+      
       if(T_ctrl)      mon.fillHisto("Ctrl_T_zmass",tags,zll.mass(),weight);
       if(T_ctrl_side) mon.fillHisto("Ctrl_Tside_RedMet",tags,aRedMet.pt(),weight);
       if(WW_ctrl)     mon.fillHisto("Ctrl_WW_RedMet",tags,aRedMet.pt(),weight);
@@ -863,7 +876,10 @@ int main(int argc, char* argv[])
 		  if(zvvs[0].pt()>25) mon.fillHisto("mindphijmet_25", tags, nAJetsGood30==0 ? mindphijmet15:mindphijmet,weight);
 		  if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet_50", tags, nAJetsGood30==0 ? mindphijmet15:mindphijmet,weight);
 		  if(zvvs[0].pt()>50) mon.fillHisto("mindphijmet",    tags, nAJetsGood30==0 ? mindphijmet15:mindphijmet,weight);
+		  if(zvvs[0].pt()>50 && passLMetVeto) mon.fillHisto("mindphijmet_aftPhil",    tags, nAJetsGood30==0 ? mindphijmet15:mindphijmet,weight);
 		  mon.fillHisto("mindphilmet",tags, min(dphil1met,dphil2met) ,weight);
+		  if(passDphijmet) mon.fillHisto("mindphilmet_aftPhij",tags, min(dphil1met,dphil2met) ,weight);
+		  if(passDphijmet && zvvs[0].pt()>60 ) mon.fillHisto("mindphilmet_aftPhijPt",tags, min(dphil1met,dphil2met) ,weight);
 		  mon.fillHisto("maxdphilmet",tags, max(dphil1met,dphil2met) ,weight);
 		  mon.fillHisto("met_metbeforedphilmet",         tags,  zvvs[0].pt(),  weight);
 		  mon.fillHisto("met_mindphilmet",tags,zvvs[0].pt(),min(dphil1met,dphil2met),weight);
@@ -892,6 +908,7 @@ int main(int argc, char* argv[])
 		      mon.fillHisto("met_metCompT",tags,pfMetCompT,weight);
 		      
 		      if(passRedMet){
+			mon.fillHisto("mindphilmet_aftMet",tags, min(dphil1met,dphil2met) ,weight);
 			mon.fillHisto("eventflow",tags,/*8*/ 9,weight); 
 			mon.fillHisto("eventflow_gamma",tags,3,weight);
 
