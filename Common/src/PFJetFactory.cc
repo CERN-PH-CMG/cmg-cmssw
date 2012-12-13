@@ -59,6 +59,7 @@ cmg::PFJetFactory::event_ptr cmg::PFJetFactory::create(const edm::Event& iEvent,
     
     const pat::Jet& jet = *mi;
 
+    // THIS MUST BE CALLED AFTER baseJetFactory_.set!!
     setPFproperties(jet, &cmgjet, useConstituents_);
     
     // Fill PU discrimination variables
