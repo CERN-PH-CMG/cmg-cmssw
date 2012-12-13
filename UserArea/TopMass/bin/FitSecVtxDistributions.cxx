@@ -367,7 +367,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 
       
       //now fit the template parameters and plot the results
-      float fitrange = 4.0;
+      float fitrange = 5.0;
       RooFitResult *fitres = w->pdf("flxy_"+ch+"sim")->fitTo(combTempl,Range(0.,fitrange),Save(kTRUE),SumW2Error(kTRUE)); 
       int ncats=templates.size();
       int npadsx=ncats/2+1;
