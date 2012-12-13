@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_cleanup_12Dec12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_cleanup_12Dec12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_cleanup_13Dec12'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-10'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_11Dec12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'anantoni_12Dec_latest_changes'),
@@ -9,7 +9,7 @@
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
   ('DataFormats/PatCandidates', 'DataFormats/PatCandidates', 'V06-05-06-03'),
   ('DataFormats/StdDictionaries', 'DataFormats/StdDictionaries', 'V00-02-14'),
-  ('EGamma/EGammaAnalysisTools', 'UserCode/EGamma/EGammaAnalysisTools', 'V00-00-29'),
+  ('EGamma/EGammaAnalysisTools', 'UserCode/EGamma/EGammaAnalysisTools', 'V00-00-30-01'),
   ('EGamma/EGammaAnalysisToolsSiXie', 'UserCode/sixie/EGamma/EGammaAnalysisTools', 'cbern_09May12'),
   ('EgammaAnalysis/ElectronTools', 'EgammaAnalysis/ElectronTools', 'FB_5Oct2012-2'),
   ('FWCore/GuiBrowsers', 'FWCore/GuiBrowsers', 'V00-00-70'),
@@ -21,6 +21,6 @@
   ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-02-09'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'wreece_020512'),
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-08'),
-  ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-20'),
+  ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-21'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-01-04s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
