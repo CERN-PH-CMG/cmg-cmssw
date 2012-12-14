@@ -172,6 +172,10 @@ int main(int argc, char* argv[])
   for(size_t i=0; i<25; i++)  qtaxis[75+i]=350+25*i; //350-976                                        
   mon.addHistogram( new TH1D( "qt",        ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)",99,qtaxis));
   mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 50,0,500) );
+  //double zpt_bins[] = {0., 20., 40., 60., 80., 100., 150., 200., 300., 400., 600., 800.}; 
+  double zpt_bins[] = {0., 20., 40., 60., 80., 100., 200., 400., 800.}; 
+  const int n_zpt_bins = sizeof(zpt_bins)/sizeof(double) - 1; 
+  mon.addHistogram( new TH1F( "zpt_rebin", ";p_{T}^{ll};Events", n_zpt_bins, zpt_bins) );
   mon.addHistogram( new TH1F( "zpt_dy", ";p_{T}^{ll};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "zpt_noJet", ";p_{T}^{ll};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "zptGen_noJet", ";p_{T}^{ll};Events", 50,0,500) );
@@ -287,8 +291,7 @@ int main(int argc, char* argv[])
   // Final distributions
   mon.addHistogram( new TH1F( "mt_final"  , ";M_{T};Events", 25,0,1000) );
   mon.addHistogram( new TH1F( "zpt_final", ";p_{T}^{ll};Events", 25,0,500) );
-  double zpt_bins[] = {0., 20., 40., 60., 80., 100., 150., 200., 300., 400., 500., 510.}; 
-  mon.addHistogram( new TH1F( "zpt_rebin_final", ";p_{T}^{ll};Events", 11, zpt_bins) );
+  mon.addHistogram( new TH1F( "zpt_rebin_final", ";p_{T}^{ll};Events", n_zpt_bins, zpt_bins) );
   mon.addHistogram( new TH1F( "met_met_final"  , ";E_{T}^{miss};Events", 25,0,250) );
   mon.addHistogram( new TH1F( "met_redMet_final"  , ";Reduced E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL_final"  , ";Longitudinal Reduced E_{T}^{miss};Events", 25,-100,400) );
@@ -337,6 +340,7 @@ int main(int argc, char* argv[])
      // for ZZ analysis (use Zpt or MET shape)
      mon.addHistogram( new TH2F (TString("redMet_shapes")+varNames[ivar],";cut index;red-MET [GeV];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
      mon.addHistogram( new TH2F (TString("zpt_shapes")+varNames[ivar],";cut index;Z p_{T} [GeV/c];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
+     mon.addHistogram( new TH2F (TString("zpt_rebin_shapes")+varNames[ivar],";cut index;Z p_{T} [GeV/c];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), n_zpt_bins, zpt_bins) );
      
      TH2F *h2=(TH2F *) mon.addHistogram( new TH2F ("redMet_shapes_NRBctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
      h2->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
@@ -352,6 +356,15 @@ int main(int argc, char* argv[])
      h2->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
      h2->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
      h2->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
+     h2->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
+
+     h2=(TH2F *) mon.addHistogram( new TH2F ("zpt_rebin_shapes_NRBctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
+     h2->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
+     h2->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
+     h2->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
+     h2->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
+     h2->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
+     h2->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
    }
   
       
@@ -788,7 +801,7 @@ int main(int argc, char* argv[])
       if(WW_ctrl_m)   mon.fillHisto("Ctrl_WW_zmass",tags,zll.mass(),weight);
 
       //Sherpa control 
-      mon.fillHisto("njets_pres", tags, nAJetsGood30,weight);
+      mon.fillHisto("npfjets_pres", tags, nAJetsGood30,weight);
 
       //Main event selection
       mon.fillHisto("zmass",       tags, zll.mass(), weight);  
@@ -801,6 +814,7 @@ int main(int argc, char* argv[])
 	mon.fillHisto("rho25"    ,   tags, ev.rho25Neut, weight);
 
 	mon.fillHisto("zpt"      ,   tags, zll.pt(),     weight);      
+	mon.fillHisto("zpt_rebin",   tags, zll.pt(),     weight);      
 	if(nAJetsGood30==0) mon.fillHisto("zpt_noJet", tags, zll.pt(), weight);      
 	if(nAJetsGood30==0 && genmatchid[0]>-1 && genmatchid[1]>-1 && genmatchid[0]!=genmatchid[1]) mon.fillHisto("zptGen_noJet", tags, genZP4.pt(), weight);      
 	mon.fillHisto("zeta"     ,   tags, zll.eta(),    weight);
@@ -1084,30 +1098,37 @@ int main(int argc, char* argv[])
 	  if( passPreselection ) {
 	    mon.fillHisto(TString("redMet_shapes")+varNames[ivar],tags,index, redMet.pt(),iweight);
 	    mon.fillHisto(TString("zpt_shapes")+varNames[ivar],tags,index, zll.pt(),iweight);
+	    mon.fillHisto(TString("zpt_rebin_shapes")+varNames[ivar],tags,index, zll.pt(),iweight);
 	  }
 	  if( passPreselectionMbvetoMzmass && passLocalZmass && passLocalBveto ) {
 	    mon.fillHisto("redMet_shapes_NRBctrl"+varNames[ivar],tags,index,0,iweight);
 	    mon.fillHisto("zpt_shapes_NRBctrl"+varNames[ivar],tags,index,0,iweight);
+	    mon.fillHisto("zpt_rebin_shapes_NRBctrl"+varNames[ivar],tags,index,0,iweight);
 	  }
 	  if( passPreselectionMbvetoMzmass && isZsideBand && passLocalBveto ) {
 	    mon.fillHisto("redMet_shapes_NRBctrl"+varNames[ivar],tags,index,1,iweight);
 	    mon.fillHisto("zpt_shapes_NRBctrl"+varNames[ivar],tags,index,1,iweight);
+	    mon.fillHisto("zpt_rebin_shapes_NRBctrl"+varNames[ivar],tags,index,1,iweight);
 	  }
 	  if( passPreselectionMbvetoMzmass && isZsideBandPlus && passLocalBveto ) {
 	    mon.fillHisto("redMet_shapes_NRBctrl"+varNames[ivar],tags,index,2,iweight);
 	    mon.fillHisto("zpt_shapes_NRBctrl"+varNames[ivar],tags,index,2,iweight);
+	    mon.fillHisto("zpt_rebin_shapes_NRBctrl"+varNames[ivar],tags,index,2,iweight);
 	  }
 	  if( passPreselectionMbvetoMzmass && passLocalZmass && !passLocalBveto ) {
 	    mon.fillHisto("redMet_shapes_NRBctrl"+varNames[ivar],tags,index,3,iweight);
 	    mon.fillHisto("zpt_shapes_NRBctrl"+varNames[ivar],tags,index,3,iweight);
+	    mon.fillHisto("zpt_rebin_shapes_NRBctrl"+varNames[ivar],tags,index,3,iweight);
 	  }
 	  if( passPreselectionMbvetoMzmass && isZsideBand && !passLocalBveto ) {
 	    mon.fillHisto("redMet_shapes_NRBctrl"+varNames[ivar],tags,index,4,iweight);
 	    mon.fillHisto("zpt_shapes_NRBctrl"+varNames[ivar],tags,index,4,iweight);
+	    mon.fillHisto("zpt_rebin_shapes_NRBctrl"+varNames[ivar],tags,index,4,iweight);
 	  }
 	  if( passPreselectionMbvetoMzmass && isZsideBandPlus && !passLocalBveto ) {
 	    mon.fillHisto("redMet_shapes_NRBctrl"+varNames[ivar],tags,index,5,iweight);
 	    mon.fillHisto("zpt_shapes_NRBctrl"+varNames[ivar],tags,index,5,iweight);
+	    mon.fillHisto("zpt_rebin_shapes_NRBctrl"+varNames[ivar],tags,index,5,iweight);
 	  }
 	}
       }
