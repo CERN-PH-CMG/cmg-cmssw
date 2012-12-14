@@ -18,9 +18,10 @@ class WAnalyzer( Analyzer ):
         self.counters.addCounter('WAna')
         count = self.counters.counter('WAna')
         count.register('W all events')
-        count.register('W at least 1 lep trig matched')
         count.register('W ev trig, good vertex and >= 1 lepton')
+        count.register('W at least 1 lep trig matched')
         count.register('W only 1 lep trig matched')
+        count.register('W non trg leading lepton pT < 10 GeV')
         count.register('W lep is MuIsTightAndIso')
         count.register('W Mu_eta<2.1 && Mu_pt>30')
         count.register('W pfmet>25')
@@ -73,6 +74,7 @@ class WAnalyzer( Analyzer ):
         # retrieve collections of interest (muons and jets)
         event.allMuons = copy.copy(event.muons)
         event.selMuons = copy.copy(event.muons)
+        event.NoTriggeredMuonsLeadingPt = copy.copy(event.muons)
         event.allJets = copy.copy(event.jets)
         event.selJets = copy.copy(event.jets)
 
@@ -148,6 +150,23 @@ class WAnalyzer( Analyzer ):
         else:
             if fillCounter: self.counters.counter('WAna').inc('W only 1 lep trig matched')
 
+        # store muons that did not fire the trigger
+        event.NoTriggeredMuonsLeadingPt = [lep for lep in event.allMuons if \
+                        not self.trigMatched(event, lep) ]
+        
+        # print "len(event.NoTriggeredMuonsLeadingPt)= ",len(event.NoTriggeredMuonsLeadingPt)
+        # if len(event.NoTriggeredMuonsLeadingPt)>0 : print "event.NoTriggeredMuonsLeadingPt[0].pt() = ",event.NoTriggeredMuonsLeadingPt[0].pt()
+
+        if len(event.NoTriggeredMuonsLeadingPt) > 0:
+          if event.NoTriggeredMuonsLeadingPt[0].pt()>10:
+            # if (event.NoTriggeredMuonsLeadingPt[0].pt()<10): print "ESISTE UN LEPTONE NON TRIGGERING WITH PT>10, event.NoTriggeredMuonsLeadingPt[0].pt() = ",event.NoTriggeredMuonsLeadingPt[0].pt()
+            return True, 'rejecting event with non triggering lepton with pT > 10 GeV'
+          else:
+              if fillCounter: self.counters.counter('WAna').inc('W non trg leading lepton pT < 10 GeV')
+        else:
+            if fillCounter: self.counters.counter('WAna').inc('W non trg leading lepton pT < 10 GeV')
+
+        
         # if the genp are saved, compute dR between gen and reco muon 
         if event.savegenpW :
           event.muGenDeltaRgenP = deltaR( event.selMuons[0].eta(), event.selMuons[0].phi(), event.genMu[0].eta(), event.genMu[0].phi() ) 
@@ -276,22 +295,10 @@ class WAnalyzer( Analyzer ):
         path = event.hltPath
         triggerObjects = event.triggerObjects
         filters = self.cfg_ana.triggerMap[ path ]
-        filter = filters[0]
-        # if legName == 'leg1':
-            # filter = filters[0]
-        # elif legName == 'leg2':
-            # filter = filters[1]
-        # else:
-            # raise ValueError( 'legName should be leg1 or leg2, not {leg}'.format(
-                # leg=legName )  )
-        # the dR2Max value is 0.3^2
-        pdgIds = None
-        if len(filter) == 1:
-            filter, pdgIds = filter[0], filter[1]
-        return triggerMatched(leg, triggerObjects, path, filter,
-                              # dR2Max=0.089999,
-                              dR2Max=0.25,
-                              pdgIds=pdgIds )
+        # the dR2Max value is 0.1^2
+        return triggerMatched(leg, triggerObjects, path, filters,
+                              dR2Max=0.01,
+                              pdgIds=None )
 
 
 class WBoson(object):
