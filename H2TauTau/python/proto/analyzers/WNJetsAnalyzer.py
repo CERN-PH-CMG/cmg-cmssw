@@ -24,18 +24,20 @@ class WNJetsAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(WNJetsAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
 
-        self.ninc = self.cfg_ana.nevents[0]
-        self.cfg_ana.nevents[0] = 0.
-        self.ni = [frac*self.ninc for frac in self.cfg_ana.fractions]
-        assert(len(self.cfg_ana.nevents)==len(self.cfg_ana.fractions))
-        self.weighti = []
-        for ninc, nexc in zip(self.ni, self.cfg_ana.nevents ):
-            self.weighti.append( ninc/(ninc+nexc) )
-
         cname = self.cfg_comp.name
         wpat = re.compile('W\d?Jet.*')
         match = wpat.match(self.cfg_comp.name)
         self.isWJets = not (match is None)
+
+        if self.isWJets:
+            self.ninc = self.cfg_ana.nevents[0]
+            self.cfg_ana.nevents[0] = 0.
+            self.ni = [frac*self.ninc for frac in self.cfg_ana.fractions]
+            assert(len(self.cfg_ana.nevents)==len(self.cfg_ana.fractions))
+            self.weighti = []
+            for ninc, nexc in zip(self.ni, self.cfg_ana.nevents ):
+                self.weighti.append( ninc/(ninc+nexc) )
+
 
         
     def beginLoop(self):
