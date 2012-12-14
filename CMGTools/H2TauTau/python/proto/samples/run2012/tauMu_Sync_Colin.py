@@ -47,9 +47,17 @@ allsamples = copy.copy(MC_list)
 ## HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/TAUMU_2012_Colin_Sync_OSVFit_21Oct',
 ##                              'cbern', '.*root')
 
-HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/TAUMU_2012_Colin_Sync_23Oct',
-                             'cbern', '.*root')
 
+## HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/TAUMU_2012_Colin_Sync_23Oct',
+##                              'cbern', '.*root')
+
+
+# old JEC
+# pat = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_Moriond_Test1/TAUMU_TestMoriond_Dec13'
+# new JEC
+pat = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_Moriond_Test2/TAUMU_TestMoriond_Dec13'
+HiggsVBF125.files = getFiles(pat,
+                             'cbern', '.*root')
 
 HiggsVBF125.splitFactor = 14
 

@@ -16,16 +16,13 @@ syncntuple = True
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
-# andrew ICHEP
-# puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-09-12/MC_Summer12_PU_S7.root'
-# puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/12-09-12/Data_Pileup_2012.root'
-# andrew HCP
+
 puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/MC_Summer12_PU_S10-600bins.root'
 puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/Data_Pileup_2012_HCP-600bins.root'
 
 
-vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
-vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
+# vertexFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012/Vertices'
+# vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_195947.root'])
 
 mc_vertexWeight = None
 
@@ -45,7 +42,7 @@ triggerAna = cfg.Analyzer(
 
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
-    goodVertices = 'goodPVFilter',
+    goodVertices = 'goodPVFilter', 
     vertexWeight = mc_vertexWeight,
     fixedWeight = 1,
     verbose = False
@@ -62,7 +59,7 @@ pileUpAna = cfg.Analyzer(
     )
 
 
-TauEleAna = cfg.Analyzer(
+tauEleAna = cfg.Analyzer(
     'TauEleAnalyzer',
     scaleShift1 = tauScaleShift,
     pt1 = 20,
@@ -117,7 +114,7 @@ tauWeighter = cfg.Analyzer(
     disable = False,
     )
 
-electronWeighter = cfg.Analyzer(
+eleWeighter = cfg.Analyzer(
     'LeptonWeighter_ele',
     effWeight = hlt_eleEffWeight,
     effWeightMC = hlt_eleEffWeight_mc,
@@ -128,6 +125,8 @@ electronWeighter = cfg.Analyzer(
     isoWeight = ele_iso_tauele_2012    
     )
 
+
+
 # defined for vbfAna and eventSorter
 vbfKwargs = dict( Mjj = 500,
                   deltaEta = 3.5    
@@ -137,37 +136,30 @@ vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
     vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
     jetCol = 'cmgPFJetSel',
-    jetPt = 20,
+    jetPt = 20.,
     jetEta = 4.7,
     cjvPtCut = 30.,
-    btagSFseed = 12345,
-    #COLIN: this flag is obsolete, I think:
-    # is2012Flag = True,
+    btagSFseed = 123456,
     relaxJetId = False,
     **vbfKwargs
     )
+
 
 treeProducer = cfg.Analyzer(
     'H2TauTauTreeProducerTauEle'
     )
 
 treeProducerXCheck = cfg.Analyzer(
-    'H2TauTauSyncTree',   
-    pt20 = False
+    'H2TauTauSyncTree',
+    pt20 = False,
+    # isFake = 0
     )
 
 #########################################################################################
 
-from CMGTools.H2TauTau.proto.samples.run2012.tauEle_PietroOct22 import *
+from CMGTools.H2TauTau.proto.samples.run2012.tauEle_Sync_Colin import *
 
 #########################################################################################
-
-WNJetsAna.nevents = [ WJets.nGenEvents,
-                      W1Jets.nGenEvents,
-                      W2Jets.nGenEvents,
-                      W3Jets.nGenEvents,
-                      W4Jets.nGenEvents
-                      ]
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
@@ -178,28 +170,50 @@ for emb in embed_list:
     emb.puFileData = None
     emb.puFileMC = None
 
-selectedComponents =  copy.copy(MC_list)
+WNJetsAna.nevents = [ WJets.nGenEvents,
+                      W1Jets.nGenEvents,
+                      W2Jets.nGenEvents,
+                      W3Jets.nGenEvents,
+                      W4Jets.nGenEvents
+                      ]
+
+# selectedComponents = allsamples
+diboson_list = [    WWJetsTo2L2Nu,
+                    WZJetsTo2L2Q,
+                    WZJetsTo3LNu,
+                    ZZJetsTo2L2Nu,
+                    ZZJetsTo2L2Q,
+                    ZZJetsTo4L,
+                    T_tW,
+                    Tbar_tW
+                    ]
+WJetsSoup = copy.copy(WJets)
+WJetsSoup.name = 'WJetsSoup'
+VVgroup = [comp.name for comp in diboson_list]
+# higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
+selectedComponents =  [WJetsSoup, TTJets, DYJets]
+# selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
+higgs = mc_higgs
+selectedComponents.extend( higgs )
+selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list )
 selectedComponents.extend( embed_list )
-#selectedComponents = copy.copy (embed_list)
-#selectedComponents = copy.copy (data_list)
-
 
 sequence = cfg.Sequence( [
     # eventSelector,
     jsonAna,
     triggerAna,
     vertexAna,
-    TauEleAna,
+    tauEleAna,
     dyJetsFakeAna,
     dyLLReweighterTauEle,
-    WNJetsAna,
+    WNJetsAna, 
     higgsWeighter, 
     vbfAna,
     pileUpAna,
     embedWeighter, 
     tauWeighter, 
-    electronWeighter, 
+    eleWeighter, 
     treeProducer
    ] )
 
@@ -209,38 +223,18 @@ if syncntuple:
 
 test = 1
 if test==1:
-#    comp = DYJets
-#    comp = ZZJetsTo2L2Q
-#    comp = data_Run2012A
-#    comp = data_Run2012C_v2
     comp = HiggsVBF125
-#    comp = HiggsVH125
-#    comp = Tbar_tW
-#    comp = WW
-#    comp = embed_Run2012A_13Jul2012_v1
-#    comp = TTJets
-#    HiggsVBF125.triggers = []
-    comp.files = comp.files[:20]
+    # comp.files = comp.files[:5]
     selectedComponents = [comp]
-    comp.splitFactor = 1
-    # comp.files = comp.files[:1]
-    # for 53 MC: 
-#    comp.triggers = ['HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v*']
+    comp.splitFactor = 14
 elif test==2:
+    selectedComponents = copy.copy(data_list)
+    selectedComponents.extend(embed_list)
+    selectedComponents.extend(MC_list[0:3])
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.files = comp.files[:10]
-elif test==4:
-    comp = HiggsVBF125 
-    comp.splitFactor = 52
-    selectedComponents = [comp]
-elif test==5:
-    # run this with python to get numbers for the soup
-    print 'WJets  : ', WJets.nGenEvents,  WJets.effCorrFactor
-    print 'W1Jets : ', W1Jets.nGenEvents, W1Jets.effCorrFactor
-    print 'W2Jets : ', W2Jets.nGenEvents, W2Jets.effCorrFactor
-    print 'W3Jets : ', W3Jets.nGenEvents, W3Jets.effCorrFactor
-    print 'W4Jets : ', W4Jets.nGenEvents, W4Jets.effCorrFactor
+        comp.files = comp.files[:3]
+
 
 
 config = cfg.Config( components = selectedComponents,

@@ -44,7 +44,13 @@ allsamples = copy.copy(MC_list)
 
 
 
-HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/TAUELE_2012_Colin_Sync_OSVFit_23Oct',
+## HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/TAUELE_2012_Colin_Sync_OSVFit_23Oct',
+##                              'cbern', '.*root')
+
+pat = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_Moriond_Test2/TAUELE_TestMoriond_Dec13'
+# pat = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_Moriond_Test2/TAUELE_TestMoriond_Dec13'
+HiggsVBF125.files = getFiles(pat,
                              'cbern', '.*root')
+
 HiggsVBF125.splitFactor = 14
 

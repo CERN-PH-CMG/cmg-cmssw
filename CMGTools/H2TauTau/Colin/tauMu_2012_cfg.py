@@ -1,4 +1,3 @@
-
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
@@ -176,15 +175,15 @@ muonWeighter = cfg.Analyzer(
 
 
 # defined for vbfAna and eventSorter
-vbfKwargs = dict( Mjj = 400,
-                  deltaEta = 4.0    
+vbfKwargs = dict( Mjj = 500,
+                  deltaEta = 3.5    
                   )
 
 vbfAna = cfg.Analyzer(
     'VBFAnalyzer',
     vbfMvaWeights = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/VBFMVA_BDTG_HCP_52X.weights.xml',
     jetCol = 'cmgPFJetSel',
-    jetPt = 20,
+    jetPt = 20.,
     jetEta = 4.7,
     cjvPtCut = 30.,
     btagSFseed = 123456,
@@ -198,7 +197,8 @@ treeProducer = cfg.Analyzer(
     )
 
 treeProducerXCheck = cfg.Analyzer(
-    'H2TauTauSyncTree'    
+    'H2TauTauSyncTree',
+    pt20 = False
     )
 
 #########################################################################################
@@ -218,19 +218,41 @@ for emb in embed_list:
     emb.puFileData = None
     emb.puFileMC = None
 
+WNJetsAna.nevents = [ WJets.nGenEvents,
+                      W1Jets.nGenEvents,
+                      W2Jets.nGenEvents,
+                      W3Jets.nGenEvents,
+                      W4Jets.nGenEvents
+                      ]
 
-selectedComponents = allsamples
-# selectedComponents = [data_Run2012A_aug6, data_Run2012A, data_Run2012C_v1, ]
-# selectedComponents = [DYJets]
+# selectedComponents = allsamples
+diboson_list = [    WWJetsTo2L2Nu,
+                    WZJetsTo2L2Q,
+                    WZJetsTo3LNu,
+                    ZZJetsTo2L2Nu,
+                    ZZJetsTo2L2Q,
+                    ZZJetsTo4L,
+                    T_tW,
+                    Tbar_tW
+                    ]
+WJetsSoup = copy.copy(WJets)
+WJetsSoup.name = 'WJetsSoup'
+VVgroup = [comp.name for comp in diboson_list]
+# higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
+selectedComponents =  [WJetsSoup, TTJets, DYJets]
+selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
+higgs = mc_higgs
+selectedComponents.extend( higgs )
+selectedComponents.extend( diboson_list )
+selectedComponents.extend( data_list )
+selectedComponents.extend( embed_list )
 
-WJets.splitFactor = 50
 
 sequence = cfg.Sequence( [
-    # eventSelector,
+#     eventSelector,
     jsonAna,
     triggerAna,
     vertexAna,
-    genErsatzAna,
     TauMuAna,
     dyJetsFakeAna,
     WNJetsAna,
@@ -247,12 +269,12 @@ if syncntuple:
     sequence.append( treeProducerXCheck)
 
 
-test = 0
+test = 1
 if test==1:
     comp = HiggsVBF125
     selectedComponents = [comp]
-    comp.splitFactor = 1
-    comp.files = comp.files[:10]
+    comp.splitFactor = 14
+    # comp.files = comp.files[:10]
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1
@@ -263,4 +285,3 @@ config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
 
 printComps(config.components, True)
-

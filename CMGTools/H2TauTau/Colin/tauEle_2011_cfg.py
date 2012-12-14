@@ -30,7 +30,8 @@ jsonAna = cfg.Analyzer(
     )
 
 triggerAna = cfg.Analyzer(
-    'TriggerAnalyzer'
+    'TriggerAnalyzer',
+    verbose = False
     )
 
 vertexAna = cfg.Analyzer(
@@ -186,8 +187,6 @@ selectedComponents.extend( higgs )
 selectedComponents.extend( diboson_list )
 selectedComponents.extend( data_list_2011 )
 selectedComponents.extend( embed_list_2011 )
-
-selectedComponents = [DYJets]
 
 sequence = cfg.Sequence( [
 #     eventSelector,
