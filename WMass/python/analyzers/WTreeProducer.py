@@ -100,6 +100,8 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       var( tr, 'evtWSel', int)
       
       var( tr, 'nMuons', int)
+      var( tr, 'nTrgMuons', int)
+      var( tr, 'noTrgMuonsLeadingPt', int)
 
       bookMET( tr, 'pfmet')
       
@@ -161,16 +163,20 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fill( tr, 'lumi',event.lumi)
           fill( tr, 'evt', event.eventId)
           fill( tr, 'nvtx', len(self.handles['vertices'].product()))          
-          event.pileUpInfo = map( PileUpSummaryInfo,
-                                  self.mchandles['pusi'].product() )
-          for puInfo in event.pileUpInfo:
-            if puInfo.getBunchCrossing()==0:
-              fill( tr, 'npu', puInfo.nTrueInteractions())
-              # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
-            # else:
-              # print 'NO INFO FOR puInfo.getBunchCrossing()==0 !!!!'
-          
+          if (self.cfg_comp.isMC) :
+            event.pileUpInfo = map( PileUpSummaryInfo,
+                                    self.mchandles['pusi'].product() )
+            for puInfo in event.pileUpInfo:
+              if puInfo.getBunchCrossing()==0:
+                fill( tr, 'npu', puInfo.nTrueInteractions())
+                # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
+              # else:
+                # print 'NO INFO FOR puInfo.getBunchCrossing()==0 !!!!'
+            
           fill( tr, 'nMuons', event.nMuons)
+          fill( tr, 'nTrgMuons', len(event.selMuons))
+          if len(event.NoTriggeredMuonsLeadingPt) > 0 :
+            fill( tr, 'noTrgMuonsLeadingPt', event.NoTriggeredMuonsLeadingPt[0].pt())
           fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
           fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
           fill( tr, 'evtWSel', event.WGoodEvent)

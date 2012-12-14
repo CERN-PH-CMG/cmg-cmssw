@@ -113,6 +113,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       var( tr, 'nMuons', int)
       var( tr, 'nTrgMuons', int)
       var( tr, 'nNoTrgMuons', int)
+      var( tr, 'noTrgExtraMuonsLeadingPt', int)
 
       bookMET(tr, 'pfmet')
       var(tr, 'pfmet_sumEt')
@@ -200,17 +201,19 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fill( tr, 'lumi',event.lumi)
           fill( tr, 'evt', event.eventId)
           fill( tr, 'nvtx', len(self.handles['vertices'].product()))
-
-          event.pileUpInfo = map( PileUpSummaryInfo,
-                                  self.mchandles['pusi'].product() )
-          for puInfo in event.pileUpInfo:
-            if puInfo.getBunchCrossing()==0:
-              fill( tr, 'npu', puInfo.nTrueInteractions())
-              # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
+          if (self.cfg_comp.isMC) :
+            event.pileUpInfo = map( PileUpSummaryInfo,
+                                    self.mchandles['pusi'].product() )
+            for puInfo in event.pileUpInfo:
+              if puInfo.getBunchCrossing()==0:
+                fill( tr, 'npu', puInfo.nTrueInteractions())
+                # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
 
           fill( tr, 'nMuons', len(event.ZallMuons))
           fill( tr, 'nTrgMuons', len(event.ZselTriggeredMuons))
           fill( tr, 'nNoTrgMuons', len(event.ZselNoTriggeredMuons))
+          if(len(event.ZselNoTriggeredExtraMuonsLeadingPt)>0):
+            fill( tr, 'noTrgExtraMuonsLeadingPt', event.ZselNoTriggeredExtraMuonsLeadingPt[0].pt())
           fill( tr, 'evtHasGoodVtx', event.passedVertexAnalyzer)
           fill( tr, 'evtHasTrg', event.passedTriggerAnalyzer)
           fill( tr, 'evtZSel', event.ZGoodEvent)
