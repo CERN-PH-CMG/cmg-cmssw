@@ -21,6 +21,7 @@ class ZAnalyzer( Analyzer ):
         count.register('Z >= 2 lepton')
         count.register('Z at least 1 lep trig matched')
         count.register('Z good muon pair found')
+        count.register('Z non trg leading extra muon pT < 10 GeV')
         count.register('Z Inv Mass>50')
         count.register('Z pos Mu is MuIsTightAndIso')
         count.register('Z pos Mu_eta<2.1 && Mu_pt>30*MZ/MW')
@@ -75,6 +76,7 @@ class ZAnalyzer( Analyzer ):
         event.ZallMuons = copy.copy(event.Zmuons)
         event.ZselTriggeredMuons = []
         event.ZselNoTriggeredMuons = []
+        event.ZselNoTriggeredExtraMuonsLeadingPt = []
         event.ZallJets = copy.copy(event.Zjets)
         event.ZselJets = []
         
@@ -161,6 +163,17 @@ class ZAnalyzer( Analyzer ):
         else:
             if fillCounter : self.counters.counter('ZAna').inc('Z good muon pair found')
 
+        event.ZselNoTriggeredExtraMuonsLeadingPt = [lep for lep in event.ZselNoTriggeredMuons if \
+                        lep !=event.BestZMuonPairList[2]]
+            
+        if(len(event.ZselNoTriggeredExtraMuonsLeadingPt)>0  and lep.pt()>10):
+          return True, 'rejecting, non triggering leading extra muon has pT > 10 GeV'
+          # print 'len(event.ZallMuons)= ',len(event.ZallMuons),' len(event.ZselTriggeredMuons)= ',len(event.ZselTriggeredMuons),' len(event.ZselNoTriggeredMuons)= ', len(event.ZselNoTriggeredMuons)
+          # print 'event.BestZMuonPairList= ',event.BestZMuonPairList[0],' ',event.BestZMuonPairList[1],' ',event.BestZMuonPairList[2],' ',event.BestZMuonPairList[3],' ',event.ZselNoTriggeredExtraMuonsLeadingPt[0].pt()
+        else:
+            if fillCounter : self.counters.counter('ZAna').inc('Z non trg leading extra muon pT < 10 GeV')
+
+            
         # associate properly positive and negative muons
         if(event.BestZMuonPairList[1].charge()>0):
           event.BestZPosMuon = event.BestZMuonPairList[1]
@@ -375,7 +388,11 @@ class ZAnalyzer( Analyzer ):
     
     
     def mT(self, leg1, leg2):
-        return math.sqrt( 2*leg1.Pt()*leg2.Pt()*( 1 - (leg1.Px()*leg2.Px() + leg1.Py()*leg2.Py()) / ( leg1.Pt()*leg2.Pt() ) ) )
+        # print 'leg1.Pt() ',leg1.Pt(),' leg2.Pt() ',leg2.Pt(),' leg1.Px() ',leg1.Px(),' leg2.Px() ',leg2.Px(),' leg2.Py() ',leg2.Py(),' leg1.Pt() ',leg1.Pt(),' leg2.Pt() ',leg2.Pt(),' before sqrt ',( 2*leg1.Pt()*leg2.Pt()*( 1 - (leg1.Px()*leg2.Px() + leg1.Py()*leg2.Py()) / ( leg1.Pt()*leg2.Pt() ) ) )
+        if (2*leg1.Pt()*leg2.Pt()*( 1 - (leg1.Px()*leg2.Px() + leg1.Py()*leg2.Py()) / ( leg1.Pt()*leg2.Pt() ) )) > 0:
+            return math.sqrt( 2*leg1.Pt()*leg2.Pt()*( 1 - (leg1.Px()*leg2.Px() + leg1.Py()*leg2.Py()) / ( leg1.Pt()*leg2.Pt() ) ) )
+        else:
+            return 0
 
     def trigMatched(self, event, leg):
         '''Returns true if the leg is matched to a trigger object as defined in the
@@ -385,19 +402,7 @@ class ZAnalyzer( Analyzer ):
         path = event.hltPath
         triggerObjects = event.triggerObjects
         filters = self.cfg_ana.triggerMap[ path ]
-        filter = filters[0]
-        # if legName == 'leg1':
-            # filter = filters[0]
-        # elif legName == 'leg2':
-            # filter = filters[1]
-        # else:
-            # raise ValueError( 'legName should be leg1 or leg2, not {leg}'.format(
-                # leg=legName )  )
-        # the dR2Max value is 0.3^2
-        pdgIds = None
-        if len(filter) == 1:
-            filter, pdgIds = filter[0], filter[1]
-        return triggerMatched(leg, triggerObjects, path, filter,
-                              # dR2Max=0.089999,
-                              dR2Max=0.25,
-                              pdgIds=pdgIds )
+        # the dR2Max value is 0.1^2
+        return triggerMatched(leg, triggerObjects, path, filters,
+                              dR2Max=0.01,
+                              pdgIds=None )
