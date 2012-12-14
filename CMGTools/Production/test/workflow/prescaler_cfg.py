@@ -16,7 +16,7 @@ process.source = datasetToSource(
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
 #WARNING!
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(2000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
 
 process.pre = cms.EDFilter("Prescaler",

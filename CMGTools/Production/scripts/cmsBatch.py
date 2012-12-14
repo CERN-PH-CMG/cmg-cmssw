@@ -115,7 +115,7 @@ cmsStageWithFailover.py -f $file $fullFileName
 #write the files as user readable but not writable
 eos chmod 755 /eos/cms/$fullFileName
 done
-""" % (index+1, remoteDir)         
+""" % (index, remoteDir)         
       script += 'rm *.root\n'
    script += 'cp -rf * $LS_SUBCWD\n'
    
@@ -144,7 +144,7 @@ newFileName=`echo $file | sed -r -e 's/\./_%s\./'`
 cmsStageWithFailover.py -f $file $fullFileName
 eos chmod 755 /eos/cms/$fullFileName
 done
-""" % (index+1, remoteDir)
+""" % (index, remoteDir)
       script += 'rm *.root\n'
    return script
 
@@ -178,16 +178,15 @@ class MyBatchManager( BatchManager ):
          scriptFile.write( batchScriptLocal( storeDir, value) )   #same as above but for batchScriptLocal
       scriptFile.close()
       os.system('chmod +x %s' % scriptFileName)
-      
-      
+
       #prepare the cfg
       # replace the list of fileNames by a chunk of filenames:
       if generator:
          randSvc = RandomNumberServiceHelper(process.RandomNumberGeneratorService)
          randSvc.populate()
       else:
-         iFileMin = (value)*grouping 
-         iFileMax = (value+1)*grouping 
+         iFileMin = (value-1)*grouping 
+         iFileMax = (value)*grouping 
          process.source.fileNames = fullSource.fileNames[iFileMin:iFileMax]
          print process.source
       cfgFile = open(jobDir+'/run_cfg.py','w')
@@ -304,7 +303,7 @@ try:
 except:
    print 'No input file. This is a generator process.'
    generator = True
-   listOfValues = range( nJobs ) #Here is where the list of values is created 
+   listOfValues = [i+1 for i in range( nJobs )] #Here is where the list of values is created 
 else:
    print "Number of files in the source:",len(process.source.fileNames), ":"
    pprint.pprint(process.source.fileNames)
@@ -314,7 +313,7 @@ else:
       nJobs = nJobs + 1
       
    print "number of jobs to be created: ", nJobs
-   listOfValues = range( nJobs ) #OR Here is where the list of values is created
+   listOfValues = [i+1 for i in range( nJobs )] #OR Here is where the list of values is created
    #here i change from e.g 0-19 to 1-20
 
 batchManager.PrepareJobs( listOfValues ) #PrepareJobs with listOfValues as param
