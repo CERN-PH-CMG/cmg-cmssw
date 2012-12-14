@@ -282,7 +282,7 @@ class DatasetInformation(object):
 			self.createLoggerTemporaryFile()
 			return True
 		else: 
-			raise NameError("ERROR: No Logger.tgz file found for this sample. If you would like to preceed anyway, please rerun publish with the --force option.\n")
+			raise NameError("ERROR: No Logger.tgz file found for this sample. If you would like to preceed anyway, please copy Logger.tgz from your local production directory to your production directory on eos.\n")
 	
 	def createLoggerTemporaryFile(self):
 		"""Build a temporary logger file object and tarfile object to be used when retrieving tags and jobs"""
@@ -496,7 +496,10 @@ class DatasetInformation(object):
 						raise IOError( "ERROR: Unexpected output from 'cvs status scripts/cmsBatch' execution" )
 					tag_to_revision[result[0]] = result[2]  #add tag and its correspoding branch/revision to the dictionary
 				#get the revision corresponding to the dataset's tag
-				revision = tag_to_revision[self.dataset_details['Tags'][0]['tag']]
+				for item in self.dataset_details['Tags']:
+					if item['package'] == "CMGTools/Production":
+						revision = tag_to_revision[item['tag']]
+						break
 				if revision is None:
 					raise IOError( "ERROR: Unexpected output from 'cvs status scripts/cmsBatch' execution - couldn't match tag with an existing revision" )
 				else:
