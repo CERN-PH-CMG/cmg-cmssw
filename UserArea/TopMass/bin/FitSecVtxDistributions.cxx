@@ -67,8 +67,6 @@ public:
     mass_signalSysts = other.mass_signalSysts;
     lxy_bckg    = other.lxy_bckg;
     mass_bckg   = other.mass_bckg;
-    // lxy_b_bckg    = other.lxy_b_bckg;
-    // mass_b_bckg   = other.mass_b_bckg;
   }
     
   TString m_tag;
@@ -77,8 +75,6 @@ public:
   std::map<Float_t, std::map<TString, TH1F *> > lxy_signalSysts, mass_signalSysts;
   std::map<TString, TH1F *> lxy_bckg;
   std::map<TString, TH1F *> mass_bckg;
-  // std::map<TString, TH1F *> lxy_b_bckg;
-  // std::map<TString, TH1F *> mass__b_bckg;
 };
 
 void showSecVtxShapeCollection(RooWorkspace *,std::vector<SecVtxShape_t> &);
@@ -392,7 +388,8 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 
 	  //get the PDF corresponding to the required category
 	  RooCategory theCategory(key.c_str(),key.c_str());
-	  w->pdf("flxy_"+ch+"sim")->plotOn(frame,ProjWData(lxy,*dataslice),MoveToBack(),Range(0.,fitrange));
+	  // w->pdf("flxy_"+ch+"sim")->plotOn(frame,ProjWData(lxy,*dataslice),MoveToBack(),Range(0.,fitrange));
+	  w->pdf("flxy_"+ch+"sim")->plotOn(frame,ProjWData(lxy,*dataslice),MoveToBack());
 
 	  frame->Draw();
 	  frame->GetXaxis()->SetTitle("L_{xy} [cm]");
@@ -571,13 +568,28 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  RooRealVar *sigfrac =new RooRealVar(ch+"sigfrac",ch+"sigfrac",signalExp/(signalExp+bckgExp),0,1.0);
 	  RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf(ch+"flxy"),*w->pdf(ch+"flxy_bkg")),*sigfrac);
 	  w->import(*model);
-    }
+	}
 
-      
-      
+      //
+      // SYSTEMATICS
+      //
+      for(std::map<Float_t, std::map<TString, TH1F *> >::iterator it=chShapes[is].lxy_signalSysts.begin(); it != chShapes[is].lxy_signalSysts.end(); it++)
+	{
+	  for(map<TString, TH1F *>::iterator iit=it->second.begin(); iit != it->second.end(); iit++)
+	    {
+	      std::cout << "bla: " << it->first << " / " <<iit->first << std::endl;
+	      RooDataHist *lxySystData = new RooDataHist(ch+"lxy_"+iit->first,    ch+"lxy_"+iit->first,     RooArgList(lxy), Import(*iit->second));
+	      RooHistPdf *lxySystPdf   = new RooHistPdf(lxySystData->GetName()+TString("syst"), lxySystData->GetName()+TString("syst"), RooArgSet(lxy), *lxySystData);
+	      w->import(*lxySystPdf);      
+	    }
+	}
+
 
     }
   cqt->SaveAs("SignalPDFsMomenta.png");
+
+
+
 
 
   //all done here  
@@ -678,23 +690,7 @@ int main(int argc, char *argv[])
 	  	  if(var.Contains("mass")) m_shape.mass_signalSysts[mass][syst]=h;
 	  	}
 	    }
-	  // get all b-jet backgrounds
-	  // else if((mass==0 || (mass==172.5 && syst=="") ) && jetFlav!="b")
-	  //   {
-	  //     if(var.Contains("lxy"))
-	  // 	{
-	  // 	  if(m_shape.lxy_b_bckg.find(jetFlav)==m_shape.lxy_b_bckg.end()) m_shape.lxy_b_bckg[jetFlav]=h;
-	  // 	  else                                                       m_shape.lxy_b_bckg[jetFlav]->Add(h);
-	  // 	}
-	  //     if(var.Contains("mass"))
-	  // 	{
-	  // 	  if(m_shape.mass_b_bckg.find(jetFlav)==m_shape.mass_b_bckg.end()) m_shape.mass_b_bckg[jetFlav]=h;
-	  // 	  else                                                         m_shape.mass_b_bckg[jetFlav]->Add(h);
-	  // 	}
-	  //   }
-	  // get the non-b-jet backgrounds
 	  else if((mass==0 || (mass==172.5 && syst=="") ) && jetFlav!="")
-	    //else if((mass==0 || (mass==172.5 && syst=="") ) && jetFlav!=""  && jetFlav!="b")
 	    {
 	      if(var.Contains("lxy"))
 		{
