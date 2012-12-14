@@ -801,7 +801,11 @@ int main(int argc, char* argv[])
       if(WW_ctrl_m)   mon.fillHisto("Ctrl_WW_zmass",tags,zll.mass(),weight);
 
       //Sherpa control 
-      mon.fillHisto("npfjets_pres", tags, nAJetsGood30,weight);
+      // N.B. 7 TeV:  Sherpa  Zpt>12,  MG Zpt>50  --> cut Zpt>50 to fill the plot
+      //      8 TeV:  Sherpa  Zpt>12,  MG Zpt>12  --> no need to cut
+      if( (!use2011Id) || zll.mass()>50. ) {
+	mon.fillHisto("npfjets_pres", tags, nAJetsGood30,weight);
+      }
 
       //Main event selection
       mon.fillHisto("zmass",       tags, zll.mass(), weight);  
