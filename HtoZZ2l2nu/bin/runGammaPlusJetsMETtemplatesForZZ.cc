@@ -126,9 +126,12 @@ int main(int argc, char* argv[])
     Hoptim_cuts1_zpt  ->Fill(index, optim_Cuts1_zpt[index]);
     Hoptim_cuts1_zmass  ->Fill(index, optim_Cuts1_zmass[index]);
   }
+ double zpt_bins[] = {0., 20., 40., 60., 80., 100., 200., 400., 800.};
+ const int n_zpt_bins = sizeof(zpt_bins)/sizeof(double) - 1;
   mon.addHistogram( new TH2F ("mt_shapes",";cut index;M_{T} [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
   mon.addHistogram( new TH2F ("met_shapes",";cut index;met [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
   mon.addHistogram( new TH2F ("zpt_shapes",";cut index;Z p_{T} [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
+  mon.addHistogram( new TH2F ("zpt_rebin_shapes",";cut index;Z p_{T} [GeV/c];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), n_zpt_bins, zpt_bins) );
   TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl",";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
   h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
   h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
@@ -194,8 +197,11 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "met_met_final"  , ";E_{T}^{miss};Events", 25,0,250) );
   mon.addHistogram( new TH1F( "met_redMet_final"  , ";Reduced E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL_final"  , ";Longitudinal Reduced E_{T}^{miss};Events", 25,-100,400) );
-
   mon.addHistogram( new TH1F("npfjets_dy",  ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
+
+ mon.addHistogram( new TH1F( "zpt_rebin", ";p_{T}^{ll};Events", n_zpt_bins, zpt_bins) );
+ mon.addHistogram( new TH1F( "zpt_rebin_final", ";p_{T}^{ll};Events", n_zpt_bins, zpt_bins) );
+
   TH1 *hj=mon.addHistogram( new TH1F("njets",  ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
   for(int ibin=1; ibin<=hj->GetXaxis()->GetNbins(); ibin++)
     {
