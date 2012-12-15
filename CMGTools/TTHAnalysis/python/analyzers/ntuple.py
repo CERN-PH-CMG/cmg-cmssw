@@ -82,7 +82,7 @@ def fillLepton( tree, pName, lepton ):
         fill(tree, '{pName}_jetSelf'.format(pName=pName), lepton.jet.pdgId() == lepton.pdgId())
     if abs(lepton.pdgId())==11:
         fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.numberOfHits())
-        fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.mvaNonTrigV0())
+        fill(tree, '{pName}_mvaId'.format(pName=pName), lepton.mvaNonTrigV0())
     if abs(lepton.pdgId())==13:
         fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.sourcePtr().innerTrack().hitPattern().numberOfValidPixelHits())
     if hasattr(lepton, 'jet'):    
