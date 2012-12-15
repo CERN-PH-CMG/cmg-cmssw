@@ -19,6 +19,8 @@ def getSchedule(process, runOnMC, runOnFastSim):
         result.append( process.eeBadScFilterPath )
     if isNewerThan('CMSSW_5_3_0'):
         result.append( process.ecalLaserFilterPath )
+        if not runOnMC:
+            result.append( process.trkPOGFiltersPath )
 
     if runOnMC:
         result.append(process.totalKinematicsFilterPath)
