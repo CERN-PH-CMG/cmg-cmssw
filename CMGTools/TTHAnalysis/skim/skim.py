@@ -8,7 +8,7 @@ runOld5XGT   = False
 runOnFastSim = False
 runOnCMGV56  = False
 LOOSE_ID     = "&& abs(sourcePtr.dB('PV3D')/sourcePtr.edB('PV3D')) < 100"
-#LOOSE_ID     = LOOSE_ID + "&& chargedHadronIso/pt < 0.4"
+LOOSE_ID     = LOOSE_ID + "&& chargedHadronIso/pt < 0.4"
 process = cms.Process("CMG")
 
 
@@ -213,11 +213,12 @@ if False: ## set to True to compute gen-level acceptances
 ########################################################
 process.muForSkim = cms.EDFilter("CandViewSelector",
     src = cms.InputTag("cmgMuonSel"),
-    cut = cms.string("pt > 5 && sourcePtr.track.isNonnull"+LOOSE_ID),
+    cut = cms.string("pt > 5 && abs(eta)<2.4 && (isGlobalMuon || (isTrackerMuon && numberOfMatches>0)) "+LOOSE_ID),
 )
+
 process.eleForSkim = cms.EDFilter("CandViewSelector",
     src = cms.InputTag("cmgElectronSel"),
-    cut = cms.string("pt > 7"+LOOSE_ID),
+    cut = cms.string("pt > 7 && abs(eta)<2.5 "+LOOSE_ID),
 )
 process.lepForSkim = cms.EDProducer("CandViewMerger", 
     src = cms.VInputTag(cms.InputTag("muForSkim"), cms.InputTag("eleForSkim"))
