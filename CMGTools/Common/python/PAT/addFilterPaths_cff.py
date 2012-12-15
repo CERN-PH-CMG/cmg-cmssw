@@ -87,16 +87,6 @@ trackingFailureFilter.JetSource = 'ak5PFJets'
 trackingFailureSequence = cms.Sequence(goodVertices*trackingFailureFilter)
 trackingFailureFilterPath = cms.Path(trackingFailureSequence)
 
-## Bad EE Supercrystal filter
-# from RecoMET.METFilters.eeBadScFilter_cfi import eeBadScFilter
-# eeBadScSequence = cms.Sequence(eeBadScFilter)
-# eeBadScFilterPath = cms.Path(eeBadScSequence)
-
-## EB or EE Xtals with large laser calibration correction
-# from RecoMET.METFilters.ecalLaserCorrFilter_cfi import ecalLaserCorrFilter
-# ecalLaserCorrSequence = cms.Sequence(ecalLaserCorrFilter)
-# ecalLaserFilterPath = cms.Path(ecalLaserCorrSequence)
-
 metNoiseCleaning = cms.Sequence(primaryVertexFilter+
                                 noscraping+
                                 CSCTightHaloFilter+
@@ -116,11 +106,21 @@ if isNewerThan('CMSSW_5_2_0'):
     hcalLaserEventFilter.vetoByRunEventNumber=cms.untracked.bool(False)
     hcalLaserEventFilter.vetoByHBHEOccupancy=cms.untracked.bool(True)
     #the ee bad sc filter is only available in 5X 
+    ## Bad EE Supercrystal filter
     from RecoMET.METFilters.eeBadScFilter_cfi import eeBadScFilter
     eeBadScFilterPath = cms.Path(eeBadScFilter)
     metNoiseCleaning +=  eeBadScFilter 
+    ## EB or EE Xtals with large laser calibration correction
     from RecoMET.METFilters.ecalLaserCorrFilter_cfi import ecalLaserCorrFilter
     ecalLaserFilterPath = cms.Path(ecalLaserCorrFilter)
     metNoiseCleaning += ecalLaserCorrFilter
 else:
     print >> sys.stderr, 'hcalLaserFilterFromAOD, eeBadScFilter and ecalLaserFilter only available in releases >= 5.2'
+
+if isNewerThan('CMSSW_5_3_0'):
+    #the tracking PoG filters only work in 53
+    from RecoMET.METFilters.trackingPOGFilters_cfi import *
+    trkPOGFiltersSequence = cms.Sequence(~manystripclus53X * ~toomanystripclus53X * ~logErrorTooManyClusters)
+    trkPOGFiltersPath = cms.Path(trkPOGFiltersSequence)
+else:
+    print >> sys.stderr, 'trkPOGFilters only available in releases >= 5.3'
