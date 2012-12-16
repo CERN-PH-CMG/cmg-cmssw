@@ -6,7 +6,7 @@ from copy import copy
 pat='V5_10_0'
 pat2='V5_6_0_B'
 pat3='V5_8_0'
-skim='TTH_071212'
+skim='TTH_151212'
 filepattern = 'cmgTuple.*root'
 userName='botta'
 
