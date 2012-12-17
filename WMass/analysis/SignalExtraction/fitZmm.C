@@ -83,37 +83,38 @@ const Int_t    Ecm=7         // center-of-mass energy
   
   // file format for output plots
   const TString format1("png"); 
-  
 
   //--------------------------------------------------------------------------------------------------------------
   // Main W analysis code 
   //==============================================================================================================  
     
+  // cout << gSystem->WorkingDirectory() << endl;
+  // cout << Form("../JobOutputs/%s/test_numbers_DATA/ZanalysisOnDATA.root",outputDir.Data()) << endl;
   TFile*fData      = new TFile(Form("../JobOutputs/%s/test_numbers_DATA/ZanalysisOnDATA.root",outputDir.Data()));
   TFile*fZmm     = new TFile(Form("../JobOutputs/%s/test_numbers_DYJetsSig/ZanalysisOnDATA.root",outputDir.Data()));
   TFile*fEWKTT       = new TFile(Form("../JobOutputs/%s/test_numbers_EWKTT/ZanalysisOnDATA.root",outputDir.Data()));
-  TH1D *hDataMass   = (TH1D*)fData->Get("Zmass_Sig_eta2p1"); 
+  TH1D *hDataMass   = (TH1D*)fData->Get("Zmass_Sig_eta0p6_80385"); 
   TH1D *hDataMassm  = (TH1D*)hDataMass;  
   TH1D *hDataMassp  = (TH1D*)hDataMass;
   hDataMass->Print();
-  TH1D *hZmmMass  = (TH1D*)fZmm->Get("Zmass_Sig_eta2p1"); 
+  TH1D *hZmmMass  = (TH1D*)fZmm->Get("Zmass_Sig_eta0p6_80385"); 
   TH1D *hZmmMassp = (TH1D*)hZmmMass;
   TH1D *hZmmMassm = (TH1D*)hZmmMass;
   hZmmMass->Print();
-  TH1D *hEWKMass    = (TH1D*)fEWKTT->Get("Zmass_Sig_eta2p1"); 
+  TH1D *hEWKMass    = (TH1D*)fEWKTT->Get("Zmass_Sig_eta0p6_80385"); 
   TH1D *hEWKMassp   = (TH1D*)hEWKMass;
   TH1D *hEWKMassm   = (TH1D*)hEWKMass;
   hEWKMass->Print();
 
-  TH1D *hAntiDataMass   = (TH1D*)fData->Get("Zmass_QCD_eta2p1"); 
+  TH1D *hAntiDataMass   = (TH1D*)fData->Get("Zmass_QCD_eta0p6_80385"); 
   TH1D *hAntiDataMassm  = (TH1D*)hAntiDataMass;
   TH1D *hAntiDataMassp  = (TH1D*)hAntiDataMass;
   hAntiDataMass->Print();
-  TH1D *hAntiZmmMass  = (TH1D*)fZmm->Get("Zmass_QCD_eta2p1"); 
+  TH1D *hAntiZmmMass  = (TH1D*)fZmm->Get("Zmass_QCD_eta0p6_80385"); 
   TH1D *hAntiZmmMassp = (TH1D*)hAntiZmmMass;
   TH1D *hAntiZmmMassm = (TH1D*)hAntiZmmMass;
   hAntiZmmMass->Print();
-  TH1D *hAntiEWKMass    = (TH1D*)fEWKTT->Get("Zmass_QCD_eta2p1"); 
+  TH1D *hAntiEWKMass    = (TH1D*)fEWKTT->Get("Zmass_QCD_eta0p6_80385"); 
   TH1D *hAntiEWKMassp   = (TH1D*)hAntiEWKMass; 
   TH1D *hAntiEWKMassm   = (TH1D*)hAntiEWKMass; 
   hAntiEWKMass->Print();

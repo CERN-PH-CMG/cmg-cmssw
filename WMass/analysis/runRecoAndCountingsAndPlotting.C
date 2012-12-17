@@ -15,17 +15,19 @@ void runRecoAndCountingsAndPlotting(){
   // TString foldername = "RecoCountingPlotting_test44X_testRecoil";
   // TString foldername = "RecoCountingPlotting_test44X_tightMuNeg";
   // TString foldername = "results_test44X_bugfix_Run2011A";
-  TString foldername = "results_test44X_testtempl";
+  // TString foldername = "results_test44X_testtempl";
+  TString foldername = "results_test44X_testpython";
   // TString foldername = "RecoCountingPlotting_test44X_newPileupSF_gen";
+  // TString foldername = "results_test44X_testnpu";
   
   int usePileupSF = 1; // 0=no, 1=yes
   int useEffSF = 1; // 0=no, 1=yes
   int useMomentumCorr = 1; // 0=none, 1=Rochester, 2=MuscleFit
   int smearRochCorrByNsigma = 0;
   // CHOOSE WETHER IS MC CLOSURE OR NOT (half statistics used as DATA, half as MC)
-  bool IS_MC_CLOSURE_TEST= 1; 
+  bool IS_MC_CLOSURE_TEST= 0; 
   bool normalize_lumi_MC_CLOSURE_TEST = 1;
-  double intLumi_MC_CLOSURE_TEST_fb = 5.1;// data = 5.1 ; works only if normalize_lumi_MC_CLOSURE_TEST is TRUE
+  double intLumi_MC_CLOSURE_TEST_fb = 5.1;// data = 4.7499 prescaled trigger, 5.1 unprescaled; works only if normalize_lumi_MC_CLOSURE_TEST is TRUE
   bool useAlsoGenPforSig= 0;
         
   TString ZMass = "91.1876"; // 91.1876
@@ -33,6 +35,7 @@ void runRecoAndCountingsAndPlotting(){
   TString WMassStep_MeV = "50"; // 15
   TString WMassNSteps = "10"; // 60
   TString etaMuonNSteps = "1"; // 5
+  // TString etaMaxMuons = "0.6"; // 0.6, 0.8, 1.2, 1.6, 2.1
   TString etaMaxMuons = "0.6"; // 0.6, 0.8, 1.2, 1.6, 2.1
 
   bool runWanalysis = 0;
@@ -40,8 +43,7 @@ void runRecoAndCountingsAndPlotting(){
   
   bool mergeEWKbkg   = 0;
 
-  bool ExtractNumbers = 1;
-
+  bool ExtractNumbers = 0;
   
   bool runWSigBkgFit = 0;
   bool runZSigBkgFit = 0;
@@ -59,10 +61,13 @@ void runRecoAndCountingsAndPlotting(){
   
   
   // PRODUCE R(X)=W/Z DISTRIBUTION TO REWEIGHT Z in DATA
-  bool runR_WdivZ_andSimpleTemplates= 0;
+  bool runR_WdivZ= 0;
   // PRODUCE TEMPLATES, i.e. Z(DATA)*R(X)
+  bool run_BuildSimpleTemplates= 0;
   bool run_BuildEvByEvTemplates= 0;
+  
   // PERFORM W MASS FIT
+  bool runPrepareDataCards     = 1;
   bool run_MassFit       = 0;
   int fitType            = 0; // 0 = ROOT, 1 = CUSTOM
 
@@ -85,65 +90,48 @@ void runRecoAndCountingsAndPlotting(){
   TString     sample[nsamples]  = { "WJetsSig", "WJetsFake", "DYJetsSig", "DYJetsFake",  "TTJets",  "ZZJets",  "WWJets", "WZJets", "QCD"    , "DATA" };
   int      isMCorDATA[nsamples] = {        0  ,          0 ,        0   ,           0 ,        0 ,       0  ,       0  ,       0 ,   0      ,    1   };
   double       CS_pb[nsamples]  = {    31314  ,      31314 ,   2895.6   ,      2895.6 ,   157.51 ,   0.119  ,   4.514  ,   0.596 , 84679.3  ,   -1   };
-  // Run2011A  Run2011B  JSON  TRIGGER GOOD VTX
+                                                                                                                                              // Run2011A  Run2011B  JSON  TRIGGER GOOD VTX
   // double       Nevts[nsamples]  = { 81053834  ,   81053834 ,  36209629  ,    36209629 , 59136395 , 1103468  , 1197558  , 1221134 , 24958039 , (50367238+91137428)*0.8894*0.3991*0.9996   }; // 42X
-  double       Nevts[nsamples]  = { 81293448  ,   81293448 ,  36225556  ,    36225556 , 59136395 , 1103468  , 1197558  , 1221134 , 24958039 , (50367238+91137428)*0.8894*0.3991*0.9996   }; // 44X
-  double int_lumi_fb[nsamples]  = {        0  ,          0 ,        0   ,           0 ,        0 ,       0  ,       0  ,       0 ,        0 ,  5.1 /*4.7499*/};
+  double       Nevts[nsamples]  = { 81293448  ,   81293448 ,  36225556  ,    36225556 , 59314581 , 1103468  , 1197558  , 1221134 , 24958039 ,  53056567/* (50367238+91137428)*0.8894*0.4217*0.9996 */   }; // 44X
+  double int_lumi_fb[nsamples]  = {        0  ,          0 ,        0   ,           0 ,        0 ,       0  ,       0  ,       0 ,        0 ,   5.1  /* 4.7499 */};
   double Nevts_Per_fb[nsamples] = {        0  ,          0 ,        0   ,           0 ,        0 ,       0  ,       0  ,       0 ,   0      ,    0   };
-  
+
+  TString common_folder = "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/";
+
   TString fWana_str[nsamples] = {
-    // "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_WJets_10wGen_ZanaAndCounts_TightAlone/WJets/WTreeProducer/WTreeProducer_tree_SignalRecoSkimmed.root",
-    // "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_WJets_10wGen_ZanaAndCounts_TightAlone/WJets/WTreeProducer/WTreeProducer_tree_FakeRecoSkimmed.root",
-    // "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_DYJets_10wGen_ZanaAndCounts_TightAlone/DYJets/WTreeProducer/WTreeProducer_tree_SignalRecoSkimmed.root",
-    // "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_DYJets_10wGen_ZanaAndCounts_TightAlone/DYJets/WTreeProducer/WTreeProducer_tree_FakeRecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_WJets_10wGen_ZanaAndCounts_TightAlone_npu_44X/WJets/WTreeProducer/WTreeProducer_tree_SignalRecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_WJets_10wGen_ZanaAndCounts_TightAlone_npu_44X/WJets/WTreeProducer/WTreeProducer_tree_FakeRecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_DYJets_10wGen_ZanaAndCounts_TightAlone_npu_44X/DYJets/WTreeProducer/WTreeProducer_tree_SignalRecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_DYJets_10wGen_ZanaAndCounts_TightAlone_npu_44X/DYJets/WTreeProducer/WTreeProducer_tree_FakeRecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_TTJets_10wGen_ZanaAndCounts_TightAlone/TTJets/WTreeProducer/WTreeProducer_tree_RecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_VVJets_10wGen_ZanaAndCounts_TightAlone/ZZJetsTo2L2Nu/WTreeProducer/WTreeProducer_tree_RecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_VVJets_10wGen_ZanaAndCounts_TightAlone/WWJetsTo2L2Nu/WTreeProducer/WTreeProducer_tree_RecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_VVJets_10wGen_ZanaAndCounts_TightAlone/WZJetsTo3LNu/WTreeProducer/WTreeProducer_tree_RecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_QCD_10wGenCounts/QCD15/WTreeProducer/WTreeProducer_tree.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/data_Run2011AB_Nov8Nov19ReReco_v1_ZanaAndCounts_TightAlone/data_Run2011AB_Nov8Nov19ReReco_v1/WTreeProducer/WTreeProducer_tree_RecoSkimmed.root"
+    common_folder+"batch_W_Trg/WJets/WTreeProducer/WTreeProducer_tree_SignalRecoSkimmed.root",
+    common_folder+"batch_W_Trg/WJets/WTreeProducer/WTreeProducer_tree_FakeRecoSkimmed.root",
+    common_folder+"batch_DY_Trg/DYJets/WTreeProducer/WTreeProducer_tree_SignalRecoSkimmed.root",
+    common_folder+"batch_DY_Trg/DYJets/WTreeProducer/WTreeProducer_tree_FakeRecoSkimmed.root",
+    common_folder+"batch_TT_Trg/TTJets/WTreeProducer/WTreeProducer_tree.root",
+    common_folder+"batch_VV_Trg/ZZJetsTo2L2Nu/WTreeProducer/WTreeProducer_tree.root",
+    common_folder+"batch_VV_Trg/WWJetsTo2L2Nu/WTreeProducer/WTreeProducer_tree.root",
+    common_folder+"batch_VV_Trg/WZJetsTo3LNu/WTreeProducer/WTreeProducer_tree.root",
+    common_folder+"batch_QCD_Trg/QCD15/WTreeProducer/WTreeProducer_tree.root",
+    common_folder+"batch_DATA_Trg/data_Run2011AB_Nov8Nov19ReReco_v1/WTreeProducer/WTreeProducer_tree.root"
   };  
   TString fZana_str[nsamples] = {
-    // "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_WJets_10wGen_ZanaAndCounts_TightAlone/WJets/ZTreeProducer/ZTreeProducer_tree_SignalRecoSkimmed.root",
-    // "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_WJets_10wGen_ZanaAndCounts_TightAlone/WJets/ZTreeProducer/ZTreeProducer_tree_FakeRecoSkimmed.root",
-    // "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_DYJets_10wGen_ZanaAndCounts_TightAlone/DYJets/ZTreeProducer/ZTreeProducer_tree_SignalRecoSkimmed.root",
-    // "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_DYJets_10wGen_ZanaAndCounts_TightAlone/DYJets/ZTreeProducer/ZTreeProducer_tree_FakeRecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_WJets_10wGen_ZanaAndCounts_TightAlone_npu_44X/WJets/ZTreeProducer/ZTreeProducer_tree_SignalRecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_WJets_10wGen_ZanaAndCounts_TightAlone_npu_44X/WJets/ZTreeProducer/ZTreeProducer_tree_FakeRecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_DYJets_10wGen_ZanaAndCounts_TightAlone_npu_44X/DYJets/ZTreeProducer/ZTreeProducer_tree_SignalRecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_DYJets_10wGen_ZanaAndCounts_TightAlone_npu_44X/DYJets/ZTreeProducer/ZTreeProducer_tree_FakeRecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_TTJets_10wGen_ZanaAndCounts_TightAlone/TTJets/ZTreeProducer/ZTreeProducer_tree_RecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_VVJets_10wGen_ZanaAndCounts_TightAlone/ZZJetsTo2L2Nu/ZTreeProducer/ZTreeProducer_tree_RecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_VVJets_10wGen_ZanaAndCounts_TightAlone/WWJetsTo2L2Nu/ZTreeProducer/ZTreeProducer_tree_RecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_VVJets_10wGen_ZanaAndCounts_TightAlone/WZJetsTo3LNu/ZTreeProducer/ZTreeProducer_tree_RecoSkimmed.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_QCD_10wGenCounts/QCD15/ZTreeProducer/ZTreeProducer_tree.root",
-    "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/data_Run2011AB_Nov8Nov19ReReco_v1_ZanaAndCounts_TightAlone/data_Run2011AB_Nov8Nov19ReReco_v1/ZTreeProducer/ZTreeProducer_tree_RecoSkimmed.root"
+    common_folder+"batch_W_Trg/WJets/ZTreeProducer/ZTreeProducer_tree_SignalRecoSkimmed.root",
+    common_folder+"batch_W_Trg/WJets/ZTreeProducer/ZTreeProducer_tree_FakeRecoSkimmed.root",
+    common_folder+"batch_DY_Trg/DYJets/ZTreeProducer/ZTreeProducer_tree_SignalRecoSkimmed.root",
+    common_folder+"batch_DY_Trg/DYJets/ZTreeProducer/ZTreeProducer_tree_FakeRecoSkimmed.root",
+    common_folder+"batch_TT_Trg/TTJets/ZTreeProducer/ZTreeProducer_tree.root",
+    common_folder+"batch_VV_Trg/ZZJetsTo2L2Nu/ZTreeProducer/ZTreeProducer_tree.root",
+    common_folder+"batch_VV_Trg/WWJetsTo2L2Nu/ZTreeProducer/ZTreeProducer_tree.root",
+    common_folder+"batch_VV_Trg/WZJetsTo3LNu/ZTreeProducer/ZTreeProducer_tree.root",
+    common_folder+"batch_QCD_Trg/QCD15/ZTreeProducer/ZTreeProducer_tree.root",
+    common_folder+"batch_DATA_Trg/data_Run2011AB_Nov8Nov19ReReco_v1/ZTreeProducer/ZTreeProducer_tree.root"
   };
-
-  // WJETS
-  // TString jobID= "test_numbers_WJETS";
-  // TString WfileDATA= "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_WJetsToLNu_10wGenFixed2mt/WJets/WTreeProducer/WTreeProducer_tree_RecoSkimmed.root";
-  // TString ZfileDATA= "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_WJets_10wGen_ZanaAndCounts/WJets/ZTreeProducer/ZTreeProducer_tree_RecoSkimmed.root";
-  // int tot_N_evts = 81053834;
-  // // DYJETS
-  // TString jobID= "test_numbers_DYJETS";
-  // TString WfileDATA= "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_DYJets_10wGen_WanaAndCounts/DYJets/WTreeProducer/WTreeProducer_tree_RecoSkimmed.root";
-  // TString ZfileDATA= "/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_4/src/CMGTools/WMass/cfg/batch_DYJetsToLL_10wGenFixed/DYJets/ZTreeProducer/ZTreeProducer_tree_RecoSkimmed.root";
-  // int tot_N_evts = 36209629;
   
   cout << gSystem->WorkingDirectory() << endl;
   cout << Form(".! cp runRecoAndCountingsAndPlotting.C JobOutputs/%s/",foldername.Data()) << endl;
   gROOT->ProcessLine(Form(".! cp runRecoAndCountingsAndPlotting.C JobOutputs/%s/",foldername.Data()));
 
-  if(runWanalysis || runZanalysis || ExtractNumbers){
+  if(runWanalysis || runZanalysis || ExtractNumbers || run_BuildSimpleTemplates){
     for(int i=0;i<nsamples;i++){
     // for(int i=8;i<9;i++){
     
-      // if(i!=1) continue; // TEMPORARY
+      // if(i<8) continue; // TEMPORARY
       // if(sample[i]!="DATA") continue; // TEMPORARY
       // cout << sample[i] << " " << IS_MC_CLOSURE_TEST << " " << (sample[i]!="WJetsSig") << " " << (sample[i]!="DYJetsSig") << endl;
       if(IS_MC_CLOSURE_TEST && (sample[i]!="WJetsSig" && sample[i]!="DYJetsSig")) continue; // TEMPORARY
@@ -205,8 +193,9 @@ void runRecoAndCountingsAndPlotting(){
       if(runWanalysis){
         // cout << "IS_MC_CLOSURE_TEST "<<IS_MC_CLOSURE_TEST << " isMCorDATA " << isMCorDATA[i] << " useMomentumCorr " << useMomentumCorr << " smearRochCorrByNsigma " << smearRochCorrByNsigma << endl;
         // gSystem->CompileMacro("MuScleFitCorrector.C");
-        gSystem->CompileMacro("rochcor_44X_v2.C");
-        gSystem->CompileMacro("rochcor_42X.C");
+        gROOT->ProcessLine(".! touch *.*");
+        gSystem->CompileMacro("rochcor_44X_v3.C");
+        // gSystem->CompileMacro("rochcor_42X.C");
         gSystem->CompileMacro("Wanalysis.C");
         cout << "processing line "<< Form("Wanalysis wDATA(\"%s\",%f,%d)",WfileDATA.Data(),WfileDATA_lumi_SF,sample[i].Contains("WJetsSig")?useAlsoGenPforSig:0) << endl;
         gROOT->ProcessLine(Form("Wanalysis wDATA(\"%s\",%f,%d)",WfileDATA.Data(),WfileDATA_lumi_SF,sample[i].Contains("WJetsSig")?useAlsoGenPforSig:0));
@@ -225,13 +214,13 @@ void runRecoAndCountingsAndPlotting(){
       }
 
       if(runZanalysis){
+        gROOT->ProcessLine(".! touch *.*");
         // gSystem->CompileMacro("MuScleFitCorrector.cc");
-        gSystem->CompileMacro("rochcor_44X_v2.C");
-        gSystem->CompileMacro("rochcor_42X.C");
+        gSystem->CompileMacro("rochcor_44X_v3.C");
+        // gSystem->CompileMacro("rochcor_42X.C");
         gSystem->CompileMacro("Zanalysis.C");
         cout << "processing line "<< Form("Zanalysis zDATA(\"%s\",%f,%d)",ZfileDATA.Data(),ZfileDATA_lumi_SF,sample[i].Contains("DYJetsSig")?useAlsoGenPforSig:0) << endl;
         gROOT->ProcessLine(Form("Zanalysis zDATA(\"%s\",%f,%d)",ZfileDATA.Data(),ZfileDATA_lumi_SF,sample[i].Contains("DYJetsSig")?useAlsoGenPforSig:0));
-        cout << "processing line "<< Form("Zanalysis zDATA(\"%s\",%f,%d)",ZfileDATA.Data(),ZfileDATA_lumi_SF,sample[i].Contains("DYJetsSig")?useAlsoGenPforSig:0) << endl;
         cout << Form("zDATA.Loop(%d,%d,\"../%s\",0,%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,isMCorDATA[i],filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,sample[i].Data()) << endl;
         gROOT->ProcessLine(Form("zDATA.Loop(%d,%d,\"../%s\",0,%d,%d,%d,%d,\"%s\")",IS_MC_CLOSURE_TEST,isMCorDATA[i],filename_outputdir.Data(),useMomentumCorr,smearRochCorrByNsigma,useEffSF,usePileupSF,sample[i].Data()));
         gROOT->ProcessLine(Form(".! mv ../%s/Zanalysis.root ../%s/ZanalysisOnDATA.root",filename_outputdir.Data(),filename_outputdir.Data()));
@@ -249,13 +238,21 @@ void runRecoAndCountingsAndPlotting(){
       // gSystem->ChangeDirectory("../MCcode/");
       
       if(ExtractNumbers){
+        gROOT->ProcessLine(".! touch *.*");
         gROOT->ProcessLine(Form(".! root -l -b -q \'R_WdivZ.C(\"../JobOutputs/%s/%s\",1,%d)\' > numbers.txt",foldername.Data(),outputdir.Data(),tot_N_evts));
         // gROOT->ProcessLine(Form(".! root -l -b -q \'R_WdivZ.C(\"../JobOutputs/%s/%s\",0,%d)\'",foldername.Data(),outputdir.Data(),tot_N_evts));
         // gROOT->ProcessLine(Form(".! mv R_WdivZ_OnMC.root ../JobOutputs/%s/%s/R_WdivZ_OnMC.root",foldername.Data(),outputdir.Data()));
         gROOT->ProcessLine(Form(".! mv \*.txt ../JobOutputs/%s/%s/",foldername.Data(),outputdir.Data()));
-        gROOT->ProcessLine(Form(".! mv R_WdivZ_OnMC.root ../JobOutputs/%s/%s/R_WdivZ_OnMC.root",foldername.Data(),outputdir.Data()));
-        gROOT->ProcessLine(Form(".! mv \*.root ../JobOutputs/%s/%s/",foldername.Data(),outputdir.Data()));
+        // gROOT->ProcessLine(Form(".! mv R_WdivZ_OnMC.root ../JobOutputs/%s/%s/R_WdivZ_OnMC.root",foldername.Data(),outputdir.Data()));
+        // gROOT->ProcessLine(Form(".! mv \*.root ../JobOutputs/%s/%s/",foldername.Data(),outputdir.Data()));
         gROOT->ProcessLine(Form(".! cp R_WdivZ.C ../JobOutputs/%s/%s/",foldername.Data(),outputdir.Data()));
+      }
+
+      if(run_BuildSimpleTemplates){
+        gROOT->ProcessLine(".! touch *.*");
+        cout << "running " << Form(".! root -l -b -q \'BuildSimpleTemplates.C(\"../JobOutputs/%s/%s\")\'",foldername.Data(),outputdir.Data()) << endl;
+        gROOT->ProcessLine(Form(".! root -l -b -q \'BuildSimpleTemplates.C(\"../JobOutputs/%s/%s\")\'",foldername.Data(),outputdir.Data()));
+        // gROOT->ProcessLine(Form(".! mv \*.txt ../JobOutputs/%s/%s/",foldername.Data(),outputdir.Data()));
         // gROOT->ProcessLine(Form(".! cp R_WdivZ.C ../JobOutputs/%s/%s/",foldername.Data(),outputdir.Data()));
       }
       
@@ -266,7 +263,8 @@ void runRecoAndCountingsAndPlotting(){
   
   gSystem->ChangeDirectory("AnalysisCode/");
   
-  if(runR_WdivZ_andSimpleTemplates){
+  if(runR_WdivZ){
+    gROOT->ProcessLine(".! touch *.*");
     // gSystem->ChangeDirectory("../MCcode/");
     gROOT->ProcessLine(Form(".x R_WdivZ.C(\"../JobOutputs/%s\")",foldername.Data()));
     gROOT->ProcessLine(Form(".! mv R_WdivZ_OnMC.root ../JobOutputs/%s/R_WdivZ_OnMC.root",foldername.Data()));
@@ -276,13 +274,14 @@ void runRecoAndCountingsAndPlotting(){
   }
 
   if(run_BuildEvByEvTemplates){  
+    gROOT->ProcessLine(".! touch *.*");
     // gSystem->CompileMacro("Templates_from_ZanalysisOnDATA.C");
     // gROOT->ProcessLine(Form("Templates_from_ZanalysisOnDATA zTEMPLATESOnDATA(\"%s\",\"../JobOutputs/%s/\",%f)",ZfileDATA.Data(),outputdir.Data(),ZfileDATA_lumi_SF));
     // gROOT->ProcessLine(Form("zTEMPLATESOnDATA.Loop(%d)",IS_MC_CLOSURE_TEST));
     // // gROOT->ProcessLine(Form(".! mv \*.root ../JobOutputs/%s/",outputdir.Data()));
     // gROOT->ProcessLine(Form(".! cp Templates_from_ZanalysisOnDATA.C ../JobOutputs/%s/",outputdir.Data()));
-    gSystem->CompileMacro("rochcor_44X_v2.C");
-    gSystem->CompileMacro("rochcor_42X.C");
+    gSystem->CompileMacro("rochcor_44X_v3.C");
+    // gSystem->CompileMacro("rochcor_42X.C");
     // gSystem->CompileMacro("MuScleFitCorrector.cc");
     gSystem->CompileMacro("Zanalysis.C");
     // cout << "int_lumi_fb[IS_MC_CLOSURE_TEST? DYJetsSig : DATA]= "<<(IS_MC_CLOSURE_TEST? intLumi_MC_CLOSURE_TEST_fb/(Nevts[DYJetsSig]/CS_pb[DYJetsSig]/1e3) : 1) << endl;
@@ -296,7 +295,9 @@ void runRecoAndCountingsAndPlotting(){
     gROOT->ProcessLine(Form(".! mv ../JobOutputs/%s/Zanalysis.root ../JobOutputs/%s/Templates_from_ZanalysisOnDATA.root",foldername.Data(),foldername.Data()));
     gROOT->ProcessLine(Form(".! cp Zanalysis.\* ../JobOutputs/%s/",foldername.Data()));
   }
+  
   if(run_MassFit){  
+    gROOT->ProcessLine(".! touch *.*");
     gROOT->ProcessLine(Form(".x TemplateFit.C(\"../JobOutputs/%s/%s/WanalysisOnDATA.root\",\"../JobOutputs/%s/Templates_from_ZanalysisOnDATA.root\",\"../JobOutputs/%s/R_WdivZ_OnMC.root\",%d",
                         foldername.Data(),Form("test_numbers_%s",sample[DATA].Data()),foldername.Data(),foldername.Data(),fitType));
     gROOT->ProcessLine(Form(".! mv FitResults.root ../JobOutputs/%s/FitResults%s.root",foldername.Data(),fitType==0?"_ROOTchi2Fit":"_CustomChi2Fit"));
@@ -306,6 +307,7 @@ void runRecoAndCountingsAndPlotting(){
   gSystem->ChangeDirectory("../PlottingCode");
 
   if(run_ZvsWlike_comparisonMC){
+    gROOT->ProcessLine(".! touch *.*");
     // gSystem->ChangeDirectory("DATAcode/");
     gSystem->MakeDirectory(Form("../JobOutputs/%s/MC_ZandWlikeComparisonPlots",foldername.Data()));
     TString jobIDZ= Form("test_numbers_%s",sample[DYJetsSig].Data());
@@ -315,6 +317,7 @@ void runRecoAndCountingsAndPlotting(){
     // gSystem->ChangeDirectory("../");
   }
   if(run_ZvsWlike_comparisonDATA){
+    gROOT->ProcessLine(".! touch *.*");
     // gSystem->ChangeDirectory("DATAcode/");
     gSystem->MakeDirectory(Form("../JobOutputs/%s/DATA_ZandWlikeComparisonPlots",foldername.Data()));
     TString jobIDZ= Form("test_numbers_%s",sample[DATA].Data());
@@ -325,6 +328,7 @@ void runRecoAndCountingsAndPlotting(){
   }
   
   if(runWandZcomparisonMC){
+    gROOT->ProcessLine(".! touch *.*");
     // gSystem->ChangeDirectory("DATAcode/");
     gSystem->MakeDirectory(Form("../JobOutputs/%s/MC_WandZcomparisonPlots",foldername.Data()));
     TString jobIDZ= Form("test_numbers_%s",sample[DYJetsSig].Data());
@@ -336,6 +340,7 @@ void runRecoAndCountingsAndPlotting(){
   }
   
   if(runWandZcomparisonDATA){
+    gROOT->ProcessLine(".! touch *.*");
     // gSystem->ChangeDirectory("DATAcode/");
     gSystem->MakeDirectory(Form("../JobOutputs/%s/DATA_WandZcomparisonPlots",foldername.Data()));
     gSystem->MakeDirectory(Form("../JobOutputs/%s/DATA_WandZcomparisonPlots",foldername.Data()));
@@ -348,6 +353,7 @@ void runRecoAndCountingsAndPlotting(){
   }
   
   if(run_Z_MCandDATAcomparison){
+    gROOT->ProcessLine(".! touch *.*");
     // gSystem->ChangeDirectory("DATAcode/");
     gSystem->MakeDirectory(Form("../JobOutputs/%s/ZcomparisonPlots_MCvsDATA",foldername.Data()));
     TString jobIDMC= Form("test_numbers_%s",sample[DYJetsSig].Data());
@@ -358,6 +364,7 @@ void runRecoAndCountingsAndPlotting(){
     // gSystem->ChangeDirectory("../");
   }
   if(run_Z_MCandDATAcomparisons_stack){
+    gROOT->ProcessLine(".! touch *.*");
     // gSystem->ChangeDirectory("DATAcode/");
     gSystem->MakeDirectory(Form("../JobOutputs/%s/ZcomparisonPlots_MCvsDATA",foldername.Data()));
     TString jobIDMCsig= Form("../JobOutputs/%s/test_numbers_%s",foldername.Data(),sample[DYJetsSig].Data());
@@ -372,6 +379,7 @@ void runRecoAndCountingsAndPlotting(){
   }
   
   if(run_W_MCandDATAcomparison){
+    gROOT->ProcessLine(".! touch *.*");
     // gSystem->ChangeDirectory("DATAcode/");
     gSystem->MakeDirectory(Form("../JobOutputs/%s/WcomparisonPlots_MCvsDATA",foldername.Data()));
     TString jobIDMC= Form("test_numbers_%s",sample[WJetsSig].Data());
@@ -382,7 +390,8 @@ void runRecoAndCountingsAndPlotting(){
     // gSystem->ChangeDirectory("../");
   }
   
-  if(mergeEWKbkg){
+  if(mergeEWKbkg){  
+    gROOT->ProcessLine(".! touch *.*");
     gSystem->ChangeDirectory("../utils/");
     // cout << Form("../JobOutputs/%s/test_numbers_EWK/",foldername.Data()) << endl;
     gSystem->MakeDirectory(Form("../JobOutputs/%s/test_numbers_EWK/",foldername.Data()));
@@ -407,15 +416,36 @@ void runRecoAndCountingsAndPlotting(){
   }
   
   if(runWSigBkgFit){
+    gROOT->ProcessLine(".! touch *.*");
     gSystem->ChangeDirectory("../SignalExtraction/");  
     gROOT->ProcessLine(Form(".! source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.28.00h/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh; root -l -b -q rootlogon.C fitWm.C+\\\(\\\"%s\\\"\\\)",foldername.Data()));
     gSystem->ChangeDirectory("../");  
   
   }
   if(runZSigBkgFit){
+    gROOT->ProcessLine(".! touch *.*");
     gSystem->ChangeDirectory("../SignalExtraction/");  
     gROOT->ProcessLine(Form(".! source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.28.00h/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh; root -l -b -q rootlogon.C fitZmm.C+\\\(\\\"%s\\\"\\\)",foldername.Data()));
 
+    gSystem->ChangeDirectory("../");  
+  
+  }
+
+  if(runPrepareDataCards){
+    gROOT->ProcessLine(".! touch *.*");
+    // cout << gSystem->WorkingDirectory() << endl;
+    gSystem->ChangeDirectory("../AnalysisCode/");
+    gSystem->MakeDirectory(Form("../JobOutputs/%s/DataCards",foldername.Data()));
+    TString samples_datacards;
+    // for(int i=0;i<nsamples;i++){
+      // samples_datacards+=sample[i];
+      // if(i<nsamples-1) samples_datacards+="-";
+    // }
+    cout << "running " << Form(".x prepareDatacards.C(\"../JobOutputs/%s\",\"%s\")",foldername.Data(),samples_datacards.Data()) << endl;
+    cout << endl;
+    gROOT->ProcessLine(Form(".x prepareDatacards.C(\"../JobOutputs/%s\",\"%s\")",foldername.Data(),samples_datacards.Data()));
+    // gROOT->ProcessLine(Form(".! mv \*.png ../JobOutputs/%s/MC_WandZcomparisonPlots",foldername.Data()));
+    // gROOT->ProcessLine(Form(".! cp PlotWvsZdistributionsDATA.C ../JobOutputs/%s/MC_WandZcomparisonPlots",foldername.Data()));
     gSystem->ChangeDirectory("../");  
   
   }
