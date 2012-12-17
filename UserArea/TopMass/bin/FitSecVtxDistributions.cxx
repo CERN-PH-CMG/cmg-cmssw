@@ -301,6 +301,10 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       w->import(*lxy_data);
       lxy.setBins( chShapes[is].lxy_signal.begin()->second->GetXaxis()->GetNbins()/2 );
 
+      // 
+      // MC SIGNAL
+      //
+
       const Int_t nq = 4;
       Double_t xq[nq];  // position where to compute the quantiles in [0,1]
       Double_t yq[nq];  // array to contain the quantiles
@@ -316,14 +320,29 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  TString catName(ch); catName += (int)(it->first*10);
 	  templateCategories.defineType(catName);
 	  templateCategories.setLabel(catName.Data());
+	  
+	  // add the b-jets from background to the signal!
+	  TH1F *h_signal;
+	  TH1F *h_bckg;
+	  h_signal =  it->second;
+	  h_bckg = chShapes[is].lxy_bckg["b"];
+	  h_signal->Add(h_bckg);
+
 	  masses[catName.Data()]    = it->first;
-	  templates[catName.Data()] = it->second;
-	  rooTemplates[catName.Data()] = new RooDataHist(catName+"templ",catName+"templ",lxy,it->second);
-	  if(it->first==172.5) signalExp=it->second->Integral();
-	  it->second->GetQuantiles(nq,yq,xq);
+	  // templates[catName.Data()] = it->second;
+	  // rooTemplates[catName.Data()] = new RooDataHist(catName+"templ",catName+"templ",lxy,it->second);
+	  // if(it->first==172.5) signalExp=it->second->Integral();
+	  // it->second->GetQuantiles(nq,yq,xq);
+	  // gr25->SetPoint(gr25->GetN(),it->first,yq[0]);
+	  // gr50->SetPoint(gr50->GetN(),it->first,yq[1]);
+	  // grmean->SetPoint(grmean->GetN(),it->first,it->second->GetMean());
+	  templates[catName.Data()] = h_signal;
+	  rooTemplates[catName.Data()] = new RooDataHist(catName+"templ",catName+"templ",lxy,h_signal);
+	  if(it->first==172.5) signalExp=h_signal->Integral();
+	  h_signal->GetQuantiles(nq,yq,xq);
 	  gr25->SetPoint(gr25->GetN(),it->first,yq[0]);
 	  gr50->SetPoint(gr50->GetN(),it->first,yq[1]);
-	  grmean->SetPoint(grmean->GetN(),it->first,it->second->GetMean());
+	  grmean->SetPoint(grmean->GetN(),it->first,h_signal->GetMean());
 
 	}
 
@@ -563,11 +582,17 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  pave->Draw();
 
 	  c->SaveAs("SecVtxBckg_"+ch+".png");
-	  
+
+	  // the following lines just sum up the backgrounds 
 	  Double_t bckgExp=it->second->Integral();
 	  RooRealVar *sigfrac =new RooRealVar(ch+"sigfrac",ch+"sigfrac",signalExp/(signalExp+bckgExp),0,1.0);
 	  RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf(ch+"flxy"),*w->pdf(ch+"flxy_bkg")),*sigfrac);
 	  w->import(*model);
+
+	  // what we need is to construct the model according to the fractions from the mass fit
+	  
+
+
 	}
 
       //
@@ -578,7 +603,16 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  for(map<TString, TH1F *>::iterator iit=it->second.begin(); iit != it->second.end(); iit++)
 	    {
 	      std::cout << "bla: " << it->first << " / " <<iit->first << std::endl;
-	      RooDataHist *lxySystData = new RooDataHist(ch+"lxy_"+iit->first,    ch+"lxy_"+iit->first,     RooArgList(lxy), Import(*iit->second));
+
+	      // add the b-jets from background to the signal!
+	      TH1F *h_signal;
+	      TH1F *h_bckg;
+	      h_signal =  iit->second;
+	      h_bckg = chShapes[is].lxy_bckg["b"];
+	      h_signal->Add(h_bckg);
+	      
+
+	      RooDataHist *lxySystData = new RooDataHist(ch+"lxy_"+iit->first,    ch+"lxy_"+iit->first,     RooArgList(lxy), Import(*h_signal));
 	      RooHistPdf *lxySystPdf   = new RooHistPdf(lxySystData->GetName()+TString("syst"), lxySystData->GetName()+TString("syst"), RooArgSet(lxy), *lxySystData);
 	      w->import(*lxySystPdf);      
 	    }
@@ -667,6 +701,7 @@ int main(int argc, char *argv[])
 	  TString syst("");
 	  TObjArray *systTkns=proc.Tokenize("syst");
 	  if(systTkns->GetEntriesFast()>1) syst=systTkns->At(1)->GetName();
+	  if(systTkns->GetEntriesFast()>2) syst=syst+systTkns->At(2)->GetName();
 	  TString massStr = tkns->At(3)->GetName(); 
 	  float mass      = massStr.Atof()/10.;
 	  if(mass != 0 ) { h->SetLineColor(1); h->SetMarkerColor(1); h->SetFillColor(804); h->SetFillStyle(1001); } 
@@ -686,7 +721,8 @@ int main(int argc, char *argv[])
 	  	}
 	      else
 	  	{
-	  	  if(var.Contains("lxy"))  m_shape.lxy_signalSysts[mass][syst]=h;
+		  std::cout << syst << std::endl;
+		  if(var.Contains("lxy"))  m_shape.lxy_signalSysts[mass][syst]=h;
 	  	  if(var.Contains("mass")) m_shape.mass_signalSysts[mass][syst]=h;
 	  	}
 	    }
