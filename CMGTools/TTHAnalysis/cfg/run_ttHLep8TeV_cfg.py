@@ -61,6 +61,7 @@ ttHLepAna = cfg.Analyzer(
     muons='cmgMuonSel',
     electrons='cmgElectronSel',
     minGoodLeptons=3,
+    doSSLeptons=True,
     )
 
 # Jets Analyzer 
