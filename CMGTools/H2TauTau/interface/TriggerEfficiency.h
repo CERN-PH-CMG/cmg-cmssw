@@ -901,6 +901,18 @@ double crystalballfunc(double m, double m0, double sigma, double alpha, double n
             )/(808.411+4428.0+1783.003+5109.155));
   }
   
+  double eff2012IsoTau35Park(double pt, double eta){
+    return (0.83*0.5*(TMath::Erf((pt-40.8)/2./1.41/sqrt(pt))+1.));
+  }
+  
+  double eff2012IsoTau1prong12fb(double pt, double eta){
+    return (808.411*(0.73201*0.5*(TMath::Erf((pt-41.0386)/2./0.663772/sqrt(pt))+1.))+
+            4428.0*(0.764371*0.5*(TMath::Erf((pt-41.2967)/2./0.71147/sqrt(pt))+1.))+
+            1783.003*(0.840278*0.5*(TMath::Erf((pt-41.7228)/2./0.754745/sqrt(pt))+1.))+
+            5109.155*(0.7879*0.5*(TMath::Erf((pt-40.9494)/2./0.66706/sqrt(pt))+1.))
+            )/(808.411+4428.0+1783.003+5109.155);
+  }
+ 
 private:
 
   //function definition taken from AN-11-390 v4
