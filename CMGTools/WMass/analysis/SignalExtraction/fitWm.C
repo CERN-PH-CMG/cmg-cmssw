@@ -86,29 +86,33 @@ const Int_t    Ecm=7         // center-of-mass energy
   // Main W analysis code 
   //==============================================================================================================  
     
+  cout << "loading files and histos" << endl;
   TFile*fData      = new TFile(Form("../JobOutputs/%s/test_numbers_DATA/WanalysisOnDATA.root",outputDir.Data()));
+  fData->Print();
   TFile*fWmunu     = new TFile(Form("../JobOutputs/%s/test_numbers_WJetsSig/WanalysisOnDATA.root",outputDir.Data()));
+  fWmunu->Print();
   TFile*fEWKTT       = new TFile(Form("../JobOutputs/%s/test_numbers_EWKTT/WanalysisOnDATA.root",outputDir.Data()));
-  TH1D *hDataMet   = (TH1D*)fData->Get("hpfMET_WPos_Sig_eta2p1"); 
+  fEWKTT->Print();
+  TH1D *hDataMet   = (TH1D*)fData->Get("hpfMET_WPos_Sig_eta0p6"); 
   TH1D *hDataMetm  = (TH1D*)hDataMet;  
   TH1D *hDataMetp  = (TH1D*)hDataMet;
   hDataMet->Print();
-  TH1D *hWmunuMet  = (TH1D*)fWmunu->Get("hpfMET_WPos_Sig_eta2p1"); 
+  TH1D *hWmunuMet  = (TH1D*)fWmunu->Get("hpfMET_WPos_Sig_eta0p6"); 
   TH1D *hWmunuMetp = (TH1D*)hWmunuMet;
   TH1D *hWmunuMetm = (TH1D*)hWmunuMet;
   hWmunuMet->Print();
-  TH1D *hEWKMet    = (TH1D*)fEWKTT->Get("hpfMET_WPos_Sig_eta2p1"); 
+  TH1D *hEWKMet    = (TH1D*)fEWKTT->Get("hpfMET_WPos_Sig_eta0p6"); 
   TH1D *hEWKMetp   = (TH1D*)hEWKMet;
   TH1D *hEWKMetm   = (TH1D*)hEWKMet;
 
-  TH1D *hAntiDataMet   = (TH1D*)fData->Get("hpfMET_WPos_QCD_eta2p1"); 
+  TH1D *hAntiDataMet   = (TH1D*)fData->Get("hpfMET_WPos_QCD_eta0p6"); 
   TH1D *hAntiDataMetm  = (TH1D*)hAntiDataMet;
   TH1D *hAntiDataMetp  = (TH1D*)hAntiDataMet;
   hAntiDataMet->Print();
-  TH1D *hAntiWmunuMet  = (TH1D*)fWmunu->Get("hpfMET_WPos_QCD_eta2p1"); 
+  TH1D *hAntiWmunuMet  = (TH1D*)fWmunu->Get("hpfMET_WPos_QCD_eta0p6"); 
   TH1D *hAntiWmunuMetp = (TH1D*)hAntiWmunuMet;
   TH1D *hAntiWmunuMetm = (TH1D*)hAntiWmunuMet;
-  TH1D *hAntiEWKMet    = (TH1D*)fEWKTT->Get("hpfMET_WPos_QCD_eta2p1"); 
+  TH1D *hAntiEWKMet    = (TH1D*)fEWKTT->Get("hpfMET_WPos_QCD_eta0p6"); 
   TH1D *hAntiEWKMetp   = (TH1D*)hAntiEWKMet; 
   TH1D *hAntiEWKMetm   = (TH1D*)hAntiEWKMet; 
   hAntiEWKMet->Print();
