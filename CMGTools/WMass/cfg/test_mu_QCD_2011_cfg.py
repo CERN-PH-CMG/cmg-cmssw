@@ -10,13 +10,13 @@ jsonAna = cfg.Analyzer(
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer',
-     keepFailingEvents = True
+     keepFailingEvents = False        
     )
 
 vertexAna = cfg.Analyzer(
     'VertexAnalyzer',
     fixedWeight = 1.,
-    keepFailingEvents = True
+     keepFailingEvents = False        
     )
 
 WAna = cfg.Analyzer(
@@ -27,7 +27,7 @@ WAna = cfg.Analyzer(
     pt = 30,
     eta = 2.1,
     iso = 0.5,
-    savegenp = True,
+    savegenp = False,
     verbose = True,
     triggerMap = pathsAndFilters
     )
@@ -44,7 +44,7 @@ ZAna = cfg.Analyzer(
     pt = 30,
     eta = 2.1,
     iso = 0.5,
-    savegenp = True,
+    savegenp = False,
     verbose = True,
     triggerMap = pathsAndFilters
     )
@@ -63,23 +63,24 @@ sequence = cfg.Sequence( [
     ZtreeProducer
    ] )
 
-from CMGTools.H2TauTau.proto.samples.ewk import DYJets
+
+from CMGTools.H2TauTau.proto.samples.qcd import QCD15, QCD30, QCD50, QCD80
 from CMGTools.H2TauTau.proto.samples.getFiles import getFiles
 
-# DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
-DYJets.files = getFiles('/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START44_V9B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
-DYJets.triggers = ["HLT_IsoMu24_v1","HLT_IsoMu24_v2","HLT_IsoMu24_v3","HLT_IsoMu24_v4","HLT_IsoMu24_v5","HLT_IsoMu24_v6","HLT_IsoMu24_v7",\
+QCD15.files = getFiles('/QCD_Pt-20_MuEnrichedPt-15_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B', 'cmgtools', '.*root')
+QCD15.triggers = ["HLT_IsoMu24_v1","HLT_IsoMu24_v2","HLT_IsoMu24_v3","HLT_IsoMu24_v4","HLT_IsoMu24_v5","HLT_IsoMu24_v6","HLT_IsoMu24_v7",\
                    "HLT_IsoMu24_v8","HLT_IsoMu24_v9","HLT_IsoMu24_v10","HLT_IsoMu24_v11","HLT_IsoMu24_v12","HLT_IsoMu24_v13","HLT_IsoMu24_v14",\
                    "HLT_IsoMu24_eta2p1_v1","HLT_IsoMu24_eta2p1_v2","HLT_IsoMu24_eta2p1_v3","HLT_IsoMu24_eta2p1_v4","HLT_IsoMu24_eta2p1_v5",\
                    "HLT_IsoMu24_eta2p1_v6","HLT_IsoMu24_eta2p1_v7","HLT_IsoMu24_eta2p1_v8"
                    ]
 
-selectedComponents = [DYJets]
+selectedComponents = [QCD15]
 
-DYJets.splitFactor = 750
+QCD15.splitFactor = 750
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
+
                      
 printComps(config.components, True)
 
