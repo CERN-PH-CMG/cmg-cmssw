@@ -72,7 +72,7 @@ class ttHLepAnalyzerBase( Analyzer ):
         allmuons = map( Muon, self.handles['muons'].product() )
         for mu in allmuons:
             mu.associatedVertex = event.goodVertices[0]
-            if mu.pt()>5 and abs(mu.dxy())<0.5 and abs(mu.dz())<1. and abs(mu.eta())<2.4 and (mu.isGlobal() or (mu.isTracker() and mu.numberOfMatches()>0)):
+            if (mu.isGlobal() or mu.isTracker() and mu.numberOfMatches()>0) and mu.pt()>5 and abs(mu.eta())<2.4 and abs(mu.dxy())<0.5 and abs(mu.dz())<1.:
                 if mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.sip3D()<10 and mu.relIso(dBetaFactor=0.5)<0.4:
                     event.selectedLeptons.append(mu)
                 else:
@@ -82,7 +82,7 @@ class ttHLepAnalyzerBase( Analyzer ):
         allelectrons = map( Electron, self.handles['electrons'].product() )
         for ele in allelectrons:
             ele.associatedVertex = event.goodVertices[0]
-            if ele.pt()>7 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and abs(ele.eta())<2.5 and ele.numberOfHits()<=1:
+            if ele.pt()>7 and abs(ele.eta())<2.5 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and ele.numberOfHits()<=1:
                  if ele.mvaIDZZ() and ele.sip3D()<10 and ele.relIso(dBetaFactor=0.5)<0.4:
                     event.selectedLeptons.append(ele)
                  else:
@@ -105,7 +105,12 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         #call the leptons functions
         self.makeLeptons(event)
-        if len(event.selectedLeptons) < self.cfg_ana.minGoodLeptons:
-            return False
-        
-        return True
+
+        ret = False
+        if len(event.selectedLeptons) >= self.cfg_ana.minGoodLeptons:
+            ret = True
+        if self.cfg_ana.doSSLeptons and len(event.selectedLeptons) >= 2:
+            if event.selectedLeptons[0].charge() == event.selectedLeptons[1].charge():
+                ret = True
+
+        return ret

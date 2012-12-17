@@ -54,6 +54,7 @@ def bookLepton( tree, pName, isMC=False ):
     var(tree, '{pName}_mvaId'.format(pName=pName))
     var(tree, '{pName}_tightId'.format(pName=pName))
     var(tree, '{pName}_mva'.format(pName=pName))
+    var(tree, '{pName}_tightCharge'.format(pName=pName), int)
     if isMC:
         var(tree, '{pName}_mcMatchId'.format(pName=pName), int)
         var(tree, '{pName}_mcMatchAny'.format(pName=pName), int)
@@ -92,6 +93,12 @@ def fillLepton( tree, pName, lepton ):
         fill(tree, '{pName}_mcMatchId'.format(pName=pName), lepton.mcMatchId)
         fill(tree, '{pName}_mcMatchAny'.format(pName=pName), lepton.mcMatchAny)
         fill(tree, '{pName}_mcDeltaRB'.format(pName=pName), lepton.mcDeltaRB)
+    if abs(lepton.pdgId()) == 13:
+        fill(tree, '{pName}_tightCharge'.format(pName=pName), 
+                lepton.sourcePtr().innerTrack().ptError()/lepton.sourcePtr().innerTrack().pt() < 0.2)
+    elif abs(lepton.pdgId()) == 11:
+        fill(tree, '{pName}_tightCharge'.format(pName=pName), 
+                lepton.sourcePtr().isGsfCtfScPixChargeConsistent() + lepton.sourcePtr().isGsfScPixChargeConsistent())
    
      
 
