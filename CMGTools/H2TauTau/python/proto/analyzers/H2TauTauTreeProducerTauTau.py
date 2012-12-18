@@ -100,6 +100,8 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         var('l2jetBtag')
         var('l1match')
         var('l2match')
+        var('l1VertexZ')
+        var('l2VertexZ')
 
         var('genMass')
         var('genMassSmeared')
@@ -119,6 +121,10 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         var('jet2Btag')
         var('jet1Bmatch')
         var('jet2Bmatch')
+
+        varInt('nbJets')
+        particleVars('bjet1')
+        particleVars('bjet2')
 
         var('weight')
         var('vertexWeight')
@@ -260,6 +266,9 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 	if l2jet:
           fill('l2jetWidth', l2jet.rms() )
           fill('l2jetBtag', l1jet.btag("combinedSecondaryVertexBJetTags") )
+
+        fill('l1VertexZ', leg1.tau.vz() )
+        fill('l2VertexZ', leg2.tau.vz() )
 	  
 	if hasattr(event,"leg1DeltaR"):
             fill('l1match', event.leg1DeltaR )
@@ -327,6 +336,13 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 	    fill('dPhittjj', deltaPhi(event.cleanJets[0].phi()+event.cleanJets[1].phi(),event.diLepton.phi()))
 	    fill('nCentralJets', len(event.vbf.centralJets))
 	    fill('vbfMVA', event.vbf.mva)
+
+        nbJets = len(event.cleanBJets)
+        fill('nbJets', nbJets )
+        if nbJets>=1:
+            fParticleVars('bjet1', event.cleanBJets[0] )
+        if nbJets>=2:
+            fParticleVars('bjet2', event.cleanBJets[1] )
 
         fill('weight', event.eventWeight)
         if hasattr( event, 'vertexWeight'): 

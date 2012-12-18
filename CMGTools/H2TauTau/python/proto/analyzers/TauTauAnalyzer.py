@@ -139,7 +139,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                     event.isPhoton=True
                 if abs(gen.pdgId())==11 and gen.mother().pdgId()==23:
                     event.isElectron=True
-                if abs(gen.pdgId()) in [23, 25]:
+                if abs(gen.pdgId()) in [23, 25, 35, 36, 37]:
                     event.genMass=gen.mass()
                 if abs(gen.pdgId()) in [23]:
                     event.hasW=True
