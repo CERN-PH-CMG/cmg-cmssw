@@ -73,8 +73,9 @@ tauIDsNew = dict(
     byTightCombinedIsolationDeltaBetaCorr3Hits = cms.InputTag('hpsPFTauDiscriminationByTightCombinedIsolationDBSumPtCorr3Hits'),        
     )
 
-if isNewerThan('CMSSW_5_3_5'):
-    # deactivated until we have a 2011 tau id recipe
+# if isNewerThan('CMSSW_5_3_5'):
+# deactivated until we have a 2011 tau id recipe
+if 1: 
     tauIDs = dict( tauIDs.items() + tauIDsNew.items() )
 
 patTaus.tauIDSources = cms.PSet(
