@@ -9,7 +9,7 @@ print sep_line
 
 process = cms.Process("ANA")
 
-runOnMC = True
+runOnMC = False
 runOld5XGT = False
 
 process.load("Configuration.StandardSequences.GeometryDB_cff")
@@ -29,7 +29,7 @@ print 'Global tag       : ', process.GlobalTag.globaltag
 
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
+    input = cms.untracked.int32(1000)
     )
 
 process.maxLuminosityBlocks = cms.untracked.PSet( 
@@ -38,11 +38,11 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
 
 
 from CMGTools.Production.datasetToSource import *
-process.source = datasetToSource(
-    # 'CMS',
-    # '/DoubleMu/Run2012C-PromptReco-v2/AOD'
+process.source = datasetToSource(  
     'cmgtools',
-    '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0',
+    # '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0',
+    # '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0',
+    '/DoubleMu/Run2012A-13Jul2012-v1/AOD/V5_B/PAT_CMG_V5_10_0',
     'cmgTuple.*root'
    )
 
@@ -53,27 +53,32 @@ process.source.fileNames = process.source.fileNames[:nFiles]
 
 print process.source.fileNames
 
-process.load('CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi')
+from CMGTools.Common.miscProducers.cmgPFJetCorrector_cfi import cmgPFJetCorrector
+process.cmgPFJetSel = cmgPFJetCorrector.clone()
 
-process.cmgPFJetCorrector.verbose = True
-process.cmgPFJetCorrector.levels = ['L1FastJet','L2Relative','L3Absolute']
-# process.cmgPFJetCorrector.levels = ['L1Offset','L2Relative','L3Absolute']
+process.cmgPFJetSel.verbose = False
+process.cmgPFJetSel.levels = ['L1FastJet','L2Relative','L3Absolute']
+if not runOnMC:
+    process.cmgPFJetSel.levels = ['L1FastJet','L2Relative','L3Absolute','L2L3Residual']
+
+print 'Correction levels', process.cmgPFJetSel.levels
 
 process.p = cms.Path(
-    process.cmgPFJetCorrector
+    process.cmgPFJetSel
 )
 
 from CMGTools.Common.eventContent.everything_cff import everything
 process.out = cms.OutputModule(
     "PoolOutputModule",
-    fileName = cms.untracked.string('tree_testJEC.root'),
+    fileName = cms.untracked.string('cmgTuple.root'),
     # save only events passing the full path
     SelectEvents   = cms.untracked.PSet( SelectEvents = cms.vstring('p') ),
     # save PAT Layer 1 output; you need a '*' to
     # unpack the list of commands 'patEventContent'
     outputCommands = everything
     )
-process.out.outputCommands.append( 'keep cmgPFJets_cmgPFJetCorrector_*_*' )
+process.out.outputCommands.append( 'keep cmgPFJets_cmgPFJetSel_*_*' )
+process.outpath = cms.EndPath(process.out)
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
