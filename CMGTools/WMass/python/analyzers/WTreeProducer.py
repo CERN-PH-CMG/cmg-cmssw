@@ -121,6 +121,10 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       var(tr, 'MuRelIso')
       bookParticle(tr, 'MuGen')
       var(tr, 'MuDRGenP')
+      var(tr, 'parton1_pdgId')
+      var(tr, 'parton1_x')
+      var(tr, 'parton2_pdgId')
+      var(tr, 'parton2_x')
       
       bookParticle(tr, 'NuGen')
       
@@ -142,6 +146,10 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fillParticle(tr, 'MuGen',event.genMu[0])
           fill(tr, 'MuDRGenP',event.muGenDeltaRgenP)
           fillParticle(tr, 'NuGen', event.genNu[0])
+          fill(tr, 'parton1_pdgId',event.genParticles[2].pdgId())
+          fill(tr, 'parton1_x',event.genParticles[2].p()/event.genParticles[0].p())
+          fill(tr, 'parton2_pdgId',event.genParticles[3].pdgId())
+          fill(tr, 'parton2_x',event.genParticles[3].p()/event.genParticles[1].p())
 
         if event.WGoodEvent == True :
                       

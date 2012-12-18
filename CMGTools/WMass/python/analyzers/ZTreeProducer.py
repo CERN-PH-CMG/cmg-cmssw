@@ -149,6 +149,10 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       bookParticle(tr, 'MuNegGen')
       # var(tr, 'MuNegGen_pdgId', int)
       var(tr, 'MuNegDRGenP')
+      var(tr, 'parton1_pdgId')
+      var(tr, 'parton1_x')
+      var(tr, 'parton2_pdgId')
+      var(tr, 'parton2_x')
       
       bookJet(tr, 'Jet_leading')
        
@@ -167,6 +171,10 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fill(tr, 'MuPosDRGenP', event.muPosGenDeltaRgenP)              
           fillParticle(tr, 'MuNegGen', event.genMuNeg[0])
           fill(tr, 'MuNegDRGenP', event.muNegGenDeltaRgenP)
+          fill(tr, 'parton1_pdgId',event.genParticles[2].pdgId())
+          fill(tr, 'parton1_x',event.genParticles[2].p()/event.genParticles[0].p())
+          fill(tr, 'parton2_pdgId',event.genParticles[3].pdgId())
+          fill(tr, 'parton2_x',event.genParticles[3].p()/event.genParticles[1].p())
             
         if event.ZGoodEvent == True :
                                     
