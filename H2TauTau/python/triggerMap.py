@@ -68,7 +68,7 @@ pathsAndFilters = {
     'HLT_DoubleIsoPFTau35_Trk5_eta2p1_v2': ("hltFilterDoubleIsoPFTau35Trk5LeadTrack5IsolationL1HLTMatched","hltFilterDoubleIsoPFTau35Trk5LeadTrack5IsolationL1HLTMatched"),
     'HLT_DoubleIsoPFTau35_Trk5_eta2p1_v3': ("hltFilterDoubleIsoPFTau35Trk5LeadTrack5IsolationL1HLTMatched","hltFilterDoubleIsoPFTau35Trk5LeadTrack5IsolationL1HLTMatched"),
     'HLT_DoubleIsoPFTau35_Trk5_eta2p1_v4': ("hltFilterDoubleIsoPFTau35Trk5LeadTrack5IsolationL1HLTMatched","hltFilterDoubleIsoPFTau35Trk5LeadTrack5IsolationL1HLTMatched"),
-    # hadronic tau triggers 2012
+    # hadronic tau triggers with jet 2012
     'HLT_DoubleMediumIsoPFTau25_Trk5_eta2p1_Jet30_v1': ("hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02"),
     'HLT_DoubleMediumIsoPFTau25_Trk5_eta2p1_Jet30_v2': ("hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02"),
     'HLT_DoubleMediumIsoPFTau25_Trk5_eta2p1_Jet30_v3': ("hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau25TrackPt5MediumIsolationProng4Dz02"),
@@ -84,6 +84,20 @@ pathsAndFilters = {
     'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v3': ("hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02"),
     'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v4': ("hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02"),
     'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Jet30_v5': ("hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau30_Trk1_eta2p1_Reg_Jet30_v1': ("hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02Reg","hltDoublePFTau30TrackPt1MediumIsolationProng4Dz02Reg"),
+    # hadronic tau triggers with 1 prong 2012
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v1': ("hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v2': ("hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v3': ("hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v4': ("hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v5': ("hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v6': ("hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt5MediumIsolationProng2Dz02"),
+
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v1': ("hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v2': ("hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v3': ("hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v4': ("hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_Reg_v1': ("hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02Reg","hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02Reg"),
     }
     
 
