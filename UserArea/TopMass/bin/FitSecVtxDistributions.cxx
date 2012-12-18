@@ -527,6 +527,89 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  RooDataHist *lxyData = new RooDataHist(ch+"lxy_"+it->first,    ch+"lxy_"+it->first,     RooArgList(lxy), Import(*it->second));
 	  RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName()+TString("bkg"), lxyData->GetName()+TString("bkg"), RooArgSet(lxy), *lxyData);
 	  w->import(*lxyPdf);
+	}
+      
+      // sum the backgrounds
+
+      TH1F *h_bkg;
+      h_bkg = chShapes[is].lxy_bckg["c"];
+      h_bkg->Add(chShapes[is].lxy_bckg["udsg"]);
+      RooDataHist *lxyData = new RooDataHist(ch+"lxy_bkg",    ch+"lxy_bkg",     RooArgList(lxy), Import(*h_bkg));
+ 
+      w->factory("EDIT::"+ch+"flxy_bkg("+ch+"flxy,"+ch+"pfunc="+ch+"beta1[0.02,0.,10],"+ch+"qfunc="+ch+"beta2[0.6,0.,10],"+ch+"thr="+ch+"thr_bckg[0.11],"+ch+"wid="+ch+"wid_bkg[0.035,0,0.1])");
+      w->var(ch+"beta1")->SetTitle("p");
+      w->var(ch+"beta2")->SetTitle("q");
+      w->var(ch+"thr_bckg")->SetTitle("#lambda");
+      w->var(ch+"wid_bkg")->SetTitle("#sigma");
+      RooFitResult *fitRes=w->pdf(ch+"flxy_bkg")->fitTo(*lxyData,Save(kTRUE),SumW2Error(kTRUE));
+      
+      TCanvas *cbkg=new TCanvas("cbkg","cbkg",500,500);
+      RooPlot* frame = lxy.frame();
+      lxyData->plotOn(frame,DataError(RooAbsData::SumW2));
+      w->pdf(ch+"flxy_bkg")->plotOn(frame,ProjWData(lxy,*lxyData),MoveToBack());
+      frame->Draw();
+      frame->SetMinimum(0.001);
+      TPaveText *pavebkg = new TPaveText(0.2,0.9,0.9,0.95,"NDC");
+      pavebkg->SetBorderSize(0);
+      pavebkg->SetFillStyle(0);
+      pavebkg->SetTextFont(42);
+      TString chTitle(ch); chTitle.ReplaceAll("mu","#mu"); chTitle += " background";
+      pavebkg->AddText(chTitle);
+      pavebkg->Draw();
+
+      pavebkg = new TPaveText(0.65,0.9,0.9,0.95,"NDC");
+      pavebkg->SetBorderSize(0);
+      pavebkg->SetFillStyle(0);
+      pavebkg->SetTextAlign(32);
+      pavebkg->SetTextFont(42);
+      float chi2=frame->chiSquare(0);
+      char buf[200];
+      sprintf(buf,"#chi^{2} %3.2f",chi2);
+      pavebkg->AddText(buf);
+      pavebkg->Draw();
+      
+      fitres->Print("v");
+      pavebkg = new TPaveText(0.5,0.5,0.88,0.88,"NDC");
+      pavebkg->AddText("Fit results");
+      pavebkg->SetBorderSize(0);
+      pavebkg->SetFillStyle(0);
+      pavebkg->SetTextAlign(12);
+      pavebkg->SetTextFont(42);
+      RooArgList varSet=fitRes->floatParsFinal();
+      TIterator *iter=varSet.createIterator();
+      RooRealVar *var;
+      while((var=(RooRealVar*)iter->Next())) {
+	if(var->getError()==0) continue;
+	TString varName(var->GetName()); 
+	if(!varName.BeginsWith(ch)) continue;
+	if(varName.Contains("mtop")) continue;
+	char line[100];
+	sprintf(line,"%s=%3.4f #pm %3.4f", var->GetTitle(),var->getVal(),var->getError());
+	pavebkg->AddText(line); 
+	npar++;
+      }
+      pavebkg->Draw();
+
+      cbkg->SaveAs("SecVtxBckg_"+ch+".png");
+
+      //what we need is to construct the model according to the fractions from the mass fit
+      RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf(ch+"flxy"),*w->pdf(ch+"flxy_bkg")),*w->var(ch+"byields"));
+      // RooRealVar *sigfrac =new RooRealVar(ch+"sigfrac",ch+"sigfrac",1.);
+      // RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf(ch+"flxy"),*w->pdf(ch+"flxy_bkg")),*sigfrac);
+      w->import(*model);
+      
+      
+      
+
+      // "old" code - I think this was only working whern there was only one background component...
+      /*
+      for(map<TString, TH1F *>::iterator it=chShapes[is].lxy_bckg.begin(); it != chShapes[is].lxy_bckg.end(); it++)
+	{
+	  if(it->first.BeginsWith("b")) continue;
+
+	  RooDataHist *lxyData = new RooDataHist(ch+"lxy_"+it->first,    ch+"lxy_"+it->first,     RooArgList(lxy), Import(*it->second));
+	  RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName()+TString("bkg"), lxyData->GetName()+TString("bkg"), RooArgSet(lxy), *lxyData);
+	  w->import(*lxyPdf);
 	  w->factory("EDIT::"+ch+"flxy_bkg("+ch+"flxy,"+ch+"pfunc="+ch+"beta1[0.02,0.,10],"+ch+"qfunc="+ch+"beta2[0.6,0.,10],"+ch+"thr="+ch+"thr_bckg[0.11],"+ch+"wid="+ch+"wid_bkg[0.035,0,0.1])");
 	  w->var(ch+"beta1")->SetTitle("p");
 	  w->var(ch+"beta2")->SetTitle("q");
@@ -583,17 +666,16 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 
 	  c->SaveAs("SecVtxBckg_"+ch+".png");
 
-	  // the following lines just sum up the backgrounds 
 	  Double_t bckgExp=it->second->Integral();
 	  RooRealVar *sigfrac =new RooRealVar(ch+"sigfrac",ch+"sigfrac",signalExp/(signalExp+bckgExp),0,1.0);
+	  //RooRealVar *sigfrac =new RooRealVar(ch+"sigfrac",ch+"sigfrac",1.);
 	  RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf(ch+"flxy"),*w->pdf(ch+"flxy_bkg")),*sigfrac);
 	  w->import(*model);
 
-	  // what we need is to construct the model according to the fractions from the mass fit
-	  
+	}*/
 
 
-	}
+
 
       //
       // SYSTEMATICS
@@ -602,8 +684,6 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	{
 	  for(map<TString, TH1F *>::iterator iit=it->second.begin(); iit != it->second.end(); iit++)
 	    {
-	      std::cout << "bla: " << it->first << " / " <<iit->first << std::endl;
-
 	      // add the b-jets from background to the signal!
 	      TH1F *h_signal;
 	      TH1F *h_bckg;
@@ -611,7 +691,6 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	      h_bckg = chShapes[is].lxy_bckg["b"];
 	      h_signal->Add(h_bckg);
 	      
-
 	      RooDataHist *lxySystData = new RooDataHist(ch+"lxy_"+iit->first,    ch+"lxy_"+iit->first,     RooArgList(lxy), Import(*h_signal));
 	      RooHistPdf *lxySystPdf   = new RooHistPdf(lxySystData->GetName()+TString("syst"), lxySystData->GetName()+TString("syst"), RooArgSet(lxy), *lxySystData);
 	      w->import(*lxySystPdf);      
@@ -778,4 +857,3 @@ int main(int argc, char *argv[])
   cout << "[FitSecVtxDistributions] fitting data" << endl;
   // fitData(chShapes,w);
 }
-
