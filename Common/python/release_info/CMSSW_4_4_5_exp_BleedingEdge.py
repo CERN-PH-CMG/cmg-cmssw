@@ -1,10 +1,11 @@
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'joseNov28'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_44X_backport_11Dec12'),
-  ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-09'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_cleanup_12Dec12'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_44X_backport_18Dec12'),
+  ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-10'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_11Dec12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_failover_dec10'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'anantoni_12Dec_latest_changes'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_11Dec12'),
   ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'cbern_44X_correctMVAandRecoilMET_11Dec12'),
+  ('CMGTools/ZJetsTutorial', 'UserCode/CMG/CMGTools/ZJetsTutorial', 'cbern_local_12Dec12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-05-10'),
   ('CondFormats/DataRecord', 'CondFormats/DataRecord', 'V06-23-01'),
   ('CondFormats/EcalObjects', 'CondFormats/EcalObjects', 'V01-02-13'),
@@ -30,8 +31,11 @@
   ('RecoMET/METAnalyzers', 'RecoMET/METAnalyzers', 'V00-00-08'),
   ('RecoMET/METFilters', 'RecoMET/METFilters', 'lhx_14APR2012_v1'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'wreece_020512'),
-  ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-03'),
-  ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-17'),
+  ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-08-4XX'),
+  ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-21-4XX'),
   ('RecoTauTag/TauTagTools', 'RecoTauTag/TauTagTools', 'CMSSW_5_2_4'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-01-04s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
+# The following packages were not in the input release_info.
+# Please make sure that the CVS module is correct!
+#	CMGTools/ZJetsTutorial                   cbern_local_12Dec12
