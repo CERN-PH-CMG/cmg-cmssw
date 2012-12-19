@@ -18,15 +18,18 @@ import os
 import optparse
 import sys
 from array import array
+from math import sqrt,pow
 import ROOT
 from ROOT import *
 
 def openTFile(path, option='r'):
+    print 'Opening '+path+'...'
     f =  ROOT.TFile.Open(path,option)
     if not f.__nonzero__() or not f.IsOpen():
         raise NameError('File '+path+' not open')
     return f
 
+    
 def getWorkspace(file,name):
     print ' * getting workspace '+name
     ## open the TFile
@@ -71,70 +74,33 @@ massbindict = {
     '1845':9,
     }
 
-
-## def getCalibration(allmassfits):
-##     ## split in different channels
-##     for chan in channels:
-##         c_bias_summary = TCanvas('c_bias_summary_'+chan,'c_bias_summary_'+chan,400,400)
-##         ## one histogram per channel
-##         ## get all mass points for the channel
-##         allfits = set([f for f in allmassfits if chan in f])
-##         ## FIXME: get the binning from the masses automatically => now hardcoded
-##         binning = [160.5,162.5,165,168,171,174,177,180,183,186]
-##         hist = TH1F('bias_summary','bias_summary',len(binning)-1,array('d',binning))
-        
-##         for tag in allfits:
-##             print tag
-##             mass = tag.split('_')[-1]
-##             m = float(mass)/10.
-##             hist.SetBinContent(massbindict[mass],allmassfits[chan+'_'+mass].histograms[chan+'_'+mass+'_bias'].GetMean())
-##             hist.SetBinError(massbindict[mass],allmassfits[chan+'_'+mass].histograms[chan+'_'+mass+'_bias'].GetMeanError())
-
-##         ## perform a linear fit to the histogram
-##         lfunc = TF1('linfunc','[0]+[1]*x',160,185)
-##         lfunc.SetLineWidth(3)
-##         lfunc.SetLineColor(2)
-##         lfunc.SetParameters(0.,0.)
-##         hist.Fit('linfunc')
-##         a = lfunc.GetParameter(0)
-##         b = lfunc.GetParameter(1)
-##         hist.Draw('e1')
-##         lfunc.Draw('lsame')
-
-##         c_bias_summary.Print('c_bias_summary_'+chan+'.pdf')
-##         c_bias_summary.Print('c_bias_summary_'+chan+'.png')
-        
-##         return [a,b]
-
-
-    #def makeDataFit():
-
-
-
-
-
-
-
-
-
 class toyResult():
     def __init__(self):
-        self.variable = 'lxy'
+        self.variable = 'pt'
         self.channel = ''
         self.mass = ''
         self.histograms = {}
         self.biasHistos = []
         self.massHistos = []
-
-        ## self.nSamples = 10
-        ## self.nToys = 10000
+        self.bias = {}
+        self.biasError = {}
 
 
     def doCalibrationStep(self,workspace,nSamples,nToys,fittype,floatSignal):
         ## get the model for the fit, the signal and the background
-        mod_fit  = workspace.pdf(self.channel+'model')
-        mod_bkg  = workspace.pdf(self.channel+self.variable+'_bkg')
-        mod_sig  = workspace.pdf(self.channel+'f'+self.variable+'_'+self.channel+self.mass)
+        print 'retrieving the pdfs'
+        # mod_fit  = workspace.pdf(self.channel+'model')
+        mod_fit  = workspace.pdf(self.channel+'flxy')
+        mod_bkg  = workspace.pdf(self.channel+self.variable+'_bkg') 
+        mod_bkg_c    = workspace.pdf(self.channel+self.variable+'_cbkg')
+        mod_bkg_udsg = workspace.pdf(self.channel+self.variable+'_udesgbkg')
+        ## take also systematics samples as "mass"
+        if self.mass not in masses:
+            syst = self.mass
+            self.mass = '1725'
+            mod_sig  = workspace.pdf(self.channel+self.variable+'_'+syst+'syst') # mulxy_mepsyst
+        else:
+            mod_sig  = workspace.pdf(self.channel+self.variable+'_'+self.channel+self.mass)
         mod_25q  = workspace.function(self.channel+'25qInv')
         mod_50q  = workspace.function(self.channel+'50qInv')
         mod_mean = workspace.function(self.channel+'meanInv')
@@ -151,10 +117,27 @@ class toyResult():
         var.setConstant(kFALSE)
         var.setRange(0.,5.) ## FIXME: range can be variable
 
-        ## sum the signal and background pdfs to use for the generation step
-        sigfrac = workspace.var(self.channel+'sigfrac')
-        if(not floatSignal) : sigfrac.setConstant(kTRUE) 
-        mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig,mod_bkg),RooArgList(sigfrac))
+        ## sum the signal and background pdfs to use for the generation step (original version)
+        # sigfrac = workspace.var(self.channel+'sigfrac')
+        # if(not floatSignal):
+        #     sigfrac.setConstant(kTRUE) 
+        # mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig,mod_bkg),RooArgList(sigfrac))
+
+
+
+
+        ## new model including the fractions form the flavour fit
+        workspace.var(self.channel+'byields').setConstant(kTRUE)
+        workspace.var(self.channel+'cyields').setConstant(kTRUE)
+
+        mod_gen = mod_sig
+        #mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg_c, mod_bkg_udsg),RooArgList(workspace.var(self.channel+'byields'),workspace.var(self.channel+'cyields')))
+        byields = workspace.var(self.channel+'byields')
+        byields.setConstant(kTRUE) 
+        # mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg),RooArgList(workspace.var(self.channel+'byields')))
+        #mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg),RooArgList(byields))
+
+
 
         getattr(w,'import')(mod_gen)
         ## FIXME is this needed?
@@ -168,8 +151,8 @@ class toyResult():
         workspace.var(self.channel+'beta1').setConstant(kTRUE)
         workspace.var(self.channel+'beta2').setConstant(kTRUE)
         workspace.var(self.channel+'thr').setConstant(kTRUE)
+        workspace.var(self.channel+'thr_bkg').setConstant(kTRUE)
         workspace.var(self.channel+'wid').setConstant(kTRUE)
-
         workspace.var(self.channel+'wid_bkg').setConstant(kTRUE)
         
         ## change here for the closure test...
@@ -201,7 +184,7 @@ class toyResult():
             modelConfig.SetPdf(mod_fit)
             modelConfig.SetParametersOfInterest(RooArgSet(mtop))
             modelConfig.SetObservables(RooArgSet(observable))
-            modelConfig.SetNuisanceParameters(RooArgSet(sigfrac))
+            #modelConfig.SetNuisanceParameters(RooArgSet(sigfrac))
 
         #run the pseudo-experiments
         resultsSummary={}
@@ -283,6 +266,14 @@ class toyResult():
             asymErrH.Fill(+fabs(r[3]))
             asymErrH.Fill(-fabs(r[4]))
 
+
+
+        gfunc = TF1('f1','gaus',-20.,20)
+        gfunc.SetLineWidth(3)
+        gfunc.SetLineColor(4)
+        gfunc.SetParameters(50.,0.,5.)
+        ## p0: height, p1: mean, p2: width, 
+
         #show the results
         c_mtop = TCanvas('c_mtop','c_mtop',600,600)
         c_mtop.Divide(2,2)
@@ -299,9 +290,18 @@ class toyResult():
         c_mtop.Print('c_mtop_'+method+'_'+self.channel+'_'+self.mass+'.png')
 
         c_bias = TCanvas('c_bias_'+self.channel+'_'+self.mass,'c_bias_'+self.channel+'_'+self.mass,400,400)
+        biasH.Fit('f1')
+        mean = gfunc.GetParameter(1)
+        width = gfunc.GetParameter(2)
         biasH.Draw()
+        gfunc.Draw("same")
         c_bias.Print('c_bias_'+method+'_'+self.channel+'_'+self.mass+'.pdf')
         c_bias.Print('c_bias_'+method+'_'+self.channel+'_'+self.mass+'.png')
+        
+        # self.bias = biasH.GetMean()
+        # self.biasError = biasH.GetMeanError()
+        self.bias[method] = mean
+        self.biasError[method] = width
 
         return biasH,pullH
  
@@ -381,20 +381,24 @@ masses = [ '1615','1635','1665','1695','1725','1755','1785','1815','1845' ]
 #masses = ['1695','1725'] 
 ## FIXME: read channels from command line
 channels = ['mu']
-
+systematics = ['mepdown','mepup','q2down','q2up']
+#systematics = []
+#systematics = ['q2down']
+#systematics = ['q2down','q2up']
+#systematics = ['mepdown','mepup']
 
 def main():
-
+    
     usage = 'usage: %prog [options]'
     parser = optparse.OptionParser(usage)
-    parser.add_option('-i', '--inputfile' ,    dest='inputfile'      , help='Name of the local input file.'          , default=None)
-    parser.add_option('-r', '--rootfile'  ,    dest='rootfile'       , help='Name of the root file.'                 , default=None)
-    parser.add_option('-c', '--channel'   ,    dest='channel'        , help='If only one channel is processed.'      , default=None)
-    parser.add_option('-f', '--fit'       ,    dest='fittype'        , help='Choose fit type ll,ull,plr,uplr'        , default='ll')
-    parser.add_option('-S', '--floatsignal',   dest='floatsignal'    , help='Signal is left to float in the fit'     , default=False,  action="store_true")
-    parser.add_option('-m', '--mass'      ,    dest='mass'           , help='If only one mass is processed.'         , default=None)
-    parser.add_option('-n', '--ntoys'     ,    dest='ntoys'          , help='Number of toy experiments.'             , default=25      ,type = int)
-    parser.add_option('-s', '--samplesize',    dest='samplesize'     , help='Number of events per toy experiment.'   , default=50000   ,type = int)
+    parser.add_option('-i', '--inputfile' ,    dest='inputfile'      , help='Name of the local input file (This has to be a workspace).'          , default=None)
+    parser.add_option('-r', '--rootfile'  ,    dest='rootfile'       , help='Name of the root file.'                                              , default=None)
+    parser.add_option('-c', '--channel'   ,    dest='channel'        , help='If only one channel is processed.'                                   , default=None)
+    parser.add_option('-f', '--fit'       ,    dest='fittype'        , help='Choose fit type ll,ull,plr,uplr'                                     , default='ll')
+    parser.add_option('-S', '--floatsignal',   dest='floatsignal'    , help='Signal is left to float in the fit'                                  , default=False,  action="store_true")
+    parser.add_option('-m', '--mass'      ,    dest='mass'           , help='If only one mass is processed.'                                      , default=None)
+    parser.add_option('-n', '--ntoys'     ,    dest='ntoys'          , help='Number of toy experiments.'                                          , default=25      ,type = int)
+    parser.add_option('-s', '--samplesize',    dest='samplesize'     , help='Number of events per toy experiment.'                                , default=50000   ,type = int)
 
     (opt, args) = parser.parse_args()
 
@@ -407,7 +411,8 @@ def main():
 |_| |_| |_|\__,_|___/___/_| |_|\__|\__\___|_|   
                                                 '''
     print 'Chosen operaion: ',sys.argv[1]
-    if sys.argv[1] not in ['all', 'toys', 'calib', 'fit']:
+
+    if sys.argv[1] not in ['all', 'toys', 'calib', 'fit', 'syst']:
         print 'Need to specify a valid operation! Possibilities are: \'all\' \'toys\', \'calib\', \'fit\' '
         sys.exit(2)
 
@@ -433,6 +438,57 @@ def main():
 
     inputfile = opt.inputfile
 
+
+    ## evaluate the systematics
+    if sys.argv[1] == 'syst':
+        systSummaryFileName = 'systSummary_'+opt.channel+'.txt'
+        ## if a second argument is passed, use this one to just make one systematic estimation
+        ## the statistical uncertainty of on the nominal should be covered by the GetMeanError()
+        # print sys.argv[2]
+        # if not sys.argv[2].startswith('-'):
+        #     print 'entered'
+        #     systSummaryFileName.replace('.txt','_'+sys.argv[2]+'.txt')
+        #     systematics = [sys.argv[2]]
+
+        workspace = getWorkspace(inputfile,'w')
+        workspace.Print() 
+        # systname = 'mulxy_mepsyst'
+        # get the nominal mass bias
+        nominal = toyResult()
+        nominal.variable = 'lxy'
+        nominal.channel = opt.channel
+        nominal.mass = '1725'
+        nominal.doCalibrationStep(workspace, opt.ntoys, opt.samplesize, opt.fittype,opt.floatsignal)
+
+        allSystematics = {}
+        for systematic in systematics:
+            syst = toyResult()
+            syst.variable = 'lxy'
+            syst.channel = opt.channel
+            syst.mass = systematic
+            syst.doCalibrationStep(workspace, opt.ntoys, opt.samplesize, opt.fittype,opt.floatsignal)
+            allSystematics[systematic] = syst
+
+
+        outfile = open(systSummaryFileName,'w')
+        outfile.write('number of toy experiment:\t'+str(opt.ntoys)+'\n')
+        outfile.write('samplesize per toy experiment:\t'+str(opt.samplesize)+'\n')
+        outfile.write('-'*100+'\n')
+        outfile.write('nominal bias:\t'+str(nominal.bias['fit'])+' \t+- '+str(nominal.biasError['fit'])+'\n')
+        for syst in allSystematics:
+            outfile.write(syst+' bias:\t'+str(allSystematics[syst].bias['fit'])+' \t+- '+str(allSystematics[syst].biasError['fit'])+'\n')
+        outfile.write('-'*100+'\n')
+        for syst in allSystematics:
+            outfile.write(syst+' uncertainty:\t'+str(abs(nominal.bias['fit']-allSystematics[syst].bias['fit']))+' \t+- '+str(sqrt(pow(nominal.biasError['fit'],2)+pow(allSystematics[syst].biasError['fit'],2)))+'\n')
+
+        
+        print 'Systematic uncertainties:'
+        print 'nominal bias: '+str(nominal.bias['fit'])+' +- '+str(nominal.biasError['fit'])
+        for syst in allSystematics:
+            print syst+' bias: '+str(allSystematics[syst].bias['fit'])+' +- '+str(allSystematics[syst].biasError['fit'])
+
+
+        
     ## run the toy experiments
     
     if sys.argv[1] == 'all' or sys.argv[1] == 'toys':
@@ -470,6 +526,7 @@ def main():
             print tag
             allFitResults[tag].biasHistos[0].Write()
         biasoutfile.Close()
+        print 'File '+biasoutfileName+' created...'
 
 
 
@@ -482,6 +539,10 @@ def main():
             rootfile = opt.rootfile
         elif sys.argv[1] == 'all':
             rootfile = biasoutfileName
+
+
+        print rootfile,'==============='
+
 
         ## open the file containing the bias histograms
         rfile = openTFile(rootfile)
@@ -503,7 +564,8 @@ def main():
 
                 c_hist_fit = TCanvas('c_hist_fit'+chan,'c_hist_fit_'+chan,400,400)
 
-                hist = getHist(rfile, 'bias_histo_'+chan+'_'+mass)
+                ## hist = getHist(rfile, 'bias_histo_'+chan+'_'+mass)
+                hist = getHist(rfile, 'fitbias_histo_'+chan+'_'+mass)
                 hist.SetTitle('m_{gen} = '+str(float(mass)/10.)+' GeV, '+chan+' channel')
                 hist.SetMarkerStyle(20)
                 hist.SetMarkerColor(1)
@@ -663,7 +725,8 @@ def main():
             workspace.var(''+chan+'thr').setConstant(kTRUE)    
             workspace.var(''+chan+'wid').setConstant(kTRUE)    
             workspace.var(''+chan+'wid_bkg').setConstant(kTRUE)
-            workspace.var(''+chan+'sigfrac').setConstant(kTRUE)
+            #workspace.var(''+chan+'sigfrac').setConstant(kTRUE)
+
 
             c_data_fit = TCanvas('c_data_fit_'+chan,'c_data_fit_'+chan,400,400)
 
