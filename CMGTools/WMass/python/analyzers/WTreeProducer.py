@@ -86,10 +86,20 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           'addPileupInfo',
           'std::vector<PileupSummaryInfo>' 
           ) 
-    
+      self.mchandles['generator'] = AutoHandle(
+          'generator','GenEventInfoProduct' 
+          )
+
+          
     def declareVariables(self):
       tr = self.tree
 
+      var(tr, 'scalePDF')
+      var(tr, 'parton1_pdgId')
+      var(tr, 'parton1_x')
+      var(tr, 'parton2_pdgId')
+      var(tr, 'parton2_x')
+      
       var( tr, 'run', int)
       var( tr, 'lumi', int)
       var( tr, 'evt', int)
@@ -121,10 +131,6 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       var(tr, 'MuRelIso')
       bookParticle(tr, 'MuGen')
       var(tr, 'MuDRGenP')
-      var(tr, 'parton1_pdgId')
-      var(tr, 'parton1_x')
-      var(tr, 'parton2_pdgId')
-      var(tr, 'parton2_x')
       
       bookParticle(tr, 'NuGen')
       
@@ -146,10 +152,6 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fillParticle(tr, 'MuGen',event.genMu[0])
           fill(tr, 'MuDRGenP',event.muGenDeltaRgenP)
           fillParticle(tr, 'NuGen', event.genNu[0])
-          fill(tr, 'parton1_pdgId',event.genParticles[2].pdgId())
-          fill(tr, 'parton1_x',event.genParticles[2].p()/event.genParticles[0].p())
-          fill(tr, 'parton2_pdgId',event.genParticles[3].pdgId())
-          fill(tr, 'parton2_x',event.genParticles[3].p()/event.genParticles[1].p())
 
         if event.WGoodEvent == True :
                       
@@ -178,8 +180,13 @@ class WTreeProducer( TreeAnalyzerNumpy ):
               if puInfo.getBunchCrossing()==0:
                 fill( tr, 'npu', puInfo.nTrueInteractions())
                 # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
-              # else:
-                # print 'NO INFO FOR puInfo.getBunchCrossing()==0 !!!!'
+            event.generator = self.mchandles['generator'].product()
+            # print 'WTreeProducer.py: ',event.generator.pdf().scalePDF,' ',event.generator.pdf().id.first,' ',event.generator.pdf().x.first,' ',event.generator.pdf().id.second,' ',event.generator.pdf().x.second
+            fill(tr, 'scalePDF',float(event.generator.pdf().scalePDF))
+            fill(tr, 'parton1_pdgId',float(event.generator.pdf().id.first))
+            fill(tr, 'parton1_x',float(event.generator.pdf().x.first))
+            fill(tr, 'parton2_pdgId',float(event.generator.pdf().id.second))
+            fill(tr, 'parton2_x',float(event.generator.pdf().x.second))
             
           fill( tr, 'nMuons', event.nMuons)
           fill( tr, 'nTrgMuons', len(event.selMuons))

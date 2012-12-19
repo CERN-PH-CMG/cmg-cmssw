@@ -44,7 +44,7 @@ class ZAnalyzer( Analyzer ):
         '''Creates python GenParticles from the di-leptons read from the disk.
         to be overloaded if needed.'''
         return map( GenParticle, cmgGenParticles )
-        
+                
     def declareVariables(self):
       tr = self.tree
       var( tr, 'pfmet')
@@ -318,7 +318,6 @@ class ZAnalyzer( Analyzer ):
             'genParticlesPruned',
             'std::vector<reco::GenParticle>'
             )
-
 
     def testJet(self, jet):
         '''returns testjetID && testjetIso && testjetKine for jet'''

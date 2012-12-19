@@ -7,6 +7,8 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Jet, GenParticle
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 from CMGTools.RootTools.utils.DeltaR import bestMatch, deltaR, deltaR2
+# INCLUDE MVAMET WRAPPER (not working)
+from CMGTools.Utilities.mvaMET.mvaMet import MVAMet
 
 class WAnalyzer( Analyzer ):
 
@@ -82,7 +84,7 @@ class WAnalyzer( Analyzer ):
         event.savegenpW=True
         if not (self.cfg_ana.savegenp and self.cfg_comp.isMC):
           event.savegenpW=False
-        
+
         # save genp only for signal events
         # i.e. only one W is present and daughters are muon plus neutrino
         genW_dummy = [ genp for genp in event.genParticles if \
