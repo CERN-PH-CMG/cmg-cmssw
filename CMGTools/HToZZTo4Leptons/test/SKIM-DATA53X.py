@@ -1,3 +1,4 @@
+
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
@@ -37,8 +38,13 @@ process.skim=cms.EDFilter('HZZCMGSkim',
                           )
 
 
+
+process.tunepMuons = cms.EDProducer('TunePPatMuonEmbedder',
+                                    src = cms.InputTag('patMuonsWithTrigger')
+)                                    
+
 process.correctedMuons = cms.EDProducer('RochesterPATMuonCorrector',
-             src = cms.InputTag("patMuonsWithTrigger"))
+             src = cms.InputTag("tunepMuons"))
 
 process.cleanedMuons = cms.EDProducer('PATMuonCleanerBySegments',
              src = cms.InputTag("correctedMuons"),
@@ -80,7 +86,7 @@ process.calibratedElectrons = cms.EDProducer("CalibratedPatElectronProducer",
 process.cmgElectron.cfg.inputCollection = 'calibratedElectrons'
 process.genInfo = cms.EDProducer('HZZGenEmbedder')
 
-process.p = cms.Path(process.genInfo+process.goodPrimaryVertices+process.correctedMuons+process.cleanedMuons+process.cmgMuon+process.cmgMuonSel+\
+process.p = cms.Path(process.genInfo+process.goodPrimaryVertices+process.tunepMuons+process.correctedMuons+process.cleanedMuons+process.cmgMuon+process.cmgMuonSel+\
                      process.patElectronsWithRegression+process.calibratedElectrons+\
                      process.cmgElectron+process.cmgElectronSel+process.skim)
 
@@ -109,6 +115,7 @@ process.outcmg = cms.OutputModule(
     "drop *_cmgTauSel_*_*",                     
     "drop *_cmgMuonSel_*_PAT",                     
     "drop *_patMuonsWithTrigger_*_PAT",                     
+    "drop *_tunepMuons_*_*",                     
     "drop *_patElectronsWithTrigger_*_PAT",                     
     "drop *_patElectronsWithRegression_*_PAT",                     
     "drop *_cmgMuon_*_CMG",                     
