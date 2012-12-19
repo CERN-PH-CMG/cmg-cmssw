@@ -293,7 +293,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 
       
       //
-      // SIGNAL
+      // DATA
       //
 
       //lxy templates
@@ -327,6 +327,11 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  h_signal =  it->second;
 	  h_bckg = chShapes[is].lxy_bckg["b"];
 	  h_signal->Add(h_bckg);
+ 
+	  // store the hitogram pdf in the workspace in order to throw the toy experiments from them and not from the fit model
+	  RooDataHist *lxySignalData = new RooDataHist(ch+"lxy_"+catName,    ch+"lxy_"+catName,     RooArgList(lxy), Import(*h_signal));
+	  RooHistPdf *lxySignalPdf   = new RooHistPdf(lxySignalData->GetName(), lxySignalData->GetName(), RooArgSet(lxy), *lxySignalData);
+	  w->import(*lxySignalPdf);
 
 	  masses[catName.Data()]    = it->first;
 	  // templates[catName.Data()] = it->second;
@@ -535,7 +540,9 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       h_bkg = chShapes[is].lxy_bckg["c"];
       h_bkg->Add(chShapes[is].lxy_bckg["udsg"]);
       RooDataHist *lxyData = new RooDataHist(ch+"lxy_bkg",    ch+"lxy_bkg",     RooArgList(lxy), Import(*h_bkg));
- 
+      RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName(), lxyData->GetName(), RooArgSet(lxy), *lxyData);
+      w->import(*lxyPdf);
+
       w->factory("EDIT::"+ch+"flxy_bkg("+ch+"flxy,"+ch+"pfunc="+ch+"beta1[0.02,0.,10],"+ch+"qfunc="+ch+"beta2[0.6,0.,10],"+ch+"thr="+ch+"thr_bckg[0.11],"+ch+"wid="+ch+"wid_bkg[0.035,0,0.1])");
       w->var(ch+"beta1")->SetTitle("p");
       w->var(ch+"beta2")->SetTitle("q");
@@ -593,7 +600,8 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       cbkg->SaveAs("SecVtxBckg_"+ch+".png");
 
       //what we need is to construct the model according to the fractions from the mass fit
-      RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf(ch+"flxy"),*w->pdf(ch+"flxy_bkg")),*w->var(ch+"byields"));
+      w->var(ch+"byields")->setConstant(kTRUE);
+      RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf(ch+"flxy"),*w->pdf(ch+"flxy_bkg")),RooArgList(*w->var(ch+"byields")));
       // RooRealVar *sigfrac =new RooRealVar(ch+"sigfrac",ch+"sigfrac",1.);
       // RooAddPdf *model = new RooAddPdf(ch+"model",ch+"model",RooArgList(*w->pdf(ch+"flxy"),*w->pdf(ch+"flxy_bkg")),*sigfrac);
       w->import(*model);
