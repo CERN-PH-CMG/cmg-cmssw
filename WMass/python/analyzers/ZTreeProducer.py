@@ -96,11 +96,20 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           'addPileupInfo',
           'std::vector<PileupSummaryInfo>' 
           ) 
-            
+      self.mchandles['generator'] = AutoHandle(
+          'generator','GenEventInfoProduct' 
+          )
+
     
     def declareVariables(self):
       tr = self.tree
-
+      
+      var(tr, 'scalePDF')
+      var(tr, 'parton1_pdgId')
+      var(tr, 'parton1_x')
+      var(tr, 'parton2_pdgId')
+      var(tr, 'parton2_x')
+      
       var( tr, 'run', int)
       var( tr, 'lumi', int)
       var( tr, 'evt', int)
@@ -149,10 +158,6 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
       bookParticle(tr, 'MuNegGen')
       # var(tr, 'MuNegGen_pdgId', int)
       var(tr, 'MuNegDRGenP')
-      var(tr, 'parton1_pdgId')
-      var(tr, 'parton1_x')
-      var(tr, 'parton2_pdgId')
-      var(tr, 'parton2_x')
       
       bookJet(tr, 'Jet_leading')
        
@@ -161,7 +166,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
         self.readCollections( iEvent )
         tr = self.tree
         tr.reset()
-        
+                
         # print 'event.savegenpZ= ',event.savegenpZ,' self.cfg_comp.isMC= ',self.cfg_comp.isMC,' event.ZGoodEvent= ',event.ZGoodEvent
         if (event.savegenpZ and self.cfg_comp.isMC):
                   
@@ -171,11 +176,7 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
           fill(tr, 'MuPosDRGenP', event.muPosGenDeltaRgenP)              
           fillParticle(tr, 'MuNegGen', event.genMuNeg[0])
           fill(tr, 'MuNegDRGenP', event.muNegGenDeltaRgenP)
-          fill(tr, 'parton1_pdgId',event.genParticles[2].pdgId())
-          fill(tr, 'parton1_x',event.genParticles[2].p()/event.genParticles[0].p())
-          fill(tr, 'parton2_pdgId',event.genParticles[3].pdgId())
-          fill(tr, 'parton2_x',event.genParticles[3].p()/event.genParticles[1].p())
-            
+          
         if event.ZGoodEvent == True :
                                     
           fillZ(tr, 'Z', event.Z4V)
@@ -216,7 +217,14 @@ class ZTreeProducer( TreeAnalyzerNumpy ):
               if puInfo.getBunchCrossing()==0:
                 fill( tr, 'npu', puInfo.nTrueInteractions())
                 # print 'puInfo.nTrueInteractions()= ',puInfo.nTrueInteractions()
-
+            event.generator = self.mchandles['generator'].product()
+            # print 'ZTreeProducer.py: ',event.generator.pdf().scalePDF,' ',event.generator.pdf().id.first,' ',event.generator.pdf().x.first,' ',event.generator.pdf().id.second,' ',event.generator.pdf().x.second
+            fill(tr, 'scalePDF',event.generator.pdf().scalePDF)
+            fill(tr, 'parton1_pdgId',event.generator.pdf().id.first)
+            fill(tr, 'parton1_x',event.generator.pdf().x.first)
+            fill(tr, 'parton2_pdgId',event.generator.pdf().id.second)
+            fill(tr, 'parton2_x',event.generator.pdf().x.second)
+                
           fill( tr, 'nMuons', len(event.ZallMuons))
           fill( tr, 'nTrgMuons', len(event.ZselTriggeredMuons))
           fill( tr, 'nNoTrgMuons', len(event.ZselNoTriggeredMuons))
