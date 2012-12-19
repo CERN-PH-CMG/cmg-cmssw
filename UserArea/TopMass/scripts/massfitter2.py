@@ -89,8 +89,8 @@ class toyResult():
     def doCalibrationStep(self,workspace,nSamples,nToys,fittype,floatSignal):
         ## get the model for the fit, the signal and the background
         print 'retrieving the pdfs'
-        # mod_fit  = workspace.pdf(self.channel+'model')
-        mod_fit  = workspace.pdf(self.channel+'flxy')
+        mod_fit  = workspace.pdf(self.channel+'model')
+        #mod_fit  = workspace.pdf(self.channel+'flxy')
         mod_bkg  = workspace.pdf(self.channel+self.variable+'_bkg') 
         mod_bkg_c    = workspace.pdf(self.channel+self.variable+'_cbkg')
         mod_bkg_udsg = workspace.pdf(self.channel+self.variable+'_udesgbkg')
