@@ -1,0 +1,6 @@
+==3 good leptons: nLepGood == 3
+lep MVA: min(LepGood1_mva,min(LepGood2_mva,LepGood3_mva)) >= -0.2
+Z veto: abs(mZ1-91.2) > 10
+1b: nBJetLoose25 >= 1
+2b: nBJetLoose25 >= 2
+5j: nJet25 >= 5
