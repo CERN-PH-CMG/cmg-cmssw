@@ -41,12 +41,15 @@
 #include "TGraphErrors.h"
 #include "TLegend.h"
 
+#include <strstream>
 #include <iostream>
 #include <vector>
 #include <map>
 
 using namespace std;
 using namespace RooFit;
+
+strstream report;
 
 class SecVtxShape_t
 {
@@ -88,8 +91,6 @@ void showSecVtxShapeCollection(RooWorkspace *w, std::vector<SecVtxShape_t> &shap
 
   TCanvas *c=new TCanvas("c","c",400*shapes.size(),800);
   c->Divide(shapes.size(),2);
-  gStyle->SetOptTitle(0);
-  gStyle->SetOptStat(0);
 
   for(size_t is=0; is<shapes.size(); is++)
     {
@@ -103,59 +104,62 @@ void showSecVtxShapeCollection(RooWorkspace *w, std::vector<SecVtxShape_t> &shap
       else if(m_shape.m_tag.BeginsWith("mu"))  { ch="mu";   chTitle="#mu"; }
       chTitle += " events";
 
-      /*
       //lxy
       c->cd(is+1);
-      TString name("lxy"); name+=is;
-      THStack *hstack=new THStack(name,name);
-      TLegend *leg=new TLegend(0.4,0.75,0.9,0.9);
-      leg->SetNColumns(3);
-      leg->SetBorderSize(0);
-      leg->SetFillStyle(0);
-      leg->SetTextFont(42);
-      if(m_shape.lxy_data) leg->AddEntry(m_shape.lxy_data,"data","lp");
-      for(std::map<TString, TH1F *>::const_iterator it = m_shape.lxy_bckg.begin(); it != m_shape.lxy_bckg.end(); it++)
+      RooRealVar *x=w->var("lxy");
+      RooPlot *frame = x->frame();
+      RooDataHist *lxydata=(RooDataHist *)w->data(ch+"data");
+      lxydata->plotOn(frame,Name("data"),Name("data"));
+      w->pdf(ch+"model")->plotOn(frame, RooFit::FillStyle(0), RooFit::LineWidth(2), MoveToBack(),
+				 ProjWData(*x,*lxydata), DrawOption("lf"),   Name("b"));
+      w->pdf(ch+"model")->plotOn(frame, RooFit::Components(* w->pdf( ch+"flxy_bkg")),
+				 RooFit::FillStyle(1001), RooFit::FillColor(kAzure+9), MoveToBack(), 
+				 ProjWData(*x,*lxydata), DrawOption("lf"), Name("udscg"));
+
+      frame->SetTitleOffset(1.0,"Y");
+      frame->SetTitleSize(0.05,"Y");
+      frame->SetYTitle("Jets");
+      frame->SetTitleSize(0.05,"X");
+      frame->SetXTitle("SecVtx L_{xy} [cm]");
+      frame->SetMinimum(0.01);
+      frame->Draw();
+
+      if(is==0)
 	{
-	  hstack->Add(it->second,"HIST");
-	  TString title(it->first); if(title=="b") title="other b";
-	  //TString title("#Sigma bckg");
-	  leg->AddEntry(it->second,title,"F");
+	  TLegend *leg=new TLegend(0.4,0.75,0.9,0.9);
+	  leg->SetNColumns(3);
+	  leg->SetBorderSize(0);
+	  leg->SetFillStyle(0);
+	  leg->SetTextFont(42);
+	  leg->AddEntry("data","data","p");
+	  leg->AddEntry("b","b","F");
+	  leg->AddEntry("udscg","udsg+c","F");
+	  leg->Draw();
+
+	  TPaveText *pave = new TPaveText(0.15,0.9,0.4,0.95,"NDC");
+	  pave->SetBorderSize(0);
+	  pave->SetFillStyle(0);
+	  pave->SetTextAlign(32);
+	  pave->SetTextFont(42);
+	  pave->AddText("CMS preliminary");
+	  pave->Draw();
 	}
-      if(m_shape.lxy_signal.find(mtop)!= m_shape.lxy_signal.end())
-	{
-	  TH1F *h=m_shape.lxy_signal.find(mtop)->second;
-	  hstack->Add( h, "HIST" );
-	  leg->AddEntry( h,"b","F");
-	  //leg->AddEntry( h,"Signal","F");
-	}
-      hstack->Draw("");
-      hstack->GetXaxis()->SetTitle(m_shape.lxy_data->GetXaxis()->GetTitle());
-      hstack->GetYaxis()->SetTitle("Jets");
-      if(m_shape.lxy_data) 
-	{
-	  m_shape.lxy_data->SetLineColor(1);
-	  m_shape.lxy_data->SetMarkerColor(1);
-	  m_shape.lxy_data->SetMarkerStyle(20);
-	  m_shape.lxy_data->Draw("e1 same");
-	}
-      if(is==0)	leg->Draw();
+      
       TPaveText *pave = new TPaveText(0.65,0.9,0.9,0.95,"NDC");
       pave->SetBorderSize(0);
       pave->SetFillStyle(0);
       pave->SetTextAlign(32);
       pave->SetTextFont(42);
-      pave->AddText(ch);
+      pave->AddText(chTitle);
       pave->Draw();
-      */
       
       //sec vtx mass
-
       c->cd(is+1+shapes.size());
-      RooRealVar *x=w->var("secvtxmass");
-      RooPlot *frame = x->frame();
+      x=w->var("secvtxmass");
+      frame = x->frame();
       RooDataHist *data=(RooDataHist *)w->data(ch+"mass_data");
       data->plotOn(frame,Name("data"),Name("data"));
-      cout <<  w->pdf( ch+"_cvtxmasspdf") << " " << w->pdf( ch+"_udsgvtxmasspdf") << endl;
+
       // FIXME: changed flavormodel to flavormodelunc
       w->pdf(ch+"flavormodelunc")->plotOn(frame, RooFit::FillStyle(0), RooFit::LineWidth(2), 
       				       ProjWData(*x,*data), DrawOption("lf"),   Name("b"));
@@ -182,6 +186,20 @@ void showSecVtxShapeCollection(RooWorkspace *w, std::vector<SecVtxShape_t> &shap
 	      w->var(ch+"byields")->getVal(), w->var(ch+"byields")->getError());
       T->AddText(buf);
       T->Draw("same");
+
+      if(is==0)
+	{
+	  TLegend *leg=new TLegend(0.3,0.75,0.9,0.9);
+	  leg->SetNColumns(4);
+	  leg->SetBorderSize(0);
+	  leg->SetFillStyle(0);
+	  leg->SetTextFont(42);
+	  leg->AddEntry("data","data","p");
+	  leg->AddEntry("b","b","F");
+	  leg->AddEntry("udsg","udsg","F");
+	  leg->AddEntry("c","c","F");
+	  leg->Draw();
+	}
     }
 
   c->Modified();
@@ -226,71 +244,56 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       w->import(*mass_data);
       float totalObs=chShapes[is].mass_data->Integral();
 
-      std::cout << "observed: " << totalObs << std::endl;
+      //expected composition from simulation
+      float totalExp(0),udsgExp(0),cExp(0),bExp(0);
+      TH1F *h_signal= (TH1F *)chShapes[is].mass_signal[172.5]->Clone(ch+"bvtxmassh");
+      h_signal->Add(chShapes[is].mass_bckg["b"]);
+      totalExp += h_signal->Integral();
+      bExp     += h_signal->Integral();
+      for(map<TString, TH1F *>::iterator it=chShapes[is].mass_bckg.begin(); it != chShapes[is].mass_bckg.end(); it++)
+	{
+	  totalExp += it->second->Integral();
+       	  if(it->first.BeginsWith("c"))    cExp += it->second->Integral();
+       	  if(it->first.BeginsWith("udsg")) udsgExp += it->second->Integral();
+	}
 
-      float sums = 0;
-      //b's from t->Wb
-      RooRealVar *bfrac = new RooRealVar(ch+"byields",ch+"byields",0.5,0,1.0);    
-      //RooRealVar *bfrac = new RooRealVar(ch+"bsigyields",ch+"bsigyields",0.5,0,1.0);    
-      flavorFractions.add(*bfrac);
-      std::cout << "summing: " << chShapes[is].mass_signal[172.5]->Integral();
-      sums += chShapes[is].mass_signal[172.5]->Integral();
-
-      TH1F *h_signal;
-      TH1F *h_bckg;
-      h_signal = chShapes[is].mass_signal[172.5];
-      h_bckg = chShapes[is].mass_bckg["b"];
-      h_signal->Add(h_bckg);
-      // RooDataHist *vtxMassSignalData = new RooDataHist(ch+"_bvtxmass",ch+"_bvtxmass",RooArgList(secvtxmass),Import(*chShapes[is].mass_signal[172.5]));
-      // RooHistPdf *vtxMassSignalPdf   = new RooHistPdf(ch+"_bsigvtxmasspdf",ch+"_bsigvtxmasspdf",RooArgSet(secvtxmass),*vtxMassSignalData,smoothOrder);
-
+      //b's from t->Wb and other residual b's
       RooDataHist *vtxMassSignalData = new RooDataHist(ch+"_bvtxmass",ch+"_bvtxmass",RooArgList(secvtxmass),Import(*h_signal));
-      std::cout << "summed: " << h_signal->Integral() << std::endl;
       RooHistPdf *vtxMassSignalPdf   = new RooHistPdf(ch+"_bvtxmasspdf",ch+"_bvtxmasspdf",RooArgSet(secvtxmass),*vtxMassSignalData,smoothOrder);
       flavorPdfs.add(*vtxMassSignalPdf);
-
-      std::cout << "number fo background components: " << chShapes[is].mass_bckg.size() << std::endl;
+      RooRealVar *bfrac = new RooRealVar(ch+"byields",ch+"byields",bExp/totalExp,0,1.0);    
+      flavorFractions.add(*bfrac);
+      
       //other flavors
       int icount(0),maxCount(chShapes[is].mass_bckg.size()-1);
       for(map<TString, TH1F *>::iterator it=chShapes[is].mass_bckg.begin(); it != chShapes[is].mass_bckg.end(); it++)
-       	{
+	{
 	  TString flav("udsg");
-       	  if(it->first.BeginsWith("c")) flav="c";
+       	  float expFrac(udsgExp/totalExp);
+	  if(it->first.BeginsWith("c")) { flav="c"; expFrac=cExp/totalExp; }
        	  if(it->first.BeginsWith("b")) continue;
-	  std::cout << "summing "+ch+flav+"yields: " << it->second->Integral() << std::endl;
-	  sums += it->second->Integral();
-	  RooRealVar *flavfrac = new RooRealVar(ch+flav+"yields",ch+flav+"yields",0.25,0,1.0); 
-	  if(icount<maxCount-1) {
-	    flavorFractions.add(*flavfrac);
-	  }
+	  
+	  RooRealVar *flavfrac = new RooRealVar(ch+flav+"yields",ch+flav+"yields",expFrac,0,1.0); 
+	  if(icount<maxCount-1) { flavorFractions.add(*flavfrac); }
+
 	  // RooGaussian *flavConstraint=new RooGaussian(ch+flav+"yieldsconstr",ch+flav+"yieldsconstr",flavfrac,RooConst(flavfrac->getVal()),RooConst(flavfrac->getVal()/totalObs));
-
-
        	  RooDataHist *vtxMassData = new RooDataHist(ch+"_"+flav+"vtxmass", ch+"_"+flav+"vtxmass", RooArgList(secvtxmass),Import(*it->second));
        	  RooHistPdf *vtxMassPdf   = new RooHistPdf(ch+"_"+flav+"vtxmasspdf",ch+"_"+flav+"vtxmasspdf", RooArgSet(secvtxmass),*vtxMassData,smoothOrder);
 	  flavorPdfs.add(*vtxMassPdf);
 	  icount++;
 	}
 
-      std::cout << "MC: " << sums << std::endl;
-
       //fit flavor fractions to data
       RooAddPdf flavorShapeModelunc(ch+"flavormodelunc", ch+"flavormodelunc", flavorPdfs, flavorFractions);
-      //RooProdPdf flavorShapeModel(ch+"flavormodel", ch+"flavormodel", RooArgSet(flavorShapeModelunc,flavorConstraints));
-      // flavorShapeModel.fitTo(*mass_data,SumW2Error(kTRUE),Constraint(otherFlavYields),Save(kTRUE));
-      std::cout << "printing model info... " << maxCount << std::endl;
       flavorShapeModelunc.Print();
       flavorShapeModelunc.fitTo(*mass_data,SumW2Error(kFALSE),Save(kTRUE));
-      // flavorShapeModelunc.chi2FitTo(*mass_data,SumW2Error(kFALSE),Save(kTRUE));
-  
       w->import(flavorShapeModelunc);
-      
-      std::cout << "Fit results: " << std::endl;
-      std::cout << ch+"cyields " << w->var(ch+"cyields")->getVal() << " pm " << w->var(ch+"cyields")->getError() << std::endl;
-      std::cout << ch+"byields " << w->var(ch+"byields")->getVal() << " pm " << w->var(ch+"byields")->getError() << std::endl;
 
-
-
+      report << "[" << ch << " flavor fit] observed: " << totalObs << " expected: " << totalExp << endl
+	     << "\tc yields: " << w->var(ch+"cyields")->getVal() << "+/-" << w->var(ch+"cyields")->getError()  
+	     << "\tSF_c " << w->var(ch+"cyields")->getVal()/(cExp/totalExp) << "+/-" << w->var(ch+"cyields")->getError()/(cExp/totalExp) <<  endl 
+	     << "\tb yields: " << w->var(ch+"byields")->getVal() << "+/-" << w->var(ch+"byields")->getError()  
+	     << "\tSF_b " << w->var(ch+"byields")->getVal()/(bExp/totalExp) << "+/-" << w->var(ch+"byields")->getError()/(bExp/totalExp) <<  endl; 
       
       //
       // DATA
@@ -312,7 +315,6 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       TGraph *gr25 = new TGraph;   gr25->SetName(ch+"q25");    gr25->SetTitle("1^{st} quart.");  gr25->SetMarkerStyle(24);    gr25->SetFillStyle(0);
       TGraph *gr50 = new TGraph;   gr50->SetName(ch+"q50");    gr50->SetTitle("median");         gr50->SetMarkerStyle(25);    gr50->SetFillStyle(0);
       TGraph *grmean = new TGraph; grmean->SetName(ch+"mean"); grmean->SetTitle("average");      grmean->SetMarkerStyle(20);  grmean->SetFillStyle(0);
-      Double_t signalExp(chShapes[is].lxy_data->Integral());
       for(std::map<Float_t,TH1F *>::iterator it=chShapes[is].lxy_signal.begin();
 	  it!=chShapes[is].lxy_signal.end();
 	  it++)
@@ -322,11 +324,8 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  templateCategories.setLabel(catName.Data());
 	  
 	  // add the b-jets from background to the signal!
-	  TH1F *h_signal;
-	  TH1F *h_bckg;
-	  h_signal =  it->second;
-	  h_bckg = chShapes[is].lxy_bckg["b"];
-	  h_signal->Add(h_bckg);
+	  TH1F *h_signal=(TH1F *)it->second->Clone(ch+"blxyh");
+	  h_signal->Add(chShapes[is].lxy_bckg["b"]);
  
 	  // store the hitogram pdf in the workspace in order to throw the toy experiments from them and not from the fit model
 	  RooDataHist *lxySignalData = new RooDataHist(ch+"lxy_"+catName,    ch+"lxy_"+catName,     RooArgList(lxy), Import(*h_signal));
@@ -334,16 +333,8 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  w->import(*lxySignalPdf);
 
 	  masses[catName.Data()]    = it->first;
-	  // templates[catName.Data()] = it->second;
-	  // rooTemplates[catName.Data()] = new RooDataHist(catName+"templ",catName+"templ",lxy,it->second);
-	  // if(it->first==172.5) signalExp=it->second->Integral();
-	  // it->second->GetQuantiles(nq,yq,xq);
-	  // gr25->SetPoint(gr25->GetN(),it->first,yq[0]);
-	  // gr50->SetPoint(gr50->GetN(),it->first,yq[1]);
-	  // grmean->SetPoint(grmean->GetN(),it->first,it->second->GetMean());
 	  templates[catName.Data()] = h_signal;
 	  rooTemplates[catName.Data()] = new RooDataHist(catName+"templ",catName+"templ",lxy,h_signal);
-	  if(it->first==172.5) signalExp=h_signal->Integral();
 	  h_signal->GetQuantiles(nq,yq,xq);
 	  gr25->SetPoint(gr25->GetN(),it->first,yq[0]);
 	  gr50->SetPoint(gr50->GetN(),it->first,yq[1]);
@@ -351,7 +342,6 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 
 	}
 
-      //RooDataHist combTempl("combTempl","combTempl",RooArgList(lxy),templateCategories,templates); 
       RooDataHist combTempl("combTempl","combTempl",RooArgList(lxy),templateCategories,rooTemplates);  
       w->import(RooArgSet(mtop,templateCategories),RenameConflictNodes(ch));
 
@@ -416,7 +406,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  w->pdf("flxy_"+ch+"sim")->plotOn(frame,ProjWData(lxy,*dataslice),MoveToBack());
 
 	  frame->Draw();
-	  frame->GetXaxis()->SetTitle("L_{xy} [cm]");
+	  frame->GetXaxis()->SetTitle("SecVtx L_{xy} [cm]");
 	  frame->GetYaxis()->SetTitle("Jets");
 	  frame->SetMinimum(0.001);
 	  
@@ -461,7 +451,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  pave->SetTextAlign(32);
 	  pave->SetTextFont(42);
 	  float chi2=frame->chiSquare(0); //npar);
-	  int myndof = frame->GetNbinsX() - npar;
+	  //int myndof = frame->GetNbinsX() - npar;
 	  sprintf(buf,"#chi^{2} %3.2f",chi2);
 	  pave->AddText(buf);
 	  pave->Draw();
@@ -480,7 +470,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       TGraph *grframe=new TGraph;
       grframe->SetPoint(0,160,0.2); grframe->SetPoint(1,185,1.8); grframe->Draw("ap");
       grframe->GetXaxis()->SetTitle("m_{top} [GeV]");
-      grframe->GetYaxis()->SetTitle("L_{xy} momentum");
+      grframe->GetYaxis()->SetTitle("SecVtx L_{xy} momentum");
 
       grmean->Draw("p");  grmean->Fit("pol1");
       RooFormulaVar *invForm=new RooFormulaVar(ch+"meanInv",
@@ -535,9 +525,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	}
       
       // sum the backgrounds
-
-      TH1F *h_bkg;
-      h_bkg = chShapes[is].lxy_bckg["c"];
+      TH1F *h_bkg=(TH1F *)chShapes[is].lxy_bckg["c"]->Clone(ch+"lxy_bkgh");
       h_bkg->Add(chShapes[is].lxy_bckg["udsg"]);
       RooDataHist *lxyData = new RooDataHist(ch+"lxy_bkg",    ch+"lxy_bkg",     RooArgList(lxy), Import(*h_bkg));
       RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName(), lxyData->GetName(), RooArgSet(lxy), *lxyData);
@@ -693,12 +681,8 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  for(map<TString, TH1F *>::iterator iit=it->second.begin(); iit != it->second.end(); iit++)
 	    {
 	      // add the b-jets from background to the signal!
-	      TH1F *h_signal;
-	      TH1F *h_bckg;
-	      h_signal =  iit->second;
-	      h_bckg = chShapes[is].lxy_bckg["b"];
-	      h_signal->Add(h_bckg);
-	      
+	      TH1F *h_signal=(TH1F *) iit->second->Clone(ch+iit->first+"bh");
+	      h_signal->Add(chShapes[is].lxy_bckg["b"]);
 	      RooDataHist *lxySystData = new RooDataHist(ch+"lxy_"+iit->first,    ch+"lxy_"+iit->first,     RooArgList(lxy), Import(*h_signal));
 	      RooHistPdf *lxySystPdf   = new RooHistPdf(lxySystData->GetName()+TString("syst"), lxySystData->GetName()+TString("syst"), RooArgSet(lxy), *lxySystData);
 	      w->import(*lxySystPdf);      
@@ -722,6 +706,9 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 //
 int main(int argc, char *argv[])
 {
+  gStyle->SetOptTitle(0);
+  gStyle->SetOptStat(0);
+
   // load framework libraries 
   gSystem->Load( "libFWCoreFWLite" );
   AutoLibraryLoader::enable();
@@ -739,13 +726,10 @@ int main(int argc, char *argv[])
   optutl::CommandLineParser parser ("[FitSecVtxDistrutions]");
   parser.addOption("templ",   optutl::CommandLineParser::kString, "input file with templates");
   parser.addOption("ws",      optutl::CommandLineParser::kString, "input file with pre-defined workspace");
-  parser.addOption("calib",   optutl::CommandLineParser::kBool,   "if true calibration is run");
   parser.stringValue("ws")="";
-  parser.boolValue("calib")=false;
   parser.parseArguments (argc, argv);
   std::string templateInputFile = parser.stringValue("templ");
   std::string wsInUrl           = parser.stringValue("ws");
-  bool doCalib                  = parser.boolValue("calib");
 
   //
   // READ HISTOGRAMS FROM INPUT FILE AND DEFINE CATEGORIES
@@ -770,6 +754,8 @@ int main(int argc, char *argv[])
 	  TString keyStr(nextTemplKey->GetName());
 	  TH1F *h=(TH1F *) fIn->Get(ch+"/"+keyStr);
 	  h->SetDirectory(0);
+
+	  //force minimal counts in all bins (RooFit bug)
 	  for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
 	    {
 	      if(h->GetBinContent(ibin)>0) continue;
@@ -854,14 +840,5 @@ int main(int argc, char *argv[])
   cout << "[FitSecVtxDistributions] saving pre-fit distributions" << endl;
   showSecVtxShapeCollection(w,chShapes);
 
-
-  cout << "[FitSecVtxDistributions] studying bias" << endl;
-  //  studyBias(chShapes,w);
-
-  cout << "[FitSecVtxDistributions] studying systematics" << endl;
-  // studySysts(chShapes,w);
-
-
-  cout << "[FitSecVtxDistributions] fitting data" << endl;
-  // fitData(chShapes,w);
+  cout << report.str() << endl;
 }
