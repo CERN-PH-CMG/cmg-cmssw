@@ -292,13 +292,13 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       float cFrac(w->var(ch+"cyields")->getVal()),cFracErr(w->var(ch+"cyields")->getError()); 
       float bFrac(w->var(ch+"byields")->getVal()),bFracErr(w->var(ch+"byields")->getError()); 
       float rhobc=fitRes->correlation(ch+"cyields",ch+"byields"); 
-      float udsgFrac(1-cFrac-bFrac), udsgFracErr(sqrt(pow(cFracErr,2)+pow(bFracErr,2)+2*rhobc/(cFracErr*bFracErr)));
+      float udsgFrac(1-cFrac-bFrac), udsgFracErr(sqrt(pow(cFracErr,2)+pow(bFracErr,2)+2*rhobc*(cFracErr*bFracErr)));
 
       report << "[" << ch << " flavor fit] observed: " << totalObs << " expected: " << totalExp << endl
 	     << "\tc yields: "    << cFrac << "+/-" << cFracErr
 	     << "\tSF_c "         << cFrac/(cExp/totalExp) << "+/-" << cFracErr/(cExp/totalExp) <<  endl 
 	     << "\tudsg yields: " << udsgFrac << "+/-" << udsgFracErr  
-	     << "\tSF_udsg "      << udsgFrac/(udsgExp/totalExp) << "+/-" << udsgFrac/(udsgExp/totalExp) <<  endl 
+	     << "\tSF_udsg "      << udsgFrac/(udsgExp/totalExp) << "+/-" << udsgFracErr/(udsgExp/totalExp) <<  endl 
 	     << "\tb yields: "    << bFrac << "+/-" << bFracErr  
 	     << "\tSF_b "         << bFrac/(bExp/totalExp) << "+/-" << bFracErr/(bExp/totalExp) <<  endl
 	     << "\t rho(b,c):" << rhobc << endl;
@@ -360,7 +360,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       RooRealVar alpha4(ch+"alpha4","#alpha_{4}",0.0,  0.,   0.1);
       RooFormulaVar pfunc(ch+"pfunc","p","@0+@1*@2",RooArgSet(alpha1,alpha2,mtop)); 
       RooFormulaVar qfunc(ch+"qfunc","q","@0+@1*@2",RooArgSet(alpha3,alpha4,mtop));
-      RooRealVar thr(ch+"thr","#lambda",0.11,0.1,0.2);//,0,0.2);
+      RooRealVar thr(ch+"thr","#lambda",0.11);//,0.1,0.2);//,0,0.2);
       RooRealVar wid(ch+"wid","#sigma",0.035,0,0.1);
       TString F_form(  "(1.0/qfunc)*(1.0/TMath::Gamma(1+pfunc,thr/qfunc))*pow(var/qfunc,pfunc)*(exp(-var/qfunc)/(1+exp((thr-var)/wid)))"); 
       F_form.ReplaceAll("thr",   "@0");
