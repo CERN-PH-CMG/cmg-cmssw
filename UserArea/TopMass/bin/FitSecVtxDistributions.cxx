@@ -286,14 +286,22 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       //fit flavor fractions to data
       RooAddPdf flavorShapeModelunc(ch+"flavormodelunc", ch+"flavormodelunc", flavorPdfs, flavorFractions);
       flavorShapeModelunc.Print();
-      flavorShapeModelunc.fitTo(*mass_data,SumW2Error(kFALSE),Save(kTRUE));
+      RooFitResult *fitRes=flavorShapeModelunc.fitTo(*mass_data,SumW2Error(kFALSE),Save(kTRUE));
       w->import(flavorShapeModelunc);
+      
+      float cFrac(w->var(ch+"cyields")->getVal()),cFracErr(w->var(ch+"cyields")->getError()); 
+      float bFrac(w->var(ch+"byields")->getVal()),bFracErr(w->var(ch+"byields")->getError()); 
+      float rhobc=fitRes->correlation(ch+"cyields",ch+"byields"); 
+      float udsgFrac(1-cFrac-bFrac), udsgFracErr(sqrt(pow(cFracErr,2)+pow(bFracErr,2)+2*rhobc/(cFracErr*bFracErr)));
 
       report << "[" << ch << " flavor fit] observed: " << totalObs << " expected: " << totalExp << endl
-	     << "\tc yields: " << w->var(ch+"cyields")->getVal() << "+/-" << w->var(ch+"cyields")->getError()  
-	     << "\tSF_c " << w->var(ch+"cyields")->getVal()/(cExp/totalExp) << "+/-" << w->var(ch+"cyields")->getError()/(cExp/totalExp) <<  endl 
-	     << "\tb yields: " << w->var(ch+"byields")->getVal() << "+/-" << w->var(ch+"byields")->getError()  
-	     << "\tSF_b " << w->var(ch+"byields")->getVal()/(bExp/totalExp) << "+/-" << w->var(ch+"byields")->getError()/(bExp/totalExp) <<  endl; 
+	     << "\tc yields: "    << cFrac << "+/-" << cFracErr
+	     << "\tSF_c "         << cFrac/(cExp/totalExp) << "+/-" << cFracErr/(cExp/totalExp) <<  endl 
+	     << "\tudsg yields: " << udsgFrac << "+/-" << udsgFracErr  
+	     << "\tSF_udsg "      << udsgFrac/(udsgExp/totalExp) << "+/-" << udsgFrac/(udsgExp/totalExp) <<  endl 
+	     << "\tb yields: "    << bFrac << "+/-" << bFracErr  
+	     << "\tSF_b "         << bFrac/(bExp/totalExp) << "+/-" << bFracErr/(bExp/totalExp) <<  endl
+	     << "\t rho(b,c):" << rhobc << endl;
       
       //
       // DATA
@@ -524,9 +532,10 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  w->import(*lxyPdf);
 	}
       
-      // sum the backgrounds
+      // sum the backgrounds: SF_c x c + SF_udsg x udsg
       TH1F *h_bkg=(TH1F *)chShapes[is].lxy_bckg["c"]->Clone(ch+"lxy_bkgh");
-      h_bkg->Add(chShapes[is].lxy_bckg["udsg"]);
+      h_bkg->Scale( cFrac/(cExp/totalExp) );
+      h_bkg->Add(chShapes[is].lxy_bckg["udsg"], udsgFrac/(bExp/totalExp));
       RooDataHist *lxyData = new RooDataHist(ch+"lxy_bkg",    ch+"lxy_bkg",     RooArgList(lxy), Import(*h_bkg));
       RooHistPdf *lxyPdf   = new RooHistPdf(lxyData->GetName(), lxyData->GetName(), RooArgSet(lxy), *lxyData);
       w->import(*lxyPdf);
@@ -536,7 +545,7 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       w->var(ch+"beta2")->SetTitle("q");
       w->var(ch+"thr_bckg")->SetTitle("#lambda");
       w->var(ch+"wid_bkg")->SetTitle("#sigma");
-      RooFitResult *fitRes=w->pdf(ch+"flxy_bkg")->fitTo(*lxyData,Save(kTRUE),SumW2Error(kTRUE));
+      fitRes=w->pdf(ch+"flxy_bkg")->fitTo(*lxyData,Save(kTRUE),SumW2Error(kTRUE));
       
       TCanvas *cbkg=new TCanvas("cbkg","cbkg",500,500);
       RooPlot* frame = lxy.frame();
