@@ -11,8 +11,8 @@ void analyzer() {
  
   //TString inputDir="root://lxcms00//data3/cristina_area/TTH/TREES_081212/";
   //TString inputDir="/data3/cristina_area/TTH/TREES_081212/";
-  TString inputDir="/afs/cern.ch/work/b/botta/TTHAnalysis/BE_031212/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/cfg/TREES_081212/";
-  TString outDir = "TTH_plots/091212/";
+  TString inputDir="/afs/cern.ch/work/b/botta/TTHAnalysis/BE_031212/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/cfg/TREES_171212/";
+  TString outDir = "TTH_plots/171212/";
 
   float lumi = 20000.;
   vector<component> components;

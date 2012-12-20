@@ -1023,7 +1023,7 @@ void drawStepPlot(long stack, long data, TString xTitle ="", TString yTitle = ""
   drawStepPlot(s,d,xTitle,yTitle);
 }
 
-void drawStepPlot(THStack* stack, TH1F* data, TString xTitle ="", TString yTitle = "", int minX=0, int maxX=-1, float ymin=1e-3, float ymax=2e7) {
+void drawStepPlot(THStack* stack, TH1F* data, TString xTitle ="", TString yTitle = "", int minX=0, int maxX=-1, float ymin=1e-2, float ymax=2e5) {
   cout << "drawStepPlot: " << stack->GetName() << " " << (long) stack
        << ", "  << (long) data << endl;
 
