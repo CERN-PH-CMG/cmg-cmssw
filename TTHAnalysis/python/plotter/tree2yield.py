@@ -91,6 +91,15 @@ class CutsFile:
         self._cuts.append((newname,newcut))
         return self
 
+class PlotSpec:
+    def __init__(self,name,expr,bins,opts):
+        self.name = name
+        self.expr = expr
+        self.bins = bins
+        self.opts = opts
+    def getOption(self,name,default=None):
+        return self.opts[name] if (name in self.opts) else default
+
 class TreeToYield:
     def __init__(self,root,options,scaleFactor=1.0,name=None,settings={}):
         self._name  = name if name != None else root
@@ -107,6 +116,11 @@ class TreeToYield:
         return self._scaleFactor
     def name(self):
         return self._name
+    def hasOption(self,name):
+        return (name in self._settings)
+    def getOption(self,name,default=None):
+        if name in self._settings: return self._settings[name]
+        return default
     def _init(self):
         self._tfile = ROOT.TFile.Open(self._fname)
         if not self._tfile: raise RuntimeError, "Cannot open %s\n" % root
@@ -179,11 +193,26 @@ class TreeToYield:
         else: 
             npass = tree.Draw("1",cut,"goff");
             return [ npass, sqrt(npass) ]
-    def _stylePlot(self,plot):
-        if 'FillColor' in self._settings: plot.SetFillColor(self._settings['FillColor'])
-        if 'LineColor' in self._settings: plot.SetLineColor(self._settings['FillColor'])
-        else: plot.SetLineColor(1)
-    def getPlot(self,name,expr,bins,cut):
+    def _stylePlot(self,plot,spec):
+        ## Sample specific-options, from self
+        if self.hasOption('FillColor'):
+            plot.SetFillColor(self.getOption('FillColor',0))
+            plot.SetFillStyle(self.getOption('FillStyle',1001))
+        else:
+            plot.SetFillStyle(0)
+        plot.SetLineColor(self.getOption('LineColor',1))
+        plot.SetMarkerColor(self.getOption('MarkerColor',1))
+        plot.SetMarkerStyle(self.getOption('MarkerStyle',20))
+        plot.SetMarkerSize(self.getOption('MarkerSize',1.6))
+        ## Plot specific-options, from spec
+        plot.GetYaxis().SetTitle(spec.getOption('YTitle',"Events"))
+        plot.GetXaxis().SetTitle(spec.getOption('XTitle',spec.name))
+        plot.GetXaxis().SetNdivisions(spec.getOption('XNDiv',510))
+    def getPlot(self,plotspec,cut):
+        ret = self.getPlotRaw(plotspec.name, plotspec.expr, plotspec.bins, cut)
+        self._stylePlot(ret,plotspec)
+        return ret
+    def getPlotRaw(self,name,expr,bins,cut):
         if not self._isInit: self._init()
         if self._weight:
             cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, cut)
@@ -191,9 +220,7 @@ class TreeToYield:
         (nb,xmin,xmax) = bins.split(",")
         histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
         self._tree.Draw("%s>>%s" % (expr,"dummy"), cut ,"goff")
-        ret = histo.Clone(name)
-        self._stylePlot(ret)
-        return ret
+        return histo.Clone(name)
     def __str__(self):
         mystr = ""
         mystr += str(self._fname) + '\n'
