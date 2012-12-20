@@ -229,6 +229,16 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 10
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
+
+if not runOnMC and isNewerThan('CMSSW_5_2_0'):
+    process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
+
+
+## Last minute fixes
+process.PATJetSequenceCHS.remove(process.outTracksCHS)
+process.PATJetSequenceCHS.remove(process.ak5SoftTrackJetsForVbfHbbCHS)
+
+
 print sep_line
 
 print 'Fastjet instances (dominating our processing time...):'
@@ -240,5 +250,3 @@ print sep_line
 
 print 'starting CMSSW'
 
-if not runOnMC and isNewerThan('CMSSW_5_2_0'):
-    process.pfJetMETcorr.jetCorrLabel = cms.string("ak5PFL1FastL2L3Residual")
