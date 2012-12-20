@@ -22,6 +22,11 @@ class Wanalysis {
   int             useGenVar;
   
   // Declaration of leaf types
+  Double_t        scalePDF;
+  Double_t        parton1_pdgId;
+  Double_t        parton1_x;
+  Double_t        parton2_pdgId;
+  Double_t        parton2_x;
   Int_t           run;
   Int_t           lumi;
   Int_t           evt;
@@ -71,6 +76,11 @@ class Wanalysis {
   Double_t        Jet_leading_phi;
 
   // List of branches
+  TBranch        *b_scalePDF;   //!
+  TBranch        *b_parton1_pdgId;   //!
+  TBranch        *b_parton1_x;   //!
+  TBranch        *b_parton2_pdgId;   //!
+  TBranch        *b_parton2_x;   //!
   TBranch        *b_run;   //!
   TBranch        *b_lumi;   //!
   TBranch        *b_evt;   //!
@@ -194,6 +204,11 @@ void Wanalysis::Init(TTree *tree)
   fCurrent = -1;
   fChain->SetMakeClass(1);
 
+  fChain->SetBranchAddress("scalePDF", &scalePDF, &b_scalePDF);
+  fChain->SetBranchAddress("parton1_pdgId", &parton1_pdgId, &b_parton1_pdgId);
+  fChain->SetBranchAddress("parton1_x", &parton1_x, &b_parton1_x);
+  fChain->SetBranchAddress("parton2_pdgId", &parton2_pdgId, &b_parton2_pdgId);
+  fChain->SetBranchAddress("parton2_x", &parton2_x, &b_parton2_x);
   fChain->SetBranchAddress("run", &run, &b_run);
   fChain->SetBranchAddress("lumi", &lumi, &b_lumi);
   fChain->SetBranchAddress("evt", &evt, &b_evt);
