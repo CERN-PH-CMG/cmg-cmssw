@@ -27,7 +27,7 @@ plots_inclusive = {
     'mvacov10': PlotInfo(var1='mvacov10', cut=cut_inclusive, xmax=1000),
     'mvacov01': PlotInfo(var1='mvacov01', cut=cut_inclusive, xmax=1000),
     'mvacov11': PlotInfo(var1='mvacov01', cut=cut_inclusive, xmax=1000),
-    'mt_2': PlotInfo(var1='mt_2', cut=cut_inclusive, xmax=200),
+    'mt_1': PlotInfo(var1='mt_1', cut=cut_inclusive, xmax=200),
     'mvis': PlotInfo(var1='mvis', cut=cut_inclusive, xmax=200),
     'm_sv': PlotInfo(var1='m_sv', cut=cut_inclusive, xmax=350),
     'njets': PlotInfo(var1='njets', cut=cut_inclusive, nbins=5, xmax=5),
