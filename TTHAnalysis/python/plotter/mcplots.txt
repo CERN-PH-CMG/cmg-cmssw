@@ -1,0 +1,8 @@
+nJet25 : nJet25 : 8,0,8
+nBJetLoose25 : nBJetLoose25 : 6,0,6
+nBJetMedium25 : nBJetMedium25 : 6,0,6
+met: met: 60,0,300
+metLD: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1
+mZ1: mZ1: 70,0,140
+minMllAFAS: minMllAFAS: 70,0,140
+lepMVA: min(LepGood1_mva,min(LepGood2_mva,LepGood3_mva)) : 50,-1,1

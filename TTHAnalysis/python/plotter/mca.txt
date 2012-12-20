@@ -1,0 +1,27 @@
+#ttHWW+   : TTH : 0.1271 : GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
+#ttHtt+   : TTH : 0.1271 : GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
+#ttHZZ+   : TTH : 0.1271 : GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+ttH+     : TTH : 0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
+TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
+TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
+# TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
+WWW 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet
+WWZ 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet
+WW 	 : WWJets:     5.995    ;  FillColor=ROOT.kBlue-9
+WZ 	 : WZJets:     1.057    ;  FillColor=ROOT.kViolet-4
+ZZ	 : ZZ2e2mu:    0.1767   ;  FillColor=ROOT.kAzure-9
+ZZ 	 : ZZ2e2tau:   0.1767   ;  FillColor=ROOT.kAzure-9
+ZZ 	 : ZZ2mu2tau:  0.1767   ;  FillColor=ROOT.kAzure-9
+ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9   
+ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
+ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
+#TT 	 : TTLep:      23.64    ;  FillColor=ROOT.kGray
+TT 	 : TTJets:     225.2    ;  FillColor=ROOT.kGray
+TW 	 : TtW:        11.73    ;  FillColor=ROOT.kCyan+2
+TW 	 : TbartW:     11.73    ;  FillColor=ROOT.kCyan+2
+DY       : DYJetsM50 : 3503.7   ;  FillColor=ROOT.kCyan
+DY       : DYJetsM10 : 915      ;  FillColor=ROOT.kCyan
+WGs 	 : WGs2MU:     1.914    ;  FillColor=ROOT.kAzure-9
+WGs 	 : WGs2E:      5.873    ;  FillColor=ROOT.kAzure-9
+WGs 	 : WGs2Tau:    0.336    ;  FillColor=ROOT.kAzure-9
+#WJets    : WJets    : 37509.0   ;  FillColor=ROOT.kCyan+2
