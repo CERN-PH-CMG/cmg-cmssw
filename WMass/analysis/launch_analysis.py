@@ -55,7 +55,7 @@ runDataCardsParametrization = 0;
 ## NEW FIT
 print "if it doesn't work, try with this first: cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_5_3_3_patch3/src; setenv SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -";
 runClosureTest = 0;
-mergeResults = 1;
+mergeResults = 0;
 
 ## OLD FIT
 run_MassFit         = 0;
