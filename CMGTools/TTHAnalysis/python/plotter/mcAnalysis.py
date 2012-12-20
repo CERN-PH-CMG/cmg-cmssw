@@ -85,6 +85,9 @@ class MCAnalysis:
     def scaleUpProcess(self,process,scaleFactor):
         for tty in self._allData[process]: 
             tty.setScaleFactor( "((%s) * (%s))" % (tty.getScaleFactor(),scaleFactor) )
+    def getProcessOption(self,process,default=None):
+        tty = self._allData[process]
+        
     # assumes that all the processes have the same SF, oops
     def getScale(self,process):
         for tty in self._allData[process]: return tty.getScaleFactor()
@@ -116,21 +119,23 @@ class MCAnalysis:
             if self._backgrounds and not ret.has_key('background') and len(allBg) > 0:
                 ret['background'] = mergeReports(allBg)
         return ret
-    def getPlots(self,name,expr,bins,cut,process=None,nodata=False,makeSummary=False):
+    def getPlotsRaw(self,name,expr,bins,cut,process=None,nodata=False,makeSummary=False):
+        return self.getPlots(PlotSpec(name,expr,bins,{}),cut,process,nodata,makeSummary)
+    def getPlots(self,plotspec,cut,process=None,nodata=False,makeSummary=False):
         ret = { }
         allSig = []; allBg = []
         for key in self._allData:
             if key == 'data' and nodata: continue
             if process != None and key != process: continue
-            ret[key] = mergePlots(name+"_"+key, [tty.getPlot(name,expr,bins,cut) for tty in self._allData[key]])
+            ret[key] = mergePlots(plotspec.name+"_"+key, [tty.getPlot(plotspec,cut) for tty in self._allData[key]])
             if key != 'data':
                 if self._isSignal[key]: allSig.append(ret[key])
                 else: allBg.append(ret[key])
         if makeSummary:
             if self._signals and not ret.has_key('signal') and len(allSig) > 0:
-                ret['signal'] = mergePlots(name+"_signal", allSig)
+                ret['signal'] = mergePlots(plotspec.name+"_signal", allSig)
             if self._backgrounds and not ret.has_key('background') and len(allBg) > 0:
-                ret['background'] = mergePlots(name+"_background",allBg)
+                ret['background'] = mergePlots(plotspec.name+"_background",allBg)
         return ret
     def prettyPrint(self,reports,makeSummary=True):
         allSig = []; allBg = []
