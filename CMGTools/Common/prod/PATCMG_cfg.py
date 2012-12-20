@@ -235,8 +235,8 @@ if not runOnMC and isNewerThan('CMSSW_5_2_0'):
 
 
 ## Last minute fixes
-process.PATJetSequenceCHS.remove(process.outTracksCHS)
-process.PATJetSequenceCHS.remove(process.ak5SoftTrackJetsForVbfHbbCHS)
+# process.PATJetSequenceCHS.remove(process.outTracksCHS)
+# process.PATJetSequenceCHS.remove(process.ak5SoftTrackJetsForVbfHbbCHS)
 
 
 print sep_line
