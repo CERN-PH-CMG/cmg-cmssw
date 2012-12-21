@@ -59,6 +59,11 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             'std::vector<cmg::Muon>'
             )
 
+        self.mchandles['source'] =  AutoHandle(
+            'source',
+            'LHEEventProduct'
+            )
+
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (the one with best isolation).'''
         return max( [ (min(dilep.leg1().tauID("byRawIsoMVA"), dilep.leg2().tauID("byRawIsoMVA")), dilep) for dilep in diLeptons ] )[1]
@@ -143,6 +148,11 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                    electron.looseIdForTriLeptonVeto()           and \
                    self.testVertex( electron )           and \
                    electron.relIsoAllChargedDB05() < 0.3]
+
+	try:
+          event.NUP = self.mchandles['source'].product().hepeup().NUP
+	except:
+          event.NUP = -1
 
         event.genMatched = None
         if self.cfg_comp.isMC and ("DY" in self.cfg_comp.name or "Higgs" in self.cfg_comp.name):
