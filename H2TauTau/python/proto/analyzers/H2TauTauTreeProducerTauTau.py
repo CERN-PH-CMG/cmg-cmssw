@@ -154,6 +154,8 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         var('electron1Phi')
         var('muon1Phi')
 
+        var('NUP')
+
 	self.triggers=['HLT_LooseIsoPFTau35_Trk20_Prong1_v6',
          'HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v6',
          'HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v6',
@@ -165,7 +167,6 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
             varInt(trig)
 	
         self.tree.book()
-
 
     def process(self, iEvent, event):
 
@@ -408,6 +409,8 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
             fill('electron1Pt', -1 )
             fill('electron1Eta', -1 )
             fill('electron1Phi', -1 )
+
+        fill('NUP', event.NUP )
 
         for trig in self.triggers:
             fill(trig, getattr(event,trig))
