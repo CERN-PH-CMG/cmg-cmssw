@@ -2,9 +2,10 @@ import math
 from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauTau
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Tau, GenParticle
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Tau, Muon, GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 from ROOT import TFile
+from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
 
 class TauTauAnalyzer( DiLeptonAnalyzer ):
 
@@ -47,6 +48,16 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 	    masspoint=self.cfg_comp.name[7:10]
             self.higgsPtWeightFile=TFile("$CMSSW_BASE/src/CMGTools/H2TauTau/data/weight_ptH_"+masspoint+".root")
             self.higgsPtWeightHistogram=self.higgsPtWeightFile.Get("powheg_weight/weight_hqt_fehipro_fit_"+masspoint)
+
+        self.handles['electrons'] = AutoHandle(
+            'cmgElectronSel',
+            'std::vector<cmg::Electron>'
+            )
+        
+        self.handles['muons'] = AutoHandle(
+            'cmgMuonSel',
+            'std::vector<cmg::Muon>'
+            )
 
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (the one with best isolation).'''
@@ -119,6 +130,19 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             event.isSignal = False
         else:
             event.isSignal = True
+
+
+        # count muons
+        event.muons = [lep for lep in self.buildMuons(self.handles['muons'].product(),event)
+	        if self.testLegKine(lep, ptcut=10, etacut=2.4) and 
+                   self.testLeg2ID(lep) and
+                   self.testLeg2Iso(lep, 0.3) ]
+        # count electrons
+        event.electrons = [electron for electron in self.buildElectrons(self.handles['electrons'].product(),event)
+                if self.testLegKine(electron, ptcut=10, etacut=2.5) and \
+                   electron.looseIdForTriLeptonVeto()           and \
+                   self.testVertex( electron )           and \
+                   electron.relIsoAllChargedDB05() < 0.3]
 
         event.genMatched = None
         if self.cfg_comp.isMC and ("DY" in self.cfg_comp.name or "Higgs" in self.cfg_comp.name):
@@ -344,3 +368,57 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 	   leg.tauID("decayModeFinding")>0.5 and \
 	   leg.tauID("againstElectronLoose")>0.5 and \
 	   leg.tauID("againstMuonLoose")>0.5)
+
+    
+    def testLeg2ID(self, muon):
+        '''Tight muon selection, no isolation requirement'''
+        return muon.tightId() and \
+               self.testVertex( muon )
+               
+    def testLeg2Iso(self, muon, isocut):
+        '''Tight muon selection, with isolation requirement'''
+        if isocut is None:
+            isocut = self.cfg_ana.iso2
+        return self.muonIso(muon)<isocut
+
+    def testVertex(self, lepton):
+        '''Tests vertex constraints, for mu and tau'''
+        return abs(lepton.dxy()) < 0.045 and \
+               abs(lepton.dz()) < 0.2 
+
+    def testMuonIDLoose(self, muon):
+        '''Loose muon ID and kine, no isolation requirement, for lepton veto'''        
+        return muon.pt() > 15 and \
+               abs( muon.eta() ) < 2.4 and \
+               muon.isGlobalMuon() and \
+               muon.isTrackerMuon() and \
+               muon.sourcePtr().userFloat('isPFMuon') and \
+               abs(muon.dz()) < 0.2
+               # self.testVertex( muon ) 
+            
+    def buildMuons(self, cmgLeptons, event):
+        '''Build muons for veto, associate best vertex, select loose ID muons.
+        The loose ID selection is done to ensure that the muon has an inner track.'''
+        leptons = []
+        for index, lep in enumerate(cmgLeptons):
+            pyl = Muon(lep)
+            pyl.associatedVertex = event.goodVertices[0]
+            if not self.testMuonIDLoose( pyl ):
+                continue
+            leptons.append( pyl )
+        return leptons
+
+
+    def buildElectrons(self, cmgOtherLeptons, event):
+        '''Build electrons for third lepton veto, associate best vertex.
+        '''
+        otherLeptons = []
+        for index, lep in enumerate(cmgOtherLeptons):
+            pyl = Electron(lep)
+            pyl.associatedVertex = event.goodVertices[0]
+            #COLINTLV check ID 
+            # if not self.testMuonIDLoose(pyl):
+            #    continue
+            otherLeptons.append( pyl )
+        return otherLeptons
+
