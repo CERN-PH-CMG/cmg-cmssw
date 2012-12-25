@@ -28,6 +28,12 @@ export path="/data/benitezj/Samples"
 #export tag="muTau201253XAB_580Oct16"
 #export tag="muTau201253X_580Oct18Sync"
 #export tag="muTau201253X_580Oct23"
+#export tag="muTau201253X_580Nov20Trig"
+#export tag="muTau201253X_580Dec13Trig"
+#export tag="muTau201253X_580Dec11"
+#export tag="muTau201253X_580Dec13"
+#export tag="muTau201253X_580Dec21"
+
 
 ###e-tau 2012
 #export tag="TauEle2012V5_4_0_NewType1MET3"
@@ -39,7 +45,11 @@ export path="/data/benitezj/Samples"
 #export tag="eTau201253X_580Oct14"
 #export tag="eTau201253XAB_580Oct16"
 #export tag="eTau201253X_580Oct18Sync"
-export tag="eTau201253X_580Oct23"
+#export tag="eTau201253X_580Oct23"
+#export tag="eTau201253X_580Dec5Trig"
+#export tag="eTau201253X_580Dec13"
+#export tag="eTau201253X_580Dec19Trig"
+export tag="eTau201253X_580Dec21"
 
 export dirname=Plots_${tag}_${1}
 echo $dirname

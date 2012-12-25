@@ -25,7 +25,10 @@ using namespace std;
 #include <TCanvas.h>
 #include <TString.h>
 #include <TF1.h>
+#include <TGraph.h>
 
+
+#include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
 
 class TauMuPlotter : public TNamed {
 
@@ -154,10 +157,15 @@ public:
   void plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",TString IsoSel="(tauisodisc>=2)",Float_t ymax=50,Bool_t log=1);//
   void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
 
+
+  TH1F* getWNJetSumAllNoChCut();
+  TH1F* getWJetsNJetSumAllNoChCut();
+  TH1F* computeTrigEff(TH1F* HPass, TH1F* HFail);
+  void plotTauTrigger(Int_t Region, TString tag);
+
   //HCP Studies
   void plotQCDSSOSRatio();
   void plotQCDSSOSRatioBTag();
-  void fitZToMuMu();
   void compareZTTEmbedded();
   void compareZTTEmbeddedUnfolding();
   void plotZTTShape();
@@ -197,6 +205,7 @@ public:
   Int_t ZTTType_;
   Int_t WJetsType_;
   long mTCut_;
+  TString eventWeight_;
 
   Float_t TTJetsCorrFactor[3];
   float tauLooseIsoCut_;

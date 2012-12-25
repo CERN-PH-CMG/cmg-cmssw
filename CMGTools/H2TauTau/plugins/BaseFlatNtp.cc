@@ -16,8 +16,8 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   signalWeightHisto_(NULL),
   btagWP_(0.679),
   btagsf(12345),
-  // corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
-  corrector2012_(iConfig.getParameter<std::string>("fileCorrectTo")),
+  corrector_(iConfig.getParameter<std::string>("fileCorrectTo")),
+  //corrector2012_(iConfig.getParameter<std::string>("fileCorrectTo")),
   mvaWeights_(iConfig.getParameter<std::string>("mvaWeights")),
   reader_(mvaWeights_.c_str()),
   mvaWeights2012_(iConfig.getParameter<std::string>("mvaWeights2012")),
@@ -42,6 +42,15 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
 
   pupWeightName_=iConfig.getParameter<edm::InputTag>("pupWeightName");
   cout<<"pupWeightName_  : "<<pupWeightName_.label()<<endl;
+
+  pupWeightName_=iConfig.getParameter<edm::InputTag>("pupWeightName");
+  cout<<"pupWeightName_  : "<<pupWeightName_.label()<<endl;
+
+  for(long i=0;i<5;i++){
+    pupWeightNames_[i]=iConfig.getParameter<edm::InputTag>((TString("pupWeightNames")+(i+1)).Data());
+    cout<<"pupWeightNames_  : "<<pupWeightNames_[i].label()<<endl;
+  }
+
 
   firstRun_=iConfig.getParameter<int>("firstRun");
   cout<<"firstRun_  : "<<firstRun_<<endl;
@@ -115,10 +124,10 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   fileZmmMC_ = iConfig.getParameter<std::string>("fileZmmMC");
   cout<<"fileZmmMC_  : "<<fileZmmMC_.c_str()<<endl;
 
-  // corrector_.addDataFile( fileZmmData_);
-  // corrector_.addMCFile( fileZmmMC_);
-  corrector2012_.addDataFile( fileZmmData_);
-  corrector2012_.addMCFile( fileZmmMC_);
+  corrector_.addDataFile( fileZmmData_);
+  corrector_.addMCFile( fileZmmMC_);
+  //corrector2012_.addDataFile( fileZmmData_);
+  //corrector2012_.addMCFile( fileZmmMC_);
 
   recoiliScale_ = iConfig.getParameter<double>("recoiliScale");
   cout<<"recoiliScale_   : "<<recoiliScale_<<endl;
@@ -151,6 +160,13 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
       trigPaths_.push_back(new edm::InputTag(path));
     }
   }
+  for(long p=1;p<=10;p++){
+    edm::InputTag pathTest=iConfig.getParameter<edm::InputTag>((const char*)(TString("trigPathTest")+p));
+    if(pathTest.label()!=""){
+      cout<<pathTest.label()<<" "<<pathTest.instance()<<" "<<pathTest.process()<<endl;
+      trigPathsTest_.push_back(new edm::InputTag(pathTest));
+    }
+  }
 
 
 
@@ -176,10 +192,46 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("pupWeight",&pupWeight_,"pupWeight/F");
   tree_->Branch("eventweight",&eventweight_,"eventweight/F");
   tree_->Branch("triggerEffWeight",&triggerEffWeight_,"triggerEffWeight/F"); 
+  tree_->Branch("triggerEffWeightMu",&triggerEffWeightMu_,"triggerEffWeightMu/F"); 
+  tree_->Branch("triggerEffWeightTau",&triggerEffWeightTau_,"triggerEffWeightTau/F"); 
   tree_->Branch("selectionEffWeight",&selectionEffWeight_,"selectionEffWeight/F"); 
+  tree_->Branch("selectionEffWeightId",&selectionEffWeightId_,"selectionEffWeightId/F"); 
+  tree_->Branch("selectionEffWeightIso",&selectionEffWeightIso_,"selectionEffWeightIso/F"); 
   tree_->Branch("embeddedGenWeight",&embeddedGenWeight_,"embeddedGenWeight/F"); 
   tree_->Branch("btagEffWeight",&btagEffWeight_,"btagEffWeight/F");
   tree_->Branch("signalWeight",&signalWeight_,"signalWeight/F");
+
+
+  tree_->Branch("pupWeights1",&pupWeights_[0],"pupWeights1/F");
+  tree_->Branch("pupWeights2",&pupWeights_[1],"pupWeights2/F");
+  tree_->Branch("pupWeights3",&pupWeights_[2],"pupWeights3/F");
+  tree_->Branch("pupWeights4",&pupWeights_[3],"pupWeights4/F");
+  tree_->Branch("pupWeights5",&pupWeights_[4],"pupWeights5/F");
+
+  tree_->Branch("triggerEffWeightsMu1",&triggerEffWeightsMu_[0],"triggerEffWeightsMu1/F"); 
+  tree_->Branch("triggerEffWeightsMu2",&triggerEffWeightsMu_[1],"triggerEffWeightsMu2/F"); 
+  tree_->Branch("triggerEffWeightsMu3",&triggerEffWeightsMu_[2],"triggerEffWeightsMu3/F"); 
+  tree_->Branch("triggerEffWeightsMu4",&triggerEffWeightsMu_[3],"triggerEffWeightsMu4/F"); 
+  tree_->Branch("triggerEffWeightsMu5",&triggerEffWeightsMu_[4],"triggerEffWeightsMu5/F"); 
+
+  tree_->Branch("triggerEffWeightsTau1",&triggerEffWeightsTau_[0],"triggerEffWeightsTau1/F"); 
+  tree_->Branch("triggerEffWeightsTau2",&triggerEffWeightsTau_[1],"triggerEffWeightsTau2/F"); 
+  tree_->Branch("triggerEffWeightsTau3",&triggerEffWeightsTau_[2],"triggerEffWeightsTau3/F"); 
+  tree_->Branch("triggerEffWeightsTau4",&triggerEffWeightsTau_[3],"triggerEffWeightsTau4/F"); 
+  tree_->Branch("triggerEffWeightsTau5",&triggerEffWeightsTau_[4],"triggerEffWeightsTau5/F"); 
+
+  tree_->Branch("selectionEffWeightsId1",&selectionEffWeightsId_[0],"selectionEffWeightsId1/F"); 
+  tree_->Branch("selectionEffWeightsId2",&selectionEffWeightsId_[1],"selectionEffWeightsId2/F"); 
+  tree_->Branch("selectionEffWeightsId3",&selectionEffWeightsId_[2],"selectionEffWeightsId3/F"); 
+  tree_->Branch("selectionEffWeightsId4",&selectionEffWeightsId_[3],"selectionEffWeightsId4/F"); 
+  tree_->Branch("selectionEffWeightsId5",&selectionEffWeightsId_[4],"selectionEffWeightsId5/F"); 
+
+  tree_->Branch("selectionEffWeightsIso1",&selectionEffWeightsIso_[0],"selectionEffWeightsIso1/F"); 
+  tree_->Branch("selectionEffWeightsIso2",&selectionEffWeightsIso_[1],"selectionEffWeightsIso2/F"); 
+  tree_->Branch("selectionEffWeightsIso3",&selectionEffWeightsIso_[2],"selectionEffWeightsIso3/F"); 
+  tree_->Branch("selectionEffWeightsIso4",&selectionEffWeightsIso_[3],"selectionEffWeightsIso4/F"); 
+  tree_->Branch("selectionEffWeightsIso5",&selectionEffWeightsIso_[4],"selectionEffWeightsIso5/F"); 
+
 
   tree_->Branch("genbosonmass",&genbosonmass_,"genbosonmass/F");
   tree_->Branch("genbosonpt",&genbosonpt_,"genbosonpt/F");
@@ -189,13 +241,32 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("runnumber",&runnumber_,"runnumber/I");
   tree_->Branch("lumiblock",&lumiblock_,"lumiblock/I");
   tree_->Branch("eventid",&eventid_,"eventid/I");
+  tree_->Branch("trigPath1",&trigPath_[0],"trigPath1/I");
+  tree_->Branch("trigPath2",&trigPath_[1],"trigPath2/I");
+  tree_->Branch("trigPath3",&trigPath_[2],"trigPath3/I");
+  tree_->Branch("trigPath4",&trigPath_[3],"trigPath4/I");
+  tree_->Branch("trigPath5",&trigPath_[4],"trigPath5/I");
+  tree_->Branch("trigPath6",&trigPath_[5],"trigPath6/I");
+  tree_->Branch("trigPath7",&trigPath_[6],"trigPath7/I");
+  tree_->Branch("trigPath8",&trigPath_[7],"trigPath8/I");
+  tree_->Branch("trigPath9",&trigPath_[8],"trigPath9/I");
+  tree_->Branch("trigPath10",&trigPath_[9],"trigPath10/I");
+  tree_->Branch("trigTest1",&trigTest_[0],"trigTest1/I");
+  tree_->Branch("trigTest2",&trigTest_[1],"trigTest2/I");
+  tree_->Branch("trigTest3",&trigTest_[2],"trigTest3/I");
+  tree_->Branch("trigTest4",&trigTest_[3],"trigTest4/I");
+  tree_->Branch("trigTest5",&trigTest_[4],"trigTest5/I");
+  tree_->Branch("trigTest6",&trigTest_[5],"trigTest6/I");
+  tree_->Branch("trigTest7",&trigTest_[6],"trigTest7/I");
+  tree_->Branch("trigTest8",&trigTest_[7],"trigTest8/I");
+  tree_->Branch("trigTest9",&trigTest_[8],"trigTest9/I");
+  tree_->Branch("trigTest10",&trigTest_[9],"trigTest10/I");
 
   tree_->Branch("npu",&npu_,"npu/I");
   tree_->Branch("nvtx",&nvtx_,"nvtx/I");
   tree_->Branch("vtxx",&vtxx_,"vtxx/F");
   tree_->Branch("vtxy",&vtxy_,"vtxy/F");
   tree_->Branch("vtxz",&vtxz_,"vtxz/F");
-
 
   tree_->Branch("nditau",&nditau_,"nditau/I");
   tree_->Branch("ditaumass",&ditaumass_,"ditaumass/F");
@@ -394,10 +465,12 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   genEventType_=0;
   if(dataType_==0){  
     iEvent_->getByLabel(genParticlesTag_,genParticles_);    
-    for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
-      //cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
-      if((abs(g->pdgId())==23 || abs(g->pdgId())==24 ||  abs(g->pdgId())==25 ||  abs(g->pdgId())==36 ) && genBoson_==NULL )
-	genBoson_=&(*g);
+    for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){
+      if(g->status()==3){
+	//cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
+	if((abs(g->pdgId())==23 || abs(g->pdgId())==24 ||  abs(g->pdgId())==25 ||  abs(g->pdgId())==36 ) && genBoson_==NULL )
+	  genBoson_=&(*g);
+      }
     }
     //if(genBoson_)cout<<"genBoson_ ref = "<<genBoson_<<" "<<<genBoson_->pdgId()<<" "<<genBoson_->pt()<<endl;
 
@@ -412,9 +485,11 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
       int genMuons=0;
       int genElectrons=0;
       for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
-	if(abs(g->pdgId())==11 && g->mother()==genBoson_) genElectrons++;
-	if(abs(g->pdgId())==13 && g->mother()==genBoson_) genMuons++;
-	if(abs(g->pdgId())==15 && g->mother()==genBoson_) genTaus++;
+	if(g->status()==3){
+	  if(abs(g->pdgId())==11 && g->mother()==genBoson_) genElectrons++;
+	  if(abs(g->pdgId())==13 && g->mother()==genBoson_) genMuons++;
+	  if(abs(g->pdgId())==15 && g->mother()==genBoson_) genTaus++;
+	}
       }
       if(abs(genBoson_->pdgId())==23 && genElectrons==2)   genEventType_=1;
       if(abs(genBoson_->pdgId())==23 && genMuons==2)       genEventType_=3;
@@ -424,9 +499,11 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
       if(abs(genBoson_->pdgId())==24 && genTaus==1)        genEventType_=15;
 
       //get the leptons from the genBoson
-      for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
-	if((g->pdgId()==11 || g->pdgId()==13 || g->pdgId()==15 ) && g->mother()==genBoson_) genBosonL1_=&(*g);
-	if((g->pdgId()==-11 || g->pdgId()==-13 || g->pdgId()==-15 ) && g->mother()==genBoson_) genBosonL2_=&(*g);
+      for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){
+	if(g->status()==3){    
+	  if((g->pdgId()==11 || g->pdgId()==13 || g->pdgId()==15 ) && g->mother()==genBoson_) genBosonL1_=&(*g);
+	  if((g->pdgId()==-11 || g->pdgId()==-13 || g->pdgId()==-15 ) && g->mother()==genBoson_) genBosonL2_=&(*g);
+	}
       }      
 
       if(genBosonL1_ && genBosonL2_)
@@ -457,7 +534,7 @@ bool BaseFlatNtp::applySelections(){
   }
   counterruns_++;
 
-
+  trigpass_=0;
   if(trigPaths_.size()==0)trigpass_=1;//no trigger requirement
   for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){//cmg ObjetSel
     //cout<<path->label()<<" "<<path->instance()<<" "<<path->process()<<endl;
@@ -501,6 +578,8 @@ bool BaseFlatNtp::fill(){
   vtxz_=PV_->z();
 
   pupWeight_=1.;//do not comment out needs to be used.
+  for(long i=0;i<5;i++)
+    pupWeights_[i]=1.;
   npu_=-1;
   if(dataType_==0 && (pupWeightName_.label()).compare("")!=0){//if no vertex weight name is provided then leave weight to 1
     edm::Handle<double>  PupWeight;
@@ -518,6 +597,17 @@ bool BaseFlatNtp::fill(){
 	if(dataPeriodFlag_==2012)npu_ = PVI->getTrueNumInteractions();
       }
     }
+
+    //extra pile-up weights
+    for(long i=0;i<5;i++){
+      if((pupWeightNames_[i].label()).compare("")!=0){
+	edm::Handle<double>  PupWeight;
+	iEvent_->getByLabel(pupWeightNames_[i],PupWeight);    
+	pupWeights_[i]=(*PupWeight);
+      }
+    }
+
+
   }
 
 
@@ -556,21 +646,21 @@ bool BaseFlatNtp::fill(){
 
 bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::string filter, int pdgid){
 
+  //cout<<filter.c_str()<<endl;
   if(filter.compare("")==0) return 1;//no trigger matching required
 
   for(std::vector<cmg::TriggerObject>::const_iterator obj=trigObjs_->begin(); obj!=trigObjs_->end(); obj++){
-    if(obj->hasSelection(path.c_str())){//HLT path name
+    if(obj->hasSelection(path.c_str()))//HLT path name
       //obj->printSelections(cout);
-      if(obj->hasSelection(filter.c_str())){//last filter
+      if(obj->hasSelection(filter.c_str()))//last filter
 	if(reco::deltaR(eta,phi,obj->eta(),obj->phi())<0.3
 	   && (abs(obj->pdgId())==pdgid || pdgid==-1)
 	   ){
 	  //obj->printSelections(cout);	  
 	  //cout<<"pdg id "<<obj->pdgId()<<endl;
+	  //cout<<obj->hasSelection(filter.c_str())<<endl;
 	  return 1;      
 	}
-      }
-    }
   }
   
   return 0;

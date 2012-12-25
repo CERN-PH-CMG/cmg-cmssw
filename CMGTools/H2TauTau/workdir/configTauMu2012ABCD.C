@@ -2,41 +2,18 @@
 #include "Sample.h"
 #include <TString.h>
 
-TauMuPlotter * configTauMu2012(TString name, TString path){  
+TauMuPlotter * configTauMu2012ABCD(TString name, TString path){  
 
   TauMuPlotter * analysis = new TauMuPlotter(name);
   analysis->setOutputPath(path);
   analysis->setQCDOStoSSRatio(1.06);
   analysis->setZTTType(2);
   analysis->mTCut_=20;
- 
-// 2012A
-// | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v4 |       2823 | 96.977(/pb) | 96.977(/pb) |
-// | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v5 |       5260 | 316.128(/pb) | 316.128(/pb) |
-// | HLT_IsoMu18_eta2p1_LooseIsoPFTau20_v6 |       6516 | 396.213(/pb) | 396.213(/pb) |
-// 2012B
-// ./Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON.txt
-// | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2 |      50953 | 4.403(/fb) | 4.403(/fb) |
-// 2012Cv1
-// ./Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt
-// | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |       6719 | 495.003(/pb) | 495.003(/pb) |
-// 2012Cv2
-// ./Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2_For2012Cv2Lumi.txt
-// | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v3 |      15358 | 1.288(/fb) | 1.288(/fb) |
-// | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v6 |      52308 | 4.828(/fb) | 4.828(/fb) |
-// | HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v7 |       3425 | 281.155(/pb) | 281.155(/pb) |
-
-
- 
+  
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
   TauPlusX2012A->setSampleLumi(96.977+316.128+396.213);
   analysis->addSample(TauPlusX2012A);
-
-//   Sample* TauPlusX2012A2 = new Sample("TauPlusX2012A2",path);
-//   TauPlusX2012A2->setDataType("Data");
-//   TauPlusX2012A2->setSampleLumi(82.136);
-//   analysis->addSample(TauPlusX2012A2);
 
   Sample* TauPlusX2012B = new Sample("TauPlusX2012B",path);
   TauPlusX2012B->setDataType("Data");
@@ -53,13 +30,18 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
   TauPlusX2012Cv2->setSampleLumi(1288 + 4828 + 281);
   analysis->addSample(TauPlusX2012Cv2);
 
+  Sample* TauPlusX2012D = new Sample("TauPlusX2012D",path);
+  TauPlusX2012D->setDataType("Data");
+  TauPlusX2012D->setSampleLumi(6040);
+  analysis->addSample(TauPlusX2012D);
+
   Sample* Embedded2012A = new Sample("Embedded2012A",path);
   Embedded2012A->setDataType("Embedded");
   analysis->addSample(Embedded2012A);
 
-//   Sample* Embedded2012A2 = new Sample("Embedded2012A2",path);
-//   Embedded2012A2->setDataType("Embedded");
-//   analysis->addSample(Embedded2012A2);
+  Sample* Embedded2012A2 = new Sample("Embedded2012A2",path);
+  Embedded2012A2->setDataType("Embedded");
+  analysis->addSample(Embedded2012A2);
 
   Sample* Embedded2012B = new Sample("Embedded2012B",path);
   Embedded2012B->setDataType("Embedded");
@@ -236,6 +218,7 @@ TauMuPlotter * configTauMu2012(TString name, TString path){
 //       analysis->addSample(SUSYGG);    
 
 //   }
+
 
 
 

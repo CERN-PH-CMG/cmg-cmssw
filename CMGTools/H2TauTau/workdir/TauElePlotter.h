@@ -109,8 +109,14 @@ public:
   TH1F* getQCDIncWNJet();
 
   //
+  TH1F* getWNJetSumAll();
+  TH1F* getWNJetSumAllNoChCut();
+  TH1F* getWJetsNJetAllNoChCut();//combined without proper weights
+  TH1F* getWNJetSumAllNoChNoMTCut();
+  TH1F* getWJetsNJetAllNoChNoMTCut();
   TH1F* getWJetsNJetLooseTau();
   TH1F* getWJetsIncShape();
+  TH1F* getWJetsIncNoMTCut();
   TH1F* getW2JetsBJet();
   TH1F* getW3JetsVBF();
   TH1F* getQCDMuIsoSM();
@@ -149,14 +155,11 @@ public:
   //tau fake rate
   //void plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",TString IsoSel="(tauisodisc>=2)",Float_t ymax=50,Bool_t log=1);//
   void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
-
-
-  //
   void plotQCDSSOSRatio();
-
-  //
   void compareZTTEmbedded();
 
+  TH1F* computeTrigEff(TH1F* HPass, TH1F* HFail);
+  void plotTauTrigger(Int_t Region, TString tag);
 
   //utilities
   void setSmearHistoRes(float res){smearHistoRes_=res;}
@@ -185,6 +188,9 @@ public:
   Int_t SMcat_;
   TString extrasel_;
   TString blindsel_;
+
+  long mTCut_;
+  TString eventWeight_;
 
   TString plotvar_;
   Int_t nbins_;
