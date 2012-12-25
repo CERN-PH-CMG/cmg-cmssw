@@ -4,12 +4,19 @@
 #include <math.h> 
 #include "TMath.h" 
 #include <limits>
+#include <TH1.h> 
 
 
 class TriggerEfficiency {
 public:
   TriggerEfficiency(){} ;
   
+  ////Method for fitting turn-on curves
+  bool fitEfficiency(const char* filename,float xmin=0.,float xmax=0.);
+  double operator()(const double *xx ) const;
+  TH1* chi2FunctorHisto;  
+  float xmin_; float xmax_;
+
 
   //trigger lumi weighting done according to this table from:
   //https://twiki.cern.ch/twiki/bin/viewauth/CMS/HToTauTauPlusTwoJets
@@ -519,6 +526,22 @@ public:
 
 
 
+
+  ////////////////////Moriond Top-Up/////////////////////////////
+  double effMu_muTau_Data_2012D(double pt, double eta){
+    if (fabs(eta)<0.8)                        return efficiency (pt,15.9852,0.0428581,0.0160247,1.69952,0.971443) ;
+    else if (0.8<=fabs(eta) && fabs(eta)<1.2) return efficiency (pt,16.7041,0.383545,0.467605,1.59941,0.882451) ;
+    else                                      return efficiency (pt,15.9994,7.37077e-05,7.21076e-08,1.58178,0.861339) ;
+  }
+  double effTau_muTau_Data_2012D(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,19.09,    0.236111,    0.140104,    2.361672,    0.9137);
+    else               return efficiency(pt,19.49,    0.003359,    0.005832,    1.000378,    85.3401);
+  }
+  double effTau_muTau_MC53X_2012D(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,18.84,    0.962342,    2.103198,    1.014981,    1.8846);
+    else               return efficiency(pt,19.01,    0.492647,    0.449299,    137.190323,    0.8850);
+  }
+
   
   //********************************
   //e-tau 2012
@@ -680,6 +703,26 @@ public:
      if(fabs(eta)<1.5) return efficiency(pt,18.40815138,1.53235636,3.55989632,1.74542709,0.90118450);
      else              return efficiency(pt,18.29028052,1.56239255,11.03605631,155.89290151,0.85683995);
   }
+
+
+
+  ////////////////////Moriond Top-Up/////////////////////////////
+  double effEle_eTau_Data_2012D(double pt, double eta){
+    if (fabs(eta)<1.479)    return efficiency (pt,23.2037,0.947222,1.29024,1.09804,1.53015 ) ;
+    else                    return efficiency (pt,21.86,0.979008,0.505753,2.2701,0.94213) ;
+  }
+  double effTau_eTau_Data_2012D(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,18.73,    0.374578,    0.136068,    5.789410,    0.8638);
+    else               return efficiency(pt,19.32,    0.146243,    0.123579,    3.126114,    0.8313);
+  }
+  double effTau_eTau_MC53X_2012D(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,19.22,    0.204905,    0.175676,    2.644803,    0.8974);
+    else               return efficiency(pt,18.62,    0.037935,    0.002134,    95.090919,    0.8515);
+  }
+
+
+
+
 
   //****************
   //first trigger turn-ons for the di-tau trigger from Simone
@@ -916,7 +959,7 @@ double crystalballfunc(double m, double m0, double sigma, double alpha, double n
 private:
 
   //function definition taken from AN-11-390 v4
-  double efficiency(double m, double m0, double sigma, double alpha,double n, double norm);
+  double efficiency(double m, double m0, double sigma, double alpha,double n, double norm) const;
 } ;
 #endif 
 

@@ -46,8 +46,7 @@
 #include "CMGTools/H2TauTau/interface/SelectionEfficiency.h"
 //#include "CMGTools/H2TauTau/interface/TauRate.h"
 
-//COLIN
-// #include "CMGTools/Common/interface/RecoilCorrector.h"
+//#include "CMGTools/Common/interface/RecoilCorrector.h"
 #include "CMGTools/Utilities/interface/RecoilCorrector.h"
 
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
@@ -56,6 +55,7 @@
 
 #include "CMGTools/H2TauTau/interface/BTagEfficiency.h"
 #include "CMGTools/H2TauTau/interface/BTagWeight.h"
+//#include "CMGTools/H2TauTau/interface/BtagSF.h"
 #include "CMGTools/RootTools/interface/BTagSF.h"
 
 
@@ -91,7 +91,6 @@ protected:
   edm::InputTag verticesListTag_;
   edm::InputTag trigPathsListTag_;
   edm::InputTag trigObjsListTag_;
-  edm::InputTag pupWeightName_;
   int firstRun_; 
   int lastRun_; 
   int dataType_;//0=MC, 1=Data, 2=EmbeddedData, 3=EmbeddedMC
@@ -112,6 +111,7 @@ protected:
 
   edm::Handle< std::vector<cmg::TriggerObject> > trig_;
   std::vector<edm::InputTag *>  trigPaths_;
+  std::vector<edm::InputTag *>  trigPathsTest_;
 
   edm::InputTag genParticlesTag_;
   const reco::GenParticle * genBoson_;
@@ -125,6 +125,7 @@ protected:
 
 
   edm::InputTag diTauTag_;
+
 
   edm::InputTag muonVetoListTag_;
   edm::Handle< std::vector<cmg::Muon> > leptonVetoListMuon_;
@@ -153,9 +154,17 @@ protected:
 
   TriggerEfficiency triggerEff_;
   float triggerEffWeight_;
+  float triggerEffWeightMu_;
+  float triggerEffWeightTau_;
+  float triggerEffWeightsMu_[5];
+  float triggerEffWeightsTau_[5];
 
   SelectionEfficiency selectionEff_;
   float selectionEffWeight_;
+  float selectionEffWeightId_;
+  float selectionEffWeightIso_;
+  float selectionEffWeightsId_[5];
+  float selectionEffWeightsIso_[5];
 
   //HQT weights for 2011 signal samples
   std::string signalWeightDir_;
@@ -183,13 +192,19 @@ protected:
 
 
   //event variables
+  edm::InputTag pupWeightName_;
   float pupWeight_;
   float eventweight_;
   float embeddedGenWeight_;//for tau embedded samples
 
+  edm::InputTag pupWeightNames_[5];
+  float pupWeights_[5];
+
   int runnumber_;
   int lumiblock_;
   int eventid_;
+  int trigPath_[10];
+  int trigTest_[10];
 
   int npu_;
   int nvtx_;
@@ -402,8 +417,8 @@ protected:
   int diobjectindex_;
   edm::InputTag mvaMETSigTag_;
 
-  // RecoilCorrector corrector_;
-  RecoilCorrector corrector2012_;
+  RecoilCorrector corrector_;
+  //RecoilCorrector2012 corrector2012_;
   int recoilCorreciton_;
   double recoiliScale_;
   std::string fileZmmData_;
@@ -477,15 +492,13 @@ protected:
       }
       
       if(recoilCorreciton_<10) 
-	;
-/* 	corrector_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult ); */
+	corrector_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
       else if(recoilCorreciton_<20)
-/* 	corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult ); */
-	;
-      else if(recoilCorreciton_<30) //2012 MVA corrector
-	corrector2012_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
-      else if(recoilCorreciton_<40) //2012 MVA corrector
-	corrector2012_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+	corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+      //       else if(recoilCorreciton_<30) //2012 MVA corrector
+      // 	corrector2012_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
+      //       else if(recoilCorreciton_<40) //2012 MVA corrector
+      // 	corrector2012_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
       
       //smear the met even more
       //metpt_=metpt_*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);

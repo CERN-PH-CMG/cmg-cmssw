@@ -1,7 +1,4 @@
-//#include "CMGTools/H2TauTau/interface/Sample.h"
 #include "Sample.h"
-
-//ClassImp(Sample)
 
 Sample::Sample():
   TNamed("Sample","Sample")
@@ -41,9 +38,11 @@ TH1F* Sample::getHistoNtpFile(TString xvar,Int_t xnbins,Float_t xmin,Float_t xma
   TH1F* h=new TH1F(TString("Sample")+GetName(),xvar,xnbins,xmin,xmax);
   h->GetXaxis()->SetTitle(xvar);
   h->Sumw2();
-  ntpChain_->Draw(xvar+">>"+h->GetName(),selection);
-  
-  h->Scale(getNorm());
+  if(ntpChain_->GetNtrees()>0){
+    ntpChain_->Draw(xvar+">>"+h->GetName(),selection);
+    h->Scale(getNorm());
+  }
+
   return h;
 }
 
@@ -53,9 +52,11 @@ TH1F * Sample::getHistoNtpFile(TString xvar,Int_t Nbins, Float_t * Xbins, TStrin
   TH1F* h=new TH1F(TString("Sample")+GetName(),xvar,Nbins,Xbins);
   h->GetXaxis()->SetTitle(xvar);
   h->Sumw2();
-  ntpChain_->Draw(xvar+">>"+h->GetName(),selection);
+  if(ntpChain_->GetNtrees()>0){
+    ntpChain_->Draw(xvar+">>"+h->GetName(),selection);
+    h->Scale(getNorm());
+  }
 
-  h->Scale(getNorm());
   return h;
 }
 
@@ -65,9 +66,11 @@ TH2F* Sample::getHistoNtpFile(TString xvar, Int_t xnbins, Float_t xmin, Float_t 
     
   TH2F* h=new TH2F(TString("Sample")+GetName(),"",xnbins,xmin,xmax,ynbins,ymin,ymax);
   h->Sumw2();
-  ntpChain_->Draw(xvar+":"+yvar+">>"+h->GetName(),selection);
+  if(ntpChain_->GetNtrees()>0){
+    ntpChain_->Draw(xvar+":"+yvar+">>"+h->GetName(),selection);
+    h->Scale(getNorm());
+  }
 
-  h->Scale(getNorm());
   return h;
 }
 
@@ -158,7 +161,8 @@ bool Sample::openNtpFile(){
   }
 
   //set the number of generated events for MC needed for normalization
-  setSampleGenEvents(nProcEv);
+  if(ntpChain_->GetNtrees()>0)
+    setSampleGenEvents(nProcEv);
 
   cout<<GetName()<<" "<<TString(GetTitle())<<" : files = "<<ntpChain_->GetNtrees()<<" , nProcEv ="<<nProcEv<<" , entries = "<<ntpChain_->GetEntries()<<endl;
   

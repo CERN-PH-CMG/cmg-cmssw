@@ -10,6 +10,8 @@
 #include <TText.h>
 #include <TPaveText.h>
 #include "CMGTools/H2TauTau/interface/QCDEstimate.h"
+#include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
+
 
 #include "RooDataHist.h"
 #include "RooHistPdf.h"
@@ -20,6 +22,8 @@
 #include "RooChi2Var.h"
 #include "RooMinuit.h"
 using namespace RooFit;
+
+
 
 TauElePlotter::TauElePlotter():
   TNamed("","")
@@ -35,6 +39,8 @@ TauElePlotter::TauElePlotter(const char * name):
   SMcat_(-1),
   extrasel_("1"),
   blindsel_("1"),
+  mTCut_(30),
+  eventWeight_("eventweight"),
   plotvar_("ditaumass"),
   nbins_(100),
   xmin_(0.),
@@ -51,25 +57,6 @@ TauElePlotter::TauElePlotter(const char * name):
   TTJetsCorrFactor[1]=1.;
   TTJetsCorrFactor[2]=1.;
 
-
-
-  //Boosted/VBF methods
-//   TString qcdTauIsoRatioMuNonIso_;//formula for the ratio
-//   TString qcdMuIsoRatioTauNonIso_;//formula for the ratio
-//   TString qcdTauIsoRatio_;//formula for the ratio
-//   TString qcdMuIsoRatio_;//formula for the ratio
-//   TString wjetsTauIsoRatio_;//formula for the ratio for W+jets 
-//   TString wjetsTauIsoRatioSS_;//formula for the ratio for W+jets 
-
-//   //after sync
-//   qcdTauIsoRatio_ = "((20<taujetpt&&taujetpt<=25)*2.85+(25<taujetpt&&taujetpt<=30)*1+(30<taujetpt&&taujetpt<=35)*0.411+(35<taujetpt&&taujetpt<=40)*0.196+(40<taujetpt&&taujetpt<=45)*0.109+(45<taujetpt&&taujetpt<=50)*0.0644+(50<taujetpt&&taujetpt<=55)*0.0458+(55<taujetpt&&taujetpt<=60)*0.0349+(60<taujetpt&&taujetpt<=65)*0.0338)";
-//   qcdMuIsoRatio_  = "((17<mujetpt&&mujetpt<=22)*1.51+(22<mujetpt&&mujetpt<=27)*0.462+(27<mujetpt&&mujetpt<=32)*0.2+(32<mujetpt&&mujetpt<=37)*0.12+(37<mujetpt&&mujetpt<=42)*0.101+(42<mujetpt&&mujetpt<=47)*0.0964+(47<mujetpt&&mujetpt<=52)*0.14+(52<mujetpt&&mujetpt<=57)*0.116)";
-
-
-//   //after sync
-//   wjetsTauIsoRatio_ = "((20<taujetpt&&taujetpt<=25)*3.82+(25<taujetpt&&taujetpt<=30)*1.3+(30<taujetpt&&taujetpt<=35)*0.502+(35<taujetpt&&taujetpt<=40)*0.256+(40<taujetpt&&taujetpt<=45)*0.144+(45<taujetpt&&taujetpt<=50)*0.0986+(50<taujetpt&&taujetpt<=55)*0.0736+(55<taujetpt&&taujetpt<=60)*0.0546+(60<taujetpt&&taujetpt<=65)*0.0477+(65<taujetpt&&taujetpt<=70)*0.0365+(70<taujetpt&&taujetpt<=75)*0.0341+(75<taujetpt&&taujetpt<=80)*0.0271+(80<taujetpt&&taujetpt<=85)*0.024+(85<taujetpt&&taujetpt<=90)*0.0212+(90<taujetpt&&taujetpt<=95)*0.0192+(95<taujetpt&&taujetpt<=100)*0.0163)";
-
-
 }
 
 TauElePlotter::~TauElePlotter(){
@@ -82,18 +69,19 @@ bool TauElePlotter::scaleSamplesLumi(){
   //reset all scales
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     (*s)->resetScale();
-  
-
 
   /////////determine total lumi and scale MCs
   float totalDataLumi=getTotalDataLumi();
-
+  cout<<"totalDataLumi = "<<totalDataLumi<<endl;
+  
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
     if((*s)->getDataType()=="MC" 
        || (*s)->getDataType()=="MCCat" 
        || (*s)->getDataType()=="Signal" ){
       //cout<<(*s)->GetName()<<" lumi scale "<<totalDataLumi/(*s)->getLumi()<<endl;
-      (*s)->scale(totalDataLumi/(*s)->getLumi());
+      if((*s)->getLumi()>0.)
+	(*s)->scale(totalDataLumi/(*s)->getLumi());
+      else (*s)->scale(0.);
     }
 
 
@@ -102,7 +90,7 @@ bool TauElePlotter::scaleSamplesLumi(){
   ////Scale the embedded samples at inclusive level:  Should there be separate scale factor for OS and SS ? --> should be Ok. ZTauTau is small in SS
   /////////////////////////////////
   cout<<"---------> Scaling Embedded samples "<<endl;
-  TString sel="eventweight*(categoryIso==1&&abs(ditaucharge)==0&&1.<ditaumass&&ditaumass<1000.)";
+  TString sel=eventWeight_+"*(categoryIso==1&&abs(ditaucharge)==0&&1.<ditaumass&&ditaumass<1000.)";
   TH1F*hZTTMC=findSample("ZToTauTau")->getHistoNtpFile("ditaumass",10,1,1001,sel);
   Float_t ZToTauTauMC=hZTTMC->Integral();
   delete hZTTMC;
@@ -131,11 +119,11 @@ bool TauElePlotter::scaleSamplesLumi(){
 
 TH1F* TauElePlotter::getSample(TString samplename){
 
-  TString sel="eventweight";
+  TString sel=eventWeight_;
   if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
   if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<20)";
+  if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
   if(MTcat_==3)  sel += "*(transversemass>70)";
   if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
@@ -170,13 +158,13 @@ TH1F* TauElePlotter::getSample(TString samplename){
 
 
 TH1F* TauElePlotter::getTotalData(){
-  TString sel="eventweight";
-  if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
-  if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
+  TString sel=eventWeight_;
+  if(Chcat_==1)  sel += TString("*(abs(ditaucharge)==0)");
+  if(Chcat_==2)  sel += TString("*(abs(ditaucharge)==2)");
   if(Isocat_>0)  sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<20)";
+  if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
   if(MTcat_==3)  sel += "*(transversemass>70)";
-  if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
+  if(MTcat_==13) sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
   if(blindsel_.CompareTo("1")!=0)sel += TString("*")+blindsel_;
   
@@ -193,7 +181,7 @@ TH1F* TauElePlotter::getTotalData(){
       delete hd;
     }
  
-  cout<<"TotalData : "<<h->Integral()<<endl;
+  //cout<<"TotalData : "<<h->Integral()<<endl;
 
   return h;
 }
@@ -201,11 +189,11 @@ TH1F* TauElePlotter::getTotalData(){
 
 
 TH1F* TauElePlotter::getTotalEmbedded(){
-  TString sel="eventweight";
+  TString sel=eventWeight_;
   if(Chcat_==1) sel += TString("*(abs(ditaucharge)==0)");
   if(Chcat_==2) sel += TString("*(abs(ditaucharge)==2)");
   if(Isocat_>0) sel += TString("*(categoryIso==")+(long)Isocat_+")";
-  if(MTcat_==1)  sel += "*(transversemass<20)";
+  if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
   if(MTcat_==3)  sel += "*(transversemass>70)";
   if(MTcat_==13)  sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
@@ -381,8 +369,6 @@ TH1F* TauElePlotter::getWJetsInc(){
   TH1F* HData=getTotalData();
   TH1F* HMC=getZToTauTau();
   TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
-  TH1F* HVV=getDiBoson();     HMC->Add(HVV); delete HVV;
-  TH1F* HZL=getZL2012();      HMC->Add(HZL); delete HZL;
   TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); delete HZJ;
   MTcat_=tmpCategoryMT;
 
@@ -400,6 +386,49 @@ TH1F* TauElePlotter::getWJetsInc(){
   return hShape;
 }
 
+TH1F* TauElePlotter::getWJetsIncNoMTCut(){
+  cout<<" Calling getWJetsIncNoMTCut "<<endl;
+  TString sname="WJetsToLNu";
+
+  //shape of W+jets
+  Int_t tmpCategoryMT=MTcat_;
+  MTcat_=-1;
+  Int_t tmpChcat=Chcat_;
+  Chcat_=0;
+  TH1F*hShape=getSample(sname);
+  MTcat_=tmpCategoryMT;
+  Chcat_=tmpChcat;
+  hShape->SetName("getWJetsShape");
+
+  //determine normalization
+  MTcat_=3;
+  TH1F* HWHigh=getSample(sname);  HWHigh->SetName("getWJetsHigh");
+  TH1F* HData=getTotalData();
+  TH1F* HMC=getZToTauTau();
+  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
+  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); delete HZJ;
+  MTcat_=tmpCategoryMT;
+
+  TH1F*HWLow=getSample(sname);    HWLow->SetName("getWJetsLow");
+
+
+  if( HWHigh->Integral()>0. && hShape->Integral()>0. ){
+    hShape->Scale(1./hShape->Integral());
+    hShape->Scale(HWLow->Integral()*(HData->Integral()-HMC->Integral())/HWHigh->Integral());
+  }   else {
+    cout<<"WARNING Integral is 0"<<endl;
+    hShape->Scale(0.);
+  }
+
+  delete HData;
+  delete HMC;
+  delete HWLow;
+  delete HWHigh;
+
+  return hShape;
+}
+
+
 
 TH1F* TauElePlotter::getWNJetSum(){
   TH1F*hShape=getSample("W1JetsToLNu");
@@ -410,11 +439,54 @@ TH1F* TauElePlotter::getWNJetSum(){
   return hShape;
 }
 
+TH1F* TauElePlotter::getWNJetSumAll(){
+  TH1F*hShape=getSample("W1JetsToLNu");
+  hShape->SetName("getWNJetSum");
+  TH1F* HW2Shape=getSample("W2JetsToLNu"); hShape->Add(HW2Shape); delete HW2Shape;
+  TH1F* HW3Shape=getSample("W3JetsToLNu"); hShape->Add(HW3Shape); delete HW3Shape;
+  TH1F* HW4Shape=getSample("W4JetsToLNu"); hShape->Add(HW4Shape); delete HW4Shape;
+  TH1F* HWShape=getSample("WJetsToLNu"); hShape->Add(HWShape); delete HWShape;
+  return hShape;
+}
+
+TH1F* TauElePlotter::getWNJetSumAllNoChCut(){
+  Int_t tmpChcat=Chcat_;
+  Chcat_=0;
+  TH1F*hShape=getSample("W1JetsToLNu");
+  hShape->SetName("getWNJetSum");
+  TH1F* HW2Shape=getSample("W2JetsToLNu"); hShape->Add(HW2Shape); delete HW2Shape;
+  TH1F* HW3Shape=getSample("W3JetsToLNu"); hShape->Add(HW3Shape); delete HW3Shape;
+  TH1F* HW4Shape=getSample("W4JetsToLNu"); hShape->Add(HW4Shape); delete HW4Shape;
+  TH1F* HWShape=getSample("WJetsToLNu"); hShape->Add(HWShape); delete HWShape;
+  Chcat_=tmpChcat;
+  return hShape;
+}
+
+TH1F* TauElePlotter::getWNJetSumAllNoChNoMTCut(){
+  Int_t tmpChcat=Chcat_;
+  Chcat_=0;
+  Int_t tmpCategoryMT=MTcat_;
+  MTcat_=-1;
+  TH1F*hShape=getSample("W1JetsToLNu");
+  hShape->SetName("getWNJetSum");
+  TH1F* HW2Shape=getSample("W2JetsToLNu"); hShape->Add(HW2Shape); delete HW2Shape;
+  TH1F* HW3Shape=getSample("W3JetsToLNu"); hShape->Add(HW3Shape); delete HW3Shape;
+  TH1F* HW4Shape=getSample("W4JetsToLNu"); hShape->Add(HW4Shape); delete HW4Shape;
+  TH1F* HWShape=getSample("WJetsToLNu"); hShape->Add(HWShape); delete HWShape;
+  Chcat_=tmpChcat;
+  MTcat_=tmpCategoryMT;
+  return hShape;
+}
+
 
 
 TH1F* TauElePlotter::getWJetsNJet(){
   cout<<"calling method getWJetsNJet"<<endl;
+
+  Int_t tmpChcat=Chcat_;
+  Chcat_=0;
   TH1F*hShape=getWNJetSum();
+  Chcat_=tmpChcat;
   hShape->SetName("getWJetsNJet");
 
   //W Yield at high mT in Data, this should be done yield in current mass range
@@ -429,7 +501,7 @@ TH1F* TauElePlotter::getWJetsNJet(){
   MTcat_=tmpCategoryMT;
   cout<<"Data: "<<HData->Integral()<<" - MC: "<<HMC->Integral()<<" ="<<HData->Integral()-HMC->Integral()<<endl;
 
-  Int_t tmpChcat=Chcat_;
+
   Chcat_=0;///mT ratio is different if only use OS sample
 
   ///////Determine extrapolation factor, this should be done with wide mass range
@@ -483,6 +555,146 @@ TH1F* TauElePlotter::getWJetsNJet(){
 
   return hShape;
 }
+
+
+
+TH1F* TauElePlotter::getWJetsNJetAllNoChCut(){
+  cout<<"calling method getWJetsNJetAllNoChCut"<<endl;
+
+  ///Get the shape
+  TH1F*hShape=getWNJetSumAllNoChCut();
+  hShape->SetName("getWJetsNJet");
+
+  //W Yield at high mT in Data
+  Int_t tmpCategoryMT=MTcat_;
+  MTcat_=3;
+  TH1F* HData=getTotalData();
+  TH1F* HMC=getZToTauTau();
+  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
+  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); delete HZJ;
+  MTcat_=tmpCategoryMT;
+  cout<<"Data: "<<HData->Integral()<<" - MC: "<<HMC->Integral()<<" ="<<HData->Integral()-HMC->Integral()<<endl;
+
+  ///////Determine extrapolation factor
+  TString tmpplotvar=plotvar_;
+  plotvar_="ditaumass";
+  Int_t tmpnbins=nbins_;
+  nbins_=10;
+  Float_t tmpxmin=xmin_;
+  xmin_=0;
+  Float_t tmpxmax=xmax_;
+  xmax_=1000;
+
+  MTcat_=3;
+  TH1F* HWH=getWNJetSumAllNoChCut();
+  HWH->SetName("HWH");
+  MTcat_=tmpCategoryMT;
+  TH1F*HWL=getWNJetSumAllNoChCut();
+  HWL->SetName("HWL");
+  
+  plotvar_=tmpplotvar;
+  nbins_=tmpnbins;
+  xmin_=tmpxmin;
+  xmax_=tmpxmax;
+  
+
+  Float_t ratio=0.;
+  if(HWH->Integral()>0.){
+    double NWLerr=0.;
+    double NWHerr=0.;
+    Float_t NWL=HWL->IntegralAndError(1,HWL->GetNbinsX(),NWLerr);
+    Float_t NWH=HWH->IntegralAndError(1,HWH->GetNbinsX(),NWHerr);
+    ratio=NWL/NWH;
+    Float_t ratioerr=ratio*sqrt((NWLerr*NWLerr)/(NWL*NWL)+(NWHerr*NWHerr)/(NWH*NWH));
+
+    cout<<" W high mT : "<<NWH<<" "<<NWHerr<<endl;
+    cout<<" W low mT : "<<NWL<<" "<<NWLerr<<endl;
+    cout<<" extrapolation factor : "<<ratio<<" +- "<<ratioerr<<endl;
+  } else ratio=0.;
+
+
+  /////////////////////////Normalize the Shape
+  if(hShape->Integral()>0.){
+    hShape->Scale(((HData->Integral()-HMC->Integral())*ratio)/hShape->Integral());
+  }else     hShape->Scale(0.);
+
+  delete HData;
+  delete HMC;
+  delete HWH;
+  delete HWL;
+
+  return hShape;
+}
+
+
+TH1F* TauElePlotter::getWJetsNJetAllNoChNoMTCut(){
+  cout<<"calling method getWJetsNJetAllNoChNoMTCut"<<endl;
+
+  ///Get the shape
+  TH1F*hShape=getWNJetSumAllNoChNoMTCut();
+  hShape->SetName("getWJetsNJet");
+
+  //W Yield at high mT in Data
+  Int_t tmpCategoryMT=MTcat_;
+  MTcat_=3;
+  TH1F* HData=getTotalData();
+  TH1F* HMC=getZToTauTau();
+  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
+  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); delete HZJ;
+  MTcat_=tmpCategoryMT;
+  cout<<"Data: "<<HData->Integral()<<" - MC: "<<HMC->Integral()<<" ="<<HData->Integral()-HMC->Integral()<<endl;
+
+  ///////Determine extrapolation factor
+  TString tmpplotvar=plotvar_;
+  plotvar_="ditaumass";
+  Int_t tmpnbins=nbins_;
+  nbins_=10;
+  Float_t tmpxmin=xmin_;
+  xmin_=0;
+  Float_t tmpxmax=xmax_;
+  xmax_=1000;
+
+  MTcat_=3;
+  TH1F*HWH=getWNJetSumAllNoChCut();
+  HWH->SetName("HWH");
+  MTcat_=tmpCategoryMT;
+  TH1F*HWL=getWNJetSumAllNoChCut();
+  HWL->SetName("HWL");
+  
+  plotvar_=tmpplotvar;
+  nbins_=tmpnbins;
+  xmin_=tmpxmin;
+  xmax_=tmpxmax;
+  
+
+  Float_t ratio=0.;
+  if(HWH->Integral()>0.){
+    double NWLerr=0.;
+    double NWHerr=0.;
+    Float_t NWL=HWL->IntegralAndError(1,HWL->GetNbinsX(),NWLerr);
+    Float_t NWH=HWH->IntegralAndError(1,HWH->GetNbinsX(),NWHerr);
+    ratio=NWL/NWH;
+    Float_t ratioerr=ratio*sqrt((NWLerr*NWLerr)/(NWL*NWL)+(NWHerr*NWHerr)/(NWH*NWH));
+
+    cout<<" W high mT : "<<NWH<<" "<<NWHerr<<endl;
+    cout<<" W low mT : "<<NWL<<" "<<NWLerr<<endl;
+    cout<<" extrapolation factor : "<<ratio<<" +- "<<ratioerr<<endl;
+  } else ratio=0.;
+
+
+  /////////////////////////Normalize the Shape
+  if(hShape->Integral()>0.){
+    hShape->Scale(((HData->Integral()-HMC->Integral())*ratio)/hShape->Integral());
+  }else     hShape->Scale(0.);
+
+  delete HData;
+  delete HMC;
+  delete HWH;
+  delete HWL;
+
+  return hShape;
+}
+
 
 
 
@@ -1641,6 +1853,8 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   if(WJetsType==2) hWJetsToLNu = getWJetsNJet(); 
   if(WJetsType==3) hWJetsToLNu = getWJetsNJetVBFHCP();
   if(WJetsType==4) hWJetsToLNu = getWJetsNJetLooseTau();
+  if(WJetsType==5) hWJetsToLNu = getWJetsNJetAllNoChCut();
+  if(WJetsType==6) hWJetsToLNu = getWJetsNJetAllNoChNoMTCut();
   if(!hWJetsToLNu){
     cout<<"WJets Background is NULL"<<endl; 
     return 0;
@@ -1708,7 +1922,7 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   hZToEE->SetLineWidth(1);
   hZToEE->SetLineColor(1);
   hZToEE->SetFillColor(ZMuMuColor_);
-  cout<<"ZL "<<hZToTauTau->Integral()<<endl;
+  cout<<"ZL "<<hZToEE->Integral()<<endl;
   if(nbins_==0)makeDensityHisto(hZToEE); 
 
 
@@ -2498,4 +2712,250 @@ void TauElePlotter::compareZTTEmbedded(){
 
 }
 
+
+
+TH1F* TauElePlotter::computeTrigEff(TH1F* HPass, TH1F* HFail){
+  //Ratio = NPass/NTot = NPass/(NPass+NFail) =  1/(1+NFail/NPass)
+  //RatioErr= Ratio^2 * d(NFail/NPass)
+  TH1F* HRatio =(TH1F*)HFail->Clone(TString(HPass->GetName())+"Ratio");
+  HRatio->Divide(HPass);
+  TH1F* HEff =(TH1F*)HRatio->Clone(TString(HPass->GetName())+"Eff");
+  for(Int_t b=1;b<=HEff->GetNbinsX();b++){
+    HEff->SetBinContent(b,0);
+    HEff->SetBinError(b,0);
+    if(HPass->GetBinContent(b)>0 && HPass->GetBinError(b)/HPass->GetBinContent(b)<0.3){
+      HEff->SetBinContent(b,HPass->GetBinContent(b)/(HPass->GetBinContent(b)+HFail->GetBinContent(b)));
+      HEff->SetBinError(b,HEff->GetBinContent(b)*HEff->GetBinContent(b)*HRatio->GetBinError(b));
+    }
+  }
+  delete HRatio;
+  return HEff;
+}
+
+void  TauElePlotter::plotTauTrigger(Int_t Region, TString tag){
+  scaleSamplesLumi();
+
+  ///plot the difference in eta
+  plotvar_="taupt";
+  nbins_=13;
+  xmin_=0;
+  xmax_=52;
+  Chcat_=1;
+  Isocat_=1;
+  MTcat_=1;
+  extrasel_="1";
+
+  Float_t xbinsValues[15]={17,18,19,20,21,22,24,26,28,30,34,38,42,46,50};
+  setVariableBinning(14,xbinsValues);
+  nbins_=0;
+
+  
+  TString selectionTrigPass="(trigTest1==1||trigTest2==1||trigTest3==1||trigTest4==1||trigTest5==1||trigTest6==1||trigTest7==1||trigTest8==1||trigTest9==1)";
+  TString selectionTrigFail="(!"+selectionTrigPass+")";
+
+  TString selection;
+  if(Region==1) selection="(abs(taueta)<1.5)";
+  if(Region==2) selection="(abs(taueta)>1.5)";
+
+  TString region;
+  if(Region==1) region="Barrel";
+  if(Region==2) region="EndCap";
+
+
+  ///Calculate the Fakes Scale factor
+  ///Changes between Barrel and EndCap
+  extrasel_ = selection;
+  TH1F*HW   = getWJetsNJetAllNoChNoMTCut(); 
+  TH1F*HQCD = getQCDInc();
+  float FakesScaleFactor=(HW->Integral()+HQCD->Integral())/HW->Integral();
+  cout<<"W Fakes scale factor: "<<FakesScaleFactor<<endl;
+
+
+  extrasel_=selection;
+  TH1F*HTAUPT=getTotalData(); HTAUPT->SetName("HTAUPT");
+  TH1F*HMCTAUPT=getPlotHisto("HMCTAUPT");
+  TH1F*HMCZTT=getZToTauTau();         HMCTAUPT->Add(HMCZTT);                delete HMCZTT; 
+  TH1F*HMCW=getWJetsNJetAllNoChNoMTCut();
+  HMCTAUPT->Add(HMCW,FakesScaleFactor); 
+  TH1F*HMCWRaw=getWNJetSumAllNoChNoMTCut(); //uncorrected yield needed for scaling later 
+  TH1F*HMCZL=getZLInc();              HMCTAUPT->Add(HMCZL);                 delete HMCZL; //add ZL 
+  
+  extrasel_=selection+"*"+selectionTrigPass;
+  TH1F*HTAUPTTrigPass=getTotalData();  HTAUPTTrigPass->SetName("HTAUPTTrigPass");
+  TH1F*HMCTAUPTTrigPass=getPlotHisto("HMCTAUPTPass");
+  TH1F*HMCZTTTrigPass=getZToTauTau();          HMCTAUPTTrigPass->Add(HMCZTTTrigPass);                delete HMCZTTTrigPass; 
+  TH1F*HMCWTrigPass=getWNJetSumAllNoChNoMTCut();  
+  HMCTAUPTTrigPass->Add(HMCWTrigPass,FakesScaleFactor*HMCW->Integral()/HMCWRaw->Integral());         delete HMCWTrigPass; 
+  TH1F*HMCZLTrigPass=getZLInc();               HMCTAUPTTrigPass->Add(HMCZLTrigPass);                 delete HMCZLTrigPass;
+  
+  extrasel_=selection+"*"+selectionTrigFail;
+  TH1F*HTAUPTTrigFail=getTotalData();  HTAUPTTrigFail->SetName("HTAUPTTrigFail");
+  TH1F*HMCTAUPTTrigFail=getPlotHisto("HMCTAUPTFail");
+  TH1F*HMCZTTTrigFail=getZToTauTau();         HMCTAUPTTrigFail->Add(HMCZTTTrigFail);                delete HMCZTTTrigFail; 
+  TH1F*HMCWTrigFail=getWNJetSumAllNoChNoMTCut(); 
+  HMCTAUPTTrigFail->Add(HMCWTrigFail,FakesScaleFactor*HMCW->Integral()/HMCWRaw->Integral());        delete HMCWTrigFail; 
+  TH1F*HMCZLTrigFail=getZLInc();              HMCTAUPTTrigFail->Add(HMCZLTrigFail);                 delete HMCZLTrigFail;
+
+ 
+  TCanvas C;
+  TString plotFileName=TString("TauTriggerEfficiency_eTau_")+region+"_"+tag;
+  C.Print(plotFileName+".ps[");
+
+  ////Compare the Pass distribution to the total
+  C.Clear();
+  HTAUPT->SetTitle("Data ");
+  HTAUPT->GetXaxis()->SetTitle("Tau p_{T}");
+  HTAUPT->GetYaxis()->SetRangeUser(0,HTAUPT->GetMaximum()*1.3);
+  HTAUPT->Draw("hist");
+  HTAUPTTrigPass->Draw("histpesame");
+  C.Print(plotFileName+".ps");
+
+  C.Clear();
+  HMCTAUPT->SetTitle("MC ");
+  HMCTAUPT->GetXaxis()->SetTitle("Tau p_{T}");
+  HMCTAUPT->GetYaxis()->SetRangeUser(0,HMCTAUPT->GetMaximum()*1.3);
+  HMCTAUPT->Draw("hist");
+  HMCTAUPTTrigPass->Draw("histpesame");
+  C.Print(plotFileName+".ps");
+
+  /////////Compute the efficiency 
+  TH1F* HTAUPTTrigEff = computeTrigEff(HTAUPTTrigPass,HTAUPTTrigFail); 
+  TH1F* HMCTAUPTTrigEff = computeTrigEff(HMCTAUPTTrigPass,HMCTAUPTTrigFail); 
+
+
+  C.Clear();
+  HTAUPTTrigEff->SetTitle("");
+  HTAUPTTrigEff->GetXaxis()->SetTitle("Tau p_{T}");
+  HTAUPTTrigEff->GetYaxis()->SetTitle("Efficiency");
+  HTAUPTTrigEff->GetYaxis()->SetRangeUser(0.,1);
+  HTAUPTTrigEff->Draw("histpe");
+  HMCTAUPTTrigEff->SetMarkerColor(4);
+  HMCTAUPTTrigEff->SetLineColor(4);
+  HMCTAUPTTrigEff->Draw("histpesame");
+  C.Print(plotFileName+".ps");
+
+
+  ///save the histograms for fitting later
+  TFile FData(plotFileName+"_Data.root","recreate");
+  HTAUPTTrigEff->SetName("efficiency");  HTAUPTTrigEff->SetTitle("");
+  HTAUPTTrigEff->Write();
+  FData.ls(); FData.Close();
+  TFile FMC(plotFileName+"_MC.root","recreate");
+  HMCTAUPTTrigEff->SetName("efficiency");   HMCTAUPTTrigEff->SetTitle("");
+  HMCTAUPTTrigEff->Write();
+  FMC.ls(); FMC.Close();
+
+
+  /////////////////compare to the curve from Josh
+  TriggerEfficiency triggerEff_;
+  TGraph HTAUPTTrigEff_Josh;
+  TGraph HMCTAUPTTrigEff_Josh;
+  for(Int_t p=0;p<100;p++){
+    float x=17+p;
+    HTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau2012ABC_TauEle(x,(Region==1)*0.0+(Region==2)*2.0));
+    HMCTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.eff2012Tau20MC53X_TauEle(x,(Region==1)*0.0+(Region==2)*2.0));
+  }
+
+  C.Clear();
+  HTAUPTTrigEff->Draw("histpe");
+  HMCTAUPTTrigEff->Draw("histpesame");
+  HTAUPTTrigEff_Josh.SetLineColor(1);
+  HTAUPTTrigEff_Josh.Draw("lsame");
+  HMCTAUPTTrigEff_Josh.SetLineColor(4);
+  HMCTAUPTTrigEff_Josh.Draw("lsame");
+  C.Print(plotFileName+".ps");
+
+
+
+
+  ///////////////Compare Real and Fake Taus
+  //Low mT ZTT  
+  MTcat_=1;
+  extrasel_=selection+"*"+selectionTrigPass;
+  TH1F*HTAUPTZTTTrigPass=getZToTauTau();  HTAUPTZTTTrigPass->SetName("HTAUPTZTTTrigPass");
+  extrasel_=selection+"*"+selectionTrigFail;
+  TH1F*HTAUPTZTTTrigFail=getZToTauTau();  HTAUPTZTTTrigFail->SetName("HTAUPTZTTTrigFail");
+  TH1F*HMCTAUPTZTTTrigEff = computeTrigEff(HTAUPTZTTTrigPass,HTAUPTZTTTrigFail); 
+
+  //Low mT ZEE
+  MTcat_=1;
+  extrasel_=selection+"*"+selectionTrigPass;
+  TH1F*HTAUPTZLTrigPass=getZLInc();  HTAUPTZLTrigPass->SetName("HTAUPTZLTrigPass");
+  extrasel_=selection+"*"+selectionTrigFail;
+  TH1F*HTAUPTZLTrigFail=getZLInc();  HTAUPTZLTrigFail->SetName("HTAUPTZLTrigFail");
+  TH1F*HMCTAUPTZLTrigEff = computeTrigEff(HTAUPTZLTrigPass,HTAUPTZLTrigFail);
+
+  //high MT W : Do not normalize to Data otherwise efficiency is set to Data efficiency
+  MTcat_=3;
+  extrasel_=selection+"*"+selectionTrigPass;
+  TH1F*HMCTAUPTWTrigPass=getWNJetSumAllNoChCut(); HMCTAUPTWTrigPass->SetName("HMCTAUPTWTrigPass"); 
+  extrasel_=selection+"*"+selectionTrigFail;
+  TH1F*HMCTAUPTWTrigFail=getWNJetSumAllNoChCut(); HMCTAUPTWTrigFail->SetName("HMCTAUPTWTrigFail"); 
+  TH1F*HMCTAUPTWTrigEff= computeTrigEff(HMCTAUPTWTrigPass,HMCTAUPTWTrigFail);
+
+  //high MT Data 
+  MTcat_=3;
+  extrasel_=selection+"*"+selectionTrigPass;
+  TH1F*HTAUPTWTrigPass=getTotalData();  HTAUPTWTrigPass->SetName("HTAUPTWTrigPass");
+  extrasel_=selection+"*"+selectionTrigFail;
+  TH1F*HTAUPTWTrigFail=getTotalData();  HTAUPTWTrigFail->SetName("HTAUPTWTrigFail");
+  TH1F*HTAUPTWTrigEff= computeTrigEff(HTAUPTWTrigPass,HTAUPTWTrigFail);
+
+
+
+  C.Clear();
+  HTAUPTWTrigEff->SetTitle("");
+  HTAUPTWTrigEff->GetXaxis()->SetTitle("Tau p_{T}");
+  HTAUPTWTrigEff->GetYaxis()->SetTitle("Efficiency");
+  HTAUPTWTrigEff->GetYaxis()->SetRangeUser(.0,1);
+  HTAUPTWTrigEff->Draw("histpe");
+  HMCTAUPTWTrigEff->SetMarkerColor(WJetsColor_);
+  HMCTAUPTWTrigEff->SetLineColor(WJetsColor_);
+  HMCTAUPTWTrigEff->Draw("histpesame");
+  TLegend legend;
+  legend.SetFillStyle (0);
+  legend.SetFillColor (0);
+  legend.SetBorderSize(0);
+  legend.SetTextSize(0.04);
+  legend.AddEntry(HMCTAUPTWTrigEff,"W+jets (mT>70)","pe");
+  legend.AddEntry(HTAUPTWTrigEff,"Data (mT>70)","pe");
+  legend.SetX1NDC(.50);
+  legend.SetX2NDC(.85);
+  legend.SetY1NDC(.22);
+  legend.SetY2NDC(.57);
+  legend.Draw();
+  C.Print(plotFileName+".ps");
+
+
+
+  C.Clear();
+  HMCTAUPTZTTTrigEff->SetTitle("");
+  HMCTAUPTZTTTrigEff->GetXaxis()->SetTitle("Tau p_{T}");
+  HMCTAUPTZTTTrigEff->GetYaxis()->SetTitle("Efficiency");
+  HMCTAUPTZTTTrigEff->SetMarkerColor(ZTauTauColor_);
+  HMCTAUPTZTTTrigEff->SetLineColor(ZTauTauColor_);
+  HMCTAUPTZTTTrigEff->GetYaxis()->SetRangeUser(.0,1);
+  HMCTAUPTZTTTrigEff->Draw("histpe");
+  HMCTAUPTZLTrigEff->SetMarkerColor(ZMuMuColor_);
+  HMCTAUPTZLTrigEff->SetLineColor(ZMuMuColor_);
+  HMCTAUPTZLTrigEff->Draw("histpesame");
+  TLegend legend2;
+  legend2.SetFillStyle (0);
+  legend2.SetFillColor (0);
+  legend2.SetBorderSize(0);
+  legend2.SetTextSize(0.04);
+  legend2.AddEntry(HMCTAUPTZTTTrigEff,TString("ZTT MC (mT<")+mTCut_+")","pe");
+  legend2.AddEntry(HMCTAUPTZLTrigEff,TString("Z->ee MC (mT<")+mTCut_+")","pe");
+  legend2.SetX1NDC(.50);
+  legend2.SetX2NDC(.85);
+  legend2.SetY1NDC(.22);
+  legend2.SetY2NDC(.57);
+  legend2.Draw();
+  C.Print(plotFileName+".ps");
+
+
+
+
+  C.Print(plotFileName+".ps]");
+}
 

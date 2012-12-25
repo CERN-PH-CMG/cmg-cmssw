@@ -363,81 +363,154 @@ bool TauMuFlatNtp::fill(){
 
   /////mu and tau trigger efficiency weight
   triggerEffWeight_=1.;
+  triggerEffWeightMu_=1.;
+  triggerEffWeightTau_=1.;
   selectionEffWeight_=1.;
+  selectionEffWeightId_=1.;
+  selectionEffWeightIso_=1.;
+
+  for(long i=0;i<5;i++){
+    triggerEffWeightsMu_[i]=1.;
+    triggerEffWeightsTau_[i]=1.;
+    selectionEffWeightsId_[i]=1.;
+    selectionEffWeightsIso_[i]=1.;
+  }
+
   if(dataType_==0 || dataType_==2){
     
     if(dataPeriodFlag_==2011){
       if(trigPaths_.size()>0){
 	if(triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	  triggerEffWeight_ *= triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	  triggerEffWeightTau_ = triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
 	    /triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	
+
 	if(triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	  triggerEffWeight_ *= triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	  triggerEffWeightMu_ = triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
 	    /triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
       }else{
-	triggerEffWeight_ *= triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	triggerEffWeight_ *= triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	triggerEffWeightTau_ = triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightMu_ = triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       }
       
       //id+isolation corrections
-      selectionEffWeight_ *= selectionEff_.effCorrMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      selectionEffWeight_ = selectionEff_.effCorrMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
     }
+
+
     if(dataPeriodFlag_==2012){
-//       if(trigPaths_.size()>0){
-// 	if(triggerEff_.effTau2012MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-// 	  triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-// 	    /triggerEff_.effTau2012MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-// 	if(triggerEff_.effMu2012MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-// 	  triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-// 	    /triggerEff_.effMu2012MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-//       }else{
-// 	triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-// 	triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-//       }
-//       //id+isolation corrections
-//       selectionEffWeight_ *= selectionEff_.effCorrMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
-//       ////2012 A + B crosscheck with 53X MC
-//       if(trigPaths_.size()>0){
-// 	if(triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-// 	  triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-// 	    /triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-
-// 	if(triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-// 	  triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-// 	    /triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC (diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-//       }else{
-// 	triggerEffWeight_ *= triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-// 	triggerEffWeight_ *= triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-//       }
-
-      //////////2012 A+B+C
       if(trigPaths_.size()>0){
+	////////////////////Nominal weights
 	if(triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	  triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	  triggerEffWeightTau_ = triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
 	    /triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 
 	if(triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC (diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	  triggerEffWeight_ *= triggerEff_.effMu2012_Rebecca_TauMu_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	  triggerEffWeightMu_ = triggerEff_.effMu2012_Rebecca_TauMu_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
 	    /triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC (diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
+	
+	/////////////////extra trigger weights
+	if(triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeightsTau_[0] = triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC (diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeightsMu_[0] =  triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC (diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	if(triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeightsTau_[1] = triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.effTau2012MC53X(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC (diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeightsMu_[1] = triggerEff_.effMu2012_Rebecca_TauMu_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC (diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	if(triggerEff_.effTau_muTau_MC53X_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeightsTau_[2] = triggerEff_.effTau_muTau_Data_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.effTau_muTau_MC53X_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeightsMu_[2] = triggerEff_.effMu_muTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.eff_2012_Rebecca_TauMu_IsoMu1753XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
+
       }else{
-	triggerEffWeight_ *= triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	triggerEffWeight_ *= triggerEff_.effMu2012_Rebecca_TauMu_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	triggerEffWeightTau_ = triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightMu_ = triggerEff_.effMu2012_Rebecca_TauMu_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
+	triggerEffWeightsTau_[0] = triggerEff_.effTau2012AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightsMu_[0] =  triggerEff_.effMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	triggerEffWeightsTau_[1] = triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightsMu_[1] = triggerEff_.effMu2012_Rebecca_TauMu_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	triggerEffWeightsTau_[2] = triggerEff_.effTau_muTau_Data_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightsMu_[2] = triggerEff_.effMu_muTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
       }
 
 
-      //id correction to both MC and Embedded
-      selectionEffWeight_ *= selectionEff_.effCorrMuID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      ////////id weight
+      selectionEffWeightId_ = selectionEff_.effCorrMuID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      selectionEffWeightsId_[0] = selectionEff_.effCorrMu2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      selectionEffWeightsId_[1] = selectionEff_.effCorrMuID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      selectionEffWeightsId_[2] = selectionEff_.effCorrMuID2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
+
       //iso correction only to MC
-      if(dataType_==0)
-	selectionEffWeight_ *= selectionEff_.effCorrMuIso2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      if(dataType_==0){
+	selectionEffWeightIso_ = selectionEff_.effCorrMuIso2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	selectionEffWeightsIso_[0] = 1.;//need to separate the above function
+	selectionEffWeightsIso_[1] = selectionEff_.effCorrMuIso2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	selectionEffWeightsIso_[2] = selectionEff_.effCorrMuIso2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }
     }
 
   }
   
+  triggerEffWeight_   = triggerEffWeightMu_  * triggerEffWeightTau_;
+  selectionEffWeight_ = selectionEffWeightId_* selectionEffWeightIso_;
   eventweight_=pupWeight_*embeddedGenWeight_*triggerEffWeight_*selectionEffWeight_*signalWeight_;
 
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass weights "<<endl;
+
+
+  ///////////////check some filter paths
+  for(long p=0;p<10;p++){  trigPath_[p]=0;  trigTest_[p]=0;}
+  int i=0;
+  for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){//cmg ObjetSel
+    if(trig_->begin()->hasSelection((*path)->label())){
+      if(trig_->begin()->getSelection((*path)->label())){
+	//trigPath_[i]=1;
+
+	if(trigObjMatch(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),(*path)->label(),(*path)->process(),13)
+	   &&
+	   (trigObjMatch(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),(*path)->label(),(*path)->instance(),15)
+	     ||trigObjMatch(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),(*path)->label(),(*path)->instance(),0)
+	    )
+	   )trigPath_[i]=1;
+	
+      }
+    }
+    i++;
+  }
+  int j=0;
+  for(std::vector<edm::InputTag *>::const_iterator path=trigPathsTest_.begin(); path!=trigPathsTest_.end(); path++){//cmg ObjetSel
+    if(trig_->begin()->hasSelection((*path)->label())){
+      if(trig_->begin()->getSelection((*path)->label())){
+	
+	//trigTest_[j]=1;
+	if(trigObjMatch(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),(*path)->label(),(*path)->process(),13)
+	   &&
+	   (trigObjMatch(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),(*path)->label(),(*path)->instance(),15)
+	    ||trigObjMatch(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),(*path)->label(),(*path)->instance(),0)
+	    )
+	   )trigTest_[i]=1;
+	
+      }
+    }
+    j++;
+  }
+  ///////////////
+
+
 
   mupt_=diTauSel_->leg2().pt();
   mueta_=diTauSel_->leg2().eta();

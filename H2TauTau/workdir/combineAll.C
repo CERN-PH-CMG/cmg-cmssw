@@ -1,3 +1,29 @@
+
+
+/*
+INSTRUCTIONS:
+-Execute from this directory:
+HiggsAnalysis/HiggsToTauTau/test
+
+-In there you need 3 directories:
+HiggsAnalysis/HiggsToTauTau/test/root/ (input root-cards)
+HiggsAnalysis/HiggsToTauTau/test/datacards/ (.txt data-cards)
+HiggsAnalysis/HiggsToTauTau/test/fitresults/ (mlfit result for the pulls in a file called mlfit_sm.txt)
+
+-Run the following commands to generate the root files containing the postfit histograms:
+python produce_macros.py  -a sm -c 'mt, et, em' -u 1 -p "7TeV 8TeV"
+python produce_macros.py  -a sm -c 'tt' -u 1 -p "8TeV"
+sed -i 's/bool log=true/bool log=false/g' *_0_*.C
+sed -i 's/BLIND_DATA = true/BLIND_DATA = false/g' *.C
+python run_macros.py  -a sm -c 'mt, et, em'  -p "7TeV 8TeV"
+python run_macros.py  -a sm -c 'tt'  -p "8TeV"
+
+-Now one can execute this combineAll.C macro
+
+*/
+
+
+
 #include "weightedCombine.C"
 
 void combineAll(int weight=1){

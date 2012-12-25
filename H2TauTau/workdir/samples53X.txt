@@ -1,8 +1,10 @@
 TauPlusX2012A cmgtools 20 470
-TauPlusX2012A2 cmgtools 10  56
+TauPlusX2012A2 cmgtools 10 56
 TauPlusX2012B cmgtools 30 3007
 TauPlusX2012Cv1 cmgtools 20 312
 TauPlusX2012Cv2 cmgtools 30 4592
+#TauPlusX2012D cmgtools 30 5612
+TauPlusX2012D cmgtools 30 6512
 
 ###muTau
 Embedded2012A cmgtools 10 100
@@ -19,6 +21,12 @@ Embedded2012B cmgtools 10 533
 Embedded2012Cv1 cmgtools 5 54
 Embedded2012Cv2 cmgtools 10 736
 ZToEE cmgtools 30 2573
+
+SingleElectron2012A cmgtools 20 943
+SingleElectron2012B cmgtools 40 4891
+SingleElectron2012Cv1 cmgtools 20 691
+SingleElectron2012Cv2 cmgtools 40 8710
+
 
 ##Special
 Wbb cmgtools 20 1814

@@ -6,10 +6,12 @@
 #include "configTauMu2011.C"
 #include "configTauMu2012.C"
 #include "configTauMu2012AB.C"
+#include "configTauMu2012D.C"
 #include "TauElePlotter.h"
 #include "configTauEle2011.C"
 #include "configTauEle2012.C"
 #include "configTauEle2012AB.C"
+#include "configTauEle2012D.C"
 
 #define NMASS 8
 long massValues[NMASS]={110,115,120,125,130,135,140,145};
@@ -68,13 +70,15 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
   
   if(channel==1){
     if(year==2011)TauMuPlotter * analysis=configTauMu2011("analysis",path);
-    if(year==2012)TauMuPlotter * analysis=configTauMu2012("analysis",path);
+    //if(year==2012)TauMuPlotter * analysis=configTauMu2012("analysis",path);
     //if(year==2012)TauMuPlotter * analysis=configTauMu2012AB("analysis",path);
+    if(year==2012)TauMuPlotter * analysis=configTauMu2012D("analysis",path);
   }
   if(channel==2){
     if(year==2011)TauElePlotter * analysis=configTauEle2011("analysis",path);
-    if(year==2012)TauElePlotter * analysis=configTauEle2012("analysis",path);
+    //if(year==2012)TauElePlotter * analysis=configTauEle2012("analysis",path);
     //if(year==2012)TauElePlotter * analysis=configTauEle2012AB("analysis",path);
+    if(year==2012)TauElePlotter * analysis=configTauEle2012D("analysis",path);
   }
   
   analysis->plotvar_="svfitmass";
@@ -87,7 +91,7 @@ void histosForDataCardSM(Int_t channel,Int_t year,TString path,TString tag,Int_t
   analysis->Chcat_=1; 
   //analysis->mTCut_=option; 
 
-  analysis->printRawYields("eventweight*(categoryIso==1&&abs(ditaucharge)==0)");//need to load files before scaling by lumi
+  //analysis->printRawYields("eventweight*(categoryIso==1&&abs(ditaucharge)==0)");//need to load files before scaling by lumi
   analysis->scaleSamplesLumi();
 
   TFile output(ChannelName+"SM"+"_"+analysis->plotvar_+"_"+tag+".root","recreate");
@@ -281,10 +285,10 @@ void plotDataCard(TString file, Int_t channel){
   else if(channel==2)ChannelName="eleTau";
   else return;
   
-  TFile nominal(file,"read");
+  TFile nominal(file+".root","read");
   gROOT->cd();
 
-  TString fname=TString("plotDataCard_")+ChannelName+".ps";
+  TString fname=TString("plotDataCard_")+file+".ps";
 
   TCanvas C;
   C.Print(fname+"[");
