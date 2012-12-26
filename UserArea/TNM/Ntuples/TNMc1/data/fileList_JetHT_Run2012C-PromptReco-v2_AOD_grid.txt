@@ -182,6 +182,7 @@ root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_261.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_262.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_263.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_264.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_265.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_266.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_267.root
@@ -363,6 +364,7 @@ root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_425.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_426.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_427.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_428.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_429.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_43.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_430.root
@@ -443,6 +445,7 @@ root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_499.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_5.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_50.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_500.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_51.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_52.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_53.root
@@ -459,6 +462,7 @@ root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_63.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_64.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_65.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_66.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_67.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_68.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_6_0_B/NTUPLE_Oct25/ntuple_69.root
