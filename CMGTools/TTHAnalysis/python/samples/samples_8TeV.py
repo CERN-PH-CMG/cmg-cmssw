@@ -6,11 +6,15 @@ from copy import copy
 pat='V5_10_0'
 pat2='V5_6_0_B'
 pat3='V5_8_0'
-skim='TTH_151212'
-skim2='TTH_020113'
+#skim='TTH_151212'
+#skim2='TTH_020113'
+skim=''
+skim2=''
 filepattern = 'cmgTuple.*root'
-userName='botta'
-
+#userName='botta'
+#userName2='botta'
+userName='cmgtools'
+userName2='govoni'
 
 
 ################### Triggers
@@ -74,7 +78,7 @@ ZZTo4mu  =kreator.makeMCComponent('ZZTo4mu','/ZZTo4mu_8TeV-powheg-pythia6/Summer
 ZZTo4tau =kreator.makeMCComponent('ZZTo4tau','/ZZTo4tau_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 ZZTo4e   =kreator.makeMCComponent('ZZTo4e','/ZZTo4e_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 TTJets   =kreator.makeMCComponent('TTJets','/TTJets_TuneZ2star_8TeV-madgraph-tauola/Summer12-PU_S7_START52_V9-v1/AODSIM/V5_B/PAT_CMG_'+pat2+'/'+skim,userName,filepattern)
-TtW      =kreator.makeMCComponent('TtW','/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat2+'/'+skim,userName,filepattern)
+TtW      =kreator.makeMCComponent('TtW','/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/PAT_CMG_'+pat2+'/'+skim,userName2,filepattern)
 TbartW   =kreator.makeMCComponent('TbartW','/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat2+'/'+skim,userName,filepattern)
 W1Jets   =kreator.makeMCComponent('W1Jets','/W1JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat3+'/'+skim2,userName,filepattern)
 W2Jets   =kreator.makeMCComponent('W2Jets','/W2JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat3+'/'+skim2,userName,filepattern)
@@ -92,77 +96,107 @@ TTH,TTWJets,TTZJets,WWWJets,WWZJets,WGs2MU,WGs2E,WGs2Tau,TTWWJets,DYJetsM10,DYJe
 
 #-----------DATA---------------
 
-json='/afs/cern.ch/user/m/mangano/public/hcp2012_json_v2/hcp.json'
-
-# DoubleMuAB = cfg.DataComponent(
-#     name = 'DoubleMuAB',
-#     files = getFiles('/DoubleMu/Run2012A-13Jul2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
-#             getFiles('/DoubleMu/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+
-#             getFiles('/DoubleMu/Run2012B-13Jul2012-v4/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
-#     intLumi = 1,
-#     triggers = [],
-#     json = json
-#     )
-
-# DoubleMuC = cfg.DataComponent(
-#     name = 'DoubleMuC',
-#     files = getFiles('/DoubleMu/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
-#             getFiles('/DoubleMu/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-203002/'+skim,userName,filepattern),
-
-#     intLumi = 1,
-#     triggers = [],
-#     json = json
-#     )
+#json='/afs/cern.ch/user/m/mangano/public/hcp2012_json_v2/hcp.json'
+json='/afs/cern.ch/user/b/botta/public/moriond.json'
+#lumi: 12.21+7.27 = 19.48 /fb @ 8TeV
 
 
-# DoubleElectronAB = cfg.DataComponent(
-#     name = 'DoubleElectronAB',
-#     files = getFiles('/DoubleElectron/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
-#             getFiles('/DoubleElectron/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+
-#             getFiles('/DoubleElectron/Run2012B-13Jul2012-v1/AOD/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
-#     intLumi = 1,
-#     triggers = [],
-#     json = json
-#     )
+DoubleMuAB = cfg.DataComponent(
+    name = 'DoubleMuAB',
+    files = getFiles('/DoubleMu/Run2012A-13Jul2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleMu/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+
+            getFiles('/DoubleMu/Run2012B-13Jul2012-v4/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
 
-# DoubleElectronC = cfg.DataComponent(
-#     name = 'DoubleElectronC',
-#     files = getFiles('/DoubleElectron/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
-#             getFiles('/DoubleElectron/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-203002/'+skim,userName,filepattern),
+DoubleMuC = cfg.DataComponent(
+    name = 'DoubleMuC',
+    files = getFiles('/DoubleMu/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleMu/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-203002/'+skim,userName,filepattern),
 
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
 
-#     intLumi = 1,
-#     triggers = [],
-#     json = json
-#     )
-
-# MuEGAB = cfg.DataComponent(
-#     name = 'MuEGAB',
-#     files = getFiles('/MuEG/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
-#             getFiles('/MuEG/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+
-#             getFiles('/MuEG/Run2012B-13Jul2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
-#     intLumi = 1,
-#     triggers = [],
-#     json = json
-#     )
-
-# MuEGC = cfg.DataComponent(
-#     name = 'MuEGC',
-#     files = getFiles('/MuEG/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
-#             getFiles('/MuEG/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-203002/'+skim,userName,filepattern),
+DoubleMuD = cfg.DataComponent(
+    name = 'DoubleMuD',
+    files = getFiles('/DoubleMu/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
 
 
-#     intLumi = 1,
-#     triggers = [],
-#     json = json
-#     )
+
+
+
+DoubleElectronAB = cfg.DataComponent(
+    name = 'DoubleElectronAB',
+    files = getFiles('/DoubleElectron/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleElectron/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+
+            getFiles('/DoubleElectron/Run2012B-13Jul2012-v1/AOD/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+DoubleElectronC = cfg.DataComponent(
+    name = 'DoubleElectronC',
+    files = getFiles('/DoubleElectron/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleElectron/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-203002/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+DoubleElectronD = cfg.DataComponent(
+    name = 'DoubleElectronD',
+    files = getFiles('/DoubleElectron/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+
+
+
+
+MuEGAB = cfg.DataComponent(
+    name = 'MuEGAB',
+    files = getFiles('/MuEG/Run2012A-13Jul2012-v1/AOD/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/MuEG/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+
+            getFiles('/MuEG/Run2012B-13Jul2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+MuEGC = cfg.DataComponent(
+    name = 'MuEGC',
+    files = getFiles('/MuEG/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/MuEG/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'_runrange_start-203002/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+MuEGD = cfg.DataComponent(
+    name = 'MuEGD',
+    files = getFiles('/MuEG/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
 
           
-# dataSamplesMu=[DoubleMuAB,DoubleMuC]
+dataSamplesMu=[DoubleMuAB,DoubleMuC,DoubleMuD]
 
-# dataSamplesE=[DoubleElectronAB,DoubleElectronC]
+dataSamplesE=[DoubleElectronAB,DoubleElectronC,DoubleElectronD]
 
-# dataSamplesMuE=[MuEGAB,MuEGC]
+dataSamplesMuE=[MuEGAB,MuEGC,MuEGD]
 
 #Define splitting
 for comp in mcSamples:
@@ -170,18 +204,18 @@ for comp in mcSamples:
     comp.isData = False
     comp.splitFactor = 50
 
-# for comp in dataSamplesMu:
-#     comp.splitFactor = 500
-#     comp.isMC = False
-#     comp.isData = True
+for comp in dataSamplesMu:
+    comp.splitFactor = 500
+    comp.isMC = False
+    comp.isData = True
 
-# for comp in dataSamplesE:
-#     comp.splitFactor = 500
-#     comp.isMC = False
-#     comp.isData = True
+for comp in dataSamplesE:
+    comp.splitFactor = 500
+    comp.isMC = False
+    comp.isData = True
     
-# for comp in dataSamplesMuE:
-#     comp.splitFactor = 500
-#     comp.isMC = False
-#     comp.isData = True
+for comp in dataSamplesMuE:
+    comp.splitFactor = 500
+    comp.isMC = False
+    comp.isData = True
 
