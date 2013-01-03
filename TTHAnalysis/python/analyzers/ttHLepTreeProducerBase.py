@@ -20,18 +20,23 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         isMC = self.cfg_comp.isMC 
 
         tr = self.tree
-        # var( tr, 'run', int)
-        # var( tr, 'lumi', int)
-        # var( tr, 'evt', int)
+        var( tr, 'run', int)
+        var( tr, 'lumi', int)
+        var( tr, 'evt', int)
         var( tr, 'nVert')
+        
+        ## --- LEPTONS ---
         var( tr, 'nLepLoose', int)
         var( tr, 'nLepGood', int)
+        for i in range(8):
+            #bookLepton(tr,"LepLoose%d"%(i+1))
+            bookLepton(tr,"LepGood%d"%(i+1), isMC)
+        ## --- PHOTONS ---
+        for i in range(8):            
+            bookParticle(tr,"Photon%d"%(i+1))     
         ## --- JETS ---
         var( tr, 'nJet25', int)
-        var( tr, 'nJet30', int)
-        for i in range(8):
-            bookLepton(tr,"LepLoose%d"%(i+1))
-            bookLepton(tr,"LepGood%d"%(i+1), isMC)
+        var( tr, 'nJet30', int)       
         for i in range(8):
             bookJet(tr,"Jet%d"%(i+1), isMC)
         var( tr, 'nBJetLoose25', int )
@@ -65,18 +70,24 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         tr = self.tree
         tr.reset()
 
-        # fill( tr, 'run', event.run) 
-        # fill( tr, 'lumi',event.lumi)
-        # fill( tr, 'evt', event.eventId)    
+        fill( tr, 'run', event.run) 
+        fill( tr, 'lumi',event.lumi)
+        fill( tr, 'evt', event.eventId)    
         fill( tr, 'nVert', len(event.goodVertices) )
-            
+
+        ## --- LEPTONS ---    
         fill(tr, 'nLepLoose', len(event.looseLeptons))
-        for i in range(min(8,len(event.looseLeptons))):
-            fillLepton( tr, "LepLoose%d"%(i+1), event.looseLeptons[i])
+        #for i in range(min(8,len(event.looseLeptons))):
+        #    fillLepton( tr, "LepLoose%d"%(i+1), event.looseLeptons[i])
         fill(tr, 'nLepGood', len(event.selectedLeptons))
         for i in range(min(8,len(event.selectedLeptons))):
-            fillLepton( tr, "LepGood%d"%(i+1), event.selectedLeptons[i])    
+            fillLepton( tr, "LepGood%d"%(i+1), event.selectedLeptons[i])
 
+        ## --- PHOTONS ---
+        for i in range(min(8,len(event.allphotons))):
+            fillParticle(tr,"Photon%d"%(i+1), event.allphotons[i])         
+
+        ## --- JETS ---
         #ordering the jets
         event.cleanJets.sort(key = lambda j : j.btag('combinedSecondaryVertexBJetTags'), reverse = True)
             

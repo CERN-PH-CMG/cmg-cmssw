@@ -46,6 +46,10 @@ class ttHLepAnalyzerBase( Analyzer ):
         self.handles['rhoEle'] = AutoHandle( (self.cfg_ana.rhoElectron, 'rho'),
                                           'double')
 
+        #photons (a la hzz4l definition)
+        self.handles['photons'] = AutoHandle( ('cmgPhotonSel',''),'std::vector<cmg::Photon>')
+
+
     def beginLoop(self):
         super(ttHLepAnalyzerBase,self).beginLoop()
 
@@ -93,6 +97,12 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         #print "Found ",len(event.looseLeptons)," loose leptons"
         #print "Found ",len(event.selectedLeptons)," good leptons"
+
+
+    def makePhotons(self, event):
+
+        event.allphotons = map( Photon, self.handles['photons'].product() )
+        event.allphotons.sort(key = lambda l : l.pt(), reverse = True)
        
 
     def process(self, iEvent, event):
@@ -103,8 +113,10 @@ class ttHLepAnalyzerBase( Analyzer ):
         
         #import pdb; pdb.set_trace()
 
-        #call the leptons functions
+        #call the leptons/photons functions
         self.makeLeptons(event)
+        self.makePhotons(event)
+        
 
         ret = False
         if len(event.selectedLeptons) >= self.cfg_ana.minGoodLeptons:
