@@ -60,8 +60,9 @@ ttHLepAna = cfg.Analyzer(
     rhoElectron = 'kt6PFJets',
     muons='cmgMuonSel',
     electrons='cmgElectronSel',
-    minGoodLeptons=3,
-    doSSLeptons=True,
+    photons='cmgPhotonSel',
+    minGoodLeptons=2,
+    doSSLeptons=False,
     )
 
 # Jets Analyzer 
@@ -101,8 +102,21 @@ from CMGTools.TTHAnalysis.samples.samples_8TeV import *
 
 for mc in mcSamples:
     mc.triggers = triggersMC_mue
-selectedComponents=mcSamples
+#selectedComponents=mcSamples
+#selectedComponents=[TTH,DYJetsM10,DYJetsM50,TTLep]
+#selectedComponents=[DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,W2Jets,WGToLNuG,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf]
+#selectedComponents=[W1Jets,W2Jets,WGToLNuG]
 
+for data in dataSamplesE:
+    data.triggers = triggers_ee
+for data in dataSamplesMu:
+    data.triggers = triggers_mumu
+    data.vetoTriggers = triggers_ee
+for data in dataSamplesMuE:
+    data.triggers = triggers_mue
+    data.vetoTriggers=triggers_ee+triggers_mumu
+
+selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMu
 
 
 #-------- SEQUENCE
@@ -110,7 +124,7 @@ selectedComponents=mcSamples
 sequence = cfg.Sequence([
     skimAnalyzer,
     #eventSelector,
-    #jsonAna,
+    jsonAna,
     triggerAna,
     #pileUpAna,
     ttHGenAna,
@@ -127,7 +141,7 @@ sequence = cfg.Sequence([
 #-------- HOW TO RUN
 
 # set test = 0 to run all jobs, in case you are using pybatch.py
-test = 1
+test = 0
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
