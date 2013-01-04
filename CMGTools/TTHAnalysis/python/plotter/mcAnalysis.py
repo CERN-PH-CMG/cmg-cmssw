@@ -4,8 +4,8 @@ from CMGTools.TTHAnalysis.plotter.tree2yield import *
 import pickle, re
 
 def _runYields(args):
-    key,ttys,cuts,noEntryLine = args
-    return (key, mergeReports([tty.getYields(cuts,noEntryLine=noEntryLine) for tty in ttys]))
+    key,tty,cuts,noEntryLine = args
+    return (key, tty.getYields(cuts,noEntryLine=noEntryLine))
 
 class MCAnalysis:
     def __init__(self,samples,options):
@@ -98,27 +98,33 @@ class MCAnalysis:
             tty.setScaleFactor( "((%s) * (%s))" % (tty.getScaleFactor(),scaleFactor) )
     def getProcessOption(self,process,default=None):
         tty = self._allData[process]
-        
-    # assumes that all the processes have the same SF, oops
-    def getScale(self,process):
-        for tty in self._allData[process]: return tty.getScaleFactor()
     def getScales(self,process):
         return [ tty.getScaleFactor() for tty in self._allData[process] ] 
     def getYields(self,cuts,process=None,nodata=False,makeSummary=False,noEntryLine=False):
-        ret = { }
         ## first figure out what we want to do
         tasks = []
-        for key in self._allData:
+        for key,ttys in self._allData.iteritems():
             if key == 'data' and nodata: continue
             if process != None and key != process: continue
-            tasks.append((key,self._allData[key],cuts,noEntryLine))
+            for tty in ttys:
+                tasks.append((key,tty,cuts,noEntryLine))
         ## then do the work
+        retlist = []
         if self._options.jobs == 0: 
-            ret = dict(map(_runYields, tasks))
+            retlist = map(_runYields, tasks)
         else:
+            #from sys import stderr
+            #stderr.write("Will run %d tasks on %d multiple treads\n" % (len(tasks),self._options.jobs))
             from multiprocessing import Pool
             pool = Pool(self._options.jobs)
-            ret  = dict(pool.map(_runYields, tasks))
+            retlist  = pool.map(_runYields, tasks)
+        ## then gather results with the same process
+        mergemap = {}
+        for (k,v) in retlist: 
+            if k not in mergemap: mergemap[k] = []
+            mergemap[k].append(v)
+        ## and finally merge them
+        ret = dict([ (k,mergeReports(v)) for k,v in mergemap.iteritems() ])
         if makeSummary:
             allSig = []; allBg = []
             for (key,val) in ret.iteritems():
