@@ -27,7 +27,7 @@ class CutsFile:
                 if re.match(cr,"entry point"): self._cuts.append((cn,cv))
             for line in file:
                 if len(line.strip()) == 0 or line.strip()[0] == '#': continue
-                (name,cut) = [x.strip() for x in line.split(":")]
+                (name,cut) = [x.strip().replace(";",":") for x in line.replace("\:",";").split(":")]
                 if name == "entry point" and cut == "1": continue
                 if options.startCut and not re.search(options.startCut,name): continue
                 if options.startCut and re.search(options.startCut,name): options.startCut = None
@@ -90,6 +90,8 @@ class CutsFile:
     def add(self,newname,newcut):
         self._cuts.append((newname,newcut))
         return self
+    def setParams(self,paramMap):
+        self._cuts = [ (cn.format(**paramMap), cv.format(**paramMap)) for (cn,cv) in self._cuts ]
 
 class PlotSpec:
     def __init__(self,name,expr,bins,opts):
@@ -97,16 +99,19 @@ class PlotSpec:
         self.expr = expr
         self.bins = bins
         self.opts = opts
+    def hasOption(self,name):
+        return (name in self.opts)
     def getOption(self,name,default=None):
         return self.opts[name] if (name in self.opts) else default
 
 class TreeToYield:
-    def __init__(self,root,options,scaleFactor=1.0,name=None,settings={}):
-        self._name  = name if name != None else root
+    def __init__(self,root,options,scaleFactor=1.0,name=None,cname=None,settings={}):
+        self._name  = name  if name != None else root
+        self._cname = cname if cname != None else self._name
         self._fname = root
         self._isInit = False
         self._options = options
-        self._weight  = (options.weight and '2012' not in self._name and '2011' not in self._name )
+        self._weight  = (options.weight and 'data' not in self._name and '2012' not in self._name and '2011' not in self._name )
         self._weightString  = options.weightString
         self._scaleFactor = scaleFactor
         self._settings = settings
@@ -127,11 +132,16 @@ class TreeToYield:
         t = self._tfile.Get(self._options.tree)
         if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (options.tree, root)
         self._tree  = t
+        self._friends = []
+        for tf_tree,tf_file in self._options.friendTrees:
+            tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname)),
+            self._friends.append(tf)
         self._isInit = True
-    def getYields(self,cuts):
+    def getYields(self,cuts,noEntryLine=False):
         if not self._isInit: self._init()
         report = []; cut = ""
         cutseq = [ ['entry point','1'] ]
+        if noEntryLine: cutseq = []
         sequential = False
         if self._options.nMinusOne: 
             cutseq = cuts.nMinusOneCuts()
@@ -187,7 +197,7 @@ class TreeToYield:
             cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, cut)
             ROOT.gROOT.cd()
             if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
-            histo = ROOT.TH1F("dummy","dummy",1,0.0,1.0)                   
+            histo = ROOT.TH1F("dummy","dummy",1,0.0,1.0); histo.Sumw2()
             nev = tree.Draw("0.5>>dummy",cut,"goff")
             return [ histo.GetBinContent(1), histo.GetBinError(1) ]
         else: 
@@ -210,6 +220,11 @@ class TreeToYield:
         plot.GetXaxis().SetNdivisions(spec.getOption('XNDiv',510))
     def getPlot(self,plotspec,cut):
         ret = self.getPlotRaw(plotspec.name, plotspec.expr, plotspec.bins, cut)
+        # fold overflow
+        if ret.ClassName == "TH1F":
+            n = ret.GetNbinsX()
+            ret.SetBinContent(1,ret.GetBinContent(0)+ret.GetBinContent(1))
+            ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
         self._stylePlot(ret,plotspec)
         return ret
     def getPlotRaw(self,name,expr,bins,cut):
@@ -217,8 +232,14 @@ class TreeToYield:
         if self._weight:
             cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, cut)
         if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
-        (nb,xmin,xmax) = bins.split(",")
-        histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
+        histo = None
+        if ":" in expr:
+            (nbx,xmin,xmax,nby,ymin,ymax) = bins.split(",")
+            histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
+        else:
+            (nb,xmin,xmax) = bins.split(",")
+            histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
+        histo.Sumw2()
         self._tree.Draw("%s>>%s" % (expr,"dummy"), cut ,"goff")
         return histo.Clone(name)
     def __str__(self):
@@ -244,6 +265,7 @@ def addTreeToYieldOptions(parser):
     parser.add_option("-N", "--n-minus-one", dest="nMinusOne", action="store_true", help="Compute n-minus-one yields and plots")
     parser.add_option("-t", "--tree",          dest="tree", default='ttHLepTreeProducerBase', help="Pattern for tree name");
     parser.add_option("-G", "--no-fractions",  dest="fractions",action="store_false", default=True, help="Don't print the fractions");
+    parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename). can use {name}, {cname} patterns in the treename") 
 
 def mergeReports(reports):
     import copy
