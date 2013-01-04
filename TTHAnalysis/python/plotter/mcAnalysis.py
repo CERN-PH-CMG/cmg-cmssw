@@ -3,9 +3,14 @@
 from CMGTools.TTHAnalysis.plotter.tree2yield import *
 import pickle, re
 
+## These must be defined as standalone functions, to allow runing them in parallel
 def _runYields(args):
     key,tty,cuts,noEntryLine = args
     return (key, tty.getYields(cuts,noEntryLine=noEntryLine))
+
+def _runPlot(args):
+    key,tty,plotspec,cut = args
+    return (key,tty.getPlot(plotspec,cut))
 
 class MCAnalysis:
     def __init__(self,samples,options):
@@ -141,14 +146,32 @@ class MCAnalysis:
     def getPlots(self,plotspec,cut,process=None,nodata=False,makeSummary=False):
         ret = { }
         allSig = []; allBg = []
-        for key in self._allData:
+        tasks = []
+        for key,ttys in self._allData.iteritems():
             if key == 'data' and nodata: continue
             if process != None and key != process: continue
-            ret[key] = mergePlots(plotspec.name+"_"+key, [tty.getPlot(plotspec,cut) for tty in self._allData[key]])
-            if key != 'data':
-                if self._isSignal[key]: allSig.append(ret[key])
-                else: allBg.append(ret[key])
+            for tty in ttys:
+                tasks.append((key,tty,plotspec,cut))
+        retlist = []
+        if self._options.jobs == 0: 
+            retlist = map(_runPlot, tasks)
+        else:
+            #from sys import stderr
+            #stderr.write("Will run %d tasks on %d multiple treads\n" % (len(tasks),self._options.jobs))
+            from multiprocessing import Pool
+            pool = Pool(self._options.jobs)
+            retlist  = pool.map(_runPlot, tasks)
+        ## then gather results with the same process
+        mergemap = {}
+        for (k,v) in retlist: 
+            if k not in mergemap: mergemap[k] = []
+            mergemap[k].append(v)
+        ## and finally merge them
+        ret = dict([ (k,mergePlots(plotspec.name+"_"+k,v)) for k,v in mergemap.iteritems() ])
+        #ret[key] = mergePlots(plotspec.name+"_"+key, [tty.getPlot(plotspec,cut) for tty in self._allData[key]])
         if makeSummary:
+            allSig = [v for k,v in ret.iteritems() if k != 'data'and self._isSignal[k] == True  ]
+            allBg  = [v for k,v in ret.iteritems() if k != 'data'and self._isSignal[k] == False ]
             if self._signals and not ret.has_key('signal') and len(allSig) > 0:
                 ret['signal'] = mergePlots(plotspec.name+"_signal", allSig)
                 ret['signal'].summary = True
