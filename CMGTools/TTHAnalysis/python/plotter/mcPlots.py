@@ -38,12 +38,12 @@ def doSpam(text,x1,y1,x2,y2,align=12,fill=False,textSize=0.033,_noDelete={}):
     _noDelete[text] = cmsprel; ## so it doesn't get deleted by PyROOT
     return cmsprel
 
-def doTinyCmsPrelim(textLeft="_default_",textRight="_default_"):
+def doTinyCmsPrelim(textLeft="_default_",textRight="_default_",hasExpo=False):
     global options
     if textLeft  == "_default_": textLeft  = options.lspam
     if textRight == "_default_": textRight = options.rspam
     if textLeft not in ['', None]:
-        doSpam(textLeft, .15, .955, .40, .995, align=12)
+        doSpam(textLeft, .28 if hasExpo else .17, .955, .40, .995, align=12)
     if textRight not in ['', None]:
         if "%(lumi)" in textRight: 
             textRight = textRight % { 'lumi':options.lumi }
@@ -104,9 +104,9 @@ def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2):
 
         (x1,y1,x2,y2) = (.7, .75 - textSize*max(nentries-3,0), .93, .93)
         if corner == "TR":
-            (x1,y1,x2,y2) = (.7, .75 - textSize*max(nentries-3,0), .93, .93)
+            (x1,y1,x2,y2) = (.75, .75 - textSize*max(nentries-3,0), .93, .93)
         elif corner == "TL":
-            (x1,y1,x2,y2) = (.2, .75 - textSize*max(nentries-3,0), .43, .93)
+            (x1,y1,x2,y2) = (.2, .75 - textSize*max(nentries-3,0), .38, .93)
         
         leg = ROOT.TLegend(x1,y1,x2,y2)
         leg.SetFillColor(0)
@@ -136,7 +136,7 @@ class PlotMaker:
         if not self._options.final:
             allcuts = cuts.sequentialCuts()
             if self._options.nMinusOne: allcuts = cuts.nMinusOneCuts()
-            for i,(cn,cv) in enumerate(allcuts):
+            for i,(cn,cv) in enumerate(allcuts[:-1]): # skip the last one which is equal to all cuts
                 cnsafe = "cut_%02d_%s" % (i, re.sub("[^a-zA-Z0-9_.]","",cn.replace(" ","_")))
                 sets.append((cnsafe,cn,cv))
         for subname, title, cut in sets:
@@ -186,14 +186,21 @@ class PlotMaker:
                 if pspec.hasOption('Logy'):
                     c1.SetLogy(1)
                     total.SetMaximum(2*total.GetMaximum())
+                else:
+                    c1.SetLogy(0)
                 total.Draw("HIST")
-                stack.Draw("SAME HIST" if self._options.plotmode == "stack" else "SAME HIST NOSTACK")
+                if self._options.plotmode == "stack":
+                    stack.Draw("SAME HIST")
+                    total.Draw("AXIS SAME")
+                else: 
+                    stack.Draw("SAME HIST NOSTACK")
                 #stack.Draw("HF SAME")
                 if 'data' in pmap: 
                     reMax(total,pmap['data'])
                     pmap['data'].Draw("E SAME")
-                doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'))
-                doTinyCmsPrelim()
+                doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
+                                  cutoff=pspec.getOption('LegendCutoff', 1e-5 if c1.GetLogy() else 1e-2))
+                doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy())
                 signorm = None; datnorm = None
                 if options.showSigShape: 
                     signorm = doStackSignalNorm(pspec,pmap)
@@ -217,7 +224,8 @@ class PlotMaker:
 def addPlotMakerOptions(parser):
     addMCAnalysisOptions(parser)
     parser.add_option("--ss",  "--scale-signal", dest="signalPlotScale", default=1.0, help="scale the signal in the plots by this amount");
-    parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Simulation", help="Spam text on the right hand side");
+    #parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Simulation", help="Spam text on the right hand side");
+    parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Preliminary", help="Spam text on the right hand side");
     parser.add_option("--rspam", dest="rspam",   type="string", default="#sqrt{s} = 8 TeV, L = %(lumi).1f fb^{-1}", help="Spam text on the right hand side");
     parser.add_option("--print", dest="printPlots", type="string", default=None, help="print out plots in this format or formats (e.g. 'png,pdf')");
     parser.add_option("--pdir", "--print-dir", dest="printDir", type="string", default="plots", help="print out plots in this directory");
