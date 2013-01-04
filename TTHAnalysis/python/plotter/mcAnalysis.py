@@ -1,10 +1,11 @@
 #!/usr/bin/env python
+#from tree2yield import *
 from CMGTools.TTHAnalysis.plotter.tree2yield import *
 import pickle, re
 
 def _runYields(args):
-    key,ttys,cuts = args
-    return (key, mergeReports([tty.getYields(cuts) for tty in ttys]))
+    key,ttys,cuts,noEntryLine = args
+    return (key, mergeReports([tty.getYields(cuts,noEntryLine=noEntryLine) for tty in ttys]))
 
 class MCAnalysis:
     def __init__(self,samples,options):
@@ -40,11 +41,21 @@ class MCAnalysis:
             for p0 in options.processesToExclude:
                 for p in p0.split(","):
                     if re.match(p+"$", field[0]): skipMe = True
+            for p0 in options.filesToExclude:
+                for p in p0.split(","):
+                    if re.match(p+"$", field[1]): skipMe = True
             if skipMe: continue
             #endif
+            ## If we have a user-defined list of processes as signal
+            if len(options.processesAsSignal):
+                signal = False
+                for p0 in options.processesAsSignal:
+                    for p in p0.split(","):
+                        if re.match(p+"$", field[0]): signal = True
+            ## endif
             rootfile = options.path+"/%s/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root" % field[1].strip()
             pckfile = options.path+"/%s/skimAnalyzerCount/SkimReport.pck" % field[1].strip()
-            tty = TreeToYield(rootfile, options, settings=extra)
+            tty = TreeToYield(rootfile, options, settings=extra, name=field[0], cname=field[1].strip())
             if signal: 
                 self._signals.append(tty)
                 self._isSignal[field[0]] = True
@@ -93,14 +104,14 @@ class MCAnalysis:
         for tty in self._allData[process]: return tty.getScaleFactor()
     def getScales(self,process):
         return [ tty.getScaleFactor() for tty in self._allData[process] ] 
-    def getYields(self,cuts,process=None,nodata=False,makeSummary=False):
+    def getYields(self,cuts,process=None,nodata=False,makeSummary=False,noEntryLine=False):
         ret = { }
         ## first figure out what we want to do
         tasks = []
         for key in self._allData:
             if key == 'data' and nodata: continue
             if process != None and key != process: continue
-            tasks.append((key,self._allData[key],cuts))
+            tasks.append((key,self._allData[key],cuts,noEntryLine))
         ## then do the work
         if self._options.jobs == 0: 
             ret = dict(map(_runYields, tasks))
@@ -134,8 +145,10 @@ class MCAnalysis:
         if makeSummary:
             if self._signals and not ret.has_key('signal') and len(allSig) > 0:
                 ret['signal'] = mergePlots(plotspec.name+"_signal", allSig)
+                ret['signal'].summary = True
             if self._backgrounds and not ret.has_key('background') and len(allBg) > 0:
                 ret['background'] = mergePlots(plotspec.name+"_background",allBg)
+                ret['background'].summary = True
         return ret
     def prettyPrint(self,reports,makeSummary=True):
         allSig = []; allBg = []
@@ -207,7 +220,9 @@ def addMCAnalysisOptions(parser,addTreeToYieldOnesToo=True):
     parser.add_option("-j", "--jobs",   dest="jobs", type="int", default=0, help="Use N threads");
     parser.add_option("-P", "--path",   dest="path",     type="string", default="./",      help="path to directory with trees (./)") 
     parser.add_option("-p", "--process", dest="processes", type="string", default=[], action="append", help="Processes to print (comma-separated list of regexp, can specify multiple ones)");
+    parser.add_option("--xf", "--exclude-files", dest="filesToExclude", type="string", default=[], action="append", help="Files to exclude (comma-separated list of regexp, can specify multiple ones)");
     parser.add_option("--xp", "--exclude-process", dest="processesToExclude", type="string", default=[], action="append", help="Processes to exclude (comma-separated list of regexp, can specify multiple ones)");
+    parser.add_option("--sp", "--signal-process", dest="processesAsSignal", type="string", default=[], action="append", help="Processes to set as signal (overriding the '+' in the text file)");
 
 if __name__ == "__main__":
     from optparse import OptionParser
