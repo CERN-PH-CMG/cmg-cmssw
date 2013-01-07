@@ -95,6 +95,8 @@ process.PATCMGJetCHSSequence.insert( 0, process.ak5PFJetsCHS )
 from CMGTools.Common.Tools.visitorUtils import replaceSrc
 replaceSrc( process.PATCMGJetCHSSequence, 'ak5PFJets', 'ak5PFJetsCHS')
 replaceSrc( process.PATCMGJetCHSSequence, 'particleFlow', 'pfNoPileUp')
+process.PATCMGJetCHSSequence.remove(process.outTracksCHS) # not needed for CHS jets
+process.PATCMGJetCHSSequence.remove(process.ak5SoftTrackJetsForVbfHbbCHS) # not needed for CHS jets
 jecPayload = 'AK5PFchs'
 process.patJetsWithVarCHS.payload = jecPayload
 process.patJetCorrFactorsCHS.payload = jecPayload
