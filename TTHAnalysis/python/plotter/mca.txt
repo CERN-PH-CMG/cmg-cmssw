@@ -4,6 +4,8 @@
 ttH+     : TTH : 0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
 TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
 TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
+#TTV 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
+#TTV 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
 #TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
 VVV 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet
 VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet
@@ -17,14 +19,14 @@ ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
 ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
 #TT 	 : TTLep:      23.64    ;  FillColor=ROOT.kGray
 TT 	 : TTJets:     225.2    ;  FillColor=ROOT.kGray
-TW 	 : TtW:        11.73    ;  FillColor=ROOT.kCyan+2
-TW 	 : TbartW:     11.73    ;  FillColor=ROOT.kCyan+2
+TW 	 : TtW:        11.73    ;  FillColor=ROOT.kGray+2
+TW 	 : TbartW:     11.73    ;  FillColor=ROOT.kGray+2
 DY       : DYJetsM10 : 915      ;  FillColor=ROOT.kCyan
-#DY        : DYJetsM50 : 3503.7   ;  FillColor=ROOT.kCyan
-DY       : DY1JetsM50 : 666.3   ;  FillColor=ROOT.kViolet-4
-DY       : DY2JetsM50 : 215.0   ;  FillColor=ROOT.kViolet-4
-DY       : DY3JetsM50 :  60.7   ;  FillColor=ROOT.kViolet-4
-DY       : DY4JetsM50 :  27.4   ;  FillColor=ROOT.kViolet-4
+DY       : DYJetsM50 : 3503.7   ;  FillColor=ROOT.kCyan
+#DY      : DY1JetsM50 : 666.3   ;  FillColor=ROOT.kViolet-4
+#DY      : DY2JetsM50 : 215.0   ;  FillColor=ROOT.kViolet-4
+#DY      : DY3JetsM50 :  60.7   ;  FillColor=ROOT.kViolet-4
+#DY      : DY4JetsM50 :  27.4   ;  FillColor=ROOT.kViolet-4
 #WGs 	 : WGs2MU:     1.914    ;  FillColor=ROOT.kAzure-9
 #WGs 	 : WGs2E:      5.873    ;  FillColor=ROOT.kAzure-9
 #WGs 	 : WGs2Tau:    0.336    ;  FillColor=ROOT.kAzure-9
@@ -33,12 +35,12 @@ WJets    : W1Jets    : 6642.0   ;  FillColor=ROOT.kCyan+2
 WJets    : W2Jets    : 2152.0   ;  FillColor=ROOT.kCyan+2
 WJets    : W3Jets    : 638.4    ;  FillColor=ROOT.kCyan+2
 WJets    : W4Jets    : 263.2    ;  FillColor=ROOT.kCyan+2
-#data     : DoubleMuAB
-#data     : DoubleMuC
-#data     : DoubleMuD
-#data     : DoubleElectronAB
-#data     : DoubleElectronC
-#data     : DoubleElectronD
-#data     : MuEGAB
-#data     : MuEGC
-#data     : MuEGD
+data     : DoubleMuAB
+data     : DoubleMuC
+data     : DoubleMuD
+data     : DoubleElectronAB
+data     : DoubleElectronC
+data     : DoubleElectronD
+data     : MuEGAB
+data     : MuEGC
+data     : MuEGD
