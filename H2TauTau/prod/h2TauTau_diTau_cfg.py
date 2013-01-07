@@ -47,10 +47,11 @@ dataset_user = 'cmgtools'
 # dataset_name = '/H2TAUTAU/Sync/GluGlu/AOD/PAT_CMG_V5_5_0'
 # dataset_name = '/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1'
 #dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1'
-#dataset_name = '/Tau/Run2012C-PromptReco-v1/AOD/PAT_CMG_V5_6_0_B'
+dataset_name = '/Tau/Run2012D-PromptReco-v1/AOD/PAT_CMG_V5_8_0'
 #dataset_name = '/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau132_pttau1_17had2_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0'
 #dataset_name = '/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
-dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+#dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+#dataset_name = '/W4JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
 dataset_files = 'cmgTuple.*root'
 
 # creating the source
@@ -77,8 +78,9 @@ runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.file
 
 # set up JSON ---------------------------------------------------------------
 if runOnMC==False:
-    from CMGTools.H2TauTau.tools.setupJSON import setupJSON
-    json = setupJSON(process)
+    from CMGTools.H2TauTau.tools.setupJSON import applyJSON
+    json="/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt"
+    applyJSON(process, json )
 
 
 
@@ -88,9 +90,28 @@ process.load('CMGTools.H2TauTau.h2TauTau_cff')
 # setting up the recoil correction according to the input file ---------------
 
 print sep_line
-from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
+from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection,lookup,rootfile_dir
 # WARNING DISABLING RECOIL CORRECTIONS FOR 2012!!!
-setupRecoilCorrection( process, runOnMC, True, cmsswIs52X())
+#setupRecoilCorrection( process, runOnMC, True, cmsswIs52X())
+fileName = process.source.fileNames[0]
+if lookup( fileName, 'DYJets' ) or \
+	 lookup( fileName, 'DY1Jets' ) or \
+	 lookup( fileName, 'DY2Jets' ) or \
+	 lookup( fileName, 'DY3Jets' ) or \
+	 lookup( fileName, 'DY4Jets' ):
+    print '\tENABLED : Z->tau tau mode (tau is true)'
+    process.recoilCorMETDiTau.enable = True
+    process.recoilCorMETDiTau.fileCorrectTo = rootfile_dir + 'recoilfit_ztt53X_20pv_njet.root'
+elif lookup( fileName, 'GluGluToHToTauTau' ) or \
+       lookup( fileName, 'VBF_HToTauTau' ):
+    print '\tENABLED : Higgs mode (tau is true)'
+    process.recoilCorMETDiTau.enable = True
+    process.recoilCorMETDiTau.fileCorrectTo = rootfile_dir + 'recoilfit_htt53X_20pv_njet.root'
+else:
+    print '\tDISABLED'
+    if runOnMC:
+	process.metRecoilCorrectionInputSequence.remove( process.genWorZ ) 
+    process.recoilCorMETDiTau.enable = False
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()

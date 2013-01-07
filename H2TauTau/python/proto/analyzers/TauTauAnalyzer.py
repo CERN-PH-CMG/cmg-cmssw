@@ -380,6 +380,11 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 	   leg.tauID("againstMuonLoose")>0.5)
 
     
+    def muonIso(self, muon ):
+        '''dbeta corrected pf isolation with all charged particles instead of
+        charged hadrons'''
+        return muon.relIsoAllChargedDB05()
+
     def testLeg2ID(self, muon):
         '''Tight muon selection, no isolation requirement'''
         return muon.tightId() and \

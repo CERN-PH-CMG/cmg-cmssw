@@ -232,10 +232,12 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['data_Run2012B_PromptReco_v1']   = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2012C_PromptReco_v1']   = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2012C_PromptReco_v2']   = {'style':sBlue,     'layer':-1000}
+        self.histPref['data_Run2012D_PromptReco_v1']   = {'style':sBlue,     'layer':-1000}
         self.histPref['embed_Run2012A_PromptReco_v1']  = {'style':sBlue,     'layer':-1000}
         self.histPref['embed_Run2012B_PromptReco_v1']  = {'style':sRed,      'layer':-1100}
         self.histPref['embed_Run2012C_PromptReco_v1']  = {'style':sBlue,     'layer':-1000}
         self.histPref['embed_Run2012C_PromptReco_v2']  = {'style':sRed,      'layer':-1100}
+        self.histPref['embed_Run2012D_PromptReco_v1']  = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2011A_May10ReReco_v1']  = {'style':sViolet,   'layer':-1000}
         self.histPref['data_Run2011A_PromptReco_v4']   = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2011A_PromptReco_v6']   = {'style':sRed,      'layer':-1100}
