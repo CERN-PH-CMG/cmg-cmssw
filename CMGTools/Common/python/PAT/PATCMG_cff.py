@@ -118,7 +118,7 @@ cmgPFJet.cfg.inputCollection = patJetSource
 # leading jets for MET regression
 from CMGTools.Common.factories.cmgBaseJet_cfi import cmgBaseJet
 cmgPFBaseJetAll = cmgBaseJet.clone()
-cmgPFBaseJetAll.cfg.inputCollection = 'patJetsWithVar'
+cmgPFBaseJetAll.cfg.inputCollection = patJetSource
 
 from CMGTools.Common.skims.leadingCMGBaseJetSelector_cfi import leadingCMGBaseJetSelector
 cmgPFBaseJetLead = leadingCMGBaseJetSelector.clone()
