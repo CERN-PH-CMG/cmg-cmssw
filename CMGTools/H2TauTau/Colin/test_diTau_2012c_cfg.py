@@ -3,7 +3,7 @@ import os
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
-runOnEmbedded = True
+runOnEmbedded = False
 runOnData = False
 runOnMC = False
 use1prong = False
@@ -147,7 +147,7 @@ if use1prong:
     data.triggers = data_triggers_1prong_2012D
 
 
-selectedComponents = data_2012 + embedded_2012 + [DYJets, WJets, W3Jets, TTJets, WW, WZ, ZZ]
+selectedComponents = data_2012 + embedded_2012 + [DYJets, DY1Jets, DY2Jets, DY3Jets, DY4Jets, TTJets, WW, WZ, ZZ, WJets, W1Jets, W2Jets, W3Jets, W4Jets, T_tW, Tbar_tW]
 selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
                         HiggsVBF110, HiggsVBF115, HiggsVBF120, HiggsVBF125, HiggsVBF130, HiggsVBF135, HiggsVBF140, HiggsVBF145, 
                         HiggsVH110 , HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
