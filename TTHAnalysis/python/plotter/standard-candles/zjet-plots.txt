@@ -1,0 +1,10 @@
+nJet25 : nJet25 : 8,0,8 ; XTitle='N(jet\, p_{T} > 25)',Logy
+met: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy
+mZ1_wide: mZ1: 60,0,180 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TR',Logy,LegendCutoff=1e-5
+mZ1: mZ1: 60,60,120 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TL'
+iso1: LepGood1_relIso: 20,0,.4
+iso2: LepGood2_relIso: 20,0,.4
+isoSum: LepGood1_relIso+LepGood2_relIso: 20,0,.8
+lepMVA2: min(LepGood1_mva,LepGood2_mva) : 50,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
+maxLepPt:  LepGood1_pt: 40,0,100; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
+minLepPt:  LepGood2_pt: 40,0,100; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
