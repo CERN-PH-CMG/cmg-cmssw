@@ -39,7 +39,7 @@ run2012  = True
 blinding = False
 #just125  = True
 just125  = False
-RW_only  = True
+RW_only  = False
 simple   = False
 
 import ROOT
@@ -166,6 +166,10 @@ if __name__ == '__main__':
       weights[ 'data_Run2012C_PromptReco_v1'].intLumi = 493.975
       selComps['data_Run2012C_PromptReco_v2'].intLumi = 6397.
       weights[ 'data_Run2012C_PromptReco_v2'].intLumi = 6397.
+      # 19.3/fb
+      lumiD=19300-selComps['data_Run2012A_PromptReco_v1'].intLumi-selComps['data_Run2012B_PromptReco_v1'].intLumi-selComps['data_Run2012C_PromptReco_v1'].intLumi-selComps['data_Run2012C_PromptReco_v2'].intLumi
+      selComps['data_Run2012D_PromptReco_v1'].intLumi = lumiD
+      weights[ 'data_Run2012D_PromptReco_v1'].intLumi = lumiD
 
     else:
       # 1fb
@@ -286,9 +290,9 @@ if __name__ == '__main__':
       NOVBFtight  = ''
     
     cuts=[  
-        #("CMS_2012_ABC_12fb_HpT140_pT45_isoTM_vetoMjj250Deta25_allMasses_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50. || jet2Pt<30. || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationTM , 5 ),
-        #("CMS_2012_ABC_12fb_HpT140_pT45_isoMM_vetoMjj250Deta25_allMasses_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50. || jet2Pt<30. || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationMM , 5 ),
-        ("CMS_2012_ABC_12fb_HpT110_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_allMasses_VBF" + rewStr   , baseline           + '&&  jet1Pt>50. && jet2Pt>30. && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
+        ("CMS_2012_ABC_19fb_HpT140_pT45_isoTM_vetoMjj250Deta25_allMasses_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50. || jet2Pt<30. || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationTM , 5 ),
+        #("CMS_2012_ABC_19fb_HpT140_pT45_isoMM_vetoMjj250Deta25_allMasses_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50. || jet2Pt<30. || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationMM , 5 ),
+        ("CMS_2012_ABC_19fb_HpT110_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_allMasses_VBF" + rewStr   , baseline           + '&&  jet1Pt>50. && jet2Pt>30. && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),
         #("CMS_2012_ABC_12fb_HpT000_pT45_isoTM_vetoMjj250Deta25_dRttRW_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>0. ' , isolationTM , 5 ),
         #("CMS_2012_ABC_12fb_HpT140_pT45_isoMM_vetoMjj250Deta25_Raw05_BOOSTED"         + rewStr   , baseline + BOOSTED + '&& (jet1Pt<50 || jet2Pt<30 || abs(jet2Eta)>4.7 || abs(jet1Eta - jet2Eta)<2.5 || mjj<250 || nCentralJets >0)', '45', ' && pThiggs>140. ' , isolationMM , 5 ),
         #("CMS_2012_ABC_12fb_HpT110_pT45_isoMM_mjj250_dEtajj25_qcdFromBoost_dRttRW_VBF" + rewStr   , baseline           + '&&  jet1Pt>50 && jet2Pt>30 && abs(jet2Eta)<4.7 && abs(jet1Eta - jet2Eta)>2.5 && mjj>250 && nCentralJets==0 ', '45', ' && pThiggs>110. ' , isolationMM , 5 ),

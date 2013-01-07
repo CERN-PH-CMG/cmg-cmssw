@@ -656,7 +656,7 @@ data_Run2012A_PromptReco_v1.files = getFiles('/Tau/Run2012A-13Jul2012-v1/AOD/{ao
 data_Run2012B_PromptReco_v1.files = getFiles('/Tau/Run2012B-13Jul2012-v1/AOD/V5/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 data_Run2012C_PromptReco_v1.files = getFiles('/Tau/Run2012C-24Aug2012-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 data_Run2012C_PromptReco_v2.files = getFiles('/Tau/Run2012C-PromptReco-v2/AOD/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-data_Run2012D_PromptReco_v1.files = getFiles('/Tau/Run2012D-PromptReco-v1/AOD/V5_8_0/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+data_Run2012D_PromptReco_v1.files = getFiles('/Tau/Run2012D-PromptReco-v1/AOD/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
 # Embedded samples --------------------------------------------------------------------
 
@@ -682,6 +682,12 @@ embed_Run2012C_PromptReco_v1 = cfg.EmbedComponent(
 embed_Run2012C_PromptReco_v2 = cfg.EmbedComponent(
     name = 'embed_Run2012C_PromptReco_v2',
     files = getFiles('/DoubleMu/StoreResults-DoubleMu_Run2012C_PromptReco_v2_embedded_trans1_tau132_pttau1_17had2_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    triggers = [],
+    )
+
+embed_Run2012D_PromptReco_v1 = cfg.EmbedComponent(
+    name = 'embed_Run2012D_PromptReco_v1',
+    files = getFiles('/DoubleMu/StoreResults-DoubleMu_2012D_PromptReco_v1_embedded_trans1_tau132_pttau1_17had2_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
     triggers = [],
     )
 
@@ -972,7 +978,7 @@ for mc in mc_spring12:
     mc.triggers = mc_triggers_spring12
     MC.append(mc)
 
-embedded_2012 = [embed_Run2012A_PromptReco_v1, embed_Run2012B_PromptReco_v1, embed_Run2012C_PromptReco_v1, embed_Run2012C_PromptReco_v2]
+embedded_2012 = [embed_Run2012A_PromptReco_v1, embed_Run2012B_PromptReco_v1, embed_Run2012C_PromptReco_v1, embed_Run2012C_PromptReco_v2, embed_Run2012D_PromptReco_v1]
     
 if __name__ == '__main__':
 
