@@ -25,7 +25,7 @@ class MVAMet(MVAMetPyWrapper):
                visObjectP4s
                ):
         map( self.addVisObject, visObjectP4s)
-        return GetMet(
+        return self.GetMet(
                iPFMet,
                iTKMet,
                iNoPUMet,
