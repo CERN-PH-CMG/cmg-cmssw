@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.9 2012/11/14 09:50:13 jueugste Exp $
+// $Id: TtbarLeptonJets.cc,v 1.11 2012/12/10 16:51:57 jueugste Exp $
 //
 //
 
@@ -314,9 +314,6 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   finalWeight = puWeightCMG * triggerWeight;
   
   // Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/2012/summary
-  // 2012A: HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v* 						       ---> 45, 45, 45, 20 jet pT cuts
-  // 2012B: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v* || HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*   ---> 45, 45, 45, 20 jet pT cuts
-  // 2012C and D: HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*                                           ---> 55, 45, 35, 20 jet pT cuts
   // 2012A (190456<=run<=193621): HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v* with (45,45,45,20) jet pT cuts
   // 2012B (193834<=run<=194225): HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v1 with (45,45,45,20) jet pT cuts
   // 2012B (194270<=run<=196531): HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v1 with (45,45,35,20) jet pT cuts
@@ -337,13 +334,13 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	   }else if(iEvent.eventAuxiliary().run()>=199698){
               if ( TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*") )                           nMuoTrig++;
               if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet45_35_25_v*") ) nEleTrig++;
-           } else std::cout << "  wrong run number???? = " << std::endl;
+           } else std::cout << "  wrong run number = " << iEvent.eventAuxiliary().run()<< "???" << std::endl;
 	}else{	 
 	   // Last recommendation is to not apply HLT in MC
 	   //if (TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1")) nMuoTrig++;
 	   //if (TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5") || TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1")) nEleTrig++;	
-	  nMuoTrig++;
-	  nEleTrig++;
+	   nMuoTrig++;
+	   nEleTrig++;
         }   
      }   
   }
@@ -421,6 +418,9 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
      int jetMuoIndex = 0;
      if(jetsMJ.isValid() && passMJsel){
         for(muJET = jetsMJ->begin(); muJET != jetsMJ->end(); ++muJET) {
+	   // if(JESup)        jetMJ_pT[jetMuoIndex] = muJET->pt() * (1+muJET->uncOnFourVectorScale());
+	   // else if(JESdown) jetMJ_pT[jetMuoIndex] = muJET->pt() * (1-muJET->uncOnFourVectorScale());
+	   // else             jetMJ_pT[jetMuoIndex] = muJET->pt() ;
 	   jetMJ_pT[jetMuoIndex]  = muJET->pt();
 	   jetMJ_lxy[jetMuoIndex] = muJET->Lxy();
 	   jetMJ_btag[jetMuoIndex] = muJET->btag(6);
@@ -428,7 +428,9 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	   jetMJ_flavour[jetMuoIndex] = muJET->partonFlavour();
 	   //std::cout << "flavour: " << muJET->partonFlavour() << std::endl;
 
-           if(verbose) std::cout << "  mu-jet pt = " << muJET->pt() << ", eta = " << muJET->eta() << ", lxy = " << muJET->Lxy() << "  my mu-jet pt = " << jetMJ_pT[jetMuoIndex] <<  std::endl; 
+           if(verbose) std::cout << "  mu-jet pt = " << muJET->pt() << ", eta = " << muJET->eta() << ", lxy = " << muJET->Lxy() << ",  my mu-jet pt = " << jetMJ_pT[jetMuoIndex] << ", JES unc = " << muJET->uncOnFourVectorScale() <<  std::endl; 
+	   
+	   
 	   jetMuoIndex++;
         } // muJET loop
      }
