@@ -84,6 +84,7 @@ print "\n Processing events:"
 print process.maxEvents
 
 
+
 if runOnData:
    if '13Jul2012' in options.sampleLocation:
       lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
@@ -300,8 +301,6 @@ process.genSequence = cms.Sequence(
 )
 
 
-
-
 from CMGTools.Common.physicsObjectPrinter_cfi import *
 process.printerTTbar = physicsObjectPrinter.clone(
     inputCollection = cms.untracked.InputTag("cmgTriggerObjectSel"),
@@ -312,6 +311,18 @@ process.printerTTbar = physicsObjectPrinter.clone(
 )
 
 
+# Produce PDF weights (maximum is 3)
+# http://cmslxr.fnal.gov/lxr/source/ElectroWeakAnalysis/Utilities/src/PdfWeightProducer.cc
+# http://cmslxr.fnal.gov/lxr/source/ElectroWeakAnalysis/Utilities/test/PdfSystematicsAnalyzer.py
+process.pdfWeights = cms.EDProducer("PdfWeightProducer",
+      PdfInfoTag = cms.untracked.InputTag("generator"),
+      PdfSetNames = cms.untracked.vstring(
+	      "cteq66.LHgrid", # 44 members
+	      #"cteq65.LHgrid", # 21 members
+	      #"MRST2006nnlo.LHgrid", # 31 members
+	      #"MRST2007lomod.LHgrid" # 1 member
+      )
+)
 
 
 print process.primaryVertexFilter.dumpPython() 	 
@@ -339,6 +350,7 @@ print process.zeroLooseElecsEleJetSel.dumpPython()
 print process.zeroLooseMuonsEleJetSel.dumpPython()
 print process.fourJetsEleJetSel.dumpPython()
 
+print process.pdfWeights.dumpPython()
 
 
 process.pEle = cms.Path( 
@@ -376,6 +388,11 @@ process.pMu = cms.Path(
 if not runOnData:
    process.pEle += process.vertexWeightSequence
    process.pMu  += process.vertexWeightSequence
+
+# Calculate the PDF weights only for the central ttbar sample (it takes ~2 mins per event)
+if 'TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola' in options.sampleLocation and not runOnData:
+   process.pEle += process.pdfWeights
+   process.pMu  += process.pdfWeights
    
 process.outLepton = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string(options.sampleName+'_treeCMG_leptonJetsSkim.root'),
@@ -391,6 +408,7 @@ process.outLepton = cms.OutputModule("PoolOutputModule",
 								       'keep *_vertexWeightSummer12*_*_*',
 								       'keep *_*Filter*_*_*',
 								       'keep *_primaryVertexFilter*_*_*'  ,
+                                                                       'keep *_pdfWeights_*_*',
 								       'keep *_genJetSel*_*_*'  ,
 								       'keep cmgPFJets_cmgPFJetSel_*_*'
  								      ) 
