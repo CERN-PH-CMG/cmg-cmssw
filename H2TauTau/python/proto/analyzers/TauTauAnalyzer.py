@@ -59,7 +59,9 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             'std::vector<cmg::Muon>'
             )
 
-        self.mchandles['source'] =  AutoHandle(
+        if self.cfg_comp.isMC and ("WJets" in self.cfg_comp.name or "W0Jets" in self.cfg_comp.name or "W1Jets" in self.cfg_comp.name or "W2Jets" in self.cfg_comp.name or "W3Jets" in self.cfg_comp.name or "W4Jets" in self.cfg_comp.name
+	                        or "DYJets" in self.cfg_comp.name or "DY0Jets" in self.cfg_comp.name or "DY1Jets" in self.cfg_comp.name or "DY2Jets" in self.cfg_comp.name or "DY3Jets" in self.cfg_comp.name or "DY4Jets" in self.cfg_comp.name):
+          self.mchandles['source'] =  AutoHandle(
             'source',
             'LHEEventProduct'
             )
@@ -84,6 +86,10 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             event.leptons += [diLepton.leg2()]
         # import pdb; pdb.set_trace()
         self.shiftEnergyScale(event)
+
+        if hasattr(self.cfg_ana,'HCP_matching'):
+            event.triggerObjects=[]
+ 
 	result = self.selectionSequence(event, fillCounter=True)
         
 	event.rawMET=self.handles['rawMET'].product()
@@ -100,12 +106,20 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         # select non signal dileptons with loose cuts
         if result is False:
             # Post-Preapproval version
-	    selDiLeptons = [ diL for diL in event.diLeptonsTrigMatched if \
+            if hasattr(self.cfg_ana,'HCP_matching'):
+                event.l1TrigMatched=True
+                event.l2TrigMatched=True
+                selDiLeptons = [ diL for diL in event.diLeptons if \
                              self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
 			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
 			     (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
-            if len(selDiLeptons)==0:
-                selDiLeptons = [ diL for diL in event.diLeptons if \
+	    else:
+	        selDiLeptons = [ diL for diL in event.diLeptonsTrigMatched if \
+                             self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
+			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
+			     (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
+                if len(selDiLeptons)==0:
+                    selDiLeptons = [ diL for diL in event.diLeptons if \
                              self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
 			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
 			     (self.testLeg( diL.leg1() ) or self.testLeg( diL.leg2() )) ]
@@ -149,9 +163,10 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                    self.testVertex( electron )           and \
                    electron.relIsoAllChargedDB05() < 0.3]
 
-	try:
+        if self.cfg_comp.isMC and ("WJets" in self.cfg_comp.name or "W0Jets" in self.cfg_comp.name or "W1Jets" in self.cfg_comp.name or "W2Jets" in self.cfg_comp.name or "W3Jets" in self.cfg_comp.name or "W4Jets" in self.cfg_comp.name
+	                        or "DYJets" in self.cfg_comp.name or "DY0Jets" in self.cfg_comp.name or "DY1Jets" in self.cfg_comp.name or "DY2Jets" in self.cfg_comp.name or "DY3Jets" in self.cfg_comp.name or "DY4Jets" in self.cfg_comp.name):
           event.NUP = self.mchandles['source'].product().hepeup().NUP
-	except:
+	else:
           event.NUP = -1
 
         event.genMatched = None
@@ -260,6 +275,8 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                             self.trigMatched(event, diL.leg1(), 'leg1')]
             if len(selDiLeptons) == 0:
                 event.l1TrigMatched=False
+                if hasattr(self.cfg_ana,'HCP_matching'):
+	            return False
             else:
                 if fillCounter: self.counters.counter('DiLepton').inc('leg1 trig matched')
                 event.l1TrigMatched=True
@@ -270,6 +287,8 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                             self.trigMatched(event, diL.leg2(), 'leg2')]
             if len(selDiLeptons) == 0:
                 event.l2TrigMatched=False
+                if hasattr(self.cfg_ana,'HCP_matching'):
+	            return False
             else:
                 if fillCounter: self.counters.counter('DiLepton').inc('leg2 trig matched')
                 event.l2TrigMatched=True
