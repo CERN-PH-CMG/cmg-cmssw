@@ -898,7 +898,7 @@ HiggsVH145.files = getFiles('/WH_ZH_TTH_HToTauTau_M-145_8TeV-pythia6-tauola/Summ
 
 # add recoil
 
-DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilZnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+#DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilZnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 #Higgsgg110.files = getFiles('/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 #Higgsgg115.files = getFiles('/GluGluToHToTauTau_M-115_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 #Higgsgg120.files = getFiles('/GluGluToHToTauTau_M-120_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
