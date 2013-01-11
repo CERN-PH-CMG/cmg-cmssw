@@ -278,9 +278,8 @@ razorMJDiHemiHadBox20 = cmgDiHemi.clone(
 
 #now for the lepton boxes - we keep everything so we can find a lepton friendly combo
 razorMJHemiLepBox = razorMJHemiHadBox.clone()
-razorMJHemiLepBox.cfg.minObjectsPerHemi0 = cms.untracked.uint32(1)
-razorMJHemiLepBox.cfg.minObjectsPerHemi1 = cms.untracked.uint32(3)
-razorMJHemiLepBox.cfg.keepAll = cms.untracked.bool(True)
+razorMJHemiLepBox.cfg.minObjectsPerHemi0 = cms.untracked.uint32(0)
+razorMJHemiLepBox.cfg.minObjectsPerHemi1 = cms.untracked.uint32(0)
 
 #also the up + down
 razorMJHemiLepBoxDown = razorMJHemiLepBox.clone()
