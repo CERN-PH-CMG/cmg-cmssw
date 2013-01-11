@@ -92,6 +92,7 @@ for proc in procList :
             dtag = origdtag
             xsec = getByLabel(d,'xsec',-1)
             br = getByLabel(d,'br',[])
+            suffix = str(getByLabel(d,'suffix' ,""))
             if(onlytag!='all') :
                 if(dtag.find(onlytag)<0) : continue
             if(mctruthmode!=0) : dtag+='_filt'+str(mctruthmode)
@@ -109,6 +110,9 @@ for proc in procList :
                 if(eventsFile.find('/store/')==0)  : eventsFile = commands.getstatusoutput('cmsPfn ' + eventsFile)[1]
 
             	sedcmd = 'sed \"s%@input%' + eventsFile +'%;s%@outdir%' + outdir +'%;s%@isMC%' + str(not isdata) + '%;s%@mctruthmode%'+str(mctruthmode)+'%;s%@xsec%'+str(xsec)+'%;'
+                sedcmd += 's%@cprime%'+str(getByLabel(d,'cprime',-1))+'%;'
+                sedcmd += 's%@brnew%' +str(getByLabel(d,'brnew' ,-1))+'%;'
+                sedcmd += 's%@suffix%' +suffix+'%;'
             	if(params.find('@useMVA')<0) :          params = '@useMVA=False ' + params
                 if(params.find('@weightsFile')<0) :     params = '@weightsFile= ' + params
                 if(params.find('@evStart')<0) :         params = '@evStart=0 ' + params
@@ -122,10 +126,12 @@ for proc in procList :
                         if(len(varopt)<2) : continue
                         sedcmd += 's%' + varopt[0] + '%' + varopt[1] + '%;'
             	sedcmd += '\"'
+
+
 		if(split==1): 
-	            	cfgfile=outdir +'/'+ dtag + '_cfg.py'
+	            	cfgfile=outdir +'/'+ dtag + suffix + '_cfg.py'
 		else:
-                        cfgfile=outdir +'/'+ dtag +'_' + str(segment) + '_cfg.py'
+                        cfgfile=outdir +'/'+ dtag + suffix + '_' + str(segment) + '_cfg.py'
             	os.system('cat ' + cfg_file + ' | ' + sedcmd + ' > ' + cfgfile)
             	if(not subtoBatch) :
                 	os.system(theExecutable + ' ' + cfgfile)

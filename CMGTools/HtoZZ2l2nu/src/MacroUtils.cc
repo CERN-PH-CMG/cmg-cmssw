@@ -95,7 +95,7 @@ PuShifter_t getPUshifters(std::vector< float > &Lumi_distr, float puUnc)
 }
 
 //
-double weightVBF(std::string SampleName, double m_gen, double mass){
+double weightVBF(std::string SampleName, double m_gen, double mass, double Cprime, double BRnew){
    bool isZZ = (SampleName.find("ZZ")!=std::string::npos) ;
 
    double decay_width = -1;
@@ -148,9 +148,15 @@ double weightVBF(std::string SampleName, double m_gen, double mass){
    }else if(m_gen ==1000){    decay_width = 647.00000;
    }
 
+   double OverallXSectionScaleFactor = 1.0;
+   if(Cprime>=0 && BRnew>=0){
+      decay_width = decay_width * pow(Cprime,2) / (1-BRnew);      
+      OverallXSectionScaleFactor = pow(Cprime,2) * (1-BRnew);
+   }
+
    double s = pow(mass,2);
    double weight_BW = s/pow(m_gen,2) * (pow(s-pow(m_gen,2),2)+ pow(m_gen*decay_width,2)) / (pow(s-pow(m_gen,2),2)+ pow(m_gen*decay_width*s/(pow(m_gen,2)),2));
-   double toReturn = weight_BW;
+   double toReturn = OverallXSectionScaleFactor * weight_BW;
    if(toReturn<0){toReturn=1.0;  printf("weightVBF<0=%f\n",toReturn);}
    return toReturn;
 }
