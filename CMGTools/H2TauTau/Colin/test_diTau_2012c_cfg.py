@@ -4,15 +4,18 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.H2TauTau.triggerMap import pathsAndFilters
 
 runOnEmbedded = False
-runOnData = False
+runOnData = True
 runOnMC = False
 use1prong = False
+HCP_matching=True
 
 #puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/vertexWeight'
 #puFileMC = '/'.join([puFileDir, 'Pileup_Summer12MC53X.true.root'])
-#puFileData = '/'.join([puFileDir, 'Pileup_2012HCP_190456_203002.true.root'])
-puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/MC_Summer12_PU_S10-600bins.root'
-puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/Data_Pileup_2012_HCP-600bins.root'
+#puFileData = '/'.join([puFileDir, 'Pileup_2012ABCD.true.root'])
+puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/MC_Summer12_PU_S10-600bins.root'
+puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/Data_Pileup_2012_Moriond-600bins.root'
+#puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/MC_Summer12_PU_S10-600bins.root'
+#puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/Data_Pileup_2012_HCP-600bins.root'
 
 mc_vertexWeight = None
 mc_tauEffWeight_mc = 'effLooseTau15MC'
@@ -39,6 +42,9 @@ triggerAna = cfg.Analyzer(
     verbose = False
     )
 
+if HCP_matching:
+    triggerAna.keepFailingEvents=True
+    
 TauTauAna = cfg.Analyzer(
     'TauTauAnalyzer',
     pt1 = 0,
@@ -53,6 +59,9 @@ TauTauAna = cfg.Analyzer(
     # No trigger matching for the moment since MC only contains too high threshold trigger
     triggerMap = pathsAndFilters
     )
+
+if HCP_matching:
+    TauTauAna.HCP_matching=True
 
 tau1Weighter = cfg.Analyzer(
     'LeptonWeighter_tau1',
@@ -146,6 +155,10 @@ if use1prong:
   for data in data_2012D:
     data.triggers = data_triggers_1prong_2012D
 
+if HCP_matching:
+  for data in data_2012:
+    data.triggers = []
+
 
 selectedComponents = data_2012 + embedded_2012 + [DYJets, DY1Jets, DY2Jets, DY3Jets, DY4Jets, TTJets, WW, WZ, ZZ, WJets, W1Jets, W2Jets, W3Jets, W4Jets, T_tW, Tbar_tW]
 selectedComponents += [ Higgsgg110 , Higgsgg115 , Higgsgg120 , Higgsgg125 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 ,
@@ -171,15 +184,15 @@ if runOnMC:
     #                    HiggsVH110 , HiggsVH115 , HiggsVH120 , HiggsVH125 , HiggsVH130 , HiggsVH135 , HiggsVH140 , HiggsVH145 ]
     #selectedComponents = [ HiggsSUSYBB80, HiggsSUSYBB90, HiggsSUSYBB100, HiggsSUSYBB110, HiggsSUSYBB120, HiggsSUSYBB130, HiggsSUSYBB140, HiggsSUSYBB160, HiggsSUSYBB180, HiggsSUSYBB200, HiggsSUSYBB250, HiggsSUSYBB300, HiggsSUSYBB350, HiggsSUSYBB400, HiggsSUSYBB450, HiggsSUSYBB500, HiggsSUSYBB600, HiggsSUSYBB700, HiggsSUSYBB800, HiggsSUSYBB1000,
     #                       HiggsSUSYGluGlu80, HiggsSUSYGluGlu90, HiggsSUSYGluGlu100, HiggsSUSYGluGlu110, HiggsSUSYGluGlu120, HiggsSUSYGluGlu130, HiggsSUSYGluGlu140, HiggsSUSYGluGlu160, HiggsSUSYGluGlu180, HiggsSUSYGluGlu200, HiggsSUSYGluGlu250, HiggsSUSYGluGlu300, HiggsSUSYGluGlu350, HiggsSUSYGluGlu400, HiggsSUSYGluGlu450, HiggsSUSYGluGlu500, HiggsSUSYGluGlu600, HiggsSUSYGluGlu700, HiggsSUSYGluGlu800, HiggsSUSYGluGlu1000 ]
-    #selectedComponents = [ DY3Jets, W4Jets, HiggsVH125, HiggsSUSYBB500, HiggsSUSYBB130, HiggsSUSYBB350, HiggsSUSYBB250, HiggsSUSYBB400, HiggsSUSYBB700, HiggsSUSYGluGlu140, HiggsSUSYGluGlu120 ]
-    selectedComponents = [ WJets, W1Jets ]
+    #selectedComponents = [ DY2Jets, DY4Jets, WW ]
+    selectedComponents = [ WJets, DYJets ]
     #selectedComponents = [ HiggsVH130, ZZ , HiggsSUSYBB110 , HiggsSUSYBB130 , HiggsSUSYBB140 , HiggsSUSYBB600 , HiggsSUSYBB1000 , HiggsSUSYGluGlu100, HiggsSUSYGluGlu600 , Higgsgg110 , Higgsgg130 , Higgsgg135 , Higgsgg140 , Higgsgg145 , HiggsVBF110 , HiggsVBF115 , HiggsVBF120 , HiggsVBF125 , HiggsVBF130 , HiggsVBF135 , HiggsVBF140 , HiggsVBF145 ]
     #selectedComponents = [ Higgsgg120 ]
     #selectedComponents = [QCD80,QCD120]
     #selectedComponents = [T_s, T_t, Tbar_s, Tbar_t]
 if runOnEmbedded:
-    selectedComponents = [embed_Run2012D_PromptReco_v1]
-    #selectedComponents = embedded_2012
+    #selectedComponents = [embed_Run2012D_PromptReco_v1]
+    selectedComponents = embedded_2012
 
 print [c.name for c in selectedComponents]
 
@@ -331,9 +344,9 @@ if test==1:
     #DYJets.files = ["~/workspace/ditau/diTau_fullsel_tree_CMG.root"]
     #comp = HiggsSUSYBB1000
     #comp = DYJets
-    #comp = data_Run2012C_PromptReco_v1
+    comp = data_Run2012C_PromptReco_v1
     #comp = GluGluToHToWWTo2LAndTau2Nu_M_125
-    comp = embed_Run2012D_PromptReco_v1
+    #comp = embed_Run2012D_PromptReco_v1
     #comp = HiggsSUSYBB300
     #comp = Higgsgg125
     selectedComponents = [comp]
