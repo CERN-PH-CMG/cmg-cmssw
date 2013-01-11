@@ -49,14 +49,15 @@ def doTinyCmsPrelim(textLeft="_default_",textRight="_default_",hasExpo=False):
             textRight = textRight % { 'lumi':options.lumi }
         doSpam(textRight,.48, .955, .99, .995, align=32)
 
-def reMax(hist,hist2,factor=1.3):
+def reMax(hist,hist2,islog,factorLin=1.3,factorLog=2.0):
     if  hist.ClassName() == 'THStack':
         hist = hist.GetHistogram()
     max0 = hist.GetMaximum()
-    max2 = hist2.GetMaximum()*factor
+    max2 = hist2.GetMaximum()*(factorLog if islog else factorLin)
     if max2 > max0:
         max0 = max2;
-        hist.GetYaxis().SetRangeUser(0,max0)
+        if islog: hist.GetYaxis().SetRangeUser(0.9,max0)
+        else:     hist.GetYaxis().SetRangeUser(0,max0)
 def doDataNorm(pspec,pmap):
     if "data" not in pmap: return None
     total = sum([v.Integral() for k,v in pmap.iteritems() if k != 'data' and not hasattr(v,'summary')])
@@ -183,20 +184,16 @@ class PlotMaker:
                 # 
                 if not makeCanvas and not self._options.printPlots: continue
                 c1 = ROOT.TCanvas(pspec.name+"_canvas",pspec.name)
-                if pspec.hasOption('Logy'):
-                    c1.SetLogy(1)
-                    total.SetMaximum(2*total.GetMaximum())
-                else:
-                    c1.SetLogy(0)
+                islog = pspec.hasOption('Logy'); c1.SetLogy(islog)
+                if islog: total.SetMaximum(2*total.GetMaximum())
                 total.Draw("HIST")
                 if self._options.plotmode == "stack":
                     stack.Draw("SAME HIST")
                     total.Draw("AXIS SAME")
                 else: 
                     stack.Draw("SAME HIST NOSTACK")
-                #stack.Draw("HF SAME")
                 if 'data' in pmap: 
-                    reMax(total,pmap['data'])
+                    reMax(total,pmap['data'],islog)
                     pmap['data'].Draw("E SAME")
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
                                   cutoff=pspec.getOption('LegendCutoff', 1e-5 if c1.GetLogy() else 1e-2))
@@ -204,12 +201,14 @@ class PlotMaker:
                 signorm = None; datnorm = None
                 if options.showSigShape: 
                     signorm = doStackSignalNorm(pspec,pmap)
-                    signorm.SetDirectory(dir); dir.WriteTObject(signorm)
-                    reMax(total,signorm)
+                    if signorm != None:
+                        signorm.SetDirectory(dir); dir.WriteTObject(signorm)
+                        reMax(total,signorm,islog)
                 if options.showDatShape: 
                     datnorm = doDataNorm(pspec,pmap)
-                    datnorm.SetDirectory(dir); dir.WriteTObject(datnorm)
-                    reMax(total,datnorm)
+                    if datnorm != None:
+                        datnorm.SetDirectory(dir); dir.WriteTObject(datnorm)
+                        reMax(total,datnorm,islog)
                 if makeCanvas: dir.WriteTObject(c1)
                 #
                 if self._options.printPlots:
