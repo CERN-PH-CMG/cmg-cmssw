@@ -100,7 +100,7 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         event.jets = map( Jet,self.handles['jets'].product() )
 
         #prune jets
-        event.prunedJets = filter(lambda x:x.pt()>30 and abs(x.eta())<4.7,event.jets)
+        event.prunedJets = filter(lambda x:x.pt()>10 and abs(x.eta())<4.7,event.jets)
 
         event.selectedJets = filter(lambda x:x.getSelection("cuts_looseJetId") and  x.passPuJetId('full', 2),event.prunedJets) 
         event.shiftedJetsUp  = self.makeShiftedJets(event.selectedJets,1.0)
@@ -559,13 +559,14 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         cleanedJets=[]
 
         for jet in jets:
-            overlap=False
-            for lepton in leptons:
-                if deltaR(jet.eta(),jet.phi(),lepton.eta(),lepton.phi())<cleanDR:
-                    overlap=True
-                    break
-            if not overlap:
-                cleanedJets.append(jet)
+            if jet.pt()>30: ###Apply the real cut here to do proper systs on jet counting
+                overlap=False
+                for lepton in leptons:
+                    if deltaR(jet.eta(),jet.phi(),lepton.eta(),lepton.phi())<cleanDR:
+                        overlap=True
+                        break
+                if not overlap:
+                    cleanedJets.append(jet)
                 
 
         jetVars=dict()
