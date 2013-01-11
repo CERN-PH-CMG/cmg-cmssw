@@ -102,13 +102,15 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 	    else:
 	        trigres=triggerResults.accept(index)
 	    setattr(event,trig,trigres)
+
+        if hasattr(self.cfg_ana,'HCP_matching'):
+            event.l1TrigMatched=True
+            event.l2TrigMatched=True
 	
         # select non signal dileptons with loose cuts
         if result is False:
             # Post-Preapproval version
             if hasattr(self.cfg_ana,'HCP_matching'):
-                event.l1TrigMatched=True
-                event.l2TrigMatched=True
                 selDiLeptons = [ diL for diL in event.diLeptons if \
                              self.cfg_ana.m_min < diL.mass() and diL.mass() < self.cfg_ana.m_max and \
 			     self.testNonLeg( diL.leg1() ) and self.testNonLeg( diL.leg2() ) and \
