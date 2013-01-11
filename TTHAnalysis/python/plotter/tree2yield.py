@@ -233,7 +233,7 @@ class TreeToYield:
             cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, cut)
         if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
         histo = None
-        if ":" in expr:
+        if ":" in expr.replace("::","--"):
             (nbx,xmin,xmax,nby,ymin,ymax) = bins.split(",")
             histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
         else:
