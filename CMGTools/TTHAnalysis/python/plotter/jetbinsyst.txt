@@ -1,0 +1,6 @@
+TTj  : TT.* : 2l.*_4j : 1.2
+TTj  : TT.* : 3l.*_4j : 1.2
+TTj  : TT.* : 4l.*_3j : 1.2
+TTjj : TT.* : 2l.*_5j : 1.4
+TTjj : TT.* : 3l.*_5j : 1.4
+TTjj : TT.* : 4l.*_4j : 1.4
