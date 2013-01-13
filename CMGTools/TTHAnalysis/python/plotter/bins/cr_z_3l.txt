@@ -1,0 +1,11 @@
+2L SF/OS: nLepGood >= 3 && abs(LepGood1_pdgId+LepGood2_pdgId)==0
+lep MVA: min(LepGood1_mvaNew,LepGood2_mvaNew) >= -0.2
+mll > 12: minMllAFAS > 12
+Z peak: abs(mZ1-91.2) < 10
+met LD < 0.15: met*0.00397 + mhtJet25*0.00265 < 0.15
+lep veto: nLepGood == 3
+l3pt : LepGood3_pt < 30
+#lep MVA 3: min(LepGood1_mvaNew,min(LepGood2_mvaNew,LepGood3_mvaNew)) >= -0.2
+#met LD > 0.30: met*0.00397 + mhtJet25*0.00265 > 0.30
+#tight MVA: min(LepGood1_mvaNew,LepGood2_mvaNew) >= 0.25
+#b veto: LepGood3_mvaNew < 0.0
