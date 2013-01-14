@@ -46,3 +46,4 @@ class MVAMet(MVAMetPyWrapper):
 if __name__ == '__main__':
     mvaMet = MVAMet()
 
+    jetInfo = MetUtilities.JetInfo()
