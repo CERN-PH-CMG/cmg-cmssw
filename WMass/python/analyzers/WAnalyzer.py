@@ -7,7 +7,6 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Jet, GenParticle
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 from CMGTools.RootTools.utils.DeltaR import bestMatch, deltaR, deltaR2
-# INCLUDE MVAMET WRAPPER (not working)
 from CMGTools.Utilities.mvaMET.mvaMet import MVAMet
 
 class WAnalyzer( Analyzer ):
@@ -29,6 +28,24 @@ class WAnalyzer( Analyzer ):
         count.register('W pfmet>25')
         count.register('W pt<20')
         count.register('W Jet_leading_pt<30')
+        
+        self.mvamet = MVAMet() # SHOULD BE MVAMet(0.1)
+
+        # void    Initialize(const edm::ParameterSet &iConfig, 
+        # TString iU1Weights      ="$CMSSW_BASE/src/pharris/data/gbrmet_52.root",
+        # TString iPhiWeights     ="$CMSSW_BASE/src/pharris/data/gbrmetphi_52.root",
+        # TString iCovU1Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu1_52.root",
+        # TString iCovU2Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu2_52.root",
+        # MVAMet::MVAType  iType=kBaseline);
+
+        self.mvamet.Initialize(0,
+                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmet_42.root',
+                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmetphi_42.root',
+                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmetu1cov_42.root',
+                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmetu2cov_42.root',
+                          0
+                          )
+
 
     def buildLeptons(self, cmgMuons, event):
         '''Creates python Leptons from the muons read from the disk.
@@ -59,6 +76,14 @@ class WAnalyzer( Analyzer ):
         event.jets = self.buildJets( self.handles['jets'].product(), event )
         # access MET
         event.pfmet = self.handles['pfmet'].product()[0]
+        event.tkmet = self.handles['tkmet'].product()[0]
+        event.nopumet = self.handles['nopumet'].product()[0]
+        event.pumet = self.handles['pumet'].product()[0]
+        event.pucmet = self.handles['pucmet'].product()[0]
+        event.pfMetForRegression = self.handles['pfMetForRegression'].product()[0]
+        # print 'event.pfmet ',event.pfmet.pt(),' event.pfMetForRegression ',event.pfMetForRegression.pt()
+        # access nJetsPtGt1
+        event.nJetsPtGt1H = self.handles['nJetsPtGt1'].product()[0]
         # access genP
         event.genParticles = []
         if self.cfg_comp.isMC :
@@ -70,7 +95,7 @@ class WAnalyzer( Analyzer ):
 
         
     def selectionSequence(self, event, fillCounter):
-
+        
         if fillCounter: self.counters.counter('WAna').inc('W all events')
 
         # retrieve collections of interest (muons and jets)
@@ -168,6 +193,8 @@ class WAnalyzer( Analyzer ):
         else:
             if fillCounter: self.counters.counter('WAna').inc('W non trg leading lepton pT < 10 GeV')
 
+
+        # print 'START OF selectionSequence FOR SELECTED EVENTS'
         
         # if the genp are saved, compute dR between gen and reco muon 
         if event.savegenpW :
@@ -180,6 +207,74 @@ class WAnalyzer( Analyzer ):
         event.selMuonIsTightAndIso = self.testLeg( event.selMuons[0] ) 
         event.selMuonIsTight = self.testLegID( event.selMuons[0] ) 
           
+        # Initialize MVAMet and retrieve it
+
+        # mvaMETTauMu = cms.EDProducer(
+                  # "MVAMETProducerTauMu",
+                  # pfmetSrc = cms.InputTag('pfMetForRegression'),
+                  # tkmetSrc = cms.InputTag('tkMet'),
+                  # nopumetSrc = cms.InputTag('nopuMet'),
+                  # pucmetSrc = cms.InputTag('pcMet'),
+                  # pumetSrc = cms.InputTag('puMet'),
+                  # recBosonSrc = cms.InputTag('cmgTauMuSel'),
+                  # jetSrc = cms.InputTag('cmgPFJetSel'),
+                  # leadJetSrc = cms.InputTag('cmgPFBaseJetLead'),
+                  # vertexSrc = cms.InputTag('goodPVFilter'),
+                  # nJetsPtGt1Src = cms.InputTag('nJetsPtGt1'),
+                  # rhoSrc = cms.InputTag('kt6PFJets','rho'),
+                  # enable = cms.bool(True),
+                  # verbose = cms.untracked.bool( False ),
+                  # weights_gbrmet = cms.string(weights_gbrmet),
+                  # weights_gbrmetphi = cms.string(weights_gbrmetphi),
+                  # weights_gbrmetu1cov = cms.string(weights_gbrmetu1cov),
+                  # weights_gbrmetu2cov = cms.string(weights_gbrmetu2cov),
+                  
+                  # #COLIN: make delta R a parameter
+                  # )
+
+        iLeadJet = 0
+        i2ndJet = 0
+        if(len(event.selJets)>0): iLeadJet = event.selJets[0].p4()
+        # if(len(event.selJets)>0): i2ndJet = event.selJets[0].p4()
+        if(len(event.selJets)>1): i2ndJet = event.selJets[1].p4()
+        # print 'iLeadJet= ',iLeadJet, ' i2ndJet=',i2ndJet 
+        # self.mvamet.addVisObject(event.selMuons[0].p4())
+        visObjectP4s_array = [event.selMuons[0].p4()]
+        iJets_p4 = []
+        iJets_mva = []
+        iJets_neutFrac = []
+        for jet in event.selJets:
+            iJets_p4.append(jet.p4())
+            iJets_mva.append(float(0))
+            iJets_neutFrac.append(float(0.5))
+            
+        self.mvamet.getMet(
+                           # event.pfmet, #iPFMet,
+                           event.pfMetForRegression, #iPFMet,
+                           event.tkmet, #iTKMet,
+                           event.nopumet, #iNoPUMet,
+                           event.pumet, #iPUMet,
+                           event.pucmet, #iPUCMet,
+                           iLeadJet, #event.selJets[0], #iLeadJet,
+                           i2ndJet, #event.selJets[1], #i2ndJet,
+                           len(event.selJets), #iNJetsGt30,
+                           len(event.allJets), #iNJetsGt1,
+                           len(self.handles['vertices'].product()), #iNGoodVtx,
+                           iJets_p4, #iJets,
+                           iJets_mva, #iJets,
+                           iJets_neutFrac, #iJets,
+                           False, #iPrintDebug,
+                           visObjectP4s_array #visObjectP4s
+                          )
+                          
+        GetMet_first = self.mvamet.GetMet_first();
+        GetMet_second = self.mvamet.GetMet_second();
+        
+        # print 'AFTER MVAmet_test'
+        # print 'event.pfmet.pt() ', event.pfmet.pt()
+        # print 'GetMet_first ',GetMet_first,' GetMet_first.Pt() ',GetMet_first.Pt()
+        # print 'GetMet_second ',GetMet_second,' GetMet_second.significance() ',GetMet_second.significance().Print()
+        
         # define a W from lepton and MET
         event.W4V = event.selMuons[0].p4() + event.pfmet.p4()
         event.W4V_mt = self.mT(event.selMuons[0].p4() , event.pfmet.p4())        
@@ -220,6 +315,8 @@ class WAnalyzer( Analyzer ):
         # event is fully considered as good
         # if fillCounter: self.counters.counter('WAna').inc('W pass')
         event.WGoodEvent = True
+        # print 'END OF selectionSequence'
+
         return True
 
 
@@ -237,13 +334,45 @@ class WAnalyzer( Analyzer ):
             'cmgPFJetSel',
             'std::vector<cmg::PFJet>'
             )
+        self.handles['jetLead'] = AutoHandle(
+            'cmgPFBaseJetLead',
+            'vector<cmg::BaseJet>'
+            )
         self.handles['pfmet'] = AutoHandle(
           'cmgPFMET',
           'std::vector<cmg::BaseMET>' 
           )
+        self.handles['pfMetForRegression'] = AutoHandle(
+          'pfMetForRegression',
+          'std::vector<reco::PFMET>'  
+          )
+        self.handles['tkmet'] = AutoHandle(
+          'tkMet',
+          'std::vector<reco::PFMET>' 
+          )
+        self.handles['nopumet'] = AutoHandle(
+          'nopuMet',
+          'std::vector<reco::PFMET>' 
+          )
+        self.handles['pumet'] = AutoHandle(
+          'puMet',
+          'std::vector<reco::PFMET>' 
+          )
+        self.handles['pucmet'] = AutoHandle(
+          'pcMet',
+          'std::vector<reco::PFMET>'  
+          )
         self.mchandles['genpart'] =  AutoHandle(
             'genParticlesPruned',
             'std::vector<reco::GenParticle>'
+            )
+        self.handles['vertices'] =  AutoHandle(
+            'offlinePrimaryVertices',
+            'std::vector<reco::Vertex>'
+            )
+        self.handles['nJetsPtGt1'] =  AutoHandle(
+            'nJetsPtGt1',
+            'int'
             )
 
 
@@ -304,7 +433,6 @@ class WAnalyzer( Analyzer ):
 
 
 class WBoson(object):
-
         def __init__(self, lepton, met):
                 self.lepton = lepton
                 self.met = met

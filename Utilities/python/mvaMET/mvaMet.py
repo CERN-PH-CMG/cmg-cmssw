@@ -20,11 +20,14 @@ class MVAMet(MVAMetPyWrapper):
                iNJetsGt30,
                iNJetsGt1,
                iNGoodVtx,
-               iJets,
+               iJets_p4,
+               iJets_mva,
+               iJets_neutFrac,
                iPrintDebug,
                visObjectP4s
                ):
         map( self.addVisObject, visObjectP4s)
+        map( self.add_iJets, iJets_p4, iJets_mva, iJets_neutFrac)
         return self.GetMet(
                iPFMet,
                iTKMet,
@@ -36,10 +39,10 @@ class MVAMet(MVAMetPyWrapper):
                iNJetsGt30,
                iNJetsGt1,
                iNGoodVtx,
-               iJets,
                iPrintDebug            
                )
     
 
 if __name__ == '__main__':
     mvaMet = MVAMet()
+
