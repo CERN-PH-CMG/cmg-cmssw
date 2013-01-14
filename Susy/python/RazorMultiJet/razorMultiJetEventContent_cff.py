@@ -26,6 +26,7 @@ razorMJjetEventContent += cms.untracked.vstring(
                                            'drop patElectrons_razorMJElectronSAK_*_*',
                                            'drop patMuons_razorMJMuonSAK_*_*',
                                            'drop cmgHemispheres_razorMJHemiHadBox*_*_*',
+                                           'drop cmgHemispheres_razorMJHemiLepBox*_*_*',
                                            'drop recoCandidatesOwned_razorMJDiHemi*_*_*',
                                            'keep double_vertexWeight*_*_MJSkim',
                                            'keep *_razorMJTrackIsolationMaker_*_*'

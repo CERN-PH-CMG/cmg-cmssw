@@ -281,15 +281,54 @@ razorMJHemiLepBox = razorMJHemiHadBox.clone()
 razorMJHemiLepBox.cfg.minObjectsPerHemi0 = cms.untracked.uint32(0)
 razorMJHemiLepBox.cfg.minObjectsPerHemi1 = cms.untracked.uint32(0)
 
+razorMJDiHemiLepBox = cmgDiHemi.clone(
+    cfg = cmgDiHemi.cfg.clone(
+    leg1Collection = cms.InputTag('razorMJHemiLepBox'),
+    leg2Collection = cms.InputTag('razorMJHemiLepBox'),
+    metCollection = cms.InputTag('cmgPFMET')
+    ),
+    cuts = cms.PSet(
+    razor = cms.PSet(
+    r = cms.string('Rsq() >= 0.03'),
+    mr = cms.string('mR() >= 300')
+    )
+    )
+    )
+razorMJDiHemiLepBoxSel = cmgCandSel.clone( src = 'razorMJDiHemiLepBox', cut = 'getSelection("cuts_razor")' )
+razorMJDiHemiLepBoxCount = cmgCandCount.clone( src = 'razorMJDiHemiLepBoxSel', minNumber = 1 )
+
 #also the up + down
 razorMJHemiLepBoxDown = razorMJHemiLepBox.clone()
 razorMJHemiLepBoxDown.cfg.inputCollection[0] = "razorMJPFJetSel30Down"
+razorMJDiHemiLepBoxDown = cmgDiHemi.clone(
+    cfg = cmgDiHemi.cfg.clone(
+    leg1Collection = cms.InputTag('razorMJHemiLepBoxDown'),
+    leg2Collection = cms.InputTag('razorMJHemiLepBoxDown'),
+    metCollection = cms.InputTag('razorMJMetDown')
+    )
+    )
+
 razorMJHemiLepBoxUp = razorMJHemiLepBox.clone()
 razorMJHemiLepBoxUp.cfg.inputCollection[0] = "razorMJPFJetSel30Up"
+razorMJDiHemiLepBoxUp = cmgDiHemi.clone(
+        cfg = cmgDiHemi.cfg.clone(
+        leg1Collection = cms.InputTag('razorMJHemiLepBoxUp'),
+            leg2Collection = cms.InputTag('razorMJHemiLepBoxUp'),
+            metCollection = cms.InputTag('razorMJMetUp')
+            )
+        )
+
 
 #and the 20 GeV versions
 razorMJHemiLepBox20 = razorMJHemiLepBox.clone()
 razorMJHemiLepBox20.cfg.inputCollection[0] = "razorMJPFJetSel20"
+razorMJDiHemiLepBox20 = cmgDiHemi.clone(
+        cfg = cmgDiHemi.cfg.clone(
+        leg1Collection = cms.InputTag('razorMJHemiLepBox20'),
+            leg2Collection = cms.InputTag('razorMJHemiLepBox20'),
+            metCollection = cms.InputTag('cmgPFMET')
+            )
+        )
 
 ############### Run the sequences
 razorMJTriggerSequence = cms.Sequence(
@@ -326,11 +365,14 @@ razorMJHemiSequence = cms.Sequence(
     razorMJDiHemiHadBoxDown+
     razorMJHemiHadBox20*
     razorMJDiHemiHadBox20+
-    razorMJHemiLepBox+
-    razorMJHemiLepBoxUp+
-    razorMJHemiLepBoxDown+
-    razorMJDiHemiHadBoxSel+
-    razorMJHemiLepBox20
+    razorMJHemiLepBox*
+    razorMJDiHemiLepBox+
+    razorMJHemiLepBoxUp*
+    razorMJDiHemiLepBoxUp+
+    razorMJHemiLepBoxDown*
+    razorMJDiHemiLepBoxDown+
+    razorMJHemiLepBox20*
+    razorMJDiHemiLepBox20
 )
 
 ###Isolated Tracks veto, hadronic
@@ -345,6 +387,7 @@ razorMJTrackIsolationMaker.vetoCollections = cms.VInputTag()
 
 ### Isolated Tracks veto, leptonic
 from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import *
+from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import *
 from CMGTools.Common.skims.leadingCMGTauSelector_cfi      import *
 from CMGTools.Susy.common.trackIsolationMaker_cfi         import trackIsolationMaker
 
