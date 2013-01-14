@@ -49,13 +49,19 @@ def getGlobalTagByDataset(runOnMC, dataset):
             GT = 'START53_V7G::All'
         elif 'START52' in dataset:
             GT = 'START52_V9F::All'
+        elif 'START44' in dataset:
+            GT = 'START44_V13::All'
     else:
-        if '13Jul2012' in dataset:
+        if cmsswIs44X():
+            GT = 'GR_R_44_V15::All'
+        elif '13Jul2012' in dataset:
             GT = 'FT_53_V6_AN3::All'
         elif '06Aug2012' in dataset:
             GT = 'FT_53_V6C_AN3::All'
         elif '24Aug2012' in dataset:
             GT = 'FT_53_V10_AN3::All'
+        elif 'Run2012C-PromptReco-v1' in dataset:
+            GT = 'GR_P_V40_AN3::All'
         elif 'Run2012C-PromptReco-v2' in dataset:
             GT = 'GR_P_V41_AN3::All'
         elif 'Run2012D' in dataset:
