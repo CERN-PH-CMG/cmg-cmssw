@@ -33,16 +33,16 @@ class PhysicsObject_Lepton : public LorentzVector
     Float_t pfRelIsoDbeta()                       { return (TMath::Max(nhIso+gIso-0.5*puchIso,0.)+chIso)/pt(); }
     Float_t pfRelIso()                            { return (nhIso+gIso+chIso)/pt(); }
     Float_t relTkIso()                            { return trkIso/pt(); }
-    Float_t ePFRelIsoCorrected2012(double rho)
+    Float_t ePFRelIsoCorrected2012(double rho,double eeta)
     {
       //cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection#Isolation_cone_R_0_4
       Float_t aeff(0.21);
-      if(fabs(eta())>2.4)        aeff=0.26;
-      else if(fabs(eta())>2.3)   aeff=0.19;
-      else if(fabs(eta())>2.2)   aeff=0.18;
-      else if(fabs(eta())>2.0)   aeff=0.14;
-      else if(fabs(eta())>1.479) aeff=0.11;
-      else if(fabs(eta())>1.0)   aeff=0.21;
+      if(fabs(eeta)>2.4)        aeff=0.26;
+      else if(fabs(eeta)>2.3)   aeff=0.19;
+      else if(fabs(eeta)>2.2)   aeff=0.18;
+      else if(fabs(eeta)>2.0)   aeff=0.14;
+      else if(fabs(eeta)>1.479) aeff=0.11;
+      else if(fabs(eeta)>1.0)   aeff=0.21;
       
       return (chIso+TMath::Max(gIso+nhIso-rho*aeff,0.))/pt();
     }
@@ -64,7 +64,12 @@ class PhysicsObject_Lepton : public LorentzVector
       trkValidPixelHits=trkValidPixelHits_; trkValidTrackerHits=trkValidTrackerHits_;trkLostInnerHits=trkLostInnerHits_;
     }
     void setEnergyCorrections(Float_t ensf_, Float_t ensferr_) { ensf=ensf_; ensferr=ensferr_; }
- 
+
+    bool isEBElectron(float sceta)      { return fabs(sceta) < 1.479; }
+    bool isEEElectron(float sceta)      { return fabs(sceta) > 1.479 && fabs(sceta) < 2.5; }
+    bool isInCrackElectron(float sceta) { double abseta = fabs(sceta); return (abseta > 1.4442 && abseta < 1.566); }
+
+
     Int_t id,genid;
     Float_t nonTrigMvaId, trigMvaId, ensf,ensferr;
     Float_t d0, dZ, trkpt,trketa,trkphi,trkchi2,trkValidPixelHits,trkValidTrackerHits,trkLostInnerHits;

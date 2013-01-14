@@ -1,13 +1,13 @@
 {
 
-  TString gammaFile="/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
+  TString gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
   TFile *_file0=TFile::Open(gammaFile);
   
   gStyle->SetOptStat(0);
   
-  //    TString histo("metvsavginstlumi");
-  //  TString histoY("<E_{T}^{miss}>");
-  //  TString histoX("Avg. inst luminosity");
+  TString histo("metvsavginstlumi");
+  TString histoY("<E_{T}^{miss}>");
+  TString histoX("Avg. inst luminosity");
     
 //   TString histo("nvtxvsavginstlumi");
 //   TString histoY("<N_{vtx}>");
@@ -17,9 +17,9 @@
 //   TString histoY("<E_{T}^{miss}>");
 //   TString histoX("Run number");
   
-  TString histo("nvtxvsrun");
-  TString histoY("<N_{vtx}>");
-  TString histoX("Run number");
+// TString histo("nvtxvsrun");
+  // TString histoY("<N_{vtx}>");
+  //  TString histoX("Run number");
   
   
   TString cats[]={"","eq0jets","eq1jets","eq2jets"};
@@ -27,6 +27,9 @@
   const size_t ncats=sizeof(cats)/sizeof(TString);
   TCanvas *c = new TCanvas("c","c",600,600);
   c->Divide(2,2);
+
+  TCanvas *c2 = new TCanvas("c2","c2",600,600);
+  c2->Divide(2,2);
   
   for(int i=0; i<ncats; i++)
     {
@@ -67,7 +70,22 @@
       pt->SetTextFont(42);
       pt->Draw();
 
+
+      TH1 *gammaDiffmm=(TH1F *) mumu->Clone(); gammaDiffmm->SetDirectory(0);
+      TH1 *gammaDiffee=(TH1F *) ee->Clone();   gammaDiffee->SetDirectory(0);
+      gammaDiffmm->Add(gamma,-1);
+      gammaDiffee->Add(gammaee,-1);
+
+      c2->cd(i+1);
+      gammaDiffmm->Draw("e1");
+      gammaDiffee->Draw("e1 same");
+      pt->Clone()->Draw();
+      gammaDiffmm->GetYaxis()->SetRangeUser(-10,10);
+      gammaDiffmm->GetXaxis()->SetRangeUser(0,1500);
+      gammaDiffmm->GetYaxis()->SetTitle("Rel. difference %");
+
       if(i) continue;
+      c->cd(i+1);
       TLegend *leg= new TLegend(0.6,0.6,0.9,0.9);
       //      leg->SetNColumns(2);
       leg->AddEntry(mumu,"#mu#mu","lp");
@@ -79,6 +97,7 @@
       leg->SetBorderSize(0);
       leg->SetFillStyle(0);
       leg->SetTextFont(42);
+      c2->cd(i+1);
 
     }
 

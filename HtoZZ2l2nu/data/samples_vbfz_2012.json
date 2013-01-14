@@ -1,6 +1,29 @@
 {
     "proc":[
         {
+        "tag":"#alpha^{6}_{EW}-ll#nu#nu",
+        "isdata":false,
+        "color":"804",
+        "lcolor":1,
+        "marker":1,
+	"fill":0,
+	"spimpose":true,
+        "data":[
+                {
+                "dtag":"no MC8TeV_eevvjj_VBFNLO",
+                "aoddir":["/store/cmst3/user/psilva/VBFNLO/eevvjj/8TeV/AODSIM"],
+                "xsec":0.15153,
+		"br":[1.11]
+                },
+                {
+                "dtag":"no MC8TeV_mmvvjj_VBFNLO",
+                "aoddir":["/store/cmst3/user/psilva/VBFNLO/mmvvjj/8TeV/AODSIM"],
+                "xsec":0.1513,
+		"br":[1.11]
+                }
+         ]
+        },
+        {
         "tag":"#alpha^{4}_{EW}-ll",
         "isdata":false,
         "issignal":true,
@@ -12,13 +35,15 @@
                 "dtag":"MC8TeV_eejj_VBFNLO",
                 "aoddir":["/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/AODSIM"],
                 "xsec":0.095,
-		"br":[1.11]
+		"br":[1.11],
+		"split":2
                 },
                 {
                 "dtag":"MC8TeV_mmjj_VBFNLO",
                 "aoddir":["/store/cmst3/user/psilva/VBFNLO/mmjj/8TeV/AODSIM"],
                 "xsec":0.095,
-		"br":[1.11]
+		"br":[1.11],
+		"split":2
                 }
          ]
         },
@@ -189,7 +214,7 @@
               },
 	       {
                 "dtag":"MC8TeV_DY3JetsToLL_50toInf",
-                "split":5,
+                "split":4,
                 "xsec":3532.8,
 		"br":[0.0173220339]
               },

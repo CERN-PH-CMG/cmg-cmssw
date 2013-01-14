@@ -96,12 +96,14 @@ void makeLimitSummary(){
    LEG->SetBorderSize(0);
    LEG->SetHeader("Expected @95% C.L.");
 
-   getGraph("Baseline=AK5PF+E_{T}^{miss}"                      , 1, 1, 1, LEG , NULL, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8_LimitSummary")->Draw("L same");
-   getGraph("AK5PF+red-E_{T}^{miss}"                           , 2, 1, 1, LEG , NULL, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8RMET_LimitSummary")->Draw("L same");
-   getGraph("AK5PF+E_{T}^{miss}+min #Delta#phi_{jet>30}"       , 4, 1, 1, LEG , NULL, "../computeLimits/JOBS_nodphisoftjmet/_LimitSummary")->Draw("L same");
-   getGraph("AK5PFchs+E_{T}^{miss}"                            , 1, 2, 1, LEG , NULL, "../computeLimits/JOBS_chs/_LimitSummary")->Draw("L same");
-   getGraph("AK5PFchs+red-E_{T}^{miss}+min #Delta#phi_{jet>30}", 2, 2, 1, LEG , NULL, "../computeLimits/JOBS_chsnodphisoftjmet_rmet/_LimitSummary")->Draw("L same");
-   getGraph("AK5PFchs+E_{T}^{miss}+min #Delta#phi_{jet>30}"    , 4, 2, 1, LEG , NULL, "../computeLimits/JOBS_chsnodphisoftjmet/_LimitSummary")->Draw("L same");
+   // getGraph("Baseline=AK5PF+E_{T}^{miss}"                      , 1, 1, 1, LEG , NULL, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8_LimitSummary")->Draw("L same");
+   //   getGraph("AK5PF+red-E_{T}^{miss}"                           , 2, 1, 1, LEG , NULL, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8RMET_LimitSummary")->Draw("L same");
+   ///getGraph("AK5PF+E_{T}^{miss}+min #Delta#phi_{jet>30}"       , 4, 1, 1, LEG , NULL, "../computeLimits/JOBS_nodphisoftjmet/_LimitSummary")->Draw("L same");
+   //getGraph("AK5PFchs+E_{T}^{miss}"                            , 1, 2, 1, LEG , NULL, "../computeLimits/JOBS_chs/_LimitSummary")->Draw("L same");
+   // getGraph("AK5PFchs+red-E_{T}^{miss}+min #Delta#phi_{jet>30}", 2, 2, 1, LEG , NULL, "../computeLimits/JOBS_chsnodphisoftjmet_rmet/_LimitSummary")->Draw("L same");
+   getGraph("Cut&Count",1, 1, 1, LEG , NULL, "../computeLimits/JOBS_chsnodphisoftjmet/_LimitSummary")->Draw("L same");
+   getGraph("Shape(inc)",2, 2, 1, LEG , NULL, "../computeLimits/JOBS_chsnodphisoftjmet_incs/_LimitSummary")->Draw("L same");
+   getGraph("Shape(binned)"    ,4, 2, 1, LEG , NULL, "../computeLimits/JOBS_chsnodphisoftjmet/_LimitSummary_shape")->Draw("L same");
    
    LEG ->Draw("same");
    LEG->SetNColumns(2);
@@ -131,12 +133,14 @@ void makeLimitSummary(){
    
    TLine *l=new TLine(150,1,1000,1); l->Draw("same");
 
-   Ref=getGraph("Baseline=AK5PF+E_{T}^{miss}"                      , 1, 1, 1, LEG , NULL, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8_LimitSummary");
-   getGraph("AK5PF+red-E_{T}^{miss}"                           , 2, 1, 1, LEG , Ref, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8RMET_LimitSummary")->Draw("L same");
-   getGraph("AK5PF+E_{T}^{miss}+min #Delta#phi_{jet>30}"       , 4, 1, 1, LEG , Ref, "../computeLimits/JOBS_nodphisoftjmet/_LimitSummary")->Draw("L same");
-   getGraph("AK5PFchs+E_{T}^{miss}"                            , 1, 2, 1, LEG , Ref, "../computeLimits/JOBS_chs/_LimitSummary")->Draw("L same");
-   getGraph("AK5PFchs+red-E_{T}^{miss}+min #Delta#phi_{jet>30}", 2, 2, 1, LEG , Ref, "../computeLimits/JOBS_chsnodphisoftjmet_rmet/_LimitSummary")->Draw("L same");
-   getGraph("AK5PFchs+E_{T}^{miss}+min #Delta#phi_{jet>30}"    , 4, 2, 1, LEG , Ref, "../computeLimits/JOBS_chsnodphisoftjmet/_LimitSummary")->Draw("L same");
+   //   Ref=getGraph("Baseline=AK5PF+E_{T}^{miss}"                      , 1, 1, 1, LEG , NULL, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8_LimitSummary");
+   //   getGraph("AK5PF+red-E_{T}^{miss}"                           , 2, 1, 1, LEG , Ref, "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/Council/COUNT8RMET_LimitSummary")->Draw("L same");
+   // getGraph("AK5PF+E_{T}^{miss}+min #Delta#phi_{jet>30}"       , 4, 1, 1, LEG , Ref, "../computeLimits/JOBS_nodphisoftjmet/_LimitSummary")->Draw("L same");
+   // getGraph("AK5PFchs+E_{T}^{miss}"                            , 1, 2, 1, LEG , Ref, "../computeLimits/JOBS_chs/_LimitSummary")->Draw("L same");
+   // getGraph("AK5PFchs+red-E_{T}^{miss}+min #Delta#phi_{jet>30}", 2, 2, 1, LEG , Ref, "../computeLimits/JOBS_chsnodphisoftjmet_rmet/_LimitSummary")->Draw("L same");
+   Ref=getGraph("Cut&Count", 1, 1, 1, LEG , NULL, "../computeLimits/JOBS_chsnodphisoftjmet/_LimitSummary");
+   getGraph("Shape(inc)",         2, 2, 1, LEG , Ref, "../computeLimits/JOBS_chsnodphisoftjmet_incs/_LimitSummary")->Draw("L same");
+   getGraph("Shape(binned)",         4, 2, 1, LEG , Ref, "../computeLimits/JOBS_chsnodphisoftjmet/_LimitSummary_shape")->Draw("L same");
 
    LEG ->Draw("same");
    LEG->SetNColumns(2);

@@ -313,20 +313,28 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
 	{
 	  float vxMother = genpart->vx();
 	  float vyMother = genpart->vy();
-	  //float vzMother = genpart->vz();
+	  int dauId(0), gDauId(0);
+	  float vxDaughter(0), vyDaughter(0);
+	  float vxGdaughter(0), vyGdaughter(0);
 	  const reco::Candidate *fsPart=getGeneratorFinalStateFor(genpart);
-	  if(fsPart)
+	  if(fsPart && fsPart->numberOfDaughters()>0)
 	    {
-	      for(size_t id=0; id<fsPart->numberOfDaughters(); id++)
+	      dauId      = fsPart->daughter(0)->pdgId();
+	      vxDaughter = fsPart->daughter(0)->vx();
+	      vyDaughter = fsPart->daughter(0)->vy();
+	     
+	      const reco::Candidate *fsDauPart=getGeneratorFinalStateFor(fsPart);
+	      float vxGdaughter(0),vyGdaughter(0);
+	      if(fsDauPart && fsDauPart->numberOfDaughters()>1)
 		{
-		  float vxDaughter = fsPart->daughter(id)->vx();
-		  float vyDaughter = fsPart->daughter(id)->vy();
-		  //float vzDaughter = fsPart->daughter(id)->vz();
-		  float bDecayLength = sqrt(pow(vxMother-vxDaughter,2)+pow(vyMother-vyDaughter,2));
-		  //float bDecayLength3D = sqrt(pow(vxMother-vxDaughter,2)+pow(vyMother-vyDaughter,2)+pow(vzMother-vzDaughter,2));
-		  ev.mc_lxy[ev.nmcparticles]=max(ev.mc_lxy[ev.nmcparticles],bDecayLength);
+		  gDauId      = fsDauPart->daughter(1)->pdgId();
+		  vxGdaughter = fsDauPart->daughter(1)->vx();
+		  vyGdaughter = fsDauPart->daughter(1)->vy();
 		}
 	    }
+
+	  float bDecayLength = max(sqrt(pow(vxMother-vxDaughter,2)+pow(vyMother-vyDaughter,2)),sqrt(pow(vxMother-vxGdaughter,2)+pow(vyMother-vyGdaughter,2))); 
+	  ev.mc_lxy[ev.nmcparticles]=max(ev.mc_lxy[ev.nmcparticles],bDecayLength);
 	}
       ev.mc_id[ev.nmcparticles]=genpart->pdgId();
       ev.mc_status[ev.nmcparticles]=genpart->status();

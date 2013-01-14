@@ -186,7 +186,7 @@ int main(int argc, char* argv[])
       fin=TFile::Open(lineShapeWeightsFileURL);     
       if(fin){hLineShapeNominal = new TGraph((TH1 *)fin->Get(buf+TString("massCPS")));}
     }
-  else
+  else if(isMC_GG)
     {
       sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
       wgts.push_back(buf+TString("rwgtpint"));
@@ -782,14 +782,31 @@ int main(int argc, char* argv[])
 	  float relIso2011    = phys.leptons[ilep].relIsoRho(ev.rho);
 	  float relIso = (lepStr=="mu") ? 
 	    phys.leptons[ilep].pfRelIsoDbeta() :
-	    phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho);
+	    phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho,ev.en_sceta[lpid]);
 	  std::vector<int> passIds;
 	  std::map<int,bool> passIsos;
 	  bool hasGoodId(false), isIso(false);
 	  if(fabs(phys.leptons[ilep].id)==13)
 	    {
+	      // 	      if(ev.event==515435)
+	      // 		{
+	      // 		  cout  << phys.leptons[ilep].pt()
+	      // 			<< " loose=" << hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) 
+	      // 			<< " tight=" << hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) << " "
+	      // 			<< " chi2=" << phys.leptons[ilep].trkchi2 
+	      // 			<< " validMuHits=" << ev.mn_validMuonHits[lpid]
+	      // 			<< " matchedSta=" << ev.mn_nMatchedStations[lpid]
+	      // 			<< " dxy=" << fabs(phys.leptons[ilep].d0)
+	      // 			<< " dz=" << fabs(phys.leptons[ilep].dZ)
+	      // 			<< " pixelHits=" << phys.leptons[ilep].trkValidPixelHits
+	      // 			<< " trkLayersWithMeas=" << ev.mn_trkLayersWithMeasurement[lpid] << endl;
+	      // 		}
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) )    { passIds.push_back(0); passIsos[0]=(relIso<0.2); }
-	      if( hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) )    { passIds.push_back(1); passIsos[1]=(relIso<0.2);      if(!use2011Id) {hasGoodId=true; isIso=passIsos[1];} }
+	      if( hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) )    { passIds.push_back(1); passIsos[1]=(relIso<0.2);      
+		if(!use2011Id) {
+		  hasGoodId=true; isIso=passIsos[1];
+		} 
+	      }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) { passIds.push_back(2); passIsos[2]=(relIso2011<0.15); if(use2011Id)  {hasGoodId=true; isIso=passIsos[2];} }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_SOFT) )     { passIds.push_back(3); passIsos[3]=true;}
 	      if(use2011Id) 
@@ -826,13 +843,15 @@ int main(int argc, char* argv[])
 		    }
 		  else
 		    {
+		      float sceta=ev.en_sceta[lpid];
 		      bool passWp = EgammaCutBasedEleId::PassWP(EgammaCutBasedEleId::WorkingPoint(wps[iwp]),
-								(fabs(phys.leptons[ilep].eta())<1.4442),
+								phys.leptons[ilep].isEBElectron(sceta),
 								phys.leptons[ilep].pt(), phys.leptons[ilep].eta(),
 								ev.en_detain[lpid],  ev.en_dphiin[lpid], ev.en_sihih[lpid], ev.en_hoe[lpid],
 								ev.en_ooemoop[lpid], phys.leptons[ilep].d0, phys.leptons[ilep].dZ,
 								0., 0., 0.,
-								!hasObjectId(ev.en_idbits[lpid], EID_CONVERSIONVETO),0,ev.rho);
+								!hasObjectId(ev.en_idbits[lpid], EID_CONVERSIONVETO),phys.leptons[ilep].trkLostInnerHits,ev.rho);
+		      passWp &= !phys.leptons[ilep].isInCrackElectron(sceta);
 		      if(passWp) { 
 			passIds.push_back(iwp); 
 			passIsos[iwp]=(relIso<0.15);
@@ -926,7 +945,7 @@ int main(int argc, char* argv[])
 	  }
 	}else{
 	  if(!use2011Id){
-	    isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 && phys.leptons[ilep].pt()>10);
+	    isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho,ev.en_sceta[lpid])<0.15 && phys.leptons[ilep].pt()>10);
 	  }else{
 	    isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.1 && phys.leptons[ilep].pt()>10);
 	  }
@@ -1028,6 +1047,18 @@ int main(int argc, char* argv[])
       //transverse masses
       double aMT=METUtils::transverseMass(zll,zvvs[0],true);
       double atypeIMT=METUtils::transverseMass(zll,fullTypeIMetP4,true);
+
+      int selWord(0);
+      selWord |= hasTrigger;
+      selWord |= (passId<<1);
+      selWord |= (passIdAndIso<<2);
+      selWord |= (passZmass<<3);
+      selWord |= (passZpt<<4);
+      selWord |= (pass3dLeptonVeto<<5);
+      selWord |= (passBveto<<6);
+      selWord |= (passDphijmet<<7);
+      fprintf(outTxtFile,"%d %d %d %d %d %f %f\n",ev.run,ev.lumi,ev.event,selWord,nAJetsGood30,zvvs[0].pt(),aMT);
+
 
       //
       //RUN PRESELECTION AND CONTROL PLOTS

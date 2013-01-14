@@ -284,6 +284,9 @@
                   "dtag":"Data8TeV_Photon2012C_v2",
                   "split":2
                 },
+	        {
+	         "dtag":"Data8TeV_Photon2012D_206744to207898"
+                },
                 {
  	          "dtag":"Data8TeV_DoubleElectron2012B",
                   "split":2
