@@ -1,5 +1,6 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
+
 ##########
 runOnMC = True
 from CMGTools.Common.Tools.applyJSON_cff import applyJSON
@@ -16,7 +17,7 @@ from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
 #process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC, runOld5XGT))
 process.GlobalTag.globaltag = cms.string('START53_V10::All')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
@@ -33,13 +34,16 @@ from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource(
     'cmgtools',
     #'wreece',
-    '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B/',
+#    '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B/',
+    '/WJetsToLNu_HT-400ToInf_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/',
+#    '/WJetsToLNu_HT-300To400_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/',
+#    '/WJetsToLNu_HT-250To300_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/',
     #'/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B',
     #'/MultiJet/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_6_0_B_QuadJet',
     'patTuple_[0-9]+\\.root',
     #'cmgTuple_[0-9]+\\.root'
     ) 
-process.source.fileNames = process.source.fileNames[:10]
+#process.source.fileNames = process.source.fileNames[:1]
 
 ext = 'CMG'
 
@@ -80,6 +84,7 @@ process.schedule = cms.Schedule(
     process.razorMJSkimSequenceElePath,
     process.razorMJSkimSequenceMuPath,
     process.razorMJSkimSequenceTauPath,
+    process.trkVetoLeptonSequencePath,
     process.outpath
     )
 if runOnMC:
@@ -117,3 +122,5 @@ process.TFileService = cms.Service(
     )
 
 print 'output file: ', process.out.fileName
+
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
