@@ -235,7 +235,6 @@ razorMJDiHemiHadBox = cmgDiHemi.clone(
     ),
     cuts = cms.PSet(
         razor = cms.PSet(
-            r = cms.string('Rsq() >= 0.03'),
             mr = cms.string('mR() >= 300')
             )
         )      
@@ -289,7 +288,6 @@ razorMJDiHemiLepBox = cmgDiHemi.clone(
     ),
     cuts = cms.PSet(
     razor = cms.PSet(
-    r = cms.string('Rsq() >= 0.03'),
     mr = cms.string('mR() >= 300')
     )
     )
@@ -333,7 +331,8 @@ razorMJDiHemiLepBox20 = cmgDiHemi.clone(
 ############### Run the sequences
 razorMJTriggerSequence = cms.Sequence(
     razorMJHadTriggerSel+
-    #razorMJHadTriggerInfo+
+    razorMJHadBTriggerSel+
+    razorMJHadTriggerInfo+
     razorMJEleTriggerSel+
     razorMJMuTriggerSel+
     razorMJAllTriggerSel
@@ -358,7 +357,8 @@ razorMJJetSequence = cms.Sequence(
 
 razorMJHemiSequence = cms.Sequence(
     razorMJHemiHadBox*
-    razorMJDiHemiHadBox+
+    razorMJDiHemiHadBox*
+    razorMJDiHemiHadBoxSel+
     razorMJHemiHadBoxUp*
     razorMJDiHemiHadBoxUp+
     razorMJHemiHadBoxDown*
@@ -366,7 +366,8 @@ razorMJHemiSequence = cms.Sequence(
     razorMJHemiHadBox20*
     razorMJDiHemiHadBox20+
     razorMJHemiLepBox*
-    razorMJDiHemiLepBox+
+    razorMJDiHemiLepBox*
+    razorMJDiHemiLepBoxSel+
     razorMJHemiLepBoxUp*
     razorMJDiHemiLepBoxUp+
     razorMJHemiLepBoxDown*
@@ -388,7 +389,6 @@ razorMJTrackIsolationMaker.vetoCollections = cms.VInputTag()
 ### Isolated Tracks veto, leptonic
 from CMGTools.Common.skims.leadingCMGElectronSelector_cfi import *
 from CMGTools.Common.skims.leadingCMGMuonSelector_cfi import *
-from CMGTools.Common.skims.leadingCMGTauSelector_cfi      import *
 from CMGTools.Susy.common.trackIsolationMaker_cfi         import trackIsolationMaker
 
 ##muons
@@ -402,24 +402,17 @@ razorMJElectronTightLead = leadingCMGElectronSelector.clone(
         inputCollection = 'razorMJElectronTight', index = 1
             )
 
-##taus
-razorMJTauTightLead = leadingCMGTauSelector.clone(
-        inputCollection = 'razorMJTauTight', index = 1
-            )
-
 razorMJLeptonTrackIsolationMaker                   = trackIsolationMaker.clone()
 razorMJLeptonTrackIsolationMaker.vertexInputTag    = cms.InputTag("goodOfflinePrimaryVertices")
 razorMJLeptonTrackIsolationMaker.minPt_PFCandidate = cms.double(5.0)
 razorMJLeptonTrackIsolationMaker.pfCandidatesTag   = cms.InputTag("pfNoPileUp")
 razorMJLeptonTrackIsolationMaker.dz_CutValue       = cms.double(101.)
 razorMJLeptonTrackIsolationMaker.vetoCollections   = cms.VInputTag(cms.InputTag("razorMJMuonTightLead"),
-                                                                   cms.InputTag("razorMJElectronTightLead"),
-                                                                   cms.InputTag("razorMJTauTightLead"))
+                                                                   cms.InputTag("razorMJElectronTightLead"))
 
 razorMJTrackIsolationMakerForLepBoxSequence = cms.Sequence(
     razorMJMuonTightLead            +
     razorMJElectronTightLead        +
-    razorMJTauTightLead             +
     razorMJLeptonTrackIsolationMaker
     )
 
@@ -451,7 +444,9 @@ razorMJSkimSequenceHad = cms.Sequence(
     #only take 6jets above 20
     razorMJPFJetSel20Count6j+
     #filter is inverted
-    ~razorMJPFJetIDCount
+    ~razorMJPFJetIDCount+
+    #loose razor cut
+    razorMJDiHemiHadBoxCount
     )
 
 razorMJSkimSequenceEle = cms.Sequence(
@@ -468,7 +463,9 @@ razorMJSkimSequenceEle = cms.Sequence(
     #filter is inverted
     ~razorMJPFJetIDLeptonCount+
     #a tight electron
-    razorMJTightElectronCount
+    razorMJTightElectronCount+
+    #loose razor cut
+    razorMJDiHemiLepBoxCount
     )
 
 razorMJSkimSequenceMu = cms.Sequence(
@@ -485,7 +482,9 @@ razorMJSkimSequenceMu = cms.Sequence(
     #filter is inverted
     ~razorMJPFJetIDLeptonCount+
     #a tight muon
-    razorMJTightMuonCount
+    razorMJTightMuonCount+
+    #loose razor cut
+    razorMJDiHemiLepBoxCount
     )
 
 razorMJSkimSequenceTau = cms.Sequence(
@@ -502,7 +501,9 @@ razorMJSkimSequenceTau = cms.Sequence(
     #filter is inverted
     ~razorMJPFJetIDCount+
     #a tight tau
-    razorMJTightTauCount 
+    razorMJTightTauCount+
+    #loose razor cut
+    razorMJDiHemiHadBoxCount
     )
 
 trkVetoLeptonSequence = cms.Sequence(

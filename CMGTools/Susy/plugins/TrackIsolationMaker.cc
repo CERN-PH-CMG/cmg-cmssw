@@ -56,7 +56,7 @@ using namespace std;
 // constructors and destructor
 //
 
-TrackIsolationMaker::TrackIsolationMaker(const edm::ParameterSet& iConfig) {
+TrackIsolationMakerSUS::TrackIsolationMakerSUS(const edm::ParameterSet& iConfig) {
 
   pfCandidatesTag_		= iConfig.getParameter<InputTag>	("pfCandidatesTag");
   vertexInputTag_               = iConfig.getParameter<InputTag>        ("vertexInputTag");
@@ -74,18 +74,18 @@ TrackIsolationMaker::TrackIsolationMaker(const edm::ParameterSet& iConfig) {
     
 }
 
-TrackIsolationMaker::~TrackIsolationMaker() 
+TrackIsolationMakerSUS::~TrackIsolationMakerSUS() 
 {
 
 }
 
-void  TrackIsolationMaker::beginRun(edm::Run&, const edm::EventSetup& es) {}
-void  TrackIsolationMaker::beginJob() {}
-void  TrackIsolationMaker::endJob()   {}
+void  TrackIsolationMakerSUS::beginRun(edm::Run&, const edm::EventSetup& es) {}
+void  TrackIsolationMakerSUS::beginJob() {}
+void  TrackIsolationMakerSUS::endJob()   {}
 
 // ------------ method called to produce the data  ------------
 
-void TrackIsolationMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
+void TrackIsolationMakerSUS::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   auto_ptr<vector<float> >  pfcands_trkiso(new vector<float>);
   auto_ptr<vector<float> >  pfcands_dzpv  (new vector<float>);
@@ -240,5 +240,5 @@ void TrackIsolationMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(TrackIsolationMaker);
+DEFINE_FWK_MODULE(TrackIsolationMakerSUS);
 

@@ -29,10 +29,10 @@
 // class decleration
 //
 
-class TrackIsolationMaker : public edm::EDProducer {
+class TrackIsolationMakerSUS : public edm::EDProducer {
 public:
-     explicit TrackIsolationMaker (const edm::ParameterSet&);
-     ~TrackIsolationMaker();
+     explicit TrackIsolationMakerSUS (const edm::ParameterSet&);
+     ~TrackIsolationMakerSUS();
 
 private:
   //  virtual void beginJob() ;

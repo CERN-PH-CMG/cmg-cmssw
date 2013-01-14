@@ -22,6 +22,12 @@ razorMJHadTriggerInfo = physicsObjectPrinter.clone(
     printSelections = cms.untracked.bool(True)
     )
 
+#Trigger from the MultiJet1Parked PD
+razorMJHadBTriggerSel = cmgTriggerObjectSel.clone(
+                                            src = 'cmgTriggerObjectSel',
+                                            cut = 'getSelectionRegExp("^HLT_QuadJet45_v[0-9]+$") ||'\
+                                                '  getSelectionRegExp("^HLT_QuadJet50_v[0-9]+$")')
+
 #muon triggers from the SingleMu PD
 razorMJMuTriggerSel = cmgTriggerObjectSel.clone(
                                             src = 'cmgTriggerObjectSel',
@@ -38,7 +44,8 @@ razorMJEleTriggerCount = cmgCandCount.clone( src = 'razorMJEleTriggerSel', minNu
 #now OR the triggers
 razorMJAllTriggerSel = cmgTriggerObjectSel.clone(
                                             src = 'cmgTriggerObjectSel',
-                                            cut = '(%s) || (%s) || (%s)' % (razorMJHadTriggerSel.cut.value(),razorMJMuTriggerSel.cut.value(),razorMJEleTriggerSel.cut.value())
+                                            cut = '(%s) || (%s) || (%s) || (%s)' % (razorMJHadTriggerSel.cut.value(), razorMJHadBTriggerSel.cut.value(),\
+                                                                                        razorMJMuTriggerSel.cut.value(),razorMJEleTriggerSel.cut.value())
 )
 razorMJAllTriggerCount = cmgCandCount.clone( src = 'razorMJAllTriggerSel', minNumber = 1 )
 
