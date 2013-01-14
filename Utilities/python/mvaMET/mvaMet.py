@@ -3,9 +3,13 @@ from ROOT import gSystem
 
 # loading the shared library containing the MVAMetPyWrapper class in ROOT
 gSystem.Load("libCMGToolsUtilities")
+gSystem.Load("libDataFormatsMETReco")
 
 # importing the python binding to the C++ class from ROOT 
 from ROOT import MVAMetPyWrapper
+from ROOT import reco, MetUtilities
+
+PFMET = reco.PFMET
 
 class MVAMet(MVAMetPyWrapper):
     
@@ -46,4 +50,5 @@ class MVAMet(MVAMetPyWrapper):
 if __name__ == '__main__':
     mvaMet = MVAMet()
 
-    jetInfo = MetUtilities.JetInfo()
+    # jetInfo = MetUtilities.JetInfo()
+    pfmet = PFMET()
