@@ -13,23 +13,16 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC      = True
-runOld5XGT = False
+runOnMC      = False
 runOnFastSim = False
 
 from CMGTools.Production.datasetToSource import *
+## This is used to get the correct global tag below, and to find the files
+## It is *reset* automatically by ProductionTasks, so you can use it after the ProductionTasksHook
+datasetInfo = ('CMS', '/MultiJet1Parked/Run2012C-part1_05Nov2012-v1/AOD','.*root')
 process.source = datasetToSource(
-    # 'CMS',
-    # '/DoubleElectron/Run2012A-13Jul2012-v1/AOD'
-    # '/DoubleMu/Run2012C-PromptReco-v2/AOD'
-    # '/DoubleMu/Run2012B-PromptReco-v1/AOD'
-    # '/TTH_HToBB_M-135_8TeV-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM',
-    # '/BTag/Run2012B-PromptReco-v1/RECO', 
-    'cmgtools_group',
-    # '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B',
-    '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
-    # '/DY2JetsToLL_M-50_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B'
-   )
+    *datasetInfo
+    )
 
 process.source.fileNames = process.source.fileNames[:20]
 
@@ -207,11 +200,6 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
-from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
-
-process.GlobalTag.globaltag = getGlobalTag( runOnMC, runOld5XGT )
-print 'Global tag       : ', process.GlobalTag.globaltag
-
 ########################################################
 ## Below, stuff that you probably don't want to modify
 ########################################################
@@ -247,6 +235,13 @@ print 'Fastjet instances (dominating our processing time...):'
 from CMGTools.Common.Tools.visitorUtils import SeqVisitor
 v = SeqVisitor('FastjetJetProducer')
 process.p.visit(v)
+
+### Set the global tag from the dataset name
+###ProductionTaskHook$$$
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTagByDataset
+process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
+print 'Global tag       : ', process.GlobalTag.globaltag
+###
 
 print sep_line
 

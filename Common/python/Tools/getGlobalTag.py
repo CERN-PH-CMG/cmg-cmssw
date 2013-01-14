@@ -1,5 +1,5 @@
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X, isNewerThan
 
 def getGlobalTag(runOnMC, runOld5XGT):
     """Return the global tag, based on
@@ -34,6 +34,41 @@ def getGlobalTag(runOnMC, runOld5XGT):
                 # GT = 'GR_P_V40_AN1::All' # for 53X data in < 533
             else:
                 GT = 'GR_P_V39_AN3::All' # Moriond calibration
+    return GT
+
+def getGlobalTagByDataset(runOnMC, dataset):
+    """
+    Uses the dataset name to select the correct global tag
+
+    Information from here: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions?redirectedfrom=CMS.SWGuideFrontierConditions#Summary_of_Global_Tags_used_in_o
+    Last updated: wreece 14/01/13 for 53 data, MC, parking
+    """
+    GT = None
+    if runOnMC:
+        if 'START53' in dataset:
+            GT = 'START53_V7G::All'
+        elif 'START52' in dataset:
+            GT = 'START52_V9F::All'
+    else:
+        if '13Jul2012' in dataset:
+            GT = 'FT_53_V6_AN3::All'
+        elif '06Aug2012' in dataset:
+            GT = 'FT_53_V6C_AN3::All'
+        elif '24Aug2012' in dataset:
+            GT = 'FT_53_V10_AN3::All'
+        elif 'Run2012C-PromptReco-v2' in dataset:
+            GT = 'GR_P_V41_AN3::All'
+        elif 'Run2012D' in dataset:
+            GT = 'GR_P_V42_AN3::All'
+        elif 'Run2012B-05Nov2012' in dataset:
+            GT = 'FT_53_V6C_AN3::All'
+        elif 'Run2012C-part1_05Nov2012' in dataset:
+            GT = 'FT53_V10A_AN3::All'
+        elif 'Run2012C-part2_05Nov2012' in dataset:
+            GT = 'FT_P_V42C_AN3::All'
+
+    if GT is None:
+        raise Exception("No global tag found for dataset '%s'. Check getGlobalTagByDataset" % dataset)
     return GT
 
 
