@@ -24,12 +24,12 @@ def getFiles(datasets, user, pattern):
     files = []
     for d in datasets:
         ds = datasetToSource(
-                             user,
+                             'lucieg',
                              d,
                              pattern
                              )
         files.extend(ds.fileNames)
-
+    
     return ['root://eoscms//eos/cms%s' % f for f in files]
 
 def deltaR(a,b):
@@ -50,36 +50,6 @@ def mct(calc, h1, h2):
     v2.extend([h2.E(),h2.Px(),h2.Py(),h2.Pz()])
 
     return calc.mct(v1,v2)
-
-def find_lepton_hemi(hemi_vector, leptons, best = None):
-    """Find the best hemispheres that have the lepton on one side and at least 3 jets on the other"""
-
-    print 'n hemispheres',len(hemi_vector)
-    for i in xrange(0,len(hemi_vector),2):
-        
-        hemi1 = hemi_vector.at(i)
-        hemi2 = hemi_vector.at(i+1)
-        
-        nHemi1 = hemi1.numConstituents()
-        nHemi2 = hemi2.numConstituents()
-        
-        for j in hemi1.sourcePtrs():
-            for l in leptons:
-                if deltaR(j,l) < 0.4:
-                    nHemi1 -= 1
-        for j in hemi2.sourcePtrs():
-            for l in leptons:
-                if deltaR(j,l) < 0.4:
-                    nHemi2 -= 1
-
-        #break out with the first hemi pair that is ok
-        if (hemi1.numConstituents() >= 3 and nHemi1 == hemi1.numConstituents() and (best is None or best == 1) ):#can specify which must be hadronic side
-            return (hemi1, hemi2, 1) #hemi 1 is the hadronic side
-        elif (hemi2.numConstituents() >= 3 and nHemi2 == hemi2.numConstituents() and (best is None or best == 2) ):
-            return (hemi1, hemi2, 2) #hemi 2 is the hadronic side
-        
-    return (None, None, -1)
-    
 
 if __name__ == '__main__':
 
@@ -140,11 +110,11 @@ if __name__ == '__main__':
             else:
                 name = '%s-%s-%s_%d.root' % (names[0],names[1],names[-1],options.index)
             options.outputFile = os.path.join(options.outputDirectory,name)
-            print options.outputFile
+            
         
         files = getFiles(
             [options.datasetName],
-            'lucieg',
+            'wreece',
             'susy_tree_CMG_[0-9]+.root'                
             )
         if options.maxFiles > 0:
@@ -310,7 +280,7 @@ struct Filters{\
     jetSelCleanedH = Handle("std::vector<cmg::PFJet>")
 
     hemiHadH = Handle("std::vector<cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> >")
-    hemiLepH = Handle("std::vector<cmg::Hemisphere>")
+    hemiLepH = Handle("std::vector<cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> >")
     metH = Handle("std::vector<cmg::BaseMET>")
     lheH = Handle('LHEEventProduct')
     pdfH = Handle('std::vector<double>')
@@ -373,18 +343,18 @@ struct Filters{\
         #get the LHE product info
         vars.mStop = -1
         vars.mLSP = -1
-     ##    if runOnMC:
-##             event.getByLabel(('source'),lheH)
-##             if lheH.isValid():
-##                 lhe = lheH.product()
-##                 for i in xrange(lhe.comments_size()):
-##                     comment = lhe.getComment(i)
-##                     if 'model' not in comment: continue
-##                     comment = comment.replace('\n','')
-##                     parameters = comment.split(' ')[-1]
-##                     masses = map(float,parameters.split('_')[-2:])
-##                     vars.mStop = masses[0]
-##                     vars.mLSP = masses[1]
+        if runOnMC:
+            event.getByLabel(('source'),lheH)
+            if lheH.isValid():
+                lhe = lheH.product()
+                for i in xrange(lhe.comments_size()):
+                    comment = lhe.getComment(i)
+                    if 'model' not in comment: continue
+                    comment = comment.replace('\n','')
+                    parameters = comment.split(' ')[-1]
+                    masses = map(float,parameters.split('_')[-2:])
+                    vars.mStop = masses[0]
+                    vars.mLSP = masses[1]
 
         #store how many of each model we see
         point = (vars.mStop,vars.mLSP)
@@ -542,76 +512,53 @@ struct Filters{\
         info.BOX_NUM = getBox(info.NBJET,info.nElectronTight,info.nMuonTight,info.nTauTight)
 
         if info.nLepton == 1 and info.nJetNoLeptons20 >= 4:
-            print 'nTaus', info.nTauTight
-            print 'nEles', info.nElectronTight
-            print 'nMus', info.nMuonTight
-            print 'nJets20', info.nJetNoLeptons20
-            print 'nJets', info.nJetNoLeptons
             #if we have 4 jets above 30, we use them, otherwise take the 20 GeV jets
             if info.nJetNoLeptons >= 4:
-                print 'using razorMJHemiLepBox'
-                event.getByLabel(('razorMJHemiLepBox'),hemiLepH)
+                event.getByLabel(('razorMJDiHemiLepBox'),hemiLepH)
             else:
-                event.getByLabel(('razorMJHemiLepBox20'),hemiLepH)
+                event.getByLabel(('razorMJDiHemiLepBox20'),hemiLepH)
 
             if hemiLepH.isValid():
-                hemi_vector = hemiLepH.product()
-                hemi1, hemi2, info.bestHemi = find_lepton_hemi(hemi_vector, leptons)
-                from ROOT import  mR, mRT
-                vars.MR = mR(hemi1.p4(), hemi2.p4())
-                mrt = mRT(hemi1.p4(), hemi2.p4(), met.p4())
-                vars.RSQ = (mrt/vars.MR)**2
+                hemi = hemiLepH.product()[0]
+                vars.RSQ = hemi.Rsq()
+                vars.MR = hemi.mR()
+                vars.hemi1Mass = hemi.leg1().mass()
+                vars.hemi2Mass = hemi.leg2().mass()
+                info.hemisphereBalance = (10*hemi.leg1().numConstituents()) + hemi.leg2().numConstituents()
 
-                vars.hemi1Mass = hemi1.mass()
-                vars.hemi2Mass = hemi2.mass()
-                info.hemisphereBalance = (10*hemi1.numConstituents()) + hemi2.numConstituents()
-                
-                #run the hadronic top tagger
-                info.hemi1Count, vars.hemi1TopMass, vars.hemi1WMass, vars.hemi1ThetaH = topTag( hemi1 )
-                info.hemi2Count, vars.hemi2TopMass, vars.hemi2WMass, vars.hemi2ThetaH = topTag( hemi2 )
-
-                vars.hemi1Pt = hemi1.pt()
-                vars.hemi1Eta = hemi1.eta()
-                vars.hemi1Phi = hemi1.phi()
-                vars.hemi2Pt = hemi2.pt()
-                vars.hemi2Eta = hemi2.eta()
-                vars.hemi2Phi = hemi2.phi()
+                vars.hemi1Pt = hemi.leg1().pt()
+                vars.hemi1Eta = hemi.leg1().eta()
+                vars.hemi1Phi = hemi.leg1().phi()
+                vars.hemi2Pt = hemi.leg2().pt()
+                vars.hemi2Eta = hemi.leg2().eta()
+                vars.hemi2Phi = hemi.leg2().phi()
 
                 #MCT etc
-                vars.MCT = mct(mct_calc,hemi1.p4(),hemi2.p4())
-                vars.MRT = mrt
-
+                vars.MCT = mct(mct_calc,hemi.leg1().p4(),hemi.leg2().p4())
+                vars.MRT = hemi.mRT()
+   
                 #now need to take care of the systematics...
                 #UP
                 event.getByLabel(('razorMJMetUp'),metH)
                 met = metH.product()[0]
-                event.getByLabel(('razorMJHemiLepBoxUp'),hemiLepH)
-                if hemiLepH.isValid():
-                    hemi_vector = hemiLepH.product()
-                    hemi1, hemi2, _ = find_lepton_hemi(hemi_vector, leptons)
-                    if hemi1 is None or hemi2 is None:
-                        vars.MR_JES_UP = vars.MR
-                        vars.RSQ_JES_UP = vars.RSQ
-                    else:
-                        vars.MR_JES_UP = mR(hemi1.p4(), hemi2.p4())
-                        mrt = mRT(hemi1.p4(), hemi2.p4(), met.p4())
-                        vars.RSQ_JES_UP = (mrt/vars.MR_JES_UP)**2
 
+                event.getByLabel(('razorMJDiHemiLepBoxUp'),hemiLepH)
+                if hemiLepH.isValid():
+                   hemi = hemiLepH.product()[0]
+                   vars.RSQ_JES_UP = hemi.Rsq()
+                   vars.MR_JES_UP = hemi.mR()
+                 
+                
                 #DOWN
                 event.getByLabel(('razorMJMetDown'),metH)
                 met = metH.product()[0]
-                event.getByLabel(('razorMJHemiLepBoxDown'),hemiLepH)
+                event.getByLabel(('razorMJDiHemiLepBoxDown'),hemiLepH)
                 if hemiLepH.isValid():
-                    hemi_vector = hemiLepH.product()
-                    hemi1, hemi2, _ = find_lepton_hemi(hemi_vector, leptons, best=info.bestHemi)
-                    if hemi1 is None or hemi2 is None:
-                        vars.MR_JES_DOWN = vars.MR
-                        vars.RSQ_JES_DOWN = vars.RSQ
-                    else:
-                        vars.MR_JES_DOWN = mR(hemi1.p4(), hemi2.p4())
-                        mrt = mRT(hemi1.p4(), hemi2.p4(), met.p4())
-                        vars.RSQ_JES_DOWN = (mrt/vars.MR_JES_DOWN)**2
+                   hemi = hemiLepH.product()[0]
+                   vars.RSQ_JES_DOWN = hemi.Rsq()
+                   vars.MR_JES_DOWN = hemi.mR()
 
+               
         else:
             #take the 20Gev jet control sample if relevant
             if info.nJet20 >= 6 and info.nJet < 6:
