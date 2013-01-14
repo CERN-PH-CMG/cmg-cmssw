@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-trackIsolationMaker = cms.EDProducer("TrackIsolationMaker",
+trackIsolationMaker = cms.EDProducer("TrackIsolationMakerSUS",
                                      pfCandidatesTag     = cms.InputTag("particleFlow"),
                                      vertexInputTag      = cms.InputTag("offlinePrimaryVertices"),
                                      dR_ConeSize         = cms.double(0.3),
