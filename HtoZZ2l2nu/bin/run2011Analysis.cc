@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
   TFile *fin;
   int cmEnergy(8);
   if(url.Contains("7TeV")) cmEnergy=7;
-  std::vector<TGraph *> hWeightsGrVec,hLineShapeGrVec;
+  std::vector<TGraph *> hWeightsGrVec,hLineShapeGrVec;  TGraph* hLineShapeNominal;
   if(isMC_GG){  
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,4);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
@@ -173,25 +173,28 @@ int main(int argc, char* argv[])
   //LINE SHAPE WEIGHTS
   TString lineShapeWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[1]; gSystem->ExpandPathName(lineShapeWeightsFileURL);
   fin=0;
-  std::vector<TString> wgts;
+  std::vector<TString> wgts;  
+  char buf[100];
   if(isMC_VBF)
     {
-      char buf[100]; sprintf(buf,"H%d/",int(HiggsMass));
+      sprintf(buf,"H%d/",int(HiggsMass));
       wgts.push_back(buf+TString("cpsWgt"));
       wgts.push_back(buf+TString("cpsUpWgt"));
       wgts.push_back(buf+TString("cpsDownWgt"));
       wgts.push_back(buf+TString("cpsWgt"));
-      lineShapeWeightsFileURL.ReplaceAll("LineShapeWeights","VBFLineShapeWeights");
+      lineShapeWeightsFileURL.ReplaceAll("LineShapeWeights","VBFLineShapeWeights");      
       fin=TFile::Open(lineShapeWeightsFileURL);     
+      if(fin){hLineShapeNominal = new TGraph((TH1 *)fin->Get(buf+TString("massCPS")));}
     }
   else
     {
-      char buf[100]; sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
+      sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
       wgts.push_back(buf+TString("rwgtpint"));
       wgts.push_back(buf+TString("rwgtpint_up"));
       wgts.push_back(buf+TString("rwgtpint_down"));
       wgts.push_back(buf+TString("rwgt"));
       fin=TFile::Open(lineShapeWeightsFileURL);     
+      if(fin){hLineShapeNominal = (TGraph *)(fin->Get(buf+TString("rwgt_shape")))->Clone();}
     }
   if(fin)
     {
@@ -710,14 +713,14 @@ int main(int argc, char* argv[])
 
         //compute weight correction for narrow resonnance
         if(isMC_VBF || isMC_GG){
-           if(cprime>=0 && brnew>=0){
-              double NRWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass(), cprime, brnew);  
+           if(cprime>=0 || brnew>=0){
+              double NRWeight = weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), cprime, brnew, hLineShapeNominal);  
               weight*=NRWeight;
            }
            mon.fillHisto("higgsMass_4nr"  ,tags_inc, phys.genhiggs[0].mass(), weight);
            
            for(unsigned int nri=0;nri<NRparams.size();nri++){ 
-              NRweights[nri] = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second);
+              NRweights[nri] = weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal);
            }  
         }      
       }

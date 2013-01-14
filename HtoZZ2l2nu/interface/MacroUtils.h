@@ -16,7 +16,8 @@ typedef std::vector<LorentzVector> LorentzVectorCollection;
 
 
 LorentzVector min(const LorentzVector& a, const LorentzVector& b);
-double weightVBF(std::string SampleName, double m_gen, double mass, double cprime=-1, double brnew=-1);
+double weightVBF(std::string SampleName, double m_gen, double mass);
+double weightNarrowResonnance(std::string SampleName, double m_gen, double mass, double Cprime, double BRnew, TGraph* hLineShapeNominal);
 
 typedef std::vector<TGraph *> PuShifter_t;
 enum PuShifterTypes {PUDOWN,PUUP};
