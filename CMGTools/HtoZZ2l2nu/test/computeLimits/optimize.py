@@ -112,7 +112,7 @@ os.system('mkdir -p ' + OUT)
 if(shapeBased=='1'): DataCardsDir+='Shape'
 
 if(len(gammaUrl)>0) : LandSArg += ' --subDY ' + gammaUrl
-LandSArg +=' --bins ' + useBins
+if(useBins!='inc') :  LandSArg +=' --bins ' + useBins
 
 #get the cuts
 file = ROOT.TFile(inUrl)
@@ -137,12 +137,16 @@ if( phase == 1 ):
       if(cuts1.GetBinContent(i)%10!=0): continue;
 
       #X axis of the 2D histograms does not contains the MT variation anymore -> not a big deal we can anyway cut on it via the --shapeMin/--shapeMax arguments of runLandS.
-      for mtmin in range(125,550,25):
+      mtminrange=range(125,550,25)
+      if(shapeBased=='1') : mtminrange=[0]
+      for mtmin in mtminrange:
          mtmin_ = mtmin
          if(mtmin_<=125):mtmin_=0
          if(mtmin_>350 and mtmin_%50!=0):continue;
-#         if(mtmin_<450):continue #ONLY FOR HIGH MASS !!!!!!!!!!!!!!!!!
-         for mtmax in range(mtmin+50,mtmin+500,25):
+         #         if(mtmin_<450):continue #ONLY FOR HIGH MASS !!!!!!!!!!!!!!!!!
+         mtmaxrange=range(mtmin+50,mtmin+500,25)
+         if(shapeBased=='1') : mtmaxrange=[9000]
+         for mtmax in mtmaxrange:
             mtmax_ = mtmax
             if(mtmax_>=mtmin_+455):mtmax_=9000 
             if(mtmin_==0 and mtmax_!=9000):continue;
@@ -318,7 +322,6 @@ elif(phase == 3 ):
         else:			    sys.exit(0);           
    print 'YES'
 
-
    list = open(OUT+'list.txt',"w")
    listcuts = open(OUT+'cuts.txt',"w")
    for m in SUBMASS:
@@ -339,8 +342,6 @@ elif(phase == 3 ):
            Rindex = findCutIndex(Gmet.Eval(SideMasses[1],0,""), cuts1, Gtmin.Eval(SideMasses[1],0,""), cuts2,  Gtmax.Eval(SideMasses[1],0,""), cuts3);
            print "cutIndex for sideBand are " + str(Lindex) + " and " + str(Rindex) 
            SideMassesArgs += "--mL " + str(SideMasses[0]) + " --mR " + str(SideMasses[1]) + " --indexL " + str(Lindex) +  " --indexR " + str(Rindex) + " "
-
-
         cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
         SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + " --shapeMin " + str(Gtmin.Eval(m,0,"")) +" --shapeMax " + str(Gtmax.Eval(m,0,""))  +" ;\n")

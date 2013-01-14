@@ -569,32 +569,33 @@ event_weight = xsec/cnorm;
       int nextraleptons(0);
       double llScaleFactor(1.0),llTriggerEfficiency(1.0);
       LorentzVector lep1=phys.leptons[0];
+      int lpid=phys.leptons[0].pid;
       TString lepStr1( fabs(phys.leptons[0].id)==13 ? "mu" : "e");
 
          float relIso1 = (lepStr1=="mu") ?
           phys.leptons[0].pfRelIsoDbeta(): //muPFRelIsoCorrected2012(ev.rho25Neut):
-          phys.leptons[0].ePFRelIsoCorrected2012(ev.rho);
+	   phys.leptons[0].ePFRelIsoCorrected2012(ev.rho,ev.en_sceta[lpid]);
 
 
 //      float relIso1 = phys.leptons[0].relIsoRho(ev.rho);
 //cout << "relIso1 = " << relIso1 << endl;
 //cout << "particle id = " << phys.leptons[0].id << endl;
-      int lpid=phys.leptons[0].pid;
-      if(fabs(phys.leptons[0].id)==13)      passIds &= hasObjectId(ev.mn_idbits[lpid], MID_TIGHT);
+	 if(fabs(phys.leptons[0].id)==13)      passIds &= hasObjectId(ev.mn_idbits[lpid], MID_TIGHT);
       else if(fabs(phys.leptons[0].id)==11) passIds &= hasObjectId(ev.en_idbits[lpid], EID_MEDIUM);
 //      else if(fabs(phys.leptons[0].id)==11) passIds &= hasObjectId(ev.en_idbits[lpid], EID_VBTF2011);
 
 
       LorentzVector lep2=phys.leptons[1];
+      lpid=phys.leptons[1].pid;
   //    float relIso2 = phys.leptons[1].relIsoRho(ev.rho);
       TString lepStr2( fabs(phys.leptons[1].id)==13 ? "mu" : "e");
           float relIso2 = (lepStr2=="mu") ?
             phys.leptons[1].pfRelIsoDbeta(): //muPFRelIsoCorrected2012(ev.rho25Neut):
-            phys.leptons[1].ePFRelIsoCorrected2012(ev.rho);
+            phys.leptons[1].ePFRelIsoCorrected2012(ev.rho,ev.en_sceta[lpid]);
 
 
 
-      lpid=phys.leptons[1].pid;
+
       if(fabs(phys.leptons[1].id)==13)      passIds &= hasObjectId(ev.mn_idbits[lpid], MID_TIGHT);
       else if(fabs(phys.leptons[1].id)==11) passIds &= hasObjectId(ev.en_idbits[lpid], EID_MEDIUM); 
 //      else if(fabs(phys.leptons[1].id)==11) passIds &= hasObjectId(ev.en_idbits[lpid], EID_VBTF2011); 
@@ -651,7 +652,7 @@ if(!use2011Id)
 		      }
 	          }else{
 		      if(!use2011Id){
-			  isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 && phys.leptons[ilep].pt()>10);
+			isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho,ev.en_sceta[lpid])<0.15 && phys.leptons[ilep].pt()>10);
 		      }else{
 			  isGood = ( hasObjectId(ev.en_idbits[lpid],EID_VBTF2011) && phys.leptons[ilep].relIsoRho(ev.rho)<0.1 && phys.leptons[ilep].pt()>10);
 		      }

@@ -111,163 +111,283 @@ TGraph *steerQtParameterization(TH1F *qt,std::vector<int> &thr,TPad *p)
 
 
 //
-void fitSpectrum(TString url="plotter.root", bool zzMode=false,bool is2011=false)
+enum AnalysisMode {STANDARD, ZZ, VBFZ};
+void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=STANDARD,bool is2011=false)
 {
-  std::vector<TString> categs,titles;
-  if(zzMode){
+  std::vector<TString> categs,titles,mcg;
+  if(mode==ZZ){
     categs.push_back("eq0jets");
     titles.push_back("=0jets");
   }
   else{
-    categs.push_back("eq0jets"); categs.push_back("eq1jets"); categs.push_back("eq2jets"); categs.push_back("geq3jets");  categs.push_back("vbf");
-    titles.push_back("=0jets");  titles.push_back("=1jets");  titles.push_back("=2jets");  titles.push_back("#geq3jets"); titles.push_back("VBF");
-
+    categs.push_back("eq0jets"); categs.push_back("eq1jets"); categs.push_back("eq2jets"); categs.push_back("geq3jets");  if(mode==STANDARD) categs.push_back("vbf");
+    titles.push_back("=0jets");  titles.push_back("=1jets");  titles.push_back("=2jets");  titles.push_back("#geq3jets"); if(mode==STANDARD) titles.push_back("VBF");
   }
+  mcg.push_back("Fakes");
+  mcg.push_back("Prompt #gamma");
+  TString mcdy("Z#rightarrow ll");
+
+
   const size_t ncategs=categs.size();
   TObjArray toSave;
 
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
   gStyle->SetOptTitle(0);
+
   TCanvas *c= new TCanvas("c","c",ncategs*400,600);
   c->Divide(ncategs,1);
 
+  TCanvas *mcc= new TCanvas("mcc","mcc",ncategs*400,600);
+  mcc->Divide(ncategs,1);
+
   TCanvas *wc=new TCanvas("wc","wc",ncategs*400,400);
   wc->Divide(ncategs,1);
+
+  TCanvas *mcwc=new TCanvas("mcwc","mcwc",ncategs*400,400);
+  mcwc->Divide(ncategs,1);
 
   for(size_t icat=0; icat<ncategs; icat++)
     {
       //get histos from file
       TFile *fIn=TFile::Open(url);
+      TFile *gIn=TFile::Open(gUrl);
 
       //mass distributions
-      TH1F *eemass=(TH1F *) fIn->Get("data (ll)/ee_zmass");      
-      if(!zzMode){
+      TH1F *eemass=(TH1F *) fIn->Get("data/ee_zmass");      
+      if(mode!=ZZ && eemass){
 	eemass->SetName("ee"+categs[icat]+"_zmass");
 	eemass->SetDirectory(0);
 	toSave.Add(eemass);
       }
 
       //mass distributions
-      TH1F *mmmass=(TH1F *) fIn->Get("data (ll)/mumu_zmass");      
-      if(!zzMode){
+      TH1F *mmmass=(TH1F *) fIn->Get("data/mumu_zmass");      
+      if(mode!=ZZ && mmmass){
 	mmmass->SetName("mumu"+categs[icat]+"_zmass");
 	mmmass->SetDirectory(0);
 	toSave.Add(mmmass);
       }
 
       //qt distributions
-      TH1F *mmqt = (TH1F *)fIn->Get("data (ll)/mumu"+categs[icat]+"_qt");    
-      mmqt->SetDirectory(0); 
-      mmqt->SetName("mm"+categs[icat]);   
-      mmqt->SetTitle("#mu#mu,"+titles[icat]);
-
-      TH1F *eeqt = (TH1F *)fIn->Get("data (ll)/ee"+categs[icat]+"_qt");  
-      eeqt->SetDirectory(0); 
-      eeqt->SetName("ee"+categs[icat]);   
-      eeqt->SetTitle("ee,"+titles[icat]);
+      TH1F *mmqt = (TH1F *)fIn->Get("data/mumu"+categs[icat]+"_qt");    
+      TH1F *eeqt = (TH1F *)fIn->Get("data/ee"+categs[icat]+"_qt");  
+      TH1F *gqt  = (TH1F *)gIn->Get("data (#gamma)/mumu"+categs[icat]+"_qt");
+      if(mmqt && eeqt && gqt)
+	{
+	  mmqt->SetDirectory(0); 
+	  mmqt->SetName("mm"+categs[icat]);   
+	  mmqt->SetTitle("#mu#mu,"+titles[icat]);
+	 
+	  eeqt->SetDirectory(0); 
+	  eeqt->SetName("ee"+categs[icat]);   
+	  eeqt->SetTitle("ee,"+titles[icat]);
+	  
+	  gqt->SetDirectory(0);  
+	  gqt->SetName("gamma"+categs[icat]); 
+	  gqt->SetTitle("#gamma,"+titles[icat]);
+	}
       
-      TH1F *gqt  = (TH1F *)fIn->Get("data (#gamma)/mumu"+categs[icat]+"_qt");
-      gqt->SetDirectory(0);  
-      gqt->SetName("gamma"+categs[icat]); 
-      gqt->SetTitle("#gamma,"+titles[icat]);
-
+      TH1F *mcgqt=0,*mcmmqt=0,*mceeqt=0;
+      for(size_t imcg=0; imcg<mcg.size(); imcg++)
+	{
+	  TH1F *ih=(TH1F *)fIn->Get(mcdy+"/mumu"+categs[icat]+"_qt");
+	  if(ih!=0)
+	    {
+	      mcmmqt=ih;
+	      mcmmqt->SetDirectory(0);
+	      mcmmqt->SetName("mcmm"+categs[icat]);
+	      mcmmqt->SetTitle("#mu#mu,"+titles[icat]);
+	    }
+	  ih=(TH1F *)fIn->Get(mcdy+"/ee"+categs[icat]+"_qt");
+	  if(ih!=0)
+	    {
+	      mceeqt=ih;
+	      mceeqt->SetDirectory(0);
+	      mceeqt->SetName("mcee"+categs[icat]);
+	      mceeqt->SetTitle("ee,"+titles[icat]);
+	    }
+	  ih  = (TH1F *)gIn->Get(mcg[imcg]+"/mumu"+categs[icat]+"_qt");
+	  if(ih==0) continue;
+	  mcgqt=ih;
+	  mcgqt->SetDirectory(0);  
+	  mcgqt->SetName("mcgamma"+categs[icat]); 
+	  mcgqt->SetTitle("#gamma,"+titles[icat]);
+	}
+      
       fIn->Close();
+      gIn->Close();
 
       //perform fits and show results on subpads
-      c->cd();
-      TPad *p=(TPad *)c->cd(icat+1);      
-      p->Divide(1,3);
+      if(mmqt && eeqt && gqt)
+	{      
+	  c->cd();
+	  TPad *p=(TPad *)c->cd(icat+1);      
+	  p->Divide(1,3);
 
-      std::vector<int> thr;
-      if(is2011){
-	thr.push_back(40);
-	thr.push_back(50);
-	thr.push_back(75);
-	thr.push_back(90);
-      }
-      else{
-	thr.push_back(50); 
-	thr.push_back(75);
-	if(!categs[icat].Contains("vbf"))
-	  {      
-	    thr.push_back(90); 
+	  std::vector<int> thr;	  
+	  if(is2011){
+	    thr.push_back(40);
+	    thr.push_back(50);
+	    thr.push_back(75);
+	    thr.push_back(90);
+	  }
+	  else{
+	    thr.push_back(50); 
+	    thr.push_back(75);
+	    if(!categs[icat].Contains("vbf"))
+	      {      
+		thr.push_back(90); 
+		//thr.push_back(135);
+		thr.push_back(150); 
+		thr.push_back(170); 
+		if(!categs[icat].Contains("eq0jets"))
+		  {
+		    //thr.push_back(250); 
+		    thr.push_back(300); 
+		  }
+	      }
+	  }
+	  TGraph *regmmqt = steerQtParameterization(mmqt,thr,(TPad *)p->cd(1)); 
+	  TGraph *regeeqt = steerQtParameterization(eeqt,thr,(TPad *)p->cd(2));
+	  
+	  thr.clear();
+	  if(is2011){
+	    thr.push_back(40);
+	    thr.push_back(50);
+	    thr.push_back(75);
+	    thr.push_back(90);
+	    thr.push_back(125);
 	    thr.push_back(135);
-	    if(!categs[icat].Contains("eq0jets"))
+	    thr.push_back(200);
+	  }
+	  else{
+	    thr.push_back(50); 
+	    thr.push_back(80);
+	    thr.push_back(90); 
+	    thr.push_back(150);
+	    thr.push_back(170);
+	    if(!categs[icat].Contains("eq0jets") /*&& !categs[icat].Contains("vbf")*/)
 	      {
-		thr.push_back(160); 
-		//thr.push_back(250); 
+		if(categs[icat].Contains("eq1jets"))  thr.push_back(250); 
 		thr.push_back(300); 
 	      }
 	  }
-      }
-      TGraph *regmmqt = steerQtParameterization(mmqt,thr,(TPad *)p->cd(1)); 
-      TGraph *regeeqt = steerQtParameterization(eeqt,thr,(TPad *)p->cd(2));
-   
-      thr.clear();
-      if(is2011){
-	thr.push_back(40);
-	thr.push_back(50);
-	thr.push_back(75);
-	thr.push_back(90);
-	thr.push_back(125);
-	thr.push_back(135);
-	thr.push_back(200);
-      }
-      else{
-	thr.push_back(50); 
-	thr.push_back(80);
-	thr.push_back(90); 
-	thr.push_back(135);
-	thr.push_back(160);
-	if(!categs[icat].Contains("eq0jets") /*&& !categs[icat].Contains("vbf")*/)
-	  {
-	    thr.push_back(250); 
-	    //if(!categs[icat].Contains("vbf")) 
-	    thr.push_back(300); 
-	    // if(categs[icat].Contains("vbf")) thr.push_back(400);
-	  }
-      }
-      TGraph *reggqt = steerQtParameterization(gqt,thr,(TPad *)p->cd(3));
+	  TGraph *reggqt = steerQtParameterization(gqt,thr,(TPad *)p->cd(3));
+	  
+	  TGraph *eewgtGr=new TGraph; eewgtGr->SetTitle("ee");     eewgtGr->SetName("ee"+categs[icat]+"_qt_datafitwgts");
+	  TGraph *mmwgtGr=new TGraph; mmwgtGr->SetTitle("#mu#mu"); mmwgtGr->SetName("mumu"+categs[icat]+"_qt_datafitwgts");
+	  for(int ibin=1; ibin<=gqt->GetXaxis()->GetNbins(); ibin++)
+	    {
+	      float x=gqt->GetBinCenter(ibin);
+	      if(reggqt->Eval(x)<0.01) continue;
+	      if(x<50) continue;
+	      float wgt=regeeqt->Eval(x)/reggqt->Eval(x);
+	      eewgtGr->SetPoint(eewgtGr->GetN(),x,wgt);
+	      wgt=regmmqt->Eval(x)/reggqt->Eval(x);
+	      mmwgtGr->SetPoint(eewgtGr->GetN(),x,wgt);
+	    }
+	  
+	  wc->cd();
+	  p=(TPad *) wc->cd(icat+1); 
+	  eewgtGr->Draw("al"); eewgtGr->SetMarkerColor(1); eewgtGr->SetFillStyle(0); eewgtGr->SetLineColor(1);      eewgtGr->SetLineWidth(2);
+	  mmwgtGr->Draw("l");  mmwgtGr->SetMarkerColor(kGreen); mmwgtGr->SetFillStyle(0); mmwgtGr->SetLineColor(kGreen); mmwgtGr->SetLineWidth(2);
+	  eewgtGr->GetXaxis()->SetTitle("q_{T} [GeV]");
+	  eewgtGr->GetYaxis()->SetTitle("Weight");
+	  eewgtGr->GetXaxis()->SetRangeUser(50,1000);
+	  eewgtGr->GetYaxis()->SetRangeUser(0,0.1);
+	  TLegend *leg=p->BuildLegend();
+	  leg->SetFillStyle(0);
+	  leg->SetBorderSize(0);
+	  leg->SetTextFont(42);
+	  leg->SetHeader(titles[icat]);
 
-      TGraph *eewgtGr=new TGraph; eewgtGr->SetTitle("ee");     eewgtGr->SetName("ee"+categs[icat]+"_qt_datafitwgts");
-      TGraph *mmwgtGr=new TGraph; mmwgtGr->SetTitle("#mu#mu"); mmwgtGr->SetName("mumu"+categs[icat]+"_qt_datafitwgts");
-      for(int ibin=1; ibin<=gqt->GetXaxis()->GetNbins(); ibin++)
-	{
-	  float x=gqt->GetBinCenter(ibin);
-	  if(reggqt->Eval(x)<0.01) continue;
-	  if(x<50) continue;
-	  float wgt=regeeqt->Eval(x)/reggqt->Eval(x);
-	  eewgtGr->SetPoint(eewgtGr->GetN(),x,wgt);
-	  wgt=regmmqt->Eval(x)/reggqt->Eval(x);
-	  mmwgtGr->SetPoint(eewgtGr->GetN(),x,wgt);
+	  toSave.Add(eewgtGr);
+	  toSave.Add(mmwgtGr);
 	}
 
-      wc->cd();
-      p=(TPad *) wc->cd(icat+1); 
-      eewgtGr->Draw("al"); eewgtGr->SetMarkerColor(1); eewgtGr->SetFillStyle(0); eewgtGr->SetLineColor(1);      eewgtGr->SetLineWidth(2);
-      mmwgtGr->Draw("l");  mmwgtGr->SetMarkerColor(kGreen); mmwgtGr->SetFillStyle(0); mmwgtGr->SetLineColor(kGreen); mmwgtGr->SetLineWidth(2);
-      eewgtGr->GetXaxis()->SetTitle("q_{T} [GeV]");
-      eewgtGr->GetYaxis()->SetTitle("Weight");
-      eewgtGr->GetXaxis()->SetRangeUser(50,1000);
-      eewgtGr->GetYaxis()->SetRangeUser(0,0.1);
-      TLegend *leg=p->BuildLegend();
-      leg->SetFillStyle(0);
-      leg->SetBorderSize(0);
-      leg->SetTextFont(42);
-      leg->SetHeader(titles[icat]);
+      //mc based
+      if(mcgqt && mceeqt && mcmmqt)
+	{
+	  mcc->cd();
+	  TPad *p=(TPad *) mcc->cd(icat+1);
+	  p->Divide(1,3);
 
-      toSave.Add(eewgtGr);
-      toSave.Add(mmwgtGr);
+	  std::vector<int> thr;
+	  thr.clear();
+	  thr.push_back(50); 
+	  //thr.push_back(80);
+	  //thr.push_back(90); 
+	  thr.push_back(150);
+	  // if( !categs[icat].Contains("eq0jets") ) thr.push_back(250);
+	  p->cd(1); mcmmqt->Draw("e1");
+	  //TGraph *regmcmmqt = steerQtParameterization(mcmmqt,thr,(TPad *)p->cd(1)); 
+	  p->cd(2); mceeqt->Draw("e1");
+	  //TGraph *regmceeqt = steerQtParameterization(mceeqt,thr,(TPad *)p->cd(2));
+	  thr.clear();
+	  thr.push_back(50); 
+	  //	  thr.push_back(80);
+	  // thr.push_back(90); 
+	   thr.push_back(150);
+	  //if( categs[icat].Contains("eq0jets") ) thr.push_back(500);
+	  //else                                   thr.push_back(300); 
+	   p->cd(3); mcgqt->Draw("e1");
+	   //TGraph *regmcgqt  = steerQtParameterization(mcgqt,thr,(TPad *)p->cd(3));
+	   
+	   p=(TPad *) mcwc->cd(icat+1);
+	   TH1 *mceewgts=(TH1 *) mceeqt->Clone(); mceewgts->Divide(mcgqt);
+	   TGraph *mceewgtGr=new TGraph(mceewgts); mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
+	   TH1 *mcmmwgts=(TH1 *) mcmmqt->Clone(); mcmmwgts->Divide(mcgqt); 
+	   TGraph *mcmmwgtGr=new TGraph(mcmmwgts); mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
+
+	   //TGraph *mceewgtGr=new TGraph; mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
+	   //TGraph *mcmmwgtGr=new TGraph; mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
+	   // for(int ibin=1; ibin<=mcgqt->GetXaxis()->GetNbins(); ibin++)
+	   // 	     {
+	   // 	       float x=mcgqt->GetBinCenter(ibin);
+	   // 	       if(regmcgqt->Eval(x)<0.01) continue;
+	   // 	       if(x<50) continue;
+	   // 	       float wgt=regmceeqt->Eval(x)/regmcgqt->Eval(x);
+	   // 	       mceewgtGr->SetPoint(mceewgtGr->GetN(),x,wgt);
+	   // 	       wgt=regmcmmqt->Eval(x)/regmcgqt->Eval(x);
+	   // 	       mcmmwgtGr->SetPoint(mcmmwgtGr->GetN(),x,wgt);
+	   //}
+	   mceewgtGr->Draw("al"); mceewgtGr->SetMarkerColor(1);      mceewgtGr->SetFillStyle(0); mceewgtGr->SetLineColor(1);      mceewgtGr->SetLineWidth(2);
+	   mcmmwgtGr->Draw("l");  mcmmwgtGr->SetMarkerColor(kGreen); mcmmwgtGr->SetFillStyle(0); mcmmwgtGr->SetLineColor(kGreen); mcmmwgtGr->SetLineWidth(2);
+	   mceewgtGr->GetXaxis()->SetTitle("q_{T} [GeV]");
+	   mceewgtGr->GetYaxis()->SetTitle("Weight");
+	   mceewgtGr->GetXaxis()->SetRangeUser(50,1000);
+	   mceewgtGr->GetYaxis()->SetRangeUser(0,0.1);
+	   TLegend *leg=p->BuildLegend();
+	   leg->SetFillStyle(0);
+	   leg->SetBorderSize(0);
+	   leg->SetTextFont(42);
+	   leg->SetHeader(titles[icat]);
+	   
+	   toSave.Add(mceewgtGr);
+	   toSave.Add(mcmmwgtGr);
+	}
     }
+  
+  c->SaveAs("qtFit.png");
+  c->SaveAs("qtFit.pdf");
+  mcc->SaveAs("qtFit_mc.png");
+  mcc->SaveAs("qtFit_mc.pdf");
+  wc->SaveAs("qtWeights.png");
+  wc->SaveAs("qtWeights.pdf");
+  mcwc->SaveAs("qtWeights_mc.png");
+  mcwc->SaveAs("qtWeights_mc.pdf");
+
 
   //save results
   TFile *fOut=TFile::Open("gammawgts.root","RECREATE");
   fOut->cd();
-  for(int i=0; i<toSave.GetEntriesFast(); i++) toSave.At(i)->Write();
+  for(int i=0; i<toSave.GetEntriesFast(); i++)
+    {
+      if(toSave.At(i)==0) continue;
+      toSave.At(i)->Write();
+    }
   fOut->Close();
 
-  c->SaveAs("qtFit.png");
-  wc->SaveAs("qtWeights.png");
 
 }

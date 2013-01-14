@@ -168,9 +168,24 @@ std::map<TString,float> GammaEventHandler::getWeights(PhysicsEvent_t &phys, TStr
 	  if(wIt->second.find(key) == wIt->second.end()) continue; // { cout << key; continue; }
 	  TGraph *h = wIt->second[key];
 	  //TH1 *h = wIt->second[key];
-	  weight=h->Eval(gamma.pt());
-	  if(gamma.pt()>900)                        weight=h->Eval(900);
-	  if(key.Contains("vbf") && gamma.pt()>600) weight=h->Eval(600);
+	  if(!isMC_)
+	    {
+	      weight=h->Eval(gamma.pt());
+	      if(gamma.pt()>900)                        weight=h->Eval(900);
+	      if(key.Contains("vbf") && gamma.pt()>600) weight=h->Eval(600);
+	    }
+	  else
+	    {
+	      for(int ip=1; ip<h->GetN()-1; ip++)
+		{
+		  Double_t xm1,x0,xp1,y;
+		  h->GetPoint(ip-1,xm1,y);
+		  h->GetPoint(ip+1,xp1,y);
+		  h->GetPoint(ip,x0,y);
+		  if(gamma.pt()>=0.5*(x0+xm1) && gamma.pt()<0.5*(x0+xp1)) {weight=y; break;}
+		}
+	    }
+	  
 	  if(weight<0) weight=0;
 	}
       evWeights_[dilCats[id]]=weight;

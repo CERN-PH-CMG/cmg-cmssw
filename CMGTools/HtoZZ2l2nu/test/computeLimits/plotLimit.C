@@ -172,7 +172,7 @@ void plotLimit(TString outputName="Limit", TString inputs="", bool blind=false, 
   if(energy<9){
     sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #scale[0.5]{#int} L=%6.1ffb^{-1} - %20s",energy, luminosity,legendName.Data());
   }else{
-    sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f/%.0f TeV, #scale[0.5]{#int} L=%6.1ffb^{-1} - %20s",7.0,8.0, luminosity,legendName.Data());
+    sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV #scale[0.5]{#int} L=%6.1ffb^{-1}, #sqrt{s}=%.0f TeV #scale[0.5]{#int} L=%6.1ffb^{-1}",7.0,5100,8.0,12200);
   }
   pave->SetBorderSize(0);
   pave->SetFillStyle(0);

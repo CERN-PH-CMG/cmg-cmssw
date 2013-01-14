@@ -4,60 +4,27 @@
 #    2012    #
 ##############
 runLocalAnalysisOverSamples.py -e runVBFZAnalysis -j data/samples_vbfz_2012.json -o ~/work/vbfz/results/2012 -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=False @is2011=False" -s 8nh 
-runPlotter --json data/samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012/ --outDir ~/work/vbfz/results/2012/plots/ --iLumi 16602 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_2012.root
+runPlotter --json data/samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012/ --outDir ~/work/vbfz/results/2012/plots/ --iLumi 16698 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_2012.root
 
 runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForVBFZ -j data/photon-samples_vbfz_2012.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/vbfz/results/2012_gamma/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh
-runPlotter --json data/photon-samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012_gamma/raw/ --outDir ~/work/vbfz/results/2012_gamma/raw/plots/ --iLumi 16602 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_gamma_raw_2012.root
+runPlotter --json data/photon-samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012_gamma/raw/ --outDir ~/work/vbfz/results/2012_gamma/raw/plots/ --iLumi 16698 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_gamma_raw_2012.root
+root -b -q "bin/G/FitQtSpectrum.C+(\"~/work/vbfz/plotter_vbfz_2012.root\",\"~/work/vbfz/plotter_vbfz_gamma_raw_2012.root\",VBFZ)"
+mv gammawgts.root data/gammaqtweights_vbfz_2012.root
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForVBFZ -j data/photon-samples_vbfz_2012.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/vbfz/results/2012_gamma/qt  -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_vbfz_2012.root'" -s 8nh
+runPlotter --json data/photon-samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012_gamma/qt/ --outDir ~/work/vbfz/results/2012_gamma/qt/plots/ --iLumi 16698 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_gamma_qt_2012.root
 
+### closure
+#use empty pileup distribution in test/runAnalysis_cfg.py.templ
+runLocalAnalysisOverSamples.py -e runVBFZAnalysis -j data/samples_vbfz_2012.json -o ~/work/vbfz/results/2012_closure -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=False @is2011=False" -s 8nh -t DY
+runPlotter --json data/samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012_closure/ --outDir ~/work/vbfz/results/2012_closure/plots/ --iLumi 16698 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_closure_2012.root --noPlot
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForVBFZ -j data/photon-samples_vbfz_2012.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/vbfz/results/2012_gamma_closure/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh -t MC
+runPlotter --json data/photon-samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012_gamma_closure/raw/ --outDir ~/work/vbfz/results/2012_gamma_closure/raw/plots/ --iLumi 16698 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_gamma_closure_raw_2012.root --noPlot
+root -b -q "bin/G/FitQtSpectrum.C+(\"~/work/vbfz/plotter_vbfz_closure_2012.root\",\"~/work/vbfz/plotter_vbfz_gamma_closure_raw_2012.root\",VBFZ)"
+mv gammawgts.root data/gammaqtweights_vbfz_2012.root
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForVBFZ -j data/photon-samples_vbfz_2012.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/vbfz/results/2012_gamma_closure/qt  -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_vbfz_closure_2012.root'" -s 8nh -t MC
+runPlotter --json data/photon-samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012_gamma_closure/qt/ --outDir ~/work/vbfz/results/2012_gamma_closure/qt/plots/ --iLumi 16698 --iEcm 8 --outFile ~/work/vbfz/plotter_vbfz_gamma_closure_2012.root --noPlot
 
-
-#CHECK ME FROM THIS POINT FORWARD
-
-#the photon pain strikes back
-
-runPlotter --json data/photon-samples_vbf_2011.json --inDir ~/work/vbfz/gamma/2011/raw/ --outDir ~/work/vbfz/gamma/2011/raw/plots/ --outFile ~/work/vbfz/gamma/2011/raw/plotter.root --only qt --iLumi 5051 --iEcm 7
-root -b -q "bin/G/getGammaWeights.C+(\"~/work/vbfz/gamma/2011/raw/plotter.root\",\"qt\")"
-mv gammaqtweights.root data/gammaqtweights_vbfz_2011.root
-
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_vbf_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/vbfz/gamma/2011/qt  -c test/runAnalysis_cfg.py.templ -p "@is2011=True @weightsFile='data/gammaqtweights_vbfz_2011.root'" -s 8nh
-runPlotter --json data/photon-samples_vbf_2011.json --inDir ~/work/vbfz/gamma/2011/qt/ --outDir ~/work/vbfz/gamma/2011/qt/plots/ --outFile ~/work/vbfz/gamma/2011/qt/plotter.root  --iLumi 5051 --iEcm 7
-root -b -q "bin/G/getGammaWeights.C+(\"~/work/vbfz/gamma/2011/qt/plotter.root\",\"nvtx\")"
-mv gammanvtxweights.root data/gammanvtxweights_vbfz_2011.root
-
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_vbf_2011.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/vbfz/gamma/2011/nvtx  -c test/runAnalysis_cfg.py.templ -p "@is2011=True @weightsFile='data/gammaqtweights_vbfz_2011.root','data/gammanvtxweights_vbfz_2011.root'" -s 8nh
-runPlotter --json data/photon-samples_vbf_2011.json --inDir ~/work/vbfz/gamma/2011/nvtx/ --outDir ~/work/vbfz/gamma/2011/nvtx/plots/ --outFile ~/work/vbfz/gamma/2011/nvtx/plotter.root  --iLumi 5051 --iEcm 7
-
-#optimize
-python test/computeLimits/optimize_VBFZ.py -p 1 -m 0 -i ~/work/vbfz/results/2011/plotter_vbfz_2011.root -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_vbfz_2011.json -e 7 -t ~/work/vbfz/results/2011/gamma_vbfz_2011.root -x 0.165
-  
-##############
-#    2012    #
-##############
-runLocalAnalysisOverSamples.py -e runZZAnalysis -j data/samples_vbfz_2012.json -o ~/work/vbfz/results/2012 -d /store/cmst3/user/psilva/29Aug2012_CMSSW_53x_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
-runPlotter --json data/samples_vbfz_2012.json --inDir ~/work/vbfz/results/2012/ --outDir ~/work/vbfz/results/2012/plots/ --iLumi 10198 --iEcm 8 --outFile  ~/work/vbfz/results/2012/plotter_vbfz_2012.root
-
-#the photon pain strikes back
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/29Aug2012_CMSSW_53x_ntuples -o ~/work/vbfz/gamma/2012/raw  -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh
-runPlotter --json data/photon-samples_2012.json --inDir ~/work/vbfz/gamma/2012/raw/ --outDir ~/work/vbfz/gamma/2012/raw/plots/ --outFile ~/work/vbfz/gamma/2012/raw/plotter.root --only qt --iLumi 5041
-root -b -q "bin/G/getGammaWeights.C+(\"~/work/vbfz/gamma/2012/raw/plotter.root\",\"qt\")"
-mv gammaqtweights.root data/gammaqtweights_vbfz_2012.root
-
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/29Aug2012_CMSSW_53x_ntuples -o ~/work/vbfz/gamma/2012/qt  -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_vbfz_2012.root'" -s 8nh
-runPlotter --json data/photon-samples_2012.json --inDir ~/work/vbfz/gamma/2012/qt/ --outDir ~/work/vbfz/gamma/2012/qt/plots/ --outFile ~/work/vbfz/gamma/2012/qt/plotter.root  --iLumi 5041
-root -b -q "bin/G/getGammaWeights.C+(\"~/work/vbfz/gamma/2012/qt/plotter.root\",\"nvtx\")"
-mv gammavtxweights.root data/gammanvtxweights_vbfz_2012.root
-
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/29Aug2012_CMSSW_53x_ntuples -o ~/work/vbfz/gamma/2012/nvtx  -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_vbfz_2012.root','data/gammanvtxweights_vbfz_2012.root'" -s 8nh
-runPlotter --json data/photon-samples_2012.json --inDir ~/work/vbfz/gamma/2012/nvtx/ --outDir ~/work/vbfz/gamma/2012/nvtx/plots/ --outFile ~/work/vbfz/gamma/2012/nvtx/plotter.root  --iLumi 5041
-
-# hell closure (disable pu reweighting)
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/vbfz/gamma/2012/mc -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh -t MC
-runPlotter --json data/photon-samples_2012.json --inDir ~/work/vbfz/gamma/2012/mc/ --outDir ~/work/vbfz/gamma/2012/mc/plots/ --outFile ~/work/vbfz/gamma/2012/mc/plotter.root --only qt
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/vbfz/gamma/2012/mc -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_vbfz_mc8tev.root'" -s 8nh -t MC
-runPlotter --json data/photon-samples_2012.json --inDir ~/work/vbfz/gamma/2012/mc/ --outDir ~/work/vbfz/gamma/2012/mc/plots/ --outFile ~/work/vbfz/gamma/2012/mc/plotter_qt.root --only ee
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplatesForZZ -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/28May2012_CMSSW444_HZZ2l2v_ntuples -o ~/work/vbfz/gamma/2012/mc -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_vbfz_mc8tev.root','data/gammanvtxweights_vbfz_mc8tev.root'" -s 8nh -t MC
-runPlotter --json data/photon-samples_2012.json --inDir ~/work/vbfz/gamma/2012/mc/ --outDir ~/work/vbfz/gamma/2012/mc/plots/ --outFile ~/work/vbfz/gamma/2012/mc/plotter_nvtx.root --only ee
-
+#CHECK ME THIS POINT FWD
 
 #optimize
 python test/computeLimits/optimize_VBFZ.py -p 1 -m 0 -i ~/work/vbfz/results/2012/plotter_vbfz_2012.root -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_vbfz_2012.json -e 8 -t ~/work/vbfz/results/2012/gamma_vbfz_2012.root -x 0.215

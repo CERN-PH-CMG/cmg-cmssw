@@ -11,7 +11,7 @@ void convertLineShape()
 {
   TFile *outF=TFile::Open("LineShapeWeights.root","RECREATE");
 
-  TString baseUrl="http://tier2.ihepa.ufl.edu/~tongguang/LineShape_Lineshape_runningWidth/";
+  TString baseUrl="http://tier2.ihepa.ufl.edu/~tcheng/LineShape_Lineshape_runningWidth/";
   TString files[]={
     "mZZ_Higgs400_7TeV_Lineshape+Interference.txt",
     "mZZ_Higgs400_8TeV_Lineshape+Interference.txt", 
@@ -84,6 +84,7 @@ void convertLineShape()
 	}
       if(dists.size()==0) continue;
       std::vector<TGraph *> graphs;
+      std::vector<TGraph *> shapeGraphs;
       for(std::map<float, std::vector<float> >::iterator it =dists.begin();
 	  it!= dists.end(); 
 	  it++)
@@ -102,22 +103,35 @@ void convertLineShape()
 		  if(p==6) grname="rwgtpint_down";
 		  gr->SetName(grname);
 		  graphs.push_back(gr);
+
+		  gr=new TGraph;
+		  gr->SetName(grname+"_shape");
+		  shapeGraphs.push_back(gr);
 		}
-	      
 	      if( (it->second)[0]==0)
-		graphs[p]->SetPoint(graphs[p]->GetN(),it->first,0);
+		{
+		  graphs[p]->SetPoint(graphs[p]->GetN(),it->first,0);
+		  shapeGraphs[p]->SetPoint(shapeGraphs[p]->GetN(),it->first,0);
+		}
 	      else
-		 graphs[p]->SetPoint(graphs[p]->GetN(),it->first,(it->second)[p]/(it->second)[0]);
+		{
+		  graphs[p]->SetPoint(graphs[p]->GetN(),it->first,(it->second)[p]/(it->second)[0]);
+		  shapeGraphs[p]->SetPoint(shapeGraphs[p]->GetN(),it->first,(it->second)[p]);
+		}
 	    }
 	}
       
       TDirectory*dir=outF->mkdir(key);
       dir->cd();
-      for(size_t p=1; p<graphs.size(); p++)
+      for(size_t p=0; p<graphs.size(); p++)
 	{
 	  graphs[p]->SetMarkerStyle(20+p);
 	  graphs[p]->SetFillStyle(0);
 	  graphs[p]->Write();
+
+	  shapeGraphs[p]->SetMarkerStyle(20+p);
+	  shapeGraphs[p]->SetFillStyle(0);
+	  shapeGraphs[p]->Write();
 	}
 
       gSystem->Exec("rm " + files[i]);
