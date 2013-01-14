@@ -7,6 +7,7 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Jet, GenParticle
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 from CMGTools.RootTools.utils.DeltaR import bestMatch, deltaR, deltaR2
+from CMGTools.Utilities.mvaMET.mvaMet import MVAMet
 
 class ZAnalyzer( Analyzer ):
 
@@ -30,6 +31,23 @@ class ZAnalyzer( Analyzer ):
         count.register('Z pt<20*MZ/MW')
         count.register('Z Jet_leading_pt<30')
 
+        self.mvamet = MVAMet() # SHOULD BE MVAMet(0.1)
+
+        # void    Initialize(const edm::ParameterSet &iConfig, 
+        # TString iU1Weights      ="$CMSSW_BASE/src/pharris/data/gbrmet_52.root",
+        # TString iPhiWeights     ="$CMSSW_BASE/src/pharris/data/gbrmetphi_52.root",
+        # TString iCovU1Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu1_52.root",
+        # TString iCovU2Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu2_52.root",
+        # MVAMet::MVAType  iType=kBaseline);
+
+        self.mvamet.Initialize(0,
+                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmet_42.root',
+                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmetphi_42.root',
+                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmetu1cov_42.root',
+                          '/afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_4_4_5/src/CMGTools/Utilities/data/mvaMET/gbrmetu2cov_42.root',
+                          0
+                          )
+        
     def buildLeptons(self, cmgMuons, event):
         '''Creates python Leptons from the muons read from the disk.
         to be overloaded if needed.'''
@@ -58,6 +76,13 @@ class ZAnalyzer( Analyzer ):
         event.Zjets = self.buildJets( self.handles['Zjets'].product(), event )
         # access MET
         event.pfmet = self.handles['pfmet'].product()[0]
+        event.tkmet = self.handles['tkmet'].product()[0]
+        event.nopumet = self.handles['nopumet'].product()[0]
+        event.pumet = self.handles['pumet'].product()[0]
+        event.pucmet = self.handles['pucmet'].product()[0]
+        event.pfMetForRegression = self.handles['pfMetForRegression'].product()[0]
+        # access nJetsPtGt1
+        event.nJetsPtGt1H = self.handles['nJetsPtGt1'].product()[0]
         # access genP
         event.genParticles = []
         if self.cfg_comp.isMC :
@@ -173,6 +198,45 @@ class ZAnalyzer( Analyzer ):
         else:
             if fillCounter : self.counters.counter('ZAna').inc('Z non trg leading extra muon pT < 10 GeV')
 
+        # Initialize MVAMet and retrieve it
+        
+        iLeadJet = 0
+        i2ndJet = 0
+        if(len(event.ZselJets)>0): iLeadJet = event.ZselJets[0].p4()
+        # if(len(event.ZselJets)>0): i2ndJet = event.ZselJets[0].p4()
+        if(len(event.ZselJets)>1): i2ndJet = event.ZselJets[1].p4()
+        # print 'iLeadJet= ',iLeadJet, ' i2ndJet=',i2ndJet 
+        # self.mvamet.addVisObject(event.BestZMuonPairList[0].p4())
+        visObjectP4s_array = [event.BestZMuonPairList[0].p4(),event.BestZMuonPairList[0].p4()]
+        iJets_p4 = []
+        iJets_mva = []
+        iJets_neutFrac = []
+        for jet in event.ZselJets:
+            iJets_p4.append(jet.p4())
+            iJets_mva.append(float(0))
+            iJets_neutFrac.append(float(0.5))
+            
+        self.mvamet.getMet(
+                           # event.pfmet, #iPFMet,
+                           event.pfMetForRegression, #iPFMet,
+                           event.tkmet, #iTKMet,
+                           event.nopumet, #iNoPUMet,
+                           event.pumet, #iPUMet,
+                           event.pucmet, #iPUCMet,
+                           iLeadJet, #event.ZselJets[0], #iLeadJet,
+                           i2ndJet, #event.ZselJets[1], #i2ndJet,
+                           len(event.ZselJets), #iNJetsGt30,
+                           len(event.allJets), #iNJetsGt1,
+                           len(self.handles['vertices'].product()), #iNGoodVtx,
+                           iJets_p4, #iJets,
+                           iJets_mva, #iJets,
+                           iJets_neutFrac, #iJets,
+                           False, #iPrintDebug,
+                           visObjectP4s_array #visObjectP4s
+                          )
+                          
+        GetMet_first = self.mvamet.GetMet_first();
+        GetMet_second = self.mvamet.GetMet_second();
             
         # associate properly positive and negative muons
         if(event.BestZMuonPairList[1].charge()>0):
