@@ -404,6 +404,7 @@ class FullCFG(Task):
                     'process.source.fileNames = files\n',
                     'if hasattr(process,"maxEvents"): process.maxEvents.input = cms.untracked.int32({nEvents})\n'.format(nEvents=nEventsPerJob),
                     'if hasattr(process,"maxLuminosityBlocks"): process.maxLuminosityBlocks.input = cms.untracked.int32(-1)\n'
+                    'datasetInfo = ("%s","%s","%s")\n' % (self.user, self.dataset, fnmatch.translate(self.options.wildcard) )
                     ]
         config = insertLines( config, toInsert )
         output.writelines(config)
