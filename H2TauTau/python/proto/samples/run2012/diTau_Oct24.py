@@ -695,6 +695,7 @@ embed_Run2012D_PromptReco_v1 = cfg.EmbedComponent(
 
 DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 DYJets.nGenEvents = 30459503*0.99836254
+DYJets.xSection = 3503.71
 
 DY1Jets = cfg.MCComponent(
     name = 'DY1Jets',
