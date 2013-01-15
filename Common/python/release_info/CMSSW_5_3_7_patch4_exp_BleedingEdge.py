@@ -2,7 +2,7 @@
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_GT_15Jan13'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-10'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_19Dec12'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'anantoni_14Dec_publish_correction'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'wreece_140113'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_15Jan13'),
   ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'cbern_morewrapping_15Jan13'),
   ('CMGTools/ZJetsTutorial', 'UserCode/CMG/CMGTools/ZJetsTutorial', 'cbern_local_12Dec12'),
