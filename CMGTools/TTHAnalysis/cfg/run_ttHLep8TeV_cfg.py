@@ -133,7 +133,7 @@ sequence = cfg.Sequence([
     #eventSelector,
     jsonAna,
     triggerAna,
-    #pileUpAna,
+    pileUpAna,
     ttHGenAna,
     ttHVertexAna,
     ttHLepAna,
