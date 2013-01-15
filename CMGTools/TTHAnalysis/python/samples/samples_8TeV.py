@@ -202,7 +202,7 @@ dataSamplesMuE=[MuEGAB,MuEGC,MuEGD]
 for comp in mcSamples:
     comp.isMC = True
     comp.isData = False
-    comp.splitFactor = 50
+    comp.splitFactor = 50 #200 is needed for WJets 
 
 for comp in dataSamplesMu:
     comp.splitFactor = 500
