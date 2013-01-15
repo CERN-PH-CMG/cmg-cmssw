@@ -26,6 +26,10 @@ process.source = datasetToSource(
 
 process.source.fileNames = process.source.fileNames[:20]
 
+
+###ProductionTaskHook$$$
+
+
 print sep_line
 print process.source.fileNames
 print sep_line 
@@ -237,7 +241,6 @@ v = SeqVisitor('FastjetJetProducer')
 process.p.visit(v)
 
 ### Set the global tag from the dataset name
-###ProductionTaskHook$$$
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTagByDataset
 process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
 print 'Global tag       : ', process.GlobalTag.globaltag
