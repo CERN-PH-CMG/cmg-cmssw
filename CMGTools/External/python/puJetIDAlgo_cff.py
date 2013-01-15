@@ -28,8 +28,8 @@ full_53x = cms.PSet(
     "jetEta",
     "jetPhi"
     ),
- JetIdParams = full_5x_wp,
- label = cms.string("full")
+ JetIdParams = full_53x_wp,
+ label = cms.string("full_53x")
  )
 ####################################################################################################################  
 met_53x = cms.PSet(
@@ -57,7 +57,8 @@ met_53x = cms.PSet(
     "frac05"   , 
     ),
  tmvaSpectators = cms.vstring(),
- label = cms.string("full")
+ JetIdParams = met_53x_wp,
+ label = cms.string("met_53x")
  )
 ####################################################################################################################  
 full_5x = cms.PSet(
