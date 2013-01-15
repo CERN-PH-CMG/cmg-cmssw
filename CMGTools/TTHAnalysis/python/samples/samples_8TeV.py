@@ -96,9 +96,11 @@ TTH,TTWJets,TTZJets,WWWJets,WWZJets,WGs2MU,WGs2E,WGs2Tau,TTWWJets,DYJetsM10,DYJe
 
 #-----------DATA---------------
 
-#json='/afs/cern.ch/user/m/mangano/public/hcp2012_json_v2/hcp.json'
-json='/afs/cern.ch/user/b/botta/public/moriond.json'
-#lumi: 12.21+7.27 = 19.48 /fb @ 8TeV
+dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/TTHAnalysis/data"
+json=dataDir+"/moriond.json"
+#json='/afs/cern.ch/user/b/botta/public/moriond.json'
+#lumi: 12.21+7.27+0.134 = 19.62 /fb @ 8TeV
+
 
 
 DoubleMuAB = cfg.DataComponent(
@@ -123,11 +125,13 @@ DoubleMuC = cfg.DataComponent(
 
 DoubleMuD = cfg.DataComponent(
     name = 'DoubleMuD',
-    files = getFiles('/DoubleMu/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    files = getFiles('/DoubleMu/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+    files = getFiles('/DoubleMu/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
     intLumi = 1,
     triggers = [],
     json = json
     )
+
 
 
 
@@ -154,7 +158,8 @@ DoubleElectronC = cfg.DataComponent(
 
 DoubleElectronD = cfg.DataComponent(
     name = 'DoubleElectronD',
-    files = getFiles('/DoubleElectron/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    files = getFiles('/DoubleElectron/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/DoubleElectron/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
     intLumi = 1,
     triggers = [],
     json = json
@@ -185,7 +190,8 @@ MuEGC = cfg.DataComponent(
 
 MuEGD = cfg.DataComponent(
     name = 'MuEGD',
-    files = getFiles('/MuEG/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    files = getFiles('/MuEG/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/MuEG/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
     intLumi = 1,
     triggers = [],
     json = json
@@ -202,7 +208,9 @@ dataSamplesMuE=[MuEGAB,MuEGC,MuEGD]
 for comp in mcSamples:
     comp.isMC = True
     comp.isData = False
-    comp.splitFactor = 50 #200 is needed for WJets 
+    comp.splitFactor = 50 #200 is needed for WJets
+    comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
+    comp.puFileData=dataDir+"/puProfile_Data12.root"
 
 for comp in dataSamplesMu:
     comp.splitFactor = 500
