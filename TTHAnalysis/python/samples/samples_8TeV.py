@@ -126,7 +126,7 @@ DoubleMuC = cfg.DataComponent(
 DoubleMuD = cfg.DataComponent(
     name = 'DoubleMuD',
     files = getFiles('/DoubleMu/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
-    files = getFiles('/DoubleMu/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+            getFiles('/DoubleMu/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
     intLumi = 1,
     triggers = [],
     json = json
