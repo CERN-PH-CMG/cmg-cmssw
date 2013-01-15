@@ -1139,14 +1139,15 @@ int main(int argc, char* argv[])
 		      tags_full.push_back(tag_cat+tag_subcat);
 		      if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(tag_cat + "geq1jets");
                       if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcat);  if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(string("ll")+string("geq1jets"));   }
-		      if(tag_subcat=="vbf"){
-                          TString tag_subcatVBF = tag_subcat;
-                          if(fabs(aGoodIdJets[0].eta())<2.1 && fabs(aGoodIdJets[1].eta())<2.1){tag_subcatVBF+="2";}else
-                          if(fabs(aGoodIdJets[0].eta())<2.1 || fabs(aGoodIdJets[1].eta())<2.1){tag_subcatVBF+="1";}else
-                                                                                              {tag_subcatVBF+="0";}
-                          tags_full.push_back(tag_cat+tag_subcatVBF);
-                          if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcatVBF); }
-		      }
+//                    //remove VBF subcategory to make it faster
+//		      if(tag_subcat=="vbf"){
+//                          TString tag_subcatVBF = tag_subcat;
+//                          if(fabs(aGoodIdJets[0].eta())<2.1 && fabs(aGoodIdJets[1].eta())<2.1){tag_subcatVBF+="2";}else
+//                          if(fabs(aGoodIdJets[0].eta())<2.1 || fabs(aGoodIdJets[1].eta())<2.1){tag_subcatVBF+="1";}else
+//                                                                                              {tag_subcatVBF+="0";}
+//                          tags_full.push_back(tag_cat+tag_subcatVBF);
+//                          if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcatVBF); }
+//		      }
                       //if(tag_subcat!="vbf") tags_full.push_back(tag_cat + "novbf");
 		      //if(tag_subcat=="geq2jets" || tag_subcat=="vbf")tags_full.push_back(tag_cat + "geq2jetsInc");
                       //if(tag_cat=="mumu" || tag_cat=="ee")tags_full.push_back(string("ll")+tag_subcat);
@@ -1349,14 +1350,15 @@ int main(int argc, char* argv[])
 	  tags_full.push_back(string("ll")+tag_subcat);  
 	  if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(string("ll")+string("geq1jets"));   
 	}
-        if(tag_subcat=="vbf"){
-	  TString tag_subcatVBF = tag_subcat;
-	  if(fabs(tightVarJets[0].eta())<2.1 && fabs(tightVarJets[1].eta())<2.1)      { tag_subcatVBF+="2"; }
-	  else if(fabs(tightVarJets[0].eta())<2.1 || fabs(tightVarJets[1].eta())<2.1) { tag_subcatVBF+="1"; }
-	  else                                                                        { tag_subcatVBF+="0"; }
-	  tags_full.push_back(tag_cat+tag_subcatVBF);
-	  if(tag_cat=="mumu" || tag_cat=="ee")                                        { tags_full.push_back(string("ll")+tag_subcatVBF); }
-        }
+//        //remove sub VBF category to make it faster
+//        if(tag_subcat=="vbf"){
+//	  TString tag_subcatVBF = tag_subcat;
+//	  if(fabs(tightVarJets[0].eta())<2.1 && fabs(tightVarJets[1].eta())<2.1)      { tag_subcatVBF+="2"; }
+//	  else if(fabs(tightVarJets[0].eta())<2.1 || fabs(tightVarJets[1].eta())<2.1) { tag_subcatVBF+="1"; }
+//	  else                                                                        { tag_subcatVBF+="0"; }
+//	  tags_full.push_back(tag_cat+tag_subcatVBF);
+//	  if(tag_cat=="mumu" || tag_cat=="ee")                                        { tags_full.push_back(string("ll")+tag_subcatVBF); }
+//        }
 	if(passPreselection && zvv.pt()>30) mon.fillHisto("mtvar"+varNames[ivar],tags_full,mt,iweight);
 	
 	/*
