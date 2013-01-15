@@ -13,10 +13,16 @@ print 'querying database for source files'
 
 runOnMC = True
 
+datasetInfo = ('cmgtools_group', '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
+
 process.source = cms.Source(
     'PoolSource',
     fileNames = cms.untracked.vstring('file:patTuple.root')
     )
+
+
+###ProductionTaskHook$$$
+
 
 # drop all CMG objects from the input, to recreate them.
 # This is important if there was a change in AnalysisDataFormats after the patTuple was create.
@@ -107,7 +113,7 @@ process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
-
-process.GlobalTag.globaltag = getGlobalTag( runOnMC, False )
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTagByDataset
+process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
 print 'Global tag       : ', process.GlobalTag.globaltag
 
