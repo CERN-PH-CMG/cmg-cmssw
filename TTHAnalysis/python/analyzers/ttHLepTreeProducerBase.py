@@ -26,11 +26,14 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'nVert')
         
         ## --- LEPTONS ---
-        var( tr, 'nLepLoose', int)
         var( tr, 'nLepGood', int)
         for i in range(8):
-            #bookLepton(tr,"LepLoose%d"%(i+1))
             bookLepton(tr,"LepGood%d"%(i+1), isMC)
+        ## --- LOOSE LEPTONS (OPTIONAL) ---
+        if self.cfg_ana.doLooseLeptons:
+            var( tr, 'nLepLoose', int)
+            for i in range(8):
+                bookLepton(tr,"LepLoose%d"%(i+1))
         ## --- PHOTONS ---
         for i in range(8):            
             bookParticle(tr,"Photon%d"%(i+1))     
@@ -76,12 +79,15 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill( tr, 'nVert', len(event.goodVertices) )
 
         ## --- LEPTONS ---    
-        fill(tr, 'nLepLoose', len(event.looseLeptons))
-        #for i in range(min(8,len(event.looseLeptons))):
-        #    fillLepton( tr, "LepLoose%d"%(i+1), event.looseLeptons[i])
         fill(tr, 'nLepGood', len(event.selectedLeptons))
         for i in range(min(8,len(event.selectedLeptons))):
             fillLepton( tr, "LepGood%d"%(i+1), event.selectedLeptons[i])
+
+        ## --- LOOSE LEPTONS (OPTIONAL) ---
+        if self.cfg_ana.doLooseLeptons:
+            fill(tr, 'nLepLoose', len(event.looseLeptons))
+            for i in range(min(8,len(event.looseLeptons))):
+                fillLepton( tr, "LepLoose%d"%(i+1), event.looseLeptons[i])
 
         ## --- PHOTONS ---
         for i in range(min(8,len(event.allphotons))):

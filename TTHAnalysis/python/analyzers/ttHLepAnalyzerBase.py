@@ -1,6 +1,7 @@
 import operator 
 import itertools
 import copy
+import types
 
 from ROOT import TLorentzVector
 
@@ -14,17 +15,30 @@ from CMGTools.RootTools.physicsobjects.Electron import Electron
 from CMGTools.RootTools.physicsobjects.Muon import Muon
 from CMGTools.RootTools.physicsobjects.Jet import Jet
 
-from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
+from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
+from CMGTools.RootTools.physicsobjects.RochesterCorrections import rochcor
 
+from ROOT import CMGMuonCleanerBySegmentsAlgo, ElectronEnergyCalibrator, TRandom3
+cmgMuonCleanerBySegments = CMGMuonCleanerBySegmentsAlgo()
 
-        
+from CMGTools.TTHAnalysis.signedSip import *
+ 
 class ttHLepAnalyzerBase( Analyzer ):
 
     
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHLepAnalyzerBase,self).__init__(cfg_ana,cfg_comp,looperName)
 
-
+        if self.cfg_ana.doElectronScaleCorrections:
+            tag = "Summer12_DR53X_HCP2012" if cfg_comp.isMC else "Moriond2013";
+            self.electronEnergyCalibrator = ElectronEnergyCalibrator(
+                                                tag,   ## dataset  
+                                                True, # isAOD
+                                                cfg_comp.isMC, # isMC
+                                                True, # updateEnergyError,
+                                                999,  # applyCorrections (999 = correct and/or smear for SC-based energy estimation)
+                                                False, False, #verbose, sync
+                                                TRandom3(0)) # random number generator
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
     #----------------------------------------
@@ -54,7 +68,6 @@ class ttHLepAnalyzerBase( Analyzer ):
         super(ttHLepAnalyzerBase,self).beginLoop()
 
 
-
     #------------------
     # MAKE LEPTON LISTS
     #------------------
@@ -74,20 +87,65 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         #muons
         allmuons = map( Muon, self.handles['muons'].product() )
+
+        if self.cfg_ana.doRecomputeSIP3D:
+            for mu in allmuons:
+                if mu.sourcePtr().innerTrack().isNonnull():
+                    ## compute the variable and set it
+                    mu._sip3d = abs(signedSip3D(mu, event.goodVertices[0]))
+                    ## attach it to the object redefining the sip3D() method
+                    mu.sip3D  = types.MethodType(lambda self : self._sip3d, mu, mu.__class__)
+
+        if self.cfg_ana.doRochesterCorrections:
+            for mu in allmuons:
+                corp4 = rochcor.corrected_p4(mu, event.run) 
+                mu.setP4( corp4 )
+
+        if self.cfg_ana.doSegmentBasedMuonCleaning:
+            isgood = cmgMuonCleanerBySegments.clean( self.handles['muons'].product() )
+            newmu = []
+            for i,mu in enumerate(allmuons):
+                if isgood[i]: newmu.append(mu)
+            allmuons = newmu
+
         for mu in allmuons:
             mu.associatedVertex = event.goodVertices[0]
             if (mu.isGlobal() or mu.isTracker() and mu.numberOfMatches()>0) and mu.pt()>5 and abs(mu.eta())<2.4 and abs(mu.dxy())<0.5 and abs(mu.dz())<1.:
-                if mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.sip3D()<10 and mu.relIso(dBetaFactor=0.5)<0.4:
+                if mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.sip3D()<10 and mu.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
                     event.selectedLeptons.append(mu)
                 else:
                     event.looseLeptons.append(mu)
-                    
+
         #electrons        
         allelectrons = map( Electron, self.handles['electrons'].product() )
+
+        if self.cfg_ana.doRecomputeSIP3D:
+            for ele in allelectrons:
+                if ele.sourcePtr().gsfTrack().isNonnull():
+                    ## compute the variable and set it
+                    ele._sip3d = abs(signedSip3D(ele, event.goodVertices[0]))
+                    ## attach it to the object redefining the sip3D() method
+                    ele.sip3D  = types.MethodType(lambda self : self._sip3d, ele, ele.__class__)
+
+        if self.cfg_ana.doElectronScaleCorrections:
+            for ele in allelectrons:
+                ele.calibratedPatEle = ele.sourcePtr().get().clone()
+                self.electronEnergyCalibrator.correctLite(ele.calibratedPatEle, ele.calibratedPatEle.r9(), event.run)
+                ele.setP4(ele.calibratedPatEle.p4(ele.calibratedPatEle.P4_COMBINATION))
+
+        muForEleCrossCleaning = []
+        if self.cfg_ana.doEleMuCrossCleaning:
+            for mu in event.selectedLeptons + event.looseLeptons:
+                if abs(mu.pdgId()) == 13 and (mu.isGlobal() or mu.sourcePtr().userFloat("isPFMuon")>0.5):
+                    muForEleCrossCleaning.append(mu)
+
         for ele in allelectrons:
             ele.associatedVertex = event.goodVertices[0]
+            ## remove muons if muForEleCrossCleaning is not empty
+            if bestMatch(ele, muForEleCrossCleaning)[1] < 0.02: continue
+            ## apply selection
             if ele.pt()>7 and abs(ele.eta())<2.5 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and ele.numberOfHits()<=1:
-                 if ele.mvaIDZZ() and ele.sip3D()<10 and ele.relIso(dBetaFactor=0.5)<0.4:
+                 if ele.mvaIDZZ() and ele.sip3D()<10 and ele.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
                     event.selectedLeptons.append(ele)
                  else:
                     event.looseLeptons.append(ele)

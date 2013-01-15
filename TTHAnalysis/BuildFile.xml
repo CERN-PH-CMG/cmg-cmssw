@@ -2,8 +2,10 @@
 <use name="CommonTools/Utils"/>
 <use name="TrackingTools/IPTools"/>
 <use name="MagneticField/UniformEngine"/>
+<use name="EgammaAnalysis/ElectronTools"/>
 <use name="rootrflx"/>
 <use name="roottmva"/>
+<flags LDFLAGS="$(CMSSW_RELEASE_BASE)/lib/slc5_amd64_gcc462/pluginMagneticFieldParametrizedEnginePlugins.so" />
 <export>
   <lib   name="1"/>
 </export>
