@@ -13,13 +13,13 @@ process = cms.Process("PAT")
 print 'querying database for source files'
 
 
-runOnMC      = False
+runOnMC      = True
 runOnFastSim = False
 
 from CMGTools.Production.datasetToSource import *
 ## This is used to get the correct global tag below, and to find the files
 ## It is *reset* automatically by ProductionTasks, so you can use it after the ProductionTasksHook
-datasetInfo = ('CMS', '/MultiJet1Parked/Run2012C-part1_05Nov2012-v1/AOD','.*root')
+datasetInfo = ('cmgtools_group', '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
 process.source = datasetToSource(
     *datasetInfo
     )
