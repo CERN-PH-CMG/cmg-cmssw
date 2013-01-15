@@ -8,13 +8,13 @@ struct MagneticField;
 
 class SignedImpactParameter {
     public:
-        SignedImpactParameter(double bfield=3.8) ;
-        SignedImpactParameter(const SignedImpactParameter &other) ;
+        SignedImpactParameter() ;
         ~SignedImpactParameter() ;
 
         Measurement1D signedIP3D(const reco::Track &tk, const reco::Vertex &vtx, const reco::Track::Vector jetdir) const ;
     private:
-        MagneticField *bfield_;
+        //MagneticField *bfield_;
+        static MagneticField *paramField_;
 };
 
 

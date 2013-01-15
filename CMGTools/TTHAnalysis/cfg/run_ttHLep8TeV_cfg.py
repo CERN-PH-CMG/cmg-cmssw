@@ -61,8 +61,14 @@ ttHLepAna = cfg.Analyzer(
     muons='cmgMuonSel',
     electrons='cmgElectronSel',
     photons='cmgPhotonSel',
+    isolationCut=0.4,
     minGoodLeptons=2,
     doSSLeptons=False,
+    doRochesterCorrections=True,
+    doElectronScaleCorrections=True,
+    doRecomputeSIP3D=True,
+    doSegmentBasedMuonCleaning=True,
+    doEleMuCrossCleaning=True,
     )
 
 # Jets Analyzer 
@@ -90,7 +96,8 @@ ttHMCMatchAna = cfg.Analyzer(
 
 # Tree Producer
 treeProducer = cfg.Analyzer(
-    'ttHLepTreeProducerBase'
+    'ttHLepTreeProducerBase',
+    doLooseLeptons = False
     )
 
 
@@ -141,12 +148,12 @@ sequence = cfg.Sequence([
 #-------- HOW TO RUN
 
 # set test = 0 to run all jobs, in case you are using pybatch.py
-test = 0
+test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = TTH
-    comp.files = comp.files[:20]
+    comp.files = comp.files[:2]
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:    
@@ -157,14 +164,14 @@ elif test==2:
         comp.files = comp.files[:3]
 elif test==3:
     # test two components, using many threads, to check if variables are ok
-    #comp = TTH
-    #comp.files = comp.files[:20]
-    #comp.splitFactor = 2
-    #selectedComponents = [comp]
-    comp = DYJetsM50
-    comp.files = comp.files[:50]
+    comp = DoubleElectronC
+    comp.files = comp.files[:100]
     comp.splitFactor = 5
     selectedComponents = [comp]
+    #comp = DYJetsM50
+    #comp.files = comp.files[:50]
+    #comp.splitFactor = 5
+    #selectedComponents += [comp]
 
 # creation of the processing configuration.
 # we define here on which components to run, and

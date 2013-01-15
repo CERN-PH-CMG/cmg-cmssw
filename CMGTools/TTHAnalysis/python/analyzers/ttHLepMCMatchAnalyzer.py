@@ -42,7 +42,7 @@ class ttHLepMCMatchAnalyzer( Analyzer ):
         for i in xrange( particle.numberOfMothers() ): 
             mom  = particle.mother(i)
             momid = abs(mom.pdgId())
-            if momid / 1000 == 5 or momid / 100 == 5: 
+            if momid / 1000 == 5 or momid / 100 == 5 or momid == 5: 
                 return True
             elif mom.status() == 2 and self.isFromB(mom):
                 return True
