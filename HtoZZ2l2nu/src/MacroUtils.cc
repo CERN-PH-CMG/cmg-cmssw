@@ -194,8 +194,11 @@ double weightNarrowResonnance(std::string SampleName, double m_gen, double mass,
    }
 
    double weight_BW = TMath::BreitWigner(mass, m_gen, decay_width);
-   double toReturn = OverallXSectionScaleFactor * (weight_BW / hLineShapeNominal->Eval(mass));
+   double weight_CPS = hLineShapeNominal->Eval(mass);
+   double toReturn = OverallXSectionScaleFactor * (weight_BW / weight_CPS);
+//   printf("%E / %E = %E\n",weight_BW, hLineShapeNominal->Eval(mass), (weight_BW / hLineShapeNominal->Eval(mass)) );
    if(toReturn<0){toReturn=1.0;}
+   if(weight_CPS<=0)toReturn = 0.0;
    return toReturn;
 }
 
