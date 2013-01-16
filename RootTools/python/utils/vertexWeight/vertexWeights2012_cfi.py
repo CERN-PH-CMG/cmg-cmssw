@@ -54,3 +54,12 @@ vertexWeightSummer12MC53X2012ABCDData = cms.EDProducer(
     inputHistMC = cms.string( rootfile_dir + '/Pileup_Summer12MC53X.true.root'),
     inputHistData = cms.string( rootfile_dir + '/Pileup_2012ABCD.true.root' ),
     )
+
+vertexWeightSummer12MC53X2012BCDData = cms.EDProducer(
+    "PileUpWeightProducer",
+    verbose = cms.untracked.bool( False ),
+    src = cms.InputTag('addPileupInfo'),
+    type = cms.int32(2), # 1 = observed , 2= true 
+    inputHistMC = cms.string( rootfile_dir + '/Pileup_Summer12MC53X.true.root'),
+    inputHistData = cms.string( rootfile_dir + '/Pileup_2012BCD.true.root' ),
+    )

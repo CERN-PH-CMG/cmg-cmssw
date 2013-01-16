@@ -52,5 +52,6 @@ vertexWeightSequence = cms.Sequence(
     +vertexWeightSummer12MC53XHCPData
     +vertexWeightSummer12MC53X2012D6fbData
     +vertexWeightSummer12MC53X2012ABCDData
+    +vertexWeightSummer12MC53X2012BCDData
     
     )
