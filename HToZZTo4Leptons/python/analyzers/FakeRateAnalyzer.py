@@ -134,6 +134,9 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
         if len(event.leptonsForFakeRate) ==0:
             return False
 
+	# 16 Jan 2013: initialize minmass
+	minmass = False
+
         if deltaR(event.leptonsForFakeRate[0].eta(),event.leptonsForFakeRate[0].phi(), \
                   event.bestZForFakeRate.leg1.eta(),event.bestZForFakeRate.leg1.phi())>0.02 and \
                   deltaR(event.leptonsForFakeRate[0].eta(),event.leptonsForFakeRate[0].phi(), \
@@ -150,7 +153,10 @@ class FakeRateAnalyzer( MultiLeptonAnalyzerBase ):
             if not minmass:
                 event.leptonsForFakeRate=[]
         
-        
+	# 16 Jan 2013:
+        if not minmass:
+           return False
+
         return True
     
 
