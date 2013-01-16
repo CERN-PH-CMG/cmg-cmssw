@@ -45,6 +45,32 @@ TString getJetRegion(float eta)
   return reg;
 }
 
+TGraphAsymmErrors *getInterferenceShape(TGraph *cps,TGraph *cpsPint, TGraph *cpsPintUp,TGraph *cpsPintDown)
+{
+  if(cps==0) return 0;
+  TGraphAsymmErrors *gr=new TGraphAsymmErrors;
+  gr->SetName("intGr");
+  for(int ip=0; ip<cps->GetN(); ip++)
+    {
+      Double_t x(0),ycps(0),ycpsPint(0),ycpsPintUp(0),ycpsPintDown(0);
+      cps->GetPoint(ip,x,ycps);
+      if(cpsPint) cpsPint->GetPoint(ip,x,ycpsPint);
+      else       ycpsPint=ycps;
+      if(cpsPintUp)   cpsPintUp->GetPoint(ip,x,ycpsPintUp);
+      else           ycpsPintUp=ycps; 
+      if(cpsPintDown) cpsPintDown->GetPoint(ip,x,ycpsPintDown);
+      else           ycpsPintDown=ycps;
+
+      if(ycps>0)
+	{
+	  gr->SetPoint(ip,x,TMath::Max(ycpsPint-ycps,0.)/ycps);
+	  gr->SetPointError(ip,0,0,TMath::Max(ycpsPintDown-ycps,0.)/ycps,TMath::Max(ycpsPintUp-ycps,0.)/ycps);
+	}
+    }
+  gr->SaveAs("intgr.root");
+  return gr;
+}
+
 int main(int argc, char* argv[])
 {
   //##############################################
@@ -141,7 +167,8 @@ int main(int argc, char* argv[])
   TFile *fin;
   int cmEnergy(8);
   if(url.Contains("7TeV")) cmEnergy=7;
-  std::vector<TGraph *> hWeightsGrVec,hLineShapeGrVec;  TGraph* hLineShapeNominal;
+  std::vector<TGraph *> hWeightsGrVec,hLineShapeGrVec;  
+  TGraph* hLineShapeNominal=0, *hInterferenceNominal=0;
   if(isMC_GG){  
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,4);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
@@ -184,7 +211,10 @@ int main(int argc, char* argv[])
       wgts.push_back(buf+TString("cpsWgt"));
       lineShapeWeightsFileURL.ReplaceAll("LineShapeWeights","VBFLineShapeWeights");      
       fin=TFile::Open(lineShapeWeightsFileURL);     
-      if(fin){hLineShapeNominal = new TGraph((TH1 *)fin->Get(buf+TString("massCPS")));}
+      if(fin){
+	hLineShapeNominal = new TGraph((TH1 *)fin->Get(buf+TString("massCPS")));
+	hInterferenceNominal = getInterferenceShape(hLineShapeNominal,0,0,0);
+      }
     }
   else if(isMC_GG)
     {
@@ -194,8 +224,20 @@ int main(int argc, char* argv[])
       wgts.push_back(buf+TString("rwgtpint_down"));
       wgts.push_back(buf+TString("rwgt"));
       fin=TFile::Open(lineShapeWeightsFileURL);     
-      if(fin){hLineShapeNominal = (TGraph *)(fin->Get(buf+TString("rwgt_shape")))->Clone();}
+      if(fin){
+	hLineShapeNominal = (TGraph *)(fin->Get(buf+TString("rwgt_shape")));
+	if(hLineShapeNominal)
+	  {
+	    //do we really need to clone? should be persistent in memory after TFile::Close()
+	    hLineShapeNominal=(TGraph*)hLineShapeNominal->Clone();
+	    hInterferenceNominal = getInterferenceShape(hLineShapeNominal, 
+							(TGraph *)fin->Get(buf+TString("rwgtpint_shape")), 
+							(TGraph *)fin->Get(buf+TString("rwgtpint_up_shape")), 
+							(TGraph *)fin->Get(buf+TString("rwgtpint_down_shape")) ); 
+	  }
+      }      
     }
+  
   if(fin)
     {
       cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
