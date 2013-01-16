@@ -1,13 +1,14 @@
 import operator
 import copy
 import math
+from ROOT import Math as ROOTmath, reco
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Muon, Jet, GenParticle
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 from CMGTools.RootTools.utils.DeltaR import bestMatch, deltaR, deltaR2
-from CMGTools.Utilities.mvaMET.mvaMet import MVAMet
+from CMGTools.Utilities.mvaMET.mvaMet import MVAMet, PFMET
 
 class WAnalyzer( Analyzer ):
 
@@ -74,8 +75,10 @@ class WAnalyzer( Analyzer ):
         event.muons = self.buildLeptons( self.handles['muons'].product(), event )
         # access jets
         event.jets = self.buildJets( self.handles['jets'].product(), event )
+        event.jetLead = self.buildJets( self.handles['jetLead'].product(), event )
         # access MET
         event.pfmet = self.handles['pfmet'].product()[0]
+        event.mvamet = 0
         event.tkmet = self.handles['tkmet'].product()[0]
         event.nopumet = self.handles['nopumet'].product()[0]
         event.pumet = self.handles['pumet'].product()[0]
@@ -145,9 +148,10 @@ class WAnalyzer( Analyzer ):
         # store event number of muons, MET and jets in all gen events (necessary to make cuts in genp studies...)
         # total number of reco muons
         event.nMuons=len(event.selMuons)
-        # clean jets by removing muons
-        event.selJets = [ jet for jet in event.allJets if not \
-                                (bestMatch( jet , event.selMuons ))[1] <0.5
+                
+        event.selJets = [ jet for jet in event.allJets \
+                                if jet.looseJetId() 
+                                and not (bestMatch( jet , event.selMuons ))[1] <0.5
                         ]
 
         # reco events must have good reco vertex and trigger fired...
@@ -193,9 +197,8 @@ class WAnalyzer( Analyzer ):
         else:
             if fillCounter: self.counters.counter('WAna').inc('W non trg leading lepton pT < 10 GeV')
 
-
         # print 'START OF selectionSequence FOR SELECTED EVENTS'
-        
+                
         # if the genp are saved, compute dR between gen and reco muon 
         if event.savegenpW :
           event.muGenDeltaRgenP = deltaR( event.selMuons[0].eta(), event.selMuons[0].phi(), event.genMu[0].eta(), event.genMu[0].phi() ) 
@@ -207,9 +210,10 @@ class WAnalyzer( Analyzer ):
         event.selMuonIsTightAndIso = self.testLeg( event.selMuons[0] ) 
         event.selMuonIsTight = self.testLegID( event.selMuons[0] ) 
           
-        # Initialize MVAMet and retrieve it
-
-        # mvaMETTauMu = cms.EDProducer(
+        # START RETRIEVING MVAMET
+        
+        # INPUT DEFINITIONS AS OF HTT
+                # mvaMETTauMu = cms.EDProducer(
                   # "MVAMETProducerTauMu",
                   # pfmetSrc = cms.InputTag('pfMetForRegression'),
                   # tkmetSrc = cms.InputTag('tkMet'),
@@ -232,34 +236,75 @@ class WAnalyzer( Analyzer ):
                   # #COLIN: make delta R a parameter
                   # )
 
-        iLeadJet = 0
-        i2ndJet = 0
-        if(len(event.selJets)>0): iLeadJet = event.selJets[0].p4()
-        # if(len(event.selJets)>0): i2ndJet = event.selJets[0].p4()
-        if(len(event.selJets)>1): i2ndJet = event.selJets[1].p4()
-        # print 'iLeadJet= ',iLeadJet, ' i2ndJet=',i2ndJet 
-        # self.mvamet.addVisObject(event.selMuons[0].p4())
-        visObjectP4s_array = [event.selMuons[0].p4()]
+        event.NJetsGt30 = 0 # Number of jets above 30 Gev in cmgPFJetSel after cleaning
+        event.nJetsPtGt1Clean = event.nJetsPtGt1H # Number of jets above 1 Gev in cmgPFJetSel after cleaning
+
+        for jet in event.allJets:
+            if jet.pt>=1:
+                if deltaR(jet.eta(),jet.phi(),event.selMuons[0].eta(),event.selMuons[0].phi())<0.5 : 
+                    event.nJetsPtGt1Clean = event.nJetsPtGt1Clean - 1
+                else:
+                    if jet.pt>=30:
+                        event.NJetsGt30 = event.NJetsGt30 + 1
+        
+        if(event.nJetsPtGt1Clean < 0): event.nJetsPtGt1Clean = 0
+          
+        # Clean various METs (but PUMET)
+        
+        dummyVertex = ROOTmath.XYZPointD()
+        
+        cleanpfmetp4 = event.pfMetForRegression.p4() + event.selMuons[0].p4()
+        cleanpfmetsumet = event.pfMetForRegression.sumEt() - event.selMuons[0].pt()
+        event.cleanpfmet = PFMET(event.pfMetForRegression.getSpecific(),cleanpfmetsumet,cleanpfmetp4,dummyVertex)
+        
+        cleanpucmetp4 = event.pucmet.p4() + event.selMuons[0].p4()
+        cleanpucmetsumet = event.pucmet.sumEt() - event.selMuons[0].pt()
+        event.cleanpucmet = PFMET(event.pucmet.getSpecific(),cleanpucmetsumet,cleanpucmetp4,dummyVertex)
+        
+        cleantkmetp4 = event.tkmet.p4() + event.selMuons[0].p4()
+        cleantkmetsumet = event.tkmet.sumEt() - event.selMuons[0].pt()
+        event.cleantkmet = PFMET(event.tkmet.getSpecific(),cleantkmetsumet,cleantkmetp4,dummyVertex)
+        
+        cleannopumetp4 = event.nopumet.p4() + event.selMuons[0].p4()
+        cleannopumetsumet = event.nopumet.sumEt() - event.selMuons[0].pt()
+        event.cleannopumet = PFMET(event.nopumet.getSpecific(),cleannopumetsumet,cleannopumetp4,dummyVertex)
+
+        iLeadJet = 0 # Leading jet (if any) from cmgPFBaseJetLead after cleaning
+        i2ndJet = 0 # Second leading jet (if any) from cmgPFBaseJetLead collection after cleaning
+        
+        event.jetLeadClean = [jet for jet in event.jetLead if \
+                                          deltaR(jet.eta(),jet.phi(),event.selMuons[0].eta(),event.selMuons[0].phi())<0.5 ]
+                        
+        if(len(event.jetLeadClean)>0): iLeadJet = event.jetLeadClean[0].p4()
+        if(len(event.jetLeadClean)>1): i2ndJet = event.jetLeadClean[1].p4()
+
+        visObjectP4s_array = [event.selMuons[0].p4()] # Visual part of the signal (single muon for the W, dimuon for the Z)
+        
+        # iJets struct from cmgPFJetSel without cleaning (if will be done afterwards)
         iJets_p4 = []
         iJets_mva = []
         iJets_neutFrac = []
-        for jet in event.selJets:
-            iJets_p4.append(jet.p4())
-            iJets_mva.append(float(0))
-            iJets_neutFrac.append(float(0.5))
-            
+        for jet in event.allJets:
+            if jet.looseJetId():
+                iJets_p4.append(jet.p4())
+                iJets_mva.append(jet.puMva('philv1'))
+                neutFrac=1
+                # DOES THIS HOLD ALSO IN 44X ???
+                if(math.fabs(jet.eta())<2.5): 
+                    neutFrac = jet.component(reco.PFCandidate.gamma).fraction() + jet.component(reco.PFCandidate.h0).fraction() + jet.component(reco.PFCandidate.egamma_HF).fraction()
+                iJets_neutFrac.append( neutFrac )
+                
         self.mvamet.getMet(
-                           # event.pfmet, #iPFMet,
-                           event.pfMetForRegression, #iPFMet,
-                           event.tkmet, #iTKMet,
-                           event.nopumet, #iNoPUMet,
+                           event.cleanpfmet, #iPFMet,
+                           event.cleantkmet, #iTKMet,
+                           event.cleannopumet, #iNoPUMet,
                            event.pumet, #iPUMet,
-                           event.pucmet, #iPUCMet,
-                           iLeadJet, #event.selJets[0], #iLeadJet,
-                           i2ndJet, #event.selJets[1], #i2ndJet,
-                           len(event.selJets), #iNJetsGt30,
-                           len(event.allJets), #iNJetsGt1,
-                           len(self.handles['vertices'].product()), #iNGoodVtx,
+                           event.cleanpucmet, #iPUCMet,
+                           iLeadJet, #iLeadJet,
+                           i2ndJet,  #i2ndJet,
+                           event.NJetsGt30, #iNJetsGt30,
+                           event.nJetsPtGt1Clean, #iNJetsGt1,
+                           len(event.goodVertices), #iNGoodVtx,
                            iJets_p4, #iJets,
                            iJets_mva, #iJets,
                            iJets_neutFrac, #iJets,
@@ -267,13 +312,13 @@ class WAnalyzer( Analyzer ):
                            visObjectP4s_array #visObjectP4s
                           )
                           
-        GetMet_first = self.mvamet.GetMet_first();
-        GetMet_second = self.mvamet.GetMet_second();
+        event.mvamet = self.mvamet.GetMet_first();
+        event.GetMVAMet_second = self.mvamet.GetMet_second();
         
         # print 'AFTER MVAmet_test'
         # print 'event.pfmet.pt() ', event.pfmet.pt()
-        # print 'GetMet_first ',GetMet_first,' GetMet_first.Pt() ',GetMet_first.Pt()
-        # print 'GetMet_second ',GetMet_second,' GetMet_second.significance() ',GetMet_second.significance().Print()
+        # print 'event.mvamet ',event.mvamet,' event.mvamet.Pt() ',event.mvamet.Pt()
+        # print 'event.GetMVAMet_second ',event.GetMVAMet_second,' event.GetMVAMet_second.significance() ',event.GetMVAMet_second.significance().Print()
         
         # define a W from lepton and MET
         event.W4V = event.selMuons[0].p4() + event.pfmet.p4()

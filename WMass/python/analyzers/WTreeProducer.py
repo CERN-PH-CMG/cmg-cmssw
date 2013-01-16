@@ -63,25 +63,25 @@ class WTreeProducer( TreeAnalyzerNumpy ):
     def declareHandles(self):
       super(WTreeProducer, self).declareHandles()
     
-      self.handles['pfmet'] = AutoHandle(
-        'cmgPFMET',
-        'std::vector<cmg::BaseMET>' 
-        )
-      self.handles['muons'] = AutoHandle(
-            'cmgMuonSel',
-            'std::vector<cmg::Muon>'
-            )
-      self.handles['electrons'] = AutoHandle(
-            'cmgElectronSel',
-            'std::vector<cmg::Electron>'
-            )
-      self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
-            'std::vector<reco::GenParticle>' )
+      # self.handles['pfmet'] = AutoHandle(
+        # 'cmgPFMET',
+        # 'std::vector<cmg::BaseMET>' 
+        # )
+      # self.handles['muons'] = AutoHandle(
+            # 'cmgMuonSel',
+            # 'std::vector<cmg::Muon>'
+            # )
+      # self.handles['electrons'] = AutoHandle(
+            # 'cmgElectronSel',
+            # 'std::vector<cmg::Electron>'
+            # )
+      # self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
+            # 'std::vector<reco::GenParticle>' )
     
-      self.handles['vertices'] =  AutoHandle(
-          'offlinePrimaryVertices',
-          'std::vector<reco::Vertex>'
-          )
+      # self.handles['vertices'] =  AutoHandle(
+          # 'offlinePrimaryVertices',
+          # 'std::vector<reco::Vertex>'
+          # )
       self.mchandles['pusi'] =  AutoHandle(
           'addPileupInfo',
           'std::vector<PileupSummaryInfo>' 
@@ -114,6 +114,8 @@ class WTreeProducer( TreeAnalyzerNumpy ):
       var( tr, 'noTrgMuonsLeadingPt', int)
 
       bookMET( tr, 'pfmet')
+      var( tr, 'MVAmet')
+      var( tr, 'MVAmet_phi')
       
       bookW( tr, 'W')
       var( tr, 'W_mt')
@@ -167,12 +169,15 @@ class WTreeProducer( TreeAnalyzerNumpy ):
           fill(tr, 'MuIsTight', event.selMuonIsTight)
           fill(tr, 'MuRelIso', event.selMuons[0].relIso(0.5))
 
+          fill(tr, 'MVAmet', event.mvamet.pt())
+          fill(tr, 'MVAmet_phi', event.mvamet.phi())
           
         if (event.savegenpW and self.cfg_comp.isMC) or event.WGoodEvent:
           fill( tr, 'run', event.run) 
           fill( tr, 'lumi',event.lumi)
           fill( tr, 'evt', event.eventId)
-          fill( tr, 'nvtx', len(self.handles['vertices'].product()))          
+          # fill( tr, 'nvtx', len(self.handles['vertices'].product()))          
+          fill( tr, 'nvtx', len(event.goodVertices))          
           if (self.cfg_comp.isMC) :
             event.pileUpInfo = map( PileUpSummaryInfo,
                                     self.mchandles['pusi'].product() )
