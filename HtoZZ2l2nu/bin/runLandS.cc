@@ -339,7 +339,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
             for(int x=0;x<=hshape->GetXaxis()->GetNbins()+1;x++){
                if(hshape->GetXaxis()->GetBinCenter(x)<=minCut || hshape->GetXaxis()->GetBinCenter(x)>=maxCut){ hshape->SetBinContent(x,0); hshape->SetBinError(x,0); }
             }
-            hshape->Rebin(2);
+            hshape->Rebin(8);
             hshape->GetYaxis()->SetTitle("Entries (/25GeV)");
          }
 
@@ -466,6 +466,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   for(size_t b=0; b<AnalysisBins.size(); b++){
       TVirtualPad* pad = t1->cd(1+s*AnalysisBins.size()+b);
       pad->SetTopMargin(0.06); pad->SetRightMargin(0.03); pad->SetBottomMargin(0.07);  pad->SetLeftMargin(0.06);
+      pad->SetLogy(true);   
 
      TH1* allbkg=NULL;
      std::map<TString, TH1*> mapbkg;
@@ -563,9 +564,9 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
       axis->Reset();      
       axis->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
       axis->GetYaxis()->SetTitle(b==0?mc->GetYaxis()->GetTitle():"");
-      axis->SetMinimum(mc->GetMinimum());
+      axis->SetMinimum(1E-2);//mc->GetMinimum());
       axis->SetMaximum(1.1*std::max(mcErorMax, alldata->GetMaximum()));
-      axis->GetXaxis()->SetRangeUser(150,700);//
+//      axis->GetXaxis()->SetRangeUser(150,700);//
       axis->Draw();
       stack->Draw("same");
       
@@ -585,7 +586,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 
 
   if(alldata){
-      alldata->Draw("E1 same");
+//      alldata->Draw("E1 same");
       if(s==0 && b==0)legA->AddEntry(alldata,alldata->GetTitle(),"P");
   }
 
@@ -637,8 +638,8 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   c1->cd();
   TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
   T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
-  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV, #scale[0.5]{#int} L=10.0  fb^{-1}");
-  }else{                         T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV, #scale[0.5]{#int} L=5.0  fb^{-1}");
+  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV, #scale[0.5]{#int}");// L=10.0  fb^{-1}");
+  }else{                         T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV, #scale[0.5]{#int}");// L=5.0  fb^{-1}");
   }T->Draw();
   c1->Update();
   c1->SaveAs(SaveName+"_Shape.png");
@@ -1237,8 +1238,12 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
   //replace WZ by its estimate from 3rd Lepton SB
   if(subWZ)doWZSubtraction(selCh,"emu",allShapes,histo,histo+"_3rdLepton");
 
+std::cout << "TESTA\n";
+  for(size_t ich=0; ich<selCh.size(); ich++)std::cout << "TEST" << selCh[ich] << std::endl;
+   
   //replace Z+Jet background by Gamma+Jet estimates
   if(subDY)doDYReplacement(selCh,"gamma",allShapes,histo,"met_met");
+std::cout << "TESTB\n";
 
   //replace data by total MC background
   if(blindData)BlindData(selCh,allShapes,histo, blindWithSignal);
@@ -1747,6 +1752,8 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 
 
 void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString metHistoForRescale){
+std::cout << "DY CHECK0\n";
+
   TString DYProcName = "Z#rightarrow ll";
   TString GammaJetProcName = "Instr. background (data)";
   std::map<TString, double> LowMetIntegral;
@@ -1763,22 +1770,31 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
      fprintf(pFile,"%s\\\\\\hline\n", Cname.c_str());
   }
 
+std::cout << "DY CHECK1\n";
+
+  TFile* inF = NULL;
+  TDirectory *pdir = NULL;
+  //Just to redo what we did for the HIGHMASS paper
+  //#################################################
   //open input file
-  TFile* inF = TFile::Open(inFileUrl);
-  if( !inF || inF->IsZombie() ){ cout << "Invalid file name : " << inFileUrl << endl; return; }
+//  inF = TFile::Open(inFileUrl);
+//  if( !inF || inF->IsZombie() ){ cout << "Invalid file name : " << inFileUrl << endl; return; }
 
-  TDirectory *pdir = (TDirectory *)inF->Get(DYProcName);        
-  if(!pdir){ printf("Skip Z+Jet estimation because %s directory is missing in root file\n", DYProcName.Data()); return;}
+//  pdir = (TDirectory *)inF->Get(DYProcName);        
+//  if(!pdir){ printf("Skip Z+Jet estimation because %s directory is missing in root file\n", DYProcName.Data()); return;}
 
-  //Just to redo what we did for the HIGHMASS pape
-  for(size_t i=0;i<selCh.size();i++){
-  for(size_t b=0; b<AnalysisBins.size(); b++){
-     TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);
-     LowMetIntegral[selCh[i]+AnalysisBins[b]] = met->Integral(1,met->GetXaxis()->FindBin(50));
-  }}
+//  for(size_t i=0;i<selCh.size();i++){
+//  for(size_t b=0; b<AnalysisBins.size(); b++){
+//     TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);
+//     LowMetIntegral[selCh[i]+AnalysisBins[b]] = met->Integral(1,met->GetXaxis()->FindBin(50));
+//  }}
 
   //all done with input file
-  inF->Close();
+//  inF->Close();
+  //#################################################
+
+
+std::cout << "DY CHECK2\n";
 
 
   //open gamma+jet file
@@ -1788,7 +1804,11 @@ void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
   pdir = (TDirectory *)inF->Get(GammaJetProcName);
   if(!pdir){ printf("Skip Z+Jet estimation because %s directory is missing in Gamma+Jet file\n", GammaJetProcName.Data()); return;}
 
+std::cout << "DY CHECK3\n";
+
   for(size_t i=0;i<selCh.size();i++){
+std::cout << "DY CHECK3 " << selCh[i] << std::endl;
+
   for(size_t b=0; b<AnalysisBins.size(); b++){ 
      Cval   = selCh[i]+string(" - ")+AnalysisBins[b];
      Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
@@ -1802,11 +1822,11 @@ std::cout<<"DYTEST1  " << selCh[i]+string(" - ")+AnalysisBins[b] << "  \n";
 
            double rescaleFactor = 1.0;
 
-           //compute rescale factor using low MET events
-           TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);           
-           double integral = met->Integral(1,met->GetXaxis()->FindBin(50));
-           rescaleFactor = LowMetIntegral[selCh[i]+AnalysisBins[b]] / integral; //Just to redo what we did for the HIGHMASS paper
-           printf("Rescale in %s = %f/%f = %f\n",  (selCh[i]+AnalysisBins[b]).Data(), LowMetIntegral[selCh[i]+AnalysisBins[b]], integral, rescaleFactor);         
+//           //compute rescale factor using low MET events
+//           TH1* met = (TH1*)pdir->Get(selCh[i]+AnalysisBins[b]+"_"+metHistoForRescale);           
+//           double integral = met->Integral(1,met->GetXaxis()->FindBin(50));
+//           rescaleFactor = LowMetIntegral[selCh[i]+AnalysisBins[b]] / integral; //Just to redo what we did for the HIGHMASS paper
+//           printf("Rescale in %s = %f/%f = %f\n",  (selCh[i]+AnalysisBins[b]).Data(), LowMetIntegral[selCh[i]+AnalysisBins[b]], integral, rescaleFactor);         
 
            char buffer[255]; sprintf(buffer,"%6.3f",rescaleFactor);
            Cval   += string(" &") + buffer;
@@ -1837,7 +1857,7 @@ std::cout<<"DYTEST2c\n";
            for(int x=0;x<=gjets1Dshape->GetXaxis()->GetNbins()+1;x++){
               if(gjets1Dshape->GetXaxis()->GetBinCenter(x)<=cutMin || gjets1Dshape->GetXaxis()->GetBinCenter(x)>=cutMax){gjets1Dshape->SetBinContent(x,0); gjets1Dshape->SetBinError(x,0);}
            }
-           gjets1Dshape->Rebin(2);
+           gjets1Dshape->Rebin(8);
 
 
 std::cout<<"DYTEST3\n";
