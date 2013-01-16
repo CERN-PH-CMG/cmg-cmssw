@@ -48,6 +48,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'nBJetMedium30', int )
         ## --- MET, HT, MHT ---
         var( tr, 'met' )
+        var( tr, 'met_phi' )
         var( tr, 'metSignificance' )
         var( tr, 'projMetAll1S' )
         var( tr, 'projMetAll2S' )
@@ -66,6 +67,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'minMllAFAS' )
 
         if self.cfg_comp.isMC: 
+            var( tr, 'puWeight' )
             self.declareMCVariables()
 
     def process(self, iEvent, event):
@@ -108,6 +110,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
 
         ## --- MET ---
         fill( tr, 'met', event.met.pt() )
+        fill( tr, 'met_phi', event.met.phi() )
         fill( tr, 'metSignificance', event.metSignificance )
         fill( tr, 'projMetAll1S', event.projMetAll1S )
         fill( tr, 'projMetAll2S', event.projMetAll2S )
@@ -128,6 +131,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill( tr, 'minMllAFAS', event.minMllAFAS )
          
         if self.cfg_comp.isMC: 
+            fill( tr, 'puWeight', event.eventWeight )
             self.fillMCVariables(iEvent, event)
               
         self.tree.tree.Fill()      
