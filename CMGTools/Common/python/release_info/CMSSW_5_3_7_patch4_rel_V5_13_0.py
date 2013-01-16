@@ -1,6 +1,6 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_cleanup_12Dec12'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_GT_15Jan13'),
-  ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-10'),
+  ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-03-03'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_19Dec12'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'wreece_140113'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_15Jan13'),
