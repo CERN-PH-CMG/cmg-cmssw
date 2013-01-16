@@ -680,6 +680,12 @@ class MonitorJobs(Task):
                                 result[j] = '%s.gz' % stdout
                             else:
                                 result[j] = 'NOSTDOUT'
+                        
+                            #also compress the stderr, although this is mostly empty
+                            stderr = os.path.join(j,'LSFJOB_%s' % id,'STDERR')
+                            if os.path.exists(stderr):
+                                #compress this file
+                                actions['FilesToCompress']['Files'].append(stderr)
                                 
             compress = GZipFiles(self.dataset,self.user,self.options)
             compress.run(actions)
