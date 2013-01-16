@@ -5,7 +5,7 @@ from CMGTools.External.JetIdParams_cfi import *
 full_53x = cms.PSet(
  impactParTkThreshold = cms.double(1.) ,
  cutBased = cms.bool(False),
- tmvaWeights = cms.string("RecoJets/JetProducers/data/TMVAClassificationCategory_JetID_53X_Dec2012.weights.xml"),
+ tmvaWeights = cms.string("CMGTools/External/data/TMVAClassificationCategory_JetID_53X_Dec2012.weights.xml"),
  tmvaMethod  = cms.string("JetIDMVAHighPt"),
  version = cms.int32(-1),
  tmvaVariables = cms.vstring(
@@ -29,13 +29,13 @@ full_53x = cms.PSet(
     "jetPhi"
     ),
  JetIdParams = full_53x_wp,
- label = cms.string("full_53x")
+ label = cms.string("full53x")
  )
 ####################################################################################################################  
 met_53x = cms.PSet(
  impactParTkThreshold = cms.double(1.) ,
  cutBased = cms.bool(False),
- tmvaWeights = cms.string("RecoJets/JetProducers/data/TMVAClassificationCategory_JetID_MET_53X_Dec2012.weights.xml"),
+ tmvaWeights = cms.string("CMGTools/External/data/TMVAClassificationCategory_JetID_MET_53X_Dec2012.weights.xml"),
  tmvaMethod  = cms.string("JetIDMVAMET"),
  version = cms.int32(-1),
  tmvaVariables = cms.vstring(
@@ -58,7 +58,7 @@ met_53x = cms.PSet(
     ),
  tmvaSpectators = cms.vstring(),
  JetIdParams = met_53x_wp,
- label = cms.string("met_53x")
+ label = cms.string("met53x")
  )
 ####################################################################################################################  
 full_5x = cms.PSet(
