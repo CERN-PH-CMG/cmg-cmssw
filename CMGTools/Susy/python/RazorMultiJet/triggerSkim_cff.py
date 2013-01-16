@@ -32,7 +32,9 @@ razorMJHadBTriggerSel = cmgTriggerObjectSel.clone(
 razorMJMuTriggerSel = cmgTriggerObjectSel.clone(
                                             src = 'cmgTriggerObjectSel',
                                             cut = 'getSelectionRegExp("^HLT_Mu[0-9]+_eta2p1_v[0-9]+$") ||'\
-                                                '  getSelectionRegExp("^HLT_IsoMu[0-9]+_eta2p1_v[0-9]+$")')
+                                                  'getSelectionRegExp("^HLT_Mu[0-9]+_v[0-9]+$") ||'\
+                                                  'getSelectionRegExp("^HLT_IsoMu[0-9]+_v[0-9]+$") ||'\
+                                                  'getSelectionRegExp("^HLT_IsoMu[0-9]+_eta2p1_v[0-9]+$")')
 razorMJMuTriggerCount = cmgCandCount.clone( src = 'razorMJMuTriggerSel', minNumber = 1 )
 
 #Multijet triggers from the SingleElectron PD
