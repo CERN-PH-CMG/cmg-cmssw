@@ -11,11 +11,11 @@ from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 shapeBased='1'
 shapeName='mt_shapes'
 useBins='eq0jets,geq1jets,vbf'
-inUrl='/afs/cern.ch/user/p/psilva/public/HtoZZ/Council_chs/plotter.root'
-gammaUrl='/afs/cern.ch/user/p/psilva/public/HtoZZ/Council_chs/gamma_half_2012_12fb_chs.root'
+inUrl='/afs/cern.ch/user/p/psilva/public/HtoZZ/Moriond/plotter2012.root'
+gammaUrl='/afs/cern.ch/user/p/psilva/public/HtoZZ/Moriond/gamma_out.root'
 CWD=os.getcwd()
 phase=-1
-jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012_rereco.json'
+jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
 LandSArg=' --indexvbf 9 '
 LandSArg+='--subNRB --systpostfix _8TeV --interf'

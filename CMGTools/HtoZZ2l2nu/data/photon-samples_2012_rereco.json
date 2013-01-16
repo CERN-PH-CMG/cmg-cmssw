@@ -66,6 +66,31 @@
                 {
 	         "dtag":"Data8TeV_SingleMu2012C_v2",
                  "split":2
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012C_ecal_v2"
+                 },
+                {
+	         "dtag":"Data8TeV_DoubleMu2012C_ecal_v2"
+                },
+                {
+	         "dtag":"Data8TeV_SingleMu2012C_ecal_v2"
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012D",
+                 "split":5
+                },
+                {
+	         "dtag":"Data8TeV_DoubleMu2012D",
+                 "split":5
+                },
+                {
+	         "dtag":"Data8TeV_SingleMu2012D",
+                 "split":5
+                },
+                {
+                 "dtag":"Data8TeV_MuEG2012D",
+                 "split":5
                 }
 	    ]
 	},	
@@ -285,6 +310,10 @@
                   "split":2
                 },
                 {
+	         "dtag":"Data8TeV_Photon2012D",
+                 "split":5
+                },
+                {
  	          "dtag":"Data8TeV_DoubleElectron2012B",
                   "split":2
                 },
@@ -295,6 +324,13 @@
                 {
 	          "dtag":"Data8TeV_DoubleElectron2012C_v2",
                   "split":4
+                },
+                {
+	          "dtag":"Data8TeV_DoubleElectron2012C_ecal_v2"
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012D",
+                 "split":5
                 }
 	   ]
 	}

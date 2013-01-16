@@ -147,6 +147,9 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
   TCanvas *mcwc=new TCanvas("mcwc","mcwc",ncategs*400,400);
   mcwc->Divide(ncategs,1);
 
+  TString llDir("data");
+  if(url==gUrl) llDir="data (ll)";
+
   for(size_t icat=0; icat<ncategs; icat++)
     {
       //get histos from file
@@ -154,7 +157,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
       TFile *gIn=TFile::Open(gUrl);
 
       //mass distributions
-      TH1F *eemass=(TH1F *) fIn->Get("data/ee_zmass");      
+      TH1F *eemass=(TH1F *) fIn->Get(llDir+"/ee_zmass");      
       if(mode!=ZZ && eemass){
 	eemass->SetName("ee"+categs[icat]+"_zmass");
 	eemass->SetDirectory(0);
@@ -162,7 +165,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
       }
 
       //mass distributions
-      TH1F *mmmass=(TH1F *) fIn->Get("data/mumu_zmass");      
+      TH1F *mmmass=(TH1F *) fIn->Get(llDir+"/mumu_zmass");      
       if(mode!=ZZ && mmmass){
 	mmmass->SetName("mumu"+categs[icat]+"_zmass");
 	mmmass->SetDirectory(0);
@@ -170,8 +173,8 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
       }
 
       //qt distributions
-      TH1F *mmqt = (TH1F *)fIn->Get("data/mumu"+categs[icat]+"_qt");    
-      TH1F *eeqt = (TH1F *)fIn->Get("data/ee"+categs[icat]+"_qt");  
+      TH1F *mmqt = (TH1F *)fIn->Get(llDir+"/mumu"+categs[icat]+"_qt");    
+      TH1F *eeqt = (TH1F *)fIn->Get(llDir+"/ee"+categs[icat]+"_qt");  
       TH1F *gqt  = (TH1F *)gIn->Get("data (#gamma)/mumu"+categs[icat]+"_qt");
       if(mmqt && eeqt && gqt)
 	{
@@ -243,7 +246,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 		thr.push_back(170); 
 		if(!categs[icat].Contains("eq0jets"))
 		  {
-		    //thr.push_back(250); 
+		    //  thr.push_back(250); 
 		    thr.push_back(300); 
 		  }
 	      }
@@ -267,9 +270,9 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	    thr.push_back(90); 
 	    thr.push_back(150);
 	    thr.push_back(170);
-	    if(!categs[icat].Contains("eq0jets") /*&& !categs[icat].Contains("vbf")*/)
+	    if(!categs[icat].Contains("eq0jets") && !categs[icat].Contains("eq2jets") )
 	      {
-		if(categs[icat].Contains("eq1jets"))  thr.push_back(250); 
+		//if(categs[icat].Contains("eq1jets"))  thr.push_back(250); 
 		thr.push_back(300); 
 	      }
 	  }

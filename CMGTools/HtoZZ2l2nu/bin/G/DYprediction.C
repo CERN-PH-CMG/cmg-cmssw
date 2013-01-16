@@ -189,8 +189,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //gammaFile="~/work/htozz/53x_rereco/gamma/2012_chs/qt/plotter.root";
       //llFile="~/work/htozz/53x_rereco/ll/2012_chs/plotter.root";
 
-      gammaFile="~/work/htozz/53x_rereco/gamma/2012_chsnomindphisoftjet/qt/plotter.root";
-      llFile="~/work/htozz/53x_rereco/ll/2012_chsnomindphisoftjet/plotter.root";
+      //      gammaFile="~/work/htozz/53x_rereco/gamma/2012_chsnomindphisoftjet/qt/plotter.root";
+      //  llFile="~/work/htozz/53x_rereco/ll/2012_chsnomindphisoftjet/plotter.root";
+
+      gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
+      llFile="~/work/htozz/53x_rereco/ll/2012/plotter.root";
 
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
@@ -209,7 +212,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
      
       histos.push_back("met_metNM1");
       histos.push_back("met_met");
-      //      histos.push_back("met_met_blind");                
+      histos.push_back("met_met_blind");                
 
       //histos.push_back("met_redMetNM1");
       //histos.push_back("met_redMet");
@@ -217,23 +220,23 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 
       histos.push_back("mtNM1");     
       histos.push_back("mt");     
-      // histos.push_back("mt_blind");     
+      histos.push_back("mt_blind");     
       
 //       histos.push_back("pfvbfcandjeteta");
 //       histos.push_back("pfvbfcandjetpt");
-//       histos.push_back("pfvbfcandjetdeta");
-//       histos.push_back("pfvbfmjj");
-//       histos.push_back("pfvbfpremjj");
+       histos.push_back("pfvbfcandjetdeta");
+       histos.push_back("pfvbfmjj");
+       histos.push_back("pfvbfpremjj");
 //       histos.push_back("pfvbfcjv");
       
       
-//       histos.push_back("mindphijmet_0");            
-//       histos.push_back("mindphijmet_25");           
-//       histos.push_back("mindphijmet_50");           
-//       histos.push_back("mindphijmet");                     
-//       histos.push_back("mindphijmetNM1");                     
-//       histos.push_back("mt_shapes");              
-//       histos.push_back("mt_redMet_shapes");       
+//      histos.push_back("mindphijmet_0");            
+      //     histos.push_back("mindphijmet_25");           
+      //   histos.push_back("mindphijmet_50");           
+      histos.push_back("mindphijmet");                     
+      //      histos.push_back("mindphijmetNM1");                     
+      histos.push_back("mt_shapes");              
+      //       histos.push_back("mt_redMet_shapes");       
       
       dilSignal.push_back("ggH(600)#rightarrow ZZ");
       dilSignal.push_back("qqH(600)#rightarrow ZZ");
@@ -256,9 +259,9 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       gcats.push_back("eq2jets");
       gcats.push_back("geq3jets");
       gcats.push_back("vbf");
-      gcats.push_back("vbf0");
-      gcats.push_back("vbf1");
-      gcats.push_back("vbf2");
+      //      gcats.push_back("vbf0");
+      // gcats.push_back("vbf1");
+      // gcats.push_back("vbf2");
       gcats.push_back("");
 
       //   string histos[] = {//"met_met",
@@ -800,7 +803,8 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   if(is2011)
     sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5051./1000);
   else
-    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 16698./1000);
+    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 19577./1000);
+  //    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 16698./1000);
   //sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 12196./1000);
   //    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 10200./1000);
   //sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
