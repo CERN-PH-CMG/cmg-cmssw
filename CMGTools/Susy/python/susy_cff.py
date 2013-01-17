@@ -17,10 +17,6 @@ razorMJSkimSequenceMuPath = cms.Path(
     razorMJSkimSequenceMu
 )
 
-razorMJSkimSequenceTauPath = cms.Path(
-    razorMJSkimSequenceTau
-)
-
 trkVetoLeptonSequencePath = cms.Path(
     trkVetoLeptonSequence
 )

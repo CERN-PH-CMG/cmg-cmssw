@@ -107,7 +107,7 @@ razorMJTauCleaned = cms.EDProducer(
             ),
         cms.PSet(                                     
             vetoCollection=cms.InputTag("razorMJTightBtaggedJets"),
-            minDeltaR=cms.double(0.1),
+            minDeltaR=cms.double(0.3),
             removeMatchedObject=cms.bool(True)
             )
 
@@ -235,7 +235,8 @@ razorMJDiHemiHadBox = cmgDiHemi.clone(
     ),
     cuts = cms.PSet(
         razor = cms.PSet(
-            mr = cms.string('mR() >= 300')
+            mr = cms.string('mR() >= 300'),
+            rsq = cms.string('Rsq() >= 0.02')
             )
         )      
 )
@@ -288,7 +289,8 @@ razorMJDiHemiLepBox = cmgDiHemi.clone(
     ),
     cuts = cms.PSet(
     razor = cms.PSet(
-    mr = cms.string('mR() >= 300')
+    mr = cms.string('mR() >= 300'),
+    rsq = cms.string('Rsq() >= 0.02')
     )
     )
     )
@@ -485,25 +487,6 @@ razorMJSkimSequenceMu = cms.Sequence(
     razorMJTightMuonCount+
     #loose razor cut
     razorMJDiHemiLepBoxCount
-    )
-
-razorMJSkimSequenceTau = cms.Sequence(
-    #require *some* trigger fired
-    razorMJTriggerSequence+
-    #veto events with too many jets
-    ~razorPFJetSelCount+ 
-    #now make the sequence
-    razorMJObjectSequence +
-    #require at least 5 jets above 30 
-    razorMJPFJetSel30Count5j + 
-    #only take 6jets
-    razorMJPFJetSel20Count6j+
-    #filter is inverted
-    ~razorMJPFJetIDCount+
-    #a tight tau
-    razorMJTightTauCount+
-    #loose razor cut
-    razorMJDiHemiHadBoxCount
     )
 
 trkVetoLeptonSequence = cms.Sequence(
