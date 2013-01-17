@@ -157,7 +157,7 @@ double weightVBF(std::string SampleName, double m_gen, double mass){
 
 //
 double weightNarrowResonnance(std::string SampleName, double m_gen, double mass, double Cprime, double BRnew, TGraph* hLineShapeNominal){
-   if(CPrime<0 || BRnew<0)return 1.0;
+   if(Cprime<0 || BRnew<0)return 1.0;
 
    bool isZZ = (SampleName.find("ZZ")!=std::string::npos) ;
 
