@@ -157,6 +157,8 @@ double weightVBF(std::string SampleName, double m_gen, double mass){
 
 //
 double weightNarrowResonnance(std::string SampleName, double m_gen, double mass, double Cprime, double BRnew, TGraph* hLineShapeNominal){
+   if(CPrime<0 || BRnew<0)return 1.0;
+
    bool isZZ = (SampleName.find("ZZ")!=std::string::npos) ;
 
    double decay_width = -1;
@@ -188,10 +190,8 @@ double weightNarrowResonnance(std::string SampleName, double m_gen, double mass,
    }
 
    double OverallXSectionScaleFactor = 1.0;
-   if(Cprime>=0 || BRnew>=0){
-      decay_width = decay_width * pow(Cprime,2) / (1-BRnew);      
+   decay_width = decay_width * pow(Cprime,2) / (1-BRnew);      
 //      OverallXSectionScaleFactor = pow(Cprime,2) * (1-BRnew);
-   }
 
    double weight_BW = TMath::BreitWigner(mass, m_gen, decay_width);
    double weight_CPS = hLineShapeNominal->Eval(mass);
