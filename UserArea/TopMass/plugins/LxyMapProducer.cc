@@ -222,10 +222,15 @@ LxyMapProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      std::cout << "number of PF jets: " <<jets->size() << std::endl;
    }
   
+   // bool leptonEvent = false;
+
    // loop over gen particles
    std::cout << "----------------------" << std::endl;
    vector<TLorentzVector> b_quarks;
    for(genParticle = genParticles->begin(); genParticle != genParticles->end(); ++genParticle) {
+     // if(abs(genParticle->pdgId()) == 11 && abs(genParticle->mother()->pdgId()) == 24) {
+     //   leptonEvent = true;
+     // }
      if(abs(genParticle->pdgId()) == 5 /*&& abs(genParticle->mother()->pdgId()) == 5*/ && genParticle->status() == 2) {
        TLorentzVector b_quark;
        b_quark.SetPxPyPzE(genParticle->px(),  genParticle->py(),  genParticle->pz(),  genParticle->energy());
@@ -236,6 +241,7 @@ LxyMapProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
 
    std::cout << "number of b-quarks found: " << b_quarks.size() << endl;
+
 
    // // loop over gen jets
    // vector<TLorentzVector> gen_jets;
@@ -278,6 +284,7 @@ LxyMapProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      // only b-jets
      if(abs(jet->partonFlavour()) != 5) continue;
      if(jet->Lxy() > maxlxy) {
+       maxlxy = jet->Lxy();
        TLorentzVector pfjet;
        pfjet.SetPxPyPzE(jet->px(), jet->py(), jet->pz(), jet->energy());
        // match the jet to one of the b-quarks
@@ -287,6 +294,7 @@ LxyMapProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        float gamma = -999.99;
        for(unsigned int i=0; i<b_quarks.size(); ++i) {
 	 if(pfjet.DeltaR(b_quarks[i]) < deltaR) {
+	   deltaR = pfjet.DeltaR(b_quarks[i]);
 	   pt  = b_quarks[i].Pt();
 	   eta = b_quarks[i].Eta();
 	   gamma = b_quarks[i].Gamma();
