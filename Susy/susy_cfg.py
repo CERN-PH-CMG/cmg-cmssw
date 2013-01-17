@@ -1,49 +1,40 @@
 from PhysicsTools.PatAlgos.patTemplate_cfg import *
 
-
-##########
-runOnMC = True
-from CMGTools.Common.Tools.applyJSON_cff import applyJSON
-json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-200245_8TeV_PromptReco_Collisions12_JSON.txt'
-if not runOnMC:
-    applyJSON(process, json )
-##########
-skimEvents = False
-runPAT = False
-runOld5XGT = False
-
-##########
-from CMGTools.Common.Tools.getGlobalTag import getGlobalTag
-#process.GlobalTag.globaltag = cms.string(getGlobalTag(runOnMC, runOld5XGT))
-process.GlobalTag.globaltag = cms.string('START53_V10::All')
-
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+from CMGTools.Production.datasetToSource import *
+#datasetInfo = ('cmgtools', '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0','patTuple_[0-9]+\\.root')
+datasetInfo = ('cmgtools', '/SMS-T2tt_FineBin_Mstop-225to1200_mLSP-0to1000_8TeV-Pythia6Z/Summer12-START52_V9_FSIM-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B','patTuple_[0-9]+\\.root')
+process.source = datasetToSource(
+    *datasetInfo
+    )
+process.source.fileNames = process.source.fileNames[:1]
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(200) )
 
 process.maxLuminosityBlocks = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
     )
-##########
 
+###ProductionTaskHook$$$
+runOnMC = 'START5' in datasetInfo[1]
+### Set the global tag from the dataset name
+from CMGTools.Common.Tools.getGlobalTag import getGlobalTagByDataset
+process.GlobalTag.globaltag = getGlobalTagByDataset( runOnMC, datasetInfo[1])
+print 'Global tag       : ', process.GlobalTag.globaltag
+###
+
+##########
+from CMGTools.Common.Tools.applyJSON_cff import applyJSON
+json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
+if not runOnMC:
+    applyJSON(process, json )
+
+##########
+skimEvents = True
+runPAT = False
 # Message logger setup.
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
 process.setName_('MJSkim')
-
-from CMGTools.Production.datasetToSource import *
-process.source = datasetToSource(
-    'cmgtools',
-    #'wreece',
-#    '/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B/',
-    '/WJetsToLNu_HT-400ToInf_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/',
-#    '/WJetsToLNu_HT-300To400_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/',
-#    '/WJetsToLNu_HT-250To300_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0/',
-    #'/TTJets_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v2/AODSIM/V5_B/PAT_CMG_V5_6_0_B',
-    #'/MultiJet/Run2012A-PromptReco-v1/RECO/PAT_CMG_V5_6_0_B_QuadJet',
-    'patTuple_[0-9]+\\.root',
-    #'cmgTuple_[0-9]+\\.root'
-    ) 
-#process.source.fileNames = process.source.fileNames[:1]
 
 ext = 'CMG'
 
@@ -83,7 +74,6 @@ process.schedule = cms.Schedule(
     process.razorMJSkimSequenceHadPath,
     process.razorMJSkimSequenceElePath,
     process.razorMJSkimSequenceMuPath,
-    process.razorMJSkimSequenceTauPath,
     process.trkVetoLeptonSequencePath,
     process.outpath
     )
@@ -104,7 +94,7 @@ from CMGTools.Common.eventContent.eventCleaning_cff import eventCleaning
 process.out.outputCommands.extend( eventCleaning )
 process.out.outputCommands += susyEventContent
 
-SelectEvents = cms.vstring('razorMJSkimSequenceHadPath','razorMJSkimSequenceElePath','razorMJSkimSequenceMuPath','razorMJSkimSequenceTauPath')
+SelectEvents = cms.vstring('razorMJSkimSequenceHadPath','razorMJSkimSequenceElePath','razorMJSkimSequenceMuPath')
 if not skimEvents:
     SelectEvents.append('p')
 

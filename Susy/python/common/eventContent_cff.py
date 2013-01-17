@@ -16,14 +16,15 @@ jetId = [
 
 gen = [
     'keep LHEEventProduct_*_*_*',
-    'keep *_dumpPdfWeights_*_*',
+    'keep *_dumpPdfWeights*_*_*',
     'keep *_simpleGenInfo_*_*',
     'keep *_topGenInfo_*_*'
     ]
 
 reco = [
     'drop recoBeamHaloSummary_BeamHaloSummary_*_*',
-    'drop recoVertexs_offlinePrimaryVertices_*_*'  
+    'drop recoVertexs_offlinePrimaryVertices_*_*',
+    'keep recoCaloMETs_corMetGlobalMuons_*_*'
 ]
 
 pat = [

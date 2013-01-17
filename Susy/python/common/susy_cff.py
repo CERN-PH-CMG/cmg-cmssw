@@ -13,10 +13,12 @@ from CMGTools.RootTools.utils.vertexWeight.vertexWeights2012_cfi import *
 susyGenSequence  = cms.Sequence(
     #dumpPdfWeights+
     simpleGenInfo+
-    emulate2011Trigger+
+    #emulate2011Trigger+
     topGenInfo+
     vertexWeightSummer12MCICHEPData+
-    vertexWeightSummer12MC53XHCPData
+    vertexWeightSummer12MC53XHCPData+
+    vertexWeightSummer12MC53X2012ABCDData+
+    vertexWeightSummer12MC53X2012BCDData
     )
 
 susyDataSequence  = cms.Sequence(
