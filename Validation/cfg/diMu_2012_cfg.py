@@ -28,9 +28,11 @@ ZMuMuAna = cfg.Analyzer(
     )
 
 
-## ZMuMuHistograms = cfg.Analyzer(
-##     'ZMuMuHistogrammer'
-##     )
+
+
+ZHistograms = cfg.Analyzer(
+    'ZHistogrammer'
+     )
 
 ###############################################################################
 
@@ -46,6 +48,7 @@ selectedComponents = [DYJets]
 sequence = cfg.Sequence( [
     vertexAna,
     ZMuMuAna,
+    ZHistograms
    ] )
 
 
@@ -55,9 +58,9 @@ if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = DYJets
-    comp.files = comp.files[:50]
+    comp.files = comp.files[:5]
     selectedComponents = [comp]
-    # comp.splitFactor = 14
+    comp.splitFactor = 1
 elif test==2:    
     # test all components (1 thread per component.
     # important to make sure that your code runs on any kind of component
