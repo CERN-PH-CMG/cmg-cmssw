@@ -725,8 +725,8 @@ int main(int argc, char* argv[])
       double TotalWeight_minus = 1.0;
       float lShapeWeights[4]={1.0,1.0,1.0,1.0};
 
-
-
+      //reinitialize the weights to 1, to make sure that Data and MC backgrounds have proper weights
+      for(unsigned int nri=0;nri<NRparams.size();nri++){NRweights[nri] = 1.0;}
       if(isMC){
         weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_plus  = PuShifters[PUUP]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
@@ -764,9 +764,7 @@ int main(int argc, char* argv[])
            for(unsigned int nri=0;nri<NRparams.size();nri++){ 
               NRweights[nri] = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal);
            }  
-        }else{
-           for(unsigned int nri=0;nri<NRparams.size();nri++){NRweights[nri] = 1.0;}
-        }      
+         }
       }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
