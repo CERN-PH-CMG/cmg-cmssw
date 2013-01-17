@@ -756,14 +756,16 @@ int main(int argc, char* argv[])
         //compute weight correction for narrow resonnance
         if(isMC_VBF || isMC_GG){
            if(cprime>=0 || brnew>=0){
-              double NRWeight = weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), cprime, brnew, hLineShapeNominal);  
+              double NRWeight = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), cprime, brnew, hLineShapeNominal);  
               weight*=NRWeight;
            }
            mon.fillHisto("higgsMass_4nr"  ,tags_inc, phys.genhiggs[0].mass(), weight);
            
            for(unsigned int nri=0;nri<NRparams.size();nri++){ 
-              NRweights[nri] = weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal);
+              NRweights[nri] = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal);
            }  
+        }else{
+           for(unsigned int nri=0;nri<NRparams.size();nri++){NRweights[nri] = 1.0;}
         }      
       }
       Hcutflow->Fill(1,1);
