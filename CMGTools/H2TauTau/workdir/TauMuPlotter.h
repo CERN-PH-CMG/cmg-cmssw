@@ -160,8 +160,11 @@ public:
 
   TH1F* getWNJetSumAllNoChCut();
   TH1F* getWJetsNJetSumAllNoChCut();
+  TH1F* getWNJetSumAllNoChNoMTCut();
+  TH1F* getWJetsNJetAllNoChNoMTCut();
   TH1F* computeTrigEff(TH1F* HPass, TH1F* HFail);
   void plotTauTrigger(Int_t Region, TString tag);
+  void plotTauTriggerReal(Int_t Region, TString tag);
 
   //HCP Studies
   void plotQCDSSOSRatio();

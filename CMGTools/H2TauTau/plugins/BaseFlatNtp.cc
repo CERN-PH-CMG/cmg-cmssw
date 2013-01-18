@@ -1,6 +1,7 @@
 #include "CMGTools/H2TauTau/plugins/BaseFlatNtp.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenFilterInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 
 BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   file_(0),
@@ -30,6 +31,9 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
 
   dataPeriodFlag_=iConfig.getParameter<int>("dataPeriodFlag");
   cout<<"dataPeriodFlag_  : "<<dataPeriodFlag_<<endl;
+
+  saveLHENUP_=iConfig.getParameter<int>("saveLHENUP");
+  cout<<"saveLHENUP_  : "<<saveLHENUP_<<endl;
 
   verticesListTag_=iConfig.getParameter<edm::InputTag>("verticesListTag");
   cout<<"verticesListTag_  : "<<verticesListTag_.label()<<endl;
@@ -126,8 +130,6 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
 
   corrector_.addDataFile( fileZmmData_);
   corrector_.addMCFile( fileZmmMC_);
-  //corrector2012_.addDataFile( fileZmmData_);
-  //corrector2012_.addMCFile( fileZmmMC_);
 
   recoiliScale_ = iConfig.getParameter<double>("recoiliScale");
   cout<<"recoiliScale_   : "<<recoiliScale_<<endl;
@@ -237,6 +239,8 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("genbosonpt",&genbosonpt_,"genbosonpt/F");
   tree_->Branch("genbosoneta",&genbosoneta_,"genbosoneta/F");
   tree_->Branch("genbosonphi",&genbosonphi_,"genbosonphi/F");
+  tree_->Branch("lhenup",&lhenup_,"lhenup/I");
+
 
   tree_->Branch("runnumber",&runnumber_,"runnumber/I");
   tree_->Branch("lumiblock",&lumiblock_,"lumiblock/I");
@@ -276,6 +280,9 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("ditaupt",&ditaupt_,"ditaupt/F");
   tree_->Branch("ditauphi",&ditauphi_,"ditauphi/F");
   tree_->Branch("mutaucostheta",&mutaucostheta_,"mutaucostheta/F");
+  tree_->Branch("ditaudeltaR",&ditaudeltaR_,"ditaudeltaR/F");
+  tree_->Branch("ditaudeltaEta",&ditaudeltaEta_,"ditaudeltaEta/F");
+  tree_->Branch("ditaudeltaPhi",&ditaudeltaPhi_,"ditaudeltaPhi/F");
   
   tree_->Branch("taumass",&taumass_,"taumass/F");
   tree_->Branch("taupt",&taupt_,"taupt/F");
@@ -305,7 +312,7 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("tauleadpt",&tauleadpt_,"tauleadpt/F");
   tree_->Branch("tauleadhcal",&tauleadhcal_,"tauleadhcal/F");
   tree_->Branch("tauleadecal",&tauleadecal_,"tauleadecal/F");
-
+  tree_->Branch("taucharge",&taucharge_,"taucharge/I");
 
   tree_->Branch("mupt",&mupt_,"mupt/F");
   tree_->Branch("mueta",&mueta_,"mueta/F");
@@ -323,10 +330,13 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("mutruthstatus",&mutruthstatus_,"mutruthstatus/I");
   tree_->Branch("mutruthpt",&mutruthpt_,"mutruthpt/F");
   tree_->Branch("mutrutheta",&mutrutheta_,"mutrutheta/F");
+  tree_->Branch("mucharge",&mucharge_,"mucharge/I");
 
   tree_->Branch("pfmetpt",&pfmetpt_,"pfmetpt/D");
   tree_->Branch("pfmetphi",&pfmetphi_,"pfmetphi/D");
   tree_->Branch("pftransversemass",&pftransversemass_,"pftransversemass/F");
+  tree_->Branch("metptraw",&metptraw_,"metptraw/D");
+  tree_->Branch("metphiraw",&metphiraw_,"metphiraw/D");
   tree_->Branch("metpt",&metpt_,"metpt/D");
   tree_->Branch("metphi",&metphi_,"metphi/D");
   tree_->Branch("transversemass",&transversemass_,"transversemass/F");
@@ -446,10 +456,17 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   runnumber_=iEvent_->run();
   lumiblock_=iEvent_->luminosityBlock();
   eventid_=iEvent_->id().event();
-
+  
   iEvent_->getByLabel(verticesListTag_,vertices_);
   nvtx_=vertices_->size();  
   PV_=&(*(vertices_->begin()));
+  
+  lhenup_=-1;
+  if(saveLHENUP_==1){  
+    edm::Handle< LHEEventProduct > LHEEvent_;
+    iEvent_->getByLabel(edm::InputTag("source"),LHEEvent_);
+    lhenup_=LHEEvent_->hepeup().NUP;
+  }
 
 
   iEvent_->getByLabel(trigPathsListTag_,trig_);
@@ -463,6 +480,10 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   genBosonL1_ = NULL;
   genBosonL2_ = NULL;
   genEventType_=0;
+  genbosonpt_=0.;
+  genbosoneta_=0.;
+  genbosonphi_=0.;
+  genbosonmass_=0.;
   if(dataType_==0){  
     iEvent_->getByLabel(genParticlesTag_,genParticles_);    
     for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){

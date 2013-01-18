@@ -8,17 +8,12 @@ TauElePlotter * configTauEle2012(TString name, TString path){
   analysis->setOutputPath(path);
   analysis->setQCDOStoSSRatio(1.06);
   analysis->setZTTType(2);
-
+  analysis->mTCut_=20;
 
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
   TauPlusX2012A->setSampleLumi(96.977+316.128+396.213);
   analysis->addSample(TauPlusX2012A);
-
-//   Sample* TauPlusX2012A2 = new Sample("TauPlusX2012A2",path);
-//   TauPlusX2012A2->setDataType("Data");
-//   TauPlusX2012A2->setSampleLumi(82.136);
-//   analysis->addSample(TauPlusX2012A2);
 
   Sample* TauPlusX2012B = new Sample("TauPlusX2012B",path);
   TauPlusX2012B->setDataType("Data");
@@ -38,10 +33,6 @@ TauElePlotter * configTauEle2012(TString name, TString path){
   Sample* Embedded2012A = new Sample("Embedded2012A",path);
   Embedded2012A->setDataType("Embedded");
   analysis->addSample(Embedded2012A);
-
-//   Sample* Embedded2012A2 = new Sample("Embedded2012A2",path);
-//   Embedded2012A2->setDataType("Embedded");
-//   analysis->addSample(Embedded2012A2);
 
   Sample* Embedded2012B = new Sample("Embedded2012B",path);
   Embedded2012B->setDataType("Embedded");

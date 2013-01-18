@@ -241,6 +241,66 @@ public:
   }
 
 
+  double effCorrMuID2012ABCD(double pt,double eta){
+    if(fabs(eta)<0.8) {
+      if(20.0<pt&&pt<=30.0) return 0.9853;
+      if(30.0<pt) return 0.9857;
+      return 0;
+    }else if(fabs(eta)<1.2) {
+      if(20.0<pt&&pt<=30.0) return 0.9818;
+      if(30.0<pt) return 0.9805;
+      return 0;
+    }else if(fabs(eta)<2.1){
+      if(20.0<pt&&pt<=30.0) return 0.9899;
+      if(30.0<pt) return 0.9900;
+      return 0;
+    }
+    return 0;
+  }
+
+  double effCorrMuIso2012ABCD(double pt,double eta){
+    if(fabs(eta)<0.8) {
+      if(20.0<pt&&pt<=30.0) return 0.9685;
+      if(30.0<pt) return 0.9872;
+      return 0;
+    }else if(fabs(eta)<1.2) {
+      if(20.0<pt&&pt<=30.0) return 0.9808;
+      if(30.0<pt) return 0.9924;
+      return 0;
+    }else if(fabs(eta)<2.1){
+      if(20.0<pt&&pt<=30.0) return 0.9972;
+      if(30.0<pt) return 1.0012;
+      return 0;
+    }
+    return 0;
+  }
+
+  double effCorrEleID2012ABCD(double pt,double eta){
+    if(fabs(eta)<1.479) {//Barrel
+      if(24.0<pt&&pt<=30.0) return 0.9100;
+      if(30.0<pt) return 0.9493;
+      return 0;
+    }else if(fabs(eta)<2.1){//Endcap
+      if(24.0<pt&&pt<=30.0) return 0.8244;
+      if(30.0<pt) return 0.9260;
+      return 0;
+    }
+    return 0;
+  }
+  double effCorrEleIso2012ABCD(double pt,double eta){
+    if(fabs(eta)<1.479) {//Barrel
+      if(24.0<pt&&pt<=30.0) return 0.9468;
+      if(30.0<pt) return 0.9820;
+      return 0;
+    }else if(fabs(eta)<2.1){//Endcap
+      if(24.0<pt&&pt<=30.0) return 0.9586;
+      if(30.0<pt) return 0.9948;
+      return 0;
+    }
+    return 0;
+  }
+
+
 private:
   
 } ;

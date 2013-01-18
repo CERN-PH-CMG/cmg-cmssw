@@ -12,6 +12,7 @@ Embedded2012A2 cmgtools 3 10
 Embedded2012B cmgtools 10 543
 Embedded2012Cv1 cmgtools 5 57
 Embedded2012Cv2 cmgtools 10 757
+Embedded2012D cmgtools 10 930
 ZToMuMu cmgtools 30 2573
 
 ##eTau
@@ -20,6 +21,7 @@ Embedded2012A2 cmgtools 3 9
 Embedded2012B cmgtools 10 533
 Embedded2012Cv1 cmgtools 5 54
 Embedded2012Cv2 cmgtools 10 736
+Embedded2012D cmgtools 10 864
 ZToEE cmgtools 30 2573
 
 SingleElectron2012A cmgtools 20 943

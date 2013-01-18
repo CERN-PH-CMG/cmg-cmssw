@@ -110,7 +110,7 @@ TH1F* TauMuPlotter::getSample(TString samplename){
   if(Chcat_==2)  sel += "*(abs(ditaucharge)==2)";
   if(Isocat_>0)  sel += TString("*(categoryIso==")+(long)Isocat_+")";
   if(MTcat_==1)  sel += TString("*(transversemass<")+mTCut_+")";
-  if(MTcat_==3)  sel += "*(70<transversemass)";
+  if(MTcat_==3)  sel += "*(70<transversemass&&transversemass<150)";
   if(MTcat_==13) sel += "*(60<transversemass&&transversemass<120)";
   if(extrasel_.CompareTo("1")!=0)sel += TString("*")+extrasel_;
 
@@ -414,27 +414,41 @@ TH1F* TauMuPlotter::getWJetsIncLooseTau(){
 
 
 
+// TH1F* TauMuPlotter::getWNJetSum(){
+//   TH1F*hShape=getSample("W1JetsToLNu");
+//   hShape->SetName("getWNJetSum");
+//   TH1F* HW2Shape=getSample("W2JetsToLNu"); hShape->Add(HW2Shape); delete HW2Shape;
+//   TH1F* HW3Shape=getSample("W3JetsToLNu"); hShape->Add(HW3Shape); delete HW3Shape;
+//   TH1F* HW4Shape=getSample("W4JetsToLNu"); hShape->Add(HW4Shape); delete HW4Shape;
+//   return hShape;
+// }
+
+
 TH1F* TauMuPlotter::getWNJetSum(){
-  TH1F*hShape=getSample("W1JetsToLNu");
+
+  ///get inclusive sample, but apply 1/2 weight to the components added later
+  TString tmpExtrasel=extrasel_;
+  extrasel_+="*(1-0.5*(lhenup==6||lhenup==7||lhenup==8||lhenup==9))";
+  TH1F*hShape=getSample("WJetsToLNu");
   hShape->SetName("getWNJetSum");
-  TH1F* HW2Shape=getSample("W2JetsToLNu"); hShape->Add(HW2Shape); delete HW2Shape;
-  TH1F* HW3Shape=getSample("W3JetsToLNu"); hShape->Add(HW3Shape); delete HW3Shape;
-  TH1F* HW4Shape=getSample("W4JetsToLNu"); hShape->Add(HW4Shape); delete HW4Shape;
+  extrasel_= tmpExtrasel;
+
+  //add the nJet samples with 1/2 weight
+  TH1F* HW1Shape=getSample("W1JetsToLNu"); hShape->Add(HW1Shape,0.5); delete HW1Shape;
+  TH1F* HW2Shape=getSample("W2JetsToLNu"); hShape->Add(HW2Shape,0.5); delete HW2Shape;
+  TH1F* HW3Shape=getSample("W3JetsToLNu"); hShape->Add(HW3Shape,0.5); delete HW3Shape;
+  TH1F* HW4Shape=getSample("W4JetsToLNu"); hShape->Add(HW4Shape,0.5); delete HW4Shape;
+
   return hShape;
 }
+
 
 
 TH1F* TauMuPlotter::getWNJetSumAllNoChCut(){
   Int_t tmpChcat=Chcat_;
   Chcat_=0;
-
-  TH1F*hShape=getSample("W1JetsToLNu");
-  hShape->SetName("getWNJetSum");
-  TH1F* HW2Shape=getSample("W2JetsToLNu"); hShape->Add(HW2Shape); delete HW2Shape;
-  TH1F* HW3Shape=getSample("W3JetsToLNu"); hShape->Add(HW3Shape); delete HW3Shape;
-  TH1F* HW4Shape=getSample("W4JetsToLNu"); hShape->Add(HW4Shape); delete HW4Shape;
-  TH1F* HWShape=getSample("WJetsToLNu"); hShape->Add(HWShape); delete HWShape;
-
+  TH1F*hShape=getWNJetSum();
+  hShape->SetName("getWNJetSumAllNoChCut");
   Chcat_=tmpChcat;
 
   return hShape;
@@ -504,7 +518,9 @@ TH1F* TauMuPlotter::getWJetsNJet(){
 
   /////////////////////////Normalize the Shape
   if(hShape->Integral()>0.){
-    hShape->Scale(((HData->Integral()-HMC->Integral())*ratio)/hShape->Integral());
+    float corrFactor=((HData->Integral()-HMC->Integral())*ratio)/hShape->Integral();
+    cout<<"Wjets correction factor: "<<corrFactor<<endl;
+    hShape->Scale(corrFactor);
   }else     hShape->Scale(0.);
 
   delete HData;
@@ -543,6 +559,89 @@ TH1F* TauMuPlotter::getWJetsNJetSumAllNoChCut(){
 
   MTcat_=3;
   TH1F* HWH=getWNJetSumAllNoChCut();
+  HWH->SetName("HWH");
+  MTcat_=tmpCategoryMT;
+  TH1F*HWL=getWNJetSumAllNoChCut();
+  HWL->SetName("HWL");
+  
+  plotvar_=tmpplotvar;
+  nbins_=tmpnbins;
+  xmin_=tmpxmin;
+  xmax_=tmpxmax;
+  
+
+  Float_t ratio=0.;
+  if(HWH->Integral()>0.){
+    double NWLerr=0.;
+    double NWHerr=0.;
+    Float_t NWL=HWL->IntegralAndError(1,HWL->GetNbinsX(),NWLerr);
+    Float_t NWH=HWH->IntegralAndError(1,HWH->GetNbinsX(),NWHerr);
+    ratio=NWL/NWH;
+    Float_t ratioerr=ratio*sqrt((NWLerr*NWLerr)/(NWL*NWL)+(NWHerr*NWHerr)/(NWH*NWH));
+
+    cout<<" W high mT : "<<NWH<<" "<<NWHerr<<endl;
+    cout<<" W low mT : "<<NWL<<" "<<NWLerr<<endl;
+    cout<<" extrapolation factor : "<<ratio<<" +- "<<ratioerr<<endl;
+  } else ratio=0.;
+
+
+  /////////////////////////Normalize the Shape
+  if(hShape->Integral()>0.){
+    hShape->Scale(((HData->Integral()-HMC->Integral())*ratio)/hShape->Integral());
+  }else     hShape->Scale(0.);
+
+  delete HData;
+  delete HMC;
+  delete HWH;
+  delete HWL;
+
+  return hShape;
+}
+
+
+TH1F* TauMuPlotter::getWNJetSumAllNoChNoMTCut(){
+  Int_t tmpChcat=Chcat_;
+  Chcat_=0;
+  Int_t tmpCategoryMT=MTcat_;
+  MTcat_=-1;
+  TH1F*hShape=getWNJetSum();
+  hShape->SetName("getWNJetSumAllNoChNoMTCut");
+  Chcat_=tmpChcat;
+  MTcat_=tmpCategoryMT;
+  return hShape;
+}
+
+
+
+TH1F* TauMuPlotter::getWJetsNJetAllNoChNoMTCut(){
+  cout<<"calling method getWJetsNJetAllNoChNoMTCut"<<endl;
+
+  ///Get the shape
+  TH1F*hShape=getWNJetSumAllNoChNoMTCut();
+  hShape->SetName("getWJetsNJetAllNoChNoMTCut");
+
+  //W Yield at high mT in Data
+  Int_t tmpCategoryMT=MTcat_;
+  MTcat_=3;
+  TH1F* HData=getTotalData();
+  TH1F* HMC=getZToTauTau();
+  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
+  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); delete HZJ;
+  MTcat_=tmpCategoryMT;
+  cout<<"Data: "<<HData->Integral()<<" - MC: "<<HMC->Integral()<<" ="<<HData->Integral()-HMC->Integral()<<endl;
+
+  ///////Determine extrapolation factor
+  TString tmpplotvar=plotvar_;
+  plotvar_="ditaumass";
+  Int_t tmpnbins=nbins_;
+  nbins_=10;
+  Float_t tmpxmin=xmin_;
+  xmin_=0;
+  Float_t tmpxmax=xmax_;
+  xmax_=1000;
+
+  MTcat_=3;
+  TH1F*HWH=getWNJetSumAllNoChCut();
   HWH->SetName("HWH");
   MTcat_=tmpCategoryMT;
   TH1F*HWL=getWNJetSumAllNoChCut();
@@ -1009,7 +1108,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
    
   
   TH1F*hQCD = 0;
-  if(QCDType==0) hQCD=getQCDInc();
+  if(QCDType==0) hQCD=getQCDInc(1);
   if(QCDType==1) hQCD=getQCDMuIsoSM();
   if(QCDType==2) hQCD=getQCDIncLooseShape();
   if(QCDType==3) hQCD=getQCDMike();
@@ -1030,8 +1129,9 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   if(nbins_==0) if(hQCD) makeDensityHisto(hQCD);
 
   TH1F* hWJetsToLNu=0;
+  if(WJetsType==-2) hWJetsToLNu = getWNJetSum(); //not normalized to high mt
+  if(WJetsType==-1) hWJetsToLNu = getSample("WJetsToLNu"); //not normalized to high mt
   if(WJetsType==0) hWJetsToLNu = getWJetsInc(); 
-  if(WJetsType==1) hWJetsToLNu = getSample("WJetsToLNu"); 
   if(WJetsType==2) hWJetsToLNu = getWJetsNJet();
   if(WJetsType==3) hWJetsToLNu = getWJetsNJetVBFHCP();
   if(WJetsType==4) hWJetsToLNu = getWJetsIncLooseTau();
@@ -1101,7 +1201,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   hZToMuMu->SetLineColor(1);
   hZToMuMu->SetFillColor(ZMuMuColor_);
   if(nbins_==0)makeDensityHisto(hZToMuMu); 
-  hEWK->Add(hZToMuMu);
+  //hEWK->Add(hZToMuMu);
 
   //cout<<"ElectroWeak "<<hEWK->Integral()<<endl;
 
@@ -1112,6 +1212,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
   if(hQCD)hMCStack.Add(hQCD,"hist");
   hMCStack.Add(hEWK,"hist");
   hMCStack.Add(hTTJets,"hist");
+  hMCStack.Add(hZToMuMu,"hist");
   hMCStack.Add(hZToTauTau,"hist");
 
 
@@ -1176,6 +1277,7 @@ bool TauMuPlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t 
     else legend.AddEntry(hHiggs,TString("")+(long)higgs+" x SM H(125)","L");
   }
   legend.AddEntry(hZToTauTau,"Z#rightarrow#tau^{+}#tau^{-}","F");
+  legend.AddEntry(hZToMuMu,"Z#rightarrow#mu^{+}#mu^{-}","f");
   legend.AddEntry(hTTJets,"t#bar{t}","F");
   legend.AddEntry(hEWK,"Electroweak","F");
   if(hQCD)  legend.AddEntry(hQCD,"QCD","F");
@@ -2916,9 +3018,10 @@ void  TauMuPlotter::plotTauTrigger(Int_t Region, TString tag){
   Isocat_=1;
   extrasel_="1";
 
-  Float_t xbinsValues[15]={17,18,19,20,21,22,24,26,28,30,34,38,42,46,50};
-  setVariableBinning(14,xbinsValues);
+  Float_t xbinsValues[11]={18,20,22,24,26,30,34,38,42,50,60};
+  setVariableBinning(10,xbinsValues);
   nbins_=0;
+
 
   
   TString selectionTrigPass="(trigTest1==1||trigTest2==1||trigTest3==1||trigTest4==1||trigTest5==1||trigTest6==1||trigTest7==1||trigTest8==1||trigTest9==1)";
@@ -2933,36 +3036,69 @@ void  TauMuPlotter::plotTauTrigger(Int_t Region, TString tag){
   if(Region==2) region="EndCap";
 
 
-  ///Calculate the Fakes Scale factor
-  ///Changes between Barrel and EndCap
+//   ///Calculate the Fakes Scale factor
+//   ///Changes between Barrel and EndCap
+//   extrasel_ = selection;
+//   TH1F*HW   = getWJetsNJetSumAllNoChCut(); 
+//   TH1F*HQCD = getQCDInc();
+//   float FakesScaleFactor=(HW->Integral()+HQCD->Integral())/HW->Integral();
+//   cout<<"W Fakes scale factor: "<<FakesScaleFactor<<endl;
+
+//   extrasel_=selection;
+//   TH1F*HTAUPT=getTotalData(); HTAUPT->SetName("HTAUPT");
+//   TH1F*HMCTAUPT=getPlotHisto("HMCTAUPT");
+//   TH1F*HMCZTT=getZToTauTau();         HMCTAUPT->Add(HMCZTT);                delete HMCZTT; 
+//   TH1F*HMCW=getWJetsNJetSumAllNoChCut();
+//   HMCTAUPT->Add(HMCW,FakesScaleFactor); 
+//   TH1F*HMCWRaw=getWNJetSumAllNoChCut(); //uncorrected yield needed for scaling later the Pass and Fail samples
+  
+//   extrasel_=selection+"*"+selectionTrigPass;
+//   TH1F*HTAUPTTrigPass=getTotalData();  HTAUPTTrigPass->SetName("HTAUPTTrigPass");
+//   TH1F*HMCTAUPTTrigPass=getPlotHisto("HMCTAUPTPass");
+//   TH1F*HMCZTTTrigPass=getZToTauTau();          HMCTAUPTTrigPass->Add(HMCZTTTrigPass);                delete HMCZTTTrigPass; 
+//   TH1F*HMCWTrigPass=getWNJetSumAllNoChCut();  
+//   HMCTAUPTTrigPass->Add(HMCWTrigPass,FakesScaleFactor*HMCW->Integral()/HMCWRaw->Integral());         delete HMCWTrigPass; 
+  
+//   extrasel_=selection+"*"+selectionTrigFail;
+//   TH1F*HTAUPTTrigFail=getTotalData();  HTAUPTTrigFail->SetName("HTAUPTTrigFail");
+//   TH1F*HMCTAUPTTrigFail=getPlotHisto("HMCTAUPTFail");
+//   TH1F*HMCZTTTrigFail=getZToTauTau();         HMCTAUPTTrigFail->Add(HMCZTTTrigFail);                delete HMCZTTTrigFail; 
+//   TH1F*HMCWTrigFail=getWNJetSumAllNoChCut(); 
+//   HMCTAUPTTrigFail->Add(HMCWTrigFail,FakesScaleFactor*HMCW->Integral()/HMCWRaw->Integral());        delete HMCWTrigFail; 
+
+
+
+
   extrasel_ = selection;
-  TH1F*HW   = getWJetsNJetSumAllNoChCut(); 
+  TH1F*HW   = getWJetsNJetAllNoChNoMTCut(); 
   TH1F*HQCD = getQCDInc();
   float FakesScaleFactor=(HW->Integral()+HQCD->Integral())/HW->Integral();
   cout<<"W Fakes scale factor: "<<FakesScaleFactor<<endl;
+
 
   extrasel_=selection;
   TH1F*HTAUPT=getTotalData(); HTAUPT->SetName("HTAUPT");
   TH1F*HMCTAUPT=getPlotHisto("HMCTAUPT");
   TH1F*HMCZTT=getZToTauTau();         HMCTAUPT->Add(HMCZTT);                delete HMCZTT; 
-  TH1F*HMCW=getWJetsNJetSumAllNoChCut();
+  TH1F*HMCW=getWJetsNJetAllNoChNoMTCut();
   HMCTAUPT->Add(HMCW,FakesScaleFactor); 
-  TH1F*HMCWRaw=getWNJetSumAllNoChCut(); //uncorrected yield needed for scaling later the Pass and Fail samples
+  TH1F*HMCWRaw=getWNJetSumAllNoChNoMTCut(); //uncorrected yield needed for scaling later 
   
   extrasel_=selection+"*"+selectionTrigPass;
   TH1F*HTAUPTTrigPass=getTotalData();  HTAUPTTrigPass->SetName("HTAUPTTrigPass");
   TH1F*HMCTAUPTTrigPass=getPlotHisto("HMCTAUPTPass");
   TH1F*HMCZTTTrigPass=getZToTauTau();          HMCTAUPTTrigPass->Add(HMCZTTTrigPass);                delete HMCZTTTrigPass; 
-  TH1F*HMCWTrigPass=getWNJetSumAllNoChCut();  
+  TH1F*HMCWTrigPass=getWNJetSumAllNoChNoMTCut();  
   HMCTAUPTTrigPass->Add(HMCWTrigPass,FakesScaleFactor*HMCW->Integral()/HMCWRaw->Integral());         delete HMCWTrigPass; 
   
   extrasel_=selection+"*"+selectionTrigFail;
   TH1F*HTAUPTTrigFail=getTotalData();  HTAUPTTrigFail->SetName("HTAUPTTrigFail");
   TH1F*HMCTAUPTTrigFail=getPlotHisto("HMCTAUPTFail");
   TH1F*HMCZTTTrigFail=getZToTauTau();         HMCTAUPTTrigFail->Add(HMCZTTTrigFail);                delete HMCZTTTrigFail; 
-  TH1F*HMCWTrigFail=getWNJetSumAllNoChCut(); 
+  TH1F*HMCWTrigFail=getWNJetSumAllNoChNoMTCut(); 
   HMCTAUPTTrigFail->Add(HMCWTrigFail,FakesScaleFactor*HMCW->Integral()/HMCWRaw->Integral());        delete HMCWTrigFail; 
 
+ 
  
   TCanvas C;
   TString plotFileName=TString("TauTriggerEfficiency_muTau_")+region+"_"+tag;
@@ -3018,8 +3154,8 @@ void  TauMuPlotter::plotTauTrigger(Int_t Region, TString tag){
   TGraph HMCTAUPTTrigEff_Josh;
   for(Int_t p=0;p<100;p++){
     float x=17+p;
-    HTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau2012ABC(x,(Region==1)*0.0+(Region==2)*2.0));
-    HMCTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau2012MC53X(x,(Region==1)*0.0+(Region==2)*2.0));
+    HTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau_muTau_Data_2012ABCD(x,(Region==1)*0.0+(Region==2)*2.0));
+    HMCTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau_muTau_MC_2012ABCD(x,(Region==1)*0.0+(Region==2)*2.0));
   }
 
   C.Clear();
@@ -3084,6 +3220,111 @@ void  TauMuPlotter::plotTauTrigger(Int_t Region, TString tag){
   legend.SetY2NDC(.57);
   legend.Draw();
   C.Print(plotFileName+".ps");
+
+
+
+  C.Print(plotFileName+".ps]");
+}
+
+
+void  TauMuPlotter::plotTauTriggerReal(Int_t Region, TString tag){
+  scaleSamplesLumi();
+
+  ///plot the difference in eta
+  plotvar_="taupt";
+  nbins_=30;
+  xmin_=0;
+  xmax_=60;
+  MTcat_=1;
+  Chcat_=1;
+  Isocat_=1;
+  extrasel_="1";
+
+  Float_t xbinsValues[15]={17,18,19,20,21,22,24,26,28,30,34,38,42,46,50};
+  setVariableBinning(14,xbinsValues);
+  nbins_=0;
+
+  
+  TString selectionTrigPass="(trigTest1==1||trigTest2==1||trigTest3==1||trigTest4==1||trigTest5==1||trigTest6==1||trigTest7==1||trigTest8==1||trigTest9==1)";
+  TString selectionTrigFail="(!"+selectionTrigPass+")";
+
+  TString selection;
+  if(Region==1) selection="(30<ditaumass&&ditaumass<100&&abs(taueta)<1.5)";
+  if(Region==2) selection="(30<ditaumass&&ditaumass<100&&abs(taueta)>1.5)";
+
+  TString region;
+  if(Region==1) region="Barrel";
+  if(Region==2) region="EndCap";
+
+
+  extrasel_=selection;
+  TH1F*HMCTAUPT=getZToTauTau();           HMCTAUPT->SetName("HMCTAUPT"); 
+  TH1F*HTAUPT=getTotalData();             HTAUPT->SetName("HTAUPT");
+  TH1F*HMCW=getWJetsNJetSumAllNoChCut();  HTAUPT->Add(HMCW,-1);  delete HMCW;
+  TH1F*HMCQ=getQCDInc();                  HTAUPT->Add(HMCQ,-1);  delete HMCQ;
+  TH1F*HMCT=getTTJetsInc();               HTAUPT->Add(HMCT,-1);  delete HMCT;
+  
+  extrasel_=selection+"*"+selectionTrigPass;
+  TH1F*HMCTAUPTTrigPass=getZToTauTau();   HMCTAUPTTrigPass->SetName("HMCTAUPTTrigPass");
+  TH1F*HTAUPTTrigPass=getTotalData();     HTAUPTTrigPass->SetName("HTAUPTTrigPass");
+  HMCW=getWJetsNJetSumAllNoChCut();       HTAUPTTrigPass->Add(HMCW,-1);  delete HMCW;
+  HMCQ=getQCDInc();                       HTAUPTTrigPass->Add(HMCQ,-1);  delete HMCQ;
+  HMCT=getTTJetsInc();                    HTAUPTTrigPass->Add(HMCT,-1);  delete HMCT;
+
+  extrasel_=selection+"*"+selectionTrigFail;
+  TH1F*HMCTAUPTTrigFail=getZToTauTau();   HMCTAUPTTrigFail->SetName("HMCTAUPTTrigFail");
+  TH1F*HTAUPTTrigFail=getTotalData();     HTAUPTTrigFail->SetName("HTAUPTTrigFail");
+  HMCW=getWJetsNJetSumAllNoChCut();       HTAUPTTrigFail->Add(HMCW,-1);  delete HMCW;
+  HMCQ=getQCDInc();                       HTAUPTTrigFail->Add(HMCQ,-1);  delete HMCQ;
+  HMCT=getTTJetsInc();                    HTAUPTTrigFail->Add(HMCT,-1);  delete HMCT;
+
+ 
+  TCanvas C;
+  TString plotFileName=TString("TauTriggerEfficiency_muTau_")+region+"_"+tag;
+  C.Print(plotFileName+".ps[");
+
+  ////Compare the Pass distribution to the total
+  C.Clear();
+  HTAUPT->SetTitle("Data");
+  HTAUPT->GetXaxis()->SetTitle("Tau p_{T}");
+  HTAUPT->GetYaxis()->SetRangeUser(0,HTAUPT->GetMaximum()*1.3);
+  HTAUPT->Draw("hist");
+  HTAUPTTrigPass->Draw("histpesame");
+  C.Print(plotFileName+".ps");
+
+  C.Clear();
+  HMCTAUPT->SetTitle("MC");
+  HMCTAUPT->GetXaxis()->SetTitle("Tau p_{T}");
+  HMCTAUPT->GetYaxis()->SetRangeUser(0,HMCTAUPT->GetMaximum()*1.3);
+  HMCTAUPT->Draw("hist");
+  HMCTAUPTTrigPass->Draw("histpesame");
+  C.Print(plotFileName+".ps");
+
+
+  /////////Compute the efficiency 
+  TH1F* HTAUPTTrigEff = computeTrigEff(HTAUPTTrigPass,HTAUPTTrigFail); 
+  TH1F* HMCTAUPTTrigEff = computeTrigEff(HMCTAUPTTrigPass,HMCTAUPTTrigFail); 
+  C.Clear();
+  HTAUPTTrigEff->SetTitle("");
+  HTAUPTTrigEff->GetXaxis()->SetTitle("Tau p_{T}");
+  HTAUPTTrigEff->GetYaxis()->SetTitle("Efficiency");
+  HTAUPTTrigEff->GetYaxis()->SetRangeUser(0.5,1);
+  HTAUPTTrigEff->Draw("histpe");
+  HMCTAUPTTrigEff->SetMarkerColor(4);
+  HMCTAUPTTrigEff->SetLineColor(4);
+  HMCTAUPTTrigEff->Draw("histpesame");
+  C.Print(plotFileName+".ps");
+
+
+  ///save the histograms for fitting later
+  TFile FData(plotFileName+"_Data.root","recreate");
+  HTAUPTTrigEff->SetName("efficiency");     HTAUPTTrigEff->SetTitle("");
+  HTAUPTTrigEff->Write();
+  FData.ls(); FData.Close();
+  TFile FMC(plotFileName+"_MC.root","recreate");
+  HMCTAUPTTrigEff->SetName("efficiency");   HMCTAUPTTrigEff->SetTitle("");
+  HMCTAUPTTrigEff->Write();
+  FMC.ls(); FMC.Close();
 
 
 

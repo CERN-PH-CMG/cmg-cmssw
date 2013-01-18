@@ -9,10 +9,10 @@ $mass=shift;
 $plot=shift;
 
 
-$limitcommand="limit.py --asymptotic --expectedOnly --noprefit  --userOpt '--minosAlgo stepping'";
-#$limitcommand="limit.py --significance";
+#$limitcommand="limit.py --asymptotic --expectedOnly --noprefit  --userOpt '--minosAlgo stepping'";
 #$limitcommand="limit.py --asymptotic --expectedOnly --userOpt '--minosAlgo stepping'";
-#$limitcommand="limit.py --asymptotic --userOpt '--minosAlgo stepping'";
+$limitcommand="limit.py --asymptotic --userOpt '--minosAlgo stepping'";
+#$limitcommand="limit.py --significance";
 
 ###############
 @Cat=($cat);
@@ -50,7 +50,9 @@ if($channel>100){
     #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012.py";
     #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_30.py";
     #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_15.py";
-    $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout_ProjectionStudy.py";
+    #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout_ProjectionStudy.py";
+    #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_ABC.py";
+    $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_D.py";
 }
 if($channel>200){
     $ECMS="14";
@@ -58,7 +60,7 @@ if($channel>200){
 }
 
 ###scale to the crossections
-if($Input!=0){
+if($Input ne "0"){
     `cp ${Input} ./htt_${ch}.inputs-sm-${ECMS}TeV.root`;
     `scale2SM.py -i htt_${ch}.inputs-sm-${ECMS}TeV.root --samples="ggH, qqH, VH" -e ${ECMS} -v 110-145:5`;
 }

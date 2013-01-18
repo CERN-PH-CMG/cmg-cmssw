@@ -31,10 +31,10 @@
 #rootl mergeDataCardsSM.C\(2\,\"svfitmass\"\)
 
 #####2012D
-rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Dec13\"\,\"\"\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct23\"\,\"tUp\"\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct23\"\,\"tDown\"\)
-#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
+rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Dec21\"\,\"\"\)
+rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Dec21\"\,\"tUp\"\)
+rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Dec21\"\,\"tDown\"\)
+rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
 
 
 #############mT Limit Scan

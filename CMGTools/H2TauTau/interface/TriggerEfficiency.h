@@ -525,21 +525,49 @@ public:
   } 
 
 
-
-
   ////////////////////Moriond Top-Up/////////////////////////////
   double effMu_muTau_Data_2012D(double pt, double eta){
     if (fabs(eta)<0.8)                        return efficiency (pt,15.9852,0.0428581,0.0160247,1.69952,0.971443) ;
     else if (0.8<=fabs(eta) && fabs(eta)<1.2) return efficiency (pt,16.7041,0.383545,0.467605,1.59941,0.882451) ;
     else                                      return efficiency (pt,15.9994,7.37077e-05,7.21076e-08,1.58178,0.861339) ;
   }
+  //for muon MC use same curve as for ABC, Rebecca did not measure a new one for 2012D alone.
+
   double effTau_muTau_Data_2012D(double pt, double eta) {
     if(fabs(eta)<1.5)  return efficiency(pt,19.09,    0.236111,    0.140104,    2.361672,    0.9137);
     else               return efficiency(pt,19.49,    0.003359,    0.005832,    1.000378,    85.3401);
   }
-  double effTau_muTau_MC53X_2012D(double pt, double eta) {
+  double effTau_muTau_MC_2012D(double pt, double eta) {
     if(fabs(eta)<1.5)  return efficiency(pt,18.84,    0.962342,    2.103198,    1.014981,    1.8846);
     else               return efficiency(pt,19.01,    0.492647,    0.449299,    137.190323,    0.8850);
+  }
+
+  ///full dataset ABCD
+  double effMu_muTau_Data_2012ABCD(double pt, double eta){
+    if      (eta<-1.2)  return efficiency (pt,15.9825,7.90724e-05,5.49275e-08,1.6403,0.858285) ;
+    else if (eta<-0.8)  return efficiency (pt,17.3283,0.707103,1.2047,1.3732,0.900519) ;
+    else if (eta< 0.0)  return efficiency (pt,15.9828,0.0412999,0.0177441,1.66934,0.970097) ;
+    else if (eta< 0.8)  return efficiency (pt,15.9802,0.0548775,0.020313,1.79791,0.968398) ;
+    else if (eta< 1.2)  return efficiency (pt,16.8396,0.458636,0.633185,1.5706,0.8848) ;
+    else                return efficiency (pt,15.9987,8.94398e-05,5.18549e-08,1.8342,0.854625) ;
+  }
+
+  double effMu_muTau_MC_2012ABCD(double pt, double eta){
+    if      (eta<-1.2)  return efficiency (pt,16.0051,2.45144e-05,4.3335e-09,1.66134,0.87045) ;
+    else if (eta<-0.8)  return efficiency (pt,17.3135,0.747636,1.21803,1.40611,0.934983) ;
+    else if (eta< 0.0)  return efficiency (pt,15.9556,0.0236127,0.00589832,1.75409,0.981338) ;
+    else if (eta< 0.8)  return efficiency (pt,15.9289,0.0271317,0.00448573,1.92101,0.978625 ) ;
+    else if (eta< 1.2)  return efficiency (pt,16.5678,0.328333,0.354533,1.67085,0.91699) ;
+    else                return efficiency (pt,15.997,7.90069e-05,4.40036e-08,1.66272,0.884502) ;
+  }
+
+  double effTau_muTau_Data_2012ABCD(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,18.52036251,1.47760312,2.53574445,1.71202550,0.93019930);
+    else               return efficiency(pt,18.41225333,0.76598912,0.60544260,5.38350881,0.85870108);
+  }
+  double effTau_muTau_MC_2012ABCD(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,18.88740627,0.10718873,0.12277723,1.60581265,0.95041892);
+    else               return efficiency(pt,18.30439676,1.44360240,3.79358997,1.07560564,0.93103925);
   }
 
   
@@ -711,16 +739,34 @@ public:
     if (fabs(eta)<1.479)    return efficiency (pt,23.2037,0.947222,1.29024,1.09804,1.53015 ) ;
     else                    return efficiency (pt,21.86,0.979008,0.505753,2.2701,0.94213) ;
   }
+  //for electron MC use curve for ABC
+
   double effTau_eTau_Data_2012D(double pt, double eta) {
     if(fabs(eta)<1.5)  return efficiency(pt,18.73,    0.374578,    0.136068,    5.789410,    0.8638);
     else               return efficiency(pt,19.32,    0.146243,    0.123579,    3.126114,    0.8313);
   }
-  double effTau_eTau_MC53X_2012D(double pt, double eta) {
+  double effTau_eTau_MC_2012D(double pt, double eta) {
     if(fabs(eta)<1.5)  return efficiency(pt,19.22,    0.204905,    0.175676,    2.644803,    0.8974);
     else               return efficiency(pt,18.62,    0.037935,    0.002134,    95.090919,    0.8515);
   }
-
-
+  
+  //full data-set ABCD 
+  double effEle_eTau_Data_2012ABCD(double pt, double eta){
+    if(fabs(eta)<1.479)  return efficiency (pt,22.9041,1.04728,1.38544,1.22576,1.13019) ;
+    else                 return efficiency (pt,21.9941,1.43419,1.01152,2.28622,0.939872) ;
+  }
+  double effEle_eTau_MC_2012ABCD(double pt, double eta){
+    if(fabs(eta)<1.479)  return efficiency (pt,21.7243,0.619015,0.739301,1.34903,1.02594) ;
+    else                 return efficiency (pt,22.1217,1.34054,1.8885,1.01855,4.7241) ;
+  }
+  double effTau_eTau_Data_2012ABCD(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,18.686211,    1.993524,    3.202713,    3.612693,    0.871640);
+    else               return efficiency(pt,18.472954,    1.606388,    3.468975,    55.629620,    0.828977);
+  }
+  double effTau_eTau_MC_2012ABCD(double pt, double eta) {
+    if(fabs(eta)<1.5)  return efficiency(pt,18.431118,    1.572877,    3.301699,    4.760769,    0.899620);
+    else               return efficiency(pt,18.257217,    1.632443,    9.283116,    40.219585,    0.858643);
+  }
 
 
 

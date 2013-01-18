@@ -9,7 +9,9 @@ TauMuPlotter * configTauMu2012ABCD(TString name, TString path){
   analysis->setQCDOStoSSRatio(1.06);
   analysis->setZTTType(2);
   analysis->mTCut_=20;
-  
+  analysis->eventWeight_="pupWeights4*embeddedGenWeight*triggerEffWeightsTau4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*signalWeight";//
+
+
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
   TauPlusX2012A->setSampleLumi(96.977+316.128+396.213);
@@ -32,16 +34,12 @@ TauMuPlotter * configTauMu2012ABCD(TString name, TString path){
 
   Sample* TauPlusX2012D = new Sample("TauPlusX2012D",path);
   TauPlusX2012D->setDataType("Data");
-  TauPlusX2012D->setSampleLumi(6040);
+  TauPlusX2012D->setSampleLumi(7274);
   analysis->addSample(TauPlusX2012D);
 
   Sample* Embedded2012A = new Sample("Embedded2012A",path);
   Embedded2012A->setDataType("Embedded");
   analysis->addSample(Embedded2012A);
-
-  Sample* Embedded2012A2 = new Sample("Embedded2012A2",path);
-  Embedded2012A2->setDataType("Embedded");
-  analysis->addSample(Embedded2012A2);
 
   Sample* Embedded2012B = new Sample("Embedded2012B",path);
   Embedded2012B->setDataType("Embedded");
@@ -55,9 +53,13 @@ TauMuPlotter * configTauMu2012ABCD(TString name, TString path){
   Embedded2012Cv2->setDataType("Embedded");
   analysis->addSample(Embedded2012Cv2);
 
+  Sample* Embedded2012D = new Sample("Embedded2012D",path);
+  Embedded2012D->setDataType("Embedded");
+  analysis->addSample(Embedded2012D);
+
 
   /////////////Z+Jets
-  float CrossectionScaleFactor=1.011;
+  float CrossectionScaleFactor=1.0;
   cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
   Sample* ZToTauTau = new Sample("ZToTauTau",path);
   ZToTauTau->setDataType("MC");
@@ -226,7 +228,7 @@ TauMuPlotter * configTauMu2012ABCD(TString name, TString path){
   analysis->setQCDColor(kMagenta-10);
   analysis->setWJetsColor(kRed+2);
   analysis->setTTJetsColor(kBlue-8);
-  analysis->setZMuMuColor(kRed);
+  analysis->setZMuMuColor(kBlue);
   analysis->setZTauTauColor(kOrange-4);
   analysis->setSmearHistoRes(0.);
   char title[100];

@@ -11,32 +11,34 @@ TauElePlotter * configTauEle2012Trig(TString name, TString path){
   analysis->mTCut_=20;
   //analysis->eventWeight_="pupWeights1*triggerEffWeightMu*selectionEffWeight*(ditaumass>10)*(mupt>28)*(taupt>16)";//AB
   //analysis->eventWeight_="pupWeight*triggerEffWeightMu*selectionEffWeight*(ditaumass>10)*(mupt>28)*(taupt>16)";  //ABC
-  analysis->eventWeight_="pupWeights3*triggerEffWeightMu*selectionEffWeight*(ditaumass>10)*(mupt>28)*(taupt>20)";  //D
+  //analysis->eventWeight_="pupWeights3*triggerEffWeightMu*selectionEffWeight*(ditaumass>10)*(mupt>28)*(taupt>20)";  //D
+  analysis->eventWeight_="pupWeights4*(ditaumass>10)*(mupt>28)*(taupt>18)";  //ABCD
  
 
-//   Sample* SingleElectron2012A = new Sample("SingleElectron2012A",path);
-//   SingleElectron2012A->setDataType("Data");
-//   SingleElectron2012A->setSampleLumi(96.977+316.128+396.213);
-//   analysis->addSample(SingleElectron2012A);
+  Sample* SingleElectron2012A = new Sample("SingleElectron2012A",path);
+  SingleElectron2012A->setDataType("Data");
+  SingleElectron2012A->setSampleLumi(96.977+316.128+396.213);
+  analysis->addSample(SingleElectron2012A);
 
-//   Sample* SingleElectron2012B = new Sample("SingleElectron2012B",path);
-//   SingleElectron2012B->setDataType("Data");
-//   SingleElectron2012B->setSampleLumi(4403.);
-//   analysis->addSample(SingleElectron2012B);
+  Sample* SingleElectron2012B = new Sample("SingleElectron2012B",path);
+  SingleElectron2012B->setDataType("Data");
+  SingleElectron2012B->setSampleLumi(4403.);
+  analysis->addSample(SingleElectron2012B);
 
-//   Sample* SingleElectron2012Cv1 = new Sample("SingleElectron2012Cv1",path);
-//   SingleElectron2012Cv1->setDataType("Data");
-//   SingleElectron2012Cv1->setSampleLumi(495.003);
-//   analysis->addSample(SingleElectron2012Cv1);
+  Sample* SingleElectron2012Cv1 = new Sample("SingleElectron2012Cv1",path);
+  SingleElectron2012Cv1->setDataType("Data");
+  SingleElectron2012Cv1->setSampleLumi(495.003);
+  analysis->addSample(SingleElectron2012Cv1);
 
-//   Sample* SingleElectron2012Cv2 = new Sample("SingleElectron2012Cv2",path);
-//   SingleElectron2012Cv2->setDataType("Data");
-//   SingleElectron2012Cv2->setSampleLumi(1288 + 4828 + 281);
-//   analysis->addSample(SingleElectron2012Cv2);
+  Sample* SingleElectron2012Cv2 = new Sample("SingleElectron2012Cv2",path);
+  SingleElectron2012Cv2->setDataType("Data");
+  SingleElectron2012Cv2->setSampleLumi(1288 + 4828 + 281);
+  analysis->addSample(SingleElectron2012Cv2);
 
   Sample* SingleElectron2012D = new Sample("SingleElectron2012D",path);
   SingleElectron2012D->setDataType("Data");
-  SingleElectron2012D->setSampleLumi(6040);
+  //SingleElectron2012D->setSampleLumi(6040);
+  SingleElectron2012D->setSampleLumi(7274);
   analysis->addSample(SingleElectron2012D);
 
 
@@ -53,10 +55,10 @@ TauElePlotter * configTauEle2012Trig(TString name, TString path){
   ZToEE->setCrossection(ZToTauTau->getCrossection());
   analysis->addSample(ZToEE);
 
-//   Sample* ZToLJet = new Sample("ZToLJet",path);
-//   ZToLJet->setDataType("MC");
-//   ZToLJet->setCrossection(ZToTauTau->getCrossection());
-//   analysis->addSample(ZToLJet);
+  Sample* ZToLJet = new Sample("ZToLJet",path);
+  ZToLJet->setDataType("MC");
+  ZToLJet->setCrossection(ZToTauTau->getCrossection());
+  analysis->addSample(ZToLJet);
 
   /////////W+jets
   Sample * WJetsToLNu=new Sample("WJetsToLNu",path);
