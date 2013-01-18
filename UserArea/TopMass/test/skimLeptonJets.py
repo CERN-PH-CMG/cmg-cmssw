@@ -296,9 +296,20 @@ process.fourJetsEleJetSel = cms.EDFilter("PATCandViewCountFilter",
 
 # Run the weights for PU
 process.load('CMGTools.RootTools.utils.vertexWeight.vertexWeight_cff')
-process.genSequence = cms.Sequence(
-   process.vertexWeightSequence 
-)
+#process.genSequence = cms.Sequence(
+#   process.vertexWeightSequence 
+#)
+
+#you need to do this: cvs up -d -A CMGTools/RootTools/data/vertexWeight/Pileup_2012ABCD.true.root
+from CMGTools.RootTools.utils.vertexWeight.vertexWeights2012_cfi import *
+process.vertexWeight2012ABCDtrue = cms.EDProducer(
+    "PileUpWeightProducer",
+    verbose = cms.untracked.bool( False ),
+    src = cms.InputTag('addPileupInfo'),
+    type = cms.int32(2),
+    inputHistMC   = cms.string( '../../../CMGTools/RootTools/data/vertexWeight/Pileup_Summer12MC53X.true.root'),
+    inputHistData = cms.string( '../../../CMGTools/RootTools/data/vertexWeight/Pileup_2012ABCD.true.root'),
+    )
 
 
 from CMGTools.Common.physicsObjectPrinter_cfi import *
@@ -387,12 +398,14 @@ process.pMu = cms.Path(
 
 if not runOnData:
    process.pEle += process.vertexWeightSequence
+   process.pEle += process.vertexWeight2012ABCDtrue
    process.pMu  += process.vertexWeightSequence
+   process.pMu  += process.vertexWeight2012ABCDtrue
 
 # Calculate the PDF weights only for the central ttbar sample (it takes ~2 mins per event)
-if 'TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola' in options.sampleLocation and not runOnData:
-   process.pEle += process.pdfWeights
-   process.pMu  += process.pdfWeights
+#if 'TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola' in options.sampleLocation and not runOnData:
+#   process.pEle += process.pdfWeights
+#   process.pMu  += process.pdfWeights
    
 process.outLepton = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string(options.sampleName+'_treeCMG_leptonJetsSkim.root'),
@@ -406,6 +419,7 @@ process.outLepton = cms.OutputModule("PoolOutputModule",
                                 				       'keep *_generator_*_*',
                                 				       'keep *_cmgTop*_*_*',
 								       'keep *_vertexWeightSummer12*_*_*',
+								       'keep *_vertexWeight2012ABCDtrue*_*_*',
 								       'keep *_*Filter*_*_*',
 								       'keep *_primaryVertexFilter*_*_*'  ,
                                                                        'keep *_pdfWeights_*_*',

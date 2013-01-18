@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.11 2012/12/10 16:51:57 jueugste Exp $
+// $Id: TtbarLeptonJets.cc,v 1.12 2013/01/10 14:32:45 palencia Exp $
 //
 //
 
@@ -264,6 +264,10 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   iEvent.getByLabel("vertexWeightSummer12MC53XHCPData", puWeight2012AB);
   if(!puWeight2012AB.isValid() && !isData) cerr << "  WARNING: puWeight2012AB is not valid! " << endl;
 
+  edm::Handle<double> puWeight2012ABCD;
+  iEvent.getByLabel("vertexWeight2012ABCDtrue", puWeight2012ABCD);
+  if(!puWeight2012ABCD.isValid() && !isData) cerr << "  WARNING: puWeight2012ABCD is not valid! " << endl;
+
   // Info for PDFs weights
   edm::Handle<GenEventInfoProduct> pdfstuff;
   iEvent.getByLabel("generator", pdfstuff);
@@ -285,7 +289,7 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   
   double puWeightCMG = 1.0;
   if(!isData){
-     puWeightCMG = *puWeight2012AB;
+     puWeightCMG = *puWeight2012ABCD;
      if(verbose) std::cout << "  pu weight = " << puWeightCMG << std::endl;
   }
   // adding tihher weights for MC
