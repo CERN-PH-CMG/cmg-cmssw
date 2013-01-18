@@ -33,7 +33,7 @@ void plotTriggerEffFits(TString effFile,float xmin=0,float xmax=0){
  
   std::cout<<endl<<effFile.Data()<<" : "<<endl;
   //printf("m0        sigma    alpha    n        norm\n");
-  printf("%.2f,    %.6f,    %.6f,    %.6f,    %.4f\n",HFitPars->GetBinContent(1),HFitPars->GetBinContent(2),HFitPars->GetBinContent(3),HFitPars->GetBinContent(4),HFitPars->GetBinContent(5));
+  printf("%.6f,    %.6f,    %.6f,    %.6f,    %.6f\n",HFitPars->GetBinContent(1),HFitPars->GetBinContent(2),HFitPars->GetBinContent(3),HFitPars->GetBinContent(4),HFitPars->GetBinContent(5));
   std::cout<<endl;
 
 }
@@ -78,26 +78,26 @@ void runTriggerEffFits(){
  
 
 
-  ///////////////////////////mu-Tau Dec21
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_AB_Data.root",19,50);
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_AB_Data.root",19,50);
+//   ///////////////////////////mu-Tau Dec21
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_AB_Data.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_AB_Data.root",19,50);
 
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_ABC_Data.root",19,50);
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_ABC_Data.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_ABC_Data.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_ABC_Data.root",19,50);
 
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_D_Data.root",19,50);
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_D_Data.root",19,35);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_D_Data.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_D_Data.root",19,35);
 
 
-  //53X MC
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_AB_MC.root",19,50);
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_AB_MC.root",19,40);
+//   //53X MC
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_AB_MC.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_AB_MC.root",19,40);
 
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_ABC_MC.root",19,50);
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_ABC_MC.root",19,45);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_ABC_MC.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_ABC_MC.root",19,45);
 
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_D_MC.root",19,50);
-  plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_D_MC.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_D_MC.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_D_MC.root",19,50);
 
 
 //   ///////////////////////////e-Tau Dec21
@@ -121,6 +121,31 @@ void runTriggerEffFits(){
 
 //   plotTriggerEffFits("TauTriggerEfficiency_eTau_Barrel_D_MC.root",19,50);
 //   plotTriggerEffFits("TauTriggerEfficiency_eTau_EndCap_D_MC.root",19,50);
+
+
+
+  ///////////////////////////mu-Tau Dec25
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_ABCD_Data.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_ABCD_Data.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_ABCD_MC.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_ABCD_MC.root",19,50);
+
+//   plotTriggerEffFits("TauTriggerEfficiency_eTau_Barrel_ABCD_Data.root",19,40);
+//   plotTriggerEffFits("TauTriggerEfficiency_eTau_EndCap_ABCD_Data.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_eTau_Barrel_ABCD_MC.root",19,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_eTau_EndCap_ABCD_MC.root",19,50);
+
+
+  ///////////////////////////mu-Tau Jan11
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_ABCD_Data.root",18,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_ABCD_Data.root",18,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_Barrel_ABCD_MC.root",18,50);
+//   plotTriggerEffFits("TauTriggerEfficiency_muTau_EndCap_ABCD_MC.root",18,50);
+
+  plotTriggerEffFits("TauTriggerEfficiency_eTau_Barrel_ABCD_Data.root",18,40);
+  plotTriggerEffFits("TauTriggerEfficiency_eTau_EndCap_ABCD_Data.root",18,50);
+  plotTriggerEffFits("TauTriggerEfficiency_eTau_Barrel_ABCD_MC.root",18,50);
+  plotTriggerEffFits("TauTriggerEfficiency_eTau_EndCap_ABCD_MC.root",18,50);
 
 
 

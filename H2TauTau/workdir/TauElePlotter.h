@@ -109,7 +109,6 @@ public:
   TH1F* getQCDIncWNJet();
 
   //
-  TH1F* getWNJetSumAll();
   TH1F* getWNJetSumAllNoChCut();
   TH1F* getWJetsNJetAllNoChCut();//combined without proper weights
   TH1F* getWNJetSumAllNoChNoMTCut();

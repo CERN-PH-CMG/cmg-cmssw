@@ -185,6 +185,8 @@ protected:
 
 
   //generator variables
+  int saveLHENUP_;
+  int lhenup_;
   float genbosonmass_;
   float genbosonpt_;
   float genbosoneta_;
@@ -222,7 +224,9 @@ protected:
   float ditauphi_;
   float svfitmass_;
   float mutaucostheta_;
-
+  float ditaudeltaR_;
+  float ditaudeltaEta_;
+  float ditaudeltaPhi_;
 
   //lepton variables
   float mupt_;
@@ -243,6 +247,7 @@ protected:
   float mutruthpt_;
   float mutrutheta_;
   math::XYZTLorentzVector mup4_;
+  int   mucharge_;
   
 
   //tau variables
@@ -275,13 +280,15 @@ protected:
   float tauleadhcal_;
   float tauleadecal_;
   math::XYZTLorentzVector taup4_;
-
+  int   taucharge_;
 
   //met variables
   float pftransversemass_;
   double pfmetpt_;
   double pfmetphi_;
   float transversemass_;
+  double metptraw_;//save met without recoil correction
+  double metphiraw_;
   double metpt_;//double needed by recoil corrector
   double metphi_;
   float  metsigcov00_;
@@ -469,6 +476,10 @@ protected:
       exit(0);
     }
     
+    
+    //save met without recoil correction
+    metptraw_=metpt_;
+    metphiraw_=metphi_;
     if(recoilCorreciton_>0){
       if(!genBoson_){
 	cout<<" recoilCorrection requested but no genBoson_ available"<<endl;
@@ -495,13 +506,6 @@ protected:
 	corrector_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
       else if(recoilCorreciton_<20)
 	corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
-      //       else if(recoilCorreciton_<30) //2012 MVA corrector
-      // 	corrector2012_.CorrectType1(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
-      //       else if(recoilCorreciton_<40) //2012 MVA corrector
-      // 	corrector2012_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
-      
-      //smear the met even more
-      //metpt_=metpt_*( (randsigma_>0. && njet_>0  ) ? randEngine_.Gaus(1.,randsigma_) : 1.);
     }
     
     

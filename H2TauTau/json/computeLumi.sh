@@ -90,3 +90,6 @@ which lumiCalcVersion
 
 ##pile-up for 2012ABCD: full 2012D 
 #pileupCalc.py -i Cert_8TeV_PromptReco_Collisions12_JSON_for2012ABCDPileUp.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 69400 --maxPileupBin 60 --numPileupBins 60  Pileup_2012ABCD.true.root
+
+##pile-up for 2012BCD (for Will)
+#pileupCalc.py -i Cert_PromptReco_Collisions12_JSON_for2012BCDPileUp.txt --inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/PileUp/pileup_latest.txt --calcMode true --minBiasXsec 69400 --maxPileupBin 60 --numPileupBins 60  Pileup_2012BCD.true.root

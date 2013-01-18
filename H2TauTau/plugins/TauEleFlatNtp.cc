@@ -359,115 +359,107 @@ void TauEleFlatNtp::beginJob(){
    return 1;
  }
 
- bool TauEleFlatNtp::fill(){
+bool TauEleFlatNtp::fill(){
 
-   BaseFlatNtp::fill();
+  BaseFlatNtp::fill();
 
-   /////mu and tau trigger efficiency weight
-   triggerEffWeight_=1.;
-   triggerEffWeightMu_=1.;
-   triggerEffWeightTau_=1.;
-   selectionEffWeight_=1.;
-   selectionEffWeightId_=1.;
-   selectionEffWeightIso_=1.;
+  /////mu and tau trigger efficiency weight
+  eventweight_=1.;
+  triggerEffWeight_=1.;
+  triggerEffWeightMu_=1.;
+  triggerEffWeightTau_=1.;
+  selectionEffWeight_=1.;
+  selectionEffWeightId_=1.;
+  selectionEffWeightIso_=1.;
 
-   for(long i=0;i<5;i++){
-     triggerEffWeightsMu_[i]=1.;
-     triggerEffWeightsTau_[i]=1.;
-     selectionEffWeightsId_[i]=1.;
-     selectionEffWeightsIso_[i]=1.;
-   }
+  for(long i=0;i<5;i++){
+    triggerEffWeightsMu_[i]=1.;
+    triggerEffWeightsTau_[i]=1.;
+    selectionEffWeightsId_[i]=1.;
+    selectionEffWeightsIso_[i]=1.;
+  }
 
-   if(dataType_==0 || dataType_==2){
+  if(dataType_==0 || dataType_==2){
   
-     ///trigger corrections
-     if(dataPeriodFlag_==2011){
-       if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
-	 if(triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	   triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	     /triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 if(triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	   triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	     /triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-       }else{//no trigger applied --> apply efficiency
-	 triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-       }
-       //id+isolation corrections
-       selectionEffWeight_ *= selectionEff_.effCorrEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-     }
+    ///trigger corrections
+    if(dataPeriodFlag_==2011){
+      if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
+	if(triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }else{//no trigger applied --> apply efficiency
+	triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }
+      //id+isolation corrections
+      selectionEffWeight_ *= selectionEff_.effCorrEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+    }
 
-     if(dataPeriodFlag_==2012){
+    if(dataPeriodFlag_==2012){
        
-       if(trigPaths_.size()>0){
+      if(trigPaths_.size()>0){
 
-	 //////////////////Nominal
-	 if(triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	   triggerEffWeightTau_ = triggerEff_.effTau2012ABC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	     /triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeightsTau_[0] = triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta()); 
+	if(triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeightsMu_[0] =  triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	if(triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeightsTau_[1] = triggerEff_.effTau2012ABC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeightsMu_[1] = triggerEff_.effEle2012_Rebecca_TauEle_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	if(triggerEff_.effTau_eTau_MC_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeightsTau_[2] = triggerEff_.effTau_eTau_Data_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.effTau_eTau_MC_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeightsMu_[2] = triggerEff_.effEle_eTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	if(triggerEff_.effTau_eTau_MC_2012ABCD(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
+	  triggerEffWeightsTau_[3] = triggerEff_.effTau_eTau_Data_2012ABCD(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.effTau_eTau_MC_2012ABCD(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.effEle_eTau_MC_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
+	  triggerEffWeightsMu_[3] = triggerEff_.effEle_eTau_Data_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+	    /triggerEff_.effEle_eTau_MC_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
-	 if(triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	   triggerEffWeightMu_ = triggerEff_.effEle2012_Rebecca_TauEle_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	     /triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
-
-	 ////extra trigger weights
-	 if(triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	   triggerEffWeightsTau_[0] = triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	     /triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta()); 
-	 if(triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	   triggerEffWeightsMu_[0] =  triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	     /triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-	 if(triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	   triggerEffWeightsTau_[1] = triggerEff_.effTau2012ABC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	     /triggerEff_.eff2012Tau20MC53X_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 if(triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	   triggerEffWeightsMu_[1] = triggerEff_.effEle2012_Rebecca_TauEle_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	     /triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-	 if(triggerEff_.effTau_eTau_MC53X_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	   triggerEffWeightsTau_[2] = triggerEff_.effTau_eTau_Data_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	     /triggerEff_.effTau_eTau_MC53X_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 if(triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	   triggerEffWeightsMu_[2] = triggerEff_.effEle_eTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	     /triggerEff_.eff_2012_Rebecca_TauEle_Ele2253XMC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 	 
-       }else{//no trigger applied --> apply efficiency
-	 triggerEffWeightTau_ = triggerEff_.effTau2012ABC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 triggerEffWeightMu_  = triggerEff_.effEle2012_Rebecca_TauEle_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-
-	 triggerEffWeightsTau_[0] = triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 triggerEffWeightsMu_[0] =   triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-	 triggerEffWeightsTau_[1] = triggerEff_.effTau2012ABC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 triggerEffWeightsMu_[1] = triggerEff_.effEle2012_Rebecca_TauEle_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-	 triggerEffWeightsTau_[2] =  triggerEff_.effTau_eTau_Data_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	 triggerEffWeightsMu_[2] = triggerEff_.effEle_eTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }else{//no trigger applied --> apply Data efficiency
+	triggerEffWeightsTau_[0] = triggerEff_.effTau2012AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightsMu_[0] =   triggerEff_.effEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	triggerEffWeightsTau_[1] = triggerEff_.effTau2012ABC_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightsMu_[1] = triggerEff_.effEle2012_Rebecca_TauEle_ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	triggerEffWeightsTau_[2] =  triggerEff_.effTau_eTau_Data_2012D(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightsMu_[2] = triggerEff_.effEle_eTau_Data_2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	triggerEffWeightsTau_[3] =  triggerEff_.effTau_eTau_Data_2012ABCD(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightsMu_[3] = triggerEff_.effEle_eTau_Data_2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 	 
-       }
+      }
 
-       //id
-       selectionEffWeightId_ = selectionEff_.effCorrEleID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-       selectionEffWeightsId_[0] = selectionEff_.effCorrEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-       selectionEffWeightsId_[1] = selectionEff_.effCorrEleID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-       selectionEffWeightsId_[2] = selectionEff_.effCorrEleID2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      //id
+      selectionEffWeightsId_[0] = selectionEff_.effCorrEle2012AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      selectionEffWeightsId_[1] = selectionEff_.effCorrEleID2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      selectionEffWeightsId_[2] = selectionEff_.effCorrEleID2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      selectionEffWeightsId_[3] = selectionEff_.effCorrEleID2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
 
-       //isolation
-       if(dataType_==0){
-	 selectionEffWeightIso_ = selectionEff_.effCorrEleIso2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-	 selectionEffWeightsIso_[0] = 1.;//need to separate
-	 selectionEffWeightsIso_[1] = selectionEff_.effCorrEleIso2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-	 selectionEffWeightsIso_[2] = selectionEff_.effCorrEleIso2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-       }
-     }
+      //isolation
+      if(dataType_==0){
+	selectionEffWeightsIso_[0] = 1.;//need to separate
+	selectionEffWeightsIso_[1] = selectionEff_.effCorrEleIso2012ABC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	selectionEffWeightsIso_[2] = selectionEff_.effCorrEleIso2012D(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	selectionEffWeightsIso_[3] = selectionEff_.effCorrEleIso2012ABCD(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }
+    }
+     
+  }
 
-   }
-
-   triggerEffWeight_ = triggerEffWeightMu_*triggerEffWeightTau_;
-   selectionEffWeight_ = selectionEffWeightId_* selectionEffWeightIso_;
-   eventweight_ = pupWeight_*embeddedGenWeight_*triggerEffWeight_*selectionEffWeight_*signalWeight_;
-
-
-
-   ///////////////check some filter paths
+   
+  ///////////////check some filter paths
   for(long p=0;p<10;p++){  trigPath_[p]=0;  trigTest_[p]=0;}
   int i=0;
   for(std::vector<edm::InputTag *>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){//cmg ObjetSel
@@ -478,7 +470,7 @@ void TauEleFlatNtp::beginJob(){
 	if(trigObjMatch(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),(*path)->label(),(*path)->process(),11)
 	   &&
 	   (trigObjMatch(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),(*path)->label(),(*path)->instance(),15)
-	     ||trigObjMatch(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),(*path)->label(),(*path)->instance(),0)
+	    ||trigObjMatch(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),(*path)->label(),(*path)->instance(),0)
 	    )
 	   )trigPath_[i]=1;
 	
@@ -519,7 +511,8 @@ void TauEleFlatNtp::beginJob(){
    muz_=diTauSel_->leg2().vertex().z();
    mutruth_=truthMatchLeg(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),mutruthpt_,mutrutheta_,mutruthstatus_);
    mumvaid_=diTauSel_->leg2().mvaNonTrigV0();
- 
+   mucharge_=diTauSel_->leg2().charge();
+
    taumass_=diTauSel_->leg1().p4().M();
    taupt_=diTauSel_->leg1().pt();
    taueta_=diTauSel_->leg1().eta();
@@ -536,6 +529,7 @@ void TauEleFlatNtp::beginJob(){
    tauz_=diTauSel_->leg1().leadChargedHadrVertex().z();
    tauiso_=diTauSel_->leg1().relIso(0.5);
    tauisomva_=diTauSel_->leg1().tauID("byRawIsoMVA");
+   taucharge_=diTauSel_->leg1().charge();
 
    tauleadpt_=diTauSel_->leg1().leadChargedHadrPt();  
    tauleadhcal_=diTauSel_->leg1().leadChargedHadrHcalEnergy();
@@ -567,9 +561,14 @@ void TauEleFlatNtp::beginJob(){
    ditaueta_=diTauSel_->eta();
    ditaupt_=diTauSel_->pt();
    ditauphi_=diTauSel_->phi();
-   svfitmass_=diTauSel_->massSVFit();
-
-
+   svfitmass_=0.;//diTauSel_->massSVFit();
+   ditaudeltaR_= reco::deltaR(diTauSel_->leg1().p4().eta(),diTauSel_->leg1().p4().phi(),
+			      diTauSel_->leg2().p4().eta(),diTauSel_->leg2().p4().phi()
+			      ); 
+   ditaudeltaEta_=diTauSel_->leg2().p4().eta()-diTauSel_->leg1().p4().eta();;
+   ditaudeltaPhi_=diTauSel_->leg2().p4().phi()-diTauSel_->leg1().p4().phi();;
+   
+   
    ///get the jets //need the jets here because of randomization of mT
    edm::Handle< std::vector<cmg::PFJet> > eventJetList;
    iEvent_->getByLabel(pfJetListTag_,eventJetList);

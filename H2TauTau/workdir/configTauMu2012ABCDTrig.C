@@ -10,8 +10,10 @@ TauMuPlotter * configTauMu2012ABCDTrig(TString name, TString path){
   analysis->setZTTType(1);
   analysis->mTCut_=20;//30 used by Josh for HCP curves
   //analysis->eventWeight_="(pupWeights1*(npu>-1)+1.*(npu==-1))*(taupt>18)";//AB
-  analysis->eventWeight_="pupWeight*(taupt>18)";//ABC
+  //analysis->eventWeight_="pupWeight*(taupt>18)";//ABC
   //analysis->eventWeight_="(pupWeights3*(npu>-1)+1.*(npu==-1))*(taupt>18)";//D
+  //analysis->eventWeight_="pupWeights3*(taupt>18)";//D
+  analysis->eventWeight_="pupWeights4*(taupt>18)";//ABCD
 
 
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
@@ -34,10 +36,10 @@ TauMuPlotter * configTauMu2012ABCDTrig(TString name, TString path){
   TauPlusX2012Cv2->setSampleLumi(1288 + 4828 + 281);
   analysis->addSample(TauPlusX2012Cv2);
 
-//   Sample* TauPlusX2012D = new Sample("TauPlusX2012D",path);
-//   TauPlusX2012D->setDataType("Data");
-//   TauPlusX2012D->setSampleLumi(6040);
-//   analysis->addSample(TauPlusX2012D);
+  Sample* TauPlusX2012D = new Sample("TauPlusX2012D",path);
+  TauPlusX2012D->setDataType("Data");
+  TauPlusX2012D->setSampleLumi(7274);
+  analysis->addSample(TauPlusX2012D);
 
   /////////////Z+Jets
   float CrossectionScaleFactor=1.01;
