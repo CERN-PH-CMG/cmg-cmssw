@@ -30,8 +30,8 @@ def getFiles(datasets, user, pattern):
                              )
         files.extend(ds.fileNames)
     
-    return ['root://eoscms//eos/cms%s' % f for f in files]
-
+    return ['root://eoscms//eos/cms%s' % f for f in files[:1]]
+    
 def deltaR(a,b):
     deta = a.eta() - b.eta()
     dphi = a.phi() - b.phi()
@@ -209,6 +209,7 @@ struct Filters{\
     Bool_t muBoxFilter;\
     Bool_t eleTriggerFilter;\
     Bool_t hadTriggerFilter;\
+    Bool_t quadJetTriggerFilter;\
     Bool_t muTriggerFilter;\
     Bool_t metFilter;\
     Bool_t isolatedTrack5Filter;\
@@ -260,6 +261,8 @@ struct Filters{\
     tree.Branch('jet_fl',jet_fl)
     jet_mult = std.vector('double')()
     tree.Branch('jet_mult',jet_mult)
+    jet_had_frac = std.vector('double')()
+    tree.Branch('jet_had_frac',jet_had_frac)
     jet_girth = std.vector('double')()
     tree.Branch('jet_girth',jet_girth)
     jet_girth_ch = std.vector('double')()
@@ -305,6 +308,7 @@ struct Filters{\
     pfcandstrkisoH = Handle('std::vector<float>')
     pfcandschgH = Handle('std::vector<int>')
 
+#    options.outputFile = 'test.root'
     store = RootFile.RootFile(options.outputFile)
     store.add(tree)
 
@@ -324,6 +328,7 @@ struct Filters{\
         jet_csv.clear()
         jet_fl.clear()
         jet_mult.clear()
+        jet_had_frac.clear()
         jet_girth.clear()
         jet_girth_ch.clear()
         jet_veto.clear()
@@ -429,6 +434,8 @@ struct Filters{\
             jet_fl.push_back(jet.partonFlavour())
             #charged multiplicity
             jet_mult.push_back(jet.component(1).number() + jet.component(2).number() + jet.component(3).number() )
+            #hadronic (neutral + charged) fraction
+            jet_had_frac.push_back(jet.component(1).fraction()+jet.component(5).fraction())
             #store whether or not this was removed from the lepton veto jets
             jet_veto.push_back( int( (jet.pt(), jet.eta() ) in jet_param_veto) )
             vars.MEFF += jet.pt()
@@ -657,12 +664,14 @@ struct Filters{\
                 trigger.getSelectionRegExp("^HLT_QuadJet[0-9]+_v[0-9]+$") or\
                 trigger.getSelectionRegExp("^HLT_QuadJet[0-9]+_L1FastJet_v[0-9]+$") or \
                 trigger.getSelectionRegExp("^HLT_SixJet[0-9]+.*_v[0-9]+$")
+            filters.quadJetTriggerFilter =   trigger.getSelectionRegExp("^HLT_QuadJet[0-9]+_v[0-9]+$") 
             filters.eleTriggerFilter = trigger.getSelectionRegExp("^HLT_Ele[0-9]+_WP80_v[0-9]+$")
             filters.muTriggerFilter = trigger.getSelectionRegExp("^HLT_Mu[0-9]+_eta2p1_v[0-9]+$") or \
                 trigger.getSelectionRegExp("^HLT_IsoMu[0-9]+_eta2p1_v[0-9]+$")
             del trigger
         else:
             filters.hadTriggerFilter = False
+            filters.quadJetTriggerFilter = False
             filters.muTriggerFilter = False
             filters.eleTriggerFilter = False
         
