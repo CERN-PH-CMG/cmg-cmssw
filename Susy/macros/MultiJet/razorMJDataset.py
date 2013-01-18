@@ -207,13 +207,14 @@ struct Filters{\
     Bool_t hadBoxFilter;\
     Bool_t eleBoxFilter;\
     Bool_t muBoxFilter;\
-    Bool_t tauBoxFilter;\
     Bool_t eleTriggerFilter;\
     Bool_t hadTriggerFilter;\
     Bool_t muTriggerFilter;\
     Bool_t metFilter;\
     Bool_t isolatedTrack5Filter;\
     Bool_t isolatedTrack10Filter;\
+    Bool_t isolatedTrack5LeptonFilter;\
+    Bool_t isolatedTrack10LeptonFilter;\
 };""")
 
     top_dir = os.path.join(os.environ['CMSSW_BASE'],'src/CMGTools/Susy/macros/MultiJet')
@@ -343,18 +344,18 @@ struct Filters{\
         #get the LHE product info
         vars.mStop = -1
         vars.mLSP = -1
-        if runOnMC:
-            event.getByLabel(('source'),lheH)
-            if lheH.isValid():
-                lhe = lheH.product()
-                for i in xrange(lhe.comments_size()):
-                    comment = lhe.getComment(i)
-                    if 'model' not in comment: continue
-                    comment = comment.replace('\n','')
-                    parameters = comment.split(' ')[-1]
-                    masses = map(float,parameters.split('_')[-2:])
-                    vars.mStop = masses[0]
-                    vars.mLSP = masses[1]
+       ##  if runOnMC:
+##             event.getByLabel(('source'),lheH)
+##             if lheH.isValid():
+##                 lhe = lheH.product()
+##                 for i in xrange(lhe.comments_size()):
+##                     comment = lhe.getComment(i)
+##                     if 'model' not in comment: continue
+##                     comment = comment.replace('\n','')
+##                     parameters = comment.split(' ')[-1]
+##                     masses = map(float,parameters.split('_')[-2:])
+##                     vars.mStop = masses[0]
+##                     vars.mLSP = masses[1]
 
         #store how many of each model we see
         point = (vars.mStop,vars.mLSP)
@@ -371,8 +372,7 @@ struct Filters{\
         filters.hadBoxFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('razorMJSkimSequenceHadPath'))
         filters.eleBoxFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('razorMJSkimSequenceElePath'))
         filters.muBoxFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('razorMJSkimSequenceMuPath'))
-        filters.tauBoxFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('razorMJSkimSequenceTauPath'))  
-        path = filters.hadBoxFilter or filters.muBoxFilter or filters.eleBoxFilter or filters.tauBoxFilter
+        path = filters.hadBoxFilter or filters.muBoxFilter or filters.eleBoxFilter 
         if skimEvents and not path: continue
 
         #also get the MET filter
@@ -508,6 +508,36 @@ struct Filters{\
                     break
             filters.isolatedTrack5Filter = veto5
             filters.isolatedTrack10Filter = veto10
+
+        #this is for the isolated track veto, for leptonic boxes
+        event.getByLabel(('razorMJLeptonTrackIsolationMaker','pfcandspt'),pfcandsptH)
+        event.getByLabel(('razorMJLeptonTrackIsolationMaker','pfcandstrkiso'),pfcandstrkisoH)
+        event.getByLabel(('razorMJLeptonTrackIsolationMaker','pfcandschg'),pfcandschgH)
+
+        filters.isolatedTrack5LeptonFilter = False
+        filters.isolatedTrack10LeptonFilter = False
+        if pfcandsptH.isValid():
+            pfcandspt = pfcandsptH.product()
+            pfcandstrkiso = pfcandstrkisoH.product()
+            pfcandschg = pfcandschgH.product()
+
+            veto5 = False
+            veto10 = False
+            for i in xrange(len(pfcandspt)):
+                if pfcandspt.at(i) >= 10. and pfcandschg.at(i) > 0:
+                    reliso = pfcandstrkiso.at(i)/pfcandspt.at(i)
+                    if reliso < 0.1:
+                        veto10 = True
+                        veto5  = True
+                elif pfcandspt.at(i) >= 5. and pfcandschg.at(i) > 0:
+                    reliso = pfcandstrkiso.at(i)/pfcandspt.at(i)
+                    if reliso < 0.1:
+                        veto5 = True
+                if veto5 and veto10:
+                    break
+            filters.isolatedTrack5LeptonFilter = veto5
+            filters.isolatedTrack10LeptonFilter = veto10
+
 
         info.BOX_NUM = getBox(info.NBJET,info.nElectronTight,info.nMuonTight,info.nTauTight)
 
