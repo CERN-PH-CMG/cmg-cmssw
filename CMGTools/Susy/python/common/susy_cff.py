@@ -11,7 +11,7 @@ from CMGTools.Susy.common.topGenInfo_cff import *
 from CMGTools.RootTools.utils.vertexWeight.vertexWeights2012_cfi import *
 
 susyGenSequence  = cms.Sequence(
-    #dumpPdfWeights+
+    dumpPdfWeights+
     simpleGenInfo+
     #emulate2011Trigger+
     topGenInfo+
