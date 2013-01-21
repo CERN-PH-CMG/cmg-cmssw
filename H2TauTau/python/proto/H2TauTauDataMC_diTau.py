@@ -8,11 +8,16 @@ from CMGTools.RootTools.DataMC.AnalysisDataMCPlot import AnalysisDataMC
 from CMGTools.RootTools.fwlite.Weight import Weight
 from CMGTools.RootTools.fwlite.Weight import printWeights
 from CMGTools.RootTools.Style import *
-from ROOT import kPink, kOrange, kViolet, kGreen, kGray
+from ROOT import kPink, kOrange, kViolet, kGreen, kGray, kMagenta, kRed, kBlue
 
 sOrange = Style(lineColor=1, markerColor=kOrange, fillColor=kOrange)
 sViolet = Style(lineColor=1, markerColor=kViolet, fillColor=kViolet)
 sGray   = Style(lineColor=1, markerColor=kGray,   fillColor=kGray)
+
+sZtt    = Style(lineColor=1, markerColor=kOrange - 4, fillColor=kOrange - 4, fillStyle=1001)
+sQCD    = Style(lineColor=1, markerColor=kMagenta-10, fillColor=kMagenta-10, fillStyle=1001)
+sEwk    = Style(lineColor=1, markerColor=kRed    + 2, fillColor=kRed    + 2, fillStyle=1001)
+sttb    = Style(lineColor=1, markerColor=kBlue   - 8, fillColor=kBlue   - 8, fillStyle=1001)
 
 sRedLine   = Style(lineColor=2     , markerColor=2     , fillStyle=0)
 sBlueLine  = Style(lineColor=4     , markerColor=4     , fillStyle=0)
@@ -24,7 +29,7 @@ sRed.fillStyle=1001
 sGreen.fillStyle=1001
 sBlue.fillStyle=1001
 sYellow.fillStyle=1001
-sBlack.fillStyle=1001
+sBlack.fillStyle=0
 
 class H2TauTauDataMC( AnalysisDataMC ):
 
@@ -57,7 +62,8 @@ class H2TauTauDataMC( AnalysisDataMC ):
         super(H2TauTauDataMC, self).__init__(varName, directory, weights)
         offsetx = 0.55
         offsety = 0.1
-        self.legendBorders = 0.13+offsetx,0.56+offsety,0.44+offsetx,0.89+offsety
+        self.legendBorders = 0.6,0.6,0.88,0.88
+        #self.legendBorders = 0.13+offsetx,0.56+offsety,0.44+offsetx,0.89+offsety
 
         self.dataComponents = [ key for key, value in selComps.iteritems() \
                                 if value.isData is True ]
@@ -225,7 +231,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
         
 
     def _InitPrefs(self):
-        '''Definine preferences for each component'''
+        '''Define preferences for each component'''
         self.histPref = {}
         self.histPref['Data']                          = {'style':sBlack,    'layer':-99}
         self.histPref['data_Run2012A_PromptReco_v1']   = {'style':sBlue,     'layer':-1000}
@@ -233,11 +239,14 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['data_Run2012C_PromptReco_v1']   = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2012C_PromptReco_v2']   = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2012D_PromptReco_v1']   = {'style':sBlue,     'layer':-1000}
+
         self.histPref['embed_Run2012A_PromptReco_v1']  = {'style':sBlue,     'layer':-1000}
         self.histPref['embed_Run2012B_PromptReco_v1']  = {'style':sRed,      'layer':-1100}
         self.histPref['embed_Run2012C_PromptReco_v1']  = {'style':sBlue,     'layer':-1000}
-        self.histPref['embed_Run2012C_PromptReco_v2']  = {'style':sRed,      'layer':-1100}
-        self.histPref['embed_Run2012D_PromptReco_v1']  = {'style':sBlue,     'layer':-1000}
+
+        self.histPref['embed_Run2012C_PromptReco_v2']  = {'style':sBlue,     'layer':-1000}
+        self.histPref['embed_Run2012D_PromptReco_v1']  = {'style':sRed,      'layer':-1100}
+
         self.histPref['data_Run2011A_May10ReReco_v1']  = {'style':sViolet,   'layer':-1000}
         self.histPref['data_Run2011A_PromptReco_v4']   = {'style':sBlue,     'layer':-1000}
         self.histPref['data_Run2011A_PromptReco_v6']   = {'style':sRed,      'layer':-1100}
@@ -250,18 +259,31 @@ class H2TauTauDataMC( AnalysisDataMC ):
         self.histPref['embed_Run2011A_03Oct2011_v1']   = {'style':sYellow,   'layer':-1105}
         self.histPref['embed_Run2011A_05Aug2011_v1']   = {'style':sBlack,    'layer':-1150}
         self.histPref['embed_Run2011B_PromptReco_v1']  = {'style':sViolet,   'layer':-1200}
-        self.histPref['TTJets']                        = {'style':sRed,      'layer':1} 
-        self.histPref['WJets']                         = {'style':sBlue,     'layer':2}  
-        self.histPref['W3Jets']                        = {'style':sOrange,   'layer':2}  
-        self.histPref['WJets_Fakes']                   = {'style':sViolet,   'layer':1.5}  
-        self.histPref['WW']                            = {'style':sBlue,     'layer':0.93}  
-        self.histPref['WZ']                            = {'style':sBlue,     'layer':0.92}  
-        self.histPref['ZZ']                            = {'style':sBlue,     'layer':0.91}  
-        self.histPref['DYJets']                        = {'style':sYellow,   'layer':3}
-        self.histPref['DYJets (emb)']                  = {'style':sYellow,   'layer':3}
-        self.histPref['DYJets_Photon']                 = {'style':sYellow,   'layer':2.7}
-        self.histPref['DYJets_Electron']               = {'style':sYellow,   'layer':2.6}
-        self.histPref['DYJets_Fakes']                  = {'style':sYellow,   'layer':2.5}
+        self.histPref['TTJets']                        = {'style':sttb,      'layer':1} 
+        self.histPref['T_s']                           = {'style':sttb,      'layer':1} 
+        self.histPref['T_t'] 	                       = {'style':sttb,      'layer':1} 
+        self.histPref['T_tW'] 	                       = {'style':sttb,      'layer':1} 
+        self.histPref['Tbar_s'] 	               = {'style':sttb,      'layer':1} 
+        self.histPref['Tbar_t'] 	               = {'style':sttb,      'layer':1} 
+        self.histPref['Tbar_tW']                       = {'style':sttb,      'layer':1} 
+        self.histPref['WJets']                         = {'style':sEwk,      'layer':2}  
+        self.histPref['W1Jets']                        = {'style':sEwk,      'layer':2}  
+        self.histPref['W2Jets']                        = {'style':sEwk,      'layer':2}  
+        self.histPref['W3Jets']                        = {'style':sEwk,      'layer':2}  
+        self.histPref['W4Jets']                        = {'style':sEwk,      'layer':2}  
+        self.histPref['WJets_Fakes']                   = {'style':sEwk,      'layer':1.5}  
+        self.histPref['WW']                            = {'style':sEwk,      'layer':0.93}  
+        self.histPref['WZ']                            = {'style':sEwk,      'layer':0.92}  
+        self.histPref['ZZ']                            = {'style':sEwk,      'layer':0.91}  
+        self.histPref['DYJets']                        = {'style':sZtt,      'layer':3}
+        self.histPref['DY1Jets']                       = {'style':sZtt,      'layer':3}
+        self.histPref['DY2Jets']                       = {'style':sZtt,      'layer':3}
+        self.histPref['DY3Jets']                       = {'style':sZtt,      'layer':3}
+        self.histPref['DY4Jets']                       = {'style':sZtt,      'layer':3}
+        self.histPref['DYJets (emb)']                  = {'style':sZtt,      'layer':3}
+        self.histPref['DYJets_Photon']                 = {'style':sZtt,      'layer':2.7}
+        self.histPref['DYJets_Electron']               = {'style':sZtt,      'layer':2.6}
+        self.histPref['DYJets_Fakes']                  = {'style':sZtt,      'layer':2.5}
         self.histPref['QCD15']                         = {'style':sGray,     'layer':5.4}
         self.histPref['QCD30']                         = {'style':sGray,     'layer':5.3}
         self.histPref['QCD50']                         = {'style':sGray,     'layer':5.2}

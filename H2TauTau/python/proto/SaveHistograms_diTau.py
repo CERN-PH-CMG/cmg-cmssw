@@ -6,13 +6,11 @@ from CMGTools.RootTools.RootInit import *
 import math
 
 
-def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
+def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category, emb=False):
     rootfile=TFile(os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+"_tauTau_"+category+"_mH"+str(mass)+"_"+plotVarDataOS.varName+".root","RECREATE")
     channel=rootfile.mkdir("tauTau_"+category)
     
-      
-    
-    if plotVarDataOS.varName == massType+"" :
+    if plotVarDataOS.varName == massType+"" and emb == False:
 		plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted.SetName(str("SM" +str(mass)))
 		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)))
 		plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted.SetName(str("VH" +str(mass)))
@@ -46,24 +44,26 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
 		channel.Add(plotVarDataOS.Hist("QCDdata").weighted)
 		channel.Add(plotVarDataOS.Hist("Data").weighted)
 
-    if plotVarDataOS.varName == massType+"*1.03" :
-		plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted.SetName(str("SM" +str(mass)+"_CMS_scale_tUp"))
-		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)+"_CMS_scale_tUp"))
-		plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted.SetName(str("VH" +str(mass)+"_CMS_scale_tUp"))
+    if plotVarDataOS.varName == massType+"" and emb == True:
+		plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted.SetName(str("SM" +str(mass)))
+		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)))
+		plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted.SetName(str("VH" +str(mass)))
 		#plotVarDataOS.Hist("DYJets").Add(plotVarDataOS.Hist("DYJets_Photon"))
-		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT_CMS_scale_tUp")
-		plotVarDataOS.Hist("DYJets_Electron").weighted.SetName("ZL_CMS_scale_tUp")
-		plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ_CMS_scale_tUp")
+		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT_CMS_scale_t_tautau_8TeVDown")
+		plotVarDataOS.Hist("DYJets_Electron").weighted.SetName("ZL")
+		plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ")
 		if prefixLabel.find('BOOSTED') > 0 :
 		  plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
-		  plotVarDataOS.Hist("WJets").weighted.SetName("W_CMS_scale_tUp")
+		  plotVarDataOS.Hist("WJets").weighted.SetName("W")
 		if prefixLabel.find('VBF') > 0 :
-		  plotVarDataOS.Hist("W3Jets").weighted.SetName("W_CMS_scale_tUp")
-		plotVarDataOS.Hist("TTJets").weighted.SetName("TT_CMS_scale_tUp")
+		  plotVarDataOS.Hist("W3Jets").weighted.SetName("W")
+		plotVarDataOS.Hist("TTJets").weighted.SetName("TT")
 		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("ZZ"))
 		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("WZ"))
-		plotVarDataOS.Hist("WW").weighted.SetName("VV_CMS_scale_tUp")
-		channel.Add(plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted)
+		plotVarDataOS.Hist("WW").weighted.SetName("VV")
+		plotVarDataOS.Hist("QCDdata").weighted.SetName("QCD")
+		plotVarDataOS.Hist("Data").weighted.SetName("data_obs")
+		channel.Add(plotVarDataOS.Hist(str("Higgsgg"+str(mass))).weighted)
 		channel.Add(plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted)
 		channel.Add(plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted)
 		channel.Add(plotVarDataOS.Hist("DYJets").weighted)
@@ -75,36 +75,50 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category):
 		  channel.Add(plotVarDataOS.Hist("W3Jets").weighted)
 		channel.Add(plotVarDataOS.Hist("TTJets").weighted)
 		channel.Add(plotVarDataOS.Hist("WW").weighted)
+		channel.Add(plotVarDataOS.Hist("QCDdata").weighted)
+		channel.Add(plotVarDataOS.Hist("Data").weighted)
 
-    if plotVarDataOS.varName == massType+"*0.97" :
-		plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted.SetName(str("SM" +str(mass)+"_CMS_scale_tDown"))
-		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)+"_CMS_scale_tDown"))
-		plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted.SetName(str("VH" +str(mass)+"_CMS_scale_tDown"))
-		#plotVarDataOS.Hist("DYJets").Add(plotVarDataOS.Hist("DYJets_Photon"))
-		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT_CMS_scale_tDown")
-		plotVarDataOS.Hist("DYJets_Electron").weighted.SetName("ZL_CMS_scale_tDown")
-		plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ_CMS_scale_tDown")
-		if prefixLabel.find('BOOSTED') > 0 :
-		  plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
-		  plotVarDataOS.Hist("WJets").weighted.SetName("W_CMS_scale_tDown")
-		if prefixLabel.find('VBF') > 0 :
-		  plotVarDataOS.Hist("W3Jets").weighted.SetName("W_CMS_scale_tDown")
-		plotVarDataOS.Hist("TTJets").weighted.SetName("TT_CMS_scale_tDown")
-		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("ZZ"))
-		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("WZ"))
-		plotVarDataOS.Hist("WW").weighted.SetName("VV_CMS_scale_tDown")
+    if plotVarDataOS.varName == massType+"*1.03" and emb == False:
+		plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted.SetName(str("SM" +str(mass)+"_CMS_scale_t_tautau_8TeVUp"))
+		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)+"_CMS_scale_t_tautau_8TeVUp"))
+		plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted.SetName(str("VH" +str(mass)+"_CMS_scale_t_tautau_8TeVUp"))
+		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT_CMS_scale_t_tautau_8TeVUp")
 		channel.Add(plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted)
 		channel.Add(plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted)
 		channel.Add(plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted)
 		channel.Add(plotVarDataOS.Hist("DYJets").weighted)
-		channel.Add(plotVarDataOS.Hist("DYJets_Electron").weighted)
-		channel.Add(plotVarDataOS.Hist("DYJets_Fakes").weighted)
-		if prefixLabel.find('BOOSTED') > 0 :
-		  channel.Add(plotVarDataOS.Hist("WJets").weighted)
-		if prefixLabel.find('VBF') > 0 :
-		  channel.Add(plotVarDataOS.Hist("W3Jets").weighted)
-		channel.Add(plotVarDataOS.Hist("TTJets").weighted)
-		channel.Add(plotVarDataOS.Hist("WW").weighted)
+
+    if plotVarDataOS.varName == massType+"*1.03" and emb == True:
+		plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted.SetName(str("SM" +str(mass)+"_CMS_scale_t_tautau_8TeVUp"))
+		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)+"_CMS_scale_t_tautau_8TeVUp"))
+		plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted.SetName(str("VH" +str(mass)+"_CMS_scale_t_tautau_8TeVUp"))
+		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT")
+		channel.Add(plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted)
+		channel.Add(plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted)
+		channel.Add(plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted)
+		channel.Add(plotVarDataOS.Hist("DYJets").weighted)
+
+    if plotVarDataOS.varName == massType+"*0.97" and emb == False:
+		plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted.SetName(str("SM" +str(mass)+"_CMS_scale_t_tautau_8TeVDown"))
+		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)+"_CMS_scale_t_tautau_8TeVDown"))
+		plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted.SetName(str("VH" +str(mass)+"_CMS_scale_t_tautau_8TeVDown"))
+		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT_CMS_scale_t_tautau_8TeVDown")
+		channel.Add(plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted)
+		channel.Add(plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted)
+		channel.Add(plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted)
+		channel.Add(plotVarDataOS.Hist("DYJets").weighted)
+
+    if plotVarDataOS.varName == massType+"*0.97" and emb == True:
+		plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted.SetName(str("SM" +str(mass)+"_CMS_scale_t_tautau_8TeVDown"))
+		plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted.SetName(str("VBF"+str(mass)+"_CMS_scale_t_tautau_8TeVDown"))
+		plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted.SetName(str("VH" +str(mass)+"_CMS_scale_t_tautau_8TeVDown"))
+		channel.Add(plotVarDataOS.Hist(str("Higgsgg" +str(mass))).weighted)
+		channel.Add(plotVarDataOS.Hist(str("HiggsVBF"+str(mass))).weighted)
+		channel.Add(plotVarDataOS.Hist(str("HiggsVH" +str(mass))).weighted)
+
+    if plotVarDataOS.varName == massType+"*1.06" and emb == True:
+		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT_CMS_scale_t_tautau_8TeVUp")
+		channel.Add(plotVarDataOS.Hist("DYJets").weighted)
 
     channel.Write()
     rootfile.Close()
@@ -125,6 +139,8 @@ def saveForPlotting(plotVarDataOS, prefixLabel, mass):
     plotVarDataOS.Hist("WJets").weighted.SetName("W")
     plotVarDataOS.Hist("W3Jets").weighted.SetName("W3")
     plotVarDataOS.Hist("TTJets").weighted.SetName("TT")
+    plotVarDataOS.Hist("T_tW").Add(plotVarDataOS.Hist("Tbar_tW"))
+    plotVarDataOS.Hist("T_tW").weighted.SetName("T")
     plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("ZZ"))
     plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("WZ"))
     plotVarDataOS.Hist("WW").weighted.SetName("VV")
@@ -139,6 +155,7 @@ def saveForPlotting(plotVarDataOS, prefixLabel, mass):
     channel.Add(plotVarDataOS.Hist("WJets").weighted)
     channel.Add(plotVarDataOS.Hist("W3Jets").weighted)
     channel.Add(plotVarDataOS.Hist("TTJets").weighted)
+    channel.Add(plotVarDataOS.Hist("T_tW").weighted)
     channel.Add(plotVarDataOS.Hist("WW").weighted)
     channel.Add(plotVarDataOS.Hist("QCDdata").weighted)
     channel.Add(plotVarDataOS.Hist("Data").weighted)
@@ -146,23 +163,19 @@ def saveForPlotting(plotVarDataOS, prefixLabel, mass):
     channel.Write()
     rootfile.Close()
 
-def saveQCD(QCDlooseOS, QCDlooseSS, QCDtightSS, var, prefixLabel, mass, corr=False):
+def saveQCD(QCDlooseOS, QCDlooseSS, QCDtightSS, var, sys, prefixLabel, mass, corr=False):
 
     if corr :
       rootfile = TFile(os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+"_CORRELATIONS_QCD_TauTau_mH"+str(mass)+"_PLOT.root","UPDATE")      
     else :
-      rootfile = TFile(os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+"_QCD_TauTau_mH"+str(mass)+"_PLOT.root","UPDATE")
+      print 'working on ', os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+sys+"_QCD_TauTau_mH"+str(mass)+"_PLOT.root"
+      rootfile = TFile(os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+sys+"_QCD_TauTau_mH"+str(mass)+"_PLOT.root","UPDATE")
     
     channel = rootfile.mkdir(str(var))
     rootfile.cd(str(var))
     
     names = {QCDlooseOS:'QCDlooseOS', QCDlooseSS:'QCDlooseSS', QCDtightSS:'QCDtightSS'}
-    
-#     for sample in [QCDlooseOS, QCDlooseSS, QCDtightSS]:
-#       sample.weighted.SetName(names[sample])
-#       sample.weighted.Write()      
-#       rootfile.cd('..')
-      
+          
     QCDlooseOS.weighted.SetName('QCDlooseOS')
     QCDlooseSS.weighted.SetName('QCDlooseSS')
     QCDtightSS.weighted.SetName('QCDtightSS')
@@ -187,6 +200,145 @@ def saveQCD(QCDlooseOS, QCDlooseSS, QCDtightSS, var, prefixLabel, mass, corr=Fal
     
     rootfile.Close()
 
+def saveQCD7ShapeSyst(QCDlooseSS, QCDlooseOS, QCDtightSS, var, sys, prefixLabel, mass):
+    
+    rootfile = TFile(os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+sys+"_QCD_TauTau_mH"+str(mass)+"_PLOT.root","UPDATE")
+
+    print 'SAVING QCD',os.getcwd()+"/"+prefixLabel+"/"+prefixLabel+sys+"_QCD_TauTau_mH"+str(mass)+"_PLOT.root"
+    
+    channel = rootfile.mkdir(str(var))
+    rootfile.cd(str(var))
+    
+    if var == 'dRtt' :          
+      QCDlooseOS.weighted.SetName('QCDlooseOS')
+      QCDlooseSS.weighted.SetName('QCDlooseSS')
+      QCDtightSS.weighted.SetName('QCDtightSS')
+      
+      print QCDlooseOS.weighted.Integral()
+      print QCDlooseSS.weighted.Integral()
+      print QCDtightSS.weighted.Integral()
+      
+      QCDlooseOS.weighted.Write()
+      QCDlooseSS.weighted.Write()
+      QCDtightSS.weighted.Write()
+      
+      ratio = QCDlooseOS.weighted.Clone()
+      
+      num   = QCDlooseOS.weighted.Clone()
+      den   = QCDlooseSS.weighted.Clone()
+      
+      scale = num.Integral() / den.Integral()
+      
+      ratio.Divide(num,den,1,scale)
+      ratio.SetName('QCDlooseOS_QCDlooseSS_ratio')
+  
+      ratio.Write()    
+    
+    elif var == 'nVert' :
+
+      QCDlooseOS.weighted.SetName('QCDlooseOS')
+      QCDlooseSS.weighted.SetName('QCDlooseSS')
+      QCDtightSS.weighted.SetName('QCDtightSS')
+      
+      print QCDlooseOS.weighted.Integral()
+      print QCDlooseSS.weighted.Integral()
+      print QCDtightSS.weighted.Integral()
+      
+      QCDlooseOS.weighted.Write()
+      QCDlooseSS.weighted.Write()
+      QCDtightSS.weighted.Write()
+      
+      ratio = QCDlooseSS.weighted.Clone()
+      
+      num   = QCDtightSS.weighted.Clone()
+      den   = QCDlooseSS.weighted.Clone()
+      
+      scale = num.Integral() / den.Integral()
+      
+      ratio.Divide(num,den,1,scale)
+      ratio.SetName('QCDtightSS_QCDlooseSS_ratio')
+  
+      ratio.Write()    
+
+    elif var == 'svfitMass' :
+
+      QCDlooseOS.weighted.SetName('QCDlooseOS')
+      QCDlooseSS.weighted.SetName('QCDlooseSS')
+      QCDtightSS.weighted.SetName('QCDtightSS')
+      
+      print QCDlooseOS.weighted.Integral()
+      print QCDlooseSS.weighted.Integral()
+      print QCDtightSS.weighted.Integral()
+      
+      QCDlooseOS.weighted.Write()
+      QCDlooseSS.weighted.Write()
+      QCDtightSS.weighted.Write()
+      
+      mass = QCDlooseSS.weighted.Clone()
+
+      num   = QCDtightSS.weighted.Clone()
+      den   = QCDlooseSS.weighted.Clone()
+      
+      scale = num.Integral() / den.Integral()
+      
+      mass.Scale(scale)
+      mass.SetName('QCDtightOS_extrap')
+  
+      mass.Write()    
+
+
+      QCDlooseOS.weighted.SetName('QCDlooseOS')
+      QCDlooseSS.weighted.SetName('QCDlooseSS')
+      QCDtightSS.weighted.SetName('QCDtightSS')
+      
+      print QCDlooseOS.weighted.Integral()
+      print QCDlooseSS.weighted.Integral()
+      print QCDtightSS.weighted.Integral()
+      
+      QCDlooseOS.weighted.Write()
+      QCDlooseSS.weighted.Write()
+      QCDtightSS.weighted.Write()
+      
+      ratio = QCDlooseOS.weighted.Clone()
+      
+      num   = QCDlooseOS.weighted.Clone()
+      den   = QCDlooseSS.weighted.Clone()
+      
+      scale = num.Integral() / den.Integral()
+      
+      ratio.Divide(num,den,1,scale)
+      ratio.SetName('QCDlooseOS_QCDlooseSS_ratio')
+  
+      ratio.Write()    
+
+      QCDlooseOS.weighted.SetName('QCDlooseOS')
+      QCDlooseSS.weighted.SetName('QCDlooseSS')
+      QCDtightSS.weighted.SetName('QCDtightSS')
+      
+      print QCDlooseOS.weighted.Integral()
+      print QCDlooseSS.weighted.Integral()
+      print QCDtightSS.weighted.Integral()
+      
+      QCDlooseOS.weighted.Write()
+      QCDlooseSS.weighted.Write()
+      QCDtightSS.weighted.Write()
+      
+      ratio = QCDlooseSS.weighted.Clone()
+      
+      num   = QCDtightSS.weighted.Clone()
+      den   = QCDlooseSS.weighted.Clone()
+      
+      scale = num.Integral() / den.Integral()
+      
+      ratio.Divide(num,den,1,scale)
+      ratio.SetName('QCDtightSS_QCDlooseSS_ratio')
+  
+      ratio.Write()    
+      
+    
+    rootfile.cd('..')
+    
+    rootfile.Close()
 
 def saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVarDataLooseIsoOS, prefixLabel, mass):
 
