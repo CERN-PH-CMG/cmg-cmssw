@@ -169,6 +169,7 @@ int main(int argc, char* argv[])
   if(url.Contains("7TeV")) cmEnergy=7;
   std::vector<TGraph *> hWeightsGrVec,hLineShapeGrVec;  
   TGraph* hLineShapeNominal=0, *hInterferenceNominal=0;
+  TF1 *decayProbPdf=new TF1("relbw","(2*sqrt(2)*[0]*[1]*sqrt(pow([0],2)*(pow([0],2)+pow([1],2)))/(TMath::Pi()*sqrt(pow([0],2)+sqrt(pow([0],2)*(pow([0],2)+pow([1],2))))))/(pow(pow([2],2)-pow([0],2),2)+pow([0]*[1],2))",0,2000);
   if(isMC_GG){  
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,4);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
@@ -237,7 +238,7 @@ int main(int argc, char* argv[])
 	  }
       }      
     }
-  
+
   if(fin)
     {
       cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
@@ -279,13 +280,21 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "leadeta", ";#eta^{l};Events", 50,-2.6,2.6) );
   mon.addHistogram( new TH1F( "trailerpt", ";p_{T}^{l};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "trailereta", ";#eta^{l};Events", 50,-2.6,2.6) );
-  //  mon.addHistogram( new TH1F( "deltaleptonpt", ";|p_{T}^{1}-p_{T}^{2}|;Events", 50,0,250) );
-  // mon.addHistogram( new TH1F( "deltazpt", ";p_{T}^{ll}-E_{T}^{miss};Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "zptNM1", ";p_{T}^{ll};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 50,-10,10) );
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,40,250) );
   mon.addHistogram( new TH1F( "zmassNM1", ";M^{ll};Events", 100,40,250) );
+
+  //for g+jets re-weighting
+  Float_t qtaxis[100];
+  for(size_t i=0; i<40; i++)  qtaxis[i]=2.5*i;       //0-97.5
+  for(size_t i=0; i<20; i++)  qtaxis[40+i]=100+5*i;  //100-195
+  for(size_t i=0; i<15; i++)  qtaxis[60+i]=200+10*i; //200-340
+  for(size_t i=0; i<25; i++)  qtaxis[75+i]=350+25*i; //350-976
+  mon.addHistogram( new TH1D( "qt"              , ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)",99,qtaxis));
+  mon.addHistogram( new TH1F( "qmass", ";M^{ll};Events", 15,76,106) );
+
 
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_0raw", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_1vbf", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
@@ -300,26 +309,6 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "thirdleptoneta", ";#eta^{l};Events", 50,-2.6,2.6) );
   mon.addHistogram( new TH1F( "nleptons", ";Leptons;Events", 3,2,4) );
   mon.addHistogram( new TH1F( "nleptonsNM1", ";Leptons;Events", 3,2,4) );
-  // mon.addHistogram( new TH1F( "ngenjets", ";Gen. jets;Events", 4,0,4) );
-
-//   h=(TH1F*) mon.addHistogram( new TH1F ("vbfeventflow", ";;Events", 8,0,8) );
-//   h->GetXaxis()->SetBinLabel(1,"2 gen. leptons");
-//   h->GetXaxis()->SetBinLabel(2,"#geq 2 leptons");
-//   h->GetXaxis()->SetBinLabel(3,"#geq 2 jets");
-//   h->GetXaxis()->SetBinLabel(4,"#Delta #eta(j,j)");
-//   h->GetXaxis()->SetBinLabel(5,"M(j,j)");
-//   h->GetXaxis()->SetBinLabel(6,"CJV");
-//   h->GetXaxis()->SetBinLabel(7,"#Delta #phi(jet,E_{T}^{miss})>0.5");
-//   h->GetXaxis()->SetBinLabel(8,"E_{T}^{miss}>70");
-//   h=(TH1F*) mon.addHistogram( new TH1F ("vbfmode", ";;Events", 3,0,3) );
-//   h->GetXaxis()->SetBinLabel(1,"ll");
-//   h->GetXaxis()->SetBinLabel(2,"l#tau");
-//   h->GetXaxis()->SetBinLabel(3,"#tau#tau");
-//   mon.addHistogram( new TH1F( "genmjj", ";Gen. M_{j,j};Events", 50,0,2500) );
-//   mon.addHistogram( new TH1F( "gendeta", ";Gen. #Delta #eta;Events", 50,0,10) );
-//   mon.addHistogram( new TH1F( "genjet1pt", ";Gen. jet #1;Events", 50,0,250) );
-//   mon.addHistogram( new TH1F( "genjet2pt", ";Gen. jet #2;Events", 50,0,250) );
-
 
   //LEPTON control
 
@@ -327,55 +316,10 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "RunDep_Yields", ";Run;Events",4000,170000,210000) );
   mon.addHistogram( new TProfile( "RunDep_Met", ";Run;<Met>",4000,170000,210000) );
 
-  //lepton control
-  //  Double_t effptAxis[]={0,10,20,30,40,50,75,100,150,200,500};
-  // const size_t nEffptAxis=sizeof(effptAxis)/sizeof(Double_t)-1;
   for(size_t ilep=0; ilep<2; ilep++)
     {
       TString lepStr(ilep==0? "mu" :"e");
-      //       mon.addHistogram(new TH1F(lepStr+"genpt",   ";p_{T} [GeV/c];Leptons",nEffptAxis,effptAxis) );
-      //       mon.addHistogram(new TH1F(lepStr+"geneta",   ";#eta;Leptons",50,-5,5) );
-      //       mon.addHistogram(new TH1F(lepStr+"genpu",   ";Pileup;Leptons",50,0,50) );
-      //       for(int iid=0; iid<4; iid++)
-      // 	{
-      // 	  TString idctr(""); idctr+=iid;
-      // 	  mon.addHistogram(new TH1F(lepStr+idctr+"pt",   ";p_{T} [GeV/c];Leptons",nEffptAxis,effptAxis) );
-      // 	  mon.addHistogram(new TH1F(lepStr+idctr+"eta",   ";#eta;Leptons",50,-5,5) );
-      // 	  mon.addHistogram(new TH1F(lepStr+idctr+"pu",   ";Pileup;Leptons",50,0,50) );
-      // 	  mon.addHistogram(new TH1F(lepStr+idctr+"isopt",   ";p_{T} [GeV/c];Leptons",nEffptAxis,effptAxis) );
-      // 	  mon.addHistogram(new TH1F(lepStr+idctr+"isoeta",   ";#eta;Leptons",50,-5,5) );
-      // 	  mon.addHistogram(new TH1F(lepStr+idctr+"isopu",   ";Pileup;Leptons",50,0,50) );
-      // 	}
-      //       if(ilep==1)
-      // 	{
-      // 	  for(size_t ireg=0; ireg<2; ireg++)
-      // 	    { 
-      // 	      TString reg(ireg==0?"eb":"ee");
-      // 	      mon.addHistogram(new TH1F(lepStr+reg+"detain",   ";#Delta#eta_{in};Leptons",50,0,0.01) );
-      // 	      mon.addHistogram(new TH1F(lepStr+reg+"dphiin",   ";#Delta#phi_{in};Leptons",50,0,0.1) );
-      // 	      mon.addHistogram(new TH1F(lepStr+reg+"sihih",    ";#sigma_{i#eta i#eta};Leptons",50,0,0.05) );
-      // 	      mon.addHistogram(new TH1F(lepStr+reg+"sipip",    ";#sigma_{i#phi i#phi};Leptons",50,0,0.05) );
-      // 	      mon.addHistogram(new TH1F(lepStr+reg+"r9",       ";R_{9};Leptons",50,0,1.) );
-      // 	      mon.addHistogram(new TH1F(lepStr+reg+"hoe",      ";h/e;Leptons",50,0,0.2) );
-      // 	      mon.addHistogram(new TH1F(lepStr+reg+"ooemoop",  ";1/E-1/p;Leptons",100,0,0.05) );
-      // 	      mon.addHistogram(new TH1F(lepStr+reg+"eopin",    ";E/p;Leptons",100,0,2) );
-      // 	      mon.addHistogram(new TH1F(lepStr+reg+"fbrem",    ";f_{brem};Leptons",100,0,2) );
-      // 	    }
-      // 	}
-      //       else
-      // 	{
-      // 	  mon.addHistogram(new TH1F(lepStr+"nmatches", ";Muon matches;Leptons",15,0,15) );
-      // 	  mon.addHistogram(new TH1F(lepStr+"nmuonhits", ";Muon hits;Leptons",30,0,30) );
-      // 	}
-      //       mon.addHistogram(new TH1F(lepStr+"d0",            ";d_{0};Leptons",50,0,0.05) );
-      //       mon.addHistogram(new TH1F(lepStr+"dZ",            ";d_{Z};Leptons",50,0,0.1) );
-      //       mon.addHistogram(new TH1F(lepStr+"trkchi2",       ";#chi^{2};Leptons",50,0,10) );
-      //       mon.addHistogram(new TH1F(lepStr+"trkvalidpixel",  ";Valid pixel hits;Leptons",20,0,20) );
-      //       mon.addHistogram(new TH1F(lepStr+"trkvalidtracker",  ";Valid tracker hits;Leptons",50,0,50) );
-      //       mon.addHistogram(new TH1F(lepStr+"losthits",         ";Lost hits;Leptons",4,0,4) );
       mon.addHistogram(new TH1F(lepStr+"reliso",           ";RelIso;Leptons",50,0,2) );
-      //       mon.addHistogram(new TH1F(lepStr+"truereliso",           ";RelIso;Leptons",50,0,2) );
-      //       mon.addHistogram(new TH1F(lepStr+"fakereliso",           ";RelIso;Fake leptons",50,0,2) );
     }
   
   mon.addHistogram( new TH1F( "nvtx",";Vertices;Events",50,0,50) ); 
@@ -390,21 +334,11 @@ int main(int argc, char* argv[])
   TString btagAlgos[]={"TCHE","CSV","JP"};
   Double_t btagAlgoMin[]={-5,0,0};
   Double_t btagAlgoMax[]={15,1.,3};
-  //TString jetIds[]={"pfloose","pftight","minloose","minmedium"};
-  //const size_t nJetIds=sizeof(jetIds)/sizeof(TString);
-  //Double_t jetPtBins[]={0,15,20,25,30,40,50,60,70,80,100,200,300,400,500,600,700,1000};
-  //Int_t nJetPtBins=sizeof(jetPtBins)/sizeof(Double_t)-1;
-  //Double_t jetEtaBins[]={0,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.25,2.625,2.75,2.875,3.0,3.5,4.0,4.5,5.0};
-  //Double_t nJetEtaBins=sizeof(jetEtaBins)/sizeof(Double_t)-1;
   for(size_t i=0; i<nJetTypes; i++)
     {
       for(size_t ireg=0; ireg<nJetRegs; ireg++)
 	{
 	  mon.addHistogram( new TH1F(jetRegs[ireg]+jetTypes[i]+"jetbeta"    , ";#beta;Events",50,0,1) );
-	  // 	  mon.addHistogram( new TH1F(jetRegs[ireg]+jetTypes[i]+"jetbetastar", ";#beta *;Events",50,0,1) );
-	  // 	  mon.addHistogram( new TH1F(jetRegs[ireg]+jetTypes[i]+"jetdrmean"  , ";<#Delta R>;Events",50,0,0.5) );
-	  // 	  mon.addHistogram( new TH1F(jetRegs[ireg]+jetTypes[i]+"jetptd"     , ";p_{T}D [GeV/c];Events",50,0,1) );
-	  // 	  mon.addHistogram( new TH1F(jetRegs[ireg]+jetTypes[i]+"jetptrms"   , ";RMS p_{T} [GeV/c];Events",50,0,0.5) );
 	  mon.addHistogram( new TH1F(jetRegs[ireg]+jetTypes[i]+"jetmva"     , ";MVA;Events",50,-1,1) );
 	}
       for(size_t ibtag=0; ibtag<3; ibtag++)
@@ -756,13 +690,13 @@ int main(int argc, char* argv[])
         //compute weight correction for narrow resonnance
         if(isMC_VBF || isMC_GG){
            if(cprime>=0 || brnew>=0){
-              double NRWeight = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), cprime, brnew, hLineShapeNominal);  
+	     double NRWeight = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), cprime, brnew, hLineShapeNominal,decayProbPdf);  
               weight*=NRWeight;
            }
            mon.fillHisto("higgsMass_4nr"  ,tags_inc, phys.genhiggs[0].mass(), weight);
            
            for(unsigned int nri=0;nri<NRparams.size();nri++){ 
-              NRweights[nri] = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal);
+	     NRweights[nri] = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal,decayProbPdf);
            }  
          }
       }
@@ -1123,6 +1057,7 @@ int main(int argc, char* argv[])
 	mon.fillHisto("npfjetspresel",              tags_full, nAJetsLoose,weight);
 
 	  if(passZpt){
+	    
 	      mon.fillHisto("eventflow",tags_full,4,weight);
               mon.fillHisto("pfvbfcount_total",tags_cat,ev.ngenITpu,weight);
 	      
@@ -1174,13 +1109,28 @@ int main(int argc, char* argv[])
 		  if(passBveto)
 		    {
 		      mon.fillHisto("eventflow",tags_full,6,weight);
-		      
+
 		      //sub-divide for good jets
 		      int eventSubCat  = eventCategoryInst.Get(phys,&aGoodIdJets);
 		      TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
 		      tags_full.push_back(tag_cat+tag_subcat);
 		      if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(tag_cat + "geq1jets");
-                      if(tag_cat=="mumu" || tag_cat=="ee"){tags_full.push_back(string("ll")+tag_subcat);  if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(string("ll")+string("geq1jets"));   }
+                      if(tag_cat=="mumu" || tag_cat=="ee"){
+			tags_full.push_back(string("ll")+tag_subcat);  
+			if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets") tags_full.push_back(string("ll")+string("geq1jets"));   
+			
+			//reweight here
+			std::vector<TString> photonCats;
+			photonCats.push_back(tag_cat+"");
+			if(nAJetsLoose==0) photonCats.push_back(tag_cat+"eq0jets");
+			if(nAJetsLoose==1) photonCats.push_back(tag_cat+"eq1jets");
+			if(nAJetsLoose==2) photonCats.push_back(tag_cat+"eq2jets");
+			if(nAJetsLoose>2)  photonCats.push_back(tag_cat+"geq3jets");
+			if(tag_subcat.Contains("vbf")) photonCats.push_back(tag_cat+"vbf");
+			mon.fillHisto("qt",photonCats, zll.pt(),weight,true); 
+			mon.fillHisto("qmass",photonCats, zll.mass(),weight,true); 
+		      }
+
 //                    //remove VBF subcategory to make it faster
 //		      if(tag_subcat=="vbf"){
 //                          TString tag_subcatVBF = tag_subcat;

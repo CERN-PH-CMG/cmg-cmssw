@@ -7,6 +7,7 @@
 
 #include "TGraph.h"
 #include "TH1.h"
+#include "TF1.h"
 
 #include "Math/LorentzVector.h"
 #include "DataFormats/Math/interface/deltaR.h"
@@ -17,7 +18,7 @@ typedef std::vector<LorentzVector> LorentzVectorCollection;
 
 LorentzVector min(const LorentzVector& a, const LorentzVector& b);
 double weightVBF(std::string SampleName, double m_gen, double mass);
-double weightNarrowResonnance(std::string SampleName, double m_gen, double mass, double Cprime, double BRnew, TGraph* hLineShapeNominal);
+double weightNarrowResonnance(std::string SampleName, double m_gen, double mass, double Cprime, double BRnew, TGraph* hLineShapeNominal, TF1 *decayProbPdf=0);
 
 typedef std::vector<TGraph *> PuShifter_t;
 enum PuShifterTypes {PUDOWN,PUUP};
