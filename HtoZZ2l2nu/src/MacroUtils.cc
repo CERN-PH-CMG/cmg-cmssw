@@ -156,7 +156,7 @@ double weightVBF(std::string SampleName, double m_gen, double mass){
 }
 
 //
-double weightNarrowResonnance(std::string SampleName, double m_gen, double mass, double Cprime, double BRnew, TGraph* hLineShapeNominal){
+double weightNarrowResonnance(std::string SampleName, double m_gen, double mass, double Cprime, double BRnew, TGraph* hLineShapeNominal, TF1 *decayProbPdf){
    if(Cprime<0 || BRnew<0)return 1.0;
 
    bool isZZ = (SampleName.find("ZZ")!=std::string::npos) ;
@@ -193,10 +193,28 @@ double weightNarrowResonnance(std::string SampleName, double m_gen, double mass,
    decay_width = decay_width * pow(Cprime,2) / (1-BRnew);      
 //      OverallXSectionScaleFactor = pow(Cprime,2) * (1-BRnew);
 
-   double weight_BW = TMath::BreitWigner(mass, m_gen, decay_width);
+   //the CPS shape
    double weight_CPS = hLineShapeNominal->Eval(mass);
-   double toReturn = OverallXSectionScaleFactor * (weight_BW / weight_CPS);
-//   printf("%E / %E = %E\n",weight_BW, hLineShapeNominal->Eval(mass), (weight_BW / hLineShapeNominal->Eval(mass)) );
+
+   //standard BW
+   double toReturn(-1);
+   if(decayProbPdf==0)
+     {
+       double weight_BW = TMath::BreitWigner(mass, m_gen, decay_width);
+       toReturn = OverallXSectionScaleFactor * (weight_BW / weight_CPS);   
+     }
+   else
+     {
+       //other prob function where [0] is the mass of resonance and [1] is the new width
+       // e.g. relativistic BW   
+       //TF1 *f=new TF1("relbw","(2*sqrt(2)*[0]*[1]*sqrt(pow([0],2)*(pow([0],2)+pow([1],2)))/(TMath::Pi()*sqrt(pow([0],2)+sqrt(pow([0],2)*(pow([0],2)+pow([1],2))))))/(pow(pow([2],2)-pow([0],2),2)+pow([0]*[1],2))",0,2000);
+       decayProbPdf->SetParameter(0,m_gen);
+       decayProbPdf->SetParameter(1,decay_width);
+       double weight_BW = decayProbPdf->Eval( mass );
+       toReturn = OverallXSectionScaleFactor * ( weight_BW / weight_CPS);
+     }
+
+   //   printf("%E / %E = %E\n",weight_BW, hLineShapeNominal->Eval(mass), (weight_BW / hLineShapeNominal->Eval(mass)) );
    if(toReturn<0){toReturn=1.0;}
    if(weight_CPS<=0)toReturn = 0.0;
    return toReturn;
