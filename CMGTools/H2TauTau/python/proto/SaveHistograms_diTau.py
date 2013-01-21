@@ -18,11 +18,11 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category, emb=False
 		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT")
 		plotVarDataOS.Hist("DYJets_Electron").weighted.SetName("ZL")
 		plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ")
-		if prefixLabel.find('BOOSTED') > 0 :
-		  plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
-		  plotVarDataOS.Hist("WJets").weighted.SetName("W")
-		if prefixLabel.find('VBF') > 0 :
-		  plotVarDataOS.Hist("W3Jets").weighted.SetName("W")
+		#if prefixLabel.find('BOOSTED') > 0 :
+		plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
+		plotVarDataOS.Hist("WJets").weighted.SetName("W")
+		#if prefixLabel.find('VBF') > 0 :
+		#  plotVarDataOS.Hist("W3Jets").weighted.SetName("W")
 		plotVarDataOS.Hist("TTJets").weighted.SetName("TT")
 		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("ZZ"))
 		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("WZ"))
@@ -35,10 +35,10 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category, emb=False
 		channel.Add(plotVarDataOS.Hist("DYJets").weighted)
 		channel.Add(plotVarDataOS.Hist("DYJets_Electron").weighted)
 		channel.Add(plotVarDataOS.Hist("DYJets_Fakes").weighted)
-		if prefixLabel.find('BOOSTED') > 0 :
-		  channel.Add(plotVarDataOS.Hist("WJets").weighted)
-		if prefixLabel.find('VBF') > 0 :
-		  channel.Add(plotVarDataOS.Hist("W3Jets").weighted)
+		#if prefixLabel.find('BOOSTED') > 0 :
+		channel.Add(plotVarDataOS.Hist("WJets").weighted)
+		#if prefixLabel.find('VBF') > 0 :
+		#  channel.Add(plotVarDataOS.Hist("W3Jets").weighted)
 		channel.Add(plotVarDataOS.Hist("TTJets").weighted)
 		channel.Add(plotVarDataOS.Hist("WW").weighted)
 		channel.Add(plotVarDataOS.Hist("QCDdata").weighted)
@@ -52,11 +52,11 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category, emb=False
 		plotVarDataOS.Hist("DYJets").weighted.SetName("ZTT_CMS_scale_t_tautau_8TeVDown")
 		plotVarDataOS.Hist("DYJets_Electron").weighted.SetName("ZL")
 		plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ")
-		if prefixLabel.find('BOOSTED') > 0 :
-		  plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
-		  plotVarDataOS.Hist("WJets").weighted.SetName("W")
-		if prefixLabel.find('VBF') > 0 :
-		  plotVarDataOS.Hist("W3Jets").weighted.SetName("W")
+		#if prefixLabel.find('BOOSTED') > 0 :
+		plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
+		plotVarDataOS.Hist("WJets").weighted.SetName("W")
+		#if prefixLabel.find('VBF') > 0 :
+		#  plotVarDataOS.Hist("W3Jets").weighted.SetName("W")
 		plotVarDataOS.Hist("TTJets").weighted.SetName("TT")
 		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("ZZ"))
 		plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("WZ"))
@@ -69,10 +69,10 @@ def saveForLimit(plotVarDataOS, prefixLabel, mass, massType, category, emb=False
 		channel.Add(plotVarDataOS.Hist("DYJets").weighted)
 		channel.Add(plotVarDataOS.Hist("DYJets_Electron").weighted)
 		channel.Add(plotVarDataOS.Hist("DYJets_Fakes").weighted)
-		if prefixLabel.find('BOOSTED') > 0 :
-		  channel.Add(plotVarDataOS.Hist("WJets").weighted)
-		if prefixLabel.find('VBF') > 0 :
-		  channel.Add(plotVarDataOS.Hist("W3Jets").weighted)
+		#if prefixLabel.find('BOOSTED') > 0 :
+		channel.Add(plotVarDataOS.Hist("WJets").weighted)
+		#if prefixLabel.find('VBF') > 0 :
+		#  channel.Add(plotVarDataOS.Hist("W3Jets").weighted)
 		channel.Add(plotVarDataOS.Hist("TTJets").weighted)
 		channel.Add(plotVarDataOS.Hist("WW").weighted)
 		channel.Add(plotVarDataOS.Hist("QCDdata").weighted)
@@ -137,7 +137,7 @@ def saveForPlotting(plotVarDataOS, prefixLabel, mass):
     plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ")
     plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
     plotVarDataOS.Hist("WJets").weighted.SetName("W")
-    plotVarDataOS.Hist("W3Jets").weighted.SetName("W3")
+    #plotVarDataOS.Hist("W3Jets").weighted.SetName("W3")
     plotVarDataOS.Hist("TTJets").weighted.SetName("TT")
     plotVarDataOS.Hist("T_tW").Add(plotVarDataOS.Hist("Tbar_tW"))
     plotVarDataOS.Hist("T_tW").weighted.SetName("T")
@@ -153,7 +153,7 @@ def saveForPlotting(plotVarDataOS, prefixLabel, mass):
     channel.Add(plotVarDataOS.Hist("DYJets_Electron").weighted)
     channel.Add(plotVarDataOS.Hist("DYJets_Fakes").weighted)
     channel.Add(plotVarDataOS.Hist("WJets").weighted)
-    channel.Add(plotVarDataOS.Hist("W3Jets").weighted)
+    #channel.Add(plotVarDataOS.Hist("W3Jets").weighted)
     channel.Add(plotVarDataOS.Hist("TTJets").weighted)
     channel.Add(plotVarDataOS.Hist("T_tW").weighted)
     channel.Add(plotVarDataOS.Hist("WW").weighted)
@@ -354,7 +354,7 @@ def saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVa
     plotVarDataOS.Hist("DYJets_Fakes").weighted.SetName("ZJ")
     plotVarDataOS.Hist("WJets").Add(plotVarDataOS.Hist("WJets_Fakes"))
     plotVarDataOS.Hist("WJets").weighted.SetName("W")
-    plotVarDataOS.Hist("W3Jets").weighted.SetName("W3")
+    #plotVarDataOS.Hist("W3Jets").weighted.SetName("W3")
     plotVarDataOS.Hist("TTJets").weighted.SetName("TT")
     plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("ZZ"))
     plotVarDataOS.Hist("WW").Add(plotVarDataOS.Hist("WZ"))
@@ -368,7 +368,7 @@ def saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVa
     channelOST.Add(plotVarDataOS.Hist("DYJets_Electron").weighted)
     channelOST.Add(plotVarDataOS.Hist("DYJets_Fakes").weighted)
     channelOST.Add(plotVarDataOS.Hist("WJets").weighted)
-    channelOST.Add(plotVarDataOS.Hist("W3Jets").weighted)
+    #channelOST.Add(plotVarDataOS.Hist("W3Jets").weighted)
     channelOST.Add(plotVarDataOS.Hist("TTJets").weighted)
     channelOST.Add(plotVarDataOS.Hist("WW").weighted)
     channelOST.Add(plotVarDataOS.Hist("QCDdata").weighted)
@@ -388,7 +388,7 @@ def saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVa
     plotVarDataSS.Hist("DYJets_Fakes").weighted.SetName("ZJ")
     plotVarDataSS.Hist("WJets").Add(plotVarDataSS.Hist("WJets_Fakes"))
     plotVarDataSS.Hist("WJets").weighted.SetName("W")
-    plotVarDataSS.Hist("W3Jets").weighted.SetName("W3")
+    #plotVarDataSS.Hist("W3Jets").weighted.SetName("W3")
     plotVarDataSS.Hist("TTJets").weighted.SetName("TT")
     plotVarDataSS.Hist("WW").Add(plotVarDataSS.Hist("ZZ"))
     plotVarDataSS.Hist("WW").Add(plotVarDataSS.Hist("WZ"))
@@ -402,7 +402,7 @@ def saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVa
     channelSST.Add(plotVarDataSS.Hist("DYJets_Electron").weighted)
     channelSST.Add(plotVarDataSS.Hist("DYJets_Fakes").weighted)
     channelSST.Add(plotVarDataSS.Hist("WJets").weighted)
-    channelSST.Add(plotVarDataSS.Hist("W3Jets").weighted)
+    #channelSST.Add(plotVarDataSS.Hist("W3Jets").weighted)
     channelSST.Add(plotVarDataSS.Hist("TTJets").weighted)
     channelSST.Add(plotVarDataSS.Hist("WW").weighted)
     #channelSST.Add(plotVarDataSS.Hist("QCDdata").weighted)
@@ -423,7 +423,7 @@ def saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVa
     plotVarDataLooseIsoSS.Hist("DYJets_Fakes").weighted.SetName("ZJ")
     plotVarDataLooseIsoSS.Hist("WJets").Add(plotVarDataLooseIsoSS.Hist("WJets_Fakes"))
     plotVarDataLooseIsoSS.Hist("WJets").weighted.SetName("W")
-    plotVarDataLooseIsoSS.Hist("W3Jets").weighted.SetName("W3")
+    #plotVarDataLooseIsoSS.Hist("W3Jets").weighted.SetName("W3")
     plotVarDataLooseIsoSS.Hist("TTJets").weighted.SetName("TT")
     plotVarDataLooseIsoSS.Hist("WW").Add(plotVarDataLooseIsoSS.Hist("ZZ"))
     plotVarDataLooseIsoSS.Hist("WW").Add(plotVarDataLooseIsoSS.Hist("WZ"))
@@ -437,7 +437,7 @@ def saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVa
     channelSSL.Add(plotVarDataLooseIsoSS.Hist("DYJets_Electron").weighted)
     channelSSL.Add(plotVarDataLooseIsoSS.Hist("DYJets_Fakes").weighted)
     channelSSL.Add(plotVarDataLooseIsoSS.Hist("WJets").weighted)
-    channelSSL.Add(plotVarDataLooseIsoSS.Hist("W3Jets").weighted)
+    #channelSSL.Add(plotVarDataLooseIsoSS.Hist("W3Jets").weighted)
     channelSSL.Add(plotVarDataLooseIsoSS.Hist("TTJets").weighted)
     channelSSL.Add(plotVarDataLooseIsoSS.Hist("WW").weighted)
     #channelSSL.Add(plotVarDataLooseIsoSS.Hist("QCDdata").weighted)
@@ -458,7 +458,7 @@ def saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVa
     plotVarDataLooseIsoOS.Hist("DYJets_Fakes").weighted.SetName("ZJ")
     plotVarDataLooseIsoOS.Hist("WJets").Add(plotVarDataLooseIsoOS.Hist("WJets_Fakes"))
     plotVarDataLooseIsoOS.Hist("WJets").weighted.SetName("W")
-    plotVarDataLooseIsoOS.Hist("W3Jets").weighted.SetName("W3")
+    #plotVarDataLooseIsoOS.Hist("W3Jets").weighted.SetName("W3")
     plotVarDataLooseIsoOS.Hist("TTJets").weighted.SetName("TT")
     plotVarDataLooseIsoOS.Hist("WW").Add(plotVarDataLooseIsoOS.Hist("ZZ"))
     plotVarDataLooseIsoOS.Hist("WW").Add(plotVarDataLooseIsoOS.Hist("WZ"))
@@ -472,7 +472,7 @@ def saveForWeighting(plotVarDataOS, plotVarDataSS, plotVarDataLooseIsoSS, plotVa
     channelOSL.Add(plotVarDataLooseIsoOS.Hist("DYJets_Electron").weighted)
     channelOSL.Add(plotVarDataLooseIsoOS.Hist("DYJets_Fakes").weighted)
     channelOSL.Add(plotVarDataLooseIsoOS.Hist("WJets").weighted)
-    channelOSL.Add(plotVarDataLooseIsoOS.Hist("W3Jets").weighted)
+    #channelOSL.Add(plotVarDataLooseIsoOS.Hist("W3Jets").weighted)
     channelOSL.Add(plotVarDataLooseIsoOS.Hist("TTJets").weighted)
     channelOSL.Add(plotVarDataLooseIsoOS.Hist("WW").weighted)
     #channelOSL.Add(plotVarDataLooseIsoOS.Hist("QCDdata").weighted)
