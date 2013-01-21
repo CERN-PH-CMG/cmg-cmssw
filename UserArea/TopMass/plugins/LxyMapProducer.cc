@@ -110,9 +110,12 @@ class LxyMapProducer : public edm::EDAnalyzer {
 
   std::string treeName_;    
   TTree*      tree_;
-  int fnjets;
-  float flxy, fpt, feta,fbtag,fgamma;
+  int fnjets, fnpu;
+  float flxy, flxyerr, fpt, fsecvtxmass, feta,fbtag,fgamma;
+  float fdR; 
   float fpuW;
+  
+  float fgenpt, fgeneta, frecopt, frecoeta;
 
 
   bool isData;
@@ -222,10 +225,18 @@ LxyMapProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
      std::cout << "number of PF jets: " <<jets->size() << std::endl;
    }
   
+
+   //PupInfo
+   for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
+     fnpu = PVI->getPU_NumInteractions();
+     if(verbose) std::cout << "number of gen PU: " << PVI->getPU_NumInteractions() << std::endl;
+     //std::cout << PVI->TrueNumInteractions() << std::endl;
+   }
+
+
    // bool leptonEvent = false;
 
    // loop over gen particles
-   std::cout << "----------------------" << std::endl;
    vector<TLorentzVector> b_quarks;
    for(genParticle = genParticles->begin(); genParticle != genParticles->end(); ++genParticle) {
      // if(abs(genParticle->pdgId()) == 11 && abs(genParticle->mother()->pdgId()) == 24) {
@@ -235,13 +246,16 @@ LxyMapProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
        TLorentzVector b_quark;
        b_quark.SetPxPyPzE(genParticle->px(),  genParticle->py(),  genParticle->pz(),  genParticle->energy());
        b_quarks.push_back(b_quark);
-       std::cout << "genParticle: " << genParticle->pt() << " " << genParticle->eta() << " " << genParticle->phi()<< std::endl;
-       std::cout << "genParticle: " << genParticle->px() << " " << genParticle->py() << " " << genParticle->pz() << " " << genParticle->energy()<< std::endl;
+       if(verbose) {
+	 std::cout << "genParticle: " << genParticle->pt() << " " << genParticle->eta() << " " << genParticle->phi()<< std::endl;
+	 std::cout << "genParticle: " << genParticle->px() << " " << genParticle->py() << " " << genParticle->pz() << " " << genParticle->energy()<< std::endl;
+       }
      }
    }
 
-   std::cout << "number of b-quarks found: " << b_quarks.size() << endl;
-
+   if(verbose) {
+     std::cout << "number of b-quarks found: " << b_quarks.size() << endl;
+   } 
 
    // // loop over gen jets
    // vector<TLorentzVector> gen_jets;
@@ -279,37 +293,54 @@ LxyMapProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // get the jet with maxlxy
    // b-jets only...
    int njets = 0;
-   float maxlxy = 0.;
+   float maxlxy = -999.999,maxlxyErr = 0.;
+   float deltaR = 9999.99;
+   float bq_pt = -999.99, reco_pt = -999.99;
+   float bq_eta = -999.99, reco_eta = -999.99;
+   float bq_gamma = -999.99;
    for(std::vector<cmg::PFJet>::const_iterator jet = jets->begin(); jet != jets->end(); ++jet) {
      // only b-jets
      if(abs(jet->partonFlavour()) != 5) continue;
+     if (jet->Lxy() <= 0.) continue;
      if(jet->Lxy() > maxlxy) {
        maxlxy = jet->Lxy();
+       maxlxyErr = jet->LxyErr();
+       reco_pt = jet->pt(); 
+       reco_eta = jet->eta(); 
        TLorentzVector pfjet;
        pfjet.SetPxPyPzE(jet->px(), jet->py(), jet->pz(), jet->energy());
        // match the jet to one of the b-quarks
-       float deltaR = 9999.99;
-       float pt = -999.99;
-       float eta = -999.99;
-       float gamma = -999.99;
+       if(verbose) std::cout << "------------------" << std::endl;
        for(unsigned int i=0; i<b_quarks.size(); ++i) {
+       //for(unsigned int i=0; i<2; ++i) {
 	 if(pfjet.DeltaR(b_quarks[i]) < deltaR) {
 	   deltaR = pfjet.DeltaR(b_quarks[i]);
-	   pt  = b_quarks[i].Pt();
-	   eta = b_quarks[i].Eta();
-	   gamma = b_quarks[i].Gamma();
+	   if(verbose) std::cout << deltaR << std::endl;
+	   bq_pt  = b_quarks[i].Pt();
+	   bq_eta = b_quarks[i].Eta();
+	   bq_gamma = b_quarks[i].Gamma();
 	 }
        }
-       flxy = jet->Lxy();
+       // flxy = jet->Lxy();
+       // flxyerr = jet->LxyErr();
+       fsecvtxmass = jet->secvtxMass();
        // fpt  = jet->pt();
        // feta = jet->eta();
-       fpt  = pt;
-       feta = eta;
-       fgamma = gamma;
+       // fpt  = pt;
+       // feta = eta;
+       // fgamma = gamma;
        fbtag = jet->btag(6);
      }
      njets++;
    }
+   flxy = maxlxy;
+   flxyerr = maxlxyErr;
+   frecopt = reco_pt;
+   frecoeta = reco_eta;
+   fpt  = bq_pt;
+   feta = bq_eta;
+   fgamma = bq_gamma;
+   fdR = deltaR;
    fnjets = njets;
    
    
@@ -327,12 +358,18 @@ LxyMapProducer::beginJob()
   edm::Service<TFileService> fileService;
   tree_ = fileService->make<TTree>("map", "map");
   tree_->Branch("njets"      ,&fnjets        ,"njets/I");
+  tree_->Branch("npu"        ,&fnpu          ,"npu/I");
+  tree_->Branch("secvtxmass" ,&fsecvtxmass   ,"secvtxmass/F");
   tree_->Branch("lxy"        ,&flxy          ,"lxy/F");
+  tree_->Branch("lxyerr"     ,&flxyerr       ,"lxyerr/F");
   tree_->Branch("pt"         ,&fpt           ,"pt/F");
   tree_->Branch("eta"        ,&feta          ,"eta/F");
   tree_->Branch("btag"       ,&fbtag         ,"btag/F");
   tree_->Branch("puW"        ,&fpuW          ,"puW/F");
   tree_->Branch("gamma"      ,&fgamma        ,"gamma/F");
+  tree_->Branch("dR"         ,&fdR           ,"dR/F");
+  tree_->Branch("recopt"     ,&frecopt       ,"recopt/F");
+  tree_->Branch("recoeta"    ,&frecoeta      ,"recoeta/F");
 
 
 
@@ -385,9 +422,13 @@ LxyMapProducer::clearTreeVariables() {
   //doubles 
   fpuW  = 1.;
   flxy  = -999.999;
+  frecopt   = -999.999;
+  frecoeta  = -999.999;
   fpt   = -999.999;
   feta  = -999.999;
   fbtag = -999.999;
+  fgamma = -999.999;
+  fdR = -999.999;
 }
 
 

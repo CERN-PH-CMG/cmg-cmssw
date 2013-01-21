@@ -3,14 +3,11 @@ import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
 
 
-from CMGTools.Common.skims.cmgMuonSel_cfi import *
-from CMGTools.Common.skims.cmgElectronSel_cfi import *
-
 runOnData = False
 
 process = cms.Process("LxyMap")
 options = VarParsing.VarParsing ('analysis')
-options.maxEvents = 1000 # -1
+options.maxEvents = -1 # -1
 options.inputFiles= '/store/cmst3/user/cmgtools/CMG/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_10_0/cmgTuple_112.root'
 options.outputFile = './'
 
@@ -27,9 +24,11 @@ options.register ('sampleName',
                   "Name of the sample")
 
 
-sample = options.sampleName
 
 options.parseArguments()
+
+sample = options.sampleName
+
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 500
@@ -42,12 +41,16 @@ process.maxLuminosityBlocks = cms.untracked.PSet(
     )
 
 from CMGTools.Production.datasetToSource import *
+## use the following line to run over an entire sample set
+process.source = datasetToSource('cmgtools', options.sampleLocation, 'cmgTuple_.*root')
 
-process.source = cms.Source("PoolSource",
-                                fileNames = cms.untracked.vstring(options.inputFiles),
-)
+## use the following lines to run over single files
+# process.source = cms.Source("PoolSource",
+#                                 fileNames = cms.untracked.vstring(options.inputFiles),
+# )
 
-
+from CMGTools.Common.skims.cmgMuonSel_cfi import *
+from CMGTools.Common.skims.cmgElectronSel_cfi import *
 from CMGTools.Common.skims.cmgPFJetSel_cfi import *
 
 process.primaryVertexFilter = cms.EDFilter("VertexSelector",
@@ -75,6 +78,12 @@ process.cmgTopTightMuonMuJetSel = cmgMuonSel.clone(
     src = 'cmgMuonSel',
     cut = cms.string( tightMuon ),
     )
+process.oneTightMuonMuJetSel = cms.EDFilter("PATCandViewCountFilter",
+     minNumber = cms.uint32  (1),
+     maxNumber = cms.uint32  (1),
+     src       = cms.InputTag("cmgTopTightMuonMuJetSel"),
+)
+
 
 ## tight electron selection for jet cleaning
 tightElectron = "(pt()>30 && abs(eta())<2.5&& (abs(sourcePtr().superCluster().eta())>1.5660 || abs(sourcePtr().superCluster().eta())<1.4442) && abs(dxy())<0.02 && passConversionVeto()==1 && mvaTrigV0()>0.0 && numberOfHits()<=0 && relIso(0.5, 0, 0.3)<0.1)"
@@ -116,12 +125,18 @@ process.cleanElectronJets = cms.EDProducer("DeltaRVetoProducerPFJet",
     )
 
 
-##FIXME
+##FIXME 
 process.cmgTopJetPreSel = cmgPFJetSel.clone(
     #src = 'cleanElectronJets',
     src = 'cmgPFJetSelCHS',
-   cut = cms.string("pt()>=0 && abs(eta())<2.5 && abs(phi()) < 3.2  &&  getSelection(\"cuts_looseJetId\") " )
+   cut = cms.string("pt()>=15 && abs(eta())<5 && abs(phi()) < 3.2  &&  getSelection(\"cuts_looseJetId\") " )
    )
+
+process.fourJetsMuJetSel = cms.EDFilter("PATCandViewCountFilter",
+     minNumber = cms.uint32  (4),
+     maxNumber = cms.uint32  (9999),
+     src       = cms.InputTag("cmgTopJetPreSel"),
+)
 
 
 # Run the weights for PU
@@ -142,15 +157,17 @@ process.TFileService = cms.Service("TFileService",
 
 process.mapper = cms.Path(
     process.primaryVertexFilter      +
-    process.vertexWeightSequence     +
-    # process.scrapingFilter           + 	 
-    # process.metFilter                +
+    process.scrapingFilter           + 	 
+    process.metFilter                +
     #process.cmgTopTightMuonMuJetSel  +
+    #process.oneTightMuonMuJetSel     +
     #process.cmgTopTightElecEleJetSel +
     #process.oneTightElecEleJetSel    +
     #process.cleanMuonJets            +
     #process.cleanElectronJets        +
     process.cmgTopJetPreSel          +
-    process.map
+    #process.fourJetsMuJetSel        +
+    process.vertexWeightSequence     +
+    process.map                      
     )
 
