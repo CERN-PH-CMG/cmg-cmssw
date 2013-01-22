@@ -1,8 +1,6 @@
 
-#include "ZZMatrixElement/MELA/interface/Mela.h"
-#include "ZZMatrixElement/MELA/interface/PsMela.h"
-#include "ZZMatrixElement/MELA/interface/PseudoMELA.h"
-#include "ZZMatrixElement/MELA/interface/SpinTwoMinimalMELA.h"
+#include "ZZMatrixElement/MEMCalculators/interface/MEMCalculators.h"
+
 
 
 
@@ -10,101 +8,75 @@ class KD
 {
  public:
   KD() {
-    mela_ = new Mela();
-    pseudomela_ = new PseudoMELA();
-    psMela_ = new PsMela();
-    spintwomela_ = new SpinTwoMinimalMELA();
+    mem_ = new MEMs(8);
+
 
 
   }
 
 
   ~KD() {
-    if(mela_ !=0) delete mela_;
-    if(psMela_ !=0) delete psMela_;
-    if(pseudomela_ !=0) delete pseudomela_;
-    if(spintwomela_ !=0) delete spintwomela_;
+    if(mem_ !=0) delete mem_;
   }
 
-  float computeMELA(TLorentzVector Z1_lept1, int Z1_lept1Id,
+
+
+
+  void  computeAll(TLorentzVector Z1_lept1, int Z1_lept1Id,
 		   TLorentzVector Z1_lept2, int Z1_lept2Id,
 		   TLorentzVector Z2_lept1, int Z2_lept1Id,
-		   TLorentzVector Z2_lept2, int Z2_lept2Id,
-		   bool withPt = false,
-		    bool withY = false) {
+		   TLorentzVector Z2_lept2, int Z2_lept2Id) {
 
-    
-    float melaKD,melaS,melaB;
-    mela_->computeKD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,
-		     costhetastar_,costheta1_,costheta2_,phi_,phistar1_,melaKD,sig_,bkg_,withPt,withY);
-    return melaKD;
+    std::vector<TLorentzVector> ps;
+    ps.push_back(Z1_lept1);
+    ps.push_back(Z1_lept2);
+    ps.push_back(Z2_lept1);
+    ps.push_back(Z2_lept2);
+
+    if ( Z2_lept1Id == Z2_lept2Id)
+      Z2_lept2Id=-Z2_lept2Id;
+
+
+    std::vector<int> id;
+    id.push_back(Z1_lept1Id);
+    id.push_back(Z1_lept2Id);
+    id.push_back(Z2_lept1Id);
+    id.push_back(Z2_lept2Id);
+
+
+
+    printf("IDs = %d %d %d %d\n",Z1_lept1Id,Z1_lept2Id,Z2_lept1Id,Z2_lept2Id);
+
+    mem_->computeMEs(ps,id);
   }
 
 
-  float computePsMELA(TLorentzVector Z1_lept1, int Z1_lept1Id,
-		   TLorentzVector Z1_lept2, int Z1_lept2Id,
-		   TLorentzVector Z2_lept1, int Z2_lept1Id,
-		   TLorentzVector Z2_lept2, int Z2_lept2Id,
-		   bool withPt = false,
-		    bool withY = false) {
-
-    
-    float melaKD,melaS,melaB;
-    psMela_->computeKD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,
-		     costhetastar_,costheta1_,costheta2_,phi_,phistar1_,melaKD,sig_,bkg_,withPt,withY);
-    return melaKD;
+  float getKD() {
+    using namespace MEMNames;
+    double KD,ME_ggHiggs,ME_qqZZ;
+    mem_->computeKD(kSMHiggs, kJHUGen, kqqZZ, kMCFM, &MEMs::probRatio, KD, ME_ggHiggs, ME_qqZZ);
+    return KD;
   }
 
-
-  float melaS() {return sig_;}
-  float melaB() {return bkg_;}
-
-
-  float computePseudoMELA(TLorentzVector Z1_lept1, int Z1_lept1Id,
-			  TLorentzVector Z1_lept2, int Z1_lept2Id,
-			  TLorentzVector Z2_lept1, int Z2_lept1Id,
-			  TLorentzVector Z2_lept2, int Z2_lept2Id) {
-    
-    float melaKD,melaS,melaB;
-    pseudomela_->computeKD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,melaKD,melaS,melaB);
-    return melaKD;
+  float getPseudoKD() {
+    using namespace MEMNames;
+    double KD,ME_ggHiggs,ME_gg0Minus;
+    mem_->computeKD(kSMHiggs, kJHUGen, k0minus, kJHUGen, &MEMs::probRatio, KD, ME_ggHiggs, ME_gg0Minus);
+    return KD;
   }
 
-
-
-  float computeSpinTwoMELA(TLorentzVector Z1_lept1, int Z1_lept1Id,
-			  TLorentzVector Z1_lept2, int Z1_lept2Id,
-			  TLorentzVector Z2_lept1, int Z2_lept1Id,
-			  TLorentzVector Z2_lept2, int Z2_lept2Id) {
-    
-    float melaKD,melaS,melaB;
-    spintwomela_->computeKD(Z1_lept1,Z1_lept1Id,Z1_lept2,Z1_lept2Id,Z2_lept1,Z2_lept1Id,Z2_lept2,Z2_lept2Id,melaKD,melaS,melaB);
-    return melaKD;
+  float getGraviKD() {
+    using namespace MEMNames;
+    double KD,ME_ggHiggs,ME_gg0Minus;
+    mem_->computeKD(kSMHiggs, kJHUGen, k2mplus_gg, kJHUGen, &MEMs::probRatio, KD, ME_ggHiggs, ME_gg0Minus);
+    return KD;
   }
-
-
-
-
-  float costhetastar() {return costhetastar_;}
-  float costheta1() {return costheta1_;}
-  float costheta2() {return costheta2_;}
-  float phi() {return phi_;}
-  float phistar1() {return phistar1_;}
+  
 
 
  private:
-  Mela * mela_;
-  PseudoMELA * pseudomela_;
-  PsMela * psMela_;
-  SpinTwoMinimalMELA * spintwomela_;
-  float costhetastar_;
-  float costheta1_; 
-  float costheta2_;
-  float phi_;
-  float phistar1_;
-  float sig_;
-  float bkg_;
 
+  MEMs * mem_;
 
 
 

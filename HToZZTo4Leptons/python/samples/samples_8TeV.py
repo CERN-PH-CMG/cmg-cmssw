@@ -210,8 +210,11 @@ GGZZ2L2L,DY,DYLOW,TT
 
 #-----------DATA---------------
 
-json='/afs/cern.ch/user/m/mangano/public/hcp2012_json_v2/hcp.json'
-#skim='SKIM_Oct27_All'
+#json='/afs/cern.ch/user/m/mangano/public/hcp2012_json_v2/hcp.json'
+
+json='/afs/cern.ch/user/b/botta/public/moriond.json'
+jsonRecover='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt'
+
 
 DoubleMuAB = cfg.DataComponent(
     name = 'DoubleMuAB',
@@ -277,15 +280,76 @@ MuEGC = cfg.DataComponent(
     )
 
 
+#####################################################################################################################
+#####################################################################################################################
+
+print 'USING SPECIAL SKIM FOR 2012D'
+skim='SKIM_Jan14_NOCALD'
+
+DoubleMuD = cfg.DataComponent(
+    name = 'DoubleMuD',
+    files = getFiles('/DoubleMu/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+
+DoubleElectronD = cfg.DataComponent(
+    name = 'DoubleElectronD',
+    files = getFiles('/DoubleElectron/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+MuEGD = cfg.DataComponent(
+    name = 'MuEGD',
+    files = getFiles('/MuEG/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+
+
+DoubleMuRec = cfg.DataComponent(
+    name = 'DoubleMuRec',
+    files =getFiles('/DoubleMu/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = jsonRecover
+    )
+
+
+DoubleElectronRec = cfg.DataComponent(
+    name = 'DoubleElectronRec',
+    files = getFiles('/DoubleElectron/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = jsonRecover
+    )
+
+MuEGRec = cfg.DataComponent(
+    name = 'MuEGRec',
+    files = getFiles('/MuEG/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = jsonRecover
+    )
+
+
+
 
 
 
           
-dataSamplesMu=[DoubleMuAB,DoubleMuC]
+dataSamplesMu=[DoubleMuAB,DoubleMuC,DoubleMuD,DoubleMuRec]
 
-dataSamplesE=[DoubleElectronAB,DoubleElectronC]
+dataSamplesE=[DoubleElectronAB,DoubleElectronC,DoubleElectronD,DoubleElectronRec]
 
-dataSamplesMuE=[MuEGAB,MuEGC]
+dataSamplesMuE=[MuEGAB,MuEGC,MuEGD,MuEGRec]
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 
@@ -306,19 +370,19 @@ for comp in mcSamples:
 
 
 for comp in dataSamplesMu:
-    comp.splitFactor = 500
+    comp.splitFactor = 100
     comp.fakeRates=fakeRates2012
     comp.isMC = False
     comp.isData = True
 
 for comp in dataSamplesE:
-    comp.splitFactor = 500
+    comp.splitFactor = 100
     comp.fakeRates=fakeRates2012
     comp.isMC = False
     comp.isData = True
     
 for comp in dataSamplesMuE:
-    comp.splitFactor = 500
+    comp.splitFactor = 100
     comp.fakeRates=fakeRates2012
 
 

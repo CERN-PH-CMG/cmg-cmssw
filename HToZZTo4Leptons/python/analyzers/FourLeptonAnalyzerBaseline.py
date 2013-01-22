@@ -169,13 +169,13 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
 
 
         
-        passed=cutFlow.applyCut(lambda x: x.mela>0.1,'MELA',1,'fourLeptonsMELA')
+        passed=cutFlow.applyCut(lambda x: x.KD>0.1,'KD',1,'fourLeptonsMELA')
         passed=cutFlow.applyCut(lambda x: hasattr(x.leg1,'fsrPhoton') or hasattr(x.leg2,'fsrPhoton') ,'FSR',1,'fourLeptonsWithFSR')
         passed=cutFlow.applyCut(lambda x: hasattr(x.leg1,'fsrPhoton') and hasattr(x.leg2,'fsrPhoton') ,'Both FSR',1,'fourLeptonsWithFSR')
         cutFlow.setSource1(event.fourLeptonsHPhaseSpace)
-        passed=cutFlow.applyCut(lambda x: x.pseudomela>0.3,'PseudoMELA',1,'fourLeptonsPSMELA')
+        passed=cutFlow.applyCut(lambda x: x.pseudoKD>0.3,'PseudoKD',1,'fourLeptonsPSMELA')
         cutFlow.setSource1(event.fourLeptonsHPhaseSpace)
-        passed=cutFlow.applyCut(lambda x: x.spintwomela>0.15,'GraviMELA',1,'fourLeptonsSpinTwoMELA')
+        passed=cutFlow.applyCut(lambda x: x.graviKD>0.15,'GraviKD',1,'fourLeptonsSpinTwoMELA')
 
 
 

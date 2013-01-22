@@ -163,12 +163,9 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_FSRExists'.format(pName=pName))
         self.var('{pName}_FSRMatch'.format(pName=pName))
         self.var('{pName}_FSRUncorrMass'.format(pName=pName))
-        self.var('{pName}_MELA'.format(pName=pName))
-        self.var('{pName}_MELAS'.format(pName=pName))
-        self.var('{pName}_MELAB'.format(pName=pName))
-        self.var('{pName}_PseudoMELA'.format(pName=pName))
-        self.var('{pName}_PSMELA'.format(pName=pName))
-        self.var('{pName}_SpinTwoMELA'.format(pName=pName))
+        self.var('{pName}_KD'.format(pName=pName))
+        self.var('{pName}_PseudoKD'.format(pName=pName))
+        self.var('{pName}_GraviKD'.format(pName=pName))
         self.var('{pName}_MassErr'.format(pName=pName))
         for postfix in ['','Up','Dwn']:
             self.var('{pName}_DEta'.format(pName=pName)+postfix)
@@ -208,17 +205,12 @@ class TreeProducer( Analyzer ):
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
         self.fill('{pName}_FSRExists'.format(pName=pName), hasattr(particle.leg1,'fsrPhoton') or hasattr(particle.leg2,'fsrPhoton'))
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
-        if hasattr(particle,'mela'):
-            self.fill('{pName}_MELA'.format(pName=pName), particle.mela )
-            self.fill('{pName}_MELAS'.format(pName=pName), particle.melaS )
-            self.fill('{pName}_MELAB'.format(pName=pName), particle.melaB )
-        if hasattr(particle,'pseudomela'):
-            self.fill('{pName}_PseudoMELA'.format(pName=pName), particle.pseudomela )
-        if hasattr(particle,'psmela'):
-            self.fill('{pName}_PSMELA'.format(pName=pName), particle.psmela )
-
-        if hasattr(particle,'spintwomela'):
-            self.fill('{pName}_SpinTwoMELA'.format(pName=pName), particle.spintwomela )
+        if hasattr(particle,'KD'):
+            self.fill('{pName}_KD'.format(pName=pName), particle.KD )
+        if hasattr(particle,'pseudoKD'):
+            self.fill('{pName}_PseudoKD'.format(pName=pName), particle.pseudoKD )
+        if hasattr(particle,'graviKD'):
+            self.fill('{pName}_GraviKD'.format(pName=pName), particle.graviKD )
         if hasattr(particle,'massErr'):
             self.fill('{pName}_MassErr'.format(pName=pName), particle.massErr )
 

@@ -4,7 +4,7 @@ from CMGTools.HToZZTo4Leptons.tools.EfficiencyCorrector import EfficiencyCorrect
 
 eff2011 = CFG(
     name='eff',
-    muonFile = 'data/eff_mu.root',
+    muonFile = 'data/eff_mu11.root',
     muonHisto = 'eff2011',
 #    muonHisto = 'TH2D_ALL_2012',
 
@@ -15,10 +15,10 @@ eff2011 = CFG(
 
 eff2012 = CFG(
     name='eff',
-    muonFile = 'data/eff_mu.root',
-    muonHisto = 'TH2D_ALL_2012',
+    muonFile = 'data/eff_mu12.root',
+    muonHisto = 'TH2D_ALL',
     eleFile = 'data/eff_ele12.root',    
-    eleHisto = 'h_electron_scale_factor_RECO_ID_ISO_SIP'
+    eleHisto = 'heff_electron_selection'
     )
 
 

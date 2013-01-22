@@ -315,6 +315,14 @@ class PDFFactory(object):
 
 
 
+    def makeFastProduct(self,name,name1,name2):
+        conditional = ROOT.RooVerticalInterpUncorrProd2D(name,'',ROOT.RooArgSet(self.w.pdf(name1),self.w.pdf(name2)))
+        getattr(self.w,'importClassCode')(ROOT.RooVerticalInterpUncorrProd2D.Class(),1)
+        getattr(self.w,'import')(conditional)
+
+    def makeFastCond(self,name,names,conds):
+        conditional = ROOT.RooProdPdf(name,'',ROOT.RooArgSet(self.w.pdf(names[0])),ROOT.RooFit.Conditional(ROOT.RooArgSet(self.w.pdf(names[1])),ROOT.RooArgSet(self.w.var(conds[0]),self.w.var(conds[1]))))
+        getattr(self.w,'import')(conditional)
 
 
 
