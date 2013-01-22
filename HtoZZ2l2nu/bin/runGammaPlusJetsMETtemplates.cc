@@ -70,11 +70,13 @@ int main(int argc, char* argv[])
   bool useCHS(true);
   bool nodphisoftjet(true);
 
+  TString url=runProcess.getParameter<std::string>("input");
+
   bool isMC = runProcess.getParameter<bool>("isMC");
  //bool runBlinded = runProcess.getParameter<bool>("runBlinded");
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
+  bool isV0JetsMC(isMC && url.Contains("0Jets"));
 
-  TString url=runProcess.getParameter<std::string>("input");
   TString outFileUrl(gSystem->BaseName(url));
   outFileUrl.ReplaceAll(".root","");
   if(mctruthmode!=0) { outFileUrl += "_filt"; outFileUrl += mctruthmode; }
@@ -180,7 +182,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "met_redMet_blind", ";red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_redMetL"     , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - longi.;Events", 50,-250,250) );
   mon.addHistogram( new TH1F( "met_redMetT"     , ";red(E_{T}^{miss},clustered-E_{T}^{miss}) - perp.;Events", 50,-250,250) );
-  mon.addHistogram( new TH1F( "zmass"           , ";M^{ll};Events", 15,76,106) );
+  mon.addHistogram( new TH1F( "qmass"           , ";M^{ll};Events", 15,76,106) );
   mon.addHistogram( new TH2F( "met_met_vspu"    , ";Vertices;E_{T}^{miss};Events", 50,0,50,50,0,500) );
   mon.addHistogram( new TH2F( "met_redMet_vspu" , ";Vertices;red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,500) );
   mon.addHistogram( new TH2F ("mt_shapes"       , ";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 160,150,950) );  
@@ -294,21 +296,11 @@ int main(int argc, char* argv[])
       //interpret event
       ZZ2l2nuSummary_t &ev = evSummaryHandler.getEvent();
       PhysicsEvent_t phys  = getPhysicsEventFrom(ev);
-      bool hasEEtrigger = ev.triggerType & 0x1;
-      bool hasMMtrigger = (ev.triggerType >> 1 ) & 0x1;
+      if( !gammaEvHandler.isGood(phys,use2011Id) ) continue;
+      if( !isMC && duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)) {  NumberOfDuplicated++; continue; }
 
-      bool isGammaEvent    = gammaEvHandler.isGood(phys,use2011Id);
-      if(!isMC && duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)) {  NumberOfDuplicated++; continue; }
-
-      //check which event type is required to use (dilepton/or photon)
-      if(mctruthmode==1)
+      if((mctruthmode==22||mctruthmode==111))
 	{
-	  if(isGammaEvent)                  continue;
-	  if(ev.cat != EE && ev.cat !=MUMU) continue;
-	}
-      else if((mctruthmode==22||mctruthmode==111))
-	{
-	  if(!isGammaEvent ) continue;
 	  if(isMC)
 	    {
 	      int npromptGammas = ((ev.mccat>>28)&0xf) ;      
@@ -317,77 +309,33 @@ int main(int argc, char* argv[])
 	    }
 	}
       else continue;
+      if(isV0JetsMC && ev.mc_nup>5)                          continue;
 
       std::vector<TString> dilCats;
+      dilCats.push_back("ee");
+      dilCats.push_back("mumu");
       
       //build the gamma candidate
       LorentzVector gamma(0,0,0,0);
       float r9(0),sietaieta(0);
       bool hasTrkVeto(false),hasElectronVeto(false);
-      if(isGammaEvent)
-	{
-	  dilCats.push_back("ee");
-	  dilCats.push_back("mumu");
-	  r9               = phys.gammas[0].r9*(isMC ? 1.005 : 1.0);
-	  sietaieta        = phys.gammas[0].sihih;
-	  hasElectronVeto  = phys.gammas[0].hasElectronVeto;
-	  hasTrkVeto       = phys.gammas[0].hasCtfTrkVeto;
-	  gamma            = phys.gammas[0];
-	}
-      else
-	{
-	  //check if dilepton is good
-	  bool isGood(true);
-	  for(size_t ilep=0; ilep<2; ilep++)
-	    {
-	      gamma += phys.leptons[ilep];
-	      int lpid=phys.leptons[ilep].pid;
-	      
-	      if(fabs(phys.leptons[ilep].id)==13)
-		{
-		  if(use2011Id)
-		    {
-		      float relIso=phys.leptons[ilep].relIsoRho(ev.rho);
-		      if( !hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) || relIso>0.15) isGood=false;
-		    }
-		  else
-		    {
-		      float relIso=phys.leptons[ilep].pfRelIsoDbeta();
-		      if( !hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) || relIso>0.2) isGood=false;
-		    }
-		}
-	      if(fabs(phys.leptons[ilep].id)==11)
-		{
-		  if(use2011Id)
-		    {
-		      float relIso=phys.leptons[ilep].relIsoRho(ev.rho);
-		      if(!hasObjectId(ev.en_idbits[lpid], EID_VBTF2011) || relIso>0.1) isGood=false;
-		    }
-		  else
-		    {
-		      float relIso=phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho,ev.en_sceta[lpid]);
-		      if(!hasObjectId(ev.en_idbits[lpid],EID_MEDIUM) || relIso>0.15) isGood=false;
-		    }
-		}
-	    }
-	  if(!isGood) continue;
-	  if(fabs(gamma.mass()-91)>15) continue;
-	  if(!isMC && ev.cat==MUMU && !hasMMtrigger) continue;
-	  if(!isMC && ev.cat==EE && !hasEEtrigger) continue;
-	  if(ev.cat==MUMU) dilCats.push_back("mumu");
-	  if(ev.cat==EE)   dilCats.push_back("ee");
-	}
+      r9               = phys.gammas[0].r9*(isMC ? 1.005 : 1.0);
+      sietaieta        = phys.gammas[0].sihih;
+      hasElectronVeto  = phys.gammas[0].hasElectronVeto;
+      hasTrkVeto       = phys.gammas[0].hasCtfTrkVeto;
+      gamma            = phys.gammas[0];
+	
 
       //
       // EXTRA LEPTONS
       //
       int nextraleptons(0);
-      for(size_t ilep=(isGammaEvent ? 0 : 2); ilep<phys.leptons.size(); ilep++)
+      for(size_t ilep=0; ilep<phys.leptons.size(); ilep++)
 	{
 	  int lpid=phys.leptons[ilep].pid;
 
 	  //FIXME: looks like sometimes the gamma comes double counted as a soft-id electron ???
-	  if(isGammaEvent && fabs(phys.leptons[ilep].id)==11)
+	  if(fabs(phys.leptons[ilep].id)==11)
 	    {
 	      double dr( deltaR(phys.leptons[ilep],gamma) );
 	      if(dr<0.1) continue;
@@ -427,12 +375,6 @@ int main(int argc, char* argv[])
       //LorentzVector metP4(phys.met[0]);
       LorentzVector metP4(phys.met[2]);
       bool passLMetVeto(true);
-      if(!isGammaEvent)
-	{
-	  double dphil1met=fabs(deltaPhi(phys.leptons[0].phi(),metP4.phi()));
-	  double dphil2met=fabs(deltaPhi(phys.leptons[1].phi(),metP4.phi()));
-	  if(!use2011Id && metP4.pt()>60 && min(dphil1met,dphil2met)<0.2) passLMetVeto=false;
-	}
 
       LorentzVectorCollection zvvs;
       std::vector<PhysicsObjectJetCollection> jets;
@@ -453,7 +395,7 @@ int main(int argc, char* argv[])
       for(size_t ijet=0; ijet<jetsToUse.size(); ijet++)
         {
 	  LorentzVector ijetP4=jetsToUse[ijet];
-	  if(isGammaEvent && ijetP4.pt()>30 && deltaR(ijetP4,gamma)<0.1) continue;
+	  if(ijetP4.pt()>30 && deltaR(ijetP4,gamma)<0.1) continue;
 
 	  //dphi(jet,MET)
 	  double idphijmet( fabs(deltaPhi(ijetP4.phi(),metP4.phi()) ) );	  
@@ -491,8 +433,8 @@ int main(int argc, char* argv[])
 
       //event weight
       float weight = 1.0;  
-      if(isMC)                                { weight = LumiWeights.weight( ev.ngenITpu ); }
-      if(!isMC && isGammaEvent && !use2011Id) { weight *= gammaEvHandler.triggerWgt_; }
+      if(isMC)                { weight = LumiWeights.weight( ev.ngenITpu ); }
+      if(!isMC && !use2011Id) { weight *= gammaEvHandler.triggerWgt_; }
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight);
@@ -504,13 +446,12 @@ int main(int argc, char* argv[])
       //
       bool passMultiplicityVetoes (nextraleptons==0);
       bool passKinematics         (gamma.pt()>55);
-      if(isGammaEvent)
-	{
-	  passKinematics &= (fabs(gamma.eta())<1.4442); 
-	  passKinematics &= (r9>0.9 && r9<1.0);
-	  if(!isMC)    passKinematics &= (gamma.pt()>gammaEvHandler.triggerThr());
-	  passKinematics &= !hasElectronVeto; 
-	}
+      passKinematics &= (fabs(gamma.eta())<1.4442); 
+      //passKinematics &= (r9>0.9 && r9<1.0);
+      passKinematics &= (r9<1.0);
+      if(!isMC)    passKinematics &= (gamma.pt()>gammaEvHandler.triggerThr());
+      passKinematics &= !hasElectronVeto; 
+	
       bool passBveto              (nbtags==0);
       if(nodphisoftjet)  mindphijmet15=99999.;
       bool passMinDphiJmet        (mindphijmet>0.5);
@@ -542,41 +483,45 @@ int main(int argc, char* argv[])
 
       //now do the control plots
       std::map<TString, float> qtWeights;
-      if(isGammaEvent) qtWeights = gammaEvHandler.getWeights(phys,tag_subcat);
+      //TString photonSubCat(tag_subcat);
+      TString photonSubCat("eq0jets"); 
+      if(njets30==1) photonSubCat = "eq1jets";
+      if(njets30==2) photonSubCat = "eq2jets";
+      if(njets30>=3) photonSubCat = "geq3jets";
+      qtWeights = gammaEvHandler.getWeights(phys,photonSubCat);
      
       //now do the control plots
       if(passKinematics && passMultiplicityVetoes)
 	{
 	  for(size_t idc=0; idc<dilCats.size(); idc++)
 	    {
-	      LorentzVector iboson(isGammaEvent ? gammaEvHandler.massiveGamma(dilCats[idc]) : gamma);
+	      LorentzVector iboson(gammaEvHandler.massiveGamma(dilCats[idc]));
 	      float zmass=iboson.mass();
 	      Float_t mt( METUtils::transverseMass(iboson,metP4,true) );
 	      
-	      float iweight=weight;
-	      if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
+	      float iweight=weight*qtWeights[dilCats[idc]];
 	     
 	      for(size_t isc=0; isc<subcats.size(); isc++)
 		{
 		  TString ctf=dilCats[idc]+subcats[isc];	      
-		  
-		  if(isGammaEvent)  
-		    {
-		      mon.fillHisto("r9",        ctf, r9,         iweight);
-		      mon.fillHisto("sietaieta", ctf, sietaieta,  iweight);
-		      mon.fillHisto("trkveto",   ctf, hasTrkVeto, iweight);
-		    }
-		  
+		  mon.fillHisto("r9",        ctf, r9,         iweight);
+		  mon.fillHisto("sietaieta", ctf, sietaieta,  iweight);
+		  mon.fillHisto("trkveto",   ctf, hasTrkVeto, iweight);
+		  		  
 		  mon.fillHisto("nbtags",ctf, nbtags,iweight);
 		  if(passMinDphiJmet && metP4.pt()>70)  mon.fillHisto("npfjetsbtagsJPNM1", ctf, nbtags ,iweight);
 		  if(passBveto)
 		    {
 		      mon.fillHisto("eta",ctf, fabs(gamma.eta()),iweight);
-		      mon.fillHisto("qtraw",ctf, gamma.pt(),iweight/weight,true);
-		      mon.fillHisto("qt",ctf, gamma.pt(),iweight,true);
+		      
+		      //TString photonCtf=ctf;
+		      TString photonCtf=dilCats[idc]+photonSubCat;
+		      mon.fillHisto("qtraw", photonCtf, gamma.pt(), iweight/weight, true);
+		      mon.fillHisto("qt",    photonCtf, gamma.pt(), iweight,        true);
+
 		      mon.fillHisto("nvtx",ctf, ev.nvtx,iweight);
 		      mon.fillHisto("rho",ctf, ev.rho,iweight);
-		      mon.fillHisto("zmass",ctf, zmass,iweight);
+		      mon.fillHisto("qmass",ctf, zmass,iweight);
 		      mon.fillHisto("njets",ctf, njets30,iweight);
 		      mon.fillProfile("nloosejetsvspu",ctf,ev.nvtx,npfjets30,iweight);	      	      
 		      mon.fillProfile("njetsvspu",ctf,ev.nvtx,njets30,iweight);	      	      

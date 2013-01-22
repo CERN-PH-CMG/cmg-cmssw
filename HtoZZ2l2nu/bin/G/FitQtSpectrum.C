@@ -112,7 +112,8 @@ TGraph *steerQtParameterization(TH1F *qt,std::vector<int> &thr,TPad *p)
 
 //
 enum AnalysisMode {STANDARD, ZZ, VBFZ};
-void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=STANDARD,bool is2011=false)
+enum WeightMode   {WEIGHTTOSAMETYPE, WEIGHTALLTODATA};
+void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=STANDARD,bool is2011=false, int weightMode=WEIGHTALLTODATA)
 {
   std::vector<TString> categs,titles,mcg;
   if(mode==ZZ){
@@ -123,6 +124,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
     categs.push_back("eq0jets"); categs.push_back("eq1jets"); categs.push_back("eq2jets"); categs.push_back("geq3jets");  if(mode==STANDARD) categs.push_back("vbf");
     titles.push_back("=0jets");  titles.push_back("=1jets");  titles.push_back("=2jets");  titles.push_back("#geq3jets"); if(mode==STANDARD) titles.push_back("VBF");
   }
+  mcg.push_back("EWK");
   mcg.push_back("Fakes");
   mcg.push_back("Prompt #gamma");
   TString mcdy("Z#rightarrow ll");
@@ -290,6 +292,16 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	      wgt=regmmqt->Eval(x)/reggqt->Eval(x);
 	      mmwgtGr->SetPoint(eewgtGr->GetN(),x,wgt);
 	    }
+
+	  //apply direct weighting for VBF
+	  if(categs[icat]=="vbf")
+	    {
+	      TH1 *eewgts=(TH1 *) eeqt->Clone(); eewgts->Divide(gqt);
+	      eewgtGr=new TGraph(eewgts); eewgtGr->SetTitle("ee");     eewgtGr->SetName("ee"+categs[icat]+"_qt_datafitwgts");
+	      TH1 *mmwgts=(TH1 *) mmqt->Clone(); mmwgts->Divide(mcgqt); 
+	      mmwgtGr=new TGraph(mmwgts); mmwgtGr->SetTitle("#mu#mu"); mmwgtGr->SetName("mumu"+categs[icat]+"_qt_datafitwgts");
+	    }	      
+	  
 	  
 	  wc->cd();
 	  p=(TPad *) wc->cd(icat+1); 
@@ -310,6 +322,11 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	}
 
       //mc based
+      if(weightMode==WEIGHTALLTODATA)
+	{
+	  mceeqt=eeqt;
+	  mcmmqt=mmqt;
+	}
       if(mcgqt && mceeqt && mcmmqt)
 	{
 	  mcc->cd();

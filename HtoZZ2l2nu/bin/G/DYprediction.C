@@ -210,32 +210,32 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011HighMass.root";
       
      
-      histos.push_back("met_metNM1");
-      histos.push_back("met_met");
+      //      histos.push_back("met_metNM1");
+      //      histos.push_back("met_met");
       histos.push_back("met_met_blind");                
 
       //histos.push_back("met_redMetNM1");
       //histos.push_back("met_redMet");
       //histos.push_back("met_redMet_blind");             
 
-      histos.push_back("mtNM1");     
-      histos.push_back("mt");     
+//       histos.push_back("mtNM1");     
+//       histos.push_back("mt");     
       histos.push_back("mt_blind");     
       
 //       histos.push_back("pfvbfcandjeteta");
 //       histos.push_back("pfvbfcandjetpt");
-       histos.push_back("pfvbfcandjetdeta");
-       histos.push_back("pfvbfmjj");
-       histos.push_back("pfvbfpremjj");
+//       histos.push_back("pfvbfcandjetdeta");
+//       histos.push_back("pfvbfmjj");
+//       histos.push_back("pfvbfpremjj");
 //       histos.push_back("pfvbfcjv");
       
       
 //      histos.push_back("mindphijmet_0");            
       //     histos.push_back("mindphijmet_25");           
       //   histos.push_back("mindphijmet_50");           
-      histos.push_back("mindphijmet");                     
+      //      histos.push_back("mindphijmet");                     
       //      histos.push_back("mindphijmetNM1");                     
-      histos.push_back("mt_shapes");              
+      //   histos.push_back("mt_shapes");              
       //       histos.push_back("mt_redMet_shapes");       
       
       dilSignal.push_back("ggH(600)#rightarrow ZZ");
