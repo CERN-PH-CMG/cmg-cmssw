@@ -24,7 +24,7 @@ def getFiles(datasets, user, pattern):
     files = []
     for d in datasets:
         ds = datasetToSource(
-                             'lucieg',
+                             os.environ['USER'],
                              d,
                              pattern
                              )
@@ -97,6 +97,11 @@ if __name__ == '__main__':
 
     options.parseArguments()
     runOnMC = options.runOnMC
+
+    runSMS = False
+    if options.datasetName:
+        runSMS = 'SMS' in options.datasetName
+        runOnMC = 'START' in options.datasetName
     if not options.inputFiles:
         if options.inputDirectory is not None:
             listDirectory(options.inputDirectory, options.inputFiles, options.maxFiles)
@@ -146,8 +151,13 @@ struct Variables{\
     Double_t RSQ_JES_UP;\
     Double_t RSQ_JES_DOWN;\
     Double_t met;\
+    Double_t met_x;\
+    Double_t met_y;\
     Double_t met_up;\
     Double_t met_down;\
+    Double_t caloMET;\
+    Double_t caloMET_x;\
+    Double_t caloMET_y;\
     Double_t hemi1Mass;\
     Double_t hemi2Mass;\
     Double_t hemi1TopMass;\
@@ -165,7 +175,8 @@ struct Variables{\
     Double_t hemi2Eta;\
     Double_t hemi1Phi;\
     Double_t hemi2Phi;\
-    Double_t pileUpWeight;\
+    Double_t pileUpWeightABCD;\
+    Double_t pileUpWeightBCD;\
     Double_t MRT;\
     Double_t MCT;\
     Double_t MEFF;\
@@ -212,9 +223,7 @@ struct Filters{\
     Bool_t quadJetTriggerFilter;\
     Bool_t muTriggerFilter;\
     Bool_t metFilter;\
-    Bool_t isolatedTrack5Filter;\
     Bool_t isolatedTrack10Filter;\
-    Bool_t isolatedTrack5LeptonFilter;\
     Bool_t isolatedTrack10LeptonFilter;\
 };""")
 
@@ -286,6 +295,7 @@ struct Filters{\
     hemiHadH = Handle("std::vector<cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> >")
     hemiLepH = Handle("std::vector<cmg::DiObject<cmg::Hemisphere, cmg::Hemisphere> >")
     metH = Handle("std::vector<cmg::BaseMET>")
+    calometH = Handle("std::vector<reco::CaloMET>")
     lheH = Handle('LHEEventProduct')
     pdfH = Handle('std::vector<double>')
     candH = Handle("std::vector<reco::LeafCandidate>")
@@ -308,7 +318,6 @@ struct Filters{\
     pfcandstrkisoH = Handle('std::vector<float>')
     pfcandschgH = Handle('std::vector<int>')
 
-#    options.outputFile = 'test.root'
     store = RootFile.RootFile(options.outputFile)
     store.add(tree)
 
@@ -349,18 +358,21 @@ struct Filters{\
         #get the LHE product info
         vars.mStop = -1
         vars.mLSP = -1
-       ##  if runOnMC:
-##             event.getByLabel(('source'),lheH)
-##             if lheH.isValid():
-##                 lhe = lheH.product()
-##                 for i in xrange(lhe.comments_size()):
-##                     comment = lhe.getComment(i)
-##                     if 'model' not in comment: continue
-##                     comment = comment.replace('\n','')
-##                     parameters = comment.split(' ')[-1]
-##                     masses = map(float,parameters.split('_')[-2:])
-##                     vars.mStop = masses[0]
-##                     vars.mLSP = masses[1]
+        if runOnMC and runSMS:
+            event.getByLabel(('source'),lheH)
+            if lheH.isValid():
+                lhe = lheH.product()
+                for i in xrange(lhe.comments_size()):
+                    comment = lhe.getComment(i)
+                    if 'model' not in comment: continue
+                    comment = comment.replace('\n','')
+                    parameters = comment.split(' ')[-1]
+                    masses = map(float,parameters.split('_')[-2:])
+                    vars.mStop = masses[0]
+                    vars.mLSP = masses[1]
+                if skimEvents and vars.mLSP > 0.0:
+                    #TODO: For Moriond, only consider the zero LSP mass strip
+                    continue
 
         #store how many of each model we see
         point = (vars.mStop,vars.mLSP)
@@ -384,7 +396,10 @@ struct Filters{\
         event.getByLabel(('TriggerResults','','PAT'),pathTriggerH)
         pathTrigger = pathTriggerH.product()
         pathTriggerNames = event.object().triggerNames(pathTrigger)
-        filters.metFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('metNoiseCleaningPath'))
+        if runOnMC:
+            filters.metFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('metNoiseCleaningPath'))
+        else:
+            filters.metFilter = pathTrigger.accept(pathTriggerNames.triggerIndex('metNoiseCleaningPath')) and pathTrigger.accept(pathTriggerNames.triggerIndex('trkPOGFiltersPath'))
                         
         event.getByLabel(('razorMJDiHemiHadBoxUp'),hemiHadH)
         if hemiHadH.isValid() and len(hemiHadH.product()):
@@ -451,7 +466,11 @@ struct Filters{\
         event.getByLabel(('cmgPFMET'),metH)
         met = metH.product()[0]
         vars.met = met.et()
+        vars.met_x = met.px()
+        vars.met_y = met.py()
         vars.MEFF += met.et()
+
+
 
         #set the number of btags
         if info.nCSVL == 0:
@@ -480,7 +499,7 @@ struct Filters{\
         info.nElectronTight = len(electronH.product())
         info.nMuonTight = len(muonH.product())
         info.nTauTight = len(tauH.product())
-        info.nLepton = info.nElectronTight + info.nMuonTight + info.nTauTight
+        info.nLepton = info.nElectronTight + info.nMuonTight
         
         #store the leptons for future use
         leptons = [l for l in electronH.product()]
@@ -492,28 +511,20 @@ struct Filters{\
         event.getByLabel(('razorMJTrackIsolationMaker','pfcandstrkiso'),pfcandstrkisoH)
         event.getByLabel(('razorMJTrackIsolationMaker','pfcandschg'),pfcandschgH)
 
-        filters.isolatedTrack5Filter = False
         filters.isolatedTrack10Filter = False
         if pfcandsptH.isValid():
             pfcandspt = pfcandsptH.product()
             pfcandstrkiso = pfcandstrkisoH.product()
             pfcandschg = pfcandschgH.product()
 
-            veto5 = False
             veto10 = False
             for i in xrange(len(pfcandspt)):
                 if pfcandspt.at(i) >= 10. and pfcandschg.at(i) > 0:
                     reliso = pfcandstrkiso.at(i)/pfcandspt.at(i)
                     if reliso < 0.1:
                         veto10 = True
-                        veto5  = True
-                elif pfcandspt.at(i) >= 5. and pfcandschg.at(i) > 0:
-                    reliso = pfcandstrkiso.at(i)/pfcandspt.at(i)
-                    if reliso < 0.1:
-                        veto5 = True
-                if veto5 and veto10:
+                if veto10:
                     break
-            filters.isolatedTrack5Filter = veto5
             filters.isolatedTrack10Filter = veto10
 
         #this is for the isolated track veto, for leptonic boxes
@@ -521,28 +532,20 @@ struct Filters{\
         event.getByLabel(('razorMJLeptonTrackIsolationMaker','pfcandstrkiso'),pfcandstrkisoH)
         event.getByLabel(('razorMJLeptonTrackIsolationMaker','pfcandschg'),pfcandschgH)
 
-        filters.isolatedTrack5LeptonFilter = False
         filters.isolatedTrack10LeptonFilter = False
         if pfcandsptH.isValid():
             pfcandspt = pfcandsptH.product()
             pfcandstrkiso = pfcandstrkisoH.product()
             pfcandschg = pfcandschgH.product()
 
-            veto5 = False
             veto10 = False
             for i in xrange(len(pfcandspt)):
                 if pfcandspt.at(i) >= 10. and pfcandschg.at(i) > 0:
                     reliso = pfcandstrkiso.at(i)/pfcandspt.at(i)
                     if reliso < 0.1:
                         veto10 = True
-                        veto5  = True
-                elif pfcandspt.at(i) >= 5. and pfcandschg.at(i) > 0:
-                    reliso = pfcandstrkiso.at(i)/pfcandspt.at(i)
-                    if reliso < 0.1:
-                        veto5 = True
-                if veto5 and veto10:
+                if veto10:
                     break
-            filters.isolatedTrack5LeptonFilter = veto5
             filters.isolatedTrack10LeptonFilter = veto10
 
 
@@ -645,16 +648,17 @@ struct Filters{\
 
         event.getByLabel(('goodOfflinePrimaryVertices'),vertexH)
         info.nVertex = len(vertexH.product())
-
-##        #dump the PDF weights
-##        Event.getByLabel(('dumpPdfWeights','cteq66'),pdfH)
-##        if pdfH.isValid():
-##            for w in pdfH.product():
-##                CTEQ66_W.push_back(w)
-##        event.getByLabel(('dumpPdfWeights','MRST2006nnlo'),pdfH)
-##        if pdfH.isValid():
-##            for w in pdfH.product():
-##                MRST2006NNLO_W.push_back(w)
+        
+        if runOnMC:
+            #dump the PDF weights
+            event.getByLabel(('dumpPdfWeights','cteq66'),pdfH)
+            if pdfH.isValid():
+                for w in pdfH.product():
+                    CTEQ66_W.push_back(w)
+            event.getByLabel(('dumpPdfWeights','NNPDF20'),pdfH)
+            if pdfH.isValid():
+                for w in pdfH.product():
+                    MRST2006NNLO_W.push_back(w)
 
         event.getByLabel(('razorMJAllTriggerSel'),triggerH)
         if len(triggerH.product()):
@@ -667,7 +671,9 @@ struct Filters{\
             filters.quadJetTriggerFilter =   trigger.getSelectionRegExp("^HLT_QuadJet[0-9]+_v[0-9]+$") 
             filters.eleTriggerFilter = trigger.getSelectionRegExp("^HLT_Ele[0-9]+_WP80_v[0-9]+$")
             filters.muTriggerFilter = trigger.getSelectionRegExp("^HLT_Mu[0-9]+_eta2p1_v[0-9]+$") or \
-                trigger.getSelectionRegExp("^HLT_IsoMu[0-9]+_eta2p1_v[0-9]+$")
+                trigger.getSelectionRegExp("^HLT_IsoMu[0-9]+_eta2p1_v[0-9]+$") or \
+                trigger.getSelectionRegExp("^HLT_Mu[0-9]+_v[0-9]+$") or \
+                trigger.getSelectionRegExp("^HLT_IsoMu[0-9]+_v[0-9]+$")
             del trigger
         else:
             filters.hadTriggerFilter = False
@@ -675,6 +681,13 @@ struct Filters{\
             filters.muTriggerFilter = False
             filters.eleTriggerFilter = False
         
+        #recoCaloMETs_corMetGlobalMuons__RECO
+        event.getByLabel(('corMetGlobalMuons'),calometH)
+        calomet = calometH.product()[0]
+        vars.caloMET = calomet.et()
+        vars.caloMET_x = calomet.px()
+        vars.caloMET_y = calomet.py()    
+
         if runOnMC:
             event.getByLabel(('topGenInfo'),candH)
             if options.model is not None and candH.isValid() and len(candH.product()):
@@ -692,12 +705,12 @@ struct Filters{\
                 info.genInfo = filterH.product()[0]
                 info.BOX_NUM_GEN = getBoxGenLevel(info.genInfo)
 
-            if options.datasetName is not None and 'START53' in options.datasetName:
-                event.getByLabel(('vertexWeightSummer12MC53XHCPData'),pileUpH)
-                vars.pileUpWeight = pileUpH.product()[0]
-            elif options.datasetName is not None and 'START52' in options.datasetName:
-                event.getByLabel(('vertexWeightSummer12MCICHEPData'),pileUpH)
-                vars.pileUpWeight = pileUpH.product()[0]
+            #store weights for both ABCD (StreamA) and BCD (Parking)
+            event.getByLabel(('vertexWeightSummer12MC53X2012ABCDData'),pileUpH)
+            vars.pileUpWeightABCD = pileUpH.product()[0]
+            event.getByLabel(('vertexWeightSummer12MC53X2012BCDData'),pileUpH)
+            vars.pileUpWeightBCD = pileUpH.product()[0]
+
 
 
         #TODO: Place some cut here
@@ -706,9 +719,6 @@ struct Filters{\
 
         tree.Fill()
 
-#    tree.SetDirectory(output)
-#    tree.Write()
-#    output.Close()
     store.write()
 
     sample_counts = file(options.outputFile.replace('.root','.pkl'),'wb')
