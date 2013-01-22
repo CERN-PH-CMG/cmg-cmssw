@@ -149,6 +149,12 @@ razorMJPFJetSel30Count5j = cmgCandCount.clone( src = 'razorMJPFJetSel30', minNum
 razorMJPFJetSelID = cmgPFJetSel.clone( src = 'razorMJPFJetSel30', cut = '(!getSelection("cuts_looseJetId"))' )
 razorMJPFJetIDCount = cmgCandCount.clone( src = 'razorMJPFJetSelID', minNumber = 1 ) #filter inverted below
 
+#now require either 0 loose btags, or at least one medium 
+razorMJBTagFilter = cms.EDFilter(
+    "BTagFilter",
+    src = cms.InputTag('razorMJPFJetSel30')
+    )
+
 #produce the girth for quark/gluon discrimination
 razorMJJetGirth = cms.EDFilter(
     "QGJetIDProducer",
@@ -334,7 +340,7 @@ razorMJDiHemiLepBox20 = cmgDiHemi.clone(
 razorMJTriggerSequence = cms.Sequence(
     razorMJHadTriggerSel+
     razorMJHadBTriggerSel+
-    razorMJHadTriggerInfo+
+    #razorMJHadTriggerInfo+
     razorMJEleTriggerSel+
     razorMJMuTriggerSel+
     razorMJAllTriggerSel
@@ -383,7 +389,7 @@ razorMJHemiSequence = cms.Sequence(
 from CMGTools.Susy.common.trackIsolationMaker_cfi import trackIsolationMaker
 razorMJTrackIsolationMaker = trackIsolationMaker.clone()
 razorMJTrackIsolationMaker.vertexInputTag = cms.InputTag("goodOfflinePrimaryVertices")
-razorMJTrackIsolationMaker.minPt_PFCandidate = cms.double(5.0)
+razorMJTrackIsolationMaker.minPt_PFCandidate = cms.double(10.0)
 razorMJTrackIsolationMaker.pfCandidatesTag = cms.InputTag("pfNoPileUp")
 razorMJTrackIsolationMaker.dz_CutValue = cms.double(101.)
 razorMJTrackIsolationMaker.vetoCollections = cms.VInputTag()
@@ -404,11 +410,7 @@ razorMJElectronTightLead = leadingCMGElectronSelector.clone(
         inputCollection = 'razorMJElectronTight', index = 1
             )
 
-razorMJLeptonTrackIsolationMaker                   = trackIsolationMaker.clone()
-razorMJLeptonTrackIsolationMaker.vertexInputTag    = cms.InputTag("goodOfflinePrimaryVertices")
-razorMJLeptonTrackIsolationMaker.minPt_PFCandidate = cms.double(5.0)
-razorMJLeptonTrackIsolationMaker.pfCandidatesTag   = cms.InputTag("pfNoPileUp")
-razorMJLeptonTrackIsolationMaker.dz_CutValue       = cms.double(101.)
+razorMJLeptonTrackIsolationMaker                   = razorMJTrackIsolationMaker.clone()
 razorMJLeptonTrackIsolationMaker.vetoCollections   = cms.VInputTag(cms.InputTag("razorMJMuonTightLead"),
                                                                    cms.InputTag("razorMJElectronTightLead"))
 
@@ -447,6 +449,8 @@ razorMJSkimSequenceHad = cms.Sequence(
     razorMJPFJetSel20Count6j+
     #filter is inverted
     ~razorMJPFJetIDCount+
+    # we need a btag, or a veto
+    razorMJBTagFilter+
     #loose razor cut
     razorMJDiHemiHadBoxCount
     )
@@ -464,6 +468,8 @@ razorMJSkimSequenceEle = cms.Sequence(
     razorMJPFJetSel20Count4j+
     #filter is inverted
     ~razorMJPFJetIDLeptonCount+
+    # we need a btag, or a veto
+    razorMJBTagFilter+
     #a tight electron
     razorMJTightElectronCount+
     #loose razor cut
@@ -483,6 +489,8 @@ razorMJSkimSequenceMu = cms.Sequence(
     razorMJPFJetSel20Count4j+
     #filter is inverted
     ~razorMJPFJetIDLeptonCount+
+    # we need a btag, or a veto
+    razorMJBTagFilter+
     #a tight muon
     razorMJTightMuonCount+
     #loose razor cut

@@ -53,7 +53,7 @@ razorMJAllTriggerCount = cmgCandCount.clone( src = 'razorMJAllTriggerSel', minNu
 
 razorMJTriggerSequence = cms.Sequence(
     PATCMGTriggerSequence+
-    razorMJHadTriggerInfo+
+#    razorMJHadTriggerInfo+
     razorMJHadTriggerSel+
     razorMJMuTriggerSel+
     razorMJEleTriggerSel+
