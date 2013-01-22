@@ -12,7 +12,7 @@ from ROOT import KD
 
 # you can even create a python class for high level stuff, like this: 
 class KDCalculator(object):
-    '''This class Calculates the MELA .'''
+    '''This class Calculates the KDs .'''
     
     def __init__(self):
 
@@ -21,11 +21,9 @@ class KDCalculator(object):
     def calculate(self,FL):
 
         if FL.M()<100:
-            FL.mela=-99
-            FL.melaS=-99
-            FL.melaB=-99
-            FL.pseudomela=-99
-            FL.spintwomela=-99
+            FL.KD = -99.
+            FL.pseudoKD = -99.
+            FL.graviKD  = -99. 
             return
         
         l1 = ROOT.TLorentzVector(FL.leg1.leg1.px(),FL.leg1.leg1.py(),FL.leg1.leg1.pz(),FL.leg1.leg1.energy())
@@ -48,31 +46,16 @@ class KDCalculator(object):
                 l4=l4+photon
                 
 
-        FL.mela = self.KD.computeMELA(l1,FL.leg1.leg1.pdgId(),
-                                        l2,FL.leg1.leg2.pdgId(),
-                                        l3,FL.leg2.leg1.pdgId(),
-                                        l4,FL.leg2.leg2.pdgId())
+        self.KD.computeAll(l1,FL.leg1.leg1.pdgId(),
+                           l2,FL.leg1.leg2.pdgId(),
+                           l3,FL.leg2.leg1.pdgId(),
+                           l4,FL.leg2.leg2.pdgId())
 
-        FL.melaS = self.KD.melaS()
-        FL.melaB = self.KD.melaB()
-
-
-        FL.psmela = self.KD.computePsMELA(l1,FL.leg1.leg1.pdgId(),
-                                          l2,FL.leg1.leg2.pdgId(),
-                                          l3,FL.leg2.leg1.pdgId(),
-                                          l4,FL.leg2.leg2.pdgId())
-
-
-
-        FL.pseudomela = self.KD.computePseudoMELA(l1,FL.leg1.leg1.pdgId(),
-                                        l2,FL.leg1.leg2.pdgId(),
-                                        l3,FL.leg2.leg1.pdgId(),
-                                        l4,FL.leg2.leg2.pdgId())
-        FL.spintwomela = self.KD.computeSpinTwoMELA(l1,FL.leg1.leg1.pdgId(),
-                                        l2,FL.leg1.leg2.pdgId(),
-                                        l3,FL.leg2.leg1.pdgId(),
-                                        l4,FL.leg2.leg2.pdgId())
         
+        
+        FL.KD       = self.KD.getKD()
+        FL.pseudoKD = self.KD.getPseudoKD()
+        FL.graviKD  = self.KD.getGraviKD()
         
 
         

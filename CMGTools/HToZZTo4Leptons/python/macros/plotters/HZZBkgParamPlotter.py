@@ -15,6 +15,7 @@ class HZZBkgParamPlotter(PlotterBase):
         self.category=category
         self.w=ROOT.RooWorkspace('w')
         self.massVar='H_Mass'+'_'+finalstate+'_'+period+'_'+category
+#        self.massVar='H_Mass'
         self.w.factory(self.massVar+'[120,100,1000]')
         self.corrFactors=[]
 

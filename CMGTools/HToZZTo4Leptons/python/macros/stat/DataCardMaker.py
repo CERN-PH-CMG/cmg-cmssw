@@ -159,6 +159,8 @@ class DataCardMaker(object):
                 self.processExpr(shape,expr['fourth'],w,pdfFactory,mini,maxi,False)
             if expr['oper']=='PROD':
                 pdfFactory.makeProduct(name,name1,name2)
+            if expr['oper']=='FPROD':
+                pdfFactory.makeFastProduct(name,name1,name2)
             if expr['oper']=='COND':
                 names=[name1,name2]
                 conds=[self.observables[expr['second']['var'][1]]]
@@ -169,6 +171,10 @@ class DataCardMaker(object):
                     names.append(shape['name']+expr['fourth']['pdfName']+self.channel+'_'+self.period+'_'+self.category)
                     conds.append(self.observables[expr['fourth']['var'][1]])
                 pdfFactory.makeMultiConditional(name,names,conds)
+            if expr['oper']=='FCOND':
+                names=[name1,name2]
+                conds=[self.observables[expr['second']['var'][1]],self.observables[expr['second']['var'][2]]]
+                pdfFactory.makeFastCond(name,names,conds)
 
 
     def unfoldHisto(self,h,name):
@@ -296,11 +302,12 @@ class DataCardMaker(object):
             dataRate = h2.Integral()
 
         elif self.data['model'] == 'roobinned':
-            dataset,observables=dataPlotter.makeDataHist(var,cuts,binsx,minx,maxx,binsy,miny,maxy,'data_obs')
+            dataset,observables=dataPlotter.makeDataHist(var,cuts,bins[0],mini[0],maxi[0],bins[1],mini[1],maxi[1],'data_obs')
             self.observables=[]
             for obs in observables:
-                dataset.changeObservableName(obs.GetName(),obs.GetName()+'_'+self.suffix)
-                self.observables.append(obs.GetName()+'_'+self.suffix)
+#                dataset.changeObservableName(obs.GetName(),obs.GetName()+'_'+self.suffix)
+#                self.observables.append(obs.GetName()+'_'+self.suffix)
+                self.observables.append(obs.GetName())
             dataRate = dataset.sumEntries()
             getattr(w,'import')(dataset)
         else:
@@ -309,6 +316,7 @@ class DataCardMaker(object):
             for obs,nbins in zip(observables,bins):
                 dataset.changeObservableName(obs.GetName(),obs.GetName()+'_'+self.suffix)
                 self.observables.append(obs.GetName()+'_'+self.suffix)
+#                self.observables.append(obs.GetName())
 #                obs.setBins(nbins)
             dataRate = dataset.sumEntries()
             getattr(w,'import')(dataset)
