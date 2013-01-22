@@ -189,7 +189,7 @@ double weightNarrowResonnance(std::string SampleName, double m_gen, double mass,
    }else if(m_gen ==1000){    decay_width = 647.00000;
    }
 
-   double OverallXSectionScaleFactor = 1.0;
+	 double OverallXSectionScaleFactor = 1.0*hLineShapeNominal->Integral();
    decay_width = decay_width * pow(Cprime,2) / (1-BRnew);      
 //      OverallXSectionScaleFactor = pow(Cprime,2) * (1-BRnew);
 
