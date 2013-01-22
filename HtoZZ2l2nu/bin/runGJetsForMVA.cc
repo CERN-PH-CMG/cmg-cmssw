@@ -39,15 +39,6 @@ LorentzVector min(const LorentzVector& a, const LorentzVector& b)
   return b;
 }
 
-TString getJetRegion(float eta)
-{
-  TString reg("TK");
-  if(fabs(eta)>2.5)  reg="HEin";
-  if(fabs(eta)>2.75) reg="HEout";
-  if(fabs(eta)>3)    reg="HF";
-  return reg;
-}
-
 //
 int main(int argc, char* argv[])
 {
@@ -56,18 +47,6 @@ int main(int argc, char* argv[])
   AutoLibraryLoader::enable();
   
 TTree *hzz_tree     = new TTree("hzz_tree","Train and Test Tree");
-double hzz_lept1_PT;
-double hzz_lept2_PT;
-double hzz_lept1_ETA;
-double hzz_lept2_ETA;
-double hzz_lept1_PHI;
-double hzz_lept2_PHI;
-double hzz_lept1_DetIso;
-double hzz_lept2_DetIso;
-double hzz_lept1_PFIso2012;
-double hzz_lept2_PFIso2012;
-double hzz_lept1_PFIsoDbeta;
-double hzz_lept2_PFIsoDbeta;
 double hzz_Z_Mass;
 double hzz_Z_PT;
 double hzz_Z_Eta;
@@ -83,24 +62,12 @@ double hzz_Jet_Energy;
 int ev_category;
 int hzz_N_Jets;
 double hzz_dPhi_JetMet;
-int hzz_lept1_ID;
-int hzz_lept2_ID;
 double event_weight;
 int ev_num;
 int run_num;
 int lumi_num;
 bool vbf_flag;
 double hzz_Jet_SumPT;
-double hzz_lept1_gIso;
-double hzz_lept2_gIso;
-double hzz_lept1_chIso;
-double hzz_lept2_chIso;
-double hzz_lept1_nhIso;
-double hzz_lept2_nhIso;
-double hzz_lept1_nIso;
-double hzz_lept2_nIso;
-double hzz_rho;
-double lineshape_weight;
 double hzz_BTag;
 double hzz_RedMet;
 double hzz_RedMetL;
@@ -110,49 +77,12 @@ double hzz_MVAMet;
 double hzz_vbfdetajj;
 double hzz_vbfmjj;
 double hzz_vbfdphijj;
-float hzz_weight_PUup;
-float hzz_weight_PUdown;
-double hzz_TransMass_Higgs_JERup;
-double hzz_TransMass_Higgs_JERdown;
-double hzz_TransMass_Higgs_JESup;
-double hzz_TransMass_Higgs_JESdown;
-double hzz_TransMass_Higgs_UMETup;
-double hzz_TransMass_Higgs_UMETdown;
-double hzz_TransMass_Higgs_LESup;
-double hzz_TransMass_Higgs_LESdown;
-double hzz_RawMet_JERup;
-double hzz_RawMet_JERdown;
-double hzz_RawMet_JESup;
-double hzz_RawMet_JESdown;
-double hzz_RawMet_UMETup;
-double hzz_RawMet_UMETdown;
-double hzz_RawMet_LESup;
-double hzz_RawMet_LESdown;
-double hzz_dPhi_JetMet_JERup;
-double hzz_dPhi_JetMet_JERdown;
-double hzz_dPhi_JetMet_JESup;
-double hzz_dPhi_JetMet_JESdown;
-double hzz_dPhi_JetMet_UMETup;
-double hzz_dPhi_JetMet_UMETdown;
-double hzz_dPhi_JetMet_LESup;
-double hzz_dPhi_JetMet_LESdown;
+double gamma_weight;
+double prescale_weight;
 
-
+TBranch *b_prescale_weight = hzz_tree->Branch("prescale_weight",&prescale_weight,"prescale_weight/D");
+TBranch *b_gamma_weight = hzz_tree->Branch("gamma_weight",&gamma_weight,"gamma_weight/D");
 TBranch *b_hzz_Jet_SumPT = hzz_tree->Branch("hzz_Jet_SumPT",&hzz_Jet_SumPT,"hzz_Jet_SumPT/D");
-TBranch *b_hzz_lept1_ID = hzz_tree->Branch("hzz_lept1_ID", &hzz_lept1_ID ,"hzz_lept1_ID/I");
-TBranch *b_hzz_lept2_ID = hzz_tree->Branch("hzz_lept2_ID", &hzz_lept2_ID ,"hzz_lept2_ID/I");
-TBranch *b_hzz_lept1_PT = hzz_tree->Branch("hzz_lept1_PT", &hzz_lept1_PT ,"hzz_lept1_PT/D");
-TBranch *b_hzz_lept2_PT = hzz_tree->Branch("hzz_lept2_PT", &hzz_lept2_PT ,"hzz_lept2_PT/D");
-TBranch *b_hzz_lept1_ETA = hzz_tree->Branch("hzz_lept1_ETA", &hzz_lept1_ETA ,"hzz_lept1_ETA/D");
-TBranch *b_hzz_lept2_ETA = hzz_tree->Branch("hzz_lept2_ETA", &hzz_lept2_ETA ,"hzz_lept2_ETA/D");
-TBranch *b_hzz_lept1_PHI = hzz_tree->Branch("hzz_lept1_PHI", &hzz_lept1_PHI ,"hzz_lept1_PHI/D");
-TBranch *b_hzz_lept2_PHI = hzz_tree->Branch("hzz_lept2_PHI", &hzz_lept2_PHI ,"hzz_lept2_PHI/D");
-TBranch *b_hzz_lept1_DetIso = hzz_tree->Branch("hzz_lept1_DetIso", &hzz_lept1_DetIso ,"hzz_lept1_DetIso/D");
-TBranch *b_hzz_lept2_DetIso = hzz_tree->Branch("hzz_lept2_DetIso", &hzz_lept2_DetIso ,"hzz_lept2_DetIso/D");
-TBranch *b_hzz_lept1_PFIso2012 = hzz_tree->Branch("hzz_lept1_PFIso2012", &hzz_lept1_PFIso2012 ,"hzz_lept1_PFIso2012/D");
-TBranch *b_hzz_lept2_PFIso2012 = hzz_tree->Branch("hzz_lept2_PFIso2012", &hzz_lept2_PFIso2012 ,"hzz_lept2_PFIso2012/D");
-TBranch *b_hzz_lept1_PFIsoDbeta = hzz_tree->Branch("hzz_lept1_PFIsoDbeta", &hzz_lept1_PFIsoDbeta ,"hzz_lept1_PFIsoDbeta/D");
-TBranch *b_hzz_lept2_PFIsoDbeta = hzz_tree->Branch("hzz_lept2_PFIsoDbeta", &hzz_lept2_PFIsoDbeta ,"hzz_lept2_PFIsoDbeta/D");
 TBranch *b_hzz_Z_Mass = hzz_tree->Branch("hzz_Z_Mass", &hzz_Z_Mass ,"hzz_Z_Mass/D");
 TBranch *b_hzz_Z_PT = hzz_tree->Branch("hzz_Z_PT", &hzz_Z_PT ,"hzz_Z_PT/D");
 TBranch *b_hzz_Z_Eta = hzz_tree->Branch("hzz_Z_Eta", &hzz_Z_Eta ,"hzz_Z_Eta/D");
@@ -173,16 +103,6 @@ TBranch *b_ev_num = hzz_tree->Branch("ev_num", &ev_num , "ev_num/I");
 TBranch *b_run_num = hzz_tree->Branch("run_num", &run_num , "run_num/I");
 TBranch *b_lumi_num = hzz_tree->Branch("lumi_num", &lumi_num , "lumi_num/I");
 TBranch *b_vbf_flag = hzz_tree->Branch("vbf_flag", &vbf_flag , "vbf_flag/B");
-TBranch *b_hzz_lept1_gIso = hzz_tree->Branch("hzz_lept1_gIso", &hzz_lept1_gIso , "hzz_lept1_gIso/D");
-TBranch *b_hzz_lept2_gIso = hzz_tree->Branch("hzz_lept2_gIso", &hzz_lept2_gIso , "hzz_lept2_gIso/D");
-TBranch *b_hzz_lept1_chIso = hzz_tree->Branch("hzz_lept1_chIso", &hzz_lept1_chIso , "hzz_lept1_chIso/D");
-TBranch *b_hzz_lept2_chIso = hzz_tree->Branch("hzz_lept2_chIso", &hzz_lept2_chIso , "hzz_lept2_chIso/D");
-TBranch *b_hzz_lept1_nhIso = hzz_tree->Branch("hzz_lept1_nhIso", &hzz_lept1_nhIso , "hzz_lept1_nhIso/D");
-TBranch *b_hzz_lept2_nhIso = hzz_tree->Branch("hzz_lept2_nhIso", &hzz_lept2_nhIso , "hzz_lept2_nhIso/D");
-TBranch *b_hzz_lept1_nIso = hzz_tree->Branch("hzz_lept1_nIso", &hzz_lept1_nIso , "hzz_lept1_nIso/D");
-TBranch *b_hzz_lept2_nIso = hzz_tree->Branch("hzz_lept2_nIso", &hzz_lept2_nIso , "hzz_lept2_nIso/D");
-TBranch *b_hzz_rho = hzz_tree->Branch("hzz_rho", &hzz_rho , "hzz_rho/D");
-TBranch *b_lineshape_weight = hzz_tree->Branch("lineshape_weight", &lineshape_weight , "lineshape_weight/D");
 TBranch *b_hzz_BTag = hzz_tree->Branch("hzz_BTag", &hzz_BTag , "hzz_BTag/D");
 TBranch *b_hzz_RedMet = hzz_tree->Branch("hzz_RedMet", &hzz_RedMet , "hzz_RedMet/D");
 TBranch *b_hzz_RedMetL = hzz_tree->Branch("hzz_RedMetL", &hzz_RedMetL , "hzz_RedMetL/D");
@@ -192,33 +112,6 @@ TBranch *b_hzz_MVAMet = hzz_tree->Branch("hzz_MVAMet", &hzz_MVAMet , "hzz_MVAMet
 TBranch *b_hzz_vbfdetajj = hzz_tree->Branch("hzz_vbfdetajj", &hzz_vbfdetajj , "hzz_vbfdetajj/D");
 TBranch *b_hzz_vbfdphijj = hzz_tree->Branch("hzz_vbfdphijj", &hzz_vbfdphijj , "hzz_vbfdphijj/D");
 TBranch *b_hzz_vbfmjj = hzz_tree->Branch("hzz_vbfmjj", &hzz_vbfmjj , "hzz_vbfmjj/D");
-TBranch *b_hzz_weight_PUup = hzz_tree->Branch("hzz_weight_PUup", &hzz_weight_PUup, "hzz_weight_PUup/F");
-TBranch *b_hzz_weight_PUdown = hzz_tree->Branch("hzz_weight_PUdown", &hzz_weight_PUdown, "hzz_weight_PUdown/F");
-TBranch *b_hzz_TransMass_Higgs_JERup = hzz_tree->Branch("hzz_TransMass_Higgs_JERup", &hzz_TransMass_Higgs_JERup ,"hzz_TransMass_Higgs_JERup/D");
-TBranch *b_hzz_TransMass_Higgs_JERdown = hzz_tree->Branch("hzz_TransMass_Higgs_JERdown", &hzz_TransMass_Higgs_JERdown ,"hzz_TransMass_Higgs_JERdown/D");
-TBranch *b_hzz_TransMass_Higgs_JESup = hzz_tree->Branch("hzz_TransMass_Higgs_JESup", &hzz_TransMass_Higgs_JESup ,"hzz_TransMass_Higgs_JESup/D");
-TBranch *b_hzz_TransMass_Higgs_JESdown = hzz_tree->Branch("hzz_TransMass_Higgs_JESdown", &hzz_TransMass_Higgs_JESdown ,"hzz_TransMass_Higgs_JESdown/D");
-TBranch *b_hzz_TransMass_Higgs_UMETup = hzz_tree->Branch("hzz_TransMass_Higgs_UMETup", &hzz_TransMass_Higgs_UMETup ,"hzz_TransMass_Higgs_UMETup/D");
-TBranch *b_hzz_TransMass_Higgs_UMETdown = hzz_tree->Branch("hzz_TransMass_Higgs_UMETdown", &hzz_TransMass_Higgs_UMETdown ,"hzz_TransMass_Higgs_UMETdown/D");
-TBranch *b_hzz_TransMass_Higgs_LESup = hzz_tree->Branch("hzz_TransMass_Higgs_LESup", &hzz_TransMass_Higgs_LESup ,"hzz_TransMass_Higgs_LESup/D");
-TBranch *b_hzz_TransMass_Higgs_LESdown = hzz_tree->Branch("hzz_TransMass_Higgs_LESdown", &hzz_TransMass_Higgs_LESdown ,"hzz_TransMass_Higgs_LESdown/D");
-TBranch *b_hzz_RawMet_JERup = hzz_tree->Branch("hzz_RawMet_JERup", &hzz_RawMet_JERup , "hzz_RawMet_JERup/D");
-TBranch *b_hzz_RawMet_JERdown = hzz_tree->Branch("hzz_RawMet_JERdown", &hzz_RawMet_JERdown , "hzz_RawMet_JERdown/D");
-TBranch *b_hzz_RawMet_JESup = hzz_tree->Branch("hzz_RawMet_JESup", &hzz_RawMet_JESup , "hzz_RawMet_JESup/D");
-TBranch *b_hzz_RawMet_JESdown = hzz_tree->Branch("hzz_RawMet_JESdown", &hzz_RawMet_JESdown , "hzz_RawMet_JESdown/D");
-TBranch *b_hzz_RawMet_UMETup = hzz_tree->Branch("hzz_RawMet_UMETup", &hzz_RawMet_UMETup , "hzz_RawMet_UMETup/D");
-TBranch *b_hzz_RawMet_UMETdown = hzz_tree->Branch("hzz_RawMet_UMETdown", &hzz_RawMet_UMETdown , "hzz_RawMet_UMETdown/D");
-TBranch *b_hzz_RawMet_LESup = hzz_tree->Branch("hzz_RawMet_LESup", &hzz_RawMet_LESup , "hzz_RawMet_LESup/D");
-TBranch *b_hzz_RawMet_LESdown = hzz_tree->Branch("hzz_RawMet_LESdown", &hzz_RawMet_LESdown , "hzz_RawMet_LESdown/D");
-TBranch *b_hzz_dPhi_JetMet_JERup = hzz_tree->Branch("hzz_dPhi_JetMet_JERup", &hzz_dPhi_JetMet_JERup , "hzz_dPhi_JetMet_JERup/D");
-TBranch *b_hzz_dPhi_JetMet_JERdown = hzz_tree->Branch("hzz_dPhi_JetMet_JERdown", &hzz_dPhi_JetMet_JERdown , "hzz_dPhi_JetMet_JERdown/D");
-TBranch *b_hzz_dPhi_JetMet_JESup = hzz_tree->Branch("hzz_dPhi_JetMet_JESup", &hzz_dPhi_JetMet_JESup , "hzz_dPhi_JetMet_JESup/D");
-TBranch *b_hzz_dPhi_JetMet_JESdown = hzz_tree->Branch("hzz_dPhi_JetMet_JESdown", &hzz_dPhi_JetMet_JESdown , "hzz_dPhi_JetMet_JESdown/D");
-TBranch *b_hzz_dPhi_JetMet_UMETup = hzz_tree->Branch("hzz_dPhi_JetMet_UMETup", &hzz_dPhi_JetMet_UMETup , "hzz_dPhi_JetMet_UMETup/D");
-TBranch *b_hzz_dPhi_JetMet_UMETdown = hzz_tree->Branch("hzz_dPhi_JetMet_UMETdown", &hzz_dPhi_JetMet_UMETdown , "hzz_dPhi_JetMet_UMETdown/D");
-TBranch *b_hzz_dPhi_JetMet_LESup = hzz_tree->Branch("hzz_dPhi_JetMet_LESup", &hzz_dPhi_JetMet_LESup , "hzz_dPhi_JetMet_LESup/D");
-TBranch *b_hzz_dPhi_JetMet_LESdown = hzz_tree->Branch("hzz_dPhi_JetMet_LESdown", &hzz_dPhi_JetMet_LESdown , "hzz_dPhi_JetMet_LESdown/D");
-
 
   //check arguments
   if ( argc < 2 ) 
@@ -232,9 +125,11 @@ TBranch *b_hzz_dPhi_JetMet_LESdown = hzz_tree->Branch("hzz_dPhi_JetMet_LESdown",
 
   bool use2011Id = runProcess.getParameter<bool>("is2011");
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
+  bool useCHS(true);
+  bool nodphisoftjet(true);
 
   bool isMC = runProcess.getParameter<bool>("isMC");
-  bool runBlinded = runProcess.getParameter<bool>("runBlinded");
+//  bool runBlinded = runProcess.getParameter<bool>("runBlinded");
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
 
   double xsec=runProcess.getParameter<double>("xsec");
@@ -256,32 +151,7 @@ std::cout << "xsec =  " << xsec << std::endl;
 
   //book histograms
   SmartSelectionMonitor mon;
-  //##############################################
-
-  //add last year cut
-
-
-  //##############################################
-  //######## CONTROL PLOTS FOR SELECTION #########
-  //##############################################
-  
-  //  mon.addHistogram( new TH1D( "qt",        ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)", 100,0,500) );
-  Float_t qtaxis[100];
-  for(size_t i=0; i<40; i++)  qtaxis[i]=2.5*i;       //0-97.5
-  for(size_t i=0; i<20; i++)  qtaxis[40+i]=100+5*i;  //100-195
-  for(size_t i=0; i<15; i++)  qtaxis[60+i]=200+10*i; //200-340
-  for(size_t i=0; i<25; i++)  qtaxis[75+i]=350+25*i; //350-976
-   
-  //jet id efficiencies
-  TString jetRegs[]={"TK","HEin","HEout","HF"};
-  const size_t nJetRegs=sizeof(jetRegs)/sizeof(TString);
-  TString jetIds[]={"pfloose","pftight","minloose","minmedium"};
-  const size_t nJetIds=sizeof(jetIds)/sizeof(TString);
-  Double_t jetPtBins[]={0,15,20,25,30,40,50,60,70,80,100,200,300,400,500,600,700,1000};
-  Int_t nJetPtBins=sizeof(jetPtBins)/sizeof(Double_t)-1;
-  Double_t jetEtaBins[]={0,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.25,2.625,2.75,2.875,3.0,3.5,4.0,4.5,5.0};
-  Double_t nJetEtaBins=sizeof(jetEtaBins)/sizeof(Double_t)-1;
-  
+  //#############################################
   //open the file and get events tree
   TFile *file = TFile::Open(url);
   if(file==0) return -1;
@@ -348,15 +218,28 @@ std::cout << "xsec =  " << xsec << std::endl;
       if(!isMC && duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)) {  NumberOfDuplicated++; continue; }
 
       //check which event type is required to use (dilepton/or photon)
-      if(mctruthmode==22 && !isGammaEvent ) continue;
-      if(mctruthmode==1  && isGammaEvent) continue;
-      if(!isGammaEvent && ev.cat != EE && ev.cat !=MUMU) continue;
+         if(mctruthmode==1)
+        {
+          if(isGammaEvent)                  continue;
+          if(ev.cat != EE && ev.cat !=MUMU) continue;
+        }
+      else if((mctruthmode==22||mctruthmode==111))
+        {
+          if(!isGammaEvent ) continue;
+          if(isMC)
+            {
+              int npromptGammas = ((ev.mccat>>28)&0xf) ;
+              if(mctruthmode==22  && npromptGammas<1) continue;
+              if(mctruthmode==111 && npromptGammas>0) continue;
+            }
+        }
+      else continue; 
       std::vector<TString> dilCats;
       
       //build the gamma candidate
       LorentzVector gamma(0,0,0,0);
       float r9(0),sietaieta(0);
-      bool hasTrkVeto(false),/*isConv(false),*/hasElectronVeto(false),hasConvUnsafeElectronVeto(false);
+      bool hasTrkVeto(false),hasElectronVeto(false);
       if(isGammaEvent)
 	{
 	  dilCats.push_back("ee");
@@ -364,10 +247,8 @@ std::cout << "xsec =  " << xsec << std::endl;
 	  r9               = phys.gammas[0].r9*(isMC ? 1.005 : 1.0);
 	  sietaieta        = phys.gammas[0].sihih;
 	  hasElectronVeto  = phys.gammas[0].hasElectronVeto;
-	  hasConvUnsafeElectronVeto = phys.gammas[0].hasConvUnsafeElectronVeto;
 	  hasTrkVeto       = phys.gammas[0].hasCtfTrkVeto;
 	  gamma            = phys.gammas[0];
-	  //isConv=(phys.gammas[0].isConv);
 	}
       else
 	{
@@ -387,7 +268,7 @@ std::cout << "xsec =  " << xsec << std::endl;
 		  else
 		    {
 		      float relIso=phys.leptons[ilep].pfRelIsoDbeta();
-		      if( !hasObjectId(ev.mn_idbits[lpid], MID_LOOSE) || relIso>0.2) isGood=false;
+		      if( !hasObjectId(ev.mn_idbits[lpid], MID_TIGHT) || relIso>0.2) isGood=false;
 		    }
 		}
 	      if(fabs(phys.leptons[ilep].id)==11)
@@ -399,7 +280,7 @@ std::cout << "xsec =  " << xsec << std::endl;
 		    }
 		  else
 		    {
-		      float relIso=phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho);
+		      float relIso=phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho,ev.en_sceta[lpid]);
 		      if(!hasObjectId(ev.en_idbits[lpid],EID_MEDIUM) || relIso>0.15) isGood=false;
 		    }
 		}
@@ -450,7 +331,7 @@ std::cout << "xsec =  " << xsec << std::endl;
 		}
 	      else
 		{
-		  if( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 && phys.leptons[ilep].pt()>10) nextraleptons++;
+		  if( hasObjectId(ev.en_idbits[lpid],EID_VETO) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho,ev.en_sceta[lpid])<0.15 && phys.leptons[ilep].pt()>10) nextraleptons++;
 		}
 	    }
 	}
@@ -460,14 +341,23 @@ std::cout << "xsec =  " << xsec << std::endl;
       //
       //LorentzVector metP4(phys.met[0]);
       LorentzVector metP4(phys.met[2]);
+      bool passLMetVeto(true);
+      if(!isGammaEvent)
+	{
+	  double dphil1met=fabs(deltaPhi(phys.leptons[0].phi(),metP4.phi()));
+	  double dphil2met=fabs(deltaPhi(phys.leptons[1].phi(),metP4.phi()));
+	  if(!use2011Id && metP4.pt()>60 && min(dphil1met,dphil2met)<0.2) passLMetVeto=false;
+	}
 
       LorentzVectorCollection zvvs;
       std::vector<PhysicsObjectJetCollection> jets;
-      METUtils::computeVariation(phys.ajets, phys.leptons, metP4, jets, zvvs, &jecUnc);
+      if(useCHS) METUtils::computeVariation(phys.ajets, phys.leptons, metP4, jets, zvvs, &jecUnc);
+      else       METUtils::computeVariation(phys.jets,  phys.leptons, metP4, jets, zvvs, &jecUnc);
       metP4=zvvs[0];
       PhysicsObjectJetCollection & jetsToUse=jets[0];
-      if(disableJERSmear) jetsToUse=phys.ajets;
-     
+      if(disableJERSmear && useCHS)  jetsToUse=phys.ajets;
+      if(disableJERSmear && !useCHS) jetsToUse=phys.jets;
+      
       //count the jets
       int nbtags(0),npfjets30(0),njets30(0),njets15(0);
       double ht(0);
@@ -482,7 +372,7 @@ std::cout << "xsec =  " << xsec << std::endl;
 
 	  //dphi(jet,MET)
 	  double idphijmet( fabs(deltaPhi(ijetP4.phi(),metP4.phi()) ) );	  
-	  if(idphijmet<mindphijmet15) mindphijmet15=idphijmet;
+          if(ijetP4.pt()>15) if(idphijmet<mindphijmet15) mindphijmet15=idphijmet;
 	  if(ijetP4.pt()>30) if(idphijmet<mindphijmet) mindphijmet = idphijmet;
 	  if( fabs(deltaPhi(ijetP4.phi(),gamma.phi())>2 ) ) recoilJets.push_back( jetsToUse[ijet] );
 	  
@@ -506,8 +396,8 @@ std::cout << "xsec =  " << xsec << std::endl;
       //other mets
       unclusteredMet = metP4-clusteredMet;
       LorentzVector nullP4(0,0,0,0);
-      LorentzVector assocMetP4 = phys.met[1];
-      LorentzVector min3Met=min(metP4, min(assocMetP4,clusteredMet)) ;
+//      LorentzVector assocMetP4 = phys.met[1];
+  //    LorentzVector min3Met=min(metP4, min(assocMetP4,clusteredMet)) ;
       METUtils::stRedMET redMetOut;
       LorentzVector redMet(METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, gamma, 0, nullP4, 0, clusteredMet, metP4,true,&redMetOut));
       double redMetL=redMetOut.redMET_l;
@@ -516,24 +406,32 @@ std::cout << "xsec =  " << xsec << std::endl;
 
       //event weight
       float weight = 1.0;
-      float pre_weight = 1.0;  
-      float pu_weight = 1.0;
-      if(isMC)                  { pu_weight = LumiWeights.weight( ev.ngenITpu ); }
-      if(!isMC && isGammaEvent && !use2011Id) { pre_weight *= ev.gn_prescale;  }
-cout << "pre_weight = " << pre_weight << endl;
-      //  
+      float puweight = 1.0;
+float pre_weight = 1.0;
+//cout << "isGammaEvent = " << isGammaEvent << endl;
+      if(isMC)                                { puweight = LumiWeights.weight( ev.ngenITpu ); }
+      if(!isMC && isGammaEvent && !use2011Id) { 
+weight *= gammaEvHandler.triggerWgt_; 
+pre_weight = gammaEvHandler.triggerWgt_; }
+//cout << " gammaEvHandler.triggerWgt_= " << gammaEvHandler.triggerWgt_ << endl; }
+//cout << "************************************************************** "<< endl;
+//cout << "isGammaEvent = " << isGammaEvent << endl;
+
+
+        
       // EVENT SELECTION
-      //
+      
       bool passMultiplicityVetoes (nextraleptons==0);
       bool passKinematics         (gamma.pt()>55);
       if(isGammaEvent)
 	{
-	  passKinematics &= (fabs(gamma.eta())<2.5); 
+	  passKinematics &= (fabs(gamma.eta())<1.4442); 
 	  passKinematics &= (r9>0.9 && r9<1.0);
 	  if(!isMC)    passKinematics &= (gamma.pt()>gammaEvHandler.triggerThr());
-	  //passKinematics &= (njets15>0);
+	  passKinematics &= !hasElectronVeto;
 	}
       bool passBveto              (nbtags==0);
+      if(nodphisoftjet)  mindphijmet15=99999.;
       bool passMinDphiJmet        (mindphijmet>0.5);
       if(njets30==0) passMinDphiJmet=(mindphijmet15>0.5);
       
@@ -564,83 +462,40 @@ cout << "pre_weight = " << pre_weight << endl;
       //now do the control plots
       std::map<TString, float> qtWeights;
       if(isGammaEvent) qtWeights = gammaEvHandler.getWeights(phys,tag_subcat);
-
       //now do the control plots
-      if(!passMultiplicityVetoes) continue;
-      if(!passKinematics) continue;
-//cout << "dilCats.size() = " << dilCats.size() <<endl; 
-cout << "*********************************************************" << endl;
-//cout << "ev.category" << ev.cat << endl; 
-cout << "qtWeights.size() = " << qtWeights.size() << endl;
-cout << "qtWeights[dilCats[0]] = " << qtWeights[dilCats[0]] << endl;
-cout << "qtWeights[dilCats[1]] = " << qtWeights[dilCats[1]] << endl;
-
+    if(passKinematics && passMultiplicityVetoes && passBveto)
+	{
       for(size_t idc=0; idc<dilCats.size(); idc++)
 	{
 	  LorentzVector iboson(isGammaEvent ? gammaEvHandler.massiveGamma(dilCats[idc]) : gamma);
 	  float zmass=iboson.mass();
 	  Float_t mt( METUtils::transverseMass(iboson,metP4,true) );
-cout << "zmass = " << zmass << endl;
-cout << "mt = " << mt << endl;
-cout << "gamma PT = " << iboson.pt() << endl;
 	  float iweight=weight;
 	  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
-//cout << " qtWeights[dilCats[idc]] = " << qtWeights[dilCats[idc]] << " " << "dilCats[idc] = " << dilCats[idc] << endl;
-	  for(size_t isc=0; isc<subcats.size(); isc++)
-	    {
-	      TString ctf=dilCats[idc]+subcats[isc];	      
-	  
-	      if(hasElectronVeto) continue;
-	      if(!passBveto) continue;
-	      
-	      //measure jet selection efficiency 
-	      if(ctf.Contains("eq1jets") && recoilJets.size()==1)
-		{
-		  double balance = recoilJets[0].pt()/gamma.pt();
-		  bool passBalanceCut(balance>0.5 && balance<1.5);
-		  TString etaReg = getJetRegion(recoilJets[0].eta());
-		  bool isMatched(isMC && recoilJets[0].genPt>0);
-		  std::vector<TString> passIds;
-		  if( hasObjectId(recoilJets[0].pid,JETID_LOOSE) )      { passIds.push_back("pfloose");   if(isMatched) passIds.push_back("truepfloose"); }
-		  if( hasObjectId(recoilJets[0].pid,JETID_TIGHT) )      { passIds.push_back("pftight");   if(isMatched) passIds.push_back("truepftight"); }
-		  if( hasObjectId(recoilJets[0].pid,JETID_MIN_LOOSE) )  { passIds.push_back("minloose");  if(isMatched) passIds.push_back("trueminloose"); }
-		  if( hasObjectId(recoilJets[0].pid,JETID_MIN_MEDIUM) ) { passIds.push_back("minmedium"); if(isMatched) passIds.push_back("trueminmedium"); }
-		}  
 
-	      if(passMinDphiJmet)
-		{
-	  //VBF monitoring
-		  //float dphijj(-1);
-		  float hardpt(-1);
-		  if(njets30>=2 && selJets.size()>=2)
-		    {
-		      LorentzVector vbfSyst=selJets[0]+selJets[1];
-		      LorentzVector hardSyst=vbfSyst+metP4+gamma;
-		      hardpt=hardSyst.pt();
-		      //dphijj=deltaPhi(selJets[0].phi(),selJets[1].phi());
-		      double maxEta=max(selJets[0].eta(),selJets[1].eta());
-		      double minEta=min(selJets[0].eta(),selJets[1].eta());
-		      float avgEtajj=0.5*(maxEta+minEta);
-		      float detajj=maxEta-minEta;
-		      int ncjv(0);
-		      float htcjv(0);
-		      for(size_t iotherjet=2; iotherjet<selJets.size(); iotherjet++)
-			{
-			  if(selJets[iotherjet].pt()<30 || selJets[iotherjet].eta()<minEta || selJets[iotherjet].eta()>maxEta) continue;
-			  htcjv+= selJets[iotherjet].pt();
-			  ncjv++;
-			}
-		    }
+if(iweight != 1) {cout << "iweight = " << iweight << endl;}
+//cout << "puweight = " << puweight <<endl;
 
-		  bool blind(false);
-		  if(!tag_subcat.Contains("vbf")) blind = (mt>250);
-		  else                            blind=(metP4.pt()>70);
-		 
-		}
+hzz_Z_Mass = zmass;
+hzz_Z_PT = iboson.pt();
+hzz_Z_Eta = iboson.eta();
+hzz_Z_Phi = iboson.phi();
+hzz_TransMass_Higgs = mt;
+hzz_RawMet = metP4.pt();
+hzz_dPhi_JetMet = mindphijmet;
+hzz_N_Jets = njets30; 
+PUWeight = puweight;
+hzz_MET_Phi = metP4.phi();
+gamma_weight = iweight;
+prescale_weight = pre_weight;
 
-	    }
-	}
-    }
+	} // size_t idc=0; idc<dilCats.size(); idc++
+	
+hzz_tree->Fill();
+
+	   } // passKinematics && passMultiplicityVetoes && passBveto
+
+    } // Event Loop
   
   //all done with the events file
   file->Close();
@@ -657,5 +512,3 @@ cout << "gamma PT = " << iboson.pt() << endl;
 hzz_tree->Write();
   ofile->Close();
 }  
-
-
