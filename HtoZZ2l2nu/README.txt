@@ -56,11 +56,13 @@ haddOverSamples.py -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json
 runLocalAnalysisOverSamples.py -e run2011Analysis -j data/samples_2012.json -o  ~/work/htozz/53x_rereco/ll/2012 -d /store/cmst3/user/psilva/Moriond2013_ntuples -c test/runAnalysis_cfg.py.templ -p "@runSystematics=True @is2011=False" -s 8nh 
 runPlotter --json data/samples_2012.json --inDir ~/work/htozz/53x_rereco/ll/2012/ --noPlot --outFile ~/work/htozz/53x_rereco/ll/2012/plotter.root --iEcm 8 --iLumi 19577
 
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012_rereco.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/htozz/53x_rereco/gamma/2012/raw -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh -t Data
-runPlotter --json data/photon-samples_2012_rereco.json --inDir ~/work/htozz/53x_rereco/gamma/2012/raw/ --noPlot --outFile ~/work/htozz/53x_rereco/gamma/2012/raw/plotter.root --iEcm 8 --iLumi 19577
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/htozz/53x_rereco/gamma/2012/raw -c test/runAnalysis_cfg.py.templ -p "@is2011=False" -s 8nh
+runPlotter --json data/photon-samples_2012.json --inDir ~/work/htozz/53x_rereco/gamma/2012/raw/ --noPlot --outFile ~/work/htozz/53x_rereco/gamma/2012/raw/plotter.root --iEcm 8 --iLumi 19577
+root -b -q "bin/G/FitQtSpectrum.C+(\"~/work/htozz/53x_rereco/ll/2012/plotter.root\",\"~/work/htozz/53x_rereco/gamma/2012/raw/plotter.root\",STANDARD,false,WEIGHTALLTODATA)"
+mv gammawgts.root data/gammaqtweights_hzz_2012.root
 
-runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012_rereco.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/htozz/53x_rereco/gamma/2012/qt  -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_hzz_2012_rereco.root'" -s 8nh -t Data
-runPlotter --json data/photon-samples_2012_rereco.json --inDir ~/work/htozz/53x_rereco/gamma/2012/qt/ --noPlot --outFile ~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root --iEcm 8 --iLumi 19577
+runLocalAnalysisOverSamples.py -e runGammaPlusJetsMETtemplates -j data/photon-samples_2012.json -d /store/cmst3/user/psilva/Moriond2013_ntuples -o ~/work/htozz/53x_rereco/gamma/2012/qt  -c test/runAnalysis_cfg.py.templ -p "@is2011=False @weightsFile='data/gammaqtweights_hzz_2012.root'" -s 8nh
+runPlotter --json data/photon-samples_2012.json --inDir ~/work/htozz/53x_rereco/gamma/2012/qt/ --noPlot --outFile ~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root --iEcm 8 --iLumi 19577
 
 #vary phase -p 1 - 4
 python optimize.py -p 1 -m 0 -s mt_shapes -i /afs/cern.ch/user/p/psilva/public/HtoZZ/Moriond/plotter2012.root -o /afs/cern.ch/user/p/psilva/work/CMSSW_5_3_3_patch2/src/CMGTools/HtoZZ2l2nu/test/computeLimits/JOBS/ -g /afs/cern.ch/user/p/psilva/public/HtoZZ/Moriond/gamma_out.root -j /afs/cern.ch/work/p/psilva/CMSSW_5_3_3_patch2/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json

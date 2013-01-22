@@ -1126,7 +1126,7 @@ int main(int argc, char* argv[])
 			if(nAJetsLoose==1) photonCats.push_back(tag_cat+"eq1jets");
 			if(nAJetsLoose==2) photonCats.push_back(tag_cat+"eq2jets");
 			if(nAJetsLoose>2)  photonCats.push_back(tag_cat+"geq3jets");
-			if(tag_subcat.Contains("vbf")) photonCats.push_back(tag_cat+"vbf");
+			//if(tag_subcat.Contains("vbf")) photonCats.push_back(tag_cat+"vbf");
 			mon.fillHisto("qt",photonCats, zll.pt(),weight,true); 
 			mon.fillHisto("qmass",photonCats, zll.mass(),weight,true); 
 		      }
