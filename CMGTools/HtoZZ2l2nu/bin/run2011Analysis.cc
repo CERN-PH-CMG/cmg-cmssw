@@ -302,7 +302,9 @@ int main(int argc, char* argv[])
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_sls" , ";Gen Higgs Mass;Events", 1000,0,2000) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_3ls" , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_ls" ,  ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
-  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_4nr" , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  for(unsigned int nri=0;nri<NRparams.size();nri++){ 
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_4nr"+NRsuffix[nri] , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  }
 
 
   mon.addHistogram( new TH1F( "thirdleptonpt", ";p_{T}^{l};Events", 50,0,500) );
@@ -688,15 +690,10 @@ int main(int argc, char* argv[])
         if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_ls"  ,tags_inc, phys.genhiggs[0].mass(), weight/signalWeight);
 
         //compute weight correction for narrow resonnance
-        if(isMC_VBF || isMC_GG){
-           if(cprime>=0 || brnew>=0){
-	     double NRWeight = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), cprime, brnew, hLineShapeNominal,decayProbPdf);  
-              weight*=NRWeight;
-           }
-           mon.fillHisto("higgsMass_4nr"  ,tags_inc, phys.genhiggs[0].mass(), weight);
-           
+        if(isMC_VBF || isMC_GG){           
            for(unsigned int nri=0;nri<NRparams.size();nri++){ 
 	     NRweights[nri] = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal,decayProbPdf);
+             mon.fillHisto("higgsMass_4nr"++NRsuffix[nri]  ,tags_inc, phys.genhiggs[0].mass(), weight*NRweights[nri]);
            }  
          }
       }
@@ -705,6 +702,10 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(3,weight*TotalWeight_minus);
       Hcutflow->Fill(4,weight*TotalWeight_plus);
       Hcutflow->Fill(5,signalWeight);
+
+      //make this here to make sure that all plots are scaled properly
+      if(isMC && (isMC_VBF || isMC_GG) && (cprime>=0 || brnew>=0)){weight*=NRWeight[0]; }
+
 
       //MET variables
       LorentzVector rawMetP4=phys.met[2];
