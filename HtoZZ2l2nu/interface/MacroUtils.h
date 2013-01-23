@@ -62,4 +62,7 @@ class DuplicatesChecker{
 //
 std::string toLatexRounded(double value, double error, double systError=-1);
 
+//
+std::pair<TH1F *,TH1F *> generateHistoEnvelope(TH1F *h,bool debug=false);
+
 #endif
