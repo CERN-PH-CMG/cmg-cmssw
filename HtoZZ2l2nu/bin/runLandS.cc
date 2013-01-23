@@ -138,6 +138,7 @@ TString DYFile ="";
 TString inFileUrl(""),jsonFile(""), histo("");
 TString postfix="";
 TString systpostfix="";
+TString signalSufix="";
 double shapeMin = 0;
 double shapeMax = 9999;
 double shapeMinVBF = 0;
@@ -152,7 +153,6 @@ int indexvbf = -1;
 int indexcut   = -1, indexcutL=-1, indexcutR=-1;
 int mass=-1, massL=-1, massR=-1;
 bool runSystematics = false; bool shape = false;
-
 void printHelp()
 {
   printf("Options\n");
@@ -190,6 +190,7 @@ void printHelp()
   printf("--MCRescale    --> use this to specify a syst postfix that will be added to the process names)\n");
   printf("--interf     --> use this to rescale xsection according to WW interferences)\n");
   printf("--minSignalYield   --> use this to specify the minimum Signal yield you want in each channel)\n");
+  printf("--signalSufix --> use this flag to specify a suffix string that should be added to the signal 'histo' histogram\n");
 
 
 
@@ -255,6 +256,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--shape")    !=string::npos) { shape=true; printf("shapeBased = True\n");}
     else if(arg.find("--dirtyFix2")    !=string::npos) { dirtyFix2=true; printf("dirtyFix2 = True\n");}
     else if(arg.find("--dirtyFix1")    !=string::npos) { dirtyFix1=true; printf("dirtyFix1 = True\n");}
+    else if(arg.find("--signalSufix") !=string::npos) { signalSufix = argv[i+1]; i++; printf("signalSufix '%s' will be used\n", signalSufix.Data()); }
   }
   if(jsonFile.IsNull() || inFileUrl.IsNull() || histo.IsNull() || indexcut == -1 || mass==-1) { printHelp(); return -1; }
   if(AnalysisBins.size()==0)AnalysisBins.push_back("");
@@ -287,6 +289,8 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
       bool isData(Process[i]["isdata"].toBool());
      if(onlyData && !isData)continue; //just here to speedup the NRB prediction
 
+      if(proc.Contains(")cp0"))continue; // skip those samples
+
       bool isSignal(Process[i].isTag("issignal") && Process[i]["issignal"].toBool());
       if(Process[i]["spimpose"].toBool() && (proc.Contains("ggH") || proc.Contains("qqH")))isSignal=true;
       bool isInSignal(Process[i].isTag("isinsignal") && Process[i]["isinsignal"].toBool());
@@ -305,7 +309,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 	 TH1D* hshape   = NULL;
 
 	 TString varName = syst->GetXaxis()->GetBinLabel(ivar);
-         TString histoName = ch+"_"+shapeName+varName ;
+         TString histoName = ch+"_"+shapeName+(isSignal?signalSufix:"")+varName ;
          TH2* hshape2D = (TH2*)pdir->Get(histoName );
          if(!hshape2D){
 //            if(varName==""){
@@ -339,7 +343,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
             for(int x=0;x<=hshape->GetXaxis()->GetNbins()+1;x++){
                if(hshape->GetXaxis()->GetBinCenter(x)<=minCut || hshape->GetXaxis()->GetBinCenter(x)>=maxCut){ hshape->SetBinContent(x,0); hshape->SetBinError(x,0); }
             }
-            hshape->Rebin(8);
+            hshape->Rebin(2);
             hshape->GetYaxis()->SetTitle("Entries (/25GeV)");
          }
 
@@ -364,7 +368,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
                   std::vector<JSONWrapper::Object> BRs = Process[i]["data"].daughters()[0]["br"].daughters();
                   double totalBR=1.0; for(size_t ipbr=0; ipbr<BRs.size(); ipbr++){totalBR*=BRs[ipbr].toDouble();}   
                   shape.BRs[proc] = totalBR;
-               }
+               }               
 
                int procIndex = -1;
                for(unsigned int i=0;i<shape.signal.size();i++){ if(string(proc.Data())==shape.signal[i]->GetTitle() ){procIndex=i;break;}  }
@@ -1857,7 +1861,7 @@ std::cout<<"DYTEST2c\n";
            for(int x=0;x<=gjets1Dshape->GetXaxis()->GetNbins()+1;x++){
               if(gjets1Dshape->GetXaxis()->GetBinCenter(x)<=cutMin || gjets1Dshape->GetXaxis()->GetBinCenter(x)>=cutMax){gjets1Dshape->SetBinContent(x,0); gjets1Dshape->SetBinError(x,0);}
            }
-           gjets1Dshape->Rebin(8);
+           gjets1Dshape->Rebin(2);
 
 
 std::cout<<"DYTEST3\n";
@@ -2029,11 +2033,11 @@ void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allS
            for(unsigned int i=0;i<shapeL.signal.size();i++){if(TString(shapeL.signal[i]->GetTitle()).BeginsWith(nameL))indexL=i;}
            for(unsigned int i=0;i<shapeR.signal.size();i++){if(TString(shapeR.signal[i]->GetTitle()).BeginsWith(nameR))indexR=i;}
 
-           double Ratio = (mass - massL); Ratio/=(massR - massL);
+           double Ratio = ((double)mass - massL); Ratio/=(massR - massL);
 
            //centralValue
-           TH1* histoL = (TH1*) shapeL.signal[indexL]->Clone("tmpLeft");   histoL->Scale(1.0/shapeL.xsections[histoL->GetTitle()]);
-           TH1* histoR = (TH1*) shapeR.signal[indexR]->Clone("tmpRight");  histoR->Scale(1.0/shapeR.xsections[histoR->GetTitle()]);           
+           TH1* histoL = (TH1*) shapeL.signal[indexL]->Clone("tmpLeft");   histoL->Scale(1.0/(shapeL.xsections[histoL->GetTitle()]*shapeL.BRs[histoL->GetTitle()]));
+           TH1* histoR = (TH1*) shapeR.signal[indexR]->Clone("tmpRight");  histoR->Scale(1.0/(shapeR.xsections[histoR->GetTitle()]*shapeR.BRs[histoR->GetTitle()]));           
            TString newName = signalTypes[t]+"("; newName+= mass;
            TH1* histoNew = (TH1*)histoL->Clone(TString(histoL->GetTitle()).ReplaceAll(nameL,newName));         
            histoNew->SetTitle(histoNew->GetName());
@@ -2042,9 +2046,16 @@ void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allS
 
            setTGraph(histoNew->GetTitle(), systpostfix );
            double XSection = TG_xsec->Eval(mass,NULL,"S");
-           histoNew->Scale(XSection);
+           double BR       = shapeL.BRs[histoL->GetTitle()] + (Ratio * (shapeR.BRs[histoR->GetTitle()] - shapeL.BRs[histoL->GetTitle()]));
+           printf("Linear BR interpolation: Masses = %i %i %i and BR = %f ? %f --> %f\n", massL, mass, massR, shapeL.BRs[histoL->GetTitle()], shapeR.BRs[histoR->GetTitle()], BR );
+           histoNew->Scale(XSection*BR);
            histoNew->SetBinError(0,0.15*histoNew->Integral());
            shape.signal.insert(shape.signal.begin()+indexL,histoNew);
+
+           shape.xsections[histoNew->GetTitle()] = XSection;
+           shape.BRs[histoNew->GetTitle()] = BR;
+        
+
 
            
            //systematics
@@ -2052,13 +2063,13 @@ void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allS
            std::vector<std::pair<TString, TH1*> > varsRight = shapeR.signalVars[histoR->GetTitle()];
            std::vector<std::pair<TString, TH1*> > varsNew;
            for(size_t v=0;v<varsLeft.size();v++){
-              TH1* histoSystL = (TH1*) varsLeft [v].second->Clone("tmpSystLeft");    histoSystL->Scale(1.0/shapeL.xsections[histoL->GetTitle()]);
-              TH1* histoSystR = (TH1*) varsRight[v].second->Clone("tmpSystRight");   histoSystR->Scale(1.0/shapeR.xsections[histoR->GetTitle()]);
+              TH1* histoSystL = (TH1*) varsLeft [v].second->Clone("tmpSystLeft");    histoSystL->Scale(1.0/(shapeL.xsections[histoL->GetTitle()]*shapeL.BRs[histoL->GetTitle()]));
+              TH1* histoSystR = (TH1*) varsRight[v].second->Clone("tmpSystRight");   histoSystR->Scale(1.0/(shapeR.xsections[histoR->GetTitle()]*shapeR.BRs[histoR->GetTitle()]));
               TH1* histoSystNew   = (TH1*)histoSystL->Clone(TString(histoSystL->GetTitle()).ReplaceAll(nameL,newName));
               histoSystNew->SetTitle(histoSystNew->GetName());
               histoSystNew->Scale(1-Ratio);
               histoSystNew->Add(histoSystR,Ratio);
-              histoSystNew->Scale(XSection);
+              histoSystNew->Scale(XSection*BR);
               //varsNew.push_back(std::make_pair<TString, TH1*>(varsLeft[v].first,histoSystNew));
 	      varsNew.push_back(std::pair<TString, TH1*>(varsLeft[v].first,histoSystNew));
               delete histoSystL;
