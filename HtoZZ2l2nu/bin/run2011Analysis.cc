@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
   if(url.Contains("7TeV")) cmEnergy=7;
   std::vector<TGraph *> hWeightsGrVec,hLineShapeGrVec;  
   TGraph* hLineShapeNominal=0, *hInterferenceNominal=0;
-  TF1 *decayProbPdf=new TF1("relbw","(2*sqrt(2)*[0]*[1]*sqrt(pow([0],2)*(pow([0],2)+pow([1],2)))/(TMath::Pi()*sqrt(pow([0],2)+sqrt(pow([0],2)*(pow([0],2)+pow([1],2))))))/(pow(pow([2],2)-pow([0],2),2)+pow([0]*[1],2))",0,2000);
+  TF1 *decayProbPdf=new TF1("relbw","(2*sqrt(2)*[0]*[1]*sqrt(pow([0],2)*(pow([0],2)+pow([1],2)))/(TMath::Pi()*sqrt(pow([0],2)+sqrt(pow([0],2)*(pow([0],2)+pow([1],2))))))/(pow(pow(x,2)-pow([0],2),2)+pow([0]*[1],2))",0,2000);
   if(isMC_GG){  
     size_t GGStringpos =  string(url.Data()).find("GG");
     string StringMass = string(url.Data()).substr(GGStringpos+5,4);  sscanf(StringMass.c_str(),"%lf",&HiggsMass);
@@ -693,8 +693,8 @@ int main(int argc, char* argv[])
         if(isMC_VBF || isMC_GG){           
            for(unsigned int nri=0;nri<NRparams.size();nri++){ 
 	     NRweights[nri] = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal,decayProbPdf);
-             mon.fillHisto(TString("higgsMass_4nr")+NRsuffix[nri]  ,tags_inc, phys.genhiggs[0].mass(), weight*NRweights[nri]);
              if(nri==0){weight*=NRweights[0]; }else{NRweights[nri]/=NRweights[0];}
+             mon.fillHisto(TString("higgsMass_4nr")+NRsuffix[nri]  ,tags_inc, phys.genhiggs[0].mass(), weight*NRweights[nri]);
            }  
          }
       }
