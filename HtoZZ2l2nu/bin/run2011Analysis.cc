@@ -694,6 +694,7 @@ int main(int argc, char* argv[])
            for(unsigned int nri=0;nri<NRparams.size();nri++){ 
 	     NRweights[nri] = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal,decayProbPdf);
              mon.fillHisto(TString("higgsMass_4nr")+NRsuffix[nri]  ,tags_inc, phys.genhiggs[0].mass(), weight*NRweights[nri]);
+             if(nri==0){weight*=NRweights[0]; }else{NRweights[nri]/=NRweights[0];}
            }  
          }
       }
@@ -702,10 +703,6 @@ int main(int argc, char* argv[])
       Hcutflow->Fill(3,weight*TotalWeight_minus);
       Hcutflow->Fill(4,weight*TotalWeight_plus);
       Hcutflow->Fill(5,signalWeight);
-
-      //make this here to make sure that all plots are scaled properly
-      if(isMC && (isMC_VBF || isMC_GG) && (cprime>=0 || brnew>=0)){weight*=NRweights[0]; }
-
 
       //MET variables
       LorentzVector rawMetP4=phys.met[2];

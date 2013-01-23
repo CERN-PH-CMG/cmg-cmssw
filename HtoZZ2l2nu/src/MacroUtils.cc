@@ -157,7 +157,7 @@ double weightVBF(std::string SampleName, double m_gen, double mass){
 
 //
 double weightNarrowResonnance(std::string SampleName, double m_gen, double mass, double Cprime, double BRnew, TGraph* hLineShapeNominal, TF1 *decayProbPdf){
-   if(Cprime<0 || BRnew<0)return 1.0;
+   if((Cprime<0 || BRnew<0) || (Cprime==0 && BRnew==0))return 1.0;
 
    bool isZZ = (SampleName.find("ZZ")!=std::string::npos) ;
 
@@ -191,7 +191,7 @@ double weightNarrowResonnance(std::string SampleName, double m_gen, double mass,
 
 	 double OverallXSectionScaleFactor = 1.0*hLineShapeNominal->Integral();
    decay_width = decay_width * pow(Cprime,2) / (1-BRnew);      
-//      OverallXSectionScaleFactor = pow(Cprime,2) * (1-BRnew);
+//      OverallXSectionScaleFactor *= pow(Cprime,2) * (1-BRnew);
 
    //the CPS shape
    double weight_CPS = hLineShapeNominal->Eval(mass);
