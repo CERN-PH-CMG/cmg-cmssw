@@ -166,6 +166,7 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_KD'.format(pName=pName))
         self.var('{pName}_PseudoKD'.format(pName=pName))
         self.var('{pName}_GraviKD'.format(pName=pName))
+        self.var('{pName}_Weight'.format(pName=pName))
         self.var('{pName}_MassErr'.format(pName=pName))
         for postfix in ['','Up','Dwn']:
             self.var('{pName}_DEta'.format(pName=pName)+postfix)
@@ -211,6 +212,8 @@ class TreeProducer( Analyzer ):
             self.fill('{pName}_PseudoKD'.format(pName=pName), particle.pseudoKD )
         if hasattr(particle,'graviKD'):
             self.fill('{pName}_GraviKD'.format(pName=pName), particle.graviKD )
+        if hasattr(particle,'weight'):
+            self.fill('{pName}_Weight'.format(pName=pName), particle.weight )
         if hasattr(particle,'massErr'):
             self.fill('{pName}_MassErr'.format(pName=pName), particle.massErr )
 

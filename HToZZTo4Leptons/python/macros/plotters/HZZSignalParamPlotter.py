@@ -16,8 +16,8 @@ class HZZSignalParamPlotter(PlotterBase):
         self.category=category
         self.MH = ROOT.RooRealVar('MH','HiggsMass',125)
         self.width = ROOT.RooRealVar('width','HiggsWidthScale',1.0)
-        self.massVar='H_Mass'+'_'+finalstate+'_'+period+'_'+category
-#        self.massVar='H_Mass'
+#        self.massVar='H_Mass'+'_'+finalstate+'_'+period+'_'+category
+        self.massVar='H_Mass'
         self.mass = ROOT.RooRealVar(self.massVar,'HiggsMass',100,1000)
         self.lowMass=160
         #systematics

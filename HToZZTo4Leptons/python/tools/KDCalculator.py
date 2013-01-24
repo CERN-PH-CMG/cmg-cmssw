@@ -56,7 +56,7 @@ class KDCalculator(object):
         FL.KD       = self.KD.getKD()
         FL.pseudoKD = self.KD.getPseudoKD()
         FL.graviKD  = self.KD.getGraviKD()
-        
+        FL.weight   = self.KD.getInterferenceWeight()
 
         
 
