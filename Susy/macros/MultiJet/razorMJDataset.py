@@ -131,14 +131,20 @@ if __name__ == '__main__':
     if options.index > -1:
         chunks = []
         chunk = []
-        for f in files:
+
+        for f in sorted(files):
             if len(chunk) <= options.maxFiles:
                 chunk.append(f)
             if len(chunk) == options.maxFiles:
                 chunks.append(chunk)
                 chunk = []
-        print 'Created %d chunks of length %s' % (len(chunks),options.maxFiles)
+        if chunk:
+            chunks.append(chunk)
+        
+        options.clearList('inputFiles')
         options.inputFiles = chunks[options.index]
+        print 'Created %d chunks of length %s' % (len(chunks),options.maxFiles),options.index,[len(c) for c in chunks],len(chunks[options.index]),len(options.inputFiles)
+        print options.inputFiles
 
     pickleFile = options.outputFile.replace('.root','.pkl')
 
@@ -328,6 +334,10 @@ struct Filters{\
     # loop over events
     for event in events:
 
+        info.event = event.object().id().event()
+        info.lumi = event.object().id().luminosityBlock()
+        info.run = event.object().id().run()
+
         CTEQ66_W.clear()
         MRST2006NNLO_W.clear()
         
@@ -345,10 +355,6 @@ struct Filters{\
         pftau_mt.clear()
 
         vars.pileUpWeight = 1.0
-
-        info.event = event.object().id().event()
-        info.lumi = event.object().id().luminosityBlock()
-        info.run = event.object().id().run()
 
         if (count % 1000) == 0:
             print count,'run/lumi/event',info.run,info.lumi,info.event
