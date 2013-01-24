@@ -120,9 +120,13 @@ elif channel == 'mu_ele' :
     for data in dataSamplesMu:
         data.triggers = triggers_mumu
         data.vetoTriggers = triggers_ee
+    for data in dataSamplesMuE:
+        data.triggers = triggers_mue
+        data.vetoTriggers = triggers_ee+triggers_mumu
+
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
-    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
+    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
 
 elif channel == 'all' :
     theAna = allAna
@@ -131,10 +135,13 @@ elif channel == 'all' :
     for data in dataSamplesMu:
         data.triggers = triggers_mumu
         data.vetoTriggers = triggers_ee
+    for data in dataSamplesMuE:
+        data.triggers = triggers_mue
+        data.vetoTriggers = triggers_ee+triggers_mumu
 
     for mc in mcSamples:
         mc.triggers = triggersMC_mue
-    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE
+    selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
 
 
     
@@ -174,7 +181,7 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 1
+test = 0
 if test==1:
     dataset = ggH125
     selectedComponents = [dataset]
