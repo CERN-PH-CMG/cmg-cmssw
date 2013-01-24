@@ -370,8 +370,12 @@ def QCDEstimate2(prefix,prefix1,var,xmin,xmax,\
       print >> QCD_PrintOut, "QCDlooseOS:", QCDlooseOS.Integral()
       print >> QCD_PrintOut, "QCDlooseSS:", QCDlooseSS.Integral()
       print >> QCD_PrintOut, "QCDtightSS:", QCDtightSS.Integral()
-      tightLoose    = QCDtightSS.Integral()/QCDlooseSS.Integral()
-      tightLooseErr = tightLoose*math.sqrt(1./abs(QCDtightSS.Integral()) + 1./abs(QCDlooseSS.Integral()))
+      if QCDlooseSS.Integral()>0:
+          tightLoose    = QCDtightSS.Integral()/QCDlooseSS.Integral()
+          tightLooseErr = tightLoose*math.sqrt(1./abs(QCDtightSS.Integral()) + 1./abs(QCDlooseSS.Integral()))
+      else:
+          tightLoose    = 1
+          tightLooseErr = 1
       print >> QCD_PrintOut, "QCDtightSS / QCDlooseSS", tightLoose, "+-", tightLooseErr
       QCD_PrintOut.close()
       

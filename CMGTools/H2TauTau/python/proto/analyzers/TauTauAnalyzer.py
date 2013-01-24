@@ -6,6 +6,9 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Tau, Muon, GenParti
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 from ROOT import TFile
 from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as Electron
+from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
+from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 
 class TauTauAnalyzer( DiLeptonAnalyzer ):
 
@@ -35,7 +38,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         #    'cmgTauSel',
         #    'std::vector<cmg::Tau>'
         #    )
-        if self.cfg_comp.isMC and ("DY" in self.cfg_comp.name or "W" in self.cfg_comp.name or "Higgs" in self.cfg_comp.name):
+        if self.cfg_comp.isMC and ("DY" in self.cfg_comp.name or "W" in self.cfg_comp.name or "TTJets" in self.cfg_comp.name or "Higgs" in self.cfg_comp.name):
             self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
         if self.cfg_comp.isMC and "QCD" in self.cfg_comp.name:
@@ -66,9 +69,17 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             'LHEEventProduct'
             )
 
+        self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol,
+                                           'std::vector<cmg::PFJet>' )
+
+    def beginLoop(self):
+        super(TauTauAnalyzer,self).beginLoop()
+        self.counters.counter('DiLepton').register('jet trig matched')
+
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (the one with best isolation).'''
         return max( [ (min(dilep.leg1().tauID("byRawIsoMVA"), dilep.leg2().tauID("byRawIsoMVA")), dilep) for dilep in diLeptons ] )[1]
+        #return max( [ (dilep.sumPt(), dilep) for dilep in diLeptons ] )[1]
     
     def process(self, iEvent, event):
         # select signal dileptons with all cuts on both legs
@@ -91,6 +102,10 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             event.triggerObjects=[]
  
 	result = self.selectionSequence(event, fillCounter=True)
+
+	#if event.eventId in [212391570,227704571,254997006,34410222]:
+	#    print "found event"
+	#    print eventId,result
         
 	event.rawMET=self.handles['rawMET'].product()
 	triggerResults=self.handles['triggerResults'].product()
@@ -186,9 +201,11 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             event.isPhoton=False
             event.isElectron=False
 	    for gen in genParticles:
-                if abs(gen.pdgId())==15 and gen.mother().pdgId()==23 and (gen.mother().mass()<80 or gen.mother().mass()>100):
+                if abs(gen.pdgId())==15 and abs(gen.mother().pdgId())==23 and (gen.mother().mass()<80 or gen.mother().mass()>100):
                     event.isPhoton=True
-                if abs(gen.pdgId())==11 and gen.mother().pdgId()==23:
+                if abs(gen.pdgId())==13 and abs(gen.mother().pdgId())==23:
+                    event.isMuon=True
+                if abs(gen.pdgId())==11 and abs(gen.mother().pdgId())==23:
                     event.isElectron=True
                 if abs(gen.pdgId()) in [23, 25, 35, 36, 37]:
                     event.genMass=gen.mass()
@@ -201,8 +218,10 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             event.genParticles = map( GenParticle, genParticles)
             genTaus = []
             event.genMatched = False
+            event.genMatchedElectron = False
+            event.genMatchedMuon = False
             for gen in genParticles:
-                if abs(gen.pdgId())==15 and gen.mother().pdgId()==24: # W -> tau nu_tau
+                if abs(gen.pdgId()) in [11,13,15] and abs(gen.mother().pdgId())==24: # W -> tau nu
                     genTaus.append( gen )
             if len(genTaus)>=1:
                 dR2leg1Min, event.diLepton.leg1Gen = ( float('inf'), None)
@@ -216,11 +235,73 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                         dR2leg1Min, event.diLepton.leg1Gen = (dR2leg1, genTau)
                     if dR2leg2 <  dR2leg2Min:
                         dR2leg2Min, event.diLepton.leg2Gen = (dR2leg2, genTau)
-                leg1DeltaR = math.sqrt( dR2leg1Min )
-                leg2DeltaR = math.sqrt( dR2leg2Min )
-                if (leg1DeltaR>-1 and leg1DeltaR < 0.1) or \
-                   (leg2DeltaR>-1 and leg2DeltaR < 0.1):
-                     event.genMatched = True
+                    leg1DeltaR = math.sqrt( dR2leg1Min )
+                    leg2DeltaR = math.sqrt( dR2leg2Min )
+                    if ((leg1DeltaR>-1 and leg1DeltaR < 0.1) or \
+                        (leg2DeltaR>-1 and leg2DeltaR < 0.1)) and abs(genTau.pdgId())==11:
+                         event.genMatchedElectron = True
+                    if ((leg1DeltaR>-1 and leg1DeltaR < 0.1) or \
+                        (leg2DeltaR>-1 and leg2DeltaR < 0.1)) and abs(genTau.pdgId())==13:
+                         event.genMatchedMuon = True
+                    if ((leg1DeltaR>-1 and leg1DeltaR < 0.1) or \
+                        (leg2DeltaR>-1 and leg2DeltaR < 0.1)) and abs(genTau.pdgId())==15:
+                         event.genMatched = True
+            event.isElectron=False
+            event.isMuon=False
+            event.isTau=False
+	    for gen in genParticles:
+                if abs(gen.pdgId())==11 and abs(gen.mother().pdgId())==24:
+                    event.isElectron=True
+                if abs(gen.pdgId())==13 and abs(gen.mother().pdgId())==24:
+                    event.isMuon=True
+                if abs(gen.pdgId())==15 and abs(gen.mother().pdgId())==24:
+                    event.isTau=True
+        if self.cfg_comp.isMC and "TTJets" in self.cfg_comp.name:
+            genParticles = self.mchandles['genParticles'].product()
+            event.genParticles = map( GenParticle, genParticles)
+            genTaus = []
+            event.genMatched = 0
+            event.genMatchedElectron = 0
+            event.genMatchedMuon = 0
+            for gen in genParticles:
+                if abs(gen.pdgId()) in [11,13,15] and abs(gen.mother().pdgId())==24: # W -> tau nu
+                    genTaus.append( gen )
+            if len(genTaus)>=1:
+                dR2leg1Min, event.diLepton.leg1Gen = ( float('inf'), None)
+                dR2leg2Min, event.diLepton.leg2Gen = ( float('inf'), None) 
+                for genTau in genTaus:
+                    dR2leg1 = deltaR2(event.diLepton.leg1().eta(), event.diLepton.leg1().phi(),
+                                      genTau.eta(), genTau.phi() )
+                    dR2leg2 = deltaR2(event.diLepton.leg2().eta(), event.diLepton.leg2().phi(),
+                                      genTau.eta(), genTau.phi() )
+                    if dR2leg1 <  dR2leg1Min:
+                        dR2leg1Min, event.diLepton.leg1Gen = (dR2leg1, genTau)
+                    if dR2leg2 <  dR2leg2Min:
+                        dR2leg2Min, event.diLepton.leg2Gen = (dR2leg2, genTau)
+                    leg1DeltaR = math.sqrt( dR2leg1Min )
+                    leg2DeltaR = math.sqrt( dR2leg2Min )
+                    if (leg1DeltaR>-1 and leg1DeltaR < 0.1) and abs(genTau.pdgId())==11:
+                        event.genMatchedElectron+=1
+                    if (leg1DeltaR>-1 and leg1DeltaR < 0.1) and abs(genTau.pdgId())==13:
+                        event.genMatchedMuon+=1
+                    if (leg1DeltaR>-1 and leg1DeltaR < 0.1) and abs(genTau.pdgId())==15:
+                        event.genMatched+=1
+                    if (leg2DeltaR>-1 and leg2DeltaR < 0.1) and abs(genTau.pdgId())==11:
+                        event.genMatchedElectron+=1
+                    if (leg2DeltaR>-1 and leg2DeltaR < 0.1) and abs(genTau.pdgId())==13:
+                        event.genMatchedMuon+=1
+                    if (leg2DeltaR>-1 and leg2DeltaR < 0.1) and abs(genTau.pdgId())==15:
+                        event.genMatched+=1
+            event.isElectron=0
+            event.isMuon=0
+            event.isTau=0
+	    for gen in genParticles:
+                if abs(gen.pdgId())==11 and abs(gen.mother().pdgId())==24:
+                    event.isElectron+=1
+                if abs(gen.pdgId())==13 and abs(gen.mother().pdgId())==24:
+                    event.isMuon+=1
+                if abs(gen.pdgId())==15 and abs(gen.mother().pdgId())==24:
+                    event.isTau+=1
 		
         if self.cfg_comp.isMC and "Higgsgg" in self.cfg_comp.name:
             genParticles = self.mchandles['genParticles'].product()
@@ -294,6 +375,28 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             else:
                 if fillCounter: self.counters.counter('DiLepton').inc('leg2 trig matched')
                 event.l2TrigMatched=True
+
+        if len(self.cfg_comp.triggers)>0 and len(self.cfg_ana.triggerMap[ event.hltPath ])>2:
+            # trigger matching jet
+            cmgJets = self.handles['jets'].product()
+	    jets=[]
+            for cmgJet in cmgJets:
+                jet = Jet( cmgJet )
+                if self.testJet( jet ):
+                    jets.append(jet)
+	    selDiLeptonsNew=[]
+	    for diL in selDiLeptons:
+                cleanJets, dummy = cleanObjectCollection( jets, masks = [ diL.leg1(), diL.leg2() ], deltaRMin = 0.5 )
+                if len(cleanJets)>0 and self.trigMatched(event, cleanJets[0], 'jet'):
+                    selDiLeptonsNew+=[diL]
+	    selDiLeptons=selDiLeptonsNew
+            if len(selDiLeptons) == 0:
+                event.jetTrigMatched=False
+                if hasattr(self.cfg_ana,'HCP_matching'):
+	            return False
+            else:
+                if fillCounter: self.counters.counter('DiLepton').inc('jet trig matched')
+                event.jetTrigMatched=True
 
         event.diLeptonsTrigMatched = selDiLeptons
 
@@ -458,3 +561,46 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             otherLeptons.append( pyl )
         return otherLeptons
 
+
+    def trigMatched(self, event, leg, legName):
+        '''Returns true if the leg is matched to a trigger object as defined in the
+        triggerMap parameter'''
+        if not hasattr( self.cfg_ana, 'triggerMap'):
+            return True
+        path = event.hltPath
+        triggerObjects = event.triggerObjects
+        filters = self.cfg_ana.triggerMap[ path ]
+        filter = None
+        if legName == 'leg1':
+            filter = filters[0]
+        elif legName == 'leg2':
+            filter = filters[1]
+        elif legName == 'jet':
+            filter = filters[2]
+        else:
+            raise ValueError( 'legName should be leg1 or leg2, not {leg}'.format(
+                leg=legName )  )
+        # the dR2Max value is 0.3^2
+        pdgIds = None
+        if len(filter) == 2:
+            filter, pdgIds = filter[0], filter[1]
+        return triggerMatched(leg, triggerObjects, path, filter,
+                              # dR2Max=0.089999,
+                              dR2Max=0.25,
+                              pdgIds=pdgIds )
+
+    def testJetID(self, jet):
+        jet.puJetIdPassed = jet.puJetId()
+        jet.pfJetIdPassed = jet.getSelection('cuts_looseJetId')
+        if self.cfg_ana.relaxJetId:
+            return True
+        else:
+            return jet.puJetIdPassed and jet.pfJetIdPassed
+        
+        
+    def testJet( self, jet ):
+        # 2 is loose pile-up jet id
+        return jet.pt() > self.cfg_ana.jetPt and \
+               abs( jet.eta() ) < self.cfg_ana.jetEta and \
+               self.testJetID(jet)
+               # jet.passPuJetId('full', 2)
