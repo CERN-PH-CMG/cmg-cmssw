@@ -189,7 +189,10 @@ def saveQCD(QCDlooseOS, QCDlooseSS, QCDtightSS, var, sys, prefixLabel, mass, cor
     num   = QCDtightSS.weighted.Clone()
     den   = QCDlooseSS.weighted.Clone()
     
-    scale = num.Integral() / den.Integral()
+    if den.Integral()>0:
+      scale = num.Integral() / den.Integral()
+    else:
+      scale = 1
     
     ratio.Divide(num,den,1,scale)
     ratio.SetName('QCDtightSS_QCDlooseSS_ratio')

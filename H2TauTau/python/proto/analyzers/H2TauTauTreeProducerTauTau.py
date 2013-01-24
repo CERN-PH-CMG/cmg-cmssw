@@ -31,6 +31,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
             var('{pName}Eta'.format(pName=pName))
             var('{pName}Phi'.format(pName=pName))
             var('{pName}Charge'.format(pName=pName))
+            var('{pName}Mass'.format(pName=pName))
             #var('{pName}Iso'.format(pName=pName))
             #var('{pName}Id'.format(pName=pName))
             
@@ -41,7 +42,8 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 	
         var('visMass')
         var('svfitMass')
-        var('mt')
+        var('mt1')
+        var('mt2')
 	var('pThiggs')
         
 	var('mex')
@@ -110,6 +112,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         var('l2JetInvMass')
         varInt('l1TrigMatched')
         varInt('l2TrigMatched')
+        varInt('jetTrigMatched')
 
         #var('genTauVisMass')
         #var('genJetVisMass')
@@ -140,9 +143,11 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         #var('l2EffMC')
         #var('l2Weight')
 
+        varInt('genMatched')
         varInt('isFake')
         varInt('isPhoton')
         varInt('isElectron')
+        varInt('isMuon')
 
         varInt('hasW')
         varInt('hasZ')
@@ -184,6 +189,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
             fill('{pName}Eta'.format(pName=pName), particle.eta() )
             fill('{pName}Phi'.format(pName=pName), particle.phi() )
             fill('{pName}Charge'.format(pName=pName), particle.charge() )
+            fill('{pName}Mass'.format(pName=pName), particle.mass()*scale )
             #if hasattr( particle, 'relIso' ):
             #    fill('{pName}Iso'.format(pName=pName), particle.relIso(0.5) )
             #if abs( particle.pdgId() )==11:
@@ -213,7 +219,8 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
                 
         fill('visMass', event.diLepton.mass()*scale)
         fill('svfitMass', event.diLepton.massSVFit()*scale)
-        fill('mt', event.diLepton.mTLeg2()*scale)
+        fill('mt1', event.diLepton.mTLeg1()*scale)
+        fill('mt2', event.diLepton.mTLeg2()*scale)
         fill('pThiggs', sqrt(pow(event.diLepton.met().px()+event.diLepton.px(),2)+pow(event.diLepton.met().py()+event.diLepton.py(),2))*scale)
 
         fill('mex', event.diLepton.met().px()*scale)
@@ -270,7 +277,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         fill('l2MVAEle', leg2.tauID("againstElectronMVA") )
         #fill('l2LooseMu', leg2.tauID("againstMuonLoose") )
         fill('l2jetMass', leg2.jetRefp4().mass() )
-        fill('l2jetPt', leg1.jetRefp4().pt() )
+        fill('l2jetPt', leg2.jetRefp4().pt() )
 	if l2jet:
           fill('l2jetWidth', l2jet.rms() )
           fill('l2jetBtag', l1jet.btag("combinedSecondaryVertexBJetTags") )
@@ -307,6 +314,11 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
             fill('l2TrigMatched', event.l2TrigMatched )
 	else:
             fill('l2TrigMatched', -1 )
+
+	if hasattr(event,"jetTrigMatched"):
+            fill('jetTrigMatched', event.jetTrigMatched )
+	else:
+            fill('jetTrigMatched', -1 )
 
         #if event.diLepton.leg1().genTaup4() and event.diLepton.leg2().genTaup4():
         #  fill('genTauVisMass', sqrt(
@@ -376,13 +388,21 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
                 isFake = 0
         fill('isFake', isFake)
 
+        genMatched = 0
+        if hasattr(event,'genMatched') and event.genMatched > 0: genMatched = event.genMatched
+        fill('genMatched', genMatched)
+
         isPhoton = 0
         if hasattr(event,'isPhoton') and event.isPhoton == 1: isPhoton = 1
         fill('isPhoton', isPhoton)
 
         isElectron = 0
-        if hasattr(event,'isElectron') and event.isElectron == 1: isElectron = 1
+        if hasattr(event,'isElectron') and event.isElectron > 0: isElectron = event.isElectron
         fill('isElectron', isElectron)
+
+        isMuon = 0
+        if hasattr(event,'isMuon') and event.isMuon > 0: isMuon = event.isMuon
+        fill('isMuon', isMuon)
 
         hasW = 0
         if hasattr(event,'hasW') and event.hasW == 1: hasW = 1

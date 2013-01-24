@@ -652,7 +652,8 @@ filePattern = 'diTau.*fullsel.*root'
 #                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195397-195947/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
 #                                    getFiles('/Tau/Run2012B-PromptReco-v1/AOD/PAT_CMG_V5_4_0_runrange_195948-196531/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
-data_Run2012A_PromptReco_v1.files = getFiles('/Tau/Run2012A-13Jul2012-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
+data_Run2012A_PromptReco_v1.files = getFiles('/Tau/Run2012A-13Jul2012-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern) + \
+                                    getFiles('/Tau/Run2012A-recover-06Aug2012-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 data_Run2012B_PromptReco_v1.files = getFiles('/Tau/Run2012B-13Jul2012-v1/AOD/V5/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 data_Run2012C_PromptReco_v1.files = getFiles('/Tau/Run2012C-24Aug2012-v1/AOD/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 data_Run2012C_PromptReco_v2.files = getFiles('/Tau/Run2012C-PromptReco-v2/AOD/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
@@ -897,26 +898,6 @@ HiggsVH135.files = getFiles('/WH_ZH_TTH_HToTauTau_M-135_8TeV-pythia6-tauola/Summ
 HiggsVH140.files = getFiles('/WH_ZH_TTH_HToTauTau_M-140_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsVH145.files = getFiles('/WH_ZH_TTH_HToTauTau_M-145_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
-# add recoil
-
-#DYJets.files = getFiles('/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilZnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#Higgsgg110.files = getFiles('/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#Higgsgg115.files = getFiles('/GluGluToHToTauTau_M-115_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#Higgsgg120.files = getFiles('/GluGluToHToTauTau_M-120_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#Higgsgg125.files = getFiles('/GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#Higgsgg130.files = getFiles('/GluGluToHToTauTau_M-130_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#Higgsgg135.files = getFiles('/GluGluToHToTauTau_M-135_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#Higgsgg140.files = getFiles('/GluGluToHToTauTau_M-140_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#Higgsgg145.files = getFiles('/GluGluToHToTauTau_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF110.files = getFiles('/VBF_HToTauTau_M-110_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF115.files = getFiles('/VBF_HToTauTau_M-115_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF120.files = getFiles('/VBF_HToTauTau_M-120_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF125.files = getFiles('/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF130.files = getFiles('/VBF_HToTauTau_M-130_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF135.files = getFiles('/VBF_HToTauTau_M-135_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF140.files = getFiles('/VBF_HToTauTau_M-140_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-#HiggsVBF145.files = getFiles('/VBF_HToTauTau_M-145_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}_recoilHnew'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
-
 HiggsSUSYBB80.files = getFiles('/SUSYBBHToTauTau_M-80_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsSUSYBB90.files = getFiles('/SUSYBBHToTauTau_M-90_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsSUSYBB100.files = getFiles('/SUSYBBHToTauTau_M-100_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
@@ -959,11 +940,39 @@ HiggsSUSYGluGlu700.files = getFiles('/SUSYGluGluToHToTauTau_M-700_8TeV-pythia6-t
 HiggsSUSYGluGlu800.files = getFiles('/SUSYGluGluToHToTauTau_M-800_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 HiggsSUSYGluGlu1000.files = getFiles('/SUSYGluGluToHToTauTau_M-1000_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/{aod}/{pat}/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern)
 
+GluGluToHToBB125 = cfg.MCComponent(
+    name = 'GluGluToHToBB125',
+    #files = [],
+    files = getFiles('/GluGluToHToBB_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0_tauSkim/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    xSection = 19.52*5.77e-1, # dummy
+    triggers = [],
+    nGenEvents = 999908,
+    effCorrFactor = 1 )
+
+VBF_HToBB125 = cfg.MCComponent(
+    name = 'VBF_HToBB125',
+    #files = [],
+    files = getFiles('/VBF_HToBB_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0_tauSkim/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    xSection = 1.559*5.77e-1, # dummy
+    triggers = [],
+    nGenEvents = 998844,
+    effCorrFactor = 1 )
+
+TTH_HToBB125 = cfg.MCComponent(
+    name = 'TTH_HToBB125',
+    #files = [],
+    files = getFiles('/TTH_HToBB_M-125_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0_tauSkim/{htt}'.format(aod=aod, pat=pat, htt=htt), user, filePattern),
+    xSection = (0.1302)*5.77e-1, # VH 0.6966+0.3943+
+    triggers = [],
+    nGenEvents = 1000008,
+    effCorrFactor = 1 )
+
 mc_spring12 = copy.copy( mc_ewk )
 mc_spring12.extend( mc_higgs ) 
 mc_spring12.extend([DY1Jets, DY2Jets, DY3Jets, DY4Jets, W1Jets, W2Jets, W3Jets, W4Jets, WW, WZ, ZZ])
 mc_spring12.extend([T_s, T_t, T_tW, Tbar_s, Tbar_t, Tbar_tW])
 mc_spring12.extend([QCD])
+mc_spring12.extend([GluGluToHToBB125, VBF_HToBB125, TTH_HToBB125])
 
 for data in data_2012A:
     data.triggers = data_triggers_2012A
