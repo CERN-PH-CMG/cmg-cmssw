@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
     }
   TGraph *hLineShapeNominal=0,*hLineShapeInterference=0;
   std::vector<TGraph *> hLineShapeGrVec;  
-  if(fin){
+  if(fin && isMC_VBF || isMC_GG){
     cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
     if(fin_int)
       cout << "Inteference terms (and uncertaintnies) will be replaced from " << fin_int->GetName() << endl;
