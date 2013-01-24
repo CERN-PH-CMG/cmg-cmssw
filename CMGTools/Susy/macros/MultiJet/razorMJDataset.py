@@ -30,7 +30,7 @@ def getFiles(datasets, user, pattern):
                              )
         files.extend(ds.fileNames)
     
-    return ['root://eoscms//eos/cms%s' % f for f in files[:1]]
+    return ['root://eoscms//eos/cms%s' % f for f in files]
     
 def deltaR(a,b):
     deta = a.eta() - b.eta()
@@ -594,9 +594,9 @@ struct Filters{\
                 met = metH.product()[0]
                 event.getByLabel(('razorMJDiHemiLepBoxDown'),hemiLepH)
                 if hemiLepH.isValid():
-                   hemi = hemiLepH.product()[0]
-                   vars.RSQ_JES_DOWN = hemi.Rsq()
-                   vars.MR_JES_DOWN = hemi.mR()
+                    hemi = hemiLepH.product()[0]
+                    vars.RSQ_JES_DOWN = hemi.Rsq()
+                    vars.MR_JES_DOWN = hemi.mR()
 
                
         else:
