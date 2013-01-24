@@ -314,10 +314,10 @@ class DataCardMaker(object):
             dataset,observables=dataPlotter.makeDataSet(var,cuts,mini,maxi,self.data['name'])
             self.observables=[]
             for obs,nbins in zip(observables,bins):
-                dataset.changeObservableName(obs.GetName(),obs.GetName()+'_'+self.suffix)
-                self.observables.append(obs.GetName()+'_'+self.suffix)
-#                self.observables.append(obs.GetName())
-#                obs.setBins(nbins)
+#                dataset.changeObservableName(obs.GetName(),obs.GetName()+'_'+self.suffix)
+#                self.observables.append(obs.GetName()+'_'+self.suffix)
+                self.observables.append(obs.GetName())
+                obs.setBins(nbins)
             dataRate = dataset.sumEntries()
             getattr(w,'import')(dataset)
             

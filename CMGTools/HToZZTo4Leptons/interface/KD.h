@@ -43,10 +43,13 @@ class KD
     id.push_back(Z2_lept1Id);
     id.push_back(Z2_lept2Id);
 
+<<<<<<< KD.h
+=======
 
 
 
 
+>>>>>>> 1.8
     mem_->computeMEs(ps,id);
   }
 
@@ -71,7 +74,11 @@ class KD
     mem_->computeKD(kSMHiggs, kJHUGen, k2mplus_gg, kJHUGen, &MEMs::probRatio, KD, ME_ggHiggs, ME_gg0Minus);
     return KD;
   }
-  
+
+
+  float getInterferenceWeight() {
+    return mem_->getMELAWeight();
+  }
 
 
  private:
