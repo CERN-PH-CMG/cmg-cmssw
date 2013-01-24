@@ -45,7 +45,7 @@ class KD
 
 
 
-    printf("IDs = %d %d %d %d\n",Z1_lept1Id,Z1_lept2Id,Z2_lept1Id,Z2_lept2Id);
+
 
     mem_->computeMEs(ps,id);
   }

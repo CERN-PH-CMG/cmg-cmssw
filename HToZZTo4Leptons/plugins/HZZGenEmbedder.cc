@@ -13,7 +13,7 @@
 //
 // Original Author:  Michail Bachtis,40 1-B08,+41227678176,
 //         Created:  Mon Nov 12 20:34:11 CET 2012
-// $Id$
+// $Id: HZZGenEmbedder.cc,v 1.1 2012/11/13 00:14:09 bachtis Exp $
 //
 //
 
@@ -159,6 +159,7 @@ HZZGenEmbedder::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       *out = genProduct->signalProcessID();
     }
 
+
   if( *out==24)
     NZH_++;
   if( *out==26)
@@ -166,8 +167,6 @@ HZZGenEmbedder::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if( *out==121 || *out==122)
     NTTH_++;
   
-
-
   iEvent.put(out,"processID");   
 }
 

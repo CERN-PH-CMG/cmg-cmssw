@@ -4,7 +4,8 @@ import os
 from copy import copy
 
 pat='V5_9_0'
-skim='SKIM_Oct15_All'
+#skim='SKIM_Oct15_All'
+skim='SKIM_Nov12_All'
 filepattern = 'cmgTuple.*root'
 userName='bachtis'
 
@@ -17,6 +18,14 @@ triggers_ee   = ['HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_Calo
 
 
 triggers_mumu = ["HLT_Mu17_Mu8_v*","HLT_DoubleMu7_v*","HLT_Mu13_Mu8_v*"]
+
+triggers_mue   = [
+              'HLT_Mu17_Ele8_CaloIdL_v*',
+              'HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v*',
+              'HLT_Mu8_Ele17_CaloIdL_v*',
+              'HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v*'
+              ]
+
 
 
 triggersMC_mumu = ["HLT_Mu17_Mu8_v*"]
@@ -31,7 +40,9 @@ triggersMC_ee   = [
 triggersMC_mue   = [
     'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*',
     'HLT_TripleEle10_CaloIdL_TrkIdVL_v*',
-    "HLT_Mu17_Mu8_v*"
+    "HLT_Mu17_Mu8_v*",
+    "HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v*",
+    "HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v*"
     ]
 
 
@@ -162,7 +173,7 @@ uflSamples=[
 
 json='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11//7TeV/Reprocessing/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2.txt'
 
-skim='SKIM_Oct20_GTAG'
+#skim='SKIM_Oct20_GTAG'
 
 
 DoubleElectron = cfg.DataComponent(
@@ -184,10 +195,23 @@ DoubleMu = cfg.DataComponent(
     )
 
 
+skim='SKIM_Jan22_All'
+print 'using custom skim for MuEG'
+
+MuEG = cfg.DataComponent(
+    name = 'MuEG',
+    files =getFiles('/MuEG/Run2011A-13Dec2012-v1/RECO/PAT_CMG_'+pat+'/'+skim, userName, filepattern)+ \
+           getFiles('/MuEG/Run2011B-13Dec2012-v1/RECO/PAT_CMG_'+pat+'/'+skim, userName, filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
 
           
 dataSamplesMu=[DoubleMu]
 dataSamplesE=[DoubleElectron]
+dataSamplesMuE=[MuEG]
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 
@@ -218,13 +242,19 @@ for comp in uflSamples:
     
 
 for comp in dataSamplesMu:
-    comp.splitFactor = 500
+    comp.splitFactor = 200
     comp.fakeRates=fakeRates2011
     comp.isMC = False
     comp.isData = True
 
 for comp in dataSamplesE:
-    comp.splitFactor = 500
+    comp.splitFactor = 200
+    comp.fakeRates=fakeRates2011
+    comp.isMC = False
+    comp.isData = True
+
+for comp in dataSamplesMuE:
+    comp.splitFactor = 200
     comp.fakeRates=fakeRates2011
     comp.isMC = False
     comp.isData = True

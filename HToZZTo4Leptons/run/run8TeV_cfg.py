@@ -1,6 +1,4 @@
 
-
-
 import copy
 import os 
 import CMGTools.RootTools.fwlite.Config as cfg
