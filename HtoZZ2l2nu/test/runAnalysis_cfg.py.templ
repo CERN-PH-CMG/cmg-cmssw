@@ -40,7 +40,8 @@ runProcess = cms.PSet(
     weightsFile = cms.vstring(@weightsFile),	 
     hqtWeightsFile = cms.vstring(
 	"${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/HiggsQtWeights.root",
-	"${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/LineShapeWeights.root"		
+	"${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/LineShapes.root",
+	"${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/ShapeInterferences.root"
     ),
     evStart = cms.int32(0),
     evEnd = cms.int32(-1),

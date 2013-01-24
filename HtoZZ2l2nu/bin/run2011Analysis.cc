@@ -45,32 +45,6 @@ TString getJetRegion(float eta)
   return reg;
 }
 
-TGraphAsymmErrors *getInterferenceShape(TGraph *cps,TGraph *cpsPint, TGraph *cpsPintUp,TGraph *cpsPintDown)
-{
-  if(cps==0) return 0;
-  TGraphAsymmErrors *gr=new TGraphAsymmErrors;
-  gr->SetName("intGr");
-  for(int ip=0; ip<cps->GetN(); ip++)
-    {
-      Double_t x(0),ycps(0),ycpsPint(0),ycpsPintUp(0),ycpsPintDown(0);
-      cps->GetPoint(ip,x,ycps);
-      if(cpsPint) cpsPint->GetPoint(ip,x,ycpsPint);
-      else       ycpsPint=ycps;
-      if(cpsPintUp)   cpsPintUp->GetPoint(ip,x,ycpsPintUp);
-      else           ycpsPintUp=ycps; 
-      if(cpsPintDown) cpsPintDown->GetPoint(ip,x,ycpsPintDown);
-      else           ycpsPintDown=ycps;
-
-      if(ycps>0)
-	{
-	  gr->SetPoint(ip,x,TMath::Max(ycpsPint-ycps,0.)/ycps);
-	  gr->SetPointError(ip,0,0,TMath::Max(ycpsPintDown-ycps,0.)/ycps,TMath::Max(ycpsPintUp-ycps,0.)/ycps);
-	}
-    }
-  gr->SaveAs("intgr.root");
-  return gr;
-}
-
 int main(int argc, char* argv[])
 {
   //##############################################
@@ -129,9 +103,9 @@ int main(int argc, char* argv[])
   std::vector<std::pair<double, double> > NRparams;
   NRparams.push_back(std::make_pair<double,double>(double(cprime),double(brnew)) );
   if(suffix==""){ //consider the other points only when no suffix is being used
-  NRparams.push_back(std::make_pair<double,double>(0.1, 0) );
-  NRparams.push_back(std::make_pair<double,double>(0.3, 0) );
-  NRparams.push_back(std::make_pair<double,double>(0.6, 0) );
+    NRparams.push_back(std::make_pair<double,double>(0.1, 0) );
+    NRparams.push_back(std::make_pair<double,double>(0.3, 0) );
+    NRparams.push_back(std::make_pair<double,double>(0.6, 0) );
   }
   std::vector<double> NRweights(NRparams.size());
   std::vector<TString>NRsuffix; for(unsigned int nri=0;nri<NRparams.size();nri++){if(NRparams[nri].first<0 && NRparams[nri].second<0){NRsuffix.push_back(TString(""));}else{char tmp[255];sprintf(tmp,"_cp%3.2f_brn%3.2f",NRparams[nri].first, NRparams[nri].second); NRsuffix.push_back(TString(tmp));} }
@@ -167,8 +141,7 @@ int main(int argc, char* argv[])
   TFile *fin;
   int cmEnergy(8);
   if(url.Contains("7TeV")) cmEnergy=7;
-  std::vector<TGraph *> hWeightsGrVec,hLineShapeGrVec;  
-  TGraph* hLineShapeNominal=0, *hInterferenceNominal=0;
+  std::vector<TGraph *> hWeightsGrVec;
   TF1 *decayProbPdf=new TF1("relbw","(2*sqrt(2)*[0]*[1]*sqrt(pow([0],2)*(pow([0],2)+pow([1],2)))/(TMath::Pi()*sqrt(pow([0],2)+sqrt(pow([0],2)*(pow([0],2)+pow([1],2))))))/(pow(pow(x,2)-pow([0],2),2)+pow([0]*[1],2))",0,2000);
   if(isMC_GG){  
     size_t GGStringpos =  string(url.Data()).find("GG");
@@ -200,56 +173,46 @@ int main(int argc, char* argv[])
   
   //LINE SHAPE WEIGHTS
   TString lineShapeWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[1]; gSystem->ExpandPathName(lineShapeWeightsFileURL);
+  TString interferenceShapeWeightsFileUrl("");
+  if(runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile").size()>2)
+    {
+      interferenceShapeWeightsFileUrl=runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[2];
+      gSystem->ExpandPathName(interferenceShapeWeightsFileUrl);
+    }
   fin=0;
   std::vector<TString> wgts;  
   char buf[100];
-  if(isMC_VBF)
+  sprintf(buf,"H%d/",int(HiggsMass));
+  wgts.push_back(buf+TString("cps"));
+  wgts.push_back(buf+TString("nominal"));
+  wgts.push_back(buf+TString("up"));
+  wgts.push_back(buf+TString("down"));
+  if(isMC_VBF) lineShapeWeightsFileURL.ReplaceAll("LineShapes","VBF_LineShapes");      
+  else         lineShapeWeightsFileURL.ReplaceAll("LineShapes","GG_LineShapes");      
+  fin=TFile::Open(lineShapeWeightsFileURL);     
+  TFile *fin_int=0;
+  if(interferenceShapeWeightsFileUrl!="" && isMC_GG) 
     {
-      sprintf(buf,"H%d/",int(HiggsMass));
-      wgts.push_back(buf+TString("cpsWgt"));
-      wgts.push_back(buf+TString("cpsUpWgt"));
-      wgts.push_back(buf+TString("cpsDownWgt"));
-      wgts.push_back(buf+TString("cpsWgt"));
-      lineShapeWeightsFileURL.ReplaceAll("LineShapeWeights","VBFLineShapeWeights");      
-      fin=TFile::Open(lineShapeWeightsFileURL);     
-      if(fin){
-	hLineShapeNominal = new TGraph((TH1 *)fin->Get(buf+TString("massCPS")));
-	hInterferenceNominal = getInterferenceShape(hLineShapeNominal,0,0,0);
+      interferenceShapeWeightsFileUrl.ReplaceAll("ShapeInterferences","GG_ShapeInterferences");
+      fin_int=TFile::Open(interferenceShapeWeightsFileUrl);
+    }
+  TGraph *hLineShapeNominal=0,*hLineShapeInterference=0;
+  std::vector<TGraph *> hLineShapeGrVec;  
+  if(fin){
+    cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
+    if(fin_int)
+      cout << "Inteference terms (and uncertaintnies) will be replaced from " << fin_int->GetName() << endl;
+    hLineShapeNominal      = new TGraph((TH1 *)fin->Get(buf+TString("cps_shape")));
+    hLineShapeInterference = new TGraph((TH1 *)fin->Get(buf+TString("nominal_shape")));
+    for(size_t i=0; i<wgts.size(); i++)
+      {
+	TGraph *gr= (TGraph *) fin->Get(wgts[i]);
+	if(i>0 && fin_int!=0) gr=(TGraph *) fin_int->Get(wgts[i]);
+	hLineShapeGrVec.push_back((TGraph *)gr->Clone());
       }
-    }
-  else if(isMC_GG)
-    {
-      sprintf(buf,"Higgs%d_%dTeV/",int(HiggsMass),cmEnergy);
-      wgts.push_back(buf+TString("rwgtpint"));
-      wgts.push_back(buf+TString("rwgtpint_up"));
-      wgts.push_back(buf+TString("rwgtpint_down"));
-      wgts.push_back(buf+TString("rwgt"));
-      fin=TFile::Open(lineShapeWeightsFileURL);     
-      if(fin){
-	hLineShapeNominal = (TGraph *)(fin->Get(buf+TString("rwgt_shape")));
-	if(hLineShapeNominal)
-	  {
-	    //do we really need to clone? should be persistent in memory after TFile::Close()
-	    hLineShapeNominal=(TGraph*)hLineShapeNominal->Clone();
-	    hInterferenceNominal = getInterferenceShape(hLineShapeNominal, 
-							(TGraph *)fin->Get(buf+TString("rwgtpint_shape")), 
-							(TGraph *)fin->Get(buf+TString("rwgtpint_up_shape")), 
-							(TGraph *)fin->Get(buf+TString("rwgtpint_down_shape")) ); 
-	  }
-      }      
-    }
-
-  if(fin)
-    {
-      cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
-      for(size_t i=0; i<wgts.size(); i++)
-	{
-	  TGraph *gr= (TGraph *) fin->Get(wgts[i]);
-	  if(gr) hLineShapeGrVec.push_back((TGraph *)gr->Clone());
-       	}
-      fin->Close();
-      delete fin;
-    }
+    fin->Close();
+    delete fin;
+  }
 
 
   //##############################################
@@ -294,16 +257,14 @@ int main(int argc, char* argv[])
   for(size_t i=0; i<25; i++)  qtaxis[75+i]=350+25*i; //350-976
   mon.addHistogram( new TH1D( "qt"              , ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)",99,qtaxis));
   mon.addHistogram( new TH1F( "qmass", ";M^{ll};Events", 15,76,106) );
-
-
-  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_0raw", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
-  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_1vbf", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
-  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_2qt" , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
-  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_sls" , ";Gen Higgs Mass;Events", 1000,0,2000) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
-  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_3ls" , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
-  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_ls" ,  ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  
+  //higgs mass control
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_raw",     ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_hqt",     ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_cps",     ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_cpspint", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   for(unsigned int nri=0;nri<NRparams.size();nri++){ 
-  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_4nr"+NRsuffix[nri] , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
+    ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_4nr"+NRsuffix[nri] , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   }
 
 
@@ -453,7 +414,7 @@ int main(int argc, char* argv[])
      Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
 
      for(unsigned int nri=0;nri<NRparams.size();nri++){ 
-     mon.addHistogram( new TH2F (TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );     
+       mon.addHistogram( new TH2F (TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );     
      TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
      h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
      h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
@@ -653,56 +614,60 @@ int main(int argc, char* argv[])
       std::vector<TString> tags_full(1,"all");
 
       
-      //pileup weight
+      //reinitialize the weights to 1, to make sure that Data and MC backgrounds have proper weights
       float weight = 1.0;
-      float noLShapeWeight=1.0;
-      float signalWeight=1.0;
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
       float lShapeWeights[4]={1.0,1.0,1.0,1.0};
-
-      //reinitialize the weights to 1, to make sure that Data and MC backgrounds have proper weights
       for(unsigned int nri=0;nri<NRparams.size();nri++){NRweights[nri] = 1.0;}
       if(isMC){
-        weight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
+
+	//Pileup weight
+        float puWeight            = LumiWeights->weight(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_plus  = PuShifters[PUUP]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
         TotalWeight_minus = PuShifters[PUDOWN]->Eval(useObservedPU ? ev.ngenITpu : ev.ngenTruepu);
 
-        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_0raw",tags_inc, phys.genhiggs[0].mass(), weight);
-	//if(isMC_VBF){ signalWeight = weightVBF(VBFString,HiggsMass, phys.genhiggs[0].mass() );  weight*=signalWeight; }
-        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_1vbf",tags_inc, phys.genhiggs[0].mass(), weight); 
-
-        //if(isMC_GG) {
+	//Higgs qT
 	for(size_t iwgt=0; iwgt<hWeightsGrVec.size(); iwgt++) 
 	  ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
-	weight *= ev.hptWeights[0];
-	  //}
-        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_2qt" ,tags_inc, phys.genhiggs[0].mass(), weight);
-  
-	for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
-	  lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
-	noLShapeWeight=weight;
-	weight *= lShapeWeights[0];
-        //printf("lsw=%f \n",lShapeWeights[0]);
-	
-        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_sls" ,tags_inc, phys.genhiggs[0].mass(), weight*lShapeWeights[3]/lShapeWeights[0]);	
-        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_3ls" ,tags_inc, phys.genhiggs[0].mass(), weight);	
-        if(isMC_VBF || isMC_GG)mon.fillHisto("higgsMass_ls"  ,tags_inc, phys.genhiggs[0].mass(), weight/signalWeight);
+	float qtWeight = ev.hptWeights[0];
 
-        //compute weight correction for narrow resonnance
+	
+	//Line shape weights 
+  	for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
+	  if(hLineShapeGrVec[iwgt])
+	    lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
+	float cpsWeight   = lShapeWeights[0];
+	float shapeWeight = cpsWeight*lShapeWeights[1];    // (CPS/GEN) x [(CPS+INT)/CPS]
+
+	//final weight
+	weight = puWeight * qtWeight * shapeWeight;
+
         if(isMC_VBF || isMC_GG){           
-           for(unsigned int nri=0;nri<NRparams.size();nri++){ 
-	     NRweights[nri] = !hLineShapeNominal?1.0:weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal,decayProbPdf);
-             if(nri==0){weight*=NRweights[0]; }else{NRweights[nri]/=NRweights[0];}
-             mon.fillHisto(TString("higgsMass_4nr")+NRsuffix[nri]  ,tags_inc, phys.genhiggs[0].mass(), weight*NRweights[nri]);
-           }  
-         }
+	  
+	  mon.fillHisto("higgsMass_raw",     tags_inc, phys.genhiggs[0].mass(), 1);
+	  mon.fillHisto("higgsMass_hqt",     tags_inc, phys.genhiggs[0].mass(), qtWeight);
+	  mon.fillHisto("higgsMass_cps",     tags_inc, phys.genhiggs[0].mass(), qtWeight * cpsWeight);
+	  mon.fillHisto("higgsMass_cpspint", tags_inc, phys.genhiggs[0].mass(), qtWeight * shapeWeight);
+
+	  //compute weight correction for narrow resonnance
+          for(unsigned int nri=0;nri<NRparams.size();nri++){ 
+	    NRweights[nri] = weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal,decayProbPdf);
+
+	    //we remove the interference term on purpose as nothing is know about this
+	    if(nri==0) { weight*=NRweights[0]/lShapeWeights[1]; } 
+	    else       { NRweights[nri]/=NRweights[0]; }
+	    mon.fillHisto(TString("higgsMass_4nr")+NRsuffix[nri]  ,tags_inc, phys.genhiggs[0].mass(), weight*NRweights[nri]);
+	  }  
+	}
       }
+
+      //control the normalization after so many weights
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weight*TotalWeight_minus);
       Hcutflow->Fill(4,weight*TotalWeight_plus);
-      Hcutflow->Fill(5,signalWeight);
+      Hcutflow->Fill(5,1.0);
 
       //MET variables
       LorentzVector rawMetP4=phys.met[2];
@@ -1256,7 +1221,6 @@ int main(int argc, char* argv[])
 
 			      mon.fillHisto("mt",tags_full,aMT,weight);
 			      mon.fillHisto("typeImt",tags_full,atypeIMT,weight);
-			      mon.fillHisto("mt_raw",tags_full,aMT,noLShapeWeight);
 			      
 			      mon.fillHisto("RunDep_Yields",tags_full,ev.run,weight);
 			      mon.fillProfile("RunDep_Met"   ,tags_full,ev.run, zvvs[0].pt(),weight);
@@ -1302,8 +1266,16 @@ int main(int argc, char* argv[])
         float iweight = weight;                                               //nominal
         if(ivar==9)                         iweight *=TotalWeight_plus;        //pu up
         if(ivar==10)                        iweight *=TotalWeight_minus;       //pu down
-        if(ivar<=14 && ivar>=11 && isMC_GG) iweight *=ev.hptWeights[ivar-10]/ev.hptWeights[0];   //ren/fact     scales   
-	if((ivar==17 || ivar==18) && isMC_GG) iweight *= (lShapeWeights[0]!=0?lShapeWeights[ivar-16]/lShapeWeights[0] : 1.0); //lineshape weights
+        if(ivar<=14 && ivar>=11 && isMC_GG)                                  //ren/fact scales
+	  {
+	    float hptReweight = ev.hptWeights[ivar-10]/ev.hptWeights[0];
+	    iweight *= hptReweight;
+	  }
+	if((ivar==17 || ivar==18) && isMC_GG)                                //shape unc
+	  {
+	    float shapeReWeight = lShapeWeights[ivar-15]/lShapeWeights[1];
+	    iweight *= shapeReWeight;
+	  }
 
 	//recompute MET/MT if JES/JER was varied
 	LorentzVector zvv    = zvvs[ivar>8 ? 0 : ivar];
@@ -1385,17 +1357,23 @@ int main(int argc, char* argv[])
                if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,5,iweight);
              }
              
+	     //NARROW RESONANCE ANALYSIS
              if(zvv.pt()>optim_Cuts1_met[index]){
                for(unsigned int nri=0;nri<NRparams.size();nri++){
-//               if(passPreselection && passZmass10                                          )   mon.fillHisto(TString("mt_shapesZ10")+NRsuffix[nri]+varNames[ivar],tags_full,index, mt,iweight*NRweights[nri]);
-//               if(passPreselection && passZmass5                                           )   mon.fillHisto(TString("mt_shapesZ5")+NRsuffix[nri]+varNames[ivar],tags_full,index, mt,iweight*NRweights[nri]);
-               if(passPreselection                                                         )   mon.fillHisto(TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],tags_full,index, mt,iweight*NRweights[nri]);
-               if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,0,iweight*NRweights[nri]);
-               if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,1,iweight*NRweights[nri]);
-               if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,2,iweight*NRweights[nri]);
-               if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,3,iweight*NRweights[nri]);
-               if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,4,iweight*NRweights[nri]);
-               if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,iweight*NRweights[nri]);
+
+		 //remove the inteference effect for NR...
+		 float iNRweight=iweight*NRweights[nri];
+		 if((ivar==17 || ivar==18) && isMC_GG) {
+		   iNRweight *= lShapeWeights[1]/lShapeWeights[ivar-15];
+		 }
+
+		 if(passPreselection                                                         )   mon.fillHisto(TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],tags_full,index, mt,iNRweight);
+		 if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,0,iNRweight);
+		 if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,1,iNRweight);
+		 if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,2,iNRweight);
+		 if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,3,iNRweight);
+		 if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,4,iNRweight);
+		 if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,iNRweight);
                }
              }         
            }
