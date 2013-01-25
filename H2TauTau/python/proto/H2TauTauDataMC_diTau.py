@@ -85,13 +85,13 @@ class H2TauTauDataMC( AnalysisDataMC ):
         histName = '_'.join( [compName, self.varName] )
         hist = TH1F( histName, histName, self.nbins, self.xmin, self.xmax )
 	histName=histName.replace("(","_").replace(")","_")
+        hist.GetXaxis().SetTitle(varName)
 	if varName=="tau1Mass":
 	    varName="sqrt(l1E*l1E-l1Px*l1Px-l1Py*l1Py-l1Pz*l1Pz)"
 	if varName=="tau2Mass":
 	    varName="sqrt(l2E*l2E-l2Px*l2Px-l2Py*l2Py-l2Pz*l2Pz)"
         tree.Project( histName, varName, '{weight}*({cut})'.format(cut=cut,
                                                                    weight=self.eventWeight) )
-        hist.GetXaxis().SetTitle(varName)
         hist.SetTitle("")
         hist.SetStats(0)
         hist.Sumw2()

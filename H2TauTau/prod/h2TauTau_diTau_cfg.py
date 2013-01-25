@@ -47,9 +47,9 @@ dataset_user = 'cmgtools'
 # dataset_name = '/H2TAUTAU/Sync/GluGlu/AOD/PAT_CMG_V5_5_0'
 # dataset_name = '/H2TAUTAU/Sync/2012/VBF/AOD/PAT_CMG_V5_5_1'
 #dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12-PU_S7_START52_V9-v1/AODSIM/V5/PAT_CMG_V5_5_1'
-dataset_name = '/Tau/Run2012D-PromptReco-v1/AOD/PAT_CMG_V5_8_0'
+#dataset_name = '/Tau/Run2012D-PromptReco-v1/AOD/PAT_CMG_V5_8_0'
 #dataset_name = '/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1_tau132_pttau1_17had2_17_v1-f456bdbb960236e5c696adfe9b04eaae/USER/PAT_CMG_V5_8_0'
-#dataset_name = '/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+dataset_name = '/GluGluToHToTauTau_M-110_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
 #dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
 #dataset_name = '/W4JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
 dataset_files = 'cmgTuple.*root'
@@ -80,6 +80,7 @@ runOnMC = process.source.fileNames[0].find('Run201')==-1 and process.source.file
 if runOnMC==False:
     from CMGTools.H2TauTau.tools.setupJSON import applyJSON
     json="/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt"
+    #json="/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt"
     applyJSON(process, json )
 
 
@@ -112,6 +113,10 @@ else:
     if runOnMC:
 	process.metRecoilCorrectionInputSequence.remove( process.genWorZ ) 
     process.recoilCorMETDiTau.enable = False
+
+if lookup( fileName, 'DYJets' ) or \
+	 lookup( fileName, 'embed' ):
+    process.cmgDiTauPreSel.cut = 'getSelection("cuts_baseline") && leg1().pt>20 && leg2().pt>20'
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
