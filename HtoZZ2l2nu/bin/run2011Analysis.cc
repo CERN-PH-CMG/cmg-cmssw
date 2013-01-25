@@ -198,21 +198,22 @@ int main(int argc, char* argv[])
     }
   TGraph *hLineShapeNominal=0,*hLineShapeInterference=0;
   std::vector<TGraph *> hLineShapeGrVec;  
-  if(fin){
-    cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
-    if(fin_int)
-      cout << "Inteference terms (and uncertaintnies) will be replaced from " << fin_int->GetName() << endl;
-    hLineShapeNominal      = new TGraph((TH1 *)fin->Get(buf+TString("cps_shape")));
-    hLineShapeInterference = new TGraph((TH1 *)fin->Get(buf+TString("nominal_shape")));
-    for(size_t i=0; i<wgts.size(); i++)
-      {
-	TGraph *gr= (TGraph *) fin->Get(wgts[i]);
-	if(i>0 && fin_int!=0) gr=(TGraph *) fin_int->Get(wgts[i]);
-	hLineShapeGrVec.push_back((TGraph *)gr->Clone());
-      }
-    fin->Close();
-    delete fin;
-  }
+  if(fin && (isMC_GG || isMC_VBF))
+    {
+      cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
+      if(fin_int)
+	cout << "Inteference terms (and uncertaintnies) will be replaced from " << fin_int->GetName() << endl;
+      hLineShapeNominal      = new TGraph((TH1 *)fin->Get(buf+TString("cps_shape")));
+      hLineShapeInterference = new TGraph((TH1 *)fin->Get(buf+TString("nominal_shape")));
+      for(size_t i=0; i<wgts.size(); i++)
+	{
+	  TGraph *gr= (TGraph *) fin->Get(wgts[i]);
+	  if(i>0 && fin_int!=0) gr=(TGraph *) fin_int->Get(wgts[i]);
+	  hLineShapeGrVec.push_back((TGraph *)gr->Clone());
+	}
+      fin->Close();
+      delete fin;
+    }
 
 
   //##############################################
