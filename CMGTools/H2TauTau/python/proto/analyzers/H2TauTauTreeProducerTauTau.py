@@ -221,7 +221,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         fill('svfitMass', event.diLepton.massSVFit()*scale)
         fill('mt1', event.diLepton.mTLeg1()*scale)
         fill('mt2', event.diLepton.mTLeg2()*scale)
-        fill('pThiggs', sqrt(pow(event.diLepton.met().px()+event.diLepton.px(),2)+pow(event.diLepton.met().py()+event.diLepton.py(),2))*scale)
+        fill('pThiggs', sqrt(pow(event.diLepton.met().px()+event.diLepton.leg1().px()+event.diLepton.leg2().px(),2)+pow(event.diLepton.met().py()+event.diLepton.leg1().py()+event.diLepton.leg2().py(),2))*scale)
 
         fill('mex', event.diLepton.met().px()*scale)
         fill('mey', event.diLepton.met().py()*scale)
