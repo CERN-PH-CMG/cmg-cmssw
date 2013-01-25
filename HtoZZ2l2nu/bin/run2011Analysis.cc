@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
     }
   TGraph *hLineShapeNominal=0,*hLineShapeInterference=0;
   std::vector<TGraph *> hLineShapeGrVec;  
-  if(fin && isMC_VBF || isMC_GG){
+  if(fin){
     cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
     if(fin_int)
       cout << "Inteference terms (and uncertaintnies) will be replaced from " << fin_int->GetName() << endl;
@@ -652,10 +652,10 @@ int main(int argc, char* argv[])
 
 	  //compute weight correction for narrow resonnance
           for(unsigned int nri=0;nri<NRparams.size();nri++){ 
-	    NRweights[nri] = weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal,decayProbPdf);
+	    NRweights[nri] = weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal,decayProbPdf) / lShapeWeights[1];
 
 	    //we remove the interference term on purpose as nothing is know about this
-	    if(nri==0) { weight*=NRweights[0]/lShapeWeights[1]; } 
+	    if(nri==0) { weight*=NRweights[0]; } 
 	    else       { NRweights[nri]/=NRweights[0]; }
 	    mon.fillHisto(TString("higgsMass_4nr")+NRsuffix[nri]  ,tags_inc, phys.genhiggs[0].mass(), weight*NRweights[nri]);
 	  }  
@@ -1362,18 +1362,13 @@ int main(int argc, char* argv[])
                for(unsigned int nri=0;nri<NRparams.size();nri++){
 
 		 //remove the inteference effect for NR...
-		 float iNRweight=iweight*NRweights[nri];
-		 if((ivar==17 || ivar==18) && isMC_GG) {
-		   iNRweight *= lShapeWeights[1]/lShapeWeights[ivar-15];
-		 }
-
-		 if(passPreselection                                                         )   mon.fillHisto(TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],tags_full,index, mt,iNRweight);
-		 if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,0,iNRweight);
-		 if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,1,iNRweight);
-		 if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,2,iNRweight);
-		 if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,3,iNRweight);
-		 if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,4,iNRweight);
-		 if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,iNRweight);
+		 if(passPreselection                                                         )   mon.fillHisto(TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],tags_full,index, mt,iweight*NRweights[nri]);
+		 if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,0,iweight*NRweights[nri]);
+		 if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,1,iweight*NRweights[nri]);
+		 if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,2,iweight*NRweights[nri]);
+		 if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,3,iweight*NRweights[nri]);
+		 if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,4,iweight*NRweights[nri]);
+		 if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,iweight*NRweights[nri]);
                }
              }         
            }
