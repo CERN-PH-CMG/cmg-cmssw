@@ -10,7 +10,11 @@ def _runYields(args):
 
 def _runPlot(args):
     key,tty,plotspec,cut = args
-    return (key,tty.getPlot(plotspec,cut))
+    #timer = ROOT.TStopwatch()
+    #print "Starting plot %s for %s, %s" % (plotspec.name,key,tty._cname)
+    ret = (key,tty.getPlot(plotspec,cut))
+    #print "Done plot %s for %s, %s in %s s" % (plotspec.name,key,tty._cname,timer.RealTime())
+    return ret
 
 class MCAnalysis:
     def __init__(self,samples,options):
@@ -27,7 +31,7 @@ class MCAnalysis:
             extra = {}
             if ";" in line:
                 (line,more) = line.split(";")[:2]
-                for setting in [f.strip() for f in more.split(',')]:
+                for setting in [f.replace(';',',').strip() for f in more.replace('\\,',';').split(',')]:
                     if "=" in setting: 
                         (key,val) = [f.strip() for f in setting.split("=")]
                         extra[key] = eval(val)
@@ -59,6 +63,10 @@ class MCAnalysis:
                         if re.match(p+"$", field[0]): signal = True
             ## endif
             rootfile = options.path+"/%s/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root" % field[1].strip()
+            if options.remotePath:
+                rootfile = options.remotePath+"/%s/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root" % field[1].strip()
+            elif os.path.exists(rootfile+".url"): #(not os.path.exists(rootfile)) and :
+                rootfile = open(rootfile+".url","r").readline().strip()
             pckfile = options.path+"/%s/skimAnalyzerCount/SkimReport.pck" % field[1].strip()
             tty = TreeToYield(rootfile, options, settings=extra, name=field[0], cname=field[1].strip())
             if signal: 
@@ -246,8 +254,9 @@ class MCAnalysis:
 
 def addMCAnalysisOptions(parser,addTreeToYieldOnesToo=True):
     if addTreeToYieldOnesToo: addTreeToYieldOptions(parser)
-    parser.add_option("-j", "--jobs",   dest="jobs", type="int", default=0, help="Use N threads");
-    parser.add_option("-P", "--path",   dest="path",     type="string", default="./",      help="path to directory with trees (./)") 
+    parser.add_option("-j", "--jobs",           dest="jobs", type="int", default=0, help="Use N threads");
+    parser.add_option("-P", "--path",           dest="path",        type="string", default="./",      help="path to directory with input trees and pickle files (./)") 
+    parser.add_option("--RP", "--remote-path",   dest="remotePath",  type="string", default=None,      help="path to remote directory with trees, but not other metadata (default: same as path)") 
     parser.add_option("-p", "--process", dest="processes", type="string", default=[], action="append", help="Processes to print (comma-separated list of regexp, can specify multiple ones)");
     parser.add_option("--xf", "--exclude-files", dest="filesToExclude", type="string", default=[], action="append", help="Files to exclude (comma-separated list of regexp, can specify multiple ones)");
     parser.add_option("--xp", "--exclude-process", dest="processesToExclude", type="string", default=[], action="append", help="Processes to exclude (comma-separated list of regexp, can specify multiple ones)");
