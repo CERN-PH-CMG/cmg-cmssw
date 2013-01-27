@@ -20,6 +20,12 @@ class PlotFile:
             line = re.sub("#.*","",line) 
             field = [f.strip().replace(";",":") for f in line.replace("\\:",";").split(':')]
             if len(field) <= 2: continue
+            if len(options.plotselect):
+                skipMe = True
+                for p0 in options.plotselect:
+                    for p in p0.split(","):
+                        if re.match(p+"$", field[0]): skipMe = False
+                if skipMe: continue
             self._plots.append(PlotSpec(field[0],field[1],field[2],extra))
     def plots(self):
         return self._plots[:]
@@ -89,6 +95,26 @@ def doStackSignalNorm(pspec,pmap):
     sig.Draw("HIST SAME")
     return sig
 
+def doStackSigScaledNormData(pspec,pmap):
+    if "data"       not in pmap: return (None,-1.0)
+    if "signal"     not in pmap: return (None,-1.0)
+    data = pmap["data"]
+    sig = pmap["signal"].Clone("sig_refloat")
+    bkg = None
+    if "background" in pmap:
+        bkg = pmap["background"]
+    else:
+        bkg = sig.Clone(); bkg.Reset()
+    sf = (data.Integral()-bkg.Integral())/sig.Integral()
+    sig.Scale(sf)
+    sig.Add(bkg)
+    sig.SetFillStyle(0)
+    sig.SetLineColor(206)
+    sig.SetLineWidth(3)
+    sig.SetLineStyle(2)
+    sig.Draw("HIST SAME")
+    return (sig,sf)
+
 
 legend_ = None;
 def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2):
@@ -130,6 +156,7 @@ class PlotMaker:
         self._options = options
         self._dir = tdir
         ROOT.gROOT.ProcessLine(".x tdrstyle.cc")
+        ROOT.gROOT.ProcessLine(".L smearer.cc+")
         ROOT.gStyle.SetOptStat(0)
         ROOT.gStyle.SetOptTitle(0)
     def run(self,mca,cuts,plots,makeStack=True,makeCanvas=True):
@@ -198,7 +225,7 @@ class PlotMaker:
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
                                   cutoff=pspec.getOption('LegendCutoff', 1e-5 if c1.GetLogy() else 1e-2))
                 doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy())
-                signorm = None; datnorm = None
+                signorm = None; datnorm = None; sfitnorm = None
                 if options.showSigShape: 
                     signorm = doStackSignalNorm(pspec,pmap)
                     if signorm != None:
@@ -209,6 +236,11 @@ class PlotMaker:
                     if datnorm != None:
                         datnorm.SetDirectory(dir); dir.WriteTObject(datnorm)
                         reMax(total,datnorm,islog)
+                if options.showSFitShape: 
+                    (sfitnorm,sf) = doStackSigScaledNormData(pspec,pmap)
+                    if sfitnorm != None:
+                        sfitnorm.SetDirectory(dir); dir.WriteTObject(sfitnorm)
+                        reMax(total,sfitnorm,islog)
                 if makeCanvas: dir.WriteTObject(c1)
                 #
                 if self._options.printPlots:
@@ -230,7 +262,9 @@ def addPlotMakerOptions(parser):
     parser.add_option("--pdir", "--print-dir", dest="printDir", type="string", default="plots", help="print out plots in this directory");
     parser.add_option("--showSigShape", dest="showSigShape", action="store_true", default=False, help="Stack a normalized signal shape")
     parser.add_option("--showDatShape", dest="showDatShape", action="store_true", default=False, help="Stack a normalized data shape")
+    parser.add_option("--showSFitShape", dest="showSFitShape", action="store_true", default=False, help="Stack a shape of background + scaled signal normalized to total data")
     parser.add_option("--plotmode", dest="plotmode", type="string", default="stack", help="Show as stacked plot (stack), a non-stacked comparison (nostack) and a non-stacked comparison of normalized shapes (norm)")
+    parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
 
 if __name__ == "__main__":
     from optparse import OptionParser
