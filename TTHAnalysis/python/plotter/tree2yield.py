@@ -13,6 +13,8 @@ ROOT.gROOT.SetBatch(True)
 
 from copy import *
 
+from CMGTools.TTHAnalysis.plotter.mcCorrections import *
+
 class CutsFile:
     def __init__(self,txtfileOrCuts,options=None):
         if type(txtfileOrCuts) == list:
@@ -115,6 +117,13 @@ class TreeToYield:
         self._weightString  = options.weightString
         self._scaleFactor = scaleFactor
         self._settings = settings
+        loadMCCorrections(options)            ## make sure this is loaded
+        self._mcCorrs = globalMCCorrections() ##  get defaults
+        if 'SkipDefaultMCCorrections' in settings: ## unless requested to 
+            self._mcCorrs = []                     ##  skip them
+        if 'MCCorrections' in settings:
+            for cfile in settings['MCCorrections'].split(','): 
+                self._mcCorrs.append( MCCorrections(cfile) )
     def setScaleFactor(self,scaleFactor):
         self._scaleFactor = scaleFactor
     def getScaleFactor(self):
@@ -126,6 +135,16 @@ class TreeToYield:
     def getOption(self,name,default=None):
         if name in self._settings: return self._settings[name]
         return default
+    def adaptExpr(self,expr):
+        ret = expr
+        if self._name == "data":
+            ret = re.sub(r'\$MC\{.*?\}', '', re.sub(r'\$DATA\{(.*?)\}', r'\1', expr));
+        else:
+            ret = re.sub(r'\$DATA\{.*?\}', '', re.sub(r'\$MC\{(.*?)\}', r'\1', expr));
+            for mcc in self._mcCorrs:
+                ret = mcc(ret,self._name,self._cname)
+            #if ret != expr: print "[[%s]] => [[%s]]\n" % (expr,ret)
+        return ret
     def _init(self):
         self._tfile = ROOT.TFile.Open(self._fname)
         if not self._tfile: raise RuntimeError, "Cannot open %s\n" % root
@@ -198,10 +217,10 @@ class TreeToYield:
             ROOT.gROOT.cd()
             if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
             histo = ROOT.TH1F("dummy","dummy",1,0.0,1.0); histo.Sumw2()
-            nev = tree.Draw("0.5>>dummy",cut,"goff")
+            nev = tree.Draw("0.5>>dummy",self.adaptExpr(cut),"goff")
             return [ histo.GetBinContent(1), histo.GetBinError(1) ]
         else: 
-            npass = tree.Draw("1",cut,"goff");
+            npass = tree.Draw("1",self.adaptExpr(cut),"goff");
             return [ npass, sqrt(npass) ]
     def _stylePlot(self,plot,spec):
         ## Sample specific-options, from self
@@ -221,7 +240,7 @@ class TreeToYield:
     def getPlot(self,plotspec,cut):
         ret = self.getPlotRaw(plotspec.name, plotspec.expr, plotspec.bins, cut)
         # fold overflow
-        if ret.ClassName == "TH1F":
+        if "TH1" in ret.ClassName():
             n = ret.GetNbinsX()
             ret.SetBinContent(1,ret.GetBinContent(0)+ret.GetBinContent(1))
             ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
@@ -240,7 +259,7 @@ class TreeToYield:
             (nb,xmin,xmax) = bins.split(",")
             histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
         histo.Sumw2()
-        self._tree.Draw("%s>>%s" % (expr,"dummy"), cut ,"goff")
+        self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), self.adaptExpr(cut) ,"goff")
         return histo.Clone(name)
     def __str__(self):
         mystr = ""
@@ -266,6 +285,7 @@ def addTreeToYieldOptions(parser):
     parser.add_option("-t", "--tree",          dest="tree", default='ttHLepTreeProducerBase', help="Pattern for tree name");
     parser.add_option("-G", "--no-fractions",  dest="fractions",action="store_false", default=True, help="Don't print the fractions");
     parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename). can use {name}, {cname} patterns in the treename") 
+    parser.add_option("--mcc", "--mc-corrections",    dest="mcCorrs",  action="append", default=[], nargs=1, help="Load the following file of mc to data corrections") 
 
 def mergeReports(reports):
     import copy
