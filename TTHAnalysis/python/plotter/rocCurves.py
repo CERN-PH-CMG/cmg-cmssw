@@ -102,7 +102,7 @@ if __name__ == "__main__":
     outfile  = ROOT.TFile(outname,"RECREATE")
     rocs = []
     ROOT.gROOT.ProcessLine(".x tdrstyle.cc")
-    c1 = ROOT.TCanvas("c1","c1")
+    c1 = ROOT.TCanvas("roc_canvas","roc_canvas")
     allrocs = ROOT.TMultiGraph("all","all")
     for i,plot in enumerate(plots.plots()):
         pmap = mca.getPlots(plot,cut,makeSummary=True)
@@ -120,7 +120,7 @@ if __name__ == "__main__":
             roc.style = "P"
         allrocs.Add(roc,roc.style)
         roc.SetName(plot.name)
-        rocs.append((plot.name,roc))
+        rocs.append((plot.getOption("Title",plot.name),roc))
         outfile.WriteTObject(roc)
     allrocs.Draw("APL");
     allrocs.GetXaxis().SetTitle("Eff Background")
@@ -128,6 +128,7 @@ if __name__ == "__main__":
     allrocs.Draw()
     doLegend(rocs)
     c1.Print(outname.replace(".root","")+".png")
+    outfile.WriteTObject(c1,"roc_canvas")
     outfile.Close()
 
 
