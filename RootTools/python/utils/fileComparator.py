@@ -80,15 +80,19 @@ class Comparator(object):
                 
     def _drawHists(self, h1, h2, h1name):
         '''Compare 2 histograms'''
+        
         h1.SetMarkerColor(1) 
         h1.SetMarkerStyle(21) 
         h1.SetLineColor(1) 
+        h1.SetMarkerSize(0.8)
         
         h2.SetFillColor(16) 
         h2.SetFillStyle(1001)
         h2.SetMarkerColor(1)                    
         h2.SetMarkerStyle(4)                   
         h2.SetLineColor(1)
+        h2.SetMarkerSize(0.8)
+        
         title1=self.title1
         title2=self.title2
         if title1 is None:
@@ -96,7 +100,7 @@ class Comparator(object):
         if title2 is None:
             title2 = self.info2.name            
         if not self.hcomp:
-            self.hcomp = HistComparator(h1name,h1,h2, title1, title2)
+            self.hcomp = HistComparator(h1name,h1, h2, title1, title2)
         else:
             self.hcomp.set(h1name, h1, h2, title1, title2)
         self.hcomp.draw()
