@@ -42,17 +42,6 @@ def isCrabFile(name):
 		return False          #return unindexed name
 
 def removeIndex(name):
-	'''split name to the head and tail
-        e.g. "/DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM"    
-        will be:
-        head: "/DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/
-        tail: "AODSIM"
-        the tail won't contain a slash so if we had:
-        "/DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/"
-        the:
-        head: "/DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/"
-        tail: ""
-        '''
 	_, fname = os.path.split(name)                
 	base, _ = os.path.splitext(fname)              #splits fname at the '.' 
 	pattern = "(^.*)(_\d+$)|(^.*)(_\d+_\d+_\w+$)"  #two possible patterns - cmsbatch and crab respectively
@@ -95,6 +84,17 @@ def getFileName(name):
 class DatasetInformation(object):
 	
 	"""Class gives access to attributes of the dataset that are stored on disk"""
+	'''split name to the head and tail
+        e.g. "/DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM"    
+        will be:
+        head: "/DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/
+        tail: "AODSIM"
+        the tail won't contain a slash so if we had:
+        "/DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/"
+        the:
+        head: "/DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/"
+        tail: ""
+        '''
 	
 	### Important definitions:
 	### CMGDB Name is in the form which contains the file owner
@@ -114,11 +114,10 @@ class DatasetInformation(object):
 	##### whereas 'cmgtools_group' is the file owner of a sample stored in group/cmgtools/CMG/
 	##### and 'cbern' is the file owner of a sample stored in user/cbern/CMG/
 	
-	def __init__(self, sampleName, fileOwner, comment, force, test, primary, username, password):
+	def __init__( self, sampleName, fileOwner, comment, test, primary, username, password ):
 		"""Initialises attributes of object, and validates existence of dataset
 		'sampleName' takes the name of the dataset e.g. /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3
 		'fileOwner' takes the files owner on EOS e.g. cmgtools
-		'force' takes True/False on whether the dataset should be considered valid if there is no logger file found
 		'test' takes True/False on whether the sample is a test or not
 		'username' takes the username of the person submitting the sample
 		'password' takes that users password"""
@@ -126,7 +125,6 @@ class DatasetInformation(object):
 		self.dataset = None                                 #initializes the members
 		self._report = None
 		self._reportBuilt = False
-		self._force = force
 		self._primary = primary
 		self._username = username
 		self._password = password
@@ -278,7 +276,7 @@ class DatasetInformation(object):
 		'sampleName' takes the name of the sample as a string
 		'fileOwner' takes the file owner on EOS as a string
 		"""
-		if len( eostools.matchingFiles( self.dataset_details['LFN'], "Logger.tgz" ) )  == 1 or self._force:
+		if len( eostools.matchingFiles( self.dataset_details['LFN'], "Logger.tgz" ) )  == 1:
 			self.createLoggerTemporaryFile()
 			return True
 		else: 
@@ -306,7 +304,7 @@ class DatasetInformation(object):
 			self.dataset_details['RootFiles'] = self.dataset.files
 			return True
 		else: 
-			raise NameError("ERROR: Dataset root files not found on EOS, dataset is invalid\n")
+			raise NameError("ERROR: Dataset root files not found on EOS, dataset is empty\n")
 	
 	def buildAllReports(self):
 		"""Builds all of the optional reports in the class"""
@@ -498,7 +496,13 @@ class DatasetInformation(object):
 				#get the revision corresponding to the dataset's tag
 				for item in self.dataset_details['Tags']:
 					if item['package'] == "CMGTools/Production":
-						revision = tag_to_revision[item['tag']]
+						try: 
+							revision = tag_to_revision[item['tag']]
+						except KeyError:
+							if item['tag'] == "HEAD":
+								revision = "17"
+							else:
+								revision = None
 						break
 				if revision is None:
 					raise IOError( "ERROR: Unexpected output from 'cvs status scripts/cmsBatch' execution - couldn't match tag with an existing revision" )
@@ -625,8 +629,8 @@ if __name__ == '__main__':
 	user = os.environ['USER']
 	pw = getpass.getpass()
 
-	#sampleName,fileOwner,comment, force, test, primary, username, password
-	d = DatasetInformation(dataset, owner, 'This is a test',True, True, False, user, pw)
+	#sampleName,fileOwner,comment, test, primary, username, password
+	d = DatasetInformation(dataset, owner, 'This is a test', True, False, user, pw)
 	d.buildMissingFileReport()
 	d.buildFileEntriesReport()
 
