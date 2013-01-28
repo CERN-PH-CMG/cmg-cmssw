@@ -107,6 +107,7 @@ int main(int argc, char* argv[])
     NRparams.push_back(std::make_pair<double,double>(0.3, 0) );
     NRparams.push_back(std::make_pair<double,double>(0.6, 0) );
   }
+  std::vector<TGraph *> NRweightsGr;
   std::vector<double> NRweights(NRparams.size());
   std::vector<TString>NRsuffix; for(unsigned int nri=0;nri<NRparams.size();nri++){if(NRparams[nri].first<0 && NRparams[nri].second<0){NRsuffix.push_back(TString(""));}else{char tmp[255];sprintf(tmp,"_cp%3.2f_brn%3.2f",NRparams[nri].first, NRparams[nri].second); NRsuffix.push_back(TString(tmp));} }
 
@@ -138,7 +139,7 @@ int main(int argc, char* argv[])
   double HiggsMass=0; string VBFString = ""; string GGString("");
   bool isMC_GG  = isMC && ( string(url.Data()).find("GG" )  != string::npos);
   bool isMC_VBF = isMC && ( string(url.Data()).find("VBF")  != string::npos);
-  TFile *fin;
+  TFile *fin=0;
   int cmEnergy(8);
   if(url.Contains("7TeV")) cmEnergy=7;
   std::vector<TGraph *> hWeightsGrVec;
@@ -171,7 +172,9 @@ int main(int argc, char* argv[])
     VBFString = string(url.Data()).substr(VBFStringpos);
   }
   
-  //LINE SHAPE WEIGHTS
+  //#######################################
+  //####      LINE SHAPE WEIGHTS       ####
+  //#######################################
   TString lineShapeWeightsFileURL = runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile")[1]; gSystem->ExpandPathName(lineShapeWeightsFileURL);
   TString interferenceShapeWeightsFileUrl("");
   if(runProcess.getParameter<std::vector<std::string> >("hqtWeightsFile").size()>2)
@@ -180,13 +183,6 @@ int main(int argc, char* argv[])
       gSystem->ExpandPathName(interferenceShapeWeightsFileUrl);
     }
   fin=0;
-  std::vector<TString> wgts;  
-  char buf[100];
-  sprintf(buf,"H%d/",int(HiggsMass));
-  wgts.push_back(buf+TString("cps"));
-  wgts.push_back(buf+TString("nominal"));
-  wgts.push_back(buf+TString("up"));
-  wgts.push_back(buf+TString("down"));
   if(isMC_VBF) lineShapeWeightsFileURL.ReplaceAll("LineShapes","VBF_LineShapes");      
   else         lineShapeWeightsFileURL.ReplaceAll("LineShapes","GG_LineShapes");      
   fin=TFile::Open(lineShapeWeightsFileURL);     
@@ -196,23 +192,94 @@ int main(int argc, char* argv[])
       interferenceShapeWeightsFileUrl.ReplaceAll("ShapeInterferences","GG_ShapeInterferences");
       fin_int=TFile::Open(interferenceShapeWeightsFileUrl);
     }
-  TGraph *hLineShapeNominal=0,*hLineShapeInterference=0;
-  std::vector<TGraph *> hLineShapeGrVec;  
+
+  TH1 *hGen=0;
+  TGraph *hLineShapeNominal=0;
+  std::map<std::pair<double,double>, std::vector<TGraph *> > hLineShapeGrVec;  
   if(fin && (isMC_GG || isMC_VBF))
     {
       cout << "Line shape weights (and uncertainties) will be applied from " << fin->GetName() << endl;
       if(fin_int)
 	cout << "Inteference terms (and uncertaintnies) will be replaced from " << fin_int->GetName() << endl;
-      hLineShapeNominal      = new TGraph((TH1 *)fin->Get(buf+TString("cps_shape")));
-      hLineShapeInterference = new TGraph((TH1 *)fin->Get(buf+TString("nominal_shape")));
-      for(size_t i=0; i<wgts.size(); i++)
+
+      char dirBuf[100];
+      sprintf(dirBuf,"H%d/",int(HiggsMass));
+      
+      hLineShapeNominal      = new TGraph((TH1 *)fin->Get(dirBuf+TString("cps_shape")));
+      hGen                   = (TH1 *) fin->Get(dirBuf+TString("gen")); hGen->SetDirectory(0); hGen->Scale(1./hGen->Integral());
+      
+      //loop over possible scenarios
+      for(size_t nri=0; nri<NRparams.size(); nri++)
 	{
-	  TGraph *gr= (TGraph *) fin->Get(wgts[i]);
-	  if(i>0 && fin_int!=0) gr=(TGraph *) fin_int->Get(wgts[i]);
-	  hLineShapeGrVec.push_back((TGraph *)gr->Clone());
+	  TGraph *cpsGr          = (TGraph *) fin->Get(dirBuf+TString("cps"));
+	  TGraph *cpspintGr      = (TGraph *) (fin_int!=0? fin_int: fin)->Get(dirBuf+TString("nominal"));
+	  TGraph *cpspint_upGr   = (TGraph *) (fin_int!=0? fin_int: fin)->Get(dirBuf+TString("up"));
+	  TGraph *cpspint_downGr = (TGraph *) (fin_int!=0? fin_int: fin)->Get(dirBuf+TString("down"));
+	  
+	  //recompute weights depending on the scenario (SM or BSM)
+	  TGraph *shapeWgtsGr      = new TGraph; shapeWgtsGr->SetName("shapeWgts_"+ NRsuffix[nri]);          float shapeNorm(0);
+	  TGraph *shapeWgts_upGr   = new TGraph; shapeWgts_upGr->SetName("shapeWgtsUp_"+ NRsuffix[nri]);     float shapeUpNorm(0);
+	  TGraph *shapeWgts_downGr = new TGraph; shapeWgts_downGr->SetName("shapeWgtsDown_"+ NRsuffix[nri]); float shapeDownNorm(0);
+	  for(int ip=1; ip<=hGen->GetXaxis()->GetNbins(); ip++)
+	    {
+	      Double_t hmass    = hGen->GetBinCenter(ip);
+	      Double_t hy       = hGen->GetBinContent(ip);
+
+	      Double_t shapeWgt(1.0),shapeWgtUp(1.0),shapeWgtDown(1.0);
+	      if(NRparams[nri].first<0)
+		{
+		  shapeWgt     = cpsGr->Eval(hmass) * cpspintGr->Eval(hmass);
+		  shapeWgtUp   = cpsGr->Eval(hmass) * cpspint_upGr->Eval(hmass);
+		  shapeWgtDown = cpsGr->Eval(hmass) * cpspint_downGr->Eval(hmass);
+		}
+	      else
+		{
+		  Double_t nrWgt = weightNarrowResonnance(VBFString,HiggsMass, hmass, NRparams[nri].first, NRparams[nri].second, hLineShapeNominal,decayProbPdf);
+		  shapeWgt       = cpsGr->Eval(hmass) * nrWgt;
+		  shapeWgtUp     = shapeWgt;
+		  shapeWgtDown   = shapeWgt;
+		}
+		            
+	      shapeWgtsGr->SetPoint(shapeWgtsGr->GetN(),           hmass, shapeWgt);       shapeNorm     += shapeWgt*hy;
+	      shapeWgts_upGr->SetPoint(shapeWgts_upGr->GetN(),     hmass, shapeWgtUp);     shapeUpNorm   += shapeWgtUp*hy;
+	      shapeWgts_downGr->SetPoint(shapeWgts_downGr->GetN(), hmass, shapeWgtDown);   shapeDownNorm += shapeWgtDown*hy;
+	    }
+
+	  //fix possible normalization issues
+	  cout << "C'=" << NRparams[nri].first << " BRnew=" << NRparams[nri].second << " shape wgts will be re-normalized with: "
+	       << " nominal=" << shapeNorm
+	       << " up     =" << shapeUpNorm
+	       << " down   =" << shapeDownNorm 
+	       << endl;
+	  for(Int_t ip=0; ip<shapeWgtsGr->GetN(); ip++)
+	    {
+	      Double_t x,y;
+	      shapeWgtsGr->GetPoint(ip,x,y);
+	      shapeWgtsGr->SetPoint(ip,x,y/shapeNorm);
+
+	      shapeWgts_upGr->GetPoint(ip,x,y);
+	      shapeWgts_upGr->SetPoint(ip,x,y/shapeUpNorm);
+
+	      shapeWgts_downGr->GetPoint(ip,x,y);
+	      shapeWgts_downGr->SetPoint(ip,x,y/shapeDownNorm);
+
+	    }
+
+	  //all done here...
+	  std::vector<TGraph *> inrWgts;
+	  inrWgts.push_back( shapeWgtsGr      );
+	  inrWgts.push_back( shapeWgts_upGr   );
+	  inrWgts.push_back( shapeWgts_downGr );
+	  hLineShapeGrVec[ NRparams[nri] ] = inrWgts;
 	}
+
+      //close files
       fin->Close();
       delete fin;
+      if(fin_int){
+	fin_int->Close();
+	delete fin_int;
+      }
     }
 
 
@@ -262,7 +329,6 @@ int main(int argc, char* argv[])
   //higgs mass control
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_raw",     ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_hqt",     ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
-  ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_cps",     ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_cpspint", ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
   for(unsigned int nri=0;nri<NRparams.size();nri++){ 
     ((TH1F*)mon.addHistogram( new TH1F( "higgsMass_4nr"+NRsuffix[nri] , ";Gen Higgs Mass;Events", 500,0,1500) ))->Fill(-1.0,0.0001);//add an underflow entry to make sure the histo is kept
@@ -619,7 +685,7 @@ int main(int argc, char* argv[])
       float weight = 1.0;
       double TotalWeight_plus = 1.0;
       double TotalWeight_minus = 1.0;
-      float lShapeWeights[4]={1.0,1.0,1.0,1.0};
+      float lShapeWeights[3]={1.0,1.0,1.0};
       for(unsigned int nri=0;nri<NRparams.size();nri++){NRweights[nri] = 1.0;}
       if(isMC){
 
@@ -633,32 +699,31 @@ int main(int argc, char* argv[])
 	  ev.hptWeights[iwgt] = hWeightsGrVec[iwgt]->Eval(phys.genhiggs[0].pt());
 	float qtWeight = ev.hptWeights[0];
 
-	
 	//Line shape weights 
-  	for(size_t iwgt=0; iwgt<hLineShapeGrVec.size(); iwgt++)
-	  if(hLineShapeGrVec[iwgt])
-	    lShapeWeights[iwgt]=hLineShapeGrVec[iwgt]->Eval(phys.genhiggs[0].mass());
-	float cpsWeight   = lShapeWeights[0];
-	float shapeWeight = cpsWeight*lShapeWeights[1];    // (CPS/GEN) x [(CPS+INT)/CPS]
-
+	std::vector<TGraph *> nominalShapeWgtGr=hLineShapeGrVec.begin()->second;
+  	for(size_t iwgt=0; iwgt<nominalShapeWgtGr.size(); iwgt++)
+	  {
+	    if(nominalShapeWgtGr[iwgt]==0) continue;
+	    lShapeWeights[iwgt]=nominalShapeWgtGr[iwgt]->Eval(phys.genhiggs[0].mass());
+	  }
+	float shapeWeight   = lShapeWeights[0];
+	
 	//final weight
 	weight = puWeight * qtWeight * shapeWeight;
 
         if(isMC_VBF || isMC_GG){           
 	  
-	  mon.fillHisto("higgsMass_raw",     tags_inc, phys.genhiggs[0].mass(), 1);
-	  mon.fillHisto("higgsMass_hqt",     tags_inc, phys.genhiggs[0].mass(), qtWeight);
-	  mon.fillHisto("higgsMass_cps",     tags_inc, phys.genhiggs[0].mass(), qtWeight * cpsWeight);
-	  mon.fillHisto("higgsMass_cpspint", tags_inc, phys.genhiggs[0].mass(), qtWeight * shapeWeight);
+	  mon.fillHisto("higgsMass_raw",     tags_inc, phys.genhiggs[0].mass(), puWeight);
+	  mon.fillHisto("higgsMass_hqt",     tags_inc, phys.genhiggs[0].mass(), puWeight * qtWeight);
+	  mon.fillHisto("higgsMass_cpspint", tags_inc, phys.genhiggs[0].mass(), puWeight * qtWeight * shapeWeight);
 
 	  //compute weight correction for narrow resonnance
           for(unsigned int nri=0;nri<NRparams.size();nri++){ 
-	    NRweights[nri] = weightNarrowResonnance(VBFString,HiggsMass, phys.genhiggs[0].mass(), NRparams[nri].first, NRparams[nri].second, hLineShapeNominal,decayProbPdf) / lShapeWeights[1];
-
-	    //we remove the interference term on purpose as nothing is know about this
-	    if(nri==0) { weight*=NRweights[0]; } 
-	    else       { NRweights[nri]/=NRweights[0]; }
-	    mon.fillHisto(TString("higgsMass_4nr")+NRsuffix[nri]  ,tags_inc, phys.genhiggs[0].mass(), weight*NRweights[nri]);
+	    if(NRparams[nri].first<0) continue;
+	    std::vector<TGraph *> shapeWgtGr = hLineShapeGrVec[NRparams[nri] ];
+	    NRweights[nri] = shapeWgtGr[0]->Eval(phys.genhiggs[0].mass()); 
+	    float iweight = puWeight * qtWeight * NRweights[nri];
+	    mon.fillHisto(TString("higgsMass_4nr")+NRsuffix[nri]  ,tags_inc, phys.genhiggs[0].mass(), iweight );
 	  }  
 	}
       }
@@ -1269,13 +1334,17 @@ int main(int argc, char* argv[])
         if(ivar==10)                        iweight *=TotalWeight_minus;       //pu down
         if(ivar<=14 && ivar>=11 && isMC_GG)                                  //ren/fact scales
 	  {
-	    float hptReweight = ev.hptWeights[ivar-10]/ev.hptWeights[0];
+	    float hptReweight = ev.hptWeights[ivar-10];
+	    if(ev.hptWeights[0]==0) hptReweight=0;
+	    else                    hptReweight/=ev.hptWeights[0];
 	    iweight *= hptReweight;
 	  }
 	if((ivar==17 || ivar==18) && isMC_GG)                                //shape unc
 	  {
-	    float shapeReWeight = lShapeWeights[ivar-15]/lShapeWeights[1];
-	    iweight *= shapeReWeight;
+	    float shapeReWeight = lShapeWeights[ivar-16];
+	    if(lShapeWeights[0]==0) shapeReWeight=0;
+	    else                    shapeReWeight /= lShapeWeights[0];
+	    iweight                 *= shapeReWeight;
 	  }
 
 	//recompute MET/MT if JES/JER was varied
@@ -1313,79 +1382,87 @@ int main(int argc, char* argv[])
 	  tags_full.push_back(string("ll")+tag_subcat);  
 	  if(tag_subcat=="eq1jets" || tag_subcat=="geq2jets")tags_full.push_back(string("ll")+string("geq1jets"));   
 	}
-//        //remove sub VBF category to make it faster
-//        if(tag_subcat=="vbf"){
-//	  TString tag_subcatVBF = tag_subcat;
-//	  if(fabs(tightVarJets[0].eta())<2.1 && fabs(tightVarJets[1].eta())<2.1)      { tag_subcatVBF+="2"; }
-//	  else if(fabs(tightVarJets[0].eta())<2.1 || fabs(tightVarJets[1].eta())<2.1) { tag_subcatVBF+="1"; }
-//	  else                                                                        { tag_subcatVBF+="0"; }
-//	  tags_full.push_back(tag_cat+tag_subcatVBF);
-//	  if(tag_cat=="mumu" || tag_cat=="ee")                                        { tags_full.push_back(string("ll")+tag_subcatVBF); }
-//        }
+	//        //remove sub VBF category to make it faster
+	//        if(tag_subcat=="vbf"){
+	//	  TString tag_subcatVBF = tag_subcat;
+	//	  if(fabs(tightVarJets[0].eta())<2.1 && fabs(tightVarJets[1].eta())<2.1)      { tag_subcatVBF+="2"; }
+	//	  else if(fabs(tightVarJets[0].eta())<2.1 || fabs(tightVarJets[1].eta())<2.1) { tag_subcatVBF+="1"; }
+	//	  else                                                                        { tag_subcatVBF+="0"; }
+	//	  tags_full.push_back(tag_cat+tag_subcatVBF);
+	//	  if(tag_cat=="mumu" || tag_cat=="ee")                                        { tags_full.push_back(string("ll")+tag_subcatVBF); }
+	//        }
 	if(passPreselection && zvv.pt()>30) mon.fillHisto("mtvar"+varNames[ivar],tags_full,mt,iweight);
 	
 	/*
-	  //DEBUG
-	  if(ivar==0 && outTxtFile && tag_subcat=="vbf" && zvv.pt()>70 && passPreselection){
-	  fprintf(outTxtFile,"X----------------------------\nCat: %s - %s\n",tag_cat.Data(),tag_subcat.Data());
-	  fprintf(outTxtFile,"inputFile = %s\n",url.Data());
-	  fprintf(outTxtFile,"run/lumi/event = %i/%i/%i\n",ev.run, ev.lumi, ev.event);
-	  fprintf(outTxtFile,"mt = %f met = %f -redMet = %f\n",mt, zvv.pt(), redMet.pt());
-	  }
-	  
-	  if(ivar==0 && outTxtFile && tag_subcat=="geq2jets" && zvv.pt()>100 && mt<250 && passPreselection){
-	  fprintf(outTxtFile,"DEBUG----------------------------\nCat: %s - %s\n",tag_cat.Data(),tag_subcat.Data());
-	  fprintf(outTxtFile,"subcat = %s inputFile = %s\n",tag_subcat.Data(), url.Data());
-	  fprintf(outTxtFile,"run/lumi/event = %i/%i/%i\n",ev.run, ev.lumi, ev.event);
-	  fprintf(outTxtFile,"mt = %f met = %f -redMet = %f\n",mt, zvv.pt(), redMet.pt());
-	  fprintf(outTxtFile,"nvtx = %i rho=%f rho25 = %f\n",ev.nvtx,ev.rho, ev.rho25Neut);
-	  fprintf(outTxtFile,"zll  pt=%f mass=%f eta=%f phi=%f\n",zll.pt(), zll.mass(), zll.eta(), zll.phi());
-	  for(unsigned int j=0;j<phys.ajets.size();j++){
-	  fprintf(outTxtFile,"jet %i  pt=%f eta=%f phi=%f\n",j, phys.ajets[j].pt(), phys.ajets[j].eta(), phys.ajets[j].phi());
-	  }
-	  }
+	//DEBUG
+	if(ivar==0 && outTxtFile && tag_subcat=="vbf" && zvv.pt()>70 && passPreselection){
+	fprintf(outTxtFile,"X----------------------------\nCat: %s - %s\n",tag_cat.Data(),tag_subcat.Data());
+	fprintf(outTxtFile,"inputFile = %s\n",url.Data());
+	fprintf(outTxtFile,"run/lumi/event = %i/%i/%i\n",ev.run, ev.lumi, ev.event);
+	fprintf(outTxtFile,"mt = %f met = %f -redMet = %f\n",mt, zvv.pt(), redMet.pt());
+	}
+	
+	if(ivar==0 && outTxtFile && tag_subcat=="geq2jets" && zvv.pt()>100 && mt<250 && passPreselection){
+	fprintf(outTxtFile,"DEBUG----------------------------\nCat: %s - %s\n",tag_cat.Data(),tag_subcat.Data());
+	fprintf(outTxtFile,"subcat = %s inputFile = %s\n",tag_subcat.Data(), url.Data());
+	fprintf(outTxtFile,"run/lumi/event = %i/%i/%i\n",ev.run, ev.lumi, ev.event);
+	fprintf(outTxtFile,"mt = %f met = %f -redMet = %f\n",mt, zvv.pt(), redMet.pt());
+	fprintf(outTxtFile,"nvtx = %i rho=%f rho25 = %f\n",ev.nvtx,ev.rho, ev.rho25Neut);
+	fprintf(outTxtFile,"zll  pt=%f mass=%f eta=%f phi=%f\n",zll.pt(), zll.mass(), zll.eta(), zll.phi());
+	for(unsigned int j=0;j<phys.ajets.size();j++){
+	fprintf(outTxtFile,"jet %i  pt=%f eta=%f phi=%f\n",j, phys.ajets[j].pt(), phys.ajets[j].eta(), phys.ajets[j].phi());
+	}
+	}
 	*/
 	
-           //fill shapes
-           for(unsigned int index=0;index<optim_Cuts1_met.size();index++){             
-             if(redMet.pt()>optim_Cuts1_met[index]){
-               if(passPreselection                                                         )   mon.fillHisto(TString("mt_redMet_shapes")+varNames[ivar],tags_full,index, mt,iweight);
-               if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,0,iweight);
-               if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,1,iweight);
-               if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,2,iweight);
-               if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,3,iweight);
-               if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,4,iweight);
-               if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,5,iweight);
-             }
-             
-	     //NARROW RESONANCE ANALYSIS
-             if(zvv.pt()>optim_Cuts1_met[index]){
-               for(unsigned int nri=0;nri<NRparams.size();nri++){
+	//fill shapes
+	for(unsigned int index=0;index<optim_Cuts1_met.size();index++){             
+	  //              if(redMet.pt()>optim_Cuts1_met[index]){
+	  //                if(passPreselection                                                         )   mon.fillHisto(TString("mt_redMet_shapes")+varNames[ivar],tags_full,index, mt,iweight);
+	  //                if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,0,iweight);
+	  //                if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,1,iweight);
+	  //                if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,2,iweight);
+	  //                if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,3,iweight);
+	  //                if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,4,iweight);
+	  //                if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_redMet_shapes_NRBctrl"+varNames[ivar],tags_full,index,5,iweight);
+	  //              }
+	  
+	  //NARROW RESONANCE ANALYSIS
+	  if(zvv.pt()>optim_Cuts1_met[index]){
+	    for(unsigned int nri=0;nri<NRparams.size();nri++){
 
-		 //remove the inteference effect for NR...
-		 if(passPreselection                                                         )   mon.fillHisto(TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],tags_full,index, mt,iweight*NRweights[nri]);
-		 if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,0,iweight*NRweights[nri]);
-		 if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,1,iweight*NRweights[nri]);
-		 if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,2,iweight*NRweights[nri]);
-		 if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,3,iweight*NRweights[nri]);
-		 if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,4,iweight*NRweights[nri]);
-		 if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,iweight*NRweights[nri]);
-               }
-             }         
-           }
-           
-           for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
-             if(varJets.size()>=2 && zvv.pt()>optim_Cuts2_met[index] && varJets[0].pt()>optim_Cuts2_vbfJpt[index] && varJets[1].pt()>optim_Cuts2_vbfJpt[index] &&  fabs(varJets[0].eta()-varJets[1].eta())>optim_Cuts2_vbfdeta[index]  ){
-               if(passPreselection                                                         )   mon.fillHisto("VBFmt_shapes"        +varNames[ivar],tags_full,index, (varJets[0] + varJets[1]).M(),iweight);
-               if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,0,iweight);
-               if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,1,iweight);
-               if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,2,iweight);
-               if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,3,iweight);
-               if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,4,iweight);
-               if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,5,iweight);
-             }
-           }         
+	      float nrweight=iweight*NRweights[nri];
+	      if(nri>0)
+		{
+		  nrweight=iweight*NRweights[nri];
+		  if(lShapeWeights[0]==0) nrweight=0;
+		  else                    nrweight/=lShapeWeights[0];
+		}
+
+	      if(passPreselection                                                         )   mon.fillHisto(TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],tags_full,index, mt,nrweight);
+	      if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,0,nrweight);
+	      if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,1,nrweight);
+	      if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,2,nrweight);
+	      if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,3,nrweight);
+	      if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,4,nrweight);
+	      if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,nrweight);
+	    }
+	  }         
+	}
+	
+	for(unsigned int index=0;index<optim_Cuts2_met.size();index++){
+	  if(varJets.size()>=2 && zvv.pt()>optim_Cuts2_met[index] && varJets[0].pt()>optim_Cuts2_vbfJpt[index] && varJets[1].pt()>optim_Cuts2_vbfJpt[index] &&  fabs(varJets[0].eta()-varJets[1].eta())>optim_Cuts2_vbfdeta[index]  ){
+	    if(passPreselection                                                         )   mon.fillHisto("VBFmt_shapes"        +varNames[ivar],tags_full,index, (varJets[0] + varJets[1]).M(),iweight);
+	    if(passPreselectionMbvetoMzmass && passZmass         && passLocalBveto      )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,0,iweight);
+	    if(passPreselectionMbvetoMzmass && isZsideBand       && passLocalBveto      )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,1,iweight);
+	    if(passPreselectionMbvetoMzmass && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,2,iweight);
+	    if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,3,iweight);
+	    if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,4,iweight);
+	    if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("VBFmt_shapes_NRBctrl"+varNames[ivar],tags_full,index,5,iweight);
+	  }
+	}         
       }
+      //cout << endl;
   }
   
   printf("\n"); 
