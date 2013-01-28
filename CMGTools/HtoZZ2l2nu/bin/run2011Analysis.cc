@@ -700,11 +700,14 @@ int main(int argc, char* argv[])
 	float qtWeight = ev.hptWeights[0];
 
 	//Line shape weights 
-	std::vector<TGraph *> nominalShapeWgtGr=hLineShapeGrVec.begin()->second;
-  	for(size_t iwgt=0; iwgt<nominalShapeWgtGr.size(); iwgt++)
+	if(isMC_VBF || isMC_GG)
 	  {
-	    if(nominalShapeWgtGr[iwgt]==0) continue;
-	    lShapeWeights[iwgt]=nominalShapeWgtGr[iwgt]->Eval(phys.genhiggs[0].mass());
+	    std::vector<TGraph *> nominalShapeWgtGr=hLineShapeGrVec.begin()->second;
+	    for(size_t iwgt=0; iwgt<nominalShapeWgtGr.size(); iwgt++)
+	      {
+		if(nominalShapeWgtGr[iwgt]==0) continue;
+		lShapeWeights[iwgt]=nominalShapeWgtGr[iwgt]->Eval(phys.genhiggs[0].mass());
+	      }
 	  }
 	float shapeWeight   = lShapeWeights[0];
 	
