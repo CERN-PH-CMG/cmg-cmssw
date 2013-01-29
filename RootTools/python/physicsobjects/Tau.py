@@ -23,6 +23,10 @@ class Tau( Lepton ):
         '''Just making the tau behave as a lepton.'''
         return -1
 
+    def mvaId(self):
+        '''For a transparent treatment of electrons, muons and taus. Returns -99'''
+        return -99
+
     def dxy(self, vertex=None):
         if vertex is None:
             vertex = self.associatedVertex
