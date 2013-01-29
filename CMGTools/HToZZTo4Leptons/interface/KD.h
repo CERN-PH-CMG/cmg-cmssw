@@ -43,13 +43,6 @@ class KD
     id.push_back(Z2_lept1Id);
     id.push_back(Z2_lept2Id);
 
-<<<<<<< KD.h
-=======
-
-
-
-
->>>>>>> 1.8
     mem_->computeMEs(ps,id);
   }
 
@@ -61,19 +54,46 @@ class KD
     return KD;
   }
 
-  float getPseudoKD() {
+  float getGG0KD() {
     using namespace MEMNames;
     double KD,ME_ggHiggs,ME_gg0Minus;
     mem_->computeKD(kSMHiggs, kJHUGen, k0minus, kJHUGen, &MEMs::probRatio, KD, ME_ggHiggs, ME_gg0Minus);
     return KD;
   }
 
-  float getGraviKD() {
+  float getGG0HKD() {
     using namespace MEMNames;
-    double KD,ME_ggHiggs,ME_gg0Minus;
-    mem_->computeKD(kSMHiggs, kJHUGen, k2mplus_gg, kJHUGen, &MEMs::probRatio, KD, ME_ggHiggs, ME_gg0Minus);
+    double KD,ME_ggHiggs,ME_gg0hPlus;
+    mem_->computeKD(kSMHiggs, kJHUGen, k0hplus, kJHUGen, &MEMs::probRatio, KD, ME_ggHiggs, ME_gg0hPlus);
     return KD;
   }
+  float getQQ1MinusKD() {
+    using namespace MEMNames;
+    double KD,ME_ggHiggs,ME_qq1Minus;
+    mem_->computeKD(kSMHiggs, kJHUGen, k1minus, kJHUGen, &MEMs::probRatio, KD, ME_ggHiggs, ME_qq1Minus);
+    return KD;
+  }
+
+  float getQQ1PlusKD() {
+    using namespace MEMNames;
+    double KD,ME_ggHiggs,ME_qq2Plus;
+    mem_->computeKD(kSMHiggs, kJHUGen, k1plus, kJHUGen, &MEMs::probRatio, KD, ME_ggHiggs, ME_qq2Plus);
+    return KD;
+  }
+  float getGG2PlusKD() {
+    using namespace MEMNames;
+    double KD,ME_ggHiggs,ME_gg2Plus;
+    mem_->computeKD(kSMHiggs, kJHUGen, k2mplus_gg, kJHUGen, &MEMs::probRatio, KD, ME_ggHiggs, ME_gg2Plus);
+    return KD;
+  }
+  float getQQ2PlusKD() {
+    using namespace MEMNames;
+    double KD,ME_ggHiggs,ME_qq2Plus;
+    mem_->computeKD(kSMHiggs, kJHUGen, k2mplus_qqbar, kJHUGen, &MEMs::probRatio, KD, ME_ggHiggs, ME_qq2Plus);
+    return KD;
+  }
+
+
 
 
   float getInterferenceWeight() {

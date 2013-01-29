@@ -39,7 +39,8 @@ class HiggsEfficiency(object):
 
 
         self.graph    = ROOT.TGraphErrors()
-        for i,mass in enumerate(masses):
+        i=0
+        for mass in masses:
             fname={'ggH':'ggH','qqH':'qqH','WH':'VH','ZH':'VH','ttH':'VH'}
             plotter = TreePlotter("All_"+period+"/"+fname[prod]+str(mass)+".root","FourLeptonTreeProducer/tree",'1')
             plotter.setupFromFile("All_"+period+"/"+fname[prod]+str(mass)+".pck",finalstate,prod)
@@ -69,13 +70,15 @@ class HiggsEfficiency(object):
 
             h = plotter.drawTH1('H_Mass',finalStateCut,'1',100,0,100000)
             self.data['eff'][self.prod][self.suffix][mass]=h.Integral()
-            self.x.append(mass)
-            self.y.append(h.Integral())
-            self.graph.SetPoint(i,mass,h.Integral())
-            if h.GetEffectiveEntries()>0:
-                self.graph.SetPointError(i,0,h.Integral()/math.sqrt(h.GetEffectiveEntries()))
-            else:    
-                self.graph.SetPointError(i,0,0)
+            if h.Integral()>0 and mass>100 :
+                self.x.append(mass)
+                self.y.append(h.Integral())
+                self.graph.SetPoint(i,mass,h.Integral())
+                if h.GetEffectiveEntries()>0:
+                    self.graph.SetPointError(i,0,h.Integral()/math.sqrt(h.GetEffectiveEntries()))
+                else:    
+                    self.graph.SetPointError(i,0,0)
+                i=i+1
 
     def fit(self,mini=0.,maxi=1000):
         self.graph.SetMarkerStyle(20);
