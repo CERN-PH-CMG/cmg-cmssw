@@ -10,9 +10,9 @@ def hname():
 
 legend = None
 
-def draw(var1=None, cut=None, t1=None, t2=None, w1='1', w2='1',
+def draw(var1=None, cut=1, t1=None, t2=None, w1='1', w2='1',
          name1=None, name2=None,
-         normalize=False, nbins=20, xmin=0, xmax=200, var2=None):
+         normalize=None, nbins=20, xmin=0, xmax=200, var2=None):
     if var2 is None:
         var2 = var1
     print 'tree1',
@@ -29,12 +29,13 @@ def draw(var1=None, cut=None, t1=None, t2=None, w1='1', w2='1',
     h2 = h1.Clone(hname())
     h2.Sumw2()
     t2.Project(h2.GetName(), var2,'({cut})*({w2})'.format(cut=cut,w2=w2),'')
-    if normalize:
+    if normalize == None:
+        pass
+    elif normalize == -1:
         h1.Scale(1./h1.Integral())
         h2.Scale(1./h2.Integral())
-    else:
-        pass
-        # h2.Scale(h1.Integral()/h2.Integral())
+    elif normalize>0:
+        h2.Scale( normalize )
     sBlue.markerStyle = 25
     sBlue.formatHisto(h2)
     sBlack.formatHisto(h1)
@@ -59,12 +60,40 @@ def draw(var1=None, cut=None, t1=None, t2=None, w1='1', w2='1',
     comparator.draw()
     return comparator
 
+
+def simpleDraw(var, cut='1'):
+    if len(trees)!=2:
+        print 'this function cannot be used if you have a number of trees different than 2 in the "trees" dictionary.'
+        return
+
+    t1 = None
+    t2 = None
+    name1 = None
+    name2 = None
+    for index, (alias, tree) in enumerate(sorted(trees.iteritems())):
+        if index==0:
+            t1 = tree
+            name1 = alias
+        else:
+            t2 = tree
+            name2 = alias
+
+    return draw(var1=var, cut=cut, t1=t1, t2=t2, name1=name1, name2=name2)
+    
+
+trees = None
+
 def getTrees( treeName, patterns ):
     trees = dict()
     for alias, pattern in patterns:
         print 'loading', alias, treeName, pattern
         tree = Chain(treeName, pattern)
-        trees[alias] = tree
+        tmpalias = alias
+        num=0
+        while tmpalias in trees:
+            num += 1
+            tmpalias = '{alias}_{num}'.format(alias=alias, num=num)
+        trees[tmpalias] = tree
         # tree.SetWeight(1./tree.GetEntries(), 'global')
     return trees
 
@@ -93,6 +122,10 @@ def main():
                       dest="outdir", 
                       help="output director for plots",
                       default='Comparator_OutDir')
+    parser.add_option("-t", "--tree", 
+                      dest="tree", 
+                      help="name of tree in files",
+                      default=None)
 
     (options,args) = parser.parse_args()
 
@@ -103,7 +136,7 @@ def main():
     a1,p1 = args[0].split(':')
     a2,p2 = args[1].split(':')
     patterns = [ (a1, p1), (a2, p2) ]
-    trees = getTrees(None, patterns)
+    trees = getTrees( options.tree, patterns)
     pprint.pprint(trees)
 
     comp = None
