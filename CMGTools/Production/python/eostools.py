@@ -2,7 +2,6 @@
 """
 A module to manipulate files on EOS or on the local file system. Intended to have the same interface as castortools.py.
 """
-
 import sys
 import os
 import re
@@ -16,7 +15,6 @@ def setCAFPath():
         sys.path.append(caf)
 setCAFPath()
 import cmsIO
-
 
 def runXRDCommand(path, cmd, *args):
     """Run an xrd command.
@@ -51,17 +49,14 @@ def runEOSCommand(path, cmd, *args):
     runner = cmsIO.cmsFileManip()
     return runner.runCommand(command)
 
-
 def isLFN( path ):
     """Tests whether this path is a CMS LFN (name starts with /store...)"""
     # return re.match('^/store.*', path ) is not None
     return path.startswith('/store')
 
-
 def isEOS( path ):
     """Tests whether this path is a CMS EOS (name starts with /eos...)"""
     return path.startswith('/eos')
-
 
 def eosToLFN( path ):
     """Converts a EOS PFN to an LFN.
@@ -73,7 +68,6 @@ def eosToLFN( path ):
 
 #also define an alias for backwards compatibility
 castorToLFN = eosToLFN
-
 
 def lfnToPFN( path, tfcProt = 'rfio'):
     """Converts an LFN to a PFN. For example:
@@ -241,7 +235,6 @@ def createEOSDir( path ):
 #also define an alias for backwards compatibility
 createCastorDir = createEOSDir
 
-
 def mkdir(path):
     """Create a directory, either on EOS or locally"""
     # print 'mkdir', path
@@ -251,7 +244,6 @@ def mkdir(path):
         # recursive directory creation (like mkdir -p)
         os.makedirs(path)
     return path
-
 
 def isDirectory(path):
     """Returns True if path is a directory on EOS.
@@ -265,7 +257,6 @@ def isDirectory(path):
 
     out, _, _ = runXRDCommand(path,'existdir')
     return 'The directory exists' in out
-
 
 def isFile(path):
     """Returns True if a path is a file.
@@ -342,7 +333,6 @@ def which(cmd):
         return lines[1]
     else:
         return lines
-
 
 def ls(path, rec = False):
     """Provides a simple list of the specified directory, works on EOS and locally"""
@@ -521,6 +511,15 @@ def matchingFiles( path, regexp):
     files = ls_EOS(path)
     # print files
     return [f for f in files if pattern.match(os.path.basename(f)) is not None]
+
+def datasetNotEmpty( path, regexp ):
+    pattern = re.compile( regexp )
+    files = ls_EOS(path)
+    
+    for f in files:
+        if pattern.match( os.path.basename(f) ) is not None:
+            return 1
+    return 0
     
 def cmsStage( absDestDir, files, force):
     """Runs cmsStage with LFNs if possible"""
@@ -538,5 +537,3 @@ def cmsStage( absDestDir, files, force):
         print ' '.join(command)
         runner = cmsIO.cmsFileManip()
         runner.runCommand(command)
-
-
