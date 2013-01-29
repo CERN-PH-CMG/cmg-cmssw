@@ -9,7 +9,11 @@ import sys
 from CMGTools.Production.castorBaseDir import castorBaseDir
 import CMGTools.Production.eostools as castortools
 
-
+class IntegrityCheckError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
 
 class BaseDataset( object ):
     
@@ -20,7 +24,6 @@ class BaseDataset( object ):
         self.run_range = run_range
         self.primaryDatasetEntries = -1
         self.report = None
-
         self.buildListOfFiles( self.pattern )
         self.extractFileSizes()
         self.buildListOfBadFiles()
@@ -200,7 +203,6 @@ class CMSDataset( BaseDataset ):
             return sum(entries)
         return -1
 
-
     def getPrimaryDatasetEntries(self):
         runmin = -1
         runmax = -1
@@ -208,7 +210,6 @@ class CMSDataset( BaseDataset ):
             runmin = self.run_range[0]
             runmax = self.run_range[1]
         return self.findPrimaryDatasetEntries(self.name, runmin, runmax)
-
 
 class LocalDataset( BaseDataset ):
 
@@ -235,8 +236,6 @@ class LocalDataset( BaseDataset ):
 ##             # print 'line',line
 ##             self.files.append(line)
 
-        
-
 class Dataset( BaseDataset ):
     
     def __init__(self, name, user, pattern='.*root'):
@@ -244,7 +243,6 @@ class Dataset( BaseDataset ):
         self.castorDir = castortools.lfnToCastor( self.lfnDir )
         self.maskExists = False
         self.report = None
-        # import pdb; pdb.set_trace()
         super(Dataset, self).__init__(name, user, pattern)
         #        self.buildListOfFiles( pattern )
         #        self.extractFileSizes()
@@ -255,9 +253,6 @@ class Dataset( BaseDataset ):
     def buildListOfFiles(self, pattern='.*root'):
         '''fills list of files, taking all root files matching the pattern in the castor dir'''
         self.files = castortools.matchingFiles( self.castorDir, pattern )
-        if len(self.files)==0:
-            raise ValueError(' '.join( ['No file matching',
-                                        pattern, 'in', self.castorDir] ))
                              
     def buildListOfBadFiles(self):
         '''fills the list of bad files from the IntegrityCheck log.
@@ -271,7 +266,6 @@ class Dataset( BaseDataset ):
            
         self.bad_files = {}
         self.good_files = []
-        # import pdb; pdb.set_trace()
 
         file_mask = castortools.matchingFiles(self.castorDir, '^%s_.*\.txt$' % mask)
         if file_mask:
@@ -291,8 +285,7 @@ class Dataset( BaseDataset ):
                     else:
                         self.good_files.append( name )
         else:
-            raise IOError( "ERROR: IntegrityCheck log file IntegrityCheck_XXXXXXXXXX.txt not found" )
-       
+            raise IntegrityCheckError( "ERROR: IntegrityCheck log file IntegrityCheck_XXXXXXXXXX.txt not found" )
 
     def extractFileSizes(self):
         '''Get the file size for each file, from the eos ls -l command.'''
@@ -318,7 +311,6 @@ class Dataset( BaseDataset ):
             return int(self.report.get('PrimaryDatasetEntries',-1))
         return -1
 
-
 def createDataset( user, dataset, pattern,  readcache=False, basedir=None, run_range = None):
     
     cachedir =  '/'.join( [os.environ['HOME'],'.cmgdataset'])
@@ -335,7 +327,6 @@ def createDataset( user, dataset, pattern,  readcache=False, basedir=None, run_r
     def writeCache(dataset):
         if not os.path.exists(cachedir):
             os.mkdir(cachedir)
-        # import pdb; pdb.set_trace()
         cachename = cacheFileName(dataset.name,
                                   dataset.user,
                                   dataset.pattern)
