@@ -2,7 +2,7 @@
 import operator 
 import itertools
 import copy
-
+from math import fabs
 from ROOT import TLorentzVector
 
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
@@ -539,7 +539,7 @@ class MultiLeptonAnalyzerBase( Analyzer ):
 
         for obj in objColl:
             self.kdCalc.calculate(obj)
-            obj.massErr = self.massRes.calculate(obj)
+            self.massRes.calculate(obj)
             self.calculateJetObservables(obj,event.selectedJets,'jets')
             self.calculateJetObservables(obj,event.shiftedJetsUp,'jetsUp')
             self.calculateJetObservables(obj,event.shiftedJetsDwn,'jetsDwn')
@@ -605,11 +605,18 @@ class MultiLeptonAnalyzerBase( Analyzer ):
             jetVars['dPhi'] = deltaPhi(cleanedJets[0].phi(),cleanedJets[1].phi())
             jetVars['Mjj'] = (cleanedJets[0].p4()+cleanedJets[1].p4()).M()
             jetVars['Ptjj'] = (cleanedJets[0].p4()+cleanedJets[1].p4()).Pt()
+            jetVars['subleadingPt']=cleanedJets[1].pt()
+            jetVars['subleadingEta']=cleanedJets[1].eta()
+            jetVars['Fisher']=0.09407*fabs(jetVars['dEta'])  +4.1581e-4*jetVars['Mjj']
+        
         else:
             jetVars['dEta'] = -99
             jetVars['dPhi'] = -99
             jetVars['Mjj'] = -99
             jetVars['Ptjj'] = -99
+            jetVars['subleadingPt']=-99.
+            jetVars['subleadingEta']=-99.
+            jetVars['Fisher']=-99.
 
         #highest Jet    
         if  len(cleanedJets)>0:
@@ -620,6 +627,8 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         else:
             jetVars['leadingPt']=-99.
             jetVars['leadingEta']=-99.
+
+
 
         setattr(object,prefix,jetVars)    
 

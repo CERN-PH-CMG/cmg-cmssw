@@ -48,7 +48,7 @@ class BackgroundShapes(object):
             
 
 
-        data,obs = plotter.makeDataSet('H_Mass',finalStateCut,100,1000,0,1e+10,"data_obs",-1)
+        data,obs = plotter.makeDataSet('H_Mass',finalStateCut,[100],[1000],"data_obs",-1)
         getattr(self.w,'import')(data)
 
             #make pdf

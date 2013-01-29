@@ -3,7 +3,7 @@ import ROOT
 from math import sqrt,pow,sin,cos,tan
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,isNewerThan
 from CMGTools.HToZZTo4Leptons.tools.fullPath import getFullPath
-
+import copy
 ROOT.gSystem.Load("libCMGToolsHToZZTo4Leptons")
 
 class MassErrors(object):
@@ -159,14 +159,21 @@ class MassErrors(object):
             jacobian[0][offset+2] = (fourLepton.energy()*(lepton.pz()/lepton.energy()) - fourLepton.pz())/fourLepton.mass()
             offset=offset+3                           
 
+
+
+###CALCULATE RAW           
+        bigCov2 = copy.copy(bigCov)
+        jacobian2 = copy.copy(jacobian)
+        
+        massCovRAW = bigCov2.Similarity(jacobian2)
+        dm2RAW = massCovRAW(0,0)
+        if dm2RAW<=0:
+            dm2RAW=0
             
+        fourLepton.massErrRaw = dm2RAW
         if not self.doComponents:
-            massCov = bigCov.Similarity(jacobian)
-            dm2 = massCov(0,0)
-            if dm2>0:
-                return sqrt(dm2)
-            else:
-                return 0
+            fourLepton.massErr = dm2RAW
+
 
         errs = []
         offset=0
@@ -201,9 +208,10 @@ class MassErrors(object):
 
 #        print 'error=',dm2    
         if dm2>0:
-            return sqrt(dm2)
+            fourLepton.massErr = dm2
         else:
-            return 0
+            fourLepton.massErr = 0
+
 
 
 

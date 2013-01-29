@@ -154,6 +154,7 @@ class TreeProducer( Analyzer ):
 
     def bookHiggs(self, pName ):
         self.var('{pName}_Pt'.format(pName=pName))
+        self.var('{pName}_PtOM'.format(pName=pName))
         self.var('{pName}_Eta'.format(pName=pName))
         self.var('{pName}_Phi'.format(pName=pName))
         self.var('{pName}_Charge'.format(pName=pName))
@@ -164,14 +165,20 @@ class TreeProducer( Analyzer ):
         self.var('{pName}_FSRMatch'.format(pName=pName))
         self.var('{pName}_FSRUncorrMass'.format(pName=pName))
         self.var('{pName}_KD'.format(pName=pName))
-        self.var('{pName}_PseudoKD'.format(pName=pName))
-        self.var('{pName}_GraviKD'.format(pName=pName))
+        self.var('{pName}_GG0KD'.format(pName=pName))
+        self.var('{pName}_GG0HKD'.format(pName=pName))
+        self.var('{pName}_QQ1MinusKD'.format(pName=pName))
+        self.var('{pName}_QQ1PlusKD'.format(pName=pName))
+        self.var('{pName}_GG2PlusKD'.format(pName=pName))
+        self.var('{pName}_QQ2PlusKD'.format(pName=pName))
         self.var('{pName}_Weight'.format(pName=pName))
         self.var('{pName}_MassErr'.format(pName=pName))
+        self.var('{pName}_MassErrRaw'.format(pName=pName))
         for postfix in ['','Up','Dwn']:
             self.var('{pName}_DEta'.format(pName=pName)+postfix)
             self.var('{pName}_DPhi'.format(pName=pName)+postfix)
             self.var('{pName}_MJJ'.format(pName=pName)+postfix)
+            self.var('{pName}_Fisher'.format(pName=pName)+postfix)
             self.var('{pName}_MJJJ'.format(pName=pName)+postfix)
             self.var('{pName}_MBB'.format(pName=pName)+postfix)
             self.var('{pName}_HT'.format(pName=pName)+postfix)
@@ -181,6 +188,8 @@ class TreeProducer( Analyzer ):
             self.var('{pName}_NBJetsTight'.format(pName=pName)+postfix,int)
             self.var('{pName}_LeadingJetPt'.format(pName=pName)+postfix)
             self.var('{pName}_LeadingJetEta'.format(pName=pName)+postfix)
+            self.var('{pName}_SubleadingJetPt'.format(pName=pName)+postfix)
+            self.var('{pName}_SubleadingJetEta'.format(pName=pName)+postfix)
 
 
     def fillBoson(self, pName,particle ):
@@ -201,6 +210,7 @@ class TreeProducer( Analyzer ):
             
     def fillHiggs(self, pName,particle ):
         self.fillBasic(pName,particle)
+        self.fill('{pName}_PtOM'.format(pName=pName), particle.Pt()/particle.M() )
         self.fill('{pName}_MinPairMass'.format(pName=pName), particle.minPairMass() )
         self.fill('{pName}_MinOSPairMass'.format(pName=pName), particle.minOSPairMass() )
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
@@ -208,20 +218,32 @@ class TreeProducer( Analyzer ):
         self.fill('{pName}_FSRUncorrMass'.format(pName=pName), particle.fsrUncorrected().M() )
         if hasattr(particle,'KD'):
             self.fill('{pName}_KD'.format(pName=pName), particle.KD )
-        if hasattr(particle,'pseudoKD'):
-            self.fill('{pName}_PseudoKD'.format(pName=pName), particle.pseudoKD )
-        if hasattr(particle,'graviKD'):
-            self.fill('{pName}_GraviKD'.format(pName=pName), particle.graviKD )
+        if hasattr(particle,'gg0KD'):
+            self.fill('{pName}_GG0KD'.format(pName=pName), particle.gg0KD )
+        if hasattr(particle,'gg0HKD'):
+            self.fill('{pName}_GG0HKD'.format(pName=pName), particle.gg0HKD )
+        if hasattr(particle,'qq1MinusKD'):
+            self.fill('{pName}_QQ1MinusKD'.format(pName=pName), particle.qq1MinusKD )
+        if hasattr(particle,'qq1PlusKD'):
+            self.fill('{pName}_QQ1PlusKD'.format(pName=pName), particle.qq1PlusKD )
+        if hasattr(particle,'qq2PlusKD'):
+            self.fill('{pName}_QQ2PlusKD'.format(pName=pName), particle.qq2PlusKD )
+        if hasattr(particle,'gg2PlusKD'):
+            self.fill('{pName}_GG2PlusKD'.format(pName=pName), particle.gg2PlusKD )
+
         if hasattr(particle,'weight'):
             self.fill('{pName}_Weight'.format(pName=pName), particle.weight )
         if hasattr(particle,'massErr'):
             self.fill('{pName}_MassErr'.format(pName=pName), particle.massErr )
+        if hasattr(particle,'massErrRaw'):
+            self.fill('{pName}_MassErrRaw'.format(pName=pName), particle.massErrRaw )
 
         if hasattr(particle,'jets'):
             for postfix in ['','Up','Dwn']: 
                 self.fill('{pName}_DEta'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['dEta'] )
                 self.fill('{pName}_DPhi'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['dPhi'] )
                 self.fill('{pName}_MJJ'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['Mjj'] )
+                self.fill('{pName}_Fisher'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['Fisher'] )
                 self.fill('{pName}_MJJJ'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['Mjjj'] )
                 self.fill('{pName}_MBB'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['Mbb'] )
                 self.fill('{pName}_HT'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['HT'] )
@@ -231,6 +253,8 @@ class TreeProducer( Analyzer ):
                 self.fill('{pName}_Ptjj'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['Ptjj'] )
                 self.fill('{pName}_LeadingJetPt'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['leadingPt'] )
                 self.fill('{pName}_LeadingJetEta'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['leadingEta'] )
+                self.fill('{pName}_SubleadingJetPt'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['subleadingPt'] )
+                self.fill('{pName}_SubleadingJetEta'.format(pName=pName)+postfix, getattr(particle,'jets'+postfix)['subleadingEta'] )
             
 
 

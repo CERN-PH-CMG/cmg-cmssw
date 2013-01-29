@@ -18,7 +18,8 @@ class HZZSetup(object):
         self.data=dict()
         self.data['7TeV'] = dict()
         self.data['8TeV']=dict()
-        self.data['lumi']={'7TeV':5050., '8TeV': 12210}
+#        self.data['lumi']={'7TeV':5050., '8TeV': 12210}
+        self.data['lumi']={'7TeV':5050., '8TeV': 19630}
         self.data['lumiErr']={'7TeV':0.022, '8TeV': 0.044}
         self.data['ZZ4mu']={'8TeV':0.07691,'7TeV':0.024887}
         self.data['ZZ4e']={'8TeV':0.07691,'7TeV':0.024993}
@@ -163,7 +164,7 @@ class HZZSetup(object):
           higgsPlotter.addCorrectionFactor(pdf,1.0,(xs[pname[production]]['pdfUp']-xs[pname[production]]['pdfDown'])/200.,'lnN')
 
           if (production in ['ggH']) and (category =='vbf' or category =='vbftag'):
-              higgsPlotter.addCorrectionFactor('QCDscale_ggH2j',1.0,0.20,'lnN')
+              higgsPlotter.addCorrectionFactor('QCDscale_ggH2j',1.0,0.30,'lnN')
           elif (production in ['qqH']) and (category =='vbf' or  category=='vbftag'):   
               higgsPlotter.addCorrectionFactor('QCDscale_qqH',1.0,0.10,'lnN')
 

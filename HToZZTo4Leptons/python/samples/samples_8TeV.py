@@ -6,7 +6,7 @@ from copy import copy
 
 pat='V5_10_0'
 #skim='SKIM_Oct13_All'
-skim='SKIM_Nov12_All'
+skim='SKIM_Moriond_All'
 filepattern = 'cmgTuple.*root'
 userName='bachtis'
 
@@ -212,7 +212,9 @@ GGZZ2L2L,DY,DYLOW,TT
 
 #json='/afs/cern.ch/user/m/mangano/public/hcp2012_json_v2/hcp.json'
 
-json='/afs/cern.ch/user/b/botta/public/moriond.json'
+#json='/afs/cern.ch/user/b/botta/public/moriond.json'
+json='/afs/cern.ch/user/a/anlevin/public/moriond_2012_remove_r12c_ecal_recovered.txt'
+
 jsonRecover='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt'
 
 
@@ -283,8 +285,6 @@ MuEGC = cfg.DataComponent(
 #####################################################################################################################
 #####################################################################################################################
 
-print 'USING SPECIAL SKIM FOR 2012D'
-skim='SKIM_Jan14_NOCALD'
 
 DoubleMuD = cfg.DataComponent(
     name = 'DoubleMuD',

@@ -59,7 +59,7 @@ class HiggsShapes(object):
             width=float(theory['width'])
 
 
-            data,obs = plotter.makeDataSet('H_Mass',finalStateCut,mass-50-3*width,mass+50+5*width,0,1e+10,"data_obs",500000)
+            data,obs = plotter.makeDataSet('H_Mass',finalStateCut,[mass-50-3*width],[mass+50+5*width],"data_obs",500000)
             getattr(self.w,'import')(data)
 
             #make pdf
