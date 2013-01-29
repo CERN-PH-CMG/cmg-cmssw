@@ -10,7 +10,7 @@ from CMGTools.Production.castorBaseDir import getUserAndArea
 from CMGTools.Production.datasetInformation import DatasetInformation
 
 
-def publish(sampleName,fileown,comment,test,user,password, force, savannah,primary, run_range = None):
+def publish( sampleName, fileown, comment, test, user, password, savannah, primary, run_range = None):
 	"""Publish the given dataset to CMGDB and Savannah
 		
 	'sampleName' takes the name of the dataset, in either format
@@ -19,7 +19,6 @@ def publish(sampleName,fileown,comment,test,user,password, force, savannah,prima
 	'test' takes True/False on whether the posting is a test or not
 	'user' takes the NICE username of the person making the post
 	'password' takes the NICE password of the person making the post
-	'force' takes True/False on whether the dataset should be published if no log file exists
 	'savannah' takes True/False on whether Savannah publish is desired
 	"""
 	
@@ -35,10 +34,10 @@ def publish(sampleName,fileown,comment,test,user,password, force, savannah,prima
 		
 		# Check the length of the dataset name	
 		if len(sampleName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) < 3:
-			print "Error, "+sampleName+" is not valid, please use valid name"
+			print "Error, " + sampleName + " is not valid, please use valid name."
 			return None
 		elif len(sampleName.lstrip(os.sep).rstrip(os.sep).split(os.sep)) < 4:
-			print "Dataset "+ sampleName + "is a CMS base dataset and cannot be published, please use DAS."
+			print "Dataset " + sampleName + "is a CMS base dataset and cannot be published, please use DAS."
 			return None
 		return sampleName, fileown
 	
@@ -72,7 +71,7 @@ def publish(sampleName,fileown,comment,test,user,password, force, savannah,prima
 		
 		
 		# Get DS Information
-		datasetDetails = DatasetInformation(sampleName, fileown ,comment ,force,test,primary, user, password)
+		datasetDetails = DatasetInformation(sampleName, fileown ,comment, test,primary, user, password)
 		
 		# Build all reports on the dataset
 		if datasetDetails is None: return None
