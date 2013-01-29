@@ -35,11 +35,11 @@ class PublishTask(Task):
                          default = None)
 
         # If user wants to add their own comments
-        parser.add_option("-f", "--force",
-                         action = "store_true",
-                         dest="force",
-                         help="force publish without logger",
-                         default = False)
+        #parser.add_option("-f", "--force",
+        #                 action = "store_true",
+        #                 dest="force",
+        #                 help="force publish without logger",
+        #                 default = False)
         # If user wants to add their own comments
         parser.add_option("-G", "--groups",
                          action = "store_true",
@@ -77,7 +77,7 @@ class PublishTask(Task):
             self.password = self.getPassword()
         return publish(self.dataset,self.options.fileown,\
                     self.options.commented,self.options.test,\
-                    username,self.password,self.options.force,\
+                    username,self.password,\
                     self.options.savannah,self.options.primary,\
                     (self.options.min_run, self.options.max_run) )
 
