@@ -28,6 +28,7 @@ def getFileOwner(name):
         return user
     except:
         return None
+
 def getCMGDB(name):
     try:
         parts = name.lstrip("/").split("/")
@@ -61,7 +62,6 @@ def getParentWithSampleName(name):
     except: 
         return None
     
-    
 def getUnknownParentWithCMGDB(name):
     try:
         
@@ -82,6 +82,7 @@ def getUnknownParentWithCMGDB(name):
         else: return None
     except:
         return None 
+
 def getKnownParentWithCMGDB(name,user):
     try:
         name = removeUser(name)
@@ -107,11 +108,13 @@ def removeUser(setName):
         return "/" + name
     except:
         return setName
+
 def isCMGDBName(name):
 	length = len(name.rstrip().lstrip().rstrip("/").lstrip("/").split("/"))
 	if length == 3 and re.search("---",name):
 		return True
 	else: return False
+
 def isSampleName(name):
 	length = len(name.rstrip().lstrip().rstrip("/").lstrip("/").split("/"))
 	if length > 3 and not re.search("---",name):
