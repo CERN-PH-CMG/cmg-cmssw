@@ -11,8 +11,6 @@ from CMGTools.Production.publish import publish
 from CMGTools.Production.publishTask import PublishTask
 from optparse import *
 
-
-
 if __name__ == '__main__':
 	parser = optparse.OptionParser()
 	def isComment(word):
@@ -55,9 +53,7 @@ if __name__ == '__main__':
 					if len(line)==3:
 						comment = isComment(line[2])
 		return sampleName, str(fileowner), comment
-	
-	
-	
+      	
 	parser.usage = """
 	%prog [options] <sampleName>
 		
