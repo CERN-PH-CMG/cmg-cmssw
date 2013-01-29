@@ -15,6 +15,7 @@ import tempfile
 import tarfile
 import CMGTools.Production.eostools as eostools
 import CMGTools.Production.castorBaseDir as castorBaseDir
+import datetime
 from CMGTools.Production.edmIntegrityCheck import PublishToFileSystem
 from CMGTools.Production.edmIntegrityCheck import IntegrityCheck
 from CMGTools.Production.cmgdbToolsApi import CmgdbToolsApi
@@ -24,6 +25,8 @@ from CMGTools.Production.dataset import *
 from datetime import *
 from CMGTools.Production.eostools import *
 from CMGTools.Production.fileNameUtils import getFileGroup
+from time import strptime
+
 
 def isCrabFile(name):
 	_, fname = os.path.split(name)                
@@ -472,40 +475,64 @@ class DatasetInformation(object):
 				file_list = self.dataset_details['FileGroups'][group_name]['Files']   
 				isCrab = self.dataset_details['FileGroups'][group_name]['IsCrab']
      				
-				os.chdir( os.environ['CMSSW_BASE'] + '/src/CMGTools/Production' )
-				#create a subprocess to call cvs status for cmsBatch.py 
-				p = subprocess.Popen(['cvs', 'status', '-v', 'scripts/cmsBatch.py'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-				#pattern matches       cbern_workflow_16Nov11   	(revision: 1.6)
-				#and                   abis_cmgtools            	(branch: 1.6.2)
-				pattern = "\t(.*?)\s*?\t\((revision:|branch:) (.*?)\)" 
-			       	regex = re.compile(pattern) 
-				try:
-					#create a list with lines of format abis_cmgtools            	(branch: 1.6.2) after splitting the output
-					revision_info = [item for item in p.communicate()[0].split("Existing Tags:")[1].split('\n') if item != '' ]
-				except:
-					raise IOError( "ERROR: Unexpected output from 'cvs status scripts/cmsBatch' execution" )
-				
-				tag_to_revision = dict()
-				for item in revision_info: 
+				if not isCrab:
+					os.chdir( os.environ['CMSSW_BASE'] + '/src/CMGTools/Production' )
+				        #create a subprocess to call cvs status for cmsBatch.py 
+					p = subprocess.Popen(['cvs', 'status', '-v', 'scripts/cmsBatch.py'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+				        #pattern matches       cbern_workflow_16Nov11   	(revision: 1.6)
+				        #and                   abis_cmgtools            	(branch: 1.6.2)
+					pattern = "\t(.*?)\s*?\t\((revision:|branch:) (.*?)\)" 
+					regex = re.compile(pattern) 
 					try:
-						#match the list items to pattern
-						result = regex.match(item).groups()
-					except AttributeError:
+					        #create a list with lines of format abis_cmgtools            	(branch: 1.6.2) after splitting the output
+						revision_info = [item for item in p.communicate()[0].split("Existing Tags:")[1].split('\n') if item != '' ]
+					except:
 						raise IOError( "ERROR: Unexpected output from 'cvs status scripts/cmsBatch' execution" )
-					tag_to_revision[result[0]] = result[2]  #add tag and its correspoding branch/revision to the dictionary
-				#get the revision corresponding to the dataset's tag
-				for item in self.dataset_details['Tags']:
-					if item['package'] == "CMGTools/Production":
-						try: 
-							revision = tag_to_revision[item['tag']]
-						except KeyError:
-							if item['tag'] == "HEAD":
-								revision = "17"
-							else:
+				
+					tag_to_revision = dict()
+					for item in revision_info: 
+						try:
+							#match the list items to pattern
+							result = regex.match(item).groups()
+						except AttributeError:
+							raise IOError( "ERROR: Unexpected output from 'cvs status scripts/cmsBatch' execution" )
+						tag_to_revision[result[0]] = result[2]  #add tag and its correspoding branch/revision to the dictionary
+					#get the revision corresponding to the dataset's tag
+					for item in self.dataset_details['Tags']:
+						if item['package'] == "CMGTools/Production":
+							try: 
+								revision = tag_to_revision[item['tag']]
+							except KeyError:
 								revision = None
-						break
+								if item['tag'] == "HEAD":
+									counter = 0
+									while counter < len(file_list):
+										p = subprocess.Popen(['/afs/cern.ch/project/eos/installation/pro/bin/eos.select', 
+												      'fileinfo',
+												      self.dataset_details['EOSPath'] + "/" + group_name + "_" + repr( counter ) + ".root"],
+												      stdout=subprocess.PIPE, 
+												      stderr=subprocess.STDOUT)
+										try:
+											pattern = ".*\nModify: \w{3} (\w{3}) (\d{2}) (\d{2}:\d{2}:\d{2}) (\d{4}) Timestamp: .*?\n"
+											regex = re.compile( pattern )
+											pts = regex.match( p.communicate()[0] ).groups()
+											changes_time = datetime( 2012, 12, 14, 15, 27, 03 )
+											temp = pts[2].split(':')
+											produced_time = datetime( int(pts[3]), int( strptime( pts[0], '%b' ).tm_mon ), int(pts[1]), int(temp[0]), int(temp[1]), int(temp[2]) )
+											if produced_time < changes_time:
+												revision = "1.16"
+											else:
+												revision = "1.17"
+											
+											break
+										except:
+											counter += 1
+											continue
+								break
+				else:
+					revision = "1.17"
 				if revision is None:
-					raise IOError( "ERROR: Unexpected output from 'cvs status scripts/cmsBatch' execution - couldn't match tag with an existing revision" )
+					raise IOError( "ERROR: Unexpected output from 'cvs status scripts/cmsBatch' execution - couldn't match tag with an existing revision or dataset is " )
 				else:
 					revision = revision.split('.')
 			
@@ -526,7 +553,7 @@ class DatasetInformation(object):
 						for number in range( start_index, end_index ):
 							if number not in numbers:                            #if this number is missing from numbers list
 								missing_files.append( createFileName( group_name,number, isCrab ) )
-				else:   #Changed since 12-12-2012: both cmsBatch and crabfiles have indexing from 1 to n
+				else:   #Changed since 14-12-2012: both cmsBatch and crabfiles have indexing from 1 to n
 
 					for file_name in file_list:
 						numbers.append( getIndex( file_name ) )  #add each file's indexing number to the numbers list
