@@ -406,7 +406,8 @@ class toyResult():
 
 
 ## FIXME: read masses from command line
-masses = [ '1615','1635','1665','1695','1725','1755','1785','1815','1845' ]
+#masses = [ '1615','1635','1665','1695','1725','1755','1785','1815','1845' ]
+masses = [ '1635','1665','1695','1725','1755','1785','1815','1845' ]
 #masses = ['1695','1725'] 
 ## FIXME: read channels from command line
 channels = ['mu']
