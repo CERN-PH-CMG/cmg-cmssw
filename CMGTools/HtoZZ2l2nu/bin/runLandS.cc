@@ -7,6 +7,7 @@
 #include "CMGTools/HtoZZ2l2nu/interface/setStyle.h"
 #include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/plotter.h"
+#include "HiggsAnalysis/CombinedLimit/interface/th1fmorph.h"
 
 #include "TSystem.h"
 #include "TFile.h"
@@ -375,7 +376,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
                if(procIndex>=0) shape.signal[procIndex]->Add(hshape);
                else             {hshape->SetTitle(proc);shape.signal.push_back(hshape);}
 
-               printf("Adding signal %s\n",proc.Data());
+               printf("Adding signal %s %s (Integral = %f)\n",histoName.Data(), proc.Data(), hshape->Integral());
             }else{
                std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator it = shape.signalVars.find(proc);
                 
@@ -400,7 +401,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 	       else             shape.bckgVars[proc].push_back( std::pair<TString,TH1*>(varName,hshape) );
             }
 
-	    printf("histoName = B %i -- %i  -- %s - %s --> %s\n", i, int(varName==""), proc.Data(), histoName.Data(), hshape->GetTitle());
+	    //printf("histoName = B %i -- %i  -- %s - %s --> %s\n", i, int(varName==""), proc.Data(), histoName.Data(), hshape->GetTitle());
 	 }
       }
     }
@@ -1244,7 +1245,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
 
 std::cout << "TESTA\n";
   for(size_t ich=0; ich<selCh.size(); ich++)std::cout << "TEST" << selCh[ich] << std::endl;
-   
+
   //replace Z+Jet background by Gamma+Jet estimates
   if(subDY)doDYReplacement(selCh,"gamma",allShapes,histo,"met_met");
 std::cout << "TESTB\n";
@@ -2030,47 +2031,48 @@ void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allS
 
 
            int indexL=0, indexR=0;
-           for(unsigned int i=0;i<shapeL.signal.size();i++){if(TString(shapeL.signal[i]->GetTitle()).BeginsWith(nameL))indexL=i;}
-           for(unsigned int i=0;i<shapeR.signal.size();i++){if(TString(shapeR.signal[i]->GetTitle()).BeginsWith(nameR))indexR=i;}
+           for(unsigned int k=0;k<shapeL.signal.size();k++){if(TString(shapeL.signal[k]->GetTitle()).BeginsWith(nameL))indexL=k;}
+           for(unsigned int k=0;k<shapeR.signal.size();k++){if(TString(shapeR.signal[k]->GetTitle()).BeginsWith(nameR))indexR=k;}
 
            double Ratio = ((double)mass - massL); Ratio/=(massR - massL);
 
            //centralValue
-           TH1* histoL = (TH1*) shapeL.signal[indexL]->Clone("tmpLeft");   histoL->Scale(1.0/(shapeL.xsections[histoL->GetTitle()]*shapeL.BRs[histoL->GetTitle()]));
-           TH1* histoR = (TH1*) shapeR.signal[indexR]->Clone("tmpRight");  histoR->Scale(1.0/(shapeR.xsections[histoR->GetTitle()]*shapeR.BRs[histoR->GetTitle()]));           
+           TH1D* histoL = (TH1D*) shapeL.signal[indexL]->Clone("tmpLeft");   histoL->Scale(1.0/(shapeL.xsections[histoL->GetTitle()]*shapeL.BRs[histoL->GetTitle()]));
+           TH1D* histoR = (TH1D*) shapeR.signal[indexR]->Clone("tmpRight");  histoR->Scale(1.0/(shapeR.xsections[histoR->GetTitle()]*shapeR.BRs[histoR->GetTitle()]));           
            TString newName = signalTypes[t]+"("; newName+= mass;
-           TH1* histoNew = (TH1*)histoL->Clone(TString(histoL->GetTitle()).ReplaceAll(nameL,newName));         
-           histoNew->SetTitle(histoNew->GetName());
-           histoNew->Scale(1-Ratio);
-           histoNew->Add(histoR,Ratio);
+           TString newHistoTitle = TString(histoL->GetTitle()).ReplaceAll(nameL,newName);
+           TString newHistoName  = (selCh[i]+AnalysisBins[b]+mainHisto+newHistoTitle); 
+           TH1D* histoNew = (TH1D*)histoL->Clone(TString(histoL->GetTitle()).ReplaceAll(nameL,newName));         
+           histoNew->Reset();//reset the histogram inorder to keep only the style properties
+           histoNew->Add(th1fmorph(newHistoName.Data(),newHistoTitle.Data(), histoL, histoR, (double)massL, (double)massR, (double)mass, (1-Ratio)*histoL->Integral() + Ratio*histoR->Integral(), 0), 1);
+           histoNew->SetTitle(newHistoTitle);
 
            setTGraph(histoNew->GetTitle(), systpostfix );
            double XSection = TG_xsec->Eval(mass,NULL,"S");
            double BR       = shapeL.BRs[histoL->GetTitle()] + (Ratio * (shapeR.BRs[histoR->GetTitle()] - shapeL.BRs[histoL->GetTitle()]));
-           printf("Linear BR interpolation: Masses = %i %i %i and BR = %f ? %f --> %f\n", massL, mass, massR, shapeL.BRs[histoL->GetTitle()], shapeR.BRs[histoR->GetTitle()], BR );
+           //printf("Linear BR interpolation: Masses = %i %i %i and BR = %f ? %f --> %f\n", massL, mass, massR, shapeL.BRs[histoL->GetTitle()], shapeR.BRs[histoR->GetTitle()], BR );
            histoNew->Scale(XSection*BR);
-           histoNew->SetBinError(0,0.15*histoNew->Integral());
+//           histoNew->SetBinError(0,0.15*histoNew->Integral());
            shape.signal.insert(shape.signal.begin()+indexL,histoNew);
 
            shape.xsections[histoNew->GetTitle()] = XSection;
-           shape.BRs[histoNew->GetTitle()] = BR;
-        
-
-
+           shape.BRs[histoNew->GetTitle()] = BR;      
            
            //systematics
            std::vector<std::pair<TString, TH1*> > varsLeft  = shapeL.signalVars[histoL->GetTitle()];
            std::vector<std::pair<TString, TH1*> > varsRight = shapeR.signalVars[histoR->GetTitle()];
            std::vector<std::pair<TString, TH1*> > varsNew;
            for(size_t v=0;v<varsLeft.size();v++){
-              TH1* histoSystL = (TH1*) varsLeft [v].second->Clone("tmpSystLeft");    histoSystL->Scale(1.0/(shapeL.xsections[histoL->GetTitle()]*shapeL.BRs[histoL->GetTitle()]));
-              TH1* histoSystR = (TH1*) varsRight[v].second->Clone("tmpSystRight");   histoSystR->Scale(1.0/(shapeR.xsections[histoR->GetTitle()]*shapeR.BRs[histoR->GetTitle()]));
+              TH1D* histoSystL = (TH1D*) varsLeft [v].second->Clone("tmpSystLeft");    histoSystL->Scale(1.0/(shapeL.xsections[histoL->GetTitle()]*shapeL.BRs[histoL->GetTitle()]));
+              TH1D* histoSystR = (TH1D*) varsRight[v].second->Clone("tmpSystRight");   histoSystR->Scale(1.0/(shapeR.xsections[histoR->GetTitle()]*shapeR.BRs[histoR->GetTitle()]));
+
+              TString newHistoSystTitle = TString(histoSystL->GetTitle()).ReplaceAll(nameL,newName);
+              TString newHistoSystName  = (selCh[i]+AnalysisBins[b]+mainHisto+newHistoSystTitle);
               TH1* histoSystNew   = (TH1*)histoSystL->Clone(TString(histoSystL->GetTitle()).ReplaceAll(nameL,newName));
-              histoSystNew->SetTitle(histoSystNew->GetName());
-              histoSystNew->Scale(1-Ratio);
-              histoSystNew->Add(histoSystR,Ratio);
+             histoSystNew->Reset();//reset the histogram inorder to keep only the style properties
+              histoSystNew->Add(th1fmorph((selCh[i]+AnalysisBins[b]+mainHisto+newHistoSystTitle).Data(),newHistoSystTitle.Data(), histoSystL, histoSystR, (double)massL, (double)massR, (double)mass, (1-Ratio)*histoSystL->Integral() + Ratio*histoSystR->Integral(), 0), 1);
+              histoSystNew->SetTitle(newHistoSystTitle);
               histoSystNew->Scale(XSection*BR);
-              //varsNew.push_back(std::make_pair<TString, TH1*>(varsLeft[v].first,histoSystNew));
 	      varsNew.push_back(std::pair<TString, TH1*>(varsLeft[v].first,histoSystNew));
               delete histoSystL;
               delete histoSystR;
@@ -2080,7 +2082,7 @@ void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allS
            delete histoL;
            delete histoR;
       }}
-
+      printf("Done\n");
    }
 }
 
@@ -2117,12 +2119,12 @@ void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& a
                     ((TH1D*)vars[v].second)->Scale(scaleFactor);
                  }
 
-                 //((TH1D*)shape.signal[isignal])->SetBinContent(0,scaleFactor);
-
-                 TH1* down = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHDown"); down->Scale(scaleFactorDown);
-                 TH1* up   = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHUp"  ); up  ->Scale(scaleFactorUp  );
-                 vars.push_back(std::make_pair("_interf_ggHDown", down) );
-                 vars.push_back(std::make_pair("_interf_ggHUp"  , up  ) );
+                 if(signalSufix!=""){ //add uncertainty only for NarrowResonnance case
+                    TH1* down = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHDown"); down->Scale(scaleFactorDown);
+                    TH1* up   = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHUp"  ); up  ->Scale(scaleFactorUp  );
+                    vars.push_back(std::make_pair("_interf_ggHDown", down) );
+                    vars.push_back(std::make_pair("_interf_ggHUp"  , up  ) );
+                 }
                }
       }}
 }
