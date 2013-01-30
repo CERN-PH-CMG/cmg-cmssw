@@ -5,7 +5,6 @@ import os
 from copy import copy
 
 pat='V5_10_0'
-#skim='SKIM_Oct13_All'
 skim='SKIM_Moriond_All'
 filepattern = 'cmgTuple.*root'
 userName='bachtis'
