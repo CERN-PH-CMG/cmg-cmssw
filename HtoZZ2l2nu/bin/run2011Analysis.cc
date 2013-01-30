@@ -208,14 +208,21 @@ int main(int argc, char* argv[])
       hLineShapeNominal      = new TGraph((TH1 *)fin->Get(dirBuf+TString("cps_shape")));
       hGen                   = (TH1 *) fin->Get(dirBuf+TString("gen")); hGen->SetDirectory(0); hGen->Scale(1./hGen->Integral());
       
+      TGraph *cpsGr          = (TGraph *) fin->Get(dirBuf+TString("cps"));
+      TGraph *cpspintGr      = (TGraph *) (fin_int!=0? fin_int: fin)->Get(dirBuf+TString("nominal"));
+      TGraph *cpspint_upGr   = (TGraph *) (fin_int!=0? fin_int: fin)->Get(dirBuf+TString("up"));
+      TGraph *cpspint_downGr = (TGraph *) (fin_int!=0? fin_int: fin)->Get(dirBuf+TString("down"));
+      if(cpspintGr==0)
+	{
+	  cpspintGr = (TGraph *)cpsGr->Clone();
+	  for(int ip=0; ip<cpspintGr->GetN(); ip++) { Double_t x,y; cpspintGr->GetPoint(ip,x,y); cpspintGr->SetPoint(ip,x,1); }
+	  cpspint_upGr = (TGraph *) cpspintGr->Clone();
+	  cpspint_downGr=(TGraph *) cpspintGr->Clone();
+	}
+      
       //loop over possible scenarios
       for(size_t nri=0; nri<NRparams.size(); nri++)
 	{
-	  TGraph *cpsGr          = (TGraph *) fin->Get(dirBuf+TString("cps"));
-	  TGraph *cpspintGr      = (TGraph *) (fin_int!=0? fin_int: fin)->Get(dirBuf+TString("nominal"));
-	  TGraph *cpspint_upGr   = (TGraph *) (fin_int!=0? fin_int: fin)->Get(dirBuf+TString("up"));
-	  TGraph *cpspint_downGr = (TGraph *) (fin_int!=0? fin_int: fin)->Get(dirBuf+TString("down"));
-	  
 	  //recompute weights depending on the scenario (SM or BSM)
 	  TGraph *shapeWgtsGr      = new TGraph; shapeWgtsGr->SetName("shapeWgts_"+ NRsuffix[nri]);          float shapeNorm(0);
 	  TGraph *shapeWgts_upGr   = new TGraph; shapeWgts_upGr->SetName("shapeWgtsUp_"+ NRsuffix[nri]);     float shapeUpNorm(0);
@@ -482,23 +489,27 @@ int main(int argc, char* argv[])
 
      for(unsigned int nri=0;nri<NRparams.size();nri++){ 
        mon.addHistogram( new TH2F (TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );     
-     TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
-     h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
-     h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
-     h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
-     h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
-     h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
-     h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
-     }
+       TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
+       h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
+       h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
+       h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
+       h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
+       h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
+       h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
 
-     mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );
-     TH2F* h=(TH2F *) mon.addHistogram( new TH2F ("mt_redMet_shapes_NRBctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
-     h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
-     h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
-     h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
-     h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
-     h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
-     h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
+       mon.addHistogram( new TH2F (TString("mt_shapes_unroll")+NRsuffix[nri]+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/20GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 100,150,2150) );     
+       mon.addHistogram( (TH2F *)h->Clone("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar]) );
+
+     }
+     
+     //      mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );
+     //      TH2F* h=(TH2F *) mon.addHistogram( new TH2F ("mt_redMet_shapes_NRBctrl"+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
+     //      h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
+     //      h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
+     //      h->GetYaxis()->SetBinLabel(3,"M_{out+}^{ll}/=0 b-tags");
+     //      h->GetYaxis()->SetBinLabel(4,"M_{in}^{ll}/#geq 1 b-tag");
+     //      h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
+     //      h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
    }
    
    
@@ -1341,6 +1352,9 @@ int main(int argc, char* argv[])
 	    if(ev.hptWeights[0]==0) hptReweight=0;
 	    else                    hptReweight/=ev.hptWeights[0];
 	    iweight *= hptReweight;
+
+	    //these are irrelevant systematics
+	    continue;
 	  }
 	if((ivar==17 || ivar==18) && isMC_GG)                                //shape unc
 	  {
@@ -1364,8 +1378,10 @@ int main(int argc, char* argv[])
 	    if(ivar==15)      passLocalBveto &= (varJets[ijet].btag2<0.250);
 	    else if(ivar==16) passLocalBveto &= (varJets[ijet].btag2<0.240);
         }
-	bool passPreselection             (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passLocalBveto && passLMetVeto);
-	bool passPreselectionMbvetoMzmass (             passZpt && pass3dLeptonVeto && passDphijmet                   && passLMetVeto);          
+	bool passPreselection                 (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passLocalBveto && passLMetVeto);
+	bool passPreselectionMbvetoMzmass     (             passZpt && pass3dLeptonVeto && passDphijmet                   && passLMetVeto);          
+	bool passPreselectionMdphi            (passZmass && passZpt && pass3dLeptonVeto                 && passLocalBveto && passLMetVeto);
+	bool passPreselectionMbvetoMzmassMdphi(             passZpt && pass3dLeptonVeto                                   && passLMetVeto);          
 	
 	float mt = METUtils::transverseMass(zll,zvv,true);
 	LorentzVector nullP4(0,0,0,0);
@@ -1433,7 +1449,7 @@ int main(int argc, char* argv[])
 	  //NARROW RESONANCE ANALYSIS
 	  if(zvv.pt()>optim_Cuts1_met[index]){
 	    for(unsigned int nri=0;nri<NRparams.size();nri++){
-
+	      
 	      float nrweight=iweight*NRweights[nri];
 	      if(nri>0)
 		{
@@ -1449,6 +1465,18 @@ int main(int argc, char* argv[])
 	      if(passPreselectionMbvetoMzmass && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,3,nrweight);
 	      if(passPreselectionMbvetoMzmass && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,4,nrweight);
 	      if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,nrweight);
+	      
+	      //unrolled in dphi(jet,met)
+	      float unrolledmt(mt); 
+	      if(mt>1150)      mt=1140;
+	      if(passDphijmet) unrolledmt += 1000;
+	      if(passPreselectionMdphi                                                         )   mon.fillHisto(TString("mt_shapes_unroll")+NRsuffix[nri]+varNames[ivar],tags_full,index, unrolledmt,nrweight);
+	      if(passPreselectionMbvetoMzmassMdphi && passZmass         && passLocalBveto      )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,0,nrweight);
+	      if(passPreselectionMbvetoMzmassMdphi && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,1,nrweight);
+	      if(passPreselectionMbvetoMzmassMdphi && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,2,nrweight);
+	      if(passPreselectionMbvetoMzmassMdphi && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,3,nrweight);
+	      if(passPreselectionMbvetoMzmassMdphi && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,4,nrweight);
+	      if(passPreselectionMbvetoMzmassMdphi && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,nrweight);
 	    }
 	  }         
 	}
