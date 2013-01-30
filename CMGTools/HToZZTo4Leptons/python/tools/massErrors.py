@@ -162,17 +162,17 @@ class MassErrors(object):
 
 
 ###CALCULATE RAW           
-        bigCov2 = copy.copy(bigCov)
-        jacobian2 = copy.copy(jacobian)
+        bigCov2 = copy.deepcopy(bigCov)
+        jacobian2 = copy.deepcopy(jacobian)
         
         massCovRAW = bigCov2.Similarity(jacobian2)
         dm2RAW = massCovRAW(0,0)
         if dm2RAW<=0:
             dm2RAW=0
             
-        fourLepton.massErrRaw = dm2RAW
+        fourLepton.massErrRaw = sqrt(dm2RAW)
         if not self.doComponents:
-            fourLepton.massErr = dm2RAW
+            fourLepton.massErr = sqrt(dm2RAW)
 
 
         errs = []
@@ -208,7 +208,7 @@ class MassErrors(object):
 
 #        print 'error=',dm2    
         if dm2>0:
-            fourLepton.massErr = dm2
+            fourLepton.massErr = sqrt(dm2)
         else:
             fourLepton.massErr = 0
 
