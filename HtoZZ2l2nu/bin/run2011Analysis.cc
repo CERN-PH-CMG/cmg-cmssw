@@ -106,6 +106,8 @@ int main(int argc, char* argv[])
     NRparams.push_back(std::make_pair<double,double>(0.1, 0) );
     NRparams.push_back(std::make_pair<double,double>(0.3, 0) );
     NRparams.push_back(std::make_pair<double,double>(0.6, 0) );
+    NRparams.push_back(std::make_pair<double,double>(0.8, 0) );
+    NRparams.push_back(std::make_pair<double,double>(1.0, 0) );
   }
   std::vector<TGraph *> NRweightsGr;
   std::vector<double> NRweights(NRparams.size());
