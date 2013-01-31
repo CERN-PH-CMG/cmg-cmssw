@@ -78,6 +78,7 @@ int main(int argc, char* argv[])
 
   bool isMC = runProcess.getParameter<bool>("isMC");
   int mctruthmode = runProcess.getParameter<int>("mctruthmode");
+
   TString dirname = runProcess.getParameter<std::string>("dirName");
   TString uncFile =  runProcess.getParameter<std::string>("jesUncFileName"); gSystem->ExpandPathName(uncFile);
   JetCorrectionUncertainty jecUnc(uncFile.Data());
@@ -87,6 +88,8 @@ int main(int argc, char* argv[])
   outFileUrl.ReplaceAll(".root","");
   if(mctruthmode!=0) { outFileUrl += "_filt"; outFileUrl += mctruthmode; }
   TString outdir=runProcess.getParameter<std::string>("outdir");
+
+  bool isV0JetsMC(isMC && url.Contains("0Jets"));
 
   TRandom2 rndGen;
   EventCategory eventCategoryInst(4);  //0,>=1jet, VBF
@@ -307,6 +310,19 @@ int main(int argc, char* argv[])
       ZZ2l2nuSummary_t &ev = evSummaryHandler.getEvent();
       if(!isMC && duplicatesChecker.isDuplicate(ev.run,ev.lumi, ev.event)) {  NumberOfDuplicated++; continue; }      
 
+      if((mctruthmode==22||mctruthmode==111))
+	{
+	  if(isMC)
+	    {
+	      int npromptGammas = ((ev.mccat>>28)&0xf) ;      
+	      if(mctruthmode==22  && npromptGammas<1) continue;
+	      if(mctruthmode==111 && npromptGammas>0) continue;
+	    }
+	}
+      else continue;
+      if(isV0JetsMC && ev.mc_nup>5)                          continue;
+
+
       //interpret event
       PhysicsEvent_t phys  = getPhysicsEventFrom(ev);
       bool isGammaEvent    = gammaEvHandler.isGood(phys,use2011Id);
@@ -371,7 +387,7 @@ int main(int argc, char* argv[])
 		}
 	      else
 		{
-		  if( hasObjectId(ev.en_idbits[lpid],EID_LOOSE) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 && phys.leptons[ilep].pt()>10) nextraleptons++;
+		  if( hasObjectId(ev.en_idbits[lpid],EID_LOOSE) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho,ev.en_sceta[lpid])<0.15 && phys.leptons[ilep].pt()>10) nextraleptons++;
 		}
 	    }
 	}
