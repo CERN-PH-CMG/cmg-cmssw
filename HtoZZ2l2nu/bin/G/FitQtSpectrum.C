@@ -112,17 +112,20 @@ TGraph *steerQtParameterization(TH1F *qt,std::vector<int> &thr,TPad *p)
 
 //
 enum AnalysisMode {STANDARD, ZZ, VBFZ};
-enum WeightMode   {WEIGHTTOSAMETYPE, WEIGHTALLTODATA};
-void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=STANDARD,bool is2011=false, int weightMode=WEIGHTALLTODATA)
+void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=STANDARD,bool is2011=false)
 {
   std::vector<TString> categs,titles,mcg;
   if(mode==ZZ){
     categs.push_back("eq0jets");
     titles.push_back("=0jets");
   }
+  else if(mode==VBFZ){
+    categs.push_back("eq2jets"); categs.push_back("geq3jets");
+    titles.push_back("=2jets");  titles.push_back("#geq3jets");
+  }
   else{
-    categs.push_back("eq0jets"); categs.push_back("eq1jets"); categs.push_back("eq2jets"); categs.push_back("geq3jets");  if(mode==STANDARD) categs.push_back("vbf");
-    titles.push_back("=0jets");  titles.push_back("=1jets");  titles.push_back("=2jets");  titles.push_back("#geq3jets"); if(mode==STANDARD) titles.push_back("VBF");
+    categs.push_back("eq0jets"); categs.push_back("eq1jets"); categs.push_back("eq2jets"); categs.push_back("geq3jets");  //if(mode==STANDARD) categs.push_back("vbf");
+    titles.push_back("=0jets");  titles.push_back("=1jets");  titles.push_back("=2jets");  titles.push_back("#geq3jets"); //if(mode==STANDARD) titles.push_back("VBF");
   }
   mcg.push_back("EWK");
   mcg.push_back("Fakes");
@@ -159,7 +162,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
       TFile *gIn=TFile::Open(gUrl);
 
       //mass distributions
-      TH1F *eemass=(TH1F *) fIn->Get(llDir+"/ee_zmass");      
+      TH1F *eemass=(TH1F *) fIn->Get(llDir+"/ee_qmass");      
       if(mode!=ZZ && eemass){
 	eemass->SetName("ee"+categs[icat]+"_zmass");
 	eemass->SetDirectory(0);
@@ -167,7 +170,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
       }
 
       //mass distributions
-      TH1F *mmmass=(TH1F *) fIn->Get(llDir+"/mumu_zmass");      
+      TH1F *mmmass=(TH1F *) fIn->Get(llDir+"/mumu_qmass");      
       if(mode!=ZZ && mmmass){
 	mmmass->SetName("mumu"+categs[icat]+"_zmass");
 	mmmass->SetDirectory(0);
@@ -222,8 +225,10 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
       
       fIn->Close();
       gIn->Close();
-
-      //perform fits and show results on subpads
+      
+      //
+      // PHOTON DATA -> REWEIGHT TO DILEPTON DATA
+      //
       if(mmqt && eeqt && gqt)
 	{      
 	  c->cd();
@@ -238,18 +243,35 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	    thr.push_back(90);
 	  }
 	  else{
-	    thr.push_back(50); 
-	    thr.push_back(75);
-	    if(!categs[icat].Contains("vbf"))
-	      {      
-		thr.push_back(90); 
-		//thr.push_back(135);
-		thr.push_back(150); 
+	    if(mode==VBFZ)
+	      {
+		thr.push_back(50); 
+		thr.push_back(75);
+		thr.push_back(90);
+		thr.push_back(110); 
+		thr.push_back(125); 
 		thr.push_back(170); 
 		if(!categs[icat].Contains("eq0jets"))
 		  {
 		    //  thr.push_back(250); 
 		    thr.push_back(300); 
+		  }
+	      }
+	    else
+	      {
+		thr.push_back(50); 
+		thr.push_back(75);
+		if(!categs[icat].Contains("vbf"))
+		  {      
+		    thr.push_back(90); 
+		    //thr.push_back(135);
+		    thr.push_back(160); 
+		    thr.push_back(170); 
+		    if(!categs[icat].Contains("eq0jets"))
+		      {
+			// thr.push_back(250); 
+			  //thr.push_back(300); 
+		      }
 		  }
 	      }
 	  }
@@ -274,8 +296,10 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	    thr.push_back(170);
 	    if(!categs[icat].Contains("eq0jets") && !categs[icat].Contains("eq2jets") )
 	      {
-		//if(categs[icat].Contains("eq1jets"))  thr.push_back(250); 
-		thr.push_back(300); 
+		if(categs[icat].Contains("eq1jets"))  
+		  thr.push_back(400); 
+		else
+		  thr.push_back(300); 
 	      }
 	  }
 	  TGraph *reggqt = steerQtParameterization(gqt,thr,(TPad *)p->cd(3));
@@ -294,14 +318,15 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	    }
 
 	  //apply direct weighting for VBF
-	  if(categs[icat]=="vbf")
-	    {
-	      TH1 *eewgts=(TH1 *) eeqt->Clone(); eewgts->Divide(gqt);
-	      eewgtGr=new TGraph(eewgts); eewgtGr->SetTitle("ee");     eewgtGr->SetName("ee"+categs[icat]+"_qt_datafitwgts");
-	      TH1 *mmwgts=(TH1 *) mmqt->Clone(); mmwgts->Divide(mcgqt); 
-	      mmwgtGr=new TGraph(mmwgts); mmwgtGr->SetTitle("#mu#mu"); mmwgtGr->SetName("mumu"+categs[icat]+"_qt_datafitwgts");
-	    }	      
-	  
+	  //	  if(categs[icat]=="vbf")
+	  /*
+	  {
+	    TH1 *eewgts=(TH1 *) eeqt->Clone(); eewgts->Divide(gqt); eewgts->SetDirectory(0);
+	    eewgtGr=new TGraph(eewgts); eewgtGr->SetTitle("ee");     eewgtGr->SetName("ee"+categs[icat]+"_qt_datafitwgts");
+	    TH1 *mmwgts=(TH1 *) mmqt->Clone(); mmwgts->Divide(mcgqt);  mmwgts->SetDirectory(0);
+	    mmwgtGr=new TGraph(mmwgts); mmwgtGr->SetTitle("#mu#mu"); mmwgtGr->SetName("mumu"+categs[icat]+"_qt_datafitwgts");
+	  }	      
+	  */
 	  
 	  wc->cd();
 	  p=(TPad *) wc->cd(icat+1); 
@@ -321,12 +346,11 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	  toSave.Add(mmwgtGr);
 	}
 
-      //mc based
-      if(weightMode==WEIGHTALLTODATA)
-	{
-	  mceeqt=eeqt;
-	  mcmmqt=mmqt;
-	}
+      //
+      // MC PHOTON SAMPLES -> REWEIGHT TO DATA (fix me for mc closure test)
+      //
+      mceeqt=(TH1F *) eeqt->Clone(TString("mc")+eeqt->GetName());
+      mcmmqt=(TH1F *) mmqt->Clone(TString("mc")+mmqt->GetName());
       if(mcgqt && mceeqt && mcmmqt)
 	{
 	  mcc->cd();
@@ -339,53 +363,57 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	  //thr.push_back(80);
 	  //thr.push_back(90); 
 	  thr.push_back(150);
-	  // if( !categs[icat].Contains("eq0jets") ) thr.push_back(250);
+	  thr.push_back(250);
 	  p->cd(1); mcmmqt->Draw("e1");
-	  //TGraph *regmcmmqt = steerQtParameterization(mcmmqt,thr,(TPad *)p->cd(1)); 
+	  TGraph *regmcmmqt = steerQtParameterization(mcmmqt,thr,(TPad *)p->cd(1)); 
 	  p->cd(2); mceeqt->Draw("e1");
-	  //TGraph *regmceeqt = steerQtParameterization(mceeqt,thr,(TPad *)p->cd(2));
+	  TGraph *regmceeqt = steerQtParameterization(mceeqt,thr,(TPad *)p->cd(2));
+	  
 	  thr.clear();
 	  thr.push_back(50); 
 	  //	  thr.push_back(80);
-	  // thr.push_back(90); 
-	   thr.push_back(150);
-	  //if( categs[icat].Contains("eq0jets") ) thr.push_back(500);
+	  thr.push_back(150);
+	  thr.push_back(300);
+	  if( categs[icat].Contains("eq2jets") ) thr.push_back(500);
 	  //else                                   thr.push_back(300); 
-	   p->cd(3); mcgqt->Draw("e1");
-	   //TGraph *regmcgqt  = steerQtParameterization(mcgqt,thr,(TPad *)p->cd(3));
-	   
-	   p=(TPad *) mcwc->cd(icat+1);
-	   TH1 *mceewgts=(TH1 *) mceeqt->Clone(); mceewgts->Divide(mcgqt);
-	   TGraph *mceewgtGr=new TGraph(mceewgts); mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
-	   TH1 *mcmmwgts=(TH1 *) mcmmqt->Clone(); mcmmwgts->Divide(mcgqt); 
-	   TGraph *mcmmwgtGr=new TGraph(mcmmwgts); mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
+	  p->cd(3); mcgqt->Draw("e1");
+	  TGraph *regmcgqt  = steerQtParameterization(mcgqt,thr,(TPad *)p->cd(3));
+	  
+	  p=(TPad *) mcwc->cd(icat+1);
+	  /*
+	    TH1 *mceewgts=(TH1 *) mceeqt->Clone(); mceewgts->Divide(mcgqt);
+	    TGraph *mceewgtGr=new TGraph(mceewgts); mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
+	    TH1 *mcmmwgts=(TH1 *) mcmmqt->Clone(); mcmmwgts->Divide(mcgqt); 
+	    TGraph *mcmmwgtGr=new TGraph(mcmmwgts); mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
+	  */
 
-	   //TGraph *mceewgtGr=new TGraph; mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
-	   //TGraph *mcmmwgtGr=new TGraph; mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
-	   // for(int ibin=1; ibin<=mcgqt->GetXaxis()->GetNbins(); ibin++)
-	   // 	     {
-	   // 	       float x=mcgqt->GetBinCenter(ibin);
-	   // 	       if(regmcgqt->Eval(x)<0.01) continue;
-	   // 	       if(x<50) continue;
-	   // 	       float wgt=regmceeqt->Eval(x)/regmcgqt->Eval(x);
-	   // 	       mceewgtGr->SetPoint(mceewgtGr->GetN(),x,wgt);
-	   // 	       wgt=regmcmmqt->Eval(x)/regmcgqt->Eval(x);
-	   // 	       mcmmwgtGr->SetPoint(mcmmwgtGr->GetN(),x,wgt);
-	   //}
-	   mceewgtGr->Draw("al"); mceewgtGr->SetMarkerColor(1);      mceewgtGr->SetFillStyle(0); mceewgtGr->SetLineColor(1);      mceewgtGr->SetLineWidth(2);
-	   mcmmwgtGr->Draw("l");  mcmmwgtGr->SetMarkerColor(kGreen); mcmmwgtGr->SetFillStyle(0); mcmmwgtGr->SetLineColor(kGreen); mcmmwgtGr->SetLineWidth(2);
-	   mceewgtGr->GetXaxis()->SetTitle("q_{T} [GeV]");
-	   mceewgtGr->GetYaxis()->SetTitle("Weight");
-	   mceewgtGr->GetXaxis()->SetRangeUser(50,1000);
-	   mceewgtGr->GetYaxis()->SetRangeUser(0,0.1);
-	   TLegend *leg=p->BuildLegend();
-	   leg->SetFillStyle(0);
-	   leg->SetBorderSize(0);
-	   leg->SetTextFont(42);
-	   leg->SetHeader(titles[icat]);
-	   
-	   toSave.Add(mceewgtGr);
-	   toSave.Add(mcmmwgtGr);
+	  TGraph *mceewgtGr=new TGraph; mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
+	  TGraph *mcmmwgtGr=new TGraph; mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
+	  for(int ibin=1; ibin<=mcgqt->GetXaxis()->GetNbins(); ibin++)
+	    {
+	      float x=mcgqt->GetBinCenter(ibin);
+	      if(regmcgqt->Eval(x)<0.01) continue;
+	      if(x<50) continue;
+	      float wgt=regmceeqt->Eval(x)/regmcgqt->Eval(x);
+	      mceewgtGr->SetPoint(mceewgtGr->GetN(),x,wgt);
+	      wgt=regmcmmqt->Eval(x)/regmcgqt->Eval(x);
+	      mcmmwgtGr->SetPoint(mcmmwgtGr->GetN(),x,wgt);
+	    }
+	  
+	  mceewgtGr->Draw("al"); mceewgtGr->SetMarkerColor(1);      mceewgtGr->SetFillStyle(0); mceewgtGr->SetLineColor(1);      mceewgtGr->SetLineWidth(2);
+	  mcmmwgtGr->Draw("l");  mcmmwgtGr->SetMarkerColor(kGreen); mcmmwgtGr->SetFillStyle(0); mcmmwgtGr->SetLineColor(kGreen); mcmmwgtGr->SetLineWidth(2);
+	  mceewgtGr->GetXaxis()->SetTitle("q_{T} [GeV]");
+	  mceewgtGr->GetYaxis()->SetTitle("Weight");
+	  mceewgtGr->GetXaxis()->SetRangeUser(50,1000);
+	  mceewgtGr->GetYaxis()->SetRangeUser(0,0.1);
+	  TLegend *leg=p->BuildLegend();
+	  leg->SetFillStyle(0);
+	  leg->SetBorderSize(0);
+	  leg->SetTextFont(42);
+	  leg->SetHeader(titles[icat]);
+	  
+	  toSave.Add(mceewgtGr);
+	  toSave.Add(mcmmwgtGr);
 	}
     }
   
