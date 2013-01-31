@@ -153,7 +153,8 @@
                   "split":2
                 },
 	        {
-	         "dtag":"Data8TeV_Photon2012D_206744to207898"
+	         "dtag":"Data8TeV_Photon2012D",
+                 "split":5
                 },
                 {
  	          "dtag":"Data8TeV_DoubleElectron2012B",
@@ -166,6 +167,13 @@
                 {
 	          "dtag":"Data8TeV_DoubleElectron2012C_v2",
                   "split":4
+                },
+		{
+                 "dtag":"Data8TeV_DoubleElectron2012C_ecal_v2"
+                },
+		{
+                 "dtag":"Data8TeV_DoubleElectron2012D",
+                 "split":5
                 }
 	   ]
 	}
