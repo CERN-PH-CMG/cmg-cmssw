@@ -126,12 +126,20 @@ int main(int argc, char* argv[])
     Hoptim_cuts1_zpt  ->Fill(index, optim_Cuts1_zpt[index]);
     Hoptim_cuts1_zmass  ->Fill(index, optim_Cuts1_zmass[index]);
   }
- double zpt_bins[] = {0., 20., 40., 60., 80., 100., 200., 400., 800.};
+
+  //double redMet_bins[] = {0., 20., 40., 60., 80., 100., 200., 400., 800.}; 
+  double redMet_bins[] = {0., 20., 40., 60., 80., 100., 150., 400., 800.}; 
+  double zpt_bins[] = {0., 20., 40., 60., 80., 100., 200., 400., 800.};
+  const int n_redMet_bins = sizeof(redMet_bins)/sizeof(double) - 1; 
+  mon.addHistogram( new TH1F( "met_redMet_rebin",       ";Reduced E_{T}^{miss};Events", n_redMet_bins,redMet_bins) );
+  mon.addHistogram( new TH1F( "met_redMet_rebin_final", ";Reduced E_{T}^{miss};Events", n_redMet_bins,redMet_bins) );
  const int n_zpt_bins = sizeof(zpt_bins)/sizeof(double) - 1;
   mon.addHistogram( new TH2F ("mt_shapes",";cut index;M_{T} [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
   mon.addHistogram( new TH2F ("met_shapes",";cut index;met [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
   mon.addHistogram( new TH2F ("zpt_shapes",";cut index;Z p_{T} [GeV/c^{2}];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
+  mon.addHistogram( new TH2F ("redMet_shapes",";cut index;Red Met [GeV/c];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,0,800) );
   mon.addHistogram( new TH2F ("zpt_rebin_shapes",";cut index;Z p_{T} [GeV/c];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), n_zpt_bins, zpt_bins) );
+  mon.addHistogram( new TH2F ("redMet_rebin_shapes",";cut index;red-MET [GeV];#events (/5GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), n_redMet_bins,redMet_bins) );
   TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("nonresbckg_ctrl",";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
   h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
   h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
@@ -318,6 +326,7 @@ int main(int argc, char* argv[])
       std::vector<TString> dilCats;
       dilCats.push_back("ee");
       dilCats.push_back("mumu");      
+      dilCats.push_back("ll");      
       
       //build the gamma candidate
       float r9               = phys.gammas[0].r9*(isMC ? 1.005 : 1.0);
@@ -362,7 +371,7 @@ int main(int argc, char* argv[])
 		}
 	      else
 		{
-		  if( hasObjectId(ev.en_idbits[lpid],EID_LOOSE) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho,ev.en_sceta[lpid])<0.15 && phys.leptons[ilep].pt()>10) nextraleptons++;
+		  if( hasObjectId(ev.en_idbits[lpid],EID_LOOSE) && phys.leptons[ilep].ePFRelIsoCorrected2012(ev.rho)<0.15 && phys.leptons[ilep].pt()>10) nextraleptons++;
 		}
 	    }
 	}
@@ -490,7 +499,8 @@ int main(int argc, char* argv[])
 	      TString ctf=dilCats[idc]+subcats[isc];	      
 	  
 	      mon.fillHisto("eventflow_gamma", ctf,1,iweight);
-	      mon.fillHisto("zpt_dy"    ,ctf, gamma.pt(),  iweight);      //this is for synch
+	      mon.fillHisto("zpt_dy",ctf, gamma.pt(),  iweight); 
+	      mon.fillHisto("zpt_rebin",ctf, gamma.pt(),  iweight); 
 	      mon.fillHisto("eta",ctf, fabs(gamma.eta()),iweight);
 	      mon.fillHisto("qt",ctf, gamma.pt(),iweight,true);
 	      mon.fillHisto("nvtx_dy",ctf, ev.nvtx,iweight);
@@ -506,6 +516,7 @@ int main(int argc, char* argv[])
 		  mon.fillHisto("met_metL",    ctf,  axialMet,  iweight);
 		  mon.fillHisto("met_met",         ctf, metP4.pt(),iweight);
 		  mon.fillHisto("met_redMet",      ctf, redMet.pt(),iweight);
+		  mon.fillHisto("met_redMet_rebin",ctf, redMet.pt(),iweight);
 		  mon.fillHisto("met_redMet_phi_dy",      ctf, redMet.phi(),iweight);
 		  mon.fillProfile("metvsrho",  ctf, ev.rho, redMet.pt(), iweight);
 		  mon.fillHisto("met_redMetT",     ctf, redMetL,iweight);
@@ -522,12 +533,14 @@ int main(int argc, char* argv[])
 		  if(passRedMet)
 		    {
 		      mon.fillHisto("eventflow_gamma", ctf,3,iweight);
-		      if(!passBalance) {
+		      if(passBalance) {
 			mon.fillHisto("eventflow_gamma", ctf,4,iweight);
 			mon.fillHisto("mt_final",         ctf, metP4.pt(),iweight);
 			mon.fillHisto("zpt_final",        ctf, gamma.pt(),iweight);
+			mon.fillHisto("zpt_rebin_final",    ctf, gamma.pt(),  iweight); 
 			mon.fillHisto("met_met_final",         ctf, metP4.pt(),iweight);
 			mon.fillHisto("met_redMet_final",      ctf, redMet.pt(),iweight);
+			mon.fillHisto("met_redMet_rebin_final", ctf, redMet.pt(), iweight);
 			mon.fillHisto("met_redMetL_final",      ctf, redMetL,iweight);
 		      }
 		    }//end passRedMet
@@ -548,6 +561,9 @@ int main(int argc, char* argv[])
 //cout<<"gamma.pt() AFTER : "<<gamma.pt()<<" "<<mt<<endl;
 			mon.fillHisto("mt_shapes",ctf,index,mt,iweight);
 			mon.fillHisto("zpt_shapes",ctf,index,gamma.pt(),iweight);
+			mon.fillHisto("redMet_rebin_shapes",ctf,index, redMet.pt(),iweight);
+			mon.fillHisto("zpt_rebin_shapes",ctf,index,gamma.pt(),iweight);
+			mon.fillHisto("redMet_shapes",ctf,index,redMet.pt(),iweight);
 		      }
 		  }	
 		}//passDphijmet
