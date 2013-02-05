@@ -149,6 +149,7 @@ double minSignalYield = 0;
 
 bool dirtyFix1 = false;
 bool dirtyFix2 = false;
+int rebinVal = 1;
 
 int indexvbf = -1;
 int indexcut   = -1, indexcutL=-1, indexcutR=-1;
@@ -192,9 +193,7 @@ void printHelp()
   printf("--interf     --> use this to rescale xsection according to WW interferences)\n");
   printf("--minSignalYield   --> use this to specify the minimum Signal yield you want in each channel)\n");
   printf("--signalSufix --> use this flag to specify a suffix string that should be added to the signal 'histo' histogram\n");
-
-
-
+  printf("--rebin         --> rebin the histogram\n");
 }
 
 //
@@ -258,6 +257,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--dirtyFix2")    !=string::npos) { dirtyFix2=true; printf("dirtyFix2 = True\n");}
     else if(arg.find("--dirtyFix1")    !=string::npos) { dirtyFix1=true; printf("dirtyFix1 = True\n");}
     else if(arg.find("--signalSufix") !=string::npos) { signalSufix = argv[i+1]; i++; printf("signalSufix '%s' will be used\n", signalSufix.Data()); }
+    else if(arg.find("--rebin")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&rebinVal); i++; printf("rebin = %i\n", rebinVal);}
   }
   if(jsonFile.IsNull() || inFileUrl.IsNull() || histo.IsNull() || indexcut == -1 || mass==-1) { printHelp(); return -1; }
   if(AnalysisBins.size()==0)AnalysisBins.push_back("");
@@ -344,7 +344,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
             for(int x=0;x<=hshape->GetXaxis()->GetNbins()+1;x++){
                if(hshape->GetXaxis()->GetBinCenter(x)<=minCut || hshape->GetXaxis()->GetBinCenter(x)>=maxCut){ hshape->SetBinContent(x,0); hshape->SetBinError(x,0); }
             }
-            hshape->Rebin(2);
+            hshape->Rebin(rebinVal);
             hshape->GetYaxis()->SetTitle("Entries (/25GeV)");
          }
 
@@ -1257,7 +1257,7 @@ std::cout << "TESTB\n";
   SignalInterpolation(selCh,allShapesL, allShapes, allShapesR, histo);
 
 
-   if(doInterf)RescaleForInterference(selCh,allShapes, histo);
+   if(doInterf || signalSufix!="")RescaleForInterference(selCh,allShapes, histo);
 
 
 
@@ -2097,21 +2097,41 @@ void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& a
               for(size_t isignal=0; isignal<nsignal; isignal++){
                  TString proc(((TH1D*)shape.signal[isignal])->GetTitle());
                  if(mass>0 && !proc.Contains(massStr))continue;
-                 if(!proc.Contains("ggH"))continue;
-                 double scaleFactor = 1.45 - 0.00218 * mass + 0.000002625 * mass * mass;
-                 double scaleFactorDown = 1.0;
-                 double scaleFactorUp = 1 + (scaleFactor-1)*2;
 
-                 if(mass<400){
-                    scaleFactor = 1.0; scaleFactorDown=1.0; scaleFactorUp=1.0;
+                 double scaleFactor = 1.0;
+                 double scaleFactorDown = 1.0;
+                 double scaleFactorUp = 1.0;
+
+                 if(doInterf && proc.Contains("ggH")){
+                    scaleFactor = 1.45 - 0.00218 * mass + 0.000002625 * mass * mass;
+                    scaleFactorDown = 1.0;
+                    scaleFactorUp = 1 + (scaleFactor-1)*2;
+
+                    if(mass<400){
+                       scaleFactor = 1.0; scaleFactorDown=1.0; scaleFactorUp=1.0;
+                    }
+
+                    if(dirtyFix2){
+                       scaleFactor *= 0.80; scaleFactorDown*=1.00; scaleFactorUp*=1.00;                  
+                       printf("apply dirty fix --> %f\n",scaleFactor);
+                    } 
+
+                    printf("Scale Factor for Interference : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
                  }
 
-                 if(dirtyFix2){
-                    scaleFactor *= 0.80; scaleFactorDown*=1.00; scaleFactorUp*=1.00;                  
-                    printf("apply dirty fix --> %f\n",scaleFactor);
-                 } 
+/*                 if(signalSufix!=""){ //scale factor for Narrow Resonnance
+                    double cprime=1.0; double  brnew=0.0;
+                    sscanf(signalSufix.Data(), "_cp%lf_brn%lf", &cprime, &brnew);
+                    double sf = pow(cprime,2) * (1-brnew);
+                    scaleFactor*=sf; scaleFactorDown*=sf; scaleFactorUp*=sf;
+                    printf("Scale Factor for Narrow Resonnance : %f applied on %s\n",sf, proc.Data());                    
+                  }
+*/
 
-                 printf("Scale Factor : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
+                 printf("Total Scale Factor : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
+
+                 //modify the TH cross section to be saved/used later
+                 shape.xsections[proc] *= scaleFactor;
 
                  ((TH1D*)shape.signal[isignal])->Scale(scaleFactor);
                  std::vector<std::pair<TString, TH1*> >& vars = shape.signalVars[proc];
@@ -2119,12 +2139,13 @@ void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& a
                     ((TH1D*)vars[v].second)->Scale(scaleFactor);
                  }
 
-                 if(signalSufix!=""){ //add uncertainty only for NarrowResonnance case
+//                 if(signalSufix!=""){ //add uncertainty only for NarrowResonnance case
                     TH1* down = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHDown"); down->Scale(scaleFactorDown);
                     TH1* up   = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHUp"  ); up  ->Scale(scaleFactorUp  );
                     vars.push_back(std::make_pair("_interf_ggHDown", down) );
                     vars.push_back(std::make_pair("_interf_ggHUp"  , up  ) );
-                 }
+//                 }
+                  
                }
       }}
 }
@@ -2235,7 +2256,7 @@ void initializeTGraph(){
 
    double UEPSf0 []         = {0.952, 0.955, 0.958, 0.964, 0.966, 0.954, 0.946, 0.931, 0.920, 0.920, 0.920, 0.920, 0.920};
    double UEPSf1 []         = {1.055, 1.058, 1.061, 1.068, 1.078, 1.092, 1.102, 1.117, 1.121, 1.121, 1.121, 1.121, 1.121};
-   double UEPSf2 []         = {0.059, 0.990, 0.942, 0.889, 0.856, 0.864, 0.868, 0.861, 0.872, 0.872, 0.872, 0.872, 0.872}; 
+   double UEPSf2 []         = {1.059, 0.990, 0.942, 0.889, 0.856, 0.864, 0.868, 0.861, 0.872, 0.872, 0.872, 0.872, 0.872}; 
 
   TG_QCDScaleK0ggH0 = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleK0ggH0);
   TG_QCDScaleK0ggH1 = new TGraph(sizeof(QCDScaleMass)/sizeof(double), QCDScaleMass, QCDScaleK0ggH1);
