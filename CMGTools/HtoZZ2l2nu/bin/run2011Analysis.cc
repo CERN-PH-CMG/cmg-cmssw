@@ -490,7 +490,7 @@ int main(int argc, char* argv[])
      Hoptim_systs->GetXaxis()->SetBinLabel(ivar+1, varNames[ivar]);
 
      for(unsigned int nri=0;nri<NRparams.size();nri++){ 
-       mon.addHistogram( new TH2F (TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );     
+       mon.addHistogram( new TH2F (TString("mt_shapes")+NRsuffix[nri]+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/10GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,1750) );     
        TH2F *h=(TH2F *) mon.addHistogram( new TH2F ("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],";cut index;Selection region;Events",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(),6,0,6) );
        h->GetYaxis()->SetBinLabel(1,"M_{in}^{ll}/=0 b-tags");
        h->GetYaxis()->SetBinLabel(2,"M_{out}^{ll}/=0 b-tags");
@@ -499,9 +499,8 @@ int main(int argc, char* argv[])
        h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
        h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
 
-       mon.addHistogram( new TH2F (TString("mt_shapes_unroll")+NRsuffix[nri]+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/20GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 100,150,2150) );     
+       mon.addHistogram( new TH2F (TString("mt_shapes_unroll")+NRsuffix[nri]+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/20GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,1750) );     
        mon.addHistogram( (TH2F *)h->Clone("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar]) );
-
      }
      
      //      mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );
