@@ -112,7 +112,7 @@ TGraph *steerQtParameterization(TH1F *qt,std::vector<int> &thr,TPad *p)
 
 //
 enum AnalysisMode {STANDARD, ZZ, VBFZ};
-void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=STANDARD,bool is2011=false)
+void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=STANDARD,bool is2011=false,bool doRatio=false)
 {
   std::vector<TString> categs,titles,mcg;
   if(mode==ZZ){
@@ -317,17 +317,15 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	      mmwgtGr->SetPoint(eewgtGr->GetN(),x,wgt);
 	    }
 
-	  //apply direct weighting for VBF
-	  //	  if(categs[icat]=="vbf")
-	  /*
-	  {
-	    TH1 *eewgts=(TH1 *) eeqt->Clone(); eewgts->Divide(gqt); eewgts->SetDirectory(0);
-	    eewgtGr=new TGraph(eewgts); eewgtGr->SetTitle("ee");     eewgtGr->SetName("ee"+categs[icat]+"_qt_datafitwgts");
-	    TH1 *mmwgts=(TH1 *) mmqt->Clone(); mmwgts->Divide(mcgqt);  mmwgts->SetDirectory(0);
-	    mmwgtGr=new TGraph(mmwgts); mmwgtGr->SetTitle("#mu#mu"); mmwgtGr->SetName("mumu"+categs[icat]+"_qt_datafitwgts");
-	  }	      
-	  */
-	  
+	  //override with direct weights
+	  if(doRatio)
+	    {
+	      TH1 *eewgts=(TH1 *) eeqt->Clone(); eewgts->Divide(gqt); eewgts->SetDirectory(0);
+	      eewgtGr=new TGraph(eewgts); eewgtGr->SetTitle("ee");     eewgtGr->SetName("ee"+categs[icat]+"_qt_datafitwgts");
+	      TH1 *mmwgts=(TH1 *) mmqt->Clone(); mmwgts->Divide(mcgqt);  mmwgts->SetDirectory(0);
+	      mmwgtGr=new TGraph(mmwgts); mmwgtGr->SetTitle("#mu#mu"); mmwgtGr->SetName("mumu"+categs[icat]+"_qt_datafitwgts");
+	    }	      
+
 	  wc->cd();
 	  p=(TPad *) wc->cd(icat+1); 
 	  eewgtGr->Draw("al"); eewgtGr->SetMarkerColor(1); eewgtGr->SetFillStyle(0); eewgtGr->SetLineColor(1);      eewgtGr->SetLineWidth(2);
@@ -380,12 +378,6 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	  TGraph *regmcgqt  = steerQtParameterization(mcgqt,thr,(TPad *)p->cd(3));
 	  
 	  p=(TPad *) mcwc->cd(icat+1);
-	  /*
-	    TH1 *mceewgts=(TH1 *) mceeqt->Clone(); mceewgts->Divide(mcgqt);
-	    TGraph *mceewgtGr=new TGraph(mceewgts); mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
-	    TH1 *mcmmwgts=(TH1 *) mcmmqt->Clone(); mcmmwgts->Divide(mcgqt); 
-	    TGraph *mcmmwgtGr=new TGraph(mcmmwgts); mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
-	  */
 
 	  TGraph *mceewgtGr=new TGraph; mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
 	  TGraph *mcmmwgtGr=new TGraph; mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
@@ -399,6 +391,16 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	      wgt=regmcmmqt->Eval(x)/regmcgqt->Eval(x);
 	      mcmmwgtGr->SetPoint(mcmmwgtGr->GetN(),x,wgt);
 	    }
+
+	  //override with direct weights
+	  if(doRatio)
+	    {
+	      TH1 *mceewgts=(TH1 *) mceeqt->Clone(); mceewgts->Divide(mcgqt);
+	      mceewgtGr=new TGraph(mceewgts); mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
+	      TH1 *mcmmwgts=(TH1 *) mcmmqt->Clone(); mcmmwgts->Divide(mcgqt); 
+	      mcmmwgtGr=new TGraph(mcmmwgts); mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
+	    }
+
 	  
 	  mceewgtGr->Draw("al"); mceewgtGr->SetMarkerColor(1);      mceewgtGr->SetFillStyle(0); mceewgtGr->SetLineColor(1);      mceewgtGr->SetLineWidth(2);
 	  mcmmwgtGr->Draw("l");  mcmmwgtGr->SetMarkerColor(kGreen); mcmmwgtGr->SetFillStyle(0); mcmmwgtGr->SetLineColor(kGreen); mcmmwgtGr->SetLineWidth(2);

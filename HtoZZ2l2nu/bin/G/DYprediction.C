@@ -122,11 +122,15 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   std::vector<std::string> histos,dilSignal,dilcats,gcats;
   if(model==VBFZ) 
     {
-      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_qt_2012.root";
+      //      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_qt_2012.root";
+      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_nofit_qt_2012.root";
       llFile="~/work/vbfz/plotter_vbfz_2012.root";
 
 
       histos.push_back("qt");
+      histos.push_back("qt");
+      histos.push_back("zptNM1");
+      //     histos.push_back("zyNM1");
       histos.push_back("vbfmjj");
       histos.push_back("vbfmjjNM1");
       histos.push_back("vbfcandjeteta");
@@ -164,7 +168,8 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       histos.push_back("mt");
       histos.push_back("dijet_mass_shapes");
       
-      dilSignal.push_back("#alpha^{4}_{EW}-ll");
+      dilSignal.push_back("#alpha^{4}_{EW}-ll (VBFNLO)");
+      dilSignal.push_back("#alpha^{4}_{EW}-ll (MG)");
       
       dilcats.push_back("");
       gcats.push_back("");
@@ -192,7 +197,9 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //      gammaFile="~/work/htozz/53x_rereco/gamma/2012_chsnomindphisoftjet/qt/plotter.root";
       //  llFile="~/work/htozz/53x_rereco/ll/2012_chsnomindphisoftjet/plotter.root";
 
+      //gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
       gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
+      //gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt_nofit/plotter.root";
       llFile="~/work/htozz/53x_rereco/ll/2012/plotter.root";
 
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
@@ -209,32 +216,36 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011HighMass.root";
       
-     
-      //      histos.push_back("met_metNM1");
-      //      histos.push_back("met_met");
+      
+      histos.push_back("met_met");
       histos.push_back("met_met_blind");                
+      histos.push_back("met_metNM1");
 
       //histos.push_back("met_redMetNM1");
       //histos.push_back("met_redMet");
       //histos.push_back("met_redMet_blind");             
+      
+      histos.push_back("mt");     
+      histos.push_back("mtNM1");     
+      //histos.push_back("mt_blind");     
 
-//       histos.push_back("mtNM1");     
-//       histos.push_back("mt");     
-      histos.push_back("mt_blind");     
+      histos.push_back("mt_unroll");     
+      histos.push_back("mt_unroll_NM1"); 
+      //histos.push_back("mt_unroll_blind");         
       
-//       histos.push_back("pfvbfcandjeteta");
-//       histos.push_back("pfvbfcandjetpt");
-//       histos.push_back("pfvbfcandjetdeta");
-//       histos.push_back("pfvbfmjj");
-//       histos.push_back("pfvbfpremjj");
-//       histos.push_back("pfvbfcjv");
+      //       histos.push_back("pfvbfcandjeteta");
+      //       histos.push_back("pfvbfcandjetpt");
+      //       histos.push_back("pfvbfcandjetdeta");
+      //       histos.push_back("pfvbfmjj");
+      //       histos.push_back("pfvbfpremjj");
+      //       histos.push_back("pfvbfcjv");
       
       
-//      histos.push_back("mindphijmet_0");            
-      //     histos.push_back("mindphijmet_25");           
-      //   histos.push_back("mindphijmet_50");           
-      //      histos.push_back("mindphijmet");                     
-      //      histos.push_back("mindphijmetNM1");                     
+      histos.push_back("mindphijmet_0");            
+      //      histos.push_back("mindphijmet_25");           
+      //  histos.push_back("mindphijmet");                     
+      histos.push_back("mindphijmetNM1");                     
+      
       //   histos.push_back("mt_shapes");              
       //       histos.push_back("mt_redMet_shapes");       
       
@@ -343,20 +354,15 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 			  if(hsig==0) { cout << "Missing " << hsigname << endl; continue; }
 			  fixExtremities(hsig,true,true);
 			  hsig->SetTitle(dilSignal[isig].c_str());
-			  if(dilSignal[isig].find("VBF Z")!=string::npos)
-			    {
-			      if(dilSignal[isig].find("interf")==string::npos) hsig->SetTitle("#alpha_{EW}^{4}-Z");			  
-			      else                                             hsig->SetTitle("#alpha_{EW}^{4}-ll");			  
-			    }
 			  hsig->SetDirectory(0);
 			  hsig->SetLineColor(1+isig/2);
 			  hsig->SetLineStyle(1+isig%2);
 			  hsig->SetLineWidth(2);
-			  if(model==VBFZ)
-			    {
-			      if(ch[ich]=="ee")        hsig->Scale(is2011 ? 0.985 : 0.842);
-			      else if(ch[ich]=="mumu") hsig->Scale(is2011 ? 1.106 : 0.558 );
-			    }
+			 //  if(model==VBFZ)
+			  // 			    {
+			  // 			      if(ch[ich]=="ee")        hsig->Scale(is2011 ? 0.985 : 0.842);
+			  // 			      else if(ch[ich]=="mumu") hsig->Scale(is2011 ? 1.106 : 0.558 );
+			  // 			    }
 			  m_shape.signal[dilSignal[isig]]=hsig;
 			}
 		    }
@@ -472,15 +478,21 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       string distNormKey("");
 
       ////normalization factor (from MET<50)
-      if(it->first.find("met_met")!=string::npos)   
-	{ distNormKey="met"; 	
+      if(
+	 it->first.find("met_met")  != string::npos
+	 && it->first.find("blind") == string::npos
+	 && it->first.find("NM1")   == string::npos
+	 )   
+	{ 
+	  distNormKey="met"; 	
 	  normBin=normH->GetXaxis()->FindBin(50); 
 	  if(it->first.find("vbf")) normBin=normH->GetXaxis()->FindBin(40); 
 	}
-      
+
+      /*      
       ////normalization factor (from red-MET<35)
       if(it->first.find("met_redMet")!=string::npos) { distNormKey="redMet"; normBin=normH->GetXaxis()->FindBin(35); }
-	      
+
       ////normalization factor (from deta_jj<3)
       if(it->first.find("jetdeta")!=string::npos && it->first.find("NM1")==string::npos) { 	  distNormKey="jetdeta"; normBin=normH->GetXaxis()->FindBin(3); }
 
@@ -489,13 +501,13 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       if(it->first.find("vbfcjv")!=string::npos)    { distNormKey="cjv"; normBin=normH->GetXaxis()->FindBin(0.); }
       if(it->first.find("qt")!=string::npos)    { distNormKey="qt"; normBin=normH->GetXaxis()->FindBin(100); }
 
-
+      */
       ////normalization factor (from mindphijmet<0.5)
-      if(it->first.find("mindphijmet_0")!=string::npos)          { distNormKey="mindphijmet_0"; normBin=normH->GetXaxis()->FindBin(0.5); } 
-      else if(it->first.find("mindphijmet_25")!=string::npos)    { distNormKey="mindphijmet_25"; normBin=normH->GetXaxis()->FindBin(0.5); } 
-      else if(it->first.find("mindphijmet_50")!=string::npos)    { distNormKey="mindphijmet_50"; normBin=normH->GetXaxis()->FindBin(0.5); } 
-      else if(it->first.find("mindphijmetNM1")!=string::npos)    { distNormKey="mindphijmetNM1"; normBin=normH->GetXaxis()->FindBin(0.5); } 
-      else if(it->first.find("mindphijmet")!=string::npos)       { distNormKey="mindphijmet"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+     //  if(it->first.find("mindphijmet_0")!=string::npos)          { distNormKey="mindphijmet_0"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+//       else if(it->first.find("mindphijmet_25")!=string::npos)    { distNormKey="mindphijmet_25"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+//       else if(it->first.find("mindphijmet_50")!=string::npos)    { distNormKey="mindphijmet_50"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+//       else if(it->first.find("mindphijmetNM1")!=string::npos)    { distNormKey="mindphijmetNM1"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+//       else if(it->first.find("mindphijmet")!=string::npos)       { distNormKey="mindphijmet"; normBin=normH->GetXaxis()->FindBin(0.5); } 
 
       if(normBin<0) continue;
       if(shapesMap.find(it->first)==shapesMap.end()) continue;
@@ -528,7 +540,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
      //normalization factor
      float sf(1.0);
      if(it->first.find("met_redMet")!= string::npos || it->first.find("mt_redMet_shapes")!=string::npos) sf=scaleFactors["redMet"][normKey];
-     else if(it->first.find("mindphijmet") != string::npos)                                              sf=scaleFactors["mindphijmet"][normKey];
+     //     else if(it->first.find("mindphijmet") != string::npos)                                              sf=scaleFactors["mindphijmet"][normKey];
      else                                                                                                sf=scaleFactors["met"][normKey];
      if(model==VBFZ)
        {
@@ -718,17 +730,15 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       //include VBF Z in the stack
       if(model==VBFZ && SaveName.EndsWith("50"))
 	{
-	  for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
-	    {
-	      TH1 *h=it->second;
-	      h->SetFillColor(809);
-	      h->SetLineStyle(1);
-	      h->SetLineColor(1);
-	      stack->Add(h,"HIST");
-	      legA->AddEntry(h,h->GetTitle(),"F");
-	    }
+	  std::map<TString , TH1 *>::const_iterator it=shape.signal.begin();
+	  TH1 *h=it->second;
+	  h->SetFillColor(809);
+	  h->SetLineStyle(1);
+	  h->SetLineColor(1);
+	  stack->Add(h,"HIST");
+	  legA->AddEntry(h,h->GetTitle(),"F");
 	}
-
+      
  
       stack->Draw();
       stack->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
@@ -782,18 +792,18 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
     }
 
   //signal
-  if(model!=VBFZ)
+  //  if(model!=VBFZ)
+  //    {
+  std::map<TString , TH1 *>::const_iterator it=shape.signal.begin();
+  if(model==VBFZ) it++;
+  for(; it!= shape.signal.end(); it++)
     {
-      for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
-	{
-	  TH1 *h=it->second;
-	  h->Draw(canvasIsFilled ? "histsame" : "hist");
-	  legA->AddEntry(h,h->GetTitle(),"L");
-	  canvasIsFilled=true;
-	}
+      TH1 *h=it->second;
+      h->Draw(canvasIsFilled ? "histsame" : "hist");
+      legA->AddEntry(h,h->GetTitle(),"L");
+      canvasIsFilled=true;
     }
-
-
+    
 
   TPaveText* T = new TPaveText(0.1,0.995,0.9,0.96, "NDC");
   T->SetFillColor(0);
