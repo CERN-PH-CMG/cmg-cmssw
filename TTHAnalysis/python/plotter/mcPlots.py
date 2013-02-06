@@ -123,10 +123,12 @@ def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2):
         sigEntries = []; bgEntries = []
         for p in mca.listSignals():
             if p in pmap and pmap[p].Integral() >= cutoff*total: 
-                sigEntries.append( (pmap[p],p,'F') )
+                lbl = mca.getProcessOption(p,'Label',p)
+                sigEntries.append( (pmap[p],lbl,'F') )
         for p in mca.listBackgrounds():
             if p in pmap and pmap[p].Integral() >= cutoff*total: 
-                bgEntries.append( (pmap[p],p,'F') )
+                lbl = mca.getProcessOption(p,'Label',p)
+                bgEntries.append( (pmap[p],lbl,'F') )
         nentries = len(sigEntries) + len(bgEntries) + ('data' in pmap)
 
         (x1,y1,x2,y2) = (.7, .75 - textSize*max(nentries-3,0), .93, .93)
