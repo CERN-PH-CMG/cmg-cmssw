@@ -27,7 +27,8 @@ class MCAnalysis:
         self._rank        = {} ## keep ranks as in the input text file
         for line in open(samples,'r'):
             if re.match("\s*#.*", line): continue
-            line = re.sub("#.*","",line)
+            line = re.sub(r"(?<!\\)#.*","",line)  ## regexp black magic: match a # only if not preceded by a \!
+            line = line.replace(r"\#","#")        ## and now we just unescape the remaining #'s
             extra = {}
             if ";" in line:
                 (line,more) = line.split(";")[:2]
@@ -109,8 +110,8 @@ class MCAnalysis:
     def scaleUpProcess(self,process,scaleFactor):
         for tty in self._allData[process]: 
             tty.setScaleFactor( "((%s) * (%s))" % (tty.getScaleFactor(),scaleFactor) )
-    def getProcessOption(self,process,default=None):
-        tty = self._allData[process]
+    def getProcessOption(self,process,name,default=None):
+        return self._allData[process][0].getOption(name,default=default)
     def getScales(self,process):
         return [ tty.getScaleFactor() for tty in self._allData[process] ] 
     def getYields(self,cuts,process=None,nodata=False,makeSummary=False,noEntryLine=False):
