@@ -110,15 +110,21 @@ public:
 
 
 //
-std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TString targetUrl, TString kin="pt",Int_t kinBins=10,Float_t maxDRbj=0.3,std::vector<int> *optimBins=0, int filterChannel=-1)
+std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TString targetUrl, TString kin="pt",Int_t kinBins=10,Float_t maxDRbj=0.3,std::vector<int> *optimBins=0, int filterChannel=-1, TString tag="")
 {   
   std::map<TString,std::vector<float> > res;
   Int_t pflav,chcat;
   Float_t gamma,pt,eta,lxy,bqdR;
   Float_t jetpt1, jetpt2,jetpt3, jetpt4;
 
-  TString chSuf("");
-  if(filterChannel>0) { chSuf+= "_"; chSuf+=filterChannel; }
+  TString eosPrefix("root://eoscms//eos/cms/");
+  if(ctrlUrl.BeginsWith("/store"))   ctrlUrl   = eosPrefix + ctrlUrl;
+  if(targetUrl.BeginsWith("/store")) targetUrl = eosPrefix + targetUrl;
+
+  TString chSuf("inc");
+  if(filterChannel==1)  chSuf="mumu";
+  if(filterChannel==2)  chSuf="ee";
+  if(filterChannel==3)  chSuf="emu";
 
   //fill the target templates
   cout << "Filling target templates" << endl; 
@@ -213,11 +219,24 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
   ctrlF->Close();
 
   fOut->cd();
-  TString dirName(kin+"bins"); 
-  if(optimBins==0) dirName += ctrl.kinH[0]->GetXaxis()->GetNbins();
-  else             dirName += "optim";
-  dirName += chSuf;
-  TDirectory *outDir = fOut->mkdir(dirName);
+  TDirectory *outDir=0;
+  TString dirName("");
+  if(tag!="") 
+    {
+      dirName = chSuf;
+      outDir  = fOut->GetDirectory(dirName);
+      cout << chSuf << " " << outDir << " " << fOut << endl;
+    }
+  else
+    {
+      dirName =kin+"bins"; 
+      if(optimBins==0) dirName += ctrl.kinH[0]->GetXaxis()->GetNbins();
+      else             dirName += "optim";
+      dirName += chSuf;
+    }
+  if(outDir==0) outDir=fOut->mkdir(dirName);
+
+
 
   //show the results
   if(optimBins!=0)
@@ -249,7 +268,7 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
       char buf[200];
       sprintf(buf,"#splitline{CMS simulation}{%3.2f < |#eta| < %3.2f}",target.loLimits[ibin],target.hiLimits[ibin]);
 
-      TLegend *leg = new TLegend(0.6,0.8,0.9,0.9,buf,"brNDC");
+      TLegend *leg = new TLegend(0.6,0.7,0.9,0.85,buf,"brNDC");
       leg->AddEntry(target.kinH[ibin],"target","P");
       leg->AddEntry(ctrl.kinH[ibin],  "template","L");
       leg->SetNColumns(2);
@@ -269,7 +288,7 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
       maxVal=TMath::Max(TMath::Max(ctrl.lxyH[ibin]->GetMaximum(),templ.lxyH[ibin]->GetMaximum()), target.lxyH[ibin]->GetMaximum());
       ctrl.lxyH[ibin]->GetYaxis()->SetRangeUser(0,maxVal);
 
-      TPaveText *txt = new TPaveText(0.6,0.8,0.9,0.9,"brNDC");
+      TPaveText *txt = new TPaveText(0.6,0.7,0.9,0.85,"brNDC");
       txt->SetBorderSize(0);
       txt->SetFillStyle(0);
       txt->SetTextFont(42);
@@ -300,8 +319,24 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
       res["dq05"]      .push_back( targetq[1]-templq[1] );
       res["dq075"]     .push_back( targetq[2]-templq[2] );
 
+      //save to file
       outDir->cd();
-      c->Write();
+      if(tag=="")
+	{
+	  target.lxyH[ibin]->Write();
+	  templ.lxyH[ibin]->Write();
+	  c->Write();
+	}
+      else if(ibin==target.loLimits.size()-1)
+	{
+	  cout << target.lxyH[ibin]->GetName() << endl;
+	  TString outName("lxy_ttbar");
+	  if(tag.IsDigit()) outName += "_"+tag;
+	  else              outName += "syst"+tag+"_1725";
+	  target.lxyH[ibin]->Write(chSuf+"_bjetorig"+outName);
+	  templ.lxyH[ibin]->Write(chSuf+"_bjet"+outName);
+	  c->Write(chSuf+"_canvas"+outName);
+	}
     }
 
   return res;
@@ -423,14 +458,12 @@ void RunOptimization(TString iFile,TString jFile, TString kin, Float_t maxDRbj)
       //average center of the intervals found
       float avgBin(0);
       int npts(0);
-      cout << it->first << " | ";
       for(std::map<TString,std::pair<float,float> >::iterator vIt=optimBins.begin();
 	  vIt != optimBins.end();
 	  vIt++)
 	{
 	  float lo=vIt->second.first;
 	  float up=vIt->second.second;
-	  cout << vIt->first << " [" << lo << ";" << up << "]  | ";
 	  if(up>0 && lo<9999) { avgBin += 0.5*(lo+up); npts++;}
 	}
       int optimBin=int(avgBin/npts) ;
@@ -456,4 +489,42 @@ void RunOptimization(TString iFile,TString jFile, TString kin, Float_t maxDRbj)
 
 
   fOut->Close();
+}
+
+//
+void ClassifyJetKinematics(TString iFile,TString jFile, TString kin, Float_t maxDRbj,TString optFile="",TString tag="")
+{
+  if(optFile=="") 
+    {
+      RunOptimization(iFile,jFile,kin,maxDRbj);
+    }
+  else{
+    
+    std::vector<int> optimBins;
+    
+    //get optimization result
+    TFile *inF = TFile::Open(optFile);
+    if(inF==0) { cout << "Can't open optimization file: " << optFile << endl; return; }
+    TH1F *optimH=(TH1F *) inF->Get("optimh");
+    if(optimH)
+      {
+	for(int ibin=1; ibin<=optimH->GetXaxis()->GetNbins(); ibin++) 
+	  {
+	    optimBins.push_back( optimH->GetBinContent(ibin) );
+	  }
+      }
+    inF->Close();
+    if(optimBins.size()==0) { cout << "Failed to read optimization result from  "<< optFile << endl; return; }
+
+    //built the templates
+    fOut = TFile::Open("LxyTemplates.root","UPDATE");
+    //RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins,-1, tag);
+    RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 1, tag);
+    RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 2, tag);
+    RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 3, tag);
+    fOut->cd();
+    fOut->Close();
+  }
+
+
 }
