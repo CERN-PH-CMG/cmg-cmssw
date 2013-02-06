@@ -298,7 +298,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
       int color(1);       if(Process[i].isTag("color" ) ) color  = (int)Process[i]["color" ].toInt();
       int lcolor(color);  if(Process[i].isTag("lcolor") ) lcolor = (int)Process[i]["lcolor"].toInt();
       int mcolor(color);  if(Process[i].isTag("mcolor") ) mcolor = (int)Process[i]["mcolor"].toInt();
-      int fcolor(color);  if(Process[i].isTag("fcolor") ) fcolor = (int)Process[i]["fcolor"].toInt();
+      //int fcolor(color);  if(Process[i].isTag("fcolor") ) fcolor = (int)Process[i]["fcolor"].toInt();
       int lwidth(1);      if(Process[i].isTag("lwidth") ) lwidth = (int)Process[i]["lwidth"].toInt();
       int lstyle(1);      if(Process[i].isTag("lstyle") ) lstyle = (int)Process[i]["lstyle"].toInt();
       int fill(1001);     if(Process[i].isTag("fill"  ) ) fill   = (int)Process[i]["fill"  ].toInt();
@@ -1040,13 +1040,13 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
 
          fprintf(pFile,"%35s %10s ", "pdf_gg", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            if(dci.procs[j-1].Contains("ggh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_pdfp->Eval(mass,NULL,"S"),2) + pow(TG_pdfm->Eval(mass,NULL,"S"),2)));
+            if(dci.procs[j-1].Contains("ggh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*max(TG_pdfp->Eval(mass,NULL,"S"), TG_pdfm->Eval(mass,NULL,"S")));
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
          fprintf(pFile,"%35s %10s ", "pdf_qqbar", "lnN");
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
-            if(dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*sqrt(pow(TG_pdfp->Eval(mass,NULL,"S"),2) + pow(TG_pdfm->Eval(mass,NULL,"S"),2)));
+            if(dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*max(TG_pdfp->Eval(mass,NULL,"S"),TG_pdfm->Eval(mass,NULL,"S")));
             }else if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0312);}else{fprintf(pFile,"%6f ",1.0360);}
             }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0455);}else{fprintf(pFile,"%6f ",1.0502);}
             }else{fprintf(pFile,"%6s ","-");}
@@ -1862,7 +1862,22 @@ std::cout<<"DYTEST2c\n";
            for(int x=0;x<=gjets1Dshape->GetXaxis()->GetNbins()+1;x++){
               if(gjets1Dshape->GetXaxis()->GetBinCenter(x)<=cutMin || gjets1Dshape->GetXaxis()->GetBinCenter(x)>=cutMax){gjets1Dshape->SetBinContent(x,0); gjets1Dshape->SetBinError(x,0);}
            }
-           gjets1Dshape->Rebin(2);
+//           gjets1Dshape->Rebin(2);
+
+
+           //Check the binning!!!
+           if(gjets1Dshape->GetXaxis()->GetXmin()!=shapeChan_SI.bckg[ibckg]->GetXaxis()->GetXmin()){printf("Gamma+Jet templates have a different XAxis range\nStop the script here\n"); exit(0);}
+           if(gjets1Dshape->GetXaxis()->GetBinWidth(1)!=shapeChan_SI.bckg[ibckg]->GetXaxis()->GetBinWidth(1)){
+              double dywidth = gjets1Dshape->GetXaxis()->GetBinWidth(1);
+              printf("Gamma+Jet templates have a different bin width:");
+              double mcwidth = shapeChan_SI.bckg[ibckg]->GetXaxis()->GetBinWidth(1);
+              if(dywidth>mcwidth){printf("bin width in Gamma+Jet templates is larger than in MC samples --> can not rebin!\nStop the script here\n"); exit(0);}
+              int rebinfactor = (int)(mcwidth/dywidth);
+              if(((int)mcwidth)%((int)dywidth)!=0){printf("bin width in Gamma+Jet templates are not multiple of the mc histograms bin width\n"); exit(0);}
+              printf("Rebinning by %i --> ", rebinfactor);
+              gjets1Dshape->Rebin(rebinfactor);
+              printf("Binning GJets Min=%f  Max=%f Width=%f compared to MC Min=%f  Max=%f Width=%f\n", gjets1Dshape->GetXaxis()->GetXmin(), gjets1Dshape->GetXaxis()->GetXmax(), gjets1Dshape->GetXaxis()->GetBinWidth(1), shapeChan_SI.bckg[ibckg]->GetXaxis()->GetXmin(), shapeChan_SI.bckg[ibckg]->GetXaxis()->GetXmax(), shapeChan_SI.bckg[ibckg]->GetXaxis()->GetBinWidth(1));
+           }
 
 
 std::cout<<"DYTEST3\n";
