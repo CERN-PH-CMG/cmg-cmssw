@@ -37,7 +37,7 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.381.2.7 $'),
+    version = cms.untracked.string('$Revision: 1.1 $'),
     annotation = cms.untracked.string('Configuration/GenProduction/python/EightTeV/Hadronizer_MgmMatchTuneZ2star_8TeV_madgraph_tauola_cff.py nevts:-1'),
     name = cms.untracked.string('PyReleaseValidation')
 )
