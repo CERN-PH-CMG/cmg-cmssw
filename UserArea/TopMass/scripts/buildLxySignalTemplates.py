@@ -19,24 +19,6 @@ ctrlDir   = opt.cdir
 targetDir = opt.tdir
 optFile   = opt.fopt
 
-
-gROOT.ProcessLine('.L ClassifyJetKinematics.C+')
-
-#
-#first optimize based on the central sample, if needed
-#
-if(optFile==''):
-
-    print 'Optimization file was not found running first optimization'
-    os.system('root -b -q "ClassifyJetKinematics.C++(\"'+ctrlDir+'/TTJets_MassiveBinDECAYHistos.root\",\"'+targetDir+'/MC8TeV_TTJets_filt1_summary.root\",\"gamma\",0.3)"')
-    optFile="JetKinematicsOptimization.root"
-
-
-#
-# Now build the templates
-#
-print 'Using results from optimization stored @ %s'%(optFile)
-    
 targetList={ '1635':    ['TTJets_mass163_5Histos',       'MC8TeV_TTJets_163v5_filt1_summary' ],
              '1665':    ['TTJets_mass166_5Histos',       'MC8TeV_TTJets_166v5_filt1_summary' ],
              '1695':    ['TTJets_mass169_5Histos',       'MC8TeV_TTJets_169v5_filt1_summary' ],
@@ -50,6 +32,25 @@ targetList={ '1635':    ['TTJets_mass163_5Histos',       'MC8TeV_TTJets_163v5_fi
              'q2up':    ['TTJets_scaleupHistos',         'MC8TeV_TTJets_scaleup_summary'     ]
              }
 
+#compile the script
+gROOT.ProcessLine('.L ClassifyJetKinematics.C+')
+gROOT.SetBatch()
+
+#
+#first optimize based on the central sample, if needed
+#
+if(optFile==''):
+    ctrlFile   = targetList['1725'][0]
+    targetFile = targetList['1725'][1]
+    print 'Optimization file was not found running first optimization'
+    ClassifyJetKinematics(ctrlDir+'/'+ctrlFile+'.root',targetDir+'/'+targetFile+'.root','gamma',0.3)
+    optFile="JetKinematicsOptimization.root"
+
+
+#
+# Now build the templates
+#
+print 'Using results from optimization stored @ %s'%(optFile)
 os.system('rm LxyTemplates.root')
 for key in targetList:
     ctrlFile   = targetList[key][0]

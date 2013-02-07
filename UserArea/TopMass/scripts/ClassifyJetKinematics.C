@@ -442,16 +442,19 @@ void RunOptimization(TString iFile,TString jFile, TString kin, Float_t maxDRbj)
 	  else
 	    {
 	      float up(0),lo(9999);
+	      float minX(0),minY(9999);
 	      float thr = optimThr[it->first][igr]->GetY1();
 	      for(int pt=0;pt<it->second[igr]->GetN(); pt++)
 		{
 		  Double_t x,y;
 		  it->second[igr]->GetPoint(pt,x,y);
+		  if(y<minY) { minX=x; minY=y; }
 		  if(y>thr) continue;
 		  if(x>up) up=x;
 		  if(x<lo) lo=x;
 		}
 	      optimBins[ctrlTitle]=std::pair<float,float>(lo,up);
+	      //optimBins[ctrlTitle]=std::pair<float,float>(minX,minX);
 	    }
 	}
 
