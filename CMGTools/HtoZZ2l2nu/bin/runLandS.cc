@@ -1008,7 +1008,8 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
             }fprintf(pFile,"\n");
          }
 
-         if(dci.ch[i-1].Contains("ee")){
+//Commenting this part, because these uncertainties are now comming from the "les" shape
+/*         if(dci.ch[i-1].Contains("ee")){
             fprintf(pFile,"%35s %10s ", "CMS_scale_e", "lnN");
             for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
                if(!dci.procs[j-1].Contains("data")){fprintf(pFile,"%6f ",1.01);}else{fprintf(pFile,"%6s ","-");}
@@ -1019,6 +1020,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
                if(!dci.procs[j-1].Contains("data")){fprintf(pFile,"%6f ",1.01);}else{fprintf(pFile,"%6s ","-");}
             }fprintf(pFile,"\n");
          }
+*/
 
          if(mass>0){
 //         fprintf(pFile,"%35s %10s ", "Signal_rescaling_8TeV", "lnN");
