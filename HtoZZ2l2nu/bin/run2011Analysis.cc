@@ -499,8 +499,8 @@ int main(int argc, char* argv[])
        h->GetYaxis()->SetBinLabel(5,"M_{out}^{ll}/#geq 1 b-tag");
        h->GetYaxis()->SetBinLabel(6,"M_{out+}^{ll}/#geq 1 b-tag");
 
-       mon.addHistogram( new TH2F (TString("mt_shapes_unroll")+NRsuffix[nri]+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/20GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,1750) );     
-       mon.addHistogram( (TH2F *)h->Clone("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar]) );
+//       mon.addHistogram( new TH2F (TString("mt_shapes_unroll")+NRsuffix[nri]+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];#events (/20GeV)",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,1750) );     
+//       mon.addHistogram( (TH2F *)h->Clone("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar]) );
      }
      
      //      mon.addHistogram( new TH2F (TString("mt_redMet_shapes")+varNames[ivar],";cut index;M_{T} [GeV/c^{2}];",optim_Cuts1_met.size(),0,optim_Cuts1_met.size(), 160,150,950) );
@@ -1468,16 +1468,16 @@ int main(int argc, char* argv[])
 	      if(passPreselectionMbvetoMzmass && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,nrweight);
 	      
 	      //unrolled in dphi(jet,met)
-	      float unrolledmt(mt); 
-	      if(mt>1150)      mt=1140;
-	      if(passDphijmet) unrolledmt += 1000;
-	      if(passPreselectionMdphi                                                         )   mon.fillHisto(TString("mt_shapes_unroll")+NRsuffix[nri]+varNames[ivar],tags_full,index, unrolledmt,nrweight);
-	      if(passPreselectionMbvetoMzmassMdphi && passZmass         && passLocalBveto      )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,0,nrweight);
-	      if(passPreselectionMbvetoMzmassMdphi && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,1,nrweight);
-	      if(passPreselectionMbvetoMzmassMdphi && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,2,nrweight);
-	      if(passPreselectionMbvetoMzmassMdphi && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,3,nrweight);
-	      if(passPreselectionMbvetoMzmassMdphi && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,4,nrweight);
-	      if(passPreselectionMbvetoMzmassMdphi && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,nrweight);
+//	      float unrolledmt(mt); 
+//	      if(mt>1150)      mt=1140;
+//	      if(passDphijmet) unrolledmt += 1000;
+//	      if(passPreselectionMdphi                                                         )   mon.fillHisto(TString("mt_shapes_unroll")+NRsuffix[nri]+varNames[ivar],tags_full,index, unrolledmt,nrweight);
+//	      if(passPreselectionMbvetoMzmassMdphi && passZmass         && passLocalBveto      )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,0,nrweight);
+//	      if(passPreselectionMbvetoMzmassMdphi && isZsideBand       && passLocalBveto      )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,1,nrweight);
+//	      if(passPreselectionMbvetoMzmassMdphi && isZsideBandPlus   && passLocalBveto      )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,2,nrweight);
+//	      if(passPreselectionMbvetoMzmassMdphi && passZmass         && !passLocalBveto     )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,3,nrweight);
+//	      if(passPreselectionMbvetoMzmassMdphi && isZsideBand       && !passLocalBveto     )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,4,nrweight);
+//	      if(passPreselectionMbvetoMzmassMdphi && isZsideBandPlus   && !passLocalBveto     )   mon.fillHisto("mt_shapes_unroll_NRBctrl"+NRsuffix[nri]+varNames[ivar],tags_full,index,5,nrweight);
 	    }
 	  }         
 	}

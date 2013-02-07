@@ -1048,7 +1048,7 @@ std::vector<TString>  buildDataCard(Int_t mass, TString histo, TString url, TStr
          for(size_t j=1; j<=dci.procs.size(); j++){ if(dci.rates.find(RateKey_t(dci.procs[j-1],dci.ch[i-1]))==dci.rates.end()) continue;
             if(dci.procs[j-1].Contains("qqh")){setTGraph(dci.procs[j-1], systpostfix ); fprintf(pFile,"%6f ",1+0.01*max(TG_pdfp->Eval(mass,NULL,"S"),TG_pdfm->Eval(mass,NULL,"S")));
             }else if(dci.procs[j-1].BeginsWith("zz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0312);}else{fprintf(pFile,"%6f ",1.0360);}
-            }else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0455);}else{fprintf(pFile,"%6f ",1.0502);}
+            //}else if(dci.procs[j-1].BeginsWith("wz")){if(systpostfix.Contains('8')){fprintf(pFile,"%6f ",1.0455);}else{fprintf(pFile,"%6f ",1.0502);}
             }else{fprintf(pFile,"%6s ","-");}
          }fprintf(pFile,"\n");
 
@@ -1452,6 +1452,10 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
        if(syst==""){syst="";
        }else if(syst.BeginsWith("_jes")){syst.ReplaceAll("_jes","_CMS_scale_j");
        }else if(syst.BeginsWith("_jer")){syst.ReplaceAll("_jer","_CMS_res_j"); // continue;//skip res for now
+       }else if(syst.BeginsWith("_les")){ 
+          if(ch.Contains("ee")){syst.ReplaceAll("_les","_CMS_scale_e");
+          }else                {syst.ReplaceAll("_les","_CMS_scale_m");
+          }
        }else if(syst.BeginsWith("_btag")){syst.ReplaceAll("_btag","_CMS_eff_b"); 
        }else if(syst.BeginsWith("_pu" )){syst.ReplaceAll("_pu", "_CMS_hzz2l2v_pu");
        }else if(syst.BeginsWith("_ren" )){continue;   //already accounted for in QCD scales
