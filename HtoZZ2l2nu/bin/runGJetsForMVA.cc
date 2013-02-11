@@ -79,7 +79,11 @@ double hzz_vbfmjj;
 double hzz_vbfdphijj;
 double gamma_weight;
 double prescale_weight;
+int num_vtx;
+double lumi_weight;
 
+
+TBranch *b_num_vtx = hzz_tree->Branch("num_vtx",&num_vtx,"num_vtx/I");
 TBranch *b_prescale_weight = hzz_tree->Branch("prescale_weight",&prescale_weight,"prescale_weight/D");
 TBranch *b_gamma_weight = hzz_tree->Branch("gamma_weight",&gamma_weight,"gamma_weight/D");
 TBranch *b_hzz_Jet_SumPT = hzz_tree->Branch("hzz_Jet_SumPT",&hzz_Jet_SumPT,"hzz_Jet_SumPT/D");
@@ -112,6 +116,9 @@ TBranch *b_hzz_MVAMet = hzz_tree->Branch("hzz_MVAMet", &hzz_MVAMet , "hzz_MVAMet
 TBranch *b_hzz_vbfdetajj = hzz_tree->Branch("hzz_vbfdetajj", &hzz_vbfdetajj , "hzz_vbfdetajj/D");
 TBranch *b_hzz_vbfdphijj = hzz_tree->Branch("hzz_vbfdphijj", &hzz_vbfdphijj , "hzz_vbfdphijj/D");
 TBranch *b_hzz_vbfmjj = hzz_tree->Branch("hzz_vbfmjj", &hzz_vbfmjj , "hzz_vbfmjj/D");
+TBranch *b_lumi_weight = hzz_tree->Branch("lumi_weight", &lumi_weight , "lumi_weight/D");
+
+
 
   //check arguments
   if ( argc < 2 ) 
@@ -169,6 +176,7 @@ std::cout << "xsec =  " << xsec << std::endl;
       if(cutflowH) cnorm=cutflowH->GetBinContent(1);
       printf("cnorm = %f\n",cnorm);
     }
+cout <<"xsec*19600/cnorm = " << (xsec*19600)/cnorm << endl;
   //duplicate checker
   DuplicatesChecker duplicatesChecker;
   int NumberOfDuplicated(0);
@@ -473,8 +481,10 @@ pre_weight = gammaEvHandler.triggerWgt_; }
 	  float iweight=weight;
 	  if(isGammaEvent) iweight*=qtWeights[dilCats[idc]];
 
-if(iweight != 1) {cout << "iweight = " << iweight << endl;}
+//if(iweight != 1) {cout << "iweight = " << iweight << endl;}
 //cout << "puweight = " << puweight <<endl;
+
+//cout << "ev.nvtx = " << ev.nvtx << endl;
 
 hzz_Z_Mass = zmass;
 hzz_Z_PT = iboson.pt();
@@ -488,6 +498,9 @@ PUWeight = puweight;
 hzz_MET_Phi = metP4.phi();
 gamma_weight = iweight;
 prescale_weight = pre_weight;
+num_vtx = ev.nvtx;
+lumi_weight = (xsec*19600)/cnorm;
+
 
 	} // size_t idc=0; idc<dilCats.size(); idc++
 	
