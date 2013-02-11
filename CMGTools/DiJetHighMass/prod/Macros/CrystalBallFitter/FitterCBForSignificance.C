@@ -37,7 +37,7 @@ RooFitResult* FitHistWithCBShape(TH1* h, double mass)
 
   double avg = 0.97*mass;
   double rms = 0.05*mass;
-  double xmin = 0.60*mass;
+  double xmin = 0.7*mass;
   // double xmax = 1.25*mass;
   // double xmin = 0.80*mass;
   double xmax = 1.25*mass;
@@ -93,13 +93,19 @@ void FitterCBForSignificance(){
 
 
 
+  //  TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_gg_TuneD6T_Emine2013.root");
+
+  TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_qg_TuneD6T_Emine2013.root");
+
+
+
   //  TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_Qstar_2012_D6T_ak5_fat30_save.root");
   //  TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_RSGraviton_2012_D6T_ak5_GGtoGG_fat30_save.root");
-  TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_RSGraviton_2012_D6T_ak5_QQtoQQ_fat30_save.root");
+  //TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_RSGraviton_2012_D6T_ak5_QQtoQQ_fat30_save.root");
 
   //TFile* _shapes = new TFile("/afs/cern.ch/user/m/mgouzevi/scratch0/CMGTools/CMSSW_4_2_8/src/StatTools/BayesianDijetFit/Results/Resonance_Shapes_Qstar_ak5_fat30.root");
-  for (int i = 0; i < 38; i++){
-	   TH1F* shape = (TH1F*) _shapes->Get(Form("h_qstar_%d;1", 1000+i*100));
+  for (int i = 1; i < 2; i++){
+	   TH1F* shape = (TH1F*) _shapes->Get(Form("h_qg_%d;1", 1000+i*100));
 	   TH1F* shape_largeBinning = new TH1F("shape_large_binning", "", NBINS, BOUNDARIES);
 
 	   for (int j = 1; j < shape->GetNbinsX()+1; j++){
@@ -128,7 +134,7 @@ void FitterCBForSignificance(){
 
 	  cout << "mass\tsMean\tsSigma\tsAlphaHigh\tsAlphaLow\tsNHigh\tsNLow\tsFrac"<<endl;
 
-	for (int i = 0; i < 38; i++){
+	for (int i = 0; i < 40; i++){
 	
 	  cout << Masses[i] << "\t" << Means[i] << "\t" << Sigmas[i] << "\t"
 	       << alphaHights[i] << "\t\t" << alphaLows[i] << "\t"
