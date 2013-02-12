@@ -248,6 +248,7 @@ class TreeToYield:
             if plotspec.getOption('Density',False):
                 for b in xrange(1,n+1):
                     ret.SetBinContent( b, ret.GetBinContent(b) / ret.GetXaxis().GetBinWidth(b) )
+                    ret.SetBinError(   b, ret.GetBinError(b) / ret.GetXaxis().GetBinWidth(b) )
         self._stylePlot(ret,plotspec)
         return ret
     def getPlotRaw(self,name,expr,bins,cut):
