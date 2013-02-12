@@ -2,6 +2,7 @@
 from math import *
 import re
 import os.path
+from array import array
 
 ## safe batch mode
 import sys
@@ -244,6 +245,9 @@ class TreeToYield:
             n = ret.GetNbinsX()
             ret.SetBinContent(1,ret.GetBinContent(0)+ret.GetBinContent(1))
             ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
+            if plotspec.getOption('Density',False):
+                for b in xrange(1,n+1):
+                    ret.SetBinContent( b, ret.GetBinContent(b) / ret.GetXaxis().GetBinWidth(b) )
         self._stylePlot(ret,plotspec)
         return ret
     def getPlotRaw(self,name,expr,bins,cut):
@@ -256,8 +260,12 @@ class TreeToYield:
             (nbx,xmin,xmax,nby,ymin,ymax) = bins.split(",")
             histo = ROOT.TH2F("dummy","dummy",int(nbx),float(xmin),float(xmax),int(nby),float(ymin),float(ymax))
         else:
-            (nb,xmin,xmax) = bins.split(",")
-            histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
+            if bins[0] == "[":
+                edges = [ float(f) for f in bins[1:-1].split(",") ]
+                histo = ROOT.TH1F("dummy","dummy",len(edges)-1,array('f',edges))
+            else:
+                (nb,xmin,xmax) = bins.split(",")
+                histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
         histo.Sumw2()
         self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), self.adaptExpr(cut) ,"goff")
         return histo.Clone(name)
