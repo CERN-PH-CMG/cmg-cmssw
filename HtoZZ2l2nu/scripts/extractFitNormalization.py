@@ -8,7 +8,6 @@ print sys.argv
 file = ROOT.TFile(sys.argv[1])
 if(file is None): sys.exit(1)
 if(file.IsZombie()) : sys.exit(1) 
-file.ls()
 
 file2=None
 if(len(sys.argv)==3):
@@ -29,14 +28,14 @@ for i in range(nfb.getSize()):
    channel = name.split("_")[3]
    channel = channel[3:len(channel)]
    proc = name.split("_")[5]
-
+   if(len(name.split("_"))>6): proc=proc+"_"+name.split("_")[6]
+   
    if(file2 is None):
       list.append( "%-30s & %-30s & $%7.3f$ & $%7.3f$ \\\\" % (proc, channel, valb.getVal(), vals.getVal() ) )
    else:
       h = file2.Get(channel+"/"+proc)
       hstat = file2.Get(channel+"/"+proc+"_CMS_hzz2l2v_stat_"+channel+"_"+proc+"_7TeVUp");
       if(hstat==None):hstat = file2.Get(channel+"/"+proc+"_CMS_hzz2l2v_stat_"+channel+"_"+proc+"_8TeVUp");
-
       statErr = hstat.Integral();
       statErr = statErr -h.Integral();
       systErr = 0.0;
