@@ -1,5 +1,19 @@
 {
     "proc":[
+        {
+        "tag":"EWK Z+2jets",
+        "isdata":false,
+        "color":"594",
+        "lcolor":1,
+        "marker":1,
+        "data":[
+                {
+                "dtag":"MC8TeV_DYJJ",
+                "xsec":0.45,
+		"br":[1.12]
+                }
+         ]
+        },
 	{
         "tag":"WW#rightarrow 2l2#nu",
         "isdata":false,

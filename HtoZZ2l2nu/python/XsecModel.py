@@ -48,11 +48,13 @@ class XsecCorrelation(PhysicsModel):
             else:
                 self.modelBuilder.doVar("MH[%g]" % self.options.mass) 
             self.modelBuilder.doSet("POI",'mu_8TeV,mu_7TeV')
+        return 0
 
     def getYieldScale(self,bin,process):
         if not self.DC.isSignal[process]: return 1
-        for sqrts in ['7TeV', '8TeV']:
+        for sqrts in ['7TeV', '8TeV', '7', '8']:
             if sqrts in process:
+                if(sqrts.find('TeV')<0): sqrts =sqrts+'TeV'
                 return 'mu_%(sqrts)s'%locals()
 
 xsecCorrelation=XsecCorrelation()

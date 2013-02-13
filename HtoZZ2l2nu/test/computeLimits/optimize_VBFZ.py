@@ -8,16 +8,17 @@ import ROOT
 from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 
 #default values
-shapeBased='0'
-shapeName='dijet_mass_shapes'
-inUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/plotter_vbfz_2012.root'
+shapeBased='1'
+shapeName='dijet_deta_shapes'
+inUrl='~psilva/work/vbfz/plotter_vbfz_syst_2012.root'
 CWD=os.getcwd()
 phase=-1
-jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_vbfz_2012.json'
+jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_vbfzmg_2012.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
 sqrts='8'
-dyTemplates='/afs/cern.ch/user/p/psilva/public/VBFZ/gamma_vbfz_2012.root'
-smXsec=0.5484
+dyTemplates=''
+#dyTemplates='/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_syst_2012.root'
+smXsec=0.504
 
 MASS = [0]
 SUBMASS = [0]
@@ -77,11 +78,13 @@ if(phase<0 or len(CMSSW_BASE)==0):
    sys.exit(1)
 
 #build the arguments for runLands
-#LandSArg='--blindWithSignal'
-LandSArg=''
+LandSArg='--blindWithSignal'
+#LandSArg=''
 LandSArg+=' --systpostfix _%sTeV'%sqrts
 if(len(dyTemplates)>0) : LandSArg+=' --subDY '+dyTemplates
-DataCardsDir='cards%s',sqrts
+LandSArg +=' --bins mjjq016,mjjq033,mjjq049,mjjq066,mjjq083,mjjq092,mjjq100'
+
+DataCardsDir='cards%s'%(sqrts)
 
 #auxiliary function
 def findCutIndex(cut1, hcut1, cut2, hcut2, cut3, hcut3, cut4, hcut4):
@@ -114,10 +117,8 @@ if(shapeBased=='1'): DataCardsDir+='Shape'
 
 #get the cuts
 file = ROOT.TFile(inUrl)
-cuts1   = file.Get('WW#rightarrow 2l2#nu/optim_cut2_jet1_pt') 
-cuts2   = file.Get('WW#rightarrow 2l2#nu/optim_cut2_jet2_pt') 
-cuts3   = file.Get('WW#rightarrow 2l2#nu/optim_cut2_eta_gap') 
-cuts4   = file.Get('WW#rightarrow 2l2#nu/optim_cut2_dijet_mass')
+cuts   = file.Get('data/optim_cut2') 
+
 
 ######################################################################
 
@@ -130,18 +131,19 @@ if( phase == 1 ):
    commandToRun = []
 
    FILE = open(OUT+"/LIST.txt","w")
-   for i in range(1,cuts1.GetNbinsX()):
-#      if(shapeBased=='1' and cuts3.GetBinContent(i)<780):continue
-      FILE.writelines("index="+str(i).rjust(5) + " --> jet1>" + str(cuts1.GetBinContent(i)).rjust(5) + " jet2>" + str(cuts2.GetBinContent(i)).rjust(5) + "  deta>"+str(cuts3.GetBinContent(i)).rjust(5) + ' mjj>'+str(cuts4.GetBinContent(i)).rjust(5)+"\n")
+   print cuts
+   for i in range(1,cuts.GetNbinsX()):
+      #      if(shapeBased=='1' and cuts3.GetBinContent(i)<780):continue
+      FILE.writelines("index="+str(i).rjust(5) + " --> jet1>" + str(cuts.GetBinContent(i,1)).rjust(5) + " jet2>" + str(cuts.GetBinContent(i,2)).rjust(5)+"\n")
 
       #create wrappper script for each set of cuts ans submit it
       SCRIPT = open(OUT+'script_'+str(i)+'.sh',"w")
-      SCRIPT.writelines('echo "TESTING SELECTION : ' + str(i).rjust(5) + ' --> jet1>' + str(cuts1.GetBinContent(i)).rjust(5) + ' jet2>' + str(cuts2.GetBinContent(i)).rjust(5) + ' deta>'+str(cuts3.GetBinContent(i)).rjust(5)+ ' mjj>'+str(cuts4.GetBinContent(i)).rjust(5)+'";\n')
+      SCRIPT.writelines('echo "TESTING SELECTION : ' + str(i).rjust(5) + ' --> jet1>' + str(cuts.GetBinContent(i,1)).rjust(5) + ' jet2>' + str(cuts.GetBinContent(i,2)).rjust(5) + '";\n')
       SCRIPT.writelines('cd ' + CMSSW_BASE + '/src;\n')
       SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc5_amd64_gcc462")+";\n")
       SCRIPT.writelines("eval `scram r -sh`;\n")
       SCRIPT.writelines('cd ' + CWD + ';\n')
-#      SCRIPT.writelines('cd /tmp/;\n')
+      #      SCRIPT.writelines('cd /tmp/;\n')
       for m in MASS:
          shapeBasedOpt=''
          if(shapeBased=='1') : shapeBasedOpt='--shape'
@@ -149,14 +151,14 @@ if( phase == 1 ):
          if(shapeBased=='0'): cardsdir+='_count_'+str(i)
          if(shapeBased=='1'): cardsdir+='_shape_'+str(i)
          SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
-         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(i)     + " --json " + jsonUrl +" --fast " + LandSArg + " ;\n")# " --shapeMin " + str(Gzpt.Eval(m,0,"")) +" --shapeMax " + str(Gzm.Eval(m,0,""))  +" ;\n")
+         SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " --syst " + shapeBasedOpt + " --index " + str(i)     + " --json " + jsonUrl +" --fast " + LandSArg + " ;\n")
          SCRIPT.writelines("sh combineCards.sh;\n")
-#         SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " --run expected card_combined.dat > COMB.log;\n")
+         #         SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " --run expected card_combined.dat > COMB.log;\n")
          SCRIPT.writelines("combine -M MaxLikelihoodFit -m " +  str(m) + " --saveNormalizations card_combined.dat > COMB.log;\n")
-         SCRIPT.writelines("extractFitNormalization.py mlfit.root hzz2l2v_"+str(m)+"_?TeV.root > fit.txt;\n")
+         SCRIPT.writelines("extractFitNormalization.py mlfit.root hzz2l2v__%sTeV.root > fit.txt;\n"%sqrts)
          SCRIPT.writelines('tail -n 100 COMB.log > ' +OUT+str(m)+'_'+str(i)+'.log;\n')
          SCRIPT.writelines('cd ..;\n\n')
-      SCRIPT.close()
+         SCRIPT.close()
       commandToRun.append("bsub -G u_zh -q 8nh -J optim"+str(i)+" 'sh " + OUT+"script_"+str(i)+".sh &> "+OUT+"script_"+str(i)+".log'")
    FILE.close()
 
@@ -181,7 +183,7 @@ elif(phase == 2):
    for m in MASS:
       print 'Starting mass ' + str(m)
       FILE.writelines("------------------------------------------------------------------------------------\n")
-      BestLimit = []
+      BestXsec = []
       fileList = commands.getstatusoutput("ls " + OUT + str(m)+"_*.log")[1].split();           
       for f in fileList:
          exp = commands.getstatusoutput("cat " + f + " | grep \"Best fit r: \"")[1];
@@ -193,122 +195,51 @@ elif(phase == 2):
             unc = (((median+uncP) + (median-uncM))/(2*median))-1
             if(float(median)<=0.0):continue
             index = int(f[f.rfind("_")+1:f.rfind(".log")])
-            BestLimit.append("mH="+str(m)+ " --> " + ('%07.3f%%' % float(100.0*unc)) + " " + ('%07.3fpb +- [%07.3f%%/%07.3f%%]' % (float(median*smXsec) , 100.0*uncM/median , 100.0*uncP/median) ) + " " + str(index).rjust(5) + " " + str(cuts1.GetBinContent(index)).rjust(5) + " " + str(cuts2.GetBinContent(index)).rjust(5) + " " + str(cuts3.GetBinContent(index)).rjust(5) + " " + str(cuts4.GetBinContent(index)).rjust(5))
+            ixsecReport="%7.3f @ index=%d %7.3fpb [%7.3f/%7.3f] pt1=%f pt2=%f"%(float(100.0*unc),index,float(median*smXsec),100.0*uncM/median,100.0*uncP/median,cuts.GetBinContent(index,1),cuts.GetBinContent(index,2))
+            BestXsec.append(ixsecReport)
          except:
             print 'Failed with %s'%exp
       #sort the limits for this mass
-      BestLimit.sort()
-      for s in BestLimit:
-         FILE.writelines(s+"\n")
-
+      BestXsec.sort()
+      for s in BestXsec:
+         FILE.writelines(s+'\n')
+         
    #all done
    FILE.close()
-   print("file "+fileName+".txt is written: it contains all selection points ordered by exp limit")
+   print("file "+fileName+".txt is written: it contains all selection points ordered by best cross section measurement")
 
 ######################################################################
 
 elif(phase == 3 ):
 
    print '#              #'
-   print '# FINAL LIMITS #'
+   print '# FINAL XSEC   #'
    print '#              #'
-   Gmet  = ROOT.TGraph(len(SUBMASS));
-   Gzpt = ROOT.TGraph(len(SUBMASS));
-   Gzm = ROOT.TGraph(len(SUBMASS));
-   Gjt = ROOT.TGraph(len(SUBMASS));
 
-   if(cutList=='') :
-      fileName = OUT+"/OPTIM_"
-      if(shapeBased=='1'):
-         fileName+='SHAPE'
-      else:
-         fileName+='COUNT'
-      fileName+=".txt"
+   fileName = OUT+"/OPTIM_"
+   if(shapeBased=='1'):
+      fileName+='SHAPE'
+   else:
+      fileName+='COUNT'
+   fileName+=".txt"
       
-      mi=0
-      for m in MASS:
+   #if you want to display more than 3 options edit -m3 field
+   cut_lines=commands.getstatusoutput("cat " + fileName)[1].split('\n')
+   print '\tOption \t dS/S \tjet 1\tjet 2'
+   ictr=1
+   for c in cut_lines:
+      if(len(c.split())<2): continue
+      print '\t #%s \t %s \t %s \t %s'%(c.split()[2],c.split()[0],c.split()[6],c.split()[7])
+      ictr+=1
+   print "Which option you want to keep?"
 
-         #if you want to display more than 3 options edit -m3 field
-         cut_lines=commands.getstatusoutput("cat " + fileName + " | grep 'mH="+str(m)+"' -m20")[1].split('\n')
-         print 'mH='+str(m)+'\tOption \tR \tjet 1\tjet 2\tDeltaEta\tMjj' 
-         ictr=1
-         for c in cut_lines:
-            print '\t #'+ str(ictr) + '\t' + c.split()[2] + '\t' + c.split()[4] + '\t' + c.split()[5] + '\t' + c.split()[6]+ '\t' + c.split()[7]
-            ictr+=1
-         print "Which option you want to keep?"
-         opt = int(raw_input(">"))-1
-
-         #save cut chosen
-         metCut=float(cut_lines[opt].split()[4])
-         zptCut=float(cut_lines[opt].split()[5])
-         zmCut=float(cut_lines[opt].split()[6])
-         jtCut=float(cut_lines[opt].split()[7])
-         Gmet .SetPoint(mi, m, metCut);
-         Gzpt.SetPoint(mi, m, zptCut);
-         Gzm.SetPoint(mi, m, zmCut);
-         Gjt.SetPoint(mi, m, jtCut);
-         mi+=1
-   else :
-      mi=0
-      f= open(cutList,'r')
-      for line in f :
-         vals=line.split(' ')
-         Gmet .SetPoint(mi, float(vals[0]), float(vals[1]));
-         Gzpt.SetPoint(mi, float(vals[0]), float(vals[2]));
-         Gzm.SetPoint(mi, float(vals[0]), float(vals[3]));
-         Gjt.SetPoint(mi, float(vals[0]), float(vals[4]));
-         mi+=1
-      f.close()
-
-   Gmet.Set(mi);
-   Gzpt.Set(mi);
-   Gzm.Set(mi);
-
-
-
-
-   #display cuts chosen
-   ROOT.gROOT.SetStyle('Plain')
-   ROOT.gStyle.SetOptStat(False);
-   c1 = ROOT.TCanvas("c1", "c1",600,600);
-   c1.Divide(2,2);
-   c1.cd(1);
-   Gmet.SetMarkerStyle(20);
-   Gmet.SetTitle("Jet1");
-   Gmet.Draw("APC");
-   Gmet.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
-   Gmet.GetYaxis().SetTitle("Jet 1");
-
-   c1.cd(2);
-   Gzpt.SetMarkerStyle(20);
-   Gzpt.SetTitle("Jet2");
-   Gzpt.Draw("APC");
-   Gzpt.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
-   Gzpt.GetYaxis().SetTitle("Jet 2");
-
-   c1.cd(3);
-   Gzm.SetMarkerStyle(20);
-   Gzm.SetTitle("Delta Eta");
-   Gzm.Draw("APC");
-   Gzm.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
-   Gzm.GetYaxis().SetTitle("#Delta #eta");
-
-   c1.cd(4);
-   Gjt.SetMarkerStyle(20);
-   Gjt.SetTitle("Mjj Threshold");
-   Gjt.Draw("APC");
-   Gjt.GetXaxis().SetTitle("m_{H} (GeV/c^{2})");
-   Gjt.GetYaxis().SetTitle("Mjj Threshold cut");
-
-   c1.cd(0);
-   c1.Update();
-   c1.SaveAs("OptimizedCuts.png")
-
-   #run limits for the cuts chosen (for intermediate masses use spline interpolation)
-   for m in SUBMASS:
-        index = findCutIndex(Gmet.Eval(m,0,""), cuts1, Gzpt.Eval(m,0,""), cuts2,  Gzm.Eval(m,0,""), cuts3, Gjt.Eval(m,0,""), cuts4);
-        print("mH="+str(m).rjust(3)+ " met>"+str(cuts1.GetBinContent(index)).rjust(5) + " zpt>" + str(cuts2.GetBinContent(index)).rjust(5) + "  |zll-zmass|<"+str(cuts3.GetBinContent(index)).rjust(5) + ' redMetJetPt>'+str(cuts4.GetBinContent(index)).rjust(5) )
-
+   #save cut chosen
+   opt = int(raw_input(">"))
+   c=cut_lines[opt]
+   pt1Cut=float(c.split()[6].split('=')[1])
+   pt2Cut=float(c.split()[7].split('=')[1])
+   optCuts="index="+str(opt).rjust(5) + " --> jet1>" + str(pt1Cut).rjust(5) + " jet2>" + str(pt2Cut).rjust(5)+"\n"
+   print optCuts
    while True:
         ans = raw_input('Use this fit and compute final limits? (y or n)\n')
         if(ans=='y' or ans == 'Y'): break;
@@ -316,41 +247,31 @@ elif(phase == 3 ):
    print 'YES'
 
 
+   m=0
    list = open(OUT+'list.txt',"w")
    listcuts = open(OUT+'cuts.txt',"w")
-   for m in SUBMASS:
-        index = findCutIndex(Gmet.Eval(m,0,""), cuts1, Gzpt.Eval(m,0,""), cuts2,  Gzm.Eval(m,0,""), cuts3, Gjt.Eval(m,0,""), cuts4);
-        SCRIPT = open(OUT+'/script_mass_'+str(m)+'.sh',"w")
-        SCRIPT.writelines('cd ' + CMSSW_BASE + ';\n')
-        SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc5_amd64_gcc462")+";\n")
-        SCRIPT.writelines("eval `scram r -sh`;\n")
-        SCRIPT.writelines('cd ' + CWD + ';\n')
-        shapeBasedOpt=''
-        if(shapeBased=='1') : shapeBasedOpt='--shape'
+   SCRIPT = open(OUT+'/script_mass_'+str(m)+'.sh',"w")
+   SCRIPT.writelines('cd ' + CMSSW_BASE + ';\n')
+   SCRIPT.writelines("export SCRAM_ARCH="+os.getenv("SCRAM_ARCH","slc5_amd64_gcc462")+";\n")
+   SCRIPT.writelines("eval `scram r -sh`;\n")
+   SCRIPT.writelines('cd ' + CWD + ';\n')
+   shapeBasedOpt=''
+   if(shapeBased=='1') : shapeBasedOpt='--shape'
 
-        SideMassesArgs = ' '
-        SideMasses = findSideMassPoint(m)
-        if(not (SideMasses[0]==SideMasses[1])):
-           print "Side Mass for mass " + str(m) + " are " + str(SideMasses[0]) + " and " + str(SideMasses[1])
-           Lindex = findCutIndex(Gmet.Eval(SideMasses[0],0,""), cuts1, Gzpt.Eval(SideMasses[0],0,""), cuts2,  Gzm.Eval(SideMasses[0],0,""), cuts3, Gjt.Eval(SideMasses[0],0,""), cuts4);
-           Rindex = findCutIndex(Gmet.Eval(SideMasses[1],0,""), cuts1, Gzpt.Eval(SideMasses[1],0,""), cuts2,  Gzm.Eval(SideMasses[1],0,""), cuts3, Gjt.Eval(SideMasses[1],0,""), cuts4);
-           print "cutIndex for sideBand are " + str(Lindex) + " and " + str(Rindex) 
-           SideMassesArgs += "--mL " + str(SideMasses[0]) + " --mR " + str(SideMasses[1]) + " --indexL " + str(Lindex) +  " --indexR " + str(Rindex) + " "
+   cardsdir=DataCardsDir+"/"+str(m);
+   SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
+   SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(opt) + " --json " + jsonUrl + " " + LandSArg +" ;\n")# " --shapeMin " + str(Gzpt.Eval(m,0,"")) +" --shapeMax " + str(Gzm.Eval(m,0,""))  +" ;\n")
+   SCRIPT.writelines("sh combineCards.sh;\n")
+   SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " card_combined.dat > COMB.log;\n") 
+   SCRIPT.writelines("combine -M MaxLikelihoodFit -m " +  str(m) + " --saveNormalizations card_combined.dat > COMB.log;\n")
+   SCRIPT.writelines("extractFitNormalization.py mlfit.root hzz2l2v__%sTeV.root > fit.txt;\n"%sqrts)
+   SCRIPT.writelines('cd ..;\n\n') 
+   SCRIPT.close()
+   os.system("bsub -G u_zh -q 2nd 'sh " + OUT+"script_mass_"+str(m)+".sh'")
+   if(shapeBased=='1'):   list.writelines('H'+str(m)+'_shape_'+str(opt)+'\n'); 
+   else :                  list.writelines('H'+str(m)+'_count_'+str(opt)+'\n');
 
-
-        cardsdir=DataCardsDir+"/"+str(m);
-        SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
-        SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg +" ;\n")# " --shapeMin " + str(Gzpt.Eval(m,0,"")) +" --shapeMax " + str(Gzm.Eval(m,0,""))  +" ;\n")
-        SCRIPT.writelines("sh combineCards.sh;\n")
-        SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + " card_combined.dat > COMB.log;\n") 
-        SCRIPT.writelines("combine -M MaxLikelihoodFit -m " +  str(m) + " --saveNormalizations card_combined.dat > COMB.log;\n")
-        SCRIPT.writelines("extractFitNormalization.py mlfit.root hzz2l2v_*_?TeV.root > fit.txt;\n")
-        SCRIPT.writelines('cd ..;\n\n') 
-	SCRIPT.close()
-        os.system("bsub -G u_zh -q 2nd 'sh " + OUT+"script_mass_"+str(m)+".sh'")
-	if(shapeBased=='1'):   list.writelines('H'+str(m)+'_shape_'+str(index)+'\n'); 
-	else:                  list.writelines('H'+str(m)+'_count_'+str(index)+'\n');
-        listcuts.writelines(str(m)+' ' + str(Gmet.Eval(m,0,"")) + ' ' + str(Gzpt.Eval(m,0,""))+' '+ str(Gzm.Eval(m,0,"")) +'\n');
+   listcuts.writelines(optCuts +'\n')
    list.close();
    listcuts.close();
 
