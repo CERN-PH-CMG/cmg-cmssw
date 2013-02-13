@@ -113,7 +113,7 @@ Shape_t cloneShape(Shape_t &orig,TString newName)
 //
 enum SubtractionTypes {NOSUBTRACTION, HALVE, EWKSUBTRACTION, EWKSUBTRACTIONHALVE};
 enum ModelType { HZZ,ZZ,VBFZ};
-void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
+void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 {
   setTDRStyle();
  
@@ -123,60 +123,80 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   if(model==VBFZ) 
     {
       //      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_qt_2012.root";
-      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_nofit_qt_2012.root";
-      llFile="~/work/vbfz/plotter_vbfz_2012.root";
+      //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_nofit_qt_2012.root";
+      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_qt_2012.root";
+      //llFile="~/work/vbfz/plotter_vbfz_2012.root";
+      llFile="~/work/vbfz/plotter_vbfz_syst_2012.root";
 
 
-      histos.push_back("qt");
-      histos.push_back("qt");
-      histos.push_back("zptNM1");
+     histos.push_back("vbfcandjetdeta");
+      //histos.push_back("qt");
+      // histos.push_back("qt");
+      //      histos.push_back("zptNM1");
       //     histos.push_back("zyNM1");
-      histos.push_back("vbfmjj");
-      histos.push_back("vbfmjjNM1");
-      histos.push_back("vbfcandjeteta");
-      histos.push_back("vbfcandjetetaNM1");
+       histos.push_back("vbfmjj");
+      //       histos.push_back("vbfmjjNM1");
+      //       histos.push_back("vbfcandjeteta");
+      //       histos.push_back("vbfcandjetetaNM1");
       histos.push_back("vbfcandjet1eta");
-      histos.push_back("vbfcandjet1etaNM1");
+      //       histos.push_back("vbfcandjet1etaNM1");
       histos.push_back("vbfcandjet2eta");
-      histos.push_back("vbfcandjet2etaNM1");
-      histos.push_back("vbfcandjetdeta");
-      histos.push_back("vbfcandjetdetaNM1");
+      //       histos.push_back("vbfcandjet2etaNM1");
+      //       histos.push_back("vbfcandjetdeta");
+      //      histos.push_back("vbfcandjetdetaNM1");
       histos.push_back("vbfcandjetpt");
-      histos.push_back("vbfcandjet1pt");
-      histos.push_back("vbfcandjet2pt");
-      histos.push_back("vbfhardpt");
-      histos.push_back("vbfcjv");
-      histos.push_back("vbfcjv15");
-      histos.push_back("vbfcjv20");
-      histos.push_back("vbfhtcjv");
-      histos.push_back("vbfhtcjv15");
-      histos.push_back("vbfhtcjv20");
-      histos.push_back("vbfdphijj");
-      histos.push_back("vbfpt");
-      histos.push_back("vbfmaxcjvjpt");
-//       histos.push_back("zpt_cm");
-//       histos.push_back("jjpt_cm");
-//       histos.push_back("jet_beam_cm");
-//       histos.push_back("z_beam_cm");
-//       histos.push_back("jet_z_cm");
-//       histos.push_back("jet_zstar_cm");
-//       histos.push_back("jet_zstar_asym_cm");
-//       histos.push_back("jet_z_asym_cm");
-//       histos.push_back("jet_beam_asym_cm");
-      histos.push_back("met");
-      histos.push_back("metL");
-      histos.push_back("mt");
-      histos.push_back("dijet_mass_shapes");
+      //       histos.push_back("vbfcandjet1pt");
+      //       histos.push_back("vbfcandjet2pt");
+      //       histos.push_back("vbfhardpt");
+      //       histos.push_back("vbfcjv");
+      //       histos.push_back("vbfcjv15");
+      //       histos.push_back("vbfcjv20");
+      //       histos.push_back("vbfhtcjv");
+      //       histos.push_back("vbfhtcjv15");
+      //       histos.push_back("vbfhtcjv20");
+      //       histos.push_back("vbfdphijj");
+      //       histos.push_back("vbfpt");
+      //       histos.push_back("vbfmaxcjvjpt");
+      // 
+      //      histos.push_back("zpt_cm");
+      //       histos.push_back("jjpt_cm");
+      //       histos.push_back("jet_beam_cm");
+      //       histos.push_back("z_beam_cm");
+      //       histos.push_back("jet_z_cm");
+      //       histos.push_back("jet_zstar_cm");
+      //       histos.push_back("jet_zstar_asym_cm");
+      //       histos.push_back("jet_z_asym_cm");
+      //       histos.push_back("jet_beam_asym_cm");
+      //histos.push_back("met");
+      //histos.push_back("metL");
+      // histos.push_back("mt");
+      //      histos.push_back("dijet_mass_shapes");
       
-      dilSignal.push_back("#alpha^{4}_{EW}-ll (VBFNLO)");
+      //      dilSignal.push_back("#alpha^{4}_{EW}-ll (VBFNLO)");
       dilSignal.push_back("#alpha^{4}_{EW}-ll (MG)");
       
       dilcats.push_back("");
+      dilcats.push_back("mjjq016");
+      dilcats.push_back("mjjq033");
+      dilcats.push_back("mjjq049");
+      dilcats.push_back("mjjq066");
+      dilcats.push_back("mjjq083");
+      dilcats.push_back("mjjq092");
+      dilcats.push_back("mjjq100");
+     
       gcats.push_back("");
-      dilcats.push_back("eq2jets");
-      gcats.push_back("eq2jets");
-//       dilcats.push_back("geq3jets");
-//       gcats.push_back("geq3jets");
+      gcats.push_back("mjjq016");
+      gcats.push_back("mjjq033");
+      gcats.push_back("mjjq049");
+      gcats.push_back("mjjq066");
+      gcats.push_back("mjjq083");
+      gcats.push_back("mjjq092");
+      gcats.push_back("mjjq100");
+
+      //      dilcats.push_back("eq2jets");
+      //      gcats.push_back("eq2jets");
+      //      dilcats.push_back("geq3jets");
+      //      gcats.push_back("geq3jets");
     }
   else
     {
@@ -197,11 +217,20 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //      gammaFile="~/work/htozz/53x_rereco/gamma/2012_chsnomindphisoftjet/qt/plotter.root";
       //  llFile="~/work/htozz/53x_rereco/ll/2012_chsnomindphisoftjet/plotter.root";
 
-      //gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
-      gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
       //gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt_nofit/plotter.root";
+      //gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
+
+
+      //HIGGS
+      gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
       llFile="~/work/htozz/53x_rereco/ll/2012/plotter.root";
 
+      //SM ZZ
+      //gammaFile="~lpernie/public/4Pedro/gamma_plotter.root";
+      //gammaFile="~lpernie/public/4Pedro/gamma_plotter_fit.root";
+      //llFile="~lpernie/public/4Pedro/dil_plotter.root";
+
+  
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
 
@@ -216,78 +245,60 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
       //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011HighMass.root";
       
-      
-      histos.push_back("met_met");
-      histos.push_back("met_met_blind");                
-      histos.push_back("met_metNM1");
+      if(model==HZZ)
+	{
+	  histos.push_back("met_met");
+	  histos.push_back("met_met_blind");                
+	  histos.push_back("met_metNM1");
+	  //histos.push_back("met_redMetNM1");
+	  //histos.push_back("met_redMet");
+	  //histos.push_back("met_redMet_blind");             
+	  histos.push_back("mt");     
+	  histos.push_back("mt_blind");     
+	  histos.push_back("mtNM1");     
+	  //histos.push_back("mt_blind");     
+	  //histos.push_back("mt_unroll");     
+	  //histos.push_back("mt_unroll_NM1"); 
+	  //histos.push_back("mt_unroll_blind");         
+	  histos.push_back("pfvbfcandjeteta");
+	  histos.push_back("pfvbfcandjetpt");
+	  histos.push_back("pfvbfcandjetdeta");
+	  histos.push_back("pfvbfmjj");
+	  histos.push_back("pfvbfpremjj");
+	  //       histos.push_back("pfvbfcjv");
+	  
+	  
+	  histos.push_back("mindphijmet_0");            
+	  histos.push_back("mindphijmet");            
+	  histos.push_back("mindphijmetNM1");                     
 
-      //histos.push_back("met_redMetNM1");
-      //histos.push_back("met_redMet");
-      //histos.push_back("met_redMet_blind");             
+	  
+	  dilSignal.push_back("ggH(600)#rightarrow ZZ");
+	  dilSignal.push_back("qqH(600)#rightarrow ZZ");
+	  dilSignal.push_back("ggH(300)#rightarrow ZZ");
+	  dilSignal.push_back("qqH(300)#rightarrow ZZ");
       
-      histos.push_back("mt");     
-      histos.push_back("mtNM1");     
-      //histos.push_back("mt_blind");     
+	  dilcats.push_back("eq0jets");
+	  dilcats.push_back("geq1jets");
+	  dilcats.push_back("vbf");
+	  dilcats.push_back("");
 
-      histos.push_back("mt_unroll");     
-      histos.push_back("mt_unroll_NM1"); 
-      //histos.push_back("mt_unroll_blind");         
-      
-      //       histos.push_back("pfvbfcandjeteta");
-      //       histos.push_back("pfvbfcandjetpt");
-      //       histos.push_back("pfvbfcandjetdeta");
-      //       histos.push_back("pfvbfmjj");
-      //       histos.push_back("pfvbfpremjj");
-      //       histos.push_back("pfvbfcjv");
-      
-      
-      histos.push_back("mindphijmet_0");            
-      //      histos.push_back("mindphijmet_25");           
-      //  histos.push_back("mindphijmet");                     
-      histos.push_back("mindphijmetNM1");                     
-      
-      //   histos.push_back("mt_shapes");              
-      //       histos.push_back("mt_redMet_shapes");       
-      
-      dilSignal.push_back("ggH(600)#rightarrow ZZ");
-      dilSignal.push_back("qqH(600)#rightarrow ZZ");
-      dilSignal.push_back("ggH(300)#rightarrow ZZ");
-      dilSignal.push_back("qqH(300)#rightarrow ZZ");
-      
-      dilcats.push_back("eq0jets");
-      //      dilcats.push_back("eq1jets");
-      dilcats.push_back("geq1jets");
-      //  dilcats.push_back("geq2jets");
-      dilcats.push_back("vbf");
-      //  dilcats.push_back("vbf0");
-      // dilcats.push_back("vbf1");
-      // dilcats.push_back("vbf2");
-      dilcats.push_back("");
 
-      //gcats.push_back("eq0softjets");  //0 soft jets to be subtracted
-      gcats.push_back("eq0jets");
-      gcats.push_back("eq1jets");
-      gcats.push_back("eq2jets");
-      gcats.push_back("geq3jets");
-      gcats.push_back("vbf");
-      //      gcats.push_back("vbf0");
-      // gcats.push_back("vbf1");
-      // gcats.push_back("vbf2");
-      gcats.push_back("");
-
-      //   string histos[] = {//"met_met",
-      //     //    "met_redMet"//,
-      //     "met_min3Met"//,
-      // 		     //"met_redMet15",
-      // 		     //"met_redMet20",
-      // 		     // "balance",
-      // 		     //"mt",
-      // 		     //"mindphijmet",
-      // 		     // "pfvbfpremjj","pfvbfcandjetdeta","pfvbfmjj"
-      // 		     //,"pfvbfcjv", "pfvbfhardpt",
-      // 		     //"mt_shapes"//,
-      // 		     //"zpt_shapes",
-      // 		     // "met_shapes"
+	  //gcats.push_back("eq0softjets");  //0 soft jets to be subtracted
+	  gcats.push_back("eq0jets");
+	  gcats.push_back("eq1jets");
+	  gcats.push_back("eq2jets");
+	  gcats.push_back("geq3jets");
+	  gcats.push_back("vbf");
+	  gcats.push_back("");
+	}
+      else
+	{
+	  histos.push_back("met_met");
+	  histos.push_back("zpt_rebin_final");
+	  dilcats.push_back("eq0jets");
+	  gcats.push_back("eq0jets");
+	}
     };
 
 
@@ -308,7 +319,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   else
     {
       dilprocs.push_back("WW#rightarrow 2l2#nu"); dilColors.push_back(592);
-      dilprocs.push_back("ZZ");                   dilColors.push_back(590);
+      if(model==HZZ) dilprocs.push_back("ZZ");  
+      else          dilprocs.push_back("ZZ#rightarrow 2l2#nu");  
+      dilColors.push_back(590);
+      dilprocs.push_back("EWK Z+2jets");
+      dilColors.push_back(804);
       dilprocs.push_back("WZ#rightarrow 3l#nu");  dilColors.push_back(596);
       dilprocs.push_back("t#bar{t}");             dilColors.push_back(8);
       dilprocs.push_back("Single top");           dilColors.push_back(824);
@@ -318,7 +333,7 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
   const size_t ndilprocs=dilprocs.size();
   const size_t nDilSignals=dilSignal.size();
   const size_t ngcats=gcats.size();
-  string gprocs[]={"Z#gamma#rightarrow#nu#nu#gamma","W#gamma#rightarrowl#nu#gamma","W#rightarrow l#nu","data (#gamma)"};
+  string gprocs[]={"EWK","data (#gamma)"};
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
 
   std::map<string,Shape_t> shapesMap,gShapesMap, gFinalShapesMap;
@@ -477,6 +492,16 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 
       string distNormKey("");
 
+      
+      //use the inclusive delta Eta_jj distribution to normalize the template
+      if(model==VBFZ && it->first.find("deta") != string::npos && it->first.find("mjjq")==string::npos)
+	{
+	  distNormKey="detajj";
+	  normBin=normH->GetXaxis()->FindBin(0.5);
+	  cout << distNormKey << " " << normBin << " " << endl;
+	}
+
+
       ////normalization factor (from MET<50)
       if(
 	 it->first.find("met_met")  != string::npos
@@ -489,26 +514,26 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 	  if(it->first.find("vbf")) normBin=normH->GetXaxis()->FindBin(40); 
 	}
 
+      
       /*      
-      ////normalization factor (from red-MET<35)
-      if(it->first.find("met_redMet")!=string::npos) { distNormKey="redMet"; normBin=normH->GetXaxis()->FindBin(35); }
-
-      ////normalization factor (from deta_jj<3)
-      if(it->first.find("jetdeta")!=string::npos && it->first.find("NM1")==string::npos) { 	  distNormKey="jetdeta"; normBin=normH->GetXaxis()->FindBin(3); }
-
-      ////normalization factor (from m_jj<500)
-      if(it->first.find("mjj")!=string::npos)    { distNormKey="mjj"; normBin=normH->GetXaxis()->FindBin(500); }
-      if(it->first.find("vbfcjv")!=string::npos)    { distNormKey="cjv"; normBin=normH->GetXaxis()->FindBin(0.); }
-      if(it->first.find("qt")!=string::npos)    { distNormKey="qt"; normBin=normH->GetXaxis()->FindBin(100); }
-
+    ////normalization factor (from red-MET<35)
+    if(it->first.find("met_redMet")!=string::npos) { distNormKey="redMet"; normBin=normH->GetXaxis()->FindBin(35); }
+    
+    ////normalization factor (from deta_jj<3)
+    if(it->first.find("jetdeta")!=string::npos && it->first.find("NM1")==string::npos) { 	  distNormKey="jetdeta"; normBin=normH->GetXaxis()->FindBin(3); }
+    
+    ////normalization factor (from m_jj<500)
+    if(it->first.find("mjj")!=string::npos)    { distNormKey="mjj"; normBin=normH->GetXaxis()->FindBin(500); }
+    if(it->first.find("vbfcjv")!=string::npos)    { distNormKey="cjv"; normBin=normH->GetXaxis()->FindBin(0.); }
+    if(it->first.find("qt")!=string::npos)    { distNormKey="qt"; normBin=normH->GetXaxis()->FindBin(100); }
       */
       ////normalization factor (from mindphijmet<0.5)
-     //  if(it->first.find("mindphijmet_0")!=string::npos)          { distNormKey="mindphijmet_0"; normBin=normH->GetXaxis()->FindBin(0.5); } 
-//       else if(it->first.find("mindphijmet_25")!=string::npos)    { distNormKey="mindphijmet_25"; normBin=normH->GetXaxis()->FindBin(0.5); } 
-//       else if(it->first.find("mindphijmet_50")!=string::npos)    { distNormKey="mindphijmet_50"; normBin=normH->GetXaxis()->FindBin(0.5); } 
-//       else if(it->first.find("mindphijmetNM1")!=string::npos)    { distNormKey="mindphijmetNM1"; normBin=normH->GetXaxis()->FindBin(0.5); } 
-//       else if(it->first.find("mindphijmet")!=string::npos)       { distNormKey="mindphijmet"; normBin=normH->GetXaxis()->FindBin(0.5); } 
-
+      //  if(it->first.find("mindphijmet_0")!=string::npos)          { distNormKey="mindphijmet_0"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+      //       else if(it->first.find("mindphijmet_25")!=string::npos)    { distNormKey="mindphijmet_25"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+      //       else if(it->first.find("mindphijmet_50")!=string::npos)    { distNormKey="mindphijmet_50"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+      //       else if(it->first.find("mindphijmetNM1")!=string::npos)    { distNormKey="mindphijmetNM1"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+      //       else if(it->first.find("mindphijmet")!=string::npos)       { distNormKey="mindphijmet"; normBin=normH->GetXaxis()->FindBin(0.5); } 
+      
       if(normBin<0) continue;
       if(shapesMap.find(it->first)==shapesMap.end()) continue;
       TString normKey(it->first);
@@ -544,9 +569,11 @@ void getDYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
      else                                                                                                sf=scaleFactors["met"][normKey];
      if(model==VBFZ)
        {
-	 if(it->first.find("qt")!=string::npos) sf=scaleFactors["qt"][normKey];
-	 else if(it->first.find("cjv")!=string::npos) sf=scaleFactors["cjv"][normKey];
-	 else                                   sf=scaleFactors["jetdeta"][normKey];
+	 sf=scaleFactors["detajj"][normKey];
+	 cout << "detajj" << " " << normKey << " " << sf << endl;
+	 //if(it->first.find("qt")!=string::npos) sf=scaleFactors["qt"][normKey];
+	 //else if(it->first.find("cjv")!=string::npos) sf=scaleFactors["cjv"][normKey];
+	 //else                                   sf=scaleFactors["jetdeta"][normKey];
        }
      if(sf==0) continue;
      if(gFinalShapesMap.find(it->first)==gFinalShapesMap.end()) cout << "BUG: " << it->first << " not found in gamma sample..." << endl;
