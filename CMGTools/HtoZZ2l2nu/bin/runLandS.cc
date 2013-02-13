@@ -324,7 +324,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
 
          if(hshape2D){
             histoName.ReplaceAll(ch,ch+"_proj"+procCtr);
-   	    hshape   = hshape2D->ProjectionY(histoName,cutBin,cutBin);
+            hshape   = hshape2D->ProjectionY(histoName,cutBin,cutBin);
             if(hshape->Integral()<=0 && varName=="" && !isData){hshape->Reset(); hshape->SetBinContent(1, 1E-10);}
 
             if(isnan((float)hshape->Integral())){hshape->Reset();}
@@ -1861,13 +1861,15 @@ std::cout<<"DYTEST2a " << selCh[i]+AnalysisBins[b]+"_"+mainHisto <<"\n";
            if(!gjets2Dshape)printf("Can't find histo: %s in g+jets template\n",(selCh[i]+AnalysisBins[b]+"_"+mainHisto).Data());
 std::cout<<"DYTEST2b\n";
 
-           TH1* gjets1Dshape  = gjets2Dshape->ProjectionY("tmpName",indexcut_,indexcut_);
+           TH1* gjets1Dshape  = NULL;
+            gjets1Dshape = gjets2Dshape->ProjectionY("tmpName",indexcut_,indexcut_);
+            //apply the cuts
+            for(int x=0;x<=gjets1Dshape->GetXaxis()->GetNbins()+1;x++){
+               if(gjets1Dshape->GetXaxis()->GetBinCenter(x)<=cutMin || gjets1Dshape->GetXaxis()->GetBinCenter(x)>=cutMax){gjets1Dshape->SetBinContent(x,0); gjets1Dshape->SetBinError(x,0);}
+            }
+
 std::cout<<"DYTEST2c\n";
 
-           //apply the cuts
-           for(int x=0;x<=gjets1Dshape->GetXaxis()->GetNbins()+1;x++){
-              if(gjets1Dshape->GetXaxis()->GetBinCenter(x)<=cutMin || gjets1Dshape->GetXaxis()->GetBinCenter(x)>=cutMax){gjets1Dshape->SetBinContent(x,0); gjets1Dshape->SetBinError(x,0);}
-           }
 //           gjets1Dshape->Rebin(2);
 
 

@@ -547,6 +547,45 @@
 	   ]
 	},
 	{
+	"tag":"ggH(550)#rightarrow ZZ",
+	"isdata":false,
+        "isinvisible":true,
+	"spimpose":true,
+	"color":"805",
+	"lwidth":2,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+                "dtag":"MC8TeV_GGtoH550toZZto2L2Nu",
+                "split":1,
+                "xsec":0.8141,
+                "xsecunc":[15.2 ,-13.2],
+                "br":[0.266,0.0403896]
+		}
+	   ]
+	},
+	{
+	"tag":"qqH(550)#rightarrow ZZ",
+        "isinvisible":true,
+	"isdata":false,
+	"spimpose":true,
+	"color":"797",
+        "lwidth":3,
+        "lstyle":3,
+	"fill":0,
+	"marker":1,
+	"data":[
+		{
+                "dtag":"MC8TeV_VBFtoH550toZZto2L2Nu",
+		"split":1,
+                "xsec":0.1223,
+                "xsecunc":[3.5,-4.1],
+		"br":[0.266,0.0403896]
+		}
+	   ]
+	},
+	{
 	"tag":"ggH(600)#rightarrow ZZ",
         "isinvisible":true,
 	"isdata":false,
