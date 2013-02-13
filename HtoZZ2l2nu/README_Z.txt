@@ -32,7 +32,7 @@ runPlotter --json data/photon-samples_vbfz_2012.json --inDir ~/work/vbfz/results
 #CHECK ME THIS POINT FWD
 
 #optimize
-python test/computeLimits/optimize_VBFZ.py -p 1 -m 0 -i ~/work/vbfz/results/2012/plotter_vbfz_2012.root -j $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_vbfz_2012.json -e 8 -t ~/work/vbfz/results/2012/gamma_vbfz_2012.root -x 0.215
+python test/computeLimits/optimize_VBFZ.py -p 1
 
 #correlation plot
 combineCards.py ee_7TeV=hzz2l2v__7TeV_ee.dat ee_8TeV=hzz2l2v__8TeV_ee.dat mumu_7TeV=hzz2l2v__7TeV_mumu.dat mumu_8TeV=hzz2l2v__8TeV_mumu.dat > hzz2l2v__7p8TeV_combined.dat

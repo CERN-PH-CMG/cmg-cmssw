@@ -120,8 +120,8 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
     titles.push_back("=0jets");
   }
   else if(mode==VBFZ){
-    categs.push_back("eq2jets"); categs.push_back("geq3jets");
-    titles.push_back("=2jets");  titles.push_back("#geq3jets");
+    categs.push_back("");
+    titles.push_back("#geq 2 jets");
   }
   else{
     categs.push_back("eq0jets"); categs.push_back("eq1jets"); categs.push_back("eq2jets"); categs.push_back("geq3jets");  //if(mode==STANDARD) categs.push_back("vbf");
@@ -217,11 +217,23 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	    }
 	  ih  = (TH1F *)gIn->Get(mcg[imcg]+"/mumu"+categs[icat]+"_qt");
 	  if(ih==0) continue;
+<<<<<<< FitQtSpectrum.C
+	  if(mcgqt==0)
+	    {
+	      mcgqt=ih;
+	      mcgqt->SetDirectory(0);  
+	      mcgqt->SetName("mcgamma"+categs[icat]); 
+	      mcgqt->SetTitle("#gamma,"+titles[icat]);
+	    }
+	  else
+	    mcgqt->Add(ih);
+=======
 	  if(imcg==0) mcgqt=ih;
 	  else mcgqt->Add(ih,1.);
 	  mcgqt->SetDirectory(0);  
 	  mcgqt->SetName("mcgamma"+categs[icat]); 
 	  mcgqt->SetTitle("#gamma,"+titles[icat]);
+>>>>>>> 1.7
 	}
       
       fIn->Close();
