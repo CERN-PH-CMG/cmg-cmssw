@@ -217,7 +217,6 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	    }
 	  ih  = (TH1F *)gIn->Get(mcg[imcg]+"/mumu"+categs[icat]+"_qt");
 	  if(ih==0) continue;
-<<<<<<< FitQtSpectrum.C
 	  if(mcgqt==0)
 	    {
 	      mcgqt=ih;
@@ -227,13 +226,6 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	    }
 	  else
 	    mcgqt->Add(ih);
-=======
-	  if(imcg==0) mcgqt=ih;
-	  else mcgqt->Add(ih,1.);
-	  mcgqt->SetDirectory(0);  
-	  mcgqt->SetName("mcgamma"+categs[icat]); 
-	  mcgqt->SetTitle("#gamma,"+titles[icat]);
->>>>>>> 1.7
 	}
       
       fIn->Close();

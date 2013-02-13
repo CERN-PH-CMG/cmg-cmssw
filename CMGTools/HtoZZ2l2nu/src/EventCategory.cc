@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/08/06 07:45:49 $
- *  $Revision: 1.16 $
+ *  $Date: 2012/09/04 06:12:17 $
+ *  $Revision: 1.17 $
  *  \author L. Quertenmont
  */
 
@@ -64,6 +64,11 @@ int EventCategory::Get(const PhysicsEvent_t& phys, PhysicsObjectJetCollection* J
   
   for(size_t ijet=0; ijet<jets.size(); ijet++){
       if(jets[ijet].pt()<=30)continue;
+      if(isGamma)
+	{
+	  double dR(deltaR(phys.gammas[0],jets[ijet]));
+	  if(dR<0.5) continue;
+	}
       NJets++;
   }
 
@@ -86,11 +91,13 @@ int EventCategory::Get(const PhysicsEvent_t& phys, PhysicsObjectJetCollection* J
           if(jets[ijet].btag1>2.0) NBJets++;
       }
       
+      //this part is not totally synchronized... but should yield minor differences
       if(!isGamma){
 	  if(phys.leptons[0].eta()>MinEta && phys.leptons[0].eta()<MaxEta)NCentralLepton++;
 	  if(phys.leptons[1].eta()>MinEta && phys.leptons[1].eta()<MaxEta)NCentralLepton++;
       }else{
-	  if(phys.gammas[0].eta()>MinEta && phys.gammas[0].eta()<MaxEta)NCentralLepton=2;
+	if(phys.gammas[0].eta()>MinEta && phys.gammas[0].eta()<MaxEta)NCentralLepton=2;
+	//NCentralLepton=2;
       }
       isVBF = (dEta>4.0) && (VBFSyst.M()>500) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2); //ICHEP2012 selection
 //      isVBF = (dEta>4.5) && (VBFSyst.M()>450) && (NCentralJet==0) && (NBJets==0) && (NCentralLepton==2); //new selection optimized with datadriven backgrounds

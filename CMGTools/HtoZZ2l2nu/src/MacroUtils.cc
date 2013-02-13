@@ -157,7 +157,7 @@ double weightVBF(std::string SampleName, double m_gen, double mass){
 
 //
 double weightNarrowResonnance(std::string SampleName, double m_gen, double mass, double Cprime, double BRnew, TGraph* hLineShapeNominal, TF1 *decayProbPdf){
-   if((Cprime<0 || BRnew<0) || (Cprime==0 && BRnew==0))return 1.0;
+  if((Cprime<0 || BRnew<0) || (Cprime==0 && BRnew==0)) return 1.0;
 
    bool isZZ = (SampleName.find("ZZ")!=std::string::npos) ;
 
@@ -188,10 +188,10 @@ double weightNarrowResonnance(std::string SampleName, double m_gen, double mass,
    }else if(m_gen == 950){    decay_width = 540.00000;
    }else if(m_gen ==1000){    decay_width = 647.00000;
    }
-
-	 double OverallXSectionScaleFactor = 1.0;//*hLineShapeNominal->Integral();
+	 
+   double OverallXSectionScaleFactor = 1.0;//*hLineShapeNominal->Integral();
    decay_width = decay_width * pow(Cprime,2) / (1-BRnew);      
-//      OverallXSectionScaleFactor *= pow(Cprime,2) * (1-BRnew);
+   //      OverallXSectionScaleFactor *= pow(Cprime,2) * (1-BRnew);
 
    //the CPS shape
    double weight_CPS = hLineShapeNominal->Eval(mass);
@@ -222,9 +222,9 @@ double weightNarrowResonnance(std::string SampleName, double m_gen, double mass,
 
 
 //
-std::pair<TH1F *,TH1F *> generateHistoEnvelope(TH1F *h,bool debug)
+std::pair<TH1 *,TH1 *> generateHistoEnvelope(TH1 *h,bool debug)
 {
-  std::pair<TH1F *,TH1F *> toReturn(0,0);
+  std::pair<TH1 *,TH1 *> toReturn(0,0);
   if(h==0) return toReturn;
 
   //get bin with min. relative error and use as reference
@@ -319,8 +319,8 @@ std::pair<TH1F *,TH1F *> generateHistoEnvelope(TH1F *h,bool debug)
   shiftDown->SetParameter(4,bR);
 
   
-  TH1F *hUp   = (TH1F *) h->Clone("hUp");   hUp->Reset("ICE");   hUp->SetLineColor(kRed);    hUp->SetDirectory(0);
-  TH1F *hDown = (TH1F *) h->Clone("hDown"); hDown->Reset("ICE"); hDown->SetLineColor(kBlue); hDown->SetDirectory(0); 
+  TH1 *hUp   = (TH1 *) h->Clone("hUp");   hUp->Reset("ICE");   hUp->SetLineColor(kRed);    hUp->SetDirectory(0);
+  TH1 *hDown = (TH1 *) h->Clone("hDown"); hDown->Reset("ICE"); hDown->SetLineColor(kBlue); hDown->SetDirectory(0); 
   for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
     {
       float x=h->GetBinCenter(ibin);

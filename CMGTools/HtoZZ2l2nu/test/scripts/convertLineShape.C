@@ -95,12 +95,12 @@ void convertLineShape()
 		{
 		  TGraph *gr=new TGraph;
 		  TString grname="nominal";
-		  if(p==1) grname="rwgt";
-		  if(p==2) grname="rwgt_up";
-		  if(p==3) grname="rwgt_down";
-		  if(p==4) grname="rwgtpint";
-		  if(p==5) grname="rwgtpint_up";
-		  if(p==6) grname="rwgtpint_down";
+		  if(p==1) grname="cps";
+		  if(p==2) grname="cps_up";
+		  if(p==3) grname="cps_down";
+		  if(p==4) grname="int";
+		  if(p==5) grname="int_up";
+		  if(p==6) grname="int_down";
 		  gr->SetName(grname);
 		  graphs.push_back(gr);
 
@@ -108,6 +108,10 @@ void convertLineShape()
 		  gr->SetName(grname+"_shape");
 		  shapeGraphs.push_back(gr);
 		}
+
+	      int refGraph=0;
+	      if(p>=4) refGraph==1;
+
 	      if( (it->second)[0]==0)
 		{
 		  graphs[p]->SetPoint(graphs[p]->GetN(),it->first,0);
@@ -115,7 +119,7 @@ void convertLineShape()
 		}
 	      else
 		{
-		  graphs[p]->SetPoint(graphs[p]->GetN(),it->first,(it->second)[p]/(it->second)[0]);
+		  graphs[p]->SetPoint(graphs[p]->GetN(),it->first,(it->second)[p]/(it->second)[refGraph]);
 		  shapeGraphs[p]->SetPoint(shapeGraphs[p]->GetN(),it->first,(it->second)[p]);
 		}
 	    }

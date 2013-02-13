@@ -8,7 +8,8 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 {
   //trigger thresholds to consider
   isMC_ = runProcess.getParameter<bool>("isMC");
- 
+  isMC_=false;
+
   //open file and retrieve weights + mass shapes
   std::vector<std::string> gammaPtWeightsFiles =  runProcess.getParameter<std::vector<std::string> >("weightsFile");  
   TString cats[]   =  {"eq0jets","eq1jets","eq2jets","geq3jets","vbf","geq1jets"};
@@ -49,7 +50,8 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 		  key = dilCats[id] + (isMC_ ? "" : cats[ic]);
 		  if(zmassH_.find(key)!=zmassH_.end()) continue;
 		      
-		  TString hname= key+ (isMC_ ? "_mczmass" : "_zmass"); 
+		  TString hname= key+"_zmass"; 
+		  //TString hname= key+ (isMC_ ? "_mczmass" : "_zmass"); 
 		  //		  TString hname= key+ (isMC_ ? "_mczmass" : "_datazmass"); 
 		  TH1 *massh = (TH1 *) fwgt->Get(hname);
 		  if(massh!=0)
@@ -108,13 +110,13 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, bool is2011)
 	  triggerThr_=75; 
 	  triggerWgt_=phys.gammaPrescale[3];
 	}
-      else if(pt>=100 && pt<170)
+      else if(pt>=100/* && pt<170*/)
 	{
 	  if( !( (phys.gammaTriggerWord>>4) & 0x1) ) return isGoodEvent_;
 	  triggerThr_=90; 
 	  triggerWgt_=phys.gammaPrescale[4];
 	}
-      else if(pt>=170)
+      /*      else if(pt>=170)
 	{
 	  bool has150(( (phys.gammaTriggerWord>>6) & 0x1));
 	  bool has160(( (phys.gammaTriggerWord>>7) & 0x1));
@@ -130,6 +132,7 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, bool is2011)
 	      triggerWgt_=phys.gammaPrescale[7];
 	    }
 	}
+      */
     }
   else {   triggerThr_ =( phys.cat-22)/1000; triggerWgt_=1;}
   

@@ -1,30 +1,25 @@
 {
     "proc":[
         {
-        "tag":"#alpha^{6}_{EW}-ll#nu#nu",
+        "tag":"#alpha^{4}_{EW}-ll (MG)",
         "isdata":false,
         "color":"804",
         "lcolor":1,
         "marker":1,
 	"fill":0,
+	"lstyle":9,
+	"lwidth":2,
 	"spimpose":true,
         "data":[
                 {
-                "dtag":"no MC8TeV_eevvjj_VBFNLO",
-                "aoddir":["/store/cmst3/user/psilva/VBFNLO/eevvjj/8TeV/AODSIM"],
-                "xsec":0.15153,
-		"br":[1.11]
-                },
-                {
-                "dtag":"no MC8TeV_mmvvjj_VBFNLO",
-                "aoddir":["/store/cmst3/user/psilva/VBFNLO/mmvvjj/8TeV/AODSIM"],
-                "xsec":0.1513,
-		"br":[1.11]
+                "dtag":"MC8TeV_DYJJ",
+                "xsec":0.45,
+		"br":[1.12]
                 }
          ]
         },
         {
-        "tag":"#alpha^{4}_{EW}-ll",
+        "tag":"#alpha^{4}_{EW}-ll (VBFNLO)",
         "isdata":false,
         "issignal":true,
         "color":"804",
@@ -320,20 +315,32 @@
                  "split":2
                 },
                 {
-	         "dtag":"Data8TeV_DoubleElectron2012D_203894to206940",
-                 "split":2
+	         "dtag":"Data8TeV_DoubleElectron2012C_ecal_v2"
                 },
                 {
-	         "dtag":"Data8TeV_DoubleMu2012D_203894to206940",
-                 "split":2
+	         "dtag":"Data8TeV_DoubleMu2012C_ecal_v2"
                 },
                 {
-	         "dtag":"Data8TeV_SingleMu2012D_203894to206940",
-                 "split":2
+	         "dtag":"Data8TeV_SingleMu2012C_ecal_v2"
                 },
                 {
-                 "dtag":"Data8TeV_MuEG2012D_203894to206940",
-                 "split":2
+                 "dtag":"Data8TeV_MuEG2012C_ecal_v2"
+                },
+                {
+	         "dtag":"Data8TeV_DoubleElectron2012D",
+                 "split":5
+                },
+                {
+	         "dtag":"Data8TeV_DoubleMu2012D",
+                 "split":5
+                },
+                {
+	         "dtag":"Data8TeV_SingleMu2012D",
+                 "split":5
+                },
+                {
+                 "dtag":"Data8TeV_MuEG2012D",
+                 "split":5
                 }
 	    ]
 	}
