@@ -16,17 +16,12 @@ $limitcommand="limit.py --asymptotic --userOpt '--minosAlgo stepping'";
 
 ###############
 @Cat=($cat);
-if($cat==6){
-    @Cat=(0,1,2,3,5);
-    
-    ###For VBF Projection Study
-    #@Cat=(0,1,5);
-    ###For 1-Jet Projection Study
-    #@Cat=(0,1,3);
-
-    ###For VBF+1Jet Projection Study
-    #@Cat=(0,1,3,5);
-}
+if($cat==12){@Cat=(0,2);}#Boost_low
+if($cat==13){@Cat=(1,3);}#Boost_high
+if($cat==23){@Cat=(0,1,2,3);}#Boost
+if($cat==15){@Cat=(0,1,5);}#VBF
+if($cat==100){@Cat=(0,1,2,3,5);}##All
+if( 1000<=$cat && $cat<1010){ @Cat=($cat-1000); } ##fits for ZTT and  but no signal
 
 #############
 @Mass=($mass);
@@ -39,6 +34,9 @@ $ch="mt";
 if($channel==2||$channel==102||$channel==202){
     $ch="et";
 }
+if($channel==3||$channel==103||$channel==203){
+    $ch="em";
+}
 
 ############plot layout
 $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout.py";
@@ -47,12 +45,13 @@ $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout.py";
 $ECMS="7";
 if($channel>100){
     $ECMS="8";
-    #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012.py";
+    $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012.py";
     #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_30.py";
     #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_15.py";
     #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout_ProjectionStudy.py";
     #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_ABC.py";
-    $layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_D.py";
+    #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_D.py";
+    #$layout="/afs/cern.ch/user/b/benitezj/public/datacards/sm_htt_layout2012_ABCD.py";
 }
 if($channel>200){
     $ECMS="14";
@@ -62,43 +61,18 @@ if($channel>200){
 ###scale to the crossections
 if($Input ne "0"){
     `cp ${Input} ./htt_${ch}.inputs-sm-${ECMS}TeV.root`;
-    `scale2SM.py -i htt_${ch}.inputs-sm-${ECMS}TeV.root --samples="ggH, qqH, VH" -e ${ECMS} -v 110-145:5`;
+    if($cat<1000){
+	`scale2SM.py -i htt_${ch}.inputs-sm-${ECMS}TeV.root --samples="ggH, qqH, VH" -e ${ECMS} -v 110-145:5`;
+    }
 }
 
 $topdir=`pwd`;
 chomp($topdir);
 
 
-#######limit for each category
+#######limit for individual categories
 print "creating datacard txt files:\n";
-if($cat==6){
-    `rm -rf SMAll`;
-    `mkdir SMAll`;
-	
-    foreach  $i (@Mass){
-	#print "${i} ";
-	`mkdir SMAll/${i}`;	  
-	
-	foreach $d (@Cat){
-	    chdir("./SMAll/${i}");
-	    $cardcommand="create-datacard.py -i ${topdir}/htt_${ch}.inputs-sm-${ECMS}TeV.root  -o ${d}_${i}.txt -c ${UncsDir}/cgs-sm-${ECMS}TeV-0${d}.conf -u ${UncsDir}/unc-sm-${ECMS}TeV-0${d}.vals -d ${UncsDir}/unc-sm-${ECMS}TeV-0${d}.conf ${i}";
-
-	    print "${cardcommand}\n";
-            `${cardcommand}`;
-	    chdir("../../.");
-	    
-	}
-	print "\n";
-    }
-    #print "Computing limits:\n";
-    #print "${limitcommand} ./SMAll/*\n";
-    #`${limitcommand} ./SMAll/*`;
-    foreach  $i (@Mass){
-	print "${limitcommand} ./SMAll/${i}\n";
-	`${limitcommand} ./SMAll/${i} >> ./SMAll/${i}/limitcommand.log 2>&1`;
-    }
-
-}else {
+if(0<=$cat&&$cat<10){
     foreach $d (@Cat){
 	print "SM${d}: ";
         `rm -rf SM${d}`;
@@ -127,20 +101,75 @@ if($cat==6){
     }
 }
 
+#########Combination of categories
+if(10<$cat && $cat<1000){
+    `rm -rf SM${cat}`;
+    `mkdir SM${cat}`;
+	
+    foreach  $i (@Mass){
+	#print "${i} ";
+	`mkdir SM${cat}/${i}`;	  
+	
+	foreach $d (@Cat){
+	    chdir("./SM${cat}/${i}");
+	    $cardcommand="create-datacard.py -i ${topdir}/htt_${ch}.inputs-sm-${ECMS}TeV.root  -o ${d}_${i}.txt -c ${UncsDir}/cgs-sm-${ECMS}TeV-0${d}.conf -u ${UncsDir}/unc-sm-${ECMS}TeV-0${d}.vals -d ${UncsDir}/unc-sm-${ECMS}TeV-0${d}.conf ${i}";
 
-######plot the limits 
+	    print "${cardcommand}\n";
+            `${cardcommand}`;
+	    chdir("../../.");
+	    
+	}
+	print "\n";
+    }
+
+    foreach  $i (@Mass){
+	print "${limitcommand} ./SM${cat}/${i}\n";
+	`${limitcommand} ./SM${cat}/${i} >> ./SM${cat}/${i}/limitcommand.log 2>&1`;
+    }
+
+}
+
+
+#######fit for ZTT yield
+if(1000<=$cat && $cat<1010){
+    foreach $d (@Cat){
+	print "SM${d}: \n";
+        `rm -rf SM${d}`;
+	`mkdir SM${d}`;
+	`mkdir SM${d}/125`;
+	chdir("./SM${d}/125");
+	$cardcommand="create-datacard.py -i ${topdir}/htt_${ch}.inputs-sm-${ECMS}TeV.root  -o ${d}_125.txt -c ${UncsDir}/cgs-ZTT-0${d}.conf -u ${UncsDir}/unc-ZTT-0${d}.vals -d ${UncsDir}/unc-ZTT-0${d}.conf";
+	print "${cardcommand}\n";
+	`${cardcommand}`;
+	chdir("../../.");
+
+	print "\n";
+    }
+    print "Running fit:\n";
+    foreach $d (@Cat){
+	$cmd="limit.py --max-likelihood --stable --rMin 0 --rMax 2 SM${d}/125 >> SM${d}/125/maxLikelihood.log 2>&1";
+	print "${cmd}\n";
+	`${cmd}`;
+    }
+}
+
+
+
+###########################plot the limits ##############################
 if($plot==1){
     print "Ploting the limits:\n";
     `rm -f limits_sm.root`;
-    if($cat==6){
-	$plotcommand="plot asymptotic ${layout} SMAll";
+    if(abs($cat)>10){
+	$CAT=abs($cat);
+	$plotcommand="plot asymptotic ${layout} SM${CAT}";
 	print "${plotcommand}\n";
-	`rm -f SMAll_sm.*`;
+	`rm -f SM${CAT}_sm.*`;
 	`${plotcommand}`;
     }else {
 	foreach $d (@Cat){
-	    `rm -f SM$d_sm.*`;
-	    $plotcommand="plot asymptotic ${layout} SM$d";
+	    $CAT=abs($d);
+	    `rm -f SM$CAT_sm.*`;
+	    $plotcommand="plot asymptotic ${layout} SM${CAT}";
 	    print "${plotcommand}\n";
 	    `${plotcommand}`;
 	}

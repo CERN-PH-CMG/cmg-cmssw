@@ -105,14 +105,14 @@ public:
   TH1F* getWJetsNJet();
   TH1F* getWNJetSum();
   TH1F* getTotalMCSM(Int_t WType=0);//sum of OS backgrounds execpt for the QCD
-  TH1F* getQCDInc(Int_t WType=0);
+  TH1F* getQCDInc(Int_t WType=0,bool cleanNegativeBins=1);
   TH1F* getQCDIncWNJet();
 
   //
-  TH1F* getWNJetSumAllNoChCut();
-  TH1F* getWJetsNJetAllNoChCut();//combined without proper weights
-  TH1F* getWNJetSumAllNoChNoMTCut();
-  TH1F* getWJetsNJetAllNoChNoMTCut();
+  TH1F* getWNJetSumNoChCut();
+  TH1F* getWJetsNJetNoChCut();//combined without proper weights
+  TH1F* getWNJetSumNoChNoMTCut();
+  TH1F* getWJetsNJetNoChNoMTCut();
   TH1F* getWJetsNJetLooseTau();
   TH1F* getWJetsIncShape();
   TH1F* getWJetsIncNoMTCut();
@@ -129,15 +129,23 @@ public:
 
   ///HCP 2012 Methods
   TH1F* getWJetsNJetVBFHCP();
+  TH1F* getWJetsNJetVBFLooseIso();
   TH1F* getQCDVBFHCP();
   TH1F* getQCDVBFHCP2();
+  TH1F* getQCDVBFLooseIso();
+  TH1F* getSampleVBFHCPShape(TString sample);//used for the methods below
   TH1F* getSampleVBFHCP(TString sample);//used for the methods below
   TH1F* getTTJetsVBFHCP();
   TH1F* getZToLJetVBFHCP();
   TH1F* getZLVBFHCP();
+  TH1F* getZLLVBFHCP();
   TH1F* getDiBosonVBFHCP();
-  TH1F* getZToTauTauVBFHCP();
+  TH1F* getZToTauTauVBF();
   TH1F* getZL2012();
+  TH1F* getZL2012Type1();
+  TH1F* getZL2012Type1LowHigh();
+  TH1F* getZL2012Type2();
+  TH1F* getZLBoost();
 
 
 
@@ -224,6 +232,7 @@ public:
     TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
     TString boostcut=TString("(njet>=1&&nbjet==0)")+"*"+metcut;
+    TString boostcutnomet=TString("(njet>=1&&nbjet==0)");
     TString notboostcut=TString("(!")+boostcut+")";
     TString bjetcut="(njet<2&&nbjet>=1)";
     TString notbjetcut=TString("(!")+bjetcut+")";
@@ -234,6 +243,7 @@ public:
     SMcut[0]=zerojetcut+"*"+taulowcut;
     SMcut[1]=zerojetcut+"*"+tauhighcut;
     SMcut[2]=notvbfcut+"*"+boostcut+"*"+taulowcut;
+    //SMcut[2]=notvbfcut+"*"+boostcutnomet+"*"+taulowcut;
     SMcut[3]=notvbfcut+"*"+boostcut+"*"+tauhighcut;
     SMcut[4]=vbfcut;
     SMcut[5]=bjetcut+"*"+taulowcut;

@@ -2,14 +2,14 @@
 #include "Sample.h"
 #include <TString.h>
 
-TauMuPlotter * configTauMu2012AB(TString name, TString path){  
+TauMuPlotter * configTauMu2012ABC(TString name, TString path){  
 
   TauMuPlotter * analysis = new TauMuPlotter(name);
   analysis->setOutputPath(path);
   analysis->setQCDOStoSSRatio(1.06);
   analysis->setZTTType(2);
   analysis->mTCut_=20;
-  analysis->eventWeight_="pupWeights1*embeddedGenWeight*triggerEffWeightsTau1*triggerEffWeightsMu1*selectionEffWeightsId1*selectionEffWeightsIso1*signalWeight";//
+  analysis->eventWeight_="pupWeights2*embeddedGenWeight*triggerEffWeightsTau2*triggerEffWeightsMu2*selectionEffWeightsId2*selectionEffWeightsIso2*signalWeight";//
 
 
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
@@ -22,6 +22,15 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
   TauPlusX2012B->setSampleLumi(4403.);
   analysis->addSample(TauPlusX2012B);
 
+  Sample* TauPlusX2012Cv1 = new Sample("TauPlusX2012Cv1",path);
+  TauPlusX2012Cv1->setDataType("Data");
+  TauPlusX2012Cv1->setSampleLumi(495.003);
+  analysis->addSample(TauPlusX2012Cv1);
+
+  Sample* TauPlusX2012Cv2 = new Sample("TauPlusX2012Cv2",path);
+  TauPlusX2012Cv2->setDataType("Data");
+  TauPlusX2012Cv2->setSampleLumi(1288 + 4828 + 281);
+  analysis->addSample(TauPlusX2012Cv2);
 
 
   Sample* Embedded2012A = new Sample("Embedded2012A",path);
@@ -32,7 +41,14 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
   Embedded2012B->setDataType("Embedded");
   analysis->addSample(Embedded2012B);
 
- 
+  Sample* Embedded2012Cv1 = new Sample("Embedded2012Cv1",path);
+  Embedded2012Cv1->setDataType("Embedded");
+  analysis->addSample(Embedded2012Cv1);
+
+  Sample* Embedded2012Cv2 = new Sample("Embedded2012Cv2",path);
+  Embedded2012Cv2->setDataType("Embedded");
+  analysis->addSample(Embedded2012Cv2);
+
 
 
 

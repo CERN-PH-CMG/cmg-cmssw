@@ -9,13 +9,17 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
   analysis->setQCDOStoSSRatio(1.06);
   analysis->setZTTType(2);
   analysis->mTCut_=20;
-  analysis->eventWeight_="pupWeights1*embeddedGenWeight*triggerEffWeightsTau1*triggerEffWeightsMu1*selectionEffWeightsId1*selectionEffWeightsIso1*signalWeight";//
-
-
+ 
+  
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
   TauPlusX2012A->setSampleLumi(96.977+316.128+396.213);
   analysis->addSample(TauPlusX2012A);
+
+  Sample* TauPlusX2012A2 = new Sample("TauPlusX2012A2",path);
+  TauPlusX2012A2->setDataType("Data");
+  TauPlusX2012A2->setSampleLumi(82.136);
+  analysis->addSample(TauPlusX2012A2);
 
   Sample* TauPlusX2012B = new Sample("TauPlusX2012B",path);
   TauPlusX2012B->setDataType("Data");
@@ -23,21 +27,21 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
   analysis->addSample(TauPlusX2012B);
 
 
-
   Sample* Embedded2012A = new Sample("Embedded2012A",path);
   Embedded2012A->setDataType("Embedded");
   analysis->addSample(Embedded2012A);
+
+  Sample* Embedded2012A2 = new Sample("Embedded2012A2",path);
+  Embedded2012A2->setDataType("Embedded");
+  analysis->addSample(Embedded2012A2);
 
   Sample* Embedded2012B = new Sample("Embedded2012B",path);
   Embedded2012B->setDataType("Embedded");
   analysis->addSample(Embedded2012B);
 
- 
-
-
 
   /////////////Z+Jets
-  float CrossectionScaleFactor=1.0;
+  float CrossectionScaleFactor=1.000;
   cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
   Sample* ZToTauTau = new Sample("ZToTauTau",path);
   ZToTauTau->setDataType("MC");
@@ -55,12 +59,12 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
   analysis->addSample(ZToLJet);
 
 
-  //////////TTJets 
-  float TTCrossectionScaleFactor=1.0;//apply this globally 
+  //////////TTJets
+  float TTCrossectionScaleFactor=1.08;//apply this globally
   cout<<"WARNING applying scale factor to TT MC "<<TTCrossectionScaleFactor<<endl;
-  //analysis->TTJetsCorrFactor[0]=1.;
-  //analysis->TTJetsCorrFactor[1]=1.01/TTCrossectionScaleFactor;
-  //analysis->TTJetsCorrFactor[2]=1.03/TTCrossectionScaleFactor;
+  analysis->TTJetsCorrFactor[0]=1.;
+  analysis->TTJetsCorrFactor[1]=1.01/TTCrossectionScaleFactor;
+  analysis->TTJetsCorrFactor[2]=1.03/TTCrossectionScaleFactor;
 
   Sample* TTJets = new Sample("TTJets",path);
   TTJets->setDataType("MC");
@@ -176,18 +180,17 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
 
 
 
-
-
   ///////configure the colors
   analysis->setQCDColor(kMagenta-10);
   analysis->setWJetsColor(kRed+2);
   analysis->setTTJetsColor(kBlue-8);
-  analysis->setZMuMuColor(kBlue);
+  analysis->setZMuMuColor(kRed);
   analysis->setZTauTauColor(kOrange-4);
   analysis->setSmearHistoRes(0.);
   char title[100];
   sprintf(title,"CMS Preliminary 2012,   %.1f fb^{-1},     #sqrt{s} = 8 TeV,        #tau_{#mu}#tau_{h}",(analysis->getTotalDataLumi())/1000.);
   analysis->setPlotTitle(title);
+
 
   return analysis;
 }

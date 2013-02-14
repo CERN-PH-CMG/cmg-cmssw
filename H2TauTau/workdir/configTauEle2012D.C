@@ -24,7 +24,7 @@ TauElePlotter * configTauEle2012D(TString name, TString path){
 
 
   ///DY
-  float CrossectionScaleFactor=1.011;
+  float CrossectionScaleFactor=1.0;
   cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
   Sample* ZToTauTau = new Sample("ZToTauTau",path);
   ZToTauTau->setDataType("MC");
@@ -70,7 +70,7 @@ TauElePlotter * configTauEle2012D(TString name, TString path){
    
 
   ///TTJets
-  float TTCrossectionScaleFactor=0.98;
+  float TTCrossectionScaleFactor=1.0;
   cout<<"WARNING applying scale factor to TT MC "<<TTCrossectionScaleFactor<<endl;
 
   Sample* TTJets = new Sample("TTJets",path);

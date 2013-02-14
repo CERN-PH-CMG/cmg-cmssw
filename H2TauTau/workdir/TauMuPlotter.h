@@ -102,6 +102,7 @@ public:
   TH1F* getSample(TString samplename);//can be used to get histo for any MC or Data sample
   TH1F* getDiBoson();
   TH1F* getZToTauTau();//Z-->tau tau (either from MC or Embedded)
+  TH1F* getZToTauTauVBF();
  
   //Inclusive/SM0 methods
   TH1F* getWJetsInc();
@@ -109,7 +110,7 @@ public:
   TH1F* getTTJetsInc();
   TH1F* getZToLJetInc();
   TH1F* getZLInc();
-  TH1F* getQCDInc(Int_t WType=0);
+  TH1F* getQCDInc(Int_t WType=0,bool cleanNegativeBins=1);
   TH1F* getQCDIncWNJet();
   TH1F* getQCDIncLooseShape();
   TH1F* getQCDIncWJetsShape();
@@ -140,16 +141,21 @@ public:
   //Methods for VBF category with loose shape selections
   TH1F* getWJetsNJetVBFHCP();//note loose selections here are different
   TH1F* getQCDVBFHCP();
-  TH1F* getSampleVBFHCP(TString sample);//used for the methods below
+  TH1F* getSampleVBFHCPShape(TString sample);//used for the methods below
+  TH1F* getSampleVBFHCPShape2(TString sample);//used for the methods below
+  TH1F* getSampleVBFHCP(TString sample,int type=0);//used for the methods below
   TH1F* getTTJetsVBFHCP();
   TH1F* getZToLJetVBFHCP();
   TH1F* getZLVBFHCP();
+  TH1F* getZLLVBFHCP();
   TH1F* getDiBosonVBFHCP();
 
   TH1F* getQCDIncLowPt();
   TH1F* getQCDIncHighPt();
   TH1F* getZL2012(){return 0;}
+  TH1F* getZL2012Type2(){return 0;}
   TH1F* getQCDVBFHCP2(){return 0;}
+  TH1F* getZLBoost(){return 0;}
   TH1F* getWJetsNJetLooseTau(){return 0;}
 
   ////Methods unrelated to the main plots
@@ -158,10 +164,10 @@ public:
   void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
 
 
-  TH1F* getWNJetSumAllNoChCut();
-  TH1F* getWJetsNJetSumAllNoChCut();
-  TH1F* getWNJetSumAllNoChNoMTCut();
-  TH1F* getWJetsNJetAllNoChNoMTCut();
+  TH1F* getWNJetSumNoChCut();
+  TH1F* getWJetsNJetNoChCut();
+  TH1F* getWNJetSumNoChNoMTCut();
+  TH1F* getWJetsNJetNoChNoMTCut();
   TH1F* computeTrigEff(TH1F* HPass, TH1F* HFail);
   void plotTauTrigger(Int_t Region, TString tag);
   void plotTauTriggerReal(Int_t Region, TString tag);
@@ -242,9 +248,6 @@ public:
       cout<<" Category : "<<sm<<" undefined "<<endl;
       return TString("");
     }
-    //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva>0.5)";
-    //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.94)";
-    //TString vbfcut="(njet>=2&&njetingap==0&&vbfmva2012>0.978)";
     TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
     TString boostcut="(njet>=1&&nbjet==0)";
@@ -255,8 +258,6 @@ public:
     TString taulowcut="(taupt<40.)";
     TString tauhighcut="(taupt>=40.)";
     TString SMcut[7];
-//     SMcut[0]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+taulowcut;
-//     SMcut[1]=notvbfcut+"*"+notboostcut+"*"+notbjetcut+"*"+tauhighcut;
     SMcut[0]=zerojetcut+"*"+taulowcut;
     SMcut[1]=zerojetcut+"*"+tauhighcut;
     SMcut[2]=notvbfcut+"*"+boostcut+"*"+taulowcut;
@@ -265,8 +266,41 @@ public:
     SMcut[5]=bjetcut+"*"+taulowcut;
     SMcut[6]=bjetcut+"*"+tauhighcut;
     cout<<"Category selection : "<<SMcut[sm]<<endl;
+
+
     return SMcut[sm];
   }
+
+
+
+  TString getSMcutTauTau(Int_t sm){
+    if(sm<0||6<sm){
+      cout<<" Category : "<<sm<<" undefined "<<endl;
+      return TString("");
+    }
+
+    cout<<" Warning using Boost and VBF selections for TauTau !!!!!!!!!!!!!!! "<<endl;
+    mTCut_=50;
+    cout<<" set mT cut to 50 !!!!!"<<endl;
+    TString tauPtCutTauTau="(taupt>=45.&&mupt>30)";
+    TString jetPtCutTauTau="(leadJetPt>50&&abs(leadJetEta)<3.0)";
+    TString vbfcutTauTau="(njet>=2&&njetingap==0&&vbfvars3>110&&diJetMass>250.&&abs(diJetDeltaEta)>2.5)";
+    TString notvbfcutTauTau=TString("(!")+vbfcutTauTau+")";
+    TString boostcutTauTau="(njet>=1&&nbjet==0&&vbfvars3>140)";
+    TString zerojetcut="(njet==0&&nbjet==0)";
+
+    TString SMcut[7];
+    SMcut[0]="(0)";
+    SMcut[1]=tauPtCutTauTau+"*"+zerojetcut;
+    SMcut[2]="(0)";
+    SMcut[3]=tauPtCutTauTau+"*"+jetPtCutTauTau+"*"+boostcutTauTau+"*"+notvbfcutTauTau;
+    SMcut[4]=tauPtCutTauTau+"*"+jetPtCutTauTau+"*"+vbfcutTauTau;
+
+    cout<<"Category selection for TauTau : "<<SMcut[sm]<<endl;
+
+    return SMcut[sm];
+  }
+
 
 
 

@@ -40,6 +40,7 @@ flatNtpTauMu = cms.EDAnalyzer(
     trigPathTest9 = cms.InputTag(""),
     trigPathTest10 = cms.InputTag(""),
     diTauTag =  cms.InputTag(""),
+    unscaledTauTag =  cms.InputTag("cmgTauSel"),
     verticesListTag = cms.InputTag("goodOfflinePrimaryVertices"), #note that these need to be created in the FLATNTP step
     genParticlesTag =  cms.InputTag("genParticlesPruned"),
     trigPathsListTag = cms.InputTag("cmgTriggerObjectSel"),
@@ -57,8 +58,13 @@ flatNtpTauMu = cms.EDAnalyzer(
     fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm53X_20pv_njet.root'),
     fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm53X_20pv_njet.root'),
     metType = cms.int32(1), # 1=PFMET, 2=MVAMET
+    metscale = cms.double(-1.),
     mvaMETSigTag = cms.InputTag("mvaMETTauMu"),
     runSVFit = cms.int32(2), # 0 do not run, 1 run old version, 2 run new version
+    smearVisMass0pi0 = cms.double(-1.),
+    smearSVFitMass0pi0 = cms.double(-1.),
+    smearVisMass1pi0 = cms.double(-1.),
+    smearSVFitMass1pi0 = cms.double(-1.),
     mvaWeights = cms.string(httdata_dir + 'VBFMVA_BDTG.weights.44X.xml'),
     mvaWeights2012 = cms.string(httdata_dir + 'VBFMVA_BDTG_HCP_42X.weights.xml'),
     muPtCut = cms.double(17.),
@@ -69,6 +75,7 @@ flatNtpTauMu = cms.EDAnalyzer(
     signalWeightMass =  cms.string('0'),
     jsonfile = cms.string(httjson_dir + 'json.txt'),
     saveLHENUP = cms.int32(0),
+    correctTauES = cms.int32(0), 
     )
 
 
@@ -107,6 +114,7 @@ flatNtpTauEle = cms.EDAnalyzer(
     trigPathTest9 = cms.InputTag(""),
     trigPathTest10 = cms.InputTag(""),
     diTauTag =  cms.InputTag(""),
+    unscaledTauTag =  cms.InputTag("cmgTauSel"),
     verticesListTag = cms.InputTag("goodOfflinePrimaryVertices"),
     genParticlesTag =  cms.InputTag("genParticlesPruned"),
     trigPathsListTag = cms.InputTag("cmgTriggerObjectSel"),
@@ -124,8 +132,13 @@ flatNtpTauEle = cms.EDAnalyzer(
     fileZmmData = cms.string(rootfile_dir + 'recoilfit_datamm53X_20pv_njet.root'),
     fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm53X_20pv_njet.root'),
     metType = cms.int32(1), # 1=PFMET, 2=MVAMET
+    metscale = cms.double(-1.),
     mvaMETSigTag = cms.InputTag("mvaMETTauEle"),
     runSVFit = cms.int32(1), # 0 do not run, 1 run old version, 2 run new version
+    smearVisMass0pi0 = cms.double(-1.),
+    smearSVFitMass0pi0 = cms.double(-1.),
+    smearVisMass1pi0 = cms.double(-1.),
+    smearSVFitMass1pi0 = cms.double(-1.),
     mvaWeights = cms.string(httdata_dir + 'VBFMVA_BDTG.weights.44X.xml'),
     mvaWeights2012 = cms.string(httdata_dir + 'VBFMVA_BDTG_HCP_42X.weights.xml'),
     muPtCut = cms.double(20.),
@@ -136,4 +149,5 @@ flatNtpTauEle = cms.EDAnalyzer(
     signalWeightMass =  cms.string('0'),
     jsonfile = cms.string(httjson_dir + 'json.txt'),
     saveLHENUP = cms.int32(0),
+    correctTauES = cms.int32(0), 
     )
