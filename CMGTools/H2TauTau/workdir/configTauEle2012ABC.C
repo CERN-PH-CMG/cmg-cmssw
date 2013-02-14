@@ -1,17 +1,19 @@
-#include "TauMuPlotter.h"
+#include "TauElePlotter.h"
 #include "Sample.h"
 #include <TString.h>
 
-TauMuPlotter * configTauMu2012AB(TString name, TString path){  
+TauElePlotter * configTauEle2012ABC(TString name, TString path){  
 
-  TauMuPlotter * analysis = new TauMuPlotter(name);
+  TauElePlotter * analysis = new TauElePlotter(name);
   analysis->setOutputPath(path);
   analysis->setQCDOStoSSRatio(1.06);
   analysis->setZTTType(2);
   analysis->mTCut_=20;
-  analysis->eventWeight_="pupWeights1*embeddedGenWeight*triggerEffWeightsTau1*triggerEffWeightsMu1*selectionEffWeightsId1*selectionEffWeightsIso1*signalWeight";//
+  analysis->eventWeight_="pupWeights2*embeddedGenWeight*triggerEffWeightsTau2*triggerEffWeightsMu2*selectionEffWeightsId2*selectionEffWeightsIso2*signalWeight";
+ 
 
 
+  //////Data
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");
   TauPlusX2012A->setSampleLumi(96.977+316.128+396.213);
@@ -22,8 +24,18 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
   TauPlusX2012B->setSampleLumi(4403.);
   analysis->addSample(TauPlusX2012B);
 
+  Sample* TauPlusX2012Cv1 = new Sample("TauPlusX2012Cv1",path);
+  TauPlusX2012Cv1->setDataType("Data");
+  TauPlusX2012Cv1->setSampleLumi(495.003);
+  analysis->addSample(TauPlusX2012Cv1);
+
+  Sample* TauPlusX2012Cv2 = new Sample("TauPlusX2012Cv2",path);
+  TauPlusX2012Cv2->setDataType("Data");
+  TauPlusX2012Cv2->setSampleLumi(1288 + 4828 + 281);
+  analysis->addSample(TauPlusX2012Cv2);
 
 
+  //embedded samples
   Sample* Embedded2012A = new Sample("Embedded2012A",path);
   Embedded2012A->setDataType("Embedded");
   analysis->addSample(Embedded2012A);
@@ -32,11 +44,16 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
   Embedded2012B->setDataType("Embedded");
   analysis->addSample(Embedded2012B);
 
- 
+  Sample* Embedded2012Cv1 = new Sample("Embedded2012Cv1",path);
+  Embedded2012Cv1->setDataType("Embedded");
+  analysis->addSample(Embedded2012Cv1);
+
+  Sample* Embedded2012Cv2 = new Sample("Embedded2012Cv2",path);
+  Embedded2012Cv2->setDataType("Embedded");
+  analysis->addSample(Embedded2012Cv2);
 
 
-
-  /////////////Z+Jets
+  ///DY
   float CrossectionScaleFactor=1.0;
   cout<<"WARNING applying scale factor for Z->tau tau MC "<<CrossectionScaleFactor<<endl;
   Sample* ZToTauTau = new Sample("ZToTauTau",path);
@@ -44,29 +61,15 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
   ZToTauTau->setCrossection(3503.71*CrossectionScaleFactor);
   analysis->addSample(ZToTauTau);
 
-  Sample* ZToMuMu = new Sample("ZToMuMu",path);
-  ZToMuMu->setDataType("MC");
-  ZToMuMu->setCrossection(ZToTauTau->getCrossection());
-  analysis->addSample(ZToMuMu);
+  Sample* ZToEE = new Sample("ZToEE",path);
+  ZToEE->setDataType("MC");
+  ZToEE->setCrossection(ZToTauTau->getCrossection());
+  analysis->addSample(ZToEE);
 
   Sample* ZToLJet = new Sample("ZToLJet",path);
   ZToLJet->setDataType("MC");
   ZToLJet->setCrossection(ZToTauTau->getCrossection());
   analysis->addSample(ZToLJet);
-
-
-  //////////TTJets 
-  float TTCrossectionScaleFactor=1.0;//apply this globally 
-  cout<<"WARNING applying scale factor to TT MC "<<TTCrossectionScaleFactor<<endl;
-  //analysis->TTJetsCorrFactor[0]=1.;
-  //analysis->TTJetsCorrFactor[1]=1.01/TTCrossectionScaleFactor;
-  //analysis->TTJetsCorrFactor[2]=1.03/TTCrossectionScaleFactor;
-
-  Sample* TTJets = new Sample("TTJets",path);
-  TTJets->setDataType("MC");
-  TTJets->setCrossection(225.2*TTCrossectionScaleFactor);
-  analysis->addSample(TTJets);
-
 
   /////////W+jets
   Sample * WJetsToLNu=new Sample("WJetsToLNu",path);
@@ -96,8 +99,17 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
   analysis->addSample(W4JetsToLNu);  
    
 
+  ///TTJets
+  float TTCrossectionScaleFactor=1.00;
+  cout<<"WARNING applying scale factor to TT MC "<<TTCrossectionScaleFactor<<endl;
 
-  /////di-Bosons
+  Sample* TTJets = new Sample("TTJets",path);
+  TTJets->setDataType("MC");
+  TTJets->setCrossection(225.2*TTCrossectionScaleFactor);
+  analysis->addSample(TTJets);
+
+
+  //Di-Bosons
   Sample* WW2L2Nu = new Sample("WW2L2Nu",path);
   WW2L2Nu->setDataType("MC");
   WW2L2Nu->setCrossection(5.824);
@@ -140,20 +152,17 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
   analysis->addSample(TopBTW);
 
 
-  ///Crossections taken from here:
-  //https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
-  ///Higgs --> tau tau branching ratios taken from http://arxiv.org/abs/1101.0593 v3
-  const int NSM=8;
-  Int_t HiggsMass[NSM]={110,115,120,125,130,135,140,145};
-  Float_t HiggsTauTauBF[NSM]={ 8.03e-2, 7.65e-2,  7.11e-2,  6.37e-2,  5.49e-2,  4.52e-2, 3.54e-2,2.62e-2};
-  Float_t HiggsGGcross[NSM]={25.04,22.96,21.13,19.52,18.07,16.79,15.63,14.59};
-  Float_t HiggsVBFcross[NSM]={ 1.809,1.729,1.649,1.578,1.511,1.448,1.389,1.333 };
-  Float_t HiggsWHcross[NSM]= {1.0600,0.9165,0.7966,0.6966,0.6095,0.5351,0.47130,0.41640};
-  Float_t HiggsZHcross[NSM]= {0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.27280,0.24240};
-  Float_t HiggsttHcross[NSM]={0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246 };
+  //copied from mu-tau 
+  Int_t HiggsMass[8]={110,115,120,125,130,135,140,145};
+  Float_t HiggsTauTauBF[8]={ 8.03e-2, 7.65e-2,  7.11e-2,  6.37e-2,  5.49e-2,  4.52e-2, 3.54e-2,2.62e-2};
+  Float_t HiggsGGcross[8]={25.04,22.96,21.13,19.52,18.07,16.79,15.63,14.59};
+  Float_t HiggsVBFcross[8]={ 1.809,1.729,1.649,1.578,1.511,1.448,1.389,1.333 };
+  Float_t HiggsWHcross[8]={1.060,0.9165,0.7966,0.6966,0.6095,0.5351,0.4713,0.4164};
+  Float_t HiggsZHcross[8]={0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.2728,0.2424 };
+  Float_t HiggsttHcross[8]={ 0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246 };
 
   char nam[100];
-  for(Int_t i=0;i<NSM;i++){
+  for(Int_t i=0;i<8;i++){
 
     sprintf(nam,"HiggsGG%d",HiggsMass[i]);
     Sample* HiggsGG = new Sample(nam,path);
@@ -176,19 +185,15 @@ TauMuPlotter * configTauMu2012AB(TString name, TString path){
 
 
 
-
-
-  ///////configure the colors
+  /////////////////SUSY Samples
   analysis->setQCDColor(kMagenta-10);
   analysis->setWJetsColor(kRed+2);
   analysis->setTTJetsColor(kBlue-8);
   analysis->setZMuMuColor(kBlue);
   analysis->setZTauTauColor(kOrange-4);
-  analysis->setSmearHistoRes(0.);
   char title[100];
-  sprintf(title,"CMS Preliminary 2012,   %.1f fb^{-1},     #sqrt{s} = 8 TeV,        #tau_{#mu}#tau_{h}",(analysis->getTotalDataLumi())/1000.);
+  sprintf(title,"CMS Preliminary 2012,   %.1f fb^{-1},     #sqrt{s} = 8 TeV,        #tau_{e}#tau_{h}",(analysis->getTotalDataLumi())/1000.);
   analysis->setPlotTitle(title);
-
   return analysis;
 }
 

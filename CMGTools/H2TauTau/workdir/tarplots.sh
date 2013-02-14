@@ -35,6 +35,8 @@ export path="/data/benitezj/Samples"
 #export tag="muTau201253X_580Dec21"
 #export tag="muTau201253X_580Jan15"
 #export tag="muTau201253X_580Jan16"
+#export tag="muTau201253X_580Jan29"
+export tag="muTau201253X_580Feb7"
 
 
 ###e-tau 2012
@@ -51,7 +53,9 @@ export path="/data/benitezj/Samples"
 #export tag="eTau201253X_580Dec5Trig"
 #export tag="eTau201253X_580Dec13"
 #export tag="eTau201253X_580Dec19Trig"
-export tag="eTau201253X_580Jan15"
+#export tag="eTau201253X_580Jan15"
+#export tag="eTau201253X_580Jan16"
+#export tag="eTau201253X_580Feb7"
 
 export dirname=Plots_${tag}_${1}
 echo $dirname
@@ -61,14 +65,22 @@ mkdir $dirname
 
 mkdir $dirname/pdflog
 mv $path/$tag/*log.pdf $dirname/pdflog
+
 mkdir $dirname/pdf
 mv $path/$tag/*.pdf $dirname/pdf
 
 mkdir $dirname/pnglog
 mv $path/$tag/*log.png $dirname/pnglog
+
 mkdir $dirname/png
 mv $path/$tag/*.png $dirname/png
 
+mkdir $dirname/C
+mv $path/$tag/*.C $dirname/C
 
-#tar -cvf $dirname.tar $dirname
+mkdir $dirname/root
+mv $path/$tag/*.root $dirname/root
+
+mkdir $dirname/ps
+mv $path/$tag/*.ps $dirname/ps
 ###########################################

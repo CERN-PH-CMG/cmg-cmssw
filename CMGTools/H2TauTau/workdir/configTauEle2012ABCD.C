@@ -7,10 +7,8 @@ TauElePlotter * configTauEle2012ABCD(TString name, TString path){
   TauElePlotter * analysis = new TauElePlotter(name);
   analysis->setOutputPath(path);
   analysis->setQCDOStoSSRatio(1.06);
-  analysis->setZTTType(1);
+  analysis->setZTTType(2);
   analysis->mTCut_=20;
-  //analysis->eventWeight_="pupWeights2*embeddedGenWeight*triggerEffWeightsTau2*triggerEffWeightsMu2*selectionEffWeightsId2*selectionEffWeightsIso2*signalWeight";
-  //analysis->eventWeight_="pupWeights3*embeddedGenWeight*triggerEffWeightsTau3*triggerEffWeightsMu3*selectionEffWeightsId3*selectionEffWeightsIso3*signalWeight";
   analysis->eventWeight_="pupWeights4*embeddedGenWeight*triggerEffWeightsTau4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*signalWeight";
 
 
@@ -109,7 +107,7 @@ TauElePlotter * configTauEle2012ABCD(TString name, TString path){
    
 
   ///TTJets
-  float TTCrossectionScaleFactor=0.98;
+  float TTCrossectionScaleFactor=1.00;
   cout<<"WARNING applying scale factor to TT MC "<<TTCrossectionScaleFactor<<endl;
 
   Sample* TTJets = new Sample("TTJets",path);

@@ -95,9 +95,23 @@ if process.flatNtp.dataType == 0:
 process.load("CommonTools.ParticleFlow.goodOfflinePrimaryVertices_cfi")
 process.analysis += process.goodOfflinePrimaryVertices
 
+
+###Apply Tau ES corrections
+process.load('CMGTools.Utilities.tools.cmgTauESCorrector_cfi')
+process.analysis +=  process.cmgTauESCorrector
+if process.flatNtp.correctTauES == 1:
+   process.cmgTauESCorrector.cfg.OneProngNoPi0Correction = 1.000
+   process.cmgTauESCorrector.cfg.OneProng1Pi0Correction = 1.015
+   process.cmgTauESCorrector.cfg.OneProng1Pi0CorrectionPtSlope = 0.001
+   process.cmgTauESCorrector.cfg.ThreeProngCorrection = 1.012
+   process.cmgTauESCorrector.cfg.ThreeProngCorrectionPtSlope = 0.001
+   
+
+
 ##create mu-tau candidates
 process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
-process.analysis +=  process.cmgTauScaler 
+process.analysis +=  process.cmgTauScaler
+process.cmgTauScaler.cfg.inputCollection = 'cmgTauESCorrector'
 #process.cmgTauScaler.cfg.uncertainty = 0.03
 #process.cmgTauScaler.cfg.nSigma = 1.0
 

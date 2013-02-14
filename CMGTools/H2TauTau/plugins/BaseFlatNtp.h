@@ -101,7 +101,14 @@ protected:
   float muEtaCut_;
   float tauEtaCut_;
   int metType_;
+  float metscale_;
   int runSVFit_;
+
+  
+  float smearSVFitMass0pi0_;
+  float smearVisMass0pi0_;
+  float smearSVFitMass1pi0_;
+  float smearVisMass1pi0_;
 
   //event info
   const edm::Event * iEvent_; 
@@ -125,6 +132,9 @@ protected:
 
 
   edm::InputTag diTauTag_;
+
+  edm::InputTag unscaledTauTag_;
+  edm::Handle< std::vector<cmg::Tau> > unscaledTauList_;
 
 
   edm::InputTag muonVetoListTag_;
@@ -253,6 +263,8 @@ protected:
   //tau variables
   float taumass_;
   float taupt_;
+  float taupx_;
+  float taupy_;
   float taueta_;
   float tauphi_;
   int   tautruth_;
@@ -477,6 +489,27 @@ protected:
     }
     
     
+    //apply MET shift first:
+    // 1) find the corresponding Tau first
+    // 2) calculate the difference in p4
+    // 3) subtract from MET    
+    float dpx=0.;
+    float dpy=0.;
+    for(std::vector<cmg::Tau>::const_iterator cand=unscaledTauList_->begin(); cand!=unscaledTauList_->end(); ++cand){
+      if(cand->eta()==taueta_ && cand->phi()==tauphi_){
+	dpx=taupx_ - cand->p4().x();
+	dpy=taupy_ - cand->p4().y();
+	break;
+      }
+    }
+    //cout<<dpx<<" "<<dpy<<endl;
+    math::XYZTLorentzVector unscaledmetP4(metpt_*cos(metphi_),metpt_*sin(metphi_),0,0);    
+    math::XYZTLorentzVector deltaTauP4(dpx,dpy,0,0);
+    math::XYZTLorentzVector scaledmetP4 = unscaledmetP4 - deltaTauP4;
+    metpt_=scaledmetP4.pt();
+    metphi_=scaledmetP4.phi();
+
+
     //save met without recoil correction
     metptraw_=metpt_;
     metphiraw_=metphi_;
@@ -508,7 +541,9 @@ protected:
 	corrector_.CorrectType2(metpt_,metphi_,genBoson_->pt(), genBoson_->phi(),  lepPt, lepPhi,  u1, u2, fluc, recoiliScale_ , jetMult );
     }
     
-    
+    //met correction needed for ZEE
+    if(metscale_>0.)metpt_*=metscale_;
+
     metP4_=reco::Candidate::PolarLorentzVector(metpt_,0,metphi_,0);
     metsigcov00_=(*(metSig_->significance()))[0][0];
     metsigcov01_=(*(metSig_->significance()))[0][1];
@@ -888,6 +923,10 @@ protected:
       cout<<" Unrecognized SVFit version "<<endl;
       exit(0);
     }
+
+    
+    if(smearSVFitMass0pi0_>0.&&taudecaymode_==0) svfitmass_ += gRandom->Gaus(0,smearSVFitMass0pi0_);
+    if(smearSVFitMass1pi0_>0.&&taudecaymode_==1) svfitmass_ += gRandom->Gaus(0,smearSVFitMass1pi0_);
 
   }
 

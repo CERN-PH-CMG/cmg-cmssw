@@ -78,7 +78,7 @@ TauMuPlotter * configTauMu2012ABCD(TString name, TString path){
 
 
   //////////TTJets 
-  float TTCrossectionScaleFactor=0.98;//apply this globally 
+  float TTCrossectionScaleFactor=1.0;//apply this globally 
   cout<<"WARNING applying scale factor to TT MC "<<TTCrossectionScaleFactor<<endl;
   //analysis->TTJetsCorrFactor[0]=1.;
   //analysis->TTJetsCorrFactor[1]=1.01/TTCrossectionScaleFactor;

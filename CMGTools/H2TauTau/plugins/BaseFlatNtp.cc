@@ -92,12 +92,26 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   metType_ = iConfig.getParameter<int>("metType");
   cout<<"metType_  : "<<metType_<<endl;
 
+  metscale_ = iConfig.getParameter<double>("metscale");
+  cout<<"metscale_  : "<<metscale_<<endl;
+
   mvaMETSigTag_ = iConfig.getParameter<edm::InputTag>("mvaMETSigTag");
   cout<<"mvaMETSigTag_  : "<<mvaMETSigTag_.label()<<endl;
 
 
   runSVFit_  =  iConfig.getParameter<int>("runSVFit");
   cout<<" runSVFit_ : "<<runSVFit_<<endl;
+
+  smearSVFitMass0pi0_  =  iConfig.getParameter<double>("smearSVFitMass0pi0");
+  cout<<"smearSVFitMass0pi0_ : "<<smearSVFitMass0pi0_<<endl;
+  smearVisMass0pi0_  =  iConfig.getParameter<double>("smearVisMass0pi0");
+  cout<<"smearVisMass0pi0_ : "<<smearVisMass0pi0_<<endl;
+
+  smearSVFitMass1pi0_  =  iConfig.getParameter<double>("smearSVFitMass1pi0");
+  cout<<"smearSVFitMass1pi0_ : "<<smearSVFitMass1pi0_<<endl;
+  smearVisMass1pi0_  =  iConfig.getParameter<double>("smearVisMass1pi0");
+  cout<<"smearVisMass1pi0_ : "<<smearVisMass1pi0_<<endl;
+
 
 
   //
@@ -137,6 +151,8 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   randsigma_              = iConfig.getParameter<double>("randsigma");
   cout<<"randsigma_  : "<<randsigma_<<endl;
 
+  unscaledTauTag_        = iConfig.getParameter<edm::InputTag>("unscaledTauTag");
+  cout<<"unscaledTauTag_  : "<<unscaledTauTag_.label()<<endl;
 
   //read in histogram with signal weights
   signalWeightDir_ = iConfig.getParameter<std::string>("signalWeightDir");
@@ -286,6 +302,8 @@ void BaseFlatNtp::beginJob(){
   
   tree_->Branch("taumass",&taumass_,"taumass/F");
   tree_->Branch("taupt",&taupt_,"taupt/F");
+  tree_->Branch("taupx",&taupx_,"taupx/F");
+  tree_->Branch("taupy",&taupy_,"taupy/F");
   tree_->Branch("taueta",&taueta_,"taueta/F");
   tree_->Branch("tauphi",&tauphi_,"tauphi/F");
   tree_->Branch("tauehop",&tauehop_,"tauehop/F");
@@ -474,6 +492,9 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
 
   //get trigger object list for later
   iEvent_->getByLabel(trigObjsListTag_,trigObjs_);
+
+  //get the unscaled taus
+  iEvent_->getByLabel(unscaledTauTag_,unscaledTauList_);
   
   ///get the gen Boson and set the genEventType
   genBoson_ = NULL;

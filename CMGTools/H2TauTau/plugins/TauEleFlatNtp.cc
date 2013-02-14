@@ -515,6 +515,8 @@ bool TauEleFlatNtp::fill(){
 
    taumass_=diTauSel_->leg1().p4().M();
    taupt_=diTauSel_->leg1().pt();
+   taupx_=diTauSel_->leg1().p4().x();
+   taupy_=diTauSel_->leg1().p4().y();
    taueta_=diTauSel_->leg1().eta();
    tauphi_=diTauSel_->leg1().phi();
    taudz_=diTauSel_->leg1().dz();
@@ -557,6 +559,10 @@ bool TauEleFlatNtp::fill(){
 
 
    ditaumass_=diTauSel_->mass();
+   if(smearVisMass0pi0_>0.&&taudecaymode_==0) ditaumass_ += gRandom->Gaus(0,smearVisMass0pi0_);
+   if(smearVisMass1pi0_>0.&&taudecaymode_==1) ditaumass_ += gRandom->Gaus(0,smearVisMass1pi0_);
+
+
    ditaucharge_=diTauSel_->charge();
    ditaueta_=diTauSel_->eta();
    ditaupt_=diTauSel_->pt();

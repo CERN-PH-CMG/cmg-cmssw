@@ -16,7 +16,7 @@ TString catdirname[NCAT]={
  "vbf"};
 
 
-void mergeDataCardsSM(Int_t channel, TString mass){
+void mergeDataCardsSMZTT(Int_t channel, TString mass){
 
   TString ChannelName;
   if(channel==1)ChannelName="muTau";
@@ -44,7 +44,7 @@ void mergeDataCardsSM(Int_t channel, TString mass){
 
 
     /////////////Nominal histos:
-    TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
+    TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT"); 
     TH1F* QCD = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
     TH1F* W = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/W");
     TH1F* TT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/TT");
@@ -55,6 +55,9 @@ void mergeDataCardsSM(Int_t channel, TString mass){
     TH1F* data_obs = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/data_obs");
 
     ZTT->Write();
+    ZTT->SetName("ZTT125");
+    ZTT->Write();
+
     ZL->Write();
     ZJ->Write();
     ZLL->Write();
@@ -64,15 +67,9 @@ void mergeDataCardsSM(Int_t channel, TString mass){
     QCD->Write();
     data_obs->Write();
 
-    //copy resolution shifts
-    TH1F* ZTT_resDown = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT_resDown");
-    TH1F* ZTT_resUp = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT_resUp");
-    ZTT_resDown->Write();
-    ZTT_resUp->Write();
-
     /////////////tUp histos
     TH1F* ZTT_CMS_scale_tUp =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
-    ZTT_CMS_scale_tUp->SetName(TString("ZTT_")+scaleUp);
+    ZTT_CMS_scale_tUp->SetName(TString("ZTT125_")+scaleUp);
 
     TH1F* QCD_CMS_scale_tUp = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
     QCD_CMS_scale_tUp->SetName(TString("QCD_")+scaleUp);
@@ -107,7 +104,7 @@ void mergeDataCardsSM(Int_t channel, TString mass){
 
     /////////////tDown histos
     TH1F* ZTT_CMS_scale_tDown =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
-    ZTT_CMS_scale_tDown->SetName(TString("ZTT_")+scaleDown);
+    ZTT_CMS_scale_tDown->SetName(TString("ZTT125_")+scaleDown);
 
     TH1F* QCD_CMS_scale_tDown = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/QCD");
     QCD_CMS_scale_tDown->SetName(TString("QCD_")+scaleDown);
@@ -139,60 +136,6 @@ void mergeDataCardsSM(Int_t channel, TString mass){
     TT_CMS_scale_tDown->Write();
     VV_CMS_scale_tDown->Write();
     QCD_CMS_scale_tDown->Write();
-
-
-    for(Int_t m=0;m<NMASS;m++){
-      long ma=massValues[m];
-      
-      cout<<ChannelName+"_"+catdirname[sm]<<" "<<ma<<endl;
-
-      //Nominal histos
-      TH1F* SM = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
-      SM->SetName(TString("ggH")+ma);
-
-      TH1F* VBF =  (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/qqH"+ma);
-      VBF->SetName(TString("qqH")+ma);
-      
-      TH1F* VH =  (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/VH"+ma);
-      VH->SetName(TString("VH")+ma);
-     
-      //tUp histos
-      TH1F* SM_CMS_scale_tUp  = (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
-      SM_CMS_scale_tUp->SetName(TString("ggH")+ma+"_"+scaleUp);
-      
-      TH1F* VBF_CMS_scale_tUp  =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/qqH"+ma);
-      VBF_CMS_scale_tUp->SetName(TString("qqH")+ma+"_"+scaleUp);
-
-      TH1F* VH_CMS_scale_tUp  =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/VH"+ma);
-      VH_CMS_scale_tUp->SetName(TString("VH")+ma+"_"+scaleUp);
-
-     
-      //tDown histos
-      TH1F* SM_CMS_scale_tDown  = (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
-      SM_CMS_scale_tDown->SetName(TString("ggH")+ma+"_"+scaleDown);
-      
-      TH1F* VBF_CMS_scale_tDown  =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/qqH"+ma);
-      VBF_CMS_scale_tDown->SetName(TString("qqH")+ma+"_"+scaleDown);
-
-      TH1F* VH_CMS_scale_tDown  =  (TH1F*)nominaltDown.Get(ChannelName+"_"+catdirname[sm]+"/VH"+ma);
-      VH_CMS_scale_tDown->SetName(TString("VH")+ma+"_"+scaleDown);
-
-
-      SM->Write();
-      VBF->Write();
-      VH->Write();
-
-      SM_CMS_scale_tUp->Write();
-      VBF_CMS_scale_tUp->Write();
-      VH_CMS_scale_tUp->Write();
-
-      SM_CMS_scale_tDown->Write();
-      VBF_CMS_scale_tDown->Write();
-      VH_CMS_scale_tDown->Write();
-
-
-    }
-
 
   }
   
