@@ -1,4 +1,4 @@
-#$Revision: 1.19 $
+#$Revision: 1.1 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -51,6 +51,8 @@ process.source = datasetToSource(
 
 if runOnVVtuples:
     process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_WJetsPt100_cff")
+    runAK7jets=False
+    runCA8jets=False
 
 print 'input:', process.source.fileNames
 
