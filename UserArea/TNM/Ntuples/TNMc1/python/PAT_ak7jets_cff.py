@@ -53,7 +53,7 @@ patJetsAK7CHS.genJetMatch = cms.InputTag('patJetGenJetMatchAK7CHS')
 from PhysicsTools.PatAlgos.selectionLayer1.jetSelector_cfi import *
 selectedPatJetsAK7CHS = selectedPatJets.clone()
 selectedPatJetsAK7CHS.src = 'patJetsAK7CHS'
-selectedPatJetsAK7CHS.cut = 'pt()>10'
+selectedPatJetsAK7CHS.cut = 'pt()>20'
 
 from RecoJets.Configuration.RecoGenJets_cff import ak7GenJetsNoNu
 from RecoJets.Configuration.GenJetParticles_cff import genParticlesForJetsNoNu

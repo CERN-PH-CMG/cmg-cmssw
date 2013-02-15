@@ -13,7 +13,7 @@
 //
 // Original Author:  Jeff Temple, University of Maryland (jtemple@fnal.gov)
 //         Created:  Fri Oct 19 13:15:44 EDT 2012
-// $Id: HcalLaserEventFilter2012.cc,v 1.1 2012/10/22 06:33:23 sunanda Exp $
+// $Id: HcalLaserEventFilter2012.cc,v 1.1 2012/10/26 13:45:24 hinzmann Exp $
 //
 //
 
@@ -52,6 +52,7 @@ public:
   ~HcalLaserEventFilter2012();
   
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+  bool filter(int eventhelper_run, int eventhelper_luminosityBlock, int eventhelper_event);
   
 private:
   virtual void beginJob() ;
@@ -196,6 +197,38 @@ HcalLaserEventFilter2012::filter(edm::Event& iEvent, const edm::EventSetup& iSet
   if (WriteBadToFile_)
     outfile_<<iEvent.id().run()<<":"<<iEvent.luminosityBlock()<<":"<<iEvent.id().event()<<std::endl;
   iEvent.put( std::auto_ptr<int>(new int(result)) );
+  if (forceFilterTrue_) result=true; // if special input boolean set, always return true, regardless of filter decision
+  return result;
+}
+
+// ------------ method to filter by hand  ------------
+bool
+HcalLaserEventFilter2012::filter(int eventhelper_run, int eventhelper_luminosityBlock, int eventhelper_event)
+{
+  int run = eventhelper_run;
+  bool result=false;
+  // if run is outside filter range, then always return true
+  if (minrun_>-1 && run<minrun_) result=true;
+  if (maxrun_>-1 && run>maxrun_) result=true;
+
+  // Okay, now create a string object for this run:ls:event
+  std::stringstream thisevent;
+  thisevent<<run<<":"<<eventhelper_luminosityBlock<<":"<<eventhelper_event;
+
+  // Event not found in bad list; it is a good event
+  if (std::find(EventList_.begin(), EventList_.end(), thisevent.str())==EventList_.end())
+    result=true;
+  // Otherwise, this is a bad event
+  // if verbose, dump out event info
+  // Dump out via cout, or via LogInfo?  For now, use cout
+  if (verbose_) std::cout <<prefix_<<thisevent.str()<<std::endl;
+
+  // To use if we decide on LogInfo:
+  // if (verbose_) edm::LogInfo(prefix_)<<thisevent.str();
+  
+  // Write bad event to file 
+  if (WriteBadToFile_)
+    outfile_<<run<<":"<<eventhelper_luminosityBlock<<":"<<eventhelper_event<<std::endl;
   if (forceFilterTrue_) result=true; // if special input boolean set, always return true, regardless of filter decision
   return result;
 }

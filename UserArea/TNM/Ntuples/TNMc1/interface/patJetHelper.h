@@ -204,15 +204,28 @@ namespace pat
         float tau2() const { return getTau(2); }
         float tau3() const { return getTau(3); }
 
-        float jetCharge() const;
-        float daughter_0_jetCharge() const;
-        float daughter_1_jetCharge() const;
+        float getJetCharge(float kappa) const;
+        float getDaughter_0_jetCharge(float kappa) const;
+        float getDaughter_1_jetCharge(float kappa) const;
+
+        float jetCharge03() const { return getJetCharge(0.3); };
+        float daughter_0_jetCharge03() const { return getDaughter_0_jetCharge(0.3); };
+        float daughter_1_jetCharge03() const { return getDaughter_1_jetCharge(0.3); };
+
+        float jetCharge05() const { return getJetCharge(0.5); };
+        float daughter_0_jetCharge05() const { return getDaughter_0_jetCharge(0.5); };
+        float daughter_1_jetCharge05() const { return getDaughter_1_jetCharge(0.5); };
+
+        float jetCharge10() const { return getJetCharge(1.0); };
+        float daughter_0_jetCharge10() const { return getDaughter_0_jetCharge(1.0); };
+        float daughter_1_jetCharge10() const { return getDaughter_1_jetCharge(1.0); };
 
   private:
     // -- User internals
         edm::Handle<edm::View<pat::Jet> > jets_;
         //edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > puJetId_;
         //edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > subJetpuJetId_;
+        //edm::Handle<edm::ValueMap<pat::JetCorrFactors> > jcf_;
 
   public:
 	

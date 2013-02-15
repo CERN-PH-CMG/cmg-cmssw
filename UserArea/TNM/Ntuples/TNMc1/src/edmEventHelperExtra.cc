@@ -24,19 +24,15 @@ void EventHelperExtra::analyzeEvent()
 
   // Get the jet collections::
   edm::Handle<std::vector<pat::Jet> > jets;
-  event->getByLabel("selectedPatJets", jets);
+  event->getByLabel("patJetsWithVar", jets);
 
   edm::Handle<std::vector<pat::Jet> > jetsCHS;
-  event->getByLabel("selectedPatJetsCHS", jetsCHS);    
-
-  edm::Handle<std::vector<pat::Jet> > jetsCHSpruned;
-  event->getByLabel("selectedPatJetsCHSpruned", jetsCHSpruned);
+  event->getByLabel("patJetsWithVarCHS", jetsCHS);    
 
   // dijet invariant mass:
 
   dijet_invmass_ = initval;
   dijetCHS_invmass_ = initval;
-  dijetCHSpruned_invmass_ = initval;
 
   // for selectedPatJets:
   std::vector<const pat::Jet*> seljets15;
@@ -70,23 +66,6 @@ void EventHelperExtra::analyzeEvent()
                              pow((seljetsCHS15[0]->py() + seljetsCHS15[1]->py()), 2) -
                              pow((seljetsCHS15[0]->pz() + seljetsCHS15[1]->pz()), 2)
                              );
-  }
-
-  // for selectedPatJetsCHSpruned:
-  std::vector<const pat::Jet*> seljetsCHSp15;
-  for (unsigned int i=0; i<jetsCHSpruned->size(); i++) {
-    const pat::Jet* j = &((*jetsCHSpruned)[i]);
-    if (!(j->pt() > 15) ) continue;
-    seljetsCHSp15.push_back(j);
-    if (seljetsCHSp15.size() == 2) break;
-  }
-
-  if (seljetsCHSp15.size() == 2) {
-    dijetCHSpruned_invmass_ = sqrt(pow((seljetsCHSp15[0]->energy() + seljetsCHSp15[1]->energy()), 2) -
-                                   pow((seljetsCHSp15[0]->px() + seljetsCHSp15[1]->px()), 2) -
-                                   pow((seljetsCHSp15[0]->py() + seljetsCHSp15[1]->py()), 2) -
-                                   pow((seljetsCHSp15[0]->pz() + seljetsCHSp15[1]->pz()), 2)
-                                   );
   }
 
   // Finding the wide jets:
@@ -360,9 +339,6 @@ double EventHelperExtra::dijet_invmass() const {
 }
 double EventHelperExtra::dijetCHS_invmass() const {
   return dijetCHS_invmass_;
-}
-double EventHelperExtra::dijetCHSpruned_invmass() const {
-  return dijetCHSpruned_invmass_;
 }
 
 // Non-CHS jets:

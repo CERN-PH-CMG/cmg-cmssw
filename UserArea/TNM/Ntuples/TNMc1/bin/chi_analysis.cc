@@ -15,6 +15,14 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "TLorentzVector.h"
 
+#include "Ntuples/TNMc1/plugins/HcalLaserEventFilter2012.cc"
+
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
+#include <vector>
+
+#include "TLorentzVector.h"
+
 using namespace std;
 //-----------------------------------------------------------------------------
 int main(int argc, char** argv)
@@ -103,7 +111,6 @@ int main(int argc, char** argv)
   stream.select("patJetHelper_selectedPatJetsCHS.nConstituents", jethelper_nConstituents);
   stream.select("patJetHelper_selectedPatJetsCHS.neutralEmEnergyFraction", jethelper_neutralEmEnergyFraction);
   stream.select("patJetHelper_selectedPatJetsCHS.neutralHadronEnergyFraction", jethelper_neutralHadronEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.numberOfDaughters", jethelper_numberOfDaughters);
   stream.select("patJetHelper_selectedPatJetsCHS.phi", jethelper_phi);
   stream.select("patJetHelper_selectedPatJetsCHS.pt", jethelper_pt);
   stream.select("patMET_patMETsRaw.et", met2_et);
@@ -125,6 +132,8 @@ int main(int argc, char** argv)
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v8", triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v8);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v9", triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v9);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v10", triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v10);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v11", triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v11);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v12", triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v12);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v1", triggerresultshelper_HLT_HT450_v1);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v2", triggerresultshelper_HLT_HT450_v2);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_HT450_v3", triggerresultshelper_HLT_HT450_v3);
@@ -152,6 +161,14 @@ int main(int argc, char** argv)
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT650_v7", triggerresultshelper_HLT_PFHT650_v7);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT650_v8", triggerresultshelper_HLT_PFHT650_v8);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT650_v9", triggerresultshelper_HLT_PFHT650_v9);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT650_v10", triggerresultshelper_HLT_PFHT650_v10);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFHT650_v11", triggerresultshelper_HLT_PFHT650_v11);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFNoPUHT650_v1", triggerresultshelper_HLT_PFNoPUHT650_v1);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFNoPUHT650_v2", triggerresultshelper_HLT_PFNoPUHT650_v2);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFNoPUHT650_v3", triggerresultshelper_HLT_PFNoPUHT650_v3);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFNoPUHT650_v4", triggerresultshelper_HLT_PFNoPUHT650_v4);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFNoPUHT650_v5", triggerresultshelper_HLT_PFNoPUHT650_v5);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFNoPUHT650_v6", triggerresultshelper_HLT_PFNoPUHT650_v6);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v1", triggerresultshelper_HLT_DiPFJetAve400_v1);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v2", triggerresultshelper_HLT_DiPFJetAve400_v2);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v3", triggerresultshelper_HLT_DiPFJetAve400_v3);
@@ -162,6 +179,8 @@ int main(int argc, char** argv)
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v8", triggerresultshelper_HLT_DiPFJetAve400_v8);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v9", triggerresultshelper_HLT_DiPFJetAve400_v9);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v10", triggerresultshelper_HLT_DiPFJetAve400_v10);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v11", triggerresultshelper_HLT_DiPFJetAve400_v11);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_DiPFJetAve400_v12", triggerresultshelper_HLT_DiPFJetAve400_v12);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v1", triggerresultshelper_HLT_PFJet400_v1);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v2", triggerresultshelper_HLT_PFJet400_v2);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v3", triggerresultshelper_HLT_PFJet400_v3);
@@ -171,6 +190,8 @@ int main(int argc, char** argv)
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v7", triggerresultshelper_HLT_PFJet400_v7);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v8", triggerresultshelper_HLT_PFJet400_v8);
   stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v9", triggerresultshelper_HLT_PFJet400_v9);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v10", triggerresultshelper_HLT_PFJet400_v10);
+  stream.select("edmTriggerResultsHelper_TriggerResults_HLT.HLT_PFJet400_v11", triggerresultshelper_HLT_PFJet400_v11);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.hcalLaserEventFilterPath", triggerresultshelper_hcalLaserEventFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.noscrapingFilterPath", triggerresultshelper_noscrapingFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.primaryVertexFilterPath", triggerresultshelper_primaryVertexFilterPath);
@@ -180,6 +201,13 @@ int main(int argc, char** argv)
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.EcalDeadCellTriggerPrimitiveFilterPath", triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.HBHENoiseFilterPath", triggerresultshelper_HBHENoiseFilterPath);
   stream.select("sint_hcallasereventfilter2012.value", triggerresultshelper_hcallasereventfilter2012);
+
+  stream.select("cmgPFJet_cmgPFJetSel.energy", jethelper3_energy);
+  stream.select("cmgPFJet_cmgPFJetSel.eta", jethelper3_eta);
+  stream.select("cmgPFJet_cmgPFJetSel.rapidity", jethelper3_rapidity);
+  stream.select("cmgPFJet_cmgPFJetSel.mass", jethelper3_mass);
+  stream.select("cmgPFJet_cmgPFJetSel.phi", jethelper3_phi);
+  stream.select("cmgPFJet_cmgPFJetSel.pt", jethelper3_pt);
 
   // The root application is needed to make canvases visible during
   // program execution. If this is not needed, just comment out the following
@@ -222,7 +250,7 @@ int main(int argc, char** argv)
   // Declare histograms
   //---------------------------------------------------------------------------
 
-  std::vector<double> massBins = {400,600,800,1000,1200,1500,1900,2400,3000,4000,5000,7000};
+  std::vector<double> massBins = {1500,1900,2400,3000,3600,4200,7000};
 
   TCanvas c1("c1","c1",200,200);
   TH1F* h1=new TH1F("dijet_mass","M_{jj}",76,400,8000);
@@ -312,6 +340,71 @@ int main(int argc, char** argv)
       histsdphi.push_back(new TH1F(name.str().c_str(),name.str().c_str(),20,0,3.15));
       histsdphi[j]->Sumw2();
   }
+
+  std::vector<std::string> eventlist;
+  std::ifstream infile_;
+  char a[80];
+  infile_.open("data/ecalLaserFilter_HT_Run2012A.txt");
+  while(!infile_.eof())
+  {
+      infile_>>a;
+      eventlist.push_back(a);
+  }
+  infile_.close();
+  infile_.open("data/ecalLaserFilter_JetHT_Run2012B.txt");
+  while(!infile_.eof())
+  {
+      infile_>>a;
+      eventlist.push_back(a);
+  }
+  edm::ParameterSet parameters;
+  parameters.addUntrackedParameter<std::vector<std::string>>("EventList",eventlist);
+  HcalLaserEventFilter2012 laserfilter(parameters);
+
+// Instantiate uncertainty sources
+int nsrc = 19; /////////////////////////////
+const char* srcnames[19] =
+  {"Absolute", "HighPtExtra", /*"SinglePion",*/ "SinglePionECAL"/*new*/, "SinglePionHCAL"/*new*/,
+   "Flavor", "Time",
+   "RelativeJEREC1", "RelativeJEREC2", "RelativeJERHF",
+   "RelativePtEC1"/*new*/, "RelativePtEC2"/*new*/, "RelativePtHF"/*new*/,
+   "RelativeStatEC2", "RelativeStatHF", /*"RelativeFSR",*/ /*"RelativeSample",*/ /*new*/
+   "PileUpDataMC", /*"PileUpOOT",*/ "PileUpBias", /*"PileUpJetRate"*/
+   /*"PileUpPt",*/ "PileUpPtBB"/*new*/, "PileUpPtEC"/*new*/, "PileUpPtHF"/*new*/};
+std::vector<JetCorrectionUncertainty*> vsrc(nsrc);
+
+for (int isrc = 0; isrc < nsrc; isrc++) {
+
+   const char *name = srcnames[isrc];
+   JetCorrectorParameters *p = new JetCorrectorParameters("data/Fall12_V6_DATA_UncertaintySources_AK7PF.txt", name);
+   JetCorrectionUncertainty *unc = new JetCorrectionUncertainty(*p);
+   vsrc[isrc] = unc;
+} // for isrc
+
+  std::vector<std::vector<TH1F*> > histsJECup;
+for (int isrc = 0; isrc < nsrc; isrc++) {
+  std::vector<TH1F*> histsJ;
+  for ( size_t j = 0; j < (massBins.size()-1); ++j )
+  {
+      std::stringstream name;
+      name << "dijet_" << massBins[j] << "_" << massBins[j+1] << "_" << "chi_JECup" << isrc;
+      histsJ.push_back(new TH1F(name.str().c_str(),name.str().c_str(),15,1,16));
+      histsJ[j]->Sumw2();
+  }
+  histsJECup.push_back(histsJ);
+}
+  std::vector<std::vector<TH1F*> > histsJECdown;
+for (int isrc = 0; isrc < nsrc; isrc++) {
+  std::vector<TH1F*> histsJ;
+  for ( size_t j = 0; j < (massBins.size()-1); ++j )
+  {
+      std::stringstream name;
+      name << "dijet_" << massBins[j] << "_" << massBins[j+1] << "_" << "chi_JECdown" << isrc;
+      histsJ.push_back(new TH1F(name.str().c_str(),name.str().c_str(),15,1,16));
+      histsJ[j]->Sumw2();
+  }
+  histsJECdown.push_back(histsJ);
+}
   
   //---------------------------------------------------------------------------
   // Loop over events
@@ -332,37 +425,46 @@ int main(int argc, char** argv)
 	  
 	  // fillObjects();
 	 
-	  if(entry%100000==0) std::cout << entry << "..." << std::endl;
+	  if(((entry<100000)&&(entry%10000==0))||(entry%100000==0)) std::cout << entry << "..." << std::endl;
+
+          TLorentzVector Jet1;
+	  Jet1.SetPtEtaPhiE(jethelper3_pt[0],jethelper3_eta[0],jethelper3_phi[0],jethelper3_energy[0]);
+          TLorentzVector Jet2;
+	  Jet2.SetPtEtaPhiE(jethelper3_pt[1],jethelper3_eta[1],jethelper3_phi[1],jethelper3_energy[1]);
+          double DijetMass = (Jet1+Jet2).M();
 	  
 	  // ---------------------
 	  // -- event selection --
 	  // ---------------------
            
-	  if(!((jethelper2_pt.size()>=2)&&
-	     (jethelper2_pt[0]>30)&&
-	     (jethelper2_pt[1]>30)&&
-	     (fabs(jethelper2_rapidity[0])<2.5)&&
-	     (fabs(jethelper2_rapidity[1])<2.5)&&
-             (fabs(jethelper2_rapidity[0]+jethelper2_rapidity[1])/2.<1.11)&&
-             (exp(fabs(jethelper2_rapidity[0]-jethelper2_rapidity[1]))<16)&&
+	  if(!((jethelper3_pt.size()>=2)&&
+	     (jethelper3_pt[0]>30)&&
+	     (jethelper3_pt[1]>30)&&
+	     (fabs(jethelper3_rapidity[0])<2.5)&&
+	     (fabs(jethelper3_rapidity[1])<2.5)&&
+             (fabs(jethelper3_rapidity[0]+jethelper3_rapidity[1])/2.<1.11)&&
+             (exp(fabs(jethelper3_rapidity[0]-jethelper3_rapidity[1]))<16)&&
+	     (DijetMass>500)&&
 	     
+	     (jethelper2_muonEnergyFraction[0]<0.80)&&
 	     //(jethelper2_neutralHadronEnergyFraction[0]<0.99)&&
 	     (jethelper2_neutralHadronEnergyFraction[0]<0.90)&&
 	     //(jethelper2_neutralEmEnergyFraction[0]<0.99)&&
 	     (jethelper2_neutralEmEnergyFraction[0]<0.90)&&
 	     (jethelper2_nConstituents[0]>1)&&
 	     ((fabs(jethelper2_eta[0])>2.4)||
-	      ((jethelper2_chargedHadronEnergyFraction[0]>0)&&
+	      ((jethelper2_chargedHadronEnergyFraction[0]>0.01)&&
 	       (jethelper2_chargedMultiplicity[0]>0)&&
 	       (jethelper2_chargedEmEnergyFraction[0]<0.99)))&&
 	     
+	     (jethelper2_muonEnergyFraction[1]<0.80)&&
 	     //(jethelper2_neutralHadronEnergyFraction[1]<0.99)&&
 	     (jethelper2_neutralHadronEnergyFraction[1]<0.90)&&
 	     //(jethelper2_neutralEmEnergyFraction[1]<0.99)&&
 	     (jethelper2_neutralEmEnergyFraction[1]<0.90)&&
 	     (jethelper2_nConstituents[1]>1)&&
 	     ((fabs(jethelper2_eta[1])>2.4)||
-	      ((jethelper2_chargedHadronEnergyFraction[1]>0)&&
+	      ((jethelper2_chargedHadronEnergyFraction[1]>0.01)&&
 	       (jethelper2_chargedMultiplicity[1]>0)&&
 	       (jethelper2_chargedEmEnergyFraction[1]<0.99)))
 	     
@@ -377,6 +479,8 @@ int main(int argc, char** argv)
 	     (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath!=0)&&
 	     (triggerresultshelper_hcallasereventfilter2012!=0)
 	    )) continue;
+
+	  //if(!laserfilter.filter(eventhelper_run,eventhelper_luminosityBlock,eventhelper_event)) continue;
 	   
 	  // ---------------------
 	  // -- fill histograms --
@@ -386,7 +490,7 @@ int main(int argc, char** argv)
           if(geneventinfoproduct_weight>0)
 	      weight=geneventinfoproduct_weight;
 
-          h1->Fill(eventhelperextra_dijet_invmass, weight);
+          h1->Fill(DijetMass, weight);
 	  
 	  if ((triggerresultshelper_HLT_HT450_v1>0)||
 	      (triggerresultshelper_HLT_HT450_v2>0)||
@@ -397,7 +501,7 @@ int main(int argc, char** argv)
 	      (triggerresultshelper_HLT_HT450_v7>0)||
 	      (triggerresultshelper_HLT_HT450_v8>0)||
 	      (triggerresultshelper_HLT_HT450_v9>0))
-              h1_ref->Fill(eventhelperextra_dijet_invmass, weight);
+              h1_ref->Fill(DijetMass, weight);
 
 	  if(((triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v1>0)||
 	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v2>0)||
@@ -409,6 +513,8 @@ int main(int argc, char** argv)
 	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v8>0)||
 	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v9>0)||
 	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v10>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v11>0)||
+	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v12>0)||
 	      (triggerresultshelper_HLT_PFHT650_v1>0)||
 	      (triggerresultshelper_HLT_PFHT650_v2>0)||
 	      (triggerresultshelper_HLT_PFHT650_v3>0)||
@@ -418,6 +524,8 @@ int main(int argc, char** argv)
 	      (triggerresultshelper_HLT_PFHT650_v7>0)||
 	      (triggerresultshelper_HLT_PFHT650_v8>0)||
 	      (triggerresultshelper_HLT_PFHT650_v9>0)||
+	      (triggerresultshelper_HLT_PFHT650_v10>0)||
+	      (triggerresultshelper_HLT_PFHT650_v11>0)||
 	      (triggerresultshelper_HLT_PFJet400_v1>0)||
 	      (triggerresultshelper_HLT_PFJet400_v2>0)||
 	      (triggerresultshelper_HLT_PFJet400_v3>0)||
@@ -427,6 +535,8 @@ int main(int argc, char** argv)
 	      (triggerresultshelper_HLT_PFJet400_v7>0)||
 	      (triggerresultshelper_HLT_PFJet400_v8>0)||
 	      (triggerresultshelper_HLT_PFJet400_v9>0)||
+	      (triggerresultshelper_HLT_PFJet400_v10>0)||
+	      (triggerresultshelper_HLT_PFJet400_v11>0)||
 	      (triggerresultshelper_HLT_DiPFJetAve400_v1>0)||
 	      (triggerresultshelper_HLT_DiPFJetAve400_v2>0)||
 	      (triggerresultshelper_HLT_DiPFJetAve400_v3>0)||
@@ -437,6 +547,8 @@ int main(int argc, char** argv)
 	      (triggerresultshelper_HLT_DiPFJetAve400_v8>0)||
 	      (triggerresultshelper_HLT_DiPFJetAve400_v9>0)||
 	      (triggerresultshelper_HLT_DiPFJetAve400_v10>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v11>0)||
+	      (triggerresultshelper_HLT_DiPFJetAve400_v12>0)||
 	      (triggerresultshelper_HLT_HT750_v1>0)||
 	      (triggerresultshelper_HLT_HT750_v2>0)||
 	      (triggerresultshelper_HLT_HT750_v3>0)||
@@ -445,7 +557,13 @@ int main(int argc, char** argv)
 	      (triggerresultshelper_HLT_HT750_v6>0)||
 	      (triggerresultshelper_HLT_HT750_v7>0)||
 	      (triggerresultshelper_HLT_HT750_v8>0)||
-	      (triggerresultshelper_HLT_HT750_v9>0))&&
+	      (triggerresultshelper_HLT_HT750_v9>0)||
+	      (triggerresultshelper_HLT_PFNoPUHT650_v1>0)||
+	      (triggerresultshelper_HLT_PFNoPUHT650_v2>0)||
+	      (triggerresultshelper_HLT_PFNoPUHT650_v3>0)||
+	      (triggerresultshelper_HLT_PFNoPUHT650_v4>0)||
+	      (triggerresultshelper_HLT_PFNoPUHT650_v5>0)||
+	      (triggerresultshelper_HLT_PFNoPUHT650_v6>0))&&
 	     ((triggerresultshelper_HLT_HT450_v1>0)||
 	      (triggerresultshelper_HLT_HT450_v2>0)||
 	      (triggerresultshelper_HLT_HT450_v3>0)||
@@ -455,28 +573,83 @@ int main(int argc, char** argv)
 	      (triggerresultshelper_HLT_HT450_v7>0)||
 	      (triggerresultshelper_HLT_HT450_v8>0)||
 	      (triggerresultshelper_HLT_HT450_v9>0)))
-              h1_trig->Fill(eventhelperextra_dijet_invmass, weight);
-
+              h1_trig->Fill(DijetMass, weight);
+          /*
+	  if(((triggerresultshelper_HLT_HT650_v1>0)||
+	      (triggerresultshelper_HLT_HT650_v2>0)||
+	      (triggerresultshelper_HLT_HT650_v3>0)||
+	      (triggerresultshelper_HLT_HT650_v4>0)||
+	      (triggerresultshelper_HLT_HT650_v5>0)||
+	      (triggerresultshelper_HLT_HT650_v6>0)||
+	      (triggerresultshelper_HLT_HT650_v7>0)||
+	      (triggerresultshelper_HLT_HT650_v8>0)||
+	      (triggerresultshelper_HLT_HT650_v9>0))&&
+	     ((triggerresultshelper_HLT_HT450_v1>0)||
+	      (triggerresultshelper_HLT_HT450_v2>0)||
+	      (triggerresultshelper_HLT_HT450_v3>0)||
+	      (triggerresultshelper_HLT_HT450_v4>0)||
+	      (triggerresultshelper_HLT_HT450_v5>0)||
+	      (triggerresultshelper_HLT_HT450_v6>0)||
+	      (triggerresultshelper_HLT_HT450_v7>0)||
+	      (triggerresultshelper_HLT_HT450_v8>0)||
+	      (triggerresultshelper_HLT_HT450_v9>0)))
+              h1_trig->Fill(DijetMass, weight);
+          */
           for ( size_t j = 0; j < (massBins.size()-1); ++j )
           {
-              if((eventhelperextra_dijet_invmass>=massBins[j])&&
-	         (eventhelperextra_dijet_invmass<massBins[j+1]))
+              if((DijetMass>=massBins[j])&&
+	         (DijetMass<massBins[j+1]))
               {
-                  hists[j]->Fill(exp(fabs(jethelper2_rapidity[0]-jethelper2_rapidity[1])), weight);
-                  histspt1[j]->Fill(jethelper2_pt[0], weight);
-                  histspt2[j]->Fill(jethelper2_pt[1], weight);
-                  histsy1[j]->Fill(jethelper2_rapidity[0], weight);
-                  histsy2[j]->Fill(jethelper2_rapidity[1], weight);
-                  histsyboost[j]->Fill(fabs(jethelper2_rapidity[0]+jethelper2_rapidity[1])/2., weight);
+                  hists[j]->Fill(exp(fabs(jethelper3_rapidity[0]-jethelper3_rapidity[1])), weight);
+                  histspt1[j]->Fill(jethelper3_pt[0], weight);
+                  histspt2[j]->Fill(jethelper3_pt[1], weight);
+                  histsy1[j]->Fill(jethelper3_rapidity[0], weight);
+                  histsy2[j]->Fill(jethelper3_rapidity[1], weight);
+                  histsyboost[j]->Fill(fabs(jethelper3_rapidity[0]+jethelper3_rapidity[1])/2., weight);
                   histsmetsumet[j]->Fill(met2_et/met2_sumEt, weight);
 		  TLorentzVector spt1;
-		  spt1.SetPtEtaPhiE(jethelper2_pt[0],jethelper2_eta[0],jethelper2_phi[0],jethelper2_energy[0]);
+		  spt1.SetPtEtaPhiE(jethelper3_pt[0],jethelper3_eta[0],jethelper3_phi[0],jethelper3_energy[0]);
 		  TLorentzVector spt2;
-		  spt2.SetPtEtaPhiE(jethelper2_pt[1],jethelper2_eta[1],jethelper2_phi[1],jethelper2_energy[1]);
-                  histsmptsumpt[j]->Fill((spt1+spt2).Pt()/(jethelper2_pt[0]+jethelper2_pt[1]), weight);
-                  histsdphi[j]->Fill(fabs(reco::deltaPhi(jethelper2_phi[0],jethelper2_phi[1])));
+		  spt2.SetPtEtaPhiE(jethelper3_pt[1],jethelper3_eta[1],jethelper3_phi[1],jethelper3_energy[1]);
+                  histsmptsumpt[j]->Fill((spt1+spt2).Pt()/(jethelper3_pt[0]+jethelper3_pt[1]), weight);
+                  histsdphi[j]->Fill(fabs(reco::deltaPhi(jethelper3_phi[0],jethelper3_phi[1])));
               }
+for (int isrc = 0; isrc < nsrc; isrc++) {
+              double shift;
+	      vsrc[isrc]->setJetPt(jethelper3_pt[0]);
+              vsrc[isrc]->setJetEta(jethelper3_eta[0]);
+	      shift=1.0+vsrc[isrc]->getUncertainty(true);
+	      TLorentzVector jet1UpAbsolute;
+	      jet1UpAbsolute.SetPtEtaPhiE(jethelper3_pt[0]*shift,jethelper3_eta[0],jethelper3_phi[0],jethelper3_energy[0]*shift);
+              vsrc[isrc]->setJetPt(jethelper3_pt[1]);
+              vsrc[isrc]->setJetEta(jethelper3_eta[1]);
+	      shift=1.0+vsrc[isrc]->getUncertainty(true);
+	      TLorentzVector jet2UpAbsolute;
+	      jet2UpAbsolute.SetPtEtaPhiE(jethelper3_pt[1]*shift,jethelper3_eta[1],jethelper3_phi[1],jethelper3_energy[1]*shift);
+              if(((jet1UpAbsolute+jet2UpAbsolute).M()>=massBins[j])&&
+	         ((jet1UpAbsolute+jet2UpAbsolute).M()<massBins[j+1]))
+                  histsJECup[isrc][j]->Fill(exp(fabs(jethelper3_rapidity[0]-jethelper3_rapidity[1])), weight);
+}
+for (int isrc = 0; isrc < nsrc; isrc++) {
+              double shift;
+	      vsrc[isrc]->setJetPt(jethelper3_pt[0]);
+              vsrc[isrc]->setJetEta(jethelper3_eta[0]);
+	      shift=1.0-vsrc[isrc]->getUncertainty(false);
+	      TLorentzVector jet1UpAbsolute;
+	      jet1UpAbsolute.SetPtEtaPhiE(jethelper3_pt[0]*shift,jethelper3_eta[0],jethelper3_phi[0],jethelper3_energy[0]*shift);
+              vsrc[isrc]->setJetPt(jethelper3_pt[1]);
+              vsrc[isrc]->setJetEta(jethelper3_eta[1]);
+	      shift=1.0-vsrc[isrc]->getUncertainty(false);
+	      TLorentzVector jet2UpAbsolute;
+	      jet2UpAbsolute.SetPtEtaPhiE(jethelper3_pt[1]*shift,jethelper3_eta[1],jethelper3_phi[1],jethelper3_energy[1]*shift);
+              if(((jet1UpAbsolute+jet2UpAbsolute).M()>=massBins[j])&&
+	         ((jet1UpAbsolute+jet2UpAbsolute).M()<massBins[j+1]))
+                  histsJECdown[isrc][j]->Fill(exp(fabs(jethelper3_rapidity[0]-jethelper3_rapidity[1])), weight);
+}
           }
+	  
+	  if((DijetMass>4000)||((DijetMass>3000)&&(exp(fabs(jethelper3_rapidity[0]-jethelper3_rapidity[1]))<2)))
+  std::cout << eventhelper_run << ':' << eventhelper_luminosityBlock << ':' << eventhelper_event << " m=" << DijetMass << " chi=" << exp(fabs(jethelper3_rapidity[0]-jethelper3_rapidity[1])) << " y_boost= " << fabs(jethelper3_rapidity[0]+jethelper3_rapidity[1])/2. << " deltaPhi=" << fabs(reco::deltaPhi(jethelper3_phi[0],jethelper3_phi[1])) << std::endl;
   
 	}
 
@@ -502,6 +675,10 @@ int main(int argc, char** argv)
       histsmptsumpt[j]->Write();
       histsdphi[j]->Write();
       hists[j]->Draw("histe");
+for (int isrc = 0; isrc < nsrc; isrc++) {
+      histsJECup[isrc][j]->Write();
+      histsJECdown[isrc][j]->Write();
+}
       std::stringstream name;
       name << cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5) << "_" << massBins[j] << "_" << massBins[j+1] << "_" << "chi.pdf";
       gPad->SetLogy(false);

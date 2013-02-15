@@ -97,7 +97,6 @@ namespace edm
         // dijet invariant mass:
         double dijet_invmass_;
         double dijetCHS_invmass_;
-        double dijetCHSpruned_invmass_;
 
 	// Normal jets:
 	// wide jet 1:
@@ -145,7 +144,6 @@ namespace edm
         // dijet invariant mass:
         double dijet_invmass() const;
         double dijetCHS_invmass() const;
-        double dijetCHSpruned_invmass() const;
 
 	// Normal jets:
 	// wide jet 1:
