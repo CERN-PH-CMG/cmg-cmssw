@@ -8,18 +8,21 @@ if "/mcCorrections_cc.so" not in ROOT.gSystem.GetLibraries():
     ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/mcCorrections.cc+" % os.environ['CMSSW_BASE']);
 
 class SimpleCorrection:
-    def __init__(self,find,replace,procMatch=None,componentMatch=None):
+    def __init__(self,find,replace,procMatch=None,componentMatch=None,onlyForCuts=False):
         self._find    = re.compile(find)
         self._replace = replace
         self._procMatch = re.compile(procMatch) if procMatch else None
         self._componentMatch = re.compile(componentMatch) if componentMatch else None
-    def __call__(self,expr,process,component):
+        self._onlyForCuts = onlyForCuts
+    def __call__(self,expr,process,component,iscut):
         if self._procMatch and not re.match(self._procMatch, process): return expr
         if self._componentMatch and not re.match(self._componentMatch, component   ): return expr
+        if self._onlyForCuts and not iscut: return expr
         return re.sub(self._find, self._replace, expr)
 
 class MCCorrections:
     def __init__(self,file):
+        self._file = file
         self._corrections = []
         for line in open(file,'r'):
             if re.match("\s*#.*", line): continue
@@ -36,12 +39,17 @@ class MCCorrections:
             if len(field) <= 1: continue
             self._corrections.append( SimpleCorrection(field[0], field[1], 
                                     procMatch=(extra['Process'] if 'Process' in extra else None),
-                                    componentMatch=(extra['Component'] if 'Component' in extra else None)) )
-    def __call__(self,expr,process,component):
+                                    componentMatch=(extra['Component'] if 'Component' in extra else None),
+                                    onlyForCuts=('OnlyForCuts' in extra)) )
+    def __call__(self,expr,process,component,iscut):
         ret = expr
         for c in self._corrections:
-            ret = c(ret,process,component)
+            ret = c(ret,process,component,iscut)
         return ret
+    def __str__(self): 
+        return "MCCorrections('%s')" % self._file
+    def __repr__(self): 
+        return "MCCorrections('%s')" % self._file
 
 _corrections = []; _corrections_init = []
 def loadMCCorrections(options):
