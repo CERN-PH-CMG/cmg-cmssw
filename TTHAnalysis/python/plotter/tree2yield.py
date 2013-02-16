@@ -15,6 +15,7 @@ ROOT.gROOT.SetBatch(True)
 from copy import *
 
 from CMGTools.TTHAnalysis.plotter.mcCorrections import *
+from CMGTools.TTHAnalysis.plotter.fakeRate import *
 
 class CutsFile:
     def __init__(self,txtfileOrCuts,options=None):
@@ -123,8 +124,16 @@ class TreeToYield:
         if 'SkipDefaultMCCorrections' in settings: ## unless requested to 
             self._mcCorrs = []                     ##  skip them
         if 'MCCorrections' in settings:
+            self._mcCorrs = self._mcCorrs[:] # make copy
             for cfile in settings['MCCorrections'].split(','): 
                 self._mcCorrs.append( MCCorrections(cfile) )
+        if 'FakeRate' in settings:
+            self._FR = FakeRate(settings['FakeRate'])
+            ## add additional weight correction 
+            self._weightString += "* (" + self._FR.weight() + ")"
+            ## modify cuts to get to control region
+            self._mcCorrs = self._mcCorrs + self._FR.cutMods()
+            
     def setScaleFactor(self,scaleFactor):
         self._scaleFactor = scaleFactor
     def getScaleFactor(self):
@@ -136,14 +145,14 @@ class TreeToYield:
     def getOption(self,name,default=None):
         if name in self._settings: return self._settings[name]
         return default
-    def adaptExpr(self,expr):
+    def adaptExpr(self,expr,cut=False):
         ret = expr
         if self._name == "data":
             ret = re.sub(r'\$MC\{.*?\}', '', re.sub(r'\$DATA\{(.*?)\}', r'\1', expr));
         else:
             ret = re.sub(r'\$DATA\{.*?\}', '', re.sub(r'\$MC\{(.*?)\}', r'\1', expr));
             for mcc in self._mcCorrs:
-                ret = mcc(ret,self._name,self._cname)
+                ret = mcc(ret,self._name,self._cname,cut)
             #if ret != expr: print "[[%s]] => [[%s]]\n" % (expr,ret)
         return ret
     def _init(self):
@@ -214,14 +223,14 @@ class TreeToYield:
             print ""
     def _getYield(self,tree,cut):
         if self._weight:
-            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, cut)
+            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
             ROOT.gROOT.cd()
             if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
             histo = ROOT.TH1F("dummy","dummy",1,0.0,1.0); histo.Sumw2()
-            nev = tree.Draw("0.5>>dummy",self.adaptExpr(cut),"goff")
+            nev = tree.Draw("0.5>>dummy", cut, "goff")
             return [ histo.GetBinContent(1), histo.GetBinError(1) ]
         else: 
-            npass = tree.Draw("1",self.adaptExpr(cut),"goff");
+            npass = tree.Draw("1",self.adaptExpr(cut,cut=True),"goff");
             return [ npass, sqrt(npass) ]
     def _stylePlot(self,plot,spec):
         ## Sample specific-options, from self
@@ -254,7 +263,7 @@ class TreeToYield:
     def getPlotRaw(self,name,expr,bins,cut):
         if not self._isInit: self._init()
         if self._weight:
-            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, cut)
+            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
         if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
         histo = None
         if ":" in expr.replace("::","--"):
@@ -268,7 +277,7 @@ class TreeToYield:
                 (nb,xmin,xmax) = bins.split(",")
                 histo = ROOT.TH1F("dummy","dummy",int(nb),float(xmin),float(xmax))
         histo.Sumw2()
-        self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), self.adaptExpr(cut) ,"goff")
+        self._tree.Draw("%s>>%s" % (self.adaptExpr(expr),"dummy"), cut, "goff")
         return histo.Clone(name)
     def __str__(self):
         mystr = ""
