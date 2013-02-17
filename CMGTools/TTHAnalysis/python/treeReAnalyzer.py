@@ -25,6 +25,8 @@ class Event:
         if name in self.__dict__: return self.__dict__[name]
         self._sync()
         return getattr(self._tree,name)
+    def __getitem__(self,attr):
+        return self.__getattr__(attr)
     def eval(self,expr):
         if not hasattr(self._tree, '_exprs'):
             self._tree._exprs = {}
@@ -49,6 +51,8 @@ class Object:
     def __getattr__(self,name):
         if name in self.__dict__: return self.__dict__[name]
         return getattr(self._event,self._prefix+name)
+    def __getitem__(self,attr):
+        return self.__getattr__(attr)
     def p4(self):
         ret = ROOT.TLorentzVector()
         ret.SetPtEtaPhiM(self.pt,self.eta,self.phi,self.mass)
@@ -101,16 +105,16 @@ class Module:
 class EventLoop:
     def __init__(self,modules):
         self._modules = modules
-    def loop(self,trees,maxEvents=-1,cut=None):
+    def loop(self,trees,maxEvents=-1,cut=None,eventRange=None):
         modules = self._modules
         for m in modules: m.beginJob()
         if type(trees) != list: trees = [ trees ]
         for tree in trees:
             tree.entry = -1
-            for i in xrange(tree.GetEntries()):
+            for i in xrange(tree.GetEntries()) if eventRange == None else eventRange:
                 if maxEvents > 0 and i >= maxEvents-1: break
                 e = Event(tree,i)
-                if cut != None and not event.eval(cut): 
+                if cut != None and not e.eval(cut): 
                     continue
                 ret = True
                 for m in modules: 
