@@ -1,3 +1,65 @@
+
+TH1 *ptHistoGood = 0, *ptHistoBad = 0;
+TH1* initWeights1(TTree *tree, TTree *refTree, TCut  cut) {
+    double pts[999]; int npt = 0; 
+    for (double pt =  5;  pt <   10; pt += 1.0) pts[++npt] = pt;
+    for (double pt =  10; pt <   25; pt += 2.5) pts[++npt] = pt;
+    for (double pt =  25; pt <   50; pt += 5.0) pts[++npt] = pt;
+    for (double pt =  50; pt <  100; pt += 10)  pts[++npt] = pt;
+    for (double pt = 100; pt <= 200; pt += 25)  pts[++npt] = pt;
+    TH1F *ptNum = new TH1F("ptNum","ptNum",npt-1,pts);
+    refTree->Draw("pt>>ptNum",cut,"GOFF");
+    TH1F *ptDen = new TH1F("ptDen","ptDen",npt-1,pts);
+    tree->Draw("pt>>ptDen",cut,"GOFF");
+    TH1* ret = (TH1*) ptNum->Clone("ptNum");
+    ret->Divide(ptDen);
+    return ret;
+}
+
+void initWeights(TTree *sigTree, TTree *bkgTree, TCut cut) {
+    TFile *refGood = TFile::Open("treeTTH.root");
+    TFile *refBad = TFile::Open("treeTTLep.root");
+    TTree *tGood = (TTree*) refGood->Get("rec/t");
+    TTree *tBad = (TTree*) refBad->Get("rec/t");
+    ptHistoGood = initWeights1(sigTree, tGood, cut + "good > 0");
+    ptHistoGood->Draw();
+    c1->Print("~/public_html/drop/plots/wpt_good.png");
+    //ptHistoBad = initWeights1(bkgTree, tBad, Form("(%s && good <= 0)*pow(nJet25,2.36)",(const char *)cut));
+    ptHistoBad = initWeights1(bkgTree, tBad, cut);
+    ptHistoBad->Draw();
+    c1->Print("~/public_html/drop/plots/wpt_bad.png");
+}
+
+double weight(double pt, int good) {
+    TH1 *h = (good > 0 ? ptHistoGood : ptHistoBad);
+    int i = h->GetXaxis()->FindBin(pt);
+    if (i == h->GetNbinsX()+1) --i;
+    else if (i == 0) ++i;
+    return h->GetBinContent(i);
+}
+
+void uniformWeight(TTree *sigTree, TTree *bkgTree, TCut cut, double &wSig, double &wBkg) {
+    TFile *refGood = TFile::Open("treeTTH.root");
+    TFile *refBad = TFile::Open("treeTTLep.root");
+    TTree *tGood = (TTree*) refGood->Get("rec/t");
+    TTree *tBad = (TTree*) refBad->Get("rec/t");
+    TH1F *htemp = new TH1F("htemp","",1,0.5,1.5);
+    sigTree->Draw("1>>htemp",cut + "good > 0"); 
+    double nSig = htemp->GetBinContent(1);
+    bkgTree->Draw("1>>htemp",cut + "good < 0"); 
+    double nBkg = htemp->GetBinContent(1);
+
+    tGood->Draw("1>>htemp",cut + "good <= 0"); 
+    double rSig = htemp->GetBinContent(1);
+    tBad->Draw("1>>htemp",Form("(%s && good <= 0)*pow(nJet25,2.36)",(const char *)cut)); 
+    double rBkg = htemp->GetBinContent(1);
+    
+    std::cout << "Weight for good: "  << rSig/nSig << std::endl;
+    std::cout << "Weight for bad: "  << rBkg/nBkg << std::endl;
+    wSig = rSig/nSig; wBkg = rBkg/nBkg;
+    //return TString::Format("(good > 0)*%g  + (good <=0)*%g", rSig/nSig, rBkg/nBkg);
+}
+
 void trainLeptonID(TString name, TString train="GB") {
     TTree *dSig = (TTree*) _file0->Get("rec/t");
     TTree *dBg1 = (TTree*) _file1->Get("rec/t");
@@ -43,11 +105,6 @@ void trainLeptonID(TString name, TString train="GB") {
         }
     } else { std::cerr << "ERROR: must either be electron or muon." << std::endl; return; }
    
-    factory->AddSignalTree(dSig, 1.0);
-    factory->AddBackgroundTree( dBg1, 1.0);
-
-    // re-weighting to approximately match n(jet) multiplicity of signal
-    factory->SetWeightExpression("(good>0)+(good<=0)*pow(nJet25,2.36)");
 
     TCut lepton = (name.Contains("mu") ? "abs(pdgId) == 13" : "abs(pdgId) == 11");
 
@@ -69,6 +126,18 @@ void trainLeptonID(TString name, TString train="GB") {
         }
     }
 
+    double wSig = 1.0, wBkg = 1.0;
+    uniformWeight(dSig, dBg1, lepton, wSig, wBkg);
+    factory->AddSignalTree(dSig, wSig);
+    factory->AddBackgroundTree(dBg1, wBkg);
+
+    // re-weighting to approximately match n(jet) multiplicity of signal
+    //factory->SetWeightExpression("puWeight*((good>0)+(good<=0)*pow(nJet25,2.36))");
+    //factory->SetWeightExpression("((good>0)+(good<=0)*pow(nJet25,2.36))");
+    //factory->SetWeightExpression("weight(pt,good)");
+    //factory->SetWeightExpression("puWeight");
+    //initWeights(dSig,dBg1,lepton);
+
     if (train=="GB") {
         factory->PrepareTrainingAndTestTree( lepton+" good > 0", lepton+" good <= 0", "" );
     } else if (train=="pB") {
@@ -87,7 +156,10 @@ void trainLeptonID(TString name, TString train="GB") {
     // factory->BookMethod( TMVA::Types::kCuts, "CutsGA", "!H:!V:FitMethod=GA" );
 
     // Boosted Decision Trees with gradient boosting
-    TString BDTGopt = "!H:!V:NTrees=200:BoostType=Grad:Shrinkage=0.10:!UseBaggedGrad:nCuts=2000:nEventsMin=100:NNodesMax=9:UseNvars=9:PruneStrength=5:PruneMethod=CostComplexity:MaxDepth=8";
+    //TString BDTGopt = "!H:!V:NTrees=200:BoostType=Grad:Shrinkage=0.10:!UseBaggedGrad:nCuts=2000:nEventsMin=100:NNodesMax=9:UseNvars=9:PruneStrength=5:PruneMethod=CostComplexity:MaxDepth=8";
+    TString BDTGopt = "!H:!V:NTrees=500:BoostType=Grad:Shrinkage=0.10:!UseBaggedGrad:nCuts=2000:nEventsMin=100:NNodesMax=9:UseNvars=9:PruneStrength=5:PruneMethod=CostComplexity:MaxDepth=8";
+    ///  !H:!V:NTrees=6000:BoostType=Grad:Shrinkage=0.50:UseBaggedGrad:GradBaggingFraction=0.6:SeparationType=GiniIndex:nCuts=2000:PruneMethod=CostComplexity:PruneStrength=50:NNodesMax=5"
+
     BDTGopt += ":CreateMVAPdfs"; // Create Rarity distribution
     factory->BookMethod( TMVA::Types::kBDT, "BDTG", BDTGopt);
 
