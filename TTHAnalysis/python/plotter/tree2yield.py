@@ -162,7 +162,9 @@ class TreeToYield:
         if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (options.tree, root)
         self._tree  = t
         self._friends = []
-        for tf_tree,tf_file in self._options.friendTrees:
+        friendOpts = self._options.friendTrees
+        friendOpts += (self._options.friendTreesData if self._name == "data" else self._options.friendTreesMC)
+        for tf_tree,tf_file in friendOpts:
             tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname)),
             self._friends.append(tf)
         self._isInit = True
@@ -302,7 +304,9 @@ def addTreeToYieldOptions(parser):
     parser.add_option("-N", "--n-minus-one", dest="nMinusOne", action="store_true", help="Compute n-minus-one yields and plots")
     parser.add_option("-t", "--tree",          dest="tree", default='ttHLepTreeProducerBase', help="Pattern for tree name");
     parser.add_option("-G", "--no-fractions",  dest="fractions",action="store_false", default=True, help="Don't print the fractions");
-    parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename). can use {name}, {cname} patterns in the treename") 
+    parser.add_option("-F", "--add-friend",    dest="friendTrees",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename). Can use {name}, {cname} patterns in the treename") 
+    parser.add_option("--FMC", "--add-friend-mc",    dest="friendTreesMC",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to MC only. Can use {name}, {cname} patterns in the treename") 
+    parser.add_option("--FD", "--add-friend-data",    dest="friendTreesData",  action="append", default=[], nargs=2, help="Add a friend tree (treename, filename) to data trees only. Can use {name}, {cname} patterns in the treename") 
     parser.add_option("--mcc", "--mc-corrections",    dest="mcCorrs",  action="append", default=[], nargs=1, help="Load the following file of mc to data corrections") 
 
 def mergeReports(reports):
