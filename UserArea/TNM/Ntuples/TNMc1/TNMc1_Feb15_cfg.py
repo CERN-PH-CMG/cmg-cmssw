@@ -1,4 +1,4 @@
-#$Revision: 1.2 $
+#$Revision: 1.3 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -231,8 +231,6 @@ process.load("CMGTools.Susy.RazorMultiJet.razorMultijet_cff")
 process.load("CMGTools.Susy.common.susy_cff")
 
 process.razorMJObjectSequence.remove(process.razorMJHemiSequence)
-# This is the UCSB tau veto.  Need to remove for SMSs:
-process.razorMJTauSequence.remove(process.razorMJTauVeto)
 
 if not runOnMC:
     process.demo.buffers.remove('sint')
@@ -278,9 +276,6 @@ if not runOnMC:
     process.hcallasereventfilter2012.EventList=eventlist
     process.hcallasereventfilter2012Path=cms.Path(process.hcallasereventfilter2012)
     process.schedule = cms.Schedule(process.hcallasereventfilter2012Path,*[p for p in process.schedule])
-
-#### no AK5 pruned
-process.p.remove(process.razorMJStructureJetSel30)
 
 #### recalibrated jets
 if recalibrateCMGJets:
