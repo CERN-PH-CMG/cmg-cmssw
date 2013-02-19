@@ -12,6 +12,8 @@
 #include "pdg.h"
 #endif
 
+#include "TLorentzVector.h"
+
 using namespace std;
 
 Double_t fnc_dscb(Double_t *xx, Double_t *pp)
@@ -134,58 +136,58 @@ int main(int argc, char** argv)
   stream.select("patJetHelper_selectedPatJetsCHS.neutralHadronEnergyFraction", jethelper_neutralHadronEnergyFraction);
   stream.select("patJetHelper_selectedPatJetsCHS.phi", jethelper_phi);
   stream.select("patJetHelper_selectedPatJetsCHS.pt", jethelper_pt);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.numberOfDaughters", jethelper_numberOfDaughters);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.combinedSecondaryVertexBJetTags", jethelper3_combinedSecondaryVertexBJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.combinedSecondaryVertexMVABJetTags", jethelper3_combinedSecondaryVertexMVABJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.energy", jethelper3_energy);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.et", jethelper3_et);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.eta", jethelper3_eta);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.genJet_energy", jethelper3_genJet_energy);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.genJet_eta", jethelper3_genJet_eta);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.genJet_phi", jethelper3_genJet_phi);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.genJet_pt", jethelper3_genJet_pt);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.genParton_pdgId", jethelper3_genParton_pdgId);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.jetArea", jethelper3_jetArea);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.jetBProbabilityBJetTags", jethelper3_jetBProbabilityBJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.jetProbabilityBJetTags", jethelper3_jetProbabilityBJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.mass", jethelper3_mass);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.nConstituents", jethelper3_nConstituents);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.partonFlavour", jethelper3_partonFlavour);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.phi", jethelper3_phi);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.pt", jethelper3_pt);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.simpleSecondaryVertexHighEffBJetTags", jethelper3_simpleSecondaryVertexHighEffBJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.simpleSecondaryVertexHighPurBJetTags", jethelper3_simpleSecondaryVertexHighPurBJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.trackCountingHighEffBJetTags", jethelper3_trackCountingHighEffBJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.trackCountingHighPurBJetTags", jethelper3_trackCountingHighPurBJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.uncor_energy", jethelper3_uncor_energy);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.uncor_et", jethelper3_uncor_et);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.uncor_pt", jethelper3_uncor_pt);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_chargedEmEnergyFraction", jethelper_daughter_0_chargedEmEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_chargedHadronEnergyFraction", jethelper_daughter_0_chargedHadronEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_chargedMultiplicity", jethelper_daughter_0_chargedMultiplicity);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_energy", jethelper_daughter_0_energy);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_eta", jethelper_daughter_0_eta);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_mass", jethelper_daughter_0_mass);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_muonEnergyFraction", jethelper_daughter_0_muonEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_nConstituents", jethelper_daughter_0_nConstituents);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_neutralEmEnergyFraction", jethelper_daughter_0_neutralEmEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_neutralHadronEnergyFraction", jethelper_daughter_0_neutralHadronEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_phi", jethelper_daughter_0_phi);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_photonEnergyFraction", jethelper_daughter_0_photonEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_0_pt", jethelper_daughter_0_pt);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_chargedEmEnergyFraction", jethelper_daughter_1_chargedEmEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_chargedHadronEnergyFraction", jethelper_daughter_1_chargedHadronEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_chargedMultiplicity", jethelper_daughter_1_chargedMultiplicity);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_energy", jethelper_daughter_1_energy);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_eta", jethelper_daughter_1_eta);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_mass", jethelper_daughter_1_mass);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_muonEnergyFraction", jethelper_daughter_1_muonEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_nConstituents", jethelper_daughter_1_nConstituents);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_neutralEmEnergyFraction", jethelper_daughter_1_neutralEmEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_neutralHadronEnergyFraction", jethelper_daughter_1_neutralHadronEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_phi", jethelper_daughter_1_phi);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_photonEnergyFraction", jethelper_daughter_1_photonEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHSpruned.daughter_1_pt", jethelper_daughter_1_pt);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.numberOfDaughters", jethelper_numberOfDaughters);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.combinedSecondaryVertexBJetTags", jethelper3_combinedSecondaryVertexBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.combinedSecondaryVertexMVABJetTags", jethelper3_combinedSecondaryVertexMVABJetTags);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.energy", jethelper3_energy);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.et", jethelper3_et);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.eta", jethelper3_eta);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.genJet_energy", jethelper3_genJet_energy);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.genJet_eta", jethelper3_genJet_eta);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.genJet_phi", jethelper3_genJet_phi);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.genJet_pt", jethelper3_genJet_pt);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.genParton_pdgId", jethelper3_genParton_pdgId);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.jetArea", jethelper3_jetArea);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.jetBProbabilityBJetTags", jethelper3_jetBProbabilityBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.jetProbabilityBJetTags", jethelper3_jetProbabilityBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.mass", jethelper3_mass);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.nConstituents", jethelper3_nConstituents);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.partonFlavour", jethelper3_partonFlavour);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.phi", jethelper3_phi);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.pt", jethelper3_pt);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.simpleSecondaryVertexHighEffBJetTags", jethelper3_simpleSecondaryVertexHighEffBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.simpleSecondaryVertexHighPurBJetTags", jethelper3_simpleSecondaryVertexHighPurBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.trackCountingHighEffBJetTags", jethelper3_trackCountingHighEffBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.trackCountingHighPurBJetTags", jethelper3_trackCountingHighPurBJetTags);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.uncor_energy", jethelper3_uncor_energy);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.uncor_et", jethelper3_uncor_et);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.uncor_pt", jethelper3_uncor_pt);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_chargedEmEnergyFraction", jethelper_daughter_0_chargedEmEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_chargedHadronEnergyFraction", jethelper_daughter_0_chargedHadronEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_chargedMultiplicity", jethelper_daughter_0_chargedMultiplicity);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_energy", jethelper_daughter_0_energy);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_eta", jethelper_daughter_0_eta);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_mass", jethelper_daughter_0_mass);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_muonEnergyFraction", jethelper_daughter_0_muonEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_nConstituents", jethelper_daughter_0_nConstituents);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_neutralEmEnergyFraction", jethelper_daughter_0_neutralEmEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_neutralHadronEnergyFraction", jethelper_daughter_0_neutralHadronEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_phi", jethelper_daughter_0_phi);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_photonEnergyFraction", jethelper_daughter_0_photonEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_0_pt", jethelper_daughter_0_pt);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_chargedEmEnergyFraction", jethelper_daughter_1_chargedEmEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_chargedHadronEnergyFraction", jethelper_daughter_1_chargedHadronEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_chargedMultiplicity", jethelper_daughter_1_chargedMultiplicity);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_energy", jethelper_daughter_1_energy);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_eta", jethelper_daughter_1_eta);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_mass", jethelper_daughter_1_mass);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_muonEnergyFraction", jethelper_daughter_1_muonEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_nConstituents", jethelper_daughter_1_nConstituents);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_neutralEmEnergyFraction", jethelper_daughter_1_neutralEmEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_neutralHadronEnergyFraction", jethelper_daughter_1_neutralHadronEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_phi", jethelper_daughter_1_phi);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_photonEnergyFraction", jethelper_daughter_1_photonEnergyFraction);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_pt", jethelper_daughter_1_pt);
   stream.select("patMET_patMETsRaw.et", met2_et);
   stream.select("patMET_patMETsRaw.sumEt", met2_sumEt);
   stream.select("npatJetHelper_selectedPatJetsCHS", njethelper);
@@ -236,6 +238,11 @@ int main(int argc, char** argv)
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.noscrapingFilterPath", triggerresultshelper_noscrapingFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.primaryVertexFilterPath", triggerresultshelper_primaryVertexFilterPath);
   stream.select("edmTriggerResultsHelper_TriggerResults_PAT.trackingFailureFilterPath", triggerresultshelper_trackingFailureFilterPath);
+  stream.select("edmTriggerResultsHelper_TriggerResults_PAT.CSCTightHaloFilterPath", triggerresultshelper_CSCTightHaloFilterPath);
+  stream.select("edmTriggerResultsHelper_TriggerResults_PAT.EcalDeadCellBoundaryEnergyFilterPath", triggerresultshelper_EcalDeadCellBoundaryEnergyFilterPath);
+  stream.select("edmTriggerResultsHelper_TriggerResults_PAT.EcalDeadCellTriggerPrimitiveFilterPath", triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath);
+  stream.select("edmTriggerResultsHelper_TriggerResults_PAT.HBHENoiseFilterPath", triggerresultshelper_HBHENoiseFilterPath);
+  stream.select("sint_hcallasereventfilter2012.value", triggerresultshelper_hcallasereventfilter2012);
 
   stream.select("nrecoGenParticleHelper_genParticles", ngenparticlehelper);
   stream.select("recoGenParticleHelper_genParticles.firstDaughter", genparticlehelper_firstDaughter);
@@ -243,6 +250,9 @@ int main(int argc, char** argv)
   stream.select("recoGenParticleHelper_genParticles.lastDaughter", genparticlehelper_lastDaughter);
   stream.select("recoGenParticleHelper_genParticles.lastMother", genparticlehelper_lastMother);
   stream.select("recoGenParticleHelper_genParticles.pdgId", genparticlehelper_pdgId);
+
+  stream.select("patJetHelper_selectedPatJetsCA8CHS.tau1", jethelper_tau1);
+  stream.select("patJetHelper_selectedPatJetsCA8CHS.tau2", jethelper_tau2);
 
   // The root application is needed to make canvases visible during
   // program execution. If this is not needed, just comment out the following
@@ -292,28 +302,14 @@ int main(int argc, char** argv)
   4686, 4869, 5058, 5253, 5455, 5663, 5877, 6099, 6328, 6564, 6808, 7060, 7320, 7589, 7866, 8152, 8447, 8752, 9067, 9391, 9726, 10072, 10430, 
   10798, 11179, 11571, 11977, 12395, 12827, 13272, 13732, 14000};
   
-  TH1F* mass=new TH1F("dijet_mass","M_{jj}",NBINS-1,BOUNDARIES);
-  mass->Sumw2();
-  TH1F* mass_1Wtag=new TH1F("dijet_mass_1Wtag","M_{jj}",NBINS-1,BOUNDARIES);
-  mass_1Wtag->Sumw2();
   TH1F* mass_2Wtag=new TH1F("dijet_mass_2Wtag","M_{jj}",NBINS-1,BOUNDARIES);
   mass_2Wtag->Sumw2();
-  TH1F* mass_1Htag=new TH1F("dijet_mass_1Htag","M_{jj}",NBINS-1,BOUNDARIES);
-  mass_1Htag->Sumw2();
-  TH1F* mass_2Htag=new TH1F("dijet_mass_2Htag","M_{jj}",NBINS-1,BOUNDARIES);
-  mass_2Htag->Sumw2();
-  TH1F* mass_1Hbtag=new TH1F("dijet_mass_1Hbtag","M_{jj}",NBINS-1,BOUNDARIES);
-  mass_1Hbtag->Sumw2();
-  TH1F* mass_1Hbtag_1Htag=new TH1F("dijet_mass_1Hbtag_1Htag","M_{jj}",NBINS-1,BOUNDARIES);
-  mass_1Hbtag_1Htag->Sumw2();
-  TH1F* mass_2Hbtag=new TH1F("dijet_mass_2Hbtag","M_{jj}",NBINS-1,BOUNDARIES);
-  mass_2Hbtag->Sumw2();
-  TH1F* mass_1Hmtag=new TH1F("dijet_mass_1Hmtag","M_{jj}",NBINS-1,BOUNDARIES);
-  mass_1Hmtag->Sumw2();
-  TH1F* mass_1Hmtag_1Htag=new TH1F("dijet_mass_1Hmtag_1Htag","M_{jj}",NBINS-1,BOUNDARIES);
-  mass_1Hmtag_1Htag->Sumw2();
-  TH1F* mass_2Hmtag=new TH1F("dijet_mass_2Hmtag","M_{jj}",NBINS-1,BOUNDARIES);
-  mass_2Hmtag->Sumw2();
+  TH1F* massNoCHS_2Wtag=new TH1F("dijet_massNoCHS_2Wtag","M_{jj}",NBINS-1,BOUNDARIES);
+  massNoCHS_2Wtag->Sumw2();
+  TH1F* massCA8_2Wtag=new TH1F("dijet_massCA8_2Wtag","M_{jj}",NBINS-1,BOUNDARIES);
+  massCA8_2Wtag->Sumw2();
+  TH1F* mass_2Nsubtag=new TH1F("dijet_mass_2Nsubtag","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_2Nsubtag->Sumw2();
 
   //---------------------------------------------------------------------------
   // Loop over events
@@ -339,11 +335,23 @@ int main(int argc, char** argv)
 	  // ---------------------
 
 
-          double DijetMass = eventhelperextra_dijetCHS_invmass;
+          TLorentzVector Jet1;
+          TLorentzVector Jet2;
+	  Jet1.SetPtEtaPhiE(jethelper_pt[0],jethelper_eta[0],jethelper_phi[0],jethelper_energy[0]);
+	  Jet2.SetPtEtaPhiE(jethelper_pt[1],jethelper_eta[1],jethelper_phi[1],jethelper_energy[1]);
+          double DijetMass = (Jet1+Jet2).M();
+	  Jet1.SetPtEtaPhiE(jethelper2_pt[0],jethelper2_eta[0],jethelper2_phi[0],jethelper2_energy[0]);
+	  Jet2.SetPtEtaPhiE(jethelper2_pt[1],jethelper2_eta[1],jethelper2_phi[1],jethelper2_energy[1]);
+          double DijetMassNoCHS = (Jet1+Jet2).M();
+	  Jet1.SetPtEtaPhiE(jethelper3_pt[0],jethelper3_eta[0],jethelper3_phi[0],jethelper3_energy[0]);
+	  Jet2.SetPtEtaPhiE(jethelper3_pt[1],jethelper3_eta[1],jethelper3_phi[1],jethelper3_energy[1]);
+          double DijetMassCA8 = (Jet1+Jet2).M();
           double JetMass1 = jethelper3_mass[0];
           double JetMass2 = jethelper3_mass[1];
           double JetMassDrop1 = max(jethelper_daughter_0_mass[0],jethelper_daughter_1_mass[0])/JetMass1;
           double JetMassDrop2 = max(jethelper_daughter_0_mass[1],jethelper_daughter_1_mass[1])/JetMass2;
+          double JetNsub1 = jethelper_tau2[0]/jethelper_tau1[0];
+          double JetNsub2 = jethelper_tau2[1]/jethelper_tau1[1];
            
 	  if(!((jethelper_pt.size()>=2)&&
 	     (jethelper_pt[0]>30)&&
@@ -352,60 +360,38 @@ int main(int argc, char** argv)
 	     (fabs(jethelper_eta[1])<2.5)&&
 	     (fabs(jethelper_eta[0]-jethelper_eta[1])<1.3)&&
 	     
+	     (jethelper_muonEnergyFraction[0]<0.80)&&
+	     //(jethelper_neutralHadronEnergyFraction[0]<0.99)&&
 	     (jethelper_neutralHadronEnergyFraction[0]<0.90)&&
+	     //(jethelper_neutralEmEnergyFraction[0]<0.99)&&
 	     (jethelper_neutralEmEnergyFraction[0]<0.90)&&
 	     (jethelper_nConstituents[0]>1)&&
 	     ((fabs(jethelper_eta[0])>2.4)||
-	      ((jethelper_chargedHadronEnergyFraction[0]>0)&&
+	      ((jethelper_chargedHadronEnergyFraction[0]>0.01)&&
 	       (jethelper_chargedMultiplicity[0]>0)&&
 	       (jethelper_chargedEmEnergyFraction[0]<0.99)))&&
 	     
+	     (jethelper_muonEnergyFraction[1]<0.80)&&
+	     //(jethelper_neutralHadronEnergyFraction[1]<0.99)&&
 	     (jethelper_neutralHadronEnergyFraction[1]<0.90)&&
+	     //(jethelper_neutralEmEnergyFraction[1]<0.99)&&
 	     (jethelper_neutralEmEnergyFraction[1]<0.90)&&
 	     (jethelper_nConstituents[1]>1)&&
 	     ((fabs(jethelper_eta[1])>2.4)||
-	      ((jethelper_chargedHadronEnergyFraction[1]>0)&&
+	      ((jethelper_chargedHadronEnergyFraction[1]>0.01)&&
 	       (jethelper_chargedMultiplicity[1]>0)&&
 	       (jethelper_chargedEmEnergyFraction[1]<0.99)))
-	      /*
-	      &&
 	     
-	     (triggerresultshelper_primaryVertexFilterPath)&&
-	     (triggerresultshelper_noscrapingFilterPath)&&
-	     (triggerresultshelper_hcalLaserEventFilterPath)&&
-             
-	     ((triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v1)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v2)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v3)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v4)||
-	      (triggerresultshelper_HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v5)||
-	      (triggerresultshelper_HLT_PFHT650_v1)||
-	      (triggerresultshelper_HLT_PFHT650_v2)||
-	      (triggerresultshelper_HLT_PFHT650_v3)||
-	      (triggerresultshelper_HLT_PFHT650_v4)||
-	      (triggerresultshelper_HLT_PFHT650_v5)||
-	      (triggerresultshelper_HLT_PFHT650_v6)||
-	      (triggerresultshelper_HLT_PFHT650_v7)||
-	      (triggerresultshelper_HLT_PFHT650_v8)||
-	      (triggerresultshelper_HLT_PFHT700_v1)||
-	      (triggerresultshelper_HLT_PFHT700_v2)||
-	      (triggerresultshelper_HLT_PFHT700_v3)||
-	      (triggerresultshelper_HLT_PFHT700_v4)||
-	      (triggerresultshelper_HLT_PFHT700_v5)||
-	      (triggerresultshelper_HLT_PFHT700_v6)||
-	      (triggerresultshelper_HLT_PFHT750_v1)||
-	      (triggerresultshelper_HLT_PFHT750_v2)||
-	      (triggerresultshelper_HLT_PFHT750_v3)||
-	      (triggerresultshelper_HLT_PFHT750_v4)||
-	      (triggerresultshelper_HLT_PFHT750_v5)||
-	      (triggerresultshelper_HLT_PFHT750_v6)||
-	      (triggerresultshelper_HLT_HT650_v1)||
-	      (triggerresultshelper_HLT_HT650_v2)||
-	      (triggerresultshelper_HLT_HT650_v3)||
-	      (triggerresultshelper_HLT_HT750_v1)||
-	      (triggerresultshelper_HLT_HT750_v2)||
-	      (triggerresultshelper_HLT_HT750_v3))
-	      */
+	     &&
+	     (sdouble_kt6PFJets_rho_value<40)&&
+	     (triggerresultshelper_primaryVertexFilterPath!=0)&&
+	     (triggerresultshelper_noscrapingFilterPath!=0)&&
+	     (triggerresultshelper_trackingFailureFilterPath!=0)&&
+	     (triggerresultshelper_hcalLaserEventFilterPath!=0)&&
+	     (triggerresultshelper_HBHENoiseFilterPath!=0)&&
+	     (triggerresultshelper_CSCTightHaloFilterPath!=0)&&
+	     (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath!=0)&&
+	     (triggerresultshelper_hcallasereventfilter2012!=0)
 	    )) continue;
 	   
 	  // ---------------------
@@ -417,114 +403,36 @@ int main(int argc, char** argv)
 	  else
 	      weight=1;
 
-          mass->Fill(DijetMass, weight);
-	  if(((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.25)) ||
-	     ((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.25)))
-              mass_1Wtag->Fill(DijetMass, weight);
 	  if(((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.25)) &&
 	     ((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.25)))
+	  {
               mass_2Wtag->Fill(DijetMass, weight);
-
-	  if(((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)) ||
-	     ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)))
-              mass_1Htag->Fill(DijetMass, weight);
-	  if(((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)) &&
-	     ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)))
-              mass_2Htag->Fill(DijetMass, weight);
-
-	  if(((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)&&(jethelper_combinedSecondaryVertexBJetTags[0]>0.244)) ||
-             ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)&&(jethelper_combinedSecondaryVertexBJetTags[1]>0.244)))
-              mass_1Hbtag->Fill(DijetMass, weight);
-	  if((((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)&&(jethelper_combinedSecondaryVertexBJetTags[0]>0.244)) &&
-              ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25))) ||
-             (((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)) &&
-              ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)&&(jethelper_combinedSecondaryVertexBJetTags[1]>0.244))))
-              mass_1Hbtag_1Htag->Fill(DijetMass, weight);
-	  if(((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)&&(jethelper_combinedSecondaryVertexBJetTags[0]>0.244)) &&
-             ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)&&(jethelper_combinedSecondaryVertexBJetTags[1]>0.244)))
-              mass_2Hbtag->Fill(DijetMass, weight);
-
-	  if(((JetMass1>115)&&(JetMass1<135)) ||
-	     ((JetMass2>115)&&(JetMass2<135)))
-              mass_1Hmtag->Fill(DijetMass, weight);
-	  if(((JetMass1>115)&&(JetMass1<135)) &&
-	     ((JetMass2>115)&&(JetMass2<135)))
-              mass_2Hmtag->Fill(DijetMass, weight);
-	  if((((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)) &&
-	      ((JetMass2>115)&&(JetMass2<135)))||
-	     (((JetMass1>115)&&(JetMass1<135)) &&
- 	      ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25))))
-              mass_1Hmtag_1Htag->Fill(DijetMass, weight);
-/*
-	  if(((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)&&(jethelper_muonEnergyFraction[0]>0.1)) ||
-             ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)&&(jethelper_muonEnergyFraction[1]>0.1)))
-              mass_1Hmtag->Fill(DijetMass, weight);
-	  if((((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)&&(jethelper_muonEnergyFraction[0]>0.1)) &&
-              ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25))) ||
-             (((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)) &&
-              ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)&&(jethelper_muonEnergyFraction[1]>0.1))))
-              mass_1Hmtag_1Htag->Fill(DijetMass, weight);
-	  if(((JetMass1>115)&&(JetMass1<135)&&(JetMassDrop1<0.25)&&(jethelper_muonEnergyFraction[0]>0.1)) &&
-             ((JetMass2>115)&&(JetMass2<135)&&(JetMassDrop2<0.25)&&(jethelper_muonEnergyFraction[1]>0.1)))
-              mass_2Hmtag->Fill(DijetMass, weight);
-*/
+              massNoCHS_2Wtag->Fill(DijetMassNoCHS, weight);
+              massCA8_2Wtag->Fill(DijetMassCA8, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.4)) &&
+	     ((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.4)))
+	  {
+              mass_2Nsubtag->Fill(DijetMass, weight);
+	  }
 	}
 
   double y_min=0.5;
-  if(weight!=1) y_min=mass->GetMaximum()/1e6;
+  if(weight!=1) y_min=mass_2Wtag->GetMaximum()/1e6;
 
   TCanvas c1("c1","c1",200,200);
-  mass->Draw("he");
-  mass->GetXaxis()->SetRangeUser(1200,6000);
-  mass->GetYaxis()->SetRangeUser(y_min,mass->GetMaximum()*1.5);
+  mass_2Wtag->Draw("he");
+  mass_2Wtag->GetXaxis()->SetRangeUser(890,2500);
+  mass_2Wtag->GetYaxis()->SetRangeUser(y_min,mass_2Wtag->GetMaximum()*1.5);
   gPad->SetLogy(true);
-  mass_1Wtag->SetLineColor(2);
-  mass_1Wtag->Draw("hesame");
-  mass_2Wtag->SetLineColor(3);
-  mass_2Wtag->Draw("hesame");
+  massNoCHS_2Wtag->SetLineColor(2);
+  massNoCHS_2Wtag->Draw("hesame");
+  massCA8_2Wtag->SetLineColor(3);
+  massCA8_2Wtag->Draw("hesame");
+  mass_2Nsubtag->SetLineColor(4);
+  mass_2Nsubtag->Draw("hesame");
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Wtag_mass.pdf").c_str());
-
-  mass->Draw("he");
-  mass->GetXaxis()->SetRangeUser(1200,6000);
-  mass->GetYaxis()->SetRangeUser(y_min,mass->GetMaximum()*1.5);
-  gPad->SetLogy(true);
-  mass_1Htag->SetLineColor(2);
-  mass_1Htag->Draw("hesame");
-  mass_2Htag->SetLineColor(3);
-  mass_2Htag->Draw("hesame");
-  c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Htag_mass.pdf").c_str());
-
-  mass->Draw("he");
-  mass->GetXaxis()->SetRangeUser(1200,6000);
-  mass->GetYaxis()->SetRangeUser(y_min,mass->GetMaximum()*1.5);
-  gPad->SetLogy(true);
-  mass_1Hbtag->SetLineColor(2);
-  mass_1Hbtag->Draw("hesame");
-  mass_1Hbtag_1Htag->SetLineColor(3);
-  mass_1Hbtag_1Htag->Draw("hesame");
-  mass_2Hbtag->SetLineColor(4);
-  mass_2Hbtag->Draw("hesame");
-  c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Hbtag_mass.pdf").c_str());
-
-  mass->SetTitle("");
-  mass->GetXaxis()->SetTitle("dijet mass");
-  mass->GetYaxis()->SetTitle("events");
-  mass->Draw("he");
-  mass->GetXaxis()->SetRangeUser(500,6000);
-  mass->GetYaxis()->SetRangeUser(y_min,mass->GetMaximum()*1.5);
-  gPad->SetLogy(true);
-  mass_1Hmtag->SetLineColor(2);
-  mass_1Hmtag->Draw("hesame");
-  mass_1Htag->SetLineColor(6);
-  mass_1Htag->Draw("hesame");
-  mass_1Hmtag_1Htag->SetLineColor(3);
-  mass_1Hmtag_1Htag->Draw("hesame");
-  mass_2Hmtag->SetLineColor(4);
-  mass_2Hmtag->Draw("hesame");
-  mass_2Htag->SetLineColor(7);
-  mass_2Htag->Draw("hesame");
-  c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Hmtag_mass.pdf").c_str());
-  c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Hmtag_mass.root").c_str());
+  c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Wtag_mass.root").c_str());
 
   stream.close();
   ofile.close();
