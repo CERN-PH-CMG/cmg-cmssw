@@ -1,4 +1,4 @@
-#$Revision: 1.3 $
+#$Revision: 1.4 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -231,6 +231,7 @@ process.load("CMGTools.Susy.RazorMultiJet.razorMultijet_cff")
 process.load("CMGTools.Susy.common.susy_cff")
 
 process.razorMJObjectSequence.remove(process.razorMJHemiSequence)
+process.susyGenSequence.remove(process.dumpPdfWeights)
 
 if not runOnMC:
     process.demo.buffers.remove('sint')
