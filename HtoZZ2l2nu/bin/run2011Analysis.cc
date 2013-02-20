@@ -333,7 +333,7 @@ int main(int argc, char* argv[])
 //   for(size_t i=0; i<15; i++)  qtaxis[60+i]=200+10*i; //200-340
 //   for(size_t i=0; i<25; i++)  qtaxis[75+i]=350+25*i; //350-976
 //   mon.addHistogram( new TH1D( "qt"              , ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)",99,qtaxis));
-//   mon.addHistogram( new TH1F( "qmass", ";M^{ll};Events", 15,76,106) );
+  mon.addHistogram( new TH1F( "qmass", ";M^{ll};Events", 15,76,106) );
   mon.addHistogram( new TH1F( "qt",        ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)",1500,0,1500));
   mon.addHistogram( new TH1F( "qtraw",        ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)",1500,0,1500));
 
@@ -990,7 +990,7 @@ int main(int argc, char* argv[])
       PhysicsObjectJetCollection aJets= variedAJets[0];
       PhysicsObjectJetCollection aGoodIdJets;
       LorentzVector aClusteredMetP4(zll); aClusteredMetP4 *= -1;
-      int nAJetsLoose(0), nAJetsTight(0), nAJetsPUIdLoose(0), nAJetsPUIdMedium(0), nAJetsGood30(0);
+      int nAJetsLoose(0), nAJetsTight(0), nAJetsPUIdLoose(0), nAJetsPUIdMedium(0), nAJetsGood30(0),nAJetsGood15(0);
       int nABtags[3]={0,0,0};
       float mindphijmet(999999.),mindphijmet15(999999.);
       PhysicsObjectJetCollection recoilJets;
@@ -1012,6 +1012,7 @@ int main(int argc, char* argv[])
 	  mon.fillHisto(reg+"pfjetmva",      tags_inc,aJets[ijet].pumva,    weight);
 	  if(isGoodJet)
 	    {
+	      if(aJets[ijet].pt()>15) nAJetsGood15++;
 	      if(aJets[ijet].pt()>30)nAJetsGood30++;
 	      aClusteredMetP4 -= aJets[ijet];	  
 	      aGoodIdJets.push_back(aJets[ijet]);
@@ -1172,13 +1173,12 @@ int main(int argc, char* argv[])
 			//reweight here
 			std::vector<TString> photonCats;
 			photonCats.push_back(tag_cat+"");
-			if(nAJetsLoose==0) photonCats.push_back(tag_cat+"eq0jets");
-			if(nAJetsLoose==1) photonCats.push_back(tag_cat+"eq1jets");
-			if(nAJetsLoose==2) photonCats.push_back(tag_cat+"eq2jets");
-			if(nAJetsLoose>2)  photonCats.push_back(tag_cat+"geq3jets");
+			TString gsub_cat("eq"); gsub_cat+=min(nAJetsGood30,3); gsub_cat += "jets";
+			if(gsub_cat.Contains("3")) gsub_cat = "g"+gsub_cat;
+		        photonCats.push_back(tag_cat+gsub_cat);
 			//if(tag_subcat.Contains("vbf")) photonCats.push_back(tag_cat+"vbf");
 			mon.fillHisto("qt",photonCats, zll.pt(),weight,true); 
-			mon.fillHisto("qmass",photonCats, zll.mass(),weight,true); 
+			mon.fillHisto("qmass",photonCats, zll.mass(),weight); 
 		      }
 
 
