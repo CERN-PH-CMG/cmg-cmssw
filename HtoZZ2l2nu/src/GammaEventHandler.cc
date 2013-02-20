@@ -12,7 +12,7 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 
   //open file and retrieve weights + mass shapes
   std::vector<std::string> gammaPtWeightsFiles =  runProcess.getParameter<std::vector<std::string> >("weightsFile");  
-  TString cats[]   =  {"eq0jets","eq1jets","eq2jets","geq3jets","vbf","geq1jets"};
+  TString cats[]   =  {"eq0jets","eq1jets","eq2jets","geq3jets","vbf","geq1jets","mjjq100","mjjq092","mjjq083","mjjq066","mjjq049","mjjq033","mjjq016"};
   TString dilCats[] = {"ee","mumu","ll"};
   for(size_t ifile=0; ifile<gammaPtWeightsFiles.size(); ifile++)
     {
@@ -174,8 +174,8 @@ std::map<TString,float> GammaEventHandler::getWeights(PhysicsEvent_t &phys, TStr
 	  if(!isMC_)
 	    {
 	      weight=h->Eval(gamma.pt());
-	      if(gamma.pt()>900)                        weight=h->Eval(900);
-	      if(key.Contains("vbf") && gamma.pt()>600) weight=h->Eval(600);
+	      //if(gamma.pt()>900)                        weight=h->Eval(900);
+	      //if(key.Contains("vbf") && gamma.pt()>600) weight=h->Eval(600);
 	    }
 	  else
 	    {

@@ -10,15 +10,15 @@ from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 #default values
 shapeBased='1'
 shapeName='dijet_deta_shapes'
-inUrl='~psilva/work/vbfz/plotter_vbfz_syst_2012.root'
+inUrl='/afs/cern.ch/user/p/psilva/www/FSQ-12-035/ll_19.6fbinv_ewkz.root'
 CWD=os.getcwd()
 phase=-1
 jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_vbfzmg_2012.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
 sqrts='8'
-dyTemplates=''
-#dyTemplates='/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_syst_2012.root'
+dyTemplates='/afs/cern.ch/user/p/psilva/www/FSQ-12-035/gamma_19.6fbinv_ewkz.root'
 smXsec=0.504
+blind=False
 
 MASS = [0]
 SUBMASS = [0]
@@ -78,8 +78,8 @@ if(phase<0 or len(CMSSW_BASE)==0):
    sys.exit(1)
 
 #build the arguments for runLands
-LandSArg='--blindWithSignal'
-#LandSArg=''
+LandSArg=''
+if(blind) : LandSArg='--blindWithSignal'
 LandSArg+=' --systpostfix _%sTeV'%sqrts
 if(len(dyTemplates)>0) : LandSArg+=' --subDY '+dyTemplates
 LandSArg +=' --bins mjjq016,mjjq033,mjjq049,mjjq066,mjjq083,mjjq092,mjjq100'

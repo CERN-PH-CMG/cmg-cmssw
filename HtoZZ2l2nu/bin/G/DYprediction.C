@@ -126,39 +126,26 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_nofit_qt_2012.root";
       gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_qt_2012.root";
       //llFile="~/work/vbfz/plotter_vbfz_2012.root";
-      llFile="~/work/vbfz/plotter_vbfz_syst_2012.root";
+      llFile="~/work/vbfz/plotter_vbfz_2012.root";
 
 
-     histos.push_back("vbfcandjetdeta");
-      //histos.push_back("qt");
-      // histos.push_back("qt");
-      //      histos.push_back("zptNM1");
-      //     histos.push_back("zyNM1");
-       histos.push_back("vbfmjj");
-      //       histos.push_back("vbfmjjNM1");
-      //       histos.push_back("vbfcandjeteta");
-      //       histos.push_back("vbfcandjetetaNM1");
+      histos.push_back("vbfcandjetdeta");      
+      histos.push_back("qt");
+      histos.push_back("vbfmjj");
       histos.push_back("vbfcandjet1eta");
-      //       histos.push_back("vbfcandjet1etaNM1");
       histos.push_back("vbfcandjet2eta");
-      //       histos.push_back("vbfcandjet2etaNM1");
-      //       histos.push_back("vbfcandjetdeta");
-      //      histos.push_back("vbfcandjetdetaNM1");
       histos.push_back("vbfcandjetpt");
-      //       histos.push_back("vbfcandjet1pt");
-      //       histos.push_back("vbfcandjet2pt");
-      //       histos.push_back("vbfhardpt");
-      //       histos.push_back("vbfcjv");
-      //       histos.push_back("vbfcjv15");
+      histos.push_back("vbfcandjet1pt");
+      histos.push_back("vbfcandjet2pt");
+      histos.push_back("vbfcjv15");
       //       histos.push_back("vbfcjv20");
       //       histos.push_back("vbfhtcjv");
       //       histos.push_back("vbfhtcjv15");
       //       histos.push_back("vbfhtcjv20");
-      //       histos.push_back("vbfdphijj");
-      //       histos.push_back("vbfpt");
+      histos.push_back("vbfdphijj");
+      histos.push_back("vbfpt");
       //       histos.push_back("vbfmaxcjvjpt");
-      // 
-      //      histos.push_back("zpt_cm");
+      //histos.push_back("zpt_cm");
       //       histos.push_back("jjpt_cm");
       //       histos.push_back("jet_beam_cm");
       //       histos.push_back("z_beam_cm");
@@ -167,10 +154,10 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //       histos.push_back("jet_zstar_asym_cm");
       //       histos.push_back("jet_z_asym_cm");
       //       histos.push_back("jet_beam_asym_cm");
-      //histos.push_back("met");
-      //histos.push_back("metL");
+      histos.push_back("met");
+      histos.push_back("metL");
       // histos.push_back("mt");
-      //      histos.push_back("dijet_mass_shapes");
+      histos.push_back("dijet_deta_shapes");
       
       //      dilSignal.push_back("#alpha^{4}_{EW}-ll (VBFNLO)");
       dilSignal.push_back("#alpha^{4}_{EW}-ll (MG)");
@@ -200,30 +187,9 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
     }
   else
     {
-      //10/fb @ 8 TeV
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/nvtx/plotter.root";
-      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012.root";
-
-      //gammaFile = "~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
-      //llFile    = "~/work/htozz/53x_rereco/ll/2012/plotter.root";
-
-      //gammaFile = "~/work/htozz/53x_rereco/gamma/2012_nomindphisoftjet/qt/plotter.root";
-      //llFile="~/work/htozz/53x_rereco/ll/2012_nomindphisoftjet/plotter.root";
-
-      //gammaFile="~/work/htozz/53x_rereco/gamma/2012_chs/qt/plotter.root";
-      //llFile="~/work/htozz/53x_rereco/ll/2012_chs/plotter.root";
-
-      //      gammaFile="~/work/htozz/53x_rereco/gamma/2012_chsnomindphisoftjet/qt/plotter.root";
-      //  llFile="~/work/htozz/53x_rereco/ll/2012_chsnomindphisoftjet/plotter.root";
-
-      //gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt_nofit/plotter.root";
+      //HIGGS 2012
       //gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
-
-
-      //HIGGS
-      gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
-      llFile="~/work/htozz/53x_rereco/ll/2012/plotter.root";
+      //llFile="~/work/htozz/53x_rereco/ll/2012/plotter.root";
 
       //SM ZZ
       //gammaFile="~lpernie/public/4Pedro/gamma_plotter.root";
@@ -231,46 +197,36 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //llFile="~lpernie/public/4Pedro/dil_plotter.root";
 
   
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
-      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root";
+      //HIGGS 2011
+      gammaFile = "~/work/htozz/53x/gamma/2011/qt/plotter.root";
+      llFile    = "~/work/htozz/53x/ll/2011/plotter.root";
 
-      //
-      //HIGH MASS PAPER INPUTS
-      //
-      //5/fb @ 8 TeV
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2012/qt/plotter.root";
-      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2012HighMass.root";
-
-      //5/fb @ 7 TeV
-      //gammaFile = "/afs/cern.ch/user/p/psilva/work/htozz/53x/gamma/2011/nvtx/plotter.root";
-      //llFile    = "/afs/cern.ch/user/q/querten/workspace/public/HZZ2l2v/CMSSW_5_3_3_patch3/src/CMGTools/HtoZZ2l2nu/test/plotter2011HighMass.root";
       
       if(model==HZZ)
 	{
 	  histos.push_back("met_met");
 	  histos.push_back("met_met_blind");                
 	  histos.push_back("met_metNM1");
-	  //histos.push_back("met_redMetNM1");
-	  //histos.push_back("met_redMet");
-	  //histos.push_back("met_redMet_blind");             
-	  histos.push_back("mt");     
-	  histos.push_back("mt_blind");     
-	  histos.push_back("mtNM1");     
-	  //histos.push_back("mt_blind");     
-	  //histos.push_back("mt_unroll");     
-	  //histos.push_back("mt_unroll_NM1"); 
-	  //histos.push_back("mt_unroll_blind");         
-	  histos.push_back("pfvbfcandjeteta");
-	  histos.push_back("pfvbfcandjetpt");
-	  histos.push_back("pfvbfcandjetdeta");
-	  histos.push_back("pfvbfmjj");
-	  histos.push_back("pfvbfpremjj");
-	  //       histos.push_back("pfvbfcjv");
+	  
+ 	  histos.push_back("mt");     
+ 	  histos.push_back("mt_blind");     
+ 	  histos.push_back("mtNM1");     
+
+//  	  histos.push_back("pfvbfcandjeteta");
+//  	  histos.push_back("pfvbfcandjetpt");
+//  	  histos.push_back("pfvbfcandjetdeta");
+//  	  histos.push_back("pfvbfmjj");
+// 	  histos.push_back("pfvbfpremjj");
+// 	  histos.push_back("pfvbfcjv");
 	  
 	  
-	  histos.push_back("mindphijmet_0");            
-	  histos.push_back("mindphijmet");            
-	  histos.push_back("mindphijmetNM1");                     
+//  	  histos.push_back("mindphijmet_0");            
+//  	  histos.push_back("mindphijmet_25");            
+//  	  histos.push_back("mindphijmet_50");            
+//  	  histos.push_back("mindphijmet");            
+//  	  histos.push_back("mindphijmetNM1");                     
+ 	  histos.push_back("mt_shapes");                     
+ 	  histos.push_back("met_shapes");                     
 
 	  
 	  dilSignal.push_back("ggH(600)#rightarrow ZZ");
@@ -322,9 +278,8 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       if(model==HZZ) dilprocs.push_back("ZZ");  
       else          dilprocs.push_back("ZZ#rightarrow 2l2#nu");  
       dilColors.push_back(590);
-      dilprocs.push_back("EWK Z+2jets");
-      dilColors.push_back(804);
       dilprocs.push_back("WZ#rightarrow 3l#nu");  dilColors.push_back(596);
+      dilprocs.push_back("EWK Z+2jets");          dilColors.push_back(594);
       dilprocs.push_back("t#bar{t}");             dilColors.push_back(8);
       dilprocs.push_back("Single top");           dilColors.push_back(824);
       dilprocs.push_back("W#rightarrow l#nu");    dilColors.push_back(809);
@@ -492,16 +447,6 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 
       string distNormKey("");
 
-      
-      //use the inclusive delta Eta_jj distribution to normalize the template
-      if(model==VBFZ && it->first.find("deta") != string::npos && it->first.find("mjjq")==string::npos)
-	{
-	  distNormKey="detajj";
-	  normBin=normH->GetXaxis()->FindBin(0.5);
-	  cout << distNormKey << " " << normBin << " " << endl;
-	}
-
-
       ////normalization factor (from MET<50)
       if(
 	 it->first.find("met_met")  != string::npos
@@ -569,11 +514,7 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
      else                                                                                                sf=scaleFactors["met"][normKey];
      if(model==VBFZ)
        {
-	 sf=scaleFactors["detajj"][normKey];
-	 cout << "detajj" << " " << normKey << " " << sf << endl;
-	 //if(it->first.find("qt")!=string::npos) sf=scaleFactors["qt"][normKey];
-	 //else if(it->first.find("cjv")!=string::npos) sf=scaleFactors["cjv"][normKey];
-	 //else                                   sf=scaleFactors["jetdeta"][normKey];
+	 sf=1.0;
        }
      if(sf==0) continue;
      if(gFinalShapesMap.find(it->first)==gFinalShapesMap.end()) cout << "BUG: " << it->first << " not found in gamma sample..." << endl;
@@ -600,7 +541,8 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 
 	 if(subtractType==HALVE || subtractType==EWKSUBTRACTIONHALVE) {
 	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(80) );
-	   if(it->first.find("_mt") != string::npos &&  !isTH2) fbin = corrGammaH->GetXaxis()->FindBin(350);
+	   if(it->first.find("vbf")!=string::npos && !isTH2)    fbin = corrGammaH->GetXaxis()->FindBin(50);
+	   else if(it->first.find("_mt") != string::npos &&  !isTH2) fbin = corrGammaH->GetXaxis()->FindBin(350);
 	   //int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(60) );
 	   for(int ibin=fbin; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
 	     {
@@ -610,7 +552,7 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 		     {
 		       Double_t val=corrGammaH->GetBinContent(ibin,jbin)/2;
 		       Double_t valerr=val;
-		       if(model==VBFZ) valerr=0.3*val;
+		       if(model==VBFZ) valerr=corrGammaH->GetBinError(ibin); //0.3*val;
 		       corrGammaH->SetBinContent(ibin,jbin,val);
 		       corrGammaH->SetBinError(ibin,jbin,valerr);
 		     }
@@ -815,7 +757,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       char buf[100];
       sprintf(buf,"#chi^{2}/ndof : %3.2f", shape.data->Chi2Test(mc,"WWCHI2/NDF") );
       pave->AddText(buf);
-      //      pave->Draw();
+      pave->Draw();
     }
 
   //signal
@@ -840,7 +782,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   if(is2011)
     sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5051./1000);
   else
-    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 19577./1000);
+    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 19666./1000);
   //    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 16698./1000);
   //sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 12196./1000);
   //    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 10200./1000);
