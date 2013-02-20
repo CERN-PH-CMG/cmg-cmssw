@@ -191,9 +191,8 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "qmass"           , ";M^{ll};Events", 15,76,106) );
   mon.addHistogram( new TH2F( "met_met_vspu"    , ";Vertices;E_{T}^{miss};Events", 50,0,50,50,0,500) );
   mon.addHistogram( new TH2F( "met_redMet_vspu" , ";Vertices;red(E_{T}^{miss},clustered-E_{T}^{miss});Events", 50,0,50,50,0,500) );
-  mon.addHistogram( new TH2F ("mt_shapes"       , ";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 160,150,950) );  
-  mon.addHistogram( new TH2F ("mt_shapes_unroll", ";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 50,150,2650) );     
-  mon.addHistogram( new TH2F ("mt_redMet_shapes", ";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 160,150,950) );  
+  mon.addHistogram( new TH2F ("mt_shapes"       , ";cut index;M_{T} [GeV/c^{2}];",nOptimCuts,0,nOptimCuts, 160,150,1750) );  
+  mon.addHistogram( new TH2F ("met_shapes",       ";cut index;MET [GeV/c^{2}];#events (/10GeV)",nOptimCuts,0,nOptimCuts,100 ,0,500) );
   
   //jet id efficiencies
   TString jetRegs[]={"TK","HEin","HEout","HF"};
@@ -453,9 +452,8 @@ int main(int argc, char* argv[])
       bool passMultiplicityVetoes (nextraleptons==0);
       bool passKinematics         (gamma.pt()>55);
       passKinematics &= (fabs(gamma.eta())<1.4442); 
-      passKinematics &= (r9>0.94 && r9<1.0);
-      passKinematics &= (r9<1.0);
-      passKinematics &= (gIso<0.5);
+      passKinematics &= (r9>0.9 && r9<1.0);
+      //      passKinematics &= (gIso<0.5);
       if(!isMC)    passKinematics &= (gamma.pt()>gammaEvHandler.triggerThr());
       passKinematics &= !hasElectronVeto; 
 	
@@ -471,7 +469,7 @@ int main(int argc, char* argv[])
       subcats.push_back("");
       if(njets30==0)
 	{
-	  if(njets15==0) continue;
+	  //if(njets15==0) continue;
 	  subcats.push_back("eq0jets");
 	  //  if(njets15==0)         subcats.push_back("eq0softjets");
 	  //  else                   subcats.push_back("eq0hardjets");
@@ -492,10 +490,12 @@ int main(int argc, char* argv[])
       //now do the control plots
       std::map<TString, float> qtWeights;
       //TString photonSubCat(tag_subcat);
-      TString photonSubCat("eq0jets"); 
-      if(njets30==1) photonSubCat = "eq1jets";
-      if(njets30==2) photonSubCat = "eq2jets";
-      if(njets30>=3) photonSubCat = "geq3jets";
+      //TString photonSubCat("eq0jets"); 
+      //if(njets30==1) photonSubCat = "eq1jets";
+      //if(njets30==2) photonSubCat = "eq2jets";
+      //if(njets30>=3) photonSubCat = "geq3jets";
+      TString photonSubCat("eq");    photonSubCat+=min(njets30,3); photonSubCat += "jets";
+      if(photonSubCat.Contains("3")) photonSubCat = "g"+photonSubCat;
       qtWeights = gammaEvHandler.getWeights(phys,photonSubCat);
      
       //now do the control plots
@@ -664,25 +664,11 @@ int main(int argc, char* argv[])
 				if ( index<nOptimCuts-1 && metP4.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
 				  {
 				    mon.fillHisto("mt_shapes",ctf,index, mt,iweight);
-				    mon.fillHisto("mt_shapes_unroll",ctf,index, mt_unroll,iweight);
-				    
+				    mon.fillHisto("met_shapes",ctf,index, metP4.pt(),iweight);
 				  }
-				if ( index<nOptimCuts-1 && redMet.pt()>optim_Cuts1_met[index] && mt>optim_Cuts1_mtmin[index] && mt<optim_Cuts1_mtmax[index])
-				  mon.fillHisto("mt_redMet_shapes",ctf,index, mt,iweight);
 			      } 
 			    }
 			}
-
-		      
-		      if(passLMetVeto)
-			{
-			  if( !blind ) mon.fillHisto("mt_unroll_blind",ctf,mt_unroll,weight);
-			  mon.fillHisto("mt_unroll",ctf,mt_unroll,weight);
-			  if(metP4.pt()>70) 
-			    mon.fillHisto("mt_unroll_NM1",ctf, mt_unroll,iweight);
-			}
-
-
 		    }
 		}
 	    }
