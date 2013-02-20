@@ -144,9 +144,8 @@ int main(int argc, char* argv[])
 		      "_jesup","_jesdown",
 		      "_lesup","_lesdown",
 		      "_puup","_pudown"};
-                      //"_btagup","_btagdown"};
   size_t nvarsToInclude(1);
-  if(runSystematics)
+  if(runSystematics && isMC)
     {
       cout << "Systematics will be computed for this analysis" << endl;
       nvarsToInclude=sizeof(varNames)/sizeof(TString);
@@ -205,18 +204,7 @@ int main(int argc, char* argv[])
   //jet control
   mon.addHistogram( new TH1F("jetpt"       , ";p_{T} [GeV];Events",50,0,250) );
   mon.addHistogram( new TH1F("jeteta"       , ";|#eta|;Events",25,0,5) );
-  mon.addHistogram( new TH1F("btags", ";CSV;Events",50,-0.5,1.2) );
   h=mon.addHistogram( new TH1F("njets",  ";Jet multiplicity (p_{T}>30 GeV);Events",5,0,5) );
-  TH1 *hb=mon.addHistogram( new TH1F("nbtags",   ";b-tag multiplicity (CSV);Events",5,0,5) );
-  for(int ibin=1; ibin<=h->GetXaxis()->GetNbins(); ibin++)
-    {
-      TString label("");
-      if(ibin==h->GetXaxis()->GetNbins()) label +="#geq";
-      else                                label +="=";
-      label += (ibin-1);
-      h->GetXaxis()->SetBinLabel(ibin,label);
-      hb->GetXaxis()->SetBinLabel(ibin,label);
-    } 
 
   //vbf control
   int jetIdToApply=JETID_OPT_LOOSE;
@@ -648,7 +636,7 @@ int main(int argc, char* argv[])
       PhysicsObjectJetCollection aJets= variedAJets[0];
       if(disableJERSmear) aJets=phys.ajets;
       PhysicsObjectJetCollection aGoodIdJets;
-      int nAJetsLoose(0), nAJetsLoose15(0), nABtags(0);
+      int nAJetsLoose(0), nAJetsLoose15(0);
       float mindrbj(99999.),minmbj(99999.);
       for(size_t ijet=0; ijet<aJets.size(); ijet++) 
 	{
@@ -667,11 +655,9 @@ int main(int argc, char* argv[])
 	      if(bj.mass()<minmbj) minmbj=bj.mass();
 	      if(drbj<mindrbj)     mindrbj=drbj;
 	    }
-	  if(aJets[ijet].pt()>30 && fabs(aJets[ijet].eta())<2.5) nABtags += (aJets[ijet].btag2>0.679);
 	}
       std::sort(aGoodIdJets.begin(), aGoodIdJets.end(), JetPtOrdering);
 
-      bool passBveto(nABtags==0);
       float mt=METUtils::transverseMass(zll,zvvs[0],true);
       TVector2 boson2(zll.px(),zll.py());
       TVector2 met2(zvvs[0].px(),zvvs[0].py());
@@ -797,15 +783,7 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("mt3",tags,METUtils::transverseMass(extraLeptonsP4[0],zvvs[0],false),weight);
 	    }
 	  mon.fillHisto("njets",    tags, nAJetsLoose,weight);
-	  mon.fillHisto("nbtags",  tags, nABtags,weight);
 	  
-	  //mon.fillHisto("qt"          ,   tags, sqrt(pow(zll.mass(),2)+pow(zll.pt(),2)), weight,true);
-	  TString sub_cat("eq"); sub_cat+=nAJetsLoose15; sub_cat += "jets";
-	  std::vector<TString> qtCats;
-	  qtCats.push_back(tag_cat+sub_cat);;
-	  mon.fillHisto("qt", qtCats, zll.pt(), weight,true);
-	  //mon.fillHisto("qt"          ,   tags, zll.energy(), weight,true);
-
 	  //fill summary
 	  gammaEvHandler.evSummary_.cat=ev.cat;
 	  gammaEvHandler.evSummary_.qt=zll.pt();
@@ -821,19 +799,19 @@ int main(int argc, char* argv[])
 	  if(nAJetsLoose>=2)
 	    {
 	      mon.fillHisto("eventflow",tags,4,weight);
-	      mon.fillHisto("njetsvsavginstlumi", tags, nAJetsLoose,ev.curAvgInstLumi,weight);
-	      mon.fillHisto("vbfcandjetpt",  tags, maxPt,weight);
-	      mon.fillHisto("vbfcandjetpt",  tags, minPt,weight);
-	      mon.fillHisto("vbfcandjet1pt", tags, maxPt,weight);
-	      mon.fillHisto("vbfcandjet2pt", tags, minPt,weight);
-	      mon.fillHisto("vbfcandjet1eta",     tags, max(fabs(maxEta),fabs(minEta)),weight);
-	      mon.fillHisto("vbfcandjet2eta",     tags, min(fabs(maxEta),fabs(minEta)),weight);
-	      mon.fillHisto("vbfcandjeteta",      tags, fabs(maxEta),weight);
-	      mon.fillHisto("vbfcandjeteta",      tags, fabs(minEta),weight);
-	      
+
 	      selTags = getDijetCategories(mjj,detajj,tags);
-	      
-	      mon.fillHisto("vbfcandjetdeta",      selTags, fabs(detajj),weight);
+	      mon.fillHisto("qt", selTags, zll.pt(), weight,true);      
+	      mon.fillHisto("njetsvsavginstlumi", tags, nAJetsLoose,ev.curAvgInstLumi,weight);
+	      mon.fillHisto("vbfcandjetpt",  selTags, maxPt,weight);
+	      mon.fillHisto("vbfcandjetpt",  selTags, minPt,weight);
+	      mon.fillHisto("vbfcandjet1pt", selTags, maxPt,weight);
+	      mon.fillHisto("vbfcandjet2pt", selTags, minPt,weight);
+	      mon.fillHisto("vbfcandjet1eta",     selTags, max(fabs(maxEta),fabs(minEta)),weight);
+	      mon.fillHisto("vbfcandjet2eta",     selTags, min(fabs(maxEta),fabs(minEta)),weight);
+	      mon.fillHisto("vbfcandjeteta",      selTags, fabs(maxEta),weight);
+	      mon.fillHisto("vbfcandjeteta",      selTags, fabs(minEta),weight);
+	      mon.fillHisto("vbfcandjetdeta",      selTags, detajj,weight);
 	      mon.fillHisto("vbfmjj",              selTags, mjj,weight,true);
 	      mon.fillHisto("vbfhardpt",           selTags, hardpt,weight);
 	      mon.fillHisto("vbfdphijj",           selTags, fabs(dphijj),weight);
@@ -871,54 +849,37 @@ int main(int argc, char* argv[])
 	    if(ivar==7)                        iweight *=TotalWeight_plus;        //pu up
 	    if(ivar==8)                        iweight *=TotalWeight_minus;       //pu down
 
-	    int localNAJetsLoose(0),localNABtags(0);
+	    int localNAJetsLoose(0);
 	    PhysicsObjectJetCollection &varJets=variedAJets[ivar>4 ? 0  : ivar];
-	    PhysicsObjectJetCollection tightVarJets;
+	    PhysicsObjectJetCollection localSelJets;
 	    for(size_t ijet=0; ijet<varJets.size(); ijet++){
-	      if(varJets[ijet].pt()<30) continue;
+	      if(varJets[ijet].pt()<30 || fabs(aJets[ijet].eta())>4.7) continue;
 	      if(!hasObjectId(varJets[ijet].pid,JETID_LOOSE)) continue;
 	      if(!hasObjectId(varJets[ijet].pid,jetIdToApply)) continue;
-	      tightVarJets.push_back( varJets[ijet] );
+	      localSelJets.push_back( varJets[ijet] );
 	      localNAJetsLoose++;
-	      //if(fabs(varJets[ijet].eta())<2.5)continue;
-	      //  if(ivar==9)      localNABtags += (varJets[ijet].btag2>0.679*0.95);
-	      //  else if(ivar==10) localNABtags += (varJets[ijet].btag2>0.679*1.05);
-	      //  else              localNABtags += (varJets[ijet].btag2>0.679);
 	    }
 	    if(localNAJetsLoose<2) continue;
-	    
+	    std::sort(localSelJets.begin(), localSelJets.end(), JetPtOrdering);
+
 	    //re-assign the event category;
 	    
 	    std::vector<TString> locTags;
 	    locTags.push_back(tag_cat);
-	    //if(localNAJetsLoose==2) locTags.push_back(tag_cat+"geq2jets");
-	    //for(unsigned int index=0; index<optim_Cuts2_z_pt.size();index++){
 	    for(unsigned int index=0; index<optim_Cuts2_jet_pt1.size();index++)
 	      {
-		//float minZPt=optim_Cuts2_z_pt[index];
-		//float maxZEta=optim_Cuts2_z_eta[index];
 		float minJetPt1=optim_Cuts2_jet_pt1[index];
 		float minJetPt2=optim_Cuts2_jet_pt2[index];
-		//float minEtaGap=optim_Cuts2_eta_gap[index];
-		//float minDijetMass=optim_Cuts2_dijet_mass[index];
+
+		bool passLocalJet1Pt(localSelJets[0].pt()>minJetPt1);
+		bool passLocalJet2Pt(localSelJets[1].pt()>minJetPt2);
+		if(!passLocalJet1Pt || !passLocalJet2Pt) continue; 
 		
-		LorentzVector vbfSyst=tightVarJets[0]+tightVarJets[1];
+		LorentzVector vbfSyst=localSelJets[0]+localSelJets[1];
 		float mjj=vbfSyst.M();
-		float detajj=fabs(varJets[0].eta()-varJets[1].eta());
+		float detajj=fabs(localSelJets[0].eta()-localSelJets[1].eta());
 		std::vector<TString> localSelTags=getDijetCategories(mjj,detajj,locTags);
-		
-		//bool passLocalZmass(fabs(zll.mass()-91)<15);
-		//bool passLocalZpt(zll.pt()>minZPt && fabs(zy)<maxZEta); 
-		bool passLocalJet1Pt(varJets[0].pt()>minJetPt1);
-		bool passLocalJet2Pt(varJets[1].pt()>minJetPt2);
-		//bool passLocalEtaGap(detajj>minEtaGap);	     
-		//bool passLocalDijetMass(mjj>minDijetMass);
-		//if(passLocalJet1Pt && passLocalJet2Pt && passLocalEtaGap && passLocalDijetMass && passLocalZmass && passLocalZpt /*&& pass3dLeptonVeto*/){
-		//  mon.fillHisto(TString("dijet_mass_shapes")+varNames[ivar],localSelTags,index,mjj,iweight);
-		//}
-		if(passLocalJet1Pt && passLocalJet2Pt){ 
-		  mon.fillHisto(TString("dijet_deta_shapes")+varNames[ivar],localSelTags,index,detajj,iweight);
-		}
+		mon.fillHisto(TString("dijet_deta_shapes")+varNames[ivar],localSelTags,index,detajj,iweight);
 	      }
 	  }
 	}//end passZpt && passZeta
