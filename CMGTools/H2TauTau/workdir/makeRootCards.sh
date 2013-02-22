@@ -73,73 +73,14 @@ export SAMPLEPATH=muTau201253X_580Feb7
 #mv muTauSM_ditaumass.root htt_mt.inputs-sm-8TeV-hcp-mvis.root
 
 
-##for Decay mode ratio measurements
-rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,0\)
-rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\,0\)
-rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\,0\)
-rootl mergeDataCardsSMZTT.C\(1\,\"ditaumass\"\)
-mv muTauSM_ditaumass.root htt_mt.inputs-sm-8TeV-mvis-decayMode0.root
 
-#rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,1\)
-#rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\,1\)
-#rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\,1\)
-#rootl mergeDataCardsSMZTT.C\(1\,\"ditaumass\"\)
-#mv muTauSM_ditaumass.root htt_mt.inputs-sm-8TeV-mvis-decayMode1.root
-#
-#rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,10\)
-#rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\,10\)
-#rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\,10\)
-#rootl mergeDataCardsSMZTT.C\(1\,\"ditaumass\"\)
-#mv muTauSM_ditaumass.root htt_mt.inputs-sm-8TeV-mvis-decayMode10.root
+#############ratios vs tau pT
+#for p in 0 1 2 3 4 5 6 7 8; do
+#rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,2${p}\)
+#mv muTauSM_ditaumass_.root htt_mt.inputs-sm-8TeV-mvis-decayMode0_pT${p}.root
+#rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,3${p}\)
+#mv muTauSM_ditaumass_.root htt_mt.inputs-sm-8TeV-mvis-decayMode1_pT${p}.root
+#rootl histosForDataCardSM.C\(1\,2012\,4\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,4${p}\)
+#mv muTauSM_ditaumass_.root htt_mt.inputs-sm-8TeV-mvis-decayMode10_pT${p}.root
+#done
 
-
-
-##########################################################################################################
-#############mT Limit Scan
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\,10\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tUp\"\,10\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tDown\"\,10\)
-#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
-#mv muTauSM_svfitmass.root ./Limits/MTScan/MT10/.
-#
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\,15\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tUp\"\,15\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tDown\"\,15\)
-#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
-#mv muTauSM_svfitmass.root ./Limits/MTScan/MT15/.
-#
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\,20\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tUp\"\,20\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tDown\"\,20\)
-#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
-#mv muTauSM_svfitmass.root ./Limits/MTScan/MT20/.
-#
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\,25\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tUp\"\,25\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tDown\"\,25\)
-#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
-#mv muTauSM_svfitmass.root ./Limits/MTScan/MT25/.
-#
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\,30\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tUp\"\,30\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tDown\"\,30\)
-#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
-#mv muTauSM_svfitmass.root ./Limits/MTScan/MT30/.
-#
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\,35\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tUp\"\,35\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tDown\"\,35\)
-#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
-#mv muTauSM_svfitmass.root ./Limits/MTScan/MT35/.
-#
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\,40\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tUp\"\,40\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tDown\"\,40\)
-#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
-#mv muTauSM_svfitmass.root ./Limits/MTScan/MT40/.
-#
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"\"\,45\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tUp\"\,45\)
-#rootl histosForDataCardSM.C\(1\,2012\,\"\/data\/benitezj\/Samples\/muTau201253X_580Oct18Sync\"\,\"tDown\"\,45\)
-#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
-#mv muTauSM_svfitmass.root ./Limits/MTScan/MT45/.

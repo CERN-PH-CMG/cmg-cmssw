@@ -72,7 +72,7 @@ void plotTauMu2012(){
   //analysis->plotQCDSSOSRatioBTag();
   //analysis->plotZTTShape();
 
-
+  analysis->compareSignalShapes();
 
 //   //check WJets// Winc=75,W1=22.6,W2=33.5,W3=15.4,W4=12.9
 //   analysis->eventWeight_="pupWeights4*embeddedGenWeight*triggerEffWeightsTau4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*signalWeight";

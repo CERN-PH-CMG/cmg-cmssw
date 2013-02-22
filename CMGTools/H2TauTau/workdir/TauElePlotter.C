@@ -460,15 +460,15 @@ TH1F* TauElePlotter::getZL2012Type2(){
   if( plotvar_.CompareTo("ditaumass")==0){
     plotvar_+="*((taupt<40)*1.000+(taupt>=40)*1.004)"; 
     TH1F*h1P0Pi0=getSample("ZToEE");
-    //smearHistoRes_=1.9;//by eye
-    smearHistoRes_=0.0;//assumes smearing has already been done
+    smearHistoRes_=2.8;//by eye
+    //smearHistoRes_=0.0;//assumes smearing has already been done
     h1P0Pi0Smeared=smearHisto(h1P0Pi0);//smear
     delete h1P0Pi0;
   } else   if(plotvar_.CompareTo("svfitmass")==0 ){
     plotvar_+="*((taupt<40)*1.000+(taupt>=40)*1.007)"; 
     TH1F*h1P0Pi0=getSample("ZToEE");
-    //smearHistoRes_=3.5;//by eye
-    smearHistoRes_=0.0;//assumes smearing has already been done
+    smearHistoRes_=3.5;//by eye
+    //smearHistoRes_=0.0;//assumes smearing has already been done
     h1P0Pi0Smeared=smearHisto(h1P0Pi0);//smear
     delete h1P0Pi0;
   } else h1P0Pi0Smeared=getSample("ZToEE");
@@ -485,15 +485,15 @@ TH1F* TauElePlotter::getZL2012Type2(){
   if( plotvar_.CompareTo("ditaumass")==0){
     plotvar_+="*((taupt<40)*1.000+(taupt>=40)*1.002)";
     TH1F*h1P1Pi0=getSample("ZToEE");
-    //smearHistoRes_=3.2;//by eye
-    smearHistoRes_=0.0;//assumes smearing has already been done
+    smearHistoRes_=3.2;//by eye
+    //smearHistoRes_=0.0;//assumes smearing has already been done
     h1P1Pi0Smeared=smearHisto(h1P1Pi0);//smear
     delete h1P1Pi0;  
   } else if(plotvar_.CompareTo("svfitmass")==0 ){
     plotvar_+="*((taupt<40)*1.000+(taupt>=40)*1.002)";
     TH1F*h1P1Pi0=getSample("ZToEE");
-    //smearHistoRes_=3.2;//by eye
-    smearHistoRes_=0.0;//assumes smearing has already been done
+    smearHistoRes_=3.2;//by eye
+    //smearHistoRes_=0.0;//assumes smearing has already been done
     h1P1Pi0Smeared=smearHisto(h1P1Pi0);//smear
     delete h1P1Pi0;  
   } else h1P1Pi0Smeared=getSample("ZToEE");
@@ -677,14 +677,14 @@ TH1F* TauElePlotter::getWJetsNJet(){
   //W Yield at high mT in Data, this should be done yield in current mass range
   Int_t tmpCategoryMT=MTcat_;
   MTcat_=3;
-  TH1F* HData=getTotalData();  // cout<<" "<<->Integral()<<endl;
-  TH1F* HMC=getZToTauTau();
-  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); delete HTT;
-  TH1F* HVV=getDiBoson();     HMC->Add(HVV); delete HVV;
-  TH1F* HZL=getZLInc();      HMC->Add(HZL); delete HZL;
-  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); delete HZJ;
+  TH1F* HData=getTotalData(); // cout<<" Data "<<HData->Integral()<<endl;
+  TH1F* HMC=getZToTauTau();                  cout<<"   ZTT "<<HMC->Integral()<<endl;
+  TH1F* HTT=getTTJetsInc();   HMC->Add(HTT); cout<<"   TT "<<HTT->Integral()<<endl; delete HTT;
+  TH1F* HVV=getDiBoson();     HMC->Add(HVV); cout<<"   VV "<<HVV->Integral()<<endl; delete HVV;
+  TH1F* HZL=getZLInc();      HMC->Add(HZL);  cout<<"   ZL "<<HZL->Integral()<<endl; delete HZL;
+  TH1F* HZJ=getZToLJetInc();  HMC->Add(HZJ); cout<<"   ZJ "<<HZJ->Integral()<<endl; delete HZJ;
   MTcat_=tmpCategoryMT;
-  cout<<"Data: "<<HData->Integral()<<" - MC: "<<HMC->Integral()<<" ="<<HData->Integral()-HMC->Integral()<<endl;
+  cout<<"    Data: "<<HData->Integral()<<" - MC: "<<HMC->Integral()<<" ="<<HData->Integral()-HMC->Integral()<<endl;
 
 
   MTcat_=3;
@@ -1223,7 +1223,7 @@ TH1F* TauElePlotter::getQCDInc(Int_t WType,bool cleanNegativeBins){
   Chcat_=2;
 
   TH1F* hDataSS=getTotalData();
-  cout<<"hDataSS "<<hDataSS->Integral()<<endl;
+  cout<<"    Data "<<hDataSS->Integral()<<endl;
   h->Add(hDataSS);
   delete hDataSS;
 
@@ -1232,26 +1232,26 @@ TH1F* TauElePlotter::getQCDInc(Int_t WType,bool cleanNegativeBins){
   TH1F*hWJets=0;
   if(WType==0)hWJets=getWJetsInc();   
   if(WType==1)hWJets=getWJetsNJet();   
-  cout<<"hWJets "<<hWJets->Integral()<<endl;
+  cout<<"   W "<<hWJets->Integral()<<endl;
   h->Add(hWJets,-1);
   delete hWJets;
 
   Int_t ZTTypeTmp=ZTTType_;
   ZTTType_=1; //always use MC in SS
   TH1F*hZToTauTau=getZToTauTau();   
-  cout<<"ZTT "<<hZToTauTau->Integral()<<endl; 
+  cout<<"   ZTT "<<hZToTauTau->Integral()<<endl; 
   h->Add(hZToTauTau,-1); 
   delete hZToTauTau;
   ZTTType_=ZTTypeTmp;
 
 
-  TH1F*hDiBoson=getDiBoson();      h->Add(hDiBoson,-1);  cout<<"hDiBoson "<<hDiBoson->Integral()<<endl;
+  TH1F*hDiBoson=getDiBoson();      h->Add(hDiBoson,-1);  cout<<"   VV "<<hDiBoson->Integral()<<endl;
   delete hDiBoson;
-  TH1F*hTTJets=getTTJetsInc();     h->Add(hTTJets,-1);  cout<<"hTTJets "<<hTTJets->Integral()<<endl;
+  TH1F*hTTJets=getTTJetsInc();     h->Add(hTTJets,-1);  cout<<"    TT "<<hTTJets->Integral()<<endl;
   delete hTTJets;
-  TH1F*hZToEE=getZLInc();          h->Add(hZToEE,-1);   cout<<"hZToEE "<<hZToEE->Integral()<<endl;
+  TH1F*hZToEE=getZLInc();          h->Add(hZToEE,-1);   cout<<"    ZL "<<hZToEE->Integral()<<endl;
   delete hZToEE;
-  TH1F*hZLJet=getZToLJetInc();     h->Add(hZLJet,-1);   cout<<"hZLJet "<<hZLJet->Integral()<<endl;
+  TH1F*hZLJet=getZToLJetInc();     h->Add(hZLJet,-1);   cout<<"    ZJ "<<hZLJet->Integral()<<endl;
   delete hZLJet;
 
   Chcat_=ChcatTmp;
@@ -2216,7 +2216,7 @@ TH1F* TauElePlotter::getZToTauTauVBF(){
 
 bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel, TString blindsel, Int_t QCDType, Int_t WJetsType, TString xlabel, TString ylabel,Float_t* legendcoords, int higgs,TString filetag){
 
-  int rebin=0;
+  int rebin=10;
 
   plotvar_=variable;
   nbins_=nbins;
@@ -2315,10 +2315,10 @@ bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t
   if(QCDType==5)  hZL=getZLVBFHCP();
   else if(QCDType==8)  hZL=getZLBoost();
   //else hZL=getZLInc();
-  else hZL=getZL2012();//this is type0
+  //else hZL=getZL2012();//this is type0
   //else hZL=getZL2012Type1();
   //else hZL=getZL2012Type1LowHigh();
-  //else hZL=getZL2012Type2();
+  else hZL=getZL2012Type2();
   //else hZL=getZLVBFHCP();
   if(!hZL)return 0;
   hZL->SetName("ZL");

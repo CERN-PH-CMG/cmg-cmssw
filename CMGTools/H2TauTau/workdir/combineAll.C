@@ -35,11 +35,8 @@ void combine(TString name, TString* Input,const char* dataset , const char* chan
                     |->array of file names 
   */
 
-  if(weight==0)weightedPlot(name+"_UnWeighted",dataset,channel);
-  //if(weight==1)weightedPlot(name+"_Weighted",dataset,channel);
-  //if(weight==1)weightedPlotGammaGamma(name+"_Weighted",dataset,channel);
-  if(weight==1)weightedPlotInset(name+"_Weighted",dataset,channel);
-
+  //weightedPlot(name,dataset,channel);
+  weightedPlotInset(name,dataset,channel);
 
 }
 
@@ -246,31 +243,30 @@ void combineAll(){
   E8TeVNoTauTau[8]="muTau_vbf_rescaled_8TeV_";
 
 
-   combine("All",All,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","#tau_{e}#tau_{#mu},#tau_{e}#tau_{h},#tau_{#mu}#tau_{h},#tau_{h}#tau_{h}",1);
-//   combine("EMu",EMu,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","#tau_{e}#tau_{#mu}",1);
-//   combine("ETau",ETau,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","#tau_{e}#tau_{h}",1);
-//   combine("MuTau",MuTau,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","#tau_{#mu}#tau_{h}",1);
-//   combine("TauTau",TauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{h}#tau_{h}",1);
-//   combine("BoostLow",BoostLow,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","1jet_low",1);
-//   combine("BoostHigh",BoostHigh,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","1jet_high",1);
-//   combine("Boost",Boost,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","#tau_{e}#tau_{#mu},#tau_{e}#tau_{h},#tau_{#mu}#tau_{h},#tau_{h}#tau_{h}",1);
-//   combine("VBF",VBF,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","#tau_{e}#tau_{#mu},#tau_{e}#tau_{h},#tau_{#mu}#tau_{h},#tau_{h}#tau_{h}",1);
-//   combine("E7TeV",E7TeV,"#sqrt{s} = 7 TeV ,   L = 4.9 fb^{-1}","#tau_{e}#tau_{#mu},#tau_{e}#tau_{h},#tau_{#mu}#tau_{h}",1);
-//   combine("E8TeV",E8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{e}#tau_{#mu},#tau_{e}#tau_{h},#tau_{#mu}#tau_{h},#tau_{h}#tau_{h}",1);
+  combine("All",All,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e-#mu,e-#tau_{h},#mu-#tau_{h},#tau_{h}-#tau_{h}",1);
+  combine("Boost",Boost,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e-#mu,e-#tau_{h},#mu-#tau_{h},#tau_{h}-#tau_{h}",1);
+  combine("VBF",VBF,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e-#mu,e-#tau_{h},#mu-#tau_{h},#tau_{h}-#tau_{h}",1);
+  
+//   combine("EMu",EMu,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e-#mu",1);
+//   combine("ETau",ETau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e-#tau_{h}",1);
+//   combine("MuTau",MuTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","#mu-#tau_{h}",1);
+//   combine("TauTau",TauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{h}-#tau_{h}",1);
+//   combine("BoostLow",BoostLow,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","1jet_low",1);
+//   combine("BoostHigh",BoostHigh,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","1jet_high",1);
+//   combine("E7TeV",E7TeV,"#sqrt{s} = 7 TeV ,   L = 4.9 fb^{-1}","e-#mu,e-#tau_{h},#mu-#tau_{h}",1);
+//   combine("E8TeV",E8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","e-#mu,e-#tau_{h},#mu-#tau_{h},#tau_{h}-#tau_{h}",1);
+  
+//   combine("AllNoTauTau",AllNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e-#mu,e-#tau_{h},#mu-#tau_{h}",1);
+//   combine("BoostHighNoTauTau",BoostHighNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","Boost_High No TauTau",1);
+//   combine("VBFNoTauTau",VBFNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","VBF No TauTau",1);
+//   combine("E8TeVNoTauTau",E8TeVNoTauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","e-#mu,e-#tau_{h},#mu-#tau_{h}",1);
 
-//   combine("AllNoTauTau",AllNoTauTau,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","#tau_{e}#tau_{#mu},#tau_{e}#tau_{h},#tau_{#mu}#tau_{h}",1);
-//   combine("BoostHighNoTauTau",BoostHighNoTauTau,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","Boost_High No TauTau",1);
-//   combine("VBFNoTauTau",VBFNoTauTau,"#sqrt{s} = 7 + 8 TeV ,   L = 24.3 fb^{-1}","VBF No TauTau",1);
-//   combine("E8TeVNoTauTau",E8TeVNoTauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{e}#tau_{#mu},#tau_{e}#tau_{h},#tau_{#mu}#tau_{h}",1);
-
-//   combine("MuTauBoost8TeV",MuTauBoost8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{#mu}#tau_{h} Boost",1);
-//   combine("MuTau8TeV",MuTau8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{#mu}#tau_{h}",1);
+//   combine("MuTauBoost8TeV",MuTauBoost8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} Boost",1);
+//   combine("MuTau8TeV",MuTau8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h}",1);
+//  combine("MuTau0Jet8TeV",MuTau0Jet8TeV,2,0,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} 0-Jet",1);
 
 
-//  combine("MuTau0Jet8TeV",MuTau0Jet8TeV,2,0,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{#mu}#tau_{h} 0-Jet",1);
-
-
-  gROOT->ProcessLine(".q");
+   gROOT->ProcessLine(".q");
 }
 
 
