@@ -162,8 +162,8 @@ class MassErrors(object):
 
 
 ###CALCULATE RAW           
-        bigCov2 = copy.deepcopy(bigCov)
-        jacobian2 = copy.deepcopy(jacobian)
+        bigCov2 = copy.copy(bigCov)
+        jacobian2 = copy.copy(jacobian)
         
         massCovRAW = bigCov2.Similarity(jacobian2)
         dm2RAW = massCovRAW(0,0)

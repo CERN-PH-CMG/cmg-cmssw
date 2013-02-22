@@ -94,11 +94,11 @@ class KD
   }
 
 
-
-
   float getInterferenceWeight() {
     return mem_->getMELAWeight();
   }
+
+
 
 
  private:

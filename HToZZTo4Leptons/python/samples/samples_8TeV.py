@@ -212,8 +212,10 @@ GGZZ2L2L,DY,DYLOW,TT
 #json='/afs/cern.ch/user/m/mangano/public/hcp2012_json_v2/hcp.json'
 
 #json='/afs/cern.ch/user/b/botta/public/moriond.json'
-json='/afs/cern.ch/user/a/anlevin/public/moriond_2012_remove_r12c_ecal_recovered.txt'
 
+json='/afs/cern.ch/user/a/anlevin/public/moriond_2012_remove_pixel_ecal_recovered.txt'
+
+jsonBadSIP='/afs/cern.ch/user/a/anlevin/public/moriond_2012_remove_r12c_ecal_recovered.txt'
 jsonRecover='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt'
 
 
@@ -341,14 +343,45 @@ MuEGRec = cfg.DataComponent(
 
 
 
+#####################################################################################################################
+#####################################################################################################################
+DoubleMuBadSIP = cfg.DataComponent(
+    name = 'DoubleMuBadSIP',
+    files = getFiles('/DoubleMu/Run2012D-16Jan2013-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = jsonBadSIP
+    )
 
+
+DoubleElectronBadSIP = cfg.DataComponent(
+    name = 'DoubleElectronBadSIP',
+    files = getFiles('/DoubleElectron/Run2012D-16Jan2013-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+
+    intLumi = 1,
+    triggers = [],
+    json = jsonBadSIP
+    )
+
+MuEGBadSIP = cfg.DataComponent(
+    name = 'MuEGBadSIP',
+    files = getFiles('/MuEG/Run2012D-16Jan2013-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = jsonBadSIP
+    )
+
+
+
+
+####################################################################################################################
 
           
-dataSamplesMu=[DoubleMuAB,DoubleMuC,DoubleMuD,DoubleMuRec]
+dataSamplesMu=[DoubleMuAB,DoubleMuC,DoubleMuD,DoubleMuRec,DoubleMuBadSIP]
 
-dataSamplesE=[DoubleElectronAB,DoubleElectronC,DoubleElectronD,DoubleElectronRec]
+dataSamplesE=[DoubleElectronAB,DoubleElectronC,DoubleElectronD,DoubleElectronRec,DoubleElectronBadSIP]
 
-dataSamplesMuE=[MuEGAB,MuEGC,MuEGD,MuEGRec]
+dataSamplesMuE=[MuEGAB,MuEGC,MuEGD,MuEGRec,MuEGBadSIP]
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 
