@@ -44,8 +44,6 @@ int findLastBin(TH1F* h,double frac=0.1){
 
 TH1F* getErrorBand(TH1F*h1){
   TH1F* h=(TH1F*)(h1->Clone(TString(h1->GetName())+"herrorBand"));
-  h->Reset();
-  h->Clear();
   for(Int_t b=1;b<=h1->GetNbinsX();b++){
     h->SetBinContent(b,0.);
     h->SetBinError(b,h1->GetBinError(b));
@@ -70,9 +68,6 @@ double getSoB(TH1F*hsig,TH1F*hbkg){
   TH1F*HB=(TH1F*)hbkg->Clone("HB");
   HS->Add(HB,-1);
   HS->Scale(SignalScale);
-
-  ///get the error band for  the systematic uncertainty
-  //TH1F* HBErr=getErrorBand(HB);
 
   //put the histos into a TF1 for easy access to integrals
   TString SigString="";
@@ -102,10 +97,7 @@ double getSoB(TH1F*hsig,TH1F*hbkg){
 
   delete HS;
   delete HB;
-  //delete HBErr;
 
-  //cout<<SigString<<endl;
-  //cout<<BkgString<<endl;
   TF1 FSig("FSig",SigString,xmin,xmax);
   TF1 FBkg("FBkg",BkgString,xmin,xmax);
   TF1 FErr("FErr",ErrString,xmin,xmax);
@@ -131,10 +123,9 @@ double getSoB(TH1F*hsig,TH1F*hbkg){
 
   double sig=FSig.Integral(xlow,xhigh);
   double bkg=FBkg.Integral(xlow,xhigh);
-  //double bkgerr=FErr.Integral(xlow,xhigh);
+  double bkgerr=FErr.Integral(xlow,xhigh);
 
-
-  return sig/bkg;//purity
+  return sig/bkg; //purity
   //return sig/sqrt(sig+bkg);//statistical significance
   //return sig/sqrt( bkgerr*bkgerr + sig + bkg );//stat+syst. significance
 }
@@ -142,11 +133,10 @@ double getSoB(TH1F*hsig,TH1F*hbkg){
 int countInputs(TString * Input){
   int n=0;
   for(Int_t j=0;j<NMAXINPUT;j++){
-    ////while(Input[n].CompareTo("")!=0 && n<100){
-    //cout<<j<<" "<<Input[j]<<endl;
     if(Input[j])
       if(Input[j].CompareTo("")!=0)n++;
   }
+  cout<< " Input has "<<n<<" Files"<<endl;
   return n;
 }
 
@@ -180,18 +170,12 @@ void findRebin(TString * Input,Int_t N, Int_t * Rebin){
 
 void weightedCombine(TString *Input, TString outName, int weight=1){
 
-  int n=countInputs(Input); cout<< " Input has "<<n<<" Files"<<endl;
+  int n=countInputs(Input);
   Int_t Rebin[NMAXINPUT];
   findRebin(Input,n,Rebin);
   
-
-  TFile F1((Input[0]+".root").Data(),"READ");
-  gROOT->cd();
-
   //array of the weights for ordering later
   float weights[100];
-
-
   //first compute the sum of the weights
   double weightsum=0.;
   for(Int_t f=0;f<n;f++){
@@ -203,8 +187,11 @@ void weightedCombine(TString *Input, TString outName, int weight=1){
     if(!ggH || !Ztt){ cout<<" ggH or Ztt not found in "<<Input[f].Data()<<endl;}
 
     weightsum+=getSoB(ggH,Ztt);
+    File.Close();
   }
 
+  TFile F1((Input[0]+".root").Data(),"READ");
+  gROOT->cd();
   TH1F* Ztt1=(TH1F*)F1.Get("Ztt");
   TH1F* ggH1=(TH1F*)F1.Get("ggH");
 
@@ -245,15 +232,15 @@ void weightedCombine(TString *Input, TString outName, int weight=1){
   if(weight==1)Fakes->Scale(weights[0]);
   if(Rebin[0]) Fakes->Rebin(2);
   
-
+  F1.Close();
 
   //printf("%.4f %s\n",weights[0],Input[0].Data());
   for(Int_t f=1;f<n;f++){
     TFile F2((Input[f]+".root").Data(),"READ");
     gROOT->cd();
 
-    TH1F* ggH2=(TH1F*)F2.Get("ggH");
-    TH1F* Ztt2=(TH1F*)F2.Get("Ztt");
+    TH1F* ggH2=(TH1F*)(F2.Get("ggH")->Clone("ggH2"));
+    TH1F* Ztt2=(TH1F*)(F2.Get("Ztt")->Clone("Ztt2"));
 
     weights[f]=getSoB(ggH2,Ztt2)/weightsum;
     //printf("%.4f   %s\n",weights[f],Input[f].Data());
@@ -262,10 +249,10 @@ void weightedCombine(TString *Input, TString outName, int weight=1){
     signal2->Add(Ztt2,-1);
     signal2->Scale(SignalScale);
 
-    TH1F* data_obs2=(TH1F*)F2.Get("data_obs");
-    TH1F* TT2=(TH1F*)F2.Get("ttbar");    
-    TH1F* EWK2=(TH1F*)F2.Get("EWK");    
-    TH1F* Fakes2=(TH1F*)F2.Get("Fakes");
+    TH1F* data_obs2=(TH1F*)(F2.Get("data_obs")->Clone("data_obs2"));
+    TH1F* TT2=(TH1F*)(F2.Get("ttbar")->Clone("ttbar2"));    
+    TH1F* EWK2=(TH1F*)(F2.Get("EWK")->Clone("EWK2"));    
+    TH1F* Fakes2=(TH1F*)(F2.Get("Fakes")->Clone("Fakes2"));
 
 
     //rescale by S/B before adding
@@ -296,7 +283,17 @@ void weightedCombine(TString *Input, TString outName, int weight=1){
     EWK->Add(EWK2);
     Fakes->Add(Fakes2);
 
+
+    F2.Close();
+
+    delete ggH2;
     delete signal2;
+    delete data_obs2;
+    delete Ztt2;
+    delete TT2;
+    delete EWK2;
+    delete Fakes2;
+
   }
 
 
@@ -325,9 +322,7 @@ void weightedCombine(TString *Input, TString outName, int weight=1){
   cout<<" sum of weights = "<<TotalweightSum<<endl;
 
 
-  TString outname=outName;
-  if(weight==1)outname+="_Weighted.root";
-  if(weight==0)outname+="_UnWeighted.root";
+  TString outname=TString("Plot_")+outName+".root";
 
   TFile outFile(outname.Data(),"recreate");
   ggH->Write();
@@ -361,33 +356,36 @@ void weightedCombine(TString *Input, TString outName, int weight=1){
 
 void CMSPrelim(const char* dataset, const char* channel, double lowX, double lowY)
 {
+
+  float size=0.035; int color=1; int font = 62;
+  
   TPaveText* cmsprel  = new TPaveText(lowX, lowY+0.06, lowX+0.30, lowY+0.16, "NDC");
   cmsprel->SetBorderSize(   0 );
   cmsprel->SetFillStyle(    0 );
   cmsprel->SetTextAlign(   12 );
-  cmsprel->SetTextSize ( 0.04 );
-  cmsprel->SetTextColor(    1 );
-  cmsprel->SetTextFont (   62 );
-  cmsprel->AddText("CMS Prelim., ");
+  cmsprel->SetTextSize ( size );
+  cmsprel->SetTextColor( color );
+  cmsprel->SetTextFont ( font );
+  cmsprel->AddText(TString("CMS Preliminary,  ")+dataset);
   cmsprel->Draw();
 
-  TPaveText* lumi     = new TPaveText(lowX+0.24, lowY+0.061, lowX+0.61, lowY+0.161, "NDC");
-  lumi->SetBorderSize(   0 );
-  lumi->SetFillStyle(    0 );
-  lumi->SetTextAlign(   12 );
-  lumi->SetTextSize ( 0.04 );
-  lumi->SetTextColor(    1 );
-  lumi->SetTextFont (   62 );
-  lumi->AddText(dataset);
-  lumi->Draw();
+//   TPaveText* lumi     = new TPaveText(lowX+0.24, lowY+0.061, lowX+0.61, lowY+0.161, "NDC");
+//   lumi->SetBorderSize(   0 );
+//   lumi->SetFillStyle(    0 );
+//   lumi->SetTextAlign(   12 );
+//   lumi->SetTextSize ( size );
+//   lumi->SetTextColor( color );
+//   lumi->SetTextFont ( font );
+//   lumi->AddText(dataset);
+//   lumi->Draw();
 
   TPaveText* chan     = new TPaveText(lowX+0.05, lowY-0.002, lowX+0.45, lowY+0.028, "NDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
-  chan->SetTextSize ( 0.04 );
-  chan->SetTextColor(    1 );
-  chan->SetTextFont (   62 );
+  chan->SetTextSize ( size );
+  chan->SetTextColor( color );
+  chan->SetTextFont ( font );
   chan->AddText(channel);
   chan->Draw();
 }
@@ -395,15 +393,15 @@ void CMSPrelim(const char* dataset, const char* channel, double lowX, double low
 
 
 TH1F* diffPlot(TH1F*h1,TH1F*h2,int opt){
-  TH1F* h=(TH1F*)h1->Clone("hdiff");
-  h->Reset();
-  h->Clear();
+  
+  TH1F* h=(TH1F*)(h1->Clone(TString(h1->GetName())+h2->GetName()+"_diff"));
   for(Int_t b=1;b<=h1->GetNbinsX();b++){
     h->SetBinContent(b,h1->GetBinContent(b)-h2->GetBinContent(b));
     h->SetBinError(b,0.);
     if(opt==1)h->SetBinError(b,h1->GetBinError(b));
-    if(opt==2)h->SetBinError(b,sqrt(pow(h1->GetBinError(b)*h1->GetBinError(b),2)+pow(h2->GetBinError(b)*h2->GetBinError(b),2)));
+    if(opt==2)h->SetBinError(b,sqrt(h1->GetBinError(b)*h1->GetBinError(b)+h2->GetBinError(b)*h2->GetBinError(b)));
   }
+
   h->SetBinContent(0,0);
   h->SetBinError(0,0.);
   h->SetBinContent(h1->GetNbinsX()+1,0);
@@ -611,7 +609,7 @@ void weightedPlot(TString filename,const char* dataset , const char* channel ){
 
 void weightedPlotInset(TString filename,const char* dataset , const char* channel ){
 
-  TFile F((filename+".root").Data(),"READ");
+  TFile F((TString("Plot_")+filename+".root").Data(),"READ");
   gROOT->cd();
   TH1F* data=(TH1F*)F.Get("data_obs");
   TH1F* Ztt=(TH1F*)F.Get("Ztt");
@@ -626,14 +624,9 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   ////Format the histograms
 
   Ztt->GetYaxis()->SetRangeUser(0.,1.3*findMaxY(Ztt,0));
-  Ztt->GetXaxis()->SetTitle("#bf{m_{#tau#tau}    (GeV)}              ");
+  Ztt->GetXaxis()->SetTitle("#bf{m_{#tau#tau}  [GeV]}              ");
   Ztt->GetYaxis()->SetTitle("#bf{S/B Weighted dN/dm_{#tau#tau} [1/GeV]}");
   Ztt->SetNdivisions(505);
-
-  TH1F*Bkg=(TH1F*)Ztt->Clone("Bkg");
-  Bkg->SetFillStyle(3004);//1001=solid , 3004,3005=diagonal
-  Bkg->SetFillColor(1);
-  Bkg->SetMarkerSize(0.);
 
   sig->SetBinContent(0,0);//remove red line on top of y axis in plot
   sig->SetBinContent(sig->GetNbinsX()+1,0);
@@ -657,12 +650,12 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   ggH->SetLineStyle(1);
   ggH->SetLineWidth(0.);
 
+
   TH1F* errorBand = (TH1F*)Ztt->Clone("errorBand");
   errorBand->SetMarkerSize(0);
   errorBand->SetFillColor(1);
   errorBand->SetFillStyle(3013);
   errorBand->SetLineWidth(1);
-  errorBand->Draw("e2same");
 
 
   TLegend legend;
@@ -671,45 +664,29 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   legend.SetFillColor(0);
   legend.SetBorderSize(0);
   legend.AddEntry(data,"Observed","LP");  
-  //legend.AddEntry(ggH,"SM Higgs (125 GeV)","F");
+  legend.AddEntry(ggH,"SM Higgs (125 GeV)","F");
   legend.AddEntry(Ztt,"Z#rightarrow#tau#tau","F");
   legend.AddEntry(tt,"t#bar{t}","F");
   legend.AddEntry(ewk,"electroweak","F");
   legend.AddEntry(fakes,"QCD","F");
 
-//   legend.SetX1NDC(0.57);
-//   legend.SetX2NDC(0.86);
-//   legend.SetY1NDC(0.25);
-//   legend.SetY2NDC(0.5);
-
-  legend.SetX1NDC(0.72);
-  legend.SetX2NDC(0.92);
-  legend.SetY1NDC(0.23);
+  legend.SetX1NDC(0.57);
+  legend.SetX2NDC(1.05);
+  legend.SetY1NDC(0.27);
   legend.SetY2NDC(0.48);
-
   legend.SetTextSize(.028);
   legend.SetTextAlign(   12 );
 
 
-  TH1F* dataDiff=diffPlot(data,Ztt,1);
-  dataDiff->SetName("dataDiff");
+  TH1F* dataDiff=diffPlot(data,Ztt,2);
 
   float xmininset=60; float xmaxinset=180;
   TH1F* errBand=getErrorBand(Ztt);
-  errBand->SetFillStyle(1001);//1001=solid , 3004,3005=diagonal
-  errBand->SetFillColor(16);
+  errBand->SetFillStyle(3013);//1001=solid , 3004,3005=diagonal, 3013=hatched official for H->tau tau
+  errBand->SetFillColor(1);
   errBand->SetLineStyle(1);
-  errBand->SetLineColor(16);
-//   errBand->GetYaxis()->SetRangeUser(-1.5*findMinY(dataDiff,0),2.0*findMaxY(dataDiff,0));
-//   errBand->GetYaxis()->SetTitle("");
-//   errBand->GetYaxis()->SetNdivisions(5);
-//   errBand->GetYaxis()->SetLabelSize(0.06);
-//   errBand->GetXaxis()->SetTitle(Ztt->GetXaxis()->GetTitle());
-//   errBand->GetXaxis()->SetTitleSize(0.07);
-//   errBand->GetXaxis()->SetTitleOffset(0.95);
-//   errBand->GetXaxis()->SetLabelSize(0.06);
-//   errBand->SetNdivisions(505);
-//   errBand->GetXaxis()->SetRangeUser(xmininset,xmaxinset);
+  errBand->SetLineColor(1);
+  
 
   TH1F errBandFrame("errBandFrame","",(xmaxinset-xmininset)/dataDiff->GetBinWidth(1),xmininset,xmaxinset);
   errBandFrame.GetYaxis()->SetTitle("");
@@ -728,26 +705,29 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   legendDiff.SetFillColor(0);
   legendDiff.SetBorderSize(0);
   legendDiff.AddEntry(dataDiff,"Data - Background","LP");  
-  legendDiff.AddEntry(errBand,"Bkg. Uncertainty","F");
+  //legendDiff.AddEntry(errBand,"Bkg. Uncertainty","F");
   legendDiff.AddEntry(sig,"SM Higgs (125 GeV)","F");
   legendDiff.SetX1NDC(0.45);
   legendDiff.SetX2NDC(0.88);
   legendDiff.SetY1NDC(0.67);
   legendDiff.SetY2NDC(0.88);
   legendDiff.SetTextSize(.045);
-  legendDiff.SetTextAlign(   12 );
+  legendDiff.SetTextAlign(12);
 
 
 
-  TString outname=TString("Plot_")+filename;
-  TCanvas C(outname);
+  TCanvas C(filename);
 
-  TPad pad("diff","diff",0.45,0.5,0.975,0.956);//TPad must be created after TCanvas otherwise ROOT crashes
+
+  TPad padBack("padBack","padBack",0.57,0.58,0.975,0.956);//TPad must be created after TCanvas otherwise ROOT crashes
+  padBack.SetFillColor(0);
+
+  TPad pad("diff","diff",0.45,0.5,0.9765,0.957);//TPad must be created after TCanvas otherwise ROOT crashes
   pad.cd();
   pad.SetFillColor(0);
   pad.SetFillStyle(0);
   errBandFrame.Draw();
-  errBand->Draw("E2same");
+  //errBand->Draw("e2same");
   sig->Draw("histsame");
   TLine line;
   line.DrawLine(xmininset,0,xmaxinset,0);
@@ -759,7 +739,7 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   Ztt->Draw("hist");
   ggH->Draw("histsame");
   Ztt->Draw("histsame");
-  Bkg->Draw("e2same");
+  errorBand->Draw("e2same");
 
   tt->Draw("histsame");
   ewk->Draw("histsame");
@@ -767,100 +747,16 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   data->Draw("pesame");
   legend.Draw();
   C.RedrawAxis();
+  padBack.Draw();//clear the background axes
   pad.Draw();
 
   CMSPrelim(dataset,channel , 0.18, 0.835);
-  C.Print(outname+".eps");
-  C.Print(outname+".png");
+  C.Print(TString("Plot_")+filename+".eps");
+  C.Print(TString("Plot_")+filename+".png");
   
-  delete Bkg;
+  delete errorBand;
   delete dataDiff;
   delete errBand;
-  delete errorBand;
-
-  F.Close();
-
-  //gROOT->ls();
-  //gROOT->Reset();
 
 }
 
-
-
-void weightedPlotGammaGamma(TString filename,const char* dataset , const char* channel ){
-
-  TFile F((filename+".root").Data(),"READ");
-  TH1F* data=(TH1F*)F.Get("data_obs");
-  TH1F* Ztt=(TH1F*)F.Get("Ztt");
-  TH1F* ggH=(TH1F*)F.Get("ggH");
-  if(!data){cout<<"No input histograms in file: "<<filename.Data()<<endl; return;}
-
-
-
-  ggH->SetBinContent(0,0);//remove red line on top of y axis in plot
-  ggH->SetBinContent(ggH->GetNbinsX()+1,0);
-  ggH->SetBinError(0,0);
-  ggH->SetBinError(ggH->GetNbinsX()+1,0);
-  ggH->SetName("ggH");
-  ggH->SetFillColor(0);
-  ggH->SetLineColor(2);
-  ggH->SetLineStyle(1);
-
-  TH1F* errorBand = (TH1F*)Ztt->Clone();
-  errorBand->SetMarkerSize(0);
-  errorBand->SetFillColor(1);
-  errorBand->SetFillStyle(3013);
-  errorBand->SetLineWidth(1);
-  errorBand->Draw("e2same");
-
-
-  TLegend legend;
-  
-  legend.SetFillStyle(0);
-  legend.SetFillColor(0);
-  legend.SetBorderSize(0);
-  legend.AddEntry(data,"Observed","LP");  
-  legend.AddEntry(ggH,"SM Higgs (125 GeV)","F");
-  legend.AddEntry(Ztt,"Z#rightarrow#tau#tau","F");
-
-  legend.SetX1NDC(0.57);
-  legend.SetX2NDC(0.86);
-  legend.SetY1NDC(0.60);
-  legend.SetY2NDC(0.87);
-  legend.SetTextSize(.035);
-  legend.SetTextAlign(   12 );
-
-
-  TString outname=TString("Plot_")+filename;
-
-  TCanvas C(outname);
-  C.Print(outname+".ps[");
-
-
-  //Data and Background Plot
-  C.Clear();
-  Ztt->GetYaxis()->SetRangeUser(0.,1.2*findMaxY(Ztt,0));
-  Ztt->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
-  Ztt->GetYaxis()->SetTitle("#bf{Weighted dN/dm_{#tau#tau} [1/GeV]}");//  dN/dm(#tau#tau)
-  Ztt->SetNdivisions(505);
-  Ztt->SetFillColor(0);
-  Ztt->SetLineColor(4);
-  Ztt->Draw("hist");
-
-  ggH->Draw("histsame");
-  Ztt->Draw("histsame");
-  data->Draw("pesame");
-  legend.Draw();
-
-  CMSPrelim(dataset,channel , 0.18, 0.835);
-
-  C.RedrawAxis();
-  C.Print(outname+".ps");
-  C.Print(outname+".png");
-
-  delete errorBand;
-
-
-  C.Print(outname+".ps]");
-
-}

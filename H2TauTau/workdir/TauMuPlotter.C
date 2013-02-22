@@ -3509,6 +3509,60 @@ void  TauMuPlotter::plotTauTriggerReal(Int_t Region, TString tag){
   C.Print(plotFileName+".ps]");
 }
 
+
+TH1F* TauMuPlotter::getSignal(long mass){
+  TH1F* H=getSample(TString("HiggsGG")+mass);
+  TH1F* Hqq=getSample(TString("HiggsVBF")+mass);
+  TH1F* HVH=getSample(TString("HiggsVH")+mass);
+  H->Add(Hqq);
+  H->Add(HVH);
+  
+  delete Hqq; delete HVH;
+
+  return H;
+}
+
+void TauMuPlotter::compareSignalShapes(){
+
+
+  ///plot the difference in eta
+  plotvar_="svfitmass";
+  nbins_=40;
+  xmin_=0;
+  xmax_=200;
+  MTcat_=1;
+  Chcat_=1;
+  Isocat_=1;
+  //extrasel_="1";
+  //extrasel_=getSMcut(3);
+  extrasel_=getSMcut(4);
+
+  TH1F * HZ=getZToTauTau();
+  HZ->Scale(1./HZ->Integral());
+  
+  TH1F * H[8];
+  for(Int_t m=0;m<3;m++){
+    H[m]=getSignal(115+m*10);
+  }
+
+  TCanvas C;
+  HZ->SetFillColor(kOrange-4);
+  HZ->SetTitle("");
+  HZ->GetXaxis()->SetTitle("m(#tau#tau)   [GeV]");
+  HZ->GetYaxis()->SetTitle("Unit Norm");
+  HZ->Draw("hist");
+  for(Int_t m=0;m<3;m++){
+    H[m]->Scale(1./H[m]->Integral());
+    if(m==0)H[m]->SetLineColor(1);
+    if(m==1)H[m]->SetLineColor(2);
+    if(m==2)H[m]->SetLineColor(4);
+    H[m]->Draw("histsame");
+  }
+  C.Print("compareSignalShapes.eps");
+  C.Print("compareSignalShapes.png");
+}
+
+
 bool TauMuPlotter::printRawYields(TString selection){
   
   for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s){

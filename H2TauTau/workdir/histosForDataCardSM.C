@@ -77,11 +77,40 @@ void fix0Bins(TH1F* h){
 //       h->SetBinError(b,maxer);
 //     }
 
-  if(h->Integral()<=0.)
-    for(Int_t b=1; b<=h->GetNbinsX(); b++){
-      h->SetBinContent(b,1e-6);
-      h->SetBinError(b,2e-6);
+//   if(h->Integral()<=0.)
+//     for(Int_t b=1; b<=h->GetNbinsX(); b++){
+//       h->SetBinContent(b,1e-6);
+//       h->SetBinError(b,2e-6);
+//     }
+
+  float lastbinCenter = h->GetBinCenter(1);
+  float lastbinContent = 1e-6;
+  float lastbinError   = 1e-6;
+  for(Int_t i=1;i<=h->GetNbinsX();i++){
+    if(h->GetBinContent(i)==0.){
+      //find next non-empty bin and interpolate
+      float nextbinCenter = h->GetBinCenter(h->GetNbinsX())+h->GetBinWidth(i);
+      float nextbinContent = 1e-6;
+      float nextbinError = 1e-6;
+      for(Int_t j=i+1;j<=h->GetNbinsX();j++){
+	if(h->GetBinContent(j)>0.){
+	  nextbinCenter = h->GetBinCenter(j);
+	  nextbinContent = h->GetBinContent(j);
+	  nextbinError = h->GetBinError(j);
+	  break;
+	}
+      }
+
+      h->SetBinContent(i,lastbinContent + (h->GetBinCenter(i)-lastbinCenter)*(nextbinContent-lastbinContent)/(nextbinCenter-lastbinCenter));
+      h->SetBinError(i,lastbinError + (h->GetBinCenter(i)-lastbinCenter)*(nextbinError-lastbinError)/(nextbinCenter-lastbinCenter));
+
+    }else {//this is a good bin, update
+      lastbinCenter = h->GetBinCenter(i); 
+      lastbinContent = h->GetBinContent(i);
+      lastbinError   = h->GetBinError(i);
     }
+  }
+
 }
 
 void fixSignal(TH1F*hData,TH1F*hMC,TH1F*hsig){
@@ -172,9 +201,16 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
     if(sm==4)analysis->setVariableBinning(NXBINSVBF,xbinsValuesVBF);
     else analysis->setVariableBinning(NXBINS,xbinsValues);
     analysis->extrasel_ = analysis->getSMcut(sm);
-    if(option==0)analysis->extrasel_ = analysis->getSMcut(sm) + "*(taudecaymode!=1&&taudecaymode!=10)";
-    if(option==1)analysis->extrasel_ = analysis->getSMcut(sm) + "*(taudecaymode==1)";
-    if(option==10)analysis->extrasel_ = analysis->getSMcut(sm) + "*(taudecaymode==10)";
+
+//     if(option==0)analysis->extrasel_ = analysis->getSMcut(sm) + "*(taudecaymode==0)";
+//     if(option==1)analysis->extrasel_ = analysis->getSMcut(sm) + "*(taudecaymode==1)";
+//     if(option==10)analysis->extrasel_ = analysis->getSMcut(sm) + "*(taudecaymode==10)";
+
+//     //for ZTT decaymode ratios
+//     analysis->mTCut_=40;
+//     if(20<=option&&option<30) analysis->extrasel_ = TString("(metpt<40&&njet<=2)*")+"(taudecaymode==0)"+"*("+(long)(20+(option-20)*5)+"<taupt&&taupt<"+(long)(20+(option-20+1)*5)+")";
+//     if(30<=option&&option<40) analysis->extrasel_ = TString("(metpt<40&&njet<=2)*")+"(taudecaymode==1)"+"*("+(long)(20+(option-30)*5)+"<taupt&&taupt<"+(long)(20+(option-30+1)*5)+")";
+//     if(40<=option&&option<50) analysis->extrasel_ = TString("(metpt<40&&njet<=2)*")+"(taudecaymode==10)"+"*("+(long)(20+(option-40)*5)+"<taupt&&taupt<"+(long)(20+(option-40+1)*5)+")";
 
 
 
@@ -327,7 +363,8 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
     dir->cd();
   
     
-    fix0Bins(ZTT); ZTT->Write();
+    fix0Bins(ZTT); ZTT->Write(); 
+    ZTT->SetName("ZTT125"); ZTT->Write();//needed for ZTT fits
     fix0Bins(ZL);  ZL->Write();
     fix0Bins(ZJ);  ZJ->Write();
     fix0Bins(ZLL); ZLL->Write();

@@ -91,7 +91,7 @@ void plotTauEle2012(){
 //   analysis->plotInc("taudecaymode",11,0,11,1,1,1,"","",0,2,"Tau decay mode","",c,0,"taudecaymode_et_2012");
   
 //   analysis->plotInc("metpt",30,0,150,1,1,0,"","",0,2," MET   (GeV)","",c,0,"mvamet_et_2012");
-//   analysis->plotInc("ditaumass",20,0,200,1,1,1,"","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_et_2012");
+  analysis->plotInc("ditaumass",200,0,200,1,1,1,"(taupt>40&&abs(taueta)<1.5&&njet<2&&metpt<30)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_et_2012");
 //   //  analysis->plotInc("transversemass",40,0,200,2,1,0,"","",-1,2,"M_{T}   [GeV]","",c,0,"mt_1_met_SS_et_2012");
 //   analysis->plotInc("transversemass",40,0,200,1,1,0,"","",0,2,"M_{T}   [GeV]","",c,0,"mt_1_met_et_2012");
 //   //analysis->plotInc("svfitmass",30,0,300,2,1,1,"","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_SS_et_2012");
@@ -134,7 +134,7 @@ void plotTauEle2012(){
 // //   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(0),"",-1,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jetlow_SS_et_2012");
 //   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(0),"",0,2,"m_{vis}   (GeV)","",c,0,"mvis_0jetlow_et_2012");
 //   analysis->plotInc("transversemass",40,0,200,1,1,0,analysis->getSMcut(0),"",0,2,"m_{T} ","",c,0,"mt_1_met_0jetlow_et_2012");
-//   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(0),"",0,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jetlow_et_2012");
+//  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(0),"",0,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jetlow_et_2012");
   
 //   //   analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(1),"",2,0," electron pt   (GeV)","",c,0,"pt_1_0jethigh_et_2012");
 //   //   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(1),"",2,0," electron  #eta","",c2,0,"eta_1_0jethigh_et_2012"); 

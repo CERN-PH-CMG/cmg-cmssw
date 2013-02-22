@@ -138,7 +138,7 @@ if(1000<=$cat && $cat<1010){
 	`mkdir SM${d}`;
 	`mkdir SM${d}/125`;
 	chdir("./SM${d}/125");
-	$cardcommand="create-datacard.py -i ${topdir}/htt_${ch}.inputs-sm-${ECMS}TeV.root  -o ${d}_125.txt -c ${UncsDir}/cgs-ZTT-0${d}.conf -u ${UncsDir}/unc-ZTT-0${d}.vals -d ${UncsDir}/unc-ZTT-0${d}.conf";
+	$cardcommand="create-datacard.py -i ${topdir}/htt_${ch}.inputs-sm-${ECMS}TeV.root  -o ${d}_125.txt -c ${UncsDir}/cgs-ZTT-0${d}.conf -u ${UncsDir}/unc-ZTT-0${d}.vals -d ${UncsDir}/unc-ZTT-0${d}.conf 125";
 	print "${cardcommand}\n";
 	`${cardcommand}`;
 	chdir("../../.");
@@ -151,6 +151,7 @@ if(1000<=$cat && $cat<1010){
 	print "${cmd}\n";
 	`${cmd}`;
     }
+
 }
 
 
@@ -175,4 +176,30 @@ if($plot==1){
 	}
     }
 }
+
+#################make post-fit plots
+if($plot==2){
+    ##this currently does not work for the ZTT yield fits because templates want the ggH signal not ZTT
+    print "Make post-fit plots:\n";
+    foreach $d (@Cat){
+	$CAT=abs($d);
+	`rm -rf test_SM${CAT}`;
+	`mkdir test_SM${CAT}`;
+	`mkdir test_SM${CAT}/root`;
+	`mkdir test_SM${CAT}/datacards`;
+	`mkdir test_SM${CAT}/fitresults`;
+	`mkdir test_SM${CAT}/templates`;
+	chdir("test_SM${CAT}");
+	`cp ../SM${CAT}/125/out/mlfit.txt fitresults/mlfit_sm.txt`;
+	`cp ../SM${CAT}/125/0_125.txt datacards/htt_${ch}_0_${ECMS}TeV.txt`;
+	`cp ../htt_${ch}.inputs-sm-${ECMS}TeV.root root/htt_${ch}.input_${ECMS}TeV.root`;
+	`cp /afs/cern.ch/user/b/benitezj/scratch1/V5_8_0/CMGTools/CMSSW_5_3_3_patch3/src/HiggsAnalysis/HiggsToTauTau/test/templates/*.C templates/.`;
+	`python /afs/cern.ch/user/b/benitezj/scratch1/V5_8_0/CMGTools/CMSSW_5_3_3_patch3/src/HiggsAnalysis/HiggsToTauTau/test/produce_macros.py -a sm -c '${ch}' --sm-categories-${ch} "${CAT}" -u 1 -p "${ECMS}TeV"`;
+	`sed -i 's/bool log=true/bool log=false/g' *.C ; sed -i 's/BLIND_DATA = true/BLIND_DATA = false/g' *.C`;
+	`python /afs/cern.ch/user/b/benitezj/scratch1/V5_8_0/CMGTools/CMSSW_5_3_3_patch3/src/HiggsAnalysis/HiggsToTauTau/test/run_macros.py -a sm -c '${ch}' --sm-categories-${ch} "${CAT}"  -p "${ECMS}TeV"`;
+	chdir("../.");
+    }
+
+}
+
 

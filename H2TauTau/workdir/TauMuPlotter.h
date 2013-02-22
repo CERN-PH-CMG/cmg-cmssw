@@ -158,12 +158,6 @@ public:
   TH1F* getZLBoost(){return 0;}
   TH1F* getWJetsNJetLooseTau(){return 0;}
 
-  ////Methods unrelated to the main plots
-  //tau fake rate
-  void plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",TString IsoSel="(tauisodisc>=2)",Float_t ymax=50,Bool_t log=1);//
-  void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
-
-
   TH1F* getWNJetSumNoChCut();
   TH1F* getWJetsNJetNoChCut();
   TH1F* getWNJetSumNoChNoMTCut();
@@ -172,12 +166,24 @@ public:
   void plotTauTrigger(Int_t Region, TString tag);
   void plotTauTriggerReal(Int_t Region, TString tag);
 
+
+
+  ////Methods unrelated to the main plots
+  //tau fake rate
+  void plotIsoFakeRate(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",TString IsoSel="(tauisodisc>=2)",Float_t ymax=50,Bool_t log=1);//
+  void plotTauFakeRateWJets(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, TString extrasel="",Float_t ymax=50,Bool_t log=1);
+
+
   //HCP Studies
   void plotQCDSSOSRatio();
   void plotQCDSSOSRatioBTag();
   void compareZTTEmbedded();
   void compareZTTEmbeddedUnfolding();
   void plotZTTShape();
+
+  //
+  TH1F* getSignal(long mass);
+  void compareSignalShapes();
 
 
 
