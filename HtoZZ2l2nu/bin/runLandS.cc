@@ -1560,10 +1560,12 @@ void convertHistosForLimits_core(DataCardInputs& dci, TString& proc, TString& bi
                 dci.systs[systName][RateKey_t(proc,ch)]=1.0;
              }else{
                 double Unc = 1 + fabs(temp->Integral()/hshapes[0]->Integral());
+                printf("SYST %s --> %f versus %f --> Unc=%f\n", syst.Data(), hshape->Integral(), hshapes[0]->Integral(), Unc);
                 if(dci.systs.find(systName)==dci.systs.end() || dci.systs[systName].find(RateKey_t(proc,ch))==dci.systs[systName].end() ){
                    dci.systs[systName][RateKey_t(proc,ch)]=Unc;
                 }else{
                    dci.systs[systName][RateKey_t(proc,ch)]=(dci.systs[systName][RateKey_t(proc,ch)] + Unc)/2.0;
+                   printf("Average = %f\n", dci.systs[systName][RateKey_t(proc,ch)]);
                 }
              }
           }
@@ -1668,8 +1670,8 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 //        if(selCh[i].First("ee"  )!=kNPOS){alpha = 0.339286; alpha_err=0.043549;}
 //        if(selCh[i].First("mumu")!=kNPOS){alpha = 0.529018; alpha_err=0.059357;}
 
-        if(selCh[i].First("ee"  )!=kNPOS){alpha = 0.34; alpha_err=0.03;}
-        if(selCh[i].First("mumu")!=kNPOS){alpha = 0.61; alpha_err=0.04;}
+        if(selCh[i].First("ee"  )!=kNPOS){alpha = 0.44; alpha_err=0.03;} //was 34
+        if(selCh[i].First("mumu")!=kNPOS){alpha = 0.71; alpha_err=0.04;} //was 61
 
 
         //add 100% syst uncertainty on alpha
@@ -2135,7 +2137,7 @@ void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allS
    }
 }
 
-
+/* //BACKUP WITH 100% Uncertainty
 void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& allShapes, TString mainHisto){
       TString massStr(""); if(mass>0)massStr += mass;
       for(size_t i=0;i<selCh.size();i++){
@@ -2168,14 +2170,14 @@ void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& a
                     printf("Scale Factor for Interference : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
                  }
 
-/*                 if(signalSufix!=""){ //scale factor for Narrow Resonnance
-                    double cprime=1.0; double  brnew=0.0;
-                    sscanf(signalSufix.Data(), "_cp%lf_brn%lf", &cprime, &brnew);
-                    double sf = pow(cprime,2) * (1-brnew);
-                    scaleFactor*=sf; scaleFactorDown*=sf; scaleFactorUp*=sf;
-                    printf("Scale Factor for Narrow Resonnance : %f applied on %s\n",sf, proc.Data());                    
-                  }
-*/
+//                 if(signalSufix!=""){ //scale factor for Narrow Resonnance
+//                    double cprime=1.0; double  brnew=0.0;
+//                    sscanf(signalSufix.Data(), "_cp%lf_brn%lf", &cprime, &brnew);
+//                    double sf = pow(cprime,2) * (1-brnew);
+//                    scaleFactor*=sf; scaleFactorDown*=sf; scaleFactorUp*=sf;
+//                    printf("Scale Factor for Narrow Resonnance : %f applied on %s\n",sf, proc.Data());                    
+//                  }
+
 
                  printf("Total Scale Factor : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
 
@@ -2191,6 +2193,67 @@ void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& a
 //                 if(signalSufix!=""){ //add uncertainty only for NarrowResonnance case
                     TH1* down = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHDown"); down->Scale(scaleFactorDown);
                     TH1* up   = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHUp"  ); up  ->Scale(scaleFactorUp  );
+                    vars.push_back(std::make_pair("_interf_ggHDown", down) );
+                    vars.push_back(std::make_pair("_interf_ggHUp"  , up  ) );
+//                 }
+                  
+               }
+      }}
+}
+*/
+
+void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& allShapes, TString mainHisto){
+      TString massStr(""); if(mass>0)massStr += mass;
+      for(size_t i=0;i<selCh.size();i++){
+      for(size_t b=0; b<AnalysisBins.size(); b++){
+           Shape_t& shape  = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
+              //signals
+              size_t nsignal=shape.signal.size();
+              for(size_t isignal=0; isignal<nsignal; isignal++){
+                 TString proc(((TH1D*)shape.signal[isignal])->GetTitle());
+                 if(mass>0 && !proc.Contains(massStr))continue;
+
+                 double scaleFactor = 1.0;
+                 double scaleFactorDown = 1.0;
+                 double scaleFactorUp = 1.0;
+
+                 if(doInterf && proc.Contains("ggH")){
+                    scaleFactor = 0.897-0.000152*mass+7.69e-07*mass*mass;
+                    scaleFactorDown = 0.907-2.08e-05*mass+4.63e-07*mass*mass;
+                    scaleFactorUp = 0.889-0.000357*mass+1.21e-06*mass*mass;
+
+                    if(mass<400){
+                       scaleFactor = 1.0; scaleFactorDown=1.0; scaleFactorUp=1.0;
+                    }
+
+                    if(mass>=400 && signalSufix!=""){ //scale factor for Narrow Resonnance
+                       double cprime=1.0; double  brnew=0.0;
+                       sscanf(signalSufix.Data(), "_cp%lf_brn%lf", &cprime, &brnew);
+                       scaleFactor=1 + (scaleFactor-1)/cprime; scaleFactorDown=1 + (scaleFactorDown-1)/cprime; scaleFactorUp=1 + (scaleFactorUp-1)/cprime;
+                       printf("Scale Factor for Narrow Resonnance : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());                    
+                    }else{
+                       printf("Scale Factor for Interference : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
+                    }
+
+                 }
+
+                 printf("Total Scale Factor : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
+
+                 //modify the TH cross section to be saved/used later
+                 shape.xsections[proc] *= scaleFactor;
+
+                 printf("Scale signal from %f ", ((TH1D*)shape.signal[isignal])->Integral());
+                 ((TH1D*)shape.signal[isignal])->Scale(scaleFactor);
+                 printf("to %f\n", ((TH1D*)shape.signal[isignal])->Integral());
+
+                 std::vector<std::pair<TString, TH1*> >& vars = shape.signalVars[proc];
+                 for(size_t v=0;v<vars.size();v++){
+                    ((TH1D*)vars[v].second)->Scale(scaleFactor);
+                 }
+
+//                 if(signalSufix!=""){ //add uncertainty only for NarrowResonnance case
+                    TH1* down = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHDown"); down->Scale(scaleFactorDown / scaleFactor); //must devide by scaleFactor, because this was already applied
+                    TH1* up   = (TH1D*)shape.signal[isignal]->Clone(proc+"interf_ggHUp"  ); up  ->Scale(scaleFactorUp   / scaleFactor); //must devide by scaleFactor, because this was already applied
                     vars.push_back(std::make_pair("_interf_ggHDown", down) );
                     vars.push_back(std::make_pair("_interf_ggHUp"  , up  ) );
 //                 }
