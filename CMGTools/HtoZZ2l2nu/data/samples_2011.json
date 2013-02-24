@@ -1110,47 +1110,6 @@
 	   ]
 	},
 	{
-	"tag":"ggH(700)#rightarrow ZZ",
-	"isdata":false,
-	"isinvisible":true,
-	"spimpose":true,
-	"color":"807",
-	"lwidth":2,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC7TeV_GGtoH700toZZto2L2Nu",
-		"patdir":["/store/cmst3/user/psilva/Powheg/GluGluToHToZZTo2L2Nu_M-700_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.1468,
-                "xsecunc":[16.2,-14.6],
-		"br":[0.272,0.0403896]
-		}
-	   ]
-	},
-	{
-	"tag":"qqH(700)#rightarrow ZZ",
-	"isdata":false,
-	"isinvisible":true,
-	"spimpose":true,
-	"color":"807",
-        "lwidth":3,
-        "lstyle":2,
-	"fill":0,
-	"marker":1,
-	"data":[
-		{
-		"dtag":"MC7TeV_VBFtoH700toZZto2L2Nu",
-		"patdir":["/store/cmst3/user/psilva/Powheg/VBF_ToHToZZTo2L2NU_M-700_7TeV-powheg-pythia6"],
-		"split":1,
-                "xsec":0.0392,
-                "xsecunc":[9.9,-4.0],
-		"br":[0.272,0.0403896]
-		}
-	   ]
-	},
-	{
 	"tag":"ggH(750)#rightarrow ZZ",
 	"isdata":false,
 	"isinvisible":true,
