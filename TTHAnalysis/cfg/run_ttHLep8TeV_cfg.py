@@ -61,7 +61,7 @@ ttHLepAna = cfg.Analyzer(
     muons='cmgMuonSel',
     electrons='cmgElectronSel',
     photons='cmgPhotonSel',
-    isolationCut=0.4,
+    isolationCut=0.4, 
     minGoodLeptons=2,
     doSSLeptons=False,
     doRochesterCorrections=True,
@@ -70,6 +70,12 @@ ttHLepAna = cfg.Analyzer(
     doSegmentBasedMuonCleaning=True,
     doEleMuCrossCleaning=True,
     )
+
+# Lepton MC Matching (must happen earlier to allow for MVA corrections)
+ttHLepMCAna = cfg.Analyzer(
+    'ttHLepMCMatchAnalyzer',
+    )
+
 
 # Jets Analyzer 
 ttHJetAna = cfg.Analyzer(
@@ -82,16 +88,21 @@ ttHJetAna = cfg.Analyzer(
     relaxJetId = False,  
     )
 
+## MET Analyzer
+#ttHMETAna = cfg.Analyzer(
+#    'ttHMETAnalyzer',
+#    )
+
+# Jet MC Match Analyzer
+ttHJetMCAna = cfg.Analyzer(
+    'ttHJetMCMatchAnalyzer',
+    )
+
 # Event Analyzer
 ttHEventAna = cfg.Analyzer(
     'ttHLepEventAnalyzer',
     maxLeps = 4, ## leptons to use
     verbose = False,
-    )
-
-# Event Analyzer
-ttHMCMatchAna = cfg.Analyzer(
-    'ttHLepMCMatchAnalyzer',
     )
 
 # Tree Producer
@@ -137,9 +148,11 @@ sequence = cfg.Sequence([
     ttHGenAna,
     ttHVertexAna,
     ttHLepAna,
+    ttHLepMCAna,
     ttHJetAna,
+    #ttHMETAna,
+    ttHJetMCAna,
     ttHEventAna,
-    ttHMCMatchAna,
     treeProducer,
     
     ])
@@ -148,12 +161,12 @@ sequence = cfg.Sequence([
 #-------- HOW TO RUN
 
 # set test = 0 to run all jobs, in case you are using pybatch.py
-test = 1
+test = 0
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = TTH
-    comp.files = comp.files[:2]
+    comp.files = comp.files[:5]
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:    
@@ -164,14 +177,14 @@ elif test==2:
         comp.files = comp.files[:3]
 elif test==3:
     # test two components, using many threads, to check if variables are ok
-    comp = DoubleElectronC
-    comp.files = comp.files[:100]
+    #comp = DoubleElectronC
+    #comp.files = comp.files[:20]
+    #comp.splitFactor = 5
+    #selectedComponents = [comp]
+    comp = DYJetsM50
+    comp.files = comp.files[:20]
     comp.splitFactor = 5
     selectedComponents = [comp]
-    #comp = DYJetsM50
-    #comp.files = comp.files[:50]
-    #comp.splitFactor = 5
-    #selectedComponents += [comp]
 
 # creation of the processing configuration.
 # we define here on which components to run, and

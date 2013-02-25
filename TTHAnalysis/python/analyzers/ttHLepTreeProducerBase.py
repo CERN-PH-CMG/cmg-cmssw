@@ -49,6 +49,8 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         ## --- MET, HT, MHT ---
         var( tr, 'met' )
         var( tr, 'met_phi' )
+        var( tr, 'metNoPU' )
+        var( tr, 'metNoPU_phi' )
         var( tr, 'metSignificance' )
         var( tr, 'projMetAll1S' )
         var( tr, 'projMetAll2S' )
@@ -111,6 +113,8 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         ## --- MET ---
         fill( tr, 'met', event.met.pt() )
         fill( tr, 'met_phi', event.met.phi() )
+        fill( tr, 'metNoPU', event.metNoPU.pt() )
+        fill( tr, 'metNoPU_phi', event.metNoPU.phi() )
         fill( tr, 'metSignificance', event.metSignificance )
         fill( tr, 'projMetAll1S', event.projMetAll1S )
         fill( tr, 'projMetAll2S', event.projMetAll2S )
