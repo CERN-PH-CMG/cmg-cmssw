@@ -63,10 +63,32 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'mhtJet25' )
         ## --- DILEPTON MASSES ---
         var( tr, 'mZ1' )
+        var( tr, 'mZ1SFSS' )
         var( tr, 'mZ2' )
         var( tr, 'minMllSFOS' )
         var( tr, 'minMllAFOS' )
+        var( tr, 'minMllAFSS' )
         var( tr, 'minMllAFAS' )
+        var( tr, 'maxMllAFOS' )
+        var( tr, 'maxMllAFSS' )
+        var( tr, 'minDrllAFOS' )
+        var( tr, 'maxDrllAFOS' )
+        var( tr, 'minDrllAFSS' )
+        var( tr, 'maxDrllAFSS' )
+        var( tr, 'minPtllAFOS' )
+        var( tr, 'maxPtllAFOS' )
+        var( tr, 'minPtllAFSS' )
+        var( tr, 'maxPtllAFSS' )
+        var( tr, 'q3l', 'I' )
+        var( tr, 'q4l', 'I' )
+        var( tr, 'm3l' )
+        var( tr, 'm4l' )
+        var( tr, 'pt3l' )
+        var( tr, 'pt4l' )
+        var( tr, 'ht3l' )
+        var( tr, 'ht4l' )
+        
+        ## --- DILEPTON MASSES ---
 
         if self.cfg_comp.isMC: 
             var( tr, 'puWeight' )
@@ -130,9 +152,29 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         ## --- DILEPTON MASSES ---
         fill( tr, 'mZ1', event.bestZ1[0] )
         fill( tr, 'mZ2', event.bestZ2[3] )
+        fill( tr, 'mZ1SFSS', event.bestZ1sfss[0] )
         fill( tr, 'minMllSFOS', event.minMllSFOS )
         fill( tr, 'minMllAFOS', event.minMllAFOS )
+        fill( tr, 'minMllAFSS', event.minMllAFSS )
         fill( tr, 'minMllAFAS', event.minMllAFAS )
+        fill( tr, 'maxMllAFOS', event.maxMllAFOS )
+        fill( tr, 'maxMllAFSS', event.maxMllAFSS )
+        fill( tr, 'minPtllAFOS', event.minPtllAFOS )
+        fill( tr, 'minPtllAFSS', event.minPtllAFSS )
+        fill( tr, 'maxPtllAFOS', event.maxPtllAFOS )
+        fill( tr, 'maxPtllAFSS', event.maxPtllAFSS )
+        fill( tr, 'minDrllAFOS', event.minDrllAFOS )
+        fill( tr, 'minDrllAFSS', event.minDrllAFSS )
+        fill( tr, 'maxDrllAFOS', event.maxDrllAFOS )
+        fill( tr, 'maxDrllAFSS', event.maxDrllAFSS )
+        fill( tr, 'm3l', event.m3l )
+        fill( tr, 'q3l', event.q3l )
+        fill( tr, 'ht3l', event.ht3l )
+        fill( tr, 'pt3l', event.pt3l )
+        fill( tr, 'm4l', event.m4l )
+        fill( tr, 'q4l', event.q4l )
+        fill( tr, 'ht4l', event.ht4l )
+        fill( tr, 'pt4l', event.pt4l )
          
         if self.cfg_comp.isMC: 
             fill( tr, 'puWeight', event.eventWeight )
@@ -143,6 +185,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
     def declareMCVariables(self):
         tr = self.tree
         var( tr, 'GenHiggsDecayMode', int)
+        var( tr, 'GenHeaviestQCDFlavour', int)
         bookGenParticle(tr, 'GenHiggs')
         bookGenParticle(tr, 'GenTop1')
         bookGenParticle(tr, 'GenTop2')
@@ -163,6 +206,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
     def fillMCVariables(self, iEvent, event):
         tr = self.tree
         fill( tr, 'GenHiggsDecayMode', event.genHiggsDecayMode )
+        fill( tr, 'GenHeaviestQCDFlavour', event.heaviestQCDFlavour )
 
         if event.genHiggsBoson: 
             fillGenParticle(tr, 'GenHiggs', event.genHiggsBoson)

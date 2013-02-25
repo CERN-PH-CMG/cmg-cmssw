@@ -37,6 +37,7 @@ class ttHLepEventAnalyzer( Analyzer ):
 
     def makeZs(self, event, maxLeps):
         event.bestZ1 = [ 0., -1,-1 ]
+        event.bestZ1sfss = [ 0., -1,-1 ]
         event.bestZ2 = [ 0., -1,-1, 0. ]
         nlep = len(event.selectedLeptons)
         for i,l1 in enumerate(event.selectedLeptons):
@@ -47,6 +48,10 @@ class ttHLepEventAnalyzer( Analyzer ):
                     zmass = (l1.p4() + l2.p4()).M()
                     if abs(zmass - 91.188) < abs(event.bestZ1[0] - 91.188):
                         event.bestZ1 = [ zmass, i, j ]
+                if l1.pdgId() == l2.pdgId():
+                    zmass = (l1.p4() + l2.p4()).M()
+                    if abs(zmass - 91.188) < abs(event.bestZ1sfss[0] - 91.188):
+                        event.bestZ1sfss = [ zmass, i, j ]
         if event.bestZ1[0] != 0 and nlep > 3:
             for i,l1 in enumerate(event.selectedLeptons):
                 if i == event.bestZ1[1]: continue
@@ -59,11 +64,48 @@ class ttHLepEventAnalyzer( Analyzer ):
                             event.bestZ2 = [ l1.pt() + l2.pt(), i, j, (l1.p4() + l2.p4()).M() ]
 
     def makeMlls(self, event, maxLeps):
-        event.minMllSFOS = min(self.mllValues(event,  lambda l1,l2 : l1.pdgId()  == -l2.pdgId(), maxLeps))
-        event.minMllAFOS = min(self.mllValues(event,  lambda l1,l2 : l1.charge() == -l2.charge(), maxLeps))
-        event.minMllAFAS = min(self.mllValues(event,  lambda l1,l2 : True, maxLeps))
+        mllsfos = self.mllValues(event,  lambda l1,l2 : l1.pdgId()  == -l2.pdgId(),  maxLeps)
+        mllafos = self.mllValues(event,  lambda l1,l2 : l1.charge() == -l2.charge(),  maxLeps)
+        mllafss = self.mllValues(event,  lambda l1,l2 : l1.charge() ==  l2.charge(),  maxLeps)
+        mllafas = self.mllValues(event,  lambda l1,l2 : True, maxLeps)
+        event.minMllSFOS = min(mllsfos)
+        event.minMllAFOS = min(mllafos)
+        event.minMllAFSS = min(mllafss)
+        event.minMllAFAS = min(mllafas)
+        event.maxMllAFOS = max(mllafos)
+        event.maxMllAFSS = max(mllafss)
+        drllafos = self.drllValues(event,  lambda l1,l2 : l1.charge() == -l2.charge(),  maxLeps)
+        drllafss = self.drllValues(event,  lambda l1,l2 : l1.charge() ==  l2.charge(),  maxLeps)
+        event.minDrllAFSS = min(drllafss)
+        event.minDrllAFOS = min(drllafos)
+        event.maxDrllAFOS = max(drllafos)
+        event.maxDrllAFSS = max(drllafss)
+        ptllafos = self.ptllValues(event,  lambda l1,l2 : l1.charge() == -l2.charge(),  maxLeps)
+        ptllafss = self.ptllValues(event,  lambda l1,l2 : l1.charge() ==  l2.charge(),  maxLeps)
+        event.minPtllAFSS = min(ptllafss)
+        event.minPtllAFOS = min(ptllafos)
+        event.maxPtllAFOS = max(ptllafos)
+        event.maxPtllAFSS = max(ptllafss)
+        leps = event.selectedLeptons; nlep = len(leps)
+        event.q3l = sum([l.charge() for l in leps[:2]]) if nlep >= 3 else 0
+        event.ht3l = sum([l.pt() for l in leps[:2]]) if nlep >= 3 else 0
+        event.pt3l = (leps[0].p4() + leps[1].p4() + leps[2].p4()).Pt() if nlep >= 3 else 0
+        event.m3l = (leps[0].p4() + leps[1].p4() + leps[2].p4()).M() if nlep >= 3 else 0
+        event.q4l = sum([l.charge() for l in leps[:3]])  if nlep >= 4 else 0
+        event.ht4l = sum([l.pt() for l in leps[:3]]) if nlep >= 4 else 0
+        event.pt4l = (leps[0].p4() + leps[1].p4() + leps[2].p4() + leps[3].p4()).Pt() if nlep >= 4 else 0
+        event.m4l = (leps[0].p4() + leps[1].p4() + leps[2].p4() + leps[3].p4()).M() if nlep >= 4 else 0
 
     def mllValues(self, event, pairSelection, maxLeps):
+        return self.llValues(event, lambda l1,l2: (l1.p4() + l2.p4()).M(), pairSelection, maxLeps)
+
+    def drllValues(self, event, pairSelection, maxLeps):
+        return self.llValues(event, lambda l1,l2: deltaR(l1.eta(), l1.phi(), l2.eta(), l2.phi()), pairSelection, maxLeps)
+
+    def ptllValues(self, event, pairSelection, maxLeps):
+        return self.llValues(event, lambda l1,l2: (l1.p4() + l2.p4()).Pt(), pairSelection, maxLeps)
+
+    def llValues(self, event, function, pairSelection, maxLeps):
         pairs = []
         nlep = len(event.selectedLeptons)
         for i,l1 in enumerate(event.selectedLeptons):
@@ -71,7 +113,7 @@ class ttHLepEventAnalyzer( Analyzer ):
                 if j >= maxLeps: break
                 l2 = event.selectedLeptons[j]    
                 if pairSelection(l1,l2):
-                    pairs.append( (l1.p4() + l2.p4()).M() )
+                    pairs.append( function(l1, l2) )
         if pairs == []: pairs.append(-1)
         return pairs
     
