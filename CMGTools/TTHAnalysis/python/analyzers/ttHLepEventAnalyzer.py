@@ -161,6 +161,8 @@ class ttHLepEventAnalyzer( Analyzer ):
 
     def makeHadTopDecays(self, event):
         event.lightJets = [ j for j in event.cleanJets if not j.getSelection("cuts_csv_medium") ]
+        event.minMWjj   = 999
+        event.minMWjjPt = 0
         event.bestMWjj   = 0
         event.bestMWjjPt = 0
         event.bestMTopHad   = 0
@@ -170,6 +172,9 @@ class ttHLepEventAnalyzer( Analyzer ):
                 j2 = event.lightJets[i2]
                 jjp4 = j1.p4() + j2.p4()
                 mjj  = jjp4.M()
+                if mjj > 30 and mjj < event.minMWjj:
+                    event.minMWjj = mjj
+                    event.minMWjjPt = jjp4.Pt()
                 if abs(mjj-80.4) < abs(event.bestMWjj-80.4):
                     event.bestMWjj = mjj
                     event.bestMWjjPt = jjp4.Pt()

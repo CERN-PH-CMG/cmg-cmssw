@@ -88,6 +88,8 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'ht3l' )
         var( tr, 'ht4l' )
          
+        var( tr, 'minMWjj' )
+        var( tr, 'minMWjjPt' )
         var( tr, 'bestMWjj' )
         var( tr, 'bestMWjjPt' )
         var( tr, 'bestMTopHad' )
@@ -192,6 +194,9 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill( tr, 'q4l', event.q4l )
         fill( tr, 'ht4l', event.ht4l )
         fill( tr, 'pt4l', event.pt4l )
+         
+        fill( tr, 'minMWjj', event.minMWjj )
+        fill( tr, 'minMWjjPt', event.minMWjjPt )
         fill( tr, 'bestMWjj', event.bestMWjj )
         fill( tr, 'bestMWjjPt', event.bestMWjjPt )
         fill( tr, 'bestMTopHad', event.bestMTopHad )
