@@ -1,6 +1,6 @@
 import ROOT
-from CMGTools.HToZZTo4Leptons.tools.WeightCalculatorFromHistogram import WeightCalculatorFromHistogram as WeightCalculator
-from CMGTools.HToZZTo4Leptons.tools.fullPath import getFullPath
+from CMGTools.TTHAnalysis.tools.WeightCalculatorFromHistogram import WeightCalculatorFromHistogram as WeightCalculator
+from CMGTools.TTHAnalysis.tools.fullPath import getFullPath
 
 
 class EfficiencyCorrector(object):
