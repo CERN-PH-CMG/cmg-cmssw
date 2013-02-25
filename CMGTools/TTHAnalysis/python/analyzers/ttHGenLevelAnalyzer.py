@@ -103,7 +103,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
                     event.genbquarks.append( dau )
                 elif abs(dau.pdgId()) == 24:
                     self.fillGenLeptons( event, dau, sourceId=6 )
-                    self.fillWZQuarks(   event, dau, sourceId=6 )
+                    self.fillWZQuarks(   event, dau, True, sourceId=6 )
 
         
     def makeMCInfo(self, event):

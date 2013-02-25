@@ -43,13 +43,17 @@ def bookLepton( tree, pName, isMC=False ):
     var(tree, '{pName}_dz'.format(pName=pName))
     var(tree, '{pName}_relIso'.format(pName=pName))
     var(tree, '{pName}_chargedIso'.format(pName=pName))
-    var(tree, '{pName}_drBJet'.format(pName=pName))
+    var(tree, '{pName}_mvaIso'.format(pName=pName))
     var(tree, '{pName}_jetPtRatio'.format(pName=pName))
     var(tree, '{pName}_jetBTagCSV'.format(pName=pName))
-    var(tree, '{pName}_jetBTagTCHE'.format(pName=pName))
+    #var(tree, '{pName}_jetBTagTCHE'.format(pName=pName))
     var(tree, '{pName}_ptRelJet'.format(pName=pName))
     var(tree, '{pName}_jetDR'.format(pName=pName))
     var(tree, '{pName}_jetSelf'.format(pName=pName), int)
+    var(tree, '{pName}_jetChHadMultiplicity'.format(pName=pName), int)
+    var(tree, '{pName}_jetChHadEnergyFraction'.format(pName=pName))
+    var(tree, '{pName}_jetPhoMultiplicity'.format(pName=pName), int)
+    var(tree, '{pName}_jetPhoEnergyFraction'.format(pName=pName))
     var(tree, '{pName}_innerHits'.format(pName=pName), int)
     var(tree, '{pName}_mvaId'.format(pName=pName))
     var(tree, '{pName}_tightId'.format(pName=pName))
@@ -73,16 +77,20 @@ def fillLepton( tree, pName, lepton ):
     fill(tree, '{pName}_dz'.format(pName=pName), abs(lepton.dz()) )
     fill(tree, '{pName}_relIso'.format(pName=pName), lepton.relIso(dBetaFactor=0.5))
     fill(tree, '{pName}_chargedIso'.format(pName=pName), lepton.chargedHadronIso())
-    fill(tree, '{pName}_drBJet'.format(pName=pName), lepton.drBJet)
+    fill(tree, '{pName}_mvaIso'.format(pName=pName), lepton.mvaIso())
     if hasattr(lepton, 'jet'):
         fill(tree, '{pName}_ptRelJet'.format(pName=pName), lepton.ptRelJet)
         fill(tree, '{pName}_jetPtRatio'.format(pName=pName), lepton.pt()/lepton.jet.pt())
         fill(tree, '{pName}_jetBTagCSV'.format(pName=pName), 
             lepton.jet.btag('combinedSecondaryVertexBJetTags') if hasattr(lepton.jet, 'btag') else -99)
-        fill(tree, '{pName}_jetBTagTCHE'.format(pName=pName), 
-            lepton.jet.btag('trackCountingHighEffBJetTags') if hasattr(lepton.jet, 'btag') else -99)
+        #fill(tree, '{pName}_jetBTagTCHE'.format(pName=pName), 
+        #    lepton.jet.btag('trackCountingHighEffBJetTags') if hasattr(lepton.jet, 'btag') else -99)
         fill(tree, '{pName}_jetDR'.format(pName=pName), deltaR(lepton.eta(),lepton.phi(),lepton.jet.eta(),lepton.jet.phi()))
         fill(tree, '{pName}_jetSelf'.format(pName=pName), lepton.jet.pdgId() == lepton.pdgId())
+        fill(tree, '{pName}_jetChHadMultiplicity'.format(pName=pName), lepton.jet.component(1).number() if hasattr(lepton.jet, 'component') else 0)
+        fill(tree, '{pName}_jetChHadEnergyFraction'.format(pName=pName), lepton.jet.component(1).fraction() if hasattr(lepton.jet, 'component') else 0)
+        fill(tree, '{pName}_jetPhoMultiplicity'.format(pName=pName), lepton.jet.component(4).number() if hasattr(lepton.jet, 'component') else 0)
+        fill(tree, '{pName}_jetPhoEnergyFraction'.format(pName=pName), lepton.jet.component(4).fraction() if hasattr(lepton.jet, 'component') else 0)
     if abs(lepton.pdgId())==11:
         fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.numberOfHits())
         fill(tree, '{pName}_mvaId'.format(pName=pName), lepton.mvaNonTrigV0())
@@ -140,6 +148,7 @@ def bookJet( tree, pName, isMC=False ):
     if isMC:
         var(tree, '{pName}_mcMatchId'.format(pName=pName),   int)
         var(tree, '{pName}_mcMatchFlav'.format(pName=pName), int)
+        var(tree, '{pName}_mcFlavour'.format(pName=pName), int)
 
 def fillJet( tree, pName, jet ):
     fillParticle(tree, pName, jet )
@@ -161,6 +170,7 @@ def fillJet( tree, pName, jet ):
     if hasattr(jet, 'mcMatchId'):
         fill(tree, '{pName}_mcMatchId'.format(pName=pName),   jet.mcMatchId)
         fill(tree, '{pName}_mcMatchFlav'.format(pName=pName), jet.mcMatchFlav)
+        fill(tree, '{pName}_mcFlavour'.format(pName=pName), jet.mcFlavour)
     
 #----------
 # GEN PARTICLE

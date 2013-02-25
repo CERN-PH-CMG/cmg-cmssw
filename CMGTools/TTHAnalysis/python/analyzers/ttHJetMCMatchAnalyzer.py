@@ -29,6 +29,29 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
     def beginLoop(self):
         super(ttHJetMCMatchAnalyzer,self).beginLoop()
 
+    def jetFlavour(self,event):
+        def isFlavour(x,f):
+            id = abs(x.pdgId())
+            if id > 999: return (id/1000)%10 == f
+            if id >  99: return  (id/100)%10 == f
+            return id % 100 == f
+
+        event.bqObjects = [ p for p in event.genParticles if (p.status() == 2 and isFlavour(p,5)) ]
+        event.cqObjects = [ p for p in event.genParticles if (p.status() == 2 and isFlavour(p,4)) ]
+        
+        for jet in event.jets:
+           (bmatch, dr) = bestMatch(jet, event.bqObjects)
+           if dr < 0.5:
+               jet.mcFlavour = 5
+           else:
+               (cmatch, dr) = bestMatch(jet, event.cqObjects) 
+               if dr < 0.5:
+                   jet.mcFlavour = 4
+               else:
+                   jet.mcFlavour = 0
+
+        event.heaviestQCDFlavour = 5 if len(event.bqObjects) else (4 if len(event.cqObjects) else 1);
+                    
     def matchJets(self, event):
         match = matchObjectCollection2(event.cleanJets,
                                        event.genbquarks + event.genwzquarks,
@@ -45,5 +68,6 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
             return True
 
         self.matchJets(event)
+        self.jetFlavour(event)
 
         return True
