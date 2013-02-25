@@ -14,6 +14,7 @@ from CMGTools.RootTools.physicsobjects.Photon import Photon
 from CMGTools.RootTools.physicsobjects.Electron import Electron
 from CMGTools.RootTools.physicsobjects.Muon import Muon
 from CMGTools.RootTools.physicsobjects.Jet import Jet
+from CMGTools.TTHAnalysis.tools.EfficiencyCorrector import EfficiencyCorrector
 
 from CMGTools.RootTools.utils.DeltaR import deltaR, deltaPhi, bestMatch
 from CMGTools.RootTools.physicsobjects.RochesterCorrections import rochcor
@@ -39,6 +40,10 @@ class ttHLepAnalyzerBase( Analyzer ):
                                                 999,  # applyCorrections (999 = correct and/or smear for SC-based energy estimation)
                                                 False, False, #verbose, sync
                                                 TRandom3(0)) # random number generator
+
+        if hasattr(cfg_comp,'efficiency'):
+            self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
+            
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
     #----------------------------------------
@@ -72,7 +77,7 @@ class ttHLepAnalyzerBase( Analyzer ):
     # MAKE LEPTON LISTS
     #------------------
 
-    # A SKIM STEP WAS RUN BEFORE:
+    
     # the muons are already corrected with Rochester corrections, are already cleaned with the ghost cleaning
     # the electrons have already the electron energy regression and calibration applied
     # the V5_10_0 cmgTuple, have been corrected with Mike's patch for the SIP computation -> cmgMuons have been remade ->
@@ -152,6 +157,10 @@ class ttHLepAnalyzerBase( Analyzer ):
                     
         event.looseLeptons.sort(key = lambda l : l.pt(), reverse = True)
         event.selectedLeptons.sort(key = lambda l : l.pt(), reverse = True)
+
+        for lepton in event.selectedLeptons:
+            if hasattr(self,'efficiency'):
+                self.efficiency.attachToObject(lepton)
 
         #print "Found ",len(event.looseLeptons)," loose leptons"
         #print "Found ",len(event.selectedLeptons)," good leptons"
