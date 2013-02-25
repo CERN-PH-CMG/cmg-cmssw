@@ -87,6 +87,11 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'pt4l' )
         var( tr, 'ht3l' )
         var( tr, 'ht4l' )
+         
+        var( tr, 'bestMWjj' )
+        var( tr, 'bestMWjjPt' )
+        var( tr, 'bestMTopHad' )
+        var( tr, 'bestMTopHadPt' )
         
         ## --- DILEPTON MASSES ---
 
@@ -176,6 +181,11 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill( tr, 'ht4l', event.ht4l )
         fill( tr, 'pt4l', event.pt4l )
          
+        fill( tr, 'bestMWjj', event.bestMWjj )
+        fill( tr, 'bestMWjjPt', event.bestMWjjPt )
+        fill( tr, 'bestMTopHad', event.bestMTopHad )
+        fill( tr, 'bestMTopHadPt', event.bestMTopHadPt )
+
         if self.cfg_comp.isMC: 
             fill( tr, 'puWeight', event.eventWeight )
             self.fillMCVariables(iEvent, event)
