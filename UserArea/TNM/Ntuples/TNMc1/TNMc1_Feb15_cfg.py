@@ -1,4 +1,4 @@
-#$Revision: 1.4 $
+#$Revision: 1.5 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -65,14 +65,16 @@ print 'input:', process.source.fileNames
 
 if runOnMC==False:
     from CMGTools.Common.Tools.applyJSON_cff import *
-    # Run2012 A+B 13Jul2012ReReco
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
-    # Run2012 A 06Aug2012ReReco
+    # Run2012A+B 13Jul2012ReReco
+    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
+    # Run2012A 06Aug2012ReReco
     #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt'
-    # Run2012C v1+v2
-    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
-    # Run2012D
-    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
+    # Run2012C v1 Aug24ReReco
+    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
+    # Run2012C v1 Dec11ReReco
+    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt'
+    # Run2012C v2 and Run2012D
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
     print 'json:', json
     applyJSON(process, json )
 

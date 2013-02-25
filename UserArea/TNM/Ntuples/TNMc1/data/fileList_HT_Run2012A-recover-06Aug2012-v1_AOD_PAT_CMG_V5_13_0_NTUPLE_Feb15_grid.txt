@@ -1,0 +1,11 @@
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_1.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_10.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_11.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_2.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_3.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_4.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_5.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_6.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_7.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_8.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/HT/Run2012A-recover-06Aug2012-v1/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_9.root
