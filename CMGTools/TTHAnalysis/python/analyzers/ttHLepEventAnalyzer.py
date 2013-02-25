@@ -159,6 +159,28 @@ class ttHLepEventAnalyzer( Analyzer ):
         #print "PrMETJet 1S:", event.projMetJets1S 
         #print "PrMETJet 2S:", event.projMetJets2S
 
+    def makeHadTopDecays(self, event):
+        event.lightJets = [ j for j in event.cleanJets if not j.getSelection("cuts_csv_medium") ]
+        event.bestMWjj   = 0
+        event.bestMWjjPt = 0
+        event.bestMTopHad   = 0
+        event.bestMTopHadPt = 0
+        for i1,j1 in enumerate(event.lightJets):
+            for i2 in xrange(i1+1,len(event.lightJets)):
+                j2 = event.lightJets[i2]
+                jjp4 = j1.p4() + j2.p4()
+                mjj  = jjp4.M()
+                if abs(mjj-80.4) < abs(event.bestMWjj-80.4):
+                    event.bestMWjj = mjj
+                    event.bestMWjjPt = jjp4.Pt()
+                    for bj in event.bjetsLoose:
+                        if deltaR(bj.eta(),bj.phi(),j1.eta(),j1.phi()) < 0.1 or deltaR(bj.eta(),bj.phi(),j2.eta(),j2.phi()) < 0.1: continue
+                        tp4 = jjp4 + bj.p4()
+                        mtop = tp4.M()
+                        if abs(mtop-172) < abs(event.bestMTopHad - 172):
+                            event.bestMTopHad = mtop
+                            event.bestMTopHadPt = tp4.Pt()
+
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
@@ -178,7 +200,7 @@ class ttHLepEventAnalyzer( Analyzer ):
         self.makeZs(event, self.maxLeps)
         self.makeMlls(event, self.maxLeps)
 
-        self.makeLepBJetDeltaR(event)
+        self.makeHadTopDecays(event)
 
         for lep in event.selectedLeptons:
             self.leptonMVA.addMVA(lep)

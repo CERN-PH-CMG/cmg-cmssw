@@ -47,7 +47,7 @@ def bookLepton( tree, pName, isMC=False ):
     var(tree, '{pName}_jetPtRatio'.format(pName=pName))
     var(tree, '{pName}_jetBTagCSV'.format(pName=pName))
     #var(tree, '{pName}_jetBTagTCHE'.format(pName=pName))
-    var(tree, '{pName}_ptRelJet'.format(pName=pName))
+    #var(tree, '{pName}_ptRelJet'.format(pName=pName))
     var(tree, '{pName}_jetDR'.format(pName=pName))
     var(tree, '{pName}_jetSelf'.format(pName=pName), int)
     var(tree, '{pName}_jetChHadMultiplicity'.format(pName=pName), int)
@@ -79,7 +79,7 @@ def fillLepton( tree, pName, lepton ):
     fill(tree, '{pName}_chargedIso'.format(pName=pName), lepton.chargedHadronIso())
     fill(tree, '{pName}_mvaIso'.format(pName=pName), lepton.mvaIso())
     if hasattr(lepton, 'jet'):
-        fill(tree, '{pName}_ptRelJet'.format(pName=pName), lepton.ptRelJet)
+        #fill(tree, '{pName}_ptRelJet'.format(pName=pName), lepton.ptRelJet)
         fill(tree, '{pName}_jetPtRatio'.format(pName=pName), lepton.pt()/lepton.jet.pt())
         fill(tree, '{pName}_jetBTagCSV'.format(pName=pName), 
             lepton.jet.btag('combinedSecondaryVertexBJetTags') if hasattr(lepton.jet, 'btag') else -99)
