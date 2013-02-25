@@ -7,6 +7,16 @@ if "/smearer_cc.so" not in ROOT.gSystem.GetLibraries():
 if "/mcCorrections_cc.so" not in ROOT.gSystem.GetLibraries(): 
     ROOT.gROOT.ProcessLine(".L %s/src/CMGTools/TTHAnalysis/python/plotter/mcCorrections.cc+" % os.environ['CMSSW_BASE']);
 
+def plausible(rec,gen):
+    dr = deltaR(rec,gen)
+    if abs(rec.pdgId) == 11 and abs(gen.pdgId) != 11:   return False
+    if abs(rec.pdgId) == 13 and abs(gen.pdgId) != 13:   return False
+    if dr < 0.3: return True
+    if gen.pt < abs(rec.pdgId) == 13 and gen.pdgId != rec.pdgId: return False
+    if dr < 0.7: return True
+    if min(rec.pt,gen.pt)/max(rec.pt,gen.pt) < 0.3: return False
+    return True
+
 class LepTreeProducer(Module):
     def beginJob(self):
         self.t = PyTree(self.book("TTree","t","t"))
@@ -46,13 +56,13 @@ class LepTreeProducer(Module):
             #self.t.dr_out = dr
             #self.t.ptf_out = l.pt/ptot.Pt()
             #self.t.CSV_out = j.btagCSV
-            (gmatch,dr) = closest(l,glep)
-            if dr < 0.5 and abs(gmatch.pdgId) == abs(l.pdgId):
-                self.t.good = 2
+            (gmatch,dr) = closest(l,glep,presel=plausible)
+            if dr < 1.5 and abs(gmatch.pdgId) == abs(l.pdgId):
+                self.t.good = 20 if dr < 0.5 else 2
             else:
-                (gmatch,dr) = closest(l,gtau)
-                if dr < 0.5 and abs(gmatch.pdgId) == abs(l.pdgId):
-                    self.t.good = 1
+                (gmatch,dr) = closest(l,gtau,presel=plausible)
+                if dr < 1.5 and abs(gmatch.pdgId) == abs(l.pdgId):
+                    self.t.good = 10 if dr < 0.5 else 1
                 else: 
                     self.t.good = -l.mcMatchAny
             self.t.fill()
