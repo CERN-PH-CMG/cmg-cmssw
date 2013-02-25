@@ -116,8 +116,6 @@ treeProducer = cfg.Analyzer(
 
 from CMGTools.TTHAnalysis.samples.samples_8TeV import * 
 
-#selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
-
 for mc in mcSamples:
     mc.triggers = triggersMC_mue
 #selectedComponents=mcSamples
@@ -134,7 +132,7 @@ for data in dataSamplesMuE:
     data.triggers = triggers_mue
     data.vetoTriggers=triggers_ee+triggers_mumu
 
-selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMu
+selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
 
 
 #-------- SEQUENCE
@@ -161,12 +159,12 @@ sequence = cfg.Sequence([
 #-------- HOW TO RUN
 
 # set test = 0 to run all jobs, in case you are using pybatch.py
-test = 0
+test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = TTH
-    comp.files = comp.files[:5]
+    comp.files = comp.files[:20]
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:    
