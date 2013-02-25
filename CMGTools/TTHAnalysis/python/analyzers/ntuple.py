@@ -59,6 +59,8 @@ def bookLepton( tree, pName, isMC=False ):
         var(tree, '{pName}_mcMatchId'.format(pName=pName), int)
         var(tree, '{pName}_mcMatchAny'.format(pName=pName), int)
         var(tree, '{pName}_mcDeltaRB'.format(pName=pName))
+        var(tree, '{pName}_mvaNoCorr'.format(pName=pName))
+        var(tree, '{pName}_mvaDoubleCorr'.format(pName=pName))
     
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
@@ -88,6 +90,9 @@ def fillLepton( tree, pName, lepton ):
         fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.sourcePtr().innerTrack().hitPattern().numberOfValidPixelHits())
     if hasattr(lepton, 'jet'):    
         fill(tree, '{pName}_mva'.format(pName=pName), lepton.mvaValue)
+        if hasattr(lepton, 'mvaNoCorr'):
+            fill(tree, '{pName}_mvaNoCorr'.format(pName=pName), lepton.mvaNoCorr)
+            fill(tree, '{pName}_mvaDoubleCorr'.format(pName=pName), lepton.mvaDoubleCorr)
         fill(tree, '{pName}_tightId'.format(pName=pName), lepton.tightId())
     if hasattr(lepton, 'mcMatchId'):
         fill(tree, '{pName}_mcMatchId'.format(pName=pName), lepton.mcMatchId)

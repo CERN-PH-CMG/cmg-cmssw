@@ -17,25 +17,19 @@ from CMGTools.RootTools.physicsobjects.Jet import Jet
 
 from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi,bestMatch
 from CMGTools.TTHAnalysis.leptonMVA import LeptonMVA
-
+import os
         
 class ttHLepEventAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHLepEventAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
         self.maxLeps = cfg_ana.maxLeps
 
-        variables = []
-        variables.append(  ('sip3d', 'F', lambda lep : lep.sip3D()) )
-        variables.append(  ('dxy := min(abs(dxy),0.2)', 'F', lambda lep : min(abs(lep.dxy()), 0.2)) )
-        variables.append(  ('dz := min(abs(dz),0.3)', 'F', lambda lep : min(abs(lep.dz()), 0.3)) )
-        variables.append(  ('relIso', 'F', lambda lep : lep.relIso(dBetaFactor=0.5)) )
-        variables.append(  ('jetPtRatio := min(jetPtRatio,1)', 'F', lambda lep : min(lep.pt()/lep.jet.pt(), 1)) )
-        variables.append(  ('jetBTagCSV := max(jetBTagCSV,0)', 'F', lambda lep : max(0,
-                                    lep.jet.btag('combinedSecondaryVertexBJetTags') if hasattr(lep.jet, 'btag') else -99)) )
-        self.leptonMVA = LeptonMVA("BDTG", variables, "/afs/cern.ch/user/b/botta/public/prova_BDTG.weights.xml")
+        self.leptonMVA = LeptonMVA("%s/src/CMGTools/TTHAnalysis/data/leptonMVA/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'], self.cfg_comp.isMC)
+        
     def declareHandles(self):
         super(ttHLepEventAnalyzer, self).declareHandles()
         self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
+        self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
         self.handles['metSignificance'] = AutoHandle( 'pfMetSignificance', 'cmg::METSignificance' )
 
     def beginLoop(self):
@@ -105,6 +99,7 @@ class ttHLepEventAnalyzer( Analyzer ):
 
     def makeMETs(self, event):
         event.met = self.handles['met'].product()[0]
+        event.metNoPU = self.handles['nopumet'].product()[0]
         metMatrix = self.handles['metSignificance'].product().significance()
         metMatrix.Invert();
         import array
@@ -144,9 +139,7 @@ class ttHLepEventAnalyzer( Analyzer ):
         self.makeLepBJetDeltaR(event)
 
         for lep in event.selectedLeptons:
-            mva = self.leptonMVA(lep)
-            #print "for selected lepton ",lep," MVA = ",mva
-            lep.mvaValue = mva   
+            self.leptonMVA.addMVA(lep)
 
         if self.cfg_ana.verbose:
             print 'Event ',eventNumber

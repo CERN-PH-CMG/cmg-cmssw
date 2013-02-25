@@ -50,9 +50,15 @@ class Object:
         self._prefix = prefix+"_"
     def __getattr__(self,name):
         if name in self.__dict__: return self.__dict__[name]
+        if name == "pdgLabel": return self.pdgLabel_()
         return getattr(self._event,self._prefix+name)
     def __getitem__(self,attr):
         return self.__getattr__(attr)
+    def pdgLabel_(self):
+        if self.pdgId == +13: return "#mu-";
+        if self.pdgId == -13: return "#mu+";
+        if self.pdgId == +11: return "e-";
+        if self.pdgId == -11: return "e+";
     def p4(self):
         ret = ROOT.TLorentzVector()
         ret.SetPtEtaPhiM(self.pt,self.eta,self.phi,self.mass)
@@ -196,9 +202,10 @@ def deltaR(eta1,phi1,eta2=None,phi2=None):
         return deltaR(eta1.eta,eta1.phi,phi1.eta,phi1.phi)
     ## otherwise
     return hypot(eta1-eta2, deltaPhi(phi1,phi2))
-def closest(object,list):
+def closest(object,list,presel=lambda x,y: True):
     ret = None; drMin = 999
     for x in list:
+        if not presel(object,x): continue
         dr = deltaR(object,x)
         if dr < drMin: 
             ret = x; drMin = dr
