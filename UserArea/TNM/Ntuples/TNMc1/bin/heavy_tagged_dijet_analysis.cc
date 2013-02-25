@@ -254,6 +254,13 @@ int main(int argc, char** argv)
   stream.select("patJetHelper_selectedPatJetsCA8CHS.tau1", jethelper_tau1);
   stream.select("patJetHelper_selectedPatJetsCA8CHS.tau2", jethelper_tau2);
 
+  stream.select("cmgPFJet_cmgPFJetSel.energy", jethelper4_energy);
+  stream.select("cmgPFJet_cmgPFJetSel.eta", jethelper4_eta);
+  stream.select("cmgPFJet_cmgPFJetSel.rapidity", jethelper4_rapidity);
+  stream.select("cmgPFJet_cmgPFJetSel.mass", jethelper4_mass);
+  stream.select("cmgPFJet_cmgPFJetSel.phi", jethelper4_phi);
+  stream.select("cmgPFJet_cmgPFJetSel.pt", jethelper4_pt);
+
   // The root application is needed to make canvases visible during
   // program execution. If this is not needed, just comment out the following
   // line
@@ -302,14 +309,48 @@ int main(int argc, char** argv)
   4686, 4869, 5058, 5253, 5455, 5663, 5877, 6099, 6328, 6564, 6808, 7060, 7320, 7589, 7866, 8152, 8447, 8752, 9067, 9391, 9726, 10072, 10430, 
   10798, 11179, 11571, 11977, 12395, 12827, 13272, 13732, 14000};
   
+  TH1F* mass_0Wtag=new TH1F("dijet_mass_0Wtag","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_0Wtag->Sumw2();
+  TH1F* mass_1Wtag=new TH1F("dijet_mass_1Wtag","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_1Wtag->Sumw2();
   TH1F* mass_2Wtag=new TH1F("dijet_mass_2Wtag","M_{jj}",NBINS-1,BOUNDARIES);
   mass_2Wtag->Sumw2();
   TH1F* massNoCHS_2Wtag=new TH1F("dijet_massNoCHS_2Wtag","M_{jj}",NBINS-1,BOUNDARIES);
   massNoCHS_2Wtag->Sumw2();
   TH1F* massCA8_2Wtag=new TH1F("dijet_massCA8_2Wtag","M_{jj}",NBINS-1,BOUNDARIES);
   massCA8_2Wtag->Sumw2();
-  TH1F* mass_2Nsubtag=new TH1F("dijet_mass_2Nsubtag","M_{jj}",NBINS-1,BOUNDARIES);
-  mass_2Nsubtag->Sumw2();
+  TH1F* mass_2Nsubtag04=new TH1F("dijet_mass_2Nsubtag04","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_2Nsubtag04->Sumw2();
+  TH1F* mass_2Nsubtag05=new TH1F("dijet_mass_2Nsubtag05","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_2Nsubtag05->Sumw2();
+  TH1F* mass_2Nsubtag06=new TH1F("dijet_mass_2Nsubtag06","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_2Nsubtag06->Sumw2();
+  TH1F* mass_1Nsubtag04=new TH1F("dijet_mass_1Nsubtag04","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_1Nsubtag04->Sumw2();
+  TH1F* mass_1Nsubtag05=new TH1F("dijet_mass_1Nsubtag05","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_1Nsubtag05->Sumw2();
+  TH1F* mass_1Nsubtag06=new TH1F("dijet_mass_1Nsubtag06","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_1Nsubtag06->Sumw2();
+  TH1F* mass_2Nsubtag0406=new TH1F("dijet_mass_2Nsubtag0406","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_2Nsubtag0406->Sumw2();
+  TH1F* mass_0Htag=new TH1F("dijet_mass_0Htag","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_0Htag->Sumw2();
+  TH1F* mass_1Htag=new TH1F("dijet_mass_1Htag","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_1Htag->Sumw2();
+  TH1F* mass_2Htag=new TH1F("dijet_mass_2Htag","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_2Htag->Sumw2();
+  TH1F* mass_0Wtag04=new TH1F("dijet_mass_0Wtag04","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_0Wtag04->Sumw2();
+  TH1F* mass_1Wtag04=new TH1F("dijet_mass_1Wtag04","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_1Wtag04->Sumw2();
+  TH1F* mass_2Wtag04=new TH1F("dijet_mass_2Wtag04","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_2Wtag04->Sumw2();
+  TH1F* mass_0Mtag=new TH1F("dijet_mass_0Mtag","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_0Mtag->Sumw2();
+  TH1F* mass_1Mtag=new TH1F("dijet_mass_1Mtag","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_1Mtag->Sumw2();
+  TH1F* mass_2Mtag=new TH1F("dijet_mass_2Mtag","M_{jj}",NBINS-1,BOUNDARIES);
+  mass_2Mtag->Sumw2();
 
   //---------------------------------------------------------------------------
   // Loop over events
@@ -403,6 +444,18 @@ int main(int argc, char** argv)
 	  else
 	      weight=1;
 
+	  if((!((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.25)))&&
+	     (!((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.25))))
+	  {
+              mass_0Wtag->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.25)))&&
+	     (!((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.25))))||
+ 	    ((!((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.25)))&&
+	     (((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.25)))))
+	  {
+              mass_1Wtag->Fill(DijetMass, weight);
+	  }
 	  if(((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.25)) &&
 	     ((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.25)))
 	  {
@@ -413,7 +466,96 @@ int main(int argc, char** argv)
 	  if(((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.4)) &&
 	     ((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.4)))
 	  {
-              mass_2Nsubtag->Fill(DijetMass, weight);
+              mass_2Nsubtag04->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.5)) &&
+	     ((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.5)))
+	  {
+              mass_2Nsubtag05->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.6)) &&
+	     ((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.6)))
+	  {
+              mass_2Nsubtag06->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.4)))&&
+	     (((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.6))))||
+ 	    ((((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.6)))&&
+	     (((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.4)))))
+	  {
+              mass_2Nsubtag0406->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.4)))&&
+	     (!((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.4))))||
+ 	    ((!((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.4)))&&
+	     (((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.4)))))
+	  {
+              mass_1Nsubtag04->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.5)))&&
+	     (!((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.5))))||
+ 	    ((!((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.5)))&&
+	     (((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.5)))))
+	  {
+              mass_1Nsubtag05->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.6)))&&
+	     (!((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.6))))||
+ 	    ((!((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.6)))&&
+	     (((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.6)))))
+	  {
+              mass_1Nsubtag06->Fill(DijetMass, weight);
+	  }
+	  if((!((JetMass1>100)&&(JetMassDrop1<0.25)))&&
+	     (!((JetMass2>100)&&(JetMassDrop2<0.25))))
+	  {
+              mass_0Htag->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>100)&&(JetMassDrop1<0.25)))&&
+	     (!((JetMass2>100)&&(JetMassDrop2<0.25))))||
+ 	    ((!((JetMass1>100)&&(JetMassDrop1<0.25)))&&
+	     (((JetMass2>100)&&(JetMassDrop2<0.25)))))
+	  {
+              mass_1Htag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>100)&&(JetMassDrop1<0.25)) &&
+	     ((JetMass2>100)&&(JetMassDrop2<0.25)))
+	  {
+              mass_2Htag->Fill(DijetMass, weight);
+	  }
+	  if((!((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.4)))&&
+	     (!((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.4))))
+	  {
+              mass_0Wtag04->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.4)))&&
+	     (!((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.4))))||
+ 	    ((!((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.4)))&&
+	     (((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.4)))))
+	  {
+              mass_1Wtag04->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.4)) &&
+	     ((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.4)))
+	  {
+              mass_2Wtag04->Fill(DijetMass, weight);
+	  }
+	  if((!((JetMass1>70)&&(JetMass1<100)))&&
+	     (!((JetMass2>70)&&(JetMass2<100))))
+	  {
+              mass_0Mtag->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)))&&
+	     (!((JetMass2>70)&&(JetMass2<100))))||
+ 	    ((!((JetMass1>70)&&(JetMass1<100)))&&
+	     (((JetMass2>70)&&(JetMass2<100)))))
+	  {
+              mass_1Mtag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100)) &&
+	     ((JetMass2>70)&&(JetMass2<100)))
+	  {
+              mass_2Mtag->Fill(DijetMass, weight);
 	  }
 	}
 
@@ -429,9 +571,12 @@ int main(int argc, char** argv)
   massNoCHS_2Wtag->Draw("hesame");
   massCA8_2Wtag->SetLineColor(3);
   massCA8_2Wtag->Draw("hesame");
-  mass_2Nsubtag->SetLineColor(4);
-  mass_2Nsubtag->Draw("hesame");
-  c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Wtag_mass.pdf").c_str());
+  mass_2Nsubtag04->SetLineColor(4);
+  mass_2Nsubtag04->Draw("hesame");
+  mass_2Nsubtag05->SetLineColor(4);
+  mass_2Nsubtag05->Draw("hesame");
+  mass_2Nsubtag06->SetLineColor(4);
+  mass_2Nsubtag06->Draw("hesame");
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Wtag_mass.root").c_str());
 
   stream.close();
