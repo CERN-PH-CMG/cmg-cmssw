@@ -93,11 +93,23 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'bestMTopHad' )
         var( tr, 'bestMTopHadPt' )
         
-        ## --- DILEPTON MASSES ---
+
+        ## --- LEP EFFICIENCY WEIGHT ---
+        var(tr, 'Eff_4lep')
+        var(tr, 'EffUp_4lep')
+        var(tr, 'EffDwn_4lep')
+        var(tr, 'Eff_3lep')
+        var(tr, 'EffUp_3lep')
+        var(tr, 'EffDwn_3lep')
+        var(tr, 'Eff_2lep')
+        var(tr, 'EffUp_2lep')
+        var(tr, 'EffDwn_2lep')    
+        
 
         if self.cfg_comp.isMC: 
             var( tr, 'puWeight' )
             self.declareMCVariables()
+
 
     def process(self, iEvent, event):
          
@@ -180,11 +192,27 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill( tr, 'q4l', event.q4l )
         fill( tr, 'ht4l', event.ht4l )
         fill( tr, 'pt4l', event.pt4l )
-         
         fill( tr, 'bestMWjj', event.bestMWjj )
         fill( tr, 'bestMWjjPt', event.bestMWjjPt )
         fill( tr, 'bestMTopHad', event.bestMTopHad )
         fill( tr, 'bestMTopHadPt', event.bestMTopHadPt )
+
+        ## --- LEP EFFICIENCY WEIGHT ---
+        if len(event.selectedLeptons)>=4 :
+            fill( tr, 'Eff_4lep', event.selectedLeptons[0].eff * event.selectedLeptons[1].eff * event.selectedLeptons[2].eff * event.selectedLeptons[3].eff)
+            fill( tr, 'EffUp_4lep', event.selectedLeptons[0].effUp * event.selectedLeptons[1].effUp * event.selectedLeptons[2].effUp * event.selectedLeptons[3].effUp)
+            fill( tr, 'EffDwn_4lep', event.selectedLeptons[0].effDwn * event.selectedLeptons[1].effDwn * event.selectedLeptons[2].effDwn * event.selectedLeptons[3].effDwn)
+
+        if len(event.selectedLeptons)>=3 :
+            fill( tr, 'Eff_3lep', event.selectedLeptons[0].eff * event.selectedLeptons[1].eff * event.selectedLeptons[2].eff)
+            fill( tr, 'EffUp_3lep', event.selectedLeptons[0].effUp * event.selectedLeptons[1].effUp * event.selectedLeptons[2].effUp)
+            fill( tr, 'EffDwn_3lep', event.selectedLeptons[0].effDwn * event.selectedLeptons[1].effDwn * event.selectedLeptons[2].effDwn)
+
+        if len(event.selectedLeptons)>=2 :    
+            fill( tr, 'Eff_2lep', event.selectedLeptons[0].eff * event.selectedLeptons[1].eff)
+            fill( tr, 'EffUp_2lep', event.selectedLeptons[0].effUp * event.selectedLeptons[1].effUp)
+            fill( tr, 'EffDwn_2lep', event.selectedLeptons[0].effDwn * event.selectedLeptons[1].effDwn)
+        
 
         if self.cfg_comp.isMC: 
             fill( tr, 'puWeight', event.eventWeight )
