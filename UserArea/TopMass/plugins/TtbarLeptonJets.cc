@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.12 2013/01/10 14:32:45 palencia Exp $
+// $Id: TtbarLeptonJets.cc,v 1.13 2013/01/18 13:13:27 palencia Exp $
 //
 //
 
@@ -302,17 +302,17 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   // can result in jets below 20 GeV, which is not according to the Top group base selection.
   // the trigger weight function assigns then 100% efficiency for the lepton.
   double triggerWeight = 1.0;
-  if(!isData) {
-    if(tightMuonMJ->size() == 1 && jetsMJ->size()>=4) {
-      if(verbose) std::cout << " jet pt = " << (*jetsMJ)[3].pt() << std::endl;
-      triggerWeight = weight_provider->get_weight((*tightMuonMJ)[0].pt(), (*tightMuonMJ)[0].eta(), (*jetsMJ)[3].pt(), (*jetsMJ)[3].eta(), vertices->size(), jetsMJ->size(), 1, 0, 1., 1., 0., 0.);
-    }
-    if(tightElectronEJ->size() == 1 && jetsEJ->size()>=4) {
-      if(verbose) std::cout << " jet pt = " << (*jetsEJ)[3].pt() << std::endl;
-      triggerWeight = weight_provider->get_weight((*tightElectronEJ)[0].pt(), (*tightElectronEJ)[0].eta(), (*jetsEJ)[3].pt(), (*jetsEJ)[3].eta(), vertices->size(), jetsEJ->size(), 0, 0, 1., 1., 0., 0.);
-    }
-    if(verbose) std::cout << " trigger weight = " << triggerWeight << std::endl;
-  }
+  //if(!isData) {
+  //  if(tightMuonMJ->size() == 1 && jetsMJ->size()>=4) {
+  //    if(verbose) std::cout << " jet pt = " << (*jetsMJ)[3].pt() << std::endl;
+  //    triggerWeight = weight_provider->get_weight((*tightMuonMJ)[0].pt(), (*tightMuonMJ)[0].eta(), (*jetsMJ)[3].pt(), (*jetsMJ)[3].eta(), vertices->size(), jetsMJ->size(), 1, 0, 1., 1., 0., 0.);
+  //  }
+  //  if(tightElectronEJ->size() == 1 && jetsEJ->size()>=4) {
+  //    if(verbose) std::cout << " jet pt = " << (*jetsEJ)[3].pt() << std::endl;
+  //    triggerWeight = weight_provider->get_weight((*tightElectronEJ)[0].pt(), (*tightElectronEJ)[0].eta(), (*jetsEJ)[3].pt(), (*jetsEJ)[3].eta(), vertices->size(), jetsEJ->size(), 0, 0, 1., 1., 0., 0.);
+  //  }
+  //  if(verbose) std::cout << " trigger weight = " << triggerWeight << std::endl;
+  //}
   
 
   finalWeight = puWeightCMG * triggerWeight;
@@ -325,29 +325,29 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   // 199698<=run<=202504:         HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v1 with (55,45,35,20) jet pT cuts
   // 202970<=run<=203002:         HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v2 with (55,45,35,20) jet pT cuts
 
-  int nMuoTrig = 0, nEleTrig= 0;
-  if(triggerPath.isValid()){
-     for(TRIGGER = triggerPath->begin(); TRIGGER != triggerPath->end(); ++TRIGGER) {
-        if(isData){
-	   if(iEvent.eventAuxiliary().run()>=190456 && iEvent.eventAuxiliary().run()<=193621){
-              if ( TRIGGER->getSelectionRegExp("HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*"))                         nMuoTrig++;
-              if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*")) nEleTrig++;
-           }else if(iEvent.eventAuxiliary().run()>=193834 && iEvent.eventAuxiliary().run()<=199608){
-              if ( TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v*") || TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*") ) nMuoTrig++;
-              if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v*") )                                                       nEleTrig++;
-	   }else if(iEvent.eventAuxiliary().run()>=199698){
-              if ( TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*") )                           nMuoTrig++;
-              if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet45_35_25_v*") ) nEleTrig++;
-           } else std::cout << "  wrong run number = " << iEvent.eventAuxiliary().run()<< "???" << std::endl;
-	}else{	 
-	   // Last recommendation is to not apply HLT in MC
-	   //if (TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1")) nMuoTrig++;
-	   //if (TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5") || TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1")) nEleTrig++;	
-	   nMuoTrig++;
-	   nEleTrig++;
-        }   
-     }   
-  }
+  int nMuoTrig = 1, nEleTrig= 1;
+  // Require single lepton triggers at skimming level
+  //if(triggerPath.isValid()){
+  //   for(TRIGGER = triggerPath->begin(); TRIGGER != triggerPath->end(); ++TRIGGER) {
+  //      if(isData){
+  //	   if(iEvent.eventAuxiliary().run()>=190456 && iEvent.eventAuxiliary().run()<=193621){
+  //            if ( TRIGGER->getSelectionRegExp("HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*"))                         nMuoTrig++;
+  //            if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*")) nEleTrig++;
+  //         }else if(iEvent.eventAuxiliary().run()>=193834 && iEvent.eventAuxiliary().run()<=199608){
+  //            if ( TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v*") || TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*") ) nMuoTrig++;
+  //            if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v*") )                                                       nEleTrig++;
+  //	   }else if(iEvent.eventAuxiliary().run()>=199698){
+  //            if ( TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*") )                           nMuoTrig++;
+  //            if ( TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet45_35_25_v*") ) nEleTrig++;
+  //         } else std::cout << "  wrong run number = " << iEvent.eventAuxiliary().run()<< "???" << std::endl;
+  //	}else{	 
+  //	   // Last recommendation is to not apply HLT in MC
+  //	   //if (TRIGGER->getSelectionRegExp("HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1")) nMuoTrig++;
+  //	   //if (TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5") || TRIGGER->getSelectionRegExp("HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1")) nEleTrig++;	  //	   nMuoTrig++;
+  //	   nEleTrig++;
+  //      }   
+  //   }   
+  //}
  
   
   bool passMJsel = false, passEJsel = false;
