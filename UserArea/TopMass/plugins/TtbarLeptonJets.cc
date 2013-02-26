@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.13 2013/01/18 13:13:27 palencia Exp $
+// $Id: TtbarLeptonJets.cc,v 1.14 2013/02/26 14:55:27 palencia Exp $
 //
 //
 
@@ -438,11 +438,11 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	   jetMuoIndex++;
         } // muJET loop
      }
-     if(jetMJ_pT[0]>=45 && jetMJ_pT[1]>=45 && jetMJ_pT[2]>=45 && jetMJ_pT[3]>=20) {
+     if(jetMJ_pT[0]>=30 && jetMJ_pT[1]>=30 && jetMJ_pT[2]>=30 && jetMJ_pT[3]>=30) {
         goodJetMJ++;
         for(unsigned int i=0; i < jetsMJ->size(); ++i) {
-	   if(jetMJ_pT[i]>=20 && jetMJ_lxy[i]>0) goodJetLxyMJ++;
-	   if(jetMJ_pT[i]>=20 && jetMJ_lxy[i]>0 && jetMJ_btag[i]>0.679) goodJetBtagMJ++;
+	   if(jetMJ_pT[i]>=30 && jetMJ_lxy[i]>0) goodJetLxyMJ++;
+	   if(jetMJ_pT[i]>=30 && jetMJ_lxy[i]>0 && jetMJ_btag[i]>0.679) goodJetBtagMJ++;
 	   if(jetMJ_lxy[i]>maxLxyMJ) {
 	     maxLxyMJ = jetMJ_lxy[i];
 	     secVtxMassMJ = jetMJ_mass[i];
@@ -466,11 +466,11 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	   jetEleIndex++;
         } // eleJET loop
      }
-     if(jetEJ_pT[0]>=45 && jetEJ_pT[1]>=45 && jetEJ_pT[2]>=45 && jetEJ_pT[3]>=20) {
+     if(jetEJ_pT[0]>=30 && jetEJ_pT[1]>=30 && jetEJ_pT[2]>=30 && jetEJ_pT[3]>=30) {
         goodJetEJ++;
         for(unsigned int i=0; i < jetsEJ->size(); ++i) {
-	   if(jetEJ_pT[i]>=20 && jetEJ_lxy[i]>0) goodJetLxyEJ++;
-	   if(jetEJ_pT[i]>=20 && jetEJ_lxy[i]>0 && jetEJ_btag[i]>0.679) goodJetBtagEJ++;
+	   if(jetEJ_pT[i]>=30 && jetEJ_lxy[i]>0) goodJetLxyEJ++;
+	   if(jetEJ_pT[i]>=30 && jetEJ_lxy[i]>0 && jetEJ_btag[i]>0.679) goodJetBtagEJ++;
 	   if(jetEJ_lxy[i]>maxLxyEJ) {
 	     maxLxyEJ = jetEJ_lxy[i];
 	     secVtxMassEJ = jetEJ_mass[i];
