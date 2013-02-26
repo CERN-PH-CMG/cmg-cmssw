@@ -84,7 +84,6 @@ print "\n Processing events:"
 print process.maxEvents
 
 
-
 #https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2012Analysis#DATA
 if runOnData:
    if '13Jul2012' in options.sampleLocation:
@@ -94,11 +93,12 @@ if runOnData:
    if '24Aug2012' in options.sampleLocation:
       lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
    if 'Run2012C-PromptReco-v2' in options.sampleLocation:
-      lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM//certification/Collisions12/8TeV/Prompt/Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
+      lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
    if '11Dec2012' in options.sampleLocation:
       lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt'
    if 'Run2012D-PromptReco-v1' in options.sampleLocation:
       lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_PixAlignRecovery.txt'
+
 
 print "\n Using json file:"
 print lumiFile
@@ -143,28 +143,46 @@ process.metFilter.HLTPaths = cms.vstring('HBHENoiseFilterPath', 'CSCTightHaloFil
  
 
 # Check triggers here: http://fwyzard.web.cern.ch/fwyzard/hlt/2012/summary
-# Since HLT paths depend on the run number, we will require them later on
-# if runOnData:
+#Path HLT_Ele27_WP80:
+# - first seen online on run 190456 (/cdaq/physics/Run2012/5e33/v4.4/HLT/V5)
+# - last  seen online on run 209151 (/cdaq/special/25ns/v1.1/HLT/V2)
+# - V8: (runs 190456 - 190738) seeded by: L1_SingleEG20 OR L1_SingleEG22
+# - V9: (runs 190782 - 191411) seeded by: L1_SingleEG20 OR L1_SingleEG22
+# - V10: (runs 191691 - 196531) seeded by: L1_SingleEG20 OR L1_SingleEG22
+# - V11: (runs 198022 - 209151) seeded by: L1_SingleEG20 OR L1_SingleEG22
+#Path HLT_IsoMu24_eta2p1:
+# - first seen online on run 190456 (/cdaq/physics/Run2012/5e33/v4.4/HLT/V5)
+# - last  seen online on run 209151 (/cdaq/special/25ns/v1.1/HLT/V2)
+# - V11: (runs 190456 - 190738) seeded by: L1_SingleMu16er
+# - V12: (runs 190782 - 193621) seeded by: L1_SingleMu16er
+# - V13: (runs 193834 - 196531) seeded by: L1_SingleMu16er
+# - V14: (runs 198022 - 199608) seeded by: L1_SingleMu16er
+# - V15: (runs 199698 - 209151) seeded by: L1_SingleMu16er
+
+muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu24_eta2p1_v*\") )"   
+eleTriggerList = "( getSelectionRegExp(\"HLT_Ele27_WP80_v*\")	  )"   
+
+#if runOnData:
 #    muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu20_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet30_30_20_v*\") || getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet45_35_25_v*\")  )"   
 #    eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet30_30_20_v*\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet45_35_25_v*\") )"   
-# else:
+#else:
 #    muTriggerList  = "( getSelectionRegExp(\"HLT_IsoMu17_eta2p1_TriCentralPFNoPUJet50_40_30_v1\") )"
 #    eleTriggerList = "( getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFNoPUJet50_40_30_v5\") || getSelectionRegExp(\"HLT_Ele25_CaloIdVT_CaloIsoVL_TrkIdVL_TrkIsoT_TriCentralPFNoPUJet50_40_30_v1\") )"
 
 
-# process.cmgTopEleTriggerSel = cmgTriggerObjectSel.clone(
-#    src = 'cmgTriggerObjectSel',
-#    cut = cms.string( eleTriggerList ),
-#    filter = cms.bool(True),
-#    debugOn = cms.untracked.bool(True),
-#    )
+process.cmgTopEleTriggerSel = cmgTriggerObjectSel.clone(
+   src = 'cmgTriggerObjectSel',
+   cut = cms.string( eleTriggerList ),
+   filter = cms.bool(True),
+   debugOn = cms.untracked.bool(True),
+   )
 
-# process.cmgTopMuoTriggerSel = cmgTriggerObjectSel.clone(
-#    src = 'cmgTriggerObjectSel',
-#    cut = cms.string( muTriggerList ),
-#    filter = cms.bool(True),
-#    debugOn = cms.untracked.bool(True),
-#    )
+process.cmgTopMuoTriggerSel = cmgTriggerObjectSel.clone(
+   src = 'cmgTriggerObjectSel',
+   cut = cms.string( muTriggerList ),
+   filter = cms.bool(True),
+   debugOn = cms.untracked.bool(True),
+   )
 
 
 
@@ -325,7 +343,7 @@ process.printerTTbar = physicsObjectPrinter.clone(
     #inputCollection = cms.untracked.InputTag("cmgTopMuonSel"),
     #inputCollection = cms.untracked.InputTag("cmgTopPFJetSel"),
     printSelections = cms.untracked.bool(True),
-    reportEvery     = cms.untracked.uint32(5000)
+    reportEvery     = cms.untracked.uint32(500)
 )
 
 
@@ -375,7 +393,7 @@ process.pEle = cms.Path(
    process.primaryVertexFilter      +
    process.scrapingFilter           + 	 
    process.metFilter                + 	 
-   #process.cmgTopEleTriggerSel      +
+   process.cmgTopEleTriggerSel      +
    process.cmgTopTightElecEleJetSel +		    
    process.cmgTopLooseMuonEleJetSel +	    
    process.cmgTopLooseElecEleJetSel +	    
@@ -391,7 +409,7 @@ process.pMu = cms.Path(
    process.primaryVertexFilter      +
    process.scrapingFilter           + 	 
    process.metFilter                + 	 
-   #process.cmgTopMuoTriggerSel      +
+   process.cmgTopMuoTriggerSel      +
    process.cmgTopTightMuonMuJetSel  +		    
    process.cmgTopLooseMuonMuJetSel  +	    
    process.cmgTopLooseElecMuJetSel  +	    
