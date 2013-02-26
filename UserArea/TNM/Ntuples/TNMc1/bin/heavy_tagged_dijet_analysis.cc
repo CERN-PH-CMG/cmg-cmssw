@@ -462,6 +462,8 @@ int main(int argc, char** argv)
               mass_2Wtag->Fill(DijetMass, weight);
               massNoCHS_2Wtag->Fill(DijetMassNoCHS, weight);
               massCA8_2Wtag->Fill(DijetMassCA8, weight);
+	      if(DijetMass>1600)
+                cout << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << endl;
 	  }
 	  if(((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.4)) &&
 	     ((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.4)))
