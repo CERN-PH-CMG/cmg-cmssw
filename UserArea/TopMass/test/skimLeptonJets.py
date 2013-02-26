@@ -85,6 +85,7 @@ print process.maxEvents
 
 
 
+#https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2012Analysis#DATA
 if runOnData:
    if '13Jul2012' in options.sampleLocation:
       lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
@@ -92,6 +93,12 @@ if runOnData:
       lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt'
    if '24Aug2012' in options.sampleLocation:
       lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
+   if 'Run2012C-PromptReco-v2' in options.sampleLocation:
+      lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM//certification/Collisions12/8TeV/Prompt/Cert_190456-203002_8TeV_PromptReco_Collisions12_JSON_v2.txt'
+   if '11Dec2012' in options.sampleLocation:
+      lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt'
+   if 'Run2012D-PromptReco-v1' in options.sampleLocation:
+      lumiFile = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON_PixAlignRecovery.txt'
 
 print "\n Using json file:"
 print lumiFile
