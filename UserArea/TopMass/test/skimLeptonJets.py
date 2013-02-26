@@ -393,12 +393,12 @@ process.pEle = cms.Path(
    process.primaryVertexFilter      +
    process.scrapingFilter           + 	 
    process.metFilter                + 	 
-   process.cmgTopEleTriggerSel      +
    process.cmgTopTightElecEleJetSel +		    
    process.cmgTopLooseMuonEleJetSel +	    
    process.cmgTopLooseElecEleJetSel +	    
    process.cleanElectronJets        + 
    process.cmgTopJetEleJetSel       +       	    	    
+   process.cmgTopEleTriggerSel      +
    process.oneTightElecEleJetSel    +       	    	    
    process.zeroLooseElecsEleJetSel  +       	    	    
    process.zeroLooseMuonsEleJetSel  +       	    	    
@@ -409,12 +409,12 @@ process.pMu = cms.Path(
    process.primaryVertexFilter      +
    process.scrapingFilter           + 	 
    process.metFilter                + 	 
-   process.cmgTopMuoTriggerSel      +
    process.cmgTopTightMuonMuJetSel  +		    
    process.cmgTopLooseMuonMuJetSel  +	    
    process.cmgTopLooseElecMuJetSel  +	    
    process.cleanMuonJets            + 
    process.cmgTopJetMuJetSel        +	       	    
+   process.cmgTopMuoTriggerSel      +
    process.oneTightMuonMuJetSel     +	       	    
    process.zeroLooseElecsMuJetSel   +	       	    
    process.zeroLooseMuonsMuJetSel   +	       	    
