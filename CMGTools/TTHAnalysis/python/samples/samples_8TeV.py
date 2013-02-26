@@ -38,6 +38,12 @@ triggersMC_mue   = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_T
                     "HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"
                    ]
 
+triggersFR_1mu  = [ 'HLT_Mu17_v*', 'HLT_Mu12_v*', 'HLT_Mu24_eta2p1_v*', 'HLT_Mu24_v*', 'HLT_Mu30_eta2p1_v*', 'HLT_Mu30_v*', 'HLT_Mu40_eta2p1_v*', 'HLT_Mu40_v*', 'HLT_IsoMu24_eta2p1_v*' ]
+triggersFR_mumu = [ 'HLT_Mu17_Mu8_v*', 'HLT_Mu17_TkMu8_v*' ]
+triggersFR_1e   = [ 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele17_CaloIdL_CaloIsoVL_v*', 'HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele8__CaloIdL_CaloIsoVL_v*']
+triggersFR_mue  = triggers_mue[:]
+triggersFR_MC = triggersFR_1mu + triggersFR_mumu + triggersFR_1e + triggersFR_mue
+
 
 #####COMPONENT CREATOR
 
@@ -82,6 +88,7 @@ WJets    =kreator.makeMCComponent('WJets','/WJetsToLNu_TuneZ2Star_8TeV-madgraph-
 #WJets_HT250To300=kreator.makeMCComponent('WJets_HT250To300','/WJetsToLNu_HT-250To300_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 #WJets_HT300To400=kreator.makeMCComponent('WJets_HT300To400','/WJetsToLNu_HT-300To400_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 #WJets_HT400ToInf=kreator.makeMCComponent('WJets_HT400ToInf','/WJetsToLNu_HT-400ToInf_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+QCDMuPt15=kreator.makeMCComponent('QCDMuPt15','/QCD_Pt_20_MuEnrichedPt_15_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v3/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
 mcSamples=[
 TTH,TTWJets,TTZJets,WWWJets,WWZJets,WGs2MU,WGs2E,WGs2Tau,TTWWJets,DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTLep,WWJets,WZJets,ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4tau,ZZTo4e,TTJets,TtW,TbartW,W1Jets,W2Jets,W3Jets,W4Jets,WGToLNuG,WJets]#,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf]
@@ -159,6 +166,27 @@ MuEGC = cfg.DataComponent(
     json = json
     )
 
+SingleMuAB = cfg.DataComponent(
+    name = 'SingleMuAB',
+    files = (#getFiles('/SingleMu/Run2012A-13Jul2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+             #getFiles('/SingleMu/Run2012A-recover-06Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+
+            getFiles('/SingleMu/Run2012B-13Jul2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+SingleMuC = cfg.DataComponent(
+    name = 'SingleMuC',
+    files = getFiles('/SingleMu/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)+ \
+            getFiles('/SingleMu/Run2012C-PromptReco-v2/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+
 
 #####################################################################################################################
 #####################################################################################################################
@@ -191,6 +219,13 @@ MuEGD = cfg.DataComponent(
     )
 
 
+SingleMuD = cfg.DataComponent(
+    name = 'SingleMuD',
+    files = getFiles('/SingleMu/Run2012D-PromptReco-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
 
 DoubleMuRec = cfg.DataComponent(
     name = 'DoubleMuRec',
@@ -212,6 +247,14 @@ DoubleElectronRec = cfg.DataComponent(
 MuEGRec = cfg.DataComponent(
     name = 'MuEGRec',
     files = getFiles('/MuEG/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
+    intLumi = 1,
+    triggers = [],
+    json = jsonRecover
+    )
+
+SingleMuRec = cfg.DataComponent(
+    name = 'DoubleMuRec',
+    files =getFiles('/SingleMu/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
     intLumi = 1,
     triggers = [],
     json = jsonRecover
@@ -258,6 +301,8 @@ dataSamplesE=[DoubleElectronAB,DoubleElectronC,DoubleElectronD,DoubleElectronRec
 
 dataSamplesMuE=[MuEGAB,MuEGC,MuEGD,MuEGRec,MuEGBadSIP]
 
+dataSamples1Mu=[SingleMuAB,SingleMuC,SingleMuD,SingleMuRec]
+
 
 from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
@@ -282,6 +327,11 @@ for comp in dataSamplesE:
     comp.isData = True
     
 for comp in dataSamplesMuE:
+    comp.splitFactor = 500
+    comp.isMC = False
+    comp.isData = True
+
+for comp in dataSamples1Mu:
     comp.splitFactor = 500
     comp.isMC = False
     comp.isData = True
