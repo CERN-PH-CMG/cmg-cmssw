@@ -1,4 +1,4 @@
-#$Revision: 1.5 $
+#$Revision: 1.6 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -22,7 +22,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 # Run on MC or data
 
-runOnMC = True
+runOnMC = False
 runPATCMG = False
 recalibrateCMGJets = False
 runAK7jets = False

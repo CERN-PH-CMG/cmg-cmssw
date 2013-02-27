@@ -216,7 +216,7 @@ process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
 #FIXME now keeping the whole event content...
 # process.out.outputCommands.append('keep *_*_*_*')
 
-#process.outpath = cms.EndPath(process.out)
+process.outpath = cms.EndPath(process.out)
 
 ########################################################
 ## CMG output definition
@@ -231,7 +231,7 @@ process.outcmg = cms.OutputModule(
     dropMetaData = cms.untracked.string('PRIOR')
     )
 
-#process.outpath += process.outcmg
+process.outpath += process.outcmg
 
 
 
@@ -274,7 +274,7 @@ print 'Global tag       : ', process.GlobalTag.globaltag
 
 from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
 process.schedule = getSchedule(process, runOnMC)
-#process.schedule.append( process.outpath )
+process.schedule.append( process.outpath )
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
@@ -346,7 +346,6 @@ process.p += cms.Sequence(process.selectedPatJetspuJetId * process.selectedPatJe
 
 ### Tweaks to run on fastsim samples
 
-<<<<<<< PATCMG_TNMc1_cfg.py
 process.schedule.remove(process.hcalLaserFilterFromAODPath)
 process.schedule.remove(process.CSCTightHaloFilterPath)
 process.schedule.remove(process.HBHENoiseFilterPath)
@@ -358,16 +357,4 @@ process.p.remove(process.MetSignificanceSequence)
 process.demo.buffers.remove('patMET')
 process.demo.buffers.remove('patMET1')
 process.p.remove(process.vertexWeightSequence)
-=======
-process.schedule.remove(process.hcalLaserFilterFromAODPath)
-process.schedule.remove(process.CSCTightHaloFilterPath)
-process.schedule.remove(process.HBHENoiseFilterPath)
-process.demo.buffers.remove('edmTriggerResultsHelper1')
-process.p.remove(process.PATCMGTauSequence)
-process.demo.buffers.remove('patTau')
-process.p.remove(process.PATCMGMetSequence)
-process.p.remove(process.MetSignificanceSequence)
-process.demo.buffers.remove('patMET')
-process.demo.buffers.remove('patMET1')
-process.p.remove(process.vertexWeightSequence)
-process.outpath = cms.EndPath()>>>>>>> 1.3
+process.outpath = cms.EndPath()

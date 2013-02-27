@@ -89,18 +89,6 @@ process.selectedPatJetsCHSpuJetId = pileupJetIdProducer.clone(
     algos = cms.VPSet(cutbased)
     )
 
-<<<<<<< TNMc1_cfg.py
-process.ak5PFJetsCHSprunedSubJetspuJetId = pileupJetIdProducer.clone(
-    produceJetIds = cms.bool(True),
-    jetids = cms.InputTag(""),
-    runMvas = cms.bool(False),
-    jets = cms.InputTag("ak5PFJetsCHSpruned:SubJets"),
-    vertexes = cms.InputTag("offlinePrimaryVertices"),
-    algos = cms.VPSet(cutbased)
-    )
-
-process.p = cms.Path(process.selectedPatJetspuJetId * process.selectedPatJetsCHSpuJetId * process.ak5PFJetsCHSprunedSubJetspuJetId * process.demo)
-=======
 process.ak5PFJetsCHSprunedSubJetspuJetId = pileupJetIdProducer.clone(
     produceJetIds = cms.bool(True),
     jetids = cms.InputTag(""),
@@ -290,4 +278,3 @@ from CMGTools.Common.Tools.visitorUtils import SeqVisitor
 v = SeqVisitor('FastjetJetProducer')
 process.p.visit(v)
 
->>>>>>> 1.20
