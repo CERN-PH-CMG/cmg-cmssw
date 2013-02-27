@@ -361,6 +361,28 @@ process.pdfWeights = cms.EDProducer("PdfWeightProducer",
 )
 
 
+######################################################################################################################################
+## std sequence to produce the kinematic fit for semi-leptonic events
+process.load("TopQuarkAnalysis.TopHitFit.TtSemiLepHitFitProducer_Muons_cfi")
+process.hitFitTtSemiLepEventMJ = process.hitFitTtSemiLepEvent.clone(
+   jets	     = cms.InputTag("cmgTopJetMuJetSel"	     , "", ""),
+   leps	     = cms.InputTag("cmgTopTightMuonMuJetSel", "", ""),
+   mets	     = cms.InputTag("cmgPFMET"		     , "", ""),
+   maxNJets  = cms.int32(4),  # maximum number of jets to be considered in the jet combinatorics (has to be >= 4, can be set to -1 if you want to take all) 
+   maxNComb  = cms.int32(-1), # maximum number of jet combinations finally written into the event, starting from the "best" (has to be >= 1, can be set to -1 if you want to take all)
+   #bTagAlgo  = cms.string("trackCountingHighEffBJetTags")
+)
+
+process.load("TopQuarkAnalysis.TopHitFit.TtSemiLepHitFitProducer_Electrons_cfi")
+process.hitFitTtSemiLepEventEJ = process.hitFitTtSemiLepEvent.clone(
+   jets	     = cms.InputTag("cmgTopJetEleJetSel"      , "", ""),
+   leps	     = cms.InputTag("cmgTopTightElecEleJetSel", "", ""),
+   mets	     = cms.InputTag("cmgPFMET"		      , "", ""),
+   maxNJets  = cms.int32(4),  # maximum number of jets to be considered in the jet combinatorics (has to be >= 4, can be set to -1 if you want to take all) 
+   maxNComb  = cms.int32(-1), # maximum number of jet combinations finally written into the event, starting from the "best" (has to be >= 1, can be set to -1 if you want to take all)
+)
+
+
 print process.primaryVertexFilter.dumpPython() 	 
 print process.scrapingFilter.dumpPython() 	 
 print process.metFilter.dumpPython() 	 
@@ -374,6 +396,7 @@ print process.oneTightMuonMuJetSel.dumpPython()
 print process.zeroLooseMuonsMuJetSel.dumpPython()
 print process.zeroLooseElecsMuJetSel.dumpPython()
 print process.fourJetsMuJetSel.dumpPython()
+print process.hitFitTtSemiLepEventEJ.dumpPython()
 
 
 #print process.cmgTopEleTriggerSel.dumpPython() 	 
@@ -385,9 +408,9 @@ print process.oneTightElecEleJetSel.dumpPython()
 print process.zeroLooseElecsEleJetSel.dumpPython()
 print process.zeroLooseMuonsEleJetSel.dumpPython()
 print process.fourJetsEleJetSel.dumpPython()
+print process.hitFitTtSemiLepEventMJ.dumpPython()
 
 print process.pdfWeights.dumpPython()
-
 
 process.pEle = cms.Path( 
    process.primaryVertexFilter      +
@@ -402,7 +425,8 @@ process.pEle = cms.Path(
    process.oneTightElecEleJetSel    +       	    	    
    process.zeroLooseElecsEleJetSel  +       	    	    
    process.zeroLooseMuonsEleJetSel  +       	    	    
-   process.fourJetsEleJetSel       	    	    
+   process.fourJetsEleJetSel        +   	    	    
+   process.hitFitTtSemiLepEventEJ        	       	    
    )
 
 process.pMu = cms.Path( 
@@ -418,7 +442,8 @@ process.pMu = cms.Path(
    process.oneTightMuonMuJetSel     +	       	    
    process.zeroLooseElecsMuJetSel   +	       	    
    process.zeroLooseMuonsMuJetSel   +	       	    
-   process.fourJetsMuJetSel        	       	    
+   process.fourJetsMuJetSel         +       	       	    
+   process.hitFitTtSemiLepEventMJ        	       	    
    )
 
 if not runOnData:
@@ -436,20 +461,21 @@ process.outLepton = cms.OutputModule("PoolOutputModule",
                                fileName = cms.untracked.string(options.sampleName+'_treeCMG_leptonJetsSkim.root'),
                                SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('pMu || pEle')),
                                outputCommands = cms.untracked.vstring( 'drop *',
-                               				               'keep *_TriggerResults*_*_*'	  ,
-                                				       'keep *_cmgTriggerObjectSel*_*_*'		   ,
-                              				               'keep *_cmgPFMET*_*_*'		   ,
-                                				       'keep *_offlinePrimaryVertices*_*_*',
-                                				       'keep *_addPileupInfo_*_*',
-                                				       'keep *_generator_*_*',
-                                				       'keep *_cmgTop*_*_*',
-								       'keep *_vertexWeightSummer12*_*_*',
+                               				               'keep *_TriggerResults*_*_*'	     ,
+                                				       'keep *_cmgTriggerObjectSel*_*_*'     ,
+                              				               'keep *_cmgPFMET*_*_*'		     ,
+                                				       'keep *_offlinePrimaryVertices*_*_*'  ,
+                                				       'keep *_addPileupInfo_*_*'            ,
+                                				       'keep *_generator_*_*'                ,
+                                				       'keep *_cmgTop*_*_*'                  ,
+								       'keep *_vertexWeightSummer12*_*_*'    ,
 								       'keep *_vertexWeight2012ABCDtrue*_*_*',
-								       'keep *_*Filter*_*_*',
-								       'keep *_primaryVertexFilter*_*_*'  ,
-                                                                       'keep *_pdfWeights_*_*',
-								       'keep *_genJetSel*_*_*'  ,
-								       'keep cmgPFJets_cmgPFJetSel_*_*'
+								       'keep *_*Filter*_*_*'                 ,
+								       'keep *_primaryVertexFilter*_*_*'     ,
+                                                                       'keep *_pdfWeights_*_*'               ,
+								       'keep *_genJetSel*_*_*'               ,
+								       'keep cmgPFJets_cmgPFJetSel_*_*'      ,
+                                                                       'keep *_hitFitTtSemiLepEvent*_*_*'
  								      ) 
 )
 

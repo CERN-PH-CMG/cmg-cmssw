@@ -6,6 +6,31 @@ cvs co -d UserCode/TopMass  UserCode/CMG/UserArea/TopMass
 cd UserCode/TopMass
 scram b 
 
+
+# For V5_13_0 cmgtools framework
+https://twiki.cern.ch/twiki/bin/view/CMS/CMGToolsReleasesExperimental#Colin_537_patch4_V5_13_0
+
+
+# For kinematic fit
+cvs co -r V06-08-00 AnalysisDataFormats/TopObjects
+cvs co -r V00-00-05 DataFormats/WrappedStdDictionaries
+cvs co -r V06-08-00 TopQuarkAnalysis/TopEventProducers
+cvs co -r V06-08-00 TopQuarkAnalysis/TopJetCombination
+cvs co TopQuarkAnalysis/TopHitFit
+
+cp /afs/cern.ch/user/p/palencia/public/hitFit/CMGMuonHitFitTranslator.cc               TopQuarkAnalysis/TopHitFit/src/
+cp /afs/cern.ch/user/p/palencia/public/hitFit/CMGElectronHitFitTranslator.cc           TopQuarkAnalysis/TopHitFit/src/
+cp /afs/cern.ch/user/p/palencia/public/hitFit/CMGMETHitFitTranslator.cc                TopQuarkAnalysis/TopHitFit/src/
+cp /afs/cern.ch/user/p/palencia/public/hitFit/CMGJetHitFitTranslator.cc                TopQuarkAnalysis/TopHitFit/src/
+cp /afs/cern.ch/user/p/palencia/public/hitFit/TtSemiLepHitFitProducerCMG.h             TopQuarkAnalysis/TopHitFit/plugins/
+cp /afs/cern.ch/user/p/palencia/public/hitFit/SealModuleCMG.cc                         TopQuarkAnalysis/TopHitFit/plugins/
+cp /afs/cern.ch/user/p/palencia/public/hitFit/BuildFile.xml                            TopQuarkAnalysis/TopHitFit/plugins/
+cp /afs/cern.ch/user/p/palencia/public/hitFit/TtSemiLepHitFitProducer_Muons_cfi.py     TopQuarkAnalysis/TopHitFit/python/
+cp /afs/cern.ch/user/p/palencia/public/hitFit/TtSemiLepHitFitProducer_Electrons_cfi.py TopQuarkAnalysis/TopHitFit/python/
+
+scram b 
+
+
 # PLEASE UPDATE FROM THIS POINT FOWARD
 # THESE INSTRUCTIONS WERE VALID FOR THE SUMMER STUDIES
 
