@@ -75,6 +75,7 @@ root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_349.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_35.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_350.root
+root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_351.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_352.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_353.root
 root://eoscms//eos/cms/store/cmst3/user/hinzmann/CMG/JetHT/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_13_0/NTUPLE_Feb15/ntuple_354.root

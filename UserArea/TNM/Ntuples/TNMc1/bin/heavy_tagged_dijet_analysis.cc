@@ -357,6 +357,7 @@ int main(int argc, char** argv)
   //---------------------------------------------------------------------------
 
   double weight=1;
+  bool hcallasereventfilter2012active=false;
 
   for(int entry=0; entry < nevents; ++entry)
 	{
@@ -394,6 +395,9 @@ int main(int argc, char** argv)
           double JetNsub1 = jethelper_tau2[0]/jethelper_tau1[0];
           double JetNsub2 = jethelper_tau2[1]/jethelper_tau1[1];
            
+          if(triggerresultshelper_hcallasereventfilter2012!=0)
+	     hcallasereventfilter2012active=true;
+
 	  if(!((jethelper_pt.size()>=2)&&
 	     (jethelper_pt[0]>30)&&
 	     (jethelper_pt[1]>30)&&
@@ -432,7 +436,7 @@ int main(int argc, char** argv)
 	     (triggerresultshelper_HBHENoiseFilterPath!=0)&&
 	     (triggerresultshelper_CSCTightHaloFilterPath!=0)&&
 	     (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath!=0)&&
-	     (triggerresultshelper_hcallasereventfilter2012!=0)
+	     ((triggerresultshelper_hcallasereventfilter2012!=0)||(hcallasereventfilter2012active==false))
 	    )) continue;
 
 	  // ---------------------
