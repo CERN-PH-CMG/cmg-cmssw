@@ -1,5 +1,5 @@
 >= 4 good leptons: nLepGood >= 4
-lep MVA 3: min(min(LepGood1_mvaNew,LepGood2_mvaNew),LepGood3_mvaNew) >= -0.2
+lep MVA 3: min(min(LepGood1_mva,LepGood2_mva),LepGood3_mva) >= -0.2
 Z veto: abs(mZ1-91.2) > 10
 1b: nBJetLoose25 >= 1
 2b or 1B: nBJetLoose25 >= 2 || nBJetMedium25 >= 1
