@@ -13,7 +13,7 @@
 //
 // Original Author:  Jose Enrique Palencia Cortezon
 //         Created:  Tue May  1 15:53:55 CEST 2012
-// $Id: TtbarLeptonJets.cc,v 1.14 2013/02/26 14:55:27 palencia Exp $
+// $Id: TtbarLeptonJets.cc,v 1.15 2013/02/26 16:45:27 palencia Exp $
 //
 //
 
@@ -280,7 +280,7 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   if(!PupInfo.isValid() && !isData)     cerr << "  WARNING: PU is not valid! " << endl;
   
   // Trigger weights
-  TopTriggerEfficiencyProvider *weight_provider = new TopTriggerEfficiencyProvider();
+  //TopTriggerEfficiencyProvider *weight_provider = new TopTriggerEfficiencyProvider();
   
   nTot++;
   countAll_h ->Fill(1);
@@ -353,16 +353,10 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   bool passMJsel = false, passEJsel = false;
   int  goodJetEJ = 0, goodJetLxyEJ = 0, goodJetBtagEJ = 0;
   int  goodJetMJ = 0, goodJetLxyMJ = 0, goodJetBtagMJ = 0;
-  float maxLxyMJ = -999., maxLxyEJ = -999.;
-  // float maxBtagMJ = -999., maxBtagEJ = -999.;
-  float muo_pT = -999., ele_pT = -999.;
-  float jetMJ_pT[jetsMJ->size()], jetEJ_pT[jetsEJ->size()];
-  float jetMJ_lxy[jetsMJ->size()], jetEJ_lxy[jetsEJ->size()];
-  float jetMJ_btag[jetsMJ->size()], jetEJ_btag[jetsEJ->size()];
 
-  float jetMJ_mass[jetsEJ->size()], jetEJ_mass[jetsEJ->size()]; 
-  float jetMJ_flavour[jetsEJ->size()], jetEJ_flavour[jetsEJ->size()]; 
-  float secVtxMassMJ = -999, secVtxMassEJ = -999.;
+  float muo_pT       = -999., ele_pT       = -999.;
+  float maxLxyMJ     = -999., maxLxyEJ     = -999.;
+  float secVtxMassMJ = -999., secVtxMassEJ = -999.;
   int flavourMJ = -999, flavourEJ = -999; 
 
   if(nMuoTrig == 1){
@@ -425,65 +419,52 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	   // if(JESup)        jetMJ_pT[jetMuoIndex] = muJET->pt() * (1+muJET->uncOnFourVectorScale());
 	   // else if(JESdown) jetMJ_pT[jetMuoIndex] = muJET->pt() * (1-muJET->uncOnFourVectorScale());
 	   // else             jetMJ_pT[jetMuoIndex] = muJET->pt() ;
-	   jetMJ_pT[jetMuoIndex]  = muJET->pt();
-	   jetMJ_lxy[jetMuoIndex] = muJET->Lxy();
-	   jetMJ_btag[jetMuoIndex] = muJET->btag(6);
-	   jetMJ_mass[jetMuoIndex] = muJET->secvtxMass();
-	   jetMJ_flavour[jetMuoIndex] = muJET->partonFlavour();
-	   //std::cout << "flavour: " << muJET->partonFlavour() << std::endl;
 
-           if(verbose) std::cout << "  mu-jet pt = " << muJET->pt() << ", eta = " << muJET->eta() << ", lxy = " << muJET->Lxy() << ",  my mu-jet pt = " << jetMJ_pT[jetMuoIndex] << ", JES unc = " << muJET->uncOnFourVectorScale() <<  std::endl; 
-	   
-	   
-	   jetMuoIndex++;
+           if(verbose) std::cout << "  mu-jet pt = " << muJET->pt() << ", eta = " << muJET->eta() << ", lxy = " << muJET->Lxy() << ", JES unc = " << muJET->uncOnFourVectorScale() <<  std::endl; 
+	   if(muJET->pt()>=30) {
+	      goodJetMJ++;
+	      if(muJET->btag(6)>0.679) {
+	         goodJetBtagMJ++;
+	         if(muJET->Lxy()>0) {
+		    goodJetLxyMJ++;
+		    if(muJET->Lxy()>maxLxyMJ) {
+	               maxLxyMJ     = muJET->Lxy();
+	               secVtxMassMJ = muJET->secvtxMass();
+	               flavourMJ    = muJET->partonFlavour();
+	            }
+	         }
+	      }
+	   }
         } // muJET loop
      }
-     if(jetMJ_pT[0]>=30 && jetMJ_pT[1]>=30 && jetMJ_pT[2]>=30 && jetMJ_pT[3]>=30) {
-        goodJetMJ++;
-        for(unsigned int i=0; i < jetsMJ->size(); ++i) {
-	   if(jetMJ_pT[i]>=30 && jetMJ_lxy[i]>0) goodJetLxyMJ++;
-	   if(jetMJ_pT[i]>=30 && jetMJ_lxy[i]>0 && jetMJ_btag[i]>0.679) goodJetBtagMJ++;
-	   if(jetMJ_lxy[i]>maxLxyMJ) {
-	     maxLxyMJ = jetMJ_lxy[i];
-	     secVtxMassMJ = jetMJ_mass[i];
-	     flavourMJ = jetMJ_flavour[i];
-	   }
-	   // if(jetMJ_btag[i]>maxBtagMJ) maxBtagMJ = jetMJ_btag[i];
-        }
-     }
   
   
-     int jetEleIndex = 0;
      if(jetsEJ.isValid() && passEJsel){
         for(eleJET = jetsEJ->begin(); eleJET != jetsEJ->end(); ++eleJET) {
-	   jetEJ_pT[jetEleIndex]  = eleJET->pt();
-	   jetEJ_lxy[jetEleIndex] = eleJET->Lxy();
-	   jetEJ_btag[jetEleIndex] = eleJET->btag(6);
-	   jetEJ_mass[jetEleIndex] = eleJET->secvtxMass();
-	   jetEJ_flavour[jetEleIndex] = eleJET->partonFlavour();
 
            if(verbose) std::cout << "  ele-jet pt = " << eleJET->pt() << ", eta = " << eleJET->eta() << ", lxy = " << eleJET->Lxy() << std::endl;           
-	   jetEleIndex++;
+	   if(eleJET->pt()>=30) {
+	      goodJetEJ++;
+	      if(eleJET->btag(6)>0.679) {
+	         goodJetBtagEJ++;
+	         if(eleJET->Lxy()>0) {
+		    goodJetLxyEJ++;
+		    if(eleJET->Lxy()>maxLxyMJ) {
+	               maxLxyEJ     = eleJET->Lxy();
+	               secVtxMassEJ = eleJET->secvtxMass();
+	               flavourEJ    = eleJET->partonFlavour();
+	            }
+	         }
+	      }
+	   }
         } // eleJET loop
      }
-     if(jetEJ_pT[0]>=30 && jetEJ_pT[1]>=30 && jetEJ_pT[2]>=30 && jetEJ_pT[3]>=30) {
-        goodJetEJ++;
-        for(unsigned int i=0; i < jetsEJ->size(); ++i) {
-	   if(jetEJ_pT[i]>=30 && jetEJ_lxy[i]>0) goodJetLxyEJ++;
-	   if(jetEJ_pT[i]>=30 && jetEJ_lxy[i]>0 && jetEJ_btag[i]>0.679) goodJetBtagEJ++;
-	   if(jetEJ_lxy[i]>maxLxyEJ) {
-	     maxLxyEJ = jetEJ_lxy[i];
-	     secVtxMassEJ = jetEJ_mass[i];
-	     flavourEJ = jetEJ_flavour[i];
-	   }
-	   // if(jetEJ_btag[i]>maxBtagEJ) maxBtagEJ = jetEJ_btag[i];
-        }
-     }
-
+     
+     
   }// if(passMJsel || passEJsel)
 
 
-  if (goodJetMJ>=1){
+  if (goodJetMJ>=4){
      pass4jetsMJ++;
      if (goodJetLxyMJ>0 && goodJetBtagMJ>0){
         passMJ++;
@@ -491,15 +472,15 @@ void TtbarLeptonJets::analyze(const edm::Event& iEvent, const edm::EventSetup& i
         //myfile << iEvent.eventAuxiliary().event() << " : " << iEvent.eventAuxiliary().luminosityBlock() << "\n" ;   
      }
   }
-  if (goodJetEJ>=1){
+  if (goodJetEJ>=4){
      pass4jetsEJ++;
      if (goodJetLxyEJ>0 && goodJetBtagEJ>0){
         passEJ++;
      }
   }
   
-  if (goodJetMJ<1 || goodJetLxyMJ<1 || goodJetBtagMJ<1) passMJsel = false;
-  if (goodJetEJ<1 || goodJetLxyEJ<1 || goodJetBtagEJ<1) passEJsel = false;
+  if (goodJetMJ<4 || goodJetLxyMJ<1 || goodJetBtagMJ<1) passMJsel = false;
+  if (goodJetEJ<4 || goodJetLxyEJ<1 || goodJetBtagEJ<1) passEJsel = false;
 
   // Fill histograms after full selection
   if(passMJsel){
