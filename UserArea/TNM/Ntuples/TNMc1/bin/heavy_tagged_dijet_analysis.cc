@@ -106,36 +106,36 @@ int main(int argc, char** argv)
   stream.select("edmEventHelperExtra_info.wj2_phi", eventhelperextra_wj2_phi);
   stream.select("edmEventHelperExtra_info.wj2_pt", eventhelperextra_wj2_pt);
   stream.select("GenEventInfoProduct_generator.weight", geneventinfoproduct_weight);
-  stream.select("patJetHelper_selectedPatJets.chargedEmEnergyFraction", jethelper2_chargedEmEnergyFraction);
-  stream.select("patJetHelper_selectedPatJets.chargedHadronEnergyFraction", jethelper2_chargedHadronEnergyFraction);
-  stream.select("patJetHelper_selectedPatJets.chargedMultiplicity", jethelper2_chargedMultiplicity);
-  stream.select("patJetHelper_selectedPatJets.energy", jethelper2_energy);
-  stream.select("patJetHelper_selectedPatJets.eta", jethelper2_eta);
-  stream.select("patJetHelper_selectedPatJets.rapidity", jethelper2_rapidity);
-  stream.select("patJetHelper_selectedPatJets.mass", jethelper2_mass);
-  stream.select("patJetHelper_selectedPatJets.muonEnergyFraction", jethelper2_muonEnergyFraction);
-  stream.select("patJetHelper_selectedPatJets.nConstituents", jethelper2_nConstituents);
-  stream.select("patJetHelper_selectedPatJets.neutralEmEnergyFraction", jethelper2_neutralEmEnergyFraction);
-  stream.select("patJetHelper_selectedPatJets.neutralHadronEnergyFraction", jethelper2_neutralHadronEnergyFraction);
-  stream.select("patJetHelper_selectedPatJets.phi", jethelper2_phi);
-  stream.select("patJetHelper_selectedPatJets.pt", jethelper2_pt);
-  stream.select("patJetHelper_selectedPatJetsCHS.chargedEmEnergyFraction", jethelper_chargedEmEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHS.chargedHadronEnergyFraction", jethelper_chargedHadronEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHS.chargedMultiplicity", jethelper_chargedMultiplicity);
-  stream.select("patJetHelper_selectedPatJetsCHS.combinedSecondaryVertexBJetTags", jethelper_combinedSecondaryVertexBJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHS.combinedSecondaryVertexMVABJetTags", jethelper_combinedSecondaryVertexMVABJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHS.energy", jethelper_energy);
-  stream.select("patJetHelper_selectedPatJetsCHS.eta", jethelper_eta);
-  stream.select("patJetHelper_selectedPatJetsCHS.rapidity", jethelper_rapidity);
-  stream.select("patJetHelper_selectedPatJetsCHS.jetBProbabilityBJetTags", jethelper_jetBProbabilityBJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHS.jetProbabilityBJetTags", jethelper_jetProbabilityBJetTags);
-  stream.select("patJetHelper_selectedPatJetsCHS.mass", jethelper_mass);
-  stream.select("patJetHelper_selectedPatJetsCHS.muonEnergyFraction", jethelper_muonEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHS.nConstituents", jethelper_nConstituents);
-  stream.select("patJetHelper_selectedPatJetsCHS.neutralEmEnergyFraction", jethelper_neutralEmEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHS.neutralHadronEnergyFraction", jethelper_neutralHadronEnergyFraction);
-  stream.select("patJetHelper_selectedPatJetsCHS.phi", jethelper_phi);
-  stream.select("patJetHelper_selectedPatJetsCHS.pt", jethelper_pt);
+  stream.select("patJetHelper_patJetsWithVar.chargedEmEnergyFraction", jethelper2_chargedEmEnergyFraction);
+  stream.select("patJetHelper_patJetsWithVar.chargedHadronEnergyFraction", jethelper2_chargedHadronEnergyFraction);
+  stream.select("patJetHelper_patJetsWithVar.chargedMultiplicity", jethelper2_chargedMultiplicity);
+  stream.select("patJetHelper_patJetsWithVar.energy", jethelper2_energy);
+  stream.select("patJetHelper_patJetsWithVar.eta", jethelper2_eta);
+  stream.select("patJetHelper_patJetsWithVar.rapidity", jethelper2_rapidity);
+  stream.select("patJetHelper_patJetsWithVar.mass", jethelper2_mass);
+  stream.select("patJetHelper_patJetsWithVar.muonEnergyFraction", jethelper2_muonEnergyFraction);
+  stream.select("patJetHelper_patJetsWithVar.nConstituents", jethelper2_nConstituents);
+  stream.select("patJetHelper_patJetsWithVar.neutralEmEnergyFraction", jethelper2_neutralEmEnergyFraction);
+  stream.select("patJetHelper_patJetsWithVar.neutralHadronEnergyFraction", jethelper2_neutralHadronEnergyFraction);
+  stream.select("patJetHelper_patJetsWithVar.phi", jethelper2_phi);
+  stream.select("patJetHelper_patJetsWithVar.pt", jethelper2_pt);
+  stream.select("patJetHelper_patJetsWithVarCHS.chargedEmEnergyFraction", jethelper_chargedEmEnergyFraction);
+  stream.select("patJetHelper_patJetsWithVarCHS.chargedHadronEnergyFraction", jethelper_chargedHadronEnergyFraction);
+  stream.select("patJetHelper_patJetsWithVarCHS.chargedMultiplicity", jethelper_chargedMultiplicity);
+  stream.select("patJetHelper_patJetsWithVarCHS.combinedSecondaryVertexBJetTags", jethelper_combinedSecondaryVertexBJetTags);
+  stream.select("patJetHelper_patJetsWithVarCHS.combinedSecondaryVertexMVABJetTags", jethelper_combinedSecondaryVertexMVABJetTags);
+  stream.select("patJetHelper_patJetsWithVarCHS.energy", jethelper_energy);
+  stream.select("patJetHelper_patJetsWithVarCHS.eta", jethelper_eta);
+  stream.select("patJetHelper_patJetsWithVarCHS.rapidity", jethelper_rapidity);
+  stream.select("patJetHelper_patJetsWithVarCHS.jetBProbabilityBJetTags", jethelper_jetBProbabilityBJetTags);
+  stream.select("patJetHelper_patJetsWithVarCHS.jetProbabilityBJetTags", jethelper_jetProbabilityBJetTags);
+  stream.select("patJetHelper_patJetsWithVarCHS.mass", jethelper_mass);
+  stream.select("patJetHelper_patJetsWithVarCHS.muonEnergyFraction", jethelper_muonEnergyFraction);
+  stream.select("patJetHelper_patJetsWithVarCHS.nConstituents", jethelper_nConstituents);
+  stream.select("patJetHelper_patJetsWithVarCHS.neutralEmEnergyFraction", jethelper_neutralEmEnergyFraction);
+  stream.select("patJetHelper_patJetsWithVarCHS.neutralHadronEnergyFraction", jethelper_neutralHadronEnergyFraction);
+  stream.select("patJetHelper_patJetsWithVarCHS.phi", jethelper_phi);
+  stream.select("patJetHelper_patJetsWithVarCHS.pt", jethelper_pt);
   stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.numberOfDaughters", jethelper_numberOfDaughters);
   stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.combinedSecondaryVertexBJetTags", jethelper3_combinedSecondaryVertexBJetTags);
   stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.combinedSecondaryVertexMVABJetTags", jethelper3_combinedSecondaryVertexMVABJetTags);
@@ -190,8 +190,8 @@ int main(int argc, char** argv)
   stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_pt", jethelper_daughter_1_pt);
   stream.select("patMET_patMETsRaw.et", met2_et);
   stream.select("patMET_patMETsRaw.sumEt", met2_sumEt);
-  stream.select("npatJetHelper_selectedPatJetsCHS", njethelper);
-  stream.select("npatJetHelper_selectedPatJets", njethelper2);
+  stream.select("npatJetHelper_patJetsWithVarCHS", njethelper);
+  stream.select("npatJetHelper_patJetsWithVar", njethelper2);
   stream.select("nrecoVertex_offlinePrimaryVertices", nvertex);
   stream.select("PileupSummaryInfo_addPileupInfo.getBunchCrossing", pileupsummaryinfo_getBunchCrossing);
   stream.select("PileupSummaryInfo_addPileupInfo.getPU_NumInteractions", pileupsummaryinfo_getPU_NumInteractions);
@@ -251,8 +251,8 @@ int main(int argc, char** argv)
   stream.select("recoGenParticleHelper_genParticles.lastMother", genparticlehelper_lastMother);
   stream.select("recoGenParticleHelper_genParticles.pdgId", genparticlehelper_pdgId);
 
-  stream.select("patJetHelper_selectedPatJetsCA8CHS.tau1", jethelper_tau1);
-  stream.select("patJetHelper_selectedPatJetsCA8CHS.tau2", jethelper_tau2);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSwithQjets.tau1", jethelper_tau1);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSwithQjets.tau2", jethelper_tau2);
 
   stream.select("cmgPFJet_cmgPFJetSel.energy", jethelper4_energy);
   stream.select("cmgPFJet_cmgPFJetSel.eta", jethelper4_eta);
@@ -434,7 +434,7 @@ int main(int argc, char** argv)
 	     (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath!=0)&&
 	     (triggerresultshelper_hcallasereventfilter2012!=0)
 	    )) continue;
-	   
+
 	  // ---------------------
 	  // -- fill histograms --
 	  // ---------------------	  
@@ -463,7 +463,7 @@ int main(int argc, char** argv)
               massNoCHS_2Wtag->Fill(DijetMassNoCHS, weight);
               massCA8_2Wtag->Fill(DijetMassCA8, weight);
 	      if(DijetMass>1600)
-                cout << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << endl;
+                cout << "run:lumi:event:mass " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << endl;
 	  }
 	  if(((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.4)) &&
 	     ((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.4)))
