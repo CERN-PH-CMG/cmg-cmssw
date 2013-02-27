@@ -99,21 +99,6 @@ int main(int argc, char* argv[])
   const size_t nPdfSets=1;
   for(size_t ipdf=0; ipdf<nPdfSets; ipdf++)  LHAPDF::initPDFSet(1, pdfSets[ipdf]);
   
-  //output tree
-  std::vector<float *> pdfWgts;
-  TTree *pdfT = new TTree("pdf","pdf");
-  for(size_t ipdf=0; ipdf<nPdfSets; ipdf++){
-      pdfWgts.push_back( new float(nPdfVars[ipdf]+1 ) );
-      char nameBuf[200],typeBuf[200];
-      sprintf(nameBuf,"%s_wgts",       pdfSets[ipdf].c_str() );
-      sprintf(typeBuf,"%s_wgts[%d]/F", pdfSets[ipdf].c_str(), nPdfVars[ipdf]+1);
-      pdfT->Branch(nameBuf, pdfWgts[ipdf], typeBuf);
-  }
-//  pdfT->SetDirectory(ofile);
-//  pdfT->SetAutoSave(1000000);
-  gROOT->cd();
-
-
    printf("Loop on PDF sets and variations\n");   
    //prepare a structure to old the results
    float* w = new float[pdfvals.size() * (101) * nPdfSets];
@@ -127,8 +112,20 @@ int main(int argc, char* argv[])
          }
       }
    }
+   
 
    printf("Save results to tree\n");
+   //output tree
+   std::vector<float *> pdfWgts;
+   TTree *pdfT = new TTree("pdf","pdf");
+   for(size_t ipdf=0; ipdf<nPdfSets; ipdf++){
+      pdfWgts.push_back( new float(nPdfVars[ipdf]+1 ) );
+      char nameBuf[200],typeBuf[200];
+      sprintf(nameBuf,"%s_wgts",       pdfSets[ipdf].c_str() );
+      sprintf(typeBuf,"%s_wgts[%d]/F", pdfSets[ipdf].c_str(), nPdfVars[ipdf]+1);
+      pdfT->Branch(nameBuf, pdfWgts[ipdf], typeBuf);
+   }
+
    for(unsigned int v=0; v<pdfvals.size(); v++){     
       for(size_t ipdf=0; ipdf<nPdfSets; ipdf++){
          for(int i=0; i <(nPdfVars[ipdf]+1); ++i){
@@ -138,6 +135,10 @@ int main(int argc, char* argv[])
       pdfT->Fill();
    }
 
+  printf("free all the objects\n");fflush(stdout); 
+   delete [] w;
+   pdfWgts.clear();
+   pdfvals.clear();
 
 
 
