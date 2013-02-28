@@ -390,14 +390,16 @@ int main(int argc, char** argv)
           double DijetMassCA8 = (Jet1+Jet2).M();
           double JetMass1 = jethelper3_mass[0];
           double JetMass2 = jethelper3_mass[1];
-          double JetMassDrop1 = max(jethelper_daughter_0_mass[0],jethelper_daughter_1_mass[0])/JetMass1;
-          double JetMassDrop2 = max(jethelper_daughter_0_mass[1],jethelper_daughter_1_mass[1])/JetMass2;
+          double JetMassDrop1 = max(jethelper_daughter_0_mass[0],jethelper_daughter_1_mass[0])/JetMass1/jethelper3_uncor_pt[0]*jethelper3_pt[0];
+          double JetMassDrop2 = max(jethelper_daughter_0_mass[1],jethelper_daughter_1_mass[1])/JetMass2/jethelper3_uncor_pt[1]*jethelper3_pt[1];
           double JetNsub1 = jethelper_tau2[0]/jethelper_tau1[0];
           double JetNsub2 = jethelper_tau2[1]/jethelper_tau1[1];
            
           if(triggerresultshelper_hcallasereventfilter2012!=0)
 	     hcallasereventfilter2012active=true;
 
+          if(DijetMass>1600)
+              cout << "every " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << endl;
 	  if(!((jethelper_pt.size()>=2)&&
 	     (jethelper_pt[0]>30)&&
 	     (jethelper_pt[1]>30)&&
@@ -448,6 +450,8 @@ int main(int argc, char** argv)
 	  else
 	      weight=1;
 
+          if(DijetMass>1600)
+              cout << "filtered " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << JetMass1 << ":" << JetMass2 << ":" << JetMassDrop1 << ":" << JetMassDrop2 << endl;
 	  if((!((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.25)))&&
 	     (!((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.25))))
 	  {
@@ -466,8 +470,8 @@ int main(int argc, char** argv)
               mass_2Wtag->Fill(DijetMass, weight);
               massNoCHS_2Wtag->Fill(DijetMassNoCHS, weight);
               massCA8_2Wtag->Fill(DijetMassCA8, weight);
-	      if(DijetMass>1600)
-                cout << "run:lumi:event:mass " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << endl;
+	      //if(DijetMass>1600)
+              //  cout << "run:lumi:event:mass " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << JetMass1 << ":" << JetMass2 << ":" << JetMassDrop1 << ":" << JetMassDrop2 << endl;
 	  }
 	  if(((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.4)) &&
 	     ((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.4)))
