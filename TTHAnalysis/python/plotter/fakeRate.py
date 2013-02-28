@@ -12,6 +12,7 @@ class FakeRate:
         stream = open(file,'r')
         self._file = file
         self._weight = None
+        self._mods = []
         self._cutMods = []
         for line in stream:
             if len(line.strip()) == 0 or line.strip()[0] == '#': continue
@@ -19,6 +20,8 @@ class FakeRate:
             if fields[0] == "weight":
                 if self._weight is not None: raise RuntimeError, "Duplicate weight definition in fake rate file ",file
                 self._weight = fields[1]
+            elif fields[0] == "change": 
+                self._mods.append( SimpleCorrection(fields[1],fields[2]) )
             elif fields[0] == "cut-change": 
                 self._cutMods.append( SimpleCorrection(fields[1],fields[2],onlyForCuts=True) )
             elif fields[0] == "load-histo":
@@ -29,5 +32,7 @@ class FakeRate:
         if len(self._cutMods) == 0 is None: print "WARNING: no directives to change cuts in fake rate file ",file
     def weight(self): 
         return self._weight
+    def mods(self): 
+        return self._mods
     def cutMods(self): 
         return self._cutMods

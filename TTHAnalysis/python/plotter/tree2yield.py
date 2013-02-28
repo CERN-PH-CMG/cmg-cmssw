@@ -130,9 +130,9 @@ class TreeToYield:
         if 'FakeRate' in settings:
             self._FR = FakeRate(settings['FakeRate'])
             ## add additional weight correction 
-            self._weightString += "* (" + self._FR.weight() + ")"
+            self._weightString += "* (" + self.adaptDataMCExpr(self._FR.weight()) + ")"
             ## modify cuts to get to control region
-            self._mcCorrs = self._mcCorrs + self._FR.cutMods()
+            self._mcCorrs = self._mcCorrs + self._FR.cutMods()  + self._FR.mods()
             
     def setScaleFactor(self,scaleFactor):
         self._scaleFactor = scaleFactor
@@ -145,12 +145,16 @@ class TreeToYield:
     def getOption(self,name,default=None):
         if name in self._settings: return self._settings[name]
         return default
-    def adaptExpr(self,expr,cut=False):
+    def adaptDataMCExpr(self,expr):
         ret = expr
         if self._name == "data":
             ret = re.sub(r'\$MC\{.*?\}', '', re.sub(r'\$DATA\{(.*?)\}', r'\1', expr));
         else:
             ret = re.sub(r'\$DATA\{.*?\}', '', re.sub(r'\$MC\{(.*?)\}', r'\1', expr));
+        return ret
+    def adaptExpr(self,expr,cut=False):
+        ret = self.adaptDataMCExpr(expr)
+        if self._name != "data":
             for mcc in self._mcCorrs:
                 ret = mcc(ret,self._name,self._cname,cut)
             #if ret != expr: print "[[%s]] => [[%s]]\n" % (expr,ret)

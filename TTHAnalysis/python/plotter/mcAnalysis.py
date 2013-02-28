@@ -93,8 +93,10 @@ class MCAnalysis:
         ret = self._allData.keys()[:]
         ret.sort(key = lambda n : self._rank[n], reverse = True)
         return ret
+    def isBackground(self,process):
+        return process != 'data' and not self._isSignal[process]
     def isSignal(self,process):
-        return self._isSignal[p]
+        return self._isSignal[process]
     def listSignals(self):
         ret = [ p for p in self._allData.keys() if p != 'data' and self._isSignal[p] ]
         ret.sort(key = lambda n : self._rank[n], reverse = True)
