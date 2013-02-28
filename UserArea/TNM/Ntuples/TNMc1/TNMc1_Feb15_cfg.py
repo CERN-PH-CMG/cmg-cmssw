@@ -1,11 +1,11 @@
-#$Revision: 1.6 $
+#$Revision: 1.7 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 # See TheNtupleMaker twiki for a brief explanation
-#process.MessageLogger.destinations = cms.untracked.vstring("cerr")
+process.MessageLogger.destinations = cms.untracked.vstring("cerr")
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.MessageLogger.cerr.default.limit = 5
 
@@ -18,11 +18,11 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 #process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # Run on MC or data
 
-runOnMC = False
+runOnMC = True
 runPATCMG = False
 recalibrateCMGJets = False
 runAK7jets = False
@@ -66,7 +66,7 @@ print 'input:', process.source.fileNames
 if runOnMC==False:
     from CMGTools.Common.Tools.applyJSON_cff import *
     # Run2012A+B 13Jul2012ReReco
-    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
+    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
     # Run2012A 06Aug2012ReReco
     #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190782-190949_8TeV_06Aug2012ReReco_Collisions12_JSON.txt'
     # Run2012C v1 Aug24ReReco
@@ -74,7 +74,7 @@ if runOnMC==False:
     # Run2012C v1 Dec11ReReco
     #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_201191-201191_8TeV_11Dec2012ReReco-recover_Collisions12_JSON.txt'
     # Run2012C v2 and Run2012D
-    json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
+    #json = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt'
     print 'json:', json
     applyJSON(process, json )
 
@@ -210,6 +210,7 @@ process.selectedPatJetsAK7CHSwithQjets = cms.EDProducer("QjetsAdder",
 			  )
 if not runQJets:
     process.selectedPatJetsAK7CHSwithQjets.cutoff=100000.0
+    process.selectedPatJetsCA8CHSwithQjets.cutoff=100000.0
 process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
 process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQjets
 
@@ -234,6 +235,7 @@ process.load("CMGTools.Susy.common.susy_cff")
 
 process.razorMJObjectSequence.remove(process.razorMJHemiSequence)
 process.susyGenSequence.remove(process.dumpPdfWeights)
+process.razorMJHadTriggerInfo.printSelections=False
 
 if not runOnMC:
     process.demo.buffers.remove('sint')
