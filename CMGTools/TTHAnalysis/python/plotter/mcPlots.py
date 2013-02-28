@@ -82,6 +82,8 @@ def doStackSignalNorm(pspec,pmap):
     #if "background" in pmap: total = pmap["background"].Integral()
     #else: total = sum([pmap[x].Integral() for x in mca.listBackgrounds() if pmap.has_key(x) ])
     total = sum([v.Integral() for k,v in pmap.iteritems() if k != 'data' and not hasattr(v,'summary')])
+    if options.noStackSig:
+        total = sum([v.Integral() for k,v in pmap.iteritems() if not hasattr(v,'summary') and mca.isBackground(k) ])
     sig = None
     if "signal" in pmap: sig = pmap["signal"].Clone(pspec.name+"_signal_norm")
     else: 
@@ -193,6 +195,7 @@ class PlotMaker:
                     if p in pmap: 
                         plot = pmap[p]
                         if plot.Integral() <= 0: continue
+                        if mca.isSignal(p) and options.noStackSig == True: continue 
                         if self._options.plotmode == "stack":
                             stack.Add(plot)
                             total.Add(plot)
@@ -263,6 +266,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--print", dest="printPlots", type="string", default=None, help="print out plots in this format or formats (e.g. 'png,pdf')");
     parser.add_option("--pdir", "--print-dir", dest="printDir", type="string", default="plots", help="print out plots in this directory");
     parser.add_option("--showSigShape", dest="showSigShape", action="store_true", default=False, help="Stack a normalized signal shape")
+    parser.add_option("--noStackSig", dest="noStackSig", action="store_true", default=False, help="Don't add the signal shape to the stack (useful with --showSigShape)")
     parser.add_option("--showDatShape", dest="showDatShape", action="store_true", default=False, help="Stack a normalized data shape")
     parser.add_option("--showSFitShape", dest="showSFitShape", action="store_true", default=False, help="Stack a shape of background + scaled signal normalized to total data")
     parser.add_option("--plotmode", dest="plotmode", type="string", default="stack", help="Show as stacked plot (stack), a non-stacked comparison (nostack) and a non-stacked comparison of normalized shapes (norm)")
@@ -278,6 +282,12 @@ if __name__ == "__main__":
     cuts = CutsFile(args[1],options)
     plots = PlotFile(args[2],options)
     outname  = options.out if options.out else (args[2].replace(".txt","")+".root")
+    if (not options.out) and options.printDir:
+        outname = options.printDir + "/"+os.path.basename(args[2].replace(".txt","")+".root")
+    if not os.path.exists(os.path.dirname(outname)):
+        os.system("mkdir -p "+os.path.dirname(outname))
+        if os.path.exists("/afs/cern.ch"): os.system("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+os.path.dirname(outname))
+    print "Will save plots to ",outname
     outfile  = ROOT.TFile(outname,"RECREATE")
     plotter = PlotMaker(outfile)
     plotter.run(mca,cuts,plots)
