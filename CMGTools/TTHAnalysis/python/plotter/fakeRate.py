@@ -18,7 +18,7 @@ class FakeRate:
             if len(line.strip()) == 0 or line.strip()[0] == '#': continue
             fields = [x.strip() for x in line.split(":")]
             if fields[0] == "weight":
-                if self._weight is not None: raise RuntimeError, "Duplicate weight definition in fake rate file ",file
+                if self._weight is not None: raise RuntimeError, "Duplicate weight definition in fake rate file "+file
                 self._weight = fields[1]
             elif fields[0] == "change": 
                 self._mods.append( SimpleCorrection(fields[1],fields[2]) )
@@ -28,9 +28,9 @@ class FakeRate:
                 data = "%s/src/CMGTools/TTHAnalysis/data/" % os.environ['CMSSW_BASE'];
                 ROOT.loadFRHisto(fields[1],fields[2].replace("$DATA",data),fields[3] if len(fields) >= 4 else fields[1])
             else:
-                raise RuntimeError, "Unknown directive ",fields[0]
-        if self._weight is None: raise RuntimeError, "Missing weight definition in fake rate file ",file
-        if len(self._cutMods) == 0 is None: print "WARNING: no directives to change cuts in fake rate file ",file
+                raise RuntimeError, "Unknown directive "+fields[0]
+        if self._weight is None: raise RuntimeError, "Missing weight definition in fake rate file "+file
+        if len(self._cutMods) == 0 is None: print "WARNING: no directives to change cuts in fake rate file "+file
     def weight(self): 
         return self._weight
     def mods(self): 
