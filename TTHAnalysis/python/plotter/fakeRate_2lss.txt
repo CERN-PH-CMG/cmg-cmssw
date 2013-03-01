@@ -3,5 +3,5 @@ cut-change: (LepGood[12])_mvaNew : 1
 ## define the FR weight
 weight: fakeRateWeight_2lss(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_mvaNew,LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_mvaNew)
 ## load histograms 
-load-histo: FR_2lss_mu : fakeRates_TTJets_MC.root
-load-histo: FR_2lss_el : fakeRates_TTJets_MC.root
+load-histo: FR_mu : $DATA/fakerate/FR_ttl_m.root : FR_m
+load-histo: FR_el : $DATA/fakerate/FR_ttl_e.root : FR_e
