@@ -7,13 +7,14 @@
 
 TH2 * FR_mu = 0;
 TH2 * FR_el = 0;
-
+TH2 * QF_el = 0;
 
 
 bool loadFRHisto(const std::string &histoName, const char *file, const char *name) {
     TH2 **histo = 0;
     if (histoName == "FR_mu") histo = & FR_mu;
     if (histoName == "FR_el") histo = & FR_el;
+    if (histoName == "QF_el") histo = & QF_el;
     if (histo == 0)  {
         std::cerr << "ERROR: histogram " << histoName << " is not defined in fakeRate.cc." << std::endl;
         return 0;
@@ -61,6 +62,33 @@ float fakeRateWeight_2lss(float l1pt, float l1eta, int l1pdgId, float l1mva,
         default: return 0;
     }
 }
+
+float chargeFlipWeight_2lss(float l1pt, float l1eta, int l1pdgId, 
+                             float l2pt, float l2eta, int l2pdgId) 
+{
+    if (l1pdgId * l2pdgId > 0) return 0.;
+    double w = 0;
+    if (abs(l1pdgId) == 11) {
+        int ptbin  = std::max(1, std::min(QF_el->GetNbinsX(), QF_el->GetXaxis()->FindBin(l1pt)));
+        int etabin = std::max(1, std::min(QF_el->GetNbinsY(), QF_el->GetYaxis()->FindBin(std::abs(l1eta))));
+        w += QF_el->GetBinContent(ptbin,etabin);
+    }
+    if (abs(l2pdgId) == 11) {
+        int ptbin  = std::max(1, std::min(QF_el->GetNbinsX(), QF_el->GetXaxis()->FindBin(l2pt)));
+        int etabin = std::max(1, std::min(QF_el->GetNbinsY(), QF_el->GetYaxis()->FindBin(std::abs(l2eta))));
+        w += QF_el->GetBinContent(ptbin,etabin);
+    }
+    return w;
+}
+
+float chargeFlipBin_2lss(float l1pt, float l1eta) {
+    if (std::abs(l1eta) < 1.479) {
+        return (l1pt < 20 ? 0 : 1);
+    } else {
+        return (l1pt < 20 ? 2 : (l1pt < 50 ? 3 : 4));
+    }
+}
+
 
 
 float fakeRateWeight_3l(float l1pt, float l1eta, int l1pdgId, float l1mva,

@@ -25,7 +25,8 @@ class FakeRate:
             elif fields[0] == "cut-change": 
                 self._cutMods.append( SimpleCorrection(fields[1],fields[2],onlyForCuts=True) )
             elif fields[0] == "load-histo":
-                ROOT.loadFRHisto(fields[1],fields[2],fields[3] if len(fields) > 4 else fields[1])
+                data = "%s/src/CMGTools/TTHAnalysis/data/" % os.environ['CMSSW_BASE'];
+                ROOT.loadFRHisto(fields[1],fields[2].replace("$DATA",data),fields[3] if len(fields) >= 4 else fields[1])
             else:
                 raise RuntimeError, "Unknown directive ",fields[0]
         if self._weight is None: raise RuntimeError, "Missing weight definition in fake rate file ",file
