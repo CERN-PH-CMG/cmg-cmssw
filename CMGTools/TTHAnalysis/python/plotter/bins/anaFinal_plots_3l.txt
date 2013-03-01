@@ -28,3 +28,8 @@ bestMTopHad_log: bestMTopHad: 60, 0, 500; XTitle="best m(TopHad) [GeV]",Logy,  L
 bestMTopHadPt_log: bestMTopHadPt: 60, 0, 500; XTitle="best m(TopHad) pT [GeV]",Logy, LegendCutoff=1e-3
 
 
+lep3pT: LepGood3_pt : 40, 0, 150; XTitle="pT(l_{3}) [GeV]"
+jet1pT: Jet1_pt : 60,20,300; XTitle="pT(Jet_{1}) [GeV]"
+jet2pT: Jet2_pt : 60,20,300; XTitle="pT(Jet_{2}) [GeV]"
+lepEta3: max(max(abs(LepGood1_eta),abs(LepGood2_eta)),abs(LepGood3_eta)) : 50,0,2.5; XTitle="Max lepton eta(l_{1}\,l_{2}\,l_{3})"
+
