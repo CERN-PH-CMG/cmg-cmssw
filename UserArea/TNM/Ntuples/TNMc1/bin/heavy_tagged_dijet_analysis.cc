@@ -352,6 +352,78 @@ int main(int argc, char** argv)
   TH1F* mass_2Mtag=new TH1F("dijet_mass_2Mtag","M_{jj}",NBINS-1,BOUNDARIES);
   mass_2Mtag->Sumw2();
 
+  TH1F* mass_0mtag=new TH1F("dijet_mass_0mtag","M_{jj}",8000,0,8000);
+  mass_0mtag->Sumw2();
+  TH1F* mass_1mtag_0mdtag=new TH1F("dijet_mass_1mtag_0mdtag","M_{jj}",8000,0,8000);
+  mass_1mtag_0mdtag->Sumw2();
+  TH1F* mass_1mtag_1mdtag=new TH1F("dijet_mass_1mtag_1mdtag","M_{jj}",8000,0,8000);
+  mass_1mtag_1mdtag->Sumw2();
+  TH1F* mass_2mtag_0mdtag=new TH1F("dijet_mass_2mtag_0mdtag","M_{jj}",8000,0,8000);
+  mass_2mtag_0mdtag->Sumw2();
+  TH1F* mass_2mtag_1mdtag=new TH1F("dijet_mass_2mtag_1mdtag","M_{jj}",8000,0,8000);
+  mass_2mtag_1mdtag->Sumw2();
+  TH1F* mass_2mtag_2mdtag=new TH1F("dijet_mass_2mtag_2mdtag","M_{jj}",8000,0,8000);
+  mass_2mtag_2mdtag->Sumw2();
+
+  TH1F* mass_0smtag=new TH1F("dijet_mass_0smtag","M_{jj}",8000,0,8000);
+  mass_0smtag->Sumw2();
+  TH1F* mass_1smtag_0mdtag=new TH1F("dijet_mass_1smtag_0mdtag","M_{jj}",8000,0,8000);
+  mass_1smtag_0mdtag->Sumw2();
+  TH1F* mass_1smtag_1mdtag=new TH1F("dijet_mass_1smtag_1mdtag","M_{jj}",8000,0,8000);
+  mass_1smtag_1mdtag->Sumw2();
+  TH1F* mass_2smtag_0mdtag=new TH1F("dijet_mass_2smtag_0mdtag","M_{jj}",8000,0,8000);
+  mass_2smtag_0mdtag->Sumw2();
+  TH1F* mass_2smtag_1mdtag=new TH1F("dijet_mass_2smtag_1mdtag","M_{jj}",8000,0,8000);
+  mass_2smtag_1mdtag->Sumw2();
+  TH1F* mass_2smtag_2mdtag=new TH1F("dijet_mass_2smtag_2mdtag","M_{jj}",8000,0,8000);
+  mass_2smtag_2mdtag->Sumw2();
+
+  //TH1F* mass_0mtag=new TH1F("dijet_mass_0mtag","M_{jj}",8000,0,8000);
+  //mass_0mtag->Sumw2();
+  TH1F* mass_1mtag_0nstag=new TH1F("dijet_mass_1mtag_0nstag","M_{jj}",8000,0,8000);
+  mass_1mtag_0nstag->Sumw2();
+  TH1F* mass_1mtag_1nstag=new TH1F("dijet_mass_1mtag_1nstag","M_{jj}",8000,0,8000);
+  mass_1mtag_1nstag->Sumw2();
+  TH1F* mass_2mtag_0nstag=new TH1F("dijet_mass_2mtag_0nstag","M_{jj}",8000,0,8000);
+  mass_2mtag_0nstag->Sumw2();
+  TH1F* mass_2mtag_1nstag=new TH1F("dijet_mass_2mtag_1nstag","M_{jj}",8000,0,8000);
+  mass_2mtag_1nstag->Sumw2();
+  TH1F* mass_2mtag_2nstag=new TH1F("dijet_mass_2mtag_2nstag","M_{jj}",8000,0,8000);
+  mass_2mtag_2nstag->Sumw2();
+
+  TH1F* mass_0mtag_2smdtag=new TH1F("dijet_mass_0mtag_2smdtag","M_{jj}",8000,0,8000);
+  mass_0mtag_2smdtag->Sumw2();
+  TH1F* mass_1mtag_2smdtag=new TH1F("dijet_mass_1mtag_2smdtag","M_{jj}",8000,0,8000);
+  mass_1mtag_2smdtag->Sumw2();
+  TH1F* mass_2mtag_2smdtag=new TH1F("dijet_mass_2mtag_2smdtag","M_{jj}",8000,0,8000);
+  mass_2mtag_2smdtag->Sumw2();
+
+  TH1F* mass8_0mtag=new TH1F("dijet_mass8_0mtag","M_{jj}",8000,0,8000);
+  mass8_0mtag->Sumw2();
+  TH1F* mass8_1mtag_0mdtag=new TH1F("dijet_mass8_1mtag_0mdtag","M_{jj}",8000,0,8000);
+  mass8_1mtag_0mdtag->Sumw2();
+  TH1F* mass8_1mtag_1mdtag=new TH1F("dijet_mass8_1mtag_1mdtag","M_{jj}",8000,0,8000);
+  mass8_1mtag_1mdtag->Sumw2();
+  TH1F* mass8_2mtag_0mdtag=new TH1F("dijet_mass8_2mtag_0mdtag","M_{jj}",8000,0,8000);
+  mass8_2mtag_0mdtag->Sumw2();
+  TH1F* mass8_2mtag_1mdtag=new TH1F("dijet_mass8_2mtag_1mdtag","M_{jj}",8000,0,8000);
+  mass8_2mtag_1mdtag->Sumw2();
+  TH1F* mass8_2mtag_2mdtag=new TH1F("dijet_mass8_2mtag_2mdtag","M_{jj}",8000,0,8000);
+  mass8_2mtag_2mdtag->Sumw2();
+
+  //TH1F* mass_0mtag=new TH1F("dijet_mass_0mtag","M_{jj}",8000,0,8000);
+  //mass_0mtag->Sumw2();
+  TH1F* mass_1mtag_0mdltag=new TH1F("dijet_mass_1mtag_0mdltag","M_{jj}",8000,0,8000);
+  mass_1mtag_0mdltag->Sumw2();
+  TH1F* mass_1mtag_1mdltag=new TH1F("dijet_mass_1mtag_1mdltag","M_{jj}",8000,0,8000);
+  mass_1mtag_1mdltag->Sumw2();
+  TH1F* mass_2mtag_0mdltag=new TH1F("dijet_mass_2mtag_0mdltag","M_{jj}",8000,0,8000);
+  mass_2mtag_0mdltag->Sumw2();
+  TH1F* mass_2mtag_1mdltag=new TH1F("dijet_mass_2mtag_1mdltag","M_{jj}",8000,0,8000);
+  mass_2mtag_1mdltag->Sumw2();
+  TH1F* mass_2mtag_1mdtag_1mdltag=new TH1F("dijet_mass_2mtag_1mdtag_1mdltag","M_{jj}",8000,0,8000);
+  mass_2mtag_1mdtag_1mdltag->Sumw2();
+
   //---------------------------------------------------------------------------
   // Loop over events
   //---------------------------------------------------------------------------
@@ -567,6 +639,236 @@ int main(int argc, char** argv)
 	  {
               mass_2Mtag->Fill(DijetMass, weight);
 	  }
+
+
+
+
+
+
+	  if((!((JetMass1>70)&&(JetMass1<100)))&&
+	     (!((JetMass2>70)&&(JetMass2<100))))
+	  {
+              mass_0mtag->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1>0.25)))&&
+	      (!((JetMass2>70)&&(JetMass2<100))))||
+ 	     ((((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2>0.25)))&&
+	      (!((JetMass1>70)&&(JetMass1<100)))))
+	  {
+              mass_1mtag_0mdtag->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.25)))&&
+	      (!((JetMass2>70)&&(JetMass2<100))))||
+ 	     ((((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.25)))&&
+	      (!((JetMass1>70)&&(JetMass1<100)))))
+	  {
+              mass_1mtag_1mdtag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     ((JetMassDrop1>0.25)&&(JetMassDrop2>0.25)))
+	  {
+              mass_2mtag_0mdtag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     (((JetMassDrop1>0.25)&&(JetMassDrop2<0.25))||
+	      ((JetMassDrop1<0.25)&&(JetMassDrop2>0.25))))
+	  {
+              mass_2mtag_1mdtag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     ((JetMassDrop1<0.25)&&(JetMassDrop2<0.25)))
+	  {
+              mass_2mtag_2mdtag->Fill(DijetMass, weight);
+	  }
+
+
+	  if((!((JetMass1>50)&&(JetMass1<70)))&&
+	     (!((JetMass2>50)&&(JetMass2<70))))
+	  {
+              mass_0smtag->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>50)&&(JetMass1<70)&&(JetMassDrop1>0.25)))&&
+	      (!((JetMass2>50)&&(JetMass2<70))))||
+ 	     ((((JetMass2>50)&&(JetMass2<70)&&(JetMassDrop2>0.25)))&&
+	      (!((JetMass1>50)&&(JetMass1<70)))))
+	  {
+              mass_1smtag_0mdtag->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>50)&&(JetMass1<70)&&(JetMassDrop1<0.25)))&&
+	      (!((JetMass2>50)&&(JetMass2<70))))||
+ 	     ((((JetMass2>50)&&(JetMass2<70)&&(JetMassDrop2<0.25)))&&
+	      (!((JetMass1>50)&&(JetMass1<70)))))
+	  {
+              mass_1smtag_1mdtag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>50)&&(JetMass1<70))&&
+	     ((JetMass2>50)&&(JetMass2<70))&&
+	     ((JetMassDrop1>0.25)&&(JetMassDrop2>0.25)))
+	  {
+              mass_2smtag_0mdtag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>50)&&(JetMass1<70))&&
+	     ((JetMass2>50)&&(JetMass2<70))&&
+	     (((JetMassDrop1>0.25)&&(JetMassDrop2<0.25))||
+	      ((JetMassDrop1<0.25)&&(JetMassDrop2>0.25))))
+	  {
+              mass_2smtag_1mdtag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>50)&&(JetMass1<70))&&
+	     ((JetMass2>50)&&(JetMass2<70))&&
+	     ((JetMassDrop1<0.25)&&(JetMassDrop2<0.25)))
+	  {
+              mass_2smtag_2mdtag->Fill(DijetMass, weight);
+	  }
+
+
+	  //if((!((JetMass1>70)&&(JetMass1<100)))&&
+	  //   (!((JetMass2>70)&&(JetMass2<100))))
+	  //{
+          //    mass_0mtag->Fill(DijetMass, weight);
+	  //}
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetNsub1>0.5)))&&
+	      (!((JetMass2>70)&&(JetMass2<100))))||
+ 	     ((((JetMass2>70)&&(JetMass2<100)&&(JetNsub2>0.5)))&&
+	      (!((JetMass1>70)&&(JetMass1<100)))))
+	  {
+              mass_1mtag_0nstag->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetNsub1<0.5)))&&
+	      (!((JetMass2>70)&&(JetMass2<100))))||
+ 	     ((((JetMass2>70)&&(JetMass2<100)&&(JetNsub2<0.5)))&&
+	      (!((JetMass1>70)&&(JetMass1<100)))))
+	  {
+              mass_1mtag_1nstag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     ((JetNsub1>0.5)&&(JetNsub2>0.5)))
+	  {
+              mass_2mtag_0nstag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     (((JetNsub1>0.5)&&(JetNsub2<0.5))||
+	      ((JetNsub1<0.5)&&(JetNsub2>0.5))))
+	  {
+              mass_2mtag_1nstag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     ((JetNsub1<0.5)&&(JetNsub2<0.5)))
+	  {
+              mass_2mtag_2nstag->Fill(DijetMass, weight);
+	  }
+
+
+
+	  if(((JetMassDrop1>0.8)&&(JetMassDrop2>0.8))&&
+	     (!((JetMass2>70)&&(JetMass2<100)))&&
+             (!((JetMass1>70)&&(JetMass1<100))))
+	  {
+              mass_0mtag_2smdtag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMassDrop1>0.8)&&(JetMassDrop2>0.8))&&
+	     (((((JetMass1>70)&&(JetMass1<100)))&&
+	       (!((JetMass2>70)&&(JetMass2<100))))||
+ 	      ((((JetMass2>70)&&(JetMass2<100)))&&
+	       (!((JetMass1>70)&&(JetMass1<100))))))
+	  {
+              mass_1mtag_2smdtag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     ((JetMassDrop1>0.8)&&(JetMassDrop2>0.8)))
+	  {
+              mass_2mtag_2smdtag->Fill(DijetMass, weight);
+	  }
+
+
+	  if((!((JetMass1>70)&&(JetMass1<100)))&&
+	     (!((JetMass2>70)&&(JetMass2<100))))
+	  {
+              mass8_0mtag->Fill(DijetMassCA8, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1>0.25)))&&
+	      (!((JetMass2>70)&&(JetMass2<100))))||
+ 	     ((((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2>0.25)))&&
+	      (!((JetMass1>70)&&(JetMass1<100)))))
+	  {
+              mass8_1mtag_0mdtag->Fill(DijetMassCA8, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.25)))&&
+	      (!((JetMass2>70)&&(JetMass2<100))))||
+ 	     ((((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.25)))&&
+	      (!((JetMass1>70)&&(JetMass1<100)))))
+	  {
+              mass8_1mtag_1mdtag->Fill(DijetMassCA8, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     ((JetMassDrop1>0.25)&&(JetMassDrop2>0.25)))
+	  {
+              mass8_2mtag_0mdtag->Fill(DijetMassCA8, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     (((JetMassDrop1>0.25)&&(JetMassDrop2<0.25))||
+	      ((JetMassDrop1<0.25)&&(JetMassDrop2>0.25))))
+	  {
+              mass8_2mtag_1mdtag->Fill(DijetMassCA8, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     ((JetMassDrop1<0.25)&&(JetMassDrop2<0.25)))
+	  {
+              mass8_2mtag_2mdtag->Fill(DijetMassCA8, weight);
+	  }
+
+
+	  //if((!((JetMass1>70)&&(JetMass1<100)))&&
+	  //   (!((JetMass2>70)&&(JetMass2<100))))
+	  //{
+          //    mass_0mtag->Fill(DijetMass, weight);
+	  //}
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1>0.4)))&&
+	      (!((JetMass2>70)&&(JetMass2<100))))||
+ 	     ((((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2>0.4)))&&
+	      (!((JetMass1>70)&&(JetMass1<100)))))
+	  {
+              mass_1mtag_0mdltag->Fill(DijetMass, weight);
+	  }
+	  if(((((JetMass1>70)&&(JetMass1<100)&&(JetMassDrop1<0.4)))&&
+	      (!((JetMass2>70)&&(JetMass2<100))))||
+ 	     ((((JetMass2>70)&&(JetMass2<100)&&(JetMassDrop2<0.4)))&&
+	      (!((JetMass1>70)&&(JetMass1<100)))))
+	  {
+              mass_1mtag_1mdltag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     ((JetMassDrop1>0.4)&&(JetMassDrop2>0.4)))
+	  {
+              mass_2mtag_0mdltag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     (((JetMassDrop1>0.4)&&(JetMassDrop2<0.4))||
+	      ((JetMassDrop1<0.4)&&(JetMassDrop2>0.4))))
+	  {
+              mass_2mtag_1mdltag->Fill(DijetMass, weight);
+	  }
+	  if(((JetMass1>70)&&(JetMass1<100))&&
+	     ((JetMass2>70)&&(JetMass2<100))&&
+	     (((JetMassDrop1<0.25)&&(JetMassDrop2<0.4))||
+	      ((JetMassDrop1<0.4)&&(JetMassDrop2<0.25))))
+	  {
+              mass_2mtag_1mdtag_1mdltag->Fill(DijetMass, weight);
+	  }
+
+
 	}
 
   double y_min=0.5;
