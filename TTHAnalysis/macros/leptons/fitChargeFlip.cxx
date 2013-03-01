@@ -63,18 +63,18 @@ void fitChargeFlip(TString process="DY") {
         printf("Charge flip in bin %d: %.5f +/- %.5f\n", i, xs[i], xe[i]);
     }
 
-    TFile *fOut = new TFile(Form("fakeRate_chargeFlip_%s.root",process.Data()),"RECREATE");
+    TFile *fOut = new TFile(Form("QF_%s_el.root",process.Data()),"RECREATE");
     const int npt = 3, neta = 2;
     double ptbins[npt+1] = { 5.0, 20.0, 50.0, 100.0 };
     double etabins[neta+1] = { 0.0, 1.479, 2.5 };
 
     TH2F *QF_el = new TH2F("QF_el_"+process,"",npt,ptbins,neta,etabins);
     QF_el->SetBinContent(1,1, xs[0]); // low pt barrel
-    QF_el->SetBinContent(1,2, xs[1]); // high pt barrel
-    QF_el->SetBinContent(1,3, xs[1]); // high pt barrel (same as above)
-    QF_el->SetBinContent(2,1, xs[2]); // low pt endcap
+    QF_el->SetBinContent(2,1, xs[1]); // high pt barrel
+    QF_el->SetBinContent(3,1, xs[1]); // high pt barrel (same as above)
+    QF_el->SetBinContent(1,2, xs[2]); // low pt endcap
     QF_el->SetBinContent(2,2, xs[3]); // medium pt endcap
-    QF_el->SetBinContent(2,2, xs[4]); // high pt endcap
+    QF_el->SetBinContent(3,2, xs[4]); // high pt endcap
 
     QF_el->Write();
     printf("Written to %s\n", fOut->GetName());
