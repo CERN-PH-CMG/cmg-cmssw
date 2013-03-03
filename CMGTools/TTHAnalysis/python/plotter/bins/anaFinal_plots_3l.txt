@@ -18,14 +18,24 @@ m3l: m3l : 50,0,600; XTitle="m(l_{1}\,l_{2}\,l_{3}) [GeV]"
 ht3l: ht3l : 50,0,600; XTitle="pT(l_{1}\,l_{2}\,l_{3}) [GeV]"
 q3l: (LepGood1_charge + LepGood2_charge + LepGood3_charge) : 5,-1,+3; XTitle="q(l_{1}\,l_{2}\,l_{3})",XNDiv=505
 
-minMWjj_log: minMWjj: 50, 0, 500; XTitle="min m(Wjj) [GeV]",Logy, LegendCutoff=1e-3
-minMWjjPt_log: minMWjjPt: 40, 0, 300; XTitle="min m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-3
+minMWjj_log: minMWjj: 50, 0, 500; XTitle="min m(Wjj) [GeV]",Logy, LegendCutoff=1e-2
+minMWjjPt_log: minMWjjPt: 40, 0, 300; XTitle="min m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-2
 
-bestMWjj_log: bestMWjj: 40, 0, 200; XTitle="best m(Wjj) [GeV]",Logy, LegendCutoff=1e-3
-bestMWjjPt_log: bestMWjjPt: 50, 0, 300; XTitle="best m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-3
+bestMWjj_log: bestMWjj: 40, 0, 200; XTitle="best m(Wjj) [GeV]",Logy, LegendCutoff=1e-2
+bestMWjjPt_log: bestMWjjPt: 50, 0, 300; XTitle="best m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-2
 
-bestMTopHad_log: bestMTopHad: 60, 0, 500; XTitle="best m(TopHad) [GeV]",Logy,  LegendCutoff=1e-3
-bestMTopHadPt_log: bestMTopHadPt: 60, 0, 500; XTitle="best m(TopHad) pT [GeV]",Logy, LegendCutoff=1e-3
+bestMTopHad_log: bestMTopHad: 60, 0, 500; XTitle="best m(TopHad) [GeV]",Logy,  LegendCutoff=1e-2
+bestMTopHadPt_log: bestMTopHadPt: 60, 0, 500; XTitle="best m(TopHad) pT [GeV]",Logy, LegendCutoff=1e-2
+
+
+minMWjj: minMWjj: 50, 0, 500; XTitle="min m(Wjj) [GeV]"
+minMWjjPt: minMWjjPt: 40, 0, 300; XTitle="min m(Wjj) pT [GeV]"
+
+bestMWjj: bestMWjj: 40, 0, 200; XTitle="best m(Wjj) [GeV]"
+bestMWjjPt: bestMWjjPt: 50, 0, 300; XTitle="best m(Wjj) pT [GeV]"
+
+bestMTopHad: bestMTopHad: 60, 0, 500; XTitle="best m(TopHad) [GeV]"
+bestMTopHadPt: bestMTopHadPt: 60, 0, 500; XTitle="best m(TopHad) pT [GeV]"
 
 
 lep3pT: LepGood3_pt : 40, 0, 150; XTitle="pT(l_{3}) [GeV]"
