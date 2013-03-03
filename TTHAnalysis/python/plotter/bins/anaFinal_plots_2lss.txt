@@ -1,28 +1,35 @@
 
-minMllAFSS: minMllAFSS: 50,0,400 ; XTitle="min m(l^{+/-}l^{+/-}')  [GeV]"
-maxMllAFSS: maxMllAFSS: 60,0,500 ; XTitle="max m(l^{+/-}l^{+/-}')  [GeV]"
-minPtllAFSS: minPtllAFSS: 40,0,250 ; XTitle="min pT(l^{+/-}l^{+/-}')  [GeV]"
-maxPtllAFSS: maxPtllAFSS: 60,0,500 ; XTitle="min pT(l^{+/-}l^{+/-}')  [GeV]"
-minDrllAFSS: minDrllAFSS: 35,0,6 ; XTitle="min dR(l^{+/-}l^{+/-}')"
-maxDrllAFSS: maxDrllAFSS: 35,0,6 ; XTitle="max dR(l^{+/-}l^{+/-}')"
+minMllAFSS: minMllAFSS: 40,0,400 ; XTitle="min m(l^{+/-}l^{+/-}')  [GeV]"
+maxMllAFSS: maxMllAFSS: 50,0,500 ; XTitle="max m(l^{+/-}l^{+/-}')  [GeV]"
+minPtllAFSS: minPtllAFSS: 25,0,250 ; XTitle="min pT(l^{+/-}l^{+/-}')  [GeV]"
+maxPtllAFSS: maxPtllAFSS: 50,0,500 ; XTitle="min pT(l^{+/-}l^{+/-}')  [GeV]"
+minDrllAFSS: minDrllAFSS: 25,0,6 ; XTitle="min dR(l^{+/-}l^{+/-}')"
+maxDrllAFSS: maxDrllAFSS: 25,0,6 ; XTitle="max dR(l^{+/-}l^{+/-}')"
 
 nJet25 : nJet25 : 8,1.5,9.5 ; XTitle='N(jet\, p_{T} > 25)'
+q2l: (LepGood1_charge + LepGood2_charge) : 7,-2,+4; XTitle="q(l_{1}\,l_{2})",XNDiv=505
 
-m3l: m3l : 50,0,600; XTitle="m(l_{1}\,l_{2}\,l_{3}) [GeV]"
-ht3l: ht3l : 50,0,600; XTitle="pT(l_{1}\,l_{2}\,l_{3}) [GeV]"
-q2l: (LepGood1_charge + LepGood2_charge) : 5,-1,+3; XTitle="q(l_{1}\,l_{2})",XNDiv=505
+minMWjj_log: minMWjj: 50, 0, 500; XTitle="min m(Wjj) [GeV]",Logy, LegendCutoff=1e-2
+minMWjjPt_log: minMWjjPt: 40, 0, 300; XTitle="min m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-2
 
-minMWjj_log: minMWjj: 50, 0, 500; XTitle="min m(Wjj) [GeV]",Logy, LegendCutoff=1e-3
-minMWjjPt_log: minMWjjPt: 40, 0, 300; XTitle="min m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-3
+bestMWjj_log: bestMWjj: 40, 0, 200; XTitle="best m(Wjj) [GeV]",Logy, LegendCutoff=1e-2
+bestMWjjPt_log: bestMWjjPt: 50, 0, 300; XTitle="best m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-2
 
-bestMWjj_log: bestMWjj: 40, 0, 200; XTitle="best m(Wjj) [GeV]",Logy, LegendCutoff=1e-3
-bestMWjjPt_log: bestMWjjPt: 50, 0, 300; XTitle="best m(Wjj) pT [GeV]",Logy, LegendCutoff=1e-3
-
-bestMTopHad_log: bestMTopHad: 60, 0, 500; XTitle="best m(TopHad) [GeV]",Logy,  LegendCutoff=1e-3
-bestMTopHadPt_log: bestMTopHadPt: 60, 0, 500; XTitle="best m(TopHad) pT [GeV]",Logy, LegendCutoff=1e-3
+bestMTopHad_log: bestMTopHad: 50, 0, 500; XTitle="best m(TopHad) [GeV]",Logy,  LegendCutoff=1e-2
+bestMTopHadPt_log: bestMTopHadPt: 50, 0, 500; XTitle="best m(TopHad) pT [GeV]",Logy, LegendCutoff=1e-2
 
 
-jet1pT: Jet1_pt : 60,20,300; XTitle="pT(Jet_{1}) [GeV]"
-jet2pT: Jet2_pt : 60,20,300; XTitle="pT(Jet_{2}) [GeV]"
-lepEta2max: max(abs(LepGood1_eta),abs(LepGood2_eta)) : 50,0,2.5; XTitle="Max lepton eta(l_{1}\,l_{2})"
-lepEta2min: min(abs(LepGood1_eta),abs(LepGood2_eta)) : 50,0,2.5; XTitle="Min lepton eta(l_{1}\,l_{2})"
+minMWjj: minMWjj: 50, 0, 500; XTitle="min m(Wjj) [GeV]"
+minMWjjPt: minMWjjPt: 40, 0, 300; XTitle="min m(Wjj) pT [GeV]"
+
+bestMWjj: bestMWjj: 40, 0, 200; XTitle="best m(Wjj) [GeV]"
+bestMWjjPt: bestMWjjPt: 50, 0, 300; XTitle="best m(Wjj) pT [GeV]"
+
+bestMTopHad: bestMTopHad: 50, 0, 500; XTitle="best m(TopHad) [GeV]"
+bestMTopHadPt: bestMTopHadPt: 50, 0, 500; XTitle="best m(TopHad) pT [GeV]"
+
+
+jet1pT: Jet1_pt : 40,20,300; XTitle="pT(Jet_{1}) [GeV]"
+jet2pT: Jet2_pt : 40,20,300; XTitle="pT(Jet_{2}) [GeV]"
+lepEta2max: max(abs(LepGood1_eta),abs(LepGood2_eta)) : 30,0,2.5; XTitle="Max lepton eta(l_{1}\,l_{2})"
+lepEta2min: min(abs(LepGood1_eta),abs(LepGood2_eta)) : 30,0,2.5; XTitle="Min lepton eta(l_{1}\,l_{2})"
