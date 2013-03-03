@@ -549,8 +549,8 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
           if(s==0 && b==0)legA->AddEntry(it->second,it->second->GetTitle(),"F");
 
           double baseRelUnc = it->second->GetBinError(0)/it->second->Integral();
-          if(TString(it->second->GetTitle()).Contains("rightarrow ll (data)")){
-             printf("replace uncertainty %g",baseRelUnc); baseRelUnc=1.0;}
+	  //  if(TString(it->second->GetTitle()).Contains("rightarrow ll (data)")){
+          //   printf("replace uncertainty %g",baseRelUnc); baseRelUnc=1.0;}
           for(int ibin=1; ibin<=mcPlusRelUnc->GetXaxis()->GetNbins(); ibin++){
              double val = it->second->GetBinContent(ibin);
              double err = it->second->GetBinError(ibin);
@@ -599,10 +599,10 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 
 
   if(alldata){
-//      alldata->Draw("E1 same");
-      if(s==0 && b==0)legA->AddEntry(alldata,alldata->GetTitle(),"P");
+    alldata->Draw("E1 same");
+    if(s==0 && b==0)legA->AddEntry(alldata,alldata->GetTitle(),"P");
   }
-
+  
 
   TPaveText* Label = new TPaveText(0.1,0.81,0.94,0.89, "NDC");
   Label->SetFillColor(0);  Label->SetFillStyle(0);  Label->SetLineColor(0); Label->SetBorderSize(0);  Label->SetTextAlign(31);
@@ -611,7 +611,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   Label->AddText(LabelText);  Label->Draw();
 
 
-
+  
   if(s==selCh.size()-1 && b==AnalysisBins.size()-1) {
   legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);  legA->SetBorderSize(); legA->SetHeader("");
   legA->Draw("same");    legA->SetTextFont(42);}
@@ -645,7 +645,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   }
 */
   }}
-
+  t1->SetLogy(false);
   t1->cd();
   t1->Update();
   c1->cd();

@@ -14,7 +14,8 @@
 #include "CMGTools/HtoZZ2l2nu/interface/TMVAUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/MacroUtils.h"
 #include "CMGTools/HtoZZ2l2nu/interface/EventCategory.h"
-#include "CMGTools/HtoZZ2l2nu/interface/EfficiencyMap.h"
+#include "CMGTools/HtoZZ2l2nu/interface/LeptonEfficiencySF.h"
+#include "CMGTools/HtoZZ2l2nu/interface/BtagUncertaintyComputer.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -60,6 +61,8 @@ int main(int argc, char* argv[])
   
   // configure the process
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
+
+   BTagSFUtil btsfutil(1.0);
 
   bool use2011Id = runProcess.getParameter<bool>("is2011");
   cout << "Note: will apply " << (use2011Id ? 2011 : 2012) << " version of the id's" << endl;
@@ -368,7 +371,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "rho",";#rho;Events",50,0,25) ); 
   mon.addHistogram( new TH1F( "rho25",";#rho(#eta<2.5);Events",50,0,25) ); 
 
-  TString jetTypes[]={"pf"};//,"pfchs"};
+  TString jetTypes[]={"pf"};
   const size_t nJetTypes=sizeof(jetTypes)/sizeof(TString);
   TString jetRegs[]={"TK","HEin","HEout","HF"};
   const size_t nJetRegs=sizeof(jetRegs)/sizeof(TString);
@@ -439,7 +442,6 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "mindphijmet_50", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmet", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1F( "mindphijmetNM1", ";min #Delta#phi(jet,E_{T}^{miss});Events",40,0,4) );
-  mon.addHistogram( new TH1F( "mindphichsjmetNM1", ";min #Delta#phi(CHS jet,E_{T}^{miss});Events",40,0,4) );
   mon.addHistogram( new TH1D( "balance", ";E_{T}^{miss}/q_{T};Events", 25,0,2.5) );
   mon.addHistogram( new TH1D( "balance", ";|E_{T}^{miss}-q_{T}|/q_{T};Events", 25,0,1) );
   mon.addHistogram( new TH2D( "met_mindphilmet"  , ";E_{T}^{miss};min(#Delta#phi(lepton,E_{T}^{miss});Events", 50,0,250,40,0,4) );
@@ -448,8 +450,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "met_met",          ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_metaxial",     ";Axial E_{T}^{miss};Events", 50,-100,150) );
   mon.addHistogram( new TH1F( "met_metNM1",          ";Reduced E_{T}^{miss};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "met_redMetNM1",       ";Reduced E_{T}^{miss} CHS;Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "met_redMetCHSNM1",    ";E_{T}^{miss};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "met_redMetNM1",       ";Reduced E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH2F( "metvsmt",          ";E_{T}^{miss};M_{T};Events", 100,0,500,200,0,1000) );
   mon.addHistogram( new TH1F( "met_metbeforedphilmet",          ";E_{T}^{miss};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "met_met_blind",    ";E_{T}^{miss};Events", 50,0,500) );
@@ -469,7 +470,6 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH2F( "met_mvamet_vspu",    ";Pileup events; MVA E_{T}^{miss};Events", 50,0,50,50,0,250) );
   mon.addHistogram( new TH2F( "met_redMet_vspu",    ";Pileup events; Reduced E_{T}^{miss};Events", 50,0,50,50,0,250) );
   mon.addHistogram( new TH2F( "met_typeImet_vspu",  ";Pileup events; Type I E_{T}^{miss};Events", 50,0,50,50,0,250) );
-  mon.addHistogram( new TH2F( "met_redMetCHS_vspu", ";Pileup events; Type I E_{T}^{miss};Events", 50,0,50,50,0,250) );
   mon.addHistogram( new TH1F( "mt"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mtNM1"  , ";M_{T};Events", 100,0,1000) );
   mon.addHistogram( new TH1F( "mt_blind"  , ";M_{T};Events", 100,0,1000) );
@@ -627,6 +627,7 @@ int main(int argc, char* argv[])
   //  EventCategory eventCategoryInst(3); //jet(0,1,>=2)+vbf binning
   EventCategory eventCategoryInst(4); //jet(0,>=1)+vbf binning
 
+  LeptonEfficiencySF lsf(use2011Id ? 2011:2012);
 
 
   //##############################################
@@ -766,11 +767,6 @@ int main(int argc, char* argv[])
       if(!useCHS) METUtils::computeVariation(phys.jets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
       else        METUtils::computeVariation(phys.ajets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
 
-      // CHS PF
-      std::vector<PhysicsObjectJetCollection> variedCHSJets;
-      LorentzVectorCollection CHSzvvs;
-      METUtils::computeVariation(phys.ajets, phys.leptons, rawMetP4, variedCHSJets, CHSzvvs, &jecUnc);
-
       //
       // LEPTON ANALYSIS
       //
@@ -833,23 +829,24 @@ int main(int argc, char* argv[])
 	      }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_VBTF2011) ) { passIds.push_back(2); passIsos[2]=(relIso2011<0.15); if(use2011Id)  {hasGoodId=true; isIso=passIsos[2];} }
 	      if( hasObjectId(ev.mn_idbits[lpid], MID_SOFT) )     { passIds.push_back(3); passIsos[3]=true;}
+	      llScaleFactor       *= lsf.getLeptonEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),13).first;
+
 	      if(use2011Id) 
 		{
 		  try{
-		    llScaleFactor *= muonScaleFactor(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()));
-		    llTriggerEfficiency *= muonTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()));
+		    llTriggerEfficiency *= 1.0;// muonTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()));
 		  }catch(std::string &e){
 		  }
 		}
 	      else
 		{
-		  llScaleFactor *= 1;
-		  llTriggerEfficiency *= 1.0; //muonTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),2012);
+		  llTriggerEfficiency *= 1.0;
 		}
 	    }
 	  else
 	    {
 	      int wps[]={EgammaCutBasedEleId::LOOSE,EgammaCutBasedEleId::MEDIUM, EID_VBTF2011, EgammaCutBasedEleId::VETO};
+	      llScaleFactor       *= lsf.getLeptonEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),11).first;
 	      for(int iwp=0; iwp<4; iwp++)
 		{
 		  if(iwp==2 && hasObjectId(ev.en_idbits[lpid], EID_VBTF2011)) 
@@ -859,8 +856,7 @@ int main(int argc, char* argv[])
 			{ 
 			  hasGoodId=true; isIso=passIsos[2]; 
 			  try{
-			    llScaleFactor *= electronScaleFactor(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()));
-			    llTriggerEfficiency *= electronTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()));
+			    llTriggerEfficiency *= 1.0; //electronTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()));
 			  } catch(std::string &e){
 			  }
 			}
@@ -883,7 +879,6 @@ int main(int argc, char* argv[])
 		      }
 		      if(!use2011Id)
 			{
-			  llScaleFactor *= 1;
 			  llTriggerEfficiency *= 1.0; //electronTriggerEfficiency(phys.leptons[ilep].pt(),fabs(phys.leptons[ilep].eta()),2012);
 			}
 		    }
@@ -987,6 +982,8 @@ int main(int argc, char* argv[])
       //
       bool passBveto(true);
       bool passDphijmet(true);
+      //PhysicsObjectJetCollection aJets= phys.ajets; 
+      //zvvs[0]=rawMetP4;
       PhysicsObjectJetCollection aJets= variedAJets[0];
       PhysicsObjectJetCollection aGoodIdJets;
       LorentzVector aClusteredMetP4(zll); aClusteredMetP4 *= -1;
@@ -1002,7 +999,7 @@ int main(int argc, char* argv[])
 	  if(fabs(deltaPhi(aJets[ijet].phi(),zll.phi()))>2) recoilJets.push_back( aJets[ijet] );
 	  
 	  //bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_LOOSE);//TIGHT);
-	  bool isGoodJet   = hasObjectId(aJets[ijet].pid,JETID_CUTBASED_LOOSE);
+	  bool isGoodJet   = (hasObjectId(aJets[ijet].pid,JETID_CUTBASED_LOOSE) && fabs(aJets[ijet].pt())<4.7);
 	  TString reg      = getJetRegion(aJets[ijet].eta());
  	  mon.fillHisto(reg+"pfjetbeta",     tags_inc,aJets[ijet].beta,     weight);
 	  // 	  mon.fillHisto(reg+"pfjetbetastar", tags_inc,aJets[ijet].betaStar, weight);
@@ -1010,6 +1007,7 @@ int main(int argc, char* argv[])
 	  // 	  mon.fillHisto(reg+"pfjetptd",      tags_inc,aJets[ijet].ptD,      weight);
 	  // 	  mon.fillHisto(reg+"pfjetptrms",    tags_inc,aJets[ijet].ptRMS,    weight);
 	  mon.fillHisto(reg+"pfjetmva",      tags_inc,aJets[ijet].pumva,    weight);
+	  
 	  if(isGoodJet)
 	    {
 	      if(aJets[ijet].pt()>15) nAJetsGood15++;
@@ -1031,41 +1029,21 @@ int main(int argc, char* argv[])
 	    }
 	}
       if(nodphisoftjet) mindphijmet15=99999.;
-      passBveto=(nABtags[1]==0);
+      passBveto=(nABtags[2]==0);
       passDphijmet=(mindphijmet>0.5);
       if(nAJetsGood30==0) passDphijmet=(mindphijmet15>0.5);
 
-
-      //CHS jets
-      int nGoodCHSJets(0);
-      PhysicsObjectJetCollection chsJets= variedCHSJets[0];
-      LorentzVector chsClusteredMetP4(zll); chsClusteredMetP4 *= -1;
-      float mindphichsjmet(999999.),mindphichsjmet15(999999.);
-      for(size_t ijet=0; ijet< chsJets.size(); ijet++) 
-	{
-	  float idphichsjmet( fabs(deltaPhi(chsJets[ijet].phi(),CHSzvvs[0].phi()) ) );
-	  if(chsJets[ijet].pt()>15) if(idphichsjmet<mindphichsjmet15)  mindphichsjmet15=idphichsjmet;
-	  if(chsJets[ijet].pt()>30) if(idphichsjmet<mindphichsjmet)    mindphichsjmet=idphichsjmet;
-	  bool isGoodJet   = hasObjectId(chsJets[ijet].pid,JETID_CUTBASED_LOOSE);
-	  if(!isGoodJet) continue;
-	  chsClusteredMetP4 -= chsJets[ijet];	  
-	  if(chsJets[ijet].pt()>30) nGoodCHSJets++;
-	}
-      bool passDphichsjmet=(mindphichsjmet>0.5);
-      if(nGoodCHSJets==0) passDphichsjmet=(mindphichsjmet15>0.5);
-
-      //ad-hoc cut for obvious correlations between MET and a lepton
+       //ad-hoc cut for obvious correlations between MET and a lepton
       double dphil1met=fabs(deltaPhi(lep1.phi(),zvvs[0].phi()));
       double dphil2met=fabs(deltaPhi(lep2.phi(),zvvs[0].phi()));
       bool passLMetVeto(true);
       if(!use2011Id && zvvs[0].pt()>60 && min(dphil1met,dphil2met)<0.2) passLMetVeto=false;
       
       //other mets
-      METUtils::stRedMET aRedMetOut,chsRedMetOut; 
+      METUtils::stRedMET aRedMetOut;
       LorentzVector aRedMet=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, aClusteredMetP4, zvvs[0],false,&aRedMetOut);
       double aRedMetL=aRedMetOut.redMET_l;
       double aRedMetT=aRedMetOut.redMET_t;
-      LorentzVector chsRedMet=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, chsClusteredMetP4, CHSzvvs[0],false,&chsRedMetOut);
       LorentzVector assocMetP4(phys.met[1]);
       LorentzVector min3Met( min(zvvs[0], min(assocMetP4,aClusteredMetP4)) );
 
@@ -1084,12 +1062,13 @@ int main(int argc, char* argv[])
       selWord |= (pass3dLeptonVeto<<5);
       selWord |= (passBveto<<6);
       selWord |= (passDphijmet<<7);
+
       fprintf(outTxtFile,"%d %d %d %d %d %f %f\n",ev.run,ev.lumi,ev.event,selWord,nAJetsGood30,zvvs[0].pt(),aMT);
 
       //
       //RUN PRESELECTION AND CONTROL PLOTS
       //
-      if(isMC && use2011Id) weight *= llScaleFactor*llTriggerEfficiency;
+      if(isMC)         weight *= llScaleFactor*llTriggerEfficiency;
       if(hasTrigger)   mon.fillHisto("eventflow",tags_full,0,weight);
       if(passId)       mon.fillHisto("eventflow",tags_full,1,weight);
       if(passIdAndIso) mon.fillHisto("eventflow",tags_full,2,weight);
@@ -1176,7 +1155,7 @@ int main(int argc, char* argv[])
 			TString gsub_cat("eq"); gsub_cat+=min(nAJetsGood30,3); gsub_cat += "jets";
 			if(gsub_cat.Contains("3")) gsub_cat = "g"+gsub_cat;
 		        photonCats.push_back(tag_cat+gsub_cat);
-			//if(tag_subcat.Contains("vbf")) photonCats.push_back(tag_cat+"vbf");
+			if(tag_subcat.Contains("vbf")) photonCats.push_back(tag_cat+"vbf");
 			mon.fillHisto("qt",photonCats, zll.pt(),weight,true); 
 			mon.fillHisto("qmass",photonCats, zll.mass(),weight); 
 		      }
@@ -1304,7 +1283,6 @@ int main(int argc, char* argv[])
 			      mon.fillHisto("met_mvamet_vspu",      tags_full,ev.ngenITpu,mvaMetP4.pt(),      weight);
 			      mon.fillHisto("met_typeImet_vspu",    tags_full,ev.ngenITpu,fullTypeIMetP4.pt(),    weight);
 			      mon.fillHisto("met_redMet_vspu",      tags_full,ev.ngenITpu,aRedMet.pt(),weight);
-			      mon.fillHisto("met_redMetCHS_vspu",   tags_full,ev.ngenITpu,chsRedMet.pt(),weight);
 
 			      mon.fillHisto("metvsmt",tags_full,zvvs[0].pt(),aMT,weight);
 			      mon.fillHisto("mt",tags_full,aMT,weight);
@@ -1339,14 +1317,10 @@ int main(int argc, char* argv[])
       if(passZmass && passZpt && pass3dLeptonVeto              && (passDphijmet && passLMetVeto) && zvvs[0].pt()>70) { mon.fillHisto("npfjetsbtagsJPNM1", tags_full, nABtags[2] ,weight); }
       if(passZmass && passZpt && pass3dLeptonVeto && passBveto                                   && zvvs[0].pt()>70) { 
 	mon.fillHisto("mindphijmetNM1", tags_full, nAJetsGood30==0 ? mindphijmet15:mindphijmet ,weight); 
-	mon.fillHisto("mindphichsjmetNM1", tags_full, nGoodCHSJets==0 ? mindphichsjmet15:mindphichsjmet ,weight); 
       }
       if(passZmass && passZpt && pass3dLeptonVeto && passBveto && (passDphijmet && passLMetVeto)                   ) { 
 	mon.fillHisto("met_metNM1", tags_full, zvvs[0].pt() ,weight); 
 	mon.fillHisto("met_redMetNM1", tags_full, aRedMet.pt(),weight); 
-      }
-      if(passZmass && passZpt && pass3dLeptonVeto && passBveto && (passDphichsjmet && passLMetVeto)                   ) { 
-	mon.fillHisto("met_redMetCHSNM1", tags_full, chsRedMet.pt(),weight); 
       }
 
 
@@ -1387,13 +1361,17 @@ int main(int argc, char* argv[])
 	LorentzVector clusteredMetP4(zll); clusteredMetP4 *= -1;
 	bool passLocalBveto(passBveto);
 	for(size_t ijet=0; ijet<varJets.size(); ijet++){
-	    if(!hasObjectId(varJets[ijet].pid,JETID_LOOSE)) continue;
-	    clusteredMetP4 -= varJets[ijet];
-	    if( hasObjectId(varJets[ijet].pid,JETID_CUTBASED_LOOSE) ) tightVarJets.push_back( varJets[ijet] );
-	    if(varJets[ijet].pt()<30 || fabs(varJets[ijet].eta())>2.5) continue;
-	    if(ivar==15)      passLocalBveto &= (varJets[ijet].btag2<0.250);
-	    else if(ivar==16) passLocalBveto &= (varJets[ijet].btag2<0.240);
-        }
+	  if(!hasObjectId(varJets[ijet].pid,JETID_LOOSE) || fabs(varJets[ijet].eta())>4.7) continue;
+	  clusteredMetP4 -= varJets[ijet];
+	  if( hasObjectId(varJets[ijet].pid,JETID_CUTBASED_LOOSE) ) tightVarJets.push_back( varJets[ijet] );
+	  if(varJets[ijet].pt()<30 || fabs(varJets[ijet].eta())>2.5) continue;
+	  if(ivar==15)     {
+	    btsfutil.modifyBTagsWithSF(passLocalBveto, varJets[ijet].flavid, 0.98, 0.841*1.02, 1.21, 0.137*1.11);
+	  }
+	  else if(ivar==16) {
+	    btsfutil.modifyBTagsWithSF(passLocalBveto, varJets[ijet].flavid, 0.98, 0.841*0.98, 1.21, 0.137*0.89);
+	  }
+	}
 	bool passPreselection                 (passZmass && passZpt && pass3dLeptonVeto && passDphijmet && passLocalBveto && passLMetVeto);
 	bool passPreselectionMbvetoMzmass     (             passZpt && pass3dLeptonVeto && passDphijmet                   && passLMetVeto);          
 	bool passPreselectionMdphi            (passZmass && passZpt && pass3dLeptonVeto                 && passLocalBveto && passLMetVeto);
