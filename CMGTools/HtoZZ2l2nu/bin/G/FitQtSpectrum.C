@@ -7,6 +7,8 @@
 #include "TPaveText.h"
 #include "TLegend.h"
 #include "TObjArray.h"
+#include "TMath.h"
+#include "TGraphSmooth.h"
 
 #include <iostream>
 #include <vector>
@@ -14,158 +16,302 @@
 
 using namespace std;
 
-TF1 *getQtParam(std::vector<int> &thr,TString fname, TH1 *qtH);
-TGraph *getRegularizedQtParam(TF1 *qtParam,TH1F *qt, std::vector<int> &thr);
-
-//
-TF1 *getQtParam(std::vector<int> &thr,TString fname, TH1 *qtH)
-{
-  TString qtParamForm("");
-  const size_t nthr=thr.size();
-  for(size_t i=0; i<nthr; i++)
-    {
-      TString form("");
-      if(i==0)            { form += "(x<";   form += thr[i+1]; form += ")"; }
-      else if (i<nthr-1)  { form += "+(x>="; form += thr[i]; form += " && x<"; form += thr[i+1]; form += ")"; }
-      else                { form += "+(x>="; form += thr[i]; form += ")"; }
-      char buf[500];
-      sprintf(buf,"*[%lu]*pow(x/[%lu],[%lu])*exp(-x/[%lu])/(1+exp((%d-x)/[%lu]))",i*4,i*4+1,i*4+2,i*4+1,thr[i],i*4+3);
-      form += buf;
-      qtParamForm += form;
-    }
-
-  TF1 *qtParam=new TF1(fname,qtParamForm.Data(),0,1e6);
-  for(size_t i=0; i<nthr; i++)
-    {
-      float maxBinValue=qtH->GetBinContent(qtH->GetXaxis()->FindBin(thr[i+1])); 
-      qtParam->SetParLimits(i*4,   maxBinValue/100,          100000*maxBinValue);
-      qtParam->SetParLimits(i*4+1, thr[i]*0.9,thr[i]*1.1);
-      qtParam->SetParLimits(i*4+2, -10,        0);
-      qtParam->SetParLimits(i*4+3, 0.1,        3);
-    } 
-  return qtParam;
-}
-//
-TGraph *getRegularizedQtParam(TF1 *qtParam,TH1F *qt, std::vector<int> &thr)
-{
-  std::map<int,float> binsForThr;
-  for(size_t i=0; i<thr.size(); i++) 
-    {
-      int bin0=qt->FindBin(thr[i])-2;  float x0=qt->GetBinCenter(bin0);  float y0=qtParam->Eval(x0);
-      int bin1=qt->FindBin(thr[i])-1;  float x1=qt->GetBinCenter(bin1);  float y1=qt->GetBinContent(bin1);
-      int bin2=qt->FindBin(thr[i]);    float x2=qt->GetBinCenter(bin2);  float y2=qtParam->Eval(x2);
-
-      binsForThr[bin0]   = qtParam->Eval(x0);
-      binsForThr[bin1]   = qt->GetBinContent(bin1);
-      binsForThr[bin2]   = qtParam->Eval(x1);
-
-      float a=((y2-y0)*(x1-x0)-(y1-y0)*(x2-x0))/( (x2*x2-x0*x0)*(x1-x0)-(x1*x1-x0*x0)*(x2-x0) );
-      float b=(-a*(x1*x1-x0*x0)+(y1-y0))/(x1-x0);
-      float c=y0-a*x0*x0-b*x0;
-      binsForThr[bin0]=a*x0*x0+b*x0+c;
-      binsForThr[bin1]=a*x1*x1+b*x1+c;
-      binsForThr[bin2]=a*x2*x2+b*x2+c;
-
-    }
-
-  TGraph *gr = new TGraph;
-  gr->SetName(TString("reg")+qtParam->GetName());
-  for(int ibin=1; ibin<=qt->GetXaxis()->GetNbins(); ibin++)
-    {
-      Double_t x=qt->GetBinCenter(ibin);
-      Double_t y=qtParam->Eval(x); //GetBinContent(ibin);
-      if(binsForThr.find(ibin)!=binsForThr.end()) y=binsForThr[ibin];
-      gr->SetPoint(gr->GetN(),x,y);
-    }
-  gr->SetLineWidth(2);
-  gr->SetLineColor(kBlue);
-  return gr;
+TGraph *parametrizeSpectrum(TH1F *target, TPad *p);
+TGraph *getWeights(TGraph *target, TGraph *ctrl,TString name);
+TGraph *getWeightsTH1(TGraph *target, TH1F *ctrl,TString name);
+TGraph *getWeightsRatio(TH1F *target, TH1F *ctrl,TString name);
+TGraph *getWeightsSmooth(TGraph *wgtGr){
+  TGraphSmooth *gs = new TGraphSmooth(wgtGr->GetName()+TString("smooth"));
+  //TGraph *smoothWgtGr=gs->Approx(wgtGr,"linear");
+  // TGraph *smoothWgtGr=gs->SmoothKern(wgtGr,"normal",2.0);
+  //TGraph *smoothWgtGr=gs->SmoothKern(wgtGr,"normal",5.0);
+  //TGraph *smoothWgtGr=gs->SmoothLowess(wgtGr,"",0.67);
+  //TGraph *smoothWgtGr=gs->SmoothLowess(wgtGr,"",0.2);
+  //TGraph *smoothWgtGr=gs->SmoothSuper(wgtGr,"",0,0);
+  TGraph *smoothWgtGr=gs->SmoothSuper(wgtGr,"",3);
+  smoothWgtGr->SetTitle(wgtGr->GetTitle());
+  smoothWgtGr->SetFillColor(wgtGr->GetFillColor());
+  smoothWgtGr->SetFillStyle(wgtGr->GetFillStyle());
+  smoothWgtGr->SetLineColor(wgtGr->GetLineColor());
+  smoothWgtGr->SetLineStyle(wgtGr->GetLineStyle());
+  smoothWgtGr->SetMarkerColor(wgtGr->GetMarkerColor());
+  smoothWgtGr->SetMarkerStyle(wgtGr->GetMarkerStyle());
+  return smoothWgtGr;
 }
 
+TH1F *checkClosure(TH1F *target, TH1F *ctrl, TGraph *wgtGr);
+
+
 //
-TGraph *steerQtParameterization(TH1F *qt,std::vector<int> &thr,TPad *p)
+TGraph *parametrizeSpectrum(TH1F *target,TPad *p)
 {
-  TF1 *qtParam=getQtParam(thr,p->GetName()+TString("qtparam"),qt);
-  qt->Fit(qtParam,"MRQ0","",36,1000);
-  TGraph *regqt=getRegularizedQtParam(qtParam,qt,thr);
+  char buf[1000];
+
+  //instantiate fitting function (Tsallis)
+  TString fname(target->GetName());
+  //  TF1 *targetParam=new TF1(fname+"fit","[0]*(pow(1.0+[1]*(x-[2])/[3],[3])+[4]*pow(1.0+[5]*(x-[6])/[7],[7]))*x",0,1e3);
+  TF1 *targetParamLowPt=new TF1(fname+"lowptfit","[0]*x*pow(1.0+[1]*(x-[3])/[2],[2])",0,1e3);
+  targetParamLowPt->SetParLimits(0,0,target->GetMaximum());
+  targetParamLowPt->SetParLimits(1,-1,0);
+  targetParamLowPt->SetParLimits(2,-15,0);
+  targetParamLowPt->SetParLimits(3,40,60);
+  target->Fit(targetParamLowPt,"MRQ0","",0,250);
+
+  TF1 *targetParamHighPt=(TF1 *) targetParamLowPt->Clone(fname+"highptfit");
+  target->Fit(targetParamHighPt,"MRQ0","",200,1000);
   
-  //show in pad
+  double dymin(1e3),xmin(150.);
+  for(double x=50; x<=1000; x+=0.1)
+    {
+      double dy=fabs(targetParamLowPt->Eval(x)-targetParamHighPt->Eval(x))/targetParamHighPt->Eval(x);
+      if(dy>dymin) continue;
+      dymin=dy;
+      xmin=x;
+    }
+
+  //compute the chi2 per range and choose the function which best minimizes it
+  float chi2_perRange[]={0,0,0,0};
+  float ndf_perRange[]={0,0,0,0};
+  for(int ibin=1; ibin<=target->GetXaxis()->GetNbins(); ibin++)
+    {
+      float s2=pow(target->GetBinError(ibin),2);
+      if(s2==0) continue;
+
+      float x=target->GetBinCenter(ibin);
+      size_t rangeBin(x<xmin);
+
+      float dy2_lowPt  = pow(target->GetBinContent(ibin)-targetParamLowPt->Eval(x),2);
+      float dy2_highPt = pow(target->GetBinContent(ibin)-targetParamHighPt->Eval(x),2);
+      
+      chi2_perRange[rangeBin]   += dy2_lowPt/s2;  ndf_perRange[rangeBin]   += 1.0; 
+      chi2_perRange[rangeBin+2] += dy2_highPt/s2; ndf_perRange[rangeBin+2] += 1.0; 
+    }
+
+  double chi2(0.),ndf(0.);
+  TF1 *fPerRange[]={0,0};
+  for(size_t i=0; i<2; i++)
+    {
+      if(ndf_perRange[i]==0   || isnan(chi2_perRange[i]) )  { chi2_perRange[i]=1e9;   ndf_perRange[i]=1.0; }
+      if(ndf_perRange[i+2]==0 || isnan(chi2_perRange[i+2])) { chi2_perRange[i+2]=1e9; ndf_perRange[i+2]=1.0; }
+      
+      float reducedChi2_loPt=chi2_perRange[i]/ndf_perRange[i];
+      float reducedChi2_hiPt=chi2_perRange[i+2]/ndf_perRange[i+2];
+     
+      if(reducedChi2_loPt<reducedChi2_hiPt)
+	{ 
+	  fPerRange[i]=targetParamLowPt;  
+	  chi2 += chi2_perRange[i];   
+	  ndf += ndf_perRange[i];   
+	}
+      else                                                           
+	{ 
+	  fPerRange[i]=targetParamHighPt; 
+	  chi2 += chi2_perRange[i+2]; 
+	  ndf += ndf_perRange[i+2]; 
+	}
+    }
+  
+  //return as a graph
+  TGraph *regParam=new TGraph;
+  regParam->SetName(fname+TString("_fitreg"));
+  for(double x=0; x<=1500; x+=0.5)
+    {
+      Double_t y= fPerRange[ x<xmin ]->Eval(x);
+      regParam->SetPoint(regParam->GetN(),x,y);
+    }
+  regParam->SetLineWidth(2);
+  regParam->SetLineColor(kBlue);
+
+
+  //show if required
   if(p)
     {
       p->cd();
+      p->Clear();
       p->SetLogx();
       p->SetLogy();
-      qt->Draw(); 
-      qt->GetXaxis()->SetRangeUser(50,1000);
-      qt->GetXaxis()->SetTitleSize(0.07);
-      qt->GetXaxis()->SetTitleOffset(0.8);
-      qt->GetXaxis()->CenterTitle(true);
-      qt->GetXaxis()->SetLabelSize(0.06);
-      qt->GetYaxis()->SetTitleSize(0.06);
-      qt->GetYaxis()->SetTitleOffset(1.0);
-      qt->GetYaxis()->SetLabelSize(0.06);
+      target->Draw(); 
+      target->GetXaxis()->SetRangeUser(50,1000);
+      target->GetXaxis()->SetTitleSize(0.07);
+      target->GetXaxis()->SetTitleOffset(0.8);
+      target->GetXaxis()->CenterTitle(true);
+      target->GetXaxis()->SetLabelSize(0.06);
+      target->GetYaxis()->SetTitleSize(0.06);
+      target->GetYaxis()->SetTitleOffset(1.0);
+      target->GetYaxis()->SetLabelSize(0.06);
 
-      regqt->Draw("l");  
-      TPaveText *pave = new TPaveText(0.6,0.9,0.9,0.75,"brNDC");
+      targetParamHighPt->SetLineColor(kGray);
+      targetParamHighPt->Draw("lsame"); 
+      targetParamLowPt->SetLineStyle(2);
+      targetParamLowPt->SetLineColor(kGray);
+      targetParamLowPt->Draw("lsame");  
+      regParam->Draw("l");  
+      
+      TPaveText *pave = new TPaveText(0.6,0.9,0.9,0.65,"brNDC");
       pave->SetFillStyle(0);
       pave->SetBorderSize(0);
-      pave->AddText(qt->GetTitle());
+      pave->AddText(target->GetTitle());
       pave->SetTextFont(42);
-      char buf[200];
-      sprintf(buf,"#chi^{2}/ndf: %3.1f/%d",qtParam->GetChisquare(),qtParam->GetNDF());
+      pave->SetTextAlign(11);
+      sprintf(buf,"#chi^{2}/ndf: %3.0f / %3.0f",chi2,ndf);
+      pave->AddText(buf);
+      sprintf(buf,"Prob: %3.2f",TMath::Prob(chi2,ndf));
       pave->AddText(buf);
       pave->Draw("same");
     }
-  
-  return regqt;
+  return regParam;
 }
 
 
 //
-enum AnalysisMode {STANDARD, ZZ, VBFZ};
-void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=STANDARD,bool is2011=false,bool doRatio=false)
+TGraph *getWeights(TGraph *target, TGraph *ctrl,TString name)
+{
+  TString title("ee");
+  int color(1),lw(2),marker(1); 
+ if(name.BeginsWith("mumu")) 
+   {
+     title="#mu#mu";
+     color=kGreen;
+   }
+  
+  TGraph *wgtGr=new TGraph; 
+  wgtGr->SetTitle(title); 
+  wgtGr->SetName(name);
+  wgtGr->SetMarkerStyle(marker); 
+  wgtGr->SetMarkerColor(color);
+  wgtGr->SetLineColor(color);
+  wgtGr->SetLineWidth(lw);
+  wgtGr->SetFillStyle(0); 
+  for(float x=50; x<=1500; x+=1)
+    {
+      float wgt(0.);
+      if(ctrl->Eval(x)>0.001) wgt=target->Eval(x)/ctrl->Eval(x);
+      wgtGr->SetPoint(wgtGr->GetN(),x,wgt);
+    }
+
+  return wgtGr;
+}
+
+//
+TGraph *getWeightsTH1(TGraph *target, TH1F *ctrl,TString name)
+{
+  TString title("ee");
+  int color(1),lw(2),marker(1); 
+  if(name.BeginsWith("mumu")) 
+   {
+     title="#mu#mu";
+     color=kGreen;
+   }
+  cout << target << " " << ctrl << " " << name << endl;
+  TGraph *wgtGr=new TGraph; 
+  wgtGr->SetTitle(title); 
+  wgtGr->SetName(name);
+  wgtGr->SetMarkerStyle(marker); 
+  wgtGr->SetMarkerColor(color);
+  wgtGr->SetLineColor(color);
+  wgtGr->SetLineWidth(lw);
+  wgtGr->SetFillStyle(0); 
+  for(int ibin=1; ibin<=ctrl->GetXaxis()->GetNbins(); ibin++)
+    {
+      float wgt(0.);
+      float x=ctrl->GetXaxis()->GetBinCenter(ibin);
+      if(ctrl->GetBinContent(ibin)>0.001) wgt=target->Eval(x)/ctrl->GetBinContent(ibin);
+      wgtGr->SetPoint(wgtGr->GetN(),x,wgt);
+    }
+
+  return wgtGr;
+}
+
+
+//
+TGraph *getWeightsRatio(TH1F *target, TH1F *ctrl,TString name)
+{
+  TString title("ee");
+  int color(1),lw(2),marker(1); 
+  if(name.BeginsWith("mumu")) 
+   {
+     title="#mu#mu";
+     color=kGreen;
+   }
+
+  TH1F *ratio=(TH1F *)target->Clone("ratio");
+  ratio->Divide(ctrl);
+  TGraph *wgtGr=new TGraph(ratio); 
+  wgtGr->SetTitle(title); 
+  wgtGr->SetName(name);
+  wgtGr->SetMarkerStyle(marker); 
+  wgtGr->SetMarkerColor(color);
+  wgtGr->SetLineColor(color);
+  wgtGr->SetLineWidth(lw);
+  wgtGr->SetFillStyle(0); 
+  delete ratio;
+
+  return wgtGr;
+}
+
+TH1F *checkClosure(TH1F *target, TH1F *ctrl, TGraph *wgtGr)
+{
+  TString name(target->GetName()+TString("closure"));
+  TString title(target->GetTitle());
+  int color(1),lw(1),marker(1),fill(3003); 
+  if(!title.BeginsWith("ee")) 
+    {
+     title="#mu#mu";
+     color=kGreen;
+     fill=3001;
+   }
+  else
+    {
+      title="ee";
+    }
+
+  TH1F *ctrlWgt=(TH1F *)ctrl->Clone(name);
+  ctrlWgt->SetTitle(title);
+  for(int ibin=1; ibin<=ctrl->GetXaxis()->GetNbins(); ibin++)
+    {
+      float x=ctrl->GetBinCenter(ibin);
+      float y=ctrl->GetBinContent(ibin)*wgtGr->Eval(x);
+      float yerr=ctrl->GetBinError(ibin)*wgtGr->Eval(x);
+      ctrlWgt->SetBinContent(ibin,y);
+      ctrlWgt->SetBinError(ibin,yerr);
+    }
+  ctrlWgt->Divide(target);
+  ctrlWgt->SetDirectory(0);
+  ctrlWgt->SetTitle(title); 
+  ctrlWgt->SetName(name);
+  ctrlWgt->SetMarkerStyle(marker); 
+  ctrlWgt->SetMarkerColor(color);
+  ctrlWgt->SetLineColor(color);
+  ctrlWgt->SetLineWidth(lw);
+  ctrlWgt->SetFillStyle(fill); 
+  ctrlWgt->SetFillColor(color);
+
+  return ctrlWgt;
+}
+
+
+
+//
+enum WeightsMode { NOFIT, FITDILEPTON, FITBOTH, NOFITSMOOTH };
+enum KinMode     { PT, ET };
+void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=NOFIT,int kinMode=PT)
 {
   std::vector<TString> categs,titles,mcg;
-  if(mode==ZZ){
-    categs.push_back("eq0jets");
-    titles.push_back("=0jets");
-  }
-  else if(mode==VBFZ){
-   
-    categs.push_back("mjjq016"); titles.push_back("<250");
-    categs.push_back("mjjq033"); titles.push_back("250-350");
-    categs.push_back("mjjq049"); titles.push_back("350-450");
-    categs.push_back("mjjq066"); titles.push_back("450-550 GeV");
-    categs.push_back("mjjq083"); titles.push_back("550-750 GeV");
-    categs.push_back("mjjq092"); titles.push_back("#geq 750 GeV");
-    //categs.push_back("mjjq100"); titles.push_back("#geq 1 TeV");
-
-    //     for(int i=2; i<=8; i++)
-    //       {
-    // 	TString istr(""); istr+=i;
-    // 	categs.push_back("eq"+istr+"jets");
-    // 	titles.push_back("#geq "+istr+" jets");
-    //       }
-  }
-  else{
-    for(int i=0; i<=2; i++)
-      {
-	TString istr(""); istr+=i;
-	categs.push_back("eq"+istr+"jets");
-	titles.push_back("eq "+istr+" jets");
-      }
-    categs.push_back("geq3jets");
-    titles.push_back("#geq3jets");
-    //categs.push_back("eq0jets"); categs.push_back("eq1jets"); categs.push_back("eq2jets"); categs.push_back("geq3jets");  //if(mode==STANDARD) categs.push_back("vbf");
-    //titles.push_back("=0jets");  titles.push_back("=1jets");  titles.push_back("=2jets");  titles.push_back("#geq3jets"); //if(mode==STANDARD) titles.push_back("VBF");
-  }
-  mcg.push_back("EWK");
-  mcg.push_back("Fakes");
-  mcg.push_back("Prompt #gamma");
+  categs.push_back("mjjq016"); titles.push_back("<250");
+  categs.push_back("mjjq033"); titles.push_back("250-350");
+  categs.push_back("mjjq049"); titles.push_back("350-450");
+  categs.push_back("mjjq066"); titles.push_back("450-550");
+  categs.push_back("mjjq083"); titles.push_back("550-750");
+  categs.push_back("mjjq092"); titles.push_back("#geq 750");
+  const size_t ncategs=categs.size();
+  
+  //mc for closure
+  //  mcg.push_back("V#gamma");
+  //  mcg.push_back("Multijets");
+  mcg.push_back("#gamma+jets");
   TString mcdy("Z#rightarrow ll");
 
-
-  const size_t ncategs=categs.size();
+  //plots to save in file
   TObjArray toSave;
 
   gStyle->SetOptStat(0);
@@ -184,8 +330,17 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
   TCanvas *mcwc=new TCanvas("mcwc","mcwc",ncategs*400,400);
   mcwc->Divide(ncategs,1);
 
+  TCanvas *ctc=new TCanvas("ctc","ctc",ncategs*400,400);
+  ctc->Divide(ncategs,1);
+
+  TCanvas *mcctc=new TCanvas("mcctc","mcctc",ncategs*400,400);
+  mcctc->Divide(ncategs,1);
+  
+
   TString llDir("data");
   if(url==gUrl) llDir="data (ll)";
+  TString llVar("qt");
+  if(kinMode==ET) llVar="et";
 
   for(size_t icat=0; icat<ncategs; icat++)
     {
@@ -195,8 +350,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 
       //mass distribution
       TH1F *eemass=(TH1F *) fIn->Get(llDir+"/ee_qmass");      
-      //if(eemass==0) eemass=(TH1F *) fIn->Get(llDir+"/ee_zmass");      
-      if(mode!=ZZ && eemass){
+      if(eemass){
 	eemass->SetName("ee"+categs[icat]+"_zmass");
 	eemass->SetDirectory(0);
 	toSave.Add(eemass);
@@ -204,21 +358,20 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 
       //mass distributions
       TH1F *mmmass=(TH1F *) fIn->Get(llDir+"/mumu_qmass");      
-      //if(mmmass==0)mmmass=(TH1F *) fIn->Get(llDir+"/mumu_zmass");      
-      if(mode!=ZZ && mmmass){
+      if(mmmass){
 	mmmass->SetName("mumu"+categs[icat]+"_zmass");
 	mmmass->SetDirectory(0);
 	toSave.Add(mmmass);
       }
 
       //qt distributions
-      TH1F *mmqt = (TH1F *)fIn->Get(llDir+"/mumu"+categs[icat]+"_qt");
-      TH1F *eeqt = (TH1F *)fIn->Get(llDir+"/ee"+categs[icat]+"_qt");  
+      TH1F *mmqt = (TH1F *)fIn->Get(llDir+"/mumu"+categs[icat]+"_"+llVar);
+      TH1F *eeqt = (TH1F *)fIn->Get(llDir+"/ee"+categs[icat]+"_"+llVar);  
       TH1F *gqt  = (TH1F *)gIn->Get("data (#gamma)/mumu"+categs[icat]+"_qt");
       if(categs[icat]=="mjjq092")
 	{
-	  mmqt->Add( (TH1F *)fIn->Get(llDir+"/mumumjjq100_qt") );
-	  eeqt->Add( (TH1F *)fIn->Get(llDir+"/eemjjq100_qt") );
+	  mmqt->Add( (TH1F *)fIn->Get(llDir+"/mumumjjq100_"+llVar) );
+	  eeqt->Add( (TH1F *)fIn->Get(llDir+"/eemjjq100_"+llVar) );
 	  gqt->Add(  (TH1F *)gIn->Get("data (#gamma)/mumumjjq100_qt") );
 	}
 
@@ -227,46 +380,69 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	  mmqt->SetDirectory(0); 
 	  mmqt->SetName("mm"+categs[icat]);   
 	  mmqt->SetTitle("#mu#mu,"+titles[icat]);
-	 
+	  mmqt->Rebin();
+
 	  eeqt->SetDirectory(0); 
 	  eeqt->SetName("ee"+categs[icat]);   
 	  eeqt->SetTitle("ee,"+titles[icat]);
-	  
+	  eeqt->Rebin();
+
 	  gqt->SetDirectory(0);  
 	  gqt->SetName("gamma"+categs[icat]); 
 	  gqt->SetTitle("#gamma,"+titles[icat]);
+	  gqt->Rebin();
 	}
       
       TH1F *mcgqt=0,*mcmmqt=0,*mceeqt=0;
       for(size_t imcg=0; imcg<mcg.size(); imcg++)
 	{
-	  TH1F *ih=(TH1F *)fIn->Get(mcdy+"/mumu"+categs[icat]+"_qt");
+	  TH1F *ih=(TH1F *)fIn->Get(mcdy+"/mumu"+categs[icat]+"_"+llVar);
 	  if(ih!=0)
 	    {
 	      mcmmqt=ih;
 	      mcmmqt->SetDirectory(0);
 	      mcmmqt->SetName("mcmm"+categs[icat]);
 	      mcmmqt->SetTitle("#mu#mu,"+titles[icat]);
+	      if(categs[icat]=="mjjq092")
+		mcmmqt->Add( (TH1F *)fIn->Get(mcdy+"/mumumjjq100_"+llVar) );
 	    }
-	  ih=(TH1F *)fIn->Get(mcdy+"/ee"+categs[icat]+"_qt");
+
+	  ih=(TH1F *)fIn->Get(mcdy+"/ee"+categs[icat]+"_"+llVar);
 	  if(ih!=0)
 	    {
-	      mceeqt=ih;
+	      mceeqt=(TH1F *)ih->Clone("mcee"+categs[icat]);
 	      mceeqt->SetDirectory(0);
-	      mceeqt->SetName("mcee"+categs[icat]);
 	      mceeqt->SetTitle("ee,"+titles[icat]);
+	      if(categs[icat]=="mjjq092")
+		mceeqt->Add( (TH1F *)fIn->Get(mcdy+"/eemjjq100_"+llVar) );
 	    }
+
 	  ih  = (TH1F *)gIn->Get(mcg[imcg]+"/mumu"+categs[icat]+"_qt");
-	  if(ih==0) continue;
-	  if(mcgqt==0)
+	  if(ih!=0)
 	    {
-	      mcgqt=ih;
-	      mcgqt->SetDirectory(0);  
-	      mcgqt->SetName("mcgamma"+categs[icat]); 
-	      mcgqt->SetTitle("#gamma,"+titles[icat]);
+	      if(mcgqt==0)
+		{
+		  mcgqt=ih;
+		  mcgqt->SetDirectory(0);  
+		  mcgqt->SetName("mcgamma"+categs[icat]); 
+		  mcgqt->SetTitle("#gamma,"+titles[icat]);
+		}
+	      else
+		mcgqt->Add(ih);
+	      if(categs[icat]=="mjjq092")
+		mcgqt->Add(  (TH1F *)gIn->Get("data (#gamma)/mumumjjq100_qt") );
 	    }
-	  else
-	    mcgqt->Add(ih);
+	}
+      if(mcgqt && mcmmqt && mceeqt)
+	{
+	  mcmmqt->SetDirectory(0);
+	  mcmmqt->Rebin();
+
+	  mceeqt->SetDirectory(0);
+	  mceeqt->Rebin();
+
+	  mcgqt->SetDirectory(0);
+	  mcgqt->Rebin();
 	}
       
       fIn->Close();
@@ -281,159 +457,138 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	  TPad *p=(TPad *)c->cd(icat+1);      
 	  p->Divide(1,3);
 
-	  std::vector<int> thr;	  
-	  if(is2011){
-	    thr.push_back(55);
-	    thr.push_back(80);
-	    thr.push_back(95);
-	    thr.push_back(125);
-	  }
-	  else{
-	    if(mode==VBFZ)
-	      {
-		thr.push_back(50); 
-		//thr.push_back(80);
-		thr.push_back(95);
-	      }
-	    else
-	      {
-		thr.push_back(50); 
-		thr.push_back(80); 
-		thr.push_back(95); 
-	      }
-	  }
-	  // 	  if(categs[icat]=="mjjq100"){
-	  // 	    mmqt->Rebin();
-	  // 	    eeqt->Rebin();
-	  // 	  }
-	  TGraph *regmmqt = steerQtParameterization(mmqt,thr,(TPad *)p->cd(1)); 
-	  TGraph *regeeqt = steerQtParameterization(eeqt,thr,(TPad *)p->cd(2));
-	  
-	  thr.clear();
-	  if(is2011){
-	    thr.push_back(50);
-	    thr.push_back(70);
-	    thr.push_back(85);
-	    thr.push_back(125);
-	  }
-	  else{
-	    thr.push_back(55); 
-	    thr.push_back(75);
-	    thr.push_back(92); 
-	    thr.push_back(140); 
-	  }
-	  TGraph *reggqt = steerQtParameterization(gqt,thr,(TPad *)p->cd(3));
-	  
-	  TGraph *eewgtGr=new TGraph; eewgtGr->SetTitle("ee");     eewgtGr->SetName("ee"+categs[icat]+"_qt_datafitwgts");
-	  TGraph *mmwgtGr=new TGraph; mmwgtGr->SetTitle("#mu#mu"); mmwgtGr->SetName("mumu"+categs[icat]+"_qt_datafitwgts");
-	  for(int ibin=1; ibin<=gqt->GetXaxis()->GetNbins(); ibin++)
+	  p->cd(); TGraph *regmmqt = parametrizeSpectrum(mmqt,(TPad *)p->cd(1));
+	  p->cd(); TGraph *regeeqt = parametrizeSpectrum(eeqt,(TPad *)p->cd(2));
+	  p->cd(); TGraph *reggqt  = parametrizeSpectrum(gqt,(TPad *)p->cd(3));
+    
+	  TGraph *eewgtGr=0,*mmwgtGr=0;
+	  if(mode==NOFIT || mode ==NOFITSMOOTH)
 	    {
-	      float x=gqt->GetBinCenter(ibin);
-	      if(reggqt->Eval(x)<0.01) continue;
-	      if(x<50) continue;
-	      float wgt=regeeqt->Eval(x)/reggqt->Eval(x);
-	      eewgtGr->SetPoint(eewgtGr->GetN(),x,wgt);
-	      wgt=regmmqt->Eval(x)/reggqt->Eval(x);
-	      mmwgtGr->SetPoint(eewgtGr->GetN(),x,wgt);
+	      eewgtGr = getWeightsRatio(eeqt,gqt,"ee"  +categs[icat]+"_qt_datafitwgts");
+	      mmwgtGr = getWeightsRatio(mmqt,gqt,"mumu"+categs[icat]+"_qt_datafitwgts");
+	      if(mode==NOFITSMOOTH)
+		{
+		  eewgtGr=getWeightsSmooth(eewgtGr);
+		  mmwgtGr=getWeightsSmooth(mmwgtGr);
+		}
+	    }
+	  else if(mode==FITDILEPTON)
+	    {
+	      eewgtGr = getWeightsTH1(regeeqt,gqt,"ee"  +categs[icat]+"_qt_datafitwgts");
+	      mmwgtGr = getWeightsTH1(regmmqt,gqt,"mumu"+categs[icat]+"_qt_datafitwgts");
+	    }
+	  else
+	    {
+	      eewgtGr = getWeights(regeeqt,reggqt,"ee"  +categs[icat]+"_qt_datafitwgts");
+	      mmwgtGr = getWeights(regmmqt,reggqt,"mumu"+categs[icat]+"_qt_datafitwgts");
 	    }
 
-	  //override with direct weights
-	  if(doRatio)
-	    {
-	      TH1 *eewgts=(TH1 *) eeqt->Clone(); eewgts->Divide(gqt); eewgts->SetDirectory(0);
-	      eewgtGr=new TGraph(eewgts); eewgtGr->SetTitle("ee");     eewgtGr->SetName("ee"+categs[icat]+"_qt_datafitwgts");
-	      TH1 *mmwgts=(TH1 *) mmqt->Clone(); mmwgts->Divide(mcgqt);  mmwgts->SetDirectory(0);
-	      mmwgtGr=new TGraph(mmwgts); mmwgtGr->SetTitle("#mu#mu"); mmwgtGr->SetName("mumu"+categs[icat]+"_qt_datafitwgts");
-	    }	      
+	  TH1F *eeClosure=checkClosure(eeqt,gqt,eewgtGr);
+	  TH1F *mmClosure=checkClosure(mmqt,gqt,mmwgtGr);
+
 
 	  wc->cd();
 	  p=(TPad *) wc->cd(icat+1); 
-	  eewgtGr->Draw("al"); eewgtGr->SetMarkerStyle(1); eewgtGr->SetMarkerColor(1); eewgtGr->SetFillStyle(0); eewgtGr->SetLineColor(1);      eewgtGr->SetLineWidth(2);
-	  mmwgtGr->Draw("l");  mmwgtGr->SetMarkerStyle(1); mmwgtGr->SetMarkerColor(kGreen); mmwgtGr->SetFillStyle(0); mmwgtGr->SetLineColor(kGreen); mmwgtGr->SetLineWidth(2);
+	  p->SetLogy();
+	  p->SetLogx();
+	  eewgtGr->Draw("al");
+	  mmwgtGr->Draw("l");
 	  eewgtGr->GetXaxis()->SetTitle("q_{T} [GeV]");
 	  eewgtGr->GetYaxis()->SetTitle("Weight");
 	  eewgtGr->GetXaxis()->SetRangeUser(50,1000);
-	  //eewgtGr->GetYaxis()->SetRangeUser(0,0.1);
+	  eewgtGr->GetYaxis()->SetRangeUser(1e-3,10);
 	  TLegend *leg=p->BuildLegend(0.2,0.68,0.45,0.88,titles[icat]);
 	  leg->SetFillStyle(0);
 	  leg->SetBorderSize(0);
 	  leg->SetTextFont(42);
 	  toSave.Add(eewgtGr);
 	  toSave.Add(mmwgtGr);
+
+	  ctc->cd();
+	  p=(TPad *) ctc->cd(icat+1); 
+	  p->SetLogx();
+	  eeClosure->Draw("e2");      eeClosure->Fit("pol1","QM"); 
+	  mmClosure->Fit("pol1","QM","same");
+	  eeClosure->GetXaxis()->SetTitle("q_{T} [GeV]");
+	  eeClosure->GetYaxis()->SetTitle("Bias");
+	  eeClosure->GetXaxis()->SetRangeUser(50,1000);
+	  eeClosure->GetYaxis()->SetRangeUser(0,2);
+	  leg=p->BuildLegend(0.2,0.68,0.45,0.88,titles[icat]);
+	  leg->SetFillStyle(0);
+	  leg->SetBorderSize(0);
+	  leg->SetTextFont(42);
 	}
 
       //
       // MC PHOTON SAMPLES -> REWEIGHT TO DATA (fix me for mc closure test)
       //
-      mceeqt=(TH1F *) eeqt->Clone(TString("mc")+eeqt->GetName());
-      mcmmqt=(TH1F *) mmqt->Clone(TString("mc")+mmqt->GetName());
+      //mceeqt=(TH1F *) eeqt->Clone(TString("mc")+eeqt->GetName());
+      //mcmmqt=(TH1F *) mmqt->Clone(TString("mc")+mmqt->GetName());
       if(mcgqt && mceeqt && mcmmqt)
 	{
 	  mcc->cd();
 	  TPad *p=(TPad *) mcc->cd(icat+1);
 	  p->Divide(1,3);
 
-	  std::vector<int> thr;
-	  thr.clear();
-	  thr.push_back(50); 
-	  //thr.push_back(80);
-	  //thr.push_back(90); 
-	  thr.push_back(150);
-	  thr.push_back(250);
-	  p->cd(1); mcmmqt->Draw("e1");
-	  TGraph *regmcmmqt = steerQtParameterization(mcmmqt,thr,(TPad *)p->cd(1)); 
-	  p->cd(2); mceeqt->Draw("e1");
-	  TGraph *regmceeqt = steerQtParameterization(mceeqt,thr,(TPad *)p->cd(2));
+	  TGraph *regmcmmqt = parametrizeSpectrum(mcmmqt,(TPad *)p->cd(1));
+	  TGraph *regmceeqt = parametrizeSpectrum(mceeqt,(TPad *)p->cd(2));
+	  TGraph *regmcgqt  = parametrizeSpectrum(mcgqt,(TPad *)p->cd(3));
 	  
-	  thr.clear();
-	  thr.push_back(50); 
-	  //	  thr.push_back(80);
-	  thr.push_back(150);
-	  thr.push_back(300);
-	  if( categs[icat].Contains("eq2jets") ) thr.push_back(500);
-	  //else                                   thr.push_back(300); 
-	  p->cd(3); mcgqt->Draw("e1");
-	  TGraph *regmcgqt  = steerQtParameterization(mcgqt,thr,(TPad *)p->cd(3));
-	  
-	  p=(TPad *) mcwc->cd(icat+1);
-
-	  TGraph *mceewgtGr=new TGraph; mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
-	  TGraph *mcmmwgtGr=new TGraph; mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
-	  for(int ibin=1; ibin<=mcgqt->GetXaxis()->GetNbins(); ibin++)
+	  TGraph *mceewgtGr=0,*mcmmwgtGr=0;
+	  if(mode==NOFIT || mode==NOFITSMOOTH)
 	    {
-	      float x=mcgqt->GetBinCenter(ibin);
-	      if(regmcgqt->Eval(x)<0.01) continue;
-	      if(x<50) continue;
-	      float wgt=regmceeqt->Eval(x)/regmcgqt->Eval(x);
-	      mceewgtGr->SetPoint(mceewgtGr->GetN(),x,wgt);
-	      wgt=regmcmmqt->Eval(x)/regmcgqt->Eval(x);
-	      mcmmwgtGr->SetPoint(mcmmwgtGr->GetN(),x,wgt);
+	      mceewgtGr = getWeightsRatio(mceeqt,mcgqt,"ee"  +categs[icat]+"_qt_mcfitwgts");
+	      mcmmwgtGr = getWeightsRatio(mcmmqt,mcgqt,"mumu"  +categs[icat]+"_qt_mcfitwgts");
+	      if(mode==NOFITSMOOTH)
+		{
+		  mceewgtGr=getWeightsSmooth(mceewgtGr);
+		  mcmmwgtGr=getWeightsSmooth(mcmmwgtGr);
+		}
 	    }
-
-	  //override with direct weights
-	  if(doRatio)
+	  else if(mode==FITDILEPTON)
 	    {
-	      TH1 *mceewgts=(TH1 *) mceeqt->Clone(); mceewgts->Divide(mcgqt);
-	      mceewgtGr=new TGraph(mceewgts); mceewgtGr->SetTitle("ee");     mceewgtGr->SetName("ee"+categs[icat]+"_qt_mcfitwgts");
-	      TH1 *mcmmwgts=(TH1 *) mcmmqt->Clone(); mcmmwgts->Divide(mcgqt); 
-	      mcmmwgtGr=new TGraph(mcmmwgts); mcmmwgtGr->SetTitle("#mu#mu"); mcmmwgtGr->SetName("mumu"+categs[icat]+"_qt_mcfitwgts");
+	      mceewgtGr = getWeightsTH1(regmceeqt,mcgqt,"ee"  +categs[icat]+"_qt_mcfitwgts");
+	      mcmmwgtGr = getWeightsTH1(regmcmmqt,mcgqt,"mumu"  +categs[icat]+"_qt_mcfitwgts");
 	    }
-
+	  else
+	    {
+	      mceewgtGr = getWeights(regmceeqt,regmcgqt,"ee"  +categs[icat]+"_qt_mcfitwgts");
+	      mcmmwgtGr = getWeights(regmcmmqt,regmcgqt,"mumu"  +categs[icat]+"_qt_mcfitwgts");
+	    }
 	  
-	  mceewgtGr->Draw("al"); mceewgtGr->SetMarkerColor(1);      mceewgtGr->SetFillStyle(0); mceewgtGr->SetLineColor(1);      mceewgtGr->SetLineWidth(2);
-	  mcmmwgtGr->Draw("l");  mcmmwgtGr->SetMarkerColor(kGreen); mcmmwgtGr->SetFillStyle(0); mcmmwgtGr->SetLineColor(kGreen); mcmmwgtGr->SetLineWidth(2);
+	  TH1F *mceeClosure=checkClosure(mceeqt,mcgqt,mceewgtGr);
+	  TH1F *mcmmClosure=checkClosure(mcmmqt,mcgqt,mcmmwgtGr);
+
+	  mcwc->cd();
+	  p=(TPad *) mcwc->cd(icat+1);	  
+	  p->SetLogy();
+	  p->SetLogx();
+	  mceewgtGr->Draw("al");
+	  mcmmwgtGr->Draw("l"); 
 	  mceewgtGr->GetXaxis()->SetTitle("q_{T} [GeV]");
 	  mceewgtGr->GetYaxis()->SetTitle("Weight");
 	  mceewgtGr->GetXaxis()->SetRangeUser(50,1000);
-	  mceewgtGr->GetYaxis()->SetRangeUser(0,0.1);
-	  TLegend *leg=p->BuildLegend();
+	  mceewgtGr->GetYaxis()->SetRangeUser(1e-3,10);
+	  TLegend *leg=p->BuildLegend(0.2,0.68,0.45,0.88,titles[icat]);
 	  leg->SetFillStyle(0);
 	  leg->SetBorderSize(0);
 	  leg->SetTextFont(42);
-	  leg->SetHeader(titles[icat]);
-	  
 	  toSave.Add(mceewgtGr);
 	  toSave.Add(mcmmwgtGr);
+	  
+	  mcctc->cd();
+	  p=(TPad *) mcctc->cd(icat+1); 
+	  p->SetLogx();
+	  mceeClosure->Draw("e2");      mceeClosure->Fit("pol1","QM");
+	  mcmmClosure->Fit("pol1","QM","same"); 
+	  mceeClosure->GetXaxis()->SetTitle("q_{T} [GeV]");
+	  mceeClosure->GetYaxis()->SetTitle("Bias");
+	  mceeClosure->GetXaxis()->SetRangeUser(50,1000);
+	  mceeClosure->GetYaxis()->SetRangeUser(0,2);
+	  leg=p->BuildLegend(0.2,0.68,0.45,0.88,titles[icat]);
+	  leg->SetFillStyle(0);
+	  leg->SetBorderSize(0);
+	  leg->SetTextFont(42);
 	}
     }
   

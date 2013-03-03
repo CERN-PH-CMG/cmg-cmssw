@@ -534,7 +534,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    t1->Draw();
    t1->cd();
    if(!noLog) t1->SetLogy(true);
-   float maximumFound(noLog);
+   float maximumFound(false);//noLog);
 
    TLegend* legA  = new TLegend(0.845,0.2,0.99,0.99, "NDC"); 
    //   TLegend* legA  = new TLegend(0.51,0.93,0.67,0.75, "NDC"); 
@@ -693,7 +693,7 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    }
 
    //compare data and MC
-   if(showChi2 && data && mc && data->Integral()>0 && mc->Integral()>0)
+   if(showChi2)
      {
        TPaveText *pave = new TPaveText(0.6,0.85,0.8,0.9,"NDC");
        pave->SetBorderSize(0);
@@ -701,8 +701,20 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
        pave->SetTextAlign(32);
        pave->SetTextFont(42);
        char buf[100];
-       sprintf(buf,"#chi^{2}/ndof : %3.2f", data->Chi2Test(mc,"WWCHI2/NDF") );
-       pave->AddText(buf);
+       if(data && mc && data->Integral()>0 && mc->Integral()>0)
+	 {
+	   sprintf(buf,"#chi^{2}/ndof : %3.2f", data->Chi2Test(mc,"WWCHI2/NDF") );
+	   pave->AddText(buf);
+	 }
+       if(mc && spimpose.size()>0 && mc->Integral()>0)
+	 {
+	   for(size_t ip=0; ip<spimpose.size(); ip++)
+	     {
+	       if(spimpose[ip]->Integral()<=0) continue;
+	       sprintf(buf,"#chi^{2}/ndof : %3.2f, K-S prob: %3.2f", spimpose[ip]->Chi2Test(mc,"WWCHI2/NDF"), spimpose[ip]->KolmogorovTest(mc) );
+	       pave->AddText(buf);
+	     }
+	 }
        pave->Draw();
      }
    
@@ -711,7 +723,8 @@ void Draw1DHistogram(JSONWrapper::Object& Root, std::string RootDir, NameAndType
    T->SetFillStyle(0);  T->SetLineColor(0);
    T->SetTextAlign(22);
    char Buffer[1024]; 
-   if(isSim) sprintf(Buffer, "CMS simulation, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
+   //if(isSim) sprintf(Buffer, "CMS simulation, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
+   if(isSim) sprintf(Buffer, "CMS simulation, #sqrt{s}=%.1f TeV", iEcm);
    else      sprintf(Buffer, "CMS preliminary, #sqrt{s}=%.1f TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", iEcm, iLumi/1000);
    T->AddText(Buffer);
    T->Draw("same");

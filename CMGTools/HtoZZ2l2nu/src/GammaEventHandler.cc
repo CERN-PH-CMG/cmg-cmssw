@@ -8,7 +8,6 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
 {
   //trigger thresholds to consider
   isMC_ = runProcess.getParameter<bool>("isMC");
-  isMC_=false;
 
   //open file and retrieve weights + mass shapes
   std::vector<std::string> gammaPtWeightsFiles =  runProcess.getParameter<std::vector<std::string> >("weightsFile");  
@@ -21,6 +20,7 @@ GammaEventHandler::GammaEventHandler(const edm::ParameterSet &runProcess)
       TFile *fwgt=TFile::Open(gammaPtWeightsFile);
       if(fwgt)
 	{
+	  cout << "[GammaEventHandler] retrieving weights from: " << gammaPtWeightsFile << endl;
 	  TString wgtName("qt");
 	  TString wgtType( isMC_ ? "mcfitwgts" : "datafitwgts");
 	  if (gammaPtWeightsFile.Contains("nvtx")) 
@@ -110,29 +110,12 @@ bool GammaEventHandler::isGood(PhysicsEvent_t &phys, bool is2011)
 	  triggerThr_=75; 
 	  triggerWgt_=phys.gammaPrescale[3];
 	}
-      else if(pt>=100/* && pt<170*/)
+      else if(pt>=100)
 	{
 	  if( !( (phys.gammaTriggerWord>>4) & 0x1) ) return isGoodEvent_;
 	  triggerThr_=90; 
 	  triggerWgt_=phys.gammaPrescale[4];
 	}
-      /*      else if(pt>=170)
-	{
-	  bool has150(( (phys.gammaTriggerWord>>6) & 0x1));
-	  bool has160(( (phys.gammaTriggerWord>>7) & 0x1));
-	  if(!has150 && !has160) return isGoodEvent_;
-	  if(has150)
-	    {
-	      triggerThr_=150; 
-	      triggerWgt_=phys.gammaPrescale[6];
-	    }
-	  else
-	    {
-	      triggerThr_=160; 
-	      triggerWgt_=phys.gammaPrescale[7];
-	    }
-	}
-      */
     }
   else {   triggerThr_ =( phys.cat-22)/1000; triggerWgt_=1;}
   
@@ -166,29 +149,11 @@ std::map<TString,float> GammaEventHandler::getWeights(PhysicsEvent_t &phys, TStr
       key = dilCats[id]+evCategoryLabel;
       float weight(1.0);//wgtsH_.size() ? 0.0 : 1.0);
       for(std::map<TString, std::map<TString,TGraph *> >::iterator wIt = wgtsH_.begin(); wIt != wgtsH_.end(); wIt++)
-	//      for(std::map<TString, std::map<TString,TH1 *> >::iterator wIt = wgtsH_.begin(); wIt != wgtsH_.end(); wIt++)
 	{
-	  if(wIt->second.find(key) == wIt->second.end()) continue; // { cout << key; continue; }
+	  if(wIt->second.find(key) == wIt->second.end()) { /*cout << key << " not found" << endl;*/ continue; }
 	  TGraph *h = wIt->second[key];
-	  //TH1 *h = wIt->second[key];
-	  if(!isMC_)
-	    {
-	      weight=h->Eval(gamma.pt());
-	      //if(gamma.pt()>900)                        weight=h->Eval(900);
-	      //if(key.Contains("vbf") && gamma.pt()>600) weight=h->Eval(600);
-	    }
-	  else
-	    {
-	      for(int ip=1; ip<h->GetN()-1; ip++)
-		{
-		  Double_t xm1,x0,xp1,y;
-		  h->GetPoint(ip-1,xm1,y);
-		  h->GetPoint(ip+1,xp1,y);
-		  h->GetPoint(ip,x0,y);
-		  if(gamma.pt()>=0.5*(x0+xm1) && gamma.pt()<0.5*(x0+xp1)) {weight=y; break;}
-		}
-	    }
-	  
+	  weight=h->Eval(gamma.pt());
+	  //if(gamma.pt()>900)                        weight=h->Eval(900);
 	  if(weight<0) weight=0;
 	}
       evWeights_[dilCats[id]]=weight;

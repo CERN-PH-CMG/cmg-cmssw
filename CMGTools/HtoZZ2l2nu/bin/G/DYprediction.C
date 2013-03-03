@@ -134,16 +134,16 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       histos.push_back("vbfmjj");
       histos.push_back("vbfcandjet1eta");
       histos.push_back("vbfcandjet2eta");
-      histos.push_back("vbfcandjetpt");
+      //histos.push_back("vbfcandjetpt");
       histos.push_back("vbfcandjet1pt");
       histos.push_back("vbfcandjet2pt");
       histos.push_back("vbfcjv15");
       //       histos.push_back("vbfcjv20");
       //       histos.push_back("vbfhtcjv");
-      //       histos.push_back("vbfhtcjv15");
+      histos.push_back("vbfhtcjv15");
       //       histos.push_back("vbfhtcjv20");
       histos.push_back("vbfdphijj");
-      histos.push_back("vbfpt");
+      //  histos.push_back("vbfpt");
       //       histos.push_back("vbfmaxcjvjpt");
       //histos.push_back("zpt_cm");
       //       histos.push_back("jjpt_cm");
@@ -154,8 +154,8 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //       histos.push_back("jet_zstar_asym_cm");
       //       histos.push_back("jet_z_asym_cm");
       //       histos.push_back("jet_beam_asym_cm");
-      histos.push_back("met");
-      histos.push_back("metL");
+      //histos.push_back("met");
+      // histos.push_back("metL");
       // histos.push_back("mt");
       histos.push_back("dijet_deta_shapes");
       
@@ -645,7 +645,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
 
   bool canvasIsFilled(false);
   THStack *stack=0;
-  TH1 *mc=0,*vbfmc=0;
+  TH1 *mc=0,*vbfmc=0,*instrBckg=0;
   if(shape.bckg.size())
     {
       mc=(TH1 *)shape.totalBckg->Clone("mc");
@@ -693,6 +693,8 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
 	    {
 	      stack->Add(h,"HIST");
 	      legA->AddEntry(h,itit,"F");
+	      cout << itit << endl;
+	      if(itit.Contains("QCD Z")) instrBckg=h;
 	    }
 	}
 
@@ -727,6 +729,19 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       mc->Add((TH1 *)stack->GetStack()->At( stack->GetStack()->GetEntriesFast()-1) );
       mc->SetDirectory(0);
    
+      if(model==VBFZ && mc && shape.data && instrBckg)
+	{
+	  float totalMC= mc->Integral();
+	  float totalData=shape.data->Integral();
+	  float totalInstr=instrBckg->Integral();
+	  if(totalMC>0 && totalInstr>0) {
+	    float sf=totalData/totalMC;
+	    float sfdy=1.0+(sf-1.0)*totalMC/totalInstr;
+	    cout << sf << " " << sfdy << endl;
+	    instrBckg->Scale(sfdy);
+	  }
+	}
+
       TGraphErrors *mcgr=new TGraphErrors;
       for(int ibin=1; ibin<=mc->GetXaxis()->GetNbins(); ibin++)
 	{
@@ -757,6 +772,8 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       char buf[100];
       sprintf(buf,"#chi^{2}/ndof : %3.2f", shape.data->Chi2Test(mc,"WWCHI2/NDF") );
       pave->AddText(buf);
+      //sprintf(buf,"K-S prob: %3.2f", shape.data->KolmogorovTest(mc,"") );
+      //pave->AddText(buf);
       pave->Draw();
     }
 

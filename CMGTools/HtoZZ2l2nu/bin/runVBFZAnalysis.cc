@@ -192,7 +192,10 @@ int main(int argc, char* argv[])
 //   for(size_t i=0; i<15; i++)  qtaxis[60+i]=200+10*i; //200-340                                                                                                                                    
 //   for(size_t i=0; i<25; i++)  qtaxis[75+i]=350+25*i; //350-976                                        
 //   mon.addHistogram( new TH1D( "qt",        ";p_{T}^{#gamma} [GeV];Events / (2.5 GeV)",99,qtaxis));
-  mon.addHistogram( new TH1F( "qt",        ";p_{T}^{#gamma} [GeV/c];Events / (2.5 GeV/c)",1500,0,1500));
+  mon.addHistogram( new TH1F( "qt",        ";p_{T}^{#gamma} [GeV];Events / (1 GeV)",1500,0,1500));
+  mon.addHistogram( new TH1F( "et",        ";E_{T}^{#gamma} [GeV];Events / (1 GeV)",1500,0,1500));
+  mon.addHistogram( new TH1F( "minmgtj",    ";min M(#gamma,tag jet) [GeV];Events / (1 GeV)",250,0,500));
+  mon.addHistogram( new TH1F( "minmgj",    ";min M(#gamma,jet) [GeV];Events / (1 GeV)",250,0,500));
   mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "zptNM1", ";p_{T}^{ll};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 50,-10,10) );
@@ -665,7 +668,7 @@ int main(int argc, char* argv[])
       float detalj;
       float hardpt(0), dphijj(0), maxPt(0), minPt(0), maxEta(0), minEta(0), detajj(0), zepp(0), mjj(0),ptjj(0);
       float jet1_beam_cm(0),jet2_beam_cm(0),z_beam_cm(0),jet1_z_cm(0),jet2_z_cm(0),jet1_zstar_cm(0),jet2_zstar_cm(0),zpt_cm(0),jjpt_cm(0);
-      int ncjv(0), ncjv15(0),ncjv20(0), htcjv(0), htcjv15(0),htcjv20(0),maxcjpt(0);
+      int ncjv(0), ncjv15(0),ncjv20(0), htcjv(0), htcjv15(0),htcjv20(0),maxcjpt(0),minmgtj(0);
       std::vector<float> eta3;
 
       if(nAJetsLoose>=2)
@@ -677,6 +680,9 @@ int main(int argc, char* argv[])
 	  maxEta=max(jet1.eta(),jet2.eta());
 	  minEta=min(jet1.eta(),jet2.eta());
 	  detajj=maxEta-minEta;
+	  LorentzVector mgj1=jet1+zll;
+	  LorentzVector mgj2=jet2+zll;
+	  minmgtj = min(mgj1.mass(),mgj2.mass());
 	  
 	  float detal1j=TMath::Min( fabs(jet1.eta()-leadingLep.eta()), fabs(jet2.eta()-leadingLep.eta()) );
 	  float detal2j=TMath::Min( fabs(jet1.eta()-trailerLep.eta()), fabs(jet2.eta()-trailerLep.eta()) );
@@ -801,7 +807,10 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("eventflow",tags,4,weight);
 
 	      selTags = getDijetCategories(mjj,detajj,tags);
+	      mon.fillHisto("minmgtj", selTags, minmgtj, weight);      
+	      mon.fillHisto("minmgj", selTags, minmbj, weight);      
 	      mon.fillHisto("qt", selTags, zll.pt(), weight,true);      
+	      mon.fillHisto("et", selTags, zll.Et(), weight,true);      
 	      mon.fillHisto("njetsvsavginstlumi", tags, nAJetsLoose,ev.curAvgInstLumi,weight);
 	      mon.fillHisto("vbfcandjetpt",  selTags, maxPt,weight);
 	      mon.fillHisto("vbfcandjetpt",  selTags, minPt,weight);

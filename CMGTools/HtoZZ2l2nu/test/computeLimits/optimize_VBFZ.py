@@ -229,7 +229,10 @@ elif(phase == 3 ):
    ictr=1
    for c in cut_lines:
       if(len(c.split())<2): continue
-      print '\t #%s \t %s \t %s \t %s'%(c.split()[2],c.split()[0],c.split()[6],c.split()[7])
+      try :
+         print '%d)\t #%s \t %s \t %s \t %s'%(ictr,c.split()[2],c.split()[0],c.split()[6],c.split()[7])
+      except:
+         continue
       ictr+=1
    print "Which option you want to keep?"
 
