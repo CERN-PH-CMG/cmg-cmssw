@@ -1,7 +1,6 @@
-effS : ttH : .* : 1.2
-TTW  : TTW : .* : 1.3
-TTZ  : TTZ : .* : 1.3
-TTFR : TT  : .* : 1.4
-TTFR : TW  : .* : 1.4
-WZFR : WZ  : .* : 1.2
-DYFR : DY  : .* : 2.0
+effS   : ttH : .* : 1.2
+TTW    : TTW : .* : 1.3
+TTZ    : TTZ : .* : 1.3
+FR     : FR_.*  : .* : 1.4
+QF     : QF_.*  : .* : 1.2
+Mistag : (WZ|ZZ|VVV) : .* : 1.2

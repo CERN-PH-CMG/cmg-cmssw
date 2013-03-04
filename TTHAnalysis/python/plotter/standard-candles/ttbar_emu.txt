@@ -1,5 +1,5 @@
 2L OF/OS: nLepGood >= 2 && abs(LepGood1_pdgId+LepGood2_pdgId)==2
-lep MVA: min(LepGood1_mva,LepGood2_mva) >= -0.2
+lep MVA: min(LepGood1_mvaNew,LepGood2_mvaNew) >= -0.2
 mll > 12: minMllAFOS > 12
 #pt > 20/20: LepGood2_pt > 20
 #>= 2 jets: nJet25 == 0
