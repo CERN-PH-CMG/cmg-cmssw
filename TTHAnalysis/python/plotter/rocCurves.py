@@ -95,6 +95,8 @@ if __name__ == "__main__":
     parser = OptionParser(usage="%prog [options] mc.txt cuts.txt plotfile.txt")
     addROCMakerOptions(parser)
     parser.add_option("-o", "--out", dest="out", default=None, help="Output file name. by default equal to plots -'.txt' +'.root'");
+    parser.add_option("--xrange", dest="xrange", default=None, nargs=2, type='float', help="X axis range");
+    parser.add_option("--yrange", dest="yrange", default=None, nargs=2, type='float', help="X axis range");
     (options, args) = parser.parse_args()
     mca  = MCAnalysis(args[0],options)
     cut = CutsFile(args[1],options).allCuts()
@@ -126,6 +128,10 @@ if __name__ == "__main__":
     allrocs.Draw("APL");
     allrocs.GetXaxis().SetTitle("Eff Background")
     allrocs.GetYaxis().SetTitle("Eff Signal")
+    if options.xrange:
+        allrocs.GetXaxis().SetRangeUser(options.xrange[0], options.xrange[1])
+    if options.yrange:
+        allrocs.GetYaxis().SetRangeUser(options.yrange[0], options.yrange[1])
     allrocs.Draw()
     doLegend(rocs)
     c1.Print(outname.replace(".root","")+".png")
