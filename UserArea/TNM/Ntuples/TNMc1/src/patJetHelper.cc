@@ -9,6 +9,7 @@
 
 #include <fastjet/PseudoJet.hh>
 #include "Njettiness.hh"
+#include "GeneralizedEnergyCorrelator.hh"
 
 //-----------------------------------------------------------------------------
 using namespace std;
@@ -77,6 +78,34 @@ float JetHelper::getTau(int num) const
     NsubParameters paraNsub = NsubParameters(1.0, 0.7); //assume R=0.7 jet clusering used
     Njettiness routine(Njettiness::onepass_kt_axes, paraNsub);
     return routine.getTau(num, FJparticles); 
+}
+
+
+float JetHelper::getC2beta(float beta) const
+{
+    vector<const reco::PFCandidate*> all_particles;
+    if(object->isPFJet())
+    {
+       for (unsigned k =0; k < object->getPFConstituents().size(); k++)
+          all_particles.push_back( object->getPFConstituent(k).get() );
+    } else {
+       for (unsigned j = 0; j < object->numberOfDaughters(); j++){
+          reco::PFJet const *pfSubjet = dynamic_cast <const reco::PFJet *>(object->daughter(j));
+          if (!pfSubjet) break;
+          for (unsigned k =0; k < pfSubjet->getPFConstituents().size(); k++)
+	     all_particles.push_back( pfSubjet->getPFConstituent(k).get() );	
+       }
+    }
+    vector<fastjet::PseudoJet> FJparticles;
+    for (unsigned particle = 0; particle < all_particles.size(); particle++){
+        const reco::PFCandidate *thisParticle = all_particles.at(particle);
+        FJparticles.push_back( fastjet::PseudoJet( thisParticle->px(), thisParticle->py(), thisParticle->pz(), thisParticle->energy() ) );	
+    }
+    fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 2.0);
+    fastjet::ClusterSequence clust_seq(FJparticles, jet_def);
+    vector<fastjet::PseudoJet> incluisve_jets = clust_seq.inclusive_jets(0);
+    fastjet::GeneralizedEnergyCorrelatorRatio C2beta(2,beta,fastjet::pT_R);
+    return C2beta(incluisve_jets[0]);
 }
 
 float JetHelper::getJetCharge(float kappa) const
