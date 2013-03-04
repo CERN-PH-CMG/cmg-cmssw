@@ -6,7 +6,7 @@ TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
 TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
 #TTV 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
 #TTV 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
-#TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
+TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
 VVV 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet
 VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet
 WW 	 : WWJets:     5.995    ;  FillColor=ROOT.kBlue-9
@@ -17,21 +17,23 @@ ZZ 	 : ZZ2mu2tau:  0.1767   ;  FillColor=ROOT.kAzure-9
 ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9   
 ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
 ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
-#TT 	 : TTLep:      23.64    ;  FillColor=ROOT.kGray
-TT 	 : TTJets:     225.2    ;  FillColor=ROOT.kGray
+TT 	 : TTLep:      23.64    ;  FillColor=ROOT.kGray
+#TT 	 : TTJets:     225.2    ;  FillColor=ROOT.kGray
 #TTl      : TTLep:      23.64 : ((LepGood1_mcMatchId > 0) + (LepGood2_mcMatchId > 0) == 2)   ;  FillColor=ROOT.kGray, Label="TT ll"
 #TTf      : TTJets:     225.2 : ((LepGood1_mcMatchId > 0) + (LepGood2_mcMatchId > 0) <= 1)  ;  FillColor=ROOT.kGray, Label="TT f"
 TW 	 : TtW:        11.73    ;  FillColor=ROOT.kGray+2
 TW 	 : TbartW:     11.73    ;  FillColor=ROOT.kGray+2
 DY       : DYJetsM10 : 915      ;  FillColor=ROOT.kCyan
-#DY      : DYJetsM50 : 3503.7   ;  FillColor=ROOT.kCyan
-DY       : DY1JetsM50 : 666.3   ;  FillColor=ROOT.kCyan
-DY       : DY2JetsM50 : 215.0   ;  FillColor=ROOT.kCyan
-DY       : DY3JetsM50 :  60.7   ;  FillColor=ROOT.kCyan
-DY       : DY4JetsM50 :  27.4   ;  FillColor=ROOT.kCyan
-#WGs 	 : WGs2MU:     1.914    ;  FillColor=ROOT.kAzure-9
-#WGs 	 : WGs2E:      5.873    ;  FillColor=ROOT.kAzure-9
-#WGs 	 : WGs2Tau:    0.336    ;  FillColor=ROOT.kAzure-9
+#DY       : DYJetsM50 : 3503.7   ;  FillColor=ROOT.kCyan
+DY      : DY1JetsM50 : 666.3   ;  FillColor=ROOT.kViolet-4
+DY      : DY2JetsM50 : 215.0   ;  FillColor=ROOT.kViolet-4
+DY      : DY3JetsM50 :  60.7   ;  FillColor=ROOT.kViolet-4
+DY      : DY4JetsM50 :  27.4   ;  FillColor=ROOT.kViolet-4
+WGs 	 : WGs2MU:     1.914    ;  FillColor=ROOT.kAzure-9
+WGs 	 : WGs2E:      5.873    ;  FillColor=ROOT.kAzure-9
+WGs 	 : WGs2Tau:    0.336    ;  FillColor=ROOT.kAzure-9
+TTG      : TTG     : 1.444      ;  FillColor=ROOT.kGrey+3    
+ZG       : ZG      : 165.7      ;  FillColor=ROOT.kViolet-3
 #WJets   : WJets    : 37509.0   ;  FillColor=ROOT.kRed
 WJets    : W1Jets    : 6642.0   ;  FillColor=ROOT.kCyan+2
 WJets    : W2Jets    : 2152.0   ;  FillColor=ROOT.kCyan+2
@@ -52,3 +54,4 @@ data     : MuEGC
 data     : MuEGRec
 data     : MuEGD
 data     : MuEGBadSIP
+
