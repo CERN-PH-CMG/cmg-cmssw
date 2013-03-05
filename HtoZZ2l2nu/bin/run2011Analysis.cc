@@ -983,7 +983,7 @@ int main(int argc, char* argv[])
       bool passBveto(true);
       bool passDphijmet(true);
       //PhysicsObjectJetCollection aJets= phys.ajets; 
-      //zvvs[0]=rawMetP4;
+      // zvvs[0]=rawMetP4;
       PhysicsObjectJetCollection aJets= variedAJets[0];
       PhysicsObjectJetCollection aGoodIdJets;
       LorentzVector aClusteredMetP4(zll); aClusteredMetP4 *= -1;
@@ -993,40 +993,35 @@ int main(int argc, char* argv[])
       PhysicsObjectJetCollection recoilJets;
       for(size_t ijet=0; ijet<aJets.size(); ijet++) 
 	{
+	  //bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_LOOSE);//TIGHT);
+	  bool isGoodJet   = (hasObjectId(aJets[ijet].pid,JETID_CUTBASED_LOOSE) && fabs(aJets[ijet].eta())<4.7);
+	  if(!isGoodJet) continue;
+
 	  float idphijmet( fabs(deltaPhi(aJets[ijet].phi(),zvvs[0].phi()) ) );
 	  if(aJets[ijet].pt()>15) if(idphijmet<mindphijmet15)  mindphijmet15=idphijmet;
 	  if(aJets[ijet].pt()>30) if(idphijmet<mindphijmet)  mindphijmet=idphijmet;
 	  if(fabs(deltaPhi(aJets[ijet].phi(),zll.phi()))>2) recoilJets.push_back( aJets[ijet] );
-	  
-	  //bool isGoodJet    =hasObjectId(aJets[ijet].pid,JETID_LOOSE);//TIGHT);
-	  bool isGoodJet   = (hasObjectId(aJets[ijet].pid,JETID_CUTBASED_LOOSE) && fabs(aJets[ijet].pt())<4.7);
+
 	  TString reg      = getJetRegion(aJets[ijet].eta());
  	  mon.fillHisto(reg+"pfjetbeta",     tags_inc,aJets[ijet].beta,     weight);
-	  // 	  mon.fillHisto(reg+"pfjetbetastar", tags_inc,aJets[ijet].betaStar, weight);
-	  // 	  mon.fillHisto(reg+"pfjetdrmean",   tags_inc,aJets[ijet].dRMean,   weight);
-	  // 	  mon.fillHisto(reg+"pfjetptd",      tags_inc,aJets[ijet].ptD,      weight);
-	  // 	  mon.fillHisto(reg+"pfjetptrms",    tags_inc,aJets[ijet].ptRMS,    weight);
 	  mon.fillHisto(reg+"pfjetmva",      tags_inc,aJets[ijet].pumva,    weight);
+	  if(aJets[ijet].pt()>15) nAJetsGood15++;
+	  if(aJets[ijet].pt()>30)nAJetsGood30++;
+	  aClusteredMetP4 -= aJets[ijet];	  
 	  
-	  if(isGoodJet)
-	    {
-	      if(aJets[ijet].pt()>15) nAJetsGood15++;
-	      if(aJets[ijet].pt()>30)nAJetsGood30++;
-	      aClusteredMetP4 -= aJets[ijet];	  
-	      aGoodIdJets.push_back(aJets[ijet]);
+	  aGoodIdJets.push_back(aJets[ijet]);
 		      
-	      if(aJets[ijet].pt()<30) continue;
-	      if(fabs(aJets[ijet].eta())<2.5) 
-		{
-		  nABtags[0] += (aJets[ijet].btag1>2.0);
-		  nABtags[1] += (aJets[ijet].btag2>0.244);
-		  nABtags[2] += (aJets[ijet].btag3>0.275);
-		}
-	      nAJetsLoose      += hasObjectId(aJets[ijet].pid,JETID_LOOSE);
-	      nAJetsTight      += hasObjectId(aJets[ijet].pid,JETID_TIGHT);
-	      nAJetsPUIdLoose  += hasObjectId(aJets[ijet].pid,JETID_OPT_LOOSE);
-	      nAJetsPUIdMedium += hasObjectId(aJets[ijet].pid,JETID_OPT_MEDIUM);
+	  if(aJets[ijet].pt()<30) continue;
+	  if(fabs(aJets[ijet].eta())<2.5) 
+	    {
+	      nABtags[0] += (aJets[ijet].btag1>2.0);
+	      nABtags[1] += (aJets[ijet].btag2>0.244);
+	      nABtags[2] += (aJets[ijet].btag3>0.275);
 	    }
+	  nAJetsLoose      += hasObjectId(aJets[ijet].pid,JETID_LOOSE);
+	  nAJetsTight      += hasObjectId(aJets[ijet].pid,JETID_TIGHT);
+	  nAJetsPUIdLoose  += hasObjectId(aJets[ijet].pid,JETID_OPT_LOOSE);
+	  nAJetsPUIdMedium += hasObjectId(aJets[ijet].pid,JETID_OPT_MEDIUM);
 	}
       if(nodphisoftjet) mindphijmet15=99999.;
       passBveto=(nABtags[2]==0);
