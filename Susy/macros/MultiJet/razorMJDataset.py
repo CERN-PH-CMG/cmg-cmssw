@@ -24,7 +24,8 @@ def getFiles(datasets, user, pattern):
     files = []
     for d in datasets:
         ds = datasetToSource(
-                             os.environ['USER'],
+                             'wreece',
+                             #os.environ['USER'],
                              d,
                              pattern
                              )
@@ -289,6 +290,28 @@ struct Filters{\
     jet_veto = std.vector('int')()
     tree.Branch('jet_veto',jet_veto)
 
+    muLoose_pt = std.vector('double')()
+    tree.Branch('muLoose_pt',muLoose_pt)
+    muLoose_eta = std.vector('double')()
+    tree.Branch('muLoose_eta',muLoose_eta)
+
+    muTight_pt = std.vector('double')()
+    tree.Branch('muTight_pt',muTight_pt)
+    muTight_eta = std.vector('double')()
+    tree.Branch('muTight_eta',muTight_eta)
+  
+   
+    eleLoose_pt = std.vector('double')()
+    tree.Branch('eleLoose_pt',eleLoose_pt)
+    eleLoose_eta = std.vector('double')()
+    tree.Branch('eleLoose_eta',eleLoose_eta)
+
+    eleTight_pt = std.vector('double')()
+    tree.Branch('eleTight_pt',eleTight_pt)
+    eleTight_eta = std.vector('double')()
+    tree.Branch('eleTight_eta',eleTight_eta)
+
+
     # use Varparsing object
     print 'inputFiles:',options.inputFiles
     events = Events(options)
@@ -353,6 +376,17 @@ struct Filters{\
         jet_veto.clear()
 
         pftau_mt.clear()
+
+        muLoose_pt.clear()
+        muLoose_eta.clear()
+        muTight_pt.clear()
+        muTight_eta.clear()
+       
+        eleLoose_pt.clear()
+        eleLoose_eta.clear()
+        eleTight_pt.clear()
+        eleTight_eta.clear()
+       
 
         vars.pileUpWeight = 1.0
 
@@ -493,6 +527,16 @@ struct Filters{\
         info.nMuonLoose = len(muonH.product())
         info.nTauLoose = len(tauH.product())
 
+        #get leading and subleading leptons pt/eta for data/MC scaling
+        if len(muonH.product()):
+            for mu in muonH.product()[:2]:
+                muLoose_pt.push_back(mu.pt())
+                muLoose_eta.push_back(mu.eta())
+        if len(electronH.product()):
+            for ele in electronH.product()[:2]:
+                eleLoose_pt.push_back(ele.pt())
+                eleLoose_eta.push_back(ele.eta())
+
         #loop over loose PF taus
         for t in tauH.product():
             pftau_mt.push_back(mt(t,met))
@@ -501,6 +545,17 @@ struct Filters{\
         event.getByLabel(('razorMJElectronTight'),electronH)
         event.getByLabel(('razorMJMuonTight'),muonH)
         event.getByLabel(('razorMJTauTight'),tauH)
+
+        #get leading and subleading leptons pt/eta for data/MC scaling
+        if len(muonH.product()):
+            for mu in muonH.product()[:2]:
+                muTight_pt.push_back(mu.pt())
+                muTight_eta.push_back(mu.eta())
+        if len(electronH.product()):
+            for ele in electronH.product()[:2]:
+                eleTight_pt.push_back(ele.pt())
+                eleTight_eta.push_back(ele.eta())
+
         #
         info.nElectronTight = len(electronH.product())
         info.nMuonTight = len(muonH.product())
@@ -599,7 +654,7 @@ struct Filters{\
                 event.getByLabel(('razorMJMetDown'),metH)
                 met = metH.product()[0]
                 event.getByLabel(('razorMJDiHemiLepBoxDown'),hemiLepH)
-                if hemiLepH.isValid():
+                if hemiLepH.isValid() and len( hemiLepH.product())>0.:
                     hemi = hemiLepH.product()[0]
                     vars.RSQ_JES_DOWN = hemi.Rsq()
                     vars.MR_JES_DOWN = hemi.mR()
@@ -720,7 +775,7 @@ struct Filters{\
 
 
         #TODO: Place some cut here
-        if skimEvents and vars.RSQ < 0.03 or vars.MR < 300:
+        if skimEvents and vars.RSQ < 0.05 or vars.MR < 350:
             continue
 
         tree.Fill()
