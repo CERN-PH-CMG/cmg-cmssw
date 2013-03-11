@@ -29,6 +29,8 @@ ROOT.gROOT.SetStyle('Plain') # white background
 njets_h  = ROOT.TH1F('njets',";Jet multiplicity; Events",10,0,10)
 mjj_h    = ROOT.TH1F('mjj',";M_{jj} [GeV]; Events",100,0,3000)
 detajj_h = ROOT.TH1F('detajj',";|#Delta #eta_{jj}|; Events",100,0,8)
+leadetaj_h = ROOT.TH1F('leadetaj',";max |#eta_{j}|; Events",100,0,6)
+traileretaj_h = ROOT.TH1F('traileretaj',";min |#eta_{j}|; Events",100,0,6)
 
 mjj_mpi_h = mjj_h.Clone('mjj_mpi')
 detajj_mpi_h = detajj_h.Clone('detajj_mpi')
@@ -99,6 +101,9 @@ for event in events:
     dijet=j1.p4()+j2.p4()
     mjj_h.Fill(dijet.mass())
     detajj_h.Fill(abs(j1.eta()-j2.eta()))
+    leadetaj_h.Fill(max(abs(j1.eta()),abs(j2.eta())))
+    traileretaj_h.Fill(min(abs(j1.eta()),abs(j2.eta())))
+                     
     if(j1Orig==1 or j2Orig==1) :
         mjj_mpi_h.Fill(dijet.mass())
         detajj_mpi_h.Fill(abs(j1.eta()-j2.eta()))
@@ -117,3 +122,10 @@ c.cd(3)
 detajj_h.Draw()
 detajj_mpi_h.Draw()
 c.Print ('njets.png')
+
+fOut=ROOT.TFile("plots.root","RECREATE")
+fOut.cd()
+mjj_h.Write()
+detajj_h.Write()
+leadetaj_h.Write()
+traileretaj_h.Write()

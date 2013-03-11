@@ -5,7 +5,7 @@
 # with command line options: Configuration/GenProduction/python/EightTeV/Hadronizer_MgmMatchTuneZ2star_8TeV_madgraph_tauola_cff.py --step GEN --conditions START53_V7A::All --pileup 2012_Summer_50ns_PoissonOOTPU --datamix NODATAMIXER --eventcontent AODSIM --datatier GEN --filetype=EDM --filein=/store/cmst3/user/psilva/Madgraph/DYJJ01Jets/lhe/events_edm.root -n -1
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process('GEN')
+process = cms.Process('HAD')
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -27,8 +27,11 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    secondaryFileNames = cms.untracked.vstring(),
-    fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Madgraph/DYJJ01Jets/lhe/events_edm.root')
+			    secondaryFileNames = cms.untracked.vstring(),
+			    #fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Madgraph/DYJJ01Jets/lhe/events_edm.root')
+			    fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Phantom/genh125_lhe.root')
+			    #fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Phantom/qcdnotop_lhe.root')
+			    #fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/Phantom/qcdtop_lhe.root')
 )
 
 process.options = cms.untracked.PSet(
