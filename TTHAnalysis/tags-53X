@@ -7,7 +7,7 @@ cvs co -r U09-04-03-00-01 DataFormats/MuonReco
 # Egamma official recipe for corrections/smearing
 cvs co -r V09-00-00 RecoEgamma/EgammaTools
 cvs co -r V00-00-30 -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools 
-cvs co -r Moriond_2013_V00 EgammaAnalysis/ElectronTools
+cvs co -r Moriond_2013_V01-1 EgammaAnalysis/ElectronTools
 patch -p0 < $CMSSW_BASE/src/CMGTools/TTHAnalysis/PatElectronEnergyCalibrator-fwliteCompatible.patch
 
 # Fix muon SIP from Mike
