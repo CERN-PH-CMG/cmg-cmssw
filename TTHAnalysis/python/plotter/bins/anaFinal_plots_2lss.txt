@@ -33,3 +33,7 @@ jet1pT: Jet1_pt : 40,20,300; XTitle="pT(Jet_{1}) [GeV]"
 jet2pT: Jet2_pt : 40,20,300; XTitle="pT(Jet_{2}) [GeV]"
 lepEta2max: max(abs(LepGood1_eta),abs(LepGood2_eta)) : 30,0,2.5; XTitle="Max lepton eta(l_{1}\,l_{2})"
 lepEta2min: min(abs(LepGood1_eta),abs(LepGood2_eta)) : 30,0,2.5; XTitle="Min lepton eta(l_{1}\,l_{2})"
+
+
+finalMVA: FinalMVA_2LSS_BDTG : 30, -1, 1; XTitle="BDT output", Legend='TL'
+finalMVA_log: FinalMVA_2LSS_BDTG : 30, -1, 1; XTitle="BDT output",Logy, LegendCutoff=1e-3,  Legend='TL'

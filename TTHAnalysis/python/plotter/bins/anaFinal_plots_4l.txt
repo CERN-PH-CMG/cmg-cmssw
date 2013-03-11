@@ -44,11 +44,12 @@ bestMTopHadPt: bestMTopHadPt: 60, 0, 500; XTitle="best m(TopHad) pT [GeV]"
 
 metLD: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD",  Legend='TR'
 metLD_log: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD",Logy, LegendCutoff=1e-3,  Legend='TR'
-met: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
-met_log: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy, LegendCutoff=1e-3
+met: met: 40,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
+met_log: met: 40,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy, LegendCutoff=1e-3
 
 
 jet1pT: Jet1_pt : 50,20,300; XTitle="pT(Jet_{1}) [GeV]"
 jet2pT: Jet2_pt : 40,20,250; XTitle="pT(Jet_{2}) [GeV]"
 
-
+finalMVA: FinalMVA_4L_BDTG : 30, -1, 1; XTitle="BDT output"
+finalMVA_log: FinalMVA_4L_BDTG : 30, -1, 1; XTitle="BDT output",Logy, LegendCutoff=1e-3,  Legend='TR'

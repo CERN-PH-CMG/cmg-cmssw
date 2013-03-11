@@ -35,25 +35,26 @@ ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
 #WJets    : W2Jets    : 2152.0   ;  FillColor=ROOT.kCyan+2
 #WJets    : W3Jets    : 638.4    ;  FillColor=ROOT.kCyan+2
 #WJets    : W4Jets    : 263.2    ;  FillColor=ROOT.kCyan+2
-data     : DoubleMuAB
-data     : DoubleMuC
-data     : DoubleMuRec
-data     : DoubleMuD
-data     : DoubleMuBadSIP
-data     : DoubleElectronAB
-data     : DoubleElectronC
-data     : DoubleElectronRec
-data     : DoubleElectronD
-data     : DoubleElectronBadSIP
-data     : MuEGAB
-data     : MuEGC
-data     : MuEGRec
-data     : MuEGD
-data     : MuEGBadSIP
+#data     : DoubleMuAB
+#data     : DoubleMuC
+#data     : DoubleMuRec
+#data     : DoubleMuD
+#data     : DoubleMuBadSIP
+#data     : DoubleElectronAB
+#data     : DoubleElectronC
+#data     : DoubleElectronRec
+#data     : DoubleElectronD
+#data     : DoubleElectronBadSIP
+#data     : MuEGAB
+#data     : MuEGC
+#data     : MuEGRec
+#data     : MuEGD
+#data     : MuEGBadSIP
 #TTq   : TTLep:     23.64 : ((LepGood1_mcMatchId > 0) + (LepGood2_mcMatchId > 0) == 2)   ;  FillColor=210, Label="TT MC."
 FR_tt : TTJets    : 225.2    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_2lss.txt', Label='Top FR'
 FR_tt : TtW       : 11.73    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_2lss.txt', Label='Top FR'
 FR_tt : TbartW    : 11.73    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_2lss.txt', Label='Top FR'
+FR_tt : TTG      : 1.444      ;  FillColor=ROOT.kGray, FakeRate='fakeRate_2lss.txt', Label='Top FR'
 FR_wj : W1Jets    : 6642.0   ;  FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='WJets FR'
 FR_wj : W2Jets    : 2152.0   ;  FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='WJets FR'
 FR_wj : W3Jets    : 638.4    ;  FillColor=ROOT.kCyan+2, FakeRate='fakeRate_2lss.txt', Label='WJets FR'
