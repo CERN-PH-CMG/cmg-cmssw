@@ -18,7 +18,7 @@ for i in ${tag[@]}; do
     fi
 
     if [ "$step" == "2" ]; then
-	runPlotter --json data/dy-samples_${i}.json --inDir ${outdir}/dy/${i} --noPlot --iLumi 19577 --iEcm 8 --outFile ${outdir}/plotter_ewkz_${i}.root;
+	runPlotter --json data/dy-samples_${i}.json --inDir ${outdir}/dy/${i}/ --noPlot --iLumi 19577 --iEcm 8 --outFile ${outdir}/plotter_ewkz_${i}.root;
 	runPlotter --json data/photon-samples_${i}.json --inDir ${outdir}/g/raw_${i}/ --noPlot --iLumi 19577 --iEcm 8 --outFile ${outdir}/plotter_ewkz_g_raw_${i}.root;
 	root -b -q "$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/bin/G/FitQtSpectrum.C+(\"${outdir}/plotter_ewkz_${i}.root\",\"${outdir}/plotter_ewkz_g_raw_${i}.root\",NOFITSMOOTH,PT,PUREG)";
 	mv gammawgts.root ${outdir}/gammaqtweights_ewkz_${i}.root;
@@ -29,7 +29,7 @@ for i in ${tag[@]}; do
     fi
 
     if [ "$step" == "4" ]; then
-	runPlotter --json data/photon-samples_${i}.json --inDir ${outdir}/g/qt_${i} --noPlot --iLumi 19577 --iEcm 8 --outFile ${outdir}/plotter_ewkz_g_qt_${i}.root;
+	runPlotter --json data/photon-samples_${i}.json --inDir ${outdir}/g/qt_${i}/ --noPlot --iLumi 19577 --iEcm 8 --outFile ${outdir}/plotter_ewkz_g_qt_${i}.root;
     fi
 done
 

@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+# python studyUE.py inputFiles=file
+
 import ROOT
 import sys
 from DataFormats.FWLite import Events, Handle
@@ -14,8 +16,9 @@ def traceHistory(p):
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('python')
 options.parseArguments()
+outF=options.outputFile
 
-# use Varparsing object
+#get the events branch
 events = Events (options)
 
 # create handles
@@ -23,17 +26,20 @@ genParticlesHandle = Handle ('std::vector<reco::GenParticle>')
 genJetsHandle     = Handle('std::vector<reco::GenJet>')
 
 # Create histograms, etc.
-ROOT.gROOT.SetBatch()        # don't pop up canvases
-ROOT.gROOT.SetStyle('Plain') # white background
-
-njets_h  = ROOT.TH1F('njets',";Jet multiplicity; Events",10,0,10)
-mjj_h    = ROOT.TH1F('mjj',";M_{jj} [GeV]; Events",100,0,3000)
-detajj_h = ROOT.TH1F('detajj',";|#Delta #eta_{jj}|; Events",100,0,8)
-leadetaj_h = ROOT.TH1F('leadetaj',";max |#eta_{j}|; Events",100,0,6)
-traileretaj_h = ROOT.TH1F('traileretaj',";min |#eta_{j}|; Events",100,0,6)
-
-mjj_mpi_h = mjj_h.Clone('mjj_mpi')
-detajj_mpi_h = detajj_h.Clone('detajj_mpi')
+mon={}
+mon['zpt']         = ROOT.TH1F('zpt',";p_{T} [GeV]; Events",100,0,1000)
+mon['njets']       = ROOT.TH1F('njets',";Jet multiplicity; Events",10,0,10)
+mon['mjj']         = ROOT.TH1F('mjj',";M_{jj} [GeV]; Events",100,0,3000)
+mon['spt']         = ROOT.TH1F('spt',";S_{p_{T}} ; Events",100,0,1)
+mon['detajj']      = ROOT.TH1F('detajj',";|#Delta #eta_{jj}|; Events",100,0,8)
+mon['leadetaj']    = ROOT.TH1F('leadetaj',";max |#eta_{j}|; Events",100,0,6)
+mon['traileretaj'] = ROOT.TH1F('traileretaj',";min |#eta_{j}|; Events",100,0,6)
+mon['mjj_mpi']     = mon['mjj'].Clone('mjj_mpi')
+mon['spt_mpi']     = mon['spt'].Clone('mjj_mpi')
+mon['detajj_mpi']  = mon['detajj'].Clone('detajj_mpi')
+for key, h in mon.iteritems():
+    h.Sumw2()
+    h.SetDirectory(0)
 
 # loop over events
 for event in events:
@@ -45,8 +51,12 @@ for event in events:
     #select leptons
     genParticles=genParticlesHandle.product()
     leptons=[]
+    zpt=0
     for p in genParticles:
         if p.status()!=3 : continue
+        if abs(p.pdgId())==23:
+            zpt=p.pt()
+            continue
         if abs(p.pdgId()) not in [11,13]: continue
         if p.pt()<20 or abs(p.eta())>2.5: continue
         leptons.append(p)
@@ -89,43 +99,35 @@ for event in events:
         else : jetOrigin.append(1)
         #print '%d hp=%f mpi=%f'%(n,nFromHP/n,nFromMPI/n)
 
-    njets_h.Fill(nselJets)
+
+    mon['njets'].Fill(nselJets)
     if(nselJets<2): continue
+
+    if(zpt>0) : mon['zpt'].Fill(zpt)
 
     #analyse leading pT jets
     j1=selJets.pop()
     j1Orig=jetOrigin.pop()
     j2=selJets.pop()
     j2Orig=jetOrigin.pop()
-    
     dijet=j1.p4()+j2.p4()
-    mjj_h.Fill(dijet.mass())
-    detajj_h.Fill(abs(j1.eta()-j2.eta()))
-    leadetaj_h.Fill(max(abs(j1.eta()),abs(j2.eta())))
-    traileretaj_h.Fill(min(abs(j1.eta()),abs(j2.eta())))
-                     
-    if(j1Orig==1 or j2Orig==1) :
-        mjj_mpi_h.Fill(dijet.mass())
-        detajj_mpi_h.Fill(abs(j1.eta()-j2.eta()))
+    spt=dijet.pt()/(j1.pt()+j2.pt())
     
-        
-# make a canvas, draw, and save it
-c=ROOT.TCanvas()
-c.SetWindowSize(1200,400)
-c.Divide(3,1)
-c.cd(1)
-njets_h.Draw()
-c.cd(2)
-mjj_h.Draw()
-mjj_mpi_h.Draw()
-c.cd(3)
-detajj_h.Draw()
-detajj_mpi_h.Draw()
-c.Print ('njets.png')
+    mon['mjj'].Fill(dijet.mass())
+    mon['spt'].Fill(spt)
+    mon['detajj'].Fill(abs(j1.eta()-j2.eta()))
+    mon['leadetaj'].Fill(max(abs(j1.eta()),abs(j2.eta())))
+    mon['traileretaj'].Fill(min(abs(j1.eta()),abs(j2.eta())))
+                     
+    if(j1Orig==0 or j2Orig==0) :
+        mon['mjj_mpi'].Fill(dijet.mass())
+        mon['detajj_mpi'].Fill(abs(j1.eta()-j2.eta()))
+        mon['spt_mpi'].Fill(spt)
 
-fOut=ROOT.TFile("plots.root","RECREATE")
+
+#save histos
+fOut=ROOT.TFile(outF,"RECREATE")
 fOut.cd()
-mjj_h.Write()
-detajj_h.Write()
-leadetaj_h.Write()
-traileretaj_h.Write()
+for key, h in mon.iteritems():
+    h.Write()
+fOut.Close()
