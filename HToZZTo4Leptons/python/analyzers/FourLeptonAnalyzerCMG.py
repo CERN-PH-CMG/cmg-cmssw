@@ -1,4 +1,3 @@
-
 import operator 
 import itertools
 import copy
@@ -22,6 +21,7 @@ from CMGTools.HToZZTo4Leptons.tools.FSRRecovery import FSRRecovery
 
 from CMGTools.RootTools.utils.DeltaR import deltaR
 
+from CMGTools.HToZZTo4Leptons.tools.LineShapeWeights import LineShapeWeights
 
 
         
@@ -39,99 +39,81 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         count = self.counters.counter('FourLepton')
         count.register('all events')
 
-        
+        self.lineShapeWeights = LineShapeWeights(self.cfg_comp)
 
        
     def process(self, iEvent, event):
         super(FourLeptonAnalyzerCMG,self).process(iEvent,event)
         
-        keepThisEvent=False
+        #apply lineshape weights
+        self.lineShapeWeights.applyWeight(event)
 
         #startup counter
         self.counters.counter('FourLepton').inc('all events')
 
-
-        
-        #Get photons
-        self.buildPhotonList( event )
-        #get leptons
-        self.buildLeptonList( event )
-        #get jets
-        self.buildJetList(event)
-
-        
-
-
         #create a cut flow
         cutFlow = CutFlowMaker(self.counters.counter("FourLepton"),event,event.leptons1,event.leptons2)
+
         #Cuts :Apply minimal criteria like sip<100 and min Pt and eta and require at least two leptons 
         passed=cutFlow.applyDoubleCut(self.testLeptonSkim1,self.testLeptonSkim2,'lepton preselection',2,'skimmedLeptons1','skimmedLeptons2')
 
         #merge the two output collections in one non overlapping
         cutFlow.mergeResults('skimmedLeptons')
+        #define loose leptons
+        passed = cutFlow.applyCut(self.testLeptonLoose,'loose ID',2,'looseLeptons')
+
+        #clean overlap for muons
+        cleanOverlap = OverlapCleaner(event.looseLeptons,0.05,11,13,self.testMuonCleaning)
 
         #Remove any electrons that are near to tight muons!
-        cleanOverlap = OverlapCleaner(event.skimmedLeptons,0.05,11,13,self.testMuonCleaning)
-        passed = cutFlow.applyCut(cleanOverlap,'electron cross cleaning',4,'cleanLeptons')
+        passed = cutFlow.applyCut(cleanOverlap,'electron cross cleaning',2,'cleanLeptons')
 
-        #Now create four Lepton candidtes upstream. Use all permutations and not combinations
-        #of leptons so we can pick the best Z1 and Z2
-        event.fourLeptons = self.findQuads(event.cleanLeptons,event.photons)
+        #Make all combinations of leptons
+        event.allFourLeptons = self.findQuads(event.cleanLeptons,event.photons)
 
-        #Sort them by M1 near Z and My highest Pt sum
-        event.sortedFourLeptons = self.sortFourLeptons(event.fourLeptons)
-
-        #Give the sorted four leptons in our cut flow 
+        #Sort them by Z1 nearest to the Z Z2 highest sum Pt 
+        event.sortedFourLeptons = self.sortFourLeptons(event.allFourLeptons)
         cutFlow.setSource1(event.sortedFourLeptons)
 
-        #Ghost Suppression
-        passed=cutFlow.applyCut(self.testFourLeptonGhostSuppression,'ghost suppression',1,'fourLeptonsGhostSup')
+        #Now apply cuts
 
-        #tight ID for Z1
-        passed=cutFlow.applyCut(self.testFourLeptonTightIDZ1,'4l z1 tight ID',1,'fourLeptonsTightIDZ1')
+        #require ghost suppresiion(minimum distance) 
+        passed=cutFlow.applyCut(self.testFourLeptonGhostSuppression,' ghost suppression ',1,'FourLeptonsGhostSup')
 
-        #Next Step : Apply Loose Lepton Selection for Z1 
-        passed=cutFlow.applyCut(self.testFourLeptonLooseID,'4l loose lepton id',1,'fourLeptonsLooseID')
+        #require that  both Z1 and Z2 are   SF
+        passed=cutFlow.applyCut(self.testFourLeptonSF,'same flavour',1,'fourLeptonsSF')
+        #require Z1 tight ID
+        passed=cutFlow.applyCut(self.testFourLeptonTightIDZ1,'Z1 tight ID',1,'fourLeptonsZ1TightID')
 
-        #Require Z1 OS/SF and mass cuts
-        passed=cutFlow.applyCut(self.testFourLeptonZ1,'4l pair 1 built',1,'fourLeptonsZ1')
+        #require Z1 OS/SF and mass
+        passed=cutFlow.applyCut(self.testFourLeptonZ1,'good Z1',1,'fourLeptonsGoodZ1')
+
+        #Apply Pt Cuts
+        passed=cutFlow.applyCut(self.testFourLeptonPtThr,'Pt cuts ',1,'fourLeptonsPtCuts')
 
         #Check SF for both pairs 
-        passed=cutFlow.applyCut(self.testFourLeptonSF,'4l pair 2  SF',1,'fourLeptonsSFZ2')
-
-
-        #Pt Cuts (CAREFUL: The correct cut is : Any combination of leptons must be 20/10 not the Z1 ones
-        passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds',1,'fourLeptonsFakeRateApp')
-
-
-        if passed:
-            #calculate mela massErrors and vbf
-            self.boostFourLeptons(event.fourLeptonsFakeRateApp,event)
-            event.higgsCandLoose = cutFlow.obj1[0]
-            keepThisEvent=True
-        #OS Z2    
-        passed=cutFlow.applyCut(self.testFourLeptonOS,'4l pair 2  OS',1,'fourLeptonsOSZ2')
-
-        #tight ID    
-        passed=cutFlow.applyCut(self.testFourLeptonTightID,'4l tight lepton id',1,'fourLeptonsTightID')
-
-        #Mass cuts for second lepton
-        passed=cutFlow.applyCut(self.testFourLeptonMassZ2,'4l pair 2 mass cut',1,'fourLeptonsMassZ2')
-
-#        Pt Cuts (CAREFUL: The correct cut is : Any combination of leptons must be 20/10 not the Z1 ones
-        passed=cutFlow.applyCut(self.testFourLeptonPtThr,'4l Pt Thresholds2',1,'fourLeptonsPtThres2')
-
+        passed=cutFlow.applyCut(self.testFourLeptonSF,'4l pair SF',1,'fourLeptonsSFZ2')
         #QCD suppression
         passed=cutFlow.applyCut(self.testFourLeptonMinOSMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')
-
-        #Z -> 4 l phase space
-        passed=cutFlow.applyCut(self.testFourLeptonMassZ,'4l Z phase space',1,'fourLeptonsZPhaseSpace')
 
         #Z2 Mass Tight Cut
         passed=cutFlow.applyCut(lambda x: x.leg2.mass()>12.,'4l Tight Mass2',1,'fourLeptonsTightZ2')
 
-        event.otherLeptons=[]
-        event.otherTightLeptons=[]
+        #Z2 SIP CUT
+        passed=cutFlow.applyCut(lambda x: abs(x.leg2.leg1.sip3D())<4 and abs(x.leg2.leg2.sip3D())<4,'SIP cut for Z2 ',1,'fourLeptonsLoose')
+        #Add KD etc
+        self.boostFourLeptons(event.fourLeptonsLoose,event)
+
+        #require Z2 OS
+        passed=cutFlow.applyCut(self.testFourLeptonOS,'Z2 OS',1,'fourLeptonsOS')
+
+        #require Z2 tight ID
+        passed=cutFlow.applyCut(self.testFourLeptonTightIDZ2,'Z2 tight ID',1,'fourLeptonsTight')
+
+        
+        #Z -> 4 l phase space
+        passed=cutFlow.applyCut(self.testFourLeptonMassZ,'4l Z phase space',1,'fourLeptonsZPhaseSpace')
+
         if passed:
             event.higgsCand = cutFlow.obj1[0]
             event.otherLeptons=copy.copy(event.cleanLeptons)
@@ -149,13 +131,36 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonMass,'4l H phase space',1,'fourLeptonsHPhaseSpace')
 
 
-        passed=cutFlow.applyCut(lambda x: x.mela>0.1,'MELA',1,'fourLeptonsMELA')
-
-        passed=cutFlow.applyCut(lambda x: hasattr(x.leg1,'fsrPhoton') or hasattr(x.leg2,'fsrPhoton') ,'FSR',1,'fourLeptonsWithFSR')
-
-
 
         
-        return  keepThisEvent
+        passed=cutFlow.applyCut(lambda x: x.KD>0.1,'KD',1,'fourLeptonsMELA')
+        passed=cutFlow.applyCut(lambda x: hasattr(x.leg1,'fsrPhoton') or hasattr(x.leg2,'fsrPhoton') ,'FSR',1,'fourLeptonsWithFSR')
+        passed=cutFlow.applyCut(lambda x: hasattr(x.leg1,'fsrPhoton') and hasattr(x.leg2,'fsrPhoton') ,'Both FSR',1,'fourLeptonsWithFSR')
+        cutFlow.setSource1(event.fourLeptonsHPhaseSpace)
+        passed=cutFlow.applyCut(lambda x: x.gg0KD>0.3,'PseudoKD',1,'fourLeptonsPSMELA')
+        cutFlow.setSource1(event.fourLeptonsHPhaseSpace)
+        passed=cutFlow.applyCut(lambda x: x.qq2PlusKD>0.15,'GraviKD',1,'fourLeptonsSpinTwoMELA')
+
+
+
+        cutFlow.setSource1(event.fourLeptonsHPhaseSpace)
+        passed=cutFlow.applyCut(lambda x: x.jets['nJets']>=1,'NJEtsaboveone',1,'fourLeptonsOneJet')
+        passed=cutFlow.applyCut(lambda x: x.jets['nJets']==2,'NJEtsTwo',1,'fourLeptonsTwoJets')
+        passed=cutFlow.applyCut(lambda x: x.jets['nJets']==2 and abs(x.jets['dEta'])>3 and x.jets['Mjj']>300.,'VBF',1,'fourLeptonsVBF')  
+
+        #Paths for FAKES
+        cutFlow.setSource1(event.fourLeptonsLoose)
+        passed=cutFlow.applyCut(lambda x: x.leg2.charge()!=0,'Z2 SS',1,'fourLeptonsSS')
+        if passed:
+            event.higgsCandLoose = cutFlow.obj1[0]
+        if len(event.fourLeptonsOS)>0:
+            event.higgsCandLooseOS =event.fourLeptonsOS[0] 
+
+
+
+        if hasattr(event,'higgsCand') or hasattr(event,'higgsCandLoose') or hasattr(event,'higgsCandLooseOS'):
+            return True
+        
+        return  False
     
 
