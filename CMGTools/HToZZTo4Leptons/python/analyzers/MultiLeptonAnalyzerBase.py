@@ -251,13 +251,12 @@ class MultiLeptonAnalyzerBase( Analyzer ):
             if l1.pt()>l2.pt() and l3.pt()>l4.pt():
                 quadObject =DiObjectPair(l1, l2,l3,l4)
                 if  hasattr(self,"FSR"):
-                    fsrAlgo.setBoson(quadObject)
-                    fsrAlgo.attachPhotons(photons)
-                    fsrAlgo.recoverZ(quadObject.leg1)
-                    fsrAlgo.recoverZ(quadObject.leg2)
+                    self.FSR.setBoson(quadObject)
+                    self.FSR.attachPhotons(photons)
+                    self.FSR.recoverZ(quadObject.leg1)
+                    self.FSR.recoverZ(quadObject.leg2)
                     quadObject.updateP4()
-                if abs(quadObject.leg1.M()-91.188)<abs(quadObject.leg2.M()-91.188):    
-                    out.append(quadObject)
+                out.append(quadObject)
         return out
 
 
