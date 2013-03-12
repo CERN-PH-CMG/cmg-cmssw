@@ -153,6 +153,15 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(lambda x: x.leg2.charge()!=0,'Z2 SS',1,'fourLeptonsSS')
         if passed:
             event.higgsCandLoose = cutFlow.obj1[0]
+            event.otherLeptonsLoose=copy.copy(event.cleanLeptons)
+            event.otherLeptonsLoose.remove(event.higgsCandLoose.leg1.leg1)
+            event.otherLeptonsLoose.remove(event.higgsCandLoose.leg1.leg2)
+            event.otherLeptonsLoose.remove(event.higgsCandLoose.leg2.leg1)
+            event.otherLeptonsLoose.remove(event.higgsCandLoose.leg2.leg2)
+            event.otherLeptonsLoose = filter(lambda x:x.pt()>10,event.otherLeptonsLoose)
+            event.otherTightLeptonsLoose = filter(self.testLeptonTight,event.otherLeptonsLoose)
+
+
         if len(event.fourLeptonsOS)>0:
             event.higgsCandLooseOS =event.fourLeptonsOS[0] 
 
