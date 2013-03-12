@@ -66,8 +66,10 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.var("vertexWeight")
         self.var('eventWeight')
 
-        self.var('otherLeptons',int)
-        self.var('otherTightLeptons',int)
+        self.var('H_otherLeptons',int)
+        self.var('H_otherTightLeptons',int)
+        self.var('HLoose_otherLeptons',int)
+        self.var('HLoose_otherTightLeptons',int)
         self.var('recoil')
 
         if self.cfg_comp.isMC:
@@ -92,9 +94,13 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.fill('eventWeight',(event.eventWeight))
 
         if hasattr(event,'otherLeptons'):
-            self.fill('otherLeptons',len(event.otherLeptons))
+            self.fill('H_otherLeptons',len(event.otherLeptons))
         if hasattr(event,'otherTightLeptons'):
-            self.fill('otherTightLeptons',len(event.otherTightLeptons))
+            self.fill('H_otherTightLeptons',len(event.otherTightLeptons))
+        if hasattr(event,'otherLeptonsLoose'):
+            self.fill('HLoose_otherLeptons',len(event.otherLeptonsLoose))
+        if hasattr(event,'otherTightLeptonsLoose'):
+            self.fill('HLoose_otherTightLeptons',len(event.otherTightLeptonsLoose))
 
         #Fill run,lumi,event
         self.fillEventInfo(iEvent,event)
