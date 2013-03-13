@@ -212,8 +212,6 @@ int main(int argc, char** argv)
 
   stream.select("patMET_patMETsRaw.et", met2_et);
   stream.select("patMET_patMETsRaw.sumEt", met2_sumEt);
-  stream.select("npatJetHelper_patJetsWithVarCHS", njethelper);
-  stream.select("npatJetHelper_patJetsWithVar", njethelperNoCHS);
   stream.select("nrecoVertex_offlinePrimaryVertices", nvertex);
   stream.select("PileupSummaryInfo_addPileupInfo.getBunchCrossing", pileupsummaryinfo_getBunchCrossing);
   stream.select("PileupSummaryInfo_addPileupInfo.getPU_NumInteractions", pileupsummaryinfo_getPU_NumInteractions);
@@ -625,6 +623,45 @@ int main(int argc, char** argv)
   TH1F* jet2_mass_2mdtag=new TH1F("jet2_mass_2mdtag","m_{jet}",1000,0,1000);
   jet2_mass_2mdtag->Sumw2();
 
+  TH1F* njets_0mtag=new TH1F("njets_0mtag","M_{jj}",50,0,50);
+  njets_0mtag->Sumw2();
+  TH1F* njets_1mtag_0mdtag=new TH1F("njets_1mtag_0mdtag","M_{jj}",50,0,50);
+  njets_1mtag_0mdtag->Sumw2();
+  TH1F* njets_1mtag_1mdtag=new TH1F("njets_1mtag_1mdtag","M_{jj}",50,0,50);
+  njets_1mtag_1mdtag->Sumw2();
+  TH1F* njets_2mtag_0mdtag=new TH1F("njets_2mtag_0mdtag","M_{jj}",50,0,50);
+  njets_2mtag_0mdtag->Sumw2();
+  TH1F* njets_2mtag_1mdtag=new TH1F("njets_2mtag_1mdtag","M_{jj}",50,0,50);
+  njets_2mtag_1mdtag->Sumw2();
+  TH1F* njets_2mtag_2mdtag=new TH1F("njets_2mtag_2mdtag","M_{jj}",50,0,50);
+  njets_2mtag_2mdtag->Sumw2();
+
+  TH1F* njetsCA8_0mtag=new TH1F("njetsCA8_0mtag","M_{jj}",50,0,50);
+  njetsCA8_0mtag->Sumw2();
+  TH1F* njetsCA8_1mtag_0mdtag=new TH1F("njetsCA8_1mtag_0mdtag","M_{jj}",50,0,50);
+  njetsCA8_1mtag_0mdtag->Sumw2();
+  TH1F* njetsCA8_1mtag_1mdtag=new TH1F("njetsCA8_1mtag_1mdtag","M_{jj}",50,0,50);
+  njetsCA8_1mtag_1mdtag->Sumw2();
+  TH1F* njetsCA8_2mtag_0mdtag=new TH1F("njetsCA8_2mtag_0mdtag","M_{jj}",50,0,50);
+  njetsCA8_2mtag_0mdtag->Sumw2();
+  TH1F* njetsCA8_2mtag_1mdtag=new TH1F("njetsCA8_2mtag_1mdtag","M_{jj}",50,0,50);
+  njetsCA8_2mtag_1mdtag->Sumw2();
+  TH1F* njetsCA8_2mtag_2mdtag=new TH1F("njetsCA8_2mtag_2mdtag","M_{jj}",50,0,50);
+  njetsCA8_2mtag_2mdtag->Sumw2();
+
+  TH1F* deta_0mtag=new TH1F("deta_0mtag","M_{jj}",1000,0,10);
+  deta_0mtag->Sumw2();
+  TH1F* deta_1mtag_0mdtag=new TH1F("deta_1mtag_0mdtag","M_{jj}",200,0,2);
+  deta_1mtag_0mdtag->Sumw2();
+  TH1F* deta_1mtag_1mdtag=new TH1F("deta_1mtag_1mdtag","M_{jj}",200,0,2);
+  deta_1mtag_1mdtag->Sumw2();
+  TH1F* deta_2mtag_0mdtag=new TH1F("deta_2mtag_0mdtag","M_{jj}",200,0,2);
+  deta_2mtag_0mdtag->Sumw2();
+  TH1F* deta_2mtag_1mdtag=new TH1F("deta_2mtag_1mdtag","M_{jj}",200,0,2);
+  deta_2mtag_1mdtag->Sumw2();
+  TH1F* deta_2mtag_2mdtag=new TH1F("deta_2mtag_2mdtag","M_{jj}",200,0,2);
+  deta_2mtag_2mdtag->Sumw2();
+
   Double_t mgg;
   Double_t evWeight = 1.0;
   Int_t categories;
@@ -643,6 +680,9 @@ int main(int argc, char** argv)
   double DijetMassCA8;
   double DijetMassAK7;
   double deta;
+  double njets;
+  double njetsCA8;
+  double njetsAK7;
   double Jet1pt;
   double Jet2pt;
   double Jet1eta;
@@ -668,16 +708,16 @@ int main(int argc, char** argv)
 
   TTree *dijetWtag = new TTree("dijetWtag", "dijetWtag");
   dijetWtag->Branch("DijetMass",&DijetMass,"DijetMass/D");
-  dijetWtag->Branch("DijetMassNoCHS",&DijetMassNoCHS,"DijetMassNoCHS/D");
+  //dijetWtag->Branch("DijetMassNoCHS",&DijetMassNoCHS,"DijetMassNoCHS/D");
   dijetWtag->Branch("DijetMassCA8",&DijetMassCA8,"DijetMassCA8/D");
   dijetWtag->Branch("DijetMassAK7",&DijetMassAK7,"DijetMassAK7/D");
-  dijetWtag->Branch("deta",&deta,"deta/D");
+  //dijetWtag->Branch("deta",&deta,"deta/D");
   dijetWtag->Branch("Jet1pt",&Jet1pt,"Jet1pt/D");
   dijetWtag->Branch("Jet2pt",&Jet2pt,"Jet2pt/D");
   dijetWtag->Branch("Jet1eta",&Jet1eta,"Jet1eta/D");
   dijetWtag->Branch("Jet2eta",&Jet2eta,"Jet2eta/D");
-  dijetWtag->Branch("Jet1phi",&Jet1phi,"Jet1phi/D");
-  dijetWtag->Branch("Jet2phi",&Jet2phi,"Jet2phi/D");
+  //dijetWtag->Branch("Jet1phi",&Jet1phi,"Jet1phi/D");
+  //dijetWtag->Branch("Jet2phi",&Jet2phi,"Jet2phi/D");
   dijetWtag->Branch("Jet1CA8Mass",&Jet1CA8Mass,"Jet1CA8Mass/D");
   dijetWtag->Branch("Jet2CA8Mass",&Jet2CA8Mass,"Jet2CA8Mass/D");
   dijetWtag->Branch("Jet1CA8MassDrop",&Jet1CA8MassDrop,"Jet1CA8MassDrop/D");
@@ -720,6 +760,21 @@ int main(int argc, char** argv)
 	  // -- event selection --
 	  // ---------------------
 
+	  if(!((jethelper_pt.size()>=2)))
+	      continue;
+
+          njets=0;
+	  for(unsigned n=0;n<jethelper_pt.size();n++)
+	     if(jethelper_pt[n]>100)
+	         njets++;
+          njetsCA8=0;
+	  for(unsigned n=0;n<jethelperCA8_pt.size();n++)
+	     if(jethelperCA8_pt[n]>100)
+	         njetsCA8++;
+          njetsAK7=0;
+	  for(unsigned n=0;n<jethelperAK7_pt.size();n++)
+	     if(jethelperAK7_pt[n]>100)
+	         njetsAK7++;
 
           TLorentzVector Jet1;
           TLorentzVector Jet2;
@@ -736,7 +791,7 @@ int main(int argc, char** argv)
 	  Jet2.SetPtEtaPhiE(jethelperAK7_pt[1],jethelperAK7_eta[1],jethelperAK7_phi[1],jethelperAK7_energy[1]);
           DijetMassAK7 = (Jet1+Jet2).M();
 
-          deta = abs(jethelper_eta[0]-jethelper_eta[1]);
+          deta = fabs(jethelper_eta[0]-jethelper_eta[1]);
           Jet1pt = jethelper_pt[0];
           Jet2pt = jethelper_pt[1];
           Jet1eta = jethelper_eta[0];
@@ -780,8 +835,7 @@ int main(int argc, char** argv)
 
           //if(DijetMass>1600)
           //    cout << "every " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << endl;
-	  if(!((jethelper_pt.size()>=2)&&
-	     (jethelper_pt[0]>30)&&
+	  if(!((jethelper_pt[0]>30)&&
 	     (jethelper_pt[1]>30)&&
 	     (fabs(jethelper_eta[0])<2.5)&&
 	     (fabs(jethelper_eta[1])<2.5)&&
@@ -830,11 +884,10 @@ int main(int argc, char** argv)
 	  else
 	      weight=1;
 
-          if(DijetMass>500)
-	     dijetWtag->Fill();
-
-	  if(!(fabs(jethelper_eta[0]-jethelper_eta[1])<1.3))
+	  if(!(deta<1.3))
 	      continue;
+
+          dijetWtag->Fill();
 
           if(DijetMass>1600)
               cout << "filtered " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << Jet1CA8Mass << ":" << Jet2CA8Mass << ":" << Jet1CA8MassDrop << ":" << Jet2CA8MassDrop << endl;
@@ -1650,53 +1703,105 @@ int main(int argc, char** argv)
 
 
 
-	  if((!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))&&
-	     (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))
+	  if(((!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))&&
+	     (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))&&(DijetMass>890))
 	  {
               jet1_massdrop_0mtag->Fill(Jet1CA8MassDrop, weight);
               jet2_massdrop_0mtag->Fill(Jet2CA8MassDrop, weight);
 	  }
-	  if(((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))&&
+	  if((((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))&&
 	      (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))||
  	     ((((Jet2CA8Mass>70)&&(Jet2CA8Mass<100)))&&
-	      (!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))))
+	      (!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))))&&(DijetMass>890))
 	  {
               jet1_massdrop_1mtag->Fill(Jet1CA8MassDrop, weight);
               jet2_massdrop_1mtag->Fill(Jet2CA8MassDrop, weight);
 	  }
-	  if(((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
-	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100)))
+	  if((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
+	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100)))&&(DijetMass>890))
 	  {
               jet1_massdrop_2mtag->Fill(Jet1CA8MassDrop, weight);
               jet2_massdrop_2mtag->Fill(Jet2CA8MassDrop, weight);
 	  }
 
-	  if((!((Jet1CA8MassDrop<0.25)))&&
-	     (!((Jet2CA8MassDrop<0.25))))
+	  if(((!((Jet1CA8MassDrop<0.25)))&&
+	     (!((Jet2CA8MassDrop<0.25))))&&(DijetMass>890))
 	  {
               jet1_mass_0mdtag->Fill(Jet1CA8Mass, weight);
               jet2_mass_0mdtag->Fill(Jet2CA8Mass, weight);
 	  }
-	  if(((((Jet1CA8MassDrop<0.25)))&&
+	  if((((((Jet1CA8MassDrop<0.25)))&&
 	      (!((Jet2CA8MassDrop<0.25))))||
  	     ((((Jet2CA8MassDrop<0.25)))&&
-	      (!((Jet1CA8MassDrop<0.25)))))
+	      (!((Jet1CA8MassDrop<0.25)))))&&(DijetMass>890))
 	  {
               jet1_mass_1mdtag->Fill(Jet1CA8Mass, weight);
               jet2_mass_1mdtag->Fill(Jet2CA8Mass, weight);
 	  }
-	  if(((Jet1CA8MassDrop<0.25))&&
-	     ((Jet2CA8MassDrop<0.25)))
+	  if((((Jet1CA8MassDrop<0.25))&&
+	     ((Jet2CA8MassDrop<0.25)))&&(DijetMass>890))
 	  {
               jet1_mass_2mdtag->Fill(Jet1CA8Mass, weight);
               jet2_mass_2mdtag->Fill(Jet2CA8Mass, weight);
 	  }
 
+	  if(((!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))&&
+	     (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))&&(DijetMass>1600))
+	  {
+              njets_0mtag->Fill(njets, weight);
+              njetsCA8_0mtag->Fill(njetsCA8, weight);
+              deta_0mtag->Fill(deta, weight);
+	  }
+	  if((((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)&&(Jet1CA8MassDrop>0.25)))&&
+	      (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))||
+ 	     ((((Jet2CA8Mass>70)&&(Jet2CA8Mass<100)&&(Jet2CA8MassDrop>0.25)))&&
+	      (!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))))&&(DijetMass>1600))
+	  {
+              njets_1mtag_0mdtag->Fill(njets, weight);
+              njetsCA8_1mtag_0mdtag->Fill(njetsCA8, weight);
+              deta_1mtag_0mdtag->Fill(deta, weight);
+	  }
+	  if((((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)&&(Jet1CA8MassDrop<0.25)))&&
+	      (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))||
+ 	     ((((Jet2CA8Mass>70)&&(Jet2CA8Mass<100)&&(Jet2CA8MassDrop<0.25)))&&
+	      (!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))))&&(DijetMass>1600))
+	  {
+              njets_1mtag_1mdtag->Fill(njets, weight);
+              njetsCA8_1mtag_1mdtag->Fill(njetsCA8, weight);
+              deta_1mtag_1mdtag->Fill(deta, weight);
+	  }
+	  if((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
+	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
+	     ((Jet1CA8MassDrop>0.25)&&(Jet2CA8MassDrop>0.25)))&&(DijetMass>1600))
+	  {
+              njets_2mtag_0mdtag->Fill(njets, weight);
+              njetsCA8_2mtag_0mdtag->Fill(njetsCA8, weight);
+              deta_2mtag_0mdtag->Fill(deta, weight);
+	  }
+	  if((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
+	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
+	     (((Jet1CA8MassDrop>0.25)&&(Jet2CA8MassDrop<0.25))||
+	      ((Jet1CA8MassDrop<0.25)&&(Jet2CA8MassDrop>0.25))))&&(DijetMass>1600))
+	  {
+              njets_2mtag_1mdtag->Fill(njets, weight);
+              njetsCA8_2mtag_1mdtag->Fill(njetsCA8, weight);
+              deta_2mtag_1mdtag->Fill(deta, weight);
+	  }
+	  if((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
+	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
+	     ((Jet1CA8MassDrop<0.25)&&(Jet2CA8MassDrop<0.25)))&&(DijetMass>1600))
+	  {
+              njets_2mtag_2mdtag->Fill(njets, weight);
+              njetsCA8_2mtag_2mdtag->Fill(njetsCA8, weight);
+              deta_2mtag_2mdtag->Fill(deta, weight);
+	  }
+
+
 	}
 
   double y_min=0.5;
   if(weight!=1) y_min=mass_2Wtag->GetMaximum()/1e6;
-
+  /*
   TCanvas c1("c1","c1",200,200);
   mass_2Wtag->Draw("he");
   mass_2Wtag->GetXaxis()->SetRangeUser(890,2500);
@@ -1713,7 +1818,7 @@ int main(int argc, char** argv)
   mass_2Nsubtag06->SetLineColor(4);
   mass_2Nsubtag06->Draw("hesame");
   c1.SaveAs((cmdline.outputfilename.substr(0,cmdline.outputfilename.size()-5)+"_Wtag_mass.root").c_str());
-
+  */
   stream.close();
   ofile.close();
 
