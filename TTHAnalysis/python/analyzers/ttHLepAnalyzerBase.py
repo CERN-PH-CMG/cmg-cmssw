@@ -38,8 +38,10 @@ class ttHLepAnalyzerBase( Analyzer ):
                                                 cfg_comp.isMC, # isMC
                                                 True, # updateEnergyError,
                                                 999,  # applyCorrections (999 = correct and/or smear for SC-based energy estimation)
+                                                0.607, # smearing ratio
                                                 False, False, #verbose, sync
-                                                TRandom3(0)) # random number generator
+                                                TRandom3(0),) # random number generator
+                                                
 
         if hasattr(cfg_comp,'efficiency'):
             self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
