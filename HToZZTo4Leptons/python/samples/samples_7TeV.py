@@ -5,7 +5,7 @@ from copy import copy
 
 pat='V5_9_0'
 #skim='SKIM_Oct15_All'
-skim='SKIM_Nov12_All'
+skim='SKIM_Moriond_All'
 filepattern = 'cmgTuple.*root'
 userName='bachtis'
 
@@ -194,9 +194,6 @@ DoubleMu = cfg.DataComponent(
     json = json
     )
 
-
-skim='SKIM_Jan22_All'
-print 'using custom skim for MuEG'
 
 MuEG = cfg.DataComponent(
     name = 'MuEG',
