@@ -209,6 +209,16 @@ class MultiLeptonAnalyzerBase( Analyzer ):
                 for fr in self.fakeRates:
                     fr.attachToObject(lepton, z1Flav)
 
+    def correctFakeWeightsComb(self,fourLepton ):
+        '''correct the fake rates attached to the LooseZ2 leptons,
+           using the channel-dependent fake rates.
+           needs knowldege of the Z1 decay mode.'''
+        z1Flav = fourLepton.leg1.pdgId()
+        for lepton in [fourLepton.leg2.leg1,fourLepton.leg2.leg2]:
+            if hasattr(self,'fakeRates'):
+                for fr in self.fakeRates:
+                    fr.attachToObject(lepton, z1Flav)
+
 
     #####################################################################
     #Combinatorial METHODS
