@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.PatAlgos.tools.helpers import applyPostfix
 import os
 
-HiggsMass = cms.vstring(['110','115','120','125','130','135','140','145'])
+HiggsMass = cms.vstring(['90','95','100','105','110','115','120','125','130','135','140','145','150','155','160'])
 #SUSYMass = cms.vstring(['90','100','110','120','130','140','160','180','200','250','300','350','400','450','500','600','700','800','900','1000'])
 SUSYMass = cms.vstring(['80','90','100','110','120','130','140','160','180','200','250','300','350','400','450','500','600','700','800','900','1000'])
 
@@ -266,10 +266,13 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
 
 
 
-    for i in range(0,8):
+    for i in range(0,15):
 
         if sampleAlias == "HiggsGG"+HiggsMass[i] :
-            module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
+            if i < 4 :
+                module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
+            else:
+                module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
@@ -278,17 +281,21 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
             module.correctTauES = 1
 
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
+            if i < 4 :                
+                module.path = "/VBFHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
+            else:
+                module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
             module.dataType = 0
-            module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_IsoMu17_eta2p1_LooseIsoPFTau20_v2","hltOverlapFilterIsoMu17LooseIsoPFTau20","hltOverlapFilterIsoMu17LooseIsoPFTau20") 
             module.recoilCorrection = 1
             module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root'
-            module.correctTauES = 1
-
+            module.correctTauES = 1            
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] :
-            if i == 5 :
+            if i < 4 :
+                module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
+            elif i == 5 :
                 module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
             else :
                 module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
@@ -732,10 +739,13 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
 
 
 
-    for i in range(0,8):
+    for i in range(0,15):
 
         if sampleAlias == "HiggsGG"+HiggsMass[i] :
-            module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
+            if i < 4 :
+                module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
+            else:
+                module.path ="/GluGluToHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
@@ -744,17 +754,21 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
             module.correctTauES = 1
 
         if sampleAlias == "HiggsVBF"+HiggsMass[i] :
-            module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
+            if i < 4 :                
+                module.path = "/VBFHToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
+            else:
+                module.path = "/VBF_HToTauTau_M-%s_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
             module.dataType = 0
             module.pupWeightName = 'vertexWeightSummer12MC53XHCPData'                                             
-           #hltOverlapFilterEle20LooseIsoPFTau20, hltIsoElePFTau20TrackLooseIso, hltOverlapFilterIsoEle20WP90LooseIsoPFTau20, hltOverlapFilterEle20LooseIsoPFTau20
             module.trigPath1 = cms.InputTag("HLT_Ele22_eta2p1_WP90Rho_LooseIsoPFTau20_v2","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20","hltOverlapFilterIsoEle20WP90LooseIsoPFTau20")
             module.recoilCorrection = 1
             module.fileCorrectTo =  recoilCorr_dir + 'recoilfit_higgs53X_20pv_njet.root' 
             module.correctTauES = 1
             
         if sampleAlias == "HiggsVH"+HiggsMass[i] :
-            if i == 5 :
+            if i < 4 :
+                module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
+            elif i == 5 :
                 module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]
             else :
                 module.path = "/WH_ZH_TTH_HToTauTau_M-%s_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0" % HiggsMass[i]

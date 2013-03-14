@@ -72,7 +72,7 @@ void plotTauMu2012(){
   //analysis->plotQCDSSOSRatioBTag();
   //analysis->plotZTTShape();
 
-  analysis->compareSignalShapes();
+  //analysis->compareSignalShapes();
 
 //   //check WJets// Winc=75,W1=22.6,W2=33.5,W3=15.4,W4=12.9
 //   analysis->eventWeight_="pupWeights4*embeddedGenWeight*triggerEffWeightsTau4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*signalWeight";
@@ -132,7 +132,7 @@ void plotTauMu2012(){
 // //   analysis->plotInc("ditaumass",20,0,200,2,1,1,"","",-1,2,"m_{vis}   (GeV)","",c,0,"mvis_SS_mt_2012");
 //   analysis->plotInc("ditaumass",40,0,200,1,1,1,"","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_mt_2012");
 // //   analysis->plotInc("svfitmass",30,0,300,2,1,1,"","",-1,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_SS_mt_2012");
-// //   analysis->plotInc("svfitmass",60,0,300,1,1,1,"","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_mt_2012");
+//  analysis->plotInc("svfitmass",60,0,300,1,1,1,"","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_mt_2012");
 // //   analysis->plotInc("njet",5,-.5,4.5,1,1,1,"","",0,2," njet ","",c,0,"njets_mt_2012");
 
 //   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(taudecaymode==0)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_DecayMode0_mt_2012");

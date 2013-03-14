@@ -2,19 +2,7 @@
 #include <TFile.h>
 #include <TH1F.h>
 #include <TDirectory.h>
-
-#define NMASS 8
-#define NCAT 5
-
-long massValues[NMASS]={110,115,120,125,130,135,140,145};
-
-TString catdirname[NCAT]={
- "0jet_low",
- "0jet_high",
- "boost_low",
- "boost_high",
- "vbf"};
-
+#include "constants.h"
 
 void mergeDataCardsSM(Int_t channel, TString mass){
 

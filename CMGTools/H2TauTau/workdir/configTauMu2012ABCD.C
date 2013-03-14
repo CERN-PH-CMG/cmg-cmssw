@@ -1,6 +1,7 @@
 #include "TauMuPlotter.h"
 #include "Sample.h"
 #include <TString.h>
+#include "constants.h"
 
 TauMuPlotter * configTauMu2012ABCD(TString name, TString path){  
 
@@ -162,34 +163,22 @@ TauMuPlotter * configTauMu2012ABCD(TString name, TString path){
   analysis->addSample(TopBTW);
 
 
-  ///Crossections taken from here:
-  //https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
-  ///Higgs --> tau tau branching ratios taken from http://arxiv.org/abs/1101.0593 v3
-  const int NSM=8;
-  Int_t HiggsMass[NSM]={110,115,120,125,130,135,140,145};
-  Float_t HiggsTauTauBF[NSM]={ 8.03e-2, 7.65e-2,  7.11e-2,  6.37e-2,  5.49e-2,  4.52e-2, 3.54e-2,2.62e-2};
-  Float_t HiggsGGcross[NSM]={25.04,22.96,21.13,19.52,18.07,16.79,15.63,14.59};
-  Float_t HiggsVBFcross[NSM]={ 1.809,1.729,1.649,1.578,1.511,1.448,1.389,1.333 };
-  Float_t HiggsWHcross[NSM]= {1.0600,0.9165,0.7966,0.6966,0.6095,0.5351,0.47130,0.41640};
-  Float_t HiggsZHcross[NSM]= {0.5869,0.5117,0.4483,0.3943,0.3473,0.3074,0.27280,0.24240};
-  Float_t HiggsttHcross[NSM]={0.1887,0.1663,0.1470,0.1302,0.1157,0.1031,0.09207,0.08246 };
-
   char nam[100];
-  for(Int_t i=0;i<NSM;i++){
+  for(Int_t i=0;i<NMASS;i++){
 
-    sprintf(nam,"HiggsGG%d",HiggsMass[i]);
+    sprintf(nam,"HiggsGG%d",massValues[i]);
     Sample* HiggsGG = new Sample(nam,path);
     HiggsGG->setDataType("Signal");
     HiggsGG->setCrossection(HiggsGGcross[i]*HiggsTauTauBF[i]);
     analysis->addSample(HiggsGG);    
 
-    sprintf(nam,"HiggsVBF%d",HiggsMass[i]);
+    sprintf(nam,"HiggsVBF%d",massValues[i]);
     Sample* HiggsVBF=new Sample(nam,path);
     HiggsVBF->setDataType("Signal");
     HiggsVBF->setCrossection(HiggsVBFcross[i]*HiggsTauTauBF[i]);
     analysis->addSample(HiggsVBF);    
 
-    sprintf(nam,"HiggsVH%d",HiggsMass[i]);
+    sprintf(nam,"HiggsVH%d",massValues[i]);
     Sample* HiggsVH=new Sample(nam,path);
     HiggsVH->setDataType("Signal");
     HiggsVH->setCrossection((HiggsWHcross[i]+HiggsZHcross[i]+HiggsttHcross[i])*HiggsTauTauBF[i]);
@@ -199,12 +188,7 @@ TauMuPlotter * configTauMu2012ABCD(TString name, TString path){
 
 
 //   /////////////////SUSY Samples
-//   const int NSUSY=16;
-//   //Int_t  SUSYMass[NSUSY]={90,100,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};  
-//   Int_t  SUSYMass[NSUSY]={90,100,110,120,130,140,160,180,250,300,400,450,500,600,800,1000};  
-
 //   for(Int_t i=0;i<NSUSY;i++){
-
 //       sprintf(nam,"SUSYBB%d",SUSYMass[i]);
 //       Sample* SUSYBB = new Sample(nam,path);
 //       SUSYBB->setDataType("Signal");
