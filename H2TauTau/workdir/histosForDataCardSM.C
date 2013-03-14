@@ -3,6 +3,8 @@
 #include <TH1F.h>
 #include <TDirectory.h>
 
+#include "constants.h"
+
 #include "TauMuPlotter.h"
 #include "configTauMu2011.C"
 #include "configTauMu2012.C"
@@ -19,16 +21,6 @@
 #include "configTauEle2012D.C"
 #include "configTauEle2012ABCD.C"
 
-#define NMASS 8
-long massValues[NMASS]={110,115,120,125,130,135,140,145};
-
-#define NCAT 5
-TString catdirname[NCAT]={
- "0jet_low",
- "0jet_high",
- "boost_low",
- "boost_high",
- "vbf"};
 
 
 //#define NMASS 20
@@ -57,31 +49,9 @@ TString catdirname[NCAT]={
 // #define NXBINSVBF 13
 // Float_t xbinsValuesVBF[NXBINSVBF+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
 
-/////New fine binning
-#define NXBINS 26
-Float_t xbinsValues[NXBINS+1]={0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350};
-#define NXBINSVBF 13
-Float_t xbinsValuesVBF[NXBINSVBF+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
-
 
 
 void fix0Bins(TH1F* h){
-
-//   float maxer=0.;
-//   for(Int_t b=1;b<=h->GetNbinsX();b++)
-//     if( h->GetBinError(b) > maxer) maxer = h->GetBinError(b);
-  
-//   for(Int_t b=1;b<=h->GetNbinsX();b++)
-//     if(h->GetBinContent(b)<=0.){
-//       h->SetBinContent(b,0.);
-//       h->SetBinError(b,maxer);
-//     }
-
-//   if(h->Integral()<=0.)
-//     for(Int_t b=1; b<=h->GetNbinsX(); b++){
-//       h->SetBinContent(b,1e-6);
-//       h->SetBinError(b,2e-6);
-//     }
 
   float lastbinCenter = h->GetBinCenter(1);
   float lastbinContent = 1e-6;
@@ -211,8 +181,6 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
 //     if(20<=option&&option<30) analysis->extrasel_ = TString("(metpt<40&&njet<=2)*")+"(taudecaymode==0)"+"*("+(long)(20+(option-20)*5)+"<taupt&&taupt<"+(long)(20+(option-20+1)*5)+")";
 //     if(30<=option&&option<40) analysis->extrasel_ = TString("(metpt<40&&njet<=2)*")+"(taudecaymode==1)"+"*("+(long)(20+(option-30)*5)+"<taupt&&taupt<"+(long)(20+(option-30+1)*5)+")";
 //     if(40<=option&&option<50) analysis->extrasel_ = TString("(metpt<40&&njet<=2)*")+"(taudecaymode==10)"+"*("+(long)(20+(option-40)*5)+"<taupt&&taupt<"+(long)(20+(option-40+1)*5)+")";
-
-
 
 
     TH1F* QCD = 0;

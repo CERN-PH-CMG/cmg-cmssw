@@ -168,16 +168,63 @@ void findRebin(TString * Input,Int_t N, Int_t * Rebin){
 }
 
 
-void weightedCombine(TString *Input, TString outName, int weight=1){
+void weightedCombine(TString *Input, TString outName, int weight=1, float  MuValue=1.0){
+  
+  cout<<"Warning: using fitted mu-value = "<<MuValue<<" , make sure its up to date"<<endl;
+  
 
   int n=countInputs(Input);
   Int_t Rebin[NMAXINPUT];
   findRebin(Input,n,Rebin);
   
-  //array of the weights for ordering later
+  /////Determine the weight for each category
   float weights[100];
-  //first compute the sum of the weights
   double weightsum=0.;
+  for(Int_t f=0;f<n;f++){
+    TFile F((Input[f]+".root").Data(),"READ");
+    gROOT->cd();
+
+    TH1F* ggH=(TH1F*)(F.Get("ggH")->Clone("ggH"));
+    TH1F* Ztt=(TH1F*)(F.Get("Ztt")->Clone("Ztt"));
+
+    weights[f]=getSoB(ggH,Ztt);
+    weightsum+=weights[f];
+  }
+  if(weightsum<=0.){
+    cout<<" weightsum is bad :"<<weightsum<<endl;
+    return;
+  }
+  for(Int_t f=0;f<n;f++){//normalize to 1
+    weights[f]*= 1./weightsum;
+  }
+  //////////////print out the list of ordered weights
+  cout<<" Ordered Weights"<<endl;
+  float maxw=100000.0;
+  float TotalweightSum=0.;
+  for(Int_t i=0;i<n;i++){
+    int maxindex=-1;
+    float initmax=0.;
+    for(Int_t j=0;j<n;j++)
+      if(weights[j]>initmax  &&  weights[j] <maxw){
+	maxindex=j;
+	initmax=weights[j];
+      }
+    if(maxindex==-1){
+      cout<<"Max weight not found "<<endl;
+      break;
+    } 
+    maxw=weights[maxindex];
+    printf("%.4f   %s\n",maxw,Input[maxindex].Data());
+    TotalweightSum+=maxw;
+  }
+  cout<<" sum of weights = "<<TotalweightSum<<endl;
+
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  //modify the weightsum so that the integral of the Fitted signal is equal to the event yield from the fit
+  float signalintegral=0.;
+  float weightedsignalintegral=0.;
   for(Int_t f=0;f<n;f++){
     TFile File((Input[f]+".root").Data(),"READ");
     gROOT->cd();
@@ -186,17 +233,33 @@ void weightedCombine(TString *Input, TString outName, int weight=1){
     TH1F* Ztt=(TH1F*)File.Get("Ztt");
     if(!ggH || !Ztt){ cout<<" ggH or Ztt not found in "<<Input[f].Data()<<endl;}
 
-    weightsum+=getSoB(ggH,Ztt);
-    File.Close();
+    TH1F* signal=(TH1F*)ggH->Clone("signal");
+    signal->Add(Ztt,-1);
+    signal->Scale(SignalScale*MuValue);
+
+    //need to undo the bin density to get proper integrals
+    //as different categories have different binning
+    for(Int_t b=1;b<=signal->GetNbinsX();b++)
+      signal->SetBinContent(b,signal->GetBinContent(b)*signal->GetBinWidth(b));
+    
+    signalintegral += signal->Integral();
+    if(weight==1) signal->Scale(weights[f]);
+    weightedsignalintegral += signal->Integral();
+    delete signal;
   }
+  cout<<" signal yield "<<signalintegral<<endl;
+  cout<<" weighted signal yield "<<weightedsignalintegral<<endl;
+  cout<<" signal yield scale factor "<<signalintegral/weightedsignalintegral<<endl;
+  for(Int_t f=0;f<n;f++){//normalize signal yield to original yield
+    weights[f] *= signalintegral/weightedsignalintegral;
+  }
+  /////////////////////////////////////////////////////////////
+
 
   TFile F1((Input[0]+".root").Data(),"READ");
   gROOT->cd();
   TH1F* Ztt1=(TH1F*)F1.Get("Ztt");
   TH1F* ggH1=(TH1F*)F1.Get("ggH");
-
-  //Compute the S/B weight
-  weights[0]=getSoB(ggH1,Ztt1)/weightsum;
 
   ///Signal
   TH1F* ggH=(TH1F*)ggH1->Clone("ggH");
@@ -241,9 +304,6 @@ void weightedCombine(TString *Input, TString outName, int weight=1){
 
     TH1F* ggH2=(TH1F*)(F2.Get("ggH")->Clone("ggH2"));
     TH1F* Ztt2=(TH1F*)(F2.Get("Ztt")->Clone("Ztt2"));
-
-    weights[f]=getSoB(ggH2,Ztt2)/weightsum;
-    //printf("%.4f   %s\n",weights[f],Input[f].Data());
 
     TH1F* signal2=(TH1F*)ggH2->Clone("signal2");
     signal2->Add(Ztt2,-1);
@@ -298,29 +358,6 @@ void weightedCombine(TString *Input, TString outName, int weight=1){
 
 
 
-  //print out ordered weights
-  cout<<" Ordered Weights"<<endl;
-  float maxw=1.0;
-  float TotalweightSum=0.;
-  for(Int_t i=0;i<n;i++){
-    int maxindex=-1;
-    float initmax=0.;
-    for(Int_t j=0;j<n;j++){
-      if(weights[j]>initmax  &&  weights[j] <maxw){
-	maxindex=j;
-	initmax=weights[j];
-      }
-    }
-    
-    maxw=weights[maxindex];
-      
-    if(maxindex==-1) cout<<"Max not found "<<endl;
-    else printf("%.4f   %s\n",maxw,Input[maxindex].Data());
-    
-    TotalweightSum+=maxw;
-  }
-  cout<<" sum of weights = "<<TotalweightSum<<endl;
-
 
   TString outname=TString("Plot_")+outName+".root";
 
@@ -354,20 +391,31 @@ void weightedCombine(TString *Input, TString outName, int weight=1){
 */
 //#include "/afs/cern.ch/user/b/benitezj/scratch1/V5_8_0/CMGTools/CMSSW_5_3_3_patch3/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
-void CMSPrelim(const char* dataset, const char* channel, double lowX, double lowY)
+void CMSPrelim(const char* dataset, const char* channel,const char* cat, double lowX, double lowY)
 {
 
-  float size=0.035; int color=1; int font = 62;
+  int color=1; int font = 62;
   
   TPaveText* cmsprel  = new TPaveText(lowX, lowY+0.06, lowX+0.30, lowY+0.16, "NDC");
   cmsprel->SetBorderSize(   0 );
   cmsprel->SetFillStyle(    0 );
   cmsprel->SetTextAlign(   12 );
-  cmsprel->SetTextSize ( size );
   cmsprel->SetTextColor( color );
   cmsprel->SetTextFont ( font );
-  cmsprel->AddText(TString("CMS Preliminary,  ")+dataset);
+
+  //cmsprel->SetTextSize ( 0.035 );
+  //cmsprel->AddText("CMS Preliminary, #sqrt{s} = 7-8 TeV, L = 24.3 fb^{-1}");
+
+  //cmsprel->SetTextSize ( 0.027 );
+  //cmsprel->AddText("CMS Preliminary,  #sqrt{s}=7 TeV, L=4.9 fb^{-1}; #sqrt{s}=8 TeV, L=19.3 fb^{-1}; H#rightarrow#tau#tau");
+
+  cmsprel->SetTextSize ( 0.030 );
+  cmsprel->AddText("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.3 fb^{-1} at 8 TeV");
+
+
   cmsprel->Draw();
+
+
 
 //   TPaveText* lumi     = new TPaveText(lowX+0.24, lowY+0.061, lowX+0.61, lowY+0.161, "NDC");
 //   lumi->SetBorderSize(   0 );
@@ -379,6 +427,8 @@ void CMSPrelim(const char* dataset, const char* channel, double lowX, double low
 //   lumi->AddText(dataset);
 //   lumi->Draw();
 
+  float size=0.035;
+ 
   TPaveText* chan     = new TPaveText(lowX+0.05, lowY-0.002, lowX+0.45, lowY+0.028, "NDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
@@ -388,6 +438,17 @@ void CMSPrelim(const char* dataset, const char* channel, double lowX, double low
   chan->SetTextFont ( font );
   chan->AddText(channel);
   chan->Draw();
+
+
+  TPaveText* category     = new TPaveText(lowX+0.05, lowY-0.002-0.06, lowX+0.45, lowY+0.028-0.06, "NDC");
+  category->SetBorderSize(   0 );
+  category->SetFillStyle(    0 );
+  category->SetTextAlign(   12 );
+  category->SetTextSize ( size );
+  category->SetTextColor( color );
+  category->SetTextFont ( font );
+  category->AddText(cat);
+  category->Draw();
 }
 
 
@@ -446,7 +507,7 @@ float findMinY(TH1F* h,int opt=0,float lowx=0.,float highx=0.){
   return max;
 }
 
-void weightedPlot(TString filename,const char* dataset , const char* channel ){
+void weightedPlot(TString filename,const char* dataset , const char* channel,const char* cat ){
 
   TFile F((filename+".root").Data(),"READ");
   TH1F* data=(TH1F*)F.Get("data_obs");
@@ -532,7 +593,7 @@ void weightedPlot(TString filename,const char* dataset , const char* channel ){
   data->Draw("pesame");
   legend.Draw();
 
-  CMSPrelim(dataset,channel , 0.18, 0.835);
+  CMSPrelim(dataset,channel ,cat, 0.19, 0.835);
 
   C.RedrawAxis();
   C.Print(outname+".ps");
@@ -584,7 +645,7 @@ void weightedPlot(TString filename,const char* dataset , const char* channel ){
   legendDiff.SetTextAlign(   12 );
   legendDiff.Draw();
 
-  CMSPrelim(dataset,channel , 0.18, 0.835);
+  CMSPrelim(dataset,channel , cat, 0.19, 0.835);
 
   C.RedrawAxis();
   C.Print(outname+".ps");
@@ -607,7 +668,7 @@ void weightedPlot(TString filename,const char* dataset , const char* channel ){
 
 
 
-void weightedPlotInset(TString filename,const char* dataset , const char* channel ){
+void weightedPlotInset(TString filename,const char* dataset , const char* channel,const char* cat){
 
   TFile F((TString("Plot_")+filename+".root").Data(),"READ");
   gROOT->cd();
@@ -621,17 +682,24 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   if(!sig){cout<<"No input histograms in file: "<<filename.Data()<<endl; return;}
 
 
+  float xmininset=60; float xmaxinset=180;
+  //float xmininset=0; float xmaxinset=340;//full range
+
   ////Format the histograms
 
-  Ztt->GetYaxis()->SetRangeUser(0.,1.3*findMaxY(Ztt,0));
-  Ztt->GetXaxis()->SetTitle("#bf{m_{#tau#tau}  [GeV]}              ");
+  Ztt->GetYaxis()->SetRangeUser(0.,1.3*findMaxY(data,0));
+  Ztt->GetXaxis()->SetTitle("#bf{m_{#tau#tau}  [GeV]}");
   Ztt->GetYaxis()->SetTitle("#bf{S/B Weighted dN/dm_{#tau#tau} [1/GeV]}");
   Ztt->SetNdivisions(505);
 
-  sig->SetBinContent(0,0);//remove red line on top of y axis in plot
-  sig->SetBinContent(sig->GetNbinsX()+1,0);
-  sig->SetBinError(0,0);
-  sig->SetBinError(sig->GetNbinsX()+1,0);
+  for(Int_t b=0;b<=sig->GetNbinsX()+1;b++){
+    //remove red line on top of y axis in plot
+    if(sig->GetBinCenter(b)<xmininset||xmaxinset<sig->GetBinCenter(b)){
+      sig->SetBinContent(b,0);
+      sig->SetBinError(b,0);
+    }
+  }
+
   sig->SetName("sig");
   sig->SetFillStyle(3353);//1001=solid , 3004,3005=diagonal
   sig->SetFillColor(2);
@@ -660,11 +728,12 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
 
   TLegend legend;
   
+  TString higgslabel="H(125 GeV)#rightarrow #tau#tau";
   legend.SetFillStyle(0);
   legend.SetFillColor(0);
   legend.SetBorderSize(0);
-  legend.AddEntry(data,"Observed","LP");  
-  legend.AddEntry(ggH,"SM Higgs (125 GeV)","F");
+  legend.AddEntry(ggH,higgslabel,"F");
+  legend.AddEntry(data,"observed","LP");  
   legend.AddEntry(Ztt,"Z#rightarrow#tau#tau","F");
   legend.AddEntry(tt,"t#bar{t}","F");
   legend.AddEntry(ewk,"electroweak","F");
@@ -678,9 +747,10 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   legend.SetTextAlign(   12 );
 
 
-  TH1F* dataDiff=diffPlot(data,Ztt,2);
+  //TH1F* dataDiff=diffPlot(data,Ztt,2);
+  TH1F* dataDiff=diffPlot(data,Ztt,1);
 
-  float xmininset=60; float xmaxinset=180;
+ 
   TH1F* errBand=getErrorBand(Ztt);
   errBand->SetFillStyle(3013);//1001=solid , 3004,3005=diagonal, 3013=hatched official for H->tau tau
   errBand->SetFillColor(1);
@@ -694,7 +764,7 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   errBandFrame.GetYaxis()->SetTitle("");
   errBandFrame.GetYaxis()->SetNdivisions(5);
   errBandFrame.GetYaxis()->SetLabelSize(0.06);
-  errBandFrame.GetXaxis()->SetTitle(Ztt->GetXaxis()->GetTitle());
+  errBandFrame.GetXaxis()->SetTitle(TString(Ztt->GetXaxis()->GetTitle())+"       ");
   errBandFrame.GetXaxis()->SetTitleSize(0.07);
   errBandFrame.GetXaxis()->SetTitleOffset(0.95);
   errBandFrame.GetXaxis()->SetLabelSize(0.06);
@@ -704,9 +774,9 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   legendDiff.SetFillStyle(0);
   legendDiff.SetFillColor(0);
   legendDiff.SetBorderSize(0);
+  legendDiff.AddEntry(sig,higgslabel,"F");
   legendDiff.AddEntry(dataDiff,"Data - Background","LP");  
-  //legendDiff.AddEntry(errBand,"Bkg. Uncertainty","F");
-  legendDiff.AddEntry(sig,"SM Higgs (125 GeV)","F");
+  legendDiff.AddEntry(errBand,"Bkg. Uncertainty","F");
   legendDiff.SetX1NDC(0.45);
   legendDiff.SetX2NDC(0.88);
   legendDiff.SetY1NDC(0.67);
@@ -715,9 +785,7 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   legendDiff.SetTextAlign(12);
 
 
-
-  TCanvas C(filename);
-
+  TCanvas C(filename,"",600,600);
 
   TPad padBack("padBack","padBack",0.57,0.58,0.975,0.956);//TPad must be created after TCanvas otherwise ROOT crashes
   padBack.SetFillColor(0);
@@ -727,7 +795,7 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   pad.SetFillColor(0);
   pad.SetFillStyle(0);
   errBandFrame.Draw();
-  //errBand->Draw("e2same");
+  errBand->Draw("e2same");
   sig->Draw("histsame");
   TLine line;
   line.DrawLine(xmininset,0,xmaxinset,0);
@@ -750,9 +818,10 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   padBack.Draw();//clear the background axes
   pad.Draw();
 
-  CMSPrelim(dataset,channel , 0.18, 0.835);
+  CMSPrelim(dataset,channel , cat, 0.19, 0.835);
   C.Print(TString("Plot_")+filename+".eps");
   C.Print(TString("Plot_")+filename+".png");
+  C.Print(TString("Plot_")+filename+".pdf");
   
   delete errorBand;
   delete dataDiff;
