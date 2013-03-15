@@ -18,7 +18,7 @@ void CMSPrelim()
   //cmsprel->AddText("CMS Preliminary,  #sqrt{s}=7 TeV, L=4.9 fb^{-1}; #sqrt{s}=8 TeV, L=19.3 fb^{-1}; H#rightarrow#tau#tau");
 
   cmsprel->SetTextSize ( 0.030 );
-  cmsprel->AddText("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.3 fb^{-1} at 8 TeV");
+  cmsprel->AddText("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV");
 
   cmsprel->Draw();
 
@@ -243,10 +243,14 @@ void plotNLLMassToys(long injmass){
   TGraph*DataInput=(TGraph*)FData.Get("b+_All_final_1nd/mass_scan");
   
   float mindata=100.;
+  float minmassdata=0.;
   for(Int_t m=0;m<8;m++){
     double x; double y;
     DataInput->GetPoint(m*5,x,y);
-    if(mindata>y)mindata=y;
+    if(mindata>y){
+      mindata=y;
+      minmassdata=110+m*5;
+    }
   }
 
   TGraph GData;
@@ -268,8 +272,8 @@ void plotNLLMassToys(long injmass){
   float datasigmalow=5.85;
   TLine verticalline;
   verticalline.SetLineStyle(2);
-  verticalline.DrawLine(minmass-datasigmalow,0,minmass-datasigmalow,0.5);
-  verticalline.DrawLine(minmass+datasigmahigh,0,minmass+datasigmahigh,0.5);
+  verticalline.DrawLine(minmassdata-datasigmalow,0,minmassdata-datasigmalow,0.5);
+  verticalline.DrawLine(minmassdata+datasigmahigh,0,minmassdata+datasigmahigh,0.5);
 
 
   TLegend legend;
@@ -323,6 +327,9 @@ void plotNLLMassToys(long injmass){
   Gaus.FixParameter(6,145+(145-injmass));
   C.Clear();
   HMass.Fit(&Gaus);
+  char title[100];
+  sprintf(title,"Mean = %.1f +- %.1f  Sigma = %.1f +- %.1f",Gaus.GetParameter(1),Gaus.GetParError(1),Gaus.GetParameter(2),Gaus.GetParError(2));
+  HMassFrame.SetTitle(title);
   HMassFrame.Draw("hist");
   HMass.Draw("histpesame");
   Gaus.SetLineColor(4);
@@ -340,10 +347,13 @@ void plotNLLMassToys(long injmass){
   cout<<" Fit with 1 gaussian "<<endl;
   C.Clear();
   TF1 GausCore("GausCore","[0]*exp(-0.5*(x-[1])**2/([2]*[2]))",110,145);
-  GausCore.SetParLimits(0,0,10000);
-  GausCore.SetParLimits(1,115,135);
+  GausCore.SetParLimits(0,0.1,10000);
+  GausCore.SetParLimits(1,injmass-5.0,injmass+5.0);
   GausCore.SetParLimits(2,1,20);
-  HMass.Fit(&GausCore,"","IL",injmass-5,injmass+10);
+  //HMass.Fit(&GausCore,"","",injmass-5.5,injmass+5.5);
+  HMass.Fit(&GausCore,"","LL",injmass-10.0,injmass+10.0);
+  sprintf(title,"Mean = %.1f +- %.1f  Sigma = %.1f +- %.1f",GausCore.GetParameter(1),GausCore.GetParError(1),GausCore.GetParameter(2),GausCore.GetParError(2));
+  HMassFrame.SetTitle(title);
   HMassFrame.Draw("hist");
   HMass.Draw("histpesame");
   GausCore.SetLineColor(2);
@@ -360,7 +370,8 @@ void plotNLLMassToys(long injmass){
   GausPull.SetParLimits(2,0.2,3);
   GausPull.SetLineColor(4);
   HPull.Fit(&GausPull,"","I",-2,2);
-  
+  sprintf(title,"Mean = %.2f +- %.2f  Sigma = %.2f +- %.2f",GausPull.GetParameter(1),GausPull.GetParError(1),GausPull.GetParameter(2),GausPull.GetParError(2));
+  HPull.SetTitle(title);
   HPull.GetXaxis()->SetTitle("(  m_{best-fit}  -  m_{injected}  )/#sigma_{m}");
   HPull.GetYaxis()->SetTitle("# of toys");
   HPull.Draw("pe");
