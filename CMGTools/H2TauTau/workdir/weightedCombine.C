@@ -410,7 +410,7 @@ void CMSPrelim(const char* dataset, const char* channel,const char* cat, double 
   //cmsprel->AddText("CMS Preliminary,  #sqrt{s}=7 TeV, L=4.9 fb^{-1}; #sqrt{s}=8 TeV, L=19.3 fb^{-1}; H#rightarrow#tau#tau");
 
   cmsprel->SetTextSize ( 0.030 );
-  cmsprel->AddText("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.3 fb^{-1} at 8 TeV");
+  cmsprel->AddText("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV");
 
 
   cmsprel->Draw();
