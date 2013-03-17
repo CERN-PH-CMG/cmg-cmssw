@@ -22,20 +22,20 @@ gStyle.SetLegendBorderSize(0)
 
 channel=[0, 1]
 sChannel=["WW","ZZ"]
-sigWW=[]
-pvalWW=[]
 
-sigZZ=[]
-pvalZZ=[]
+bin=[0,1,2,3,4,5]
+sBin=["m2mg0", "m2mg1", "m2mg2", "m1mg0", "m1mg1", "m0"]
 
-for chan in channel:
+for ibin in bin:
 
-    masses =[1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0]
-#    masses =[1200.0]
-    for mass in masses:
-        print "mass = ",mass
+    for chan in channel:
 
-        os.system("combine ../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel2.txt -M Asymptotic -v2 -m "+str(mass) + " --signif &>Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_Asymptotic_8TeV_channel2.out")
-        os.system("cp higgsCombineTest.Asymptotic.mH1200.root gravitonCombineTest.Asymptotic.mH"+str(mass)+"_" + sChannel[chan] + ".root")
+        masses =[1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0]
+
+        for mass in masses:
+            print "mass = ",mass
+
+            os.system("combine ../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel"+str(bin[ibin])+".txt -M Asymptotic -v2 -m "+str(mass) + " --signif &>Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_Asymptotic_8TeV_channel"+str(bin[ibin])+".out")
+            os.system("mv higgsCombineTest.Asymptotic.mH"+str(int(mass))+".root Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_Asymptotic_8TeV_channel"+str(bin[ibin])+"_"+sBin[ibin]+".root")
 
  
