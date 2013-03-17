@@ -496,8 +496,8 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
   for (int c = 0; c < ncat; ++c) {
     data[c]   = (RooDataSet*) w->data(TString::Format("Data_cat%d",c));
                 
-    if (c == 2) ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope1_cat%d",c)))->setConstant(true);
-    cout << "---------------- First parameter set to const for c == 2" << endl;
+    if (c == 2) ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c)))->setConstant(true);
+    cout << "---------------- First parameter 3 set to const for c == 2" << endl;
 
     
     RooFormulaVar *p1mod = new RooFormulaVar(TString::Format("p1mod_cat%d",c),"","@0",*w->var(TString::Format("mgg_bkg_8TeV_slope1_cat%d",c)));
@@ -1142,9 +1142,7 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
    double min = wAll->var(TString::Format("mgg_bkg_8TeV_slope1_cat%d",c))->getMin();
    double max = wAll->var(TString::Format("mgg_bkg_8TeV_slope1_cat%d",c))->getMax();
 
-   if (c != 2 ) wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope1_cat%d[%g,%g,%g]", c, mean, min, max));
-   else if (c == 2 ) wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope1_cat%d[%g,%g,%g]", c, mean, mean, mean));
-
+   wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope1_cat%d[%g,%g,%g]", c, mean, min, max));
 
 
    double mean = wAll->var(TString::Format("mgg_bkg_8TeV_slope2_cat%d",c))->getVal();
@@ -1156,7 +1154,9 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
    double mean = wAll->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c))->getVal();
    double min = wAll->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c))->getMin();
    double max = wAll->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c))->getMax();
-   wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,%g,%g]", c, mean, min, max));
+
+   if (c == 2)wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,%g,%g]", c, mean, mean, mean));
+   else if (c != 2) wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,%g,%g]", c, mean, min, max));
 
     cout << "Done For category " << c << endl;    
   }
