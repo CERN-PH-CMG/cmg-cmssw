@@ -88,34 +88,34 @@ mgg_bkg_8TeV_slope3[0.,0.0, 0.0];
 
 
 mgg_bkg_8TeV_slope_cat0[200000.0,0, 100000000];
-mgg_bkg_8TeV_slope1_cat0[10.0, -100.0, 500.0];
-mgg_bkg_8TeV_slope2_cat0[13,0.0, 100.0];
-mgg_bkg_8TeV_slope3_cat0[0.,-2.0, 4.0];
+mgg_bkg_8TeV_slope1_cat0[15.0, -100.0, 500.0];
+mgg_bkg_8TeV_slope2_cat0[3,0.0, 100.0];
+mgg_bkg_8TeV_slope3_cat0[-0.4,-10.0, 10.0];
 
 mgg_bkg_8TeV_slope_cat1[20000.0,0, 10000000];
-mgg_bkg_8TeV_slope1_cat1[10.0, -100.0, 500.0];
-mgg_bkg_8TeV_slope2_cat1[13,0.0, 100.0];
-mgg_bkg_8TeV_slope3_cat1[0.,-2.0, 4.0];
+mgg_bkg_8TeV_slope1_cat1[0.7, -100.0, 500.0];
+mgg_bkg_8TeV_slope2_cat1[15,0.0, 100.0];
+mgg_bkg_8TeV_slope3_cat1[2.,-10.0, 10.0];
 
 mgg_bkg_8TeV_slope_cat2[4000.0,0, 10000000];
-mgg_bkg_8TeV_slope1_cat2[1.0, 1.0, 1.0];
-mgg_bkg_8TeV_slope2_cat2[25.7,-1000.0, 1000.0];
-mgg_bkg_8TeV_slope3_cat2[5.0,-10.0, 10.0];
+mgg_bkg_8TeV_slope1_cat2[13.0, -100.0, 500.0];
+mgg_bkg_8TeV_slope2_cat2[25.7,0.0, 1000.0];
+mgg_bkg_8TeV_slope3_cat2[0.0,0.0, 0.0];
 
 mgg_bkg_8TeV_slope_cat3[4000.0,0, 10000000];
-mgg_bkg_8TeV_slope1_cat3[10.0, -100.0, 500.0];
-mgg_bkg_8TeV_slope2_cat3[13,0.0, 100.0];
-mgg_bkg_8TeV_slope3_cat3[0.,-2.0, 4.0];
+mgg_bkg_8TeV_slope1_cat3[4.0, -100.0, 500.0];
+mgg_bkg_8TeV_slope2_cat3[12,0.0, 100.0];
+mgg_bkg_8TeV_slope3_cat3[0.,-10.0, 10.0];
 
 mgg_bkg_8TeV_slope_cat4[4000.0,0, 10000000];
-mgg_bkg_8TeV_slope1_cat4[10.0, -100.0, 500.0];
-mgg_bkg_8TeV_slope2_cat4[13,0.0, 100.0];
-mgg_bkg_8TeV_slope3_cat4[0.,-2.0, 4.0];
+mgg_bkg_8TeV_slope1_cat4[4.0, -100.0, 500.0];
+mgg_bkg_8TeV_slope2_cat4[12,0.0, 100.0];
+mgg_bkg_8TeV_slope3_cat4[0.,-10.0, 10.0];
 
 mgg_bkg_8TeV_slope_cat5[4000.0,0, 10000000];
-mgg_bkg_8TeV_slope1_cat5[10.0, -100.0, 500.0];
-mgg_bkg_8TeV_slope2_cat5[13,0.0, 100.0];
-mgg_bkg_8TeV_slope3_cat5[0.,-2.0, 4.0];
+mgg_bkg_8TeV_slope1_cat5[8.0, -100.0, 500.0];
+mgg_bkg_8TeV_slope2_cat5[5,0.0, 100.0];
+mgg_bkg_8TeV_slope3_cat5[.,-10.0, 10.0];
 
 wei[1,0,10];
 
