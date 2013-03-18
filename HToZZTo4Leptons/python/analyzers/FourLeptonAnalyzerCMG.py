@@ -97,7 +97,7 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(self.testFourLeptonMinOSMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')
 
         #Z2 Mass Tight Cut
-        passed=cutFlow.applyCut(lambda x: x.leg2.mass()>12.,'4l Tight Mass2',1,'fourLeptonsTightZ2')
+        passed=cutFlow.applyCut(self.testFourLeptonMassZ2,'4l Tight Mass2',1,'fourLeptonsTightZ2')
 
         #Z2 SIP CUT
         passed=cutFlow.applyCut(lambda x: abs(x.leg2.leg1.sip3D())<4 and abs(x.leg2.leg2.sip3D())<4,'SIP cut for Z2 ',1,'fourLeptonsLoose')
@@ -114,8 +114,10 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         #Z -> 4 l phase space
         passed=cutFlow.applyCut(self.testFourLeptonMassZ,'4l Z phase space',1,'fourLeptonsZPhaseSpace')
 
+
         if passed:
             event.higgsCand = cutFlow.obj1[0]
+
             event.otherLeptons=copy.copy(event.cleanLeptons)
             event.otherLeptons.remove(event.higgsCand.leg1.leg1)
             event.otherLeptons.remove(event.higgsCand.leg1.leg2)
@@ -126,6 +128,16 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
             metV = TLorentzVector(event.met.px(),event.met.py(),event.met.pz(),event.met.energy())
 
             event.recoil = (-metV-event.higgsCand).Pt()
+
+
+            if len(event.otherTightLeptons)>0:
+                 #here define the lepton tag algorithm. Essentially pick the Z2 with the lowest mass
+                 event.leptonTagSortedCands=sorted(cutFlow.obj1,key=lambda x: abs(x.leg2.mass()))
+                 event.higgsCandTagged = event.leptonTagSortedCands[0]
+            
+            
+
+
 
         #ZZ phase smace
         passed=cutFlow.applyCut(self.testFourLeptonMass,'4l H phase space',1,'fourLeptonsHPhaseSpace')
@@ -161,6 +173,11 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
             event.otherLeptonsLoose.remove(event.higgsCandLoose.leg2.leg2)
             event.otherLeptonsLoose = filter(lambda x:x.pt()>10,event.otherLeptonsLoose)
             event.otherTightLeptonsLoose = filter(self.testLeptonTight,event.otherLeptonsLoose)
+
+            if len(event.otherTightLeptonsLoose)>0:
+                 #here define the lepton tag algorithm. Essentially pick the Z2 with the lowest mass
+                 event.leptonTagSortedCandsLoose=sorted(cutFlow.obj1,key=lambda x: abs(x.leg2.mass()))
+                 event.higgsCandTaggedLoose = event.leptonTagSortedCandsLoose[0]
 
 
         if len(event.fourLeptonsOS)>0:

@@ -47,6 +47,30 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.bookLepton("HLooseOS_Z2_leg2")
 
 
+        #Book the Lepton Tagged Higgs
+        self.var("LT_H")
+        self.bookHiggs("LT_H")
+        self.bookBoson("LT_H_Z1")
+        self.bookBoson("LT_H_Z2")
+        self.bookLepton("LT_H_Z1_leg1")
+        self.bookLepton("LT_H_Z1_leg2")
+        self.bookLepton("LT_H_Z2_leg1")
+        self.bookLepton("LT_H_Z2_leg2")
+
+        #Book the Lepton Tagged Higgs
+        self.var("LT_HLoose")
+        self.bookHiggs("LT_HLoose")
+        self.bookBoson("LT_HLoose_Z1")
+        self.bookBoson("LT_HLoose_Z2")
+        self.bookLepton("LT_HLoose_Z1_leg1")
+        self.bookLepton("LT_HLoose_Z1_leg2")
+        self.bookLepton("LT_HLoose_Z2_leg1")
+        self.bookLepton("LT_HLoose_Z2_leg2")
+
+
+
+
+
         #Book the fake rate
         self.var('HLoose_fakeRate')
         self.var('HLoose_fakeRateUp')
@@ -56,10 +80,21 @@ class FourLeptonTreeProducer( TreeProducer ):
         self.var('HLooseOS_fakeRateUp')
         self.var('HLooseOS_fakeRateDwn')
 
+
+        self.var('LT_HLoose_fakeRate')
+        self.var('LT_HLoose_fakeRateUp')
+        self.var('LT_HLoose_fakeRateDwn')
+
+
+
         #Book the fake rate
         self.var('H_eff')
         self.var('H_effUp')
         self.var('H_effDwn')
+
+        self.var('LT_H_eff')
+        self.var('LT_H_effUp')
+        self.var('LT_H_effDwn')
         
 
         self.var("vertices",int)
@@ -178,6 +213,50 @@ class FourLeptonTreeProducer( TreeProducer ):
                 self.fill('HLooseOS_fakeRate',event.higgsCandLooseOS.leg2.leg1.fR*event.higgsCandLooseOS.leg2.leg2.fR)
                 self.fill('HLooseOS_fakeRateUp',event.higgsCandLooseOS.leg2.leg1.fRUp*event.higgsCandLooseOS.leg2.leg2.fRUp)
                 self.fill('HLooseOS_fakeRateDwn',event.higgsCandLooseOS.leg2.leg1.fRDwn*event.higgsCandLooseOS.leg2.leg2.fRDwn)
+
+
+
+
+
+
+        if hasattr( event, 'higgsCandTagged' ):
+            self.fillHiggs("LT_H",event.higgsCandTagged)
+            self.fillBoson("LT_H_Z1",event.higgsCandTagged.leg1)
+            self.fillBoson("LT_H_Z2",event.higgsCandTagged.leg2)
+            self.fillLepton("LT_H_Z1_leg1",event.higgsCandTagged.leg1.leg1,event)
+            self.fillLepton("LT_H_Z1_leg2",event.higgsCandTagged.leg1.leg2,event)
+            self.fillLepton("LT_H_Z2_leg1",event.higgsCandTagged.leg2.leg1,event)
+            self.fillLepton("LT_H_Z2_leg2",event.higgsCandTagged.leg2.leg2,event)
+
+            if hasattr(event.higgsCandTagged.leg2.leg1,'eff'):
+                self.fill('LT_H_eff',event.higgsCandTagged.leg2.leg1.eff* \
+                          event.higgsCandTagged.leg2.leg2.eff* \
+                          event.higgsCandTagged.leg1.leg1.eff* \
+                          event.higgsCandTagged.leg1.leg2.eff)
+                self.fill('LT_H_effUp',event.higgsCandTagged.leg2.leg1.effUp* \
+                          event.higgsCandTagged.leg2.leg2.effUp* \
+                          event.higgsCandTagged.leg1.leg1.effUp* \
+                          event.higgsCandTagged.leg1.leg2.effUp)
+
+                self.fill('LT_H_effDwn',event.higgsCandTagged.leg2.leg1.effDwn* \
+                          event.higgsCandTagged.leg2.leg2.effDwn* \
+                          event.higgsCandTagged.leg1.leg1.effDwn* \
+                          event.higgsCandTagged.leg1.leg2.effDwn)
+
+
+        if hasattr( event, 'higgsCandTaggedLoose' ):
+            self.fillHiggs("LT_HLoose",event.higgsCandTaggedLoose)
+            self.fillBoson("LT_HLoose_Z1",event.higgsCandTaggedLoose.leg1)
+            self.fillBoson("LT_HLoose_Z2",event.higgsCandTaggedLoose.leg2)
+            self.fillLepton("LT_HLoose_Z1_leg1",event.higgsCandTaggedLoose.leg1.leg1,event)
+            self.fillLepton("LT_HLoose_Z1_leg2",event.higgsCandTaggedLoose.leg1.leg2,event)
+            self.fillLepton("LT_HLoose_Z2_leg1",event.higgsCandTaggedLoose.leg2.leg1,event)
+            self.fillLepton("LT_HLoose_Z2_leg2",event.higgsCandTaggedLoose.leg2.leg2,event)
+
+            if hasattr(event.higgsCandTaggedLoose.leg2.leg1,'fR'):
+                self.fill('LT_HLoose_fakeRate',event.higgsCandTaggedLoose.leg2.leg1.fR*event.higgsCandTaggedLoose.leg2.leg2.fR)
+                self.fill('LT_HLoose_fakeRateUp',event.higgsCandTaggedLoose.leg2.leg1.fRUp*event.higgsCandTaggedLoose.leg2.leg2.fRUp)
+                self.fill('LT_HLoose_fakeRateDwn',event.higgsCandTaggedLoose.leg2.leg1.fRDwn*event.higgsCandTaggedLoose.leg2.leg2.fRDwn)
 
 
 
