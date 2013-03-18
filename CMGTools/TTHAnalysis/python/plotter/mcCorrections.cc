@@ -20,12 +20,21 @@ double scaleIpVarsMC(double ipvar, int pdgId, double pt, double eta, int mcMatch
     }
 }
 double scaleSip3dMC(double sip3d, int pdgId, double pt, double eta, int mcMatchId, int mcMatchAny) {
+    if (abs(pdgId) == 11 && (mcMatchId > 0 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+        return logSmearMC(sip3d, 0.10, 0.2);
+    }
     return scaleIpVarsMC(sip3d,pdgId,pt,eta,mcMatchId,mcMatchAny);
 }
 double scaleDzMC(double dz, int pdgId, double pt, double eta, int mcMatchId, int mcMatchAny) {
+    if (abs(pdgId) == 11 && (mcMatchId > 0 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+        return logSmearMC(dz, 0.20, 0.3);
+    }
     return scaleIpVarsMC(dz,pdgId,pt,eta,mcMatchId,mcMatchAny);
 }
 double scaleDxyMC(double dxy, int pdgId, double pt, double eta, int mcMatchId, int mcMatchAny) {
+    if (abs(pdgId) == 11 && (mcMatchId > 0 || mcMatchAny <= 1) && abs(eta) >= 1.479) {
+        return logSmearMC(dxy, 0.07, 0.3);
+    }
     return scaleIpVarsMC(dxy,pdgId,pt,eta,mcMatchId,mcMatchAny);
 }
 
