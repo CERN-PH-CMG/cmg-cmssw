@@ -134,7 +134,18 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
                  #here define the lepton tag algorithm. Essentially pick the Z2 with the lowest mass
                  event.leptonTagSortedCands=sorted(cutFlow.obj1,key=lambda x: abs(x.leg2.mass()))
                  event.higgsCandTagged = event.leptonTagSortedCands[0]
-            
+                 #refind the additional lepton and ad it
+                 event.otherLeptonsTag=copy.copy(event.cleanLeptons)
+                 event.otherLeptonsTag.remove(event.higgsCandTagged.leg1.leg1)
+                 event.otherLeptonsTag.remove(event.higgsCandTagged.leg1.leg2)
+                 event.otherLeptonsTag.remove(event.higgsCandTagged.leg2.leg1)
+                 event.otherLeptonsTag.remove(event.higgsCandTagged.leg2.leg2)
+                 event.otherLeptonsTag = filter(lambda x:x.pt()>10,event.otherLeptonsTag)
+                 event.otherLeptonsTag = filter(self.testLeptonTight,event.otherLeptonsTag)
+                 event.otherLeptonsTag =sorted(event.otherLeptonsTag,key=lambda x: x.pt(),reverse=True)
+                 event.higgsCandTagged.leptonTag = event.otherLeptonsTag[0]
+                 
+                 
             
 
 
@@ -174,10 +185,19 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
             event.otherLeptonsLoose = filter(lambda x:x.pt()>10,event.otherLeptonsLoose)
             event.otherTightLeptonsLoose = filter(self.testLeptonTight,event.otherLeptonsLoose)
 
-            if len(event.otherTightLeptonsLoose)>0:
+            if len(event.otherLeptonsLoose)>0:
                  #here define the lepton tag algorithm. Essentially pick the Z2 with the lowest mass
                  event.leptonTagSortedCandsLoose=sorted(cutFlow.obj1,key=lambda x: abs(x.leg2.mass()))
                  event.higgsCandTaggedLoose = event.leptonTagSortedCandsLoose[0]
+                 event.otherLeptonsTagLoose=copy.copy(event.cleanLeptons)
+                 event.otherLeptonsTagLoose.remove(event.higgsCandTaggedLoose.leg1.leg1)
+                 event.otherLeptonsTagLoose.remove(event.higgsCandTaggedLoose.leg1.leg2)
+                 event.otherLeptonsTagLoose.remove(event.higgsCandTaggedLoose.leg2.leg1)
+                 event.otherLeptonsTagLoose.remove(event.higgsCandTaggedLoose.leg2.leg2)
+                 event.otherLeptonsTagLoose = filter(lambda x:x.pt()>10,event.otherLeptonsTagLoose)
+                 event.otherLeptonsTagLoose =sorted(event.otherLeptonsTagLoose,key=lambda x: x.pt(),reverse=True)
+                 event.higgsCandTaggedLoose.leptonTag = event.otherLeptonsTagLoose[0]
+                 self.correctFakeWeightsComb(event.higgsCandTaggedLoose)
 
 
         if len(event.fourLeptonsOS)>0:
@@ -186,7 +206,7 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
 
 
 
-        if hasattr(event,'higgsCand') or hasattr(event,'higgsCandLoose') or hasattr(event,'higgsCandLooseOS'):
+        if hasattr(event,'higgsCand') or hasattr(event,'higgsCandLoose') or hasattr(event,'higgsCandLooseOS') or hasattr(event,'higgsCandTagged') or hasattr(event,'higgsCandTaggedLoose'):
             return True
         
         return  False
