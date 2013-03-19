@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id$
+ * $Id: R2JJFitter.cc,v 1.4 2013/03/17 19:24:29 mgouzevi Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -115,6 +115,8 @@ using namespace RooFit;
 using namespace RooStats ;
 
 static const Int_t NCAT = 6;
+static const Double_t MMIN = 890;
+static const Double_t MMAX = 2500;
 
 void AddSigData(RooWorkspace*, Float_t);
 void AddBkgData(RooWorkspace*);
@@ -131,7 +133,7 @@ void SetConstantParams(const RooArgSet* params);
 RooArgSet* defineVariables()
 {
   // define variables of the input ntuple
-  RooRealVar* mgg  = new RooRealVar("mgg","M(jet-jet)",1000,4000,"GeV");
+  RooRealVar* mgg  = new RooRealVar("mgg","M(jet-jet)",MMIN,MMAX,"GeV");
   RooRealVar* evWeight   = new RooRealVar("evWeight","Reweightings",0,100,"");
   RooRealVar* normWeight  = new RooRealVar("normWeight","Additionnal Weight",0,10000000,"");
   RooCategory* categories = new RooCategory("categories","event category 6") ;
@@ -361,7 +363,7 @@ void AddBkgData(RooWorkspace* w) {
 // common preselection cut
   TString mainCut("1");
 
-  Float_t minMassFit(1000),maxMassFit(4000); 
+  Float_t minMassFit(MMIN),maxMassFit(MMAX); 
 
 
 //****************************//
@@ -414,7 +416,7 @@ void SigModelFit(RooWorkspace* w, Float_t mass) {
   RooDataSet* sigToFit[NCAT];
   RooAbsPdf* MggSig[NCAT];
 
-  Float_t minMassFit(1000),maxMassFit(4000); 
+  Float_t minMassFit(MMIN),maxMassFit(MMAX); 
 
 
 // Fit Signal 
@@ -481,7 +483,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
   RooAbsPdf*  MggSig[NCAT];
 
 
-  Float_t minMassFit(1000),maxMassFit(4000); 
+  Float_t minMassFit(MMIN),maxMassFit(MMAX); 
 
 // Fit data with background pdf for data limit
 
@@ -496,8 +498,8 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
   for (int c = 0; c < ncat; ++c) {
     data[c]   = (RooDataSet*) w->data(TString::Format("Data_cat%d",c));
                 
-    if (c == 2) ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c)))->setConstant(true);
-    cout << "---------------- First parameter 3 set to const for c == 2" << endl;
+    ((RooRealVar*) w->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c)))->setConstant(true);
+    cout << "---------------- Parameter 3 set to const" << endl;
 
     
     RooFormulaVar *p1mod = new RooFormulaVar(TString::Format("p1mod_cat%d",c),"","@0",*w->var(TString::Format("mgg_bkg_8TeV_slope1_cat%d",c)));
@@ -727,7 +729,7 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, bool isW
 //  SetParamNames(w);
 
 
-  Float_t minMassFit(1000),maxMassFit(4000); 
+  Float_t minMassFit(MMIN),maxMassFit(MMAX); 
   Float_t MASS(mass);
 
   Int_t nBinsMass(50);
@@ -1126,7 +1128,7 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
  
     cout << "For category " << c << endl;
     data[c]      = (RooDataSet*) w->data(TString::Format("Data_cat%d",c));
-    ((RooRealVar*) data[c]->get()->find("mgg"))->setBins(4000) ;
+    ((RooRealVar*) data[c]->get()->find("mgg"))->setBins(MMAX-MMIN) ;
     RooDataHist* dataBinned = data[c]->binnedClone();
     MggBkgPdf[c] = (RooExtendPdf*)  w->pdf(TString::Format("MggBkg_cat%d",c));
     //   wAll->import(*data[c], Rename(TString::Format("data_obs_cat%d",c)));
@@ -1155,8 +1157,8 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
    double min = wAll->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c))->getMin();
    double max = wAll->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c))->getMax();
 
-   if (c == 2)wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,%g,%g]", c, mean, mean, mean));
-   else if (c != 2) wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,%g,%g]", c, mean, min, max));
+   wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,%g,%g]", c, mean, mean, mean));
+   //wAll->factory(TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,%g,%g]", c, mean, min, max));
 
     cout << "Done For category " << c << endl;    
   }
@@ -1572,4 +1574,10 @@ Double_t effSigma(TH1 *hist) {
   if(ierr != 0) std::cout << "effsigma: Error of type " << ierr << std::endl;
 
   return widmin;
+}
+
+void R2JJFitter(double mass)
+{
+    runfits(mass, true);
+    runfits(mass, false);
 }
