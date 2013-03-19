@@ -11,6 +11,9 @@ for mass in masses:
   outputfile.write("root -b -q 'R2JJFitter.cc("+str(mass)+")'\n")
   outputfile.close
   
+  command="rm "+logname
+  print command
+  os.system(command)
   command="bsub -q 1nh -o "+logname+" source "+outputname
   print command
   os.system(command)
