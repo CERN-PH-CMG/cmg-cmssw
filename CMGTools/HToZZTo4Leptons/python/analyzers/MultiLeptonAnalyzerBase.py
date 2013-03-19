@@ -214,11 +214,14 @@ class MultiLeptonAnalyzerBase( Analyzer ):
            using the channel-dependent fake rates.
            needs knowldege of the Z1 decay mode.'''
         z1Flav = fourLepton.leg1.leg1.pdgId()
-        for lepton in [fourLepton.leg2.leg1,fourLepton.leg2.leg2]:
-            if hasattr(self,'fakeRates'):
+        leptons=[fourLepton.leg2.leg1,fourLepton.leg2.leg2]
+        if hasattr(fourLepton,'leptonTag'):
+            leptons.append(fourLepton.leptonTag)
+        if hasattr(self,'fakeRates'):
+            for lepton in leptons:
                 for fr in self.fakeRates:
                     fr.attachToObject(lepton, z1Flav)
-
+                    
 
     #####################################################################
     #Combinatorial METHODS
