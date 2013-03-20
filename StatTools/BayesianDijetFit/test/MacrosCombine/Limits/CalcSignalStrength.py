@@ -31,9 +31,16 @@ muPlusZZ=[]
 
 
 sChan=["WW","ZZ"]
-bin=[0,1,2,3,4,5]
-sBin=["m2mg0", "m2mg1", "m2mg2", "m1mg0", "m1mg1", "m0"]
-#bin=[4]
+bin=[0,1,2,3,4,5,"012","012345"]
+sBin={}
+sBin[0]="m2mg0"
+sBin[1]="m2mg1"
+sBin[2]="m2mg2"
+sBin[3]="m1mg0"
+sBin[4]="m1mg1"
+sBin[5]="m0"
+sBin["012"]="012"
+sBin["012345"]="012345"
 
 for ibin in bin:
 
