@@ -76,13 +76,13 @@ class ZAnalyzer( Analyzer ):
         event.Zjets = self.buildJets( self.handles['Zjets'].product(), event )
         # access MET
         event.pfmet = self.handles['pfmet'].product()[0]
-        event.tkmet = self.handles['tkmet'].product()[0]
-        event.nopumet = self.handles['nopumet'].product()[0]
-        event.pumet = self.handles['pumet'].product()[0]
-        event.pucmet = self.handles['pucmet'].product()[0]
-        event.pfMetForRegression = self.handles['pfMetForRegression'].product()[0]
+        # event.tkmet = self.handles['tkmet'].product()[0]
+        # event.nopumet = self.handles['nopumet'].product()[0]
+        # event.pumet = self.handles['pumet'].product()[0]
+        # event.pucmet = self.handles['pucmet'].product()[0]
+        # event.pfMetForRegression = self.handles['pfMetForRegression'].product()[0]
         # access nJetsPtGt1
-        event.nJetsPtGt1H = self.handles['nJetsPtGt1'].product()[0]
+        # event.nJetsPtGt1H = self.handles['nJetsPtGt1'].product()[0]
         # access genP
         event.genParticles = []
         if self.cfg_comp.isMC :
@@ -123,8 +123,10 @@ class ZAnalyzer( Analyzer ):
           event.genMuNeg = []
           if len(event.genZ)==1:
           # if the genp event is selected, associate gen muons
-            if(event.genZ[0].daughter(0).pdgId()==13):
+            # if(event.genZ[0].daughter(0).pdgId()==13):
+            if(event.genZ[0].daughter(0).charge()>0):
               event.genMuPos.append(event.genZ[0].daughter(0))
+              # print event.genZ[0].daughter(0).pdgId(),' event.genZ[0].daughter(0).charge()= ',event.genZ[0].daughter(0).charge()
               event.genMuNeg.append(event.genZ[0].daughter(1))
             else:
               event.genMuPos.append(event.genZ[0].daughter(1))
@@ -207,7 +209,7 @@ class ZAnalyzer( Analyzer ):
         if(len(event.ZselJets)>1): i2ndJet = event.ZselJets[1].p4()
         # print 'iLeadJet= ',iLeadJet, ' i2ndJet=',i2ndJet 
         # self.mvamet.addVisObject(event.BestZMuonPairList[0].p4())
-        visObjectP4s_array = [event.BestZMuonPairList[0].p4(),event.BestZMuonPairList[0].p4()]
+        # visObjectP4s_array = [event.BestZMuonPairList[0].p4(),event.BestZMuonPairList[0].p4()]
         iJets_p4 = []
         iJets_mva = []
         iJets_neutFrac = []
@@ -216,24 +218,24 @@ class ZAnalyzer( Analyzer ):
             iJets_mva.append(float(0))
             iJets_neutFrac.append(float(0.5))
             
-        self.mvamet.getMet(
-                           # event.pfmet, #iPFMet,
-                           event.pfMetForRegression, #iPFMet,
-                           event.tkmet, #iTKMet,
-                           event.nopumet, #iNoPUMet,
-                           event.pumet, #iPUMet,
-                           event.pucmet, #iPUCMet,
-                           iLeadJet, #event.ZselJets[0], #iLeadJet,
-                           i2ndJet, #event.ZselJets[1], #i2ndJet,
-                           len(event.ZselJets), #iNJetsGt30,
-                           len(event.allJets), #iNJetsGt1,
-                           len(self.handles['vertices'].product()), #iNGoodVtx,
-                           iJets_p4, #iJets,
-                           iJets_mva, #iJets,
-                           iJets_neutFrac, #iJets,
-                           False, #iPrintDebug,
-                           visObjectP4s_array #visObjectP4s
-                          )
+        # self.mvamet.getMet(
+                           # # event.pfmet, #iPFMet,
+                           # event.pfMetForRegression, #iPFMet,
+                           # event.tkmet, #iTKMet,
+                           # event.nopumet, #iNoPUMet,
+                           # event.pumet, #iPUMet,
+                           # event.pucmet, #iPUCMet,
+                           # iLeadJet, #event.ZselJets[0], #iLeadJet,
+                           # i2ndJet, #event.ZselJets[1], #i2ndJet,
+                           # len(event.ZselJets), #iNJetsGt30,
+                           # len(event.allJets), #iNJetsGt1,
+                           # len(self.handles['vertices'].product()), #iNGoodVtx,
+                           # iJets_p4, #iJets,
+                           # iJets_mva, #iJets,
+                           # iJets_neutFrac, #iJets,
+                           # False, #iPrintDebug,
+                           # visObjectP4s_array #visObjectP4s
+                          # )
                           
         GetMet_first = self.mvamet.GetMet_first();
         GetMet_second = self.mvamet.GetMet_second();
