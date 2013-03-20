@@ -118,43 +118,27 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         if passed:
             event.higgsCand = cutFlow.obj1[0]
 
-            event.otherLeptons=copy.copy(event.cleanLeptons)
-            event.otherLeptons.remove(event.higgsCand.leg1.leg1)
-            event.otherLeptons.remove(event.higgsCand.leg1.leg2)
-            event.otherLeptons.remove(event.higgsCand.leg2.leg1)
-            event.otherLeptons.remove(event.higgsCand.leg2.leg2)
-            event.otherLeptons = filter(lambda x:x.pt()>10,event.otherLeptons)
-            event.otherTightLeptons = filter(self.testLeptonTight,event.otherLeptons)
             metV = TLorentzVector(event.met.px(),event.met.py(),event.met.pz(),event.met.energy())
-
             event.recoil = (-metV-event.higgsCand).Pt()
 
-
-            if len(event.otherTightLeptons)>0:
-                 #here define the lepton tag algorithm. Essentially pick the Z2 with the lowest mass
-                 event.leptonTagSortedCands=sorted(cutFlow.obj1,key=lambda x: abs(x.leg2.mass()))
+            #search for lepton tag(Pick the one with smallest M_Z2)
+            event.leptonTagSortedCands=sorted(cutFlow.obj1,key=lambda x: abs(x.leg2.mass()))
+            event.otherLeptonsTag=copy.copy(event.cleanLeptons)
+            event.otherLeptonsTag.remove(event.leptonTagSortedCands[0].leg1.leg1)
+            event.otherLeptonsTag.remove(event.leptonTagSortedCands[0].leg1.leg2)
+            event.otherLeptonsTag.remove(event.leptonTagSortedCands[0].leg2.leg1)
+            event.otherLeptonsTag.remove(event.leptonTagSortedCands[0].leg2.leg2)
+            event.otherLeptonsTag = filter(lambda x:x.pt()>10,event.otherLeptonsTag)
+            event.otherLeptonsTag =sorted(event.otherLeptonsTag,key=lambda x: x.pt(),reverse=True)
+            event.otherLeptonsTightTag = filter(self.testLeptonTight,event.otherLeptonsTag)
+            if len(event.otherLeptonsTightTag)>0:
                  event.higgsCandTagged = event.leptonTagSortedCands[0]
-                 #refind the additional lepton and ad it
-                 event.otherLeptonsTag=copy.copy(event.cleanLeptons)
-                 event.otherLeptonsTag.remove(event.higgsCandTagged.leg1.leg1)
-                 event.otherLeptonsTag.remove(event.higgsCandTagged.leg1.leg2)
-                 event.otherLeptonsTag.remove(event.higgsCandTagged.leg2.leg1)
-                 event.otherLeptonsTag.remove(event.higgsCandTagged.leg2.leg2)
-                 event.otherLeptonsTag = filter(lambda x:x.pt()>10,event.otherLeptonsTag)
-                 event.otherLeptonsTag = filter(self.testLeptonTight,event.otherLeptonsTag)
-                 event.otherLeptonsTag =sorted(event.otherLeptonsTag,key=lambda x: x.pt(),reverse=True)
-                 event.higgsCandTagged.leptonTag = event.otherLeptonsTag[0]
-                 
-                 
-            
+                 event.higgsCandTagged.leptonTag = event.otherLeptonsTightTag[0]
 
 
 
         #ZZ phase smace
         passed=cutFlow.applyCut(self.testFourLeptonMass,'4l H phase space',1,'fourLeptonsHPhaseSpace')
-
-
-
         
         passed=cutFlow.applyCut(lambda x: x.KD>0.1,'KD',1,'fourLeptonsMELA')
         passed=cutFlow.applyCut(lambda x: hasattr(x.leg1,'fsrPhoton') or hasattr(x.leg2,'fsrPhoton') ,'FSR',1,'fourLeptonsWithFSR')
@@ -177,25 +161,19 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         if passed:
             event.higgsCandLoose = cutFlow.obj1[0]
             self.correctFakeWeightsComb(event.higgsCandLoose)
-            event.otherLeptonsLoose=copy.copy(event.cleanLeptons)
-            event.otherLeptonsLoose.remove(event.higgsCandLoose.leg1.leg1)
-            event.otherLeptonsLoose.remove(event.higgsCandLoose.leg1.leg2)
-            event.otherLeptonsLoose.remove(event.higgsCandLoose.leg2.leg1)
-            event.otherLeptonsLoose.remove(event.higgsCandLoose.leg2.leg2)
-            event.otherLeptonsLoose = filter(lambda x:x.pt()>10,event.otherLeptonsLoose)
-            event.otherTightLeptonsLoose = filter(self.testLeptonTight,event.otherLeptonsLoose)
 
-            if len(event.otherLeptonsLoose)>0:
-                 #here define the lepton tag algorithm. Essentially pick the Z2 with the lowest mass
-                 event.leptonTagSortedCandsLoose=sorted(cutFlow.obj1,key=lambda x: abs(x.leg2.mass()))
-                 event.higgsCandTaggedLoose = event.leptonTagSortedCandsLoose[0]
-                 event.otherLeptonsTagLoose=copy.copy(event.cleanLeptons)
-                 event.otherLeptonsTagLoose.remove(event.higgsCandTaggedLoose.leg1.leg1)
-                 event.otherLeptonsTagLoose.remove(event.higgsCandTaggedLoose.leg1.leg2)
-                 event.otherLeptonsTagLoose.remove(event.higgsCandTaggedLoose.leg2.leg1)
-                 event.otherLeptonsTagLoose.remove(event.higgsCandTaggedLoose.leg2.leg2)
-                 event.otherLeptonsTagLoose = filter(lambda x:x.pt()>10,event.otherLeptonsTagLoose)
-                 event.otherLeptonsTagLoose =sorted(event.otherLeptonsTagLoose,key=lambda x: x.pt(),reverse=True)
+            #create lepton tag
+            event.leptonTagSortedLooseCands=sorted(cutFlow.obj1,key=lambda x: abs(x.leg2.mass()))
+            event.otherLeptonsTagLoose=copy.copy(event.cleanLeptons)
+            event.otherLeptonsTagLoose.remove(event.leptonTagSortedLooseCands[0].leg1.leg1)
+            event.otherLeptonsTagLoose.remove(event.leptonTagSortedLooseCands[0].leg1.leg2)
+            event.otherLeptonsTagLoose.remove(event.leptonTagSortedLooseCands[0].leg2.leg1)
+            event.otherLeptonsTagLoose.remove(event.leptonTagSortedLooseCands[0].leg2.leg2)
+            event.otherLeptonsTagLoose = filter(lambda x:x.pt()>10,event.otherLeptonsTagLoose)
+            event.otherLeptonsTagLoose =sorted(event.otherLeptonsTagLoose,key=lambda x: x.pt(),reverse=True)
+
+            if len(event.otherLeptonsTagLoose)>0:
+                 event.higgsCandTaggedLoose = event.leptonTagSortedLooseCands[0]
                  event.higgsCandTaggedLoose.leptonTag = event.otherLeptonsTagLoose[0]
                  self.correctFakeWeightsComb(event.higgsCandTaggedLoose)
 
