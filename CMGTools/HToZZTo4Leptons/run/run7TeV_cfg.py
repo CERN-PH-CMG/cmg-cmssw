@@ -47,7 +47,7 @@ muMuAna = cfg.Analyzer(
     minPt2=5,
     maxEta2=2.4,
     z1_m = (40.,120.),
-    z2_m = (4.,120.),
+    z2_m = (12.,120.),
     z1_pt1 = 20,
     z1_pt2 = 10,
     minHMass=100.,
@@ -181,7 +181,7 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-test = 1
+test = 0
 if test==1:
     dataset = ggH125
     selectedComponents = [dataset]
