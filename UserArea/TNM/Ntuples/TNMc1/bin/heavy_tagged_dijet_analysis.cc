@@ -665,6 +665,7 @@ int main(int argc, char** argv)
   Double_t mgg;
   Double_t evWeight = 1.0;
   Int_t categories;
+  Int_t categoriesNS;
   double weight=1.0;
 
   TTree *TCVARS = new TTree("TCVARS", "VV selection");
@@ -674,6 +675,7 @@ int main(int argc, char** argv)
   TCVARS->Branch("Weight",&weight,"Weight/D");
 
   TCVARS->Branch("categories",&categories,"categories/I"); 
+  TCVARS->Branch("categoriesNS",&categoriesNS,"categoriesNS/I"); 
 
   double DijetMass;
   double DijetMassNoCHS;
@@ -887,7 +889,8 @@ int main(int argc, char** argv)
 	  if(!(deta<1.3))
 	      continue;
 
-          dijetWtag->Fill();
+          if((cmdline.outputfilename.find("Py6")!=std::string::npos)||(cmdline.outputfilename.find("Hpp")!=std::string::npos)||(DijetMass>890))
+              dijetWtag->Fill();
 
           if(DijetMass>1600)
               cout << "filtered " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << Jet1CA8Mass << ":" << Jet2CA8Mass << ":" << Jet1CA8MassDrop << ":" << Jet2CA8MassDrop << endl;
@@ -1009,7 +1012,9 @@ int main(int argc, char** argv)
 
 
 
-
+          categories=-1;
+          categoriesNS=-1;
+          mgg = DijetMass;
 
 
 	  if((!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))&&
@@ -1017,9 +1022,7 @@ int main(int argc, char** argv)
 	  {
               mass_0mtag->Fill(DijetMass, weight);
               mass_eta_0mtag->Fill(DijetMass, deta, weight);
-	      mgg = DijetMass;
 	      categories = 5;
-              if(mgg>890) TCVARS->Fill();
 	  }
 	  if(((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)&&(Jet1CA8MassDrop>0.25)))&&
 	      (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))||
@@ -1028,9 +1031,7 @@ int main(int argc, char** argv)
 	  {
               mass_1mtag_0mdtag->Fill(DijetMass, weight);
               mass_eta_1mtag_0mdtag->Fill(DijetMass, deta, weight);
-	      mgg = DijetMass;
 	      categories = 4;
-              if(mgg>890) TCVARS->Fill();
 	  }
 	  if(((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)&&(Jet1CA8MassDrop<0.25)))&&
 	      (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))||
@@ -1039,9 +1040,7 @@ int main(int argc, char** argv)
 	  {
               mass_1mtag_1mdtag->Fill(DijetMass, weight);
               mass_eta_1mtag_1mdtag->Fill(DijetMass, deta, weight);
-	      mgg = DijetMass;
 	      categories = 3;
-              if(mgg>890) TCVARS->Fill();
 	  }
 	  if(((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
 	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
@@ -1049,9 +1048,7 @@ int main(int argc, char** argv)
 	  {
               mass_2mtag_0mdtag->Fill(DijetMass, weight);
               mass_eta_2mtag_0mdtag->Fill(DijetMass, deta, weight);
-	      mgg = DijetMass;
 	      categories = 2;
-              if(mgg>890) TCVARS->Fill();
 	  }
 	  if(((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
 	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
@@ -1060,9 +1057,7 @@ int main(int argc, char** argv)
 	  {
               mass_2mtag_1mdtag->Fill(DijetMass, weight);
               mass_eta_2mtag_1mdtag->Fill(DijetMass, deta, weight);
-	      mgg = DijetMass;
 	      categories = 1;
-              if(mgg>890) TCVARS->Fill();
 	  }
 	  if(((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
 	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
@@ -1070,9 +1065,7 @@ int main(int argc, char** argv)
 	  {
               mass_2mtag_2mdtag->Fill(DijetMass, weight);
               mass_eta_2mtag_2mdtag->Fill(DijetMass, deta, weight);
-	      mgg = DijetMass;
 	      categories = 0;
-              if(mgg>890) TCVARS->Fill();
 	  }
 
 
@@ -1276,17 +1269,19 @@ int main(int argc, char** argv)
 	  }
 
 
-	  //if((!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))&&
-	  //   (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))
-	  //{
+	  if((!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))&&
+	     (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))
+	  {
           //    mass_0mtag->Fill(DijetMass, weight);
-	  //}
+	      categoriesNS = 5;
+	  }
 	  if(((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)&&(Jet1CA8Nsub>0.5)))&&
 	      (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))||
  	     ((((Jet2CA8Mass>70)&&(Jet2CA8Mass<100)&&(Jet2CA8Nsub>0.5)))&&
 	      (!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))))
 	  {
               mass_1mtag_0nstag->Fill(DijetMass, weight);
+	      categoriesNS = 4;
 	  }
 	  if(((((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)&&(Jet1CA8Nsub<0.5)))&&
 	      (!((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))))||
@@ -1294,12 +1289,14 @@ int main(int argc, char** argv)
 	      (!((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)))))
 	  {
               mass_1mtag_1nstag->Fill(DijetMass, weight);
+	      categoriesNS = 3;
 	  }
 	  if(((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
 	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
 	     ((Jet1CA8Nsub>0.5)&&(Jet2CA8Nsub>0.5)))
 	  {
               mass_2mtag_0nstag->Fill(DijetMass, weight);
+	      categoriesNS = 2;
 	  }
 	  if(((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
 	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
@@ -1307,12 +1304,14 @@ int main(int argc, char** argv)
 	      ((Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub>0.5))))
 	  {
               mass_2mtag_1nstag->Fill(DijetMass, weight);
+	      categoriesNS = 1;
 	  }
 	  if(((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
 	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
 	     ((Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub<0.5)))
 	  {
               mass_2mtag_2nstag->Fill(DijetMass, weight);
+	      categoriesNS = 0;
 	  }
 
 
@@ -1796,6 +1795,7 @@ int main(int argc, char** argv)
               deta_2mtag_2mdtag->Fill(deta, weight);
 	  }
 
+          if(mgg>890) TCVARS->Fill();
 
 	}
 
