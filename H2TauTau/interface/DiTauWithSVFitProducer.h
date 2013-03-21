@@ -90,6 +90,27 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
     warningMessage = "DiTauWithSVFitProducer: MVA MET mode: reading vector PFMET significance";
   }
 
+  NSVfitStandalone::kDecayType leg1type, leg2type;
+  NSVfitStandalone2011::kDecayType leg1type2011, leg2type2011;
+  if(typeid(typename DiTauType::type1)==typeid(cmg::Tau)) {
+      leg1type=NSVfitStandalone::kHadDecay;
+      leg1type2011=NSVfitStandalone2011::kHadDecay;
+      warningMessage += " - first leg is hadronic tau";
+  } else {
+      leg1type=NSVfitStandalone::kLepDecay;
+      leg1type2011=NSVfitStandalone2011::kLepDecay;
+      warningMessage += " - first leg is leptonic tau";
+  }
+  if(typeid(typename DiTauType::type2)==typeid(cmg::Tau)) {
+      leg2type=NSVfitStandalone::kHadDecay;
+      leg2type2011=NSVfitStandalone2011::kHadDecay;
+      warningMessage += " - second leg is hadronic tau";
+  } else {
+      leg2type=NSVfitStandalone::kLepDecay;
+      leg2type2011=NSVfitStandalone2011::kLepDecay;
+      warningMessage += " - second leg is leptonic tau";
+  }
+
   const unsigned maxWarnings = 5;
   if(warningNumbers_<maxWarnings) {
     std::cout<<warningMessage<<std::endl;
@@ -133,8 +154,8 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
 	std::vector<NSVfitStandalone2011::MeasuredTauLepton2011> measuredTauLeptons;
 	NSVfitStandalone2011::LorentzVector p1(diTau.leg1().p4());
 	NSVfitStandalone2011::LorentzVector p2(diTau.leg2().p4());
-	measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kLepDecay,p2));
-	measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(NSVfitStandalone2011::kHadDecay,p1));    
+	measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(leg2type2011,p2));
+	measuredTauLeptons.push_back(NSVfitStandalone2011::MeasuredTauLepton2011(leg1type2011,p1));    
 	NSVfitStandaloneAlgorithm2011 algo(measuredTauLeptons,measuredMET, tmsig, 0);
 	algo.maxObjFunctionCalls(5000);
 	algo.fit();
@@ -142,8 +163,8 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
       }else if(SVFitVersion_==2){
 	//Note that this works only for di-objects where the tau is the leg1 and mu is leg2
 	std::vector<NSVfitStandalone::MeasuredTauLepton> measuredTauLeptons;
-	measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, diTau.leg2().p4()));
-	measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kHadDecay, diTau.leg1().p4()));
+	measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(leg2type, diTau.leg2().p4()));
+	measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(leg1type, diTau.leg1().p4()));
 	NSVfitStandaloneAlgorithm algo(measuredTauLeptons, met.p4().Vect(), *(tmsig), 0);
 	algo.addLogM(false);
 	algo.integrate();

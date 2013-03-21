@@ -1,6 +1,11 @@
 from CMGTools.RootTools.analyzers.TreeAnalyzer import TreeAnalyzer
 from CMGTools.RootTools.utils.DeltaR import bestMatch
 from math import *
+import inspect
+
+def lineno():
+    '''Returns the current line number in our program.'''
+    return inspect.currentframe().f_back.f_lineno
 
 def deltaPhi(phi1, phi2):
    p=abs(phi1-phi2)
@@ -46,6 +51,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         var('mt2')
 	var('pThiggs')
         
+	var('metPhi')
 	var('mex')
 	var('mey')
 	var('met')
@@ -197,32 +203,36 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 
         # SKIMMING here:
         #if not (event.diLepton.leg1().pt>20 and \
-	#   event.diLepton.leg2().pt>20 and \
-	#   event.diLepton.leg1().tauID("decayModeFinding")>0.5 and \
-	#   event.diLepton.leg2().tauID("decayModeFinding")>0.5 and \
-	#   (event.diLepton.leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5 or \
-	#    event.diLepton.leg2().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5) and \
-	#   event.diLepton.leg1().tauID("againstElectronLoose")>0.5 and \
-	#   event.diLepton.leg2().tauID("againstElectronLoose")>0.5 and \
-	#   event.diLepton.leg1().tauID("againstMuonLoose")>0.5 and \
-	#   event.diLepton.leg2().tauID("againstMuonLoose")>0.5): return
-                
+        #event.diLepton.leg2().pt>20 and \
+        #event.diLepton.leg1().tauID("decayModeFinding")>0.5 and \
+        #event.diLepton.leg2().tauID("decayModeFinding")>0.5 and \
+        #(event.diLepton.leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5 or \
+        # event.diLepton.leg2().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5) and \
+        #event.diLepton.leg1().tauID("againstElectronLoose")>0.5 and \
+        #event.diLepton.leg2().tauID("againstElectronLoose")>0.5 and \
+        #event.diLepton.leg1().tauID("againstMuonLoose")>0.5 and \
+        #event.diLepton.leg2().tauID("againstMuonLoose")>0.5): return
         #if "TTJets" in self.cfg_comp.name and not (event.diLepton.leg1().tauID("byMediumIsoMVA")>0.5 and \
-	#   event.diLepton.leg2().tauID("byMediumIsoMVA")>0.5): return
-
+        #event.diLepton.leg2().tauID("byMediumIsoMVA")>0.5): return
         if hasattr(event,"run"):
             fill('run', event.run)
         if hasattr(event,"lumi"):
             fill('lumi', event.lumi)
         if hasattr(event,"eventId"):
             fill('event', event.eventId)
-                
+        
         fill('visMass', event.diLepton.mass()*scale)
         fill('svfitMass', event.diLepton.massSVFit()*scale)
         fill('mt1', event.diLepton.mTLeg1()*scale)
         fill('mt2', event.diLepton.mTLeg2()*scale)
         fill('pThiggs', sqrt(pow(event.diLepton.met().px()+event.diLepton.leg1().px()+event.diLepton.leg2().px(),2)+pow(event.diLepton.met().py()+event.diLepton.leg1().py()+event.diLepton.leg2().py(),2))*scale)
 
+        #mvametsig = event.diLepton.mvaMetSig.significance()
+        #fill( tr, 'mvacov00', mvametsig(0,0))
+        #fill( tr, 'mvacov01', mvametsig(0,1))
+        #fill( tr, 'mvacov10', mvametsig(1,0))
+        #fill( tr, 'mvacov11', mvametsig(1,1))
+        fill('metPhi', event.diLepton.met().phi()*scale)
         fill('mex', event.diLepton.met().px()*scale)
         fill('mey', event.diLepton.met().py()*scale)
         fill('met', event.diLepton.met().pt()*scale)
@@ -233,14 +243,14 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
             
         fParticleVars('diTau', event.diLepton)
 	
-	#if event.diLepton.leg1().pt()>event.diLepton.leg2().pt():
-	#    leg1=event.diLepton.leg1()
-	#    leg2=event.diLepton.leg2()
+        #if event.diLepton.leg1().pt()>event.diLepton.leg2().pt():
+        #    leg1=event.diLepton.leg1()
+        #    leg2=event.diLepton.leg2()
         #else:
-	#    leg1=event.diLepton.leg2()
-	#    leg2=event.diLepton.leg1()
-	leg1=event.diLepton.leg1()
-	leg2=event.diLepton.leg2()
+        #    leg1=event.diLepton.leg2()
+        #    leg2=event.diLepton.leg1()
+        leg1=event.diLepton.leg1()
+        leg2=event.diLepton.leg2()
 	
         fParticleVars('l1', leg1 )
         fParticleVars('l2', leg2 )
@@ -261,7 +271,7 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         #fill('l1LooseMu', leg1.tauID("againstMuonLoose") )
         fill('l1jetMass', leg1.jetRefp4().mass() )
         fill('l1jetPt', leg1.jetRefp4().pt() )
-	if l1jet:
+        if l1jet:
           fill('l1jetWidth', l1jet.rms() )
           fill('l1jetBtag', l1jet.btag("combinedSecondaryVertexBJetTags") )
 
@@ -278,14 +288,14 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
         #fill('l2LooseMu', leg2.tauID("againstMuonLoose") )
         fill('l2jetMass', leg2.jetRefp4().mass() )
         fill('l2jetPt', leg2.jetRefp4().pt() )
-	if l2jet:
+        if l2jet:
           fill('l2jetWidth', l2jet.rms() )
           fill('l2jetBtag', l1jet.btag("combinedSecondaryVertexBJetTags") )
 
         fill('l1VertexZ', leg1.tau.vz() )
         fill('l2VertexZ', leg2.tau.vz() )
-	  
-	if hasattr(event,"leg1DeltaR"):
+
+        if hasattr(event,"leg1DeltaR"):
             fill('l1match', event.leg1DeltaR )
             fill('l2match', event.leg2DeltaR )
 	else:
@@ -294,12 +304,12 @@ class H2TauTauTreeProducerTauTau( TreeAnalyzer ):
 
 	if hasattr(event,"genMass"):
             fill('genMass', event.genMass )
-	    from ROOT import TFile,TH1F
-            f = TFile("/afs/cern.ch/user/h/hinzmann/workspace/stable2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/embeddedWeights.root")
-            hEmbed = f.Get("hemb")
-            shift=hEmbed.GetRandom()/event.genMass
-            fill('genMassSmeared', event.genMass*shift )
-            fill('svfitMassSmeared', event.diLepton.massSVFit()*scale*shift )
+#	    from ROOT import TFile,TH1F
+#            f = TFile("/afs/cern.ch/user/h/hinzmann/workspace/stable2012/CMGTools/CMSSW_5_2_5/src/CMGTools/H2TauTau/python/proto/embeddedWeights.root")
+#            hEmbed = f.Get("hemb")
+#            shift=hEmbed.GetRandom()/event.genMass
+#            fill('genMassSmeared', event.genMass*shift )
+#            fill('svfitMassSmeared', event.diLepton.massSVFit()*scale*shift )
 	else:
             fill('genMass', -1 )
             fill('genMassSmeared', -1 )

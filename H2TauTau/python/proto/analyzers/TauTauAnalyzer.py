@@ -9,6 +9,7 @@ from CMGTools.RootTools.physicsobjects.HTauTauElectron import HTauTauElectron as
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
+from CMGTools.RootTools.statistics.Counter import Counters
 
 class TauTauAnalyzer( DiLeptonAnalyzer ):
 
@@ -43,10 +44,11 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                                                      'std::vector<reco::GenParticle>' )
         if self.cfg_comp.isMC and "QCD" in self.cfg_comp.name:
             self.mchandles['generator'] = AutoHandle( 'generator',
-                                                     'GenEventInfoProduct' )
-        if self.cfg_comp.isEmbed:
-            self.handles['genParticles'] = AutoHandle( 'genParticles',
-                                                     'std::vector<reco::GenParticle>' )
+                                                      'GenEventInfoProduct' )
+#COLIN this collection does not exist
+##         if self.cfg_comp.isEmbed:
+##             self.handles['genParticles'] = AutoHandle( 'genParticles',
+##                                                      'std::vector<reco::GenParticle>' )
 	if "Higgsgg" in self.cfg_comp.name:
 	    masspoint=self.cfg_comp.name[7:10]
             self.higgsPtWeightFile=TFile("$CMSSW_BASE/src/CMGTools/H2TauTau/data/weight_ptH_"+masspoint+".root")
@@ -68,13 +70,31 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             'source',
             'LHEEventProduct'
             )
+        #self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol,
+        #                                   'std::vector<cmg::PFJet>' )
 
-        self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol,
+        self.handles['jets'] = AutoHandle( 'cmgPFJetSel',
                                            'std::vector<cmg::PFJet>' )
 
     def beginLoop(self):
         super(TauTauAnalyzer,self).beginLoop()
-        self.counters.counter('DiLepton').register('jet trig matched')
+        self.counters = Counters()
+        self.counters.addCounter('DiLepton')
+        count = self.counters.counter('DiLepton')
+        count.register('all events')
+        count.register('> 0 di-lepton')
+        # count.register('di-lepton cut string ok')
+        count.register('lepton accept')
+        count.register('third lepton veto')
+        count.register('leg1 trig matched')
+        count.register('leg2 trig matched')
+        count.register('jet trig matched')
+        count.register('leg1 offline cuts passed')
+        count.register('leg2 offline cuts passed')
+        count.register('{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
+                                                             max = self.cfg_ana.m_max ))
+        count.register('exactly 1 di-lepton')
+
 
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (the one with best isolation).'''
@@ -87,7 +107,10 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         self.readCollections( iEvent )
         # trigger stuff could be put in a separate analyzer
         # event.triggerObject = self.handles['cmgTriggerObjectSel'].product()[0]
+
         event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product(), event )
+
+        # import pdb; pdb.set_trace()
         #event.leptons = self.buildLeptons( self.handles['leptons'].product(), event )
         event.leptons = []
 	for diLepton in event.diLeptons:
@@ -170,15 +193,18 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 
         # count muons
         event.muons = [lep for lep in self.buildMuons(self.handles['muons'].product(),event)
-	        if self.testLegKine(lep, ptcut=10, etacut=2.4) and 
-                   self.testLeg2ID(lep) and
-                   self.testLeg2Iso(lep, 0.3) ]
+                       if self.testLegKine(lep, ptcut=10, etacut=2.4) and 
+                       self.testLeg2ID(lep) and
+                       self.testLeg2Iso(lep, 0.3) ]
         # count electrons
         event.electrons = [electron for electron in self.buildElectrons(self.handles['electrons'].product(),event)
                 if self.testLegKine(electron, ptcut=10, etacut=2.5) and \
                    electron.looseIdForTriLeptonVeto()           and \
                    self.testVertex( electron )           and \
                    electron.relIsoAllChargedDB05() < 0.3]
+
+        # if len(event.muons)+len(event.electrons) > 0:
+        #    return False
 
         if self.cfg_comp.isMC and ("WJets" in self.cfg_comp.name or "W0Jets" in self.cfg_comp.name or "W1Jets" in self.cfg_comp.name or "W2Jets" in self.cfg_comp.name or "W3Jets" in self.cfg_comp.name or "W4Jets" in self.cfg_comp.name
 	                        or "DYJets" in self.cfg_comp.name or "DY0Jets" in self.cfg_comp.name or "DY1Jets" in self.cfg_comp.name or "DY2Jets" in self.cfg_comp.name or "DY3Jets" in self.cfg_comp.name or "DY4Jets" in self.cfg_comp.name):
@@ -319,15 +345,24 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             event.generatorWeight = generator.weight()
             event.eventWeight *= event.generatorWeight
 
-        if self.cfg_comp.isEmbed:
-            genParticles = self.handles['genParticles'].product()
-            event.genParticles = map( GenParticle, genParticles)
-	    for gen in genParticles:
-                if abs(gen.pdgId()) in [23]:
-                    event.genMass=gen.mass()
+#COLIN: no genParticle collection present in embedded samples diTau files...
+##         if self.cfg_comp.isEmbed:
+##             genParticles = self.handles['genParticles'].product()
+##             event.genParticles = map( GenParticle, genParticles)
+## 	    for gen in genParticles:
+##                 if abs(gen.pdgId()) in [23]:
+##                     event.genMass=gen.mass()
 		
         return True
 
+
+# trigger: debug it and make sure that trigger matching is working
+# build trigger list for data
+# build trigger map 
+
+# 3rd lepton veto:
+# look for electron or muon that pass loose id
+# none of them 
 
     def selectionSequence(self, event, fillCounter, leg1IsoCut=None, leg2IsoCut=None):
 
@@ -351,6 +386,8 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         if not self.leptonAccept( event.leptons ):
             return False
         if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
+
+        # import pdb; pdb.set_trace()
 
         if len(self.cfg_comp.triggers)>0:
             # trigger matching leg1
@@ -455,21 +492,21 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
         #return self.testStdTightLeg(leg)
 
     def testLeg(self, leg):
-        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
 	   leg.tauID("decayModeFinding")>0.5 and \
 	   leg.tauID("byMediumIsoMVA")>0.5 and \
 	   leg.tauID("againstElectronLoose")>0.5 and \
 	   leg.tauID("againstMuonLoose")>0.5)
 
     def testStdMediumLeg(self, leg):
-        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
 	   leg.tauID("decayModeFinding")>0.5 and \
 	   leg.tauID("byMediumCombinedIsolationDeltaBetaCorr")>0.5 and \
 	   leg.tauID("againstElectronLoose")>0.5 and \
 	   leg.tauID("againstMuonLoose")>0.5)
 
     def testStdTightLeg(self, leg):
-        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
 	   leg.tauID("decayModeFinding")>0.5 and \
 	   leg.tauID("byTightCombinedIsolationDeltaBetaCorr")>0.5 and \
 	   leg.tauID("againstElectronLoose")>0.5 and \
@@ -483,7 +520,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
     #    return selDiLeptons
 
     def testLooseLeg(self, leg):
-        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
 	   leg.tauID("decayModeFinding")>0.5 and \
 	   leg.tauID("byRawIsoMVA")>0.5 and \
 	   #leg.tauID("byRawIsoMVA")>0.795 and \
@@ -491,14 +528,14 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 	   leg.tauID("againstMuonLoose")>0.5)
 
     def testLooseStdLeg(self, leg):
-        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
 	   leg.tauID("decayModeFinding")>0.5 and \
 	   leg.tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5 and \
 	   leg.tauID("againstElectronLoose")>0.5 and \
 	   leg.tauID("againstMuonLoose")>0.5)
 
     def testNonLeg(self, leg):
-        return (leg.pt()>35 and abs(leg.eta())<2.1 and \
+        return (leg.pt()>45 and abs(leg.eta())<2.1 and \
 	   leg.tauID("decayModeFinding")>0.5 and \
 	   leg.tauID("againstElectronLoose")>0.5 and \
 	   leg.tauID("againstMuonLoose")>0.5)
@@ -596,7 +633,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             return True
         else:
             return jet.puJetIdPassed and jet.pfJetIdPassed
-        
         
     def testJet( self, jet ):
         # 2 is loose pile-up jet id

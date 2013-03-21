@@ -130,9 +130,11 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
         
+        # not event.thirdLeptonVeto or \
+        # not event.leptonAccept:
         if not event.isSignal or \
-           not event.thirdLeptonVeto or \
-           not event.leptonAccept:
+           (hasattr(event, 'thirdLeptonVeto') and not event.thirdLeptonVeto ) or \
+           (hasattr(event, 'leptonAccept') and not event.leptonAccept ):
             return False
 
         if hasattr(self.cfg_ana, 'isFake') and \

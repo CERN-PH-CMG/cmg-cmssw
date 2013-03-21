@@ -239,7 +239,7 @@ mc_higgs_vbf = [
     HiggsVBF135,
     HiggsVBF140,
     HiggsVBF145,
-    HiggsVBF150,
+    #HiggsVBF150,
     ]
 
 mc_higgs_ggh = [
@@ -251,7 +251,7 @@ mc_higgs_ggh = [
     HiggsGGH135,
     HiggsGGH140,
     HiggsGGH145,
-    HiggsGGH150,
+    #HiggsGGH150,
     ]
 
 mc_higgs_vh = [
@@ -263,7 +263,7 @@ mc_higgs_vh = [
     HiggsVH135,
     HiggsVH140,
     HiggsVH145,
-    HiggsVH150,
+    #HiggsVH150,
     ]
 
 
