@@ -87,3 +87,17 @@ mc_triggers_spring12 = [
     #'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v6',
     #'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v6',
     ]
+
+mc_triggers_all = [
+    'HLT_LooseIsoPFTau35_Trk20_Prong1_v6',
+    'HLT_LooseIsoPFTau35_Trk20_Prong1_MET70_v6',
+    'HLT_LooseIsoPFTau35_Trk20_Prong1_MET75_v6',
+    'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_Jet30_v2',
+    'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_v2',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v6',
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_Prong1_v6',
+    ]
+
+mc_triggers = [
+    'HLT_DoubleMediumIsoPFTau30_Trk5_eta2p1_Jet30_v2',
+    ]

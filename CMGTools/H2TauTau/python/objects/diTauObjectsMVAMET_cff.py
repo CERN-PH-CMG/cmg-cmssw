@@ -20,7 +20,7 @@ cmgDiTau.cfg.leg1Collection = 'cmgTauScaler'
 cmgDiTau.cfg.leg2Collection = 'cmgTauScaler'
 
 # preselection 
-cmgDiTauPreSel = cmgDiTauSel.clone( cut = 'getSelection("cuts_baseline") && leg1().pt>35 && leg2().pt>35')
+cmgDiTauPreSel = cmgDiTauSel.clone( cut = 'getSelection("cuts_baseline") && leg1().pt()>40 && leg2().pt()>40')
 
 diTauStdSequence = cms.Sequence( cmgTauScaler +
                                  cmgDiTau +
@@ -54,17 +54,17 @@ recoilCorMETDiTau =  recoilCorrectedMETDiTau.clone(
     )
 
 mvaBaseMETDiTau = cmgBaseMETFromPFMET.clone()
-mvaBaseMETDiTau.cfg.inputCollection = 'recoilCorMETDiTau'
 
 # SWITCH OFF RECOIL CORRECTIONS HERE
 
-mvaBaseMETDiTau.cfg.inputCollection = 'mvaMETDiTau'
+mvaBaseMETDiTau.cfg.inputCollection = 'recoilCorMETDiTau'
+#mvaBaseMETDiTau.cfg.inputCollection = 'mvaMETDiTau'
 
 # sequence
 
 mvaMETSequence = cms.Sequence( goodPVFilter + 
                                mvaMETDiTau +
-			       recoilCorMETDiTau +
+                               recoilCorMETDiTau +
                                mvaBaseMETDiTau
                                #    # +
                                #    # cmgDiTauMVAPreSel
@@ -81,9 +81,7 @@ cmgDiTauCorSVFitPreSel = diTauSVFit.clone()
 cmgDiTauCorSVFitPreSel.diTauSrc = 'cmgDiTauCorPreSel'
 cmgDiTauCorSVFitPreSel.metsigSrc = 'mvaMETDiTau'
 cmgDiTauCorSVFitFullSel = cmgDiTauSel.clone( src = 'cmgDiTauCorSVFitPreSel',
-                                             cut = ''
-                                             # WARNING!
-                                             # cut = 'getSelection("cuts_baseline")'
+                                             cut = 'leg1().pt()>45 && leg2().pt()>45',
                                              ) 
 
 diTauCorSVFitSequence = cms.Sequence( #

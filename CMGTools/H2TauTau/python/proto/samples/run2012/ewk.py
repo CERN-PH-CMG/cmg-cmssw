@@ -9,6 +9,38 @@ DYJets = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
+DY1Jets = cfg.MCComponent(
+    name = 'DY1Jets',
+    files = [],
+    xSection = 561.0 * 1.011, # correction factor from Valentina through Jose (18/10)
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+DY2Jets = cfg.MCComponent(
+    name = 'DY2Jets',
+    files = [],
+    xSection = 181. * 1.011, # correction factor from Valentina through Jose (18/10)
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+DY3Jets = cfg.MCComponent(
+    name = 'DY3Jets',
+    files = [],
+    xSection = 51.1 * 1.011, # correction factor from Valentina through Jose (18/10)
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
+DY4Jets = cfg.MCComponent(
+    name = 'DY4Jets',
+    files = [],
+    xSection = 23.04 * 1.011, # correction factor from Valentina through Jose (18/10)
+    nGenEvents = 1,
+    triggers = [],
+    effCorrFactor = 1 )
+
 WJets = cfg.MCComponent(
     name = 'WJets',
     files = [],
@@ -49,14 +81,6 @@ W4Jets = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
-## WJets = cfg.MCComponent(
-##     name = 'WJets',
-##     files = [],
-##     xSection = WJets.xSection ,
-##     nGenEvents = 1,
-##     triggers = [],
-##     effCorrFactor = 1 )
-
 
 TTJets = cfg.MCComponent(
     name = 'TTJets',
@@ -83,8 +107,18 @@ Tbar_tW = cfg.MCComponent(
     effCorrFactor = 1 )
 
 
+t_mc_ewk = [
+    TTJets,
+    T_tW,
+    Tbar_tW,
+    ]
+
 mc_ewk = [
     DYJets,
+    DY1Jets,
+    DY2Jets,
+    DY3Jets,
+    DY4Jets,
     WJets,
     W1Jets,
     W2Jets,
@@ -93,8 +127,29 @@ mc_ewk = [
     # WJetsExt,
     TTJets,
     T_tW,
-    Tbar_tW
+    Tbar_tW,
     ]
+
+ztt_mc_ewk = [
+    DYJets,
+    DY1Jets,
+    DY2Jets,
+    DY3Jets,
+    DY4Jets,
+    ]
+
+ztt_inc_mc_ewk = [
+    DYJets,
+    ]
+
+w_mc_ewk = [
+    WJets,
+    W1Jets,
+    W2Jets,
+    W3Jets,
+    W4Jets,
+    ]
+
 
 ## mc_ewk_up = sampleShift( locals(), [DYJets], 'Up')
 ## mc_ewk_down = sampleShift( locals(), [DYJets], 'Down')

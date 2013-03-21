@@ -108,3 +108,10 @@ mc_diboson = [
     ZZ
     ]
 
+
+mc_diboson_incl = [
+    WW,
+    WZ,
+    ZZ
+    ]
+

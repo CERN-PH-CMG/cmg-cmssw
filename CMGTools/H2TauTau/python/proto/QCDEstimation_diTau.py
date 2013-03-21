@@ -10,17 +10,7 @@ def substractMCbackground(QCDtightSS, plotVarDataSS):
       #QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Photon"),-1)
       QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Electron"),-1)
       QCDtightSS.Add(plotVarDataSS.Hist("WJets"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("WJets_Fakes"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("WW"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("WZ"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("ZZ"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("TTJets"),-1)
-
-def substractMCbackground2(QCDtightSS, plotVarDataSS):
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Fakes"),-1)
-      #QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Photon"),-1)
-      QCDtightSS.Add(plotVarDataSS.Hist("DYJets_Electron"),-1)
+      #QCDtightSS.Add(plotVarDataSS.Hist("WJets_Fakes"),-1)
       QCDtightSS.Add(plotVarDataSS.Hist("WW"),-1)
       QCDtightSS.Add(plotVarDataSS.Hist("WZ"),-1)
       QCDtightSS.Add(plotVarDataSS.Hist("ZZ"),-1)
@@ -41,7 +31,7 @@ def QCDEstimate(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.pdf")
       gPad.WaitPrimitive()
       
       ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
@@ -51,7 +41,7 @@ def QCDEstimate(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.pdf")
       gPad.WaitPrimitive()
       
       ymax=plotVarDataAverageControlOS.Hist("Data").GetMaximum()*1.5
@@ -61,7 +51,7 @@ def QCDEstimate(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataAverageControlOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlOS.varName+"_qcdAverageControlOS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlOS.varName+"_qcdAverageControlOS.pdf")
       gPad.WaitPrimitive()
       
       ymax=plotVarDataAverageControlLooseIsoOS.Hist("Data").GetMaximum()*1.5
@@ -71,7 +61,7 @@ def QCDEstimate(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataAverageControlLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoOS.varName+"_qcdAverageControlLooseIsoOS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoOS.varName+"_qcdAverageControlLooseIsoOS.pdf")
       gPad.WaitPrimitive()
       
       ymax=plotVarDataAverageControlLooseIsoSS.Hist("Data").GetMaximum()*1.5
@@ -81,7 +71,7 @@ def QCDEstimate(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataAverageControlLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoSS.varName+"_qcdAverageControlLooseIsoSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoSS.varName+"_qcdAverageControlLooseIsoSS.pdf")
       gPad.WaitPrimitive()
       
       QCDtightSS=copy.deepcopy(plotVarDataSS.Hist("Data"))
@@ -204,7 +194,7 @@ def QCDEstimate1(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
@@ -214,7 +204,7 @@ def QCDEstimate1(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.pdf")
       #gPad.WaitPrimitive()
       
       #ymax=plotVarDataAverageControlOS.Hist("Data").GetMaximum()*1.5
@@ -224,7 +214,7 @@ def QCDEstimate1(prefix,prefix1,xmin,xmax,\
       #else:
         #  plotVarDataAverageControlOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	#  gPad.SetLogy(False)
-      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlOS.varName+"_qcdAverageControlOS.png")
+      #gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlOS.varName+"_qcdAverageControlOS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataAverageControlLooseIsoOS.Hist("Data").GetMaximum()*1.5
@@ -234,7 +224,7 @@ def QCDEstimate1(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataAverageControlLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoOS.varName+"_qcdAverageControlLooseIsoOS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoOS.varName+"_qcdAverageControlLooseIsoOS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataAverageControlLooseIsoSS.Hist("Data").GetMaximum()*1.5
@@ -244,7 +234,7 @@ def QCDEstimate1(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataAverageControlLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoSS.varName+"_qcdAverageControlLooseIsoSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoSS.varName+"_qcdAverageControlLooseIsoSS.pdf")
       #gPad.WaitPrimitive()
 
 
@@ -337,7 +327,7 @@ def QCDEstimate2(prefix,prefix1,var,xmin,xmax,\
       else:
           plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.pdf")
       
       ymax=plotVarDataLooseIsoSS.Hist("Data").GetMaximum()*1.5
       if log:
@@ -346,7 +336,7 @@ def QCDEstimate2(prefix,prefix1,var,xmin,xmax,\
       else:
           plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.pdf")
       
       ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
       if log:
@@ -355,7 +345,7 @@ def QCDEstimate2(prefix,prefix1,var,xmin,xmax,\
       else:
           plotVarDataSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.pdf")
       
       QCDlooseOS = copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
       substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOSMC)
@@ -397,7 +387,7 @@ def QCD_WJets_Estimate2(prefix,prefix1,var,xmin,xmax,\
       else:
           plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcd_wjets_LooseOS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcd_wjets_LooseOS.pdf")
       
       ymax=plotVarDataLooseIsoSS.Hist("Data").GetMaximum()*1.5
       if log:
@@ -406,7 +396,7 @@ def QCD_WJets_Estimate2(prefix,prefix1,var,xmin,xmax,\
       else:
           plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcd_wjets_LooseSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcd_wjets_LooseSS.pdf")
       
       ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
       if log:
@@ -415,7 +405,7 @@ def QCD_WJets_Estimate2(prefix,prefix1,var,xmin,xmax,\
       else:
           plotVarDataSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcd_wjets_TightSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcd_wjets_TightSS.pdf")
       
       QCDlooseOS=copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
       substractMCbackground2(QCDlooseOS, plotVarDataLooseIsoOS)
@@ -455,7 +445,7 @@ def QCDEstimate3(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataLooseIsoOS.Hist("Data").GetMaximum()*1.5
@@ -465,7 +455,7 @@ def QCDEstimate3(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataAverageControlSS.Hist("Data").GetMaximum()*1.5
@@ -475,7 +465,7 @@ def QCDEstimate3(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataAverageControlSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlSS.varName+"_qcdAverageControlSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlSS.varName+"_qcdAverageControlSS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataAverageControlLooseIsoSS.Hist("Data").GetMaximum()*1.5
@@ -485,7 +475,7 @@ def QCDEstimate3(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataAverageControlLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoSS.varName+"_qcdAverageControlLooseIsoSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataAverageControlLooseIsoSS.varName+"_qcdAverageControlLooseIsoSS.pdf")
       #gPad.WaitPrimitive()
 
 
@@ -535,7 +525,7 @@ def QCDEstimate4(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataLooseIsoSS.Hist("Data").GetMaximum()*1.5
@@ -545,7 +535,7 @@ def QCDEstimate4(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataSemiLooseIsoSS.Hist("Data").GetMaximum()*1.5
@@ -555,7 +545,7 @@ def QCDEstimate4(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataSemiLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSemiLooseIsoSS.varName+"_qcdSemiLooseSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSemiLooseIsoSS.varName+"_qcdSemiLooseSS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
@@ -565,7 +555,7 @@ def QCDEstimate4(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.pdf")
       #gPad.WaitPrimitive()
       
       QCDlooseOS=copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
@@ -600,7 +590,7 @@ def QCDEstimate5(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataLooseIsoSS.Hist("Data").GetMaximum()*1.5
@@ -610,7 +600,7 @@ def QCDEstimate5(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataSemiLooseIsoSS.Hist("Data").GetMaximum()*1.5
@@ -620,7 +610,7 @@ def QCDEstimate5(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataSemiLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSemiLooseIsoSS.varName+"_qcdSemiLooseSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSemiLooseIsoSS.varName+"_qcdSemiLooseSS.pdf")
       #gPad.WaitPrimitive()
       
       ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
@@ -630,7 +620,7 @@ def QCDEstimate5(prefix,prefix1,xmin,xmax,\
       else:
           plotVarDataSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.pdf")
       #gPad.WaitPrimitive()
       
       QCDlooseOS=copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
@@ -729,7 +719,7 @@ def QCDEstimate6(prefix,prefix1,var,xmin,xmax,\
       else:
         plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
         gPad.SetLogy(False)
-        gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.png")
+        gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.pdf")
       
       ymax=plotVarDataLooseIsoSS.Hist("Data").GetMaximum()*1.5
       if log:
@@ -738,7 +728,7 @@ def QCDEstimate6(prefix,prefix1,var,xmin,xmax,\
       else:
         plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
         gPad.SetLogy(False)
-        gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+        gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.pdf")
       
       ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
       if log:
@@ -747,7 +737,7 @@ def QCDEstimate6(prefix,prefix1,var,xmin,xmax,\
       else:
         plotVarDataSS.DrawStack("HIST",xmin,xmax,0,ymax)
         gPad.SetLogy(False)
-        gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.png")
+        gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.pdf")
       
       QCDlooseOS = copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
       substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOS)
@@ -786,7 +776,7 @@ def QCDEstimate7(prefix,prefix1,var,xmin,xmax,\
       else:
           plotVarDataLooseIsoOS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoOS.varName+"_qcdLooseOS.pdf")
       
       ymax=plotVarDataLooseIsoSS.Hist("Data").GetMaximum()*1.5
       if log:
@@ -795,7 +785,7 @@ def QCDEstimate7(prefix,prefix1,var,xmin,xmax,\
       else:
           plotVarDataLooseIsoSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataLooseIsoSS.varName+"_qcdLooseSS.pdf")
       
       ymax=plotVarDataSS.Hist("Data").GetMaximum()*1.5
       if log:
@@ -804,7 +794,7 @@ def QCDEstimate7(prefix,prefix1,var,xmin,xmax,\
       else:
           plotVarDataSS.DrawStack("HIST",xmin,xmax,0,ymax)
 	  gPad.SetLogy(False)
-      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.png")
+      gPad.SaveAs(prefix1+prefix+'_'+plotVarDataSS.varName+"_qcdTightSS.pdf")
       
       QCDlooseOS = copy.deepcopy(plotVarDataLooseIsoOS.Hist("Data"))
       substractMCbackground(QCDlooseOS, plotVarDataLooseIsoOSMC)
