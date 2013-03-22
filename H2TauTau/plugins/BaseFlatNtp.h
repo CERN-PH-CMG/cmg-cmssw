@@ -311,11 +311,23 @@ protected:
   float  pZetaVis_;
   reco::Candidate::PolarLorentzVector metP4_;
 
+  //mva met inputs
+  float  pfMetForRegression_;
+  float  tkMet_;
+  float  nopuMet_;
+  float  puMet_;
+  float  pcMet_;
+
+
+
+
+
   //jet variables
   int njet_;
   float leadJetPt_;
   float leadJetEta_;
   float leadJetRawFactor_;
+  float leadJetPUIdMva_;
   float subleadJetPt_;
   float subleadJetEta_;
   float subleadJetRawFactor_;
@@ -469,6 +481,20 @@ protected:
       edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
       iEvent_->getByLabel(mvaMETSigTag_,metsigVector); 
       metSig_ = &(metsigVector->at(diobjectindex_));
+
+      edm::Handle<std::vector< reco::PFMET> > mvaInputMET;
+      iEvent_->getByLabel(edm::InputTag("pfMetForRegression"),mvaInputMET);
+      pfMetForRegression_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("tkMet"),mvaInputMET);
+      tkMet_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("nopuMet"),mvaInputMET);
+      nopuMet_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("puMet"),mvaInputMET);
+      puMet_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("pcMet"),mvaInputMET);
+      pcMet_=mvaInputMET->begin()->pt();
+
+
     }
 		  
     if(metType_==3){//Type 1 Corrected MET
@@ -652,6 +678,7 @@ protected:
 
   int truthMatchLeg(float legeta, float legphi,float& truthpt,float& trutheta,int& truthstatus);
 
+  bool checkPUJetId(const cmg::PFJet * jet);
   void fillPFJetList(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list);
   void fillPFJetList20(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list);
   void fillPFJetListLC(float leg1eta, float leg1phi, float leg2eta, float leg2phi, std::vector<const cmg::PFJet * > * list, std::vector<const cmg::PFJet * > * listLC);
@@ -696,6 +723,7 @@ protected:
       leadJetPt_=leadJet_->pt();
       leadJetEta_=leadJet_->eta();
       leadJetRawFactor_=leadJet_->rawFactor();
+      leadJetPUIdMva_=leadJet_->puMva("full");
     }
     if(pfJetListLC_.size()>=2){
       subleadJetPt_=subleadJet_->pt();
@@ -969,24 +997,127 @@ protected:
   }
 
 
+  bool electronVertexCut(const cmg::Electron * cand){
+    if(!((*(cand->sourcePtr()))->gsfTrack().isNonnull()))return 0;
+    if(!((*(cand->sourcePtr()))->gsfTrack().isAvailable()))return 0;     
+    if(fabs((*(cand->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) return 0;
+    if(fabs((*(cand->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) return 0;
+    
+    return 1;
+  }
+
   //electron id WP95
   bool electronIDWP95(const cmg::Electron * cand){
     ///https://twiki.cern.ch/twiki/bin/view/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
     if(!cand) return 0;
     if((*(cand->sourcePtr()))->isEB()
-       && cand->deltaEtaSuperClusterTrackAtVtx()<0.007
-       && cand->deltaPhiSuperClusterTrackAtVtx()<0.800
+       && fabs(cand->deltaEtaSuperClusterTrackAtVtx())<0.007
+       && fabs(cand->deltaPhiSuperClusterTrackAtVtx())<0.800
        && cand->sigmaIetaIeta()<0.01
        && cand->hadronicOverEm()<0.15
        ) return 1;
     else if((*(cand->sourcePtr()))->isEE()
-	    && cand->deltaEtaSuperClusterTrackAtVtx()<0.01
-	    && cand->deltaPhiSuperClusterTrackAtVtx()<0.70
+	    && fabs(cand->deltaEtaSuperClusterTrackAtVtx())<0.01
+	    && fabs(cand->deltaPhiSuperClusterTrackAtVtx())<0.70
 	    && cand->sigmaIetaIeta()<0.03
 	    )return 1;
     else return 0;
   }
 
+  bool electronMVATight(const cmg::Electron * cand){
+     //look here https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentification
+     float mvaid=cand->mvaNonTrigV0();
+     float eta=(*(cand->sourcePtr()))->superCluster()->eta();
+     //cout<<eta<<" "<<mvaid<<endl;
+     if(fabs(eta)<0.8)
+       if(mvaid<0.925)return 0; 
+     if(0.8<=fabs(eta)&&fabs(eta)<1.479)
+       if(mvaid<0.975)return 0;
+     if(1.479<=fabs(eta))
+       if(mvaid<0.985)return 0; 
+     
+     //need to check for different pt ranges
+
+     return 1;
+  }
+  bool electronMVALoose(const cmg::Electron * cand){
+     float mvaid=cand->mvaNonTrigV0();
+     float eta=(*(cand->sourcePtr()))->superCluster()->eta();
+     if(cand->pt()<20){
+       if(fabs(eta)<0.8)                  if(mvaid<0.925)return 0; 
+       if(0.8<=fabs(eta)&&fabs(eta)<1.479)if(mvaid<0.915)return 0;
+       if(1.479<=fabs(eta))               if(mvaid<0.965)return 0; 
+     }
+     if(cand->pt()>=20){
+       if(fabs(eta)<0.8)                  if(mvaid<0.905)return 0; 
+       if(0.8<=fabs(eta)&&fabs(eta)<1.479)if(mvaid<0.955)return 0;
+       if(1.479<=fabs(eta))               if(mvaid<0.975)return 0; 
+     }
+
+    return 1;
+  }
+
+  //Muon Vertex cut
+  bool muonVertexCut(const cmg::Muon * cand){
+    if(!((*(cand->sourcePtr()))->innerTrack().isNonnull()))return 0;
+    if(!((*(cand->sourcePtr()))->innerTrack().isAvailable()))return 0;
+    if(fabs((*(cand->sourcePtr()))->innerTrack()->dxy(PV_->position())) > 0.045 ) return 0;
+    if(fabs((*(cand->sourcePtr()))->innerTrack()->dz(PV_->position()))  > 0.2 ) return 0;
+    return 1;
+  }
+
+  //PFMuonTight 
+  bool muonIDPFMuonTight(const cmg::Muon * cand){
+    if(!(cand->isGlobal()))return 0; 
+    if(!((*(cand->sourcePtr()))->userFloat("isPFMuon")>0.5))return 0;
+    if(!(cand->normalizedChi2() < 10))return 0;
+    if(!(cand->numberOfValidMuonHits() > 0))return 0;
+    if(!(cand->numberOfMatchedStations() > 1))return 0; //if(!(cand->numberOfMatches() > 1))return 0;
+
+    if(!((*(cand->sourcePtr()))->innerTrack().isNonnull()))return 0;
+    if(!((*(cand->sourcePtr()))->innerTrack().isAvailable()))return 0;
+    if(!((*(cand->sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits() > 0))return 0; 
+
+    if(!(cand->trackerLayersWithMeasurement() > 5))return 0;
+    return 1;
+  }
+
+  // 
+  bool tauVertexCut(const cmg::Tau * cand){
+    if(fabs(computeDxy(cand->leadChargedHadrVertex(),cand->p4()))>0.045)return 0;
+    if(fabs(computeDz(cand->leadChargedHadrVertex(),cand->p4()))>0.2)return 0;
+    return 1;
+  }
+
+  //
+  bool thirdLeptonVeto(){
+    int nleptons=0;
+    for(std::vector<cmg::Muon>::const_iterator m=leptonVetoListMuon_->begin(); m!=leptonVetoListMuon_->end(); ++m){  
+      if(m->pt()<=10.0)continue;
+      if(fabs(m->eta())>=2.4)continue;
+      if(!muonVertexCut(&(*m)))continue;
+      if(!muonIDPFMuonTight(&(*m)))continue;
+      if(m->relIso(0.5,1)>=0.3)continue;        
+      nleptons++;
+    }
+    for(std::vector<cmg::Electron>::const_iterator m=leptonVetoListElectron_->begin(); m!=leptonVetoListElectron_->end(); ++m){  
+      if(m->pt()<=10.0)continue;
+      if(fabs(m->eta())>=2.5)continue;
+      if(!electronVertexCut(&(*m)))continue;
+      if(m->numberOfHits()!=0) continue;
+      if(m->passConversionVeto()!=1) continue;
+      if(!electronMVALoose(&(*m)))continue;
+      if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
+      nleptons++;
+    }
+    if(nleptons>=2)return 0;
+    return 1;
+  }
+
+  ////Debugging functions:
+  void printMuonInfo(const cmg::Muon * cand);
+  void printElectronInfo(const cmg::Electron * cand);
+  void printTauInfo(const cmg::Tau * cand);
 
 
 private:

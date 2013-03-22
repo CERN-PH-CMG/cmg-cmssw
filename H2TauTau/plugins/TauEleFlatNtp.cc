@@ -67,47 +67,55 @@ void TauEleFlatNtp::beginJob(){
    }
    counterev_++;
 
-   ////
-   if(vetoDiLepton()){
-     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
-     return 0;
-   }
-   counterveto_++;
-
 
    std::vector<cmg::TauEle> tmpditaulist=*diTauList_;
    diTauSelList_.clear();
 
-//    ///basic skims which should have been applied in H2TAUTAU step  
-//    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-//      if(cand->mass()>10.0
-// 	&& cand->leg1().pt() > tauPtCut_
-// 	&& fabs(cand->leg1().eta()) < tauEtaCut_
-// 	&& cand->leg1().tauID("decayModeFinding") > 0.5
-// 	&& cand->leg2().pt() > muPtCut_
-// 	&& fabs(cand->leg2().eta()) < muEtaCut_
-// 	)     
-//        diTauSelList_.push_back(*cand);
-     
-//    }
-//    if(diTauSelList_.size()==0) return 0;
-//    counterpresel_++;
-//    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterpresel"<<endl;
 
-
-   //muon vtx 
-   //   tmpditaulist=diTauSelList_;
-   //   diTauSelList_.clear();
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-//      if( fabs(cand->leg2().dxy())>0.045)continue;
-//      if( fabs(cand->leg2().dz())>0.1 )continue;
+     if(cand->leg2().pt()<24.0)continue;
+     if(fabs(cand->leg2().eta())>2.1)continue;
+     if(reco::deltaR(cand->leg1().p4().eta(),cand->leg1().p4().phi(),
+		     cand->leg2().p4().eta(),cand->leg2().p4().phi()
+		     )<0.5)continue;
 
-     if(!((*(cand->leg2().sourcePtr()))->gsfTrack().isNonnull()))continue;
-     if(!((*(cand->leg2().sourcePtr()))->gsfTrack().isAvailable()))continue;     
-     if(fabs((*(cand->leg2().sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) continue;
-     if(fabs((*(cand->leg2().sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;
+     diTauSelList_.push_back(*cand);
+   }
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_){
+       cout<<runnumber_<<":"<<eventid_<<" fail Electron preselection"<<endl;  
+       for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	 printElectronInfo(&(cand->leg2()));
+       }
+     }
+     return 0;
+   }
+   
+   tmpditaulist=diTauSelList_;
+   diTauSelList_.clear();
+   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+     if(cand->leg1().tauID("decayModeFinding")<0.5 )continue;
+     if(cand->leg1().pt()<20.0 )continue;
+     if(fabs(cand->leg1().eta())>2.3 )continue;
+	
+     diTauSelList_.push_back(*cand);
+   }
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_){
+       cout<<runnumber_<<":"<<eventid_<<" fail Tau preselection"<<endl;  
+       for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	 printTauInfo(&(cand->leg1()));
+       }
+     }
+     return 0;
+   }
+   
 
-
+   //electron vtx cut
+   tmpditaulist=diTauSelList_;
+   diTauSelList_.clear();
+   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+     if(!electronVertexCut(&(cand->leg2())))continue;
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
@@ -115,8 +123,6 @@ void TauEleFlatNtp::beginJob(){
      return 0;
    }
    countermuvtx_++;
-
-
 
    //ele id cuts
    tmpditaulist=diTauSelList_;
@@ -135,28 +141,11 @@ void TauEleFlatNtp::beginJob(){
    }
    if(diTauSelList_.size()==0 && printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail cand->leg2().passConversionVeto()"<<endl;
 
-//    tmpditaulist=diTauSelList_;
-//    diTauSelList_.clear();
-//    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-//      if(!electronIDWP95(&(cand->leg2())))continue;     
-//      diTauSelList_.push_back(*cand);
-//    }
-//    if(diTauSelList_.size()==0 && printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail electronIDWP95"<<endl;
 
    tmpditaulist=diTauSelList_;
    diTauSelList_.clear();
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     //look here https://twiki.cern.ch/twiki/bin/view/CMS/MultivariateElectronIdentification
-     float mvaid=cand->leg2().mvaNonTrigV0();
-     float eta=(*(cand->leg2().sourcePtr()))->superCluster()->eta();
-     //cout<<eta<<" "<<mvaid<<endl;
-     if(fabs(eta)<0.8)
-       if(mvaid<0.925)continue; 
-     if(0.8<=fabs(eta)&&fabs(eta)<1.479)
-       if(mvaid<0.975)continue;
-     if(1.479<=fabs(eta))
-       if(mvaid<0.985)continue; 
-     
+     if(!electronMVATight(&(cand->leg2())))continue;
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
@@ -164,21 +153,6 @@ void TauEleFlatNtp::beginJob(){
      return 0;
    }
    countermuid_++;
-
-//   /////////electron iso
-//   tmpditaulist=diTauSelList_;
-//   diTauSelList_.clear();
-//   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-//     if( electronRelIsoDBCorr( &(cand->leg2()) ) < 0.1){
-//       diTauSelList_.push_back(*cand);
-//     }
-//   }
-//   if(diTauSelList_.size()==0){
-//     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermuiso"<<endl;
-//     return 0;
-//   }
-//   countermuiso_++;
-
 
    //muon trig-match
    tmpditaulist=diTauSelList_;
@@ -200,17 +174,6 @@ void TauEleFlatNtp::beginJob(){
    }
    countermumatch_++;
 
-
-//    //Tau E/P cut  ---> This is not needed for this channel as Z->mumu is not a problem
-//    tmpditaulist=diTauSelList_;
-//    diTauSelList_.clear();
-//    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-//      if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
-//        if(cand->leg1().eOverP()<0.2)
-//  	continue;
-  
-//      diTauSelList_.push_back(*cand);
-//    }
    if(diTauSelList_.size()==0){
      if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
      return 0;
@@ -221,14 +184,10 @@ void TauEleFlatNtp::beginJob(){
    //tau vtx
    tmpditaulist=diTauSelList_;
    diTauSelList_.clear();
-   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     //if(fabs(cand->leg1().dxy())>0.045) continue;
-     //if(fabs(cand->leg1().dz())>0.2 ) continue;
-      
-    if(fabs(computeDxy(cand->leg1().leadChargedHadrVertex(),cand->leg1().p4()))>0.045)continue;
-    if(fabs(computeDz(cand->leg1().leadChargedHadrVertex(),cand->leg1().p4()))>0.2)continue;
+   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){  
 
-    
+     if(!tauVertexCut(&(cand->leg1())))continue;
+          
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
@@ -343,6 +302,12 @@ void TauEleFlatNtp::beginJob(){
      }
 
 
+   ////
+   if(vetoDiLepton()){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
+     return 0;
+   }
+   counterveto_++;
 
    //truth match 
    truthEventType_=0;
@@ -355,6 +320,12 @@ void TauEleFlatNtp::beginJob(){
      }
    countertruth_++;
 
+
+   if(printSelectionPass_){
+     cout<<" Passed all selections : "<<endl;
+     printElectronInfo(&(diTauSel_->leg2()));
+     printTauInfo(&(diTauSel_->leg1()));
+   }
    
    return 1;
  }
@@ -599,13 +570,6 @@ bool TauEleFlatNtp::fill(){
    fillPFJetListBTagLoose(&pfJetList20LC_,&pfJetListBTagLCLoose_);
    fillBJetVariables();
 
- //   ///---- b-jets
-//    fillPFJetListB(&fullJetList_,&pfJetListB_);
-//    fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetListB_,&pfJetListBLC_);
-//    fillPFJetListBTag(&pfJetListBLC_,&pfJetListBTagLC_);
-//    fillBJetVariables();
-//    fillBTagWeight();
-
 
    //find the jet matching to the tau
    taujetpt_=0.;
@@ -669,72 +633,36 @@ bool TauEleFlatNtp::fill(){
 
  bool TauEleFlatNtp::vetoDiLepton(){
 
-   bool muminus=0;
-   bool muplus=0;
+   const cmg::Electron * mu1=0;
+   const cmg::Electron * mu2=0;
    for(std::vector<cmg::Electron>::const_iterator m=leptonVetoListElectron_->begin(); m!=leptonVetoListElectron_->end(); ++m){  
      if(m->pt()<=15.0)continue;
      if(fabs(m->eta())>=2.5)continue;
-     if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;     
+     if(!electronVertexCut(&(*m)))continue;
      if(!electronIDWP95(&(*m)))continue;
      if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
 
-     if(m->charge()==-1)muminus=1;
-     if(m->charge()==1)muplus=1;
-   }
-   if(muminus&&muplus) return 1;
-
-   //3rd lepton veto
-   int nleptons=0;
-   for(std::vector<cmg::Muon>::const_iterator m=leptonVetoListMuon_->begin(); m!=leptonVetoListMuon_->end(); ++m){  
-     if(m->pt()<=10.0)continue;
-     if(fabs(m->eta())>=2.4)continue;
-     if(!(m->isTracker()))continue; 
-     if(!(m->isGlobal()))continue; 
-     if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
-     if(!(m->normalizedChi2() < 10))continue;
-     if(!(m->numberOfValidMuonHits() > 0))continue; 
-     if(!(m->numberOfMatches() > 1))continue; //cout<<"pass"<<endl;
-     if(!(m->trackerLayersWithMeasurement() > 5))continue; 
-   
-     ///this is crashing saying track is not there , so must check 
-     if(!((*(m->sourcePtr()))->innerTrack().isNonnull()))continue;
-     if(!((*(m->sourcePtr()))->innerTrack().isAvailable()))continue;
-     if(!((*(m->sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits() > 0))continue;
-     if(fabs((*(m->sourcePtr()))->innerTrack()->dz(PV_->position()))  > 0.2 ) continue;
-     if(fabs((*(m->sourcePtr()))->innerTrack()->dxy(PV_->position())) > 0.045 ) continue;
-    
-     if(m->relIso(0.5,1)>=0.3)continue;        
-     nleptons++;
-   }
-   for(std::vector<cmg::Electron>::const_iterator m=leptonVetoListElectron_->begin(); m!=leptonVetoListElectron_->end(); ++m){  
-     if(m->pt()<=10.0)continue;
-     if(fabs(m->eta())>=2.5)continue;
-     if(m->numberOfHits()!=0) continue;
-     if(m->passConversionVeto()!=1) continue;
-
-     if(!((*(m->sourcePtr()))->gsfTrack().isNonnull()))continue;
-     if(!((*(m->sourcePtr()))->gsfTrack().isAvailable()))continue;     
-     if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) continue;
-     if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;
-
-     float mvaid=m->mvaNonTrigV0();
-     float eta=(*(m->sourcePtr()))->superCluster()->eta();
-     if(m->pt()<20){
-       if(fabs(eta)<0.8)                  if(mvaid<0.925)continue; 
-       if(0.8<=fabs(eta)&&fabs(eta)<1.479)if(mvaid<0.915)continue;
-       if(1.479<=fabs(eta))               if(mvaid<0.965)continue; 
+     if(!mu1)mu1=&(*m);
+     else if(m->charge()!=mu1->charge()
+	     && reco::deltaR(m->p4().eta(),m->p4().phi(),
+			     mu1->p4().eta(),mu1->p4().phi()) > 0.15 ){//Andrew has this cut
+       mu2=&(*m);
      }
-     if(m->pt()>=20){
-       if(fabs(eta)<0.8)                  if(mvaid<0.905)continue; 
-       if(0.8<=fabs(eta)&&fabs(eta)<1.479)if(mvaid<0.955)continue;
-       if(1.479<=fabs(eta))               if(mvaid<0.975)continue; 
-     }
-
-     if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
-     nleptons++;
    }
 
-   if(nleptons>=2)return 1;
+   if(mu1&&mu2){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<"      fail dilepon veto"<<endl;
+     //cout<<"e1 info: "<<endl; printElectronInfo(mu1);
+     //cout<<"e2 info: "<<endl; printElectronInfo(mu2);
+     return 1;
+   }
+
+  
+  //3rd lepton veto
+  if(!thirdLeptonVeto()){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<"      fail 3rd lepton veto"<<endl;
+    return 1;
+  }
    
    return 0;
  }
@@ -743,7 +671,6 @@ bool TauEleFlatNtp::fill(){
  void TauEleFlatNtp::endJob(){
    BaseFlatNtp::endJob();
    cout<<"counterev = "<<counterev_<<endl;
-   cout<<"counterveto = "<<counterveto_<<endl;
    cout<<"counterpresel = "<<counterpresel_<<endl;
    cout<<"countermuvtx = "<<countermuvtx_<<endl;
    cout<<"countermuid = "<<countermuid_<<endl;
@@ -755,6 +682,7 @@ bool TauEleFlatNtp::fill(){
    cout<<"countertaueveto = "<<countertaueveto_<<endl;
    cout<<"countertauiso = "<<countertauiso_<<endl;
    cout<<"countertaumatch = "<<countertaumatch_<<endl;
+   cout<<"counterveto = "<<counterveto_<<endl;
    cout<<"countertruth = "<<countertruth_<<endl;
 
  }

@@ -366,9 +366,18 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("pZeta",&pZeta_,"pZeta/F");
   tree_->Branch("pZetaVis",&pZetaVis_,"pZetaVis/F");
 
+
+  tree_->Branch("pfMetForRegression",&pfMetForRegression_,"pfMetForRegression/F");
+  tree_->Branch("tkMet",&tkMet_,"tkMet/F");
+  tree_->Branch("nopuMet",&nopuMet_,"nopuMet/F");
+  tree_->Branch("puMet",&puMet_,"puMet/F");
+  tree_->Branch("pcMet",&pcMet_,"pcMet/F");
+
+
   tree_->Branch("njet",&njet_,"njet/I"); 
   tree_->Branch("njetLepLC",&njetLepLC_,"njetLepLC/I"); 
   tree_->Branch("leadJetPt",&leadJetPt_,"leadJetPt/F");
+  tree_->Branch("leadJetPUIdMva",&leadJetPUIdMva_,"leadJetPUIdMva/F");
   tree_->Branch("leadJetRawFactor",&leadJetRawFactor_,"leadJetRawFactor/F");
   tree_->Branch("leadJetEta",&leadJetEta_,"leadJetEta/F");
   tree_->Branch("subleadJetPt",&subleadJetPt_,"subleadJetPt/F");
@@ -695,7 +704,7 @@ bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::stri
     if(obj->hasSelection(path.c_str()))//HLT path name
       //obj->printSelections(cout);
       if(obj->hasSelection(filter.c_str()))//last filter
-	if(reco::deltaR(eta,phi,obj->eta(),obj->phi())<0.3
+	if(reco::deltaR(eta,phi,obj->eta(),obj->phi())<0.5
 	   && (abs(obj->pdgId())==pdgid || pdgid==-1)
 	   ){
 	  //obj->printSelections(cout);	  
@@ -709,21 +718,26 @@ bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::stri
 }
 
 
+bool  BaseFlatNtp::checkPUJetId(const cmg::PFJet *jet){
+
+  float eta=fabs(jet->eta());
+  float mva=jet->puMva("full");
+  bool pass=1;
+  if(0.00<=eta&&eta<2.50) if(mva<-0.80) pass=0;
+  if(2.50<=eta&&eta<2.75) if(mva<-0.74) pass=0;
+  if(2.75<=eta&&eta<3.00) if(mva<-0.68) pass=0;
+  if(3.00<=eta&&eta<5.00) if(mva<-0.77) pass=0;
+
+  return pass;
+}
+
 void BaseFlatNtp::fillPFJetList(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list){
   list->clear();
   for(std::vector<const cmg::PFJet *>::const_iterator jet=fulllist->begin(); jet!=fulllist->end(); ++jet){
     if((*jet)->pt()<30.0)continue;  
     if(fabs((*jet)->eta())>4.7)continue; 
     if(!checkPFJetId((*jet)))continue;
-    //if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
-
-    float eta=fabs((*jet)->eta());
-    float mva=(*jet)->puMva("full");
-    if(0.00<=eta&&eta<2.50) if(mva<-0.80) continue;
-    if(2.50<=eta&&eta<2.75) if(mva<-0.74) continue;
-    if(2.75<=eta&&eta<3.00) if(mva<-0.68) continue;
-    if(3.00<=eta&&eta<5.00) if(mva<-0.77) continue;
-    
+    if(!checkPUJetId((*jet)))continue;
     list->push_back((*jet));
   }
 }
@@ -734,29 +748,10 @@ void BaseFlatNtp::fillPFJetList20(std::vector<const cmg::PFJet * > * fulllist, s
     if((*jet)->pt()<20.0)continue;  
     if(fabs((*jet)->eta())>4.7)continue; 
     if(!checkPFJetId((*jet)))continue;
-    //if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
-
-    float eta=fabs((*jet)->eta());
-    float mva=(*jet)->puMva("full");
-    if(0.00<=eta&&eta<2.50) if(mva<-0.80) continue;
-    if(2.50<=eta&&eta<2.75) if(mva<-0.74) continue;
-    if(2.75<=eta&&eta<3.00) if(mva<-0.68) continue;
-    if(3.00<=eta&&eta<5.00) if(mva<-0.77) continue;
-    
+    if(!checkPUJetId((*jet)))continue;
     list->push_back((*jet));
   }
 }
-
-// void BaseFlatNtp::fillPFJetListB(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list){
-//   list->clear();
-//   for(std::vector<const cmg::PFJet *>::const_iterator jet=fulllist->begin(); jet!=fulllist->end(); ++jet){
-//     if((*jet)->pt()<20.0)continue;  
-//     if(fabs((*jet)->eta())>2.4)continue; 
-//     if(!checkPFJetId((*jet)))continue;
-//     if(!((*jet)->passPuJetId("full",PileupJetIdentifier::kLoose))) continue;
-//     list->push_back((*jet));
-//   }
-// }
 
 void BaseFlatNtp::fillPFJetListBTag(std::vector<const cmg::PFJet * > * fulllist, std::vector<const cmg::PFJet * > * list){
   list->clear();
@@ -839,3 +834,60 @@ void BaseFlatNtp::printMCGen(edm::Handle< std::vector<reco::GenParticle> > & gen
 }
 
 
+
+void BaseFlatNtp::printMuonInfo(const cmg::Muon * cand){
+  cout<<" Muon info "<<endl;
+  cout<<"   pt                             = "<<cand->pt()<<endl;
+  cout<<"   eta                            = "<<cand->eta()<<endl;
+  cout<<"   phi                            = "<<cand->phi()<<endl;
+  cout<<"   charge                         = "<<cand->charge()<<endl;
+  cout<<"   RelIso                         = "<<cand->relIso(0.5,1)<<endl;
+  cout<<"   dz                             = "<<(*(cand->sourcePtr()))->innerTrack()->dz(PV_->position()) <<endl;
+  cout<<"   dxy                            = "<<(*(cand->sourcePtr()))->innerTrack()->dxy(PV_->position()) <<endl;
+  cout<<"   isGlobal                       = "<< cand->isGlobal() <<endl;
+  cout<<"   isPFMuon                       = "<< (*(cand->sourcePtr()))->userFloat("isPFMuon") <<endl;
+  cout<<"   normalizedChi2                 = "<< cand->normalizedChi2() <<endl;
+  cout<<"   numberOfValidMuonHits          = "<< cand->numberOfValidMuonHits() <<endl;
+  cout<<"   numberOfMatchedStations        = "<< cand->numberOfMatchedStations() <<endl;
+  cout<<"   numberOfValidPixelHits         = "<< (*(cand->sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits()  <<endl;
+  cout<<"   trackerLayersWithMeasurement   = "<< cand->trackerLayersWithMeasurement() <<endl;
+}
+
+
+void BaseFlatNtp::printElectronInfo(const cmg::Electron * cand){
+  cout<<" Electron info "<<endl;
+  cout<<"   pt             = "<<cand->pt()<<endl;
+  cout<<"   eta            = "<<cand->eta()<<endl;
+  cout<<"   phi            = "<<cand->phi()<<endl;
+  cout<<"   charge         = "<<cand->charge()<<endl;
+  cout<<"   RelIso         = "<<electronRelIsoDBCorr(cand)<<endl;
+  cout<<"   dz             = "<<(*(cand->sourcePtr()))->gsfTrack()->dz(PV_->position()) <<endl;
+  cout<<"   dxy            = "<<(*(cand->sourcePtr()))->gsfTrack()->dxy(PV_->position()) <<endl;
+  cout<<"   numberOfHits   = "<<cand->numberOfHits()<<endl;
+  cout<<"   passConversion = "<<cand->passConversionVeto()<<endl;
+  cout<<"   mvaNonTrigV0   = "<<cand->mvaNonTrigV0()<<endl;
+  cout<<"   passIDWP95     = "<<electronIDWP95(cand)<<endl;
+  cout<<"   isEB           = "<<(*(cand->sourcePtr()))->isEB()<<endl;
+  cout<<"   isEE           = "<<(*(cand->sourcePtr()))->isEE()<<endl;
+  cout<<"   dEtaSCTkVtx    = "<<cand->deltaEtaSuperClusterTrackAtVtx()<<endl;
+  cout<<"   dPhiSCTkVtx    = "<<cand->deltaPhiSuperClusterTrackAtVtx()<<endl;
+  cout<<"   sigmaIetaIeta  = "<<cand->sigmaIetaIeta()<<endl;
+  cout<<"   hadrOverEm     = "<<cand->hadronicOverEm()<<endl;
+}
+
+void BaseFlatNtp::printTauInfo(const cmg::Tau * cand){
+  cout<<" Tau info "<<endl;
+  cout<<"   pt                    = "<<cand->pt()<<endl;
+  cout<<"   eta                   = "<<cand->eta()<<endl;
+  cout<<"   phi                   = "<<cand->phi()<<endl;
+  cout<<"   charge                = "<<cand->charge()<<endl;
+  cout<<"   byLooseIsoMVA         = "<< cand->tauID("byLooseIsoMVA")<<endl;
+  cout<<"   dz                    = "<< computeDz(cand->leadChargedHadrVertex(),cand->p4())<<endl;
+  cout<<"   dxy                   = "<< computeDxy(cand->leadChargedHadrVertex(),cand->p4()) <<endl;
+  cout<<"   againstMuonLoose      = "<< cand->tauID("againstMuonLoose")<<endl;
+  cout<<"   againstMuonTight      = "<< cand->tauID("againstMuonTight")<<endl;
+  cout<<"   againstElectronLoose  = "<< cand->tauID("againstElectronLoose") <<endl;
+  cout<<"   againstElectronMedium      = "<< cand->tauID("againstElectronMedium")<<endl;
+  cout<<"   againstElectronMVA      = "<< cand->tauID("againstElectronMVA")<<endl;
+  cout<<"   againstElectronTightMVA2     = "<< cand->tauID("againstElectronTightMVA2")<<endl;
+}

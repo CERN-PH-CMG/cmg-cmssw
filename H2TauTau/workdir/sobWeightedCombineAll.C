@@ -17,31 +17,35 @@ sed -i 's/bool log=true/bool log=false/g' *.C
 sed -i 's/BLIND_DATA = true/BLIND_DATA = false/g' *.C
 python run_macros.py  -a sm -c 'mt, et, em'  -p "7TeV 8TeV"
 python run_macros.py  -a sm -c 'tt'  -p "8TeV"
-root -b /afs/cern.ch/user/b/benitezj/scratch1/V5_8_0/CMGTools/CMSSW_5_3_3_patch3/src/CMGTools/H2TauTau/workdir/combineAll.C
+
 
 -Now one can execute this combineAll.C macro
+root -b /PATH/sobWeightedCombineAll.C
+-it relies on another macro sobWeightedCombine.C being at the same PATH
+-one needs to make sure to update the muvalue below to the result from the fit to Data
 
+
+Authors: Jose Benitez, Lorenzo Bianchini 
 */
 
 
-#include "weightedCombine.C"
+#include "sobWeightedCombine.C"
 
 
-void combine(TString name, TString* Input,const char* dataset , const char* channel, const char* cat, int weight=1, float  MuValue=1.0){
+void sobCombine(TString name, TString* Input,const char* dataset , const char* channel, const char* cat, int weight=1, float  MuValue=1.0){
 
-  weightedCombine(Input,name.Data(),weight,MuValue);
-  /*                |     |          |->option to not apply weights
-                    |     |-> name for this plot
-                    |->array of file names 
+  sobWeightedCombine(Input,name,weight,MuValue);
+  /*                                     |-> mu value from the fit to Data
+                      |     |     |->option to apply or not apply weights
+                      |     |-> name for this plot
+                      |->array of input postfit root files 
   */
 
-  //weightedPlot(name,dataset,channel);
-  weightedPlotInset(name,dataset,channel,cat);
-
+  sobWeightedPlot(name,dataset,channel,cat);
 }
 
 
-void combineAll(){
+void sobWeightedCombineAll(){
 
   TString All[NMAXINPUT];
   All[0]="emu_boost_low_rescaled_7TeV_";
@@ -244,28 +248,31 @@ void combineAll(){
 
 
   float muvalue=1.10;
-  TString dataset=" CMS Preliminary, #sqrt{s} = 7-8 TeV, L = 24.3 fb^{-1}";
-  combine("All",All,dataset,"e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}","",1,muvalue);
-  combine("Boost",Boost,dataset,"e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}","1 jet",1,muvalue);
-  combine("VBF",VBF,dataset,"e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}","2 jet (VBF)",1,muvalue);
-  
-//   combine("EMu",EMu,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#mu",1,muvalue);
-//   combine("ETau",ETau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#tau_{h}",1,muvalue);
-//   combine("MuTau",MuTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","#mu-#tau_{h}",1,muvalue);
-//   combine("TauTau",TauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{h}-#tau_{h}",1,muvalue);
-//   combine("BoostLow",BoostLow,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","1jet_low",1,muvalue);
-//   combine("BoostHigh",BoostHigh,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","1jet_high",1,muvalue);
-//   combine("E7TeV",E7TeV,"#sqrt{s} = 7 TeV ,   L = 4.9 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muvalue);
-//   combine("E8TeV",E8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h},#tau_{h}-#tau_{h}",1,muvalue);
-  
-//   combine("AllNoTauTau",AllNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muvalue);
-//   combine("BoostHighNoTauTau",BoostHighNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","Boost_High No TauTau",1,muvalue);
-//   combine("VBFNoTauTau",VBFNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","VBF No TauTau",1,muvalue);
-//   combine("E8TeVNoTauTau",E8TeVNoTauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muvalue);
+  //TString dataset=" CMS Preliminary, #sqrt{s} = 7-8 TeV, L = 24.3 fb^{-1}";
+  //TString dataset="CMS Preliminary,  #sqrt{s}=7 TeV, L=4.9 fb^{-1}; #sqrt{s}=8 TeV, L=19.3 fb^{-1}; H#rightarrow#tau#tau";
+  TString dataset="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.3 fb^{-1} at 8 TeV";
 
-//   combine("MuTauBoost8TeV",MuTauBoost8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} Boost",1,muvalue);
-//   combine("MuTau8TeV",MuTau8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h}",1,muvalue);
-//  combine("MuTau0Jet8TeV",MuTau0Jet8TeV,2,0,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} 0-Jet",1,muvalue);
+  sobCombine("All",All,dataset,"e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}","",1,muvalue);
+  sobCombine("Boost",Boost,dataset,"e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}","1 jet",1,muvalue);
+  sobCombine("VBF",VBF,dataset,"e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}","2 jet (VBF)",1,muvalue);
+  
+//   sobCombine("EMu",EMu,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#mu",1,muvalue);
+//   sobCombine("ETau",ETau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#tau_{h}",1,muvalue);
+//   sobCombine("MuTau",MuTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","#mu-#tau_{h}",1,muvalue);
+//   sobCombine("TauTau",TauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{h}-#tau_{h}",1,muvalue);
+//   sobCombine("BoostLow",BoostLow,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","1jet_low",1,muvalue);
+//   sobCombine("BoostHigh",BoostHigh,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","1jet_high",1,muvalue);
+//   sobCombine("E7TeV",E7TeV,"#sqrt{s} = 7 TeV ,   L = 4.9 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muvalue);
+//   sobCombine("E8TeV",E8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h},#tau_{h}-#tau_{h}",1,muvalue);
+  
+//   sobCombine("AllNoTauTau",AllNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muvalue);
+//   sobCombine("BoostHighNoTauTau",BoostHighNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","Boost_High No TauTau",1,muvalue);
+//   sobCombine("VBFNoTauTau",VBFNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","VBF No TauTau",1,muvalue);
+//   sobCombine("E8TeVNoTauTau",E8TeVNoTauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muvalue);
+
+//   sobCombine("MuTauBoost8TeV",MuTauBoost8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} Boost",1,muvalue);
+//   sobCombine("MuTau8TeV",MuTau8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h}",1,muvalue);
+//  sobCombine("MuTau0Jet8TeV",MuTau0Jet8TeV,2,0,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} 0-Jet",1,muvalue);
 
 
    gROOT->ProcessLine(".q");

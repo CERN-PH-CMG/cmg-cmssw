@@ -1,7 +1,8 @@
 
-/*************************************************
- * Functions used to weight the input root files
- ************************************************
+/*
+ Auxiliary macro for sobWeightedCombineAll.C macro, see instructions there.
+
+Authors: Jose Benitez, Lorenzo Bianchini 
 */
 #include <TROOT.h>
 #include <TFile.h>
@@ -168,7 +169,7 @@ void findRebin(TString * Input,Int_t N, Int_t * Rebin){
 }
 
 
-void weightedCombine(TString *Input, TString outName, int weight=1, float  MuValue=1.0){
+void sobWeightedCombine(TString *Input, TString outName, int weight=1, float  MuValue=1.0){
   
   cout<<"Warning: using fitted mu-value = "<<MuValue<<" , make sure its up to date"<<endl;
   
@@ -389,10 +390,12 @@ void weightedCombine(TString *Input, TString outName, int weight=1, float  MuVal
  * Functions used to produce the weighted plot 
  ************************************************
 */
-//#include "/afs/cern.ch/user/b/benitezj/scratch1/V5_8_0/CMGTools/CMSSW_5_3_3_patch3/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
-void CMSPrelim(const char* dataset, const char* channel,const char* cat, double lowX, double lowY)
+void CMSPrelim(const char* dataset, const char* channel,const char* cat)
 {
+
+  double lowX=0.19;
+  double lowY=0.835;
 
   int color=1; int font = 62;
   
@@ -404,47 +407,28 @@ void CMSPrelim(const char* dataset, const char* channel,const char* cat, double 
   cmsprel->SetTextFont ( font );
 
   //cmsprel->SetTextSize ( 0.035 );
-  //cmsprel->AddText("CMS Preliminary, #sqrt{s} = 7-8 TeV, L = 24.3 fb^{-1}");
-
   //cmsprel->SetTextSize ( 0.027 );
-  //cmsprel->AddText("CMS Preliminary,  #sqrt{s}=7 TeV, L=4.9 fb^{-1}; #sqrt{s}=8 TeV, L=19.3 fb^{-1}; H#rightarrow#tau#tau");
-
   cmsprel->SetTextSize ( 0.030 );
-  cmsprel->AddText("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV");
-
+  cmsprel->AddText(dataset);
 
   cmsprel->Draw();
 
-
-
-//   TPaveText* lumi     = new TPaveText(lowX+0.24, lowY+0.061, lowX+0.61, lowY+0.161, "NDC");
-//   lumi->SetBorderSize(   0 );
-//   lumi->SetFillStyle(    0 );
-//   lumi->SetTextAlign(   12 );
-//   lumi->SetTextSize ( size );
-//   lumi->SetTextColor( color );
-//   lumi->SetTextFont ( font );
-//   lumi->AddText(dataset);
-//   lumi->Draw();
-
-  float size=0.035;
  
   TPaveText* chan     = new TPaveText(lowX+0.05, lowY-0.002, lowX+0.45, lowY+0.028, "NDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
-  chan->SetTextSize ( size );
+  chan->SetTextSize ( 0.035 );
   chan->SetTextColor( color );
   chan->SetTextFont ( font );
   chan->AddText(channel);
   chan->Draw();
 
-
   TPaveText* category     = new TPaveText(lowX+0.05, lowY-0.002-0.06, lowX+0.45, lowY+0.028-0.06, "NDC");
   category->SetBorderSize(   0 );
   category->SetFillStyle(    0 );
   category->SetTextAlign(   12 );
-  category->SetTextSize ( size );
+  category->SetTextSize ( 0.035 );
   category->SetTextColor( color );
   category->SetTextFont ( font );
   category->AddText(cat);
@@ -507,168 +491,8 @@ float findMinY(TH1F* h,int opt=0,float lowx=0.,float highx=0.){
   return max;
 }
 
-void weightedPlot(TString filename,const char* dataset , const char* channel,const char* cat ){
 
-  TFile F((filename+".root").Data(),"READ");
-  TH1F* data=(TH1F*)F.Get("data_obs");
-  TH1F* Ztt=(TH1F*)F.Get("Ztt");
-  TH1F* ggH=(TH1F*)F.Get("ggH");
-  TH1F* sig=(TH1F*)F.Get("signal");
-  TH1F* tt=(TH1F*)F.Get("ttbar");
-  TH1F* ewk=(TH1F*)F.Get("EWK");
-  TH1F* fakes=(TH1F*)F.Get("Fakes");
-  if(!sig){cout<<"No input histograms in file: "<<filename.Data()<<endl; return;}
-
-
-  ////Format the histograms
-  sig->SetBinContent(0,0);//remove red line on top of y axis in plot
-  sig->SetBinContent(sig->GetNbinsX()+1,0);
-  sig->SetBinError(0,0);
-  sig->SetBinError(sig->GetNbinsX()+1,0);
-  sig->SetName("sig");
-  sig->SetFillStyle(3353);//1001=solid , 3004,3005=diagonal
-  sig->SetFillColor(2);
-  sig->SetLineColor(2);
-  sig->SetLineStyle(1);
-  sig->SetLineWidth(0.);
-
-  ggH->SetBinContent(0,0);//remove red line on top of y axis in plot
-  ggH->SetBinContent(ggH->GetNbinsX()+1,0);
-  ggH->SetBinError(0,0);
-  ggH->SetBinError(ggH->GetNbinsX()+1,0);
-  ggH->SetName("ggH");
-  ggH->SetFillStyle(3353);//1001=solid , 3004,3005=diagonal
-  ggH->SetFillColor(2);
-  ggH->SetLineColor(2);
-  ggH->SetLineStyle(1);
-  ggH->SetLineWidth(0.);
-
-  TH1F* errorBand = (TH1F*)Ztt->Clone();
-  errorBand  ->SetMarkerSize(0);
-  errorBand  ->SetFillColor(1);
-  errorBand  ->SetFillStyle(3013);
-  errorBand  ->SetLineWidth(1);
-  errorBand->Draw("e2same");
-
-
-  TLegend legend;//(0.59, 0.65, 0.99, 0.90);
-  
-  legend.SetFillStyle(0);
-  legend.SetFillColor(0);
-  legend.SetBorderSize(0);
-  legend.AddEntry(data,"Observed","LP");  
-  legend.AddEntry(ggH,"SM Higgs (125 GeV)","F");
-  legend.AddEntry(Ztt,"Z#rightarrow#tau#tau","F");
-  legend.AddEntry(tt,"t#bar{t}","F");
-  legend.AddEntry(ewk,"electroweak","F");
-  legend.AddEntry(fakes,"QCD","F");
-
-  legend.SetX1NDC(0.57);
-  legend.SetX2NDC(0.86);
-  legend.SetY1NDC(0.60);
-  legend.SetY2NDC(0.87);
-  legend.SetTextSize(.035);
-  legend.SetTextAlign(   12 );
-
-
-  TString outname=TString("Plot_")+filename;
-
-  TCanvas C(outname);
-  C.Print(outname+".ps[");
-
-
-  //Data and Background Plot
-  C.Clear();
-  Ztt->GetYaxis()->SetRangeUser(0.,1.2*findMaxY(Ztt,0));
-  Ztt->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
-  Ztt->GetYaxis()->SetTitle("#bf{Weighted dN/dm_{#tau#tau} [1/GeV]}");//  dN/dm(#tau#tau)
-  Ztt->SetNdivisions(505);
-  Ztt->Draw("hist");
-
-  ggH->Draw("histsame");
-  Ztt->Draw("histsame");
-  tt->Draw("histsame");
-  ewk->Draw("histsame");
-  fakes->Draw("histsame");
-  data->Draw("pesame");
-  legend.Draw();
-
-  CMSPrelim(dataset,channel ,cat, 0.19, 0.835);
-
-  C.RedrawAxis();
-  C.Print(outname+".ps");
-  C.Print(outname+".png");
-
-  delete errorBand;
-
-
-
-  ///////////Data - Background and Signal Plot
-
-  C.Clear();
-  TH1F* dataDiff=diffPlot(data,Ztt,1);
-  dataDiff->SetName("dataDiff");
-
-  TH1F* errBand=getErrorBand(Ztt);
-  errBand->SetFillStyle(1001);//1001=solid , 3004,3005=diagonal
-  errBand->SetFillColor(16);
-  errBand->SetLineStyle(1);
-  errBand->SetLineColor(16);
-  errBand->GetYaxis()->SetRangeUser(-1.5*findMinY(dataDiff,0),2.0*findMaxY(dataDiff,0));
-  errBand->GetYaxis()->SetTitle(Ztt->GetYaxis()->GetTitle());
-  errBand->GetXaxis()->SetTitle(Ztt->GetXaxis()->GetTitle());
-  errBand->SetNdivisions(505);
-  errBand->Draw("histE2");
-
-  sig->Draw("histsame");
-
-  //draw line to cover the red from the signal
-  TLine line;
-  line.DrawLine(errBand->GetXaxis()->GetXmin(),0,errBand->GetXaxis()->GetXmax(),0);
-
-  //Draw the Data
-  dataDiff->Draw("pesame");
-
-  //Draw the Key
-  TLegend legendDiff;
-  legendDiff.SetFillStyle(0);
-  legendDiff.SetFillColor(0);
-  legendDiff.SetBorderSize(0);
-  legendDiff.AddEntry(dataDiff,"Data - Background","LP");  
-  legendDiff.AddEntry(errBand,"Bkg. Uncertainty","F");
-  legendDiff.AddEntry(sig,"SM Higgs (125 GeV)","F");
-  legendDiff.SetX1NDC(0.55);
-  legendDiff.SetX2NDC(0.84);
-  legendDiff.SetY1NDC(0.67);
-  legendDiff.SetY2NDC(0.87);
-  legendDiff.SetTextSize(.035);
-  legendDiff.SetTextAlign(   12 );
-  legendDiff.Draw();
-
-  CMSPrelim(dataset,channel , cat, 0.19, 0.835);
-
-  C.RedrawAxis();
-  C.Print(outname+".ps");
-  C.Print(outname+"_diff.png");
-
-
-
-  C.Print(outname+".ps]");
-
-  cout<<"SM Higgs Integral :"<<sig->Integral()<<endl;
-  cout<<"Data - Bkg Integral :"<<dataDiff->Integral()<<endl;
-  cout<<"Data-Bkg/Higgs : "<<dataDiff->Integral()/sig->Integral()<<endl;
-
-  delete dataDiff;
-  delete errBand;
-
-
-  //gROOT->ProcessLine(".q");
-}
-
-
-
-void weightedPlotInset(TString filename,const char* dataset , const char* channel,const char* cat){
+void sobWeightedPlot(TString filename,const char* dataset , const char* channel,const char* cat){
 
   TFile F((TString("Plot_")+filename+".root").Data(),"READ");
   gROOT->cd();
@@ -818,7 +642,7 @@ void weightedPlotInset(TString filename,const char* dataset , const char* channe
   padBack.Draw();//clear the background axes
   pad.Draw();
 
-  CMSPrelim(dataset,channel , cat, 0.19, 0.835);
+  CMSPrelim(dataset,channel,cat);
   C.Print(TString("Plot_")+filename+".eps");
   C.Print(TString("Plot_")+filename+".png");
   C.Print(TString("Plot_")+filename+".pdf");

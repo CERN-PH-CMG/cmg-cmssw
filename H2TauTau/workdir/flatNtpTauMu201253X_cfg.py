@@ -28,10 +28,10 @@ sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 
 
-#dataset_user  = 'cbern'
+#dataset_user  = 'benitezj'
 #sampleName = 'HiggsVBF125'
-#sampleJobIdx = 1
-#sampleMergeFactor = 1
+#sampleJobIdx = 0
+#sampleMergeFactor = 200
 
 
 #########################
@@ -46,8 +46,9 @@ from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSam
 configureFlatNtpSampleTauMu2012(process.flatNtp,sampleName)
 process.flatNtp.diTauTag = 'cmgTauMuPreSel'
 process.flatNtp.metType = 2
-process.flatNtp.runSVFit = 2
-process.flatNtp.printSelectionPass=0
+process.flatNtp.runSVFit = 1 #1 old #2 new
+process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
+
 
 ### input files
 #inputfiles = "tauMu_fullsel_tree_CMG_.*root"
@@ -61,22 +62,20 @@ print inputfiles
 print firstfile
 print lastfile
 
-
 #get input files
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:15599','1:20873','1:20916','1:20991','1:21008')
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:20401','1:20509','1:20536','1:20611','1:20625')
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:20536','1:20611')
-#print process.source.eventsToProcess
 
-#*        0 *         1 *     20401 * 61.421115 *
-#*        1 *         1 *     20509 * 59.559642 *
-#*        2 *         1 *     20536 * 54.727180 *
-#*        3 *         1 *     20611 * 148.97924 *
-#*        4 *         1 *     20625 * 51.737155 *
+##difference in trigger
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:253983','1:771203')
+
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:105103','1:258011','1:385416','1:579732','1:750487','1:844314','1:860080','1:887035')
+
+#process.flatNtp.printSelectionPass=1
+
+#print process.source.eventsToProcess
 
 
 #process.source = cms.Source(
@@ -145,7 +144,8 @@ process.analysis +=  process.cmgTauMu
 process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
 process.cmgTauMuPreSel = process.cmgTauMuSel.clone()
 #process.cmgTauMuPreSel.cut = cms.string('pt()>0' )
-process.cmgTauMuPreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>20.0 && abs(leg2().eta())<2.1 && leg2().relIso(0.5,1)<0.5' )
+#process.cmgTauMuPreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>20.0 && abs(leg2().eta())<2.1 && leg2().relIso(0.5,1)<0.5' )
+#process.cmgTauMuPreSel.cut = cms.string('leg1().pt()>=20.0 && abs(leg1().eta())<=2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>=20.0 && abs(leg2().eta())<=2.1 && leg2().relIso(0.5,1)<0.5' )
 process.analysis +=  process.cmgTauMuPreSel 
 
 # event filter --------------------------------
@@ -154,10 +154,9 @@ process.cmgTauMuCount.src = 'cmgTauMuPreSel'
 process.cmgTauMuCount.minNumber = 1
 process.analysis += process.cmgTauMuCount
 
-##run the MVA MET and remake the mu-tau list
 if process.flatNtp.metType ==2 :
    process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
-   process.load("CMGTools.Common.miscProducers.mvaMET.mvaMETTauMu_cfi")
+   process.load("CMGTools.Utilities.mvaMET.mvaMETTauMu_cfi")
    process.mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
    process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
    process.mvaBaseMETTauMu = process.cmgBaseMETFromPFMET.clone()

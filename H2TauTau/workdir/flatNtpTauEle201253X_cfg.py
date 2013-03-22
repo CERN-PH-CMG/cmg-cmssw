@@ -19,6 +19,10 @@ sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 
+#dataset_user  = 'benitezj'
+#sampleName = 'HiggsVBF125'
+#sampleJobIdx = 0
+#sampleMergeFactor = 200
 
 #########################
 
@@ -32,7 +36,9 @@ from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSam
 configureFlatNtpSampleTauEle2012(process.flatNtp,sampleName)
 process.flatNtp.diTauTag = 'cmgTauElePreSel'
 process.flatNtp.metType = 2
-process.flatNtp.runSVFit = 2
+process.flatNtp.runSVFit = 1 #1 old #2 new
+process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
+
 
 
 ### input files
@@ -64,11 +70,8 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 
 #process.source.fileNames = ['file:./tauEle_fullsel_tree_CMG.root']
 
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:1580609', '1:428746')
-
-
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:123718', '1:265310', '1:384609', '1:40369', '1:43534', '1:769171')
 #process.flatNtp.printSelectionPass = 1
-
 #print process.source.eventsToProcess
 
 print process.source.fileNames
@@ -123,7 +126,7 @@ process.analysis +=  process.cmgTauEle
 process.load('CMGTools.Common.skims.cmgTauEleSel_cfi')
 process.cmgTauElePreSel = process.cmgTauEleSel.clone()
 #process.cmgTauElePreSel.cut = cms.string('pt()>0.0' )
-process.cmgTauElePreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>0.0 && leg2().pt()>24.0 && abs(leg2().eta())<2.1' )
+#process.cmgTauElePreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>0.0 && leg2().pt()>24.0 && abs(leg2().eta())<2.1' )
 process.analysis +=  process.cmgTauElePreSel 
 
 
@@ -137,7 +140,7 @@ process.analysis +=  process.cmgTauEleCount
 ##run the MVA MET and remake the mu-tau list
 if process.flatNtp.metType == 2:
    process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
-   process.load("CMGTools.Common.miscProducers.mvaMET.mvaMETTauEle_cfi")
+   process.load("CMGTools.Utilities.mvaMET.mvaMETTauEle_cfi")
    process.mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
    process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
    process.mvaBaseMETTauEle = process.cmgBaseMETFromPFMET.clone()
