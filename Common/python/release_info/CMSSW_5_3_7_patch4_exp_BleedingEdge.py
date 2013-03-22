@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'cbern_cleanup_12Dec12'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'joseMar22'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'JoseMar22'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-03-03'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'joseMar22'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'wreece_140113'),
