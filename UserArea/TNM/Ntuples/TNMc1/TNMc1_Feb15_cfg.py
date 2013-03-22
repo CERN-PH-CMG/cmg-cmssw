@@ -1,4 +1,4 @@
-#$Revision: 1.10 $
+#$Revision: 1.11 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -28,7 +28,7 @@ recalibrateCMGJets = False
 runAK7jets = True
 runCA8jets = True
 runQJets = False
-runOnVVtuples = False
+runOnVVtuples = True
 
 # Input file
 
@@ -55,7 +55,11 @@ if runOnVVtuples:
     #process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_WJetsPt50To70_cff")
     #process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_WW_cff")
     #process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_TTBAR_cff")
-    process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_RSG_WW_lvjj_c0p05_M1000_cff")
+    #process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_RSG_WW_lvjj_c0p05_M1000_cff")
+    #process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_BulkG_WW_lvjj_c0p2_M1000_cff")
+    #process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_BulkG_WW_lvjj_c0p2_M1500_cff")
+    #process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_BulkG_WW_lvjj_c0p2_M2000_cff")
+    process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_BulkG_WW_lvjj_c0p2_M2500_cff")
     runAK7jets=False
     runCA8jets=False
 
