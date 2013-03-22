@@ -70,11 +70,6 @@ bool TauMuFlatNtp::applySelections(){
   counterev_++;
 
 
-  if(vetoDiLepton()){
-    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
-    return 0;
-  }
-  counterveto_++;
 
   if(diTauList_->size()==0){
     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterpresel"<<endl;  
@@ -86,65 +81,78 @@ bool TauMuFlatNtp::applySelections(){
   diTauSelList_.clear();
 
 
-  //muon vtx 
-  //  tmpditaulist=diTauSelList_;
-  //  diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    //if( fabs(cand->leg2().dxy())>0.045)continue;
-    //if( fabs(cand->leg2().dz())>0.2 )continue;
-    
-    //track.isNonnull() && track.isAvailable()
-    if(!((*(cand->leg2().sourcePtr()))->innerTrack().isNonnull()))continue;
-    if(!((*(cand->leg2().sourcePtr()))->innerTrack().isAvailable()))continue;
 
-    if(fabs((*(cand->leg2().sourcePtr()))->innerTrack()->dxy(PV_->position())) > 0.045 ) continue;
-    if(fabs((*(cand->leg2().sourcePtr()))->innerTrack()->dz(PV_->position()))  > 0.2 ) continue;
+  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(cand->leg2().pt()<20.0)continue;
+    if(fabs(cand->leg2().eta())>2.1)continue;
+    if(reco::deltaR(cand->leg1().p4().eta(),cand->leg1().p4().phi(),
+		    cand->leg2().p4().eta(),cand->leg2().p4().phi()
+		    )<0.5)continue;
     
     diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
-    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermuvtx"<<endl;  
+    if(printSelectionPass_){
+      cout<<runnumber_<<":"<<eventid_<<" fail Muon preselection"<<endl;  
+      for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	printMuonInfo(&(cand->leg2()));
+      }
+    }
+    return 0;
+  }
+
+  tmpditaulist=diTauSelList_;
+  diTauSelList_.clear();
+  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(cand->leg1().tauID("decayModeFinding")<0.5 )continue;
+    if(cand->leg1().pt()<20.0 )continue;
+    if(fabs(cand->leg1().eta())>2.3 )continue;
+    diTauSelList_.push_back(*cand);
+  }
+  if(diTauSelList_.size()==0){
+    if(printSelectionPass_){
+      cout<<runnumber_<<":"<<eventid_<<" fail Tau preselection"<<endl;  
+      for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+      	printTauInfo(&(cand->leg1()));
+      }
+    }
+    return 0;
+  }
+
+
+  //muon vtx 
+  tmpditaulist=diTauSelList_;
+  diTauSelList_.clear();
+  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(!muonVertexCut(&(cand->leg2())))continue;
+    diTauSelList_.push_back(*cand);
+  }
+  if(diTauSelList_.size()==0){
+    if(printSelectionPass_){
+      cout<<runnumber_<<":"<<eventid_<<" fail countermuvtx"<<endl;  
+      for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	printMuonInfo(&(cand->leg2()));
+      }
+    }
     return 0;
   }
   countermuvtx_++;
-
 
 
   //muion id cuts
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    
-    //     //old VBTF cuts
-    //     if(cand->leg2().isGlobal()
-    //        &&cand->leg2().isTracker()
-    //        &&cand->leg2().numberOfValidTrackerHits() > 10
-    //        &&cand->leg2().numberOfValidPixelHits() > 0
-    //        &&cand->leg2().numberOfValidMuonHits() > 0
-    //        &&cand->leg2().numberOfMatches() > 1
-    //        &&cand->leg2().normalizedChi2() < 10
-    //        ){
-      
-    //     //"Loose Muon" 
-    //     if((*(cand->leg2().sourcePtr()))->userFloat("isPFMuon")>0.5
-    //        && (cand->leg2().isGlobal() || cand->leg2().isTracker())
-    //        ){      
-      
-    //"Tight Muon" 
-    if(!(cand->leg2().isGlobal()))continue; //cout<<"pass"<<endl;
-    if(!((*(cand->leg2().sourcePtr()))->userFloat("isPFMuon")>0.5))continue;// cout<<"pass"<<endl;
-    if(!(cand->leg2().normalizedChi2() < 10))continue; //cout<<"pass"<<endl;
-    if(!(cand->leg2().numberOfValidMuonHits() > 0))continue; //cout<<"pass"<<endl;
-    if(!(cand->leg2().numberOfMatches() > 1))continue; //cout<<"pass"<<endl;
-    //if(!(cand->leg2().numberOfValidPixelHits() > 0))continue; //cout<<"pass"<<endl; //pixelHits is not filled right in the cmgMuon
-    if(!((*(cand->leg2().sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits() > 0))continue; //cout<<"pass"<<endl; 
-    if(!(cand->leg2().trackerLayersWithMeasurement() > 5))continue; //cout<<"pass"<<endl;
-    
+    if(!muonIDPFMuonTight(&(cand->leg2())))continue;
     diTauSelList_.push_back(*cand);
-      
   }
   if(diTauSelList_.size()==0){
-    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermuid"<<endl;
+    if(printSelectionPass_){
+      cout<<runnumber_<<":"<<eventid_<<" fail countermuid"<<endl;
+      for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand)
+	printMuonInfo(&(cand->leg2()));
+    }
+
     return 0;
   }
   countermuid_++;
@@ -178,41 +186,45 @@ bool TauMuFlatNtp::applySelections(){
       diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
-    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermumatch"<<endl;
+    if(printSelectionPass_){
+      cout<<runnumber_<<":"<<eventid_<<" fail countermumatch"<<endl;
+      for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand)
+	printMuonInfo(&(cand->leg2()));
+    }
     return 0;
   }
   countermumatch_++;
 
 
 
-  //Tau E/P cut
-  tmpditaulist=diTauSelList_;
-  diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
-      if(cand->leg1().eOverP()<0.2)
-	continue;
+//   //Tau E/P cut
+//   tmpditaulist=diTauSelList_;
+//   diTauSelList_.clear();
+//   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+//     if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
+//       if(cand->leg1().eOverP()<0.2)
+// 	continue;
     
-    diTauSelList_.push_back(*cand);
-  }
-  if(diTauSelList_.size()==0){
-    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
-    return 0;
-  }
-  countertaueop_++;
+//     diTauSelList_.push_back(*cand);
+//   }
+//   if(diTauSelList_.size()==0){
+//     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
+//     return 0;
+//   }
+//   countertaueop_++;
 
   
   //tau vtx
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
-  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    //if(fabs(cand->leg1().dxy())>0.045) continue;
-    //if(fabs(cand->leg1().dz())>0.2 ) continue;
-      
-    if(fabs(computeDxy(cand->leg1().leadChargedHadrVertex(),cand->leg1().p4()))>0.045)continue;
-    if(fabs(computeDz(cand->leg1().leadChargedHadrVertex(),cand->leg1().p4()))>0.2)continue;
+  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){  
 
-
+    if(!tauVertexCut(&(cand->leg1())))continue;
+    
+    if(reco::deltaR(cand->leg1().p4().eta(),cand->leg1().p4().phi(),
+		    cand->leg2().p4().eta(),cand->leg2().p4().phi()
+		    )<0.5)continue; //Andrew has this cut
+    
     diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
@@ -339,6 +351,12 @@ bool TauMuFlatNtp::applySelections(){
 //   counterveto_++;
 
 
+  if(vetoDiLepton()){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail counterveto"<<endl;
+    return 0;
+  }
+  counterveto_++;
+
   //truth match 
   truthEventType_=0;
   if(genBoson_)
@@ -351,7 +369,13 @@ bool TauMuFlatNtp::applySelections(){
   countertruth_++;
 
 
-  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passed TauMu selections "<<endl;
+
+   if(printSelectionPass_){
+     cout<<" Passed all selections : "<<endl;
+     printMuonInfo(&(diTauSel_->leg2()));
+     printTauInfo(&(diTauSel_->leg1()));
+   }
+
 
   return 1;
 }
@@ -600,7 +624,6 @@ bool TauMuFlatNtp::fill(){
   fillPFJetList20(&fullJetList_,&pfJetList20_);
   fillPFJetListLC(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),&pfJetList20_,&pfJetList20LC_);
   fillJetVariables20();
-  //fillBTagWeight();//not used any more
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass Jets fillJetVariables20 "<<endl;
 
 
@@ -668,74 +691,43 @@ bool TauMuFlatNtp::fill(){
 
 
 bool TauMuFlatNtp::vetoDiLepton(){
-  bool muminus=0;
-  bool muplus=0;
+
+
+  const cmg::Muon * mu1=0;
+  const cmg::Muon * mu2=0;
   for(std::vector<cmg::Muon>::const_iterator m=leptonVetoListMuon_->begin(); m!=leptonVetoListMuon_->end(); ++m){  
     if(m->pt()<=15.0)continue;
     if(fabs(m->eta())>=2.4)continue;
+
+    if(!muonVertexCut(&(*m)))continue;
+
     if(!(m->isTracker()))continue; 
     if(!(m->isGlobal()))continue; 
     if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
-    if(fabs((*(m->sourcePtr()))->innerTrack()->dz(PV_->position()))  > 0.2 ) continue;
+
     if(m->relIso(0.5,1)>=0.3)continue;        
 
-    if(m->charge()==-1)muminus=1;
-    if(m->charge()==1)muplus=1;
+    if(!mu1)mu1=&(*m);
+    else if(m->charge()!=mu1->charge()
+	    && reco::deltaR(m->p4().eta(),m->p4().phi(),mu1->p4().eta(),mu1->p4().phi()) > 0.15 ){//Andrew has this cut
+      mu2=&(*m);
+    }
+
   }
-  if(muminus&&muplus) return 1;
+  if(mu1&&mu2){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<"      fail dilepon veto"<<endl;
+    //cout<<"e1 info: "<<endl; printElectronInfo(mu1);
+    //cout<<"e2 info: "<<endl;printElectronInfo(mu2);
+    return 1;
+  }
 
 
+  
   //3rd lepton veto
-  int nleptons=0;
-  for(std::vector<cmg::Muon>::const_iterator m=leptonVetoListMuon_->begin(); m!=leptonVetoListMuon_->end(); ++m){  
-    if(m->pt()<=10.0)continue;
-    if(fabs(m->eta())>=2.4)continue;
-    if(!(m->isTracker()))continue; 
-    if(!(m->isGlobal()))continue; 
-    if((*(m->sourcePtr()))->userFloat("isPFMuon")<0.5) continue;
-    if(!(m->normalizedChi2() < 10))continue;
-    if(!(m->numberOfValidMuonHits() > 0))continue; 
-    if(!(m->numberOfMatches() > 1))continue; //cout<<"pass"<<endl;
-    if(!(m->trackerLayersWithMeasurement() > 5))continue; 
-   
-    ///this is crashing saying track is not there , so must check 
-    if(!((*(m->sourcePtr()))->innerTrack().isNonnull()))continue;
-    if(!((*(m->sourcePtr()))->innerTrack().isAvailable()))continue;
-    if(!((*(m->sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits() > 0))continue;
-    if(fabs((*(m->sourcePtr()))->innerTrack()->dz(PV_->position()))  > 0.2 ) continue;
-    if(fabs((*(m->sourcePtr()))->innerTrack()->dxy(PV_->position())) > 0.045 ) continue;
-
-    if(m->relIso(0.5,1)>=0.3)continue;        
-    nleptons++;
+  if(!thirdLeptonVeto()){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<"      fail 3rd lepton veto"<<endl;
+    return 1;
   }
-  for(std::vector<cmg::Electron>::const_iterator m=leptonVetoListElectron_->begin(); m!=leptonVetoListElectron_->end(); ++m){  
-    if(m->pt()<=10.0)continue;
-    if(fabs(m->eta())>=2.5)continue;
-    if(m->numberOfHits()!=0) continue;
-    if(m->passConversionVeto()!=1) continue;
-
-    if(!((*(m->sourcePtr()))->gsfTrack().isNonnull()))continue;
-    if(!((*(m->sourcePtr()))->gsfTrack().isAvailable()))continue;     
-    if(fabs((*(m->sourcePtr()))->gsfTrack()->dxy(PV_->position())) > 0.045 ) continue;
-    if(fabs((*(m->sourcePtr()))->gsfTrack()->dz(PV_->position()))  > 0.2 ) continue;
-
-    float mvaid=m->mvaNonTrigV0();
-    float eta=(*(m->sourcePtr()))->superCluster()->eta();
-    if(m->pt()<20){
-      if(fabs(eta)<0.8)                  if(mvaid<0.925)continue; 
-      if(0.8<=fabs(eta)&&fabs(eta)<1.479)if(mvaid<0.915)continue;
-      if(1.479<=fabs(eta))               if(mvaid<0.965)continue; 
-    }
-    if(m->pt()>=20){
-      if(fabs(eta)<0.8)                  if(mvaid<0.905)continue; 
-      if(0.8<=fabs(eta)&&fabs(eta)<1.479)if(mvaid<0.955)continue;
-      if(1.479<=fabs(eta))               if(mvaid<0.975)continue; 
-    }
-
-    if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
-    nleptons++;
-  }
-  if(nleptons>=2)return 1;
 
 
   return 0;
@@ -746,7 +738,6 @@ void TauMuFlatNtp::endJob(){
   BaseFlatNtp::endJob();
 
   cout<<"counterev = "<<counterev_<<endl;
-  cout<<"counterveto = "<<counterveto_<<endl;
   cout<<"counterpresel = "<<counterpresel_<<endl;
   cout<<"countermuvtx = "<<countermuvtx_<<endl;
   cout<<"countermuid = "<<countermuid_<<endl;
@@ -758,6 +749,7 @@ void TauMuFlatNtp::endJob(){
   cout<<"countertaueveto = "<<countertaueveto_<<endl;
   cout<<"countertauiso = "<<countertauiso_<<endl;
   cout<<"countertaumatch = "<<countertaumatch_<<endl;
+  cout<<"counterveto = "<<counterveto_<<endl;
   cout<<"countertruth = "<<countertruth_<<endl;
 }
 
