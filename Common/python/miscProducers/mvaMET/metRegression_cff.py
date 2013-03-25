@@ -12,6 +12,7 @@ pfMetForRegression   = cms.EDProducer(
     RhoName         = cms.InputTag('kt6PFJets','rho'),
     JetPtMin        = cms.double(0.), # should be 0 for 5X and 1 for 4X
     dZMin           = cms.double(0.1),
+    met_53x         = met_53x,
     PhilV1          = PhilV1,
     full            = full,
     full_5x         = full_5x,
