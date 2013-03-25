@@ -43,7 +43,7 @@ pfMetForRegression   = cms.EDProducer(
      ),
     label          = cms.string("met_53x"),
     tmvaSpectators = cms.vstring(),
-    JetIdParams = JetIdParams
+    JetIdParams = met_53x_wp
     )
 
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X, isNewerThan
