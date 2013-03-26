@@ -134,7 +134,6 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F ("mht",     ";MHT [GeV];Events",50,0,250) );
   mon.addHistogram( new TH1F ("njets",     ";Jet multiplicity (p_{T}>30 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TProfile( "njetsvspu", ";Vertices;N_{jets}",50,0,50) );
-  mon.addHistogram( new TProfile( "nloosejetsvspu", ";Vertices;N_{jets}",50,0,50) );
   mon.addHistogram( new TH1F ("nsoftjets", ";Jet multiplicity (p_{T}>15 GeV/c);Events",5,0,5) );
   mon.addHistogram( new TH1F ("nbtags",    ";b-tag multiplicity; Events", 5,0,5) );
   mon.addHistogram( new TH1F ("npfjetsbtagsJPNM1",    ";b-tag multiplicity; Events", 5,0,5) );
@@ -391,7 +390,7 @@ int main(int argc, char* argv[])
       if(disableJERSmear && !useCHS) jetsToUse=phys.jets;
       
       //count the jets
-      int nbtags(0),npfjets30(0),njets30(0),njets15(0);
+      int nbtags(0),njets30(0),njets15(0);
       double ht(0);
       double mindphijmet(9999.),mindphijmet15(9999.);
       PhysicsObjectJetCollection selJets,recoilJets;
@@ -402,26 +401,27 @@ int main(int argc, char* argv[])
 	  LorentzVector ijetP4=jetsToUse[ijet];
 	  if(ijetP4.pt()>30 && deltaR(ijetP4,gamma)<0.1) continue;
 
+	  //base jet id
+	  bool isGoodPFJet=hasObjectId(jetsToUse[ijet].pid,JETID_LOOSE);
+	  if(!isGoodPFJet) continue; //this is redundant...
+	  
+	  //tighten id
+	  bool isGoodJet=(hasObjectId(jetsToUse[ijet].pid,JETID_CUTBASED_LOOSE) && fabs(jetsToUse[ijet].eta())<4.7);
+	  if(!isGoodJet) continue;
+
 	  //dphi(jet,MET)
 	  double idphijmet( fabs(deltaPhi(ijetP4.phi(),metP4.phi()) ) );	  
 	  if(ijetP4.pt()>15) if(idphijmet<mindphijmet15) mindphijmet15=idphijmet;
 	  if(ijetP4.pt()>30) if(idphijmet<mindphijmet)   mindphijmet = idphijmet;
 	  if( fabs(deltaPhi(ijetP4.phi(),gamma.phi())>2 ) ) recoilJets.push_back( jetsToUse[ijet] );
 	  
-	  //base jet id
-	  bool isGoodPFJet=hasObjectId(jetsToUse[ijet].pid,JETID_LOOSE);
-	  if(isGoodPFJet && ijetP4.pt()>30) npfjets30++;
-
-	  //tighten id
-	  bool isGoodJet=hasObjectId(jetsToUse[ijet].pid,JETID_CUTBASED_LOOSE);
-	  if(!isGoodJet) continue;
 	  selJets.push_back(jetsToUse[ijet]);
 	  clusteredMet -= ijetP4;
 	  mht -= ijetP4;
 	  ht += ijetP4.pt();
 	  if(ijetP4.pt()>15)  njets15++; 
 	  if(ijetP4.pt()<30) continue;
-	  if(fabs(ijetP4.eta())<2.5) nbtags += (jetsToUse[ijet].btag2>0.244);
+	  if(fabs(ijetP4.eta())<2.5) nbtags += (jetsToUse[ijet].btag3>0.275);
 	  njets30++;
 	}
       
@@ -496,6 +496,8 @@ int main(int argc, char* argv[])
       //if(njets30>=3) photonSubCat = "geq3jets";
       TString photonSubCat("eq");    photonSubCat+=min(njets30,3); photonSubCat += "jets";
       if(photonSubCat.Contains("3")) photonSubCat = "g"+photonSubCat;
+      if(tag_subcat.Contains("vbf")) photonSubCat = "vbf";
+      
       qtWeights = gammaEvHandler.getWeights(phys,photonSubCat);
      
       //now do the control plots
@@ -536,7 +538,6 @@ int main(int argc, char* argv[])
 		      mon.fillHisto("rho",ctf, ev.rho,iweight);
 		      mon.fillHisto("qmass",ctf, zmass,iweight);
 		      mon.fillHisto("njets",ctf, njets30,iweight);
-		      mon.fillProfile("nloosejetsvspu",ctf,ev.nvtx,npfjets30,iweight);	      	      
 		      mon.fillProfile("njetsvspu",ctf,ev.nvtx,njets30,iweight);	      	      
 		      mon.fillHisto("ht",ctf, ht,iweight);
 		      for(size_t ijet=0; ijet<selJets.size(); ijet++) mon.fillHisto("jetpt",ctf, selJets[ijet].pt(),iweight);

@@ -1057,8 +1057,13 @@ int main(int argc, char* argv[])
       selWord |= (pass3dLeptonVeto<<5);
       selWord |= (passBveto<<6);
       selWord |= (passDphijmet<<7);
-
-      fprintf(outTxtFile,"%d %d %d %d %d %f %f\n",ev.run,ev.lumi,ev.event,selWord,nAJetsGood30,zvvs[0].pt(),aMT);
+      TString evCat(tag_cat);
+      {      
+	int eventSubCat  = eventCategoryInst.Get(phys,&aGoodIdJets);
+	TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat);
+	evCat+=tag_subcat;
+      }
+      fprintf(outTxtFile,"%d %d %d %d %d %f %f %s\n",ev.run,ev.lumi,ev.event,selWord,nAJetsGood30,zvvs[0].pt(),aMT,evCat.Data());
 
       //
       //RUN PRESELECTION AND CONTROL PLOTS
@@ -1149,8 +1154,8 @@ int main(int argc, char* argv[])
 			photonCats.push_back(tag_cat+"");
 			TString gsub_cat("eq"); gsub_cat+=min(nAJetsGood30,3); gsub_cat += "jets";
 			if(gsub_cat.Contains("3")) gsub_cat = "g"+gsub_cat;
-		        photonCats.push_back(tag_cat+gsub_cat);
 			if(tag_subcat.Contains("vbf")) photonCats.push_back(tag_cat+"vbf");
+		        else                           photonCats.push_back(tag_cat+gsub_cat);
 			mon.fillHisto("qt",photonCats, zll.pt(),weight,true); 
 			mon.fillHisto("qmass",photonCats, zll.mass(),weight); 
 		      }

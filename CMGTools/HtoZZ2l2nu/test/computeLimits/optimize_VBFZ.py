@@ -50,7 +50,7 @@ def help() :
 #parse the options
 try:
    # retrive command line options
-   shortopts  = "p:f:m:i:s:j:o:e:t:x:h?"
+   shortopts  = "p:f:m:i:s:j:o:e:t:b:x:h?"
    opts, args = getopt.getopt( sys.argv[1:], shortopts )
 except getopt.GetoptError:
    # print help information and exit:
@@ -72,6 +72,7 @@ for o,a in opts:
    elif o in('-e'): sqrts=a
    elif o in('-t'): dyTemplates=a
    elif o in('-x'):  smXsec=float(a)
+   elif o in('-b'): blind=True 
       
 if(phase<0 or len(CMSSW_BASE)==0):
    help()

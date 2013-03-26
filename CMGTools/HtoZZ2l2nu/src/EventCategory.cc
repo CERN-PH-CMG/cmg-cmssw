@@ -1,8 +1,8 @@
 /*
  *  See header file for a description of this class.
  *
- *  $Date: 2012/09/04 06:12:17 $
- *  $Revision: 1.17 $
+ *  $Date: 2013/02/13 23:03:38 $
+ *  $Revision: 1.18 $
  *  \author L. Quertenmont
  */
 
@@ -88,7 +88,7 @@ int EventCategory::Get(const PhysicsEvent_t& phys, PhysicsObjectJetCollection* J
           float jeta=jets[ijet].eta();
           if(jpt<30)continue; 
           if(jeta>MinEta && jeta<MaxEta) NCentralJet++;  
-          if(jets[ijet].btag1>2.0) NBJets++;
+          if(jets[ijet].btag3>0.275) NBJets++;
       }
       
       //this part is not totally synchronized... but should yield minor differences

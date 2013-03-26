@@ -7,6 +7,8 @@
 #include "TPaveText.h"
 #include "TStyle.h"
 #include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
+#include "TF1.h"
 
 #include <fstream>
 #include<strstream>
@@ -16,6 +18,7 @@
 
 using namespace std;
 
+TString outDir("Img/");
 strstream report;
 TStyle *tdrStyle;
 
@@ -25,8 +28,24 @@ struct Shape_t
   std::map<TString, TH1 *> bckg, signal;
 };
 
-void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model);
+void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model,TFile *closeF=0);
 void setTDRStyle();
+
+
+Int_t findClosestPoint(TGraph *gr,Double_t xToMatch){
+ 
+  Int_t PointNumber =0;
+  Double_t x,y;
+  gr->GetPoint(0,x,y);
+  Double_t Delta = TMath::Abs(xToMatch-x);
+  for (Int_t i=1; i<gr->GetN();i++){
+    gr->GetPoint(i,x,y);
+    if (TMath::Abs(xToMatch-x)>Delta) continue;
+    Delta = TMath::Abs(xToMatch-x);
+    PointNumber=i;
+  }
+  return PointNumber;
+}
 
 //
 void fixExtremities(TH1* h,bool addOverflow, bool addUnderflow)
@@ -113,10 +132,17 @@ Shape_t cloneShape(Shape_t &orig,TString newName)
 //
 enum SubtractionTypes {NOSUBTRACTION, HALVE, EWKSUBTRACTION, EWKSUBTRACTIONHALVE};
 enum ModelType { HZZ,ZZ,VBFZ};
-void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
+void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureFile="")
 {
   setTDRStyle();
  
+  TFile *closeF=0;
+  if(closureFile!="") 
+    {
+      closeF=TFile::Open(closureFile);
+      if(closeF!=0 && closeF->IsZombie()) closeF=0;
+    }
+	
 
   TString llFile,gammaFile;
   std::vector<std::string> histos,dilSignal,dilcats,gcats;
@@ -128,37 +154,28 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       //llFile="~/work/vbfz/plotter_vbfz_2012.root";
       llFile="~/work/vbfz/plotter_vbfz_2012.root";
 
-
       histos.push_back("vbfcandjetdeta");      
       histos.push_back("qt");
       histos.push_back("vbfmjj");
       histos.push_back("vbfcandjet1eta");
       histos.push_back("vbfcandjet2eta");
-      //histos.push_back("vbfcandjetpt");
+      histos.push_back("vbfcandjetetaprod");
+      histos.push_back("vbfspt");
       histos.push_back("vbfcandjet1pt");
       histos.push_back("vbfcandjet2pt");
       histos.push_back("vbfcjv15");
-      //       histos.push_back("vbfcjv20");
-      //       histos.push_back("vbfhtcjv");
       histos.push_back("vbfhtcjv15");
-      //       histos.push_back("vbfhtcjv20");
+      histos.push_back("vbfcjv20");
+      histos.push_back("vbfhtcjv20");
+      histos.push_back("vbfcjv");
+      histos.push_back("vbfhtcjv");
       histos.push_back("vbfdphijj");
-      //  histos.push_back("vbfpt");
-      //       histos.push_back("vbfmaxcjvjpt");
-      //histos.push_back("zpt_cm");
-      //       histos.push_back("jjpt_cm");
-      //       histos.push_back("jet_beam_cm");
-      //       histos.push_back("z_beam_cm");
-      //       histos.push_back("jet_z_cm");
-      //       histos.push_back("jet_zstar_cm");
-      //       histos.push_back("jet_zstar_asym_cm");
-      //       histos.push_back("jet_z_asym_cm");
-      //       histos.push_back("jet_beam_asym_cm");
-      //histos.push_back("met");
-      // histos.push_back("metL");
-      // histos.push_back("mt");
+      histos.push_back("vbfhardpt");
+      histos.push_back("vbfmaxcjvjpt");
+      histos.push_back("met");
+      histos.push_back("metL");
       histos.push_back("dijet_deta_shapes");
-      
+
       //      dilSignal.push_back("#alpha^{4}_{EW}-ll (VBFNLO)");
       dilSignal.push_back("#alpha^{4}_{EW}-ll (MG)");
       
@@ -170,7 +187,7 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       dilcats.push_back("mjjq083");
       dilcats.push_back("mjjq092");
       dilcats.push_back("mjjq100");
-     
+
       gcats.push_back("");
       gcats.push_back("mjjq016");
       gcats.push_back("mjjq033");
@@ -179,18 +196,13 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       gcats.push_back("mjjq083");
       gcats.push_back("mjjq092");
       gcats.push_back("mjjq100");
-
-      //      dilcats.push_back("eq2jets");
-      //      gcats.push_back("eq2jets");
-      //      dilcats.push_back("geq3jets");
-      //      gcats.push_back("geq3jets");
     }
   else
     {
       //HIGGS 2012
-      //gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
-      //llFile="~/work/htozz/53x_rereco/ll/2012/plotter.root";
-
+      gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt_nofit/plotter.root";
+      llFile="~/work/htozz/53x_rereco/ll/2012/plotter.root";
+      
       //SM ZZ
       //gammaFile="~lpernie/public/4Pedro/gamma_plotter.root";
       //gammaFile="~lpernie/public/4Pedro/gamma_plotter_fit.root";
@@ -198,8 +210,8 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 
   
       //HIGGS 2011
-      gammaFile = "~/work/htozz/53x/gamma/2011/qt/plotter.root";
-      llFile    = "~/work/htozz/53x/ll/2011/plotter.root";
+      //gammaFile = "~/work/htozz/53x/gamma/2011/qt/plotter.root";
+      //llFile    = "~/work/htozz/53x/ll/2011/plotter.root";
 
       
       if(model==HZZ)
@@ -225,8 +237,8 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 //  	  histos.push_back("mindphijmet_50");            
 //  	  histos.push_back("mindphijmet");            
 //  	  histos.push_back("mindphijmetNM1");                     
- 	  histos.push_back("mt_shapes");                     
- 	  histos.push_back("met_shapes");                     
+// 	  histos.push_back("mt_shapes");                     
+	  //	  histos.push_back("met_shapes");                     
 
 	  
 	  dilSignal.push_back("ggH(600)#rightarrow ZZ");
@@ -483,10 +495,10 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
       if(shapesMap.find(it->first)==shapesMap.end()) continue;
       TString normKey(it->first);
       normKey = normKey.Tokenize("_")->At(0)->GetName();
-      cout << normKey << "\t will be normalized from " << normH->GetXaxis()->GetTitle() << "<" << normH->GetXaxis()->GetBinCenter(normBin) << flush;
+      //cout << normKey << "\t will be normalized from " << normH->GetXaxis()->GetTitle() << "<" << normH->GetXaxis()->GetBinCenter(normBin) << flush;
       Shape_t &dilMetShape = shapesMap[it->first];
       float sf=dilMetShape.data->Integral(1,normBin)/normH->Integral(1,normBin);
-      cout << "\t scale-factor=" << sf << endl;
+      //cout << "\t scale-factor=" << sf << endl;
       scaleFactors[distNormKey][string(normKey.Data())]=sf;
     }
 
@@ -534,10 +546,39 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
        }
 
      //do the subtraction for met related variables when MET>70
-     if(it->first.find("mt_shapes")!= string::npos  || it->first.find("mt_redMet_shapes")!= string::npos || it->first.find("_mt")!= string::npos || it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos)
+     if(it->first.find("mt_shapes")!= string::npos  || it->first.find("mt_redMet_shapes")!= string::npos || it->first.find("_mt")!= string::npos || it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos || it->first.find("dijet_deta_shapes")!=string::npos)
        {
+
+	 if(closeF && it->first.find("dijet_deta_shapes")!=string::npos)
+	   {
+	     TString key("vbfcandjetdeta_func");
+	     if(it->first.find("mjjq016")!=string::npos) key="mumumjjq016_"+key;
+	     if(it->first.find("mjjq033")!=string::npos) key="mumumjjq033_"+key;
+	     if(it->first.find("mjjq049")!=string::npos) key="mumumjjq049_"+key;
+	     if(it->first.find("mjjq066")!=string::npos) key="mumumjjq066_"+key;
+	     if(it->first.find("mjjq083")!=string::npos) key="mumumjjq083_"+key;
+	     if(it->first.find("mjjq092")!=string::npos) key="mumumjjq092_"+key;
+	     if(it->first.find("mjjq100")!=string::npos) key="mumumjjq100_"+key;
+	     TF1 *closureUncGr=(TF1 *)closeF->Get(key);
+	     cout << "Correcting with " << key << " " << closureUncGr << endl;
+	     for(int ibin=1; ibin<=corrGammaH->GetXaxis()->GetNbins(); ibin++)
+	       {
+		 for(int jbin=1; jbin<=corrGammaH->GetYaxis()->GetNbins(); jbin++)
+		   {
+		     Double_t val=corrGammaH->GetBinContent(ibin,jbin);
+		     Double_t valerr=corrGammaH->GetBinError(ibin,jbin);
+		     if(closureUncGr){
+		       float relErr=fabs(1-closureUncGr->Eval( corrGammaH->GetYaxis()->GetBinCenter(jbin) ));
+		       valerr=sqrt(pow(valerr,2)+pow(relErr*val,2));
+		     }
+		     corrGammaH->SetBinError(ibin,jbin,valerr);
+		   }
+	       }
+	   }
+
 	 bool isTH2( corrGammaH->InheritsFrom("TH2") );
-	 cout << it->first << " " << isTH2 << endl;
+	 //cout << it->first << " " << isTH2 << endl;
+
 
 	 if(subtractType==HALVE || subtractType==EWKSUBTRACTIONHALVE) {
 	   int fbin( isTH2 ? 1 : corrGammaH->GetXaxis()->FindBin(80) );
@@ -599,10 +640,10 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
         }
 
      corrGammaH->SetFillColor(831);
-     cout << it->second.totalBckg->GetName() << " " << corrGammaH->GetName() << " " << sf << endl;
+     //cout << it->second.totalBckg->GetName() << " " << corrGammaH->GetName() << " " << sf << endl;
      it->second.totalBckg->Add(corrGammaH);
      it->second.bckg["Instr. background (data)"]=corrGammaH;
-     showShape(it->second,"final_"+it->first,is2011,model);
+     showShape(it->second,"final_"+it->first,is2011,model,closeF);
      gOutDir->cd();
      TString keyToWrite(it->first.c_str());
      corrGammaH->Write(keyToWrite);
@@ -614,21 +655,23 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ)
 	 Shape_t &eeShape=shapesMap[keyToGet.Data()];
 	 addToShape(eeShape,it->second);
 	 keyToGet=keyToGet.ReplaceAll("ee","");
-	 showShape(eeShape,keyToGet.Data(),is2011,model);
+	 showShape(eeShape,keyToGet.Data(),is2011,model,closeF);
        }
    }
   gOut->Close();
 
 
   //save as page
-  ofstream ofile;
-  ofile.open ("index.html");
-  ofile << report.str() << flush;
-  ofile.close();
+  //ofstream ofile;
+  //  ofile.open (outDir+"/index.html");
+  //ofile << report.str() << endl;
+  //ofile.close();
+
+  if(closeF) closeF->Close();
 }
 
 //
-void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
+void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model, TFile *closeF)
 {
   if(shape.data->InheritsFrom("TH2"))
     {
@@ -639,13 +682,26 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   c1->cd();
 
   TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);  t1->Draw();  t1->cd();
-  if(!SaveName.EndsWith("50")) t1->SetLogy(true);
+  //t1->SetLogy(true);
   
-  TLegend* legA  = new TLegend(0.845,0.2,0.99,0.99, "NDC");
+  TLegend* legA  = new TLegend(0.15,0.85,0.9,0.92);
 
   bool canvasIsFilled(false);
   THStack *stack=0;
-  TH1 *mc=0,*vbfmc=0,*instrBckg=0;
+  TH1 *mc=0,*vbfmc=0,*instrBckg=0,*nrbBckg=0;
+  TGraphErrors *closureUnc=0;
+  TF1 *closureUncGr=0;
+  if(closeF)
+    {
+      TString key(SaveName);
+      key.ReplaceAll("final","");
+      key.ReplaceAll("_ee","");
+      key.ReplaceAll("_mumu","");
+      closureUnc  =(TGraphErrors *)closeF->Get("mumu"+key+"_unc");
+      closureUncGr=(TF1 *)         closeF->Get("mumu"+key+"_func");
+      cout << key << " " << closureUnc << " " << closureUncGr << endl;
+    }
+  TGraphAsymmErrors *mcgr=0;
   if(shape.bckg.size())
     {
       mc=(TH1 *)shape.totalBckg->Clone("mc");
@@ -666,12 +722,74 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
 	    }
 	}
 
-     TH1 *nrbBckg=0;
+
+      //instrumental background (may be affected by different corrections)
+      for(std::map<TString,TH1 *>::const_reverse_iterator it = shape.bckg.rbegin(); it != shape.bckg.rend(); it++)
+        {
+          TString itit(it->second->GetTitle());
+	  if(!itit.Contains("QCD Z")) continue;
+	  instrBckg=it->second;
+	  
+	  for(int ibin=1; ibin<=instrBckg->GetXaxis()->GetNbins(); ibin++)
+	    {
+	      float x     = instrBckg->GetXaxis()->GetBinCenter(ibin);
+	      float xerr  = instrBckg->GetXaxis()->GetBinWidth(ibin)/2;
+	      float y     = instrBckg->GetBinContent(ibin);
+	      float yerr  = instrBckg->GetBinError(ibin);
+	      
+	      if(closureUncGr)
+		{
+
+		  Double_t pdfRelUnc=0.02;
+
+		  //no correction
+		  Double_t relCorrection=1.0;
+
+		  //correct based on parameterization
+		  Double_t pVal = closureUncGr->Eval( instrBckg->GetXaxis()->GetBinCenter(ibin) );
+		  //Double_t relCorrection = pVal;
+		  Double_t relUnc = pVal>1 ? pVal-1 : 1-pVal;
+		  relUnc = sqrt( relUnc*relUnc + pdfRelUnc*pdfRelUnc);		  
+		  
+		  //assign uncertainty from statistical unc. of the closure + 2% from PDF tests
+		  /*
+		  Int_t iclose = findClosestPoint(closureUnc,x);
+		  Double_t xclose,yclose;
+		  closureUnc->GetPoint(iclose,xclose,yclose);
+		  Double_t relCorrection(yclose);
+		  Double_t relUnc = yclose >0 ? closureUnc->GetErrorY(iclose)/yclose : 0;
+		  relUnc = sqrt( relUnc*relUnc + pdfRelUnc*pdfRelUnc);
+		  */
+
+		  y *= relCorrection;
+		  yerr= y*min(max(sqrt(pow(relUnc,2)+pow(yerr/y,2)),0.),1.0);
+		}
+
+	      instrBckg->SetBinContent(ibin,x,y);
+	      instrBckg->SetBinError(ibin,yerr);
+	    }
+	  
+	  //re-scale
+	  if(model==VBFZ && mc && shape.data)
+	    {
+	      float totalMC= mc->Integral();
+	      float totalData=shape.data->Integral();
+	      float totalInstr=instrBckg->Integral();
+	      if(totalMC>0 && totalInstr>0) {
+		float sf=totalData/totalMC;
+		float sfdy=1.0+(sf-1.0)*totalMC/totalInstr;
+		instrBckg->Scale(sfdy);
+	      }
+	    }
+	}
+      
+
+      //now stack all the backgrounds
       for(std::map<TString,TH1 *>::const_reverse_iterator it = shape.bckg.rbegin(); it != shape.bckg.rend(); it++)
         {
 	  TH1 *h = it->second;
 	  vbfmc->Add(h);
-
+	  
           if(h->Integral()<=0) continue;
           TString itit(h->GetTitle());
  	  if(itit.Contains("t#bar{t}") || itit.Contains("Single top") || itit.Contains("W#rightarrow") || itit.Contains("WW") 
@@ -693,61 +811,20 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
 	    {
 	      stack->Add(h,"HIST");
 	      legA->AddEntry(h,itit,"F");
-	      cout << itit << endl;
-	      if(itit.Contains("QCD Z")) instrBckg=h;
 	    }
 	}
 
-      //include VBF Z in the stack
-      if(model==VBFZ && SaveName.EndsWith("50"))
-	{
-	  std::map<TString , TH1 *>::const_iterator it=shape.signal.begin();
-	  TH1 *h=it->second;
-	  h->SetFillColor(809);
-	  h->SetLineStyle(1);
-	  h->SetLineColor(1);
-	  stack->Add(h,"HIST");
-	  legA->AddEntry(h,h->GetTitle(),"F");
-	}
       
- 
       stack->Draw();
       stack->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
       stack->GetYaxis()->SetTitle(mc->GetYaxis()->GetTitle());
-      stack->SetMinimum(0.1);//mc->GetMinimum());
-      //if(SaveName.Contains("vbf") && !SaveName.Contains("novbf")) stack->SetMinimum(1e-2);
+      stack->SetMinimum(0.1);
       stack->SetMaximum(1.5*max(mc->GetMaximum(),shape.data->GetMaximum()));
-
-      if(model==VBFZ && SaveName.Contains("mjj"))
-	{
-	  stack->SetMinimum(0.001);
-	  // t1->SetLogx();
-	  //	  stack->GetXaxis()->SetRangeUser(120,5000);
-	}
 
       mc->Reset("ICE");
       mc->Add((TH1 *)stack->GetStack()->At( stack->GetStack()->GetEntriesFast()-1) );
       mc->SetDirectory(0);
-   
-      if(model==VBFZ && mc && shape.data && instrBckg)
-	{
-	  float totalMC= mc->Integral();
-	  float totalData=shape.data->Integral();
-	  float totalInstr=instrBckg->Integral();
-	  if(totalMC>0 && totalInstr>0) {
-	    float sf=totalData/totalMC;
-	    float sfdy=1.0+(sf-1.0)*totalMC/totalInstr;
-	    cout << sf << " " << sfdy << endl;
-	    instrBckg->Scale(sfdy);
-	  }
-	}
-
-      TGraphErrors *mcgr=new TGraphErrors;
-      for(int ibin=1; ibin<=mc->GetXaxis()->GetNbins(); ibin++)
-	{
-	  mcgr->SetPoint(ibin-1,mc->GetXaxis()->GetBinCenter(ibin),mc->GetBinContent(ibin));
-	  mcgr->SetPointError(ibin-1,mc->GetXaxis()->GetBinWidth(ibin)/2,mc->GetBinError(ibin));
-	}
+      mcgr=new TGraphAsymmErrors(mc);
       mcgr->SetFillStyle(3001);//3427);
       mcgr->SetFillColor(kGray+1);
       mcgr->SetMarkerStyle(1);
@@ -755,7 +832,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       
       canvasIsFilled=true;
     }
-
+  
   //data
   if(shape.data)
     {
@@ -763,23 +840,22 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       legA->AddEntry(shape.data,shape.data->GetTitle(),"P");
       canvasIsFilled=true;
 
-
-      TPaveText *pave = new TPaveText(0.6,0.85,0.8,0.9,"NDC");
+      TPaveText *pave = new TPaveText(0.7,0.75,0.9,0.82,"NDC");
       pave->SetBorderSize(0);
       pave->SetFillStyle(0);
       pave->SetTextAlign(32);
       pave->SetTextFont(42);
+      pave->SetTextAlign(21);
       char buf[100];
       sprintf(buf,"#chi^{2}/ndof : %3.2f", shape.data->Chi2Test(mc,"WWCHI2/NDF") );
       pave->AddText(buf);
-      //sprintf(buf,"K-S prob: %3.2f", shape.data->KolmogorovTest(mc,"") );
+      //sprintf(buf,"Prob: %3.3f", shape.data->Chi2Test(mc,"WW"));
       //pave->AddText(buf);
+      sprintf(buf,"K-S prob: %3.2f", shape.data->KolmogorovTest(mc,"") );
+      pave->AddText(buf);
       pave->Draw();
     }
 
-  //signal
-  //  if(model!=VBFZ)
-  //    {
   std::map<TString , TH1 *>::const_iterator it=shape.signal.begin();
   if(model==VBFZ) it++;
   for(; it!= shape.signal.end(); it++)
@@ -790,29 +866,33 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       canvasIsFilled=true;
     }
     
-
-  TPaveText* T = new TPaveText(0.1,0.995,0.9,0.96, "NDC");
+  TPaveText* T = new TPaveText(0.12,0.93,0.6,0.97, "brNDC");
   T->SetFillColor(0);
-  T->SetFillStyle(0);  T->SetLineColor(0);
-  T->SetTextAlign(22);
+  T->SetFillStyle(0);  
+  T->SetLineColor(0);
+  T->SetTextAlign(11);
   char Buffer[1024]; 
   if(is2011)
     sprintf(Buffer, "CMS preliminary, #sqrt{s}=7 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5051./1000);
   else
-    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 19666./1000);
-  //    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 16698./1000);
-  //sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 12196./1000);
-  //    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 10200./1000);
-  //sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 5041./1000);
-    T->AddText(Buffer);
+    sprintf(Buffer, "CMS preliminary, #sqrt{s}=8 TeV, #scale[0.5]{#int} L=%.1f fb^{-1}", 19600./1000);
+  T->AddText(Buffer);
+  T->SetBorderSize(0);
   T->Draw("same");
   
-  legA->SetFillColor(0); legA->SetFillStyle(0); legA->SetLineColor(0);
-  legA->SetHeader("");
-  legA->Draw("same");
+  legA->SetFillColor(0); 
+  legA->SetFillStyle(0); 
+  legA->SetLineColor(0);
   legA->SetTextFont(42);
+  legA->SetTextAlign(21);
+  legA->SetNColumns(5);
+  legA->SetBorderSize(0);
+  legA->Draw("same");
   
+
+  //ratio canvas
   TH1 *ratio=0;
+  TGraphAsymmErrors *denRelUnc=0;
   if(shape.data && mc)
     {
       c1->cd();
@@ -823,27 +903,39 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
       ratio->Divide(mc);
       
       TH1D *denRelUncH=(TH1D *) mc->Clone("mcrelunc");
-      for(int xbin=1; xbin<=denRelUncH->GetXaxis()->GetNbins(); xbin++)
-	{
-	  if(denRelUncH->GetBinContent(xbin)==0) continue;
-	  Double_t err=denRelUncH->GetBinError(xbin)/denRelUncH->GetBinContent(xbin);
-	  denRelUncH->SetBinContent(xbin,1);
-	  denRelUncH->SetBinError(xbin,err);
-	}
-
-      TGraphErrors *denRelUnc=new TGraphErrors(denRelUncH);
+      denRelUncH->Reset("ICE");       
+      denRelUncH->Draw();
+      
+      denRelUnc=new TGraphAsymmErrors;
       denRelUnc->SetLineColor(1);
       denRelUnc->SetFillStyle(3001);
       denRelUnc->SetFillColor(kGray);
       denRelUnc->SetMarkerColor(1);
       denRelUnc->SetMarkerStyle(1);
-      denRelUncH->Reset("ICE");       
-
-      denRelUncH->Draw();
+      for(int ip=0; ip<mcgr->GetN(); ip++)
+	{
+	  Double_t x,y;
+	  mcgr->GetPoint(ip,x,y);
+	  Double_t xLo=mcgr->GetErrorXlow(ip);
+	  Double_t xHi=mcgr->GetErrorXhigh(ip);
+	  Double_t yLo=y!=0?mcgr->GetErrorYlow(ip)/y:0.;
+	  Double_t yHi=y!=0?mcgr->GetErrorYhigh(ip)/y:0.;
+	  denRelUnc->SetPoint(ip,x,1.0);
+	  denRelUnc->SetPointError(ip,xLo,xHi,yLo,yHi);
+	}
       denRelUnc->Draw("3");
-    
+          
+      float xmin=denRelUncH->GetXaxis()->GetXmin();
+      float xmax=denRelUncH->GetXaxis()->GetXmax();
+      TLine *l = new TLine(xmin,0.5,xmax,0.5);
+      l->SetLineColor(kRed);
+      l->Draw();
+      l = new TLine(xmin,1.5,xmax,1.5);
+      l->SetLineColor(kRed);
+      l->Draw();
 
       ratio->Draw("e1 same");
+      
 
       float yscale = (1.0-0.2)/(0.18-0);       
       denRelUncH->GetYaxis()->SetTitle("Data/#Sigma Bckg");
@@ -866,36 +958,38 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
   if(SaveName.BeginsWith("_")) SaveName="inc"+SaveName;
   TString outName(SaveName);
   if(is2011) outName += "_2011";
-  c1->SaveAs(outName+".png");
-  c1->SaveAs(outName+".pdf");
-  c1->SaveAs(outName+".C");
+  c1->SaveAs(outDir+"/"+outName+".png");
+  c1->SaveAs(outDir+"/"+outName+".pdf");
+  c1->SaveAs(outDir+"/"+outName+".C");
+  //report << "<img src=\"" << outName << ".png\"/>\n" << endl;
 
-  report << "<img src=\"" << outName << ".png\" alt=\"" << outName << "\" height=\"300\"/>\n" << flush;
 
-  if(!SaveName.Contains("hardpt") && !SaveName.Contains("dphijj") && !SaveName.Contains("mjj") ) return;
-  bool doRebin(false);//SaveName.Contains("mjj"));
-
+  if(!SaveName.Contains("hardpt") && !SaveName.Contains("dphijj") &&
+     !SaveName.Contains("jetdeta") && !SaveName.Contains("cjv")) return;
+  
   //subtract data
   c1->Clear();
   c1->SetWindowSize(600,600);
   c1->SetLogy(false);
-
-  TLegend* legB  = new TLegend(0.845,0.2,0.99,0.99, "NDC");
+  
+  TLegend* legB  = new TLegend(0.15,0.85,0.9,0.92);
 
   TH1 *diff = (TH1*)shape.data->Clone("DiffHistogram");
   diff->SetDirectory(0);
   diff->Add(vbfmc,-1);
+
   TH1 *vbfmcwithsyst=(TH1 *)vbfmc->Clone("vbfmcwithsyst");
   for(int ibin=1; ibin<=vbfmcwithsyst->GetXaxis()->GetNbins(); ibin++)
     {
-      float unc=pow(vbfmcwithsyst->GetBinContent(ibin,1)*0.3,2);
+      float unc=pow(denRelUnc->GetErrorY(ibin-1)*vbfmcwithsyst->GetBinContent(ibin,1),2);
       unc += pow(vbfmcwithsyst->GetBinError(ibin),2);
       vbfmcwithsyst->SetBinError(ibin,sqrt(unc));
     }
+
   TH1 *diffWithSyst = (TH1*)shape.data->Clone("DiffWithSystHistogram");
   diffWithSyst->SetDirectory(0);
   diffWithSyst->Add(vbfmcwithsyst,-1);
-  if(doRebin) diffWithSyst->Rebin(2);
+  //  if(doRebin) diffWithSyst->Rebin(2);
   TGraphErrors *diffWithSystGr=new TGraphErrors(diffWithSyst);
   diffWithSystGr->SetFillStyle(3427);
   diffWithSystGr->SetFillColor(kGray+1);
@@ -905,39 +999,44 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model)
     diffWithSystGr->SetPointError(ibin-1,diffWithSyst->GetXaxis()->GetBinWidth(ibin)/2.0, diffWithSyst->GetBinError(ibin));
   }
   
-  if(doRebin) diff->Rebin(2);
+  //if(doRebin) diff->Rebin(2);
   diffWithSystGr->Draw("a20");
   diffWithSystGr->GetXaxis()->SetRangeUser(vbfmcwithsyst->GetXaxis()->GetXmin(),vbfmcwithsyst->GetXaxis()->GetXmax());
+  diffWithSystGr->GetXaxis()->SetTitle(diffWithSyst->GetXaxis()->GetTitle());
+  diffWithSystGr->GetYaxis()->SetTitle(diffWithSyst->GetYaxis()->GetTitle());
   diff->Draw("same");
   legB->AddEntry(diff,"residuals","P");
 
   //signal
   TH1 *hframe=0;
-  for(std::map<TString , TH1 *>::const_iterator it=shape.signal.begin(); it!= shape.signal.end(); it++)
+  for(std::map<TString , TH1 *>::const_iterator sit=shape.signal.begin(); sit!= shape.signal.end(); sit++)
     {
-      TH1 *h=(TH1 *)it->second->Clone();
+      TH1 *h=(TH1 *)sit->second->Clone();
       h->SetFillStyle(3001);
       h->Draw(canvasIsFilled ? "histsame" : "hist");
-      if(doRebin) h->Rebin(2);
+      //if(doRebin) h->Rebin(2);
       if(!canvasIsFilled) hframe=h;
       legB->AddEntry(h,h->GetTitle(),"F");
     }
 
-  //  hframe->GetYaxis()->SetRangeUser(1.05*diff->GetMinimum(),diff->GetMaximum()*1.05);
-
-  legB->SetFillColor(0); legB->SetFillStyle(0); legB->SetLineColor(0);
-  legB->SetHeader("");
-  legB->Draw("same");
+  legB->SetNColumns(2);
+  legB->SetFillColor(0); 
+  legB->SetFillStyle(0); 
+  legB->SetLineColor(0);
   legB->SetTextFont(42);
+  legB->SetTextAlign(11); 
+  legB->SetTextSize(0.05);
+  legB->Draw("same");
 
   T->SetBorderSize(0);
   T->Draw();
   SaveName.ReplaceAll("hardpt","hardpt_sub");
   SaveName.ReplaceAll("dphijj","dphijj_sub");
-  SaveName.ReplaceAll("mjj","mjj_sub");
-  c1->SaveAs(SaveName+".png");
-  c1->SaveAs(SaveName+".pdf");
-  c1->SaveAs(SaveName+".C");
+  SaveName.ReplaceAll("deta","deta_sub");
+  SaveName.ReplaceAll("cjv","cjv_sub");
+  c1->SaveAs(outDir+"/"+SaveName+".png");
+  c1->SaveAs(outDir+"/"+SaveName+".pdf");
+  c1->SaveAs(outDir+"/"+SaveName+".C");
 }
 
 
@@ -1085,7 +1184,8 @@ void setTDRStyle() {
   gStyle->SetErrorX(0.5);
   gStyle->SetPadTopMargin   (0.06);
   gStyle->SetPadBottomMargin(0.12);
-  gStyle->SetPadRightMargin (0.16);
+  //  gStyle->SetPadRightMargin (0.16);
+  tdrStyle->SetPadRightMargin(0.05);
   gStyle->SetPadLeftMargin  (0.14);
   gStyle->SetTitleSize(0.04, "XYZ");
   gStyle->SetTitleXOffset(1.1);
