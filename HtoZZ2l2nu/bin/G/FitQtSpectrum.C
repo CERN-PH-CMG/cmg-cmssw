@@ -29,6 +29,7 @@ TGraph *getWeightsSmooth(TGraph *wgtGr){
   //TGraph *smoothWgtGr=gs->SmoothLowess(wgtGr,"",0.2);
   //TGraph *smoothWgtGr=gs->SmoothSuper(wgtGr,"",0,0);
   TGraph *smoothWgtGr=gs->SmoothSuper(wgtGr,"",3);
+  smoothWgtGr->SetName(wgtGr->GetName());
   smoothWgtGr->SetTitle(wgtGr->GetTitle());
   smoothWgtGr->SetFillColor(wgtGr->GetFillColor());
   smoothWgtGr->SetFillStyle(wgtGr->GetFillStyle());
@@ -36,6 +37,7 @@ TGraph *getWeightsSmooth(TGraph *wgtGr){
   smoothWgtGr->SetLineStyle(wgtGr->GetLineStyle());
   smoothWgtGr->SetMarkerColor(wgtGr->GetMarkerColor());
   smoothWgtGr->SetMarkerStyle(wgtGr->GetMarkerStyle());
+  wgtGr->SetName(wgtGr->GetName()+TString("raw"));
   return smoothWgtGr;
 }
 
@@ -129,7 +131,7 @@ TGraph *parametrizeSpectrum(TH1F *target,TPad *p)
       p->cd();
       p->Clear();
       p->SetLogx();
-      p->SetLogy();
+      //      p->SetLogy();
       target->Draw(); 
       target->GetXaxis()->SetRangeUser(50,1000);
       target->GetXaxis()->SetTitleSize(0.07);
@@ -140,24 +142,29 @@ TGraph *parametrizeSpectrum(TH1F *target,TPad *p)
       target->GetYaxis()->SetTitleOffset(1.0);
       target->GetYaxis()->SetLabelSize(0.06);
 
+      /*
       targetParamHighPt->SetLineColor(kGray);
       targetParamHighPt->Draw("lsame"); 
       targetParamLowPt->SetLineStyle(2);
       targetParamLowPt->SetLineColor(kGray);
       targetParamLowPt->Draw("lsame");  
       regParam->Draw("l");  
-      
+      */
       TPaveText *pave = new TPaveText(0.6,0.9,0.9,0.65,"brNDC");
       pave->SetFillStyle(0);
       pave->SetBorderSize(0);
       pave->AddText(target->GetTitle());
       pave->SetTextFont(42);
       pave->SetTextAlign(11);
+      pave->SetTextSize(0.08);
+      /*
       sprintf(buf,"#chi^{2}/ndf: %3.0f / %3.0f",chi2,ndf);
       pave->AddText(buf);
       sprintf(buf,"Prob: %3.2f",TMath::Prob(chi2,ndf));
       pave->AddText(buf);
+      */
       pave->Draw("same");
+     
     }
   return regParam;
 }
@@ -293,21 +300,32 @@ TH1F *checkClosure(TH1F *target, TH1F *ctrl, TGraph *wgtGr)
 
 //
 enum WeightsMode { NOFIT, FITDILEPTON, FITBOTH, NOFITSMOOTH };
-enum KinMode     { PT, ET };
-void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=NOFIT,int kinMode=PT)
+enum KinMode     { PT,    ET };
+enum MCMode      { ALL,   PUREG };
+void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=NOFIT,int kinMode=PT, int mcMode=PUREG)
 {
   std::vector<TString> categs,titles,mcg;
-  categs.push_back("mjjq016"); titles.push_back("<250");
-  categs.push_back("mjjq033"); titles.push_back("250-350");
-  categs.push_back("mjjq049"); titles.push_back("350-450");
-  categs.push_back("mjjq066"); titles.push_back("450-550");
-  categs.push_back("mjjq083"); titles.push_back("550-750");
-  categs.push_back("mjjq092"); titles.push_back("#geq 750");
+  /*
+  categs.push_back("mjjq016"); titles.push_back("M_{jj}<250");
+  categs.push_back("mjjq033"); titles.push_back("250<M_{jj}<350");
+  categs.push_back("mjjq049"); titles.push_back("350<M_{jj}<450");
+  categs.push_back("mjjq066"); titles.push_back("450<M_{jj}<550");
+  categs.push_back("mjjq083"); titles.push_back("550<M_{jj}<750");
+  categs.push_back("mjjq092"); titles.push_back("M_{jj}>750");
+  */
+  categs.push_back("eq0jets");  titles.push_back("=0 jets");
+  categs.push_back("eq1jets");  titles.push_back("=1 jets");
+  categs.push_back("eq2jets");  titles.push_back("=2 jets");
+  categs.push_back("geq3jets"); titles.push_back("#geq 3 jets");
+  categs.push_back("vbf");      titles.push_back("VBF");
   const size_t ncategs=categs.size();
   
   //mc for closure
-  mcg.push_back("V#gamma");
-  mcg.push_back("Multijets");
+  if(mcMode!=PUREG)
+    {
+      mcg.push_back("V#gamma");
+      mcg.push_back("Multijets");
+    }
   mcg.push_back("#gamma+jets");
   TString mcdy("Z#rightarrow ll");
 
@@ -434,7 +452,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	      else
 		mcgqt->Add(ih);
 	      if(categs[icat]=="mjjq092")
-		mcgqt->Add(  (TH1F *)gIn->Get("data (#gamma)/mumumjjq100_qt") );
+		mcgqt->Add(  (TH1F *)gIn->Get(mcg[imcg]+"/mumumjjq100_qt") );
 	    }
 	}
       if(mcmmqt)
@@ -471,14 +489,15 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	  if(gqt)  {p->cd(); reggqt  = parametrizeSpectrum(gqt,(TPad *)p->cd(3));}
 	  
 	  TGraph *eewgtGr=0,*mmwgtGr=0;
+	  TGraph *eerawwgtGr=0,*mmrawwgtGr=0;
 	  if(mode==NOFIT || mode ==NOFITSMOOTH)
 	    {
 	      if(eeqt) eewgtGr = getWeightsRatio(eeqt,gqt,"ee"  +categs[icat]+"_qt_datafitwgts");
 	      if(mmqt) mmwgtGr = getWeightsRatio(mmqt,gqt,"mumu"+categs[icat]+"_qt_datafitwgts");
 	      if(mode==NOFITSMOOTH)
 		{
-		  if(eeqt) eewgtGr=getWeightsSmooth(eewgtGr);
-		  if(mmqt) mmwgtGr=getWeightsSmooth(mmwgtGr);
+		  if(eeqt) { eerawwgtGr=eewgtGr; eewgtGr=getWeightsSmooth(eewgtGr); }
+		  if(mmqt) { mmrawwgtGr=mmwgtGr; mmwgtGr=getWeightsSmooth(mmwgtGr); }
 		}
 	    }
 	  else if(mode==FITDILEPTON)
@@ -500,12 +519,14 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 
 	  wc->cd();
 	  p=(TPad *) wc->cd(icat+1); 
-	  p->SetLogy();
+	  //  p->SetLogy();
 	  p->SetLogx();
 	  bool fill(false);
 	  TGraph *frame=mmwgtGr;
-	  if(eewgtGr)      { eewgtGr->Draw("al"); frame=eewgtGr; fill=true;}
-	  else if(mmwgtGr) { mmwgtGr->Draw(fill ? "l" : "al"); fill=true; }
+	  if(eewgtGr)    { eewgtGr->Draw("al"); frame=eewgtGr; fill=true;}
+	  if(mmwgtGr)    { mmwgtGr->Draw(fill ? "l" : "al"); fill=true; }
+	  //	  if(eerawwgtGr) { eerawwgtGr->Draw("p"); eerawwgtGr->SetMarkerStyle(24); }
+	  //	  if(mmrawwgtGr) { mmrawwgtGr->Draw("p"); mmrawwgtGr->SetMarkerStyle(24); }
 	  if(fill)
 	    {
 	      frame->GetXaxis()->SetTitle("q_{T} [GeV]");
@@ -556,16 +577,18 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	  if(mcmmqt) regmcmmqt = parametrizeSpectrum(mcmmqt,(TPad *)p->cd(1));
 	  if(mceeqt) regmceeqt = parametrizeSpectrum(mceeqt,(TPad *)p->cd(2));
 	  if(mcgqt)  regmcgqt  = parametrizeSpectrum(mcgqt,(TPad *)p->cd(3));
+
 	  
 	  TGraph *mceewgtGr=0,*mcmmwgtGr=0;
+	  TGraph *mceerawwgtGr=0,*mcmmrawwgtGr=0;
 	  if(mode==NOFIT || mode==NOFITSMOOTH)
 	    {
 	      if(mceeqt) mceewgtGr = getWeightsRatio(mceeqt,mcgqt,"ee"  +categs[icat]+"_qt_mcfitwgts");
 	      if(mcmmqt) mcmmwgtGr = getWeightsRatio(mcmmqt,mcgqt,"mumu"  +categs[icat]+"_qt_mcfitwgts");
 	      if(mode==NOFITSMOOTH)
 		{
-		  if(mceeqt) mceewgtGr=getWeightsSmooth(mceewgtGr);
-		  if(mcmmqt) mcmmwgtGr=getWeightsSmooth(mcmmwgtGr);
+		  if(mceeqt) { mceerawwgtGr=mceewgtGr; mceewgtGr=getWeightsSmooth(mceewgtGr); }
+		  if(mcmmqt) { mcmmrawwgtGr=mcmmwgtGr; mcmmwgtGr=getWeightsSmooth(mcmmwgtGr); }
 		}
 	    }
 	  else if(mode==FITDILEPTON)
@@ -585,12 +608,14 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 
 	  mcwc->cd();
 	  p=(TPad *) mcwc->cd(icat+1);	  
-	  p->SetLogy();
+	  //	  p->SetLogy();
 	  p->SetLogx();
 	  bool fill(false);
 	  TGraph *frame=mcmmwgtGr;
 	  if(mceewgtGr) { fill=true; mceewgtGr->Draw("al"); frame=mceewgtGr; }
 	  if(mcmmwgtGr) { mcmmwgtGr->Draw(fill ? "l" : "al");  fill=true; }
+	  //	  if(mceerawwgtGr) { mceerawwgtGr->Draw("p"); mceerawwgtGr->SetMarkerStyle(24); }
+	  //  if(mcmmrawwgtGr) { mcmmrawwgtGr->Draw("p"); mcmmrawwgtGr->SetMarkerStyle(24); }
 	  if(fill)
 	    {
 	      frame->GetXaxis()->SetTitle("q_{T} [GeV]");
@@ -628,12 +653,16 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
   
   c->SaveAs("qtFit.png");
   c->SaveAs("qtFit.pdf");
+  c->SaveAs("qtFit.C");
   mcc->SaveAs("qtFit_mc.png");
   mcc->SaveAs("qtFit_mc.pdf");
+  mcc->SaveAs("qtFit_mc.C");
   wc->SaveAs("qtWeights.png");
   wc->SaveAs("qtWeights.pdf");
+  wc->SaveAs("qtWeights.C");
   mcwc->SaveAs("qtWeights_mc.png");
   mcwc->SaveAs("qtWeights_mc.pdf");
+  mcwc->SaveAs("qtWeights_mc.C");
 
   //save results
   TFile *fOut=TFile::Open("gammawgts.root","RECREATE");

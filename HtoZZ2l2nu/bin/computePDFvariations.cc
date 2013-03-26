@@ -1,6 +1,7 @@
 #include <iostream>
 #include <boost/shared_ptr.hpp>
 
+#include "CMGTools/HtoZZ2l2nu/interface/PDFInfo.h"
 #include "CMGTools/HtoZZ2l2nu/interface/ZZ2l2nuSummaryHandler.h"
 #include "FWCore/FWLite/interface/AutoLibraryLoader.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
@@ -12,6 +13,10 @@
 #include "TTree.h"
 #include "TEventList.h"
 #include "TROOT.h"
+#include "TH1F.h"
+#include "TGraph.h"
+
+using namespace std;
 
 namespace LHAPDF {
   void initPDFSet(int nset, const std::string& filename, int member=0);
@@ -25,16 +30,24 @@ namespace LHAPDF {
   void extrapolate(bool extrapolate=true);
 }
 
-
-using namespace std;
-
 struct stPDFval{
+  stPDFval() {}
+  stPDFval(const stPDFval& arg) : 
+    qscale(arg.qscale),
+    x1(arg.x1),
+    x2(arg.x2),
+    id1(arg.id1),
+    id2(arg.id2){
+  }
+
    double qscale;
    double x1;
    double x2;
-   double id1;
-   double id2;
+   int id1;
+   int id2;
 };
+
+
 
 //
 int main(int argc, char* argv[])
@@ -62,11 +75,14 @@ int main(int argc, char* argv[])
 
   //INITIALIZE THE PDF TOOL
   string pdfSets[]   = {"cteq66.LHgrid","MSTW2008nlo68cl.LHgrid","NNPDF20_100.LHgrid"};
-  Int_t   nPdfVars[] = {44,              41,                      100};
+  std::vector<Int_t>   nPdfVars;
   //const size_t nPdfSets=sizeof(pdfSets)/sizeof(string);
   const size_t nPdfSets=1;
-  for(size_t ipdf=0; ipdf<nPdfSets; ipdf++)  LHAPDF::initPDFSet(1, pdfSets[ipdf]);
-
+  for(size_t ipdf=0; ipdf<nPdfSets; ipdf++)  
+    {
+      LHAPDF::initPDFSet(ipdf+1, pdfSets[ipdf]);
+      nPdfVars.push_back( LHAPDF::numberPDF(ipdf+1) );
+    }
 
   //open the INPUT file and get events tree
   TFile *file = TFile::Open(url);
@@ -88,6 +104,8 @@ int main(int argc, char* argv[])
   outUrl += outFileUrl + "_pdf.root";
   printf("PDF weights will be saved in %s\n", outUrl.Data());
   TFile *ofile=TFile::Open(outUrl, "recreate");  
+  TH1F *qscale=new TH1F("qscale",";Q^{2};Events",1000,0.,1000.); 
+  qscale->SetDirectory(ofile);
   gROOT->cd(); 
 
 
@@ -108,36 +126,56 @@ int main(int argc, char* argv[])
       valForPDF.x2     = ev.x2;      
       valForPDF.id1     = ev.id1;
       valForPDF.id2     = ev.id2;
-      
       pdfvals.push_back(valForPDF);
+      qscale->Fill(ev.qscale);
    }printf("\n\n\n");
   //all done with the events file
   file->Close();
 
-  
-   printf("Loop on PDF sets and variations\n");   
-   for(size_t ipdf=0; ipdf<nPdfSets; ipdf++){
-      for(int i=0; i <(nPdfVars[ipdf]+1); ++i){
-         char nameBuf[256];sprintf(nameBuf,"%s_var%d", pdfSets[ipdf].c_str(), i);
-         printf("%30s:", nameBuf);
-         LHAPDF::usePDFMember(ipdf,i);
 
-         //create the output tree
-         float pdfWgt;
-         TTree *pdfT = new TTree(nameBuf,"pdf");
-         pdfT->Branch("w", &pdfWgt, "F");
-         pdfT->SetDirectory(ofile);
+  //shift Q^2 scale
+  ofile->cd();
+  float meanScale=qscale->GetMean();
+  cout << "<Q^2>=" << meanScale << endl;
+  TGraph *nomScale=new TGraph(qscale); nomScale->SetName("qscale_nom");
+  TGraph *scaleUp=new TGraph;          scaleUp->SetName("qscale_up");
+  TGraph *scaleDown=new TGraph;        scaleDown->SetName("qscale_down");
+  for(int ip=0; ip<nomScale->GetN(); ip++) 
+    {
+      Double_t x,y; nomScale->GetPoint(ip,x,y);
+      scaleUp->SetPoint(scaleUp->GetN(),x+meanScale,y);
+      scaleDown->SetPoint(scaleDown->GetN(),x-meanScale*0.5,y);
+    }
+  nomScale->Write();
+  scaleUp->Write();
+  scaleDown->Write();
+  qscale->Write();
 
-         for(unsigned int v=0; v<pdfvals.size(); v++){
-            double xpdf1 = LHAPDF::xfx(1, pdfvals[v].x1, pdfvals[v].qscale, pdfvals[v].id1);
-            double xpdf2 = LHAPDF::xfx(1, pdfvals[v].x2, pdfvals[v].qscale, pdfvals[v].id2);
-            pdfWgt = xpdf1 * xpdf2;
-            pdfT->Fill();
-         }
-         ofile->cd();
-         pdfT->Write();
-         printf("Done\n");
+  printf("Loop on PDF sets and variations\n");   
+  for(size_t ipdf=0; ipdf<nPdfSets; ipdf++){
+    for(int i=0; i <(nPdfVars[ipdf]+1); ++i){
+
+      LHAPDF::usePDFMember(ipdf+1,i);
+      char nameBuf[256];sprintf(nameBuf,"%s_var%d", pdfSets[ipdf].c_str(), i);
+      //printf("%30s:", nameBuf);
+     
+      //create the output tree
+      float pdfWgt(0);
+      TTree *pdfT = new TTree(nameBuf,"pdf");
+      pdfT->Branch("w", &pdfWgt, "w/F");
+      pdfT->SetDirectory(ofile);
+      
+      for(unsigned int v=0; v<pdfvals.size(); v++){ 
+	double xpdf1 = LHAPDF::xfx(ipdf+1, pdfvals[v].x1, pdfvals[v].qscale, pdfvals[v].id1)/pdfvals[v].x1;
+	double xpdf2 = LHAPDF::xfx(ipdf+1, pdfvals[v].x2, pdfvals[v].qscale, pdfvals[v].id2)/pdfvals[v].x2;
+	pdfWgt = xpdf1 * xpdf2;
+	pdfT->Fill();
       }
+      ofile->cd();
+      pdfT->Write();
+    }
+    
+    printf("Done\n");
   }
 
   ofile->Close();

@@ -234,6 +234,7 @@ void DileptonPlusMETEventAnalyzer::saveMCtruth(const edm::Event &event, const ed
       ev.qscale = genEventInfoProd->qScale();
       if(genEventInfoProd->pdf())
 	{
+	  //	  cout << ev.qscale << " " << genEventInfoProd->pdf()->scalePDF << endl;
 	  ev.x1  = genEventInfoProd->pdf()->x.first;
 	  ev.x2  = genEventInfoProd->pdf()->x.second;
 	  ev.id1 = genEventInfoProd->pdf()->id.first;

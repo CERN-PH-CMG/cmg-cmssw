@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
       std::vector<std::pair<TString,TGraph *> > plotList;
       float statUnc(0);
       RooArgSet *profNuis=0;
-      for(int in=-1; in<=(int)nuisNames.size(); in++)
+      for(int in=-1; in<=0*(int)nuisNames.size(); in++)
 	{
 	  TFile *inF=TFile::Open(inFilesUrl[ifile]);
 	  RooWorkspace *w  =(RooWorkspace *)inF->Get(wsName); 

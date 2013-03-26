@@ -39,7 +39,7 @@
 
 using namespace std;
 double NonResonnantSyst = 0.25; //0.1;//0.25;
-double GammaJetSyst = 1.0; //0.5;//0.5, 1.0;
+double GammaJetSyst = 0.05; //0.3; //1.0; //0.5;//0.5, 1.0;
 
 //wrapper for a projected shape for a given set of cuts
 class Shape_t
