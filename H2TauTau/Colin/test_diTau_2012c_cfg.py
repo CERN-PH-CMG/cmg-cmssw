@@ -16,11 +16,11 @@ puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/07-01-13/Data_Pileu
 
 mc_vertexWeight    = None
 mc_tauEffWeight_mc = 'effLooseTau15MC'
-mc_tauEffWeight    = 'eff2012IsoTau12fb'
-mc_jetEffWeight    = 'eff2012Jet12fb'
+mc_tauEffWeight    = 'eff2012IsoTau19fb'
+mc_jetEffWeight    = 'eff2012Jet19fb'
 
 if use1prong or useParked:
-    mc_tauEffWeight='eff2012IsoTau1prong12fb'
+    mc_tauEffWeight='eff2012IsoTau1prong19fb'
 
 triggerAna = cfg.Analyzer(
     'TriggerAnalyzer',
