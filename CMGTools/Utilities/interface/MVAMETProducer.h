@@ -193,13 +193,63 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   iEvent.getByLabel(rhoSrc_, rhoH);
   double rho = *rhoH;
 
-  
-
   std::vector<MetUtilities::JetInfo> jetInfo; 
   makeJets( jetInfo, *jetH, *vertexH, rho );
   
   OutPtr pOut(new std::vector< MetType > ); 
   std::auto_ptr< std::vector<cmg::METSignificance> > pOutSig( new std::vector<cmg::METSignificance>() );
+
+
+    /* Horrible Lepton Overlap code from http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/METPUSubtraction/plugins/PFMETProducerMVA.cc?revision=1.7&view=markup
+     To make this work for CMG Tuples you must have a vector of leptons. The code below that will then remove the overlapping leptons and add the good leptons to a final vector
+     Once you have the final vector, the code beyond needs to be cleand to 
+        1. Run over the vector and clean up overlapping jets
+        2. Chooose the two leading "Cleaned" Jets (should be straight forward)
+        3. Correct the final METs with this info
+
+         int  lId         = 0;
+  bool lHasPhotons = false;
+  std::vector<mvaMEtUtilities::leptonInfo> leptonInfo;
+  for ( vInputTag::const_iterator srcLeptons_i = srcLeptons_.begin();
+  srcLeptons_i != srcLeptons_.end(); ++srcLeptons_i ) {
+    edm::Handle<CandidateView> leptons;
+    evt.getByLabel(*srcLeptons_i, leptons);
+    for ( CandidateView::const_iterator lepton1 = leptons->begin();
+      lepton1 != leptons->end(); ++lepton1 ) {
+      bool pMatch = false;
+      for ( vInputTag::const_iterator srcLeptons_j = srcLeptons_.begin();
+          srcLeptons_j != srcLeptons_.end(); ++srcLeptons_j ) {
+	  edm::Handle<CandidateView> leptons2;
+	  evt.getByLabel(*srcLeptons_j, leptons2);
+	  for ( CandidateView::const_iterator lepton2 = leptons2->begin();
+	        lepton2 != leptons2->end(); ++lepton2 ) {
+		  if(&(*lepton1) == &(*lepton2)) continue;
+		    if(deltaR(lepton1->p4(),lepton2->p4()) < 0.5)                                                                    pMatch = true;
+		      if(pMatch &&     !istau(&(*lepton1)) &&  istau(&(*lepton2)))                                                     pMatch = false;
+		        if(pMatch &&    ( (istau(&(*lepton1)) && istau(&(*lepton2))) || (!istau(&(*lepton1)) && !istau(&(*lepton2)))) 
+			            &&     lepton1->pt() > lepton2->pt())                                                                  pMatch = false;
+				      if(pMatch && lepton1->pt() == lepton2->pt()) {
+				          pMatch = false;
+					      for(unsigned int i0 = 0; i0 < leptonInfo.size(); i0++) {
+					            if(fabs(lepton1->pt() - leptonInfo[i0].p4_.pt()) < 0.1) pMatch = true;
+						    }
+						    }
+						    if(pMatch) break;
+						    }
+						    if(pMatch) break;
+      }
+      if(pMatch) continue;
+      mvaMEtUtilities::leptonInfo pLeptonInfo;
+      pLeptonInfo.p4_          = lepton1->p4();
+      pLeptonInfo.chargedFrac_ = chargedFrac(&(*lepton1),*pfCandidates,hardScatterVertex);
+      leptonInfo.push_back(pLeptonInfo); 
+      if(lepton1->isPhoton()) lHasPhotons = true;
+    }
+    lId++;
+  }
+    */
+    
+
 
   for( unsigned i=0; i<recBosonH->size(); ++i) {
     const RecBosonType& recBoson = recBosonH->at(i);
@@ -244,6 +294,7 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     }
 
     math::XYZPoint dummyVertex;
+
 
     // need to clean up the MET from di-lepton legs. 
     LorentzVector cleanpfmetp4 = pfmet->p4();
@@ -351,7 +402,7 @@ void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo>
     // FIXME choose the correct mva
     if( ! pCJet->getSelection("cuts_looseJetId") ) continue;
     //double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
-    double lMVA = pCJet->puMva("philv1");//, PileupJetIdentifier::kMedium );
+    double lMVA = pCJet->puMva("met_53x");//, PileupJetIdentifier::kMedium );
     // FIXME compute properly, according to what Phil does
     //COLIN 53 
     double lNeuFrac = 1.;

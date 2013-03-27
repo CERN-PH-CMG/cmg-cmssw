@@ -11,10 +11,10 @@ weightdir = '/'.join([os.environ['CMSSW_BASE'],
 
 #COLIN: add gbrmet_53 files (check package)
 if isNewerThan('CMSSW_5_3_3'):
-    weights_gbrmet = '/'.join([weightdir, 'gbrmet_53.root'])
-    weights_gbrmetphi = '/'.join([weightdir, 'gbrmetphi_53.root'])
-    weights_gbrmetu1cov = '/'.join([weightdir, 'gbru1cov_53.root'])
-    weights_gbrmetu2cov = '/'.join([weightdir, 'gbru2cov_53.root'])   
+    weights_gbrmet = '/'.join([weightdir, 'gbrmet_53_Dec2012.root'])
+    weights_gbrmetphi = '/'.join([weightdir, 'gbrmetphi_53_Dec2012.root'])
+    weights_gbrmetu1cov = '/'.join([weightdir, 'gbru1cov_53_Dec2012.root'])
+    weights_gbrmetu2cov = '/'.join([weightdir, 'gbru2cov_53_Dec2012.root'])   
 elif isNewerThan('CMSSW_5_2_0'):
     weights_gbrmet = '/'.join([weightdir, 'gbrmet_52.root'])
     weights_gbrmetphi = '/'.join([weightdir, 'gbrmetphi_52.root'])
