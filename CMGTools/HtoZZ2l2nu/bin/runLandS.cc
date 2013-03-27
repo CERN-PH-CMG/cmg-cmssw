@@ -1696,13 +1696,13 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
         Cval   += string(" &") + toLatexRounded(valval,valvalerr);
 
         printf("VALVAL=%f\n",valval);
-        for(int b=1;b<=NonResonant->GetXaxis()->GetNbins()+1;b++){
-           double val = NonResonant->GetBinContent(b);
-           double err = NonResonant->GetBinError(b);
+        for(int bi=1;bi<=NonResonant->GetXaxis()->GetNbins()+1;bi++){
+           double val = NonResonant->GetBinContent(bi);
+           double err = NonResonant->GetBinError(bi);
            double newval = val*alpha;
            double newerr = sqrt(pow(err*alpha,2) + pow(val*alpha_err,2));
-           NonResonant->SetBinContent(b, newval );
-           NonResonant->SetBinError  (b, newerr );
+           NonResonant->SetBinContent(bi, newval );
+           NonResonant->SetBinError  (bi, newerr );
         }
         NonResonant->Scale(DDRescale);
 
@@ -1730,6 +1730,17 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
         NonResonant->SetFillStyle(1001);
         NonResonant->SetFillColor(592);
 //        NonResonant->SetLineColor(592);
+
+
+        //for VBF stat in emu is too low, so take the shape from MC and scale it to the expected yield
+        if(AnalysisBins[b].First("vbf")!=kNPOS){
+           double integral = NonResonant->Integral();
+           NonResonant->Reset();
+           NonResonant->Add(MCNRB);
+           NonResonant->Scale(integral / NonResonant->Integral());
+           NonResonant->SetBinError(0,systError);//save syst error in underflow bin that is always empty
+        }
+
 
 
         //add the background estimate
