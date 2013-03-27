@@ -39,7 +39,7 @@
 
 using namespace std;
 double NonResonnantSyst = 0.25; //0.1;//0.25;
-double GammaJetSyst = 0.05; //0.3; //1.0; //0.5;//0.5, 1.0;
+double GammaJetSyst = 1.0; //0.5;//0.5, 1.0;
 
 //wrapper for a projected shape for a given set of cuts
 class Shape_t
@@ -333,9 +333,7 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
             if(isnan((float)hshape->Integral())){hshape->Reset();}
 	    hshape->SetDirectory(0);
 	    hshape->SetTitle(proc);
-            printf("%s %s overflow = %f -->", histoName.Data(), varName.Data(), hshape->GetBinContent(hshape->GetNbinsX()+1));
 	    fixExtremities(hshape,true,true);
-            printf("%f\n", hshape->GetBinContent(hshape->GetNbinsX()+1));
 	    hshape->SetFillColor(color); hshape->SetLineColor(lcolor); hshape->SetMarkerColor(mcolor);
 	    hshape->SetFillStyle(fill);  hshape->SetLineWidth(lwidth); hshape->SetMarkerStyle(marker); hshape->SetLineStyle(lstyle);
          }else{		
@@ -578,7 +576,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
       axis->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
       axis->GetYaxis()->SetTitle(b==0?mc->GetYaxis()->GetTitle():"");
       axis->SetMinimum(1E-2);//mc->GetMinimum());
-      axis->SetMaximum(1.1*std::max(mcErorMax, alldata->GetMaximum()));
+      axis->SetMaximum(1.5*std::max(mcErorMax, alldata->GetMaximum()));
 //      axis->GetXaxis()->SetRangeUser(150,700);//
       axis->Draw();
       stack->Draw("same");
@@ -599,7 +597,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 
 
   if(alldata){
-    alldata->Draw("E1 same");
+    //alldata->Draw("E1 same");
     if(s==0 && b==0)legA->AddEntry(alldata,alldata->GetTitle(),"P");
   }
   
@@ -1220,7 +1218,7 @@ DataCardInputs convertHistosForLimits(Int_t mass,TString histo,TString url,TStri
        int indexcut_ = indexcut; double cutMin=shapeMin; double cutMax=shapeMax;
        if(indexvbf>=0 && AnalysisBins[b].Contains("vbf")){printf("use vbf index(%i) for bin %s\n", indexvbf, AnalysisBins[b].Data()); indexcut_ = indexvbf; cutMin=shapeMinVBF; cutMax=shapeMaxVBF;}
         for(size_t j=0; j<nsh; j++){
-             printf("i=%i b=%i j=%i\n",(int)i,(int)b,(int)j);
+             printf("channel=%s bin=%s histo=%s\n",ch[i].Data(),AnalysisBins[b].Data(),sh[j].Data());
 	     allShapes[ch[i]+AnalysisBins[b]+sh[j]]=getShapeFromFile(inF, ch[i]+AnalysisBins[b],sh[j],indexcut_,Root,cutMin, cutMax);
              if(indexcutL>=0 && indexcutR>=0){
                 if(indexvbf>=0 && AnalysisBins[b].Contains("vbf")){
@@ -2229,12 +2227,15 @@ void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& a
                     if(mass>=400 && signalSufix!=""){ //scale factor for Narrow Resonnance
                        double cprime=1.0; double  brnew=0.0;
                        sscanf(signalSufix.Data(), "_cp%lf_brn%lf", &cprime, &brnew);
-                       scaleFactor=1 + (scaleFactor-1)/cprime; scaleFactorDown=1 + (scaleFactorDown-1)/cprime; scaleFactorUp=1 + (scaleFactorUp-1)/cprime;
+//                       scaleFactor=1 + (scaleFactor-1)/pow(cprime,2); scaleFactorDown=1 + (scaleFactorDown-1)/pow(cprime,2); scaleFactorUp=1 + (scaleFactorUp-1)/pow(cprime,2);   //SM Scaled by cprime
+                       scaleFactor=1 + (scaleFactor-1)/pow(cprime,2);   scaleFactorDown = 1.0;                          scaleFactorUp = 1 + (scaleFactor-1)*2;        //100% Uncertainty
                        printf("Scale Factor for Narrow Resonnance : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());                    
+                       if(scaleFactor<1){scaleFactor=1.0;  scaleFactorUp = 1 + (scaleFactor-1)*2;}
                     }else{
                        printf("Scale Factor for Interference : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
                     }
 
+                    if(scaleFactorDown>scaleFactorUp){double tmp = scaleFactorUp; scaleFactorUp = scaleFactorDown; scaleFactorDown = tmp;}
                  }
 
                  printf("Total Scale Factor : %f [%f,%f] applied on %s\n",scaleFactor, scaleFactorDown, scaleFactorUp, proc.Data());
