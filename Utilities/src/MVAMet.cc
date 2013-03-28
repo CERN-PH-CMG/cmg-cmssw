@@ -358,30 +358,17 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   lCov(1,1)   = lCovU1*lSin2+lCovU2*lCos2;
 
   if (iPrintDebug == kTRUE) {
-    std::cout << "Debug MetMVA: "
-	      <<  fU        << " : "
-	      <<  fUPhi     << " : "
-	      <<  fTKSumEt  << " : "
-	      <<  fTKU      << " : "
-	      <<  fTKUPhi   << " : "
-	      <<  fNPSumEt  << " : "
-	      <<  fNPU      << " : "
-	      <<  fNPUPhi   << " : "
-	      <<  fPUSumEt  << " : "
-	      <<  fPUMet    << " : "
-	      <<  fPUMetPhi << " : "
-	      <<  fPCSumEt  << " : "
-	      <<  fPCU      << " : "
-	      <<  fPCUPhi   << " : "
-	      <<  fJSPt1    << " : "
-	      <<  fJSEta1   << " : "
-	      <<  fJSPhi1   << " : "
-	      <<  fJSPt2    << " : "
-	      <<  fJSEta2   << " : "
-	      <<  fJSPhi2   << " : "
-	      <<  fNJet     << " : "
-	      <<  fNAllJet  << " : "
-	      <<  fNPV      << " : "
+    std::cout << "Debug MetMVA: "<<std::endl
+	      <<" PF "<<  fSumEt    <<" "<<  fU        <<" "<<  fUPhi     <<std::endl
+	      <<" TK "<<  fTKSumEt  <<" "<<  fTKU      <<" "<<  fTKUPhi   <<std::endl
+	      <<" NPU "<<  fNPSumEt  <<" "<<  fNPU      <<" "<<  fNPUPhi   <<std::endl
+	      <<" PU "<<  fPUSumEt  <<" "<<  fPUMet    <<" "<<  fPUMetPhi <<std::endl
+	      <<" PUC "<<  fPCSumEt  <<" "<<  fPCU      <<" "<<  fPCUPhi   <<std::endl
+	      <<" jet1 "<<  fJSPt1    <<" "<<  fJSEta1   <<" "<<  fJSPhi1   <<std::endl
+	      <<" jet2 "<<  fJSPt2    <<" "<<  fJSEta2   <<" "<<  fJSPhi2   <<std::endl
+	      <<" njets "<<  fNAllJet  <<std::endl
+	      <<" njet30 "<<  fNJet     <<std::endl
+	      <<" npv "<<  fNPV      <<std::endl
               << " === : === "
               << std::endl;
   }
@@ -484,30 +471,17 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   lCov(1,1)   = lCovU1*lSin2+lCovU2*lCos2;
 
   if (iPrintDebug == kTRUE) {
-    std::cout << "Debug MetMVA: "
-	      <<  fU        << " : "
-	      <<  fUPhi     << " : "
-	      <<  fTKSumEt  << " : "
-	      <<  fTKU      << " : "
-	      <<  fTKUPhi   << " : "
-	      <<  fNPSumEt  << " : "
-	      <<  fNPU      << " : "
-	      <<  fNPUPhi   << " : "
-	      <<  fPUSumEt  << " : "
-	      <<  fPUMet    << " : "
-	      <<  fPUMetPhi << " : "
-	      <<  fPCSumEt  << " : "
-	      <<  fPCU      << " : "
-	      <<  fPCUPhi   << " : "
-	      <<  fJSPt1    << " : "
-	      <<  fJSEta1   << " : "
-	      <<  fJSPhi1   << " : "
-	      <<  fJSPt2    << " : "
-	      <<  fJSEta2   << " : "
-	      <<  fJSPhi2   << " : "
-	      <<  fNJet     << " : "
-	      <<  fNAllJet  << " : "
-	      <<  fNPV      << " : "
+    std::cout << "Debug MetMVA: "<<std::endl
+	      <<" PF "<<  fSumEt    <<" "<<  fU        <<" "<<  fUPhi     <<std::endl
+	      <<" TK "<<  fTKSumEt  <<" "<<  fTKU      <<" "<<  fTKUPhi   <<std::endl
+	      <<" NPU "<<  fNPSumEt  <<" "<<  fNPU      <<" "<<  fNPUPhi   <<std::endl
+	      <<" PU "<<  fPUSumEt  <<" "<<  fPUMet    <<" "<<  fPUMetPhi <<std::endl
+	      <<" PUC "<<  fPCSumEt  <<" "<<  fPCU      <<" "<<  fPCUPhi   <<std::endl
+	      <<" jet1 "<<  fJSPt1    <<" "<<  fJSEta1   <<" "<<  fJSPhi1   <<std::endl
+	      <<" jet2 "<<  fJSPt2    <<" "<<  fJSEta2   <<" "<<  fJSPhi2   <<std::endl
+	      <<" njets "<<  fNAllJet  <<std::endl
+	      <<" njet30 "<<  fNJet     <<std::endl
+	      <<" npv "<<  fNPV      <<std::endl
               << " === : === "
               << std::endl;
   }

@@ -123,16 +123,17 @@ process.cmgTauEle.cfg.leg1Collection = 'cmgTauScaler'
 process.cmgTauEle.cfg.metCollection = 'cmgPFMETRaw'
 process.analysis +=  process.cmgTauEle
 
-process.load('CMGTools.Common.skims.cmgTauEleSel_cfi')
-process.cmgTauElePreSel = process.cmgTauEleSel.clone()
+##selections here could be causing a small sync difference
+#process.load('CMGTools.Common.skims.cmgTauEleSel_cfi')
+#process.cmgTauElePreSel = process.cmgTauEleSel.clone()
 #process.cmgTauElePreSel.cut = cms.string('pt()>0.0' )
 #process.cmgTauElePreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>0.0 && leg2().pt()>24.0 && abs(leg2().eta())<2.1' )
-process.analysis +=  process.cmgTauElePreSel 
+#process.analysis +=  process.cmgTauElePreSel 
 
 
 # event filter --------------------------------
 process.load('CMGTools.Common.skims.cmgTauEleCount_cfi')
-process.cmgTauEleCount.src = 'cmgTauElePreSel'
+process.cmgTauEleCount.src = 'cmgTauEle'
 process.cmgTauEleCount.minNumber = 1
 process.analysis +=  process.cmgTauEleCount
 
@@ -141,14 +142,14 @@ process.analysis +=  process.cmgTauEleCount
 if process.flatNtp.metType == 2:
    process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
    process.load("CMGTools.Utilities.mvaMET.mvaMETTauEle_cfi")
-   process.mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
+   process.mvaMETTauEle.recBosonSrc = 'cmgTauEle'
    process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
    process.mvaBaseMETTauEle = process.cmgBaseMETFromPFMET.clone()
    process.mvaBaseMETTauEle.cfg.inputCollection = 'mvaMETTauEle'
    process.load("CMGTools.Common.factories.cmgTauEleCor_cfi")
    process.cmgTauEleCorPreSel = process.cmgTauEleCor.clone()
    process.cmgTauEleCorPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
-   process.cmgTauEleCorPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
+   process.cmgTauEleCorPreSel.cfg.diObjectCollection = 'cmgTauEle'
    process.mvaMETSequence = cms.Sequence(
       process.goodPVFilter + 
       process.mvaMETTauEle +
