@@ -151,11 +151,11 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureF
       //      gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_qt_2012.root";
       //gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_nofit_qt_2012.root";
       gammaFile="/afs/cern.ch/user/p/psilva/work/vbfz/plotter_vbfz_gamma_qt_2012.root";
-      //llFile="~/work/vbfz/plotter_vbfz_2012.root";
       llFile="~/work/vbfz/plotter_vbfz_2012.root";
 
       histos.push_back("vbfcandjetdeta");      
       histos.push_back("qt");
+      histos.push_back("zy");
       histos.push_back("vbfmjj");
       histos.push_back("vbfcandjet1eta");
       histos.push_back("vbfcandjet2eta");
@@ -200,8 +200,8 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureF
   else
     {
       //HIGGS 2012
-      gammaFile="~/work/htozz/53x_rereco/gamma/2012/qt_nofit/plotter.root";
-      llFile="~/work/htozz/53x_rereco/ll/2012/plotter.root";
+      //gammaFile = "~/work/htozz/53x_rereco/gamma/2012/qt/plotter.root";
+      // llFile    = "~/work/htozz/53x_rereco/ll/2012/plotter.root";
       
       //SM ZZ
       //gammaFile="~lpernie/public/4Pedro/gamma_plotter.root";
@@ -210,13 +210,15 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureF
 
   
       //HIGGS 2011
-      //gammaFile = "~/work/htozz/53x/gamma/2011/qt/plotter.root";
-      //llFile    = "~/work/htozz/53x/ll/2011/plotter.root";
+      gammaFile = "~/work/htozz/53x/gamma/2011/qt/plotter.root";
+      //gammaFile = "~/work/htozz/53x/gamma/2011/qt_smooth/plotter.root";
+      llFile    = "~/work/htozz/53x/ll/2011/plotter.root";
 
       
       if(model==HZZ)
 	{
 	  histos.push_back("met_met");
+	  /*
 	  histos.push_back("met_met_blind");                
 	  histos.push_back("met_metNM1");
 	  
@@ -224,23 +226,21 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureF
  	  histos.push_back("mt_blind");     
  	  histos.push_back("mtNM1");     
 
-//  	  histos.push_back("pfvbfcandjeteta");
-//  	  histos.push_back("pfvbfcandjetpt");
-//  	  histos.push_back("pfvbfcandjetdeta");
-//  	  histos.push_back("pfvbfmjj");
-// 	  histos.push_back("pfvbfpremjj");
-// 	  histos.push_back("pfvbfcjv");
-	  
-	  
-//  	  histos.push_back("mindphijmet_0");            
-//  	  histos.push_back("mindphijmet_25");            
-//  	  histos.push_back("mindphijmet_50");            
-//  	  histos.push_back("mindphijmet");            
-//  	  histos.push_back("mindphijmetNM1");                     
-// 	  histos.push_back("mt_shapes");                     
-	  //	  histos.push_back("met_shapes");                     
-
-	  
+  	  histos.push_back("pfvbfcandjeteta");
+  	  histos.push_back("pfvbfcandjetpt");
+  	  histos.push_back("pfvbfcandjetdeta");
+  	  histos.push_back("pfvbfmjj");
+ 	  histos.push_back("pfvbfpremjj");
+ 	  histos.push_back("pfvbfcjv");
+	
+  	  histos.push_back("mindphijmet_0");            
+  	  histos.push_back("mindphijmet_25");            
+  	  histos.push_back("mindphijmet");            
+	  histos.push_back("mindphijmetNM1");                     
+	  histos.push_back("mt_shapes");                     
+	  histos.push_back("met_shapes");                     
+	  */
+  
 	  dilSignal.push_back("ggH(600)#rightarrow ZZ");
 	  dilSignal.push_back("qqH(600)#rightarrow ZZ");
 	  dilSignal.push_back("ggH(300)#rightarrow ZZ");
@@ -251,12 +251,9 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureF
 	  dilcats.push_back("vbf");
 	  dilcats.push_back("");
 
-
 	  //gcats.push_back("eq0softjets");  //0 soft jets to be subtracted
 	  gcats.push_back("eq0jets");
-	  gcats.push_back("eq1jets");
-	  gcats.push_back("eq2jets");
-	  gcats.push_back("geq3jets");
+	  gcats.push_back("geq1jets");
 	  gcats.push_back("vbf");
 	  gcats.push_back("");
 	}
@@ -303,7 +300,7 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureF
   string gprocs[]={"EWK","data (#gamma)"};
   const size_t ngprocs=sizeof(gprocs)/sizeof(string);
 
-  std::map<string,Shape_t> shapesMap,gShapesMap, gFinalShapesMap;
+  std::map<string,Shape_t> shapesMap,gShapesMap;
   std::map<string, std::map<string,float> >   scaleFactors;
 
   //get dilepton histos from files
@@ -388,10 +385,10 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureF
 		  fixExtremities(h,true,true);
 		  h->SetDirectory(0);
 		  h->SetName( TString("g") + h->GetName() );
-		  
+
 		  if(gprocs[iproc].find("data") != string::npos) {
 		    if(model==VBFZ) h->SetTitle("QCD Z");
-		    else            h->SetTitle("#splitline{Instr. bkg}{(data)}");
+		    else            h->SetTitle("Z+jets");
 		    m_shape.data=h; 
 		  }
 		  else
@@ -413,46 +410,10 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureF
 	}
     }
   gIn->Close();
-  
-  for(std::map<string,Shape_t>::iterator sIt = gShapesMap.begin(); sIt != gShapesMap.end(); sIt++)
-    {
-      //now merge: >=1 from 1,2 >=3 and >=2 from 2,>=3 bins
-      if(model!=VBFZ)
-	{	
-	  if(sIt->first.find("eq1jets")!=string::npos || sIt->first.find("eq2jets")!=string::npos)
-	    {
-	      //clone to build the inclusive shape
-	      TString newName(sIt->first.c_str());
-	      newName=newName.ReplaceAll("eq1jets","geq1jets");
-	      newName=newName.ReplaceAll("eq2jets","geq2jets");
-	      gFinalShapesMap[string(newName.Data())]=cloneShape(sIt->second,newName);
-	      
-	      //add the 2 jets bin to the inclusive 1 jets bin also
-	      if(sIt->first.find("eq2jets")!=string::npos)
-		{
-		  TString incKey(sIt->first.c_str());
-		  incKey=incKey.ReplaceAll("eq2jets","geq1jets");
-		  Shape_t &shapeToCorrect=gFinalShapesMap[string(incKey.Data())];
-		  addToShape(shapeToCorrect,sIt->second,+1);
-		}
-	    }
-	  else if(sIt->first.find("geq3jets")!=string::npos)
-	    {
-	      TString binsToIncrement[]={"geq2jets","geq1jets"};
-	      for(size_t ibin=0; ibin<sizeof(binsToIncrement)/sizeof(TString); ibin++)
-		{
-		  TString incKey(sIt->first.c_str());
-		  incKey=incKey.ReplaceAll("geq3jets",binsToIncrement[ibin]);
-		  Shape_t &shapeToCorrect=gFinalShapesMap[string(incKey.Data())];
-		  addToShape(shapeToCorrect,sIt->second,+1);
-		}
-	    }
-	}
-      gFinalShapesMap[sIt->first]=sIt->second;
-    }
+
   
   //now compute the normalization factors
-  for(std::map<string,Shape_t>::iterator it=gFinalShapesMap.begin(); it != gFinalShapesMap.end(); it++)
+  for(std::map<string,Shape_t>::iterator it=gShapesMap.begin(); it != gShapesMap.end(); it++)
     {
       int normBin(-1);
       TH1 *normH=it->second.data;
@@ -529,8 +490,8 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureF
 	 sf=1.0;
        }
      if(sf==0) continue;
-     if(gFinalShapesMap.find(it->first)==gFinalShapesMap.end()) cout << "BUG: " << it->first << " not found in gamma sample..." << endl;
-     Shape_t &gShape=gFinalShapesMap[it->first];
+     if(gShapesMap.find(it->first)==gShapesMap.end()) cout << "BUG: " << it->first << " not found in gamma sample..." << endl;
+     Shape_t &gShape=gShapesMap[it->first];
 
      TH1 *corrGammaH=(TH1 *)gShape.data->Clone((it->first+"corrg").c_str());
      corrGammaH->SetDirectory(0);
@@ -546,7 +507,9 @@ void DYprediction(int subtractType=NOSUBTRACTION,int model=VBFZ,TString closureF
        }
 
      //do the subtraction for met related variables when MET>70
-     if(it->first.find("mt_shapes")!= string::npos  || it->first.find("mt_redMet_shapes")!= string::npos || it->first.find("_mt")!= string::npos || it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos || it->first.find("dijet_deta_shapes")!=string::npos)
+     if(it->first.find("mt_shapes")!= string::npos  || it->first.find("mt_redMet_shapes")!= string::npos 
+	/*|| it->first.find("_mt")!= string::npos*/
+	|| it->first.find("met_") != string::npos || it->first.find("dijet_mass_shapes")!=string::npos || it->first.find("dijet_deta_shapes")!=string::npos)
        {
 
 	 if(closeF && it->first.find("dijet_deta_shapes")!=string::npos)
@@ -682,9 +645,10 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model, TFil
   c1->cd();
 
   TPad* t1 = new TPad("t1","t1", 0.0, 0.20, 1.0, 1.0);  t1->Draw();  t1->cd();
-  //t1->SetLogy(true);
+  if(model!=VBFZ) t1->SetLogy(true);
   
   TLegend* legA  = new TLegend(0.15,0.85,0.9,0.92);
+  if(model!= VBFZ) legA = new TLegend(0.4,0.65,0.94,0.92);
 
   bool canvasIsFilled(false);
   THStack *stack=0;
@@ -797,8 +761,7 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model, TFil
 	    {
  	      if(nrbBckg==0) { 
 		nrbBckg = (TH1 *) h->Clone("nrb"); 
-		if(model==VBFZ) nrbBckg->SetTitle("Top,W,VV");
-		else            nrbBckg->SetTitle("#splitline{Non resonant}{bkg (data)}"); 
+		nrbBckg->SetTitle("Top,W,VV");
 		legA->AddEntry(nrbBckg,nrbBckg->GetTitle(),"F");
 		nrbBckg->SetDirectory(0); 
 		stack->Add(nrbBckg,"HIST"); 
@@ -840,20 +803,23 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model, TFil
       legA->AddEntry(shape.data,shape.data->GetTitle(),"P");
       canvasIsFilled=true;
 
-      TPaveText *pave = new TPaveText(0.7,0.75,0.9,0.82,"NDC");
-      pave->SetBorderSize(0);
-      pave->SetFillStyle(0);
-      pave->SetTextAlign(32);
-      pave->SetTextFont(42);
-      pave->SetTextAlign(21);
-      char buf[100];
-      sprintf(buf,"#chi^{2}/ndof : %3.2f", shape.data->Chi2Test(mc,"WWCHI2/NDF") );
-      pave->AddText(buf);
-      //sprintf(buf,"Prob: %3.3f", shape.data->Chi2Test(mc,"WW"));
-      //pave->AddText(buf);
-      sprintf(buf,"K-S prob: %3.2f", shape.data->KolmogorovTest(mc,"") );
-      pave->AddText(buf);
-      pave->Draw();
+      if(model==VBFZ)
+	{
+	  TPaveText *pave = new TPaveText(0.7,0.75,0.9,0.82,"NDC");
+	  pave->SetBorderSize(0);
+	  pave->SetFillStyle(0);
+	  pave->SetTextAlign(32);
+	  pave->SetTextFont(42);
+	  pave->SetTextAlign(21);
+	  char buf[100];
+	  sprintf(buf,"#chi^{2}/ndof : %3.2f", shape.data->Chi2Test(mc,"WWCHI2/NDF") );
+	  pave->AddText(buf);
+	  //sprintf(buf,"Prob: %3.3f", shape.data->Chi2Test(mc,"WW"));
+	  //pave->AddText(buf);
+	  sprintf(buf,"K-S prob: %3.2f", shape.data->KolmogorovTest(mc,"") );
+	  pave->AddText(buf);
+	  pave->Draw();
+	}
     }
 
   std::map<TString , TH1 *>::const_iterator it=shape.signal.begin();
@@ -884,8 +850,9 @@ void showShape(const Shape_t &shape,TString SaveName,bool is2011,int model, TFil
   legA->SetFillStyle(0); 
   legA->SetLineColor(0);
   legA->SetTextFont(42);
-  legA->SetTextAlign(21);
-  legA->SetNColumns(5);
+  legA->SetTextAlign(12);
+  if(model==VBFZ)  legA->SetNColumns(5);
+  else             legA->SetNColumns(3);
   legA->SetBorderSize(0);
   legA->Draw("same");
   

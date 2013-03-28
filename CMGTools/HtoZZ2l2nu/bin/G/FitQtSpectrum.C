@@ -367,7 +367,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
       TFile *gIn=TFile::Open(gUrl);
 
       //mass distribution
-      TH1F *eemass=(TH1F *) fIn->Get(llDir+"/ee_qmass");      
+      TH1F *eemass=(TH1F *) fIn->Get(llDir+"/ee"+categs[icat]+"_qmass");      
       if(eemass){
 	eemass->SetName("ee"+categs[icat]+"_zmass");
 	eemass->SetDirectory(0);
@@ -375,7 +375,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
       }
 
       //mass distributions
-      TH1F *mmmass=(TH1F *) fIn->Get(llDir+"/mumu_qmass");      
+      TH1F *mmmass=(TH1F *) fIn->Get(llDir+"/mumu"+categs[icat]+"_qmass");      
       if(mmmass){
 	mmmass->SetName("mumu"+categs[icat]+"_zmass");
 	mmmass->SetDirectory(0);
@@ -532,7 +532,7 @@ void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root"
 	      frame->GetXaxis()->SetTitle("q_{T} [GeV]");
 	      frame->GetYaxis()->SetTitle("Weight");
 	      frame->GetXaxis()->SetRangeUser(50,1000);
-	      frame->GetYaxis()->SetRangeUser(1e-3,10);
+	      frame->GetYaxis()->SetRangeUser(1e-3,0.1);
 	      TLegend *leg=p->BuildLegend(0.2,0.68,0.45,0.88,titles[icat]);
 	      leg->SetFillStyle(0);
 	      leg->SetBorderSize(0);

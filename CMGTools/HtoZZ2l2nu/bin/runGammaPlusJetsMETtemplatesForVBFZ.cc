@@ -171,9 +171,7 @@ int main(int argc, char* argv[])
       h->GetXaxis()->SetBinLabel(ibin,label);
       hb->GetXaxis()->SetBinLabel(ibin,label);
     } 
-  mon.addHistogram( new TH1F( "zptNM1", ";p_{T}^{ll};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "zetaNM1", ";#eta^{ll};Events", 50,-10,10) );
-  mon.addHistogram( new TH1F( "zyNM1", ";y^{ll};Events", 50,-6,6) );
+  mon.addHistogram( new TH1F( "rapidity", ";y^{ll};Events", 50,0,2) );
 
   //vbf control
   int jetIdToApply=JETID_OPT_LOOSE;
@@ -677,6 +675,7 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("iso",tags, gIso,iweight,true);
 	      mon.fillHisto("qtraw",tags, gamma.pt(),weight,true);
 	      mon.fillHisto("qt",tags, gamma.pt(),iweight,true);
+	      mon.fillHisto("rapidity",tags, fabs(gamma.Rapidity()),iweight,true);
 	      mon.fillHisto("njetsvsavginstlumi", tags, njets30,ev.curAvgInstLumi,iweight);
 	      mon.fillHisto("minmgtj", tags, minmgtj, weight);      
 	      mon.fillHisto("minmgj", tags, minmbj, weight);      
