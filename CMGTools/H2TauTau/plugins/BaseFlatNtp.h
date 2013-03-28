@@ -160,6 +160,8 @@ protected:
 
   std::vector<const cmg::PFJet * > pfJetListBTagLCLoose_;
 
+  std::string pujetidname_;
+
   const cmg::METSignificance * metSig_;
 
   TriggerEfficiency triggerEff_;
@@ -446,6 +448,7 @@ protected:
 
   cmg::BaseMET diobjectmet_;
   int diobjectindex_;
+  edm::InputTag mvaMETTag_;
   edm::InputTag mvaMETSigTag_;
 
   RecoilCorrector corrector_;
@@ -476,8 +479,14 @@ protected:
     }
     
     if(metType_==2){//MVA MET 
-      metpt_=diobjectmet_.pt();
-      metphi_=diobjectmet_.phi();
+      //metpt_=diobjectmet_.pt();
+      //metphi_=diobjectmet_.phi();
+
+      edm::Handle<std::vector< cmg::BaseMET> > mvaMETVector;
+      iEvent_->getByLabel(mvaMETTag_,mvaMETVector); 
+      metpt_=(mvaMETVector->at(diobjectindex_)).pt();
+      metphi_=(mvaMETVector->at(diobjectindex_)).phi();
+
       edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
       iEvent_->getByLabel(mvaMETSigTag_,metsigVector); 
       metSig_ = &(metsigVector->at(diobjectindex_));
@@ -674,7 +683,7 @@ protected:
   void printMCGen(edm::Handle< std::vector<reco::GenParticle> > & genList);
   
   edm::Handle< std::vector<cmg::TriggerObject> > trigObjs_;
-  bool trigObjMatch(float eta, float phi, std::string path, std::string filter, int pdgid=-1);
+  const cmg::TriggerObject * trigObjMatch(float eta, float phi, std::string path, std::string filter, int pdgid=-1);
 
   int truthMatchLeg(float legeta, float legphi,float& truthpt,float& trutheta,int& truthstatus);
 
@@ -692,7 +701,7 @@ protected:
   bool checkPFJetId(const cmg::PFJet * jet){
     //Loose PF Jet id : https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
     if(fabs(jet->eta()) <= 2.4){
-      if(jet->component(5).fraction() < 0.99
+      if((jet->component(5).fraction() + jet->component(6).fraction()) < 0.99
 	 &&jet->component(4).fraction() < 0.99
 	 &&jet->nConstituents() > 1
 	 &&jet->component(1).fraction() > 0
@@ -700,7 +709,7 @@ protected:
 	 &&jet->component(2).fraction() < 0.99 
 	 ) return 1;
     } else {
-      if(jet->component(5).fraction() < 0.99
+      if((jet->component(5).fraction() + jet->component(6).fraction()) < 0.99
 	 &&jet->component(4).fraction() < 0.99
 	 &&jet->nConstituents() > 1
 	 ) return 1;
@@ -723,7 +732,7 @@ protected:
       leadJetPt_=leadJet_->pt();
       leadJetEta_=leadJet_->eta();
       leadJetRawFactor_=leadJet_->rawFactor();
-      leadJetPUIdMva_=leadJet_->puMva("full");
+      leadJetPUIdMva_=leadJet_->puMva(pujetidname_.c_str());
     }
     if(pfJetListLC_.size()>=2){
       subleadJetPt_=subleadJet_->pt();
@@ -1105,7 +1114,8 @@ protected:
       if(fabs(m->eta())>=2.5)continue;
       if(!electronVertexCut(&(*m)))continue;
       if(m->numberOfHits()!=0) continue;
-      if(m->passConversionVeto()!=1) continue;
+      //if(m->passConversionVeto()!=1) continue;
+      if((*(m->sourcePtr()))->passConversionVeto()!=1)continue;
       if(!electronMVALoose(&(*m)))continue;
       if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
       nleptons++;
@@ -1118,6 +1128,7 @@ protected:
   void printMuonInfo(const cmg::Muon * cand);
   void printElectronInfo(const cmg::Electron * cand);
   void printTauInfo(const cmg::Tau * cand);
+  void printMETInfo();
 
 
 private:

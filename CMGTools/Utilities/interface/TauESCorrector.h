@@ -69,7 +69,7 @@ cmg::TauESCorrector::event_ptr cmg::TauESCorrector::create(const edm::Event& iEv
 
     //corrections depending on decay mode
     if(cand.decayMode()==0) fourVec *= OneProngNoPi0Correction_;
-    if(cand.decayMode()==1) fourVec *= OneProng1Pi0Correction_ + OneProng1Pi0CorrectionPtSlope_ * TMath::Min(TMath::Max(cand.pt()-45.,0.),10.);
+    if(cand.decayMode()==1 || cand.decayMode()==2) fourVec *= OneProng1Pi0Correction_ + OneProng1Pi0CorrectionPtSlope_ * TMath::Min(TMath::Max(cand.pt()-45.,0.),10.);
     if(cand.decayMode()==10) fourVec *= ThreeProngCorrection_ + ThreeProngCorrectionPtSlope_ * TMath::Min(TMath::Max(cand.pt()-32.,0.),18.);
     //other decaymodes are not corrected
 

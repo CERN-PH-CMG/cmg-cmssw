@@ -54,6 +54,15 @@ bool TauMuFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetu
 
   ///get the TauMu cands 
   iEvent.getByLabel(diTauTag_,diTauList_);
+  if(printSelectionPass_==2){
+    cout<<runnumber_<<":"<<eventid_<<" List of initial mu-Tau pairs:"<<endl; 
+    cout<<"Number of pairs : "<<diTauList_->size()<<endl;
+    for(std::vector<cmg::TauMu>::const_iterator cand=diTauList_->begin(); cand!=diTauList_->end(); ++cand){
+      cout<<" Pair: "<<endl;
+      printMuonInfo(&(cand->leg2()));
+      printTauInfo(&(cand->leg1()));
+    }
+  }
   
   return 1;
 }
@@ -68,7 +77,7 @@ bool TauMuFlatNtp::applySelections(){
     return 0;
   }
   counterev_++;
-
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass counterev"<<endl;
 
 
   if(diTauList_->size()==0){
@@ -76,6 +85,7 @@ bool TauMuFlatNtp::applySelections(){
     return 0;
   }
   counterpresel_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass counterpresel"<<endl;
 
   std::vector<cmg::TauMu> tmpditaulist=*diTauList_;
   diTauSelList_.clear();
@@ -100,6 +110,7 @@ bool TauMuFlatNtp::applySelections(){
     }
     return 0;
   }
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass Muon preselection"<<endl;
 
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
@@ -118,6 +129,7 @@ bool TauMuFlatNtp::applySelections(){
     }
     return 0;
   }
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass Tau preselection"<<endl;
 
 
   //muon vtx 
@@ -137,6 +149,7 @@ bool TauMuFlatNtp::applySelections(){
     return 0;
   }
   countermuvtx_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countermuvtx"<<endl;
 
 
   //muion id cuts
@@ -156,6 +169,7 @@ bool TauMuFlatNtp::applySelections(){
     return 0;
   }
   countermuid_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countermuid"<<endl;
 
 //   /////////Muon iso
 //   tmpditaulist=diTauSelList_;
@@ -178,8 +192,10 @@ bool TauMuFlatNtp::applySelections(){
     bool matchmu=0;
     if(trigPaths_.size()==0) matchmu=1;//no match requirement
     for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
-      if(trigObjMatch(cand->leg2().eta(),cand->leg2().phi(),(*path)->label(),(*path)->process()),13)
-	  matchmu=1;
+      if(((*path)->instance()).compare("")==0) matchmu=1;
+      //if(trigObjMatch(cand->leg2().eta(),cand->leg2().phi(),(*path)->label(),(*path)->process()),13)
+      if(trigObjMatch(cand->leg2().eta(),cand->leg2().phi(),(*path)->label(),(*path)->process(),13))
+	matchmu=1;
     }
     
     if(matchmu) 
@@ -194,6 +210,7 @@ bool TauMuFlatNtp::applySelections(){
     return 0;
   }
   countermumatch_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countermumatch"<<endl;
 
 
 
@@ -232,7 +249,7 @@ bool TauMuFlatNtp::applySelections(){
     return 0;
   }
   countertauvtx_++;
-
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countertauvtx"<<endl;
 
   //Tau anti-mu cut
   tmpditaulist=diTauSelList_;
@@ -246,7 +263,7 @@ bool TauMuFlatNtp::applySelections(){
     return 0;
   }
   countertaumuveto_++;
-
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countertaumuveto"<<endl;
 
   //Tau anti-e cut
   tmpditaulist=diTauSelList_;
@@ -260,6 +277,7 @@ bool TauMuFlatNtp::applySelections(){
     return 0;
   }
   countertaueveto_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countertaueveto"<<endl;
 
 
 //   /////////Tau Isolation
@@ -284,6 +302,7 @@ bool TauMuFlatNtp::applySelections(){
     bool matchtau=0;
     if(trigPaths_.size()==0)matchtau=1;//no match requirement
     for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
+      if(((*path)->instance()).compare("")==0) matchtau=1;
       if(trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),(*path)->label(),(*path)->instance(),15)
 	 ||trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),(*path)->label(),(*path)->instance(),0) //seems taus were set to 0 in 2012
 	 )
@@ -298,6 +317,7 @@ bool TauMuFlatNtp::applySelections(){
     return 0;
   }
   countertaumatch_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countertaumatch"<<endl;
 
 
 
@@ -319,6 +339,8 @@ bool TauMuFlatNtp::applySelections(){
        //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
        
        && cand->leg1().tauID("byLooseIsoMVA")>0.5
+
+
        ){
       diTauSelList_.push_back(*cand);
     }
@@ -327,21 +349,46 @@ bool TauMuFlatNtp::applySelections(){
   categoryIso_=1;//category gets set to "signal" by default
   nditau_=diTauSelList_.size();//save number of cadidates in event
   if(diTauSelList_.size()==0){//no isolated candidates were found, see if there are any anti-isolated ones
+
+    if(printSelectionPass_) cout<<runnumber_<<":"<<eventid_<<" fail isolation cuts"<<endl;
+    
+
     categoryIso_=2;//category gets set to "sideband" if there was no candidate in the signal box
     for(std::vector<cmg::TauMu>::const_iterator cand = tmpditaulist.begin(); cand != tmpditaulist.end(); ++cand)
       diTauSelList_.push_back(*cand);
+  }else {
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass isolation cuts"<<endl;
   }
+
+
  
   
   //choose the best candidate
-  nditau_=diTauSelList_.size();//keep track of the number of candidates per event
-  diTauSel_=&(*diTauSelList_.begin());
-  double highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
-  for(std::vector<cmg::TauMu>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand)
-    if(cand->leg1().pt()+cand->leg2().pt()>highsumpt){
-      diTauSel_=&(*cand);
-      highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
+  nditau_=diTauSelList_.size(); //keep track of the number of candidates per event
+
+  //diTauSel_=&(*diTauSelList_.begin());
+
+  diTauSel_=0;
+  double highsumpt=0.;
+  for(std::vector<cmg::TauMu>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand){
+    if(cand->leg2().charge() != cand->leg1().charge()){//Choose first among OS pairs
+      if(cand->leg1().pt()+cand->leg2().pt()>highsumpt){
+	 diTauSel_=&(*cand);
+	highsumpt= diTauSel_->leg1().pt()+ diTauSel_->leg2().pt();
+      }
     }
+  }
+  if(! diTauSel_){//if no OS pair found try SS pairs
+    highsumpt=0.;
+    for(std::vector<cmg::TauMu>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand){
+      if(cand->leg2().charge() == cand->leg1().charge()){
+	if(cand->leg1().pt()+cand->leg2().pt()>highsumpt){
+	   diTauSel_=&(*cand);
+	  highsumpt= diTauSel_->leg1().pt()+ diTauSel_->leg2().pt();
+	}
+      }
+    }
+  }
 
 
 //   if(vetoDiLepton()){
@@ -356,6 +403,7 @@ bool TauMuFlatNtp::applySelections(){
     return 0;
   }
   counterveto_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass counterveto"<<endl;
 
   //truth match 
   truthEventType_=0;
@@ -367,14 +415,7 @@ bool TauMuFlatNtp::applySelections(){
       return 0;
     }
   countertruth_++;
-
-
-
-   if(printSelectionPass_){
-     cout<<" Passed all selections : "<<endl;
-     printMuonInfo(&(diTauSel_->leg2()));
-     printTauInfo(&(diTauSel_->leg1()));
-   }
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countertruth"<<endl;
 
 
   return 1;
@@ -683,6 +724,18 @@ bool TauMuFlatNtp::fill(){
   if(njet20_>=2) fillVBFMVA();
   vbfmva2012_=0.;
   if(njet20_>=2) fillVBFMVA2012();
+
+
+
+
+  if(printSelectionPass_){
+    cout<<" Passed all selections : "<<endl;
+    printMuonInfo(&(diTauSel_->leg2()));
+    printTauInfo(&(diTauSel_->leg1()));
+    printMETInfo();
+  }
+  
+
 
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Done fill "<<endl;
   return 1;

@@ -200,57 +200,6 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   std::auto_ptr< std::vector<cmg::METSignificance> > pOutSig( new std::vector<cmg::METSignificance>() );
 
 
-    /* Horrible Lepton Overlap code from http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/METPUSubtraction/plugins/PFMETProducerMVA.cc?revision=1.7&view=markup
-     To make this work for CMG Tuples you must have a vector of leptons. The code below that will then remove the overlapping leptons and add the good leptons to a final vector
-     Once you have the final vector, the code beyond needs to be cleand to 
-        1. Run over the vector and clean up overlapping jets
-        2. Chooose the two leading "Cleaned" Jets (should be straight forward)
-        3. Correct the final METs with this info
-
-         int  lId         = 0;
-  bool lHasPhotons = false;
-  std::vector<mvaMEtUtilities::leptonInfo> leptonInfo;
-  for ( vInputTag::const_iterator srcLeptons_i = srcLeptons_.begin();
-  srcLeptons_i != srcLeptons_.end(); ++srcLeptons_i ) {
-    edm::Handle<CandidateView> leptons;
-    evt.getByLabel(*srcLeptons_i, leptons);
-    for ( CandidateView::const_iterator lepton1 = leptons->begin();
-      lepton1 != leptons->end(); ++lepton1 ) {
-      bool pMatch = false;
-      for ( vInputTag::const_iterator srcLeptons_j = srcLeptons_.begin();
-          srcLeptons_j != srcLeptons_.end(); ++srcLeptons_j ) {
-	  edm::Handle<CandidateView> leptons2;
-	  evt.getByLabel(*srcLeptons_j, leptons2);
-	  for ( CandidateView::const_iterator lepton2 = leptons2->begin();
-	        lepton2 != leptons2->end(); ++lepton2 ) {
-		  if(&(*lepton1) == &(*lepton2)) continue;
-		    if(deltaR(lepton1->p4(),lepton2->p4()) < 0.5)                                                                    pMatch = true;
-		      if(pMatch &&     !istau(&(*lepton1)) &&  istau(&(*lepton2)))                                                     pMatch = false;
-		        if(pMatch &&    ( (istau(&(*lepton1)) && istau(&(*lepton2))) || (!istau(&(*lepton1)) && !istau(&(*lepton2)))) 
-			            &&     lepton1->pt() > lepton2->pt())                                                                  pMatch = false;
-				      if(pMatch && lepton1->pt() == lepton2->pt()) {
-				          pMatch = false;
-					      for(unsigned int i0 = 0; i0 < leptonInfo.size(); i0++) {
-					            if(fabs(lepton1->pt() - leptonInfo[i0].p4_.pt()) < 0.1) pMatch = true;
-						    }
-						    }
-						    if(pMatch) break;
-						    }
-						    if(pMatch) break;
-      }
-      if(pMatch) continue;
-      mvaMEtUtilities::leptonInfo pLeptonInfo;
-      pLeptonInfo.p4_          = lepton1->p4();
-      pLeptonInfo.chargedFrac_ = chargedFrac(&(*lepton1),*pfCandidates,hardScatterVertex);
-      leptonInfo.push_back(pLeptonInfo); 
-      if(lepton1->isPhoton()) lHasPhotons = true;
-    }
-    lId++;
-  }
-    */
-    
-
-
   for( unsigned i=0; i<recBosonH->size(); ++i) {
     const RecBosonType& recBoson = recBosonH->at(i);
 
@@ -348,6 +297,12 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
       if(leadJet  != 0) std::cout<<"\tjet1 eta,pt= "<<leadJet->Et()<<","<<leadJet->eta()<<std::endl;
       if(leadJet2 != 0) std::cout<<"\tjet2 eta,pt= "<<leadJet2->Et()<<","<<leadJet2->eta()<<std::endl;
       
+//       std::cout<<"  cleanpfmetsumet = "<< cleanpfmetsumet <<std::endl;
+//       std::cout<<"  cleanpucmetsumet = "<< cleanpucmetsumet <<std::endl;
+//       std::cout<<"  cleantkmetsumet = "<< cleantkmetsumet<<std::endl;
+//       std::cout<<"  cleannopumetsumet = "<< cleannopumetsumet <<std::endl;
+//       std::cout<<"  pumetsumet = "<<pumet->sumEt() <<std::endl;
+ 
     }
 
     std::pair<LorentzVector,TMatrixD> lMVAMetInfo
@@ -363,7 +318,7 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 			 nJetsPtGt1Clean,
 			 nGoodVtx,
 			 jetInfo, 
-			 false );
+			 verbose_ );
 
     // if I do that, sumEt is incorrect...
     pOut->push_back( met );
@@ -375,7 +330,8 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
       std::cout<<"\trec boson: "<<recBoson<<std::endl;
       std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
       std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;
-      std::cout<<"\t\tNEW MET: "<<lMVAMetInfo.first.Pt()<<std::endl;
+      std::cout<<"\t\tNEW MET: "<<lMVAMetInfo.first.Pt()<<"   "<<lMVAMetInfo.first.Phi()<<std::endl;
+      std::cout<<""<<endl;
     }
     // FIXME add matrix
   }

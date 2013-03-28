@@ -136,10 +136,11 @@ void TauEleFlatNtp::beginJob(){
    tmpditaulist=diTauSelList_;
    diTauSelList_.clear();
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     if(cand->leg2().passConversionVeto()!=1) continue; 
+     //if(cand->leg2().passConversionVeto()!=1) continue; 
+     if((*(cand->leg2().sourcePtr()))->passConversionVeto()!=1)continue;
      diTauSelList_.push_back(*cand);
    }
-   if(diTauSelList_.size()==0 && printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail cand->leg2().passConversionVeto()"<<endl;
+   if(diTauSelList_.size()==0 && printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail passConversionVeto()"<<endl;
 
 
    tmpditaulist=diTauSelList_;
@@ -161,8 +162,9 @@ void TauEleFlatNtp::beginJob(){
      bool matchmu=0;
      if(trigPaths_.size()==0) matchmu=1;//no match requirement
      for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
-       if(trigObjMatch(cand->leg2().eta(),cand->leg2().phi(),(*path)->label(),(*path)->process()),11)
- 	  matchmu=1;
+       if(((*path)->instance()).compare("")==0) matchmu=1;
+       if(trigObjMatch(cand->leg2().eta(),cand->leg2().phi(),(*path)->label(),(*path)->process(),11))
+	 matchmu=1;
      }
   
      if(matchmu) 
@@ -248,6 +250,7 @@ void TauEleFlatNtp::beginJob(){
      bool matchtau=0;
      if(trigPaths_.size()==0)matchtau=1;//no match requirement
      for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){
+       if(((*path)->instance()).compare("")==0) matchtau=1;
        if(trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),(*path)->label(),(*path)->instance(),15)
 	  || trigObjMatch(cand->leg1().eta(),cand->leg1().phi(),(*path)->label(),(*path)->instance(),0))
  	  matchtau=1;
@@ -285,6 +288,9 @@ void TauEleFlatNtp::beginJob(){
    categoryIso_=1;//category gets set to "signal" by default
    nditau_=diTauSelList_.size();
    if(diTauSelList_.size()==0){//no isolated candidates were found, see if there are any anti-isolated ones
+
+     if(printSelectionPass_) cout<<runnumber_<<":"<<eventid_<<" fail isolation cuts"<<endl;
+
      categoryIso_=2;//category gets set to "sideband" if there was no candidate in the signal box
      for(std::vector<cmg::TauEle>::const_iterator cand = tmpditaulist.begin(); cand != tmpditaulist.end(); ++cand)
        diTauSelList_.push_back(*cand);
@@ -293,13 +299,39 @@ void TauEleFlatNtp::beginJob(){
 
    //choose the best candidate
    nditau_=diTauSelList_.size();//keep track of the number of candidates per event
-   diTauSel_=&(*diTauSelList_.begin());
-   double highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
-   for(std::vector<cmg::TauEle>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand)
-     if(cand->leg1().pt()+cand->leg2().pt()>highsumpt){
-       diTauSel_=&(*cand);
-       highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
+
+
+   //    diTauSel_=&(*diTauSelList_.begin());
+   //    double highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
+   //    for(std::vector<cmg::TauEle>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand)
+   //      if(cand->leg1().pt()+cand->leg2().pt()>highsumpt){
+   //        diTauSel_=&(*cand);
+   //        highsumpt=diTauSel_->leg1().pt()+diTauSel_->leg2().pt();
+   //      }
+
+
+   diTauSel_=0;
+   double highsumpt=0.;
+   for(std::vector<cmg::TauEle>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand){
+     if(cand->leg2().charge() != cand->leg1().charge()){//Choose first among OS pairs
+       if(cand->leg1().pt()+cand->leg2().pt()>highsumpt){
+	 diTauSel_=&(*cand);
+	 highsumpt= diTauSel_->leg1().pt()+ diTauSel_->leg2().pt();
+       }
      }
+   }
+   if(! diTauSel_){//if no OS pair found try SS pairs
+     highsumpt=0.;
+     for(std::vector<cmg::TauEle>::const_iterator cand=diTauSelList_.begin(); cand!=diTauSelList_.end(); ++cand){
+       if(cand->leg2().charge() == cand->leg1().charge()){
+	 if(cand->leg1().pt()+cand->leg2().pt()>highsumpt){
+	   diTauSel_=&(*cand);
+	   highsumpt= diTauSel_->leg1().pt()+ diTauSel_->leg2().pt();
+	 }
+       }
+     }
+   }
+
 
 
    ////

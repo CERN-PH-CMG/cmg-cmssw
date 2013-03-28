@@ -2,10 +2,10 @@ import FWCore.ParameterSet.Config as cms
 import os
 
 process = cms.Process("FLATNTP")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) ) #---->
 process.maxLuminosityBlocks = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-evReportFreq = 100
+evReportFreq = 1
 
 #######Define the samples to process
 #dataset_user = 'benitezj'
@@ -28,6 +28,7 @@ sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 
 
+#####---->
 #dataset_user  = 'benitezj'
 #sampleName = 'HiggsVBF125'
 #sampleJobIdx = 0
@@ -44,7 +45,6 @@ process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
 process.flatNtp = process.flatNtpTauMu.clone()
 from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSampleTauMu2012
 configureFlatNtpSampleTauMu2012(process.flatNtp,sampleName)
-process.flatNtp.diTauTag = 'cmgTauMuPreSel'
 process.flatNtp.metType = 2
 process.flatNtp.runSVFit = 1 #1 old #2 new
 process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
@@ -69,10 +69,33 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 
 
 ##difference in trigger
-#process.source.eventsToProcess = cms.untracked.VEventRange('1:253983','1:771203')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:253983', '1:64131')
+##isolation difference 
 
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:105103','1:258011','1:385416','1:579732','1:750487','1:844314','1:860080','1:887035')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:105103')
+#process.source.fileNames =  process.source.fileNames[90:99]
 
+##issue with mu-Tau pair removed
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:385416')
+#process.source.fileNames =  process.source.fileNames[65:70]
+#process.flatNtp.diTauTag = 'cmgTauMu'
+#process.flatNtp.metType = 2
+
+##issues with muon iso
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:258011', '1:579732', '1:750487', '1:844314', '1:860080', '1:887035')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:258011')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:579732')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:750487')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:844314')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:860080')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:887035')
+
+
+#---->
+###MVA MET sync 
+#process.source.fileNames = ['/store/cmst3/user/benitezj/CMG/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0_BleedingEdge_MET53X_Mar27/cmgTuple_94.root']
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:122718')
 #process.flatNtp.printSelectionPass=1
 
 #print process.source.eventsToProcess
@@ -95,8 +118,6 @@ print process.source.fileNames
 
 # set up JSON ---------------------------------------------------------------
 if process.flatNtp.dataType != 0 :
-   #from CMGTools.H2TauTau.tools.setupJSON import setupJSON
-   #json = setupJSON(process)
    json = process.flatNtp.jsonfile.value()
    print 'json:', json
    from CMGTools.Common.Tools.applyJSON_cff import applyJSON
@@ -129,51 +150,67 @@ if process.flatNtp.correctTauES == 1:
    process.cmgTauESCorrector.cfg.ThreeProngCorrectionPtSlope = 0.001
    
 
-##create mu-tau candidates
+###apply Tau ES shifts
 process.load('CMGTools.Common.factories.cmgTauScaler_cfi')
 process.analysis +=  process.cmgTauScaler
 process.cmgTauScaler.cfg.inputCollection = 'cmgTauESCorrector'
 #process.cmgTauScaler.cfg.uncertainty = 0.03
 #process.cmgTauScaler.cfg.nSigma = 1.0
 
+
+
+
+
+##create mu-tau candidates
 process.load('CMGTools.Common.factories.cmgTauMu_cfi')
 process.cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
 process.cmgTauMu.cfg.metCollection = 'cmgPFMETRaw'
 process.analysis +=  process.cmgTauMu
 
-process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
-process.cmgTauMuPreSel = process.cmgTauMuSel.clone()
-#process.cmgTauMuPreSel.cut = cms.string('pt()>0' )
-#process.cmgTauMuPreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>20.0 && abs(leg2().eta())<2.1 && leg2().relIso(0.5,1)<0.5' )
-#process.cmgTauMuPreSel.cut = cms.string('leg1().pt()>=20.0 && abs(leg1().eta())<=2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>=20.0 && abs(leg2().eta())<=2.1 && leg2().relIso(0.5,1)<0.5' )
-process.analysis +=  process.cmgTauMuPreSel 
-
 # event filter --------------------------------
 process.load('CMGTools.Common.skims.cmgTauMuCount_cfi')
-process.cmgTauMuCount.src = 'cmgTauMuPreSel'
+process.cmgTauMuCount.src = 'cmgTauMu'
 process.cmgTauMuCount.minNumber = 1
 process.analysis += process.cmgTauMuCount
 
+
+
+###MVA MET
+if process.flatNtp.metType == 3 :
+   process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
+   process.load("CMGTools.Utilities.mvaMET.mvaMETPreselLep_cfi")
+   process.mvaMETSequence = cms.Sequence(
+      process.goodPVFilter + 
+      process.mvaMETPreselLep
+      )
+   process.analysis  += process.mvaMETSequence
+   #process.mvaMETTauMu.verbose = True
+   process.cmgTauMuMET = process.cmgTauMu.clone()
+   process.cmgTauMuMET.cfg.leg1Collection = 'cmgTauScaler'
+   process.cmgTauMuMET.cfg.metCollection = 'mvaMETPreselLep'
+   process.analysis +=  process.cmgTauMuMET
+   process.flatNtp.diTauTag = 'cmgTauMuMET'
+
+   
 if process.flatNtp.metType ==2 :
+   #need to use uncorrected Tau for MVA MET computation
+   process.cmgTauMuMVAMET = process.cmgTauMu.clone()
+   process.cmgTauMuMVAMET.cfg.leg1Collection = 'cmgTauSel'
    process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
    process.load("CMGTools.Utilities.mvaMET.mvaMETTauMu_cfi")
-   process.mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
+   process.mvaMETTauMu.recBosonSrc = 'cmgTauMuMVAMET'
    process.load("CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi")
    process.mvaBaseMETTauMu = process.cmgBaseMETFromPFMET.clone()
    process.mvaBaseMETTauMu.cfg.inputCollection = 'mvaMETTauMu'
-   process.load("CMGTools.Common.factories.cmgTauMuCor_cfi")
-   process.cmgTauMuCorPreSel = process.cmgTauMuCor.clone()
-   process.cmgTauMuCorPreSel.cfg.metCollection = 'mvaBaseMETTauMu'
-   process.cmgTauMuCorPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
    process.mvaMETSequence = cms.Sequence(
+      process.cmgTauMuMVAMET +
       process.goodPVFilter + 
-      process.mvaMETTauMu +
-      process.mvaBaseMETTauMu +
-      process.cmgTauMuCorPreSel
+      process.mvaMETTauMu + 
+      process.mvaBaseMETTauMu
       )
    process.analysis  += process.mvaMETSequence
-   process.flatNtp.diTauTag = 'cmgTauMuCorPreSel'
    #process.mvaMETTauMu.verbose = True
+   
 
 
 ##schedule the analyzer
@@ -200,3 +237,11 @@ process.MessageLogger = cms.Service("MessageLogger",
 
 #process.source.duplicateCheckMode = cms.untracked.string("noDuplicateCheck")
 #print process.dumpPython()
+#process.load('CMGTools.Common.skims.cmgTauMuSel_cfi')
+#process.cmgTauMuPreSel = process.cmgTauMuSel.clone()
+#process.cmgTauMuPreSel.cut = cms.string('')
+#process.cmgTauMuPreSel.cut = cms.string('pt()>0' )
+###I think the this code was removing some good candidates:
+#process.cmgTauMuPreSel.cut = cms.string('leg1().eta()!=leg2().eta() && leg1().pt()>20.0 && abs(leg1().eta())<2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>20.0 && abs(leg2().eta())<2.1 && leg2().relIso(0.5,1)<0.5' )
+#process.cmgTauMuPreSel.cut = cms.string('leg1().pt()>=20.0 && abs(leg1().eta())<=2.3 && leg1().tauID("decayModeFinding")>0.5 && leg1().tauID("byRawIsoMVA")>-0.5 && leg2().pt()>=20.0 && abs(leg2().eta())<=2.1 && leg2().relIso(0.5,1)<0.5' )
+#process.analysis +=  process.cmgTauMuPreSel 

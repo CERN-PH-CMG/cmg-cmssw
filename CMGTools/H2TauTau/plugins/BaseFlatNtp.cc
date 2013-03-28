@@ -95,6 +95,10 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   metscale_ = iConfig.getParameter<double>("metscale");
   cout<<"metscale_  : "<<metscale_<<endl;
 
+
+  mvaMETTag_ = iConfig.getParameter<edm::InputTag>("mvaMETTag");
+  cout<<"mvaMETTag_  : "<<mvaMETTag_.label()<<endl;
+
   mvaMETSigTag_ = iConfig.getParameter<edm::InputTag>("mvaMETSigTag");
   cout<<"mvaMETSigTag_  : "<<mvaMETSigTag_.label()<<endl;
 
@@ -133,6 +137,10 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   cout<<"pfJetListTag_ : "<<pfJetListTag_.label()<<endl;
 
 
+  pujetidname_  = iConfig.getParameter<std::string>("pujetidname");
+  cout<<"pujetidname_ : "<<pujetidname_.c_str()<<endl;
+  
+  
   //
   recoilCorreciton_ =  iConfig.getParameter<int>("recoilCorrection");
   cout<<"recoilCorreciton_  : "<<recoilCorreciton_<<endl;
@@ -572,6 +580,22 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   iEvent.getByLabel(tauVetoListTag_,leptonVetoListTau_);
 
 
+  if(printSelectionPass_==2){
+    cout<<runnumber_<<":"<<eventid_<<" List of initial Electrons : "<< leptonVetoListElectron_->size()<<endl; 
+    for(std::vector<cmg::Electron>::const_iterator cand=leptonVetoListElectron_->begin(); cand!=leptonVetoListElectron_->end(); ++cand)
+      printElectronInfo(&(*cand));
+
+    cout<<runnumber_<<":"<<eventid_<<" List of initial Muons :"<< leptonVetoListMuon_->size()<<endl; 
+    for(std::vector<cmg::Muon>::const_iterator cand=leptonVetoListMuon_->begin(); cand!=leptonVetoListMuon_->end(); ++cand)
+      printMuonInfo(&(*cand));
+
+    cout<<runnumber_<<":"<<eventid_<<" List of initial Taus :"<< leptonVetoListTau_->size()<<endl; 
+    for(std::vector<cmg::Tau>::const_iterator cand=leptonVetoListTau_->begin(); cand!=leptonVetoListTau_->end(); ++cand)
+      printTauInfo(&(*cand));
+
+  }
+
+
   return 1;
 }
 
@@ -584,6 +608,7 @@ bool BaseFlatNtp::applySelections(){
     return 0;
   }
   counterruns_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass counterruns"<<endl;
 
   trigpass_=0;
   if(trigPaths_.size()==0)trigpass_=1;//no trigger requirement
@@ -601,24 +626,23 @@ bool BaseFlatNtp::applySelections(){
     return 0;
   }
   countertrig_++;
-
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countertrig"<<endl;
   
   if(nvtx_==0){
     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countergoodvtx"<<endl;
     return 0;
   }
   countergoodvtx_++;
-
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" pass countergoodvtx"<<endl;
 
   if( sampleGenEventType_!=0 && sampleGenEventType_!=genEventType_){
     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countergen"<<endl;
     return 0;
   }
   countergen_++;
-
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passcountergen "<<endl;
 
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passed BaseFlatNtp selections "<<endl;
-  
   return 1;
 }
 
@@ -695,10 +719,10 @@ bool BaseFlatNtp::fill(){
 }
 
 
-bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::string filter, int pdgid){
+const cmg::TriggerObject * BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::string filter, int pdgid){
 
   //cout<<filter.c_str()<<endl;
-  if(filter.compare("")==0) return 1;//no trigger matching required
+  //if(filter.compare("")==0) return 1;//no trigger matching required
 
   for(std::vector<cmg::TriggerObject>::const_iterator obj=trigObjs_->begin(); obj!=trigObjs_->end(); obj++){
     if(obj->hasSelection(path.c_str()))//HLT path name
@@ -710,7 +734,7 @@ bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::stri
 	  //obj->printSelections(cout);	  
 	  //cout<<"pdg id "<<obj->pdgId()<<endl;
 	  //cout<<obj->hasSelection(filter.c_str())<<endl;
-	  return 1;      
+	  return &(*obj);      
 	}
   }
   
@@ -721,7 +745,9 @@ bool BaseFlatNtp::trigObjMatch(float eta, float phi, std::string path, std::stri
 bool  BaseFlatNtp::checkPUJetId(const cmg::PFJet *jet){
 
   float eta=fabs(jet->eta());
-  float mva=jet->puMva("full");
+  //float mva=jet->puMva("full");
+  float mva=jet->puMva(pujetidname_.c_str());
+  //cout<<"pujetid "<<pujetidname_.c_str()<<"   "<<mva<<endl;
   bool pass=1;
   if(0.00<=eta&&eta<2.50) if(mva<-0.80) pass=0;
   if(2.50<=eta&&eta<2.75) if(mva<-0.74) pass=0;
@@ -841,16 +867,43 @@ void BaseFlatNtp::printMuonInfo(const cmg::Muon * cand){
   cout<<"   eta                            = "<<cand->eta()<<endl;
   cout<<"   phi                            = "<<cand->phi()<<endl;
   cout<<"   charge                         = "<<cand->charge()<<endl;
+  cout<<"   neutralHadronIso               = "<<cand->neutralHadronIso(-1)<<endl;
+  cout<<"   chargedHadronIso               = "<<cand->chargedHadronIso(-1)<<endl;
+  cout<<"   photonIso                      = "<<cand->photonIso(-1)<<endl;
+  cout<<"   chargedAllIso                  = "<<cand->chargedAllIso(-1)<<endl;
+  cout<<"   puChargedHadronIso             = "<<cand->puChargedHadronIso(-1)<<endl; 
   cout<<"   RelIso                         = "<<cand->relIso(0.5,1)<<endl;
-  cout<<"   dz                             = "<<(*(cand->sourcePtr()))->innerTrack()->dz(PV_->position()) <<endl;
-  cout<<"   dxy                            = "<<(*(cand->sourcePtr()))->innerTrack()->dxy(PV_->position()) <<endl;
+
   cout<<"   isGlobal                       = "<< cand->isGlobal() <<endl;
   cout<<"   isPFMuon                       = "<< (*(cand->sourcePtr()))->userFloat("isPFMuon") <<endl;
   cout<<"   normalizedChi2                 = "<< cand->normalizedChi2() <<endl;
   cout<<"   numberOfValidMuonHits          = "<< cand->numberOfValidMuonHits() <<endl;
   cout<<"   numberOfMatchedStations        = "<< cand->numberOfMatchedStations() <<endl;
-  cout<<"   numberOfValidPixelHits         = "<< (*(cand->sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits()  <<endl;
   cout<<"   trackerLayersWithMeasurement   = "<< cand->trackerLayersWithMeasurement() <<endl;
+
+  if(((*(cand->sourcePtr()))->innerTrack().isNonnull())
+     &&((*(cand->sourcePtr()))->innerTrack().isAvailable())){
+    cout<<"   dz                             = "<<(*(cand->sourcePtr()))->innerTrack()->dz(PV_->position()) <<endl;
+    cout<<"   dxy                            = "<<(*(cand->sourcePtr()))->innerTrack()->dxy(PV_->position()) <<endl;
+    cout<<"   numberOfValidPixelHits         = "<< (*(cand->sourcePtr()))->innerTrack()->hitPattern().numberOfValidPixelHits()  <<endl;
+  }
+
+  //
+  const cmg::TriggerObject * trigobj=0;
+  if(trigPaths_.size()!=0){
+    for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){      
+      trigobj=trigObjMatch(cand->eta(),cand->phi(),(*path)->label(),(*path)->process(),13);
+    }
+  }
+  if(trigobj){
+    cout<<"  trig object info:"<<endl;
+    cout<<"    pt   = "<< trigobj->pt() <<endl;
+    cout<<"    eta  = "<< trigobj->eta() <<endl;
+    cout<<"    phi  = "<< trigobj->phi() <<endl;
+    cout<<"   pdgid = "<< trigobj->pdgId()<<endl;
+    trigobj->printSelections(cout);	  
+  }
+  
 }
 
 
@@ -860,11 +913,22 @@ void BaseFlatNtp::printElectronInfo(const cmg::Electron * cand){
   cout<<"   eta            = "<<cand->eta()<<endl;
   cout<<"   phi            = "<<cand->phi()<<endl;
   cout<<"   charge         = "<<cand->charge()<<endl;
+
+  cout<<"   neutralHadronIso               = "<<cand->neutralHadronIso(-1)<<endl;
+  cout<<"   photonIso                      = "<<cand->photonIso(-1)<<endl;
+  cout<<"   chargedAllIso                  = "<<cand->chargedAllIso(-1)<<endl;
+  cout<<"   puChargedHadronIso             = "<<cand->puChargedHadronIso(-1)<<endl; 
+
   cout<<"   RelIso         = "<<electronRelIsoDBCorr(cand)<<endl;
-  cout<<"   dz             = "<<(*(cand->sourcePtr()))->gsfTrack()->dz(PV_->position()) <<endl;
-  cout<<"   dxy            = "<<(*(cand->sourcePtr()))->gsfTrack()->dxy(PV_->position()) <<endl;
+
+  if( ((*(cand->sourcePtr()))->gsfTrack().isNonnull())
+      && ((*(cand->sourcePtr()))->gsfTrack().isAvailable())){
+    cout<<"   dz             = "<<(*(cand->sourcePtr()))->gsfTrack()->dz(PV_->position()) <<endl;
+    cout<<"   dxy            = "<<(*(cand->sourcePtr()))->gsfTrack()->dxy(PV_->position()) <<endl;
+  }
   cout<<"   numberOfHits   = "<<cand->numberOfHits()<<endl;
-  cout<<"   passConversion = "<<cand->passConversionVeto()<<endl;
+  //cout<<"   passConversion = "<<cand->passConversionVeto()<<endl;
+  cout<<"   passConversion = "<<(*(cand->sourcePtr()))->passConversionVeto()<<endl;
   cout<<"   mvaNonTrigV0   = "<<cand->mvaNonTrigV0()<<endl;
   cout<<"   passIDWP95     = "<<electronIDWP95(cand)<<endl;
   cout<<"   isEB           = "<<(*(cand->sourcePtr()))->isEB()<<endl;
@@ -873,6 +937,23 @@ void BaseFlatNtp::printElectronInfo(const cmg::Electron * cand){
   cout<<"   dPhiSCTkVtx    = "<<cand->deltaPhiSuperClusterTrackAtVtx()<<endl;
   cout<<"   sigmaIetaIeta  = "<<cand->sigmaIetaIeta()<<endl;
   cout<<"   hadrOverEm     = "<<cand->hadronicOverEm()<<endl;
+
+  const cmg::TriggerObject * trigobj=0;
+  if(trigPaths_.size()!=0){
+    for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){      
+      trigobj=trigObjMatch(cand->eta(),cand->phi(),(*path)->label(),(*path)->process(),11);
+    }
+  }
+  if(trigobj){
+    cout<<"  trig object info:"<<endl;
+    cout<<"    pt   = "<< trigobj->pt() <<endl;
+    cout<<"    eta  = "<< trigobj->eta() <<endl;
+    cout<<"    phi  = "<< trigobj->phi() <<endl;
+    cout<<"   pdgid = "<< trigobj->pdgId()<<endl;
+    trigobj->printSelections(cout);	  
+  }
+  
+
 }
 
 void BaseFlatNtp::printTauInfo(const cmg::Tau * cand){
@@ -881,6 +962,7 @@ void BaseFlatNtp::printTauInfo(const cmg::Tau * cand){
   cout<<"   eta                   = "<<cand->eta()<<endl;
   cout<<"   phi                   = "<<cand->phi()<<endl;
   cout<<"   charge                = "<<cand->charge()<<endl;
+  cout<<"   decaymode             = "<<cand->decayMode()<<endl;
   cout<<"   byLooseIsoMVA         = "<< cand->tauID("byLooseIsoMVA")<<endl;
   cout<<"   dz                    = "<< computeDz(cand->leadChargedHadrVertex(),cand->p4())<<endl;
   cout<<"   dxy                   = "<< computeDxy(cand->leadChargedHadrVertex(),cand->p4()) <<endl;
@@ -890,4 +972,33 @@ void BaseFlatNtp::printTauInfo(const cmg::Tau * cand){
   cout<<"   againstElectronMedium      = "<< cand->tauID("againstElectronMedium")<<endl;
   cout<<"   againstElectronMVA      = "<< cand->tauID("againstElectronMVA")<<endl;
   cout<<"   againstElectronTightMVA2     = "<< cand->tauID("againstElectronTightMVA2")<<endl;
+
+  //
+  const cmg::TriggerObject * trigobj=0;
+  if(trigPaths_.size()!=0){
+    for(std::vector<edm::InputTag*>::const_iterator path=trigPaths_.begin(); path!=trigPaths_.end(); path++){      
+      trigobj=trigObjMatch(cand->eta(),cand->phi(),(*path)->label(),(*path)->process(),15);
+      if(!trigobj)trigobj=trigObjMatch(cand->eta(),cand->phi(),(*path)->label(),(*path)->process(),0);
+    }
+  }
+  if(trigobj){
+    cout<<"  trig object info:"<<endl;
+    cout<<"    pt   = "<< trigobj->pt() <<endl;
+    cout<<"    eta  = "<< trigobj->eta() <<endl;
+    cout<<"    phi  = "<< trigobj->phi() <<endl;
+    cout<<"   pdgid = "<< trigobj->pdgId()<<endl;
+    trigobj->printSelections(cout);	  
+  }
+  
+}
+
+
+void BaseFlatNtp::printMETInfo(){
+  cout<<" MET info "<<endl;
+  cout<<"   pt                    = "<<metpt_<<endl;
+  cout<<"   phi                   = "<<metphi_<<endl;  
+  cout<<"   metsigcov00           = "<<metsigcov00_<<endl;  
+  cout<<"   metsigcov01           = "<<metsigcov01_<<endl;  
+  cout<<"   metsigcov10           = "<<metsigcov10_<<endl;  
+  cout<<"   metsigcov11           = "<<metsigcov11_<<endl;  
 }

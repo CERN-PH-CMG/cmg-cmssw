@@ -66,9 +66,10 @@ bool TauMuPlotter::scaleSamplesLumi(){
        || (*s)->getDataType()=="MCCat" 
        || (*s)->getDataType()=="Signal" ){
       //cout<<(*s)->GetName()<<" lumi scale "<<totalDataLumi/(*s)->getLumi()<<endl;
-      if((*s)->getLumi()>0.)
+      if((*s)->getLumi()>0.){
+	cout<<"Scaling "<<(*s)->GetName()<<"  by "<<totalDataLumi/(*s)->getLumi()<<endl;
 	(*s)->scale(totalDataLumi/(*s)->getLumi());
-      else (*s)->scale(0.);
+      } else (*s)->scale(0.);
     }
 
 
