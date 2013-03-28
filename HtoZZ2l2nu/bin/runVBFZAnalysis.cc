@@ -203,6 +203,7 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 50,-10,10) );
   mon.addHistogram( new TH1F( "zetaNM1", ";#eta^{ll};Events", 50,-10,10) );
   mon.addHistogram( new TH1F( "zy", ";y^{ll};Events", 50,-6,6) );
+  mon.addHistogram( new TH1F( "rapidity", ";y^{ll};Events", 50,0,2) );
   mon.addHistogram( new TH1F( "zyNM1", ";y^{ll};Events", 50,-6,6) );
   mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,40,250) );
 
@@ -834,6 +835,7 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("minmgtj", selTags, minmgtj, weight);      
 	      mon.fillHisto("minmgj", selTags, minmbj, weight);      
 	      mon.fillHisto("qt", selTags, zll.pt(), weight,true);      
+	      mon.fillHisto("rapidity"     ,   tags, fabs(zy),    weight);
 	      mon.fillHisto("et", selTags, zll.Et(), weight,true);      
 	      mon.fillHisto("njetsvsavginstlumi", tags, nAJetsLoose,ev.curAvgInstLumi,weight);
 	      mon.fillHisto("vbfcandjetpt",  selTags, maxPt,weight);

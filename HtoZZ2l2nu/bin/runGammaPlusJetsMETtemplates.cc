@@ -269,7 +269,7 @@ int main(int argc, char* argv[])
   std::vector<float> dataPileupDistribution; 
   for(unsigned int i=0;i<dataPileupDistributionDouble.size();i++){dataPileupDistribution.push_back(dataPileupDistributionDouble[i]);}
   std::vector<float> mcPileupDistribution;
-  bool useObservedPU(use2011Id);
+  bool useObservedPU(true);//use2011Id);
   if(isMC)
     {
       TString puDist("evAnalyzer/h2zz/pileuptrue");
@@ -378,12 +378,20 @@ int main(int argc, char* argv[])
       //
       //LorentzVector metP4(phys.met[0]);
       LorentzVector metP4(phys.met[2]);
+      if(use2011Id) metP4=phys.met[0];
       bool passLMetVeto(true);
 
       LorentzVectorCollection zvvs;
       std::vector<PhysicsObjectJetCollection> jets;
-      if(useCHS) METUtils::computeVariation(phys.ajets, phys.leptons, metP4, jets, zvvs, &jecUnc);
-      else       METUtils::computeVariation(phys.jets,  phys.leptons, metP4, jets, zvvs, &jecUnc);
+      if(!use2011Id)
+	{
+	  if(!useCHS) METUtils::computeVariation(phys.jets, phys.leptons, metP4, jets, zvvs, &jecUnc);
+	  else        METUtils::computeVariation(phys.ajets,  phys.leptons, metP4, jets, zvvs, &jecUnc);
+	}
+      else
+	{
+	  METUtils::computeVariation(phys.ajets,  phys.leptons, metP4, jets, zvvs, &jecUnc);
+	}
       metP4=zvvs[0];
       PhysicsObjectJetCollection & jetsToUse=jets[0];
       if(disableJERSmear && useCHS)  jetsToUse=phys.ajets;
@@ -402,8 +410,8 @@ int main(int argc, char* argv[])
 	  if(ijetP4.pt()>30 && deltaR(ijetP4,gamma)<0.1) continue;
 
 	  //base jet id
-	  bool isGoodPFJet=hasObjectId(jetsToUse[ijet].pid,JETID_LOOSE);
-	  if(!isGoodPFJet) continue; //this is redundant...
+	  //	  bool isGoodPFJet=hasObjectId(jetsToUse[ijet].pid,JETID_LOOSE);
+	  // if(!isGoodPFJet) continue; //this is redundant...
 	  
 	  //tighten id
 	  bool isGoodJet=(hasObjectId(jetsToUse[ijet].pid,JETID_CUTBASED_LOOSE) && fabs(jetsToUse[ijet].eta())<4.7);
@@ -461,21 +469,14 @@ int main(int argc, char* argv[])
       if(nodphisoftjet)  mindphijmet15=99999.;
       bool passMinDphiJmet        (mindphijmet>0.5);
       if(njets30==0) passMinDphiJmet=(mindphijmet15>0.5);
-      
+      if(use2011Id && njets15==0) passMinDphiJmet=false;
+
       //event category
       int eventSubCat    = eventCategoryInst.Get(phys,&selJets);
       TString tag_subcat = eventCategoryInst.GetLabel(eventSubCat); 
       std::vector<TString> subcats;
       subcats.push_back("");
-      if(njets30==0)
-	{
-	  //if(njets15==0) continue;
-	  subcats.push_back("eq0jets");
-	  //  if(njets15==0)         subcats.push_back("eq0softjets");
-	  //  else                   subcats.push_back("eq0hardjets");
-	} 
-      else if(njets30==1)        subcats.push_back("eq1jets");
-      else if(tag_subcat=="vbf") {
+      if(tag_subcat=="vbf") {
 	subcats.push_back(tag_subcat);
 	// 	TString tag_subcatVBF(tag_subcat);
 	// 	if(fabs(jetsToUse[0].eta())<2.1 && fabs(jetsToUse[1].eta())<2.1)      { tag_subcatVBF+="2"; }
@@ -483,17 +484,14 @@ int main(int argc, char* argv[])
 	// 	else                                                                  { tag_subcatVBF+="0"; }
 	//	subcats.push_back(tag_subcatVBF);
       }
-      else if(njets30==2)        { subcats.push_back("eq2jets");  tag_subcat="eq2jets"; }
-      else if(njets30>2)         { subcats.push_back("geq3jets"); tag_subcat="geq3jets"; }
-      
+      else if(njets30==0)
+	{
+	  subcats.push_back("eq0jets");
+	} 
+      else { subcats.push_back("geq1jets");  tag_subcat="geq1jets"; }
 
       //now do the control plots
       std::map<TString, float> qtWeights;
-      //TString photonSubCat(tag_subcat);
-      //TString photonSubCat("eq0jets"); 
-      //if(njets30==1) photonSubCat = "eq1jets";
-      //if(njets30==2) photonSubCat = "eq2jets";
-      //if(njets30>=3) photonSubCat = "geq3jets";
       TString photonSubCat("eq");    photonSubCat+=min(njets30,3); photonSubCat += "jets";
       if(photonSubCat.Contains("3")) photonSubCat = "g"+photonSubCat;
       if(tag_subcat.Contains("vbf")) photonSubCat = "vbf";
@@ -506,7 +504,7 @@ int main(int argc, char* argv[])
 	  for(size_t idc=0; idc<dilCats.size(); idc++)
 	    {
 	      LorentzVector iboson(gammaEvHandler.massiveGamma(dilCats[idc]));
-	      float zmass=iboson.mass();
+	      float zmass = iboson.mass();
 	      Float_t mt( METUtils::transverseMass(iboson,metP4,true) );
 	      double  mt_unroll(mt);
 	      if(mt>1250)         mt_unroll = 1240;

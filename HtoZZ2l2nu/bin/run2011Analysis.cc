@@ -757,6 +757,7 @@ int main(int argc, char* argv[])
 
       //MET variables
       LorentzVector rawMetP4=phys.met[2];
+      if(use2011Id) rawMetP4=phys.met[0];
       LorentzVector fullTypeIMetP4=phys.met[0];
       LorentzVector mvaMetP4=phys.met[7];
 
@@ -764,8 +765,15 @@ int main(int argc, char* argv[])
       // std PF
       std::vector<PhysicsObjectJetCollection> variedAJets;
       LorentzVectorCollection zvvs;
-      if(!useCHS) METUtils::computeVariation(phys.jets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
-      else        METUtils::computeVariation(phys.ajets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
+      if(!use2011Id)
+	{
+	  if(!useCHS) METUtils::computeVariation(phys.jets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
+	  else        METUtils::computeVariation(phys.ajets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
+	}
+      else
+	{
+	  METUtils::computeVariation(phys.ajets, phys.leptons, rawMetP4, variedAJets, zvvs, &jecUnc);
+	}
 
       //
       // LEPTON ANALYSIS
@@ -1152,10 +1160,12 @@ int main(int argc, char* argv[])
 			//reweight here
 			std::vector<TString> photonCats;
 			photonCats.push_back(tag_cat+"");
-			TString gsub_cat("eq"); gsub_cat+=min(nAJetsGood30,3); gsub_cat += "jets";
-			if(gsub_cat.Contains("3")) gsub_cat = "g"+gsub_cat;
 			if(tag_subcat.Contains("vbf")) photonCats.push_back(tag_cat+"vbf");
-		        else                           photonCats.push_back(tag_cat+gsub_cat);
+		        else {
+			  TString gsub_cat("eq"); gsub_cat+=min(nAJetsGood30,3); gsub_cat += "jets";
+			  if(gsub_cat.Contains("3")) gsub_cat = "g"+gsub_cat;
+                          photonCats.push_back(tag_cat+gsub_cat);
+			}
 			mon.fillHisto("qt",photonCats, zll.pt(),weight,true); 
 			mon.fillHisto("qmass",photonCats, zll.mass(),weight); 
 		      }
