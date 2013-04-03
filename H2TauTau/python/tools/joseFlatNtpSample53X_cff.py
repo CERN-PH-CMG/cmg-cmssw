@@ -19,7 +19,17 @@ httdata_dir = os.environ['CMSSW_BASE'] + '/src/CMGTools/H2TauTau/data/'
 #cmgtag = 'PAT_CMG_V5_13_0_BleedingEdge_MET53X'
 
 ##fixed vertex collection in inputs
-cmgtag = 'PAT_CMG_V5_13_0_BleedingEdge_MET53X_Mar27'
+#cmgtag = 'PAT_CMG_V5_13_0_BleedingEdge_MET53X_Mar27'
+
+##fixed PF jet id in Mva met
+#cmgtag = 'PAT_CMG_V5_13_0_BleedingEdge_MET53X_Mar29'
+
+##fixed muon iso veto cone to 1e-3
+#cmgtag = 'PAT_CMG_V5_13_0_BleedingEdge_MET53X_Mar31'
+
+##fixed tau track ref to recover gsf tracks
+cmgtag = 'PAT_CMG_V5_13_0_BleedingEdge_MET53X_Apr2'
+
 
 ####--------------------------------------muTau 2012--------------------------------------------
 def configureFlatNtpSampleTauMu2012(module,sampleAlias):

@@ -2,25 +2,12 @@ import FWCore.ParameterSet.Config as cms
 import os
 
 process = cms.Process("FLATNTP")
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) ) #---->
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) ) 
 process.maxLuminosityBlocks = cms.untracked.PSet(input = cms.untracked.int32(-1))
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
-evReportFreq = 1
+evReportFreq = 10
 
 #######Define the samples to process
-#dataset_user = 'benitezj'
-#sampleTag = "/PAT_CMG_V5_4_1/H2TAUTAU_TauMu_V541June2"
-#sampleTag = "/PAT_CMG_V5_4_0_NewType1MET/H2TAUTAU_TauMu2012_V5_4_0_NewType1MET"
-
-#for data and MC samples
-#sampleTag = "/H2TAUTAU_TauMu2012_V5_4_0_NewType1MET"
-
-#for embedded samples
-#sampleTag = "/TauMu2012V540"
-
-#dataset_user = 'cmgtools'
-sampleTag = ""
-
 
 dataset_user  = os.environ['SAMPLEOWNER']
 sampleName = os.environ['SAMPLENAME']
@@ -34,7 +21,6 @@ sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 #sampleJobIdx = 0
 #sampleMergeFactor = 200
 
-
 #########################
 
 process.analysis = cms.Path() 
@@ -45,7 +31,7 @@ process.load('CMGTools.H2TauTau.tools.joseFlatNtpSample_cfi')
 process.flatNtp = process.flatNtpTauMu.clone()
 from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSampleTauMu2012
 configureFlatNtpSampleTauMu2012(process.flatNtp,sampleName)
-process.flatNtp.metType = 2
+process.flatNtp.metType = 2 #1 PFMET, 2 mva met, 3 mva met presel
 process.flatNtp.runSVFit = 1 #1 old #2 new
 process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
 
@@ -53,7 +39,7 @@ process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
 ### input files
 #inputfiles = "tauMu_fullsel_tree_CMG_.*root"
 inputfiles = "cmgTuple.*root"
-dataset_name = process.flatNtp.path.value() + sampleTag
+dataset_name = process.flatNtp.path.value()
 firstfile = sampleJobIdx * sampleMergeFactor
 lastfile = (sampleJobIdx + 1 ) * sampleMergeFactor
 print dataset_user
@@ -66,6 +52,8 @@ print lastfile
 from CMGTools.Production.datasetToSource import *
 process.source = datasetToSource( dataset_user, dataset_name, inputfiles)
 process.source.fileNames = process.source.fileNames[firstfile:lastfile]
+
+
 
 
 ##difference in trigger
@@ -92,13 +80,23 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:887035')
 
 
-#---->
-###MVA MET sync 
+#---->Prior to Apr1
+##MVA MET sync 
+#process.source.fileNames = ['/store/cmst3/user/benitezj/CMG/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0_BleedingEdge_MET53X/cmgTuple_94.root']
 #process.source.fileNames = ['/store/cmst3/user/benitezj/CMG/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0_BleedingEdge_MET53X_Mar27/cmgTuple_94.root']
+#process.source.fileNames = ['/store/cmst3/user/benitezj/CMG/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0_BleedingEdge_MET53X_Mar31/cmgTuple_94.root']
+#process.source.fileNames = ['file:/afs/cern.ch/user/b/benitezj/scratch0/V5_13_0_BleedingEdge/CMGTools/CMSSW_5_3_7_patch4/src/CMGTools/Common/prod/cmgTuple.root']
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:122718')
-#process.flatNtp.printSelectionPass=1
+#
 
-#print process.source.eventsToProcess
+
+##-->Post Apr1
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:124859','1:179645','1:215021','1:222966','1:248040','1:268951','1:352011','1:481278','1:548861','1:558612','1:605727','1:656800','1:666222','1:703011','1:938521','1:988135')
+
+###MVA MET sync scatter values
+#process.source.fileNames = ['/store/cmst3/user/benitezj/CMG/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0_BleedingEdge_MET53X_Apr2/cmgTuple_1.root']
+#process.source.fileNames = ['file:/afs/cern.ch/user/b/benitezj/scratch0/V5_13_0_BleedingEdge/CMGTools/CMSSW_5_3_7_patch4/src/CMGTools/Common/prod/cmgTuple.root']
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:263427')
 
 
 #process.source = cms.Source(
@@ -114,6 +112,8 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 #process.source.fileNames = ['file:./tauMu_fullsel_tree_CMG.root']
 
 print process.source.fileNames
+print process.source.eventsToProcess
+process.flatNtp.printSelectionPass=1
 
 
 # set up JSON ---------------------------------------------------------------
@@ -159,8 +159,6 @@ process.cmgTauScaler.cfg.inputCollection = 'cmgTauESCorrector'
 
 
 
-
-
 ##create mu-tau candidates
 process.load('CMGTools.Common.factories.cmgTauMu_cfi')
 process.cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
@@ -176,22 +174,7 @@ process.analysis += process.cmgTauMuCount
 
 
 ###MVA MET
-if process.flatNtp.metType == 3 :
-   process.load("CMGTools.Common.eventCleaning.goodPVFilter_cfi")
-   process.load("CMGTools.Utilities.mvaMET.mvaMETPreselLep_cfi")
-   process.mvaMETSequence = cms.Sequence(
-      process.goodPVFilter + 
-      process.mvaMETPreselLep
-      )
-   process.analysis  += process.mvaMETSequence
-   #process.mvaMETTauMu.verbose = True
-   process.cmgTauMuMET = process.cmgTauMu.clone()
-   process.cmgTauMuMET.cfg.leg1Collection = 'cmgTauScaler'
-   process.cmgTauMuMET.cfg.metCollection = 'mvaMETPreselLep'
-   process.analysis +=  process.cmgTauMuMET
-   process.flatNtp.diTauTag = 'cmgTauMuMET'
 
-   
 if process.flatNtp.metType ==2 :
    #need to use uncorrected Tau for MVA MET computation
    process.cmgTauMuMVAMET = process.cmgTauMu.clone()
@@ -211,7 +194,14 @@ if process.flatNtp.metType ==2 :
    process.analysis  += process.mvaMETSequence
    #process.mvaMETTauMu.verbose = True
    
+if process.flatNtp.metType == 3 :
+   process.load("CMGTools.Utilities.mvaMET.mvaMETPreselLep_cff")
+   process.analysis  += process.mvaMETPreselLepSequence
+   process.flatNtp.mvaMETTag = 'cmgMvaMETPreselLep'
+   process.flatNtp.mvaMETSigTag = 'mvaMETPreselLep'
+   #process.mvaMETPreselLep.verbose = True
 
+   
 
 ##schedule the analyzer
 process.analysis += process.flatNtp

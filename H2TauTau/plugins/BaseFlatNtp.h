@@ -290,6 +290,8 @@ protected:
   float tauisomva_;
   float taujetpt_;
   float taujeteta_;
+  float taujetrefpt_;
+  float taujetrefeta_;
   float tauleadpt_;
   float tauleadhcal_;
   float tauleadecal_;
@@ -479,9 +481,6 @@ protected:
     }
     
     if(metType_==2){//MVA MET 
-      //metpt_=diobjectmet_.pt();
-      //metphi_=diobjectmet_.phi();
-
       edm::Handle<std::vector< cmg::BaseMET> > mvaMETVector;
       iEvent_->getByLabel(mvaMETTag_,mvaMETVector); 
       metpt_=(mvaMETVector->at(diobjectindex_)).pt();
@@ -490,23 +489,19 @@ protected:
       edm::Handle< std::vector<cmg::METSignificance> > metsigVector;
       iEvent_->getByLabel(mvaMETSigTag_,metsigVector); 
       metSig_ = &(metsigVector->at(diobjectindex_));
-
-      edm::Handle<std::vector< reco::PFMET> > mvaInputMET;
-      iEvent_->getByLabel(edm::InputTag("pfMetForRegression"),mvaInputMET);
-      pfMetForRegression_=mvaInputMET->begin()->pt();
-      iEvent_->getByLabel(edm::InputTag("tkMet"),mvaInputMET);
-      tkMet_=mvaInputMET->begin()->pt();
-      iEvent_->getByLabel(edm::InputTag("nopuMet"),mvaInputMET);
-      nopuMet_=mvaInputMET->begin()->pt();
-      iEvent_->getByLabel(edm::InputTag("puMet"),mvaInputMET);
-      puMet_=mvaInputMET->begin()->pt();
-      iEvent_->getByLabel(edm::InputTag("pcMet"),mvaInputMET);
-      pcMet_=mvaInputMET->begin()->pt();
-
-
     }
-		  
-    if(metType_==3){//Type 1 Corrected MET
+    if(metType_==3){//MVA MET with presel leptons
+      edm::Handle<std::vector< cmg::BaseMET> > mvaMET;
+      iEvent_->getByLabel(mvaMETTag_,mvaMET);
+      metpt_=mvaMET->begin()->pt();
+      metphi_=mvaMET->begin()->phi();
+      
+      edm::Handle< std::vector< cmg::METSignificance > > mvaMetSigHandle;
+      iEvent_->getByLabel(mvaMETSigTag_,mvaMetSigHandle); 
+      metSig_ = &(*(mvaMetSigHandle->begin()));
+    }
+	  
+    if(metType_==5){//Type 1 Corrected MET
       edm::Handle<std::vector< cmg::BaseMET> > pfMET;
       iEvent_->getByLabel(edm::InputTag("cmgPFMET"),pfMET);
       metpt_=pfMET->begin()->pt();
@@ -518,6 +513,21 @@ protected:
     }
     
     
+    if(metType_==2 || metType_==3){//Save the mva met inputs
+      edm::Handle<std::vector< reco::PFMET> > mvaInputMET;
+      iEvent_->getByLabel(edm::InputTag("pfMetForRegression"),mvaInputMET);
+      pfMetForRegression_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("tkMet"),mvaInputMET);
+      tkMet_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("nopuMet"),mvaInputMET);
+      nopuMet_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("puMet"),mvaInputMET);
+      puMet_=mvaInputMET->begin()->pt();
+      iEvent_->getByLabel(edm::InputTag("pcMet"),mvaInputMET);
+      pcMet_=mvaInputMET->begin()->pt();
+    }
+
+
     if(!metSig_){
       cout<<" Unrecognized metType "<<endl;
       exit(0);

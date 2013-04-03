@@ -335,6 +335,8 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("tauz",&tauz_,"tauz/F");
   tree_->Branch("taujetpt",&taujetpt_,"taujetpt/F");
   tree_->Branch("taujeteta",&taujeteta_,"taujeteta/F");
+  tree_->Branch("taujetrefpt",&taujetrefpt_,"taujetrefpt/F");
+  tree_->Branch("taujetrefeta",&taujetrefeta_,"taujetrefeta/F");
   tree_->Branch("tauleadpt",&tauleadpt_,"tauleadpt/F");
   tree_->Branch("tauleadhcal",&tauleadhcal_,"tauleadhcal/F");
   tree_->Branch("tauleadecal",&tauleadecal_,"tauleadecal/F");
