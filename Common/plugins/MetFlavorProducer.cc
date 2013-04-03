@@ -180,7 +180,7 @@ bool MetFlavorProducer::passPFLooseId(const pat::Jet *iJet) {
 double MetFlavorProducer::pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) { 
   double lDz = -999;
   if(iPFCand->trackRef().isNonnull())    lDz = fabs(iPFCand->   trackRef()->dz(iPV->position()));
-  if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->gsfTrackRef()->dz(iPV->position()));
+  else if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->gsfTrackRef()->dz(iPV->position()));
   return lDz;
 }
 double MetFlavorProducer::jetMVA (const Jet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug) { 
