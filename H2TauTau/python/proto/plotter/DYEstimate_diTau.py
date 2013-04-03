@@ -12,6 +12,7 @@ def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataM
       cutDY = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && isFake==0 && isElectron==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 '
     if prong :
       cutDY += ' && l1DecayMode<3  && l2DecayMode<3'
+      cutDY.replace('abs(jet1Eta)<3.0 && jet1Pt>50.','')
     inclusiveForEmbeddedNormalizationDY    = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
      			    #50,0,500,
      			    30,0,300,
@@ -22,6 +23,7 @@ def embeddedScaleFactor(anaDir, selCompsNoSignal, weightsNoSignal, selCompsDataM
     cutEmb = 'abs(jet1Eta)<3.0 && jet1Pt>50. && l1Pt>45 && l2Pt>45 && abs(l1Eta)<2.1 && abs(l2Eta)<2.1 && diTauCharge==0 && l2MVAEle>0.5 && l1MedMVAIso>0.5 && l2MedMVAIso>0.5 '
     if prong :
       cutEmb += ' && l1DecayMode<3  && l2DecayMode<3'
+      cutEmb.replace('abs(jet1Eta)<3.0 && jet1Pt>50.','')
     inclusiveForEmbeddedNormalizationEmbed = H2TauTauDataMC('svfitMass', anaDir, selCompsNoSignal, weightsNoSignal,
      			    #50,0,500,
      			    30,0,300,
