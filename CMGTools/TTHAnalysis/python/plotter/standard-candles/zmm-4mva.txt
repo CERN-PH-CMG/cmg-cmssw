@@ -2,4 +2,4 @@
 muon: abs(LepGood1_pdgId) == 13
 metVeto: met < 30
 tightTag: LepGood1_pt > 25 && LepGood1_relIso < 0.2 
-m(ll) > 60: minMllAFAS > 60 && mZ1 < 120
+m(ll): minMllAFAS > 60 && mZ1>0 && mZ1 < 120
