@@ -675,11 +675,17 @@ bool TauMuFlatNtp::fill(){
 
 
   //find the jet matching to the tau
+  taujetrefpt_=diTauSel_->leg1().jetRefp4().pt();  //use the jet ref p4 filled in the Tau factory
+  taujetrefeta_=diTauSel_->leg1().jetRefp4().eta();
+
   taujetpt_=0.;
   taujeteta_=0.;
   const cmg::PFJet * taujet = findJet(&fullJetList_,diTauSel_->leg1().eta(),diTauSel_->leg1().phi());
   if(taujet) taujetpt_=taujet->pt();
   if(taujet) taujeteta_=taujet->eta();
+
+  
+
   
   //find the jet matching to the mu
   mujetpt_=0.;
