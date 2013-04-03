@@ -14,7 +14,7 @@ bool cmg::AbstractPhysicsObject::operator<(const AbstractPhysicsObject& other) c
   return pt() < other.pt();
 }
 bool cmg::AbstractPhysicsObject::operator==(const AbstractPhysicsObject& other) const{
-  return (p4() == other.p4()) && (charge() == other.charge());
+  return (p4() == other.p4()) && (charge() == other.charge())  &&  (pdgId() == other.pdgId());
 }
 
 std::ostream& cmg::AbstractPhysicsObject::printSelections(std::ostream& o, const std::string indent) const{
