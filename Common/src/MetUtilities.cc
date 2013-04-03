@@ -112,13 +112,17 @@ void MetUtilities::cleanMet(std::vector<LorentzVector> &iVis,std::vector<JetInfo
 std::pair<MetUtilities::LorentzVector,double> MetUtilities::TKMet(std::vector<std::pair<LorentzVector,double> > &iCands,double iDZ,int iLowDz) { 
   double            lSumEt = 0;
   LorentzVector     lVec;
+  int ngood=0;
   for(int i0 = 0; i0 < int(iCands.size()); i0++) {
     if(iCands[i0].second < 0   &&  iLowDz != 2) continue;
     if(iCands[i0].second > iDZ &&  iLowDz == 0) continue;
     if(iCands[i0].second < iDZ &&  iLowDz == 1) continue;
     lVec    -= iCands[i0].first;
     lSumEt  += iCands[i0].first.pt();
+    ngood++;
   }
+  //cout<<"MetUtilities::TKMet ngood pf cands "<<ngood<<endl;
+  //cout<<"MetUtilities::TKMet "<<lSumEt<<" "<<lVec.pt()<<endl;
   std::pair<LorentzVector,double> lTKMet(lVec,lSumEt);
   return lTKMet;
 }
@@ -139,6 +143,8 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::JetMet(std::vector<J
     lSumEt  += pVec.Pt();
     lNPass++;
   }
+  //cout<<"MetUtilities::JetMet ngood jets "<<lNPass<<endl;
+  //cout<<"MetUtilities::JetMet "<<lSumEt<<" "<<lVec.pt()<<endl;
   std::pair<LorentzVector,double> lJetMet(lVec,lSumEt);
   return lJetMet;
 }
@@ -150,6 +156,7 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::NoPUMet(std::vector<
 
   lVec += lTKMet.first;     lSumEt += lTKMet.second;
   lVec += lJetMet.first;    lSumEt += lJetMet.second; 
+  //cout<<"MetUtilities::NoPUMet "<<lSumEt<<" "<<lVec.pt()<<endl;
   std::pair<LorentzVector,double> lNoPUMet(lVec,lSumEt);
   return lNoPUMet;
 }

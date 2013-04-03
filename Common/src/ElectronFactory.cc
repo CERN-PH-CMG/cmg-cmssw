@@ -85,13 +85,7 @@ cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* const ou
   output->convDist_ = input->convDist();
   output->convDcot_ = input->convDcot();
   
-//  output->passConversionVeto_ = input->passConversionVeto() ;
-//  output->passConversionVeto_ = !ConversionTools::hasMatchedConversion(*input, hConversions, beamspot.position (), true, 2.0, 1e-06, 0) ;
-
-  output->passConversionVeto_ = !ConversionTools::hasMatchedConversion(
-				dynamic_cast<reco::GsfElectron const&>(*(input->originalObjectRef())), 
-				hConversions, beamspot.position (), true, 2.0, 1e-06, 0) ;
-
+  output->passConversionVeto_ = input->passConversionVeto() ;
   
   if(input->core().isNonnull() && input->core().isAvailable()){
     output->isEcalDriven_ = cmg::toTriBool(input->ecalDriven());

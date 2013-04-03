@@ -32,9 +32,14 @@ void cmg::TauFactory::set(const pat::TauPtr& input, cmg::Tau* const output, cons
 							    cand.p4().pt(), cand.p4().eta(), 
 							    cand.p4().phi(),  cand.p4().mass());
 
+    //leading charged particle vertex
     if(cand.trackRef().isNonnull() && cand.trackRef().isAvailable()){
       output->leadChargedHadrVertex_ = cand.trackRef()->vertex();
-      leptonFactory_.set(cand.trackRef(),output,iEvent,iSetup);   //dz and dxy 
+      leptonFactory_.set(cand.trackRef(),output,iEvent,iSetup);   //dz and dxy w.r.t primary vertex in offlinePrimaryVertices
+    } else if(cand.gsfTrackRef().isNonnull() && cand.gsfTrackRef().isAvailable()){
+      //when there is no pion track check if there is an electron track
+      output->leadChargedHadrVertex_ = cand.gsfTrackRef()->vertex();
+      leptonFactory_.set(cand.gsfTrackRef(),output,iEvent,iSetup);  
     }
 
 

@@ -25,7 +25,7 @@ process.source = datasetToSource(
     )
 
 process.source.fileNames = process.source.fileNames[:20]
-
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 ###ProductionTaskHook$$$
 
@@ -35,7 +35,7 @@ print process.source.fileNames
 print sep_line 
 
 ## Maximal Number of Events
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(4000) )
+
 
 print 'loading the main CMG sequence'
 
@@ -83,6 +83,9 @@ if runOnMC is False:
     #if isNewerThan('CMSSW_5_2_0'):
     #    process.patJetCorrFactorsCHSpruned.levels.append('L2L3Residual')
 
+
+#Jose: fix to muon isolation in case the pf muon is not within the 1e-5 veto cone w.r.t reco muon (Muon expert should fix somewhere else)
+process.muPFIsoDepositChargedAll.ExtractorPSet.DR_Veto = 1e-3
 
 print 'cloning the jet sequence to build PU chs jets'
 
