@@ -114,11 +114,16 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::TKMet(std::vector<st
   LorentzVector     lVec;
   int ngood=0;
   for(int i0 = 0; i0 < int(iCands.size()); i0++) {
+    //cout<<" TKMet input "<<iCands[i0].first.pt()<<" "<<iCands[i0].second<<endl;
+    
     if(iCands[i0].second < 0   &&  iLowDz != 2) continue;
     if(iCands[i0].second > iDZ &&  iLowDz == 0) continue;
     if(iCands[i0].second < iDZ &&  iLowDz == 1) continue;
     lVec    -= iCands[i0].first;
     lSumEt  += iCands[i0].first.pt();
+    
+    //cout<<" TKMet "<<iCands[i0].first.pt()<<endl;
+
     ngood++;
   }
   //cout<<"MetUtilities::TKMet ngood pf cands "<<ngood<<endl;
@@ -135,12 +140,19 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::JetMet(std::vector<J
     //bool pPass =  passMVA(pMVAInfo);
     if( passMVA(pMVAInfo)  && !iPassMVA) continue;
     if(!passMVA(pMVAInfo)  &&  iPassMVA) continue;
-    LorentzVector  pFullVec; pFullVec = iJets[i0].p4; //Full 4 vector
-    //Now make the Neutral contributions
-    TLorentzVector pTVec; pTVec.SetPtEtaPhiM(pFullVec.Pt()*iJets[i0].neutFrac,pFullVec.eta(),pFullVec.phi(),pFullVec.mass());
-    LorentzVector  pVec ; pVec .SetCoordinates(pTVec.Px(),pTVec.Py(),pTVec.Pz(),pTVec.E());
+//     LorentzVector  pFullVec; pFullVec = iJets[i0].p4; //Full 4 vector
+//     //Now make the Neutral contributions
+//     TLorentzVector pTVec; pTVec.SetPtEtaPhiM(pFullVec.Pt()*iJets[i0].neutFrac,pFullVec.eta(),pFullVec.phi(),pFullVec.mass());
+//     LorentzVector  pVec ; pVec .SetCoordinates(pTVec.Px(),pTVec.Py(),pTVec.Pz(),pTVec.E());
+//     lVec    -= pVec;
+//     lSumEt  += pVec.Pt();
+
+    //Jose: This code is closer to the PAT recipe
+    LorentzVector  pVec ; pVec .SetCoordinates(iJets[i0].p4.px()*iJets[i0].neutFrac,iJets[i0].p4.py()*iJets[i0].neutFrac,0.,0.);
     lVec    -= pVec;
-    lSumEt  += pVec.Pt();
+    lSumEt += iJets[i0].p4.pt()*iJets[i0].neutFrac;
+
+    //cout<<" JetMet "<<iJets[i0].p4.pt()<<" "<<iJets[i0].mva<<" "<<iJets[i0].neutFrac<<endl;
     lNPass++;
   }
   //cout<<"MetUtilities::JetMet ngood jets "<<lNPass<<endl;
@@ -168,6 +180,8 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::PUMet  (std::vector<
 
   lVec += lTKMet .first;    lSumEt += lTKMet .second;
   lVec += lJetMet.first;    lSumEt += lJetMet.second; 
+
+  //cout<<"MetUtilities::PUMet  "<<lVec.pt()<<" "<<lSumEt<<endl;
   std::pair<LorentzVector,double> lPUMet(lVec,lSumEt);
   return lPUMet;
 }
