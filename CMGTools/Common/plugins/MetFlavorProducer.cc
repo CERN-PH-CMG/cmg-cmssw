@@ -40,8 +40,8 @@ MetFlavorProducer::MetFlavorProducer(const edm::ParameterSet& iConfig) {
   fDZMin          = iConfig.getParameter<double>       ("dZMin");  
   fMetFlavor      = iConfig.getParameter<int>          ("MetFlavor");
   fUtils          = new MetUtilities();
-  fPUJetIdAlgo         = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("met53x"));
-  fPUJetIdAlgoLowPt    = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("met53x"));
+  fPUJetIdAlgo         = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("met_53x"));
+  fPUJetIdAlgoLowPt    = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("met_53x"));
 }
 MetFlavorProducer::~MetFlavorProducer() { 
   delete fUtils;
@@ -112,8 +112,15 @@ void MetFlavorProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
   
   for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
     const pat::Jet     *pCJet  = &(iCJets.at(i1));
+
+    //std::cout<<" MetFlavorProducer::makeJets  input :  "<<i1<<"  "<<pCJet->pt()<<" "<<pCJet->eta()<<" "<<pCJet->correctedJet(0).pt()<<" "<<pCJet->neutralEmEnergy()<<" "<<pCJet->neutralHadronEnergy()<<std::endl;
+    
     if(pCJet->pt() < fJetPtMin) continue;
+
     if( !passPFLooseId(pCJet) ) continue;
+
+    //std::cout<<" MetFlavorProducer::makeJets  PFLooseId :  "<<i1<<"  "<<pCJet->pt()<<" "<<pCJet->eta()<<" "<<pCJet->correctedJet(0).pt()<<" "<<pCJet->neutralEmEnergy()<<" "<<pCJet->neutralHadronEnergy()<<std::endl;
+
     double lJec = 0;
     double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false);
     double lJetEnergy = pCJet->correctedJet(0).pt()/pCJet->pt()*pCJet->energy();
@@ -127,6 +134,7 @@ void MetFlavorProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,
     pJetObject.p4       = pCJet->p4(); 
     pJetObject.mva      = lMVA;
     pJetObject.neutFrac = lNeuFrac;
+    //std::cout<<" MetFlavorProducer::makeJets  final:  "<<i1<<"  "<<pJetObject.p4.pt()<<" "<<pJetObject.mva<<" "<<pJetObject.neutFrac<<std::endl;
     iJetInfo.push_back(pJetObject);
   }
 }
@@ -144,16 +152,24 @@ void MetFlavorProducer::makeCandidates(std::vector<std::pair<LorentzVector,doubl
 void MetFlavorProducer::makeVertices(std::vector<Vector>        &iPVInfo,const VertexCollection &iVertices) { 
   for(int i0    = 0; i0 < (int)iVertices.size(); i0++) {
     const Vertex       *pVertex = &(iVertices.at(i0));
+
+    if(fabs(pVertex->z())           > 24.) continue;
+    if(pVertex->ndof()              <  4.) continue;
+    if(pVertex->position().Rho()    >  2.) continue;
+
     Vector pVec; pVec.SetCoordinates(pVertex->x(),pVertex->y(),pVertex->z());
     iPVInfo.push_back(pVec);
   }
 }
 bool MetFlavorProducer::passPFLooseId(const pat::Jet *iJet) { 
-  //5.33831 - 2.75353 : 42.0967 - 54.9466 - 13 - 87.3427 _ 0 - 4
+
+
   //std::cout << " ==> " << iJet->pt() << " - " << iJet->eta() << " : " << iJet->energy() << " - " << iJet->neutralEmEnergy() << " - " << iJet->nConstituents() << " - " << iJet->chargedHadronEnergy() << " _ " << iJet->chargedEmEnergy() << " - " << iJet->chargedMultiplicity() << std::endl;
   //if(iJet->energy()== 0)                                                           return false;
+
   double lJetEnergy = iJet->correctedJet(0).pt()/iJet->pt()*iJet->energy();
-  if((iJet->neutralHadronEnergy()+iJet->HFHadronEnergy())/lJetEnergy > 0.99)      return false;
+  //if((iJet->neutralHadronEnergy()+iJet->HFHadronEnergy())/lJetEnergy > 0.99)      return false;//Jose: this is the correct PFLoose id 
+  if((iJet->neutralHadronEnergy())/lJetEnergy > 0.99)      return false;//Jose: HF energy is not used in the MVA Met training
   if(iJet->neutralEmEnergy()/lJetEnergy     > 0.99)                               return false;
   if(iJet->nConstituents()                  <  2)                                 return false;
   if(iJet->chargedHadronEnergy()/lJetEnergy <= 0     && fabs(iJet->eta()) < 2.4 ) return false;

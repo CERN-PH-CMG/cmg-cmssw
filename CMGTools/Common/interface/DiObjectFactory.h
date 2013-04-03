@@ -117,15 +117,26 @@ typename cmg::DiObjectFactory<T,U>::event_ptr cmg::DiObjectFactory<T,U>::create(
             result->push_back(cmgTmp);
       }
     }
+
     //finally, remove duplicates while preserving order
-    set diObjects;
-    for(typename collection::iterator it = result->begin(); it != result->end(); ++it){
+    if(sameCollection){
+      //Jose: code below removes some good mu-tau pairs because of the way 
+      // two cmg objects are declared to be equal in  AnalysisDataFormats/CMGTools/src/AbstractPhysicsObject.cc
+      // therefore this cleaning should only be done for 2 identical collections.
+      // In case one builds di-objects from two collections of same kind of objects but where one of these collections is 
+      // modified (by skiming for example) the "sameCollection" flag may not be set correctly, then one must do the cleaning 
+      // by hand later.
+      
+      set diObjects;
+      for(typename collection::iterator it = result->begin(); it != result->end(); ++it){
         std::pair<typename set::iterator,bool> set_it = diObjects.insert(*it);
         if(!set_it.second){
-            it = result->erase(it);
-            --it;   
+	  it = result->erase(it);
+	  --it;   
         }
-    } 
+      } 
+    }
+
     return result;
 }
 
