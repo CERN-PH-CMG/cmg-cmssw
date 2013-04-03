@@ -134,16 +134,15 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
 
   edm::Handle< std::vector<cmg::Muon> > preselMuonList_;
   iEvent.getByLabel(preselMuonListTag_, preselMuonList_);
-  std::vector<cmg::Muon>  cleanMuonList_;
 
   edm::Handle< std::vector<cmg::Electron> > preselElectronList_;
   iEvent.getByLabel(preselElectronListTag_, preselElectronList_);
-  std::vector<cmg::Electron>  cleanElectronList_;
 
   edm::Handle< std::vector<cmg::Tau> > preselTauList_;
   iEvent.getByLabel(preselTauListTag_, preselTauList_);
-  std::vector<cmg::Tau>  cleanTauList_;
 
+  
+  if(verbose_)cout<<"Muons "<< preselMuonList_->size() <<" Electrons "<< preselElectronList_->size() <<" Taus"<< preselTauList_->size()<<endl;
 
   if( pfmetH->size()!=1) 
     throw cms::Exception("Input MET collection should have size 1.");
@@ -201,79 +200,84 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
   std::auto_ptr< std::vector<cmg::METSignificance> > pOutSig( new std::vector<cmg::METSignificance>() );
 
 
-  for(std::vector<cmg::Muon>::const_iterator cand=preselMuonList_->begin(); cand!=preselMuonList_->end(); ++cand){
-    cleanMuonList_.push_back(*cand);
-  }   
-  for(std::vector<cmg::Electron>::const_iterator cand=preselElectronList_->begin(); cand!=preselElectronList_->end(); ++cand){
+  std::vector<const cmg::Muon * >  cleanMuonList_;
+  std::vector<const cmg::Electron *>  cleanElectronList_;
+  std::vector<const cmg::Tau * >  cleanTauList_;
+  
+  //clean the muons from electrons based on pT
+  for(std::vector<cmg::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM){
     bool pass=1;
-    for(std::vector<cmg::Muon>::const_iterator cand2=cleanMuonList_.begin(); cand2!=cleanMuonList_.end(); ++cand){
-      if(deltaR(cand->p4(),cand2->p4())<0.5)pass=0;
-    }
-    if(pass)cleanElectronList_.push_back(*cand);
+    for(std::vector<cmg::Electron>::const_iterator candE=preselElectronList_->begin(); candE!=preselElectronList_->end(); ++candE)
+      if( deltaR(candM->p4(),candE->p4())<0.5 && candM->pt()<candE->pt() )pass=0;
+    if(pass)cleanMuonList_.push_back(&(*candM));
   }   
-  for(std::vector<cmg::Tau>::const_iterator cand=preselTauList_->begin(); cand!=preselTauList_->end(); ++cand){
-    
+  //clean the electrons from muons based on pT
+  for(std::vector<cmg::Electron>::const_iterator candE=preselElectronList_->begin(); candE!=preselElectronList_->end(); ++candE){
     bool pass=1;
-    for(std::vector<cmg::Muon>::const_iterator cand2=cleanMuonList_.begin(); cand2!=cleanMuonList_.end(); ++cand){
-      if(deltaR(cand->p4(),cand2->p4())<0.5)pass=0;
-    }
-    for(std::vector<cmg::Electron>::const_iterator cand3=cleanElectronList_.begin(); cand3!=cleanElectronList_.end(); ++cand){
-      if(deltaR(cand->p4(),cand3->p4())<0.5)pass=0;
-    }
-
-    if(pass)cleanTauList_.push_back(*cand);
+    for(std::vector<cmg::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM)
+      if(deltaR(candE->p4(),candM->p4())<0.5 && candE->pt()<candM->pt())pass=0;
+    if(pass)cleanElectronList_.push_back(&(*candE));
   }   
-  cout<<"Muons "<< cleanMuonList_.size() <<" Electrons "<< cleanElectronList_.size() <<" Taus"<< cleanTauList_.size()<<endl;
+  //clean the taus from muons and electrons
+  for(std::vector<cmg::Tau>::const_iterator candT=preselTauList_->begin(); candT!=preselTauList_->end(); ++candT){
+    bool pass=1;
+    for(std::vector<cmg::Muon>::const_iterator candM=preselMuonList_->begin(); candM!=preselMuonList_->end(); ++candM)
+      if(deltaR(candT->p4(),candM->p4())<0.5)pass=0;
+    for(std::vector<cmg::Electron>::const_iterator candE=preselElectronList_->begin(); candE!=preselElectronList_->end(); ++candE)
+      if(deltaR(candT->p4(),candE->p4())<0.5)pass=0;
+    if(pass)cleanTauList_.push_back(&(*candT));
+  }   
+  if(verbose_)cout<<"clean Muons "<< cleanMuonList_.size() <<" Electrons "<< cleanElectronList_.size() <<" Taus"<< cleanTauList_.size()<<endl;
 
 
-    /* Horrible Lepton Overlap code from http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/METPUSubtraction/plugins/PFMETProducerMVA.cc?revision=1.7&view=markup
+  /* Horrible Lepton Overlap code from http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/METPUSubtraction/plugins/PFMETProducerMVA.cc?revision=1.7&view=markup
      To make this work for CMG Tuples you must have a vector of leptons. The code below that will then remove the overlapping leptons and add the good leptons to a final vector
      Once you have the final vector, the code beyond needs to be cleand to 
-        1. Run over the vector and clean up overlapping jets
-        2. Chooose the two leading "Cleaned" Jets (should be straight forward)
-        3. Correct the final METs with this info
+     1. Run over the vector and clean up overlapping jets
+     2. Chooose the two leading "Cleaned" Jets (should be straight forward)
+     3. Correct the final METs with this info
+  */
+//   int  lId         = 0;
+//   bool lHasPhotons = false;
+//   std::vector<mvaMEtUtilities::leptonInfo> leptonInfo;
+//   for ( vInputTag::const_iterator srcLeptons_i = srcLeptons_.begin(); srcLeptons_i != srcLeptons_.end(); ++srcLeptons_i ) {
+//     edm::Handle<CandidateView> leptons;
+//     evt.getByLabel(*srcLeptons_i, leptons);
+//     for ( CandidateView::const_iterator lepton1 = leptons->begin(); lepton1 != leptons->end(); ++lepton1 ) {
+//       bool pMatch = false;
 
-         int  lId         = 0;
-  bool lHasPhotons = false;
-  std::vector<mvaMEtUtilities::leptonInfo> leptonInfo;
-  for ( vInputTag::const_iterator srcLeptons_i = srcLeptons_.begin();
-  srcLeptons_i != srcLeptons_.end(); ++srcLeptons_i ) {
-    edm::Handle<CandidateView> leptons;
-    evt.getByLabel(*srcLeptons_i, leptons);
-    for ( CandidateView::const_iterator lepton1 = leptons->begin();
-      lepton1 != leptons->end(); ++lepton1 ) {
-      bool pMatch = false;
-      for ( vInputTag::const_iterator srcLeptons_j = srcLeptons_.begin();
-          srcLeptons_j != srcLeptons_.end(); ++srcLeptons_j ) {
-	  edm::Handle<CandidateView> leptons2;
-	  evt.getByLabel(*srcLeptons_j, leptons2);
-	  for ( CandidateView::const_iterator lepton2 = leptons2->begin();
-	        lepton2 != leptons2->end(); ++lepton2 ) {
-		  if(&(*lepton1) == &(*lepton2)) continue;
-		    if(deltaR(lepton1->p4(),lepton2->p4()) < 0.5)                                                                    pMatch = true;
-		      if(pMatch &&     !istau(&(*lepton1)) &&  istau(&(*lepton2)))                                                     pMatch = false;
-		        if(pMatch &&    ( (istau(&(*lepton1)) && istau(&(*lepton2))) || (!istau(&(*lepton1)) && !istau(&(*lepton2)))) 
-			            &&     lepton1->pt() > lepton2->pt())                                                                  pMatch = false;
-				      if(pMatch && lepton1->pt() == lepton2->pt()) {
-				          pMatch = false;
-					      for(unsigned int i0 = 0; i0 < leptonInfo.size(); i0++) {
-					            if(fabs(lepton1->pt() - leptonInfo[i0].p4_.pt()) < 0.1) pMatch = true;
-						    }
-						    }
-						    if(pMatch) break;
-						    }
-						    if(pMatch) break;
-      }
-      if(pMatch) continue;
-      mvaMEtUtilities::leptonInfo pLeptonInfo;
-      pLeptonInfo.p4_          = lepton1->p4();
-      pLeptonInfo.chargedFrac_ = chargedFrac(&(*lepton1),*pfCandidates,hardScatterVertex);
-      leptonInfo.push_back(pLeptonInfo); 
-      if(lepton1->isPhoton()) lHasPhotons = true;
-    }
-    lId++;
-  }
-    */
+//       for ( vInputTag::const_iterator srcLeptons_j = srcLeptons_.begin(); srcLeptons_j != srcLeptons_.end(); ++srcLeptons_j ) {
+// 	edm::Handle<CandidateView> leptons2;
+// 	evt.getByLabel(*srcLeptons_j, leptons2);
+// 	for ( CandidateView::const_iterator lepton2 = leptons2->begin(); lepton2 != leptons2->end(); ++lepton2 ) {
+// 	  if(&(*lepton1) == &(*lepton2)) continue;
+// 	  if(deltaR(lepton1->p4(),lepton2->p4()) < 0.5)                                                                    pMatch = true;
+// 	  if(pMatch 
+// 	     &&     !istau(&(*lepton1)) &&  istau(&(*lepton2)))                                                     pMatch = false;
+// 	  if(pMatch 
+// 	     &&    ( (istau(&(*lepton1)) && istau(&(*lepton2))) || (!istau(&(*lepton1)) && !istau(&(*lepton2)))) 
+// 	     &&     lepton1->pt() > lepton2->pt())                                                                  pMatch = false;
+// 	  if(pMatch && lepton1->pt() == lepton2->pt()) {
+// 	    pMatch = false;
+// 	    for(unsigned int i0 = 0; i0 < leptonInfo.size(); i0++) {
+// 	      if(fabs(lepton1->pt() - leptonInfo[i0].p4_.pt()) < 0.1) pMatch = true;
+// 	    }
+// 	  }
+// 	  if(pMatch) break;
+// 	}
+// 	if(pMatch) break;
+//       }
+
+//       if(pMatch) continue;
+//       mvaMEtUtilities::leptonInfo pLeptonInfo;
+//       pLeptonInfo.p4_          = lepton1->p4();
+//       pLeptonInfo.chargedFrac_ = chargedFrac(&(*lepton1),*pfCandidates,hardScatterVertex);
+//       leptonInfo.push_back(pLeptonInfo); 
+//       if(lepton1->isPhoton()) lHasPhotons = true;
+//     }
+//     lId++;
+//   }
+
     
 
 
@@ -281,19 +285,12 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
   int nJetsPtGt1Clean = nJetsPtGt1;
   for( unsigned i=0; i<jetH->size(); ++i) {
     if( jetH->at(i).pt() < 1 ) continue; 
-    for( unsigned l=0; l<cleanMuonList_.size(); ++l) {
-      const cmg::Muon & m = cleanMuonList_.at(l);
-      if(deltaR(jetH->at(i).p4(),m.p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
-    }
-    for( unsigned l=0; l<cleanElectronList_.size(); ++l) {
-      const cmg::Electron & m = cleanElectronList_.at(l);
-      if(deltaR(jetH->at(i).p4(),m.p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
-    }
-    for( unsigned l=0; l<cleanTauList_.size(); ++l) {
-      const cmg::Tau & m = cleanTauList_.at(l);
-      if(deltaR(jetH->at(i).p4(),m.p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
-    }
-
+    for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+      if(deltaR(jetH->at(i).p4(),cleanMuonList_.at(l)->p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
+    for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+      if(deltaR(jetH->at(i).p4(),cleanElectronList_.at(l)->p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
+    for( unsigned l=0; l<cleanTauList_.size(); ++l)
+      if(deltaR(jetH->at(i).p4(),cleanTauList_.at(l)->p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
     if( jetH->at(i).pt() < 30 ) continue;
     nJetsPtGt30++; 
   }
@@ -301,18 +298,12 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
 
 
   std::vector<LorentzVector> lVisible;
-  for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-      const cmg::Muon & m = cleanMuonList_.at(l);
-      lVisible.push_back(m.p4());
-  }
-  for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-      const cmg::Electron & m = cleanElectronList_.at(l);
-      lVisible.push_back(m.p4());
-  }
-  for( unsigned l=0; l<cleanTauList_.size(); ++l){
-      const cmg::Tau & m = cleanTauList_.at(l);
-      lVisible.push_back(m.p4());
-  }
+  for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+    lVisible.push_back(cleanMuonList_.at(l)->p4());
+  for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+    lVisible.push_back(cleanElectronList_.at(l)->p4());
+  for( unsigned l=0; l<cleanTauList_.size(); ++l)
+    lVisible.push_back(cleanTauList_.at(l)->p4());
 
   //Redefine Lead Jet
   const LorentzVector *cleanLeadJet  = leadJet;
@@ -324,34 +315,21 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
     bool pClean = false;
       
     if(i0==0){
-      for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-	const cmg::Muon & m = cleanMuonList_.at(l);
-	if(deltaR(*cleanLeadJet,m.p4()) < 0.5) pClean = true;
-      }
-      for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-	const cmg::Electron & m = cleanElectronList_.at(l);
-	if(deltaR(*cleanLeadJet,m.p4()) < 0.5) pClean = true;
-      }
-      for( unsigned l=0; l<cleanTauList_.size(); ++l){
-	const cmg::Tau & m = cleanTauList_.at(l);
-	if(deltaR(*cleanLeadJet,m.p4()) < 0.5) pClean = true;
-      }
-
+      for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+	if(deltaR(*cleanLeadJet,cleanMuonList_.at(l)->p4()) < 0.5) pClean = true;
+      for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+	if(deltaR(*cleanLeadJet,cleanElectronList_.at(l)->p4()) < 0.5) pClean = true;
+      for( unsigned l=0; l<cleanTauList_.size(); ++l)
+	if(deltaR(*cleanLeadJet,cleanTauList_.at(l)->p4()) < 0.5) pClean = true;
     }
     
     if(i0==1){
-      for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-	const cmg::Muon & m = cleanMuonList_.at(l);
-	if(deltaR(*cleanLeadJet2,m.p4()) < 0.5) pClean = true;
-      }
-      for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-	const cmg::Electron & m = cleanElectronList_.at(l);
-	if(deltaR(*cleanLeadJet2,m.p4()) < 0.5) pClean = true;
-      }
-      for( unsigned l=0; l<cleanTauList_.size(); ++l){
-	const cmg::Tau & m = cleanTauList_.at(l);
-	if(deltaR(*cleanLeadJet2,m.p4()) < 0.5) pClean = true;
-      }
+      for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+	if(deltaR(*cleanLeadJet2,cleanMuonList_.at(l)->p4()) < 0.5) pClean = true;
+      for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+	if(deltaR(*cleanLeadJet2,cleanElectronList_.at(l)->p4()) < 0.5) pClean = true;
+      for( unsigned l=0; l<cleanTauList_.size(); ++l)
+	if(deltaR(*cleanLeadJet2,cleanTauList_.at(l)->p4()) < 0.5) pClean = true;
     }
     
     
@@ -366,133 +344,79 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
   }
 
   math::XYZPoint dummyVertex;
-
   // need to clean up the MET from di-lepton legs. 
+
+  ////////////PFMET
   LorentzVector cleanpfmetp4 = pfmet->p4();
-  for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-    const cmg::Muon & m = cleanMuonList_.at(l);
-    cleanpfmetp4 += m.p4();
-  }
-  for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-    const cmg::Electron & m = cleanElectronList_.at(l);
-    cleanpfmetp4 += m.p4();
-  }
-  for( unsigned l=0; l<cleanTauList_.size(); ++l){
-    const cmg::Tau & m = cleanTauList_.at(l);
-    cleanpfmetp4 += m.p4();
-  }
-
+  for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+    cleanpfmetp4 += cleanMuonList_.at(l)->p4();
+  for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+    cleanpfmetp4 += cleanElectronList_.at(l)->p4();
+  for( unsigned l=0; l<cleanTauList_.size(); ++l)
+    cleanpfmetp4 += cleanTauList_.at(l)->p4();
   double cleanpfmetsumet = pfmet->sumEt();
-  for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-    const cmg::Muon & m = cleanMuonList_.at(l);
-    cleanpfmetsumet -= m.pt();
-  }
-  for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-    const cmg::Electron & m = cleanElectronList_.at(l);
-    cleanpfmetsumet -= m.pt();
-  }
-  for( unsigned l=0; l<cleanTauList_.size(); ++l){
-    const cmg::Tau & m = cleanTauList_.at(l);
-    cleanpfmetsumet -= m.pt();
-  }
+  for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+    cleanpfmetsumet -= cleanMuonList_.at(l)->pt();
+  for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+    cleanpfmetsumet -= cleanElectronList_.at(l)->pt();
+  for( unsigned l=0; l<cleanTauList_.size(); ++l)
+    cleanpfmetsumet -= cleanTauList_.at(l)->pt();
+  reco::PFMET cleanpfmet( pfmet->getSpecific(), cleanpfmetsumet, cleanpfmetp4, dummyVertex);
 
 
-  reco::PFMET cleanpfmet( pfmet->getSpecific(),
-			  cleanpfmetsumet, cleanpfmetp4, dummyVertex);
-
-
-  
+  ////PUC MET
   LorentzVector cleanpucmetp4 = pucmet->p4();
-  for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-    const cmg::Muon & m = cleanMuonList_.at(l);
-    cleanpucmetp4 += m.p4();
-  }
-  for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-    const cmg::Electron & m = cleanElectronList_.at(l);
-    cleanpucmetp4 += m.p4();
-  }
-  for( unsigned l=0; l<cleanTauList_.size(); ++l){
-    const cmg::Tau & m = cleanTauList_.at(l);
-    cleanpucmetp4 += m.p4();
-  }
-
+  for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+    cleanpucmetp4 += cleanMuonList_.at(l)->p4();
+  for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+    cleanpucmetp4 += cleanElectronList_.at(l)->p4();
+  for( unsigned l=0; l<cleanTauList_.size(); ++l)
+    cleanpucmetp4 += cleanTauList_.at(l)->p4();
   double cleanpucmetsumet = pucmet->sumEt();
-  for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-    const cmg::Muon & m = cleanMuonList_.at(l);
-    cleanpucmetsumet -= m.pt();
-  }
-  for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-    const cmg::Electron & m = cleanElectronList_.at(l);
-    cleanpucmetsumet -= m.pt();
-  }
-  for( unsigned l=0; l<cleanTauList_.size(); ++l){
-    const cmg::Tau & m = cleanTauList_.at(l);
-    cleanpucmetsumet -= m.pt();
-  }
-  reco::PFMET cleanpucmet( pucmet->getSpecific(),
-			   cleanpucmetsumet, cleanpucmetp4, dummyVertex);
+  for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+    cleanpucmetsumet -= cleanMuonList_.at(l)->pt();
+  for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+    cleanpucmetsumet -= cleanElectronList_.at(l)->pt();
+  for( unsigned l=0; l<cleanTauList_.size(); ++l)
+    cleanpucmetsumet -= cleanTauList_.at(l)->pt();
+  reco::PFMET cleanpucmet( pucmet->getSpecific(), cleanpucmetsumet, cleanpucmetp4, dummyVertex);
 
 
   /////////////////////////////////Here use only the charged components
+
+  //////////Track MET
   LorentzVector cleantkmetp4 = tkmet->p4();
-  for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-    const cmg::Muon & m = cleanMuonList_.at(l);
-    cleantkmetp4 += m.p4();
-  }
-  for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-    const cmg::Electron & m = cleanElectronList_.at(l);
-    cleantkmetp4 += m.p4();
-  }
-  for( unsigned l=0; l<cleanTauList_.size(); ++l){
-    const cmg::Tau & m = cleanTauList_.at(l);
-    cleantkmetp4 += m.p4() * m.signalChargedFraction();
-  }
-
+  for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+    cleantkmetp4 += cleanMuonList_.at(l)->p4();
+  for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+    cleantkmetp4 += cleanElectronList_.at(l)->p4();
+  for( unsigned l=0; l<cleanTauList_.size(); ++l)
+    cleantkmetp4 += cleanTauList_.at(l)->p4() * cleanTauList_.at(l)->signalChargedFraction();
   double cleantkmetsumet = tkmet->sumEt();
-  for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-    const cmg::Muon & m = cleanMuonList_.at(l);
-    cleantkmetsumet -= m.pt();
-  }
-  for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-    const cmg::Electron & m = cleanElectronList_.at(l);
-    cleantkmetsumet -= m.pt();
-  }
-  for( unsigned l=0; l<cleanTauList_.size(); ++l){
-    const cmg::Tau & m = cleanTauList_.at(l);
-    cleantkmetsumet -= m.pt()* m.signalChargedFraction();
-  }
-  reco::PFMET cleantkmet( tkmet->getSpecific(),
-			  cleantkmetsumet, cleantkmetp4, dummyVertex);
+  for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+    cleantkmetsumet -= cleanMuonList_.at(l)->pt();
+  for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+    cleantkmetsumet -= cleanElectronList_.at(l)->pt();
+  for( unsigned l=0; l<cleanTauList_.size(); ++l)
+    cleantkmetsumet -= cleanTauList_.at(l)->pt()* cleanTauList_.at(l)->signalChargedFraction();
+  reco::PFMET cleantkmet( tkmet->getSpecific(), cleantkmetsumet, cleantkmetp4, dummyVertex);
 
+  ///////No PU MET
   LorentzVector cleannopumetp4 = nopumet->p4();
-  for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-    const cmg::Muon & m = cleanMuonList_.at(l);
-    cleannopumetp4 += m.p4();
-  }
-  for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-    const cmg::Electron & m = cleanElectronList_.at(l);
-    cleannopumetp4 += m.p4();
-  }
-  for( unsigned l=0; l<cleanTauList_.size(); ++l){
-    const cmg::Tau & m = cleanTauList_.at(l);
-    cleannopumetp4 += m.p4() * m.signalChargedFraction();
-  }
-
+  for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+    cleannopumetp4 += cleanMuonList_.at(l)->p4();
+  for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+    cleannopumetp4 += cleanElectronList_.at(l)->p4();
+  for( unsigned l=0; l<cleanTauList_.size(); ++l)
+    cleannopumetp4 += cleanTauList_.at(l)->p4() * cleanTauList_.at(l)->signalChargedFraction();
   double cleannopumetsumet = nopumet->sumEt();
-  for( unsigned l=0; l<cleanMuonList_.size(); ++l){
-    const cmg::Muon & m = cleanMuonList_.at(l);
-    cleannopumetsumet -= m.pt();
-  }  
-  for( unsigned l=0; l<cleanElectronList_.size(); ++l){
-    const cmg::Electron & m = cleanElectronList_.at(l);
-    cleannopumetsumet -= m.pt();
-  }  
-  for( unsigned l=0; l<cleanTauList_.size(); ++l){
-    const cmg::Tau & m = cleanTauList_.at(l);
-    cleannopumetsumet -= m.pt() * m.signalChargedFraction();
-  }   
-  reco::PFMET cleannopumet( nopumet->getSpecific(),
-			    cleannopumetsumet, cleannopumetp4, dummyVertex);
+  for( unsigned l=0; l<cleanMuonList_.size(); ++l)
+    cleannopumetsumet -= cleanMuonList_.at(l)->pt();
+  for( unsigned l=0; l<cleanElectronList_.size(); ++l)
+    cleannopumetsumet -= cleanElectronList_.at(l)->pt();
+  for( unsigned l=0; l<cleanTauList_.size(); ++l)
+    cleannopumetsumet -= cleanTauList_.at(l)->pt() * cleanTauList_.at(l)->signalChargedFraction();
+  reco::PFMET cleannopumet( nopumet->getSpecific(), cleannopumetsumet, cleannopumetp4, dummyVertex);
   ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -541,6 +465,7 @@ void MVAMETProducerPreselLep::produce(edm::Event & iEvent, const edm::EventSetup
     //       std::cout<<"\t\tleg1: "<<recBoson.leg1()<<std::endl;
     //       std::cout<<"\t\tleg2: "<<recBoson.leg2()<<std::endl;
     std::cout<<"\t\tNEW MET: "<<lMVAMetInfo.first.Pt()<<std::endl;
+    std::cout<<"\t\tNEW MET Cov00: "<<lMVAMetInfo.second[0][0]<<std::endl;
   }
   // FIXME add matrix
 
@@ -559,25 +484,37 @@ void MVAMETProducerPreselLep::makeJets(std::vector<MetUtilities::JetInfo> &iJetI
 				       const reco::VertexCollection &iVertices,double iRho) const { 
   for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
     const JetType     *pCJet  = &(iCJets.at(i1));
-/*     if( !passPFLooseId(pCJet) ) continue; */
-/*     double lJec = 0; */
-/*     double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false); */
-/*     double lNeuFrac = (pCJet->neutralEmEnergy()/pCJet->energy() + pCJet->neutralHadronEnergy()/pCJet->energy()); */
-    // FIXME choose the correct mva
-    if( ! pCJet->getSelection("cuts_looseJetId") ) continue;
-    //double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
-    double lMVA = pCJet->puMva("philv1");//, PileupJetIdentifier::kMedium );
-    // FIXME compute properly, according to what Phil does
-    //COLIN 53 
+    
+    //PF jet id 
+    if(fabs(pCJet->eta()) <= 2.4){
+      if(!(pCJet->component(5).fraction() < 0.99
+           &&pCJet->component(4).fraction() < 0.99
+           &&pCJet->nConstituents() > 1
+           &&pCJet->component(1).fraction() > 0
+           &&pCJet->component(1).number() > 0
+           &&pCJet->component(2).fraction() < 0.99) 
+         ) continue ;
+    } else {
+      if(!(pCJet->component(5).fraction() < 0.99
+           &&pCJet->component(4).fraction() < 0.99
+           &&pCJet->nConstituents() > 1)
+         ) continue;
+    }
+
+    double lMVA = pCJet->puMva("met53x"); 
     double lNeuFrac = 1.;
     if (fabs(pCJet->eta())<2.5)
-      lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
-    //COLIN old 52 recipe:
-    // double lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
+      lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction();
+
+
     MetUtilities::JetInfo pJetObject; 
     pJetObject.p4       = pCJet->p4(); 
     pJetObject.mva      = lMVA;
     pJetObject.neutFrac = lNeuFrac;
+
+    //std::cout<<" MVAMETProducer::makeJets  final:  "<<i1<<"  "<<pJetObject.p4.pt()<<" "<<pJetObject.mva<<" "<<pJetObject.neutFrac<<std::endl;
+
     iJetInfo.push_back(pJetObject);
+
   }
 }
