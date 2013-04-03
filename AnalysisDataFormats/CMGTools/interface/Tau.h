@@ -88,6 +88,7 @@ namespace cmg
     /// Energy fraction carried by charged signal PFCandidates, 
     /// wrt all signal PFCandidates
     float signalChargedFraction() const;
+    float signalChargedFractionpT() const;//fraction based on pT
 
     //tau ID's
     float tauID(const std::string& idname) const { 
