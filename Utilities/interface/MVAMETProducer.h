@@ -188,6 +188,7 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   edm::Handle< int > nJetsPtGt1H;
   iEvent.getByLabel(nJetsPtGt1Src_, nJetsPtGt1H);
   int nJetsPtGt1 = *nJetsPtGt1H;
+  //cout<<" nJetsPtGt1 "<<nJetsPtGt1<<endl;
 
   edm::Handle< double > rhoH;
   iEvent.getByLabel(rhoSrc_, rhoH);
@@ -262,10 +263,10 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 
     LorentzVector tau1Chargedp4 = recBoson.leg1().p4();
     if(typeid(recBoson.leg1())==typeid(cmg::Tau))
-        tau1Chargedp4 *= dynamic_cast<const cmg::Tau&>(recBoson.leg1()).signalChargedFraction();
+        tau1Chargedp4 *= dynamic_cast<const cmg::Tau&>(recBoson.leg1()).signalChargedFractionpT();
     LorentzVector tau2Chargedp4 = recBoson.leg2().p4();
     if(typeid(recBoson.leg2())==typeid(cmg::Tau))
-        tau2Chargedp4 *= dynamic_cast<const cmg::Tau&>(recBoson.leg2()).signalChargedFraction();
+        tau2Chargedp4 *= dynamic_cast<const cmg::Tau&>(recBoson.leg2()).signalChargedFractionpT();
     
     LorentzVector cleantkmetp4 = tkmet->p4();
     cleantkmetp4 += tau1Chargedp4;
@@ -355,21 +356,49 @@ void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo>
 /*     double lJec = 0; */
 /*     double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false); */
 /*     double lNeuFrac = (pCJet->neutralEmEnergy()/pCJet->energy() + pCJet->neutralHadronEnergy()/pCJet->energy()); */
-    // FIXME choose the correct mva
-    if( ! pCJet->getSelection("cuts_looseJetId") ) continue;
-    //double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
-    double lMVA = pCJet->puMva("met_53x");//, PileupJetIdentifier::kMedium );
-    // FIXME compute properly, according to what Phil does
-    //COLIN 53 
+
+//     // FIXME choose the correct mva
+//     if( ! pCJet->getSelection("cuts_looseJetId") ) continue;
+//     //double lMVA = pCJet->passPuJetId("full", PileupJetIdentifier::kMedium );
+//     double lMVA = pCJet->puMva("met_53x");//, PileupJetIdentifier::kMedium );
+//     // FIXME compute properly, according to what Phil does
+//     //COLIN 53 
+//     double lNeuFrac = 1.;
+//     if (fabs(pCJet->eta())<2.5)
+//       lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
+//     //COLIN old 52 recipe:
+//     // double lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
+
+
+    ///Jose: fix for summer 13,  PF id, and neutral fraction need to be consistent with one used in CMGTools/Coomon/plugins/MetFlavorProducer.h
+    if(fabs(pCJet->eta()) <= 2.4){
+      if(!(pCJet->component(5).fraction() < 0.99
+	   &&pCJet->component(4).fraction() < 0.99
+	   &&pCJet->nConstituents() > 1
+	   &&pCJet->component(1).fraction() > 0
+	   &&pCJet->component(1).number() > 0
+	   &&pCJet->component(2).fraction() < 0.99) 
+         ) continue ;
+    } else {
+      if(!(pCJet->component(5).fraction() < 0.99
+	   &&pCJet->component(4).fraction() < 0.99
+	   &&pCJet->nConstituents() > 1)
+	 ) continue;
+    }
+
+    double lMVA = pCJet->puMva("met53x"); 
     double lNeuFrac = 1.;
     if (fabs(pCJet->eta())<2.5)
-      lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
-    //COLIN old 52 recipe:
-    // double lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction() + pCJet->component( reco::PFCandidate::egamma_HF ).fraction();
+      lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction();
+
+
     MetUtilities::JetInfo pJetObject; 
     pJetObject.p4       = pCJet->p4(); 
     pJetObject.mva      = lMVA;
     pJetObject.neutFrac = lNeuFrac;
+
+    //std::cout<<" MVAMETProducer::makeJets  final:  "<<i1<<"  "<<pJetObject.p4.pt()<<" "<<pJetObject.mva<<" "<<pJetObject.neutFrac<<std::endl;
+
     iJetInfo.push_back(pJetObject);
   }
 }
