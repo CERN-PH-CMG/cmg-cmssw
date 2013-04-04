@@ -47,6 +47,7 @@ class Shape_t
   public:
   TH1* data, *totalBckg;
   std::vector<TH1 *> bckg, signal;
+  std::vector<TF1 *> bckgFit;
   //the key corresponds to the proc name
   //the key is the name of the variation: e.g. jesup, jesdown, etc.
   std::map<TString,std::vector<std::pair<TString, TH1*> > > bckgVars, signalVars;
@@ -101,6 +102,8 @@ void doBackgroundSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TStr
 void doDYReplacement(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString metHistoForRescale);
 void doWZSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Shape_t>& allShapes, TString mainHisto, TString sideBandHisto);
 void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, bool addSignal);
+void extrapolateBackgroundsFromFit(std::vector<TString>& selCh,map<TString, Shape_t>& allShapes, TString mainHisto);
+
 
 void RescaleForInterference(std::vector<TString>& selCh,map<TString, Shape_t>& allShapes, TString mainHisto);
 void SignalInterpolation(std::vector<TString>& selCh,map<TString, Shape_t>& allShapesL, map<TString, Shape_t>& allShapes, map<TString, Shape_t>& allShapesR, TString mainHisto);
@@ -118,6 +121,7 @@ TGraph *    TG_xsec=NULL, *    TG_errp=NULL, *    TG_errm=NULL, *    TG_scap=NUL
 TGraph* TG_QCDScaleK0ggH0=NULL, *TG_QCDScaleK0ggH1=NULL, *TG_QCDScaleK1ggH1=NULL, *TG_QCDScaleK1ggH2=NULL, *TG_QCDScaleK2ggH2=NULL;
 TGraph* TG_UEPSf0=NULL, *TG_UEPSf1=NULL, *TG_UEPSf2=NULL;
 
+bool BackExtrapol = false;
 bool subNRB2011 = false;
 bool subNRB2012 = false;
 bool MCclosureTest = false;
@@ -195,6 +199,7 @@ void printHelp()
   printf("--minSignalYield   --> use this to specify the minimum Signal yield you want in each channel)\n");
   printf("--signalSufix --> use this flag to specify a suffix string that should be added to the signal 'histo' histogram\n");
   printf("--rebin         --> rebin the histogram\n");
+  printf("--BackExtrapol --> extrapollate background histograms to high mass/met\n");
 }
 
 //
@@ -260,6 +265,7 @@ int main(int argc, char* argv[])
     else if(arg.find("--dirtyFix1")    !=string::npos) { dirtyFix1=true; printf("dirtyFix1 = True\n");}
     else if(arg.find("--signalSufix") !=string::npos) { signalSufix = argv[i+1]; i++; printf("signalSufix '%s' will be used\n", signalSufix.Data()); }
     else if(arg.find("--rebin")    !=string::npos && i+1<argc)  { sscanf(argv[i+1],"%i",&rebinVal); i++; printf("rebin = %i\n", rebinVal);}
+    else if(arg.find("--BackExtrapol")    !=string::npos) { BackExtrapol=true; printf("BackExtrapol = True\n");}
   }
   if(jsonFile.IsNull() || inFileUrl.IsNull() || histo.IsNull() || indexcut == -1 || mass==-1) { printHelp(); return -1; }
   if(AnalysisBins.size()==0)AnalysisBins.push_back("");
@@ -318,7 +324,11 @@ Shape_t getShapeFromFile(TFile* inF, TString ch, TString shapeName, int cutBin, 
          if(!hshape2D){
 //            if(varName==""){
                //replace by empty histogram (take inclusive histo to make sure it has same binning)
-               hshape2D = (TH2*)pdir->Get(shapeName+varName);
+               if(shapeName==histo && histoVBF!="" && ch.Contains("vbf")){
+                 hshape2D = (TH2*)pdir->Get(histoVBF+(isSignal?signalSufix:"")+varName);
+               }else{
+                 hshape2D = (TH2*)pdir->Get(shapeName+varName);
+               }
                if(hshape2D)hshape2D->Reset();
 //            }else{
 //               continue;
@@ -508,6 +518,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
         CCHistos[shape.bckg[i]->GetTitle()]->SetBinError(1+s*AnalysisBins.size()+b,VAL);
      }
 
+
      TString massStr("");if(mass>0) massStr += mass;
      for(size_t ip=0; ip<shape.signal.size(); ip++){
          TString proc(shape.signal[ip]->GetTitle());
@@ -587,6 +598,13 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
       errors->SetLineStyle(1);
       errors->SetLineColor(2);
       errors->Draw("2 same");
+
+
+      //show background fits (if any)
+      for(size_t i=0; i<shape.bckgFit.size(); i++){
+          shape.bckgFit[i]->Draw("same");
+      }
+
    }
 
    for(std::map<TString, TH1*>::iterator it=mapsig.begin(); it!=mapsig.end(); it++){
@@ -597,7 +615,7 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
 
 
   if(alldata){
-    //alldata->Draw("E1 same");
+    alldata->Draw("E1 same");
     if(s==0 && b==0)legA->AddEntry(alldata,alldata->GetTitle(),"P");
   }
   
@@ -649,8 +667,8 @@ void showShape(std::vector<TString>& selCh ,map<TString, Shape_t>& allShapes, TS
   c1->cd();
   TPaveText* T = new TPaveText(0.1,0.995,0.84,0.95, "NDC");
   T->SetFillColor(0);  T->SetFillStyle(0);  T->SetLineColor(0); T->SetBorderSize(0);  T->SetTextAlign(22);
-  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV, #scale[0.5]{#int}");// L=10.0  fb^{-1}");
-  }else{                         T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV, #scale[0.5]{#int}");// L=5.0  fb^{-1}");
+  if(systpostfix.Contains('8')){ T->AddText("CMS preliminary, #sqrt{s}=8.0 TeV");// L=10.0  fb^{-1}");
+  }else{                         T->AddText("CMS preliminary, #sqrt{s}=7.0 TeV");// L=5.0  fb^{-1}");
   }T->Draw();
   c1->Update();
   c1->SaveAs(SaveName+"_Shape.png");
@@ -1267,6 +1285,8 @@ std::cout << "TESTB\n";
 
    if(doInterf || signalSufix!="")RescaleForInterference(selCh,allShapes, histo);
 
+  //extrapolate backgrounds toward higher mt/met region to make sure that there is no empty bins
+  if(shape && BackExtrapol)extrapolateBackgroundsFromFit(selCh,allShapes,histo);
 
 
   //print event yields from the mt shapes
@@ -2051,6 +2071,121 @@ void doWZSubtraction(std::vector<TString>& selCh,TString ctrlCh,map<TString, Sha
         fclose(pFile);
      }
 }
+
+
+
+
+void extrapolateBackgroundsFromFit(std::vector<TString>& selCh,map<TString, Shape_t>& allShapes, TString mainHisto)
+{
+/*    for(size_t i=0;i<selCh.size();i++){
+    for(size_t b=0; b<AnalysisBins.size(); b++){   
+        if(!AnalysisBins[b].Contains("vbf"))continue;
+  
+        Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
+        for(size_t ibckg=0; ibckg<shapeChan_SI.bckg.size(); ibckg++){
+           TH1* histo = shapeChan_SI.bckg[ibckg];
+           double integralBefFit=histo->Integral();
+           if(integralBefFit<=0)continue;
+
+           int maxBin=histo->GetMaximumBin();
+           float xmin=histo->GetBinCenter(maxBin);
+           float xmax=histo->GetXaxis()->GetXmax();
+           TF1* ffunc=new TF1("ffunc","expo",xmin,xmax);
+
+//           TF1* ffunc=new TF1("ffunc","[0]*pow(x,[1])",xmin,xmax);
+//           ffunc->SetParLimits(1,-10,-3.5);
+
+//           TF1* ffunc=new TF1("ffunc","[0]*exp([1]*x+[2]*x*x)",xmin,xmax);
+//           ffunc->SetParLimits(1,-50,-3);
+//           ffunc->SetParLimits(2,-50,-3);
+
+//           TF1* ffunc=new TF1("ffunc","[0]+[1]*x+[2]*x*x",xmin,xmax);
+//           ffunc->SetParLimits(2,-1e9,0);
+
+//           TF1* ffunc=new TF1("ffunc","exp(-1*[0]*x)[1]",xmin,xmax);
+//           ffunc->SetParLimits(0,0,1000);
+//           ffunc->SetParLimits(1,0,1e9);
+
+//           int maxBin=histo->GetMaximumBin();
+//           float xmin=histo->GetXaxis()->GetXmin();
+//           float xmax=histo->GetXaxis()->GetXmax();
+//           TF1* ffunc = new TF1("ffunc","landau", xmin, xmax);
+
+
+           histo->Fit("ffunc","0R WW");
+           ffunc->SetLineColor(histo->GetFillColor());
+           ffunc->SetLineWidth(2);
+           shapeChan_SI.bckgFit.push_back(ffunc);
+           for(int x = maxBin+2; x<=histo->GetNbinsX();x++){
+              if(histo->GetBinContent(x)<=0){
+                 histo->SetBinContent(x, ffunc->Eval(histo->GetXaxis()->GetBinCenter(x)) );
+                 histo->SetBinError  (x, histo->GetBinContent(x) );
+              }
+           }
+
+           double integralAftFit=histo->Integral();
+           printf("Extrapolate background from fit for %s:  %f-->%f --> %6.2f\n", histo->GetTitle(), integralBefFit, integralAftFit, integralAftFit/integralBefFit);
+        }
+     }}
+*/
+
+
+    for(size_t i=0;i<selCh.size();i++){
+    for(size_t b=0; b<AnalysisBins.size(); b++){   
+        Shape_t& shapeChan_SI = allShapes.find(selCh[i]+AnalysisBins[b]+mainHisto)->second;
+        TH1* histo = shapeChan_SI.data;
+        double* xbins = NULL;  int nbins=0;
+        if(AnalysisBins[b].Contains("vbf")){
+           nbins = 3;
+           xbins = new double[nbins+1];
+           xbins[0] =  0;
+           xbins[1] = 70;
+           xbins[2] = histo->GetXaxis()->GetBinLowEdge(histo->GetXaxis()->FindBin(150));
+           xbins[3] = histo->GetXaxis()->GetBinLowEdge(histo->GetNbinsX()+1);
+        }else{
+           nbins = histo->GetXaxis()->FindBin(1000)+1;
+           xbins = new double[nbins+1];
+           for(int x=0;x<=histo->GetXaxis()->FindBin(1000)+1;x++){xbins[x]=histo->GetXaxis()->GetBinLowEdge(x);}
+           xbins[nbins] = histo->GetXaxis()->GetBinLowEdge(histo->GetNbinsX()+1);
+        }
+        printf("Rebinning as: "); for(int x=0;x<=nbins;x++){printf("%f - ", xbins[x]);}printf("\n");
+        shapeChan_SI.data = histo->Rebin(nbins, histo->GetName(), (double*)xbins);
+
+        histo = shapeChan_SI.totalBckg;
+        shapeChan_SI.totalBckg = histo->Rebin(nbins, histo->GetName(), (double*)xbins);
+
+        for(size_t ibckg=0; ibckg<shapeChan_SI.bckg.size(); ibckg++){
+           histo = shapeChan_SI.bckg[ibckg];
+           shapeChan_SI.bckg[ibckg] = histo->Rebin(nbins, histo->GetName(), (double*)xbins);
+
+           std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator vars = shapeChan_SI.bckgVars.find(histo->GetTitle());
+           if(vars!=shapeChan_SI.bckgVars.end()){
+              for(unsigned int v=0;v<vars->second.size();v++){
+                 histo = vars->second[v].second;
+                 vars->second[v].second = histo->Rebin(nbins, histo->GetName(), (double*)xbins);                 
+              }
+           }
+        }
+
+        for(size_t isign=0; isign<shapeChan_SI.signal.size(); isign++){
+           histo = shapeChan_SI.signal[isign];
+           shapeChan_SI.signal[isign] = histo->Rebin(nbins, histo->GetName(), (double*)xbins);
+
+           std::map<TString,std::vector<std::pair<TString, TH1*> > >::iterator vars = shapeChan_SI.signalVars.find(histo->GetTitle());
+           if(vars!=shapeChan_SI.signalVars.end()){
+              for(unsigned int v=0;v<vars->second.size();v++){
+                 histo = vars->second[v].second;
+                 vars->second[v].second = histo->Rebin(nbins, histo->GetName(), (double*)xbins);  
+              }
+           }
+        }
+
+     }}
+
+
+}
+
+
 
 void BlindData(std::vector<TString>& selCh, map<TString, Shape_t>& allShapes, TString mainHisto, bool addSignal){
     for(size_t i=0;i<selCh.size();i++){
