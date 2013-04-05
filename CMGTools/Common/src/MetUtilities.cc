@@ -108,6 +108,12 @@ void MetUtilities::cleanMet(std::vector<LorentzVector> &iVis,std::vector<JetInfo
     //     if(lRemoveJet && iAdd)  { iMet.first += iJets[i0].p4*iJets[i0].neutFrac;} //Add Jet back (ie removing it)
     //     if(lRemoveJet && !iAdd) { iMet.first -= iJets[i0].p4*iJets[i0].neutFrac;} //Add Jet back (when subtraced as in PUCMet)
   }
+
+  if(iMet.second<0.){//protect against negative energy sum
+    iMet.second=0.;
+    iMet.first*=0.;
+  }
+
 }
 std::pair<MetUtilities::LorentzVector,double> MetUtilities::TKMet(std::vector<std::pair<LorentzVector,double> > &iCands,double iDZ,int iLowDz) { 
   double            lSumEt = 0;
