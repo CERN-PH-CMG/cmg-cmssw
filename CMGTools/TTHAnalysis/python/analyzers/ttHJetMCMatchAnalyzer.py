@@ -25,6 +25,7 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
 
     def declareHandles(self):
         super(ttHJetMCMatchAnalyzer, self).declareHandles()
+        self.handles['genJet'] = AutoHandle( 'genJetSel', 'vector<cmg::PhysicsObjectWithPtr<edm::Ptr<reco::GenJet> > >' )
 
     def beginLoop(self):
         super(ttHJetMCMatchAnalyzer,self).beginLoop()
@@ -61,13 +62,40 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
             jet.mcMatchId   = (gen.sourceId     if gen != None else 0)
             jet.mcMatchFlav = (abs(gen.pdgId()) if gen != None else 0)
 
-    def process(self, iEvent, event):
+    def smearJets(self, event):
+        # https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiTopRefSyst#Jet_energy_resolution
+        match = matchObjectCollection2(event.cleanJets,
+                                       event.genJets,
+                                       deltaRMax = 0.5)
+        for jet in event.cleanJets:
+            gen = match[jet]
+            if gen != None:
+               genpt, jetpt, aeta = gen.pt(), jet.pt(), abs(jet.eta())
+               # from https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+               factor = 1.052;
+               if   aeta > 2.3: factor = 1.288
+               elif aeta > 1.7: factor = 1.134
+               elif aeta > 1.1: factor = 1.096
+               elif aeta > 0.5: factor = 1.057
+               ptscale = max(0.0, (jetpt + factor*(jetpt-genpt))/jetpt)
+               #print "get with pt %.1f (gen pt %.1f, ptscale = %.3f)" % (jetpt,genpt,ptscale)
+               event.deltaMetFromJetSmearing[0] -= (ptscale-1)*jet.rawFactor()*jet.px()
+               event.deltaMetFromJetSmearing[1] -= (ptscale-1)*jet.rawFactor()*jet.py()
+               jet.setP4(jet.p4()*ptscale)
+            #else: print "jet with pt %.1d, eta %.2f is unmatched" % (jet.pt(), jet.eta())
 
-        # if not MC, nothing to do
+    def process(self, iEvent, event):
+        ## define by how much the MET should be changed because of jet smearing
+        event.deltaMetFromJetSmearing = [0, 0]
+
+        ## if not MC, nothing to do
         if not self.cfg_comp.isMC: 
             return True
 
+        self.readCollections( iEvent )
+        event.genJets = [ x for x in self.handles['genJet'].product() ]
         self.matchJets(event)
         self.jetFlavour(event)
+        self.smearJets(event)
 
         return True

@@ -54,6 +54,7 @@ def bookLepton( tree, pName, isMC=False ):
     var(tree, '{pName}_jetChHadEnergyFraction'.format(pName=pName))
     var(tree, '{pName}_jetPhoMultiplicity'.format(pName=pName), int)
     var(tree, '{pName}_jetPhoEnergyFraction'.format(pName=pName))
+    var(tree, '{pName}_jetMuEnergyFraction'.format(pName=pName))
     var(tree, '{pName}_innerHits'.format(pName=pName), int)
     var(tree, '{pName}_mvaId'.format(pName=pName))
     var(tree, '{pName}_tightId'.format(pName=pName))
@@ -65,6 +66,27 @@ def bookLepton( tree, pName, isMC=False ):
         var(tree, '{pName}_mcDeltaRB'.format(pName=pName))
         var(tree, '{pName}_mvaNoCorr'.format(pName=pName))
         var(tree, '{pName}_mvaDoubleCorr'.format(pName=pName))
+    # charge misid vars (Jason)
+    var(tree, '{pName}_eleQ_gsfCtfQ'.format(pName=pName), int)
+    var(tree, '{pName}_eleQ_pRelDiff'.format(pName=pName))
+    # ele ID vars (Riccardo)
+    var(tree, '{pName}_eleId_validKF'.format(pName=pName), int)
+    var(tree, '{pName}_eleId_fbrem'.format(pName=pName))
+    var(tree, '{pName}_eleId_kfchi2'.format(pName=pName))
+    var(tree, '{pName}_eleId_kfhits'.format(pName=pName))
+    var(tree, '{pName}_eleId_gsfchi2'.format(pName=pName))
+    var(tree, '{pName}_eleId_deta'.format(pName=pName))
+    var(tree, '{pName}_eleId_dphi'.format(pName=pName))
+    #var(tree, '{pName}_eleId_etawidth'.format(pName=pName))
+    #var(tree, '{pName}_eleId_phiwidth'.format(pName=pName))
+    var(tree, '{pName}_eleId_detacalo'.format(pName=pName))
+    var(tree, '{pName}_eleId_see'.format(pName=pName))
+    var(tree, '{pName}_eleId_e1x5e5x5'.format(pName=pName))
+    #var(tree, '{pName}_eleId_HoE'.format(pName=pName))
+    var(tree, '{pName}_eleId_EoP'.format(pName=pName))
+    var(tree, '{pName}_eleId_IoEmIoP'.format(pName=pName))
+    var(tree, '{pName}_eleId_eleEoPout'.format(pName=pName))
+    var(tree, '{pName}_eleId_PreShowerOverRaw'.format(pName=pName))
     
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
@@ -91,17 +113,19 @@ def fillLepton( tree, pName, lepton ):
         fill(tree, '{pName}_jetChHadEnergyFraction'.format(pName=pName), lepton.jet.component(1).fraction() if hasattr(lepton.jet, 'component') else 0)
         fill(tree, '{pName}_jetPhoMultiplicity'.format(pName=pName), lepton.jet.component(4).number() if hasattr(lepton.jet, 'component') else 0)
         fill(tree, '{pName}_jetPhoEnergyFraction'.format(pName=pName), lepton.jet.component(4).fraction() if hasattr(lepton.jet, 'component') else 0)
+        fill(tree, '{pName}_jetMuEnergyFraction'.format(pName=pName), lepton.jet.component(3).fraction() if hasattr(lepton.jet, 'component') else 0)
     if abs(lepton.pdgId())==11:
         fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.numberOfHits())
         fill(tree, '{pName}_mvaId'.format(pName=pName), lepton.mvaNonTrigV0())
+        fill(tree, '{pName}_tightId'.format(pName=pName), lepton.mvaTrigV0())
     if abs(lepton.pdgId())==13:
-        fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.sourcePtr().innerTrack().hitPattern().numberOfValidPixelHits())
+        fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.sourcePtr().innerTrack().numberOfValidHits())
+        fill(tree, '{pName}_tightId'.format(pName=pName), lepton.tightId())
     if hasattr(lepton, 'jet'):    
         fill(tree, '{pName}_mva'.format(pName=pName), lepton.mvaValue)
         if hasattr(lepton, 'mvaNoCorr'):
             fill(tree, '{pName}_mvaNoCorr'.format(pName=pName), lepton.mvaNoCorr)
             fill(tree, '{pName}_mvaDoubleCorr'.format(pName=pName), lepton.mvaDoubleCorr)
-        fill(tree, '{pName}_tightId'.format(pName=pName), lepton.tightId())
     if hasattr(lepton, 'mcMatchId'):
         fill(tree, '{pName}_mcMatchId'.format(pName=pName), lepton.mcMatchId)
         fill(tree, '{pName}_mcMatchAny'.format(pName=pName), lepton.mcMatchAny)
@@ -112,6 +136,32 @@ def fillLepton( tree, pName, lepton ):
     elif abs(lepton.pdgId()) == 11:
         fill(tree, '{pName}_tightCharge'.format(pName=pName), 
                 lepton.sourcePtr().isGsfCtfScPixChargeConsistent() + lepton.sourcePtr().isGsfScPixChargeConsistent())
+    # charge misid vars (Jason)
+    if abs(lepton.pdgId()) == 11:
+        ele = lepton.sourcePtr()
+        fill(tree, '{pName}_eleQ_pRelDiff'.format(pName=pName), abs(ele.superCluster().energy()-ele.gsfTrack().p())/ele.gsfTrack().p())
+        fill(tree, '{pName}_eleQ_gsfCtfQ'.format(pName=pName), ele.isGsfCtfChargeConsistent())
+    # ele ID vars (Riccardo)
+    if abs(lepton.pdgId()) == 11:
+        ele = lepton.sourcePtr()
+        fill(tree, '{pName}_eleId_validKF'.format(pName=pName), ele.closestCtfTrackRef().isNonnull())
+        fill(tree, '{pName}_eleId_fbrem'.format(pName=pName), ele.fbrem())
+        fill(tree, '{pName}_eleId_kfchi2'.format(pName=pName), ele.closestCtfTrackRef().normalizedChi2() if ele.closestCtfTrackRef().isNonnull() else 0)
+        fill(tree, '{pName}_eleId_kfhits'.format(pName=pName), ele.closestCtfTrackRef().hitPattern().trackerLayersWithMeasurement() if ele.closestCtfTrackRef().isNonnull() else -1)
+        fill(tree, '{pName}_eleId_gsfchi2'.format(pName=pName), ele.gsfTrack().normalizedChi2())
+        fill(tree, '{pName}_eleId_deta'.format(pName=pName), ele.deltaEtaSuperClusterTrackAtVtx())
+        fill(tree, '{pName}_eleId_dphi'.format(pName=pName), ele.deltaPhiSuperClusterTrackAtVtx())
+        #fill(tree, '{pName}_eleId_etawidth'.format(pName=pName), ele.superCluster().etaWidth()) #(not used?))
+        #fill(tree, '{pName}_eleId_phiwidth'.format(pName=pName), ele.superCluster().phiWidth()) #(not used?))
+        fill(tree, '{pName}_eleId_detacalo'.format(pName=pName), ele.deltaEtaSeedClusterTrackAtCalo())
+        fill(tree, '{pName}_eleId_see'.format(pName=pName), ele.sigmaIetaIeta())
+        fill(tree, '{pName}_eleId_e1x5e5x5'.format(pName=pName), 1.-ele.e1x5()/ele.e5x5() if ele.e5x5() != 0. else  -1.)
+        #fill(tree, '{pName}_eleId_HoE'.format(pName=pName), ele.hadronicOverEm()) #(not used?))
+        fill(tree, '{pName}_eleId_EoP'.format(pName=pName), ele.eSuperClusterOverP())
+        #fill(tree, '{pName}_eleId_IoEmIoP'.format(pName=pName), 1.0/ele.superCluster().energy() - 1.0/ele.gsfTrack().p() )
+        fill(tree, '{pName}_eleId_IoEmIoP'.format(pName=pName), 1.0/ele.ecalEnergy() - 1.0/ele.p() )
+        fill(tree, '{pName}_eleId_eleEoPout'.format(pName=pName), ele.eEleClusterOverPout())
+        fill(tree, '{pName}_eleId_PreShowerOverRaw'.format(pName=pName), ele.superCluster().preshowerEnergy()/ele.superCluster().rawEnergy())
    
      
 
