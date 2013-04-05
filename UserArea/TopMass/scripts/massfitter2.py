@@ -86,8 +86,10 @@ class toyResult():
         self.bias = {}
         self.biasError = {}
         self.toyavgHisto = None
+        self.integral_templ = 0.
+        # self.integral_toys
 
-    def doCalibrationStep(self,workspace,nToys,nSamples,fittype,floatSignal):
+    def doCalibrationStep(self,workspace,nToys,nSamples,fittype,floatSignal,outdir):
         ## get the model for the fit, the signal and the background
         print 'retrieving the pdfs'
         #mod_fit  = workspace.pdf(self.channel+'model')
@@ -95,8 +97,8 @@ class toyResult():
         #mod_fit  = workspace.pdf('flxy_'+self.channel+'sim')
         #mod_fit  = workspace.pdf(self.channel+'f'+self.variable+'_'+self.channel+self.mass)
         mod_bkg  = workspace.pdf(self.channel+self.variable+'_bkg') 
-        mod_bkg_c    = workspace.pdf(self.channel+self.variable+'_cbkg')
-        mod_bkg_udsg = workspace.pdf(self.channel+self.variable+'_udesgbkg')
+        # mod_bkg_c    = workspace.pdf(self.channel+self.variable+'_cbkg')
+        # mod_bkg_udsg = workspace.pdf(self.channel+self.variable+'_udsgbkg')
         ## take also systematics samples as "mass"
         if self.mass not in masses:
             syst = self.mass
@@ -107,6 +109,10 @@ class toyResult():
         mod_25q  = workspace.function(self.channel+'25qInv')
         mod_50q  = workspace.function(self.channel+'50qInv')
         mod_mean = workspace.function(self.channel+'meanInv')
+
+        # mod_sig  = workspace.pdf(self.channel+self.variable+'_'+self.channel+self.mass)
+
+
          
         ## the top mass and the relative signal fractions are not constant
         ## define the range of mtop
@@ -117,24 +123,53 @@ class toyResult():
         ## var.setConstant(kFALSE)
         ## var.setRange(0.,5.)
 
-        ## new model including the fractions form the flavour fit
-        workspace.var(self.channel+'byields').setConstant(kTRUE)
-        workspace.var(self.channel+'cyields').setConstant(kTRUE)
+        # ## new model including the fractions form the flavour fit
+        # workspace.var(self.channel+'byields').setConstant(kTRUE)
+        # workspace.var(self.channel+'cyields').setConstant(kTRUE)
 
-        #mod_gen = mod_fit
+        #mod_gen = mod_fit 
   
-        mod_gen = workspace.pdf(self.channel+self.variable+'_'+self.channel+self.mass)
-        #mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg_c, mod_bkg_udsg),RooArgList(workspace.var(self.channel+'byields'),workspace.var(self.channel+'cyields')))
+        # mod_gen = workspace.pdf(self.channel+self.variable+'_'+self.channel+self.mass)
+        # dummy = RooRealVar('dummy', 'dummy', 1.0)
+        sigfrac = workspace.var(self.channel+'sigfrac')
+        print 'signal fraction: ',sigfrac.getVal()
+        #sigfrac.setVal(sigfrac.getVal() * 1.1)
+        sigfrac.setConstant(kTRUE)
+        print 'signal fraction new: ',sigfrac.getVal()
+        mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg),RooArgList(sigfrac))
+         
+        # byields = workspace.var(self.channel+'byields')
+        # byields.setConstant(kTRUE) 
+        # cyields = workspace.var(self.channel+'cyields')
+        # cyields.setConstant(kTRUE) 
+
+        # mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg),RooArgList(byields))
+
+        #mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg_udsg, mod_bkg_c),RooArgList(byields,dummy))
+        # mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg_c),RooArgList(byields))
+        #mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg_c),RooArgList(dummy))
+
+        #mod_gen = workspace.pdf(self.channel+self.variable+'_cbkg')
+
+        getattr(workspace,'import')(mod_gen)
+
+
         
-        byields = workspace.var(self.channel+'byields')
-        byields.setConstant(kTRUE) 
-        ## sigfrac = workspace.var(self.channel+'sigfrac')
-        ## sigfrac.setConstant(kTRUE) 
+        ## control plot for the generation step
+        c_toy_templ = TCanvas('c_toy_templ_'+self.channel+'_'+self.mass,'c_toy_templ_'+self.channel+'_'+self.mass,600,600)
+        toy_templ_frame = workspace.var(self.variable).frame()
+        mod_gen.plotOn(toy_templ_frame,RooFit.LineStyle(1),RooFit.LineWidth(1))
+        mod_gen.plotOn(toy_templ_frame,RooFit.Components(self.channel+self.variable+'_cbkg'),RooFit.LineStyle(2),RooFit.LineWidth(1))
+        mod_gen.plotOn(toy_templ_frame,RooFit.Components(self.channel+self.variable+'_udsgbkg'),RooFit.LineStyle(3),RooFit.LineColor(2),RooFit.LineWidth(1))
+        mod_sig.plotOn(toy_templ_frame,RooFit.LineStyle(1),RooFit.LineColor(8),RooFit.LineWidth(1))
+        toy_templ_frame.Draw()
+        c_toy_templ.Print(outdir+'/c_toy_templ_'+self.channel+'_'+self.mass+'.png')
 
-        #mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg),RooArgList(workspace.var(self.channel+'byields')))
-        #mod_gen = RooAddPdf('s+b_model_'+self.channel+'_'+self.mass,'s+b_model_'+self.channel+'_'+self.mass,RooArgList(mod_sig, mod_bkg),RooArgList(byields))
-
-
+        print 'mean (mod_gen): ',mod_gen.mean(workspace.var(self.variable)).getVal()
+        print 'mean (mod_sig): ',mod_sig.mean(workspace.var(self.variable)).getVal()
+        # print 'mean (mod_bkg_c): ',mod_bkg_c.mean(workspace.var(self.variable)).getVal()
+        # print 'mean (mod_bkg_udsg): ',mod_bkg_udsg.mean(workspace.var(self.variable)).getVal()
+                
         
         #getattr(w,'import')(mod_gen) ## FIXME is this needed?
         
@@ -198,6 +233,7 @@ class toyResult():
         yq=array('d',[0,   0,  0,   0])
 
         toy_avg = []
+        
 
         for toy in xrange(nToys):
 
@@ -207,6 +243,7 @@ class toyResult():
 
             #generate (binned or not)
             toyData=None
+            print '***************************mean (mod_gen): ',mod_gen.mean(workspace.var(self.variable)).getVal()
             if fittype=='plr' or fittype=='ll':
                 toyData=mod_gen.generateBinned(RooArgSet(observable),nSamples)
             else:
@@ -214,8 +251,29 @@ class toyResult():
 
             #momenta of the distribution
             binnedData=toyData.createHistogram("tmp",observable)
+            print 'generated mean toydata:',toyData.mean(workspace.var(self.variable))
+            print 'generated mean:',binnedData.GetMean()
+
+            
+##             c_toy_exp = TCanvas('c_toy_exp_'+str(toy)+'_'+self.channel+'_'+self.mass,'c_toy_exp_'+str(toy)+'_'+self.channel+'_'+self.mass,600,600)
+##             toy_templ_frame = workspace.var(self.variable).frame()
+##             toyData.plotOn(toy_templ_frame)
+##             mod_gen.plotOn(toy_templ_frame,RooFit.LineStyle(1),RooFit.LineWidth(1))
+##             mod_sig.plotOn(toy_templ_frame,RooFit.LineStyle(1),RooFit.LineColor(8),RooFit.LineWidth(1))
+##             toy_templ_frame.Draw()
+##             c_toy_exp.Print('c_toy_exp_'+str(toy)+'_'+self.channel+'_'+self.mass+'.png')
+
+
+
+
+            # c_toy = TCanvas('c_toy','c_toy',500,500)
+            # binnedData.Draw()
+            # c_toy.Update()
+            # c_toy.Print('toy_distr_'+self.channel+'_'+self.mass+'_'+str(toy)+'.pdf')
+            # c_toy.Print('toy_distr_'+self.channel+'_'+self.mass+'_'+str(toy)+'.png')
 
             toy_avg.append(binnedData.GetMean())
+            #toy_avg.append(workspace.pdf(self.channel+self.variable+'_'+self.channel+self.mass).createHistogram("blatmp",observable).GetMean())
  
             observable.setVal(binnedData.GetMean())
             res=mod_mean.getVal()
@@ -259,21 +317,23 @@ class toyResult():
 
         for method in resultsSummary:
             print method
-            biasH, pullH = self.makeControlPlots(method,resultsSummary[method])
+            biasH, pullH = self.makeControlPlots(method,resultsSummary[method],outdir)
             self.biasHistos[method] = biasH
 
-        toy_avgH = ROOT.TH1F('toyavg_histo_'+self.channel+'_'+self.mass, ';average from toy [cm];entries/bin',  100,  0., 2.5)
+        toy_avgH = ROOT.TH1F('toyavg_histo_'+self.channel+'_'+self.mass, ';average from toy [cm];entries/bin',  1000,  0., 2.5)
         for a in toy_avg:
             toy_avgH.Fill(a)
         self.toyavgHisto = toy_avgH
 
 
         
-    def makeControlPlots(self,method,resultsSummary):
+    def makeControlPlots(self,method,resultsSummary,outdir):
 
         #define and fill the histograms
         fitResH  = ROOT.TH1F(method+'res_'+self.channel+'_'+self.mass,        ';Fitted m_{top} [GeV];Toys / (1 GeV)',                    50,  150,   200)
-        biasH    = ROOT.TH1F(method+'bias_histo_'+self.channel+'_'+self.mass, ';Fitted m_{top}-Generated m_{top} [GeV];Toys / 0.5 GeV',  50,  -12.25, 12.75)
+        # biasH    = ROOT.TH1F(method+'bias_histo_'+self.channel+'_'+self.mass, ';Fitted m_{top}-Generated m_{top} [GeV];Toys / 0.5 GeV',  30,  -7.25, 7.75)
+        # biasH    = ROOT.TH1F(method+'bias_histo_'+self.channel+'_'+self.mass, ';Fitted m_{top}-Generated m_{top} [GeV];Toys / 0.5 GeV',  100,  -35., 15)
+        biasH    = ROOT.TH1F(method+'bias_histo_'+self.channel+'_'+self.mass, ';Fitted m_{top}-Generated m_{top} [GeV];Toys / 0.5 GeV',  100,  -15., 15)
         asymErrH = ROOT.TH1F(method+'asymerr_'+self.channel+'_'+self.mass,    ';#sigma_{m_{top}} [GeV];Toys / (0.25 GeV)',               100,  -12.375, 12.625)
         errH     = ROOT.TH1F(method+'err_'+self.channel+'_'+self.mass,        ';#sigma_{m_{top}} [GeV];Toys / (0.5 GeV)',                25,  0,     12.5)
         pullH    = ROOT.TH1F(method+'pull_'+self.channel+'_'+self.mass,       ';Pull;Toys / (0.05)',                                     50,  -2.45, 2.55)
@@ -304,8 +364,8 @@ class toyResult():
         c_mtop.cd(4)
         pullH.Draw()
         c_mtop.Update()
-        c_mtop.Print('c_mtop_'+method+'_'+self.channel+'_'+self.mass+'.pdf')
-        c_mtop.Print('c_mtop_'+method+'_'+self.channel+'_'+self.mass+'.png')
+        c_mtop.Print(outdir+'/c_mtop_'+method+'_'+self.channel+'_'+self.mass+'.eps')
+        c_mtop.Print(outdir+'/c_mtop_'+method+'_'+self.channel+'_'+self.mass+'.png')
 
         c_bias = TCanvas('c_bias_'+self.channel+'_'+self.mass,'c_bias_'+self.channel+'_'+self.mass,400,400)
         gafunc = TF1('gaus','gaus',-20.,20)
@@ -315,11 +375,11 @@ class toyResult():
         ## p0: height, p1: mean, p2: width, 
         biasH.Fit('gaus')
         mean = gafunc.GetParameter(1)
-        width = gafunc.GetParError(2)
+        width = gafunc.GetParError(1)
         biasH.Draw()
         gafunc.Draw("same")
-        c_bias.Print('c_bias_'+method+'_'+self.channel+'_'+self.mass+'.pdf')
-        c_bias.Print('c_bias_'+method+'_'+self.channel+'_'+self.mass+'.png')
+        c_bias.Print(outdir+'/c_bias_'+method+'_'+self.channel+'_'+self.mass+'.eps')
+        c_bias.Print(outdir+'/c_bias_'+method+'_'+self.channel+'_'+self.mass+'.png')
         
         # self.bias = biasH.GetMean()
         # self.biasError = biasH.GetMeanError()
@@ -405,9 +465,8 @@ class toyResult():
 
 
 
-## FIXME: read masses from command line
-#masses = [ '1615','1635','1665','1695','1725','1755','1785','1815','1845' ]
-masses = [ '1635','1665','1695','1725','1755','1785','1815','1845' ]
+## FIXME: read masses from command line 
+masses = [ '1615','1635','1665','1695','1725','1755','1785','1815','1845' ] 
 #masses = ['1695','1725'] 
 ## FIXME: read channels from command line
 channels = ['mu']
@@ -429,6 +488,8 @@ def main():
     parser.add_option('-m', '--mass'      ,    dest='mass'           , help='If only one mass is processed.'                                      , default=None)
     parser.add_option('-n', '--ntoys'     ,    dest='ntoys'          , help='Number of toy experiments.'                                          , default=25      ,type = int)
     parser.add_option('-s', '--samplesize',    dest='samplesize'     , help='Number of events per toy experiment.'                                , default=50000   ,type = int)
+    parser.add_option('-b', '--batch'      ,    dest='batch'           , help='Use this flag to run root in batch mode.'            , action='store_true'        , default=False)
+    parser.add_option('-o', '--outputdir' ,    dest='outputdir'      , help='Name of the local output directory.'                        , default='.')
 
     (opt, args) = parser.parse_args()
 
@@ -461,6 +522,11 @@ def main():
         sys.exit(2)
 
 
+    if opt.batch:
+        sys.argv.append( '-b' )
+        ROOT.gROOT.SetBatch()
+ 
+
     ## FIXME: add this flag from the command line 
     ## run ROOT in batch mode
     ## sys.argv.append( '-b' )
@@ -488,7 +554,7 @@ def main():
         nominal.variable = 'lxy'
         nominal.channel = opt.channel
         nominal.mass = '1725'
-        nominal.doCalibrationStep(workspace, opt.ntoys, opt.samplesize, opt.fittype,opt.floatsignal)
+        nominal.doCalibrationStep(workspace, opt.ntoys, opt.samplesize, opt.fittype,opt.floatsignal,opt.outputdir)
 
 
 
@@ -498,11 +564,43 @@ def main():
             syst.variable = 'lxy'
             syst.channel = opt.channel
             syst.mass = systematic
-            syst.doCalibrationStep(workspace, opt.ntoys, opt.samplesize, opt.fittype,opt.floatsignal)
+            syst.doCalibrationStep(workspace, opt.ntoys, opt.samplesize, opt.fittype,opt.floatsignal,opt.outputdir)
             allSystematics[systematic] = syst
 
         ## 
         outfile = open(systSummaryFileName,'w')
+        outfile.write('number of toy experiment:\t'+str(opt.ntoys)+'\n')
+        outfile.write('samplesize per toy experiment:\t'+str(opt.samplesize)+'\n')
+        outfile.write('-'*100+'\n')
+        outfile.write('mean method: \n')
+        outfile.write('-'*100+'\n')
+        outfile.write('nominal bias:\t'+str(nominal.bias['mean'])+' \t+- '+str(nominal.biasError['mean'])+'\n')
+        for syst in allSystematics:
+            outfile.write(syst+' bias:\t'+str(allSystematics[syst].bias['mean'])+' \t+- '+str(allSystematics[syst].biasError['mean'])+'\n')
+        outfile.write('-'*100+'\n')
+        for syst in allSystematics:
+            outfile.write(syst+' uncertainty:\t'+str(nominal.bias['mean']-allSystematics[syst].bias['mean'])+' \t+- '+str(sqrt(pow(nominal.biasError['mean'],2)+pow(allSystematics[syst].biasError['mean'],2)))+'\n')
+
+        outfile.write('-'*100+'\n')
+        outfile.write('q50 method: \n')
+        outfile.write('-'*100+'\n')
+        outfile.write('nominal bias:\t'+str(nominal.bias['q50'])+' \t+- '+str(nominal.biasError['q50'])+'\n')
+        for syst in allSystematics:
+            outfile.write(syst+' bias:\t'+str(allSystematics[syst].bias['q50'])+' \t+- '+str(allSystematics[syst].biasError['q50'])+'\n')
+        outfile.write('-'*100+'\n')
+        for syst in allSystematics:
+            outfile.write(syst+' uncertainty:\t'+str(nominal.bias['q50']-allSystematics[syst].bias['q50'])+' \t+- '+str(sqrt(pow(nominal.biasError['q50'],2)+pow(allSystematics[syst].biasError['q50'],2)))+'\n')
+
+        outfile.write('-'*100+'\n')
+        outfile.write('q25 method: \n')
+        outfile.write('-'*100+'\n')
+        outfile.write('nominal bias:\t'+str(nominal.bias['q25'])+' \t+- '+str(nominal.biasError['q25'])+'\n')
+        for syst in allSystematics:
+            outfile.write(syst+' bias:\t'+str(allSystematics[syst].bias['q25'])+' \t+- '+str(allSystematics[syst].biasError['q25'])+'\n')
+        outfile.write('-'*100+'\n')
+        for syst in allSystematics:
+            outfile.write(syst+' uncertainty:\t'+str(nominal.bias['q25']-allSystematics[syst].bias['q25'])+' \t+- '+str(sqrt(pow(nominal.biasError['q25'],2)+pow(allSystematics[syst].biasError['q25'],2)))+'\n')
+
         outfile.write('number of toy experiment:\t'+str(opt.ntoys)+'\n')
         outfile.write('samplesize per toy experiment:\t'+str(opt.samplesize)+'\n')
         outfile.write('-'*100+'\n')
@@ -545,20 +643,20 @@ def main():
                 thisResult.variable = 'lxy'
                 thisResult.channel = chan
                 thisResult.mass = mass
-                thisResult.doCalibrationStep(workspace,opt.ntoys,opt.samplesize,opt.fittype,opt.floatsignal)
+                thisResult.doCalibrationStep(workspace,opt.ntoys,opt.samplesize,opt.fittype,opt.floatsignal,opt.outputdir)
                 print thisResult.biasHistos
                 tag = thisResult.channel+'_'+thisResult.mass
                 allFitResults[tag] = thisResult
 
         ## save the bias hitograms in a root file
         if len(channels) == 1 and len(masses) == 1:
-            biasoutfileName = 'bias_hists_'+channels[0]+'_'+masses[0]+'.root'
+            biasoutfileName = opt.outputdir+'/bias_hists_'+channels[0]+'_'+masses[0]+'.root'
         elif len(channels) == 1:
-            biasoutfileName = 'bias_hists_'+channels[0]+'.root'
+            biasoutfileName = opt.outputdir+'/bias_hists_'+channels[0]+'.root'
         elif len(masses) == 1:
-            biasoutfileName = 'bias_hists_'+masses[0]+'.root'
+            biasoutfileName = opt.outputdir+'/bias_hists_'+masses[0]+'.root'
         else:
-            biasoutfileName = 'bias_hists.root'
+            biasoutfileName = opt.outputdir+'/bias_hists.root'
 
         ## biasoutfile = ROOT.TFile().Open(biasoutfileName,'RECREATE')
         ## for tag in allFitResults:
@@ -623,6 +721,7 @@ def main():
         rfile = openTFile(rootfile)
         channels = getAllChannels(rfile)
         masses   = getAllMasses(rfile)
+
         print masses
         print channels
 
@@ -637,6 +736,8 @@ def main():
                 hist = getHist(rfile, 'toyavg_histo_'+chan+'_'+mass)
                 h_toy_avg.SetBinContent(massbindict[mass],hist.GetMean())
                 h_toy_avg.SetBinError(massbindict[mass],hist.GetMeanError())
+            h_toy_avg.SetMinimum(0.)
+            h_toy_avg.SetMaximum(2.)
             all_h_toyavg.append(h_toy_avg)
 
 
@@ -676,8 +777,12 @@ def main():
                     ## p0: height, p1: mean, p2: width, 
                     hist.Fit('f1')
                     mean = gfunc.GetParameter(1)
-                    width = gfunc.GetParError(1)
-                    #width = gfunc.GetParameter(2)
+                    #width = gfunc.GetParError(1)
+                    # Ntempl = 500000
+                    # Ndata  = 50000
+                    # Nmc = 500.
+                    # width = gfunc.GetParameter(2) / (sqrt(float(opt.ntoys)))
+                    width = gfunc.GetParameter(2)
                     hist.Draw('e1')
                     gfunc.Draw("same")
 
@@ -700,20 +805,22 @@ def main():
                     leg.AddEntry(gfunc,'Gaussian fit','l')
                     leg.Draw()
                 
-                    c_hist_fit.Print('c_bias_fitted_'+method+'_'+chan+'_'+mass+'.pdf')
-                    c_hist_fit.Print('c_bias_fitted_'+method+'_'+chan+'_'+mass+'.png')
+                    c_hist_fit.Print(opt.outputdir+'/c_bias_fitted_'+method+'_'+chan+'_'+mass+'.eps')
+                    c_hist_fit.Print(opt.outputdir+'/c_bias_fitted_'+method+'_'+chan+'_'+mass+'.png')
 
                 
                     m = float(mass)/10.
-                    ## h_bias.SetBinContent(massbindict[mass],hist.GetMean())
-                    ## h_bias.SetBinError(massbindict[mass],hist.GetMeanError())
+                    # h_bias.SetBinContent(massbindict[mass],hist.GetMean())
+                    # h_bias.SetBinError(massbindict[mass],hist.GetMeanError())
                     h_bias.SetBinContent(massbindict[mass],mean)
                     h_bias.SetBinError(massbindict[mass],width)
 
                 all_h_bias.append(h_bias)
 
+
+        ##  here
         ## write gbias summary to a file
-        outfile = ROOT.TFile().Open('bias_summary_'+chan+'.root','RECREATE')
+        outfile = ROOT.TFile().Open(opt.outputdir+'/bias_summary_'+chan+'.root','RECREATE')
         for h_bias in all_h_bias:
             h_bias.Write()
         for h_toy_avg in all_h_toyavg:
@@ -826,6 +933,13 @@ def main():
 
             print '******************************************* fitting'
 
+            h_stat_up = h_bias.Clone('h_stat_up')
+            h_stat_down = h_bias.Clone('h_stat_down')
+            for i in xrange(1,h_bias.GetNbinsX()+1):
+                h_stat_up.SetBinContent(i, h_stat_up.GetBinContent(i)+h_stat_up.GetBinError(i))
+                h_stat_down.SetBinContent(i, h_stat_down.GetBinContent(i)+h_stat_down.GetBinError(i))
+
+
 
             ROOT.gStyle.SetOptTitle(0)
             ROOT.gStyle.SetOptStat(0)
@@ -842,6 +956,26 @@ def main():
             h_bias.SetMinimum(-5)
             h_bias.Draw('e1')
             lfunc.Draw('lsame')
+
+            lfunc_up = TF1('lf_up','[0]+[1]*x',160,185)
+            lfunc_up.SetLineWidth(3)
+            lfunc_up.SetLineColor(8)
+            lfunc_up.SetLineStyle(3)
+            lfunc_up.SetParameters(0.,0.)
+            h_stat_up.Fit('lf_up')
+            a_up = lfunc_up.GetParameter(0)
+            b_up = lfunc_up.GetParameter(1)
+            lfunc_up.Draw('lsame')
+
+            lfunc_down = TF1('lf_down','[0]+[1]*x',160,185)
+            lfunc_down.SetLineWidth(3)
+            lfunc_down.SetLineColor(8)
+            lfunc_down.SetLineStyle(3)
+            lfunc_down.SetParameters(0.,0.)
+            h_stat_down.Fit('lf_down')
+            a_down = lfunc_down.GetParameter(0)
+            b_down = lfunc_down.GetParameter(1)
+            lfunc_down.Draw('lsame')
 
 
             l = ROOT.TLatex()
@@ -868,7 +1002,7 @@ def main():
             line.SetLineStyle(2)
             line.Draw('L')
 
-            c_bias_fitted.Print('c_bias_fitted_'+chan+'.pdf')
+            c_bias_fitted.Print('c_bias_fitted_'+chan+'.eps')
             c_bias_fitted.Print('c_bias_fitted_'+chan+'.png')
 
             print'*********************************************'
@@ -906,8 +1040,8 @@ def main():
             #            workspace.var(''+chan+'thr_bkg').setConstant(kTRUE)    
             workspace.var(''+chan+'wid').setConstant(kTRUE)    
             workspace.var(''+chan+'wid_bkg').setConstant(kTRUE)
-            #workspace.var(''+chan+'sigfrac').setConstant(kTRUE)
-
+            workspace.var(''+chan+'sigfrac').setConstant(kTRUE)
+ 
 
             c_data_fit = TCanvas('c_data_fit_'+chan,'c_data_fit_'+chan,400,400)
 
@@ -931,6 +1065,7 @@ def main():
 
             newframe = lxy.frame()
             workspace.pdf('new'+chan+'model').fitTo(data,RooCmdArg(RooFit.FitOptions(RooFit.Save(kTRUE),RooFit.SumW2Error(kTRUE))))
+            #workspace.pdf(chan+'model').fitTo(data,RooCmdArg(RooFit.FitOptions(RooFit.Save(kTRUE),RooFit.SumW2Error(kTRUE))))
 
             fit_res = mtop.getVal()
             fit_error = mtop.getError()
@@ -944,12 +1079,13 @@ def main():
             print 'calibration error: ',calib_error
             print 'statistical error: ',stat_error
             print 'produt error: ',stat_error*calib_error
+            print 'signal fraction: ',workspace.var(''+chan+'sigfrac').getVal()
             print '--------------------------'
 
 
             data.plotOn(newframe)
-            #workspace.pdf(chan+'model').plotOn(newframe)
-            workspace.pdf('new'+chan+'model').plotOn(newframe)
+            workspace.pdf(chan+'model').plotOn(newframe)
+            #workspace.pdf('new'+chan+'model').plotOn(newframe)
             newframe.Draw()
 
             
@@ -967,12 +1103,14 @@ def main():
             pave.Draw();
 
 
-            c_data_fit.Print('c_data_fit_'+chan+'.pdf')
+            c_data_fit.Print('c_data_fit_'+chan+'.eps')
             c_data_fit.Print('c_data_fit_'+chan+'.png')
         
         
             ## and this for the mean, median, q25 methods:
             calibs = {}
+            calibs_up = {}
+            calibs_down = {}
             for method in ['mean', 'q25', 'q50']:
                 
                 c_bias_fitted = TCanvas('c_bias_fitted_'+method+'_'+chan,'c_bias_fitted_'+method+'_'+chan,400,400)
@@ -981,25 +1119,61 @@ def main():
                 h_bias.GetXaxis().SetTitle('m_{gen} [GeV]')
                 h_bias.GetYaxis().SetTitle('m_{fit toys} - m_{gen} [GeV]')
                 h_bias.SetMarkerStyle(20)
+                h_bias.SetMaximum(5)
+                h_bias.SetMinimum(-10)
 
                 print '******************************************* fitting'
+
+
+                h_stat_up = h_bias.Clone('h_stat_up')
+                h_stat_down = h_bias.Clone('h_stat_down')
+                for i in xrange(1,h_bias.GetNbinsX()+1):
+                    h_stat_up.SetBinContent(i, h_stat_up.GetBinContent(i)+h_stat_up.GetBinError(i))
+                    h_stat_down.SetBinContent(i, h_stat_down.GetBinContent(i)-h_stat_down.GetBinError(i))
+
+
+                temp = []
+                TF1.DrawClone._creates = False
+
 
 
                 ROOT.gStyle.SetOptTitle(0)
                 ROOT.gStyle.SetOptStat(0)
                 ROOT.gStyle.SetOptFit(1)
 
-                lfunc = TF1('lf','[0]+[1]*x',165,180)
-                lfunc.SetLineWidth(3)
-                lfunc.SetLineColor(8)
-                lfunc.SetParameters(0.,0.)
-                h_bias.Fit('lf')
-                a = lfunc.GetParameter(0)
-                b = lfunc.GetParameter(1)
-                h_bias.SetMaximum(5)
-                h_bias.SetMinimum(-5)
+                lfunc2 = TF1('lf2'+method,'[0]+[1]*x',159,187)
+                lfunc2.SetLineWidth(3)
+                lfunc2.SetLineColor(8)
+                lfunc2.SetParameters(0.,0.)
+                h_bias.Fit('lf2'+method,'0')
+                a = lfunc2.GetParameter(0)
+                b = lfunc2.GetParameter(1)
                 h_bias.Draw('e1')
-                lfunc.Draw('lsame')
+                temp.append(lfunc2.DrawClone('lsame'))
+
+                lfunc_up2 = TF1('lf_up2'+method,'[0]+[1]*x',159,187)
+                lfunc_up2.SetLineWidth(3)
+                lfunc_up2.SetLineColor(4)
+                lfunc_up2.SetLineStyle(2)
+                lfunc_up2.SetParameters(0.,0.)
+                h_stat_up.Fit('lf_up2'+method,'0')
+                temp.append(lfunc_up2.DrawClone('lsame'))
+                a_up = lfunc_up2.GetParameter(0)
+                b_up = lfunc_up2.GetParameter(1)
+                # h_stat_up.Draw('e1 same')
+
+                lfunc_down2 = TF1('lf_down2'+method,'[0]+[1]*x',159,187)
+                lfunc_down2.SetLineWidth(3)
+                lfunc_down2.SetLineColor(4)
+                lfunc_down2.SetLineStyle(2)
+                lfunc_down2.SetParameters(0.,0.)
+                h_stat_down.Fit('lf_down2'+method,'0')
+                temp.append(lfunc_down2.DrawClone('lsame'))
+                a_down = lfunc_down2.GetParameter(0)
+                b_down = lfunc_down2.GetParameter(1)
+                # h_stat_down.Draw('e1 same')
+
+                h_bias.Draw('e1 same')
 
 
                 l = ROOT.TLatex()
@@ -1019,7 +1193,7 @@ def main():
                 line.SetLineStyle(2)
                 line.Draw('L')
 
-                c_bias_fitted.Print('c_bias_fitted_'+method+'_'+chan+'.pdf')
+                c_bias_fitted.Print('c_bias_fitted_'+method+'_'+chan+'.eps')
                 c_bias_fitted.Print('c_bias_fitted_'+method+'_'+chan+'.png')
 
 
@@ -1028,30 +1202,143 @@ def main():
                 print 'linear function: '+str(a)+' + '+str(b)+' * mtop'
 
                 calibs[method] = [a,b]
+                calibs_up[method] = [a_up,b_up]
+                calibs_down[method] = [a_down,b_down]
                 
 
 
+                c_toy_avg = TCanvas('c_toy_avg_'+method+'_'+chan,'c_toy_avg_'+method+'_'+chan,600,400)
+                c_toy_avg.SetLeftMargin(0.15)
+
+
+                h_avg = getHist(rfile,'h_toy_avg_'+chan)
+                h_avg.GetXaxis().SetTitle('m_{gen} [GeV]')
+                h_avg.GetYaxis().SetTitle('<L_{xy}> [cm]')
+                h_avg.GetYaxis().SetTitleOffset(1.5)
+                h_avg.SetMarkerStyle(20)
+                h_avg.SetMaximum(1.211)
+                h_avg.SetMinimum(1.0)
+                h_avg.Draw('e1')
+
+                leg = TLegend(0.2,0.6,0.55,0.7)
+                leg.SetFillColor(0)
+                leg.SetLineColor(0)
+                leg.SetHeader('CMS Preliminary')
+                leg.AddEntry(h_avg, chan+' + jets','p')
+                leg.Draw()
+
+
+                c_toy_avg.Print('c_toy_avg_'+method+'_'+chan+'.eps')
+                c_toy_avg.Print('c_toy_avg_'+method+'_'+chan+'.png')
+
+
+
             pa_mean = RooRealVar('pa_mean','pa_mean',calibs['mean'][0])
-            pa_mean.setConstant(kTRUE)
-            pb_mean = RooRealVar('pb_mean','pb_mean',calibs['mean'][1]+1)
+            pb_mean = RooRealVar('pb_mean','pb_mean',calibs['mean'][1])
+            getattr(workspace,'import')(pa_mean)
+            getattr(workspace,'import')(pb_mean)
             pb_mean.setConstant(kTRUE)
+            pa_mean.setConstant(kTRUE)
+
+            pa_q50 = RooRealVar('pa_q50','pa_q50',calibs['q50'][0])
+            pb_q50 = RooRealVar('pb_q50','pb_q50',calibs['q50'][1])
+            getattr(workspace,'import')(pa_q50)
+            getattr(workspace,'import')(pb_q50)
+            pb_q50.setConstant(kTRUE)
+            pa_q50.setConstant(kTRUE)
+
+                                                    
+            pa_mean_up = RooRealVar('pa_mean_up','pa_mean_up',calibs_up['mean'][0])
+            pb_mean_up = RooRealVar('pb_mean_up','pb_mean_up',calibs_up['mean'][1])
+            getattr(workspace,'import')(pa_mean_up)
+            getattr(workspace,'import')(pb_mean_up)
+            pb_mean_up.setConstant(kTRUE)
+            pa_mean_up.setConstant(kTRUE)
+                                                    
+            pa_mean_down = RooRealVar('pa_mean_down','pa_mean_down',calibs_down['mean'][0])
+            pb_mean_down = RooRealVar('pb_mean_down','pb_mean_down',calibs_down['mean'][1])
+            getattr(workspace,'import')(pa_mean_down)
+            getattr(workspace,'import')(pb_mean_down)
+            pb_mean_down.setConstant(kTRUE)
+            pa_mean_down.setConstant(kTRUE)
+                                                    
+            print '**************************************'
+            print 'Statistical uncertainty @ 172.5 GeV:'
+            print 'mean stat. up   : ', (172.5-(pa_mean.getVal() + pb_mean.getVal()*172.5))-(172.5-(pa_mean_up.getVal() + pb_mean_up.getVal()*172.5))
+            print 'mean stat. down : ', (172.5-(pa_mean.getVal() + pb_mean.getVal()*172.5))-(172.5-(pa_mean_down.getVal() + pb_mean_down.getVal()*172.5))
+            print '**************************************'
+            print 'median stat. up   : ', (172.5-(calibs['q50'][0] + calibs['q50'][1]*172.5))-(172.5-(calibs_up['q50'][0] + calibs_up['q50'][1]*172.5))
+            print 'median stat. down : ', (172.5-(calibs['q50'][0] + calibs['q50'][1]*172.5))-(172.5-(calibs_down['q50'][0] + calibs_down['q50'][1]*172.5))
+            print '**************************************'
+                                                    
+
 
             mod_25q  = workspace.function(chan+'25qInv')
             mod_50q  = workspace.function(chan+'50qInv')
             mod_mean = workspace.function(chan+'meanInv')
 
-            mod_meancalib = RooFormulaVar('mod_meancalib','mod_meancalib','@0+@1*@2',RooArgList(pa_mean,pb_mean,mtop))
-            getattr(workspace,'import')(mod_meancalib)
-            newmod_mean = workspace.factory("EDIT::new"+chan+"mod_mean("+chan+"meanInv,mtop=mod_meancalib)")
-            #getattr(workspace,'import')(newmod_mean)
-            newmod_mean.Print()
 
             observable=workspace.var('lxy')
             binnedData=data.createHistogram("tmp",observable)
             observable.setVal(binnedData.GetMean())
-            res=newmod_mean.getVal()
-            print '***',res
+            print 'mean in data: ',binnedData.GetMean()
+            
+            res=mod_mean.getVal()
+            
+            xq=array('d',[0.25,0.5,0.75,1])
+            yq=array('d',[0,   0,  0,   0])
+            observable_q50=workspace.var('lxy')
+            binnedData_q50=data.createHistogram("tmp_q50",observable_q50)
+            binnedData_q50.GetQuantiles(4,yq,xq)
+            observable_q50.setVal(yq[1])
+            print 'median in data: ',yq[1]
+            res_q50=mod_50q.getVal()
 
+
+            # observable_q25=workspace.var('lxy')
+
+            # observable_q25.setVal(yq[0])
+            # res_q25=mod_25q.getVal()
+
+            print 'RESULTS:'
+            print '**************************************'
+            print '*uncorrected'
+            print 'mean method: ',res
+            print 'median method: ',res_q50
+
+
+            # print 'q25 method: ',res_q25
+
+            # print pa_mean.getVal()
+
+            # mod_mean.Print()
+
+            #            mod_meancalib = RooFormulaVar('mod_meancalib','mod_meancalib','(1-@1)*@2-@0',RooArgList(pa_mean,pb_mean,mtop))
+            # mod_meancalib = RooFormulaVar('mod_meancalib','mod_meancalib','@0+@1*@2',RooArgList(pa_mean,pb_mean,mtop))
+            # getattr(workspace,'import')(mod_meancalib)
+            # mod_meancalib.Print()
+            # newmod_mean = workspace.factory("EDIT::new"+chan+"mod_mean("+chan+"meanInv,mtop=mod_meancalib)")
+            # getattr(workspace,'import')(newmod_mean)
+            # newmod_mean.Print()
+
+            res_cor = res-(pa_mean.getVal() + pb_mean.getVal()*res)
+            res_q50_cor = res_q50-(calibs['q50'][0] + calibs['q50'][1]*res_q50)
+
+            # res=newmod_mean.getVal()
+            print '**************************************'
+            # print 'w correction: ',newmod_mean.getVal()
+            print '*corrected'
+            print 'mean method  : ', res_cor
+            print 'median method: ', res_q50_cor
+            # print 'alternative: ', res-(pa_q25.getVal() + pb_q25.getVal()*res)
+            # print 'alternative: ', res-(pa_q50.getVal() + pb_q50.getVal()*res)
+
+            ## get the statistical uncertainty
+            res_err_up = res-(pa_mean_up.getVal() + pb_mean_up.getVal()*res)
+            res_err_down = res-(pa_mean_down.getVal() + pb_mean_down.getVal()*res)
+            stat_err_up = res_cor - res_err_up
+            stat_err_down = res_cor - res_err_down
+            print 'stat error: ', stat_err_up, stat_err_down
 
         
             mod_mean.Print()
@@ -1078,6 +1365,14 @@ def main():
             observable.setVal(yq[1])
             res=mod_50q.getVal()
             print res
+
+
+            print '**************************************'
+            print 'Calibration error:'
+            observable.setVal(1.109)
+            print 'mean@1725: ',res-mod_mean.getVal()
+            observable_q50.setVal(0.835)
+            print 'median@1725: ',res_q50-mod_50q.getVal()
 
 
 if __name__ == '__main__':
