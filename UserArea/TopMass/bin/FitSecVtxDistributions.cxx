@@ -372,18 +372,19 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  // cout << "mean of signal pdf" << lxySignalPdf->mean(lxy)->getVal() << std::endl;
 
 
+	  masses[catName.Data()]    = it->first;
+	  templates[catName.Data()] = h_signal;
+	  rooTemplates[catName.Data()] = new RooDataHist(catName+"templ",catName+"templ",lxy,h_signal);
+
 	  // Add the background to the signal  
+	  //	  TH1F *h_signal=(TH1F *)it->second->Clone(ch+"blxyh");
 	  for(map<TString, TH1F *>::iterator bit=chShapes[is].lxy_bckg.begin(); bit != chShapes[is].lxy_bckg.end(); bit++)
 	    {
-	  // h_signal->Add(chShapes[is].lxy_bckg["b"]);
-	      h_signal->Add(bit->second);
+	      h_signal->Add((TH1F *)bit->second->Clone("bkgrd"));
 	    }
 
 	  //bbbfix
 	  // set the tgraph points
-	  masses[catName.Data()]    = it->first;
-	  templates[catName.Data()] = h_signal;
-	  rooTemplates[catName.Data()] = new RooDataHist(catName+"templ",catName+"templ",lxy,h_signal);
 	  h_signal->GetQuantiles(nq,yq,xq);
 	  gr25->SetPoint(gr25->GetN(),it->first,yq[0]);
 	  gr50->SetPoint(gr50->GetN(),it->first,yq[1]);
