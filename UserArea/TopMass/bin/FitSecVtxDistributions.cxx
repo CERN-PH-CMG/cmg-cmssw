@@ -321,9 +321,6 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       // // DATA
       // //
 
-      // std::cout << "Flavor fraction fit 5" << std::endl;
-      // end: flavour fit
-
       //lxy templates
       RooDataHist *lxy_data = new RooDataHist(ch+"data",ch+"data",lxy,chShapes[is].lxy_data);
       w->import(*lxy_data);
@@ -332,9 +329,6 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       // 
       // MC SIGNAL
       //
-
-      std::cout << "Flavor fraction fit 6" << std::endl;
-
 
       Double_t signalExp=0.;
 
@@ -359,42 +353,36 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  signalExp = h_signal->Integral(0,h_signal->GetNbinsX()+1);
 	  std::cout << "signal expected: " << signalExp << std::endl;
 	  }	  
-	  // std::cout << "*** (signal only) " << h_signal->GetMean() << std::endl;
-
-
-	  // h_signal->Smooth(0);
 
 	  // store the hitogram pdf in the workspace in order to throw the toy experiments from them and not from the fit model
 	  RooDataHist *lxySignalData = new RooDataHist(ch+"lxy_"+catName,    ch+"lxy_"+catName,     RooArgList(lxy), Import(*h_signal));
 	  RooHistPdf *lxySignalPdf   = new RooHistPdf(lxySignalData->GetName(), lxySignalData->GetName(), RooArgSet(lxy), *lxySignalData);
 	  w->import(*lxySignalPdf);
 
-	  // cout << "mean of signal pdf" << lxySignalPdf->mean(lxy)->getVal() << std::endl;
-
-
 	  masses[catName.Data()]    = it->first;
 	  templates[catName.Data()] = h_signal;
 	  rooTemplates[catName.Data()] = new RooDataHist(catName+"templ",catName+"templ",lxy,h_signal);
 
 	  // Add the background to the signal  
-	  //	  TH1F *h_signal=(TH1F *)it->second->Clone(ch+"blxyh");
+	  TH1F *h_signal2=(TH1F *)it->second->Clone(ch+"blxyh");
 	  for(map<TString, TH1F *>::iterator bit=chShapes[is].lxy_bckg.begin(); bit != chShapes[is].lxy_bckg.end(); bit++)
 	    {
-	      h_signal->Add((TH1F *)bit->second->Clone("bkgrd"));
+	      Double_t bckgExp=bit->second->Integral(0,bit->second->GetNbinsX()+1);
+	      TH1F *h_bkgrd=(TH1F *)bit->second->Clone("bkgrd");
+	      Double_t frac=signalExp/(signalExp+bckgExp);
+	      h_signal2->Scale(frac);
+	      h_bkgrd->Scale(1.-frac);
+	      h_signal2->Add(h_bkgrd);
 	    }
 
 	  //bbbfix
 	  // set the tgraph points
-	  h_signal->GetQuantiles(nq,yq,xq);
+	  h_signal2->GetQuantiles(nq,yq,xq);
 	  gr25->SetPoint(gr25->GetN(),it->first,yq[0]);
 	  gr50->SetPoint(gr50->GetN(),it->first,yq[1]);
-	  grmean->SetPoint(grmean->GetN(),it->first,h_signal->GetMean());
-	  std::cout << "*** (other b's summed) " << it->first << h_signal->GetMean() << std::endl;
-	  //grmean->SetPoint(grmean->GetN(),it->first,lxySignalPdf->createHistogram("blatmp",lxy)->GetMean());
-
+	  grmean->SetPoint(grmean->GetN(),it->first,h_signal2->GetMean());
 	}
 
-      std::cout << "Flavor fraction fit 7" << std::endl;
 
       RooDataHist combTempl("combTempl","combTempl",RooArgList(lxy),templateCategories,rooTemplates);  
       w->import(RooArgSet(mtop,templateCategories),RenameConflictNodes(ch));
@@ -417,9 +405,6 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
       RooGenericPdf Flxy_pdf(ch+"flxy","",F_form.Data(),RooArgSet(thr,wid,lxy,pfunc,qfunc)); 
       w->import(Flxy_pdf);
 
-      std::cout << "Flavor fraction fit 8" << std::endl;
-
-
       //clone for each sub-mass and fix mass 
       w->factory("SIMCLONE::flxy_"+ch+"sim( "+ch+"flxy, $SplitParam({mtop},"+ch+"categs) )") ;
       for(std::map<string,float>::iterator mIt = masses.begin(); mIt != masses.end(); mIt++)  
@@ -433,8 +418,6 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	}
 
       
-      std::cout << "Flavor fraction fit 9" << std::endl;
-
       //now fit the template parameters and plot the results
       float fitrange = 5.0;
       RooFitResult *fitres = w->pdf("flxy_"+ch+"sim")->fitTo(combTempl,Range(0.,fitrange),Save(kTRUE),SumW2Error(kTRUE)); 
@@ -520,9 +503,6 @@ RooWorkspace *defineWorkspace(std::vector<SecVtxShape_t> &chShapes)
 	  pave->SetTextFont(42);
 	  pave->Draw();
 	}
-
-      std::cout << "Flavor fraction fit 10" << std::endl;
-
 
       c->SaveAs("SignalPDFs_"+ch+".png");  
       c->SaveAs("SignalPDFs_"+ch+".eps");  
