@@ -223,7 +223,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         if self.cfg_comp.isMC: 
             fill( tr, 'puWeight', event.eventWeight )
             self.fillMCVariables(iEvent, event)
-              
+
         self.tree.tree.Fill()      
 
     def declareMCVariables(self):
@@ -246,6 +246,14 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
  
         var( tr, 'nGoodLepsMatchId',  int) 
         var( tr, 'nGoodLepsMatchAny', int) 
+
+
+        self.pdfWeights = []
+        if hasattr(self.cfg_ana, "PDFWeights") and len(self.cfg_ana.PDFWeights) > 0:
+            self.pdfWeights = self.cfg_ana.PDFWeights
+            for (pdf,nvals) in self.pdfWeights:
+                for i in range(nvals):
+                    var( tr, 'pdfWeight_%s_%d' % (pdf,i))
  
     def fillMCVariables(self, iEvent, event):
         tr = self.tree
@@ -273,4 +281,12 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
 
         fill( tr, 'nGoodLepsMatchId',  sum([x.mcMatchId  > 0 for x in event.selectedLeptons]) )
         fill( tr, 'nGoodLepsMatchAny', sum([x.mcMatchAny > 0 for x in event.selectedLeptons]) )
+   
+         
+        for (pdf,nvals) in self.pdfWeights:
+            if len(event.pdfWeights[pdf]) != nvals:
+                raise RuntimeError, "PDF lenght mismatch for %s, declared %d but the event has %d" % (pdf,nvals,event.pdfWeights[pdf])
+            for i,w in enumerate(event.pdfWeights[pdf]):
+                fill(tr, 'pdfWeight_%s_%d' % (pdf,i), w)
+ 
         

@@ -38,6 +38,8 @@ triggersMC_mue   = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_T
                     "HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*"
                    ]
 
+triggers_1mu = [ 'HLT_IsoMu24_eta2p1_v*' ]
+triggersMC_1mu  = triggers_1mu;
 triggersFR_1mu  = [ 'HLT_Mu17_v*', 'HLT_Mu12_v*', 'HLT_Mu24_eta2p1_v*', 'HLT_Mu24_v*', 'HLT_Mu30_eta2p1_v*', 'HLT_Mu30_v*', 'HLT_Mu40_eta2p1_v*', 'HLT_Mu40_v*', 'HLT_IsoMu24_eta2p1_v*' ]
 triggersFR_mumu = [ 'HLT_Mu17_Mu8_v*', 'HLT_Mu17_TkMu8_v*' ]
 triggersFR_1e   = [ 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele17_CaloIdL_CaloIsoVL_v*', 'HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele8__CaloIdL_CaloIsoVL_v*']
@@ -83,6 +85,10 @@ ZZTo4e   =kreator.makeMCComponent('ZZTo4e','/ZZTo4e_8TeV-powheg-pythia6/Summer12
 TTJets   =kreator.makeMCComponent('TTJets','/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 TtW      =kreator.makeMCComponent('TtW','/T_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 TbartW   =kreator.makeMCComponent('TbartW','/Tbar_tW-channel-DR_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+Ttch      =kreator.makeMCComponent('Ttch','/T_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+Tbartch   =kreator.makeMCComponent('Tbartch','/Tbar_t-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+Tsch      =kreator.makeMCComponent('Tsch','/T_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+Tbarsch   =kreator.makeMCComponent('Tbartsh','/Tbar_s-channel_TuneZ2star_8TeV-powheg-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 W1Jets   =kreator.makeMCComponent('W1Jets','/W1JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 W2Jets   =kreator.makeMCComponent('W2Jets','/W2JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 W3Jets   =kreator.makeMCComponent('W3Jets','/W3JetsToLNu_TuneZ2Star_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
@@ -97,6 +103,7 @@ QCDMuPt15=kreator.makeMCComponent('QCDMuPt15','/QCD_Pt_20_MuEnrichedPt_15_TuneZ2
 mcSamples=[
 TTH,TTWJets,TTZJets,WWWJets,WWZJets,WGs2MU,WGs2E,WGs2Tau,ZG,TTG,TTWWJets,DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTLep,WWJets,WZJets,ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4tau,ZZTo4e,TTJets,TtW,TbartW,W1Jets,W2Jets,W3Jets,W4Jets,WGToLNuG,WJets]#,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf]
 
+extraMcSamples = [QCDMuPt15,Ttch,Tbartch,Tsch,Tbarsch]
 
 #-----------DATA---------------
 
@@ -307,15 +314,30 @@ dataSamplesMuE=[MuEGAB,MuEGC,MuEGD,MuEGRec,MuEGBadSIP]
 
 dataSamples1Mu=[SingleMuAB,SingleMuC,SingleMuD,SingleMuRec]
 
+####################################################################################################################
+#-----------PRIVATE FAST SIM---------------
+
+TTZRunsCMS = [ 1,445,6671,8510,9122,31166,28119,22429,17821,14290,11291,10367 ]
+FastSim_TTZJets = kreator.makePrivateMCComponent('FastSim_TTZJets','/store/caf/user/gpetrucc/ttH/fastsim/TTZJets', ['cmgTuple.8TeV_TTZJets_madgraph_run%d.root' % r for r in TTZRunsCMS])
+FastSim_TTZJets_MUp = kreator.makePrivateMCComponent('FastSim_TTZJets_matchingUp','/store/caf/user/gpetrucc/ttH/fastsim/TTZJets_matchingUp', ['cmgTuple.8TeV_TTZJets_madgraph_run%d_matchingUp.root' % r for r in TTZRunsCMS])
+FastSim_TTZJets_MDn = kreator.makePrivateMCComponent('FastSim_TTZJets_matchingDown','/store/caf/user/gpetrucc/ttH/fastsim/TTZJets_matchingDown', ['cmgTuple.8TeV_TTZJets_madgraph_run%d_matchingDown.root' % r for r in TTZRunsCMS])
+
+TTWRunsCMS = [ 143217067, 143217068, 143217069, 143217070, 143217071, 143217072, 143217073, 143217075, 143217076, 143217078, 143217079, 143217080 ]
+FastSim_TTWJets = kreator.makePrivateMCComponent('FastSim_TTWJets','/store/caf/user/gpetrucc/ttH/fastsim/TTWJets', ['cmgTuple.TTWJets_8TeV-madgraph_%d.root' % r for r in TTWRunsCMS])
+FastSim_TTWJets_MUp = kreator.makePrivateMCComponent('FastSim_TTWJets_matchingUp','/store/caf/user/gpetrucc/ttH/fastsim/TTWJets_matchingUp', ['cmgTuple.TTWJets_8TeV-madgraph_%d_matchingUp.root' % r for r in TTWRunsCMS])
+FastSim_TTWJets_MDn = kreator.makePrivateMCComponent('FastSim_TTWJets_matchingDown','/store/caf/user/gpetrucc/ttH/fastsim/TTWJets_matchingDown', ['cmgTuple.TTWJets_8TeV-madgraph_%d_matchingDown.root' % r for r in TTWRunsCMS])
+
+fastSimSamples = [ FastSim_TTZJets, FastSim_TTZJets_MUp, FastSim_TTZJets_MDn,
+                   FastSim_TTWJets, FastSim_TTWJets_MUp, FastSim_TTWJets_MDn ]
 
 from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
 
 #Define splitting
-for comp in mcSamples:
+for comp in mcSamples + fastSimSamples + extraMcSamples:
     comp.isMC = True
     comp.isData = False
-    comp.splitFactor = 200 #is needed for WJets 
+    comp.splitFactor = 200 if comp.name == "WJets" else 50
     comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012

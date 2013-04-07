@@ -189,6 +189,11 @@ class ttHLepEventAnalyzer( Analyzer ):
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
+        if hasattr(self.cfg_ana, 'minJets25'):
+            n25 = len([ j for j in event.cleanJets if j.pt() > 25 ])
+            if n25 < self.cfg_ana.minJets25: 
+                return False
+
         eventNumber = iEvent.eventAuxiliary().id().event()
 
         event.bjetsLoose  = [ j for j in event.cleanJets if j.getSelection("cuts_csv_loose")  ]
