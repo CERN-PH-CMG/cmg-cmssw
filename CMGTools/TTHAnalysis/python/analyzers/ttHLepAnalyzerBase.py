@@ -190,8 +190,10 @@ class ttHLepAnalyzerBase( Analyzer ):
         ret = False
         if len(event.selectedLeptons) >= self.cfg_ana.minGoodLeptons:
             ret = True
-        if self.cfg_ana.doSSLeptons and len(event.selectedLeptons) >= 2:
-            if event.selectedLeptons[0].charge() == event.selectedLeptons[1].charge():
-                ret = True
+        if hasattr(self.cfg_ana, 'maxGoodLeptons') and len(event.selectedLeptons) > self.cfg_ana.maxGoodLeptons:
+            ret = False
+        #if self.cfg_ana.doSSLeptons and len(event.selectedLeptons) >= 2:
+        #    if event.selectedLeptons[0].charge() == event.selectedLeptons[1].charge():
+        #        ret = True
 
         return ret

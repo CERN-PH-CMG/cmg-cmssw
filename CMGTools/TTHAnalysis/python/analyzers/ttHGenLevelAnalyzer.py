@@ -17,7 +17,6 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 
 from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
 from CMGTools.RootTools.physicsobjects.genutils import *
-
         
 class ttHGenLevelAnalyzer( Analyzer ):
     """Do generator-level analysis of a ttH->leptons decay:
@@ -43,8 +42,9 @@ class ttHGenLevelAnalyzer( Analyzer ):
     """
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ttHGenLevelAnalyzer,self).__init__(cfg_ana,cfg_comp,looperName)
-
-
+        self.doPDFWeights = hasattr(self.cfg_ana, "PDFWeights") and len(self.cfg_ana.PDFWeights) > 0
+        if self.doPDFWeights:
+            self.pdfWeightInit = False
     #---------------------------------------------
     # DECLARATION OF HANDLES OF GEN LEVEL OBJECTS 
     #---------------------------------------------
@@ -56,6 +56,8 @@ class ttHGenLevelAnalyzer( Analyzer ):
         #mc information
         self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
+        if self.doPDFWeights:
+            self.mchandles['pdfstuff'] = AutoHandle( 'generator', 'GenEventInfoProduct' )
 
     def beginLoop(self):
         super(ttHGenLevelAnalyzer,self).beginLoop()
@@ -161,6 +163,23 @@ class ttHGenLevelAnalyzer( Analyzer ):
                 print "Generator level b quarks from top:\n", "\n".join(["\t%s" % p for p in event.genbquarks])
                 print "Generator level quarks from W, Z decays:\n", "\n".join(["\t%s" % p for p in event.genwzquarks])
 
+    def initPDFWeights(self):
+        from ROOT import PdfWeightProducerTool
+        self.pdfWeightInit = True
+        self.pdfWeightTool = PdfWeightProducerTool()
+        for pdf in self.cfg_ana.PDFWeights:
+            self.pdfWeightTool.addPdfSet(pdf+".LHgrid")
+        self.pdfWeightTool.beginJob()
+
+    def makePDFWeights(self, event):
+        if not self.pdfWeightInit: self.initPDFWeights()
+        self.pdfWeightTool.processEvent(self.mchandles['pdfstuff'].product())
+        event.pdfWeights = {}
+        for pdf in self.cfg_ana.PDFWeights:
+            ws = self.pdfWeightTool.getWeights(pdf+".LHgrid")
+            event.pdfWeights[pdf] = [w for w in ws]
+            #print "Produced %d weights for %s: %s" % (len(ws),pdf,event.pdfWeights[pdf])
+
     def process(self, iEvent, event):
         self.readCollections( iEvent )
 
@@ -182,4 +201,7 @@ class ttHGenLevelAnalyzer( Analyzer ):
             if event.genHiggsDecayMode not in self.cfg_ana.filterHiggsDecays:
                 return False
 
+        # do PDF weights, if requested
+        if self.doPDFWeights:
+            self.makePDFWeights(event)
         return True

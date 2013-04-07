@@ -19,6 +19,21 @@ class ComponentCreator(object):
  #        print 'Skim Efficiency for ',name,'=', component.skimEfficiency
          return component
 
+    def makePrivateMCComponent(self,name,dataset,files):
+        
+         component = cfg.MCComponent(
+             dataset=dataset,
+             name = name,
+             files = ['root://eoscms//eos/cms%s/%s' % (dataset,f) for f in files],
+             xSection = 1,
+             nGenEvents = 1,
+             triggers = [],
+             effCorrFactor = 1,
+#             skimEfficiency = self.getSkimEfficiency(dataset,user)
+         )
+
+ #        print 'Skim Efficiency for ',name,'=', component.skimEfficiency
+         return component
 
     def makeDataComponent(self,name,datasets,user,pattern):
          files=[]
