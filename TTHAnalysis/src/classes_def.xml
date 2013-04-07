@@ -3,4 +3,6 @@
     <class name="PyTMVATool" transient="true" />
     <class name="CMGMuonCleanerBySegmentsAlgo" transient="true" />
     <class name="ElectronEnergyCalibrator" transient="true" />
+    <class name="DistributionRemapper" transient="true" />
+    <class name="PdfWeightProducerTool" transient="true" />
 </lcgdict>
