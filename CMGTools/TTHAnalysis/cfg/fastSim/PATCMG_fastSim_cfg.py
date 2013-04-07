@@ -154,9 +154,9 @@ process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
 #FIXME now keeping the whole event content...
 # process.out.outputCommands.append('keep *_*_*_*')
 
-process.outpath = cms.EndPath(
-    process.out
-    )
+#process.outpath = cms.EndPath(
+#    process.out
+#    )
 
 ########################################################
 ## CMG output definition
@@ -171,9 +171,7 @@ process.outcmg = cms.OutputModule(
     dropMetaData = cms.untracked.string('PRIOR')
     )
 
-process.outpath += process.outcmg
-
-process.outcmgpath = cms.EndPath(process.outcmg)
+process.outpath = cms.EndPath(process.outcmg)
 
 
 ########################################################
@@ -199,7 +197,7 @@ print 'Global tag       : ', process.GlobalTag.globaltag
 
 from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
 process.schedule = getSchedule(process, runOnMC, runOnFastSim)
-process.schedule.append( process.outcmgpath )
+process.schedule.extend([process.outpath])
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")

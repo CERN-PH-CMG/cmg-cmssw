@@ -1,8 +1,4 @@
-# Auto generated configuration file
-# using: 
-# Revision: 1.381.2.13 
-# Source: /local/reps/CMSSW/CMSSW/Configuration/PyReleaseValidation/python/ConfigBuilder.py,v 
-# with command line options: Configuration/GenProduction/python/EightTeV/Hadronizer_MgmMatchTuneZ2star_8TeV_madgraph_tauola_cff.py --filein=file:/afs/cern.ch/work/g/gpetrucc/GENS/MadGraph5_v2_0_0_beta2/ttW_01jets_lo/Events/run_01/unweighted_events.lhe -s GEN,FASTSIM,HLT:GRun --pileup=2012_Summer_inTimeOnly --geometry DB --conditions=auto:startup_GRun --eventcontent=AODSIM --datatier GEN-SIM-DIGI-RECO -n 1000 --no_exec
+#### FASTSIM + CMG in one go
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('HLT')
@@ -23,7 +19,7 @@ process.load('HLTrigger.Configuration.HLT_GRun_Famos_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(10)
 )
 
 # Input source
@@ -35,18 +31,16 @@ process.source = cms.Source("PoolSource",
 process.options = cms.untracked.PSet(
 )
 
-
 # Output definition
-
-process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
-    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
-    outputCommands = process.AODSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('out.root'),
-    dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string(''),
-        dataTier = cms.untracked.string('GEN-SIM-DIGI-RECO')
-    ),
-)
+#process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
+#    eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
+#    outputCommands = process.AODSIMEventContent.outputCommands,
+#    fileName = cms.untracked.string('aodsim.root'),
+#    dataset = cms.untracked.PSet(
+#        filterName = cms.untracked.string(''),
+#        dataTier = cms.untracked.string('GEN-SIM-DIGI-RECO')
+#    ),
+#)
 
 # Additional output definition
 
@@ -63,13 +57,14 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup_GRun', '')
 
 # Path and EndPath definitions
 process.reconstruction = cms.Path(process.reconstructionWithFamos)
-process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
-process.AODSIMoutput_step = cms.EndPath(process.AODSIMoutput)
+#process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
+#process.AODSIMoutput_step = cms.EndPath(process.AODSIMoutput)
 
 # Schedule definition
 process.schedule = cms.Schedule()
 process.schedule.extend(process.HLTSchedule)
-process.schedule.extend([process.reconstruction,process.AODSIMoutput_step])
+#process.schedule.extend([process.reconstruction,process.AODSIMoutput_step])
+process.schedule.extend([process.reconstruction])
 
 # customisation of the process.
 
@@ -79,4 +74,46 @@ from HLTrigger.Configuration.customizeHLTforMC import customizeHLTforMC
 #call to customisation function customizeHLTforMC imported from HLTrigger.Configuration.customizeHLTforMC
 process = customizeHLTforMC(process)
 
-# End of customisation functions
+###=================================================================================================================
+###========  PREPARE FOR SUBPROCESS  ===============================================================================
+###=================================================================================================================
+
+MAIN_PROCESS = process
+
+#print "NOW PROCESS NAME IS ",process.name_()," AND PROCESS ID IS ",id(process)
+
+import os, subprocess, tempfile
+
+tmpf = tempfile.NamedTemporaryFile(delete=False)
+tmpf.close()
+
+dumpcode = """dumpf = open(r'%s', 'w');
+dumpf.write(process.dumpPython());
+dumpf.close();
+exit(); """ % tmpf.name
+
+print "WILL FULLY EXPAND PATCMG_fastSim_cfg.py INTO %s" % tmpf.name
+
+subp = subprocess.Popen(["python", "-i", "PATCMG_fastSim_cfg.py"], stdin=subprocess.PIPE, bufsize=-1)
+subp.communicate(dumpcode)
+
+subp.wait()
+
+#print "WILL NOW READ %s" % tmpf.name
+execfile(tmpf.name)
+#print "NOW PROCESS NAME IS ",process.name_()," AND PROCESS ID IS ",id(process)
+
+os.unlink(tmpf.name)
+del process.source
+
+###=================================================================================================================
+###========  FINALIZE FOR SUBPROCESS  ==============================================================================
+###=================================================================================================================
+
+#### =========== SET THIS AS SUBPROCESS ================
+MAIN_PROCESS.subProcess = cms.SubProcess(process)
+
+#### =========== AND PUT BACK THE MAIN AS PROCESS ======
+process = MAIN_PROCESS
+
+#print "NOW PROCESS NAME IS ",process.name_()," AND PROCESS ID IS ",id(process)
