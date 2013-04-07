@@ -4,6 +4,9 @@ import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import *
 
+PDFWeights = []
+#PDFWeights = [ ("cteq66",44), ("NNPDF21_100",101), ("MSTW2008lo68cl",41) ]
+#PDFWeights = [ ("CT10",53), ("MSTW2008lo68cl",41), ("NNPDF21_100",101) ]
 
 # this analyzer finds the initial events before the skim
 skimAnalyzer = cfg.Analyzer(
@@ -51,6 +54,7 @@ ttHGenAna = cfg.Analyzer(
     'ttHGenLevelAnalyzer',
     filterHiggsDecays = [0, 15, 23, 24],
     verbose = False,
+    PDFWeights = [ pdf for pdf,num in PDFWeights ]
     )
 
 # Lepton Analyzer
@@ -108,7 +112,8 @@ ttHEventAna = cfg.Analyzer(
 # Tree Producer
 treeProducer = cfg.Analyzer(
     'ttHLepTreeProducerBase',
-    doLooseLeptons = False
+    doLooseLeptons = False,
+    PDFWeights = PDFWeights,
     )
 
 
@@ -116,7 +121,7 @@ treeProducer = cfg.Analyzer(
 
 from CMGTools.TTHAnalysis.samples.samples_8TeV import * 
 
-for mc in mcSamples:
+for mc in mcSamples+fastSimSamples:
     mc.triggers = triggersMC_mue
 #selectedComponents=mcSamples
 #selectedComponents=[TTH,DYJetsM10,DYJetsM50,TTLep]
@@ -133,6 +138,18 @@ for data in dataSamplesMuE:
     data.vetoTriggers=triggers_ee+triggers_mumu
 
 selectedComponents=mcSamples+dataSamplesMu+dataSamplesE+dataSamplesMuE
+
+isSingleMu = False
+if isSingleMu:
+    ttHLepAna.minGoodLeptons=1
+    ttHLepAna.maxGoodLeptons=1
+    ttHEventAna.minJets25 = 3
+    mcSamples = [ TTJets, W2Jets, W3Jets, W4Jets, TtW, TbartW, Ttch,Tbartch,Tsch,Tbarsch, QCDMuPt15 ]
+    for mc in mcSamples+fastSimSamples:
+        mc.triggers = triggersMC_1mu
+    for data in dataSamplesMu:
+        data.triggers = triggers_1mu
+    selectedComponents = dataSamples1Mu+mcSamples
 
 
 #-------- SEQUENCE
@@ -158,13 +175,15 @@ sequence = cfg.Sequence([
 
 #-------- HOW TO RUN
 
+# selectedComponents = [ FastSim_TTWJets, FastSim_TTWJets_MUp, FastSim_TTWJets_MDn ]
 # set test = 0 to run all jobs, in case you are using pybatch.py
+selectedComponents = mcSamples
 test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
     comp = TTH
-    comp.files = comp.files[:20]
+    comp.files = comp.files[:4]
     selectedComponents = [comp]
     comp.splitFactor = 1
 elif test==2:    
@@ -172,7 +191,7 @@ elif test==2:
     # important to make sure that your code runs on any kind of component
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.files = comp.files[:3]
+        comp.files = comp.files[:2]
 elif test==3:
     # test two components, using many threads, to check if variables are ok
     #comp = DoubleElectronC
