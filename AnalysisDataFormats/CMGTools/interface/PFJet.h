@@ -35,9 +35,9 @@ namespace cmg {
     ///number of PFCandidates types, see PFCandidate.h
     static const unsigned NCANDTYPES;
 
-    PFJet() : components_(NCANDTYPES), ptd_(-999), rms_(UnSet(float)), beta_(UnSet(float)), vtxpt_(UnSet (float)), vtx3dL_(UnSet (float)), vtx3deL_(UnSet (float)), axis_major_(UnSet (float)), axis_minor_(UnSet (float)), pt_max_(UnSet (float)), tana_(UnSet (float)), ttheta_(UnSet (float)), pull_(UnSet (float)), fmax_charged_(UnSet (float)), fmax_neutral_(UnSet (float)), fmax_(UnSet (float)), n_charged_(UnSet (int)), n_neutral_(UnSet (int)), n_charged_ptcut_(UnSet (int)), n_neutral_ptcut_(UnSet (int)),       axis_major_qc_(UnSet (float)), axis_minor_qc_(UnSet (float)), ptd_qc_(UnSet (float)), pull_qc_(UnSet (float)), fmax_charged_qc_(UnSet (float)), n_charged_qc_(UnSet (int)), n_charged_ptcut_qc_(UnSet (int)) {}
+    PFJet() : components_(NCANDTYPES), ptd_(-999), rms_(UnSet(float)), beta_(UnSet(float)), vtxpt_(UnSet (float)), vtx3dL_(UnSet (float)), vtx3deL_(UnSet (float)), axis_major_(UnSet (float)), axis_minor_(UnSet (float)), pt_max_(UnSet (float)), tana_(UnSet (float)), ttheta_(UnSet (float)), pull_(UnSet (float)), fmax_charged_(UnSet (float)), fmax_neutral_(UnSet (float)), fmax_(UnSet (float)), n_charged_(UnSet (int)), n_neutral_(UnSet (int)), n_charged_ptcut_(UnSet (int)), n_neutral_ptcut_(UnSet (int)),       axis_major_qc_(UnSet (float)), axis_minor_qc_(UnSet (float)), ptd_qc_(UnSet (float)), pull_qc_(UnSet (float)), fmax_charged_qc_(UnSet (float)), n_charged_qc_(UnSet (int)), n_charged_ptcut_qc_(UnSet (int)), girth_(UnSet (int)), girth_charged_(UnSet (int)) {}
 
-    PFJet(const value& m): BaseJet(m), components_(NCANDTYPES), ptd_(-999), rms_(UnSet(float)), vtxpt_(UnSet (float)), vtx3dL_(UnSet (float)), vtx3deL_(UnSet (float)), axis_major_(UnSet (float)), axis_minor_(UnSet (float)), pt_max_(UnSet (float)), tana_(UnSet (float)), ttheta_(UnSet (float)), pull_(UnSet (float)), fmax_charged_(UnSet (float)), fmax_neutral_(UnSet (float)), fmax_(UnSet (float)), n_charged_(UnSet (int)), n_neutral_(UnSet (int)), n_charged_ptcut_(UnSet (int)), n_neutral_ptcut_(UnSet (int)),       axis_major_qc_(UnSet (float)), axis_minor_qc_(UnSet (float)), ptd_qc_(UnSet (float)), pull_qc_(UnSet (float)), fmax_charged_qc_(UnSet (float)), n_charged_qc_(UnSet (int)), n_charged_ptcut_qc_(UnSet (int)) {}
+      PFJet(const value& m): BaseJet(m), components_(NCANDTYPES), ptd_(-999), rms_(UnSet(float)), vtxpt_(UnSet (float)), vtx3dL_(UnSet (float)), vtx3deL_(UnSet (float)), axis_major_(UnSet (float)), axis_minor_(UnSet (float)), pt_max_(UnSet (float)), tana_(UnSet (float)), ttheta_(UnSet (float)), pull_(UnSet (float)), fmax_charged_(UnSet (float)), fmax_neutral_(UnSet (float)), fmax_(UnSet (float)), n_charged_(UnSet (int)), n_neutral_(UnSet (int)), n_charged_ptcut_(UnSet (int)), n_neutral_ptcut_(UnSet (int)),       axis_major_qc_(UnSet (float)), axis_minor_qc_(UnSet (float)), ptd_qc_(UnSet (float)), pull_qc_(UnSet (float)), fmax_charged_qc_(UnSet (float)), n_charged_qc_(UnSet (int)), n_charged_ptcut_qc_(UnSet (int)), girth_(UnSet (int)), girth_charged_(UnSet (int)) {}
 	
     virtual ~PFJet(){}
     
@@ -75,6 +75,8 @@ namespace cmg {
     int nNeutral()        const {return n_neutral_;}
     int nNeutralPtCut()   const {return n_neutral_ptcut_;}
     float ptdQC()         const {return ptd_qc_;}
+    float girth()         const {return girth_;}
+    float girth_charged() const {return girth_charged_;}
 
     /// \return the ptd variable, for quark-gluon jet discrimination 
     /// \sum pt^2 / (\sum pt)^2
@@ -166,6 +168,11 @@ namespace cmg {
     float fmax_charged_qc_;
     int n_charged_qc_;
     int n_charged_ptcut_qc_;
+
+    //variables for QGdiscrimination
+    float girth_;
+    float girth_charged_;
+
   };
 }
 
