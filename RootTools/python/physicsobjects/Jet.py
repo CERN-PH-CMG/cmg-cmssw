@@ -17,7 +17,7 @@ class Jet( PhysicsObject):
 
     def puJetId(self):
         '''Full mva PU jet id with old loose working point used by Josh'''
-        puMva = self.puMva('full')
+        puMva = self.puMva('full53x')
         eta = abs(self.eta())
         for etamin, etamax, cut in loose_WP:
             if not(eta>=etamin and eta<etamax):
