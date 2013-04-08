@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-muonSource = cms.InputTag('patMuonsWithMVA')
+muonSource = cms.InputTag('patMuonsWithDirectionalIsolation')
 
 muonTriggerMatchHLT = cms.EDProducer( 'PATTriggerMatcherDRDPtLessByR',
     src     = muonSource,

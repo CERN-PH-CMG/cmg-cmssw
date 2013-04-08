@@ -115,6 +115,22 @@ void cmg::PFJetFactory::setPFproperties(const pat::Jet& jet, cmg::PFJet* cmgjet,
 
     float ptd = -1.0;
 
+    //girth - See http://arxiv.org/abs/1106.3076v2 - eqn (2)
+    double gsumcharged = 0.0;
+    double gsum        = 0.0;
+
+    const std::vector<reco::PFCandidatePtr>& constituents = jet.getPFConstituents();
+    for(std::vector<reco::PFCandidatePtr>::const_iterator it = constituents.begin(); it != constituents.end(); ++it){
+      const double dr = reco::deltaR(**it,jet);
+      gsum += (dr*( (*it)->pt()/jet.pt() ) ); 
+      if((*it)->charge() == 0) continue;
+      else 
+	gsumcharged += (dr*( (*it)->pt()/jet.pt() ) ); 
+    }
+    cmgjet->girth_         = gsum;
+    cmgjet->girth_charged_ = gsumcharged;
+    //end girth
+
     if( useConstituents_ ) {
 
       std::vector<reco::PFCandidatePtr> pfCandPtrs = jet.getPFConstituents();

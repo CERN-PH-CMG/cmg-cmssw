@@ -54,6 +54,7 @@ selectedPatMuons.cut = 'pt()>0'
 from CMGTools.Common.PAT.patMuonsWithPF_cfi import * 
 from CMGTools.Common.PAT.patMuonsWithMVA_cfi import * 
 from CMGTools.Common.PAT.patMuonsWithTrigger_cff import * 
+from CMGTools.Common.PAT.patMuonsWithDirectionalIsolation_cfi import * 
 
 PATMuonSequence = cms.Sequence(
     pfMuonIsolationSequence +
@@ -61,6 +62,7 @@ PATMuonSequence = cms.Sequence(
     makePatMuons +
     selectedPatMuons +
     patMuonsWithPF +
-    patMuonsWithMVA + 
+    patMuonsWithMVA +
+    patMuonsWithDirectionalIsolation +
     patMuonsWithTriggerSequence 
     )
