@@ -13,7 +13,20 @@ class Jet( PhysicsObject):
     def looseJetId(self):
         '''PF Jet ID
         '''
-        return self.getSelection('cuts_looseJetId') 
+        self.pfJetIdPassed = ( abs(self.eta()) <= 2.4                                             and 
+                              (self.component(1).fraction()                                > 0    and
+                               self.component(2).fraction()                                < 0.99 and 
+                               self.component(4).fraction()                                < 0.99 and 
+                               self.component(5).fraction() + self.component(6).fraction() < 0.99 and 
+                               self.component(1).number()                                  > 0    and
+                               self.nConstituents()                                        > 1   )or
+                              abs(self.eta()) > 2.4                                               and
+                              (self.component(4).fraction()                                < 0.99 and 
+                               self.component(5).fraction() + self.component(6).fraction() < 0.99 and 
+                               self.nConstituents()                                        > 1    ) 
+                            ) 
+        #return self.getSelection('cuts_looseJetId') 
+        return self.pfJetIdPassed 
 
     def puJetId(self):
         '''Full mva PU jet id with old loose working point used by Josh'''
