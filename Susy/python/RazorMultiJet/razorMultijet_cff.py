@@ -13,28 +13,11 @@ useJets = 'cmgPFJetSelCHS'
 #useJets = 'cmgPFJetSel'
 
 #Leptons
-
-#make the SAK muons first
-razorMJMuonSAK = cms.EDProducer(
-    "DirectionalIsolationProducerMuon",
-    src = cms.InputTag('patMuonsWithTrigger'),
-    pfCands = cms.InputTag('pfNoPileUp'),
-    vertexCollection = cms.InputTag('goodOfflinePrimaryVertices')
-    )
-
-#make a cmg lepton from it
-from CMGTools.Common.factories.cmgMuon_cfi import cmgMuon
-razorMJMuonSAKCMG = cmgMuon.clone()
-razorMJMuonSAKCMG.cfg.inputCollection = 'razorMJMuonSAK'
-razorMJMuonSAKCMG.cfg.leptonFactory.vertexCollection = 'goodOfflinePrimaryVertices'
-
 from CMGTools.Common.skims.cmgMuonSel_cfi import *
 
-razorMJMuonLoose = cmgMuonSel.clone(src = "razorMJMuonSAKCMG", cut = "(pt() > 5.) && (abs(eta()) < 2.4)")
+razorMJMuonLoose = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 5.) && (abs(eta()) < 2.4) && sourcePtr().userFloat('isLooseLeptonSAK')")
 razorMJMuonTight = cmgMuonSel.clone(src = "cmgMuonSel", cut = "(pt() > 25.) && (abs(eta()) < 2.4) && isPF() && relIso(0.5) < 0.15 && getSelection('cuts_tightmuonNoVtx') && abs(dxy()) < 0.02 && abs(dz()) < 0.5")
 razorMJMuonSequence = cms.Sequence(
-    razorMJMuonSAK+
-    razorMJMuonSAKCMG+
     razorMJMuonLoose+
     razorMJMuonTight
     )
@@ -42,22 +25,7 @@ razorMJMuonSequence = cms.Sequence(
 
 razorMJTightMuonCount = cmgCandCount.clone( src = 'razorMJMuonTight', minNumber = 1 )
 
-
-
 ############### Electrons
-#start off by making the veto electrons
-razorMJElectronSAK = cms.EDProducer(
-    "DirectionalIsolationProducerElectron",
-    src = cms.InputTag('patElectronsWithTrigger'),
-    pfCands = cms.InputTag('pfNoPileUp'),
-    vertexCollection = cms.InputTag('goodOfflinePrimaryVertices')
-    )
-
-#make a cmg lepton from it
-from CMGTools.Common.factories.cmgElectron_cfi import cmgElectron
-razorMJElectronSAKCMG = cmgElectron.clone()
-razorMJElectronSAKCMG.cfg.inputCollection = 'razorMJElectronSAK'
-razorMJElectronSAKCMG.cfg.primaryVertexCollection = 'goodOfflinePrimaryVertices'
 
 razorMJIsolatedElectrons = cms.EDProducer(
     "ElectronIsolationProducer",
@@ -68,12 +36,10 @@ razorMJIsolatedElectrons = cms.EDProducer(
     )
 
 from CMGTools.Common.skims.cmgElectronSel_cfi import *
-razorMJElectronLoose = cmgElectronSel.clone(src = "razorMJElectronSAKCMG", cut = '(pt()> 5.) && (abs(eta()) < 2.5)')
+razorMJElectronLoose = cmgElectronSel.clone(src = "cmgElectronSel", cut = "(pt()> 5.) && (abs(eta()) < 2.5)  && sourcePtr().userFloat('isLooseLeptonSAK')")
 razorMJElectronTight = cmgElectronSel.clone(src = "razorMJIsolatedElectrons", cut = 'pt() >= 30 && getSelection("cuts_mediumNoVtx") && abs(dxy()) < 0.02 && abs(dz()) < 0.1 && (abs(sourcePtr().superCluster().eta()) <= 1.4442 || abs(sourcePtr().superCluster().eta()) > 1.566)')
 
 razorMJElectronSequence = cms.Sequence(
-    razorMJElectronSAK+
-    razorMJElectronSAKCMG+
     razorMJElectronLoose+
     razorMJIsolatedElectrons*
     razorMJElectronTight
@@ -153,18 +119,6 @@ razorMJPFJetIDCount = cmgCandCount.clone( src = 'razorMJPFJetSelID', minNumber =
 razorMJBTagFilter = cms.EDFilter(
     "BTagFilter",
     src = cms.InputTag('razorMJPFJetSel30')
-    )
-
-#produce the girth for quark/gluon discrimination
-razorMJJetGirth = cms.EDFilter(
-    "QGJetIDProducer",
-    src = cms.InputTag('razorMJPFJetSel20'),
-    useCharged = cms.bool(False)
-    )
-razorMJJetGirthCharged = cms.EDFilter(
-    "QGJetIDProducer",
-    src = cms.InputTag('razorMJPFJetSel20'),
-    useCharged = cms.bool(True)
     )
 
 
@@ -349,8 +303,6 @@ razorMJTriggerSequence = cms.Sequence(
 razorMJJetSequence = cms.Sequence(                             
     razorMJPFJetSel20*
     razorMJPFJetSel30*
-    razorMJJetGirth+
-    razorMJJetGirthCharged+
     razorMJPFJetSelID+
     razorMJJetCleanedLoose*
     razorMJJetCleanedLoose30*
