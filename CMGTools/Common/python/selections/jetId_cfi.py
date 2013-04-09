@@ -23,13 +23,13 @@ veryLooseJetId95gamma = cms.PSet(
 
 #Selection thanks to Maxime
 looseJetId = cms.PSet(
-    h0Fraction = cms.string('component(5).fraction() < 0.99'),      
-    gammaFraction = cms.string('component(4).fraction() < 0.99'),
-    nConstituents = cms.string('nConstituents() > 1'),
+    h0Fraction          = cms.string('component(5).fraction() + component(6).fraction() < 0.99'),      
+    gammaFraction       = cms.string('component(4).fraction() < 0.99'),
+    nConstituents       = cms.string('nConstituents() > 1'),
     #these only valid for abs(eta) < 2.4 - i.e. they always pass for eta > 2.4
-    hFraction = cms.string('component(1).fraction() > 0 || abs(eta()) > 2.4 '),
-    chargedMultiplicity = cms.string('( component(1).number() + component(2).number() + component(3).number() ) > 0 || abs(eta()) > 2.4 '),
-    eFraction = cms.string('component(2).fraction() < 0.99 || abs(eta()) > 2.4 '),
+    hFraction           = cms.string('component(1).fraction() > 0    || abs(eta()) > 2.4 '),
+    eFraction           = cms.string('component(2).fraction() < 0.99 || abs(eta()) > 2.4 '),
+    chargedMultiplicity = cms.string('component(1).number() > 0      || abs(eta()) > 2.4 '),
     )
 
 mediumJetId = looseJetId.clone()
