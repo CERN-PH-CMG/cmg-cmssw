@@ -100,6 +100,7 @@ if __name__ == '__main__':
     runOnMC = options.runOnMC
 
     runSMS = False
+    if True:
     if options.datasetName:
         runSMS = 'SMS' in options.datasetName
         runOnMC = 'START' in options.datasetName
@@ -123,6 +124,7 @@ if __name__ == '__main__':
             'wreece',
             'susy_tree_CMG_[0-9]+.root'                
             )
+       # files = 'susy_tree_CMG.root'
         if options.maxFiles > 0:
             options.inputFiles = files[0:options.maxFiles]
         else:
@@ -406,7 +408,7 @@ struct Filters{\
                     comment = lhe.getComment(i)
                     if 'model' not in comment: continue
                     comment = comment.replace('\n','')
-                    parameters = comment.split(' ')[-1]
+                    parameters = comment.split(' ')[2]
                     masses = map(float,parameters.split('_')[-2:])
                     vars.mStop = masses[0]
                     vars.mLSP = masses[1]
@@ -468,17 +470,6 @@ struct Filters{\
         info.nJet = len([j for j in jetSel20H.product() if j.pt() >= 30.])
 
         #all PFCands
-        event.getByLabel(('razorMJJetGirth'),doubleH)
-        if doubleH.isValid():
-            for g in doubleH.product():
-                #girth
-                jet_girth.push_back(g)
-        #only charged PFCands
-        event.getByLabel(('razorMJJetGirthCharged'),doubleH)
-        if doubleH.isValid():
-            for g in doubleH.product():
-                #girth
-                jet_girth_ch.push_back(g)
 
         vars.MEFF = 0.0
         for jet in jets:
@@ -491,6 +482,9 @@ struct Filters{\
             jet_mult.push_back(jet.component(1).number() + jet.component(2).number() + jet.component(3).number() )
             #hadronic (neutral + charged) fraction
             jet_had_frac.push_back(jet.component(1).fraction()+jet.component(5).fraction())
+            #girth
+            jet_girth.push_back(jet.girth())
+            jet_girth_ch.push_back(jet.girth_charged())
             #store whether or not this was removed from the lepton veto jets
             jet_veto.push_back( int( (jet.pt(), jet.eta() ) in jet_param_veto) )
             vars.MEFF += jet.pt()
