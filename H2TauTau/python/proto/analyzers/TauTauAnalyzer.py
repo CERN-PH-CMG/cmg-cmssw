@@ -626,19 +626,9 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
     def testJetID(self, jet):
     
         jet.puJetIdPassed = jet.puJetId()
+        jet.pfJetIdPassed = jet.looseJetId()
+
         #jet.pfJetIdPassed = jet.getSelection('cuts_looseJetId')
-        jet.pfJetIdPassed = ( abs(jet.eta()) <= 2.4                                              and 
-                              (jet.component(1).fraction()                                > 0    and
-                               jet.component(2).fraction()                                < 0.99 and 
-                               jet.component(4).fraction()                                < 0.99 and 
-                               jet.component(5).fraction() + jet.component(6).fraction()  < 0.99 and 
-                               jet.component(1).number()                                  > 0    and
-                               jet.nConstituents()                                        > 1   )or
-                              abs(jet.eta()) > 2.4                                               and
-                              (jet.component(4).fraction()                                < 0.99 and 
-                               jet.component(5).fraction() + jet.component(6).fraction()  < 0.99 and 
-                               jet.nConstituents()                                        > 1    ) 
-                            ) 
 
         if self.cfg_ana.relaxJetId:
             return True
