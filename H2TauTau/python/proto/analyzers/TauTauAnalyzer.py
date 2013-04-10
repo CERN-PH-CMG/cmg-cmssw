@@ -95,7 +95,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                                                              max = self.cfg_ana.m_max ))
         count.register('exactly 1 di-lepton')
 
-
     def bestDiLepton(self, diLeptons):
         '''Returns the best diLepton (the one with best isolation).'''
         return max( [ (min(dilep.leg1().tauID("byRawIsoMVA"), dilep.leg2().tauID("byRawIsoMVA")), dilep) for dilep in diLeptons ] )[1]
@@ -110,7 +109,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 
         event.diLeptons = self.buildDiLeptons( self.handles['diLeptons'].product(), event )
 
-        # import pdb; pdb.set_trace()
         #event.leptons = self.buildLeptons( self.handles['leptons'].product(), event )
         event.leptons = []
 	for diLepton in event.diLeptons:
@@ -118,7 +116,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             event.leptons += [diLepton.leg1()]
           if not diLepton.leg2() in event.leptons:
             event.leptons += [diLepton.leg2()]
-        # import pdb; pdb.set_trace()
         self.shiftEnergyScale(event)
 
         if hasattr(self.cfg_ana,'HCP_matching'):
@@ -131,6 +128,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 	#    print eventId,result
         
 	event.rawMET=self.handles['rawMET'].product()
+        
 	triggerResults=self.handles['triggerResults'].product()
         triggerNames = iEvent._event.triggerNames(triggerResults)
 	for trig in self.triggers:
@@ -352,7 +350,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
 ## 	    for gen in genParticles:
 ##                 if abs(gen.pdgId()) in [23]:
 ##                     event.genMass=gen.mass()
-		
+	
         return True
 
 
@@ -378,7 +376,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             return False
         if fillCounter: self.counters.counter('DiLepton').inc('> 0 di-lepton')
 
-        # import pdb; pdb.set_trace()
         # testing di-lepton itself
         selDiLeptons = event.diLeptons
         # selDiLeptons = self.selectDiLeptons( selDiLeptons ) 
@@ -387,7 +384,6 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
             return False
         if fillCounter: self.counters.counter('DiLepton').inc('lepton accept')
 
-        # import pdb; pdb.set_trace()
 
         if len(self.cfg_comp.triggers)>0:
             # trigger matching leg1
@@ -421,6 +417,7 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                 jet = Jet( cmgJet )
                 if self.testJet( jet ):
                     jets.append(jet)
+
 	    selDiLeptonsNew=[]
 	    for diL in selDiLeptons:
                 cleanJets, dummy = cleanObjectCollection( jets, masks = [ diL.leg1(), diL.leg2() ], deltaRMin = 0.5 )
@@ -627,16 +624,30 @@ class TauTauAnalyzer( DiLeptonAnalyzer ):
                               pdgIds=pdgIds )
 
     def testJetID(self, jet):
+    
         jet.puJetIdPassed = jet.puJetId()
-        jet.pfJetIdPassed = jet.getSelection('cuts_looseJetId')
+        #jet.pfJetIdPassed = jet.getSelection('cuts_looseJetId')
+        jet.pfJetIdPassed = ( abs(jet.eta()) <= 2.4                                              and 
+                              (jet.component(1).fraction()                                > 0    and
+                               jet.component(2).fraction()                                < 0.99 and 
+                               jet.component(4).fraction()                                < 0.99 and 
+                               jet.component(5).fraction() + jet.component(6).fraction()  < 0.99 and 
+                               jet.component(1).number()                                  > 0    and
+                               jet.nConstituents()                                        > 1   )or
+                              abs(jet.eta()) > 2.4                                               and
+                              (jet.component(4).fraction()                                < 0.99 and 
+                               jet.component(5).fraction() + jet.component(6).fraction()  < 0.99 and 
+                               jet.nConstituents()                                        > 1    ) 
+                            ) 
+
         if self.cfg_ana.relaxJetId:
             return True
         else:
             return jet.puJetIdPassed and jet.pfJetIdPassed
-        
+             
     def testJet( self, jet ):
         # 2 is loose pile-up jet id
-        return jet.pt() > self.cfg_ana.jetPt and \
+        return jet.pt()         > self.cfg_ana.jetPt  and \
                abs( jet.eta() ) < self.cfg_ana.jetEta and \
                self.testJetID(jet)
                # jet.passPuJetId('full', 2)
