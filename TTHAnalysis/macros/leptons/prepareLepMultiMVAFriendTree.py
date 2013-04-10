@@ -274,28 +274,30 @@ class LeptonMVANoInnerHits:
         
 
 class LepMVATreeProducer(Module):
-    def __init__(self,name,booker,path,data,fast=False):
+    def __init__(self,name,booker,path,data,fast=False,others=False):
         Module.__init__(self,name,booker)
         self.mva = LeptonMVA(path+"/weights/%s_BDTG.weights.xml")
-        self.mvaNoIso = LeptonMVANoIso(path+"/weightsNoIso/%s_BDTG.weights.xml")
-        self.mvaNoIp = LeptonMVANoIp(path+"/weightsNoIp/%s_BDTG.weights.xml")
-        self.mvaNoJet = LeptonMVANoJet(path+"/weightsNoJet/%s_BDTG.weights.xml")
-        self.mvaNoMvaId = LeptonMVANoMvaId(path+"/weightsNoMvaId/%s_BDTG.weights.xml")
-        self.mvaNoBtag = LeptonMVANoBtag(path+"/weightsNoBtag/%s_BDTG.weights.xml")
-        self.mvaNoInnerHits = LeptonMVANoInnerHits(path+"/weightsNoInnerHits/%s_BDTG.weights.xml")       
-        
+        self.others = others
+        if self.others:
+            self.mvaNoIso = LeptonMVANoIso(path+"/weightsNoIso/%s_BDTG.weights.xml")
+            self.mvaNoIp = LeptonMVANoIp(path+"/weightsNoIp/%s_BDTG.weights.xml")
+            self.mvaNoJet = LeptonMVANoJet(path+"/weightsNoJet/%s_BDTG.weights.xml")
+            self.mvaNoMvaId = LeptonMVANoMvaId(path+"/weightsNoMvaId/%s_BDTG.weights.xml")
+            self.mvaNoBtag = LeptonMVANoBtag(path+"/weightsNoBtag/%s_BDTG.weights.xml")
+            self.mvaNoInnerHits = LeptonMVANoInnerHits(path+"/weightsNoInnerHits/%s_BDTG.weights.xml")       
         self.data = data
         self.fast = fast
     def beginJob(self):
         self.t = PyTree(self.book("TTree","t","t"))
         for i in range(8):
             self.t.branch("LepGood%d_mvaNew" % (i+1),"F")
-            self.t.branch("LepGood%d_mvaNoIso" % (i+1),"F")
-            self.t.branch("LepGood%d_mvaNoIp" % (i+1),"F")
-            self.t.branch("LepGood%d_mvaNoJet" % (i+1),"F")                        
-            self.t.branch("LepGood%d_mvaNoMvaId" % (i+1),"F")
-            self.t.branch("LepGood%d_mvaNoBtag" % (i+1),"F")
-            self.t.branch("LepGood%d_mvaNoInnerHits" % (i+1),"F")
+            if self.others:
+                self.t.branch("LepGood%d_mvaNoIso" % (i+1),"F")
+                self.t.branch("LepGood%d_mvaNoIp" % (i+1),"F")
+                self.t.branch("LepGood%d_mvaNoJet" % (i+1),"F")                        
+                self.t.branch("LepGood%d_mvaNoMvaId" % (i+1),"F")
+                self.t.branch("LepGood%d_mvaNoBtag" % (i+1),"F")
+                self.t.branch("LepGood%d_mvaNoInnerHits" % (i+1),"F")
             if not self.data and not self.fast:
                 self.t.branch("LepGood%d_mvaNewUncorr"     % (i+1),"F")
                 self.t.branch("LepGood%d_mvaNewDoubleCorr" % (i+1),"F")
@@ -304,84 +306,115 @@ class LepMVATreeProducer(Module):
         for i,l in enumerate(lep):
             if self.data:
                 setattr(self.t, "LepGood%d_mvaNew" % (i+1), self.mva(l,ncorr=0))
-                setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), self.mvaNoIso(l,ncorr=0))
-                setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), self.mvaNoIp(l,ncorr=0))
-                setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), self.mvaNoJet(l,ncorr=0))
-                setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), self.mvaNoMvaId(l,ncorr=0))
-                setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), self.mvaNoBtag(l,ncorr=0))
-                setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), self.mvaNoInnerHits(l,ncorr=0))
+                if self.others:
+                    setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), self.mvaNoIso(l,ncorr=0))
+                    setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), self.mvaNoIp(l,ncorr=0))
+                    setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), self.mvaNoJet(l,ncorr=0))
+                    setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), self.mvaNoMvaId(l,ncorr=0))
+                    setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), self.mvaNoBtag(l,ncorr=0))
+                    setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), self.mvaNoInnerHits(l,ncorr=0))
             else: 
                 setattr(self.t, "LepGood%d_mvaNew" % (i+1), self.mva(l,ncorr=1))
-                setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), self.mvaNoIso(l,ncorr=1))
-                setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), self.mvaNoIp(l,ncorr=1))
-                setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), self.mvaNoJet(l,ncorr=1))
-                setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), self.mvaNoMvaId(l,ncorr=1))
-                setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), self.mvaNoBtag(l,ncorr=1))
-                setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), self.mvaNoInnerHits(l,ncorr=1))
+                if self.others:
+                    setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), self.mvaNoIso(l,ncorr=1))
+                    setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), self.mvaNoIp(l,ncorr=1))
+                    setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), self.mvaNoJet(l,ncorr=1))
+                    setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), self.mvaNoMvaId(l,ncorr=1))
+                    setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), self.mvaNoBtag(l,ncorr=1))
+                    setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), self.mvaNoInnerHits(l,ncorr=1))
                 if not self.fast:
                     setattr(self.t, "LepGood%d_mvaNewUncorr"     % (i+1), self.mva(l,ncorr=0))
                     setattr(self.t, "LepGood%d_mvaNewDoubleCorr" % (i+1), self.mva(l,ncorr=2))
         for i in xrange(len(lep),8):
             setattr(self.t, "LepGood%d_mvaNew" % (i+1), -99.)
-            setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), -99.)
-            setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), -99.)
-            setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), -99.)
-            setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), -99.)
-            setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), -99.)
-            setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), -99.)
+            if self.others:
+                setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), -99.)
+                setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), -99.)
+                setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), -99.)
+                setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), -99.)
+                setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), -99.)
+                setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), -99.)
             if not self.data and not self.fast:
                 setattr(self.t, "LepGood%d_mvaNewUncorr"     % (i+1), -99.)
                 setattr(self.t, "LepGood%d_mvaNewDoubleCorr" % (i+1), -99.)
         self.t.fill()
 
 import os, itertools
-from sys import argv
-if len(argv) < 3: print "Usage: %s [-e] <TREE_DIR> <TRAINING>" % argv[0]
+
+from optparse import OptionParser
+parser = OptionParser(usage="%prog [options] <TREE_DIR> <TRAINING>")
+parser.add_option("-d", "--dataset", dest="datasets",  type="string", default=[], action="append", help="Process only this dataset (or dataset if specified multiple times)");
+parser.add_option("-c", "--chunk",   dest="chunks",    type="int",    default=[], action="append", help="Process only these chunks (works only if a single dataset is selected with -d)");
+parser.add_option("-N", "--events",  dest="chunkSize", type="int",    default=500000, help="Default chunk size when splitting trees");
+parser.add_option("-j", "--jobs",    dest="jobs",      type="int",    default=1, help="Use N threads");
+parser.add_option("-a", "--all",     dest="allMVAs",   action="store_true", default=False, help="Run also all the other special trainings, not just the main one");
+parser.add_option("-p", "--pretend", dest="pretend",   action="store_true", default=False, help="Don't run anything");
+parser.add_option("-q", "--queue",   dest="queue",     type="string", default=None, help="Run jobs on lxbatch instead of locally");
+(options, args) = parser.parse_args()
+
+if len(args) != 2: 
+    print "Usage: program <TREE_DIR> <TRAINING>"
+    exit()
+if len(options.chunks) != 0 and len(options.datasets) != 1:
+    print "must specify a single dataset with -d if using -c to select chunks"
+    exit()
+
 jobs = []
-if argv[1] == "-e": # use existing training
-    argv = [argv[0]] + argv[2:]
-#else: # new, make directory training
-#    if not os.path.exists(argv[2]):            os.mkdir(argv[2])
-#    if not os.path.exists(argv[2]+"/weights"): os.mkdir(argv[2]+"/weights")
-#    if not os.path.exists(argv[2]+"/trainings"): os.mkdir(argv[2]+"/trainings")
-#    for X,Y in itertools.product(["high","low"],["b","e"]):
-#       os.system("cp weights/mu_pteta_%s_%s_BDTG.weights.xml %s/weights -v" % (X,Y,argv[2]))
-#       os.system("cp mu_pteta_%s_%s.root %s/trainings -v" % (X,Y,argv[2]))
-#    for X,Y in itertools.product(["high","low"],["cb","fb","ec"]):
-#        os.system("cp weights/el_pteta_%s_%s_BDTG.weights.xml %s/weights -v" % (X,Y,argv[2]))
-#        os.system("cp el_pteta_%s_%s.root %s/trainings -v" % (X,Y,argv[2]))
-for D in glob(argv[1]+"/*"):
+for D in glob(args[0]+"/*"):
     fname = D+"/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root"
     if os.path.exists(fname):
         short = os.path.basename(D)
-        data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short)
+        if options.datasets != []:
+            if short not in options.datasets: continue
+        data = ("DoubleMu" in short or "MuEG" in short or "DoubleElectron" in short or "SingleMu" in short)
         f = ROOT.TFile.Open(fname);
         t = f.Get("ttHLepTreeProducerBase")
         entries = t.GetEntries()
         f.Close()
-        chunk = 500000.
+        chunk = options.chunkSize
         if entries < chunk:
             print "  ",os.path.basename(D),("  DATA" if data else "  MC")," single chunk"
-            jobs.append((short,fname,"%s/lepMVAFriend_%s.root" % (argv[2],short),data,xrange(entries)))
+            jobs.append((short,fname,"%s/lepMVAFriend_%s.root" % (args[1],short),data,xrange(entries),-1))
         else:
             nchunk = int(ceil(entries/chunk))
             print "  ",os.path.basename(D),("  DATA" if data else "  MC")," %d chunks" % nchunk
             for i in xrange(nchunk):
+                if options.chunks != []:
+                    if i not in options.chunks: continue
                 r = xrange(int(i*chunk),min(int((i+1)*chunk),entries))
-                jobs.append((short,fname,"%s/lepMVAFriend_%s.chunk%d.root" % (argv[2],short,i),data,r))
-print 4*"\n"
+                jobs.append((short,fname,"%s/lepMVAFriend_%s.chunk%d.root" % (args[1],short,i),data,r,i))
+print "\n"
 print "I have %d taks to process" % len(jobs)
+
+if options.queue:
+    import os, sys
+    basecmd = "bsub -q {queue} {dir}/lxbatch_runner.sh {dir} {cmssw} python {self} -N {chunkSize} {data} {training}".format(
+                queue = options.queue, dir = os.getcwd(), cmssw = os.environ['CMSSW_BASE'], 
+                self=sys.argv[0], chunkSize=options.chunkSize, data=args[0], training=args[1]
+            )
+    ## forward additional options if needed
+    if options.allMVAs: basecmd += " --all";
+    # specify what to do
+    for (name,fin,fout,data,range,chunk) in jobs:
+        if chunk != -1:
+            print "{base} -d {data} -c {chunk}".format(base=basecmd, data=name, chunk=chunk)
+        else:
+            print "{base} -d {data}".format(base=basecmd, data=name, chunk=chunk)
+    exit()
 
 maintimer = ROOT.TStopwatch()
 def _runIt(args):
-    (name,fin,fout,data,range) = args
+    (name,fin,fout,data,range,chunk) = args
     timer = ROOT.TStopwatch()
     fb = ROOT.TFile(fin)
     tb = fb.Get("ttHLepTreeProducerBase")
     nev = tb.GetEntries()
+    if options.pretend:
+        print "==== pretending to run %s (%d entries, %s) ====" % (name, nev, fout)
+        return (name,(nev,0))
     print "==== %s starting (%d entries) ====" % (name, nev)
     booker = Booker(fout)
-    el = EventLoop([ LepMVATreeProducer("newMVA",booker,argv[2],data,fast=True), ])
+    el = EventLoop([ LepMVATreeProducer("newMVA",booker,args[2],data,fast=True,others=options.allMVAs), ])
     el.loop([tb], eventRange=range)
     booker.done()
     fb.Close()
@@ -390,7 +423,7 @@ def _runIt(args):
     return (name,(nev,time))
 
 from multiprocessing import Pool
-pool = Pool(8)
+pool = Pool(options.jobs)
 ret  = dict(pool.map(_runIt, jobs))
 fulltime = maintimer.RealTime()
 totev   = sum([ev   for (ev,time) in ret.itervalues()])
