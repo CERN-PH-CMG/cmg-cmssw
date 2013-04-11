@@ -403,8 +403,8 @@ if options.queue:
     exit()
 
 maintimer = ROOT.TStopwatch()
-def _runIt(args):
-    (name,fin,fout,data,range,chunk) = args
+def _runIt(myargs):
+    (name,fin,fout,data,range,chunk) = myargs
     timer = ROOT.TStopwatch()
     fb = ROOT.TFile(fin)
     tb = fb.Get("ttHLepTreeProducerBase")
@@ -414,7 +414,7 @@ def _runIt(args):
         return (name,(nev,0))
     print "==== %s starting (%d entries) ====" % (name, nev)
     booker = Booker(fout)
-    el = EventLoop([ LepMVATreeProducer("newMVA",booker,args[2],data,fast=True,others=options.allMVAs), ])
+    el = EventLoop([ LepMVATreeProducer("newMVA",booker,args[1],data,fast=True,others=options.allMVAs), ])
     el.loop([tb], eventRange=range)
     booker.done()
     fb.Close()
