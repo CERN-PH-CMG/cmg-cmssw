@@ -55,8 +55,9 @@ kreator = ComponentCreator()
 #-----------MC---------------
 
 TTH      =kreator.makeMCComponent('TTH','/TTH_Inclusive_M-125_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-TTH122   =kreator.makeMCComponent('TTH','/TTH_Inclusive_M-122_5_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
-TTH127   =kreator.makeMCComponent('TTH','/TTH_Inclusive_M-127_5_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+TTH122   =kreator.makeMCComponent('TTH122','/TTH_Inclusive_M-122_5_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+TTH127   =kreator.makeMCComponent('TTH127','/TTH_Inclusive_M-127_5_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+TTWnlo   =kreator.makeMCComponent('TTWnlo','/TTbarW_8TeV-aMCatNLO-herwig/Summer12_DR53X-PU_S10_START53_V7C-v1/AODSIM/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 TTWJets  =kreator.makeMCComponent('TTWJets','/TTWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 TTZJets  =kreator.makeMCComponent('TTZJets','/TTZJets_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 WWWJets  =kreator.makeMCComponent('WWWJets','/WWWJets_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
@@ -100,8 +101,8 @@ WJets    =kreator.makeMCComponent('WJets','/WJetsToLNu_TuneZ2Star_8TeV-madgraph-
 #WJets_HT400ToInf=kreator.makeMCComponent('WJets_HT400ToInf','/WJetsToLNu_HT-400ToInf_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 QCDMuPt15=kreator.makeMCComponent('QCDMuPt15','/QCD_Pt_20_MuEnrichedPt_15_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v3/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
-mcSamples=[
-TTH,TTWJets,TTZJets,WWWJets,WWZJets,WGs2MU,WGs2E,WGs2Tau,ZG,TTG,TTWWJets,DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTLep,WWJets,WZJets,ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4tau,ZZTo4e,TTJets,TtW,TbartW,W1Jets,W2Jets,W3Jets,W4Jets,WGToLNuG,WJets]#,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf]
+
+mcSamples=[TTH,TTH122,TTH127,TTWnlo,TTWJets,TTZJets,WWWJets,WWZJets,WGs2MU,WGs2E,WGs2Tau,TTG,TTWWJets,DYJetsM10,DYJetsM50,DY1JetsM50,DY2JetsM50,DY3JetsM50,DY4JetsM50,TTLep,WWJets,WZJets,ZZ2e2mu,ZZ2e2tau,ZZ2mu2tau,ZZTo4mu,ZZTo4tau,ZZTo4e,TTJets,TtW,TbartW,W1Jets,W2Jets,W3Jets,W4Jets]#ZG,WJets,WGToLNuG,WJets_HT250To300,WJets_HT300To400,WJets_HT400ToInf]
 
 extraMcSamples = [QCDMuPt15,Ttch,Tbartch,Tsch,Tbarsch]
 
@@ -337,7 +338,7 @@ from CMGTools.TTHAnalysis.setup.Efficiencies import *
 for comp in mcSamples + fastSimSamples + extraMcSamples:
     comp.isMC = True
     comp.isData = False
-    comp.splitFactor = 200 if comp.name == "WJets" else 50
+    comp.splitFactor = 200 if comp.name == "WJets" else 100
     comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012
