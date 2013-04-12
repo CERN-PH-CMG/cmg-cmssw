@@ -36,7 +36,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
                 bookLepton(tr,"LepLoose%d"%(i+1))
         ## --- PHOTONS ---
         for i in range(8):            
-            bookParticle(tr,"Photon%d"%(i+1))     
+            bookPhoton(tr,"Photon%d"%(i+1))     
         ## --- JETS ---
         var( tr, 'nJet25', int)
         var( tr, 'nJet30', int)       
@@ -137,7 +137,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
 
         ## --- PHOTONS ---
         for i in range(min(8,len(event.allphotons))):
-            fillParticle(tr,"Photon%d"%(i+1), event.allphotons[i])         
+            fillPhoton(tr,"Photon%d"%(i+1), event.allphotons[i])         
 
         ## --- JETS ---
         #ordering the jets

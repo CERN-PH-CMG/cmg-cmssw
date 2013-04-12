@@ -223,6 +223,22 @@ def fillJet( tree, pName, jet ):
         fill(tree, '{pName}_mcFlavour'.format(pName=pName), jet.mcFlavour)
     
 #----------
+# PHOTONS
+#----------
+
+def bookPhoton( tree, pName, isMC=False ):
+    bookParticle(tree, pName )
+    var(tree, '{pName}_chargedIso'.format(pName=pName))
+    var(tree, '{pName}_relIso'.format(pName=pName))
+    var(tree, '{pName}_relIsoAntiPU'.format(pName=pName))
+
+def fillPhoton( tree, pName, photon ):
+    fillParticle(tree, pName, photon )
+    fill(tree, '{pName}_chargedIso'.format(pName=pName),   photon.chargedHadronIso()/photon.pt())
+    fill(tree, '{pName}_relIso'.format(pName=pName),       photon.relIso(0.5))   # dbeta corr
+    fill(tree, '{pName}_relIsoAntiPU'.format(pName=pName), photon.relIso(-1.0))  # include full PU contribution
+
+#----------
 # GEN PARTICLE
 #----------
 
