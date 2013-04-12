@@ -84,7 +84,7 @@ ttHLepMCAna = cfg.Analyzer(
 # Jets Analyzer 
 ttHJetAna = cfg.Analyzer(
     'JetAnalyzer',
-    jetCol = 'cmgPFJetSel',
+    jetCol = 'cmgPFJetSelCHS',
     jetPt = 25.,
     jetEta = 4.7,
     cjvPtCut = 30.,
@@ -106,6 +106,7 @@ ttHJetMCAna = cfg.Analyzer(
 ttHEventAna = cfg.Analyzer(
     'ttHLepEventAnalyzer',
     maxLeps = 4, ## leptons to use
+    jetCol4MVA = 'cmgPFJetSel',
     verbose = False,
     )
 
