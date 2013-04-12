@@ -106,6 +106,7 @@ class logger:
                 self.cvsupdate( tag, package )
             else:
                 print 'No tagging requested'
+
     def cvstag(self, tag, package):
         oldPwd = os.getcwd()
         os.chdir( os.getenv('CMSSW_BASE') + '/src/' )

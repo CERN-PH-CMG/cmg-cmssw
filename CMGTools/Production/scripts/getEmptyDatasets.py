@@ -12,7 +12,7 @@ if __name__ == '__main__':
     cmgdbApi = CmgdbApi()
     cmgdbApi.connect()
     
-    columns, rows = cmgdbApi.sql( "select file_owner, path_name from dataset_details where dataset_is_open='Y'" )
+    columns, rows = cmgdbApi.sql( "select file_owner, path_name from dataset_details where dataset_is_open='Y' and (file_owner='cmgtools' or file_owner='cmgtools_group')" )
 
     f = open('emptyDatasets.txt','w')
     
