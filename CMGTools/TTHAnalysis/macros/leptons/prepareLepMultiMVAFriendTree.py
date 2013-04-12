@@ -73,16 +73,18 @@ _IsoVars = [
 ]
 
 _JetVars = [
-
     MVAVar("jetDR_in := min(dr_in,0.5)", lambda x : min(x.jetDR,0.5), corrfunc=ROOT.correctJetDRMC),
     MVAVar("jetPtRatio_in := min(ptf_in,1.5)", lambda x : min(x.jetPtRatio,1.5), corrfunc=ROOT.correctJetPtRatioMC),
 
 ]    
 
 
-_IpVars = [
-
+_SIPVars = [
     MVAVar("sip3d",lambda x: x.sip3d, corrfunc=ROOT.scaleSip3dMC),
+ 
+]
+
+_IpVars = [
     MVAVar("dxy := log(abs(dxy))",lambda x: log(abs(x.dxy)), corrfunc=ROOT.scaleDxyMC),
     MVAVar("dz  := log(abs(dz))", lambda x: log(abs(x.dz)), corrfunc=ROOT.scaleDzMC),
 
@@ -90,7 +92,6 @@ _IpVars = [
 
 
 _BTagVars = [
-
     MVAVar("jetBTagCSV_in := max(CSV_in,0)", lambda x : max(x.jetBTagCSV,0.)),
 
 ]
@@ -110,18 +111,18 @@ class LeptonMVA:
     def __init__(self,basepath):
         global _CommonVars, _CommonSpect, _ElectronVars
         self.mu = CategorizedMVA([
-            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
         ])
         self.el = CategorizedMVA([
-            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
         ])
     def __call__(self,lep,ncorr=0):
         if   abs(lep.pdgId) == 11: return self.el(lep,ncorr)
@@ -135,18 +136,18 @@ class LeptonMVANoIso:
     def __init__(self,basepath):
         global _CommonVars, _CommonSpect, _ElectronVars
         self.mu = CategorizedMVA([
-            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_JetVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_JetVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_JetVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_JetVars+_BTagVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_JetVars+_BTagVars+_SIPVars+_IpVars) ),
         ])
         self.el = CategorizedMVA([
-            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
         ])
     def __call__(self,lep,ncorr=0):
         if   abs(lep.pdgId) == 11: return self.el(lep,ncorr)
@@ -182,18 +183,18 @@ class LeptonMVANoJet:
     def __init__(self,basepath):
         global _CommonVars, _CommonSpect, _ElectronVars
         self.mu = CategorizedMVA([
-            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_BTagVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_BTagVars+_SIPVars+_IpVars) ),
         ])
         self.el = CategorizedMVA([
-            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
         ])
     def __call__(self,lep,ncorr=0):
         if   abs(lep.pdgId) == 11: return self.el(lep,ncorr)
@@ -205,18 +206,18 @@ class LeptonMVANoMvaId:
     def __init__(self,basepath):
         global _CommonVars, _CommonSpect, _ElectronVars
         self.mu = CategorizedMVA([
-            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
         ])
         self.el = CategorizedMVA([
-            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_InnerHitsVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_InnerHitsVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_InnerHitsVars) ),
         ])
     def __call__(self,lep,ncorr=0):
         if   abs(lep.pdgId) == 11: return self.el(lep,ncorr)
@@ -228,18 +229,18 @@ class LeptonMVANoBtag:
     def __init__(self,basepath):
         global _CommonVars, _CommonSpect, _ElectronVars
         self.mu = CategorizedMVA([
-            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_JetVars+_IpVars) ),
-            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_JetVars+_IpVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_JetVars+_IpVars) ),
-            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_JetVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_JetVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_JetVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_JetVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_JetVars+_SIPVars+_IpVars) ),
         ])
         self.el = CategorizedMVA([
-            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_JetVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_JetVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_JetVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_JetVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_JetVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_JetVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_JetVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_JetVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_JetVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_JetVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_JetVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_JetVars+_SIPVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
         ])
     def __call__(self,lep,ncorr=0):
         if   abs(lep.pdgId) == 11: return self.el(lep,ncorr)
@@ -251,23 +252,72 @@ class LeptonMVANoInnerHits:
     def __init__(self,basepath):
         global _CommonVars, _CommonSpect, _ElectronVars
         self.mu = CategorizedMVA([
+            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars) ),
+        ])
+        self.el = CategorizedMVA([
+            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_IpVars+_MvaIdVars) ),
+        ])
+    def __call__(self,lep,ncorr=0):
+        if   abs(lep.pdgId) == 11: return self.el(lep,ncorr)
+        elif abs(lep.pdgId) == 13: return self.mu(lep,ncorr)
+        else: return -99
+
+
+
+class LeptonMVANoSIP:
+    def __init__(self,basepath):
+        global _CommonVars, _CommonSpect, _ElectronVars
+        self.mu = CategorizedMVA([
             ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
             ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
             ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
             ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars) ),
         ])
         self.el = CategorizedMVA([
-            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars) ),
-            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars) ),
-            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_IpVars+_MvaIdVars+_InnerHitsVars) ),
         ])
     def __call__(self,lep,ncorr=0):
         if   abs(lep.pdgId) == 11: return self.el(lep,ncorr)
         elif abs(lep.pdgId) == 13: return self.mu(lep,ncorr)
         else: return -99
+
+
+
+class LeptonMVANodxydz:
+    def __init__(self,basepath):
+        global _CommonVars, _CommonSpect, _ElectronVars
+        self.mu = CategorizedMVA([
+            ( lambda x: x.pt <= 15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars) ),
+            ( lambda x: x.pt <= 15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars) ),
+            ( lambda x: x.pt >  15 and abs(x.eta) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars) ),
+        ])
+        self.el = CategorizedMVA([
+            ( lambda x: x.pt <= 10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_low_fb", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt <= 10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_low_ec", _CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) <  0.8                         , MVATool("BDTG",basepath%"el_pteta_high_cb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 0.8 and abs(x.eta) <  1.479 , MVATool("BDTG",basepath%"el_pteta_high_fb",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_MvaIdVars+_InnerHitsVars) ),
+            ( lambda x: x.pt >  10 and abs(x.eta) >= 1.479                       , MVATool("BDTG",basepath%"el_pteta_high_ec",_CommonSpect,_IsoVars+_JetVars+_BTagVars+_SIPVars+_MvaIdVars+_InnerHitsVars) ),
+        ])
+    def __call__(self,lep,ncorr=0):
+        if   abs(lep.pdgId) == 11: return self.el(lep,ncorr)
+        elif abs(lep.pdgId) == 13: return self.mu(lep,ncorr)
+        else: return -99
+
 
 
 
@@ -279,12 +329,14 @@ class LepMVATreeProducer(Module):
         self.mva = LeptonMVA(path+"/weights/%s_BDTG.weights.xml")
         self.others = others
         if self.others:
-            self.mvaNoIso = LeptonMVANoIso(path+"/weightsNoIso/%s_BDTG.weights.xml")
-            self.mvaNoIp = LeptonMVANoIp(path+"/weightsNoIp/%s_BDTG.weights.xml")
-            self.mvaNoJet = LeptonMVANoJet(path+"/weightsNoJet/%s_BDTG.weights.xml")
-            self.mvaNoMvaId = LeptonMVANoMvaId(path+"/weightsNoMvaId/%s_BDTG.weights.xml")
-            self.mvaNoBtag = LeptonMVANoBtag(path+"/weightsNoBtag/%s_BDTG.weights.xml")
-            self.mvaNoInnerHits = LeptonMVANoInnerHits(path+"/weightsNoInnerHits/%s_BDTG.weights.xml")       
+            self.mvaNoSIP = LeptonMVANoSIP(path+"/weightsNoSIP/%s_BDTG.weights.xml")
+            self.mvaNodxydz = LeptonMVANodxydz(path+"/weightsNodxydz/%s_BDTG.weights.xml")
+            #self.mvaNoIso = LeptonMVANoIso(path+"/weightsNoIso/%s_BDTG.weights.xml")
+            #self.mvaNoIp = LeptonMVANoIp(path+"/weightsNoIp/%s_BDTG.weights.xml")
+            #self.mvaNoJet = LeptonMVANoJet(path+"/weightsNoJet/%s_BDTG.weights.xml")
+            #self.mvaNoMvaId = LeptonMVANoMvaId(path+"/weightsNoMvaId/%s_BDTG.weights.xml")
+            #self.mvaNoBtag = LeptonMVANoBtag(path+"/weightsNoBtag/%s_BDTG.weights.xml")
+            #self.mvaNoInnerHits = LeptonMVANoInnerHits(path+"/weightsNoInnerHits/%s_BDTG.weights.xml")       
         self.data = data
         self.fast = fast
     def beginJob(self):
@@ -292,12 +344,14 @@ class LepMVATreeProducer(Module):
         for i in range(8):
             self.t.branch("LepGood%d_mvaNew" % (i+1),"F")
             if self.others:
-                self.t.branch("LepGood%d_mvaNoIso" % (i+1),"F")
-                self.t.branch("LepGood%d_mvaNoIp" % (i+1),"F")
-                self.t.branch("LepGood%d_mvaNoJet" % (i+1),"F")                        
-                self.t.branch("LepGood%d_mvaNoMvaId" % (i+1),"F")
-                self.t.branch("LepGood%d_mvaNoBtag" % (i+1),"F")
-                self.t.branch("LepGood%d_mvaNoInnerHits" % (i+1),"F")
+                self.t.branch("LepGood%d_mvaNoSIP" % (i+1),"F")
+                self.t.branch("LepGood%d_mvaNodxydz" % (i+1),"F")
+                #self.t.branch("LepGood%d_mvaNoIso" % (i+1),"F")
+                #self.t.branch("LepGood%d_mvaNoIp" % (i+1),"F")
+                #self.t.branch("LepGood%d_mvaNoJet" % (i+1),"F")                        
+                #self.t.branch("LepGood%d_mvaNoMvaId" % (i+1),"F")
+                #self.t.branch("LepGood%d_mvaNoBtag" % (i+1),"F")
+                #self.t.branch("LepGood%d_mvaNoInnerHits" % (i+1),"F")
             if not self.data and not self.fast:
                 self.t.branch("LepGood%d_mvaNewUncorr"     % (i+1),"F")
                 self.t.branch("LepGood%d_mvaNewDoubleCorr" % (i+1),"F")
@@ -307,33 +361,39 @@ class LepMVATreeProducer(Module):
             if self.data:
                 setattr(self.t, "LepGood%d_mvaNew" % (i+1), self.mva(l,ncorr=0))
                 if self.others:
-                    setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), self.mvaNoIso(l,ncorr=0))
-                    setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), self.mvaNoIp(l,ncorr=0))
-                    setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), self.mvaNoJet(l,ncorr=0))
-                    setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), self.mvaNoMvaId(l,ncorr=0))
-                    setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), self.mvaNoBtag(l,ncorr=0))
-                    setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), self.mvaNoInnerHits(l,ncorr=0))
+                    setattr(self.t, "LepGood%d_mvaNoSIP" % (i+1), self.mvaNoSIP(l,ncorr=0))
+                    setattr(self.t, "LepGood%d_mvaNodxydz" % (i+1), self.mvaNodxydz(l,ncorr=0))
+                    #setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), self.mvaNoIso(l,ncorr=0))
+                    #setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), self.mvaNoIp(l,ncorr=0))
+                    #setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), self.mvaNoJet(l,ncorr=0))
+                    #setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), self.mvaNoMvaId(l,ncorr=0))
+                    #setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), self.mvaNoBtag(l,ncorr=0))
+                    #setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), self.mvaNoInnerHits(l,ncorr=0))
             else: 
                 setattr(self.t, "LepGood%d_mvaNew" % (i+1), self.mva(l,ncorr=1))
                 if self.others:
-                    setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), self.mvaNoIso(l,ncorr=1))
-                    setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), self.mvaNoIp(l,ncorr=1))
-                    setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), self.mvaNoJet(l,ncorr=1))
-                    setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), self.mvaNoMvaId(l,ncorr=1))
-                    setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), self.mvaNoBtag(l,ncorr=1))
-                    setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), self.mvaNoInnerHits(l,ncorr=1))
+                    setattr(self.t, "LepGood%d_mvaNoSIP" % (i+1), self.mvaNoSIP(l,ncorr=1))
+                    setattr(self.t, "LepGood%d_mvaNodxydz" % (i+1), self.mvaNodxydz(l,ncorr=1))
+                    #setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), self.mvaNoIso(l,ncorr=1))
+                    #setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), self.mvaNoIp(l,ncorr=1))
+                    #setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), self.mvaNoJet(l,ncorr=1))
+                    #setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), self.mvaNoMvaId(l,ncorr=1))
+                    #setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), self.mvaNoBtag(l,ncorr=1))
+                    #setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), self.mvaNoInnerHits(l,ncorr=1))
                 if not self.fast:
                     setattr(self.t, "LepGood%d_mvaNewUncorr"     % (i+1), self.mva(l,ncorr=0))
                     setattr(self.t, "LepGood%d_mvaNewDoubleCorr" % (i+1), self.mva(l,ncorr=2))
         for i in xrange(len(lep),8):
             setattr(self.t, "LepGood%d_mvaNew" % (i+1), -99.)
             if self.others:
-                setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), -99.)
-                setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), -99.)
-                setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), -99.)
-                setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), -99.)
-                setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), -99.)
-                setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), -99.)
+                setattr(self.t, "LepGood%d_mvaNoSIP" % (i+1), -99.)
+                setattr(self.t, "LepGood%d_mvaNodxydz" % (i+1), -99.)
+                #setattr(self.t, "LepGood%d_mvaNoIso" % (i+1), -99.)
+                #setattr(self.t, "LepGood%d_mvaNoIp" % (i+1), -99.)
+                #setattr(self.t, "LepGood%d_mvaNoJet" % (i+1), -99.)
+                #setattr(self.t, "LepGood%d_mvaNoMvaId" % (i+1), -99.)
+                #setattr(self.t, "LepGood%d_mvaNoBtag" % (i+1), -99.)
+                #setattr(self.t, "LepGood%d_mvaNoInnerHits" % (i+1), -99.)
             if not self.data and not self.fast:
                 setattr(self.t, "LepGood%d_mvaNewUncorr"     % (i+1), -99.)
                 setattr(self.t, "LepGood%d_mvaNewDoubleCorr" % (i+1), -99.)
@@ -376,7 +436,7 @@ for D in glob(args[0]+"/*"):
             print "  ",os.path.basename(D),("  DATA" if data else "  MC")," single chunk"
             jobs.append((short,fname,"%s/lepMVAFriend_%s.root" % (args[1],short),data,xrange(entries),-1))
         else:
-            nchunk = int(ceil(entries/chunk))
+            nchunk = int(ceil(entries/float(chunk)))
             print "  ",os.path.basename(D),("  DATA" if data else "  MC")," %d chunks" % nchunk
             for i in xrange(nchunk):
                 if options.chunks != []:
