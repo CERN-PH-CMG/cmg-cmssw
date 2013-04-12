@@ -117,7 +117,7 @@ class DatasetInformation(object):
     ##### whereas 'cmgtools_group' is the file owner of a sample stored in group/cmgtools/CMG/
     ##### and 'cbern' is the file owner of a sample stored in user/cbern/CMG/
 
-    def __init__( self, sampleName, fileOwner, comment, test, primary, username, password ):
+    def __init__( self, sampleName, fileOwner, comment, test, primary, username, password, test=False ):
         """Initialises attributes of object, and validates existence of dataset
         'sampleName' takes the name of the dataset e.g. /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3
         'fileOwner' takes the files owner on EOS e.g. cmgtools
@@ -133,7 +133,7 @@ class DatasetInformation(object):
         self._password = password
         self._logger_file = None
         self._logger_tar_object = None
-
+        self.test = test
         self.dataset_details = {"SampleName":sampleName,
                                 "ParentSampleName":None,
                                 "CMGDBName":None,
@@ -328,7 +328,7 @@ class DatasetInformation(object):
 
     def buildCMGDBReport(self):
         """Finds CMGDB ID of parent sample and sample"""
-        cmgdbAPI=CmgdbToolsApi()
+        cmgdbAPI=CmgdbToolsApi(self.test)
         cmgdbAPI.connect()
         self.dataset_details['CMGDBID'] = cmgdbAPI.getDatasetIDWithName(self.dataset_details['CMGDBName'])
         self.dataset_details['ParentCMGDBID'] = cmgdbAPI.getDatasetIDWithName(self.dataset_details['ParentCMGDBName'])
