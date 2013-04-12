@@ -56,22 +56,28 @@ _CommonVars = [
     #MVAVar("jetPtRatio_out := min(ptf_out,1.5)", lambda x : min(x.ptf_out,1.5)),
     #MVAVar("jetBTagCSV_out := max(CSV_out,0)", lambda x : max(x.CSV_out,0.)),
     MVAVar("sip3d",lambda x: x.sip3D(), corrfunc=ROOT.scaleSip3dMC),
+]
+
+_MuonVars = [
     MVAVar("dxy := log(abs(dxy))",lambda x: log(abs(x.dxy())), corrfunc=ROOT.scaleDxyMC),
     MVAVar("dz  := log(abs(dz))", lambda x: log(abs(x.dz())), corrfunc=ROOT.scaleDzMC),
 ]
+
 _ElectronVars = [
     MVAVar("mvaId",lambda x: x.mvaNonTrigV0()),
     MVAVar("innerHits",lambda x: x.numberOfHits()),
 ]
+
+
 class LeptonMVA:
     def __init__(self, basepath, isMC):
         global _CommonVars, _CommonSpect, _ElectronVars
         self._isMC = isMC
         self.mu = CategorizedMVA([
-            ( lambda x: x.pt() <= 15 and abs(x.eta()) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_CommonVars) ),
-            ( lambda x: x.pt() <= 15 and abs(x.eta()) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_CommonVars) ),
-            ( lambda x: x.pt() >  15 and abs(x.eta()) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_CommonVars) ),
-            ( lambda x: x.pt() >  15 and abs(x.eta()) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_CommonVars) ),
+            ( lambda x: x.pt() <= 15 and abs(x.eta()) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_low_b", _CommonSpect,_CommonVars+_MuonVars) ),
+            ( lambda x: x.pt() <= 15 and abs(x.eta()) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_low_e", _CommonSpect,_CommonVars+_MuonVars) ),
+            ( lambda x: x.pt() >  15 and abs(x.eta()) <  1.5 , MVATool("BDTG",basepath%"mu_pteta_high_b",_CommonSpect,_CommonVars+_MuonVars) ),
+            ( lambda x: x.pt() >  15 and abs(x.eta()) >= 1.5 , MVATool("BDTG",basepath%"mu_pteta_high_e",_CommonSpect,_CommonVars+_MuonVars) ),
         ])
         self.el = CategorizedMVA([
             ( lambda x: x.pt() <= 10 and abs(x.eta()) <  0.8                           , MVATool("BDTG",basepath%"el_pteta_low_cb", _CommonSpect,_CommonVars+_ElectronVars) ),
