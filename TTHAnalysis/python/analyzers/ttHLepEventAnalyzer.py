@@ -15,7 +15,7 @@ from CMGTools.RootTools.physicsobjects.Electron import Electron
 from CMGTools.RootTools.physicsobjects.Muon import Muon
 from CMGTools.RootTools.physicsobjects.Jet import Jet
 
-from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi,bestMatch
+from CMGTools.RootTools.utils.DeltaR import * 
 from CMGTools.TTHAnalysis.leptonMVA import LeptonMVA
 import os
         
@@ -31,6 +31,7 @@ class ttHLepEventAnalyzer( Analyzer ):
         self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
         self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
         self.handles['metSignificance'] = AutoHandle( 'pfMetSignificance', 'cmg::METSignificance' )
+        self.handles['jets4MVA'] = AutoHandle( self.cfg_ana.jetCol4MVA, 'std::vector<cmg::PFJet>' )
 
     def beginLoop(self):
         super(ttHLepEventAnalyzer,self).beginLoop()
@@ -212,7 +213,14 @@ class ttHLepEventAnalyzer( Analyzer ):
 
         self.makeHadTopDecays(event)
 
+        allJets = map( Jet, self.handles['jets4MVA'].product() )
+        jlpairs = matchObjectCollection( event.selectedLeptons, allJets, 0.5*0.5)
         for lep in event.selectedLeptons:
+            jet = jlpairs[lep]
+            if jet is None:
+                lep.jet = lep
+            else:
+                lep.jet = jet
             self.leptonMVA.addMVA(lep)
 
         if self.cfg_ana.verbose:
