@@ -136,9 +136,9 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         if self.cfg_ana.doElectronScaleCorrections:
             for ele in allelectrons:
-                ele.calibratedPatEle = ele.sourcePtr().get().clone()
-                self.electronEnergyCalibrator.correctLite(ele.calibratedPatEle, ele.calibratedPatEle.r9(), event.run)
-                ele.setP4(ele.calibratedPatEle.p4(ele.calibratedPatEle.P4_COMBINATION))
+                calibratedPatEle = ele.sourcePtr().get()
+                self.electronEnergyCalibrator.correctLite(calibratedPatEle, calibratedPatEle.r9(), event.run)
+                ele.setP4(calibratedPatEle.p4(calibratedPatEle.P4_COMBINATION))
 
         muForEleCrossCleaning = []
         if self.cfg_ana.doEleMuCrossCleaning:
