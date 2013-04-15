@@ -8,7 +8,7 @@
 
 using namespace std;
 
-MetUtilities::MetUtilities() { //, bool isData) {
+MetUtilities::MetUtilities(unsigned wpId) { //, bool isData) {
   // jet id
   /* ===> this code parses an xml it uses parameter set 
   edm::ParameterSet jetConfig = iConfig.getParameter<edm::ParameterSet>("JetIdParams");
@@ -27,21 +27,34 @@ MetUtilities::MetUtilities() { //, bool isData) {
     }
   */
   fJetPtMin = -1.;
-  //Tight Id
+
+
+  //Tight Id - obsolete
   fMVACut[0][0][0] =  0.5; fMVACut[0][0][1] = 0.6; fMVACut[0][0][2] = 0.6; fMVACut[0][0][3] = 0.9;
   fMVACut[0][1][0] = -0.2; fMVACut[0][1][1] = 0.2; fMVACut[0][1][2] = 0.2; fMVACut[0][1][3] = 0.6;
   fMVACut[0][2][0] =  0.3; fMVACut[0][2][1] = 0.4; fMVACut[0][2][2] = 0.7; fMVACut[0][2][3] = 0.8;
   fMVACut[0][3][0] =  0.5; fMVACut[0][3][1] = 0.4; fMVACut[0][3][2] = 0.8; fMVACut[0][3][3] = 0.9;
-  //Medium id
+ 
+  //Medium id - obsolete
   fMVACut[1][0][0] =  0.2; fMVACut[1][0][1] = 0.4; fMVACut[1][0][2] = 0.2; fMVACut[1][0][3] = 0.6;
   fMVACut[1][1][0] = -0.3; fMVACut[1][1][1] = 0. ; fMVACut[1][1][2] = 0. ; fMVACut[1][1][3] = 0.5;
   fMVACut[1][2][0] =  0.2; fMVACut[1][2][1] = 0.2; fMVACut[1][2][2] = 0.5; fMVACut[1][2][3] = 0.7;
   fMVACut[1][3][0] =  0.3; fMVACut[1][3][1] = 0.2; fMVACut[1][3][2] = 0.7; fMVACut[1][3][3] = 0.8;
-  //Loose Id 
-  fMVACut[2][0][0] = -0.2; fMVACut[2][0][1] = -0.3; fMVACut[2][0][2] = -0.5; fMVACut[2][0][3] = -0.5;
-  fMVACut[2][1][0] = -0.2; fMVACut[2][1][1] = -0.2; fMVACut[2][1][2] = -0.5; fMVACut[2][1][3] = -0.3;
-  fMVACut[2][2][0] = -0.2; fMVACut[2][2][1] = -0.2; fMVACut[2][2][2] = -0.2; fMVACut[2][2][3] =  0.1;
-  fMVACut[2][3][0] = -0.2; fMVACut[2][3][1] = -0.2; fMVACut[2][3][2] =  0.;  fMVACut[2][3][3] =  0.2;
+
+  //Loose Id, 44X (colin, not sure) 
+  fMVACut[2][0][0] = -0.2; fMVACut[2][0][1] =  0. ; fMVACut[2][0][2] =  0.2; fMVACut[2][0][3] =  0.5;
+  fMVACut[2][1][0] =  0.2; fMVACut[2][1][1] = -0.6; fMVACut[2][1][2] = -0.6; fMVACut[2][1][3] = -0.4;
+  fMVACut[2][2][0] =  0.2; fMVACut[2][2][1] = -0.6; fMVACut[2][2][2] = -0.6; fMVACut[2][2][3] = -0.4;
+  fMVACut[2][3][0] =  0.2; fMVACut[2][3][1] = -0.8; fMVACut[2][3][2] = -0.8; fMVACut[2][3][3] = -0.4;
+
+  //Loose Id, 53X (colin, not sure)
+  fMVACut[3][0][0] = -0.2; fMVACut[3][0][1] = -0.3; fMVACut[3][0][2] = -0.5; fMVACut[3][0][3] = -0.5;
+  fMVACut[3][1][0] = -0.2; fMVACut[3][1][1] = -0.2; fMVACut[3][1][2] = -0.5; fMVACut[3][1][3] = -0.3;
+  fMVACut[3][2][0] = -0.2; fMVACut[3][2][1] = -0.2; fMVACut[3][2][2] = -0.2; fMVACut[3][2][3] =  0.1;
+  fMVACut[3][3][0] = -0.2; fMVACut[3][3][1] = -0.2; fMVACut[3][3][2] =  0.;  fMVACut[3][3][3] =  0.2;
+
+  workingPointId_ = wpId; 
+
 }
 
 MetUtilities::~MetUtilities() {}
@@ -56,7 +69,7 @@ bool MetUtilities::passMVA(std::pair<LorentzVector,double> jet) {
   if(fabs(jet.first.eta()) > 2.5  && fabs(jet.first.eta()) < 2.75) etaId = 1; 
   if(fabs(jet.first.eta()) > 2.75 && fabs(jet.first.eta()) < 3.0 ) etaId = 2; 
   if(fabs(jet.first.eta()) > 3.0  && fabs(jet.first.eta()) < 5.0 ) etaId = 3; 
-  if(jet.second  > fMVACut[2][ptId][etaId]) return true;
+  if(jet.second  > fMVACut[workingPointId_][ptId][etaId]) return true;
   return false;
 }
 MetUtilities::LorentzVector *MetUtilities::leadPt(std::vector<JetInfo> &iJets,bool iFirst) {
