@@ -16,7 +16,7 @@ class MetUtilities {
     double        neutFrac;  
   };
 
-  MetUtilities();
+  MetUtilities(unsigned workingPointId);
   virtual ~MetUtilities();
 
   bool              passMVA  (std::pair<LorentzVector,double> iJet);
@@ -43,7 +43,8 @@ class MetUtilities {
   double fJetPtMin;
  protected:
   // PU jet identifier 
-  double fMVACut[3][4][4];  //Jet Id MVA
+  double     fMVACut[4][4][4];  //Jet Id MVA
+  unsigned   workingPointId_;
 };
 
 #endif
