@@ -137,7 +137,7 @@ def getValidationRunInfoFromDisk( validationRunPath ):
     
 def addInformationToCMGDB( dir_name, valRunInfo, development=False ):
     validationRunsLibraryPath = "/afs/cern.ch/user/a/anantoni/www/cmg-compare-validation-runs/ValidationRuns"
-    cmgdbAPI = CmgdbApi(development)
+    cmgdbAPI = CmgdbToolsApi(development)
     cmgdbAPI.connect()
 
     #get all the information from the validation run object
@@ -217,8 +217,6 @@ if __name__ == '__main__':
                         dest="password",
                         help="""Specify the password to access both the DBS and savannah servers.""",
 		        default=None)
-       
-
 
     parser.add_option_group( group )
     (options, args) = parser.parse_args()
@@ -233,6 +231,9 @@ if __name__ == '__main__':
             print "Authentication Failed, exiting\n\n"
             sys.exit(1)
         options.password = password
+    else:
+	password = options.password
+
     if not validLogin(options.username, password):
         print "Authentication Failed, exiting\n\n"
         sys.exit(-1)
@@ -243,10 +244,11 @@ if __name__ == '__main__':
     valRunInfo.printAnalyzers()
     valRunInfo.printReleaseInfo()
     valRunInfo.printRootFilesInfo()
-    addInformationToCMGDB( dir_name, valRunInfo, development )
+    addInformationToCMGDB( dir_name, valRunInfo, options.development )
     persistentObject = anydbm.open( "self.db", 'n')
     persistentObject.close()
     persistentObject = shelve.open( "self.db" )
     persistentObject["valRunInfo"] = valRunInfo
     persistentObject.close()
+
 
