@@ -1,11 +1,9 @@
-# Package DataFormats/TrackerCommon not in local area -> removed from relinfo
-# Package RecoLocalTracker/SubCollectionProducers not in local area -> removed from relinfo
-[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'JoseApr3'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'JoseApr3'),
+[ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'lucieg_Ap8'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_cleanuprecoil_15Apr13'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-03-03'),
-  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'JoseApr3'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'wreece_140113'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_15Jan13'),
+  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_buidfilefix_15Apr13'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_Apr15'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_Apr15'),
   ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'JoseApr3'),
   ('CMGTools/ZJetsTutorial', 'UserCode/CMG/CMGTools/ZJetsTutorial', 'cbern_local_12Dec12'),
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
