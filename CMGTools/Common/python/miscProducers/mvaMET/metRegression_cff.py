@@ -1,57 +1,32 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.External.puJetIDAlgo_cff import *
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X, isNewerThan
+
+
+jetPtMin = 1.
+puJetIdAlgo = PhilV1
+if isNewerThan('CMSSW_5_3_0'):
+    jetPtMin = 0.
+    puJetIdAlgo = met_53x
 
 pfMetForRegression   = cms.EDProducer(
     "MetFlavorProducer",
     CorrJetName     = cms.InputTag("patJets"),
-    # not needed 
-    JetName         = cms.InputTag("ak5PFJets"),
     PFCandidateName = cms.InputTag("particleFlow"),
     VertexName      = cms.InputTag("offlinePrimaryVertices"),
     RhoName         = cms.InputTag('kt6PFJets','rho'),
-    JetPtMin        = cms.double(0.), # should be 0 for 5X and 1 for 4X
+    JetPtMin        = cms.double(jetPtMin), # should be 0 for 5X and 1 for 4X
     dZMin           = cms.double(0.1),
-    met_53x         = met_53x,
-    PhilV1          = PhilV1,
-    full            = full,
-    full_5x         = full_5x,
-    runMvas         = cms.bool(True),
     MetFlavor       = cms.int32(0),  # 0 PF  1 TK  2 No PU 3 PU  4 PUC   
-    impactParTkThreshold = cms.untracked.double(1.) ,
-    # need to use edmFileInPath
-    tmvaWeights = cms.string("CMGTools/External/data/TMVAClassificationCategory_JetID_MET_53X_Dec2012.weights.xml"),
-    tmvaMethod = cms.string("JetID"),
-    version = cms.int32(-1),
-    cutBased = cms.bool(False),
-    tmvaVariables = cms.vstring(
-     "nvtx",
-     "jetPt",
-     "jetEta",
-     "jetPhi",
-     "dZ",
-     "beta",
-     "betaStar",
-     "nCharged",
-     "nNeutrals",
-     "dR2Mean",
-     "ptD",
-     "frac01",
-     "frac02",
-     "frac03",
-     "frac04",
-     "frac05",
-     ),
-    label          = cms.string("met_53x"),
-    tmvaSpectators = cms.vstring(),
-    JetIdParams = met_53x_wp
+    PUJetId         = puJetIdAlgo,
+    PUJetIdLowPt    = puJetIdAlgo,
     )
 
-from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X, isNewerThan
-if isNewerThan('CMSSW_5_2_0'):
-    pfMetForRegression.JetPtMin = 0.
-else:
-    pfMetForRegression.JetPtMin = 1.
+## if isNewerThan('CMSSW_5_3_0'):
+##     pfMetForRegression.JetPtMin = 0.
+## else:
+##     pfMetForRegression.JetPtMin = 1.
    
 
 tkMet     =  pfMetForRegression.clone(MetFlavor = cms.int32(1))
