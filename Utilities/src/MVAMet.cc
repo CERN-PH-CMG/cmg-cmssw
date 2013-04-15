@@ -60,10 +60,13 @@ void MVAMet::Initialize(const edm::ParameterSet &iConfig,
   
   ROOT::Cintex::Cintex::Enable();
   fIsInitialized = kTRUE;
-  fUtils         = new MetUtilities();//iConfig);  
+  fUtils         = new MetUtilities(3); // 3 is the working point id, see MetUtilities.cc
   fType          = iType;
   f42            = iU1Weights.Contains("42");
-  if(f42)  fUtils->fJetPtMin = 1.;
+  if(f42)  {
+    fUtils->fJetPtMin = 1.;
+    fUtils->workingPointId_=2;
+  }
 
   TFile *lPhiForest = new TFile(iPhiWeights,"READ");
   fPhiReader = (GBRForest*)lPhiForest->Get(fPhiMethodName);
