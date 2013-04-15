@@ -30,6 +30,11 @@ cp /afs/cern.ch/user/p/palencia/public/hitFit/TtSemiLepHitFitProducer_Electrons_
 
 scram b 
 
+#CALIBRATION
+python scripts/bsubCalib.py -o ~/www/TOP-12-030/ee/ -n 10000 -c ee
+python scripts/massfitter2.py calib -o ~/www/TOP-12-030/ee -i FitSecVtxDistributionsWS.root
+python scripts/massfitter2.py fit -o ~/www/TOP-12-030/ee -i FitSecVtxDistributionsWS.root
+
 
 # PLEASE UPDATE FROM THIS POINT FOWARD
 # THESE INSTRUCTIONS WERE VALID FOR THE SUMMER STUDIES
@@ -52,6 +57,8 @@ cmsenv
 # the script will create a ROOT output file with histograms
 
 SecVtxAnalysis inputDir=/store/cmst3/user/psilva/SecVtx/TTJets
+
+
 
 
 #
