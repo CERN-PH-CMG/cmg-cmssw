@@ -32,7 +32,7 @@ MetFlavorProducer::MetFlavorProducer(const edm::ParameterSet& iConfig) {
   produces<reco::PFMETCollection>();
   //fPatJetName     = iConfig.getParameter<edm::InputTag>("CorrJetName");
   fCorrJetName    = iConfig.getParameter<edm::InputTag>("CorrJetName");
-  fUnCorrJetName  = iConfig.getParameter<edm::InputTag>("JetName");
+  // fUnCorrJetName  = iConfig.getParameter<edm::InputTag>("JetName");
   fPFCandName     = iConfig.getParameter<edm::InputTag>("PFCandidateName");
   fVertexName     = iConfig.getParameter<edm::InputTag>("VertexName");
   fRhoName        = iConfig.getParameter<edm::InputTag>("RhoName");
@@ -40,8 +40,8 @@ MetFlavorProducer::MetFlavorProducer(const edm::ParameterSet& iConfig) {
   fDZMin          = iConfig.getParameter<double>       ("dZMin");  
   fMetFlavor      = iConfig.getParameter<int>          ("MetFlavor");
   fUtils          = new MetUtilities();
-  fPUJetIdAlgo         = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("met_53x"));
-  fPUJetIdAlgoLowPt    = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("met_53x"));
+  fPUJetIdAlgo         = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("PUJetId"));
+  fPUJetIdAlgoLowPt    = new PileupJetIdAlgo(iConfig.getParameter<edm::ParameterSet>("PUJetIdLowPt"));
 }
 MetFlavorProducer::~MetFlavorProducer() { 
   delete fUtils;
