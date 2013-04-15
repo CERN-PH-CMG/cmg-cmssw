@@ -40,11 +40,12 @@ class MetUtilities {
 					    std::vector<std::pair<LorentzVector,double> > &iCands ,std::vector<JetInfo> &iJets,double iDZ);
 
   std::pair<MetUtilities::LorentzVector,double> Recoil(double iSumEt,double iPtVis,double iPhiVis,std::pair<LorentzVector,double> &iMet); 
+  //colin: a friend declaration
   double fJetPtMin;
+  unsigned   workingPointId_;
  protected:
   // PU jet identifier 
   double     fMVACut[4][4][4];  //Jet Id MVA
-  unsigned   workingPointId_;
 };
 
 #endif
