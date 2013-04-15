@@ -397,7 +397,6 @@ int main(int argc, char *argv[])
 	  }
 	  TString massStr = tkns->At(3)->GetName(); 
 	  float mass      = massStr.Atof()/10.;
-<<<<<<< FitSecVtxDistributions.cxx
 	  if(proc=="ttbarv" || proc=="otherttbar") mass=0;
 	  if(mass != 0 )              { h->SetLineColor(1); h->SetMarkerColor(1); h->SetFillColor(804); h->SetFillStyle(1001); } 
 	  
@@ -407,46 +406,23 @@ int main(int argc, char *argv[])
 	    nextTemplKey=nextTempl();
 	    continue;
 	  }
-=======
-	  if(proc=="ttbarv" || proc=="otherttbar") mass=0;
-	  if(mass != 0 )              { h->SetLineColor(1); h->SetMarkerColor(1); h->SetFillColor(804); h->SetFillStyle(1001); } 
-	  
-	  //some are not interesting for us
-	  if((var.Contains("eta") || var.Contains("pt") || var.Contains("presel") || var.Contains("Count"))
-	     || (var.Contains("jet") && !var.Contains("lxy") && !var.Contains("mass")) ){
-	    nextTemplKey=nextTempl();
-	    continue;
-	  }
->>>>>>> 1.26
 
 	  //save to shape
 	  if(proc=="data")
 	    {
-<<<<<<< FitSecVtxDistributions.cxx
-	      if(var.Contains("maxlxy"))  m_shape.lxy_data=h, std::cout << "data hist(" << var <<"): " << h->Integral(0,h->GetNbinsX()+1) << std::endl;
-=======
-	      if(var.Contains("lxy"))  m_shape.lxy_data=h; //, std::cout << "data hist: " << h->Integral(0,h->GetNbinsX()+1) << std::endl;
->>>>>>> 1.26
+	      if(var.Contains("lxy"))  m_shape.lxy_data=h, std::cout << "data hist(" << var <<"): " << h->Integral(0,h->GetNbinsX()+1) << std::endl;
 	      if(var.Contains("mass")) m_shape.mass_data=h;
 	    }
 	  else if(mass!=0 && jetFlav=="")
 	    {
 	      if(syst=="")
 	  	{
-<<<<<<< FitSecVtxDistributions.cxx
-	  	  if(var.Contains("maxlxy"))  m_shape.lxy_signal[mass]=h; //, std::cout << mass << " " << h->GetName() << " " << h->GetBinWidth(1) << std::endl; //, std::cout << "signal (" << mass << ") hist: " << h->Integral(0,h->GetNbinsX()+1) << std::endl;
-=======
 	  	  if(var.Contains("lxy"))  m_shape.lxy_signal[mass]=h; //, std::cout << mass << " " << h->GetName() << " " << h->GetBinWidth(1) << std::endl; //, std::cout << "signal (" << mass << ") hist: " << h->Integral(0,h->GetNbinsX()+1) << std::endl;
->>>>>>> 1.26
 	  	  if(var.Contains("mass")) m_shape.mass_signal[mass]=h;
 	  	}
 	      else
 	  	{
-<<<<<<< FitSecVtxDistributions.cxx
-		  if(var.Contains("maxlxy"))  m_shape.lxy_signalSysts[mass][syst]=h;
-=======
 		  if(var.Contains("lxy"))  m_shape.lxy_signalSysts[mass][syst]=h;
->>>>>>> 1.26
 	  	  if(var.Contains("mass")) m_shape.mass_signalSysts[mass][syst]=h;
 	  	}
 	    }
