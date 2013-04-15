@@ -86,25 +86,7 @@ def getFileName(name):
 
 class DatasetInformation(object):	
 	"""Class gives access to attributes of the dataset that are stored on disk"""
-	
-	### Important definitions:
-	### CMGDB Name is in the form which contains the file owner
-	##### e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1--V3---cmgtools/AODSIM
-	
-	### Sample Name is in the format usually used when accessing datasets on EOS
-	##### e.g. /DiPhotonBox_Pt-250_7TeV-pythia6/Summer11-PU_S4_START42_V11-v1/AODSIM/V3
-	
-	### Group name (or file group name) is the name of a set of files within a directory, represented by the common root
-	##### e.g. 'patTuple' for the files:
-	##### patTuple_2159.root and patTuple_1996.root
-	
-	### User or Username relates to the current user making a request/publishing NOT NECESARILY the files owner on EOS
-	
-	### File owner is the name of the area that stores the sample on EOS 
-	##### e.g. 'cmgtools' is the file owner of a sample stored in user/cmgtools/CMG/
-	##### whereas 'cmgtools_group' is the file owner of a sample stored in group/cmgtools/CMG/
-	##### and 'cbern' is the file owner of a sample stored in user/cbern/CMG/
-	
+		
 	def __init__(self, sampleName, fileOwner, comment, force, test, primary, username, password, development=False):
 		"""Initialises attributes of object, and validates existence of dataset
 		'sampleName' takes the name of the dataset e.g. /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3
