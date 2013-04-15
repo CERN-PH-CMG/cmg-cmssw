@@ -11,7 +11,7 @@ from CMGTools.Production.nameOps import *
 from CMGTools.Production.findDSOnSav import *
 from CMGTools.Production.dataset import *
 
-def unPublish( dsName, fileown, user, password ):
+def unPublish( dsName, fileown, user, password, development=False ):
     
     if re.search("---",dsName):
         fileown = getDbsUser(dsName)
@@ -67,7 +67,7 @@ def unPublish( dsName, fileown, user, password ):
     	 
     print "\n-------CMGDB-------\n"
     ID = None    
-    cmgdbAPI=CmgdbToolsApi()
+    cmgdbAPI=CmgdbToolsApi(development)
     cmgdbAPI.connect()
     ID = cmgdbAPI.getDatasetIDWithName( cmgdbName )
     if ID is not None:

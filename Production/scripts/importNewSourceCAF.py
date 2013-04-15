@@ -26,10 +26,10 @@ parser.add_option("-n", "--negate", action="store_true",
                   dest="negate",
                   help="do not proceed",
                   default=False)
-parser.add_option("-p", "--pattern", 
-                  dest="pattern",
-                  help="Regexp pattern for root files in castor dir.",
-                  default=".*root")
+parser.add_option("-w", "--wildcard", 
+                  dest="wildcard",
+                  help="UNIX style wildcard for root files in castor dir.",
+                  default="*root")
 parser.add_option("-o", "--output", 
                   dest="output",
                   help="Output file name.",

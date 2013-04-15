@@ -4,7 +4,7 @@
 # compiles the python module
 # prints the line to be added to the cfg. 
 
-import os, sys,  imp, re, pprint, string
+import os, sys,  imp, re, pprint, string, fnmatch
 from optparse import OptionParser
 
 import CMGTools.Production.eostools as castortools
@@ -25,9 +25,9 @@ parser.add_option("-u", "--user",
                   dest="user",
                   help="user who is the owner of the castor base directory",
                   default=os.environ['USER'] )
-parser.add_option("-p", "--pattern", 
-                  dest="pattern",
-                  help="pattern for root files in castor dir",
+parser.add_option("-w", "--wildcard", 
+                  dest="wildcard",
+                  help="UNIX style wildcard for root files in castor dir",
                   default=".*root")
 
 (options,args) = parser.parse_args()
@@ -38,7 +38,7 @@ if len(args)!=1:
 
 sampleName = args[0]
 
-pattern = options.pattern
+pattern = fnmatch.translate( options.wildcard )
 
 
 # preparing castor dir -----------------

@@ -10,7 +10,7 @@ from CMGTools.Production.castorBaseDir import getUserAndArea
 from CMGTools.Production.datasetInformation import DatasetInformation
 
 
-def publish( sampleName, fileown, comment, test, user, password, savannah, primary, run_range = None):
+def publish(sampleName,fileown,comment,test,user,password, force, savannah,primary, run_range = None, development = False ):
 	"""Publish the given dataset to CMGDB and Savannah
 		
 	'sampleName' takes the name of the dataset, in either format
@@ -20,6 +20,7 @@ def publish( sampleName, fileown, comment, test, user, password, savannah, prima
 	'user' takes the NICE username of the person making the post
 	'password' takes the NICE password of the person making the post
 	'savannah' takes True/False on whether Savannah publish is desired
+	'development'
 	"""
 	
 	def checkName(sampleName, fileown):
@@ -50,7 +51,7 @@ def publish( sampleName, fileown, comment, test, user, password, savannah, prima
 		print sampleName+"\n"
 		
 		# Initialise PublishController
-		publishController = PublishController(user, password)
+		publishController = PublishController(user, password, development)
 		
 		# Attempt Login, if unexplained fail occurs, retry
 		loginClear = False
@@ -71,7 +72,7 @@ def publish( sampleName, fileown, comment, test, user, password, savannah, prima
 		
 		
 		# Get DS Information
-		datasetDetails = DatasetInformation(sampleName, fileown ,comment, test,primary, user, password)
+		datasetDetails = DatasetInformation(sampleName, fileown ,comment ,force,test,primary, user, password, development)
 		
 		# Build all reports on the dataset
 		if datasetDetails is None: return None

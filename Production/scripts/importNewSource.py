@@ -4,7 +4,7 @@
 # compiles the python module
 # prints the line to be added to the cfg. 
 
-import os, sys,  imp, re, pprint, string
+import os, sys,  imp, re, pprint, string, fnmatch
 from optparse import OptionParser
 
 import CMGTools.Production.eostools as castortools
@@ -38,10 +38,10 @@ parser.add_option("-u", "--user",
                   dest="user",
                   help="User who is the owner of the castor base directory, where the sample is located.",
                   default=os.environ['USER'] )
-parser.add_option("-p", "--pattern", 
-                  dest="pattern",
-                  help="Regexp pattern for root files in castor dir.",
-                  default=".*root")
+parser.add_option("-w", "--wildcard", 
+                  dest="wildcard",
+                  help="Unix style wildcard for root files in castor dir.",
+                  default="*root")
 parser.add_option("-o", "--output", 
                   dest="output",
                   help="Output file name.",
@@ -62,14 +62,15 @@ import CMGTools.Production.castorBaseDir as castorBaseDir
 cdir = castortools.lfnToCastor( castorBaseDir.castorBaseDir( options.user ) )
 cdir += sampleName
 
+pattern = fnmatch.translate( options.wildcard )
 if not castortools.fileExists(cdir):
     print 'importNewSource: castor directory does not exist. Exit!'
     sys.exit(1)
 
 
-# sourceFileList = 'sourceFileList.py -c %s "%s" > %s' % (cdir, options.pattern, sourceFile)
+# sourceFileList = 'sourceFileList.py -c %s "%s" > %s' % (cdir, pattern, sourceFile)
 
 from CMGTools.Production.doImportNewSource import doImportNewSource
 doImportNewSource( sampleName,
-                   'sourceFileList.py -c %s "%s"' % (cdir, options.pattern),
+                   'sourceFileList.py -c %s "%s"' % (cdir, pattern),
                    options.output ) 

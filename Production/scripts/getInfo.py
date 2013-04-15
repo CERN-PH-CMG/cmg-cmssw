@@ -12,11 +12,38 @@ from CMGTools.Production.cmgdbApi import CmgdbApi
 
 # Make sure is being used as a script
 if __name__ == '__main__':
-    cmgdbApi = CmgdbApi()
+    parser = optparse.OptionParser()
+    parser.add_option("-s", "--sql",
+                      action = "store_true",
+                      dest="sql",
+                      help="Enter a raw sql query for cmgdb"
+                      )
+    parser.add_option("-a", "--alias",
+                      action = "store",
+                      dest="alias",
+                      help="Enter query alias"
+                      )
+    parser.add_option("-d", "--dev",
+                      action = "store_true",
+                      dest="development",
+                      default=False,
+                      help="Publish on official or test database"
+                      )
+
+    (options, args) = parser.parse_args()
+    
+    # If there are no options selected exit.
+    if options.sql is None and options.alias is None:
+        parser.print_help()
+        sys.exit(1)
+    # Allow no less than one argument
+    if len(args)<1:
+        parser.print_help()
+        sys.exit(1)
+
+    cmgdbApi = CmgdbApi(options.development)
     cmgdbApi.connect()
     description = cmgdbApi.describe()
-    parser = optparse.OptionParser()
-
     parser.usage = """
 Table Structure:
 """+description+"""
@@ -91,27 +118,7 @@ getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6
 
 """
     
-    parser.add_option("-s", "--sql",
-                      action = "store_true",
-                      dest="sql",
-                      help="Enter a raw sql query for cmgdb"
-                      )
-    parser.add_option("-a", "--alias",
-                      action = "store",
-                      dest="alias",
-                      help="Enter query alias"
-                      )
-
-    (options, args) = parser.parse_args()
-    
-    # If there are no options selected exit.
-    if options.sql is None and options.alias is None:
-        parser.print_help()
-        sys.exit(1)
-    # Allow no less than one argument
-    if len(args)<1:
-        parser.print_help()
-        sys.exit(1)
+   
         
     
     # Dict of query alias'
