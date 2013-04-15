@@ -85,6 +85,12 @@ if __name__ == '__main__':
 						help="""Specify the password to access both the DBS and savannah servers.
 	If not entered, secure password prompt will appear.""",
 	                  default=None )
+    
+    	genGroup.add_option("-d", "--dev",
+						action = "store_true",
+						dest="development",
+						help="""Publish on official or development database.""",
+	                 			default=False )
 	# If user wants to add multiple datasets from file
 	group.add_option("-M", "--multi",
 						action = "store_true",

@@ -4,6 +4,7 @@ import sys
 import os
 import re
 import gzip
+import fnmatch
 
 from CMGTools.Production.dataset import createDataset
 
@@ -74,7 +75,7 @@ if __name__ == '__main__':
                       default=False,
                       help='Print resubmission command')
     parser.add_option("-u", "--user", dest="user", default=os.environ.get('USER', None),help='user owning the dataset.\nInstead of the username, give "LOCAL" to read datasets in a standard unix filesystem, and "CMS" to read official CMS datasets present at CERN.')
-    parser.add_option("-p", "--pattern", dest="pattern", default='.*root',help='regexp pattern for root file printout')
+    parser.add_option("-w", "--wildcard", dest="wildcard", default='*root',help='A UNIX style wildcard for root file printout')
     parser.add_option("-b", "--batch", dest="batch",
                       help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
                       default="bsub -q 8nh < ./batchScript.sh")
@@ -96,7 +97,7 @@ if __name__ == '__main__':
     allJobsDir = args[1]
 
     user = options.user
-    pattern = options.pattern
+    pattern = fnmatch.translate( options.wildcard )
 
     data = createDataset(user, dataset, pattern, options.readcache)
 

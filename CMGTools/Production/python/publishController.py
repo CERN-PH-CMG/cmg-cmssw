@@ -12,17 +12,19 @@ import sys, re
 
 class PublishController(object):
 	"""This class controls the interactions between a user and the two publishing platforms, Savannah and CMGDB"""
-	def __init__(self, username, password):
+	def __init__(self, username, password, development=False):
 		"""Initialise CMGDB and set username and password
 			
 		'username' takes the NICE username of the current user, NOT the files owner on EOS
 		'password' takes the NICE password of the current user
 		'force' takes a boolean value which determines whether a lack of log file can be ignored
 		"""
-		self._cmgdbAPI=CmgdbToolsApi()
+       		self.development = development
+		self._cmgdbAPI=CmgdbToolsApi(self.development)
 		self._cmgdbAPI.connect()
 		self._username = username
 		self._password = password
+        
 	
 	def cmgdbOnline(self):
 		"""Returns True if CMGDB is online and working"""

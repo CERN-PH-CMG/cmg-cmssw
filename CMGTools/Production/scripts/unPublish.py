@@ -63,6 +63,13 @@ If not entered, secure password prompt will appear.""",
 							E.g.
 							/MuHad/Run2011A-05Aug2011-v1/AOD/V2 cmgtools""",
                       default = False)
+    # If ommited the secure password prompt will appear
+    genGroup.add_option("-d", "--dev",
+                      action = "store_true",
+                      dest="development",
+                      help=""".""",
+                      default=False )
+
     parser.add_option_group(genGroup)
     parser.add_option_group(group)
     
@@ -122,11 +129,11 @@ If not entered, secure password prompt will appear.""",
                 		fileown = options.fileown
                 	
                 dataset.rstrip("/")
-                unPublish(dataset,fileown,options.username,password)
+                unPublish(dataset,fileown,options.username,password,options.development)
             except NameError as err:
                 print err.args, "\nDataset not published"
     # For singular file input
     else:
         dataset = args[0].rstrip("/")
-        unPublish(dataset,options.fileown,options.username,password)
+        unPublish(dataset,options.fileown,options.username,password,options.development)
 

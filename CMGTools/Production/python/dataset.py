@@ -8,6 +8,7 @@ import sys
 
 from CMGTools.Production.castorBaseDir import castorBaseDir
 import CMGTools.Production.eostools as castortools
+import fnmatch
 
 class IntegrityCheckError(Exception):
     def __init__(self, value):

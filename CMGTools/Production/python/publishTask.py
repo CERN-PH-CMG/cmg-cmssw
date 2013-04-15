@@ -7,6 +7,7 @@ class PublishTask(Task):
     def __init__(self, dataset, user, options):
         Task.__init__(self,'PublishTask', dataset, user, options)
         self.password = None
+        self.development = options.development
 
     @staticmethod
     def addOptionStatic(parser):
@@ -53,6 +54,9 @@ class PublishTask(Task):
                          help="publish a primary dataset",
                          default = False)
 
+        
+        
+
     def addOption(self,parser):
         self.addOptionStatic(parser)
 
@@ -79,5 +83,5 @@ class PublishTask(Task):
                     self.options.commented,self.options.test,\
                     username,self.password,\
                     self.options.savannah,self.options.primary,\
-                    (self.options.min_run, self.options.max_run) )
+                    (self.options.min_run, self.options.max_run), self.development )
 
