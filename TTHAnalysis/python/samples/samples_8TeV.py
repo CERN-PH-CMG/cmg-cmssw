@@ -40,8 +40,8 @@ triggersMC_mue   = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_T
 
 triggers_1mu = [ 'HLT_IsoMu24_eta2p1_v*' ]
 triggersMC_1mu  = triggers_1mu;
-triggersFR_1mu  = [ 'HLT_Mu17_v*', 'HLT_Mu12_v*', 'HLT_Mu24_eta2p1_v*', 'HLT_Mu24_v*', 'HLT_Mu30_eta2p1_v*', 'HLT_Mu30_v*', 'HLT_Mu40_eta2p1_v*', 'HLT_Mu40_v*', 'HLT_IsoMu24_eta2p1_v*' ]
-triggersFR_mumu = [ 'HLT_Mu17_Mu8_v*', 'HLT_Mu17_TkMu8_v*' ]
+triggersFR_1mu  = [ 'HLT_Mu12_v*', 'HLT_Mu24_eta2p1_v*', 'HLT_Mu40_eta2p1_v*' ]
+triggersFR_mumu = [ 'HLT_Mu17_Mu8_v*', 'HLT_Mu17_TkMu8_v*', 'HLT_Mu8_v*', 'HLT_Mu17_v*' ]
 triggersFR_1e   = [ 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele17_CaloIdL_CaloIsoVL_v*', 'HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele8__CaloIdL_CaloIsoVL_v*']
 triggersFR_mue  = triggers_mue[:]
 triggersFR_MC = triggersFR_1mu + triggersFR_mumu + triggersFR_1e + triggersFR_mue
@@ -338,7 +338,7 @@ from CMGTools.TTHAnalysis.setup.Efficiencies import *
 for comp in mcSamples + fastSimSamples + extraMcSamples:
     comp.isMC = True
     comp.isData = False
-    comp.splitFactor = 200 if comp.name == "WJets" else 100
+    comp.splitFactor = 250 if comp.name in [ "WJets", "DY3JetsM50", "DY4JetsM50" ] else 100
     comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012
