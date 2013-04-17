@@ -15,7 +15,7 @@ from CMGTools.RootTools.physicsobjects.Electron import Electron
 from CMGTools.RootTools.physicsobjects.Muon import Muon
 from CMGTools.RootTools.physicsobjects.Jet import Jet
 
-from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi,bestMatch
+from CMGTools.RootTools.utils.DeltaR import * 
 from CMGTools.TTHAnalysis.leptonMVA import LeptonMVA
 
 from CMGTools.RootTools.analyzers.TreeAnalyzerNumpy import TreeAnalyzerNumpy
@@ -37,6 +37,7 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
         super(ttHLepFRAnalyzer, self).declareHandles()
         self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
         self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
+        self.handles['jets4MVA'] = AutoHandle( self.cfg_ana.jetCol4MVA, 'std::vector<cmg::PFJet>' )
 
     def declareVariables(self):
         tr = self.tree
@@ -57,10 +58,11 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
         bookJet(tr,"TagJet", isMC)
         #bookParticle(tr,"TagPhoton", isMC)
 
-        var(tr,"Trig_Probe_1Mu", int)
+        for I in (8,12,17,24,40):
+            var(tr,"Trig_Probe_Mu%d"%I, int)
+            var(tr,"Trig_Tag_Mu%d"%I, int)
         var(tr,"Trig_Probe_1ElT", int)
         var(tr,"Trig_Probe_1ElL", int)
-        var(tr,"Trig_Tag_1Mu", int)
         var(tr,"Trig_Pair_2Mu", int)
         var(tr,"Trig_Pair_MuEG", int)
 
@@ -104,11 +106,15 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
 
         def passTrigg(lep,triggers):
             for t in triggers:
-                if lep.sourcePtr().triggerObjectMatchesByPath('HLT_%s_v*' % t).size() > 0: return True
+                if lep.sourcePtr().triggerObjectMatchesByPath('HLT_%s_v*' % t, 1, 0).size() > 0: return True
+            return False
+        def passFilter(lep,filters):
+            for t in filters:
+                if lep.sourcePtr().triggerObjectMatchesByFilter(t).size() > 0: return True
             return False
 
         def passSingleMu(lep):
-            return passTrigg(lep, "Mu12 Mu24 Mu24_eta2p1 Mu30 Mu30_eta2p1 Mu40 Mu40_eta2p1 Mu17 Mu8".split())
+            return passTrigg(lep, "Mu12 Mu24_eta2p1 Mu30_eta2p1 Mu40 Mu40_eta2p1 Mu17 Mu8".split())
 
         def passSingleIsoMu(lep):
             return passTrigg(lep, "IsoMu24 IsoMu24_eta2p1".split())
@@ -118,34 +124,59 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
 
         def passSingleElT(lep):
             return passTrigg(lep, "Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL".split())
-
+        
         def passDoubleMu(lep1,lep2):
-            return passTrigg(lep1, "Mu17_Mu8 Mu17_TkMu8".split()) and passTrigg(lep2, "Mu17_Mu8 Mu17_TkMu8".split())
+            mu17_1 = passFilter(lep1, 'hltL3fL1DoubleMu10MuOpenL1f0L2f10L3Filtered17 hltL3fL1DoubleMu10MuOpenOR3p5L1f0L2f10L3Filtered17'.split())
+            mu17_2 = passFilter(lep2, 'hltL3fL1DoubleMu10MuOpenL1f0L2f10L3Filtered17 hltL3fL1DoubleMu10MuOpenOR3p5L1f0L2f10L3Filtered17'.split())
+            mu8_1 = passFilter(lep1, 'hltL3pfL1DoubleMu10MuOpenL1f0L2pf0L3PreFiltered8 hltL3pfL1DoubleMu10MuOpenOR3p5L1f0L2pf0L3PreFiltered8'.split())
+            mu8_2 = passFilter(lep2, 'hltL3pfL1DoubleMu10MuOpenL1f0L2pf0L3PreFiltered8 hltL3pfL1DoubleMu10MuOpenOR3p5L1f0L2pf0L3PreFiltered8'.split())
+            mu8tk_1 = passFilter(lep1, ['hltDiMuonGlbFiltered17TrkFiltered8'])
+            mu8tk_2 = passFilter(lep2, ['hltDiMuonGlbFiltered17TrkFiltered8'])
+            if lep1.sourcePtr().triggerObjectMatchesByPath('HLT_Mu17_Mu8_v*',1,0).size() and (mu17_1+mu17_2 >= 1) and (mu8_1+mu8_2 >= 2): return True
+            if lep2.sourcePtr().triggerObjectMatchesByPath('HLT_Mu17_Mu8_v*',1,0).size() and (mu17_1+mu17_2 >= 1) and (mu8_1+mu8_2 >= 2): return True
+            if lep1.sourcePtr().triggerObjectMatchesByPath('HLT_Mu17_TkMu8_v*',1,0).size() and ((mu17_1 and mu8tk_2) or (mu17_2 and mu8tk_1)): return True
+            if lep2.sourcePtr().triggerObjectMatchesByPath('HLT_Mu17_TkMu8_v*',1,0).size() and ((mu17_1 and mu8tk_2) or (mu17_2 and mu8tk_1)): return True
+            return False
 
         def passMuEG(mu,el):
             if (mu.sourcePtr().triggerObjectMatchesByFilter("hltL1Mu12EG7L3MuFiltered17").size() > 0 and
-                el.sourcePtr().triggerObjectMatchesByPath("hltMu17Ele8CaloIdTCaloIsoVLTrkIdVLTrkIsoVLTrackIsoFilter").size()):
+                el.sourcePtr().triggerObjectMatchesByFilter("hltMu17Ele8CaloIdTCaloIsoVLTrkIdVLTrkIsoVLTrackIsoFilter").size()):
                     return True
             if (mu.sourcePtr().triggerObjectMatchesByFilter("hltL1sL1Mu3p5EG12ORL1MuOpenEG12L3Filtered8").size() > 0 and
-                el.sourcePtr().triggerObjectMatchesByPath("hltMu8Ele17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLTrackIsoFilter").size()):
+                el.sourcePtr().triggerObjectMatchesByFilter("hltMu8Ele17CaloIdTCaloIsoVLTrkIdVLTrkIsoVLTrackIsoFilter").size()):
                     return True
             return False
         
+        allJets = map( Jet, self.handles['jets4MVA'].product() )
+        jlpairs = matchObjectCollection( event.selectedLeptons, allJets, 0.5*0.5)
+        for lep in event.selectedLeptons:
+            jet = jlpairs[lep]
+            if jet is None:
+                lep.jet = lep
+            else:
+                lep.jet = jet
+            self.leptonMVA.addMVA(lep)
+
         # now fill probes
         for lep in event.selectedLeptons: 
-            self.leptonMVA.addMVA(lep)
             fillLepton(tr, "Probe", lep)
             fill(tr, 'mtw_probe', mtw(lep, event.met))
             fill(tr, 'mtwNoPU_probe', mtw(lep, event.metNoPU))
-            fill(tr, 'Trig_Probe_1Mu', passSingleMu(lep))
+            fill(tr, 'Trig_Probe_Mu8',  passTrigg(lep,['Mu8']))
+            fill(tr, 'Trig_Probe_Mu12', passTrigg(lep,['Mu12']))
+            fill(tr, 'Trig_Probe_Mu17', passTrigg(lep,['Mu17']))
+            fill(tr, 'Trig_Probe_Mu24', passTrigg(lep,['Mu24_eta2p1']))
+            fill(tr, 'Trig_Probe_Mu40', passTrigg(lep,['Mu40_eta2p1']))
             fill(tr, 'Trig_Probe_1ElL', passSingleElL(lep))
             fill(tr, 'Trig_Probe_1ElT', passSingleElT(lep))
             # first search for a jet tag
             fill(tr,'tagType',1) # jet
             for jet in event.cleanJets:
+                if jet.pt() < self.cfg_ana.tagJetSel['minPt']: continue
+                if jet.btag('combinedSecondaryVertexBJetTags') < self.cfg_ana.tagJetSel['minBTag']: continue
                 dr   = deltaR(jet.eta(),jet.phi(),lep.eta(),lep.phi())
                 dphi = deltaPhi(jet.phi(),lep.phi())
-                if (dr < 0.5): continue
+                if (dr < 0.8): continue
                 fillJet(tr, "TagJet", jet)
                 fill(tr, 'dr_tp',   dr)
                 fill(tr, 'dphi_tp', dphi)
@@ -156,16 +187,22 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
                 if abs(tag.pdgId()) != 13: continue
                 if tag.pt() < 10: continue
                 if tag.sourcePtr().userFloat("isPFMuon") < 0.5: continue
+                if tag.sip3D() < self.cfg_ana.tagLeptonSel['minSip3D']: continue
+                if tag.relIso() < self.cfg_ana.tagLeptonSel['minRelIso']: continue
                 dr   = deltaR(tag.eta(),tag.phi(),lep.eta(),lep.phi())
                 dphi = deltaPhi(tag.phi(),lep.phi())
-                if (dr < 0.5): continue
+                if (dr < 0.8): continue
                 fillLepton(tr, "TagLepton", tag)
                 fill(tr, 'mtw_tag', mtw(tag, event.met))
                 fill(tr, 'mtwNoPU_tag', mtw(tag, event.metNoPU))
                 fill(tr, 'dr_tp',   dr)
                 fill(tr, 'dphi_tp', dphi)
                 fill(tr, 'mll', (tag.p4()+lep.p4()).M())
-                fill(tr, 'Trig_Tag_1Mu', passSingleMu(tag) or passSingleIsoMu(tag))
+                fill(tr, 'Trig_Tag_Mu8',  passTrigg(tag,['Mu8']))
+                fill(tr, 'Trig_Tag_Mu12', passTrigg(tag,['Mu12']))
+                fill(tr, 'Trig_Tag_Mu17', passTrigg(tag,['Mu17']))
+                fill(tr, 'Trig_Tag_Mu24', passTrigg(tag,['Mu24_eta2p1']))
+                fill(tr, 'Trig_Tag_Mu40', passTrigg(tag,['Mu40_eta2p1']))
                 fill(tr, 'Trig_Pair_2Mu',  abs(lep.pdgId()) == 13 and passDoubleMu(tag,lep))
                 fill(tr, 'Trig_Pair_MuEG', abs(lep.pdgId()) == 11 and passMuEG(tag,lep))
                 tr.tree.Fill()
