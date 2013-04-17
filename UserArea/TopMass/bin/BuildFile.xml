@@ -5,16 +5,19 @@
 <use name="rootrflx"/>
 <use name="roostats"/>
 <use name="boost"/>
+<use name="lhapdf"/>
 <use   name="rootcintex"/>
 <use   name="FWCore/FWLite"/>
 <use   name="DataFormats/FWLite"/>
 <use   name="DataFormats/Luminosity"/>
+<use   name="SimDataFormats/GeneratorProducts"/>
 <use   name="FWCore/PythonParameterSet"/>
 <use   name="CommonTools/Utils"/>
 <use   name="PhysicsTools/FWLite"/>
 <use   name="PhysicsTools/Utilities"/>
 <use   name="PhysicsTools/SelectorUtils"/>
+<use   name="UserCode/TopMass"/>
 <environment>
-  <bin   file="FitKinTemplates.cxx"></bin>
   <bin   file="FitSecVtxDistributions.cxx"></bin>
+  <bin   file="BuildPDFTree.cxx"></bin>
 </environment>
