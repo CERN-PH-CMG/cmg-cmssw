@@ -3,6 +3,8 @@
 #include "CMGTools/TTHAnalysis/interface/CMGMuonCleanerBySegmentsAlgo.h"
 #include "CMGTools/TTHAnalysis/interface/DistributionRemapper.h"
 #include "CMGTools/TTHAnalysis/interface/PdfWeightProducerTool.h"
+#include "CMGTools/TTHAnalysis/interface/IgProfHook.h"
+#include "CMGTools/TTHAnalysis/interface/TriggerBitChecker.h"
 #include "EgammaAnalysis/ElectronTools/interface/PatElectronEnergyCalibrator.h"
 
 namespace {
@@ -13,5 +15,7 @@ namespace {
         DistributionRemapper remapper;
         PdfWeightProducerTool pdfw;
         ElectronEnergyCalibrator calibrator;
+        SetupIgProfDumpHook hook;
+        TriggerBitChecker checker;
     };
 }

@@ -5,4 +5,6 @@
     <class name="ElectronEnergyCalibrator" transient="true" />
     <class name="DistributionRemapper" transient="true" />
     <class name="PdfWeightProducerTool" transient="true" />
+    <class name="SetupIgProfDumpHook" transient="true" />
+    <class name="TriggerBitChecker" transient="true" />
 </lcgdict>
