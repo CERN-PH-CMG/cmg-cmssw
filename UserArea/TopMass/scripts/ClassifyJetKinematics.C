@@ -17,6 +17,7 @@
 #include "TLine.h"
 
 TFile *fOut;
+TString pdfUrl="";
 
 class LxyTemplate{
 public:
@@ -43,18 +44,26 @@ public:
     h->SetDirectory(0);
     h->Sumw2();
     lxyH.push_back(h);
+
+    h = new TH1F(name+ "_mass", "; SecVtx Mass [GeV]; Events / (0.2 GeV)", 50, 0.,10.);
+    h->SetDirectory(0);
+    h->Sumw2();
+    massH.push_back(h);
   }
   
   void doStandardCategories(int kinBins)
   {
+    addCategory(0,  2.5,kinBins);
+    /*
     addCategory(0,  0.45,kinBins);
     addCategory(0.45,0.9,kinBins); 
     addCategory(0.9,1.1,kinBins);
     addCategory(1.1,1.5,kinBins);    
     addCategory(1.5,2.5,kinBins);
+    */
   }
   
-  void fill(float kin,float eta,float lxy,float wgt=1.0)
+  void fill(float kin,float eta,float lxy,float mass,float wgt=1.0)
   {
     float abseta=fabs(eta);
     for(size_t i=0; i<hiLimits.size(); i++)
@@ -63,6 +72,7 @@ public:
 	if(kinH.size()<=i) continue;
 	kinH[i]->Fill(kin,wgt);
 	lxyH[i]->Fill(lxy,wgt);
+	massH[i]->Fill(mass,wgt);
       }
   }
 
@@ -87,25 +97,28 @@ public:
   
   void sumUp( bool append=false)
   {
-    kinSumH = (TH1F *) kinH[0]->Clone( kinH[0]->GetName()+TString("_total")); kinSumH->SetDirectory(0);
-    lxySumH = (TH1F *) lxyH[0]->Clone( lxyH[0]->GetName()+TString("_total")); lxySumH->SetDirectory(0);
+    kinSumH = (TH1F *) kinH[0]->Clone( kinH[0]->GetName()+TString("_total")); kinSumH->SetDirectory(0); kinSumH->Reset("ICE");
+    lxySumH = (TH1F *) lxyH[0]->Clone( lxyH[0]->GetName()+TString("_total")); lxySumH->SetDirectory(0); lxySumH->Reset("ICE");
+    massSumH = (TH1F *) massH[0]->Clone( massH[0]->GetName()+TString("_total")); massSumH->SetDirectory(0); massSumH->Reset("ICE");
     for(size_t ih=0; ih<kinH.size(); ih++)
       {
 	kinSumH->Add(kinH[ih]);
 	lxySumH->Add(lxyH[ih]);
+	massSumH->Add(massH[ih]);
       }
     if(append){
       loLimits.push_back( loLimits[0] );
       hiLimits.push_back( hiLimits[hiLimits.size()-1] );
       kinH.push_back(kinSumH);
       lxyH.push_back(lxySumH);
+      massH.push_back(massSumH);
     }
   }
 
   TString m_tag,m_kin;
   std::vector<float> loLimits,hiLimits;
-  std::vector<TH1F *> kinH, lxyH;
-  TH1F *kinSumH, *lxySumH;
+  std::vector<TH1F *> kinH, lxyH, massH;
+  TH1F *kinSumH, *lxySumH, *massSumH;
 };
 
 
@@ -114,8 +127,10 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
 {   
   std::map<TString,std::vector<float> > res;
   Int_t pflav,chcat;
-  Float_t gamma,pt,eta,lxy,bqdR;
+  Float_t gamma,pt,eta,lxy,mass,bqdR;
   Float_t jetpt1, jetpt2,jetpt3, jetpt4;
+
+  cout << "************" << tag << endl;
 
   TString eosPrefix("root://eoscms//eos/cms/");
   if(ctrlUrl.BeginsWith("/store"))   ctrlUrl   = eosPrefix + ctrlUrl;
@@ -131,18 +146,22 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
   LxyTemplate target("target"+chSuf,kin);
   if(optimBins==0) target.doStandardCategories(kinBins);
   else{
-    target.addCategory(0,  0.45, (*optimBins)[0] );
-    target.addCategory(0.45,0.9, (*optimBins)[1] );
-    target.addCategory(0.9,1.1, (*optimBins)[2] );
-    target.addCategory(1.1,1.5, (*optimBins)[3] );
-    target.addCategory(1.5,2.5, (*optimBins)[4] );
+    target.addCategory(0,2.5, (*optimBins)[0] );
+    /*
+      target.addCategory(0,  0.45, (*optimBins)[0] );
+      target.addCategory(0.45,0.9, (*optimBins)[1] );
+      target.addCategory(0.9,1.1, (*optimBins)[2] );
+      target.addCategory(1.1,1.5, (*optimBins)[3] );
+      target.addCategory(1.5,2.5, (*optimBins)[4] );
+    */
   }
   TFile *targetF=TFile::Open(targetUrl);
   TTree *theTree = (TTree *)targetF->Get("ana/toptree");
   theTree->SetBranchAddress( "bqpt",    &pt );
   theTree->SetBranchAddress( "bqgamma", &gamma );
   theTree->SetBranchAddress( "bqeta",   &eta );
-  theTree->SetBranchAddress( "lxy",     &lxy );
+  theTree->SetBranchAddress( "lxy",     &lxy ); 
+  theTree->SetBranchAddress( "secvtxmass", &mass );
   theTree->SetBranchAddress( "chcat",   &chcat );
   theTree->SetBranchAddress( "bqdR",    &bqdR );
   for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
@@ -152,7 +171,7 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
     if(filterChannel>0 && chcat!=filterChannel) continue;
     float kinVar=gamma;
     if(kin=="pt") kinVar=pt;
-    target.fill(kinVar,abseta,lxy);
+    target.fill(kinVar,abseta,lxy,mass);
   }
   targetF->Close();
   
@@ -161,11 +180,14 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
   LxyTemplate ctrl("ctrl"+chSuf,kin);
   if(optimBins==0) ctrl.doStandardCategories(kinBins);
   else{
-    ctrl.addCategory(0,  0.45, (*optimBins)[0] );
-    ctrl.addCategory(0.45,0.9, (*optimBins)[1] );
-    ctrl.addCategory(0.9,1.1, (*optimBins)[2] );
-    ctrl.addCategory(1.1,1.5, (*optimBins)[3] );
-    ctrl.addCategory(1.5,2.5, (*optimBins)[4] );
+    ctrl.addCategory(0,  2.5, (*optimBins)[0] );
+    /*
+      ctrl.addCategory(0,  0.45, (*optimBins)[0] );
+      ctrl.addCategory(0.45,0.9, (*optimBins)[1] );
+      ctrl.addCategory(0.9,1.1, (*optimBins)[2] );
+      ctrl.addCategory(1.1,1.5, (*optimBins)[3] );
+      ctrl.addCategory(1.5,2.5, (*optimBins)[4] );
+    */
   }
   TFile *ctrlF = TFile::Open( ctrlUrl );
   theTree = (TTree*) ctrlF->Get("ana/toptree");
@@ -179,6 +201,7 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
   theTree->SetBranchAddress( "jetpt4", &jetpt4 );
   theTree->SetBranchAddress( "partonflav", &pflav );
   theTree->SetBranchAddress( "lxy", &lxy );
+  theTree->SetBranchAddress( "secvtxmass", &mass );
   for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
     theTree->GetEntry(ievt);
     Float_t abseta=TMath::Abs(eta);
@@ -188,7 +211,7 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
     
     float kinVar=gamma;
     if(kin=="pt")    kinVar=pt;
-    ctrl.fill(kinVar,abseta,lxy);
+    ctrl.fill(kinVar,abseta,lxy,mass);
   }
   
   //derive the weighted templates
@@ -196,12 +219,38 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
   LxyTemplate templ("templates"+chSuf,kin);
   if(optimBins==0) templ.doStandardCategories(kinBins);
   else{
-    templ.addCategory(0,  0.45, (*optimBins)[0] );
-    templ.addCategory(0.45,0.9, (*optimBins)[1] );
-    templ.addCategory(0.9,1.1, (*optimBins)[2] );
-    templ.addCategory(1.1,1.5, (*optimBins)[3] );
-    templ.addCategory(1.5,2.5, (*optimBins)[4] );
+    templ.addCategory(0,  2.5, (*optimBins)[0] );
+    /*
+      templ.addCategory(0,  0.45, (*optimBins)[0] );
+      templ.addCategory(0.45,0.9, (*optimBins)[1] );
+      templ.addCategory(0.9,1.1, (*optimBins)[2] );
+      templ.addCategory(1.1,1.5, (*optimBins)[3] );
+      templ.addCategory(1.5,2.5, (*optimBins)[4] );
+    */
   }
+  
+  //add pdf variations
+  float pdfWgts[45];
+  TFile *pdfF=0;
+  std::vector<TH1F *> pdfVarH;
+  for(int ivar=0; ivar<=44; ivar++)
+    {
+      pdfWgts[ivar]=0;
+      if(pdfUrl!="")
+	{
+	  TString pf(""); pf+=ivar;
+	  if(pdfF==0) { pdfF=TFile::Open(pdfUrl); cout << "Retrieving PDF variations from " << pdfUrl << endl; }
+	  TTree *itree=(TTree *)pdfF->Get("cteq66.LHgrid_var"+pf);
+	  itree->SetBranchAddress("w",&pdfWgts[ivar]);
+	  theTree->AddFriend(itree);
+
+	  TH1F *h = new TH1F("inc_bjetlxy_ttbarsystpdf"+pf+"_1725",";L_{xy} [cm];b-quarks", 100,0.,5.);
+	  h->SetDirectory(0);
+	  h->Sumw2();
+	  pdfVarH.push_back(h);
+	}
+    }
+  if(pdfVarH.size()) cout << "Reweighting for " << pdfVarH.size() << " variations" << endl;
 
   for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
     
@@ -214,9 +263,13 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
     float kinVar=gamma;
     if(kin=="pt")    kinVar=pt;
     float wgt=ctrl.weightToTarget(kinVar,abseta,target);
-    templ.fill(kinVar,abseta,lxy,wgt);
+    templ.fill(kinVar,abseta,lxy,mass,wgt);
+
+    for(size_t ipdfvar=0; ipdfvar<pdfVarH.size(); ipdfvar++) pdfVarH[ipdfvar]->Fill(lxy,wgt*pdfWgts[ipdfvar]/pdfWgts[0]);
+
   }
   ctrlF->Close();
+  if(pdfF) pdfF->Close();
 
   fOut->cd();
   TDirectory *outDir=0;
@@ -235,7 +288,6 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
       dirName += chSuf;
     }
   if(outDir==0) outDir=fOut->mkdir(dirName);
-
 
 
   //show the results
@@ -325,6 +377,8 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
 	{
 	  target.lxyH[ibin]->Write();
 	  templ.lxyH[ibin]->Write();
+	  target.massH[ibin]->Write();
+	  templ.massH[ibin]->Write();
 	  c->Write();
 	}
       else if(ibin==target.loLimits.size()-1)
@@ -335,8 +389,13 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
 	  else              outName += "syst"+tag+"_1725";
 	  target.lxyH[ibin]->Write(chSuf+"_bjetorig"+outName);
 	  templ.lxyH[ibin]->Write(chSuf+"_bjet"+outName);
+	  target.massH[ibin]->Write(chSuf+"_bjetmasorig"+outName);
+	  templ.massH[ibin]->Write(chSuf+"_bjetmass"+outName);
 	  c->Write(chSuf+"_canvas"+outName);
 	}
+
+      //write pdf variations if available
+      for(size_t ipdfvar=0; ipdfvar<pdfVarH.size(); ipdfvar++) pdfVarH[ipdfvar]->Write();
     }
 
   return res;
@@ -486,10 +545,11 @@ void RunOptimization(TString iFile,TString jFile, TString kin, Float_t maxDRbj)
   RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins);
 
   //now derive the target templates for the exclusive channels
+  /*
   RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins,1);
   RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins,2);
   RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins,3);
-
+  */
 
   fOut->Close();
 }
@@ -497,6 +557,12 @@ void RunOptimization(TString iFile,TString jFile, TString kin, Float_t maxDRbj)
 //
 void ClassifyJetKinematics(TString iFile,TString jFile, TString kin, Float_t maxDRbj,TString optFile="",TString tag="")
 {
+  
+  TString pdfVarFileName=gSystem->BaseName(iFile);
+  pdfVarFileName.ReplaceAll(".root","_pdf.root");
+  pdfVarFileName = "/afs/cern.ch/user/p/psilva/public/lxy/"+pdfVarFileName;
+  if(!gSystem->AccessPathName(pdfVarFileName)) pdfUrl=pdfVarFileName;
+
   if(optFile=="") 
     {
       RunOptimization(iFile,jFile,kin,maxDRbj);
@@ -519,12 +585,12 @@ void ClassifyJetKinematics(TString iFile,TString jFile, TString kin, Float_t max
     inF->Close();
     if(optimBins.size()==0) { cout << "Failed to read optimization result from  "<< optFile << endl; return; }
 
-    //built the templates
+    //build the templates
     fOut = TFile::Open("LxyTemplates.root","UPDATE");
-    //RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins,-1, tag);
-    RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 1, tag);
-    RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 2, tag);
-    RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 3, tag);
+    RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins,-1, tag);
+    //      RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 1, tag);
+    //      RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 2, tag);
+    //      RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 3, tag);
     fOut->cd();
     fOut->Close();
   }
