@@ -178,7 +178,7 @@ process.out.outputCommands.append('keep patTaus_selectedPatTaus_*_*')
 # process.out.outputCommands.append('keep *_*_*_*')
 
 process.outpath = cms.EndPath(
-    process.out
+    # process.out
     )
 
 ########################################################
