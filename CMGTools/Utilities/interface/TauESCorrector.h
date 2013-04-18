@@ -55,11 +55,11 @@ cmg::TauESCorrector::event_ptr cmg::TauESCorrector::create(const edm::Event& iEv
 {
   typedef std::vector<cmg::Tau> collection;
   edm::Handle<collection> candCands;
-  typename cmg::TauESCorrector::event_ptr result(new collection);
+  cmg::TauESCorrector::event_ptr result(new collection);
   iEvent.getByLabel(candLabel_, candCands);
 
   size_t index = 0;
-  for(typename collection::const_iterator mi = candCands->begin();
+  for(collection::const_iterator mi = candCands->begin();
       mi != candCands->end(); ++mi, ++index) {
 
     edm::Ref<collection> candPtr(candCands, index);
