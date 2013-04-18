@@ -22,7 +22,7 @@
   ('RecoEgamma/EgammaTools', 'RecoEgamma/EgammaTools', 'V09-00-01'),
   ('RecoLuminosity/LumiDB', 'RecoLuminosity/LumiDB', 'V04-02-02'),
   ('RecoMET/METAnalyzers', 'RecoMET/METAnalyzers', 'V00-00-08'),
-  ('RecoMET/METFilters', 'RecoMET/METFilters', 'V00-00-13'),
+  ('RecoMET/METFilters', 'RecoMET/METFilters', 'V00-00-13-01'),
   ('RecoMET/METProducers', 'RecoMET/METProducers', 'V03-03-12-02'),
   ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-02-09'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'wreece_020512'),
@@ -30,6 +30,3 @@
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-23'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-02-02s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
-# The following packages were not in the input release_info.
-# Please make sure that the CVS module is correct!
-#	DataFormats/CaloRecHit                   V02-05-11
