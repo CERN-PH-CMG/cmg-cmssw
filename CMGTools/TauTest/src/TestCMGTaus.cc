@@ -104,6 +104,26 @@ void TestCMGTaus::testTau(TString inputtag){
   tauidname.push_back("byLooseCombinedIsolationDeltaBetaCorr");
   tauidname.push_back("byMediumCombinedIsolationDeltaBetaCorr");
   tauidname.push_back("byTightCombinedIsolationDeltaBetaCorr");
+  tauidname.push_back("byRawIsoMVA");
+  tauidname.push_back("byLooseIsoMVA");
+  tauidname.push_back("byMediumIsoMVA");
+  tauidname.push_back("byTightIsoMVA");
+  tauidname.push_back("byIsolationMVA2raw");
+  tauidname.push_back("byLooseIsolationMVA2");
+  tauidname.push_back("byMediumIsolationMVA2");
+  tauidname.push_back("byTightIsolationMVA2");
+  tauidname.push_back("byLooseCombinedIsolationDeltaBetaCorr3Hits");
+  tauidname.push_back("byMediumCombinedIsolationDeltaBetaCorr3Hits");
+  tauidname.push_back("byTightCombinedIsolationDeltaBetaCorr3Hits");
+  tauidname.push_back("byCombinedIsolationDeltaBetaCorrRaw3Hits");
+
+  tauidname.push_back("againstMuonLoose");
+  tauidname.push_back("againstMuonMedium");
+  tauidname.push_back("againstMuonTight");
+  tauidname.push_back("againstMuonLoose2");
+  tauidname.push_back("againstMuonMedium2");
+  tauidname.push_back("againstMuonTight2");
+
   tauidname.push_back("againstElectronLoose");
   tauidname.push_back("againstElectronMedium");
   tauidname.push_back("againstElectronTight");
@@ -113,23 +133,12 @@ void TestCMGTaus::testTau(TString inputtag){
   tauidname.push_back("againstElectronLooseMVA2");
   tauidname.push_back("againstElectronMediumMVA2");
   tauidname.push_back("againstElectronTightMVA2");
-  tauidname.push_back("againstMuonLoose");
-  tauidname.push_back("againstMuonMedium");
-  tauidname.push_back("againstMuonTight");
-  tauidname.push_back("byRawIsoMVA");
-  tauidname.push_back("byLooseIsoMVA");
-  tauidname.push_back("byMediumIsoMVA");
-  tauidname.push_back("byTightIsoMVA");
   tauidname.push_back("againstElectronMVA3raw");
-  tauidname.push_back("againstElectronMVA3category");
   tauidname.push_back("againstElectronLooseMVA3");
   tauidname.push_back("againstElectronMediumMVA3");
   tauidname.push_back("againstElectronTightMVA3");
   tauidname.push_back("againstElectronVTightMVA3");
-  tauidname.push_back("againstElectronDeadECAL");
-  tauidname.push_back("byLooseCombinedIsolationDeltaBetaCorr3Hits");
-  tauidname.push_back("byMediumCombinedIsolationDeltaBetaCorr3Hits");
-  tauidname.push_back("byTightCombinedIsolationDeltaBetaCorr3Hits");
+
  
   TH1F HTauIDPass("HTtauIDPass","tauID passed",tauidname.size()+1,0,tauidname.size()+1); HTauIDPass.GetXaxis()->SetTitle(" ");
   TH1F HTauIDFail("HTtauIDFail","tauID fail",tauidname.size()+1,0,tauidname.size()+1); HTauIDFail.GetXaxis()->SetTitle(" ");
@@ -202,10 +211,6 @@ void TestCMGTaus::testTau(TString inputtag){
       else if(cand->decayMode()==2)HDecaymode.Fill(2);
       else if(cand->decayMode()==10)HDecaymode.Fill(3);
       else HDecaymode.Fill(4);
-
-//       for(Int_t i=0;i<NTauID;i++)
-// 	if(cand->tauID( tauidname[i] ))  HTauIDPass.AddBinContent(i+1); 
-// 	else HTauIDFail.AddBinContent(i+1);
 
       for(unsigned int i=0;i<tauidname.size();i++)
 	if(cand->tauID( tauidname[i] ) > 0.)  HTauIDPass.AddBinContent(i+1); 
