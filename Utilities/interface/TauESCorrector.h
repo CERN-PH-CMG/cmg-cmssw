@@ -20,7 +20,7 @@ class TauESCorrector : public Factory<cmg::Tau> {
 public:
   TauESCorrector(const edm::ParameterSet& ps);
   virtual ~TauESCorrector() {};
-  typedef typename cmg::Factory<cmg::Tau>::event_ptr event_ptr;
+  typedef cmg::Factory<cmg::Tau>::event_ptr event_ptr;
   virtual event_ptr create(const edm::Event&, const edm::EventSetup&);
 
 private:
@@ -53,7 +53,7 @@ cmg::TauESCorrector::TauESCorrector(const edm::ParameterSet& ps):
 
 cmg::TauESCorrector::event_ptr cmg::TauESCorrector::create(const edm::Event& iEvent,const edm::EventSetup&)
 {
-  typedef typename std::vector<cmg::Tau> collection;
+  typedef std::vector<cmg::Tau> collection;
   edm::Handle<collection> candCands;
   typename cmg::TauESCorrector::event_ptr result(new collection);
   iEvent.getByLabel(candLabel_, candCands);
