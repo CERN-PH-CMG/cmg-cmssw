@@ -55,23 +55,27 @@ def getGlobalTagByDataset(runOnMC, dataset):
         if cmsswIs44X():
             GT = 'GR_R_44_V15::All'
         elif '13Jul2012' in dataset:
-            GT = 'FT_53_V6_AN3::All'
+            GT = 'FT_53_V6C_AN4::All'
         elif '06Aug2012' in dataset:
-            GT = 'FT_53_V6C_AN3::All'
+            GT = 'FT_53_V6C_AN4::All'
         elif '24Aug2012' in dataset:
-            GT = 'FT_53_V10_AN3::All'
-        elif 'Run2012C-PromptReco-v1' in dataset:
+            GT = 'FT_53_V10A_AN4::All'
+        elif 'Run2012C-PromptReco-v1' in dataset:#shouldn't be used...
             GT = 'GR_P_V40_AN3::All'
         elif 'Run2012C-PromptReco-v2' in dataset:
-            GT = 'GR_P_V41_AN3::All'
+            GT = 'GR_P_V42_AN4::All'
         elif 'Run2012D' in dataset:
-            GT = 'GR_P_V42_AN3::All'
+            GT = 'GR_P_V42_AN4::All'
         elif 'Run2012B-05Nov2012' in dataset:
-            GT = 'FT_53_V6C_AN3::All'
+            GT = 'FT_53_V6C_AN4::All'
         elif 'Run2012C-part1_05Nov2012' in dataset:
-            GT = 'FT53_V10A_AN3::All'
+            GT = 'FT53_V10A_AN4::All'
         elif 'Run2012C-part2_05Nov2012' in dataset:
-            GT = 'FT_P_V42C_AN3::All'
+            GT = 'FT_P_V42C_AN4::All'
+        elif 'Run2012D-part1_10Dec2012-v1' in dataset:
+            GT = 'FT_P_V42_AN4::All'
+        elif 'Run2012D-part2_17Jan2013-v1' in dataset:
+            GT = 'FT_P_V42D_AN4::All'
 
     if GT is None:
         raise Exception("No global tag found for dataset '%s'. Check getGlobalTagByDataset" % dataset)
