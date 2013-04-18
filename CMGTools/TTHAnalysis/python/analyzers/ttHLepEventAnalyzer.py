@@ -25,13 +25,11 @@ class ttHLepEventAnalyzer( Analyzer ):
         self.maxLeps = cfg_ana.maxLeps
 
         self.leptonMVA = LeptonMVA("%s/src/CMGTools/TTHAnalysis/data/leptonMVA/%%s_BDTG.weights.xml" % os.environ['CMSSW_BASE'], self.cfg_comp.isMC)
-        
     def declareHandles(self):
         super(ttHLepEventAnalyzer, self).declareHandles()
         self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
         self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
         self.handles['metSignificance'] = AutoHandle( 'pfMetSignificance', 'cmg::METSignificance' )
-        self.handles['jets4MVA'] = AutoHandle( self.cfg_ana.jetCol4MVA, 'std::vector<cmg::PFJet>' )
 
     def beginLoop(self):
         super(ttHLepEventAnalyzer,self).beginLoop()
@@ -212,15 +210,7 @@ class ttHLepEventAnalyzer( Analyzer ):
         self.makeMlls(event, self.maxLeps)
 
         self.makeHadTopDecays(event)
-
-        allJets = map( Jet, self.handles['jets4MVA'].product() )
-        jlpairs = matchObjectCollection( event.selectedLeptons, allJets, 0.5*0.5)
         for lep in event.selectedLeptons:
-            jet = jlpairs[lep]
-            if jet is None:
-                lep.jet = lep
-            else:
-                lep.jet = jet
             self.leptonMVA.addMVA(lep)
 
         if self.cfg_ana.verbose:
