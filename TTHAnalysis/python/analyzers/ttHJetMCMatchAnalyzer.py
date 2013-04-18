@@ -96,6 +96,8 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
         event.genJets = [ x for x in self.handles['genJet'].product() ]
         self.matchJets(event)
         self.jetFlavour(event)
-        self.smearJets(event)
+
+        if self.cfg_ana.smearJets or not hasattr(self.cfg_ana, 'smearJets'):
+            self.smearJets(event)
 
         return True

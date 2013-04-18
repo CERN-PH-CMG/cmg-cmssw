@@ -5,7 +5,6 @@ from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import *
 
 PDFWeights = []
-#PDFWeights = [ ("cteq66",44), ("NNPDF21_100",101), ("MSTW2008lo68cl",41) ]
 #PDFWeights = [ ("CT10",53), ("MSTW2008lo68cl",41), ("NNPDF21_100",101) ]
 
 # this analyzer finds the initial events before the skim
@@ -25,7 +24,8 @@ jsonAna = cfg.Analyzer(
     )
 
 triggerAna = cfg.Analyzer(
-    'TriggerAnalyzer',
+    #'TriggerAnalyzer',
+    'triggerBitFilter',
     )
 
 
@@ -83,13 +83,13 @@ ttHLepMCAna = cfg.Analyzer(
 
 # Jets Analyzer 
 ttHJetAna = cfg.Analyzer(
-    'JetAnalyzer',
+    'ttHJetAnalyzer',
     jetCol = 'cmgPFJetSelCHS',
+    jetCol4MVA = 'cmgPFJetSel',
     jetPt = 25.,
     jetEta = 4.7,
-    cjvPtCut = 30.,
-    btagSFseed = 123456,
     relaxJetId = False,  
+    recalibrateJets = False
     )
 
 ## MET Analyzer
@@ -100,13 +100,13 @@ ttHJetAna = cfg.Analyzer(
 # Jet MC Match Analyzer
 ttHJetMCAna = cfg.Analyzer(
     'ttHJetMCMatchAnalyzer',
+    smearJets = True
     )
 
 # Event Analyzer
 ttHEventAna = cfg.Analyzer(
     'ttHLepEventAnalyzer',
     maxLeps = 4, ## leptons to use
-    jetCol4MVA = 'cmgPFJetSel',
     verbose = False,
     )
 
@@ -179,7 +179,8 @@ sequence = cfg.Sequence([
 # selectedComponents = [ FastSim_TTWJets, FastSim_TTWJets_MUp, FastSim_TTWJets_MDn ]
 # set test = 0 to run all jobs, in case you are using pybatch.py
 selectedComponents = mcSamples
-test = 1
+
+test = 4
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
@@ -187,6 +188,10 @@ if test==1:
     comp.files = comp.files[:4]
     selectedComponents = [comp]
     comp.splitFactor = 1
+    ## search for memory leaks
+    #import ROOT;
+    #hook = ROOT.SetupIgProfDumpHook()
+    #hook.start()
 elif test==2:    
     # test all components (1 thread per component.
     # important to make sure that your code runs on any kind of component
@@ -203,6 +208,13 @@ elif test==3:
     comp.files = comp.files[:20]
     comp.splitFactor = 5
     selectedComponents = [comp]
+elif test==4:
+    # MC sync sample
+    comp = TTH
+    comp.files = [ 'file:/data/gpetrucc/8TeV/ttH/cmgTuple_full.TTH_Inclusive_M-125_8TeV_pythia6_PU_S10_START53_V7A-v1_F8454517-F509-E211-BAB4-003048D47792.root' ]
+    selectedComponents = [comp]
+    comp.splitFactor = 1
+
 
 # creation of the processing configuration.
 # we define here on which components to run, and
@@ -211,29 +223,3 @@ config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
 
 printComps(config.components, True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
