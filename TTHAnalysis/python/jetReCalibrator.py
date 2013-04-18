@@ -24,6 +24,6 @@ class JetReCalibrator:
         self.JetCorrector.setJetA(jet.jetArea())
         self.JetCorrector.setRho(rho)
         corr = self.JetCorrector.getCorrection()
-        print "   jet with raw pt %6.2f eta %+5.3f phi %+5.3f: previous corr %.4f, my corr %.4f " % (jet.pt()*jet.rawFactor(), jet.eta(), jet.phi(), 1./jet.rawFactor(), corr)
+        #print "   jet with raw pt %6.2f eta %+5.3f phi %+5.3f: previous corr %.4f, my corr %.4f " % (jet.pt()*jet.rawFactor(), jet.eta(), jet.phi(), 1./jet.rawFactor(), corr)
         jet.setP4(jet.p4() * (corr * jet.rawFactor()))
  

@@ -40,7 +40,7 @@ class ttHJetAnalyzer( Analyzer ):
         ## Read jets, if necessary recalibrate
         allJets = map(Jet, self.handles['jets'].product()) 
         if self.cfg_ana.recalibrateJets:
-            print "\nCalibrating jets %s for lumi %d, event %d" % (self.cfg_ana.jetCol, event.lumi, event.eventId)
+            #print "\nCalibrating jets %s for lumi %d, event %d" % (self.cfg_ana.jetCol, event.lumi, event.eventId)
             rho  = float(self.handles['rho'].product()[0])
             corr = self.jetReCalibratorCHS if 'CHS' in self.cfg_ana.jetCol else self.jetReCalibrator
             for j in allJets: self.jetReCalibrator.correct(j, rho)
