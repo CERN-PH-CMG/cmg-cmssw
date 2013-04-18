@@ -222,7 +222,7 @@ process.schedule.append( process.outpath )
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = 10
-
+process.MessageLogger.suppressWarning = cms.untracked.vstring('ecalLaserCorrFilter')
 ## Options and Output Report
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
