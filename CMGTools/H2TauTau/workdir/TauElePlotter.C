@@ -2216,7 +2216,7 @@ TH1F* TauElePlotter::getZToTauTauVBF(){
 
 bool TauElePlotter::plotInc(TString variable, Int_t nbins, Float_t xmin, Float_t xmax, Int_t Chcat, Int_t Isocat, Int_t MTcat,TString extrasel, TString blindsel, Int_t QCDType, Int_t WJetsType, TString xlabel, TString ylabel,Float_t* legendcoords, int higgs,TString filetag){
 
-  int rebin=10;
+  int rebin=0;
 
   plotvar_=variable;
   nbins_=nbins;

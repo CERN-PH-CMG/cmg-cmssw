@@ -51,6 +51,8 @@ flatNtpTauMu = cms.EDAnalyzer(
     electronVetoListTag =  cms.InputTag("cmgElectronSel"),
     tauVetoListTag =  cms.InputTag("cmgTauSel"),
     sampleGenEventType =   cms.int32( 0 ),
+    sampleGenMassMin =   cms.double( -1. ),
+    sampleGenMassMax =   cms.double( 1000000. ),
     sampleTruthEventType =  cms.int32( 0 ),
     randsigma = cms.double(0.),
     recoilCorrection = cms.int32(0), # 0 =no correction , 1=Z or Higgs , 2=W
@@ -115,7 +117,7 @@ flatNtpTauEle = cms.EDAnalyzer(
     trigPathTest8 = cms.InputTag(""),
     trigPathTest9 = cms.InputTag(""),
     trigPathTest10 = cms.InputTag(""),
-    diTauTag =  cms.InputTag(""),
+    diTauTag =  cms.InputTag("cmgTauEle"),
     unscaledTauTag =  cms.InputTag("cmgTauSel"),
     verticesListTag = cms.InputTag("goodOfflinePrimaryVertices"),
     genParticlesTag =  cms.InputTag("genParticlesPruned"),
@@ -127,6 +129,8 @@ flatNtpTauEle = cms.EDAnalyzer(
     electronVetoListTag =  cms.InputTag("cmgElectronSel"),
     tauVetoListTag =  cms.InputTag("cmgTauSel"),
     sampleGenEventType =   cms.int32( 0 ),
+    sampleGenMassMin =   cms.double( -1. ),
+    sampleGenMassMax =   cms.double( 1000000. ),
     sampleTruthEventType =  cms.int32( 0 ),
     randsigma = cms.double(0.),
     recoilCorrection = cms.int32(0), # 0 =no correction , 1=Z or Higgs , 2=W
@@ -136,6 +140,7 @@ flatNtpTauEle = cms.EDAnalyzer(
     fileZmmMC = cms.string(rootfile_dir + 'recoilfit_zmm53X_20pv_njet.root'),
     metType = cms.int32(1), # 1=PFMET, 2=MVAMET
     metscale = cms.double(-1.),
+    mvaMETTag = cms.InputTag("mvaBaseMETTauEle"),
     mvaMETSigTag = cms.InputTag("mvaMETTauEle"),
     runSVFit = cms.int32(1), # 0 do not run, 1 run old version, 2 run new version
     smearVisMass0pi0 = cms.double(-1.),

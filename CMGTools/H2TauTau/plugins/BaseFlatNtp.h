@@ -52,7 +52,6 @@
 #include "TauAnalysis/SVFitStandAlone/interface/NSVfitStandaloneAlgorithm2011.h"
 #include "TauAnalysis/CandidateTools/interface/NSVfitStandaloneAlgorithm.h"
 
-
 #include "CMGTools/H2TauTau/interface/BTagEfficiency.h"
 #include "CMGTools/H2TauTau/interface/BTagWeight.h"
 //#include "CMGTools/H2TauTau/interface/BtagSF.h"
@@ -129,6 +128,8 @@ protected:
   int genEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZToOther, 11=WToENu, 13=WToMuNu, 15=WToENu
   int truthEventType_;//1=ZtoEE, 3=ZToMuMu, 5=ZToTauTau, 6=ZOther 11=WToENu, 13=WToMuNu, 15=WToENu, 16=WOther
   float deltaRTruth_;
+  float sampleGenMassMin_;
+  float sampleGenMassMax_;
 
 
   edm::InputTag diTauTag_;
@@ -282,12 +283,19 @@ protected:
   float taux_;
   float tauy_;
   float tauz_;
-  int   tauantie_;
+
+  int   tauantie_;//old discs
+  int   tauantiemva_;//old MVA trained on old Medium
+  float tauantiemva2raw_;//
+  float tauantiemva3raw_;//
   int   tauantimu_;
-  int   tauisodisc_;
-  int   tauisodiscmva_;
-  float tauiso_;
-  float tauisomva_;
+  int   tauantimu2_;
+
+  int   tauiso_;
+  float tauisomvaraw_;
+  float tauisomva2raw_;
+  float tauiso3hitraw_;
+
   float taujetpt_;
   float taujeteta_;
   float taujetrefpt_;
@@ -417,6 +425,7 @@ protected:
   int counterruns_;
   int countergoodvtx_;
   int countergen_;
+  int countergenmass_;
 
 
   //Utilities
@@ -460,6 +469,59 @@ protected:
   std::string fileZmmData_;
   std::string fileZmmMC_;
   
+  void fillTau(const cmg::Tau * tau){
+     
+    taumass_=tau->p4().M();
+    taupt_=tau->pt();
+    taupx_=tau->p4().x();
+    taupy_=tau->p4().y();
+    taueta_=tau->eta();
+    tauphi_=tau->phi();
+    taudz_=tau->dz();
+    taudxy_=tau->dxy();
+    tautruth_=truthMatchLeg(tau->eta(),tau->phi(),tautruthpt_,tautrutheta_,tautruthstatus_);
+    tauehop_=tau->eOverP();
+    taueop_=tau->leadChargedHadrEcalEnergy()/tau->p();
+    tauhoe_=tau->leadChargedHadrHcalEnergy()/tau->leadChargedHadrEcalEnergy();
+    taudecaymode_=tau->decayMode();
+    taux_=tau->leadChargedHadrVertex().x();
+    tauy_=tau->leadChargedHadrVertex().y();
+    tauz_=tau->leadChargedHadrVertex().z();
+    taucharge_=tau->charge();
+
+    tauleadpt_=tau->leadChargedHadrPt();  
+    tauleadhcal_=tau->leadChargedHadrHcalEnergy();
+    tauleadecal_=tau->leadChargedHadrEcalEnergy();
+
+
+    tauantie_=0;
+    if(tau->tauID("againstElectronLoose")>0.5)tauantie_=1;
+    if(tau->tauID("againstElectronMedium")>0.5)tauantie_=2;
+    if(tau->tauID("againstElectronTight")>0.5)tauantie_=3;
+    tauantiemva_=0;
+    if(tau->tauID("againstElectronMVA")>0.5)tauantiemva_=1;
+    tauantiemva3raw_=tau->tauID("againstElectronMVA3raw");
+    tauantiemva2raw_=tau->tauID("againstElectronMVA2raw");
+
+    tauantimu_=0;
+    if(tau->tauID("againstMuonLoose")>0.5)tauantimu_=1;
+    if(tau->tauID("againstMuonMedium")>0.5)tauantimu_=2;
+    if(tau->tauID("againstMuonTight")>0.5)tauantimu_=3;
+    tauantimu2_=0;
+    if(tau->tauID("againstMuonLoose2")>0.5)tauantimu2_=1;
+    if(tau->tauID("againstMuonMedium2")>0.5)tauantimu2_=2;
+    if(tau->tauID("againstMuonTight2")>0.5)tauantimu2_=3;
+
+    tauiso_=0;
+    if(tau->tauID("byVLooseCombinedIsolationDeltaBetaCorr")>0.5)tauiso_=1;
+    if(tau->tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5)tauiso_=2;
+    if(tau->tauID("byMediumCombinedIsolationDeltaBetaCorr")>0.5)tauiso_=3;
+    if(tau->tauID("byTightCombinedIsolationDeltaBetaCorr")>0.5)tauiso_=4;
+    tauisomvaraw_=tau->tauID("byRawIsoMVA");
+    tauisomva2raw_=tau->tauID("byIsolationMVA2raw");
+    tauiso3hitraw_=tau->tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits");
+  }
+
   void fillMET(){
 
     //carry the PFMET always but dont use for SVFit
@@ -964,7 +1026,8 @@ protected:
       measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(NSVfitStandalone::kLepDecay, mup4_));
       NSVfitStandaloneAlgorithm algo(measuredTauLeptons, metP4_.Vect(), *(metSig_->significance()), 0);
       algo.addLogM(false);
-      algo.integrate();
+      //algo.integrate();
+      algo.integrateMarkovChain();
       svfitmass_ = algo.getMass();
     }else {
       cout<<" Unrecognized SVFit version "<<endl;
