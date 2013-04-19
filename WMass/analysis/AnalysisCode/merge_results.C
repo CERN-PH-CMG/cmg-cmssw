@@ -50,13 +50,16 @@ void merge_results(){
       while (!fileNames_NonScaled.eof()){
         getline (fileNames_NonScaled,StringFromFile);
         TStringFromFile = StringFromFile.c_str();
-        if(TStringFromFile.Contains("nll S+B ->")){
+        // if(TStringFromFile.Contains("nll S+B ->")){
+        if(TStringFromFile.Contains("-2 ln Q_{TEV}")){
           break;
         }
       }
       TObjArray* LineColumns = TStringFromFile.Tokenize(" ");
       ncol = LineColumns->GetEntries();
-      str_icol = ((TObjString *)LineColumns->At(3))->GetString();
+      // str_icol = ((TObjString *)LineColumns->At(3))->GetString();
+      str_icol = ((TObjString *)LineColumns->At(4))->GetString();
+      cout << jWmass << " LIKELIHOOD VALUE= "<<str_icol << endl;
       likelihood_val = (double) (str_icol.Atof());
       if(likelihood_val<0) result_NonScaled->SetPoint(npoint,jWmass,likelihood_val);
 
