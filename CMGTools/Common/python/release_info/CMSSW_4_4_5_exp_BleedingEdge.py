@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'lucieg_Ap8'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_nomorepattuple_17Apr13'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_nomorepattuple_17Apr13_44X'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-10'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_mvametbuiddfix_17Apr13'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'anantoni-15April2013-devdb-wildcards-15h01m'),
@@ -37,6 +37,3 @@
   ('RecoTauTag/TauTagTools', 'RecoTauTag/TauTagTools', 'CMSSW_5_2_4'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-02-02s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
-# The following packages were not in the input release_info.
-# Please make sure that the CVS module is correct!
-#	DataFormats/CaloRecHit                   V02-05-11
