@@ -1,0 +1,11 @@
+#3L OF/OS + 1: nLepGood >= 3 && LepGood1_pdgId*LepGood2_pdgId < 0
+#lep MVA 2: min(LepGood1_mva,LepGood2_mva) >= 0.25
+#mll > 12: minMllAFAS > 12
+Leptons: nLepGood >= 3 && LepGood1_pdgId*LepGood2_pdgId < 0 && min(LepGood1_mva,LepGood2_mva) >= 0.25 && minMllAFAS > 12
+>=1 B: nBJetMedium25 >= 1
+#>=2 b: nBJetLoose25 >= 2
+Z veto: abs(mZ1-91.2) > 15
+MET LD: met*0.00397 + mhtJet25*0.00265 > 0.2 + 0.1*(abs(LepGood1_pdgId) == abs(LepGood2_pdgId))
+2 jets: nJet25 <= 2
+#3l loose: LepGood3_mva > 0.25
+#3l tight: LepGood3_mva > 0.7
