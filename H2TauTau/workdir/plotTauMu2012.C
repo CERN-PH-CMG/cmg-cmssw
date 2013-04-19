@@ -7,7 +7,198 @@
 #include "configTauMu2012AB.C"
 #include "configTauMu2012D.C"
 #include "configTauMu2012ABCD.C"
+
+#include "configTauMu2012Summer13.C"
+
 #include "configTauMu2012ABCDTrig.C"
+
+
+Float_t c[4]={.6,.96,.57,.87};//on right up
+Float_t c2[4]={.25,.49,.56,.91};//on the left up
+Float_t c3[4]={.6,.96,.22,.57};//on the right  bottom
+Float_t c4[4]={.25,.49,.22,.57};//on the left  bottom
+
+
+Float_t xbinsValues[27]={0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350};
+Float_t xbinsValuesVBF[14]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
+
+
+//TString mvBlindSel="(ditaumass<60||120<ditaumass)";
+//TString svBlindSel="(svfitmass<100||160<svfitmass)"; 
+TString mvBlindSel="";
+TString svBlindSel="";
+
+
+void plotInclusive(TauMuPlotter* analysis){
+  //analysis->plotInc("lhenup",10,4.5,14.5,1,1,1,"","",0,-2,"lhenup ","",c,0,"lhenup_mt_2012");
+  analysis->plotInc("nvtx",50,-.5,49.5,1,1,1,"","",0,2,"# of reco. vertices ","",c,0,"nvtx_mt_2012");
+  
+  analysis->plotInc("mupt",25,0,100,1,1,1,"","",0,2," muon pt   (GeV)","",c,0,"pt_1_mt_2012");
+  analysis->plotInc("mueta",40,-2.5,2.5,1,1,1,"","",0,2," muon  #eta","",c2,0,"eta_1_mt_2012"); 
+  analysis->plotInc("muphi",20,-3.5,3.5,1,1,1,"","",0,2," muon phi ","",c3,0,"phi_1_mt_2012");    
+  analysis->plotInc("muiso",50,0,1,1,0,1,"(tauisodiscmva>=1)","",0,2," muon relIso","",c,0,"iso_1_mt_2012");
+  analysis->plotInc("muiso",50,0,1,2,0,1,"(tauisodiscmva>=1)","",0,2," muon relIso","",c,0,"iso_1_SS_mt_2012");
+
+  analysis->plotInc("taumass",20,0,2,1,1,1,"","",0,2," tau mass   (GeV)","",c,0,"taumass_mt_2012");
+  analysis->plotInc("taupt",25,0,100,1,1,1,"","",0,2," tau pt   (GeV)","",c,0,"pt_2_mt_2012");
+  analysis->plotInc("taueta",40,-2.5,2.5,1,1,1,"","",0,2," tau  #eta","",c2,0,"eta_2_mt_2012"); 
+  analysis->plotInc("tauphi",20,-3.5,3.5,1,1,1,"","",0,2," tau phi ","",c3,0,"phi_2_mt_2012");    
+  analysis->plotInc("tauisomva",20,-1.0,1.01,1,0,1,"(muiso<0.1)","",0,2,"tau iso mva","",c,0,"iso_2_mt_2012");
+  analysis->plotInc("taudecaymode",11,0,11,1,1,1,"","",0,2,"Tau decay mode","",c,0,"taudecaymode_mt_2012");
+  analysis->plotInc("tauehop",60,0,1.2,1,1,1,"","",0,2," tau (E+H)/p  (GeV)","",c,0,"tauehop_mt_2012");
+
+  analysis->plotInc("transversemass",40,0,200,2,1,0,"","",-1,2,"M_{T}   [GeV]","",c,0,"mt_1_met_SS_mt_2012");
+  analysis->plotInc("transversemass",40,0,200,1,1,0,"","",0,2,"M_{T}   [GeV]","",c,0,"mt_1_met_mt_2012");
+  analysis->plotInc("metpt",30,0,150,1,1,0,"","",0,2," MET   (GeV)","",c,0,"mvamet_mt_2012");
+  analysis->plotInc("ditaumass",20,0,200,2,1,1,"","",-1,2,"m_{vis}   (GeV)","",c,0,"mvis_SS_mt_2012");
+  analysis->plotInc("ditaumass",40,0,200,1,1,1,"","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_mt_2012");
+  analysis->plotInc("svfitmass",30,0,300,2,1,1,"","",-1,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_SS_mt_2012");
+  analysis->plotInc("svfitmass",60,0,300,1,1,1,"","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_mt_2012");
+  analysis->plotInc("njet",5,-.5,4.5,1,1,1,"","",0,2," njet ","",c,0,"njets_mt_2012");
+
+}
+
+void plot1Jet(TauMuPlotter* analysis){
+  //njet>=1 
+  analysis->plotInc("taudecaymode",11,0,11,1,1,1,"(njet>=1)","",0,2,"Tau decay mode","",c,0,"taudecaymode_1Jet_mt_2012");
+  analysis->plotInc("transversemass",60,0,300,1,1,0,"(njet>=1)","",0,2,"M_{T}   [GeV]","",c,0,"mt_1_met_1Jet_mt_2012");
+  analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1Jet_mt_2012");
+  analysis->plotInc("svfitmass",60,0,300,1,1,1,"(njet>=1)","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_1Jet_mt_2012");
+  analysis->plotInc("leadJetPt",20,0,200,1,1,1,"(njet>=1)","",0,2,"lead jet p_{T}   (GeV)","",c,0,"jetpt_1_mt_2012");
+  analysis->plotInc("leadJetEta",40,-5,5,1,1,1,"(njet>=1)","",0,2,"lead jet #eta","",c2,0,"jeteta_1_mt_2012");
+}
+
+void plotBJet(TauMuPlotter* analysis){
+  ///nbjet>=1
+  analysis->plotInc("transversemass",20,0,200,1,1,0,"(nbjet>=1&&njet<2)","",2,2,"M_{T}   [GeV]","",c,0,"mt_1_met_btag_mt_2012");
+  analysis->plotInc("ditaumass",40,0,200,1,1,1,"(nbjet>=1&&njet<2)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_btag_mt_2012");
+  analysis->plotInc("svfitmass",60,0,300,1,1,1,"(nbjet>=1&&njet<2)","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_btag_mt_2012");
+  analysis->plotInc("leadBJetPt",20,0,200,1,1,1,"(nbjet>=1&&njet<2)","",4,2," b jet p_{T}   (GeV)","",c,0,"bpt_btag_mt_2012");
+  analysis->plotInc("leadBJetEta",25,-2.5,2.5,1,1,1,"(nbjet>=1&&njet<2)","",4,2," b jet #eta","",c4,0,"beta_btag_mt_2012"); 
+}
+
+void plot2Jet(TauMuPlotter* analysis){
+  //njet>=2 Plots
+  analysis->plotInc("taudecaymode",11,0,11,1,1,1,"(njet>=1)","",0,2,"Tau decay mode","",c,0,"taudecaymode_1Jet_mt_2012");
+  analysis->plotInc("transversemass",60,0,300,2,1,0,"(njet>=2&&njetingap==0)","",-1,2,"M_{T}   [GeV]","",c,0,"mt_1_met_2Jet0JetInGap_SS_mt_2012");
+  analysis->plotInc("transversemass",60,0,300,1,1,0,"(njet>=2&&njetingap==0)","",2,2,"M_{T}   [GeV]","",c,0,"mt_1_met_2Jet0JetInGap_mt_2012");
+  analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2Jet_mt_2012"); 
+  analysis->plotInc("svfitmass",30,0,300,1,1,1,"(njet>=2&&njetingap==0)","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_2Jet0JetInGap_mt_2012");
+  analysis->plotInc("subleadJetPt",20,0,200,1,1,1,"(njet>=2)","",2,2,"sublead jet p_{T}   (GeV)","",c,0,"jetpt_2_mt_2012");
+  analysis->plotInc("subleadJetEta",20,-5,5,1,1,1,"(njet>=2)","",2,2,"sublead jet #eta","",c2,0,"jeteta_2_mt_2012");  
+  analysis->plotInc("vbfvars20120",20,0,1000,1,1,1,"(njet>=2)","",2,2,"M(jj)","",c,0,"mjj_mt_2012");
+  analysis->plotInc("vbfvars20121",20,0,10,1,1,1,"(njet>=2)","",2,2,"#Delta#eta(jj)","",c,0,"jdeta_mt_2012");
+}
+
+void plot0JetLow(TauMuPlotter* analysis){
+  analysis->setVariableBinning(26,xbinsValues);
+  analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(0),"",0,2," muon pt   (GeV)","",c,0,"pt_1_0jetlow_mt_2012");
+//   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(0),"",0,2," muon  #eta","",c2,0,"eta_1_0jetlow_mt_2012"); 
+  analysis->plotInc("taupt",25,0,100,1,1,1,analysis->getSMcut(0),"",0,2," tau pt   (GeV)","",c,0,"pt_2_0jetlow_mt_2012");
+//   analysis->plotInc("taueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(0),"",0,2," tau  #eta","",c2,0,"eta_2_0jetlow_mt_2012"); 
+  analysis->plotInc("metpt",30,0,150,1,1,0,analysis->getSMcut(0),"",0,2," MET   (GeV)","",c,0,"mvamet_0jetlow_mt_2012");
+//   analysis->plotInc("transversemass",30,0,300,2,1,0,analysis->getSMcut(0),"",-1,2,"m_{T} ","",c,0,"mt_1_met_0jetlow_SS_mt_2012");
+//   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(0),"",-1,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jetlow_SS_mt_2012");
+  analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcut(0),"",0,2,"m_{T} ","",c,0,"mt_1_met_0jetlow_mt_2012");
+  analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(0),mvBlindSel,0,2,"m_{vis}   (GeV)","",c,0,"mvis_0jetlow_mt_2012");
+  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(0),"",0,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jetlow_mt_2012");
+}
+
+void plot0JetHigh(TauMuPlotter* analysis){
+  analysis->setVariableBinning(26,xbinsValues);
+  analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(1),"",2,2," muon pt   (GeV)","",c,0,"pt_1_0jethigh_mt_2012");
+//   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(1),"",2,2," muon  #eta","",c2,0,"eta_1_0jethigh_mt_2012"); 
+  analysis->plotInc("taupt",25,0,100,1,1,1,analysis->getSMcut(1),"",2,2," tau pt   (GeV)","",c,0,"pt_2_0jethigh_mt_2012");
+//   analysis->plotInc("taueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(1),"",2,2," tau  #eta","",c2,0,"eta_2_0jethigh_mt_2012"); 
+//   analysis->plotInc("metpt",15,0,150,1,1,1,"(njet>=1&&nbjet==0&&taupt<40&&svfitmass>130)","",0,2," MET   (GeV)","",c,0,"mvamet_1jetlowNoMETCutMassG130_mt_2012");
+//  analysis->plotInc("taudecaymode",11,0,11,1,1,1,analysis->getSMcut(1),"",0,2,"Tau decay mode","",c,0,"taudecaymode_0jethigh_mt_2012");
+  analysis->plotInc("metpt",30,0,150,1,1,0,analysis->getSMcut(1),"",2,2," MET   (GeV)","",c,0,"mvamet_0jethigh_mt_2012");
+//  analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(1)+"*(taudecaymode==0)",mvBlindSel,2,2,"m_{vis}   (GeV)","",c,0,"mvis_0jethighDecayMode0_mt_2012");
+//   analysis->plotInc("transversemass",30,0,300,2,1,0,analysis->getSMcut(1),"",-1,2,"m_{T} ","",c,0,"mt_1_met_0jethigh_SS_mt_2012");
+//   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(1),"",2,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jethigh_SS_mt_2012");
+  analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(1),mvBlindSel,2,2,"m_{vis}   (GeV)","",c,0,"mvis_0jethigh_mt_2012");
+  analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcut(1),"",1,5,"m_{T} ","",c,0,"mt_1_met_0jethigh_mt_2012");
+  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(1),"",1,5,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jethigh_mt_2012");
+}
+
+void plot1JetLow(TauMuPlotter* analysis){
+  analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(2),"",1,2," muon pt   (GeV)","",c,0,"pt_1_1jetlow_mt_2012");
+//   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(2),"",1,2," muon  #eta","",c2,0,"eta_1_1jetlow_mt_2012"); 
+  analysis->plotInc("taupt",25,0,100,1,1,1,analysis->getSMcut(2),"",1,2," tau pt   (GeV)","",c,0,"pt_2_1jetlow_mt_2012");
+//   analysis->plotInc("taueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(2),"",1,2," tau  #eta","",c2,0,"eta_2_1jetlow_mt_2012"); 
+  analysis->plotInc("metpt",30,0,150,1,1,0,analysis->getSMcut(2),"",1,2," MET   (GeV)","",c,0,"mvamet_1jetlow_mt_2012");
+//   analysis->plotInc("transversemass",30,0,300,2,1,0,analysis->getSMcut(2),"",-1,2,"m_{T} ","",c,0,"mt_1_met_1jetlow_SS_mt_2012");
+//   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(2),"",-1,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_1jetlow_SS_mt_2012"); 
+  analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(2),mvBlindSel,1,2,"m_{vis}   (GeV)","",c,0,"mvis_1jetlow_mt_2012");
+  analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcut(2),"",1,2,"m_{T} ","",c,0,"mt_1_met_1jetlow_mt_2012");
+  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(2),svBlindSel,7,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_1jetlow_mt_2012");  
+}
+
+void plot1JetHigh(TauMuPlotter* analysis){
+  analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(3),"",0,2," muon pt   (GeV)","",c,0,"pt_1_1jethigh_mt_2012");
+//   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(3),"",0,2," muon  #eta","",c2,0,"eta_1_1jethigh_mt_2012"); 
+  analysis->plotInc("taupt",25,0,100,1,1,1,analysis->getSMcut(3),"",0,2," tau pt   (GeV)","",c,0,"pt_2_1jethigh_mt_2012");
+//   analysis->plotInc("taueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(3),"",0,2," tau  #eta","",c2,0,"eta_2_1jethigh_mt_2012"); 
+  analysis->plotInc("metpt",30,0,150,1,1,0,analysis->getSMcut(3),"",0,2," MET   (GeV)","",c,0,"mvamet_1jethigh_mt_2012");
+//   analysis->plotInc("transversemass",30,0,300,2,1,0,analysis->getSMcut(3),"",-1,2,"m_{T} ","",c,0,"mt_1_met_1jethigh_SS_mt_2012");
+//   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(3),"",-1,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_1jethigh_SS_mt_2012"); 
+  analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(3),mvBlindSel,0,2,"m_{vis}   (GeV)","",c,0,"mvis_1jethigh_mt_2012");
+  analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcut(3),"",1,2,"m_{T} ","",c,0,"mt_1_met_1jethigh_mt_2012");
+  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(3),svBlindSel,1,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_1jethigh_mt_2012");
+}
+   
+void plotVBF(TauMuPlotter* analysis){
+  analysis->setVariableBinning(13,xbinsValuesVBF);
+  analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(4),"",5,3," muon pt   (GeV)","",c,0,"pt_1_vbf_mt_2012");
+//   analysis->plotInc("mueta",10,-2.5,2.5,1,1,1,analysis->getSMcut(4),"",5,3," muon  #eta","",c2,0,"eta_1_vbf_mt_2012"); 
+  analysis->plotInc("taupt",25,0,100,1,1,1,analysis->getSMcut(4),"",5,3," tau pt   (GeV)","",c,0,"pt_2_vbf_mt_2012");
+  //   analysis->plotInc("taueta",10,-2.5,2.5,1,1,1,analysis->getSMcut(4),"",5,3," tau  #eta","",c2,0,"eta_2_vbf_mt_2012"); 
+  analysis->plotInc("metpt",15,0,150,1,1,0,analysis->getSMcut(4),"",5,3," MET   (GeV)","",c,0,"mvamet_vbf_mt_2012");
+  //   analysis->plotInc("transversemass",15,0,300,2,1,0,analysis->getSMcut(4),"",-1,3,"m_{T} ","",c,0,"mt_1_met_vbf_SS_mt_2012");
+  //   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(4),"",-1,3,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_vbf_SS_mt_2012"); 
+  analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(4),mvBlindSel,5,3,"m_{vis}   (GeV)","",c,5,"mvis_vbf_mt_2012");
+  analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(4),"",5,3,"m_{T} ","",c,0,"mt_1_met_vbf_mt_2012");
+  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(4),svBlindSel,5,3,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_vbf_mt_2012");
+}
+
+
+   ///0jet 
+void plot0JetTauTau(TauMuPlotter* analysis){
+   analysis->setVariableBinning(26,xbinsValues);
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(1),mvBlindSel,1,5,"m_{vis}   (GeV)","",c,0,"mvis_0jethighTauTau_mt_2012");
+   analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcutTauTau(1),"",1,5,"m_{T} ","",c,0,"mt_1_met_0jethighTauTau_mt_2012");
+   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcutTauTau(1),"",1,5,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jethighTauTau_mt_2012");
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(1)+"*(taudecaymode==0)",mvBlindSel,0,4,"m_{vis}   (GeV)","",c,0,"mvis_0jethighDecayMode0_mt_2012");
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(1)+"*(taudecaymode==1)",mvBlindSel,0,4,"m_{vis}   (GeV)","",c,0,"mvis_0jethighDecayMode1_mt_2012");
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(1)+"*(taudecaymode==10)",mvBlindSel,0,4,"m_{vis}   (GeV)","",c,0,"mvis_0jethighDecayMode10_mt_2012");
+}
+
+void plot1JetTauTau(TauMuPlotter* analysis){
+   analysis->setVariableBinning(26,xbinsValues);
+   ///Boost
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(3),mvBlindSel,2,4,"m_{vis}   (GeV)","",c,0,"mvis_1jethighTauTau_mt_2012");
+   analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcutTauTau(3),"",2,4,"m_{T} ","",c,0,"mt_1_met_1jethighTauTau_mt_2012");
+   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcutTauTau(3),svBlindSel,2,4,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_1jethighTauTau_mt_2012");
+     analysis->plotInc("ditaudeltaR",30,0,6,1,1,1,analysis->getSMcutTauTau(3),"",2,4," deltaR(#mu#tau) ","",c,1,"deltaR_1jethighTauTau_mt_2012");
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(3)+"*(taudecaymode==0)",mvBlindSel,2,4,"m_{vis}   (GeV)","",c,0,"mvis_1jethighDecayMode0_mt_2012");
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(3)+"*(taudecaymode==1)",mvBlindSel,2,4,"m_{vis}   (GeV)","",c,0,"mvis_1jethighDecayMode1_mt_2012");
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(3)+"*(taudecaymode==10)",mvBlindSel,2,4,"m_{vis}   (GeV)","",c,0,"mvis_1jethighDecayMode10_mt_2012");
+}
+
+
+void plotVBFTauTau(TauMuPlotter* analysis){
+   analysis->setVariableBinning(13,xbinsValuesVBF);
+   ///VBF
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(4),mvBlindSel,5,3,"m_{vis}   (GeV)","",c,0,"mvis_vbfTauTau_mt_2012");
+   analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcutTauTau(4),"",5,3,"m_{T} ","",c,0,"mt_1_met_vbfTauTau_mt_2012");
+   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcutTauTau(4),svBlindSel,5,3,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_vbfTauTau_mt_2012");
+     analysis->plotInc("ditaudeltaR",30,0,6,1,1,1,analysis->getSMcutTauTau(4),"",5,3," deltaR(#mu#tau) ","",c,1,"deltaR_vbfTauTau_mt_2012");
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(4)+"*(taudecaymode==0)",mvBlindSel,5,3,"m_{vis}   (GeV)","",c,0,"mvis_vbfDecayMode0_mt_2012");
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(4)+"*(taudecaymode==1)",mvBlindSel,5,3,"m_{vis}   (GeV)","",c,0,"mvis_vbfDecayMode1_mt_2012");
+   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(4)+"*(taudecaymode==10)",mvBlindSel,5,3,"m_{vis}   (GeV)","",c,0,"mvis_vbfDecayMode10_mt_2012");
+}
+
+
 
 
 void plotTauMu2012(){  
@@ -51,8 +242,17 @@ void plotTauMu2012(){
   //TString path="/data/benitezj/Samples/muTau201253X_580Jan15";
   //TString path="/data/benitezj/Samples/muTau201253X_580Jan16";//new recoil corrections, added dR,dEta,dPhi
   //TString path="/data/benitezj/Samples/muTau201253X_580Jan29";//fixed MET shifts
-  TString path="/data/benitezj/Samples/muTau201253X_580Feb7";//applied Tau ES corrections
-  TauMuPlotter*analysis=configTauMu2012ABCD("analysis",path);
+  //TString path="/data/benitezj/Samples/muTau201253X_580Feb7";//applied Tau ES corrections
+  //TauMuPlotter*analysis=configTauMu2012ABCD("analysis",path);
+
+
+  //////For Summer13
+  //TString path="/data/benitezj/Samples/muTau201253X_580Feb7";//old prod for comparison
+  //TString path="/data/benitezj/Samples/muTau201253X_5140Apr5";//new Tau software, mva met, JEC, pu jet id 
+  //TString path="/data/benitezj/Samples/muTau201253X_5140Apr7";//reverted e/p cut on Taus
+  //TString path="/data/benitezj/Samples/muTau201253X_5140Apr11";//
+  TString path="/data/benitezj/Samples/muTau201253X_5140Apr14";//no anti-muon discr. cut
+  TauMuPlotter*analysis=configTauMu2012Summer13("analysis",path);
 
 
   //////////////Trigger measurements
@@ -71,69 +271,45 @@ void plotTauMu2012(){
   //analysis->plotQCDSSOSRatio();
   //analysis->plotQCDSSOSRatioBTag();
   //analysis->plotZTTShape();
-
   //analysis->compareSignalShapes();
 
-//   //check WJets// Winc=75,W1=22.6,W2=33.5,W3=15.4,W4=12.9
-//   analysis->eventWeight_="pupWeights4*embeddedGenWeight*triggerEffWeightsTau4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*signalWeight";
-//   analysis->plotvar_="svfitmass";
-//   analysis->nbins_=17;
-//   analysis->xmin_=0;
-//   analysis->xmax_=340;
-//   analysis->Chcat_=0;
-//   analysis->Isocat_=1;
-//   analysis->MTcat_=1;
-//   analysis->extrasel_="(njet20>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
-//   analysis->scaleSamplesLumi();
-//   TH1F*hW=analysis->getWNJetSum();
-//   cout<<hW->Integral(0,36)<<endl;
-//   hW->Draw();
-//   c1->Print("WJets.eps");
-//   exit(0);
 
-
-  
-  //
-  Float_t c[4]={.6,.96,.57,.87};//on right up
-  Float_t c2[4]={.25,.49,.56,.91};//on the left up
-  Float_t c3[4]={.6,.96,.22,.57};//on the right  bottom
-  Float_t c4[4]={.25,.49,.22,.57};//on the left  bottom
-
-  
+   
   //Inclusive Plots
-//   ////analysis->plotInc("lhenup",10,4.5,14.5,1,1,1,"","",0,-2,"lhenup ","",c,0,"lhenup_mt_2012");
-//   analysis->plotInc("nvtx",50,-.5,49.5,1,1,1,"","",0,2,"# of reco. vertices ","",c,0,"nvtx_mt_2012");
-  
-//   analysis->plotInc("mupt",25,0,100,1,1,1,"","",0,2," muon pt   (GeV)","",c,0,"pt_1_mt_2012");
-//   analysis->plotInc("mueta",40,-2.5,2.5,1,1,1,"","",0,2," muon  #eta","",c2,0,"eta_1_mt_2012"); 
-// //   analysis->plotInc("muphi",20,-3.5,3.5,1,1,1,"","",0,2," muon phi ","",c3,0,"phi_1_mt_2012");    
-//   analysis->plotInc("muiso",50,0,1,1,0,1,"(tauisodiscmva>=1)","",0,2," muon relIso","",c,0,"iso_1_mt_2012");
-// //   analysis->plotInc("muiso",50,0,1,2,0,1,"(tauisodiscmva>=1)","",0,2," muon relIso","",c,0,"iso_1_SS_mt_2012");
+  plotInclusive(analysis);
+//   plot1Jet(analysis);
+//   plot2Jet(analysis);
+//   plotBJet(analysis);
+//   plot0JetLow(analysis);
+//   plot0JetHigh(analysis);
+//   plot1JetLow(analysis);
+//   plot1JetHigh(analysis);
+//   plotVBF(analysis);
 
-//  analysis->plotInc("taumass",20,0,2,1,1,1,"(taumass>0.2)","",0,2," tau mass   (GeV)","",c,0,"taumass_mt_2012");
-  //  analysis->plotInc("taumass",20,0,2,1,1,1,"(taumass>0.2&&taupt>40)","",0,2," tau mass   (GeV)","",c2,0,"taumass_TauPt40_mt_2012");
-// //   analysis->plotInc("taumass",20,0,2,1,1,1,"(taumass>0.2&&taupt>40&&taudecaymode==0)","",0,2," tau mass   (GeV)","",c2,0,"taumass_TauPt40DecayMode0_mt_2012");
-// //   analysis->plotInc("taumass",20,0,2,1,1,1,"(taumass>0.2&&taupt>40&&taudecaymode==1)","",0,2," tau mass   (GeV)","",c2,0,"taumass_TauPt40DecayMode1_mt_2012");
-//  analysis->plotInc("taumass",20,0,2,1,1,1,"(taumass>0.2&&taupt>40&&taudecaymode==10)","",0,2," tau mass   (GeV)","",c2,0,"taumass_TauPt40DecayMode10_mt_2012");
-//   analysis->plotInc("taupt",25,0,100,1,1,1,"","",0,2," tau pt   (GeV)","",c,0,"pt_2_mt_2012");
+//   plot0JetTauTau(analysis);
+//   plot1JetTauTau(analysis);
+//   plotVBFTauTau(analysis);
+
+
+
+  //analysis->plotInc("taumass",20,0,2,1,1,1,"(taumass>0.2&&taupt>40)","",0,2," tau mass   (GeV)","",c2,0,"taumass_TauPt40_mt_2012");
+  //analysis->plotInc("taumass",20,0,2,1,1,1,"(taumass>0.2&&taupt>40&&taudecaymode==0)","",0,2," tau mass   (GeV)","",c2,0,"taumass_TauPt40DecayMode0_mt_2012");
+  //analysis->plotInc("taumass",20,0,2,1,1,1,"(taumass>0.2&&taupt>40&&taudecaymode==1)","",0,2," tau mass   (GeV)","",c2,0,"taumass_TauPt40DecayMode1_mt_2012");
+  //analysis->plotInc("taumass",20,0,2,1,1,1,"(taumass>0.2&&taupt>40&&taudecaymode==10)","",0,2," tau mass   (GeV)","",c2,0,"taumass_TauPt40DecayMode10_mt_2012");
 //   analysis->plotInc("taupt",25,0,100,1,1,1,"(abs(taueta)<1.5)","",0,2," tau pt   (GeV)","",c,0,"pt_2_Barrel_mt_2012");
-// //   analysis->plotInc("taupt",25,0,100,1,1,1,"(abs(taueta)>1.5)","",0,2," tau pt   (GeV)","",c,0,"pt_2_Endcap_mt_2012");
-// //   analysis->plotInc("taupt",25,0,100,1,1,1,"(taudecaymode==0)","",0,2," tau pt   (GeV)","",c,0,"pt_2_DecayMode0_mt_2012");
-// //   analysis->plotInc("taupt",25,0,100,1,1,1,"(taudecaymode==1)","",0,2," tau pt   (GeV)","",c,0,"pt_2_DecayMode1_mt_2012");
-// //   analysis->plotInc("taupt",25,0,100,1,1,1,"(taudecaymode==10)","",0,2," tau pt   (GeV)","",c,0,"pt_2_DecayMode10_mt_2012");
-//   analysis->plotInc("taueta",40,-2.5,2.5,1,1,1,"","",0,2," tau  #eta","",c2,0,"eta_2_mt_2012"); 
-// //   //   analysis->plotInc("tauphi",20,-3.5,3.5,1,1,1,"","",0,2," tau phi ","",c3,0,"phi_2_mt_2012");    
-//   analysis->plotInc("tauisomva",20,-1.0,1.01,1,0,1,"(muiso<0.1)","",0,2,"tau iso mva","",c,0,"iso_2_mt_2012");
-//   analysis->plotInc("taudecaymode",11,0,11,1,1,1,"","",0,2,"Tau decay mode","",c,0,"taudecaymode_mt_2012");
+//   analysis->plotInc("taupt",25,0,100,1,1,1,"(abs(taueta)>1.5)","",0,2," tau pt   (GeV)","",c,0,"pt_2_Endcap_mt_2012");
+//   analysis->plotInc("taupt",25,0,100,1,1,1,"(taudecaymode==0)","",0,2," tau pt   (GeV)","",c,0,"pt_2_DecayMode0_mt_2012");
+//   analysis->plotInc("taupt",25,0,100,1,1,1,"(taudecaymode==1)","",0,2," tau pt   (GeV)","",c,0,"pt_2_DecayMode1_mt_2012");
+//   analysis->plotInc("taupt",25,0,100,1,1,1,"(taudecaymode==10)","",0,2," tau pt   (GeV)","",c,0,"pt_2_DecayMode10_mt_2012");
 
-// //   analysis->plotInc("transversemass",40,0,200,2,1,0,"","",-1,2,"M_{T}   [GeV]","",c,0,"mt_1_met_SS_mt_2012");
-//   analysis->plotInc("transversemass",40,0,200,1,1,0,"","",0,2,"M_{T}   [GeV]","",c,0,"mt_1_met_mt_2012");
-// //   analysis->plotInc("metpt",30,0,150,1,1,0,"","",0,2," MET   (GeV)","",c,0,"mvamet_mt_2012");
-// //   analysis->plotInc("ditaumass",20,0,200,2,1,1,"","",-1,2,"m_{vis}   (GeV)","",c,0,"mvis_SS_mt_2012");
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_mt_2012");
-// //   analysis->plotInc("svfitmass",30,0,300,2,1,1,"","",-1,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_SS_mt_2012");
-//  analysis->plotInc("svfitmass",60,0,300,1,1,1,"","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_mt_2012");
-// //   analysis->plotInc("njet",5,-.5,4.5,1,1,1,"","",0,2," njet ","",c,0,"njets_mt_2012");
+
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taudecaymode==0)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetDecayMode0_mt_2012");
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taudecaymode==1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetDecayMode1_mt_2012");
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taudecaymode==10)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetDecayMode10_mt_2012");
+
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taupt<40&&taudecaymode==0)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetTauPtL40DecayMode0_mt_2012");
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taupt<40&&taudecaymode==1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetTauPtL40DecayMode1_mt_2012");
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taupt<40&&taudecaymode==10)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetTauPtL40DecayMode10_mt_2012");
 
 //   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(taudecaymode==0)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_DecayMode0_mt_2012");
 //   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(taudecaymode==1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_DecayMode1_mt_2012");
@@ -148,117 +324,12 @@ void plotTauMu2012(){
 //   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(taupt>40&&taudecaymode==10)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_TauPt40DecayMode10_mt_2012");
 
 
-
-//   //njet>=1 
-//   analysis->plotInc("leadJetPt",20,0,200,1,1,1,"(njet>=1)","",0,2,"lead jet p_{T}   (GeV)","",c,0,"jetpt_1_mt_2012");
-//   analysis->plotInc("leadJetEta",40,-5,5,1,1,1,"(njet>=1)","",0,2,"lead jet #eta","",c2,0,"jeteta_1_mt_2012");
-// //   analysis->plotInc("abs(leadJetEta)",35,1.5,5,1,1,1,"(njet>=1)","",0,2,"|lead jet #eta|","",c,0,"jeteta_1_mt_2012_endcap");
-// //   analysis->plotInc("transversemass",60,0,300,1,1,0,"(njet>=1)","",0,2,"M_{T}   [GeV]","",c,0,"mt_1_met_1Jet_mt_2012");
-// //   analysis->plotInc("svfitmass",60,0,300,1,1,1,"","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_1Jet_mt_2012");
-//   analysis->plotInc("taudecaymode",11,0,11,1,1,1,"(njet>=1)","",0,2,"Tau decay mode","",c,0,"taudecaymode_1Jet_mt_2012");
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1Jet_mt_2012");
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taudecaymode==0)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetDecayMode0_mt_2012");
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taudecaymode==1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetDecayMode1_mt_2012");
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taudecaymode==10)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetDecayMode10_mt_2012");
-
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taupt<40&&taudecaymode==0)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetTauPtL40DecayMode0_mt_2012");
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taupt<40&&taudecaymode==1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetTauPtL40DecayMode1_mt_2012");
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=1&&taupt<40&&taudecaymode==10)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_1JetTauPtL40DecayMode10_mt_2012");
-
-
-//   ///nbjet>=1
-//   analysis->plotInc("transversemass",20,0,200,1,1,0,"(nbjet>=1&&njet<2)","",2,2,"M_{T}   [GeV]","",c,0,"mt_1_met_btag_mt_2012");
-//   analysis->plotInc("leadBJetPt",20,0,200,1,1,1,"(nbjet>=1&&njet<2)","",4,2," b jet p_{T}   (GeV)","",c,0,"bpt_btag_mt_2012");
-//   analysis->plotInc("leadBJetEta",25,-2.5,2.5,1,1,1,"(nbjet>=1&&njet<2)","",4,2," b jet #eta","",c4,0,"beta_btag_mt_2012"); 
-
-//   //njet>=2 Plots
-//   analysis->plotInc("subleadJetPt",20,0,200,1,1,1,"(njet>=2)","",2,2,"sublead jet p_{T}   (GeV)","",c,0,"jetpt_2_mt_2012");
-//   analysis->plotInc("subleadJetEta",20,-5,5,1,1,1,"(njet>=2)","",2,2,"sublead jet #eta","",c2,0,"jeteta_2_mt_2012");  
-//   analysis->plotInc("vbfvars20120",20,0,1000,1,1,1,"(njet>=2)","",2,2,"M(jj)","",c,0,"mjj_mt_2012");
-//   analysis->plotInc("vbfvars20121",20,0,10,1,1,1,"(njet>=2)","",2,2,"#Delta#eta(jj)","",c,0,"jdeta_mt_2012");
-// //   analysis->plotInc("transversemass",60,0,300,2,1,0,"(njet>=2&&njetingap==0)","",-1,2,"M_{T}   [GeV]","",c,0,"mt_1_met_2Jet0JetInGap_SS_mt_2012");
-// //   analysis->plotInc("transversemass",60,0,300,1,1,0,"(njet>=2&&njetingap==0)","",2,2,"M_{T}   [GeV]","",c,0,"mt_1_met_2Jet0JetInGap_mt_2012");
-// //   analysis->plotInc("svfitmass",30,0,300,1,1,1,"(njet>=2&&njetingap==0)","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_2Jet0JetInGap_mt_2012");
-//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2Jet_mt_2012"); 
-//  analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taudecaymode==0)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetDecayMode0_mt_2012");
-//    analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taudecaymode==1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetDecayMode1_mt_2012");
-//    analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taudecaymode==10)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetDecayMode10_mt_2012");
-//    analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taupt<40&&taudecaymode==0)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetTauPtL40DecayMode0_mt_2012");
-//    analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taupt<40&&taudecaymode==1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetTauPtL40DecayMode1_mt_2012");
-//    analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taupt<40&&taudecaymode==10)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetTauPtL40DecayMode10_mt_2012");
-
-
-  //////////////////////////////Category Plots
-  Float_t xbinsValues[27]={0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350};
-  analysis->setVariableBinning(26,xbinsValues);
-  
-  //TString mvBlindSel="(ditaumass<60||120<ditaumass)";
-  //TString svBlindSel="(svfitmass<100||160<svfitmass)"; 
-  TString mvBlindSel="";
-  TString svBlindSel="";
-
-// //   analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(0),"",0,2," muon pt   (GeV)","",c,0,"pt_1_0jetlow_mt_2012");
-// //   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(0),"",0,2," muon  #eta","",c2,0,"eta_1_0jetlow_mt_2012"); 
-//   analysis->plotInc("taupt",25,0,100,1,1,1,analysis->getSMcut(0),"",0,2," tau pt   (GeV)","",c,0,"pt_2_0jetlow_mt_2012");
-// //   analysis->plotInc("taueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(0),"",0,2," tau  #eta","",c2,0,"eta_2_0jetlow_mt_2012"); 
-// //   analysis->plotInc("metpt",30,0,150,1,1,0,analysis->getSMcut(0),"",0,2," MET   (GeV)","",c,0,"mvamet_0jetlow_mt_2012");
-// //   analysis->plotInc("transversemass",30,0,300,2,1,0,analysis->getSMcut(0),"",-1,2,"m_{T} ","",c,0,"mt_1_met_0jetlow_SS_mt_2012");
-// //   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(0),"",-1,0,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jetlow_SS_mt_2012");
-//   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(0),mvBlindSel,0,2,"m_{vis}   (GeV)","",c,0,"mvis_0jetlow_mt_2012");
-//   analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcut(0),"",0,2,"m_{T} ","",c,0,"mt_1_met_0jetlow_mt_2012");
-//   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(0),"",0,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jetlow_mt_2012");
-
-// //   analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(1),"",2,2," muon pt   (GeV)","",c,0,"pt_1_0jethigh_mt_2012");
-// //   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(1),"",2,2," muon  #eta","",c2,0,"eta_1_0jethigh_mt_2012"); 
-//   analysis->plotInc("taupt",25,0,100,1,1,1,analysis->getSMcut(1),"",2,2," tau pt   (GeV)","",c,0,"pt_2_0jethigh_mt_2012");
-// //   analysis->plotInc("taueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(1),"",2,2," tau  #eta","",c2,0,"eta_2_0jethigh_mt_2012"); 
-// //   analysis->plotInc("metpt",15,0,150,1,1,1,"(njet>=1&&nbjet==0&&taupt<40&&svfitmass>130)","",0,2," MET   (GeV)","",c,0,"mvamet_1jetlowNoMETCutMassG130_mt_2012");
-// //  analysis->plotInc("taudecaymode",11,0,11,1,1,1,analysis->getSMcut(1),"",0,2,"Tau decay mode","",c,0,"taudecaymode_0jethigh_mt_2012");
-// //   analysis->plotInc("metpt",30,0,150,1,1,0,analysis->getSMcut(1),"",2,2," MET   (GeV)","",c,0,"mvamet_0jethigh_mt_2012");
-// //  analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(1)+"*(taudecaymode==0)",mvBlindSel,2,2,"m_{vis}   (GeV)","",c,0,"mvis_0jethighDecayMode0_mt_2012");
-// //   analysis->plotInc("transversemass",30,0,300,2,1,0,analysis->getSMcut(1),"",-1,2,"m_{T} ","",c,0,"mt_1_met_0jethigh_SS_mt_2012");
-// //   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(1),"",2,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jethigh_SS_mt_2012");
-//   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(1),mvBlindSel,2,2,"m_{vis}   (GeV)","",c,0,"mvis_0jethigh_mt_2012");
-//   analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcut(1),"",1,5,"m_{T} ","",c,0,"mt_1_met_0jethigh_mt_2012");
-//   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(1),"",1,5,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jethigh_mt_2012");
-
-
-// //   analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(2),"",1,2," muon pt   (GeV)","",c,0,"pt_1_1jetlow_mt_2012");
-// //   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(2),"",1,2," muon  #eta","",c2,0,"eta_1_1jetlow_mt_2012"); 
-//   analysis->plotInc("taupt",25,0,100,1,1,1,analysis->getSMcut(2),"",1,2," tau pt   (GeV)","",c,0,"pt_2_1jetlow_mt_2012");
-// //   analysis->plotInc("taueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(2),"",1,2," tau  #eta","",c2,0,"eta_2_1jetlow_mt_2012"); 
-// //   analysis->plotInc("metpt",30,0,150,1,1,0,analysis->getSMcut(2),"",1,2," MET   (GeV)","",c,0,"mvamet_1jetlow_mt_2012");
-// //   analysis->plotInc("transversemass",30,0,300,2,1,0,analysis->getSMcut(2),"",-1,2,"m_{T} ","",c,0,"mt_1_met_1jetlow_SS_mt_2012");
-// //   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(2),"",-1,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_1jetlow_SS_mt_2012"); 
-//   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(2),mvBlindSel,1,2,"m_{vis}   (GeV)","",c,0,"mvis_1jetlow_mt_2012");
-//   analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcut(2),"",1,2,"m_{T} ","",c,0,"mt_1_met_1jetlow_mt_2012");
-//   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(2),svBlindSel,7,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_1jetlow_mt_2012");  
-  
-// //   analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(3),"",0,2," muon pt   (GeV)","",c,0,"pt_1_1jethigh_mt_2012");
-// //   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(3),"",0,2," muon  #eta","",c2,0,"eta_1_1jethigh_mt_2012"); 
-//   analysis->plotInc("taupt",25,0,100,1,1,1,analysis->getSMcut(3),"",0,2," tau pt   (GeV)","",c,0,"pt_2_1jethigh_mt_2012");
-// //   analysis->plotInc("taueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(3),"",0,2," tau  #eta","",c2,0,"eta_2_1jethigh_mt_2012"); 
-// //   analysis->plotInc("metpt",30,0,150,1,1,0,analysis->getSMcut(3),"",0,2," MET   (GeV)","",c,0,"mvamet_1jethigh_mt_2012");
-// //   analysis->plotInc("transversemass",30,0,300,2,1,0,analysis->getSMcut(3),"",-1,2,"m_{T} ","",c,0,"mt_1_met_1jethigh_SS_mt_2012");
-// //   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(3),"",-1,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_1jethigh_SS_mt_2012"); 
-//   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(3),mvBlindSel,0,2,"m_{vis}   (GeV)","",c,0,"mvis_1jethigh_mt_2012");
-//   analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcut(3),"",1,2,"m_{T} ","",c,0,"mt_1_met_1jethigh_mt_2012");
-//   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(3),svBlindSel,1,2,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_1jethigh_mt_2012");
-
-   
-//   Float_t xbinsValues[14]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
-//   analysis->setVariableBinning(13,xbinsValues);
-// //   analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(4),"",5,3," muon pt   (GeV)","",c,0,"pt_1_vbf_mt_2012");
-// //   analysis->plotInc("mueta",10,-2.5,2.5,1,1,1,analysis->getSMcut(4),"",5,3," muon  #eta","",c2,0,"eta_1_vbf_mt_2012"); 
-//    analysis->plotInc("taupt",25,0,100,1,1,1,analysis->getSMcut(4),"",5,3," tau pt   (GeV)","",c,0,"pt_2_vbf_mt_2012");
-// //   analysis->plotInc("taueta",10,-2.5,2.5,1,1,1,analysis->getSMcut(4),"",5,3," tau  #eta","",c2,0,"eta_2_vbf_mt_2012"); 
-// //   analysis->plotInc("metpt",15,0,150,1,1,0,analysis->getSMcut(4),"",5,3," MET   (GeV)","",c,0,"mvamet_vbf_mt_2012");
-// //   analysis->plotInc("transversemass",15,0,300,2,1,0,analysis->getSMcut(4),"",-1,3,"m_{T} ","",c,0,"mt_1_met_vbf_SS_mt_2012");
-// //   analysis->plotInc("svfitmass",0,0,350,2,1,1,analysis->getSMcut(4),"",-1,3,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_vbf_SS_mt_2012"); 
-//   analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(4),mvBlindSel,5,3,"m_{vis}   (GeV)","",c,5,"mvis_vbf_mt_2012");
-//   analysis->plotInc("transversemass",15,0,300,1,1,0,analysis->getSMcut(4),"",5,3,"m_{T} ","",c,0,"mt_1_met_vbf_mt_2012");
-  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(4),svBlindSel,5,3,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_vbf_mt_2012");
-
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taudecaymode==0)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetDecayMode0_mt_2012");
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taudecaymode==1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetDecayMode1_mt_2012");
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taudecaymode==10)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetDecayMode10_mt_2012");
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taupt<40&&taudecaymode==0)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetTauPtL40DecayMode0_mt_2012");
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taupt<40&&taudecaymode==1)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetTauPtL40DecayMode1_mt_2012");
+//   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(njet>=2&&taupt<40&&taudecaymode==10)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_2JetTauPtL40DecayMode10_mt_2012");
 
 
 
@@ -286,41 +357,6 @@ void plotTauMu2012(){
 //   analysis->plotInc("ditaumass",35,0,350,1,1,1,"(taupt>45&&njet>=2&&taudecaymode==0)",mvBlindSel,0,4,"m_{vis}   (GeV)","",c,0,"mvis_TauPt452JetDecayMode0_mt_2012");
 //   analysis->plotInc("ditaumass",35,0,350,1,1,1,"(taupt>45&&njet>=2&&taudecaymode==1)",mvBlindSel,0,4,"m_{vis}   (GeV)","",c,0,"mvis_TauPt452JetDecayMode1_mt_2012");
 //   analysis->plotInc("ditaumass",35,0,350,1,1,1,"(taupt>45&&njet>=2&&taudecaymode==10)",mvBlindSel,0,4,"m_{vis}   (GeV)","",c,0,"mvis_TauPt452JetDecayMode10_mt_2012");
-
-
-   ///0jet 
-   Float_t xbinsValues[27]={0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350};
-   analysis->setVariableBinning(26,xbinsValues);
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(1),mvBlindSel,1,5,"m_{vis}   (GeV)","",c,0,"mvis_0jethighTauTau_mt_2012");
-//    analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcutTauTau(1),"",1,5,"m_{T} ","",c,0,"mt_1_met_0jethighTauTau_mt_2012");
-//    analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcutTauTau(1),"",1,5,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,0,"m_sv_0jethighTauTau_mt_2012");
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(1)+"*(taudecaymode==0)",mvBlindSel,0,4,"m_{vis}   (GeV)","",c,0,"mvis_0jethighDecayMode0_mt_2012");
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(1)+"*(taudecaymode==1)",mvBlindSel,0,4,"m_{vis}   (GeV)","",c,0,"mvis_0jethighDecayMode1_mt_2012");
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(1)+"*(taudecaymode==10)",mvBlindSel,0,4,"m_{vis}   (GeV)","",c,0,"mvis_0jethighDecayMode10_mt_2012");
-
-   ///Boost
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(3),mvBlindSel,2,4,"m_{vis}   (GeV)","",c,0,"mvis_1jethighTauTau_mt_2012");
-//    analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcutTauTau(3),"",2,4,"m_{T} ","",c,0,"mt_1_met_1jethighTauTau_mt_2012");
-//    analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcutTauTau(3),svBlindSel,2,4,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_1jethighTauTau_mt_2012");
-   //   analysis->plotInc("ditaudeltaR",30,0,6,1,1,1,analysis->getSMcutTauTau(3),"",2,4," deltaR(#mu#tau) ","",c,1,"deltaR_1jethighTauTau_mt_2012");
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(3)+"*(taudecaymode==0)",mvBlindSel,2,4,"m_{vis}   (GeV)","",c,0,"mvis_1jethighDecayMode0_mt_2012");
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(3)+"*(taudecaymode==1)",mvBlindSel,2,4,"m_{vis}   (GeV)","",c,0,"mvis_1jethighDecayMode1_mt_2012");
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(3)+"*(taudecaymode==10)",mvBlindSel,2,4,"m_{vis}   (GeV)","",c,0,"mvis_1jethighDecayMode10_mt_2012");
-
-   ///VBF
-   Float_t xbinsValues[14]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
-   analysis->setVariableBinning(13,xbinsValues);
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(4),mvBlindSel,5,3,"m_{vis}   (GeV)","",c,0,"mvis_vbfTauTau_mt_2012");
-//    analysis->plotInc("transversemass",30,0,300,1,1,0,analysis->getSMcutTauTau(4),"",5,3,"m_{T} ","",c,0,"mt_1_met_vbfTauTau_mt_2012");
-//    analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcutTauTau(4),svBlindSel,5,3,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_vbfTauTau_mt_2012");
-   //   analysis->plotInc("ditaudeltaR",30,0,6,1,1,1,analysis->getSMcutTauTau(4),"",5,3," deltaR(#mu#tau) ","",c,1,"deltaR_vbfTauTau_mt_2012");
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(4)+"*(taudecaymode==0)",mvBlindSel,5,3,"m_{vis}   (GeV)","",c,0,"mvis_vbfDecayMode0_mt_2012");
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(4)+"*(taudecaymode==1)",mvBlindSel,5,3,"m_{vis}   (GeV)","",c,0,"mvis_vbfDecayMode1_mt_2012");
-//    analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcutTauTau(4)+"*(taudecaymode==10)",mvBlindSel,5,3,"m_{vis}   (GeV)","",c,0,"mvis_vbfDecayMode10_mt_2012");
-
-
-
-
 
 
    ///For Phil

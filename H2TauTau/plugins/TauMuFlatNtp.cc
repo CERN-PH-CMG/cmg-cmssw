@@ -214,21 +214,21 @@ bool TauMuFlatNtp::applySelections(){
 
 
 
-//   //Tau E/P cut
-//   tmpditaulist=diTauSelList_;
-//   diTauSelList_.clear();
-//   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-//     if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
-//       if(cand->leg1().eOverP()<0.2)
-// 	continue;
+  //Tau E/P cut
+  tmpditaulist=diTauSelList_;
+  diTauSelList_.clear();
+  for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+    if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
+      if(cand->leg1().eOverP()<0.2)
+	continue;
     
-//     diTauSelList_.push_back(*cand);
-//   }
-//   if(diTauSelList_.size()==0){
-//     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
-//     return 0;
-//   }
-//   countertaueop_++;
+    diTauSelList_.push_back(*cand);
+  }
+  if(diTauSelList_.size()==0){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
+    return 0;
+  }
+  countertaueop_++;
 
   
   //tau vtx
@@ -255,8 +255,8 @@ bool TauMuFlatNtp::applySelections(){
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg1().tauID("againstMuonTight")>0.5)
-      diTauSelList_.push_back(*cand);
+    if(cand->leg1().tauID("againstMuonTight")<0.5)continue;
+    diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaumuveto"<<endl;
@@ -338,7 +338,12 @@ bool TauMuFlatNtp::applySelections(){
        //if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")<0.5)
        //if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")<0.5)
        
-       && cand->leg1().tauID("byLooseIsoMVA")>0.5
+       // && cand->leg1().tauID("byLooseIsoMVA")>0.5
+      
+       && (cand->leg1().tauID("byLooseIsoMVA")>0.5 
+	   || cand->leg1().tauID("byLooseIsolationMVA2")>0.5  
+	   || cand->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")>0.5 
+	   || cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr3Hits")>0.5 )
 
 
        ){
@@ -582,49 +587,51 @@ bool TauMuFlatNtp::fill(){
   mutruth_=truthMatchLeg(diTauSel_->leg2().eta(),diTauSel_->leg2().phi(),mutruthpt_,mutrutheta_,mutruthstatus_);
   mucharge_=diTauSel_->leg2().charge();
 
-  taumass_=diTauSel_->leg1().p4().M();
-  taupt_=diTauSel_->leg1().pt();
-  taupx_=diTauSel_->leg1().p4().x();
-  taupy_=diTauSel_->leg1().p4().y();
-  taueta_=diTauSel_->leg1().eta();
-  tauphi_=diTauSel_->leg1().phi();
-  taudz_=computeDz(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());   //taudz_=diTauSel_->leg1().dz();
-  taudxy_=computeDxy(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());   //taudxy_=diTauSel_->leg1().dxy();
-  taucharge_=diTauSel_->leg1().charge();
+  fillTau(&(diTauSel_->leg1()));
 
-  tautruth_=truthMatchLeg(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),tautruthpt_,tautrutheta_,tautruthstatus_);
-  //cout<<tautruth_<<" "<<tautruthstatus_<<endl;
-  tauehop_=diTauSel_->leg1().eOverP();
-  taueop_=diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p();
-  tauhoe_=diTauSel_->leg1().leadChargedHadrHcalEnergy()/diTauSel_->leg1().leadChargedHadrEcalEnergy();
-  taudecaymode_=diTauSel_->leg1().decayMode();
-  taux_=diTauSel_->leg1().leadChargedHadrVertex().x();
-  tauy_=diTauSel_->leg1().leadChargedHadrVertex().y();
-  tauz_=diTauSel_->leg1().leadChargedHadrVertex().z();
-  tauiso_=diTauSel_->leg1().relIso(0.5);
-  tauisomva_=diTauSel_->leg1().tauID("byRawIsoMVA");
+//   taumass_=diTauSel_->leg1().p4().M();
+//   taupt_=diTauSel_->leg1().pt();
+//   taupx_=diTauSel_->leg1().p4().x();
+//   taupy_=diTauSel_->leg1().p4().y();
+//   taueta_=diTauSel_->leg1().eta();
+//   tauphi_=diTauSel_->leg1().phi();
+//   taudz_=computeDz(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());   //taudz_=diTauSel_->leg1().dz();
+//   taudxy_=computeDxy(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());   //taudxy_=diTauSel_->leg1().dxy();
+//   taucharge_=diTauSel_->leg1().charge();
 
-  tauleadpt_=diTauSel_->leg1().leadChargedHadrPt();  
-  tauleadhcal_=diTauSel_->leg1().leadChargedHadrHcalEnergy();
-  tauleadecal_=diTauSel_->leg1().leadChargedHadrEcalEnergy();
+//   tautruth_=truthMatchLeg(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),tautruthpt_,tautrutheta_,tautruthstatus_);
+//   //cout<<tautruth_<<" "<<tautruthstatus_<<endl;
+//   tauehop_=diTauSel_->leg1().eOverP();
+//   taueop_=diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p();
+//   tauhoe_=diTauSel_->leg1().leadChargedHadrHcalEnergy()/diTauSel_->leg1().leadChargedHadrEcalEnergy();
+//   taudecaymode_=diTauSel_->leg1().decayMode();
+//   taux_=diTauSel_->leg1().leadChargedHadrVertex().x();
+//   tauy_=diTauSel_->leg1().leadChargedHadrVertex().y();
+//   tauz_=diTauSel_->leg1().leadChargedHadrVertex().z();
+//   tauiso_=diTauSel_->leg1().relIso(0.5);
+//   tauisomva_=diTauSel_->leg1().tauID("byRawIsoMVA");
 
-  tauantie_=0;
-  if(diTauSel_->leg1().tauID("againstElectronLoose")>0.5)tauantie_=1;
-  if(diTauSel_->leg1().tauID("againstElectronMedium")>0.5)tauantie_=2;
-  if(diTauSel_->leg1().tauID("againstElectronTight")>0.5)tauantie_=3;
-  tauantimu_=0;
-  if(diTauSel_->leg1().tauID("againstMuonLoose")>0.5)tauantimu_=1;
-  if(diTauSel_->leg1().tauID("againstMuonMedium")>0.5)tauantimu_=2;
-  if(diTauSel_->leg1().tauID("againstMuonTight")>0.5)tauantimu_=3;
-  tauisodisc_=0;
-  if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=1;
-  if(diTauSel_->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=2;
-  if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=3;
-  if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=4;
-  tauisodiscmva_=0;
-  if(diTauSel_->leg1().tauID("byLooseIsoMVA")>0.5)tauisodiscmva_=1;
-  if(diTauSel_->leg1().tauID("byMediumIsoMVA")>0.5)tauisodiscmva_=2;
-  if(diTauSel_->leg1().tauID("byTightIsoMVA")>0.5)tauisodiscmva_=3;
+//   tauleadpt_=diTauSel_->leg1().leadChargedHadrPt();  
+//   tauleadhcal_=diTauSel_->leg1().leadChargedHadrHcalEnergy();
+//   tauleadecal_=diTauSel_->leg1().leadChargedHadrEcalEnergy();
+
+//   tauantie_=0;
+//   if(diTauSel_->leg1().tauID("againstElectronLoose")>0.5)tauantie_=1;
+//   if(diTauSel_->leg1().tauID("againstElectronMedium")>0.5)tauantie_=2;
+//   if(diTauSel_->leg1().tauID("againstElectronTight")>0.5)tauantie_=3;
+//   tauantimu_=0;
+//   if(diTauSel_->leg1().tauID("againstMuonLoose")>0.5)tauantimu_=1;
+//   if(diTauSel_->leg1().tauID("againstMuonMedium")>0.5)tauantimu_=2;
+//   if(diTauSel_->leg1().tauID("againstMuonTight")>0.5)tauantimu_=3;
+//   tauisodisc_=0;
+//   if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=1;
+//   if(diTauSel_->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=2;
+//   if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=3;
+//   if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=4;
+//   tauisodiscmva_=0;
+//   if(diTauSel_->leg1().tauID("byLooseIsoMVA")>0.5)tauisodiscmva_=1;
+//   if(diTauSel_->leg1().tauID("byMediumIsoMVA")>0.5)tauisodiscmva_=2;
+//   if(diTauSel_->leg1().tauID("byTightIsoMVA")>0.5)tauisodiscmva_=3;
 
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass object vars "<<endl;  
 
@@ -757,7 +764,12 @@ bool TauMuFlatNtp::vetoDiLepton(){
   for(std::vector<cmg::Muon>::const_iterator m=leptonVetoListMuon_->begin(); m!=leptonVetoListMuon_->end(); ++m){  
     if(m->pt()<=15.0)continue;
     if(fabs(m->eta())>=2.4)continue;
-
+    
+    if(printSelectionPass_>1){
+      cout<<"   TauMuFlatNtp::vetoDiLepton: "<<endl;
+      printMuonInfo(&(*m));
+    }
+    
     if(!muonVertexCut(&(*m)))continue;
 
     if(!(m->isTracker()))continue; 

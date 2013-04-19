@@ -15,9 +15,11 @@ sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
 sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 
 
-#####---->
-#dataset_user  = 'benitezj'
+####---->
+#dataset_user  = 'cmgtools'
 #sampleName = 'HiggsVBF125'
+#sampleName = 'TauPlusX2012Cv1'
+#sampleName = 'Embedded2012Cv1'
 #sampleJobIdx = 0
 #sampleMergeFactor = 200
 
@@ -32,8 +34,8 @@ process.flatNtp = process.flatNtpTauMu.clone()
 from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSampleTauMu2012
 configureFlatNtpSampleTauMu2012(process.flatNtp,sampleName)
 process.flatNtp.metType = 2 #1 PFMET, 2 mva met, 3 mva met presel
-process.flatNtp.runSVFit = 1 #1 old #2 new
-process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
+process.flatNtp.runSVFit = 2 #1 old #2 new
+#process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
 
 
 ### input files
@@ -98,6 +100,28 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 #process.source.fileNames = ['file:/afs/cern.ch/user/b/benitezj/scratch0/V5_13_0_BleedingEdge/CMGTools/CMSSW_5_3_7_patch4/src/CMGTools/Common/prod/cmgTuple.root']
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:263427')
 
+###V5140 diff
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:105103', '1:385416')
+
+##met diff in V5140
+#process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0/cmgTuple_10.root']
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:714501')
+
+##Apr5
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:899539','1:900460','1:954582','1:954772','1:49710','1:62339','1:391350','1:391913','1:276575','1:278782')
+
+##Apr15 Data
+#process.source.eventsToProcess = cms.untracked.VEventRange('198207:50338540','198207:50792696','198207:51118645','198207:51956333','198271:122999097','198271:123394717','198271:123456618','198271:123569610','198271:123645734','198271:123707593','198271:123840060','198271:124306867','198271:124835490','198271:125180715','198271:125747832','198271:126168119','198271:126307173','198271:385109044','198271:385374559','198271:385395943','198271:385628362','198271:386093130','198271:386187916','198271:387152433','198271:387322250','198271:387448883','198271:387685839','198271:48841797','198271:49267736','198271:49536836','198271:49561875','198271:49640321','198271:49683750','198271:50419085','198271:51764025','198271:51777644','198271:52380619','198271:52415284','198271:52486746','198485:171387420','198487:316108063','198487:316147037','198487:318117809','198487:318592324','198487:319352672','198487:451570082','198487:451715381','198487:451797597','198487:451986288','198487:453186648','198487:453288749','198487:454063382','198487:454184595','198487:454203800','198487:454410893','198487:454419798')
+
+
+##diff in di-muon veto
+#process.source.fileNames = ['/store/cmst3/user/cmgtools/CMG/TauPlusX/Run2012C-24Aug2012-v1/AOD/V5_B/PAT_CMG_V5_14_0/cmgTuple_233.root']
+#process.source.eventsToProcess = cms.untracked.VEventRange('198230:123724743')
+
+
+##check on the embedded sample
+#process.source.eventsToProcess = cms.untracked.VEventRange('198049:39003032','198116:52292486','198207:31745052','198207:73698870','198208:107422149','198208:118651506','198208:128512894','198208:22240519','198208:23798456','198208:28441906','198208:48407060','198210:19717791','198210:47125079','198212:196125834','198212:265673190','198212:2677682','198212:386331168','198212:41210292','198212:423841091','198212:61347663','198212:79661177','198212:84787504','198230:100784289','198230:135529768','198230:15361026','198230:159562044','198230:170885005','198230:183646477','198230:237527349','198230:284072030','198230:316933517')
+
 
 #process.source = cms.Source(
 #    "PoolSource",
@@ -111,9 +135,11 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 
 #process.source.fileNames = ['file:./tauMu_fullsel_tree_CMG.root']
 
+
+
 print process.source.fileNames
-print process.source.eventsToProcess
-process.flatNtp.printSelectionPass=1
+#print process.source.eventsToProcess
+#process.flatNtp.printSelectionPass = 1
 
 
 # set up JSON ---------------------------------------------------------------
@@ -186,10 +212,10 @@ if process.flatNtp.metType ==2 :
    process.mvaBaseMETTauMu = process.cmgBaseMETFromPFMET.clone()
    process.mvaBaseMETTauMu.cfg.inputCollection = 'mvaMETTauMu'
    process.mvaMETSequence = cms.Sequence(
-      process.cmgTauMuMVAMET +
-      process.goodPVFilter + 
-      process.mvaMETTauMu + 
-      process.mvaBaseMETTauMu
+      process.cmgTauMuMVAMET + #need to use the uncorrected Tau and muon
+      process.goodPVFilter + #quality vertices
+      process.mvaMETTauMu + #reco::PFMET object and cmg::PFMetSignificance object
+      process.mvaBaseMETTauMu # cmg::BaseMET object
       )
    process.analysis  += process.mvaMETSequence
    #process.mvaMETTauMu.verbose = True

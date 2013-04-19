@@ -176,6 +176,17 @@ void TauEleFlatNtp::beginJob(){
    }
    countermumatch_++;
 
+   
+   //Tau E/P cut
+   tmpditaulist=diTauSelList_;
+   diTauSelList_.clear();
+   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+     if(cand->leg1().decayMode()==0&&cand->leg1().p()>0.)
+       if(cand->leg1().eOverP()<0.2)
+	 continue;
+     
+     diTauSelList_.push_back(*cand);
+   }
    if(diTauSelList_.size()==0){
      if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
      return 0;
@@ -220,6 +231,9 @@ void TauEleFlatNtp::beginJob(){
      if(cand->leg1().tauID("againstElectronMedium")<0.5)continue;
      if(cand->leg1().tauID("againstElectronMVA")<0.5)continue;
      if(cand->leg1().tauID("againstElectronTightMVA2")<0.5)continue; 
+
+//     if(cand->leg1().tauID("againstElectronTightMVA3")<0.5)continue;
+
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
@@ -500,8 +514,6 @@ bool TauEleFlatNtp::fill(){
   }
   ///////////////
 
-
-
    mupt_=diTauSel_->leg2().pt();
    mueta_=diTauSel_->leg2().eta();
    muphi_=diTauSel_->leg2().phi();
@@ -516,50 +528,8 @@ bool TauEleFlatNtp::fill(){
    mumvaid_=diTauSel_->leg2().mvaNonTrigV0();
    mucharge_=diTauSel_->leg2().charge();
 
-   taumass_=diTauSel_->leg1().p4().M();
-   taupt_=diTauSel_->leg1().pt();
-   taupx_=diTauSel_->leg1().p4().x();
-   taupy_=diTauSel_->leg1().p4().y();
-   taueta_=diTauSel_->leg1().eta();
-   tauphi_=diTauSel_->leg1().phi();
-   taudz_=diTauSel_->leg1().dz();
-   taudxy_=diTauSel_->leg1().dxy();
-   tautruth_=truthMatchLeg(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),tautruthpt_,tautrutheta_,tautruthstatus_);
-   tauehop_=diTauSel_->leg1().eOverP();
-   taueop_=diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p();
-   tauhoe_=diTauSel_->leg1().leadChargedHadrHcalEnergy()/diTauSel_->leg1().leadChargedHadrEcalEnergy();
-   taudecaymode_=diTauSel_->leg1().decayMode();
-   taux_=diTauSel_->leg1().leadChargedHadrVertex().x();
-   tauy_=diTauSel_->leg1().leadChargedHadrVertex().y();
-   tauz_=diTauSel_->leg1().leadChargedHadrVertex().z();
-   tauiso_=diTauSel_->leg1().relIso(0.5);
-   tauisomva_=diTauSel_->leg1().tauID("byRawIsoMVA");
-   taucharge_=diTauSel_->leg1().charge();
 
-   tauleadpt_=diTauSel_->leg1().leadChargedHadrPt();  
-   tauleadhcal_=diTauSel_->leg1().leadChargedHadrHcalEnergy();
-   tauleadecal_=diTauSel_->leg1().leadChargedHadrEcalEnergy();
-
-   tauantie_=0;
-   if(diTauSel_->leg1().tauID("againstElectronLoose")>0.5)tauantie_=1;
-   if(diTauSel_->leg1().tauID("againstElectronMedium")>0.5)tauantie_=2;
-   if(diTauSel_->leg1().tauID("againstElectronTight")>0.5)tauantie_=3;
-   tauantiemva_=0;
-   if(diTauSel_->leg1().tauID("againstElectronMVA")>0.5)tauantiemva_=1;
-   tauantimu_=0;
-   if(diTauSel_->leg1().tauID("againstMuonLoose")>0.5)tauantimu_=1;
-   if(diTauSel_->leg1().tauID("againstMuonMedium")>0.5)tauantimu_=2;
-   if(diTauSel_->leg1().tauID("againstMuonTight")>0.5)tauantimu_=3;
-   tauisodisc_=0;
-   if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=1;
-   if(diTauSel_->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=2;
-   if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=3;
-   if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=4;
-   tauisodiscmva_=0;
-   if(diTauSel_->leg1().tauID("byLooseIsoMVA")>0.5)tauisodiscmva_=1;
-   if(diTauSel_->leg1().tauID("byMediumIsoMVA")>0.5)tauisodiscmva_=2;
-   if(diTauSel_->leg1().tauID("byTightIsoMVA")>0.5)tauisodiscmva_=3;
-
+   fillTau(&(diTauSel_->leg1()));
 
    ditaumass_=diTauSel_->mass();
    if(smearVisMass0pi0_>0.&&taudecaymode_==0) ditaumass_ += gRandom->Gaus(0,smearVisMass0pi0_);

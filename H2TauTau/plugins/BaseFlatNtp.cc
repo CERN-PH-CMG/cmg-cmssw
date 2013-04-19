@@ -71,9 +71,14 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   sampleGenEventType_     = iConfig.getParameter<int>("sampleGenEventType");
   cout<<"sampleGenEventType  : "<<sampleGenEventType_<<endl;
 
+  sampleGenMassMin_     = iConfig.getParameter<double>("sampleGenMassMin");
+  cout<<"sampleGenMassMin  : "<<sampleGenMassMin_<<endl;
+
+  sampleGenMassMax_     = iConfig.getParameter<double>("sampleGenMassMax");
+  cout<<"sampleGenMassMax  : "<<sampleGenMassMax_<<endl;
+
   sampleTruthEventType_   = iConfig.getParameter<int>("sampleTruthEventType");
   cout<<"sampleTruthEventType : "<<sampleTruthEventType_<<endl;
-
 
 
   ////
@@ -324,12 +329,20 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("taudecaymode",&taudecaymode_,"taudecaymode/I");
   tree_->Branch("taudz",&taudz_,"taudz/F");
   tree_->Branch("taudxy",&taudxy_,"taudxy/F");
+
   tree_->Branch("tauantie",&tauantie_,"tauantie/I");
+  tree_->Branch("tauantiemva",&tauantiemva_,"tauantiemva/I");
+  tree_->Branch("tauantiemva2raw",&tauantiemva2raw_,"tauantiemva2raw/F");
+  tree_->Branch("tauantiemva3raw",&tauantiemva3raw_,"tauantiemva3raw/F");
+
   tree_->Branch("tauantimu",&tauantimu_,"tauantimu/I");
-  tree_->Branch("tauisodisc",&tauisodisc_,"tauisodisc/I");
-  tree_->Branch("tauisodiscmva",&tauisodiscmva_,"tauisodiscmva/I");
-  tree_->Branch("tauiso",&tauiso_,"tauiso/F");
-  tree_->Branch("tauisomva",&tauisomva_,"tauisomva/F");
+  tree_->Branch("tauantimu2",&tauantimu2_,"tauantimu2/I");
+
+  tree_->Branch("tauiso",&tauiso_,"tauiso/I");
+  tree_->Branch("tauisomvaraw",&tauisomvaraw_,"tauisomvaraw/F");
+  tree_->Branch("tauisomva2raw",&tauisomva2raw_,"tauisomva2raw/F");
+  tree_->Branch("tauiso3hitraw",&tauiso3hitraw_,"tauiso3hitraw/F");
+
   tree_->Branch("taux",&taux_,"taux/F");
   tree_->Branch("tauy",&tauy_,"tauy/F");
   tree_->Branch("tauz",&tauz_,"tauz/F");
@@ -376,13 +389,11 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("pZeta",&pZeta_,"pZeta/F");
   tree_->Branch("pZetaVis",&pZetaVis_,"pZetaVis/F");
 
-
   tree_->Branch("pfMetForRegression",&pfMetForRegression_,"pfMetForRegression/F");
   tree_->Branch("tkMet",&tkMet_,"tkMet/F");
   tree_->Branch("nopuMet",&nopuMet_,"nopuMet/F");
   tree_->Branch("puMet",&puMet_,"puMet/F");
   tree_->Branch("pcMet",&pcMet_,"pcMet/F");
-
 
   tree_->Branch("njet",&njet_,"njet/I"); 
   tree_->Branch("njetLepLC",&njetLepLC_,"njetLepLC/I"); 
@@ -463,6 +474,7 @@ void BaseFlatNtp::beginJob(){
   counterruns_=0;
   countergoodvtx_=0;
   countergen_=0;
+  countergenmass_=0;
 }
 
 
@@ -480,6 +492,7 @@ void BaseFlatNtp::endJob(){
   cout<<"countertrig = "<<countertrig_<<endl;
   cout<<"countergoodvtx = "<<countergoodvtx_<<endl;
   cout<<"countergen = "<<countergen_<<endl;
+  cout<<"countergenmass = "<<countergenmass_<<endl;
 
 }
 
@@ -524,16 +537,17 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   genbosoneta_=0.;
   genbosonphi_=0.;
   genbosonmass_=0.;
-  if(dataType_==0){  
+  if(dataType_==0 || dataType_==2){//Note Z in embedded samples have status 2
     iEvent_->getByLabel(genParticlesTag_,genParticles_);    
     for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){
-      if(g->status()==3){
+      //cout<<"pdgid: "<<g->pdgId()<<"  status:"<<g->status()<<"   pt:"<<g->p4().pt()<<endl;
+      if(g->status()==3 || (g->status()==2 && dataType_==2)){
 	//cout<<g->pdgId()<<" "<<g->p4().pt()<<endl;
 	if((abs(g->pdgId())==23 || abs(g->pdgId())==24 ||  abs(g->pdgId())==25 ||  abs(g->pdgId())==36 ) && genBoson_==NULL )
 	  genBoson_=&(*g);
       }
     }
-    //if(genBoson_)cout<<"genBoson_ ref = "<<genBoson_<<" "<<<genBoson_->pdgId()<<" "<<genBoson_->pt()<<endl;
+    //if(genBoson_)cout<<"genBoson_  = "<<genBoson_->pdgId()<<" "<<genBoson_->pt()<<endl;
 
     if(genBoson_){      
 
@@ -546,7 +560,7 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
       int genMuons=0;
       int genElectrons=0;
       for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){    
-	if(g->status()==3){
+	if(g->status()==3 || (g->status()==2 && dataType_==2) ){
 	  if(abs(g->pdgId())==11 && g->mother()==genBoson_) genElectrons++;
 	  if(abs(g->pdgId())==13 && g->mother()==genBoson_) genMuons++;
 	  if(abs(g->pdgId())==15 && g->mother()==genBoson_) genTaus++;
@@ -561,7 +575,7 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
 
       //get the leptons from the genBoson
       for(std::vector<reco::GenParticle>::const_iterator g=genParticles_->begin(); g!=genParticles_->end(); ++g){
-	if(g->status()==3){    
+	if(g->status()==3 || (g->status()==2 && dataType_==2) ){    
 	  if((g->pdgId()==11 || g->pdgId()==13 || g->pdgId()==15 ) && g->mother()==genBoson_) genBosonL1_=&(*g);
 	  if((g->pdgId()==-11 || g->pdgId()==-13 || g->pdgId()==-15 ) && g->mother()==genBoson_) genBosonL2_=&(*g);
 	}
@@ -643,6 +657,14 @@ bool BaseFlatNtp::applySelections(){
   }
   countergen_++;
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passcountergen "<<endl;
+
+  //cout<<genbosonmass_<<" "<<sampleGenMassMin_ <<" "<<sampleGenMassMax_<<endl;
+  if(genbosonmass_<sampleGenMassMin_ || sampleGenMassMax_<genbosonmass_){
+    if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countergenmass"<<endl; 
+    return 0;
+  }
+  countergenmass_++;
+  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passcountergenmass "<<endl;
 
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" passed BaseFlatNtp selections "<<endl;
   return 1;
