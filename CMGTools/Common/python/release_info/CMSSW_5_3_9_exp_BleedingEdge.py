@@ -1,11 +1,12 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'lucieg_Ap8'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_nomorepattuple_17Apr13'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'lucieg_Ap18'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-03-03'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_mvametbuiddfix_17Apr13'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'anantoni-15April2013-devdb-wildcards-15h01m'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_Apr15'),
   ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'cbern_mvametbuiddfix_17Apr13'),
   ('CMGTools/ZJetsTutorial', 'UserCode/CMG/CMGTools/ZJetsTutorial', 'cbern_local_12Dec12'),
+  ('CalibCalorimetry/EcalLaserCorrection', 'CalibCalorimetry/EcalLaserCorrection', 'V00-02-04'),
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
   ('DPGAnalysis/SiStripTools', 'DPGAnalysis/SiStripTools', 'V00-11-17'),
   ('DPGAnalysis/Skims', 'DPGAnalysis/Skims', 'V01-00-11-01'),
@@ -30,3 +31,6 @@
   ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-23'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-02-02s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
+# The following packages were not in the input release_info.
+# Please make sure that the CVS module is correct!
+#	CalibCalorimetry/EcalLaserCorrection     V00-02-04
