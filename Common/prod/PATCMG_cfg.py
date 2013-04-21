@@ -19,7 +19,10 @@ runOnFastSim = False
 from CMGTools.Production.datasetToSource import *
 ## This is used to get the correct global tag below, and to find the files
 ## It is *reset* automatically by ProductionTasks, so you can use it after the ProductionTasksHook
-datasetInfo = ('cmgtools_group', '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B','.*root')
+datasetInfo = (
+    'cmgtools_group',
+    '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B',
+    '.*root')
 process.source = datasetToSource(
     *datasetInfo
     )
