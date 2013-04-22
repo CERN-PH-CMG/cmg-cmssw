@@ -44,16 +44,16 @@ def doSpam(text,x1,y1,x2,y2,align=12,fill=False,textSize=0.033,_noDelete={}):
     _noDelete[text] = cmsprel; ## so it doesn't get deleted by PyROOT
     return cmsprel
 
-def doTinyCmsPrelim(textLeft="_default_",textRight="_default_",hasExpo=False):
+def doTinyCmsPrelim(textLeft="_default_",textRight="_default_",hasExpo=False,textSize=0.033):
     global options
     if textLeft  == "_default_": textLeft  = options.lspam
     if textRight == "_default_": textRight = options.rspam
     if textLeft not in ['', None]:
-        doSpam(textLeft, .28 if hasExpo else .17, .955, .40, .995, align=12)
+        doSpam(textLeft, .28 if hasExpo else .17, .955, .40, .995, align=12, textSize=textSize)
     if textRight not in ['', None]:
         if "%(lumi)" in textRight: 
             textRight = textRight % { 'lumi':options.lumi }
-        doSpam(textRight,.48, .955, .99, .995, align=32)
+        doSpam(textRight,.48, .955, .99, .995, align=32, textSize=textSize)
 
 def reMax(hist,hist2,islog,factorLin=1.3,factorLog=2.0):
     if  hist.ClassName() == 'THStack':
@@ -116,6 +116,55 @@ def doStackSigScaledNormData(pspec,pmap):
     sig.SetLineStyle(2)
     sig.Draw("HIST SAME")
     return (sig,sf)
+
+def doRatioHists(pspec,pmap,total,totalSyst):
+    if "data" not in pmap: return (None,None,None,None)
+    ratio = pmap["data"].Clone("data_div"); 
+    ratio.Divide(total)
+    unity  = totalSyst.Clone("sim_div");
+    unity0 = total.Clone("sim_div");
+    rmin, rmax =  1,1
+    for b in xrange(1,unity.GetNbinsX()+1):
+        e,e0,n = unity.GetBinError(b), unity0.GetBinError(b), unity.GetBinContent(b)
+        unity.SetBinContent(b, 1 if n > 0 else 0)
+        unity.SetBinError(b, e/n if n > 0 else 0)
+        unity0.SetBinContent(b,  1 if n > 0 else 0)
+        unity0.SetBinError(b, e0/n if n > 0 else 0)
+        rmin = min([ rmin, 1-2*e/n if n > 0 else 1, ratio.GetBinContent(b) - 2*ratio.GetBinError(b) ]) 
+        rmax = max([ rmax, 1+2*e/n if n > 0 else 1, ratio.GetBinContent(b) + 2*ratio.GetBinError(b) ])  
+    if rmin < 0: rmin = 0
+    if rmax > 5: rmax = 5;
+    unity.SetFillStyle(1001);
+    unity.SetFillColor(ROOT.kCyan);
+    unity.SetMarkerStyle(1);
+    unity.SetMarkerColor(ROOT.kCyan);
+    unity0.SetFillStyle(1001);
+    unity0.SetFillColor(53);
+    unity0.SetMarkerStyle(1);
+    unity0.SetMarkerColor(53);
+    ROOT.gStyle.SetErrorX(0.5);
+    unity.Draw("E2");
+    unity0.Draw("E2 SAME");
+    unity.GetYaxis().SetRangeUser(rmin,rmax);
+    unity.GetXaxis().SetTitleSize(0.14)
+    unity.GetYaxis().SetTitleSize(0.14)
+    unity.GetXaxis().SetLabelSize(0.11)
+    unity.GetYaxis().SetLabelSize(0.11)
+    unity.GetYaxis().SetNdivisions(505)
+    unity.GetYaxis().SetDecimals(True)
+    unity.GetYaxis().SetTitle("Data/Sim.")
+    unity.GetYaxis().SetTitleOffset(0.52);
+    total.GetXaxis().SetLabelOffset(999) ## send them away
+    total.GetXaxis().SetTitleOffset(999) ## in outer space
+    total.GetYaxis().SetLabelSize(0.05)
+    #ratio.SetMarkerSize(0.7*ratio.GetMarkerSize()) # no it is confusing
+    #$ROOT.gStyle.SetErrorX(0.0);
+    line = ROOT.TLine(unity.GetXaxis().GetXmin(),1,unity.GetXaxis().GetXmax(),1)
+    line.SetLineWidth(2);
+    line.SetLineColor(58);
+    line.Draw("L")
+    ratio.Draw("E SAME");
+    return (ratio, unity, unity0, line)
 
 
 legend_ = None;
@@ -191,6 +240,7 @@ class PlotMaker:
                 stack = ROOT.THStack(pspec.name+"_stack",pspec.name)
                 hists = [v for k,v in pmap.iteritems() if k != 'data']
                 total = hists[0].Clone(pspec.name+"_total"); total.Reset()
+                totalSyst = hists[0].Clone(pspec.name+"_totalSyst"); totalSyst.Reset()
                 for p in mca.listBackgrounds() + mca.listSignals():
                     if p in pmap: 
                         plot = pmap[p]
@@ -199,6 +249,12 @@ class PlotMaker:
                         if self._options.plotmode == "stack":
                             stack.Add(plot)
                             total.Add(plot)
+                            totalSyst.Add(plot)
+                            if mca.getProcessOption(p,'NormSystematic',0.0) > 0:
+                                syst = mca.getProcessOption(p,'NormSystematic',0.0)
+                                if "TH1" in plot.ClassName():
+                                    for b in xrange(1,plot.GetNbinsX()+1):
+                                        totalSyst.SetBinError(b, hypot(totalSyst.GetBinError(b), syst*plot.GetBinContent(b)))
                         else:
                             plot.SetLineColor(plot.GetFillColor())
                             plot.SetLineWidth(3)
@@ -215,8 +271,30 @@ class PlotMaker:
                 dir.WriteTObject(stack)
                 # 
                 if not makeCanvas and not self._options.printPlots: continue
-                c1 = ROOT.TCanvas(pspec.name+"_canvas",pspec.name)
-                islog = pspec.hasOption('Logy'); c1.SetLogy(islog)
+                doRatio = self._options.showRatio and 'data' in pmap
+                islog = pspec.hasOption('Logy'); 
+                # define aspect ratio
+                if doRatio: ROOT.gStyle.SetPaperSize(20.,25.)
+                else:       ROOT.gStyle.SetPaperSize(20.,20.)
+                # create canvas
+                c1 = ROOT.TCanvas(pspec.name+"_canvas", pspec.name, 600, (750 if doRatio else 600))
+                c1.Draw()
+                p1, p2 = c1, None # high and low panes
+                # set borders, if necessary create subpads
+                if doRatio: 
+                    c1.SetWindowSize(600 + (600 - c1.GetWw()), (750 + (750 - c1.GetWh())));
+                    p1 = ROOT.TPad("pad1","pad1",0,0.31,1,1);
+                    p1.SetBottomMargin(0);
+                    p1.Draw();
+                    p2 = ROOT.TPad("pad2","pad2",0,0,1,0.31);
+                    p2.SetTopMargin(0);
+                    p2.SetBottomMargin(0.3);
+                    p2.SetFillStyle(0);
+                    p2.Draw();
+                    p1.cd();
+                else:
+                    c1.SetWindowSize(600 + (600 - c1.GetWw()), 600 + (600 - c1.GetWh()));
+                p1.SetLogy(islog)
                 if islog: total.SetMaximum(2*total.GetMaximum())
                 total.Draw("HIST")
                 if self._options.plotmode == "stack":
@@ -228,8 +306,9 @@ class PlotMaker:
                     reMax(total,pmap['data'],islog)
                     pmap['data'].Draw("E SAME")
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
-                                  cutoff=pspec.getOption('LegendCutoff', 1e-5 if c1.GetLogy() else 1e-2))
-                doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy())
+                                  cutoff=pspec.getOption('LegendCutoff', 1e-5 if c1.GetLogy() else 1e-2),
+                                  textSize=(0.039 if doRatio else 0.035))
+                doTinyCmsPrelim(hasExpo = total.GetMaximum() > 9e4 and not c1.GetLogy(),textSize=(0.036 if doRatio else 0.033))
                 signorm = None; datnorm = None; sfitnorm = None
                 if options.showSigShape: 
                     signorm = doStackSignalNorm(pspec,pmap)
@@ -247,7 +326,10 @@ class PlotMaker:
                         sfitnorm.SetDirectory(dir); dir.WriteTObject(sfitnorm)
                         reMax(total,sfitnorm,islog)
                 if makeCanvas: dir.WriteTObject(c1)
-                #
+                rdata,rnorm,rnorm2,rline = (None,None,None,None)
+                if doRatio:
+                    p2.cd(); 
+                    rdata,rnorm,rnorm2,rline = doRatioHists(pspec,pmap,total,totalSyst)
                 if self._options.printPlots:
                     for ext in self._options.printPlots.split(","):
                         fdir = self._options.printDir;
@@ -269,6 +351,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--noStackSig", dest="noStackSig", action="store_true", default=False, help="Don't add the signal shape to the stack (useful with --showSigShape)")
     parser.add_option("--showDatShape", dest="showDatShape", action="store_true", default=False, help="Stack a normalized data shape")
     parser.add_option("--showSFitShape", dest="showSFitShape", action="store_true", default=False, help="Stack a shape of background + scaled signal normalized to total data")
+    parser.add_option("--showRatio", dest="showRatio", action="store_true", default=False, help="Add a data/sim ratio plot at the bottom")
     parser.add_option("--plotmode", dest="plotmode", type="string", default="stack", help="Show as stacked plot (stack), a non-stacked comparison (nostack) and a non-stacked comparison of normalized shapes (norm)")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
 

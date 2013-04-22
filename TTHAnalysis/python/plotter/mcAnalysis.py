@@ -179,7 +179,6 @@ class MCAnalysis:
             mergemap[k].append(v)
         ## and finally merge them
         ret = dict([ (k,mergePlots(plotspec.name+"_"+k,v)) for k,v in mergemap.iteritems() ])
-        #ret[key] = mergePlots(plotspec.name+"_"+key, [tty.getPlot(plotspec,cut) for tty in self._allData[key]])
         if makeSummary:
             allSig = [v for k,v in ret.iteritems() if k != 'data'and self._isSignal[k] == True  ]
             allBg  = [v for k,v in ret.iteritems() if k != 'data'and self._isSignal[k] == False ]
