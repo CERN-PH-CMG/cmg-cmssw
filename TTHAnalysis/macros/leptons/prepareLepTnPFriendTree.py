@@ -44,7 +44,7 @@ class LepTreeProducer(Module):
                 self.t.eta = probe.eta
                 self.t.SIP = probe.sip3d
                 self.t.relIso = probe.relIso
-                self.t.mva = probe.mvaNew
+                self.t.mva = probe.mva
                 self.t.abseta = abs(probe.eta)
                 self.t.mass = (tag.p4() + probe.p4()).M()
                 self.t.fill()
@@ -52,7 +52,7 @@ class LepTreeProducer(Module):
 from sys import argv
 f = ROOT.TFile.Open(argv[1])
 t = f.Get("ttHLepTreeProducerBase")
-t.AddFriend("newMVA/t", argv[3])
+#t.AddFriend("newMVA/t", argv[3])
 print "Reading %s (%d entries)" % (argv[1], t.GetEntries())
 
 booker = Booker(argv[2] if len(argv) >= 3 else "lepTree.root")
