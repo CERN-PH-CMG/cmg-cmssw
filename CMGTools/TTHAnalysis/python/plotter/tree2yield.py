@@ -263,6 +263,8 @@ class TreeToYield:
             n = ret.GetNbinsX()
             ret.SetBinContent(1,ret.GetBinContent(0)+ret.GetBinContent(1))
             ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
+            ret.SetBinError(1,hypot(ret.GetBinError(0),ret.GetBinError(1)))
+            ret.SetBinError(n,hypot(ret.GetBinError(n+1),ret.GetBinError(n)))
             if plotspec.getOption('Density',False):
                 for b in xrange(1,n+1):
                     ret.SetBinContent( b, ret.GetBinContent(b) / ret.GetXaxis().GetBinWidth(b) )
