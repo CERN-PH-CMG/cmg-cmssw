@@ -83,7 +83,7 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         #require that  both Z1 and Z2 are   SF
         passed=cutFlow.applyCut(self.testFourLeptonSF,'same flavour',1,'fourLeptonsSF')
         #require Z1 tight ID
-        passed=cutFlow.applyCut(self.testFourLeptonTightIDZ1,'Z1 tight ID',1,'fourLeptonsZ1TightID')
+        passed=cutFlow.applyCut(self.testFourLeptonTightIDZ1FSRBoth,'Z1 tight ID',1,'fourLeptonsZ1TightID')
 
         #require Z1 OS/SF and mass
         passed=cutFlow.applyCut(self.testFourLeptonZ1,'good Z1',1,'fourLeptonsGoodZ1')
@@ -94,46 +94,61 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         #Check SF for both pairs 
         passed=cutFlow.applyCut(self.testFourLeptonSF,'4l pair SF',1,'fourLeptonsSFZ2')
         #QCD suppression
-        passed=cutFlow.applyCut(self.testFourLeptonMinOSMass,'4l QCD suppression',1,'fourLeptonsQCDSuppression')
-
-        #Z2 Mass Tight Cut
-        passed=cutFlow.applyCut(self.testFourLeptonMassZ2,'4l Tight Mass2',1,'fourLeptonsTightZ2')
-
-        #Z2 SIP CUT
-        passed=cutFlow.applyCut(lambda x: abs(x.leg2.leg1.sip3D())<4 and abs(x.leg2.leg2.sip3D())<4,'SIP cut for Z2 ',1,'fourLeptonsLoose')
+        passed=cutFlow.applyCut(self.testFourLeptonMinOSMass,'4l QCD suppression',1,'fourLeptonsLoose')
         #Add KD etc
         self.boostFourLeptons(event.fourLeptonsLoose,event)
 
         #require Z2 OS
         passed=cutFlow.applyCut(self.testFourLeptonOS,'Z2 OS',1,'fourLeptonsOS')
 
-        #require Z2 tight ID
-        passed=cutFlow.applyCut(self.testFourLeptonTightIDZ2,'Z2 tight ID',1,'fourLeptonsTight')
 
-        
+
+        #require Z2 tight ID
+        passed=cutFlow.applyCut(self.testFourLeptonTightIDZ2FSRBoth,'Z2 tight ID',1,'fourLeptonsTight')
+
+        cutFlow.obj1 = self.sortFourLeptonsByKD(event.fourLeptonsTight)
+
+
+        #pick only the first one
+        if passed:
+             #if lepton tag sort differently
+             tightLeptons=[]
+             for fL in event.fourLeptonsTight:
+                 tightLeptons.append(fL.leg1.leg1)
+                 tightLeptons.append(fL.leg1.leg2)
+                 tightLeptons.append(fL.leg2.leg1)
+                 tightLeptons.append(fL.leg2.leg2)
+             tightLeptonSet =set(tightLeptons)    
+             #             if len(tightLeptonSet)>4:
+#                 passed2=cutFlow.applyCut(lambda x: x.leg2.M()<60.,'Z2 mass below 60',1,'fourLeptonsZ2offshell')
+
+             cutFlow.setSource1([cutFlow.obj1[0]])
+
+        #Z2 Mass Tight Cut
+        passed=cutFlow.applyCut(self.testFourLeptonMassZ2,'4l Tight Mass2',1,'fourLeptonsTightZ2')
         #Z -> 4 l phase space
         passed=cutFlow.applyCut(self.testFourLeptonMassZ,'4l Z phase space',1,'fourLeptonsZPhaseSpace')
 
 
         if passed:
             event.higgsCand = cutFlow.obj1[0]
-
             metV = TLorentzVector(event.met.px(),event.met.py(),event.met.pz(),event.met.energy())
             event.recoil = (-metV-event.higgsCand).Pt()
 
             #search for lepton tag(Pick the one with smallest M_Z2)
-            event.leptonTagSortedCands=sorted(cutFlow.obj1,key=lambda x: abs(x.leg2.mass()))
             event.otherLeptonsTag=copy.copy(event.cleanLeptons)
-            event.otherLeptonsTag.remove(event.leptonTagSortedCands[0].leg1.leg1)
-            event.otherLeptonsTag.remove(event.leptonTagSortedCands[0].leg1.leg2)
-            event.otherLeptonsTag.remove(event.leptonTagSortedCands[0].leg2.leg1)
-            event.otherLeptonsTag.remove(event.leptonTagSortedCands[0].leg2.leg2)
-            event.otherLeptonsTag = filter(lambda x:x.pt()>10,event.otherLeptonsTag)
+            event.otherLeptonsTag.remove(event.higgsCand.leg1.leg1)
+            event.otherLeptonsTag.remove(event.higgsCand.leg1.leg2)
+            event.otherLeptonsTag.remove(event.higgsCand.leg2.leg1)
+            event.otherLeptonsTag.remove(event.higgsCand.leg2.leg2)
             event.otherLeptonsTag =sorted(event.otherLeptonsTag,key=lambda x: x.pt(),reverse=True)
             event.otherLeptonsTightTag = filter(self.testLeptonTight,event.otherLeptonsTag)
+
             if len(event.otherLeptonsTightTag)>0:
-                 event.higgsCandTagged = event.leptonTagSortedCands[0]
-                 event.higgsCandTagged.leptonTag = event.otherLeptonsTightTag[0]
+                if event.otherLeptonsTightTag[0].pt()>10.:
+                    event.higgsCand.leptonTag = event.otherLeptonsTightTag[0]
+#                    if event.higgsCand.M()>140:
+#                        import pdb;pdb.set_trace();
 
 
 
@@ -149,7 +164,6 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         passed=cutFlow.applyCut(lambda x: x.qq2PlusKD>0.15,'GraviKD',1,'fourLeptonsSpinTwoMELA')
 
 
-
         cutFlow.setSource1(event.fourLeptonsHPhaseSpace)
         passed=cutFlow.applyCut(lambda x: x.jets['nJets']>=1,'NJEtsaboveone',1,'fourLeptonsOneJet')
         passed=cutFlow.applyCut(lambda x: x.jets['nJets']==2,'NJEtsTwo',1,'fourLeptonsTwoJets')
@@ -157,34 +171,72 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
 
         #Paths for FAKES
         cutFlow.setSource1(event.fourLeptonsLoose)
-        passed=cutFlow.applyCut(lambda x: x.leg2.charge()!=0,'Z2 SS',1,'fourLeptonsSS')
+        #require Z2 SS
+        passed=cutFlow.applyCut(lambda x: x.leg2.charge()!=0,'Loose SS',1,'fourLeptonsLooseSS')
+        #Z2 SIP CUT
+        passed=cutFlow.applyCut(lambda x: abs(x.leg2.leg1.sip3D())<4 and abs(x.leg2.leg2.sip3D())<4,'SIP cut for Z2 OS loose',1,'fourLeptonsLooseSIP')
+
+        #pick only the first one
+        if passed:
+            cutFlow.setSource1([cutFlow.obj1[0]])
+
+
+        #Z2 Mass Tight Cut
+        passed=cutFlow.applyCut(self.testFourLeptonMassZ2,'4l Loose Mass2',1,'fourLeptonsLooseZ2')
         if passed:
             event.higgsCandLoose = cutFlow.obj1[0]
+            #create lepton tag
+            event.otherLeptonsTagLoose=copy.copy(event.cleanLeptons)
+            event.otherLeptonsTagLoose.remove(event.higgsCandLoose.leg1.leg1)
+            event.otherLeptonsTagLoose.remove(event.higgsCandLoose.leg1.leg2)
+            event.otherLeptonsTagLoose.remove(event.higgsCandLoose.leg2.leg1)
+            event.otherLeptonsTagLoose.remove(event.higgsCandLoose.leg2.leg2)
+            event.otherLeptonsTagLoose =filter(lambda x: x.sip3D()<4.,event.otherLeptonsTagLoose)
+            event.otherLeptonsTagLoose =sorted(event.otherLeptonsTagLoose,key=lambda x: x.pt(),reverse=True)
+            if len(event.otherLeptonsTagLoose)>0:
+                if event.otherLeptonsTagLoose[0].pt()>10.:
+                    event.higgsCandLoose.leptonTag = event.otherLeptonsTagLoose[0]
             self.correctFakeWeightsComb(event.higgsCandLoose)
 
+
+        #Second Path for FAKES
+        cutFlow.setSource1(event.fourLeptonsLoose)
+        #require Z2 OS
+        passed=cutFlow.applyCut(self.testFourLeptonOS,'Loose OS',1,'fourLeptonsLooseOS')
+        #pick only the first one
+        #Z2 SIP CUT
+        passed=cutFlow.applyCut(lambda x: abs(x.leg2.leg1.sip3D())<4 and abs(x.leg2.leg2.sip3D())<4,'SIP cut for Z2 OS loose',1,'fourLeptonsLooseOSSIP')
+
+        if passed:
+            cutFlow.setSource1([cutFlow.obj1[0]])
+
+        #Z2 Mass Tight Cut
+        passed=cutFlow.applyCut(self.testFourLeptonMassZ2,'4l Loose OS Mass2',1,'fourLeptonsLooseOSZ2')
+        if passed:
+            event.higgsCandLooseOS = cutFlow.obj1[0]
+
             #create lepton tag
-            event.leptonTagSortedLooseCands=sorted(cutFlow.obj1,key=lambda x: abs(x.leg2.mass()))
-            event.otherLeptonsTagLoose=copy.copy(event.cleanLeptons)
-            event.otherLeptonsTagLoose.remove(event.leptonTagSortedLooseCands[0].leg1.leg1)
-            event.otherLeptonsTagLoose.remove(event.leptonTagSortedLooseCands[0].leg1.leg2)
-            event.otherLeptonsTagLoose.remove(event.leptonTagSortedLooseCands[0].leg2.leg1)
-            event.otherLeptonsTagLoose.remove(event.leptonTagSortedLooseCands[0].leg2.leg2)
-            event.otherLeptonsTagLoose = filter(lambda x:x.pt()>10,event.otherLeptonsTagLoose)
-            event.otherLeptonsTagLoose =sorted(event.otherLeptonsTagLoose,key=lambda x: x.pt(),reverse=True)
-
-            if len(event.otherLeptonsTagLoose)>0:
-                 event.higgsCandTaggedLoose = event.leptonTagSortedLooseCands[0]
-                 event.higgsCandTaggedLoose.leptonTag = event.otherLeptonsTagLoose[0]
-                 self.correctFakeWeightsComb(event.higgsCandTaggedLoose)
+            event.otherLeptonsTagLooseOS=copy.copy(event.cleanLeptons)
+            event.otherLeptonsTagLooseOS.remove(event.higgsCandLooseOS.leg1.leg1)
+            event.otherLeptonsTagLooseOS.remove(event.higgsCandLooseOS.leg1.leg2)
+            event.otherLeptonsTagLooseOS.remove(event.higgsCandLooseOS.leg2.leg1)
+            event.otherLeptonsTagLooseOS.remove(event.higgsCandLooseOS.leg2.leg2)
+            event.otherLeptonsTagLooseOS =filter(lambda x: x.sip3D()<4.,event.otherLeptonsTagLooseOS)
+            event.otherLeptonsTagLooseOS =sorted(event.otherLeptonsTagLooseOS,key=lambda x: x.pt(),reverse=True)
 
 
-        if len(event.fourLeptonsOS)>0:
-            event.higgsCandLooseOS =event.fourLeptonsOS[0] 
+            if len(event.otherLeptonsTagLooseOS)>0:
+                if event.otherLeptonsTagLooseOS[0].pt()>10:
+                    event.higgsCandLooseOS.leptonTag = event.otherLeptonsTagLooseOS[0]
+                    
             self.correctFakeWeightsComb(event.higgsCandLooseOS)
 
 
 
-        if hasattr(event,'higgsCand') or hasattr(event,'higgsCandLoose') or hasattr(event,'higgsCandLooseOS') or hasattr(event,'higgsCandTagged') or hasattr(event,'higgsCandTaggedLoose'):
+
+
+
+        if hasattr(event,'higgsCand') or hasattr(event,'higgsCandLoose') or hasattr(event,'higgsCandLooseOS'):
             return True
         
         return  False

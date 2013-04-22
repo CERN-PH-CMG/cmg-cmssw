@@ -263,13 +263,14 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         for l1, l2,l3,l4 in itertools.permutations(leptons, 4):
             if l1.pt()>l2.pt() and l3.pt()>l4.pt():
                 quadObject =DiObjectPair(l1, l2,l3,l4)
-                if  hasattr(self,"FSR"):
-                    self.FSR.setBoson(quadObject)
-                    self.FSR.attachPhotons(photons)
-                    self.FSR.recoverZ(quadObject.leg1)
-                    self.FSR.recoverZ(quadObject.leg2)
-                    quadObject.updateP4()
-                out.append(quadObject)
+                if abs(quadObject.leg1.M()-91.118)<abs(quadObject.leg2.M()-91.118):
+                    if  hasattr(self,"FSR"):
+                        self.FSR.setBoson(quadObject)
+                        self.FSR.attachPhotons(photons)
+                        self.FSR.recoverZ(quadObject.leg1)
+                        self.FSR.recoverZ(quadObject.leg2)
+                        quadObject.updateP4()
+                    out.append(quadObject)
         return out
 
 
@@ -402,15 +403,17 @@ class MultiLeptonAnalyzerBase( Analyzer ):
            to be able to do it later again
         '''
         if hasattr(zCand,'fsrPhoton'):
+            zCand.leg1.fsrPhotons=[]
+            zCand.leg2.fsrPhotons=[]
             if zCand.fsrDR1()<self.cfg_ana.FSR.leptonIsoCone:
-                zCand.leg1.fsrPhoton = zCand.fsrPhoton
+                zCand.leg1.fsrPhotons.append(zCand.fsrPhoton)
             if zCand.fsrDR2()<self.cfg_ana.FSR.leptonIsoCone:
-                zCand.leg2.fsrPhoton = zCand.fsrPhoton
+                zCand.leg2.fsrPhotons.append(zCand.fsrPhoton)
         else:
-            if hasattr(zCand.leg1,'fsrPhoton'):
-                del zCand.leg1.fsrPhoton
-            if hasattr(zCand.leg2,'fsrPhoton'):
-                del zCand.leg2.fsrPhoton
+            if hasattr(zCand.leg1,'fsrPhotons'):
+                del zCand.leg1.fsrPhotons
+            if hasattr(zCand.leg2,'fsrPhotons'):
+                del zCand.leg2.fsrPhotons
 
         return self.testLeptonTight(zCand.leg1) and \
                self.testLeptonTight(zCand.leg2)
@@ -452,6 +455,128 @@ class MultiLeptonAnalyzerBase( Analyzer ):
 
     def testFourLeptonTightIDZ2(self, fourLepton):
         return self.testZTightID(fourLepton.leg2) 
+
+    def testFourLeptonTightIDFSRBoth(self, fourLepton):
+        photons=[]
+        fsrExists=False
+
+        if hasattr(fourLepton.leg1,'fsrPhoton'):
+            fsrExists=True
+            photons.append(fourLepton.leg1.fsrPhoton)
+        if hasattr(fourLepton.leg2,'fsrPhoton'):
+            fsrExists=True
+            photons.append(fourLepton.leg2.fsrPhoton)
+
+        if fsrExists:    
+            fourLepton.leg1.leg1.fsrPhotons=[]
+            fourLepton.leg1.leg2.fsrPhotons=[]
+            fourLepton.leg2.leg1.fsrPhotons=[]
+            fourLepton.leg2.leg2.fsrPhotons=[]
+            for gamma in photons:
+                if deltaR(fourLepton.leg1.leg1.eta(),fourLepton.leg1.leg1.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg1.leg1.fsrPhotons.append(gamma)
+                if deltaR(fourLepton.leg1.leg2.eta(),fourLepton.leg1.leg2.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg1.leg2.fsrPhotons.append(gamma)
+                if deltaR(fourLepton.leg2.leg1.eta(),fourLepton.leg2.leg1.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg2.leg1.fsrPhotons.append(gamma)
+                if deltaR(fourLepton.leg2.leg2.eta(),fourLepton.leg2.leg2.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg2.leg2.fsrPhotons.append(gamma)
+        else:
+            if hasattr(fourLepton.leg1.leg1,'fsrPhotons'):
+                del fourLepton.leg1.leg1.fsrPhotons
+            if hasattr(fourLepton.leg1.leg2,'fsrPhotons'):
+                del fourLepton.leg1.leg2.fsrPhotons
+            if hasattr(fourLepton.leg2.leg1,'fsrPhotons'):
+                del fourLepton.leg2.leg1.fsrPhotons
+            if hasattr(fourLepton.leg2.leg2,'fsrPhotons'):
+                del fourLepton.leg2.leg2.fsrPhotons
+
+
+        return self.testLeptonTight(fourLepton.leg1.leg1) and \
+               self.testLeptonTight(fourLepton.leg1.leg2) and \
+               self.testLeptonTight(fourLepton.leg2.leg1) and \
+               self.testLeptonTight(fourLepton.leg2.leg2)
+
+
+    def testFourLeptonTightIDZ1FSRBoth(self, fourLepton):
+        photons=[]
+        fsrExists=False
+
+        if hasattr(fourLepton.leg1,'fsrPhoton'):
+            fsrExists=True
+            photons.append(fourLepton.leg1.fsrPhoton)
+        if hasattr(fourLepton.leg2,'fsrPhoton'):
+            fsrExists=True
+            photons.append(fourLepton.leg2.fsrPhoton)
+
+        if fsrExists:    
+            fourLepton.leg1.leg1.fsrPhotons=[]
+            fourLepton.leg1.leg2.fsrPhotons=[]
+            fourLepton.leg2.leg1.fsrPhotons=[]
+            fourLepton.leg2.leg2.fsrPhotons=[]
+            for gamma in photons:
+                if deltaR(fourLepton.leg1.leg1.eta(),fourLepton.leg1.leg1.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg1.leg1.fsrPhotons.append(gamma)
+                if deltaR(fourLepton.leg1.leg2.eta(),fourLepton.leg1.leg2.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg1.leg2.fsrPhotons.append(gamma)
+                if deltaR(fourLepton.leg2.leg1.eta(),fourLepton.leg2.leg1.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg2.leg1.fsrPhotons.append(gamma)
+                if deltaR(fourLepton.leg2.leg2.eta(),fourLepton.leg2.leg2.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg2.leg2.fsrPhotons.append(gamma)
+        else:
+            if hasattr(fourLepton.leg1.leg1,'fsrPhotons'):
+                del fourLepton.leg1.leg1.fsrPhotons
+            if hasattr(fourLepton.leg1.leg2,'fsrPhotons'):
+                del fourLepton.leg1.leg2.fsrPhotons
+            if hasattr(fourLepton.leg2.leg1,'fsrPhotons'):
+                del fourLepton.leg2.leg1.fsrPhotons
+            if hasattr(fourLepton.leg2.leg2,'fsrPhotons'):
+                del fourLepton.leg2.leg2.fsrPhotons
+
+
+        return self.testLeptonTight(fourLepton.leg1.leg1) and \
+               self.testLeptonTight(fourLepton.leg1.leg2)
+
+
+    def testFourLeptonTightIDZ2FSRBoth(self, fourLepton):
+        photons=[]
+        fsrExists=False
+
+        if hasattr(fourLepton.leg1,'fsrPhoton'):
+            fsrExists=True
+            photons.append(fourLepton.leg1.fsrPhoton)
+        if hasattr(fourLepton.leg2,'fsrPhoton'):
+            fsrExists=True
+            photons.append(fourLepton.leg2.fsrPhoton)
+
+        if fsrExists:    
+            fourLepton.leg1.leg1.fsrPhotons=[]
+            fourLepton.leg1.leg2.fsrPhotons=[]
+            fourLepton.leg2.leg1.fsrPhotons=[]
+            fourLepton.leg2.leg2.fsrPhotons=[]
+            for gamma in photons:
+                if deltaR(fourLepton.leg1.leg1.eta(),fourLepton.leg1.leg1.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg1.leg1.fsrPhotons.append(gamma)
+                if deltaR(fourLepton.leg1.leg2.eta(),fourLepton.leg1.leg2.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg1.leg2.fsrPhotons.append(gamma)
+                if deltaR(fourLepton.leg2.leg1.eta(),fourLepton.leg2.leg1.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg2.leg1.fsrPhotons.append(gamma)
+                if deltaR(fourLepton.leg2.leg2.eta(),fourLepton.leg2.leg2.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
+                    fourLepton.leg2.leg2.fsrPhotons.append(gamma)
+        else:
+            if hasattr(fourLepton.leg1.leg1,'fsrPhotons'):
+                del fourLepton.leg1.leg1.fsrPhotons
+            if hasattr(fourLepton.leg1.leg2,'fsrPhotons'):
+                del fourLepton.leg1.leg2.fsrPhotons
+            if hasattr(fourLepton.leg2.leg1,'fsrPhotons'):
+                del fourLepton.leg2.leg1.fsrPhotons
+            if hasattr(fourLepton.leg2.leg2,'fsrPhotons'):
+                del fourLepton.leg2.leg2.fsrPhotons
+
+
+        return self.testLeptonTight(fourLepton.leg2.leg1) and \
+               self.testLeptonTight(fourLepton.leg2.leg2)
+
 
 
 
@@ -531,6 +656,36 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         else:
             return fourLeptons
 
+
+    def sortFourLeptonsByKD(self, fourLeptons):
+        '''Sorts four lepton candidates by KD
+        If there are more than one take the two highest
+        Pt ones'''
+        if len(fourLeptons)>1 :
+            s=sorted(fourLeptons,key=lambda x: x.KD,reverse=True)
+            return s
+        else:
+            return fourLeptons
+
+
+    def sortFourLeptonsByPt(self, fourLeptons):
+        '''Sorts four lepton candidates by mass
+        If there are more than one take the two highest
+        Pt ones'''
+        def comp(x):
+            if x.leg2.mass()>12.:
+                return x.leg2.mass()
+            else:
+                return 999999999
+            
+        #sort the first one by Z mass and if there
+        #are more than one take the two highest pt ones
+        if len(fourLeptons)>1 :
+            s=sorted(fourLeptons,key=lambda x: x.KD,reverse=True)
+            return s
+        else:
+            return fourLeptons
+
     def pruneFourLeptonsForZ1(self, fourLeptons):
         '''From all the objects in the collection pick the ones that has exactly the same
            Z1 as the best'''
@@ -571,7 +726,8 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         cleanedJets=[]
 
         for jet in jets:
-            if jet.pt()>30: ###Apply the real cut here to do proper systs on jet counting
+#            if jet.pt()>30: ###Apply the real cut here to do proper systs on jet counting
+            if (jet.pt()>30 and abs(jet.eta())<4.7) or (jet.pt()>20 and abs(jet.eta())<2.1): ###Apply the real cut here to do proper systs on jet counting
                 overlap=False
                 for lepton in leptons:
                     if deltaR(jet.eta(),jet.phi(),lepton.eta(),lepton.phi())<cleanDR:
