@@ -40,12 +40,12 @@ static double customIsolation(reco::PFCandidate::ParticleType lepton, const Part
   double                                    isoSum        = 0;
   math::XYZVector              isoAngleSum;
   std::vector<math::XYZVector> coneParticles;
-  bool matched = false;
+  
   for (unsigned int iPtcl = 0; iPtcl < isoParticles.size(); ++iPtcl) {
     if (lepton == reco::PFCandidate::mu && isoParticles[iPtcl].muonRef().isNonnull() && isoParticles[iPtcl].trackRef() == particle.track()) {
-      matched = true; continue; }
+       continue; }
     if (lepton == reco::PFCandidate::e  && isoParticles[iPtcl].gsfTrackRef().isNonnull() && isoParticles[iPtcl].gsfTrackRef() == particle.gsfTrack()) {
-      matched = true; continue; }
+       continue; }
     const IsoParticle&          isoParticle   = isoParticles[iPtcl];
     if (isoParticle.pt() <= 0)  continue;     // Ignore weird stuff
     //.. Vetoes ...............................................................
