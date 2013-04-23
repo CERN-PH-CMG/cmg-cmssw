@@ -184,7 +184,7 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
         #Z2 Mass Tight Cut
         passed=cutFlow.applyCut(self.testFourLeptonMassZ2,'4l Loose Mass2',1,'fourLeptonsLooseZ2')
         if passed:
-            event.higgsCandLoose = cutFlow.obj1[0]
+            event.higgsCandLoose =cutFlow.obj1[0]
             #create lepton tag
             event.otherLeptonsTagLoose=copy.copy(event.cleanLeptons)
             event.otherLeptonsTagLoose.remove(event.higgsCandLoose.leg1.leg1)
@@ -195,7 +195,7 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
             event.otherLeptonsTagLoose =sorted(event.otherLeptonsTagLoose,key=lambda x: x.pt(),reverse=True)
             if len(event.otherLeptonsTagLoose)>0:
                 if event.otherLeptonsTagLoose[0].pt()>10.:
-                    event.higgsCandLoose.leptonTag = event.otherLeptonsTagLoose[0]
+                    event.higgsCandLoose.leptonTagLoose = event.otherLeptonsTagLoose[0]
             self.correctFakeWeightsComb(event.higgsCandLoose)
 
 
@@ -227,7 +227,7 @@ class FourLeptonAnalyzerCMG( MultiLeptonAnalyzerBase ):
 
             if len(event.otherLeptonsTagLooseOS)>0:
                 if event.otherLeptonsTagLooseOS[0].pt()>10:
-                    event.higgsCandLooseOS.leptonTag = event.otherLeptonsTagLooseOS[0]
+                    event.higgsCandLooseOS.leptonTagLooseOS = event.otherLeptonsTagLooseOS[0]
                     
             self.correctFakeWeightsComb(event.higgsCandLooseOS)
 

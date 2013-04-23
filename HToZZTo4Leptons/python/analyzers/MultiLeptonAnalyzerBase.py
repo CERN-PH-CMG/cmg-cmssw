@@ -215,8 +215,8 @@ class MultiLeptonAnalyzerBase( Analyzer ):
            needs knowldege of the Z1 decay mode.'''
         z1Flav = fourLepton.leg1.leg1.pdgId()
         leptons=[fourLepton.leg2.leg1,fourLepton.leg2.leg2]
-        if hasattr(fourLepton,'leptonTag'):
-            leptons.append(fourLepton.leptonTag)
+#        if hasattr(fourLepton,'leptonTag'):
+#            leptons.append(fourLepton.leptonTag)
         if hasattr(self,'fakeRates'):
             for lepton in leptons:
                 for fr in self.fakeRates:
@@ -409,14 +409,16 @@ class MultiLeptonAnalyzerBase( Analyzer ):
                 zCand.leg1.fsrPhotons.append(zCand.fsrPhoton)
             if zCand.fsrDR2()<self.cfg_ana.FSR.leptonIsoCone:
                 zCand.leg2.fsrPhotons.append(zCand.fsrPhoton)
-        else:
-            if hasattr(zCand.leg1,'fsrPhotons'):
-                del zCand.leg1.fsrPhotons
-            if hasattr(zCand.leg2,'fsrPhotons'):
-                del zCand.leg2.fsrPhotons
 
-        return self.testLeptonTight(zCand.leg1) and \
-               self.testLeptonTight(zCand.leg2)
+        decision = self.testLeptonTight(zCand.leg1) and \
+               self.testLeptonTight(zCand.leg2)        
+
+        if hasattr(zCand.leg1,'fsrPhotons'):
+            del zCand.leg1.fsrPhotons
+        if hasattr(zCand.leg2,'fsrPhotons'):
+            del zCand.leg2.fsrPhotons
+
+        return decision
 
 
     def bestZBosonByMass(self, zBosons):
@@ -481,21 +483,24 @@ class MultiLeptonAnalyzerBase( Analyzer ):
                     fourLepton.leg2.leg1.fsrPhotons.append(gamma)
                 if deltaR(fourLepton.leg2.leg2.eta(),fourLepton.leg2.leg2.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
                     fourLepton.leg2.leg2.fsrPhotons.append(gamma)
-        else:
-            if hasattr(fourLepton.leg1.leg1,'fsrPhotons'):
-                del fourLepton.leg1.leg1.fsrPhotons
-            if hasattr(fourLepton.leg1.leg2,'fsrPhotons'):
-                del fourLepton.leg1.leg2.fsrPhotons
-            if hasattr(fourLepton.leg2.leg1,'fsrPhotons'):
-                del fourLepton.leg2.leg1.fsrPhotons
-            if hasattr(fourLepton.leg2.leg2,'fsrPhotons'):
-                del fourLepton.leg2.leg2.fsrPhotons
 
 
-        return self.testLeptonTight(fourLepton.leg1.leg1) and \
+        decision=self.testLeptonTight(fourLepton.leg1.leg1) and \
                self.testLeptonTight(fourLepton.leg1.leg2) and \
                self.testLeptonTight(fourLepton.leg2.leg1) and \
-               self.testLeptonTight(fourLepton.leg2.leg2)
+               self.testLeptonTight(fourLepton.leg2.leg2)        
+
+        if hasattr(fourLepton.leg1.leg1,'fsrPhotons'):
+            del fourLepton.leg1.leg1.fsrPhotons
+        if hasattr(fourLepton.leg1.leg2,'fsrPhotons'):
+            del fourLepton.leg1.leg2.fsrPhotons
+        if hasattr(fourLepton.leg2.leg1,'fsrPhotons'):
+            del fourLepton.leg2.leg1.fsrPhotons
+        if hasattr(fourLepton.leg2.leg2,'fsrPhotons'):
+            del fourLepton.leg2.leg2.fsrPhotons
+
+        return decision
+    
 
 
     def testFourLeptonTightIDZ1FSRBoth(self, fourLepton):
@@ -523,19 +528,22 @@ class MultiLeptonAnalyzerBase( Analyzer ):
                     fourLepton.leg2.leg1.fsrPhotons.append(gamma)
                 if deltaR(fourLepton.leg2.leg2.eta(),fourLepton.leg2.leg2.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
                     fourLepton.leg2.leg2.fsrPhotons.append(gamma)
-        else:
-            if hasattr(fourLepton.leg1.leg1,'fsrPhotons'):
-                del fourLepton.leg1.leg1.fsrPhotons
-            if hasattr(fourLepton.leg1.leg2,'fsrPhotons'):
-                del fourLepton.leg1.leg2.fsrPhotons
-            if hasattr(fourLepton.leg2.leg1,'fsrPhotons'):
-                del fourLepton.leg2.leg1.fsrPhotons
-            if hasattr(fourLepton.leg2.leg2,'fsrPhotons'):
-                del fourLepton.leg2.leg2.fsrPhotons
 
-
-        return self.testLeptonTight(fourLepton.leg1.leg1) and \
+        decision = self.testLeptonTight(fourLepton.leg1.leg1) and \
                self.testLeptonTight(fourLepton.leg1.leg2)
+
+
+        if hasattr(fourLepton.leg1.leg1,'fsrPhotons'):
+            del fourLepton.leg1.leg1.fsrPhotons
+        if hasattr(fourLepton.leg1.leg2,'fsrPhotons'):
+            del fourLepton.leg1.leg2.fsrPhotons
+        if hasattr(fourLepton.leg2.leg1,'fsrPhotons'):
+            del fourLepton.leg2.leg1.fsrPhotons
+        if hasattr(fourLepton.leg2.leg2,'fsrPhotons'):
+            del fourLepton.leg2.leg2.fsrPhotons
+
+
+        return decision
 
 
     def testFourLeptonTightIDZ2FSRBoth(self, fourLepton):
@@ -563,19 +571,23 @@ class MultiLeptonAnalyzerBase( Analyzer ):
                     fourLepton.leg2.leg1.fsrPhotons.append(gamma)
                 if deltaR(fourLepton.leg2.leg2.eta(),fourLepton.leg2.leg2.phi(),gamma.eta(),gamma.phi())<self.cfg_ana.FSR.leptonIsoCone:
                     fourLepton.leg2.leg2.fsrPhotons.append(gamma)
-        else:
-            if hasattr(fourLepton.leg1.leg1,'fsrPhotons'):
-                del fourLepton.leg1.leg1.fsrPhotons
-            if hasattr(fourLepton.leg1.leg2,'fsrPhotons'):
-                del fourLepton.leg1.leg2.fsrPhotons
-            if hasattr(fourLepton.leg2.leg1,'fsrPhotons'):
-                del fourLepton.leg2.leg1.fsrPhotons
-            if hasattr(fourLepton.leg2.leg2,'fsrPhotons'):
-                del fourLepton.leg2.leg2.fsrPhotons
 
 
-        return self.testLeptonTight(fourLepton.leg2.leg1) and \
+
+        decision = self.testLeptonTight(fourLepton.leg2.leg1) and \
                self.testLeptonTight(fourLepton.leg2.leg2)
+        
+
+        if hasattr(fourLepton.leg1.leg1,'fsrPhotons'):
+            del fourLepton.leg1.leg1.fsrPhotons
+        if hasattr(fourLepton.leg1.leg2,'fsrPhotons'):
+            del fourLepton.leg1.leg2.fsrPhotons
+        if hasattr(fourLepton.leg2.leg1,'fsrPhotons'):
+            del fourLepton.leg2.leg1.fsrPhotons
+        if hasattr(fourLepton.leg2.leg2,'fsrPhotons'):
+            del fourLepton.leg2.leg2.fsrPhotons
+
+        return decision
 
 
 
