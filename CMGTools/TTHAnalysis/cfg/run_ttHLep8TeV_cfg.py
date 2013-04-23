@@ -89,7 +89,7 @@ ttHJetAna = cfg.Analyzer(
     jetPt = 25.,
     jetEta = 4.7,
     relaxJetId = False,  
-    recalibrateJets = False
+    recalibrateJets = True
     )
 
 ## MET Analyzer
@@ -114,6 +114,7 @@ ttHEventAna = cfg.Analyzer(
 treeProducer = cfg.Analyzer(
     'ttHLepTreeProducerBase',
     doLooseLeptons = False,
+    doJetsFailId = False,
     PDFWeights = PDFWeights,
     )
 
