@@ -93,7 +93,7 @@ treeProducer = cfg.Analyzer(
 ###############################################################################
 
 
-from CMGTools.ZJetsTutorial.samples.run2012.diMu_ColinNov13 import *
+from CMGTools.ZJetsTutorial.samples.run2012.diMu_ColinApr9 import *
 
 ###############################################################################
 
@@ -118,7 +118,10 @@ for c in allsamples:
 
 # allsamples = data_list
 
-selectedComponents = allsamples
+# selectedComponents = allsamples
+
+selectedComponents = [sam for sam in allsamples if len(sam.files)>0]
+# selectedComponents = [TTJets]  
 
 puFileMC = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/MC_Summer12_PU_S10-600bins.root'
 puFileData = '/afs/cern.ch/user/a/agilbert/public/HTT_Pileup/28-09-12/Data_Pileup_2012_HCP-600bins.root'
@@ -141,7 +144,7 @@ sequence = cfg.Sequence( [
 
 
 # set test = 0 to run all jobs, in case you are using pybatch.py
-test = 1
+test = 0
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
