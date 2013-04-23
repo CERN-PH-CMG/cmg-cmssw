@@ -137,8 +137,8 @@ class FourLeptonTreeProducer( TreeProducer ):
             if hasattr(event.higgsCandLoose.leg2.leg1,'fR'):
                 self.fill('HLoose_fakeRate',event.higgsCandLoose.leg2.leg1.fR*event.higgsCandLoose.leg2.leg2.fR)
 
-            if hasattr(event.higgsCandLoose,'leptonTag'):
-                self.fillLepton("HLoose_lepton",event.higgsCandLoose.leptonTag,event)
+            if hasattr(event.higgsCandLoose,'leptonTagLoose'):
+                self.fillLepton("HLoose_lepton",event.higgsCandLoose.leptonTagLoose,event)
 
 
         if hasattr( event, 'higgsCandLooseOS' ):
@@ -154,8 +154,8 @@ class FourLeptonTreeProducer( TreeProducer ):
             if hasattr(event.higgsCandLooseOS.leg2.leg1,'fR'):
                 self.fill('HLooseOS_fakeRate',event.higgsCandLooseOS.leg2.leg1.fR*event.higgsCandLooseOS.leg2.leg2.fR)
 
-            if hasattr(event.higgsCandLooseOS,'leptonTag'):
-                self.fillLepton("HLooseOS_lepton",event.higgsCandLooseOS.leptonTag,event)
+            if hasattr(event.higgsCandLooseOS,'leptonTagLooseOS'):
+                self.fillLepton("HLooseOS_lepton",event.higgsCandLooseOS.leptonTagLooseOS,event)
 
 
 

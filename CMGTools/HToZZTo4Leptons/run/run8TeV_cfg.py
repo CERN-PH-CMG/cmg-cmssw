@@ -177,7 +177,7 @@ sequence = cfg.Sequence(dataSequence)
 
 
 
-#selectedComponents=[VH126,ggH126,qqH126]
+selectedComponents=[VH126,ggH126,qqH126]
     
 
 test =0 

@@ -158,9 +158,15 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
             event.otherLeptons.remove(event.higgsCand.leg2.leg1)
             event.otherLeptons.remove(event.higgsCand.leg2.leg2)
             event.otherLeptons = filter(self.testLeptonTight,event.otherLeptons)
+            event.otherLeptons = filter(lambda x: x.pt>10.,event.otherLeptons)
+
+
             metV = TLorentzVector(event.met.px(),event.met.py(),event.met.pz(),event.met.energy())
             event.recoil = (-metV-event.higgsCand).Pt()
-
+            if len(event.otherLeptons)>0:
+                event.otherLeptons =sorted(event.otherLeptons,key=lambda x: x.pt(),reverse=True)
+                event.higgsCand.leptonTag = event.otherLeptons[0]
+                
         #ZZ phase smace
         passed=cutFlow.applyCut(self.testFourLeptonMass,'4l H phase space',1,'fourLeptonsHPhaseSpace')
 
@@ -240,8 +246,6 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
 
 
         ##################NOW A SECONDPATH FOR FAKES
-
-        
         cutFlow.setSource1(event.leptonPairsLoose)
         #Z2 SF 
         passed=cutFlow.applyCut(self.testZSF,'OS for Z2 Loose',1,'zBosons3SFLoose')
