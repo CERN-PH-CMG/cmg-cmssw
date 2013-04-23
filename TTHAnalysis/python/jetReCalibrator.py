@@ -1,5 +1,5 @@
 import ROOT
-import os
+import os, types
 
 class JetReCalibrator:
     def __init__(self,globalTag,jetFlavour,doResidualJECs):
@@ -26,4 +26,8 @@ class JetReCalibrator:
         corr = self.JetCorrector.getCorrection()
         #print "   jet with raw pt %6.2f eta %+5.3f phi %+5.3f: previous corr %.4f, my corr %.4f " % (jet.pt()*jet.rawFactor(), jet.eta(), jet.phi(), 1./jet.rawFactor(), corr)
         jet.setP4(jet.p4() * (corr * jet.rawFactor()))
- 
+        # overload rawFactor() since we don't have setters
+        jet._rawFactor = 1.0/corr
+        jet.rawFactor = types.MethodType(lambda self : self._rawFactor, jet, jet.__class__)
+        
+
