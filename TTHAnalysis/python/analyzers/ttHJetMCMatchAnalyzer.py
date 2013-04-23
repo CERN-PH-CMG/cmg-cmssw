@@ -1,6 +1,5 @@
-import operator 
-import itertools
 import copy
+import types
 from math import *
 
 from ROOT import TLorentzVector
@@ -59,16 +58,20 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
                                        deltaRMax = 0.5)
         for jet in event.cleanJets:
             gen = match[jet]
+            jet.mcParton    = gen
             jet.mcMatchId   = (gen.sourceId     if gen != None else 0)
             jet.mcMatchFlav = (abs(gen.pdgId()) if gen != None else 0)
 
-    def smearJets(self, event):
-        # https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiTopRefSyst#Jet_energy_resolution
         match = matchObjectCollection2(event.cleanJets,
                                        event.genJets,
                                        deltaRMax = 0.5)
         for jet in event.cleanJets:
-            gen = match[jet]
+            jet.mcJet = match[jet]
+ 
+    def smearJets(self, event):
+        # https://twiki.cern.ch/twiki/bin/viewauth/CMS/TWikiTopRefSyst#Jet_energy_resolution
+       for jet in event.cleanJets:
+            gen = jet.mcJet 
             if gen != None:
                genpt, jetpt, aeta = gen.pt(), jet.pt(), abs(jet.eta())
                # from https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
@@ -77,11 +80,15 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
                elif aeta > 1.7: factor = 1.134
                elif aeta > 1.1: factor = 1.096
                elif aeta > 0.5: factor = 1.057
-               ptscale = max(0.0, (jetpt + factor*(jetpt-genpt))/jetpt)
+               ptscale = max(0.0, (jetpt + (factor-1)*(jetpt-genpt))/jetpt)
                #print "get with pt %.1f (gen pt %.1f, ptscale = %.3f)" % (jetpt,genpt,ptscale)
                event.deltaMetFromJetSmearing[0] -= (ptscale-1)*jet.rawFactor()*jet.px()
                event.deltaMetFromJetSmearing[1] -= (ptscale-1)*jet.rawFactor()*jet.py()
                jet.setP4(jet.p4()*ptscale)
+               # leave the uncorrected unchanged for sync
+               jet._rawFactor = jet.rawFactor()/ptscale
+               jet.rawFactor = types.MethodType(lambda self : self._rawFactor, jet, jet.__class__)
+            
             #else: print "jet with pt %.1d, eta %.2f is unmatched" % (jet.pt(), jet.eta())
 
     def process(self, iEvent, event):

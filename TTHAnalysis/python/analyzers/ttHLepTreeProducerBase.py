@@ -42,6 +42,9 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'nJet30', int)       
         for i in range(8):
             bookJet(tr,"Jet%d"%(i+1), isMC)
+        if hasattr(self.cfg_ana, 'doJetsFailId') and self.cfg_ana.doJetsFailId:
+            for i in range(8):
+                bookJet(tr,"JetFailId%d"%(i+1), isMC, saveID=True)
         var( tr, 'nBJetLoose25', int )
         var( tr, 'nBJetMedium25', int )
         var( tr, 'nBJetLoose30', int )
@@ -147,6 +150,12 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill(tr, 'nJet30', sum([(j.pt() > 30) for j in event.cleanJets]))      
         for i in range(min(8,len(event.cleanJets))):
             fillJet(tr, "Jet%d"%(i+1), event.cleanJets[i])        
+
+        if hasattr(self.cfg_ana, 'doJetsFailId') and self.cfg_ana.doJetsFailId:
+            event.jetsFailId.sort(key = lambda j : j.pt(), reverse = True)
+            for i in range(min(8,len(event.jetsFailId))):
+                fillJet(tr,"JetFailId%d"%(i+1), event.jetsFailId[i], saveID=True)
+
         fill(tr, 'nBJetLoose25', len(event.bjetsLoose))      
         fill(tr, 'nBJetLoose30', sum([(j.pt() > 30) for j in event.bjetsLoose]))      
         fill(tr, 'nBJetMedium25', len(event.bjetsMedium))      

@@ -179,33 +179,38 @@ def fillLepton( tree, pName, lepton ):
 ##       egamma_HF    // HF tower identified as an EM particle
 ##     };
 
-def bookJet( tree, pName, isMC=False ):
+def bookJet( tree, pName, isMC=False, saveID = False ):
     bookParticle(tree, pName )
     var(tree, '{pName}_btagCSV'.format(pName=pName))
 #     var(tree, '{pName}_puMvaFull'.format(pName=pName))
 #     var(tree, '{pName}_puMvaSimple'.format(pName=pName))
 #     var(tree, '{pName}_puMvaCutBased'.format(pName=pName))
-#     var(tree, '{pName}_puJetId'.format(pName=pName))
-#     var(tree, '{pName}_looseJetId'.format(pName=pName))
+    if saveID:
+        var(tree, '{pName}_puJetId'.format(pName=pName), int)
+        var(tree, '{pName}_looseJetId'.format(pName=pName), int)
 #     var(tree, '{pName}_chFrac'.format(pName=pName))
 #     var(tree, '{pName}_eFrac'.format(pName=pName))
 #     var(tree, '{pName}_muFrac'.format(pName=pName))
 #     var(tree, '{pName}_gammaFrac'.format(pName=pName))
 #     var(tree, '{pName}_h0Frac'.format(pName=pName))
 #     var(tree, '{pName}_hhfFrac'.format(pName=pName))
-#     var(tree, '{pName}_ehfFrac'.format(pName=pName))
+    var(tree, '{pName}_rawPt'.format(pName=pName))
     bookParticle(tree, '{pName}_leg'.format(pName=pName))
     if isMC:
         var(tree, '{pName}_mcMatchId'.format(pName=pName),   int)
         var(tree, '{pName}_mcMatchFlav'.format(pName=pName), int)
         var(tree, '{pName}_mcFlavour'.format(pName=pName), int)
+        var(tree, '{pName}_mcPt'.format(pName=pName))
 
-def fillJet( tree, pName, jet ):
+def fillJet( tree, pName, jet, saveID = False ):
     fillParticle(tree, pName, jet )
     fill(tree, '{pName}_btagCSV'.format(pName=pName), jet.btag('combinedSecondaryVertexBJetTags') )
 #     fill(tree, '{pName}_puMvaFull'.format(pName=pName), jet.puMva('full') )
 #     fill(tree, '{pName}_puMvaSimple'.format(pName=pName), jet.puMva('simple'))
 #     fill(tree, '{pName}_puMvaCutBased'.format(pName=pName), jet.puMva('cut-based'))
+    if saveID:
+        fill(tree, '{pName}_puJetId'.format(pName=pName), jet.puJetIdPassed)
+        fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.pfJetIdPassed)
 #     fill(tree, '{pName}_puJetId'.format(pName=pName), jet.puJetIdPassed)
 #     fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.pfJetIdPassed)
 #     fill(tree, '{pName}_chFrac'.format(pName=pName), jet.component(1).fraction() )
@@ -214,13 +219,14 @@ def fillJet( tree, pName, jet ):
 #     fill(tree, '{pName}_gammaFrac'.format(pName=pName), jet.component(4).fraction() )
 #     fill(tree, '{pName}_h0Frac'.format(pName=pName), jet.component(5).fraction() )
 #     fill(tree, '{pName}_hhfFrac'.format(pName=pName), jet.component(6).fraction() )
-#     fill(tree, '{pName}_ehfFrac'.format(pName=pName), jet.component(7).fraction() )
+    fill(tree, '{pName}_rawPt'.format(pName=pName), jet.pt() * jet.rawFactor())
     if hasattr(jet, 'leg') and jet.leg:
         fillParticle(tree, '{pName}_leg'.format(pName=pName), jet.leg )
     if hasattr(jet, 'mcMatchId'):
         fill(tree, '{pName}_mcMatchId'.format(pName=pName),   jet.mcMatchId)
         fill(tree, '{pName}_mcMatchFlav'.format(pName=pName), jet.mcMatchFlav)
         fill(tree, '{pName}_mcFlavour'.format(pName=pName), jet.mcFlavour)
+        fill(tree, '{pName}_mcPt'.format(pName=pName), jet.mcJet.pt() if jet.mcJet else 0)
     
 #----------
 # PHOTONS
