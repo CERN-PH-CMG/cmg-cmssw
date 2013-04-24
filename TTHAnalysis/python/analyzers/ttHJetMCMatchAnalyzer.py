@@ -86,7 +86,7 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
                event.deltaMetFromJetSmearing[1] -= (ptscale-1)*jet.rawFactor()*jet.py()
                jet.setP4(jet.p4()*ptscale)
                # leave the uncorrected unchanged for sync
-               jet._rawFactor = jet.rawFactor()/ptscale
+               jet._rawFactor = jet.rawFactor()/ptscale if ptscale != 0 else 0
                jet.rawFactor = types.MethodType(lambda self : self._rawFactor, jet, jet.__class__)
             
             #else: print "jet with pt %.1d, eta %.2f is unmatched" % (jet.pt(), jet.eta())
