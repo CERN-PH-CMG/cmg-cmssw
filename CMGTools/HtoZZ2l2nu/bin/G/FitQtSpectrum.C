@@ -305,19 +305,19 @@ enum MCMode      { ALL,   PUREG };
 void FitQtSpectrum(TString url="plotter.root", TString gUrl="plotter_gamma.root", int mode=NOFIT,int kinMode=PT, int mcMode=PUREG)
 {
   std::vector<TString> categs,titles,mcg;
-  /*
   categs.push_back("mjjq016"); titles.push_back("M_{jj}<250");
   categs.push_back("mjjq033"); titles.push_back("250<M_{jj}<350");
   categs.push_back("mjjq049"); titles.push_back("350<M_{jj}<450");
   categs.push_back("mjjq066"); titles.push_back("450<M_{jj}<550");
   categs.push_back("mjjq083"); titles.push_back("550<M_{jj}<750");
   categs.push_back("mjjq092"); titles.push_back("M_{jj}>750");
-  */
+  /*
   categs.push_back("eq0jets");  titles.push_back("=0 jets");
   categs.push_back("eq1jets");  titles.push_back("=1 jets");
   categs.push_back("eq2jets");  titles.push_back("=2 jets");
   categs.push_back("geq3jets"); titles.push_back("#geq 3 jets");
   categs.push_back("vbf");      titles.push_back("VBF");
+  */
   const size_t ncategs=categs.size();
   
   //mc for closure
