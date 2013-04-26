@@ -10,6 +10,10 @@ float deltaPhi(float phi1, float phi2) {
     return result;
 }
 
+float if3(bool cond, float iftrue, float iffalse) {
+    return cond ? iftrue : iffalse;
+}
+
 float deltaR2(float eta1, float phi1, float eta2, float phi2) {
     float deta = std::abs(eta1-eta2);
     float dphi = deltaPhi(phi1,phi2);
