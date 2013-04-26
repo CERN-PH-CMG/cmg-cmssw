@@ -119,13 +119,15 @@ class TreeToYield:
         self._isInit = False
         self._options = options
         self._weight  = (options.weight and 'data' not in self._name and '2012' not in self._name and '2011' not in self._name )
-        self._weightString  = options.weightString
+        self._isdata = 'data' in self._name
+        self._weightString  = options.weightString if not self._isdata else "1"
         self._scaleFactor = scaleFactor
         self._settings = settings
         loadMCCorrections(options)            ## make sure this is loaded
         self._mcCorrs = globalMCCorrections() ##  get defaults
         if 'SkipDefaultMCCorrections' in settings: ## unless requested to 
             self._mcCorrs = []                     ##  skip them
+        if self._isdata: self._mcCorrs = [] ## no MC corrections for data
         if 'MCCorrections' in settings:
             self._mcCorrs = self._mcCorrs[:] # make copy
             for cfile in settings['MCCorrections'].split(','): 
@@ -136,7 +138,7 @@ class TreeToYield:
             self._weightString += "* (" + self.adaptDataMCExpr(self._FR.weight()) + ")"
             ## modify cuts to get to control region
             self._mcCorrs = self._mcCorrs + self._FR.cutMods()  + self._FR.mods()
-            
+            self._weight = True
     def setScaleFactor(self,scaleFactor):
         self._scaleFactor = scaleFactor
     def getScaleFactor(self):
@@ -150,27 +152,28 @@ class TreeToYield:
         return default
     def adaptDataMCExpr(self,expr):
         ret = expr
-        if self._name == "data":
+        if self._isdata:
             ret = re.sub(r'\$MC\{.*?\}', '', re.sub(r'\$DATA\{(.*?)\}', r'\1', expr));
         else:
             ret = re.sub(r'\$DATA\{.*?\}', '', re.sub(r'\$MC\{(.*?)\}', r'\1', expr));
         return ret
     def adaptExpr(self,expr,cut=False):
         ret = self.adaptDataMCExpr(expr)
-        if self._name != "data":
-            for mcc in self._mcCorrs:
-                ret = mcc(ret,self._name,self._cname,cut)
-            #if ret != expr: print "[[%s]] => [[%s]]\n" % (expr,ret)
+        for mcc in self._mcCorrs:
+            ret = mcc(ret,self._name,self._cname,cut)
         return ret
     def _init(self):
-        self._tfile = ROOT.TFile.Open(self._fname)
+        print "Trying to open %s for task %s" % (self._fname, self._name)
+        foptions = ""
+        if "root://" in self._fname: foptions = "-recreate"
+        self._tfile = ROOT.TFile.Open(self._fname, foptions)
         if not self._tfile: raise RuntimeError, "Cannot open %s\n" % root
         t = self._tfile.Get(self._options.tree)
         if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (options.tree, root)
         self._tree  = t
         self._friends = []
         friendOpts = self._options.friendTrees
-        friendOpts += (self._options.friendTreesData if self._name == "data" else self._options.friendTreesMC)
+        friendOpts += (self._options.friendTreesData if self._isdata else self._options.friendTreesMC)
         for tf_tree,tf_file in friendOpts:
             tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname)),
             self._friends.append(tf)
@@ -232,7 +235,8 @@ class TreeToYield:
             print ""
     def _getYield(self,tree,cut):
         if self._weight:
-            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
+            if self._isdata: cut = "(%s)     *(%s)*(%s)" % (self._weightString,                    self._scaleFactor, self.adaptExpr(cut,cut=True))
+            else:            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
             ROOT.gROOT.cd()
             if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
             histo = ROOT.TH1F("dummy","dummy",1,0.0,1.0); histo.Sumw2()
@@ -265,6 +269,10 @@ class TreeToYield:
             ret.SetBinContent(n,ret.GetBinContent(n+1)+ret.GetBinContent(n))
             ret.SetBinError(1,hypot(ret.GetBinError(0),ret.GetBinError(1)))
             ret.SetBinError(n,hypot(ret.GetBinError(n+1),ret.GetBinError(n)))
+            rebin = plotspec.getOption('rebinFactor',0)
+            if plotspec.bins[0] != "[" and rebin > 1 and n > 5:
+                while n % rebin != 0: rebin -= 1
+                if rebin != 1: ret.Rebin(rebin)
             if plotspec.getOption('Density',False):
                 for b in xrange(1,n+1):
                     ret.SetBinContent( b, ret.GetBinContent(b) / ret.GetXaxis().GetBinWidth(b) )
@@ -274,7 +282,8 @@ class TreeToYield:
     def getPlotRaw(self,name,expr,bins,cut):
         if not self._isInit: self._init()
         if self._weight:
-            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
+            if self._isdata: cut = "(%s)     *(%s)*(%s)" % (self._weightString,                    self._scaleFactor, self.adaptExpr(cut,cut=True))
+            else:            cut = "(%s)*(%s)*(%s)*(%s)" % (self._weightString,self._options.lumi, self._scaleFactor, self.adaptExpr(cut,cut=True))
         if ROOT.gROOT.FindObject("dummy") != None: ROOT.gROOT.FindObject("dummy").Delete()
         histo = None
         if ":" in expr.replace("::","--"):
