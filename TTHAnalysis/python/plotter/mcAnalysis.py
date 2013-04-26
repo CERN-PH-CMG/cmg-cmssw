@@ -65,7 +65,8 @@ class MCAnalysis:
             ## endif
             rootfile = options.path+"/%s/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root" % field[1].strip()
             if options.remotePath:
-                rootfile = options.remotePath+"/%s/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root" % field[1].strip()
+                #rootfile = options.remotePath+"/%s/ttHLepTreeProducerBase/ttHLepTreeProducerBase_tree.root" % field[1].strip()
+                rootfile = options.remotePath+"/%s/ttHLepTreeProducerBase_tree.root" % field[1].strip()
             elif os.path.exists(rootfile+".url"): #(not os.path.exists(rootfile)) and :
                 rootfile = open(rootfile+".url","r").readline().strip()
             pckfile = options.path+"/%s/skimAnalyzerCount/SkimReport.pck" % field[1].strip()
@@ -80,7 +81,7 @@ class MCAnalysis:
                 self._backgrounds.append(tty)
             if field[0] in self._allData: self._allData[field[0]].append(tty)
             else                        : self._allData[field[0]] =     [tty]
-            if field[0] != "data":
+            if "data" not in field[0]:
                 pckobj  = pickle.load(open(pckfile,'r'))
                 nevt = dict(pckobj)['All Events']
                 scale = "%s/%g" % (field[2], 0.001*nevt)
