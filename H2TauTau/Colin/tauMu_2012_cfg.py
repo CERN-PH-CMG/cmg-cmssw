@@ -218,7 +218,7 @@ selectedComponents.extend( embed_list )
 
 
 sequence = cfg.Sequence( [
-    eventSelector,
+    # eventSelector,
     jsonAna,
     triggerAna,
     vertexAna,
@@ -243,7 +243,7 @@ test = 1
 if test==1:
     comp = HiggsVBF125
     selectedComponents = [comp]
-    comp.splitFactor = 1
+    comp.splitFactor = 14
     # comp.files = comp.files[:10]
 elif test==2:
     for comp in selectedComponents:
