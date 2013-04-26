@@ -108,6 +108,9 @@ int main(int argc, char* argv[])
   if(suffix==""){ //consider the other points only when no suffix is being used
     NRparams.push_back(std::make_pair<double,double>(0.1, 0) );
     NRparams.push_back(std::make_pair<double,double>(0.3, 0) );
+    NRparams.push_back(std::make_pair<double,double>(0.2, 0) );
+    NRparams.push_back(std::make_pair<double,double>(0.4, 0) );
+    NRparams.push_back(std::make_pair<double,double>(0.5, 0) );
     NRparams.push_back(std::make_pair<double,double>(0.6, 0) );
     NRparams.push_back(std::make_pair<double,double>(0.8, 0) );
     NRparams.push_back(std::make_pair<double,double>(1.0, 0) );
@@ -144,6 +147,18 @@ int main(int argc, char* argv[])
   double HiggsMass=0; string VBFString = ""; string GGString("");
   bool isMC_GG  = isMC && ( string(url.Data()).find("GG" )  != string::npos);
   bool isMC_VBF = isMC && ( string(url.Data()).find("VBF")  != string::npos);
+  bool isMC_ZZ  = isMC && ( string(url.Data()).find("MC8TeV_ZZ")  != string::npos);
+  std::vector<TGraph *> zzShapeUnc;
+  if(isMC_ZZ)
+    {
+      TFile *zzUncF=TFile::Open("/afs/cern.ch/work/p/psilva/CMSSW_5_3_3_patch2/src/CMGTools/HtoZZ2l2nu/data/zzunc.root");
+      zzShapeUnc.push_back( new TGraph( (TH1 *)zzUncF->Get("zzpt_up") ) );
+      zzShapeUnc.push_back( new TGraph( (TH1 *)zzUncF->Get("zzpt_down") ) );
+      zzUncF->Close();
+      varNames[11]="_zptup";
+      varNames[12]="_zptdown";
+    }
+
   TFile *fin=0;
   int cmEnergy(8);
   if(url.Contains("7TeV")) cmEnergy=7;
@@ -1041,7 +1056,8 @@ int main(int argc, char* argv[])
       double dphil2met=fabs(deltaPhi(lep2.phi(),zvvs[0].phi()));
       bool passLMetVeto(true);
       if(!use2011Id && zvvs[0].pt()>60 && min(dphil1met,dphil2met)<0.2) passLMetVeto=false;
-      
+      passLMetVeto=true;  //remove after ARC discussion 25/04
+
       //other mets
       METUtils::stRedMET aRedMetOut;
       LorentzVector aRedMet=METUtils::redMET(METUtils::INDEPENDENTLYMINIMIZED, lep1, 0, lep2, 0, aClusteredMetP4, zvvs[0],false,&aRedMetOut);
@@ -1346,6 +1362,22 @@ int main(int argc, char* argv[])
         float iweight = weight;                                               //nominal
         if(ivar==9)                         iweight *=TotalWeight_plus;        //pu up
         if(ivar==10)                        iweight *=TotalWeight_minus;       //pu down
+	if((ivar==11 || ivar==12) && isMC_ZZ && zzShapeUnc.size()==2)
+	  { 
+	    TGraph *varGr=zzShapeUnc[ivar-11];
+	    if(varGr==0) continue;
+	    std::vector<LorentzVector> zs;
+ 	    for(Int_t ipart=0; ipart<ev.nmcparticles; ipart++)
+	      {
+		if(ev.mc_id[ipart]!=23) continue;
+		zs.push_back( LorentzVector(ev.mc_px[ipart],ev.mc_py[ipart],ev.mc_pz[ipart],ev.mc_en[ipart]) );
+	      }
+	    if(zs.size()==2)
+	      {
+		LorentzVector zz=zs[0]+zs[1];
+		iweight *= varGr->Eval(zz.pt());
+	      }
+	  }
         if(ivar<=14 && ivar>=11 && isMC_GG)                                  //ren/fact scales
 	  {
 	    float hptReweight = ev.hptWeights[ivar-10];
