@@ -26,6 +26,7 @@ class PlotFile:
                     for p in p0.split(","):
                         if re.match(p+"$", field[0]): skipMe = False
                 if skipMe: continue
+            if options.globalRebin: extra['rebinFactor'] = options.globalRebin
             self._plots.append(PlotSpec(field[0],field[1],field[2],extra))
     def plots(self):
         return self._plots[:]
@@ -117,7 +118,7 @@ def doStackSigScaledNormData(pspec,pmap):
     sig.Draw("HIST SAME")
     return (sig,sf)
 
-def doRatioHists(pspec,pmap,total,totalSyst):
+def doRatioHists(pspec,pmap,total,totalSyst,maxRange):
     if "data" not in pmap: return (None,None,None,None)
     ratio = pmap["data"].Clone("data_div"); 
     ratio.Divide(total)
@@ -132,8 +133,8 @@ def doRatioHists(pspec,pmap,total,totalSyst):
         unity0.SetBinError(b, e0/n if n > 0 else 0)
         rmin = min([ rmin, 1-2*e/n if n > 0 else 1, ratio.GetBinContent(b) - 2*ratio.GetBinError(b) ]) 
         rmax = max([ rmax, 1+2*e/n if n > 0 else 1, ratio.GetBinContent(b) + 2*ratio.GetBinError(b) ])  
-    if rmin < 0: rmin = 0
-    if rmax > 5: rmax = 5;
+    if rmin < maxRange[0]: rmin = maxRange[0]; 
+    if rmax > maxRange[1]: rmax = maxRange[1];
     unity.SetFillStyle(1001);
     unity.SetFillColor(ROOT.kCyan);
     unity.SetMarkerStyle(1);
@@ -296,6 +297,7 @@ class PlotMaker:
                     c1.SetWindowSize(600 + (600 - c1.GetWw()), 600 + (600 - c1.GetWh()));
                 p1.SetLogy(islog)
                 if islog: total.SetMaximum(2*total.GetMaximum())
+                if not islog: total.SetMinimum(0)
                 total.Draw("HIST")
                 if self._options.plotmode == "stack":
                     stack.Draw("SAME HIST")
@@ -329,7 +331,7 @@ class PlotMaker:
                 rdata,rnorm,rnorm2,rline = (None,None,None,None)
                 if doRatio:
                     p2.cd(); 
-                    rdata,rnorm,rnorm2,rline = doRatioHists(pspec,pmap,total,totalSyst)
+                    rdata,rnorm,rnorm2,rline = doRatioHists(pspec,pmap,total,totalSyst, maxRange=options.maxRatioRange)
                 if self._options.printPlots:
                     for ext in self._options.printPlots.split(","):
                         fdir = self._options.printDir;
@@ -352,7 +354,9 @@ def addPlotMakerOptions(parser):
     parser.add_option("--showDatShape", dest="showDatShape", action="store_true", default=False, help="Stack a normalized data shape")
     parser.add_option("--showSFitShape", dest="showSFitShape", action="store_true", default=False, help="Stack a shape of background + scaled signal normalized to total data")
     parser.add_option("--showRatio", dest="showRatio", action="store_true", default=False, help="Add a data/sim ratio plot at the bottom")
+    parser.add_option("--maxRatioRange", dest="maxRatioRange", type="float", nargs=2, default=(0.0, 5.0), help="Min and max for the ratio")
     parser.add_option("--plotmode", dest="plotmode", type="string", default="stack", help="Show as stacked plot (stack), a non-stacked comparison (nostack) and a non-stacked comparison of normalized shapes (norm)")
+    parser.add_option("--rebin", dest="globalRebin", type="int", default="0", help="Rebin all plots by this factor")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
 
 if __name__ == "__main__":
