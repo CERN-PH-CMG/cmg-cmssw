@@ -40,8 +40,9 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         ## --- JETS ---
         var( tr, 'nJet25', int)
         var( tr, 'nJet30', int)       
+        self.saveJetId = (self.cfg_ana.saveJetId if hasattr(self.cfg_ana,'saveJetId') else False)
         for i in range(8):
-            bookJet(tr,"Jet%d"%(i+1), isMC)
+            bookJet(tr,"Jet%d"%(i+1), isMC, saveID=self.saveJetId)
         if hasattr(self.cfg_ana, 'doJetsFailId') and self.cfg_ana.doJetsFailId:
             for i in range(8):
                 bookJet(tr,"JetFailId%d"%(i+1), isMC, saveID=True)
@@ -149,7 +150,7 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill(tr, 'nJet25', len(event.cleanJets))      
         fill(tr, 'nJet30', sum([(j.pt() > 30) for j in event.cleanJets]))      
         for i in range(min(8,len(event.cleanJets))):
-            fillJet(tr, "Jet%d"%(i+1), event.cleanJets[i])        
+            fillJet(tr, "Jet%d"%(i+1), event.cleanJets[i], saveID=self.saveJetId)        
 
         if hasattr(self.cfg_ana, 'doJetsFailId') and self.cfg_ana.doJetsFailId:
             event.jetsFailId.sort(key = lambda j : j.pt(), reverse = True)

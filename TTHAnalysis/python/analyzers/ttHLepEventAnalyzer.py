@@ -141,6 +141,12 @@ class ttHLepEventAnalyzer( Analyzer ):
     def makeMETs(self, event):
         event.met = self.handles['met'].product()[0]
         event.metNoPU = self.handles['nopumet'].product()[0]
+        if hasattr(event, 'deltaMetFromJetSmearing'):
+            import ROOT
+            px,py = event.met.px()+event.deltaMetFromJetSmearing[0], event.met.py()+event.deltaMetFromJetSmearing[1]
+            event.met.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
+            px,py = event.metNoPU.px()+event.deltaMetFromJetSmearing[0], event.metNoPU.py()+event.deltaMetFromJetSmearing[1]
+            event.metNoPU.setP4(ROOT.reco.Particle.LorentzVector(px,py, 0, hypot(px,py)))
         metMatrix = self.handles['metSignificance'].product().significance()
         metMatrix.Invert();
         import array
