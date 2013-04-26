@@ -22,6 +22,7 @@ class ttHJetAnalyzer( Analyzer ):
             else:
                 self.jetReCalibrator    = JetReCalibrator("GR_P_V42_AN4","AK5PF",    True)
                 self.jetReCalibratorCHS = JetReCalibrator("GR_P_V42_AN4","AK5PFchs", True)
+        self.doPuId = self.cfg_ana.doPuId if hasattr(self.cfg_ana, 'doPuId') else True
 
     def declareHandles(self):
         super(ttHJetAnalyzer, self).declareHandles()
@@ -88,7 +89,7 @@ class ttHJetAnalyzer( Analyzer ):
         if self.cfg_ana.relaxJetId:
             return True
         else:
-            return jet.puJetIdPassed and jet.pfJetIdPassed
+            return jet.pfJetIdPassed and (jet.puJetIdPassed or not(self.doPuId)) 
         
     def testJetNoID( self, jet ):
         # 2 is loose pile-up jet id
