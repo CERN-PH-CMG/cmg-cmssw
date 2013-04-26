@@ -1,9 +1,7 @@
 mll: mZ1: 80,70,110 ; XTitle="best m(l^{+}l^{-}')  [GeV]", Legend='TR'
 mll_log: mZ1: 180,60,120 ; XTitle="best m(l^{+}l^{-}')  [GeV]", Legend='TR', Logy
 nvtx: nVert: 40,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
-lep2MVA: LepGood2_mvaNew: 40,-1.0,1.0; XTitle="Second lepton MVA", Legend='TL'
-#lep2MVA_v3b: LepGood2_mvaNew: 40,-1.0,1.0; XTitle="Second lepton MVA", Legend='TL'
-#lep2MVA_v3b: LepGood2_mvaNew: 40,-1.0,1.0; XTitle="Second lepton MVA", Legend='TL'
+lep2MVA: LepGood2_mva: 40,-1.0,1.0; XTitle="Second lepton MVA", Legend='TL'
 lep2pt:   LepGood2_pt:  100,0,100; XTitle="Second lepton p_{T}  [GeV]", Legend='TR'
 lep2eta:  LepGood2_eta: 50,-2.5,2.5; XTitle="Second lepton #eta ", Legend='TR'
 lep2chIso:  LepGood2_chargedIso/LepGood2_pt: 40,0,0.4; XTitle="leading lepton Iso/p_{T} (Ch Had)", Legend='TR',Logy
