@@ -56,7 +56,9 @@ allsamples = copy.copy(MC_list)
 # pat = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_Moriond_Test1/TAUMU_TestMoriond_Dec13'
 # new JEC
 # pat = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_Moriond_Test2/TAUMU_TestMoriond_Dec13'
-pat = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_Moriond_Test3/TAUMU_TestMoriond_Dec14'
+# pat = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_Moriond_Test3/TAUMU_TestMoriond_Dec14'
+
+pat = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0/TAUMU_OSVFit_Apr26'
 HiggsVBF125.files = getFiles(pat,
                              'cbern', '.*root')
 

@@ -42,50 +42,19 @@ mc_muEffWeight = 'effMu2012_Rebecca_TauMu_ABC'
 eventSelector = cfg.Analyzer(
     'EventSelector',
     toSelect = [
-##    376085 ,
-##    576766 ,
-##    585849 ,
-##    138712 ,
-##    462372 ,
-##    647749 ,
-##    794711 ,
-##    397814 ,
-##    168577 ,
-##    752021 ,
-##    955981 ,
-##    144732 ,
-##    253983 ,
-##    967335 ,
-##    593390 ,
-##    312587 ,
-##     95728 ,
-##     78807 ,
-##    433140 ,
-##    501604 ,
-##    990370 ,
-##    496868 ,
-##     65293 ,
-##    479335 ,
-##     19791 ,
-   # selected by me and not by Jose
-   343405 ,
-   900535 ,
-    55498 ,
-   600255 ,
-   523634 ,
-   755769 ,
-   192915 ,
-   569949 ,
-   268302 ,
-   840192 ,
-   746810 ,
-   776229 ,
-   992574 ,
-   387821 ,
-   523969 ,
-   878407 ,
-   661467 ,
-   145475 ,
+277833 ,
+831584 ,
+735611 ,
+547706 ,
+309799 ,
+738276 ,
+408424 ,
+334364 ,
+546802 ,
+549367 ,
+599803 ,
+359594 ,
+186559 ,
 
     ]
     )
@@ -249,7 +218,7 @@ selectedComponents.extend( embed_list )
 
 
 sequence = cfg.Sequence( [
-#     eventSelector,
+    eventSelector,
     jsonAna,
     triggerAna,
     vertexAna,
@@ -262,7 +231,8 @@ sequence = cfg.Sequence( [
     embedWeighter, 
     tauWeighter, 
     muonWeighter, 
-    treeProducer
+    treeProducer, 
+    # treeProducerXCheck
    ] )
 
 if syncntuple:
@@ -273,7 +243,7 @@ test = 1
 if test==1:
     comp = HiggsVBF125
     selectedComponents = [comp]
-    comp.splitFactor = 14
+    comp.splitFactor = 1
     # comp.files = comp.files[:10]
 elif test==2:
     for comp in selectedComponents:
