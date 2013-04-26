@@ -1,0 +1,7 @@
+met:   met: 15,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
+metLD: met*0.00397 + mhtJet25*0.00265 : 15,-0.1,1.4 ; XTitle="E_{T}^{miss} LD"
+mll:   minMllAFAS: 20,0,200 ; XTitle="min m(ll)  [GeV]", Legend='TR'
+lep1Pt:  LepGood1_pt: 16,0,160; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
+lep2Pt:  LepGood2_pt: 16,0,80; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
+lep1Eta:  abs(LepGood1_eta): 10,0,2.5; XTitle="Leading lepton |#eta|", Legend='TR'
+lep2Eta:  abs(LepGood2_eta): 10,0,2.5; XTitle="Subleading lepton |#eta|", Legend='TR'
