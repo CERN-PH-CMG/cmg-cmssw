@@ -6,7 +6,9 @@
 #include <map>
 
 TH2 * FR_mu = 0;
+TH2 * FR2_mu = 0;
 TH2 * FR_el = 0;
+TH2 * FR2_el = 0;
 TH2 * QF_el = 0;
 
 
@@ -14,6 +16,8 @@ bool loadFRHisto(const std::string &histoName, const char *file, const char *nam
     TH2 **histo = 0;
     if (histoName == "FR_mu") histo = & FR_mu;
     if (histoName == "FR_el") histo = & FR_el;
+    if (histoName == "FR2_mu") histo = & FR2_mu;
+    if (histoName == "FR2_el") histo = & FR2_el;
     if (histoName == "QF_el") histo = & QF_el;
     if (histo == 0)  {
         std::cerr << "ERROR: histogram " << histoName << " is not defined in fakeRate.cc." << std::endl;
@@ -34,9 +38,9 @@ bool loadFRHisto(const std::string &histoName, const char *file, const char *nam
 }
 
 float fakeRateWeight_2lss(float l1pt, float l1eta, int l1pdgId, float l1mva,
-                         float l2pt, float l2eta, int l2pdgId, float l2mva) 
+                         float l2pt, float l2eta, int l2pdgId, float l2mva, float WP) 
 {
-    int nfail = (l1mva < -0.2)+(l2mva < -0.2);
+    int nfail = (l1mva < WP)+(l2mva < WP);
     switch (nfail) {
         case 1: {
             double fpt,feta; int fid;
@@ -57,10 +61,95 @@ float fakeRateWeight_2lss(float l1pt, float l1eta, int l1pdgId, float l1mva,
             int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(l2pt)));
             int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(std::abs(l2eta))));
             double fr2 = hist2->GetBinContent(ptbin2,etabin2);
-            return fr1*fr2/((1-fr1)*(1-fr2));
+            return -fr1*fr2/((1-fr1)*(1-fr2));
         }
         default: return 0;
     }
+}
+
+bool passND_LooseDen(float l1pt, float l1eta, int l1pdgId, float relIso, float dxy, float dz, float tightId) 
+{
+    if (fabs(l1pdgId) == 13) {
+        return l1pt >= 10;
+    } else {
+        return l1pt >= 10 && (fabs(l1eta)<1.4442 || fabs(l1eta)>1.5660);
+    }
+}
+
+bool passND_Loose(float l1pt, float l1eta, int l1pdgId, float relIso, float dxy, float dz, float tightId) 
+{
+    if (fabs(l1pdgId) == 13) {
+        return l1pt >= 10 && 
+               relIso < 0.2;
+    } else {
+        return l1pt >= 10 && (fabs(l1eta)<1.4442 || fabs(l1eta)>1.5660) &&
+               tightId > 0 && relIso < 0.25 && fabs(dxy) < 0.04;
+    }
+}
+
+bool passND_TightDen(float l1pt, float l1eta, int l1pdgId, float relIso, float dxy, float dz, float tightId) 
+{
+    if (fabs(l1pdgId) == 13) {
+        return l1pt >= 20 && fabs(l1eta) <= 2.1;
+    } else {
+        return l1pt >= 20 && (fabs(l1eta)<1.4442 || fabs(l1eta)>1.5660);
+    }
+}
+
+bool passND_Tight(float l1pt, float l1eta, int l1pdgId, float relIso, float dxy, float dz, float tightId) 
+{
+    if (fabs(l1pdgId) == 13) {
+        return l1pt >= 20 && fabs(l1eta) <= 2.1 && 
+               tightId != 0 && relIso < 0.12 && fabs(dxy) < 0.2 && fabs(dz) < 0.5;
+    } else {
+        return l1pt >= 20 && (fabs(l1eta)<1.4442 || fabs(l1eta)>1.5660) &&
+               tightId > 0 && relIso < 0.15 && fabs(dxy) < 0.02;
+    }
+}
+
+float fakeRateWeight_2lss_ND(float l1pt, float l1eta, int l1pdgId, float l1relIso, float l1dxy, float l1dz, float l1tightId,
+                          float l2pt, float l2eta, int l2pdgId, float l2relIso, float l2dxy, float l2dz, float l2tightId, int WP) 
+{
+    switch (WP) {
+        case 11: {// loose-loose
+            bool l1L = passND_Loose(l1pt, l1eta, l1pdgId, l1relIso, l1dxy, l1dz, l1tightId);
+            bool l2L = passND_Loose(l2pt, l2eta, l2pdgId, l2relIso, l2dxy, l2dz, l2tightId);
+            TH2 *hist1 = (abs(l1pdgId) == 11 ? FR_el : FR_mu);
+            int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(l1pt)));
+            int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(std::abs(l1eta))));
+            double fr1 = hist1->GetBinContent(ptbin1,etabin1);
+            TH2 *hist2 = (abs(l2pdgId) == 11 ? FR_el : FR_mu);
+            int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(l2pt)));
+            int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(std::abs(l2eta))));
+            double fr2 = hist2->GetBinContent(ptbin2,etabin2);
+            if      ( l1L &&  l2L) return 0;
+            else if ( l1L && !l2L) return fr2/(1-fr2);
+            else if (!l1L &&  l2L) return fr1/(1-fr1);
+            else if (!l1L && !l2L) return -fr1*fr2/((1-fr1)*(1-fr2));
+        }; 
+        case 22: {// tight-tight 
+            bool l1T = passND_Tight(l1pt, l1eta, l1pdgId, l1relIso, l1dxy, l1dz, l1tightId);
+            bool l2T = passND_Tight(l2pt, l2eta, l2pdgId, l2relIso, l2dxy, l2dz, l2tightId);
+            TH2 *hist1 = (abs(l1pdgId) == 11 ? FR2_el : FR2_mu);
+            int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(l1pt)));
+            int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(std::abs(l1eta))));
+            double fr1 = hist1->GetBinContent(ptbin1,etabin1);
+            TH2 *hist2 = (abs(l2pdgId) == 11 ? FR2_el : FR2_mu);
+            int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(l2pt)));
+            int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(std::abs(l2eta))));
+            double fr2 = hist2->GetBinContent(ptbin2,etabin2);
+            if      ( l1T &&  l2T) return 0;
+            else if ( l1T && !l2T) return fr2/(1-fr2);
+            else if (!l1T &&  l2T) return fr1/(1-fr1);
+            else if (!l1T && !l2T) return -fr1*fr2/((1-fr1)*(1-fr2));
+        }; 
+        default: {
+            static int _once = 0;
+            if (_once++ == 0) { std::cerr << "ERROR, unknown WP " << WP << std::endl; }
+        }
+
+    }
+    return 0;
 }
 
 float chargeFlipWeight_2lss(float l1pt, float l1eta, int l1pdgId, 
