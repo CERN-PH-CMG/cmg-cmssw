@@ -25,7 +25,7 @@ class Style:
     def formatHistoAxis( self, hist ):
         hist.GetXaxis().SetTitleSize(0.05)
         hist.GetYaxis().SetTitleSize(0.05)
-        hist.GetYaxis().SetTitleOffset(1.5)        
+        hist.GetYaxis().SetTitleOffset(1.2)        
         
     def formatHisto( self, hist, title=None):
         hist.SetMarkerStyle( self.markerStyle )
@@ -43,38 +43,40 @@ class Style:
 
 def formatPad( pad ):
     pad.SetLeftMargin(0.15)
-    pad.SetBottomMargin(0.12)
+    pad.SetBottomMargin(0.15)
+    #pad.SetLeftMargin(0.)
+    #pad.SetBottomMargin(0.)
 
 
 # the following standard files are defined and ready to be used.
 # more standard styles can be added on demand.
 # user defined styles can be created in the same way in any python module
 
-sBlack = Style()
-sData = Style(fillStyle=0, markerSize=1.3)
-sBlue = Style(lineColor=4, markerColor=4)
-sGreen = Style(lineColor=8, markerColor=8)
-sRed = Style(lineColor=2, markerColor=2)
+sBlack  = Style()
+sData   = Style(fillStyle=0, markerSize=1.3)
+sBlue   = Style(lineColor=4, markerColor=4)
+sGreen  = Style(lineColor=8, markerColor=8)
+sRed    = Style(lineColor=2, markerColor=2)
 sYellow = Style(lineColor=1, markerColor=5, fillColor=5)
 sViolet = Style(lineColor=1, markerColor=kViolet, fillColor=kViolet)
 
-qcdcol = kMagenta - 10
-sHTT_QCD = Style(lineColor=1, markerColor=qcdcol, fillColor = qcdcol)
-dycol = kOrange - 4 
-sHTT_DYJets = Style(lineColor=1, markerColor=dycol, fillColor = dycol)
-wcol = kRed+2 
-sHTT_WJets = Style(lineColor=1, markerColor=wcol, fillColor = wcol)
-ttcol = kBlue-8
-sHTT_TTJets = Style(lineColor=1, markerColor=ttcol, fillColor = ttcol)
-sHTT_Higgs = Style(lineColor=2, markerColor=2, fillColor = 0)
-zlcol = kBlue
-sHTT_ZL = Style(lineColor=1, markerColor=zlcol, fillColor = zlcol)
+qcdcol      = kMagenta - 10
+sHTT_QCD    = Style(lineColor=1, markerColor=qcdcol, fillColor = qcdcol)
+dycol       = kOrange - 4 
+sHTT_DYJets = Style(lineColor=1, markerColor=dycol , fillColor = dycol)
+wcol        = kRed+2 
+sHTT_WJets  = Style(lineColor=1, markerColor=wcol  , fillColor = wcol)
+ttcol       = kBlue-8
+sHTT_TTJets = Style(lineColor=1, markerColor=ttcol , fillColor = ttcol)
+sHTT_Higgs  = Style(lineColor=4, markerColor=2, lineStyle=2 , fillColor = 0)
+zlcol       = kBlue
+sHTT_ZL     = Style(lineColor=1, markerColor=zlcol , fillColor = zlcol)
 
 
-sBlackSquares = Style(markerStyle = 21)
-sBlueSquares = Style(lineColor=4, markerStyle = 21, markerColor=4)
+sBlackSquares = Style( markerStyle = 21)
+sBlueSquares  = Style( lineColor=4, markerStyle = 21, markerColor=4 )
 sGreenSquares = Style( lineColor=8, markerStyle = 21, markerColor=8 )
-sRedSquares = Style(lineColor=2, markerStyle = 21, markerColor=2)
+sRedSquares   = Style( lineColor=2, markerStyle = 21, markerColor=2 )
 
 
 styleSet = [sBlue, sGreen, sRed, sYellow, sViolet, sBlackSquares, sBlueSquares, sGreenSquares, sRedSquares]

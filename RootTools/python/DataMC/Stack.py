@@ -85,9 +85,9 @@ class Stack:
         if self.statErrors is False:
             return
         self.totalHist.weighted.SetFillColor(kGray)
-        self.totalHist.weighted.SetFillColor(kGray)
-        self.totalHist.weighted.SetLineColor(4)
-        self.totalHist.Draw('same')
+        self.totalHist.weighted.SetFillColor(1)
+        self.totalHist.weighted.SetFillStyle(3013)
+        self.totalHist.Draw('samee2')
         
     def SetStyle(self, style ):
         '''Set the style for the total histogram'''
