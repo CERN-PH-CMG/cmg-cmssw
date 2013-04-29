@@ -2,6 +2,12 @@
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/CMGToolsReleasesExperimental#Colin_535_Bleeding_Edge
 https://twiki.cern.ch/twiki/bin/viewauth/CMS/CMGToolsReleasesExperimental#Mike_Cris_533_V5_10_0
 
+# Then
+cd CMGTools/CMSSW_5_3_3_patch3/src
+
+# TTHAnalysis package
+cvs co -d CMGTools/TTHAnalysis UserCode/CMG/CMGTools/TTHAnalysis
+
 #For mu ghost cleaning
 cvs co -r U09-04-03-00-01 DataFormats/MuonReco 
 
@@ -11,13 +17,13 @@ cvs co -r V00-00-30 -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysis
 cvs co -r Moriond_2013_V01-1 EgammaAnalysis/ElectronTools
 patch -p0 < $CMSSW_BASE/src/CMGTools/TTHAnalysis/PatElectronEnergyCalibrator-fwliteCompatible.patch
 
-# Fix muon SIP from Mike
-cvs update -r1.15.4.2 CMGTools/Common/src/MuonFactory.cc
-
-# Fix CMG-from-CMG workflow for electrons
-patch -p0 < /afs/cern.ch/work/g/gpetrucc/ttH/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/ElectronFactory.gio.patch
+## Fix muon SIP from Mike
+#cvs update -r1.15.4.2 CMGTools/Common/src/MuonFactory.cc
+#
+## Fix CMG-from-CMG workflow for electrons
+#patch -p0 < /afs/cern.ch/work/g/gpetrucc/ttH/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/ElectronFactory.gio.patch
 
 
 # For the python analysis
-cbern_jetvbfsplit_4Dec12 CMGTools/RootTools                               
-cbern_jetvbfsplit_4Dec12 CMGTools/ZJetsTutorial          
+cvs update -rcbern_jetvbfsplit_4Dec12 CMGTools/RootTools                               
+cvs update -rcbern_jetvbfsplit_4Dec12 CMGTools/ZJetsTutorial          
