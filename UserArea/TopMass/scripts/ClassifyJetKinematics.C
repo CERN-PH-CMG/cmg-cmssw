@@ -53,14 +53,12 @@ public:
   
   void doStandardCategories(int kinBins)
   {
-    addCategory(0,  2.5,kinBins);
-    /*
-    addCategory(0,  0.45,kinBins);
-    addCategory(0.45,0.9,kinBins); 
-    addCategory(0.9,1.1,kinBins);
-    addCategory(1.1,1.5,kinBins);    
-    addCategory(1.5,2.5,kinBins);
-    */
+    addCategory(0,  1.1,kinBins);
+    //     addCategory(0,  0.45,kinBins);
+    //     addCategory(0.45,0.9,kinBins); 
+    //     addCategory(0.9,1.1,kinBins);    
+    //     //addCategory(1.1,1.5,kinBins);    
+    //     //addCategory(1.5,2.5,kinBins);
   }
   
   void fill(float kin,float eta,float lxy,float mass,float wgt=1.0)
@@ -146,14 +144,12 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
   LxyTemplate target("target"+chSuf,kin);
   if(optimBins==0) target.doStandardCategories(kinBins);
   else{
-    target.addCategory(0,2.5, (*optimBins)[0] );
-    /*
-      target.addCategory(0,  0.45, (*optimBins)[0] );
-      target.addCategory(0.45,0.9, (*optimBins)[1] );
-      target.addCategory(0.9,1.1, (*optimBins)[2] );
-      target.addCategory(1.1,1.5, (*optimBins)[3] );
-      target.addCategory(1.5,2.5, (*optimBins)[4] );
-    */
+    target.addCategory(0,1.1, (*optimBins)[0] );
+    //     target.addCategory(0,  0.45, (*optimBins)[0] );
+    //     target.addCategory(0.45,0.9, (*optimBins)[1] );
+    //     target.addCategory(0.9,1.1, (*optimBins)[2] );
+    //     //      target.addCategory(1.1,1.5, (*optimBins)[3] );
+    //     //  target.addCategory(1.5,2.5, (*optimBins)[4] );
   }
   TFile *targetF=TFile::Open(targetUrl);
   TTree *theTree = (TTree *)targetF->Get("ana/toptree");
@@ -180,14 +176,13 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
   LxyTemplate ctrl("ctrl"+chSuf,kin);
   if(optimBins==0) ctrl.doStandardCategories(kinBins);
   else{
-    ctrl.addCategory(0,  2.5, (*optimBins)[0] );
-    /*
-      ctrl.addCategory(0,  0.45, (*optimBins)[0] );
-      ctrl.addCategory(0.45,0.9, (*optimBins)[1] );
-      ctrl.addCategory(0.9,1.1, (*optimBins)[2] );
-      ctrl.addCategory(1.1,1.5, (*optimBins)[3] );
-      ctrl.addCategory(1.5,2.5, (*optimBins)[4] );
-    */
+    ctrl.addCategory(0,  1.1, (*optimBins)[0] );
+
+    //     ctrl.addCategory(0,  0.45, (*optimBins)[0] );
+    //     ctrl.addCategory(0.45,0.9, (*optimBins)[1] );
+    //     ctrl.addCategory(0.9,1.1, (*optimBins)[2] );
+    //     //  ctrl.addCategory(1.1,1.5, (*optimBins)[3] );
+    //    //  ctrl.addCategory(1.5,2.5, (*optimBins)[4] );
   }
   TFile *ctrlF = TFile::Open( ctrlUrl );
   theTree = (TTree*) ctrlF->Get("ana/toptree");
@@ -219,18 +214,16 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
   LxyTemplate templ("templates"+chSuf,kin);
   if(optimBins==0) templ.doStandardCategories(kinBins);
   else{
-    templ.addCategory(0,  2.5, (*optimBins)[0] );
-    /*
-      templ.addCategory(0,  0.45, (*optimBins)[0] );
-      templ.addCategory(0.45,0.9, (*optimBins)[1] );
-      templ.addCategory(0.9,1.1, (*optimBins)[2] );
-      templ.addCategory(1.1,1.5, (*optimBins)[3] );
-      templ.addCategory(1.5,2.5, (*optimBins)[4] );
-    */
+    templ.addCategory(0,  1.1, (*optimBins)[0] );
+    //     templ.addCategory(0,  0.45, (*optimBins)[0] );
+    //     templ.addCategory(0.45,0.9, (*optimBins)[1] );
+    //     templ.addCategory(0.9,1.1, (*optimBins)[2] );
+    //     //  templ.addCategory(1.1,1.5, (*optimBins)[3] );
+    //     //  templ.addCategory(1.5,2.5, (*optimBins)[4] );
   }
   
   //add pdf variations
-  float pdfWgts[45];
+  Float_t pdfWgts[45];
   TFile *pdfF=0;
   std::vector<TH1F *> pdfVarH;
   for(int ivar=0; ivar<=44; ivar++)
@@ -265,7 +258,10 @@ std::map<TString,std::vector<float> > RunJetClassification(TString ctrlUrl,TStri
     float wgt=ctrl.weightToTarget(kinVar,abseta,target);
     templ.fill(kinVar,abseta,lxy,mass,wgt);
 
-    for(size_t ipdfvar=0; ipdfvar<pdfVarH.size(); ipdfvar++) pdfVarH[ipdfvar]->Fill(lxy,wgt*pdfWgts[ipdfvar]/pdfWgts[0]);
+    for(size_t ipdfvar=0; ipdfvar<pdfVarH.size(); ipdfvar++) 
+      {
+	if(lxy<5) pdfVarH[ipdfvar]->Fill(lxy,wgt*pdfWgts[ipdfvar]/pdfWgts[0]);
+      }
 
   }
   ctrlF->Close();
@@ -459,6 +455,7 @@ void RunOptimization(TString iFile,TString jFile, TString kin, Float_t maxDRbj)
   std::map< TString, float > optimResult;
   int icat(0);
   TH1F *optimH = new TH1F("optimh",";Category ;Optimal bin",optimGr.size(),0,optimGr.size());
+  std::map<int,float> binTotalChi2;
   for(std::map<TString, std::vector<TGraph *> >::iterator it = optimGr.begin(); it!= optimGr.end(); it++,icat++)
     {
       std::map<TString,std::pair<float,float> > optimBins;
@@ -498,38 +495,29 @@ void RunOptimization(TString iFile,TString jFile, TString kin, Float_t maxDRbj)
 	      txt->AddText(it->first);
 	      txt->Draw();
 	    }
-	  else
+	  else if(igr==2 || igr==3 || igr==4)
 	    {
-	      float up(0),lo(9999);
-	      float minX(0),minY(9999);
-	      float thr = optimThr[it->first][igr]->GetY1();
+	      // cf. refernces in http://mathworld.wolfram.com/StatisticalMedian.html
 	      for(int pt=0;pt<it->second[igr]->GetN(); pt++)
 		{
 		  Double_t x,y;
 		  it->second[igr]->GetPoint(pt,x,y);
-		  if(y<minY) { minX=x; minY=y; }
-		  if(y>thr) continue;
-		  if(x>up) up=x;
-		  if(x<lo) lo=x;
+		  if(binTotalChi2.find(pt)==binTotalChi2.end()) binTotalChi2[pt]=0.;
+		  binTotalChi2[pt]=binTotalChi2[pt]+pow(y,2);
 		}
-	      optimBins[ctrlTitle]=std::pair<float,float>(lo,up);
-	      //optimBins[ctrlTitle]=std::pair<float,float>(minX,minX);
 	    }
 	}
 
-      //average center of the intervals found
-      float avgBin(0);
-      int npts(0);
-      for(std::map<TString,std::pair<float,float> >::iterator vIt=optimBins.begin();
-	  vIt != optimBins.end();
-	  vIt++)
+      //find the bin with best chi2
+      int optimBin(0);
+      float minchi2(99999999999999.); 
+      for(std::map<int,float>::iterator it=binTotalChi2.begin(); it!=binTotalChi2.end(); it++)
 	{
-	  float lo=vIt->second.first;
-	  float up=vIt->second.second;
-	  if(up>0 && lo<9999) { avgBin += 0.5*(lo+up); npts++;}
+	  if(it->second>minchi2) continue;
+	  optimBin=it->first;
+	  minchi2=it->second;
 	}
-      int optimBin=int(avgBin/npts) ;
-      cout << " | optimal: " << optimBin << " | " << endl;
+      cout << " | optimal: " << optimBin << " | chi^2:" << minchi2 << endl;
       optimResult[ it->first ]=optimBin;
       optimH->Fill(icat, optimBin );
       optimH->GetXaxis()->SetBinLabel(icat+1 ,it->first);
@@ -545,23 +533,21 @@ void RunOptimization(TString iFile,TString jFile, TString kin, Float_t maxDRbj)
   RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins);
 
   //now derive the target templates for the exclusive channels
-  /*
   RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins,1);
   RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins,2);
   RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins,3);
-  */
 
   fOut->Close();
 }
 
 //
-void ClassifyJetKinematics(TString iFile,TString jFile, TString kin, Float_t maxDRbj,TString optFile="",TString tag="")
+void ClassifyJetKinematics(TString iFile,TString jFile, TString kin, Float_t maxDRbj,TString optFile="",TString tag="", bool doPDF=false)
 {
   
   TString pdfVarFileName=gSystem->BaseName(iFile);
   pdfVarFileName.ReplaceAll(".root","_pdf.root");
   pdfVarFileName = "/afs/cern.ch/user/p/psilva/public/lxy/"+pdfVarFileName;
-  if(!gSystem->AccessPathName(pdfVarFileName)) pdfUrl=pdfVarFileName;
+  if(doPDF && !gSystem->AccessPathName(pdfVarFileName)) pdfUrl=pdfVarFileName;
 
   if(optFile=="") 
     {
@@ -588,9 +574,9 @@ void ClassifyJetKinematics(TString iFile,TString jFile, TString kin, Float_t max
     //build the templates
     fOut = TFile::Open("LxyTemplates.root","UPDATE");
     RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins,-1, tag);
-    //      RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 1, tag);
-    //      RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 2, tag);
-    //      RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 3, tag);
+    RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 1, tag);
+    RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 2, tag);
+    RunJetClassification(iFile,jFile,kin,0, maxDRbj, &optimBins, 3, tag);
     fOut->cd();
     fOut->Close();
   }
