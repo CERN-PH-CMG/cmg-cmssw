@@ -163,10 +163,7 @@ class TreeToYield:
             ret = mcc(ret,self._name,self._cname,cut)
         return ret
     def _init(self):
-        print "Trying to open %s for task %s" % (self._fname, self._name)
-        foptions = ""
-        if "root://" in self._fname: foptions = "-recreate"
-        self._tfile = ROOT.TFile.Open(self._fname, foptions)
+        self._tfile = ROOT.TFile.Open(self._fname)
         if not self._tfile: raise RuntimeError, "Cannot open %s\n" % root
         t = self._tfile.Get(self._options.tree)
         if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (options.tree, root)
