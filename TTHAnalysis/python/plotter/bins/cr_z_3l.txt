@@ -1,5 +1,5 @@
 2L SF/OS: nLepGood >= 3 && abs(LepGood1_pdgId+LepGood2_pdgId)==0
-lep MVA: min(LepGood1_mvaNew,LepGood2_mvaNew) >= -0.2
+lep MVA: min(LepGood1_mva,LepGood2_mva) >= 0.35
 mll > 12: minMllAFAS > 12
 Z peak: abs(mZ1-91.2) < 10
 met LD < 0.15: met*0.00397 + mhtJet25*0.00265 < 0.15

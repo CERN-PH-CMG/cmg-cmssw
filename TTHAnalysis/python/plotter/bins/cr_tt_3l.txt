@@ -1,7 +1,7 @@
 2L OF/OS: nLepGood >= 3 && abs(LepGood1_pdgId+LepGood2_pdgId)==2
-lep MVA: min(LepGood1_mvaNew,LepGood2_mvaNew) >= -0.2
+lep MVA: min(LepGood1_mva,LepGood2_mva) > 0.35
 mll > 12: minMllAFAS > 12
 >=1 B: nBJetMedium25 >= 1
 >=2 j: nJet25 >= 2
 Z veto: abs(mZ1-91.2) > 15
-3l veto: LepGood3_mvaNew < 0.0
+3l loose: LepGood3_mva < 0.35
