@@ -8,7 +8,7 @@ if __name__ == '__main__':
 
     parser = OptionParser()
     
-    parser.usage = """logger.py <dir or castortgz>
+    parser.usage = """logger.py <castortgz>
 Get information on the software that was used to process a dataset.
 
 Example:
@@ -22,21 +22,9 @@ more Logger/*
         parser.print_help()
         sys.exit(1)
 
-    dirOrFile = args[0]
+    tgzFile = args[0]
 
-    try:
-        log = logger(dirOrFile)
-        # log.logCMSSW()
-
-        if log.dirLocal == None:
-            log.stageIn()
+    log = logger(tgzFile)
+    log.stageIn()
             
-        # log.addFile('patTuple_PATandPF2PAT_RecoJets_cfg.py')
-        log.stageOut('/store/cmst3/user/cbern/Test')
-        # log.dump()
-    except ValueError as err:
-        print err, '. Exit!'
-        sys.exit(1)
-
-
-
+ 
