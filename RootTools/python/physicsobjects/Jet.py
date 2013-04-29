@@ -7,6 +7,15 @@ loose_WP = [
     (3.0, 5.0, -0.77),
     ]
 
+## integrate these new working points for PU jet ID. 
+## loose_53X_WP = cms.PSet(
+##     #4 Eta Categories  0-2.5 2.5-2.75 2.75-3.0 3.0-5.0
+##     #Loose Id
+##     Pt2030_Loose   = cms.vdouble(-0.63,-0.35,-0.28,-0.27),
+##     Pt3050_Loose   = cms.vdouble(-0.63,-0.35,-0.28,-0.27)
+##     )
+
+
 
 class Jet( PhysicsObject):
 
