@@ -4,9 +4,9 @@ import sys,os, re, subprocess, datetime
 import CMGTools.Production.eostools as castortools
 
 class logger:
-
+    '''COLIN: do something cleaner with tagPackage'''
     def __init__(self, dirLocalOrTgzDirOnCastor):
-
+        
         self.dirLocal = None
         self.tgzDirOnCastor = None
         self.tagPackage = True
@@ -26,8 +26,8 @@ class logger:
         else:
             return False
 
-    def isTgzDirOnCastor(self, file ):
-
+    def isTgzDirOnEOS(self, file ):
+        '''Checks if file is a .tgz file in an eos dir'''
         if not castortools.isCastorDir( file ):
             file = castortools.castorToLFN(file)
             
@@ -40,6 +40,8 @@ class logger:
                 return False
         else:
             return False
+
+    isTgzDirOnCastor = isTgzDirOnEOS
 
     def dump(self):
         print 'local dir      :', self.dirLocal
