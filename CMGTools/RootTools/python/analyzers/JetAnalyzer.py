@@ -1,7 +1,7 @@
 import random
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet, GenJet
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 # from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
@@ -46,9 +46,14 @@ class JetAnalyzer( Analyzer ):
 
         self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol,
                                            'std::vector<cmg::PFJet>' )
-        if self.cfg_comp.isMC and ("BB" in self.cfg_comp.name):
+        if self.cfg_comp.isMC:
+            # and ("BB" in self.cfg_comp.name):
             self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                          'std::vector<reco::GenParticle>' )
+            self.mchandles['genJets'] = AutoHandle('genJetSel',
+                                                   'std::vector<cmg::PhysicsObjectWithPtr< edm::Ptr<reco::GenJet> > >')
+##             self.mchandles['genJetsP'] = AutoHandle('ak5GenJetsNoNu',
+##                                                     'std::vector< reco::GenJet >')
 
     def beginLoop(self):
         super(JetAnalyzer,self).beginLoop()
@@ -70,7 +75,22 @@ class JetAnalyzer( Analyzer ):
         event.cleanBJets = []
 
         leptons = event.selectedLeptons
-     
+
+        genJets = None
+        if self.cfg_comp.isMC:
+            genJets = map( GenJet, self.mchandles['genJets'].product() ) 
+##             genJetsP = self.mchandles['genJetsP'].product()
+##             genJetsP10 = [j for j in genJetsP if j.pt()>10]
+##             print len(genJets), len(genJetsP10), len(genJetsP)
+##            for jet in genJetsP10:
+##                 print 'jet', jet.pt()
+##                 nCons = jet.nConstituents()
+##                 for idx in range(0, nCons):
+##                     part = jet.getGenConstituent(idx)
+##                     print part.pdgId(), part.pt()
+            print 'genJets'
+            for jet in genJets: print '\t', jet
+            
         for cmgJet in cmgJets:
             jet = Jet( cmgJet )
             allJets.append( jet )
@@ -82,6 +102,14 @@ class JetAnalyzer( Analyzer ):
                 event.jets.append(jet)
             if self.testBJet(jet):
                 event.bJets.append(jet)
+            if genJets:
+                pairs = matchObjectCollection( [jet], genJets, 0.5*0.5)
+                if pairs[jet] is None:
+                    jet.genJet = None
+                else:
+                    jet.genJet = pairs[jet] 
+                # print jet, jet.genJet
+                
         self.counters.counter('jets').inc('all events')
 
         event.cleanJets, dummy = cleanObjectCollection( event.jets,
@@ -139,6 +167,7 @@ class JetAnalyzer( Analyzer ):
         
 
     def testJetID(self, jet):
+        # import pdb; pdb.set_trace()
         jet.puJetIdPassed = jet.puJetId()
         jet.pfJetIdPassed = jet.getSelection('cuts_looseJetId')
         if self.cfg_ana.relaxJetId:
