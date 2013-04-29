@@ -23,7 +23,14 @@ patch -p0 < $CMSSW_BASE/src/CMGTools/TTHAnalysis/PatElectronEnergyCalibrator-fwl
 ## Fix CMG-from-CMG workflow for electrons
 #patch -p0 < /afs/cern.ch/work/g/gpetrucc/ttH/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/ElectronFactory.gio.patch
 
-
 # For the python analysis
 cvs update -rcbern_jetvbfsplit_4Dec12 CMGTools/RootTools                               
 cvs update -rcbern_jetvbfsplit_4Dec12 CMGTools/ZJetsTutorial          
+
+# LHA PDF
+scram setup lhapdffull
+
+# Magnetic field (note: this probably works only with bash)
+LIB=$(for P in $(echo $LD_LIBRARY_PATH  | sed 's/:/\n/g'); do test -f $P/pluginMagneticFieldParametrizedEnginePlugins.so && echo $P/pluginMagneticFieldParametrizedEnginePlugins.so; done)
+sed -i "s#<flags LDFLAGS=.*>#<flags LDFLAGS=\"$LIB\" />#" CMGTools/TTHAnalysis/BuildFile.xml 
+
