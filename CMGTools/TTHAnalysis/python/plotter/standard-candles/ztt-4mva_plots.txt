@@ -12,11 +12,9 @@ dphi: acos(cos(abs(LepGood1_phi-LepGood2_phi))) : 30,0,3.1416 ; XTitle="#Delta#p
 ptll:   TMath\:\:Hypot(LepGood1_pt*sin(LepGood1_phi)+LepGood2_pt*sin(LepGood2_phi),LepGood1_pt*cos(LepGood1_phi)+LepGood2_pt*cos(LepGood2_phi)):  80,0,160; XTitle="Dilepton lepton p_{T}  [GeV]", Legend='TR'
 #bestIso: min(LepGood1_relIso,LepGood2_relIso) : 40,0,0.4; XTitle="best lepton Iso/p_{T}", Legend='TR'
 #bestMVA: max(LepGood1_mva,LepGood2_mva) : 25,-1,1; XTitle="best lepton MVA", Legend='TL'
-#bestMVA: max(LepGood1_mva,LepGood2_mva) : 25,-1,1; XTitle="best lepton MVA", Legend='TL'
 #worstIso: max(LepGood1_relIso,LepGood2_relIso) : 40,0,0.4; XTitle="worst lepton Iso/p_{T}", Legend='TR'
 #worstMVA: min(LepGood1_mva,LepGood2_mva) : 25,-1,1; XTitle="worst lepton MVA", Legend='TL'
-#worstMVA: min(LepGood1_mva,LepGood2_mva) : 25,-1,1; XTitle="best lepton MVA", Legend='TL'
-#el_MVA:     (abs(LepGood1_pdgId)==11) * LepGood1_mva + (abs(LepGood2_pdgId)==11) *  LepGood2_mva : 25,-1,1; XTitle="Electron MVA",Legend='TL'
+
 el_MVA:  (abs(LepGood1_pdgId)==11) * LepGood1_mva + (abs(LepGood2_pdgId)==11) * LepGood2_mva: 25,-1,1; XTitle="Electron MVA",Legend='TL'
 el_pt:      (abs(LepGood1_pdgId)==11) * LepGood1_pt + (abs(LepGood2_pdgId)==11) * LepGood2_pt:  80,0,100; XTitle="Electron p_{T}  [GeV]", Legend='TR'
 el_eta:     (abs(LepGood1_pdgId)==11) * LepGood1_eta + (abs(LepGood2_pdgId)==11) * LepGood2_eta: 50,-2.5,2.5; XTitle="Electron #eta ", Legend='TR'
@@ -31,7 +29,6 @@ el_ldz:     (abs(LepGood1_pdgId)==11) * log(abs(LepGood1_dz)) + (abs(LepGood2_pd
 el_mvaId:     (abs(LepGood1_pdgId)==11) * LepGood1_mvaId + (abs(LepGood2_pdgId)==11) *  LepGood2_mvaId : 25,-1,1; XTitle="Electron ID MVA",Legend='TL'
 el_innerHits: (abs(LepGood1_pdgId)==11) * LepGood1_innerHits + (abs(LepGood2_pdgId)==11) *  LepGood2_innerHits : 2,-0.5,1.5; XTitle="Electron lost hits",Legend='TL'
 
-#mu_MVA:     (abs(LepGood1_pdgId)==13) * LepGood1_mva + (abs(LepGood2_pdgId)==13) *  LepGood2_mva : 25,-1,1; XTitle="Muon MVA",Legend='TL'
 mu_MVA:  (abs(LepGood1_pdgId)==13) * LepGood1_mva + (abs(LepGood2_pdgId)==13) * LepGood2_mva: 25,-1,1; XTitle="Muon MVA",Legend='TL'
 mu_pt:      (abs(LepGood1_pdgId)==13) * LepGood1_pt + (abs(LepGood2_pdgId)==13) * LepGood2_pt:  80,0,100; XTitle="Muon p_{T}  [GeV]", Legend='TR'
 mu_eta:     (abs(LepGood1_pdgId)==13) * LepGood1_eta + (abs(LepGood2_pdgId)==13) * LepGood2_eta: 50,-2.5,2.5; XTitle="Muon #eta ", Legend='TR'

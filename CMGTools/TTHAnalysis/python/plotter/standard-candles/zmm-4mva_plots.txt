@@ -15,4 +15,4 @@ lep2ldz:   log(abs(LepGood2_dz)):  50,-15,0; XTitle="Second lepton log(|dz|/1cm)
 lep2mvaId: LepGood2_mvaId : 50,-1,1; XTitle="Second electron ID MVA",Legend='TL'
 lep2mvaId_zoom: LepGood2_mvaId : 30,0.4,1; XTitle="Second electron ID MVA",Legend='TL'
 lep2mvaId_zoom2: LepGood2_mvaId : 40,0.9,1; XTitle="Second electron ID MVA",Legend='TL'
-lep2innerHits: LepGood2_innerHits : 2,-0.5,1.5; XTitle="Second electron lost hits hits",Legend='TL'
+lep2innerHits: LepGood2_innerHits : 2,-0.5,1.5; XTitle="Second electron lost hits hits",Legend='TR'

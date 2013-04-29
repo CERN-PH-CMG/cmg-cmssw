@@ -10,8 +10,8 @@ mZ1: mZ1: 60,60,120 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TL'
 minmll: minMllAFAS: 70,0,140; XTitle="min m(ll)  [GeV]", Legend='TR'
 worseIso: max(LepGood1_relIso,max(LepGood2_relIso,LepGood3_relIso)): 20,0,.4; XTitle="Worse rel. iso (l_{1}\,l_{2}\,l_{3})"
 worseSip3D: max(LepGood1_sip3d,max(LepGood2_sip3d,LepGood3_sip3d)): 20,0,10; XTitle="Worse SIP_{3D} (l_{1}\,l_{2}\,l_{3})"
-lepMVA2: min(LepGood1_mvaNew,LepGood2_mvaNew) : 50,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
-lepMVA3: min(LepGood1_mvaNew,min(LepGood2_mvaNew,LepGood3_mvaNew)) : 50,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2}\,l_{3})",Legend='TL'
+lepMVA2: min(LepGood1_mva,LepGood2_mva) : 50,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
+lepMVA3: min(LepGood1_mva,min(LepGood2_mva,LepGood3_mva)) : 50,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2}\,l_{3})",Legend='TL'
 l1Pt:  LepGood1_pt: 40,0,200; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
 l2Pt:  LepGood2_pt: 24,0,120; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
 l3Pt:  LepGood3_pt: 20,0,100; XTitle="Third lepton p_{T}  [GeV]", Legend='TR'
