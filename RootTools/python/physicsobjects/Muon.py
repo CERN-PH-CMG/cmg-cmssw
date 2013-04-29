@@ -13,12 +13,9 @@ class Muon( Lepton ):
                self.isGlobalMuon() and \
                self.normalizedChi2() < 10 and \
                self.numberOfValidMuonHits() > 0 and \
-               self.numberOfMatches() > 1 and \
+               self.numberOfMatchedStations()>1 and \
                self.sourcePtr().innerTrack().hitPattern().numberOfValidPixelHits()>0 and \
                self.trackerLayersWithMeasurement() > 5 
-               # self.dxy() < 0.2 and \
-               # self.dz() < 0.5 and \
-               # self.numberOfValidPixelHits() > 0 and \
 
     def mvaId(self):
         '''For a transparent treatment of electrons and muons. Returns -99'''
