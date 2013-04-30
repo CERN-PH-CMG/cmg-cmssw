@@ -2,13 +2,14 @@
 cleanup: minMllAFAS > 12
 el el:  abs(LepGood1_pdgId) == 11 && abs(LepGood2_pdgId) == 11
 same-sign: LepGood1_charge*LepGood2_charge > 0
-tight-charge: LepGood1_tightCharge > 1 && LepGood2_tightCharge > 1
+tight-charge: max(LepGood1_eleQ_pRelDiff,LepGood2_eleQ_pRelDiff)<1 && max(abs(LepGood1_dxy),abs(LepGood2_dxy)) < 0.02 && min(LepGood1_eleQ_gsfCtfQ,LepGood2_eleQ_gsfCtfQ)>0 && abs(LepGood1_dxy-LepGood2_dxy) < 0.015
 conv rejection: LepGood1_innerHits == 0 && LepGood2_innerHits == 0
+conv veto:LepGood1_convVeto>0 && LepGood2_convVeto>0
 pt2010: LepGood1_pt > 20 && LepGood2_pt > 10
 Z veto: abs(minMllAFAS-91.2) > 10
 met LD: met*0.00397 + mhtJet25*0.00265 > 0.2
 2b: nBJetLoose25 >= 2
-2L: passND_Loose(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) && passND_Loose(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso03,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
-1T: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) || passND_Tight(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso03,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
-#FT: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03,LepGood1_dxy,LepGood1_dz,LepGood1_tightId)
-#2T: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) && passND_Tight(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso03,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
+2L: passND_Loose(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03/LepGood1_pt,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) && passND_Loose(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso03/LepGood2_pt,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
+1T: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03/LepGood1_pt,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) || passND_Tight(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso03/LepGood2_pt,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
+#FT: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03/LepGood1_pt,LepGood1_dxy,LepGood1_dz,LepGood1_tightId)
+#2T: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03/LepGood1_pt,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) && passND_Tight(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso03/LepGood2_pt,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
