@@ -91,7 +91,7 @@ class SimpleFOM:
             totb     += report[b][-1][1][0]
             totbsyst += (syst*report[b][-1][1][0])**2
         if self._includeS: totb += tots
-        return tots/sqrt(totb**2 + totbsyst)
+        return tots/sqrt(totb + totbsyst**2)
 
 
 if __name__ == "__main__":
