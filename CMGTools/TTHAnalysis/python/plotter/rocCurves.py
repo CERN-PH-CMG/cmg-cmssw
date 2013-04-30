@@ -98,6 +98,7 @@ if __name__ == "__main__":
     parser.add_option("--xrange", dest="xrange", default=None, nargs=2, type='float', help="X axis range");
     parser.add_option("--yrange", dest="yrange", default=None, nargs=2, type='float', help="X axis range");
     (options, args) = parser.parse_args()
+    options.globalRebin = 1
     mca  = MCAnalysis(args[0],options)
     cut = CutsFile(args[1],options).allCuts()
     plots = PlotFile(args[2],options)
