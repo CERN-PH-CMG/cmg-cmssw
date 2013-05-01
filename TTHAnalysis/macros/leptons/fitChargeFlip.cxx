@@ -8,7 +8,7 @@
 #include <Math/Functor.h>
 #include <Minuit2/Minuit2Minimizer.h>
 
-const int nbins = 5;
+const int nbins = 6;
 double nss[nbins][nbins], nos[nbins][nbins];
 
 double matchv(const double *x, bool verbose) {
@@ -40,8 +40,8 @@ void fitChargeFlip(TString process="DY") {
     TH1 *hss = (TH1*) fss->Get("bin_"+process);
     TH1 *hos = (TH1*) fos->Get("bin_"+process);
     for (int i = 0; i < nbins*nbins; ++i) {
-        nss[i/5][i%5] = hss->GetBinContent(i+1);
-        nos[i/5][i%5] = hos->GetBinContent(i+1);
+        nss[i/nbins][i%nbins] = hss->GetBinContent(i+1);
+        nos[i/nbins][i%nbins] = hos->GetBinContent(i+1);
     }
 
     ROOT::Minuit2::Minuit2Minimizer min ( ROOT::Minuit2::kMigrad );
@@ -71,10 +71,10 @@ void fitChargeFlip(TString process="DY") {
     TH2F *QF_el = new TH2F("QF_el_"+process,"",npt,ptbins,neta,etabins);
     QF_el->SetBinContent(1,1, xs[0]); // low pt barrel
     QF_el->SetBinContent(2,1, xs[1]); // high pt barrel
-    QF_el->SetBinContent(3,1, xs[1]); // high pt barrel (same as above)
-    QF_el->SetBinContent(1,2, xs[2]); // low pt endcap
-    QF_el->SetBinContent(2,2, xs[3]); // medium pt endcap
-    QF_el->SetBinContent(3,2, xs[4]); // high pt endcap
+    QF_el->SetBinContent(3,1, xs[2]); // high pt barrel (same as above)
+    QF_el->SetBinContent(1,2, xs[3]); // low pt endcap
+    QF_el->SetBinContent(2,2, xs[4]); // medium pt endcap
+    QF_el->SetBinContent(3,2, xs[5]); // high pt endcap
 
     QF_el->Write();
     printf("Written to %s\n", fOut->GetName());

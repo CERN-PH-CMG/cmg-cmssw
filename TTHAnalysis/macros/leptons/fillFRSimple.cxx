@@ -10,25 +10,21 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
-//TString basePath="/afs/cern.ch/work/g/gpetrucc/ttH/TREE_FR_260213/HADD/%s/ttHLepFRAnalyzer/ttHLepFRAnalyzer_tree.root";
-//TString friendPath="/afs/cern.ch/work/g/gpetrucc/ttH/TREE_FR_260213/HADD/0_leptonMVA_v3/lepMVAFRFriend_%s.root";
-TString basePath="/afs/cern.ch/work/g/gpetrucc/ttH/TREES_FR_170413/%s/ttHLepFRAnalyzer/ttHLepFRAnalyzer_tree.root";
-TString friendPath="/afs/cern.ch/work/g/gpetrucc/ttH/TREES_FR_170413_/0_leptonMVA_v3/lepMVAFRFriend_%s.root";
+TString basePath="/afs/cern.ch/work/g/gpetrucc/ttH/TREES_270413_FR/%s/ttHLepFRAnalyzer/ttHLepFRAnalyzer_tree.root";
 
 void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
     TString baseFileName   = Form(basePath.Data(),comp.Data());
-    TString friendFileName = Form(friendPath.Data(),comp.Data());
     baseFileName.ReplaceAll("_LooseTag","");
-    friendFileName.ReplaceAll("_LooseTag","");
     baseFileName.ReplaceAll("_SingleMu","");
-    friendFileName.ReplaceAll("_SingleMu","");
+    baseFileName.ReplaceAll("_TagMu8","");
+    baseFileName.ReplaceAll("_TagMu12","");
+    baseFileName.ReplaceAll("_TagMu17","");
+    baseFileName.ReplaceAll("_TagMu24","");
+    baseFileName.ReplaceAll("_TagMu40","");
+    baseFileName.ReplaceAll("_TagMu","");
     TFile *fileIn = TFile::Open(baseFileName);
     TTree *t = (TTree *) fileIn->Get("ttHLepFRAnalyzer");
     TString mvaVar = "mva";
-    if (0) {
-        t->AddFriend("newMVA/t", friendFileName);
-        mvaVar = "mvaNew";
-    }
 
     TString postFix = "";
     if (selection == 1) postFix = "CutBased";
@@ -52,10 +48,20 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
 
     for (int itype = 13; itype <= 13; itype += 12) {
         TCut cut0 = (itype == 1 ? "tagType == 1  && TagJet_pt > 40 && TagJet_btagCSV >= 0.898" 
-                                : "tagType == 13");
-                                //: "tagType == 13 && Probe_pt/(TagLepton_pt*(1+TagLepton_relIso)) < 1 && abs(dphi_tp) > 2.5");
+                                : "tagType == 13 && TagLepton_sip3d > 7 && Probe_pt/(TagLepton_pt*(1+TagLepton_relIso)) < 1 && abs(dphi_tp) > 2.5");
         TString name0 = (itype == 13 ? "FR_MuTag_" : "FR_JetTag_");
-        if (comp.Index("SingleMu") == 0) {
+        if (comp.Contains("_TagMu")) {
+            if (itype != 13) continue;
+            if      (comp.Contains("_TagMu8"))  cut0 += "Trig_Tag_Mu8";
+            else if (comp.Contains("_TagMu12")) cut0 += "Trig_Tag_Mu12";
+            else if (comp.Contains("_TagMu17")) cut0 += "Trig_Tag_Mu17";
+            else if (comp.Contains("_TagMu24")) cut0 += "Trig_Tag_Mu24";
+            else if (comp.Contains("_TagMu40")) cut0 += "Trig_Tag_Mu40";
+            else if (comp.Contains("_TagMu"))   {
+                if      (comp.Contains("DoubleMu")) cut0 += "(Trig_Tag_Mu8 || Trig_Tag_Mu17)";
+                else if (comp.Contains("SingleMu")) cut0 += "(Trig_Tag_Mu12 || Trig_Tag_Mu24 || Trig_Tag_Mu40)";
+            }
+        } else if (comp.Index("SingleMu") == 0) {
             cut0 += "Trig_Tag_1Mu";
         } else if (comp.Contains("DoubleMu")) {
             cut0 += "Trig_Pair_2Mu";
@@ -67,8 +73,10 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
         for (int ipdg = 11; ipdg <= 13; ipdg += 2) {
             if(comp.Contains("DoubleElectron") && (itype != 1  || ipdg != 11)) continue;
             if(comp.Contains("MuEG")           && (itype != 13 || ipdg != 11)) continue;
-            if(comp.Contains("DoubleMu")       && (itype != 13 || ipdg != 13)) continue;
-            if(comp.Index("SingleMu") == 0     && (itype == 1  && ipdg == 11)) continue;
+            if (!comp.Contains("TagMu")) {
+                if(comp.Contains("DoubleMu")       && (itype != 13 || ipdg != 13)) continue;
+                if(comp.Index("SingleMu") == 0     && (itype == 1  && ipdg == 11)) continue;
+            }
 
             TCut    cut1  = cut0  + Form("abs(Probe_pdgId) == %d",ipdg);
             TString name1 = name0 + (ipdg == 13 ? "mu_" : "el_");
@@ -97,7 +105,7 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
 
                     
                     TCut looseDen = "";
-                    TCut tightDen = (ipdg == 11 ? "Probe_innerHits == 0 && Probe_tightCharge > 1" : "Probe_tightCharge > 0");
+                    TCut tightDen = (ipdg == 11 ? "Probe_innerHits == 0 && Probe_tightCharge > 1 && Probe_convVeto" : "Probe_tightCharge > 0");
                     TCut looseNum = Form("Probe_%s >= +0.35",mvaVar.Data());
                     TCut tightNum = Form("Probe_%s >= +0.70",mvaVar.Data());
 
@@ -106,9 +114,9 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
                         looseDen = (ipdg == 11 ? "(abs(Probe_eta)<1.4442 || abs(Probe_eta)>1.5660)" : "");
                         tightDen = tightDen + looseDen + (ipdg == 13 ? "abs(Probe_eta) < 2.1" : "");
                         looseNum = (ipdg == 13 ? "Probe_relIso < 0.2" : 
-                                                 "Probe_relIso < 0.25 && Probe_tightId > 0.0 && abs(Probe_dxy) < 0.04 && abs(Probe_innerHits) <= 0");
+                                                 "Probe_relIso03/Probe_pt < 0.20 && Probe_tightId > 0.0 && abs(Probe_dxy) < 0.04 && abs(Probe_innerHits) <= 0");
                         tightNum = (ipdg == 13 ? "Probe_relIso < 0.12 && Probe_tightId       && abs(Probe_dxy) < 0.2 && abs(Probe_dz) < 0.5" :
-                                                 "Probe_relIso < 0.15 && Probe_tightId > 0.0 && abs(Probe_dxy) < 0.02 && abs(Probe_innerHits) <= 0");
+                                                 "Probe_relIso03/Probe_pt < 0.10 && Probe_tightId > 0.0 && abs(Probe_dxy) < 0.02 && abs(Probe_innerHits) <= 0");
                     }
 
 
