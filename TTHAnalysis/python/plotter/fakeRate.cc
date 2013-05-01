@@ -172,9 +172,9 @@ float chargeFlipWeight_2lss(float l1pt, float l1eta, int l1pdgId,
 
 float chargeFlipBin_2lss(float l1pt, float l1eta) {
     if (std::abs(l1eta) < 1.479) {
-        return (l1pt < 20 ? 0 : 1);
+        return (l1pt < 20 ? 0 : (l1pt < 50 ? 1 : 2));
     } else {
-        return (l1pt < 20 ? 2 : (l1pt < 50 ? 3 : 4));
+        return (l1pt < 20 ? 3 : (l1pt < 50 ? 4 : 5));
     }
 }
 
