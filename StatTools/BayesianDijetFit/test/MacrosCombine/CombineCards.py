@@ -9,9 +9,9 @@ for mass in masses:
   command="combineCards.py ch0=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel0.txt ch1=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel1.txt ch2=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel2.txt > datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel012.txt"
   print command
   os.system(command)
-  command="combineCards.py ch0=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel0.txt ch1=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel1.txt ch2=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel2.txt ch3=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel3.txt ch4=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel4.txt ch5=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel5.txt > datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel012345.txt"
-  print command
-  os.system(command)
-  command="combineCards.py ch0=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel0.txt ch1=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel1.txt ch2=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel2.txt ch3=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel3.txt ch4=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel4.txt ch5=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel5.txt > datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel012345.txt"
-  print command
-  os.system(command)
+  #command="combineCards.py ch0=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel0.txt ch1=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel1.txt ch2=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel2.txt ch3=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel3.txt ch4=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel4.txt ch5=datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel5.txt > datacards/Xvv.mX"+str(mass)+"_WW_8TeV_channel012345.txt"
+  #print command
+  #os.system(command)
+  #command="combineCards.py ch0=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel0.txt ch1=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel1.txt ch2=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel2.txt ch3=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel3.txt ch4=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel4.txt ch5=datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel5.txt > datacards/Xvv.mX"+str(mass)+"_ZZ_8TeV_channel012345.txt"
+  #print command
+  #os.system(command)
