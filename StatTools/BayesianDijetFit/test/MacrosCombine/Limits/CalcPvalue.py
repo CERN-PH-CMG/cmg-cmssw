@@ -28,18 +28,9 @@ sigZZ=[]
 pvalZZ=[]
 
 sChan=["WW","ZZ"]
-bin=[0,1,2,3,4,5,"012","012345"]
-sBin={}
-sBin[0]="m2mg0"
-sBin[1]="m2mg1"
-sBin[2]="m2mg2"
-sBin[3]="m1mg0"
-sBin[4]="m1mg1"
-sBin[5]="m0"
-sBin["012"]="012"
-sBin["012345"]="012345"
+bins=["012",0,1,2]
 
-for ibin in bin:
+for bin in bins:
     sigWW=[]
     pvalWW=[]
 
@@ -47,16 +38,17 @@ for ibin in bin:
     pvalZZ=[]
     for chan in channel:
 
-        masses =[1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0]
+        masses =[1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0, 2400.0, 2500.0]
 
         for mass in masses:
             print "mass = ",mass
         
-            os.system("combine ../datacards/Xvv.mX"+str(mass)+"_"+sChan[chan]+"_8TeV_channel"+str(ibin)+".txt -M ProfileLikelihood -v2 -m "+str(mass) + " --signif &>Xvv.mX"+str(mass)+"_"+sChan[chan]+"_8TeV_channel"+str(ibin)+".out")
-            f_fit=file("Xvv.mX"+str(mass)+"_"+sChan[chan]+"_8TeV_channel"+str(ibin)+".out")
+	    outfile="Limits/Xvv.mX"+str(mass)+"_"+sChan[chan]+"_8TeV_channel"+str(bin)+".out"
+            os.system("combine datacards/Xvv.mX"+str(mass)+"_"+sChan[chan]+"_8TeV_channel"+str(bin)+".txt -M ProfileLikelihood -v2 -m "+str(mass) + " --signif &>"+outfile)
+            f_fit=file("Limits/Xvv.mX"+str(mass)+"_"+sChan[chan]+"_8TeV_channel"+str(bin)+".out")
 
  
-            print "we look inside the fit output for bin "+str(ibin)
+            print "we look inside the fit output for bin "+str(bin)
             for line in f_fit.readlines():
                 #            print line
                 if "Significance:" in line:
@@ -87,19 +79,19 @@ for ibin in bin:
     sPvalWW=[(masses[i],pvalWW[i]) for i in range(len(masses))]
     sPvalZZ=[(masses[i],pvalZZ[i]) for i in range(len(masses))]
 
-    fWW = open("Xvv_WW_8TeV_Pval_channel"+str(ibin)+"_"+sBin[ibin]+".txt", "w")
+    fWW = open("Limits/Xvv_WW_8TeV_Pval_channel"+str(bin)+".txt", "w")
     fWW.write(str(sPvalWW))
     fWW.close()
 
-    fZZ = open("Xvv_ZZ_8TeV_Pval_channel"+str(ibin)+"_"+sBin[ibin]+".txt", "w")
+    fZZ = open("Limits/Xvv_ZZ_8TeV_Pval_channel"+str(bin)+".txt", "w")
     fZZ.write(str(sPvalZZ))
     fZZ.close()
 
 
-    fWW = open("Xvv_WW_8TeV_Sig_channel"+str(ibin)+"_"+sBin[ibin]+".txt", "w")
+    fWW = open("Limits/Xvv_WW_8TeV_Sig_channel"+str(bin)+".txt", "w")
     fWW.write(str(sSigWW))
     fWW.close()
 
-    fZZ = open("Xvv_ZZ_8TeV_Sig_channel"+str(ibin)+"_"+sBin[ibin]+".txt", "w")
+    fZZ = open("Limits/Xvv_ZZ_8TeV_Sig_channel"+str(bin)+".txt", "w")
     fZZ.write(str(sSigZZ))
     fZZ.close()

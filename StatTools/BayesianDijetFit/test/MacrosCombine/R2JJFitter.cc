@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.4 2013/03/17 19:24:29 mgouzevi Exp $
+ * $Id: R2JJFitter.cc,v 1.5 2013/03/19 17:24:54 hinzmann Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -107,16 +107,19 @@
 #include "RooConstVar.h"
 #include "RooRealVar.h"
 */
-#include "HiggsCSandWidth.h"
-#include "HiggsCSandWidth.cc"
+//#include "HiggsCSandWidth.h"
+//#include "HiggsCSandWidth.cc"
 //#include "RooPower.h"
 
 using namespace RooFit;
 using namespace RooStats ;
 
 static const Int_t NCAT = 6;
-static const Double_t MMIN = 890;
-static const Double_t MMAX = 2500;
+Double_t MMIN = 890;
+Double_t MMAX = 2500;
+std::string filePOSTfix="";
+double signalScaler=0.005;
+static const bool useNsub=false;
 
 void AddSigData(RooWorkspace*, Float_t);
 void AddBkgData(RooWorkspace*);
@@ -137,12 +140,22 @@ RooArgSet* defineVariables()
   RooRealVar* evWeight   = new RooRealVar("evWeight","Reweightings",0,100,"");
   RooRealVar* normWeight  = new RooRealVar("normWeight","Additionnal Weight",0,10000000,"");
   RooCategory* categories = new RooCategory("categories","event category 6") ;
-  categories->defineType("dijet_mass_2mtag_0mdtag",0);
-  categories->defineType("dijet_mass_2mtag_1mdtag",1);
-  categories->defineType("dijet_mass_2mtag_2mdtag",2);
-  categories->defineType("dijet_mass_1mtag_0mdtag",3);
-  categories->defineType("dijet_mass_1mtag_1mdtag",4);
+  if(useNsub)
+  {
+  categories->defineType("dijet_mass_2mtag_2hptag",0);
+  categories->defineType("dijet_mass_2mtag_1hptag_1lptag",1);
+  categories->defineType("dijet_mass_2mtag_2lptag",2);
+  categories->defineType("dijet_mass_1mtag_1hptag",3);
+  categories->defineType("dijet_mass_1mtag_1lptag",4);
   categories->defineType("dijet_mass_0mtag",5);
+  } else {
+  categories->defineType("dijet_mass_2mtag_2mdtag",0);
+  categories->defineType("dijet_mass_2mtag_1mdtag",1);
+  categories->defineType("dijet_mass_2mtag_0mdtag",2);
+  categories->defineType("dijet_mass_1mtag_1mdtag",3);
+  categories->defineType("dijet_mass_1mtag_0mdtag",4);
+  categories->defineType("dijet_mass_0mtag",5);
+  }
 
   RooArgSet* ntplVars = new RooArgSet(*mgg, *categories, *evWeight, *normWeight);
  
@@ -175,6 +188,8 @@ void runfits(const Float_t mass=2000, bool isWW = true, Bool_t dobands = false)
   RooWorkspace* w = hlf.GetWs();
   RooFitResult* fitresults;
 
+  w->var("mgg")->setMin(MMIN);
+  w->var("mgg")->setMax(MMAX);
 
 // Add data to the workspace
   AddSigData(w, mass, isWW);
@@ -231,7 +246,7 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 
 
 
-  HiggsCSandWidth *myCSW = new HiggsCSandWidth();
+//  HiggsCSandWidth *myCSW = new HiggsCSandWidth();
 
   Float_t xs_ggqq  = 0.05;
   Float_t br       = 1.0;
@@ -293,10 +308,10 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 
   RooDataSet sigScaled("sigScaled","dataset",sigTree1,*ntplVars,mainCut,"evWeight");
 
-  RooRealVar *scaleWeightVar1 = (RooRealVar*) (*ntplVars)["evWeight"] ;
-  RooRealVar *scaleWeightVar2 = (RooRealVar*) (*ntplVars)["normWeight"] ;
-  RooFormulaVar *scaleWeightVar3 = new RooFormulaVar( "scaleWeight3", "", "@0*@1", 
-						      RooArgList(*scaleWeightVar1, *scaleWeightVar2));
+//  RooRealVar *scaleWeightVar1 = (RooRealVar*) (*ntplVars)["evWeight"] ;
+//  RooRealVar *scaleWeightVar2 = (RooRealVar*) (*ntplVars)["normWeight"] ;
+//  RooFormulaVar *scaleWeightVar3 = new RooFormulaVar( "scaleWeight3", "", "@0*@1", 
+//						      RooArgList(*scaleWeightVar1, *scaleWeightVar2));
 
   sigScaled.Print("v");
 
@@ -458,11 +473,11 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
   Int_t ncat = NCAT;
 
   std::vector<TString> catdesc;
-  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_0mdtag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_1mdtag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_2mdtag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_1mtag_0mdtag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_1mtag_1mdtag}");
+  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_2hptag}");
+  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_1hptag_1lptag}");
+  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_2lptag}");
+  catdesc.push_back("#scale[0.8]{dijet_mass_1mtag_1hptag}");
+  catdesc.push_back("#scale[0.8]{dijet_mass_1mtag_1lptag}");
   catdesc.push_back("#scale[0.8]{dijet_mass_0mtag}");
 
 
@@ -674,11 +689,11 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, bool isW
   Int_t ncat = NCAT;
 
   std::vector<TString> catdesc;
-  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_0mdtag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_1mdtag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_2mdtag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_1mtag_0mdtag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_1mtag_1mdtag}");
+  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_2hptag}");
+  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_1hptag_1lptag}");
+  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_2lptag}");
+  catdesc.push_back("#scale[0.8]{dijet_mass_1mtag_1hptag}");
+  catdesc.push_back("#scale[0.8]{dijet_mass_1mtag_1lptag}");
   catdesc.push_back("#scale[0.8]{dijet_mass_0mtag}");
   
   
@@ -1003,7 +1018,7 @@ void SetParamNames(RooWorkspace* w) {
 
 void MakeSigWS(RooWorkspace* w, const char* fileBaseName) {
 
-  TString wsDir   = "workspaces/";
+  TString wsDir   = "workspaces/"+filePOSTfix;
   Int_t ncat = NCAT;
 
 //**********************************************************************//
@@ -1037,43 +1052,43 @@ void MakeSigWS(RooWorkspace* w, const char* fileBaseName) {
 
 // (2) Systematics on energy scale and resolution
 
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat0[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat1[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat2[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat3[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat4[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_m0_absShift_cat5[1,1.0,1.0]");
-  wAll->factory("prod::CMS_hgg_sig_m0_cat0(mgg_sig_m0_cat0, CMS_hgg_sig_m0_absShift_cat0)");
-  wAll->factory("prod::CMS_hgg_sig_m0_cat1(mgg_sig_m0_cat1, CMS_hgg_sig_m0_absShift_cat1)");
-  wAll->factory("prod::CMS_hgg_sig_m0_cat2(mgg_sig_m0_cat2, CMS_hgg_sig_m0_absShift_cat2)");
-  wAll->factory("prod::CMS_hgg_sig_m0_cat3(mgg_sig_m0_cat3, CMS_hgg_sig_m0_absShift_cat3)");
-  wAll->factory("prod::CMS_hgg_sig_m0_cat4(mgg_sig_m0_cat4, CMS_hgg_sig_m0_absShift_cat4)");
-  wAll->factory("prod::CMS_hgg_sig_m0_cat5(mgg_sig_m0_cat5, CMS_hgg_sig_m0_absShift_cat5)");
+  wAll->factory("CMS_hgg_sig_m0_absShift[1,1.0,1.0]");
+  //wAll->factory("CMS_hgg_sig_m0_absShift_cat1[1,1.0,1.0]");
+  //wAll->factory("CMS_hgg_sig_m0_absShift_cat2[1,1.0,1.0]");
+  //wAll->factory("CMS_hgg_sig_m0_absShift_cat3[1,1.0,1.0]");
+  //wAll->factory("CMS_hgg_sig_m0_absShift_cat4[1,1.0,1.0]");
+  //wAll->factory("CMS_hgg_sig_m0_absShift_cat5[1,1.0,1.0]");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat0(mgg_sig_m0_cat0, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat1(mgg_sig_m0_cat1, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat2(mgg_sig_m0_cat2, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat3(mgg_sig_m0_cat3, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat4(mgg_sig_m0_cat4, CMS_hgg_sig_m0_absShift)");
+  wAll->factory("prod::CMS_hgg_sig_m0_cat5(mgg_sig_m0_cat5, CMS_hgg_sig_m0_absShift)");
 // (3) Systematics on resolution: create new sigmas
 
 
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat0[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat1[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat2[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat3[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat4[1,1.0,1.0]");
-  wAll->factory("CMS_hgg_sig_sigmaScale_cat5[1,1.0,1.0]");
+  wAll->factory("CMS_hgg_sig_sigmaScale[1,1.0,1.0]");
+  //wAll->factory("CMS_hgg_sig_sigmaScale_cat1[1,1.0,1.0]");
+  //wAll->factory("CMS_hgg_sig_sigmaScale_cat2[1,1.0,1.0]");
+  //wAll->factory("CMS_hgg_sig_sigmaScale_cat3[1,1.0,1.0]");
+  //wAll->factory("CMS_hgg_sig_sigmaScale_cat4[1,1.0,1.0]");
+  //wAll->factory("CMS_hgg_sig_sigmaScale_cat5[1,1.0,1.0]");
 
 
-  wAll->factory("prod::CMS_hgg_sig_sigma_cat0(mgg_sig_sigma_cat0, CMS_hgg_sig_sigmaScale_cat0)");
-  wAll->factory("prod::CMS_hgg_sig_sigma_cat1(mgg_sig_sigma_cat1, CMS_hgg_sig_sigmaScale_cat1)");
-  wAll->factory("prod::CMS_hgg_sig_sigma_cat2(mgg_sig_sigma_cat2, CMS_hgg_sig_sigmaScale_cat2)");
-  wAll->factory("prod::CMS_hgg_sig_sigma_cat3(mgg_sig_sigma_cat3, CMS_hgg_sig_sigmaScale_cat3)");
-  wAll->factory("prod::CMS_hgg_sig_sigma_cat4(mgg_sig_sigma_cat4, CMS_hgg_sig_sigmaScale_cat4)");
-  wAll->factory("prod::CMS_hgg_sig_sigma_cat5(mgg_sig_sigma_cat5, CMS_hgg_sig_sigmaScale_cat5)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat0(mgg_sig_sigma_cat0, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat1(mgg_sig_sigma_cat1, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat2(mgg_sig_sigma_cat2, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat3(mgg_sig_sigma_cat3, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat4(mgg_sig_sigma_cat4, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_sigma_cat5(mgg_sig_sigma_cat5, CMS_hgg_sig_sigmaScale)");
 
 
-  wAll->factory("prod::CMS_hgg_sig_gsigma_cat0(mgg_sig_gsigma_cat0, CMS_hgg_sig_sigmaScale_cat0)");
-  wAll->factory("prod::CMS_hgg_sig_gsigma_cat1(mgg_sig_gsigma_cat1, CMS_hgg_sig_sigmaScale_cat1)");
-  wAll->factory("prod::CMS_hgg_sig_gsigma_cat2(mgg_sig_gsigma_cat2, CMS_hgg_sig_sigmaScale_cat2)");
-  wAll->factory("prod::CMS_hgg_sig_gsigma_cat3(mgg_sig_gsigma_cat3, CMS_hgg_sig_sigmaScale_cat3)");
-  wAll->factory("prod::CMS_hgg_sig_gsigma_cat4(mgg_sig_gsigma_cat4, CMS_hgg_sig_sigmaScale_cat4)");
-  wAll->factory("prod::CMS_hgg_sig_gsigma_cat5(mgg_sig_gsigma_cat5, CMS_hgg_sig_sigmaScale_cat5)");
+  wAll->factory("prod::CMS_hgg_sig_gsigma_cat0(mgg_sig_gsigma_cat0, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_gsigma_cat1(mgg_sig_gsigma_cat1, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_gsigma_cat2(mgg_sig_gsigma_cat2, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_gsigma_cat3(mgg_sig_gsigma_cat3, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_gsigma_cat4(mgg_sig_gsigma_cat4, CMS_hgg_sig_sigmaScale)");
+  wAll->factory("prod::CMS_hgg_sig_gsigma_cat5(mgg_sig_gsigma_cat5, CMS_hgg_sig_sigmaScale)");
 
 // (4) do reparametrization of signal
   for (int c = 0; c < ncat; ++c) {
@@ -1095,7 +1110,7 @@ void MakeSigWS(RooWorkspace* w, const char* fileBaseName) {
 
 void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
 
-  TString wsDir   = "workspaces/";
+  TString wsDir   = "workspaces/"+filePOSTfix;
   Int_t ncat = NCAT;  
 
 //**********************************************************************//
@@ -1199,135 +1214,6 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
 }
 
 
-
-void MakeDataCard(RooWorkspace* w, const char* fileBaseName, const char* fileBkgName) {
-
-  TString cardDir = "datacards/";
-  Int_t ncat = NCAT;
-
-//**********************//
-// Retrieve the datasets
-//**********************//
-
-  cout << "Start retrieving dataset" << endl;
-
-  RooDataSet* data[6];
-  RooDataSet* signal[6];
-  for (int c = 0; c < ncat; ++c) {
-    data[c]        = (RooDataSet*) w->data(TString::Format("Data_cat%d",c));
-    signal[c]      = (RooDataSet*) w->data(TString::Format("SigWeight_cat%d",c));
-  }
-
-  RooRealVar*  lumi = w->var("lumi");
-
-//*****************************//
-// Print Expected event yields
-//*****************************//
-
-  cout << "======== Expected Events Number =====================" << endl;  
-  cout << ".........Measured Data for L = " << lumi->getVal() << " pb-1 ............................" << endl;  
-  cout << "#Events data:        " <<  w->data("Data")->sumEntries()  << endl;
-  for (int c = 0; c < ncat; ++c) {
-    cout << TString::Format("#Events data cat%d:   ",c) << data[c]->sumEntries()  << endl;
-  }
-  cout << ".........Expected Signal for L = " << lumi->getVal() << " pb-1 ............................" << endl;  
-  cout << "#Events Signal:      " << w->data("SigWeight")->sumEntries()  << endl;
-  Float_t siglikeErr[6];
-  for (int c = 0; c < ncat; ++c) {
-    cout << TString::Format("#Events Signal cat%d: ",c) << signal[c]->sumEntries() << endl;
-    siglikeErr[c]=0.6*signal[c]->sumEntries();
-  }
-  cout << "====================================================" << endl;  
-
-
-//*************************//
-// Print Data Crd int file
-//*************************//
-
-
-  TString filename(cardDir+TString(fileBaseName)+".txt");
-  ofstream outFile(filename);
-
-
-  outFile << "#CMS-HGG DataCard for Unbinned Limit Setting, " << lumi->getVal() <<  " pb-1 " << endl;
-  outFile << "#Run with: combine -d hgg.mH130.0.shapes-Unbinned.txt -U -m 130 -H ProfileLikelihood -M MarkovChainMC --rMin=0 --rMax=20.0  -b 3000 -i 50000 --optimizeSim=1 --tries 30" << endl;
-  outFile << "# Lumi =  " << lumi->getVal() << " pb-1" << endl;
-  outFile << "imax 6" << endl;
-  outFile << "jmax 1" << endl;
-  outFile << "kmax *" << endl;
-  outFile << "---------------" << endl;
-
-  
-  outFile << "shapes *      * " << TString(fileBkgName)+".root" << " w_all:$PROCESS_$CHANNEL" << endl;
-  outFile << "shapes MggBkg * "<<  TString(fileBkgName)+".root" << " w_all:CMS_hgg_bkg_8TeV_$CHANNEL" << endl;
-  outFile << "shapes MggSig * " << TString(fileBaseName)+".inputsig.root" << " w_all:CMS_hgg_sig_$CHANNEL" << endl;
-
-  outFile << "---------------" << endl;
-  outFile << "bin          cat0   cat1   cat2   cat3   cat4   cat5" << endl;
-  outFile <<  "observation   "  <<  Form("%.10lg",data[0]->sumEntries()) << "  " <<  Form("%.10lg",data[1]->sumEntries()) << "  " 
-	   <<  data[2]->sumEntries() << "  " << Form("%.10lg",data[3]->sumEntries()) << "  " << Form("%.10lg",data[4]->sumEntries()) << "  " << Form("%.10lg",data[5]->sumEntries()) << endl;
-  outFile << "------------------------------" << endl;
-  outFile << "bin                      cat0       cat0       cat1      cat1       cat2       cat2      cat3     cat3        cat4         cat4        cat5      cat5" << endl;
-  outFile << "process                 MggSig     MggBkg     MggSig    MggBkg     MggSig     MggBkg  MggSig     MggBkg MggSig     MggBkg  MggSig     MggBkg" << endl;
-  outFile << "process                    0          1          0         1          0          1    0          1   0          1   0          1" << endl;
-  outFile <<  "rate                      " 
-	   << "  " << signal[0]->sumEntries() << "  " <<  1  << "  " << signal[1]->sumEntries() << "  " <<  1
-	  << "  " << signal[2]->sumEntries() << "  " <<  1  << "  " << signal[3]->sumEntries() << "  " <<  1 
-	  << "  " << signal[4]->sumEntries() << "  " <<  1  << "  " << signal[5]->sumEntries() << "  " <<  1 << endl;
-  outFile << "--------------------------------" << endl;
-
-  
-  outFile << "lumi_8TeV       lnN  0.950/1.050      -    0.950/1.050     -    0.950/1.050      - 0.950/1.050      - 0.950/1.050      - 0.950/1.050      - " << endl;
-  outFile << "CMS_VV_eff_g         lnN  1.020      -        1.020       -         1.032       -   1.020      -  1.020      - 1.020      - # Photon efficiency" << endl;
-  outFile << "# Parametric shape uncertainties, entered by hand." << endl;
-  outFile << "CMS_hgg_sig_m0_absShift_cat0    param   1   0.0025   # displacement of the mean w.r.t. nominal in EB*EB category, good R9" << endl;
-  outFile << "CMS_hgg_sig_m0_absShift_cat1    param   1   0.0025   # as above, in low R9" << endl;
-  outFile << "CMS_hgg_sig_m0_absShift_cat2    param   1   0.0050   # displacement of the mean w.r.t. nominal in EB*EX category, good R9" << endl;
-  outFile << "CMS_hgg_sig_m0_absShift_cat3    param   1   0.0050   # displacement of the mean w.r.t. nominal in EB*EX category, good R9" << endl;
-  outFile << "CMS_hgg_sig_m0_absShift_cat4    param   1   0.0050   # displacement of the mean w.r.t. nominal in EB*EX category, good R9" << endl;
-  outFile << "CMS_hgg_sig_m0_absShift_cat5    param   1   0.0050   # displacement of the mean w.r.t. nominal in EB*EX category, good R9" << endl;
-  outFile << "CMS_hgg_sig_sigmaScale_cat0     param   1   0.136   # multiplicative correction to sigmas in EB*EB category, good R9" << endl;
-  outFile << "CMS_hgg_sig_sigmaScale_cat1     param   1   0.111   # as above, in low R9" << endl;
-  outFile << "CMS_hgg_sig_sigmaScale_cat2     param   1   0.151   # multiplicative correction to sigmas in EB*EX category, good R9" << endl;
-  outFile << "CMS_hgg_sig_sigmaScale_cat3     param   1   0.151   # multiplicative correction to sigmas in EB*EX category, good R9" << endl;
-  outFile << "CMS_hgg_sig_sigmaScale_cat4     param   1   0.151   # multiplicative correction to sigmas in EB*EX category, good R9" << endl;
-  outFile << "CMS_hgg_sig_sigmaScale_cat5     param   1   0.151   # multiplicative correction to sigmas in EB*EX category, good R9" << endl;
-
-  outFile << "CMS_hgg_bkg_8TeV_cat0_norm           flatParam  # Normalization uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_cat1_norm           flatParam  # Normalization uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_cat2_norm           flatParam  # Normalization uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_cat3_norm           flatParam  # Normalization uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_cat4_norm           flatParam  # Normalization uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_cat5_norm           flatParam  # Normalization uncertainty on background slope" << endl;
-
-
-  outFile << "CMS_hgg_bkg_8TeV_slope1_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope1_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope1_cat2         flatParam  # Mean and absolute uncertainty on background slope" << endl; 
-  outFile << "CMS_hgg_bkg_8TeV_slope1_cat3         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope1_cat4         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope1_cat5         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-
-  outFile << "CMS_hgg_bkg_8TeV_slope2_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope2_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope2_cat2         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope2_cat3         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope2_cat4         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope2_cat5         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-
-  outFile << "CMS_hgg_bkg_8TeV_slope3_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope3_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope3_cat3         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope3_cat4         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope3_cat5         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile.close();
-
-  cout << "Write data card in: " << filename << " file" << endl;
-
-  return;
-}
-
-
 Double_t effSigma(TH1 *hist) {
 
   TAxis *xaxis = hist->GetXaxis();
@@ -1407,9 +1293,9 @@ Double_t effSigma(TH1 *hist) {
 
 void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char* fileBkgName, int iChan) {
 
-  TString cardDir = "datacards/";
+  TString cardDir = "datacards/"+filePOSTfix;
   Int_t ncat = NCAT;
-  TString wsDir   = "../workspaces/";
+  TString wsDir   = "../workspaces/"+filePOSTfix;
 //**********************//
 // Retrieve the datasets
 //**********************//
@@ -1474,16 +1360,18 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   outFile << "bin                      "<< Form("cat%d       cat%d      ", iChan, iChan) << endl;
   outFile << "process                 MggSig     MggBkg     " << endl;
   outFile << "process                    0          1          " << endl;
+  if(signalScaler==1.)
+      signalScaler=1./signal[2]->sumEntries()*20;
   outFile <<  "rate                      " 
-	  << "  " << signal[iChan]->sumEntries()/signal[2]->sumEntries()*20  << "  " << 1 << endl;
+	  << "  " << signal[iChan]->sumEntries()*signalScaler << "  " << 1 << endl;
   outFile << "--------------------------------" << endl;
-
+  outFile << "# signal scaled by " << signalScaler << endl;
   
   outFile << "lumi_8TeV       lnN  0.950/1.050    - " << endl;
   outFile << "CMS_VV_eff_g         lnN  0.8/1.20      - # Signal Efficiency" << endl;
   outFile << "# Parametric shape uncertainties, entered by hand." << endl;
-  outFile << Form("CMS_hgg_sig_m0_absShift_cat%d    param   1   0.0125   # displacement of the mean w.r.t. nominal in EB*EX category, good R9",iChan) << endl;
-  outFile << Form("CMS_hgg_sig_sigmaScale_cat%d     param   1   0.1   # multiplicative correction to sigmas in EB*EX category, good R9",iChan) << endl;
+  outFile << Form("CMS_hgg_sig_m0_absShift    param   1   0.0125   # displacement of the mean w.r.t. nominal in EB*EX category, good R9",iChan) << endl;
+  outFile << Form("CMS_hgg_sig_sigmaScale     param   1   0.1   # multiplicative correction to sigmas in EB*EX category, good R9",iChan) << endl;
  
   outFile << Form("CMS_hgg_bkg_8TeV_cat%d_norm           flatParam  # Normalization uncertainty on background slope",iChan) << endl;
 
@@ -1576,8 +1464,31 @@ Double_t effSigma(TH1 *hist) {
   return widmin;
 }
 
-void R2JJFitter(double mass)
+void R2JJFitter(double mass, std::string postfix="")
 {
+    filePOSTfix=postfix;
+    if(postfix!="")
+    {
+      // for optimization studies
+      MMIN=1000;
+      if(mass==1000)
+         signalScaler=0.034246;
+      if((mass>1000)&&(mass<2000))
+         signalScaler=0.02469;
+      if(mass==2000)
+         signalScaler=2.0;
+    };
     runfits(mass, true);
+    if(postfix!="")
+    {
+      // for optimization studies
+      MMIN=1000;
+      if(mass==1000)
+         signalScaler=0.033500;
+      if((mass>1000)&&(mass<2000))
+         signalScaler=0.02016;
+      if(mass==2000)
+         signalScaler=2.22222;
+    };
     runfits(mass, false);
 }
