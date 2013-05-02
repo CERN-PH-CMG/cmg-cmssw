@@ -30,30 +30,7 @@ full_53x_wp  = cms.PSet(
                 Pt3050_MET     = cms.vdouble( 0.  , 0. ,-0.1,-0.2)
                 )
 
-<<<<<<< JetIdParams_cfi.py
 full_53x_chs_wp  = cms.PSet(
-=======
-met_53x_wp  = cms.PSet(
-
-                #Tight Id
-                Pt010_Tight    = cms.vdouble(-2, -2, -2, -2, -2),
-                Pt1020_Tight   = cms.vdouble(-2, -2, -2, -2, -2),
-                Pt2030_Tight   = cms.vdouble(-2, -2, -2, -2, -2),
-                Pt3050_Tight   = cms.vdouble(-2, -2, -2, -2, -2),
-                
-                #Medium Id
-                Pt010_Medium   = cms.vdouble(-2, -2, -2, -2, -2),
-                Pt1020_Medium  = cms.vdouble(-2, -2, -2, -2, -2),
-                Pt2030_Medium  = cms.vdouble(-2, -2, -2, -2, -2),
-                Pt3050_Medium  = cms.vdouble(-2, -2, -2, -2, -2),
-                
-                #Loose Id
-                Pt010_Loose    = cms.vdouble(-2, -2, -2, -2, -2),
-                Pt1020_Loose   = cms.vdouble(-2, -2, -2, -2, -2),
-                Pt2030_Loose   = cms.vdouble(-2, -2, -2, -2, -2),
-                Pt3050_Loose   = cms.vdouble(-2, -2, -2, -2, -2),
-
->>>>>>> 1.13
                 #4 Eta Categories  0-2.5 2.5-2.75 2.75-3.0 3.0-5.0
 
                 #Tight Id
