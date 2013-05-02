@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.5 2013/03/19 17:24:54 hinzmann Exp $
+ * $Id: R2JJFitter.cc,v 1.6 2013/05/02 13:02:44 hinzmann Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -116,7 +116,7 @@ using namespace RooStats ;
 
 static const Int_t NCAT = 6;
 Double_t MMIN = 890;
-Double_t MMAX = 2500;
+Double_t MMAX = 5000;
 std::string filePOSTfix="";
 double signalScaler=0.005;
 static const bool useNsub=false;
@@ -900,6 +900,7 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, bool isW
     c4->cd(c+1);
     plotMggBkg[c]->Draw();  
     gPad->SetLogy(1);
+    plotMggBkg[c]->SetAxisRange(0.1,plotMggBkg[c]->GetMaximum()*1.5,"Y");
   }
 
   c4->SaveAs(TString::Format("plots/backgrounds_log.png",c));
