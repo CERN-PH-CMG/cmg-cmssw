@@ -33,7 +33,7 @@
  normWeight = 1;
 
 
- string sInFile = "~hinzmann/public/forMaxime/dijetWtag_Moriond_Mar6.root";
+ string sInFile = "~hinzmann/public/nsubanalysis/dijetWtag_Moriond_Mar6.root";
  cout << sInFile.c_str() << endl;
  TFile file0(sInFile.c_str(), "read");
  
@@ -64,21 +64,21 @@
    if (iCat == 4) TH1D* hMass = (TH1D*) file0.Get("dijet_mass_1mtag_1nstag;1");
    if (iCat == 5) TH1D* hMass = (TH1D*) file0.Get("dijet_mass_0mtag;1");
    */
-   
-   TH1D* hMass = (TH1D*) file0.Get("dijet_mass_2mtag_2mdtag;1");
-   if (iCat == 1) hMass = (TH1D*) file0.Get("dijet_mass_2mtag_1mdtag;1");
-   if (iCat == 2) TH1D* hMass = (TH1D*) file0.Get("dijet_mass_2mtag_0mdtag;1");
-   if (iCat == 3) hMass = (TH1D*) file0.Get("dijet_mass_1mtag_1mdtag;1");
-   if (iCat == 4) TH1D* hMass = (TH1D*) file0.Get("dijet_mass_1mtag_0mdtag;1");
-   if (iCat == 5) TH1D* hMass = (TH1D*) file0.Get("dijet_mass_0mtag;1");
    /*
+   TH1D* hMass = (TH1D*) file0.Get("dijet_mass_2mtag_0mdtag;1");
+   if (iCat == 1) hMass = (TH1D*) file0.Get("dijet_mass_2mtag_1mdtag;1");
+   if (iCat == 2) TH1D* hMass = (TH1D*) file0.Get("dijet_mass_2mtag_2mdtag;1");
+   if (iCat == 3) hMass = (TH1D*) file0.Get("dijet_mass_1mtag_0mdtag;1");
+   if (iCat == 4) TH1D* hMass = (TH1D*) file0.Get("dijet_mass_1mtag_1mdtag;1");
+   if (iCat == 5) TH1D* hMass = (TH1D*) file0.Get("dijet_mass_0mtag;1");
+   */
    TH1D* hMass = (TH1D*) file0.Get("dijet_mass_2mtag_2hptag;1");
    if (iCat == 1) hMass = (TH1D*) file0.Get("dijet_mass_2mtag_1hptag_1lptag;1");
    if (iCat == 2) hMass = (TH1D*) file0.Get("dijet_mass_2mtag_2lptag;1");
    if (iCat == 3) hMass = (TH1D*) file0.Get("dijet_mass_1mtag_1hptag;1");
    if (iCat == 4) hMass = (TH1D*) file0.Get("dijet_mass_1mtag_1lptag;1");
    if (iCat == 5) hMass = (TH1D*) file0.Get("dijet_mass_0mtag;1");
-   */
+   
 
    TAxis* Axis =   hMass->GetXaxis();
    for (int i = 1 ; i < hMass->GetNbinsX()+1; i++){

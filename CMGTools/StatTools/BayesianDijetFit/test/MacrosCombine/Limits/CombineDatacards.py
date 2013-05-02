@@ -39,9 +39,9 @@ for chan in channel:
         bin4="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel4.txt "
         bin5="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel5.txt "
         
-        bin02="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel0_2.txt "
-        bin05="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel0_5.txt "
-        bin01345="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel01_345.txt " 
+        bin02="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel012.txt "
+        bin05="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel012345.txt "
+        bin01345="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel01345.txt " 
 
         comb02 = "combineCards.py " + bin0 + bin1 + bin2 + " >" + bin02  
         comb05 = "combineCards.py " + bin0 + bin1 + bin2 + bin3 + bin4 + bin5 + " >" + bin05  

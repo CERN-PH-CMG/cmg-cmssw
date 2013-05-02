@@ -31,7 +31,8 @@ muPlusZZ=[]
 
 
 sChan=["WW","ZZ"]
-bin=[0,1,2,3,4,5,"012","012345"]
+#bin=[0,1,2,3,4,5,"012","012345"]
+bin=["012","012345"]
 sBin={}
 sBin[0]="m2mg0"
 sBin[1]="m2mg1"
@@ -58,8 +59,8 @@ for ibin in bin:
         for mass in masses:
             print "mass = ",mass
 
-            fileOut="Xvv.mX"+str(mass)+"_" + sChan[chan] + "_MaxLikelihoodFit_8TeV_channel"+str(ibin)+".out"
-            proc="combine ../datacards/Xvv.mX"+str(mass)+"_" + sChan[chan] + "_8TeV_channel"+str(ibin)+".txt -M MaxLikelihoodFit -v2 -m "+str(mass) + " --rMin -10 &>"+fileOut
+            fileOut="Limits/Xvv.mX"+str(mass)+"_" + sChan[chan] + "_MaxLikelihoodFit_8TeV_channel"+str(ibin)+".out"
+            proc="combine datacards/Xvv.mX"+str(mass)+"_" + sChan[chan] + "_8TeV_channel"+str(ibin)+".txt -M MaxLikelihoodFit -v2 -m "+str(mass) + " --rMin -10 &>"+fileOut
             print proc
             os.system(proc)
             

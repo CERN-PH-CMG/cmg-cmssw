@@ -126,7 +126,7 @@ def PlotMu(muFILENAME, label):
     c1.SaveAs("mu_%s.pdf" %label)
 
 if __name__ == '__main__':
-    
+    """
     PlotPValue("Xvv_WW_8TeV_Pval_channel0_m2mg0.txt", "WW_channel0_m2mg0")
     PlotPValue("Xvv_WW_8TeV_Pval_channel1_m2mg1.txt", "WW_channel1_m2mg1")
     PlotPValue("Xvv_WW_8TeV_Pval_channel2_m2mg2.txt", "WW_channel2_m2mg2")
@@ -154,3 +154,14 @@ if __name__ == '__main__':
     PlotMu("Xvv_ZZ_8TeV_channel3_m1mg0.txt", "ZZ_channel3_m1mg0")
     PlotMu("Xvv_ZZ_8TeV_channel4_m1mg1.txt", "ZZ_channel4_m1mg1")
     PlotMu("Xvv_ZZ_8TeV_channel5_m0.txt", "ZZ_channel5_m0")
+    """
+    PlotPValue("Xvv_WW_8TeV_Pval_channel0.txt", "WW_high_purity")
+    PlotPValue("Xvv_WW_8TeV_Pval_channel1.txt", "WW_medium_purity")
+    PlotPValue("Xvv_WW_8TeV_Pval_channel2.txt", "WW_low_purity")
+    PlotPValue("Xvv_WW_8TeV_Pval_channel012.txt", "WW_combined")
+
+    PlotPValue("Xvv_ZZ_8TeV_Pval_channel0.txt", "ZZ_high_puriy")
+    PlotPValue("Xvv_ZZ_8TeV_Pval_channel1.txt", "ZZ_medium_purity")
+    PlotPValue("Xvv_ZZ_8TeV_Pval_channel2.txt", "ZZ_low_purity")
+    PlotPValue("Xvv_ZZ_8TeV_Pval_channel012.txt", "ZZ_combine")
+    
