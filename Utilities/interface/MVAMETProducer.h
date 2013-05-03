@@ -61,6 +61,7 @@ private:
 
   edm::InputTag recBosonSrc_;
   edm::InputTag jetSrc_;
+  std::string puJetIdLabel_;
   edm::InputTag leadJetSrc_;
 
   edm::InputTag vertexSrc_;
@@ -89,6 +90,7 @@ MVAMETProducer< RecBosonType >::MVAMETProducer(const edm::ParameterSet & iConfig
   pumetSrc_( iConfig.getParameter<edm::InputTag>("pumetSrc") ), 
   recBosonSrc_( iConfig.getParameter<edm::InputTag>("recBosonSrc") ),
   jetSrc_( iConfig.getParameter<edm::InputTag>("jetSrc") ),
+  puJetIdLabel_( iConfig.getParameter<std::string>("puJetIdLabel") ),
   leadJetSrc_( iConfig.getParameter<edm::InputTag>("leadJetSrc") ),
   vertexSrc_( iConfig.getParameter<edm::InputTag>("vertexSrc") ),
   nJetsPtGt1Src_( iConfig.getParameter<edm::InputTag>("nJetsPtGt1Src") ),
@@ -104,7 +106,13 @@ MVAMETProducer< RecBosonType >::MVAMETProducer(const edm::ParameterSet & iConfig
 		      TString(iConfig.getParameter<std::string>("weights_gbrmetphi")),     //U Phi
 		      TString(iConfig.getParameter<std::string>("weights_gbrmetu1cov")),   //U1 Cov
 		      TString(iConfig.getParameter<std::string>("weights_gbrmetu2cov")));  //U2 Cov
-		      
+		 
+//   cout<<" MVAMETProducer weight files "<<endl;
+//   cout<<iConfig.getParameter<std::string>("weights_gbrmet")<<endl;
+//   cout<<iConfig.getParameter<std::string>("weights_gbrmetphi")<<endl;
+//   cout<<iConfig.getParameter<std::string>("weights_gbrmetu1cov")<<endl;
+//   cout<<iConfig.getParameter<std::string>("weights_gbrmetu2cov")<<endl;
+     
    
   // will produce one BaseMET for each recBoson 
   produces< std::vector<MetType> >();
@@ -207,9 +215,11 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     int nJetsPtGt30     = 0; 
     int nJetsPtGt1Clean = nJetsPtGt1;
     for( unsigned i=0; i<jetH->size(); ++i) {
+      //cout<<"input jets "<<jetH->at(i).pt()<<" "<<jetH->at(i).eta()<<" "<<jetH->at(i).phi()<<endl;
       if( jetH->at(i).pt() < 1 ) continue; 
       if(deltaR(jetH->at(i).p4(),recBoson.leg1().p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
       if(deltaR(jetH->at(i).p4(),recBoson.leg2().p4()) < 0.5) {nJetsPtGt1Clean--; continue;}
+      //cout<<"cleaned jets "<<jetH->at(i).pt()<<" "<<jetH->at(i).eta()<<" "<<jetH->at(i).phi()<<endl;
       if( jetH->at(i).pt() < 30 ) continue;
       nJetsPtGt30++; 
     }
@@ -291,6 +301,7 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
       std::cout<<"\tnopumet = "<<nopumet->pt()<<std::endl;
       std::cout<<"\tpucmet = "<<pucmet->pt()<<std::endl;
       std::cout<<"\tpumet = "<<pumet->pt()<<std::endl;
+      std::cout<<"\tnJetsPtGt1 (uncleaned) = "<<nJetsPtGt1<<std::endl;
       std::cout<<"\tnJetsPtGt1 = "<<nJetsPtGt1Clean<<std::endl;
       std::cout<<"\tnJetsPtGt30 = "<<nJetsPtGt30<<std::endl;
       std::cout<<"\tnGoodVtx = "<<nGoodVtx<<std::endl;
@@ -298,12 +309,6 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
       if(leadJet  != 0) std::cout<<"\tjet1 eta,pt= "<<leadJet->Et()<<","<<leadJet->eta()<<std::endl;
       if(leadJet2 != 0) std::cout<<"\tjet2 eta,pt= "<<leadJet2->Et()<<","<<leadJet2->eta()<<std::endl;
       
-//       std::cout<<"  cleanpfmetsumet = "<< cleanpfmetsumet <<std::endl;
-//       std::cout<<"  cleanpucmetsumet = "<< cleanpucmetsumet <<std::endl;
-//       std::cout<<"  cleantkmetsumet = "<< cleantkmetsumet<<std::endl;
-//       std::cout<<"  cleannopumetsumet = "<< cleannopumetsumet <<std::endl;
-//       std::cout<<"  pumetsumet = "<<pumet->sumEt() <<std::endl;
- 
     }
 
     std::pair<LorentzVector,TMatrixD> lMVAMetInfo
@@ -386,7 +391,8 @@ void MVAMETProducer< RecBosonType >::makeJets(std::vector<MetUtilities::JetInfo>
 	 ) continue;
     }
 
-    double lMVA = pCJet->puMva("met53x"); 
+    double lMVA = pCJet->puMva(puJetIdLabel_.c_str());
+ 
     double lNeuFrac = 1.;
     if (fabs(pCJet->eta())<2.5)
       lNeuFrac = pCJet->component( reco::PFCandidate::gamma ).fraction() + pCJet->component( reco::PFCandidate::h0 ).fraction();

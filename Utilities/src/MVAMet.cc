@@ -67,6 +67,7 @@ void MVAMet::Initialize(const edm::ParameterSet &iConfig,
     fUtils->fJetPtMin = 1.;
     fUtils->workingPointId_=2;
   }
+  //std::cout<<"MVAMet::Initialize  fUtils  JetPtMin= "<<fUtils->fJetPtMin<<"   workingPointId_="<<fUtils->workingPointId_<<std::endl;
 
   TFile *lPhiForest = new TFile(iPhiWeights,"READ");
   fPhiReader = (GBRForest*)lPhiForest->Get(fPhiMethodName);

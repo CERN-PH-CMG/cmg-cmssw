@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Utilities.mvaMET.weights_gbr import weights_gbrmet,weights_gbrmetphi, weights_gbrmetu1cov, weights_gbrmetu2cov
-
+from CMGTools.Common.miscProducers.mvaMET.metRegression_cff import puJetIdAlgo
 
 ##http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/JetMETCorrections/METPUSubtraction/python/mvaPFMET_leptons_cfi.py?view=markup
 ## Single muon for Wjets
@@ -122,6 +122,7 @@ mvaMETPreselLep = cms.EDProducer(
     preselElectronListTag = cms.InputTag('cmgElectronMVAMETPresel'),
     preselTauListTag = cms.InputTag('cmgTauMVAMETPresel'),
     jetSrc = cms.InputTag('cmgPFJetSel'),
+    puJetIdLabel = puJetIdAlgo.label,
     leadJetSrc = cms.InputTag('cmgPFBaseJetLead'),
     vertexSrc = cms.InputTag('goodPVFilter'),
     nJetsPtGt1Src = cms.InputTag('nJetsPtGt1'),

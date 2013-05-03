@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 from CMGTools.Utilities.mvaMET.weights_gbr import weights_gbrmet,weights_gbrmetphi, weights_gbrmetu1cov, weights_gbrmetu2cov
+from CMGTools.Common.miscProducers.mvaMET.metRegression_cff import puJetIdAlgo
 
 mvaMETTauEle = cms.EDProducer(
     "MVAMETProducerTauEle",
@@ -11,6 +12,7 @@ mvaMETTauEle = cms.EDProducer(
     pumetSrc = cms.InputTag('puMet'),
     recBosonSrc = cms.InputTag('cmgTauEleSel'),
     jetSrc = cms.InputTag('cmgPFJetSel'),
+    puJetIdLabel = puJetIdAlgo.label,
     leadJetSrc = cms.InputTag('cmgPFBaseJetLead'),
     vertexSrc = cms.InputTag('goodPVFilter'),
     nJetsPtGt1Src = cms.InputTag('nJetsPtGt1'),
