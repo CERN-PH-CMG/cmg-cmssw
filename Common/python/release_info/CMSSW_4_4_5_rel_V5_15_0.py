@@ -2,7 +2,7 @@
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'lucieg_Ap18_44X'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-10'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_mvametbuiddfix_17Apr13'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'anantoni-15April2013-devdb-wildcards-15h01m'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_Apr3'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_Apr15'),
   ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'cbern_mvametbuiddfix_17Apr13'),
   ('CMGTools/ZJetsTutorial', 'UserCode/CMG/CMGTools/ZJetsTutorial', 'cbern_local_12Dec12'),
