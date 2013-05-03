@@ -1,5 +1,5 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'lucieg_Ap8'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_nomorepattuple_17Apr13_44X'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'lucieg_Ap18_44X'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-02-10'),
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_mvametbuiddfix_17Apr13'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'anantoni-15April2013-devdb-wildcards-15h01m'),
