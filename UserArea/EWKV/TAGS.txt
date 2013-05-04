@@ -18,6 +18,8 @@ cvs co -r V02-02-06      RecoVertex/AdaptiveVertexFinder
 cvs co                   bTag/CommissioningCommonSetup      
 cvs co			 -d UserCode/EWKV UserCode/CMG/UserArea/EWKV
 cvs co -r V00-03-01      -d CMGTools/External UserCode/CMG/CMGTools/External
+cvs co                   EGamma/EGammaAnalysisTools                       
+cvs co -r V09-00-01      RecoEgamma/EgammaTools                           
 
 echo "Thought you could do this with just one tag, eh?"
 

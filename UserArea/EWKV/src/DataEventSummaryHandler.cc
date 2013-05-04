@@ -68,6 +68,11 @@ bool DataEventSummaryHandler::init(TTree *t, bool needsToRecreate)
   t_->Branch("ln_py",         evSummary_.ln_py,        "ln_py[ln]/F");
   t_->Branch("ln_pz",         evSummary_.ln_pz,        "ln_pz[ln]/F");
   t_->Branch("ln_en",         evSummary_.ln_en,        "ln_en[ln]/F");
+  t_->Branch("ln_genid",      evSummary_.ln_genid,     "ln_genid[ln]/I");
+  t_->Branch("ln_genpx",      evSummary_.ln_genpx,     "ln_genpx[ln]/F");
+  t_->Branch("ln_genpy",      evSummary_.ln_genpy,     "ln_genpy[ln]/F");
+  t_->Branch("ln_genpz",      evSummary_.ln_genpz,     "ln_genpz[ln]/F");
+  t_->Branch("ln_genen",      evSummary_.ln_genen,     "ln_genen[ln]/F");
   t_->Branch("ln_ecalIso03",  evSummary_.ln_ecalIso03, "ln_ecalIso03[ln]/F");
   t_->Branch("ln_hcalIso03",  evSummary_.ln_hcalIso03, "ln_hcalIso03[ln]/F");
   t_->Branch("ln_trkIso03",   evSummary_.ln_trkIso03,  "ln_trkIso03[ln]/F");
@@ -97,7 +102,7 @@ bool DataEventSummaryHandler::init(TTree *t, bool needsToRecreate)
 
   //Gamma Info
   t_->Branch("gn",          &evSummary_.gn,          "gn/I");
-  t_->Branch("gn_pidbits",  evSummary_.gn_pidbits,   "gn_pidbits[gn]/I");
+  t_->Branch("gn_idbits",   evSummary_.gn_idbits,    "gn_idbits[gn]/I");
   t_->Branch("gn_pid",      evSummary_.gn_pid,       "gn_pid[gn]/I");
   t_->Branch("gn_px",       evSummary_.gn_px,        "gn_px[gn]/F");
   t_->Branch("gn_py",       evSummary_.gn_py,        "gn_py[gn]/F");
@@ -149,6 +154,8 @@ bool DataEventSummaryHandler::init(TTree *t, bool needsToRecreate)
   //selected jets
   t_->Branch("jn",             &evSummary_.jn,                "jn/I");
   t_->Branch("jn_idbits",      evSummary_.jn_idbits,          "jn_idbits[jn]/I");
+  t_->Branch("jn_pfstart",     evSummary_.jn_pfstart,         "jn_pfstart[jn]/I");
+  t_->Branch("jn_pfend",       evSummary_.jn_pfend,           "jn_pfend[jn]/I");
   t_->Branch("jn_px",          evSummary_.jn_px,              "jn_px[jn]/F");
   t_->Branch("jn_py",          evSummary_.jn_py,              "jn_py[jn]/F");
   t_->Branch("jn_pz",          evSummary_.jn_pz,              "jn_pz[jn]/F");
@@ -185,10 +192,15 @@ bool DataEventSummaryHandler::init(TTree *t, bool needsToRecreate)
   t_->Branch("jn_etaW",        evSummary_.jn_etaW,            "jn_etaW[jn]/F");
   t_->Branch("jn_phiW",        evSummary_.jn_phiW,            "jn_phiW[jn]/F");
   t_->Branch("jn_genflav",     evSummary_.jn_genflav,         "jn_genflav[jn]/I");
-  t_->Branch("jn_genPx",       evSummary_.jn_genPx,           "jn_genPx[jn]/F");
-  t_->Branch("jn_genPy",       evSummary_.jn_genPy,           "jn_genPy[jn]/F");
-  t_->Branch("jn_genPz",       evSummary_.jn_genPz,           "jn_genPz[jn]/F");
-  t_->Branch("jn_genEn",       evSummary_.jn_genEn,           "jn_genEn[jn]/F");
+  t_->Branch("jn_genid",       evSummary_.jn_genid,           "jn_genid[jn]/I");
+  t_->Branch("jn_genpx",       evSummary_.jn_genpx,           "jn_genpx[jn]/F");
+  t_->Branch("jn_genpy",       evSummary_.jn_genpy,           "jn_genpy[jn]/F");
+  t_->Branch("jn_genpz",       evSummary_.jn_genpz,           "jn_genpz[jn]/F");
+  t_->Branch("jn_genen",       evSummary_.jn_genen,           "jn_genen[jn]/F");
+  t_->Branch("jn_genjpx",      evSummary_.jn_genjpx,          "jn_genjpx[jn]/F");
+  t_->Branch("jn_genjpy",      evSummary_.jn_genjpy,          "jn_genjpy[jn]/F");
+  t_->Branch("jn_genjpz",      evSummary_.jn_genjpz,          "jn_genjpz[jn]/F");
+  t_->Branch("jn_genjen",      evSummary_.jn_genjen,          "jn_genjen[jn]/F");
  
   //MET
   t_->Branch("metn",     &evSummary_.metn,    "metn/I");
@@ -295,7 +307,7 @@ bool DataEventSummaryHandler::attach(TTree *t)
 
   //Gamma Info
   t_->SetBranchAddress("gn",          &evSummary_.gn);
-  t_->SetBranchAddress("gn_pidbits",  evSummary_.gn_pidbits);
+  t_->SetBranchAddress("gn_idbits",   evSummary_.gn_idbits);
   t_->SetBranchAddress("gn_pid",      evSummary_.gn_pid);
   t_->SetBranchAddress("gn_px",       evSummary_.gn_px);
   t_->SetBranchAddress("gn_py",       evSummary_.gn_py);
@@ -383,10 +395,15 @@ bool DataEventSummaryHandler::attach(TTree *t)
   t_->SetBranchAddress("jn_etaW",        evSummary_.jn_etaW);
   t_->SetBranchAddress("jn_phiW",        evSummary_.jn_phiW);
   t_->SetBranchAddress("jn_genflav",     evSummary_.jn_genflav);
-  t_->SetBranchAddress("jn_genPx",       evSummary_.jn_genPx);
-  t_->SetBranchAddress("jn_genPy",       evSummary_.jn_genPy);
-  t_->SetBranchAddress("jn_genPz",       evSummary_.jn_genPz);
-  t_->SetBranchAddress("jn_genEn",       evSummary_.jn_genEn);
+  t_->SetBranchAddress("jn_genid",       evSummary_.jn_genid);
+  t_->SetBranchAddress("jn_genpx",       evSummary_.jn_genpx);
+  t_->SetBranchAddress("jn_genpy",       evSummary_.jn_genpy);
+  t_->SetBranchAddress("jn_genpz",       evSummary_.jn_genpz);
+  t_->SetBranchAddress("jn_genen",       evSummary_.jn_genen);
+  t_->SetBranchAddress("jn_genjpx",      evSummary_.jn_genjpx);
+  t_->SetBranchAddress("jn_genjpy",      evSummary_.jn_genjpy);
+  t_->SetBranchAddress("jn_genjpz",      evSummary_.jn_genjpz);
+  t_->SetBranchAddress("jn_genjen",      evSummary_.jn_genjen);
  
   //MET
   t_->SetBranchAddress("metn",     &evSummary_.metn);
