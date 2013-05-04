@@ -1,7 +1,7 @@
 cvs co -r V02-05-11      DataFormats/CaloRecHit                           
 cvs co -r V06-05-06-10   DataFormats/PatCandidates                        
 cvs co -r V00-02-14      DataFormats/StdDictionaries                      
-cvs co -r CutBasedId_V00-00-05 EGamma/EGammaAnalysisTools                       
+cvs co -r V00-00-02      EgammaAnalysis/ElectronTools
 cvs co -r V00-00-70      FWCore/GuiBrowsers                               
 cvs co -r V08-09-57      PhysicsTools/PatAlgos                            
 cvs co -r V03-09-28      PhysicsTools/PatUtils                            
@@ -17,6 +17,7 @@ cvs co -r V15-02-06      RecoParticleFlow/PFProducer
 cvs co -r V02-02-06      RecoVertex/AdaptiveVertexFinder                  
 cvs co                   bTag/CommissioningCommonSetup      
 cvs co			 -d UserCode/EWKV UserCode/CMG/UserArea/EWKV
+cvs co -r V00-03-01      -d CMGTools/External UserCode/CMG/CMGTools/External
 
 echo "Thought you could do this with just one tag, eh?"
 
