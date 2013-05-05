@@ -4,7 +4,7 @@
   ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_mvametbuiddfix_17Apr13'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_May3'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_Apr15'),
-  ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'cbern_mvametbuiddfix_17Apr13'),
+  ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'jose_3May13'),
   ('CMGTools/ZJetsTutorial', 'UserCode/CMG/CMGTools/ZJetsTutorial', 'cbern_local_12Dec12'),
   ('CommonTools/ParticleFlow', 'CommonTools/ParticleFlow', 'V00-03-05-10'),
   ('CondFormats/DataRecord', 'CondFormats/DataRecord', 'V06-23-01'),
