@@ -54,6 +54,8 @@ def getGlobalTagByDataset(runOnMC, dataset):
     else:
         if cmsswIs44X():
             GT = 'GR_R_44_V15::All'
+        elif '22Jan2013' in dataset:
+            GT = 'FT_53_V21_AN3::All'    
         elif '13Jul2012' in dataset:
             GT = 'FT_53_V6C_AN4::All'
         elif '06Aug2012' in dataset:
@@ -76,6 +78,7 @@ def getGlobalTagByDataset(runOnMC, dataset):
             GT = 'FT_P_V42_AN4::All'
         elif 'Run2012D-part2_17Jan2013-v1' in dataset:
             GT = 'FT_P_V42D_AN4::All'
+            
 
     if GT is None:
         raise Exception("No global tag found for dataset '%s'. Check getGlobalTagByDataset" % dataset)
