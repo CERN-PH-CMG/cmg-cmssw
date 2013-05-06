@@ -1,20 +1,64 @@
 #!/bin/env python
 
-import sys
-import os
-import re
-import gzip
-import fnmatch
-
+import sys, os, re, gzip, fnmatch, tarfile, tempfile
+import CMGTools.Production.eostools as eostools
 from CMGTools.Production.dataset import createDataset
 
+def checkForLogger( dataset_lfn_dir ):
+	"""Checks the EOS directory for a Logger.tgz file, if not found, escapes
+	'sampleName' takes the name of the sample as a string
+	'fileOwner' takes the file owner on EOS as a string
+	"""
+	if len( eostools.matchingFiles( dataset_lfn_dir, "Logger.tgz" ) )  == 1:
+		return createLoggerTemporaryFile( dataset_lfn_dir )
+	else: 
+		raise NameError("ERROR: No Logger.tgz file found for this sample. If you would like to preceed anyway, please copy Logger.tgz from your local production directory to your production directory on eos.\n")
+	
+def createLoggerTemporaryFile( dataset_lfn_dir ):
+	"""Build a temporary logger file object and tarfile object to be used 
+	when retrieving tags and jobs"""
+	try:
+		logger_file = tempfile.NamedTemporaryFile()
+		os.system("cmsStage -f "+ os.path.join( dataset_lfn_dir, "Logger.tgz") + " " + logger_file.name)
+		logger_tar_object = tarfile.open(fileobj = logger_file)
+		if len( logger_tar_object.getmembers() )==0: 
+			print "\nERROR: Failed to stage logger file"
+			exit(-1)
+		return logger_tar_object
+	except:
+		print "\nERROR: Failed to stage logger file"
+		exit(-1)
+
+def buildBadJobsList( dataset ):
+	badJobs = []
+	try:
+		# Open the file in the logger and get the value
+		print dataset.lfnDir
+		logger_tar_object = checkForLogger( dataset.lfnDir )
+		nJobsFile = logger_tar_object.extractfile("Logger/logger_jobs.txt") #extract Logger/logger_jobs.txt if it exists    
+		nJobs = int(nJobsFile.read().split(": ")[1].split("\n")[0])         #read job number from file
+	except:
+		print "ERROR: No jobs file found in logger" 
+		exit( -1 )
+
+	if nJobs == None:
+		print "ERROR:Invalid job number - Corrupt jobs report from Logger/logger_jobs.txt"
+		exit( -1 )
+	else:
+		goodFiles = data.listOfGoodFiles()
+		goodJobNumbers =  sorted( map( jobNumber, goodFiles ) )
+		totalJobNumbers = range( 1, nJobs+1 )
+	
+		badJobs = list( set(totalJobNumbers) - set(goodJobNumbers) ) 
+	return badJobs
+		
 def jobNumber( fileName ):
+    pattern = re.compile('.*_(\d+)\.root$')
     m = pattern.match(fileName)
     return int(m.group(1))
 
 def jobDir( allJobsDir, job ):
-    return '{all}/Job_{job}'.format(all=allJobsDir,
-                                    job=job)
+    return '{all}/Job_{job}'.format(all=allJobsDir, job=job)
 
 def lsfReport( stdoutgz, unzip=False, nLines=100):
     sep_line = '-'*70
@@ -50,6 +94,8 @@ def jobSubmit( allJobsDir, job, cmd):
     print cmd
     os.system( cmd )
     os.chdir( oldPwd )
+
+
     
 if __name__ == '__main__':
 
@@ -100,25 +146,12 @@ if __name__ == '__main__':
     pattern = fnmatch.translate( options.wildcard )
 
     data = createDataset(user, dataset, pattern, options.readcache)
-
-    files = data.listOfGoodFiles()
-    # print files
-
-    pattern = re.compile('.*_(\d+)\.root$')
-
-
-    jobNumbers =  sorted( map( jobNumber, files ) ) 
-    # print jobNumbers
+    
 
     badJobs = []
     if options.badjoblists is None:
-        prev = 0
-        for job in jobNumbers:
-            if job - prev != 1 and job!=0:
-                for mj in range(prev+1, job):
-                    badJobs.append( mj ) 
-                    # print mj
-            prev = job
+        badJobs = buildBadJobsList( data )
+
     else:
         # import pdb; pdb.set_trace()
         bjlsstr = options.badjoblists.split(';')

@@ -473,7 +473,10 @@ class DatasetInformation(object):
 				#get the revision corresponding to the dataset's tag
 				for item in self.dataset_details['Tags']:
 					if item['package'] == "CMGTools/Production":
-						revision = tag_to_revision[item['tag']]
+						if item['tag'] == 'HEAD':
+							revision = '1.17'
+						else:
+							revision = tag_to_revision[item['tag']]
 						break
 				if revision is None:
 					raise IOError( "ERROR: Unexpected output from 'cvs status scripts/cmsBatch' execution - couldn't match tag with an existing revision" )
