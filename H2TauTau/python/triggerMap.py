@@ -99,7 +99,15 @@ pathsAndFilters = {
     'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_v4': ("hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02"),
     'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_Prong1_Reg_v1': ("hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02Reg","hltDoublePFTau35TrackPt1MediumIsolationProng2Dz02Reg"),
     # hadronic tau triggers parked 2012
+    ## first part with trk5
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v2': ("hltDoublePFTau35TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau35TrackPt5MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v3': ("hltDoublePFTau35TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau35TrackPt5MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v4': ("hltDoublePFTau35TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau35TrackPt5MediumIsolationProng4Dz02"),
     'HLT_DoubleMediumIsoPFTau35_Trk5_eta2p1_v6': ("hltDoublePFTau35TrackPt5MediumIsolationProng4Dz02","hltDoublePFTau35TrackPt5MediumIsolationProng4Dz02"),
+    ## second part with trk1
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_v1': ("hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_v3': ("hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02"),
+    'HLT_DoubleMediumIsoPFTau35_Trk1_eta2p1_v4': ("hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02","hltDoublePFTau35TrackPt1MediumIsolationProng4Dz02"),
     }
     
 
