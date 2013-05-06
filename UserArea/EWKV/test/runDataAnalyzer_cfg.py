@@ -14,7 +14,7 @@ process.load("Configuration.Geometry.GeometryIdeal_cff")
 
 ## MessageLogger
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
-process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False))
+process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True)) #False))
 
 #the source and output
 process.source = cms.Source("PoolSource",

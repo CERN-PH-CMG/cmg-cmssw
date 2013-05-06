@@ -26,8 +26,8 @@ class DataEventSummary //: public TObject
   Float_t instLumi, rho,rho25,rho25Neut;
 
   //PF candidates
-  Int_t   pfn, pf_id[MAXDATAOBJECTS], pf_charge[MAXDATAOBJECTS];
-  Float_t pf_px[MAXDATAOBJECTS], pf_py[MAXDATAOBJECTS], pf_pz[MAXDATAOBJECTS];
+  Int_t   pfn, pf_id[MAXDATAOBJECTS], pf_charge[MAXDATAOBJECTS], pf_vtx[MAXDATAOBJECTS];
+  Float_t pf_px[MAXDATAOBJECTS], pf_py[MAXDATAOBJECTS], pf_pz[MAXDATAOBJECTS],pf_en[MAXDATAOBJECTS];
 
   //gen information
   Int_t ngenITpu, ngenOOTpu, ngenOOTpum1, ngenTruepu;
@@ -73,7 +73,7 @@ class DataEventSummary //: public TObject
   Int_t jn, jn_idbits[MAXDATAOBJECTS], jn_pfstart[MAXDATAOBJECTS], jn_pfend[MAXDATAOBJECTS];
   Float_t jn_px[MAXDATAOBJECTS],    jn_py[MAXDATAOBJECTS],      jn_pz[MAXDATAOBJECTS],          jn_en[MAXDATAOBJECTS], jn_torawsf[MAXDATAOBJECTS];
   Float_t jn_neutHadFrac[MAXDATAOBJECTS], jn_neutEmFrac[MAXDATAOBJECTS], jn_chHadFrac[MAXDATAOBJECTS];
-  Float_t jn_tchp[MAXDATAOBJECTS], jn_jp[MAXDATAOBJECTS], jn_csv[MAXDATAOBJECTS], jn_supercsv[MAXDATAOBJECTS], jn_ssvhe[MAXDATAOBJECTS], jn_ivf[MAXDATAOBJECTS];
+  Float_t jn_tchp[MAXDATAOBJECTS], jn_jp[MAXDATAOBJECTS], jn_origcsv[MAXDATAOBJECTS], jn_csv[MAXDATAOBJECTS], jn_jpcsv[MAXDATAOBJECTS], jn_slcsv[MAXDATAOBJECTS], jn_supercsv[MAXDATAOBJECTS], jn_ssvhe[MAXDATAOBJECTS], jn_ivf[MAXDATAOBJECTS];
   Float_t jn_svxPx[MAXDATAOBJECTS], jn_svxPy[MAXDATAOBJECTS], jn_svxPz[MAXDATAOBJECTS], jn_svxM[MAXDATAOBJECTS], jn_svxNtrk[MAXDATAOBJECTS], jn_svxLxy[MAXDATAOBJECTS], jn_svxLxyErr[MAXDATAOBJECTS];
   Float_t jn_ivfPx[MAXDATAOBJECTS], jn_ivfPy[MAXDATAOBJECTS], jn_ivfPz[MAXDATAOBJECTS], jn_ivfM[MAXDATAOBJECTS], jn_ivfNtrk[MAXDATAOBJECTS], jn_ivfLxy[MAXDATAOBJECTS], jn_ivfLxyErr[MAXDATAOBJECTS];
   Float_t jn_puMVA[MAXDATAOBJECTS], jn_qgMVA[MAXDATAOBJECTS];

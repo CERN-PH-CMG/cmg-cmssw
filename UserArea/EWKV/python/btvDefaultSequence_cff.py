@@ -527,7 +527,10 @@ def btvDefaultSequence(process, isMC=True, jetCollection="selectedPatJetsPFlow",
     process.softPFMuonsTagInfos.primaryVertex = cms.InputTag(vtxCollection)
     process.softPFMuonsTagInfos.jets            = jetCollection 
     process.softPFElectronsTagInfos.primaryVertex = cms.InputTag(vtxCollection)
-    process.softPFElectronsTagInfos.jets        = jetCollection 
+    process.softPFElectronsTagInfos.jets        = jetCollection
+
+    
+
 
     #the sequence
     process.btvSequence=cms.Sequence(process.inclusiveVertexing*process.inclusiveMergedVerticesFiltered*process.bToCharmDecayVertexMerged

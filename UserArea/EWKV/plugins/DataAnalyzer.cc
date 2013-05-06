@@ -544,115 +544,10 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
       ev.egn++;
       if(ele->pt()>20) nElecs++;
     }
-  
-  //
-  // jets
-  // https://twiki.cern.ch/twiki/bin/view/CMS/JetID
-  // 
-  ev.jn=0; ev.pfn=0;
-  Handle<pat::JetCollection> jetH;
-  event.getByLabel( analysisCfg_.getParameter<edm::InputTag>("jetSource"), jetH);
-  edm::Handle<edm::ValueMap<float> >  qgTaggerH;
-  event.getByLabel("QGTagger","qgLikelihood", qgTaggerH);
-  for(size_t ijet=0; ijet<jetH->size(); ++ijet)
-    {
-      edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection>(jetH,ijet));
-      const pat::Jet *jet              = &((*jetH)[ijet]);
-      const reco::Candidate *genParton = jet->genParton();
-      const reco::GenJet *genJet       = jet->genJet();
-
-      //pre-selection
-      float nhf    = ( jet->neutralHadronEnergy() + jet->HFHadronEnergy() ) / jet->energy();
-      float nef    = jet->neutralEmEnergyFraction();
-      float nconst = jet->numberOfDaughters();
-      float cef    = jet->chargedEmEnergyFraction();
-      float chf    = jet->chargedHadronEnergyFraction();
-      float nch    = jet->chargedMultiplicity();
-      bool passLooseId(nhf<0.99  && nef<0.99 && nconst>1);
-      bool passMediumId(nhf<0.95 && nef<0.95 && nconst>1);
-      bool passTightId(nhf<0.90  && nef<0.90 && nconst>1);
-      if(fabs(jet->eta())<2.4) {
-	passLooseId  &= (chf>0 && nch>0 && cef<0.99);
-	passMediumId &= (chf>0 && nch>0 && cef<0.99);
-	passTightId  &= (chf>0 && nch>0 && cef<0.99);
-      }
-      if(jet->pt()<10 || fabs(jet->eta())>4.7 || !passLooseId) continue;
-      
-      //save information
-      ev.jn_px[ev.jn]          = jet->px();
-      ev.jn_py[ev.jn]          = jet->py();
-      ev.jn_pz[ev.jn]          = jet->pz();
-      ev.jn_en[ev.jn]          = jet->energy();
-      ev.jn_torawsf[ev.jn]     = jet->correctedJet("Uncorrected").energy()/jet->energy();
-      ev.jn_genflav[ev.jn]     = jet->partonFlavour();
-      ev.jn_genid[ev.jn]       = genParton ? genParton->pdgId() : 0;
-      ev.jn_genpx[ev.jn]       = genParton ? genParton->px()    : 0;
-      ev.jn_genpy[ev.jn]       = genParton ? genParton->py()    : 0;
-      ev.jn_genpz[ev.jn]       = genParton ? genParton->pz()    : 0;
-      ev.jn_genen[ev.jn]       = genParton ? genParton->energy(): 0;
-      ev.jn_genjpx[ev.jn]      = genJet    ? genJet->px()       : 0;
-      ev.jn_genjpy[ev.jn]      = genJet    ? genJet->py()       : 0;
-      ev.jn_genjpz[ev.jn]      = genJet    ? genJet->pz()       : 0;
-      ev.jn_genjen[ev.jn]      = genJet    ? genJet->energy()   : 0;
-      ev.jn_neutHadFrac[ev.jn] = jet->neutralHadronEnergyFraction();
-      ev.jn_neutEmFrac[ev.jn]  = jet->neutralEmEnergyFraction();
-      ev.jn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();;
-      ev.jn_tchp[ev.jn]        = jet->bDiscriminator("trackCountingHighPurBJetTags");
-      ev.jn_csv[ev.jn]         = jet->bDiscriminator("combinedSecondaryVertexBJetTags");
-      ev.jn_supercsv[ev.jn]    = jet->bDiscriminator("combinedSecondaryVertexBJetTags");
-      ev.jn_jp[ev.jn]          = jet->bDiscriminator("jetProbabilityBJetTags");
-      ev.jn_ssvhe[ev.jn]       = jet->bDiscriminator("simpleSecondaryVertexHighEffBJetTags");
-      ev.jn_ivf[ev.jn]         = jet->bDiscriminator("mySimpleInclusiveSecondaryVertexHighEffBJetTags");
-      ev.jn_qgMVA[ev.jn]       = qgTaggerH.isValid() ?  (*qgTaggerH)[jetRef] : -1000 ;
-
-      PileupJetIdentifier puIdentifier = puJetIdAlgo_->computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVtx.get(), *vtxH.product(), true);
-      ev.jn_beta[ev.jn]        = puIdentifier.beta();
-      ev.jn_dRMean[ev.jn]      = puIdentifier.dRMean();
-      ev.jn_ptRMS[ev.jn]       = puIdentifier.ptRMS();
-      ev.jn_etaW[ev.jn]        = puIdentifier.etaW();
-      ev.jn_phiW[ev.jn]        = puIdentifier.phiW();
-      ev.jn_puMVA[ev.jn]       = puIdentifier.mva();
-      
-      //save pf constituents
-      const std::vector<reco::PFCandidatePtr> pfConst = jet->getPFConstituents();
-      ev.jn_pfstart[ev.jn]=ev.pfn;
-      for(size_t ipf=0; ipf<pfConst.size(); ipf++)
-	{
-	  ev.pf_id[ev.pfn] = pfConst[ipf]->pdgId();
-	  ev.pf_charge[ev.pfn] = pfConst[ipf]->charge();
-	  ev.pf_px[ev.pfn] = pfConst[ipf]->px();
-	  ev.pf_py[ev.pfn] = pfConst[ipf]->py();
-	  ev.pf_pz[ev.pfn] = pfConst[ipf]->pz();
-	  ev.pfn++;
-	}
-      ev.jn_pfend[ev.jn]=ev.pfn;
-
-      //a summary of the id bits
-      ev.jn_idbits[ev.jn] =
-	(passLooseId << 0)
-	| (passMediumId << 1)
-	| (passTightId << 2)
-	| ( ( uint(puIdentifier.idFlag()) & 0xf ) << 3 );
-      
-      ev.jn++;
-    }
-  
-  //
-  // missing transverse energy
-  //
-  std::vector<edm::InputTag> metSources=analysisCfg_.getParameter<std::vector<edm::InputTag> >("metSource");
-  ev.mn=metSources.size();
-  for(size_t imet=0; imet<metSources.size(); imet++)
-    {
-      Handle<View<Candidate> > metH;
-      event.getByLabel(metSources[imet], metH);
-      ev.met_pt[ev.mn]  = metH.isValid() ? metH->ptrAt(0)->pt() : 0; 
-      ev.met_phi[ev.mn] = metH.isValid() ? metH->ptrAt(0)->phi() : 0; 
-      ev.mn++;
-    }    
 
   //
   // photon selection
+  // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonID2012
   //
   ev.gn=0;
   int nPhotons(0);
@@ -733,9 +628,6 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
 	if(isTight && pho->isEB() && ev.egn_r9[ev.egn]>0.9) nPhotons++;
       }
 
-  //
-  // charged PF candidates which haven't been clustered
-  //
 
   //now check if at least one trigger condition is fullfilled
   bool toSave(false);
@@ -752,10 +644,248 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
       toSave=true;
       break;
     }
-  if(toSave) summary_.fill();
+  if(!toSave) return;
+
+
+  
+  //
+  // jets
+  // https://twiki.cern.ch/twiki/bin/view/CMS/JetID
+  // https://twiki.cern.ch/twiki/bin/view/CMS/PileupJetID
+  // https://twiki.cern.ch/twiki/bin/view/CMS/GluonTag
+  // 
+  ev.jn=0; ev.pfn=0;
+  Handle<pat::JetCollection> jetH;
+  event.getByLabel( analysisCfg_.getParameter<edm::InputTag>("jetSource"), jetH);
+  edm::Handle<edm::ValueMap<float> >  qgTaggerH;
+  event.getByLabel("QGTagger","qgLikelihood", qgTaggerH);
+  edm::Handle<reco::JetTagCollection> tchpTags,   jpTags,    ssvheTags,    ivfTags,    origcsvTags,    csvTags,    jpcsvTags,    slcsvTags, supercsvTags;
+  event.getByLabel("trackCountingHighPurBJetTags",                  tchpTags);          
+  event.getByLabel("jetProbabilityBJetTags",                        jpTags);            
+  event.getByLabel("simpleSecondaryVertexHighEffBJetTags",          ssvheTags);  
+  event.getByLabel("simpleInclusiveSecondaryVertexHighEffBJetTags", ivfTags); 
+  event.getByLabel("combinedSecondaryVertexBJetTags",               origcsvTags);       
+  event.getByLabel("combinedSecondaryVertexRetrainedBJetTags",      csvTags);           
+  event.getByLabel("combinedCSVJPBJetTags",                         jpcsvTags);         
+  event.getByLabel("combinedCSVSLBJetTags",                         slcsvTags);         
+  event.getByLabel("combinedCSVJPSLBJetTags",                 supercsvTags);      
+  edm::Handle<std::vector<reco::SecondaryVertexTagInfo> > svTagInfo, ivfTagInfo;
+  event.getByLabel("secondaryVertexTagInfos",                        svTagInfo);
+  event.getByLabel("inclusiveSecondaryVertexFinderTagInfosFiltered", ivfTagInfo);
+
+  for(size_t ijet=0; ijet<jetH->size(); ++ijet)
+    {
+      edm::RefToBase<pat::Jet> jetRef(edm::Ref<pat::JetCollection>(jetH,ijet));
+      const pat::Jet *jet              = &((*jetH)[ijet]);
+      const reco::Candidate *genParton = jet->genParton();
+      const reco::GenJet *genJet       = jet->genJet();
+
+      //pre-selection
+      float nhf    = ( jet->neutralHadronEnergy() + jet->HFHadronEnergy() ) / jet->energy();
+      float nef    = jet->neutralEmEnergyFraction();
+      float nconst = jet->numberOfDaughters();
+      float cef    = jet->chargedEmEnergyFraction();
+      float chf    = jet->chargedHadronEnergyFraction();
+      float nch    = jet->chargedMultiplicity();
+      bool passLooseId(nhf<0.99  && nef<0.99 && nconst>1);
+      bool passMediumId(nhf<0.95 && nef<0.95 && nconst>1);
+      bool passTightId(nhf<0.90  && nef<0.90 && nconst>1);
+      if(fabs(jet->eta())<2.4) {
+	passLooseId  &= (chf>0 && nch>0 && cef<0.99);
+	passMediumId &= (chf>0 && nch>0 && cef<0.99);
+	passTightId  &= (chf>0 && nch>0 && cef<0.99);
+      }
+      if(jet->pt()<10 || fabs(jet->eta())>4.7 || !passLooseId) continue;
+      
+      //save information
+      ev.jn_px[ev.jn]          = jet->px();
+      ev.jn_py[ev.jn]          = jet->py();
+      ev.jn_pz[ev.jn]          = jet->pz();
+      ev.jn_en[ev.jn]          = jet->energy();
+      ev.jn_torawsf[ev.jn]     = jet->correctedJet("Uncorrected").energy()/jet->energy();
+      ev.jn_genflav[ev.jn]     = jet->partonFlavour();
+      ev.jn_genid[ev.jn]       = genParton ? genParton->pdgId() : 0;
+      ev.jn_genpx[ev.jn]       = genParton ? genParton->px()    : 0;
+      ev.jn_genpy[ev.jn]       = genParton ? genParton->py()    : 0;
+      ev.jn_genpz[ev.jn]       = genParton ? genParton->pz()    : 0;
+      ev.jn_genen[ev.jn]       = genParton ? genParton->energy(): 0;
+      ev.jn_genjpx[ev.jn]      = genJet    ? genJet->px()       : 0;
+      ev.jn_genjpy[ev.jn]      = genJet    ? genJet->py()       : 0;
+      ev.jn_genjpz[ev.jn]      = genJet    ? genJet->pz()       : 0;
+      ev.jn_genjen[ev.jn]      = genJet    ? genJet->energy()   : 0;
+      ev.jn_neutHadFrac[ev.jn] = jet->neutralHadronEnergyFraction();
+      ev.jn_neutEmFrac[ev.jn]  = jet->neutralEmEnergyFraction();
+      ev.jn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();;
+
+      ev.jn_tchp[ev.jn]        = (*tchpTags)[ijet].second;
+      ev.jn_jp[ev.jn]          = (*jpTags)[ijet].second;
+      ev.jn_ssvhe[ev.jn]       = (*ssvheTags)[ijet].second;
+      ev.jn_ivf[ev.jn]         = (*ivfTags)[ijet].second;
+      ev.jn_origcsv[ev.jn]     = (*origcsvTags)[ijet].second;
+      ev.jn_csv[ev.jn]         = (*csvTags)[ijet].second;
+      ev.jn_jpcsv[ev.jn]       = (*jpcsvTags)[ijet].second;
+      ev.jn_slcsv[ev.jn]       = (*slcsvTags)[ijet].second;
+      ev.jn_supercsv[ev.jn]    = (*supercsvTags)[ijet].second;
+
+      //secondary vertex from associated tracks
+      if(svTagInfo.isValid() && svTagInfo->size()>ijet);
+      {
+	const reco::SecondaryVertexTagInfo &sv= (*svTagInfo)[ijet];
+	int nsvtx=sv.nVertices();
+	ev.jn_svxNtrk[ev.jn]=0;
+	ev.jn_svxLxy[ev.jn]=0;
+	ev.jn_svxLxyErr[ev.jn]=0;
+	ev.jn_svxM[ev.jn]=0;
+	ev.jn_svxPx[ev.jn]=0;
+	ev.jn_svxPy[ev.jn]=0;
+	ev.jn_svxPz[ev.jn]=0;
+	if(nsvtx)
+	  {  
+	    for (reco::Vertex::trackRef_iterator titt = sv.secondaryVertex(0).tracks_begin(); titt != sv.secondaryVertex(0).tracks_end(); titt++) ev.jn_svxNtrk[ev.jn]++;
+	    ev.jn_svxLxy[ev.jn]    = sv.flightDistance(0).value();
+	    ev.jn_svxLxyErr[ev.jn] = sv.flightDistance(0).error();
+	    ev.jn_svxM[ev.jn]      = sv.secondaryVertex(0).p4().mass();
+	    ev.jn_svxPx[ev.jn]     = sv.secondaryVertex(0).p4().px();
+	    ev.jn_svxPy[ev.jn]     = sv.secondaryVertex(0).p4().py();
+	    ev.jn_svxPz[ev.jn]     = sv.secondaryVertex(0).p4().pz();
+	  }
+      }
+      
+      //secondary vertex from inclusive tracks
+      if(ivfTagInfo.isValid() && ivfTagInfo->size()>ijet)
+	{
+	  const reco::SecondaryVertexTagInfo &sv= (*ivfTagInfo)[ijet];
+	  int nsvtx=sv.nVertices();
+	  ev.jn_ivfNtrk[ev.jn]=0;
+	  ev.jn_ivfLxy[ev.jn]=0;
+	  ev.jn_ivfLxyErr[ev.jn]=0;
+	  ev.jn_ivfM[ev.jn]=0;
+	  ev.jn_ivfPx[ev.jn]=0;
+	  ev.jn_ivfPy[ev.jn]=0;
+	  ev.jn_ivfPz[ev.jn]=0;
+	  if(nsvtx)
+	    {
+	      for (reco::Vertex::trackRef_iterator titt = sv.secondaryVertex(0).tracks_begin(); titt != sv.secondaryVertex(0).tracks_end(); titt++) ev.jn_ivfNtrk[ev.jn]++;
+	      ev.jn_ivfLxy[ev.jn]    = sv.flightDistance(0).value();
+	      ev.jn_ivfLxyErr[ev.jn] = sv.flightDistance(0).error();
+	      ev.jn_ivfM[ev.jn]      = sv.secondaryVertex(0).p4().mass();
+	      ev.jn_ivfPx[ev.jn]     = sv.secondaryVertex(0).p4().px();
+	      ev.jn_ivfPy[ev.jn]     = sv.secondaryVertex(0).p4().py();
+	      ev.jn_ivfPz[ev.jn]     = sv.secondaryVertex(0).p4().pz();
+	    }
+	}
+
+      PileupJetIdentifier puIdentifier = puJetIdAlgo_->computeIdVariables(dynamic_cast<const reco::Jet*>(jet), 0, primVtx.get(), *vtxH.product(), true);
+      ev.jn_beta[ev.jn]        = puIdentifier.beta();
+      ev.jn_dRMean[ev.jn]      = puIdentifier.dRMean();
+      ev.jn_ptRMS[ev.jn]       = puIdentifier.ptRMS();
+      ev.jn_etaW[ev.jn]        = puIdentifier.etaW();
+      ev.jn_phiW[ev.jn]        = puIdentifier.phiW();
+      ev.jn_puMVA[ev.jn]       = puIdentifier.mva();
+      
+      //save pf constituents (only for jets with pT>20 in the central region)
+      ev.jn_pfstart[ev.jn]=-1;
+      ev.jn_pfend[ev.jn]=-1;
+      if(jet->pt()>20 && fabs(jet->eta())<3)
+	{
+	  const std::vector<reco::PFCandidatePtr> pfConst = jet->getPFConstituents();
+	  ev.jn_pfstart[ev.jn]=ev.pfn;
+	  for(size_t ipf=0; ipf<pfConst.size(); ipf++)
+	    {
+	      ev.pf_id[ev.pfn]     = pfConst[ipf]->pdgId();
+	      ev.pf_charge[ev.pfn] = pfConst[ipf]->charge();
+	      ev.pf_px[ev.pfn]     = pfConst[ipf]->px();
+	      ev.pf_py[ev.pfn]     = pfConst[ipf]->py();
+	      ev.pf_pz[ev.pfn]     = pfConst[ipf]->pz();
+	      ev.pf_en[ev.pfn]     = pfConst[ipf]->energy();
+	      ev.pf_vtx[ev.pfn]    = 0;
+	      ev.pfn++;
+	    }
+	  ev.jn_pfend[ev.jn]=ev.pfn;
+	}
+
+      //a summary of the id bits
+      ev.jn_idbits[ev.jn] =
+	(passLooseId << 0)
+	| (passMediumId << 1)
+	| (passTightId << 2)
+	| ( ( uint(puIdentifier.idFlag()) & 0xf ) << 3 );
+      
+      ev.jn++;
+    }
+  
+  //
+  // missing transverse energy
+  //
+  std::vector<edm::InputTag> metSources=analysisCfg_.getParameter<std::vector<edm::InputTag> >("metSource");
+  ev.mn=metSources.size();
+  for(size_t imet=0; imet<metSources.size(); imet++)
+    {
+      Handle<View<Candidate> > metH;
+      event.getByLabel(metSources[imet], metH);
+      ev.met_pt[ev.mn]  = metH.isValid() ? metH->ptrAt(0)->pt() : 0; 
+      ev.met_phi[ev.mn] = metH.isValid() ? metH->ptrAt(0)->phi() : 0; 
+      ev.mn++;
+    }    
+
+
+  //
+  // charged PF candidates which haven't been clustered
+  //
+  for(size_t ipf=0; ipf<pfH->size(); ipf++)
+    {
+      const reco::PFCandidate &cand=(*pfH)[ipf];
+
+      //require charged and with track associated
+      if(cand.charge()==0) continue;
+      reco::TrackBaseRef trackBaseRef( cand.trackRef() );
+      if(trackBaseRef.isNull()) continue;
+
+      //minimum pT of 500 GeV
+      if(cand.pt()<0.5) continue;
+      
+      //check for overlaps
+      bool matches(false);
+      for(int jpf=0; jpf<ev.pfn; jpf++)
+	{
+	  LorentzVector p4(ev.pf_px[jpf],ev.pf_py[jpf], ev.pf_pz[jpf], ev.pf_en[jpf]);
+	  if( deltaR( p4.eta(), p4.phi(), cand.eta(), cand.phi()) > 0.1) continue;
+	  matches=true;
+	  break;
+	}
+      if(matches) continue;
+      
+      
+      ev.pf_vtx[ev.pfn]=-1;
+      if(trackBaseRef.isAvailable())
+	{
+	  float bestDz(9999.);
+	  for(size_t jVtx=0; jVtx<vtxH->size(); jVtx++)
+	    {
+	      const reco::VertexRef vtxref(vtxH,jVtx);
+	      float vtxDz( fabs( trackBaseRef->dz( vtxref->position()) ) );
+	      if(vtxDz < bestDz)
+		{
+		  bestDz=vtxDz;
+		  ev.pf_vtx[ev.pfn]=jVtx;
+		}
+	    }
+	}
+      
+      ev.pf_id[ev.pfn]     = cand.pdgId();
+      ev.pf_charge[ev.pfn] = cand.charge();
+      ev.pf_px[ev.pfn]     = cand.px();
+      ev.pf_py[ev.pfn]     = cand.py();
+      ev.pf_pz[ev.pfn]     = cand.pz();
+      ev.pf_en[ev.pfn]     = cand.energy();
+      ev.pfn++;
+    }
+
+
+
+  //all done here
+  summary_.fill();
 }
-
-
 
 
 
