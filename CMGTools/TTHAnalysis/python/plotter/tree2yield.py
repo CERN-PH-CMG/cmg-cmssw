@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from math import *
 import re
-import os.path
+import os, os.path
 from array import array
 
 ## safe batch mode
@@ -139,6 +139,7 @@ class TreeToYield:
             ## modify cuts to get to control region
             self._mcCorrs = self._mcCorrs + self._FR.cutMods()  + self._FR.mods()
             self._weight = True
+        #print "Done creation  %s for task %s in pid %d " % (self._fname, self._name, os.getpid())
     def setScaleFactor(self,scaleFactor):
         self._scaleFactor = scaleFactor
     def getScaleFactor(self):
@@ -163,11 +164,20 @@ class TreeToYield:
             ret = mcc(ret,self._name,self._cname,cut)
         return ret
     def _init(self):
-        self._tfile = ROOT.TFile.Open(self._fname)
-        if not self._tfile: raise RuntimeError, "Cannot open %s\n" % root
+        if "root://" in self._fname:
+            ROOT.gEnv.SetValue("TFile.AsyncReading", 1);
+            #self._tfile = ROOT.TFile.Open(self._fname+"?readaheadsz=200000") # worse than 65k
+            #self._tfile = ROOT.TFile.Open(self._fname+"?readaheadsz=32768") # worse than 65k
+            self._tfile = ROOT.TFile.Open(self._fname+"?readaheadsz=65535") # good
+            #self._tfile = ROOT.TFile.Open(self._fname+"?readaheadsz=0") #worse than 65k
+        else:
+            self._tfile = ROOT.TFile.Open(self._fname)
+        if not self._tfile: raise RuntimeError, "Cannot open %s\n" % self._fname
         t = self._tfile.Get(self._options.tree)
-        if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (options.tree, root)
+        if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (self._options.tree, self._fname)
         self._tree  = t
+        #self._tree.SetCacheSize(10*1000*1000)
+        #self._tree.SetCacheSize()
         self._friends = []
         friendOpts = self._options.friendTrees
         friendOpts += (self._options.friendTreesData if self._isdata else self._options.friendTreesMC)
@@ -186,7 +196,7 @@ class TreeToYield:
             cutseq += [ ['all',cuts.allCuts()] ]
             sequential = False
         elif self._options.final:
-            cutseq += [ ['all', cuts.allCuts()] ]
+            cutseq = [ ['all', cuts.allCuts()] ]
         else:
             cutseq += cuts.cuts();
             sequential = True
