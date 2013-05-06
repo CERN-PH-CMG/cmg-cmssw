@@ -1009,8 +1009,6 @@ double crystalballfunc(double m, double m0, double sigma, double alpha, double n
     /(808.411+4428.0+1783.003+5109.155+4131+3143));
   }    
 
-
-
   double eff2012IsoTau19fb(double pt, double eta){
     return (  808.411  * ( 0.764166 * 0.5 * (TMath::Erf((pt-33.2236)/2./0.97289 /sqrt(pt))+1.))
             + 4428.0   * ( 0.802387 * 0.5 * (TMath::Erf((pt-38.0971)/2./0.82842 /sqrt(pt))+1.))
@@ -1042,6 +1040,52 @@ double crystalballfunc(double m, double m0, double sigma, double alpha, double n
             3143    *(0.802065*0.5*(TMath::Erf((pt-41.0161)/2./0.654632/sqrt(pt))+1.))
             )/(808.411+4428.0+1783.003+5109.155+4131+3143);
   }
+
+
+
+
+
+
+
+
+  double eff2012IsoTau19fb_Simone(double pt, double eta){
+
+    // for real Taus mT<20
+    if ( fabs(eta) < 1.4 )
+    {
+      return (  808.411  * ( 0.764166 * 0.5 * (TMath::Erf((pt-33.2236)/2./0.97289 /sqrt(pt))+1.))   // 2012A by Bastian not split in eta
+              + 4428.0   * ( 0.75721  * 0.5 * (TMath::Erf((pt-39.0836)/2./1.07753 /sqrt(pt))+1.))   // 2012B
+              + 6892.158 * ( 0.791464 * 0.5 * (TMath::Erf((pt-38.4932)/2./1.01232 /sqrt(pt))+1.))   // 2012C measured in v2 only
+              + 7274.    * ( 0.779446 * 0.5 * (TMath::Erf((pt-38.4603)/2./1.01071 /sqrt(pt))+1.)) ) // 2012D measured in one go
+              /( 808.411 + 4428.0 + 6892.158 + 7274. );
+    }
+    
+    else
+    {
+      return (  808.411  * ( 0.764166 * 0.5 * (TMath::Erf((pt-33.2236)/2./0.97289 /sqrt(pt))+1.))   // 2012A by Bastian not split in eta
+              + 4428.0   * ( 0.693788 * 0.5 * (TMath::Erf((pt-37.7719)/2./1.09202 /sqrt(pt))+1.))   // 2012B
+              + 6892.158 * ( 0.698909 * 0.5 * (TMath::Erf((pt-36.5533)/2./1.05743 /sqrt(pt))+1.))   // 2012C measured in v2 only
+              + 7274.    * ( 0.703532 * 0.5 * (TMath::Erf((pt-38.8609)/2./1.05514 /sqrt(pt))+1.)) ) // 2012D measured in one go
+              /( 808.411 + 4428.0 + 6892.158 + 7274. );
+    }
+    
+  }
+
+  double eff2012IsoTau19fbMC_Simone(double pt, double eta){
+
+    // for real Taus using ggH120
+    if ( fabs(eta) < 1.4 )
+    {
+      return ( 0.807425 * 0.5 * (TMath::Erf((pt-35.2214)/2./1.04214  /sqrt(pt))+1.) ) ;
+    }
+    
+    else
+    {
+      return ( 0.713068 * 0.5 * (TMath::Erf((pt-33.4584)/2./0.994692 /sqrt(pt))+1.) ) ;
+    }
+    
+  }
+
 
  
  
