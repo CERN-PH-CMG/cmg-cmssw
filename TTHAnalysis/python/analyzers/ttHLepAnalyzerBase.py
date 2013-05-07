@@ -45,7 +45,8 @@ class ttHLepAnalyzerBase( Analyzer ):
 
         if hasattr(cfg_comp,'efficiency'):
             self.efficiency= EfficiencyCorrector(cfg_comp.efficiency)
-            
+
+        self.relaxId = cfg_ana.relaxId if hasattr(cfg_ana,'relaxId') else  False
     #----------------------------------------
     # DECLARATION OF HANDLES OF LEPTONS STUFF   
     #----------------------------------------
@@ -118,7 +119,7 @@ class ttHLepAnalyzerBase( Analyzer ):
         for mu in allmuons:
             mu.associatedVertex = event.goodVertices[0]
             if (mu.isGlobal() or mu.isTracker() and mu.numberOfMatches()>0) and mu.pt()>5 and abs(mu.eta())<2.4 and abs(mu.dxy())<0.5 and abs(mu.dz())<1.:
-                if mu.sourcePtr().userFloat("isPFMuon")>0.5 and mu.sip3D()<10 and mu.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
+                if mu.sourcePtr().userFloat("isPFMuon")>0.5 and (self.relaxId or mu.sip3D()<10) and mu.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
                     event.selectedLeptons.append(mu)
                 else:
                     event.looseLeptons.append(mu)
@@ -134,6 +135,17 @@ class ttHLepAnalyzerBase( Analyzer ):
                     ## attach it to the object redefining the sip3D() method
                     ele.sip3D  = types.MethodType(lambda self : self._sip3d, ele, ele.__class__)
 
+        for ele in allelectrons:
+          ele.rho = float(self.handles['rhoEle'].product()[0])
+          SCEta = abs(ele.sourcePtr().superCluster().eta())
+          if (abs(SCEta) >= 0.0 and abs(SCEta) < 1.0 ) : ele.EffectiveArea = 0.130;
+          if (abs(SCEta) >= 1.0 and abs(SCEta) < 1.479 ) : ele.EffectiveArea = 0.137;
+          if (abs(SCEta) >= 1.479 and abs(SCEta) < 2.0 ) : ele.EffectiveArea = 0.067;
+          if (abs(SCEta) >= 2.0 and abs(SCEta) < 2.2 ) : ele.EffectiveArea = 0.089;
+          if (abs(SCEta) >= 2.2 and abs(SCEta) < 2.3 ) : ele.EffectiveArea = 0.107;
+          if (abs(SCEta) >= 2.3 and abs(SCEta) < 2.4 ) : ele.EffectiveArea = 0.110;
+          if (abs(SCEta) >= 2.4) : ele.EffectiveArea = 0.138;
+
         if self.cfg_ana.doElectronScaleCorrections:
             for ele in allelectrons:
                 calibratedPatEle = ele.sourcePtr().get()
@@ -146,13 +158,14 @@ class ttHLepAnalyzerBase( Analyzer ):
                 if abs(mu.pdgId()) == 13 and (mu.isGlobal() or mu.sourcePtr().userFloat("isPFMuon")>0.5):
                     muForEleCrossCleaning.append(mu)
 
+
         for ele in allelectrons:
             ele.associatedVertex = event.goodVertices[0]
             ## remove muons if muForEleCrossCleaning is not empty
             if bestMatch(ele, muForEleCrossCleaning)[1] < 0.02: continue
             ## apply selection
             if ele.pt()>7 and abs(ele.eta())<2.5 and abs(ele.dxy())<0.5 and abs(ele.dz())<1. and ele.numberOfHits()<=1:
-                 if ele.mvaIDZZ() and ele.sip3D()<10 and ele.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
+                 if (self.relaxId or ele.mvaIDZZ() and ele.sip3D()<10) and ele.relIso(dBetaFactor=0.5)<self.cfg_ana.isolationCut:
                     event.selectedLeptons.append(ele)
                  else:
                     event.looseLeptons.append(ele)

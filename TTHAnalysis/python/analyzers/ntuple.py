@@ -121,7 +121,8 @@ def fillLepton( tree, pName, lepton ):
         fill(tree, '{pName}_mvaId'.format(pName=pName), lepton.mvaNonTrigV0())
         fill(tree, '{pName}_tightId'.format(pName=pName), lepton.mvaTrigV0())
         fill(tree, '{pName}_convVeto'.format(pName=pName), lepton.sourcePtr().passConversionVeto())
-        fill(tree, '{pName}_relIso03'.format(pName=pName), (lepton.chargedHadronIso(0.3) + max(((lepton.neutralHadronIso(0.3)+lepton.photonIso(0.3))-0.5*(lepton.puChargedHadronIso(0.3))),0)))
+        #fill(tree, '{pName}_relIso03'.format(pName=pName), (lepton.chargedHadronIso(0.3) + max(((lepton.neutralHadronIso(0.3)+lepton.photonIso(0.3))-0.5*(lepton.puChargedHadronIso(0.3))),0)))
+        fill(tree, '{pName}_relIso03'.format(pName=pName), lepton.chargedHadronIso(0.3) + max(lepton.neutralHadronIso(0.3)+lepton.photonIso(0.3)-lepton.rho*lepton.EffectiveArea,0))
     if abs(lepton.pdgId())==13:
         fill(tree, '{pName}_innerHits'.format(pName=pName), lepton.sourcePtr().innerTrack().numberOfValidHits())
         fill(tree, '{pName}_tightId'.format(pName=pName), lepton.tightId())
