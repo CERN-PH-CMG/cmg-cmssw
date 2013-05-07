@@ -6,6 +6,7 @@ from CMGTools.RootTools.RootTools import *
 
 PDFWeights = []
 #PDFWeights = [ ("CT10",53), ("MSTW2008lo68cl",41), ("NNPDF21_100",101) ]
+#PDFWeights = [ ("cteq61",41) ]
 
 # this analyzer finds the initial events before the skim
 skimAnalyzer = cfg.Analyzer(
@@ -89,6 +90,7 @@ ttHJetAna = cfg.Analyzer(
     jetPt = 25.,
     jetEta = 4.7,
     relaxJetId = False,  
+    doPuId = True,
     recalibrateJets = True
     )
 
@@ -146,12 +148,18 @@ if isSingleMu:
     ttHLepAna.minGoodLeptons=1
     ttHLepAna.maxGoodLeptons=1
     ttHEventAna.minJets25 = 3
-    mcSamples = [ TTJets, W2Jets, W3Jets, W4Jets, TtW, TbartW, Ttch,Tbartch,Tsch,Tbarsch, QCDMuPt15 ]
+    mcSamples = [ TTJets, W2Jets,W3Jets,W4Jets, TtW,TbartW, Ttch,Tbartch,Tsch,Tbarsch, QCDMuPt15, DY2JetsM50,DY3JetsM50,DY4JetsM50 ]
     for mc in mcSamples+fastSimSamples:
         mc.triggers = triggersMC_1mu
-    for data in dataSamplesMu:
+    for data in dataSamples1Mu:
         data.triggers = triggers_1mu
     selectedComponents = dataSamples1Mu+mcSamples
+    TTJets.splitFactor = 250
+    for X in [W2Jets,W3Jets,W4Jets]: X.splitFactor = 250
+    for X in [DY2JetsM50,DY3JetsM50,DY4JetsM50]: X.splitFactor = 400
+    SingleMuC.splitFactor = 1500
+    SingleMuD.splitFactor = 1500
+    QCDMuPt15.splitFactor = 250
 
 
 #-------- SEQUENCE
@@ -179,9 +187,8 @@ sequence = cfg.Sequence([
 
 # selectedComponents = [ FastSim_TTWJets, FastSim_TTWJets_MUp, FastSim_TTWJets_MDn ]
 # set test = 0 to run all jobs, in case you are using pybatch.py
-selectedComponents = mcSamples
 
-test = 4
+test = 1
 if test==1:
     # test a single component, using a single thread.
     # necessary to debug the code, until it doesn't crash anymore
@@ -198,7 +205,7 @@ elif test==2:
     # important to make sure that your code runs on any kind of component
     for comp in selectedComponents:
         comp.splitFactor = 1
-        comp.files = comp.files[:2]
+        comp.files = comp.files[:1]
 elif test==3:
     # test two components, using many threads, to check if variables are ok
     #comp = DoubleElectronC
@@ -215,7 +222,12 @@ elif test==4:
     comp.files = [ 'file:/data/gpetrucc/8TeV/ttH/cmgTuple_full.TTH_Inclusive_M-125_8TeV_pythia6_PU_S10_START53_V7A-v1_F8454517-F509-E211-BAB4-003048D47792.root' ]
     selectedComponents = [comp]
     comp.splitFactor = 1
-
+    comp.triggers = [t for t in triggersMC_mue if "Ele15_Ele8_Ele5" not in t ]
+    ttHLepAna.doRochesterCorrections = False
+    ttHLepAna.doElectronScaleCorrections = False
+    treeProducer.doJetsFailId = True
+    #ttHJetAna.jetCol = 'cmgPFJetSel'
+    
 
 # creation of the processing configuration.
 # we define here on which components to run, and
