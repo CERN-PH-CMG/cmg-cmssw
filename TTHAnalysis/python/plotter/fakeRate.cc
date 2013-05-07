@@ -83,7 +83,7 @@ bool passND_Loose(float l1pt, float l1eta, int l1pdgId, float relIso, float dxy,
                relIso < 0.2;
     } else {
         return l1pt >= 10 && (fabs(l1eta)<1.4442 || fabs(l1eta)>1.5660) &&
-               tightId > 0 && relIso < 0.2 && fabs(dxy) < 0.04;
+               tightId > 0.5 && relIso < 0.2 && fabs(dxy) < 0.04;
     }
 }
 
@@ -103,7 +103,7 @@ bool passND_Tight(float l1pt, float l1eta, int l1pdgId, float relIso, float dxy,
                tightId != 0 && relIso < 0.12 && fabs(dxy) < 0.2 && fabs(dz) < 0.5;
     } else {
         return l1pt >= 20 && (fabs(l1eta)<1.4442 || fabs(l1eta)>1.5660) &&
-               tightId > 0 && relIso < 0.1 && fabs(dxy) < 0.02;
+               tightId > 0.5 && relIso < 0.1 && fabs(dxy) < 0.02;
     }
 }
 
