@@ -37,7 +37,6 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
         super(ttHLepFRAnalyzer, self).declareHandles()
         self.handles['met'] = AutoHandle( 'cmgPFMET', 'std::vector<cmg::BaseMET>' )
         self.handles['nopumet'] = AutoHandle( 'nopuMet', 'std::vector<reco::PFMET>' )
-        self.handles['jets4MVA'] = AutoHandle( self.cfg_ana.jetCol4MVA, 'std::vector<cmg::PFJet>' )
 
     def declareVariables(self):
         tr = self.tree
@@ -147,15 +146,8 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
                     return True
             return False
         
-        allJets = map( Jet, self.handles['jets4MVA'].product() )
-        jlpairs = matchObjectCollection( event.selectedLeptons, allJets, 0.5*0.5)
         for lep in event.selectedLeptons:
-            jet = jlpairs[lep]
-            if jet is None:
-                lep.jet = lep
-            else:
-                lep.jet = jet
-            self.leptonMVA.addMVA(lep)
+             self.leptonMVA.addMVA(lep)
 
         # now fill probes
         for lep in event.selectedLeptons: 
