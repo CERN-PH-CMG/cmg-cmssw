@@ -89,9 +89,19 @@ def PlotMu(muFILENAME, label):
     muminus = []
     for entry in muPairs:
         mass.append(entry[0])
-        mu.append(entry[1]*20.)
-        muminus.append(entry[2]*20.+entry[1]*20.)
-        muplus.append(entry[3]*20.+entry[1]*20.)
+        mu.append(entry[1])
+        muminus.append(entry[2]+entry[1])
+        muplus.append(entry[3]+entry[1])
+        if entry[1]<-150:
+	    mu[-1]=-150
+	    muminus[-1]=-150
+	    if muplus[-1]<-150:
+	       muplus[-1]=150
+        if entry[1]>150:
+	    mu[-1]=150
+	    muplus[-1]=150
+	    if muminus[-1]>150:
+	       muminus[-1]=-150
 
     #nominal
     muGraph = rt.TGraph(len(mass), array('d',mass), array('d',mu))
@@ -117,10 +127,13 @@ def PlotMu(muFILENAME, label):
     htemp = muGraphBAND.GetHistogram()
     setStyle(c1,htemp)
     htemp.GetXaxis().SetTitle("Mass (GeV)")
-    htemp.GetYaxis().SetTitle("Best-fit Yield")
-    htemp.SetMinimum(0)
-    htemp.SetMaximum(60)
+    htemp.GetYaxis().SetTitle("Best-fit #sigma #times BR(X #rightarrow VV)")
+    htemp.SetMinimum(-150)
+    htemp.SetMaximum(150)
     muGraph.Draw("PLSAME")
+    l=rt.TLine(1000,0,2300,0)
+    l.SetLineColor(2)
+    l.Draw("same")
 
     c1.Update()
     c1.SaveAs("mu_%s.pdf" %label)
@@ -160,13 +173,28 @@ if __name__ == '__main__':
     PlotPValue("Xvv_WW_8TeV_Pval_channel2.txt", "WW_low_purity")
     PlotPValue("Xvv_WW_8TeV_Pval_channel012.txt", "WW_combined")
 
+    PlotMu("Xvv_WW_8TeV_channel0.txt", "WW_high_purity")
+    PlotMu("Xvv_WW_8TeV_channel1.txt", "WW_medium_purity")
+    PlotMu("Xvv_WW_8TeV_channel2.txt", "WW_low_purity")
+    PlotMu("Xvv_WW_8TeV_channel012.txt", "WW_combined")
+
     PlotPValue("Xvv_ZZ_8TeV_Pval_channel0.txt", "ZZ_high_puriy")
     PlotPValue("Xvv_ZZ_8TeV_Pval_channel1.txt", "ZZ_medium_purity")
     PlotPValue("Xvv_ZZ_8TeV_Pval_channel2.txt", "ZZ_low_purity")
     PlotPValue("Xvv_ZZ_8TeV_Pval_channel012.txt", "ZZ_combine")
 
+    PlotMu("Xvv_ZZ_8TeV_channel0.txt", "ZZ_high_puriy")
+    PlotMu("Xvv_ZZ_8TeV_channel1.txt", "ZZ_medium_purity")
+    PlotMu("Xvv_ZZ_8TeV_channel2.txt", "ZZ_low_purity")
+    PlotMu("Xvv_ZZ_8TeV_channel012.txt", "ZZ_combine")
+
     PlotPValue("Xvv_WZ_8TeV_Pval_channel0.txt", "WZ_high_puriy")
     PlotPValue("Xvv_WZ_8TeV_Pval_channel1.txt", "WZ_medium_purity")
     PlotPValue("Xvv_WZ_8TeV_Pval_channel2.txt", "WZ_low_purity")
     PlotPValue("Xvv_WZ_8TeV_Pval_channel012.txt", "WZ_combine")
+
+    PlotMu("Xvv_WZ_8TeV_channel0.txt", "WZ_high_puriy")
+    PlotMu("Xvv_WZ_8TeV_channel1.txt", "WZ_medium_purity")
+    PlotMu("Xvv_WZ_8TeV_channel2.txt", "WZ_low_purity")
+    PlotMu("Xvv_WZ_8TeV_channel012.txt", "WZ_combine")
     
