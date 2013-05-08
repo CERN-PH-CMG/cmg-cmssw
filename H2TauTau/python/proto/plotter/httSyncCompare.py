@@ -1,12 +1,12 @@
 import os
 
-from CMGTools.RootTools.treeComparator import main, draw
+from CMGTools.RootTools.treeComparator import main, draw, tree1, tree2, a1, a2
 from CMGTools.RootTools.html.DirectoryTree import Directory
 from ROOT import TCanvas
 
 cut_inclusive = '1'
-cut_J1 = 'njets>1'
-cut_J2 = 'njets>2'
+cut_J1 = 'njets>0'
+cut_J2 = 'njets>1'
 
 cut_tt = "1"
 
@@ -20,6 +20,7 @@ class PlotInfo(dict):
     def __init__(self, **kwargs):
         super(PlotInfo, self).__init__(**kwargs)
 
+#COLIN do we really need to duplicate code for tt?
 plots_tt = {
     'pt_1': PlotInfo(var1='pt_1', cut=cut_tt, xmax=200),
     'pt_2': PlotInfo(var1='pt_2', cut=cut_tt, xmax=200),
@@ -90,13 +91,13 @@ plots_inclusive = {
 plots_J1 = {
     'jpt_1': PlotInfo(var1='jpt_1', cut=cut_J1, xmax=200),
     'jeta_1': PlotInfo(var1='jeta_1', cut=cut_J1, xmin=-5, xmax=5),
-    'jphi_1': PlotInfo(var1='jphi_1', cut=cut_J1, xmin=-3.1416, xmax=3.1416),
+    # 'jphi_1': PlotInfo(var1='jphi_1', cut=cut_J1, xmin=-3.1416, xmax=3.1416),
     }
 
 plots_J2 = {
     'jpt_2': PlotInfo(var1='jpt_2', cut=cut_J2, xmax=200),
     'jeta_2': PlotInfo(var1='jeta_2', cut=cut_J2, xmin=-5, xmax=5),
-    'jphi_2': PlotInfo(var1='jphi_2', cut=cut_J2, xmin=-3.1416, xmax=3.1416),
+    # 'jphi_2': PlotInfo(var1='jphi_2', cut=cut_J2, xmin=-3.1416, xmax=3.1416),
     'njetingap': PlotInfo(var1='njetingap', cut=cut_J2, nbins=5, xmax=5),
     'jdeta': PlotInfo(var1='jdeta', cut=cut_J2, nbins=20, xmin=-10, xmax=10),
     'mjj': PlotInfo(var1='mjj', cut=cut_J2, xmax=3000),
@@ -107,15 +108,12 @@ def drawAll(plots):
     plots dictionary'''
     # comparators = []
     for plotName, plotInfo in plots.iteritems():
-        plotInfo['t1'] = trees[a1]
-        plotInfo['t2'] = trees[a2]
+        plotInfo['t1'] = tree1
+        plotInfo['t2'] = tree2
         plotInfo['name1'] = a1
         plotInfo['name2'] = a2
-        print 'WARNING ADDITIONAL WEIGHTING FACTOR APPLIED:',5./4.75
-        #plotInfo['normalize'] = 5./4.75
         c = draw( **plotInfo)
         plotInfo.comparator = c 
-        # comparators.append(c)
 
 
 def saveAll(plots, outdir='Out'):
@@ -130,9 +128,8 @@ def saveAll(plots, outdir='Out'):
     
 if __name__ == '__main__':
 
-    trees, a1, a2, options = main()
+    tree1, tree2, options = main() 
 
-    # allplots = dict(plots_inclusive.items() + plots_J1.items() + plots_J2.items())
-    allplots = plots_tt
+    allplots = dict(plots_inclusive.items() + plots_J1.items() + plots_J2.items())
     drawAll(allplots)
     saveAll(allplots, options.outdir)

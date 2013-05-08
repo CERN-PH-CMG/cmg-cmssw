@@ -164,9 +164,7 @@ class VBFAnalyzer( Analyzer ):
     def testJetID(self, jet):
 
         jet.puJetIdPassed = jet.puJetId()
-        jet.pfJetIdPassed = jet.looseJetId()
-        #jet.pfJetIdPassed = jet.getSelection('cuts_looseJetId')
-        
+        jet.pfJetIdPassed = jet.looseJetId()        
         if self.cfg_ana.relaxJetId:
             return True
         else:

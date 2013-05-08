@@ -12,7 +12,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
 
     def declareHandles(self):
         super(TauMuAnalyzer, self).declareHandles()
-        # print 'TauMuAnalyzer.declareHandles'
         self.handles['diLeptons'] = AutoHandle(
             'cmgTauMuCorSVFitFullSel', # FIXME!!
             # 'cmgTauMu',
@@ -65,8 +64,6 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         for index, lep in enumerate(cmgLeptons):
             pyl = self.__class__.LeptonClass(lep)
             pyl.associatedVertex = event.goodVertices[0]
-            if not self.testMuonIDLoose( pyl ):
-                continue
             leptons.append( pyl )
         return leptons
 
@@ -78,28 +75,19 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         for index, lep in enumerate(cmgOtherLeptons):
             pyl = self.__class__.OtherLeptonClass(lep)
             pyl.associatedVertex = event.goodVertices[0]
-            #COLINTLV check ID 
-            # if not self.testMuonIDLoose(pyl):
-            #    continue
             otherLeptons.append( pyl )
         return otherLeptons
 
 
     def process(self, iEvent, event):
 
-
         #if event.eventId == 70370:
         #    print 'EVENT', event.eventId
-        #    import pdb; pdb.set_trace()
         result = super(TauMuAnalyzer, self).process(iEvent, event)
-        if self.cfg_ana.verbose and result is False:
-        # if 1:
-            print 'EventReport', event.run, event.lumi, event.eventId
-            import pdb; pdb.set_trace()
         if result is False:
             # trying to get a dilepton from the control region.
             # it must have well id'ed and trig matched legs,
-            # and di-lepton veto must pass
+            # di-lepton and tri-lepton veto must pass
             result = self.selectionSequence(event, fillCounter=False,
                                             leg1IsoCut = -9999,
                                             leg2IsoCut = 9999)
@@ -160,65 +148,43 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         '''Tight muon selection, with isolation requirement'''
         if isocut is None:
             isocut = self.cfg_ana.iso2
-        return self.muonIso(muon)<isocut
+        return muon.relIsoAllChargedDB05()<isocut    
 
 
-    def muonIso(self, muon ):
-        '''dbeta corrected pf isolation with all charged particles instead of
-        charged hadrons'''
-        return muon.relIsoAllChargedDB05()
-    
-
-    def testMuonIDLoose(self, muon):
-        '''Loose muon ID and kine, no isolation requirement, for lepton veto'''        
-        return muon.pt() > 15 and \
-               abs( muon.eta() ) < 2.4 and \
-               muon.isGlobalMuon() and \
-               muon.isTrackerMuon() and \
-               muon.sourcePtr().userFloat('isPFMuon') and \
-               abs(muon.dz()) < 0.2
-               # self.testVertex( muon ) 
-            
-    def testMuonLoose( self, muon ):
-        '''Loose muon selection, with isolation requirement (for di-lepton veto)'''
-        #COLIN: not sure the vertex constraints should be kept 
-        return self.testMuonIDLoose(muon) and \
-               self.muonIso(muon)<0.3
-
-
-    def testOtherLepton(self, electron, isoCut):
-        '''Electron selection for tri-lepton veto'''
-        return self.testLegKine(electron, ptcut=10, etacut=2.5) and \
-               electron.looseIdForTriLeptonVeto()           and \
-               self.testVertex( electron )           and \
-               electron.relIsoAllChargedDB05() < isoCut
-    
-
-    def thirdLeptonVeto(self, leptons, otherLeptons, isoCut = 0.3) :
-        # count muons
-        leptons = [lep for lep in leptons if
-                   self.testLegKine(lep, ptcut=10, etacut=2.4) and 
-                   self.testLeg2ID(lep) and
-                   self.testLeg2Iso(lep, isoCut) ]
+    def thirdLeptonVeto(self, leptons, otherLeptons, ptcut = 10, isocut = 0.3) :
+        '''The tri-lepton veto. returns False if > 2 leptons (e or mu).'''
+        vleptons = [lep for lep in leptons if
+                    self.testLegKine(lep, ptcut=ptcut, etacut=2.4) and 
+                    self.testLeg2ID(lep) and
+                    self.testLeg2Iso(lep, isocut) ]
         # count electrons
-        otherLeptons = [olep for olep in otherLeptons
-                        if self.testOtherLepton(olep, isoCut)]
-        if len(leptons) + len(otherLeptons)> 1:
-            # import pdb; pdb.set_trace()
-##             print '-'*100
-##             print 'muons'
-##             print map(str, leptons)
-##             print 'electrons'
-##             print map(str, otherLeptons)    
+        votherLeptons = [olep for olep in otherLeptons if 
+                         self.testLegKine(olep, ptcut=ptcut, etacut=2.5) and \
+                         olep.looseIdForTriLeptonVeto()           and \
+                         self.testVertex( olep )           and \
+                         olep.relIsoAllChargedDB05() < isocut
+                        ]
+        if len(vleptons) + len(votherLeptons)> 1:
             return False
         else:
             return True
         
 
     def leptonAccept(self, leptons):
-        looseLeptons = set(filter( self.testMuonLoose, leptons ))
+        '''The di-lepton veto, returns false if > one lepton.
+        e.g. > 1 mu in the mu tau channel'''
+        looseLeptons = [muon for muon in leptons if
+                        self.testLegKine(muon, ptcut=15, etacut=2.4) and
+                        muon.isGlobalMuon() and
+                        muon.isTrackerMuon() and
+                        muon.sourcePtr().userFloat('isPFMuon') and
+                        #COLIN Not sure this vertex cut is ok... check emu overlap
+                        self.testVertex(muon) and
+                        self.testLeg2Iso(muon, 0.3)
+                        ]
         isPlus = False
         isMinus = False
+        # import pdb; pdb.set_trace()
         for lepton in looseLeptons:
             if lepton.charge()<0: isMinus=True
             elif lepton.charge()>0: isPlus=True

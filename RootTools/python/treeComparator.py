@@ -9,12 +9,24 @@ def hname():
     return 'h_{num}'.format(num=num)
 
 legend = None
+tree1 = None
+tree2 = None
+a1 = None
+a2 = None
 
 def draw(var1=None, cut=1, t1=None, t2=None, w1='1', w2='1',
          name1=None, name2=None,
          normalize=None, nbins=20, xmin=0, xmax=200, var2=None):
     if var2 is None:
         var2 = var1
+    if t1 is None:
+        t1 = tree1
+    if t2 is None:
+        t2 = tree2
+    if name1 is None:
+        name1 = a1
+    if name2 is None:
+        name2 = a2
     print 'tree1',
     print '\t var   : ' , var1
     print '\t weight:', w1
@@ -62,28 +74,15 @@ def draw(var1=None, cut=1, t1=None, t2=None, w1='1', w2='1',
 
 
 def simpleDraw(var, cut='1'):
-    if len(trees)!=2:
-        print 'this function cannot be used if you have a number of trees different than 2 in the "trees" dictionary.'
-        return
-
-    t1 = None
-    t2 = None
-    name1 = None
-    name2 = None
-    for index, (alias, tree) in enumerate(sorted(trees.iteritems())):
-        if index==0:
-            t1 = tree
-            name1 = alias
-        else:
-            t2 = tree
-            name2 = alias
+    t1 = tree1
+    t2 = tree2
+    name1 = tree1.GetName()
+    name2 = tree2.GetName()
 
     return draw(var1=var, cut=cut, t1=t1, t2=t2, name1=name1, name2=name2)
     
 
-trees = None
-
-def getTrees( treeName, patterns ):
+def getTreesOld( treeName, patterns ):
     trees = dict()
     for alias, pattern in patterns:
         print 'loading', alias, treeName, pattern
@@ -96,6 +95,15 @@ def getTrees( treeName, patterns ):
         trees[tmpalias] = tree
         # tree.SetWeight(1./tree.GetEntries(), 'global')
     return trees
+
+def getTree(arg):
+    name = None
+    filepattern = arg
+    if ':' in arg:
+        name, filepattern = arg.split(':')
+    tree = Chain(name, filepattern)
+    return tree
+
 
 def main():
     import sys
@@ -126,27 +134,42 @@ def main():
                       dest="tree", 
                       help="name of tree in files",
                       default=None)
+    parser.add_option("-1", "--alias1", 
+                      dest="alias1", 
+                      help="alias for the first tree",
+                      default=None)
+    parser.add_option("-2", "--alias2", 
+                      dest="alias2", 
+                      help="alias for the second tree",
+                      default=None)
+    
+    
 
     (options,args) = parser.parse_args()
 
     if len(args)!=2:
         parser.print_usage()
         sys.exit(1)
-    
-    a1,p1 = args[0].split(':')
-    a2,p2 = args[1].split(':')
-    patterns = [ (a1, p1), (a2, p2) ]
-    trees = getTrees( options.tree, patterns)
-    pprint.pprint(trees)
 
+    global tree1, tree2, a1, a2
+    
+    tree1 = getTree(args[0])
+    a1 = options.alias1
+    if a1 is None:
+        a1 = tree1.GetName()
+    tree2 = getTree(args[1])
+    a2 = options.alias2
+    if a2 is None:
+        a2 = tree2.GetName()
+        
     comp = None
     if options.var:
         comp = draw(options.var, options.cut,
-                    trees[a1], trees[a2],
+                    tree1, tree2,
                     name1=a1, name2=a2);
         comp.draw()
         
-    return trees, a1, a2, options
+    return tree1, tree2, options
 
 if __name__ == '__main__':
-    trees, a1, a2, options = main() 
+    tree1, tree2, options = main() 

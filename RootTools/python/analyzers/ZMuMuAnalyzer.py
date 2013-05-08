@@ -42,16 +42,6 @@ class ZMuMuAnalyzer( DiLeptonAnalyzer ):
 
 
     def buildLeptons(self, cmgLeptons, event):
-        '''Build muons for veto, associate best vertex, select loose ID muons.
-        The loose ID selection is done to ensure that the muon has an inner track.'''
-##         leptons = []
-##         for index, lep in enumerate(cmgLeptons):
-##             pyl = self.__class__.LeptonClass(lep)
-##             pyl.associatedVertex = event.goodVertices[0]
-##             if not self.testMuonIDLoose( pyl ):
-##                 continue
-##             leptons.append( pyl )
-##         return leptons
         return []
 
 
@@ -63,15 +53,6 @@ class ZMuMuAnalyzer( DiLeptonAnalyzer ):
         '''Tests vertex constraints, for mu and tau'''
         return abs(lepton.dxy()) < 0.045 and \
                abs(lepton.dz()) < 0.2 
-
-
-##     def testLeg1Iso(self, muon, isocut):
-##         '''Tight muon selection, with isolation requirement'''
-##         return self.muonIso(muon)<isocut
-
-##     def testLeg2Iso(self, muon, isocut):
-##         '''Tight muon selection, with isolation requirement'''
-##         return self.muonIso(muon)<isocut
 
 
     def testMuonIso(self, muon, isocut ):

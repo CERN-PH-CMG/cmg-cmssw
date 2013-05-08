@@ -22,7 +22,9 @@ debugEventContent = False
 #tau-mu, tau-ele, di-tau, all
 channel = 'tau-mu'
 jetRecalib = False
-useCHS = False 
+useCHS = False
+#newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
+# if false, much faster processing but mass is wrong. 
 newSVFit = False
 tauScaling = 0
 # increase to 1000 before running on the batch, to reduce size of log files
@@ -45,11 +47,13 @@ print 'tau scaling =', tauScaling
 
 # process.setName_('H2TAUTAU')
 
-
+#JAN: check the other signal samples:
+#JAN: 3 production modes for each mass point: GGH VH+TTH, VBF
+#JAN: use mass 125
 dataset_user = 'cmgtools' 
 # dataset_name = '/W1Jet_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_8_0'
+# dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
 
 dataset_files = 'cmgTuple.*root'
 
