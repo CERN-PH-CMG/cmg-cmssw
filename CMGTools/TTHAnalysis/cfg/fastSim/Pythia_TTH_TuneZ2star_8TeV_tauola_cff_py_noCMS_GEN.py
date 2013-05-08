@@ -21,30 +21,27 @@ process.load('GeneratorInterface.Core.genFilterSummary_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
-)
+process.source = cms.Source("EmptySource")
 
-# Input source
-process.source = cms.Source("LHESource",
-    fileNames = cms.untracked.vstring('file:/tmp/gpetrucc/unweighted_events.lhe')
-    #fileNames = cms.untracked.vstring('file:/afs/cern.ch/user/g/gpetrucc/w/GENS/MadGraph5_v2_0_0_beta2/ttZ_jets_v2/Events/run_03/unweighted_events.lhe.gz')
-    #'/afs/cern.ch/user/g/gpetrucc/w/GENS/MadGraph5_v2_0_0_beta2/ttZ_jets_v2/Events/run_01/unweighted_events.withCMS.lhe')
-)
+process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(25000))
 
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
 )
 process.MessageLogger.destinations = ['cout', 'cerr']
-process.MessageLogger.cerr.FwkReport.reportEvery = 1000
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 from Configuration.Generator.PythiaUEZ2starSettings_cfi import *
 from GeneratorInterface.ExternalDecays.TauolaSettings_cff import *
 
-process.generator = cms.EDFilter("Pythia6HadronizerFilter",
-    pythiaHepMCVerbosity = cms.untracked.bool(True),
-    maxEventsToPrint = cms.untracked.int32(0),
+process.generator = cms.EDFilter("Pythia6GeneratorFilter",
     pythiaPylistVerbosity = cms.untracked.int32(1),
+    # put here the efficiency of your filter (1. if no filter)
+    filterEfficiency = cms.untracked.double(1.0),
+    pythiaHepMCVerbosity = cms.untracked.bool(False),
+    # put here the cross section of your process (in pb)
+    crossSection = cms.untracked.double(1.0),
+    maxEventsToPrint = cms.untracked.int32(1),
     comEnergy = cms.double(8000.0),
     ExternalDecays = cms.PSet(
         Tauola = cms.untracked.PSet(
@@ -53,31 +50,40 @@ process.generator = cms.EDFilter("Pythia6HadronizerFilter",
         ),
         parameterSets = cms.vstring('Tauola')
     ),
-    UseExternalGenerators = cms.untracked.bool(True),
     PythiaParameters = cms.PSet(
         pythiaUESettingsBlock,
-        processParameters = cms.vstring('MSEL=0         ! User defined processes', 
-                        'PMAS(5,1)=4.8   ! b quark mass',
-                        'PMAS(6,1)=172.5 ! t quark mass',
-			'MSTJ(1)=1       ! Fragmentation/hadronization on or off',
-			'MSTP(61)=1      ! Parton showering on or off'),
+        processParameters = cms.vstring('PMAS(25,1)=125.0        !mass of Higgs', 
+            'MSEL=0                  ! user selection for process', 
+            'MSUB(102)=0             !ggH', 
+            'MSUB(123)=0             !ZZ fusion to H', 
+            'MSUB(124)=0             !WW fusion to H', 
+            'MSUB(24)=0              !ZH production', 
+            'MSUB(26)=0              !WH production', 
+            'MSUB(121)=1             !gg to ttH', 
+            'MSUB(122)=1             !qq to ttH', 
+            'MDME(210,1)=0           !Higgs decay into dd', 
+            'MDME(211,1)=0           !Higgs decay into uu', 
+            'MDME(212,1)=0           !Higgs decay into ss', 
+            'MDME(213,1)=0           !Higgs decay into cc', 
+            'MDME(214,1)=0           !Higgs decay into bb', 
+            'MDME(215,1)=0           !Higgs decay into tt', 
+            'MDME(216,1)=0           !Higgs decay into', 
+            'MDME(217,1)=0           !Higgs decay into Higgs decay', 
+            'MDME(218,1)=1           !Higgs decay into e nu e', 
+            'MDME(219,1)=1           !Higgs decay into mu nu mu', 
+            'MDME(220,1)=1           !Higgs decay into tau nu tau', 
+            'MDME(221,1)=0           !Higgs decay into Higgs decay', 
+            'MDME(222,1)=1           !Higgs decay into g g', 
+            'MDME(223,1)=1           !Higgs decay into gam gam', 
+            'MDME(224,1)=1           !Higgs decay into gam Z', 
+            'MDME(225,1)=1           !Higgs decay into Z Z', 
+            'MDME(226,1)=1           !Higgs decay into W W'),
         # This is a vector of ParameterSet names to be read, in this order
         parameterSets = cms.vstring('pythiaUESettings', 
             'processParameters')
-    ),
-    jetMatching = cms.untracked.PSet(
-       scheme = cms.string("Madgraph"),
-       mode = cms.string("auto"),	# soup, or "inclusive" / "exclusive"
-       MEMAIN_nqmatch = cms.int32(5),
-       MEMAIN_etaclmax = cms.double(5),
-       MEMAIN_qcut = cms.double(10),
-       MEMAIN_minjets = cms.int32(0),
-       MEMAIN_maxjets = cms.int32(99),
-       MEMAIN_showerkt = cms.double(0),   
-       MEMAIN_excres = cms.string(""),
-       outTree_flag = cms.int32(0)    
-    )    
+    )
 )
+
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.1 $'),
@@ -91,7 +97,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = process.RAWSIMEventContent.outputCommands,
-    fileName = cms.untracked.string('/tmp/gpetrucc/ttZ_01jets_LO_TuneZ2star_8TeV_madgraph_tauola.GEN.root'),
+    fileName = cms.untracked.string('Pythia_TTH_TuneZ2star_8TeV_tauola.GEN.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM-DIGI-RECO')
@@ -145,9 +151,3 @@ process.AODSIMoutput_step = cms.EndPath(process.AODSIMoutput)
 # Schedule definition
 process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step)
 process.schedule.extend([process.AODSIMoutput_step])
-
-### Scramble
-#import random
-#rnd = random.SystemRandom()
-#for X in process.RandomNumberGeneratorService.parameterNames_(): 
-#   if X != 'saveFileName': getattr(process.RandomNumberGeneratorService,X).initialSeed = rnd.randint(1,99999999)
