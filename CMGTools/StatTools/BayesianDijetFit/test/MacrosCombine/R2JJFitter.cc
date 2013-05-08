@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.6 2013/05/02 13:02:44 hinzmann Exp $
+ * $Id: R2JJFitter.cc,v 1.7 2013/05/02 16:21:49 hinzmann Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -164,7 +164,7 @@ RooArgSet* defineVariables()
 
 
 
-void runfits(const Float_t mass=2000, bool isWW = true, Bool_t dobands = false)
+void runfits(const Float_t mass=2000, int ZZ_WW_WZ = 1, Bool_t dobands = false)
 {
 
 //******************************************************************//
@@ -179,7 +179,8 @@ void runfits(const Float_t mass=2000, bool isWW = true, Bool_t dobands = false)
 
 
   TString fileBaseName(TString::Format("Xvv.mX%.1f_ZZ_8TeV", mass));
-  if (isWW) fileBaseName = TString::Format("Xvv.mX%.1f_WW_8TeV", mass);
+  if (ZZ_WW_WZ==1) fileBaseName = TString::Format("Xvv.mX%.1f_WW_8TeV", mass);
+  if (ZZ_WW_WZ==2) fileBaseName = TString::Format("Xvv.mX%.1f_WZ_8TeV", mass);
 
 
   TString fileBkgName(TString::Format("Xvv.inputbkg_8TeV", mass));
@@ -192,7 +193,7 @@ void runfits(const Float_t mass=2000, bool isWW = true, Bool_t dobands = false)
   w->var("mgg")->setMax(MMAX);
 
 // Add data to the workspace
-  AddSigData(w, mass, isWW);
+  AddSigData(w, mass, ZZ_WW_WZ);
   AddBkgData(w);
   
 // Add the signal and background models to the workspace.
@@ -214,7 +215,7 @@ void runfits(const Float_t mass=2000, bool isWW = true, Bool_t dobands = false)
 
 
 // Make plots for data and fit results
-  MakePlots(w, mass, fitresults, isWW);
+  MakePlots(w, mass, fitresults, ZZ_WW_WZ);
 
 
 
@@ -226,7 +227,7 @@ void runfits(const Float_t mass=2000, bool isWW = true, Bool_t dobands = false)
 
 
 
-void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
+void AddSigData(RooWorkspace* w, Float_t mass, int ZZ_WW_WZ) {
 
   Int_t ncat = NCAT;
   TString inDir   = "./MiniTrees/Signal_VV/";
@@ -284,9 +285,13 @@ void AddSigData(RooWorkspace* w, Float_t mass, bool isWW) {
 //signal300_tree_radcut.root
   int iMass = abs(mass);       
   TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_ZZHppOUT%d_miniTree.root", iMass)));  
-  if (isWW) {
+  if (ZZ_WW_WZ==1) {
     sigFile1.Close();
     TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_WWHppOUT%d_miniTree.root", iMass)));
+  }
+  if (ZZ_WW_WZ==2) {
+    sigFile1.Close();
+    TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_WZPy6OUT%d_miniTree.root", iMass)));
   }
 
   TTree* sigTree1 = (TTree*) sigFile1.Get("TCVARS");
@@ -682,7 +687,7 @@ void SetConstantParams(const RooArgSet* params) {
 
 }
 
-void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, bool isWW) {
+void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, int ZZ_WW_WZ) {
 
   cout << "Start plotting" << endl; 
   
@@ -830,16 +835,21 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, bool isW
 
     int iMass = abs(mass);
 
-    if (!isWW){
+    if (ZZ_WW_WZ==0){
       ctmp->SaveAs(TString::Format("plots/sigmodel_ZZ%d_cat%d.png", iMass, c));
       ctmp->SaveAs(TString::Format("plots/sigmodel_ZZ%d_cat%d.pdf", iMass, c));
       ctmp->SaveAs(TString::Format("plots/sigmodel_ZZ%d_cat%d.eps", iMass, c));
       ctmp->SaveAs(TString::Format("plots/sigmodel_ZZ%d_cat%d.C", iMass, c));
-    } else {
+    } else if (ZZ_WW_WZ==1){
       ctmp->SaveAs(TString::Format("plots/sigmodel_WW%d_cat%d.png", iMass, c));
       ctmp->SaveAs(TString::Format("plots/sigmodel_WW%d_cat%d.pdf", iMass, c));
       ctmp->SaveAs(TString::Format("plots/sigmodel_WW%d_cat%d.eps", iMass, c));
       ctmp->SaveAs(TString::Format("plots/sigmodel_WW%d_cat%d.C", iMass, c));
+    } else {
+      ctmp->SaveAs(TString::Format("plots/sigmodel_WZ%d_cat%d.png", iMass, c));
+      ctmp->SaveAs(TString::Format("plots/sigmodel_WZ%d_cat%d.pdf", iMass, c));
+      ctmp->SaveAs(TString::Format("plots/sigmodel_WZ%d_cat%d.eps", iMass, c));
+      ctmp->SaveAs(TString::Format("plots/sigmodel_WZ%d_cat%d.C", iMass, c));
     }
 
 
@@ -1479,7 +1489,7 @@ void R2JJFitter(double mass, std::string postfix="")
       if(mass==2000)
          signalScaler=2.0;
     };
-    runfits(mass, true);
+    runfits(mass, 1);
     if(postfix!="")
     {
       // for optimization studies
@@ -1491,5 +1501,6 @@ void R2JJFitter(double mass, std::string postfix="")
       if(mass==2000)
          signalScaler=2.22222;
     };
-    runfits(mass, false);
+    runfits(mass, 0);
+    runfits(mass, 2);
 }

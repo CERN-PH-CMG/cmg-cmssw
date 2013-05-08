@@ -10,7 +10,7 @@ shapes MggBkg * ../workspaces/Xvv.inputbkg_8TeV.root w_all:CMS_hgg_bkg_8TeV_$CHA
 shapes MggSig * ../workspaces/Xvv.mX1100.0_WW_8TeV.inputsig.root w_all:CMS_hgg_sig_$CHANNEL
 ---------------
 bin          cat4
-observation   464083
+observation   464389
 ------------------------------
 bin                      cat4       cat4      
 process                 MggSig     MggBkg     
