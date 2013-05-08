@@ -77,7 +77,7 @@ class ParamFile:
         return self._params[:]
 
 class SimpleFOM:
-    def __init__(self,mca,syst=0.0,includeS=True):
+    def __init__(self,mca,syst=0.0,includeS=False):
         self._signals     = mca.listSignals()
         self._backgrounds = [ (b,syst) for b in mca.listBackgrounds() ]
         self._includeS = includeS
