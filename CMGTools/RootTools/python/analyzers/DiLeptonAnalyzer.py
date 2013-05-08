@@ -5,8 +5,37 @@ from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import DiObject
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Lepton
 from CMGTools.RootTools.utils.TriggerMatching import triggerMatched
+from CMGTools.RootTools.utils.DeltaR import deltaR
 
 class DiLeptonAnalyzer( Analyzer ):
+
+    """Generic analyzer for Di-Leptons.
+    See ZMuMuAnalyzer for a concrete case.
+
+    Example configuration, and list of parameters:
+    #O means optional
+    
+    ana = cfg.Analyzer(
+      'DiLeptonAnalyzer',
+      scaleShift1 = eScaleShift,  #O shift factor for leg 1 energy scale
+      scaleShift2 = tauScaleShift,#O same for leg 2
+      pt1 = 20,   # pt, eta, iso cuts for leg 1
+      eta1 = 2.3,
+      iso1 = None,
+      pt2 = 20,   # same for leg 2
+      eta2 = 2.1,
+      iso2 = 0.1,
+      m_min = 10,    # mass range
+      m_max = 99999,
+      dR_min = 0.5,  #O min delta R between the two legs
+      triggerMap = pathsAndFilters, #O, necessary for trigger matching
+      verbose = False               #from base Analyzer class
+      )
+
+    COLIN: need to specify what is needed in the event.
+    COLIN: need to make delta R non optional.
+    COLIN: make the dR_min parameter non optional
+    """
 
     # The DiObject class will be used as the di-object class
     # and the Lepton class as the lepton class
@@ -32,8 +61,11 @@ class DiLeptonAnalyzer( Analyzer ):
         count.register('leg2 trig matched')
         count.register('{min:3.1f} < m < {max:3.1f}'.format( min = self.cfg_ana.m_min,
                                                              max = self.cfg_ana.m_max ))
+        if hasattr(self.cfg_ana, 'dR_min'):
+            count.register('dR > {min:3.1f}'.format( min = self.cfg_ana.dR_min))
+                           
         count.register('exactly 1 di-lepton')
-        
+
 
     def buildDiLeptons(self, cmgDiLeptons, event):
         '''Creates python DiLeptons from the di-leptons read from the disk.
@@ -155,6 +187,17 @@ class DiLeptonAnalyzer( Analyzer ):
                                                       max = self.cfg_ana.m_max )
                 )
 
+        # delta R cut
+        if hasattr(self.cfg_ana, 'dR_min'):
+            selDiLeptons = [ diL for diL in selDiLeptons if \
+                             self.testDeltaR(diL) ]
+            if len(selDiLeptons)==0:
+                return False
+            else:
+                if fillCounter: self.counters.counter('DiLepton').inc(
+                    'dR > {min:3.1f}'.format( min = self.cfg_ana.dR_min )
+                )
+
         # exactly one? 
         if len(selDiLeptons)==0:
             return False
@@ -238,6 +281,13 @@ class DiLeptonAnalyzer( Analyzer ):
         '''returns True if the mass of the dilepton is between the m_min and m_max parameters'''
         mass = diLepton.mass()
         return self.cfg_ana.m_min < mass and mass < self.cfg_ana.m_max
+
+
+    def testDeltaR(self, diLepton):
+        '''returns True if the two diLepton.leg1() and .leg2() have a delta R larger than the dR_min parameter.'''
+        dR = deltaR( diLepton.leg1().eta(), diLepton.leg1().phi(),
+                     diLepton.leg2().eta(), diLepton.leg2().phi())
+        return dR > self.cfg_ana.dR_min
 
     
     def bestDiLepton(self, diLeptons):

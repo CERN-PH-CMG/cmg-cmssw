@@ -17,11 +17,13 @@ class Image(str):
     
     TYPES = ['.png', '.jpg']
 
+    def __new__(cls,*args,**kw):
+        return str.__new__(cls,*args,**kw)
+
     def __init__(self, fname):
         if not allowedType(fname, self.__class__.TYPES):
             raise ValueError('Type not allowed for file'+fname)
-        super(Image, self).__init__(fname)
-        # print self
+ 
 
 
 class Directory(object):
@@ -124,7 +126,7 @@ if __name__ == '__main__':
     python DirectoryTree.py templates
     '''
     opt, args = parser.parse_args()
-    if len(args)!=2:
+    if len(args)!=1:
         parser.print_usage()
         print 'provide the input directory'
 

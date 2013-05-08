@@ -42,20 +42,7 @@ mc_muEffWeight = 'effMu2012_Rebecca_TauMu_ABC'
 eventSelector = cfg.Analyzer(
     'EventSelector',
     toSelect = [
-277833 ,
-831584 ,
-735611 ,
-547706 ,
-309799 ,
-738276 ,
-408424 ,
-334364 ,
-546802 ,
-549367 ,
-599803 ,
-359594 ,
-186559 ,
-
+    105104
     ]
     )
 
@@ -102,6 +89,7 @@ TauMuAna = cfg.Analyzer(
     iso2 = 0.1,
     m_min = 10,
     m_max = 99999,
+    dR_min = 0.5,
     triggerMap = pathsAndFilters,
     mvametsigs = 'mvaMETTauMu',
     verbose = False
@@ -219,24 +207,24 @@ selectedComponents.extend( embed_list )
 
 sequence = cfg.Sequence( [
     # eventSelector,
-    jsonAna,
-    triggerAna,
-    vertexAna,
-    TauMuAna,
+    jsonAna, 
+    triggerAna, #No! 
+    vertexAna, 
+    TauMuAna, #Yes!
     dyJetsFakeAna,
     WNJetsAna,
     higgsWeighter, 
-    vbfAna,
+    vbfAna, #Yes!
     pileUpAna,
     embedWeighter, 
     tauWeighter, 
     muonWeighter, 
-    treeProducer, 
+    treeProducer, #Yes! 
     # treeProducerXCheck
    ] )
 
 if syncntuple:
-    sequence.append( treeProducerXCheck)
+    sequence.append( treeProducerXCheck) #Yes!
 
 
 test = 1
@@ -245,6 +233,7 @@ if test==1:
     selectedComponents = [comp]
     comp.splitFactor = 14
     # comp.files = comp.files[:10]
+    # comp.files = ['tauMu_fullsel_tree_CMG.root']
 elif test==2:
     for comp in selectedComponents:
         comp.splitFactor = 1

@@ -44,9 +44,10 @@ class Tau( Lepton ):
     
     def __str__(self):
         lep = super(Tau, self).__str__()
-        spec = '\tTau: decay = {decMode:<15}, eOverP = {eOverP:4.2f}'.format(
+        spec = '\t\tTau: decay = {decMode:<15}, eOverP = {eOverP:4.2f}, isoMVALoose = {isoMVALoose}'.format(
             decMode = tauDecayModes.intToName( self.decayMode() ),
-            eOverP = self.calcEOverP()
+            eOverP = self.calcEOverP(),
+            isoMVALoose = self.tauID('byLooseIsoMVA')
             )
         return '\n'.join([lep, spec])
 
