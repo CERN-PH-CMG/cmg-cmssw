@@ -2,24 +2,26 @@
 #Run with: combine -d hgg.mH130.0.shapes-Unbinned.txt -U -m 130 -H ProfileLikelihood -M MarkovChainMC --rMin=0 --rMax=20.0  -b 3000 -i 50000 --optimizeSim=1 --tries 30
 # Lumi =  19500 pb-1
 imax 1
-jmax 1
+jmax 3
 kmax *
 ---------------
 shapes *      * ../workspaces/Xvv.inputbkg_8TeV.root w_all:$PROCESS_$CHANNEL
 shapes MggBkg * ../workspaces/Xvv.inputbkg_8TeV.root w_all:CMS_hgg_bkg_8TeV_$CHANNEL
-shapes MggSig * ../workspaces/Xvv.mX1100.0_ZZ_8TeV.inputsig.root w_all:CMS_hgg_sig_$CHANNEL
+shapes MggSigWW * ../workspaces/Xvv.mX1100.0_WW_8TeV.inputsig.root w_all:CMS_hgg_WW_sig_$CHANNEL
+shapes MggSigZZ * ../workspaces/Xvv.mX1100.0_ZZ_8TeV.inputsig.root w_all:CMS_hgg_ZZ_sig_$CHANNEL
+shapes MggSigWZ * ../workspaces/Xvv.mX1100.0_WZ_8TeV.inputsig.root w_all:CMS_hgg_WZ_sig_$CHANNEL
 ---------------
 bin          cat3
 observation   212889
 ------------------------------
-bin                      cat3       cat3      
-process                 MggSig     MggBkg     
-process                    0          1          
-rate                        10.34  1
+bin                      cat3       cat3      cat3      cat3      
+process                 MggSigWW MggSigZZ MggSigWZ     MggBkg     
+process                 -2 -1 0        1          
+rate                        0  10.34  0  1
 --------------------------------
 # signal scaled by 0.005
-lumi_8TeV       lnN  0.950/1.050    - 
-CMS_VV_eff_g         lnN  0.8/1.20      - # Signal Efficiency
+lumi_8TeV       lnN  0.950/1.050  0.950/1.050  0.950/1.050    - 
+CMS_VV_eff_g         lnN  0.8/1.20  0.8/1.20  0.8/1.20      - # Signal Efficiency
 # Parametric shape uncertainties, entered by hand.
 CMS_hgg_sig_m0_absShift    param   1   0.0125   # displacement of the mean w.r.t. nominal in EB*EX category, good R9
 CMS_hgg_sig_sigmaScale     param   1   0.1   # multiplicative correction to sigmas in EB*EX category, good R9
