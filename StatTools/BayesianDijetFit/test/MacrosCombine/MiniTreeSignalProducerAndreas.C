@@ -32,20 +32,20 @@
  evWeight = 1.0;
  normWeight = 1;
 
- for (int iSample = 1; iSample < 3; iSample++){
+ for (int iSample = 0; iSample < 3; iSample++){
    
-   string inFile("WprimeOUT");
-   if (iSample == 1) inFile = string("dijetWtag_Moriond_WW");
-   if (iSample == 2) inFile = string("dijetWtag_Moriond_ZZ");
+   string inFile("dijetWtag_Moriond_WZPy6");
+   if (iSample == 1) inFile = string("dijetWtag_Moriond_WWHpp");
+   if (iSample == 2) inFile = string("dijetWtag_Moriond_ZZHpp");
 
    for (int iMass = 0; iMass<14; iMass++){
 
-     string sInFile = "~hinzmann/public/forMaxime/" + inFile + "" + Form("HppOUT%d.root", 1000+iMass*100);
+     string sInFile = "~hinzmann/public/forMaxime/" + inFile + "" + Form("OUT%d.root", 1000+iMass*100);
      cout << sInFile.c_str() << endl;
      TFile file0(sInFile.c_str(), "read");
 
 
-     string sOutFile = "MiniTrees/Signal_VV/" + inFile + Form("HppOUT%d_miniTree.root", 1000+iMass*100);
+     string sOutFile = "MiniTrees/Signal_VV/" + inFile + Form("OUT%d_miniTree.root", 1000+iMass*100);
      TFile f1(sOutFile.c_str(), "recreate");
      f1.cd();
 

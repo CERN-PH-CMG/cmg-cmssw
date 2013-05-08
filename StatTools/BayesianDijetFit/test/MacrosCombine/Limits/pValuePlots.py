@@ -164,4 +164,9 @@ if __name__ == '__main__':
     PlotPValue("Xvv_ZZ_8TeV_Pval_channel1.txt", "ZZ_medium_purity")
     PlotPValue("Xvv_ZZ_8TeV_Pval_channel2.txt", "ZZ_low_purity")
     PlotPValue("Xvv_ZZ_8TeV_Pval_channel012.txt", "ZZ_combine")
+
+    PlotPValue("Xvv_WZ_8TeV_Pval_channel0.txt", "WZ_high_puriy")
+    PlotPValue("Xvv_WZ_8TeV_Pval_channel1.txt", "WZ_medium_purity")
+    PlotPValue("Xvv_WZ_8TeV_Pval_channel2.txt", "WZ_low_purity")
+    PlotPValue("Xvv_WZ_8TeV_Pval_channel012.txt", "WZ_combine")
     
