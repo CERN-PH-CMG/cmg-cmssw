@@ -8,8 +8,9 @@ conv veto:LepGood1_convVeto>0 && LepGood2_convVeto>0
 pt2010: LepGood1_pt > 20 && LepGood2_pt > 10
 Z veto: abs(minMllAFAS-91.2) > 10
 met LD: met*0.00397 + mhtJet25*0.00265 > 0.2
-2b: nBJetLoose25 >= 2
 2L: passND_Loose(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03/LepGood1_pt,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) && passND_Loose(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso03/LepGood2_pt,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
 1T: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03/LepGood1_pt,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) || passND_Tight(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso03/LepGood2_pt,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
 #FT: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03/LepGood1_pt,LepGood1_dxy,LepGood1_dz,LepGood1_tightId)
 #2T: passND_Tight(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_relIso03/LepGood1_pt,LepGood1_dxy,LepGood1_dz,LepGood1_tightId) && passND_Tight(LepGood2_pt,LepGood2_eta,LepGood2_pdgId,LepGood2_relIso03/LepGood2_pt,LepGood2_dxy,LepGood2_dz,LepGood2_tightId)
+2cb: ((Jet1_btagCSV > 0.244 && Jet1_pt > 30 && abs(Jet1_eta) < 2.4) + (Jet2_btagCSV > 0.244 && Jet2_pt > 30 && abs(Jet2_eta) < 2.4) + (Jet3_btagCSV > 0.244 && Jet3_pt > 30 && abs(Jet3_eta) < 2.4) + (Jet4_btagCSV > 0.244 && Jet4_pt > 30 && abs(Jet4_eta) < 2.4)) >= 2
+#4cj: ((Jet1_pt > 30 && abs(Jet1_eta) < 2.4) + (Jet2_pt > 30 && abs(Jet2_eta) < 2.4) + (Jet3_pt > 30 && abs(Jet3_eta) < 2.4) + (Jet4_pt > 30 && abs(Jet4_eta) < 2.4) + (Jet5_pt > 30 && abs(Jet5_eta)< 2.4) + (Jet6_pt > 30 && abs(Jet6_eta) < 2.4) + (Jet7_pt > 30 && abs(Jet7_eta) < 2.4) + (Jet8_pt > 30 && abs(Jet8_eta) < 2.4)) >= 4

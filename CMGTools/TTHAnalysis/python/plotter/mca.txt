@@ -8,7 +8,7 @@ ttH+     : TTH : 0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
 # --- TT+W/Z/WW (TTWW usually quite negligible)
 TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
 TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
-#TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
+TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
 # 
 # or also lumped together
 #TTV 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5, NormSystematic=0.2
@@ -27,11 +27,16 @@ ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9
 ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
 ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
 
+
 # -- TTbar and single top
 #
 # leptonic and inclusive decays (use only one!)
 #TT 	 : TTLep:      23.64    ;  FillColor=ROOT.kGray
-TT 	 : TTJets:     225.2    ;  FillColor=ROOT.kGray, NormSystematic=0.2
+#TT 	 : TTJets:     225.2    ;  FillColor=ROOT.kGray, NormSystematic=0.2
+TT 	 : TTJetsLep:     23.64    ;  FillColor=ROOT.kGray, NormSystematic=0.2
+TT 	 : TTJetsSem:	  98.65     ;  FillColor=ROOT.kGray, NormSystematic=0.2
+TT 	 : TTJetsHad:     102.9    ;  FillColor=ROOT.kGray, NormSystematic=0.2
+
 #
 # split into true leptons and fake leptons, if you need it
 #TTl      : TTLep:      23.64 : ((LepGood1_mcMatchId > 0) + (LepGood2_mcMatchId > 0) == 2)   ;  FillColor=ROOT.kGray, Label="TT ll"
@@ -42,8 +47,10 @@ TW 	 : TtW:        11.73    ;  FillColor=ROOT.kGray+2, NormSystematic=0.2
 TW 	 : TbartW:     11.73    ;  FillColor=ROOT.kGray+2, NormSystematic=0.2
 #
 # Single top t-channel and s-channel (usually negligible)
-Ttch     : Ttch:       56.4     ;  FillColor=28
-Ttch 	 : Tbartch:    30.7     ;  FillColor=28
+#Ttch     : Ttch:       56.4     ;  FillColor=28
+#Ttch 	 : Tbartch:    30.7     ;  FillColor=28
+TW     : Ttch:       56.4     ;  FillColor=28
+TW 	 : Tbartch:    30.7     ;  FillColor=28
 #Tsch    : Tsch:        3.79    ;  FillColor=217
 #Tsch 	 : Tbartsh:     1.76    ;  FillColor=217
 #
