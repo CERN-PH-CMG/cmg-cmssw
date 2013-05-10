@@ -91,15 +91,17 @@ public:
     for( std::vector<Sample*>::const_iterator s=samples_.begin(); s!=samples_.end(); ++s)
       if((*s)->getDataType()=="Data")
 	totalDataLumi+=(*s)->getLumi();
-    cout<<"Total Data lumi = "<<totalDataLumi<<endl;
+    //cout<<"Total Data lumi = "<<totalDataLumi<<endl;
     return totalDataLumi;
   }
+
+  TString getCurrentSelection();
 
   ///basic methods which can be used by all categories
   TH1F* getTotalData();
   TH1F* getTotalEmbedded();
   TH1F* getTotalMC();//sum of all OS MCs 
-  TH1F* getSample(TString samplename);//can be used to get histo for any MC or Data sample
+  TH1F* getSample(TString samplename,bool removeLumiNorm=0);//can be used to get histo for any MC or Data sample
   TH1F* getDiBoson();
   TH1F* getZToTauTau();//Z-->tau tau (either from MC or Embedded)
   TH1F* getZToTauTauVBF();
@@ -221,6 +223,8 @@ public:
   Int_t WJetsType_;
   long mTCut_;
   TString eventWeight_;
+  TString tauIsoCut_;
+  TString tauIsoCutQCD_;
 
   Float_t TTJetsCorrFactor[3];
   float tauLooseIsoCut_;

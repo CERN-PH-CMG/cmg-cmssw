@@ -34,7 +34,7 @@ process.flatNtp = process.flatNtpTauMu.clone()
 from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSampleTauMu2012
 configureFlatNtpSampleTauMu2012(process.flatNtp,sampleName)
 process.flatNtp.metType = 2 #1 PFMET, 2 mva met, 3 mva met presel
-process.flatNtp.runSVFit = 2 #1 old #2 new
+process.flatNtp.runSVFit = 1 #1 old #2 new
 #process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
 
 
@@ -123,6 +123,15 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 #process.source.eventsToProcess = cms.untracked.VEventRange('198049:39003032','198116:52292486','198207:31745052','198207:73698870','198208:107422149','198208:118651506','198208:128512894','198208:22240519','198208:23798456','198208:28441906','198208:48407060','198210:19717791','198210:47125079','198212:196125834','198212:265673190','198212:2677682','198212:386331168','198212:41210292','198212:423841091','198212:61347663','198212:79661177','198212:84787504','198230:100784289','198230:135529768','198230:15361026','198230:159562044','198230:170885005','198230:183646477','198230:237527349','198230:284072030','198230:316933517')
 
 
+###For Colin
+
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:110365','1:183683','1:54659','1:54814','1:750651','1:465090','1:172354','1:227219','1:785683','1:106165','1:72406','1:56969','1:132647','1:818777','1:347276','1:398253','1:212254','1:327286','1:472811','1:472893','1:443158','1:316268','1:487540','1:229720','1:360170','1:238699','1:268302','1:776229','1:992574','1:387821','1:411281','1:510809','1:523969','1:878407','1:661467','1:440127','1:331879','1:855028','1:655997','1:480384','1:591991','1:600255','1:343405','1:523634','1:755769','1:771203','1:695295','1:871737','1:362135','1:768438','1:922447','1:693666','1:798087','1:854552')
+
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:110365')
+
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:227219','1:818777','1:398253','1:212254','1:591991','1:922447')
+process.source.eventsToProcess = cms.untracked.VEventRange('1:227219')
+
 #process.source = cms.Source(
 #    "PoolSource",
 #    fileNames = cms.untracked.vstring(
@@ -138,8 +147,8 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 
 
 print process.source.fileNames
-#print process.source.eventsToProcess
-#process.flatNtp.printSelectionPass = 1
+print process.source.eventsToProcess
+process.flatNtp.printSelectionPass = 2
 
 
 # set up JSON ---------------------------------------------------------------

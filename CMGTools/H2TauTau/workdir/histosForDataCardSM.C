@@ -12,6 +12,7 @@
 #include "configTauMu2012ABC.C"
 #include "configTauMu2012D.C"
 #include "configTauMu2012ABCD.C"
+#include "configTauMu2012Summer13.C"
 
 #include "TauElePlotter.h"
 #include "configTauEle2011.C"
@@ -23,61 +24,96 @@
 
 
 
-//#define NMASS 20
-//#define NCAT 7
-//long massValues[NMASS]={90,100,110,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
+// void fix0Bins(TH1F* h){
 
-//#define NXBINS 13
-//Float_t xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
-//#define NXBINS 21
-//float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000};
+//   float lastbinCenter = h->GetBinCenter(1);
+//   float lastbinContent = 1e-6;
+//   float lastbinError   = 1e-6;
+//   for(Int_t i=1;i<=h->GetNbinsX();i++){
+//     if(h->GetBinContent(i)==0.){
+//       //find next non-empty bin and interpolate
+//       float nextbinCenter = h->GetBinCenter(h->GetNbinsX())+h->GetBinWidth(i);
+//       float nextbinContent = 1e-6;
+//       float nextbinError = 1e-6;
+//       for(Int_t j=i+1;j<=h->GetNbinsX();j++){
+// 	if(h->GetBinContent(j)>0.){
+// 	  nextbinCenter = h->GetBinCenter(j);
+// 	  nextbinContent = h->GetBinContent(j);
+// 	  nextbinError = h->GetBinError(j);
+// 	  break;
+// 	}
+//       }
 
-// ///For study of MSSM performance
-// #define NXBINS 19
-// float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,900,1200,1500};  
-// #define NXBINSVBF 19
-// Float_t xbinsValuesVBF[NXBINSVBF+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,400,500,700,900,1200,1500}; 
+//       h->SetBinContent(i,lastbinContent + (h->GetBinCenter(i)-lastbinCenter)*(nextbinContent-lastbinContent)/(nextbinCenter-lastbinCenter));
+//       h->SetBinError(i,lastbinError + (h->GetBinCenter(i)-lastbinCenter)*(nextbinError-lastbinError)/(nextbinCenter-lastbinCenter));
 
-// #define NXBINS 16
-// float xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,500,1000,1500};  
-// #define NXBINSVBF 16
-// Float_t xbinsValuesVBF[NXBINSVBF+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350,500,1000,1500};  
-
-// ////Old binning
-// #define NXBINS 13
-// Float_t xbinsValues[NXBINS+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
-// #define NXBINSVBF 13
-// Float_t xbinsValuesVBF[NXBINSVBF+1]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
+//     }else {//this is a good bin, update
+//       lastbinCenter = h->GetBinCenter(i); 
+//       lastbinContent = h->GetBinContent(i);
+//       lastbinError   = h->GetBinError(i);
+//     }
+//   }
 
 
+//   //fix empty distributions for limit to run
+//   if(h->Integral()<=0.){
+//     for(Int_t i=1;i<=h->GetNbinsX();i++){
+//       h->SetBinContent(i,0.001);
+//       h->SetBinError(i,0.001);
+//     }
+//   }
+
+// }
 
 void fix0Bins(TH1F* h){
 
-  float lastbinCenter = h->GetBinCenter(1);
-  float lastbinContent = 1e-6;
-  float lastbinError   = 1e-6;
+  //determine if this is a low stats shape
+  float binUnc=0.;
+  int nNon0bins=0;
   for(Int_t i=1;i<=h->GetNbinsX();i++){
-    if(h->GetBinContent(i)==0.){
-      //find next non-empty bin and interpolate
-      float nextbinCenter = h->GetBinCenter(h->GetNbinsX())+h->GetBinWidth(i);
-      float nextbinContent = 1e-6;
-      float nextbinError = 1e-6;
-      for(Int_t j=i+1;j<=h->GetNbinsX();j++){
-	if(h->GetBinContent(j)>0.){
-	  nextbinCenter = h->GetBinCenter(j);
-	  nextbinContent = h->GetBinContent(j);
-	  nextbinError = h->GetBinError(j);
-	  break;
-	}
+    if(h->GetBinContent(i)>0.){
+      nNon0bins++;
+      binUnc+=h->GetBinError(i)/h->GetBinContent(i);
+    }
+  }
+  binUnc=binUnc/nNon0bins;
+
+  //if the average bin uncertainty is greater than 30% then smooth
+  if(binUnc>0.5){
+
+    //TH1F* hs=new TH1F(TString(h->GetName())+"smeared",h->GetTitle(),h->GetXaxis()->GetNbins(),h->GetXaxis()->GetXmin(),h->GetXaxis()->GetXmax());
+    TH1F* hs=h->Clone("hs");
+    TF1 gaus("gauss","[0]*exp(-0.5*(x-[1])**2/[2]**2)",h->GetXaxis()->GetXmin(),h->GetXaxis()->GetXmax());
+    gaus.SetParameter(2,10);
+
+    for(Int_t b=1;b<=h->GetXaxis()->GetNbins();b++){
+      gaus.SetParameter(0,h->GetBinContent(b));
+      gaus.SetParameter(1,h->GetBinCenter(b));
+      for(Int_t bs=1;bs<=h->GetXaxis()->GetNbins();bs++){
+        hs->AddBinContent(bs,hs->GetBinWidth(bs)*gaus.Eval(hs->GetBinCenter(bs))) ;
       }
+    }
+    for(Int_t bs=1;bs<=h->GetXaxis()->GetNbins();bs++){
+      hs->SetBinError(bs,0.);//not sure this is necessary
+    }
+    
+    if(hs->Integral()>0.)
+      hs->Scale(h->Integral()/hs->Integral());//make sure the output histo has the same integral
+    else hs->Scale(0.);
 
-      h->SetBinContent(i,lastbinContent + (h->GetBinCenter(i)-lastbinCenter)*(nextbinContent-lastbinContent)/(nextbinCenter-lastbinCenter));
-      h->SetBinError(i,lastbinError + (h->GetBinCenter(i)-lastbinCenter)*(nextbinError-lastbinError)/(nextbinCenter-lastbinCenter));
+    for(Int_t b=1;b<=h->GetXaxis()->GetNbins();b++){
+      h->SetBinContent(b,hs->GetBinContent(b));
+      h->SetBinError(b,hs->GetBinContent(b)*0.4);
+    }
+    delete hs;
+  }
 
-    }else {//this is a good bin, update
-      lastbinCenter = h->GetBinCenter(i); 
-      lastbinContent = h->GetBinContent(i);
-      lastbinError   = h->GetBinError(i);
+
+  //fix empty distributions for limit to run
+  if(h->Integral()<=0.){
+    for(Int_t i=1;i<=h->GetNbinsX();i++){
+      h->SetBinContent(i,0.001);
+      h->SetBinError(i,0.001);
     }
   }
 
@@ -137,6 +173,7 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
       if(dataset==2)analysis=configTauMu2012ABC("analysis",path);
       if(dataset==3)analysis=configTauMu2012D("analysis",path);
       if(dataset==4)analysis=configTauMu2012ABCD("analysis",path);
+      if(dataset==5)analysis=configTauMu2012Summer13("analysis",path);
     }
   }
   if(channel==2){
@@ -160,8 +197,19 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
   analysis->MTcat_=1; 
   analysis->Chcat_=1; 
 
-  analysis->scaleSamplesLumi();
+//   ///isolation scan
+//   char isocutoption[100];
+//   if(option<10){
+//     sprintf(isocutoption,"(tauisomva2raw>%.3f)",0.80+0.02*option);
+//     analysis->tauIsoCutQCD_="(tauisomva2raw>0.5)";
+//   }else if(option<20){
+//     sprintf(isocutoption,"(tauiso3hitraw<%.3f)",2.2-0.2*(option-10));
+//     analysis->tauIsoCutQCD_="(tauiso3hitraw<6.0)";
+//   }
+//   analysis->tauIsoCut_=isocutoption;
 
+
+  analysis->scaleSamplesLumi();
   TFile output(ChannelName+"SM"+"_"+analysis->plotvar_+"_"+tag+".root","recreate");
   for(long sm=0; sm<NCAT; sm++){//NCAT
 
@@ -171,6 +219,7 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
     if(sm==4)analysis->setVariableBinning(NXBINSVBF,xbinsValuesVBF);
     else analysis->setVariableBinning(NXBINS,xbinsValues);
     analysis->extrasel_ = analysis->getSMcut(sm);
+
 
 //     if(option==0)analysis->extrasel_ = analysis->getSMcut(sm) + "*(taudecaymode==0)";
 //     if(option==1)analysis->extrasel_ = analysis->getSMcut(sm) + "*(taudecaymode==1)";
@@ -419,7 +468,8 @@ void plotDataCard(TString file, Int_t channel){
   TFile nominal(file+".root","read");
   gROOT->cd();
 
-  TString fname=TString("plotDataCard_")+file+".ps";
+  //TString fname=TString("plotDataCard_")+file+".ps";
+  TString fname=file+".ps";
 
   TCanvas C;
   C.Print(fname+"[");
@@ -485,8 +535,8 @@ void plotDataCard(TString file, Int_t channel){
       TH1F* SM = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ggH"+ma);
       TH1F* VBF = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/qqH"+ma);
       TH1F* VH = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/VH"+ma);
-      if(m==0){SM1=(TH1F*)SM->Clone("SM1"); SM1->Add(VBF); SM1->Add(VH);}
-      if(m==NMASS-1){SM2=(TH1F*)SM->Clone("SM2");SM2->Add(VBF);SM2->Add(VH);}
+      if(massValues[m]==110){SM1=(TH1F*)SM->Clone("SM1"); SM1->Add(VBF); SM1->Add(VH);}
+      if(massValues[m]==145){SM2=(TH1F*)SM->Clone("SM2");SM2->Add(VBF);SM2->Add(VH);}
     }
     if(SM1->GetMaximum()>SM2->GetMaximum())
       SM1->GetYaxis()->SetRangeUser(0,1.2*SM1->GetMaximum());

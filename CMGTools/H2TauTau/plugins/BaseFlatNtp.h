@@ -773,7 +773,8 @@ protected:
   bool checkPFJetId(const cmg::PFJet * jet){
     //Loose PF Jet id : https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetID
     if(fabs(jet->eta()) <= 2.4){
-      if((jet->component(5).fraction() + jet->component(6).fraction()) < 0.99
+      if(//(jet->component(5).fraction() + jet->component(6).fraction()) < 0.99
+	 jet->component(5).fraction() < 0.99
 	 &&jet->component(4).fraction() < 0.99
 	 &&jet->nConstituents() > 1
 	 &&jet->component(1).fraction() > 0
@@ -781,7 +782,8 @@ protected:
 	 &&jet->component(2).fraction() < 0.99 
 	 ) return 1;
     } else {
-      if((jet->component(5).fraction() + jet->component(6).fraction()) < 0.99
+      if(//(jet->component(5).fraction() + jet->component(6).fraction()) < 0.99
+	 jet->component(5).fraction() < 0.99
 	 &&jet->component(4).fraction() < 0.99
 	 &&jet->nConstituents() > 1
 	 ) return 1;
@@ -1173,27 +1175,45 @@ protected:
 
   //
   bool thirdLeptonVeto(){
-    int nleptons=0;
+    //int nleptons=0;
+    
+    std::vector<const cmg::Muon * > muonList_;
+    std::vector<const cmg::Electron * > electronList_;
+
     for(std::vector<cmg::Muon>::const_iterator m=leptonVetoListMuon_->begin(); m!=leptonVetoListMuon_->end(); ++m){  
       if(m->pt()<=10.0)continue;
       if(fabs(m->eta())>=2.4)continue;
       if(!muonVertexCut(&(*m)))continue;
       if(!muonIDPFMuonTight(&(*m)))continue;
-      if(m->relIso(0.5,1)>=0.3)continue;        
-      nleptons++;
+      if(m->relIso(0.5,1)>=0.3)continue;  
+      muonList_.push_back(&(*m));      
+      //nleptons++;
     }
     for(std::vector<cmg::Electron>::const_iterator m=leptonVetoListElectron_->begin(); m!=leptonVetoListElectron_->end(); ++m){  
       if(m->pt()<=10.0)continue;
       if(fabs(m->eta())>=2.5)continue;
       if(!electronVertexCut(&(*m)))continue;
       if(m->numberOfHits()!=0) continue;
-      //if(m->passConversionVeto()!=1) continue;
       if((*(m->sourcePtr()))->passConversionVeto()!=1)continue;
       if(!electronMVALoose(&(*m)))continue;
       if( electronRelIsoDBCorr( &(*m) )>=0.3 ) continue; 
-      nleptons++;
+      electronList_.push_back(&(*m));      
+      //nleptons++;
     }
-    if(nleptons>=2)return 0;
+    //if(nleptons>=2)return 0;
+
+    if((muonList_.size()+electronList_.size())>=2){
+      if(printSelectionPass_>1){
+	cout<<"*****thirdLeptonVeto fail leptons :  "<<endl;
+	for(std::vector<const cmg::Muon *>::const_iterator m=muonList_.begin(); m!=muonList_.end(); ++m)
+	  printMuonInfo(*m);
+	for(std::vector<const cmg::Electron * >::const_iterator m=electronList_.begin(); m!=electronList_.end(); ++m)
+	  printElectronInfo(*m);
+      }
+	
+     return 0;
+    }
+    
     return 1;
   }
 
