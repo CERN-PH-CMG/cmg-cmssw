@@ -4,6 +4,7 @@ from CMGTools.Common.diTau_cff import *
 from CMGTools.H2TauTau.objects.tauEleCuts_cff import * 
 
 from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
+from CMGTools.Utilities.tools.cmgTauESCorrector_cfi import * 
 
 from CMGTools.Common.factories.cmgTauScaler_cfi import  cmgTauScaler
 from CMGTools.Common.factories.cmgTauEleCor_cfi import cmgTauEleCor 
@@ -13,6 +14,9 @@ from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 
 # no correction, no svfit ---------------------------------------------------
+
+cmgTauESCorrector.cfg.inputCollection = 'cmgTauSel'
+cmgTauScaler.cfg.inputCollection = 'cmgTauESCorrector'
 
 # attaching the cuts defined in this module
 # to the di-tau factory
@@ -26,7 +30,8 @@ cmgTauElePreSel = cmgTauEleSel.clone(
     cut = 'getSelection("cuts_baseline")'
     )
 
-tauEleStdSequence = cms.Sequence( cmgTauScaler +
+tauEleStdSequence = cms.Sequence( cmgTauESCorrector +
+                                  cmgTauScaler +
                                   cmgTauEle +
                                   cmgTauElePreSel
                                  )
