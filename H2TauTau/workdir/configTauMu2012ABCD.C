@@ -11,7 +11,8 @@ TauMuPlotter * configTauMu2012ABCD(TString name, TString path){
   analysis->setZTTType(2);
   analysis->mTCut_=20;
   analysis->eventWeight_="pupWeights4*embeddedGenWeight*triggerEffWeightsTau4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*signalWeight";//
-
+  analysis->tauIsoCut_="(tauisomva>0.795)";
+  analysis->tauIsoCutQCD_="(tauisomva>0.5)";
 
   Sample* TauPlusX2012A = new Sample("TauPlusX2012A",path);
   TauPlusX2012A->setDataType("Data");

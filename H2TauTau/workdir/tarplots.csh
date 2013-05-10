@@ -11,6 +11,9 @@ export path="/data/benitezj/Samples"
 #export tag="muTau201253X_5140Apr7"
 #export tag="muTau201253X_5140Apr11"
 #export tag="muTau201253X_5140Apr14"
+#export tag="muTau201253X_5140Apr18Isolations"
+#export tag="muTau201253X_5140Apr26_MVA2Iso_newPUJetIdWP"
+export tag="muTau201253X_5140May2_TauIso3HitorMVA2"
 
 ###e-tau 2012
 #export tag="eTau201253X_580Jan16"
@@ -19,7 +22,7 @@ export path="/data/benitezj/Samples"
 #export tag="eTau201253X_5140Apr7"
 #export tag="eTau201253X_5140Apr11"
 #export tag="eTau201253X_5140Apr13"
-export tag="eTau201253X_5140Apr14"
+#export tag="eTau201253X_5140Apr14"
 
 
 export dirname=Plots_${tag}_${1}

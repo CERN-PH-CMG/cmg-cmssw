@@ -55,10 +55,12 @@ public:
   TString getDataType(){return dataType_;}
   int getSampleGenEvents(){return genEvents_;}
   float getLumi(){ 
-    if(!ntpChain_) if(!openNtpFile()) return 0.;
-
-    if(dataType_=="Data" || dataType_=="Data_SS" || dataType_=="Embedded" || dataType_=="Embedded_SS")return lumi_;
-    else if(crossection_>0.) return genEvents_/crossection_;
+    if(dataType_=="Data"  || dataType_=="Embedded" )
+      return lumi_;    
+    else if(crossection_>0.){
+      if(!ntpChain_) if(!openNtpFile()) return 0.;
+      return genEvents_/crossection_;
+    }
 
     return 0.;
   }

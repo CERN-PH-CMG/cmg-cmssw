@@ -767,16 +767,43 @@ const cmg::TriggerObject * BaseFlatNtp::trigObjMatch(float eta, float phi, std::
 
 
 bool  BaseFlatNtp::checkPUJetId(const cmg::PFJet *jet){
+  //note there is an implicit eta cut here
 
   float eta=fabs(jet->eta());
   //float mva=jet->puMva("full");
   float mva=jet->puMva(pujetidname_.c_str());
   //cout<<"pujetid "<<pujetidname_.c_str()<<"   "<<mva<<endl;
-  bool pass=1;
-  if(0.00<=eta&&eta<2.50) if(mva<-0.80) pass=0;
-  if(2.50<=eta&&eta<2.75) if(mva<-0.74) pass=0;
-  if(2.75<=eta&&eta<3.00) if(mva<-0.68) pass=0;
-  if(3.00<=eta&&eta<5.00) if(mva<-0.77) pass=0;
+  bool pass=0;
+
+//   ///old "full" wp (valid for pT>20)
+//   if(0.00<=eta&&eta<2.50) if(mva>-0.80) pass=1;
+//   if(2.50<=eta&&eta<2.75) if(mva>-0.74) pass=1;
+//   if(2.75<=eta&&eta<3.00) if(mva>-0.68) pass=1;
+//   if(3.00<=eta&&eta<5.00) if(mva>-0.77) pass=1;
+
+//   ///for new "full53x" training from Phil
+//     if(0.00<=eta&&eta<2.50) if(mva>-0.63) pass=1;
+//     if(2.50<=eta&&eta<2.75) if(mva>-0.35) pass=1;
+//     if(2.75<=eta&&eta<3.00) if(mva>-0.28) pass=1;
+//     if(3.00<=eta&&eta<5.00) if(mva>-0.27) pass=1;
+
+//   //second set from Phil
+//   if(0.00<=eta&&eta<2.50) if(mva>-0.63) pass=1;
+//   if(2.50<=eta&&eta<2.75) if(mva>-0.60) pass=1;
+//   if(2.75<=eta&&eta<3.00) if(mva>-0.55) pass=1;
+//   if(3.00<=eta&&eta<5.00) if(mva>-0.40) pass=1;
+
+//   //cuts from Jan
+//   if(0.00<=eta&&eta<2.50) if(mva>-0.36) pass=1;
+//   if(2.50<=eta&&eta<2.75) if(mva>-0.59) pass=1;
+//   if(2.75<=eta&&eta<3.00) if(mva>-0.70) pass=1;
+//   if(3.00<=eta&&eta<5.00) if(mva>-0.62) pass=1;
+
+  //cuts from avg
+  if(0.00<=eta&&eta<2.50) if(mva>-0.63) pass=1;
+  if(2.50<=eta&&eta<2.75) if(mva>-0.60) pass=1;
+  if(2.75<=eta&&eta<3.00) if(mva>-0.55) pass=1;
+  if(3.00<=eta&&eta<5.00) if(mva>-0.45) pass=1;
 
   return pass;
 }

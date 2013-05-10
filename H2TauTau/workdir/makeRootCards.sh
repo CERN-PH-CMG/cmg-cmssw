@@ -32,7 +32,9 @@
 #rootl mergeDataCardsSM.C\(1\,\"ditaumass\"\)
 
 #######################################################################
-export SAMPLEPATH=muTau201253X_580Feb7
+#export SAMPLEPATH=muTau201253X_580Feb7
+#export SAMPLEPATH=muTau201253X_5140Apr18Isolations
+export SAMPLEPATH=muTau201253X_5140May2_TauIso3HitorMVA2
 ###2012ABCD
 #rootl histosForDataCardSM.C\(1\,2012\,4\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\)
 #rootl histosForDataCardSM.C\(1\,2012\,4\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\)
@@ -71,6 +73,37 @@ export SAMPLEPATH=muTau201253X_580Feb7
 #rootl histosForDataCardSM.C\(1\,2012\,2\,\"ditaumass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\)
 #rootl mergeDataCardsSMZTT.C\(1\,\"ditaumass\"\)
 #mv muTauSM_ditaumass.root htt_mt.inputs-sm-8TeV-hcp-mvis.root
+
+##################### Summer13  ################################
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\)
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\)
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\)
+#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
+#mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13.root
+#mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_mva1.root
+#mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_mva2.root
+#mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_3hit.root
+
+
+###Summer13 scan of the isolation
+
+###MVA2
+#for p in 0 1 2 3 4 5 6 7 8 9; do
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,${p}\)
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\,${p}\)
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\,${p}\)
+#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
+#mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_mva2_${p}.root
+#done
+#
+####3Hit
+#for p in 0 1 2 3 4 5 6 7 8 9; do
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,1${p}\)
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\,1${p}\)
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\,1${p}\)
+#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
+#mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_3hit_${p}.root
+#done
 
 
 
