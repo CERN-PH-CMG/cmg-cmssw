@@ -62,7 +62,9 @@ void fillTrivialFakeRatesFromFRTrees(int triggering=1) {
     if (triggering == 1) baseCut += "(Trig_Pair_2Mu || Trig_Pair_MuEG) &&";
 
     TString baseCutL = baseCut + "tagType == 13 && ";
-    baseCutL += "Probe_pt/(TagLepton_pt*(1+TagLepton_relIso)) < 1 && abs(dphi_tp) > 2.0 && ";
+    //baseCutL += "TagLepton_sip3d > 7 && ";
+    //baseCutL += "Probe_pt/(TagLepton_pt*(1+TagLepton_relIso)) < 1 && abs(dphi_tp) > 2.0 && ";
+    baseCutL += "Probe_pt/(TagLepton_pt*(1+TagLepton_relIso)) < 1.5 && abs(dphi_tp) > 1.0 && ";
     //baseCutL += "(abs(Probe_pdgId) == 11 || Probe_pt < 14 || TagLepton_pt > 16) && ";
     TString baseCutJ = baseCut + "tagType == 1 && ";
     baseCutJ += "Probe_pt/TagJet_pt < 1 && abs(dphi_tp) > 2.0 && ";
