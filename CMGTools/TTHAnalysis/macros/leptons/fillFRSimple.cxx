@@ -10,6 +10,8 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
+#define TRIGGERING 0
+
 TString basePath="/afs/cern.ch/work/g/gpetrucc/ttH/TREES_270413_FR/%s/ttHLepFRAnalyzer/ttHLepFRAnalyzer_tree.root";
 
 void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
@@ -21,6 +23,7 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
     baseFileName.ReplaceAll("_TagMu17","");
     baseFileName.ReplaceAll("_TagMu24","");
     baseFileName.ReplaceAll("_TagMu40","");
+    baseFileName.ReplaceAll("_TagMuL","");
     baseFileName.ReplaceAll("_TagMu","");
     TFile *fileIn = TFile::Open(baseFileName);
     TTree *t = (TTree *) fileIn->Get("ttHLepFRAnalyzer");
@@ -31,24 +34,33 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
 
     TFile *fOut = TFile::Open(selbin ? Form("frDistsSimple%s_%s.%d.root",postFix.Data(),comp.Data(),selbin) : Form("frDistsSimple%s_%s.root",postFix.Data(),comp.Data()),"RECREATE");
     //const int npt_mu = 10, npt_el = 8, neta = 2;
+#if TRIGGERING
     const int npt_mu = 8, npt_el = 6, neta = 2;
     double ptbins_mu[npt_mu+1] = { 5.0, 7.0, 8.5, 10, 15, 20, 25, 35, 80 };
     double ptbins_el[npt_el+1] = {        7,      10, 15, 20, 25, 35, 80 };
     double etabins_mu[neta+1] = { 0.0, 1.5,   2.5 };
     double etabins_el[neta+1] = { 0.0, 1.479, 2.5 };
+#else
+    const int npt_mu = 3, npt_el = 2, neta = 2;
+    double ptbins_mu[npt_mu+1] = { 5.0, 7.0, 10, 15 };
+    double ptbins_el[npt_el+1] = {      7.0, 10, 15 };
+    double etabins_mu[neta+1] = { 0.0, 1.5,   2.5 };
+    double etabins_el[neta+1] = { 0.0, 1.479, 2.5 };
+#endif
 
 
     gROOT->ProcessLine(".x /afs/cern.ch/user/g/gpetrucc/cpp/tdrstyle.cc");
     TCanvas *c1 = new TCanvas("c1","c1");
     gStyle->SetOptStat("emr");
 
-    TString pdir = "ttH_plots/120413/FR_QCD_Simple/"+comp+"/";
+    TString pdir = "ttH_plots/270413/FR_QCD_Simple/"+comp+"/";
     gSystem->Exec("mkdir -p "+pdir);
     gSystem->Exec("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+pdir);
 
     for (int itype = 13; itype <= 13; itype += 12) {
         TCut cut0 = (itype == 1 ? "tagType == 1  && TagJet_pt > 40 && TagJet_btagCSV >= 0.898" 
-                                : "tagType == 13 && TagLepton_sip3d > 7 && Probe_pt/(TagLepton_pt*(1+TagLepton_relIso)) < 1 && abs(dphi_tp) > 2.5");
+                                //: "tagType == 13 && TagLepton_sip3d > 7 && Probe_pt/(TagLepton_pt*(1+TagLepton_relIso)) < 1 && abs(dphi_tp) > 2.5");
+                                : "tagType == 13 && TagLepton_sip3d > 5 && Probe_pt/(TagLepton_pt*(1+TagLepton_relIso)) < 1 && abs(dphi_tp) > 2.0");
         TString name0 = (itype == 13 ? "FR_MuTag_" : "FR_JetTag_");
         if (comp.Contains("_TagMu")) {
             if (itype != 13) continue;
@@ -57,7 +69,10 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
             else if (comp.Contains("_TagMu17")) cut0 += "Trig_Tag_Mu17";
             else if (comp.Contains("_TagMu24")) cut0 += "Trig_Tag_Mu24";
             else if (comp.Contains("_TagMu40")) cut0 += "Trig_Tag_Mu40";
-            else if (comp.Contains("_TagMu"))   {
+            else if (comp.Contains("_TagMuL"))   {
+                if      (comp.Contains("DoubleMu")) cut0 += "(Trig_Tag_Mu8 || Trig_Tag_Mu17)";
+                else if (comp.Contains("SingleMu")) cut0 += "(Trig_Tag_Mu12 || Trig_Tag_Mu24)";
+            } else if (comp.Contains("_TagMu"))   {
                 if      (comp.Contains("DoubleMu")) cut0 += "(Trig_Tag_Mu8 || Trig_Tag_Mu17)";
                 else if (comp.Contains("SingleMu")) cut0 += "(Trig_Tag_Mu12 || Trig_Tag_Mu24 || Trig_Tag_Mu40)";
             }

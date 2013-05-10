@@ -10,11 +10,15 @@
 #include <TH2.h>
 #include <TF1.h>
 #include <TGraphErrors.h>
+#include <TGraphAsymmErrors.h>
 #include <THStack.h>
+#include <TEfficiency.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <Math/Functor.h>
 #include <Minuit2/Minuit2Minimizer.h>
+
+#define TRIGGERING 1
 
 //#define EVEN_BINS
 TCanvas *c1 = 0;
@@ -29,6 +33,7 @@ TFile *fDY[2]  =  { 0, 0 };
 TFile *fdata[ndata_max] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
 TH1* rebin(TH1 *hist) { 
+    if (hist == 0) return 0;
     TH1 *ret = (TH1*) hist->Clone(); 
     ret->Rebin(5);
     return ret;
@@ -36,6 +41,14 @@ TH1* rebin(TH1 *hist) {
 
 void readAndAdd(TString name, TH1 * &prompt, TH1* &qcd, TH1* &data, const TH1 *ref = 0) {
     double lumi = 19.6-0.1-0.6;
+    /*
+    std::cout << "readAndAdd(" << name << ")" << std::endl;
+    for (int i = 0; i <= 7; ++i) std::cout << "fdata[" << i << "] = " << (fdata[i] ? fdata[i]->GetName() : "NULL") << std::endl;
+    std::cout << "fQCD = " << (fQCD ? fQCD->GetName() : "NULL") << std::endl;
+    std::cout << "fWJ = " << (fWJ ? fWJ->GetName() : "NULL") << std::endl;
+    std::cout << "fDY[" << 0 << "] = " << (fDY[0] ? fDY[0]->GetName() : "NULL") << std::endl;
+    std::cout << "fDY[" << 1 << "] = " << (fdata[1] ? fdata[1]->GetName() : "NULL") << std::endl;
+    */
     data = rebin((TH1*) fdata[0]->Get(name));
     data->Add(rebin((TH1*) fdata[1]->Get(name)));
     data->Add(rebin((TH1*) fdata[2]->Get(name)));
@@ -56,20 +69,27 @@ void readAndAdd(TString name, TH1 * &prompt, TH1* &qcd, TH1* &data, const TH1 *r
     prompt->Add(zed);
 }
 
-void frFromRange(TH1 *num, TH1 *den, double mtmax, double &fr, double &err) {
-    double n_num = num->Integral(0, num->GetXaxis()->FindBin(mtmax));
-    double n_den = den->Integral(0, den->GetXaxis()->FindBin(mtmax));
-    double events = (n_den/den->Integral()*den->GetEntries());
-    fr = n_num/n_den;
-    err = sqrt(fr*(1-fr)/events);
-}
-void frFromRange(TH1 *num, TH1 *den, double mtmin, double mtmax, double &fr, double &err) {
+
+void frFromRange(TH1 *num, TH1 *den, double mtmin, double mtmax, double &fr, double &errL, double &errH) {
     double n_num = num->Integral(num->GetXaxis()->FindBin(mtmin), num->GetXaxis()->FindBin(mtmax));
     double n_den = den->Integral(den->GetXaxis()->FindBin(mtmin), den->GetXaxis()->FindBin(mtmax));
     double events = (n_den/den->Integral()*den->GetEntries());
+    int inum = events > 1 ? round(n_num*events/n_den) : 0;
+    std::cout << "frFromRange(" << num->GetName() << ") " << n_num << "\t" << n_den << "\t" << events << "\t" << inum << std::endl;
+    double fup = events >= 1 ? TEfficiency::ClopperPearson(events, inum, 0.683, 1) : 0; 
+    double fdn = events >= 1 ? TEfficiency::ClopperPearson(events, inum, 0.683, 0) : 0; 
     fr = n_num/n_den;
-    err = sqrt(fr*(1-fr)/events);
+    //err = sqrt(fr*(1-fr)/events);
+    //fr = 0.5*(fup+fdn); err = 0.5*(fup-fdn);
+    errL = fr-fdn; errH = fup - fr;
 }
+void frFromRange(TH1 *num, TH1 *den, double mtmin, double mtmax, double &fr, double &err) {
+    double elo, ehi;
+    frFromRange(num,den,mtmin,mtmax,fr,elo,ehi);
+    err = 0.5*((fr+ehi)-(fr-elo));
+    fr = 0.5*((fr-elo)+(fr+ehi));
+}
+
 void integralWithError(TH1 *hist, double mtmin, double mtmax, double &ret, double &err)  {
     int b0 = hist->GetXaxis()->FindBin(mtmin);
     int b1 = hist->GetXaxis()->FindBin(mtmax);
@@ -81,7 +101,7 @@ void integralWithError(TH1 *hist, double mtmin, double mtmax, double &ret, doubl
     err = sqrt(err);
 }
 
-bool fitFRMTCorr(TString name, TH1 *hewk_den, TH1 *hdat_num, TH1* hdat_den, double *fr) {
+bool fitFRMTCorr(TString name, TH1 *hewk_den, TH1 *hdat_num, TH1* hdat_den, double *fr, bool verbose=false) {
     // some math: 
     //   let x[i] = fraction of ewk in the MET bin [i] at denominator, 
     //              and assume the FR does not depend on MET
@@ -121,7 +141,11 @@ bool fitFRMTCorr(TString name, TH1 *hewk_den, TH1 *hdat_num, TH1* hdat_den, doub
     double x0x1 = (newk[0][0]/newk[1][0]) / (ndat[0][0]/ndat[1][0]);
     double x0x1Err = x0x1 * hypot( newk[0][1]/newk[0][0], newk[1][1]/newk[1][0] ); 
 
-    printf("Error boosting factor for %s: %4.1f  (x0/x1 = %.3f +/- %.3f) \n", name.Data(), 1/(1-x0x1), x0x1, x0x1Err);
+    if (verbose) {
+        printf("FR low: %.3f   high: %.3f    nP ratio: %5.2f  den ratio: %5.2f    x0/x1 = %.3f +/- %.3f\n",
+                frdat[0], frdat[1], newk[0][0]/newk[1][0], ndat[0][0]/ndat[1][0], x0x1, x0x1Err);
+        //printf("Error boosting factor for %s: %4.1f  (x0/x1 = %.3f +/- %.3f) \n", name.Data(), 1/(1-x0x1), x0x1, x0x1Err);
+    }
 
     fr[0] = (frdat[0] - x0x1*frdat[1])/(1-x0x1);
     fr[1] = hypot( frdatErr[0] / (1-x0x1), frdatErr[1] * x0x1 / (1-x0x1) );
@@ -141,54 +165,54 @@ void fitFRMT(TString name, TH1 *hqcd_num, TH1* hqcd_den, TH1 *hewk_den, TH1 *hda
     const int ranges_qcd = 3, ranges_dat = 7;
     double mtmax_qcd[ranges_qcd] = { 60, 30., 15. };
     double mtmax_dat[ranges_dat] = { 60, 45., 30., 20., 15., 10., 5. };
-    TGraphErrors gqcd(ranges_qcd), gqcdA(1), gdat(ranges_dat), gdatA(1), gdatC(1), gdatCS(1);
+    TGraphAsymmErrors gqcd(ranges_qcd), gqcdA(1), gdat(ranges_dat), gdatA(1), gdatC(1), gdatCS(1);
     double ymax = 0;
-    double frqcd, frqcdErr; 
+    double frqcd, frqcdErrL, frqcdErrH; 
     for (int i = 0; i < ranges_qcd; ++i) {
         double mtmax =  mtmax_qcd[i], mtmin =  i < ranges_qcd-1 ? mtmax_qcd[i+1] : 0;
         if (inclusive) {
-            frFromRange(hqcd_num, hqcd_den, mtmax, frqcd, frqcdErr);
+            frFromRange(hqcd_num, hqcd_den, 0, mtmax, frqcd, frqcdErrL, frqcdErrH);
             gqcd.SetPoint(i, mtmax, frqcd); 
-            gqcd.SetPointError(i, 0, frqcdErr);
+            gqcd.SetPointError(i, 0, 0, frqcdErrL, frqcdErrH);
         } else {
-            frFromRange(hqcd_num, hqcd_den, mtmin, mtmax, frqcd, frqcdErr);
+            frFromRange(hqcd_num, hqcd_den, mtmin, mtmax, frqcd, frqcdErrL, frqcdErrH);
             gqcd.SetPoint(i, 0.5*(mtmin+mtmax), frqcd); 
-            gqcd.SetPointError(i, 0.5*(mtmax-mtmin), frqcdErr);
+            gqcd.SetPointError(i, 0.5*(mtmax-mtmin), 0.5*(mtmax-mtmin), frqcdErrL, frqcdErrH);
         }
-        ymax = max(ymax, frqcd+1.5*frqcdErr);
+        ymax = max(ymax, frqcd+1.5*frqcdErrH);
     }
-    frFromRange(hqcd_num, hqcd_den, 0, mtmax_qcd[0], frqcd, frqcdErr);
+    frFromRange(hqcd_num, hqcd_den, 0, mtmax_qcd[0], frqcd, frqcdErrL, frqcdErrH);
     gqcdA.SetPoint(0, 0.5*mtmax_qcd[0], frqcd); 
-    gqcdA.SetPointError(0, 0.5*mtmax_qcd[0], frqcdErr);
-    double frdat, frdatErr, frdatSyst; 
+    gqcdA.SetPointError(0, 0.5*mtmax_qcd[0], 0.5*mtmax_qcd[0], frqcdErrL, frqcdErrH);
+    double frdat, frdatErrL, frdatErrH, frdatSyst; 
     for (int i = 0; i < ranges_dat; ++i) {
         double mtmax =  mtmax_dat[i], mtmin =  i < ranges_dat-1 ? mtmax_dat[i+1] : 0;
         if (inclusive) {
-            frFromRange(hdat_num, hdat_den, mtmax, frdat, frdatErr);
+            frFromRange(hdat_num, hdat_den, mtmax, frdat, frdatErrL, frdatErrH);
             gdat.SetPoint(i, mtmax, frdat); 
-            gdat.SetPointError(i, 0, frdatErr);
+            gdat.SetPointError(i, 0, 0, frdatErrL, frdatErrH);
         } else {
-            frFromRange(hdat_num, hdat_den, mtmin, mtmax, frdat, frdatErr);
+            frFromRange(hdat_num, hdat_den, mtmin, mtmax, frdat, frdatErrL, frdatErrH);
             gdat.SetPoint(i, 0.5*(mtmin+mtmax), frdat); 
-            gdat.SetPointError(i, 0.5*(mtmax-mtmin), frdatErr);
+            gdat.SetPointError(i, 0.5*(mtmax-mtmin), 0.5*(mtmax-mtmin), frdatErrL, frdatErrH);
         }
-        ymax = max(ymax, frdat+1.5*frdatErr);
+        ymax = max(ymax, frdat+1.5*frdatErrH);
     }
     int avgbins = 3, systbins = 5;
-    if (gPostfix.Contains("TagMu")) { avgbins = 4; systbins = 0; }
-    frFromRange(hdat_num, hdat_den, 0, mtmax_dat[ranges_dat-avgbins], frdat, frdatErr);
+    if (gPostfix.Contains("TagMu")) { avgbins = 5; systbins = 0; }
+    frFromRange(hdat_num, hdat_den, 0, mtmax_dat[ranges_dat-avgbins], frdat, frdatErrL, frdatErrH);
     frdatSyst = 0;
     for (int i = 1; i <= systbins; ++i) {
         frdatSyst = max(frdatSyst, fabs(frdat - gdat.GetY()[ranges_dat-i])); 
     }
     gdatA.SetPoint(0, 0.5*mtmax_dat[ranges_dat-avgbins], frdat); 
-    gdatA.SetPointError(0, 0.5*mtmax_dat[ranges_dat-avgbins], hypot(frdatErr,frdatSyst));
+    gdatA.SetPointError(0, 0.5*mtmax_dat[ranges_dat-avgbins], 0.5*mtmax_dat[ranges_dat-avgbins], hypot(frdatErrL,frdatSyst), hypot(frdatErrH,frdatSyst));
 
     bool hascorr = ( hewk_den ? fitFRMTCorr(name, hewk_den, hdat_num, hdat_den, fr) : false );
     gdatC.SetPoint( 0, 0.5*mtmax_dat[0], fr[0]); 
     gdatCS.SetPoint(0, 0.5*mtmax_dat[0], fr[0]); 
-    gdatC.SetPointError( 0, 0.5*mtmax_dat[0], fr[2]);
-    gdatCS.SetPointError(0, 0.5*mtmax_dat[0], hypot(fr[2],fr[3]));
+    gdatC.SetPointError( 0, 0.5*mtmax_dat[0], 0.5*mtmax_dat[0], fr[1], fr[2]);
+    gdatCS.SetPointError(0, 0.5*mtmax_dat[0], 0.5*mtmax_dat[0], hypot(fr[1],fr[3]), hypot(fr[2],fr[3]));
 
     TH1F frame("frame", "frame;E_{T}^{miss} [GeV];Fake rate", 1, 0, mtmax_dat[0]);
     frame.SetMaximum(1.3*ymax); frame.Draw(); gStyle->SetOptStat(0);
@@ -211,7 +235,7 @@ void fitFRMT(TString name, TH1 *hqcd_num, TH1* hqcd_den, TH1 *hewk_den, TH1 *hda
     c1->Print("ttH_plots/270413/FR_QCD_Simple/fits/"+gPrefix+gPostfix+"/"+name+".pdf");
 
     fr[0] = frdat;
-    fr[1] = fr[2] = frdatErr;
+    fr[1] = frdatErrL; fr[2] = frdatErrH;
     fr[3] = frdatSyst;
 }
 void processOneBin(TString name, double *frLoose, double *frTight, bool doCorr) {
@@ -232,6 +256,7 @@ void processOneBin(TString name, double *frLoose, double *frTight, bool doCorr) 
     fitFRMT(name+"_fitL", hqcd_numL, hqcd_den,  doCorr ? hprompt_den  : 0, hdata_numL, hdata_den,  frLoose);
     fitFRMT(name+"_fitT", hqcd_numT, hqcd_denT, doCorr ? hprompt_denT : 0, hdata_numT, hdata_denT, frTight);
 
+    printf("\nFitting %s%s/%s\n",gPrefix.Data(),gPostfix.Data(),name.Data());
     FILE *log = fopen(Form("ttH_plots/270413/FR_QCD_Simple/fits/%s%s/%s.txt",gPrefix.Data(),gPostfix.Data(),name.Data()), "w");
     printf("BEFORE corrections: \n"); fprintf(log, "BEFORE corrections: \n"); 
     printf(      "FR for loose cut: %.3f +%.3f/-%.3f (stat) +/- %.3f (syst)\t FR in MC = %.3f +/- %.3f\n", frLoose[0], frLoose[2], frLoose[1], frLoose[3], mcLoose, mcLooseErr);
@@ -240,8 +265,8 @@ void processOneBin(TString name, double *frLoose, double *frTight, bool doCorr) 
     fprintf(log, "FR for tight cut: %.3f +%.3f/-%.3f (stat) +/- %.3f (syst)\t FR in MC = %.3f +/- %.3f\n", frTight[0], frTight[2], frTight[1], frTight[3], mcTight, mcTightErr);
 
     if (doCorr) {
-        bool hasL = fitFRMTCorr(name+"_fitL", hprompt_den, hdata_numL, hdata_den,  frLoose);
-        bool hasT = fitFRMTCorr(name+"_fitT", hprompt_den, hdata_numT, hdata_denT, frTight);
+        bool hasL = fitFRMTCorr(name+"_fitL", hprompt_den, hdata_numL, hdata_den,  frLoose, true);
+        bool hasT = fitFRMTCorr(name+"_fitT", hprompt_den, hdata_numT, hdata_denT, frTight, true);
         if (hasL || hasT) {  printf("AFTER corrections: \n"); fprintf(log, "AFTER corrections: \n");  }
         if (hasL) {    
         printf(      "FR for loose cut: %.3f +%.3f/-%.3f (stat) +/- %.3f (syst)\t FR in MC = %.3f +/- %.3f\n", frLoose[0], frLoose[2], frLoose[1], frLoose[3], mcLoose, mcLooseErr);
@@ -262,7 +287,7 @@ void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0) {
     TString dPostfix = "", mPostfix = "";
     if (iwhichsel == 2) {
         gPrefix = "";
-        gPostfix = "_TagMu";
+        gPostfix = "_TagMuL";
         dPostfix = gPostfix;
         mPostfix = "_SingleMu";
     }
@@ -273,16 +298,26 @@ void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0) {
 
     TFile *fOut = TFile::Open("frFitsSimple"+gPrefix+gPostfix+".root", "RECREATE");
  
-    const int neta = 2, npt_mu = 8, npt_el = 6;
-    double etaBins_mu[neta+1] = {0, 1.5, 2.5 };
-    double etaBins_el[neta+1] = {0, 1.5, 2.5 };
-    double ptBins_mu[npt_mu+1] = { 5.0, 7.0, 8.5, 10, 15, 20, 25, 35, 80 };
-    double ptBins_el[npt_el+1] = {       7,       10, 15, 20, 25, 35, 80 };
+#if TRIGGERING
+    const int npt_mu = 8, npt_el = 6, neta = 2;
+    double ptbins_mu[npt_mu+1] = { 5.0, 7.0, 8.5, 10, 15, 20, 25, 35, 80 };
+    double ptbins_el[npt_el+1] = {        7,      10, 15, 20, 25, 35, 80 };
+    double etabins_mu[neta+1] = { 0.0, 1.5,   2.5 };
+    double etabins_el[neta+1] = { 0.0, 1.479, 2.5 };
+#else
+    const int npt_mu = 3, npt_el = 2, neta = 2;
+    double ptbins_mu[npt_mu+1] = { 5.0, 7.0, 10, 15 };
+    double ptbins_el[npt_el+1] = {      7.0, 10, 15 };
+    double etabins_mu[neta+1] = { 0.0, 1.5,   2.5 };
+    double etabins_el[neta+1] = { 0.0, 1.479, 2.5 };
+#endif
 
-    TH2F *FR_mu = new TH2F("FR_mu", "", npt_mu, ptBins_mu, neta, etaBins_mu);
-    TH2F *FT_mu = new TH2F("FR_tight_mu", "", npt_mu, ptBins_mu, neta, etaBins_mu);
-    TH2F *FR_el = new TH2F("FR_el", "", npt_el, ptBins_el, neta, etaBins_el);
-    TH2F *FT_el = new TH2F("FR_tight_el", "", npt_el, ptBins_el, neta, etaBins_el);
+
+
+    TH2F *FR_mu = new TH2F("FR_mu", "", npt_mu, ptbins_mu, neta, etabins_mu);
+    TH2F *FT_mu = new TH2F("FR_tight_mu", "", npt_mu, ptbins_mu, neta, etabins_mu);
+    TH2F *FR_el = new TH2F("FR_el", "", npt_el, ptbins_el, neta, etabins_el);
+    TH2F *FT_el = new TH2F("FR_tight_el", "", npt_el, ptbins_el, neta, etabins_el);
 
     gROOT->ProcessLine(".x /afs/cern.ch/user/g/gpetrucc/cpp/tdrstyle.cc");
     c1 = new TCanvas("c1","c1");
@@ -301,7 +336,11 @@ void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0) {
                 if (fdata[i]) fdata[i]->Close(); 
                 fdata[i] = NULL; 
             }
-            if (gPostfix.Contains("TagMu")) {
+            if (gPostfix.Contains("TagMu40")) {
+                    fdata[0] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuAB"+gPostfix+".root");
+                    fdata[1] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuC"+gPostfix+".root");
+                    fdata[2] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuD"+gPostfix+".root");
+            } else if (gPostfix.Contains("TagMu")) {
                     fdata[0] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuAB"+gPostfix+".root");
                     fdata[1] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuC"+gPostfix+".root");
                     fdata[2] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuD"+gPostfix+".root");
@@ -328,22 +367,26 @@ void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0) {
             fOut->cd();
             TString name1 = name0 + (ipdg == 13 ? "mu_" : "el_");
             for (int ieta = 0; ieta < neta; ++ieta) {
-                double *etaBins = (ipdg == 11 ? etaBins_el : etaBins_mu);
-                TString name2 = name1 + Form("eta_%.1f-%.1f_",etaBins[ieta],etaBins[ieta+1]);
-                double *ptBins = (ipdg == 11 ? ptBins_el : ptBins_mu);
+                double *etabins = (ipdg == 11 ? etabins_el : etabins_mu);
+                TString name2 = name1 + Form("eta_%.1f-%.1f_",etabins[ieta],etabins[ieta+1]);
+                double *ptbins = (ipdg == 11 ? ptbins_el : ptbins_mu);
                 int     npt    = (ipdg == 11 ?    npt_el :    npt_mu);
                 for (int ipt = 0; ipt < npt; ++ipt) {
-                    TString name = name2 + Form("pt_%.0f-%.0f",ptBins[ipt],ptBins[ipt+1]);
-                    if (gPostfix.Contains("TagMu") && ptBins[ipt] >= 30) continue;
+                    TString name = name2 + Form("pt_%.0f-%.0f",ptbins[ipt],ptbins[ipt+1]);
+                    if (gPostfix.Contains("TagMu") && ptbins[ipt] >= 30) continue;
                     if (fdata[0]->Get(name+"_den") == 0) continue;
-                    processOneBin(name, frLoose, frTight, ptBins[ipt]>=10);
+                    processOneBin(name, frLoose, frTight, ptbins[ipt]>=10);
                     TH2 *hFR = (ipdg == 11 ? FR_el : FR_mu);
                     TH2 *hFT = (ipdg == 11 ? FT_el : FT_mu);
-                    hFR->SetBinContent(ipt+1, ieta+1, frLoose[0]);
-                    hFR->SetBinError(ipt+1, ieta+1, (max(frLoose[1],frLoose[2]),frLoose[3]));
-                    if (ptBins[ipt] >= 0) {
-                        hFT->SetBinContent(ipt+1, ieta+1, frTight[0]);
-                        hFT->SetBinError(ipt+1, ieta+1, (max(frTight[1],frTight[2]),frTight[3]));
+                    double fcen = 0.5*((frLoose[0]+frLoose[2])+(frLoose[0]-frLoose[1]));
+                    double fsym = 0.5*((frLoose[0]+frLoose[2])-(frLoose[0]-frLoose[1]));
+                    hFR->SetBinContent(ipt+1, ieta+1, fcen);
+                    hFR->SetBinError(ipt+1, ieta+1, hypot(fsym,frLoose[3]));
+                    if (ptbins[ipt] >= 0) {
+                        fcen = 0.5*((frTight[0]+frTight[2])+(frTight[0]-frTight[1]));
+                        fsym = 0.5*((frTight[0]+frTight[2])-(frTight[0]-frTight[1]));
+                        hFT->SetBinContent(ipt+1, ieta+1, fcen);
+                        hFT->SetBinError(ipt+1, ieta+1, hypot(fsym,frTight[3]));
                     }
                 }
             }
