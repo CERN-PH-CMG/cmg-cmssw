@@ -62,7 +62,7 @@ private:
 
   //monitoring
   DataEventSummaryHandler summary_;
-  TH1D *obsPU_h, *truePU_h, *cutflow_h, *trigger_h;
+  TH1D *obsPU_h, *truePU_h, *cutflow_h, *trigger_h,*filter_h;
   
   //selection configuration
   edm::ParameterSet analysisCfg_;
@@ -86,6 +86,7 @@ DataAnalyzer::DataAnalyzer(const edm::ParameterSet &iConfig) : obsPU_h(0), trueP
   //configure selection
   analysisCfg_ = iConfig.getParameter<edm::ParameterSet>("cfg");
   std::vector<string> trigs=analysisCfg_.getParameter<std::vector<string> >("triggerPaths");
+  std::vector<string> filts=analysisCfg_.getParameter<std::vector<string> >("metFilters");
 
   //init monitoring tools
   edm::Service<TFileService> fs;
@@ -97,6 +98,8 @@ DataAnalyzer::DataAnalyzer(const edm::ParameterSet &iConfig) : obsPU_h(0), trueP
   for(size_t istep=0; istep<sizeof(selSteps)/sizeof(string); istep++)  cutflow_h->GetXaxis()->SetBinLabel(istep+1,selSteps[istep].c_str());
   trigger_h = fs->make<TH1D>( "trigger",    ";Trigger path;",       trigs.size(),0,trigs.size());
   for(size_t itrig=0; itrig<trigs.size(); itrig++) trigger_h->GetXaxis()->SetBinLabel(itrig+1,trigs[itrig].c_str());
+  filter_h = fs->make<TH1D>( "filter",    ";Filter bits;",       filts.size(),0,filts.size());
+  for(size_t ifilt=0; ifilt<filts.size(); ifilt++) filter_h->GetXaxis()->SetBinLabel(ifilt+1,filts[ifilt].c_str());
 
   //init e/g PF isolation tools
   eIsolator03_.initializeElectronIsolation(true); eIsolator03_.setConeSize(0.3);
@@ -152,6 +155,17 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
   ev.run    = event.id().run();
   ev.lumi   = event.luminosityBlock();
   ev.event  = event.id().event();
+
+  //filter bits
+  ev.f_bits=0;
+  std::vector<string> filts=analysisCfg_.getParameter<std::vector<string> >("metFilters");
+  for(size_t ifilt=0; ifilt<filts.size(); ifilt++)
+    {
+      edm::Handle<bool> tagResultH;
+      event.getByLabel(filts[ifilt],tagResultH);
+      ev.f_bits |= tagResultH.isValid() ? ((*tagResultH) << ifilt) : 0;
+    }
+
 
   //
   // GENERATOR LEVEL
@@ -239,37 +253,48 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
     for (size_t i=0; i<genParticlesH->size(); i++)
       {
 	const reco::GenParticle & p = dynamic_cast<const reco::GenParticle &>( (*genParticlesH)[i] );
-	int absid=abs(p.pdgId());
-	bool isBhadron( p.status()==2 && ( (absid>= 5122 && absid<= 5554) || 
-					   (absid>=20513 && absid<=20543) ||
-					   (absid>=10511 && absid<=10543) || 
-					   (absid>=  511 && absid<=  545) ) );
-	if(!isBhadron) continue;
-	ev.mc_id[ev.mcn]     = p.pdgId();
-	ev.mc_status[ev.mcn] = p.status();
-	ev.mc_px[ev.mcn]     = p.px();  
-	ev.mc_py[ev.mcn]     = p.py();  
-	ev.mc_pz[ev.mcn]     = p.pz(); 
-	ev.mc_en[ev.mcn]     = p.energy();  
-	float vxMother(p.vx());
-	float vyMother(p.vy());
-	float vxDaughter(vxMother),  vyDaughter(vyMother);
-	float vxGdaughter(vxMother), vyGdaughter(vyMother);
-	const reco::Candidate *fsPart = utils::cmssw::getGeneratorFinalStateFor(&p);
-	if(fsPart && fsPart->numberOfDaughters()>0)
+	if(p.status()!=3 || abs(p.pdgId())!=5) continue;
+
+	const reco::Candidate *fs = utils::cmssw::getGeneratorFinalStateFor(&p);
+	if(fs->numberOfDaughters()==0) continue;
+	fs = utils::cmssw::getGeneratorFinalStateFor( fs->daughter(0) );
+	for(size_t j=0; j<fs->numberOfDaughters(); j++)
 	  {
-	    vxDaughter = fsPart->daughter(0)->vx();
-	    vyDaughter = fsPart->daughter(0)->vy();
+	    const reco::Candidate *d=fs->daughter(j);
+	    if(d==0) continue;
+	    int absid=abs(d->pdgId());
+	    if(!utils::cmssw::isBhadron(absid)) continue;
 	    
-	    const reco::Candidate *fsDauPart = utils::cmssw::getGeneratorFinalStateFor(fsPart);
-	    if(fsDauPart && fsDauPart->numberOfDaughters()>1)
+	    //find first stable particle to trace decay length
+	    const reco::Candidate *gd=d;
+	    while(1)
 	      {
-		vxGdaughter = fsDauPart->daughter(1)->vx();
-		vyGdaughter = fsDauPart->daughter(1)->vy();
+		if(gd->status()==1) break;
+		if(gd==0 || gd->numberOfDaughters()==0) break;
+		const reco::Candidate *newGd=gd; 
+		for(size_t k=0; k<gd->numberOfDaughters(); k++)
+		  {
+		    if(gd->daughter(k)->pdgId()==22) continue;
+		    if(gd->daughter(k)==gd) continue;
+		    newGd=gd->daughter(k);
+		  }
+		if(gd==newGd) break;
+		gd=newGd;
 	      }
+
+	    float vxMother(p.vx()),     vyMother(p.vy());
+	    float vxDaughter(gd->vx()), vyDaughter(gd->vy());
+
+	    //save B-hadron information
+	    ev.mc_id[ev.mcn]     = d->pdgId();
+	    ev.mc_status[ev.mcn] = d->status();
+	    ev.mc_px[ev.mcn]     = d->px();  
+	    ev.mc_py[ev.mcn]     = d->py();  
+	    ev.mc_pz[ev.mcn]     = d->pz(); 
+	    ev.mc_en[ev.mcn]     = d->energy();  
+	    ev.mc_lxy[ev.mcn]    = sqrt(pow(vxMother-vxDaughter,2)+pow(vyMother-vyDaughter,2));
+	    ev.mcn++; 
 	  }
-	ev.mc_lxy[ev.mcn] = max(sqrt(pow(vxMother-vxDaughter,2)+pow(vyMother-vyDaughter,2)),sqrt(pow(vxMother-vxGdaughter,2)+pow(vyMother-vyGdaughter,2))); 
-	ev.mcn++;
       }
   }
   
@@ -625,7 +650,7 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
 	ev.gn_idbits[ev.gn]    = (isLoose << 0) || (isMedium << 1 ) || (isTight << 2);
 	ev.gn++;
 	ev.egn++;
-	if(isTight && pho->isEB() && ev.egn_r9[ev.egn]>0.9) nPhotons++;
+	if(isTight && pho->isEB() && ev.egn_r9[ev.egn]>0.9 && pho->pt()>36) nPhotons++;
       }
 
 
@@ -702,7 +727,7 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
       ev.jn_py[ev.jn]          = jet->py();
       ev.jn_pz[ev.jn]          = jet->pz();
       ev.jn_en[ev.jn]          = jet->energy();
-      ev.jn_torawsf[ev.jn]     = jet->correctedJet("Uncorrected").energy()/jet->energy();
+      ev.jn_torawsf[ev.jn]     = jet->correctedJet("Uncorrected").pt()/jet->pt();
       ev.jn_genflav[ev.jn]     = jet->partonFlavour();
       ev.jn_genid[ev.jn]       = genParton ? genParton->pdgId() : 0;
       ev.jn_genpx[ev.jn]       = genParton ? genParton->px()    : 0;
@@ -716,6 +741,7 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
       ev.jn_neutHadFrac[ev.jn] = jet->neutralHadronEnergyFraction();
       ev.jn_neutEmFrac[ev.jn]  = jet->neutralEmEnergyFraction();
       ev.jn_chHadFrac[ev.jn]   = jet->chargedHadronEnergyFraction();;
+      ev.jn_area[ev.jn]        = jet->jetArea();
 
       ev.jn_tchp[ev.jn]        = (*tchpTags)[ijet].second;
       ev.jn_jp[ev.jn]          = (*jpTags)[ijet].second;
@@ -798,10 +824,9 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
 	      ev.pf_py[ev.pfn]     = pfConst[ipf]->py();
 	      ev.pf_pz[ev.pfn]     = pfConst[ipf]->pz();
 	      ev.pf_en[ev.pfn]     = pfConst[ipf]->energy();
-	      ev.pf_vtx[ev.pfn]    = 0;
 	      ev.pfn++;
 	    }
-	  ev.jn_pfend[ev.jn]=ev.pfn;
+	  ev.jn_pfend[ev.jn]=ev.pfn-1;
 	}
 
       //a summary of the id bits
@@ -818,14 +843,20 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
   // missing transverse energy
   //
   std::vector<edm::InputTag> metSources=analysisCfg_.getParameter<std::vector<edm::InputTag> >("metSource");
-  ev.mn=metSources.size();
+  ev.metn=0;
   for(size_t imet=0; imet<metSources.size(); imet++)
     {
-      Handle<View<Candidate> > metH;
+      Handle<View<reco::PFMET> > metH;
       event.getByLabel(metSources[imet], metH);
-      ev.met_pt[ev.mn]  = metH.isValid() ? metH->ptrAt(0)->pt() : 0; 
-      ev.met_phi[ev.mn] = metH.isValid() ? metH->ptrAt(0)->phi() : 0; 
-      ev.mn++;
+      ev.met_pt[ev.metn]    = metH.isValid() ? metH->ptrAt(0)->pt() : 0; 
+      ev.met_phi[ev.metn]   = metH.isValid() ? metH->ptrAt(0)->phi() : 0; 
+      ev.met_sigx2[ev.metn] = metH.isValid() ? metH->ptrAt(0)->getSignificanceMatrix()(0,0) : 0;
+      ev.met_sigxy[ev.metn] = metH.isValid() ? metH->ptrAt(0)->getSignificanceMatrix()(0,1) : 0;
+      ev.met_sigy2[ev.metn] = metH.isValid() ? metH->ptrAt(0)->getSignificanceMatrix()(1,1) : 0;
+      Float_t significance(0.);
+      if(metH.isValid() && ev.met_sigx2[ev.metn]<1.e10 && ev.met_sigy2[ev.metn]<1.e10) significance = metH->ptrAt(0)->significance();
+      ev.met_sig[ev.metn] = significance;
+      ev.metn++;
     }    
 
 
@@ -842,7 +873,7 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
       if(trackBaseRef.isNull()) continue;
 
       //minimum pT of 500 GeV
-      if(cand.pt()<0.5) continue;
+      if(cand.pt()<0.3) continue;
       
       //check for overlaps
       bool matches(false);
@@ -855,8 +886,8 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
 	}
       if(matches) continue;
       
-      
-      ev.pf_vtx[ev.pfn]=-1;
+      //require it to be associated to the primary vertex
+      int bestVtx(-1);
       if(trackBaseRef.isAvailable())
 	{
 	  float bestDz(9999.);
@@ -864,14 +895,13 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
 	    {
 	      const reco::VertexRef vtxref(vtxH,jVtx);
 	      float vtxDz( fabs( trackBaseRef->dz( vtxref->position()) ) );
-	      if(vtxDz < bestDz)
-		{
-		  bestDz=vtxDz;
-		  ev.pf_vtx[ev.pfn]=jVtx;
-		}
+	      if(vtxDz > bestDz) continue;
+	      bestDz=vtxDz;
+	      bestVtx=jVtx;
 	    }
-	}
-      
+	} 
+      if(bestVtx!=0) continue;
+
       ev.pf_id[ev.pfn]     = cand.pdgId();
       ev.pf_charge[ev.pfn] = cand.charge();
       ev.pf_px[ev.pfn]     = cand.px();

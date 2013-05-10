@@ -519,7 +519,16 @@ def btvDefaultSequence(process, isMC=True, jetCollection="selectedPatJetsPFlow",
                      tag = cms.string("TrackProbabilityCalibration_3D_MC53X_v2"),
                      connect = cms.untracked.string("frontier://FrontierPrep/CMS_COND_BTAU"))
             )
-
+#    else:
+#        process.GlobalTag.toGet = cms.VPSet(
+#            cms.PSet(record = cms.string("BTagTrackProbability2DRcd"),
+#                     tag = cms.string("TrackProbabilityCalibration_2D_Data53X_v2"),
+#                     connect = cms.untracked.string("frontier://FrontierPrep/CMS_COND_BTAU")),
+#            cms.PSet(record = cms.string("BTagTrackProbability3DRcd"),
+#                     tag = cms.string("TrackProbabilityCalibration_3D_Data53X_v2"),
+#                     connect = cms.untracked.string("frontier://FrontierPrep/CMS_COND_BTAU"))
+#            )
+        
     #user specific configurations
     process.AK5byRef.jets                       = jetCollection
     process.ak5JetTracksAssociatorAtVertex.jets = jetCollection
@@ -533,8 +542,7 @@ def btvDefaultSequence(process, isMC=True, jetCollection="selectedPatJetsPFlow",
 
 
     #the sequence
-    process.btvSequence=cms.Sequence(process.inclusiveVertexing*process.inclusiveMergedVerticesFiltered*process.bToCharmDecayVertexMerged
-                                     *process.myPartons*process.AK5Flavour
+    process.mainBtvSequence=cms.Sequence(process.inclusiveVertexing*process.inclusiveMergedVerticesFiltered*process.bToCharmDecayVertexMerged
                                      *process.ak5JetTracksAssociatorAtVertex
                                      *process.btagging
                                      *process.positiveOnlyJetProbabilityJetTags*process.negativeOnlyJetProbabilityJetTags
@@ -557,4 +565,5 @@ def btvDefaultSequence(process, isMC=True, jetCollection="selectedPatJetsPFlow",
                                      *process.inclusiveSecondaryVertexFinderTagInfosFiltered*process.simpleInclusiveSecondaryVertexHighEffBJetTags*process.simpleInclusiveSecondaryVertexHighPurBJetTags
                                      *process.doubleSecondaryVertexHighEffBJetTags
                                      *process.inclusiveSecondaryVertexFinderTagInfos*process.combinedInclusiveSecondaryVertexBJetTags*process.combinedInclusiveSecondaryVertexPositiveBJetTags)
-    
+    if(isMC) : process.btvSequence=cms.Sequence(process.myPartons*process.AK5Flavour*process.mainBtvSequence)
+    else     : process.btvSequence=cms.Sequence(process.mainBtvSequence)

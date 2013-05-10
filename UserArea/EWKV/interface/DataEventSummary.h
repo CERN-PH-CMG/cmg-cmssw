@@ -3,18 +3,22 @@
 
 #include "TMath.h"
 #include "Math/LorentzVector.h"
+#include "DataFormats/Math/interface/deltaR.h"
+
 //#include "TObject.h"
 
 #define MAXDATAOBJECTS 1000
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVector;
-typedef std::vector<LorentzVector> LorentzVectorCollection;
 
 class DataEventSummary //: public TObject 
 {
  public:
 
-  Int_t run, lumi, event, cat, mcCat;
+  Int_t run, lumi, event, cat;
+  
+  //filter information
+  Bool_t f_bits;
 
   //trigger information
   Int_t tn;
@@ -23,19 +27,19 @@ class DataEventSummary //: public TObject
 
   //pileup information
   Int_t nvtx;
-  Float_t instLumi, rho,rho25,rho25Neut;
+  Float_t instLumi, rho,rho25;
 
   //PF candidates
-  Int_t   pfn, pf_id[MAXDATAOBJECTS], pf_charge[MAXDATAOBJECTS], pf_vtx[MAXDATAOBJECTS];
+  Int_t   pfn, pf_id[MAXDATAOBJECTS], pf_charge[MAXDATAOBJECTS];
   Float_t pf_px[MAXDATAOBJECTS], pf_py[MAXDATAOBJECTS], pf_pz[MAXDATAOBJECTS],pf_en[MAXDATAOBJECTS];
 
   //gen information
   Int_t ngenITpu, ngenOOTpu, ngenOOTpum1, ngenTruepu;
-  Float_t pthat,genWeight, qscale, x1,x2;
-  Int_t id1,id2,nup;
+  Float_t pthat, genWeight, qscale, x1,x2;
+  Int_t id1, id2, nup;
 
   //gen level event
-  Int_t mcn, mccat, mc_id[MAXDATAOBJECTS], mc_status[MAXDATAOBJECTS];
+  Int_t mcn, mc_id[MAXDATAOBJECTS], mc_status[MAXDATAOBJECTS];
   Float_t mc_px[MAXDATAOBJECTS],mc_py[MAXDATAOBJECTS],mc_pz[MAXDATAOBJECTS],mc_en[MAXDATAOBJECTS], mc_lxy[MAXDATAOBJECTS]; 
 
   //leptons
@@ -72,7 +76,7 @@ class DataEventSummary //: public TObject
   //jets
   Int_t jn, jn_idbits[MAXDATAOBJECTS], jn_pfstart[MAXDATAOBJECTS], jn_pfend[MAXDATAOBJECTS];
   Float_t jn_px[MAXDATAOBJECTS],    jn_py[MAXDATAOBJECTS],      jn_pz[MAXDATAOBJECTS],          jn_en[MAXDATAOBJECTS], jn_torawsf[MAXDATAOBJECTS];
-  Float_t jn_neutHadFrac[MAXDATAOBJECTS], jn_neutEmFrac[MAXDATAOBJECTS], jn_chHadFrac[MAXDATAOBJECTS];
+  Float_t jn_neutHadFrac[MAXDATAOBJECTS], jn_neutEmFrac[MAXDATAOBJECTS], jn_chHadFrac[MAXDATAOBJECTS], jn_area[MAXDATAOBJECTS];
   Float_t jn_tchp[MAXDATAOBJECTS], jn_jp[MAXDATAOBJECTS], jn_origcsv[MAXDATAOBJECTS], jn_csv[MAXDATAOBJECTS], jn_jpcsv[MAXDATAOBJECTS], jn_slcsv[MAXDATAOBJECTS], jn_supercsv[MAXDATAOBJECTS], jn_ssvhe[MAXDATAOBJECTS], jn_ivf[MAXDATAOBJECTS];
   Float_t jn_svxPx[MAXDATAOBJECTS], jn_svxPy[MAXDATAOBJECTS], jn_svxPz[MAXDATAOBJECTS], jn_svxM[MAXDATAOBJECTS], jn_svxNtrk[MAXDATAOBJECTS], jn_svxLxy[MAXDATAOBJECTS], jn_svxLxyErr[MAXDATAOBJECTS];
   Float_t jn_ivfPx[MAXDATAOBJECTS], jn_ivfPy[MAXDATAOBJECTS], jn_ivfPz[MAXDATAOBJECTS], jn_ivfM[MAXDATAOBJECTS], jn_ivfNtrk[MAXDATAOBJECTS], jn_ivfLxy[MAXDATAOBJECTS], jn_ivfLxyErr[MAXDATAOBJECTS];
@@ -84,7 +88,7 @@ class DataEventSummary //: public TObject
   
   //met 
   Int_t metn;
-  Float_t met_pt[MAXDATAOBJECTS], met_phi[MAXDATAOBJECTS];
+  Float_t met_pt[MAXDATAOBJECTS], met_phi[MAXDATAOBJECTS],met_sig[MAXDATAOBJECTS],met_sigx2[MAXDATAOBJECTS],met_sigxy[MAXDATAOBJECTS],met_sigy2[MAXDATAOBJECTS];
 
   DataEventSummary() { } 
   ~DataEventSummary() { }

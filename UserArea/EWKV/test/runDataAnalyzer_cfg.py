@@ -18,11 +18,9 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True)) 
 
 #the source and output
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring('/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/AODSIM/Events_1194.root',
-                                                              '/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/AODSIM/Events_1195.root',
-                                                              '/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/AODSIM/Events_1196.root',
-                                                              '/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/AODSIM/Events_1197.root'
-                                                              )
+                            fileNames = cms.untracked.vstring('/store/relval/CMSSW_5_3_6-START53_V14/RelValTTbar/GEN-SIM-RECO/v2/00000/16D5D599-F129-E211-AB60-00261894390B.root',
+                                                              '/store/relval/CMSSW_5_3_6-START53_V14/RelValTTbar/GEN-SIM-RECO/v2/00000/62B0DFF3-F729-E211-9754-001A92811744.root',
+                                                              '/store/relval/CMSSW_5_3_6-START53_V14/RelValTTbar/GEN-SIM-RECO/v2/00000/DECDBB8B-302A-E211-890F-003048679168.root')
                             )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.out = cms.OutputModule("PoolOutputModule",
@@ -68,13 +66,41 @@ process.noscraping = cms.EDFilter("FilterOutScraping",
                                   thresh = cms.untracked.double(0.25)
                                )
 
+# optional MET filters
+# cf.https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFilters
+process.load('RecoMET.METFilters.metFilters_cff')
+process.hcalLaserEventFilter.taggingMode   = cms.bool(True)
+process.EcalDeadCellTriggerPrimitiveFilter.taggingMode=cms.bool(True)
+process.eeBadScFilter.taggingMode           = cms.bool(True)
+process.ecalLaserCorrFilter.taggingMode     = cms.bool(True)
+process.trackingFailureFilter.VertexSource  = cms.InputTag('goodOfflinePrimaryVertices')
+process.trackingFailureFilter.taggingMode   = cms.bool(True)
+process.manystripclus53X.taggedMode         = cms.untracked.bool(True)
+process.manystripclus53X.forcedValue        = cms.untracked.bool(False)
+process.toomanystripclus53X.taggedMode      = cms.untracked.bool(True)
+process.toomanystripclus53X.forcedValue     = cms.untracked.bool(False)
+process.logErrorTooManyClusters.taggedMode  = cms.untracked.bool(True)
+process.logErrorTooManyClusters.forcedValue = cms.untracked.bool(False)  
+
+process.metFilteringTaggers = cms.Sequence(process.HBHENoiseFilter*
+                                           process.hcalLaserEventFilter *
+                                           process.EcalDeadCellTriggerPrimitiveFilter *
+                                           process.eeBadScFilter *
+                                           process.ecalLaserCorrFilter *
+                                           process.trackingFailureFilter *
+                                           process.trkPOGFilters)
 
 #PF2PAT
 process.load("PhysicsTools.PatAlgos.patSequences_cff")
 from PhysicsTools.PatAlgos.tools.pfTools import *
+from PhysicsTools.PatAlgos.tools.coreTools import *
+
 postfix = "PFlow"
 jetAlgo="AK5"
 jecLevels=['L1FastJet', 'L2Relative', 'L3Absolute']
+if(not isMC):
+    jecLevels.append('L2L3Residual')
+    removeMCMatching(process, ['All'])
 usePF2PAT(process,
           runPF2PAT=True,
           jetAlgo=jetAlgo,
@@ -108,28 +134,17 @@ process.kt6PFJetsCentral = kt4PFJets.clone( rParam = cms.double(0.6),
                                             Rho_EtaMax = cms.double(2.5),
                                             Ghost_EtaMax = cms.double(2.5) )
 
-
-# CHECK THIS POINT FWD
-#applyPostfix(process,"pfPileUp",postfix).checkClosestZVertex = cms.bool(False) 
-#from PhysicsTools.PatAlgos.tools.metTools import *
-#process.pfPileUpPF2PAT.Enable = True
-#process.pfPileUpPF2PAT.Vertices = cms.InputTag('goodOfflinePrimaryVertices')
-#process.load('RecoJets.Configuration.RecoJets_cff')
-#from RecoJets.JetProducers.kt4PFJets_cfi import kt4PFJets
-
-#process.kt6PFJets               = kt4PFJets.clone()
-#process.kt6PFJets.rParam        = 0.6     
-##process.kt6PFJets.src           = cms.InputTag('pfNoElectron'+postfix)
-#process.kt6PFJets.Rho_EtaMax    = cms.double( 4.4)
-#process.kt6PFJets.doRhoFastjet  = True
-#process.kt6PFJets.doAreaFastjet = True
-##process.kt6PFJets.voronoiRfact  = 0.9
-
-##process.patJetCorrFactorsPFlow.rho = cms.InputTag("kt6PFJets", "rho")
-#getattr(process,"patJetCorrFactors"+postfix).rho = cms.InputTag("kt6PFJets", "rho")
-
 from UserCode.EWKV.btvDefaultSequence_cff import *
 btvDefaultSequence(process,isMC,"selectedPatJets"+postfix,"goodOfflinePrimaryVertices")
+
+# cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMetAnalysis
+process.load("JetMETCorrections.Type1MET.pfMETCorrections_cff")
+process.load("JetMETCorrections.Type1MET.pfMETCorrectionType0_cfi")
+process.pfType1CorrectedMet.applyType0Corrections = cms.bool(False)
+process.pfType1CorrectedMet.srcType1Corrections = cms.VInputTag( cms.InputTag('pfMETcorrType0'),
+                                                                 cms.InputTag('pfJetMETcorr', 'type1')
+                                                                 )
+
 
 #the analyzer
 process.load("UserCode.EWKV.dataAnalyzer_cfi")
@@ -145,13 +160,16 @@ process.p = cms.Path( process.startCounter
                       *process.goodOfflinePrimaryVertices
                       *process.goodVertexFilter
                       *process.vtxCounter
+                      *process.metFilteringTaggers
                       *process.eidMVASequence
                       *getattr(process,"patPF2PATSequence"+postfix)
                       *process.btvSequence
                       *process.kt6PFJetsCentral
                       *process.qgSequence
+                      *process.type0PFMEtCorrection*process.producePFMETCorrections
                       *process.dataAnalyzer
                       )
+
 	
 
 

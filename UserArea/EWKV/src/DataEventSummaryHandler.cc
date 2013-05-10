@@ -15,6 +15,9 @@ bool DataEventSummaryHandler::init(TTree *t, bool needsToRecreate)
   t_->Branch("event",    &evSummary_.event,    "event/I");
   t_->Branch("cat",      &evSummary_.cat,      "cat/I");
 
+  //filter bits
+  t_->Branch("f_bits",   &evSummary_.f_bits,    "f_bits/I");
+
   //trigger bit
   t_->Branch("tn",          &evSummary_.tn,        "tn/I");
   t_->Branch("t_bits",      evSummary_.t_bits,     "t_bits[tn]/O");
@@ -30,27 +33,27 @@ bool DataEventSummaryHandler::init(TTree *t, bool needsToRecreate)
   t_->Branch("pfn",       &evSummary_.pfn,       "pfn/I");
   t_->Branch("pf_id",     &evSummary_.pf_id,     "pf_id[pfn]/I");
   t_->Branch("pf_charge", &evSummary_.pf_charge, "pf_charge[pfn]/I");
-  t_->Branch("pf_px",     &evSummary_.pf_px,     "pf_px[pfn]/I");
-  t_->Branch("pf_py",     &evSummary_.pf_py,     "pf_py[pfn]/I");
-  t_->Branch("pf_pz",     &evSummary_.pf_pz,     "pf_pz[pfn]/I");
+  t_->Branch("pf_px",     &evSummary_.pf_px,     "pf_px[pfn]/F");
+  t_->Branch("pf_py",     &evSummary_.pf_py,     "pf_py[pfn]/F");
+  t_->Branch("pf_pz",     &evSummary_.pf_pz,     "pf_pz[pfn]/F");
+  t_->Branch("pf_en",     &evSummary_.pf_en,     "pf_en[pfn]/F");
 
   //generator level info
-  t_->Branch("mccat",       &evSummary_.mccat,       "mccat/I");
   t_->Branch("ngenITpu",    &evSummary_.ngenITpu,    "ngenITpu/I");
   t_->Branch("ngenOOTpu",   &evSummary_.ngenOOTpu,   "ngenOOTpu/I");
   t_->Branch("ngenOOTpum1", &evSummary_.ngenOOTpum1, "ngenOOTpum1/I");
   t_->Branch("ngenTruepu",  &evSummary_.ngenTruepu,  "ngenTruepu/I");
-  t_->Branch("pthat",       &evSummary_.pthat,       "pthat/I");
-  t_->Branch("genWeight",   &evSummary_.genWeight,   "genWeight/I");
-  t_->Branch("qscale",      &evSummary_.qscale,      "qscale/I");
-  t_->Branch("x1",          &evSummary_.x1,          "x1/I");
-  t_->Branch("x2",          &evSummary_.x2,          "x2/I");
+  t_->Branch("pthat",       &evSummary_.pthat,       "pthat/F");
+  t_->Branch("genWeight",   &evSummary_.genWeight,   "genWeight/F");
+  t_->Branch("qscale",      &evSummary_.qscale,      "qscale/F");
+  t_->Branch("x1",          &evSummary_.x1,          "x1/F");
+  t_->Branch("x2",          &evSummary_.x2,          "x2/F");
   t_->Branch("id1",         &evSummary_.id1,         "id1/I");
   t_->Branch("id2",         &evSummary_.id2,         "id2/I");
   t_->Branch("nup",         &evSummary_.nup,         "nup/I");
 
   //mc truth
-  t_->Branch("mcn",         &evSummary_.mcn,         "mcn");
+  t_->Branch("mcn",         &evSummary_.mcn,         "mcn/I");
   t_->Branch("mc_id",       evSummary_.mc_id,        "mc_id[mcn]/I");
   t_->Branch("mc_status",   evSummary_.mc_status,    "mc_status[mcn]/I");
   t_->Branch("mc_px",       evSummary_.mc_px,        "mc_px[mcn]/F");
@@ -64,11 +67,11 @@ bool DataEventSummaryHandler::init(TTree *t, bool needsToRecreate)
   t_->Branch("ln_id",         evSummary_.ln_id,        "ln_id[ln]/I");
   t_->Branch("ln_idbits",     evSummary_.ln_idbits,    "ln_idbits[ln]/I");
   t_->Branch("ln_pid",        evSummary_.ln_pid,       "ln_pid[ln]/I");
+  t_->Branch("ln_genid",      evSummary_.ln_genid,     "ln_genid[ln]/I");
   t_->Branch("ln_px",         evSummary_.ln_px,        "ln_px[ln]/F");
   t_->Branch("ln_py",         evSummary_.ln_py,        "ln_py[ln]/F");
   t_->Branch("ln_pz",         evSummary_.ln_pz,        "ln_pz[ln]/F");
   t_->Branch("ln_en",         evSummary_.ln_en,        "ln_en[ln]/F");
-  t_->Branch("ln_genid",      evSummary_.ln_genid,     "ln_genid[ln]/I");
   t_->Branch("ln_genpx",      evSummary_.ln_genpx,     "ln_genpx[ln]/F");
   t_->Branch("ln_genpy",      evSummary_.ln_genpy,     "ln_genpy[ln]/F");
   t_->Branch("ln_genpz",      evSummary_.ln_genpz,     "ln_genpz[ln]/F");
@@ -136,9 +139,11 @@ bool DataEventSummaryHandler::init(TTree *t, bool needsToRecreate)
   t_->Branch("egn_eopin",        evSummary_.egn_eopin,   "egn_eopin[egn]/F");
   t_->Branch("egn_eopout",       evSummary_.egn_eopout,  "egn_eopout[egn]/F");
   t_->Branch("egn_r9",           evSummary_.egn_r9,      "egn_r9[egn]/F");
+  t_->Branch("egn_fbrem",        evSummary_.egn_fbrem,   "egn_fbrem[egn]/F");
   t_->Branch("egn_sce",          evSummary_.egn_sce,     "egn_sce[egn]/F");
   t_->Branch("egn_sceta",        evSummary_.egn_sceta,   "egn_sceta[egn]/F");
   t_->Branch("egn_scphi",        evSummary_.egn_scphi,   "egn_scphi[egn]/F");
+  t_->Branch("egn_ooemoop",      evSummary_.egn_ooemoop, "egn_ooemoop[egn]/F");
   t_->Branch("egn_mvatrigv0",    evSummary_.egn_mvatrigv0, "egn_mvatrigv0[egn]/F");
   t_->Branch("egn_mvanontrigv0", evSummary_.egn_mvanontrigv0, "egn_mvanontrigv0[egn]/F");
 
@@ -164,9 +169,13 @@ bool DataEventSummaryHandler::init(TTree *t, bool needsToRecreate)
   t_->Branch("jn_neutHadFrac", evSummary_.jn_neutHadFrac,     "jn_neutHadFrac[jn]/F");
   t_->Branch("jn_neutEmFrac",  evSummary_.jn_neutEmFrac,      "jn_neutEmFrac[jn]/F");
   t_->Branch("jn_chHadFrac",   evSummary_.jn_chHadFrac,       "jn_chHadFrac[jn]/F");
+  t_->Branch("jn_area",        evSummary_.jn_area,            "jn_area[jn]/F");
   t_->Branch("jn_tchp",        evSummary_.jn_tchp,            "jn_tchp[jn]/F");
   t_->Branch("jn_jp",          evSummary_.jn_jp,              "jn_jp[jn]/F");
+  t_->Branch("jn_origcsv",     evSummary_.jn_origcsv,         "jn_oringcsv[jn]/F");
   t_->Branch("jn_csv",         evSummary_.jn_csv,             "jn_csv[jn]/F");
+  t_->Branch("jn_jpcsv",       evSummary_.jn_jpcsv,           "jn_jpcsv[jn]/F");
+  t_->Branch("jn_slcsv",       evSummary_.jn_slcsv,           "jn_slcsv[jn]/F");
   t_->Branch("jn_supercsv",    evSummary_.jn_supercsv,        "jn_supercsv[jn]/F");
   t_->Branch("jn_ssvhe",       evSummary_.jn_ssvhe,           "jn_ssvhe[jn]/F");
   t_->Branch("jn_ivf",         evSummary_.jn_ivf,             "jn_ivf[jn]/F");
@@ -203,9 +212,13 @@ bool DataEventSummaryHandler::init(TTree *t, bool needsToRecreate)
   t_->Branch("jn_genjen",      evSummary_.jn_genjen,          "jn_genjen[jn]/F");
  
   //MET
-  t_->Branch("metn",     &evSummary_.metn,    "metn/I");
-  t_->Branch("met_phi",  evSummary_.met_phi,  "met_phi[metn]/F");
-  t_->Branch("met_pt",   evSummary_.met_pt,   "met_pt[metn]/F");
+  t_->Branch("metn",        &evSummary_.metn,       "metn/I");
+  t_->Branch("met_phi",     evSummary_.met_phi,     "met_phi[metn]/F");
+  t_->Branch("met_pt",      evSummary_.met_pt,      "met_pt[metn]/F");
+  t_->Branch("met_sig",     evSummary_.met_sig,     "met_pt[metn]/F");
+  t_->Branch("met_sigx2",   evSummary_.met_sigx2,   "met_sigx2[metn]/F");
+  t_->Branch("met_sigxy",   evSummary_.met_sigxy,   "met_sigxy[metn]/F");
+  t_->Branch("met_sigy2",   evSummary_.met_sigy2,   "met_sigy2[metn]/F");
 
   return true;
 }
@@ -241,9 +254,7 @@ bool DataEventSummaryHandler::attach(TTree *t)
   t_->SetBranchAddress("pf_py",     &evSummary_.pf_py);
   t_->SetBranchAddress("pf_pz",     &evSummary_.pf_pz);
 
-
   //generator level info
-  t_->SetBranchAddress("mccat",       &evSummary_.mccat);
   t_->SetBranchAddress("ngenITpu",    &evSummary_.ngenITpu);
   t_->SetBranchAddress("ngenOOTpu",   &evSummary_.ngenOOTpu);
   t_->SetBranchAddress("ngenOOTpum1", &evSummary_.ngenOOTpum1);
@@ -266,8 +277,6 @@ bool DataEventSummaryHandler::attach(TTree *t)
   t_->SetBranchAddress("mc_pz",       evSummary_.mc_pz);
   t_->SetBranchAddress("mc_en",       evSummary_.mc_en);
   t_->SetBranchAddress("mc_lxy",      evSummary_.mc_lxy);  
-
-
 
   //selected leptons
   t_->SetBranchAddress("ln",            &evSummary_.ln);
@@ -303,7 +312,13 @@ bool DataEventSummaryHandler::attach(TTree *t)
   t_->SetBranchAddress("ln_trkValidPixelHits",   evSummary_.ln_trkValidPixelHits);
   t_->SetBranchAddress("ln_trkValidTrackerHits", evSummary_.ln_trkValidTrackerHits);
   t_->SetBranchAddress("ln_trkLostInnerHits",    evSummary_.ln_trkLostInnerHits);
-  t_->SetBranchAddress("ln_trkPtErr",               evSummary_.ln_trkPtErr);
+  t_->SetBranchAddress("ln_trkPtErr",            evSummary_.ln_trkPtErr);
+  t_->SetBranchAddress("ln_genid",               evSummary_.ln_genid);
+  t_->SetBranchAddress("ln_genpx",               evSummary_.ln_genpx);
+  t_->SetBranchAddress("ln_genpy",               evSummary_.ln_genpy);
+  t_->SetBranchAddress("ln_genpz",               evSummary_.ln_genpz);
+  t_->SetBranchAddress("ln_genen",               evSummary_.ln_genen);
+  
 
   //Gamma Info
   t_->SetBranchAddress("gn",          &evSummary_.gn);
@@ -359,6 +374,8 @@ bool DataEventSummaryHandler::attach(TTree *t)
   //selected jets
   t_->SetBranchAddress("jn",             &evSummary_.jn);
   t_->SetBranchAddress("jn_idbits",      evSummary_.jn_idbits);
+  t_->SetBranchAddress("jn_pfstart",     evSummary_.jn_pfstart);
+  t_->SetBranchAddress("jn_pfend",       evSummary_.jn_pfend);
   t_->SetBranchAddress("jn_px",          evSummary_.jn_px);
   t_->SetBranchAddress("jn_py",          evSummary_.jn_py);
   t_->SetBranchAddress("jn_pz",          evSummary_.jn_pz);
@@ -413,3 +430,161 @@ bool DataEventSummaryHandler::attach(TTree *t)
   return true;
 }
 
+//
+data::PhysicsObjectCollection_t DataEventSummaryHandler::getPhysicsObject(int code)
+{
+  data::PhysicsObjectCollection_t coll;
+  switch(code)
+    {
+    case LEPTONS:
+      for(Int_t ilep=0; ilep<evSummary_.ln; ilep++)
+	{
+	  data::PhysicsObject_t lep(evSummary_.ln_px[ilep],evSummary_.ln_py[ilep],evSummary_.ln_pz[ilep],evSummary_.ln_en[ilep]);
+	  lep.set("id",evSummary_.ln_id[ilep]);
+	  lep.set("idbits",evSummary_.ln_idbits[ilep]);
+
+	  lep.setVal("gIso03",    evSummary_.ln_gIso03[ilep]);  lep.setVal("chIso03",   evSummary_.ln_chIso03[ilep]);  lep.setVal("puchIso03", evSummary_.ln_puchIso03[ilep]); lep.setVal("nhIso03",   evSummary_.ln_nhIso03[ilep]);
+	  lep.setVal("gIso04",    evSummary_.ln_gIso04[ilep]);  lep.setVal("chIso04",   evSummary_.ln_chIso04[ilep]);  lep.setVal("puchIso04", evSummary_.ln_puchIso04[ilep]); lep.setVal("nhIso04",   evSummary_.ln_nhIso04[ilep]);
+	  lep.setVal("ecalIso03",    evSummary_.ln_ecalIso03[ilep]);  lep.setVal("trk03",   evSummary_.ln_trkIso03[ilep]);  lep.setVal("hcalIso03",   evSummary_.ln_hcalIso03[ilep]);
+	  lep.setVal("ecalIso04",    evSummary_.ln_ecalIso04[ilep]);  lep.setVal("trk04",   evSummary_.ln_trkIso04[ilep]);  lep.setVal("hcalIso04",   evSummary_.ln_hcalIso04[ilep]);
+	  lep.setVal("tk_d0",               evSummary_.ln_d0[ilep]);
+	  lep.setVal("tk_dz",               evSummary_.ln_dZ[ilep]);
+	  lep.setVal("tk_ip3d",             evSummary_.ln_ip3d[ilep]);
+	  lep.setVal("tk_ip3dsig",          evSummary_.ln_ip3dsig[ilep]);
+	  lep.setVal("tk_pt",               evSummary_.ln_trkpt[ilep]);
+	  lep.setVal("tk_eta",              evSummary_.ln_trketa[ilep]);
+	  lep.setVal("tk_phi",              evSummary_.ln_trkphi[ilep]);
+	  lep.setVal("tk_chi2",             evSummary_.ln_trkchi2[ilep]);
+	  lep.setVal("tk_validPixelHits",   evSummary_.ln_trkValidPixelHits[ilep]);
+	  lep.setVal("tk_validTrackerHits", evSummary_.ln_trkValidTrackerHits[ilep]);
+	  lep.setVal("tk_lostInnerHits",    evSummary_.ln_trkLostInnerHits[ilep]);
+	  lep.setVal("tk_ptErr",            evSummary_.ln_trkPtErr[ilep]);
+	  
+	  if(abs(evSummary_.ln_id[ilep])==11)
+	    {
+	      int idx=evSummary_.ln_pid[ilep];
+	      lep.setFlag("isconv", evSummary_.egn_isConv[idx]);
+	      lep.setVal("scen", evSummary_.egn_sce[idx]);
+	      lep.setVal("sceta", evSummary_.egn_sceta[idx]);
+	      lep.setVal("scphi", evSummary_.egn_scphi[idx]);
+	      lep.setVal("hoe", evSummary_.egn_hoe[idx]);
+	      lep.setVal("h2te", evSummary_.egn_h2te[idx]);
+	      lep.setVal("detain", evSummary_.egn_detain[idx]);
+	      lep.setVal("dphiin", evSummary_.egn_dphiin[idx]);
+	      lep.setVal("sihih", evSummary_.egn_sihih[idx]);
+	      lep.setVal("sipip", evSummary_.egn_sipip[idx]);
+	      lep.setVal("sihip", evSummary_.egn_sihip[idx]);
+	      lep.setVal("eopin", evSummary_.egn_eopin[idx]);
+	      lep.setVal("eopout", evSummary_.egn_eopout[idx]);
+	      lep.setVal("r9", evSummary_.egn_r9[idx]);
+	      lep.setVal("mvatrig",evSummary_.egn_mvatrigv0[idx]);
+	      lep.setVal("mvanontrig",evSummary_.egn_mvanontrigv0[idx]);
+	    }
+	  else if(abs(evSummary_.ln_id[ilep])==13)
+	    {
+	      int idx=evSummary_.ln_pid[ilep];
+	      lep.setVal("nMatches",                   evSummary_.mn_nMatches[idx]);
+	      lep.setVal("nMatchedStations",           evSummary_.mn_nMatchedStations[idx]);
+	      lep.setVal("validMuonHits",              evSummary_.mn_validMuonHits[idx]);
+	      lep.setVal("innerTrackChi2",             evSummary_.mn_innerTrackChi2[idx]);
+	      lep.setVal("trkLayersWithMeasurement",   evSummary_.mn_trkLayersWithMeasurement[idx]);
+	      lep.setVal("pixelLayersWithMeasurement", evSummary_.mn_pixelLayersWithMeasurement[idx]);
+	    }
+
+	  data::PhysicsObject_t genLep(evSummary_.ln_genpx[ilep],evSummary_.ln_genpy[ilep],evSummary_.ln_genpz[ilep],evSummary_.ln_genen[ilep]);
+	  genLep.set("id",evSummary_.ln_genid[ilep]);
+	  lep.setObject("gen",genLep);
+	  coll.push_back(lep);
+	}
+      break;
+    case JETS:
+      for(Int_t ijet=0; ijet<evSummary_.jn; ijet++)
+	{
+	  data::PhysicsObject_t jet(evSummary_.jn_px[ijet],evSummary_.jn_py[ijet],evSummary_.jn_pz[ijet],evSummary_.jn_en[ijet]);
+	  jet.setVal("torawsf", evSummary_.jn_torawsf[ijet]);
+	  jet.set("pfstart", evSummary_.jn_pfstart[ijet]);
+	  jet.set("pfend",   evSummary_.jn_pfend[ijet]);
+	  jet.set("idbits",  evSummary_.jn_idbits[ijet]);
+	  jet.setVal("neutHadFrac",    evSummary_.jn_neutHadFrac[ijet]);
+	  jet.setVal("neutEmFrac",     evSummary_.jn_neutEmFrac[ijet]);
+	  jet.setVal("chHadFrac",      evSummary_.jn_chHadFrac[ijet]);
+	  jet.setVal("area",           evSummary_.jn_area[ijet]);
+	  jet.setVal("tchp",           evSummary_.jn_tchp[ijet]);
+	  jet.setVal("jp",             evSummary_.jn_jp[ijet]);
+	  jet.setVal("origcsv",        evSummary_.jn_origcsv[ijet]);
+	  jet.setVal("csv",            evSummary_.jn_csv[ijet]);
+	  jet.setVal("jpcsv",          evSummary_.jn_jpcsv[ijet]);
+	  jet.setVal("slcsv",          evSummary_.jn_slcsv[ijet]);
+	  jet.setVal("supercsv",       evSummary_.jn_supercsv[ijet]);
+	  jet.setVal("ssvhe",          evSummary_.jn_ssvhe[ijet]);
+	  jet.setVal("ivf",            evSummary_.jn_ivf[ijet]);
+	  jet.setVal("puMVA",           evSummary_.jn_puMVA[ijet]);
+	  jet.setVal("qgMVA",           evSummary_.jn_qgMVA[ijet]);
+	  jet.setVal("beta",            evSummary_.jn_beta[ijet]);
+	  jet.setVal("dRMean",          evSummary_.jn_dRMean[ijet]);
+	  jet.setVal("ptRMS",           evSummary_.jn_ptRMS[ijet]);
+	  jet.setVal("etaW",            evSummary_.jn_etaW[ijet]);
+	  jet.setVal("phiW",            evSummary_.jn_phiW[ijet]);
+ 
+	  float svxEn=sqrt(pow(evSummary_.jn_svxPx[ijet],2)+pow(evSummary_.jn_svxPy[ijet],2)+pow(evSummary_.jn_svxPz[ijet],2)+pow(evSummary_.jn_svxM[ijet],2));
+	  data::PhysicsObject_t svx(evSummary_.jn_svxPx[ijet],evSummary_.jn_svxPy[ijet],evSummary_.jn_svxPz[ijet],svxEn);
+	  svx.set("ntrk",evSummary_.jn_svxNtrk[ijet]);
+	  svx.setVal("lxy",evSummary_.jn_svxLxy[ijet]);
+	  svx.setVal("lxyErr",evSummary_.jn_svxLxyErr[ijet]);
+	  jet.setObject("svx",svx);
+
+	  float ivfEn=sqrt(pow(evSummary_.jn_ivfPx[ijet],2)+pow(evSummary_.jn_ivfPy[ijet],2)+pow(evSummary_.jn_ivfPz[ijet],2)+pow(evSummary_.jn_ivfM[ijet],2));
+	  data::PhysicsObject_t ivf(evSummary_.jn_ivfPx[ijet],evSummary_.jn_ivfPy[ijet],evSummary_.jn_ivfPz[ijet],ivfEn);
+	  ivf.set("ntrk",evSummary_.jn_ivfNtrk[ijet]);
+	  ivf.setVal("lxy",evSummary_.jn_ivfLxy[ijet]);
+	  ivf.setVal("lxyErr",evSummary_.jn_ivfLxyErr[ijet]);
+	  jet.setObject("ivf",ivf);
+  
+	  data::PhysicsObject_t genParton(evSummary_.jn_genpx[ijet],evSummary_.jn_genpy[ijet],evSummary_.jn_genpz[ijet],evSummary_.jn_genen[ijet]);
+	  genParton.set("id",evSummary_.jn_genid[ijet]);
+	  jet.setObject("gen",genParton);
+	  data::PhysicsObject_t genJet(evSummary_.jn_genjpx[ijet],evSummary_.jn_genjpy[ijet],evSummary_.jn_genjpz[ijet],evSummary_.jn_genjen[ijet]);
+	  genJet.set("id",evSummary_.jn_genflav[ijet]);
+	  jet.setObject("genJet",genJet);
+	  coll.push_back(jet);
+	}
+      break;
+    case PHOTONS:
+      break;
+    case MET:
+      for(int imet=0; imet<evSummary_.metn; imet++)
+	{
+	  float px=evSummary_.met_pt[imet]*TMath::Cos(evSummary_.met_phi[imet]);
+	  float py=evSummary_.met_pt[imet]*TMath::Sin(evSummary_.met_phi[imet]);
+	  float en=sqrt(px*px+py*py);
+	  data::PhysicsObject_t met(px,py,0.,en);
+	  met.set("id",0);
+	  coll.push_back(met);
+	}
+      break;
+    case PFCANDIDATES:
+      for(int ipf=0; ipf<evSummary_.pfn; ipf++)
+	{
+	  data::PhysicsObject_t pf(evSummary_.pf_px[ipf],evSummary_.pf_py[ipf],evSummary_.pf_pz[ipf],evSummary_.pf_en[ipf]);
+	  pf.set("id",evSummary_.pf_id[ipf]);
+	  pf.set("charge",evSummary_.pf_charge[ipf]);
+	  cout << pf.pt() << " ";
+      	  coll.push_back(pf);
+	}
+      cout << endl;
+      break;
+    case GENPARTICLES:
+      for(int imc=0; imc<evSummary_.mcn; imc++)
+	{
+	  data::PhysicsObject_t p(evSummary_.mc_px[imc],evSummary_.mc_py[imc],evSummary_.mc_pz[imc],evSummary_.mc_en[imc]);
+	  p.set("id",evSummary_.mc_id[imc]);
+	  p.set("status",evSummary_.mc_status[imc]);
+	  p.setVal("lxy",evSummary_.mc_lxy[imc]);
+	  coll.push_back(p);
+	}
+      break;
+    default:
+      break;
+    }
+  return coll;
+}

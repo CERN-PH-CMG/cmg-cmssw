@@ -112,8 +112,8 @@ public:
   void initMonitorForStep(TString tag);
   
   //short add new histogram
-  TH1 * addHistogram(TH1 *h, TString tag, bool format=true);
-  TH1 * addHistogram(TH1 *h, bool format=true) ;
+  TH1 * addHistogram(TH1 *h, TString tag);
+  TH1 * addHistogram(TH1 *h);
   
 private:
 
