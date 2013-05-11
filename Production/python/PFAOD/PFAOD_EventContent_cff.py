@@ -205,10 +205,12 @@ V5.extend(
     'keep recoIsoDepositedmValueMap_muIsoDepositJets__*',
     'keep recoIsoDepositedmValueMap_muIsoDepositTk__*',
     'keep EcalRecHitsSorted_reducedEcalRecHitsES__*',
-    #just for embedded samples
+    #just for old pf embedded samples
     'keep *_tmfTracks_*_*',
     #generalTracksORG needed for new rec-hit embedded samples
     'keep recoTracks_generalTracksORG__EmbeddedRECO',
+    #weights needed in rec-hit embedded samples
+    'keep double_*_*_Embedded*',
     'keep recoCaloClusters_*_*_*',
     'keep recoSuperClusters_*_*_*',
     'drop recoGenJets_*_*_*'
