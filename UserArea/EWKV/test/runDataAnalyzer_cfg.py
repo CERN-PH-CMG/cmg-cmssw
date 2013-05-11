@@ -1,8 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-isMC=True
-gtag="START53_V20::All"
-
 process = cms.Process("DataAna")
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -18,10 +15,10 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True)) 
 
 #the source and output
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring('/store/relval/CMSSW_5_3_6-START53_V14/RelValTTbar/GEN-SIM-RECO/v2/00000/16D5D599-F129-E211-AB60-00261894390B.root',
-                                                              '/store/relval/CMSSW_5_3_6-START53_V14/RelValTTbar/GEN-SIM-RECO/v2/00000/62B0DFF3-F729-E211-9754-001A92811744.root',
-                                                              '/store/relval/CMSSW_5_3_6-START53_V14/RelValTTbar/GEN-SIM-RECO/v2/00000/DECDBB8B-302A-E211-890F-003048679168.root')
+                            fileNames = cms.untracked.vstring('/store/relval/CMSSW_5_3_6-START53_V14/RelValTTbar/GEN-SIM-RECO/v2/00000/16D5D599-F129-E211-AB60-00261894390B.root')
                             )
+if not isMC: process.source.fileNames = cms.untracked.vstring('/store/data//Run2012A/DoubleMu/AOD//22Jan2013-v1/20000/F4C34C30-B581-E211-8269-003048FFD7A2.root')
+    
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.out = cms.OutputModule("PoolOutputModule",
                                outputCommands = cms.untracked.vstring('keep *'),
@@ -98,9 +95,8 @@ from PhysicsTools.PatAlgos.tools.coreTools import *
 postfix = "PFlow"
 jetAlgo="AK5"
 jecLevels=['L1FastJet', 'L2Relative', 'L3Absolute']
-if(not isMC):
-    jecLevels.append('L2L3Residual')
-    removeMCMatching(process, ['All'])
+if(not isMC): jecLevels.append('L2L3Residual')
+
 usePF2PAT(process,
           runPF2PAT=True,
           jetAlgo=jetAlgo,
@@ -110,6 +106,9 @@ usePF2PAT(process,
           pvCollection=cms.InputTag('goodOfflinePrimaryVertices'),
           typeIMetCorrections=False)
 useGsfElectrons(process,postfix=postfix,dR="03")
+
+if(not isMC):
+    removeMCMatching(process, ['All'],postfix)
 
 #add electron MVA id
 process.load('EgammaAnalysis.ElectronTools.electronIdMVAProducer_cfi')
