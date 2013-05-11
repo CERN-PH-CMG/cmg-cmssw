@@ -207,6 +207,8 @@ V5.extend(
     'keep EcalRecHitsSorted_reducedEcalRecHitsES__*',
     #just for embedded samples
     'keep *_tmfTracks_*_*',
+    #generalTracksORG needed for new rec-hit embedded samples
+    'keep recoTracks_generalTracksORG__EmbeddedRECO',
     'keep recoCaloClusters_*_*_*',
     'keep recoSuperClusters_*_*_*',
     'drop recoGenJets_*_*_*'
