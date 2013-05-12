@@ -20,6 +20,10 @@ class LepTreeProducer(Module):
         self.t.branch("run","F")
         self.t.branch("pair_probeMultiplicity","F")
         self.t.branch("nVert","F")
+        #tight charge cuts
+        self.t.branch("tightCharge","F")
+        self.t.branch("convVeto","F")
+        self.t.branch("innerHits","F")
     def analyze(self,event):
         if event.nLepGood < 2: return True
         lep = Collection(event,"LepGood","nLepGood",8)
@@ -46,6 +50,9 @@ class LepTreeProducer(Module):
                 self.t.relIso = probe.relIso
                 self.t.mva = probe.mva
                 self.t.abseta = abs(probe.eta)
+                self.t.tightCharge = probe.tightCharge
+                self.t.convVeto = probe.convVeto
+                self.t.innerHits = probe.innerHits
                 self.t.mass = (tag.p4() + probe.p4()).M()
                 self.t.fill()
                 
