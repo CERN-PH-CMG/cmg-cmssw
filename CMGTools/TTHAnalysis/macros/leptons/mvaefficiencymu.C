@@ -17,6 +17,7 @@ void mvaefficiencymu()
   double eta_bins[11] = {-2.4,-2.1,-1.5,-0.9,-0.3,0,0.3,0.9,1.5,2.1,2.4}; 
   
   TH1::SetDefaultSumw2();
+  TH2::SetDefaultSumw2();
 
   TFile *fOut = TFile::Open("MVAandTigthChargeSF_mu.root", "RECREATE");    
   fOut->cd();
@@ -157,19 +158,18 @@ void mvaefficiencymu()
   hLMdataeta->Write();
 
   //2D
-  mc_tree->Draw("eta:pt>>+LepMVALooseEff_mc2D_den","abs(mass-90)<10 &&  tag_eta < 1.5 && tag_pt>25");
+  mc_tree->Draw("eta:pt>>+LepMVALooseEff_mc2D_den","abs(mass-90)<10 && tag_pt>25");
   mc_tree->Draw("eta:pt>>+LepMVALooseEff_mc2D_num","mva>0.35 && abs(mass-90)<10  && tag_pt>25");
   hLMmc2D->Divide(hLMmc2D_num,hLMmc2D_den,1,1,"B");
   hLMmc2D->Write();
-  data_tree->Draw("eta:pt>>+LepMVALooseEff_data2D_den","abs(mass-90)<10 &&  tag_eta < 1.5 && tag_pt>25");
+  data_tree->Draw("eta:pt>>+LepMVALooseEff_data2D_den","abs(mass-90)<10 && tag_pt>25");
   data_tree->Draw("eta:pt>>+LepMVALooseEff_data2D_num","mva>0.35 && abs(mass-90)<10 && tag_pt>25");
   hLMdata2D->Divide(hLMdata2D_num,hLMdata2D_den,1,1,"B");
   hLMdata2D->Write();
 
-  hLMSF2D=hLMdata2D;
+  hLMSF2D=(TH2F*)hLMdata2D->Clone("LepMVALooseSF2D");
   hLMSF2D->Divide(hLMmc2D);
   hLMSF2D->Write();
-
 
   // Tight MVA Efficiency 
   
@@ -205,17 +205,17 @@ void mvaefficiencymu()
   hTMdataeta->Write();
 
   //2D
-  mc_tree->Draw("eta:pt>>+LepMVATightEff_mc2D_den","abs(mass-90)<10 &&  tag_eta < 1.5 && tag_pt>25");
+  mc_tree->Draw("eta:pt>>+LepMVATightEff_mc2D_den","abs(mass-90)<10 && tag_pt>25");
   mc_tree->Draw("eta:pt>>+LepMVATightEff_mc2D_num","mva>0.7 && abs(mass-90)<10  && tag_pt>25");
   hTMmc2D->Divide(hTMmc2D_num,hTMmc2D_den,1,1,"B");
   hTMmc2D->Write();
-  data_tree->Draw("eta:pt>>+LepMVATightEff_data2D_den","abs(mass-90)<10 &&  tag_eta < 1.5 && tag_pt>25");
+  data_tree->Draw("eta:pt>>+LepMVATightEff_data2D_den","abs(mass-90)<10 && tag_pt>25");
   data_tree->Draw("eta:pt>>+LepMVATightEff_data2D_num","mva>0.7 && abs(mass-90)<10 && tag_pt>25");
   hTMdata2D->Divide(hTMdata2D_num,hTMdata2D_den,1,1,"B");
   hTMdata2D->Write();
 
 
-  hTMSF2D=hTMdata2D;
+  hTMSF2D=(TH2F*)hTMdata2D->Clone("LepMVATightSF2D");
   hTMSF2D->Divide(hTMmc2D);
   hTMSF2D->Write();
 
@@ -254,17 +254,16 @@ void mvaefficiencymu()
   hTCdataeta->Write();
 
   //2D
-  mc_tree->Draw("eta:pt>>+TightChargeEff_mc2D_den","mva>0.7 && abs(mass-90)<10 &&  tag_eta < 1.5 && tag_pt>25");
+  mc_tree->Draw("eta:pt>>+TightChargeEff_mc2D_den","mva>0.7 && abs(mass-90)<10 && tag_pt>25");
   mc_tree->Draw("eta:pt>>+TightChargeEff_mc2D_num","tightCharge > 0 && mva>0.7 && abs(mass-90)<10  && tag_pt>25");
   hTCmc2D->Divide(hTCmc2D_num,hTCmc2D_den,1,1,"B");
   hTCmc2D->Write();
-  data_tree->Draw("eta:pt>>+TightChargeEff_data2D_den","mva>0.7 && abs(mass-90)<10 &&  tag_eta < 1.5 && tag_pt>25");
+  data_tree->Draw("eta:pt>>+TightChargeEff_data2D_den","mva>0.7 && abs(mass-90)<10 && tag_pt>25");
   data_tree->Draw("eta:pt>>+TightChargeEff_data2D_num","tightCharge > 0 && mva>0.7 && abs(mass-90)<10 && tag_pt>25");
   hTCdata2D->Divide(hTCdata2D_num,hTCdata2D_den,1,1,"B");
   hTCdata2D->Write();
 
-
-  hTCSF2D=hTCdata2D;
+  hTCSF2D=(TH2F*)hTCdata2D->Clone("TightChargeSF2D");
   hTCSF2D->Divide(hTCmc2D);
   hTCSF2D->Write();
 

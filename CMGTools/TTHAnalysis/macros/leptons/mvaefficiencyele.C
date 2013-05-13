@@ -17,6 +17,7 @@ void mvaefficiencyele()
   double eta_bins[7] = {-2.5,-1.479,-0.8,0,0.8,1.479,2.5}; 
 
   TH1::SetDefaultSumw2();
+  TH2::SetDefaultSumw2();
 
   TFile *fOut = TFile::Open("MVAandTigthChargeSF_ele.root", "RECREATE");    
   fOut->cd();
@@ -50,7 +51,7 @@ void mvaefficiencyele()
   TH2F *hLMdata2D_num = new TH2F("LepMVALooseEff_data2D_num","LepMVALooseEff_data2D_num",10,pt_binsL,6,eta_bins);
  
 
-  TH2F *hLMSF2D = new TH2F("LepMVALooseSF","LepMVALooseSF",10,pt_binsL,6,eta_bins);
+  TH2F *hLMSF2D = new TH2F("LepMVALooseSF2D","LepMVALooseSF2D",10,pt_binsL,6,eta_bins);
 
   //Tight MVA working point vs Good lepton selection
   TH1F *hTMmcptb = new TH1F("LepMVATightEff_mcptb","LepMVATightEff_mcpte",9,pt_binsT);
@@ -122,47 +123,47 @@ void mvaefficiencyele()
   
 
   //barrel
-  mc_tree->Draw("pt>>+LepMVALooseEff_mcptb_den","abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("pt>>+LepMVALooseEff_mcptb_num","mva>0.35 && abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+LepMVALooseEff_mcptb_den","abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+LepMVALooseEff_mcptb_num","mva>0.35 && abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hLMmcptb->Divide(hLMmcptb_num,hLMmcptb_den,1,1,"B");
   hLMmcptb->Write();
-  data_tree->Draw("pt>>+LepMVALooseEff_dataptb_den","abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("pt>>+LepMVALooseEff_dataptb_num","mva>0.35 && abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+LepMVALooseEff_dataptb_den","abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+LepMVALooseEff_dataptb_num","mva>0.35 && abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hLMdataptb->Divide(hLMdataptb_num,hLMdataptb_den,1,1,"B");
   hLMdataptb->Write();
 
   //endcap
-  mc_tree->Draw("pt>>+LepMVALooseEff_mcpte_den","abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("pt>>+LepMVALooseEff_mcpte_num","mva>0.35 && abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+LepMVALooseEff_mcpte_den","abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+LepMVALooseEff_mcpte_num","mva>0.35 && abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hLMmcpte->Divide(hLMmcpte_num,hLMmcpte_den,1,1,"B");
   hLMmcpte->Write();
-  data_tree->Draw("pt>>+LepMVALooseEff_datapte_den","abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("pt>>+LepMVALooseEff_datapte_num","mva>0.35 && abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+LepMVALooseEff_datapte_den","abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+LepMVALooseEff_datapte_num","mva>0.35 && abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hLMdatapte->Divide(hLMdatapte_num,hLMdatapte_den,1,1,"B");
   hLMdatapte->Write();
   
   //eta
-  mc_tree->Draw("eta>>+LepMVALooseEff_mceta_den","abs(mass-90)<10 && pt>5 && tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("eta>>+LepMVALooseEff_mceta_num","mva>0.35 && abs(mass-90)<10 && pt > 7 && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta>>+LepMVALooseEff_mceta_den","abs(mass-90)<10 && pt>5 && abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta>>+LepMVALooseEff_mceta_num","mva>0.35 && abs(mass-90)<10 && pt > 7 && abs(tag_eta) < 1.499 && tag_pt>25");
   hLMmceta->Divide(hLMmceta_num,hLMmceta_den,1,1,"B");
   hLMmceta->Write();
-  data_tree->Draw("eta>>+LepMVALooseEff_dataeta_den","abs(mass-90)<10 && pt>5 && tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("eta>>+LepMVALooseEff_dataeta_num","mva>0.35 && abs(mass-90)<10 && pt > 7 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("eta>>+LepMVALooseEff_dataeta_den","abs(mass-90)<10 && pt>5 && abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("eta>>+LepMVALooseEff_dataeta_num","mva>0.35 && abs(mass-90)<10 && pt > 7 && abs(tag_eta) < 1.499 && tag_pt>25");
   hLMdataeta->Divide(hLMdataeta_num,hLMdataeta_den,1,1,"B");
   hLMdataeta->Write();
 
   //2D
-  mc_tree->Draw("eta:pt>>+LepMVALooseEff_mc2D_den","abs(mass-90)<10 &&  tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("eta:pt>>+LepMVALooseEff_mc2D_num","mva>0.35 && abs(mass-90)<10  && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta:pt>>+LepMVALooseEff_mc2D_den","abs(mass-90)<10 &&  abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta:pt>>+LepMVALooseEff_mc2D_num","mva>0.35 && abs(mass-90)<10  && abs(tag_eta) < 1.499 && tag_pt>25");
   hLMmc2D->Divide(hLMmc2D_num,hLMmc2D_den,1,1,"B");
   hLMmc2D->Write();
-  data_tree->Draw("eta:pt>>+LepMVALooseEff_data2D_den","abs(mass-90)<10 &&  tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("eta:pt>>+LepMVALooseEff_data2D_num","mva>0.35 && abs(mass-90)<10 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("eta:pt>>+LepMVALooseEff_data2D_den","abs(mass-90)<10 &&  abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("eta:pt>>+LepMVALooseEff_data2D_num","mva>0.35 && abs(mass-90)<10 && abs(tag_eta) < 1.499 && tag_pt>25");
   hLMdata2D->Divide(hLMdata2D_num,hLMdata2D_den,1,1,"B");
   hLMdata2D->Write();
 
 
-  hLMSF2D=hLMdata2D;
+  hLMSF2D=(TH2F*)hLMdata2D->Clone("LepMVALooseSF2D");
   hLMSF2D->Divide(hLMmc2D);
   hLMSF2D->Write();
 
@@ -171,149 +172,103 @@ void mvaefficiencyele()
   
 
   //barrel
-  mc_tree->Draw("pt>>+LepMVATightEff_mcptb_den","abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("pt>>+LepMVATightEff_mcptb_num","mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+LepMVATightEff_mcptb_den","abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+LepMVATightEff_mcptb_num","mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTMmcptb->Divide(hTMmcptb_num,hTMmcptb_den,1,1,"B");
   hTMmcptb->Write();
-  data_tree->Draw("pt>>+LepMVATightEff_dataptb_den","abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("pt>>+LepMVATightEff_dataptb_num","mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+LepMVATightEff_dataptb_den","abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+LepMVATightEff_dataptb_num","mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTMdataptb->Divide(hTMdataptb_num,hTMdataptb_den,1,1,"B");
   hTMdataptb->Write();
 
   //endcap
-  mc_tree->Draw("pt>>+LepMVATightEff_mcpte_den","abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("pt>>+LepMVATightEff_mcpte_num","mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+LepMVATightEff_mcpte_den","abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+LepMVATightEff_mcpte_num","mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTMmcpte->Divide(hTMmcpte_num,hTMmcpte_den,1,1,"B");
   hTMmcpte->Write();
-  data_tree->Draw("pt>>+LepMVATightEff_datapte_den","abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("pt>>+LepMVATightEff_datapte_num","mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+LepMVATightEff_datapte_den","abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+LepMVATightEff_datapte_num","mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTMdatapte->Divide(hTMdatapte_num,hTMdatapte_den,1,1,"B");
   hTMdatapte->Write();
   
   //eta
-  mc_tree->Draw("eta>>+LepMVATightEff_mceta_den","abs(mass-90)<10 && pt>5 && tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("eta>>+LepMVATightEff_mceta_num","mva>0.7 && abs(mass-90)<10 && pt>10 && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta>>+LepMVATightEff_mceta_den","abs(mass-90)<10 && pt>5 && abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta>>+LepMVATightEff_mceta_num","mva>0.7 && abs(mass-90)<10 && pt>10 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTMmceta->Divide(hTMmceta_num,hTMmceta_den,1,1,"B");
   hTMmceta->Write();
-  data_tree->Draw("eta>>+LepMVATightEff_dataeta_den","abs(mass-90)<10 && pt>5 && tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("eta>>+LepMVATightEff_dataeta_num","mva>0.7 && abs(mass-90)<10 && pt > 10 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("eta>>+LepMVATightEff_dataeta_den","abs(mass-90)<10 && pt>5 && abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("eta>>+LepMVATightEff_dataeta_num","mva>0.7 && abs(mass-90)<10 && pt > 10 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTMdataeta->Divide(hTMdataeta_num,hTMdataeta_den,1,1,"B");
   hTMdataeta->Write();
 
   //2D
-  mc_tree->Draw("eta:pt>>+LepMVATightEff_mc2D_den","abs(mass-90)<10 &&  tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("eta:pt>>+LepMVATightEff_mc2D_num","mva>0.7 && abs(mass-90)<10  && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta:pt>>+LepMVATightEff_mc2D_den","abs(mass-90)<10 &&  abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta:pt>>+LepMVATightEff_mc2D_num","mva>0.7 && abs(mass-90)<10  && abs(tag_eta) < 1.499 && tag_pt>25");
   hTMmc2D->Divide(hTMmc2D_num,hTMmc2D_den,1,1,"B");
   hTMmc2D->Write();
-  data_tree->Draw("eta:pt>>+LepMVATightEff_data2D_den","abs(mass-90)<10 &&  tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("eta:pt>>+LepMVATightEff_data2D_num","mva>0.7 && abs(mass-90)<10 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("eta:pt>>+LepMVATightEff_data2D_den","abs(mass-90)<10 &&  abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("eta:pt>>+LepMVATightEff_data2D_num","mva>0.7 && abs(mass-90)<10 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTMdata2D->Divide(hTMdata2D_num,hTMdata2D_den,1,1,"B");
   hTMdata2D->Write();
 
-  hTMSF2D=hTMdata2D;
+  
+  hTMSF2D=(TH2F*)hTMdata2D->Clone("LepMVATightSF2D");
   hTMSF2D->Divide(hTMmc2D);
   hTMSF2D->Write();
+
+
 
 
   // Tight Charge vs Tight MVA  Efficiency 
 
   
   //barrel
-  mc_tree->Draw("pt>>+TightChargeEff_mcptb_den","mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("pt>>+TightChargeEff_mcptb_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+TightChargeEff_mcptb_den","mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+TightChargeEff_mcptb_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTCmcptb->Divide(hTCmcptb_num,hTCmcptb_den,1,1,"B");
   hTCmcptb->Write();
-  data_tree->Draw("pt>>+TightChargeEff_dataptb_den","mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("pt>>+TightChargeEff_dataptb_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+TightChargeEff_dataptb_den","mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+TightChargeEff_dataptb_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && abseta < 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTCdataptb->Divide(hTCdataptb_num,hTCdataptb_den,1,1,"B");
   hTCdataptb->Write();
 
   //endcap
-  mc_tree->Draw("pt>>+TightChargeEff_mcpte_den","mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("pt>>+TightChargeEff_mcpte_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+TightChargeEff_mcpte_den","mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("pt>>+TightChargeEff_mcpte_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTCmcpte->Divide(hTCmcpte_num,hTCmcpte_den,1,1,"B");
   hTCmcpte->Write();
-  data_tree->Draw("pt>>+TightChargeEff_datapte_den","mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("pt>>+TightChargeEff_datapte_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+TightChargeEff_datapte_den","mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("pt>>+TightChargeEff_datapte_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && abseta > 1.499 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTCdatapte->Divide(hTCdatapte_num,hTCdatapte_den,1,1,"B");
   hTCdatapte->Write();
   
   //eta
-  mc_tree->Draw("eta>>+TightChargeEff_mceta_den","mva>0.7 && abs(mass-90)<10 && pt>5 && tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("eta>>+TightChargeEff_mceta_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && pt>10 && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta>>+TightChargeEff_mceta_den","mva>0.7 && abs(mass-90)<10 && pt>5 && abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta>>+TightChargeEff_mceta_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && pt>10 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTCmceta->Divide(hTCmceta_num,hTCmceta_den,1,1,"B");
   hTCmceta->Write();
-  data_tree->Draw("eta>>+TightChargeEff_dataeta_den","mva>0.7 && abs(mass-90)<10 && pt>5 && tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("eta>>+TightChargeEff_dataeta_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && pt > 10 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("eta>>+TightChargeEff_dataeta_den","mva>0.7 && abs(mass-90)<10 && pt>5 && abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("eta>>+TightChargeEff_dataeta_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && pt > 10 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTCdataeta->Divide(hTCdataeta_num,hTCdataeta_den,1,1,"B");
   hTCdataeta->Write();
 
   //2D
-  mc_tree->Draw("eta:pt>>+TightChargeEff_mc2D_den","mva>0.7 && abs(mass-90)<10 &&  tag_eta < 1.499 && tag_pt>25");
-  mc_tree->Draw("eta:pt>>+TightChargeEff_mc2D_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10  && tag_eta < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta:pt>>+TightChargeEff_mc2D_den","mva>0.7 && abs(mass-90)<10 &&  abs(tag_eta) < 1.499 && tag_pt>25");
+  mc_tree->Draw("eta:pt>>+TightChargeEff_mc2D_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10  && abs(tag_eta) < 1.499 && tag_pt>25");
   hTCmc2D->Divide(hTCmc2D_num,hTCmc2D_den,1,1,"B");
   hTCmc2D->Write();
-  data_tree->Draw("eta:pt>>+TightChargeEff_data2D_den","mva>0.7 && abs(mass-90)<10 &&  tag_eta < 1.499 && tag_pt>25");
-  data_tree->Draw("eta:pt>>+TightChargeEff_data2D_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && tag_eta < 1.499 && tag_pt>25");
+  data_tree->Draw("eta:pt>>+TightChargeEff_data2D_den","mva>0.7 && abs(mass-90)<10 &&  abs(tag_eta) < 1.499 && tag_pt>25");
+  data_tree->Draw("eta:pt>>+TightChargeEff_data2D_num","tightCharge > 1 && convVeto > 0 && innerHits==0 && mva>0.7 && abs(mass-90)<10 && abs(tag_eta) < 1.499 && tag_pt>25");
   hTCdata2D->Divide(hTCdata2D_num,hTCdata2D_den,1,1,"B");
   hTCdata2D->Write();
 
-  hTCSF2D=hTCdata2D;
+  hTCSF2D=(TH2F*)hTCdata2D->Clone("TightChargeSF2D");
   hTCSF2D->Divide(hTCmc2D);
   hTCSF2D->Write();
 
   fOut->Close();
 
 
-//   //==============================================================================================
 
-// //   hold->SetStats(0);
-// //   hold->SetMaximum(1);
-// //   hold->SetLineColor(1);
-// //   hold->SetLineWidth(3);
-// //   hold->SetMarkerColor(1);
-// //   hold->SetMarkerStyle(4);
-// //   hold->GetXaxis()->SetTitle("pT [GeV]");
-// //   //hold->GetXaxis()->SetTitle("pseudorapidity");
-// //   hold->GetYaxis()->SetTitle("MVA Efficiency");
-// //   hold->GetYaxis()->SetLabelSize(0.04);
-// //   hold->GetXaxis()->SetLabelSize(0.04);
-
-// //   hnew->SetStats(0);
-// //   hnew->SetMaximum(1);
-// //   hnew->SetLineColor(kAzure+8);
-// //   hnew->SetLineWidth(3);
-// //   hnew->SetMarkerColor(kAzure+8);
-// //   hnew->GetXaxis()->SetTitle("pT [GeV]");
-// //   //hnew->GetXaxis()->SetTitle("pseudorapidity");
-// //   hnew->GetYaxis()->SetTitle("MVA efficiency");
-// //   hnew->GetYaxis()->SetLabelSize(0.04);
-// //   hnew->GetXaxis()->SetLabelSize(0.04);
-
-  
-// //   TLegend *legFake = new TLegend(0.5,0.7,0.75,0.85,NULL,"brNDC");
-// //   legFake->SetTextSize(0.04);
-// //   legFake->SetTextFont(42);
-// //   legFake->SetLineWidth(2);
-// //   legFake->SetTextSize(0.04);
-// //   legFake->SetLineColor(kWhite);
-// //   legFake->SetLineStyle(1);
-// //   legFake->SetLineWidth(1);
-// //   legFake->SetFillColor(0);
-// //   legFake->SetFillStyle(0);
-// //   legFake->Draw();
-// //   entry=legFake->AddEntry(hold,"DY MC - Electron Barrel","pl");
-// //   entry->SetLineWidth(3);
-// //   entry->SetMarkerSize(1.2);
-// //   entry->SetMarkerStyle(20);
-// //   TLegendEntry *entry=legFake->AddEntry(hnew,"Data - Electron Barrel","pl");
-// //   entry->SetLineWidth(3);
-// //   entry->SetMarkerSize(1.2);
-// //   entry->SetMarkerStyle(20);	
-	
-// //   TCanvas * canFakepT = new TCanvas("canFakepT","canFakepT");
-// //   hnew->Draw();
-// //   hold->Draw("same");
-// //   legFake->Draw();
 
 }
