@@ -64,9 +64,10 @@ void fillZFakeRatesFromData() {
 
     TString baseCut = " nLepGood == 3 && LepGood1_pdgId+LepGood2_pdgId == 0 && ";
     baseCut += "minMllAFAS > 12 && abs(mZ1-91.2) < 10 && ";
-    baseCut += "met*0.00397 + mhtJet25*0.00265 < 0.15 && ";
+    baseCut += "met*0.00397 + mhtJet25*0.00265 < 0.30 && ";
     //baseCut += "met*0.00397 + mhtJet25*0.00265 < 0.3 && ";
     baseCut += "abs(mass_2(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass,LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass)-mZ1) < 0.001 && ";
+    //baseCut += "nBJetMedium25 == 1 && ";
     baseCut += "nBJetLoose25 == 1 && ";
 
     TString baseCutT = " (LepGood%d_tightCharge > (abs(LepGood%d_pdgId) == 11)) && ";
@@ -84,8 +85,8 @@ void fillZFakeRatesFromData() {
         std::cout << "Processing MVA selection on " << sample << std::endl;
         fillFR("FR_el", baseCut + "abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.35", sample, 3);
         fillFR("FR_mu", baseCut + "abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.35", sample, 3);
-        //fillFR("FR_tight_el", baseCutT + "abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
-        //fillFR("FR_tight_mu", baseCutT + "abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tight_el", baseCutT + "abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tight_mu", baseCutT + "abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
 
 #if 0
         std::cout << "Processing cut-based selection on " << sample << std::endl;

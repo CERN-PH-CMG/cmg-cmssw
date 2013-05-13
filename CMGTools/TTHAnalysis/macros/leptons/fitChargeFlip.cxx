@@ -76,6 +76,13 @@ void fitChargeFlip(TString process="DY") {
     QF_el->SetBinContent(2,2, xs[4]); // medium pt endcap
     QF_el->SetBinContent(3,2, xs[5]); // high pt endcap
 
+    QF_el->SetBinError(1,1, xe[0]); // low pt barrel
+    QF_el->SetBinError(2,1, xe[1]); // high pt barrel
+    QF_el->SetBinError(3,1, xe[2]); // high pt barrel (same as above)
+    QF_el->SetBinError(1,2, xe[3]); // low pt endcap
+    QF_el->SetBinError(2,2, xe[4]); // medium pt endcap
+    QF_el->SetBinError(3,2, xe[5]); // high pt endcap
+
     QF_el->Write();
     printf("Written to %s\n", fOut->GetName());
     fOut->Close();
