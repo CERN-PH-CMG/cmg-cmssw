@@ -66,6 +66,7 @@ void fillZFakeRatesFromMC() {
     //baseCut += "met*0.00397 + mhtJet25*0.00265 < 0.15 && ";
     baseCut += "met*0.00397 + mhtJet25*0.00265 < 0.3 && ";
     baseCut += "abs(mass_2(LepGood1_pt,LepGood1_eta,LepGood1_phi,LepGood1_mass,LepGood2_pt,LepGood2_eta,LepGood2_phi,LepGood2_mass)-mZ1) < 0.001 && ";
+    //baseCut += "nBJetMedium25 == 1 && ";
     baseCut += "nBJetLoose25 == 1 && ";
     //baseCut += "LepGood%d_mcMatchAny == 2 && ";
 
@@ -81,10 +82,10 @@ void fillZFakeRatesFromMC() {
         //fillBaseWeights("W_btag_mu", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_pt > 10 && LepGood%d_mva < 0.25", sample, 4);
 
         std::cout << "Processing MVA selection on " << sample << std::endl;
-        //fillFR("FR_el", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.35", sample, 3);
+        fillFR("FR_el", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.35", sample, 3);
         fillFR("FR_mu", baseCut + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.35", sample, 3);
-        //fillFR("FR_tight_el", baseCutT + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
-        //fillFR("FR_tight_mu", baseCutT + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tight_el", baseCutT + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
+        fillFR("FR_tight_mu", baseCutT + "LepGood%d_mcMatchId == 0 && abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
 
 #if 0
         std::cout << "Processing cut-based selection on " << sample << std::endl;

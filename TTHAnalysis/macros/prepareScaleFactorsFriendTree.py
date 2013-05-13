@@ -5,20 +5,39 @@ import os.path
 
 MODULES = []
 
-from CMGTools.TTHAnalysis.tools.btagSFs_POG import bTagSFEvent3WP as btagSFEvent
-MODULES += [ ('btag', btagSFEvent) ]
+from CMGTools.TTHAnalysis.tools.btagSFs_POG import bTagSFEvent3WPErrs as btagSFEvent
+from CMGTools.TTHAnalysis.tools.lepMVA_SF import AllLepSFs
+from CMGTools.TTHAnalysis.tools.lepTrigger_SF import LepTriggerSF_Event
+MODULES += [ ('btag', btagSFEvent), ('lep',AllLepSFs()), ('trig2l', LepTriggerSF_Event())  ]
+
+from CMGTools.TTHAnalysis.tools.metLD_reshape import MetLDReshaper
+MODULES += [ ('metLD', MetLDReshaper()) ]
+
 
 class ScaleFactorProducer(Module):
     def __init__(self,name,booker,modules):
         Module.__init__(self,name,booker)
-        self._modules = modules
+        self._modules = []
+        self._xmodules = []
+        for name,mod in modules:
+            if hasattr(mod, 'listBranches'):
+                self._xmodules.append(mod)
+            else:
+                self._modules.append((name,mod))
     def beginJob(self):
         self.t = PyTree(self.book("TTree","t","t"))
         for name, mod in self._modules:
             self.t.branch("SF_%s" % name ,"F")
+        for xmod in self._xmodules:
+            for B in xmod.listBranches():
+                self.t.branch("SF_%s" % B ,"F")
     def analyze(self,event):
         for name, mod in self._modules:
             setattr(self.t, "SF_%s" % name, mod(event))
+        for xmod in self._xmodules:
+            keyvals = xmod(event)
+            for B,V in keyvals.iteritems():
+                setattr(self.t, "SF_%s" % B, V)
         self.t.fill()
 
 import os, itertools

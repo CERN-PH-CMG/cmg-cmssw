@@ -17,6 +17,8 @@ TH2 *FR_ttl_el = 0;
 TH2 *FR_ttl_mu = 0;
 TH2 *FR_zl_el = 0;
 TH2 *FR_zl_mu = 0;
+TH2 *FR_tight_zl_el = 0;
+TH2 *FR_tight_zl_mu = 0;
 TH2 *FR_zlw_el = 0;
 TH2 *FR_zlw_mu = 0;
 #endif
@@ -41,6 +43,13 @@ const int ntrig1mu = 5;
 const int trig1mu[ntrig1mu] = { 8, 12, 17, 24, 40 };
 TH2 *FR_qcd1mu_mu[ntrig1mu], *FR_qcd1mu_el[ntrig1mu];
 
+enum LType { EL=0, MU=1, NLTypes = 2 };
+enum FRType { LOOSE=0, TIGHT=1, FRTypes=2 };
+TH2 *FR_ttl[FRTypes][NLTypes];
+TH2 *FR_zl[FRTypes][NLTypes];
+TH2 *FR_qcd[FRTypes][NLTypes];
+TH2 *d_FR_zl[FRTypes][NLTypes];
+TH2 *d_FR_qcd[FRTypes][NLTypes];
 
 void loadData(TString iPrefix, int trig) {
     TFile *fMC = TFile::Open(trig == 1 ? "fakeRates_TTJets_MC.root" : "fakeRates_TTJets_MC_NonTrig.root" );
@@ -72,24 +81,30 @@ void loadData(TString iPrefix, int trig) {
     d_FR_qcd_mu = (TH2*) fDQCD->Get("FR_mu");
 
     TFile *fZMC = TFile::Open("fakeRates_DYJets_MC.root");
-    if (fZMC) {
+    if (0 && fZMC) {
         FR_zl_el = (TH2*) fZMC->Get(iPrefix+"_el");
         FR_zl_mu = (TH2*) fZMC->Get(iPrefix+"_mu");
+        FR_tight_zl_el = (TH2*) fZMC->Get(iPrefix+"_tight_el");
+        FR_tight_zl_mu = (TH2*) fZMC->Get(iPrefix+"_tight_mu");
     }
 
     TFile *fZ3lData = TFile::Open("fakeRates_Z3l_Data.root");
-    if (fZ3lData) {
+    if (0 && fZ3lData) {
         d_FR_tight_zl_el = (TH2*) fZ3lData->Get(iPrefix+"_tight_el");
         d_FR_tight_zl_mu = (TH2*) fZ3lData->Get(iPrefix+"_tight_mu");
         d_FR_zl_el = (TH2*) fZ3lData->Get(iPrefix+"_el");
         d_FR_zl_mu = (TH2*) fZ3lData->Get(iPrefix+"_mu");
     }
-
+    FR_ttl[LOOSE][EL] = FR_ttl_el; FR_ttl[LOOSE][MU] = FR_ttl_mu; FR_ttl[TIGHT][EL] = FR_tight_ttl_el; FR_ttl[TIGHT][MU] = FR_tight_ttl_mu;
+    FR_qcd[LOOSE][EL] = FR_qcd_el; FR_qcd[LOOSE][MU] = FR_qcd_mu; FR_qcd[TIGHT][EL] = FR_tight_qcd_el; FR_qcd[TIGHT][MU] = FR_tight_qcd_mu;
+    FR_zl[LOOSE][EL] = FR_zl_el; FR_zl[LOOSE][MU] = FR_zl_mu; FR_zl[TIGHT][EL] = FR_tight_zl_el; FR_zl[TIGHT][MU] = FR_tight_zl_mu;
+    d_FR_qcd[LOOSE][EL] = d_FR_qcd_el; d_FR_qcd[LOOSE][MU] = d_FR_qcd_mu; d_FR_qcd[TIGHT][EL] = d_FR_tight_qcd_el; d_FR_qcd[TIGHT][MU] = d_FR_tight_qcd_mu;
+    d_FR_zl[LOOSE][EL] = d_FR_zl_el; d_FR_zl[LOOSE][MU] = d_FR_zl_mu; d_FR_zl[TIGHT][EL] = d_FR_tight_zl_el; d_FR_zl[TIGHT][MU] = d_FR_tight_zl_mu;
 }
 
-void cmsprelim(double x1=0.75, double y1=0.40, double x2=0.95, double y2=0.48, const int align=12, const char *text="CMS Preliminary") { 
+void cmsprelim(double x1=0.75, double y1=0.40, double x2=0.95, double y2=0.48, const int align=12, const char *text="CMS Preliminary", float textSize=0.033) { 
     TPaveText *cmsprel = new TPaveText(x1,y1,x2,y2,"NDC");
-    cmsprel->SetTextSize(0.033);
+    cmsprel->SetTextSize(textSize);
     cmsprel->SetFillColor(0);
     cmsprel->SetFillStyle(0);
     cmsprel->SetLineStyle(0);
@@ -102,7 +117,7 @@ void cmsprelim(double x1=0.75, double y1=0.40, double x2=0.95, double y2=0.48, c
 
 
 
-TGraph* drawSlice(TH2 *h2d, int ieta, int color, int ist=0) {
+TGraph* drawSlice(TH2 *h2d, int ieta, int color, int ist=0, int ifill=0) {
     if (h2d == 0) return 0;
     TGraphAsymmErrors *ret = new TGraphAsymmErrors(h2d->GetNbinsX());
     TAxis *ax = h2d->GetXaxis();
@@ -116,15 +131,16 @@ TGraph* drawSlice(TH2 *h2d, int ieta, int color, int ist=0) {
                                   h2d->GetBinError(i+1,ieta+1), h2d->GetBinError(i+1,ieta+1));
         }
     }
-    ret->SetLineWidth(2);
     ret->SetLineColor(color);
     ret->SetMarkerColor(color);
     if (ist) {
+        ret->SetLineWidth(1);
         ret->SetFillColor(color);
-        ret->SetFillStyle(ist == 1 ? 3004 : 1001);
+        ret->SetFillStyle(ifill ? ifill : (ist == 1 ? 3004 : 1001));
         ret->Draw("E5 SAME");
         ret->Draw("E2 SAME");
     } else {
+        ret->SetLineWidth(2);
         ret->Draw("P SAME");
     }
     return ret;
@@ -149,96 +165,52 @@ const char *ietalbl(int ieta) {
     else return ETALBL2[ieta];
 }
 
-void stackFRsMu(int ieta, int idata=0) {
+void stackFRs(LType lep, FRType wp, int ieta, int idata=0) {
     frame->Draw();
     TLegend *leg = newLeg(.27,.7,.49,.9);
-    //TGraph *ttl4 = drawSlice(FR_ttl_mu, ieta, 64, 2);
-    TGraph *ttl  = drawSlice(FR_ttl_mu, ieta,  4, 1);
-    leg->AddEntry(ttl,  "MC tt+l", "LF");
+    TGraph *ttl  = drawSlice(FR_ttl[wp][lep], ieta, 64, 1, 1001);
+    TGraph *zl  = drawSlice(FR_zl[wp][lep],  ieta, 222, 1, 3004);
+    TGraph *qcd = drawSlice(FR_qcd[wp][lep], ieta, 213, 1, 3345);
+    //TGraph *ttl4 = drawSlice(FR_ttl[wp][lep], ieta, 64, 2);
+    leg->AddEntry(ttl,  "MC tt+l", "F");
     //leg->AddEntry(ttl4, "  #pm 40%", "LF");
-    if (FR_zl_mu) leg->AddEntry(drawSlice(FR_zl_mu, ieta, 222), "MC Z+l", "LP");
-    //leg->AddEntry(drawSlice(FR_zlw_mu, ieta, 6), "Z+l w", "LP");
-    leg->AddEntry(drawSlice(FR_qcd_mu, ieta, 206), "MC qcd #mu", "LP");
-    //leg->AddEntry(drawSlice(FR_qcdj_mu, ieta, 209), "MC qcd j", "LP");
+    if (zl) leg->AddEntry(zl, "MC Z+b+l", "LF");
+    leg->AddEntry(qcd, "MC qcd #mu", "F");
+    //leg->AddEntry(drawSlice(FR_qcdj[wp][lep], ieta, 209), "MC qcd j", "LP");
     leg->Draw();
     if (idata) {
         TLegend *leg = newLeg(.55,.8,.87,.9);
-        leg->AddEntry(drawSlice(d_FR_qcd_mu, ieta, 1), "Data qcd #mu", "LP");
-        leg->AddEntry(drawSlice(d_FR_zl_mu, ieta, 209), "Data Z+l #mu", "LP");
+        TGraph *dq = drawSlice(d_FR_qcd[wp][lep], ieta, 1);
+        TGraph *dz = drawSlice(d_FR_zl[wp][lep], ieta, 209);
+        if (dq) leg->AddEntry(dq, "Data qcd #mu", "LPE");
+        if (dz) leg->AddEntry(dz, "Data Z+b+l #mu", "LPE");
         leg->Draw();
+        cmsprelim(.55, .73, .87, .79, 22, Form("|#eta| %s %s", ieta ? ">" : "<", lep==EL ? "1.479" : "1.5"), 0.045);
+    } else {
+        cmsprelim(.55, .8, .87, .88, 22, Form("|#eta| %s %s", ieta ? ">" : "<", lep==EL ? "1.479" : "1.5"), 0.045);
     }
-    cmsprelim(.20, .945, .40, .995, 12, "CMS Preliminary"); 
+    cmsprelim(.21, .945, .40, .995, 12, "CMS Preliminary"); 
     cmsprelim(.48, .945, .96, .995, 32, "#sqrt{s} = 8 TeV, L = 19.6 fb^{-1}");
-    c1->Print(Form("ttH_plots/270413/FR_QCD_Simple/stacks/%s/mu_%s.png", gPrefix.Data(), ietalbl(ieta)));
-    c1->Print(Form("ttH_plots/270413/FR_QCD_Simple/stacks/%s/mu_%s.pdf", gPrefix.Data(), ietalbl(ieta)));
+    const char *pName[NLTypes] = { "el", "mu" };
+    const char *wpName[FRTypes] = { "", "_tight" };
+    c1->Print(Form("ttH_plots/270413/FR_QCD_Simple/stacks/%s/%s%s_%s.png", gPrefix.Data(), pName[lep], wpName[wp], ietalbl(ieta)));
+    c1->Print(Form("ttH_plots/270413/FR_QCD_Simple/stacks/%s/%s%s_%s.pdf", gPrefix.Data(), pName[lep], wpName[wp], ietalbl(ieta)));
+}
+
+void stackFRsMu(int ieta, int idata=0) {
+    stackFRs(MU, LOOSE, ieta, idata);
 }
 
 void stackFRsEl(int ieta, int idata=0) {
-    frame->Draw();
-    TLegend *leg = newLeg(.27,.7,.49,.9);
-    //TGraph *ttl4 = drawSlice(FR_ttl_el, ieta, 64, 2);
-    TGraph *ttl  = drawSlice(FR_ttl_el, ieta,  4, 1);
-    leg->AddEntry(ttl,  "MC tt+l", "LF");
-    //leg->AddEntry(ttl4, "  #pm 40%", "LF");
-    if (FR_zl_el) leg->AddEntry(drawSlice(FR_zl_el, ieta, 222), "MC Z+l", "LP");
-    //leg->AddEntry(drawSlice(FR_zlw_el, ieta, 6), "Z+l w", "LP");
-    leg->AddEntry(drawSlice(FR_qcd_el, ieta, 206), "MC qcd #mu", "LP");
-    leg->Draw();
-    if (idata) {
-        TLegend *leg = newLeg(.55,.8,.87,.9);
-        leg->AddEntry(drawSlice(d_FR_qcd_el, ieta, 1), "Data qcd #mu", "LP");
-        leg->AddEntry(drawSlice(d_FR_zl_el, ieta, 209), "Data Z+l", "LP");
-        leg->Draw();
-    }
-    cmsprelim(.20, .945, .40, .995, 12, "CMS Preliminary"); 
-    cmsprelim(.48, .945, .96, .995, 32, "#sqrt{s} = 8 TeV, L = 19.6 fb^{-1}");
-    c1->Print(Form("ttH_plots/270413/FR_QCD_Simple/stacks/%s/el_%s.png", gPrefix.Data(), ietalbl(ieta)));
-    c1->Print(Form("ttH_plots/270413/FR_QCD_Simple/stacks/%s/el_%s.pdf", gPrefix.Data(), ietalbl(ieta)));
-}
+    stackFRs(EL, LOOSE, ieta, idata);
+} 
 
 void stackFRsMuT(int ieta, int idata=0) {
-    frame->Draw();
-    TLegend *leg = newLeg(.27,.7,.49,.9);
-    //TGraph *ttl4 = drawSlice(FR_tight_ttl_mu, ieta, 64, 2);
-    TGraph *ttl  = drawSlice(FR_tight_ttl_mu, ieta,  4, 1);
-    leg->AddEntry(ttl,  "MC tt+l", "LF");
-    //leg->AddEntry(ttl4, "  #pm 40%", "LF");
-    //leg->AddEntry(drawSlice(FR_tight_zl_mu, ieta, 222), "Z+l", "LP");
-    //leg->AddEntry(drawSlice(FR_tight_zlw_mu, ieta, 6), "Z+l w", "LP");
-    leg->AddEntry(drawSlice(FR_tight_qcd_mu, ieta, 206), "MC qcd #mu", "LP");
-    //leg->AddEntry(drawSlice(FR_tight_qcdj_mu, ieta, 209), "MC qcd j", "LP");
-    leg->Draw();
-    if (idata) {
-        TLegend *leg = newLeg(.55,.8,.87,.9);
-        leg->AddEntry(drawSlice(d_FR_tight_qcd_mu, ieta, 1), "Data qcd #mu", "LP");
-        leg->Draw();
-    }
-    cmsprelim(.20, .945, .40, .995, 12, "CMS Preliminary"); 
-    cmsprelim(.48, .945, .96, .995, 32, "#sqrt{s} = 8 TeV, L = 19.6 fb^{-1}");
-    c1->Print(Form("ttH_plots/270413/FR_QCD_Simple/stacks/%s/mu_tight_%s.png", gPrefix.Data(), ietalbl(ieta)));
-    c1->Print(Form("ttH_plots/270413/FR_QCD_Simple/stacks/%s/mu_tight_%s.pdf", gPrefix.Data(), ietalbl(ieta)));
+    stackFRs(MU, TIGHT, ieta, idata);
 }
 
 void stackFRsElT(int ieta, int idata=0) {
-    frame->Draw();
-    TLegend *leg = newLeg(.27,.7,.49,.9);
-    //TGraph *ttl4 = drawSlice(FR_tight_ttl_el, ieta, 64, 2);
-    TGraph *ttl  = drawSlice(FR_tight_ttl_el, ieta,  4, 1);
-    leg->AddEntry(ttl,  "MC tt+l", "LF");
-    //leg->AddEntry(ttl4, "  #pm 40%", "LF");
-    //leg->AddEntry(drawSlice(FR_tight_zl_el, ieta, 222), "Z+l", "LP");
-    //leg->AddEntry(drawSlice(FR_tight_zlw_el, ieta, 6), "Z+l w", "LP");
-    leg->AddEntry(drawSlice(FR_tight_qcd_el, ieta, 206), "MC qcd #mu", "LP");
-    leg->Draw();
-    if (idata) {
-        TLegend *leg = newLeg(.55,.8,.87,.9);
-        leg->AddEntry(drawSlice(d_FR_tight_qcd_el, ieta, 1), "Data qcd #mu", "LP");
-        leg->Draw();
-    }
-    cmsprelim(.20, .945, .40, .995, 12, "CMS Preliminary"); 
-    cmsprelim(.48, .945, .96, .995, 32, "#sqrt{s} = 8 TeV, L = 19.6 fb^{-1}");
-    c1->Print(Form("ttH_plots/270413/FR_QCD_Simple/stacks/%s/el_tight_%s.png", gPrefix.Data(), ietalbl(ieta)));
-    c1->Print(Form("ttH_plots/270413/FR_QCD_Simple/stacks/%s/el_tight_%s.pdf", gPrefix.Data(), ietalbl(ieta)));
+    stackFRs(EL, TIGHT, ieta, idata);
 }
 
 void stackFRs1MuMu(int ieta, int idata=0) {
