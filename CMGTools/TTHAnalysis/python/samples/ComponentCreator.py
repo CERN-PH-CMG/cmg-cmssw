@@ -20,11 +20,12 @@ class ComponentCreator(object):
          return component
 
     def makePrivateMCComponent(self,name,dataset,files):
-        
+         # prefix filenames with dataset unless they start with "/"
+         dprefix = dataset +"/" if files[0][0] != "/" else ""
          component = cfg.MCComponent(
              dataset=dataset,
              name = name,
-             files = ['root://eoscms//eos/cms%s/%s' % (dataset,f) for f in files],
+             files = ['root://eoscms//eos/cms%s%s' % (dprefix,f) for f in files],
              xSection = 1,
              nGenEvents = 1,
              triggers = [],
