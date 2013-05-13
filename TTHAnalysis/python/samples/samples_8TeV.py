@@ -318,18 +318,34 @@ dataSamples1Mu=[SingleMuAB,SingleMuC,SingleMuD,SingleMuRec]
 ####################################################################################################################
 #-----------PRIVATE FAST SIM---------------
 
-TTZRunsCMS = [ 1,445,6671,8510,9122,31166,28119,22429,17821,14290,11291,10367 ]
-FastSim_TTZJets = kreator.makePrivateMCComponent('FastSim_TTZJets','/store/caf/user/gpetrucc/ttH/fastsim/TTZJets', ['cmgTuple.8TeV_TTZJets_madgraph_run%d.root' % r for r in TTZRunsCMS])
-FastSim_TTZJets_MUp = kreator.makePrivateMCComponent('FastSim_TTZJets_matchingUp','/store/caf/user/gpetrucc/ttH/fastsim/TTZJets_matchingUp', ['cmgTuple.8TeV_TTZJets_madgraph_run%d_matchingUp.root' % r for r in TTZRunsCMS])
-FastSim_TTZJets_MDn = kreator.makePrivateMCComponent('FastSim_TTZJets_matchingDown','/store/caf/user/gpetrucc/ttH/fastsim/TTZJets_matchingDown', ['cmgTuple.8TeV_TTZJets_madgraph_run%d_matchingDown.root' % r for r in TTZRunsCMS])
+madFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-madgraph-2013-05-07.txt" % os.environ['CMSSW_BASE'], "r") ]
+pythiaFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-pythia-2013-05-02.txt" % os.environ['CMSSW_BASE'], "r") ]
+def _grep(x,l): return [ i for i in l if x in i ]
 
-TTWRunsCMS = [ 143217067, 143217068, 143217069, 143217070, 143217071, 143217072, 143217073, 143217075, 143217076, 143217078, 143217079, 143217080 ]
-FastSim_TTWJets = kreator.makePrivateMCComponent('FastSim_TTWJets','/store/caf/user/gpetrucc/ttH/fastsim/TTWJets', ['cmgTuple.TTWJets_8TeV-madgraph_%d.root' % r for r in TTWRunsCMS])
-FastSim_TTWJets_MUp = kreator.makePrivateMCComponent('FastSim_TTWJets_matchingUp','/store/caf/user/gpetrucc/ttH/fastsim/TTWJets_matchingUp', ['cmgTuple.TTWJets_8TeV-madgraph_%d_matchingUp.root' % r for r in TTWRunsCMS])
-FastSim_TTWJets_MDn = kreator.makePrivateMCComponent('FastSim_TTWJets_matchingDown','/store/caf/user/gpetrucc/ttH/fastsim/TTWJets_matchingDown', ['cmgTuple.TTWJets_8TeV-madgraph_%d_matchingDown.root' % r for r in TTWRunsCMS])
+FastSim_TTZJets    = kreator.makePrivateMCComponent('FastSim_TTZJets',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttZ_01jets_nominal',   _grep('ttZ_01jets_nominal',   madFiles) )
+FastSim_TTZJets_Up = kreator.makePrivateMCComponent('FastSim_TTZJets_scaleUp',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttZ_01jets_scaleUp',   _grep('ttZ_01jets_scaleUp',   madFiles) )
+FastSim_TTZJets_Dn = kreator.makePrivateMCComponent('FastSim_TTZJets_scaleDown',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttZ_01jets_scaleDown', _grep('ttZ_01jets_scaleDown', madFiles) )
+FastSim_TTZJets_MUp = kreator.makePrivateMCComponent('FastSim_TTZJets_xqtUp',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttZ_01jets_xqtUp',   _grep('ttZ_01jets_xqtUp',   madFiles) )
+FastSim_TTZJets_MDn = kreator.makePrivateMCComponent('FastSim_TTZJets_xqtDown',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttZ_01jets_xqtDown', _grep('ttZ_01jets_xqtDown', madFiles) )
+FastSim_TTWJets = kreator.makePrivateMCComponent('FastSim_TTWJets_nominal',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttW_012jets_nominal',   _grep('ttW_012jets_nominal',   madFiles) )
+FastSim_TTWJets_Up = kreator.makePrivateMCComponent('FastSim_TTWJets_scaleUp',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttW_012jets_scaleUp',   _grep('ttW_012jets_scaleUp',   madFiles) )
+FastSim_TTWJets_Dn = kreator.makePrivateMCComponent('FastSim_TTWJets_scaleDown',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttW_012jets_scaleDown', _grep('ttW_012jets_scaleDown', madFiles) )
+FastSim_TTWJets_MUp = kreator.makePrivateMCComponent('FastSim_TTWJets_xqtUp',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttW_012jets_xqtUp',   _grep('ttW_012jets_xqtUp',   madFiles) )
+FastSim_TTWJets_MDn = kreator.makePrivateMCComponent('FastSim_TTWJets_xqtDown',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttW_012jets_xqtDown', _grep('ttW_012jets_xqtDown', madFiles) )
+FastSim_TTHJets    = kreator.makePrivateMCComponent('FastSim_TTHJets_nominal',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_nominal',   _grep('ttH_012jets_nominal',   madFiles) )
+FastSim_TTHJets_Up = kreator.makePrivateMCComponent('FastSim_TTHJets_scaleUp',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleUp',   _grep('ttH_012jets_scaleUp',   madFiles) )
+FastSim_TTHJets_Dn = kreator.makePrivateMCComponent('FastSim_TTHJets_scaleDown',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_012jets_scaleDown', madFiles) )
 
-fastSimSamples = [ FastSim_TTZJets, FastSim_TTZJets_MUp, FastSim_TTZJets_MDn,
-                   FastSim_TTWJets, FastSim_TTWJets_MUp, FastSim_TTWJets_MDn ]
+FastSim_TTHJets_tuneZ2 = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneZ2',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_Z2-', pythiaFiles) )
+FastSim_TTHJets_tuneZ2Star = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneZ2Star',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_Z2Star-', pythiaFiles) )
+FastSim_TTHJets_tuneD6T = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneD6T',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_D6T-', pythiaFiles) )
+FastSim_TTHJets_tuneProQ20 = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneProQ20',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_ProQ20-', pythiaFiles) )
+FastSim_TTHJets_tuneP11 = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneP11',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_P11-', pythiaFiles) )
+
+fastSimSamples = [ FastSim_TTZJets, FastSim_TTZJets_Up, FastSim_TTZJets_Dn, FastSim_TTZJets_MUp, FastSim_TTZJets_MDn,
+                   FastSim_TTWJets, FastSim_TTWJets_Up, FastSim_TTWJets_Dn, FastSim_TTWJets_MUp, FastSim_TTWJets_MDn,
+                   FastSim_TTHJets, FastSim_TTHJets_Up, FastSim_TTHJets_Dn,
+                   FastSim_TTHJets_tuneZ2,  FastSim_TTHJets_tuneZ2Star,  FastSim_TTHJets_tuneD6T,  FastSim_TTHJets_tuneProQ20,  FastSim_TTHJets_tuneP11,  ]
 
 from CMGTools.TTHAnalysis.setup.Efficiencies import *
 
@@ -342,6 +358,9 @@ for comp in mcSamples + fastSimSamples + extraMcSamples:
     comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012
+
+for comp in fastSimSamples:
+    comp.splitFactor = 10
 
 for comp in dataSamplesMu:
     comp.splitFactor = 500
