@@ -131,8 +131,9 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange):
         unity.SetBinError(b, e/n if n > 0 else 0)
         unity0.SetBinContent(b,  1 if n > 0 else 0)
         unity0.SetBinError(b, e0/n if n > 0 else 0)
-        rmin = min([ rmin, 1-2*e/n if n > 0 else 1, ratio.GetBinContent(b) - 2*ratio.GetBinError(b) ]) 
-        rmax = max([ rmax, 1+2*e/n if n > 0 else 1, ratio.GetBinContent(b) + 2*ratio.GetBinError(b) ])  
+        if ratio.GetBinContent(b) != 0:
+            rmin = min([ rmin, 1-2*e/n if n > 0 else 1, ratio.GetBinContent(b) - 2*ratio.GetBinError(b) ]) 
+            rmax = max([ rmax, 1+2*e/n if n > 0 else 1, ratio.GetBinContent(b) + 2*ratio.GetBinError(b) ])  
     if rmin < maxRange[0]: rmin = maxRange[0]; 
     if rmax > maxRange[1]: rmax = maxRange[1];
     unity.SetFillStyle(1001);
