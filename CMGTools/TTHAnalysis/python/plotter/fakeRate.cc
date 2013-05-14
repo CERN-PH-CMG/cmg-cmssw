@@ -179,184 +179,32 @@ float chargeFlipBin_2lss(float l1pt, float l1eta) {
 }
 
 
-
 float fakeRateWeight_3l(float l1pt, float l1eta, int l1pdgId, float l1mva,
-			float l2pt, float l2eta, int l2pdgId, float l2mva,
-			float l3pt, float l3eta, int l3pdgId, float l3mva) 
+                        float l2pt, float l2eta, int l2pdgId, float l2mva,
+                        float l3pt, float l3eta, int l3pdgId, float l3mva,
+                        float WP)
 {
-  int nfail = (l1mva < -0.2)+(l2mva < -0.2)+(l3mva < -0.2);
-  double mvas[]={l1mva, l2mva, l3mva};
-  double pts[]={l1pt, l2pt, l3pt};
-  double etas[]={l1eta, l2eta, l3eta};
-  int pdgids[]={l1pdgId, l2pdgId, l3pdgId};
-  multimap<double,double> ptBymva;
-  multimap<double,double> etaBymva;
-  multimap<int,double> pdgidBymva;
-  for (unsigned int i = 0; i < 3 ; ++i){
-    ptBymva.insert(pair<double,double>(pts[i],mvas[i]));
-    etaBymva.insert(pair<double,double>(etas[i],mvas[i]));
-    pdgidBymva.insert(pair<int,double>(pdgids[i],mvas[i]));
-  }
-  multimap<double,double>::iterator ptmvait_one = ptBymva.begin();
-  multimap<double,double>::iterator ptmvait_two = (++(ptBymva.begin()));
-  multimap<double,double>::iterator etamvait_one = etaBymva.begin();
-  multimap<double,double>::iterator etamvait_two = (++(etaBymva.begin()));
-  multimap<int,double>::iterator pdgidmvait_one = pdgidBymva.begin();
-  multimap<int,double>::iterator pdgidmvait_two = (++(pdgidBymva.begin()));
-
-
-    switch (nfail) {
-        case 1: {
-            double fpt,feta; int fid;
-	    fpt = ptmvait_one->first; feta = std::abs(etamvait_one->first); fid = abs(pdgidmvait_one->first);
-	    TH2 *hist = (fid == 11 ? FR_el : FR_mu);
-            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(fpt)));
-            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(feta)));
+    /// 3 pass: weight  0
+    /// 1 fail: weight +f/(1-f)
+    /// 2 fail: weight -f*f/(1-f)(1-f)
+    //  3 fail: weight +f*f*f/((1-f)(1-f)(1-f)
+    //  so, just multiply up factors of -f/(1-f) for each failure
+    float mvas[]={l1mva, l2mva, l3mva};
+    float pts[]={l1pt, l2pt, l3pt};
+    float etas[]={fabs(l1eta), fabs(l2eta), fabs(l3eta)};
+    int pdgids[]={l1pdgId, l2pdgId, l3pdgId};
+    float ret = -1.0f;
+    for (unsigned int i = 0; i < 3 ; ++i) {
+        if (mvas[i] < WP) {
+	    TH2 *hist = (abs(pdgids[i]) == 11 ? FR_el : FR_mu);
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(pts[i])));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(etas[i])));
             double fr = hist->GetBinContent(ptbin,etabin);
-            return fr/(1-fr);
+            ret *= -fr/(1.0f-fr);
         }
-        case 2: {
-	    double fpt1,feta1; int fid1;
-	    double fpt2,feta2; int fid2;
-	    fpt1 = ptmvait_one->first; feta1 = std::abs(etamvait_one->first); fid1 = abs(pdgidmvait_one->first); 
-	    fpt2 = (ptmvait_two)->first; feta2 = std::abs((etamvait_two)->first); fid2 = abs((pdgidmvait_two)->first); 
-	    TH2 *hist1 = (fid1 == 11 ? FR_el : FR_mu);
-            int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(fpt1)));
-            int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(feta1)));
-            double fr1 = hist1->GetBinContent(ptbin1,etabin1);
-	    TH2 *hist2 = (fid2 == 11 ? FR_el : FR_mu);
-            int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(fpt2)));
-            int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(feta2)));
-            double fr2 = hist2->GetBinContent(ptbin2,etabin2);
-	    return fr1*fr2/((1-fr1)*(1-fr2));
-        }
-        case 3: {
-	    TH2 *hist1 = (abs(l1pdgId) == 11 ? FR_el : FR_mu);
-            int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(l1pt)));
-            int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(std::abs(l1eta))));
-            double fr1 = hist1->GetBinContent(ptbin1,etabin1);
-            TH2 *hist2 = (abs(l2pdgId) == 11 ? FR_el : FR_mu);
-            int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(l2pt)));
-            int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(std::abs(l2eta))));
-            double fr2 = hist2->GetBinContent(ptbin2,etabin2);
-	    TH2 *hist3 = (abs(l3pdgId) == 11 ? FR_el : FR_mu);
-            int ptbin3  = std::max(1, std::min(hist3->GetNbinsX(), hist3->GetXaxis()->FindBin(l3pt)));
-            int etabin3 = std::max(1, std::min(hist3->GetNbinsY(), hist3->GetYaxis()->FindBin(std::abs(l3eta))));
-            double fr3 = hist3->GetBinContent(ptbin3,etabin3);
-            return fr1*fr2*fr3/((1-fr1)*(1-fr2)*(1-fr3));
-	}
-
-        default: return 0;
     }
+    if (ret == -1.0f) ret = 0.0f;
+    return ret;
 }
-
-
-float fakeRateWeight_4l(float l1pt, float l1eta, int l1pdgId, float l1mva,
-			float l2pt, float l2eta, int l2pdgId, float l2mva,
-			float l3pt, float l3eta, int l3pdgId, float l3mva,
-			float l4pt, float l4eta, int l4pdgId, float l4mva) 
-{
-  int nfail = (l1mva < -0.2)+(l2mva < -0.2)+(l3mva < -0.2)+(l4mva < -0.2);
-  double mvas[]={l1mva, l2mva, l3mva, l4mva};
-  double pts[]={l1pt, l2pt, l3pt, l4pt};
-  double etas[]={l1eta, l2eta, l3eta, l4eta};
-  int pdgids[]={l1pdgId, l2pdgId, l3pdgId, l4pdgId};
-  multimap<double,double> ptBymva;
-  multimap<double,double> etaBymva;
-  multimap<int,double> pdgidBymva;
-  for (unsigned int i = 0; i < 4 ; ++i){
-    ptBymva.insert(pair<double,double>(pts[i],mvas[i]));
-    etaBymva.insert(pair<double,double>(etas[i],mvas[i]));
-    pdgidBymva.insert(pair<int,double>(pdgids[i],mvas[i]));
-  }
-  multimap<double,double>::iterator ptmvait_one = ptBymva.begin();
-  multimap<double,double>::iterator ptmvait_two = (++(ptBymva.begin()));
-  multimap<double,double>::iterator ptmvait_three = ++(++(ptBymva.begin()));
-  multimap<double,double>::iterator etamvait_one = etaBymva.begin();
-  multimap<double,double>::iterator etamvait_two = (++(etaBymva.begin()));
-  multimap<double,double>::iterator etamvait_three = ++(++(etaBymva.begin()));
-  multimap<int,double>::iterator pdgidmvait_one = pdgidBymva.begin();
-  multimap<int,double>::iterator pdgidmvait_two = (++(pdgidBymva.begin()));
-  multimap<int,double>::iterator pdgidmvait_three = ++(++(pdgidBymva.begin()));
-    
-    switch (nfail) {
-        case 1: {
-            double fpt,feta; int fid;
-            fpt = ptmvait_one->first; feta = std::abs(etamvait_one->first); fid = abs(pdgidmvait_one->first);
-            TH2 *hist = (fid == 11 ? FR_el : FR_mu);
-            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(fpt)));
-            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(feta)));
-            double fr = hist->GetBinContent(ptbin,etabin);
-            return fr/(1-fr);
-        }
-        case 2: {
-	    double fpt1,feta1; int fid1;
-	    double fpt2,feta2; int fid2;
-	    fpt1 = ptmvait_one->first; feta1 = std::abs(etamvait_one->first); fid1 = abs(pdgidmvait_one->first); 
-	    fpt2 = ptmvait_two->first; feta2 = std::abs(etamvait_two->first); fid2 = abs(pdgidmvait_two->first);
-	    TH2 *hist1 = (fid1 == 11 ? FR_el : FR_mu);
-            int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(fpt1)));
-            int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(feta1)));
-            double fr1 = hist1->GetBinContent(ptbin1,etabin1);
-	    TH2 *hist2 = (fid2 == 11 ? FR_el : FR_mu);
-            int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(fpt2)));
-            int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(feta2)));
-            double fr2 = hist2->GetBinContent(ptbin2,etabin2);
-	    return fr1*fr2/((1-fr1)*(1-fr2));
-        }
-        case 3: {
-            double fpt1,feta1; int fid1;
-	    double fpt2,feta2; int fid2;
-	    double fpt3,feta3; int fid3;
-	    fpt1 = ptmvait_one->first; feta1 = std::abs(etamvait_one->first); fid1 = abs(pdgidmvait_one->first); 
-	    fpt2 = ptmvait_two->first; feta2 = std::abs(etamvait_two->first); fid2 = abs(pdgidmvait_two->first);
-	    fpt3 = ptmvait_three->first; feta3 = std::abs(etamvait_three->first); fid3 = abs(pdgidmvait_three->first);
-	    TH2 *hist1 = (fid1 == 11 ? FR_el : FR_mu);
-            int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(fpt1)));
-            int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(feta1)));
-            double fr1 = hist1->GetBinContent(ptbin1,etabin1);
-	    TH2 *hist2 = (fid2 == 11 ? FR_el : FR_mu);
-            int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(fpt2)));
-            int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(feta2)));
-            double fr2 = hist2->GetBinContent(ptbin2,etabin2);
-	    TH2 *hist3 = (fid3 == 11 ? FR_el : FR_mu);
-            int ptbin3  = std::max(1, std::min(hist3->GetNbinsX(), hist3->GetXaxis()->FindBin(fpt3)));
-            int etabin3 = std::max(1, std::min(hist3->GetNbinsY(), hist3->GetYaxis()->FindBin(feta3)));
-            double fr3 = hist3->GetBinContent(ptbin3,etabin3);
-            return fr1*fr2*fr3/((1-fr1)*(1-fr2)*(1-fr3));
-	}
-        
-        case 4: {
-            TH2 *hist1 = (abs(l1pdgId) == 11 ? FR_el : FR_mu);
-            int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(l1pt)));
-            int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(std::abs(l1eta))));
-            double fr1 = hist1->GetBinContent(ptbin1,etabin1);
-            TH2 *hist2 = (abs(l2pdgId) == 11 ? FR_el : FR_mu);
-            int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(l2pt)));
-            int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(std::abs(l2eta))));
-            double fr2 = hist2->GetBinContent(ptbin2,etabin2);
-	    TH2 *hist3 = (abs(l3pdgId) == 11 ? FR_el : FR_mu);
-            int ptbin3  = std::max(1, std::min(hist3->GetNbinsX(), hist3->GetXaxis()->FindBin(l3pt)));
-            int etabin3 = std::max(1, std::min(hist3->GetNbinsY(), hist3->GetYaxis()->FindBin(std::abs(l3eta))));
-            double fr3 = hist3->GetBinContent(ptbin3,etabin3);
-	    TH2 *hist4 = (abs(l4pdgId) == 11 ? FR_el : FR_mu);
-            int ptbin4  = std::max(1, std::min(hist4->GetNbinsX(), hist4->GetXaxis()->FindBin(l4pt)));
-            int etabin4 = std::max(1, std::min(hist4->GetNbinsY(), hist4->GetYaxis()->FindBin(std::abs(l4eta))));
-            double fr4 = hist4->GetBinContent(ptbin4,etabin4);
-	    
-            return fr1*fr2*fr3*fr4/((1-fr1)*(1-fr2)*(1-fr3)*(1-fr4));
-	}  
-
-        default: return 0;
-    }
-}
-
-
-
-
-
-
-
-
 
 void fakeRate() {}
