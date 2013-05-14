@@ -79,7 +79,7 @@ class CutsFile:
         return CutsFile(self.nMinusOneCuts())
     def nMinusOneCuts(self):
         ret = []
-        for cn,cv in self._cuts:
+        for cn,cv in self._cuts[1:]:
             nm1 = " && ".join("(%s)" % cv1 for cn1,cv1 in self._cuts if cn1 != cn)
             ret.append(("all but "+cn, nm1))
         return ret
