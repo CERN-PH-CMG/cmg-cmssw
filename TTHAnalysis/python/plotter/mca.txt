@@ -31,11 +31,12 @@ ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
 # -- TTbar and single top
 #
 # leptonic and inclusive decays (use only one!)
-#TT 	 : TTLep:      23.64    ;  FillColor=ROOT.kGray
-#TT 	 : TTJets:     225.2    ;  FillColor=ROOT.kGray, NormSystematic=0.2
 TT 	 : TTJetsLep:     23.64    ;  FillColor=ROOT.kGray, NormSystematic=0.2
 TT 	 : TTJetsSem:	  98.65     ;  FillColor=ROOT.kGray, NormSystematic=0.2
 TT 	 : TTJetsHad:     102.9    ;  FillColor=ROOT.kGray, NormSystematic=0.2
+# --- older samples
+#TT 	 : TTLep:      23.64    ;  FillColor=ROOT.kGray
+#TT 	 : TTJets:     225.2    ;  FillColor=ROOT.kGray, NormSystematic=0.2
 
 #
 # split into true leptons and fake leptons, if you need it
