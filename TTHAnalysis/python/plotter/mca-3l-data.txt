@@ -1,23 +1,32 @@
+# --- ttH split by decay mode
 #ttHWW+   : TTH : 0.1271 : GenHiggsDecayMode == 24 ; FillColor=ROOT.kOrange+10
 #ttHtt+   : TTH : 0.1271 : GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
 #ttHZZ+   : TTH : 0.1271 : GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
+# --- ttH inclusive
 ttH+     : TTH : 0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
-TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5,  NormSystematic=0.2
-TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
-#TTV 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
-#TTV 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
-#TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
 
-VVV 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet,   NormSystematic=0.2
-VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet,   NormSystematic=0.2
-#WW 	 : WWJets:     5.995    ;  FillColor=ROOT.kBlue-9  # no, it's fake
-WZ 	 : WZJets:     1.057    ;  FillColor=ROOT.kViolet-4, NormSystematic=0.2
-ZZ	 : ZZ2e2mu:    0.1767   ;  FillColor=ROOT.kAzure-9,  NormSystematic=0.2
-ZZ 	 : ZZ2e2tau:   0.1767   ;  FillColor=ROOT.kAzure-9,  NormSystematic=0.2
-ZZ 	 : ZZ2mu2tau:  0.1767   ;  FillColor=ROOT.kAzure-9,  NormSystematic=0.2
-ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9,  NormSystematic=0.2
-ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9,  NormSystematic=0.2
-ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9,  NormSystematic=0.2
+# --- TT+W/Z/WW (TTWW usually quite negligible)
+TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5
+TTZ 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2
+TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
+# 
+# or also lumped together
+#TTV 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5, NormSystematic=0.2
+#TTV 	 : TTZJets:    0.208    ;  FillColor=ROOT.kSpring+2, NormSystematic=0.2
+#TTV	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9, NormSystematic=0.2
+
+# --- Multiboson
+VVV 	 : WWWJets:    0.08217  ;  FillColor=ROOT.kViolet
+VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet
+# WW 	 : WWJets:     5.995    ;  FillColor=ROOT.kBlue-9 ## NO, this is from FR
+WZ 	 : WZJets:     1.057    ;  FillColor=ROOT.kViolet-4
+ZZ	 : ZZ2e2mu:    0.1767   ;  FillColor=ROOT.kAzure-9
+ZZ 	 : ZZ2e2tau:   0.1767   ;  FillColor=ROOT.kAzure-9
+ZZ 	 : ZZ2mu2tau:  0.1767   ;  FillColor=ROOT.kAzure-9
+ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9   
+ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
+ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
+
 
 data     : DoubleMuAB
 data     : DoubleMuC
