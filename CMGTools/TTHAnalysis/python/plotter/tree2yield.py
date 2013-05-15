@@ -179,7 +179,7 @@ class TreeToYield:
         #self._tree.SetCacheSize(10*1000*1000)
         #self._tree.SetCacheSize()
         self._friends = []
-        friendOpts = self._options.friendTrees
+        friendOpts = self._options.friendTrees[:]
         friendOpts += (self._options.friendTreesData if self._isdata else self._options.friendTreesMC)
         for tf_tree,tf_file in friendOpts:
             tf = self._tree.AddFriend(tf_tree, tf_file.format(name=self._name, cname=self._cname)),
