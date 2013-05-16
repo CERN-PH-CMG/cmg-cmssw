@@ -59,9 +59,9 @@ void merge_results(){
       ncol = LineColumns->GetEntries();
       // str_icol = ((TObjString *)LineColumns->At(3))->GetString();
       str_icol = ((TObjString *)LineColumns->At(4))->GetString();
-      cout << jWmass << " LIKELIHOOD VALUE= "<<str_icol << endl;
       likelihood_val = (double) (str_icol.Atof());
-      if(likelihood_val<0) result_NonScaled->SetPoint(npoint,jWmass,likelihood_val);
+      cout << jWmass << " LIKELIHOOD VALUE= "<<likelihood_val << endl;
+      result_NonScaled->SetPoint(npoint,jWmass,likelihood_val);
 
       npoint++;
   

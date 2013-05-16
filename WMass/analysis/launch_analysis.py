@@ -13,7 +13,8 @@ import urllib, urlparse, string, time, os, shutil
 # foldername = "results_test44X_100massPoints";
 # foldername = "results_test44X_RescaleToWJetsLumi";
 # foldername = "results_test44X_MCDATAcomparison";
-foldername = "results_test44X_correctPoles";
+# foldername = "results_test44X_correctPoles";
+foldername = "test_fit";
 
 usePileupSF = 1; # 0=no, 1=yes
 useEffSF = 1; # 0=no, 1=yes
@@ -32,10 +33,10 @@ WMassNSteps = "50"; # 60
 etaMuonNSteps = "2"; # 5
 etaMaxMuons = "0.6, 2.1"; # 0.6, 0.8, 1.2, 1.6, 2.1
 
-parallelize = 1;
+parallelize = 0;
 resumbit_sample = ""
 
-runWanalysis = 0;
+runWanalysis = 1;
 runZanalysis = 0;
 
 mergeSigEWKbkg   = 0;
@@ -54,10 +55,11 @@ runDataCardsParametrization = 0;
 
 ## NEW FIT
 print "if it doesn't work, try with this first: cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_5_3_3_patch3/src; setenv SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -";
-runClosureTest = 0;
+runClosureTestLikeLihoodRatio = 0;
 mergeResults = 0;
 
 ## OLD FIT
+runClosureTest = 0;
 run_MassFit         = 0;
 fitType             = 0; # 0 = ROOT, 1 = CUSTOM
 
@@ -83,6 +85,8 @@ runWandZcomparisonDATA = 0;
 ## ============================================================== #
 ## ============================================================== #
 ## ============================================================== #
+
+print "cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_6_1_1/src; setenv SCRAM_ARCH=slc5_amd64_gcc462;eval `scramv1 runtime -sh`; cd -;"
 
 if(IS_MC_CLOSURE_TEST==1):
     foldername+="_MCclosureTest";
@@ -360,7 +364,16 @@ if(runClosureTest):
     # shutil.copyfile("includes/common.h","JobOutputs/"+foldername+"/DataCards/common.h")
     os.chdir("JobOutputs/"+foldername+"/DataCards");
     print os.getcwd()
-    os.system("cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_5_3_3_patch3/src; setenv SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -; root -l -b -q \'ClosureTest_fits.C()\'")
+    os.system("cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; setenv SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -; root -l -b -q \'ClosureTest_fits.C()\'")
+    os.chdir("../");
+
+if(runClosureTestLikeLihoodRatio):
+    # cd /afs/cern.ch/work/p/perrozzi/private/CMGTools/CMGTools/CMSSW_5_3_3_patch3/src; setenv SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -;
+    shutil.copyfile("AnalysisCode/ClosureTest_fits_likelihoodratio.C","JobOutputs/"+foldername+"/DataCards/ClosureTest_fits.C");
+    # shutil.copyfile("includes/common.h","JobOutputs/"+foldername+"/DataCards/common.h")
+    os.chdir("JobOutputs/"+foldername+"/DataCards");
+    print os.getcwd()
+    os.system("cd /afs/cern.ch/work/p/perrozzi/private/CMSSW_6_1_1/src; setenv SCRAM_ARCH slc5_amd64_gcc462;cmsenv; cd -; root -l -b -q \'ClosureTest_fits.C()\'")
     os.chdir("../");
 
 if(mergeResults):
