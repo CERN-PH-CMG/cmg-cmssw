@@ -9,5 +9,6 @@ runProcess = cms.PSet(
     xsec = cms.double(@xsec),
     mctruthmode = cms.int32(@mctruthmode),
     dirName = cms.string("dataAnalyzer"),
+    jesUncFileName = cms.string('${CMSSW_BASE}/src/UserCode/EWKV/data/FT_53_V10_AN1_Uncertainty_AK5PF.txt'),	
     datapileup = datapileup_70300_2012abcd
 )

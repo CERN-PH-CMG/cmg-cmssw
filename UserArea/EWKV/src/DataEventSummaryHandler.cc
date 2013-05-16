@@ -390,6 +390,9 @@ bool DataEventSummaryHandler::attach(TTree *t)
   t_->SetBranchAddress("jn_supercsv",    evSummary_.jn_supercsv);
   t_->SetBranchAddress("jn_ssvhe",       evSummary_.jn_ssvhe);
   t_->SetBranchAddress("jn_ivf",         evSummary_.jn_ivf);
+  t_->SetBranchAddress("jn_origcsv",     evSummary_.jn_origcsv);
+  t_->SetBranchAddress("jn_jpcsv",       evSummary_.jn_jpcsv);
+  t_->SetBranchAddress("jn_slcsv",       evSummary_.jn_slcsv);
   t_->SetBranchAddress("jn_svxPx",       evSummary_.jn_svxPx);
   t_->SetBranchAddress("jn_svxPy",       evSummary_.jn_svxPy);
   t_->SetBranchAddress("jn_svxPz",       evSummary_.jn_svxPz);
@@ -568,10 +571,8 @@ data::PhysicsObjectCollection_t DataEventSummaryHandler::getPhysicsObject(int co
 	  data::PhysicsObject_t pf(evSummary_.pf_px[ipf],evSummary_.pf_py[ipf],evSummary_.pf_pz[ipf],evSummary_.pf_en[ipf]);
 	  pf.set("id",evSummary_.pf_id[ipf]);
 	  pf.set("charge",evSummary_.pf_charge[ipf]);
-	  cout << pf.pt() << " ";
-      	  coll.push_back(pf);
+	  coll.push_back(pf);
 	}
-      cout << endl;
       break;
     case GENPARTICLES:
       for(int imc=0; imc<evSummary_.mcn; imc++)

@@ -320,6 +320,7 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
       for(size_t it=0; it<triggerPaths.size(); it++)
 	{
 	  if(trigName.find(triggerPaths[it]) == std::string::npos) continue;
+	  //cout << trigName << endl;
 	  ev.t_bits[it]=true;
 	  ev.t_prescale[it]=hltConfig_.prescaleValue(event, iSetup, trigName);
 	  break;

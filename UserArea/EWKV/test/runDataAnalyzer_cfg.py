@@ -147,7 +147,11 @@ process.pfType1CorrectedMet.srcType1Corrections = cms.VInputTag( cms.InputTag('p
 
 #the analyzer
 process.load("UserCode.EWKV.dataAnalyzer_cfi")
-
+if isTauEmbed:
+    process.dataAnalyzer.cfg.triggerCats[2]=1113
+    process.dataAnalyzer.cfg.triggerCats[3]=1113
+    
+    
 #counters for specific filters
 process.startCounter = cms.EDProducer("EventCountProducer")
 process.scrapCounter = process.startCounter.clone()
