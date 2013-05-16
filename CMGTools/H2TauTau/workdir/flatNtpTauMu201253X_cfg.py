@@ -130,7 +130,7 @@ process.source.fileNames = process.source.fileNames[firstfile:lastfile]
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:110365')
 
 #process.source.eventsToProcess = cms.untracked.VEventRange('1:227219','1:818777','1:398253','1:212254','1:591991','1:922447')
-process.source.eventsToProcess = cms.untracked.VEventRange('1:227219')
+#process.source.eventsToProcess = cms.untracked.VEventRange('1:227219')
 
 #process.source = cms.Source(
 #    "PoolSource",
@@ -166,12 +166,21 @@ if process.flatNtp.dataType == 0:
       process.vertexWeightSequence 
       )
    process.analysis += process.genSequence 
-   
+
+###kinematic weights for embedded samples
+if process.flatNtp.embeddedKinWeightFile != '' :
+   process.load('TauAnalysis/MCEmbeddingTools/embeddingKineReweight_cff')
+   process.embeddingKineReweightRECembedding.inputFileName = cms.FileInPath(process.flatNtp.embeddedKinWeightFile)
+
+###kinematic weights for embedded samples
+if process.flatNtp.embeddedKinWeightFile.value() != '' :
+   process.load('TauAnalysis/MCEmbeddingTools/embeddingKineReweight_cff')
+   process.embeddingKineReweightRECembedding.inputFileName = cms.FileInPath(process.flatNtp.embeddedKinWeightFile.value())
+   process.analysis += process.embeddingKineReweightSequenceRECembedding
 
 ##create the good primary vertices
 process.load("CommonTools.ParticleFlow.goodOfflinePrimaryVertices_cfi")
 process.analysis += process.goodOfflinePrimaryVertices
-
 
 
 ###Apply Tau ES corrections

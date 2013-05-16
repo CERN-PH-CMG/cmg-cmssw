@@ -296,11 +296,11 @@ void plotTauMu2012(){
   //analysis->plotInc("transversemass",30,0,300,2,1,0,analysis->getSMcut(3),"",-1,2,"m_{T} ","",c,0,"mt_1_met_1jethigh_SS_mt_2012");
   //analysis->plotInc("ditaumass",40,0,200,1,1,1,"","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_mt_2012");
   analysis->setVariableBinning(26,xbinsValues);
-  //analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(3),mvBlindSel,0,2,"m_{vis}   (GeV)","",c,0,"mvis_1jethigh_mt_2012"); 
-  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(3),svBlindSel,1,5,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_1jethigh_mt_2012");
-  analysis->setVariableBinning(13,xbinsValuesVBF);
-  //analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(4),mvBlindSel,5,3,"m_{vis}   (GeV)","",c,5,"mvis_vbf_mt_2012");
-  analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(4),svBlindSel,5,3,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_vbf_mt_2012");
+  analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(3),mvBlindSel,0,2,"m_{vis}   (GeV)","",c,0,"mvis_1jethigh_mt_2012"); 
+//   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(3),svBlindSel,1,5,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_1jethigh_mt_2012");
+//   analysis->setVariableBinning(13,xbinsValuesVBF);
+//   //analysis->plotInc("ditaumass",0,0,350,1,1,1,analysis->getSMcut(4),mvBlindSel,5,3,"m_{vis}   (GeV)","",c,5,"mvis_vbf_mt_2012");
+//   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(4),svBlindSel,5,3,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_vbf_mt_2012");
 
   //plotIsoStudy(analysis);
 

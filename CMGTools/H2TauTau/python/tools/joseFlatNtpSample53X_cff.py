@@ -140,6 +140,29 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
         module.correctTauES = 1
         module.genParticlesTag =  'genParticles'
         module.sampleGenMassMin = 50.
+
+    if sampleAlias == 'RHEmbedded2012B' : 
+        module.path = "/DoubleMuParked/StoreResults-Run2012B_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
+        module.dataType = 2
+        module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
+        module.correctTauES = 1
+        module.genParticlesTag =  'genParticles'
+        module.sampleGenMassMin = 50.
+        module.embeddedWeightType = 2
+        #module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_recEmbedding_mutau.root'
+        module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_muPtGt16tauPtGt18_recEmbedded.root'
+
+    if sampleAlias == 'RHEmbedded2012C' : 
+        module.path = "/DoubleMuParked/StoreResults-Run2012C_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B/{0}".format(cmgtag)
+        module.dataType = 2
+        module.jsonfile = json_dir + 'Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
+        module.correctTauES = 1
+        module.genParticlesTag =  'genParticles'
+        module.sampleGenMassMin = 50.
+        module.embeddedWeightType = 2
+        #module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_recEmbedding_mutau.root'
+        module.embeddedKinWeightFile = 'TauAnalysis/MCEmbeddingTools/data/embeddingKineReweight_muPtGt16tauPtGt18_recEmbedded.root'
+                                        
         
     if sampleAlias == 'ZToTauTau' : 
         module.path = "/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/{0}".format(cmgtag)

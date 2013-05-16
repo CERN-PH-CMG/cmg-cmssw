@@ -1,3 +1,4 @@
+#!/bin/sh
 
 ############# 2011
 #rootl histosForDataCardSM.C\(1\,\"\/data\/benitezj\/Samples\/TauMu2011FlatNtpJuly26svfit\"\,\"\"\)
@@ -104,6 +105,34 @@ export SAMPLEPATH=muTau201253X_5140May2_TauIso3HitorMVA2
 #rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
 #mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_3hit_${p}.root
 #done
+
+
+###########Grand optimization of Boost###################
+###3Hit
+for mt in 1 2 3 4 5; do
+for jpt in 1 2 3; do
+for tpt in 1 2 3 4 5; do
+for tiso in 1 2 3; do
+
+option=${mt}${jpt}${tpt}${tiso}
+
+if [ $option -lt 1124 ]
+then
+    continue 
+fi
+
+echo $option
+
+rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,${option}\)
+rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\,${option}\)
+rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\,${option}\)
+rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
+mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_simultopt_${option}.root
+
+done
+done
+done
+done
 
 
 
