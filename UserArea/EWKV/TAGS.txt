@@ -8,7 +8,7 @@ cvs co -r V03-09-28      PhysicsTools/PatUtils
 cvs co -r v1-2-3         -d QuarkGluonTagger/EightTeV UserCode/tomc/QuarkGluonTagger/EightTeV                       
 cvs co -r V00-07-03      RecoBTag/Configuration                           
 cvs co -r V01-04-09      RecoBTag/ImpactParameter                         
-cvs co -r NoTag          RecoBTag/PerformanceMeasurements                 
+cvs co                   RecoBTag/PerformanceMeasurements                 
 cvs co -r V01-10-02      RecoBTag/SecondaryVertex                         
 cvs co -r V05-09-02      RecoBTag/SoftLepton                              
 cvs co -r V02-03-00      RecoBTau/JetTagComputer                          
