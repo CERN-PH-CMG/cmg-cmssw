@@ -5,7 +5,7 @@ cvs co -r V00-00-02      EgammaAnalysis/ElectronTools
 cvs co -r V00-00-70      FWCore/GuiBrowsers                               
 cvs co -r V08-09-57      PhysicsTools/PatAlgos                            
 cvs co -r V03-09-28      PhysicsTools/PatUtils                            
-cvs co -r v1-2-3         QuarkGluonTagger/EightTeV UserCode/tomc/QuarkGluonTagger/EightTeV                       
+cvs co -r v1-2-3         -d QuarkGluonTagger/EightTeV UserCode/tomc/QuarkGluonTagger/EightTeV                       
 cvs co -r V00-07-03      RecoBTag/Configuration                           
 cvs co -r V01-04-09      RecoBTag/ImpactParameter                         
 cvs co -r NoTag          RecoBTag/PerformanceMeasurements                 
