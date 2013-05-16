@@ -23,48 +23,6 @@
 #include "configTauEle2012ABCD.C"
 
 
-
-// void fix0Bins(TH1F* h){
-
-//   float lastbinCenter = h->GetBinCenter(1);
-//   float lastbinContent = 1e-6;
-//   float lastbinError   = 1e-6;
-//   for(Int_t i=1;i<=h->GetNbinsX();i++){
-//     if(h->GetBinContent(i)==0.){
-//       //find next non-empty bin and interpolate
-//       float nextbinCenter = h->GetBinCenter(h->GetNbinsX())+h->GetBinWidth(i);
-//       float nextbinContent = 1e-6;
-//       float nextbinError = 1e-6;
-//       for(Int_t j=i+1;j<=h->GetNbinsX();j++){
-// 	if(h->GetBinContent(j)>0.){
-// 	  nextbinCenter = h->GetBinCenter(j);
-// 	  nextbinContent = h->GetBinContent(j);
-// 	  nextbinError = h->GetBinError(j);
-// 	  break;
-// 	}
-//       }
-
-//       h->SetBinContent(i,lastbinContent + (h->GetBinCenter(i)-lastbinCenter)*(nextbinContent-lastbinContent)/(nextbinCenter-lastbinCenter));
-//       h->SetBinError(i,lastbinError + (h->GetBinCenter(i)-lastbinCenter)*(nextbinError-lastbinError)/(nextbinCenter-lastbinCenter));
-
-//     }else {//this is a good bin, update
-//       lastbinCenter = h->GetBinCenter(i); 
-//       lastbinContent = h->GetBinContent(i);
-//       lastbinError   = h->GetBinError(i);
-//     }
-//   }
-
-
-//   //fix empty distributions for limit to run
-//   if(h->Integral()<=0.){
-//     for(Int_t i=1;i<=h->GetNbinsX();i++){
-//       h->SetBinContent(i,0.001);
-//       h->SetBinError(i,0.001);
-//     }
-//   }
-
-// }
-
 void fix0Bins(TH1F* h){
 
   //determine if this is a low stats shape
@@ -141,18 +99,8 @@ void rebinHisto(TH1F* hinput,TH1F* houtput){
   }
 }
 
-TH1F* extrapolateResUp(TH1F* hNominal, TH1F* hDown){
-  TH1F*hUp=(TH1F*)hNominal->Clone("hUp");
-  for(Int_t b=1; b<=hUp->GetNbinsX(); b++){
-    float diff=hNominal->GetBinContent(b) - hDown->GetBinContent(b);
-    hUp->AddBinContent(b,diff);
-    if( hUp->GetBinContent(b) < 0. ) hUp->SetBinContent(b,0.);
-  }
-  return hUp;
-}
 
-
-void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass, TString path, TString tag, Int_t option=0){
+void dataCardSM(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TString mass, TString path, TString tag, Int_t option=0){
 
   if(tag!="")path=path+"_"+tag;
 
@@ -210,30 +158,21 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
 
   
   ////////////////////////simultaneous optimization of 1Jet
-  //muon iso cut is hard coded --> dont scan
-  //-Tau Iso : 1.5,2.0,2.5
-  //-Tau pT : 30,35,40,45,50
-  //-jet pT : 30,40,50
-  //-mT : 20,25,30,35,40
-  //use the digits of the option for each variable
-  cout<<endl<<"Simultaneous optimizaion with option "<<option<<endl;
-  //exit(0);
-  long isocut=option%10;
-  long tauptcut=(option/10)%10;
-  long jetptcut=(option/100)%10;
-  long mtcut=(option/1000)%10;
-  char isocutoption[100];
-  analysis->tauIsoCutQCD_="(tauiso3hitraw<6.0)";
-  sprintf(isocutoption,"(tauiso3hitraw<%.3f)",2.5-(isocut-1)*0.5);//options must start from 1
-  analysis->tauIsoCut_=isocutoption;
-  analysis->taupTCut_ = 30+(tauptcut-1)*5;
-  analysis->leadJetpTCut_=30+(jetptcut-1)*10;
-  analysis->mTCut_=20+(mtcut-1)*5;
+  if(option>0){
+    //use the digits of the option for each variable
+    cout<<endl<<"Simultaneous optimizaion with option "<<option<<endl;
+    long higgsptcut=option%10;//vbfvars3: 0->140 : 20 --> 8 
+    long tauptcut=(option/10)%10;//taupt: 30 -> 50 : 5 --> 5
+    analysis->higgspTCut_=(higgsptcut-1)*20;
+    analysis->taupTCut_ = 30+(tauptcut-1)*5;
+  }
   //////////////////////////////////////////////////
 
   analysis->scaleSamplesLumi();
-  TFile output(ChannelName+"SM"+"_"+analysis->plotvar_+"_"+tag+".root","recreate");
-  for(long sm=0; sm<NCAT; sm++){//NCAT
+  TFile output(ChannelName+"_SM"+(long)cat+"_"+analysis->plotvar_+"_"+tag+".root","recreate");
+  for(long sm=0; sm<NCAT; sm++){
+    if(cat==13 && (sm==4))continue;
+    if(cat==15 && (sm==2 || sm==3))continue;
 
     TDirectory* dir = output.mkdir(ChannelName+"_"+catdirname[sm]);  
     gROOT->cd();
@@ -318,38 +257,9 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
     W->SetName("W");
     
     TH1F* ZTT = 0;
-    //if(sm==4) ZTT = analysis->getZToTauTauVBF(); 
-    //else 
     ZTT = analysis->getZToTauTau();
     ZTT->SetName("ZTT");
 
-    ///////smeared down ZTT
-    Int_t nbinsTmp=analysis->nbins_;
-    Float_t xminTmp=analysis->xmin_;
-    Float_t xmaxTmp=analysis->xmax_;
-    analysis->nbins_=700;
-    analysis->xmin_=0.;
-    analysis->xmax_=350;
-    analysis->smearHistoRes_=3.0;
-    TH1F* ZTT_resDownFineTmp = analysis->getZToTauTau();
-    ZTT_resDownFineTmp->SetName("ZTT_resDownFineTmp");
-    TH1F* ZTT_resDownFine=analysis->smearHisto(ZTT_resDownFineTmp);
-    ZTT_resDownFine->SetName("ZTT_resDownFine");
-    delete ZTT_resDownFineTmp;
-    analysis->nbins_=nbinsTmp;
-    analysis->xmin_=xminTmp;
-    analysis->xmax_=xmaxTmp;
-    analysis->smearHistoRes_=0.;
-    TH1F* ZTT_resDown=analysis->getPlotHisto("ZTT_resDown");
-    rebinHisto(ZTT_resDownFine,ZTT_resDown);
-    delete ZTT_resDownFine;
-    ZTT_resDown->Scale(ZTT->Integral()/ZTT_resDown->Integral());
-    //smear up ZTT
-    TH1F* ZTT_resUp = extrapolateResUp(ZTT,ZTT_resDown);
-    ZTT_resUp->SetName("ZTT_resUp");
-    ZTT_resUp->Scale(ZTT->Integral()/ZTT_resUp->Integral());
-    ///////////////////////////////////////////////////////
-    
     TH1F* TT = 0;
     if(sm==0 || sm==2 || sm==1 || sm==3)        TT=analysis->getTTJetsInc(); 
     if(sm==4)                                   TT=analysis->getTTJetsVBFHCP(); 
@@ -412,9 +322,6 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
     fix0Bins(VV);  VV->Write();
     fix0Bins(QCD); QCD->Write();
     data_obs->Write();
-
-    fix0Bins(ZTT_resDown); ZTT_resDown->Write();
-    fix0Bins(ZTT_resUp); ZTT_resUp->Write();
  
     gROOT->cd();
     
@@ -427,9 +334,7 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
     delete VV;
     delete QCD;
 
-    delete ZTT_resDown;
-    delete ZTT_resUp;
-
+ 
     for(Int_t m=0;m<NMASS;m++){
       long ma=massValues[m];
 
@@ -480,7 +385,7 @@ void histosForDataCardSM(Int_t channel, Int_t year, Int_t dataset, TString mass,
 
 
 
-void plotDataCard(TString file, Int_t channel){
+void plotDataCard(TString file, Int_t channel, Int_t cat=-1){
 
   TString ChannelName;
   if(channel==1)ChannelName="muTau";
@@ -497,6 +402,8 @@ void plotDataCard(TString file, Int_t channel){
   C.Print(fname+"[");
 
   for(long sm=0;sm<NCAT;sm++){//
+    if(cat==13 && (sm==4))continue;
+    if(cat==15 && (sm==2 || sm==3))continue;
 
     TH1F* ZTT = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
     if(!ZTT)continue;

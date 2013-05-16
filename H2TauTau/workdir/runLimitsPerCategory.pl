@@ -103,6 +103,7 @@ if($addbbb==1){
     `add_bbb_errors.py 'mt:8TeV:01,03,05:ZLL,ZL,QCD>W' -i std -o stdbbb --threshold 0.10`;
     $newinput="$topdir/stdbbb/${ch}/$newinputname";
     $newuncsdir="$topdir/stdbbb";
+    `rm -rf ./std`;
 }
 if($addbbb==2){##already done once 
     $newinput="$topdir/stdbbb/${ch}/$newinputname";

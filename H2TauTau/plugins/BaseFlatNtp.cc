@@ -80,6 +80,11 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   sampleTruthEventType_   = iConfig.getParameter<int>("sampleTruthEventType");
   cout<<"sampleTruthEventType : "<<sampleTruthEventType_<<endl;
 
+  embeddedWeightType_   = iConfig.getParameter<int>("embeddedWeightType");
+  cout<<"embeddedWeightType : "<<embeddedWeightType_<<endl;
+
+  embeddedKinWeightFile_   = iConfig.getParameter<std::string>("embeddedKinWeightFile");
+  cout<<"embeddedKinWeightFile : "<<embeddedKinWeightFile_<<endl;
 
   ////
   tauPtCut_=iConfig.getParameter<double>("tauPtCut");  
@@ -229,6 +234,16 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("selectionEffWeightId",&selectionEffWeightId_,"selectionEffWeightId/F"); 
   tree_->Branch("selectionEffWeightIso",&selectionEffWeightIso_,"selectionEffWeightIso/F"); 
   tree_->Branch("embeddedGenWeight",&embeddedGenWeight_,"embeddedGenWeight/F"); 
+
+  tree_->Branch("embeddedGenWeights1",&embeddedGenWeights_[0],"embeddedGenWeights1/F"); 
+  tree_->Branch("embeddedGenWeights2",&embeddedGenWeights_[1],"embeddedGenWeights2/F"); 
+  tree_->Branch("embeddedGenWeights3",&embeddedGenWeights_[2],"embeddedGenWeights3/F"); 
+  tree_->Branch("embeddedGenWeights4",&embeddedGenWeights_[3],"embeddedGenWeights4/F"); 
+  tree_->Branch("embeddedGenWeights5",&embeddedGenWeights_[4],"embeddedGenWeights5/F"); 
+  tree_->Branch("embeddedGenWeights6",&embeddedGenWeights_[5],"embeddedGenWeights6/F"); 
+  tree_->Branch("embeddedGenWeights7",&embeddedGenWeights_[6],"embeddedGenWeights7/F"); 
+  tree_->Branch("embeddedGenWeights8",&embeddedGenWeights_[7],"embeddedGenWeights8/F"); 
+
   tree_->Branch("btagEffWeight",&btagEffWeight_,"btagEffWeight/F");
   tree_->Branch("signalWeight",&signalWeight_,"signalWeight/F");
 
@@ -712,16 +727,57 @@ bool BaseFlatNtp::fill(){
 
   //embedded samples generator weight
   embeddedGenWeight_=1.0;
+  for(Int_t i=0;i<8;i++)  embeddedGenWeights_[i]=1.0;
   if(dataType_==2){
     if(dataPeriodFlag_==2011){
       edm::Handle< double > embeddedGenWeight;
       iEvent_->getByLabel(edm::InputTag("generator","weight",""),embeddedGenWeight);
-      embeddedGenWeight_=*embeddedGenWeight;
+      embeddedGenWeight_ *= *embeddedGenWeight;
+      embeddedGenWeights_[0]=*embeddedGenWeight;
     }
     if(dataPeriodFlag_==2012){
       edm::Handle<GenFilterInfo> genInfoEmbedded;
       iEvent_->getByLabel(edm::InputTag("generator","minVisPtFilter","EmbeddedRECO"),genInfoEmbedded);
-      if(genInfoEmbedded->numEventsTried()>0) embeddedGenWeight_ =  genInfoEmbedded->filterEfficiency(); 
+      if(genInfoEmbedded->numEventsTried()>0) embeddedGenWeight_ *=  genInfoEmbedded->filterEfficiency(); 
+      embeddedGenWeights_[0]=genInfoEmbedded->filterEfficiency();
+
+      //needed for new rec-hit embedded samples
+      if(embeddedWeightType_==2){
+	edm::Handle< double > TauSpinnerReco;
+	iEvent_->getByLabel(edm::InputTag("TauSpinnerReco","TauSpinnerWT","EmbeddedSPIN"),TauSpinnerReco);
+	embeddedGenWeight_ *=  *TauSpinnerReco;
+	embeddedGenWeights_[1] = *TauSpinnerReco;
+
+	edm::Handle< double > ZmumuEvtSelEffCorrWeightProducer;
+	iEvent_->getByLabel(edm::InputTag("ZmumuEvtSelEffCorrWeightProducer","weight","EmbeddedRECO"),ZmumuEvtSelEffCorrWeightProducer);
+	embeddedGenWeight_ *=  *ZmumuEvtSelEffCorrWeightProducer;
+	embeddedGenWeights_[2]=  *ZmumuEvtSelEffCorrWeightProducer;
+
+	edm::Handle< double > muonRadiationCorrWeightProducer;
+	iEvent_->getByLabel(edm::InputTag("muonRadiationCorrWeightProducer","weight","EmbeddedRECO"),muonRadiationCorrWeightProducer);
+	embeddedGenWeight_ *=  *muonRadiationCorrWeightProducer; 
+	embeddedGenWeights_[3]=  *muonRadiationCorrWeightProducer; 
+      }
+
+      //kinematic weights
+      if(embeddedKinWeightFile_.compare("")!=0){
+
+	edm::Handle< double > genTau2PtVsGenTau1Pt;
+	iEvent_->getByLabel(edm::InputTag("embeddingKineReweightRECembedding","genTau2PtVsGenTau1Pt"),genTau2PtVsGenTau1Pt);
+	embeddedGenWeight_ *=  *genTau2PtVsGenTau1Pt;	
+	embeddedGenWeights_[4]=  *genTau2PtVsGenTau1Pt;
+
+	edm::Handle< double > genTau2EtaVsGenTau1Eta;
+	iEvent_->getByLabel(edm::InputTag("embeddingKineReweightRECembedding","genTau2EtaVsGenTau1Eta"),genTau2EtaVsGenTau1Eta);
+	embeddedGenWeight_ *=  *genTau2EtaVsGenTau1Eta;	
+	embeddedGenWeights_[5]=  *genTau2EtaVsGenTau1Eta;	
+
+	edm::Handle< double > genDiTauMassVsGenDiTauPt;
+	iEvent_->getByLabel(edm::InputTag("embeddingKineReweightRECembedding","genDiTauMassVsGenDiTauPt"),genDiTauMassVsGenDiTauPt);
+	embeddedGenWeight_ *=  *genDiTauMassVsGenDiTauPt;	
+	embeddedGenWeights_[6]=  *genDiTauMassVsGenDiTauPt;
+      }
+
     }
   }  
 

@@ -4,7 +4,7 @@
 #include <TDirectory.h>
 #include "constants.h"
 
-void mergeDataCardsSM(Int_t channel, TString mass){
+void combineDataCardsSM(Int_t channel, Int_t cat, TString mass){
 
   TString ChannelName;
   if(channel==1)ChannelName="muTau";
@@ -12,9 +12,9 @@ void mergeDataCardsSM(Int_t channel, TString mass){
   else return;
   
 
-  TFile nominal(ChannelName+"SM_"+mass+"_.root","read");
-  TFile nominaltUp(ChannelName+"SM_"+mass+"_tUp.root","read");
-  TFile nominaltDown(ChannelName+"SM_"+mass+"_tDown.root","read");
+  TFile nominal(ChannelName+"_SM"+(long)cat+"_"+mass+"_.root","read");
+  TFile nominaltUp(ChannelName+"_SM"+(long)cat+"_"+mass+"_tUp.root","read");
+  TFile nominaltDown(ChannelName+"_SM"+(long)cat+"_"+mass+"_tDown.root","read");
 
 
   TString scaleUp="CMS_scale_t_mutau_8TeVUp";
@@ -23,9 +23,11 @@ void mergeDataCardsSM(Int_t channel, TString mass){
   if(channel==2)scaleDown="CMS_scale_t_etau_8TeVDown";
 
 
-  TFile output(ChannelName+"SM_"+mass+".root","recreate");
+  TFile output(ChannelName+"_SM"+(long)cat+"_"+mass+".root","recreate");
   for(long sm=0;sm<NCAT;sm++){
-
+    if(cat==13 && (sm==4))continue;
+    if(cat==15 && (sm==2 || sm==3))continue;
+    
     cout<<catdirname[sm]<<endl;
 
     TDirectory* dir = output.mkdir(ChannelName+"_"+catdirname[sm]);  
@@ -52,12 +54,6 @@ void mergeDataCardsSM(Int_t channel, TString mass){
     VV->Write();
     QCD->Write();
     data_obs->Write();
-
-    //copy resolution shifts
-    TH1F* ZTT_resDown = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT_resDown");
-    TH1F* ZTT_resUp = (TH1F*)nominal.Get(ChannelName+"_"+catdirname[sm]+"/ZTT_resUp");
-    ZTT_resDown->Write();
-    ZTT_resUp->Write();
 
     /////////////tUp histos
     TH1F* ZTT_CMS_scale_tUp =  (TH1F*)nominaltUp.Get(ChannelName+"_"+catdirname[sm]+"/ZTT");
@@ -189,17 +185,19 @@ void mergeDataCardsSM(Int_t channel, TString mass){
 
   //for 1Jet_low need to add a shape systematic for QCD 
   TH1F* QCD = (TH1F*)nominal.Get(ChannelName+"_boost_low/QCD");
-  TH1F* QCDUp=(TH1F*)QCD->Clone("QCD_CMS_htt_QCDShape_mutau_boost_low_8TeVUp");
-  TH1F* QCDDown=(TH1F*)QCD->Clone("QCD_CMS_htt_QCDShape_mutau_boost_low_8TeVDown");
-  for(Int_t b=1;b<=QCD->GetNbinsX();b++){
-    if(QCD->GetBinCenter(b)<=70.){
-      QCDUp->SetBinContent(b,1.15*QCDUp->GetBinContent(b));
-      QCDDown->SetBinContent(b,0.85*QCDDown->GetBinContent(b));
+  if(QCD){
+    TH1F* QCDUp=(TH1F*)QCD->Clone("QCD_CMS_htt_QCDShape_mutau_boost_low_8TeVUp");
+    TH1F* QCDDown=(TH1F*)QCD->Clone("QCD_CMS_htt_QCDShape_mutau_boost_low_8TeVDown");
+    for(Int_t b=1;b<=QCD->GetNbinsX();b++){
+      if(QCD->GetBinCenter(b)<=70.){
+	QCDUp->SetBinContent(b,1.15*QCDUp->GetBinContent(b));
+	QCDDown->SetBinContent(b,0.85*QCDDown->GetBinContent(b));
+      }
     }
+    output.cd("muTau_boost_low");
+    QCDUp->Write();
+    QCDDown->Write();
   }
-  output.cd("muTau_boost_low");
-  QCDUp->Write();
-  QCDDown->Write();
 
   output.ls();
   output.Close();

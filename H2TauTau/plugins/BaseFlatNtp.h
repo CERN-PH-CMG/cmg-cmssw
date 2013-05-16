@@ -210,7 +210,10 @@ protected:
   edm::InputTag pupWeightName_;
   float pupWeight_;
   float eventweight_;
+  int embeddedWeightType_;
+  std::string embeddedKinWeightFile_;
   float embeddedGenWeight_;//for tau embedded samples
+  float embeddedGenWeights_[8];
 
   edm::InputTag pupWeightNames_[5];
   float pupWeights_[5];

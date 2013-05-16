@@ -79,7 +79,9 @@ flatNtpTauMu = cms.EDAnalyzer(
     signalWeightMass =  cms.string('0'),
     jsonfile = cms.string(httjson_dir + 'json.txt'),
     saveLHENUP = cms.int32(0),
-    correctTauES = cms.int32(0), 
+    correctTauES = cms.int32(0),
+    embeddedWeightType = cms.int32(1),
+    embeddedKinWeightFile = cms.string(''),
     )
 
 

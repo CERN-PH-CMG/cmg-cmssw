@@ -222,6 +222,9 @@ public:
   Int_t ZTTType_;
   Int_t WJetsType_;
   long mTCut_;
+  long taupTCut_;
+  long leadJetpTCut_;
+  long higgspTCut_;
   TString eventWeight_;
   TString tauIsoCut_;
   TString tauIsoCutQCD_;
@@ -260,13 +263,13 @@ public:
     }
     TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
-    TString boostcut="(njet>=1&&nbjet==0)";
+    TString boostcut=TString("(njet>=1&&nbjet==0)*(leadJetPt>")+leadJetpTCut_+")*(vbfvars3>"+higgspTCut_+")";
     TString notboostcut=TString("(!")+boostcut+")";
     TString bjetcut="(njet<2&&nbjet>=1)";
     TString notbjetcut=TString("(!")+bjetcut+")";
     TString zerojetcut="(njet==0&&nbjet==0)";
-    TString taulowcut="(taupt<40.)";
-    TString tauhighcut="(taupt>=40.)";
+    TString tauhighcut=TString("(taupt>")+taupTCut_+")";
+    TString taulowcut=TString("(!")+tauhighcut+")";
     TString SMcut[7];
     SMcut[0]=zerojetcut+"*"+taulowcut;
     SMcut[1]=zerojetcut+"*"+tauhighcut;
