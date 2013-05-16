@@ -13,29 +13,6 @@
 
 void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, int useMomentumCorr, int smearRochCorrByNsigma, int useEffSF, int useVtxSF, TString sampleName)
 {
-  //   In a ROOT session, you can do:
-  //      Root > .L Wanalysis.C
-  //      Root > Wanalysis t
-  //      Root > t.GetEntry(12); // Fill t data members with entry number 12
-  //      Root > t.Show();       // Show values of entry 12
-  //      Root > t.Show(16);     // Read and show values of entry 16
-  //      Root > t.Loop();       // Loop on all entries
-  //
-
-  //     This is the loop skeleton where:
-  //    jentry is the global entry number in the chain
-  //    ientry is the entry number in the current Tree
-  //  Note that the argument to GetEntry must be:
-  //    jentry for TChain::GetEntry
-  //    ientry for TTree::GetEntry and TBranch::GetEntry
-  //
-  //       To read only selected branches, Insert statements like:
-  // METHOD1:
-  //    fChain->SetBranchStatus("*",0);  // disable all branches
-  //    fChain->SetBranchStatus("branchname",1);  // activate branchname
-  // METHOD2: replace line
-  //    fChain->GetEntry(jentry);       //read all branches
-  //by  b_branchname->GetEntry(ientry); //read only this branch
 
   TRandom3 *r = new TRandom3(0);
   
@@ -66,6 +43,7 @@ void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
   TGraphAsymmErrors*hEffSF_MuId_eta_2011[2],*hEffSF_Iso_eta_2011[2],*hEffSF_HLT_eta_2011/* ,*hEffSF_Iso_vtx_2011A,*hEffSF_Iso_vtx_2011B*/;
   TH1D*hPileupSF;
 
+  // retrieve efficiencies SF
   if(useEffSF && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
     finEffSF = new TFile("../utils/MuonEfficiencies_SF_2011_44X_DataMC.root"); // used only to build templates
     hEffSF_MuId_eta_2011[0]=(TGraphAsymmErrors*)finEffSF->Get("SF_TIGHT_nL8_2011A_eta__pt>20");
@@ -80,6 +58,7 @@ void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
       return;
     }
   }
+  // retrieve pileup SF
   if(useVtxSF && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
     TString vtx_str = sampleName; vtx_str.ReplaceAll("Sig",""); vtx_str.ReplaceAll("Fake","");
     // finPileupSF = new TFile(Form("../utils/pileup_reweighting_%s.root",vtx_str.Data())); // used only to build templates
@@ -110,9 +89,11 @@ void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
   bins_Notscaled[nbins]=xmax*80/2;
   // cout << xmax << endl;
 
+  // analysis can be automatically repeated for several |eta| ranges
   for(int i=0; i<WMass::etaMuonNSteps; i++){
     TString eta_str = Form("%.1f",WMass::etaMaxMuons[i]); eta_str.ReplaceAll(".","p");
 
+    // and several W mass hypotheses
     for(int j=0; j<2*WMass::WMassNSteps+1; j++){
       int jWmass = (WMass::WMassCentral_MeV-(WMass::WMassNSteps-j)*WMass::WMassStep_MeV);
       hWPos_PtScaled_1_Gen[i][j]=new TH1D(Form("hWPos_PtScaled_1_Gen_eta%s_%d",eta_str.Data(),jWmass),Form("hWPos_PtScaled_1_Gen_eta%s_%d",eta_str.Data(),jWmass),nbins,bins_scaled);
@@ -139,6 +120,7 @@ void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
       // hWPos_logiso_vs_logdxy[i][j]=new TH2D(Form("hWPos_logiso_vs_logdxy_eta%s_%d",eta_str.Data(),jWmass),Form("hWPos_logiso_vs_logdxy_eta%s_%d",eta_str.Data(),jWmass),1000,-5,1,1000,-5,1);
       // hWPos_iso_vs_dxy[i][j]=new TH2D(Form("hWPos_iso_vs_dxy_eta%s_%d",eta_str.Data(),jWmass),Form("hWPos_iso_vs_dxy_eta%s_%d",eta_str.Data(),jWmass),1000,-0.001,0.999,1000,0,1);
       
+      // relevant histograms are created for Signal and QCD enriched phase-space
       for(int k=0; k<WMass::nSigOrQCD; k++){
         hnvtx[k][i][j]=new TH1D(Form("hnvtx_%s_eta%s_%d",WMass::nSigOrQCD_str[k].Data(),eta_str.Data(),jWmass),Form("hnvtx_%s_eta%s_%d",WMass::nSigOrQCD_str[k].Data(),eta_str.Data(),jWmass),200,0,200);
         hnoTrgMuonsLeadingPt[k][i][j]=new TH1D(Form("hnoTrgMuonsLeadingPt_%s_eta%s_%d",WMass::nSigOrQCD_str[k].Data(),eta_str.Data(),jWmass),Form("hnoTrgMuonsLeadingPt_%s_eta%s_%d",WMass::nSigOrQCD_str[k].Data(),eta_str.Data(),jWmass),300,-100,200);
@@ -156,8 +138,6 @@ void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
         hJetphi_WPos[k][i][j]=new TH1D(Form("hJetphi_WPos_%s_eta%s_%d",WMass::nSigOrQCD_str[k].Data(),eta_str.Data(),jWmass),Form("hJetphi_WPos_%s_eta%s_%d",WMass::nSigOrQCD_str[k].Data(),eta_str.Data(),jWmass),100,-TMath::Pi(),TMath::Pi());
         hWPos_MuDRgen[k][i][j]=new TH1D(Form("hWPos_MuDRgen_%s_eta%s_%d",WMass::nSigOrQCD_str[k].Data(),eta_str.Data(),jWmass),Form("hWPos_MuDRgen_%s_eta%s_%d",WMass::nSigOrQCD_str[k].Data(),eta_str.Data(),jWmass),1000,-6,1);
       }
-    
-    
     
     
     }
@@ -181,9 +161,10 @@ void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
     corrector = new MuScleFitCorrector(fitParametersFile);
   }
   
+  // start the actual event loop
   Long64_t nbytes = 0, nb = 0;
   for (Long64_t jentry=first_entry; jentry<nentries;jentry++) {
-  // for (Long64_t jentry=0; jentry<5e5;jentry++) {
+  // for (Long64_t jentry=0; jentry<5e5;jentry++) { // for testing purposes
     Long64_t ientry = LoadTree(jentry);
     if (ientry < 0) break;
     nb = fChain->GetEntry(jentry);   nbytes += nb;
@@ -195,6 +176,7 @@ void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
     
     int runopt = r->Rndm()<0.457451 ? 0 : 1;
     double MuPos_tight_muon_SF = 1;
+    // THIS MUST BE CHECKED !!!!!
     if(useEffSF && (IS_MC_CLOSURE_TEST || isMCorDATA==0)){
       MuPos_tight_muon_SF = hEffSF_MuId_eta_2011[runopt]->Eval(Mu_eta)*hEffSF_Iso_eta_2011[runopt]->Eval(Mu_eta)*hEffSF_HLT_eta_2011->Eval(Mu_eta);
     }
@@ -210,19 +192,21 @@ void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
         // GEN STUFF IF REQUESTED
         if(useGenVar){
           
-          if(WGen_m>0){
-            if(MuGen_charge>0){
+          if(WGen_m>0){ // only for signal event
+            if(MuGen_charge>0){ // only for positive muons
               double MuPosGen_pt_jacobian = 2*MuGen_pt/iWmass;
-              // LUCA ADD TO AVOID OVERFLOW
+              // AVOID OVERFLOW BIN TO BE FILLED
               if(MuPosGen_pt_jacobian>=xmax) MuPosGen_pt_jacobian=xmax-binsize2/2;
               
               hWPos_PtScaled_1_Gen[i][j]->Fill(MuPosGen_pt_jacobian,evt_weight);
-              
+                
+                // mass cut not meaningful for W case
                 hWPos_PtScaled_2_ZGenMassCut[i][j]->Fill(MuPosGen_pt_jacobian,evt_weight);
                 
                 if(TMath::Abs(MuGen_eta)<WMass::etaMaxMuons[i]){
                   hWPos_PtScaled_3_Mu1GenCut[i][j]->Fill(MuPosGen_pt_jacobian,evt_weight);
                   
+                  // second lepton (i.e. neutrino) not detected
                   // if(TMath::Abs(MuNegGen_eta)<2.4){
                     hWPos_PtScaled_4_Mu2GenCut[i][j]->Fill(MuPosGen_pt_jacobian,evt_weight);
                   // }
@@ -232,27 +216,28 @@ void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
           }
         }
           
-        if(!useGenVar || W_mt>0){ // dummy thing to separate between sig and bak in W+Jets (useless)
+        if(!useGenVar || W_mt>0){ // dummy thing to separate between sig and bkg in W+Jets (useless)
           
           // good reco event selection
           if(evtHasGoodVtx && evtHasTrg && Mu_charge>0){
             TLorentzVector mu; //TLorentzVector of the reconstructed muon
-            //Set TLorentzVector of mu, and mubar
+            //Set TLorentzVector of mu
             mu.SetPtEtaPhiM(Mu_pt,Mu_eta,Mu_phi,Mu_mass);
             //use rochester correction if required
-            if(useMomentumCorr){
+            if(useMomentumCorr==1){ // use Rochester Momentum scale corrections if required
               if(IS_MC_CLOSURE_TEST || isMCorDATA==0){
+                // IN THE LAST VERSION NO RUN DEPENDENCE IN MC (TO be CHECKED)
                 // int runopt = r->Rndm()<0.457451 ? 0 : 1; // smear MC according to Run2011A and Run2011B statistics (if cut on pileup the 0.457... must be changed accordingly!!!
                 rmcor44X->momcor_mc(mu, Mu_charge, smearRochCorrByNsigma/* , runopt */);
               }
               else{
                 rmcor44X->momcor_data(mu, Mu_charge, smearRochCorrByNsigma, run<175832 ? 0 : 1 );
               }
-            }else if(useMomentumCorr==2){ // use Momentum scale corrections if required
+            }else if(useMomentumCorr==2){ // use MuscleFit Momentum scale corrections if required
               corrector->applyPtCorrection(mu,Mu_charge);
             }
 
-            double MuPos_pt_jacobian = 2*mu.Pt()/iWmass;
+            double MuPos_pt_jacobian = 2*mu.Pt()/iWmass; // SCALED VARIABLE
             // LUCA ADD TO AVOID OVERFLOW
             if(MuPos_pt_jacobian>=xmax) MuPos_pt_jacobian=xmax-binsize2/2;
             int wmass1 = iWmass*1e3;
@@ -308,7 +293,7 @@ void Wanalysis::Loop(int IS_MC_CLOSURE_TEST, int isMCorDATA, TString outputdir, 
                         
                   // if(TMath::Abs(wmass1 - WMass::WMassCentral_MeV) > 1) continue;
                     
-                  hpfMET_WPos[0][i][j]->Fill(pfmet,evt_weight*MuPos_tight_muon_SF); // TO FIT MET IN THE WHOLE RANGE!!!!
+                  hpfMET_WPos[0][i][j]->Fill(pfmet,evt_weight*MuPos_tight_muon_SF); // TRICK TO FIT MET IN THE WHOLE RANGE!!!!
                     
                 }
               }else{ // muon candidate is failing either tight ID, iso or dxy: QCD enriched region
