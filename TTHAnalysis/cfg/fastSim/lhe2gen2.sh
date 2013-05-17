@@ -36,6 +36,12 @@ done
 cat Hadronizer_MgmMatchTuneZ2star_8TeV_madgraph_tauola_cff_py_noCMS_GEN.py > jobs/$OUTBASE.cfg.py
 echo "process.source.fileNames = [ $INFILES ]"                   >> jobs/$OUTBASE.cfg.py
 echo "process.AODSIMoutput.fileName = '$TMPDIR/$OUTBASE.root'"   >> jobs/$OUTBASE.cfg.py
+NJETS=99
+if   echo $OUTFILE | grep '_012jets' -q ; then NJETS=2;
+elif echo $OUTFILE | grep '_01jets'  -q ; then NJETS=1;
+else echo "So il c...o io quanti jet vuoi. NJETS=$NJETS"; fi
+echo "process.generator.jetMatching.MEMAIN_maxjets = $NJETS"   >> jobs/$OUTBASE.cfg.py
+ 
 if [[ "$M" == "--up" ]]; then
     echo "Matching scale UP"
     echo "process.generator.PythiaParameters.processParameters += [ 'PARP(64)=4.', 'PARP(72)=0.125' ]"   >> jobs/$OUTBASE.cfg.py
