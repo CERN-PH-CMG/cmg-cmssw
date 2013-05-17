@@ -565,8 +565,8 @@ int main(int argc, char** argv)
           if((cmdline.outputfilename.find("Py6")!=std::string::npos)||(cmdline.outputfilename.find("Hpp")!=std::string::npos)||(DijetMassCA8>890))
               dijetWtag->Fill();
 
-          if((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)&&(Jet2CA8Mass>70)&&(Jet2CA8Mass<100)&&(DijetMassCA8>1600))
-              cout << "filtered " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << Jet1CA8Mass << ":" << Jet2CA8Mass << ":" << Jet1CA8Nsub << ":" << Jet2CA8Nsub << endl;
+          //if((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)&&(Jet2CA8Mass>70)&&(Jet2CA8Mass<100)&&(DijetMassCA8>1600))
+          //    cout << "filtered " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << Jet1CA8Mass << ":" << Jet2CA8Mass << ":" << Jet1CA8Nsub << ":" << Jet2CA8Nsub << endl;
 
           categories=-1;
           categoriesNS=-1;
