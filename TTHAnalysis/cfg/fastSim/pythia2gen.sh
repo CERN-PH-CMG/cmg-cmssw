@@ -6,7 +6,7 @@ export SCRAM_ARCH=slc5_amd64_gcc462
 eval $(scramv1 runtime -sh)
 cd /afs/cern.ch/user/g/gpetrucc/ttH/CMGTools/CMSSW_5_3_5/src/CMGTools/TTHAnalysis/cfg/fastSim
 #### CREATE CFG
-M="default"; if [[ "$1" == "--D6T" || "$1" == "--Z2" ||  "$1" == "--Z2Star" ||  "$1" == "--ProQ20" ]]; then M="$1"; shift; fi;
+M="default"; if [[ "$1" == "--D6T" || "$1" == "--Z2" ||  "$1" == "--Z2Star" ||  "$1" == "--ProQ20"  ||  "$1" == "--P11" ]]; then M="$1"; shift; fi;
 OUTFILE=$1
 OUTBASE=$(basename $OUTFILE .root)
 echo "Will  write to $OUTFILE";
@@ -35,6 +35,9 @@ elif [[ "$M" == "--Z2Star" ]]; then
 elif [[ "$M" == "--ProQ20" ]]; then
     echo "Using ProQ20 pythia tune"
     sed -i 's/PythiaUEZ2starSettings_cfi/PythiaUEProQ20Settings_cfi/' jobs/$OUTBASE.cfg.py
+elif [[ "$M" == "--P11" ]]; then
+    echo "Using P11 pythia tune"
+    sed -i 's/PythiaUEZ2starSettings_cfi/PythiaUEP11Settings_cfi/' jobs/$OUTBASE.cfg.py
 fi
 cat >> jobs/$OUTBASE.cfg.py <<_EOF_
 ## Scramble
