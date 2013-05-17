@@ -43,3 +43,5 @@
 </bin>
 <bin name="chi_analysis_161" file="chi_analysis_161.cc">
 </bin>
+<bin name="substructure_pas" file="substructure_pas.cc">
+</bin>

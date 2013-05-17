@@ -75,7 +75,7 @@ process.source = cms.Source("PoolSource",
 #'/store/user/yxin/yxin_RSG_WW_2000_pythia6_01/yxin_RSG_WW_2000_pythia6_01/54dbdee3e49fbf0c9fb4ed9452c44bd3/RSGravitonToWW_kMpl01_M_2000_TuneZ2star_8TeV_pythia6_cff_py_GEN_FASTSIM_HLT_6_1_dG3.root',
 #'/store/user/yxin/yxin_RSG_WW_2000_pythia6_01/yxin_RSG_WW_2000_pythia6_01/54dbdee3e49fbf0c9fb4ed9452c44bd3/RSGravitonToWW_kMpl01_M_2000_TuneZ2star_8TeV_pythia6_cff_py_GEN_FASTSIM_HLT_16_1_ce9.root',
 
-'file:/afs/cern.ch/user/h/hinzmann/workspace/ditau/RSGravitonToWW_kMpl01_M_1000_TuneZ2star_8TeV_pythia6_cff_py_GEN_FASTSIM_HLT_10_1_fkb.root',
+#'file:/afs/cern.ch/user/h/hinzmann/workspace/ditau/RSGravitonToWW_kMpl01_M_1000_TuneZ2star_8TeV_pythia6_cff_py_GEN_FASTSIM_HLT_10_1_fkb.root',
 #'file:/afs/cern.ch/user/h/hinzmann/workspace/ditau/RSGravitonToWW_kMpl01_M_1000_TuneZ2star_8TeV_pythia6_cff_py_GEN_FASTSIM_HLT_11_1_vyc.root',
 #'file:/afs/cern.ch/user/h/hinzmann/workspace/ditau/RSGravitonToWW_kMpl01_M_1000_TuneZ2star_8TeV_pythia6_cff_py_GEN_FASTSIM_HLT_12_1_bea.root',
 #'file:/afs/cern.ch/user/h/hinzmann/workspace/ditau/RSGravitonToWW_kMpl01_M_1000_TuneZ2star_8TeV_pythia6_cff_py_GEN_FASTSIM_HLT_13_1_D5s.root',

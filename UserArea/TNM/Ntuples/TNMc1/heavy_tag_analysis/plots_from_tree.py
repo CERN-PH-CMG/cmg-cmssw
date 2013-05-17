@@ -22,17 +22,25 @@ gStyle.SetLegendBorderSize(0)
 
 if __name__ == '__main__':
 
- runSet=1
+ runSet=11
 
  if runSet<10:
-   samples = ["dijetWtag_Moriond_WWHpp2000.root",
-            "dijetWtag_Moriond_ZZHpp2000.root",
-	    "dijetWtag_Moriond_WWPy62000.root",
-            "dijetWtag_Moriond_ZZPy62000.root",
-	    "dijetWtag_Moriond_WWHpp1000.root",
+   samples = ["dijetWtag_Moriond_WWHpp1000.root",
             "dijetWtag_Moriond_ZZHpp1000.root",
 	    "dijetWtag_Moriond_WWPy61000.root",
             "dijetWtag_Moriond_ZZPy61000.root",
+	    "dijetWtag_Moriond_WWHpp1500.root",
+            "dijetWtag_Moriond_ZZHpp1500.root",
+	    "dijetWtag_Moriond_WWPy61500.root",
+            "dijetWtag_Moriond_ZZPy61500.root",
+	    "dijetWtag_Moriond_WWHpp2000.root",
+            "dijetWtag_Moriond_ZZHpp2000.root",
+	    "dijetWtag_Moriond_WWPy62000.root",
+            "dijetWtag_Moriond_ZZPy62000.root",
+	    "dijetWtag_Moriond_WWHpp3000.root",
+            "dijetWtag_Moriond_ZZHpp3000.root",
+	    "dijetWtag_Moriond_WWPy63000.root",
+            "dijetWtag_Moriond_ZZPy63000.root",
 	    "dijetWtag_Moriond_QCD1000.root",
 	    "dijetWtag_Moriond_Mar6.root",
 	    ]
@@ -112,7 +120,7 @@ if __name__ == '__main__':
            ],
           ]
 
-  names = ["optimize_tagger",
+  names = ["optimize_taggerDefault",
 	  "optimize_mass_low",
 	  "optimize_mass_high",
 	 ]
@@ -145,55 +153,57 @@ if __name__ == '__main__':
 
  if runSet>10:
   samples = ["dijetWtag_Moriond_HHPy61000.root",
-            "dijetWtag_Moriond_HHPy62000.root",
+	    "dijetWtag_Moriond_HHPy61500.root",
+	    "dijetWtag_Moriond_HHPy62000.root",
+	    "dijetWtag_Moriond_HHPy63000.root",
 	    "dijetWtag_Moriond_QCD1000.root",
 	    "dijetWtag_Moriond_Mar6.root",
             ]
   set="_H"
 
-  plots = [[#("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.35)&&(Jet2AK7Nsub<0.35))","AK7 2x 115<m<135, 2x #tau_{12}<0.35"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.4)&&(Jet2AK7Nsub<0.4))","AK7 2x 115<m<135, 2x #tau_{12}<0.4"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.45)&&(Jet2AK7Nsub<0.45))","AK7 2x 115<m<135, 2x #tau_{12}<0.45"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.5)&&(Jet2AK7Nsub<0.5))","AK7 2x 115<m<135, 2x #tau_{12}<0.5"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.55)&&(Jet2AK7Nsub<0.55))","AK7 2x 115<m<135, 2x #tau_{12}<0.55"),
+  plots = [[("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.35)&&(Jet2CA8Nsub<0.35))","CA8 2x 110<m<130, 2x #tau_{12}<0.35"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.4)&&(Jet2CA8Nsub<0.4))","CA8 2x 110<m<130, 2x #tau_{12}<0.4"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.45)&&(Jet2CA8Nsub<0.45))","CA8 2x 110<m<130, 2x #tau_{12}<0.45"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub<0.5))","CA8 2x 110<m<130, 2x #tau_{12}<0.5"),
+           #("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.55)&&(Jet2CA8Nsub<0.55))","CA8 2x 110<m<130, 2x #tau_{12}<0.55"),
            ],
-          [#("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>110)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>110)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.35)&&(Jet2AK7Nsub<0.35))","AK7 2x 110<m<135, 2x #tau_{12}<0.35"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>110)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>110)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.4)&&(Jet2AK7Nsub<0.4))","AK7 2x 110<m<135, 2x #tau_{12}<0.4"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>110)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>110)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.45)&&(Jet2AK7Nsub<0.45))","AK7 2x 110<m<135, 2x #tau_{12}<0.45"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>110)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>110)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.5)&&(Jet2AK7Nsub<0.5))","AK7 2x 110<m<135, 2x #tau_{12}<0.5"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>110)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>110)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.55)&&(Jet2AK7Nsub<0.55))","AK7 2x 110<m<135, 2x #tau_{12}<0.55"),
-           #("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>105)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>105)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.35)&&(Jet2AK7Nsub<0.35))","AK7 2x 105<m<135, 2x #tau_{12}<0.35"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>105)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>105)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.4)&&(Jet2AK7Nsub<0.4))","AK7 2x 105<m<135, 2x #tau_{12}<0.4"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>105)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>105)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.45)&&(Jet2AK7Nsub<0.45))","AK7 2x 105<m<135, 2x #tau_{12}<0.45"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>105)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>105)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.5)&&(Jet2AK7Nsub<0.5))","AK7 2x 105<m<135, 2x #tau_{12}<0.5"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>105)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>105)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.55)&&(Jet2AK7Nsub<0.55))","AK7 2x 105<m<135, 2x #tau_{12}<0.55"),
-           #("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>100)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>100)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.35)&&(Jet2AK7Nsub<0.35))","AK7 2x 100<m<135, 2x #tau_{12}<0.35"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>100)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>100)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.4)&&(Jet2AK7Nsub<0.4))","AK7 2x 100<m<135, 2x #tau_{12}<0.4"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>100)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>100)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.45)&&(Jet2AK7Nsub<0.45))","AK7 2x 100<m<135, 2x #tau_{12}<0.45"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>100)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>100)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.5)&&(Jet2AK7Nsub<0.5))","AK7 2x 100<m<135, 2x #tau_{12}<0.5"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>100)&&(Jet1AK7Mass<135)&&(Jet2AK7Mass>100)&&(Jet2AK7Mass<135)&&(Jet1AK7Nsub<0.55)&&(Jet2AK7Nsub<0.55))","AK7 2x 100<m<135, 2x #tau_{12}<0.55"),
+          [("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>115)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>115)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.35)&&(Jet2CA8Nsub<0.35))","CA8 2x 115<m<130, 2x #tau_{12}<0.35"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>115)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>115)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.4)&&(Jet2CA8Nsub<0.4))","CA8 2x 115<m<130, 2x #tau_{12}<0.4"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>115)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>115)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.45)&&(Jet2CA8Nsub<0.45))","CA8 2x 115<m<130, 2x #tau_{12}<0.45"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>115)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>115)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub<0.5))","CA8 2x 115<m<130, 2x #tau_{12}<0.5"),
+           #("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>115)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>115)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.55)&&(Jet2CA8Nsub<0.55))","CA8 2x 115<m<130, 2x #tau_{12}<0.55"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>105)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>105)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.35)&&(Jet2CA8Nsub<0.35))","CA8 2x 105<m<130, 2x #tau_{12}<0.35"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>105)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>105)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.4)&&(Jet2CA8Nsub<0.4))","CA8 2x 105<m<130, 2x #tau_{12}<0.4"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>105)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>105)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.45)&&(Jet2CA8Nsub<0.45))","CA8 2x 105<m<130, 2x #tau_{12}<0.45"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>105)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>105)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub<0.5))","CA8 2x 105<m<130, 2x #tau_{12}<0.5"),
+           #("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>105)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>105)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.55)&&(Jet2CA8Nsub<0.55))","CA8 2x 105<m<130, 2x #tau_{12}<0.55"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>100)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>100)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.35)&&(Jet2CA8Nsub<0.35))","CA8 2x 100<m<130, 2x #tau_{12}<0.35"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>100)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>100)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.4)&&(Jet2CA8Nsub<0.4))","CA8 2x 100<m<130, 2x #tau_{12}<0.4"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>100)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>100)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.45)&&(Jet2CA8Nsub<0.45))","CA8 2x 100<m<130, 2x #tau_{12}<0.45"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>100)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>100)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub<0.5))","CA8 2x 100<m<130, 2x #tau_{12}<0.5"),
+           #("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>100)&&(Jet1CA8Mass<130)&&(Jet2CA8Mass>100)&&(Jet2CA8Mass<130)&&(Jet1CA8Nsub<0.55)&&(Jet2CA8Nsub<0.55))","CA8 2x 100<m<130, 2x #tau_{12}<0.55"),
            ],
-          [#("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<130)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<130)&&(Jet1AK7Nsub<0.35)&&(Jet2AK7Nsub<0.35))","AK7 2x 115<m<130, 2x #tau_{12}<0.35"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<130)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<130)&&(Jet1AK7Nsub<0.4)&&(Jet2AK7Nsub<0.4))","AK7 2x 115<m<130, 2x #tau_{12}<0.4"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<130)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<130)&&(Jet1AK7Nsub<0.45)&&(Jet2AK7Nsub<0.45))","AK7 2x 115<m<130, 2x #tau_{12}<0.45"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<130)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<130)&&(Jet1AK7Nsub<0.5)&&(Jet2AK7Nsub<0.5))","AK7 2x 115<m<130, 2x #tau_{12}<0.5"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<130)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<130)&&(Jet1AK7Nsub<0.55)&&(Jet2AK7Nsub<0.55))","AK7 2x 115<m<130, 2x #tau_{12}<0.55"),
-           #("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<140)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<140)&&(Jet1AK7Nsub<0.35)&&(Jet2AK7Nsub<0.35))","AK7 2x 115<m<140, 2x #tau_{12}<0.35"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<140)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<140)&&(Jet1AK7Nsub<0.4)&&(Jet2AK7Nsub<0.4))","AK7 2x 115<m<140, 2x #tau_{12}<0.4"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<140)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<140)&&(Jet1AK7Nsub<0.45)&&(Jet2AK7Nsub<0.45))","AK7 2x 115<m<140, 2x #tau_{12}<0.45"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<140)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<140)&&(Jet1AK7Nsub<0.5)&&(Jet2AK7Nsub<0.5))","AK7 2x 115<m<140, 2x #tau_{12}<0.5"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<140)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<140)&&(Jet1AK7Nsub<0.55)&&(Jet2AK7Nsub<0.55))","AK7 2x 115<m<140, 2x #tau_{12}<0.55"),
-           #("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<145)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<145)&&(Jet1AK7Nsub<0.35)&&(Jet2AK7Nsub<0.35))","AK7 2x 115<m<145, 2x #tau_{12}<0.35"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<145)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<145)&&(Jet1AK7Nsub<0.4)&&(Jet2AK7Nsub<0.4))","AK7 2x 115<m<145, 2x #tau_{12}<0.4"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<145)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<145)&&(Jet1AK7Nsub<0.45)&&(Jet2AK7Nsub<0.45))","AK7 2x 115<m<145, 2x #tau_{12}<0.45"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<145)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<145)&&(Jet1AK7Nsub<0.5)&&(Jet2AK7Nsub<0.5))","AK7 2x 115<m<145, 2x #tau_{12}<0.5"),
-           ("DijetMassAK7","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1AK7Mass>115)&&(Jet1AK7Mass<145)&&(Jet2AK7Mass>115)&&(Jet2AK7Mass<145)&&(Jet1AK7Nsub<0.55)&&(Jet2AK7Nsub<0.55))","AK7 2x 115<m<145, 2x #tau_{12}<0.55"),
+          [("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<125)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<125)&&(Jet1CA8Nsub<0.35)&&(Jet2CA8Nsub<0.35))","CA8 2x 110<m<125, 2x #tau_{12}<0.35"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<125)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<125)&&(Jet1CA8Nsub<0.4)&&(Jet2CA8Nsub<0.4))","CA8 2x 110<m<125, 2x #tau_{12}<0.4"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<125)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<125)&&(Jet1CA8Nsub<0.45)&&(Jet2CA8Nsub<0.45))","CA8 2x 110<m<125, 2x #tau_{12}<0.45"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<125)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<125)&&(Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub<0.5))","CA8 2x 110<m<125, 2x #tau_{12}<0.5"),
+           #("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<125)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<125)&&(Jet1CA8Nsub<0.55)&&(Jet2CA8Nsub<0.55))","CA8 2x 110<m<125, 2x #tau_{12}<0.55"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<135)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<135)&&(Jet1CA8Nsub<0.35)&&(Jet2CA8Nsub<0.35))","CA8 2x 110<m<135, 2x #tau_{12}<0.35"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<135)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<135)&&(Jet1CA8Nsub<0.4)&&(Jet2CA8Nsub<0.4))","CA8 2x 110<m<135, 2x #tau_{12}<0.4"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<135)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<135)&&(Jet1CA8Nsub<0.45)&&(Jet2CA8Nsub<0.45))","CA8 2x 110<m<135, 2x #tau_{12}<0.45"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<135)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<135)&&(Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub<0.5))","CA8 2x 110<m<135, 2x #tau_{12}<0.5"),
+           #("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<135)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<135)&&(Jet1CA8Nsub<0.55)&&(Jet2CA8Nsub<0.55))","CA8 2x 110<m<135, 2x #tau_{12}<0.55"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<140)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<140)&&(Jet1CA8Nsub<0.35)&&(Jet2CA8Nsub<0.35))","CA8 2x 110<m<140, 2x #tau_{12}<0.35"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<140)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<140)&&(Jet1CA8Nsub<0.4)&&(Jet2CA8Nsub<0.4))","CA8 2x 110<m<140, 2x #tau_{12}<0.4"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<140)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<140)&&(Jet1CA8Nsub<0.45)&&(Jet2CA8Nsub<0.45))","CA8 2x 110<m<140, 2x #tau_{12}<0.45"),
+           ("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<140)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<140)&&(Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub<0.5))","CA8 2x 110<m<140, 2x #tau_{12}<0.5"),
+           #("DijetMassCA8","((abs(Jet1eta-Jet2eta)<1.3)&&(Jet1CA8Mass>110)&&(Jet1CA8Mass<140)&&(Jet2CA8Mass>110)&&(Jet2CA8Mass<140)&&(Jet1CA8Nsub<0.55)&&(Jet2CA8Nsub<0.55))","CA8 2x 110<m<140, 2x #tau_{12}<0.55"),
            ],
           ]
 
-  names = ["optimize_HtaggerAK7",
-	  "optimize_HtaggerAK7_mass_low",
-	  "optimize_HtaggerAK7_mass_high",
+  names = ["optimize_HtaggerCA8",
+	  "optimize_HtaggerCA8_mass_low",
+	  "optimize_HtaggerCA8_mass_high",
 	 ]
 
  hists=[]
@@ -231,6 +241,14 @@ if __name__ == '__main__':
     print plot[0][2]
     hist=TH1F("plot"+str(plot[0][2]),"M_{jj}",8000,0,8000);
     tree.Project("plot"+str(plot[0][2]),plot[0][0],plot[0][1])
+    outfile=TFile("data2012_v2_tree_"+ratio+"_"+sample.split(".")[0]+"_"+names[plots.index(plot)]+"_0.root","RECREATE")
+    hist.Write("dijet_mass_0mtag")
+    hist.Write("dijet_mass_1mtag_0mdtag")
+    hist.Write("dijet_mass_1mtag_1mdtag")
+    hist.Write("dijet_mass_2mtag_0mdtag")
+    hist.Write("dijet_mass_2mtag_1mdtag")
+    hist.Write("dijet_mass_2mtag_2mdtag")
+    outfile.Close()
     if "fine" in names[plots.index(plot)]:
       hist=hist.Rebin(len(bins_fine)-1,hist.GetName()+"_rebin",binning_fine)
     else:
@@ -322,6 +340,14 @@ if __name__ == '__main__':
         print plot[i][2]
         hist2=TH1F("plot"+str(plot[i][2]),"M_{jj}",8000,0,8000);
         tree.Project("plot"+str(plot[i][2]),plot[i][0],plot[i][1])
+     	outfile=TFile("data2012_v2_tree_"+ratio+"_"+sample.split(".")[0]+"_"+names[plots.index(plot)]+"_"+str(i)+".root","RECREATE")
+     	hist2.Write("dijet_mass_0mtag")
+     	hist2.Write("dijet_mass_1mtag_0mdtag")
+     	hist2.Write("dijet_mass_1mtag_1mdtag")
+     	hist2.Write("dijet_mass_2mtag_0mdtag")
+     	hist2.Write("dijet_mass_2mtag_1mdtag")
+     	hist2.Write("dijet_mass_2mtag_2mdtag")
+     	outfile.Close()
         if "fine" in names[plots.index(plot)]:
           hist2=hist2.Rebin(len(bins_fine)-1,hist2.GetName()+"_rebin",binning_fine)
         else:

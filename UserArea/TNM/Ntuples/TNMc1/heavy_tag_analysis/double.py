@@ -31,6 +31,10 @@ frac2 = 1.2
 
 inputRoot = sys.argv[1]
 outmjj = int( sys.argv[2] )
+if len(sys.argv)>3:
+   suffix=sys.argv[3]
+else:
+   suffix=""
 
 if outmjj > 1000 and outmjj < 1500 :
     mjjlow = 1000
@@ -53,9 +57,9 @@ if outmjj == 1000 or outmjj == 1500 or outmjj == 2000 or outmjj == 3000 \
     mjjlow = outmjj
     mjjhigh = outmjj
 
-inputlow = TFile( inputRoot + str(mjjlow) + '.root' )
-inputhigh = TFile( inputRoot + str(mjjhigh) +  '.root' )
-output = TFile( inputRoot +'OUT' + str(outmjj) + '.root', 'recreate')
+inputlow = TFile( inputRoot + str(mjjlow) + suffix + '.root' )
+inputhigh = TFile( inputRoot + str(mjjhigh) + suffix +  '.root' )
+output = TFile( inputRoot +'OUT' + str(outmjj) + suffix + '.root', 'recreate')
 
 print sys.argv[1], outmjj, mjjlow, mjjhigh
 
@@ -65,11 +69,17 @@ histnames= ["dijet_mass_0mtag",
             "dijet_mass_2mtag_0mdtag",
             "dijet_mass_2mtag_1mdtag",
             "dijet_mass_2mtag_2mdtag",
-            "dijet_mass_1mtag_0nstag",
-            "dijet_mass_1mtag_1nstag",
-            "dijet_mass_2mtag_0nstag",
-            "dijet_mass_2mtag_1nstag",
-            "dijet_mass_2mtag_2nstag",
+            #"dijet_mass_1mtag_0nstag",
+            #"dijet_mass_1mtag_1nstag",
+            #"dijet_mass_2mtag_0nstag",
+            #"dijet_mass_2mtag_1nstag",
+            #"dijet_mass_2mtag_2nstag",
+            #"dijet_mass_0mtag",
+            #"dijet_mass_1mtag_1lptag",
+            #"dijet_mass_1mtag_1hptag",
+            #"dijet_mass_2mtag_2lptag",
+            #"dijet_mass_2mtag_1hptag_1lptag",
+            #"dijet_mass_2mtag_2hptag",
             ]
 
 hists=[]
