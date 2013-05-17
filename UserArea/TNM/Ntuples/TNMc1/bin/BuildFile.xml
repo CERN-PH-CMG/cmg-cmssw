@@ -25,23 +25,9 @@
 </bin>
 <bin name="chi_analysis" file="chi_analysis.cc">
 </bin>
-<bin name="chi_analysis_mc" file="chi_analysis_mc.cc">
-</bin>
 <bin name="dijet_analysis" file="dijet_analysis.cc">
 </bin>
 <bin name="heavy_tagged_dijet_analysis" file="heavy_tagged_dijet_analysis.cc">
-</bin>
-<bin name="heavy_tagged_dijet_analysis_ak7" file="heavy_tagged_dijet_analysis_ak7.cc">
-</bin>
-<bin name="chi_analysis_135" file="chi_analysis_135.cc">
-</bin>
-<bin name="chi_analysis_100" file="chi_analysis_100.cc">
-</bin>
-<bin name="chi_analysis_160" file="chi_analysis_160.cc">
-</bin>
-<bin name="chi_analysis_061" file="chi_analysis_061.cc">
-</bin>
-<bin name="chi_analysis_161" file="chi_analysis_161.cc">
 </bin>
 <bin name="substructure_pas" file="substructure_pas.cc">
 </bin>
