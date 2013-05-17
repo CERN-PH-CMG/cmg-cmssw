@@ -55,6 +55,27 @@ void JetHelper::analyzeObject()
 */
 }
 
+float JetHelper::getPt(unsigned int num) const
+{
+    if(object->getPFConstituents().size()>num)
+    {
+        const reco::PFCandidate *thisParticle = object->getPFConstituent(num).get();
+        return thisParticle->pt();
+    }
+    return 0;
+}
+
+float JetHelper::getChargedPt(unsigned int num) const
+{
+    if(object->getPFConstituents().size()>num)
+    {
+        const reco::PFCandidate *thisParticle = object->getPFConstituent(num).get();
+        if(thisParticle->charge()!=0)
+            return thisParticle->pt();
+    }
+    return 0;
+}
+
 int JetHelper::getNcharged(double relPt) const
 {
     int n=0;

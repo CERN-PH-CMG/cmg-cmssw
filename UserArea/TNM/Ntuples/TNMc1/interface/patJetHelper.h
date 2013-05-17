@@ -214,16 +214,22 @@ namespace pat
         int getNcharged(double relPt=0) const;
         int getNneutral(double relPt=0) const;
 
-        int getNcharged00() const { return getNcharged(0.0); }
         int getNcharged01() const { return getNcharged(0.1); }
-        int getNcharged02() const { return getNcharged(0.2); }
-        int getNcharged03() const { return getNcharged(0.3); }
-
-        int getNneutral00() const { return getNneutral(0.0); }
         int getNneutral01() const { return getNneutral(0.1); }
-        int getNneutral02() const { return getNneutral(0.2); }
-        int getNneutral03() const { return getNneutral(0.3); }
 
+        float getChargedPt(unsigned int num) const;
+        float getPt(unsigned int num) const;
+
+        float getChargedPt0() const { return getChargedPt(0); }
+        float getChargedPt1() const { return getChargedPt(1); }
+        float getChargedPt2() const { return getChargedPt(2); }
+        float getChargedPt3() const { return getChargedPt(3); }
+	
+        float getPt0() const { return getPt(0); }
+        float getPt1() const { return getPt(1); }
+        float getPt2() const { return getPt(2); }
+        float getPt3() const { return getPt(3); }
+	
         float getJetCharge(float kappa) const;
         float getGenJetCharge(float kappa) const;
         float getDaughter_0_jetCharge(float kappa) const;
