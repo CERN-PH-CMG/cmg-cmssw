@@ -204,22 +204,53 @@ namespace pat
         float tau2() const { return getTau(2); }
         float tau3() const { return getTau(3); }
 
+        float getGenTau(int num, double minPt=0) const;
+        float genTau1() const { return getGenTau(1); }
+        float genTau2() const { return getGenTau(2); }
+        float genTau3() const { return getGenTau(3); }
+        float genTau1Pt05() const { return getGenTau(1,0.5); }
+        float genTau2Pt05() const { return getGenTau(2,0.5); }
+
+        int getNcharged(double relPt=0) const;
+        int getNneutral(double relPt=0) const;
+
+        int getNcharged00() const { return getNcharged(0.0); }
+        int getNcharged01() const { return getNcharged(0.1); }
+        int getNcharged02() const { return getNcharged(0.2); }
+        int getNcharged03() const { return getNcharged(0.3); }
+
+        int getNneutral00() const { return getNneutral(0.0); }
+        int getNneutral01() const { return getNneutral(0.1); }
+        int getNneutral02() const { return getNneutral(0.2); }
+        int getNneutral03() const { return getNneutral(0.3); }
+
         float getJetCharge(float kappa) const;
+        float getGenJetCharge(float kappa) const;
         float getDaughter_0_jetCharge(float kappa) const;
         float getDaughter_1_jetCharge(float kappa) const;
 
         float getC2beta(float beta) const;
+        float C2beta15() const { return getC2beta(1.5); };
         float C2beta17() const { return getC2beta(1.7); };
+        float C2beta20() const { return getC2beta(2.0); };
+
+        float getGenC2beta(float beta) const;
+        float genC2beta15() const { return getGenC2beta(1.5); };
+        float genC2beta17() const { return getGenC2beta(1.7); };
+        float genC2beta20() const { return getGenC2beta(2.0); };
 
         float jetCharge03() const { return getJetCharge(0.3); };
+        float jetCharge05() const { return getJetCharge(0.5); };
+        float jetCharge10() const { return getJetCharge(1.0); };
+
+        float genJetCharge03() const { return getGenJetCharge(0.3); };
+        float genJetCharge05() const { return getGenJetCharge(0.5); };
+        float genJetCharge10() const { return getGenJetCharge(1.0); };
+
         float daughter_0_jetCharge03() const { return getDaughter_0_jetCharge(0.3); };
         float daughter_1_jetCharge03() const { return getDaughter_1_jetCharge(0.3); };
-
-        float jetCharge05() const { return getJetCharge(0.5); };
         float daughter_0_jetCharge05() const { return getDaughter_0_jetCharge(0.5); };
         float daughter_1_jetCharge05() const { return getDaughter_1_jetCharge(0.5); };
-
-        float jetCharge10() const { return getJetCharge(1.0); };
         float daughter_0_jetCharge10() const { return getDaughter_0_jetCharge(1.0); };
         float daughter_1_jetCharge10() const { return getDaughter_1_jetCharge(1.0); };
 

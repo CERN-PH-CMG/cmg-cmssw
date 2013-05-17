@@ -1,4 +1,4 @@
-#$Revision: 1.11 $
+#$Revision: 1.12 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -26,9 +26,10 @@ runOnMC = True
 runPATCMG = False
 recalibrateCMGJets = False
 runAK7jets = True
+runPrunedAK7jets = False
 runCA8jets = True
 runQJets = False
-runOnVVtuples = True
+runOnVVtuples = False
 
 # Input file
 
@@ -61,6 +62,7 @@ if runOnVVtuples:
     #process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_BulkG_WW_lvjj_c0p2_M2000_cff")
     process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_BulkG_WW_lvjj_c0p2_M2500_cff")
     runAK7jets=False
+    runPrunedAK7jets=False
     runCA8jets=False
 
 print 'input:', process.source.fileNames
@@ -164,7 +166,7 @@ if not runOnMC:
 process.load("CMGTools.Common.PAT.jetSubstructure_cff")
 process.PATCMGSequence.remove(process.PATCMGJetSequenceCHSpruned) # don't produce the AK5 pruned collections
 process.jetMCSequenceAK7CHSpruned.remove(process.ak7GenJetsNoNu) # don't cluster the ak7GenJetsNoNu twice
-process.selectedPatJetsAK7CHSpruned.cut = 'pt()>20'
+process.selectedPatJetsAK7CHSpruned.cut = 'pt()>30'
 process.PATCMGSequence += process.PATCMGJetSequenceAK7CHSpruned
 
 if not runOnMC:
@@ -207,7 +209,7 @@ process.selectedPatJetsAK7CHSwithQjets = cms.EDProducer("QjetsAdder",
 			   expmax=cms.double(0.0),
 			   rigidity=cms.double(0.1),
 			   ntrial = cms.int32(50),
-			   cutoff=cms.double(100.0),
+			   cutoff=cms.double(200.0),
 			   jetRad= cms.double(0.7),
 			   jetAlgo=cms.string("AK"),
 			   preclustering = cms.int32(30),
@@ -270,7 +272,9 @@ process.tnmc1 = cms.Sequence(process.razorMJObjectSequence)
 if runOnMC==True:
     process.tnmc1 += process.susyGenSequence
 if runAK7jets:
-    process.tnmc1 += process.PATCMGJetSequenceAK7CHS+process.PATCMGJetSequenceAK7CHSpruned+process.selectedPatJetsAK7CHSwithNsub+process.selectedPatJetsAK7CHSwithQjets
+    process.tnmc1 += process.PATCMGJetSequenceAK7CHS+process.selectedPatJetsAK7CHSwithNsub+process.selectedPatJetsAK7CHSwithQjets
+if runPrunedAK7jets:
+    process.tnmc1 += process.PATCMGJetSequenceAK7CHSpruned
 if runCA8jets:
     process.tnmc1 += process.PATCMGJetSequenceCA8CHS+process.PATCMGJetSequenceCA8CHSpruned+process.selectedPatJetsCA8CHSwithNsub+process.selectedPatJetsCA8CHSwithQjets
 process.tnmc1 += process.demo

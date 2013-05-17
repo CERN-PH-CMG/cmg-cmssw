@@ -55,6 +55,30 @@ void JetHelper::analyzeObject()
 */
 }
 
+int JetHelper::getNcharged(double relPt) const
+{
+    int n=0;
+    for (unsigned k =0; k < object->getPFConstituents().size(); k++)
+    {
+        const reco::PFCandidate *thisParticle = object->getPFConstituent(k).get();
+        if((thisParticle->charge()!=0)&&(thisParticle->pt()>relPt*object->pt()))
+            n++;
+    }
+    return n; 
+}
+
+int JetHelper::getNneutral(double relPt) const
+{
+    int n=0;
+    for (unsigned k =0; k < object->getPFConstituents().size(); k++)
+    {
+        const reco::PFCandidate *thisParticle = object->getPFConstituent(k).get();
+        if((thisParticle->charge()==0)&&(thisParticle->pt()>relPt*object->pt()))
+            n++;
+    }
+    return n; 
+}
+
 float JetHelper::getTau(int num) const
 {
     vector<const reco::PFCandidate*> all_particles;
@@ -75,7 +99,25 @@ float JetHelper::getTau(int num) const
         const reco::PFCandidate *thisParticle = all_particles.at(particle);
         FJparticles.push_back( fastjet::PseudoJet( thisParticle->px(), thisParticle->py(), thisParticle->pz(), thisParticle->energy() ) );	
     }
-    NsubParameters paraNsub = NsubParameters(1.0, 0.7); //assume R=0.7 jet clusering used
+    NsubParameters paraNsub = NsubParameters(1.0, 0.8); //assume R=0.8 jet clusering used
+    Njettiness routine(Njettiness::onepass_kt_axes, paraNsub);
+    return routine.getTau(num, FJparticles); 
+}
+
+float JetHelper::getGenTau(int num, double minPt) const
+{
+    vector<const reco::GenParticle*> all_particles;
+    for (unsigned j = 0; j < object->numberOfDaughters(); j++){
+       reco::GenParticle const *genJet = dynamic_cast <const reco::GenParticle *>(object->daughter(j));
+       all_particles.push_back( genJet );    
+    }
+    vector<fastjet::PseudoJet> FJparticles;
+    for (unsigned particle = 0; particle < all_particles.size(); particle++){
+        const reco::GenParticle *thisParticle = all_particles.at(particle);
+	if(thisParticle->pt()>minPt)
+          FJparticles.push_back( fastjet::PseudoJet( thisParticle->px(), thisParticle->py(), thisParticle->pz(), thisParticle->energy() ) );	
+    }
+    NsubParameters paraNsub = NsubParameters(1.0, 0.8); //assume R=0.8 jet clusering used
     Njettiness routine(Njettiness::onepass_kt_axes, paraNsub);
     return routine.getTau(num, FJparticles); 
 }
@@ -96,11 +138,32 @@ float JetHelper::getC2beta(float beta) const
 	     all_particles.push_back( pfSubjet->getPFConstituent(k).get() );	
        }
     }
+    if(all_particles.size()<2) return -1;
     vector<fastjet::PseudoJet> FJparticles;
     for (unsigned particle = 0; particle < all_particles.size(); particle++){
         const reco::PFCandidate *thisParticle = all_particles.at(particle);
         FJparticles.push_back( fastjet::PseudoJet( thisParticle->px(), thisParticle->py(), thisParticle->pz(), thisParticle->energy() ) );	
     }
+    fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 2.0);
+    fastjet::ClusterSequence clust_seq(FJparticles, jet_def);
+    vector<fastjet::PseudoJet> incluisve_jets = clust_seq.inclusive_jets(0);
+    fastjet::GeneralizedEnergyCorrelatorRatio C2beta(2,beta,fastjet::pT_R);
+    return C2beta(incluisve_jets[0]);
+}
+
+float JetHelper::getGenC2beta(float beta) const
+{
+    vector<const reco::GenParticle*> all_particles;
+    for (unsigned j = 0; j < object->numberOfDaughters(); j++){
+       reco::GenParticle const *genJet = dynamic_cast <const reco::GenParticle *>(object->daughter(j));
+       all_particles.push_back( genJet );    
+    }
+    vector<fastjet::PseudoJet> FJparticles;
+    for (unsigned particle = 0; particle < all_particles.size(); particle++){
+        const reco::GenParticle *thisParticle = all_particles.at(particle);
+        FJparticles.push_back( fastjet::PseudoJet( thisParticle->px(), thisParticle->py(), thisParticle->pz(), thisParticle->energy() ) );	
+    }
+    if(all_particles.size()<2) return -1;
     fastjet::JetDefinition jet_def(fastjet::antikt_algorithm, 2.0);
     fastjet::ClusterSequence clust_seq(FJparticles, jet_def);
     vector<fastjet::PseudoJet> incluisve_jets = clust_seq.inclusive_jets(0);
@@ -128,6 +191,18 @@ float JetHelper::getJetCharge(float kappa) const
              val += p->charge()*pow(p->pt(),kappa);
 	  }
        }
+    }
+    return val/object->pt(); 
+}
+
+
+float JetHelper::getGenJetCharge(float kappa) const
+{
+    float val=0;
+    vector<const reco::GenParticle*> all_particles;
+    for (unsigned j = 0; j < object->numberOfDaughters(); j++){
+       reco::GenParticle const *p = dynamic_cast <const reco::GenParticle *>(object->daughter(j));
+       val += p->charge()*pow(p->pt(),kappa);
     }
     return val/object->pt(); 
 }
