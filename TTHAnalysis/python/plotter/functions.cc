@@ -69,4 +69,12 @@ float mass_4(float pt1, float eta1, float phi1, float m1, float pt2, float eta2,
     return (p41+p42+p43+p44).M();
 }
 
+float mt_llv(float ptl1, float phil1, float ptl2, float phil2, float ptv, float phiv) {
+    float pxll = ptl1*std::cos(phil1) + ptl2*std::cos(phil2);
+    float pyll = ptl1*std::sin(phil1) + ptl2*std::sin(phil2);
+    float ptll = std::hypot(pxll, pyll);
+    float phill = std::atan2(pxll,pyll);
+    return std::sqrt(2*ptll*ptv*(1-std::cos(phill-phiv)));
+}
+
 void functions() {}
