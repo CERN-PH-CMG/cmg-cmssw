@@ -26,13 +26,13 @@ BTVAnalysis::BTVAnalysis(SmartSelectionMonitor &mon)
       for(size_t j=0; j<nSystVars; j++)
 	{  
 	  //use templates based on a given discriminator except in the case we're measuring the discriminator efficiency itself (switch to alternative)
+	  TH2F *hinc  = (TH2F *)mon_->addHistogram( new TH2F("jp"+systVars_[j],";Jet probability;Jets",50,0,2.5,nJetRanges,0,nJetRanges) );
+	  for(int ybin=1; ybin<=hinc->GetYaxis()->GetNbins(); ybin++) hinc->GetYaxis()->SetBinLabel(ybin,jetRanges_[ybin-1]);
+	  mon_->addHistogram( (TH2F *)hinc->Clone("jpb"+systVars_[j]) );
+	  mon_->addHistogram( (TH2F *)hinc->Clone("jpc"+systVars_[j]) );
+	  mon_->addHistogram( (TH2F *)hinc->Clone("jpudsg"+systVars_[j]) );
 	  for(size_t k=0; k<sizeof(btagger)/sizeof(TString); k++)
 	    {
-	      TH2F *hinc  = (TH2F *)mon_->addHistogram( new TH2F("jp"+systVars_[j],";Jet probability;Jets",50,0,2.5,nJetRanges,0,nJetRanges) );
-	      for(int ybin=1; ybin<=hinc->GetYaxis()->GetNbins(); ybin++) hinc->GetYaxis()->SetBinLabel(ybin,jetRanges_[ybin-1]);
-	      mon_->addHistogram( (TH2F *)hinc->Clone("jpb"+systVars_[j]) );
-	      mon_->addHistogram( (TH2F *)hinc->Clone("jpc"+systVars_[j]) );
-	      mon_->addHistogram( (TH2F *)hinc->Clone("jpudsg"+systVars_[j]) );
 	      for(size_t iwp=0; iwp<sizeof(btaggerWPs)/sizeof(TString); iwp++)
 		{
 		  for(size_t ipf=0; ipf<2; ipf++)

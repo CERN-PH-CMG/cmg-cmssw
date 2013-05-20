@@ -3,7 +3,7 @@
 
 // add new histogram
 TH1 * SmartSelectionMonitor::addHistogram(TH1* h, TString histo){
-  h->Sumw2();
+  if(h->GetDefaultSumw2()) h->Sumw2();
   if(!hasBaseHisto(histo)){
      allMonitors_[histo] = new std::map<TString, TH1*>; 
   }

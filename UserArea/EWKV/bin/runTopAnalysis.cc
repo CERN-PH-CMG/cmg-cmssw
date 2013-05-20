@@ -130,6 +130,7 @@ int main(int argc, char* argv[])
   TString ctrlCats[]={"","eq1jets","lowmet","eq1jetslowmet","zlowmet","zeq1jets","zeq1jetslowmet","z"};
   for(size_t k=0;k<sizeof(ctrlCats)/sizeof(TString); k++)
     {
+      controlHistos.addHistogram( new TH1F(ctrlCats[k]+"emva", "; e-id MVA; Electrons", 50, 0.95,1.0) );
       controlHistos.addHistogram( new TH1F(ctrlCats[k]+"mll",";Dilepton invariant mass [GeV];Events",50,0,250) );
       controlHistos.addHistogram( new TH1F(ctrlCats[k]+"ptll",";Dilepton transverse momentum [GeV];Events",50,0,250) );
       controlHistos.addHistogram( new TH1F(ctrlCats[k]+"dilarccosine",";#theta(l,l') [rad];Events",50,0,3.2) );
@@ -337,16 +338,21 @@ int main(int argc, char* argv[])
 
       //control distributions
       std::vector<TString> ctrlCategs;
-      if(isOS && passDilSelection && passJetSelection  && passMetSelection) ctrlCategs.push_back("");
-      if(isOS && passDilSelection && selJets.size()==1 && passMetSelection) ctrlCategs.push_back("eq1jets");
-      if(isOS && passDilSelection && passJetSelection  && met[0].pt()<30)   ctrlCategs.push_back("lowmet");
-      if(isOS && passDilSelection && selJets.size()==1 && met[0].pt()<30)   ctrlCategs.push_back("eq1jetslowmet");
-      if(isOS && isZcand          && passJetSelection  && passMetSelection) ctrlCategs.push_back("z");
-      if(isOS && isZcand          && selJets.size()==1 && passMetSelection) ctrlCategs.push_back("zeq1jets");
-      if(isOS && isZcand          && passJetSelection  && met[0].pt()<30)   ctrlCategs.push_back("zlowmet");
-      if(isOS && isZcand          && selJets.size()==1 && met[0].pt()<30)   ctrlCategs.push_back("zeq1jetslowmet");
+      if(isOS && passDilSelection && passJetSelection  && passMetSelection)   ctrlCategs.push_back("");
+      if(isOS && passDilSelection && selJets.size()==1 && passMetSelection)   ctrlCategs.push_back("eq1jets");
+      if(isOS && passDilSelection && passJetSelection  && !passMetSelection)  ctrlCategs.push_back("lowmet");
+      if(isOS && passDilSelection && selJets.size()==1 && !passMetSelection)  ctrlCategs.push_back("eq1jetslowmet");
+      if(isOS && isZcand          && passJetSelection  && passMetSelection)   ctrlCategs.push_back("z");
+      if(isOS && isZcand          && selJets.size()==1 && passMetSelection)   ctrlCategs.push_back("zeq1jets");
+      if(isOS && isZcand          && passJetSelection  && !passMetSelection)  ctrlCategs.push_back("zlowmet");
+      if(isOS && isZcand          && selJets.size()==1 && !passMetSelection)  ctrlCategs.push_back("zeq1jetslowmet");
       for(size_t icat=0; icat<ctrlCategs.size(); icat++)
 	{
+	  for(size_t ilep=0; ilep<2; ilep++)
+	    {
+	      if(abs(selLeptons[ilep].get("id"))!=11) continue;
+	      controlHistos.fillHisto(ctrlCategs[icat]+"emva", ch, selLeptons[ilep].getVal("mvatrig"), weight);
+	    }
 	  controlHistos.fillHisto(ctrlCategs[icat]+"mll",          ch, mll,            weight);
 	  controlHistos.fillHisto(ctrlCategs[icat]+"ptll",         ch, ll.pt(),        weight);
 	  controlHistos.fillHisto(ctrlCategs[icat]+"mtsum",        ch, mtsum,          weight);
