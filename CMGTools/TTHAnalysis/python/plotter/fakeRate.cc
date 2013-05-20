@@ -207,4 +207,36 @@ float fakeRateWeight_3l(float l1pt, float l1eta, int l1pdgId, float l1mva,
     return ret;
 }
 
+float fakeRateWeight_4l_2wp(float l1pt, float l1eta, int l1pdgId, float l1mva,
+                        float l2pt, float l2eta, int l2pdgId, float l2mva,
+                        float l3pt, float l3eta, int l3pdgId, float l3mva,
+                        float l4pt, float l4eta, int l4pdgId, float l4mva,
+                        float WP, float WP2)
+{
+    /// 4 pass: weight  0
+    /// 1 fail: weight +f/(1-f)
+    /// 2 fail: weight -f*f/(1-f)(1-f)
+    //  3 fail: weight +f*f*f/((1-f)(1-f)(1-f)
+    //  so, just multiply up factors of -f/(1-f) for each failure
+    //  hope it works also for 4l....
+    float mvas[]={l1mva-WP, l2mva-WP, l3mva-WP2, l4mva-WP2};
+    float pts[]={l1pt, l2pt, l3pt, l4pt};
+    float etas[]={fabs(l1eta), fabs(l2eta), fabs(l3eta), fabs(l4eta)};
+    int pdgids[]={l1pdgId, l2pdgId, l3pdgId, l4pdgId};
+    float ret = -1.0f;
+    for (unsigned int i = 0; i < 4 ; ++i) {
+        if (mvas[i] < 0) {
+	    TH2 *hist = (i <= 1 ? (abs(pdgids[i]) == 11 ? FR_el : FR_mu) : (abs(pdgids[i]) == 11 ? FR2_el : FR2_mu));
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(pts[i])));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(etas[i])));
+            double fr = hist->GetBinContent(ptbin,etabin);
+            ret *= -fr/(1.0f-fr);
+        }
+    }
+    if (ret == -1.0f) ret = 0.0f;
+    return ret;
+}
+
+
+
 void fakeRate() {}
