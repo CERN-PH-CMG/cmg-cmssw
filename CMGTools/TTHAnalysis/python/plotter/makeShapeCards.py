@@ -38,16 +38,18 @@ for sysfile in args[4:]:
         if re.match("\s*#.*", line): continue
         line = re.sub("#.*","",line)
         field = [f.strip() for f in line.split(':')]
-        if len(field) <= 4 or field[4] == "lnN":
+        if len(field) < 4:
+            raise RuntimeError, "Malformed line %s in file %s"%(line.strip(),sysfile)
+        elif len(field) == 4 or field[4] == "lnN":
             (name, procmap, binmap, amount) = field[:4]
             if re.match(binmap,binname) == None: continue
             if name not in systs: systs[name] = []
             systs[name].append((re.compile(procmap),amount))
-        elif field[4] == "envelop":
+        elif field[4] in ["envelop","shapeOnly"]:
             (name, procmap, binmap, amount) = field[:4]
             if re.match(binmap,binname) == None: continue
             if name not in systs: systsEnv[name] = []
-            systsEnv[name].append((re.compile(procmap),amount))
+            systsEnv[name].append((re.compile(procmap),amount,field[4]))
     if options.verbose:
         print "Loaded %d systematics" % len(systs)
         print "Loaded %d envelop systematics" % len(systsEnv)
@@ -62,10 +64,13 @@ for name in systs.keys():
     systs[name] = effmap
 
 for name in systsEnv.keys():
-    effmap = {}
+    effmap0  = {}
+    effmap12 = {}
     for p in procs:
         effect = "-"
-        for (procmap,amount) in systsEnv[name]:
+        effect0  = "-"
+        effect12 = "-"
+        for (procmap,amount,mode) in systsEnv[name]:
             if re.match(procmap, p): effect = float(amount)
         if effect != "-":
             nominal = report[p]
@@ -86,20 +91,23 @@ for name in systsEnv.keys():
                 p1dn.SetBinContent(b, p1dn.GetBinContent(b) * pow(effect,-c1))
                 p2up.SetBinContent(b, p2up.GetBinContent(b) * pow(effect,+c2))
                 p2dn.SetBinContent(b, p2dn.GetBinContent(b) * pow(effect,-c2))
-            report[p+"_"+name+"0Up"]   = p0up
-            report[p+"_"+name+"0Down"] = p0dn
+            if mode != "shapeOnly":
+                report[p+"_"+name+"0Up"]   = p0up
+                report[p+"_"+name+"0Down"] = p0dn
+                effect0 = "1"
             report[p+"_"+name+"1Up"]   = p1up
             report[p+"_"+name+"1Down"] = p1dn
             report[p+"_"+name+"2Up"]   = p2up
             report[p+"_"+name+"2Down"] = p2dn
+            effect12 = "1"
             # useful for plotting
             for h in p0up, p0dn, p1up, p1dn, p2up, p2dn: 
                 h.SetFillStyle(0); h.SetLineWidth(2)
             for h in p1up, p1dn: h.SetLineColor(4)
             for h in p2up, p2dn: h.SetLineColor(2)
-            effect = "1"
-        effmap[p] = effect 
-    systsEnv[name] = effmap
+        effmap0[p]  = effect0 
+        effmap12[p] = effect12 
+    systsEnv[name] = (effmap0,effmap12)
 
 
 datacard = open(outdir+binname+".card.txt", "w"); 
@@ -121,10 +129,10 @@ datacard.write('rate            '+(" ".join([fpatt % allyields[p] for p in procs
 datacard.write('##----------------------------------\n')
 for name,effmap in systs.iteritems():
     datacard.write(('%-12s lnN' % name) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
-for name,effmap in systsEnv.iteritems():
-    datacard.write(('%-10s shape' % (name+"0")) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
-    datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
-    datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap[p]   for p in procs]) +"\n")
+for name,(effmap0,effmap12) in systsEnv.iteritems():
+    datacard.write(('%-10s shape' % (name+"0")) + " ".join([kpatt % effmap0[p]  for p in procs]) +"\n")
+    datacard.write(('%-10s shape' % (name+"1")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
+    datacard.write(('%-10s shape' % (name+"2")) + " ".join([kpatt % effmap12[p] for p in procs]) +"\n")
 
 
 datacard.close()

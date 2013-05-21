@@ -168,6 +168,32 @@ def doRatioHists(pspec,pmap,total,totalSyst,maxRange):
     ratio.Draw("E SAME");
     return (ratio, unity, unity0, line)
 
+def doStatTests(total,data,test,legendCorner):
+    #print "Stat tests for %s:" % total.GetName()
+    ksprob = data.KolmogorovTest(total,"XN")
+    #print "\tKS  %.4f" % ksprob
+    chi2l, chi2p, nb = 0, 0, 0
+    for b in xrange(1,data.GetNbinsX()+1):
+        oi = data.GetBinContent(b)
+        ei = total.GetBinContent(b)
+        if ei <= 0: continue
+        nb += 1
+        chi2l += - 2*(oi*log(ei/oi)+(oi-ei) if oi > 0 else -ei)
+        chi2p += (oi-ei)**2 / ei
+    #print "\tc2p %.4f (%6.2f/%3d)" % (ROOT.TMath.Prob(chi2p, nb), chi2p, nb)
+    #print "\tc2l %.4f (%6.2f/%3d)" % (ROOT.TMath.Prob(chi2l, nb), chi2l, nb)
+    if test == "chi2l" or test == "chi2p":
+        chi2 = chi2l if test == "chi2l" else chi2p
+        pval = ROOT.TMath.Prob(chi2, nb)
+        text = "#chi^{2} p-value %.3f" % pval if pval < 0.02 else "#chi^{2} p-value %.2f" % pval
+    else:
+        text = "Unknown test %s" % test
+    if legendCorner == "TR":
+        doSpam(text, .30, .85, .48, .93, align=32, textSize=0.05)
+    elif legendCorner == "TL":
+        doSpam(text, .75, .85, .93, .93, align=32, textSize=0.05)
+
+
 
 legend_ = None;
 def doLegend(pmap,mca,corner="TR",textSize=0.035,cutoff=1e-2):
@@ -297,6 +323,11 @@ class PlotMaker:
                 else:
                     c1.SetWindowSize(600 + (600 - c1.GetWw()), 600 + (600 - c1.GetWh()));
                 p1.SetLogy(islog)
+                if pspec.hasOption('Logx'):
+                    p1.SetLogx(True)
+                    if p2: p2.SetLogx(True)
+                    total.GetXaxis().SetNoExponent(True)
+                    total.GetXaxis().SetMoreLogLabels(True)
                 if islog: total.SetMaximum(2*total.GetMaximum())
                 if not islog: total.SetMinimum(0)
                 total.Draw("HIST")
@@ -308,6 +339,8 @@ class PlotMaker:
                 if 'data' in pmap: 
                     reMax(total,pmap['data'],islog)
                     pmap['data'].Draw("E SAME")
+                    if options.doStatTests:
+                        doStatTests(total,pmap['data'], options.doStatTests, legendCorner=pspec.getOption('Legend','TR'))
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
                                   cutoff=pspec.getOption('LegendCutoff', 1e-5 if c1.GetLogy() else 1e-2),
                                   textSize=(0.039 if doRatio else 0.035))
@@ -356,6 +389,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--showSFitShape", dest="showSFitShape", action="store_true", default=False, help="Stack a shape of background + scaled signal normalized to total data")
     parser.add_option("--showRatio", dest="showRatio", action="store_true", default=False, help="Add a data/sim ratio plot at the bottom")
     parser.add_option("--maxRatioRange", dest="maxRatioRange", type="float", nargs=2, default=(0.0, 5.0), help="Min and max for the ratio")
+    parser.add_option("--doStatTests", dest="doStatTests", type="string", default=None, help="Do this stat test: chi2p (Pearson chi2), chi2l (binned likelihood equivalent of chi2)")
     parser.add_option("--plotmode", dest="plotmode", type="string", default="stack", help="Show as stacked plot (stack), a non-stacked comparison (nostack) and a non-stacked comparison of normalized shapes (norm)")
     parser.add_option("--rebin", dest="globalRebin", type="int", default="0", help="Rebin all plots by this factor")
     parser.add_option("--select-plot", "--sP", dest="plotselect", action="append", default=[], help="Select only these plots out of the full file")
