@@ -177,7 +177,7 @@ class TreeToYield:
         if not t: raise RuntimeError, "Cannot find tree %s in file %s\n" % (self._options.tree, self._fname)
         self._tree  = t
         #self._tree.SetCacheSize(10*1000*1000)
-        #self._tree.SetCacheSize()
+        if "root://" in self._fname: self._tree.SetCacheSize()
         self._friends = []
         friendOpts = self._options.friendTrees[:]
         friendOpts += (self._options.friendTreesData if self._isdata else self._options.friendTreesMC)
