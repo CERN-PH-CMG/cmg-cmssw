@@ -44,13 +44,13 @@ data     : MuEGRec
 data     : MuEGD
 data     : MuEGBadSIP
 
-FR_tt : TTJetsLep: 23.64    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_MC.txt', Label='Top FR'
-FR_tt : TtW      : 11.73    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_MC.txt', Label='Top FR'
-FR_tt : TbartW   : 11.73    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_MC.txt', Label='Top FR'
-FR_tt : TTG      : 1.444    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_MC.txt', Label='Top FR'
+FR_tt : TTJetsLep: 23.64    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'
+FR_tt : TtW      : 11.73    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'
+FR_tt : TbartW   : 11.73    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'
+FR_tt : TTG      : 1.444    ;  FillColor=ROOT.kGray, FakeRate='fakeRate_3l_tight_MC.txt', Label='Top FR'
 
-FR_dy : DYJetsM10  : 915     ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_MC.txt', Label='DY FR'
-FR_dy : DY1JetsM50 : 666.3   ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_MC.txt', Label='DY FR'
-FR_dy : DY2JetsM50 : 215.0   ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_MC.txt', Label='DY FR'
-FR_dy : DY3JetsM50 :  60.7   ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_MC.txt', Label='DY FR'
-FR_dy : DY4JetsM50 :  27.4   ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_MC.txt', Label='DY FR'
+FR_dy : DYJetsM10  : 915     ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_tight_MC.txt', Label='DY FR'
+FR_dy : DY1JetsM50 : 666.3   ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_tight_MC.txt', Label='DY FR'
+FR_dy : DY2JetsM50 : 215.0   ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_tight_MC.txt', Label='DY FR'
+FR_dy : DY3JetsM50 :  60.7   ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_tight_MC.txt', Label='DY FR'
+FR_dy : DY4JetsM50 :  27.4   ;  FillColor=ROOT.kCyan+1, FakeRate='fakeRate_3l_tight_MC.txt', Label='DY FR'
