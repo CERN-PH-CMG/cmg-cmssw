@@ -5,5 +5,3 @@ weight:fakeRateWeight_3l(LepGood1_pt,LepGood1_eta,LepGood1_pdgId,LepGood1_mva,Le
 ## load histograms 
 load-histo: FR_mu : $DATA/fakerate/FR_qcdmu_2lss_data.root : FR_mu
 load-histo: FR_el : $DATA/fakerate/FR_qcdmu_2lss_data.root : FR_el
-#load-histo: FR_mu : $DATA/fakerate/FR_ttl_m.root : FR_mu
-#load-histo: FR_el : $DATA/fakerate/FR_ttl_e.root : FR_el
