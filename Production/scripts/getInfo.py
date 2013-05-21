@@ -13,35 +13,7 @@ from CMGTools.Production.cmgdbApi import CmgdbApi
 # Make sure is being used as a script
 if __name__ == '__main__':
     parser = optparse.OptionParser()
-    parser.add_option("-s", "--sql",
-                      action = "store_true",
-                      dest="sql",
-                      help="Enter a raw sql query for cmgdb"
-                      )
-    parser.add_option("-a", "--alias",
-                      action = "store",
-                      dest="alias",
-                      help="Enter query alias"
-                      )
-    parser.add_option("-d", "--dev",
-                      action = "store_true",
-                      dest="development",
-                      default=False,
-                      help="Publish on official or test database"
-                      )
-
-    (options, args) = parser.parse_args()
-    
-    # If there are no options selected exit.
-    if options.sql is None and options.alias is None:
-        parser.print_help()
-        sys.exit(1)
-    # Allow no less than one argument
-    if len(args)<1:
-        parser.print_help()
-        sys.exit(1)
-
-    cmgdbApi = CmgdbApi(options.development)
+    cmgdbApi = CmgdbApi()
     cmgdbApi.connect()
     description = cmgdbApi.describe()
     parser.usage = """
@@ -117,6 +89,18 @@ e.g.
 getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6_START44_V9B-v1/AODSIM/V3
 
 """
+    parser.add_option("-s", "--sql",
+                      action = "store_true",
+                      dest="sql",
+                      help="Enter a raw sql query for cmgdb"
+                      )
+    parser.add_option("-a", "--alias",
+                      action = "store",
+                      dest="alias",
+                      help="Enter query alias"
+                      )
+
+    (options, args) = parser.parse_args()
     
    
         
@@ -132,6 +116,16 @@ getInfo.py -a getTags /QCD_Pt-20to30_EMEnriched_TuneZ2_7TeV-pythia6/Fall11-PU_S6
                  "getBadFiles":"SELECT distinct(bad_files.bad_file) FROM bad_files INNER JOIN dataset_details ON dataset_details.dataset_id = bad_files.dataset_id WHERE dataset_details.path_name = 'ARG1'",
                  "getDatasetInfo":"SELECT path_name, lfn, file_owner, dataset_entries, dataset_fraction, date_recorded FROM dataset_details WHERE path_name = 'ARG1'",
                  "getDatasetsMadeWithSameTagset":"SELECT distinct(dataset_id), tagset_id, path_name FROM dataset_details WHERE tagset_id in (SELECT tagset_id FROM dataset_details WHERE path_name = 'ARG1')"}
+
+    # If there are no options selected exit.
+    if options.sql is None and options.alias is None:
+        parser.print_help()
+        sys.exit(1)
+    # Allow no less than one argument
+    if len(args)<1:
+        parser.print_help()
+        sys.exit(1)
+
     
     # If its an SQL query, take 1st arg as query from command line
     if options.sql:
