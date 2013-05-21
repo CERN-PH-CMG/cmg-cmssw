@@ -1,7 +1,15 @@
-met:   met: 15,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
-metLD: met*0.00397 + mhtJet25*0.00265 : 15,-0.1,1.4 ; XTitle="E_{T}^{miss} LD"
-mll:   minMllAFAS: 20,0,200 ; XTitle="min m(ll)  [GeV]", Legend='TR'
-lep1Pt:  LepGood1_pt: 16,0,160; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
-lep2Pt:  LepGood2_pt: 16,0,80; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
-lep1Eta:  abs(LepGood1_eta): 10,0,2.5; XTitle="Leading lepton |#eta|", Legend='TR'
-lep2Eta:  abs(LepGood2_eta): 10,0,2.5; XTitle="Subleading lepton |#eta|", Legend='TR'
+nJet25 : nJet25 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 25)',Logy
+nBJetLoose25 : nBJetLoose25 : 4,-0.5,3.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Loose)',XNDiv=505
+nBJetMedium25 : nBJetMedium25 : 4,-0.5,3.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Medium)',XNDiv=505
+met: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
+met_log: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy
+metLD: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD"
+metLD_log: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD",Logy
+mll: minMllAFOS: 60,0,300 ; XTitle="min m(l^{+}l^{-}')  [GeV]", Legend='TR'
+lepMVA2: min(LepGood1_mva,LepGood2_mva) : 50,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
+maxLepPt:  LepGood1_pt: 80,0,200; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
+minLepPt:  LepGood2_pt: 60,0,120; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
+maxBTag: min(max(Jet1_btagCSV,0),.99999) : 15,0,1.5; XTitle="First b-jet btag", Legend='TR'
+minBTag: min(max(Jet2_btagCSV,0),.99999) : 15,0,1.5; XTitle="Second b-jet btag", Legend='TR'
+maxBJetPt: max(Jet1_pt,Jet2_pt) : 20, 0,400; XTitle="First b-jet p_{T} [GeV]"
+minBJetPt: min(Jet1_pt,Jet2_pt) : 20, 0,200; XTitle="Second b-jet p_{T} [GeV]"
