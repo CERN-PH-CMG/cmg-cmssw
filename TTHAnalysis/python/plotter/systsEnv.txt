@@ -1,7 +1,23 @@
-norm   : ttH : .* : 1.1
-shape  : ttH : .* : 1.1 : envelop
-TTW    : TTW : .* : 1.3 : envelop
-TTZ    : TTZ : .* : 1.3 : envelop
-FR     : FR_.*  : .* : 1.4 : envelop
-QF     : QF_.*  : .* : 1.1 
-Mistag : (WZ|ZZ|VVV) : .* : 1.1
+QCDscale_ttH   : ttH : .* : 1.06
+pdf_gg         : ttH : .* : 1.08
+pdf_shape_ttH  : ttH : .* : 1.05: shapeOnly
+thu_shape_ttH  : ttH : .* : 1.10: shapeOnly
+QCDscale_ttW   : TTW : .* : 1.10
+QCDscale_ttZ   : TTZ : .* : 1.11
+pdf_gg         : TTZ : .* : 1.088
+pdf_qqbar      : TTW : .* : 1.072
+pdf_shape_ttW  : TTW : .* : 1.05: shapeOnly
+pdf_shape_ttZ  : TTZ : .* : 1.05: shapeOnly
+thu_shape_ttW  : TTW : .* : 1.10: shapeOnly
+thu_shape_ttZ  : TTZ : .* : 1.10: shapeOnly
+#FR     : FR_.*  : .* : 1.4  
+FR     : FR_.*  : .* : 1.4: envelop
+#FRe     : FR_.*  : .*2lss_e[em].* : 1.4 : envelop
+#FRm     : FR_.*  : .*2lss_mu.* : 1.4 : envelop
+#FR3l    : FR_.*  : .*3l.* : 1.4 : envelop
+#FR4l    : TT     : .*4l.* : 1.4 : envelop
+#FRe    : FR_.*  : .* : 1.4 : envelop
+#FRe    : FR_.*  : .* : 1.4 : envelop
+#FR     : FR_.*  : .* : 1.4 : envelop
+QF     : QF_.*  : .* : 1.2 : envelop
+Mistag : (WZ|ZZ|VVV) : .* : 1.2
