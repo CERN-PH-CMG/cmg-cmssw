@@ -1,8 +1,6 @@
 import os
 import re 
 
-# from CMGTools.H2TauTau.officialJSONS import jsonMap
-# from CMGTools.H2TauTau.dcsJSONS import dcsJsonMap
 
 def lfnToDataset( lfn ):
     '''If lfn contains A/CMG/B, returns /B. Otherwise, returns lfn.'''
@@ -55,7 +53,9 @@ def jsonPick( dataset, jsonMap):
         if pat.match(baseDataSet):
             jsonFiles.append(value)
     if len(jsonFiles)==0:
-        raise ValueError('No json file found')
+        raise ValueError('No json file found for {dataset}'.format(
+            dataset = baseDataSet
+            ) )
     elif len(jsonFiles)>1:
         raise ValueError('Too many json files found')
     else:
