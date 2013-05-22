@@ -11,6 +11,8 @@ X - write particles to EDM and look at them with ROOT
 - deal with the charge. 
 
 - integrate fast jet and make particle jets
+	X fastjet integrated and running 
+	need to finalize it
 
 - start with barrel region
 need to see what to do with HF (be pragmatic and shoot particles there?) 
