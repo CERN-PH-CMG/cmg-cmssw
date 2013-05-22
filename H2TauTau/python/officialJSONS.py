@@ -103,5 +103,5 @@ if __name__ == '__main__':
 
     for sample in samples:
         print 'Sample', sample
-        print '\tJSON (DCS)     =', jsonPick( sample, jsonMap )
+        print '\tJSON    =', jsonPick( sample, jsonMap )
 
