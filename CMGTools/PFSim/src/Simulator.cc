@@ -7,7 +7,7 @@ void PFSim::Simulator::simulate( const HepMC::GenEvent& event ) {
 
   simParticles_.clear();
 
-  cout<<"simulating"<<endl;
+  // cout<<"simulating"<<endl;
 
   // loop over all particles
   bool filled = false;
@@ -59,5 +59,6 @@ PFSim::Particle PFSim::Simulator::simulateParticle(PFSim::Particle::Type type,
 						   const HepMC::FourVector& momentum ) const {
   // cout<<"type "<<type<<" pt "<<momentum.perp()<<" eta "<<momentum.eta()<<endl; 
 
-  return Particle(type, momentum); 
+  float charge = 0;
+  return Particle(type, charge, momentum); 
 }

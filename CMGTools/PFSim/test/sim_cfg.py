@@ -1,18 +1,13 @@
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process("Gen")
+process = cms.Process("Sim")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 
-process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-
-# Pythia settings for ttbar generation
-#
-process.load("Configuration.Generator.PythiaUESettings_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(-1)
 )
 
 
@@ -24,27 +19,36 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 )
 
 
-process.source = cms.Source("EmptySource")
-process.load('CMGTools.PFSim.generators.pp_ttbar_cfi')
+# add poolsource
 
-# I want to add:
-# gen particle production
-# gen particle for jet selection
-# gen jet creation
-# I could do that with my system.
+process.source = cms.Source(
+    'PoolSource',
+    fileNames = cms.untracked.vstring( 'file:gen.root' )
+    )
+
+process.pfsim = cms.EDProducer(
+    'PFSimParticleProducer',
+    hepmcSrc = cms.InputTag('generator')
+    )
+
+process.fastjet = cms.EDProducer(
+    'PFSimFastJetProducer',
+    particleSrc = cms.InputTag('pfsim')
+    )
 
 
 process.out = cms.OutputModule(
     "PoolOutputModule",
     dataset = cms.untracked.PSet(
-    dataTier = cms.untracked.string('GEN')
+    dataTier = cms.untracked.string('SIM')
     ),
-    fileName = cms.untracked.string('gen.root'),
+    fileName = cms.untracked.string('sim.root'),
     outputCommands = cms.untracked.vstring('keep *')
 )
 
 process.p = cms.Path(
-    process.generator
+    process.pfsim +
+    process.fastjet 
     )
 
 

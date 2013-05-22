@@ -6,6 +6,7 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
+#include "AnalysisDataFormats/CMGTools/interface/SimpleParticle.h"
 
 using namespace std;
 using namespace edm;
@@ -18,7 +19,7 @@ PFSimParticleProducer::PFSimParticleProducer(const edm::ParameterSet& iConfig) {
     iConfig.getUntrackedParameter<bool>("verbose",false);
 
 
-  produces< std::vector<int> > ();
+  produces< std::vector<cmg::SimpleParticle> > ();
 }
 
 PFSimParticleProducer::~PFSimParticleProducer() {}
@@ -36,8 +37,19 @@ void PFSimParticleProducer::produce(Event& iEvent,
 
   simulator_.simulate( *evt->GetEvent() ); 
 
-  auto_ptr< std::vector<int> > out( new std::vector<int> );
-  iEvent.put( out  );
+  // now translating simulated particles into types that can be stored in the EDM event
+  auto_ptr< std::vector<cmg::SimpleParticle> > outPtr( new std::vector<cmg::SimpleParticle> );
+  const PFSim::Simulator::Particles& ptcs = simulator_.simParticles();
+  for( unsigned i=0; i<ptcs.size(); ++i) {
+    outPtr->push_back( cmg::SimpleParticle( ptcs[i].type(),
+					    ptcs[i].p4().perp(), 
+					    ptcs[i].p4().eta(), 
+					    ptcs[i].p4().phi(), 
+					    ptcs[i].p4().m()
+					    ) );  
+  }
+
+  iEvent.put( outPtr  );
 }
 
 
