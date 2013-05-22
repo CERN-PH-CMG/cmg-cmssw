@@ -1,0 +1,25 @@
+- make sure that all stable invisible particles are removed
+check code in CMSSW (fastsim?) to get the list
+
+
+- focus on jet simulation 
+
+- need jet clustering
+
+X - write particles to EDM and look at them with ROOT 
+
+- deal with the charge. 
+
+- integrate fast jet and make particle jets
+
+- start with barrel region
+need to see what to do with HF (be pragmatic and shoot particles there?) 
+
+- shoot single particles to measure PF thresholds and resolution
+set up a gun source here, and a gun cfg
+set up python analysis framework to do these measurements 
+
+- write a jet study package. 
+	integrate gen jet clustering in FFW
+		see Common sequences - note fix for muons
+

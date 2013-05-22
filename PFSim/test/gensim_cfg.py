@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("Gen")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10)
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
@@ -12,7 +12,7 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load("Configuration.Generator.PythiaUESettings_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(5)
 )
 
 
@@ -25,26 +25,26 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 
 
 process.source = cms.Source("EmptySource")
+
 process.load('CMGTools.PFSim.generators.pp_ttbar_cfi')
 
-# I want to add:
-# gen particle production
-# gen particle for jet selection
-# gen jet creation
-# I could do that with my system.
-
+process.pfsim = cms.EDProducer(
+    'PFSimParticleProducer',
+    hepmcSrc = cms.InputTag('generator')
+    )
 
 process.out = cms.OutputModule(
     "PoolOutputModule",
     dataset = cms.untracked.PSet(
     dataTier = cms.untracked.string('GEN')
     ),
-    fileName = cms.untracked.string('gen.root'),
+    fileName = cms.untracked.string('MC.root'),
     outputCommands = cms.untracked.vstring('keep *')
 )
 
 process.p = cms.Path(
     process.generator
+    + process.pfsim
     )
 
 
