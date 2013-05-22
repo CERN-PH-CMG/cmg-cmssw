@@ -35,8 +35,6 @@ void print_jets (const fastjet::ClusterSequence & clust_seq,
 
 }
 
-
-
 PFSimFastJetProducer::PFSimFastJetProducer(const edm::ParameterSet& iConfig) {
   
   particleSrc_ = iConfig.getParameter<InputTag>("particleSrc");
