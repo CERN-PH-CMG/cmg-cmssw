@@ -48,12 +48,21 @@ data_Run2012C_v2 = cfg.DataComponent( # update
     json = None
     )
 
+# JAN: import from ditau, FIXME: need to double-check lumi    
+data_Run2012D_v1 = cfg.DataComponent(
+    name = 'data_Run2012D_v1',
+    files = [],
+    intLumi = 7274.,
+    triggers = [],
+    )
+
 data_list = [
     data_Run2012A,
     data_Run2012A_aug6,
     data_Run2012B,
     data_Run2012C_v1,
     data_Run2012C_v2,
+    data_Run2012D_v1,
     ]
 
 
