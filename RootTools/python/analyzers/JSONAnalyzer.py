@@ -29,6 +29,8 @@ class JSONAnalyzer( Analyzer ):
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(JSONAnalyzer, self).__init__(cfg_ana, cfg_comp, looperName)
         if not cfg_comp.isMC:
+            if self.cfg_comp.json is None:
+                raise ValueError('component {cname} is not MC, and contains no JSON file. Either remove the JSONAnalyzer for your path or set the "json" attribute of this component'.format(cname=cfg_comp.name))
             self.lumiList = LumiList(self.cfg_comp.json)
         else:
             self.lumiList = None
