@@ -97,7 +97,7 @@ def makePlot( var, anaDir, selComps, weights, wJetScaleSS, wJetScaleOS,
         ssign.Group('VV',VVgroup)
         osign.Group('VV',VVgroup)
     
-    ssQCD, osQCD = getQCD( ssign, osign, 'Data' )
+    ssQCD, osQCD = getQCD( ssign, osign, 'Data', VVgroup)
     if antiMuIsoForQCD:
         print 'WARNING RELAXING ISO FOR QCD SHAPE'
         # replace QCD with a shape obtained from data in an anti-iso control region
