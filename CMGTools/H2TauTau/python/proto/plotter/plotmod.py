@@ -19,7 +19,6 @@ def buildPlot( var, anaDir,
     return pl
     
     
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
     
 
 def hist( var, anaDir,
@@ -34,7 +33,6 @@ def hist( var, anaDir,
     return histo
     
     
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
     
 
 def shape( var, anaDir,
@@ -49,7 +47,6 @@ def shape( var, anaDir,
     return shape
     
     
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
     
 
 def shape_and_yield( var, anaDir,
@@ -65,7 +62,6 @@ def shape_and_yield( var, anaDir,
     return shape, yi
     
     
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
     
 
 def addQCD( plot, dataName ):
@@ -77,7 +73,7 @@ def addQCD( plot, dataName ):
     qcd.Add(plotWithQCD.Hist('Ztt_ZJ'), -1)  
     qcd.Add(plotWithQCD.Hist('TTJets'), -1)
     qcd.Add(plotWithQCD.Hist('WJets'), -1)
-    qcd.Add(plotWithQCD.Hist('VV'), -1)
+    #C qcd.Add(plotWithQCD.Hist('VV'), -1)
 
     # adding the QCD data-driven estimation to the  plot
     plotWithQCD.AddHistogram( 'QCD', qcd.weighted, 888)
@@ -86,7 +82,6 @@ def addQCD( plot, dataName ):
     return plotWithQCD
     
     
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
     
 
 def getQCD( plotSS, plotOS, dataName, scale=1.06 ):
@@ -113,7 +108,6 @@ def getQCD( plotSS, plotOS, dataName, scale=1.06 ):
     return plotSSWithQCD, plotOSWithQCD
     
     
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
 
 def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
 
@@ -122,7 +116,7 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
     wjet.Add(mtplot.Hist('Ztt_ZL'), -1)
     wjet.Add(mtplot.Hist('Ztt_ZJ'), -1)
     wjet.Add(mtplot.Hist('TTJets'), -1)
-    wjet.Add(mtplot.Hist('VV'), -1)
+    #C wjet.Add(mtplot.Hist('VV'), -1)
 
     mtplot.AddHistogram( 'Data-DY-TT-VV', wjet.weighted, 1010)
     mtplot.Hist('Data-DY-TT-VV').stack = False
@@ -135,107 +129,7 @@ def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
     mc_integral = mtplot.Hist('WJets').Integral(True, xmin, xmax)
     return data_integral, mc_integral
 
-## def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
-    
-##     # WJets_data = data - DY - TTbar
-##     wjet = copy.deepcopy(mtplot.Hist(dataName))
-##     #SYNC with JOSH: remove the following line
-##     wjet.Add(mtplot.Hist('Ztt'), -1)
-##     removingFakes = False
-##     #COLIN why a try block?
-##     try:
-##         #SYNC with JOSH: replace the following 4 lines by pass
-##         f1 = mtplot.Hist('Ztt_ZL')
-##         f2 = mtplot.Hist('Ztt_ZJ')
-##         wjet.Add(f1, -1)
-##         wjet.Add(f2, -1)
-##         removingFakes = True
-##     except:
-##         print 'cannot find Ztt_Fakes in W+jets estimate'
-##         pass
-##     # FIXME
-##     wjet.Add(mtplot.Hist('TTJets'), -1)
-    
-##     if mtplot.histosDict.get('VV', None) != None :
-##         wjet.Add(mtplot.Hist('VV'), -1)
-##     else:
-##         print 'fW: VV group not found, VV not subtracted'
 
-##     # adding the WJets_data estimation to the stack
-##     mtplot.AddHistogram( 'Data - DY - TT', wjet.weighted, 1010)
-##     mtplot.Hist('Data - DY - TT').stack = False
-##     # with a nice pink color
-##     pink = kPink+7
-##     sPinkHollow = Style( lineColor=pink, markerColor=pink, markerStyle=4)
-##     mtplot.Hist('Data - DY - TT').SetStyle( sPinkHollow )
-
-##     # determine scaling factor for the WJet MC
-##     mtmin, mtmax = xmin, xmax
-##     # import pdb; pdb.set_trace()
-
-##     data_error = Double(0.)
-##     data_integral = mtplot.Hist('Data - DY - TT').weighted.IntegralAndError(
-##             0 if xmin == None else mtplot.Hist('Data - DY - TT').weighted.FindFixBin (xmin), 
-##             mtplot.Hist('Data - DY - TT').weighted.GetNbinsX() if xmax == None else mtplot.Hist('Data - DY - TT').weighted.FindFixBin(xmax) - 1, 
-##             data_error)
-
-##     data_integral = mtplot.Hist('Data - DY - TT').weighted.IntegralAndError(
-##             0 if xmin == None else mtplot.Hist('Data - DY - TT').weighted.FindFixBin (xmin), 
-##             mtplot.Hist('Data - DY - TT').weighted.GetNbinsX() if xmax == None else mtplot.Hist('Data - DY - TT').weighted.FindFixBin(xmax) - 1, 
-##             data_error)
-
-##     wjets_error = Double(0.)
-##     wjets_integral = mtplot.Hist('WJets').weighted.IntegralAndError(
-##             0 if xmin == None else mtplot.Hist('WJets').weighted.FindFixBin (xmin), 
-##             mtplot.Hist('WJets').weighted.GetNbinsX() if xmax == None else mtplot.Hist('WJets').weighted.FindFixBin(xmax) - 1, 
-##             wjets_error)
-
-##     scale_WJets = data_integral / wjets_integral
-                  
-##     # apply this additional scaling factor to the WJet component
-##     mtplot.Hist('WJets').Scale(scale_WJets)
-
-##     # hide the WJets_data component from the mtplot. can be set to True interactively
-##     mtplot.Hist('Data - DY - TT').on = True
-
-##     mtplot.Hist('WJets').layer = -999999
-
-##     #PG calculating error
-##     #PG ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- 
-    
-##     #PG statistics
-##     scale_WJets_error = sqsum (data_error / data_integral, wjets_error / wjets_integral)
-
-##     #PG systematics on the subtracted fakes
-##     lepTau_fakerate_error = 0.3 
-##     if channel == 'TauEle' : lepTau_fake_rate = 0.2
-##     jetTau_fakerate_error = 0.2
-##     if removingFakes == True:
-##         rel_ZL_error = lepTau_fakerate_error * mtplot.Hist('Ztt_ZL').Integral() / mtplot.Hist('Data').Integral() 
-##         scale_WJets_error = sqsum (scale_WJets_error, rel_ZL_error)
-##         rel_ZJ_error = jetTau_fakerate_error * mtplot.Hist('Ztt_ZJ').Integral() / mtplot.Hist('Data').Integral() 
-##         scale_WJets_error = sqsum (scale_WJets_error, rel_ZJ_error)
-
-##     #PG systematics on the suctracted DY
-##     #PG FIXME normalization error is missing, as not considered in the analysis by now
-
-##     #PG systematics on the suctracted TT
-##     TTbar_error = 0.08 #PG FIXME this has to be determined and assigned somewhere
-##                        #PG FIXME comes from the error on the cross-section
-##                        #PG FIXME and the one on the scale factor used
-##                        #PG FIXME which could be added to the sample?
-##                        #PG FIXME remember that the scale factor used depends on the jet binning in 2012:
-##                        #PG FIXME need to find a way to cope with that
-##                        #PG FIXME (Valentina says that the error on the cross-section covers everything)
-##     scale_WJets_error = sqsum (scale_WJets_error, TTbar_error * mtplot.Hist('TTJets').Integral() / mtplot.Hist('Data').Integral())
-
-##     #PG transform the error into absolute one for the function output
-##     scale_WJets_error = scale_WJets * scale_WJets_error
-
-##     return scale_WJets, scale_WJets_error
-    
-    
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
     
 
 def w_lowHighMTRatio( var, anaDir,
@@ -253,7 +147,6 @@ def w_lowHighMTRatio( var, anaDir,
     return mt_ratio
     
     
-# ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----    
     
 
 def plot_W(anaDir, comps, weights, 
