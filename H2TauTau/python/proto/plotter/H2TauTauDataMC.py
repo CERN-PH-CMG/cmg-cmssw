@@ -42,7 +42,9 @@ class H2TauTauDataMC( AnalysisDataMC ):
         # self.keeper = []
         
         super(H2TauTauDataMC, self).__init__(varName, directory, weights)
-        self.legendBorders = 0.55,0.65,0.85,0.88
+
+#        self.legendBorders = 0.68, 0.68, 0.89, 0.89
+        self.legendBorders = 0.6, 0.6, 0.89, 0.89
 
         self.dataComponents = [ key for key, value in selComps.iteritems() \
                                 if value.isData is True ]
@@ -54,6 +56,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
             self.setupEmbedding( embed )
         else:
             self.removeEmbeddedSamples()
+
 
     def _BuildHistogram(self, tree, comp, compName, varName, cut, layer ):
         '''Build one histogram, for a given component'''
@@ -97,6 +100,10 @@ class H2TauTauDataMC( AnalysisDataMC ):
                 if varName == 'visMass' or varName == 'svfitMass':
                     print 'Shifting visMass and svfitMass by 1.015 for', compName
                     var = varName + '* 1.015'
+##         else:
+##             if compName == 'Ztt_ZL':
+##                 weight = weight + '/zllWeight'
+##                 weight = weight + '*((l1_decayMode==1)*1.3 + (l1_decayMode!=1)*1.0)'
 
         tree.Project( histName, var, '{weight}*({cut})'.format(cut=cut,
                                                                weight=weight) )
@@ -118,6 +125,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
                                   comp.dir,
                                   self.treeName,
                                   '{treeName}_tree.root'.format(treeName=self.treeName)] )
+
             file = self.__class__.keeper[ fileName + str(self.__class__.HINDEX) ] = TFile(fileName) 
             self.__class__.HINDEX+=1
 
@@ -140,6 +148,7 @@ class H2TauTauDataMC( AnalysisDataMC ):
             else:
                 self._BuildHistogram(tree, comp, compName, self.varName,
                                      self.cut, layer )     
+
         self._ApplyWeights()
         self._ApplyPrefs()
         
@@ -220,20 +229,21 @@ class H2TauTauDataMC( AnalysisDataMC ):
         
 
     def _InitPrefs(self):
-        '''Define preferences for each component'''
+        '''Definine preferences for each component'''
         self.histPref = {}
-        
-        self.histPref['Data']             = {'style':sData      , 'layer':2999 , 'legend':'Observed'             }
-        self.histPref['data_*']           = {'style':sBlack     , 'layer':2002 , 'legend':None                   }
-        self.histPref['DY*Jets']          = {'style':sHTT_DYJets, 'layer':4    , 'legend':'Z#rightarrow#tau#tau' }
-        self.histPref['embed_*']          = {'style':sViolet    , 'layer':4.1  , 'legend':None                   }
-        self.histPref['TTJets*']          = {'style':sHTT_TTJets, 'layer':1    , 'legend':'t#bar{t}'             } 
-        self.histPref['T*tW*']            = {'style':sHTT_TTJets, 'layer':1    , 'legend':'t#bar{t}'             } 
-        self.histPref['WW*']              = {'style':sBlue      , 'layer':0.9  , 'legend':None                   } 
-        self.histPref['WZ*']              = {'style':sRed       , 'layer':0.8  , 'legend':None                   } 
-        self.histPref['ZZ*']              = {'style':sGreen     , 'layer':0.7  , 'legend':None                   } 
-        self.histPref['QCD']              = {'style':sHTT_QCD   , 'layer':2    , 'legend':None                   }
-        self.histPref['WJets*']           = {'style':sHTT_WJets , 'layer':3    , 'legend':None                   }  
-        self.histPref['DYJets_Fakes']     = {'style':sHTT_ZL    , 'layer':3.1  , 'legend':None                   }
-        self.histPref['DYJets_Electron']  = {'style':sHTT_ZL    , 'layer':3.2  , 'legend':None                   }
-        self.histPref['Higgs*']           = {'style':sHTT_Higgs , 'layer':1001 , 'legend':None                   }
+        self.histPref['Data'] = {'style':sData, 'layer':2999, 'legend':'Observed'}
+        self.histPref['data_*'] = {'style':sBlack, 'layer':2002, 'legend':None}
+        self.histPref['Ztt'] = {'style':sHTT_DYJets, 'layer':4, 'legend':'Z#rightarrow#tau#tau'}
+        self.histPref['embed_*'] = {'style':sViolet, 'layer':4.1, 'legend':None}
+        self.histPref['TTJets*'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'t#bar{t}'} 
+        self.histPref['T*tW*'] = {'style':sHTT_TTJets, 'layer':1, 'legend':'t#bar{t}'} 
+        self.histPref['WW*'] = {'style':sBlue, 'layer':0.9, 'legend':None} 
+        self.histPref['WZ*'] = {'style':sRed, 'layer':0.8, 'legend':None} 
+        self.histPref['ZZ*'] = {'style':sGreen, 'layer':0.7, 'legend':None} 
+        self.histPref['QCD'] = {'style':sHTT_QCD, 'layer':2, 'legend':None}
+        self.histPref['WJets*'] = {'style':sHTT_WJets, 'layer':3, 'legend':None}  
+        self.histPref['Ztt_ZJ'] = {'style':sHTT_ZL, 'layer':3.1, 'legend':None}
+        self.histPref['Ztt_ZL'] = {'style':sHTT_ZL, 'layer':3.2, 'legend':None}
+        self.histPref['Higgs*'] = {'style':sHTT_Higgs, 'layer':1001, 'legend':None}
+
+
