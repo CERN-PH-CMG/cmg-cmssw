@@ -75,7 +75,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        fill( tr, 'run', event.run) 
        fill( tr, 'lumi',event.lumi)
        fill( tr, 'evt', event.eventId)
-       fill( tr, 'NUP', event.NUP)
+       #C uncomment when reactivating WNJetsAnalyzer
+       # fill( tr, 'NUP', event.NUP)
 
        fillDiLepton( tr, event.diLepton )
 
@@ -111,7 +112,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        fill(tr, 'weight', event.eventWeight)
        fill(tr, 'embedWeight', event.embedWeight)
        fill(tr, 'hqtWeight', event.higgsPtWeight)
-       fill(tr, 'WJetWeight', event.WJetWeight)
+       #C uncomment when reactivating WNJetsAnalyzer
+       # fill(tr, 'WJetWeight', event.WJetWeight)
 
        if hasattr( event, 'vertexWeight'): 
           fill(tr, 'vertexWeight', event.vertexWeight)
