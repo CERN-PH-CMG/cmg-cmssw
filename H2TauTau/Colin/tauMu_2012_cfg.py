@@ -163,7 +163,9 @@ treeProducerXCheck = cfg.Analyzer(
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_MuRm_ColinOct9 import * 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinOct10 import * 
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
+
+# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanMay23 import *
 
 #########################################################################################
 
@@ -227,7 +229,7 @@ if syncntuple:
     sequence.append( treeProducerXCheck) #Yes!
 
 
-test = 1
+test = 0
 if test==1:
     comp = HiggsVBF125
     selectedComponents = [comp]
