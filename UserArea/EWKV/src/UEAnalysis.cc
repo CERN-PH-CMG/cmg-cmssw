@@ -25,6 +25,10 @@ UEAnalysis::UEAnalysis(SmartSelectionMonitor &mon)
       mon_->addHistogram( new TH1F("ptflux"+ueReg_[ireg],";Charged p_{T} flux [GeV];Events",25,0,50));
       mon_->addHistogram( new TH1F("avgptflux"+ueReg_[ireg],";Average p_{T} flux [GeV];Events",25,0,5));
 
+      mon_->addHistogram( new TH1F("nch1"+ueReg_[ireg],";Charged particles;Events",30,0,30));
+      mon_->addHistogram( new TH1F("ptflux1"+ueReg_[ireg],";Charged p_{T} flux [GeV];Events",25,0,50));
+      mon_->addHistogram( new TH1F("avgptflux1"+ueReg_[ireg],";Average p_{T} flux [GeV];Events",25,0,5));
+
       mon_->addHistogram( new TH2F("nchprofpt"+ueReg_[ireg],";t#bar{t} transverse momentum [GeV];Charged particles;Events",25,0,250, 30,0,30));
       mon_->addHistogram( new TH2F("ptfluxprofpt"+ueReg_[ireg],";t#bar{t} transverse momentum [GeV];Charged p_{T} flux [GeV];Events",25,0,250,25,0,50));
       mon_->addHistogram( new TH2F("avgptfluxprofpt"+ueReg_[ireg],";t#bar{t} transverse momentum [GeV];Average p_{T} flux [GeV];Events",25,0,250,25,0,5));
@@ -32,6 +36,9 @@ UEAnalysis::UEAnalysis(SmartSelectionMonitor &mon)
       mon_->addHistogram( new TH2F("nchprofmt"+ueReg_[ireg],";t#bar{t} transverse mass [GeV];Charged particles;Events",25,0,1000,30,0,30));
       mon_->addHistogram( new TH2F("ptfluxprofmt"+ueReg_[ireg],";t#bar{t} transverse mass [GeV];Charged p_{T} flux [GeV];Events",25,0,1000,25,0,50));
       mon_->addHistogram( new TH2F("avgptfluxprofmt"+ueReg_[ireg],";t#bar{t} transverse mass [GeV];Average p_{T} flux [GeV];Events",25,0,1000,25,0,5));
+
+      if(ireg==0)
+	mon_->addHistogram( new TH2F("ptfluxprofphi",";#Delta#phi[^{0}];Charged p_{T} flux [GeV];Events",25,0,180,25,0,50));
     }
 }
 
@@ -73,8 +80,8 @@ void UEAnalysis::analyze(data::PhysicsObjectCollection_t &leptons,
   LorentzVector rec_ttbar=htlep+met[0];
   
   //study UE with charged PF
-  std::vector<int> chCount(4,0);
-  std::vector<float> chFlux(4,0);
+  std::vector<int> chCount(4,0), chCount1(4,0);
+  std::vector<float> chFlux(4,0), chFlux1(4,0);
   for(size_t ipfn=0; ipfn<pf.size(); ipfn++)
     {
       if(pf[ipfn].get("charge")==0) continue;
@@ -104,6 +111,12 @@ void UEAnalysis::analyze(data::PhysicsObjectCollection_t &leptons,
       if(dphi<60)  regIdx=2;
       chCount[0]++;                  chCount[regIdx]++;
       chFlux[0] += pf[ipfn].pt();    chFlux[regIdx] += pf[ipfn].pt();
+    
+      mon_->fillHisto("ptfluxprofphi",    ch, dphi, pf[ipfn].pt(),  weight);
+ 
+      if(pf[ipfn].pt()<1.0) continue;
+      chCount1[0]++;                 chCount1[regIdx]++;
+      chFlux1[0] += pf[ipfn].pt();   chFlux1[regIdx] += pf[ipfn].pt();
     }
   mon_->fillHisto("ptttbar",  ch, rec_ttbar.pt(), weight);
   mon_->fillHisto("mtttbar",  ch, rec_ttbar.Mt(), weight);
@@ -116,6 +129,14 @@ void UEAnalysis::analyze(data::PhysicsObjectCollection_t &leptons,
       mon_->fillHisto("nch"+ueReg_[ireg],             ch, cts,                      weight);
       mon_->fillHisto("ptflux"+ueReg_[ireg],          ch, flux ,                    weight);
       mon_->fillHisto("avgptflux"+ueReg_[ireg],       ch, normFlux,                 weight);
+
+      cts=chCount1[ireg];
+      flux=chFlux1[ireg];
+      normFlux=(cts>0?flux/cts:0);
+      mon_->fillHisto("nch1"+ueReg_[ireg],             ch, cts,                      weight);
+      mon_->fillHisto("ptflux1"+ueReg_[ireg],          ch, flux ,                    weight);
+      mon_->fillHisto("avgptflux1"+ueReg_[ireg],       ch, normFlux,                 weight);
+
       mon_->fillHisto("nchprofpt"+ueReg_[ireg],       ch, rec_ttbar.pt(), cts,      weight);
       mon_->fillHisto("ptfluxprofpt"+ueReg_[ireg],    ch, rec_ttbar.pt(), flux,     weight);
       mon_->fillHisto("avgptfluxprofpt"+ueReg_[ireg], ch, rec_ttbar.pt(), normFlux, weight);
