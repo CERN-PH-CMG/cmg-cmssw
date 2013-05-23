@@ -194,18 +194,27 @@ diboson_list = [    WWJetsTo2L2Nu,
                     T_tW,
                     Tbar_tW
                     ]
+
 WJetsSoup = copy.copy(WJets)
 WJetsSoup.name = 'WJetsSoup'
-VVgroup = [comp.name for comp in diboson_list]
+# VVgroup = [comp.name for comp in diboson_list]
+VVgroup = None
 # higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
-selectedComponents =  [WJetsSoup, TTJets, DYJets]
-selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
-higgs = mc_higgs
-selectedComponents.extend( higgs )
-selectedComponents.extend( diboson_list )
-selectedComponents.extend( data_list )
-selectedComponents.extend( embed_list )
+# selectedComponents =  [WJetsSoup, TTJets, DYJets]
+# selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
+# higgs = mc_higgs
+# selectedComponents.extend( higgs )
+# selectedComponents.extend( diboson_list )
+# selectedComponents.extend( data_list )
+# selectedComponents.extend( embed_list )
 
+
+selectedComponents = [TTJets, DYJets, WJets,
+                      data_Run2012A,
+                      data_Run2012B,
+                      data_Run2012C_v1,
+                      data_Run2012C_v2,
+                      ]
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -214,7 +223,8 @@ sequence = cfg.Sequence( [
     vertexAna, 
     TauMuAna, #Yes!
     dyJetsFakeAna,
-    WNJetsAna,
+    #JAN contact Colin when you want to deal with exclusive samples
+    # WNJetsAna,
     higgsWeighter, 
     vbfAna, #Yes!
     pileUpAna,
@@ -231,7 +241,7 @@ if syncntuple:
 
 test = 0
 if test==1:
-    comp = HiggsVBF125
+    comp = WJets
     selectedComponents = [comp]
     comp.splitFactor = 14
     # comp.files = comp.files[:10]
