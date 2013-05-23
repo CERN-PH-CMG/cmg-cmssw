@@ -30,6 +30,7 @@ aliases = {
     '/TauPlusX/Run2012B-13Jul2012-v1.*':'data_Run2012B',
     '/TauPlusX/Run2012C-24Aug2012-v1.*':'data_Run2012C_v1',
     '/TauPlusX/Run2012C-PromptReco-v2.*':'data_Run2012C_v2',
+    '/TauPlusX/Run2012D-PromptReco-v1.*':'data_Run2012D_v1',
     '/T_tW-channel.*START53.*':'T_tW',
     '/Tbar_tW-channel.*START53.*':'Tbar_tW',
     '/WWJetsTo2L2Nu.*START53.*':'WWJetsTo2L2Nu',
@@ -41,6 +42,11 @@ aliases = {
     '/ZZJetsTo2L2Nu.*START53.*':'ZZJetsTo2L2Nu',
     '/ZZJetsTo2L2Q.*START53.*':'ZZJetsTo2L2Q',
     '/ZZJetsTo4L.*START53.*_C$':'ZZJetsTo4L',
+    '/DoubleMu/StoreResults-DoubleMu_Run2012A_13Jul2012_v1_embedded_trans1.*':'embed_Run2012A_13Jul2012_v1',
+    '/DoubleMu/StoreResults-DoubleMu_Run2012B_13Jul2012_v4_embedded_trans1.*':'embed_Run2012B_13Jul2012_v4',
+    '/DoubleMu/StoreResults-DoubleMu_Run2012C_PromptReco_v2_embedded_trans1.*':'embed_Run2012C_PromptReco_v2',
+    '/DoubleMu/StoreResults-DoubleMu_Run2012C_24Aug2012_v1_embedded_trans1.*':'embed_Run2012C_24Aug2012_v1',
+    '/DoubleMu/StoreResults-DoubleMu_2012D_PromptReco_v1_embedded_trans1.*':'embed_2012D_PromptReco_v1',
     }
 
 
@@ -66,5 +72,9 @@ for data in data_list:
         data.json = jsonPick( data.files[0], jsonMap)
         data.triggers = data_triggers
         # allsamples.append(data)
+for embed in embed_list:
+    if len(embed.files):
+        embed.json = jsonPick( data.files[0], jsonMap)
+        # No trigger requirements for embedded samples
 for c in allsamples:
     c.splitFactor = splitFactor(c, 5e4)
