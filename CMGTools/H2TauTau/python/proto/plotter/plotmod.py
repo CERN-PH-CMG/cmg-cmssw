@@ -64,7 +64,7 @@ def shape_and_yield( var, anaDir,
     
     
 
-def addQCD( plot, dataName ):
+def addQCD( plot, dataName, VVgroup):
     # import pdb; pdb.set_trace()
     plotWithQCD = copy.deepcopy( plot )
     qcd = copy.deepcopy(plotWithQCD.Hist(dataName))
@@ -73,7 +73,8 @@ def addQCD( plot, dataName ):
     qcd.Add(plotWithQCD.Hist('Ztt_ZJ'), -1)  
     qcd.Add(plotWithQCD.Hist('TTJets'), -1)
     qcd.Add(plotWithQCD.Hist('WJets'), -1)
-    #C qcd.Add(plotWithQCD.Hist('VV'), -1)
+    if VVgroup:
+        qcd.Add(plotWithQCD.Hist('VV'), -1)
 
     # adding the QCD data-driven estimation to the  plot
     plotWithQCD.AddHistogram( 'QCD', qcd.weighted, 888)
@@ -84,11 +85,11 @@ def addQCD( plot, dataName ):
     
     
 
-def getQCD( plotSS, plotOS, dataName, scale=1.06 ):
+def getQCD( plotSS, plotOS, dataName, VVgroup=None, scale=1.06 ):
 
     # use SS data as a control region
     # to get the expected QCD shape and yield
-    plotSSWithQCD = addQCD( plotSS, dataName )
+    plotSSWithQCD = addQCD( plotSS, dataName, VVgroup)
 
     # extrapolate the expected QCD shape and yield to the
     # signal region
@@ -109,14 +110,15 @@ def getQCD( plotSS, plotOS, dataName, scale=1.06 ):
     
     
 
-def fW(mtplot, dataName, xmin, xmax, channel = 'TauMu'):
+def fW(mtplot, dataName, xmin, xmax, VVgroup=None, channel = 'TauMu'):
 
     wjet = copy.deepcopy(mtplot.Hist(dataName))
     wjet.Add(mtplot.Hist('Ztt'), -1)
     wjet.Add(mtplot.Hist('Ztt_ZL'), -1)
     wjet.Add(mtplot.Hist('Ztt_ZJ'), -1)
     wjet.Add(mtplot.Hist('TTJets'), -1)
-    #C wjet.Add(mtplot.Hist('VV'), -1)
+    if VVgroup:
+        wjet.Add(mtplot.Hist('VV'), -1)
 
     mtplot.AddHistogram( 'Data-DY-TT-VV', wjet.weighted, 1010)
     mtplot.Hist('Data-DY-TT-VV').stack = False
@@ -174,8 +176,7 @@ def plot_W(anaDir, comps, weights,
     if VVgroup != None :
         mtOS.Group ('VV',VVgroup)
 
-    # import pdb; pdb.set_trace()
-    data_OS, mc_OS = fW( mtOS, 'Data', xmin, xmax)
+    data_OS, mc_OS = fW( mtOS, 'Data', xmin, xmax, VVgroup)
     fW_OS = data_OS / mc_OS
 
 
@@ -188,7 +189,7 @@ def plot_W(anaDir, comps, weights,
     if VVgroup != None :
         mtSS.Group ('VV',VVgroup)
         
-    data_SS, mc_SS = fW( mtSS, 'Data', xmin, xmax)
+    data_SS, mc_SS = fW( mtSS, 'Data', xmin, xmax, VVgroup)
     fW_SS = data_SS / mc_SS
 
     
