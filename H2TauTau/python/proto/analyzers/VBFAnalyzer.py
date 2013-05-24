@@ -1,7 +1,7 @@
 import random
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
+from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet, GenJet
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 from CMGTools.RootTools.physicsobjects.VBF import VBF
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
@@ -48,6 +48,11 @@ class VBFAnalyzer( Analyzer ):
 
         self.handles['jets'] = AutoHandle( self.cfg_ana.jetCol,
                                            'std::vector<cmg::PFJet>' )
+        
+        if self.cfg_comp.isMC:
+            self.mchandles['genJets'] = AutoHandle('genJetSel',
+                                                   'std::vector<cmg::PhysicsObjectWithPtr< edm::Ptr<reco::GenJet> > >')
+
         if self.cfg_comp.isMC and ("BB" in self.cfg_comp.name):
             self.mchandles['genParticles'] = AutoHandle( 'genParticlesPruned',
                                                      'std::vector<reco::GenParticle>' )
@@ -76,6 +81,10 @@ class VBFAnalyzer( Analyzer ):
 
         leg1 = event.diLepton.leg1()
         leg2 = event.diLepton.leg2()
+
+        genJets = None
+        if self.cfg_comp.isMC:
+            genJets = map( GenJet, self.mchandles['genJets'].product() ) 
      
         for cmgJet in cmgJets:
             jet = Jet( cmgJet )
@@ -84,10 +93,24 @@ class VBFAnalyzer( Analyzer ):
                 scale = random.gauss( self.cfg_comp.jetScale,
                                       self.cfg_comp.jetSmear )
                 jet.scaleEnergy( scale )
+
             if self.testJet( jet ):
                 event.jets.append(jet)
             if self.testBJet(jet):
                 event.bJets.append(jet)
+            if genJets:
+                # Use DeltaR = 0.25 matching like JetMET
+                pairs = matchObjectCollection( [jet], genJets, 0.25*0.25)
+                if pairs[jet] is None:
+                    pass
+                    #jet.genJet = None
+                else:
+                    jet.genJet = pairs[jet] 
+
+            #Add JER correction for MC jets. Requires gen-jet matching
+            if self.cfg_comp.isMC and hasattr(self.cfg_ana, 'jerCorr') and self.cfg_ana.jerCorr:
+                self.jerCorrection(jet)
+
         self.counters.counter('VBF').inc('all events')
 
         event.cleanJets, dummy = cleanObjectCollection( event.jets,
@@ -118,18 +141,18 @@ class VBFAnalyzer( Analyzer ):
             leg = invpairs[jet]
             jet.leg = leg
 
-	for jet in event.cleanJets:
+        for jet in event.cleanJets:
             jet.matchGenParton=999.0
 
         if self.cfg_comp.isMC and "BB" in self.cfg_comp.name:
             genParticles = self.mchandles['genParticles'].product()
             event.genParticles = map( GenParticle, genParticles)
-	    for gen in genParticles:
+            for gen in genParticles:
                 if abs(gen.pdgId())==5 and gen.mother() and abs(gen.mother().pdgId())==21:
-		    for jet in event.cleanJets:
-			dR=deltaR2(jet.eta(), jet.phi(), gen.eta(), gen.phi() )
-		        if dR<jet.matchGenParton:
-			    jet.matchGenParton=dR
+                    for jet in event.cleanJets:
+                        dR=deltaR2(jet.eta(), jet.phi(), gen.eta(), gen.phi() )
+                        if dR<jet.matchGenParton:
+                            jet.matchGenParton=dR
 
         event.jets30 = [jet for jet in event.jets if jet.pt()>30]
         event.cleanJets30 = [jet for jet in event.cleanJets if jet.pt()>30]
@@ -159,11 +182,34 @@ class VBFAnalyzer( Analyzer ):
             return True
         
         return True
-        
+    
+    def jerCorrection(self, jet):
+        ''' Adds JER correction according to first method at
+        https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+
+        Requires some attention when genJet matching fails.
+        '''
+        if not hasattr(jet, 'genJet'):
+            return
+
+        corrections = [0.052, 0.057, 0.096, 0.134, 0.288]
+        maxEtas = [0.5, 1.1, 1.7, 2.3, 5.0]
+        eta = abs(jet.eta())
+
+        for i, maxEta in enumerate(maxEtas):
+            if eta < maxEta:
+                pt = jet.pt()
+                deltaPt = (pt - jet.genJet.pt()) * corrections[i]
+                totalScale = (pt + deltaPt) / pt
+                if totalScale < 0.:
+                    totalScale = 0.
+                jet.scaleEnergy(totalScale)
+                break
 
     def testJetID(self, jet):
+        # Use new PU jet ID working point
+        jet.puJetIdPassed = jet.puJetId(wp53x=True)
 
-        jet.puJetIdPassed = jet.puJetId()
         jet.pfJetIdPassed = jet.looseJetId()        
         if self.cfg_ana.relaxJetId:
             return True
