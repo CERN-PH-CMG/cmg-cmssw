@@ -35,6 +35,8 @@ def configureFlatNtpSampleTauMu2011(module,sampleAlias):
     module.tauPtCut = 20.
     module.muEtaCut = 2.1
     module.tauEtaCut = 2.3
+    module.tauAntiMuDisc = 'againstMuonTight'
+    module.tauAntiEDisc = 'againstElectronLoose'
 
     if sampleAlias == 'TauPlusXAug' : 
         module.path = "/TauPlusX/Run2011A-05Aug2011-v1/AOD/V5/{0}".format(cmgtagData)
@@ -243,6 +245,8 @@ def configureFlatNtpSampleTauEle2011(module,sampleAlias):
     module.tauPtCut = 20.
     module.muEtaCut = 2.1
     module.tauEtaCut = 2.3
+    module.tauAntiMuDisc = 'againstMuonLoose'
+    module.tauAntiEDisc = 'againstElectronTightMVA2'
 
     if sampleAlias == 'TauPlusXAug' : 
         module.path = "/TauPlusX/Run2011A-05Aug2011-v1/AOD/V5/{0}".format(cmgtagData)

@@ -252,8 +252,7 @@ void TauEleFlatNtp::beginJob(){
    tmpditaulist=diTauSelList_;
    diTauSelList_.clear();
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     //     if(cand->leg1().tauID("againstMuonLoose")<0.5)continue;
-     if(cand->leg1().tauID("againstMuonLoose2")<0.5)continue;
+     if(cand->leg1().tauID(tauAntiMuDisc_.c_str())<0.5)continue;
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
@@ -267,11 +266,13 @@ void TauEleFlatNtp::beginJob(){
    tmpditaulist=diTauSelList_;
    diTauSelList_.clear();
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-//      if(cand->leg1().tauID("againstElectronMedium")<0.5)continue;
-//      if(cand->leg1().tauID("againstElectronMVA")<0.5)continue;
-//      if(cand->leg1().tauID("againstElectronTightMVA2")<0.5)continue; 
 
-     if(cand->leg1().tauID("againstElectronTightMVA3")<0.5)continue;
+     if(dataPeriodFlag_==2011){
+       if(cand->leg1().tauID("againstElectronMedium")<0.5)continue;
+       if(cand->leg1().tauID("againstElectronMVA")<0.5)continue;
+     }
+
+     if(cand->leg1().tauID(tauAntiEDisc_.c_str())<0.5)continue;
 
      diTauSelList_.push_back(*cand);
    }

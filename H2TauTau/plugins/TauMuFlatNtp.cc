@@ -258,7 +258,7 @@ bool TauMuFlatNtp::applySelections(){
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg1().tauID("againstMuonTight2")<0.5)continue;
+    if(cand->leg1().tauID(tauAntiMuDisc_.c_str())<0.5)continue;//""
     diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
@@ -272,8 +272,8 @@ bool TauMuFlatNtp::applySelections(){
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg1().tauID("againstElectronLoose")>0.5)
-      diTauSelList_.push_back(*cand);
+    if(cand->leg1().tauID(tauAntiEDisc_.c_str())<0.5)continue; //""
+    diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueveto"<<endl;
@@ -287,14 +287,11 @@ bool TauMuFlatNtp::applySelections(){
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    //if(cand->leg1().tauID("byLooseIsoMVA")>0.5){
-    //if(cand->leg1().tauID("byIsolationMVA2raw")>0.5){
+    //if(cand->leg1().tauID("byLooseIsoMVA")>0.5)
+    //if(cand->leg1().tauID("byIsolationMVA2raw")>0.5)
     //     if(cand->leg1().tauID("byIsolationMVA2raw")>0.5 ||cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")<7.0)
-    if(cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")<7.0)
-      {
-	diTauSelList_.push_back(*cand);
-      }
-    
+    if(cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")>7.0)continue;
+    diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertauiso"<<endl;
