@@ -403,7 +403,10 @@ def configureFlatNtpSampleTauMu2012Trig(module,sampleAlias):
     module.pupWeightNames2 = 'vertexWeightSummer12MC53XHCPData'
     module.pupWeightNames3 = 'vertexWeightSummer12MC53X2012D6fbData'
     module.pupWeightNames4 = 'vertexWeightSummer12MC53X2012ABCDData'
-
+    module.muPtCut = 20.
+    module.tauPtCut = 20.
+    module.muEtaCut = 2.1
+    module.tauEtaCut = 2.3
 
     if sampleAlias == 'TauPlusX2012A' : #DAS range: 190450 - 193686
         module.path = "/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/{0}".format(cmgtag)
@@ -555,7 +558,11 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
     module.pupWeightNames2 = 'vertexWeightSummer12MC53XHCPData'
     module.pupWeightNames3 = 'vertexWeightSummer12MC53X2012D6fbData'
     module.pupWeightNames4 = 'vertexWeightSummer12MC53X2012ABCDData'
-        
+    module.muPtCut = 24.
+    module.tauPtCut = 20.
+    module.muEtaCut = 2.1
+    module.tauEtaCut = 2.3
+    
     if sampleAlias == 'TauPlusX2012A' : #DAS range: 190450 - 193686
         module.path = "/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/{0}".format(cmgtag)
         module.dataType = 1
@@ -893,6 +900,10 @@ def configureFlatNtpSampleTauEle2012Trig(module,sampleAlias):
     module.pupWeightNames2 = 'vertexWeightSummer12MC53XHCPData'
     module.pupWeightNames3 = 'vertexWeightSummer12MC53X2012D6fbData'
     module.pupWeightNames4 = 'vertexWeightSummer12MC53X2012ABCDData'
+    module.muPtCut = 24.
+    module.tauPtCut = 20.
+    module.muEtaCut = 2.1
+    module.tauEtaCut = 2.3
         
     if sampleAlias == 'SingleElectron2012A' : #DAS range: 190450 - 193686
         module.path = "/SingleElectron/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B"
