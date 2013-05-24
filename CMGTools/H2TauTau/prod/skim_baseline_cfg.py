@@ -41,7 +41,7 @@ if numberOfFilesToProcess > 0:
 json = None
 if dataset_name.find('Run201')>-1:
     from CMGTools.Common.Tools.applyJSON_cff import *
-    from CMGTools.H2TauTau.tools.jsonPick import *
+    from CMGTools.RootTools.tools.jsonPick import *
     json = jsonPick( dataset_name )
     applyJSON(process, json )
 
