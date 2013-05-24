@@ -53,6 +53,8 @@ def configureFlatNtpSampleTauMu2012(module,sampleAlias):
     module.tauPtCut = 20.
     module.muEtaCut = 2.1
     module.tauEtaCut = 2.3
+    module.tauAntiMuDisc = 'againstMuonTight2'
+    module.tauAntiEDisc = 'againstElectronLoose'
 
     if sampleAlias == 'TauPlusX2012A' : #DAS range: 190450 - 193686
         module.path = "/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/{0}".format(cmgtag)
@@ -407,7 +409,9 @@ def configureFlatNtpSampleTauMu2012Trig(module,sampleAlias):
     module.tauPtCut = 20.
     module.muEtaCut = 2.1
     module.tauEtaCut = 2.3
-
+    module.tauAntiMuDisc = 'againstMuonTight2'
+    module.tauAntiEDisc = 'againstElectronLoose'
+    
     if sampleAlias == 'TauPlusX2012A' : #DAS range: 190450 - 193686
         module.path = "/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/{0}".format(cmgtag)
         module.dataType = 1
@@ -562,6 +566,8 @@ def configureFlatNtpSampleTauEle2012(module,sampleAlias):
     module.tauPtCut = 20.
     module.muEtaCut = 2.1
     module.tauEtaCut = 2.3
+    module.tauAntiMuDisc = 'againstMuonLoose2'
+    module.tauAntiEDisc = 'againstElectronTightMVA3'
     
     if sampleAlias == 'TauPlusX2012A' : #DAS range: 190450 - 193686
         module.path = "/TauPlusX/Run2012A-13Jul2012-v1/AOD/V5/{0}".format(cmgtag)
@@ -904,6 +910,8 @@ def configureFlatNtpSampleTauEle2012Trig(module,sampleAlias):
     module.tauPtCut = 20.
     module.muEtaCut = 2.1
     module.tauEtaCut = 2.3
+    module.tauAntiMuDisc = 'againstMuonLoose2'
+    module.tauAntiEDisc = 'againstElectronTightMVA3'
         
     if sampleAlias == 'SingleElectron2012A' : #DAS range: 190450 - 193686
         module.path = "/SingleElectron/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_6_0_B"

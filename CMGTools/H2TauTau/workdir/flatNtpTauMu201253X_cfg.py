@@ -97,10 +97,6 @@ if process.flatNtp.dataType == 0:
       )
    process.analysis += process.genSequence 
 
-###kinematic weights for embedded samples
-if process.flatNtp.embeddedKinWeightFile != '' :
-   process.load('TauAnalysis/MCEmbeddingTools/embeddingKineReweight_cff')
-   process.embeddingKineReweightRECembedding.inputFileName = cms.FileInPath(process.flatNtp.embeddedKinWeightFile)
 
 ###kinematic weights for embedded samples
 if process.flatNtp.embeddedKinWeightFile.value() != '' :

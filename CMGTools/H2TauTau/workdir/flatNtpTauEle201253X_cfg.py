@@ -8,12 +8,6 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 evReportFreq = 100
 
 #######Define the samples to process
-#dataset_user = 'benitezj'
-#sampleTag = "/TauEle2012V540"
-
-sampleTag = ""
-
-
 dataset_user  = os.environ['SAMPLEOWNER']
 sampleName = os.environ['SAMPLENAME']
 sampleJobIdx = int(os.environ['SAMPLEJOBIDX'])
@@ -25,7 +19,6 @@ sampleMergeFactor = int(os.environ['SAMPLEMERGEFACTOR'])
 #sampleMergeFactor = 200
 
 #########################
-
 process.analysis = cms.Path() 
 
 
@@ -36,14 +29,14 @@ from CMGTools.H2TauTau.tools.joseFlatNtpSample53X_cff import configureFlatNtpSam
 configureFlatNtpSampleTauEle2012(process.flatNtp,sampleName)
 process.flatNtp.diTauTag = 'cmgTauEle'
 process.flatNtp.metType = 2
-process.flatNtp.runSVFit = 1 #1 old #2 new
+process.flatNtp.runSVFit = 2 #1 old #2 new
 process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
 
 
 
 ### input files
 inputfiles = "cmgTuple_.*root"
-dataset_name = process.flatNtp.path.value() + sampleTag
+dataset_name = process.flatNtp.path.value() 
 firstfile = sampleJobIdx * sampleMergeFactor
 lastfile = (sampleJobIdx + 1 ) * sampleMergeFactor
 print dataset_user
@@ -93,6 +86,11 @@ if process.flatNtp.dataType == 0:
       )
    process.analysis += process.genSequence 
    
+###kinematic weights for embedded samples
+if process.flatNtp.embeddedKinWeightFile.value() != '' :
+   process.load('TauAnalysis/MCEmbeddingTools/embeddingKineReweight_cff')
+   process.embeddingKineReweightRECembedding.inputFileName = cms.FileInPath(process.flatNtp.embeddedKinWeightFile.value())
+   process.analysis += process.embeddingKineReweightSequenceRECembedding
 
 ##create the good primary vertices
 process.load("CommonTools.ParticleFlow.goodOfflinePrimaryVertices_cfi")

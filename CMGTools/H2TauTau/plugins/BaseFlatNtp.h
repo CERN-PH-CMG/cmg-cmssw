@@ -102,6 +102,8 @@ protected:
   int metType_;
   float metscale_;
   int runSVFit_;
+  std::string tauAntiMuDisc_;
+  std::string tauAntiEDisc_;
 
   
   float smearSVFitMass0pi0_;

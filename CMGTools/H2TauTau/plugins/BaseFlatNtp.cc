@@ -116,6 +116,11 @@ BaseFlatNtp::BaseFlatNtp(const edm::ParameterSet & iConfig):
   runSVFit_  =  iConfig.getParameter<int>("runSVFit");
   cout<<" runSVFit_ : "<<runSVFit_<<endl;
 
+  tauAntiMuDisc_   = iConfig.getParameter<std::string>("tauAntiMuDisc");
+  cout<<"tauAntiMuDisc : "<<tauAntiMuDisc_.c_str()<<endl;
+  tauAntiEDisc_   = iConfig.getParameter<std::string>("tauAntiEDisc");
+  cout<<"tauAntiEDisc : "<<tauAntiEDisc_.c_str()<<endl;
+
   smearSVFitMass0pi0_  =  iConfig.getParameter<double>("smearSVFitMass0pi0");
   cout<<"smearSVFitMass0pi0_ : "<<smearSVFitMass0pi0_<<endl;
   smearVisMass0pi0_  =  iConfig.getParameter<double>("smearVisMass0pi0");
