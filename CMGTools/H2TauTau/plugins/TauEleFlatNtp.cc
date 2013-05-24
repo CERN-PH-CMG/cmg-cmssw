@@ -73,8 +73,8 @@ void TauEleFlatNtp::beginJob(){
 
 
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     if(cand->leg2().pt()<24.0)continue;
-     if(fabs(cand->leg2().eta())>2.1)continue;
+     if(cand->leg2().pt()<muPtCut_)continue;
+     if(fabs(cand->leg2().eta())>muEtaCut_)continue;
      if(reco::deltaR(cand->leg1().p4().eta(),cand->leg1().p4().phi(),
 		     cand->leg2().p4().eta(),cand->leg2().p4().phi()
 		     )<0.5)continue;
@@ -95,8 +95,8 @@ void TauEleFlatNtp::beginJob(){
    diTauSelList_.clear();
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
      if(cand->leg1().tauID("decayModeFinding")<0.5 )continue;
-     if(cand->leg1().pt()<20.0 )continue;
-     if(fabs(cand->leg1().eta())>2.3 )continue;
+     if(cand->leg1().pt()<tauPtCut_)continue;
+     if(fabs(cand->leg1().eta())>tauEtaCut_)continue;
 	
      diTauSelList_.push_back(*cand);
    }
@@ -119,7 +119,13 @@ void TauEleFlatNtp::beginJob(){
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
-     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermuvtx"<<endl;
+     if(printSelectionPass_){
+       cout<<runnumber_<<":"<<eventid_<<" fail countermuvtx"<<endl;
+       for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	 printElectronInfo(&(cand->leg2()));
+       }
+     }
+
      return 0;
    }
    countermuvtx_++;
@@ -150,7 +156,13 @@ void TauEleFlatNtp::beginJob(){
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
-     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermuid"<<endl;
+     if(printSelectionPass_){
+       cout<<runnumber_<<":"<<eventid_<<" fail countermuid"<<endl;
+       for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	 printElectronInfo(&(cand->leg2()));
+       }
+     }
+
      return 0;
    }
    countermuid_++;
@@ -171,7 +183,23 @@ void TauEleFlatNtp::beginJob(){
        diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
-     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countermumatch"<<endl;
+     if(printSelectionPass_){
+       cout<<runnumber_<<":"<<eventid_<<" fail countermumatch"<<endl;
+       for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	 printElectronInfo(&(cand->leg2()));
+	 
+	 //print any objects which are with 0.5 
+	 for(std::vector<cmg::TriggerObject>::const_iterator obj=trigObjs_->begin(); obj!=trigObjs_->end(); obj++){
+	   if(reco::deltaR(cand->leg2().eta(),cand->leg2().phi(),obj->eta(),obj->phi())<0.5){
+	     cout<<obj->pt()<<" "<<obj->eta()<<" "<<obj->phi()<<" "<<obj->pdgId()<<endl;
+	     obj->printSelections(cout);
+	     cout<<endl;
+	   }
+	 }
+
+       }
+     }
+
      return 0;
    }
    countermumatch_++;
@@ -188,7 +216,12 @@ void TauEleFlatNtp::beginJob(){
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
-     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
+     if(printSelectionPass_){
+       cout<<runnumber_<<":"<<eventid_<<" fail countertaueop"<<endl;
+       for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	 printTauInfo(&(cand->leg1()));
+       }
+     }
      return 0;
    }
    countertaueop_++;
@@ -204,7 +237,12 @@ void TauEleFlatNtp::beginJob(){
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
-     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertauvtx"<<endl;
+     if(printSelectionPass_){
+       cout<<runnumber_<<":"<<eventid_<<" fail countertauvtx"<<endl;
+       for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	 printTauInfo(&(cand->leg1()));
+       }
+     }
      return 0;
    }
    countertauvtx_++;
@@ -214,7 +252,8 @@ void TauEleFlatNtp::beginJob(){
    tmpditaulist=diTauSelList_;
    diTauSelList_.clear();
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     if(cand->leg1().tauID("againstMuonLoose")<0.5)continue;
+     //     if(cand->leg1().tauID("againstMuonLoose")<0.5)continue;
+     if(cand->leg1().tauID("againstMuonLoose2")<0.5)continue;
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
@@ -228,34 +267,41 @@ void TauEleFlatNtp::beginJob(){
    tmpditaulist=diTauSelList_;
    diTauSelList_.clear();
    for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-     if(cand->leg1().tauID("againstElectronMedium")<0.5)continue;
-     if(cand->leg1().tauID("againstElectronMVA")<0.5)continue;
-     if(cand->leg1().tauID("againstElectronTightMVA2")<0.5)continue; 
+//      if(cand->leg1().tauID("againstElectronMedium")<0.5)continue;
+//      if(cand->leg1().tauID("againstElectronMVA")<0.5)continue;
+//      if(cand->leg1().tauID("againstElectronTightMVA2")<0.5)continue; 
 
-//     if(cand->leg1().tauID("againstElectronTightMVA3")<0.5)continue;
+     if(cand->leg1().tauID("againstElectronTightMVA3")<0.5)continue;
 
      diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
-     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaueveto"<<endl;
+     if(printSelectionPass_){
+       cout<<runnumber_<<":"<<eventid_<<" fail countertaueveto"<<endl;
+       for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	 printTauInfo(&(cand->leg1()));
+       }
+     }
      return 0;
    }
    countertaueveto_++;
 
 
-//   /////////Tau Isolation
-//   tmpditaulist=diTauSelList_;
-//   diTauSelList_.clear();
-//   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-//     if(cand->leg1().tauID("byLooseIsoMVA")>0.5){
-//       diTauSelList_.push_back(*cand);
-//     }
-//   }
-//   if(diTauSelList_.size()==0){
-//     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertauiso"<<endl;
-//     return 0;
-//   }
-//   countertauiso_++;
+   /////////Tau Isolation
+   tmpditaulist=diTauSelList_;
+   diTauSelList_.clear();
+   for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
+     //if(cand->leg1().tauID("byLooseIsoMVA")>0.5)
+     if(cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")<7.0)
+       {
+	 diTauSelList_.push_back(*cand);
+       }
+   }
+   if(diTauSelList_.size()==0){
+     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertauiso"<<endl;
+     return 0;
+   }
+   countertauiso_++;
 
    //Tau Trig-Match
    tmpditaulist=diTauSelList_;
@@ -274,7 +320,12 @@ void TauEleFlatNtp::beginJob(){
        diTauSelList_.push_back(*cand);
    }
    if(diTauSelList_.size()==0){
-     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertaumatch"<<endl;
+     if(printSelectionPass_){
+       cout<<runnumber_<<":"<<eventid_<<" fail countertaumatch"<<endl;
+       for(std::vector<cmg::TauEle>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){
+	 printTauInfo(&(cand->leg1()));
+       }
+     }
      return 0;
    }
    countertaumatch_++;
@@ -292,7 +343,8 @@ void TauEleFlatNtp::beginJob(){
 	
         //-------tau iso cut here
         // && cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr") > 0.5
-	&& cand->leg1().tauID("byLooseIsoMVA")>0.5
+	//&& cand->leg1().tauID("byLooseIsoMVA")>0.5
+	&& cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")<1.5
 
         ){
        diTauSelList_.push_back(*cand);
@@ -400,19 +452,24 @@ bool TauEleFlatNtp::fill(){
   
     ///trigger corrections
     if(dataPeriodFlag_==2011){
-      if(trigPaths_.size()>0){//trigger applied--> apply a correction factor
-	if(triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	  triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	    /triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	if(triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	  triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
-	    /triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-      }else{//no trigger applied --> apply efficiency
-	triggerEffWeight_ *= triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	triggerEffWeight_ *= triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
+      if(trigPaths_.size()>0){
+        if( triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())> 0.)
+          triggerEffWeightsTau_[2] = triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+            /triggerEff_.effMediumIsoTau20MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+        if(triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta()) > 0.)
+          triggerEffWeightsMu_[2] = triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+            /triggerEff_.effEle18MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      }else{
+        triggerEffWeightsTau_[2] = triggerEff_.effTau2011AB_TauEle(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+        triggerEffWeightsMu_[2] = triggerEff_.effEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
       }
-      //id+isolation corrections
-      selectionEffWeight_ *= selectionEff_.effCorrEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      
+      selectionEffWeightsId_[2] = selectionEff_.effCorrEle2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      if(dataType_==0){
+        selectionEffWeightsIso_[2] = 1.;//need to separate above function
+      }
+
     }
 
     if(dataPeriodFlag_==2012){
@@ -547,13 +604,6 @@ bool TauEleFlatNtp::fill(){
    ditaudeltaEta_=diTauSel_->leg2().p4().eta()-diTauSel_->leg1().p4().eta();;
    ditaudeltaPhi_=diTauSel_->leg2().p4().phi()-diTauSel_->leg1().p4().phi();;
    
-   
-   ///get the jets //need the jets here because of randomization of mT
-   edm::Handle< std::vector<cmg::PFJet> > eventJetList;
-   iEvent_->getByLabel(pfJetListTag_,eventJetList);
-   fullJetList_.clear();
-   for(std::vector<cmg::PFJet>::const_iterator jet=eventJetList->begin(); jet!=eventJetList->end(); ++jet)
-     fullJetList_.push_back(&(*jet));
 
    //apply pt and eta cuts on jets
    fillPFJetList(&fullJetList_,&pfJetList_);

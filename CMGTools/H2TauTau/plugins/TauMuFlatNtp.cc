@@ -102,8 +102,8 @@ bool TauMuFlatNtp::applySelections(){
 
 
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg2().pt()<20.0)continue;
-    if(fabs(cand->leg2().eta())>2.1)continue;
+    if(cand->leg2().pt()<muPtCut_)continue;
+    if(fabs(cand->leg2().eta())>muEtaCut_)continue;
     if(reco::deltaR(cand->leg1().p4().eta(),cand->leg1().p4().phi(),
 		    cand->leg2().p4().eta(),cand->leg2().p4().phi()
 		    )<0.5)continue;
@@ -125,8 +125,8 @@ bool TauMuFlatNtp::applySelections(){
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
     if(cand->leg1().tauID("decayModeFinding")<0.5 )continue;
-    if(cand->leg1().pt()<20.0 )continue;
-    if(fabs(cand->leg1().eta())>2.3 )continue;
+    if(cand->leg1().pt()<tauPtCut_)continue;
+    if(fabs(cand->leg1().eta())>tauEtaCut_)continue;
     diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
@@ -244,13 +244,7 @@ bool TauMuFlatNtp::applySelections(){
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){  
-
     if(!tauVertexCut(&(cand->leg1())))continue;
-    
-    if(reco::deltaR(cand->leg1().p4().eta(),cand->leg1().p4().phi(),
-		    cand->leg2().p4().eta(),cand->leg2().p4().phi()
-		    )<0.5)continue; //Andrew has this cut
-    
     diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
@@ -264,7 +258,7 @@ bool TauMuFlatNtp::applySelections(){
   tmpditaulist=diTauSelList_;
   diTauSelList_.clear();
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
-    if(cand->leg1().tauID("againstMuonTight")<0.5)continue;
+    if(cand->leg1().tauID("againstMuonTight2")<0.5)continue;
     diTauSelList_.push_back(*cand);
   }
   if(diTauSelList_.size()==0){
@@ -295,10 +289,12 @@ bool TauMuFlatNtp::applySelections(){
   for(std::vector<cmg::TauMu>::const_iterator cand=tmpditaulist.begin(); cand!=tmpditaulist.end(); ++cand){    
     //if(cand->leg1().tauID("byLooseIsoMVA")>0.5){
     //if(cand->leg1().tauID("byIsolationMVA2raw")>0.5){
-    if(cand->leg1().tauID("byIsolationMVA2raw")>0.5
-       ||cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")<7.0){
-      diTauSelList_.push_back(*cand);
-    }
+    //     if(cand->leg1().tauID("byIsolationMVA2raw")>0.5 ||cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")<7.0)
+    if(cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")<7.0)
+      {
+	diTauSelList_.push_back(*cand);
+      }
+    
   }
   if(diTauSelList_.size()==0){
     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" fail countertauiso"<<endl;
@@ -358,10 +354,11 @@ bool TauMuFlatNtp::applySelections(){
 // 	   || cand->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")>0.5 
 // 	   || cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr3Hits")>0.5 )
 
-       && (cand->leg1().tauID("byLooseIsolationMVA2")>0.5  
-	   || cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr3Hits")>0.5 )
-
-
+//        && (cand->leg1().tauID("byLooseIsolationMVA2")>0.5  
+// 	   || cand->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr3Hits")>0.5 )
+       
+       && cand->leg1().tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits")<1.5
+       
 
        ){
       diTauSelList_.push_back(*cand);
@@ -468,22 +465,26 @@ bool TauMuFlatNtp::fill(){
     
     if(dataPeriodFlag_==2011){
       if(trigPaths_.size()>0){
-	if(triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())>0.)
-	  triggerEffWeightTau_ = triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
-	    /triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
 	
-
-	if(triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())>0.)
-	  triggerEffWeightMu_ = triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
+      	if( triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())> 0.)
+	  triggerEffWeightsTau_[2] = triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta())
+	    /triggerEff_.effLooseTau15MC(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	if(triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta()) > 0.)
+	  triggerEffWeightsMu_[2] = triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta())
 	    /triggerEff_.effIsoMu15MC(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
-
+	
       }else{
-	triggerEffWeightTau_ = triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
-	triggerEffWeightMu_ = triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+	triggerEffWeightsTau_[2] = triggerEff_.effTau2011AB(diTauSel_->leg1().pt(),diTauSel_->leg1().eta());
+	triggerEffWeightsMu_[2] = triggerEff_.effMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+
       }
       
-      //id+isolation corrections
-      selectionEffWeight_ = selectionEff_.effCorrMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      selectionEffWeightsId_[2] = selectionEff_.effCorrMu2011AB(diTauSel_->leg2().pt(),diTauSel_->leg2().eta());
+      if(dataType_==0){
+	selectionEffWeightsIso_[2] = 1.;//need to separate above function
+      }
+      
+
     }
 
 
@@ -671,12 +672,6 @@ bool TauMuFlatNtp::fill(){
 
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass ditau vars"<<endl;
 
-  ///get the jets //need the jets here because of randomization of mT
-  edm::Handle< std::vector<cmg::PFJet> > eventJetList;
-  iEvent_->getByLabel(pfJetListTag_,eventJetList);
-  fullJetList_.clear();
-  for(std::vector<cmg::PFJet>::const_iterator jet=eventJetList->begin(); jet!=eventJetList->end(); ++jet)
-    fullJetList_.push_back(&(*jet));
   
   //apply pt and eta cuts on jets
   fillPFJetList(&fullJetList_,&pfJetList_);

@@ -137,7 +137,7 @@ protected:
   edm::InputTag unscaledTauTag_;
   edm::Handle< std::vector<cmg::Tau> > unscaledTauList_;
 
-
+  
   edm::InputTag muonVetoListTag_;
   edm::Handle< std::vector<cmg::Muon> > leptonVetoListMuon_;
   edm::InputTag electronVetoListTag_;
@@ -1224,6 +1224,7 @@ protected:
   void printMuonInfo(const cmg::Muon * cand);
   void printElectronInfo(const cmg::Electron * cand);
   void printTauInfo(const cmg::Tau * cand);
+  void printJetInfo(const cmg::PFJet * cand, int level=0);
   void printMETInfo();
 
 
