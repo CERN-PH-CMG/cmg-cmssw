@@ -20,7 +20,7 @@ numberOfFilesToProcess = 10
 debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
-channel = 'tau-mu'
+channel = 'tau-mu' #'tau-mu' 'all' 'tau-ele'
 jetRecalib = False
 useCHS = False
 #newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
@@ -29,7 +29,7 @@ newSVFit = False
 tauScaling = 0
 # increase to 1000 before running on the batch, to reduce size of log files
 # on your account
-reportInterval = 100
+reportInterval = 1000
 
 print sep_line
 print 'channel', channel
@@ -47,13 +47,15 @@ print 'tau scaling =', tauScaling
 
 # process.setName_('H2TAUTAU')
 
-#JAN: check the other signal samples:
-#JAN: 3 production modes for each mass point: GGH VH+TTH, VBF
-#JAN: use mass 125
-dataset_user = 'cmgtools' 
-# dataset_name = '/W1Jet_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
-# dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+dataset_user = 'cmgtools'
+
 dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
+# /GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0
+
+#dataset_user = 'cmgtools_group'
+#dataset_name = '/WH_ZH_TTH_HToTauTau_M-125_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
+#dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
+#dataset_name = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
 
 dataset_files = 'cmgTuple.*root'
 
@@ -243,4 +245,4 @@ else:
 # process.tauMu_fullsel_tree_CMG.SelectEvents = cms.untracked.PSet()
 
 # process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > 0.5')
-# process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > -9999')
+process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > -9999')
