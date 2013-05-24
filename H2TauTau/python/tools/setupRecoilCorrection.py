@@ -60,6 +60,7 @@ def fileAndLeg(fileName, is53X, mode=None, channel=None):
         leptonLeg = 0
     if lookup( fileName, 'GluGluToHToTauTau' ) or \
            lookup( fileName, 'VBF_HToTauTau' ) or \
+           lookup( fileName, 'VBFHToTauTau' ) or \
            lookup( fileName, 'SUSYBBHToTauTau' ) or \
            lookup( fileName, 'SUSYGluGluToHToTauTau' ) or \
            lookup( fileName, 'WH_ZH_TTH_HToTauTau' ):
@@ -111,12 +112,13 @@ def basicParameters(is53X):
 
 def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True, mode=None, channel=None):
 
-    print 'setting up recoil corrections:'
+    print '# setting up recoil corrections:'
     if not runOnMC:
         enable=False
 
-    if not hasattr( process, 'recoilCorMETTauMu') and \
-       not hasattr( process, 'recoilCorMETTauEle') :
+    if not hasattr( process, 'recoilCorMETTauMu')  and \
+       not hasattr( process, 'recoilCorMETTauEle') and \
+       not hasattr( process, 'recoilCorMETDiTau') :
         print 'recoil correction module not in the path -> DISABLED'
         return False
         
@@ -173,7 +175,7 @@ def setupRecoilCorrection( process, runOnMC, enable=True, is53X=True, mode=None,
             process.recoilCorMETTauMu.enable = False
         if hasattr( process, 'recoilCorMETTauEle'):
             process.recoilCorMETTauEle.enable = False
-        if hasattr( process, 'recoilCorMETTauEle'):
+        if hasattr( process, 'recoilCorMETDiTau'):
             process.recoilCorMETDiTau.enable = False
             
 
