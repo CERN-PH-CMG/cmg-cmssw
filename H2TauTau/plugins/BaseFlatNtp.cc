@@ -627,6 +627,22 @@ bool BaseFlatNtp::fillVariables(const edm::Event & iEvent, const edm::EventSetup
   }
 
 
+  ///get the jets //need the jets here because of randomization of mT
+  edm::Handle< std::vector<cmg::PFJet> > eventJetList;
+  iEvent_->getByLabel(pfJetListTag_,eventJetList);
+  fullJetList_.clear();
+  for(std::vector<cmg::PFJet>::const_iterator jet=eventJetList->begin(); jet!=eventJetList->end(); ++jet)
+    fullJetList_.push_back(&(*jet));
+
+  if(printSelectionPass_>2){//Print Jets
+    cout<<runnumber_<<":"<<eventid_<<" List of Jets : "<< fullJetList_.size()<<endl; 
+    for(std::vector<const cmg::PFJet * >::const_iterator cand=fullJetList_.begin(); cand!=fullJetList_.end(); ++cand){
+      //if(!checkPFJetId((*jet)))continue;
+      //if(!checkPUJetId((*jet)))continue;
+      printJetInfo((*cand));
+    }
+  }
+
   return 1;
 }
 
@@ -823,43 +839,22 @@ const cmg::TriggerObject * BaseFlatNtp::trigObjMatch(float eta, float phi, std::
 
 
 bool  BaseFlatNtp::checkPUJetId(const cmg::PFJet *jet){
-  //note there is an implicit eta cut here
-
   float eta=fabs(jet->eta());
-  //float mva=jet->puMva("full");
   float mva=jet->puMva(pujetidname_.c_str());
-  //cout<<"pujetid "<<pujetidname_.c_str()<<"   "<<mva<<endl;
   bool pass=0;
 
-//   ///old "full" wp (valid for pT>20)
-//   if(0.00<=eta&&eta<2.50) if(mva>-0.80) pass=1;
-//   if(2.50<=eta&&eta<2.75) if(mva>-0.74) pass=1;
-//   if(2.75<=eta&&eta<3.00) if(mva>-0.68) pass=1;
-//   if(3.00<=eta&&eta<5.00) if(mva>-0.77) pass=1;
-
-//   ///for new "full53x" training from Phil
-//     if(0.00<=eta&&eta<2.50) if(mva>-0.63) pass=1;
-//     if(2.50<=eta&&eta<2.75) if(mva>-0.35) pass=1;
-//     if(2.75<=eta&&eta<3.00) if(mva>-0.28) pass=1;
-//     if(3.00<=eta&&eta<5.00) if(mva>-0.27) pass=1;
-
-//   //second set from Phil
-//   if(0.00<=eta&&eta<2.50) if(mva>-0.63) pass=1;
-//   if(2.50<=eta&&eta<2.75) if(mva>-0.60) pass=1;
-//   if(2.75<=eta&&eta<3.00) if(mva>-0.55) pass=1;
-//   if(3.00<=eta&&eta<5.00) if(mva>-0.40) pass=1;
-
-//   //cuts from Jan
-//   if(0.00<=eta&&eta<2.50) if(mva>-0.36) pass=1;
-//   if(2.50<=eta&&eta<2.75) if(mva>-0.59) pass=1;
-//   if(2.75<=eta&&eta<3.00) if(mva>-0.70) pass=1;
-//   if(3.00<=eta&&eta<5.00) if(mva>-0.62) pass=1;
-
-  //cuts from avg
-  if(0.00<=eta&&eta<2.50) if(mva>-0.63) pass=1;
-  if(2.50<=eta&&eta<2.75) if(mva>-0.60) pass=1;
-  if(2.75<=eta&&eta<3.00) if(mva>-0.55) pass=1;
-  if(3.00<=eta&&eta<5.00) if(mva>-0.45) pass=1;
+  if(dataPeriodFlag_==2011){
+    if(0.00<=eta&&eta<2.50) if(mva>-0.40) pass=1;
+    if(2.50<=eta&&eta<2.75) if(mva>-0.85) pass=1;
+    if(2.75<=eta&&eta<3.00) if(mva>-0.70) pass=1;
+    if(3.00<=eta&&eta<5.00) if(mva>-0.60) pass=1;
+  }
+  if(dataPeriodFlag_==2012){
+    if(0.00<=eta&&eta<2.50) if(mva>-0.63) pass=1;
+    if(2.50<=eta&&eta<2.75) if(mva>-0.60) pass=1;
+    if(2.75<=eta&&eta<3.00) if(mva>-0.55) pass=1;
+    if(3.00<=eta&&eta<5.00) if(mva>-0.45) pass=1;
+  }
 
   return pass;
 }
@@ -1036,6 +1031,7 @@ void BaseFlatNtp::printElectronInfo(const cmg::Electron * cand){
   cout<<"   numberOfHits   = "<<cand->numberOfHits()<<endl;
   //cout<<"   passConversion = "<<cand->passConversionVeto()<<endl;
   cout<<"   passConversion = "<<(*(cand->sourcePtr()))->passConversionVeto()<<endl;
+  cout<<"   SC eta         = "<<(*(cand->sourcePtr()))->superCluster()->eta()<<endl;
   cout<<"   mvaNonTrigV0   = "<<cand->mvaNonTrigV0()<<endl;
   cout<<"   passIDWP95     = "<<electronIDWP95(cand)<<endl;
   cout<<"   isEB           = "<<(*(cand->sourcePtr()))->isEB()<<endl;
@@ -1099,6 +1095,14 @@ void BaseFlatNtp::printTauInfo(const cmg::Tau * cand){
   
 }
 
+void BaseFlatNtp::printJetInfo(const cmg::PFJet * cand,int level){
+  cout<<cand->pt()*cand->rawFactor()<<" ";
+  cout<<cand->pt()<<" ";
+  cout<<cand->eta()<<" ";
+  cout<<cand->phi()<<" ";
+
+  cout<<endl;
+}
 
 void BaseFlatNtp::printMETInfo(){
   cout<<" MET info "<<endl;
