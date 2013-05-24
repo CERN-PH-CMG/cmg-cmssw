@@ -332,7 +332,7 @@ int main(int argc, char* argv[])
       float mtsum=utils::cmssw::getMT<LorentzVector>(selLeptons[0],met[0])+utils::cmssw::getMT<LorentzVector>(selLeptons[1],met[0]);
       bool isZcand( isSameFlavor && fabs(mll-91)<15);
       bool isOS( selLeptons[0].get("id")*selLeptons[1].get("id") < 0 ); 
-      bool passDilSelection(mll>12 || !isZcand);
+      bool passDilSelection(mll>12 && !isZcand);
       bool passJetSelection(selJets.size()>=2);
       bool passMetSelection( !isSameFlavor || met[0].pt()>40);
 
