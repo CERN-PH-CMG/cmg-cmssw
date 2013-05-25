@@ -88,7 +88,8 @@ class BTagSFEvent:
             for (l,f) in (('b',5), ('c',4), ('l',0)):
                 self._effhists[(T,f)] = self._efffile.Get("%s_eff_%s" % (l,T))
     def _mceff(self,tagger,j):
-        hist = self._effhists[(tagger,j.mcFlavour)]
+        mcFlav = abs(j.mcFlavour) if j.mcFlavour in [4,5,-4,-5] else 0
+        hist = self._effhists[(tagger,mcFlav)]
         xbin = hist.GetXaxis().FindBin(max(min(149.9,j.pt),25.1))
         ybin = hist.GetYaxis().FindBin(max(min(4.9,abs(j.eta)),0.1))
         #print "eff %s for pt %.1f, eta %.1f --> %.3f" % (j.pt,
@@ -98,16 +99,17 @@ class BTagSFEvent:
         num, den = 1.0, 1.0
         for j in jets:
             tagged = False
-            mySystB = systB if j.mcFlavour != 4 else 2*systB
+            mcFlav = abs(j.mcFlavour) if j.mcFlavour in [4,5,-4,-5] else 0
+            mySystB = systB if mcFlav != 4 else 2*systB
             for iw,(T,C) in enumerate(self._WPs):
                 if j.btagCSV > C: 
                     tagged = True
                     eps = self._mceff(T,j)
-                    sf  = self._sfb(T,j,mySystB) if j.mcFlavour > 0 else self._sflight(T,j,systL)
+                    sf  = self._sfb(T,j,mySystB) if mcFlav > 0 else self._sflight(T,j,systL)
                     if iw > 0:
                         TT,TC = self._WPs[iw-1]
                         epsT = self._mceff(TT,j)
-                        sfT  = self._sfb(TT,j,mySystB) if j.mcFlavour > 0 else self._sflight(TT,j,systL)
+                        sfT  = self._sfb(TT,j,mySystB) if mcFlav > 0 else self._sflight(TT,j,systL)
                         num *= max(0, sf*eps - sfT*epsT)
                         den *= max(0, eps - epsT)
                         if debug:
@@ -121,7 +123,7 @@ class BTagSFEvent:
             if not tagged:
                 T,C = self._WPs[-1]
                 eps = self._mceff(T,j)
-                sf  = self._sfb(T,j,mySystB) if j.mcFlavour > 0 else self._sflight(T,j,systL)
+                sf  = self._sfb(T,j,mySystB) if mcFlav > 0 else self._sflight(T,j,systL)
                 if debug:
                     print "    jet pt %5.1f eta %+4.2f btag %4.3f mcFlavour %d --> fail %s (eff %.3f, sf %.3f) --> event contrib: %.4f" % (j.pt, j.eta, min(1.,max(0.,j.btagCSV)), j.mcFlavour, T, eps, sf, max(0, 1-sf*eps)/max(0, 1-eps) if eps < 1 else 1)
                 num *= max(0, 1-sf*eps)
