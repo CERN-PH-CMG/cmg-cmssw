@@ -2,12 +2,22 @@ import random
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
-from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
-# from CMGTools.RootTools.physicsobjects.VBF import VBF
+from CMGTools.RootTools.utils.DeltaR import deltaR2, matchObjectCollection
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
-from CMGTools.RootTools.utils.DeltaR import deltaR2
-from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 from CMGTools.TTHAnalysis.jetReCalibrator import JetReCalibrator
+
+def cleanNearestJetOnly(jets,leptons,deltaR):
+    dr2 = deltaR**2
+    good = [ True for j in jets ]
+    for l in leptons:
+        ibest, d2m = -1, dr2
+        for i,j in enumerate(jets):
+            d2i = deltaR2(l.eta(),l.phi(), j.eta(),j.phi())
+            if d2i < d2m:
+                ibest, d2m = i, d2i
+        if ibest != -1: good[ibest] = False
+    return [ j for (i,j) in enumerate(jets) if good[i] == True ] 
+
 
 class ttHJetAnalyzer( Analyzer ):
     """Taken from RootTools.JetAnalyzer, simplified, modified, added corrections    """
@@ -23,6 +33,7 @@ class ttHJetAnalyzer( Analyzer ):
                 self.jetReCalibrator    = JetReCalibrator("GR_P_V42_AN4","AK5PF",    True)
                 self.jetReCalibratorCHS = JetReCalibrator("GR_P_V42_AN4","AK5PFchs", True)
         self.doPuId = self.cfg_ana.doPuId if hasattr(self.cfg_ana, 'doPuId') else True
+        self.shiftJEC = self.cfg_ana.shiftJEC if hasattr(self.cfg_ana, 'shiftJEC') else 0
 
     def declareHandles(self):
         super(ttHJetAnalyzer, self).declareHandles()
@@ -42,7 +53,7 @@ class ttHJetAnalyzer( Analyzer ):
             #print "\nCalibrating jets %s for lumi %d, event %d" % (self.cfg_ana.jetCol, event.lumi, event.eventId)
             rho  = float(self.handles['rho'].product()[0])
             corr = self.jetReCalibratorCHS if 'CHS' in self.cfg_ana.jetCol else self.jetReCalibrator
-            for j in allJets: corr.correct(j, rho)
+            for j in allJets: corr.correct(j, rho, delta=self.shiftJEC)
        
         ## If using a different collection for MVA, set it up 
         allJets4MVA = []
@@ -52,7 +63,7 @@ class ttHJetAnalyzer( Analyzer ):
                 #print "\nCalibrating jets %s for lumi %d, event %d" % (self.cfg_ana.jetCol4MVA, event.lumi, event.eventId)
                 rho  = float(self.handles['rho'].product()[0])
                 corr = self.jetReCalibratorCHS if 'CHS' in self.cfg_ana.jetCol4MVA else self.jetReCalibrator
-                for j in allJets4MVA: corr.correct(j, rho)
+                for j in allJets4MVA: corr.correct(j, rho, delta=self.shiftJEC)
         else:
             allJets4MVA = allJets[:]
 
@@ -68,9 +79,13 @@ class ttHJetAnalyzer( Analyzer ):
         
         ## Clean Jets from leptons
         leptons = event.selectedLeptons
-        event.cleanJets, dummy = cleanObjectCollection( event.jets,
-                                                        masks = leptons,
-                                                        deltaRMin = 0.5 )
+        #event.cleanJets, dummy = cleanObjectCollection( event.jets,
+        #                                                masks = leptons,
+        #                                                deltaRMin = 0.5 )
+        event.cleanJetsAll = cleanNearestJetOnly(event.jets, leptons, 0.5)
+        event.cleanJets    = [j for j in event.cleanJetsAll if abs(j.eta()) <  self.cfg_ana.jetEtaCentral ]
+        event.cleanJetsFwd = [j for j in event.cleanJetsAll if abs(j.eta()) >= self.cfg_ana.jetEtaCentral ]
+
         ## Associate jets to leptons
         jlpairs = matchObjectCollection( leptons, allJets4MVA, 0.5*0.5)
         for lep in leptons:
