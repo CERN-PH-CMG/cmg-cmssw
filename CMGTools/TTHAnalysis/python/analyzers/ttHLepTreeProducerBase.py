@@ -40,9 +40,13 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         ## --- JETS ---
         var( tr, 'nJet25', int)
         var( tr, 'nJet30', int)       
+        var( tr, 'nJet25Fwd', int)
+        var( tr, 'nJet30Fwd', int)       
         self.saveJetId = (self.cfg_ana.saveJetId if hasattr(self.cfg_ana,'saveJetId') else False)
         for i in range(8):
             bookJet(tr,"Jet%d"%(i+1), isMC, saveID=self.saveJetId)
+        for i in range(6):
+            bookJet(tr,"FwdJet%d"%(i+1), isMC, saveID=self.saveJetId)
         if hasattr(self.cfg_ana, 'doJetsFailId') and self.cfg_ana.doJetsFailId:
             for i in range(8):
                 bookJet(tr,"JetFailId%d"%(i+1), isMC, saveID=True)
@@ -55,16 +59,20 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'met_phi' )
         var( tr, 'metNoPU' )
         var( tr, 'metNoPU_phi' )
-        var( tr, 'metSignificance' )
-        var( tr, 'projMetAll1S' )
-        var( tr, 'projMetAll2S' )
-        var( tr, 'projMetJet1S' )
-        var( tr, 'projMetJet2S' )
+        #var( tr, 'metSignificance' )
+        #var( tr, 'projMetAll1S' )
+        #var( tr, 'projMetAll2S' )
+        #var( tr, 'projMetJet1S' )
+        #var( tr, 'projMetJet2S' )
         ## --- HT, MHT ---
         var( tr, 'htJet30' )
         var( tr, 'htJet25' )
         var( tr, 'mhtJet30' )
         var( tr, 'mhtJet25' )
+        #var( tr, 'htJet30A' )
+        var( tr, 'htJet25A' )
+        #var( tr, 'mhtJet30A' )
+        var( tr, 'mhtJet25A' )
         ## --- DILEPTON MASSES ---
         var( tr, 'mZ1' )
         var( tr, 'mZ1SFSS' )
@@ -85,8 +93,10 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'maxPtllAFSS' )
         var( tr, 'q3l', 'I' )
         var( tr, 'q4l', 'I' )
+        var( tr, 'm2l' )
         var( tr, 'm3l' )
         var( tr, 'm4l' )
+        var( tr, 'pt2l' )
         var( tr, 'pt3l' )
         var( tr, 'pt4l' )
         var( tr, 'ht3l' )
@@ -149,8 +159,12 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
             
         fill(tr, 'nJet25', len(event.cleanJets))      
         fill(tr, 'nJet30', sum([(j.pt() > 30) for j in event.cleanJets]))      
+        fill(tr, 'nJet25Fwd', len(event.cleanJetsFwd))      
+        fill(tr, 'nJet30Fwd', sum([(j.pt() > 30) for j in event.cleanJetsFwd]))      
         for i in range(min(8,len(event.cleanJets))):
             fillJet(tr, "Jet%d"%(i+1), event.cleanJets[i], saveID=self.saveJetId)        
+        for i in range(min(6,len(event.cleanJetsFwd))):
+            fillJet(tr, "FwdJet%d"%(i+1), event.cleanJetsFwd[i], saveID=self.saveJetId)        
 
         if hasattr(self.cfg_ana, 'doJetsFailId') and self.cfg_ana.doJetsFailId:
             event.jetsFailId.sort(key = lambda j : j.pt(), reverse = True)
@@ -167,17 +181,19 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill( tr, 'met_phi', event.met.phi() )
         fill( tr, 'metNoPU', event.metNoPU.pt() )
         fill( tr, 'metNoPU_phi', event.metNoPU.phi() )
-        fill( tr, 'metSignificance', event.metSignificance )
-        fill( tr, 'projMetAll1S', event.projMetAll1S )
-        fill( tr, 'projMetAll2S', event.projMetAll2S )
-        fill( tr, 'projMetJet1S', event.projMetJets1S )
-        fill( tr, 'projMetJet2S', event.projMetJets2S )
+        #fill( tr, 'metSignificance', event.metSignificance )
+        #fill( tr, 'projMetAll1S', event.projMetAll1S )
+        #fill( tr, 'projMetAll2S', event.projMetAll2S )
+        #fill( tr, 'projMetJet1S', event.projMetJets1S )
+        #fill( tr, 'projMetJet2S', event.projMetJets2S )
 
         ## --- MHT, HT ---
         fill( tr, 'htJet30', event.htJet30 )
         fill( tr, 'htJet25', event.htJet25 )
+        fill( tr, 'htJet25A', event.htJet25a )
         fill( tr, 'mhtJet30', event.mhtJet30 )
         fill( tr, 'mhtJet25', event.mhtJet25 )
+        fill( tr, 'mhtJet25A', event.mhtJet25a )
 
         ## --- DILEPTON MASSES ---
         fill( tr, 'mZ1', event.bestZ1[0] )
@@ -197,6 +213,8 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         fill( tr, 'minDrllAFSS', event.minDrllAFSS )
         fill( tr, 'maxDrllAFOS', event.maxDrllAFOS )
         fill( tr, 'maxDrllAFSS', event.maxDrllAFSS )
+        fill( tr, 'm2l', event.m2l )
+        fill( tr, 'pt2l', event.pt2l )
         fill( tr, 'm3l', event.m3l )
         fill( tr, 'q3l', event.q3l )
         fill( tr, 'ht3l', event.ht3l )
@@ -215,20 +233,16 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
 
         ## --- LEP EFFICIENCY WEIGHT ---
         if self.cfg_comp.isMC:
-            if len(event.selectedLeptons)>=4 :
-                fill( tr, 'Eff_4lep', event.selectedLeptons[0].eff * event.selectedLeptons[1].eff * event.selectedLeptons[2].eff * event.selectedLeptons[3].eff)
-                fill( tr, 'EffUp_4lep', event.selectedLeptons[0].effUp * event.selectedLeptons[1].effUp * event.selectedLeptons[2].effUp * event.selectedLeptons[3].effUp)
-                fill( tr, 'EffDwn_4lep', event.selectedLeptons[0].effDwn * event.selectedLeptons[1].effDwn * event.selectedLeptons[2].effDwn * event.selectedLeptons[3].effDwn)
-
-            if len(event.selectedLeptons)>=3 :
-                fill( tr, 'Eff_3lep', event.selectedLeptons[0].eff * event.selectedLeptons[1].eff * event.selectedLeptons[2].eff)
-                fill( tr, 'EffUp_3lep', event.selectedLeptons[0].effUp * event.selectedLeptons[1].effUp * event.selectedLeptons[2].effUp)
-                fill( tr, 'EffDwn_3lep', event.selectedLeptons[0].effDwn * event.selectedLeptons[1].effDwn * event.selectedLeptons[2].effDwn)
-
-            if len(event.selectedLeptons)>=2 :    
-                fill( tr, 'Eff_2lep', event.selectedLeptons[0].eff * event.selectedLeptons[1].eff)
-                fill( tr, 'EffUp_2lep', event.selectedLeptons[0].effUp * event.selectedLeptons[1].effUp)
-                fill( tr, 'EffDwn_2lep', event.selectedLeptons[0].effDwn * event.selectedLeptons[1].effDwn)
+            ### changed: now if there are less than <n> leptons, Eff_<n>lep is the product of the efficiency corrections for the available leptons 
+            eff, effUp, effDwn = [1.],[1.],[1.]
+            for l in event.selectedLeptons:
+                eff.append(eff[-1]*l.eff)
+                effUp.append(effUp[-1]*l.effUp)
+                effDwn.append(effDwn[-1]*l.effDwn)
+            for i in 2,3,4:
+                fill( tr, 'Eff_%dlep'%i,      eff[min(i,len(eff)-1)])
+                fill( tr, 'EffUp_%dlep'%i,  effUp[min(i,len(eff)-1)])
+                fill( tr, 'EffDwn_%dlep'%i, effUp[min(i,len(eff)-1)])
 
         if self.cfg_comp.isMC: 
             fill( tr, 'puWeight', event.eventWeight )
@@ -257,7 +271,10 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
         var( tr, 'nGoodLepsMatchId',  int) 
         var( tr, 'nGoodLepsMatchAny', int) 
 
-
+        var( tr, 'nGenJets25', int)
+        var( tr, 'nGenJets25Cen', int)
+        var( tr, 'nGenJets25Fwd', int)
+        
         self.pdfWeights = []
         if hasattr(self.cfg_ana, "PDFWeights") and len(self.cfg_ana.PDFWeights) > 0:
             self.pdfWeights = self.cfg_ana.PDFWeights
@@ -291,7 +308,10 @@ class ttHLepTreeProducerBase( TreeAnalyzerNumpy ):
 
         fill( tr, 'nGoodLepsMatchId',  sum([x.mcMatchId  > 0 for x in event.selectedLeptons]) )
         fill( tr, 'nGoodLepsMatchAny', sum([x.mcMatchAny > 0 for x in event.selectedLeptons]) )
-   
+
+        fill( tr, 'nGenJets25', event.nGenJets25)
+        fill( tr, 'nGenJets25Cen', event.nGenJets25Cen)
+        fill( tr, 'nGenJets25Fwd', event.nGenJets25Fwd)
          
         for (pdf,nvals) in self.pdfWeights:
             if len(event.pdfWeights[pdf]) != nvals:
