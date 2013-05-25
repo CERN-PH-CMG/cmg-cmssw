@@ -45,11 +45,11 @@ class ttHLepEventAnalyzer( Analyzer ):
                 l2 = event.selectedLeptons[j]    
                 if l1.pdgId() == -l2.pdgId():
                     zmass = (l1.p4() + l2.p4()).M()
-                    if abs(zmass - 91.188) < abs(event.bestZ1[0] - 91.188):
+                    if event.bestZ1[0] == 0 or abs(zmass - 91.188) < abs(event.bestZ1[0] - 91.188):
                         event.bestZ1 = [ zmass, i, j ]
                 if l1.pdgId() == l2.pdgId():
                     zmass = (l1.p4() + l2.p4()).M()
-                    if abs(zmass - 91.188) < abs(event.bestZ1sfss[0] - 91.188):
+                    if event.bestZ1sfss[0] == 0 or abs(zmass - 91.188) < abs(event.bestZ1sfss[0] - 91.188):
                         event.bestZ1sfss = [ zmass, i, j ]
         if event.bestZ1[0] != 0 and nlep > 3:
             for i,l1 in enumerate(event.selectedLeptons):
@@ -86,6 +86,8 @@ class ttHLepEventAnalyzer( Analyzer ):
         event.maxPtllAFOS = max(ptllafos)
         event.maxPtllAFSS = max(ptllafss)
         leps = event.selectedLeptons; nlep = len(leps)
+        event.m2l = (leps[0].p4() + leps[1].p4()).M() if nlep >= 2 else 0
+        event.pt2l = (leps[0].p4() + leps[1].p4()).Pt() if nlep >= 2 else 0
         event.q3l = sum([l.charge() for l in leps[:2]]) if nlep >= 3 else 0
         event.ht3l = sum([l.pt() for l in leps[:2]]) if nlep >= 3 else 0
         event.pt3l = (leps[0].p4() + leps[1].p4() + leps[2].p4()).Pt() if nlep >= 3 else 0
@@ -210,6 +212,13 @@ class ttHLepEventAnalyzer( Analyzer ):
         event.mhtJet25 = hypot(sum([x.px() for x in objects25]), sum([x.py() for x in objects25]))
         event.htJet30 = sum([x.pt() for x in objects30])
         event.mhtJet30 = hypot(sum([x.px() for x in objects30]), sum([x.py() for x in objects30]))
+        ## same but with all eta range
+        objects25a = [ j for j in event.cleanJetsAll if j.pt() > 25 ] + event.selectedLeptons
+        objects30a = [ j for j in event.cleanJetsAll if j.pt() > 30 ] + event.selectedLeptons
+        event.htJet25a = sum([x.pt() for x in objects25a])
+        event.mhtJet25a = hypot(sum([x.px() for x in objects25a]), sum([x.py() for x in objects25a]))
+        event.htJet30a = sum([x.pt() for x in objects30a])
+        event.mhtJet30a = hypot(sum([x.px() for x in objects30a]), sum([x.py() for x in objects30a]))
 
         self.makeMETs(event);
         self.makeZs(event, self.maxLeps)
