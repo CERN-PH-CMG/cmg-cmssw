@@ -84,7 +84,7 @@ class BaseDumper(Module):
             if self.options.ismc:
                 print "   mcMatch %+3d" % (l.mcMatchId if l.mcMatchId > 0 else -l.mcMatchAny),
             if abs(l.pdgId) == 11:
-                print "   mvaId %5.3f misHit %d conVeto %d tightCh %d mvaIdTrig %5.3f relIso03 %5.3f" % (l.mvaId, l.innerHits, l.convVeto, l.tightCharge, l.tightId, l.relIso03/l.pt)
+                print "   mvaId %5.3f misHit %d conVeto %d tightCh %d mvaIdTrig %5.3f relIso03 %5.3f  pf pt %.1f" % (l.mvaId, l.innerHits, l.convVeto, l.tightCharge, l.tightId, l.relIso03/(l.pfpt if l.pfpt else l.pt), l.pfpt)
             else:
                 print "   tightId %d tkHit %2d tightCh %d" % (l.tightId, l.innerHits, l.tightCharge)
         for i,j in enumerate(self.jetsPtSorted):
