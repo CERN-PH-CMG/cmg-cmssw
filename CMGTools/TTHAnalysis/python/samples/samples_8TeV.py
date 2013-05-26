@@ -337,23 +337,24 @@ dataSamples1Mu=[SingleMuAB,SingleMuC,SingleMuD,SingleMuRec]
 ####################################################################################################################
 #-----------PRIVATE FAST SIM---------------
 
-madFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-madgraph-2013-05-07.txt" % os.environ['CMSSW_BASE'], "r") ]
+madFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-madgraph.txt" % os.environ['CMSSW_BASE'], "r") ]
 pythiaFiles = [ f.strip() for f in open("%s/src/CMGTools/TTHAnalysis/python/samples/fastSim-pythia-2013-05-02.txt" % os.environ['CMSSW_BASE'], "r") ]
 def _grep(x,l): return [ i for i in l if x in i ]
 
-FastSim_TTZJets    = kreator.makePrivateMCComponent('FastSim_TTZJets',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttZ_01jets_nominal',   _grep('ttZ_01jets_nominal',   madFiles) )
-FastSim_TTZJets_Up = kreator.makePrivateMCComponent('FastSim_TTZJets_scaleUp',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttZ_01jets_scaleUp',   _grep('ttZ_01jets_scaleUp',   madFiles) )
-FastSim_TTZJets_Dn = kreator.makePrivateMCComponent('FastSim_TTZJets_scaleDown',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttZ_01jets_scaleDown', _grep('ttZ_01jets_scaleDown', madFiles) )
-FastSim_TTZJets_MUp = kreator.makePrivateMCComponent('FastSim_TTZJets_xqtUp',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttZ_01jets_xqtUp',   _grep('ttZ_01jets_xqtUp',   madFiles) )
-FastSim_TTZJets_MDn = kreator.makePrivateMCComponent('FastSim_TTZJets_xqtDown',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttZ_01jets_xqtDown', _grep('ttZ_01jets_xqtDown', madFiles) )
-FastSim_TTWJets = kreator.makePrivateMCComponent('FastSim_TTWJets_nominal',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttW_012jets_nominal',   _grep('ttW_012jets_nominal',   madFiles) )
-FastSim_TTWJets_Up = kreator.makePrivateMCComponent('FastSim_TTWJets_scaleUp',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttW_012jets_scaleUp',   _grep('ttW_012jets_scaleUp',   madFiles) )
-FastSim_TTWJets_Dn = kreator.makePrivateMCComponent('FastSim_TTWJets_scaleDown',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttW_012jets_scaleDown', _grep('ttW_012jets_scaleDown', madFiles) )
-FastSim_TTWJets_MUp = kreator.makePrivateMCComponent('FastSim_TTWJets_xqtUp',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttW_012jets_xqtUp',   _grep('ttW_012jets_xqtUp',   madFiles) )
-FastSim_TTWJets_MDn = kreator.makePrivateMCComponent('FastSim_TTWJets_xqtDown',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttW_012jets_xqtDown', _grep('ttW_012jets_xqtDown', madFiles) )
-FastSim_TTHJets    = kreator.makePrivateMCComponent('FastSim_TTHJets_nominal',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_nominal',   _grep('ttH_012jets_nominal',   madFiles) )
-FastSim_TTHJets_Up = kreator.makePrivateMCComponent('FastSim_TTHJets_scaleUp',    '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleUp',   _grep('ttH_012jets_scaleUp',   madFiles) )
-FastSim_TTHJets_Dn = kreator.makePrivateMCComponent('FastSim_TTHJets_scaleDown',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_012jets_scaleDown', madFiles) )
+madgraphDate = "2013-05-23"
+FastSim_TTZJets    = kreator.makePrivateMCComponent('FastSim_TTZJets',    '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttZ_01jets_nominal',   _grep('ttZ_01jets_nominal',   madFiles) )
+FastSim_TTZJets_Up = kreator.makePrivateMCComponent('FastSim_TTZJets_scaleUp',    '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttZ_01jets_scaleUp',   _grep('ttZ_01jets_scaleUp',   madFiles) )
+FastSim_TTZJets_Dn = kreator.makePrivateMCComponent('FastSim_TTZJets_scaleDown',  '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttZ_01jets_scaleDown', _grep('ttZ_01jets_scaleDown', madFiles) )
+FastSim_TTZJets_MUp = kreator.makePrivateMCComponent('FastSim_TTZJets_xqtUp',    '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttZ_01jets_xqtUp',   _grep('ttZ_01jets_xqtUp',   madFiles) )
+FastSim_TTZJets_MDn = kreator.makePrivateMCComponent('FastSim_TTZJets_xqtDown',  '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttZ_01jets_xqtDown', _grep('ttZ_01jets_xqtDown', madFiles) )
+FastSim_TTWJets = kreator.makePrivateMCComponent('FastSim_TTWJets',    '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttW_012jets_nominal',   _grep('ttW_012jets_nominal',   madFiles) )
+FastSim_TTWJets_Up = kreator.makePrivateMCComponent('FastSim_TTWJets_scaleUp',    '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttW_012jets_scaleUp',   _grep('ttW_012jets_scaleUp',   madFiles) )
+FastSim_TTWJets_Dn = kreator.makePrivateMCComponent('FastSim_TTWJets_scaleDown',  '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttW_012jets_scaleDown', _grep('ttW_012jets_scaleDown', madFiles) )
+FastSim_TTWJets_MUp = kreator.makePrivateMCComponent('FastSim_TTWJets_xqtUp',    '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttW_012jets_xqtUp',   _grep('ttW_012jets_xqtUp',   madFiles) )
+FastSim_TTWJets_MDn = kreator.makePrivateMCComponent('FastSim_TTWJets_xqtDown',  '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttW_012jets_xqtDown', _grep('ttW_012jets_xqtDown', madFiles) )
+FastSim_TTHJets    = kreator.makePrivateMCComponent('FastSim_TTHJets',    '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttH_012jets_nominal',   _grep('ttH_012jets_nominal',   madFiles) )
+FastSim_TTHJets_Up = kreator.makePrivateMCComponent('FastSim_TTHJets_scaleUp',    '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttH_012jets_scaleUp',   _grep('ttH_012jets_scaleUp',   madFiles) )
+FastSim_TTHJets_Dn = kreator.makePrivateMCComponent('FastSim_TTHJets_scaleDown',  '/store/caf/user/gpetrucc/ttH/gen/'+madgraphDate+'/ttH_012jets_scaleDown', _grep('ttH_012jets_scaleDown', madFiles) )
 
 FastSim_TTHJets_tuneZ2 = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneZ2',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_Z2-', pythiaFiles) )
 FastSim_TTHJets_tuneZ2Star = kreator.makePrivateMCComponent('FastSim_TTHJets_tuneZ2Star',  '/store/caf/user/gpetrucc/ttH/gen/2013-05-07/ttH_012jets_scaleDown', _grep('ttH_pythia_Z2Star-', pythiaFiles) )
