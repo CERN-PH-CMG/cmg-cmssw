@@ -39,12 +39,8 @@ process.skim=cms.EDFilter('HZZCMGSkim',
 
 
 
-process.tunepMuons = cms.EDProducer('TunePPatMuonEmbedder',
-                                    src = cms.InputTag('patMuonsWithTrigger')
-)                                    
-
 process.correctedMuons = cms.EDProducer('RochesterPATMuonCorrector',
-             src = cms.InputTag("tunepMuons"))
+             src = cms.InputTag("patMuonsWithTrigger"))
 
 process.cleanedMuons = cms.EDProducer('PATMuonCleanerBySegments',
              src = cms.InputTag("correctedMuons"),

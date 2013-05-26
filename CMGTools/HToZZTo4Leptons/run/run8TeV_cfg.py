@@ -180,12 +180,12 @@ sequence = cfg.Sequence(dataSequence)
 selectedComponents=[VH126,ggH126,qqH126]
     
 
-test =0 
+test =1 
 if test==1:
     dataset = VH126
     selectedComponents = [dataset]
     dataset.splitFactor = 1
-#    dataset.files=['cmgTuple.root']
+    dataset.files=['skim.root']
 
 
    
