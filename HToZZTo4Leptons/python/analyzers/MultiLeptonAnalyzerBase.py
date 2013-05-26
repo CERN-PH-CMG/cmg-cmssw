@@ -336,7 +336,8 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         '''Returns True if a muon passes a set of cuts.
         Can be used in testLepton1 and testLepton2, in child classes.'''
 
-        iso  = muon.absEffAreaIso(self.rhoMu,self.cfg_ana.effectiveAreas)/muon.pt()<0.4 #warning:you need to set the self.rho !!!
+#        iso  = muon.absEffAreaIso(self.rhoMu,self.cfg_ana.effectiveAreas)/muon.pt()<0.4 #warning:you need to set the self.rho !!!
+        iso  = muon.absIso(0.5,0.0)/muon.pt()<0.4 #warning:you need to set the self.rho !!!
         return self.testMuonLoose(muon) and self.testMuonPF(muon) and iso
 
     def testMuonGood(self, muon):

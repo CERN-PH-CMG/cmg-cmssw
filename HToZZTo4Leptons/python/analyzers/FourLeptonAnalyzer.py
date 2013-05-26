@@ -3,9 +3,9 @@
 
 
 ##USE THIS TO RUN THE BASELINE
-#from FourLeptonAnalyzerBaseline import FourLeptonAnalyzerBaseline as FourLeptonAnalyzer
+from FourLeptonAnalyzerBaseline import FourLeptonAnalyzerBaseline as FourLeptonAnalyzer
 ##USE THIS TO RUN CMG
-from FourLeptonAnalyzerCMG import FourLeptonAnalyzerCMG as FourLeptonAnalyzer
+#from FourLeptonAnalyzerCMG import FourLeptonAnalyzerCMG as FourLeptonAnalyzer
 
 
 
