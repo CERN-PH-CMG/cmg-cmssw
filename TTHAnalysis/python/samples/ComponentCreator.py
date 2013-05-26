@@ -20,6 +20,8 @@ class ComponentCreator(object):
          return component
 
     def makePrivateMCComponent(self,name,dataset,files):
+         if len(files) == 0:
+            raise RuntimeError, "Trying to make a component %s with no files" % name
          # prefix filenames with dataset unless they start with "/"
          dprefix = dataset +"/" if files[0][0] != "/" else ""
          component = cfg.MCComponent(
