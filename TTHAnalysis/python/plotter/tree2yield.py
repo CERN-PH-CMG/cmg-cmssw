@@ -166,6 +166,7 @@ class TreeToYield:
     def _init(self):
         if "root://" in self._fname:
             ROOT.gEnv.SetValue("TFile.AsyncReading", 1);
+            ROOT.gEnv.SetValue("XNet.Debug", -1); # suppress output about opening connections
             #self._tfile = ROOT.TFile.Open(self._fname+"?readaheadsz=200000") # worse than 65k
             #self._tfile = ROOT.TFile.Open(self._fname+"?readaheadsz=32768") # worse than 65k
             self._tfile = ROOT.TFile.Open(self._fname+"?readaheadsz=65535") # good
