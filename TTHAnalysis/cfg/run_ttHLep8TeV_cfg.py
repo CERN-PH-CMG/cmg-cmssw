@@ -89,9 +89,11 @@ ttHJetAna = cfg.Analyzer(
     jetCol4MVA = 'cmgPFJetSel',
     jetPt = 25.,
     jetEta = 4.7,
+    jetEtaCentral = 2.4,
     relaxJetId = False,  
     doPuId = True,
-    recalibrateJets = True
+    recalibrateJets = True,
+    shiftJEC = 0, # set to +1 or -1 to get +/-1 sigma shifts
     )
 
 ## MET Analyzer
@@ -102,7 +104,8 @@ ttHJetAna = cfg.Analyzer(
 # Jet MC Match Analyzer
 ttHJetMCAna = cfg.Analyzer(
     'ttHJetMCMatchAnalyzer',
-    smearJets = True
+    smearJets = True,
+    shiftJER = 0, # set to +1 or -1 to get +/-1 sigma shifts
     )
 
 # Event Analyzer
@@ -187,6 +190,7 @@ sequence = cfg.Sequence([
 
 # selectedComponents = [ FastSim_TTWJets, FastSim_TTWJets_MUp, FastSim_TTWJets_MDn ]
 # set test = 0 to run all jobs, in case you are using pybatch.py
+#selectedComponents = mcSamples_1+dataSamplesE+dataSamplesMu+dataSamplesMuE+mcSamples_2
 
 test = 1
 if test==1:
@@ -219,13 +223,14 @@ elif test==3:
 elif test==4:
     # MC sync sample
     comp = TTH
-    comp.files = [ 'file:/data/gpetrucc/8TeV/ttH/cmgTuple_full.TTH_Inclusive_M-125_8TeV_pythia6_PU_S10_START53_V7A-v1_F8454517-F509-E211-BAB4-003048D47792.root' ]
+    comp.files = [ 'root://pcmssd12//data/gpetrucc/8TeV/ttH/cmgTuple_full.TTH_Inclusive_M-125_8TeV_pythia6_PU_S10_START53_V7A-v1_F8454517-F509-E211-BAB4-003048D47792.root' ]
     selectedComponents = [comp]
     comp.splitFactor = 1
     comp.triggers = [t for t in triggersMC_mue if "Ele15_Ele8_Ele5" not in t ]
     ttHLepAna.doRochesterCorrections = False
     ttHLepAna.doElectronScaleCorrections = False
-    treeProducer.doJetsFailId = True
+    ttHLepAna.minGoodLeptons = 0
+    #treeProducer.doJetsFailId = True
     #ttHJetAna.jetCol = 'cmgPFJetSel'
     
 
