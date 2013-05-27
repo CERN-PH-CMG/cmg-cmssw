@@ -204,15 +204,20 @@ namespace pat
         float tau2() const { return getTau(2); }
         float tau3() const { return getTau(3); }
 
-        float getGenTau(int num, double minPt=0) const;
+        float getGenTau(int num, double minPt=0, bool CHS=false) const;
         float genTau1() const { return getGenTau(1); }
         float genTau2() const { return getGenTau(2); }
         float genTau3() const { return getGenTau(3); }
-        float genTau1Pt05() const { return getGenTau(1,0.5); }
-        float genTau2Pt05() const { return getGenTau(2,0.5); }
+        float genTau1Pt2() const { return getGenTau(1,2.0); }
+        float genTau2Pt2() const { return getGenTau(2,2.0); }
+        float genTau1Pt5() const { return getGenTau(1,5.0); }
+        float genTau2Pt5() const { return getGenTau(2,5.0); }
+        float genTau1CHS() const { return getGenTau(1,0,true); }
+        float genTau2CHS() const { return getGenTau(2,0,true); }
 
         int getNcharged(double relPt=0) const;
         int getNneutral(double relPt=0) const;
+        int genNCHS() const;
 
         int getNcharged01() const { return getNcharged(0.1); }
         int getNneutral01() const { return getNneutral(0.1); }
@@ -231,7 +236,7 @@ namespace pat
         float getPt3() const { return getPt(3); }
 	
         float getJetCharge(float kappa) const;
-        float getGenJetCharge(float kappa) const;
+        float getGenJetCharge(float kappa, bool CHS=false) const;
         float getDaughter_0_jetCharge(float kappa) const;
         float getDaughter_1_jetCharge(float kappa) const;
 
@@ -240,10 +245,11 @@ namespace pat
         float C2beta17() const { return getC2beta(1.7); };
         float C2beta20() const { return getC2beta(2.0); };
 
-        float getGenC2beta(float beta) const;
+        float getGenC2beta(float beta, bool CHS=false) const;
         float genC2beta15() const { return getGenC2beta(1.5); };
         float genC2beta17() const { return getGenC2beta(1.7); };
         float genC2beta20() const { return getGenC2beta(2.0); };
+        float genC2beta17CHS() const { return getGenC2beta(1.7,true); };
 
         float jetCharge03() const { return getJetCharge(0.3); };
         float jetCharge05() const { return getJetCharge(0.5); };

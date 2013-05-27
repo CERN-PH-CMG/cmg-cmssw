@@ -100,6 +100,21 @@ int JetHelper::getNneutral(double relPt) const
     return n; 
 }
 
+int JetHelper::genNCHS() const
+{
+    int n=0;
+    double vertexZ=-1000;
+    vector<const reco::GenParticle*> all_particles;
+    for (unsigned j = 0; j < object->numberOfDaughters(); j++){
+       reco::GenParticle const *p = dynamic_cast <const reco::GenParticle *>(object->daughter(j));
+       if(vertexZ==-1000)
+           vertexZ=p->vz();
+       if((abs(p->vz()-vertexZ)<0.1)||(p->charge()==0))
+            n++;
+    }
+    return n; 
+}
+
 float JetHelper::getTau(int num) const
 {
     vector<const reco::PFCandidate*> all_particles;
@@ -125,12 +140,16 @@ float JetHelper::getTau(int num) const
     return routine.getTau(num, FJparticles); 
 }
 
-float JetHelper::getGenTau(int num, double minPt) const
+float JetHelper::getGenTau(int num, double minPt, bool CHS) const
 {
+    double vertexZ=-1000;
     vector<const reco::GenParticle*> all_particles;
     for (unsigned j = 0; j < object->numberOfDaughters(); j++){
-       reco::GenParticle const *genJet = dynamic_cast <const reco::GenParticle *>(object->daughter(j));
-       all_particles.push_back( genJet );    
+       reco::GenParticle const *p = dynamic_cast <const reco::GenParticle *>(object->daughter(j));
+       if(vertexZ==-1000)
+           vertexZ=p->vz();
+       if((abs(p->vz()-vertexZ)<0.1)||(p->charge()==0)||(!CHS))
+           all_particles.push_back( p );    
     }
     vector<fastjet::PseudoJet> FJparticles;
     for (unsigned particle = 0; particle < all_particles.size(); particle++){
@@ -172,12 +191,16 @@ float JetHelper::getC2beta(float beta) const
     return C2beta(incluisve_jets[0]);
 }
 
-float JetHelper::getGenC2beta(float beta) const
+float JetHelper::getGenC2beta(float beta, bool CHS) const
 {
+    double vertexZ=-1000;
     vector<const reco::GenParticle*> all_particles;
     for (unsigned j = 0; j < object->numberOfDaughters(); j++){
-       reco::GenParticle const *genJet = dynamic_cast <const reco::GenParticle *>(object->daughter(j));
-       all_particles.push_back( genJet );    
+       reco::GenParticle const *p = dynamic_cast <const reco::GenParticle *>(object->daughter(j));
+       if(vertexZ==-1000)
+           vertexZ=p->vz();
+       if((abs(p->vz()-vertexZ)<0.1)||(p->charge()==0)||(!CHS))
+           all_particles.push_back( p );    
     }
     vector<fastjet::PseudoJet> FJparticles;
     for (unsigned particle = 0; particle < all_particles.size(); particle++){
@@ -217,13 +240,17 @@ float JetHelper::getJetCharge(float kappa) const
 }
 
 
-float JetHelper::getGenJetCharge(float kappa) const
+float JetHelper::getGenJetCharge(float kappa, bool CHS) const
 {
+    double vertexZ=-1000;
     float val=0;
     vector<const reco::GenParticle*> all_particles;
     for (unsigned j = 0; j < object->numberOfDaughters(); j++){
        reco::GenParticle const *p = dynamic_cast <const reco::GenParticle *>(object->daughter(j));
-       val += p->charge()*pow(p->pt(),kappa);
+       if(vertexZ==-1000)
+           vertexZ=p->vz();
+       if((abs(p->vz()-vertexZ)<0.1)||(p->charge()==0)||(!CHS))
+           val += p->charge()*pow(p->pt(),kappa);
     }
     return val/object->pt(); 
 }
