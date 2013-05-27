@@ -67,10 +67,13 @@ float JetHelper::getPt(unsigned int num) const
 
 float JetHelper::getChargedPt(unsigned int num) const
 {
-    if(object->getPFConstituents().size()>num)
+    unsigned int counter=-1;
+    for (unsigned k =0; k < object->getPFConstituents().size(); k++)
     {
-        const reco::PFCandidate *thisParticle = object->getPFConstituent(num).get();
+        const reco::PFCandidate *thisParticle = object->getPFConstituent(k).get();
         if(thisParticle->charge()!=0)
+	    counter++;
+	if(num==counter)
             return thisParticle->pt();
     }
     return 0;
