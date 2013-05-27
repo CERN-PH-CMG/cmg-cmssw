@@ -24,7 +24,7 @@ TGaxis.SetMaxDigits(3)
 
 if __name__ == '__main__':
 
- runSet=2
+ runSet=6
 
  if runSet==1:
   samples = ["substructure_pas_QCD1000.root",
@@ -33,6 +33,7 @@ if __name__ == '__main__':
   colors=[1,1,1,2,2,2]
   styles=[2,3,1,2,3,1]
   widths=[2,1,2,2,1,2]
+  sets=["Gen","lowPU",""]
 
   plots = [("nPU","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","pileup interactions"),
            ("Jet1pt","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet p_{T} (GeV)"),
@@ -49,6 +50,10 @@ if __name__ == '__main__':
            ("Jet1jetCharge10","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet charge (#kappa=1.0)", ),
            ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(Jet1pt>500)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.3)", ),
            ("Jet1nConstituents","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet constituents", ),
+           ("Jet1Ncharged01","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","charged particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1Nneutral01","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","neutral particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1ChargedPt2","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","3rd charged particle p_{T}", ),
+           ("Jet1Pt2","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","3rd particle p_{T}", ),
            ]
 
  if runSet==2:
@@ -60,6 +65,7 @@ if __name__ == '__main__':
   styles=[1,1,1]
   widths=[2,2,2]
   ndata=15000
+  sets=[""]
 
   plots = [("nPU","((abs(Jet1eta)<2.5)&&(Jet1pt>1000))","pileup interactions"),
            ("Jet1pt","((abs(Jet1eta)<2.5)&&(Jet1pt>1000))","jet p_{T} (GeV)"),
@@ -74,8 +80,12 @@ if __name__ == '__main__':
            ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(Jet1pt>1000))","jet charge (#kappa=0.3)", ),
            ("Jet1jetCharge05","((abs(Jet1eta)<2.5)&&(Jet1pt>1000))","jet charge (#kappa=0.5)", ),
            ("Jet1jetCharge10","((abs(Jet1eta)<2.5)&&(Jet1pt>1000))","jet charge (#kappa=1.0)", ),
-           ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(Jet1pt>500)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.3)", ),
+           ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(Jet1pt>1000)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.3)", ),
            ("Jet1nConstituents","((abs(Jet1eta)<2.5)&&(Jet1pt>1000))","jet constituents", ),
+           ("Jet1Ncharged01","((abs(Jet1eta)<2.5)&&(Jet1pt>1000))","charged particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1Nneutral01","((abs(Jet1eta)<2.5)&&(Jet1pt>1000))","neutral particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1ChargedPt2","((abs(Jet1eta)<2.5)&&(Jet1pt>1000))","3rd charged particle p_{T}", ),
+           ("Jet1Pt2","((abs(Jet1eta)<2.5)&&(Jet1pt>1000))","3rd particle p_{T}", ),
            ]
 
  if runSet==3:
@@ -87,6 +97,7 @@ if __name__ == '__main__':
   colors=[1,1,2,2]
   styles=[2,1,2,1]
   widths=[1,2,1,2]
+  sets=[""]
 
   plots = [("nPU","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","pileup interactions"),
            ("Jet1pt","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet p_{T} (GeV)"),
@@ -103,6 +114,42 @@ if __name__ == '__main__':
            ("Jet1jetCharge10","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet charge (#kappa=1.0)", ),
            ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(Jet1pt>500)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.3)", ),
            ("Jet1nConstituents","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet constituents", ),
+           ("Jet1Ncharged01","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","charged particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1Nneutral01","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","neutral particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1ChargedPt2","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","3rd charged particle p_{T}", ),
+           ("Jet1Pt2","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","3rd particle p_{T}", ),
+           ]
+
+ if runSet==4:
+  samples = ["substructure_pas_QCD1000.root",
+             "substructure_pas_QCD1000.root",
+             "substructure_pas_WWPy61000.root",
+             "substructure_pas_WWPy61000.root",
+             ]
+  colors=[1,1,2,2]
+  styles=[2,1,2,1]
+  widths=[1,2,1,2]
+  sets=[""]
+
+  plots = [("nPU","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","pileup interactions"),
+           ("Jet1pt","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet p_{T} (GeV)"),
+           ("Jet1Mass","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","pruned jet mass (GeV)"),
+           ("Jet1MassDrop","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","mass drop"),
+           ("Jet1MassDrop","((abs(Jet1eta)<2.5)&&(Jet1pt>500)&&(Jet1Mass>70)&&(Jet1Mass<100))","mass drop"),
+           ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","#tau_{2}/#tau_{1}", ),
+           ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(Jet1pt>500)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
+           ("Jet1C2beta15","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","C_{2} (#beta=1.5)", ),
+           ("Jet1C2beta17","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","C_{2} (#beta=1.7)", ),
+           ("Jet1C2beta20","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","C_{2} (#beta=2.0)", ),
+           ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet charge (#kappa=0.3)", ),
+           ("Jet1jetCharge05","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet charge (#kappa=0.5)", ),
+           ("Jet1jetCharge10","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet charge (#kappa=1.0)", ),
+           ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(Jet1pt>500)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.3)", ),
+           ("Jet1nConstituents","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet constituents", ),
+           ("Jet1Ncharged01","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","charged particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1Nneutral01","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","neutral particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1ChargedPt2","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","3rd charged particle p_{T}", ),
+           ("Jet1Pt2","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","3rd particle p_{T}", ),
            ]
 
  names = ["npu",
@@ -120,6 +167,45 @@ if __name__ == '__main__':
 	   "jetcharge10",
 	   "jetcharge03_aftermass",
 	   "nconstituents",
+	   "ncharged01",
+	   "nneutral01",
+	   "chargedpt2",
+	   "pt2",
+	   ]
+
+ if runSet==5:
+  samples = ["substructure_pas_QCD1000.root",
+             "substructure_pas_WWPy61000.root",
+            ]
+  colors=[1,1,1,2,2,2]
+  styles=[2,3,1,2,3,1]
+  widths=[2,1,2,2,1,2]
+  sets=["Gen","GenPt2",""]
+
+  plots = [("Jet1Nsub","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","#tau_{2}/#tau_{1}", ),
+           ]
+
+  names = ["tau21",
+	   ]
+
+ if runSet==6:
+  samples = ["substructure_pas_WWPy61000.root",
+             "substructure_pas_WWPy61000_12PU.root",
+             "substructure_pas_WWPy61000_22PU.root",
+             "substructure_pas_WWPy61000.root",
+             ]
+  colors=[1,2,2,4,4,2,4]
+  styles=[1,2,3,2,3,1,1]
+  widths=[2,2,2,2,2,1,1]
+  sets=["Gen","GenCHS","lowPU",""]
+
+  plots = [("Jet1Nsub","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","#tau_{2}/#tau_{1}", ),
+           ("Jet1C2beta17","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","C_{2} (#beta=1.7)", ),
+           ("Jet1nConstituents","((abs(Jet1eta)<2.5)&&(Jet1pt>500))","jet constituents", ),
+           ]
+
+  names = ["tau21",
+	   "nconstituents",
 	   ]
 
  hists=[]
@@ -136,12 +222,19 @@ if __name__ == '__main__':
   dataPlotted=False
   counter=0
   integral=1
+  s=0
   for sample in samples:
-   for gen in ["Gen","lowPU",""]:
+   s+=1
+   for gen in sets:
     if names[plots.index(plot)]=="npu" and gen=="Gen":
        continue
-    if runSet>1 and gen!="":
+    if runSet==6 and not gen=="Gen" and s==1:
        continue
+    if runSet==6 and not "Gen" in gen and (s==2 or s==3):
+       continue
+    if runSet==6 and "Gen" in gen and s==4:
+       continue
+    print sample, gen
     signal = "Hpp" in sample or "Py6" in sample
     f=TFile.Open(sample)
     tree=f.Get("dijetWtag")
@@ -162,6 +255,18 @@ if __name__ == '__main__':
        hist.GetYaxis().SetRangeUser(0,50000)
     if plot[2]=="jet constituents":
        hist=TH1F("plot"+names[plots.index(plot)]+gen,"plot"+names[plots.index(plot)]+gen,25,0,200);
+       hist.GetYaxis().SetRangeUser(0,50000)
+    if plot[2]=="charged particles (p_{T}^{rel}>0.1)":
+       hist=TH1F("plot"+names[plots.index(plot)]+gen,"plot"+names[plots.index(plot)]+gen,25,0,25);
+       hist.GetYaxis().SetRangeUser(0,50000)
+    if plot[2]=="neutral particles (p_{T}^{rel}>0.1)":
+       hist=TH1F("plot"+names[plots.index(plot)]+gen,"plot"+names[plots.index(plot)]+gen,25,0,25);
+       hist.GetYaxis().SetRangeUser(0,50000)
+    if plot[2]=="3rd charged particle p_{T}":
+       hist=TH1F("plot"+names[plots.index(plot)]+gen,"plot"+names[plots.index(plot)]+gen,25,0,250);
+       hist.GetYaxis().SetRangeUser(0,50000)
+    if plot[2]=="3rd particle p_{T}":
+       hist=TH1F("plot"+names[plots.index(plot)]+gen,"plot"+names[plots.index(plot)]+gen,25,0,250);
        hist.GetYaxis().SetRangeUser(0,50000)
     if "jet p_{T}" in plot[2]:
        if runSet==3:
@@ -191,9 +296,21 @@ if __name__ == '__main__':
     elif runSet==3 and (counter==1 or counter==3):
         print plot[0],plot[1]+"&&(Jet1pt>1500)"
         tree.Project("plot"+names[plots.index(plot)]+gen,plot[0],plot[1]+"&&(Jet1pt>1500)")
+    elif runSet==4 and (counter==1 or counter==3):
+        print plot[0],plot[1]+"&&(abs(Jet1eta)<1.0)"
+        tree.Project("plot"+names[plots.index(plot)]+gen,plot[0],plot[1]+"&&(abs(Jet1eta)<1.0)")
+    elif gen=="GenPt2":
+        print gen+plot[0],plot[1]
+        tree.Project("plot"+names[plots.index(plot)]+gen,"Gen"+plot[0]+"Pt2",plot[1].replace("Jet",gen+"Jet"))
+    elif gen=="GenCHS" and plot[0]=="Jet1nConstituents":
+        print gen+plot[0],plot[1]
+        tree.Project("plot"+names[plots.index(plot)]+gen,"GenJet1NCHS",plot[1].replace("Jet","GenJet"))
+    elif gen=="GenCHS":
+        print gen+plot[0],plot[1]
+        tree.Project("plot"+names[plots.index(plot)]+gen,"Gen"+plot[0]+"CHS",plot[1].replace("Jet","GenJet"))
     else:
         print gen+plot[0],plot[1]
-        tree.Project("plot"+names[plots.index(plot)]+gen,gen+plot[0],plot[1])
+        tree.Project("plot"+names[plots.index(plot)]+gen,gen+plot[0],plot[1].replace("Jet",gen+"Jet"))
     hist.SetTitle("")
     hist.SetFillStyle(0)
     hist.SetMarkerStyle(20)
@@ -213,14 +330,14 @@ if __name__ == '__main__':
     if counter==0:
       if "Run" in sample:
         hist.Draw("pe")
-      elif gen=="Gen":
+      elif "Gen" in gen:
         hist.Draw("lhist")
       else:
         hist.Draw("hist")
     else:
       if "Run" in sample:
         hist.Draw("pesame")
-      elif gen=="Gen":
+      elif "Gen" in gen:
         hist.Draw("lsame")
       else:
         hist.Draw("histsame")
@@ -259,19 +376,39 @@ if __name__ == '__main__':
         legend.AddEntry(hist,"QCD p_{T} > 500 GeV","l")
       elif runSet==3 and counter==1:
         legend.AddEntry(hist,"QCD p_{T} > 1.5 TeV","l")
+      elif runSet==4 and counter==0:
+        legend.AddEntry(hist,"QCD |#eta| < 2.5","l")
+      elif runSet==4 and counter==1:
+        legend.AddEntry(hist,"QCD |#eta| < 1.0","l")
       elif gen=="lowPU":
         legend.AddEntry(hist," with 12PU + simulation","l")
+      elif gen=="GenPt2":
+        legend.AddEntry(hist," with p_{T}^{particles}>2 GeV","l")
       else:
         legend.AddEntry(hist," with 22PU + simulation","l")
     if "WW" in sample:
-      if gen=="Gen" or runSet==2:
-        legend.AddEntry(hist,"G_{RS} #rightarrow WW Pythia6","l")
-      elif runSet==3 and "1000" in sample:
+      if runSet==3 and "1000" in sample:
         legend.AddEntry(hist,"W p_{T} > 500 GeV","l")
       elif runSet==3 and "3000" in sample:
         legend.AddEntry(hist,"W p_{T} > 1.5 TeV","l")
+      elif runSet==4 and counter==0:
+        legend.AddEntry(hist,"W |#eta| < 2.5","l")
+      elif runSet==4 and counter==1:
+        legend.AddEntry(hist,"W |#eta| < 1.0","l")
+      elif runSet==6 and counter==1:
+        legend.AddEntry(hist," with 12PU","l")
+      elif runSet==6 and counter==2:
+        legend.AddEntry(hist," with 12PU + CHS","l")
+      elif runSet==6 and counter==3:
+        legend.AddEntry(hist," with 22PU","l")
+      elif runSet==6 and counter==4:
+        legend.AddEntry(hist," with 22PU + CHS","l")
       elif gen=="lowPU":
         legend.AddEntry(hist," with 12PU + simulation","l")
+      elif gen=="GenPt2":
+        legend.AddEntry(hist," with p_{T}^{particles}>2 GeV","l")
+      elif gen=="Gen" or runSet==2:
+        legend.AddEntry(hist,"G_{RS} #rightarrow WW Pythia6","l")
       else:
         legend.AddEntry(hist," with 22PU + simulation","l")
     hists+=[hist]

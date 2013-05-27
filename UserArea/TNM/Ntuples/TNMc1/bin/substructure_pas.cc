@@ -176,6 +176,10 @@ int main(int argc, char** argv)
   stream.select("patJetHelper_selectedPatJetsCA8CHSwithQjets.jetCharge03", jethelperCA8_jetCharge03);
   stream.select("patJetHelper_selectedPatJetsCA8CHSwithQjets.jetCharge05", jethelperCA8_jetCharge05);
   stream.select("patJetHelper_selectedPatJetsCA8CHSwithQjets.jetCharge10", jethelperCA8_jetCharge10);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSwithQjets.getNcharged01", jethelperCA8_Ncharged01);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSwithQjets.getNneutral01", jethelperCA8_Nneutral01);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSwithQjets.getChargedPt2", jethelperCA8_ChargedPt2);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSwithQjets.getPt2", jethelperCA8_Pt2);
   stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.mass", jethelperCA8pruned_mass);
   stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.pt", jethelperCA8pruned_pt);
   stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.uncor_pt", jethelperCA8pruned_uncor_pt);
@@ -202,12 +206,22 @@ int main(int argc, char** argv)
   stream.select("patJetHelper_patGenJetsCA8CHS.pt", jethelperGenCA8_pt);
   stream.select("patJetHelper_patGenJetsCA8CHS.genTau1", jethelperGenCA8_tau1);
   stream.select("patJetHelper_patGenJetsCA8CHS.genTau2", jethelperGenCA8_tau2);
+  stream.select("patJetHelper_patGenJetsCA8CHS.genTau1Pt2", jethelperGenCA8_tau1Pt2);
+  stream.select("patJetHelper_patGenJetsCA8CHS.genTau2Pt2", jethelperGenCA8_tau2Pt2);
+  stream.select("patJetHelper_patGenJetsCA8CHS.genTau1CHS", jethelperGenCA8_tau1CHS);
+  stream.select("patJetHelper_patGenJetsCA8CHS.genTau2CHS", jethelperGenCA8_tau2CHS);
+  stream.select("patJetHelper_patGenJetsCA8CHS.genNCHS", jethelperGenCA8_NCHS);
   stream.select("patJetHelper_patGenJetsCA8CHS.genC2beta15", jethelperGenCA8_C2beta15);
   stream.select("patJetHelper_patGenJetsCA8CHS.genC2beta17", jethelperGenCA8_C2beta17);
   stream.select("patJetHelper_patGenJetsCA8CHS.genC2beta20", jethelperGenCA8_C2beta20);
+  stream.select("patJetHelper_patGenJetsCA8CHS.genC2beta17CHS", jethelperGenCA8_C2beta17CHS);
   stream.select("patJetHelper_patGenJetsCA8CHS.genJetCharge03", jethelperGenCA8_jetCharge03);
   stream.select("patJetHelper_patGenJetsCA8CHS.genJetCharge05", jethelperGenCA8_jetCharge05);
   stream.select("patJetHelper_patGenJetsCA8CHS.genJetCharge10", jethelperGenCA8_jetCharge10);
+  stream.select("patJetHelper_patGenJetsCA8CHS.getNcharged01", jethelperGenCA8_Ncharged01);
+  stream.select("patJetHelper_patGenJetsCA8CHS.getNneutral01", jethelperGenCA8_Nneutral01);
+  stream.select("patJetHelper_patGenJetsCA8CHS.getChargedPt2", jethelperGenCA8_ChargedPt2);
+  stream.select("patJetHelper_patGenJetsCA8CHS.getPt2", jethelperGenCA8_Pt2);
   stream.select("patJetHelper_patGenJetsCA8CHSpruned.mass", jethelperGenCA8pruned_mass);
   stream.select("patJetHelper_patGenJetsCA8CHSpruned.pt", jethelperGenCA8pruned_pt);
   stream.select("patJetHelper_patGenJetsCA8CHSpruned.numberOfDaughters", jethelperGenCA8pruned_numberOfDaughters);
@@ -384,6 +398,8 @@ int main(int argc, char** argv)
   double Jet1CA8Nsub;
   double Jet1GenCA8MassDrop;
   double Jet1GenCA8Nsub;
+  double Jet1GenCA8NsubPt2;
+  double Jet1GenCA8NsubCHS;
   int genWcharge=0;
 
   TTree *dijetWtag = new TTree("dijetWtag", "dijetWtag");
@@ -402,6 +418,10 @@ int main(int argc, char** argv)
   dijetWtag->Branch("Jet1jetCharge05",&jethelperCA8_jetCharge05[0],"Jet1jetCharge05/D");
   dijetWtag->Branch("Jet1jetCharge10",&jethelperCA8_jetCharge10[0],"Jet1jetCharge10/D");
   dijetWtag->Branch("Jet1nConstituents",&jethelperCA8_nConstituents[0],"Jet1nConstituents/I");
+  dijetWtag->Branch("Jet1Ncharged01",&jethelperCA8_Ncharged01[0],"Jet1Ncharged01/D");
+  dijetWtag->Branch("Jet1Nneutral01",&jethelperCA8_Nneutral01[0],"Jet1Nneutral01/D");
+  dijetWtag->Branch("Jet1ChargedPt2",&jethelperCA8_ChargedPt2[0],"Jet1ChargedPt2/D");
+  dijetWtag->Branch("Jet1Pt2",&jethelperCA8_Pt2[0],"Jet1Pt2/D");
   dijetWtag->Branch("Jet1genWcharge",&genWcharge,"Jet1genWcharge/I");
   dijetWtag->Branch("nGenJets",&nGenJetsCA8,"nGenJets/D");
   dijetWtag->Branch("GenJet1pt",&jethelperGenCA8_pt[0],"GenJet1pt/D");
@@ -410,13 +430,21 @@ int main(int argc, char** argv)
   dijetWtag->Branch("GenJet1Mass",&jethelperGenCA8pruned_mass[0],"GenJet1Mass/D");
   dijetWtag->Branch("GenJet1MassDrop",&Jet1GenCA8MassDrop,"GenJet1MassDrop/D");
   dijetWtag->Branch("GenJet1Nsub",&Jet1GenCA8Nsub,"GenJet1Nsub/D");
+  dijetWtag->Branch("GenJet1NsubPt2",&Jet1GenCA8NsubPt2,"GenJet1NsubPt2/D");
+  dijetWtag->Branch("GenJet1NsubCHS",&Jet1GenCA8NsubCHS,"GenJet1NsubCHS/D");
+  dijetWtag->Branch("GenJet1NCHS",&jethelperGenCA8_NCHS[0],"GenJet1NCHS/I");
   dijetWtag->Branch("GenJet1C2beta15",&jethelperGenCA8_C2beta15[0],"GenJet1C2beta15/D");
   dijetWtag->Branch("GenJet1C2beta17",&jethelperGenCA8_C2beta17[0],"GenJet1C2beta17/D");
   dijetWtag->Branch("GenJet1C2beta20",&jethelperGenCA8_C2beta20[0],"GenJet1C2beta20/D");
+  dijetWtag->Branch("GenJet1C2beta17CHS",&jethelperGenCA8_C2beta17CHS[0],"GenJet1C2beta17CHS/D");
   dijetWtag->Branch("GenJet1jetCharge03",&jethelperGenCA8_jetCharge03[0],"GenJet1jetCharge03/D");
   dijetWtag->Branch("GenJet1jetCharge05",&jethelperGenCA8_jetCharge05[0],"GenJet1jetCharge05/D");
   dijetWtag->Branch("GenJet1jetCharge10",&jethelperGenCA8_jetCharge10[0],"GenJet1jetCharge10/D");
   dijetWtag->Branch("GenJet1nConstituents",&jethelperGenCA8_nConstituents[0],"GenJet1nConstituents/I");
+  dijetWtag->Branch("GenJet1Ncharged01",&jethelperGenCA8_Ncharged01[0],"GenJet1Ncharged01/D");
+  dijetWtag->Branch("GenJet1Nneutral01",&jethelperGenCA8_Nneutral01[0],"GenJet1Nneutral01/D");
+  dijetWtag->Branch("GenJet1ChargedPt2",&jethelperGenCA8_ChargedPt2[0],"GenJet1ChargedPt2/D");
+  dijetWtag->Branch("GenJet1Pt2",&jethelperGenCA8_Pt2[0],"GenJet1Pt2/D");
   dijetWtag->Branch("weight",&weight,"weight/D");
 
   //---------------------------------------------------------------------------
@@ -443,25 +471,36 @@ int main(int argc, char** argv)
 	  // -- event selection --
 	  // ---------------------
 
-	  if(!((jethelperCA8_pt.size()>=1)))
-	      continue;
-
           nJetsCA8=0;
+	  Jet1CA8MassDrop=0;
+	  Jet1CA8Nsub=0;
+	  if(jethelperCA8_pt.size()>=1)
+          {
 	  for(unsigned n=0;n<jethelperCA8_pt.size();n++)
 	     if(jethelperCA8_pt[n]>100)
 	         nJetsCA8++;
           Jet1CA8MassDrop = max(jethelperCA8pruned_daughter_0_mass[0],jethelperCA8pruned_daughter_1_mass[0])/jethelperCA8pruned_mass[0]/jethelperCA8pruned_uncor_pt[0]*jethelperCA8pruned_pt[0];
 	  if ((jethelperCA8pruned_daughter_0_mass[0]<0.0001)||(jethelperCA8pruned_daughter_1_mass[0]<0.0001)) Jet1CA8MassDrop = 2;
           Jet1CA8Nsub = jethelperCA8_tau2[0]/jethelperCA8_tau1[0];
-           
+          }           
+
           nGenJetsCA8=0;
+	  Jet1GenCA8MassDrop=0;
+	  Jet1GenCA8Nsub=0;
+	  Jet1GenCA8NsubPt2=0;
+	  Jet1GenCA8NsubCHS=0;
+	  if(jethelperGenCA8_pt.size()>=1)
+          {
 	  for(unsigned n=0;n<jethelperGenCA8_pt.size();n++)
 	     if(jethelperGenCA8_pt[n]>100)
 	         nGenJetsCA8++;
           Jet1GenCA8MassDrop = max(jethelperGenCA8pruned_daughter_0_mass[0],jethelperGenCA8pruned_daughter_1_mass[0])/jethelperGenCA8pruned_mass[0]/jethelperGenCA8pruned_pt[0]*jethelperGenCA8pruned_pt[0];
 	  if ((jethelperGenCA8pruned_daughter_0_mass[0]<0.0001)||(jethelperGenCA8pruned_daughter_1_mass[0]<0.0001)) Jet1GenCA8MassDrop = 2;
           Jet1GenCA8Nsub = jethelperGenCA8_tau2[0]/jethelperGenCA8_tau1[0];
-          
+          Jet1GenCA8NsubPt2 = jethelperGenCA8_tau2Pt2[0]/jethelperGenCA8_tau1Pt2[0];
+          Jet1GenCA8NsubCHS = jethelperGenCA8_tau2CHS[0]/jethelperGenCA8_tau1CHS[0];
+          }
+	  
           for(int i=0;i<ngenparticlehelper;++i)
 	  {
 	      if((genparticlehelper_pdgId[i]==-24)&&(DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
@@ -484,10 +523,10 @@ if((genparticlehelper_pdgId[i]==24)&&(DeltaRfun(genparticlehelper_eta[i],jethelp
 
           //if(DijetMass>1600)
           //    cout << "every " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << endl;
-	  if(!((jethelperCA8_pt[0]>400)&&
-	     (fabs(jethelperCA8_eta[0])<2.5)&&
+	  if(!((((jethelperCA8_pt.size()>=1)&&(jethelperCA8_pt[0]>400)&&(fabs(jethelperCA8_eta[0])<2.5))||
+	        ((jethelperGenCA8_pt.size()>=1)&&(jethelperGenCA8_pt[0]>400)&&(fabs(jethelperGenCA8_eta[0])<2.5)))&&
 	     
-	     (jethelperCA8_muonEnergyFraction[0]<0.80)&&
+	   (((jethelperCA8_muonEnergyFraction[0]<0.80)&&
 	     //(jethelper_neutralHadronEnergyFraction[0]<0.99)&&
 	     (jethelperCA8_neutralHadronEnergyFraction[0]<0.90)&&
 	     //(jethelper_neutralEmEnergyFraction[0]<0.99)&&
@@ -507,6 +546,7 @@ if((genparticlehelper_pdgId[i]==24)&&(DeltaRfun(genparticlehelper_eta[i],jethelp
 	       (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath!=0))||
 	      (datafiltersactive==false))&&
 	     ((triggerresultshelper_hcallasereventfilter2012!=0)||(hcallasereventfilter2012active==false))
+	     )||((jethelperGenCA8_pt.size()>=1)))
 	    )) continue;
 
 	  // ---------------------
