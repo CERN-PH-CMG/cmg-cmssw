@@ -13,11 +13,6 @@ cmg::ElectronFactory::event_ptr cmg::ElectronFactory::create(const edm::Event& i
   bool found = iEvent.getByLabel(primaryVertexLabel_, primaryVertices);
   int nVertices = found ? primaryVertices->size() : 0;
 
-  //Get beamspot
-  edm::Handle<reco::BeamSpot> bsHandle;
-  iEvent.getByLabel("offlineBeamSpot", bsHandle);
-  const reco::BeamSpot &beamspot = *bsHandle.product();
-
   //Get conversions
   edm::Handle<reco::ConversionCollection> hConversions;
   iEvent.getByLabel("allConversions", hConversions);
@@ -35,7 +30,7 @@ cmg::ElectronFactory::event_ptr cmg::ElectronFactory::create(const edm::Event& i
     leptonFactory_.set(electronPtr->gsfTrack(),&elec,iEvent,iSetup);
     
     //now the electron like ones
-    set(electronPtr,&elec,nVertices, beamspot, hConversions);
+    set(electronPtr,&elec,nVertices, hConversions);
    		
     result->push_back(elec);
   }
@@ -45,7 +40,6 @@ cmg::ElectronFactory::event_ptr cmg::ElectronFactory::create(const edm::Event& i
 
 void 
 cmg::ElectronFactory::set(const pat::ElectronPtr& input, cmg::Electron* const output, int nVertices,
-                          const reco::BeamSpot &beamspot, 
                           edm::Handle<reco::ConversionCollection> & hConversions){
 
   output->dB3D_ = input->dB( pat::Electron::PV3D );
