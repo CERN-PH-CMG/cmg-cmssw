@@ -1,3 +1,4 @@
+import operator
 from CMGTools.RootTools.analyzers.DiLeptonAnalyzer import DiLeptonAnalyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.DiObject import TauMuon
@@ -195,3 +196,12 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
                 raise ValueError('Impossible!')
         veto = isMinus and isPlus
         return not veto
+
+    def bestDiLepton(self, diLeptons):
+        '''Returns the best diLepton (1st precedence opposite-sign, 2nd precedence
+        highest pt1 + pt2).'''
+        osDiLeptons = [dl for dl in diLeptons if dl.leg1().charge() != dl.leg2().charge()]
+        if osDiLeptons:
+            return max( osDiLeptons, key=operator.methodcaller( 'sumPt' ) )
+        else:
+            return max( diLeptons, key=operator.methodcaller( 'sumPt' ) )
