@@ -122,19 +122,24 @@ def bookTau( tree, pName ):
     var(tree, '{pName}_mediumIso'.format(pName=pName))
     var(tree, '{pName}_tightIso'.format(pName=pName))
 
-    var(tree, '{pName}_againstMuonTight'.format(pName=pName))    
+    var(tree, '{pName}_againstMuonTight'.format(pName=pName))
+    var(tree, '{pName}_againstMuonTight2'.format(pName=pName))
     var(tree, '{pName}_againstElectronLoose'.format(pName=pName))    
 
     var(tree, '{pName}_byLooseIsoMVA'.format(pName=pName))    
     var(tree, '{pName}_againstElectronMVA'.format(pName=pName))    
     var(tree, '{pName}_againstElectronTightMVA2'.format(pName=pName))
+    var(tree, '{pName}_againstElectronTightMVA3'.format(pName=pName))
     var(tree, '{pName}_againstElectronMedium'.format(pName=pName))    
-    var(tree, '{pName}_againstMuonLoose'.format(pName=pName))    
+    var(tree, '{pName}_againstMuonLoose'.format(pName=pName))
+    var(tree, '{pName}_againstMuonLoose2'.format(pName=pName))
 
     var(tree, '{pName}_rawMvaIso'.format(pName=pName))
     var(tree, '{pName}_looseMvaIso'.format(pName=pName))
     var(tree, '{pName}_mediumMvaIso'.format(pName=pName))
     var(tree, '{pName}_tightMvaIso'.format(pName=pName))
+
+    var(tree, '{pName}_threeHitIso'.format(pName=pName))
    
     var(tree, '{pName}_EOverp'.format(pName=pName))
     var(tree, '{pName}_decayMode'.format(pName=pName))
@@ -152,6 +157,8 @@ def fillTau( tree, pName, tau ):
 
     fill(tree, '{pName}_againstMuonTight'.format(pName=pName),
          tau.tauID("againstMuonTight"))
+    fill(tree, '{pName}_againstMuonTight2'.format(pName=pName),
+         tau.tauID("againstMuonTight2"))
     fill(tree, '{pName}_againstElectronLoose'.format(pName=pName),
          tau.tauID("againstElectronLoose"))
 
@@ -161,10 +168,14 @@ def fillTau( tree, pName, tau ):
          tau.tauID("againstElectronMVA"))
     fill(tree, '{pName}_againstElectronTightMVA2'.format(pName=pName),
          tau.tauID("againstElectronTightMVA2"))
+    fill(tree, '{pName}_againstElectronTightMVA3'.format(pName=pName),
+         tau.tauID("againstElectronTightMVA3"))
     fill(tree, '{pName}_againstElectronMedium'.format(pName=pName),
          tau.tauID("againstElectronMedium"))
     fill(tree, '{pName}_againstMuonLoose'.format(pName=pName),
          tau.tauID("againstMuonLoose"))
+    fill(tree, '{pName}_againstMuonLoose2'.format(pName=pName),
+         tau.tauID("againstMuonLoose2"))
 
     fill(tree, '{pName}_rawMvaIso'.format(pName=pName),
          tau.tauID("byRawIsoMVA"))
@@ -174,6 +185,9 @@ def fillTau( tree, pName, tau ):
          tau.tauID("byMediumIsoMVA"))
     fill(tree, '{pName}_tightMvaIso'.format(pName=pName),
          tau.tauID("byTightIsoMVA"))
+
+    fill(tree, '{pName}_threeHitIso'.format(pName=pName),
+         tau.tauID("byCombinedIsolationDeltaBetaCorrRaw3Hits"))
 
     fill(tree, '{pName}_rawMvaIso'.format(pName=pName),
          tau.tauID("byRawIsoMVA"))
@@ -187,18 +201,22 @@ def fillTau( tree, pName, tau ):
 
 def bookJet( tree, pName ):
     bookParticle(tree, pName )
+    var(tree, '{pName}_puMvaFull53X'.format(pName=pName))
     var(tree, '{pName}_puMvaFull'.format(pName=pName))
     var(tree, '{pName}_puMvaSimple'.format(pName=pName))
     var(tree, '{pName}_puMvaCutBased'.format(pName=pName))
     var(tree, '{pName}_looseJetId'.format(pName=pName))
+    var(tree, '{pName}_genJetPt'.format(pName=pName))
 
 def fillJet( tree, pName, jet ):
     fillParticle(tree, pName, jet )
+    fill(tree, '{pName}_puMvaFull53X'.format(pName=pName), jet.puMva('full53x') )
     fill(tree, '{pName}_puMvaFull'.format(pName=pName), jet.puMva('full') )
     fill(tree, '{pName}_puMvaSimple'.format(pName=pName), jet.puMva('simple'))
     fill(tree, '{pName}_puMvaCutBased'.format(pName=pName), jet.puMva('cut-based'))
     fill(tree, '{pName}_looseJetId'.format(pName=pName), jet.getSelection('cuts_looseJetId'))
-
+    if hasattr(jet, 'genJet') and jet.genJet:
+        fill(tree, '{pName}_genJetPt'.format(pName=pName), jet.genJet.pt())
 
 # vbf
 
