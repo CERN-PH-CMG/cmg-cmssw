@@ -16,7 +16,8 @@ BTagSF::~BTagSF() {
 Bool_t BTagSF::isbtagged(Float_t pt, Float_t eta, Float_t csv, Int_t jetflavor, Bool_t isdata, UInt_t btagsys, UInt_t mistagsys, Bool_t is2012)
 {
   Bool_t btagged = kFALSE;
-
+  randm->SetSeed((int)((eta+5)*100000));
+  
   if(isdata) {
     if(csv>0.679) btagged = kTRUE;
     else          btagged = kFALSE;
