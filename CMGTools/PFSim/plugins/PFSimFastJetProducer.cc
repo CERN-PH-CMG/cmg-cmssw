@@ -13,8 +13,7 @@ using namespace std;
 using namespace edm;
 
 
-//TODO function copied from fastjet put that in the class, 
-// and enable under debug flag
+//TODO function copied from fastjet. remove or improve that. 
 void print_jets (const fastjet::ClusterSequence & clust_seq, 
                  const vector<fastjet::PseudoJet> & jets) {
 
@@ -41,6 +40,8 @@ PFSimFastJetProducer::PFSimFastJetProducer(const edm::ParameterSet& iConfig) {
 
   verbose_ = 
     iConfig.getUntrackedParameter<bool>("verbose",false);
+  jetPtThreshold_ = 
+    iConfig.getParameter<double>("jetPtThreshold");
 
 
   produces< Jets > ();
@@ -53,7 +54,7 @@ void PFSimFastJetProducer::beginJob() {
   double Rparam = 0.5;
   fastjet::Strategy strategy = fastjet::Best;
   fastjet::RecombinationScheme recomb_scheme = fastjet::E_scheme;
-  jet_def_ =  fastjet::JetDefinition(fastjet::kt_algorithm, Rparam, recomb_scheme, strategy);
+  jet_def_ =  fastjet::JetDefinition(fastjet::antikt_algorithm, Rparam, recomb_scheme, strategy);
 }
 
 
@@ -68,7 +69,7 @@ void PFSimFastJetProducer::produce(Event& iEvent,
 
   vector<fastjet::PseudoJet> input_particles(ptcs->size());
   for(unsigned i=0; i<ptcs->size(); ++i) {
-    const cmg::SimpleParticle& ptc = ptcs->at(i);
+    const Particle& ptc = ptcs->at(i);
     double px = ptc.px();
     double py = ptc.py();
     double pz = ptc.pz();
@@ -78,20 +79,21 @@ void PFSimFastJetProducer::produce(Event& iEvent,
 
   fastjet::ClusterSequence clust_seq(input_particles, jet_def_);
 
-  // extract the inclusive jets with pt > 5 GeV
-  double ptmin = 50.0; //TODO parameter
-  vector<fastjet::PseudoJet> inclusive_jets = clust_seq.inclusive_jets(ptmin);
+  // extract the inclusive jets with pt over the threshold
+  double ptmin = jetPtThreshold_; //TODO parameter
+  vector<fastjet::PseudoJet> jets = clust_seq.inclusive_jets(ptmin);
 
-  
-  //TODO optional printout
-  // print them out
-  cout << "Printing inclusive jets with pt > "<< ptmin<<" GeV\n";
-  cout << "---------------------------------------\n";
-  print_jets(clust_seq, inclusive_jets);
-  cout << endl;
- 
+  if(verbose_)
+    cout << "inclusive jets with pt > "<< jetPtThreshold_ <<" GeV\n";
+  vector<fastjet::PseudoJet> sorted_jets = sorted_by_pt(jets);  
+  for (unsigned int i = 0; i < sorted_jets.size(); i++) {
+    const fastjet::PseudoJet& jet = sorted_jets[i];
+    reco::LeafCandidate::LorentzVector p4(jet.px(), jet.py(), jet.pz(), jet.E());
+    float charge = 0.; //TODO deal with charge
+    outPtr->push_back( Particle(charge, p4) ); 
+    if (verbose_) cout<<"\t"<<jet.pt()<<" "<<jet.eta()<<endl;
+  }
 
-  //TODO translate and write
 
   iEvent.put( outPtr  );
 }

@@ -26,6 +26,8 @@ process.source = cms.Source(
     fileNames = cms.untracked.vstring( 'file:gen.root' )
     )
 
+process.load('PhysicsTools.HepMCCandAlgos.genParticles_cfi')
+
 process.pfsim = cms.EDProducer(
     'PFSimParticleProducer',
     hepmcSrc = cms.InputTag('generator')
@@ -33,7 +35,7 @@ process.pfsim = cms.EDProducer(
 
 process.fastjet = cms.EDProducer(
     'PFSimFastJetProducer',
-    particleSrc = cms.InputTag('pfsim')
+    particleSrc = cms.InputTag('genParticles')
     )
 
 
@@ -47,7 +49,8 @@ process.out = cms.OutputModule(
 )
 
 process.p = cms.Path(
-    process.pfsim +
+    # process.pfsim +
+    process.genParticles+
     process.fastjet 
     )
 
