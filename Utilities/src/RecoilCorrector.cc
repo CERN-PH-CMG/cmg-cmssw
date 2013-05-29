@@ -39,6 +39,7 @@ void RecoilCorrector::addMCFile  (std::string iNameMC) {
 void RecoilCorrector::CorrectAll(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
   fJet = njet; if(njet > 2) fJet = 2;  
   if(fJet >= int(fF1U1Fit.size())) fJet = 0; 
+  fRandom->SetSeed((int)((lGenPhi+4)*100000));
   metDistribution(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
 		  fF1U1Fit     [fJet],
 		  fF1U1RMSSMFit[fJet],
@@ -54,6 +55,7 @@ void RecoilCorrector::CorrectAll(double &met, double &metphi, double lGenPt, dou
 void RecoilCorrector::CorrectType1(double &met, double &metphi, double lGenPt, double lGenPhi, double lepPt, double lepPhi,double &iU1,double &iU2,double iFluc,double iScale,int njet) {
   fJet = njet; if(njet > 2) fJet = 2;  
   if(fJet >= int(fF1U1Fit.size())) fJet = 0; 
+  fRandom->SetSeed((int)((lGenPhi+4)*100000));
   metDistributionType1(met,metphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
 		       fD1U1Fit     [fJet],fM1U1Fit     [fJet],
 		       fD1U1RMSSMFit[fJet],fM1U1RMSSMFit[fJet],
@@ -81,6 +83,7 @@ void RecoilCorrector::Correct(double &pfmet, double &pfmetphi, double &trkmet, d
   double lU1 = 0; double lU2 = 0;
   fJet = njet; if(njet > 2) fJet = 2;  
   if(fJet > int(fF1U1Fit.size())) fJet = 0; 
+  fRandom->SetSeed((int)((lGenPhi+4)*100000));
   metDistribution(pfmet,pfmetphi,trkmet,trkmetphi,lGenPt,lGenPhi,lepPt,lepPhi,fRandom,
 		  fF1U1Fit     [fJet],fF2U1Fit     [fJet],
 		  fF1U1RMSSMFit[fJet],fF2U1RMSSMFit[fJet],
