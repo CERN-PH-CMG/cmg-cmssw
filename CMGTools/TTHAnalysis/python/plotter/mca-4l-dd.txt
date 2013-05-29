@@ -3,7 +3,11 @@
 #ttHtt+   : TTH : 0.1271 : GenHiggsDecayMode == 15 ; FillColor=ROOT.kOrange+10
 #ttHZZ+   : TTH : 0.1271 : GenHiggsDecayMode == 23 ; FillColor=ROOT.kOrange+10
 # --- ttH inclusive
-ttH+     : TTH : 0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
+#ttH+     : TTH : 0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
+# --- more statistics including also 122 and 127 GeV
+ttH+     : TTH : 0.334*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
+ttH+     : TTH122 : 0.333*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
+ttH+     : TTH127 : 0.333*0.1271 : GenHiggsDecayMode > 0   ; FillColor=ROOT.kOrange+10
 
 # --- TT+W/Z/WW (TTWW usually quite negligible)
 #TTW 	 : TTWJets:    0.232    ;  FillColor=ROOT.kGreen-5  ## NO, no 4l so from FR
@@ -19,12 +23,13 @@ TTWW 	 : TTWWJets:   0.002037 ;  FillColor=ROOT.kBlue-9
 VVV 	 : WWZJets:    0.0633   ;  FillColor=ROOT.kViolet
 # WW 	 : WWJets:     5.995    ;  FillColor=ROOT.kBlue-9   ## NO, this is from FR (no 4l)
 # WZ 	 : WZJets:     1.057    ;  FillColor=ROOT.kViolet-4 ## NO, doesn't have 4l, so it comes from FR
-ZZ	 : ZZ2e2mu:    0.1767   ;  FillColor=ROOT.kAzure-9
-ZZ 	 : ZZ2e2tau:   0.1767   ;  FillColor=ROOT.kAzure-9
-ZZ 	 : ZZ2mu2tau:  0.1767   ;  FillColor=ROOT.kAzure-9
-ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9   
-ZZ       : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
-ZZ       : ZZTo4tau:   0.07691  ;  FillColor=ROOT.kAzure-9
+ZZ       : ZZJets4L:   0.157    ;  FillColor=ROOT.kAzure-9
+# --- Powheg ZZ (for mll < 12, but less accurate in N(Jet))
+#ZZ	 : ZZ2e2mu:    0.1767   ;  FillColor=ROOT.kAzure-9
+#ZZ 	 : ZZ2e2tau:   0.1767   ;  FillColor=ROOT.kAzure-9
+#ZZ 	 : ZZ2mu2tau:  0.1767   ;  FillColor=ROOT.kAzure-9
+#ZZ	 : ZZTo4mu:    0.07691  ;  FillColor=ROOT.kAzure-9   
+#ZZ      : ZZTo4e:     0.07691  ;  FillColor=ROOT.kAzure-9
 
 
 data     : DoubleMuAB
