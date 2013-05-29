@@ -12,7 +12,7 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load("Configuration.Generator.PythiaUESettings_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(2000)
 )
 
 

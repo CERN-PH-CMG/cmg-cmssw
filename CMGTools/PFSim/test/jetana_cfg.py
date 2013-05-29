@@ -1,5 +1,6 @@
 import copy
-import os 
+import os
+import glob
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import * 
@@ -21,11 +22,12 @@ jetAna = cfg.Analyzer(
 
 TTJets = cfg.MCComponent(
     name = 'TTJets',
-    files = ['gen.root'],
+    files = sorted(glob.glob('Prod_TT_20k/Job*/*.root')),
     xSection = 225.197, 
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
+TTJets.splitFactor = 10
 
 
 selectedComponents = [TTJets]  
