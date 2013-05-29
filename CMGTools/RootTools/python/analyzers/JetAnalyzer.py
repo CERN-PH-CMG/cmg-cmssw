@@ -79,17 +79,6 @@ class JetAnalyzer( Analyzer ):
         genJets = None
         if self.cfg_comp.isMC:
             genJets = map( GenJet, self.mchandles['genJets'].product() ) 
-##             genJetsP = self.mchandles['genJetsP'].product()
-##             genJetsP10 = [j for j in genJetsP if j.pt()>10]
-##             print len(genJets), len(genJetsP10), len(genJetsP)
-##            for jet in genJetsP10:
-##                 print 'jet', jet.pt()
-##                 nCons = jet.nConstituents()
-##                 for idx in range(0, nCons):
-##                     part = jet.getGenConstituent(idx)
-##                     print part.pdgId(), part.pt()
-            print 'genJets'
-            for jet in genJets: print '\t', jet
             
         for cmgJet in cmgJets:
             jet = Jet( cmgJet )
