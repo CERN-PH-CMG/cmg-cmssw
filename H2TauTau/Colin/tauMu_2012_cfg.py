@@ -12,7 +12,6 @@ from CMGTools.RootTools.RootTools import *
 shift = None
 # 1.0, 1.03, 0.97
 tauScaleShift = 1.0
-syncntuple = True
 
 puFileDir = os.environ['CMSSW_BASE'] + '/src/CMGTools/RootTools/data/Reweight/2012'
 
@@ -107,8 +106,19 @@ dyJetsFakeAna = cfg.Analyzer(
 
 WNJetsAna = cfg.Analyzer(
     'WNJetsAnalyzer',
-    verbose = False
+    verbose = False,
+    fractions = [ 0.744344,
+                  0.175482,
+                  0.0562994,
+                  0.0169402,
+                  0.0069341
+                  ],
     )
+
+WNJetsTreeAna = cfg.Analyzer(
+    'WNJetsTreeAnalyzer'
+    )
+
 
 higgsWeighter = cfg.Analyzer(
     'HiggsPtWeighter',
@@ -170,9 +180,10 @@ treeProducerXCheck = cfg.Analyzer(
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_MuRm_ColinOct9 import * 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinOct10 import * 
 #from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanMay23 import * 
+from CMGTools.H2TauTau.proto.samples.run2012.WJets_JanMay29 import * 
 
 #########################################################################################
+
 
 for mc in MC_list:
     mc.puFileMC = puFileMC
@@ -189,8 +200,6 @@ WNJetsAna.nevents = [ WJets.nGenEvents,
                       W4Jets.nGenEvents
                       ]
 
-# Apparently needed for only WJets if WNJetsAna runs:
-# WNJetsAna.fractions = [1., 0., 0., 0., 0.]
 
 # selectedComponents = allsamples
 diboson_list = [    WWJetsTo2L2Nu,
@@ -211,15 +220,21 @@ VVgroup = None # This is currently needed for the plotting script
 
 higgs = mc_higgs
 
-selectedComponents = [TTJets, DYJets, WJets,
+w_list = [ WJets, W1Jets, W2Jets, W3Jets, W4Jets ]
+
+selectedComponents = [
+    TTJets, DYJets, 
     data_Run2012A,
     data_Run2012B,
     data_Run2012C_v1,
     data_Run2012C_v2,
     data_Run2012D_v1,
     ]
+selectedComponents.extend( w_list )
 selectedComponents.extend( higgs )
 selectedComponents.extend( embed_list )
+
+selectedComponents = copy.copy( w_list ) 
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -228,7 +243,7 @@ sequence = cfg.Sequence( [
     vertexAna, 
     TauMuAna, #Yes!
     dyJetsFakeAna,
-    #WNJetsAna,
+    WNJetsAna,
     higgsWeighter, 
     vbfAna, #Yes!
     pileUpAna,
@@ -239,23 +254,23 @@ sequence = cfg.Sequence( [
     # treeProducerXCheck
    ] )
 
-if syncntuple:
-    sequence.append( treeProducerXCheck) #Yes!
+
+sequence = [WNJetsAna, WNJetsTreeAna]
 
 selectedComponents = [comp for comp in selectedComponents if comp.dataset_entries > 0]
 
-test = 0
+test = 2
 if test==1:
     #comp = HiggsGGH125
-    comp = embed_2012D_PromptReco_v1
+    comp = WJets
     selectedComponents = [comp]
-    comp.splitFactor = 10
-    # comp.files = comp.files[:10]
+    comp.splitFactor = 1
+    comp.files = comp.files[:10]
     # comp.files = ['tauMu_fullsel_tree_CMG.root']
 elif test==2:
     for comp in selectedComponents:
-        comp.splitFactor = 1
-        comp.files = comp.files[:5]
+        comp.splitFactor = 2
+        # comp.files = comp.files[:10]
 
 
 config = cfg.Config( components = selectedComponents,
