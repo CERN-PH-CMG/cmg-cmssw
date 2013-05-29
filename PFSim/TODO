@@ -37,8 +37,12 @@ set up python analysis framework to do these measurements
 X integrate gen jet clustering in FFW
 X see Common sequences - note fix for muons
 
-Generate more events, like 10000
+X Generate more events, like 10000
+	get an idea of computing needs
+	check speed of python framework for parametrization
 
 
 MAIN OBJECTIVE NOW!
-- write a jet study package. 
+- write a jet study pyanalysis. 
+- integrate the param sim in this pyanalysis
+- design my tree
