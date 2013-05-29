@@ -37,6 +37,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        bookJet(tr, 'bjet1')
 
        bookVBF( tr, 'VBF' )
+       #bookJet(tr, 'cjet') # leading central veto jet from VBF
        
        var( tr, 'weight')
        var( tr, 'vertexWeight')
@@ -76,7 +77,7 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        fill( tr, 'lumi',event.lumi)
        fill( tr, 'evt', event.eventId)
        #C uncomment when reactivating WNJetsAnalyzer
-       # fill( tr, 'NUP', event.NUP)
+       fill( tr, 'NUP', event.NUP)
 
        fillDiLepton( tr, event.diLepton )
 
@@ -108,12 +109,15 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
 
        if hasattr( event, 'vbf'):
            fillVBF( tr, 'VBF', event.vbf )
+           #if len(event.vbf.centralJets) > 0:
+           #    fillJet(tr, 'cjet', event.vbf.centralJets[0])
 
        fill(tr, 'weight', event.eventWeight)
        fill(tr, 'embedWeight', event.embedWeight)
        fill(tr, 'hqtWeight', event.higgsPtWeight)
        #C uncomment when reactivating WNJetsAnalyzer
-       # fill(tr, 'WJetWeight', event.WJetWeight)
+       if hasattr( event, 'WJetWeight'):
+          fill(tr, 'WJetWeight', event.WJetWeight)
 
        if hasattr( event, 'vertexWeight'): 
           fill(tr, 'vertexWeight', event.vertexWeight)
