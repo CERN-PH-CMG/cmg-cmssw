@@ -34,8 +34,11 @@ set up a gun source here, and a gun cfg
 set up python analysis framework to do these measurements 
 
 
+X integrate gen jet clustering in FFW
+X see Common sequences - note fix for muons
+
+Generate more events, like 10000
+
+
 MAIN OBJECTIVE NOW!
 - write a jet study package. 
-	integrate gen jet clustering in FFW
-		see Common sequences - note fix for muons
-
