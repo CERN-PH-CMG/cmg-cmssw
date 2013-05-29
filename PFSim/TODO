@@ -1,19 +1,31 @@
 - make sure that all stable invisible particles are removed
 check code in CMSSW (fastsim?) to get the list
 
-
 - focus on jet simulation 
 
-- need jet clustering
+- define the boundaries between gen and sim. 
+do sim in the python for now? 
+gen: 
+	generator
+	gen particles for jets / in fact, THE collection of gen particles.
+	gen jets 
+
+
+X - generalize jet clustering producer
+	ok now reading a view 
 
 X - write particles to EDM and look at them with ROOT 
 
+- could validate my gen jet clustering on GenParticles, with the one of CMS running on the same collection of gen particles. 
+
 - deal with the charge. 
 
-- integrate fast jet and make particle jets
+X- integrate fast jet and make particle jets
 	X fastjet integrated and running 
-	need to finalize it
-
+	X need to finalize it
+		now writing leafcandidates
+		moved to antikt 
+		important params implemented
 - start with barrel region
 need to see what to do with HF (be pragmatic and shoot particles there?) 
 
@@ -21,6 +33,8 @@ need to see what to do with HF (be pragmatic and shoot particles there?)
 set up a gun source here, and a gun cfg
 set up python analysis framework to do these measurements 
 
+
+MAIN OBJECTIVE NOW!
 - write a jet study package. 
 	integrate gen jet clustering in FFW
 		see Common sequences - note fix for muons

@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("Gen")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10)
 
 process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
@@ -12,7 +12,7 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 process.load("Configuration.Generator.PythiaUESettings_cfi")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000)
+    input = cms.untracked.int32(100)
 )
 
 
@@ -24,6 +24,7 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 )
 
 
+
 process.source = cms.Source("EmptySource")
 process.load('CMGTools.PFSim.generators.pp_ttbar_cfi')
 
@@ -33,6 +34,15 @@ process.load('CMGTools.PFSim.generators.pp_ttbar_cfi')
 # gen jet creation
 # I could do that with my system.
 
+process.load('CMGTools.PFSim.genJets_cff')
+
+process.p = cms.Path(
+    process.generator +
+    process.genJetsSequence
+    )
+
+
+# output definition
 
 process.out = cms.OutputModule(
     "PoolOutputModule",
@@ -43,11 +53,7 @@ process.out = cms.OutputModule(
     outputCommands = cms.untracked.vstring('keep *')
 )
 
-process.p = cms.Path(
-    process.generator
-    )
-
-
 process.outpath = cms.EndPath(process.out)
 
 
+process.genJets.verbose = False
