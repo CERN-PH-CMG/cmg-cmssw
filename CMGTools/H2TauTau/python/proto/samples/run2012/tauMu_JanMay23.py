@@ -59,7 +59,7 @@ allsamples.extend( data_list )
 allsamples.extend( embed_list )
 
 
-connect( allsamples, '%TAUMU_OSVFit_May10', 'tauMu.*root', aliases, cache=True, verbose=False)
+connect( allsamples, '%TAUMU_OSVFit_May27%', 'tauMu.*root', aliases, cache=True, verbose=False)
 
 # this number is not in the DB (dbs says this sample is still in production)
 # WJets.nGenEvents = 61444940

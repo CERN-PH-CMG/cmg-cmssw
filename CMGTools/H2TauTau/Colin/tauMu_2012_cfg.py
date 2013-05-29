@@ -33,10 +33,15 @@ vertexFileData = '/'.join([vertexFileDir, 'vertices_data_2012A_2012B_start_19594
 
 mc_vertexWeight = None
 
-mc_tauEffWeight_mc = 'effTau2012MC53X'
-mc_muEffWeight_mc = 'eff_2012_Rebecca_TauMu_IsoMu1753XMC'
-mc_tauEffWeight = 'effTau2012ABC'
-mc_muEffWeight = 'effMu2012_Rebecca_TauMu_ABC'
+# mc_tauEffWeight_mc = 'effTau2012MC53X'
+# mc_muEffWeight_mc = 'eff_2012_Rebecca_TauMu_IsoMu1753XMC'
+# mc_tauEffWeight = 'effTau2012ABC'
+# mc_muEffWeight = 'effMu2012_Rebecca_TauMu_ABC'
+
+mc_tauEffWeight_mc = 'effTau_muTau_MC_2012ABCD'
+mc_muEffWeight_mc = 'effMu_muTau_MC_2012ABCD'
+mc_tauEffWeight = 'effTau_muTau_Data_2012ABCD'
+mc_muEffWeight = 'effMu_muTau_Data_2012ABCD'
     
     
 eventSelector = cfg.Analyzer(
@@ -144,7 +149,8 @@ vbfAna = cfg.Analyzer(
     jetEta = 4.7,
     cjvPtCut = 30.,
     btagSFseed = 123456,
-    relaxJetId = False,
+    relaxJetId = False, # For jet ID studies
+    jerCorr = False, # NEW!
     **vbfKwargs
     )
 
@@ -163,9 +169,8 @@ treeProducerXCheck = cfg.Analyzer(
 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_MuRm_ColinOct9 import * 
 # from CMGTools.H2TauTau.proto.samples.run2012.tauMu_ColinOct10 import * 
-
-# from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
-from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanMay23 import *
+#from CMGTools.H2TauTau.proto.samples.run2012.tauMu_Sync_Colin import * 
+from CMGTools.H2TauTau.proto.samples.run2012.tauMu_JanMay23 import * 
 
 #########################################################################################
 
@@ -184,6 +189,9 @@ WNJetsAna.nevents = [ WJets.nGenEvents,
                       W4Jets.nGenEvents
                       ]
 
+# Apparently needed for only WJets if WNJetsAna runs:
+# WNJetsAna.fractions = [1., 0., 0., 0., 0.]
+
 # selectedComponents = allsamples
 diboson_list = [    WWJetsTo2L2Nu,
                     WZJetsTo2L2Q,
@@ -197,24 +205,21 @@ diboson_list = [    WWJetsTo2L2Nu,
 
 WJetsSoup = copy.copy(WJets)
 WJetsSoup.name = 'WJetsSoup'
-# VVgroup = [comp.name for comp in diboson_list]
-VVgroup = None
-# higgs = [HiggsVBF125, HiggsGGH125, HiggsVH125]
-# selectedComponents =  [WJetsSoup, TTJets, DYJets]
-# selectedComponents = [WJets, W1Jets, W2Jets, W3Jets, W4Jets, TTJets, DYJets]
-# higgs = mc_higgs
-# selectedComponents.extend( higgs )
-# selectedComponents.extend( diboson_list )
-# selectedComponents.extend( data_list )
-# selectedComponents.extend( embed_list )
 
+VVgroup = [comp.name for comp in diboson_list]
+VVgroup = None # This is currently needed for the plotting script
+
+higgs = mc_higgs
 
 selectedComponents = [TTJets, DYJets, WJets,
-                      data_Run2012A,
-                      data_Run2012B,
-                      data_Run2012C_v1,
-                      data_Run2012C_v2,
-                      ]
+    data_Run2012A,
+    data_Run2012B,
+    data_Run2012C_v1,
+    data_Run2012C_v2,
+    data_Run2012D_v1,
+    ]
+selectedComponents.extend( higgs )
+selectedComponents.extend( embed_list )
 
 sequence = cfg.Sequence( [
     # eventSelector,
@@ -223,8 +228,7 @@ sequence = cfg.Sequence( [
     vertexAna, 
     TauMuAna, #Yes!
     dyJetsFakeAna,
-    #JAN contact Colin when you want to deal with exclusive samples
-    # WNJetsAna,
+    #WNJetsAna,
     higgsWeighter, 
     vbfAna, #Yes!
     pileUpAna,
@@ -238,12 +242,14 @@ sequence = cfg.Sequence( [
 if syncntuple:
     sequence.append( treeProducerXCheck) #Yes!
 
+selectedComponents = [comp for comp in selectedComponents if comp.dataset_entries > 0]
 
 test = 0
 if test==1:
-    comp = WJets
+    #comp = HiggsGGH125
+    comp = embed_2012D_PromptReco_v1
     selectedComponents = [comp]
-    comp.splitFactor = 14
+    comp.splitFactor = 10
     # comp.files = comp.files[:10]
     # comp.files = ['tauMu_fullsel_tree_CMG.root']
 elif test==2:
