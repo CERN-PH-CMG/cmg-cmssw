@@ -196,6 +196,8 @@ class MyBatchManager( BatchManager ):
       cfgFile.write("sys.path.append('%s')\n" % os.path.dirname(jobDir) )
       cfgFile.write('from base_cfg import *\n')
       cfgFile.write('process.source = ' + process.source.dumpPython() + '\n')
+      if generator:
+         cfgFile.write('process.RandomNumberGeneratorService = ' + process.RandomNumberGeneratorService.dumpPython() + '\n')
       cfgFile.close()
 
 
