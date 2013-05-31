@@ -119,7 +119,7 @@ class ttHJetMCMatchAnalyzer( Analyzer ):
         self.matchJets(event)
         self.jetFlavour(event)
 
-        if self.cfg_ana.smearJets or not hasattr(self.cfg_ana, 'smearJets'):
+        if not hasattr(self.cfg_ana, 'smearJets') or self.cfg_ana.smearJets:
             self.smearJets(event)
 
         return True
