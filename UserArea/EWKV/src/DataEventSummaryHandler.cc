@@ -445,7 +445,6 @@ data::PhysicsObjectCollection_t DataEventSummaryHandler::getPhysicsObject(int co
 	  data::PhysicsObject_t lep(evSummary_.ln_px[ilep],evSummary_.ln_py[ilep],evSummary_.ln_pz[ilep],evSummary_.ln_en[ilep]);
 	  lep.set("id",evSummary_.ln_id[ilep]);
 	  lep.set("idbits",evSummary_.ln_idbits[ilep]);
-
 	  lep.setVal("gIso03",    evSummary_.ln_gIso03[ilep]);  lep.setVal("chIso03",   evSummary_.ln_chIso03[ilep]);  lep.setVal("puchIso03", evSummary_.ln_puchIso03[ilep]); lep.setVal("nhIso03",   evSummary_.ln_nhIso03[ilep]);
 	  lep.setVal("gIso04",    evSummary_.ln_gIso04[ilep]);  lep.setVal("chIso04",   evSummary_.ln_chIso04[ilep]);  lep.setVal("puchIso04", evSummary_.ln_puchIso04[ilep]); lep.setVal("nhIso04",   evSummary_.ln_nhIso04[ilep]);
 	  lep.setVal("ecalIso03",    evSummary_.ln_ecalIso03[ilep]);  lep.setVal("trk03",   evSummary_.ln_trkIso03[ilep]);  lep.setVal("hcalIso03",   evSummary_.ln_hcalIso03[ilep]);
@@ -553,6 +552,33 @@ data::PhysicsObjectCollection_t DataEventSummaryHandler::getPhysicsObject(int co
 	}
       break;
     case PHOTONS:
+      for(Int_t ig=0; ig<evSummary_.gn; ig++)
+	{
+	  data::PhysicsObject_t photon(evSummary_.gn_px[ig],evSummary_.gn_py[ig],evSummary_.gn_pz[ig],evSummary_.gn_en[ig]);
+	  photon.set("idbits",  evSummary_.gn_idbits[ig]);
+	  photon.setVal("gIso03",    evSummary_.gn_gIso03[ig]);        photon.setVal("chIso03",   evSummary_.gn_chIso03[ig]);  photon.setVal("puchIso03", evSummary_.gn_puchIso03[ig]);   photon.setVal("nhIso03",   evSummary_.gn_nhIso03[ig]);
+	  photon.setVal("gIso04",    evSummary_.gn_gIso04[ig]);        photon.setVal("chIso04",   evSummary_.gn_chIso04[ig]);  photon.setVal("puchIso04", evSummary_.gn_puchIso04[ig]);   photon.setVal("nhIso04",   evSummary_.gn_nhIso04[ig]);
+	  photon.setVal("ecalIso03",    evSummary_.gn_ecalIso03[ig]);  photon.setVal("trk03",   evSummary_.gn_trkIso03[ig]);   photon.setVal("hcalIso03",   evSummary_.gn_hcalIso03[ig]);
+	  photon.setVal("ecalIso04",    evSummary_.gn_ecalIso04[ig]);  photon.setVal("trk04",   evSummary_.gn_trkIso04[ig]);   photon.setVal("hcalIso04",   evSummary_.gn_hcalIso04[ig]);
+	  Int_t idx=evSummary_.gn_pid[ig];
+	  photon.setFlag("isconv", evSummary_.egn_isConv[idx]);
+	  photon.setVal("scen",    evSummary_.egn_sce[idx]);
+	  photon.setVal("sceta",   evSummary_.egn_sceta[idx]);
+	  photon.setVal("scphi",   evSummary_.egn_scphi[idx]);
+	  photon.setVal("hoe",     evSummary_.egn_hoe[idx]);
+	  photon.setVal("h2te",    evSummary_.egn_h2te[idx]);
+	  photon.setVal("detain",  evSummary_.egn_detain[idx]);
+	  photon.setVal("dphiin",  evSummary_.egn_dphiin[idx]);
+	  photon.setVal("sihih",   evSummary_.egn_sihih[idx]);
+	  photon.setVal("sipip",   evSummary_.egn_sipip[idx]);
+	  photon.setVal("sihip",   evSummary_.egn_sihip[idx]);
+	  photon.setVal("eopin",   evSummary_.egn_eopin[idx]);
+	  photon.setVal("eopout",  evSummary_.egn_eopout[idx]);
+	  photon.setVal("r9",      evSummary_.egn_r9[idx]);
+	  //photon.setVal("mvatrig",evSummary_.egn_mvatrigv0[idx]);
+	  //photon.setVal("mvanontrig",evSummary_.egn_mvanontrigv0[idx]);
+	  coll.push_back(photon);
+	}
       break;
     case MET:
       for(int imet=0; imet<evSummary_.metn; imet++)

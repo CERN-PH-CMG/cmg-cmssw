@@ -220,7 +220,7 @@ int main(int argc, char* argv[])
       //trigger bits
       bool eeTrigger   = ev.t_bits[0];
       bool emuTrigger  = ev.t_bits[4] || ev.t_bits[5];
-      bool mumuTrigger = ev.t_bits[3];
+      bool mumuTrigger = ev.t_bits[2] || ev.t_bits[3];
       if(filterOnlyEE)   {                   emuTrigger=false;  mumuTrigger=false; }
       if(filterOnlyEMU)  { eeTrigger=false;                     mumuTrigger=false; }
       if(filterOnlyMUMU) { eeTrigger=false;  emuTrigger=false;                     }
@@ -238,7 +238,7 @@ int main(int argc, char* argv[])
 	      Float_t chIso   = leptons[ilep].getVal("chIso03");
 	      //Float_t puchIso = leptons[ilep].getVal("puchIso03");
 	      Float_t nhIso   = leptons[ilep].getVal("nhIso03");
-	      float relIso=(TMath::Max(nhIso+gIso-ev.rho*utils::cmssw::getEffectiveArea(11,leptons[ilep].getVal("sceta")),Float_t(0.))+chIso)/leptons[ilep].pt();
+	      float relIso=(TMath::Max(nhIso+gIso-ev.rho*utils::cmssw::getEffectiveArea(11,sceta),Float_t(0.))+chIso)/leptons[ilep].pt();
 	      if(leptons[ilep].pt()<20)                      passKin=false;
 	      if(fabs(leptons[ilep].eta())>2.5)              passKin=false;
 	      if(fabs(sceta)>1.4442 && fabs(sceta)<1.5660)   passKin=false;

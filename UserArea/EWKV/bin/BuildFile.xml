@@ -2,5 +2,6 @@
 <use name="lhapdf"/>
 <environment>
   <bin name="runTopAnalysis"  file="runTopAnalysis.cc"></bin> 
+  <bin name="runVBFZAnalysis"  file="runVBFZAnalysis.cc"></bin> 
 </environment>
 <Flags CXXFLAGS="-g"/>
