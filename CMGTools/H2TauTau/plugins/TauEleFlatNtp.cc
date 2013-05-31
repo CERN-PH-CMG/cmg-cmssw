@@ -589,21 +589,14 @@ bool TauEleFlatNtp::fill(){
 
    fillTau(&(diTauSel_->leg1()));
 
+
+   ditaucharge_=diTauSel_->charge();
    ditaumass_=diTauSel_->mass();
    if(smearVisMass0pi0_>0.&&taudecaymode_==0) ditaumass_ += gRandom->Gaus(0,smearVisMass0pi0_);
    if(smearVisMass1pi0_>0.&&taudecaymode_==1) ditaumass_ += gRandom->Gaus(0,smearVisMass1pi0_);
-
-
-   ditaucharge_=diTauSel_->charge();
-   ditaueta_=diTauSel_->eta();
-   ditaupt_=diTauSel_->pt();
-   ditauphi_=diTauSel_->phi();
-   svfitmass_=0.;//diTauSel_->massSVFit();
-   ditaudeltaR_= reco::deltaR(diTauSel_->leg1().p4().eta(),diTauSel_->leg1().p4().phi(),
-			      diTauSel_->leg2().p4().eta(),diTauSel_->leg2().p4().phi()
-			      ); 
-   ditaudeltaEta_=diTauSel_->leg2().p4().eta()-diTauSel_->leg1().p4().eta();;
-   ditaudeltaPhi_=diTauSel_->leg2().p4().phi()-diTauSel_->leg1().p4().phi();;
+   taup4_=diTauSel_->leg1().p4();
+   mup4_=diTauSel_->leg2().p4();
+   fillDiTauVars();
    
 
    //apply pt and eta cuts on jets
@@ -652,16 +645,7 @@ bool TauEleFlatNtp::fill(){
    }
    fillMET();
   
-   //
-   pftransversemass_=sqrt(2*mupt_*pfmetpt_*(1-cos(muphi_-pfmetphi_)));
-   transversemass_=sqrt(2*mupt_*metP4_.pt()*(1-cos(muphi_-metP4_.phi())));
-   compZeta(diTauSel_->leg2().p4(),diTauSel_->leg1().p4(),metP4_.px(),metP4_.py(),&pZeta_,&pZetaVis_);
-
-   ///----SVFit
-   taup4_=diTauSel_->leg1().p4();
-   mup4_=diTauSel_->leg2().p4();
-   runSVFit();
-
+   fillDiTauMETVars();
 
 
    //VBF 

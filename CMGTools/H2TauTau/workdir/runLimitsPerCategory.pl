@@ -100,7 +100,7 @@ if($Input ne "0"){
 
 ####add bin-by-bin uncs
 if($addbbb==1){ 
-    `add_bbb_errors.py 'mt:8TeV:01,03,05:ZLL,ZL,QCD>W' -i std -o stdbbb --threshold 0.10`;
+    `add_bbb_errors.py '${ch}:8TeV:01,03,05:ZLL,ZL,QCD>W' -i std -o stdbbb --threshold 0.10`;
     $newinput="$topdir/stdbbb/${ch}/$newinputname";
     $newuncsdir="$topdir/stdbbb";
     `rm -rf ./std`;
@@ -246,7 +246,11 @@ if($plot==2){
 	`python ${CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/test/produce_macros.py -a sm -c '${ch}' --sm-categories-${ch} "${d}" -u 1 -p "${ECMS}TeV"`;
 	`sed -i 's/bool log=true/bool log=false/g' *.C`;
 	#`sed -i 's/BLIND_DATA = true/BLIND_DATA = false/g' *.C`;
-	`sed -i 's/BLIND_DATA = false/BLIND_DATA = true/g' *.C`;
+	#`sed -i 's/BLIND_DATA = false/BLIND_DATA = true/g' *.C`;
+	#htt_et_5_8TeV.C
+	if($d==2 || $d==3 || $d==5){
+	    `sed -i 's/BLIND_DATA = false/BLIND_DATA = true/g' htt_${ch}_${d}_${ECMS}TeV.C`;
+	}
 	`python ${CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/test/run_macros.py -a sm -c '${ch}' --sm-categories-${ch} "${d}"  -p "${ECMS}TeV"`;
     }
     

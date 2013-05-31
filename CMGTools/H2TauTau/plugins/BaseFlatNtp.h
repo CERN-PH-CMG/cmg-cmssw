@@ -245,6 +245,11 @@ protected:
   float ditaudeltaR_;
   float ditaudeltaEta_;
   float ditaudeltaPhi_;
+  float ditaumetpt_;
+  float ditaumetphi_;
+  float ditaumetsvfitpt_;
+  float ditaumetsvfiteta_;
+  float ditaumetsvfitphi_;
 
   //lepton variables
   float mupt_;
@@ -609,8 +614,8 @@ protected:
     float dpy=0.;
     for(std::vector<cmg::Tau>::const_iterator cand=unscaledTauList_->begin(); cand!=unscaledTauList_->end(); ++cand){
       if(cand->eta()==taueta_ && cand->phi()==tauphi_){
-	dpx=taupx_ - cand->p4().x();
-	dpy=taupy_ - cand->p4().y();
+	dpx=taup4_.x() - cand->p4().x();
+	dpy=taup4_.y() - cand->p4().y();
 	break;
       }
     }
@@ -638,8 +643,8 @@ protected:
       double lepPhi = 0.;
       int jetMult = 0;
       if(recoilCorreciton_%10==1){//for Z
-	lepPt  = ditaupt_;
-	lepPhi = ditauphi_;
+	lepPt  = (mup4_+taup4_).Pt(); //ditaupt_;
+	lepPhi = (mup4_+taup4_).Phi();
 	jetMult = njet_;
       }else if(recoilCorreciton_%10==2){//for W+jets
 	lepPt  =mupt_;
@@ -1009,6 +1014,40 @@ protected:
     *pZ = px*zetaX + py*zetaY;
   }
 
+  void fillDiTauVars(){
+    ditaueta_=(mup4_+taup4_).Eta();
+    ditaupt_=(mup4_+taup4_).Pt();
+    ditauphi_=(mup4_+taup4_).Phi();
+    
+    mutaucostheta_=taup4_.Vect().Dot(mup4_.Vect());
+    ditaudeltaR_= reco::deltaR(taup4_.Eta(),taup4_.Phi(),mup4_.Eta(),mup4_.Phi()); 
+    ditaudeltaEta_=mup4_.Eta()-taup4_.Eta();
+    ditaudeltaPhi_=mup4_.Phi()-taup4_.Phi();
+   
+  }
+  void fillDiTauMETVars(){
+    
+//     ditaueta_=diTauSel_->eta();
+//     ditaupt_=diTauSel_->pt();
+//     ditauphi_=diTauSel_->phi();    
+//     mutaucostheta_=diTauSel_->leg1().p4().Vect().Dot(diTauSel_->leg2().p4().Vect());
+//     ditaudeltaR_= reco::deltaR(diTauSel_->leg1().p4().eta(),diTauSel_->leg1().p4().phi(),
+// 			       diTauSel_->leg2().p4().eta(),diTauSel_->leg2().p4().phi()
+// 			       ); 
+//     ditaudeltaEta_=diTauSel_->leg2().p4().eta()-diTauSel_->leg1().p4().eta();;
+//     ditaudeltaPhi_=diTauSel_->leg2().p4().phi()-diTauSel_->leg1().p4().phi();;
+
+   
+    pftransversemass_=sqrt(2*mupt_*pfmetpt_*(1-cos(muphi_-pfmetphi_)));
+    transversemass_=sqrt(2*mupt_*metP4_.pt()*(1-cos(muphi_-metP4_.phi())));
+    compZeta(mup4_,taup4_,metP4_.px(),metP4_.py(),&pZeta_,&pZetaVis_);
+
+    ditaumetpt_=(mup4_+taup4_+metP4_).Pt();
+    ditaumetphi_=(mup4_+taup4_+metP4_).Phi();
+    
+    runSVFit();
+    
+  }
 
   void runSVFit(){
     svfitmass_=0.;
@@ -1036,6 +1075,9 @@ protected:
       //algo.integrate();
       algo.integrateMarkovChain();
       svfitmass_ = algo.getMass();
+      ditaumetsvfitpt_= algo.pt(); 
+      ditaumetsvfiteta_= algo.eta(); 
+      ditaumetsvfitphi_= algo.phi(); 
     }else {
       cout<<" Unrecognized SVFit version "<<endl;
       exit(0);

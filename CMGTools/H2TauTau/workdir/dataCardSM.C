@@ -21,7 +21,7 @@
 #include "configTauEle2012ABC.C"
 #include "configTauEle2012D.C"
 #include "configTauEle2012ABCD.C"
-
+#include "configTauEle2012Summer13.C"
 
 void fix0Bins(TH1F* h){
 
@@ -135,6 +135,7 @@ void dataCardSM(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TString mas
       if(dataset==2)analysis=configTauEle2012ABC("analysis",path);
       if(dataset==3)analysis=configTauEle2012D("analysis",path);
       if(dataset==4)analysis=configTauEle2012ABCD("analysis",path);
+      if(dataset==5)analysis=configTauEle2012Summer13("analysis",path);
     }
   }
   
@@ -157,14 +158,23 @@ void dataCardSM(Int_t channel, Int_t cat, Int_t year, Int_t dataset, TString mas
 //   analysis->tauIsoCut_=isocutoption;
 
   
+
+  ////////////////////////optimization of mT cut
+  if(option<0){
+    //use the digits of the option for each variable
+    cout<<endl<<"Simultaneous optimizaion with option "<<option<<endl;
+    analysis->mTCut_=5+abs(option)*5;
+  }
+  //////////////////////////////////////////////////
+
   ////////////////////////simultaneous optimization of 1Jet
   if(option>0){
     //use the digits of the option for each variable
     cout<<endl<<"Simultaneous optimizaion with option "<<option<<endl;
-    long higgsptcut=option%10;//vbfvars3: 0->140 : 20 --> 8 
-    long tauptcut=(option/10)%10;//taupt: 30 -> 50 : 5 --> 5
+    long tauptcut=(option/10)%10;
+    analysis->taupTCut_ = 20+(tauptcut-1)*5;
+     long higgsptcut=option%10;//vbfvars3: 0->140 : 20 --> 8 
     analysis->higgspTCut_=(higgsptcut-1)*20;
-    analysis->taupTCut_ = 30+(tauptcut-1)*5;
   }
   //////////////////////////////////////////////////
 

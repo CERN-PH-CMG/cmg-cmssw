@@ -91,7 +91,7 @@ public:
   }
 
   ///basic methods 
-  TH1F* getSample(TString samplename);
+  TH1F* getSample(TString samplename, bool removeLumiNorm=0);
   TH1F* getTotalData();
   TH1F* getTotalEmbedded();
   TH1F* getDiBoson();
