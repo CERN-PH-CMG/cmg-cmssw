@@ -20,18 +20,35 @@ gStyle.SetLabelSize(0.05, "XYZ")
 gStyle.SetNdivisions(510, "XYZ")
 gStyle.SetLegendBorderSize(0)
 
-channels=["WW","ZZ","WZ"]
-bins=[0,1,2,"012"]
+channels=["WW","ZZ","WZ","qW","qZ"]
 
-for bin in bins:
+for chan in channels:
+    print "chan =",chan
 
-    for chan in channels:
-        print "chan =",chan
+    if "q" in chan:
+       masses =[1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0, 2400.0, 2500.0, 2600.0, 2700.0, 2800.0, 2900.0, 3000.0, 3100.0, 3200.0, 3300.0, 3400.0, 3500.0, 3600.0, 3700.0]
+       bins=[3,4,"34"]
+    else:
+       masses =[1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0, 2400.0, 2500.0, 2600.0, 2700.0]
+       bins=[0,1,"01"]
 
-        masses =[1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0]
+    for bin in bins:
 
         for mass in masses:
             print "mass =",mass
 
-            os.system("combine datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".txt -M Asymptotic -v2 -m "+str(mass) + " --signif --rMax 1000 --rMin 0.01 &>Xvv.mX"+str(mass)+"_" + chan + "_Asymptotic_8TeV_channel"+str(bin)+".out")
-            os.system("mv higgsCombineTest.Asymptotic.mH"+str(int(mass))+".root Limits/Xvv.mX"+str(mass)+"_" + chan + "_Asymptotic_8TeV_channel"+str(bin)+".root")
+            outputname = "Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+"_asymplimit_submit.src"
+            logname = "Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+"_asymplimit_submit.out"
+            outputfile = open(outputname,'w')
+            outputfile.write('#!/bin/bash\n')
+            outputfile.write("cd ${CMSSW_BASE}/src/CMGTools/StatTools/MacrosCombine; eval `scramv1 run -sh`\n")
+            outputfile.write("combine datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel"+str(bin)+".txt -M Asymptotic -v2 -m "+str(mass) + " -n "+chan+str(bin)+" --signif --rMax 1000 --rMin 0.01 &>Xvv.mX"+str(mass)+"_" + chan + "_Asymptotic_8TeV_channel"+str(bin)+".out\n")
+            outputfile.write("mv higgsCombine"+chan+str(bin)+".Asymptotic.mH"+str(int(mass))+".root Limits/Xvv.mX"+str(mass)+"_" + chan + "_Asymptotic_8TeV_channel"+str(bin)+".root")
+            outputfile.close()
+  
+            command="rm "+logname
+	    print command
+            os.system(command)
+            command="bsub -q 1nh -o "+logname+" source "+outputname
+	    print command
+            os.system(command)

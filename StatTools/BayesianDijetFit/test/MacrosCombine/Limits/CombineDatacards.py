@@ -20,40 +20,34 @@ gStyle.SetLabelSize(0.05, "XYZ")
 gStyle.SetNdivisions(510, "XYZ")
 gStyle.SetLegendBorderSize(0)
 
-channel=[0, 1]
-sChannel=["WW","ZZ"]
+channels=["WW","ZZ","WZ","qW","qZ"]
 
+for chan in channels:
 
-
-for chan in channel:
-
-    masses =[1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0]
+    if "q" in chan:
+       masses =[1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0, 2400.0, 2500.0, 2600.0, 2700.0, 2800.0, 2900.0, 3000.0, 3100.0, 3200.0, 3300.0, 3400.0, 3500.0, 3600.0, 3700.0]
+    else:
+       masses =[1000.0, 1100.0, 1200.0, 1300.0, 1400.0, 1500.0, 1600.0, 1700.0, 1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0, 2400.0, 2500.0, 2600.0, 2700.0]
 
     for mass in masses:
         print "mass = ",mass
 
-        bin0="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel0.txt "
-        bin1="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel1.txt "
-        bin2="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel2.txt "
-        bin3="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel3.txt "
-        bin4="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel4.txt "
-        bin5="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel5.txt "
+        bin0="ch0=datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel0.txt "
+        bin1="ch1=datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel1.txt "
+        bin2="ch2=datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel2.txt "
+        bin3="ch3=datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel3.txt "
+        bin4="ch4=datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel4.txt "
+        bin5="ch5=datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel5.txt "
         
-        bin02="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel012.txt "
-        bin05="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel012345.txt "
-        bin01345="../datacards/Xvv.mX"+str(mass)+"_" + sChannel[chan] + "_8TeV_channel01345.txt " 
+        bin01="datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel01.txt "
+        bin34="datacards/Xvv.mX"+str(mass)+"_" + chan + "_8TeV_channel34.txt "
 
-        comb02 = "combineCards.py " + bin0 + bin1 + bin2 + " >" + bin02  
-        comb05 = "combineCards.py " + bin0 + bin1 + bin2 + bin3 + bin4 + bin5 + " >" + bin05  
-        comb01345 = "combineCards.py " + bin0 + bin1 + bin3 + bin4 + bin5 + " >" + bin01345
+        comb01 = "combineCards.py " + bin0 + bin1 + " >" + bin01
+        comb34 = "combineCards.py " + bin3 + bin4 + " >" + bin34
 
-        print comb02
-        print comb05
-        print comb01345
-        
-        os.system( comb02  )
-        os.system( comb05  )
-        os.system( comb01345 )
-
-
- 
+        if "q" in chan:
+            print comb34
+            os.system( comb34  )
+	else:
+            print comb01
+            os.system( comb01  )

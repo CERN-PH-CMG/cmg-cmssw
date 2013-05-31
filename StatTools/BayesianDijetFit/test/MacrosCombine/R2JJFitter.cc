@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.8 2013/05/08 15:23:06 hinzmann Exp $
+ * $Id: R2JJFitter.cc,v 1.9 2013/05/08 22:12:03 hinzmann Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -119,7 +119,6 @@ Double_t MMIN = 890;
 Double_t MMAX = 5000;
 std::string filePOSTfix="";
 double signalScaler=0.005;
-static const bool useNsub=false;
 
 void AddSigData(RooWorkspace*, Float_t);
 void AddBkgData(RooWorkspace*);
@@ -138,23 +137,12 @@ RooArgSet* defineVariables()
   RooRealVar* evWeight   = new RooRealVar("evWeight","Reweightings",0,100,"");
   RooRealVar* normWeight  = new RooRealVar("normWeight","Additionnal Weight",0,10000000,"");
   RooCategory* categories = new RooCategory("categories","event category 6") ;
-  if(useNsub)
-  {
-  categories->defineType("dijet_mass_2mtag_2hptag",0);
-  categories->defineType("dijet_mass_2mtag_1hptag_1lptag",1);
-  categories->defineType("dijet_mass_2mtag_2lptag",2);
-  categories->defineType("dijet_mass_1mtag_1hptag",3);
-  categories->defineType("dijet_mass_1mtag_1lptag",4);
-  categories->defineType("dijet_mass_0mtag",5);
-  } else {
-  categories->defineType("dijet_mass_2mtag_2mdtag",0);
-  categories->defineType("dijet_mass_2mtag_1mdtag",1);
-  categories->defineType("dijet_mass_2mtag_0mdtag",2);
-  categories->defineType("dijet_mass_1mtag_1mdtag",3);
-  categories->defineType("dijet_mass_1mtag_0mdtag",4);
-  categories->defineType("dijet_mass_0mtag",5);
-  }
-
+  categories->defineType("highPureVV",0);
+  categories->defineType("mediumPureVV",1);
+  categories->defineType("lowPureVV",2);
+  categories->defineType("highPureqV",3);
+  categories->defineType("mediumPureqV",4);
+  categories->defineType("lowPureqV",5);
   RooArgSet* ntplVars = new RooArgSet(*mgg, *categories, *evWeight, *normWeight);
  
   return ntplVars;
@@ -183,6 +171,12 @@ void runfits(const Float_t mass=2000, int ZZ_WW_WZ = 1, Bool_t dobands = false)
   }
   if (ZZ_WW_WZ==2)
   { signalname="WZ";
+  }
+  if (ZZ_WW_WZ==3)
+  { signalname="qW";
+  }
+  if (ZZ_WW_WZ==4)
+  { signalname="qZ";
   }
 
 
@@ -213,7 +207,7 @@ void runfits(const Float_t mass=2000, int ZZ_WW_WZ = 1, Bool_t dobands = false)
   MakeBkgWS(w, fileBkgName);
 
   int ncat = NCAT;
-  for (int c = 0; c < ncat; c++) MakeDataCard_1Channel(w, fileBaseName, fileBkgName, c, signalname);
+  for (int c = 0; c < ncat; c++) MakeDataCard_1Channel(w, fileBaseName, fileBkgName, c, signalname,ZZ_WW_WZ);
 
 
 // Make plots for data and fit results
@@ -294,6 +288,14 @@ void AddSigData(RooWorkspace* w, Float_t mass, int ZZ_WW_WZ) {
   if (ZZ_WW_WZ==2) {
     sigFile1.Close();
     TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_WZPy6OUT%d_miniTree.root", iMass)));
+  }
+  if (ZZ_WW_WZ==3) {
+    sigFile1.Close();
+    TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_QstarQWOUT%d_miniTree.root", iMass)));
+  }
+  if (ZZ_WW_WZ==4) {
+    sigFile1.Close();
+    TFile sigFile1(inDir+TString(Form("dijetWtag_Moriond_QstarQZOUT%d_miniTree.root", iMass)));
   }
 
   TTree* sigTree1 = (TTree*) sigFile1.Get("TCVARS");
@@ -1205,7 +1207,7 @@ Double_t effSigma(TH1 *hist) {
 
 
 
-void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char* fileBkgName, int iChan, TString signalname) {
+void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char* fileBkgName, int iChan, TString signalname, int ZZ_WW_WZ) {
 
   TString cardDir = "datacards/"+filePOSTfix;
   Int_t ncat = NCAT;
@@ -1258,21 +1260,30 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   outFile << "#Run with: combine -d hgg.mH130.0.shapes-Unbinned.txt -U -m 130 -H ProfileLikelihood -M MarkovChainMC --rMin=0 --rMax=20.0  -b 3000 -i 50000 --optimizeSim=1 --tries 30" << endl;
   outFile << "# Lumi =  " << lumi->getVal() << " pb-1" << endl;
   outFile << "imax 1" << endl;
+  if(ZZ_WW_WZ<3){
   outFile << "jmax 3" << endl;
+  } else {
+  outFile << "jmax 2" << endl;
+  }
   outFile << "kmax *" << endl;
   outFile << "---------------" << endl;
 
   
   outFile << "shapes *      * " << wsDir+TString(fileBkgName)+".root" << " w_all:$PROCESS_$CHANNEL" << endl;
   outFile << "shapes MggBkg * "<<  wsDir+TString(fileBkgName)+".root" << " w_all:CMS_hgg_bkg_8TeV_$CHANNEL" << endl;
+  if(ZZ_WW_WZ<3){
   outFile << "shapes MggSigWW * " << wsDir+TString(fileBaseName)+"_WW_8TeV"+".inputsig.root" << " w_all:CMS_hgg_WW_sig_$CHANNEL" << endl;
   outFile << "shapes MggSigZZ * " << wsDir+TString(fileBaseName)+"_ZZ_8TeV.inputsig.root" << " w_all:CMS_hgg_ZZ_sig_$CHANNEL" << endl;
   outFile << "shapes MggSigWZ * " << wsDir+TString(fileBaseName)+"_WZ_8TeV.inputsig.root" << " w_all:CMS_hgg_WZ_sig_$CHANNEL" << endl;
-
+  } else {
+  outFile << "shapes MggSigqW * " << wsDir+TString(fileBaseName)+"_qW_8TeV"+".inputsig.root" << " w_all:CMS_hgg_qW_sig_$CHANNEL" << endl;
+  outFile << "shapes MggSigqZ * " << wsDir+TString(fileBaseName)+"_qZ_8TeV.inputsig.root" << " w_all:CMS_hgg_qZ_sig_$CHANNEL" << endl;
+  }
   outFile << "---------------" << endl;
   outFile << Form("bin          cat%d", iChan) << endl;
   outFile <<  "observation   "  <<  Form("%.10lg",data[iChan]->sumEntries()) << endl;
   outFile << "------------------------------" << endl;
+  if(ZZ_WW_WZ<3){
   outFile << "bin                      "<< Form("cat%d       cat%d      cat%d      cat%d      ", iChan, iChan, iChan, iChan) << endl;
   outFile << "process                 MggSigWW MggSigZZ MggSigWZ     MggBkg     " << endl;
   outFile << "process                 -2 -1 0        1          " << endl;
@@ -1290,10 +1301,44 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   outFile << "--------------------------------" << endl;
   outFile << "# signal scaled by " << signalScaler << endl;
   
-  outFile << "lumi_8TeV       lnN  0.950/1.050  0.950/1.050  0.950/1.050    - " << endl;
-  outFile << "CMS_VV_eff_g         lnN  0.8/1.20  0.8/1.20  0.8/1.20      - # Signal Efficiency" << endl;
+  outFile << "lumi_8TeV       lnN  1.044  1.044  1.044    - " << endl;
+  if((iChan==0)||(iChan==3)){
+  outFile << "CMS_eff_vtau         lnN  1.2  1.2  1.2      - # tau21 efficiency" << endl;
+  } else {
+  // anti-correlated the high purity and medium purity categories
+  outFile << "CMS_eff_vtau         lnN  0.8  0.8  0.8      - # tau21 efficiency" << endl;
+  }
+  outFile << "CMS_eff_vmass         lnN  1.02  1.02  1.02      - # jet mass efficiency" << endl;
+  outFile << "CMS_scale_j         lnN  1.02  1.02  1.02      - # jet energy scale" << endl;
+  outFile << "CMS_pu         lnN  1.06  1.06  1.06      - # pileup" << endl;
+  } else {
+  outFile << "bin                      "<< Form("cat%d      cat%d      cat%d      ", iChan, iChan, iChan, iChan) << endl;
+  outFile << "process                 MggSigqW MggSigqZ     MggBkg     " << endl;
+  outFile << "process                 -1 0        1          " << endl;
+  if(signalScaler==1.)
+      signalScaler=1./signal[2]->sumEntries()*20;
+  if(signalname=="qZ")
+      outFile <<  "rate                      " 
+	  << "  0  " << signal[iChan]->sumEntries()*signalScaler << "  " << 1 << endl;
+  if(signalname=="qW")
+      outFile <<  "rate                      " 
+	  << "  " << signal[iChan]->sumEntries()*signalScaler << "  0  " << 1 << endl;
+  outFile << "--------------------------------" << endl;
+  outFile << "# signal scaled by " << signalScaler << endl;
+  
+  outFile << "lumi_8TeV       lnN  1.044  1.044    - " << endl;
+  if((iChan==0)||(iChan==3)){
+  outFile << "CMS_eff_vtau         lnN  1.1  1.1      - # tau21 efficiency" << endl;
+  } else {
+  // anti-correlated the high purity and medium purity categories
+  outFile << "CMS_eff_vtau         lnN  0.9  0.9      - # tau21 efficiency" << endl;
+  }
+  outFile << "CMS_eff_vmass         lnN  1.01  1.01      - # jet mass efficiency" << endl;
+  outFile << "CMS_scale_j         lnN  1.01  1.01      - # jet energy scale" << endl;
+  outFile << "CMS_pu         lnN  1.03  1.03      - # pileup" << endl;
+  }
   outFile << "# Parametric shape uncertainties, entered by hand." << endl;
-  outFile << Form("CMS_hgg_sig_m0_absShift    param   1   0.0125   # displacement of the mean w.r.t. nominal in EB*EX category, good R9",iChan) << endl;
+  outFile << Form("CMS_hgg_sig_m0_absShift    param   1   0.025   # displacement of the mean w.r.t. nominal in EB*EX category, good R9",iChan) << endl;
   outFile << Form("CMS_hgg_sig_sigmaScale     param   1   0.1   # multiplicative correction to sigmas in EB*EX category, good R9",iChan) << endl;
  
   outFile << Form("CMS_hgg_bkg_8TeV_cat%d_norm           flatParam  # Normalization uncertainty on background slope",iChan) << endl;
@@ -1387,9 +1432,11 @@ Double_t effSigma(TH1 *hist) {
   return widmin;
 }
 
-void R2JJFitter(double mass, std::string postfix="")
+void R2JJFitter(double mass, std::string postfix="", int VVqV=0)
 {
     filePOSTfix=postfix;
+    if(VVqV==0)
+    {
     if(postfix!="")
     {
       // for optimization studies
@@ -1415,4 +1462,8 @@ void R2JJFitter(double mass, std::string postfix="")
     };
     runfits(mass, 0);
     runfits(mass, 2);
+    } else {
+    runfits(mass, 3);
+    runfits(mass, 4);
+    }
 }

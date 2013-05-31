@@ -12,18 +12,21 @@ shapes MggSigZZ * ../workspaces/Xvv.mX1600.0_ZZ_8TeV.inputsig.root w_all:CMS_hgg
 shapes MggSigWZ * ../workspaces/Xvv.mX1600.0_WZ_8TeV.inputsig.root w_all:CMS_hgg_WZ_sig_$CHANNEL
 ---------------
 bin          cat2
-observation   17972
+observation   26257
 ------------------------------
 bin                      cat2       cat2      cat2      cat2      
 process                 MggSigWW MggSigZZ MggSigWZ     MggBkg     
 process                 -2 -1 0        1          
-rate                        0  1.185  0  1
+rate                        0  0.635  0  1
 --------------------------------
 # signal scaled by 0.005
-lumi_8TeV       lnN  0.950/1.050  0.950/1.050  0.950/1.050    - 
-CMS_VV_eff_g         lnN  0.8/1.20  0.8/1.20  0.8/1.20      - # Signal Efficiency
+lumi_8TeV       lnN  1.044  1.044  1.044    - 
+CMS_eff_vtau         lnN  0.8  0.8  0.8      - # tau21 efficiency
+CMS_eff_vmass         lnN  1.02  1.02  1.02      - # jet mass efficiency
+CMS_scale_j         lnN  1.02  1.02  1.02      - # jet energy scale
+CMS_pu         lnN  1.06  1.06  1.06      - # pileup
 # Parametric shape uncertainties, entered by hand.
-CMS_hgg_sig_m0_absShift    param   1   0.0125   # displacement of the mean w.r.t. nominal in EB*EX category, good R9
+CMS_hgg_sig_m0_absShift    param   1   0.025   # displacement of the mean w.r.t. nominal in EB*EX category, good R9
 CMS_hgg_sig_sigmaScale     param   1   0.1   # multiplicative correction to sigmas in EB*EX category, good R9
 CMS_hgg_bkg_8TeV_cat2_norm           flatParam  # Normalization uncertainty on background slope
 CMS_hgg_bkg_8TeV_slope2_cat2         flatParam  # Mean and absolute uncertainty on background slope
