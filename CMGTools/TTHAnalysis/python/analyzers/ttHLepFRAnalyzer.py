@@ -57,9 +57,11 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
         bookJet(tr,"TagJet", isMC)
         #bookParticle(tr,"TagPhoton", isMC)
 
-        for I in (8,12,17,24,40):
+        for I in (5,8,12,17,24,40):
             var(tr,"Trig_Probe_Mu%d"%I, int)
             var(tr,"Trig_Tag_Mu%d"%I, int)
+        var(tr,"Trig_Probe_RelIso1p0Mu5", int)
+        var(tr,"Trig_Tag_RelIso1p0Mu5",   int)
         var(tr,"Trig_Probe_1ElT", int)
         var(tr,"Trig_Probe_1ElL", int)
         var(tr,"Trig_Pair_2Mu", int)
@@ -79,6 +81,14 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
 
     def beginLoop(self):
         super(ttHLepFRAnalyzer,self).beginLoop()
+        self.counters.addCounter('pairs')
+        count = self.counters.counter('pairs')
+        count.register('all events')
+        count.register('one lepton')
+        count.register('loose jet')
+        count.register('high pt jet')
+        count.register('bjet tag')
+        count.register('mu tag')
 
     def process(self, iEvent, event):
         self.readCollections( iEvent )
@@ -96,9 +106,12 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
         fill(tr, 'metNoPU', event.metNoPU.pt())
         fill(tr, 'metPhiNoPU', event.metNoPU.phi())
 
+        self.counters.counter('pairs').inc('all events')
+
         # di-lepton veto: simple, for now
         if len(event.selectedLeptons) > 1: 
             return False
+        self.counters.counter('pairs').inc('one lepton')
 
         def mtw(x1,x2):
             return sqrt(2*x1.pt()*x2.pt()*(1-cos(x1.phi()-x2.phi())))
@@ -154,25 +167,31 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
             fillLepton(tr, "Probe", lep)
             fill(tr, 'mtw_probe', mtw(lep, event.met))
             fill(tr, 'mtwNoPU_probe', mtw(lep, event.metNoPU))
+            fill(tr, 'Trig_Probe_Mu5',  passTrigg(lep,['Mu5']))
             fill(tr, 'Trig_Probe_Mu8',  passTrigg(lep,['Mu8']))
             fill(tr, 'Trig_Probe_Mu12', passTrigg(lep,['Mu12']))
             fill(tr, 'Trig_Probe_Mu17', passTrigg(lep,['Mu17']))
             fill(tr, 'Trig_Probe_Mu24', passTrigg(lep,['Mu24_eta2p1']))
             fill(tr, 'Trig_Probe_Mu40', passTrigg(lep,['Mu40_eta2p1']))
+            fill(tr, 'Trig_Probe_RelIso1p0Mu5',  passTrigg(lep,['RelIso1p0Mu5']))
             fill(tr, 'Trig_Probe_1ElL', passSingleElL(lep))
             fill(tr, 'Trig_Probe_1ElT', passSingleElT(lep))
             # first search for a jet tag
             fill(tr,'tagType',1) # jet
             for jet in event.cleanJets:
-                if jet.pt() < self.cfg_ana.tagJetSel['minPt']: continue
-                if jet.btag('combinedSecondaryVertexBJetTags') < self.cfg_ana.tagJetSel['minBTag']: continue
                 dr   = deltaR(jet.eta(),jet.phi(),lep.eta(),lep.phi())
                 dphi = deltaPhi(jet.phi(),lep.phi())
                 if (dr < 0.8): continue
+                self.counters.counter('pairs').inc('loose jet')
+                if jet.pt() < self.cfg_ana.tagJetSel['minPt']: continue
+                self.counters.counter('pairs').inc('high pt jet')
+                if jet.btag('combinedSecondaryVertexBJetTags') < self.cfg_ana.tagJetSel['minBTag']: continue
+                self.counters.counter('pairs').inc('bjet tag')
                 fillJet(tr, "TagJet", jet)
                 fill(tr, 'dr_tp',   dr)
                 fill(tr, 'dphi_tp', dphi)
                 tr.tree.Fill()
+                break
             # then search for a lepton tag
             fill(tr,'tagType',13) # muon
             for tag in event.looseLeptons:
@@ -190,6 +209,8 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
                 fill(tr, 'dr_tp',   dr)
                 fill(tr, 'dphi_tp', dphi)
                 fill(tr, 'mll', (tag.p4()+lep.p4()).M())
+                fill(tr, 'Trig_Tag_RelIso1p0Mu5',  passTrigg(tag,['RelIso1p0Mu5']))
+                fill(tr, 'Trig_Tag_Mu5',  passTrigg(tag,['Mu5']))
                 fill(tr, 'Trig_Tag_Mu8',  passTrigg(tag,['Mu8']))
                 fill(tr, 'Trig_Tag_Mu12', passTrigg(tag,['Mu12']))
                 fill(tr, 'Trig_Tag_Mu17', passTrigg(tag,['Mu17']))
@@ -197,6 +218,8 @@ class ttHLepFRAnalyzer( TreeAnalyzerNumpy ):
                 fill(tr, 'Trig_Tag_Mu40', passTrigg(tag,['Mu40_eta2p1']))
                 fill(tr, 'Trig_Pair_2Mu',  abs(lep.pdgId()) == 13 and passDoubleMu(tag,lep))
                 fill(tr, 'Trig_Pair_MuEG', abs(lep.pdgId()) == 11 and passMuEG(tag,lep))
+                self.counters.counter('pairs').inc('mu tag')
                 tr.tree.Fill()
+                break
  
         return True
