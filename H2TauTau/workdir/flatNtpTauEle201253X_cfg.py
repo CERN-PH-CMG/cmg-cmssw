@@ -30,7 +30,7 @@ configureFlatNtpSampleTauEle2012(process.flatNtp,sampleName)
 process.flatNtp.diTauTag = 'cmgTauEle'
 process.flatNtp.metType = 2
 process.flatNtp.runSVFit = 2 #1 old #2 new
-process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
+#process.flatNtp.recoilCorrection = 0 #0 no, 1 Z, 2 W
 
 
 

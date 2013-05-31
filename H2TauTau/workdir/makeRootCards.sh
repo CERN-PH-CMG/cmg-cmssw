@@ -35,7 +35,8 @@
 #######################################################################
 #export SAMPLEPATH=muTau201253X_580Feb7
 #export SAMPLEPATH=muTau201253X_5140Apr18Isolations
-export SAMPLEPATH=muTau201253X_5140May2_TauIso3HitorMVA2
+#export SAMPLEPATH=muTau201253X_5140May2_TauIso3HitorMVA2
+
 ###2012ABCD
 #rootl histosForDataCardSM.C\(1\,2012\,4\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\)
 #rootl histosForDataCardSM.C\(1\,2012\,4\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\)
@@ -81,9 +82,6 @@ export SAMPLEPATH=muTau201253X_5140May2_TauIso3HitorMVA2
 #rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\)
 #rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
 #mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13.root
-#mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_mva1.root
-#mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_mva2.root
-#mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_3hit.root
 
 
 ###Summer13 scan of the isolation
@@ -107,32 +105,32 @@ export SAMPLEPATH=muTau201253X_5140May2_TauIso3HitorMVA2
 #done
 
 
-###########Grand optimization of Boost###################
-###3Hit
-for mt in 1 2 3 4 5; do
-for jpt in 1 2 3; do
-for tpt in 1 2 3 4 5; do
-for tiso in 1 2 3; do
-
-option=${mt}${jpt}${tpt}${tiso}
-
-if [ $option -lt 1124 ]
-then
-    continue 
-fi
-
-echo $option
-
-rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,${option}\)
-rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\,${option}\)
-rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\,${option}\)
-rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
-mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_simultopt_${option}.root
-
-done
-done
-done
-done
+############Grand optimization of Boost###################
+####3Hit
+#for mt in 1 2 3 4 5; do
+#for jpt in 1 2 3; do
+#for tpt in 1 2 3 4 5; do
+#for tiso in 1 2 3; do
+#
+#option=${mt}${jpt}${tpt}${tiso}
+#
+#if [ $option -lt 1124 ]
+#then
+#    continue 
+#fi
+#
+#echo $option
+#
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"\"\,${option}\)
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tUp\"\,${option}\)
+#rootl histosForDataCardSM.C\(1\,2012\,5\,\"svfitmass\"\,\"\/data\/benitezj\/Samples\/${SAMPLEPATH}\"\,\"tDown\"\,${option}\)
+#rootl mergeDataCardsSM.C\(1\,\"svfitmass\"\)
+#mv muTauSM_svfitmass.root htt_mt.inputs-sm-8TeV-summer13_simultopt_${option}.root
+#
+#done
+#done
+#done
+#done
 
 
 

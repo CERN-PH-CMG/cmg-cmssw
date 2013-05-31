@@ -20,10 +20,10 @@ Float_t c4[4]={.25,.49,.22,.57};//on the left  bottom
 Float_t xbinsValues[27]={0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350};
 Float_t xbinsValuesVBF[14]={0,20,40,60,80,100,120,140,160,180,200,250,300,350};
 
-//TString mvBlindSel="(ditaumass<60||120<ditaumass)";
-//TString svBlindSel="(svfitmass<100||160<svfitmass)";  
-TString mvBlindSel="";
-TString svBlindSel="";
+TString mvBlindSel="(ditaumass<60||120<ditaumass)";
+TString svBlindSel="(svfitmass<100||160<svfitmass)";  
+//TString mvBlindSel="";
+//TString svBlindSel="";
 
 
 void plotInclusive(TauElePlotter* analysis){
@@ -32,13 +32,14 @@ void plotInclusive(TauElePlotter* analysis){
   analysis->plotInc("mupt",25,0,100,1,1,1,"","",0,2," muon pt   (GeV)","",c,0,"pt_1_et_2012");
   analysis->plotInc("mueta",40,-2.5,2.5,1,1,1,"","",0,2," muon  #eta","",c2,0,"eta_1_et_2012"); 
   analysis->plotInc("muphi",20,-3.5,3.5,1,1,1,"","",0,2," muon phi ","",c3,0,"phi_1_et_2012");    
-  analysis->plotInc("muiso",100,0,1,1,0,1,"(tauisodiscmva>=1)","",0,2," electron relIso","",c,0,"iso_1_et_2012");
+  analysis->plotInc("muiso",100,0,1,1,0,1,"(tauiso3hitraw<1.5)","",0,2," electron relIso","",c,0,"iso_1_et_2012");
 
   analysis->plotInc("taumass",20,0,2,1,1,1,"","",0,2," tau mass   (GeV)","",c,0,"taumass_et_2012");
   analysis->plotInc("taupt",25,0,100,1,1,1,"","",0,2," tau pt   (GeV)","",c,0,"pt_2_et_2012");
   analysis->plotInc("taueta",40,-2.5,2.5,1,1,1,"","",0,2," tau  #eta","",c2,0,"eta_2_et_2012"); 
   analysis->plotInc("tauphi",20,-3.5,3.5,1,1,1,"","",0,2," tau phi ","",c3,0,"phi_2_et_2012");    
-  analysis->plotInc("tauisomva",20,-1.0,1.01,1,0,1,"(muiso<0.1)","",0,2,"tau iso mva","",c,0,"iso_2_et_2012");
+  //analysis->plotInc("tauisomva",20,-1.0,1.01,1,0,1,"(muiso<0.1)","",0,2,"tau iso 3hit","",c,0,"iso_2_et_2012");
+  analysis->plotInc("tauiso3hitraw",40,0,10,1,0,1,"(muiso<0.1)","",0,2,"tau iso. 3hit","",c,0,"iso_2_et_2012");
   analysis->plotInc("taudecaymode",11,0,11,1,1,1,"","",0,2,"Tau decay mode","",c,0,"taudecaymode_et_2012");
   analysis->plotInc("tauehop",60,0,1.2,1,1,1,"","",0,2," tau (E+H)/p  (GeV)","",c,0,"tauehop_et_2012");
 
@@ -59,7 +60,7 @@ void plot1Jet(TauElePlotter* analysis){
   analysis->plotInc("svfitmass",60,0,300,1,1,1,"(njet>=1)","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_1Jet_et_2012");
 }
 
-void plotBJet(TauMuPlotter* analysis){
+void plotBJet(TauElePlotter* analysis){
   ///nbjet>=1
   analysis->plotInc("transversemass",20,0,200,1,1,0,"(nbjet>=1&&njet<2)","",2,2,"M_{T}   [GeV]","",c,0,"mt_1_met_btag_et_2012");
   analysis->plotInc("ditaumass",40,0,200,1,1,1,"(nbjet>=1&&njet<2)","",0,2,"m_{vis}   (GeV)","",c,0,"mvis_btag_et_2012");
@@ -130,7 +131,7 @@ void plot1JetLow(TauElePlotter* analysis){
   analysis->plotInc("svfitmass",0,0,350,1,1,1,analysis->getSMcut(2),svBlindSel,0,5,"m(#tau#tau)  (GeV)","dN/dm(#tau#tau)",c,5,"m_sv_1jetlow_et_2012");  
 }  
 
-void plot0JetLow(TauElePlotter* analysis){
+void plot1JetHigh(TauElePlotter* analysis){
   analysis->setVariableBinning(26,xbinsValues);
   analysis->plotInc("mupt",25,0,100,1,1,1,analysis->getSMcut(3),"",8,2," electron pt   (GeV)","",c,0,"pt_1_1jethigh_et_2012");
   //   analysis->plotInc("mueta",20,-2.5,2.5,1,1,1,analysis->getSMcut(3),"",8,2," electron  #eta","",c2,0,"eta_1_1jethigh_et_2012"); 
@@ -197,7 +198,8 @@ void plotTauEle2012(){
   //TString path="/data/benitezj/Samples/eTau201253X_5140Apr7";//new anti-e discriminator
   //TString path="/data/benitezj/Samples/eTau201253X_5140Apr11";
   //TString path="/data/benitezj/Samples/eTau201253X_5140Apr13";
-  TString path="/data/benitezj/Samples/eTau201253X_5140Apr14";
+  //TString path="/data/benitezj/Samples/eTau201253X_5140Apr14";
+  TString path="/data/benitezj/Samples/eTau2012_5140May27";
   TauElePlotter*analysis=configTauEle2012Summer13("analysis",path);
 
 
@@ -211,13 +213,14 @@ void plotTauEle2012(){
   //analysis->plotQCDSSOSRatio();
 
 
-  plotInclusive(analysis);
+  analysis->plotInc("svfitmass",60,0,300,1,1,1,"","",0,2," m(#tau#tau)   (GeV)","",c,0,"m_sv_et_2012");
+//   plotInclusive(analysis);
 //   plot1Jet(analysis);
 //   plot2Jet(analysis);
-//   plotBJet(analysis);
-//   plot0JetLow(analysis);
-//   plot0JetHigh(analysis);
-//   plot1JetLow(analysis);
+//  plotBJet(analysis);
+//  plot0JetLow(analysis);
+//  plot0JetHigh(analysis);
+//  plot1JetLow(analysis);
 //   plot1JetHigh(analysis);
 //   plotVBF(analysis);
 

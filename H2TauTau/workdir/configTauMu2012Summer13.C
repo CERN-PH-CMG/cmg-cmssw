@@ -9,9 +9,10 @@ TauMuPlotter * configTauMu2012Summer13(TString name, TString path){
   analysis->setOutputPath(path);
   analysis->setQCDOStoSSRatio(1.06);
   analysis->setZTTType(2);
-  analysis->mTCut_=20;
-  analysis->taupTCut_=40;
-  analysis->leadJetpTCut_=30;
+  analysis->mTCut_=30;///!!!!
+  analysis->taupTCut_=40;///!!!!
+  analysis->higgspTCut_=80;
+
   analysis->eventWeight_="pupWeights4*embeddedGenWeight*triggerEffWeightsTau4*triggerEffWeightsMu4*selectionEffWeightsId4*selectionEffWeightsIso4*signalWeight";//
   //analysis->tauIsoCut_="(tauisomvaraw>0.795)";//loose
   //analysis->tauIsoCut_="(tauisomva2raw>0.85)";//loose

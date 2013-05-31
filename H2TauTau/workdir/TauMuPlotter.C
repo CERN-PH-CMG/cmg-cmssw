@@ -10,7 +10,7 @@
 #include <TText.h>
 #include <TPaveText.h>
 #include <TGraphAsymmErrors.h>
-#include "CMGTools/H2TauTau/interface/QCDEstimate.h"
+//#include "CMGTools/H2TauTau/interface/QCDEstimate.h"
 
 TauMuPlotter::TauMuPlotter():
   TNamed("","")
@@ -3414,13 +3414,13 @@ void  TauMuPlotter::plotTauTrigger(Int_t Region, TString tag){
 
 
   /////////////////compare to the curve from Josh
-  TriggerEfficiency triggerEff_;
+  //TriggerEfficiency triggerEff_;
   TGraph HTAUPTTrigEff_Josh;
   TGraph HMCTAUPTTrigEff_Josh;
   for(Int_t p=0;p<100;p++){
-    float x=17+p;
-    HTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau_muTau_Data_2012ABCD(x,(Region==1)*0.0+(Region==2)*2.0));
-    HMCTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau_muTau_MC_2012ABCD(x,(Region==1)*0.0+(Region==2)*2.0));
+    //float x=17+p;
+    //HTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau_muTau_Data_2012ABCD(x,(Region==1)*0.0+(Region==2)*2.0));
+    //HMCTAUPTTrigEff_Josh.SetPoint(p,x,triggerEff_.effTau_muTau_MC_2012ABCD(x,(Region==1)*0.0+(Region==2)*2.0));
   }
 
   C.Clear();

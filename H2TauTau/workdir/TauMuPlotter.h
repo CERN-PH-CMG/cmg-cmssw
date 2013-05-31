@@ -28,7 +28,7 @@ using namespace std;
 #include <TGraph.h>
 
 
-#include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
+//#include "CMGTools/H2TauTau/interface/TriggerEfficiency.h"
 
 class TauMuPlotter : public TNamed {
 
@@ -261,20 +261,21 @@ public:
       cout<<" Category : "<<sm<<" undefined "<<endl;
       return TString("");
     }
+
     TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
     TString notvbfcut=TString("(!")+vbfcut+")";
-    TString boostcut=TString("(njet>=1&&nbjet==0)*(leadJetPt>")+leadJetpTCut_+")*(vbfvars3>"+higgspTCut_+")";
-    TString notboostcut=TString("(!")+boostcut+")";
+    TString zerojetcut=TString("(njet==0&&nbjet==0)");
+    TString onejetcut=TString("(njet>=1&&nbjet==0)");
     TString bjetcut="(njet<2&&nbjet>=1)";
-    TString notbjetcut=TString("(!")+bjetcut+")";
-    TString zerojetcut="(njet==0&&nbjet==0)";
     TString tauhighcut=TString("(taupt>")+taupTCut_+")";
-    TString taulowcut=TString("(!")+tauhighcut+")";
+    TString taulowcut=TString("(taupt<")+taupTCut_+")";
+    
+
     TString SMcut[7];
     SMcut[0]=zerojetcut+"*"+taulowcut;
     SMcut[1]=zerojetcut+"*"+tauhighcut;
-    SMcut[2]=notvbfcut+"*"+boostcut+"*"+taulowcut;
-    SMcut[3]=notvbfcut+"*"+boostcut+"*"+tauhighcut;
+    SMcut[2]=notvbfcut+"*"+onejetcut+"*"+taulowcut;
+    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+tauhighcut;
     SMcut[4]=vbfcut;
     SMcut[5]=bjetcut+"*"+taulowcut;
     SMcut[6]=bjetcut+"*"+tauhighcut;
@@ -284,6 +285,38 @@ public:
     return SMcut[sm];
   }
 
+
+  TString getSMcutOpt(Int_t sm){
+    if(sm<0||6<sm){
+      cout<<" Category : "<<sm<<" undefined "<<endl;
+      return TString("");
+    }
+
+    TString vbfcut="(njet>=2&&njetingap==0&&diJetMass>500.&&abs(diJetDeltaEta)>3.5)";
+    TString notvbfcut=TString("(!")+vbfcut+")";
+    TString zerojetcut=TString("(njet==0&&nbjet==0)");
+    TString onejetcut=TString("(njet>=1&&nbjet==0)");
+    TString bjetcut="(njet<2&&nbjet>=1)";
+    TString tauhighcut=TString("(taupt>")+taupTCut_+")";
+    TString taulowcut=TString("(taupt<")+taupTCut_+")";
+    TString higsptcut=TString("(ditaumetpt>")+higgspTCut_+")";
+
+    TString notboosthigh="(!(taupt>40&&ditaumetpt>80))";
+    TString notboostmedium="(!(taupt>30&&ditaumetpt>80))";
+    
+    TString SMcut[7];
+    SMcut[0]=zerojetcut+"*"+taulowcut;
+    SMcut[1]=zerojetcut+"*"+tauhighcut;
+    SMcut[2]=notvbfcut+"*"+onejetcut+"*"+taulowcut;
+    SMcut[3]=notvbfcut+"*"+onejetcut+"*"+tauhighcut+"*"+higsptcut;
+    SMcut[4]=vbfcut;
+    SMcut[5]=bjetcut+"*"+taulowcut;
+    SMcut[6]=bjetcut+"*"+tauhighcut;
+    cout<<"Category selection : "<<SMcut[sm]<<endl;
+
+
+    return SMcut[sm];
+  }
 
 
   TString getSMcutTauTau(Int_t sm){

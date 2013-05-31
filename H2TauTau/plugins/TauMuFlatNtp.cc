@@ -604,68 +604,14 @@ bool TauMuFlatNtp::fill(){
 
   fillTau(&(diTauSel_->leg1()));
 
-//   taumass_=diTauSel_->leg1().p4().M();
-//   taupt_=diTauSel_->leg1().pt();
-//   taupx_=diTauSel_->leg1().p4().x();
-//   taupy_=diTauSel_->leg1().p4().y();
-//   taueta_=diTauSel_->leg1().eta();
-//   tauphi_=diTauSel_->leg1().phi();
-//   taudz_=computeDz(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());   //taudz_=diTauSel_->leg1().dz();
-//   taudxy_=computeDxy(diTauSel_->leg1().leadChargedHadrVertex(),diTauSel_->leg1().p4());   //taudxy_=diTauSel_->leg1().dxy();
-//   taucharge_=diTauSel_->leg1().charge();
-
-//   tautruth_=truthMatchLeg(diTauSel_->leg1().eta(),diTauSel_->leg1().phi(),tautruthpt_,tautrutheta_,tautruthstatus_);
-//   //cout<<tautruth_<<" "<<tautruthstatus_<<endl;
-//   tauehop_=diTauSel_->leg1().eOverP();
-//   taueop_=diTauSel_->leg1().leadChargedHadrEcalEnergy()/diTauSel_->leg1().p();
-//   tauhoe_=diTauSel_->leg1().leadChargedHadrHcalEnergy()/diTauSel_->leg1().leadChargedHadrEcalEnergy();
-//   taudecaymode_=diTauSel_->leg1().decayMode();
-//   taux_=diTauSel_->leg1().leadChargedHadrVertex().x();
-//   tauy_=diTauSel_->leg1().leadChargedHadrVertex().y();
-//   tauz_=diTauSel_->leg1().leadChargedHadrVertex().z();
-//   tauiso_=diTauSel_->leg1().relIso(0.5);
-//   tauisomva_=diTauSel_->leg1().tauID("byRawIsoMVA");
-
-//   tauleadpt_=diTauSel_->leg1().leadChargedHadrPt();  
-//   tauleadhcal_=diTauSel_->leg1().leadChargedHadrHcalEnergy();
-//   tauleadecal_=diTauSel_->leg1().leadChargedHadrEcalEnergy();
-
-//   tauantie_=0;
-//   if(diTauSel_->leg1().tauID("againstElectronLoose")>0.5)tauantie_=1;
-//   if(diTauSel_->leg1().tauID("againstElectronMedium")>0.5)tauantie_=2;
-//   if(diTauSel_->leg1().tauID("againstElectronTight")>0.5)tauantie_=3;
-//   tauantimu_=0;
-//   if(diTauSel_->leg1().tauID("againstMuonLoose")>0.5)tauantimu_=1;
-//   if(diTauSel_->leg1().tauID("againstMuonMedium")>0.5)tauantimu_=2;
-//   if(diTauSel_->leg1().tauID("againstMuonTight")>0.5)tauantimu_=3;
-//   tauisodisc_=0;
-//   if(diTauSel_->leg1().tauID("byVLooseCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=1;
-//   if(diTauSel_->leg1().tauID("byLooseCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=2;
-//   if(diTauSel_->leg1().tauID("byMediumCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=3;
-//   if(diTauSel_->leg1().tauID("byTightCombinedIsolationDeltaBetaCorr")>0.5)tauisodisc_=4;
-//   tauisodiscmva_=0;
-//   if(diTauSel_->leg1().tauID("byLooseIsoMVA")>0.5)tauisodiscmva_=1;
-//   if(diTauSel_->leg1().tauID("byMediumIsoMVA")>0.5)tauisodiscmva_=2;
-//   if(diTauSel_->leg1().tauID("byTightIsoMVA")>0.5)tauisodiscmva_=3;
-
-  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass object vars "<<endl;  
-
+  //fill di-tau variables here and below after filling MET
+  ditaucharge_=diTauSel_->charge();
   ditaumass_=diTauSel_->mass();
   if(smearVisMass0pi0_>0.&&taudecaymode_==0) ditaumass_ += gRandom->Gaus(0,smearVisMass0pi0_);
   if(smearVisMass1pi0_>0.&&taudecaymode_==1) ditaumass_ += gRandom->Gaus(0,smearVisMass1pi0_);
-
-  ditaucharge_=diTauSel_->charge();
-  ditaueta_=diTauSel_->eta();
-  ditaupt_=diTauSel_->pt();
-  ditauphi_=diTauSel_->phi();
-  svfitmass_=0.;//diTauSel_->massSVFit();
-  mutaucostheta_=diTauSel_->leg1().p4().Vect().Dot(diTauSel_->leg2().p4().Vect());
-  ditaudeltaR_= reco::deltaR(diTauSel_->leg1().p4().eta(),diTauSel_->leg1().p4().phi(),
-			     diTauSel_->leg2().p4().eta(),diTauSel_->leg2().p4().phi()
-			     ); 
-  ditaudeltaEta_=diTauSel_->leg2().p4().eta()-diTauSel_->leg1().p4().eta();;
-  ditaudeltaPhi_=diTauSel_->leg2().p4().phi()-diTauSel_->leg1().p4().phi();;
-
+  taup4_=diTauSel_->leg1().p4();
+  mup4_=diTauSel_->leg2().p4();
+  fillDiTauVars();
 
   if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass ditau vars"<<endl;
 
@@ -701,8 +647,6 @@ bool TauMuFlatNtp::fill(){
   if(taujet) taujeteta_=taujet->eta();
 
   
-
-  
   //find the jet matching to the mu
   mujetpt_=0.;
   mujeteta_=0.;
@@ -725,29 +669,13 @@ bool TauMuFlatNtp::fill(){
   }
   fillMET();
 
-
-  //
-  pftransversemass_=sqrt(2*mupt_*pfmetpt_*(1-cos(muphi_-pfmetphi_)));
-  transversemass_=sqrt(2*mupt_*metP4_.pt()*(1-cos(muphi_-metP4_.phi())));
-  compZeta(diTauSel_->leg2().p4(),diTauSel_->leg1().p4(),metP4_.px(),metP4_.py(),&pZeta_,&pZetaVis_);
-
-  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass MET "<<endl;
-  
-  //----SVFit
-  taup4_=diTauSel_->leg1().p4();
-  mup4_=diTauSel_->leg2().p4();
-  runSVFit();
-
-  if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<" Pass SVFit  "<<endl;
-
+  fillDiTauMETVars();
 
   //VBF variables
   vbfmva_=0.;
   if(njet20_>=2) fillVBFMVA();
   vbfmva2012_=0.;
   if(njet20_>=2) fillVBFMVA2012();
-
-
 
 
   if(printSelectionPass_){
@@ -796,8 +724,8 @@ bool TauMuFlatNtp::vetoDiLepton(){
   }
   if(mu1&&mu2){
     if(printSelectionPass_)cout<<runnumber_<<":"<<eventid_<<"      fail dilepon veto"<<endl;
-    if(printSelectionPass_>1)cout<<"mu1 info: "<<endl; printMuonInfo(mu1);
-    if(printSelectionPass_>1)cout<<"mu2 info: "<<endl; printMuonInfo(mu2);
+    if(printSelectionPass_>1){cout<<"mu1 info: "<<endl; printMuonInfo(mu1);}
+    if(printSelectionPass_>1){cout<<"mu2 info: "<<endl; printMuonInfo(mu2);}
     return 1;
   }
 

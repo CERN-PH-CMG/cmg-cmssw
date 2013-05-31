@@ -333,6 +333,13 @@ void BaseFlatNtp::beginJob(){
   tree_->Branch("ditaudeltaEta",&ditaudeltaEta_,"ditaudeltaEta/F");
   tree_->Branch("ditaudeltaPhi",&ditaudeltaPhi_,"ditaudeltaPhi/F");
   
+  tree_->Branch("ditaumetpt",&ditaumetpt_,"ditaumetpt/F");
+  tree_->Branch("ditaumetphi",&ditaumetphi_,"ditaumetphi/F");
+  tree_->Branch("ditaumetsvfitpt",&ditaumetsvfitpt_,"ditaumetsvfitpt/F");
+  tree_->Branch("ditaumetsvfiteta",&ditaumetsvfiteta_,"ditaumetsvfiteta/F");
+  tree_->Branch("ditaumetsvfitphi",&ditaumetsvfitphi_,"ditaumetsvfitphi/F");
+
+
   tree_->Branch("taumass",&taumass_,"taumass/F");
   tree_->Branch("taupt",&taupt_,"taupt/F");
   tree_->Branch("taupx",&taupx_,"taupx/F");
