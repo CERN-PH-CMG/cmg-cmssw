@@ -70,7 +70,7 @@ process.generator = cms.EDFilter("Pythia6HadronizerFilter",
        mode = cms.string("auto"),	# soup, or "inclusive" / "exclusive"
        MEMAIN_nqmatch = cms.int32(5),
        MEMAIN_etaclmax = cms.double(5),
-       MEMAIN_qcut = cms.double(10),
+       MEMAIN_qcut = cms.double(30),
        MEMAIN_minjets = cms.int32(0),
        MEMAIN_maxjets = cms.int32(99),
        MEMAIN_showerkt = cms.double(0),   
@@ -80,7 +80,7 @@ process.generator = cms.EDFilter("Pythia6HadronizerFilter",
 )
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    version = cms.untracked.string('$Revision: 1.1 $'),
+    version = cms.untracked.string('$Revision: 1.2 $'),
     annotation = cms.untracked.string('Configuration/GenProduction/python/EightTeV/Hadronizer_MgmMatchTuneZ2star_8TeV_madgraph_tauola_cff.py nevts:1000'),
     name = cms.untracked.string('PyReleaseValidation')
 )
