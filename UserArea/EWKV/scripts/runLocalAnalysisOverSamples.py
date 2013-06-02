@@ -29,7 +29,6 @@ parser.add_option('-n', '--n'          ,    dest='fperjob'            , help='in
 parser.add_option('-p', '--pars'       ,    dest='params'             , help='extra parameters for the job'          , default='')
 parser.add_option('-c', '--cfg'        ,    dest='cfg_file'           , help='base configuration file template'      , default='')
 (opt, args) = parser.parse_args()
-
 scriptFile=os.path.expandvars('${CMSSW_BASE}/bin/${SCRAM_ARCH}/wrapLocalAnalysisRun.sh')
 
 split=1
@@ -103,6 +102,7 @@ for proc in procList :
                 else :
                     localParams='-exe=%s -cfg=%s'%(opt.theExecutable,cfgfile)
                     batchCommand='submit2batch.sh -q%s -R%s -J%s%d %s %s'%(opt.queue,opt.requirementtoBatch,d['dtag'],segment,scriptFile,localParams)
+                    print batchCommand
                     os.system(batchCommand)
                     
     

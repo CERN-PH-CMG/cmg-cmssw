@@ -1,7 +1,8 @@
 <use name="UserCode/EWKV"/>
 <use name="lhapdf"/>
 <environment>
-  <bin name="runTopAnalysis"  file="runTopAnalysis.cc"></bin> 
+  <bin name="runTopAnalysis"   file="runTopAnalysis.cc"></bin> 
   <bin name="runVBFZAnalysis"  file="runVBFZAnalysis.cc"></bin> 
+  <bin name="runPlotter"       file="runPlotter.cc"></bin> 
 </environment>
 <Flags CXXFLAGS="-g"/>
