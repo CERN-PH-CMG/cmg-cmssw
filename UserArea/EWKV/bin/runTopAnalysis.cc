@@ -209,13 +209,14 @@ int main(int argc, char* argv[])
 	weightUp   = weight*PuShifters[utils::cmssw::PUUP]->Eval(ev.ngenITpu);
 	weightDown = weight*PuShifters[utils::cmssw::PUDOWN]->Eval(ev.ngenITpu);
       }
+      if(isV0JetsMC && ev.nup>5)                          continue;
+      Hhepup->Fill(ev.nup,weight);
+
       Hcutflow->Fill(1,1);
       Hcutflow->Fill(2,weight);
       Hcutflow->Fill(3,weightUp);
       Hcutflow->Fill(4,weightDown);
 
-      if(isV0JetsMC && ev.nup>5)                          continue;
-      Hhepup->Fill(ev.nup,weight);
 
       //trigger bits
       bool eeTrigger   = ev.t_bits[0];

@@ -24,6 +24,6 @@ runPlotter --iLumi 19683 --inDir ~/work/top_539/ --outDir ~/work/top_539/plots -
 EWK Z+2jets
 ####
 runLocalAnalysisOverSamples.py -e runVBFZAnalysis -j data/vbfz_samples.json -d /store/cmst3/user/psilva/539_ntuples -o ~/work/ewkzp2j_539 -c test/runAnalysis_cfg.py.templ -p "@runSystematics=False @useMVA=False" -s 8nh
-
+runPlotter --iLumi 19683 --inDir ~/work/ewkzp2j_539/ --json data/vbfz_samples.json --outFile ~/work/ewkzp2j_539/plotter.root 
 
 

@@ -1108,9 +1108,9 @@ int main(int argc, char* argv[]){
      }printf("\n");
    if(StoreInFile) OutputFile->Close();
    
-   system(("python ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/generateJSONplotterFromList.py -i " + csvFile + " -o "+outDir+"/plotter.json").c_str());
+   //system(("python ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/generateJSONplotterFromList.py -i " + csvFile + " -o "+outDir+"/plotter.json").c_str());
    system(("rm " + csvFile).c_str());
-   system(("cp ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/index.html " + outDir).c_str());
-   printf("You can browse the results using %s/index.html\n",outDir.c_str());
+   //system(("cp ${CMSSW_BASE}/src/CMGTools/HtoZZ2l2nu/data/html/index.html " + outDir).c_str());
+   //printf("You can browse the results using %s/index.html\n",outDir.c_str());
 }
 

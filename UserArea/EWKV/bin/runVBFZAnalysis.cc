@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
       if(url.Contains("MuEG"))      filterOnlyEMU=true;
     }
   bool isSingleMuPD(!isMC && url.Contains("SingleMu"));  
-  bool isV0JetsMC(isMC && url.Contains("0Jets"));  
+  bool isV0JetsMC(isMC && (url.Contains("DYJetsToLL_50toInf") || url.Contains("WJets")));
   bool isSignal(isMC && (url.Contains("VBFNLO") || url.Contains("DYJJ")) );
 
   TString outTxtUrl= outUrl + "/" + outFileUrl + ".txt";
