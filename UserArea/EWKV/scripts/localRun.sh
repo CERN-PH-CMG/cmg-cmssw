@@ -57,7 +57,7 @@ fi
 
 
 #check specific configuration for cmsRun
-if [ "$EXE" == "cmsRun"];
+if [ "$EXE" == "cmsRun" ];
 then
     if [ -z "$INPUTDIR" ]
 	then
