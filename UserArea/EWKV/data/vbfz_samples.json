@@ -5,8 +5,10 @@
         "isdata":false,
         "issignal":true,
         "color":"802",
+	"fill":0,
         "spimpose":true,
-        "lcolor":1,
+        "lcolor":802,
+	"lwidth":3,
         "marker":1,
         "data":[
                 {

@@ -483,14 +483,16 @@ int main(int argc, char* argv[])
 	  if(lid==11 && (leta>1.4442 && leta<1.5660)) passKin=false;
 
 	  //id
+	  Int_t idbits = leptons[ilep].get("idbits");
 	  if(lid==11){
-	    if(leptons[ilep].getFlag("isconv"))            passId=false;
-	    if(leptons[ilep].getVal("tk_d0")>0.4)          passId=false;
-	    if(leptons[ilep].getVal("tk_lostInnerHits")>0) passId=false;
-	    if(leptons[ilep].getVal("mvatrig")<0.5)        passId=false;
-	  }
+	    if(leptons[ilep].getFlag("isconv"))              passId=false;
+	    //if(leptons[ilep].getVal("tk_d0")>0.4)          passId=false;
+	    //if(leptons[ilep].getVal("tk_lostInnerHits")>0) passId=false;
+	    //if(leptons[ilep].getVal("mvatrig")<0.5)        passId=false;
+	    bool isLoose = ((idbits >> 4) & 0x1);
+	    if(!isLoose)                                   passId=false;
+ 	  }
 	  else{
-	    Int_t idbits    = leptons[ilep].get("idbits");
 	    bool isLoose    = ((idbits >> 8) & 0x1);
 	    if(!isLoose)                                   passId=false;
 	  }
