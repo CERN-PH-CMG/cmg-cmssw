@@ -1,7 +1,28 @@
 {
     "proc":[
         {
-        "tag":"#alpha^{4}_{EW}-ll",
+        "tag":"VBFNLO",
+        "isdata":false,
+        "issignal":true,
+        "color":"802",
+        "spimpose":true,
+        "lcolor":1,
+        "marker":1,
+        "data":[
+                {
+                "dtag":"MC8TeV_eejj_VBFNLO",
+                "aoddir":["/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/AODSIM"],
+                "xsec":0.168
+                },
+                {
+                "dtag":"MC8TeV_mmjj_VBFNLO",
+                "aoddir":["/store/cmst3/user/psilva/VBFNLO/mmjj/8TeV/AODSIM"],
+                "xsec":0.168
+                }
+         ]
+        },
+        {
+        "tag":"#alpha^{4}_{EW}-ll+2j",
         "isdata":false,
         "issignal":true,
         "color":"804",
@@ -10,9 +31,8 @@
         "data":[
                 {
                 "dtag":"MC8TeV_lljj",
-                "aoddir":["/store/group/phys_diffraction/FSQ-12-035/lljj_8TeV/ZVBF_Mqq-120_8TeV-madgraph"],
-                "xsec":0.168,
-		"split":2
+                "aoddir":["/store/group/phys_diffraction/FSQ-12-035/lljj_8TeV/ZVBF_Mqq-120_8TeV-madgraph/AODSIM"],
+                "xsec":0.168
                 }
          ]
         },
