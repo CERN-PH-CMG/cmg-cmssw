@@ -34,6 +34,8 @@ class CutsFile:
                 if re.match(cr,"entry point"): self._cuts.append((cn,cv))
             for line in file:
                 if len(line.strip()) == 0 or line.strip()[0] == '#': continue
+                while line.strip()[-1] == "\\":
+                    line = line.strip()[:-1] + file.next()
                 (name,cut) = [x.strip().replace(";",":") for x in line.replace("\:",";").split(":")]
                 if name == "entry point" and cut == "1": continue
                 if options.startCut and not re.search(options.startCut,name): continue
@@ -316,7 +318,7 @@ class TreeToYield:
         return mystr
 
 def addTreeToYieldOptions(parser):
-    parser.add_option("-l", "--lumi",           dest="lumi",   type="float", default="20.0", help="Luminosity (in 1/fb)");
+    parser.add_option("-l", "--lumi",           dest="lumi",   type="float", default="19.6", help="Luminosity (in 1/fb)");
     parser.add_option("-u", "--unweight",       dest="weight",       action="store_false", default=True, help="Don't use weights (in MC events)");
     parser.add_option("-W", "--weightString",   dest="weightString", type="string", default="1", help="Use weight (in MC events)");
     parser.add_option("-f", "--final",  dest="final", action="store_true", help="Just compute final yield after all cuts");
