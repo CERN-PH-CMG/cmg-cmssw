@@ -100,16 +100,15 @@ int main(int argc, char* argv[])
   TString outdir=runProcess.getParameter<std::string>("outdir");
   TString outUrl( outdir );
   gSystem->Exec("mkdir -p " + outUrl);
-  bool filterOnlyEE(false), filterOnlyEMU(false), filterOnlyMUMU(false);
+  bool filterOnlyEE(false), filterOnlyMUMU(false);
   if(!isMC)
     {
       if(url.Contains("DoubleEle")) filterOnlyEE=true;
       if(url.Contains("DoubleMu"))  filterOnlyMUMU=true;
-      if(url.Contains("MuEG"))      filterOnlyEMU=true;
     }
   bool isSingleMuPD(!isMC && url.Contains("SingleMu"));  
   bool isV0JetsMC(isMC && (url.Contains("DYJetsToLL_50toInf") || url.Contains("WJets")));
-  bool isSignal(isMC && (url.Contains("VBFNLO") || url.Contains("DYJJ")) );
+  bool isSignal(isMC && (url.Contains("VBFNLO") || url.Contains("lljj")) );
 
   TString outTxtUrl= outUrl + "/" + outFileUrl + ".txt";
   FILE* outTxtFile = NULL;
@@ -429,17 +428,11 @@ int main(int argc, char* argv[])
       
       //require compatibilitiy of the event with the PD
       bool eeTrigger          = ev.t_bits[0];
-      //bool emuTrigger         = ev.t_bits[4] || ev.t_bits[5];
-      bool mumuTrigger        = ev.t_bits[2] || ev.t_bits[3];
-      if(filterOnlyEE)   {                   mumuTrigger=false; }
-      if(filterOnlyEMU)  { eeTrigger=false;  mumuTrigger=false; }
-      if(filterOnlyMUMU) { eeTrigger=false;  
-	if(isSingleMuPD)   
-	  {
-	    bool muTrigger = ev.t_bits[6];
-	    if( mumuTrigger || !muTrigger ) mumuTrigger= false;
-	  }
-      }
+      bool muTrigger          = ev.t_bits[6];
+      bool mumuTrigger        = ev.t_bits[2] || ev.t_bits[3] || muTrigger;
+      if(filterOnlyEE)   { mumuTrigger=false; }
+      if(filterOnlyMUMU) { eeTrigger=false;   }
+      if(isSingleMuPD)   { eeTrigger=false; if( mumuTrigger || !muTrigger ) mumuTrigger= false;  }
 
       //prepare the tag's vectors for histo filling
       std::vector<TString> tags(1,"all");
@@ -498,10 +491,10 @@ int main(int argc, char* argv[])
 	  }
 
 	  //isolation
-	  Float_t gIso    = leptons[ilep].getVal("gIso03");
-	  Float_t chIso   = leptons[ilep].getVal("chIso03");
-	  Float_t puchIso = leptons[ilep].getVal("puchIso03");  
-	  Float_t nhIso   = leptons[ilep].getVal("nhIso03");
+	  Float_t gIso    = leptons[ilep].getVal(lid==11 ? "gIso03"    : "gIso04");
+	  Float_t chIso   = leptons[ilep].getVal(lid==11 ? "chIso03"   : "chIso04");
+	  Float_t puchIso = leptons[ilep].getVal(lid==11 ? "puchIso03" : "puchIso04");  
+	  Float_t nhIso   = leptons[ilep].getVal(lid==11 ? "nhIso03"   : "nhIso04");
 	  float relIso= lid==11 ?
 	    (TMath::Max(nhIso+gIso-ev.rho*utils::cmssw::getEffectiveArea(11,leptons[ilep].getVal("sceta")),Float_t(0.))+chIso)/leptons[ilep].pt() :
 	    (TMath::Max(nhIso+gIso-0.5*puchIso,0.)+chIso)/leptons[ilep].pt()
@@ -510,7 +503,7 @@ int main(int argc, char* argv[])
 	    if(relIso>0.15)                                passIso=false;
 	  }
 	  else{
-	    if(relIso>0.12)                                passIso=false;
+	    if(relIso>0.20)                                passIso=false;
 	  }
 	  
 	  if(!passId || !passIso || !passKin) continue;

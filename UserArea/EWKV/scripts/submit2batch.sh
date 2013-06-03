@@ -57,8 +57,7 @@ fi
 #
 # SUBMIT JOB
 #
-#echo "Submitting shell script: ${SCRIPT} with parameters: ${PARAMS} to queue $QUEUE"
-echo "Submitting shell script: $bsub -q $QUEUE -R $REQUIREMENT -J $JOBNAME `echo ${SCRIPT} ${PARAMS}`"
+echo "Submitting shell script: $bsub -q $QUEUE -R \"$REQUIREMENT\" -J $JOBNAME `echo ${SCRIPT} ${PARAMS}`"
 bsub -q $QUEUE -R "$REQUIREMENT" -J $JOBNAME `echo ${SCRIPT} ${PARAMS}`
 
 #

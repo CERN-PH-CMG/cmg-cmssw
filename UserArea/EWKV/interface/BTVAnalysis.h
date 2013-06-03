@@ -12,7 +12,7 @@ class BTVAnalysis
 {
 
 public:
-  BTVAnalysis(SmartSelectionMonitor &mon);
+  BTVAnalysis(SmartSelectionMonitor &mon,bool runSystematics);
 
   void analyze(data::PhysicsObjectCollection_t &leptons, 
 	       data::PhysicsObjectCollection_t &jets,

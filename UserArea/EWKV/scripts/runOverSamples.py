@@ -79,7 +79,7 @@ for proc in procList :
                     print "**** Starting new job with the following parameters ****"
                     print localParams
                     if(len(opt.queue)>0) :
-                        batchCommand='submit2batch.sh -q%s -R%s -J%s%d %s %s'%(opt.queue,opt.requirementtoBatch,d['dtag'],ijob,scriptFile,localParams)
+                        batchCommand='submit2batch.sh -q%s -R\"%s\" -J%s%d %s %s'%(opt.queue,opt.requirementtoBatch,d['dtag'],ijob,scriptFile,localParams)
                         print batchCommand
                         os.system(batchCommand)
                     else :

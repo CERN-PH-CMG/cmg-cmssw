@@ -101,7 +101,7 @@ for proc in procList :
                     os.system(opt.theExecutable + ' ' + cfgfile)
                 else :
                     localParams='-exe=%s -cfg=%s'%(opt.theExecutable,cfgfile)
-                    batchCommand='submit2batch.sh -q%s -R%s -J%s%d %s %s'%(opt.queue,opt.requirementtoBatch,d['dtag'],segment,scriptFile,localParams)
+                    batchCommand='submit2batch.sh -q%s -R\"%s\" -J%s%d %s %s'%(opt.queue,opt.requirementtoBatch,d['dtag'],segment,scriptFile,localParams)
                     print batchCommand
                     os.system(batchCommand)
                     

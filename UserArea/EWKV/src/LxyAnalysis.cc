@@ -5,7 +5,7 @@ using namespace std;
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >::BetaVector BetaVector;
 
 //
-LxyAnalysis::LxyAnalysis(SmartSelectionMonitor &mon)
+LxyAnalysis::LxyAnalysis(SmartSelectionMonitor &mon,bool runSystematics)
   : mon_(&mon)
 {
   //start monitoring histograms of this analysis

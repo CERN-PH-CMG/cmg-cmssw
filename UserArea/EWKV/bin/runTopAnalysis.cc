@@ -59,12 +59,13 @@ int main(int argc, char* argv[])
   // configure
   //
   const edm::ParameterSet &runProcess = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("runProcess");
-  TString url        = runProcess.getParameter<std::string>("input");
-  TString baseDir    = runProcess.getParameter<std::string>("dirName");
-  TString jesUncFile = runProcess.getParameter<std::string>("jesUncFileName");
-  bool isMC          = runProcess.getParameter<bool>("isMC");
-  int mcTruthMode    = runProcess.getParameter<int>("mctruthmode");
-  double xsec        = runProcess.getParameter<double>("xsec");
+  TString url         = runProcess.getParameter<std::string>("input");
+  TString baseDir     = runProcess.getParameter<std::string>("dirName");
+  bool runSystematics = runProcess.getParameter<bool>("runSystematics");
+  TString jesUncFile  = runProcess.getParameter<std::string>("jesUncFileName");
+  bool isMC           = runProcess.getParameter<bool>("isMC");
+  int mcTruthMode     = runProcess.getParameter<int>("mctruthmode");
+  double xsec         = runProcess.getParameter<double>("xsec");
   bool isV0JetsMC(isMC && (url.Contains("DYJetsToLL_50toInf") || url.Contains("WJets")));
   TString out        = runProcess.getParameter<std::string>("outdir");
 
@@ -122,7 +123,7 @@ int main(int argc, char* argv[])
   controlHistos.addHistogram( new TH1F ("nvertices", "; Vertex multiplicity; Events", 50, 0.,50.) );
 
   //event selection histogram
-  TString labels[]={"2 leptons", "M>12 #wedge |M-M_{Z}|>15", "#geq 2 jets", "op. sign", "#geq 2 b-tags"};
+  TString labels[]={"2 leptons", "M>12 #wedge |M-M_{Z}|>15", "#geq 2 jets", "E_{T}^{miss}>40,0", "op. sign"};
   int nsteps=sizeof(labels)/sizeof(TString);
   TH1F *cutflowH = (TH1F *)controlHistos.addHistogram( new TH1F("evtflow",";Cutflow;Events",nsteps,0,nsteps) );
   for(int ibin=0; ibin<nsteps; ibin++) cutflowH->GetXaxis()->SetBinLabel(ibin+1,labels[ibin]);
@@ -166,10 +167,11 @@ int main(int argc, char* argv[])
 	    }
 	}
     }
+  
 
-  UEAnalysis ueAn(controlHistos);
-  BTVAnalysis btvAn(controlHistos);
-  LxyAnalysis lxyAn(controlHistos);
+  //UEAnalysis ueAn(controlHistos);
+  BTVAnalysis btvAn(controlHistos,runSystematics);
+  //LxyAnalysis lxyAn(controlHistos,runSystematics);
   
   ///
   // process events file
@@ -397,7 +399,7 @@ int main(int argc, char* argv[])
 
       
       if(passDilSelection &&                     passMetSelection && isOS) btvAn.analyze(selLeptons,looseJets,isMC,ev.nvtx,weight,weightUp,weightDown);
-      if(passDilSelection && passJetSelection &&                     isOS) lxyAn.analyze(selLeptons,selJets,met[0],gen,weight);
+      //if(passDilSelection && passJetSelection &&                     isOS) lxyAn.analyze(selLeptons,selJets,met[0],gen,weight);
 
       //select the event
       if(!passDilSelection) continue;
@@ -406,20 +408,20 @@ int main(int argc, char* argv[])
       if(!passJetSelection) continue;
       controlHistos.fillHisto("evtflow", ch, 2, weight);
 
-      if(!isOS) continue;
-      controlHistos.fillHisto("evtflow", ch, 3, weight);
+      if(!passMetSelection) {
+	controlHistos.fillHisto("evtflow", ch, 3, weight);
 
-      //run the lxy analysis
-      lxyAn.analyze(selLeptons,selJets,met[0],gen,weight);
+	if(!isOS) 
+	  controlHistos.fillHisto("evtflow", ch, 4, weight);
+      }
 
+      //UE event analysis (no need to require MET, after 2-btags the events will be pure in ttbar)
       float nbtags(0);
       for(size_t ijet=0; ijet<selJets.size(); ijet++) nbtags += (selJets[ijet].getVal("supercsv")>0.531);
-      if(nbtags<2) continue;
-      controlHistos.fillHisto("evtflow", ch, 4, weight);
-
+      if(!isOS || nbtags<2) continue;
       //PF candidates
-      data::PhysicsObjectCollection_t pf = evSummary.getPhysicsObject(DataEventSummaryHandler::PFCANDIDATES);
-      ueAn.analyze(selLeptons,selJets,met,pf,gen,weight);
+      //data::PhysicsObjectCollection_t pf = evSummary.getPhysicsObject(DataEventSummaryHandler::PFCANDIDATES);
+      //ueAn.analyze(selLeptons,selJets,met,pf,gen,weight);
     }
   if(nDuplicates) cout << "[Warning] found " << nDuplicates << " duplicate events in this ntuple" << endl;
 
