@@ -8,14 +8,26 @@ from CMGTools.RootTools.RootTools import *
 
 effAndSmear = cfg.Analyzer(
     'EffAndSmearAnalyzer',
-    jetCol = ('genJets', 'std::vector<reco::LeafCandidate>'),
-    genJetCol = ('genJets', 'std::vector<reco::LeafCandidate>'),
-    genPartCol = ('genParticles', 'std::vector<reco::GenParticle>'),
+    genPartCol = ('genParticlesPruned', 'std::vector<reco::GenParticle>'),
+    genJetCol = ('genJetSel',
+                 'vector<cmg::PhysicsObjectWithPtr< edm::Ptr<reco::GenJet> > >')
     )
+
+
+reader = cfg.Analyzer(
+    'ObjectReader',
+    muonCol = ('cmgMuonSel', 'vector<cmg::Muon>'),
+    electronCol = ('cmgElectronSel', 'vector<cmg::Electron>'),
+    jetCol = ('cmgPFJetSel', 'vector<cmg::PFJet>'),
+    genJetCol = ('genJetSel',
+                 'vector<cmg::PhysicsObjectWithPtr< edm::Ptr<reco::GenJet> > >'),
+    genPartCol = ('genParticlesPruned', 'std::vector<reco::GenParticle>'),
+    )
+
 
 jetAna = cfg.Analyzer(
     'PFSimJetAnalyzer',
-    jetPt = 20.,
+    jetPt = 10.,
     jetEta = 4.7,
     btagSFseed = 123456,
     relaxJetId = True, 
@@ -38,10 +50,19 @@ TTJets = cfg.MCComponent(
 TTJets.splitFactor = 1
 
 
-selectedComponents = [TTJets]  
+HZ_HZHA = cfg.MCComponent(
+    name = 'ee_HZ',
+    files = ['cmgTuple_HZHA_10.root'],
+    xSection = 0.2, 
+    nGenEvents = 18000,
+    triggers = [],
+    effCorrFactor = 1 )
+
+selectedComponents = [HZ_HZHA]  
 
 sequence = cfg.Sequence( [
-    effAndSmear,
+    # effAndSmear,
+    reader,
     jetAna,
     treeProducer
    ] )

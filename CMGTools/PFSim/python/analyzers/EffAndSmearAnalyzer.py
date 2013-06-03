@@ -4,74 +4,34 @@ import math
 
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
-from CMGTools.RootTools.physicsobjects.Particle import Particle
-from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenJet
+# from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenJet
 from CMGTools.RootTools.physicsobjects.LorentzVectors import LorentzVector
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 
-
-class ParticleWithP4(Particle):
-    def __init__(self, momentum):
-        self.momentum = momentum
-    def p4(self):
-        return self.momentum
-    def pdgId(self):
-        return None
-
-class Jet(ParticleWithP4):
-    pass
-class Electron(ParticleWithP4):
-    pass
-class Muon(ParticleWithP4):
-    pass
-class Photon(ParticleWithP4):
-    pass
-class Tau(ParticleWithP4):
-    pass
+from CMGTools.PFSim.particles import GenJet, Jet, Electron, Muon
+from CMGTools.PFSim.detectors.models import CMS
 
 
-def effAndSmearObjects( objects, fun ):
+def effAndSmearObjects( objects, detmodel, particleTypeName, output_class):
     results = []
+    eff_fun = getattr(detmodel, ''.join([particleTypeName, 'Efficiency']) )
+    res_fun = getattr(detmodel, ''.join([particleTypeName, 'Resolution']) )
+    
     for iobj in objects:
-        oobj = fun( iobj )
-        if oobj:
-            oobj.unsmeared = iobj
+        eff_val = eff_fun(iobj)
+        res_val = res_fun(iobj)
+        
+        oobj = output_class( iobj.p4() )
+        oobj.gen = iobj
+        smearing = random.gauss(1, res_val ) 
+        oobj.smear( smearing )
+
+        if random.uniform(0,1)<eff_val:
             results.append(oobj)
     return results
-
-
-#TODO implement a better smearing and efficiency model.
-#TODO implement common smearing and efficiency technique
-#TODO set up an efficiency and smearing module
-
-
-def effAndSmearMomentum(p4, resolution ):
-    op4 = copy.copy( p4 )
-    resolution = resolution / math.sqrt( p4.energy() ) 
-    smearing = random.gauss(1, resolution)
-    return op4*smearing  
-    
-    
-def effAndSmear1Electron(iele):
-    op4 = effAndSmearMomentum( iele.p4(), 0.02 )
-    oele = Electron( op4 )
-    oele.gen = iele #TODO will get different results from DR matching...
-    return oele
-    
-def effAndSmear1Muon(imu):
-    op4 = effAndSmearMomentum( imu.p4(), 0.002 )
-    omu = Muon( op4 )
-    omu.gen = imu
-    return omu
-
-def effAndSmear1Jet(ijet):
-    op4 = effAndSmearMomentum( ijet.p4(), 0.60 )
-    ojet = Jet( op4 )
-    return ojet
-
 
 
 
@@ -85,7 +45,6 @@ class EffAndSmearAnalyzer( Analyzer ):
     def declareHandles(self):
         super(EffAndSmearAnalyzer, self).declareHandles()
 
-        self.handles['jets'] = AutoHandle( *self.cfg_ana.jetCol )
         self.mchandles['genParticles'] = AutoHandle( *self.cfg_ana.genPartCol )
         self.mchandles['genJets'] = AutoHandle( *self.cfg_ana.genJetCol )
 
@@ -97,9 +56,9 @@ class EffAndSmearAnalyzer( Analyzer ):
         
         self.readCollections( iEvent )
         
-        event.genJets = map( GenJet, self.mchandles['genJets'].product() ) 
+        event.genJets = [GenJet(ptc.p4()) for ptc in self.mchandles['genJets'].product() ]
 
-        event.jets = effAndSmearObjects(event.genJets, effAndSmear1Jet )
+        event.jets = effAndSmearObjects(event.genJets, CMS, 'jet', Jet)
 
         event.genElectrons = []
         event.genMuons = []
@@ -109,8 +68,8 @@ class EffAndSmearAnalyzer( Analyzer ):
             elif abs(gp.pdgId()) == 13:
                 event.genMuons.append( Muon(gp.p4()) )
 
-        event.electrons = effAndSmearObjects(event.genElectrons, effAndSmear1Electron )
-        event.muons = effAndSmearObjects(event.genMuons, effAndSmear1Muon )
+        event.electrons = effAndSmearObjects(event.genElectrons, CMS, 'electron', Electron)
+        event.muons = effAndSmearObjects(event.genMuons, CMS, 'muon', Muon )
 
         #TODO how to decide which ones are considered as leptons in the analysis?
         # iso cut? smear and eff full collection of gen particles?
