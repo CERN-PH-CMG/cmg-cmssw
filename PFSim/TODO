@@ -55,8 +55,10 @@ X - add tree system.
 	ok for jets
 
 MAIN OBJECTIVE NOW!
-- write plotting macros 
-- implement simple lepton efficiency model
+- need gen information for the gen jets:
+	- flavour of jet initiating partons
+- need to deal with taus 
+- check JES before corrections 
 - deal with the charge. 
 
 - leptons and jets 
@@ -64,7 +66,6 @@ MAIN OBJECTIVE NOW!
 	X generic smearing 
 	X smear ele and mu: 
 		note: pT or energy dependence? 
-	eff ele and mu
-	smearing and eff depend on eta, pt. need a way to describe that. 
+		eff ele and mu
 	decide on how to choose between leptons and jets .
 

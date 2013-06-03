@@ -15,11 +15,12 @@ class PFSimTreeProducer( TreeAnalyzerNumpy ):
         tr = self.tree
 
         var( tr, 'nJets')
-        var( tr, 'nJets20')
-        bookParticle(tr, 'jet1')
-        bookParticle(tr, 'jet2')
-        bookParticle(tr, 'jet1gen')
-        bookParticle(tr, 'jet2gen')
+        bookJet(tr, 'jet1')
+        bookJet(tr, 'jet2')
+        bookJet(tr, 'jet3')
+        bookGenJet(tr, 'jet1gen')
+        bookGenJet(tr, 'jet2gen')
+        bookGenJet(tr, 'jet3gen')
 
         var( tr, 'nEles')
         bookParticle(tr, 'ele1')
@@ -39,35 +40,40 @@ class PFSimTreeProducer( TreeAnalyzerNumpy ):
         tr = self.tree
         tr.reset()
        
-        fill(tr, 'nJets20', len(event.cleanJets) )
-        nJets30 = len(event.cleanJets30)
-        fill(tr, 'nJets', nJets30 )
         nJets = len(event.cleanJets)
+        fill(tr, 'nJets', len(event.cleanJets) )
 
         if nJets>=1:
-            fillParticle(tr, 'jet1', event.cleanJets[0] )
-            fillParticle(tr, 'jet1gen', event.cleanJets[0].genJet )
+            fillJet(tr, 'jet1', event.cleanJets[0] )
+            if event.cleanJets[0].genJet:
+                fillGenJet(tr, 'jet1gen', event.cleanJets[0].genJet )
         if nJets>=2:
-            fillParticle(tr, 'jet2', event.cleanJets[1] )
-            fillParticle(tr, 'jet2gen', event.cleanJets[1].genJet )
+            fillJet(tr, 'jet2', event.cleanJets[1] )
+            if event.cleanJets[1].genJet:
+                fillGenJet(tr, 'jet2gen', event.cleanJets[1].genJet )
+        if nJets>=3:
+            fillJet(tr, 'jet3', event.cleanJets[2] )
+            if event.cleanJets[2].genJet:
+                fillGenJet(tr, 'jet3gen', event.cleanJets[2].genJet )
 
-        nEles = len(event.electrons)
-        fill(tr, 'nEles', nEles )        
-        if nEles>=1:
-            fillParticle(tr, 'ele1', event.electrons[0] )
-            fillParticle(tr, 'ele1gen', event.electrons[0].gen )
-        if nEles>=2:
-            fillParticle(tr, 'ele2', event.electrons[1] )
-            fillParticle(tr, 'ele2gen', event.electrons[1].gen )
+# fill that with gen as a pivot. 
+##         nEles = len(event.electrons)
+##         fill(tr, 'nEles', nEles )        
+##         if nEles>=1:
+##             fillParticle(tr, 'ele1', event.electrons[0] )
+##             fillParticle(tr, 'ele1gen', event.electrons[0].gen )
+##         if nEles>=2:
+##             fillParticle(tr, 'ele2', event.electrons[1] )
+##             fillParticle(tr, 'ele2gen', event.electrons[1].gen )
 
-        nMus = len(event.muons)
-        fill(tr, 'nMus', nMus )        
-        if nMus>=1:
-            fillParticle(tr, 'mu1', event.muons[0] )
-            fillParticle(tr, 'mu1gen', event.muons[0].gen )
-        if nMus>=2:
-            fillParticle(tr, 'mu2', event.muons[1] )
-            fillParticle(tr, 'mu2gen', event.muons[1].gen )
+##         nMus = len(event.muons)
+##         fill(tr, 'nMus', nMus )        
+##         if nMus>=1:
+##             fillParticle(tr, 'mu1', event.muons[0] )
+##             fillParticle(tr, 'mu1gen', event.muons[0].gen )
+##         if nMus>=2:
+##             fillParticle(tr, 'mu2', event.muons[1] )
+##             fillParticle(tr, 'mu2gen', event.muons[1].gen )
                     
         self.tree.tree.Fill()
        

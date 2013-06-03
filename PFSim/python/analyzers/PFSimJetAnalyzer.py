@@ -1,8 +1,9 @@
 import random
+import math
 from CMGTools.RootTools.fwlite.Analyzer import Analyzer
 from CMGTools.RootTools.fwlite.AutoHandle import AutoHandle
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet, GenJet
-from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
+from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection, bestMatch
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
@@ -22,8 +23,8 @@ class PFSimJetAnalyzer( Analyzer ):
         self.counters.addCounter('jets')
         count = self.counters.counter('jets')
         count.register('all events')
-        count.register('at least 2 good jets')
-        count.register('at least 2 clean jets')
+        # count.register('at least 2 good jets')
+        # count.register('at least 2 clean jets')
 
         
     def process(self, iEvent, event):
@@ -40,23 +41,25 @@ class PFSimJetAnalyzer( Analyzer ):
         
 
         # associating a genjet to each clean jet
-        pairs = matchObjectCollection( event.cleanJets, event.genJets, 0.5*0.5 )
+        # pairs = matchObjectCollection( event.cleanJets, event.genJets, 0.5*0.5 )
         for jet in event.cleanJets:
-            jet.genJet = pairs[jet]
+            bm, dr2 = bestMatch(jet, event.genJets)
+            jet.genJet = bm
+            jet.genJet.dR = math.sqrt(dr2) 
 
         # associating a lepton to each clean jet
         pairs = matchObjectCollection( event.cleanJets, event.leptons, 0.5*0.5 )
         for jet in event.cleanJets:
             jet.lepton = pairs[jet]
 
-        event.jets30 = [jet for jet in event.jets if jet.pt()>30]
-        event.cleanJets30 = [jet for jet in event.cleanJets if jet.pt()>30]
+        # event.jets30 = [jet for jet in event.jets if jet.pt()>30]
+        # event.cleanJets30 = [jet for jet in event.cleanJets if jet.pt()>30]
         
-        if len( event.jets30 )>=2:
-            self.counters.counter('jets').inc('at least 2 good jets')
+##         if len( event.jets30 )>=2:
+##             self.counters.counter('jets').inc('at least 2 good jets')
                
-        if len( event.cleanJets30 )>=2:
-            self.counters.counter('jets').inc('at least 2 clean jets')
+##         if len( event.cleanJets30 )>=2:
+##             self.counters.counter('jets').inc('at least 2 clean jets')
 
         if len(event.cleanJets)<2:
             return True
