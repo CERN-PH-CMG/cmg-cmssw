@@ -648,7 +648,7 @@ void DataAnalyzer::analyze(const edm::Event &event, const edm::EventSetup &iSetu
 	    isTight  = (ev.egn_sihih[ev.egn]<0.031 && ev.egn_hoe[ev.egn]<0.05 );
 	  }
 
-	ev.gn_idbits[ev.gn]    = (isLoose << 0) || (isMedium << 1 ) || (isTight << 2);
+	ev.gn_idbits[ev.gn]    = (isLoose << 0) | (isMedium << 1 ) | (isTight << 2);
 	ev.gn++;
 	ev.egn++;
 	if(isTight && pho->isEB() && ev.egn_r9[ev.egn]>0.9 && pho->pt()>36) nPhotons++;

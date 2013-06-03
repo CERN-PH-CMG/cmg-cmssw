@@ -8,6 +8,7 @@
 #include "UserCode/EWKV/interface/LxyAnalysis.h"
 #include "UserCode/EWKV/interface/UEAnalysis.h"
 #include "UserCode/EWKV/interface/BTVAnalysis.h"
+#include "UserCode/EWKV/interface/LeptonEfficiencySF.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -68,6 +69,7 @@ int main(int argc, char* argv[])
   double xsec         = runProcess.getParameter<double>("xsec");
   bool isV0JetsMC(isMC && (url.Contains("DYJetsToLL_50toInf") || url.Contains("WJets")));
   TString out        = runProcess.getParameter<std::string>("outdir");
+  bool saveSummaryTree = runProcess.getParameter<bool>("saveSummaryTree");
 
   //jet energy scale uncertainties
   gSystem->ExpandPathName(jesUncFile);
@@ -168,6 +170,8 @@ int main(int argc, char* argv[])
 	}
     }
   
+  //lepton efficiencies
+  LeptonEfficiencySF lepEff;
 
   //UEAnalysis ueAn(controlHistos);
   BTVAnalysis btvAn(controlHistos,runSystematics);
@@ -191,7 +195,38 @@ int main(int argc, char* argv[])
        << "Initial number of events: " << cnorm << endl
        << "Events in tree:           " << totalEntries << endl
        << " xSec x BR:               " << xsec << endl;
-       
+  
+  //check if a summary should be saved
+  Float_t evSummaryWeight(1.0);
+  Float_t xsecWeight(isMC ? xsec/cnorm : 1.0);
+  TFile *spyFile=0;
+  TDirectory *spyDir=0;
+  DataEventSummaryHandler *spyEvents=0;
+  if(saveSummaryTree)
+    {
+      gSystem->Exec("mkdir -p " + out);
+      gDirectory->SaveSelf();
+      TString summaryName(out + "/" + proctag);
+      if(mcTruthMode!=0) { summaryName += "_filt"; summaryName += mcTruthMode; } 
+      summaryName += "_summary.root";
+      gSystem->ExpandPathName(summaryName);
+      cout << "Creating event summary file @ " << summaryName << endl;
+
+      //open file
+      spyEvents = new DataEventSummaryHandler;
+      spyFile = TFile::Open(summaryName,"RECREATE");
+      spyFile->rmdir(proctag);
+      spyDir = spyFile->mkdir(proctag);
+      TTree *outT = evSummary.getTree()->CloneTree(0);
+      outT->SetTitle("Event summary");
+      outT->SetDirectory(spyDir);
+      outT->SetAutoSave(1000000);
+      outT->Branch("weight",&evSummaryWeight,"weight/F"); 
+      spyEvents->init(outT,false);
+    }
+
+
+
   //
   // analyze (puf...)
   //
@@ -254,8 +289,8 @@ int main(int argc, char* argv[])
 	  else
 	    {
 	      Int_t idbits    = leptons[ilep].get("idbits");
-	      bool isTight    = ((idbits >> 10) & 0x1);
-	      //bool isLoose    = ((idbits >> 8) & 0x1);
+	      //bool isTight    = ((idbits >> 10) & 0x1);
+	      bool isLoose    = ((idbits >> 8) & 0x1);
 	      Float_t gIso    = leptons[ilep].getVal("gIso04");
 	      Float_t chIso   = leptons[ilep].getVal("chIso04");
 	      Float_t puchIso = leptons[ilep].getVal("puchIso04");
@@ -263,27 +298,40 @@ int main(int argc, char* argv[])
 	      Float_t relIso=(TMath::Max(nhIso+gIso-0.5*puchIso,0.)+chIso)/leptons[ilep].pt();
 	      if(leptons[ilep].pt()<20)                      passKin=false;
 	      if(fabs(leptons[ilep].eta())>2.4)              passKin=false;
-	      if(!isTight)                                   passId=false;
-	      if(relIso>0.12)                                passIso=false;
+	      if(!isLoose)                                   passId=false;
+	      if(relIso>0.20)                                passIso=false;
 	    }
 
 	  if(!passKin || !passId || !passIso) continue;
 	  selLeptons.push_back(leptons[ilep]);
 	}
       sort(selLeptons.begin(),selLeptons.end(),data::PhysicsObject_t::sortByPt);
-      
+     
       //select the leptons
       if(!eeTrigger && !emuTrigger && !mumuTrigger) continue;
       if(selLeptons.size()<2) continue;
-      int lid1(selLeptons[0].get("id")), lid2(selLeptons[1].get("id"));
+      
+      //apply data/mc correction factors
+      int dilId(1);
+      float llScaleFactor(1.0);
+      for(size_t ilep=0; ilep<2; ilep++)
+	{
+	  dilId *= selLeptons[ilep].get("id");
+	  int id(abs(selLeptons[ilep].get("id")));
+	  llScaleFactor *= lepEff.getLeptonEfficiency( selLeptons[ilep].pt(), selLeptons[ilep].eta(), id,  id ==11 ? "loose" : "tight" ).first;
+	}
+      weight *= llScaleFactor;
+      
+      //set the channel
       std::vector<TString> ch;
+      bool isOS(dilId<0);
       bool isSameFlavor(false);
-      if     (abs(lid1)*abs(lid2)==11*11 && eeTrigger)   { ch.push_back("ee");  isSameFlavor=true; }
-      else if(abs(lid1)*abs(lid2)==11*13 && emuTrigger)  { ch.push_back("emu"); }
-      else if(abs(lid1)*abs(lid2)==13*13 && mumuTrigger) { ch.push_back("mumu"); isSameFlavor=true; }
-      else                                               continue;
+      if     (abs(dilId)==11*11 && eeTrigger)   { ch.push_back("ee");  isSameFlavor=true; }
+      else if(abs(dilId)==11*13 && emuTrigger)  { ch.push_back("emu"); }
+      else if(abs(dilId)==13*13 && mumuTrigger) { ch.push_back("mumu"); isSameFlavor=true; }
+      else                                       continue;
       if(isSameFlavor) ch.push_back("ll");
-
+            
       //select the jets
       data::PhysicsObjectCollection_t jets=evSummary.getPhysicsObject(DataEventSummaryHandler::JETS);
       data::PhysicsObjectCollection_t looseJets,selJets;
@@ -334,7 +382,6 @@ int main(int argc, char* argv[])
       float thetall=utils::cmssw::getArcCos<LorentzVector>(selLeptons[0],selLeptons[1]);
       float mtsum=utils::cmssw::getMT<LorentzVector>(selLeptons[0],met[0])+utils::cmssw::getMT<LorentzVector>(selLeptons[1],met[0]);
       bool isZcand( isSameFlavor && fabs(mll-91)<15);
-      bool isOS( selLeptons[0].get("id")*selLeptons[1].get("id") < 0 ); 
       bool passDilSelection(mll>12 && !isZcand);
       bool passJetSelection(selJets.size()>=2);
       bool passMetSelection( !isSameFlavor || met[0].pt()>40);
@@ -411,8 +458,14 @@ int main(int argc, char* argv[])
       if(!passMetSelection) {
 	controlHistos.fillHisto("evtflow", ch, 3, weight);
 
-	if(!isOS) 
+	if(!isOS) {
 	  controlHistos.fillHisto("evtflow", ch, 4, weight);
+	  if(spyEvents){
+	    spyEvents->getEvent().cat=dilId;
+	    evSummaryWeight=xsecWeight*weight;
+	    spyEvents->getTree()->Fill();
+	  }
+	}
       }
 
       //UE event analysis (no need to require MET, after 2-btags the events will be pure in ttbar)
@@ -429,10 +482,13 @@ int main(int argc, char* argv[])
   // close opened files
   // 
   inF->Close();
-  
+  if(spyFile){
+    spyDir->cd(); spyEvents->getTree()->Write();
+    spyFile->Close();
+  }
     
   //
-  // save histos to local file
+  // finally, save histos to local file
   //
   TString outUrl(out);
   gSystem->ExpandPathName(outUrl);

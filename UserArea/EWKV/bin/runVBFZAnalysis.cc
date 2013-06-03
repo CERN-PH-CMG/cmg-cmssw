@@ -6,6 +6,7 @@
 #include "UserCode/EWKV/interface/SmartSelectionMonitor.h"
 #include "UserCode/EWKV/interface/DataEventSummaryHandler.h"
 #include "UserCode/EWKV/interface/TMVAUtils.h"
+#include "UserCode/EWKV/interface/LeptonEfficiencySF.h"
 #include "UserCode/EWKV/interface/PDFInfo.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
@@ -87,6 +88,8 @@ int main(int argc, char* argv[])
   bool isMC = runProcess.getParameter<bool>("isMC");
   double xsec = runProcess.getParameter<double>("xsec");
   int mctruthmode=runProcess.getParameter<int>("mctruthmode");
+  bool runPhotonSelection(mctruthmode==22 || mctruthmode==111);
+
 
   std::vector<int> jacknifeCfg=runProcess.getParameter<std::vector<int> >("jacknife");
   int jacknife(jacknifeCfg[0]), jacks(jacknifeCfg[1]);
@@ -140,14 +143,14 @@ int main(int argc, char* argv[])
   }
   
   //summary ntuple
-  //  TNtuple *summaryTuple = new TNtuple("ewkzp2j","ewkzp2j","ch:weight:cnorm:mjj:detajj:dphijj:ystar:hardpt:llr:ystar3:maxcjpt:ncjv:htcjv:ncjv15:htcjv15");
-  // summaryTuple->SetDirectory(0);
+  TNtuple *summaryTuple = new TNtuple("ewkzp2j","ewkzp2j","ch:weight:cnorm:mjj:detajj:dphijj:ystar:hardpt:llr:ystar3:maxcjpt:ncjv:htcjv:ncjv15:htcjv15");
+  summaryTuple->SetDirectory(0);
 
   //MVA
   bool useMVA = runProcess.getParameter<bool>("useMVA");
   TMVA::Reader *tmvaReader = 0;
   std::vector<string> tmvaMethods;
-  std::vector<Float_t> tmvaDiscrVals;
+  std::vector<Float_t> tmvaDiscrVals(3,0);
   std::vector<std::string> tmvaVarNames;
   std::vector<Float_t> tmvaVars;
   if(useMVA)
@@ -173,7 +176,7 @@ int main(int argc, char* argv[])
     }
 
   //lepton efficiencies
-  //LeptonEfficiencySF lepEff2012;
+  LeptonEfficiencySF lepEff;
 
   //systematics
   bool runSystematics                        = runProcess.getParameter<bool>("runSystematics");
@@ -222,8 +225,6 @@ int main(int argc, char* argv[])
   mon.addHistogram( new TH1F( "rho25",";#rho(#eta<2.5);Events",50,0,25) ); 
 
   //lepton control
-  mon.addHistogram( new TH1F("ereliso",           ";RelIso;Leptons",50,0,2) );
-  mon.addHistogram( new TH1F("mureliso",           ";RelIso;Leptons",50,0,2) );
   mon.addHistogram( new TH1F( "leadpt", ";p_{T}^{l};Events", 50,0,500) );
   mon.addHistogram( new TH1F( "leadeta", ";#eta^{l};Events", 50,-2.6,2.6) );
   mon.addHistogram( new TH1F( "trailerpt", ";p_{T}^{l};Events", 50,0,500) );
@@ -407,7 +408,7 @@ int main(int argc, char* argv[])
   printf("Scanning the ntuple :");
   DuplicatesChecker duplicatesChecker;
   int nDuplicates(0);
-  int step(totalEntries/100); 
+  int step(totalEntries/50); 
   for( int iev=0; iev<totalEntries; iev++ ) 
     {
       if(iev%step==0){printf(".");fflush(stdout);}
@@ -421,6 +422,7 @@ int main(int argc, char* argv[])
 
       if(isV0JetsMC && ev.nup>5)                          continue; 
 
+      data::PhysicsObjectCollection_t photons=evSummary.getPhysicsObject(DataEventSummaryHandler::PHOTONS);
       data::PhysicsObjectCollection_t leptons=evSummary.getPhysicsObject(DataEventSummaryHandler::LEPTONS);
       data::PhysicsObjectCollection_t jets=evSummary.getPhysicsObject(DataEventSummaryHandler::JETS);
       data::PhysicsObjectCollection_t met=evSummary.getPhysicsObject(DataEventSummaryHandler::MET);
@@ -433,14 +435,24 @@ int main(int argc, char* argv[])
       if(filterOnlyEE)   { mumuTrigger=false; }
       if(filterOnlyMUMU) { eeTrigger=false;   }
       if(isSingleMuPD)   { eeTrigger=false; if( mumuTrigger || !muTrigger ) mumuTrigger= false;  }
-
-      //prepare the tag's vectors for histo filling
-      std::vector<TString> tags(1,"all");
+      
+      bool hasPhotonTrigger(false);
+      float triggerPrescale(1.0);
+      if(runPhotonSelection)
+	{
+	  eeTrigger=false; mumuTrigger=false;
+	  for(size_t itrig=10; itrig>=8; itrig--)
+	    {
+	      if(!ev.t_bits[itrig]) continue;
+	      hasPhotonTrigger=true;
+	      triggerPrescale=ev.t_prescale[itrig];
+	    }
+	}
 
       //pileup weight
       float weight = 1.0;
-      double TotalWeight_plus = 1.0;
-      double TotalWeight_minus = 1.0;
+      double TotalWeight_plus = weight;
+      double TotalWeight_minus = weight;
       if(isMC){
         weight            = LumiWeights->weight(ev.ngenITpu);
         TotalWeight_plus  = PuShifters[utils::cmssw::PUUP]->Eval(ev.ngenITpu);
@@ -457,18 +469,66 @@ int main(int argc, char* argv[])
       // BELOW FOLLOWS THE ANALYSIS OF THE MAIN SELECTION WITH N-1 PLOTS
       //
       //
-      
+
+      //
+      // photon selection
+      //
+      data::PhysicsObjectCollection_t selPhotons;
+      if(runPhotonSelection)
+	{
+	  for(size_t ipho=0; ipho<photons.size(); ipho++)
+	    {
+	      double pt=photons[ipho].pt();
+	      double eta=photons[ipho].getVal("sceta");
+
+	      Int_t idbits( photons[ipho].get("id") );
+	      bool  hasPhotonId( idbits > 0 ); // (idbits >> (runSystematics ? 2 : 1) ) & 0x1 );
+	      double gIso    = photons[ipho].getVal("gIso03");
+	      double gArea   = utils::cmssw::getEffectiveArea(22,eta,3,"gIso");	      
+	      double chIso   = photons[ipho].getVal("chIso03");
+	      double chArea  = utils::cmssw::getEffectiveArea(22,eta,3,"chIso");
+	      double nhIso   = photons[ipho].getVal("nhIso03");
+	      double nhArea  = utils::cmssw::getEffectiveArea(22,eta,3,"nhIso");
+	      
+	      //select the photon
+	      if(pt<50 || fabs(eta)>1.4442 ) continue;
+	      bool passId(true);
+	      if(!hasPhotonId) passId=false;
+	      if( photons[ipho].getVal("r9")<0.9 ) passId=false;
+	      if(!passId) continue;
+	      bool passIso(true);
+	      if(runSystematics){
+		passIso &= (TMath::Max(chIso-chArea*ev.rho,0.0) < 0.7); 
+		passIso &= (TMath::Max(nhIso-nhArea*ev.rho,0.0) < 0.4+0.04*pt); 
+		passIso &= (TMath::Max(gIso-gArea*ev.rho,  0.0) < 0.5+0.005*pt); 
+	      }
+	      else{
+		passIso &= (TMath::Max(chIso-chArea*ev.rho,0.0) < 1.5); 
+		passIso &= (TMath::Max(nhIso-nhArea*ev.rho,0.0) < 1.0+0.04*pt); 
+		passIso &= (TMath::Max(gIso-gArea*ev.rho,  0.0) < 0.7+0.005*pt); 
+	      }
+	      if(!passIso) continue; 
+	      selPhotons.push_back(photons[ipho]);
+	    }
+	}
+
+
       //
       // LEPTON ANALYSIS
       //
       data::PhysicsObjectCollection_t selLeptons;
-      double llScaleFactor(1.0),llTriggerEfficiency(1.0);
       for(size_t ilep=0; ilep<leptons.size(); ilep++)
 	{
 	  bool passKin(true),passId(true),passIso(true);
 	  int lid=fabs(leptons[ilep].get("id"));
 	  TString lepStr( lid==13 ? "mu" : "e");
 
+	  //veto nearby photon (loose electrons are many times photons...)
+	  double minDRlg(9999.);
+	  for(size_t ipho=0; ipho<selPhotons.size(); ipho++)
+	    minDRlg=TMath::Min(minDRlg,deltaR(leptons[ilep],selPhotons[ipho]));
+	  if(minDRlg<0.1) continue;
+	  
 	  //kinematics
 	  float leta = lid==11 ? leptons[ilep].getVal("sceta") : leptons[ilep].eta();
 	  if(leptons[ilep].pt()<20)                   passKin=false;
@@ -512,22 +572,42 @@ int main(int argc, char* argv[])
       std::sort(selLeptons.begin(), selLeptons.end(), data::PhysicsObject_t::sortByPt);
 
       //at this point check if it's worth continuig
-      TString ch("");
-      if(selLeptons.size()<2) continue;
-      int dilId( leptons[0].get("id") * leptons[1].get("id") );
-      if( abs(dilId)==121 && eeTrigger)   ch="ee";
-      if( abs(dilId)==169 && mumuTrigger) ch="mumu";
-      tags.push_back(ch);
-      if(ch=="") continue;
-      mon.fillHisto("eventflow",tags,0,weight);
-      
+      if(runPhotonSelection && (selLeptons.size()!=0 || selPhotons.size()!=1)) continue;
+      if(!runPhotonSelection && selLeptons.size()<2) continue;
+
+      //apply data/mc correction factors
+      //prepare the tag's vectors for histo filling
+      std::vector<TString> chTags;
+      int dilId(1);
+      if(!runPhotonSelection)
+	{
+ 	  for(size_t ilep=0; ilep<2; ilep++)
+	    {
+	      dilId *= selLeptons[ilep].get("id");
+	      int id(abs(selLeptons[ilep].get("id")));
+	      weight *= lepEff.getLeptonEfficiency( selLeptons[ilep].pt(), selLeptons[ilep].eta(), id,  id ==11 ? "loose" : "loose" ).first;
+	    }
+     
+	  //check the channel
+	  if( abs(dilId)==121 && eeTrigger)   chTags.push_back("ee");
+	  if( abs(dilId)==169 && mumuTrigger) chTags.push_back("mumu"); 
+	}
+      else{
+	if(hasPhotonTrigger) {
+	  dilId=22;
+	  chTags.push_back("ee");
+	  chTags.push_back("mumu");
+	  weight *= triggerPrescale;
+	}
+      }
+      if(chTags.size()==0) continue;
+    
       //
       // DILEPTON ANALYSIS
       //
-      bool isOs(dilId<0);
-      LorentzVector leadingLep(leptons[0].pt()>leptons[1].pt() ? leptons[0]: leptons[1]);
-      LorentzVector trailerLep(leptons[0].pt()>leptons[1].pt() ? leptons[1]: leptons[0]);
-      LorentzVector zll(leadingLep+trailerLep);
+      LorentzVector leadingLep(runPhotonSelection ? selPhotons[0] : selLeptons[0].pt()>selLeptons[1].pt() ? selLeptons[0]: selLeptons[1]);
+      LorentzVector trailerLep(runPhotonSelection ? selPhotons[0] : selLeptons[0].pt()>selLeptons[1].pt() ? selLeptons[1]: selLeptons[0]);
+      LorentzVector zll(runPhotonSelection ? selPhotons[0] : leadingLep+trailerLep);
       float zy(zll.Rapidity());
       bool passZmass(fabs(zll.mass()-91)<15);
       bool passZpt(zll.pt()>50);
@@ -541,10 +621,6 @@ int main(int argc, char* argv[])
 	  if(pid!=11 && pid!=13) continue;
 	  genll += gen[ig];
 	}
-
-      if(passZmass)                         mon.fillHisto("eventflow",tags,1,weight);
-      if(passZmass && passZpt)              mon.fillHisto("eventflow",tags,2,weight);
-      if(passZmass && passZpt && passZeta)  mon.fillHisto("eventflow",tags,3,weight);
       
       //
       //JET/MET ANALYSIS
@@ -555,11 +631,13 @@ int main(int argc, char* argv[])
 	{
 	  if(jets[ijet].pt()<15 || fabs(jets[ijet].eta())>4.7 ) continue;
 	  
-	  //cross-clean with selected leptons
-	  double minDRlj(9999.);
+	  //cross-clean with selected leptons and photons
+	  double minDRlj(9999.),minDRlg(9999.);
           for(size_t ilep=0; ilep<selLeptons.size(); ilep++)
             minDRlj = TMath::Min( minDRlj, deltaR(jets[ijet],selLeptons[ilep]) );
-          if(minDRlj<0.4) continue;
+	  for(size_t ipho=0; ipho<selPhotons.size(); ipho++)
+	    minDRlg = TMath::Min( minDRlg, deltaR(jets[ijet],selPhotons[ipho]) );
+	  if(minDRlj<0.4 || minDRlg<0.4) continue;
 	  
 	  Int_t idbits=jets[ijet].get("idbits");
 	  bool passPFloose( ((idbits>>0) & 0x1));
@@ -579,7 +657,6 @@ int main(int argc, char* argv[])
 	  if(jets[ijet].pt()>30) njets30++;
 	}
       std::sort(selJets.begin(), selJets.end(), data::PhysicsObject_t::sortByPt);
-      if(passZmass && passZpt && passZeta && njets30>0)  mon.fillHisto("eventflow",tags,4,weight);
       
       //analyze dijets and activity in the dijet rapidity distance
       float maxPt(0), minPt(0), maxEta(0), minEta(0), maxAbsEta(0), minAbsEta(0);
@@ -665,224 +742,241 @@ int main(int argc, char* argv[])
       //
       // NOW FOR THE CONTROL PLOTS
       //
-      mon.fillHisto("zmass",    tags, zll.mass(), weight);  
-      if(passZmass){
-	
-	//pu control
-	mon.fillHisto("nvtx"     ,   tags, ev.nvtx,      weight);
-	mon.fillHisto("nvtxraw"  ,   tags, ev.nvtx,      1);
-	mon.fillHisto("rho"      ,   tags, ev.rho,       weight);
-	
-	//Z kinematics control
-	mon.fillHisto("zpt"      ,   tags, zll.pt(),     weight);      
-	mon.fillHisto("zeta"     ,   tags, zll.eta(),    weight);
-	mon.fillHisto("zy"       ,   tags, zy,    weight);
-	mon.fillHisto("jeteventflow",tags,njets30,weight);
-	
-	//balance control
-	if(njets30==1){
-	  float dphi=deltaPhi(selJets[0].phi(),zll.phi());
-	  if(fabs(dphi)>2.7){
-	    
-	    float recoilPt=selJets[0].pt();
-	    float balance(recoilPt/zll.pt());
-	    
-	    std::vector<TString> zptRegs;
-	    zptRegs.push_back("");
-	    if(zll.pt()>30 && zll.pt()<50) zptRegs.push_back("30to50");
-	    if(zll.pt()>50)                zptRegs.push_back("50toInf");
-	    for(size_t ireg=0; ireg<zptRegs.size(); ireg++)
-	      {
-		mon.fillHisto("recoilbalance"+zptRegs[ireg],tags,balance, weight);
-		mon.fillHisto("recoilbalancevseta"+zptRegs[ireg],tags,fabs(selJets[0].eta()), balance, weight);
-	      }
-	  }
-	}
-	//end balance control
+      //start analysis
+      for(size_t ich=0; ich<chTags.size(); ich++)
+	{
+	  std::vector<TString> tags(1,chTags[ich]);
 
-	if(passZpt && passZeta){
-	  
-	  //analyze dilepton kinematics
-	  mon.fillHisto("leadeta"   ,  tags, leadingLep.eta(), weight);
-	  mon.fillHisto("leadpt"    ,  tags, leadingLep.pt(),  weight);
-	  mon.fillHisto("trailereta",  tags, trailerLep.eta(), weight);
-	  mon.fillHisto("trailerpt",   tags, trailerLep.pt(),  weight);
-	  mon.fillHisto("njets",       tags, njets30,          weight);
-	  
-	  if(njets30>=2)
-	    {
-	      std::vector<TString> selTags;
-	      selTags = getDijetCategories(mjj,detajj,tags);
+	  mon.fillHisto("eventflow",tags,0,weight);
+	  if(passZmass)                                      mon.fillHisto("eventflow",tags,1,weight);
+	  if(passZmass && passZpt)                           mon.fillHisto("eventflow",tags,2,weight);
+	  if(passZmass && passZpt && passZeta)               mon.fillHisto("eventflow",tags,3,weight);
+	  if(passZmass && passZpt && passZeta && njets30>1)  mon.fillHisto("eventflow",tags,4,weight);
 
-	      //save for further analysis
-	      if(mjj>200) {
-		//summaryTuple->Fill(ev.cat,weight*xsecWeight,cnorm,mjj,detajj,dphijj,ystar,hardpt,tmvaDiscrVals[2],ystar3,pt3,ncjv,htcjv,ncjv15,htcjv15);
-		for(size_t im=0; im<tmvaMethods.size(); im++) mon.fillHisto(tmvaMethods[im], selTags, tmvaDiscrVals[im], weight);
-	      } 
-	      
-	      mon.fillHisto("qt", selTags, zll.pt(), weight,true);      
-	      mon.fillHisto("rapidity"     ,   tags, fabs(zy),    weight);
-	      mon.fillHisto("njetsvsavginstlumi", tags, njets30,ev.instLumi,weight);
-	      mon.fillHisto("vbfcandjetpt",  selTags, maxPt,weight);
-	      mon.fillHisto("vbfcandjetpt",  selTags, minPt,weight);
-	      mon.fillHisto("vbfcandjet1pt", selTags, maxPt,weight);
-	      mon.fillHisto("vbfcandjet2pt", selTags, minPt,weight);
-	      mon.fillHisto("vbfcandjet1eta",     selTags, maxAbsEta, weight);
-	      mon.fillHisto("vbfcandjet2eta",     selTags, minAbsEta, weight);
-	      mon.fillHisto("vbfcandjeteta",      selTags, maxAbsEta, weight);
-	      mon.fillHisto("vbfcandjeteta",      selTags, minAbsEta, weight);
-	      mon.fillHisto("vbfcandjetdeta",     selTags, detajj,weight);
-	      mon.fillHisto("vbfcandjetseta",     selTags, setajj,weight);
-	      mon.fillHisto("vbfcandjetetaprod",  selTags, etaprod,weight);
-	      mon.fillHisto("vbfmjj",             selTags, mjj,weight,true);
-	      mon.fillHisto("vbfhardpt",          selTags, hardpt,weight);
-	      mon.fillHisto("vbfspt",             selTags, spt,weight);
-	      mon.fillHisto("vbfdphijj",          selTags, fabs(dphijj),weight);
-	      mon.fillHisto("vbfystar",           selTags, ystar,weight);
-	      mon.fillHisto("vbfpt",              selTags, ptjj,weight);
-	      mon.fillHisto("met",                selTags, ptmiss,weight);
-	      mon.fillHisto("metL",               selTags, metL,weight);
-	      if(ncjv15){
-		mon.fillHisto("vbfmaxcjvjpt",        selTags, pt3,weight);
-		mon.fillHisto("vbfystar3",           selTags, ystar3,weight);
+	  mon.fillHisto("zmass",    tags, zll.mass(), weight);  
+	  if(passZmass){
+	
+	    //pu control
+	    mon.fillHisto("nvtx"     ,   tags, ev.nvtx,      weight);
+	    mon.fillHisto("nvtxraw"  ,   tags, ev.nvtx,      1);
+	    mon.fillHisto("rho"      ,   tags, ev.rho,       weight);
+	
+	    //Z kinematics control
+	    mon.fillHisto("leadpt"      ,   tags, leadingLep.pt(), weight);      
+	    mon.fillHisto("trailerpt"   ,   tags, trailerLep.pt(), weight);      
+	    mon.fillHisto("leadeta"     ,   tags, TMath::Max(fabs(leadingLep.eta()),fabs(trailerLep.eta())), weight);      
+	    mon.fillHisto("trailereta"  ,   tags, TMath::Min(fabs(leadingLep.eta()),fabs(trailerLep.eta())), weight);      
+
+	    mon.fillHisto("zpt"      , tags, zll.pt(),  weight);      
+	    mon.fillHisto("zeta"     , tags, zll.eta(), weight);
+	    mon.fillHisto("zy"       , tags, zy,        weight);
+	    mon.fillHisto("jeteventflow",tags, njets30, weight);
+	
+	    //balance control
+	    if(njets30==1){
+	      float dphi=deltaPhi(selJets[0].phi(),zll.phi());
+	      if(fabs(dphi)>2.7){
+	    
+		float recoilPt=selJets[0].pt();
+		float balance(recoilPt/zll.pt());
+	    
+		std::vector<TString> zptRegs;
+		zptRegs.push_back("");
+		if(zll.pt()>30 && zll.pt()<50) zptRegs.push_back("30to50");
+		if(zll.pt()>50)                zptRegs.push_back("50toInf");
+		for(size_t ireg=0; ireg<zptRegs.size(); ireg++)
+		  {
+		    mon.fillHisto("recoilbalance"+zptRegs[ireg],tags,balance, weight);
+		    mon.fillHisto("recoilbalancevseta"+zptRegs[ireg],tags,fabs(selJets[0].eta()), balance, weight);
+		  }
 	      }
-	      mon.fillHisto("vbfcjv",              selTags, ncjv,weight);
-	      mon.fillHisto("vbfcjv15",            selTags, ncjv15,weight);
-	      mon.fillHisto("vbfcjv20",            selTags, ncjv20,weight);
-	      mon.fillHisto("vbfhtcjv",            selTags, htcjv,weight);
-	      mon.fillHisto("vbfhtcjv15",          selTags, htcjv15,weight);
-	      mon.fillHisto("vbfhtcjv20",          selTags, htcjv20,weight);
-	      
-	      if(isMC && mPDFInfo)
+	    }
+	    //end balance control
+
+	    if(passZpt && passZeta){
+	  
+	      //analyze dilepton kinematics
+	      mon.fillHisto("leadeta"   ,  tags, leadingLep.eta(), weight);
+	      mon.fillHisto("leadpt"    ,  tags, leadingLep.pt(),  weight);
+	      mon.fillHisto("trailereta",  tags, trailerLep.eta(), weight);
+	      mon.fillHisto("trailerpt",   tags, trailerLep.pt(),  weight);
+	      mon.fillHisto("njets",       tags, njets30,          weight);
+	  
+	      if(njets30>=2)
 		{
-		  std::vector<float> wgts=mPDFInfo->getWeights(iev);
-		  for(size_t ipw=0; ipw<wgts.size(); ipw++) 
+		  std::vector<TString> selTags;
+		  selTags = getDijetCategories(mjj,detajj,tags);
+
+		  //save for further analysis
+		  if(mjj>200) {
+		    ev.cat=dilId;
+		    summaryTuple->Fill(ev.cat,weight*xsecWeight,cnorm,mjj,detajj,dphijj,ystar,hardpt,tmvaDiscrVals[2],ystar3,pt3,ncjv,htcjv,ncjv15,htcjv15);
+		    for(size_t im=0; im<tmvaMethods.size(); im++) mon.fillHisto(tmvaMethods[im], selTags, tmvaDiscrVals[im], weight);
+		  } 
+	      
+		  mon.fillHisto("qt", selTags, zll.pt(), weight,true);      
+		  mon.fillHisto("rapidity"     ,   tags, fabs(zy),    weight);
+		  mon.fillHisto("njetsvsavginstlumi", tags, njets30,ev.instLumi,weight);
+		  mon.fillHisto("vbfcandjetpt",  selTags, maxPt,weight);
+		  mon.fillHisto("vbfcandjetpt",  selTags, minPt,weight);
+		  mon.fillHisto("vbfcandjet1pt", selTags, maxPt,weight);
+		  mon.fillHisto("vbfcandjet2pt", selTags, minPt,weight);
+		  mon.fillHisto("vbfcandjet1eta",     selTags, maxAbsEta, weight);
+		  mon.fillHisto("vbfcandjet2eta",     selTags, minAbsEta, weight);
+		  mon.fillHisto("vbfcandjeteta",      selTags, maxAbsEta, weight);
+		  mon.fillHisto("vbfcandjeteta",      selTags, minAbsEta, weight);
+		  mon.fillHisto("vbfcandjetdeta",     selTags, detajj,weight);
+		  mon.fillHisto("vbfcandjetseta",     selTags, setajj,weight);
+		  mon.fillHisto("vbfcandjetetaprod",  selTags, etaprod,weight);
+		  mon.fillHisto("vbfmjj",             selTags, mjj,weight,true);
+		  mon.fillHisto("vbfhardpt",          selTags, hardpt,weight);
+		  mon.fillHisto("vbfspt",             selTags, spt,weight);
+		  mon.fillHisto("vbfdphijj",          selTags, fabs(dphijj),weight);
+		  mon.fillHisto("vbfystar",           selTags, ystar,weight);
+		  mon.fillHisto("vbfpt",              selTags, ptjj,weight);
+		  mon.fillHisto("met",                selTags, ptmiss,weight);
+		  mon.fillHisto("metL",               selTags, metL,weight);
+		  if(ncjv15){
+		    mon.fillHisto("vbfmaxcjvjpt",        selTags, pt3,weight);
+		    mon.fillHisto("vbfystar3",           selTags, ystar3,weight);
+		  }
+		  mon.fillHisto("vbfcjv",              selTags, ncjv,weight);
+		  mon.fillHisto("vbfcjv15",            selTags, ncjv15,weight);
+		  mon.fillHisto("vbfcjv20",            selTags, ncjv20,weight);
+		  mon.fillHisto("vbfhtcjv",            selTags, htcjv,weight);
+		  mon.fillHisto("vbfhtcjv15",          selTags, htcjv15,weight);
+		  mon.fillHisto("vbfhtcjv20",          selTags, htcjv20,weight);
+	      
+		  if(isMC && mPDFInfo)
 		    {
-		      TString var("_"); var+=ipw;
-		      mon.fillHisto("vbfcandjetdeta"+var,     selTags, fabs(detajj),weight*wgts[ipw]);
-		      mon.fillHisto("vbfcandjet1pt"+var,      tags, maxPt,weight*wgts[ipw]);
-		      mon.fillHisto("vbfcandjet2pt"+var,      tags, minPt,weight*wgts[ipw]);
-		      mon.fillHisto("vbfcandjet1eta"+var,     tags, maxAbsEta,weight*wgts[ipw]);
-		      mon.fillHisto("vbfcandjet2eta"+var,     tags, minAbsEta,weight*wgts[ipw]);
+		      std::vector<float> wgts=mPDFInfo->getWeights(iev);
+		      for(size_t ipw=0; ipw<wgts.size(); ipw++) 
+			{
+			  TString var("_"); var+=ipw;
+			  mon.fillHisto("vbfcandjetdeta"+var,     selTags, fabs(detajj),weight*wgts[ipw]);
+			  mon.fillHisto("vbfcandjet1pt"+var,      tags, maxPt,weight*wgts[ipw]);
+			  mon.fillHisto("vbfcandjet2pt"+var,      tags, minPt,weight*wgts[ipw]);
+			  mon.fillHisto("vbfcandjet1eta"+var,     tags, maxAbsEta,weight*wgts[ipw]);
+			  mon.fillHisto("vbfcandjet2eta"+var,     tags, minAbsEta,weight*wgts[ipw]);
+			}
 		    }
-		}
 	      	      
-	    }//end nAJetsLoose
+		}//end nAJetsLoose
   
-	  //STATISTICAL ANALYSIS
-	  float Q2Weight_plus(1.0), Q2Weight_down(1.0);
-	  float PDFWeight_plus(1.0), PDFWeight_down(1.0);
-	  if(isSignal)
-	    {
-	      if(mPDFInfo)
+	      //STATISTICAL ANALYSIS
+	      float Q2Weight_plus(1.0), Q2Weight_down(1.0);
+	      float PDFWeight_plus(1.0), PDFWeight_down(1.0);
+	      if(isSignal)
 		{
-		  std::vector<float> wgts=mPDFInfo->getWeights(iev);
-		  for(size_t ipw=0; ipw<wgts.size(); ipw++)
+		  if(mPDFInfo)
 		    {
-		      PDFWeight_plus = TMath::Max(PDFWeight_plus,wgts[ipw]);
-		      PDFWeight_down = TMath::Min(PDFWeight_down,wgts[ipw]);
+		      std::vector<float> wgts=mPDFInfo->getWeights(iev);
+		      for(size_t ipw=0; ipw<wgts.size(); ipw++)
+			{
+			  PDFWeight_plus = TMath::Max(PDFWeight_plus,wgts[ipw]);
+			  PDFWeight_down = TMath::Min(PDFWeight_down,wgts[ipw]);
+			}
+		    }
+		  if(Q2weightsGr.size()==2)
+		    {
+		      Q2Weight_plus = Q2weightsGr[0]->Eval(genll.pt());
+		      Q2Weight_down = Q2weightsGr[1]->Eval(genll.pt());
 		    }
 		}
-	      if(Q2weightsGr.size()==2)
-		{
-		  Q2Weight_plus = Q2weightsGr[0]->Eval(genll.pt());
-		  Q2Weight_down = Q2weightsGr[1]->Eval(genll.pt());
-		}
-	    }
 
-	  for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
-	    float iweight = weight;                                               //nominal
-	    if(ivar==5)                        iweight *= TotalWeight_plus;        //pu up
-	    if(ivar==6)                        iweight *= TotalWeight_minus;       //pu down
-	    if(ivar==7)                        iweight *= Q2Weight_plus;
-	    if(ivar==8)                        iweight *= Q2Weight_down;
-	    if(ivar==9)                        iweight *= PDFWeight_plus;
-	    if(ivar==10)                       iweight *= PDFWeight_down;
+	      for(size_t ivar=0; ivar<nvarsToInclude; ivar++){
+		float iweight = weight;                                               //nominal
+		if(ivar==5)                        iweight *= TotalWeight_plus;        //pu up
+		if(ivar==6)                        iweight *= TotalWeight_minus;       //pu down
+		if(ivar==7)                        iweight *= Q2Weight_plus;
+		if(ivar==8)                        iweight *= Q2Weight_down;
+		if(ivar==9)                        iweight *= PDFWeight_plus;
+		if(ivar==10)                       iweight *= PDFWeight_down;
 	    
-	    data::PhysicsObjectCollection_t localSelJets;
-	    for(size_t ijet=0; ijet<jets.size(); ijet++){
+		data::PhysicsObjectCollection_t localSelJets;
+		for(size_t ijet=0; ijet<jets.size(); ijet++){
 	      
-	      float rawpt=jets[ijet].pt();
-	      float pt=rawpt;
-	      if(ivar==1) pt=jets[ijet].getVal("jesup");
-	      if(ivar==2) pt=jets[ijet].getVal("jesdown");
-	      if(ivar==3) pt=jets[ijet].getVal("jerup");
-	      if(ivar==4) pt=jets[ijet].getVal("jerdown");
-	      if(pt<30 || fabs(jets[ijet].eta())>4.7) continue;
+		  float rawpt=jets[ijet].pt();
+		  float pt=rawpt;
+		  if(ivar==1) pt=jets[ijet].getVal("jesup");
+		  if(ivar==2) pt=jets[ijet].getVal("jesdown");
+		  if(ivar==3) pt=jets[ijet].getVal("jerup");
+		  if(ivar==4) pt=jets[ijet].getVal("jerdown");
+		  if(pt<30 || fabs(jets[ijet].eta())>4.7) continue;
 	      
-	      Int_t idbits=jets[ijet].get("idbits");
-	      bool passPFloose( ((idbits>>0) & 0x1));
-	      if(!passPFloose) continue;
+		  Int_t idbits=jets[ijet].get("idbits");
+		  bool passPFloose( ((idbits>>0) & 0x1));
+		  if(!passPFloose) continue;
 	      
-	      data::PhysicsObject_t iSelJet(jets[ijet]);
-	      iSelJet *= pt/rawpt;
-	      localSelJets.push_back( iSelJet );
-	    }
-	    if(localSelJets.size()<2)  continue;
-	    std::sort(localSelJets.begin(), localSelJets.end(),  data::PhysicsObject_t::sortByPt);
+		  data::PhysicsObject_t iSelJet(jets[ijet]);
+		  iSelJet *= pt/rawpt;
+		  localSelJets.push_back( iSelJet );
+		}
+		if(localSelJets.size()<2)  continue;
+		std::sort(localSelJets.begin(), localSelJets.end(),  data::PhysicsObject_t::sortByPt);
 
-	    //recoil residuals uncertainty
-	    if( (ivar==11 || ivar==12) && recoilResidualsGr.size()==2)
-	      {
-		for(size_t ijet=0; ijet<2; ijet++)
+		//recoil residuals uncertainty
+		if( (ivar==11 || ivar==12) && recoilResidualsGr.size()==2)
 		  {
-		    float abseta=TMath::Abs(localSelJets[ijet].eta());
-		    float sfEnvelope=TMath::Max( TMath::Abs(1-recoilResidualsGr[0]->Eval(abseta)),
-						 TMath::Abs(1-recoilResidualsGr[1]->Eval(abseta)) );
-		    localSelJets[ijet] *= (ivar==11 ? 1+sfEnvelope : 1-sfEnvelope);
+		    for(size_t ijet=0; ijet<2; ijet++)
+		      {
+			float abseta=TMath::Abs(localSelJets[ijet].eta());
+			float sfEnvelope=TMath::Max( TMath::Abs(1-recoilResidualsGr[0]->Eval(abseta)),
+						     TMath::Abs(1-recoilResidualsGr[1]->Eval(abseta)) );
+			localSelJets[ijet] *= (ivar==11 ? 1+sfEnvelope : 1-sfEnvelope);
+		      }
+		  }
+
+		//re-assign the event category;
+		std::vector<TString> locTags(1,chTags[ich]);
+		for(unsigned int index=0; index<optim_Cuts2_jet_pt1.size();index++)
+		  {
+		    float minJetPt1=optim_Cuts2_jet_pt1[index];
+		    float minJetPt2=optim_Cuts2_jet_pt2[index];
+
+		    bool passLocalJet1Pt(localSelJets[0].pt()>minJetPt1);
+		    bool passLocalJet2Pt(localSelJets[1].pt()>minJetPt2);
+		    if(!passLocalJet1Pt || !passLocalJet2Pt) continue; 
+		
+		    LorentzVector vbfSyst=localSelJets[0]+localSelJets[1];
+		    float mjj=vbfSyst.M();
+		    float detajj=fabs(localSelJets[0].eta()-localSelJets[1].eta());
+		    float spt=vbfSyst.pt()/(localSelJets[0].pt()+localSelJets[1].pt());
+
+		    std::vector<TString> localSelTags=getDijetCategories(mjj,detajj,locTags);
+		    mon.fillHisto(TString("dijet_deta_shapes")+varNames[ivar],localSelTags,index,detajj,iweight);
+		
+		    //set the variables to be used in the MVA evaluation (independently of its use)
+		    for(size_t mvar=0; mvar<tmvaVarNames.size(); mvar++) 
+		      {
+			std::string variable        = tmvaVarNames[mvar];
+			if(variable=="mjj")        tmvaVars[mvar]=mjj;
+			if(variable=="detajj")     tmvaVars[mvar]=detajj;
+			if(variable=="spt")        tmvaVars[mvar]=spt;
+		      }
+		    if(tmvaReader)
+		      for(size_t im=0; im<tmvaMethods.size(); im++)
+			{
+			  float iTmvaDiscrVal=tmvaReader->EvaluateMVA( tmvaMethods[im] );
+			  mon.fillHisto(TString(tmvaMethods[im]+"_shapes")+varNames[ivar],localSelTags,index,iTmvaDiscrVal,iweight);
+			}
 		  }
 	      }
-
-	    //re-assign the event category;
-	    std::vector<TString> locTags;
-	    locTags.push_back(ch);
-	    for(unsigned int index=0; index<optim_Cuts2_jet_pt1.size();index++)
-	      {
-		float minJetPt1=optim_Cuts2_jet_pt1[index];
-		float minJetPt2=optim_Cuts2_jet_pt2[index];
-
-		bool passLocalJet1Pt(localSelJets[0].pt()>minJetPt1);
-		bool passLocalJet2Pt(localSelJets[1].pt()>minJetPt2);
-		if(!passLocalJet1Pt || !passLocalJet2Pt) continue; 
-		
-		LorentzVector vbfSyst=localSelJets[0]+localSelJets[1];
-		float mjj=vbfSyst.M();
-		float detajj=fabs(localSelJets[0].eta()-localSelJets[1].eta());
-		float spt=vbfSyst.pt()/(localSelJets[0].pt()+localSelJets[1].pt());
-
-		std::vector<TString> localSelTags=getDijetCategories(mjj,detajj,locTags);
-		mon.fillHisto(TString("dijet_deta_shapes")+varNames[ivar],localSelTags,index,detajj,iweight);
-		
-		//set the variables to be used in the MVA evaluation (independently of its use)
-		for(size_t mvar=0; mvar<tmvaVarNames.size(); mvar++) 
-		  {
-		    std::string variable        = tmvaVarNames[mvar];
-		    if(variable=="mjj")        tmvaVars[mvar]=mjj;
-		    if(variable=="detajj")     tmvaVars[mvar]=detajj;
-		    if(variable=="spt")        tmvaVars[mvar]=spt;
-		  }
-		if(tmvaReader)
-		  for(size_t im=0; im<tmvaMethods.size(); im++)
-		    {
-		      float iTmvaDiscrVal=tmvaReader->EvaluateMVA( tmvaMethods[im] );
-		      mon.fillHisto(TString(tmvaMethods[im]+"_shapes")+varNames[ivar],localSelTags,index,iTmvaDiscrVal,iweight);
-		    }
-	      }
-	  }
-	}//end passZpt && passZeta
+	    }//end passZpt && passZeta
 	
-	//
-	//N-1 CONTROL
-	//
-	if(           passZeta && (njets30>=2))   { mon.fillHisto("zptNM1"      ,   tags, zll.pt(),     weight); }
-	if(passZpt             && (njets30>=2))   { mon.fillHisto("zetaNM1"     ,   tags, zll.eta(),    weight);  mon.fillHisto("zyNM1"     , tags, zy,    weight);}
-	if(passZpt && passZeta && (njets30>=2))
-	  {
-	    mon.fillHisto  ("mjjvsdetajj",       tags, detajj, mjj, weight);
-	    mon.fillHisto  ("detajjvsmjj",       tags, mjj,    detajj, weight);
-	  }
+	    //
+	    //N-1 CONTROL
+	    //
+	    if(           passZeta && (njets30>=2))   { mon.fillHisto("zptNM1"      ,   tags, zll.pt(),     weight); }
+	    if(passZpt             && (njets30>=2))   { mon.fillHisto("zetaNM1"     ,   tags, zll.eta(),    weight);  mon.fillHisto("zyNM1"     , tags, zy,    weight);}
+	    if(passZpt && passZeta && (njets30>=2))
+	      {
+		mon.fillHisto  ("mjjvsdetajj",       tags, detajj, mjj, weight);
+		mon.fillHisto  ("detajjvsmjj",       tags, mjj,    detajj, weight);
+	      }
 
-      }//end passZmass
+	  }//end passZmass
+	}
   }
   
   printf("\n"); 
@@ -904,8 +998,8 @@ int main(int argc, char* argv[])
   //save summary tuple
   outUrl.ReplaceAll(".root","_summary.root");
   ofile=TFile::Open(outUrl,"recreate");
-  //summaryTuple->SetDirectory(ofile);
-  //summaryTuple->Write();
+  summaryTuple->SetDirectory(ofile);
+  summaryTuple->Write();
   ofile->Close();
 
   if(outTxtFile)fclose(outTxtFile);

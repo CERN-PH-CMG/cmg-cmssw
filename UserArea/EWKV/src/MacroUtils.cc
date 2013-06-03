@@ -128,19 +128,48 @@ namespace utils
     
 
     //
-    Float_t getEffectiveArea(int id,float eta)
+    Float_t getEffectiveArea(int id,float eta,int cone,TString isoSum)
     {
       Float_t Aeff(1.0);
-      if(abs(id)==1)
+      if(abs(id)==11)
 	{
-	  if(fabs(eta)<1.0) Aeff=0.13;
-	  else if(fabs(eta)>1.0 && fabs(eta)<1.479) Aeff=0.14;
-	  else if(fabs(eta)>1.479 && fabs(eta)<2.0) Aeff=0.07;
-	  else if(fabs(eta)>2.0 && fabs(eta)<2.2)   Aeff=0.09;
-	  else if(fabs(eta)>2.2 && fabs(eta)<2.3)   Aeff=0.11;
-	  else if(fabs(eta)>2.3 && fabs(eta)<2.4)   Aeff=0.11;
+	  if(fabs(eta)<1.0)                         Aeff=(cone==3? 0.100 : 0.180);
+	  else if(fabs(eta)>1.0 && fabs(eta)<1.479) Aeff=(cone==3? 0.120 : 0.200);
+	  else if(fabs(eta)>1.479 && fabs(eta)<2.0) Aeff=(cone==3? 0.085 : 0.150);
+	  else if(fabs(eta)>2.0 && fabs(eta)<2.2)   Aeff=(cone==3? 0.110 : 0.190);
+	  else if(fabs(eta)>2.2 && fabs(eta)<2.3)   Aeff=(cone==3? 0.120 : 0.210);
+	  else if(fabs(eta)>2.3 && fabs(eta)<2.4)   Aeff=(cone==3? 0.120 : 0.220);
 	  else Aeff=0.14;
 	}
+      else if(abs(id)==22){
+	if(isoSum=="chIso"){
+	  if(fabs(eta)<1.0)                         Aeff=0.012;
+          else if(fabs(eta)>1.0 && fabs(eta)<1.479) Aeff=0.010;
+          else if(fabs(eta)>1.479 && fabs(eta)<2.0) Aeff=0.014;
+          else if(fabs(eta)>2.0 && fabs(eta)<2.2)   Aeff=0.012;
+          else if(fabs(eta)>2.2 && fabs(eta)<2.3)   Aeff=0.016;
+          else if(fabs(eta)>2.3 && fabs(eta)<2.4)   Aeff=0.020;
+          else                                      Aeff=0.012;
+	}
+	if(isoSum=="nhIso"){
+	  if(fabs(eta)<1.0)                         Aeff=0.030;
+          else if(fabs(eta)>1.0 && fabs(eta)<1.479) Aeff=0.057;
+          else if(fabs(eta)>1.479 && fabs(eta)<2.0) Aeff=0.039;
+          else if(fabs(eta)>2.0 && fabs(eta)<2.2)   Aeff=0.015;
+          else if(fabs(eta)>2.2 && fabs(eta)<2.3)   Aeff=0.024;
+          else if(fabs(eta)>2.3 && fabs(eta)<2.4)   Aeff=0.039;
+          else                                      Aeff=0.072;
+	}
+	if(isoSum=="gIso"){
+	  if(fabs(eta)<1.0)                         Aeff=0.148;
+          else if(fabs(eta)>1.0 && fabs(eta)<1.479) Aeff=0.130;
+          else if(fabs(eta)>1.479 && fabs(eta)<2.0) Aeff=0.112;
+          else if(fabs(eta)>2.0 && fabs(eta)<2.2)   Aeff=0.216;
+          else if(fabs(eta)>2.2 && fabs(eta)<2.3)   Aeff=0.262;
+          else if(fabs(eta)>2.3 && fabs(eta)<2.4)   Aeff=0.260;
+          else                                      Aeff=0.266;
+	}
+      }
       return Aeff;
     }
   }

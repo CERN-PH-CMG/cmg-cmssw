@@ -555,7 +555,7 @@ data::PhysicsObjectCollection_t DataEventSummaryHandler::getPhysicsObject(int co
       for(Int_t ig=0; ig<evSummary_.gn; ig++)
 	{
 	  data::PhysicsObject_t photon(evSummary_.gn_px[ig],evSummary_.gn_py[ig],evSummary_.gn_pz[ig],evSummary_.gn_en[ig]);
-	  photon.set("idbits",  evSummary_.gn_idbits[ig]);
+	  photon.set("id",  evSummary_.gn_idbits[ig]);
 	  photon.setVal("gIso03",    evSummary_.gn_gIso03[ig]);        photon.setVal("chIso03",   evSummary_.gn_chIso03[ig]);  photon.setVal("puchIso03", evSummary_.gn_puchIso03[ig]);   photon.setVal("nhIso03",   evSummary_.gn_nhIso03[ig]);
 	  photon.setVal("gIso04",    evSummary_.gn_gIso04[ig]);        photon.setVal("chIso04",   evSummary_.gn_chIso04[ig]);  photon.setVal("puchIso04", evSummary_.gn_puchIso04[ig]);   photon.setVal("nhIso04",   evSummary_.gn_nhIso04[ig]);
 	  photon.setVal("ecalIso03",    evSummary_.gn_ecalIso03[ig]);  photon.setVal("trk03",   evSummary_.gn_trkIso03[ig]);   photon.setVal("hcalIso03",   evSummary_.gn_hcalIso03[ig]);

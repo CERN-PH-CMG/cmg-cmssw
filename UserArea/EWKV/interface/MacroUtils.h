@@ -70,7 +70,7 @@ namespace utils
     enum PuShifterTypes {PUDOWN,PUUP};
     utils::cmssw::PuShifter_t getPUshifters(std::vector< float > &Lumi_distr, float puUnc);
 
-    Float_t getEffectiveArea(int id, float eta);
+    Float_t getEffectiveArea(int id, float eta,int cone=3,TString isoSum="");
   }
 
 }
