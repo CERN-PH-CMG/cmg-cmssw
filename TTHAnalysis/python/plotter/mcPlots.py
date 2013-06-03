@@ -6,8 +6,11 @@ class PlotFile:
     def __init__(self,fileName,options):
         self._options = options
         self._plots = []
-        for line in open(fileName,'r'):
-            if re.match("\s*#.*", line): continue
+        infile = open(fileName,'r')
+        for line in infile:
+            if re.match("\s*#.*", line) or len(line.strip())==0: continue
+            while line.strip()[-1] == "\\":
+                line = line.strip()[:-1] + infile.next()
             extra = {}
             if ";" in line:
                 (line,more) = line.split(";")[:2]
@@ -381,7 +384,7 @@ def addPlotMakerOptions(parser):
     #parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Simulation", help="Spam text on the right hand side");
     parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Preliminary", help="Spam text on the right hand side");
     parser.add_option("--rspam", dest="rspam",   type="string", default="#sqrt{s} = 8 TeV, L = %(lumi).1f fb^{-1}", help="Spam text on the right hand side");
-    parser.add_option("--print", dest="printPlots", type="string", default=None, help="print out plots in this format or formats (e.g. 'png,pdf')");
+    parser.add_option("--print", dest="printPlots", type="string", default="png,pdf", help="print out plots in this format or formats (e.g. 'png,pdf')");
     parser.add_option("--pdir", "--print-dir", dest="printDir", type="string", default="plots", help="print out plots in this directory");
     parser.add_option("--showSigShape", dest="showSigShape", action="store_true", default=False, help="Stack a normalized signal shape")
     parser.add_option("--noStackSig", dest="noStackSig", action="store_true", default=False, help="Don't add the signal shape to the stack (useful with --showSigShape)")
