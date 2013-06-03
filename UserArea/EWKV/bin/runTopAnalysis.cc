@@ -318,7 +318,7 @@ int main(int argc, char* argv[])
 	{
 	  dilId *= selLeptons[ilep].get("id");
 	  int id(abs(selLeptons[ilep].get("id")));
-	  llScaleFactor *= lepEff.getLeptonEfficiency( selLeptons[ilep].pt(), selLeptons[ilep].eta(), id,  id ==11 ? "loose" : "tight" ).first;
+	  llScaleFactor *= isMC ? lepEff.getLeptonEfficiency( selLeptons[ilep].pt(), selLeptons[ilep].eta(), id,  id ==11 ? "loose" : "tight" ).first : 1.0;
 	}
       weight *= llScaleFactor;
       

@@ -589,7 +589,7 @@ int main(int argc, char* argv[])
 	    {
 	      dilId *= selLeptons[ilep].get("id");
 	      int id(abs(selLeptons[ilep].get("id")));
-	      weight *= lepEff.getLeptonEfficiency( selLeptons[ilep].pt(), selLeptons[ilep].eta(), id,  id ==11 ? "loose" : "loose" ).first;
+	      weight *= isMC ? lepEff.getLeptonEfficiency( selLeptons[ilep].pt(), selLeptons[ilep].eta(), id,  id ==11 ? "loose" : "loose" ).first : 1.0;
 	    }
      
 	  //check the channel
