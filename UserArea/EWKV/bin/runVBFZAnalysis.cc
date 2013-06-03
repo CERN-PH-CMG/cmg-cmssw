@@ -437,7 +437,7 @@ int main(int argc, char* argv[])
       if(isSingleMuPD)   { eeTrigger=false; if( mumuTrigger || !muTrigger ) mumuTrigger= false;  }
       
       bool hasPhotonTrigger(false);
-      float triggerPrescale(1.0);
+      float triggerPrescale(1.0),triggerThreshold(0);
       if(runPhotonSelection)
 	{
 	  eeTrigger=false; mumuTrigger=false;
@@ -446,6 +446,10 @@ int main(int argc, char* argv[])
 	      if(!ev.t_bits[itrig]) continue;
 	      hasPhotonTrigger=true;
 	      triggerPrescale=ev.t_prescale[itrig];
+	      if(itrig==10) triggerThreshold=100;
+	      if(itrig==9)  triggerThreshold=82;
+	      if(itrig==8)  triggerThreshold=50;
+	      break;
 	    }
 	}
 
@@ -491,7 +495,7 @@ int main(int argc, char* argv[])
 	      double nhArea  = utils::cmssw::getEffectiveArea(22,eta,3,"nhIso");
 	      
 	      //select the photon
-	      if(pt<50 || fabs(eta)>1.4442 ) continue;
+	      if(pt<triggerThreshold || fabs(eta)>1.4442 ) continue;
 	      bool passId(true);
 	      if(!hasPhotonId) passId=false;
 	      if( photons[ipho].getVal("r9")<0.9 ) passId=false;
@@ -609,7 +613,7 @@ int main(int argc, char* argv[])
       LorentzVector trailerLep(runPhotonSelection ? selPhotons[0] : selLeptons[0].pt()>selLeptons[1].pt() ? selLeptons[1]: selLeptons[0]);
       LorentzVector zll(runPhotonSelection ? selPhotons[0] : leadingLep+trailerLep);
       float zy(zll.Rapidity());
-      bool passZmass(fabs(zll.mass()-91)<15);
+      bool passZmass(runPhotonSelection || (fabs(zll.mass()-91)<15));
       bool passZpt(zll.pt()>50);
       bool passZeta(fabs(zy)<1.4442);
 
@@ -814,13 +818,13 @@ int main(int argc, char* argv[])
 		    for(size_t im=0; im<tmvaMethods.size(); im++) mon.fillHisto(tmvaMethods[im], selTags, tmvaDiscrVals[im], weight);
 		  } 
 	      
-		  mon.fillHisto("qt", selTags, zll.pt(), weight,true);      
-		  mon.fillHisto("rapidity"     ,   tags, fabs(zy),    weight);
-		  mon.fillHisto("njetsvsavginstlumi", tags, njets30,ev.instLumi,weight);
-		  mon.fillHisto("vbfcandjetpt",  selTags, maxPt,weight);
-		  mon.fillHisto("vbfcandjetpt",  selTags, minPt,weight);
-		  mon.fillHisto("vbfcandjet1pt", selTags, maxPt,weight);
-		  mon.fillHisto("vbfcandjet2pt", selTags, minPt,weight);
+		  mon.fillHisto("qt",                 selTags, zll.pt(), weight,true);      
+		  mon.fillHisto("rapidity"     ,      selTags, fabs(zy),    weight);
+		  mon.fillHisto("njetsvsavginstlumi", selTags, njets30,ev.instLumi,weight);
+		  mon.fillHisto("vbfcandjetpt",       selTags, maxPt,weight);
+		  mon.fillHisto("vbfcandjetpt",       selTags, minPt,weight);
+		  mon.fillHisto("vbfcandjet1pt",      selTags, maxPt,weight);
+		  mon.fillHisto("vbfcandjet2pt",      selTags, minPt,weight);
 		  mon.fillHisto("vbfcandjet1eta",     selTags, maxAbsEta, weight);
 		  mon.fillHisto("vbfcandjet2eta",     selTags, minAbsEta, weight);
 		  mon.fillHisto("vbfcandjeteta",      selTags, maxAbsEta, weight);
