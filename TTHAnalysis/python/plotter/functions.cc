@@ -70,11 +70,10 @@ float mass_4(float pt1, float eta1, float phi1, float m1, float pt2, float eta2,
 }
 
 float mt_llv(float ptl1, float phil1, float ptl2, float phil2, float ptv, float phiv) {
-    float pxll = ptl1*std::cos(phil1) + ptl2*std::cos(phil2);
-    float pyll = ptl1*std::sin(phil1) + ptl2*std::sin(phil2);
-    float ptll = std::hypot(pxll, pyll);
-    float phill = std::atan2(pxll,pyll);
-    return std::sqrt(2*ptll*ptv*(1-std::cos(phill-phiv)));
+    float px = ptl1*std::cos(phil1) + ptl2*std::cos(phil2) + ptv*std::cos(phiv);
+    float py = ptl1*std::sin(phil1) + ptl2*std::sin(phil2) + ptv*std::sin(phiv);
+    float ht = ptl1+ptl2+ptv;
+    return std::sqrt(std::max(0.f, ht*ht - px*px - py*py));
 }
 
 float mtw_wz3l(float pt1, float eta1, float phi1, float m1, float pt2, float eta2, float phi2, float m2, float pt3, float eta3, float phi3, float m3, float mZ1, float met, float metphi) 
