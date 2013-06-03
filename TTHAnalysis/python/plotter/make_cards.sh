@@ -1,6 +1,6 @@
 #!/bin/bash
 
-T=/data/b/botta/TTHAnalysis/trees/TREES_270413_HADD
+T=/data/b/botta/TTHAnalysis/trees/TREES_250513_HADD
 if [[ "$HOSTNAME" == "olsnba03" ]]; then
     T=/data/gpetrucc/TREES_270413_HADD
 fi
@@ -24,7 +24,7 @@ if [[ "$1" == "" || "$1" == "2lss" ]]; then
 fi
 
 if [[ "$1" == "" || "$1" == "3l" ]]; then
-    OPTIONS="${OPTIONS} --FM sf/t $T/0_SFs_v1/sfFriend_{cname}.root "
+    OPTIONS="${OPTIONS} --FM sf/t $T/0_SFs_v2/sfFriend_{cname}.root "
     OPT_3L="${OPTIONS} -W  puWeight*Eff_3lep*SF_btag*SF_LepMVALoose_3l "
     MVA_3L="-F finalMVA/t $T/0_finalmva_3l/finalMVA_3L_{cname}.root"
     POS=" -A same-charge positive \"LepGood1_charge+LepGood2_charge+LepGood3_charge>0\" "
@@ -36,7 +36,7 @@ if [[ "$1" == "" || "$1" == "3l" ]]; then
 fi
 
 if [[ "$1" == "" || "$1" == "3l_tight" ]]; then
-    OPTIONS="${OPTIONS} --FM sf/t $T/0_SFs_v1/sfFriend_{cname}.root  "
+    OPTIONS="${OPTIONS} --FM sf/t $T/0_SFs_v2/sfFriend_{cname}.root  "
     OPT_3L="${OPTIONS} -W  puWeight*Eff_3lep*SF_btag*SF_LepMVATight_3l*SF_LepTightCharge_3l"
     MVA_3L="-F finalMVA/t $T/0_finalmva_3l/finalMVA_3L_{cname}.root"
     POS=" -A same-charge positive \"LepGood1_charge+LepGood2_charge+LepGood3_charge>0\" "
