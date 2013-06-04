@@ -214,6 +214,8 @@ namespace pat
         float genTau2Pt5() const { return getGenTau(2,5.0); }
         float genTau1CHS() const { return getGenTau(1,0,true); }
         float genTau2CHS() const { return getGenTau(2,0,true); }
+        float genTau21PUcorrected(double minPt=0, bool CHS=false) const;
+        float genTau21PUcorrectedCHS() const { return genTau21PUcorrected(0,true); }
 
         int getNcharged(double relPt=0) const;
         int getNneutral(double relPt=0) const;
@@ -269,6 +271,7 @@ namespace pat
   private:
     // -- User internals
         edm::Handle<edm::View<pat::Jet> > jets_;
+        edm::Handle<edm::View<reco::GenParticle> > genParticles_;
         //edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > puJetId_;
         //edm::Handle<edm::ValueMap<StoredPileupJetIdentifier> > subJetpuJetId_;
         //edm::Handle<edm::ValueMap<pat::JetCorrFactors> > jcf_;

@@ -1,4 +1,4 @@
-#$Revision: 1.12 $
+#$Revision: 1.13 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -25,9 +25,10 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 runOnMC = True
 runPATCMG = False
 recalibrateCMGJets = False
-runAK7jets = True
+runAK7jets = False
 runPrunedAK7jets = False
 runCA8jets = True
+runAK5genjets = True
 runQJets = False
 runOnVVtuples = False
 
@@ -277,6 +278,8 @@ if runPrunedAK7jets:
     process.tnmc1 += process.PATCMGJetSequenceAK7CHSpruned
 if runCA8jets:
     process.tnmc1 += process.PATCMGJetSequenceCA8CHS+process.PATCMGJetSequenceCA8CHSpruned+process.selectedPatJetsCA8CHSwithNsub+process.selectedPatJetsCA8CHSwithQjets
+if runAK5genjets:
+    process.tnmc1 += process.genParticlesForJets+process.ak5GenJets
 process.tnmc1 += process.demo
 process.p += process.tnmc1
 
