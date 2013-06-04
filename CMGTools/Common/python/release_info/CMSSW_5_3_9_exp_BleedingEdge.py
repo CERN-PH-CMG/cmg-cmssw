@@ -1,10 +1,8 @@
-# Package CMGTools/H2TauTau not in local area -> removed from relinfo
-# Package CMGTools/ZJetsTutorial not in local area -> removed from relinfo
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'lucieg_Ap8'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_summary_04Jun13'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_newjec_04Jun13'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-03-03'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_04Jun13'),
-  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_Apr15'),
+  ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_04Jun13'),
   ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'jose_3May13'),
   ('CalibCalorimetry/EcalLaserCorrection', 'CalibCalorimetry/EcalLaserCorrection', 'V00-02-04'),
   ('CommonTools/RecoAlgos', 'CommonTools/RecoAlgos', 'V00-03-23'),
@@ -31,11 +29,6 @@
   ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-02-09'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'wreece_020512'),
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-10'),
-  ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-24'),
+  ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-23'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-02-02s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
-# The following packages were not in the input release_info.
-# Please make sure that the CVS module is correct!
-#	CommonTools/RecoAlgos                    V00-03-23
-#	DataFormats/METReco                      V03-03-11-01
-#	JetMETCorrections/Type1MET               V04-06-09-02
