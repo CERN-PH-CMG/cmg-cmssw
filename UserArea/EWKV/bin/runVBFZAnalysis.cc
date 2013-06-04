@@ -211,6 +211,9 @@ int main(int argc, char* argv[])
   h->GetXaxis()->SetBinLabel(4, "#eta^{ll}<1.44");
   h->GetXaxis()->SetBinLabel(5,"#geq 2 jets"); 
 
+  mon.addHistogram( new TH1F("nup",";NUP;Events",10,0,10) );
+  mon.addHistogram( new TH1F("nupfilt",";NUP;Events",10,0,10) );
+
   h=mon.addHistogram( new TH1F ("jeteventflow", ";;Events", 5,0,5) );
   h->GetXaxis()->SetBinLabel(1,"=0 jets");
   h->GetXaxis()->SetBinLabel(2,"=1 jets");
@@ -239,16 +242,16 @@ int main(int argc, char* argv[])
     mon.addHistogram( new TH2F("recoilbalancevseta"+regStr, "; #eta(jet); <p_{T}(jet)/p_{T}>", 100,0,5,100,0,5) );
   }
   
-  //
-  mon.addHistogram( new TH1F( "qt",        ";p_{T}^{#gamma} [GeV];Events / (1 GeV)",1500,0,1500));
-  mon.addHistogram( new TH1F( "zpt", ";p_{T}^{ll};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "zptNM1", ";p_{T}^{ll};Events", 50,0,500) );
-  mon.addHistogram( new TH1F( "zeta", ";#eta^{ll};Events", 50,-10,10) );
+  //boson control
+  mon.addHistogram( new TH1F( "qt",      ";p_{T}^{#gamma} [GeV];Events",1500,0,1500));
+  mon.addHistogram( new TH1F( "zpt",     ";p_{T}^{ll};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "zptNM1",  ";p_{T}^{ll};Events", 50,0,500) );
+  mon.addHistogram( new TH1F( "zeta",    ";#eta^{ll};Events", 50,-10,10) );
   mon.addHistogram( new TH1F( "zetaNM1", ";#eta^{ll};Events", 50,-10,10) );
-  mon.addHistogram( new TH1F( "zy", ";y^{ll};Events", 50,-6,6) );
-  mon.addHistogram( new TH1F( "rapidity", ";y^{ll};Events", 50,0,2) );
-  mon.addHistogram( new TH1F( "zyNM1", ";y^{ll};Events", 50,-6,6) );
-  mon.addHistogram( new TH1F( "zmass", ";M^{ll};Events", 100,40,250) );
+  mon.addHistogram( new TH1F( "zy",      ";y^{ll};Events", 50,-6,6) );
+  mon.addHistogram( new TH1F( "rapidity",";y^{ll};Events", 50,0,2) );
+  mon.addHistogram( new TH1F( "zyNM1",   ";y^{ll};Events", 50,-6,6) );
+  mon.addHistogram( new TH1F( "zmass",   ";M^{ll};Events", 100,40,250) );
 
   //jet control
   mon.addHistogram( new TH1F("jetpt"       , ";p_{T} [GeV];Events",50,0,250) );
@@ -420,7 +423,12 @@ int main(int argc, char* argv[])
       DataEventSummary &ev = evSummary.getEvent();
       if(!isMC && duplicatesChecker.isDuplicate( ev.run, ev.lumi, ev.event) ) { nDuplicates++; continue; }
 
-      if(isV0JetsMC && ev.nup>5)                          continue; 
+      if(isV0JetsMC){
+	mon.fillHisto("nup","all",ev.nup,1);
+	if(ev.nup>5) continue;
+	mon.fillHisto("nupfilt","all",ev.nup,1);
+      }
+
 
       data::PhysicsObjectCollection_t photons=evSummary.getPhysicsObject(DataEventSummaryHandler::PHOTONS);
       data::PhysicsObjectCollection_t leptons=evSummary.getPhysicsObject(DataEventSummaryHandler::LEPTONS);
@@ -781,7 +789,12 @@ int main(int argc, char* argv[])
 	    mon.fillHisto("zeta"     , tags, zll.eta(), weight);
 	    mon.fillHisto("zy"       , tags, zy,        weight);
 	    mon.fillHisto("jeteventflow",tags, njets30, weight);
-	
+	    for(size_t ijet=0; ijet<selJets.size(); ijet++)
+	      {
+		mon.fillHisto("jetpt",  tags, selJets[ijet].pt(),weight);
+		mon.fillHisto("jeteta", tags, fabs(selJets[ijet].eta()),weight);
+	      }
+
 	    //balance control
 	    if(njets30==1){
 	      float dphi=deltaPhi(selJets[0].phi(),zll.phi());
@@ -811,7 +824,7 @@ int main(int argc, char* argv[])
 	      mon.fillHisto("trailereta",  tags, trailerLep.eta(), weight);
 	      mon.fillHisto("trailerpt",   tags, trailerLep.pt(),  weight);
 	      mon.fillHisto("njets",       tags, njets30,          weight);
-	  
+
 	      if(njets30>=2)
 		{
 		  std::vector<TString> selTags;
