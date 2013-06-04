@@ -441,24 +441,27 @@ int main(int argc, char* argv[])
       if(runPhotonSelection)
 	{
 	  eeTrigger=false; mumuTrigger=false;
-	  for(size_t itrig=10; itrig>=8; itrig--)
+	  for(size_t itrig=10; itrig>=7; itrig--)
 	    {
 	      if(!ev.t_bits[itrig]) continue;
 	      hasPhotonTrigger=true;
 	      triggerPrescale=ev.t_prescale[itrig];
-	      if(itrig==10) triggerThreshold=100;
-	      if(itrig==9)  triggerThreshold=82;
+	      if(itrig==10) triggerThreshold=90;
+	      if(itrig==9)  triggerThreshold=75;
 	      if(itrig==8)  triggerThreshold=50;
+	      if(itrig==7)  triggerThreshold=36;
 	      break;
 	    }
 	}
 
       //pileup weight
       float weight = 1.0;
-      double TotalWeight_plus = weight;
-      double TotalWeight_minus = weight;
+      double TotalWeight_plus = 1.0;
+      double TotalWeight_minus = 1.0;
+      float puWeight(1.0);
       if(isMC){
-        weight            = LumiWeights->weight(ev.ngenITpu);
+        puWeight          = LumiWeights->weight(ev.ngenITpu);
+	weight            = puWeight;
         TotalWeight_plus  = PuShifters[utils::cmssw::PUUP]->Eval(ev.ngenITpu);
         TotalWeight_minus = PuShifters[utils::cmssw::PUDOWN]->Eval(ev.ngenITpu);
       }
@@ -646,6 +649,9 @@ int main(int argc, char* argv[])
 	  Int_t idbits=jets[ijet].get("idbits");
 	  bool passPFloose( ((idbits>>0) & 0x1));
 	  if(!passPFloose) continue;
+	  int puId = ((idbits>>3) & 0xf);
+	  bool passLoosePU( (puId>>2) & 0x1 );
+	  if(!passLoosePU) continue;
 	  
 	  //add scale/resolution uncertainties
 	  const data::PhysicsObject_t &genJet=jets[ijet].getObject("genJet");
@@ -762,7 +768,7 @@ int main(int argc, char* argv[])
 	
 	    //pu control
 	    mon.fillHisto("nvtx"     ,   tags, ev.nvtx,      weight);
-	    mon.fillHisto("nvtxraw"  ,   tags, ev.nvtx,      1);
+	    mon.fillHisto("nvtxraw"  ,   tags, ev.nvtx,      weight/puWeight);
 	    mon.fillHisto("rho"      ,   tags, ev.rho,       weight);
 	
 	    //Z kinematics control
@@ -786,7 +792,7 @@ int main(int argc, char* argv[])
 	    
 		std::vector<TString> zptRegs;
 		zptRegs.push_back("");
-		if(zll.pt()>30 && zll.pt()<50) zptRegs.push_back("30to50");
+		if(zll.pt()>30 && zll.pt()<50) zptRegs.push_back("30to50"); 
 		if(zll.pt()>50)                zptRegs.push_back("50toInf");
 		for(size_t ireg=0; ireg<zptRegs.size(); ireg++)
 		  {
@@ -911,7 +917,10 @@ int main(int argc, char* argv[])
 		  Int_t idbits=jets[ijet].get("idbits");
 		  bool passPFloose( ((idbits>>0) & 0x1));
 		  if(!passPFloose) continue;
-	      
+	      	  int puId = ((idbits>>3) & 0xf);
+		  bool passLoosePU( (puId>>2) & 0x1 );
+		  if(!passLoosePU) continue;
+
 		  data::PhysicsObject_t iSelJet(jets[ijet]);
 		  iSelJet *= pt/rawpt;
 		  localSelJets.push_back( iSelJet );

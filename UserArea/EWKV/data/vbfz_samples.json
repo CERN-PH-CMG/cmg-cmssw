@@ -13,12 +13,12 @@
         "data":[
                 {
                 "dtag":"MC8TeV_eejj_VBFNLO",
-                "aoddir":["/store/cmst3/user/psilva/VBFNLO/eejj/8TeV/AODSIM"],
+                "aoddir":["/store/group/phys_diffraction/FSQ-12-035/lljj_8TeV/eejj_Mqq-120_8TeV-vbfnlo/AODSIM"],
                 "xsec":0.168
                 },
                 {
                 "dtag":"MC8TeV_mmjj_VBFNLO",
-                "aoddir":["/store/cmst3/user/psilva/VBFNLO/mmjj/8TeV/AODSIM"],
+                "aoddir":["/store/group/phys_diffraction/FSQ-12-035/lljj_8TeV/mmjj_Mqq-120_8TeV-vbfnlo/AODSIM"],
                 "xsec":0.168
                 }
          ]

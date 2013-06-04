@@ -1,7 +1,7 @@
 {
     "proc":[
 	{
-	 "tag":"Fakes",
+	 "tag":"multijets",
          "isdata":false,
          "color":"592",
 	 "lcolor":1,
@@ -35,7 +35,7 @@
 	    ]
     	},
 	{
-	 "tag":"Prompt #gamma",
+	 "tag":"#gamma+jets",
          "isdata":false,
          "color":"800",
 	 "lcolor":1,

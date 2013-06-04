@@ -9,56 +9,92 @@ BTVAnalysis::BTVAnalysis(SmartSelectionMonitor &mon,bool runSystematics)
   ///////////////////////////////////
   // b-tagging                     //
   ///////////////////////////////////
-  systVars_.push_back("");
-  if(runSystematics) { systVars_.push_back("jesup"); systVars_.push_back("jesdown"); systVars_.push_back("jerup"); systVars_.push_back("jerdown"); systVars_.push_back("puup"); systVars_.push_back("pudown"); }
-  size_t nSystVars=systVars_.size();
-  TString btagger[]  = {"origcsv", "csv", "jpcsv", "slcsv", "supercsv", "jp", "tchp", "ivf", "ssvhe" };
-  float btaggerMin[] = {-0.2,      -0.2,  -0.2,     -0.2,    -0.2,       0.0,   -2,    -2,    -2     };
-  float btaggerMax[] = {1.2,       1.2,   1.2,      1.2,     1.2,        2.5,   20,    8,     8      };
-  TString btaggerWPs[]={"L","M","T"};
-  jetRanges_.push_back("inc"); 
-  jetRanges_.push_back("30to50"); jetRanges_.push_back("50to80");   jetRanges_.push_back("80to120");  jetRanges_.push_back("120to210"); jetRanges_.push_back("210to320"); jetRanges_.push_back("320toInf"); 
-  jetRanges_.push_back("0to0.5"); jetRanges_.push_back("0.5to1.0"); jetRanges_.push_back("1.0to1.5"); jetRanges_.push_back("1.5to2.5"); 
-  jetRanges_.push_back("0to10");  jetRanges_.push_back("11to14");   jetRanges_.push_back("15to18");   jetRanges_.push_back("18toInf");
+  fillCategories(runSystematics); 
+  const size_t nSystVars=systVars_.size();
   const size_t nJetRanges=jetRanges_.size();
-  for(size_t i=0; i<sizeof(btagger)/sizeof(TString); i++)
+  TH2F *hjp  = new TH2F("jp",";Jet probability;Range;Jets",50,0,2.5,nJetRanges,0,nJetRanges);
+  TH2F *hkin  = new TH2F("kin",";Mass(lepton,jet);Range;Jets",50,0,500,nJetRanges,0,nJetRanges);
+  for(int ybin=1; ybin<=hjp->GetYaxis()->GetNbins(); ybin++){
+    hjp->GetYaxis()->SetBinLabel(ybin,jetRanges_[ybin-1]);
+    hkin->GetYaxis()->SetBinLabel(ybin,jetRanges_[ybin-1]);
+  }
+  
+  TH2F *hrunjp  = new TH2F("runjp",";Jet probability;Working point;Jets",50,0,2.5,taggers_[0].wps.size(),0,taggers_[0].wps.size());
+  TH2F *hrunkin = new TH2F("runkin",";Mass(lepton,jet);Working point;Jets",50,0,500,taggers_[0].wps.size(),0,taggers_[0].wps.size());
+  int ibin(1);
+  for(std::map<TString,float>::iterator it = taggers_[0].wps.begin(); it!= taggers_[0].wps.end(); it++, ibin++)
     {
+      char buf[20]; sprintf(buf,"%3.3f",it->second);
+      hrunjp->GetYaxis()->SetBinLabel(ibin,buf);
+      hrunkin->GetYaxis()->SetBinLabel(ibin,buf);
+    }
+
+  //instantiate histograms per tagger
+  for(size_t i=0; i<taggers_.size(); i++)
+    {
+      BTVTagger_t &tagger=taggers_[i];
+
       //discriminator
-      mon_->addHistogram( new TH1F("inc"+btagger[i],";Discriminator;Jets", 50, btaggerMin[i],btaggerMax[i]) );
+      mon_->addHistogram( new TH1F("inc"+tagger.name,";Discriminator;Jets", 50, tagger.minVal, tagger.maxVal) );
 
       //b-tag counting
-      TH1 *hl=mon_->addHistogram( new TH1F(btagger[i]+"Lbtagsextended",";b-tag multiplicity;Events", 3*3*5, 0.,3*3*5.) );
-      TH1 *hm=mon_->addHistogram( new TH1F(btagger[i]+"Mbtagsextended",";b-tag multiplicity;Events", 3*3*5, 0.,3*3*5.) );
-      TH1 *ht=mon_->addHistogram( new TH1F(btagger[i]+"Tbtagsextended",";b-tag multiplicity;Events", 3*3*5, 0.,3*3*5.) );
-      for(int ibin=1; ibin<=hl->GetXaxis()->GetNbins(); ibin++)
+      int nwps=tagger.wps.size();
+      TH2 *hcount= (TH2 *)mon_->addHistogram( new TH2F(tagger.name+"btagsextended",";b-tag multiplicity;Events", 3*3*5, 0.,3*3*5.,nwps,0.,nwps*1.) );
+      int ibin(1);
+      for(std::map<TString,float>::iterator it = tagger.wps.begin(); it!= tagger.wps.end(); it++, ibin++)
+	hcount->GetYaxis()->SetBinLabel(ibin,it->first);
+      for(int ibin=1; ibin<=hcount->GetXaxis()->GetNbins(); ibin++)
 	{
 	  TString label(""); label += (ibin-1)%5;
-	  hl->GetXaxis()->SetBinLabel(ibin,label);
-	  hm->GetXaxis()->SetBinLabel(ibin,label);
-	  ht->GetXaxis()->SetBinLabel(ibin,label);
+	  hcount->GetXaxis()->SetBinLabel(ibin,label);
 	}
 
+      //jp or kinematics fit
       for(size_t j=0; j<nSystVars; j++)
 	{  
-	  //use templates based on a given discriminator except in the case we're measuring the discriminator efficiency itself (switch to alternative)
-	  TH2F *hinc  = (TH2F *)mon_->addHistogram( new TH2F("jp"+systVars_[j],";Jet probability;Jets",50,0,2.5,nJetRanges,0,nJetRanges) );
-	  for(int ybin=1; ybin<=hinc->GetYaxis()->GetNbins(); ybin++) hinc->GetYaxis()->SetBinLabel(ybin,jetRanges_[ybin-1]);
-	  mon_->addHistogram( (TH2F *)hinc->Clone("jpb"+systVars_[j]) );
-	  mon_->addHistogram( (TH2F *)hinc->Clone("jpc"+systVars_[j]) );
-	  mon_->addHistogram( (TH2F *)hinc->Clone("jpudsg"+systVars_[j]) );
-	  for(size_t k=0; k<sizeof(btagger)/sizeof(TString); k++)
+	  if(tagger.name=="jp")
 	    {
-	      for(size_t iwp=0; iwp<sizeof(btaggerWPs)/sizeof(TString); iwp++)
+	      mon_->addHistogram( (TH2F *)hjp->Clone("jp"+systVars_[j]) );
+	      mon_->addHistogram( (TH2F *)hjp->Clone("jpb"+systVars_[j]) );
+	      mon_->addHistogram( (TH2F *)hjp->Clone("jpc"+systVars_[j]) );
+	      mon_->addHistogram( (TH2F *)hjp->Clone("jpudsg"+systVars_[j]) );
+	      mon_->addHistogram( (TH2F *)hrunjp->Clone("runjp"+systVars_[j]) );
+	      mon_->addHistogram( (TH2F *)hrunjp->Clone("runjpb"+systVars_[j]) );
+	      mon_->addHistogram( (TH2F *)hrunjp->Clone("runjpc"+systVars_[j]) );
+	      mon_->addHistogram( (TH2F *)hrunjp->Clone("runjpudsg"+systVars_[j]) );
+	    }
+	  else{
+	    mon_->addHistogram( (TH2F *)hrunjp->Clone("runjp"+systVars_[j]+tagger.name) );
+	    mon_->addHistogram( (TH2F *)hrunjp->Clone("runjpb"+systVars_[j]+tagger.name) );
+	    mon_->addHistogram( (TH2F *)hrunjp->Clone("runjpc"+systVars_[j]+tagger.name) );
+	    mon_->addHistogram( (TH2F *)hrunjp->Clone("runjpudsg"+systVars_[j]+tagger.name) );
+	  }
+	  
+	  if(i==0){
+	    mon_->addHistogram( (TH2F *)hkin->Clone("kin"+systVars_[j]) );
+	    mon_->addHistogram( (TH2F *)hkin->Clone("kinb"+systVars_[j]) );
+	    mon_->addHistogram( (TH2F *)hkin->Clone("kinothers"+systVars_[j]) );
+	    mon_->addHistogram( (TH2F *)hrunkin->Clone("runkin"+systVars_[j]) );
+	    mon_->addHistogram( (TH2F *)hrunkin->Clone("runkinb"+systVars_[j]) );
+	    mon_->addHistogram( (TH2F *)hrunkin->Clone("runkinothers"+systVars_[j]) );
+	  }
+	  mon_->addHistogram( (TH2F *)hrunkin->Clone("runkin"+systVars_[j]+tagger.name) );
+	  mon_->addHistogram( (TH2F *)hrunkin->Clone("runkinb"+systVars_[j]+tagger.name) );
+	  mon_->addHistogram( (TH2F *)hrunkin->Clone("runkinothers"+systVars_[j]+tagger.name) );
+	  
+	  for(std::map<TString,float>::iterator it = tagger.wps.begin(); it!= tagger.wps.end(); it++)
+	    {
+	      if(!it->first.IsAlpha()) continue;
+	      if(tagger.name!="jp")
 		{
-		  for(size_t ipf=0; ipf<2; ipf++)
-		    {
-		      TString pfix(ipf==0?"":"v");
-		      mon_->addHistogram( (TH2 *)hinc->Clone( "jp"     +systVars_[j]+btagger[k]+btaggerWPs[iwp]+pfix) );
-		      mon_->addHistogram( (TH2 *)hinc->Clone( "jpb"    +systVars_[j]+btagger[k]+btaggerWPs[iwp]+pfix) );
-		      mon_->addHistogram( (TH2 *)hinc->Clone( "jpc"    +systVars_[j]+btagger[k]+btaggerWPs[iwp]+pfix) );
-		      mon_->addHistogram( (TH2 *)hinc->Clone( "jpudsg" +systVars_[j]+btagger[k]+btaggerWPs[iwp]+pfix) );
-		    }
+		  mon_->addHistogram( (TH2 *)hjp->Clone( "jp"     +systVars_[j]+tagger.name+it->first) );
+		  mon_->addHistogram( (TH2 *)hjp->Clone( "jpb"    +systVars_[j]+tagger.name+it->first) );
+		  mon_->addHistogram( (TH2 *)hjp->Clone( "jpc"    +systVars_[j]+tagger.name+it->first) );
+		  mon_->addHistogram( (TH2 *)hjp->Clone( "jpudsg" +systVars_[j]+tagger.name+it->first) );
 		}
+	      mon_->addHistogram( (TH2 *)hkin->Clone( "kin"      +systVars_[j]+tagger.name+it->first) );
+	      mon_->addHistogram( (TH2 *)hkin->Clone( "kinb"     +systVars_[j]+tagger.name+it->first) );
+	      mon_->addHistogram( (TH2 *)hkin->Clone( "kinothers"+systVars_[j]+tagger.name+it->first) );
 	    }
 	}
     }
@@ -86,7 +122,7 @@ void BTVAnalysis::analyze(data::PhysicsObjectCollection_t &leptons,
       if(var=="pudown") iweight=weightDown;
 
       int njets30(0);
-      std::map<TString, int> btagCounts;
+      std::map<TString,std::map<TString,int> > btagCounts;
       for(size_t ijet=0; ijet<jets.size(); ijet++)
 	{
 	  if( fabs(jets[ijet].eta())>2.5) continue;
@@ -98,12 +134,34 @@ void BTVAnalysis::analyze(data::PhysicsObjectCollection_t &leptons,
 	  if(pt<30) continue;
 	  njets30++;
 
+	  LorentzVector varJetKin=jets[ijet]; 
+	  varJetKin*=(pt/jets[ijet].pt());
+
+	  //parton match
+	  const data::PhysicsObject_t &genParton=jets[ijet].getObject("gen");
+	  int genPartonId=genParton.info.find("id")->second;
+
 	  //flavor
 	  const data::PhysicsObject_t &genJet=jets[ijet].getObject("genJet");
 	  int flavId=genJet.info.find("id")->second;
 	  TString jetFlav("udsg");
 	  if(abs(flavId)==5)      jetFlav="b";
 	  else if(abs(flavId)==4) jetFlav="c";
+	  
+	  //compute mass(lepton,jet) and discriminate at generator level
+	  std::vector<std::pair<TString,float> > mljPerFlavor;
+	  for(size_t ilep=0; ilep<2; ilep++){
+	    LorentzVector lj=leptons[ilep]+varJetKin;
+	    float mlj=lj.mass();
+	    TString flav("others");
+	    if(abs(flavId)==5)
+	      {
+		const data::PhysicsObject_t &genLepton=leptons[ilep].getObject("gen");
+		int genLeptonId=genLepton.info.find("id")->second;
+		if(genLeptonId*genPartonId<0) flav="b";
+	      }
+	    mljPerFlavor.push_back( std::pair<TString,float>(flav,mlj) );  
+	  }
 	  
 	  //kinematics
 	  float eta = fabs(jets[ijet].eta());
@@ -125,70 +183,89 @@ void BTVAnalysis::analyze(data::PhysicsObjectCollection_t &leptons,
 	  if(nVtx>19)             jetCategs.push_back(14);
 
 	  //b-tag
-	  float tchp     = jets[ijet].getVal("tchp");
-	  float jp       = jets[ijet].getVal("jp");
-	  float ivf      = jets[ijet].getVal("ivf");
-	  float ssvhe    = jets[ijet].getVal("ssvhe");
-	  float origcsv  = jets[ijet].getVal("origcsv");
-	  float csv      = jets[ijet].getVal("csv");
-	  float jpcsv    = jets[ijet].getVal("jpcsv");
-	  float slcsv    = jets[ijet].getVal("slcsv");
-	  float supercsv = jets[ijet].getVal("supercsv");
-	  
-	  std::map<TString, bool> hasTagger;
-	  hasTagger["tchpT"]    = (tchp>3.41);
-	  hasTagger["jpL"]      = (jp>0.274);
-	  hasTagger["jpM"]      = (jp>0.545);
-	  hasTagger["jpT"]      = (jp>0.790);
-	  hasTagger["ivfL"]     = (ivf>0);
-	  hasTagger["ssvheL"]   = (ssvhe>0);
-	  hasTagger["ssvheM"]   = (ssvhe>1.74);
-	  hasTagger["origcsvL"] = (origcsv>0.244);
-	  hasTagger["origcsvM"] = (origcsv>0.679);
-	  hasTagger["origcsvT"] = (origcsv>0.898);
-	  hasTagger["csvL"]     = (csv>0.405);
-	  hasTagger["csvM"]     = (csv>0.783);
-	  hasTagger["csvT"]     = (csv>0.92);
-	  hasTagger["jpcsvL"]   = (jpcsv>0.529);
-	  hasTagger["jpcsvM"]   = (jpcsv>0.753);
-	  hasTagger["jpcsvT"]   = (jpcsv>0.855);
-	  hasTagger["slcsvL"]   = (slcsv>0.527);
-	  hasTagger["slcsvM"]   = (slcsv>0.756);
-	  hasTagger["slcsvT"]   = (slcsv>0.859);
-	  hasTagger["supercsvL"]= (supercsv>0.531);
-	  hasTagger["supercsvM"]= (supercsv>0.758);
-	  hasTagger["supercsvT"]= (supercsv>0.849);
+	  float jpDisc=jets[ijet].getVal("jp");
+	  for(size_t ib=0; ib<taggers_.size(); ib++){
+	    BTVTagger_t &tagger=taggers_[ib];
 
-	  //count the b-tags
-	  for(std::map<TString,bool>::iterator it = hasTagger.begin(); it!=hasTagger.end(); it++)
-	    {
-	      if(btagCounts.find(it->first)==btagCounts.end()) btagCounts[it->first]=0;
-	      btagCounts[it->first] += it->second;
-	    }
-
-
-	  mon_->fillHisto("inctchp"+var,     ch, tchp,     iweight);
-	  mon_->fillHisto("incjp"+var,       ch, jp,       iweight);
-	  mon_->fillHisto("incivf"+var,      ch, ivf,      iweight);
-	  mon_->fillHisto("incssvhe"+var,    ch, ssvhe,    iweight);
-	  mon_->fillHisto("incorigcsv"+var,  ch, origcsv,  iweight);
-	  mon_->fillHisto("inccsv"+var,      ch, csv,      iweight);	  
-	  mon_->fillHisto("incjpcsv"+var,    ch, jpcsv,    iweight);	  
-	  mon_->fillHisto("incslcsv"+var,    ch, slcsv,    iweight);	  
-	  mon_->fillHisto("incsupercsv"+var, ch, supercsv, iweight);	  
-	  for(size_t ijcat=0; ijcat<jetCategs.size(); ijcat++)
-	    {
-	      mon_->fillHisto("jp"+var, ch, jp, jetCategs[ijcat], iweight);
-	      if(isMC) mon_->fillHisto("jp"+jetFlav+var, ch, jp, jetCategs[ijcat], iweight);
-	      for(std::map<TString, bool>::iterator it=hasTagger.begin(); it!=hasTagger.end(); it++)
-		{
-		  TString pfix(it->second?"":"v");
-		  mon_->fillHisto("jp"        +var+it->first+pfix,ch, jp, jetCategs[ijcat], iweight);
-		  if(isMC) mon_->fillHisto( "jp"+jetFlav+var+it->first+pfix,     ch, jp, jetCategs[ijcat], iweight);
+	    float disc = jets[ijet].getVal(tagger.name);
+	    mon_->fillHisto("inc"+tagger.name+var,     ch, disc,     iweight);
+	    
+	    //check if it passes WP requirement
+	    std::map<TString, bool> hasWPtag;
+	    for(std::map<TString,float>::iterator it = tagger.wps.begin(); it!= tagger.wps.end(); it++)  
+	      {
+		hasWPtag[it->first]=(disc>it->second);
+		if(btagCounts.find(tagger.name)==btagCounts.end()) {
+		  std::map<TString,int> countTemplate;
+		  btagCounts[tagger.name]=countTemplate;
 		}
-	    }
-	}
+		if(btagCounts[tagger.name].find(it->first)==btagCounts[tagger.name].end()) btagCounts[tagger.name][it->first]=0;
+		btagCounts[tagger.name][it->first] += (disc>it->second);
+	      }
+	    
+	    //fill histograms according to jet kinematics categories
+	    for(size_t ijcat=0; ijcat<jetCategs.size(); ijcat++)
+	      {
+		if(tagger.name=="jp") mon_->fillHisto("jp"+var, ch, jpDisc, jetCategs[ijcat], iweight);
+		if(ib==0) {
+		  mon_->fillHisto("kin"+var, ch, mljPerFlavor[0].second, jetCategs[ijcat], iweight);
+		  mon_->fillHisto("kin"+var, ch, mljPerFlavor[1].second, jetCategs[ijcat], iweight);
+		}
+		if(isMC) {
+		  if(tagger.name=="jp") mon_->fillHisto("jp"+jetFlav+var, ch, jpDisc, jetCategs[ijcat], iweight);
+		  if(ib==0){
+		    mon_->fillHisto("kin"+mljPerFlavor[0].first+var, ch, mljPerFlavor[0].second, jetCategs[ijcat], iweight);
+		    mon_->fillHisto("kin"+mljPerFlavor[1].first+var, ch, mljPerFlavor[1].second, jetCategs[ijcat], iweight);
+		  }
+		}
+		
+		for(std::map<TString, bool>::iterator it=hasWPtag.begin(); it!=hasWPtag.end(); it++)
+		  {
+		    if(!it->second) continue;
+		    if(!it->first.IsAlpha()) continue;
+		    
+		    if(tagger.name!="jp") mon_->fillHisto("jp"+var+tagger.name+it->first,ch, jpDisc, jetCategs[ijcat], iweight);
+		    mon_->fillHisto("kin"+var+tagger.name+it->first, ch, mljPerFlavor[0].second, jetCategs[ijcat], iweight);
+		    mon_->fillHisto("kin"+var+tagger.name+it->first, ch, mljPerFlavor[1].second, jetCategs[ijcat], iweight);
+		    
+		    if(isMC){
+		      if(tagger.name!="jp") mon_->fillHisto( "jp"+jetFlav+var+tagger.name+it->first, ch, jpDisc, jetCategs[ijcat], iweight);
+		      mon_->fillHisto("kin"+mljPerFlavor[0].first+var+tagger.name+it->first,   ch, mljPerFlavor[0].second, jetCategs[ijcat], iweight);
+		      mon_->fillHisto("kin"+mljPerFlavor[1].first+var+tagger.name+it->first,   ch, mljPerFlavor[1].second, jetCategs[ijcat], iweight);
+		    }
+		  }
+	      }
 
+	    //fill histogram according to WPs
+	    int iwpbin(1);
+	    for(std::map<TString, bool>::iterator it=hasWPtag.begin(); it!=hasWPtag.end(); it++,iwpbin++)
+	      {
+		if(tagger.name=="jp") mon_->fillHisto("runjp"+var, ch, jpDisc, iwpbin, iweight);
+		if(ib==0) {
+		  mon_->fillHisto("runkin"+var, ch, mljPerFlavor[0].second, iwpbin, iweight);
+		  mon_->fillHisto("runkin"+var, ch, mljPerFlavor[1].second, iwpbin, iweight);
+		}
+		if(isMC) {
+		  if(tagger.name=="jp") mon_->fillHisto("runjp"+jetFlav+var, ch, jpDisc, iwpbin, iweight);
+		  if(ib==0){
+		    mon_->fillHisto("runkin"+mljPerFlavor[0].first+var, ch, mljPerFlavor[0].second, iwpbin, iweight);
+		    mon_->fillHisto("runkin"+mljPerFlavor[1].first+var, ch, mljPerFlavor[1].second, iwpbin, iweight);
+		  }
+		}
+		if(!it->second) continue;
+		if(tagger.name!="jp") mon_->fillHisto("runjp"+var+tagger.name,ch, jpDisc, iwpbin, iweight);
+		mon_->fillHisto("runkin"+var+tagger.name, ch, mljPerFlavor[0].second, iwpbin, iweight);
+		mon_->fillHisto("runkin"+var+tagger.name, ch, mljPerFlavor[1].second, iwpbin, iweight);
+
+		if(isMC){
+		  if(tagger.name!="jp") mon_->fillHisto( "runjp"+jetFlav+var+tagger.name, ch, jpDisc, iwpbin, iweight);
+		  mon_->fillHisto("runkin"+mljPerFlavor[0].first+var+tagger.name,   ch, mljPerFlavor[0].second, iwpbin, iweight);
+		  mon_->fillHisto("runkin"+mljPerFlavor[1].first+var+tagger.name,   ch, mljPerFlavor[1].second, iwpbin, iweight);
+		}
+	      }
+	  }
+	}
+      
       //
       if(njets30>=2 && njets30<=4)
 	{
@@ -197,10 +274,72 @@ void BTVAnalysis::analyze(data::PhysicsObjectCollection_t &leptons,
 	  if(njets30==4)    addBin += 10;
 	  if(ch[1]=="mumu") addBin += 15;
 	  if(ch[1]=="emu")  addBin += 2*15;
-	 
-	  for(std::map<TString, int>::iterator it=btagCounts.begin(); it!=btagCounts.end(); it++){
-	    mon_->fillHisto(it->first+"btagsextended"+var,ch,it->second+addBin,weight);
+	  
+	  for(std::map<TString,std::map<TString, int> >::iterator it=btagCounts.begin(); it!=btagCounts.end(); it++){
+	    int iwpbin(1);
+	    for(std::map<TString, int>::iterator jIt=it->second.begin(); jIt!=it->second.end(); jIt++,iwpbin++){
+	      mon_->fillHisto(it->first+"btagsextended"+var,ch,jIt->second+addBin,iwpbin,iweight);
+	    }
 	  }
 	}
     }
+}
+
+
+//
+void BTVAnalysis::fillCategories(bool runSystematics)
+{
+
+  systVars_.push_back("");
+  if(runSystematics) { 
+    systVars_.push_back("jesup"); systVars_.push_back("jesdown"); 
+    systVars_.push_back("jerup"); systVars_.push_back("jerdown");
+    systVars_.push_back("puup"); systVars_.push_back("pudown"); 
+  }
+  
+  jetRanges_.push_back("inc"); 
+  jetRanges_.push_back("30to50"); 
+  jetRanges_.push_back("50to80");   
+  jetRanges_.push_back("80to120");  
+  jetRanges_.push_back("120to210"); 
+  jetRanges_.push_back("210to320"); 
+  jetRanges_.push_back("320toInf"); 
+  jetRanges_.push_back("0to0.5"); 
+  jetRanges_.push_back("0.5to1.0"); 
+  jetRanges_.push_back("1.0to1.5"); 
+  jetRanges_.push_back("1.5to2.5"); 
+  jetRanges_.push_back("0to10");  
+  jetRanges_.push_back("11to14"); 
+  jetRanges_.push_back("15to18");  
+  jetRanges_.push_back("18toInf");
+
+
+
+  //note TCHPL, TCHPM, IFVM, IFVT, SSVHET are dummy
+  TString btagger[]  = {"origcsv", "csv", "jpcsv", "slcsv", "supercsv", "jp", "tchp", "ivf", "ssvhe" };
+  float btaggerMin[] = {-0.2,      -0.2,  -0.2,     -0.2,    -0.2,       0.0,   -2,    -2,    -2     };
+  float btaggerMax[] = {1.2,       1.2,   1.2,      1.2,     1.2,        2.5,   20,    8,     8      };
+  float btaggerL[]   = {0.244,     0.405, 0.529,    0.527,   0.531,      0.264, 1.19,  0,     0      };
+  float btaggerM[]   = {0.679,     0.783, 0.753,    0.756,   0.758,      0.753, 1.93,  2,     1.74   };
+  float btaggerT[]   = {0.898,     0.920, 0.855,    0.859,   0.849,      0.855, 3.41,  3,     3      };
+  
+  const size_t nTaggers=sizeof(btagger)/sizeof(TString);
+  for(size_t ib=0; ib<nTaggers; ib++){
+    BTVTagger_t itagger;
+    itagger.name=btagger[ib];
+    itagger.minVal=btaggerMin[ib];
+    itagger.maxVal=btaggerMax[ib];
+
+    float deltaLM((btaggerM[ib]-btaggerL[ib])*0.25);
+    float deltaMT((btaggerT[ib]-btaggerM[ib])*0.25);
+    float deltaTmax((0.90*btaggerMax[ib]-btaggerT[ib])*0.25);
+    for(int istep=0; istep<=3; istep++)
+      {
+	TString pf(""); if(istep) pf+=istep;
+	itagger.wps["L"+pf]=btaggerL[ib]+deltaLM*0.25;
+	itagger.wps["M"+pf]=btaggerM[ib]+deltaMT*0.25;
+	itagger.wps["T"+pf]=btaggerT[ib]+deltaTmax*0.25;
+      }
+    taggers_.push_back(itagger);
+  }
 }

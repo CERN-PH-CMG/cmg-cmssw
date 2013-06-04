@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
 
   //UEAnalysis ueAn(controlHistos);
   BTVAnalysis btvAn(controlHistos,runSystematics);
-  //LxyAnalysis lxyAn(controlHistos,runSystematics);
+  LxyAnalysis lxyAn(controlHistos,runSystematics);
   
   ///
   // process events file
@@ -446,7 +446,7 @@ int main(int argc, char* argv[])
 
       
       if(passDilSelection &&                     passMetSelection && isOS) btvAn.analyze(selLeptons,looseJets,isMC,ev.nvtx,weight,weightUp,weightDown);
-      //if(passDilSelection && passJetSelection &&                     isOS) lxyAn.analyze(selLeptons,selJets,met[0],gen,weight);
+      if(passDilSelection && passJetSelection &&                     isOS) lxyAn.analyze(selLeptons,selJets,met[0],gen,weight);
 
       //select the event
       if(!passDilSelection) continue;
@@ -455,10 +455,10 @@ int main(int argc, char* argv[])
       if(!passJetSelection) continue;
       controlHistos.fillHisto("evtflow", ch, 2, weight);
 
-      if(!passMetSelection) {
+      if(passMetSelection) {
 	controlHistos.fillHisto("evtflow", ch, 3, weight);
 
-	if(!isOS) {
+	if(isOS) {
 	  controlHistos.fillHisto("evtflow", ch, 4, weight);
 	  if(spyEvents){
 	    spyEvents->getEvent().cat=dilId;

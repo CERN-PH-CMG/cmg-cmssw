@@ -8,6 +8,21 @@
 
 #include "TString.h"
 
+struct BTVTagger_t
+{
+  BTVTagger_t() {}
+  BTVTagger_t(const BTVTagger_t &t) {
+    name=t.name;
+    minVal=t.minVal;
+    maxVal=t.maxVal;
+    wps=t.wps;
+  }
+
+  TString name;
+  float minVal,maxVal;
+  std::map<TString,float> wps;
+};
+
 class BTVAnalysis
 {
 
@@ -20,9 +35,11 @@ public:
 
 private:
 
+  void fillCategories(bool runSystematics);
+
   SmartSelectionMonitor *mon_;
   std::vector<TString> systVars_, jetRanges_;
-
+  std::vector<BTVTagger_t> taggers_;
 };
 
 #endif
