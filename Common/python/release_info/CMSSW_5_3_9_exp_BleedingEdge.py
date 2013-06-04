@@ -1,24 +1,27 @@
+# Package CMGTools/H2TauTau not in local area -> removed from relinfo
+# Package CMGTools/ZJetsTutorial not in local area -> removed from relinfo
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'lucieg_Ap8'),
-  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'lucieg_Ap18'),
+  ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_summary_04Jun13'),
   ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-03-03'),
-  ('CMGTools/H2TauTau', 'UserCode/CMG/CMGTools/H2TauTau', 'cbern_mvametbuiddfix_17Apr13'),
-  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'anantoni-15April2013-devdb-wildcards-15h01m'),
+  ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_04Jun13'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_Apr15'),
-  ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'cbern_mvametbuiddfix_17Apr13'),
-  ('CMGTools/ZJetsTutorial', 'UserCode/CMG/CMGTools/ZJetsTutorial', 'cbern_local_12Dec12'),
+  ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'jose_3May13'),
   ('CalibCalorimetry/EcalLaserCorrection', 'CalibCalorimetry/EcalLaserCorrection', 'V00-02-04'),
+  ('CommonTools/RecoAlgos', 'CommonTools/RecoAlgos', 'V00-03-23'),
   ('CondFormats/EgammaObjects', 'CondFormats/EgammaObjects', 'V00-04-01'),
   ('DPGAnalysis/SiStripTools', 'DPGAnalysis/SiStripTools', 'V00-11-17'),
   ('DPGAnalysis/Skims', 'DPGAnalysis/Skims', 'V01-00-11-01'),
   ('DataFormats/CaloRecHit', 'DataFormats/CaloRecHit', 'V02-05-11'),
+  ('DataFormats/METReco', 'DataFormats/METReco', 'V03-03-11-01'),
   ('DataFormats/PatCandidates', 'DataFormats/PatCandidates', 'V06-05-06-10'),
   ('DataFormats/StdDictionaries', 'DataFormats/StdDictionaries', 'V00-02-14'),
   ('EGamma/EGammaAnalysisTools', 'UserCode/EGamma/EGammaAnalysisTools', 'V00-00-30-01'),
   ('EGamma/EGammaAnalysisToolsSiXie', 'UserCode/sixie/EGamma/EGammaAnalysisTools', 'cbern_09May12'),
   ('EgammaAnalysis/ElectronTools', 'EgammaAnalysis/ElectronTools', 'Moriond_2013_V01-1'),
   ('FWCore/GuiBrowsers', 'FWCore/GuiBrowsers', 'V00-00-70'),
+  ('JetMETCorrections/Type1MET', 'JetMETCorrections/Type1MET', 'V04-06-09-02'),
   ('Muon/MuonAnalysisTools', 'UserCode/sixie/Muon/MuonAnalysisTools', 'V00-00-09'),
-  ('PhysicsTools/PatAlgos', 'PhysicsTools/PatAlgos', 'V08-09-56'),
+  ('PhysicsTools/PatAlgos', 'PhysicsTools/PatAlgos', 'V08-09-59'),
   ('PhysicsTools/PatUtils', 'PhysicsTools/PatUtils', 'V03-09-28'),
   ('RecoEgamma/EgammaTools', 'RecoEgamma/EgammaTools', 'V09-00-01'),
   ('RecoLuminosity/LumiDB', 'RecoLuminosity/LumiDB', 'V04-02-02'),
@@ -28,9 +31,11 @@
   ('RecoParticleFlow/PFProducer', 'RecoParticleFlow/PFProducer', 'V15-02-09'),
   ('RecoParticleFlow/PostProcessing', 'UserCode/RecoParticleFlow/PostProcessing', 'wreece_020512'),
   ('RecoTauTag/Configuration', 'RecoTauTag/Configuration', 'V01-04-10'),
-  ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-23'),
+  ('RecoTauTag/RecoTau', 'RecoTauTag/RecoTau', 'V01-04-24'),
   ('TauAnalysis/CandidateTools', 'TauAnalysis/CandidateTools', 'V00-02-02s'),
   ('TauAnalysis/SVFitStandAlone', 'UserCode/TauAnalysis/SVFitStandAlone', 'joseMay18')]
 # The following packages were not in the input release_info.
 # Please make sure that the CVS module is correct!
-#	CalibCalorimetry/EcalLaserCorrection     V00-02-04
+#	CommonTools/RecoAlgos                    V00-03-23
+#	DataFormats/METReco                      V03-03-11-01
+#	JetMETCorrections/Type1MET               V04-06-09-02
