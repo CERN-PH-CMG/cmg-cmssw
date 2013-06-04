@@ -456,35 +456,16 @@ int main(int argc, char** argv)
 	  Jet1.SetPtEtaPhiE(jethelper_pt[0],jethelper_eta[0],jethelper_phi[0],jethelper_energy[0]);
 	  Jet2.SetPtEtaPhiE(jethelper_pt[1],jethelper_eta[1],jethelper_phi[1],jethelper_energy[1]);
           DijetMass = (Jet1+Jet2).M();
-	  Jet1.SetPtEtaPhiE(jethelperNoCHS_pt[0],jethelperNoCHS_eta[0],jethelperNoCHS_phi[0],jethelperNoCHS_energy[0]);
-	  Jet2.SetPtEtaPhiE(jethelperNoCHS_pt[1],jethelperNoCHS_eta[1],jethelperNoCHS_phi[1],jethelperNoCHS_energy[1]);
-          DijetMassNoCHS = (Jet1+Jet2).M();
-	  Jet1.SetPtEtaPhiE(jethelperCA8_pt[0],jethelperCA8_eta[0],jethelperCA8_phi[0],jethelperCA8_energy[0]);
-	  Jet2.SetPtEtaPhiE(jethelperCA8_pt[1],jethelperCA8_eta[1],jethelperCA8_phi[1],jethelperCA8_energy[1]);
-          DijetMassCA8 = (Jet1+Jet2).M();
+
 	  Jet1.SetPtEtaPhiE(jethelperAK7_pt[0],jethelperAK7_eta[0],jethelperAK7_phi[0],jethelperAK7_energy[0]);
 	  Jet2.SetPtEtaPhiE(jethelperAK7_pt[1],jethelperAK7_eta[1],jethelperAK7_phi[1],jethelperAK7_energy[1]);
           DijetMassAK7 = (Jet1+Jet2).M();
 
-          deta = fabs(jethelperCA8_eta[0]-jethelperCA8_eta[1]);
-          Jet1pt = jethelperCA8_pt[0];
-          Jet2pt = jethelperCA8_pt[1];
-          Jet1eta = jethelperCA8_eta[0];
-          Jet2eta = jethelperCA8_eta[1];
-          Jet1phi = jethelperCA8_phi[0];
-          Jet2phi = jethelperCA8_phi[1];
-	  
-          Jet1CA8Mass = jethelperCA8pruned_mass[0];
-          Jet2CA8Mass = jethelperCA8pruned_mass[1];
-          Jet1CA8MassDrop = max(jethelperCA8pruned_daughter_0_mass[0],jethelperCA8pruned_daughter_1_mass[0])/Jet1CA8Mass/jethelperCA8pruned_uncor_pt[0]*jethelperCA8pruned_pt[0];
-          Jet2CA8MassDrop = max(jethelperCA8pruned_daughter_0_mass[1],jethelperCA8pruned_daughter_1_mass[1])/Jet2CA8Mass/jethelperCA8pruned_uncor_pt[1]*jethelperCA8pruned_pt[1];
-	  if ((jethelperCA8pruned_daughter_0_mass[0]<0.0001)||(jethelperCA8pruned_daughter_1_mass[0]<0.0001)) Jet1CA8MassDrop = 2;
-	  if ((jethelperCA8pruned_daughter_0_mass[1]<0.0001)||(jethelperCA8pruned_daughter_1_mass[1]<0.0001)) Jet2CA8MassDrop = 2;
-          Jet1CA8Nsub = jethelperCA8_tau2[0]/jethelperCA8_tau1[0];
-          Jet2CA8Nsub = jethelperCA8_tau2[1]/jethelperCA8_tau1[1];
-          Jet1CA8C2beta17 = jethelperCA8_C2beta17[0];
-          Jet2CA8C2beta17 = jethelperCA8_C2beta17[1];
-           
+	  Jet1.SetPtEtaPhiE(jethelperNoCHS_pt[0],jethelperNoCHS_eta[0],jethelperNoCHS_phi[0],jethelperNoCHS_energy[0]);
+	  Jet2.SetPtEtaPhiE(jethelperNoCHS_pt[1],jethelperNoCHS_eta[1],jethelperNoCHS_phi[1],jethelperNoCHS_energy[1]);
+          DijetMassNoCHS = (Jet1+Jet2).M();
+
+          
           Jet1AK7Mass = jethelperAK7pruned_mass[0];
           Jet2AK7Mass = jethelperAK7pruned_mass[1];
           Jet1AK7MassDrop = max(jethelperAK7pruned_daughter_0_mass[0],jethelperAK7pruned_daughter_1_mass[0])/Jet1AK7Mass/jethelperAK7pruned_uncor_pt[0]*jethelperAK7pruned_pt[0];
@@ -495,6 +476,36 @@ int main(int argc, char** argv)
           Jet2AK7Nsub = jethelperAK7_tau2[1]/jethelperAK7_tau1[1];
           Jet1AK7C2beta17 = jethelperAK7_C2beta17[0];
           Jet2AK7C2beta17 = jethelperAK7_C2beta17[1];
+
+
+
+	  // ------------------ Dijet Mass to be used -----------------
+
+	  Jet1.SetPtEtaPhiE(jethelperCA8_pt[0],jethelperCA8_eta[0],jethelperCA8_phi[0],jethelperCA8_energy[0]);
+	  Jet2.SetPtEtaPhiE(jethelperCA8_pt[1],jethelperCA8_eta[1],jethelperCA8_phi[1],jethelperCA8_energy[1]);
+          DijetMassCA8 = (Jet1+Jet2).M();
+
+          deta = fabs(jethelperCA8_eta[0]-jethelperCA8_eta[1]);
+          Jet1pt = jethelperCA8_pt[0]; 
+          Jet2pt = jethelperCA8_pt[1];
+          Jet1eta = jethelperCA8_eta[0];
+          Jet2eta = jethelperCA8_eta[1];
+          Jet1phi = jethelperCA8_phi[0];
+          Jet2phi = jethelperCA8_phi[1];
+	  
+          Jet1CA8Mass = jethelperCA8pruned_mass[0];
+          Jet2CA8Mass = jethelperCA8pruned_mass[1];
+          Jet1CA8MassDrop = max(jethelperCA8pruned_daughter_0_mass[0],jethelperCA8pruned_daughter_1_mass[0])/Jet1CA8Mass/jethelperCA8pruned_uncor_pt[0]*jethelperCA8pruned_pt[0];
+          Jet2CA8MassDrop = max(jethelperCA8pruned_daughter_0_mass[1],jethelperCA8pruned_daughter_1_mass[1])/Jet2CA8Mass/jethelperCA8pruned_uncor_pt[1]*jethelperCA8pruned_pt[1];
+
+	  if ((jethelperCA8pruned_daughter_0_mass[0]<0.0001)||(jethelperCA8pruned_daughter_1_mass[0]<0.0001)) Jet1CA8MassDrop = 2;
+	  if ((jethelperCA8pruned_daughter_0_mass[1]<0.0001)||(jethelperCA8pruned_daughter_1_mass[1]<0.0001)) Jet2CA8MassDrop = 2;
+
+          Jet1CA8Nsub = jethelperCA8_tau2[0]/jethelperCA8_tau1[0];
+          Jet2CA8Nsub = jethelperCA8_tau2[1]/jethelperCA8_tau1[1];
+          Jet1CA8C2beta17 = jethelperCA8_C2beta17[0];
+          Jet2CA8C2beta17 = jethelperCA8_C2beta17[1];
+ 
            
           if (triggerresultshelper_hcallasereventfilter2012!=0)
 	     hcallasereventfilter2012active=true;
@@ -510,35 +521,36 @@ int main(int argc, char** argv)
 
           //if(DijetMass>1600)
           //    cout << "every " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << endl;
-	  if(!((jethelperCA8_pt[0]>30)&&
-	     (jethelperCA8_pt[1]>30)&&
-	     (fabs(jethelperCA8_eta[0])<2.5)&&
-	     (fabs(jethelperCA8_eta[1])<2.5)&&
-	     
-	     (jethelperCA8_muonEnergyFraction[0]<0.80)&&
-	     //(jethelper_neutralHadronEnergyFraction[0]<0.99)&&
-	     (jethelperCA8_neutralHadronEnergyFraction[0]<0.90)&&
-	     //(jethelper_neutralEmEnergyFraction[0]<0.99)&&
-	     (jethelperCA8_neutralEmEnergyFraction[0]<0.90)&&
-	     (jethelperCA8_nConstituents[0]>1)&&
-	     ((fabs(jethelper_eta[0])>2.4)||
-	      ((jethelperCA8_chargedHadronEnergyFraction[0]>0.01)&&
-	       (jethelperCA8_chargedMultiplicity[0]>0)&&
-	       (jethelperCA8_chargedEmEnergyFraction[0]<0.99)))&&
-	     
-	     (jethelperCA8_muonEnergyFraction[1]<0.80)&&
-	     //(jethelper_neutralHadronEnergyFraction[1]<0.99)&&
+
+	  bool Jet1_Kinematic_Selection = (Jet1pt>30) && (fabs(Jet1eta)<2.5);
+	  bool Jet2_Kinematic_Selection = (Jet2pt>30) && (fabs(Jet2eta)<2.5);
+
+	  bool Jets_Kinematic_Selection = Jet1_Kinematic_Selection && Jet2_Kinematic_Selection;
+
+	  bool Jet1_Tight_Id =   (jethelperCA8_muonEnergyFraction[0]<0.80)&&
+	    (jethelperCA8_neutralHadronEnergyFraction[0]<0.90)&&
+	    (jethelperCA8_neutralEmEnergyFraction[0]<0.90)&&
+	    (jethelperCA8_nConstituents[0]>1)&&
+	    ((fabs(jethelper_eta[0])>2.4)||
+	     ((jethelperCA8_chargedHadronEnergyFraction[0]>0.01)&&
+	      (jethelperCA8_chargedMultiplicity[0]>0)&&
+	      (jethelperCA8_chargedEmEnergyFraction[0]<0.99)));
+
+	  bool Jet2_Tight_Id  = (jethelperCA8_muonEnergyFraction[1]<0.80)&&
 	     (jethelperCA8_neutralHadronEnergyFraction[1]<0.90)&&
-	     //(jethelper_neutralEmEnergyFraction[1]<0.99)&&
 	     (jethelperCA8_neutralEmEnergyFraction[1]<0.90)&&
 	     (jethelperCA8_nConstituents[1]>1)&&
 	     ((fabs(jethelperCA8_eta[1])>2.4)||
 	      ((jethelperCA8_chargedHadronEnergyFraction[1]>0.01)&&
 	       (jethelperCA8_chargedMultiplicity[1]>0)&&
-	       (jethelperCA8_chargedEmEnergyFraction[1]<0.99)))
-	     
-	     &&
-	     (((sdouble_kt6PFJets_rho_value<40)&&
+	       (jethelperCA8_chargedEmEnergyFraction[1]<0.99)));
+	  
+	  bool Jets_Id_Selection =  Jet1_Tight_Id && Jet2_Tight_Id;
+
+
+	  bool Jets_Selection = Jets_Kinematic_Selection && Jets_Id_Selection;
+
+	  bool noiseRemoval = (((sdouble_kt6PFJets_rho_value<40)&&
 	       (triggerresultshelper_primaryVertexFilterPath!=0)&&
 	       (triggerresultshelper_noscrapingFilterPath!=0)&&
 	       (triggerresultshelper_trackingFailureFilterPath!=0)&&
@@ -547,8 +559,13 @@ int main(int argc, char** argv)
 	       (triggerresultshelper_CSCTightHaloFilterPath!=0)&&
 	       (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath!=0))||
 	      (datafiltersactive==false))&&
-	     ((triggerresultshelper_hcallasereventfilter2012!=0)||(hcallasereventfilter2012active==false))
-	    )) continue;
+	    ((triggerresultshelper_hcallasereventfilter2012!=0)||(hcallasereventfilter2012active==false));
+
+
+	  bool centralitySelection = deta<1.3;
+
+	  if(!(noiseRemoval && Jets_Selection && centralitySelection)) continue;
+
 
 	  // ---------------------
 	  // -- fill histograms --
@@ -558,9 +575,6 @@ int main(int argc, char** argv)
 	      weight=geneventinfoproduct_weight;
 	  else
 	      weight=1;
-
-	  if(!(deta<1.3))
-	      continue;
 
           if((cmdline.outputfilename.find("Py6")!=std::string::npos)||(cmdline.outputfilename.find("Hpp")!=std::string::npos)||(DijetMassCA8>890))
               dijetWtag->Fill();
