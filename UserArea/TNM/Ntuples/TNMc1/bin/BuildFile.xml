@@ -29,5 +29,7 @@
 </bin>
 <bin name="heavy_tagged_dijet_analysis" file="heavy_tagged_dijet_analysis.cc">
 </bin>
+<bin name="higgs_tagged_dijet_analysis" file="higgs_tagged_dijet_analysis.cc">
+</bin>
 <bin name="substructure_pas" file="substructure_pas.cc">
 </bin>
