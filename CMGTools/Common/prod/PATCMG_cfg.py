@@ -22,6 +22,8 @@ from CMGTools.Production.datasetToSource import *
 datasetInfo = (
     'cmgtools_group',
     '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B',
+    # 'CMS',
+    # '/DoubleMu/Run2012A-22Jan2013-v1/AOD',
     '.*root')
 process.source = datasetToSource(
     *datasetInfo

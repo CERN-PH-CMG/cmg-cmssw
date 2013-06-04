@@ -49,14 +49,17 @@ tauIDs = dict(
     againstElectronLoose = cms.InputTag('hpsPFTauDiscriminationByLooseElectronRejection'),
     againstElectronMedium = cms.InputTag('hpsPFTauDiscriminationByMediumElectronRejection'),
     againstElectronTight = cms.InputTag('hpsPFTauDiscriminationByTightElectronRejection'),
+    # 
     againstElectronMVA = cms.InputTag('hpsPFTauDiscriminationByMVAElectronRejection'),
     againstElectronDeadECAL = cms.InputTag('hpsPFTauDiscriminationByDeadECALElectronRejection'),
+    ##
     againstElectronMVA2raw = cms.InputTag('hpsPFTauDiscriminationByMVA2rawElectronRejection'),
     againstElectronMVA2category = cms.InputTag('hpsPFTauDiscriminationByMVA2rawElectronRejection:category'),
     againstElectronVLooseMVA2 = cms.InputTag('hpsPFTauDiscriminationByMVA2VLooseElectronRejection'),
     againstElectronLooseMVA2 = cms.InputTag('hpsPFTauDiscriminationByMVA2LooseElectronRejection'),
     againstElectronMediumMVA2 = cms.InputTag('hpsPFTauDiscriminationByMVA2MediumElectronRejection'),
     againstElectronTightMVA2 = cms.InputTag('hpsPFTauDiscriminationByMVA2TightElectronRejection'),  
+    ##
     againstMuonLoose = cms.InputTag('hpsPFTauDiscriminationByLooseMuonRejection'),
     againstMuonMedium = cms.InputTag('hpsPFTauDiscriminationByMediumMuonRejection'),
     againstMuonTight = cms.InputTag('hpsPFTauDiscriminationByTightMuonRejection'),
