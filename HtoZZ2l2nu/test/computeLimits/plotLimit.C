@@ -77,20 +77,23 @@ void scaleLimitsByXSecXBR(int N, double* Mass, double* Limit){
    }   
 }
 
-void printLimits(TGraph* graph, double Mmin=200, double Mmax=600){
+void printLimits(FILE* pFile, TGraph* graph, double Mmin=200, double Mmax=600){
    double previous = graph->Eval(Mmin);
-   printf("Exclude ");
+   fprintf(pFile, "Exclude ");
+   bool opened = false;
    for(double M=Mmin;M<=Mmax;M+=1.0){
       double NEW = graph->Eval(M);
-      if(previous>1 && NEW<1){printf("[%f,",M);}
-      if(previous<1 && NEW>1){printf("%f]",M-1);}
+      //printf("%04f - %6.3f\n", M, NEW);
+      if(previous>1 && NEW<=1){fprintf(pFile,"[%f,",M); opened=true;}
+      if(previous<1 && NEW>=1){fprintf(pFile,"%f]",M-1); opened=false;}
+      if(M==Mmax    && opened){fprintf(pFile,">%f]",Mmax); opened=false;}
       previous = NEW;
-   }printf("\n");
+   }fprintf(pFile,"\n");
 }
 
 
 
-void plotLimit(TString outputDir=".", TString inputs="", TString inputXSec="", bool blind=false, double energy=7, double luminosity=5.035, TString legendName="ee and #mu#mu channels", TString thXsecUrl="")
+void plotLimit(TString outputDir="./", TString inputs="", TString inputXSec="", bool strengthLimit=true, bool blind=false, double energy=7, double luminosity=5.035, TString legendName="ee and #mu#mu channels")
 {
   //style options
   gStyle->SetCanvasBorderMode(0);
@@ -145,11 +148,18 @@ void plotLimit(TString outputDir=".", TString inputs="", TString inputXSec="", b
   gStyle->SetTitleYOffset(1.45);
   gStyle->SetPalette(1);
   gStyle->SetNdivisions(505);
+
+
+  string suffix = string(outputDir.Data());
+  double cprime=1.0; double  brnew=0.0;
+  double XSecScaleFactor = 1.0;
+  if(suffix.find("_cp")!=string::npos){
+     sscanf(suffix.c_str()+suffix.find("_cp"), "_cp%lf_brn%lf", &cprime, &brnew);
+     XSecScaleFactor = pow(cprime,2) * (1-brnew);
+  }
  
   //get xsec * br from summary file
-std::cout<<"GetXSections.txt\n"  ;
   getXSecXBR(inputXSec); 
-std::cout<<"GetXSections.txt\n"  ;
   //get the limits from the tree
   TFile* file = TFile::Open(inputs);
   printf("Looping on %s\n",inputs.Data());
@@ -162,29 +172,42 @@ std::cout<<"GetXSections.txt\n"  ;
   tree->GetBranch("quantileExpected")->SetAddress(&TquantExp);
   int N = tree->GetEntriesFast() / 6 ;// 6Limits per mass point (observed, meand , +-1sigma, +-2sigma)
   double* MassAxis   = new double[N];
-  double* ObsLimit   = new double[N];  fillLimitArray(tree,-1   ,ObsLimit,MassAxis);  scaleLimitsByXSecXBR(N, MassAxis, ObsLimit);
-  double* ExpLimitm2 = new double[N];  fillLimitArray(tree,0.025,ExpLimitm2);         scaleLimitsByXSecXBR(N, MassAxis, ExpLimitm2);
-  double* ExpLimitm1 = new double[N];  fillLimitArray(tree,0.160,ExpLimitm1);         scaleLimitsByXSecXBR(N, MassAxis, ExpLimitm1);
-  double* ExpLimit   = new double[N];  fillLimitArray(tree,0.500,ExpLimit  );         scaleLimitsByXSecXBR(N, MassAxis, ExpLimit);
-  double* ExpLimitp1 = new double[N];  fillLimitArray(tree,0.840,ExpLimitp1);         scaleLimitsByXSecXBR(N, MassAxis, ExpLimitp1);
-  double* ExpLimitp2 = new double[N];  fillLimitArray(tree,0.975,ExpLimitp2);         scaleLimitsByXSecXBR(N, MassAxis, ExpLimitp2);
+  double* ObsLimit   = new double[N];  fillLimitArray(tree,-1   ,ObsLimit,MassAxis);  if(!strengthLimit)scaleLimitsByXSecXBR(N, MassAxis, ObsLimit);
+  double* ExpLimitm2 = new double[N];  fillLimitArray(tree,0.025,ExpLimitm2);         if(!strengthLimit)scaleLimitsByXSecXBR(N, MassAxis, ExpLimitm2);
+  double* ExpLimitm1 = new double[N];  fillLimitArray(tree,0.160,ExpLimitm1);         if(!strengthLimit)scaleLimitsByXSecXBR(N, MassAxis, ExpLimitm1);
+  double* ExpLimit   = new double[N];  fillLimitArray(tree,0.500,ExpLimit  );         if(!strengthLimit)scaleLimitsByXSecXBR(N, MassAxis, ExpLimit);
+  double* ExpLimitp1 = new double[N];  fillLimitArray(tree,0.840,ExpLimitp1);         if(!strengthLimit)scaleLimitsByXSecXBR(N, MassAxis, ExpLimitp1);
+  double* ExpLimitp2 = new double[N];  fillLimitArray(tree,0.975,ExpLimitp2);         if(!strengthLimit)scaleLimitsByXSecXBR(N, MassAxis, ExpLimitp2);
   file->Close();
-
 
   //make TH Cross-sections
   double* ThXSec   = new double[N]; for(unsigned int i=0;i<N;i++){ThXSec[i] = xsecXbr[MassAxis[i]];} 
 
+  //scale TH cross-section and limits according to scale factor 
+  //this only apply to NarrowResonnance case
+  for(unsigned int i=0;i<N;i++){
+    if(strengthLimit){
+    ObsLimit[i]  /= XSecScaleFactor;
+    ExpLimitm2[i]/= XSecScaleFactor;
+    ExpLimitm1[i]/= XSecScaleFactor;
+    ExpLimit  [i]/= XSecScaleFactor;
+    ExpLimitp1[i]/= XSecScaleFactor;
+    ExpLimitp2[i]/= XSecScaleFactor;
+    }
+    ThXSec[i]    *= XSecScaleFactor;
+  }
+
     
   //limits in terms of signal strength
   TCanvas* c = new TCanvas("c", "c",600,600);
-  TH1F* framework = new TH1F("Graph","Graph",1,inputXSec==""?150:150,1050);
+  TH1F* framework = new TH1F("Graph","Graph",1,strengthLimit?150:150,1050);
   framework->SetStats(false);
   framework->SetTitle("");
   framework->GetXaxis()->SetTitle("Higgs boson mass [GeV]");
   framework->GetYaxis()->SetTitleOffset(1.70);
-  if(inputXSec==""){
+  if(strengthLimit){
   framework->GetYaxis()->SetTitle("#mu = #sigma_{95%} / #sigma_{th}");
-  framework->GetYaxis()->SetRangeUser(1E-2,40);
+  framework->GetYaxis()->SetRangeUser(1E-2,80);
   c->SetLogy(true);
   }else{
   framework->GetYaxis()->SetTitle("#sigma_{95%} (fb)");
@@ -207,7 +230,7 @@ std::cout<<"GetXSections.txt\n"  ;
   if(!blind) TGObsLimit->Draw("same CP");
   TGExpLimit->Draw("same C");
 
-  if(inputXSec==""){
+  if(strengthLimit){
      TLine* SMLine = new TLine(framework->GetXaxis()->GetXmin(),1.0,framework->GetXaxis()->GetXmax(),1.0);
      SMLine->SetLineWidth(2); SMLine->SetLineStyle(1); SMLine->SetLineColor(4);      
      SMLine->Draw("same C");
@@ -219,7 +242,7 @@ std::cout<<"GetXSections.txt\n"  ;
   TPaveText *pave = new TPaveText(0.1,0.96,0.99,0.99,"NDC");
   char LumiLabel[1024];
   if(energy<9){  sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV, #scale[0.5]{#int} L=%6.1ffb^{-1} - %20s",energy, luminosity,legendName.Data());
-  }else{         sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV #scale[0.5]{#int} L=%6.1ffb^{-1}, #sqrt{s}=%.0f TeV #scale[0.5]{#int} L=%6.1ffb^{-1}",7.0,5100.0,8.0,19600.0);
+  }else{         sprintf(LumiLabel,"CMS preliminary,  #sqrt{s}=%.0f TeV #scale[0.5]{#int} L=%6.1ffb^{-1}, #sqrt{s}=%.0f TeV #scale[0.5]{#int} L=%6.1ffb^{-1}",7.0,5.0,8.0,19.7);
   }
   pave->SetBorderSize(0);
   pave->SetFillStyle(0);
@@ -245,23 +268,27 @@ std::cout<<"GetXSections.txt\n"  ;
   LEG->AddEntry(TGExpLimit2S  , "expected #pm 2#sigma"  ,"F");
   if(!blind) LEG->AddEntry(TGObsLimit  , "observed"  ,"LP");
   LEG->Draw();
-  c->SaveAs(outputDir+"/Limit.png");
-  c->SaveAs(outputDir+"/Limit.C");
-  c->SaveAs(outputDir+"/Limit.pdf"); 
+  c->SaveAs(outputDir+"Limit.png");
+  c->SaveAs(outputDir+"Limit.C");
+  c->SaveAs(outputDir+"Limit.pdf"); 
 
 
   //save a summary of the limits
-  FILE* pFileSum = fopen((outputDir+"/LimitSummary").Data(),"w");
+  FILE* pFileSum = fopen((outputDir+"LimitSummary").Data(),"w");
   for(int i=0;i<N;i++){
-    fprintf(pFileSum, "$%7.3f$ & $%6.2f$ & $[%6.2f,%6.2f]$ & $[%6.2f,%6.2f]$ & $%6.2f$ \\\\\\hline\n",MassAxis[i], ExpLimit[i], ExpLimitm1[i], ExpLimitp1[i], ExpLimitm2[i],  ExpLimitp2[i], ObsLimit[i]);
+    fprintf(pFileSum, "$%8.6E$ & $%8.6E$ & $[%8.6E,%8.6E]$ & $[%8.6E,%8.6E]$ & $%8.6E$ & Th=$%8.6E$\\\\\\hline\n",MassAxis[i], ExpLimit[i], ExpLimitm1[i], ExpLimitp1[i], ExpLimitm2[i],  ExpLimitp2[i], ObsLimit[i], ThXSec[i]);
     if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);
   }printf("\n");
   fclose(pFileSum);
-  printf("EXPECTED LIMIT --> ");                   printLimits(TGExpLimit, MassAxis[0], MassAxis[N-1]);
-  if(!blind) printf("OBSERVED LIMIT --> ");        printLimits(TGObsLimit, MassAxis[0], MassAxis[N-1]);
-  printf("Exp Limits for Model are: ");            for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; printf("%f+-%f ",ExpLimit[i], (ExpLimitp1[i]-ExpLimitm1[i]))/2.0;}printf("\n");
-  if(!blind) { printf("Obs Limits for Model are: "); for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; printf("%f ",ObsLimit[i]);}printf("\n"); }
+
+  pFileSum = fopen((outputDir+"LimitRange").Data(),"w");
+  fprintf(pFileSum, "EXPECTED LIMIT --> ");                   printLimits(pFileSum,TGExpLimit, MassAxis[0], MassAxis[N-1]);
+  if(!blind) fprintf(pFileSum, "OBSERVED LIMIT --> ");        printLimits(pFileSum,TGObsLimit, MassAxis[0], MassAxis[N-1]);
+  fprintf(pFileSum, "Exp Limits for Model are: ");              for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; fprintf(pFileSum, "%f+-%f ",ExpLimit[i], (ExpLimitp1[i]-ExpLimitm1[i]))/2.0;}fprintf(pFileSum,"\n");
+  if(!blind) { fprintf(pFileSum, "Obs Limits for Model are: "); for(int i=0;i<N;i++){if(int(MassAxis[i])%50!=0)continue; fprintf(pFileSum, "%f ",ObsLimit[i]);}fprintf(pFileSum,"\n"); }
+  fclose(pFileSum);
 }
+
 
 
 

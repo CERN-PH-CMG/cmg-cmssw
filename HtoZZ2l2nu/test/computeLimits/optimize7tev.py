@@ -9,55 +9,59 @@ from ROOT import TFile, TGraph, TCanvas, TF1, TH1
 
 #default values
 shapeName='mt_shapes --histoVBF met_shapes'
-inUrl='~psilva/public/HtoZZ/plotter_29April_2012.root'
+#inUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/plotter2011.root'
+inUrl='~psilva/public/HtoZZ/plotter_29April_2011.root'
 CWD=os.getcwd()
 phase=-1
-jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2012.json'
+jsonUrl='$CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/data/samples_2011.json'
 CMSSW_BASE=os.environ.get('CMSSW_BASE')
 
 
-MASS = [200,250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000]
+MASS = [200,250, 300, 350, 400, 450, 500, 550, 600, 650, 750, 800, 900, 950, 1000] #700 and 850 is missing
 #SUBMASS = [200, 202, 204, 206, 208, 210, 212, 214, 216, 218, 220, 222, 224, 226, 228, 230, 232, 234, 236, 238, 240, 242, 244, 246, 248, 250, 252, 254, 256, 258, 260, 262, 264, 266, 268, 270, 272, 274, 276, 278, 280, 282, 284, 286, 288, 290, 295, 300, 305, 310, 315, 320, 325, 330, 335, 340, 345, 350, 360, 370, 380, 390, 400, 420, 440, 460, 480, 500, 520, 540, 560, 580, 600, 625, 650, 675, 700, 725, 750, 775, 800, 825, 850, 875, 900, 925, 950, 975, 1000]
 SUBMASS = [200,250, 300,350,400,450,500,550,600, 650, 700, 750, 800, 850, 900, 950, 1000]
 
 
 
-LandSArgCommonOptions=" --indexvbf 9 --subNRB --subDY $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/computeLimits_LHCP_13_04_02/gamma_half_2012_19_6fbinv_final.root --interf --BackExtrapol "
+LandSArgCommonOptions=" --indexvbf 9 --subNRB --subDY $CMSSW_BASE/src/CMGTools/HtoZZ2l2nu/test/computeLimits_LHCP_13_04_02/gamma_half_2011_5fb_Moriond.root --interf --BackExtrapol "
 signalSuffixVec = []
 OUTName         = []
 LandSArgOptions = []
 
-###################  #8TeV cut&count combined, GG, QQ
-signalSuffixVec += ["", "_cp0.10_brn0.00", "_cp0.20_brn0.00", "_cp0.30_brn0.00", "_cp0.40_brn0.00", "_cp0.50_brn0.00", "_cp0.60_brn0.00", "_cp0.80_brn0.00", "_cp1.00_brn0.00", "", "_cp0.10_brn0.00", "_cp0.20_brn0.00", "_cp0.30_brn0.00", "_cp0.40_brn0.00", "_cp0.50_brn0.00", "_cp0.60_brn0.00", "_cp0.80_brn0.00", "_cp1.00_brn0.00", "", "_cp0.10_brn0.00", "_cp0.20_brn0.00", "_cp0.30_brn0.00", "_cp0.40_brn0.00", "_cp0.50_brn0.00", "_cp0.60_brn0.00", "_cp0.80_brn0.00", "_cp1.00_brn0.00"]; 
-OUTName         += ["CC8TeV", "CC8TeV", "CC8TeV", "CC8TeV", "CC8TeV", "CC8TeV", "CC8TeV", "CC8TeV", "CC8TeV", "CC8TeV_GG", "CC8TeV_GG", "CC8TeV_GG", "CC8TeV_GG", "CC8TeV_GG", "CC8TeV_GG", "CC8TeV_GG", "CC8TeV_GG", "CC8TeV_GG", "CC8TeV_QQ", "CC8TeV_QQ", "CC8TeV_QQ", "CC8TeV_QQ", "CC8TeV_QQ", "CC8TeV_QQ", "CC8TeV_QQ", "CC8TeV_QQ", "CC8TeV_QQ"]
-LandSArgOptions += [" --bins eq0jets,geq1jets,vbf       --systpostfix _8TeV " for i in range(9)]
-LandSArgOptions += [" --bins eq0jets,geq1jets --skipQQH --systpostfix _8TeV " for i in range(9)]
-LandSArgOptions += [" --bins vbf              --skipGGH --systpostfix _8TeV " for i in range(9)]
-
-###################  #8TeV shape combined, GG, QQ
+###################  #7TeV cut&count combined, GG, QQ
 signalSuffixVec += ["", "_cp0.10_brn0.00", "_cp0.20_brn0.00", "_cp0.30_brn0.00", "_cp0.40_brn0.00", "_cp0.50_brn0.00", "_cp0.60_brn0.00", "_cp0.80_brn0.00", "_cp1.00_brn0.00", "", "_cp0.10_brn0.00", "_cp0.20_brn0.00", "_cp0.30_brn0.00", "_cp0.40_brn0.00", "_cp0.50_brn0.00", "_cp0.60_brn0.00", "_cp0.80_brn0.00", "_cp1.00_brn0.00", "", "_cp0.10_brn0.00", "_cp0.20_brn0.00", "_cp0.30_brn0.00", "_cp0.40_brn0.00", "_cp0.50_brn0.00", "_cp0.60_brn0.00", "_cp0.80_brn0.00", "_cp1.00_brn0.00"];
-OUTName         += ["SB8TeV", "SB8TeV", "SB8TeV", "SB8TeV", "SB8TeV", "SB8TeV", "SB8TeV", "SB8TeV", "SB8TeV", "SB8TeV_GG", "SB8TeV_GG", "SB8TeV_GG", "SB8TeV_GG", "SB8TeV_GG", "SB8TeV_GG", "SB8TeV_GG", "SB8TeV_GG", "SB8TeV_GG", "SB8TeV_QQ", "SB8TeV_QQ", "SB8TeV_QQ", "SB8TeV_QQ", "SB8TeV_QQ", "SB8TeV_QQ", "SB8TeV_QQ", "SB8TeV_QQ", "SB8TeV_QQ"]
-LandSArgOptions += [" --bins eq0jets,geq1jets,vbf       --systpostfix _8TeV --shape " for i in range(9)]
-LandSArgOptions += [" --bins eq0jets,geq1jets --skipQQH --systpostfix _8TeV --shape " for i in range(9)]
-LandSArgOptions += [" --bins vbf              --skipGGH --systpostfix _8TeV --shape " for i in range(9)]
+OUTName         += ["CC7TeV", "CC7TeV", "CC7TeV", "CC7TeV", "CC7TeV", "CC7TeV", "CC7TeV", "CC7TeV", "CC7TeV", "CC7TeV_GG", "CC7TeV_GG", "CC7TeV_GG", "CC7TeV_GG", "CC7TeV_GG", "CC7TeV_GG", "CC7TeV_GG", "CC7TeV_GG", "CC7TeV_GG", "CC7TeV_QQ", "CC7TeV_QQ", "CC7TeV_QQ", "CC7TeV_QQ", "CC7TeV_QQ", "CC7TeV_QQ", "CC7TeV_QQ", "CC7TeV_QQ", "CC7TeV_QQ"]
+LandSArgOptions += [" --bins eq0jets,geq1jets,vbf       --systpostfix _7TeV " for i in range(9)]
+LandSArgOptions += [" --bins eq0jets,geq1jets --skipQQH --systpostfix _7TeV " for i in range(9)]
+LandSArgOptions += [" --bins vbf              --skipGGH --systpostfix _7TeV " for i in range(9)]
+
+###################  #7TeV shape combined, GG, QQ
+signalSuffixVec += ["", "_cp0.10_brn0.00", "_cp0.20_brn0.00", "_cp0.30_brn0.00", "_cp0.40_brn0.00", "_cp0.50_brn0.00", "_cp0.60_brn0.00", "_cp0.80_brn0.00", "_cp1.00_brn0.00", "", "_cp0.10_brn0.00", "_cp0.20_brn0.00", "_cp0.30_brn0.00", "_cp0.40_brn0.00", "_cp0.50_brn0.00", "_cp0.60_brn0.00", "_cp0.80_brn0.00", "_cp1.00_brn0.00", "", "_cp0.10_brn0.00", "_cp0.20_brn0.00", "_cp0.30_brn0.00", "_cp0.40_brn0.00", "_cp0.50_brn0.00", "_cp0.60_brn0.00", "_cp0.80_brn0.00", "_cp1.00_brn0.00"];
+OUTName         += ["SB7TeV", "SB7TeV", "SB7TeV", "SB7TeV", "SB7TeV", "SB7TeV", "SB7TeV", "SB7TeV", "SB7TeV", "SB7TeV_GG", "SB7TeV_GG", "SB7TeV_GG", "SB7TeV_GG", "SB7TeV_GG", "SB7TeV_GG", "SB7TeV_GG", "SB7TeV_GG", "SB7TeV_GG", "SB7TeV_QQ", "SB7TeV_QQ", "SB7TeV_QQ", "SB7TeV_QQ", "SB7TeV_QQ", "SB7TeV_QQ", "SB7TeV_QQ", "SB7TeV_QQ", "SB7TeV_QQ"]
+LandSArgOptions += [" --bins eq0jets,geq1jets,vbf       --systpostfix _7TeV --shape " for i in range(9)]
+LandSArgOptions += [" --bins eq0jets,geq1jets --skipQQH --systpostfix _7TeV --shape " for i in range(9)]
+LandSArgOptions += [" --bins vbf              --skipGGH --systpostfix _7TeV --shape " for i in range(9)]
+
 
 signalSuffixVec += ["", "", ""];
-OUTName         += ["CC8TeV_CAT1", "CC8TeV_CAT2", "CC8TeV_CAT3"]
-LandSArgOptions += [" --bins eq0jets       --systpostfix _8TeV "]
-LandSArgOptions += [" --bins geq1jets      --systpostfix _8TeV "]
-LandSArgOptions += [" --bins vbf           --systpostfix _8TeV "]
+OUTName         += ["CC7TeV_CAT1", "CC7TeV_CAT2", "CC7TeV_CAT3"]
+LandSArgOptions += [" --bins eq0jets       --systpostfix _7TeV "]
+LandSArgOptions += [" --bins geq1jets      --systpostfix _7TeV "]
+LandSArgOptions += [" --bins vbf           --systpostfix _7TeV "]
+
 
 signalSuffixVec += ["", "", ""];
-OUTName         += ["SB8TeV_CAT1", "SB8TeV_CAT2", "SB8TeV_CAT3"]
-LandSArgOptions += [" --bins eq0jets       --systpostfix _8TeV --shape "]
-LandSArgOptions += [" --bins geq1jets      --systpostfix _8TeV --shape "]
-LandSArgOptions += [" --bins vbf           --systpostfix _8TeV --shape "]
+OUTName         += ["SB7TeV_CAT1", "SB7TeV_CAT2", "SB7TeV_CAT3"]
+LandSArgOptions += [" --bins eq0jets       --systpostfix _7TeV --shape "]
+LandSArgOptions += [" --bins geq1jets      --systpostfix _7TeV --shape "]
+LandSArgOptions += [" --bins vbf           --systpostfix _7TeV --shape "]
+
+
+
 
 #signalSuffixVec = [""]
-#OUTName         = ["CC8TeV"]
-#LandSArgOptions = [" --bins eq0jets,geq1jets,vbf       --systpostfix _8TeV "]
-
-
+#OUTName         = ["CC7TeV"]
+#LandSArgOptions = [" --bins eq0jets,geq1jets,vbf       --systpostfix _7TeV "]
 
 
 cutList='' 
@@ -353,7 +357,7 @@ for signalSuffix in signalSuffixVec :
 
            cardsdir=DataCardsDir+"/"+('%04.0f' % float(m));
            SCRIPT.writelines('mkdir -p ' + cardsdir+';\ncd ' + cardsdir+';\n')
-           SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" ;\n")
+           SCRIPT.writelines("runLandS --m " + str(m) + " --histo " + shapeName + " --in " + inUrl + " " + " --syst " + shapeBasedOpt + " --index " + str(index) + " --json " + jsonUrl + " " + SideMassesArgs + " " + LandSArg + cutStr  +" &> LOG;\n")
            SCRIPT.writelines("sh combineCards.sh;\n")
            SCRIPT.writelines("combine -M Asymptotic -m " +  str(m) + "  card_combined.dat > COMB.log;\n") 
            SCRIPT.writelines("combine -M MaxLikelihoodFit -m " +  str(m) + " --saveNormalizations card_combined.dat;\n")
@@ -372,11 +376,11 @@ for signalSuffix in signalSuffixVec :
       print '# FINAL PLOT for ' + DataCardsDir + '#\n'
       os.system("hadd -f "+DataCardsDir+"/LimitTree.root "+DataCardsDir+"/*/higgsCombineTest.Asymptotic.*.root > /dev/null")
       if(LandSArg.find('skip')<0):
-         os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Stength_\",\""+DataCardsDir+"/LimitTree.root\",\"\",  true, false, 8 , 19.7 )'")
+         os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Stength_\",\""+DataCardsDir+"/LimitTree.root\",\"\",  true, false, 7 , 5.035 )'")
       else:
          os.system("getXSec "+DataCardsDir+"/XSecs.txt "+DataCardsDir+"/*/Efficiency.tex")
-         os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Stength_\",\""+DataCardsDir+"/LimitTree.root\",\""+DataCardsDir+"/XSecs.txt\",  true, false, 8 , 19.7 )'")
-         os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/XSec_\",\""+DataCardsDir+"/LimitTree.root\",\""+DataCardsDir+"/XSecs.txt\",  false, false, 8 , 19.7 )'")
+         os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/Stength_\",\""+DataCardsDir+"/LimitTree.root\",\""+DataCardsDir+"/XSecs.txt\",  true, false, 7 , 5.035 )'")
+         os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"/XSec_\",\""+DataCardsDir+"/LimitTree.root\",\""+DataCardsDir+"/XSecs.txt\",  false, false, 7 , 5.035 )'")
 #         os.system("root -l -b -q plotLimit.C+'(\""+DataCardsDir+"\",\""+DataCardsDir+"/LimitTree.root\",\"\",  true, 8 , 19.6 )'")
    ######################################################################
 
