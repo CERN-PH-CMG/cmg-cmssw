@@ -1,6 +1,6 @@
 [ ('AnalysisDataFormats/CMGTools', 'UserCode/CMG/AnalysisDataFormats/CMGTools', 'lucieg_Ap8'),
   ('CMGTools/Common', 'UserCode/CMG/CMGTools/Common', 'cbern_newjec_04Jun13'),
-  ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-03-03'),
+  ('CMGTools/External', 'UserCode/CMG/CMGTools/External', 'V00-03-04'),
   ('CMGTools/Production', 'UserCode/CMG/CMGTools/Production', 'cbern_04Jun13'),
   ('CMGTools/RootTools', 'UserCode/CMG/CMGTools/RootTools', 'cbern_04Jun13'),
   ('CMGTools/Utilities', 'UserCode/CMG/CMGTools/Utilities', 'jose_3May13'),
