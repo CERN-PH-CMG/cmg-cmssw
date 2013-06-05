@@ -3,7 +3,9 @@
 
 using namespace std;
 
-void PFSim::Simulator::simulate( const HepMC::GenEvent& event ) {
+
+
+void PFSim::Simulator::simulate( const HepMC::GenEvent& event) {
 
   simParticles_.clear();
 
@@ -16,8 +18,6 @@ void PFSim::Simulator::simulate( const HepMC::GenEvent& event ) {
     const HepMC::GenParticle& p = **iter;
  
     if( p.status() != 1 ) continue; 
-
-    // cout<<p.pdg_id()<<" "<<p.status()<<endl;
 
     Particle::Type type = Particle::X;
 
@@ -47,18 +47,12 @@ void PFSim::Simulator::simulate( const HepMC::GenEvent& event ) {
       type = Particle::gamma;
       break;
     } 
-
-    Particle aPart = simulateParticle(type, p.momentum() );
+    
+//     const ParticleData *pdata = pdt.particle(p.pdg_id());
+//     int charge = pdata->charge();
+    int charge = 0;
+    Particle aPart = Particle(type, p.pdg_id(), charge, p.momentum() );
     simParticles_.push_back(aPart);    
   }
 }
 
-
-
-PFSim::Particle PFSim::Simulator::simulateParticle(PFSim::Particle::Type type, 
-						   const HepMC::FourVector& momentum ) const {
-  // cout<<"type "<<type<<" pt "<<momentum.perp()<<" eta "<<momentum.eta()<<endl; 
-
-  float charge = 0;
-  return Particle(type, charge, momentum); 
-}

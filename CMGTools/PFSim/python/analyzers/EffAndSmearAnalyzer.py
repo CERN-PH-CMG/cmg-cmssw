@@ -62,7 +62,13 @@ class EffAndSmearAnalyzer( Analyzer ):
 
         event.genElectrons = []
         event.genMuons = []
+        event.genParticles = []
+        event.genParticles3 = []
         for gp in self.mchandles['genParticles'].product():
+            pygp = GenParticle(gp)
+            event.genParticles.append( pygp )
+            if gp.status() == 3:
+                event.genParticles3.append( pygp ) 
             if abs(gp.pdgId()) == 11: 
                 event.genElectrons.append( Electron(gp.p4()) )
             elif abs(gp.pdgId()) == 13:

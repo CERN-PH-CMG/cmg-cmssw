@@ -6,6 +6,8 @@
 /* #include <string> */
 
 #include <string>
+#include <vector>
+#include <map>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -16,10 +18,14 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "CMGTools/PFSim/interface/Simulator.h"
+#include "DataFormats/Candidate/interface/LeafCandidate.h"
 
 
 class PFSimParticleProducer : public edm::EDProducer {
  public:
+  //TODO template on input
+  typedef reco::LeafCandidate OutputParticle; 
+  typedef std::vector< OutputParticle > OutputParticles;
 
   explicit PFSimParticleProducer(const edm::ParameterSet&);
 
@@ -31,12 +37,19 @@ class PFSimParticleProducer : public edm::EDProducer {
 
  private:
 
+  int chargeTimesThree( int id ) const;
+
+  PFSim::Simulator simulator_;
+
   edm::InputTag  hepmcSrc_;
   
   /// verbose ?
   bool   verbose_;
 
-  PFSim::Simulator simulator_;
+  bool firstEvent_; 
+
+  std::vector<int>    chargeP_, chargeM_;
+  std::map<int, int>  chargeMap_;
 
 };
 

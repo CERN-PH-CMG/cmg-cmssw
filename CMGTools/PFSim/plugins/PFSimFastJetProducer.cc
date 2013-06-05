@@ -89,7 +89,7 @@ void PFSimFastJetProducer::produce(Event& iEvent,
   for (unsigned int i = 0; i < sorted_jets.size(); i++) {
     const fastjet::PseudoJet& jet = sorted_jets[i];
     reco::LeafCandidate::LorentzVector p4(jet.px(), jet.py(), jet.pz(), jet.E());
-    float charge = 0.; //TODO deal with charge
+    float charge = 0.; //TODO deal with charge and pdgId
     outPtr->push_back( Particle(charge, p4) ); 
     if (verbose_) cout<<"\t"<<jet.pt()<<" "<<jet.eta()<<endl;
   }
