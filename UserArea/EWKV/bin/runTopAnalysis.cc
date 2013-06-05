@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
   TString url         = runProcess.getParameter<std::string>("input");
   TString baseDir     = runProcess.getParameter<std::string>("dirName");
   bool runSystematics = runProcess.getParameter<bool>("runSystematics");
-  TString jesUncFile  = runProcess.getParameter<std::string>("jesUncFileName");
+  TString jecDir      = runProcess.getParameter<std::string>("jecDir");
   bool isMC           = runProcess.getParameter<bool>("isMC");
   int mcTruthMode     = runProcess.getParameter<int>("mctruthmode");
   double xsec         = runProcess.getParameter<double>("xsec");
@@ -72,8 +72,9 @@ int main(int argc, char* argv[])
   bool saveSummaryTree = runProcess.getParameter<bool>("saveSummaryTree");
 
   //jet energy scale uncertainties
-  gSystem->ExpandPathName(jesUncFile);
-  JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty(jesUncFile.Data());
+  gSystem->ExpandPathName(jecDir);
+  FactorizedJetCorrector *jesCor        = utils::cmssw::getJetCorrector(jecDir,isMC);
+  JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty((jecDir+"/MC_Uncertainty_AK5PFchs.txt").Data());
 
   //
   // check input file
@@ -337,6 +338,20 @@ int main(int argc, char* argv[])
       data::PhysicsObjectCollection_t looseJets,selJets;
       for(size_t ijet=0; ijet<jets.size(); ijet++)
 	{
+	  //correct jet
+	  float toRawSF=jets[ijet].getVal("torawsf");
+	  LorentzVector rawJet(jets[ijet]*toRawSF);
+	  jesCor->setJetEta(rawJet.eta());
+	  jesCor->setJetPt(rawJet.pt());
+	  jesCor->setJetA(jets[ijet].getVal("area"));
+	  jesCor->setRho(ev.rho);
+	  jesCor->setNPV(ev.nvtx);
+	  float newJECSF=jesCor->getCorrection()
+	    ;
+	  jets[ijet].SetPxPyPzE(rawJet.px(),rawJet.py(),rawJet.pz(),rawJet.energy());
+	  jets[ijet] *= newJECSF;
+	  jets[ijet].setVal("torawsf",newJECSF);
+
 	  //cross-clean with selected leptons 
 	  double minDRlj(9999.);
 	  for(size_t ilep=0; ilep<selLeptons.size(); ilep++)

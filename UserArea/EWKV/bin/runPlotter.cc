@@ -190,9 +190,9 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
          for(int s=0;s<split;s++){
 	   string segmentExt; if(split>1) { char buf[255]; sprintf(buf,"_%i",s); segmentExt += buf; }
             string FileName = RootDir + (Samples[j])["dtag"].toString() + ((Samples[j].isTag("suffix"))?(Samples[j])["suffix"].toString():string("")) + segmentExt + filtExt + ".root";
-            TFile* File = new TFile(FileName.c_str());
+            TFile* File = TFile::Open(FileName.c_str());
             bool& fileExist = FileExist[FileName];
-            if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) ){fileExist=false;  continue; }else{fileExist=true;}
+	    if(!File || File->IsZombie() || !File->IsOpen() || File->TestBit(TFile::kRecovered) ){fileExist=false;  continue; }else{fileExist=true;}
 
             TH1* tmptmphist = (TH1*) GetObjectFromPath(File,HistoProperties.name); 
 	    if(tmptmphist)
@@ -205,7 +205,6 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
          if(!tmphist)continue;
          
 	 bool isMC( !Process[i]["isdata"].toBool() && !Process[i]["isdatadriven"].toBool() );
-
 
          stSampleInfo& sampleInfo = sampleInfoMap[(Samples[j])["dtag"].toString()];
 
@@ -222,10 +221,10 @@ void GetInitialNumberOfEvents(JSONWrapper::Object& Root, std::string RootDir, Na
          if(cnorm<=0 || !isMC)cnorm = 1.0;         
          if(cnorm==1 && isMC)printf("is there a problem with %s ? cnorm = %f\n",(Samples[j])["dtag"].toString().c_str(), cnorm);          
          if(!isMC)PUCentralnnorm = 1;
-
-          double VBFMCRescale = tmphist->GetXaxis()->GetNbins()>5 ? tmphist->GetBinContent(6) / tmphist->GetBinContent(2) : 1.0;
-	  if(VBFMCRescale!=0)          cnorm *= VBFMCRescale;
-          //printf("VBFMCRescale for sample %s is %f\n", (Samples[j])["dtag"].toString().c_str(), VBFMCRescale );
+	 
+	 double VBFMCRescale = tmphist->GetXaxis()->GetNbins()>5 ? tmphist->GetBinContent(6) / tmphist->GetBinContent(2) : 1.0;
+	 if(VBFMCRescale!=0)          cnorm *= VBFMCRescale;
+	 //printf("VBFMCRescale for sample %s is %f\n", (Samples[j])["dtag"].toString().c_str(), VBFMCRescale );
          sampleInfo.initialNumberOfEvents = cnorm / PUCentralnnorm;
          delete tmphist;
       }   

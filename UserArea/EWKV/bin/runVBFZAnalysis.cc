@@ -360,10 +360,12 @@ int main(int argc, char* argv[])
   double xsecWeight = xsec;
   if(!isMC) xsecWeight=1.0;
 
-  //jet energy scale uncertainties 
-  TString jesUncFile = runProcess.getParameter<std::string>("jesUncFileName");
-  gSystem->ExpandPathName(jesUncFile);
-  JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty(jesUncFile.Data());
+  //jet energy scale and uncertainties 
+  TString jecDir = runProcess.getParameter<std::string>("jecDir");
+  gSystem->ExpandPathName(jecDir);
+  FactorizedJetCorrector *jesCor        = utils::cmssw::getJetCorrector(jecDir,isMC);
+  JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty((jecDir+"/MC_Uncertainty_AK5PFchs.txt").Data());
+
   
   //pdf info
   PDFInfo *mPDFInfo=0;
@@ -644,6 +646,20 @@ int main(int argc, char* argv[])
       int njets30(0);
       for(size_t ijet=0; ijet<jets.size(); ijet++) 
 	{
+	  //correct jet
+	  float toRawSF=jets[ijet].getVal("torawsf");
+	  LorentzVector rawJet(jets[ijet]*toRawSF);
+	  jesCor->setJetEta(rawJet.eta());
+	  jesCor->setJetPt(rawJet.pt());
+	  jesCor->setJetA(jets[ijet].getVal("area"));
+	  jesCor->setRho(ev.rho);
+	  jesCor->setNPV(ev.nvtx);
+	  float newJECSF=jesCor->getCorrection()
+;
+	  jets[ijet].SetPxPyPzE(rawJet.px(),rawJet.py(),rawJet.pz(),rawJet.energy());
+	  jets[ijet] *= newJECSF;
+	  jets[ijet].setVal("torawsf",newJECSF);
+
 	  if(jets[ijet].pt()<15 || fabs(jets[ijet].eta())>4.7 ) continue;
 	  
 	  //cross-clean with selected leptons and photons

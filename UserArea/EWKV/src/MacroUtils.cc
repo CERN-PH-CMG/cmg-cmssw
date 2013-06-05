@@ -1,10 +1,33 @@
 #include "UserCode/EWKV/interface/MacroUtils.h"
 #include "TH1F.h"
+#include "TSystem.h"
 
 namespace utils
 {
   namespace cmssw
   {
+
+    //
+    FactorizedJetCorrector *getJetCorrector(TString baseDir, bool isMC)
+    {
+      gSystem->ExpandPathName(baseDir);
+      TString pf(isMC ? "MC" : "Data");
+
+      //order matters: L1 -> L2 -> L3 (-> Residuals)
+      std::vector<std::string> jetCorFiles;
+      std::cout << baseDir+"/"+pf+"_L1FastJet_AK5PFchs.txt" << std::endl;
+      jetCorFiles.push_back((baseDir+"/"+pf+"_L1FastJet_AK5PFchs.txt").Data());
+      jetCorFiles.push_back((baseDir+"/"+pf+"_L2Relative_AK5PFchs.txt").Data());
+      jetCorFiles.push_back((baseDir+"/"+pf+"_L3Absolute_AK5PFchs.txt").Data());
+      if(!isMC) jetCorFiles.push_back((baseDir+"/"+pf+"_L2L3Residual_AK5PFchs.txt").Data());
+
+      //init the parameters for correction
+      std::vector<JetCorrectorParameters> corSteps;
+      for(size_t i=0; i<jetCorFiles.size(); i++) corSteps.push_back(JetCorrectorParameters(jetCorFiles[i]));
+
+      //return the corrector
+      return new FactorizedJetCorrector(corSteps);
+    }
  
     //
     const reco::Candidate *getGeneratorFinalStateFor(const reco::Candidate *p)

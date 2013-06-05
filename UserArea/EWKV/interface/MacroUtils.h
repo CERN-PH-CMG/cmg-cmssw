@@ -8,6 +8,8 @@
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "TrackingTools/IPTools/interface/IPTools.h"
 
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 #include "TVector3.h"
@@ -71,6 +73,9 @@ namespace utils
     utils::cmssw::PuShifter_t getPUshifters(std::vector< float > &Lumi_distr, float puUnc);
 
     Float_t getEffectiveArea(int id, float eta,int cone=3,TString isoSum="");
+
+    FactorizedJetCorrector *getJetCorrector(TString baseDir, bool isMC);
+
   }
 
 }
