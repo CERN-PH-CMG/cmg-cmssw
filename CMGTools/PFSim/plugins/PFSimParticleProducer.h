@@ -1,10 +1,6 @@
 #ifndef __PFSim_PFSimParticleProducer__
 #define __PFSim_PFSimParticleProducer__
 
-// system include files
-/* #include <memory> */
-/* #include <string> */
-
 #include <string>
 #include <vector>
 #include <map>
@@ -48,8 +44,6 @@ class PFSimParticleProducer : public edm::EDProducer {
   bool   verbose_;
 
   bool firstEvent_;  
-/*   std::vector<int>    chargeP_, chargeM_; */
-/*   std::map<int, int>  chargeMap_; */
 
   edm::ESHandle<HepPDT::ParticleDataTable> pdt_;
 };
