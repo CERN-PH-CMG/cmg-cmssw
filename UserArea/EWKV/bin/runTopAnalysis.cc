@@ -76,6 +76,9 @@ int main(int argc, char* argv[])
   FactorizedJetCorrector *jesCor        = utils::cmssw::getJetCorrector(jecDir,isMC);
   JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty((jecDir+"/MC_Uncertainty_AK5PFchs.txt").Data());
 
+  //muon energy scale and uncertainties
+  MuScleFitCorrector *muCor=utils::cmssw::getMuonCorrector(jecDir,url);
+
   //
   // check input file
   //
@@ -289,6 +292,12 @@ int main(int argc, char* argv[])
 	    }
 	  else
 	    {
+	      if(muCor){
+		TLorentzVector p4(leptons[ilep].px(),leptons[ilep].py(),leptons[ilep].pz(),leptons[ilep].energy());
+		muCor->applyPtCorrection(p4 , id<0 ? -1 :1 );
+		leptons[ilep].SetPxPyPzE(p4.Px(),p4.Py(),p4.Pz(),p4.E());
+	      }
+
 	      Int_t idbits    = leptons[ilep].get("idbits");
 	      //bool isTight    = ((idbits >> 10) & 0x1);
 	      bool isLoose    = ((idbits >> 8) & 0x1);
@@ -346,11 +355,10 @@ int main(int argc, char* argv[])
 	  jesCor->setJetA(jets[ijet].getVal("area"));
 	  jesCor->setRho(ev.rho);
 	  jesCor->setNPV(ev.nvtx);
-	  float newJECSF=jesCor->getCorrection()
-	    ;
+	  float newJECSF=jesCor->getCorrection();
 	  jets[ijet].SetPxPyPzE(rawJet.px(),rawJet.py(),rawJet.pz(),rawJet.energy());
 	  jets[ijet] *= newJECSF;
-	  jets[ijet].setVal("torawsf",newJECSF);
+	  jets[ijet].setVal("torawsf",1./newJECSF);
 
 	  //cross-clean with selected leptons 
 	  double minDRlj(9999.);

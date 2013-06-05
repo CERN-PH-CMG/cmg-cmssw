@@ -8,6 +8,7 @@
 #include "UserCode/EWKV/interface/TMVAUtils.h"
 #include "UserCode/EWKV/interface/LeptonEfficiencySF.h"
 #include "UserCode/EWKV/interface/PDFInfo.h"
+#include "UserCode/EWKV/interface/MuScleFitCorrector.h"
 
 #include "CondFormats/JetMETObjects/interface/JetResolution.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
@@ -366,7 +367,9 @@ int main(int argc, char* argv[])
   FactorizedJetCorrector *jesCor        = utils::cmssw::getJetCorrector(jecDir,isMC);
   JetCorrectionUncertainty *totalJESUnc = new JetCorrectionUncertainty((jecDir+"/MC_Uncertainty_AK5PFchs.txt").Data());
 
-  
+  //muon energy scale and uncertainties
+  MuScleFitCorrector *muCor=utils::cmssw::getMuonCorrector(jecDir,url);
+    
   //pdf info
   PDFInfo *mPDFInfo=0;
   if(isMC)
@@ -537,7 +540,17 @@ int main(int argc, char* argv[])
       for(size_t ilep=0; ilep<leptons.size(); ilep++)
 	{
 	  bool passKin(true),passId(true),passIso(true);
-	  int lid=fabs(leptons[ilep].get("id"));
+	  int lid=leptons[ilep].get("id");
+
+	  //apply muon corrections
+	  if(lid==13 && muCor){
+	    TLorentzVector p4(leptons[ilep].px(),leptons[ilep].py(),leptons[ilep].pz(),leptons[ilep].energy());
+	    muCor->applyPtCorrection(p4 , lid<0 ? -1 :1 );
+	    leptons[ilep].SetPxPyPzE(p4.Px(),p4.Py(),p4.Pz(),p4.E());
+	  }
+
+	  //no need for charge info any longer
+	  lid=abs(lid);
 	  TString lepStr( lid==13 ? "mu" : "e");
 
 	  //veto nearby photon (loose electrons are many times photons...)
@@ -556,9 +569,6 @@ int main(int argc, char* argv[])
 	  Int_t idbits = leptons[ilep].get("idbits");
 	  if(lid==11){
 	    if(leptons[ilep].getFlag("isconv"))              passId=false;
-	    //if(leptons[ilep].getVal("tk_d0")>0.4)          passId=false;
-	    //if(leptons[ilep].getVal("tk_lostInnerHits")>0) passId=false;
-	    //if(leptons[ilep].getVal("mvatrig")<0.5)        passId=false;
 	    bool isLoose = ((idbits >> 4) & 0x1);
 	    if(!isLoose)                                   passId=false;
  	  }
@@ -658,7 +668,7 @@ int main(int argc, char* argv[])
 ;
 	  jets[ijet].SetPxPyPzE(rawJet.px(),rawJet.py(),rawJet.pz(),rawJet.energy());
 	  jets[ijet] *= newJECSF;
-	  jets[ijet].setVal("torawsf",newJECSF);
+	  jets[ijet].setVal("torawsf",1./newJECSF);
 
 	  if(jets[ijet].pt()<15 || fabs(jets[ijet].eta())>4.7 ) continue;
 	  

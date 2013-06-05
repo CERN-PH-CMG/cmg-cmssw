@@ -12,6 +12,8 @@
 #include "CondFormats/JetMETObjects/interface/FactorizedJetCorrector.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
+#include "UserCode/EWKV/interface/MuScleFitCorrector.h"
+
 #include "TVector3.h"
 #include "TMath.h"
 #include "TGraph.h"
@@ -74,10 +76,12 @@ namespace utils
 
     Float_t getEffectiveArea(int id, float eta,int cone=3,TString isoSum="");
 
+    //cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookJetEnergyCorrections#JetEnCorFWLite
     FactorizedJetCorrector *getJetCorrector(TString baseDir, bool isMC);
 
+    //cf. https://twiki.cern.ch/twiki/bin/view/CMSPublic/MuScleFitCorrections2012 
+    MuScleFitCorrector *getMuonCorrector(TString baseDir,TString url);
   }
-
 }
 
 // CODE FOR DUPLICATE EVENTS CHECKING
