@@ -294,7 +294,8 @@ int main(int argc, char* argv[])
 	    {
 	      if(muCor){
 		TLorentzVector p4(leptons[ilep].px(),leptons[ilep].py(),leptons[ilep].pz(),leptons[ilep].energy());
-		muCor->applyPtCorrection(p4 , id<0 ? -1 :1 );
+		muCor->applyPtCorrection(p4 , id<0 ? -1 : 1 );
+		muCor->applyPtSmearing(p4, id<0 ? -1 : 1, false);
 		leptons[ilep].SetPxPyPzE(p4.Px(),p4.Py(),p4.Pz(),p4.E());
 	      }
 
