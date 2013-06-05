@@ -11,7 +11,7 @@
   TH1D *xbH=h->ProjectionX("xb");
   xbH->SetDirectory(0);
 
-  fIn=TFile::Open("xb_weights.root");
+  fIn=TFile::Open("../../data/jec/xb_weights.root");
   TH1F *pythia_Z2_nominal  = (TH1F *) fIn->Get("pythia_Z2_nominal");     
   pythia_Z2_nominal->Rebin(5);
   pythia_Z2_nominal->Scale(xbH->Integral()/pythia_Z2_nominal->Integral());
