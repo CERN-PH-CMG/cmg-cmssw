@@ -22,7 +22,6 @@ class PFSimFastJetProducer : public edm::EDProducer {
   //TODO template on input
   typedef reco::LeafCandidate Particle; 
   typedef edm::View< Particle > Particles;
-  //TODO for now using SimpleParticle as a Jet class... later use CMG::PFJets?
   typedef std::vector< Particle > Jets;
 
   explicit PFSimFastJetProducer(const edm::ParameterSet&);

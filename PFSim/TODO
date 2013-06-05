@@ -57,6 +57,7 @@ X - add tree system.
 MAIN OBJECTIVE NOW!
 - need gen information for the gen jets:
 	- flavour of jet initiating partons
+	- check scale for each flavour. 
 - need to deal with taus 
 - check JES before corrections 
 - deal with the charge. 

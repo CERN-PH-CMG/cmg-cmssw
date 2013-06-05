@@ -20,19 +20,22 @@ namespace PFSim {
       nu       // invisible
     };
 
-    Particle(Type type, float charge, const HepMC::FourVector& mom) {
+    Particle(Type type, int pdgId, float charge, const HepMC::FourVector& mom) {
       type_=type;
+      pdgId_=pdgId;
       charge_=charge;
       momentum_ = mom;
     }
 
     Type type() const {return type_;}
+    int  pdgId() const {return pdgId_;}
     float charge() const {return charge_;}
     const HepMC::FourVector& momentum() const {return momentum_;}
     const HepMC::FourVector& p4() const {return momentum();}
 
   private:
     Type               type_;
+    int                pdgId_;
     HepMC::FourVector  momentum_; 
     float              charge_; 
   };

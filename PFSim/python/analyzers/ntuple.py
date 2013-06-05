@@ -20,12 +20,10 @@ def fillParticle( tree, pName, particle ):
 
 def bookGenParticle(tree, pName):
     bookParticle(tree, pName)
-    var(tree, '{pName}_mass'.format(pName=pName))
     var(tree, '{pName}_pdgId'.format(pName=pName))
     
 def fillGenParticle( tree, pName, particle ):
     fillParticle( tree, pName, particle )
-    fill(tree, '{pName}_mass'.format(pName=pName), particle.mass() )
     fill(tree, '{pName}_pdgId'.format(pName=pName), particle.pdgId() )
 
 def bookGenJet(tree, pName):

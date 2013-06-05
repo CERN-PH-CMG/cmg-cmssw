@@ -42,9 +42,19 @@ class ObjectReader( Analyzer ):
 
         event.genJets = map(GenJet, self.handles['genJets'].product() )
 
+        #TODO duplicated code, see EffAndSmearAnalyzer.
+        #
         event.genElectrons = []
         event.genMuons = []
+        event.genParticles = []
+        event.genParticles3 = []
         for gp in self.handles['genParticles'].product():
+            pygp = GenParticle(gp)
+            event.genParticles.append( pygp )
+            #TODO genParticlesPruned doesn't contain status 3???
+            # Maybe specific to HZHA?
+            if gp.status() == 2: 
+                event.genParticles3.append( pygp ) 
             if abs(gp.pdgId()) == 11: 
                 event.genElectrons.append( Electron(gp.p4()) )
             elif abs(gp.pdgId()) == 13:

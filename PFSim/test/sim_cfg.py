@@ -3,13 +3,14 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("Sim")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10)
 
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(-1)
 )
 
+process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService",
     generator = cms.PSet(
@@ -19,23 +20,21 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 )
 
 
-# add poolsource
 
 process.source = cms.Source(
     'PoolSource',
     fileNames = cms.untracked.vstring( 'file:gen.root' )
     )
 
-process.load('PhysicsTools.HepMCCandAlgos.genParticles_cfi')
-
 process.pfsim = cms.EDProducer(
     'PFSimParticleProducer',
     hepmcSrc = cms.InputTag('generator')
     )
 
-process.fastjet = cms.EDProducer(
+process.jets = cms.EDProducer(
     'PFSimFastJetProducer',
-    particleSrc = cms.InputTag('genParticles')
+    particleSrc = cms.InputTag('pfsim'),
+    jetPtThreshold = cms.double(5.),
     )
 
 
@@ -49,9 +48,8 @@ process.out = cms.OutputModule(
 )
 
 process.p = cms.Path(
-    # process.pfsim +
-    process.genParticles+
-    process.fastjet 
+    process.pfsim 
+ #+    process.jets
     )
 
 

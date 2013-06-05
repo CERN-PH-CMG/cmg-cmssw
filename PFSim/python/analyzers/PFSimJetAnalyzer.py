@@ -45,7 +45,10 @@ class PFSimJetAnalyzer( Analyzer ):
         for jet in event.cleanJets:
             bm, dr2 = bestMatch(jet, event.genJets)
             jet.genJet = bm
-            jet.genJet.dR = math.sqrt(dr2) 
+            jet.genJet.dR = math.sqrt(dr2)
+            pbm, pdr2 = bestMatch(jet, event.genParticles3)
+            jet.genPtc3 = pbm
+            jet.genPtc3.dR = math.sqrt(pdr2)
 
         # associating a lepton to each clean jet
         pairs = matchObjectCollection( event.cleanJets, event.leptons, 0.5*0.5 )
