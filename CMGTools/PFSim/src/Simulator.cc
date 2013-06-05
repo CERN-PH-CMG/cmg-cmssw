@@ -4,8 +4,38 @@
 using namespace std;
 
 
+static const int PDGCacheMax = 50000;
 
-void PFSim::Simulator::simulate( const HepMC::GenEvent& event) {
+
+PFSim::Simulator::Simulator() :
+  firstEvent_(true),
+  chargeP_( PDGCacheMax, 0 ),
+  chargeM_( PDGCacheMax, 0 ) {}
+
+
+
+void PFSim::Simulator::simulate( const HepMC::GenEvent& event, 
+				 const ParticleDataTable& pdt ) {
+
+  if (firstEvent_) {
+    for( HepPDT::ParticleDataTable::const_iterator p = pdt.begin(); 
+	 p != pdt.end(); ++ p ) {
+      const HepPDT::ParticleID & id = p->first;
+      int pdgId = id.pid(), apdgId = std::abs( pdgId );
+      int q3 = id.threeCharge();
+      if ( apdgId < PDGCacheMax && pdgId>0 ) {
+	chargeP_[ apdgId ] = q3;
+	chargeM_[ apdgId ] = -q3;
+      } else if ( apdgId < PDGCacheMax ) {
+	chargeP_[ apdgId ] = -q3;
+	chargeM_[ apdgId ] = q3;
+      } else {
+	chargeMap_[ pdgId ] = q3;
+	chargeMap_[ -pdgId ] = -q3;
+      }
+    }
+    firstEvent_ = false; 
+  }
 
   simParticles_.clear();
 
@@ -48,11 +78,20 @@ void PFSim::Simulator::simulate( const HepMC::GenEvent& event) {
       break;
     } 
     
-//     const ParticleData *pdata = pdt.particle(p.pdg_id());
-//     int charge = pdata->charge();
-    int charge = 0;
+    int charge = chargeTimesThree( p.pdg_id() );
     Particle aPart = Particle(type, p.pdg_id(), charge, p.momentum() );
     simParticles_.push_back(aPart);    
   }
 }
 
+
+
+int PFSim::Simulator::chargeTimesThree( int id ) const {
+  if( std::abs( id ) < PDGCacheMax ) 
+    return id > 0 ? chargeP_[ id ] : chargeM_[ - id ];
+  map<int, int>::const_iterator f = chargeMap_.find( id );
+  if ( f == chargeMap_.end() )  {
+    return HepPDT::ParticleID(id).threeCharge();
+  }
+  return f->second;
+}

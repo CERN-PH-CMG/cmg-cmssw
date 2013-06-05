@@ -13,6 +13,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -37,7 +38,7 @@ class PFSimParticleProducer : public edm::EDProducer {
 
  private:
 
-  int chargeTimesThree( int id ) const;
+  // int chargeTimesThree( int id ) const;
 
   PFSim::Simulator simulator_;
 
@@ -46,11 +47,11 @@ class PFSimParticleProducer : public edm::EDProducer {
   /// verbose ?
   bool   verbose_;
 
-  bool firstEvent_; 
+  bool firstEvent_;  
+/*   std::vector<int>    chargeP_, chargeM_; */
+/*   std::map<int, int>  chargeMap_; */
 
-  std::vector<int>    chargeP_, chargeM_;
-  std::map<int, int>  chargeMap_;
-
+  edm::ESHandle<HepPDT::ParticleDataTable> pdt_;
 };
 
 #endif
