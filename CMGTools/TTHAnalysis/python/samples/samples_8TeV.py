@@ -40,7 +40,7 @@ triggersMC_mue   = ["HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_T
 
 triggers_1mu = [ 'HLT_IsoMu24_eta2p1_v*' ]
 triggersMC_1mu  = triggers_1mu;
-triggersFR_1mu  = [ 'HLT_Mu12_v*', 'HLT_Mu24_eta2p1_v*', 'HLT_Mu40_eta2p1_v*' ]
+triggersFR_1mu  = [ 'HLT_Mu5_v*', 'HLT_RelIso1p0Mu5_v*', 'HLT_Mu12_v*', 'HLT_Mu24_eta2p1_v*', 'HLT_Mu40_eta2p1_v*' ]
 triggersFR_mumu = [ 'HLT_Mu17_Mu8_v*', 'HLT_Mu17_TkMu8_v*', 'HLT_Mu8_v*', 'HLT_Mu17_v*' ]
 triggersFR_1e   = [ 'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele17_CaloIdL_CaloIsoVL_v*', 'HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*', 'HLT_Ele8__CaloIdL_CaloIsoVL_v*']
 triggersFR_mue  = triggers_mue[:]
@@ -104,6 +104,8 @@ WJets    =kreator.makeMCComponent('WJets','/WJetsToLNu_TuneZ2Star_8TeV-madgraph-
 #WJets_HT300To400=kreator.makeMCComponent('WJets_HT300To400','/WJetsToLNu_HT-300To400_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 #WJets_HT400ToInf=kreator.makeMCComponent('WJets_HT400ToInf','/WJetsToLNu_HT-400ToInf_8TeV-madgraph_v2/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 QCDMuPt15=kreator.makeMCComponent('QCDMuPt15','/QCD_Pt_20_MuEnrichedPt_15_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v3/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+QCDElPt30To80=kreator.makeMCComponent('QCDElPt30To80','//QCD_Pt_30_80_BCtoE_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
+QCDElPt80To170=kreator.makeMCComponent('QCDElPt80To170','//QCD_Pt_80_170_BCtoE_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_'+pat+'/'+skim,userName,filepattern)
 
 
 ## Critical samples (major signals and backgrounds)
@@ -113,7 +115,7 @@ mcSamples_2 = [ TTH122,TTH127,DYJetsM10,TTLep,WWJets,TTJets,Tsch,Tbarsch,Ttch,Tb
 ## Cross-check samples, ... 
 mcSamples_3 = [ TTWnlo,WJets,ZZJets4L ]
 ## Samples we don't use
-mcSamples_4 = [ QCDMuPt15,WGs2MU,WGs2E,WGs2Tau,WGToLNuG,ZG ]
+mcSamples_4 = [ QCDMuPt15,WGs2MU,WGs2E,WGs2Tau,WGToLNuG,ZG,QCDElPt30To80,QCDElPt80To170 ]
 
 mcSamples=mcSamples_1+mcSamples_2+mcSamples_3
 
@@ -218,6 +220,17 @@ SingleMuC = cfg.DataComponent(
     )
 
 
+JetMonABCD = cfg.DataComponent(
+    name = 'JetMonABCD',
+    files = (getFiles('/JetMon/Run2012B-13Jul2012-v1/AOD/PAT_CMG_V5_12_0',userName,filepattern) + \
+             getFiles('/JetMon/Run2012C-PromptReco-v2/AOD/PAT_CMG_V5_12_0',userName,filepattern) + \
+             getFiles('/JetMon/Run2012D-PromptReco-v1/AOD/PAT_CMG_V5_12_0',userName,filepattern)),
+    intLumi = 1,
+    triggers = [],
+    json = json
+    )
+
+
 
 #####################################################################################################################
 #####################################################################################################################
@@ -284,7 +297,7 @@ MuEGRec = cfg.DataComponent(
     )
 
 SingleMuRec = cfg.DataComponent(
-    name = 'DoubleMuRec',
+    name = 'SingleMuRec',
     files =getFiles('/SingleMu/Run2012C-EcalRecover_11Dec2012-v1/AOD/PAT_CMG_'+pat+'/'+skim,userName,filepattern),
     intLumi = 1,
     triggers = [],
