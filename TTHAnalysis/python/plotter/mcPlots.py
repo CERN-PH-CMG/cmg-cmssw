@@ -121,6 +121,23 @@ def doStackSigScaledNormData(pspec,pmap):
     sig.Draw("HIST SAME")
     return (sig,sf)
 
+def doScaleSigNormData(pspec,pmap,mca):
+    if "data"       not in pmap: return -1.0
+    if "signal"     not in pmap: return -1.0
+    data = pmap["data"]
+    sig = pmap["signal"].Clone("sig_refloat")
+    bkg = None
+    if "background" in pmap:
+        bkg = pmap["background"]
+    else:
+        bkg = sig.Clone(); bkg.Reset()
+    sf = (data.Integral()-bkg.Integral())/sig.Integral()
+    signals = [ "signal" ] + mca.listSignals()
+    for p,h in pmap.iteritems():
+        if p in signals: h.Scale(sf)
+    return sf
+
+
 def doRatioHists(pspec,pmap,total,totalSyst,maxRange):
     if "data" not in pmap: return (None,None,None,None)
     ratio = pmap["data"].Clone("data_div"); 
@@ -272,6 +289,7 @@ class PlotMaker:
                 hists = [v for k,v in pmap.iteritems() if k != 'data']
                 total = hists[0].Clone(pspec.name+"_total"); total.Reset()
                 totalSyst = hists[0].Clone(pspec.name+"_totalSyst"); totalSyst.Reset()
+                if options.scaleSignalToData: doScaleSigNormData(pspec,pmap,mca)
                 for p in mca.listBackgrounds() + mca.listSignals():
                     if p in pmap: 
                         plot = pmap[p]
@@ -391,6 +409,7 @@ def addPlotMakerOptions(parser):
     parser.add_option("--showDatShape", dest="showDatShape", action="store_true", default=False, help="Stack a normalized data shape")
     parser.add_option("--showSFitShape", dest="showSFitShape", action="store_true", default=False, help="Stack a shape of background + scaled signal normalized to total data")
     parser.add_option("--showRatio", dest="showRatio", action="store_true", default=False, help="Add a data/sim ratio plot at the bottom")
+    parser.add_option("--scaleSigToData", dest="scaleSignalToData", action="store_true", default=False, help="Scale all signal processes so that the overall event yield matches the observed one")
     parser.add_option("--maxRatioRange", dest="maxRatioRange", type="float", nargs=2, default=(0.0, 5.0), help="Min and max for the ratio")
     parser.add_option("--doStatTests", dest="doStatTests", type="string", default=None, help="Do this stat test: chi2p (Pearson chi2), chi2l (binned likelihood equivalent of chi2)")
     parser.add_option("--plotmode", dest="plotmode", type="string", default="stack", help="Show as stacked plot (stack), a non-stacked comparison (nostack) and a non-stacked comparison of normalized shapes (norm)")
