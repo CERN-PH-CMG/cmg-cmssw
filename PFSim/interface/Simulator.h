@@ -2,7 +2,7 @@
 #define __PFSim_Simulator__
 
 #include <vector>
-
+#include <map>
 
 #include <cstddef>
 #include <HepMC/GenEvent.h>
@@ -18,13 +18,22 @@ namespace PFSim {
   public:
     typedef std::vector<Particle> Particles;
 
-    void simulate(const HepMC::GenEvent& event);  
+    Simulator(); 
+
+    void simulate(const HepMC::GenEvent& event, 
+		  const ParticleDataTable& pdt );  
     
     const Particles& simParticles() const {return simParticles_;}
     
   private:
+    int chargeTimesThree( int id ) const;
 
     Particles simParticles_; 
+
+    bool firstEvent_; 
+    std::vector<int>    chargeP_, chargeM_;
+    std::map<int, int>  chargeMap_;
+
   };
 }
   
