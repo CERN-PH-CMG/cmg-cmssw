@@ -156,37 +156,37 @@ typedef cmg::DeltaRVetoProducer<cmg::Tau> DeltaRVetoProducerTau;
 
 // histogrammers 
 
-typedef cmg::HistogramAnalyzer<cmg::JetHistograms> PFJetHistogramsAnalyzer;
-typedef cmg::HistogramAnalyzer<cmg::TriggerResultHistograms> TriggerResultHistogramsAnalyzer;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseMET> > GenericBaseMETHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::AbstractPhysicsObject> > GenericPOHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<pat::MET> > GenericPatMETHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Electron> > CmgElectronHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > CmgMuonHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Tau> > CmgTauHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Hemisphere> > CmgHemiHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Photon> > CmgPhotonHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MultiObject> > CmgMultiObjectHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiMuon> > CmgDiMuonHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiTau> > CmgDiTauHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiElectronHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiHemisphere> > CmgDiHemiHistograms;
+/* typedef cmg::HistogramAnalyzer<cmg::JetHistograms> PFJetHistogramsAnalyzer; */
+/* typedef cmg::HistogramAnalyzer<cmg::TriggerResultHistograms> TriggerResultHistogramsAnalyzer; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseMET> > GenericBaseMETHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::AbstractPhysicsObject> > GenericPOHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<pat::MET> > GenericPatMETHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Electron> > CmgElectronHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Muon> > CmgMuonHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Tau> > CmgTauHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Hemisphere> > CmgHemiHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::Photon> > CmgPhotonHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MultiObject> > CmgMultiObjectHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiMuon> > CmgDiMuonHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiTau> > CmgDiTauHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiElectron> > CmgDiElectronHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiHemisphere> > CmgDiHemiHistograms; */
 
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseJet> > CmgBaseJetHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::PFJet> > CmgPFJetHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::FatJet> > CmgFatJetHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiFatJet> > CmgDiFatJetHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiJet> > CmgDiJetHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiPFJet> > CmgDiPFJetHistograms;
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::BaseJet> > CmgBaseJetHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::PFJet> > CmgPFJetHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::FatJet> > CmgFatJetHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiFatJet> > CmgDiFatJetHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiJet> > CmgDiJetHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::DiPFJet> > CmgDiPFJetHistograms; */
 
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauEle> > CmgTauEleHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauMu> > CmgTauMuHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MuEle> > CmgMuEleHistograms;
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauEle> > CmgTauEleHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::TauMu> > CmgTauMuHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<cmg::MuEle> > CmgMuEleHistograms; */
 
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<reco::LeafCandidate> > LeafCandidateHistograms;
-typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<reco::GenParticle> > GenParticleHistograms;
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<reco::LeafCandidate> > LeafCandidateHistograms; */
+/* typedef cmg::HistogramAnalyzer<cmg::GenericHistograms<reco::GenParticle> > GenParticleHistograms; */
 
-// For datasets.
+/* // For datasets. */
 typedef cmg::HistogramAnalyzer<cmg::GenericRooDataSets<cmg::DiMuon> > CmgDiMuonDataSet;
 typedef cmg::HistogramAnalyzer<cmg::GenericRooDataSets<cmg::DiTau> > CmgDiTauDataSet;
 

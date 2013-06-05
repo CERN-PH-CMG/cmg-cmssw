@@ -10,7 +10,6 @@ from CMGTools.Common.tau_cff import *
 
 from CMGTools.Common.skim_cff import *
 from CMGTools.Common.cutSummary_cff import *
-from CMGTools.Common.histogram_cff import *
 from CMGTools.Common.trigger_cff import *
 
 from CMGTools.Common.miscProducers.misc_cff import *
@@ -35,6 +34,4 @@ analysisSequence = cms.Sequence(
     skimSequence +
     # summary of cuts for all objects, after skimming
     cutSummarySequence 
-    # histograms for all objects, after skimming
-    # histogramSequence 
     )
