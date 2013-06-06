@@ -23,12 +23,13 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 
 process.source = cms.Source(
     'PoolSource',
-    fileNames = cms.untracked.vstring( 'file:gen.root' )
+    fileNames = cms.untracked.vstring( 'file:Prod_TT_20k/Job_1/gen.root' )
     )
 
 process.pfsim = cms.EDProducer(
     'PFSimParticleProducer',
-    hepmcSrc = cms.InputTag('generator')
+    hepmcSrc = cms.InputTag('generator'),
+    verbose = cms.untracked.bool( False )
     )
 
 process.jets = cms.EDProducer(
@@ -49,10 +50,14 @@ process.out = cms.OutputModule(
 
 process.p = cms.Path(
     process.pfsim 
- #+    process.jets
+    + process.jets
     )
 
 
 process.outpath = cms.EndPath(process.out)
 
 
+test = False
+if test:
+    process.maxEvents.input = 10
+    process.pfsim.verbose = True

@@ -26,8 +26,10 @@ class ObjectReader( Analyzer ):
     def declareHandles(self):
         super(ObjectReader, self).declareHandles()
 
-        self.handles['muons'] = AutoHandle( *self.cfg_ana.muonCol )
-        self.handles['electrons'] = AutoHandle( *self.cfg_ana.electronCol )
+        if self.cfg_ana.muonCol:
+            self.handles['muons'] = AutoHandle( *self.cfg_ana.muonCol )
+        if self.cfg_ana.electronCol:
+            self.handles['electrons'] = AutoHandle( *self.cfg_ana.electronCol )
         self.handles['jets'] = AutoHandle( *self.cfg_ana.jetCol )
         self.handles['genJets'] = AutoHandle( *self.cfg_ana.genJetCol )
         self.handles['genParticles'] = AutoHandle( *self.cfg_ana.genPartCol )
@@ -60,10 +62,14 @@ class ObjectReader( Analyzer ):
             elif abs(gp.pdgId()) == 13:
                 event.genMuons.append( Muon(gp.p4()) )
 
-        event.muons = map(Muon, self.handles['muons'].product() )
-        event.electrons = map(Electron, self.handles['electrons'].product() )
+        if self.cfg_ana.muonCol:
+            event.muons = map(Muon,self.handles['muons'].product() )
+        if self.cfg_ana.electronCol:
+            event.electrons = map(Electron, self.handles['electrons'].product() )
+
         event.jets = map(PFJet, self.handles['jets'].product() )
-        random.shuffle(event.jets)
+
+        # random.shuffle(event.jets)
  
         event.leptons = []
         

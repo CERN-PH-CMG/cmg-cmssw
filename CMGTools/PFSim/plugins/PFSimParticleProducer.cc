@@ -18,7 +18,8 @@ PFSimParticleProducer::PFSimParticleProducer(const edm::ParameterSet& iConfig) :
  
   hepmcSrc_( iConfig.getParameter<InputTag>("hepmcSrc")),
   verbose_( iConfig.getUntrackedParameter<bool>("verbose",false)),
-  firstEvent_(true)
+  firstEvent_(true),
+  simulator_( verbose_ )
 {
   produces< OutputParticles > ();
 }
