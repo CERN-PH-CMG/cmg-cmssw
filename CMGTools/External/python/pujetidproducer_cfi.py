@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.External.puJetIDAlgo_cff import * 
 
 stdalgos_4x = cms.VPSet(full,    cutbased,PhilV1)
-stdalgos_5x = cms.VPSet(full_53x,cutbased)
+stdalgos_5x = cms.VPSet(full_53x,met_53x,cutbased)
 
 chsalgos_4x = cms.VPSet(full,        cutbased)
 chsalgos_5x = cms.VPSet(full_53x_chs,cutbased)
