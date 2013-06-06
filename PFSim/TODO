@@ -1,30 +1,36 @@
+
+- HepMCProduct not kept in PFAOD -> cannot use them as benchmark. 
+
+- add debug information to simulated particles (ref to mother? eff and resolution factors?)
+
+- make cmg PFJets from gen jets and sim jets 
+
+- speed up python (gen matching?)
+
+- comparison between sim and gen jets 
+
+- comparison between sim and reco jets (raw PF jets?)
+
+- need gen particle info on gen jets
+
+- resolution and response plotting macros
+
+
+- photon creation and absorption?
+
+- overlapping neutral hadrons
+
 - make sure that all stable invisible particles are removed
 check code in CMSSW (fastsim?) to get the list
 
 - focus on jet simulation 
 
-- define the boundaries between gen and sim. 
-do sim in the python for now? 
-gen: 
-	generator
-	gen particles for jets / in fact, THE collection of gen particles.
-	gen jets 
 
-
-X - generalize jet clustering producer
-	ok now reading a view 
-
-X - write particles to EDM and look at them with ROOT 
 
 - could validate my gen jet clustering on GenParticles, with the one of CMS running on the same collection of gen particles. 
 
 
-X- integrate fast jet and make particle jets
-	X fastjet integrated and running 
-	X need to finalize it
-		now writing leafcandidates
-		moved to antikt 
-		important params implemented
+
 - start with barrel region
 need to see what to do with HF (be pragmatic and shoot particles there?) 
 
@@ -33,12 +39,6 @@ set up a gun source here, and a gun cfg
 set up python analysis framework to do these measurements 
 
 
-X integrate gen jet clustering in FFW
-X see Common sequences - note fix for muons
-
-X Generate more events, like 10000
-	get an idea of computing needs
-	check speed of python framework for parametrization
 
 
 Start generating the events I need for the WWH analysis. 
@@ -46,21 +46,18 @@ Start generating the events I need for the WWH analysis.
 	find pythia config for these processes
 	HZHA: is it integrated in CMSSW?  -> ask Patrick
 
-Can I reuse Patrick's LEP3 samples? 
-	check event format. 
 
-X - integrate the param sim in this pyanalysis
-X - implement simple jet smearing
-X - add tree system.
-	ok for jets
 
-MAIN OBJECTIVE NOW!
+
+
+POSTPONED: 
+
+
 - need gen information for the gen jets:
 	- flavour of jet initiating partons
 	- check scale for each flavour. 
 - need to deal with taus 
 - check JES before corrections 
-X- deal with the charge. 
 
 - leptons and jets 
 	X read gen particles 
@@ -70,3 +67,28 @@ X- deal with the charge.
 		eff ele and mu
 	decide on how to choose between leptons and jets .
 
+
+DONE
+
+X - integrate the param sim in this pyanalysis
+X - implement simple jet smearing
+X - add tree system.
+	ok for jets
+X- deal with the charge. 
+X Can I reuse Patrick's LEP3 samples? 
+		X check event format. 
+X integrate gen jet clustering in FFW
+X see Common sequences - note fix for muons
+X Generate more events, like 10000
+X- integrate fast jet and make particle jets
+	X fastjet integrated and running 
+	X need to finalize it
+		now writing leafcandidates
+		moved to antikt 
+		important params implemented
+X- fake neutral hadrons 
+X - generalize jet clustering producer
+	ok now reading a view 
+X - write particles to EDM and look at them with ROOT 
+X- simple CMS model for all PF particles : efficiency and resolution
+X - jet clustering on sim particles

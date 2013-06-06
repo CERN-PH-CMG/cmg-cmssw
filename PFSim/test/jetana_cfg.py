@@ -6,17 +6,23 @@ from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import * 
 
 
-effAndSmear = cfg.Analyzer(
-    'EffAndSmearAnalyzer',
-    jetCol = ('genJets', 'std::vector<reco::LeafCandidate>'),
-    genJetCol = ('genJets', 'std::vector<reco::LeafCandidate>'),
+
+reader = cfg.Analyzer(
+    'ObjectReader',
+    # muonCol = ('cmgMuonSel', 'vector<cmg::Muon>'),
+    # electronCol = ('cmgElectronSel', 'vector<cmg::Electron>'),
+    muonCol = None,
+    electronCol = None,
+    jetCol = ('jets', 'vector<reco::LeafCandidate>'),
+    genJetCol = ('genJets', 'vector<reco::LeafCandidate>'),
     genPartCol = ('genParticles', 'std::vector<reco::GenParticle>'),
     )
 
+
 jetAna = cfg.Analyzer(
     'PFSimJetAnalyzer',
-    jetPt = 20.,
-    jetEta = 4.7,
+    jetPt = 10.,
+    jetEta = 5.0,
     btagSFseed = 123456,
     relaxJetId = True, 
     )
@@ -30,7 +36,8 @@ treeProducer = cfg.Analyzer(
 
 TTJets = cfg.MCComponent(
     name = 'TTJets',
-    files = sorted(glob.glob('Prod_TT_20k/Job*/*.root')),
+    # files = sorted(glob.glob('Prod_TT_20k/Job*/*.root')),
+    files = ['sim.root'],
     xSection = 225.197, 
     nGenEvents = 1,
     triggers = [],
@@ -41,7 +48,8 @@ TTJets.splitFactor = 1
 selectedComponents = [TTJets]  
 
 sequence = cfg.Sequence( [
-    effAndSmear,
+    # effAndSmear,
+    reader,
     jetAna,
     treeProducer
    ] )

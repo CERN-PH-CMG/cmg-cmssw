@@ -15,9 +15,9 @@ class PFSimTreeProducer( TreeAnalyzerNumpy ):
         tr = self.tree
 
         var( tr, 'nJets')
-        bookJet(tr, 'jet1')
-        bookJet(tr, 'jet2')
-        bookJet(tr, 'jet3')
+        bookParticle(tr, 'jet1')
+        bookParticle(tr, 'jet2')
+        bookParticle(tr, 'jet3')
         bookGenJet(tr, 'jet1gen')
         bookGenJet(tr, 'jet2gen')
         bookGenJet(tr, 'jet3gen')
@@ -47,19 +47,19 @@ class PFSimTreeProducer( TreeAnalyzerNumpy ):
         fill(tr, 'nJets', len(event.cleanJets) )
 
         if nJets>=1:
-            fillJet(tr, 'jet1', event.cleanJets[0] )
+            fillParticle(tr, 'jet1', event.cleanJets[0] )
             if event.cleanJets[0].genJet:
                 fillGenJet(tr, 'jet1gen', event.cleanJets[0].genJet )
             if event.cleanJets[0].genPtc3:
                 fillGenParticle(tr, 'jet1gp', event.cleanJets[0].genPtc3 )
         if nJets>=2:
-            fillJet(tr, 'jet2', event.cleanJets[1] )
+            fillParticle(tr, 'jet2', event.cleanJets[1] )
             if event.cleanJets[1].genJet:
                 fillGenJet(tr, 'jet2gen', event.cleanJets[1].genJet )
             if event.cleanJets[1].genPtc3:
                 fillGenParticle(tr, 'jet2gp', event.cleanJets[1].genPtc3 )
         if nJets>=3:
-            fillJet(tr, 'jet3', event.cleanJets[2] )
+            fillParticle(tr, 'jet3', event.cleanJets[2] )
             if event.cleanJets[2].genJet:
                 fillGenJet(tr, 'jet3gen', event.cleanJets[2].genJet )
             if event.cleanJets[2].genPtc3:

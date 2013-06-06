@@ -58,7 +58,7 @@ HZ_HZHA = cfg.MCComponent(
     triggers = [],
     effCorrFactor = 1 )
 
-selectedComponents = [HZ_HZHA]  
+selectedComponents = [HZHA]  
 
 sequence = cfg.Sequence( [
     # effAndSmear,

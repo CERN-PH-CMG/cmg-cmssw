@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <map>
+#include <random>
 
 #include <cstddef>
 #include <HepMC/GenEvent.h>
@@ -10,6 +11,7 @@
 #include "SimGeneral/HepPDTRecord/interface/ParticleDataTable.h"
 
 #include "CMGTools/PFSim/interface/Particle.h"
+#include "CMGTools/PFSim/interface/Detector.h"
 
 namespace PFSim {
   
@@ -18,7 +20,7 @@ namespace PFSim {
   public:
     typedef std::vector<Particle> Particles;
 
-    Simulator(); 
+    Simulator(bool verbose=false); 
 
     void simulate(const HepMC::GenEvent& event, 
 		  const ParticleDataTable& pdt );  
@@ -34,6 +36,12 @@ namespace PFSim {
     std::vector<int>    chargeP_, chargeM_;
     std::map<int, int>  chargeMap_;
 
+    const Detector* detector_;
+
+    std::default_random_engine generator_;
+    std::uniform_real_distribution<float> uniform_;
+    
+    bool verbose_;
   };
 }
   

@@ -36,7 +36,6 @@ class PFSimParticleProducer : public edm::EDProducer {
 
   // int chargeTimesThree( int id ) const;
 
-  PFSim::Simulator simulator_;
 
   edm::InputTag  hepmcSrc_;
   
@@ -46,6 +45,8 @@ class PFSimParticleProducer : public edm::EDProducer {
   bool firstEvent_;  
 
   edm::ESHandle<HepPDT::ParticleDataTable> pdt_;
+
+  PFSim::Simulator simulator_;
 };
 
 #endif
