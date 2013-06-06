@@ -47,7 +47,7 @@ def buildBadJobsList( dataset ):
 	else:
 		goodFiles = data.listOfGoodFiles()
 		goodJobNumbers =  sorted( map( jobNumber, goodFiles ) )
-		totalJobNumbers = range( 1, nJobs+1 )
+		totalJobNumbers = range( 1, nJobs )
 	
 		badJobs = list( set(totalJobNumbers) - set(goodJobNumbers) ) 
 	return badJobs
