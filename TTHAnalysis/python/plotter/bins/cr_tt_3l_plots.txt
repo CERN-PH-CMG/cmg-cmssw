@@ -13,7 +13,7 @@ l1Pt:  LepGood1_pt: 40,0,200; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
 l2Pt:  LepGood2_pt: 24,0,120; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
 l3Pt:  LepGood3_pt: 20,0,100; XTitle="Third lepton p_{T}  [GeV]", Legend='TR'
 l3MVA: LepGood3_mva : 20,-1,1; XTitle="Third lepton MVA",Legend='TR'
-l3MVACoarse: LepGood3_mva : [-1,-0.75,-0.5,-0.1,0.25,0.6,1.0]; XTitle="Third lepton MVA",Legend='TR',Density=True
+l3MVACoarse: LepGood3_mva : [-1,-0.75,-0.5,-0.3,0.0,0.3,0.7,1.0]; XTitle="Third lepton MVA",Legend='TR',Density=True
 l3chIso:  LepGood3_chargedIso/LepGood3_pt: 20,0,0.4; XTitle="leading lepton Iso/p_{T} (Ch Had)", Legend='TR',Logy
 l3neIso:  LepGood3_relIso - LepGood3_chargedIso/LepGood3_pt: 20,0,0.4; XTitle="leading lepton Iso/p_{T} (Ne Had)", Legend='TR',Logy
 l3jetDR:  LepGood3_jetDR: 20,0,0.5; XTitle="Third lepton #DeltaR(l\,jet)", Legend='TR'
