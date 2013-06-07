@@ -1,4 +1,4 @@
-#$Revision: 1.13 $
+#$Revision: 1.14 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -253,6 +253,11 @@ if runOnMC:
     process.demo.buffers.remove('edmTriggerResultsHelper')
     process.demo.buffers.remove('edmTriggerResultsHelper1')
 
+
+##### Vertex weight
+
+process.load("CMGTools.RootTools.utils.vertexWeight.vertexWeights2012_cfi")
+
 ##### Sequence
 
 print 'Global tag       : ', process.GlobalTag.globaltag
@@ -268,10 +273,10 @@ if runPATCMG:
   from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
   process.schedule = getSchedule(process, runOnMC, False)
 
-
 process.tnmc1 = cms.Sequence(process.razorMJObjectSequence)
 if runOnMC==True:
     process.tnmc1 += process.susyGenSequence
+    process.tnmc1 += process.vertexWeightSummer12MC53X2012ABCDData
 if runAK7jets:
     process.tnmc1 += process.PATCMGJetSequenceAK7CHS+process.selectedPatJetsAK7CHSwithNsub+process.selectedPatJetsAK7CHSwithQjets
 if runPrunedAK7jets:

@@ -324,7 +324,7 @@ float JetHelper::getJetCharge(float kappa) const
 	  }
        }
     }
-    return val/object->pt(); 
+    return val/pow(object->pt(),kappa); 
 }
 
 
@@ -340,7 +340,7 @@ float JetHelper::getGenJetCharge(float kappa, bool CHS) const
        if((abs(p->vz()-vertexZ)<0.1)||(p->charge()==0)||(!CHS))
            val += p->charge()*pow(p->pt(),kappa);
     }
-    return val/object->pt(); 
+    return val/pow(object->pt(),kappa); 
 }
 
 
@@ -356,7 +356,7 @@ float JetHelper::getDaughter_0_jetCharge(float kappa) const
     	  const reco::PFCandidate* p=pfSubjet->getPFConstituent(k).get();
     	  val += p->charge()*pow(p->pt(),kappa);
        }
-       val/=pfSubjet->pt();
+       val/=pow(pfSubjet->pt(),kappa);
        }
     }
     return val; 
@@ -374,7 +374,7 @@ float JetHelper::getDaughter_1_jetCharge(float kappa) const
     	  const reco::PFCandidate* p=pfSubjet->getPFConstituent(k).get();
     	  val += p->charge()*pow(p->pt(),kappa);
        }
-       val/=pfSubjet->pt();
+       val/=pow(pfSubjet->pt(),kappa);
        }
     }
     return val; 

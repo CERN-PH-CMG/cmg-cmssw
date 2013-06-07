@@ -22,6 +22,10 @@ void EventHelperExtra::analyzeEvent()
 
   double initval = -9999;
 
+  edm::Handle<std::vector<reco::Vertex> > vertices;
+  event->getByLabel("goodOfflinePrimaryVertices", vertices);    
+  n_vertices_=vertices->size();
+
   // Get the jet collections::
   edm::Handle<std::vector<pat::Jet> > jets;
   event->getByLabel("patJetsWithVar", jets);
@@ -434,3 +438,7 @@ double EventHelperExtra::wj1wj2CHS_invmass() const {
   return wj1wj2CHS_invmass_;
 }
 
+
+int EventHelperExtra::numberOfPrimaryVertices() const {
+  return n_vertices_;
+}

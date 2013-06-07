@@ -50,6 +50,7 @@ cms.EDAnalyzer("TheNtupleMaker",
     'recoLeafCandidate',
     'hcalFilter',
     'genJet',
+    'vertexWeight',
     ),
                edmEventHelper =
                cms.untracked.
@@ -99,6 +100,7 @@ cms.EDAnalyzer("TheNtupleMaker",
     '   double  wj2CHS_nconst()',
     '   double  wj1wj2CHS_nconst()',
     '   double  wj1wj2CHS_invmass()',
+    '   int  numberOfPrimaryVertices()',
     ),
                GenEventInfoProduct =
                cms.untracked.
@@ -951,7 +953,7 @@ cms.EDAnalyzer("TheNtupleMaker",
                recoVertex =
                cms.untracked.
                vstring(
-    'recoVertex                      offlinePrimaryVertices          2',
+    'recoVertex                    goodOfflinePrimaryVertices          2',
     #---------------------------------------------------------------------
     'bool  isFake()',
     'double  chi2()',
@@ -1212,7 +1214,7 @@ cms.EDAnalyzer("TheNtupleMaker",
                genJet =
                cms.untracked.
                vstring(
-    'recoGenJet                        ak5GenJets                     200',
+    'recoGenJet                       ak5GenJets                     200',
     #---------------------------------------------------------------------
     'double  energy()',
     'double  et()',
@@ -1222,5 +1224,12 @@ cms.EDAnalyzer("TheNtupleMaker",
     'double  mass()',
     'double  rapidity()',
     'int  nConstituents()',
+    ),
+               vertexWeight =
+               cms.untracked.
+               vstring(
+    'sdouble             vertexWeightSummer12MC53X2012ABCDData         1',
+    #---------------------------------------------------------------------
+    'double value()'
     ),
                )

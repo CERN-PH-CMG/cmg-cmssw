@@ -134,7 +134,8 @@ namespace edm
 	// Number of common constituents
 	int wj1wj2CHS_nconst_;
         double wj1wj2CHS_invmass_;
-
+	
+	int n_vertices_;
 
   public:
     // ---------------------------------------------------------
@@ -182,6 +183,7 @@ namespace edm
 	int wj1wj2CHS_nconst() const;
         double wj1wj2CHS_invmass() const;
 
+        int numberOfPrimaryVertices() const;
 
   };
 }
