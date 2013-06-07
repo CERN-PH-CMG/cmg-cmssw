@@ -27,7 +27,7 @@ TString gPostfix = "";
 
 int ndata = 5;
 const int ndata_max = 8;
-TFile *fQCD = 0;
+TFile *fQCD[2] = { 0, 0 };
 TFile *fWJ  = 0;
 TFile *fDY[2]  =  { 0, 0 };
 TFile *fdata[ndata_max] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
@@ -44,7 +44,7 @@ void readAndAdd(TString name, TH1 * &prompt, TH1* &qcd, TH1* &data, const TH1 *r
     /*
     std::cout << "readAndAdd(" << name << ")" << std::endl;
     for (int i = 0; i <= 7; ++i) std::cout << "fdata[" << i << "] = " << (fdata[i] ? fdata[i]->GetName() : "NULL") << std::endl;
-    std::cout << "fQCD = " << (fQCD ? fQCD->GetName() : "NULL") << std::endl;
+    std::cout << "fQCD[0] = " << (fQCD[0] ? fQCD[0]->GetName() : "NULL") << std::endl;
     std::cout << "fWJ = " << (fWJ ? fWJ->GetName() : "NULL") << std::endl;
     std::cout << "fDY[" << 0 << "] = " << (fDY[0] ? fDY[0]->GetName() : "NULL") << std::endl;
     std::cout << "fDY[" << 1 << "] = " << (fdata[1] ? fdata[1]->GetName() : "NULL") << std::endl;
@@ -57,8 +57,17 @@ void readAndAdd(TString name, TH1 * &prompt, TH1* &qcd, TH1* &data, const TH1 *r
     if (fdata[5]) { data->Add(rebin((TH1*) fdata[5]->Get(name))); }
     if (fdata[6]) { data->Add(rebin((TH1*) fdata[6]->Get(name))); }
     if (fdata[7]) { data->Add(rebin((TH1*) fdata[7]->Get(name))); }
-    qcd = rebin((TH1*) fQCD->Get(name)->Clone());
-    qcd->Sumw2(); qcd->Scale( lumi*1e3 * (134680.0/21484602) );
+    if (fQCD[1] == 0) {
+        qcd = rebin((TH1*) fQCD[0]->Get(name)->Clone());
+        qcd->Sumw2(); qcd->Scale( lumi*1e3 * (134680.0/21484602) );
+    } else {
+        qcd = rebin((TH1*) fQCD[0]->Get(name)->Clone());
+        qcd->Sumw2(); qcd->Scale( lumi*1e3 * (168129/2048152) );
+        TH1 *qc2 = rebin((TH1*) fQCD[1]->Get(name)->Clone());
+        qc2->Sumw2(); qc2->Scale( lumi*1e3 * (12982/1945525) );
+        qcd->Add(qc2);
+        delete qc2;
+    }
     prompt = rebin((TH1*) fWJ->Get(name)->Clone());
     prompt->Sumw2(); prompt->Scale( lumi*1e3 * 36257.2/57e6 );
     TH1 *zed = rebin((TH1*) fDY[0]->Get(name)->Clone());
@@ -231,8 +240,8 @@ void fitFRMT(TString name, TH1 *hqcd_num, TH1* hqcd_den, TH1 *hewk_den, TH1 *hda
     }
     gdat.SetMarkerStyle(20); gdat.SetLineWidth(2); gdat.Draw("P SAME");
 
-    c1->Print("ttH_plots/270413/FR_QCD_Simple/fits/"+gPrefix+gPostfix+"/"+name+".png");
-    c1->Print("ttH_plots/270413/FR_QCD_Simple/fits/"+gPrefix+gPostfix+"/"+name+".pdf");
+    c1->Print("ttH_plots/250513/FR_QCD_Simple/fits/"+gPrefix+gPostfix+"/"+name+".png");
+    c1->Print("ttH_plots/250513/FR_QCD_Simple/fits/"+gPrefix+gPostfix+"/"+name+".pdf");
 
     fr[0] = frdat;
     fr[1] = frdatErrL; fr[2] = frdatErrH;
@@ -257,7 +266,7 @@ void processOneBin(TString name, double *frLoose, double *frTight, bool doCorr) 
     fitFRMT(name+"_fitT", hqcd_numT, hqcd_denT, doCorr ? hprompt_denT : 0, hdata_numT, hdata_denT, frTight);
 
     printf("\nFitting %s%s/%s\n",gPrefix.Data(),gPostfix.Data(),name.Data());
-    FILE *log = fopen(Form("ttH_plots/270413/FR_QCD_Simple/fits/%s%s/%s.txt",gPrefix.Data(),gPostfix.Data(),name.Data()), "w");
+    FILE *log = fopen(Form("ttH_plots/250513/FR_QCD_Simple/fits/%s%s/%s.txt",gPrefix.Data(),gPostfix.Data(),name.Data()), "w");
     printf("BEFORE corrections: \n"); fprintf(log, "BEFORE corrections: \n"); 
     printf(      "FR for loose cut: %.3f +%.3f/-%.3f (stat) +/- %.3f (syst)\t FR in MC = %.3f +/- %.3f\n", frLoose[0], frLoose[2], frLoose[1], frLoose[3], mcLoose, mcLooseErr);
     fprintf(log, "FR for loose cut: %.3f +%.3f/-%.3f (stat) +/- %.3f (syst)\t FR in MC = %.3f +/- %.3f\n", frLoose[0], frLoose[2], frLoose[1], frLoose[3], mcLoose, mcLooseErr);
@@ -291,65 +300,65 @@ void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0) {
         dPostfix = gPostfix;
         mPostfix = "_SingleMu";
     }
-    fQCD = TFile::Open("frDistsSimple"+gPrefix+"_QCDMuPt15"+mPostfix+".root");
     fWJ  = TFile::Open("frDistsSimple"+gPrefix+"_WJets"+mPostfix+".root");
     fDY[0]  = TFile::Open("frDistsSimple"+gPrefix+"_DYJetsM50"+mPostfix+".root");
     fDY[1]  = TFile::Open("frDistsSimple"+gPrefix+"_DYJetsM10"+mPostfix+".root");
 
-    TFile *fOut = TFile::Open("frFitsSimple"+gPrefix+gPostfix+".root", "RECREATE");
- 
-#if TRIGGERING
-    const int npt_mu = 8, npt_el = 6, neta = 2;
+    const int npt_mu = 8, npt_el = 7, neta = 2;
     double ptbins_mu[npt_mu+1] = { 5.0, 7.0, 8.5, 10, 15, 20, 25, 35, 80 };
-    double ptbins_el[npt_el+1] = {        7,      10, 15, 20, 25, 35, 80 };
+    double ptbins_el[npt_el+1] = {        7, 8.5, 10, 15, 20, 25, 35, 80 };
     double etabins_mu[neta+1] = { 0.0, 1.5,   2.5 };
     double etabins_el[neta+1] = { 0.0, 1.479, 2.5 };
-#else
-    const int npt_mu = 3, npt_el = 2, neta = 2;
-    double ptbins_mu[npt_mu+1] = { 5.0, 7.0, 10, 15 };
-    double ptbins_el[npt_el+1] = {      7.0, 10, 15 };
-    double etabins_mu[neta+1] = { 0.0, 1.5,   2.5 };
-    double etabins_el[neta+1] = { 0.0, 1.479, 2.5 };
-#endif
+    const int npt_muj = 8;
+    double ptbins_muj[npt_muj+1] = { 5, 7, 8.5, 13, 18, 25, 35, 45, 80 };
 
 
-
-    TH2F *FR_mu = new TH2F("FR_mu", "", npt_mu, ptbins_mu, neta, etabins_mu);
-    TH2F *FT_mu = new TH2F("FR_tight_mu", "", npt_mu, ptbins_mu, neta, etabins_mu);
-    TH2F *FR_el = new TH2F("FR_el", "", npt_el, ptbins_el, neta, etabins_el);
-    TH2F *FT_el = new TH2F("FR_tight_el", "", npt_el, ptbins_el, neta, etabins_el);
 
     gROOT->ProcessLine(".x /afs/cern.ch/user/g/gpetrucc/cpp/tdrstyle.cc");
     c1 = new TCanvas("c1","c1");
     gStyle->SetOptStat(0);
 
-    TString pdir = "ttH_plots/270413/FR_QCD_Simple/fits/"+gPrefix+gPostfix;
+    TString pdir = "ttH_plots/250513/FR_QCD_Simple/fits/"+gPrefix+gPostfix;
     gSystem->Exec("mkdir -p "+pdir);
     gSystem->Exec("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+pdir);
 
     double frLoose[4], frTight[4];
     for (int itype = 1; itype <= 13; itype += 12) {
         TString name0 = (itype == 13 ? "FR_MuTag_" : "FR_JetTag_");
+
+        TFile *fOut = itype == 13 ? TFile::Open("frFitsSimple"   +gPrefix+gPostfix+".root", "RECREATE") :
+            TFile::Open("frFitsSimpleJet"+gPrefix+gPostfix+".root", "RECREATE");
+
         for (int ipdg = 11; ipdg <= 13; ipdg += 2) {
+            //if (itype == 1 && ipdg == 11) continue;
             if (iwhichid != 0 && ipdg != iwhichid) continue;
             for (int i = 0; i < ndata_max; ++i) { 
                 if (fdata[i]) fdata[i]->Close(); 
                 fdata[i] = NULL; 
             }
             if (gPostfix.Contains("TagMu40")) {
-                    fdata[0] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuAB"+gPostfix+".root");
-                    fdata[1] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuC"+gPostfix+".root");
-                    fdata[2] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuD"+gPostfix+".root");
-            } else if (gPostfix.Contains("TagMu")) {
-                    fdata[0] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuAB"+gPostfix+".root");
-                    fdata[1] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuC"+gPostfix+".root");
-                    fdata[2] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuD"+gPostfix+".root");
-                    fdata[3] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuRec"+gPostfix+".root");
-                    fdata[4] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuBadSIP"+gPostfix+".root");
-                    fdata[5] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuAB"+gPostfix+".root");
-                    fdata[6] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuC"+gPostfix+".root");
-                    fdata[7] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuD"+gPostfix+".root");
-            } else {
+                fdata[0] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuAB"+gPostfix+".root");
+                fdata[1] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuC"+gPostfix+".root");
+                fdata[2] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuD"+gPostfix+".root");
+            } else if (gPostfix.Contains("TagMu") || (itype == 1 && ipdg == 13)) {
+                fdata[0] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuAB"+gPostfix+".root");
+                fdata[1] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuC"+gPostfix+".root");
+                fdata[2] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuD"+gPostfix+".root");
+                fdata[3] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuRec"+gPostfix+".root");
+                fdata[4] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuBadSIP"+gPostfix+".root");
+                fdata[5] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuAB"+gPostfix+".root");
+                fdata[6] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuC"+gPostfix+".root");
+                fdata[7] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuD"+gPostfix+".root");
+            } else if (itype == 1 && ipdg == 11) {
+                fdata[0] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleElectronAB"+gPostfix+".root");
+                fdata[1] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleElectronC"+gPostfix+".root");
+                fdata[2] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleElectronD"+gPostfix+".root");
+                fdata[3] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleElectronRec"+gPostfix+".root");
+                fdata[4] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleElectronBadSIP"+gPostfix+".root");
+                fdata[5] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuAB"+gPostfix+".root");
+                fdata[6] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuC"+gPostfix+".root");
+                fdata[7] = TFile::Open("frDistsSimple"+gPrefix+"_SingleMuD"+gPostfix+".root");
+              } else {
                 if (ipdg == 13) {
                     fdata[0] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuAB"+gPostfix+".root");
                     fdata[1] = TFile::Open("frDistsSimple"+gPrefix+"_DoubleMuC"+gPostfix+".root");
@@ -364,20 +373,43 @@ void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0) {
                     fdata[4] = TFile::Open("frDistsSimple"+gPrefix+"_MuEGBadSIP"+gPostfix+".root");
                 }
             }
+            if (itype == 1 && ipdg == 11) {
+                if (fQCD[1] == 0) {
+                    if (fQCD[0] != 0) fQCD[0]->Close();
+                    fQCD[0] = TFile::Open("frDistsSimple"+gPrefix+"_QCDElPt30To80"+mPostfix+".root");
+                    fQCD[1] = TFile::Open("frDistsSimple"+gPrefix+"_QCDElPt80To170"+mPostfix+".root");
+                }
+            } else {
+                if (fQCD[1] != 0) {
+                    fQCD[0]->Close(); fQCD[1]->Close(); 
+                    fQCD[0] = 0; fQCD[1] = 0;
+                }
+                if (fQCD[0] == 0) fQCD[0] = TFile::Open("frDistsSimple"+gPrefix+"_QCDMuPt15"+mPostfix+".root");
+            }
+
             fOut->cd();
+
             TString name1 = name0 + (ipdg == 13 ? "mu_" : "el_");
+            double *etabins = (ipdg == 11 ? etabins_el : etabins_mu);
+            double *ptbins = (ipdg == 11 ? ptbins_el : ptbins_mu);
+            int     npt    = (ipdg == 11 ?    npt_el :    npt_mu);
+            if (itype == 1) {
+                ptbins  = (ipdg == 11 ? ptbins_el  : ptbins_muj);
+                npt     = (ipdg == 11 ? npt_el : npt_muj);
+            }
+
+            TH2F *hFR = new TH2F(ipdg == 11 ? "FR_loose_el" : "FR_loose_mu", "", npt, ptbins, neta, etabins);
+            TH2F *hFT = new TH2F(ipdg == 11 ? "FR_tight_el" : "FR_tight_mu", "", npt, ptbins, neta, etabins);
+
             for (int ieta = 0; ieta < neta; ++ieta) {
-                double *etabins = (ipdg == 11 ? etabins_el : etabins_mu);
                 TString name2 = name1 + Form("eta_%.1f-%.1f_",etabins[ieta],etabins[ieta+1]);
-                double *ptbins = (ipdg == 11 ? ptbins_el : ptbins_mu);
-                int     npt    = (ipdg == 11 ?    npt_el :    npt_mu);
+
                 for (int ipt = 0; ipt < npt; ++ipt) {
                     TString name = name2 + Form("pt_%.0f-%.0f",ptbins[ipt],ptbins[ipt+1]);
                     if (gPostfix.Contains("TagMu") && ptbins[ipt] >= 30) continue;
                     if (fdata[0]->Get(name+"_den") == 0) continue;
-                    processOneBin(name, frLoose, frTight, ptbins[ipt]>=10);
-                    TH2 *hFR = (ipdg == 11 ? FR_el : FR_mu);
-                    TH2 *hFT = (ipdg == 11 ? FT_el : FT_mu);
+                    std::cout << name << std::endl;
+                    processOneBin(name, frLoose, frTight, ptbins[ipt]>=10&&!(ipdg==11 && itype==1));
                     double fcen = 0.5*((frLoose[0]+frLoose[2])+(frLoose[0]-frLoose[1]));
                     double fsym = 0.5*((frLoose[0]+frLoose[2])-(frLoose[0]-frLoose[1]));
                     hFR->SetBinContent(ipt+1, ieta+1, fcen);
@@ -389,13 +421,13 @@ void fitFRDistsSimple(int iwhichsel=0, int iwhichid=0) {
                         hFT->SetBinError(ipt+1, ieta+1, hypot(fsym,frTight[3]));
                     }
                 }
-            }
-        }
-    }
-    FR_mu->Write();
-    FR_el->Write();
-    FT_mu->Write();
-    FT_el->Write();
 
-    fOut->Close();
+            }
+            hFR->Write();
+            hFT->Write();
+        }
+
+
+        fOut->Close();
+    }
 }

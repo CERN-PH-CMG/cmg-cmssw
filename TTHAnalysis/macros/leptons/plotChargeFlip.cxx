@@ -84,8 +84,8 @@ void stackQFs(int ieta) {
     cmsprelim(.55, .84, .87, .9, 22, Form("|#eta| %s %s", ieta ? ">" : "<", "1.479"), 0.045);
     cmsprelim(.21, .945, .40, .995, 12, "CMS Preliminary"); 
     cmsprelim(.48, .945, .96, .995, 32, "#sqrt{s} = 8 TeV, L = 19.6 fb^{-1}");
-    c1->Print(Form("ttH_plots/270413/QF_Simple/stacks/%s/ele_%s.png", gPrefix.Data(), ietalbl(ieta)));
-    c1->Print(Form("ttH_plots/270413/QF_Simple/stacks/%s/ele_%s.pdf", gPrefix.Data(), ietalbl(ieta)));
+    c1->Print(Form("ttH_plots/250513/QF_Simple/stacks/%s/ele_%s.png", gPrefix.Data(), ietalbl(ieta)));
+    c1->Print(Form("ttH_plots/250513/QF_Simple/stacks/%s/ele_%s.pdf", gPrefix.Data(), ietalbl(ieta)));
 }
 
 void initCanvas(double w=600, double h=600, double lm=0.21, double rm=0.04) {
@@ -104,7 +104,7 @@ void initCanvas(double w=600, double h=600, double lm=0.21, double rm=0.04) {
 void plotChargeFlip() {
     loadData();
     gPrefix = "";
-    gSystem->Exec("mkdir -p ttH_plots/270413/QF_Simple/stacks/"+gPrefix);
+    gSystem->Exec("mkdir -p ttH_plots/250513/QF_Simple/stacks/"+gPrefix);
     gROOT->ProcessLine(".x ~gpetrucc/cpp/tdrstyle.cc");
     gStyle->SetOptStat(0);
     initCanvas();
