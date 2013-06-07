@@ -5,7 +5,8 @@ met: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
 met_log: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy
 metLD: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD"
 metLD_log: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD",Logy
-mll: minMllAFOS: 60,0,300 ; XTitle="min m(l^{+}l^{-}')  [GeV]", Legend='TR'
+mll: m2l: 60,0,300 ; XTitle="m(l^{+}l^{-}')  [GeV]", Legend='TR'
+ptll: pt2l: 60,0,300 ; XTitle="p_{T}(l^{+}l^{-}')  [GeV]", Legend='TR'
 lepMVA2: min(LepGood1_mva,LepGood2_mva) : 50,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
 maxLepPt:  LepGood1_pt: 80,0,200; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
 minLepPt:  LepGood2_pt: 60,0,120; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'

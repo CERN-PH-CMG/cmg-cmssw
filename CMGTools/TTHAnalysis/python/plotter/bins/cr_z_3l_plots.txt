@@ -1,20 +1,20 @@
 nJet25 : nJet25 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 25)'
 nBJetLoose25 : nBJetLoose25 : 4,-0.5,3.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Loose)',XNDiv=505, Logy
-nBJetMedium25 : nBJetMedium25 : 3,-0.5,2.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Medium)',XNDiv=505, Logy
+#nBJetMedium25 : nBJetMedium25 : 3,-0.5,2.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Medium)',XNDiv=505, Logy
 nvtx: nVert: 20,0.5,40.5 ; XTitle="N(vertices)", Legend='TR'
 met: met: 40,0,40    ; XTitle="E_{T}^{miss}  [GeV]"
-mht: mhtJet25 : 30,0,60 ; XTitle="H_{T}^{miss} [GeV]"
+#mht: mhtJet25 : 30,0,60 ; XTitle="H_{T}^{miss} [GeV]"
 metLD: met*0.00397 + mhtJet25*0.00265 : 60,-0.1,0.5 ; XTitle="E_{T}^{miss} LD"
 mZ1: mZ1: 20,81.2,101.2 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TR'
-mZ1_wide: mZ1:  70,40,120 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TR'
+#mZ1_wide: mZ1:  70,40,120 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TR'
 m3l:      m3l:  45,70,180 ; XTitle="m(l^{+}l^{-} l)  [GeV]", Legend='TR'
-minMllAFAS: minMllAFAS: 10,0,120 ; XTitle="min m(ll')  [GeV]", Legend='TR'
+#minMllAFAS: minMllAFAS: 10,0,120 ; XTitle="min m(ll')  [GeV]", Legend='TR'
 #nExtraLep : nLepGood-2 : 4,-0.5,3.5 ; XTitle='N extra lep.',XNDiv=505
 #ZZCand: mZ2 > 0: 2,-0.5,1.5 ; XTitle="Has ZZ* cand", Legend='TL', XNDiv=202
 #lepMVA2: min(LepGood1_mva,LepGood2_mva) : 20,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
-lepMVA2: min(LepGood1_mva,LepGood2_mva) : 20,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
-l1Pt:  LepGood1_pt: 40,0,100; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
-l2Pt:  LepGood2_pt: 40,0,80; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
+#lepMVA2: min(LepGood1_mva,LepGood2_mva) : 20,-1,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
+#l1Pt:  LepGood1_pt: 40,0,100; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
+#l2Pt:  LepGood2_pt: 40,0,80; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
 #l3q:  LepGood3_charge: 5,-1.5,3.5; XTitle="Third lepton charge", Legend='TR', XNDiv=505
 l3Pt:  LepGood3_pt: 20,0,50; XTitle="Third lepton p_{T}  [GeV]", Legend='TR'
 l3MVA: LepGood3_mva : 20,-1,1; XTitle="Third lepton MVA",Legend='TR'

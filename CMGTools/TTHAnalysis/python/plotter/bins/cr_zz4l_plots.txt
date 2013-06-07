@@ -6,6 +6,7 @@ met: met: [0,5,10,15,20,25,30,35,40,50,60,80,100]  ; XTitle="E_{T}^{miss}  [GeV]
 metLD: met*0.00397 + mhtJet25*0.00265 : [0,0.05,0.10,0.15,0.20,0.25,0.30,0.40] ; XTitle="E_{T}^{miss} LD", YTitle="Events/1", Density=True
 mZ1_narrow: mZ1: 30,72,102 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TL'
 mZ1_wide: mZ1: 35,40,110 ; XTitle="best m(l^{+}l^{-})  [GeV]", Legend='TL'
+mZ2_wide: mZ2: 35,0,140 ; XTitle="second best m(l^{+}l^{-})  [GeV]", Legend='TL'
 minMllAFAS: minMllAFAS: [0,4,8,12,15,20,30,40,60,80,100,140]; XTitle="min m(ll')  [GeV]", YTitle="Events/GeV", Density=True
 minMllAFOS: minMllAFOS: [0,4,8,12,15,20,30,40,60,80,100,140]; XTitle="min m(l^{+}l^{-}')  [GeV]", YTitle="Events/GeV", Density=True
 lepMVA12: min(LepGood1_mva,LepGood2_mva) : 20,0,1; XTitle="Lepton MVA(l_{1}\,l_{2})",Legend='TL'
@@ -13,7 +14,7 @@ lepMVA34: min(LepGood4_mva,LepGood3_mva) : 20,-1,1; XTitle="Lepton MVA(l_{3}\,l_
 l1Pt:  LepGood1_pt: 20,0,200; XTitle="Leading lepton p_{T}  [GeV]", Legend='TR'
 l2Pt:  LepGood2_pt: 12,0,120; XTitle="Subleading lepton p_{T}  [GeV]", Legend='TR'
 l3Pt:  LepGood3_pt: 20,0,100; XTitle="Third lepton p_{T}  [GeV]", Legend='TR'
-#l4Pt:  LepGood4_pt: 20,0,100; XTitle="Fourth lepton p_{T}  [GeV]", Legend='TR'
+l4Pt:  LepGood4_pt: 20,0,100; XTitle="Fourth lepton p_{T}  [GeV]", Legend='TR'
 l4Pt_d:  LepGood4_pt: [5,7,8.5,10,12.5,15,20] ; XTitle="Fourth lepton p_{T}  [GeV]", Legend='TR', YTitle="Events/GeV", Density=True
 lep1Eta:  abs(LepGood1_eta): 5,0,2.5; XTitle="Leading lepton |#eta|", Legend='TR'
 lep2Eta:  abs(LepGood2_eta): 5,0,2.5; XTitle="Subleading lepton |#eta|", Legend='TR'
