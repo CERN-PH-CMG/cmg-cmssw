@@ -280,6 +280,24 @@ class PlotMaker:
             for pspec in plots.plots():
                 print "    plot: ",pspec.name
                 pmap = mca.getPlots(pspec,cut,makeSummary=True)
+                #
+                # blinding policy
+                blind = pspec.getOption('Blinded','None') if 'data' in pmap else 'None'
+                xblind = [9e99,-9e99]
+                if re.match(r'(bin|x)\s*([<>]=?)\s*\d+(\.\d+)?', blind):
+                    (swhat,sop,scutval) = blind.split()
+                    xfunc = (lambda h,b: b) if swhat == 'bin' else (lambda h,b : h.GetXaxis().GetBinCenter(b));
+                    test  = eval("lambda x : x %s %s" % (sop,scutval))
+                    hdata = pmap['data']
+                    for b in xrange(1,hdata.GetNbinsX()+1):
+                        if test(xfunc(hdata,b)):
+                            #print "blinding bin %d, x = [%s, %s]" % (b, hdata.GetXaxis().GetBinLowEdge(b), hdata.GetXaxis().GetBinUpEdge(b))
+                            hdata.SetBinContent(b,0)
+                            hdata.SetBinError(b,0)
+                            xblind[0] = min(xblind[0],hdata.GetXaxis().GetBinLowEdge(b))
+                            xblind[1] = max(xblind[1],hdata.GetXaxis().GetBinUpEdge(b))
+                    #print "final blinded range x = [%s, %s]" % (xblind[0],xblind[1])
+                #
                 for k,v in pmap.iteritems():
                     v.SetDirectory(dir)
                     dir.WriteTObject(v)
@@ -360,6 +378,12 @@ class PlotMaker:
                 if 'data' in pmap: 
                     reMax(total,pmap['data'],islog)
                     pmap['data'].Draw("E SAME")
+                    if xblind[0] < xblind[1]:
+                        blindbox = ROOT.TBox(xblind[0],total.GetYaxis().GetXmin(),xblind[1],total.GetMaximum())
+                        blindbox.SetFillColor(ROOT.kBlue+3)
+                        blindbox.SetFillStyle(3944)
+                        blindbox.Draw()
+                        xblind.append(blindbox) # so it doesn't get deleted
                     if options.doStatTests:
                         doStatTests(total,pmap['data'], options.doStatTests, legendCorner=pspec.getOption('Legend','TR'))
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
