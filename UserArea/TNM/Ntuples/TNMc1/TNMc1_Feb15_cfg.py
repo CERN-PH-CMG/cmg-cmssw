@@ -1,4 +1,4 @@
-#$Revision: 1.14 $
+#$Revision: 1.15 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -31,13 +31,17 @@ runCA8jets = True
 runAK5genjets = True
 runQJets = False
 runOnVVtuples = False
+runOnCMGp = False
 
 # Input file
 
 dataset_user = 'cmgtools' 
 dataset_name = '/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0'
 #dataset_name = '/MultiJet/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_12_0'
-dataset_files = 'patTuple.*root'
+if runOnCMGp:
+    dataset_files = 'cmgTuple.*root'
+else:
+    dataset_files = 'patTuple.*root'
 
 if runPATCMG:
     dataset_user = 'CMS' 
@@ -87,7 +91,10 @@ if runOnMC==False:
 
 print 'runOnMC:', runOnMC
 
-process.load("Ntuples.TNMc1.ntuple_cfi")
+if runOnCMGp:
+    process.load("Ntuples.TNMc1.ntuple_cfi_cmg")
+else:
+    process.load("Ntuples.TNMc1.ntuple_cfi")
 
 if runOnVVtuples:
     process.demo.patJetHelperAK5[0]=process.demo.patJetHelperAK5[0].replace("patJetsWithVar","selectedPatJets")
@@ -218,6 +225,9 @@ process.selectedPatJetsAK7CHSwithQjets = cms.EDProducer("QjetsAdder",
 if not runQJets:
     process.selectedPatJetsAK7CHSwithQjets.cutoff=100000.0
     process.selectedPatJetsCA8CHSwithQjets.cutoff=100000.0
+else:    
+    process.selectedPatJetsAK7CHSwithQjets.cutoff=400.0
+    process.selectedPatJetsCA8CHSwithQjets.cutoff=400.0
 process.PATCMGSequence += process.selectedPatJetsAK7CHSwithQjets
 process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQjets
 
