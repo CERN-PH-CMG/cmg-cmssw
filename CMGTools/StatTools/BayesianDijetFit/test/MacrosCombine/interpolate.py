@@ -38,21 +38,71 @@ if len(sys.argv)>3:
 else:
    suffix=""
 
-if outmjj >= 1000 and outmjj < 1500 :
+if "Qstar" in inputRoot:
+  masses=[1000,1500,2000,3000,4000]
+  if outmjj >= 1000 and outmjj < 1500 :
     mjjlow = 1000
     mjjhigh = 1500
-
-if outmjj >= 1500 and outmjj < 2000 :
+  if outmjj >= 1500 and outmjj < 2000 :
     mjjlow = 1500
     mjjhigh = 2000
-
-if outmjj >= 2000 and outmjj < 3000 :
+  if outmjj >= 2000 and outmjj < 3000 :
     mjjlow = 2000
     mjjhigh = 3000
-
-if outmjj >= 3000 and outmjj < 4000 :
+  if outmjj >= 3000 and outmjj <= 4000 :
     mjjlow = 3000
     mjjhigh = 4000
+elif "Bulk" in inputRoot:
+  masses=[1000,1500,1800,1900,2000,2200,2500]
+  if outmjj >= 1000 and outmjj < 1500 :
+    mjjlow = 1000
+    mjjhigh = 1500
+  if outmjj >= 1500 and outmjj < 1800 :
+    mjjlow = 1500
+    mjjhigh = 1800
+  if outmjj >= 1800 and outmjj < 1900 :
+    mjjlow = 1800
+    mjjhigh = 1900
+  if outmjj >= 1900 and outmjj < 2000 :
+    mjjlow = 1900
+    mjjhigh = 2000
+  if outmjj >= 2000 and outmjj < 2200 :
+    mjjlow = 2000
+    mjjhigh = 2200
+  if outmjj >= 2200 and outmjj <= 3000 :
+    mjjlow = 2200
+    mjjhigh = 2500
+elif "pythia" in inputRoot or "Wprime" in inputRoot:
+  masses=[1000,1500,1800,2000,2200,2500,3000]
+  if outmjj >= 1000 and outmjj < 1500 :
+    mjjlow = 1000
+    mjjhigh = 1500
+  if outmjj >= 1500 and outmjj < 1800 :
+    mjjlow = 1500
+    mjjhigh = 1800
+  if outmjj >= 1800 and outmjj < 2000 :
+    mjjlow = 1800
+    mjjhigh = 2000
+  if outmjj >= 2000 and outmjj < 2200 :
+    mjjlow = 2000
+    mjjhigh = 2200
+  if outmjj >= 2200 and outmjj < 2500 :
+    mjjlow = 2200
+    mjjhigh = 2500
+  if outmjj >= 2500 and outmjj <= 3000 :
+    mjjlow = 2500
+    mjjhigh = 3000
+else:
+  masses=[1000,1500,2000,3000]
+  if outmjj >= 1000 and outmjj < 1500 :
+    mjjlow = 1000
+    mjjhigh = 1500
+  if outmjj >= 1500 and outmjj < 2000 :
+    mjjlow = 1500
+    mjjhigh = 2000
+  if outmjj >= 2000 and outmjj <= 3000 :
+    mjjlow = 2000
+    mjjhigh = 3000
 
 inputlow = TFile( inputRoot + str(mjjlow) + suffix + '.root' )
 inputhigh = TFile( inputRoot + str(mjjhigh) + suffix +  '.root' )
@@ -77,9 +127,6 @@ for histname in histnames:
  fhigh = inputhigh.Get( histname )
  fhigh.SetName( 'high' ) 
  
- masses=[1000,1500,2000,3000]
- if "Qstar" in inputRoot:
-     masses+=[4000]
  xvalues=r.vector('double')()
  yvalues=r.vector('double')()
  for x in masses:
