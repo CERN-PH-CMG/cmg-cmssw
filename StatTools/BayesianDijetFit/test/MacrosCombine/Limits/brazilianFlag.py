@@ -27,7 +27,7 @@ def Plot(files, label, obs):
     radmasses = []
     for f in files:
         radmasses.append(float(f.replace("Xvv.mX","").split("_")[0]))
-    print radmasses
+    #print radmasses
 
     efficiencies={}
     for mass in radmasses:
@@ -35,7 +35,7 @@ def Plot(files, label, obs):
 
     fChain = []
     for onefile in files:
-        print onefile
+        #print onefile
         fileIN = rt.TFile.Open(onefile)
         fChain.append(fileIN.Get("limit;1"))  
 
@@ -55,7 +55,7 @@ def Plot(files, label, obs):
             chain.GetTree().GetEntry(i)
             thisrad.append(limit_branch.limit)
             #print "limit = %f" %limit_branch.limit
-        print thisrad
+        #print thisrad
         rad.append(thisrad)
 
 
@@ -84,13 +84,17 @@ def Plot(files, label, obs):
     grobs.SetLineColor(rt.kRed)
     grobs.SetLineWidth(3)
     gr2up = rt.TGraphErrors(1)
+    gr2up.SetMarkerColor(0)
     gr1up = rt.TGraphErrors(1)
+    gr1up.SetMarkerColor(0)
     grmean = rt.TGraphErrors(1)
     grmean.SetLineColor(1)
     grmean.SetLineWidth(2)
     grmean.SetLineStyle(3)
     gr1down = rt.TGraphErrors(1)
+    gr1down.SetMarkerColor(0)
     gr2down = rt.TGraphErrors(1)
+    gr2down.SetMarkerColor(0)
   
     for j in range(0,len(fChain)):
         grobs.SetPoint(j, radmasses[j], yobs[j])
@@ -99,7 +103,7 @@ def Plot(files, label, obs):
         grmean.SetPoint(j, radmasses[j], ymean[j])
         gr1down.SetPoint(j, radmasses[j], y1down[j])    
         gr2down.SetPoint(j, radmasses[j], y2down[j])
-        print " observed %f %f" %(radmasses[j],yobs[j])
+        #print " observed %f %f" %(radmasses[j],yobs[j])
     
     mg.Add(gr2up)#.Draw("same")
     mg.Add(gr1up)#.Draw("same")
@@ -150,6 +154,49 @@ def Plot(files, label, obs):
     grmean.Draw("L")
     if obs: grobs.Draw("L,P,E")
 
+    gtheory = rt.TGraphErrors(1)
+    gtheory.SetLineColor(rt.kBlue)
+    gtheory.SetLineWidth(3)
+    ftheory=open("efficiencies.txt")
+    j=0
+    glogtheory = rt.TGraphErrors(1)
+    for lines in ftheory.readlines():
+     for line in lines.split("\r"):
+      if label.split("_")[0] in line:
+        split=line.split(":")
+        gtheory.SetPoint(j, float(split[0][-4:]), float(split[1]))
+        glogtheory.SetPoint(j, float(split[0][-4:]), log(float(split[1])))
+	j+=1
+    mg.Add(gtheory,"L")
+    gtheory.Draw("L")
+    if "qW" in label.split("_")[0]:
+        ltheory="q* #rightarrow qW"
+    if "qZ" in label.split("_")[0]:
+        ltheory="q* #rightarrow qZ"
+    if "WW" in label.split("_")[0]:
+        ltheory="G_{RS} #rightarrow WW"
+    if "ZZ" in label.split("_")[0]:
+        ltheory="G_{RS} #rightarrow ZZ"
+    if "WZ" in label.split("_")[0]:
+        ltheory="W' #rightarrow WZ"
+    
+    crossing=0
+    for mass in range(int(radmasses[0]),int(radmasses[-1])):
+        if exp(glogtheory.Eval(mass))>grmean.Eval(mass) and crossing>=0:
+	    print label,"exp crossing",mass
+	    crossing=-1
+        if exp(glogtheory.Eval(mass))<grmean.Eval(mass) and crossing<=0:
+	    print label,"exp crossing",mass
+	    crossing=1
+    crossing=0
+    for mass in range(int(radmasses[0]),int(radmasses[-1])):
+        if exp(glogtheory.Eval(mass))>grobs.Eval(mass) and crossing>=0:
+	    print label,"obs crossing",mass
+	    crossing=-1
+        if exp(glogtheory.Eval(mass))<grobs.Eval(mass) and crossing<=0:
+	    print label,"obs crossing",mass
+	    crossing=1
+    
     leg = rt.TLegend(0.60,0.65,0.95,0.89)
     leg.SetFillColor(rt.kWhite)
     leg.SetFillStyle(0)
@@ -160,9 +207,15 @@ def Plot(files, label, obs):
     leg.AddEntry(grmean, "Expected", "L")
     leg.AddEntry(grgreen, "98%", "f")
     leg.AddEntry(gryellow, "68%", "f")
-    leg.SetHeader("X #rightarrow %s" %label.split("_")[0])
+    leg.AddEntry(gtheory, ltheory, "L")
+    #leg.SetHeader("X #rightarrow %s" %label.split("_")[0])
 
     leg.Draw()
+
+    banner = TLatex(0.27,0.93,"CMS Preliminary, 19.6 fb^{-1}, #sqrt{s} = 8TeV");
+    banner.SetNDC()
+    banner.SetTextSize(0.04)
+    banner.Draw();  
 
     if withAcceptance:
         c1.SaveAs("brazilianFlag_acc_%s.root" %label)
