@@ -394,7 +394,27 @@ class PlotMaker:
                         if not os.path.exists(fdir): 
                             os.makedirs(fdir); 
                             if os.path.exists("/afs/cern.ch"): os.system("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+fdir)
-                        c1.Print("%s/%s.%s" % (fdir, pspec.name, ext))
+                        if ext == "txt":
+                            dump = open("%s/%s.%s" % (fdir, pspec.name, ext), "w")
+                            maxlen = max([len(mca.getProcessOption(p,'Label',p)) for p in mca.listSignals() + mca.listBackgrounds()]+[7])
+                            fmt    = "%%-%ds %%9.2f +/- %%9.2f (stat)" % (maxlen+1)
+                            for p in mca.listSignals() + mca.listBackgrounds() + ["signal", "background"]:
+                                if p not in pmap: continue
+                                plot = pmap[p]
+                                if plot.Integral() <= 0: continue
+                                norm = plot.Integral()
+                                stat = sqrt(sum([plot.GetBinError(b)**2 for b in xrange(1,plot.GetNbinsX()+1)]))
+                                syst = norm * mca.getProcessOption(p,'NormSystematic',0.0) if p not in ["signal", "background"] else 0;
+                                if p == "signal": dump.write(("-"*(maxlen+45))+"\n");
+                                dump.write(fmt % (mca.getProcessOption(p,'Label',p) if p not in ["signal", "background"] else p.upper(), norm, stat))
+                                if syst: dump.write(" +/- %9.2f (syst)"  % syst)
+                                dump.write("\n")
+                            if 'data' in pmap: 
+                                dump.write(("-"*(maxlen+45))+"\n");
+                                dump.write(("%%%ds %%7.0f\n" % (maxlen+1)) % ('DATA', pmap['data'].Integral()))
+                            dump.close()
+                        else:
+                            c1.Print("%s/%s.%s" % (fdir, pspec.name, ext))
                 c1.Close()
 def addPlotMakerOptions(parser):
     addMCAnalysisOptions(parser)
@@ -402,7 +422,7 @@ def addPlotMakerOptions(parser):
     #parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Simulation", help="Spam text on the right hand side");
     parser.add_option("--lspam", dest="lspam",   type="string", default="CMS Preliminary", help="Spam text on the right hand side");
     parser.add_option("--rspam", dest="rspam",   type="string", default="#sqrt{s} = 8 TeV, L = %(lumi).1f fb^{-1}", help="Spam text on the right hand side");
-    parser.add_option("--print", dest="printPlots", type="string", default="png,pdf", help="print out plots in this format or formats (e.g. 'png,pdf')");
+    parser.add_option("--print", dest="printPlots", type="string", default="png,pdf,txt", help="print out plots in this format or formats (e.g. 'png,pdf,txt')");
     parser.add_option("--pdir", "--print-dir", dest="printDir", type="string", default="plots", help="print out plots in this directory");
     parser.add_option("--showSigShape", dest="showSigShape", action="store_true", default=False, help="Stack a normalized signal shape")
     parser.add_option("--noStackSig", dest="noStackSig", action="store_true", default=False, help="Don't add the signal shape to the stack (useful with --showSigShape)")
