@@ -17,7 +17,7 @@ observation   7135
 bin                      cat0       cat0      cat0      cat0      
 process                 MggSigWW MggSigZZ MggSigWZ     MggBkg     
 process                 -2 -1 0        1          
-rate                        0  6  0  1
+rate                        0  5.455  0  1
 --------------------------------
 # signal scaled by 0.005
 lumi_8TeV       lnN  1.044  1.044  1.044    - 

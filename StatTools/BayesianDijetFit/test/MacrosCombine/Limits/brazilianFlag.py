@@ -243,7 +243,9 @@ if __name__ == '__main__':
           "Xvv.mX2400.0_WW_Asymptotic_8TeV_channel0.root",
           "Xvv.mX2500.0_WW_Asymptotic_8TeV_channel0.root",
           "Xvv.mX2600.0_WW_Asymptotic_8TeV_channel0.root",
-          "Xvv.mX2700.0_WW_Asymptotic_8TeV_channel0.root"],
+          "Xvv.mX2700.0_WW_Asymptotic_8TeV_channel0.root",
+          "Xvv.mX2800.0_WW_Asymptotic_8TeV_channel0.root",
+          "Xvv.mX2900.0_WW_Asymptotic_8TeV_channel0.root"],
           "WW_high_purity", unblind)
     
     Plot(["Xvv.mX1000.0_ZZ_Asymptotic_8TeV_channel0.root",
@@ -263,7 +265,9 @@ if __name__ == '__main__':
           "Xvv.mX2400.0_ZZ_Asymptotic_8TeV_channel0.root",
           "Xvv.mX2500.0_ZZ_Asymptotic_8TeV_channel0.root",
           "Xvv.mX2600.0_ZZ_Asymptotic_8TeV_channel0.root",
-          "Xvv.mX2700.0_ZZ_Asymptotic_8TeV_channel0.root"],
+          "Xvv.mX2700.0_ZZ_Asymptotic_8TeV_channel0.root",
+          "Xvv.mX2800.0_ZZ_Asymptotic_8TeV_channel0.root",
+          "Xvv.mX2900.0_ZZ_Asymptotic_8TeV_channel0.root"],
           "ZZ_high_purity", unblind)
 
     Plot(["Xvv.mX1000.0_WZ_Asymptotic_8TeV_channel0.root",
@@ -283,7 +287,9 @@ if __name__ == '__main__':
           "Xvv.mX2400.0_WZ_Asymptotic_8TeV_channel0.root",
           "Xvv.mX2500.0_WZ_Asymptotic_8TeV_channel0.root",
           "Xvv.mX2600.0_WZ_Asymptotic_8TeV_channel0.root",
-          "Xvv.mX2700.0_WZ_Asymptotic_8TeV_channel0.root"],
+          "Xvv.mX2700.0_WZ_Asymptotic_8TeV_channel0.root",
+          "Xvv.mX2800.0_WZ_Asymptotic_8TeV_channel0.root",
+          "Xvv.mX2900.0_WZ_Asymptotic_8TeV_channel0.root"],
           "WZ_high_purity", unblind)
     
     Plot(["Xvv.mX1000.0_WW_Asymptotic_8TeV_channel1.root",
@@ -303,7 +309,9 @@ if __name__ == '__main__':
           "Xvv.mX2400.0_WW_Asymptotic_8TeV_channel1.root",
           "Xvv.mX2500.0_WW_Asymptotic_8TeV_channel1.root",
           "Xvv.mX2600.0_WW_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2700.0_WW_Asymptotic_8TeV_channel1.root"],
+          "Xvv.mX2700.0_WW_Asymptotic_8TeV_channel1.root",
+          "Xvv.mX2800.0_WW_Asymptotic_8TeV_channel1.root",
+          "Xvv.mX2900.0_WW_Asymptotic_8TeV_channel1.root"],
           "WW_medium_purity", unblind)
     
     Plot(["Xvv.mX1000.0_ZZ_Asymptotic_8TeV_channel1.root",
@@ -323,7 +331,9 @@ if __name__ == '__main__':
           "Xvv.mX2400.0_ZZ_Asymptotic_8TeV_channel1.root",
           "Xvv.mX2500.0_ZZ_Asymptotic_8TeV_channel1.root",
           "Xvv.mX2600.0_ZZ_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2700.0_ZZ_Asymptotic_8TeV_channel1.root"],
+          "Xvv.mX2700.0_ZZ_Asymptotic_8TeV_channel1.root",
+          "Xvv.mX2800.0_ZZ_Asymptotic_8TeV_channel1.root",
+          "Xvv.mX2900.0_ZZ_Asymptotic_8TeV_channel1.root"],
           "ZZ_medium_purity", unblind)
 
     Plot(["Xvv.mX1000.0_WZ_Asymptotic_8TeV_channel1.root",
@@ -343,7 +353,9 @@ if __name__ == '__main__':
           "Xvv.mX2400.0_WZ_Asymptotic_8TeV_channel1.root",
           "Xvv.mX2500.0_WZ_Asymptotic_8TeV_channel1.root",
           "Xvv.mX2600.0_WZ_Asymptotic_8TeV_channel1.root",
-          "Xvv.mX2700.0_WZ_Asymptotic_8TeV_channel1.root"],
+          "Xvv.mX2700.0_WZ_Asymptotic_8TeV_channel1.root",
+          "Xvv.mX2800.0_WZ_Asymptotic_8TeV_channel1.root",
+          "Xvv.mX2900.0_WZ_Asymptotic_8TeV_channel1.root"],
           "WZ_medium_purity", unblind)
 
     Plot(["Xvv.mX1000.0_WW_Asymptotic_8TeV_channel01.root",
@@ -363,7 +375,9 @@ if __name__ == '__main__':
           "Xvv.mX2400.0_WW_Asymptotic_8TeV_channel01.root",
           "Xvv.mX2500.0_WW_Asymptotic_8TeV_channel01.root",
           "Xvv.mX2600.0_WW_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2700.0_WW_Asymptotic_8TeV_channel01.root"],
+          "Xvv.mX2700.0_WW_Asymptotic_8TeV_channel01.root",
+          "Xvv.mX2800.0_WW_Asymptotic_8TeV_channel01.root",
+          "Xvv.mX2900.0_WW_Asymptotic_8TeV_channel01.root"],
           "WW_combined01", unblind)
     
     Plot(["Xvv.mX1000.0_ZZ_Asymptotic_8TeV_channel01.root",
@@ -383,7 +397,9 @@ if __name__ == '__main__':
           "Xvv.mX2400.0_ZZ_Asymptotic_8TeV_channel01.root",
           "Xvv.mX2500.0_ZZ_Asymptotic_8TeV_channel01.root",
           "Xvv.mX2600.0_ZZ_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2700.0_ZZ_Asymptotic_8TeV_channel01.root"],
+          "Xvv.mX2700.0_ZZ_Asymptotic_8TeV_channel01.root",
+          "Xvv.mX2800.0_ZZ_Asymptotic_8TeV_channel01.root",
+          "Xvv.mX2900.0_ZZ_Asymptotic_8TeV_channel01.root"],
           "ZZ_combined01", unblind)
 
     Plot(["Xvv.mX1000.0_WZ_Asymptotic_8TeV_channel01.root",
@@ -403,7 +419,9 @@ if __name__ == '__main__':
           "Xvv.mX2400.0_WZ_Asymptotic_8TeV_channel01.root",
           "Xvv.mX2500.0_WZ_Asymptotic_8TeV_channel01.root",
           "Xvv.mX2600.0_WZ_Asymptotic_8TeV_channel01.root",
-          "Xvv.mX2700.0_WZ_Asymptotic_8TeV_channel01.root"],
+          "Xvv.mX2700.0_WZ_Asymptotic_8TeV_channel01.root",
+          "Xvv.mX2800.0_WZ_Asymptotic_8TeV_channel01.root",
+          "Xvv.mX2900.0_WZ_Asymptotic_8TeV_channel01.root"],
           "WZ_combined01", unblind)
 
 
@@ -435,7 +453,10 @@ if __name__ == '__main__':
           "Xvv.mX3400.0_qW_Asymptotic_8TeV_channel3.root",
           "Xvv.mX3500.0_qW_Asymptotic_8TeV_channel3.root",
           "Xvv.mX3600.0_qW_Asymptotic_8TeV_channel3.root",
-          "Xvv.mX3700.0_qW_Asymptotic_8TeV_channel3.root"],
+          "Xvv.mX3700.0_qW_Asymptotic_8TeV_channel3.root",
+          "Xvv.mX3800.0_qW_Asymptotic_8TeV_channel3.root",
+          "Xvv.mX3900.0_qW_Asymptotic_8TeV_channel3.root",
+          "Xvv.mX4000.0_qW_Asymptotic_8TeV_channel3.root"],
           "qW_high_purity", unblind)
     
     Plot(["Xvv.mX1000.0_qZ_Asymptotic_8TeV_channel3.root",
@@ -465,7 +486,10 @@ if __name__ == '__main__':
           "Xvv.mX3400.0_qZ_Asymptotic_8TeV_channel3.root",
           "Xvv.mX3500.0_qZ_Asymptotic_8TeV_channel3.root",
           "Xvv.mX3600.0_qZ_Asymptotic_8TeV_channel3.root",
-          "Xvv.mX3700.0_qZ_Asymptotic_8TeV_channel3.root"],
+          "Xvv.mX3700.0_qZ_Asymptotic_8TeV_channel3.root",
+          "Xvv.mX3800.0_qZ_Asymptotic_8TeV_channel3.root",
+          "Xvv.mX3900.0_qZ_Asymptotic_8TeV_channel3.root",
+          "Xvv.mX4000.0_qZ_Asymptotic_8TeV_channel3.root"],
           "qZ_high_purity", unblind)
 
     Plot(["Xvv.mX1000.0_qW_Asymptotic_8TeV_channel4.root",
@@ -495,7 +519,10 @@ if __name__ == '__main__':
           "Xvv.mX3400.0_qW_Asymptotic_8TeV_channel4.root",
           "Xvv.mX3500.0_qW_Asymptotic_8TeV_channel4.root",
           "Xvv.mX3600.0_qW_Asymptotic_8TeV_channel4.root",
-          "Xvv.mX3700.0_qW_Asymptotic_8TeV_channel4.root"],
+          "Xvv.mX3700.0_qW_Asymptotic_8TeV_channel4.root",
+          "Xvv.mX3800.0_qW_Asymptotic_8TeV_channel4.root",
+          "Xvv.mX3900.0_qW_Asymptotic_8TeV_channel4.root",
+          "Xvv.mX4000.0_qW_Asymptotic_8TeV_channel4.root"],
           "qW_medium_purity", unblind)
     
     Plot(["Xvv.mX1000.0_qZ_Asymptotic_8TeV_channel4.root",
@@ -525,7 +552,10 @@ if __name__ == '__main__':
           "Xvv.mX3400.0_qZ_Asymptotic_8TeV_channel4.root",
           "Xvv.mX3500.0_qZ_Asymptotic_8TeV_channel4.root",
           "Xvv.mX3600.0_qZ_Asymptotic_8TeV_channel4.root",
-          "Xvv.mX3700.0_qZ_Asymptotic_8TeV_channel4.root"],
+          "Xvv.mX3700.0_qZ_Asymptotic_8TeV_channel4.root",
+          "Xvv.mX3800.0_qZ_Asymptotic_8TeV_channel4.root",
+          "Xvv.mX3900.0_qZ_Asymptotic_8TeV_channel4.root",
+          "Xvv.mX4000.0_qZ_Asymptotic_8TeV_channel4.root"],
           "qZ_medium_purity", unblind)
 
     Plot(["Xvv.mX1000.0_qW_Asymptotic_8TeV_channel34.root",
@@ -555,7 +585,10 @@ if __name__ == '__main__':
           "Xvv.mX3400.0_qW_Asymptotic_8TeV_channel34.root",
           "Xvv.mX3500.0_qW_Asymptotic_8TeV_channel34.root",
           "Xvv.mX3600.0_qW_Asymptotic_8TeV_channel34.root",
-          "Xvv.mX3700.0_qW_Asymptotic_8TeV_channel34.root"],
+          "Xvv.mX3700.0_qW_Asymptotic_8TeV_channel34.root",
+          "Xvv.mX3800.0_qW_Asymptotic_8TeV_channel34.root",
+          "Xvv.mX3900.0_qW_Asymptotic_8TeV_channel34.root",
+          "Xvv.mX4000.0_qW_Asymptotic_8TeV_channel34.root"],
           "qW_combined01", unblind)
     
     Plot(["Xvv.mX1000.0_qZ_Asymptotic_8TeV_channel34.root",
@@ -585,5 +618,8 @@ if __name__ == '__main__':
           "Xvv.mX3400.0_qZ_Asymptotic_8TeV_channel34.root",
           "Xvv.mX3500.0_qZ_Asymptotic_8TeV_channel34.root",
           "Xvv.mX3600.0_qZ_Asymptotic_8TeV_channel34.root",
-          "Xvv.mX3700.0_qZ_Asymptotic_8TeV_channel34.root"],
+          "Xvv.mX3700.0_qZ_Asymptotic_8TeV_channel34.root",
+          "Xvv.mX3800.0_qZ_Asymptotic_8TeV_channel34.root",
+          "Xvv.mX3900.0_qZ_Asymptotic_8TeV_channel34.root",
+          "Xvv.mX4000.0_qZ_Asymptotic_8TeV_channel34.root"],
           "qZ_combined01", unblind)
