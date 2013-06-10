@@ -315,6 +315,3 @@ print sep_line
 print 'starting CMSSW'
 
 
-##Disable patTuple
-#process.outpath.remove(process.out) 
-
