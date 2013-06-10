@@ -16,6 +16,8 @@ class FakeRate:
         self._cutMods = []
         for line in stream:
             if len(line.strip()) == 0 or line.strip()[0] == '#': continue
+            while line.strip()[-1] == "\\":
+                line = line.strip()[:-1] + stream.next()
             fields = [x.strip() for x in line.split(":")]
             if fields[0] == "weight":
                 if self._weight is not None: raise RuntimeError, "Duplicate weight definition in fake rate file "+file

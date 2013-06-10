@@ -284,7 +284,7 @@ class PlotMaker:
                 # blinding policy
                 blind = pspec.getOption('Blinded','None') if 'data' in pmap else 'None'
                 xblind = [9e99,-9e99]
-                if re.match(r'(bin|x)\s*([<>]=?)\s*\d+(\.\d+)?', blind):
+                if re.match(r'(bin|x)\s*([<>]=?)\s*(\+|-)?\d+(\.\d+)?', blind):
                     (swhat,sop,scutval) = blind.split()
                     xfunc = (lambda h,b: b) if swhat == 'bin' else (lambda h,b : h.GetXaxis().GetBinCenter(b));
                     test  = eval("lambda x : x %s %s" % (sop,scutval))
@@ -297,6 +297,8 @@ class PlotMaker:
                             xblind[0] = min(xblind[0],hdata.GetXaxis().GetBinLowEdge(b))
                             xblind[1] = max(xblind[1],hdata.GetXaxis().GetBinUpEdge(b))
                     #print "final blinded range x = [%s, %s]" % (xblind[0],xblind[1])
+                elif blind != "None":
+                    raise RuntimeError, "Unrecongnized value for 'Blinded' option, stopping here"
                 #
                 for k,v in pmap.iteritems():
                     v.SetDirectory(dir)
@@ -375,6 +377,8 @@ class PlotMaker:
                     total.Draw("AXIS SAME")
                 else: 
                     stack.Draw("SAME HIST NOSTACK")
+                if pspec.getOption('MoreY',1.0) > 1.0:
+                    total.SetMaximum(pspec.getOption('MoreY',1.0)*total.GetMaximum())
                 if 'data' in pmap: 
                     reMax(total,pmap['data'],islog)
                     pmap['data'].Draw("E SAME")
