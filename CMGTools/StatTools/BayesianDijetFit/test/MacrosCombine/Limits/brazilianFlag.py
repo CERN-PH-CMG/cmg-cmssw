@@ -31,7 +31,7 @@ def Plot(files, label, obs):
 
     efficiencies={}
     for mass in radmasses:
-	efficiencies[mass]=number_of_mc_events*0.005/19600.0
+	efficiencies[mass]=number_of_mc_events*0.005/19800.0
 
     fChain = []
     for onefile in files:
@@ -212,7 +212,7 @@ def Plot(files, label, obs):
 
     leg.Draw()
 
-    banner = TLatex(0.27,0.93,"CMS Preliminary, 19.6 fb^{-1}, #sqrt{s} = 8TeV");
+    banner = TLatex(0.27,0.93,"CMS Preliminary, 19.8 fb^{-1}, #sqrt{s} = 8TeV");
     banner.SetNDC()
     banner.SetTextSize(0.04)
     banner.Draw();  
