@@ -39,6 +39,7 @@ class MCAnalysis:
                     else: extra[setting] = True
             field = [f.strip() for f in line.split(':')]
             if len(field) <= 1: continue
+            if "SkipMe" in extra and extra["SkipMe"] == True and not options.allProcesses: continue
             signal = False
             if field[0][-1] == "+": 
                 signal = True
@@ -99,11 +100,11 @@ class MCAnalysis:
     def isSignal(self,process):
         return self._isSignal[process]
     def listSignals(self):
-        ret = [ p for p in self._allData.keys() if p != 'data' and self._isSignal[p] ]
+        ret = [ p for p in self._allData.keys() if p != 'data' and self._isSignal[p] and self.getProcessOption(p, 'SkipMe') != True  ]
         ret.sort(key = lambda n : self._rank[n], reverse = True)
         return ret
     def listBackgrounds(self):
-        ret = [ p for p in self._allData.keys() if p != 'data' and not self._isSignal[p] ]
+        ret = [ p for p in self._allData.keys() if p != 'data' and not self._isSignal[p] and self.getProcessOption(p, 'SkipMe') != True ]
         ret.sort(key = lambda n : self._rank[n], reverse = True)
         return ret
     def hasProcess(self,process):
@@ -264,6 +265,7 @@ def addMCAnalysisOptions(parser,addTreeToYieldOnesToo=True):
     parser.add_option("--xf", "--exclude-files", dest="filesToExclude", type="string", default=[], action="append", help="Files to exclude (comma-separated list of regexp, can specify multiple ones)");
     parser.add_option("--xp", "--exclude-process", dest="processesToExclude", type="string", default=[], action="append", help="Processes to exclude (comma-separated list of regexp, can specify multiple ones)");
     parser.add_option("--sp", "--signal-process", dest="processesAsSignal", type="string", default=[], action="append", help="Processes to set as signal (overriding the '+' in the text file)");
+    parser.add_option("--AP", "--all-processes", dest="allProcesses", action="store_true", help="Include also processes that are marked with SkipMe=True in the MCA.txt")
 
 if __name__ == "__main__":
     from optparse import OptionParser

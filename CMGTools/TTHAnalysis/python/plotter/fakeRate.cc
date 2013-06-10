@@ -66,6 +66,49 @@ float fakeRateWeight_2lss(float l1pt, float l1eta, int l1pdgId, float l1mva,
         default: return 0;
     }
 }
+float fakeRateWeight_2lssSyst(float l1pt, float l1eta, int l1pdgId, float l1mva,
+                         float l2pt, float l2eta, int l2pdgId, float l2mva, float WP, 
+                         float mu_barrel_lowpt, float mu_barrel_highpt, float mu_endcap_lowpt, float mu_endcap_highpt,
+                         float el_barrel_lowpt, float el_barrel_highpt, float el_endcap_lowpt, float el_endcap_highpt)
+{
+    int nfail = (l1mva < WP)+(l2mva < WP);
+    switch (nfail) {
+        case 1: {
+            double fpt,feta; int fid;
+            if (l1mva < l2mva) { fpt = l1pt; feta = std::abs(l1eta); fid = abs(l1pdgId); }
+            else               { fpt = l2pt; feta = std::abs(l2eta); fid = abs(l2pdgId); }
+            TH2 *hist = (fid == 11 ? FR_el : FR_mu);
+            int ptbin  = std::max(1, std::min(hist->GetNbinsX(), hist->GetXaxis()->FindBin(fpt)));
+            int etabin = std::max(1, std::min(hist->GetNbinsY(), hist->GetYaxis()->FindBin(feta)));
+            double fr = hist->GetBinContent(ptbin,etabin);
+            if (fid == 11) fr *= (feta < 1.5 ? (fpt < 20 ? el_barrel_lowpt : el_barrel_highpt) :
+                                               (fpt < 20 ? el_endcap_lowpt : el_endcap_highpt) );
+            else /*==13*/  fr *= (feta < 1.5 ? (fpt < 20 ? mu_barrel_lowpt : mu_barrel_highpt) :
+                                               (fpt < 20 ? mu_endcap_lowpt : mu_endcap_highpt) );
+            return fr/(1-fr);
+        }
+        case 2: {
+            TH2 *hist1 = (abs(l1pdgId) == 11 ? FR_el : FR_mu);
+            int ptbin1  = std::max(1, std::min(hist1->GetNbinsX(), hist1->GetXaxis()->FindBin(l1pt)));
+            int etabin1 = std::max(1, std::min(hist1->GetNbinsY(), hist1->GetYaxis()->FindBin(std::abs(l1eta))));
+            double fr1 = hist1->GetBinContent(ptbin1,etabin1);
+            if (abs(l1pdgId) == 11) fr1 *= (std::abs(l1eta) < 1.5 ? (l1pt < 20 ? el_barrel_lowpt : el_barrel_highpt) :
+                                                                    (l1pt < 20 ? el_endcap_lowpt : el_endcap_highpt) );
+            else /*==13*/           fr1 *= (std::abs(l1eta) < 1.5 ? (l1pt < 20 ? mu_barrel_lowpt : mu_barrel_highpt) :
+                                                                    (l1pt < 20 ? mu_endcap_lowpt : mu_endcap_highpt) );
+            TH2 *hist2 = (abs(l2pdgId) == 11 ? FR_el : FR_mu);
+            int ptbin2  = std::max(1, std::min(hist2->GetNbinsX(), hist2->GetXaxis()->FindBin(l2pt)));
+            int etabin2 = std::max(1, std::min(hist2->GetNbinsY(), hist2->GetYaxis()->FindBin(std::abs(l2eta))));
+            double fr2 = hist2->GetBinContent(ptbin2,etabin2);
+            if (abs(l2pdgId) == 11) fr2 *= (std::abs(l2eta) < 1.5 ? (l2pt < 20 ? el_barrel_lowpt : el_barrel_highpt) :
+                                                                    (l2pt < 20 ? el_endcap_lowpt : el_endcap_highpt) );
+            else /*==13*/           fr2 *= (std::abs(l2eta) < 1.5 ? (l2pt < 20 ? mu_barrel_lowpt : mu_barrel_highpt) :
+                                                                    (l2pt < 20 ? mu_endcap_lowpt : mu_endcap_highpt) );
+            return -fr1*fr2/((1-fr1)*(1-fr2));
+        }
+        default: return 0;
+    }
+}
 
 bool passND_LooseDen(float l1pt, float l1eta, int l1pdgId, float relIso, float dxy, float dz, float tightId) 
 {
