@@ -1,0 +1,574 @@
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*            : 1.06
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*            : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*            : 1.07
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*            : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*            : 1.06
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*            : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*            : 1.04
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*            : 1.13
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*_bt         : 1.12
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*_bt         : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*_bt         : 1.12
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*_bt         : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*_bt         : 1.12
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*_bt         : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*_bt         : 1.12
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*_bt         : 0.89/1.00  # asymm: -0.111
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*_bl         : - # negligible: 0.99/1.01
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*_bl         : 1.04
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*_bl         : 1.03
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*_bl         : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*_bl         : 1.00/0.98  # asymm: -0.016
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*_bl         : 0.95/1.03  # asymm: -0.017
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*_bl         : 1.04
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*_bl         : 1.13
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*_bl2        : - # negligible: 1.01/0.99
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*_bl2        : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*_bl2        : - # negligible: 1.00/0.99
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*_bl2        : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*_bl2        : 0.99
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*_bl2        : 1.01
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*_bl2        : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*_bl2        : 1.09
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*_ba2        : 1.04
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*_ba2        : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*_ba2        : 1.04
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*_ba2        : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*_ba2        : 1.04
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*_ba2        : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*_ba2        : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*_ba2        : 1.08
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*_bam        : 1.08
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*_bam        : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*_bam        : 1.08
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*_bam        : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*_bam        : 1.07
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*_bam        : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*_bam        : 1.07
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*_bam        : 1.12
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*_bm         : 0.97/1.02  # asymm: -0.017
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*_bm         : 0.95/1.03  # asymm: -0.018
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*_bm         : 1.03
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*_bm         : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*_bm         : 0.98/1.00  # asymm: -0.018
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*_bm         : 1.04
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*_bm         : 0.96/1.06  # asymm: +0.018
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*_bm         : 1.12
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*4j_.*       : 1.06
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*4j_.*       : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*4j_.*       : 1.05
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*4j_.*       : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*4j_.*       : 1.05
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*4j_.*       : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*4j_.*       : 0.97/1.06  # asymm: +0.028
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*4j_.*       : 0.91/1.12  # asymm: +0.019
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*4j_.*_bt    : 1.11
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*4j_.*_bt    : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*4j_.*_bt    : 1.11
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*4j_.*_bt    : 1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*4j_.*_bt    : 1.11
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*4j_.*_bt    : 1.00/1.02  # asymm: +0.020
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*4j_.*_bt    : 1.00/1.25  # asymm: +0.250
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*4j_.*_bt    : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*4j_.*_bl    : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*4j_.*_bl    : 1.04
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*4j_.*_bl    : - # negligible: 1.00/0.99
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*4j_.*_bl    : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*4j_.*_bl    : 1.00/0.98  # asymm: -0.019
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*4j_.*_bl    : 1.04
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*4j_.*_bl    : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*4j_.*_bl    : 0.90/1.13  # asymm: +0.020
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*4j_.*_bl2   : 0.98
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*4j_.*_bl2   : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*4j_.*_bl2   : 0.98
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*4j_.*_bl2   : - # negligible: 0.99/1.00
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*4j_.*_bl2   : 0.97
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*4j_.*_bl2   : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*4j_.*_bl2   : 0.98/1.04  # asymm: +0.020
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*4j_.*_bl2   : 1.09
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*4j_.*_ba2   : 1.04
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*4j_.*_ba2   : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*4j_.*_ba2   : 1.03
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*4j_.*_ba2   : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*4j_.*_ba2   : 1.03
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*4j_.*_ba2   : 1.01
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*4j_.*_ba2   : 1.04
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*4j_.*_ba2   : 1.08
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*4j_.*_bam   : 1.07
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*4j_.*_bam   : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*4j_.*_bam   : 1.06
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*4j_.*_bam   : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*4j_.*_bam   : 1.06
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*4j_.*_bam   : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*4j_.*_bam   : 0.93/1.00  # asymm: -0.067
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*4j_.*_bam   : 0.87/1.07  # asymm: -0.076
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*4j_.*_bm    : 1.00/1.02  # asymm: +0.022
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*4j_.*_bm    : 0.98/1.04  # asymm: +0.021
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*4j_.*_bm    : - # negligible: 0.99/1.01
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*4j_.*_bm    : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*4j_.*_bm    : 0.98/1.00  # asymm: -0.022
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*4j_.*_bm    : 0.96/1.02  # asymm: -0.023
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*4j_.*_bm    : 1.00/1.10  # asymm: +0.100
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*4j_.*_bm    : 0.90/1.20  # asymm: +0.080
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*3j_.*       : 0.96/1.09  # asymm: +0.040
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*3j_.*       : 1.00/1.04  # asymm: +0.043
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*3j_.*       : 1.10
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*3j_.*       : 1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*3j_.*       : 1.09
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*3j_.*       : 0.96/1.00  # asymm: -0.042
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*3j_.*       : 1.04
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*3j_.*       : 1.11
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*3j_.*_bt    : 1.11
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*3j_.*_bt    : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*3j_.*_bt    : 1.13
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*3j_.*_bt    : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*3j_.*_bt    : 0.85/1.08  # asymm: -0.089
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*3j_.*_bt    : 1.00/0.92  # asymm: -0.077
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*3j_.*_bt    : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*3j_.*_bt    : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*3j_.*_bl    : 0.93/1.00  # asymm: -0.071
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*3j_.*_bl    : 0.93/1.00  # asymm: -0.071
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*3j_.*_bl    : 0.93/1.05  # asymm: -0.017
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*3j_.*_bl    : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*3j_.*_bl    : 1.00/1.09  # asymm: +0.091
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*3j_.*_bl    : 1.00/1.09  # asymm: +0.091
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*3j_.*_bl    : 1.04
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*3j_.*_bl    : 1.13
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*3j_.*_bl2   : 1.00/1.04  # asymm: +0.040
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*3j_.*_bl2   : 1.00/1.04  # asymm: +0.040
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*3j_.*_bl2   : - # negligible: 0.99/1.01
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*3j_.*_bl2   : - # negligible: 1.00/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*3j_.*_bl2   : 0.96/1.00  # asymm: -0.038
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*3j_.*_bl2   : 0.96/1.00  # asymm: -0.038
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*3j_.*_bl2   : 0.96/1.03  # asymm: -0.015
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*3j_.*_bl2   : 0.92/1.07  # asymm: -0.020
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*3j_.*_ba2   : 0.97/1.06  # asymm: +0.027
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*3j_.*_ba2   : 1.00/1.03  # asymm: +0.029
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*3j_.*_ba2   : 1.05
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*3j_.*_ba2   : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*3j_.*_ba2   : 0.95/1.08  # asymm: +0.022
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*3j_.*_ba2   : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*3j_.*_ba2   : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*3j_.*_ba2   : 0.92/1.07  # asymm: -0.019
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*3j_.*_bam   : 1.10
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*3j_.*_bam   : 0.95/1.00  # asymm: -0.048
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*3j_.*_bam   : 1.11
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*3j_.*_bam   : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*3j_.*_bam   : 1.10
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*3j_.*_bam   : 0.95/1.00  # asymm: -0.045
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*3j_.*_bam   : 1.05
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*3j_.*_bam   : 1.11
+CMS_ttHlep_eff_b  : ttH                  : 2lss_ee.*3j_.*_bm    : 1.10
+CMS_ttHlep_fake_b : ttH                  : 2lss_ee.*3j_.*_bm    : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : TTW                  : 2lss_ee.*3j_.*_bm    : 1.08
+CMS_ttHlep_fake_b : TTW                  : 2lss_ee.*3j_.*_bm    : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_ee.*3j_.*_bm    : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : TTZ                  : 2lss_ee.*3j_.*_bm    : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_ee.*3j_.*_bm    : 1.06
+CMS_ttHlep_fake_b : WZ                   : 2lss_ee.*3j_.*_bm    : 0.94/1.12  # asymm: +0.052
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*          : 1.07
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*          : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*          : 1.07
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*          : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*          : 1.07
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*          : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*          : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*          : 1.13
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*_bt       : 1.11
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*_bt       : 1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*_bt       : 1.12
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*_bt       : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*_bt       : 1.11
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*_bt       : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*_bt       : 1.09
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*_bt       : 0.96/1.09  # asymm: +0.040
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*_bl       : 1.02
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*_bl       : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*_bl       : 1.03
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*_bl       : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*_bl       : 1.03
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*_bl       : 1.03
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*_bl       : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*_bl       : 1.14
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*_bl2      : - # negligible: 1.00/0.99
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*_bl2      : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*_bl2      : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*_bl2      : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*_bl2      : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*_bl2      : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*_bl2      : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*_bl2      : 1.09
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*_ba2      : 1.04
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*_ba2      : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*_ba2      : 1.04
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*_ba2      : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*_ba2      : 1.04
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*_ba2      : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*_ba2      : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*_ba2      : 1.09
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*_bam      : 1.08
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*_bam      : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*_bam      : 1.08
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*_bam      : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*_bam      : 1.08
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*_bam      : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*_bam      : 1.07
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*_bam      : 1.11
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*_bm       : 1.03
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*_bm       : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*_bm       : 1.04
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*_bm       : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*_bm       : 1.05
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*_bm       : 1.03
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*_bm       : 1.06
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*_bm       : 1.12
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*4j_.*     : 1.06
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*4j_.*     : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*4j_.*     : 1.07
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*4j_.*     : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*4j_.*     : 1.06
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*4j_.*     : 1.03
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*4j_.*     : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*4j_.*     : 1.13
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*4j_.*_bt  : 1.11
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*4j_.*_bt  : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*4j_.*_bt  : 1.12
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*4j_.*_bt  : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*4j_.*_bt  : 1.11
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*4j_.*_bt  : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*4j_.*_bt  : 1.12
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*4j_.*_bt  : 1.12
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*4j_.*_bl  : - # negligible: 0.99/1.01
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*4j_.*_bl  : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*4j_.*_bl  : 1.02
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*4j_.*_bl  : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*4j_.*_bl  : 1.02
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*4j_.*_bl  : 1.03
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*4j_.*_bl  : 1.02
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*4j_.*_bl  : 1.14
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*4j_.*_bl2 : - # negligible: 1.01/0.99
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*4j_.*_bl2 : 1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*4j_.*_bl2 : - # negligible: 1.01/0.99
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*4j_.*_bl2 : - # negligible: 0.99/1.00
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*4j_.*_bl2 : 1.01/0.98  # asymm: -0.016
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*4j_.*_bl2 : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*4j_.*_bl2 : 1.02
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*4j_.*_bl2 : 0.89/1.10  # asymm: -0.024
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*4j_.*_ba2 : 1.04
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*4j_.*_ba2 : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*4j_.*_ba2 : 1.04
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*4j_.*_ba2 : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*4j_.*_ba2 : 1.04
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*4j_.*_ba2 : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*4j_.*_ba2 : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*4j_.*_ba2 : 1.11
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*4j_.*_bam : 1.07
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*4j_.*_bam : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*4j_.*_bam : 1.08
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*4j_.*_bam : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*4j_.*_bam : 1.08
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*4j_.*_bam : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*4j_.*_bam : 0.96/1.07  # asymm: +0.034
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*4j_.*_bam : 1.12
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*4j_.*_bm  : 1.02
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*4j_.*_bm  : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*4j_.*_bm  : 1.03
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*4j_.*_bm  : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*4j_.*_bm  : 0.96/1.03  # asymm: -0.016
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*4j_.*_bm  : 1.03
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*4j_.*_bm  : 1.06
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*4j_.*_bm  : 1.12
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*3j_.*     : 1.08
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*3j_.*     : 0.96/1.02  # asymm: -0.019
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*3j_.*     : 1.08
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*3j_.*     : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*3j_.*     : 1.09
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*3j_.*     : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*3j_.*     : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*3j_.*     : 1.14
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*3j_.*_bt  : 1.12
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*3j_.*_bt  : 0.96/1.00  # asymm: -0.037
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*3j_.*_bt  : 1.12
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*3j_.*_bt  : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*3j_.*_bt  : 1.12
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*3j_.*_bt  : 1.03
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*3j_.*_bt  : 0.86/1.14  # asymm: -0.020
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*3j_.*_bt  : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*3j_.*_bl  : 1.04
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*3j_.*_bl  : 1.04
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*3j_.*_bl  : 1.04
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*3j_.*_bl  : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*3j_.*_bl  : 0.93/1.04  # asymm: -0.038
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*3j_.*_bl  : 0.96/1.00  # asymm: -0.036
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*3j_.*_bl  : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*3j_.*_bl  : 1.14
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*3j_.*_bl2 : 1.00/1.02  # asymm: +0.018
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*3j_.*_bl2 : 1.00/1.02  # asymm: +0.018
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*3j_.*_bl2 : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*3j_.*_bl2 : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*3j_.*_bl2 : 1.02
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*3j_.*_bl2 : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*3j_.*_bl2 : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*3j_.*_bl2 : 1.10
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*3j_.*_ba2 : 1.04
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*3j_.*_ba2 : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*3j_.*_ba2 : 1.04
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*3j_.*_ba2 : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*3j_.*_ba2 : 0.93/1.06  # asymm: -0.015
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*3j_.*_ba2 : - # negligible: 0.99/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*3j_.*_ba2 : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*3j_.*_ba2 : 1.09
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*3j_.*_bam : 0.94/1.11  # asymm: +0.036
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*3j_.*_bam : 1.00/1.02  # asymm: +0.021
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*3j_.*_bam : 1.09
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*3j_.*_bam : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*3j_.*_bam : 1.10
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*3j_.*_bam : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*3j_.*_bam : 0.93/1.05  # asymm: -0.027
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*3j_.*_bam : 1.10
+CMS_ttHlep_eff_b  : ttH                  : 2lss_mumu.*3j_.*_bm  : 1.05
+CMS_ttHlep_fake_b : ttH                  : 2lss_mumu.*3j_.*_bm  : 1.05
+CMS_ttHlep_eff_b  : TTW                  : 2lss_mumu.*3j_.*_bm  : 1.05
+CMS_ttHlep_fake_b : TTW                  : 2lss_mumu.*3j_.*_bm  : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_mumu.*3j_.*_bm  : 0.96/1.08  # asymm: +0.037
+CMS_ttHlep_fake_b : TTZ                  : 2lss_mumu.*3j_.*_bm  : 1.00/1.04  # asymm: +0.040
+CMS_ttHlep_eff_b  : WZ                   : 2lss_mumu.*3j_.*_bm  : 1.06
+CMS_ttHlep_fake_b : WZ                   : 2lss_mumu.*3j_.*_bm  : 1.12
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*            : 1.06
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*            : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*            : 1.07
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*            : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*            : 1.07
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*            : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*            : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*            : 1.14
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*_bt         : 1.11
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*_bt         : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*_bt         : 1.12
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*_bt         : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*_bt         : 1.12
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*_bt         : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*_bt         : 0.88/1.08  # asymm: -0.050
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*_bt         : 0.92/1.04  # asymm: -0.043
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*_bl         : 1.02
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*_bl         : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*_bl         : 1.03
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*_bl         : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*_bl         : 1.02
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*_bl         : 1.03
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*_bl         : 1.02
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*_bl         : 1.14
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*_bl2        : - # negligible: 1.00/0.99
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*_bl2        : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*_bl2        : - # negligible: 1.00/0.99
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*_bl2        : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*_bl2        : - # negligible: 1.01/0.99
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*_bl2        : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*_bl2        : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*_bl2        : 1.10
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*_ba2        : 1.04
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*_ba2        : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*_ba2        : 1.04
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*_ba2        : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*_ba2        : 1.04
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*_ba2        : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*_ba2        : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*_ba2        : 1.09
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*_bam        : 1.07
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*_bam        : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*_bam        : 1.08
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*_bam        : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*_bam        : 1.08
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*_bam        : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*_bam        : 1.05
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*_bam        : 1.12
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*_bm         : 1.03
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*_bm         : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*_bm         : 1.03
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*_bm         : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*_bm         : 1.03
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*_bm         : 1.03
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*_bm         : 1.05
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*_bm         : 1.13
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*4j_.*       : 1.06
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*4j_.*       : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*4j_.*       : 1.07
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*4j_.*       : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*4j_.*       : 1.06
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*4j_.*       : 1.03
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*4j_.*       : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*4j_.*       : 1.13
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*4j_.*_bt    : 1.11
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*4j_.*_bt    : 1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*4j_.*_bt    : 1.12
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*4j_.*_bt    : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*4j_.*_bt    : 1.12
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*4j_.*_bt    : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*4j_.*_bt    : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*4j_.*_bt    : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*4j_.*_bl    : 1.02
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*4j_.*_bl    : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*4j_.*_bl    : 1.01
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*4j_.*_bl    : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*4j_.*_bl    : - # negligible: 0.99/1.00
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*4j_.*_bl    : 1.04
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*4j_.*_bl    : 1.02
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*4j_.*_bl    : 0.88/1.12  # asymm: -0.016
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*4j_.*_bl2   : - # negligible: 1.01/0.99
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*4j_.*_bl2   : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*4j_.*_bl2   : 0.99
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*4j_.*_bl2   : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*4j_.*_bl2   : 0.98
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*4j_.*_bl2   : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*4j_.*_bl2   : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*4j_.*_bl2   : 0.90/1.09  # asymm: -0.017
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*4j_.*_ba2   : 1.04
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*4j_.*_ba2   : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*4j_.*_ba2   : 1.04
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*4j_.*_ba2   : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*4j_.*_ba2   : 1.03
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*4j_.*_ba2   : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*4j_.*_ba2   : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*4j_.*_ba2   : 0.91/1.09  # asymm: -0.016
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*4j_.*_bam   : 1.07
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*4j_.*_bam   : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*4j_.*_bam   : 1.08
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*4j_.*_bam   : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*4j_.*_bam   : 1.08
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*4j_.*_bam   : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*4j_.*_bam   : 0.97/1.07  # asymm: +0.031
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*4j_.*_bam   : 0.90/1.13  # asymm: +0.020
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*4j_.*_bm    : 1.03
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*4j_.*_bm    : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*4j_.*_bm    : 1.01
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*4j_.*_bm    : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*4j_.*_bm    : 1.02
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*4j_.*_bm    : 1.04
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*4j_.*_bm    : 0.96/1.07  # asymm: +0.034
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*4j_.*_bm    : 0.89/1.15  # asymm: +0.021
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*3j_.*       : 1.07
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*3j_.*       : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*3j_.*       : 1.08
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*3j_.*       : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*3j_.*       : 1.09
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*3j_.*       : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*3j_.*       : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*3j_.*       : 1.13
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*3j_.*_bt    : 0.88/1.09  # asymm: -0.041
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*3j_.*_bt    : 0.97/1.00  # asymm: -0.030
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*3j_.*_bt    : 1.12
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*3j_.*_bt    : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*3j_.*_bt    : 1.10
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*3j_.*_bt    : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*3j_.*_bt    : 1.10
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*3j_.*_bt    : 0.91/1.00  # asymm: -0.091
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*3j_.*_bl    : 1.04
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*3j_.*_bl    : 0.96/1.02  # asymm: -0.022
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*3j_.*_bl    : 1.04
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*3j_.*_bl    : 1.03
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*3j_.*_bl    : 1.05
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*3j_.*_bl    : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*3j_.*_bl    : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*3j_.*_bl    : 1.13
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*3j_.*_bl2   : - # negligible: 0.99/1.01
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*3j_.*_bl2   : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*3j_.*_bl2   : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*3j_.*_bl2   : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*3j_.*_bl2   : 1.03
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*3j_.*_bl2   : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*3j_.*_bl2   : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*3j_.*_bl2   : 1.09
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*3j_.*_ba2   : 1.04
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*3j_.*_ba2   : 1.01
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*3j_.*_ba2   : 1.04
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*3j_.*_ba2   : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*3j_.*_ba2   : 1.06
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*3j_.*_ba2   : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*3j_.*_ba2   : 1.03
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*3j_.*_ba2   : 1.09
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*3j_.*_bam   : 1.08
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*3j_.*_bam   : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*3j_.*_bam   : 1.09
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*3j_.*_bam   : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*3j_.*_bam   : 1.09
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*3j_.*_bam   : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*3j_.*_bam   : 1.05
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*3j_.*_bam   : 1.11
+CMS_ttHlep_eff_b  : ttH                  : 2lss_em.*3j_.*_bm    : 1.05
+CMS_ttHlep_fake_b : ttH                  : 2lss_em.*3j_.*_bm    : 0.95/1.02  # asymm: -0.026
+CMS_ttHlep_eff_b  : TTW                  : 2lss_em.*3j_.*_bm    : 1.06
+CMS_ttHlep_fake_b : TTW                  : 2lss_em.*3j_.*_bm    : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 2lss_em.*3j_.*_bm    : 1.07
+CMS_ttHlep_fake_b : TTZ                  : 2lss_em.*3j_.*_bm    : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : WZ                   : 2lss_em.*3j_.*_bm    : 1.05
+CMS_ttHlep_fake_b : WZ                   : 2lss_em.*3j_.*_bm    : 1.12
+CMS_ttHlep_eff_b  : ttH                  : 3l.*                 : 1.07
+CMS_ttHlep_fake_b : ttH                  : 3l.*                 : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 3l.*                 : 1.08
+CMS_ttHlep_fake_b : TTW                  : 3l.*                 : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 3l.*                 : 1.08
+CMS_ttHlep_fake_b : TTZ                  : 3l.*                 : 1.01
+CMS_ttHlep_eff_b  : WZ                   : 3l.*                 : 1.04
+CMS_ttHlep_fake_b : WZ                   : 3l.*                 : 1.11
+CMS_ttHlep_eff_b  : ZZ                   : 3l.*                 : 1.00/1.05  # asymm: +0.053
+CMS_ttHlep_fake_b : ZZ                   : 3l.*                 : 0.89/1.16  # asymm: +0.036
+CMS_ttHlep_eff_b  : ttH                  : 3l.*_bt              : 1.12
+CMS_ttHlep_fake_b : ttH                  : 3l.*_bt              : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 3l.*_bt              : 1.11
+CMS_ttHlep_fake_b : TTW                  : 3l.*_bt              : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : TTZ                  : 3l.*_bt              : 1.12
+CMS_ttHlep_fake_b : TTZ                  : 3l.*_bt              : - # negligible: 1.00/1.01
+CMS_ttHlep_eff_b  : WZ                   : 3l.*_bt              : 0.85/1.08  # asymm: -0.089
+CMS_ttHlep_fake_b : WZ                   : 3l.*_bt              : 0.92/1.00  # asymm: -0.077
+CMS_ttHlep_eff_b  : ZZ                   : 3l.*_bt              : 1.00/2.00  # asymm: +1.000
+CMS_ttHlep_fake_b : ZZ                   : 3l.*_bt              : 1.00/2.00  # asymm: +1.000
+CMS_ttHlep_eff_b  : ttH                  : 3l.*_bl              : 1.03
+CMS_ttHlep_fake_b : ttH                  : 3l.*_bl              : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 3l.*_bl              : 1.03
+CMS_ttHlep_fake_b : TTW                  : 3l.*_bl              : 1.02
+CMS_ttHlep_eff_b  : TTZ                  : 3l.*_bl              : 1.04
+CMS_ttHlep_fake_b : TTZ                  : 3l.*_bl              : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 3l.*_bl              : 1.03
+CMS_ttHlep_fake_b : WZ                   : 3l.*_bl              : 1.12
+CMS_ttHlep_eff_b  : ZZ                   : 3l.*_bl              : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : ZZ                   : 3l.*_bl              : 1.12
+CMS_ttHlep_eff_b  : ttH                  : 3l.*_bl2             : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : ttH                  : 3l.*_bl2             : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 3l.*_bl2             : - # negligible: 1.00/0.99
+CMS_ttHlep_fake_b : TTW                  : 3l.*_bl2             : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : TTZ                  : 3l.*_bl2             : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : TTZ                  : 3l.*_bl2             : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 3l.*_bl2             : 1.04
+CMS_ttHlep_fake_b : WZ                   : 3l.*_bl2             : 1.08
+CMS_ttHlep_eff_b  : ZZ                   : 3l.*_bl2             : 0.97/1.00  # asymm: -0.029
+CMS_ttHlep_fake_b : ZZ                   : 3l.*_bl2             : 0.91/1.06  # asymm: -0.033
+CMS_ttHlep_eff_b  : ttH                  : 3l.*_ba2             : 1.04
+CMS_ttHlep_fake_b : ttH                  : 3l.*_ba2             : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTW                  : 3l.*_ba2             : 1.04
+CMS_ttHlep_fake_b : TTW                  : 3l.*_ba2             : - # negligible: 1.00/1.00
+CMS_ttHlep_eff_b  : TTZ                  : 3l.*_ba2             : 1.04
+CMS_ttHlep_fake_b : TTZ                  : 3l.*_ba2             : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 3l.*_ba2             : 1.04
+CMS_ttHlep_fake_b : WZ                   : 3l.*_ba2             : 1.07
+CMS_ttHlep_eff_b  : ZZ                   : 3l.*_ba2             : 1.03
+CMS_ttHlep_fake_b : ZZ                   : 3l.*_ba2             : 1.09
+CMS_ttHlep_eff_b  : ttH                  : 3l.*_bam             : 1.08
+CMS_ttHlep_fake_b : ttH                  : 3l.*_bam             : 1.02
+CMS_ttHlep_eff_b  : TTW                  : 3l.*_bam             : 1.09
+CMS_ttHlep_fake_b : TTW                  : 3l.*_bam             : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 3l.*_bam             : 1.09
+CMS_ttHlep_fake_b : TTZ                  : 3l.*_bam             : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : WZ                   : 3l.*_bam             : 1.07
+CMS_ttHlep_fake_b : WZ                   : 3l.*_bam             : 1.09
+CMS_ttHlep_eff_b  : ZZ                   : 3l.*_bam             : 0.88/1.00  # asymm: -0.125
+CMS_ttHlep_fake_b : ZZ                   : 3l.*_bam             : 0.88/1.00  # asymm: -0.125
+CMS_ttHlep_eff_b  : ttH                  : 3l.*_bm              : 0.96/1.03  # asymm: -0.016
+CMS_ttHlep_fake_b : ttH                  : 3l.*_bm              : 1.03
+CMS_ttHlep_eff_b  : TTW                  : 3l.*_bm              : 1.05
+CMS_ttHlep_fake_b : TTW                  : 3l.*_bm              : - # negligible: 0.99/1.01
+CMS_ttHlep_eff_b  : TTZ                  : 3l.*_bm              : 1.06
+CMS_ttHlep_fake_b : TTZ                  : 3l.*_bm              : 1.02
+CMS_ttHlep_eff_b  : WZ                   : 3l.*_bm              : 1.06
+CMS_ttHlep_fake_b : WZ                   : 3l.*_bm              : 1.10
+CMS_ttHlep_eff_b  : ZZ                   : 3l.*_bm              : - # negligible: 1.00/1.00
+CMS_ttHlep_fake_b : ZZ                   : 3l.*_bm              : 0.83/1.17  # asymm: -0.028
