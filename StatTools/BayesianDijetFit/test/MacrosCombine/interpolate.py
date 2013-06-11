@@ -38,6 +38,8 @@ if len(sys.argv)>3:
 else:
    suffix=""
 
+ngenevents=[30000,30000,30000,30000,30000,30000,30000,30000]
+
 if "Qstar" in inputRoot:
   masses=[1000,1500,2000,3000,4000]
   if outmjj >= 1000 and outmjj < 1500 :
@@ -54,6 +56,7 @@ if "Qstar" in inputRoot:
     mjjhigh = 4000
 elif "Bulk" in inputRoot:
   masses=[1000,1500,1800,1900,2000,2200,2500]
+  ngenevents=[49992,45992,36807,47995,48995,49745,46612]
   if outmjj >= 1000 and outmjj < 1500 :
     mjjlow = 1000
     mjjhigh = 1500
@@ -127,26 +130,6 @@ for histname in histnames:
  fhigh = inputhigh.Get( histname )
  fhigh.SetName( 'high' ) 
  
- xvalues=r.vector('double')()
- yvalues=r.vector('double')()
- for x in masses:
-   inputf = TFile( inputRoot + str(x) + suffix + '.root' )
-   f = inputf.Get( histname )
-   xvalues.push_back(x)
-   yvalues.push_back(f.Integral())
- interpolator=r.Math.Interpolator(xvalues,yvalues)
- integral=interpolator.Eval(outmjj)
- #if mjjhigh != mjjlow:
- #    integral=flow.Integral() + (fhigh.Integral() - flow.Integral())*(outmjj - mjjlow)/float(mjjhigh - mjjlow)
- #else:
- #    integral=flow.Integral()
- 
- flow.Scale( 1/flow.Integral() )
- fhigh.Scale( 1/fhigh.Integral() )
- 
- #print fhigh.Integral()
- #N = f1000.GetNbinsX()
- 
  output.cd()
  #su = 0.
  foutmjj = TH1F(histname, histname, 7000, 0, 7000 )
@@ -154,11 +137,12 @@ for histname in histnames:
  #foutmjjfrac = TH1F( 'frac'+str(outmjj), 'frac'+str(outmjj), 10000, 0.3, 1.3)
  #foutmjjfit =  TH1F('doublefit'+str(outmjj), 'doublefit'+str(outmjj), 7000, 0, 7000 )
  
+ # interpolate the shape linearly
  su = 0
  su1 = 0.0
  for i in range(7001) :
      
-     x = 0.3 + i/7000.0
+     x = 0.0 + i/7000.0*2.0 # interpolation range: [0*mass,2*mass]
      masslow = x*mjjlow
      masshigh = x*mjjhigh
      #print masshigh
@@ -166,21 +150,28 @@ for histname in histnames:
      prob1 = flow.GetBinContent( flow.FindBin(masslow) ) 
      prob2 = fhigh.GetBinContent( fhigh.FindBin(masshigh) ) 
     # print x, prob1, prob2
-     if outmjj != 1000 and outmjj != 1500 and outmjj != 2000 and outmjj != 3000 \
-              and outmjj != 4000 : 
-         prob = prob1 + (prob2 - prob1)*(massout - mjjlow)/float(mjjhigh - mjjlow)
-     else :
-         prob =( prob1 + prob2 )/2.0
+     prob = prob1 + (prob2 - prob1)*(massout - mjjlow)/float(mjjhigh - mjjlow)
  #    print x, prob
      #foutmjjfrac.SetBinContent(i+1, max(0,prob))
-     foutmjj.SetBinContent( foutmjj.FindBin(massout+0.5), max(0,prob))
+     foutmjj.SetBinContent( foutmjj.FindBin(massout), max(0,prob))
      su += prob
      su1 += prob2
- print su
- print su1
+ #print su
+ #print su1
 
- foutmjj.Scale( integral/foutmjj.Integral() )
- 
+ # interpolate the peak height smoothly
+ xvalues=r.vector('double')()
+ yvalues=r.vector('double')()
+ for x in masses:
+   inputf = TFile( inputRoot + str(x) + suffix + '.root' )
+   f = inputf.Get( histname )
+   xvalues.push_back(x)
+   yvalues.push_back(f.Integral(f.FindBin(x*0.8),f.FindBin(x*1.2))/ngenevents[masses.index(x)]*30000.)
+ interpolator=r.Math.Interpolator(xvalues,yvalues)
+ integral=interpolator.Eval(outmjj)
+ foutmjj.Scale( integral/foutmjj.Integral(foutmjj.FindBin(outmjj*0.8),foutmjj.FindBin(outmjj*1.2)) )
+
+ # fit not used currently
  fit_gaus=TF1('fit gaus','gaus',outmjj*frac1, outmjj*frac2 )
  #foutmjj.Fit(fit_gaus,"R0N")
  #print "fit mean, width", fit_gaus.GetParameter(1), fit_gaus.GetParameter(2)

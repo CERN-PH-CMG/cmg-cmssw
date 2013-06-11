@@ -36,6 +36,7 @@
    
    string inFile("Wprime");
    if (iSample == 1) inFile = string("RSGWWherwig");
+   //if (iSample == 1) inFile = string("Bulk");
    if (iSample == 2) inFile = string("RSGZZherwig");
    if (iSample == 3) inFile = string("QstarQW");
    if (iSample == 4) inFile = string("QstarQZ");
