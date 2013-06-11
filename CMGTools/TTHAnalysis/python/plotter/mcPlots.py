@@ -390,7 +390,7 @@ class PlotMaker:
                     if options.doStatTests:
                         doStatTests(total,pmap['data'], options.doStatTests, legendCorner=pspec.getOption('Legend','TR'))
                 if pspec.hasOption('YMin') and pspec.hasOption('YMax'):
-                    total.GetYAxis().SetRangeUser(pspec.getOption('YMin',1.0), pspec.getOption('YMax',1.0))
+                    total.GetYaxis().SetRangeUser(pspec.getOption('YMin',1.0), pspec.getOption('YMax',1.0))
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
                                   cutoff=pspec.getOption('LegendCutoff', 1e-5 if c1.GetLogy() else 1e-2),
                                   textSize=(0.039 if doRatio else 0.035))
