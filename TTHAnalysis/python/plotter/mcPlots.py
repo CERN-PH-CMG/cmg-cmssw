@@ -284,10 +284,9 @@ class PlotMaker:
                 # blinding policy
                 blind = pspec.getOption('Blinded','None') if 'data' in pmap else 'None'
                 xblind = [9e99,-9e99]
-                if re.match(r'(bin|x)\s*([<>]=?)\s*(\+|-)?\d+(\.\d+)?', blind):
-                    (swhat,sop,scutval) = blind.split()
-                    xfunc = (lambda h,b: b) if swhat == 'bin' else (lambda h,b : h.GetXaxis().GetBinCenter(b));
-                    test  = eval("lambda x : x %s %s" % (sop,scutval))
+                if re.match(r'(bin|x)\s*([<>]?)\s*(\+|-)?\d+(\.\d+)?|(\+|-)?\d+(\.\d+)?\s*<\s*(bin|x)\s*<\s*(\+|-)?\d+(\.\d+)?', blind):
+                    xfunc = (lambda h,b: b)             if 'bin' in blind else (lambda h,b : h.GetXaxis().GetBinCenter(b));
+                    test  = eval("lambda bin : "+blind) if 'bin' in blind else eval("lambda x : "+blind) 
                     hdata = pmap['data']
                     for b in xrange(1,hdata.GetNbinsX()+1):
                         if test(xfunc(hdata,b)):
@@ -390,6 +389,8 @@ class PlotMaker:
                         xblind.append(blindbox) # so it doesn't get deleted
                     if options.doStatTests:
                         doStatTests(total,pmap['data'], options.doStatTests, legendCorner=pspec.getOption('Legend','TR'))
+                if pspec.hasOption('YMin') and pspec.hasOption('YMax'):
+                    total.GetYAxis().SetRangeUser(pspec.getOption('YMin',1.0), pspec.getOption('YMax',1.0))
                 doLegend(pmap,mca,corner=pspec.getOption('Legend','TR'),
                                   cutoff=pspec.getOption('LegendCutoff', 1e-5 if c1.GetLogy() else 1e-2),
                                   textSize=(0.039 if doRatio else 0.035))
