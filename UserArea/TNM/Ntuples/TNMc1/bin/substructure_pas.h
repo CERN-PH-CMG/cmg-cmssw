@@ -228,6 +228,8 @@ std::vector<float>	jethelperCA8pruned_daughter_1_neutralHadronEnergyFraction(10,
 std::vector<double>	jethelperCA8pruned_daughter_1_phi(10,0);
 std::vector<float>	jethelperCA8pruned_daughter_1_photonEnergyFraction(10,0);
 std::vector<double>	jethelperCA8pruned_daughter_1_pt(10,0);
+std::vector<double>	jethelperCA8pruned_tau1(10,0);
+std::vector<double>	jethelperCA8pruned_tau2(10,0);
 
 std::vector<double>	jethelperGenCA8_energy(10,0);
 std::vector<double>	jethelperGenCA8_et(10,0);
@@ -245,6 +247,8 @@ std::vector<double>	jethelperGenCA8_tau1Pt2(10,0);
 std::vector<double>	jethelperGenCA8_tau2Pt2(10,0);
 std::vector<double>	jethelperGenCA8_tau1CHS(10,0);
 std::vector<double>	jethelperGenCA8_tau2CHS(10,0);
+std::vector<double>	jethelperGenCA8_tau21PUcorrected(10,0);
+std::vector<double>	jethelperGenCA8_tau21PUcorrectedCHS(10,0);
 std::vector<int>	jethelperGenCA8_NCHS(10,0);
 std::vector<double>	jethelperGenCA8_C2beta15(10,0);
 std::vector<double>	jethelperGenCA8_C2beta17(10,0);
@@ -270,6 +274,8 @@ std::vector<double>	jethelperGenCA8pruned_daughter_1_eta(10,0);
 std::vector<double>	jethelperGenCA8pruned_daughter_1_mass(10,0);
 std::vector<double>	jethelperGenCA8pruned_daughter_1_phi(10,0);
 std::vector<double>	jethelperGenCA8pruned_daughter_1_pt(10,0);
+std::vector<double>	jethelperGenCA8pruned_tau1(10,0);
+std::vector<double>	jethelperGenCA8pruned_tau2(10,0);
 
 std::vector<float>	jethelperAK7_combinedSecondaryVertexBJetTags(10,0);
 std::vector<float>	jethelperAK7_combinedSecondaryVertexMVABJetTags(10,0);

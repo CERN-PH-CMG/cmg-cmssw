@@ -194,6 +194,8 @@ int main(int argc, char** argv)
   stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_mass", jethelperCA8pruned_daughter_1_mass);
   stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_phi", jethelperCA8pruned_daughter_1_phi);
   stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.daughter_1_pt", jethelperCA8pruned_daughter_1_pt);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.tau1", jethelperCA8pruned_tau1);
+  stream.select("patJetHelper_selectedPatJetsCA8CHSpruned.tau2", jethelperCA8pruned_tau2);
 
   stream.select("patJetHelper_patGenJetsCA8CHS.energy", jethelperGenCA8_energy);
   stream.select("patJetHelper_patGenJetsCA8CHS.et", jethelperGenCA8_et);
@@ -210,6 +212,8 @@ int main(int argc, char** argv)
   stream.select("patJetHelper_patGenJetsCA8CHS.genTau2Pt2", jethelperGenCA8_tau2Pt2);
   stream.select("patJetHelper_patGenJetsCA8CHS.genTau1CHS", jethelperGenCA8_tau1CHS);
   stream.select("patJetHelper_patGenJetsCA8CHS.genTau2CHS", jethelperGenCA8_tau2CHS);
+  stream.select("patJetHelper_patGenJetsCA8CHS.genTau21PUcorrected", jethelperGenCA8_tau21PUcorrected);
+  stream.select("patJetHelper_patGenJetsCA8CHS.genTau21PUcorrectedCHS", jethelperGenCA8_tau21PUcorrectedCHS);
   stream.select("patJetHelper_patGenJetsCA8CHS.genNCHS", jethelperGenCA8_NCHS);
   stream.select("patJetHelper_patGenJetsCA8CHS.genC2beta15", jethelperGenCA8_C2beta15);
   stream.select("patJetHelper_patGenJetsCA8CHS.genC2beta17", jethelperGenCA8_C2beta17);
@@ -235,6 +239,8 @@ int main(int argc, char** argv)
   stream.select("patJetHelper_patGenJetsCA8CHSpruned.daughter_1_mass", jethelperGenCA8pruned_daughter_1_mass);
   stream.select("patJetHelper_patGenJetsCA8CHSpruned.daughter_1_phi", jethelperGenCA8pruned_daughter_1_phi);
   stream.select("patJetHelper_patGenJetsCA8CHSpruned.daughter_1_pt", jethelperGenCA8pruned_daughter_1_pt);
+  stream.select("patJetHelper_patGenJetsCA8CHSpruned.genTau1", jethelperGenCA8pruned_tau1);
+  stream.select("patJetHelper_patGenJetsCA8CHSpruned.genTau2", jethelperGenCA8pruned_tau2);
 
   stream.select("patJetHelper_selectedPatJetsAK7CHSwithQjets.combinedSecondaryVertexBJetTags", jethelperAK7_combinedSecondaryVertexBJetTags);
   stream.select("patJetHelper_selectedPatJetsAK7CHSwithQjets.combinedSecondaryVertexMVABJetTags", jethelperAK7_combinedSecondaryVertexMVABJetTags);
@@ -335,6 +341,9 @@ int main(int argc, char** argv)
   stream.select("recoGenParticleHelper_genParticles.lastDaughter", genparticlehelper_lastDaughter);
   stream.select("recoGenParticleHelper_genParticles.lastMother", genparticlehelper_lastMother);
   stream.select("recoGenParticleHelper_genParticles.pdgId", genparticlehelper_pdgId);
+  stream.select("recoGenParticleHelper_genParticles.charge", genparticlehelper_charge);
+  stream.select("recoGenParticleHelper_genParticles.eta", genparticlehelper_eta);
+  stream.select("recoGenParticleHelper_genParticles.phi", genparticlehelper_phi);
 /*
   stream.select("cmgPFJet_cmgPFJetSel.energy", jethelperCMG_energy);
   stream.select("cmgPFJet_cmgPFJetSel.eta", jethelperCMG_eta);
@@ -396,24 +405,33 @@ int main(int argc, char** argv)
   double weight;
   double Jet1CA8MassDrop;
   double Jet1CA8Nsub;
+  double Jet1CA8NsubPruned;
   double Jet1GenCA8MassDrop;
   double Jet1GenCA8Nsub;
+  double Jet1GenCA8NsubPruned;
   double Jet1GenCA8NsubPt2;
   double Jet1GenCA8NsubCHS;
   int genWcharge=0;
+  double DijetMassCA8=0;
+  double deta=0;
+  double GenDijetMassCA8=0;
+  double Gendeta=0;
 
   TTree *dijetWtag = new TTree("dijetWtag", "dijetWtag");
   dijetWtag->Branch("nPU",&pileupsummaryinfo_getPU_NumInteractions[0],"nPU/I");
   dijetWtag->Branch("nJets",&nJetsCA8,"nJets/D");
+  dijetWtag->Branch("deta",&deta,"deta/D");
+  dijetWtag->Branch("DijetMass",&DijetMassCA8,"DijetMass/D");
   dijetWtag->Branch("Jet1pt",&jethelperCA8_pt[0],"Jet1pt/D");
   dijetWtag->Branch("Jet1eta",&jethelperCA8_eta[0],"Jet1eta/D");
   dijetWtag->Branch("Jet1phi",&jethelperCA8_phi[0],"Jet1phi/D");
   dijetWtag->Branch("Jet1Mass",&jethelperCA8pruned_mass[0],"Jet1Mass/D");
   dijetWtag->Branch("Jet1MassDrop",&Jet1CA8MassDrop,"Jet1MassDrop/D");
   dijetWtag->Branch("Jet1Nsub",&Jet1CA8Nsub,"Jet1Nsub/D");
-  dijetWtag->Branch("Jet1C2beta15",&jethelperCA8_C2beta15[0],"Jet1C2beta15/D");
+  dijetWtag->Branch("Jet1NsubPruned",&Jet1CA8NsubPruned,"Jet1NsubPruned/D");
+  //dijetWtag->Branch("Jet1C2beta15",&jethelperCA8_C2beta15[0],"Jet1C2beta15/D");
   dijetWtag->Branch("Jet1C2beta17",&jethelperCA8_C2beta17[0],"Jet1C2beta17/D");
-  dijetWtag->Branch("Jet1C2beta20",&jethelperCA8_C2beta20[0],"Jet1C2beta20/D");
+  //dijetWtag->Branch("Jet1C2beta20",&jethelperCA8_C2beta20[0],"Jet1C2beta20/D");
   dijetWtag->Branch("Jet1jetCharge03",&jethelperCA8_jetCharge03[0],"Jet1jetCharge03/D");
   dijetWtag->Branch("Jet1jetCharge05",&jethelperCA8_jetCharge05[0],"Jet1jetCharge05/D");
   dijetWtag->Branch("Jet1jetCharge10",&jethelperCA8_jetCharge10[0],"Jet1jetCharge10/D");
@@ -424,18 +442,23 @@ int main(int argc, char** argv)
   dijetWtag->Branch("Jet1Pt2",&jethelperCA8_Pt2[0],"Jet1Pt2/D");
   dijetWtag->Branch("Jet1genWcharge",&genWcharge,"Jet1genWcharge/I");
   dijetWtag->Branch("nGenJets",&nGenJetsCA8,"nGenJets/D");
+  dijetWtag->Branch("Gendeta",&Gendeta,"Gendeta/D");
+  dijetWtag->Branch("GenDijetMass",&GenDijetMassCA8,"GenDijetMass/D");
   dijetWtag->Branch("GenJet1pt",&jethelperGenCA8_pt[0],"GenJet1pt/D");
   dijetWtag->Branch("GenJet1eta",&jethelperGenCA8_eta[0],"GenJet1eta/D");
   dijetWtag->Branch("GenJet1phi",&jethelperGenCA8_phi[0],"GenJet1phi/D");
   dijetWtag->Branch("GenJet1Mass",&jethelperGenCA8pruned_mass[0],"GenJet1Mass/D");
   dijetWtag->Branch("GenJet1MassDrop",&Jet1GenCA8MassDrop,"GenJet1MassDrop/D");
   dijetWtag->Branch("GenJet1Nsub",&Jet1GenCA8Nsub,"GenJet1Nsub/D");
+  dijetWtag->Branch("GenJet1NsubPruned",&Jet1GenCA8NsubPruned,"GenJet1NsubPruned/D");
   dijetWtag->Branch("GenJet1NsubPt2",&Jet1GenCA8NsubPt2,"GenJet1NsubPt2/D");
   dijetWtag->Branch("GenJet1NsubCHS",&Jet1GenCA8NsubCHS,"GenJet1NsubCHS/D");
+  dijetWtag->Branch("GenJet1NsubPUcorrected",&jethelperGenCA8_tau21PUcorrected[0],"GenJet1NsubPUcorrected/D");
+  dijetWtag->Branch("GenJet1NsubPUcorrectedCHS",&jethelperGenCA8_tau21PUcorrectedCHS[0],"GenJet1NsubPUcorrectedCHS/D");
   dijetWtag->Branch("GenJet1NCHS",&jethelperGenCA8_NCHS[0],"GenJet1NCHS/I");
-  dijetWtag->Branch("GenJet1C2beta15",&jethelperGenCA8_C2beta15[0],"GenJet1C2beta15/D");
+  //dijetWtag->Branch("GenJet1C2beta15",&jethelperGenCA8_C2beta15[0],"GenJet1C2beta15/D");
   dijetWtag->Branch("GenJet1C2beta17",&jethelperGenCA8_C2beta17[0],"GenJet1C2beta17/D");
-  dijetWtag->Branch("GenJet1C2beta20",&jethelperGenCA8_C2beta20[0],"GenJet1C2beta20/D");
+  //dijetWtag->Branch("GenJet1C2beta20",&jethelperGenCA8_C2beta20[0],"GenJet1C2beta20/D");
   dijetWtag->Branch("GenJet1C2beta17CHS",&jethelperGenCA8_C2beta17CHS[0],"GenJet1C2beta17CHS/D");
   dijetWtag->Branch("GenJet1jetCharge03",&jethelperGenCA8_jetCharge03[0],"GenJet1jetCharge03/D");
   dijetWtag->Branch("GenJet1jetCharge05",&jethelperGenCA8_jetCharge05[0],"GenJet1jetCharge05/D");
@@ -482,6 +505,7 @@ int main(int argc, char** argv)
           Jet1CA8MassDrop = max(jethelperCA8pruned_daughter_0_mass[0],jethelperCA8pruned_daughter_1_mass[0])/jethelperCA8pruned_mass[0]/jethelperCA8pruned_uncor_pt[0]*jethelperCA8pruned_pt[0];
 	  if ((jethelperCA8pruned_daughter_0_mass[0]<0.0001)||(jethelperCA8pruned_daughter_1_mass[0]<0.0001)) Jet1CA8MassDrop = 2;
           Jet1CA8Nsub = jethelperCA8_tau2[0]/jethelperCA8_tau1[0];
+          Jet1CA8NsubPruned = jethelperCA8pruned_tau2[0]/jethelperCA8pruned_tau1[0];
           }           
 
           nGenJetsCA8=0;
@@ -497,15 +521,18 @@ int main(int argc, char** argv)
           Jet1GenCA8MassDrop = max(jethelperGenCA8pruned_daughter_0_mass[0],jethelperGenCA8pruned_daughter_1_mass[0])/jethelperGenCA8pruned_mass[0]/jethelperGenCA8pruned_pt[0]*jethelperGenCA8pruned_pt[0];
 	  if ((jethelperGenCA8pruned_daughter_0_mass[0]<0.0001)||(jethelperGenCA8pruned_daughter_1_mass[0]<0.0001)) Jet1GenCA8MassDrop = 2;
           Jet1GenCA8Nsub = jethelperGenCA8_tau2[0]/jethelperGenCA8_tau1[0];
+          Jet1GenCA8NsubPruned = jethelperGenCA8pruned_tau2[0]/jethelperGenCA8pruned_tau1[0];
           Jet1GenCA8NsubPt2 = jethelperGenCA8_tau2Pt2[0]/jethelperGenCA8_tau1Pt2[0];
           Jet1GenCA8NsubCHS = jethelperGenCA8_tau2CHS[0]/jethelperGenCA8_tau1CHS[0];
           }
 	  
           for(int i=0;i<ngenparticlehelper;++i)
 	  {
-	      if((genparticlehelper_pdgId[i]==-24)&&(DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
+if((DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
+//   std::cerr << genparticlehelper_pdgId[i] << "," << genparticlehelper_charge[i] << "," << DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0]) << std::endl;
+	      if((abs(genparticlehelper_pdgId[i])==24)&&(genparticlehelper_charge[i]<0)&&(DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
                   genWcharge=-1;
-if((genparticlehelper_pdgId[i]==24)&&(DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
+if((abs(genparticlehelper_pdgId[i])==24)&&(genparticlehelper_charge[i]>0)&&(DeltaRfun(genparticlehelper_eta[i],jethelperCA8_eta[0],genparticlehelper_phi[i],jethelperCA8_phi[0])<0.2))
                   genWcharge=1;
           }
 
@@ -521,10 +548,30 @@ if((genparticlehelper_pdgId[i]==24)&&(DeltaRfun(genparticlehelper_eta[i],jethelp
 	     (triggerresultshelper_EcalDeadCellTriggerPrimitiveFilterPath!=0))
 	     datafiltersactive=true;
 
-          //if(DijetMass>1600)
-          //    cout << "every " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << endl;
-	  if(!((((jethelperCA8_pt.size()>=1)&&(jethelperCA8_pt[0]>400)&&(fabs(jethelperCA8_eta[0])<2.5))||
-	        ((jethelperGenCA8_pt.size()>=1)&&(jethelperGenCA8_pt[0]>400)&&(fabs(jethelperGenCA8_eta[0])<2.5)))&&
+          DijetMassCA8=0;
+	  deta=0;
+          if(jethelperCA8_pt.size()>=2)
+	  {
+              TLorentzVector Jet1;
+              TLorentzVector Jet2;
+              Jet1.SetPtEtaPhiE(jethelperCA8_pt[0],jethelperCA8_eta[0],jethelperCA8_phi[0],jethelperCA8_energy[0]);
+              Jet2.SetPtEtaPhiE(jethelperCA8_pt[1],jethelperCA8_eta[1],jethelperCA8_phi[1],jethelperCA8_energy[1]);
+              DijetMassCA8 = (Jet1+Jet2).M();
+              deta = fabs(jethelperCA8_eta[0]-jethelperCA8_eta[1]);
+          }
+          GenDijetMassCA8=0;
+	  Gendeta=0;
+          if(jethelperGenCA8_pt.size()>=2)
+	  {
+              TLorentzVector Jet1;
+              TLorentzVector Jet2;
+              Jet1.SetPtEtaPhiE(jethelperGenCA8_pt[0],jethelperGenCA8_eta[0],jethelperGenCA8_phi[0],jethelperGenCA8_energy[0]);
+              Jet2.SetPtEtaPhiE(jethelperGenCA8_pt[1],jethelperGenCA8_eta[1],jethelperGenCA8_phi[1],jethelperGenCA8_energy[1]);
+              GenDijetMassCA8 = (Jet1+Jet2).M();
+              Gendeta = fabs(jethelperGenCA8_eta[0]-jethelperGenCA8_eta[1]);
+          }
+	  if(!((((jethelperCA8_pt.size()>=2)&&(jethelperCA8_pt[0]>400)&&(fabs(jethelperCA8_eta[0])<2.5))||
+	        ((jethelperGenCA8_pt.size()>=2)&&(jethelperGenCA8_pt[0]>400)&&(fabs(jethelperGenCA8_eta[0])<2.5)))&&
 	     
 	   (((jethelperCA8_muonEnergyFraction[0]<0.80)&&
 	     //(jethelper_neutralHadronEnergyFraction[0]<0.99)&&
