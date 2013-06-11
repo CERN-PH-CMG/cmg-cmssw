@@ -115,7 +115,7 @@ def Plot(files, label, obs):
     c1.SetLogy(1)
     mg.SetTitle("")
     mg.Draw("AP")
-    mg.GetXaxis().SetTitle("resonance mass (GeV)")
+    mg.GetXaxis().SetTitle("Resonance mass (GeV)")
     if withAcceptance:
         mg.GetYaxis().SetTitle("#sigma #times BR(X #rightarrow "+label.split("_")[0]+") #times A (pb)")
     else:
