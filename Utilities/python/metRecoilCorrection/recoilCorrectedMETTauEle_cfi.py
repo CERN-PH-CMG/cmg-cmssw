@@ -11,7 +11,6 @@ from CMGTools.Utilities.metRecoilCorrection.rootfile_dir import rootfile_dir
 
 recoilCorrectedMETTauEle  = cms.EDProducer(
     "RecoilCorrectedMETProducerTauEle",
-    metSrc = cms.InputTag('cmgPFMET'),
     # the tau is on the first leg and the muon on the second leg
     recBosonSrc = cms.InputTag('cmgTauEleSel'),
     genBosonSrc = cms.InputTag('genWorZ'),

@@ -9,12 +9,16 @@ from SimGeneral.HepPDTESSource.pythiapdt_cfi import *
 
 
 from CMGTools.Common.skims.cmgPFJetSel_cfi import cmgPFJetSel
-cmgPFJetForRecoil = cmgPFJetSel.clone(
-    cut = 'pt()>30 && abs(eta)<4.5 && getSelection("cuts_looseJetId") && passLooseFullPuJetId()',
+cmgPFJetForRecoilPresel = cmgPFJetSel.clone(
+    cut = 'pt()>30 && abs(eta)<4.7 && getSelection("cuts_looseJetId")',
     src = 'cmgPFJetSel')
 
+from CMGTools.Common.skims.cmgPFJetPUIDSel_cfi import cmgPFJetPUIDSel
+cmgPFJetForRecoil = cmgPFJetPUIDSel.clone(
+    src = 'cmgPFJetForRecoilPresel')
 
 metRecoilCorrectionInputSequence = cms.Sequence(
+    cmgPFJetForRecoilPresel +
     cmgPFJetForRecoil +
     genWorZ 
     )

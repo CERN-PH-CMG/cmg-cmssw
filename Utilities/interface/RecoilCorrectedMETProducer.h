@@ -15,6 +15,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
 #include "CMGTools/Utilities/interface/RecoilCorrector.h"
+#include "CMGTools/Common/interface/DiTauObjectFactory.h"
 
 #include <sstream>
 
@@ -49,7 +50,6 @@ private:
   int  nJets( const JetCollectionType& jets, 
 	      const RecBosonType& boson, float deltaR);
 
-  edm::InputTag metSrc_;
   edm::InputTag genBosonSrc_;
   edm::InputTag recBosonSrc_;
   edm::InputTag jetSrc_;
@@ -77,7 +77,6 @@ private:
 
 template< typename RecBosonType >
 RecoilCorrectedMETProducer< RecBosonType >::RecoilCorrectedMETProducer(const edm::ParameterSet & iConfig) : 
-  metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ), 
   genBosonSrc_( iConfig.getParameter<edm::InputTag>("genBosonSrc") ),
   recBosonSrc_( iConfig.getParameter<edm::InputTag>("recBosonSrc") ),
   jetSrc_( iConfig.getParameter<edm::InputTag>("jetSrc") ),
@@ -103,34 +102,24 @@ RecoilCorrectedMETProducer< RecBosonType >::RecoilCorrectedMETProducer(const edm
   corrector_->addMCFile( fileZmmMC );
    
   // will produce one BaseMET for each recBoson 
-  produces< std::vector<MetType> >();
+  // produces< std::vector<MetType> >();
+  produces< std::vector<RecBosonType> >();
 }
 
 
 template< typename RecBosonType >
 void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
 
-  typedef std::auto_ptr< std::vector< MetType > >  OutPtr;
 
-  edm::Handle< std::vector<MetType> > metH;
-  iEvent.getByLabel(metSrc_, metH);
-  
   edm::Handle< std::vector<RecBosonType> > recBosonH;
   iEvent.getByLabel(recBosonSrc_, recBosonH);
 
 
-  if( metH->size()!=1 && metH->size()!=recBosonH->size() ) 
-    throw cms::Exception("Input MET collection should have size 1, or have a size equal to the size of the rec boson collection");
-
-//  if( ! enable_ && metH->size()>0) {
   if( ! enable_) {
-//    assert( metH->size()==1 );
-//    const MetType& met = (*metH)[0];
-    // when disabled, put one copy of the MET in the output collection
-    // for each rec boson in input. 
-//    OutPtr pOut(new std::vector< MetType >(recBosonH->size(), met) );
-    OutPtr pOut(new std::vector< MetType >(*metH) );
-    iEvent.put( pOut ); 
+
+    std::auto_ptr< std::vector< RecBosonType > > pOutRecBoson(new std::vector< RecBosonType >(*recBosonH));
+    // Just copy rec bosons if no correction is enabled
+    iEvent.put( pOutRecBoson );
     return;
   }
 
@@ -193,14 +182,19 @@ void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, cons
     std::cout<<"Looping on reconstructed bosons:"<<std::endl;
   }
   
-  OutPtr pOut(new std::vector< MetType > ); 
+  // OutPtr pOut(new std::vector< MetType > ); 
+  std::auto_ptr< std::vector< RecBosonType > > pOutRecBoson(new std::vector<RecBosonType>);
   for( unsigned i=0; i<recBosonH->size(); ++i) {
     const RecBosonType& recBoson = recBosonH->at(i);
     
-    MetType metObj = (*metH)[0];
-    
-    if(metH->size()==recBosonH->size())
-      metObj = (*metH)[i];
+    //MetType metObj;
+    reco::LeafCandidate metObj;
+    metObj = recBoson.met();
+
+    // if (!useRecBosonMet && metH->size() == 1)
+    //   metObj = (*metH)[0];
+    // else if(!useRecBosonMet && metH->size()==recBosonH->size())
+    //   metObj = (*metH)[i];
 
     double uncMet = metObj.et();
     double uncMetPhi = metObj.phi();
@@ -268,11 +262,14 @@ void RecoilCorrectedMETProducer<RecBosonType>::produce(edm::Event & iEvent, cons
     }
 
     reco::Candidate::PolarLorentzVector newMETP4( met,0, metphi, 0);
-    pOut->push_back( metObj );
-    pOut->back().setP4( newMETP4 );
+    metObj.setP4( newMETP4 );
+    pOutRecBoson->push_back(RecBosonType(recBoson));
+    // Create new rec boson; also recalculates mT1/mT2 etc
+    cmg::DiTauObjectFactory<Leg1Type, Leg2Type>::set(std::make_pair(recBoson.leg1(), recBoson.leg2()), metObj, recBoson.metSig(), &pOutRecBoson->back());
   }
   
-  iEvent.put( pOut ); 
+  // iEvent.put( pOut ); 
+  iEvent.put( pOutRecBoson );
 
   if(verbose_) {
     std::cout<<"RecoilCorrectedMETProducer done"<<std::endl;
