@@ -4,7 +4,7 @@ from CMGTools.Utilities.metRecoilCorrection.rootfile_dir import rootfile_dir
 
 recoilCorrectedMETDiTau  = cms.EDProducer(
     "RecoilCorrectedMETProducerDiTau",
-    metSrc = cms.InputTag('cmgPFMET'),
+    # metSrc = cms.InputTag('cmgPFMET'),
     # the tau is on the first leg and the muon on the second leg
     recBosonSrc = cms.InputTag('cmgDiTauSel'),
     genBosonSrc = cms.InputTag('genWorZ'),

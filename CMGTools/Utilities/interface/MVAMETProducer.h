@@ -21,6 +21,8 @@
 #include "CMGTools/Common/interface/MetUtilities.h"
 #include "CMGTools/External/interface/PileupJetIdentifier.h"
 
+#include "CMGTools/Common/interface/DiTauObjectFactory.h"
+
 #include <sstream>
 
 template< typename RecBosonType >
@@ -115,8 +117,9 @@ MVAMETProducer< RecBosonType >::MVAMETProducer(const edm::ParameterSet & iConfig
      
    
   // will produce one BaseMET for each recBoson 
-  produces< std::vector<MetType> >();
-  produces< std::vector<cmg::METSignificance> >();
+  // produces< std::vector<MetType> >();
+  // produces< std::vector<cmg::METSignificance> >();
+  produces< std::vector<RecBosonType> >();
 }
 
 
@@ -167,12 +170,16 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   const reco::PFMET* pumet = &( (*pumetH)[0] );
 
 
-  const MetType& met = (*pfmetH)[0];
+  // const MetType& met = (*pfmetH)[0];
+  MetType met((*pfmetH)[0]);
   if( ! enable_ ) {
     // when disabled, put one copy of the PF MET in the output collection
     // for each rec boson in input. 
-    OutPtr pOut(new std::vector< MetType >(recBosonH->size(), met) );
-    iEvent.put( pOut ); 
+    // OutPtr pOut(new std::vector< MetType >(recBosonH->size(), met) );
+    // iEvent.put( pOut ); 
+
+    std::auto_ptr< std::vector< RecBosonType > > pOutRecBoson(new std::vector<RecBosonType>(*recBosonH));
+    iEvent.put(pOutRecBoson);
     return;
   }
 
@@ -205,8 +212,10 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
   std::vector<MetUtilities::JetInfo> jetInfo; 
   makeJets( jetInfo, *jetH, *vertexH, rho );
   
-  OutPtr pOut(new std::vector< MetType > ); 
-  std::auto_ptr< std::vector<cmg::METSignificance> > pOutSig( new std::vector<cmg::METSignificance>() );
+  // OutPtr pOut(new std::vector< MetType > ); 
+  // std::auto_ptr< std::vector<cmg::METSignificance> > pOutSig( new std::vector<cmg::METSignificance>() );
+
+  std::auto_ptr< std::vector<RecBosonType> > pOutRecBoson( new std::vector<RecBosonType>() );
 
 
   for( unsigned i=0; i<recBosonH->size(); ++i) {
@@ -327,9 +336,16 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
 			 verbose_ );
 
     // if I do that, sumEt is incorrect...
-    pOut->push_back( met );
-    pOutSig->push_back( lMVAMetInfo.second );
-    pOut->back().setP4( lMVAMetInfo.first ); 
+    // pOut->push_back( met );
+    // pOutSig->push_back( lMVAMetInfo.second );
+    //pOut->back().setP4( lMVAMetInfo.first ); 
+
+    cmg::METSignificance metSig(lMVAMetInfo.second);
+    met.setP4(lMVAMetInfo.first);
+
+    // JAN - add rec boson
+    pOutRecBoson->push_back(RecBosonType(recBoson));
+    cmg::DiTauObjectFactory<Leg1Type, Leg2Type>::set(std::make_pair(recBoson.leg1(), recBoson.leg2()), met, metSig, &pOutRecBoson->back());
 
     if(verbose_) {
       std::cout<<"  ---------------- "<<std::endl;
@@ -342,8 +358,9 @@ void MVAMETProducer<RecBosonType>::produce(edm::Event & iEvent, const edm::Event
     // FIXME add matrix
   }
   
-  iEvent.put( pOut ); 
-  iEvent.put( pOutSig ); 
+  // iEvent.put( pOut ); 
+  // iEvent.put( pOutSig ); 
+  iEvent.put( pOutRecBoson );
 
   if(verbose_) {
     std::cout<<"MVAMETProducer done"<<std::endl;
