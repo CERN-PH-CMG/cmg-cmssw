@@ -38,16 +38,18 @@ class DiObjectFactory : public cmg::Factory< cmg::DiObject<T,U> >, public cmg::S
         virtual void set(const std::pair<T,U>& pair, cmg::DiObject<T,U>* const obj) const;
         virtual void set(const std::pair<T,U>& pair, const reco::LeafCandidate& met, cmg::DiObject<T,U>* const obj) const;
 
-    private:
+
 
 /*         double mT(T const& l1, U const& l2) const; */
-	double mT( const reco::Candidate& l1, const reco::Candidate& l2) const;
-        double alphaT(T const& l1, U const& l2) const;
-        double mR(T const& l1, U const& l2) const;
-        double mRT(T const& l1, U const& l2, const reco::Candidate& met) const;
-        double lp(T const& l1, cmg::DiObject<T,U>* const obj) const;
-	std::pair<double, double> pZeta(T const& l1, U const& l2, 
-					const reco::Candidate& met) const;
+	static double mT( const reco::Candidate& l1, const reco::Candidate& l2);
+        static double alphaT(T const& l1, U const& l2);
+        static double mR(T const& l1, U const& l2);
+        static double mRT(T const& l1, U const& l2, const reco::Candidate& met);
+        static double lp(T const& l1, cmg::DiObject<T,U>* const obj);
+	static std::pair<double, double> pZeta(T const& l1, U const& l2, 
+					const reco::Candidate& met);
+
+    private:
 
         const edm::InputTag leg1Label_;
         const edm::InputTag leg2Label_;
@@ -167,7 +169,7 @@ void cmg::DiObjectFactory<T, U>::set(const std::pair<T,U>& pair, const reco::Lea
 
 template<typename T, typename U>
 /*   double cmg::DiObjectFactory<T, U>::mT(T const& l1, U const& l2) const */
-  double cmg::DiObjectFactory<T, U>::mT( const reco::Candidate& l1, const reco::Candidate& l2) const
+  double cmg::DiObjectFactory<T, U>::mT( const reco::Candidate& l1, const reco::Candidate& l2)
 {
   // transverse mass
   return std::sqrt( std::pow(l1.pt()+l2.pt(), 2) - 
@@ -176,7 +178,7 @@ template<typename T, typename U>
 }
 
 template<typename T, typename U>
-  double cmg::DiObjectFactory<T, U>::alphaT(T const& l1, U const& l2) const
+  double cmg::DiObjectFactory<T, U>::alphaT(T const& l1, U const& l2)
 {
   // Alpha_T as defined on p. 3 of AN2008-114-v1.
   double num = std::min(l1.et(), l2.et());
@@ -188,7 +190,7 @@ template<typename T, typename U>
 }
 
 template<typename T, typename U>
-double cmg::DiObjectFactory<T, U>::mR(T const& ja, U const& jb) const{
+double cmg::DiObjectFactory<T, U>::mR(T const& ja, U const& jb){
     //validated for 2011 variables
     const double A = ja.p();
     const double B = jb.p();
@@ -215,7 +217,7 @@ double cmg::DiObjectFactory<T, U>::mR(T const& ja, U const& jb) const{
 }
 
 template<typename T, typename U>
-double cmg::DiObjectFactory<T, U>::mRT(T const& ja, U const& jb, const reco::Candidate& met) const{
+double cmg::DiObjectFactory<T, U>::mRT(T const& ja, U const& jb, const reco::Candidate& met){
     ///validated for 2011 variables
     const reco::Candidate::LorentzVector metV = met.p4();
     const reco::Candidate::LorentzVector jaV = ja.p4();
@@ -233,7 +235,7 @@ double cmg::DiObjectFactory<T, U>::mRT(T const& ja, U const& jb, const reco::Can
 template<typename T, typename U>
 std::pair<double,double> cmg::DiObjectFactory<T, U>::pZeta(T const& tau1, 
 							   U const& tau2, 
-							   const reco::Candidate& met) const{
+							   const reco::Candidate& met){
 
 /*   TVector3 tau1P=TVector3(tau1.p4().x(),tau1.p4().y(),tau1.p4().z()); */
 /*   TVector3 tau2P=TVector3(tau2.p4().x(),tau2.p4().y(),tau2.p4().z()); */
@@ -251,7 +253,7 @@ std::pair<double,double> cmg::DiObjectFactory<T, U>::pZeta(T const& tau1,
 }
 
 template<typename T, typename U>
-  double cmg::DiObjectFactory<T, U>::lp(T const& l1, cmg::DiObject<T,U>* const obj) const
+  double cmg::DiObjectFactory<T, U>::lp(T const& l1, cmg::DiObject<T,U>* const obj)
 {
   const reco::Candidate::LorentzVector & l1p4 = l1.p4();
   const reco::Candidate::LorentzVector & dip4 = obj->p4();

@@ -6,7 +6,7 @@
    \brief    Selects PhysicsObjects basing on cuts provided with string cut parser
 
    \author   Giovanni Petrucciani
-   \version  $Id: GenericPhysicsObjectSelectorDefinition.h,v 1.3 2011/05/16 11:32:14 cbern Exp $
+   \version  $Id: GenericPhysicsObjectSelectorDefinition.h,v 1.4 2011/06/29 12:34:40 cbern Exp $
 */
 
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
@@ -61,6 +61,7 @@ namespace cmg {
     
     private:
     StringCutObjectSelector<T> selector_;
+  protected:
     container selected_;
 
   };
