@@ -232,11 +232,11 @@ if useCHS:
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
-    process.cmgDiTauCorSVFitPreSel.SVFitVersion = 2
+    process.cmgDiTauSVFit.SVFitVersion = 2
     #process.MessageLogger.cerr.FwkReport.reportEvery = 1
 else:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
-    process.cmgDiTauCorSVFitPreSel.SVFitVersion = 1
+    process.cmgDiTauSVFit.SVFitVersion = 1
 
 # process.tauMu_fullsel_tree_CMG.SelectEvents = cms.untracked.PSet()

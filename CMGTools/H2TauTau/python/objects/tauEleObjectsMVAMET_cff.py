@@ -3,10 +3,10 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.diTau_cff import *
 from CMGTools.H2TauTau.objects.tauEleCuts_cff import * 
 
-from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
-from CMGTools.Utilities.tools.cmgTauESCorrector_cfi import * 
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
-from CMGTools.Common.factories.cmgTauScaler_cfi import  cmgTauScaler
+from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
+
 from CMGTools.Common.factories.cmgTauEleCor_cfi import cmgTauEleCor 
 from CMGTools.H2TauTau.objects.tauEleSVFit_cfi import tauEleSVFit 
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
@@ -15,13 +15,11 @@ from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 # no correction, no svfit ---------------------------------------------------
 
-cmgTauESCorrector.cfg.inputCollection = 'cmgTauSel'
-cmgTauScaler.cfg.inputCollection = 'cmgTauESCorrector'
-
 # attaching the cuts defined in this module
 # to the di-tau factory
 cmgTauEle.cuts = tauEleCuts.clone()
-cmgTauEle.cfg.leg1Collection = 'cmgTauScaler'
+cmgTauEle.cfg.leg1Collection = 'cmgTauSel'
+cmgTauEle.cfg.metsigCollection = cms.InputTag('')
 
 # preselection 
 cmgTauElePreSel = cmgTauEleSel.clone(
@@ -30,11 +28,10 @@ cmgTauElePreSel = cmgTauEleSel.clone(
     cut = 'getSelection("cuts_baseline")'
     )
 
-tauEleStdSequence = cms.Sequence( cmgTauESCorrector +
-                                  cmgTauScaler +
-                                  cmgTauEle +
-                                  cmgTauElePreSel
-                                 )
+tauEleStdSequence = cms.Sequence( 
+    cmgTauEle +
+    cmgTauElePreSel
+    )
 
 
 # correction and svfit ------------------------------------------------------
@@ -50,39 +47,50 @@ from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFME
 mvaMETTauEle.recBosonSrc = 'cmgTauElePreSel'
 
 cmgTauEleMVAPreSel = cmgTauEleCor.clone()
-cmgTauEleMVAPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
 cmgTauEleMVAPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
+
+
+# Correct tau pt (after MVA MET according to current baseline)
+
+from CMGTools.Common.factories.cmgTauEleCor_cfi import cmgTauEleCor
+cmgTauEleCor = cmgTauEleCor.clone()
+
+cmgTauEleCor.cfg.diObjectCollection = cms.InputTag('mvaMETTauEle')
+
+# This selector goes after the tau pt correction.
+# Can in principal apply any further selection on the
+# di-tau object.
+cmgTauEleTauPtSel = cms.EDFilter(
+    "CmgTauEleSelector",
+    src = cms.InputTag( "cmgTauEleCor" ),
+    cut = cms.string( "leg1().pt()>18." )
+    )
+
+cmgTauEleTauPtSel = cmgTauEleTauPtSel.clone()
 
 # recoil correction
 
 #IN 52X: should be type1 MET. In 44X, should be raw MET
-metForRecoil = 'mvaMETTauEle'
-diTausForRecoil = 'cmgTauElePreSel'
+diTausForRecoil = 'cmgTauEleTauPtSel'
 recoilCorMETTauEle =  recoilCorrectedMETTauEle.clone(
-    recBosonSrc = diTausForRecoil,
-    metSrc = metForRecoil
+    recBosonSrc = diTausForRecoil
     )
 
-mvaBaseMETTauEle = cmgBaseMETFromPFMET.clone()
-mvaBaseMETTauEle.cfg.inputCollection = 'recoilCorMETTauEle'
+# mvaBaseMETTauEle = cmgBaseMETFromPFMET.clone()
+# mvaBaseMETTauEle.cfg.inputCollection = 'recoilCorMETTauEle'
 
-cmgTauEleCorPreSel = cmgTauEleCor.clone()
-cmgTauEleCorPreSel.cfg.metCollection = 'mvaBaseMETTauEle'
-cmgTauEleCorPreSel.cfg.diObjectCollection = 'cmgTauElePreSel'
-
-mvaMETSequence = cms.Sequence( goodPVFilter + 
+tauEleMvaMETRecoilSequence = cms.Sequence( goodPVFilter + 
                                mvaMETTauEle +
-                               recoilCorMETTauEle +
-                               mvaBaseMETTauEle
-                               #    # +
-                               #    # cmgTauEleMVAPreSel
+                               cmgTauEleCor +
+                               cmgTauEleTauPtSel +
+                               recoilCorMETTauEle 
                                )
 
 # SVFit
 
 cmgTauEleCorSVFitPreSel = tauEleSVFit.clone()
-cmgTauEleCorSVFitPreSel.diTauSrc = 'cmgTauEleCorPreSel'
-cmgTauEleCorSVFitPreSel.metsigSrc = 'mvaMETTauEle'
+cmgTauEleCorSVFitPreSel.diTauSrc = cms.InputTag('recoilCorMETTauEle')
+# cmgTauEleCorSVFitPreSel.metsigSrc = 'mvaMETTauEle'
 cmgTauEleCorSVFitFullSel = cmgTauEleSel.clone( src = 'cmgTauEleCorSVFitPreSel',
                                              cut = ''
                                              # WARNING!
@@ -90,8 +98,8 @@ cmgTauEleCorSVFitFullSel = cmgTauEleSel.clone( src = 'cmgTauEleCorSVFitPreSel',
                                              ) 
 
 tauEleCorSVFitSequence = cms.Sequence( #
-    mvaMETSequence +
-    cmgTauEleCorPreSel +
+    tauEleMvaMETRecoilSequence +
+    # cmgTauEleCorPreSel +
     cmgTauEleCorSVFitPreSel +
     cmgTauEleCorSVFitFullSel
     )

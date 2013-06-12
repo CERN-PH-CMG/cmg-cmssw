@@ -6,9 +6,7 @@ from CMGTools.H2TauTau.objects.tauMuCuts_cff import *
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 
 from CMGTools.Utilities.metRecoilCorrection.metRecoilCorrection_cff import *
-from CMGTools.Utilities.tools.cmgTauESCorrector_cfi import * 
 
-from CMGTools.Common.factories.cmgTauScaler_cfi import  cmgTauScaler
 from CMGTools.Common.factories.cmgTauMuCor_cfi import cmgTauMuCor 
 from CMGTools.H2TauTau.objects.tauMuSVFit_cfi import tauMuSVFit 
 from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
@@ -20,11 +18,9 @@ from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,cmsswIs52X
 # attaching the cuts defined in this module
 # to the di-tau factory
 
-cmgTauESCorrector.cfg.inputCollection = 'cmgTauSel'
-cmgTauScaler.cfg.inputCollection = 'cmgTauESCorrector'
-
 cmgTauMu.cuts = tauMuCuts.clone()
-cmgTauMu.cfg.leg1Collection = 'cmgTauScaler'
+cmgTauMu.cfg.leg1Collection = 'cmgTauSel'
+cmgTauMu.cfg.metsigCollection = cms.InputTag('')
 
 # preselection 
 cmgTauMuPreSel = cmgTauMuSel.clone(
@@ -33,9 +29,8 @@ cmgTauMuPreSel = cmgTauMuSel.clone(
     cut = 'getSelection("cuts_baseline")'
     )
 
+# creates a tau-mu pair and applies loose preselection cuts
 tauMuStdSequence = cms.Sequence(
-    cmgTauESCorrector + 
-    cmgTauScaler +
     cmgTauMu +
     cmgTauMuPreSel
     )
@@ -54,38 +49,50 @@ from CMGTools.Common.factories.cmgBaseMETFromPFMET_cfi import cmgBaseMETFromPFME
 mvaMETTauMu.recBosonSrc = 'cmgTauMuPreSel'
 
 cmgTauMuMVAPreSel = cmgTauMuCor.clone()
-cmgTauMuMVAPreSel.cfg.metCollection = 'mvaBaseMETTauMu'
 cmgTauMuMVAPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
+
+
+# Correct tau pt (after MVA MET according to current baseline)
+
+from CMGTools.Common.factories.cmgTauMuCor_cfi import cmgTauMuCor
+cmgTauMuCor = cmgTauMuCor.clone()
+
+cmgTauMuCor.cfg.diObjectCollection = cms.InputTag('mvaMETTauMu')
+
+# JAN: It's debatable whether this should be applied after MVA MET
+# and before the recoil correction instead of at the very beginning
+
+
+# This selector goes after the tau pt correction
+cmgTauMuTauPtSel = cms.EDFilter(
+    "CmgTauMuSelector",
+    src = cms.InputTag( "cmgTauMuCor" ),
+    cut = cms.string( "leg1().pt()>18." )
+    )
+
+cmgTauMuTauPtSel = cmgTauMuTauPtSel.clone()
+
 
 # recoil correction
 
-metForRecoil = 'mvaMETTauMu'
-diTausForRecoil = 'cmgTauMuPreSel'
+diTausForRecoil = 'cmgTauMuTauPtSel'
 recoilCorMETTauMu =  recoilCorrectedMETTauMu.clone(
-    recBosonSrc = diTausForRecoil,
-    metSrc = metForRecoil
+    recBosonSrc = diTausForRecoil
     )
 
-mvaBaseMETTauMu = cmgBaseMETFromPFMET.clone()
-mvaBaseMETTauMu.cfg.inputCollection = 'recoilCorMETTauMu'
-
-cmgTauMuCorPreSel = cmgTauMuCor.clone()
-cmgTauMuCorPreSel.cfg.metCollection = 'mvaBaseMETTauMu'
-cmgTauMuCorPreSel.cfg.diObjectCollection = 'cmgTauMuPreSel'
-
-mvaMETSequence = cms.Sequence( goodPVFilter + 
+tauMuMvaMETrecoilSequence = cms.Sequence( goodPVFilter + 
                                mvaMETTauMu +
-                               recoilCorMETTauMu +
-                               mvaBaseMETTauMu
-                               #    # +
-                               #    # cmgTauMuMVAPreSel
+                               cmgTauMuCor +
+                               cmgTauMuTauPtSel +
+                               recoilCorMETTauMu
                                )
 
 # SVFit
 
 cmgTauMuCorSVFitPreSel = tauMuSVFit.clone()
-cmgTauMuCorSVFitPreSel.diTauSrc = 'cmgTauMuCorPreSel'
-cmgTauMuCorSVFitPreSel.metsigSrc = 'mvaMETTauMu'
+# cmgTauMuCorSVFitPreSel.diTauSrc = 'cmgTauMuCorPreSel'
+cmgTauMuCorSVFitPreSel.diTauSrc = cms.InputTag('recoilCorMETTauMu')
+# cmgTauMuCorSVFitPreSel.metsigSrc = 'mvaMETTauMu'
 
 # This module is not really necessary anymore
 cmgTauMuCorSVFitFullSel = cmgTauMuSel.clone( src = 'cmgTauMuCorSVFitPreSel',
@@ -95,8 +102,8 @@ cmgTauMuCorSVFitFullSel = cmgTauMuSel.clone( src = 'cmgTauMuCorSVFitPreSel',
                                              ) 
 
 tauMuCorSVFitSequence = cms.Sequence( #
-    mvaMETSequence +
-    cmgTauMuCorPreSel +
+    tauMuMvaMETrecoilSequence +
+    #cmgTauMuCorPreSel +
     cmgTauMuCorSVFitPreSel +
     cmgTauMuCorSVFitFullSel
     )

@@ -34,7 +34,7 @@ private:
   
   /// source diobject inputtag
   edm::InputTag diTauSrc_;
-  edm::InputTag metsigSrc_;
+  // edm::InputTag metsigSrc_;
 
   unsigned warningNumbers_;
   bool verbose_;
@@ -46,7 +46,7 @@ template< typename DiTauType >
 DiTauWithSVFitProducer<DiTauType>::DiTauWithSVFitProducer(const edm::ParameterSet & iConfig) : 
   diTauSrc_( iConfig.getParameter<edm::InputTag>("diTauSrc") ),
   //   metSrc_( iConfig.getParameter<edm::InputTag>("metSrc") ),
-  metsigSrc_( iConfig.getParameter<edm::InputTag>("metsigSrc") ),
+  // metsigSrc_( iConfig.getParameter<edm::InputTag>("metsigSrc") ),
   warningNumbers_(0),
   verbose_( iConfig.getUntrackedParameter<bool>("verbose", false ) ),
   SVFitVersion_( iConfig.getParameter<int>("SVFitVersion") ) {
@@ -70,25 +70,25 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
     
   // get the MET significance
   std::vector< cmg::METSignificance > metsigs;
-  bool vectorMetsigs = false;
+  // bool vectorMetsigs = false;
 
   std::string warningMessage; 
-  try {
-    // In case we do recoil correction, we read a single PFMET significance
-    edm::Handle< cmg::METSignificance > metsigh;
-    iEvent.getByLabel(metsigSrc_, metsigh); 
-    metsigs.push_back( *metsigh );
-    warningMessage = "DiTauWithSVFitProducer: Recoil correction mode: reading single PFMET significance";
-  }
-  catch(...) {
-    // In case we do MVAMET, we have a PFMET significance for each MVAMET value,
-    // and thus for each di-tau
-    edm::Handle< std::vector<cmg::METSignificance> > metsigh;
-    iEvent.getByLabel(metsigSrc_, metsigh); 
-    metsigs = *metsigh;
-    vectorMetsigs = true;
-    warningMessage = "DiTauWithSVFitProducer: MVA MET mode: reading vector PFMET significance";
-  }
+  // try {
+  //   // In case we do recoil correction, we read a single PFMET significance
+  //   edm::Handle< cmg::METSignificance > metsigh;
+  //   iEvent.getByLabel(metsigSrc_, metsigh); 
+  //   metsigs.push_back( *metsigh );
+  //   warningMessage = "DiTauWithSVFitProducer: Recoil correction mode: reading single PFMET significance";
+  // }
+  // catch(...) {
+  //   // In case we do MVAMET, we have a PFMET significance for each MVAMET value,
+  //   // and thus for each di-tau
+  //   edm::Handle< std::vector<cmg::METSignificance> > metsigh;
+  //   iEvent.getByLabel(metsigSrc_, metsigh); 
+  //   metsigs = *metsigh;
+  //   vectorMetsigs = true;
+  //   warningMessage = "DiTauWithSVFitProducer: MVA MET mode: reading vector PFMET significance";
+  // }
 
   NSVfitStandalone::kDecayType leg1type, leg2type;
   NSVfitStandalone2011::kDecayType leg1type2011, leg2type2011;
@@ -117,10 +117,10 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
     warningNumbers_ += 1;
   }
   
-  if( vectorMetsigs )
-    assert(metsigs.size()==diTauH->size());
-  else
-    assert(metsigs.size()==1);
+  // if( vectorMetsigs )
+  //   assert(metsigs.size()==diTauH->size());
+  // else
+  //   assert(metsigs.size()==1);
     
   typedef std::auto_ptr< DiTauCollection >  OutPtr;
   OutPtr pOut( new DiTauCollection() );
@@ -130,12 +130,13 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
   }
 
   for( unsigned i=0; i<diTauH->size(); ++i) {
-    const DiTauType& diTau = diTauH->at(i);
+    DiTauType diTau(diTauH->at(i));
     const reco::LeafCandidate met = diTau.met();
-    cmg::METSignificance& metsig = metsigs[0];
+    //cmg::METSignificance& metsig = metsigs[0];
+    const cmg::METSignificance& metsig = diTau.metSig();
     const TMatrixD* tmsig = metsig.significance();
-    if(vectorMetsigs)
-      metsig = metsigs[i];
+    // if(vectorMetsigs)
+    //   metsig = metsigs[i];
 
     if(verbose_) {
       std::cout<<"  ---------------- "<<std::endl;
@@ -167,15 +168,20 @@ void DiTauWithSVFitProducer<DiTauType>::produce(edm::Event & iEvent, const edm::
 	measuredTauLeptons.push_back(NSVfitStandalone::MeasuredTauLepton(leg1type, diTau.leg1().p4()));
 	NSVfitStandaloneAlgorithm algo(measuredTauLeptons, met.p4().Vect(), *(tmsig), 0);
 	algo.addLogM(false);
-	algo.integrate();
-	massSVFit = algo.getMass();
+	//algo.integrate();
+        algo.integrateMarkovChain();
+        massSVFit = algo.mass();
+        diTau.setMassErrSVFit( algo.massUncert() );
+        diTau.setPtSVFit( algo.pt() );
+        diTau.setPtErrSVFit( algo.ptUncert() );
       }else {
 	std::cout<<" Unrecognized SVFitVersion !!!!!!!!!!!!"<<std::endl;    
       }
     }
+    diTau.setMassSVFit( massSVFit );
 
     pOut->push_back( diTau );
-    pOut->back().setMassSVFit( massSVFit );
+
     
     if(verbose_) {
       std::cout<<"\tm_vis = "<<diTau.mass()<<", m_svfit = "<<massSVFit<<std::endl;

@@ -77,7 +77,8 @@ class H2TauTauTreeProducerTauMu( TreeAnalyzerNumpy ):
        fill( tr, 'lumi',event.lumi)
        fill( tr, 'evt', event.eventId)
        #C uncomment when reactivating WNJetsAnalyzer
-       fill( tr, 'NUP', event.NUP)
+       if hasattr(event, 'NUP'):
+          fill( tr, 'NUP', event.NUP)
 
        fillDiLepton( tr, event.diLepton )
 
