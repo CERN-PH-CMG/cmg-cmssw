@@ -28,8 +28,24 @@ xtitles = {
     'nVert':'N_{vertices}',
     'jet1_pt':'p_{T,jet1} [GeV]',
     'jet2_pt':'p_{T,jet1} [GeV]',
-    'jet1_eta':'#eta_{#tau}',
-    'jet2_eta':'#eta_{#tau}',
+    'jet1_eta':'#eta_{jet1}',
+    'jet2_eta':'#eta_{jet2}',
+    'nJets':'N_{jets}',
+    'nJets20':'N_{jets} (20 GeV)',
+    'l1_charge':'q_{#tau}',
+    'l2_charge':'q_{#mu}',
+    'met':'E_{T}^{miss} [GeV]',
+    'pfmet':'PF E_{T}^{miss} [GeV]',
+    'diTau_pt':'p_{T}_{#mu #tau}',
+    'bjet1_pt':'p_{T}_{bjet 1}',
+    'abs_l1_eta_l2_eta':'#Delta#eta (#tau, #mu)',
+    'abs_l1_eta_j1_eta':'#Delta#eta (#tau, jet 1)',
+    'abs_l2_eta_j1_eta':'#Delta#eta (#mu, jet 1)',
+    'deltaPhi_l1_l2':'#Delta#Phi (#tau, #mu)',
+    'deltaPhi_l1_j1':'#Delta#Phi (#tau, jet 1)',
+    'deltaPhi_l2_j1':'#Delta#Phi (#mu, jet 1)',
+    'l1_threeHitIso':'#tau 3-hit iso [GeV]',
+
     }
 
 xtitles_TauEle = {
