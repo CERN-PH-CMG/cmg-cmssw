@@ -11,7 +11,11 @@ if cmsswIs52X():
     pt2 = 20 # 2012, check that
 
 #inc_sig_tau = Cut('l1_looseMvaIso>0.5 && (l1_EOverp>0.2 || l1_decayMode!=0) && l1_againstMuonTight>0.5 && l1_againstElectronLoose>0.5 && l1_dxy<0.045 && l1_dz<0.2 && l1_pt>{pt1}'.format(pt1=pt1))
-inc_sig_tau = Cut('l1_looseMvaIso>0.5 && l1_againstMuonTight>0.5 && l1_againstElectronLoose>0.5 && l1_dxy<0.045 && l1_dz<0.2 && l1_pt>{pt1}'.format(pt1=pt1))
+#inc_sig_tau = Cut('l1_looseMvaIso>0.5 && l1_againstMuonTight>0.5 && l1_againstElectronLoose>0.5 && l1_dxy<0.045 && l1_dz<0.2 && l1_pt>{pt1}'.format(pt1=pt1))
+
+# NEW one - to be implemented as soon as trees are there
+inc_sig_tau = Cut('l1_threeHitIso<1.5 && l1_againstMuonTight2>0.5 && l1_againstElectronLoose>0.5 && l1_dxy<0.045 && l1_dz<0.2 && l1_pt>{pt1}'.format(pt1=pt1))
+
 inc_sig_mu = Cut('l2_relIso05<0.1 && l2_tightId>0.5 && l2_dxy<0.045 && l2_dz<0.2 && l2_pt>{pt2}'.format(pt2=pt2))
 inc_sig = inc_sig_mu & inc_sig_tau
 
@@ -43,7 +47,11 @@ cat_Inc_AntiMuTauIso_B = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2
 
 cat_Inc_AntiMuTauIsoJosh = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.7')
 cat_Inc_AntiMuIso = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.1')
-cat_Inc_AntiTauIso = str(inc_sig).replace('l1_looseMvaIso>0.5', 'l1_looseMvaIso<0.5')
+cat_Inc_AntiMuIsoJan = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5')
+cat_Inc_AntiMuAntiTauIsoJan = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05>0.2 && l2_relIso05<0.5').replace('l1_threeHitIso<1.5', 'l1_threeHitIso>1.5 && l1_threeHitIso<10.0')
+#cat_Inc_AntiTauIso = str(inc_sig).replace('l1_looseMvaIso>0.5', 'l1_looseMvaIso<0.5')
+cat_Inc_AntiTauIso = str(inc_sig).replace('l1_threeHitIso<1.5', 'l1_threeHitIso>1.5') # && l1_threeHitIso<10.0')
+
 cat_Inc_RlxMuTauIso_b = str(inc_sig).replace('l2_relIso05<0.1','l2_relIso05<0.5').replace('l1_looseMvaIso>0.5', 'l1_rawMvaIso>0.5')
 cat_Inc = str(inc_sig)
 
@@ -52,6 +60,9 @@ categories = {
     'Xcat_Inc_RlxMuIsoX':cat_Inc_RlxMuIso,
     'Xcat_Inc_RlxTauIsoX':cat_Inc_RlxTauIso,
     'Xcat_IncX':cat_Inc,
+    'Xcat_Inc_AntiTauIsoX':cat_Inc_AntiTauIso,
+    'Xcat_Inc_AntiMuIsoJanX':cat_Inc_AntiMuIsoJan,
+    'Xcat_Inc_AntiMuAntiTauIsoJanX':cat_Inc_AntiMuAntiTauIsoJan,
     }
 
 categories.update( categories_common )
