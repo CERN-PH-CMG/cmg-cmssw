@@ -63,6 +63,11 @@
   <class name="edm::Wrapper<cmg::DiTau>"/>
   <class name="edm::Wrapper<std::vector<cmg::DiTau> >"/>
 
+  <class name="cmg::DiTauDiObject"/>
+  <class name="std::vector<cmg::DiTauDiObject>"/>
+  <class name="edm::Wrapper<cmg::DiTauDiObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::DiTauDiObject> >"/>
+
   <class name="cmg::Electron"/>
   <class name="cmg::Lepton<pat::ElectronPtr>" />
   <class name="cmg::PhysicsObjectWithPtr<pat::ElectronPtr>" />
@@ -223,15 +228,30 @@
   <class name="edm::Wrapper<cmg::TauEle>"/>
   <class name="edm::Wrapper<std::vector<cmg::TauEle> >"/>
 
+  <class name="cmg::TauEleDiObject"/>
+  <class name="std::vector<cmg::TauEleDiObject>"/>
+  <class name="edm::Wrapper<cmg::TauEleDiObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TauEleDiObject> >"/>
+
   <class name="cmg::TauMu"/>
   <class name="std::vector<cmg::TauMu>"/>
   <class name="edm::Wrapper<cmg::TauMu>"/>
   <class name="edm::Wrapper<std::vector<cmg::TauMu> >"/>
 
+  <class name="cmg::TauMuDiObject"/>
+  <class name="std::vector<cmg::TauMuDiObject>"/>
+  <class name="edm::Wrapper<cmg::TauMuDiObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::TauMuDiObject> >"/>
+
   <class name="cmg::MuEle"/>
   <class name="std::vector<cmg::MuEle>"/>
   <class name="edm::Wrapper<cmg::MuEle>"/>
   <class name="edm::Wrapper<std::vector<cmg::MuEle> >"/>
+
+  <class name="cmg::MuEleDiObject"/>
+  <class name="std::vector<cmg::MuEleDiObject>"/>
+  <class name="edm::Wrapper<cmg::MuEleDiObject>"/>
+  <class name="edm::Wrapper<std::vector<cmg::MuEleDiObject> >"/>
   
   <class name="std::vector<reco::Vertex>"/>
   <class name="std::vector<edm::Ref<std::vector<reco::Vertex>,reco::Vertex,edm::refhelper::FindUsingAdvance<std::vector<reco::Vertex>,reco::Vertex> > >"/>
