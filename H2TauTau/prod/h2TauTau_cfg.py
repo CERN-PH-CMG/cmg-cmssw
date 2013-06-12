@@ -20,12 +20,12 @@ numberOfFilesToProcess = 10
 debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
-channel = 'tau-mu' #'tau-mu' 'all' 'tau-ele'
+channel = 'all' # 'tau-mu' #'tau-mu' 'all' 'tau-ele'
 jetRecalib = False
 useCHS = False
 #newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
-newSVFit = False
+newSVFit = True
 tauScaling = 0
 # increase to 1000 before running on the batch, to reduce size of log files
 # on your account
@@ -45,15 +45,16 @@ print 'tau scaling =', tauScaling
 # Input  & JSON             -------------------------------------------------
 
 
-# process.setName_('H2TAUTAU')
-
 dataset_user = 'cmgtools'
 
+# dataset_name = '/W1Jet_TuneZ2_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
+# dataset_name = '/VBF_HToTauTau_M-125_7TeV-powheg-pythia6-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM/V5_B/PAT_CMG_V5_6_0_B'
 dataset_name = '/VBF_HToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
 # /GluGluToHToTauTau_M-125_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0
 
 #dataset_user = 'cmgtools_group'
 #dataset_name = '/WH_ZH_TTH_HToTauTau_M-125_8TeV-pythia6-tauola/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
+
 #dataset_name = '/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
 #dataset_name = '/WJetsToLNu_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_14_0'
 
@@ -104,6 +105,8 @@ from CMGTools.H2TauTau.tools.setupRecoilCorrection import setupRecoilCorrection
 recoilEnabled = True
 setupRecoilCorrection( process, runOnMC,
                        enable=recoilEnabled, is53X=isNewerThan('CMSSW_5_2_X'))
+
+
 
 # OUTPUT definition ----------------------------------------------------------
 process.outpath = cms.EndPath()
@@ -167,7 +170,9 @@ justn = 30
 # print 'Debug event content'.ljust(justn), debugEventContent
 
 # you can enable printouts of most modules like this:
-# process.cmgTauMuCorPreSelSVFit.verbose = True
+# process.cmgTauMuCorSVFitPreSel.verbose = True
+# process.mvaMETTauMu.verbose = True
+# process.recoilCorMETTauMu.verbose= True
 
 # systematic shift on tau energy scale 
 process.cmgTauScaler.cfg.nSigma = tauScaling
@@ -238,11 +243,14 @@ if useCHS:
 if newSVFit:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 2
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 2
+    process.cmgDiTauSVFit.SVFitVersion = 2
 else:
     process.cmgTauMuCorSVFitPreSel.SVFitVersion = 1
     process.cmgTauEleCorSVFitPreSel.SVFitVersion = 1
+    process.cmgDiTauSVFit.SVFitVersion = 1
 
 # process.tauMu_fullsel_tree_CMG.SelectEvents = cms.untracked.PSet()
 
 # process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > 0.5')
 process.cmgTauMu.cuts.baseline.tauLeg.iso = cms.string('leg1().tauID("byRawIsoMVA") > -9999')
+process.cmgTauMu.cuts.baseline.tauLeg.kinematics.pt = cms.string('leg1().pt() > 10.')

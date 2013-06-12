@@ -16,14 +16,15 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         self.handles['diLeptons'] = AutoHandle(
             'cmgTauMuCorSVFitFullSel', # FIXME!!
             # 'cmgTauMu',
-            'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>'
+            #'std::vector<cmg::DiObject<cmg::Tau,cmg::Muon>>'
+            'std::vector<cmg::DiTauObject<cmg::Tau,cmg::Muon>>'
             )
 
-        if hasattr(self.cfg_ana, 'mvametsigs'):
-            self.handles['mvametsigs'] = AutoHandle(
-                self.cfg_ana.mvametsigs, # 'mvaMETTauMu'
-                'std::vector<cmg::METSignificance>'
-                )
+        # if hasattr(self.cfg_ana, 'mvametsigs'):
+        #     self.handles['mvametsigs'] = AutoHandle(
+        #         self.cfg_ana.mvametsigs, # 'mvaMETTauMu'
+        #         'std::vector<cmg::METSignificance>'
+        #         )
 
         self.handles['otherLeptons'] = AutoHandle(
             'cmgElectronSel',
@@ -52,8 +53,9 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
             pydil.leg2().associatedVertex = event.goodVertices[0]
             if not self.testLeg2( pydil.leg2(), 99999 ):
                 continue
-            if hasattr(self.cfg_ana, 'mvametsigs'):
-                pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
+            #if hasattr(self.cfg_ana, 'mvametsigs'):
+            #    pydil.mvaMetSig = mvaMetSig = self.handles['mvametsigs'].product()[index]
+            pydil.mvaMetSig = mvaMetSig = dil.metSig()
             diLeptons.append( pydil )
         return diLeptons
 

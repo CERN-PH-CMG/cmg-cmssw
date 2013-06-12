@@ -121,10 +121,10 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
             'cmgPFMETRaw',
             'std::vector<cmg::BaseMET>' 
             )        
-        self.handles['pfmetsig'] = AutoHandle(
-            'pfMetSignificance',
-            'cmg::METSignificance' 
-            )        
+        # self.handles['pfmetsig'] = AutoHandle(
+        #     'pfMetSignificance',
+        #     'cmg::METSignificance' 
+        #     )        
         
 
     def process(self, iEvent, event):
@@ -207,7 +207,8 @@ class H2TauTauSyncTree( TreeAnalyzerNumpy ):
         fill( tr, 'pzetavis', event.diLepton.pZetaVis())
         fill( tr, 'pzetamiss', event.diLepton.pZetaMET())
 
-        metsig = self.handles['pfmetsig'].product().significance()
+        #metsig = self.handles['pfmetsig'].product().significance()
+        metsig = event.diLepton.metSig().significance()
         # if hasattr(event.diLepton, 'mvaMetSig'):
         #     metsig = event.diLepton.mvaMetSig.significance()
         fill( tr, 'metcov00', metsig(0,0))

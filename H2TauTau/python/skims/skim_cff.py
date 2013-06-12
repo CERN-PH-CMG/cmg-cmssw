@@ -62,7 +62,7 @@ muEleFullSelSkimSequence = cms.Sequence(
 
 cmgDiTauCount.minNumber = 1
 diTauPreSelCount = cmgDiTauCount.clone( minNumber = 1,
-                                        src = 'cmgDiTauCorSVFitPreSel')
+                                        src = 'cmgDiTauSVFit')
 
 diTauFullSelCount = diTauPreSelCount.clone( src = 'cmgDiTauCorSVFitFullSel')
 
