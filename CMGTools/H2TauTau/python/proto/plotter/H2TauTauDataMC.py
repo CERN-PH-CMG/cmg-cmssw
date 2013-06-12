@@ -58,11 +58,14 @@ class H2TauTauDataMC( AnalysisDataMC ):
             self.removeEmbeddedSamples()
 
 
-    def _BuildHistogram(self, tree, comp, compName, varName, cut, layer ):
+    def _BuildHistogram(self, tfile, comp, compName, varName, cut, layer ):
         '''Build one histogram, for a given component'''
-
-        if not hasattr( comp, 'tree'):
+        
+        if not hasattr( comp, 'tree') or comp.tree == None:
+            tree = tfile.Get( self.treeName )
             comp.tree = tree
+        else:
+            tree = comp.tree
                     
         histName = '_'.join( [compName, self.varName] )
 
@@ -90,6 +93,20 @@ class H2TauTauDataMC( AnalysisDataMC ):
                     var = varName + '* sqrt(0.97)'
             else:
                 raise ValueError( self.shift + ' is not recognized. Use None, "Up" or "Down".')
+
+
+        if varName == 'abs_l1_eta_l2_eta':
+            var = 'abs(l1_eta-l2_eta)'
+        elif varName == 'abs_l1_eta_j1_eta':
+            var = 'abs(l1_eta-jet1_eta)'
+        elif varName == 'abs_l2_eta_j1_eta':
+            var = 'abs(l2_eta-jet1_eta)'
+        elif varName == 'deltaPhi_l1_l2':
+            var = 'abs((l1_phi - l2_phi > TMath::Pi()) * (l1_phi - l2_phi - 2 * TMath::Pi()) + (l1_phi - l2_phi < - TMath::Pi()) * (l1_phi - l2_phi + 2 * TMath::Pi()) + (abs(l1_phi - l2_phi) <= TMath::Pi()) * (l1_phi - l2_phi))'
+        elif varName == 'deltaPhi_l1_j1':
+            var = 'abs((l1_phi - jet1_phi > TMath::Pi()) * (l1_phi - jet1_phi - 2 * TMath::Pi()) + (l1_phi - jet1_phi < - TMath::Pi()) * (l1_phi - jet1_phi + 2 * TMath::Pi()) + (abs(l1_phi - jet1_phi) <= TMath::Pi()) * (l1_phi - jet1_phi))'
+        elif varName == 'deltaPhi_l2_j1':
+            var = 'abs((l2_phi - jet1_phi > TMath::Pi()) * (l2_phi - jet1_phi - 2 * TMath::Pi()) + (l2_phi - jet1_phi < - TMath::Pi()) * (l2_phi - jet1_phi + 2 * TMath::Pi()) + (abs(l2_phi - jet1_phi) <= TMath::Pi()) * (l2_phi - jet1_phi))'
 
         # hack to account for the shift determined for HCP, see:
         # https://indico.cern.ch/getFile.py/access?contribId=38&resId=0&materialId=slides&confId=212612
@@ -126,27 +143,37 @@ class H2TauTauDataMC( AnalysisDataMC ):
                                   self.treeName,
                                   '{treeName}_tree.root'.format(treeName=self.treeName)] )
 
-            file = self.__class__.keeper[ fileName + str(self.__class__.HINDEX) ] = TFile(fileName) 
-            self.__class__.HINDEX+=1
+            # file = self.__class__.keeper[ fileName + str(self.__class__.HINDEX) ] = TFile(fileName) 
+            # self.__class__.HINDEX+=1
 
-            tree = file.Get( self.treeName )
+            # tree = file.Get( self.treeName )
+
+
+            # Don't need to open same file twice
+            for index in range(0, self.__class__.HINDEX):
+                if fileName + str(index) in self.__class__.keeper:
+                    tfile = self.__class__.keeper[fileName + str(index)]
+                    break
+            else:
+                tfile = self.__class__.keeper[ fileName + str(self.__class__.HINDEX) ] = TFile.Open(fileName)
+                self.__class__.HINDEX+=1
             
             if compName == 'Ztt':
-                self._BuildHistogram(tree, comp, compName, self.varName,
+                self._BuildHistogram(tfile, comp, compName, self.varName,
                                      self.cut + ' && isFake==0', layer)
                 fakeCompName = 'Ztt_ZL'
-                self._BuildHistogram(tree, comp, fakeCompName, self.varName,
+                self._BuildHistogram(tfile, comp, fakeCompName, self.varName,
                                      self.cut + ' && isFake==1', layer)
                 self.Hist(fakeCompName).realName =  comp.realName + '_ZL'
                 self.weights[fakeCompName] = self.weights[compName]
                 fakeCompName = 'Ztt_ZJ'
-                self._BuildHistogram(tree, comp, fakeCompName, self.varName,
+                self._BuildHistogram(tfile, comp, fakeCompName, self.varName,
                                      self.cut + ' && isFake==2', layer)
                 self.Hist(fakeCompName).realName =  comp.realName + '_ZJ'
                 self.weights[fakeCompName] = self.weights[compName]
 
             else:
-                self._BuildHistogram(tree, comp, compName, self.varName,
+                self._BuildHistogram(tfile, comp, compName, self.varName,
                                      self.cut, layer )     
 
         self._ApplyWeights()
