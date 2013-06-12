@@ -5,7 +5,6 @@ from CMGTools.RootTools.physicsobjects.PhysicsObjects import Jet
 from CMGTools.RootTools.utils.DeltaR import cleanObjectCollection, matchObjectCollection
 
 from CMGTools.RootTools.physicsobjects.VBF import VBF
-from CMGTools.H2TauTau.proto.VBFMVA import VBFMVA2012 as VBFMVA
 from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 from CMGTools.RootTools.utils.cmsswRelease import isNewerThan
@@ -32,7 +31,6 @@ class VBFSimpleAnalyzer( Analyzer ):
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
         super(VBFSimpleAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
-        self.vbfMva = VBFMVA (cfg_ana.vbfMvaWeights)
 
     def beginLoop(self):
         super(VBFSimpleAnalyzer,self).beginLoop()
@@ -53,7 +51,7 @@ class VBFSimpleAnalyzer( Analyzer ):
             return True
 
         event.vbf = VBF( event.cleanJets, event.diLepton,
-                         self.vbfMva.vbfMvaCalc, self.cfg_ana.cjvPtCut )
+                         None, self.cfg_ana.cjvPtCut )
         if event.vbf.mjj > self.cfg_ana.Mjj:
             self.counters.counter('VBF').inc('M_jj > {cut:3.1f}'.format(cut=self.cfg_ana.Mjj) )
         else:
