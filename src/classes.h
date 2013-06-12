@@ -96,6 +96,11 @@ namespace {
     edm::Wrapper<cmg::DiTau> edt;
     edm::Wrapper<std::vector<cmg::DiTau> > edtv;
 
+    cmg::DiTauDiObject dtdiobj_;
+    std::vector<cmg::DiTauDiObject> dtdiobjv;
+    edm::Wrapper<cmg::DiTauDiObject> edtdiobj;
+    edm::Wrapper<std::vector<cmg::DiTauDiObject> > edtdiobjv;
+
     cmg::Electron e_;
     std::vector<cmg::Electron> ev;
     edm::Wrapper<cmg::Electron> ee;
@@ -246,15 +251,31 @@ namespace {
     edm::Wrapper<cmg::TauEle> wtaue_;
     edm::Wrapper<std::vector<cmg::TauEle> > wtauev_;
 
+
+    cmg::TauEleDiObject tauelediobj;
+    std::vector<cmg::TauEleDiObject> tauelediobj_;
+    edm::Wrapper<cmg::TauEleDiObject> wtauelediobj_;
+    edm::Wrapper<std::vector<cmg::TauEleDiObject> > wtauelediobjv_;
+
     cmg::TauMu taumu;
     std::vector<cmg::TauMu> taumu_;
     edm::Wrapper<cmg::TauMu> wtaumu_;
     edm::Wrapper<std::vector<cmg::TauMu> > wtaumuv_;
 
+    cmg::TauMuDiObject taumudiobj;
+    std::vector<cmg::TauMuDiObject> taumudiobj_;
+    edm::Wrapper<cmg::TauMuDiObject> wtaumudiobj_;
+    edm::Wrapper<std::vector<cmg::TauMuDiObject> > wtaumudiobjv_;
+
     cmg::MuEle mue;
     std::vector<cmg::MuEle> mue_;
     edm::Wrapper<cmg::MuEle> wmue_;
     edm::Wrapper<std::vector<cmg::MuEle> > wmuev_;
+
+    cmg::MuEleDiObject muediobj;
+    std::vector<cmg::MuEleDiObject> mueiobj_;
+    edm::Wrapper<cmg::MuEleDiObject> wmueiobj_;
+    edm::Wrapper<std::vector<cmg::MuEleDiObject> > wmueiobjv_;
 
     // Correspondence between PFCandidates and Primary Vertices
     std::vector<reco::Vertex> vtxvec_;
