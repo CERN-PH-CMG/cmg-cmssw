@@ -2,9 +2,9 @@ import FWCore.ParameterSet.Config as cms
 
 cmgDiTauCorFactory = cms.PSet(
     # leg1 and leg2 are dummy collections here
-    leg1Collection      = cms.InputTag(''),
-    leg2Collection      = cms.InputTag(''),
-    metCollection       = cms.InputTag('recoilCorrectedMET'),
+    # leg1Collection      = cms.InputTag(''),
+    # leg2Collection      = cms.InputTag(''),
+    # metCollection       = cms.InputTag('recoilCorrectedMET'),
     diObjectCollection  = cms.InputTag('cmgDiTauSel'),
     nSigma              = cms.double(0),
     uncertainty         = cms.double(0.03),
@@ -14,7 +14,7 @@ cmgDiTauCorFactory = cms.PSet(
     ############ for the embedded
     #shift3Prong         = cms.double(0.012),
     ############ for the mc
-    shift3Prong         = cms.double(0.022),
+    shift3Prong         = cms.double(0.022), # JAN - it's 0.012 according to Monica's twiki
     ptDependence3Prong  = cms.double(0.001)
 )
 
