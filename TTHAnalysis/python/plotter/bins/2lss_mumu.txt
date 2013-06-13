@@ -5,5 +5,6 @@ lep MVA: min(LepGood1_mva,LepGood2_mva) > 0.7
 mu mu:  abs(LepGood1_pdgId) == 13 && abs(LepGood2_pdgId) == 13
 same-sign: LepGood1_charge*LepGood2_charge > 0
 tight-charge: LepGood1_tightCharge && LepGood2_tightCharge
-2b: nBJetLoose25 >= 2
-#nJets: nJet25>=4
+4j: nJet25>=4
+2b loose: nBJetLoose25 >= 2 || nBJetMedium25 >= 1
+2B tight: nBJetMedium25 >= 2
