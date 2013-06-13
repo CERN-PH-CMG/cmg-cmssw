@@ -11,7 +11,7 @@ loosePUIDcuts = cms.VPSet(
         ),
     cms.PSet(
         minPt = cms.double(20.),
-        maxPt = cms.double(50.),
+        maxPt = cms.double(99999.), # WP 30-50 also valid above
         maxEtas = cms.vdouble(2.5, 2.75, 3.0, 5.0),
         minDiscs = cms.vdouble(-0.63, -0.60, -0.55, -0.45)
         )
@@ -29,7 +29,7 @@ mediumPUIDcuts = cms.VPSet(
         ),
     cms.PSet(
         minPt = cms.double(20.),
-        maxPt = cms.double(50.),
+        maxPt = cms.double(99999.), # WP 30-50 also valid above
         maxEtas = cms.vdouble(2.5, 2.75, 3.0, 5.0),
         minDiscs = full_53x_wp.Pt2030_Medium #Pt3050 is identical
         )
