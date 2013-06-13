@@ -1,17 +1,26 @@
 
-- HepMCProduct not kept in PFAOD -> cannot use them as benchmark. 
-
-- add debug information to simulated particles (ref to mother? eff and resolution factors?)
-
-- make cmg PFJets from gen jets and sim jets 
-
-- speed up python (gen matching?)
 
 - comparison between sim and gen jets 
 
 - comparison between sim and reco jets (raw PF jets?)
 
 - need gen particle info on gen jets
+
+
+gen jet:
+	match reco jet 
+	match sim  jet 
+	
+
+
+X- HepMCProduct not kept in PFAOD -> cannot use them as benchmark. 	
+	can now read GenParticles
+
+- add debug information to simulated particles (ref to mother? eff and resolution factors?)
+
+- make cmg PFJets from gen jets and sim jets 
+
+- speed up python (gen matching?)
 
 - resolution and response plotting macros
 
@@ -23,8 +32,8 @@
 - make sure that all stable invisible particles are removed
 check code in CMSSW (fastsim?) to get the list
 
-- focus on jet simulation 
 
+- focus on jet simulation 
 
 
 - could validate my gen jet clustering on GenParticles, with the one of CMS running on the same collection of gen particles. 

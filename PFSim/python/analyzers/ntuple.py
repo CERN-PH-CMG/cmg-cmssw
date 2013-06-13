@@ -28,11 +28,18 @@ def fillGenParticle( tree, pName, particle ):
 
 def bookGenJet(tree, pName):
     bookParticle(tree, pName)
-    var(tree, '{pName}_dR'.format(pName=pName))
-    
+    bookParticle(tree, '{pName}_rec'.format(pName=pName))
+    bookParticle(tree, '{pName}_sim'.format(pName=pName))
+    bookParticle(tree, '{pName}_genPtc3'.format(pName=pName))
+        
 def fillGenJet( tree, pName, genjet ):
     fillParticle( tree, pName, genjet )
-    fill(tree, '{pName}_dR'.format(pName=pName), genjet.dR )
+    if genjet.rec:
+        fillParticle(tree, '{pName}_rec'.format(pName=pName), genjet.rec )
+    if genjet.sim:
+        fillParticle(tree, '{pName}_sim'.format(pName=pName), genjet.sim )
+    if genjet.genPtc3:
+        fillParticle(tree, '{pName}_genPtc3'.format(pName=pName), genjet.genPtc3 )
 
 
 def bookJet( tree, pName ):

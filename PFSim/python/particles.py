@@ -26,7 +26,10 @@ class PFJet(ParticleWithP4):
     def __getattr__(self, name):
         return getattr(self.physObj, name)
 
-    
+
+class SimJet(ParticleWithP4):
+    def __init__(self, p4):
+        super(SimJet,self).__init__(p4, 1)
 
 class Jet(ParticleWithP4):
     def __init__(self, p4):
