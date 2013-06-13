@@ -25,7 +25,7 @@ TGaxis.SetMaxDigits(3)
 if __name__ == '__main__':
 
  theory=False
- runSet=6
+ runSet=2
 
  if runSet==1:
   samples = ["substructure_pas_QCD500.root",
@@ -45,8 +45,8 @@ if __name__ == '__main__':
            ("Jet1MassDrop","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","mass drop"),
            ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
            ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
-           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
-           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned #tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","pruned #tau_{2}/#tau_{1}", ),
            #("Jet1C2beta15","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.5)", ),
            ("Jet1C2beta17","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.7)", ),
            #("Jet1C2beta20","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=2.0)", ),
@@ -83,8 +83,8 @@ if __name__ == '__main__':
            ("Jet1MassDrop","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","mass drop"),
            ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
            ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
-           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
-           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned #tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","pruned #tau_{2}/#tau_{1}", ),
            #("Jet1C2beta15","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.5)", ),
            ("Jet1C2beta17","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.7)", ),
            #("Jet1C2beta20","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=2.0)", ),
@@ -122,8 +122,8 @@ if __name__ == '__main__':
            ("Jet1MassDrop","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","mass drop"),
            ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
            ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
-           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
-           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned #tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","pruned #tau_{2}/#tau_{1}", ),
            #("Jet1C2beta15","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.5)", ),
            ("Jet1C2beta17","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.7)", ),
            #("Jet1C2beta20","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=2.0)", ),
@@ -161,8 +161,8 @@ if __name__ == '__main__':
            ("Jet1MassDrop","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","mass drop"),
            ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
            ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
-           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
-           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned #tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","pruned #tau_{2}/#tau_{1}", ),
            #("Jet1C2beta15","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.5)", ),
            ("Jet1C2beta17","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.7)", ),
            #("Jet1C2beta20","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=2.0)", ),
@@ -275,6 +275,41 @@ if __name__ == '__main__':
 	   "jetcharge10_aftermass",
 	   ]
 
+ if runSet==8:
+  samples = ["substructure_pas_WWPy61000.root",
+             "substructure_pas_WWHpp1000.root",
+             ]
+  colors=[1,1,1,2,2,2]
+  styles=[2,3,1,2,3,1]
+  widths=[2,1,2,2,1,2]
+  sets=["Gen",""]
+
+  plots = [("nPU","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pileup interactions"),
+           ("Jet1pt","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet p_{T} (GeV)"),
+           ("Jet1eta","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet #eta"),
+           ("Jet1Mass","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned jet mass (GeV)"),
+           ("Jet1MassDrop","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","mass drop"),
+           ("Jet1MassDrop","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","mass drop"),
+           ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
+           ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned #tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","pruned #tau_{2}/#tau_{1}", ),
+           #("Jet1C2beta15","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.5)", ),
+           ("Jet1C2beta17","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.7)", ),
+           #("Jet1C2beta20","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=2.0)", ),
+           ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1genWcharge>=0))","jet charge (#kappa=0.3)", ),
+           ("Jet1jetCharge05","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1genWcharge>=0))","jet charge (#kappa=0.5)", ),
+           ("Jet1jetCharge10","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1genWcharge>=0))","jet charge (#kappa=1.0)", ),
+           ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1genWcharge>=0)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.3)", ),
+           ("Jet1jetCharge05","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1genWcharge>=0)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.5)", ),
+           ("Jet1jetCharge10","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1genWcharge>=0)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=1.0)", ),
+           ("Jet1nConstituents","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet constituents", ),
+           ("Jet1Ncharged01","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","charged particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1Nneutral01","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","neutral particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1ChargedPt2","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","3rd charged particle p_{T}", ),
+           ("Jet1Pt2","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","3rd particle p_{T}", ),
+           ]
+
  results=[]
  for plot in plots:
   canvas = TCanvas("","",0,0,200,200)
@@ -360,7 +395,7 @@ if __name__ == '__main__':
        hist.GetYaxis().SetRangeUser(0,60000)
        if "aftermass" in names[plots.index(plot)]:
            hist.GetYaxis().SetRangeUser(0,6000)
-    if plot[2]=="#tau_{2}/#tau_{1}":
+    if "#tau_{2}/#tau_{1}" in plot[2]:
        hist=TH1F(histname,histname,25,0,1);
        hist.GetYaxis().SetRangeUser(0,75000)
        if "aftermass" in names[plots.index(plot)]:
@@ -499,7 +534,7 @@ if __name__ == '__main__':
         legend.AddEntry(hist," with p_{T}^{particles}>2 GeV","l")
       else:
         legend.AddEntry(hist," with 22PU + simulation","l")
-    if "WW" in sample:
+    if "WWPy6" in sample:
       if runSet==3 and "1000" in sample:
         legend.AddEntry(hist,"W 500 < p_{T} < 750 GeV","l")
       elif runSet==3 and "3000" in sample:
@@ -536,6 +571,11 @@ if __name__ == '__main__':
         legend.AddEntry(hist,"G_{RS} #rightarrow WW Pythia6","l")
       else:
         legend.AddEntry(hist," with 22PU + simulation","l")
+    if "WWHpp" in sample:
+      if gen=="Gen" or runSet==2:
+        legend.AddEntry(hist,"G_{RS} #rightarrow WW Herwig++","l")
+      else:
+        legend.AddEntry(hist," with 22PU + simulation","l")
     counter+=1
 
   legend.SetTextSize(0.036)
@@ -559,17 +599,17 @@ if __name__ == '__main__':
   legend2a.Draw("same")
 
   if runSet==2:
-    banner = TLatex(0.27,0.93,"CMS Preliminary, 19.6 fb^{-1}, #sqrt{s} = 8TeV, dijets");
+    banner = TLatex(0.27,0.93,"CMS Preliminary, 19.6 fb^{-1}, #sqrt{s} = 8 TeV, dijets");
   elif runSet==6 and theory:
-    banner = TLatex(0.32,0.93,"Pythia6, #sqrt{s} = 8TeV, dijets");
+    banner = TLatex(0.32,0.93,"Pythia6, #sqrt{s} = 8 TeV, dijets");
   else:
-    banner = TLatex(0.3,0.93,"CMS Simulation, #sqrt{s} = 8TeV, dijets");
+    banner = TLatex(0.3,0.93,"CMS Simulation, #sqrt{s} = 8 TeV, dijets");
   banner.SetNDC()
   banner.SetTextSize(0.04)
   banner.Draw();  
 
   if "aftermass" in names[plots.index(plot)]:
-     legend3=TLegend(0.15,0.75,0.5,0.8,"70 < m_{j} < 100 GeV")
+     legend3=TLegend(0.15,0.7,0.5,0.75,"70 < m_{j} < 100 GeV")
      legend3.SetTextSize(0.03)
      legend3.SetFillStyle(0)
      legend3.Draw("same")
