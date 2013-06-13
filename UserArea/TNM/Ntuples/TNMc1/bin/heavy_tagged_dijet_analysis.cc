@@ -573,17 +573,12 @@ int main(int argc, char** argv)
 	  else
 	      weight=1;
 
-<<<<<<< heavy_tagged_dijet_analysis.cc
           if((DijetMassCA8>1600)&&
 	     ((Jet1CA8Mass>70)&&(Jet1CA8Mass<100))&&
 	     ((Jet2CA8Mass>70)&&(Jet2CA8Mass<100))&&
 	     ((Jet1CA8Nsub<0.5)&&(Jet2CA8Nsub<0.5)))
               cout << "filtered " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << Jet1pt << ":" << Jet2pt << ":" << Jet1eta << ":" << Jet2eta << ":" << Jet1phi << ":" << Jet2phi << ":" << Jet1CA8Mass << ":" << Jet2CA8Mass << ":" << Jet1CA8Nsub << ":" << Jet2CA8Nsub << endl;
-=======
-          //if((Jet1CA8Mass>70)&&(Jet1CA8Mass<100)&&(Jet2CA8Mass>70)&&(Jet2CA8Mass<100)&&(DijetMassCA8>1600))
-          //    cout << "filtered " << eventhelper_run << ":" << eventhelper_luminosityBlock << ":" << eventhelper_event << ":" << DijetMass << ":" << Jet1CA8Mass << ":" << Jet2CA8Mass << ":" << Jet1CA8Nsub << ":" << Jet2CA8Nsub << endl;
->>>>>>> 1.19
-
+ 
           categories=-1;
           categoriesNS=-1;
           mgg = DijetMassCA8;
@@ -634,16 +629,9 @@ int main(int argc, char** argv)
 	      categories = 0;
 	  }
 
-<<<<<<< heavy_tagged_dijet_analysis.cc
           if(mgg>890) TCVARS->Fill();
 if((cmdline.outputfilename.find("Py6")!=std::string::npos)||(cmdline.outputfilename.find("Hpp")!=std::string::npos)||(DijetMassCA8>890))
               dijetWtag->Fill();
-=======
-          if(mgg>890) {
-	    if (centralitySelection) TCVARS->Fill();
-	    dijetWtag->Fill();
-	  }
->>>>>>> 1.19
 
 	}
   stream.close();
