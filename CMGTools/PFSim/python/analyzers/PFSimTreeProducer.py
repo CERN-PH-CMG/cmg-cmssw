@@ -15,56 +15,21 @@ class PFSimTreeProducer( TreeAnalyzerNumpy ):
         tr = self.tree
 
         var( tr, 'nJets')
-        bookParticle(tr, 'jet1')
-        bookParticle(tr, 'jet2')
-        bookParticle(tr, 'jet3')
-        bookGenJet(tr, 'jet1gen')
-        bookGenJet(tr, 'jet2gen')
-        bookGenJet(tr, 'jet3gen')
-        bookGenParticle(tr, 'jet1gp')
-        bookGenParticle(tr, 'jet2gp')
-        bookGenParticle(tr, 'jet3gp')
-
-        var( tr, 'nEles')
-        bookParticle(tr, 'ele1')
-        bookParticle(tr, 'ele2')
-        bookParticle(tr, 'ele1gen')
-        bookParticle(tr, 'ele2gen')
-        
-        var( tr, 'nMus')
-        bookParticle(tr, 'mu1')
-        bookParticle(tr, 'mu2')
-        bookParticle(tr, 'mu1gen')
-        bookParticle(tr, 'mu2gen')
-        
+        bookGenJet(tr, 'jet1')
 
     def process(self, iEvent, event):
         
         tr = self.tree
         tr.reset()
        
-        nJets = len(event.cleanJets)
-        fill(tr, 'nJets', len(event.cleanJets) )
+        nJets = len(event.cleanGenJets)
+        fill(tr, 'nJets', len(event.cleanGenJets) )
 
-        if nJets>=1:
-            fillParticle(tr, 'jet1', event.cleanJets[0] )
-            if event.cleanJets[0].genJet:
-                fillGenJet(tr, 'jet1gen', event.cleanJets[0].genJet )
-            if event.cleanJets[0].genPtc3:
-                fillGenParticle(tr, 'jet1gp', event.cleanJets[0].genPtc3 )
-        if nJets>=2:
-            fillParticle(tr, 'jet2', event.cleanJets[1] )
-            if event.cleanJets[1].genJet:
-                fillGenJet(tr, 'jet2gen', event.cleanJets[1].genJet )
-            if event.cleanJets[1].genPtc3:
-                fillGenParticle(tr, 'jet2gp', event.cleanJets[1].genPtc3 )
-        if nJets>=3:
-            fillParticle(tr, 'jet3', event.cleanJets[2] )
-            if event.cleanJets[2].genJet:
-                fillGenJet(tr, 'jet3gen', event.cleanJets[2].genJet )
-            if event.cleanJets[2].genPtc3:
-                fillGenParticle(tr, 'jet2gp', event.cleanJets[2].genPtc3 )
+        if nJets>0:
+            fillGenJet(tr, 'jet1', event.cleanGenJets[0] )
 
+        
+            
 # fill that with gen as a pivot. 
 ##         nEles = len(event.electrons)
 ##         fill(tr, 'nEles', nEles )        

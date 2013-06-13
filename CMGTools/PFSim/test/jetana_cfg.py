@@ -7,14 +7,16 @@ from CMGTools.RootTools.RootTools import *
 
 
 
+
 reader = cfg.Analyzer(
     'ObjectReader',
     # muonCol = ('cmgMuonSel', 'vector<cmg::Muon>'),
     # electronCol = ('cmgElectronSel', 'vector<cmg::Electron>'),
     muonCol = None,
     electronCol = None,
-    jetCol = ('jets', 'vector<reco::LeafCandidate>'),
-    genJetCol = ('genJets', 'vector<reco::LeafCandidate>'),
+    jetCol = ('ak5PFJets', 'std::vector<reco::PFJet>'),
+    simJetCol = ('jets', 'std::vector<reco::LeafCandidate>'),
+    genJetCol = ('ak5GenJets', 'std::vector<reco::GenJet>'),
     genPartCol = ('genParticles', 'std::vector<reco::GenParticle>'),
     )
 
@@ -34,18 +36,17 @@ treeProducer = cfg.Analyzer(
 
 ###############################################################################
 
-TTJets = cfg.MCComponent(
-    name = 'TTJets',
-    # files = sorted(glob.glob('Prod_TT_20k/Job*/*.root')),
+testComp = cfg.MCComponent(
+    name = 'Test',
     files = ['sim.root'],
-    xSection = 225.197, 
+    xSection = 1, 
     nGenEvents = 1,
     triggers = [],
     effCorrFactor = 1 )
-TTJets.splitFactor = 1
+testComp.splitFactor = 1
 
 
-selectedComponents = [TTJets]  
+selectedComponents = [testComp]  
 
 sequence = cfg.Sequence( [
     # effAndSmear,
