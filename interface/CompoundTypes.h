@@ -35,8 +35,8 @@ namespace cmg {
   typedef cmg::DiObject<cmg::Tau,cmg::Electron> TauEleDiObject;
   typedef cmg::DiTauObject<cmg::Tau, cmg::Muon> TauMu;
   typedef cmg::DiObject<cmg::Tau,cmg::Muon> TauMuDiObject; // still need to declare DiObject to generate dictionaries
-  typedef cmg::DiTauObject<cmg::Muon,cmg::Electron> MuEle;
-  typedef cmg::DiObject<cmg::Muon,cmg::Electron> MuEleDiObject;
+  typedef cmg::DiTauObject<cmg::Muon,cmg::Electron> MuEleDiTau;
+  typedef cmg::DiObject<cmg::Muon,cmg::Electron> MuEle;
   typedef cmg::DiObject<cmg::Electron,cmg::BaseMET> WENu;
   typedef cmg::DiObject<cmg::Muon,cmg::BaseMET> WMuNu;
   typedef cmg::DiObject<cmg::Tau,cmg::BaseMET> WTauNu;
