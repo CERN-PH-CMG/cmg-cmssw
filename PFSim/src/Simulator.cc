@@ -18,45 +18,43 @@ PFSim::Simulator::Simulator(bool verbose) :
 {}
 
 
-
 void PFSim::Simulator::simulate( const HepMC::GenEvent& event, 
 				 const ParticleDataTable& pdt ) {
+  Particles particles(event.particles_size());
+  for(HepMC::GenEvent::particle_const_iterator iter = event.particles_begin(); 
+      iter!= event.particles_end(); ++iter) {
+    const HepMC::GenParticle& inptc = **iter;
+    float charge = 99.;
+    particles.push_back( Particle(Particle::X, inptc.pdg_id(), charge, inptc.momentum() ) );
+    particles.back().setStatus( inptc.status() );
+  }
+  return simulate( particles, pdt );
+}
+
+
+
+void PFSim::Simulator::simulate( const Particles& particles, 
+				 const ParticleDataTable& pdt ) {
+
 
   if (firstEvent_) {
-    for( HepPDT::ParticleDataTable::const_iterator p = pdt.begin(); 
-	 p != pdt.end(); ++ p ) {
-      const HepPDT::ParticleID & id = p->first;
-      int pdgId = id.pid(), apdgId = std::abs( pdgId );
-      int q3 = id.threeCharge();
-      if ( apdgId < PDGCacheMax && pdgId>0 ) {
-	chargeP_[ apdgId ] = q3;
-	chargeM_[ apdgId ] = -q3;
-      } else if ( apdgId < PDGCacheMax ) {
-	chargeP_[ apdgId ] = -q3;
-	chargeM_[ apdgId ] = q3;
-      } else {
-	chargeMap_[ pdgId ] = q3;
-	chargeMap_[ -pdgId ] = -q3;
-      }
-    }
+    cachePDT( pdt );
     firstEvent_ = false; 
   }
 
   simParticles_.clear();
 
   // loop over all particles
-  bool filled = false;
-  for(HepMC::GenEvent::particle_const_iterator iter = event.particles_begin(); 
-      iter!= event.particles_end() && !filled; ++iter) {
+  for(unsigned i=0; i<particles.size(); ++i) {
 
-    const HepMC::GenParticle& inptc = **iter;
+    const Particle& inptc = particles[i];
+    // cout << inptc.status() << " "<< inptc.pdg_id() << endl;
  
     if( inptc.status() != 1 ) continue; 
 
     Particle::Type type = Particle::X;
     int charge = chargeTimesThree( inptc.pdg_id() );    
 
-    
     switch( abs( inptc.pdg_id() )  ) {
     case 12:
     case 14:
@@ -222,3 +220,25 @@ int PFSim::Simulator::chargeTimesThree( int id ) const {
   }
   return f->second;
 }
+
+
+
+void PFSim::Simulator::cachePDT( const ParticleDataTable& pdt) {
+  for( HepPDT::ParticleDataTable::const_iterator p = pdt.begin(); 
+       p != pdt.end(); ++ p ) {
+    const HepPDT::ParticleID & id = p->first;
+    int pdgId = id.pid(), apdgId = std::abs( pdgId );
+    int q3 = id.threeCharge();
+    if ( apdgId < PDGCacheMax && pdgId>0 ) {
+      chargeP_[ apdgId ] = q3;
+      chargeM_[ apdgId ] = -q3;
+    } else if ( apdgId < PDGCacheMax ) {
+      chargeP_[ apdgId ] = -q3;
+      chargeM_[ apdgId ] = q3;
+    } else {
+      chargeMap_[ pdgId ] = q3;
+      chargeMap_[ -pdgId ] = -q3;
+    }
+  }  
+}
+

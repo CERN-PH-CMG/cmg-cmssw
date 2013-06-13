@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("Sim")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 
 
 process.maxEvents = cms.untracked.PSet(
@@ -20,24 +20,20 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
 )
 
 
-
 process.source = cms.Source(
     'PoolSource',
-    fileNames = cms.untracked.vstring( 'file:Prod_TT_20k/Job_1/gen.root' )
+    fileNames = cms.untracked.vstring( 'file:ee_qq.root' )
     )
 
-process.pfsim = cms.EDProducer(
-    'PFSimParticleProducer',
-    hepmcSrc = cms.InputTag('generator'),
-    verbose = cms.untracked.bool( False )
+
+process.load('CMGTools.PFSim.pfsim_cff')
+
+process.p = cms.Path(
+    process.pfsimSequence
     )
 
-process.jets = cms.EDProducer(
-    'PFSimFastJetProducer',
-    particleSrc = cms.InputTag('pfsim'),
-    jetPtThreshold = cms.double(5.),
-    )
 
+from CMGTools.PFSim.eventContent import simple as gensimreco
 
 process.out = cms.OutputModule(
     "PoolOutputModule",
@@ -45,14 +41,8 @@ process.out = cms.OutputModule(
     dataTier = cms.untracked.string('SIM')
     ),
     fileName = cms.untracked.string('sim.root'),
-    outputCommands = cms.untracked.vstring('keep *')
+    outputCommands = cms.untracked.vstring( *gensimreco )
 )
-
-process.p = cms.Path(
-    process.pfsim 
-    + process.jets
-    )
-
 
 process.outpath = cms.EndPath(process.out)
 

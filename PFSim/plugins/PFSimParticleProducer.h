@@ -34,10 +34,9 @@ class PFSimParticleProducer : public edm::EDProducer {
 
  private:
 
-  // int chargeTimesThree( int id ) const;
-
-
   edm::InputTag  hepmcSrc_;
+
+  edm::InputTag  genSrc_;
   
   /// verbose ?
   bool   verbose_;
