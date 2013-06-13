@@ -39,7 +39,7 @@ namespace cmg{
 
   typedef DiObjectUpdateFactory< cmg::TauMu > TauMuUpdateFactory;
   typedef DiObjectUpdateFactory< cmg::TauEle > TauEleUpdateFactory;
-  typedef DiObjectUpdateFactory< cmg::MuEle > MuEleUpdateFactory;
+  typedef DiObjectUpdateFactory< cmg::MuEleDiTau > MuEleUpdateFactory;
   typedef DiObjectUpdateFactory< cmg::DiTau > DiTauUpdateFactory;
   
     
