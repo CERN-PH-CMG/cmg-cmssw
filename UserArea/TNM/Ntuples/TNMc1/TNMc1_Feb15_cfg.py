@@ -1,4 +1,4 @@
-#$Revision: 1.17 $
+#$Revision: 1.18 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -111,9 +111,11 @@ process.load("Configuration.StandardSequences.MagneticField_38T_cff")
 
 GT = None
 if runOnMC:
-    GT = 'START53_V15::All' # for Summer12 MC
+#    GT = 'START53_V15::All' # for Summer12 MC
+    GT = 'START53_V23::All' # for Summer12 MC with ReReco data
 else:
-    GT = 'GR_P_V39_AN3::All' # for Moriond data
+#    GT = 'GR_P_V39_AN3::All' # for Moriond data
+    GT = 'FT_53_V21_AN4::All' # for Jan22ReReco data
 process.GlobalTag.globaltag = GT
 
 #### AK5 CHS jets
