@@ -272,10 +272,10 @@ namespace {
     edm::Wrapper<cmg::MuEle> wmue_;
     edm::Wrapper<std::vector<cmg::MuEle> > wmuev_;
 
-    cmg::MuEleDiObject muediobj;
-    std::vector<cmg::MuEleDiObject> mueiobj_;
-    edm::Wrapper<cmg::MuEleDiObject> wmueiobj_;
-    edm::Wrapper<std::vector<cmg::MuEleDiObject> > wmueiobjv_;
+    cmg::MuEleDiTau muediobj;
+    std::vector<cmg::MuEleDiTau> mueiobj_;
+    edm::Wrapper<cmg::MuEleDiTau> wmueiobj_;
+    edm::Wrapper<std::vector<cmg::MuEleDiTau> > wmueiobjv_;
 
     // Correspondence between PFCandidates and Primary Vertices
     std::vector<reco::Vertex> vtxvec_;
