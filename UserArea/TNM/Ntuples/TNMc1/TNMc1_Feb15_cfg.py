@@ -1,4 +1,4 @@
-#$Revision: 1.16 $
+#$Revision: 1.17 $
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("TheNtupleMaker")
@@ -31,13 +31,13 @@ runCA8jets = True
 runAK5genjets = True
 runQJets = False
 runOnVVtuples = False
-runOnCMGp = False
+runOnCMGp = True
 
 # Input file
 
 dataset_user = 'cmgtools' 
-dataset_name = '/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0'
-#dataset_name = '/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0'
+#dataset_name = '/QCD_HT-1000ToInf_TuneZ2star_8TeV-madgraph-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_13_0'
+dataset_name = '/QCD_Pt-15to3000_Tune4C_Flat_8TeV_pythia8/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM/V5_B/PAT_CMG_V5_16_0'
 #dataset_name = '/MultiJet/Run2012A-13Jul2012-v1/AOD/PAT_CMG_V5_12_0'
 if runOnCMGp:
     dataset_files = 'cmgTuple.*root'
@@ -55,6 +55,8 @@ process.source = datasetToSource(
     dataset_name,
     dataset_files,
     )
+
+process.source.fileNames=cms.untracked.vstring('file:cmgTuple.root')
 
 if runOnVVtuples:
     #process.load("ExoDiBosonResonances/EDBRCommon/datasets/summer12_WJetsPt100_cff")
@@ -93,7 +95,7 @@ if runOnMC==False:
 print 'runOnMC:', runOnMC
 
 if runOnCMGp:
-    process.load("Ntuples.TNMc1.ntuple_cfi_cmg")
+    process.load("Ntuples.TNMc1.ntuple_cmg_cfi")
 else:
     process.load("Ntuples.TNMc1.ntuple_cfi")
 
@@ -161,7 +163,7 @@ process.selectedPatJetsCHS.cut = 'pt()>10'
 
 #### Adding AK7 jets
 
-process.load("ExoDiBosonResonances.PATtupleProduction.PAT_ak7jets_cff")
+process.load("Ntuples.TNMc1.PAT_ak7jets_cff")
 process.PATCMGSequence += process.PATCMGJetSequenceAK7CHS
 
 if not runOnMC:
@@ -186,7 +188,7 @@ if not runOnMC:
 
 #### Adding CA8 jets and CA8 pruned jets
 
-process.load("ExoDiBosonResonances.PATtupleProduction.PAT_ca8jets_cff")
+process.load("Ntuples.TNMc1.PAT_ca8jets_cff")
 process.PATCMGSequence += process.PATCMGJetSequenceCA8CHS
 process.PATCMGSequence += process.PATCMGJetSequenceCA8CHSpruned
 if not runOnMC:
@@ -251,6 +253,9 @@ process.PATCMGSequence += process.selectedPatJetsCA8CHSwithQjets
 process.load("CMGTools.Susy.RazorMultiJet.razorMultijet_cff")
 process.load("CMGTools.Susy.common.susy_cff")
 
+if runOnCMGp:
+  process.razorMJJetSequence.remove(process.razorMJJetGirth)
+  process.razorMJJetSequence.remove(process.razorMJJetGirthCharged)
 process.razorMJObjectSequence.remove(process.razorMJHemiSequence)
 process.susyGenSequence.remove(process.dumpPdfWeights)
 process.razorMJHadTriggerInfo.printSelections=False
@@ -284,7 +289,8 @@ if runPATCMG:
   from CMGTools.Common.PAT.patCMGSchedule_cff import getSchedule
   process.schedule = getSchedule(process, runOnMC, False)
 
-process.tnmc1 = cms.Sequence(process.razorMJObjectSequence)
+process.tnmc1 = cms.Sequence(process.goodOfflinePrimaryVertices)
+process.tnmc1 += process.razorMJObjectSequence
 if runOnMC==True:
     process.tnmc1 += process.susyGenSequence
     process.tnmc1 += process.vertexWeightSummer12MC53X2012ABCDData

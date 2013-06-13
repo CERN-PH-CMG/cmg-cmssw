@@ -26,6 +26,7 @@ void EventHelperExtra::analyzeEvent()
   event->getByLabel("goodOfflinePrimaryVertices", vertices);    
   n_vertices_=vertices->size();
 
+/*
   // Get the jet collections::
   edm::Handle<std::vector<pat::Jet> > jets;
   event->getByLabel("patJetsWithVar", jets);
@@ -205,16 +206,14 @@ void EventHelperExtra::analyzeEvent()
                             pow((wj1.Pz() + wj2.Pz()), 2)
                             );
 
-    /*    
-    cout << "wide jet 1: pt, eta, phi, energy, mass, nconst" << endl;
-    cout << wj1_pt << " " <<wj1_eta << " " << wj1_phi << " " 
-	 << wj1_energy << " " << wj1_mass << " " << wj1_nconst << endl;
+    //cout << "wide jet 1: pt, eta, phi, energy, mass, nconst" << endl;
+    //cout << wj1_pt << " " <<wj1_eta << " " << wj1_phi << " " 
+    //	 << wj1_energy << " " << wj1_mass << " " << wj1_nconst << endl;
     
-    cout << "wide jet 2: pt, eta, phi, energy, mass, nconst" << endl;
-    cout << wj2_pt << " " << wj2_eta << " " << wj2_phi << " "
-	 << wj2_energy << " " << wj2_mass << " " << wj2_nconst << endl;
-    cout << "Number of common constituents: " << wj1wj2_nconst << endl;
-    */
+    //cout << "wide jet 2: pt, eta, phi, energy, mass, nconst" << endl;
+    //cout << wj2_pt << " " << wj2_eta << " " << wj2_phi << " "
+    //	 << wj2_energy << " " << wj2_mass << " " << wj2_nconst << endl;
+    //cout << "Number of common constituents: " << wj1wj2_nconst << endl;
     
   }
 
@@ -309,20 +308,10 @@ void EventHelperExtra::analyzeEvent()
                                pow((wj1.Pz() + wj2.Pz()), 2)
                                );
 
-    /*    
-    cout << "wide jet 1: pt, eta, phi, energy, mass, nconst" << endl;
-    cout << wj1_pt << " " <<wj1_eta << " " << wj1_phi << " " 
-	 << wj1_energy << " " << wj1_mass << " " << wj1_nconst << endl;
-    
-    cout << "wide jet 2: pt, eta, phi, energy, mass, nconst" << endl;
-    cout << wj2_pt << " " << wj2_eta << " " << wj2_phi << " "
-	 << wj2_energy << " " << wj2_mass << " " << wj2_nconst << endl;
-    cout << "Number of common constituents: " << wj1wj2_nconst << endl;
-    */
     
   }
 
-  
+ */  
   
 }
 

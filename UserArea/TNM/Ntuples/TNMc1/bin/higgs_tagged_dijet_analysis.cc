@@ -366,7 +366,7 @@ int main(int argc, char** argv)
   double DijetMassCA8;
   double deta;
   double cteta;
-  double Ht
+  double Ht;
   double njets;
   double njetsCA8;  
   double Jet1pt;
@@ -392,7 +392,7 @@ int main(int argc, char** argv)
   //dijetWtag->Branch("DijetMassAK7",&DijetMassAK7,"DijetMassAK7/D");
   dijetWtag->Branch("deta",&deta,"deta/D");                                    //
   dijetWtag->Branch("cteta",&cteta,"cteta/D");                                 // ajout de cos teta* just for the lulz
-  dijetWtag->Branch("Ht",&Ht,"Ht/D")                                           //
+  dijetWtag->Branch("Ht",&Ht,"Ht/D");                                          //
   dijetWtag->Branch("Jet1pt",&Jet1pt,"Jet1pt/D");                              //
   dijetWtag->Branch("Jet2pt",&Jet2pt,"Jet2pt/D");                              // ajout de Ht: sommes des pt 
   dijetWtag->Branch("Jet1eta",&Jet1eta,"Jet1eta/D");                           //
