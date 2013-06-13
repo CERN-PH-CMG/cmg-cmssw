@@ -10,6 +10,8 @@ namespace PFSim {
 
   public:
 
+    Particle() : status_(0) {}
+
     enum Type {
       X=0,     // undefined
       h,       // charged hadron
@@ -27,8 +29,11 @@ namespace PFSim {
       momentum_ = mom;
     }
 
+    void setStatus(int status) {status_=status;}
+
+    int  status() const {return status_;}
     Type type() const {return type_;}
-    int  pdgId() const {return pdgId_;}
+    int  pdg_id() const {return pdgId_;}
     float charge() const {return charge_;}
     const HepMC::FourVector& momentum() const {return momentum_;}
     const HepMC::FourVector& p4() const {return momentum();}
@@ -37,7 +42,8 @@ namespace PFSim {
     Type               type_;
     int                pdgId_;
     HepMC::FourVector  momentum_; 
-    float              charge_; 
+    float              charge_;
+    int                status_;
   };
  
 }

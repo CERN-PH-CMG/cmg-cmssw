@@ -24,10 +24,16 @@ namespace PFSim {
 
     void simulate(const HepMC::GenEvent& event, 
 		  const ParticleDataTable& pdt );  
+
+    void simulate(const Particles& particles, 
+		  const ParticleDataTable& pdt );  
     
     const Particles& simParticles() const {return simParticles_;}
     
   private:
+
+    void cachePDT(const ParticleDataTable& pdt); 
+
     int chargeTimesThree( int id ) const;
 
     Particles simParticles_; 

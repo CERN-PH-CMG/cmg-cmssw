@@ -38,8 +38,8 @@ float PFSim::CMS::chargedHadronEfficiency(const HepMC::FourVector& mom) const {
   float pt = mom.perp();
   float eta = mom.eta();
   float effvalue = 0.;
-  if (pt>0.6 && fabs(eta)<2.5)
-    effvalue = 0.95;
+  if (pt>1.0 && fabs(eta)<2.5)
+    effvalue = 0.90;
   return effvalue;
 }
 
