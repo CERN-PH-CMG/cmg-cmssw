@@ -43,16 +43,20 @@ for chan in channels:
             f_fit=file("Limits/Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+".out")
 
             print "we look inside the fit output for bin "+str(bin)
+	    s=0
+	    p=0
             for line in f_fit.readlines():
                 #            print line
                 if "Significance:" in line:
                     #                limits+=[float(line.split(":")[2])]
                     print float(line.split(":")[1])
-                    sig+=[float(line.split(":")[1])]
+                    s=float(line.split(":")[1])
                 if "(p-value " in line:
                     print float(line.split("=")[1].split(")")[0])
-                    pval+=[float(line.split("=")[1].split(")")[0])]
+                    p=float(line.split("=")[1].split(")")[0])
             f_fit.close()
+	    sig+=[s]
+	    pval+=[p]
 
 
         print "sig",[(masses[i],sig[i]) for i in range(len(masses))]

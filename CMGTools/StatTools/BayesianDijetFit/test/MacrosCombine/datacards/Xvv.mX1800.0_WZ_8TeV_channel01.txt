@@ -15,12 +15,12 @@ shapes MggSigWZ  ch1       datacards/../workspaces/Xvv.mX1800.0_WZ_8TeV.inputsig
 shapes MggSigZZ  ch1       datacards/../workspaces/Xvv.mX1800.0_ZZ_8TeV.inputsig.root w_all:CMS_hgg_ZZ_sig_cat1
 ----------------------------------------------------------------------------------------------------------------------------------
 bin          ch0      ch1    
-observation  7135.0   22444.0
+observation  7128.0   22328.0
 ----------------------------------------------------------------------------------------------------------------------------------
 bin                              ch0       ch0       ch0       ch0       ch1       ch1       ch1       ch1     
 process                          MggSigWW  MggSigZZ  MggSigWZ  MggBkg    MggSigWW  MggSigZZ  MggSigWZ  MggBkg  
 process                          -2        -1        0         1         -2        -1        0         1       
-rate                             0.0000    0.0000    13.6000   1.0000    0.0000    0.0000    7.2350    1.0000  
+rate                             0.0000    0.0000    13.4550   1.0000    0.0000    0.0000    7.2050    1.0000  
 ----------------------------------------------------------------------------------------------------------------------------------
 CMS_eff_vmass           lnN      1.02      1.02      1.02      -         1.02      1.02      1.02      -       
 CMS_eff_vtau            lnN      1.2       1.2       1.2       -         0.8       0.8       0.8       -       

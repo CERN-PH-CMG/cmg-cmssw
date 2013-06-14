@@ -33,7 +33,7 @@
  normWeight = 1;
 
 
- string sInFile = "~hinzmann/public/yxin/DataCategoriesBin1GeV.root";
+ string sInFile = "~hinzmann/public/yxin/DataCategoriesBin1GeVJECSWAP.root";
  cout << sInFile.c_str() << endl;
  TFile file0(sInFile.c_str(), "read");
  

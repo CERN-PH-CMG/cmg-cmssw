@@ -11,12 +11,12 @@ shapes MggSigqW * ../workspaces/Xvv.mX3400.0_qW_8TeV.inputsig.root w_all:CMS_hgg
 shapes MggSigqZ * ../workspaces/Xvv.mX3400.0_qZ_8TeV.inputsig.root w_all:CMS_hgg_qZ_sig_$CHANNEL
 ---------------
 bin          cat4
-observation   535798
+observation   552334
 ------------------------------
 bin                      cat4      cat4      cat4      
 process                 MggSigqW MggSigqZ     MggBkg     
 process                 -1 0        1          
-rate                        5.73  0  1
+rate                        5.705  0  1
 --------------------------------
 # signal scaled by 0.005
 lumi_8TeV       lnN  1.044  1.044    - 

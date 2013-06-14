@@ -11,7 +11,7 @@ shapes MggSigqW * ../workspaces/Xvv.mX3700.0_qW_8TeV.inputsig.root w_all:CMS_hgg
 shapes MggSigqZ * ../workspaces/Xvv.mX3700.0_qZ_8TeV.inputsig.root w_all:CMS_hgg_qZ_sig_$CHANNEL
 ---------------
 bin          cat0
-observation   7135
+observation   7128
 ------------------------------
 bin                      cat0      cat0      cat0      
 process                 MggSigqW MggSigqZ     MggBkg     

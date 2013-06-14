@@ -85,7 +85,7 @@
        
        TAxis* Axis =   hMass->GetXaxis();
        for (int i = 1 ; i < hMass->GetNbinsX()+1; i++){
-	 if (hMass->GetBinCenter(i) < dMass*0.7 || hMass->GetBinCenter(i) > dMass*1.3) continue;
+	 //if (hMass->GetBinCenter(i) < dMass*0.75 || hMass->GetBinCenter(i) > dMass*1.25) continue;
 	 int N = abs(hMass->GetBinContent(i));
 	 if (i%1000 == 0) cout << "i = " << i << endl;
 	 

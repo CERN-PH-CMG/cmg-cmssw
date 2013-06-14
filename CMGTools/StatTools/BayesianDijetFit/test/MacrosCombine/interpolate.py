@@ -136,12 +136,14 @@ for histname in histnames:
  hists += [foutmjj]
  #foutmjjfrac = TH1F( 'frac'+str(outmjj), 'frac'+str(outmjj), 10000, 0.3, 1.3)
  #foutmjjfit =  TH1F('doublefit'+str(outmjj), 'doublefit'+str(outmjj), 7000, 0, 7000 )
- 
- # interpolate the shape linearly
- su = 0
- su1 = 0.0
- for i in range(7001) :
-     
+
+ old_interpolation=False
+
+ if old_interpolation:
+   # interpolate the shape linearly
+   su = 0
+   su1 = 0.0
+   for i in range(7001) :
      x = 0.0 + i/7000.0*2.0 # interpolation range: [0*mass,2*mass]
      masslow = x*mjjlow
      masshigh = x*mjjhigh
@@ -149,27 +151,48 @@ for histname in histnames:
      massout = x*outmjj
      prob1 = flow.GetBinContent( flow.FindBin(masslow) ) 
      prob2 = fhigh.GetBinContent( fhigh.FindBin(masshigh) ) 
-    # print x, prob1, prob2
+     #print x, prob1, prob2
      prob = prob1 + (prob2 - prob1)*(massout - mjjlow)/float(mjjhigh - mjjlow)
- #    print x, prob
+     #print x, prob
      #foutmjjfrac.SetBinContent(i+1, max(0,prob))
      foutmjj.SetBinContent( foutmjj.FindBin(massout), max(0,prob))
      su += prob
      su1 += prob2
- #print su
- #print su1
+   #print su
+   #print su1
 
- # interpolate the peak height smoothly
- xvalues=r.vector('double')()
- yvalues=r.vector('double')()
- for x in masses:
-   inputf = TFile( inputRoot + str(x) + suffix + '.root' )
-   f = inputf.Get( histname )
-   xvalues.push_back(x)
-   yvalues.push_back(f.Integral(f.FindBin(x*0.8),f.FindBin(x*1.2))/ngenevents[masses.index(x)]*30000.)
- interpolator=r.Math.Interpolator(xvalues,yvalues)
- integral=interpolator.Eval(outmjj)
- foutmjj.Scale( integral/foutmjj.Integral(foutmjj.FindBin(outmjj*0.8),foutmjj.FindBin(outmjj*1.2)) )
+   # interpolate the peak height smoothly
+   xvalues=r.vector('double')()
+   yvalues=r.vector('double')()
+   for x in masses:
+     inputf = TFile( inputRoot + str(x) + suffix + '.root' )
+     f = inputf.Get( histname )
+     xvalues.push_back(x)
+     yvalues.push_back(f.Integral(f.FindBin(x*0.8),f.FindBin(x*1.2))/ngenevents[masses.index(x)]*30000.)
+   interpolator=r.Math.Interpolator(xvalues,yvalues)
+   integral=interpolator.Eval(outmjj)
+   foutmjj.Scale( integral/foutmjj.Integral(foutmjj.FindBin(outmjj*0.8),foutmjj.FindBin(outmjj*1.2)) )
+ else:
+   # interpolate the peak height+shape smoothly
+   xvalues=r.vector('double')()
+   yvalues=[]
+   npoints=20000
+   rebin=1
+   for i in range(npoints+1) :
+     yvalues+=[r.vector('double')()]
+   for m in masses:
+     inputf = TFile( inputRoot + str(m) + suffix + '.root' )
+     f = inputf.Get( histname )
+     xvalues.push_back(m)
+     for i in range(npoints+1):
+       x=0.0 + i/float(npoints)*2.0
+       yvalues[i].push_back(f.Integral(f.FindBin(m*x)-rebin+1,f.FindBin(m*x)+rebin-1)/float(2*rebin-1)/ngenevents[masses.index(m)]*30000.)
+   for i in range(npoints+1):
+     x=0.0 + i/float(npoints)*2.0
+     interpolator=r.Math.Interpolator(xvalues,yvalues[i])
+     foutmjj.SetBinContent(foutmjj.FindBin(outmjj*x),max(0,interpolator.Eval(outmjj)))
+
+ print foutmjj.Integral(foutmjj.FindBin(outmjj*0.8),foutmjj.FindBin(outmjj*1.2)), flow.Integral(flow.FindBin(mjjlow*0.8),flow.FindBin(mjjlow*1.2)), fhigh.Integral(fhigh.FindBin(mjjhigh*0.8),fhigh.FindBin(mjjhigh*1.2))
 
  # fit not used currently
  fit_gaus=TF1('fit gaus','gaus',outmjj*frac1, outmjj*frac2 )
