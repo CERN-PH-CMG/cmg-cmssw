@@ -20,7 +20,7 @@ class KDCalculator(object):
         
     def calculate(self,FL):
 
-        if FL.M()<100:
+        if FL.M()<0:
             FL.KD = -99.
             FL.pseudoKD = -99.
             FL.graviKD  = -99. 

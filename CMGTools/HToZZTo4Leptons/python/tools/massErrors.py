@@ -56,15 +56,15 @@ class MassErrors(object):
         mtrx = ROOT.TMatrixDSym(3)
 
         
-        mtrx[0][0]=pow(dp*electron.px()/p,2)
-        mtrx[0][1]=pow(dp*electron.px()/p,2)*electron.py()/electron.px()
-        mtrx[0][2]=pow(dp*electron.px()/p,2)*electron.pz()/electron.px()
+        mtrx[0][0]=(dp*electron.px()/p)*(dp*electron.px()/p)
+        mtrx[0][1]=(dp*electron.px()/p)*(dp*electron.py()/p)
+        mtrx[0][2]=(dp*electron.px()/p)*(dp*electron.pz()/p)
         mtrx[1][0]=mtrx(0,1)
-        mtrx[1][1]=pow(dp*electron.py()/p,2)
-        mtrx[1][2]=pow(dp*electron.py()/p,2)*electron.pz()/electron.py()
+        mtrx[1][1]=(dp*electron.py()/p)*(dp*electron.py()/p)
+        mtrx[1][2]=(dp*electron.py()/p)*(dp*electron.pz()/p)
         mtrx[2][0]=mtrx(0,2)
         mtrx[2][1]=mtrx(1,2)
-        mtrx[2][2]=pow(dp*electron.pz()/p,2)
+        mtrx[2][2]=(dp*electron.pz()/p)*(dp*electron.pz()/p)
 
         for i in range(0,3):
             for j in range(0,3):
@@ -80,19 +80,22 @@ class MassErrors(object):
 
     def calculatePhotonMatrix(self,photon,matrix,offset):
         dp = self.getEnergyResolution(photon.energy(), photon.eta())
-        p=photon.p()
+        p=photon.energy()
+
+
         mtrx = ROOT.TMatrixDSym(3)
 
-        
-        mtrx[0][0]=pow(dp*photon.px()/p,2)
-        mtrx[0][1]=pow(dp*photon.px()/p,2)*photon.py()/photon.px()
-        mtrx[0][2]=pow(dp*photon.px()/p,2)*photon.pz()/photon.px()
+
+        mtrx[0][0]=(dp*photon.px()/p)*(dp*photon.px()/p)
+        mtrx[0][1]=(dp*photon.px()/p)*(dp*photon.py()/p)
+        mtrx[0][2]=(dp*photon.px()/p)*(dp*photon.pz()/p)
         mtrx[1][0]=mtrx(0,1)
-        mtrx[1][1]=pow(dp*photon.py()/p,2)
-        mtrx[1][2]=pow(dp*photon.py()/p,2)*photon.pz()/photon.py()
+        mtrx[1][1]=(dp*photon.py()/p)*(dp*photon.py()/p)
+        mtrx[1][2]=(dp*photon.py()/p)*(dp*photon.pz()/p)
         mtrx[2][0]=mtrx(0,2)
         mtrx[2][1]=mtrx(1,2)
-        mtrx[2][2]=pow(dp*photon.pz()/p,2)
+        mtrx[2][2]=(dp*photon.pz()/p)*(dp*photon.pz()/p)
+
 
         for i in range(0,3):
             for j in range(0,3):
@@ -117,7 +120,7 @@ class MassErrors(object):
           S=12.8/100
           N=440./1000.   
 
-      return sqrt(C*C*energy*energy + S*S*energy*energy + N*N);
+      return sqrt(C*C*energy*energy + S*S*energy + N*N);
 
     def errorScale(self,lepton):
         if abs(lepton.pdgId())==11:
