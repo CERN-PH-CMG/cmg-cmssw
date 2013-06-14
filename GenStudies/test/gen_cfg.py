@@ -78,7 +78,7 @@ process.out = cms.OutputModule(
     outputCommands = cms.untracked.vstring(
       'keep *',
       'drop edmHepMCProduct_*_*_*',
-      'drop recoGenParticles_*_*_*',
+      # 'drop recoGenParticles_*_*_*',
       'drop *_ak5GenJetsNoNu_*_*'
       )
 )
