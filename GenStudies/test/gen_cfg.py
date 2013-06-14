@@ -9,7 +9,6 @@ process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
 
 # Pythia settings for ttbar generation
 #
-process.load("Configuration.Generator.PythiaUESettings_cfi")
 
 
 process.maxEvents = cms.untracked.PSet(
@@ -24,9 +23,18 @@ process.RandomNumberGeneratorService = cms.Service("RandomNumberGeneratorService
     )
 )
 
-
+# here, you can also read a LHE file as in Phil's example
+# generate the LHE file yourself with POWHEG
 process.source = cms.Source("EmptySource")
+
+# if you read LHE, you need to hadronize the event with pythia,
+# so use Phil's hadronizer instead of this pythia generator
 process.load('CMGTools.GenStudies.generators.pp_ttbar_cfi')
+
+atlas = True
+if atlas: 
+    from CMGTools.GenStudies.generators.pythiaUESettingsBlock_ATLAS_cfi import pythiaUESettingsBlock
+    process.generator.PythiaParameters.pythiaUESettings = pythiaUESettingsBlock.pythiaUESettings
 
 # I want to add:
 # gen particle production
