@@ -86,17 +86,23 @@ class FourLeptonAnalyzerBaseline( MultiLeptonAnalyzerBase ):
         #require tight ID
         passed=cutFlow.applyCut(self.testZTightID,'2l  tight ID',1,'zBosonsTightID')
 
-        #Apply also M>40 and M<120 cut for comparing with others
-        passed=cutFlow.applyCut(self.testZ1Mass,'2l MZ less than 120',1,'zBosonsMass')
-
-
         if passed:
             event.bestZ = self.bestZBosonByMass(cutFlow.obj1)
             event.leptonsForZ2 = copy.copy(event.goodLeptons)
             event.leptonsForZ2.remove( event.bestZ.leg1)
             event.leptonsForZ2.remove( event.bestZ.leg2)
 
+            cutFlow.setSource1([event.bestZ])
         else:
+            cutFlow.setSource1([])
+            event.leptonsForZ2 = []
+            
+        #Apply also M>40 and M<120 cut for comparing with others
+        passed=cutFlow.applyCut(self.testZ1Mass,'2l MZ less than 120',1,'zBosonsMass')
+
+
+
+        if not passed:    
             event.bestZ = None
             event.leptonsForZ2=[]
 

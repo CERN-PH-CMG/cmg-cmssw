@@ -26,6 +26,7 @@ from CMGTools.HToZZTo4Leptons.tools.massErrors import MassErrors
 
 from CMGTools.RootTools.utils.DeltaR import deltaR,deltaPhi
 
+from CMGTools.Common.Tools.cmsswRelease import cmsswIs44X,isNewerThan
 
 
 
@@ -56,6 +57,10 @@ class MultiLeptonAnalyzerBase( Analyzer ):
 
         if  hasattr(self.cfg_ana,"FSR"):
             self.FSR=FSRRecovery(self.cfg_ana.FSR)
+
+
+        self.is44X = cmsswIs44X()
+    
 
     def declareHandles(self):
         ''' Here declare handles of all objects we possibly need
@@ -102,11 +107,57 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         #prune jets
         event.prunedJets = filter(lambda x:x.pt()>10 and abs(x.eta())<4.7,event.jets)
 
-        event.selectedJets = filter(lambda x:x.getSelection("cuts_looseJetId") and  x.passPuJetId('full', 2),event.prunedJets) 
+
+        event.selectedJets = filter(self.jetId,event.prunedJets) 
         event.shiftedJetsUp  = self.makeShiftedJets(event.selectedJets,1.0)
         event.shiftedJetsDwn = self.makeShiftedJets(event.selectedJets,-1.0)
         
-        
+
+    def jetId(self,jet):
+        pfwp ='full53x'
+
+        if self.is44X:
+            pfwp='full'
+            
+        PFID =   ( abs(jet.eta()) <= 2.4                                             and 
+                  (jet.component(1).fraction()                                > 0    and
+                   jet.component(2).fraction()                                < 0.99 and 
+                   jet.component(4).fraction()                                < 0.99 and 
+                   jet.component(5).fraction()                                < 0.99 and 
+                   jet.component(1).number()                                  > 0    and
+                   jet.nConstituents()                                        > 1   )or
+                  abs(jet.eta()) > 2.4                                               and
+                              (jet.component(4).fraction()                                < 0.99 and 
+                               jet.component(5).fraction()                                < 0.99 and 
+                               jet.nConstituents()                                        > 1    ) 
+                  ) 
+
+        wp= [{ 'ptMin':0, 'ptMax':10,'etaMin':0,'etaMax':2.5,'mva':-0.95},
+             { 'ptMin':0, 'ptMax':10,'etaMin':2.5,'etaMax':2.75,'mva':-0.96},
+             { 'ptMin':0, 'ptMax':10,'etaMin':2.75,'etaMax':3.0,'mva':-0.94},
+             { 'ptMin':0, 'ptMax':10,'etaMin':3.0,'etaMax':5.0,'mva':-0.95},
+             { 'ptMin':10, 'ptMax':20,'etaMin':0,'etaMax':2.5,'mva':-0.95},
+             { 'ptMin':10, 'ptMax':20,'etaMin':2.5,'etaMax':2.75,'mva':-0.96},
+             { 'ptMin':10, 'ptMax':20,'etaMin':2.75,'etaMax':3.0,'mva':-0.94},
+             { 'ptMin':10, 'ptMax':20,'etaMin':3.0,'etaMax':5.0,'mva':-0.95},
+             { 'ptMin':20, 'ptMax':30,'etaMin':0,'etaMax':2.5,'mva':-0.63},
+             { 'ptMin':20, 'ptMax':30,'etaMin':2.5,'etaMax':2.75,'mva':-0.60},
+             { 'ptMin':20, 'ptMax':30,'etaMin':2.75,'etaMax':3.0,'mva':-0.55},
+             { 'ptMin':20, 'ptMax':30,'etaMin':3.0,'etaMax':5.0,'mva':-0.45},
+             { 'ptMin':30, 'ptMax':9999999,'etaMin':0,'etaMax':2.5,'mva':-0.63},
+             { 'ptMin':30, 'ptMax':9999999,'etaMin':2.5,'etaMax':2.75,'mva':-0.60},
+             { 'ptMin':30, 'ptMax':9999999,'etaMin':2.75,'etaMax':3.0,'mva':-0.55},
+             { 'ptMin':30, 'ptMax':9999999,'etaMin':3.0,'etaMax':5.0,'mva':-0.45}]
+
+        PUID=False
+        for element in wp:
+            if jet.pt()>=element['ptMin'] and jet.pt()<element['ptMax'] and \
+               fabs(jet.eta())>=element['etaMin'] and fabs(jet.eta())<element['etaMax'] and \
+               jet.puMva(pfwp)>=element['mva']:
+                PUID=True
+
+        return PFID and PUID        
+#        return PFID
 
 
     def makeShiftedJets(self,jets,sigma):
@@ -739,8 +790,8 @@ class MultiLeptonAnalyzerBase( Analyzer ):
         cleanedJets=[]
 
         for jet in jets:
-#            if jet.pt()>30: ###Apply the real cut here to do proper systs on jet counting
-            if (jet.pt()>30 and abs(jet.eta())<4.7) or (jet.pt()>20 and abs(jet.eta())<2.1): ###Apply the real cut here to do proper systs on jet counting
+            if jet.pt()>30: ###Apply the real cut here to do proper systs on jet counting
+#            if (jet.pt()>30 and abs(jet.eta())<4.7) or (jet.pt()>20 and abs(jet.eta())<2.1): ###Apply the real cut here to do proper systs on jet counting
                 overlap=False
                 for lepton in leptons:
                     if deltaR(jet.eta(),jet.phi(),lepton.eta(),lepton.phi())<cleanDR:
@@ -788,7 +839,7 @@ class MultiLeptonAnalyzerBase( Analyzer ):
             jetVars['Ptjj'] = (cleanedJets[0].p4()+cleanedJets[1].p4()).Pt()
             jetVars['subleadingPt']=cleanedJets[1].pt()
             jetVars['subleadingEta']=cleanedJets[1].eta()
-            jetVars['Fisher']=0.09407*fabs(jetVars['dEta'])  +4.1581e-4*jetVars['Mjj']
+            jetVars['Fisher']=0.18*fabs(jetVars['dEta'])  +1.92e-4*jetVars['Mjj']
         
         else:
             jetVars['dEta'] = -99
