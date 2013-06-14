@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.9 2013/05/08 22:12:03 hinzmann Exp $
+ * $Id: R2JJFitter.cc,v 1.10 2013/05/31 13:15:55 hinzmann Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -458,7 +458,7 @@ void SigModelFit(RooWorkspace* w, Float_t mass, TString signalname) {
       
 
 
-    MggSig[c]     ->fitTo(*sigToFit[c],Range(minMassFit,maxMassFit),SumW2Error(kTRUE));
+    MggSig[c]     ->fitTo(*sigToFit[c],Range(mass*0.8,mass*1.5),SumW2Error(kTRUE));
 // IMPORTANT: fix all pdf parameters to constant
     w->defineSet(TString::Format("SigPdfParam_cat%d",c), RooArgSet(*w->var("mgg_"+signalname+TString::Format("_sig_m0_cat%d",c)),
 								   *w->var("mgg_"+signalname+TString::Format("_sig_sigma_cat%d",c)),
@@ -753,7 +753,7 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, TString 
   Float_t minMassFit(MMIN),maxMassFit(MMAX); 
   Float_t MASS(mass);
 
-  Int_t nBinsMass(50);
+  Int_t nBinsMass(100);
   
   RooPlot* plotMggAll = mgg->frame(Range(minMassFit,maxMassFit),Bins(nBinsMass));
   signalAll->plotOn(plotMggAll);
@@ -806,7 +806,7 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, TString 
     plotMgg[c]->SetTitle("");      
     plotMgg[c]->SetMinimum(0.0);
     plotMgg[c]->SetMaximum(1.40*plotMgg[c]->GetMaximum());
-    plotMgg[c]->GetXaxis()->SetTitle("m_{#gamma#gamma} (GeV)");
+    plotMgg[c]->GetXaxis()->SetTitle("m_{jj} (GeV)");
 
     TCanvas* ctmp = new TCanvas("ctmp","Mgg Background Categories",0,0,500,500);
     plotMgg[c]->Draw();  
