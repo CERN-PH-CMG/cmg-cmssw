@@ -22,7 +22,6 @@ class ComponentCreator(object):
 
     def makeDataComponent(self,name,dataset,user,pattern,json):
          component = cfg.DataComponent(
-             dataset=dataset,
              name = name,
              files = self.getFiles(dataset,user,pattern),
              intLumi=1,
@@ -55,8 +54,10 @@ class ComponentCreator(object):
     def makeDataComponentFromList(self,filename,suffix,user,pattern,json,triggersMuMu,triggersEE,triggersMuE):
         list=[]
         f = open(filename)
+
         for line in f:
             sample = (line.split('%')[1]+'/'+suffix).replace('\t','').replace('\n','')
+
             sampleT = sample.split('/')
             name=sampleT[1]+'_'+sampleT[2]
             component = self.makeDataComponent(name,sample,user,pattern,json)

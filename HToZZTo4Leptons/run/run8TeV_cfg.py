@@ -40,7 +40,7 @@ puAna = cfg.Analyzer(
 
 #Analyzers
 ana = cfg.Analyzer(
-    'MuMuFourLeptonAnalyzer',
+    'AllFourLeptonAnalyzer',
     minPt1=5,
     maxEta1=2.4,
     minPt2=7,
@@ -105,10 +105,11 @@ sequence = cfg.Sequence(dataSequence)
 
 selectedComponents=mcSamples+dataSamples
 
+
 test =1
 if test==1:
     dataset=mcSamples[0]
-    selectedComponenets=[dataset]
+    selectedComponents=[dataset]
     dataset.splitFactor = 1
     dataset.files=['vbf.root']
     

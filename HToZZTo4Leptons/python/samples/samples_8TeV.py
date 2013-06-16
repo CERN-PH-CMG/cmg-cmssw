@@ -8,7 +8,7 @@ from CMGTools.HToZZTo4Leptons.setup.Efficiencies import *
 
 suffix='/SKIM_LEGACY_I'
 userName='bachtis'
-filePattern='skim*.root'
+filePattern='skim.*root'
 
 
 ################### Triggers
@@ -48,8 +48,7 @@ json='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Repr
 #-----------MC---------------
 kreator = ComponentCreator()
 mcSamples =kreator.makeMCComponentFromList(getFullPath('data/samples_MC_8TeV.txt'),suffix,userName,filePattern,triggersMC_mue)
-#-----------DATA---------------
-dataSamples =[]# kreator.makeDataComponentFromList(getFullPath('data/samples_DATA_8TeV.txt'),suffix,userName,filePattern,json,triggers_mumu,triggers_ee,triggers_mue)
+dataSamples =kreator.makeDataComponentFromList(getFullPath('data/samples_DATA_8TeV.txt'),suffix,userName,filePattern,json,triggers_mumu,triggers_ee,triggers_mue)
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 
