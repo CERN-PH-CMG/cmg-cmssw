@@ -21,7 +21,7 @@
 #include "CMGTools/Common/interface/MetUtilities.h"
 #include "CMGTools/External/interface/PileupJetIdentifier.h"
 
-#include "CMGTools/Common/interface/DiTauObjectFactory.h"
+#include "CMGTools/H2TauTau/interface/DiTauObjectFactory.h"
 
 #include <sstream>
 

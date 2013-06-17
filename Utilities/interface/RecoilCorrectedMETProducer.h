@@ -15,7 +15,7 @@
 #include "AnalysisDataFormats/CMGTools/interface/AbstractPhysicsObject.h"
 
 #include "CMGTools/Utilities/interface/RecoilCorrector.h"
-#include "CMGTools/Common/interface/DiTauObjectFactory.h"
+#include "CMGTools/H2TauTau/interface/DiTauObjectFactory.h"
 
 #include <sstream>
 

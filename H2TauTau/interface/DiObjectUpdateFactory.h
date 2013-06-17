@@ -1,7 +1,7 @@
 #ifndef DIOBJECTUPDATEFACTORY_H_
 #define DIOBJECTUPDATEFACTORY_H_
 
-#include "CMGTools/Common/interface/DiTauObjectFactory.h"
+#include "CMGTools/H2TauTau/interface/DiTauObjectFactory.h"
 #include "TLorentzVector.h"
 
 namespace cmg{
