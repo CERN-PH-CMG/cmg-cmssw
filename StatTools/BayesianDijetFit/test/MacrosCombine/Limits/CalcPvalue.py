@@ -39,7 +39,8 @@ for chan in channels:
             print "mass =",mass
         
 	    outfile="Limits/Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+".out"
-            os.system("combine datacards/Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+".txt -M ProfileLikelihood -v2 -m "+str(mass) + " --signif &>"+outfile)
+            #os.system("combine datacards/Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+".txt -M ProfileLikelihood -v2 -m "+str(mass) + " --signif &>"+outfile)
+            os.system("combine datacards/Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+".txt -M HybridNew --testStat LHC -T 10000 -v2 -m "+str(mass) + " --signif &>"+outfile)
             f_fit=file("Limits/Xvv.mX"+str(mass)+"_"+chan+"_8TeV_channel"+str(bin)+".out")
 
             print "we look inside the fit output for bin "+str(bin)

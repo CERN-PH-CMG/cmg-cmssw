@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.10 2013/05/31 13:15:55 hinzmann Exp $
+ * $Id: R2JJFitter.cc,v 1.11 2013/06/14 15:45:46 hinzmann Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -1303,14 +1303,15 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   
   outFile << "lumi_8TeV       lnN  1.044  1.044  1.044    - " << endl;
   if((iChan==0)||(iChan==3)){
-  outFile << "CMS_eff_vtau         lnN  1.2  1.2  1.2      - # tau21 efficiency" << endl;
+  outFile << "CMS_eff_vtau         lnN  1.181  1.173  1.177      - # tau21 efficiency" << endl;
   } else {
   // anti-correlated the high purity and medium purity categories
-  outFile << "CMS_eff_vtau         lnN  0.8  0.8  0.8      - # tau21 efficiency" << endl;
+  outFile << "CMS_eff_vtau         lnN  0.847  0.852  0.850      - # tau21 efficiency" << endl;
   }
-  outFile << "CMS_eff_vmass         lnN  1.02  1.02  1.02      - # jet mass efficiency" << endl;
-  outFile << "CMS_scale_j         lnN  1.02  1.02  1.02      - # jet energy scale" << endl;
-  outFile << "CMS_pu         lnN  1.06  1.06  1.06      - # pileup" << endl;
+  outFile << "CMS_eff_vmass         lnN  1.185  1.197  1.191      - # jet mass efficiency" << endl;
+  outFile << "CMS_scale_j         lnN  1.120  1.120  1.120      - # jet energy scale" << endl;
+  outFile << "CMS_res_j         lnN  1.040  1.040  1.040      - # jet energy resolution" << endl;
+  outFile << "CMS_pu         lnN  1.030  1.030  1.030      - # pileup" << endl;
   } else {
   outFile << "bin                      "<< Form("cat%d      cat%d      cat%d      ", iChan, iChan, iChan, iChan) << endl;
   outFile << "process                 MggSigqW MggSigqZ     MggBkg     " << endl;
@@ -1328,17 +1329,18 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   
   outFile << "lumi_8TeV       lnN  1.044  1.044    - " << endl;
   if((iChan==0)||(iChan==3)){
-  outFile << "CMS_eff_vtau         lnN  1.1  1.1      - # tau21 efficiency" << endl;
+  outFile << "CMS_eff_vtau         lnN  1.091  1.087      - # tau21 efficiency" << endl;
   } else {
   // anti-correlated the high purity and medium purity categories
-  outFile << "CMS_eff_vtau         lnN  0.9  0.9      - # tau21 efficiency" << endl;
+  outFile << "CMS_eff_vtau         lnN  0.917  0.920      - # tau21 efficiency" << endl;
   }
-  outFile << "CMS_eff_vmass         lnN  1.01  1.01      - # jet mass efficiency" << endl;
-  outFile << "CMS_scale_j         lnN  1.01  1.01      - # jet energy scale" << endl;
-  outFile << "CMS_pu         lnN  1.03  1.03      - # pileup" << endl;
+  outFile << "CMS_eff_vmass         lnN  1.093  1.099      - # jet mass efficiency" << endl;
+  outFile << "CMS_scale_j         lnN  1.060  1.060      - # jet energy scale" << endl;
+  outFile << "CMS_res_j         lnN  1.020  1.020      - # jet energy resolution" << endl;
+  outFile << "CMS_pu         lnN  1.030  1.030      - # pileup" << endl;
   }
   outFile << "# Parametric shape uncertainties, entered by hand." << endl;
-  outFile << Form("CMS_hgg_sig_m0_absShift    param   1   0.025   # displacement of the mean w.r.t. nominal in EB*EX category, good R9",iChan) << endl;
+  outFile << Form("CMS_hgg_sig_m0_absShift    param   1   0.033   # displacement of the mean w.r.t. nominal in EB*EX category, good R9",iChan) << endl;
   outFile << Form("CMS_hgg_sig_sigmaScale     param   1   0.1   # multiplicative correction to sigmas in EB*EX category, good R9",iChan) << endl;
  
   outFile << Form("CMS_hgg_bkg_8TeV_cat%d_norm           flatParam  # Normalization uncertainty on background slope",iChan) << endl;
