@@ -43,6 +43,8 @@ class Electron(ParticleWithP4):
 class Muon(ParticleWithP4):
     def __init__(self, p4):
         super(Muon,self).__init__(p4, 13)
-    
 
+class Tau(ParticleWithP4):
+    def __init__(self, p4):
+        super(Tau,self).__init__(p4, 15)
 

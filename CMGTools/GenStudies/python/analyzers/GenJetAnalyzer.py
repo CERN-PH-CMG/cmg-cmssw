@@ -8,18 +8,18 @@ from CMGTools.RootTools.statistics.Counter import Counter, Counters
 from CMGTools.RootTools.physicsobjects.PhysicsObjects import GenParticle
 from CMGTools.RootTools.utils.DeltaR import deltaR2
 
-class PFSimJetAnalyzer( Analyzer ):
+class GenJetAnalyzer( Analyzer ):
     """Analyze jets ;-)
     """
 
     def __init__(self, cfg_ana, cfg_comp, looperName):
-        super(PFSimJetAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
+        super(GenJetAnalyzer,self).__init__(cfg_ana, cfg_comp, looperName)
 
     def declareHandles(self):
-        super(PFSimJetAnalyzer, self).declareHandles()
+        super(GenJetAnalyzer, self).declareHandles()
 
     def beginLoop(self):
-        super(PFSimJetAnalyzer,self).beginLoop()
+        super(GenJetAnalyzer,self).beginLoop()
         self.counters.addCounter('jets')
         count = self.counters.counter('jets')
         count.register('all events')
@@ -35,9 +35,17 @@ class PFSimJetAnalyzer( Analyzer ):
 
         # Could have a better lepton rejection at gen level..
         event.cleanGenJets, dummy = cleanObjectCollection( event.selectedGenJets,
-                                                           masks = event.leptons,
+                                                           masks = event.genMuons,
                                                            deltaRMin = 0.5 )
-        
+
+        event.cleanGenJets, dummy = cleanObjectCollection( event.cleanGenJets,
+                                                           masks = event.genElectrons,
+                                                           deltaRMin = 0.5 )
+
+        event.cleanGenJets, dummy = cleanObjectCollection( event.cleanGenJets,
+                                                           masks = event.genTaus,
+                                                           deltaRMin = 0.5 )
+
 
 
         def match(jet, objects, name):
@@ -47,8 +55,8 @@ class PFSimJetAnalyzer( Analyzer ):
             setattr(jet, name, bm)
     
         for jet in event.cleanGenJets:
-            match(jet, event.recJets, 'rec')
-            match(jet, event.simJets, 'sim')
+#            match(jet, event.recJets, 'rec')
+#            match(jet, event.simJets, 'sim')
             match(jet, event.genParticles3, 'genPtc3')
 
         return True        
