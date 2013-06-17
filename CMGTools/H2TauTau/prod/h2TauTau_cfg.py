@@ -20,16 +20,16 @@ numberOfFilesToProcess = 10
 debugEventContent = False
 
 #tau-mu, tau-ele, di-tau, all
-channel = 'all' # 'tau-mu' #'tau-mu' 'all' 'tau-ele'
+channel = 'tau-mu' # 'tau-mu' #'tau-mu' 'all' 'tau-ele'
 jetRecalib = False
 useCHS = False
 #newSVFit enables the svfit mass reconstruction used for the H->tau tau analysis.
 # if false, much faster processing but mass is wrong. 
-newSVFit = True
+newSVFit = False
 tauScaling = 0
 # increase to 1000 before running on the batch, to reduce size of log files
 # on your account
-reportInterval = 1000
+reportInterval = 10
 
 print sep_line
 print 'channel', channel

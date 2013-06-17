@@ -3,8 +3,6 @@
 
 #include "CMGTools/Common/interface/DiObjectFactory.h"
 #include "CMGTools/Common/interface/DiObjectPairFactory.h"
-#include "CMGTools/Common/interface/DiObjectUpdateFactory.h"
-#include "CMGTools/Common/interface/DiTauObjectFactory.h"
 #include "AnalysisDataFormats/CMGTools/interface/CompoundTypes.h"
 
 namespace cmg{
@@ -18,30 +16,15 @@ namespace cmg{
   typedef DiObjectFactory< cmg::DiJet::type1, cmg::DiJet::type2 > DiJetFactory;
   typedef DiObjectFactory< cmg::DiMuon::type1, cmg::DiMuon::type2 > DiMuonFactory;
   typedef DiObjectFactory< cmg::DiPFJet::type1, cmg::DiPFJet::type2 > DiPFJetFactory;
-  typedef DiTauObjectFactory< cmg::DiTau::type1, cmg::DiTau::type2 > DiTauFactory;
-
-  typedef DiTauObjectFactory< cmg::TauEle::type1, cmg::TauEle::type2 > TauEleFactory;
-  //typedef DiObjectFactory< cmg::TauMu::type1, cmg::TauMu::type2 > TauMuFactory;
-  typedef DiTauObjectFactory< cmg::TauMu::type1, cmg::TauMu::type2 > TauMuFactory;
-  typedef DiTauObjectFactory< cmg::MuEle::type1, cmg::MuEle::type2 > MuEleFactory;
 
   typedef DiObjectFactory< cmg::WENu::type1, cmg::WENu::type2 > WENuFactory;
   typedef DiObjectFactory< cmg::WMuNu::type1, cmg::WMuNu::type2 > WMuNuFactory;
   typedef DiObjectFactory< cmg::WTauNu::type1, cmg::WTauNu::type2 > WTauNuFactory;
     
-
-
   typedef DiObjectPairFactory< cmg::Muon, cmg::Muon, cmg::Muon, cmg::Muon> QuadMuonFactory;
   typedef DiObjectPairFactory< cmg::Muon, cmg::Muon, cmg::Electron, cmg::Electron> DiMuonDiElectronFactory;
   typedef DiObjectPairFactory< cmg::Electron,cmg::Electron, cmg::Electron, cmg::Electron> QuadElectronFactory;
   typedef DiObjectPairFactory< cmg::Muon,cmg::Muon, cmg::Muon, cmg::BaseMET> TriMuonMETFactory;
-
-
-  typedef DiObjectUpdateFactory< cmg::TauMu > TauMuUpdateFactory;
-  typedef DiObjectUpdateFactory< cmg::TauEle > TauEleUpdateFactory;
-  typedef DiObjectUpdateFactory< cmg::MuEleDiTau > MuEleUpdateFactory;
-  typedef DiObjectUpdateFactory< cmg::DiTau > DiTauUpdateFactory;
-  
     
 }
 
