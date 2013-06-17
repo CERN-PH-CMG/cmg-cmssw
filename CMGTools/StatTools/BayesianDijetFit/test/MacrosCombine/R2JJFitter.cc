@@ -1,6 +1,6 @@
 /** \macro H2GGFitter.cc
  *
- * $Id: R2JJFitter.cc,v 1.11 2013/06/14 15:45:46 hinzmann Exp $
+ * $Id: R2JJFitter.cc,v 1.12 2013/06/17 13:10:27 hinzmann Exp $
  *
  * Software developed for the CMS Detector at LHC
  *
@@ -482,13 +482,12 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
   Int_t ncat = NCAT;
 
   std::vector<TString> catdesc;
-  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_2hptag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_1hptag_1lptag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_2mtag_2lptag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_1mtag_1hptag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_1mtag_1lptag}");
-  catdesc.push_back("#scale[0.8]{dijet_mass_0mtag}");
-
+  catdesc.push_back("#scale[0.8]{highPureVV}");
+  catdesc.push_back("#scale[0.8]{mediumPureVV}");
+  catdesc.push_back("#scale[0.8]{lowPureVV}");
+  catdesc.push_back("#scale[0.8]{highPureqV}");
+  catdesc.push_back("#scale[0.8]{mediumPureqV}");
+  catdesc.push_back("#scale[0.8]{lowPureqV}");
 
 //******************************************//
 // Fit background with model pdfs
@@ -890,7 +889,7 @@ void MakePlots(RooWorkspace* w, Float_t mass, RooFitResult* fitresults, TString 
 
   RooPlot* plotMggBkg[9];
   for (int c = 0; c < ncat; ++c) {
-    plotMggBkg[c] = mgg->frame(nBinsMass);
+    plotMggBkg[c] = mgg->frame(Range(minMassFit,maxMassFit),Bins(nBinsMass));
     data[c]->plotOn(plotMggBkg[c],LineColor(kWhite),MarkerColor(kWhite));    
     MggBkg[c]->plotOn(plotMggBkg[c],LineColor(kBlue),Range("fitrange"),NormRange("fitrange")); 
     data[c]->plotOn(plotMggBkg[c]);    
@@ -1303,10 +1302,10 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   
   outFile << "lumi_8TeV       lnN  1.044  1.044  1.044    - " << endl;
   if((iChan==0)||(iChan==3)){
-  outFile << "CMS_eff_vtau         lnN  1.181  1.173  1.177      - # tau21 efficiency" << endl;
+  outFile << "CMS_eff_vtau         lnN  1.122  1.126  1.124      - # tau21 efficiency" << endl;
   } else {
   // anti-correlated the high purity and medium purity categories
-  outFile << "CMS_eff_vtau         lnN  0.847  0.852  0.850      - # tau21 efficiency" << endl;
+  outFile << "CMS_eff_vtau         lnN  0.891  0.888  0.890      - # tau21 efficiency" << endl;
   }
   outFile << "CMS_eff_vmass         lnN  1.185  1.197  1.191      - # jet mass efficiency" << endl;
   outFile << "CMS_scale_j         lnN  1.120  1.120  1.120      - # jet energy scale" << endl;
@@ -1329,10 +1328,10 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   
   outFile << "lumi_8TeV       lnN  1.044  1.044    - " << endl;
   if((iChan==0)||(iChan==3)){
-  outFile << "CMS_eff_vtau         lnN  1.091  1.087      - # tau21 efficiency" << endl;
+  outFile << "CMS_eff_vtau         lnN  1.061  1.063      - # tau21 efficiency" << endl;
   } else {
   // anti-correlated the high purity and medium purity categories
-  outFile << "CMS_eff_vtau         lnN  0.917  0.920      - # tau21 efficiency" << endl;
+  outFile << "CMS_eff_vtau         lnN  0.942  0.941      - # tau21 efficiency" << endl;
   }
   outFile << "CMS_eff_vmass         lnN  1.093  1.099      - # jet mass efficiency" << endl;
   outFile << "CMS_scale_j         lnN  1.060  1.060      - # jet energy scale" << endl;
@@ -1340,16 +1339,16 @@ void MakeDataCard_1Channel(RooWorkspace* w, const char* fileBaseName, const char
   outFile << "CMS_pu         lnN  1.030  1.030      - # pileup" << endl;
   }
   outFile << "# Parametric shape uncertainties, entered by hand." << endl;
-  outFile << Form("CMS_hgg_sig_m0_absShift    param   1   0.033   # displacement of the mean w.r.t. nominal in EB*EX category, good R9",iChan) << endl;
-  outFile << Form("CMS_hgg_sig_sigmaScale     param   1   0.1   # multiplicative correction to sigmas in EB*EX category, good R9",iChan) << endl;
+  outFile << Form("CMS_hgg_sig_m0_absShift    param   1   0.022   # dijet mass shift due to JES uncertainty",iChan) << endl;
+  outFile << Form("CMS_hgg_sig_sigmaScale     param   1   0.1   # dijet mass resolution shift due to JER uncertainty",iChan) << endl;
  
   outFile << Form("CMS_hgg_bkg_8TeV_cat%d_norm           flatParam  # Normalization uncertainty on background slope",iChan) << endl;
+
+  outFile << Form("CMS_hgg_bkg_8TeV_slope1_cat%d         flatParam  # Mean and absolute uncertainty on background slope",iChan) << endl;
 
   outFile << Form("CMS_hgg_bkg_8TeV_slope2_cat%d         flatParam  # Mean and absolute uncertainty on background slope",iChan) << endl;
 
   outFile << Form("CMS_hgg_bkg_8TeV_slope3_cat%d         flatParam  # Mean and absolute uncertainty on background slope",iChan) << endl;
-
-  if (iChan != 2 )  outFile << Form("CMS_hgg_bkg_8TeV_slope1_cat%d         flatParam  # Mean and absolute uncertainty on background slope",iChan) << endl;
 
   outFile.close();
 
