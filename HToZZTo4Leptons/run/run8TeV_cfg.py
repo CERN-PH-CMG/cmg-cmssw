@@ -106,7 +106,7 @@ sequence = cfg.Sequence(dataSequence)
 selectedComponents=mcSamples+dataSamples
 
 
-test =1
+test =0
 if test==1:
     dataset=mcSamples[0]
     selectedComponents=[dataset]
