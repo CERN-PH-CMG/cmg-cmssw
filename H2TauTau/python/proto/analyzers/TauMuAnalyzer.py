@@ -121,9 +121,9 @@ class TauMuAnalyzer( DiLeptonAnalyzer ):
         if tau.decayMode() == 0 and \
                tau.calcEOverP() < 0.2: #reject muons faking taus in 2011B
             return False
-        #return tau.tauID("againstMuonTight")>0.5 and \
-        # JAN: using new muon rejection
-        return tau.tauID("againstMuonTight2")>0.5 and \
+        #return tau.tauID("againstMuonTight2")>0.5 and \
+        # JAN: revert back to old muon rejection (Jose HN)
+        return tau.tauID("againstMuonTight")>0.5 and \
                tau.tauID("againstElectronLoose")>0.5 and \
                self.testVertex( tau )
         
