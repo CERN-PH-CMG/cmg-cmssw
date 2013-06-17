@@ -21,13 +21,13 @@ process                          -1        0         1         -1        0      
 rate                             7.8800    0.0000    1.0000    6.7700    0.0000    1.0000  
 ----------------------------------------------------------------------------------------------------------------------------------
 CMS_eff_vmass           lnN      1.099     1.093     -         1.099     1.093     -       
-CMS_eff_vtau            lnN      1.087     1.091     -         0.92      0.917     -       
+CMS_eff_vtau            lnN      1.063     1.061     -         0.941     0.942     -       
 CMS_pu                  lnN      1.03      1.03      -         1.03      1.03      -       
 CMS_res_j               lnN      1.02      1.02      -         1.02      1.02      -       
 CMS_scale_j             lnN      1.06      1.06      -         1.06      1.06      -       
 lumi_8TeV               lnN      1.044     1.044     -         1.044     1.044     -       
 CMS_hgg_sig_sigmaScale  param  1 0.1
-CMS_hgg_sig_m0_absShift  param  1 0.033
+CMS_hgg_sig_m0_absShift  param  1 0.022
 CMS_hgg_bkg_8TeV_slope2_cat3  flatParam
 CMS_hgg_bkg_8TeV_slope2_cat4  flatParam
 CMS_hgg_bkg_8TeV_cat3_norm  flatParam

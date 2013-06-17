@@ -20,15 +20,15 @@ rate                        0  23.56  1
 --------------------------------
 # signal scaled by 0.005
 lumi_8TeV       lnN  1.044  1.044    - 
-CMS_eff_vtau         lnN  1.091  1.087      - # tau21 efficiency
+CMS_eff_vtau         lnN  1.061  1.063      - # tau21 efficiency
 CMS_eff_vmass         lnN  1.093  1.099      - # jet mass efficiency
 CMS_scale_j         lnN  1.060  1.060      - # jet energy scale
 CMS_res_j         lnN  1.020  1.020      - # jet energy resolution
 CMS_pu         lnN  1.030  1.030      - # pileup
 # Parametric shape uncertainties, entered by hand.
-CMS_hgg_sig_m0_absShift    param   1   0.033   # displacement of the mean w.r.t. nominal in EB*EX category, good R9
-CMS_hgg_sig_sigmaScale     param   1   0.1   # multiplicative correction to sigmas in EB*EX category, good R9
+CMS_hgg_sig_m0_absShift    param   1   0.022   # dijet mass shift due to JES uncertainty
+CMS_hgg_sig_sigmaScale     param   1   0.1   # dijet mass resolution shift due to JER uncertainty
 CMS_hgg_bkg_8TeV_cat3_norm           flatParam  # Normalization uncertainty on background slope
+CMS_hgg_bkg_8TeV_slope1_cat3         flatParam  # Mean and absolute uncertainty on background slope
 CMS_hgg_bkg_8TeV_slope2_cat3         flatParam  # Mean and absolute uncertainty on background slope
 CMS_hgg_bkg_8TeV_slope3_cat3         flatParam  # Mean and absolute uncertainty on background slope
-CMS_hgg_bkg_8TeV_slope1_cat3         flatParam  # Mean and absolute uncertainty on background slope
