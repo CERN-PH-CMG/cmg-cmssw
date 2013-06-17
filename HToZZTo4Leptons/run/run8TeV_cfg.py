@@ -106,12 +106,18 @@ sequence = cfg.Sequence(dataSequence)
 selectedComponents=mcSamples+dataSamples
 
 
+
 test =0
 if test==1:
     dataset=mcSamples[0]
     selectedComponents=[dataset]
     dataset.splitFactor = 1
     dataset.files=['vbf.root']
+if test==2:
+    dataset=dataSamples[0]
+    selectedComponents=[dataset]
+    dataset.splitFactor = 1
+
     
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
