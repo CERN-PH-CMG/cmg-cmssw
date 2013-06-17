@@ -97,6 +97,10 @@ void fillZFakeRatesFromData(int withb=0) {
         TH2F *FR_loose_el_num = new TH2F(Form("%s_loose_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
         TH2F *FR_tight2_el_den = new TH2F(Form("%s_tight2_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
         TH2F *FR_tight2_el_num = new TH2F(Form("%s_tight2_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
+        TH2F *FR_tightiso_mu_den = new TH2F(Form("%s_tightiso_mu_den",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
+        TH2F *FR_tightiso_mu_num = new TH2F(Form("%s_tightiso_mu_num",sels[is]),"",npt_mu,ptbins_mu,neta,etabins_mu);
+        TH2F *FR_tightiso_el_den = new TH2F(Form("%s_tightiso_el_den",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
+        TH2F *FR_tightiso_el_num = new TH2F(Form("%s_tightiso_el_num",sels[is]),"",npt_el,ptbins_el,neta,etabins_el);
     }
     //TH1 *w_el = new TH1F("W_btag_el", "CSV", 20, 0, 1);
     //TH1 *w_el = new TH1F("W_btag_mu", "CSV", 20, 0, 1);
@@ -114,7 +118,8 @@ void fillZFakeRatesFromData(int withb=0) {
     TString baseCutT = baseCut; //;
     baseCutT += "LepGood%d_innerHits*(abs(LepGood%d_pdgId) == 11) == 0 && "; // require to be zero if the lepton is an electron
     baseCutT += "(LepGood%d_convVeto==0)*(abs(LepGood%d_pdgId) == 11) == 0 && ";
-    TString baseCutTC = baseCutT + " (LepGood%d_tightCharge > (abs(LepGood%d_pdgId) == 11)) && ";
+    TString baseCutTC  = baseCutT + " (LepGood%d_tightCharge > (abs(LepGood%d_pdgId) == 11)) && ";
+    TString baseCutTCB = baseCutTC+ " (LepGood%d_sip3d < 4) && (abs(LepGood%d_pdgId) == 11 || LepGood%d_tightId) && ";
 
     TString sample = "";
     const char *samples[10] = { "DoubleMuAB", "DoubleMuC", "DoubleMuD", "DoubleMuRec", "DoubleMuBadSIP",
@@ -125,11 +130,13 @@ void fillZFakeRatesFromData(int withb=0) {
         std::cout << "Processing MVA selection on " << sample << std::endl;
         //fillFR("FR_el", baseCut + "abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.35", sample, 3);
         //fillFR("FR_mu", baseCut + "abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.35", sample, 3);
+        fillFR("FR_loose_el", baseCut  + "abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= -0.3", sample, 3);
+        fillFR("FR_loose_mu", baseCut  + "abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= -0.3", sample, 3);
         fillFR("FR_tight_el", baseCutT + "abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
         fillFR("FR_tight_mu", baseCutT + "abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= 0.70", sample, 3);
         fillFR("FR_tight2_el",baseCutTC+ "abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3);
-        fillFR("FR_loose_el", baseCut + "abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= -0.30", sample, 3);
-        fillFR("FR_loose_mu", baseCut + "abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= -0.30", sample, 3);
+        fillFR("FR_loose_el", baseCutTCB + "abs(LepGood%d_pdgId) == 11", "LepGood%d_relIso < 0.12", sample, 3);
+        fillFR("FR_loose_mu", baseCutTCB + "abs(LepGood%d_pdgId) == 13", "LepGood%d_relIso < 0.12", sample, 3);
     }
 
 
@@ -148,6 +155,8 @@ void fillZFakeRatesFromData(int withb=0) {
         fillFR("PMC_FR_tight2_el",baseCutTC+ "abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= 0.70", sample, 3, weight);
         fillFR("PMC_FR_loose_el", baseCut + "abs(LepGood%d_pdgId) == 11", "LepGood%d_mva >= -0.30", sample, 3, weight);
         fillFR("PMC_FR_loose_mu", baseCut + "abs(LepGood%d_pdgId) == 13", "LepGood%d_mva >= -0.30", sample, 3, weight);
+        fillFR("PMC_FR_tightiso_el", baseCutTCB + "abs(LepGood%d_pdgId) == 11", "LepGood%d_relIso < 0.12", sample, 3, weight);
+        fillFR("PMC_FR_tightiso_mu", baseCutTCB + "abs(LepGood%d_pdgId) == 13", "LepGood%d_relIso < 0.12", sample, 3, weight);
     }
 
 
@@ -158,6 +167,8 @@ void fillZFakeRatesFromData(int withb=0) {
     doEff("tight2_el");
     doEff("loose_el");
     doEff("loose_mu");
+    doEff("tightiso_el");
+    doEff("tightiso_mu");
 
     fOut->Close();
 }

@@ -104,6 +104,13 @@ void fillTrivialFakeRatesFromFRTrees(int triggering=1) {
     fillFR("FRj_tight_el", baseCutJ + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >=  0.70", "QCDElPt30To80");
     fillFR("FRj_tight_el", baseCutJ + tightC + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11", "Probe_mva >=  0.70", "QCDElPt80To170");
 
+#if 1
+    TString tightCB = tightC + "Probe_sip3d < 4 && Probe_tightCharge > (abs(Probe_pdgId) == 11) && ";
+    fillFR("FRC_tight_el",  baseCutL + tightCB + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11",                  "Probe_relIso < 0.12",  "QCDMuPt15");
+    fillFR("FRC_tight_mu",  baseCutL + tightCB + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13 && Probe_tightId", "Probe_relIso < 0.12 ", "QCDMuPt15");
+    fillFR("FRCj_tight_el", baseCutJ + tightCB + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11",                  "Probe_relIso < 0.12",  "QCDMuPt15");
+    fillFR("FRCj_tight_mu", baseCutJ + tightCB + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13 && Probe_tightId", "Probe_relIso < 0.12 ", "QCDMuPt15");
+#endif
 #if 0
     fillFR("FRC_el",       baseCutL + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 11 && (abs(Probe_eta)<1.4442 || abs(Probe_eta)>1.5660)", "Probe_relIso03/Probe_pt < 0.25 && Probe_tightId > 0.0 && abs(Probe_dxy) < 0.04 && abs(Probe_innerHits) <= 0", "QCDMuPt15");
     fillFR("FRC_mu",       baseCutL + "Probe_mcMatchId == 0 && abs(Probe_pdgId) == 13", "Probe_relIso < 0.2", "QCDMuPt15");
