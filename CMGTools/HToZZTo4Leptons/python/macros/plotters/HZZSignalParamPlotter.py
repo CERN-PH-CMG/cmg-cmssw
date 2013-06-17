@@ -37,6 +37,9 @@ class HZZSignalParamPlotter(PlotterBase):
         else:    
             self.brStr ='eemumu' 
 
+
+
+
         #override for now
 #        self.brStr = 'llllt'
 
@@ -93,7 +96,7 @@ class HZZSignalParamPlotter(PlotterBase):
         if self.channel == 'MuMu':
             self.m0= ROOT.RooFormulaVar('m0',self.m0Formula+'*@1'+offset,ROOT.RooArgList(self.MH,self.scale_mu))
         if self.channel == 'MuEle':
-            self.m0= ROOT.RooFormulaVar('m0',self.m0Formula+'*@1*@2'+offset,ROOT.RooArgList(self.MH,self.scale_mu,self.scale_ele))
+            self.m0= ROOT.RooFormulaVar('m0',self.m0Formula+'*@1*@2/4.'+offset,ROOT.RooArgList(self.MH,self.scale_mu,self.scale_ele))
         if self.channel == 'EleEle':
             self.m0= ROOT.RooFormulaVar('m0',self.m0Formula+'*@1'+offset,ROOT.RooArgList(self.MH,self.scale_ele))
 
@@ -127,8 +130,10 @@ class HZZSignalParamPlotter(PlotterBase):
 
         theory = self.theory.getInterp(self.MH.getVal())
         fname = {'ggH':'GGH','qqH':'VBF','ZH':'ZH','WH':'WH','ttH':'TTH'}
-
-        h.Scale(theory[fname[self.prod]]['sigma']*theory['H4F'][self.brStr])
+        if self.prod in ['WH','ZH','ttH']:
+            h.Scale(theory[fname[self.prod]]['sigma']*theory['H2B']['ZZ'])
+        else:    
+            h.Scale(theory[fname[self.prod]]['sigma']*theory['H4F'][self.brStr])
         h.GetXaxis().SetTitle(titlex)
         return h
 
@@ -159,10 +164,15 @@ class HZZSignalParamPlotter(PlotterBase):
 
         
         sigma = self.theory.param[fname[self.prod]]['sigma']
-        sigma.SetName('sigma_'+self.prod)
+        sigma.SetName('sigma_'+self.prod+'_'+self.period)
         getattr(w,'import')(sigma,ROOT.RooFit.RecycleConflictNodes(1))
 
-        br = self.theory.param['H4F'][self.brStr]
+
+        if self.prod in ['WH','ZH','ttH']:
+            br = self.theory.param['H2B']['ZZ']
+        else:    
+            br = self.theory.param['H4F'][self.brStr]
+
         br.SetName('br_'+self.channel)
         getattr(w,'import')(br,ROOT.RooFit.RecycleConflictNodes(1))
 
@@ -176,7 +186,7 @@ class HZZSignalParamPlotter(PlotterBase):
         for p in ['m0','sigma','alphaL','nL','alphaR','nR','eff']:
             w.function(p).SetName(p+'_'+suffix)
 
-        w.factory("prod::"+self.prod+"_norm("+'br_'+self.channel+','+'sigma_'+self.prod+',eff_'+suffix+',scaleFactor_'+suffix+")")
+        w.factory("prod::"+self.prod+"_norm("+'br_'+self.channel+','+'sigma_'+self.prod+'_'+self.period+',eff_'+suffix+',scaleFactor_'+suffix+")")
         w.Print()
 
 

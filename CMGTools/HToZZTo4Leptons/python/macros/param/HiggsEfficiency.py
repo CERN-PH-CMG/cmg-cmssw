@@ -47,6 +47,7 @@ class HiggsEfficiency(object):
 
             #data MC corrections
             plotter.addCorrectionFactor('eventWeight','eventWeight',0.0,'lnN')
+            plotter.addCorrectionFactor('vertexWeight','vertexWeight',0.0,'lnN')
             plotter.addCorrectionFactor('eff','H_eff',0.0,'lnN')
             if mass not in [124,125,126] and period =='7TeV':
                 plotter.addCorrectionFactor('kin',0.5+0.5*ROOT.TMath.Erf((mass - 80.85)/50.42),0.0,'lnN')
@@ -68,6 +69,8 @@ class HiggsEfficiency(object):
             if finalstate=='MuEle':
                 finalStateCut+='&&abs(H_Z1_leg1_PdgId)!=abs(H_Z2_leg1_PdgId)&&genHDecay==3'
 
+
+
             h = plotter.drawTH1('H_Mass',finalStateCut,'1',100,0,100000)
             self.data['eff'][self.prod][self.suffix][mass]=h.Integral()
             if h.Integral()>0 and mass>100 :
@@ -83,6 +86,7 @@ class HiggsEfficiency(object):
     def fit(self,mini=0.,maxi=1000):
         self.graph.SetMarkerStyle(20);
         fname='eff_'+self.finalstate+'_'+self.prod+'_'+self.period+'_'+self.suffix
+
 
         f=ROOT.TF1("f","pol5", mini, maxi)
         self.graph.Fit(f,'','',mini,maxi)

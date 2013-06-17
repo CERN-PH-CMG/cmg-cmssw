@@ -12,6 +12,8 @@ class HiggsTheory(object):
 
         self.decays=['H4F']
         self.decayProperties=['llllt','eeee','eemumu']
+        self.decays2=['H2B']
+        self.decayProperties2=['ZZ']
 
         f=open(jsonFile)
         self.dict=json.load(f)
@@ -42,6 +44,10 @@ class HiggsTheory(object):
         for decay in self.decays:
             self.param[decay] = dict()
             for property in self.decayProperties:
+                self.param[decay][property] = self.getSpline(decay+'_'+property,self.MH,decay,property)
+        for decay in self.decays2:
+            self.param[decay] = dict()
+            for property in self.decayProperties2:
                 self.param[decay][property] = self.getSpline(decay+'_'+property,self.MH,decay,property)
                 
         self.param['width'] = self.getSpline('width',self.MH,'width')

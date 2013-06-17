@@ -19,7 +19,7 @@ class HZZSetup(object):
         self.data['7TeV'] = dict()
         self.data['8TeV']=dict()
 #        self.data['lumi']={'7TeV':5050., '8TeV': 12210}
-        self.data['lumi']={'7TeV':5050., '8TeV': 19630}
+        self.data['lumi']={'7TeV':5050., '8TeV': 19630.}
         self.data['lumiErr']={'7TeV':0.022, '8TeV': 0.044}
         self.data['ZZ4mu']={'8TeV':0.07691,'7TeV':0.024887}
         self.data['ZZ4e']={'8TeV':0.07691,'7TeV':0.024993}
@@ -66,7 +66,7 @@ class HZZSetup(object):
           if mass not in [124,125,126] and period =='7TeV':
               higgsPlotter.addCorrectionFactor('kin',0.5+0.5*ROOT.TMath.Erf((mass - 80.85)/50.42),0.0,'lnN')
         
-          pname = {'ggH':'GGH','qqH':'VBF','ZH':'ZH','WH':'WH','ttH':'Vtt'}
+          pname = {'ggH':'GGH','qqH':'VBF','ZH':'ZH','WH':'WH','ttH':'ttH'}
 
     #Higgs cross section, BR and uncertainties
           higgsPlotter.addCorrectionFactor('sigma',xs[pname[production]]['sigma'],0.0,'lnN')
@@ -75,6 +75,7 @@ class HZZSetup(object):
               higgsPlotter.addCorrectionFactor('BRHiggs_hzz4l',xs['H4F']['eeee'],0.02,'lnN')
           elif finalstate in ['MuEle']:
               higgsPlotter.addCorrectionFactor('BRHiggs_hzz4l',xs['H4F']['eemumu'],0.02,'lnN')
+
 
 
           higgsPlotter.addCorrectionFactor('pdf_hzz4l_accept',1,0.02,'lnN')
@@ -89,6 +90,7 @@ class HZZSetup(object):
               scale='QCDscale_ttH'
               pdf='pdf_gg'
               higgsPlotter.addCorrectionFactor('ttHSelect','genHProcess==121||genHProcess==122',0.0,'lnN')
+
 
           elif production =='qqH':
               scale='QCDscale_qqH'
@@ -213,7 +215,7 @@ class HZZSetup(object):
             zzPlotter.addCorrectionFactor('QCDscale_ggVV',1.0,0.2431,'lnN')
 
         if (category=='vbftag' or category=='vbf'):
-            zzPlotter.addCorrectionFactor('hzz4l_ZZ_VBF'+finalstate+production+period,1.0,0.10,'lnN')
+            zzPlotter.addCorrectionFactor('hzz4l_ZZ_VBF'+finalstate+production+period,1.0,0.50,'lnN')
             
 
         if finalstate=='MuMu' and period =='7TeV':
@@ -239,9 +241,9 @@ class HZZSetup(object):
         fakePlotter = HZZBkgParamPlotter(finalstate,production,period,category)
         fakePlotter.setupFromFile()
         if (category=='vbftag' or category=='vbf'):
-            fakePlotter.addCorrectionFactor('CMS'+'_'+finalstate+'_'+period+category+'_fakeRateVBF',1.0,0.80,'lnN')
-        else:
-            fakePlotter.addCorrectionFactor('CMS'+'_'+finalstate+'_'+period+category+'_fakeRate',1.0,0.6,'lnN')
+            fakePlotter.addCorrectionFactor('CMS'+'_'+finalstate+'_'+period+category+'_fakeRateVBF',1.0,0.50,'lnN')
+
+        fakePlotter.addCorrectionFactor('CMS'+'_'+finalstate+'_'+period+category+'_fakeRate',1.0,[0.6,1.4],'lnN2')
         
         return fakePlotter
 

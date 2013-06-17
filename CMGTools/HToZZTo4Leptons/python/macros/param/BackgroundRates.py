@@ -34,9 +34,9 @@ class BackgroundRates(object):
             plotter,plotters=self.setup.getZZPlotters(finalstate,self.prod,period)
         elif self.prod=='FAKES':
             if suffix =='vbf':
-                plotter=self.setup.getFakePlotter(finalstate,period,'HLoose_Z2_Charge!=0&&abs(HLoose_Z2_leg1_SIP3D)<4&&abs(HLoose_Z2_leg2_SIP3D)<4','&&H_NJets==2',4.36e-2)
-            elif suffix =='vbftag':
-                plotter=self.setup.getFakePlotter(finalstate,period,'HLoose_Z2_Charge!=0&&abs(HLoose_Z2_leg1_SIP3D)<4&&abs(HLoose_Z2_leg2_SIP3D)<4','&&H_NJets==2&&abs(H_DEta)>3&&H_MJJ>300',3.17e-3)
+                plotter=self.setup.getFakePlotter(finalstate,period,'HLoose_Z2_Charge!=0&&abs(HLoose_Z2_leg1_SIP3D)<4&&abs(HLoose_Z2_leg2_SIP3D)<4','&&H_NJets>=2',0.3)
+            elif suffix =='lt':
+                plotter=self.setup.getFakePlotter(finalstate,period,'HLoose_Z2_Charge!=0&&abs(HLoose_Z2_leg1_SIP3D)<4&&abs(HLoose_Z2_leg2_SIP3D)<4','&&H_lepton_Pt>10',4.48e-3)
 
             else:    
                 plotter=self.setup.getFakePlotter(finalstate,period,'HLoose_Z2_Charge!=0&&abs(HLoose_Z2_leg1_SIP3D)<4&&abs(HLoose_Z2_leg2_SIP3D)<4')

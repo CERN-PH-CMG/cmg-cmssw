@@ -137,6 +137,60 @@ class HZZFakeRatePlotter(TreePlotter):
 
 
 
+    def drawTH3(self,var,cuts,lumi,binsx,minix,maxix,binsy,miniy,maxiy,binsz,minz,maxz,titlex = "",unitsx = "",titley = "",unitsy = "",drawStyle = "HIST"):
+        varReplaced=var.replace('H_','HLoose_') 
+
+        factorizedRegion = self.factorizedRegion.replace('H_','HLoose_')
+
+
+        cutsReplaced="("+cuts.replace('H_','HLoose_')+"&&"+self.controlRegion+")" 
+
+        if self.factorizedRegion !='':
+            cutsReplaced=cutsReplaced.replace(factorizedRegion,'') 
+
+        #cache the smooth
+        doSmooth = self.smooth
+
+        self.smooth=False
+        hControl = super(HZZFakeRatePlotter,self).drawTH3(varReplaced,'('+cutsReplaced+")/"+self.fakeRateVar,"1",binsx,minix,maxix,binsy,miniy,maxiy,binsz,minz,maxz,titlex,unitsx,titley,unitsy,drawStyle)
+
+
+        factor = self.factor
+        if self.factorizedRegion != '':
+            hFactorized = super(HZZFakeRatePlotter,self).drawTH3(varReplaced,'('+cutsReplaced+factorizedRegion+")/"+self.fakeRateVar,'1',binsx,minix,maxix,binsy,miniy,maxiy,binsz,minz,maxz,titlex,unitsx,titley,unitsy,drawStyle)
+#            factor =hFactorized.Integral()/hControl.Integral() 
+
+            print 'FACTOR is ',factor
+            
+
+        #Now add the OS/LS ratio
+        cutsReplaced += "*((abs(HLoose_Z1_leg1_PdgId)==11&&abs(HLoose_Z2_leg1_PdgId)==11)*"+str(self.oslsEleEle) + \
+            "+(abs(HLoose_Z1_leg1_PdgId)!=abs(HLoose_Z2_leg1_PdgId))*"+str(self.oslsMuEle) + \
+            "+(abs(HLoose_Z1_leg1_PdgId)==13&&abs(HLoose_Z2_leg1_PdgId)==13)*"+str(self.oslsMuMu)+ ")"
+
+        hFakeUp =super(HZZFakeRatePlotter,self).drawTH3(varReplaced,'('+cutsReplaced+')*'+self.fakeRateVar.replace(')','Up)')+"/"+self.fakeRateVar,"1",binsx,minix,maxix,binsy,miniy,maxiy,binsz,minz,maxz,titlex,unitsx,titley,unitsy,drawStyle) 
+        hFakeDown =super(HZZFakeRatePlotter,self).drawTH3(varReplaced,'('+cutsReplaced+')*'+self.fakeRateVar.replace(')','Dwn)')+"/"+self.fakeRateVar,"1",binsx,minix,maxix,binsy,miniy,maxiy,binsz,minz,maxz,titlex,unitsx,titley,unitsy,drawStyle) 
+
+
+        self.smooth=doSmooth
+        hFake =super(HZZFakeRatePlotter,self).drawTH3(varReplaced,cutsReplaced,"1",binsx,minix,maxix,binsy,miniy,maxiy,binsz,minz,maxz,titlex,unitsx,titley,unitsy,drawStyle) 
+
+        extrapolationFactor = hFake.Integral()/hControl.Integral()
+        extrapolationError = abs(hFakeUp.Integral()-hFakeDown.Integral())/hFake.Integral()
+        #Set the values of the systematics
+        for syst in self.corrFactors:
+            if syst['name']=='CMS_hzz4l_'+self.channel+'_fakeRate':
+                syst['error'] = 0.5
+            if syst['name']=='CMS_hzz4l_'+self.channel+'_fakeRateStat':
+                syst['count'] = hControl.Integral()
+                syst['error'] = extrapolationFactor
+
+
+        hFake.Scale(self.factor)        
+        return hFake
+
+
+
 
     def drawTH2Binned(self,var,cuts,lumi,binningx,binningy,titlex = "",unitsx = "",titley = "",unitsy = "",drawStyle = "HIST"):
         varReplaced=var.replace('H_','HLoose_') 

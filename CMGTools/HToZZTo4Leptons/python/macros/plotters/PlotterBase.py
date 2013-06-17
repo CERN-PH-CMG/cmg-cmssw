@@ -49,11 +49,14 @@ class PlotterBase(object):
     def drawTH2(self,var,cuts,lumi,binsx,minx,maxx,binsy,miny,maxy,titlex = "",unitsx = "",titley="",unitsy="", drawStyle = "COLZ"):
         return None
 
+    def drawTH3(self,var,cuts,lumi,binsx,minx,maxx,binsy,miny,maxy,binsz,minz,maxz,titlex = "",unitsx = "",titley="",unitsy="", drawStyle = "COLZ"):
+        return None
+
     def drawTH1(self,var,cuts,lumi,bins,min,max,titlex = "",units = "",drawStyle = "HIST"):
         return None
 
 
-    def makeDataHist(self,var,cuts,binsx,minx,maxx,binsy=100,miny=0,maxy=1e+10,name='data',norm=0):
+    def makeDataHist(self,var,cuts,binsx,minx,maxx,binsy=100,miny=0,maxy=1e+10,binsz=100,minz=-1e-9,maxz=1e+9,name='data',norm=0):
         variables = var.split(':')
         observables=[]
         params=[]
@@ -63,20 +66,19 @@ class PlotterBase(object):
             rooVar = ROOT.RooRealVar(var,var,minx,maxx)
             dh = ROOT.RooDataHist(name,'',ROOT.RooArgList(rooVar),h)
             observables=[rooVar]
-        else:    
-            import pdb;pdb.set_trace()
-
+        elif len(variables) ==2:    
             h = self.drawTH2(var,cuts,'1',binsx,minx,maxx,binsy,miny,maxy)
             rooVar1 = ROOT.RooRealVar(variables[1],variables[1],minx,maxx)
             rooVar2 = ROOT.RooRealVar(variables[0],variables[0],miny,maxy)
-
             dh = ROOT.RooDataHist(name,'',ROOT.RooArgList(rooVar1,rooVar2),h)
             observables=[rooVar1,rooVar2]
-
-            canvas = ROOT.TCanvas('ch','cc')
-            canvas.cd()
-            h.Draw("COLZ")
-            canvas.SaveAs("validationHist_"+name+".root")
+        else:    
+            h = self.drawTH3(var,cuts,'1',binsx,minx,maxx,binsy,miny,maxy,binsz,minz,maxz)
+            rooVar1 = ROOT.RooRealVar(variables[2],variables[1],minx,maxx)
+            rooVar2 = ROOT.RooRealVar(variables[1],variables[0],miny,maxy)
+            rooVar3 = ROOT.RooRealVar(variables[0],variables[0],minz,maxz)
+            dh = ROOT.RooDataHist(name,'',ROOT.RooArgList(rooVar1,rooVar2,rooVar3),h)
+            observables=[rooVar1,rooVar2,rooVar3]
 
 
         return dh,observables
