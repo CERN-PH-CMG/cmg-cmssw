@@ -9,7 +9,8 @@ if __name__ == '__main__':
     parser = optparse.OptionParser()
     parser.add_option("-c","--cut",dest="cut",default='H_Mass>0',help="cut to apply")
     parser.add_option("-o","--output",dest="out",default='inc',help="suffix for file")
-    parser.add_option("-m","--max",dest="maxMass",default='160',help="max mass")
+    parser.add_option("-m","--min",dest="minMass",default='100',help="max mass")
+    parser.add_option("-M","--max",dest="maxMass",default='2000',help="max mass")
 
 
     (options,args) = parser.parse_args()
@@ -28,14 +29,14 @@ if __name__ == '__main__':
             name,extention=filename.split('.')
             if name.find(fname[prod])>-1 and extention == 'root':
                 s=name.split(fname[prod])
-                if int(s[1])<int(options.maxMass):
+                if int(s[1])<int(options.maxMass) and int(s[1])>int(options.minMass):
                     masses7TeV.append(int(s[1]))
 
         for filename in os.listdir('All_8TeV'):
             name,extention=filename.split('.')
             if name.find(fname[prod])>-1 and extention == 'root':
                 s=name.split(fname[prod])
-                if int(s[1])<int(options.maxMass):
+                if int(s[1])<int(options.maxMass) and int(s[1])>int(options.minMass):
                     masses8TeV.append(int(s[1]))
 
 

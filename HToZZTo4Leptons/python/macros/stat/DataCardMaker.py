@@ -302,11 +302,18 @@ class DataCardMaker(object):
             dataRate = h2.Integral()
 
         elif self.data['model'] == 'roobinned':
-            dataset,observables=dataPlotter.makeDataHist(var,cuts,bins[0],mini[0],maxi[0],bins[1],mini[1],maxi[1],'data_obs')
+            if len(bins)==1:
+                dataset,observables=dataPlotter.makeDataHist(var,cuts,bins[0],mini[0],maxi[0],1000,-1e-9,1e+9,1000,-1e-9,1e+9,'data_obs')
+            elif len(bins)==2:    
+                dataset,observables=dataPlotter.makeDataHist(var,cuts,bins[0],mini[0],maxi[0],bins[1],mini[1],maxi[1],1000,-1e-9,1e+9,'data_obs')
+            else:
+                dataset,observables=dataPlotter.makeDataHist(var,cuts,bins[0],mini[0],maxi[0],bins[1],mini[1],maxi[1],bins[2],mini[2],maxi[2],'data_obs')
+                
+
             self.observables=[]
+
+
             for obs in observables:
-#                dataset.changeObservableName(obs.GetName(),obs.GetName()+'_'+self.suffix)
-#                self.observables.append(obs.GetName()+'_'+self.suffix)
                 self.observables.append(obs.GetName())
             dataRate = dataset.sumEntries()
             getattr(w,'import')(dataset)
@@ -500,7 +507,7 @@ class DataCardMaker(object):
         for shape in shapes:
             for syst in shape['systs']:
                 #zero suppress
-                if syst['error'] != 0.0:
+                if syst['error'] != 0.0 or len(syst['error'])>0:
                     systematics.append(syst)
 
         #now we have a list of systematics but there are duplicates
@@ -519,8 +526,8 @@ class DataCardMaker(object):
         #OK now fill the systematics tables
         for syst in systs:
             writeLine=True
-            if syst['model']=='lnN':
-                f.write(syst['name']+" "+syst['model']+'\t')
+            if syst['model']=='lnN' or syst['model']=='lnN2':
+                f.write(syst['name']+" lnN\t")
             elif syst['model']=='gmN':
                 f.write(syst['name']+" "+syst['model']+" "+ str(int(syst['count']))+ '\t')
 
@@ -533,6 +540,8 @@ class DataCardMaker(object):
                         found=True
                         if shapeSyst['model'] == 'lnN':
                             toWrite = str(1+shapeSyst['error'])+'\t'
+                        elif shapeSyst['model'] == 'lnN2':
+                            toWrite = str(shapeSyst['error'][0]) +'/'+str(shapeSyst['error'][1])+'\t'
                         elif shapeSyst['model'] == 'gmN':
                             toWrite=str(shapeSyst['error'])+'\t'
                         break

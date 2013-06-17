@@ -29,6 +29,9 @@ class TreePlotter(PlotterBase):
         elif finalstate =='EleEle':
             weightinv = float(data['4e'])
 
+        if finalstate in ['MuMu','MuEle','EleEle'] and prod in ['WH','ZH','ttH']:
+            weightinv = float(data['events'])
+            
 
 
         if prod =='ttH':
@@ -37,6 +40,8 @@ class TreePlotter(PlotterBase):
             weightinv=weightinv*float(data['WH']/float(data['events']))
         elif prod =='ZH':
             weightinv=weightinv*float(data['ZH']/float(data['events']))
+
+
 
         self.addCorrectionFactor("mcWeight",1./weightinv,0.0,'lnN')
 
@@ -112,6 +117,28 @@ class TreePlotter(PlotterBase):
            h.GetYaxis().SetTitle(titley+ " ["+unitsy+"]")
 
         return h
+
+
+
+    def drawTH3(self,var,cuts,lumi,binsx,minx,maxx,binsy,miny,maxy,binsz,minz,maxz,titlex = "",unitsx = "",titley="",unitsy="", drawStyle = "COLZ"):
+        h = ROOT.TH3D("tmpTH3","",binsx,minx,maxx,binsy,miny,maxy,binsz,minz,maxz)
+        h.Sumw2()
+#        h.SetLineStyle(self.linestyle)
+#        h.SetLineColor(self.linecolor)
+#        h.SetLineWidth(self.linewidth)
+        h.SetFillStyle(self.fillstyle)
+        h.SetFillColor(self.fillcolor)
+        h.GetXaxis().SetTitle(titlex+ " ["+unitsx+"]")
+        h.GetYaxis().SetTitle(titley+ " ["+unitsy+"]")
+
+        #Apply correction factors
+        corrString='1'
+        for corr in self.corrFactors:
+                corrString = corrString+"*"+str(corr['value']) 
+        self.tree.Draw(var+">>tmpTH3","("+cuts+")*"+lumi+"*"+self.weight+"*("+corrString+")","goff")
+        return h
+
+
 
     def drawTH2Binned(self,var,cuts,lumi,binningx,binningy,titlex = "",unitsx = "",titley="",unitsy="", drawStyle = "COLZ"):
         h = ROOT.TH2D("tmpTH2","",len(binningx)-1,array('f',binningx),len(binningy)-1,array('f',binningy))

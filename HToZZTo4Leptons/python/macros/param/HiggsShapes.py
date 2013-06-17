@@ -34,7 +34,6 @@ class HiggsShapes(object):
         self.period=period
 
         for i,mass in enumerate(masses):
-
             self.w = ROOT.RooWorkspace('w')
             self.pdfFactory = PDFFactory(self.w)
 #            self.w.factory('H_Mass[125,70,800]')
@@ -42,6 +41,7 @@ class HiggsShapes(object):
 
             #data MC corrections
             plotter.addCorrectionFactor('eventWeight','eventWeight',0.0,'lnN')
+            plotter.addCorrectionFactor('vertexWeight','vertexWeight',0.0,'lnN')
             plotter.addCorrectionFactor('eff','H_eff',0.0,'lnN')
             #define final state separation here
             finalStateCut=cuts
@@ -63,7 +63,7 @@ class HiggsShapes(object):
             getattr(self.w,'import')(data)
 
             #make pdf
-            if mass<160:
+            if mass<=160.:
                 self.pdfFactory.makeDCB('pdf'+finalstate+str(mass),'H_Mass',mass,finalstate)
                 self.w.var('CMS_scale_m').setConstant(1)
                 self.w.var('CMS_scale_e').setConstant(1)
@@ -145,7 +145,7 @@ class HiggsShapes(object):
             c.cd()
             getattr(self,'graph_'+param).Draw("AP")    
             f.Draw("LSAME")
-            c.SaveAs('shape_'+self.finalstate+'_'+self.period+'_'+param+'.root')
+            c.SaveAs('shape_'+self.finalstate+'_'+self.period+'_'+param+'.png')
 
             formula = '('+str(f.GetParameter(0))+'+('+str(f.GetParameter(1))+'*@0)+'+'+('+str(f.GetParameter(2))+'*@0*@0)+('+str(f.GetParameter(3))+'*@0*@0*@0)+('+str(f.GetParameter(4))+'*@0*@0*@0*@0)+('+str(f.GetParameter(5))+"*@0*@0*@0*@0*@0))"
             self.data['shapeFormula'][param] = formula

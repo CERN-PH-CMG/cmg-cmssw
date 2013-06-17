@@ -102,6 +102,14 @@ if __name__ == '__main__':
     masses8TeV=[]
 
     pname={'ggH':'ggH','qqH':'qqH','ZH':'ggH','WH':'ggH','ttH':'ggH'}
+
+    cut = {'MuMu':'&&H_Z1_leg1_PdgId==13&&H_Z2_leg1_PdgId==13',\
+           'MuEle':'&&H_Z1_leg1_PdgId==13&&H_Z2_leg1_PdgId==11',\
+           'EleEle':'&&H_Z1_leg1_PdgId==11&&H_Z2_leg1_PdgId==11',\
+           'EleMu':'&&H_Z1_leg1_PdgId==11&&H_Z2_leg1_PdgId==13'}
+           
+
+
     for period in ['7TeV','8TeV']:
         for prod in ['ggH','qqH','ZH','WH','ttH']:
             masses7TeV=[]
@@ -130,7 +138,7 @@ if __name__ == '__main__':
             print masses7TeV,masses8TeV
             print '--------------------'        
         
-            for finalstate in ['MuMu','MuEle','EleEle']:
+            for finalstate in ['MuMu','MuEle','EleEle','EleMu']:
                 plotters=[]
                 for m in masses7TeV:
                     plotter=TreePlotter("All_7TeV/"+pname[prod]+str(m)+".root","FourLeptonTreeProducer/tree",'1')
@@ -142,8 +150,8 @@ if __name__ == '__main__':
                     plotters.append(plotter)
                 print 'Plotters',plotters
                 p=MergedPlotter(plotters)
-                h=p.makeTemplateHistBinned('H_MELA:H_Mass',options.cut,binningx,binningy,0)
-                if finalstate != 'MuEle':
+                h=p.makeTemplateHistBinned('H_MELA:H_Mass',options.cut+cut[finalstate],binningx,binningy,0)
+                if finalstate not in  ['MuEle','EleMu']:
                     reweightForInterference(h)
                 normalize(h)
                 h.SetName(finalstate+'_'+prod+'_'+period)
@@ -152,12 +160,12 @@ if __name__ == '__main__':
 
 
         for prod in ['QQZZ','GGZZ']:
-            for finalstate in ['MuMu','MuEle','EleEle']:
+            for finalstate in ['MuMu','MuEle','EleEle','EleMu']:
                 plotter,plotters7TeV=setup.getZZPlotters(finalstate,prod,'7TeV')
                 plotter,plotters8TeV=setup.getZZPlotters(finalstate,prod,'8TeV')
                 plotters=plotters7TeV+plotters8TeV
                 p=MergedPlotter(plotters)
-                h=p.makeTemplateHistBinned('H_MELA:H_Mass',options.cut,binningx,binningy,0)
+                h=p.makeTemplateHistBinned('H_MELA:H_Mass',options.cut+cut[finalstate],binningx,binningy,0)
                 hUp,hDwn = reweightForCR(h)
                 normalize(h)
 

@@ -48,6 +48,23 @@ class MergedPlotter(PlotterBase):
         h.GetYaxis().SetTitle(titley+ " ["+unitsy+"]")
         return h
 
+
+    def drawTH3(self,var,cuts,lumi,binsx,minx,maxx,binsy,miny,maxy,binsz,minz,maxz,titlex = "",unitsx = "",titley = "",unitsy = "",drawStyle = "COLZ"):
+        h=None
+        for plotter in self.plotters:
+            if h is None:
+                h=plotter.drawTH3(var,cuts,lumi,binsx,minx,maxx,binsy,miny,maxy,binsz,minz,maxz,titlex,unitsx,titley,unitsy,drawStyle)
+            else:
+                h.Add(plotter.drawTH3(var,cuts,lumi,binsx,minx,maxx,binsy,miny,maxy,binsz,minz,maxz,titlex,unitsx,titley,unitsy,drawStyle))
+
+        h.SetFillStyle(self.fillstyle)
+        h.SetFillColor(self.fillcolor)
+        h.SetMarkerStyle(self.markerstyle)
+        h.GetXaxis().SetTitle(titlex+ " ["+unitsx+"]")
+        h.GetYaxis().SetTitle(titley+ " ["+unitsy+"]")
+        return h
+
+
     def drawTH2Binned(self,var,cuts,lumi,binningx,binningy,titlex = "",unitsx = "",titley = "",unitsy = "",drawStyle = "COLZ"):
         h=None
         for plotter in self.plotters:
