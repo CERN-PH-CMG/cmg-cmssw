@@ -33,5 +33,6 @@ cd ..
 mkdir $1_out
 
 mv $1/*.* $1_out/
+mv $1/data/DATA.root  $1_out/
 
 echo 'Packed'

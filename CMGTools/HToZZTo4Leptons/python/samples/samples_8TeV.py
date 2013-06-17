@@ -58,7 +58,7 @@ dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 for comp in mcSamples:
     comp.isMC = True
     comp.isData = False
-    comp.splitFactor = 50
+    comp.splitFactor =20
     comp.puFileMC=dataDir+"/puProfile_Summer12_53X.root"
     comp.puFileData=dataDir+"/puProfile_Data12.root"
     comp.efficiency = eff2012
