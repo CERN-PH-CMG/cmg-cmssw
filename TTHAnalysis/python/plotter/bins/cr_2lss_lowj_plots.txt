@@ -1,12 +1,12 @@
-nJet25 : nJet25 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 25)'
+nJet25 : nJet25 : 8,-0.5,7.5 ; XTitle='N(jet\, p_{T} > 25)',Logy,LegendCutoff=1e-3 
 nBJetLoose25 : nBJetLoose25 : 4,-0.5,3.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Loose)',XNDiv=505
 nBJetMedium25 : nBJetMedium25 : 4,-0.5,3.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Medium)',XNDiv=505
 nBJetTight25 : (Jet1_btagCSV>0.898)+(Jet2_btagCSV>0.898)+(Jet3_btagCSV>0.898): 4,-0.5,3.5 ; XTitle='N(jet\, p_{T} > 25\, CVS Tight)',XNDiv=505
 met: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]"
-met_log: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy
+met_log: met: 60,0,300    ; XTitle="E_{T}^{miss}  [GeV]",Logy, YMin=30, YMax=1e4, LegendCutoff=1e-2
 metLD: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD"
-metLD_log: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD",Logy
-mhtJet25: mhtJet25: 60,0,300    ; XTitle="H_{T}^{miss}  [GeV]"
+metLD_log: met*0.00397 + mhtJet25*0.00265 : 50,-0.1,1.4 ; XTitle="E_{T}^{miss} LD",Logy, YMin=30, YMax=1e4, LegendCutoff=1e-2
+#mhtJet25: mhtJet25: 60,0,300    ; XTitle="H_{T}^{miss}  [GeV]"
 mll: m2l: 60,0,300 ; XTitle="m(l^{+}l^{-}')  [GeV]", Legend='TR'
 ptll: pt2l: 60,0,300 ; XTitle="p_{T}(l^{+}l^{-}')  [GeV]", Legend='TR'
 drll : deltaR(LepGood1_eta,LepGood1_phi, LepGood2_eta,LepGood2_phi): 24,0,4; XTitle="#DeltaR(ll)", MoreY=1.3, Legend='TL'
