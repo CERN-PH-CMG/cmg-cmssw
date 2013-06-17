@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 from CMGTools.Common.Tools.cmsswRelease import isNewerThan
 
 
-runOnMC      = False
+runOnMC      = True
 process = cms.Process("CMG")
 
 
@@ -36,13 +36,13 @@ print 'loading the main CMG sequence'
 process.load('CMGTools.Common.PAT.PATCMG_cff')
 
 process.skim=cms.EDFilter('HZZCMGSkim',
-                          nLeptons = cms.int32(3)
+                          nLeptons = cms.int32(4)
                           )
 
 process.correctedMuons = cms.EDProducer("MuScleFitPATMuonCorrector", 
                              src = cms.InputTag("patMuonsWithTrigger"), 
                              debug = cms.bool(False), 
-                             identifier = cms.string("Data2011_42X"), 
+                             identifier = cms.string("Fall11_START42"), 
                              applySmearing = cms.bool(runOnMC), 
                              fakeSmearing = cms.bool(False)
 )
@@ -92,8 +92,8 @@ process.calibratedElectrons = cms.EDProducer("CalibratedPatElectronProducer",
     applyLinearityCorrection = cms.bool(True),
     combinationType = cms.int32(3),
     lumiRatio = cms.double(0.0),
-    inputDataset = cms.string("Jan16ReReco"),
-#    inputDataset = cms.string("Fall11"),
+#    inputDataset = cms.string("Jan16ReReco"),
+    inputDataset = cms.string("Fall11"),
     combinationRegressionInputPath = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2011Weights_WithSubClusters_VMay28.root"),
     scaleCorrectionsInputPath = cms.string("EgammaAnalysis/ElectronTools/data/scales2011NewReg-May2013.csv"),
     linearityCorrectionsInputPath = cms.string("EgammaAnalysis/ElectronTools/data/linearityNewReg2011-May2013.csv")
