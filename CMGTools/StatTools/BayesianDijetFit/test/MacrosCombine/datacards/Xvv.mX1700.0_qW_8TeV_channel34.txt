@@ -1,7 +1,7 @@
 Combination of ch3=datacards/Xvv.mX1700.0_qW_8TeV_channel3.txt, ch4=datacards/Xvv.mX1700.0_qW_8TeV_channel4.txt
 imax 2 number of bins
 jmax 2 number of processes minus 1
-kmax 7 number of nuisance parameters
+kmax 8 number of nuisance parameters
 ----------------------------------------------------------------------------------------------------------------------------------
 shapes *         ch3       datacards/../workspaces/Xvv.inputbkg_8TeV.root w_all:$PROCESS_cat3
 shapes MggBkg    ch3       datacards/../workspaces/Xvv.inputbkg_8TeV.root w_all:CMS_hgg_bkg_8TeV_cat3
@@ -20,13 +20,14 @@ process                          MggSigqZ  MggSigqW  MggBkg    MggSigqZ  MggSigq
 process                          -1        0         1         -1        0         1       
 rate                             0.0000    20.5250   1.0000    0.0000    7.3550    1.0000  
 ----------------------------------------------------------------------------------------------------------------------------------
-CMS_eff_vmass           lnN      1.01      1.01      -         1.01      1.01      -       
-CMS_eff_vtau            lnN      1.1       1.1       -         0.9       0.9       -       
+CMS_eff_vmass           lnN      1.099     1.093     -         1.099     1.093     -       
+CMS_eff_vtau            lnN      1.087     1.091     -         0.92      0.917     -       
 CMS_pu                  lnN      1.03      1.03      -         1.03      1.03      -       
-CMS_scale_j             lnN      1.01      1.01      -         1.01      1.01      -       
+CMS_res_j               lnN      1.02      1.02      -         1.02      1.02      -       
+CMS_scale_j             lnN      1.06      1.06      -         1.06      1.06      -       
 lumi_8TeV               lnN      1.044     1.044     -         1.044     1.044     -       
 CMS_hgg_sig_sigmaScale  param  1 0.1
-CMS_hgg_sig_m0_absShift  param  1 0.025
+CMS_hgg_sig_m0_absShift  param  1 0.033
 CMS_hgg_bkg_8TeV_slope2_cat3  flatParam
 CMS_hgg_bkg_8TeV_slope2_cat4  flatParam
 CMS_hgg_bkg_8TeV_cat3_norm  flatParam

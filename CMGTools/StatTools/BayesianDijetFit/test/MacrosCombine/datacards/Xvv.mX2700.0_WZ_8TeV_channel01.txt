@@ -1,7 +1,7 @@
 Combination of ch0=datacards/Xvv.mX2700.0_WZ_8TeV_channel0.txt, ch1=datacards/Xvv.mX2700.0_WZ_8TeV_channel1.txt
 imax 2 number of bins
 jmax 3 number of processes minus 1
-kmax 7 number of nuisance parameters
+kmax 8 number of nuisance parameters
 ----------------------------------------------------------------------------------------------------------------------------------
 shapes *         ch0       datacards/../workspaces/Xvv.inputbkg_8TeV.root w_all:$PROCESS_cat0
 shapes MggBkg    ch0       datacards/../workspaces/Xvv.inputbkg_8TeV.root w_all:CMS_hgg_bkg_8TeV_cat0
@@ -22,13 +22,14 @@ process                          MggSigWW  MggSigZZ  MggSigWZ  MggBkg    MggSigW
 process                          -2        -1        0         1         -2        -1        0         1       
 rate                             0.0000    0.0000    5.8050    1.0000    0.0000    0.0000    4.4700    1.0000  
 ----------------------------------------------------------------------------------------------------------------------------------
-CMS_eff_vmass           lnN      1.02      1.02      1.02      -         1.02      1.02      1.02      -       
-CMS_eff_vtau            lnN      1.2       1.2       1.2       -         0.8       0.8       0.8       -       
-CMS_pu                  lnN      1.06      1.06      1.06      -         1.06      1.06      1.06      -       
-CMS_scale_j             lnN      1.02      1.02      1.02      -         1.02      1.02      1.02      -       
+CMS_eff_vmass           lnN      1.185     1.197     1.191     -         1.185     1.197     1.191     -       
+CMS_eff_vtau            lnN      1.181     1.173     1.177     -         0.847     0.852     0.85      -       
+CMS_pu                  lnN      1.03      1.03      1.03      -         1.03      1.03      1.03      -       
+CMS_res_j               lnN      1.04      1.04      1.04      -         1.04      1.04      1.04      -       
+CMS_scale_j             lnN      1.12      1.12      1.12      -         1.12      1.12      1.12      -       
 lumi_8TeV               lnN      1.044     1.044     1.044     -         1.044     1.044     1.044     -       
 CMS_hgg_sig_sigmaScale  param  1 0.1
-CMS_hgg_sig_m0_absShift  param  1 0.025
+CMS_hgg_sig_m0_absShift  param  1 0.033
 CMS_hgg_bkg_8TeV_slope2_cat0  flatParam
 CMS_hgg_bkg_8TeV_cat1_norm  flatParam
 CMS_hgg_bkg_8TeV_cat0_norm  flatParam
