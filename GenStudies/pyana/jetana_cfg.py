@@ -1,10 +1,8 @@
-import copy
-import os
-import glob
+import copy, os, glob
 import CMGTools.RootTools.fwlite.Config as cfg
 from CMGTools.RootTools.fwlite.Config import printComps
 from CMGTools.RootTools.RootTools import * 
-
+from CMGTools.GenStudies.analyzers import *
 
 
 
@@ -18,13 +16,23 @@ reader = cfg.Analyzer(
 jetAna = cfg.Analyzer(
     'GenJetAnalyzer',
     jetPt = 10.,
-    jetEta = 5.0,
-    btagSFseed = 123456,
-    relaxJetId = True, 
+    jetEta = 5.0
+    )
+
+
+vbfAna = cfg.Analyzer(
+    'VBFSimpleAnalyzer',
+    Mjj = 500,
+    deltaEta = 3.5,
+    cjvPtCut = 30.
     )
 
 treeProducer = cfg.Analyzer(
     'GenTreeProducer'
+    )
+
+multiProducer = cfg.Analyzer(
+    'MultiTreeProducer'
     )
 
 
@@ -44,8 +52,10 @@ selectedComponents = [testComp]
 
 sequence = cfg.Sequence( [
     reader,
-    # jetAna,
-    # treeProducer
+    jetAna,
+#    vbfAna,
+    treeProducer,
+#    multiProducer
    ] )
 
 # creation of the processing configuration.
