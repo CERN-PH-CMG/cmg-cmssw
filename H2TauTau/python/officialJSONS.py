@@ -12,6 +12,9 @@ aug6_2012 =  '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8
 aug24_2012 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_198022-198523_8TeV_24Aug2012ReReco_Collisions12_JSON.txt'
 jul13_2012 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-196531_8TeV_13Jul2012ReReco_Collisions12_JSON_v2.txt'
 
+# 2012 Jan2013 re-reco
+jan22_2013 = '/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt'
+
 
 jsonMap = {
     #
@@ -80,7 +83,11 @@ jsonMap = {
     # non Tau samples
     #
     '/DoubleMu/Run2011A-16Jan2012-v1/AOD':pr2011,
-    '/DoubleMu/Run2011B-16Jan2012-v1/AOD':pr2011 
+    '/DoubleMu/Run2011B-16Jan2012-v1/AOD':pr2011,
+
+    # Jan 13 re-reco - only use one JSON file
+    '.*22Jan2013-v1.*':jan22_2013,
+    '.*22Jan2013_v1.*':jan22_2013,
     }
 
 
@@ -99,6 +106,8 @@ if __name__ == '__main__':
         '/Tau/Run2012C-PromptReco-v1/AOD',
         '/Tau/Run2012C-24Aug2012-v1/AOD',
         '/Tau/Run2012D-PromptReco-v1/AOD',
+        '/TauPlusX/Run2012D-22Jan2013-v1/AOD/',
+        '/DoubleMuParked/StoreResults-Run2012D_22Jan2013_v1_RHembedded_trans1_tau116_ptmu1_16had1_18_v1-f456bdbb960236e5c696adfe9b04eaae/USER/V5_B'
         ]
 
     for sample in samples:
