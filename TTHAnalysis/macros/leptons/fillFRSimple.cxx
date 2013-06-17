@@ -31,6 +31,7 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
 
     TString postFix = "";
     if (selection == 1) postFix = "CutBased";
+    if (selection == 2) postFix = "JustIso";
 
     TFile *fOut = TFile::Open(selbin ? Form("frDistsSimple%s_%s.%d.root",postFix.Data(),comp.Data(),selbin) : Form("frDistsSimple%s_%s.root",postFix.Data(),comp.Data()),"RECREATE");
     
@@ -47,7 +48,7 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
     TCanvas *c1 = new TCanvas("c1","c1");
     gStyle->SetOptStat("emr");
 
-    TString pdir = "ttH_plots/250513/FR_QCD_Simple/"+comp+"/";
+    TString pdir = "ttH_plots/250513/FR_QCD_Simple/"+comp+postFix+"/";
     gSystem->Exec("mkdir -p "+pdir);
     gSystem->Exec("cp /afs/cern.ch/user/g/gpetrucc/php/index.php "+pdir);
 
@@ -146,10 +147,16 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
                                                  "Probe_relIso03/Probe_pt < 0.20 && Probe_tightId > 0.0 && abs(Probe_dxy) < 0.04 && abs(Probe_innerHits) <= 0");
                         tightNum = (ipdg == 13 ? "Probe_relIso < 0.12 && Probe_tightId       && abs(Probe_dxy) < 0.2 && abs(Probe_dz) < 0.5" :
                                                  "Probe_relIso03/Probe_pt < 0.10 && Probe_tightId > 0.0 && abs(Probe_dxy) < 0.02 && abs(Probe_innerHits) <= 0");
+                    } else if (selection == 2) {
+                        tightDen = (ipdg == 11 ? "Probe_innerHits == 0 && Probe_convVeto && Probe_tightCharge > 1" : "Probe_tightId && Probe_tightCharge > 0");
+                        tightDen += "Probe_sip3d < 4";
+                        tightNum = "Probe_relIso < 0.12";
+                        looseNum = "";
+                        looseNum = "";
                     }
 
 
-
+                    if (looseNum != "") {
                     // Denominator
                     t->Draw(Form("met>>%s_den(60,0,100)",name.Data()), cut + looseDen);                
                     TH1 *den = (TH1*) gROOT->FindObject(Form("%s_den",name.Data())); den->Write();
@@ -159,17 +166,19 @@ void fillFRSimple(TString comp="QCDMuPt15", int selection = 0, int selbin = 0) {
                     t->Draw(Form("met>>%s_numL(60,0,100)",name.Data()), cut + looseDen + looseNum );                
                     TH1 *numL = (TH1*) gROOT->FindObject(Form("%s_numL",name.Data())); numL->Write();
                     c1->Print(pdir + numL->GetName() + ".png");
+                    }
 
+                    if (tightNum != "") {
                     // Denominator for tight
                     t->Draw(Form("met>>%s_denT(60,0,100)",name.Data()), cut + tightDen);                
-                    TH1 *denT = (TH1*) gROOT->FindObject(Form("%s_denT",name.Data())); den->Write();
+                    TH1 *denT = (TH1*) gROOT->FindObject(Form("%s_denT",name.Data())); denT->Write();
                     c1->Print(pdir + denT->GetName() + ".png");
 
                      // Numerator, tight
                     t->Draw(Form("met>>%s_numT(60,0,100)",name.Data()), cut + tightDen + tightNum );                
                     TH1 *numT = (TH1*) gROOT->FindObject(Form("%s_numT",name.Data())); numT->Write();
                     c1->Print(pdir + numT->GetName() + ".png");
-
+                    }
                 }
             }
         }
