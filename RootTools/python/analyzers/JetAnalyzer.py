@@ -92,12 +92,23 @@ class JetAnalyzer( Analyzer ):
             if self.testBJet(jet):
                 event.bJets.append(jet)
             if genJets:
-                pairs = matchObjectCollection( [jet], genJets, 0.5*0.5)
+                # Use DeltaR = 0.25 matching like JetMET
+                pairs = matchObjectCollection( [jet], genJets, 0.25*0.25)
                 if pairs[jet] is None:
-                    jet.genJet = None
+                    pass
+                    #jet.genJet = None
                 else:
                     jet.genJet = pairs[jet] 
                 # print jet, jet.genJet
+
+            #Add JER correction for MC jets. Requires gen-jet matching. 
+            if self.cfg_comp.isMC and hasattr(self.cfg_ana, 'jerCorr') and self.cfg_ana.jerCorr:
+                self.jerCorrection(jet)
+
+            #Add JES correction for MC jets.
+            if self.cfg_comp.isMC and hasattr(self.cfg_ana, 'jesCorr'):
+                self.jesCorrection(jet, self.cfg_ana.jesCorr)
+
                 
         self.counters.counter('jets').inc('all events')
 
@@ -127,18 +138,18 @@ class JetAnalyzer( Analyzer ):
             leg = invpairs[jet]
             jet.leg = leg
 
-	for jet in event.cleanJets:
+        for jet in event.cleanJets:
             jet.matchGenParton=999.0
 
         if self.cfg_comp.isMC and "BB" in self.cfg_comp.name:
             genParticles = self.mchandles['genParticles'].product()
             event.genParticles = map( GenParticle, genParticles)
-	    for gen in genParticles:
+            for gen in genParticles:
                 if abs(gen.pdgId())==5 and gen.mother() and abs(gen.mother().pdgId())==21:
-		    for jet in event.cleanJets:
-			dR=deltaR2(jet.eta(), jet.phi(), gen.eta(), gen.phi() )
-		        if dR<jet.matchGenParton:
-			    jet.matchGenParton=dR
+                    for jet in event.cleanJets:
+                        dR=deltaR2(jet.eta(), jet.phi(), gen.eta(), gen.phi() )
+                        if dR<jet.matchGenParton:
+                            jet.matchGenParton=dR
 
         event.jets30 = [jet for jet in event.jets if jet.pt()>30]
         event.cleanJets30 = [jet for jet in event.cleanJets if jet.pt()>30]
@@ -153,12 +164,51 @@ class JetAnalyzer( Analyzer ):
             return True
 
         return True
-        
+
+    def jerCorrection(self, jet):
+        ''' Adds JER correction according to first method at
+        https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+
+        Requires some attention when genJet matching fails.
+        '''
+        if not hasattr(jet, 'genJet'):
+            return
+
+        #import pdb; pdb.set_trace()
+        corrections = [0.052, 0.057, 0.096, 0.134, 0.288]
+        maxEtas = [0.5, 1.1, 1.7, 2.3, 5.0]
+        eta = abs(jet.eta())
+
+        for i, maxEta in enumerate(maxEtas):
+            if eta < maxEta:
+                pt = jet.pt()
+                deltaPt = (pt - jet.genJet.pt()) * corrections[i]
+                totalScale = (pt + deltaPt) / pt
+
+                if totalScale < 0.:
+                    totalScale = 0.
+                jet.scaleEnergy(totalScale)
+                break        
+
+    def jesCorrection(self, jet, scale=0.):
+        ''' Adds JES correction in number of sigmas (scale)
+        '''
+        # Do nothing if nothing to change
+        if scale == 0.:
+            return
+
+        unc = jet.uncOnFourVectorScale()
+
+        totalScale = 1. + scale * unc
+
+        if totalScale < 0.:
+            totalScale = 0.
+        jet.scaleEnergy(totalScale)
 
     def testJetID(self, jet):
-        # import pdb; pdb.set_trace()
-        jet.puJetIdPassed = jet.puJetId()
-        jet.pfJetIdPassed = jet.getSelection('cuts_looseJetId')
+        jet.puJetIdPassed = jet.puJetId(wp53x=True)
+        jet.pfJetIdPassed = jet.looseJetId()
+
         if self.cfg_ana.relaxJetId:
             return True
         else:
