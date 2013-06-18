@@ -25,7 +25,7 @@ TGaxis.SetMaxDigits(3)
 if __name__ == '__main__':
 
  theory=False
- runSet=2
+ runSet=8
 
  if runSet==1:
   samples = ["substructure_pas_QCD500.root",
@@ -67,38 +67,39 @@ if __name__ == '__main__':
   samples = ["substructure_pas_Run2012ABCD.root",
              "substructure_pas_QCD500.root",
              "substructure_pas_QCD1000.root",
+             "substructure_pas_QCDHerwig.root",
              "substructure_pas_Run2012ABCD.root",
             ]
-  colors=[1,2,1]
-  styles=[1,1,1]
-  widths=[2,2,2]
+  colors=[1,2,4,1]
+  styles=[1,1,2,1]
+  widths=[2,2,2,2]
   ndata=15000
   sets=[""]
 
-  plots = [("nPU","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pileup interactions"),
-           ("Jet1pt","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet p_{T} (GeV)"),
-           ("Jet1eta","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet #eta"),
-           ("Jet1Mass","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned jet mass (GeV)"),
-           ("Jet1MassDrop","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","mass drop"),
-           ("Jet1MassDrop","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","mass drop"),
-           ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
-           ("Jet1Nsub","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
-           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned #tau_{2}/#tau_{1}", ),
-           ("Jet1NsubPruned","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","pruned #tau_{2}/#tau_{1}", ),
-           #("Jet1C2beta15","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.5)", ),
-           ("Jet1C2beta17","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.7)", ),
-           #("Jet1C2beta20","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=2.0)", ),
-           ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet charge (#kappa=0.3)", ),
-           ("Jet1jetCharge05","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet charge (#kappa=0.5)", ),
-           ("Jet1jetCharge10","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet charge (#kappa=1.0)", ),
-           ("Jet1jetCharge03","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.3)", ),
-           ("Jet1jetCharge05","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1genWcharge>=0)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.5)", ),
-           ("Jet1jetCharge10","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1genWcharge>=0)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=1.0)", ),
-           ("Jet1nConstituents","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet constituents", ),
-           ("Jet1Ncharged01","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","charged particles (p_{T}^{rel}>0.1)", ),
-           ("Jet1Nneutral01","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","neutral particles (p_{T}^{rel}>0.1)", ),
-           ("Jet1ChargedPt2","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","3rd charged particle p_{T}", ),
-           ("Jet1Pt2","((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","3rd particle p_{T}", ),
+  plots = [("nPU","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pileup interactions"),
+           ("Jet1pt","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet p_{T} (GeV)"),
+           ("Jet1eta","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet #eta"),
+           ("Jet1Mass","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned jet mass (GeV)"),
+           ("Jet1MassDrop","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","mass drop"),
+           ("Jet1MassDrop","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","mass drop"),
+           ("Jet1Nsub","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","#tau_{2}/#tau_{1}", ),
+           ("Jet1Nsub","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","#tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","pruned #tau_{2}/#tau_{1}", ),
+           ("Jet1NsubPruned","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100))","pruned #tau_{2}/#tau_{1}", ),
+           #("Jet1C2beta15","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.5)", ),
+           ("Jet1C2beta17","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=1.7)", ),
+           #("Jet1C2beta20","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","C_{2} (#beta=2.0)", ),
+           ("Jet1jetCharge03","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet charge (#kappa=0.3)", ),
+           ("Jet1jetCharge05","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet charge (#kappa=0.5)", ),
+           ("Jet1jetCharge10","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet charge (#kappa=1.0)", ),
+           ("Jet1jetCharge03","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.3)", ),
+           ("Jet1jetCharge05","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1genWcharge>=0)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=0.5)", ),
+           ("Jet1jetCharge10","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750)&&(Jet1genWcharge>=0)&&(Jet1Mass>70)&&(Jet1Mass<100)&&(Jet1MassDrop<0.25))","jet charge (#kappa=1.0)", ),
+           ("Jet1nConstituents","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","jet constituents", ),
+           ("Jet1Ncharged01","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","charged particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1Nneutral01","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","neutral particles (p_{T}^{rel}>0.1)", ),
+           ("Jet1ChargedPt2","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","3rd charged particle p_{T}", ),
+           ("Jet1Pt2","weight*vertexWeight*((abs(Jet1eta)<2.5)&&(deta<1.3)&&(DijetMass>890)&&(Jet1pt>500)&&(Jet1pt<750))","3rd particle p_{T}", ),
            ]
 
  if runSet==3:
@@ -486,7 +487,7 @@ if __name__ == '__main__':
         maximum=hist.GetMaximum()
 
     if "jet p_{T}" in plot[2]:
-  	hists[0].GetYaxis().SetRangeUser(0.001,maximum*10.0)
+  	hists[0].GetYaxis().SetRangeUser(0.001,maximum*20.0)
     else:
         hists[0].GetYaxis().SetRangeUser(0,maximum*2.0)
 
@@ -534,6 +535,10 @@ if __name__ == '__main__':
         legend.AddEntry(hist," with p_{T}^{particles}>2 GeV","l")
       else:
         legend.AddEntry(hist," with 22PU + simulation","l")
+    if "QCDHerwig" in sample:
+        legend.AddEntry(hist,"QCD Herwig++","l")
+    if "QCDPythia8" in sample:
+        legend.AddEntry(hist,"QCD Pythia8","l")
     if "WWPy6" in sample:
       if runSet==3 and "1000" in sample:
         legend.AddEntry(hist,"W 500 < p_{T} < 750 GeV","l")

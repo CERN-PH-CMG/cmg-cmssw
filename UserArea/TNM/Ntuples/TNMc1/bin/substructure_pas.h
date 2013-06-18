@@ -107,6 +107,7 @@ int	geneventinfoproduct_hasPDF;
 double	geneventinfoproduct_qScale;
 unsigned int	geneventinfoproduct_signalProcessID;
 double	geneventinfoproduct_weight;
+double	vertexWeight;
 std::vector<int>	genparticlehelper_charge(200,0);
 std::vector<double>	genparticlehelper_eta(200,0);
 std::vector<int>	genparticlehelper_firstDaughter(200,0);
