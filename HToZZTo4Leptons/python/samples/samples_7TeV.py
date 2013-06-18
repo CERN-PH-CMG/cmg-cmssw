@@ -54,8 +54,8 @@ json='/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions11//7TeV/Rep
 
 
 kreator = ComponentCreator()
-mcSamples =kreator.makeMCComponentFromList(getFullPath('data/samples_MC_8TeV.txt'),suffix,userName,filePattern,triggersMC_mue)
-dataSamples =kreator.makeDataComponentFromList(getFullPath('data/samples_DATA_8TeV.txt'),suffix,userName,filePattern,json,triggers_mumu,triggers_ee,triggers_mue)
+mcSamples =kreator.makeMCComponentFromList(getFullPath('data/samples_MC_7TeV.txt'),suffix,userName,filePattern,triggersMC_mue)
+dataSamples =kreator.makeDataComponentFromList(getFullPath('data/samples_DATA_7TeV.txt'),suffix,userName,filePattern,json,triggers_mumu,triggers_ee,triggers_mue)
 
 dataDir = os.environ['CMSSW_BASE']+"/src/CMGTools/HToZZTo4Leptons/data"
 
